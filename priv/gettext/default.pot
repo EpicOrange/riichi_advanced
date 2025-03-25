@@ -22,6 +22,12 @@ msgstr ""
 msgid "1 Han"
 msgstr ""
 
+msgid "1 han for winning off the tile that upgrades a wind kontsu to a fuun."
+msgstr ""
+
+msgid "1 han if you win off the tile discarded by a player who just called fuun."
+msgstr ""
+
 msgid "123"
 msgstr ""
 
@@ -46,6 +52,9 @@ msgstr ""
 msgid "2 Han"
 msgstr ""
 
+msgid "2 han if each of your four sets is of a different kind: sequence, triplet, mixed triplet (kontsu), kan, mixed quad (fuun)."
+msgstr ""
+
 msgid "258"
 msgstr ""
 
@@ -55,6 +64,9 @@ msgstr ""
 msgid "3 han 60 fu and 4 han 30 fu are worth mangan."
 msgstr ""
 
+msgid "30 Fu"
+msgstr ""
+
 msgid "369"
 msgstr ""
 
@@ -62,6 +74,9 @@ msgid "37"
 msgstr ""
 
 msgid "4 Han"
+msgstr ""
+
+msgid "40 Fu"
 msgstr ""
 
 msgid "456"
@@ -88,13 +103,22 @@ msgstr ""
 msgid "A round repeats if the dealer wins."
 msgstr ""
 
+msgid "A wind kontsu counts as 0.5 han if it contains both the round wind and seat wind. A dragon kontsu is always 0.5 han, and is called mini-sangen. Having two of the same kontsu in a closed hand is 1 han (ryandoukon), having three is 2 han open 3 han closed (sandoukon), and having four is yakuman (yondoukon)."
+msgstr ""
+
 msgid "Abortive Draws"
 msgstr ""
 
 msgid "About"
 msgstr ""
 
+msgid "Add mixed triplets, or kontsu. If you have the same number in three suits, that counts as one of your sets towards four sets and a pair. For example, 1m1s1p is a kontsu. Also considered kontsu: 3 different winds, or one of each dragon."
+msgstr ""
+
 msgid "Add some UI that shows waits."
+msgstr ""
+
+msgid "Add the following calls: Ton (calls a pair), Chon (calls kontsu), and Fuun (calls a set of 4 different winds). The precedence is Ton < Chii < Chon < Fuun < Pon < Kan."
 msgstr ""
 
 msgid "Adds 10m, 10p, and 10s."
@@ -196,6 +220,9 @@ msgstr ""
 msgid "All Last doesn't repeat if the dealer is in first place and is tenpai at draw."
 msgstr ""
 
+msgid "All scores are rounded to 1000s instead of 100s."
+msgstr ""
+
 msgid "Allow robbing ankans if in tenpai for kokushi musou."
 msgstr ""
 
@@ -227,6 +254,9 @@ msgid "Back"
 msgstr ""
 
 msgid "Baiman"
+msgstr ""
+
+msgid "Base mod for Cosmic Riichi. Adds most relevant yaku and sets up the score table for things like haneyakuman."
 msgstr ""
 
 msgid "Basic flow of the game"
@@ -266,6 +296,9 @@ msgid "Cancel"
 msgstr ""
 
 msgid "Cancellable Riichi"
+msgstr ""
+
+msgid "Chanfuun"
 msgstr ""
 
 msgid "Changes all standard tiles to aka."
@@ -358,6 +391,12 @@ msgstr ""
 msgid "Copy log"
 msgstr ""
 
+msgid "Cosmic"
+msgstr ""
+
+msgid "Cosmic Calls"
+msgstr ""
+
 msgid "Cosmic Riichi"
 msgstr ""
 
@@ -448,6 +487,9 @@ msgstr ""
 msgid "Draw"
 msgstr ""
 
+msgid "Draw To Dora Indicator"
+msgstr ""
+
 msgid "Dutch"
 msgstr ""
 
@@ -493,6 +535,9 @@ msgstr ""
 msgid "Enable uma. At the end of the game, points are awarded or deducted based on placement."
 msgstr ""
 
+msgid "Enable zan shuugi: having 4 flowers is 10 chips ron / 5 chips tsumo. Same payment for non-kazoe yakuman."
+msgstr ""
+
 msgid "Enables aka dora (red fives), worth 1 han each."
 msgstr ""
 
@@ -523,18 +568,6 @@ msgstr ""
 msgid "Enter room code:"
 msgstr ""
 
-msgid "Entered a %{ruleset} game, room code %{room_code}"
-msgstr ""
-
-msgid "Entered a %{ruleset} game, room code %{room_code} with mods %{mods}"
-msgstr ""
-
-msgid "Entered lobby for variant %{ruleset}"
-msgstr ""
-
-msgid "Entered room %{room_code} for variant %{ruleset}"
-msgstr ""
-
 msgid "Even"
 msgstr ""
 
@@ -559,13 +592,25 @@ msgstr ""
 msgid "Forces you to make all available calls, including riichi (if enabled). You still get to choose if multiple calls are available."
 msgstr ""
 
+msgid "Four flowers are added to the game and act as nukidora. Flowers cannot form sequences, triplets, or pairs. North winds are no longer nukidora, but they are now yakuhai: a triplet is worth 1 han, and a pair is worth 2 fu."
+msgstr ""
+
 msgid "French"
 msgstr ""
 
 msgid "Fu"
 msgstr ""
 
+msgid "Fu is fixed at 30."
+msgstr ""
+
+msgid "Fu is fixed at 40."
+msgstr ""
+
 msgid "Fuukasetsugetsu"
+msgstr ""
+
+msgid "Fuunburi"
 msgstr ""
 
 msgid "Fuzhou"
@@ -733,7 +778,13 @@ msgstr ""
 msgid "Kandora"
 msgstr ""
 
+msgid "Kansai"
+msgstr ""
+
 msgid "Kansai Chiitoitsu"
+msgstr ""
+
+msgid "Kansai Flowers"
 msgstr ""
 
 msgid "Kansai Sanma"
@@ -767,6 +818,12 @@ msgid "Kokushi Musou Juusan Menmachi"
 msgstr ""
 
 msgid "Kong"
+msgstr ""
+
+msgid "Kontsu"
+msgstr ""
+
+msgid "Kontsu Yaku"
 msgstr ""
 
 msgid "Korean"
@@ -806,6 +863,9 @@ msgid "Lobby"
 msgstr ""
 
 msgid "Local yaku. 1 han for having a three-color straight, like 123m 456p 789s. 2 han if closed."
+msgstr ""
+
+msgid "Local yaku. 1 han for having three concealed kontsu. 3 han for having four, and 6 han for having four waiting on your pair."
 msgstr ""
 
 msgid "Local yaku. 1 han on top of chiitoitsu if three of your pairs are dragons, or if four of your pairs are winds. If you have all seven honor pairs? Double yakuman."
@@ -1072,10 +1132,16 @@ msgstr ""
 msgid "Ningbo"
 msgstr ""
 
+msgid "No 100 sticks"
+msgstr ""
+
 msgid "No Charleston"
 msgstr ""
 
 msgid "No Double Yakuman"
+msgstr ""
+
+msgid "No Furiten Riichi"
 msgstr ""
 
 msgid "No Honors"
@@ -1085,6 +1151,9 @@ msgid "No Kazoe Yakuman"
 msgstr ""
 
 msgid "No Riichi Ankan"
+msgstr ""
+
+msgid "No Tsumo Loss"
 msgstr ""
 
 msgid "No description provided."
@@ -1201,6 +1270,9 @@ msgstr ""
 msgid "Riichi City"
 msgstr ""
 
+msgid "Riichi is disallowed while in furiten."
+msgstr ""
+
 msgid "Riichi, but everyone gets a different Saki power, which changes the game quite a bit. Some give you bonus han every time you use your power. Some let you recover dead discards. Some let you swap tiles around the entire board, including the dora indicator."
 msgstr ""
 
@@ -1256,6 +1328,9 @@ msgid "Ryuukyoku"
 msgstr ""
 
 msgid "Sakicards v1.3"
+msgstr ""
+
+msgid "Sanankon"
 msgstr ""
 
 msgid "Sanankou"
@@ -1477,7 +1552,13 @@ msgstr ""
 msgid "The classic riichi ruleset, now with an assortment of mods to pick and choose at your liking."
 msgstr ""
 
+msgid "The game ends once the next draw is the last dora indicator."
+msgstr ""
+
 msgid "The tsumo and ron buttons are enabled on every draw and discard. If you make an incorrect win call, your hand is dead and you cannot make a win call for the remainder of the round."
+msgstr ""
+
+msgid "This is a utility mod for Cosmic Riichi that changes all yakuman to be 13 han. You may disable it if you don't want yakuman to stack with normal yaku."
 msgstr ""
 
 msgid "Three-player Riichi."
@@ -1549,10 +1630,16 @@ msgstr ""
 msgid "Ura"
 msgstr ""
 
+msgid "Use the zan scoring table."
+msgstr ""
+
 msgid "Using joker assignment"
 msgstr ""
 
 msgid "Uumensai"
+msgstr ""
+
+msgid "Uumensai (cosmic)"
 msgstr ""
 
 msgid "Uupin Kaihou"
@@ -1591,6 +1678,9 @@ msgstr ""
 msgid "Welcome to Riichi Advanced!"
 msgstr ""
 
+msgid "When you tsumo, you get the same total points as if it was a ron payment. (Nondealer tsumo mangan splits north's payment, giving you 5000+3000 instead of 4000+2000.)"
+msgstr ""
+
 msgid "Yakitori"
 msgstr ""
 
@@ -1600,7 +1690,19 @@ msgstr ""
 msgid "Yakuman"
 msgstr ""
 
+msgid "Yakuman 13 Han"
+msgstr ""
+
 msgid "You have the option to declare open riichi, which is worth 2 han but reveals your hand to the table. Open double riichi is 3 han."
+msgstr ""
+
+msgid "Zan Sanma"
+msgstr ""
+
+msgid "Zan Scoring"
+msgstr ""
+
+msgid "Zan Shuugi"
 msgstr ""
 
 msgid "Zung Jung"
@@ -1630,16 +1732,7 @@ msgstr ""
 msgid "bets their tsumo payment instead of paying out (Ezaki Hitomi)"
 msgstr ""
 
-msgid "called %{call}"
-msgstr ""
-
 msgid "called %{call} on"
-msgstr ""
-
-msgid "called %{call} on %{tile}"
-msgstr ""
-
-msgid "called %{call} on %{tile} with %{choice}"
 msgstr ""
 
 msgid "called %{call} on %{tile} with hand %{hand}"
@@ -1649,9 +1742,6 @@ msgid "chose the following cards: %{choices}"
 msgstr ""
 
 msgid "dealt in while tenpai with hand %{hand} which, if won on %{tile} scores a minimum value of %{score} via the following yaku: %{yaku} (Ezaki Hitomi)"
-msgstr ""
-
-msgid "declared riichi"
 msgstr ""
 
 msgid "declared the following yaku:"

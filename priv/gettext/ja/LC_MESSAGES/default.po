@@ -542,18 +542,6 @@ msgstr "ゲームに入る"
 msgid "Enter room code:"
 msgstr "ルームコードを入力："
 
-msgid "Entered a %{ruleset} game, room code %{room_code}"
-msgstr "%{ruleset}戦に参加（ルームコード：%{room_code}）"
-
-msgid "Entered a %{ruleset} game, room code %{room_code} with mods %{mods}"
-msgstr "%{ruleset}戦に参加（ルームコード：%{room_code}、MOD：%{mods}）"
-
-msgid "Entered lobby for variant %{ruleset}"
-msgstr "変種%{ruleset}のロビーに入った。"
-
-msgid "Entered room %{room_code} for variant %{ruleset}"
-msgstr "%{ruleset}のルールでルーム%{room_code}に参加"
-
 msgid "Even"
 msgstr "偶数"
 
@@ -1649,18 +1637,9 @@ msgstr "ベット"
 msgid "bets their tsumo payment instead of paying out (Ezaki Hitomi)"
 msgstr "ツモ支払いの代わりにベットする (江崎仁美)"
 
-msgid "called %{call}"
-msgstr "が%{call}"
-
 #, fuzzy
 msgid "called %{call} on"
 msgstr "が%{call}"
-
-msgid "called %{call} on %{tile}"
-msgstr "が%{tile}で%{call}"
-
-msgid "called %{call} on %{tile} with %{choice}"
-msgstr "が%{tile}で%{call}（選択：%{choice}）"
 
 msgid "called %{call} on %{tile} with hand %{hand}"
 msgstr "が%{tile}で%{call}をしました（手牌：%{hand}）"
@@ -1670,9 +1649,6 @@ msgstr "次の牌を選択: %{choices}"
 
 msgid "dealt in while tenpai with hand %{hand} which, if won on %{tile} scores a minimum value of %{score} via the following yaku: %{yaku} (Ezaki Hitomi)"
 msgstr "手牌 %{hand} で聴牌状態で放銃。%{tile} で和了した場合、以下の役で最低 %{score} 点:"
-
-msgid "declared riichi"
-msgstr "がリーチを宣言"
 
 msgid "declared the following yaku:"
 msgstr "以下の役を宣言:"
@@ -1817,3 +1793,117 @@ msgstr "点数"
 
 msgid "→"
 msgstr "→"
+
+msgid "1 han for winning off the tile that upgrades a wind kontsu to a fuun."
+msgstr "風のコンツをフウンペイにアップグレードする牌で和了した場合1飜。"
+
+msgid "1 han if you win off the tile discarded by a player who just called fuun."
+msgstr "フウンペイを宣言したプレイヤーが捨てた牌で和了した場合1飜。"
+
+msgid "2 han if each of your four sets is of a different kind: sequence, triplet, mixed triplet (kontsu), kan, mixed quad (fuun)."
+msgstr "4つの面子がそれぞれ異なる種類（順子、刻子、コンツ、カン、フウンペイ）の場合2飜。"
+
+msgid "30 Fu"
+msgstr "30符"
+
+msgid "40 Fu"
+msgstr "40符"
+
+msgid "A wind kontsu counts as 0.5 han if it contains both the round wind and seat wind. A dragon kontsu is always 0.5 han, and is called mini-sangen. Having two of the same kontsu in a closed hand is 1 han (ryandoukon), having three is 2 han open 3 han closed (sandoukon), and having four is yakuman (yondoukon)."
+msgstr "風のコンツが場風と自風の両方を含む場合0.5飜。ドラゴンのコンツは常に0.5飜（ミニ三現）。同じコンツを2つ手牌に持つと1飜（両同刻）、3つで2飜（副露時）または3飜（門前時）（三同刻）、4つで役満（四同刻）。"
+
+msgid "Add mixed triplets, or kontsu. If you have the same number in three suits, that counts as one of your sets towards four sets and a pair. For example, 1m1s1p is a kontsu. Also considered kontsu: 3 different winds, or one of each dragon."
+msgstr "混合刻子（コンツ）を追加。3種類の数牌で同じ数字を持つ場合、面子として認められる。例：1m1s1pはコンツ。また、3種の風牌または3種のドラゴン牌もコンツとして扱われる。"
+
+msgid "Add the following calls: Ton (calls a pair), Chon (calls kontsu), and Fuun (calls a set of 4 different winds). The precedence is Ton < Chii < Chon < Fuun < Pon < Kan."
+msgstr "以下の鳴きを追加：トン（対子）、チョン（コンツ）、フウンペイ（4種の風牌セット）。優先順位はトン < チー < チョン < フウンペイ < ポン < カン。"
+
+msgid "All scores are rounded to 1000s instead of 100s."
+msgstr "全ての得点は100単位ではなく1000単位に切り上げ。"
+
+msgid "Base mod for Cosmic Riichi. Adds most relevant yaku and sets up the score table for things like haneyakuman."
+msgstr "Cosmic Riichiの基本モッド。主要な役を追加し、跳満などの点数表を設定。"
+
+msgid "Chanfuun"
+msgstr "チャンフウンペイ"
+
+msgid "Cosmic"
+msgstr "コズミック"
+
+msgid "Cosmic Calls"
+msgstr "コズミックコール"
+
+msgid "Draw To Dora Indicator"
+msgstr "ドラ表示牌まで引き終わったら終局"
+
+msgid "Enable zan shuugi: having 4 flowers is 10 chips ron / 5 chips tsumo. Same payment for non-kazoe yakuman."
+msgstr "ザン酒ルールを有効化：花牌4枚でロン時10チップ/ツモ時5チップ。数え役満にも同様の支払い。"
+
+msgid "Four flowers are added to the game and act as nukidora. Flowers cannot form sequences, triplets, or pairs. North winds are no longer nukidora, but they are now yakuhai: a triplet is worth 1 han, and a pair is worth 2 fu."
+msgstr "花牌4枚を追加（抜きドラとして機能）。花牌は順子・刻子・対子を形成できない。北風は抜きドラではなく役牌に変更：刻子で1飜、対子で2符。"
+
+msgid "Fu is fixed at 30."
+msgstr "固定30符。"
+
+msgid "Fu is fixed at 40."
+msgstr "固定40符。"
+
+msgid "Fuunburi"
+msgstr "フウンペイ振り"
+
+msgid "Kansai"
+msgstr "関西ルール"
+
+msgid "Kansai Flowers"
+msgstr "関西花牌"
+
+msgid "Kontsu"
+msgstr "コンツ"
+
+msgid "Kontsu Yaku"
+msgstr "コンツ役"
+
+msgid "Local yaku. 1 han for having three concealed kontsu. 3 han for having four, and 6 han for having four waiting on your pair."
+msgstr "ローカル役。3つの暗コンツで1飜、4つで3飜、4つで対子待ちの場合6飜。"
+
+msgid "No 100 sticks"
+msgstr "100点棒なし"
+
+msgid "No Furiten Riichi"
+msgstr "フリテン時リーチ禁止"
+
+msgid "No Tsumo Loss"
+msgstr "ツモ失点なし"
+
+msgid "Riichi is disallowed while in furiten."
+msgstr "フリテン状態ではリーチが禁止されます。"
+
+msgid "Sanankon"
+msgstr "三暗コンツ"
+
+msgid "The game ends once the next draw is the last dora indicator."
+msgstr "次に引く牌が最後のドラ表示牌になった時点で終局。"
+
+msgid "This is a utility mod for Cosmic Riichi that changes all yakuman to be 13 han. You may disable it if you don't want yakuman to stack with normal yaku."
+msgstr "Cosmic Riichi用ユーティリティモッドで、全ての役満を13飜に変更。役満と通常役の複合を防ぎたい場合は無効化可能。"
+
+msgid "Use the zan scoring table."
+msgstr "ザン点数表を使用"
+
+msgid "Uumensai (cosmic)"
+msgstr "五面斉"
+
+msgid "When you tsumo, you get the same total points as if it was a ron payment. (Nondealer tsumo mangan splits north's payment, giving you 5000+3000 instead of 4000+2000.)"
+msgstr "ツモ時、ロン時と同総得点を獲得（子のツモ満貫時、北家支払い分割で4000+2000ではなく5000+3000）。"
+
+msgid "Yakuman 13 Han"
+msgstr "役満13飜"
+
+msgid "Zan Sanma"
+msgstr "ザン三麻"
+
+msgid "Zan Scoring"
+msgstr "ザン点数計算"
+
+msgid "Zan Shuugi"
+msgstr "ザン酒ルール"

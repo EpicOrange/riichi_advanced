@@ -78,55 +78,6 @@ east
 south
 west
 north
-Welcome to Riichi Advanced!
-Player
-Player %{nickname} joined as %{seat}
-exited
-called %{call} on %{tile} with hand %{hand}
-with yaku:
-discarded %{tile}
-from hand
-scored a %{score}-point hand
-declared riichi
-called %{call}
-called %{call} on %{tile} with %{choice}
-called %{call} on %{tile}
-Entered room %{room_code} for variant %{ruleset}
-Entered a %{ruleset} game, room code %{room_code} with mods %{mods}
-Entered a %{ruleset} game, room code %{room_code}
-Entered lobby for variant %{ruleset}
-Game ended by exhaustive draw
-Game ended by abortive draw: (%{draw_name})
-Game ended after three winners
-declared the following yaku:
-swapped out a joker from the call %{call}
-revealed tiles %{tiles}
-is considering declaring a player's hand dead
-Possible hand:
-chose the following cards: %{choices}
-stays at zero points, and receives 8000 points from first place (Hanada Kirame)
-gains double points for wareme
-pays double to their duelist (Megan Davin)
-pays double (Yae Kobashiri)
-pays double since the wall ends on their side (Kanbara Satomi)
-gets double points for winning under someone else's ippatsu (Tsujigaito Satoha)
-pays half due to dealing in with their voided suit (Yoshitome Miharu)
-has tsumo payments increased by 300 per 1000 bet (%{delta}) (Motouchi Naruka)
-has tsumo payments decreased by 300 per 1000 bet (%{delta}) (Motouchi Naruka)
-is damaten, and immune to tsumo payments (Atago Hiroe)
-pays double for tsumo (Maya Yukiko)
-pays double (Yae Kobashiri)
-pays double to their duelist (Megan Davin)
-pays double since the wall ends on their side (Kanbara Satomi)
-gets double points for winning under someone else's ippatsu (Tsujigaito Satoha)
-loses double points for wareme
-has greater tenpai value than their deal-in value, and therefore reverses the payment, not including riichi sticks (Ezaki Hitomi)
-has less or equal tenpai value than their deal-in value, and therefore the payment proceeds as normal (Ezaki Hitomi)
-takes all bets on the table (%{pot}) and is paid 1500 by every player (Nelly Virsaladze)
-bets their tsumo payment instead of paying out (Ezaki Hitomi)
-pays double since the wall ends on their side (Kanbara Satomi)
-pays double since the wall ends on their side (Kanbara Satomi)
-is treated as a dealer for scoring purposes (Ryuumonbuchi Touka)
 Rules
 1 Han
 2 Han
@@ -510,6 +461,24 @@ Ten
 Space Mahjong
 Chinitsu
 Fifth Tile
+Cosmic
+Kontsu
+Cosmic Calls
+Kontsu Yaku
+Chanfuun
+Fuunburi
+Uumensai (cosmic)
+Sanankon
+Yakuman 13 Han
+Draw To Dora Indicator
+Kansai Flowers
+No Furiten Riichi
+No 100 sticks
+30 Fu
+40 Fu
+Zan Shuugi
+Zan Scoring
+No Tsumo Loss
 Add some UI that shows waits.
 Everyone plays with tiles shown.
 Enable kan. If you have four of a tile in hand, you may create a concealed kan (ankan). If you have three of a tile and someone discards the fourth, you may create an open kan (daiminkan). If you have called a triplet and draw the fourth tile, you may create an added kan (kakan). Kan calls count as triplets for the purposes of winning and scoring, but they award 4x triplet fu. In all three cases, after declaring kan you draw a replacement tile from the dead wall. Winning on this replacement tile awards the rinshan yaku (1 han). One may also call ron on a tile added to an added kan (kakan) for the chankan yaku (1 han). Having three kans is 2 han (sankantsu), and having four is yakuman. There can be at most four kans in a single game.
@@ -666,12 +635,31 @@ Adds 10m, 10p, and 10s.
 Sequences can wrap (891, 912).
 Replace the wall with 16 copies of each bamboo tile. Includes 10s if Ten is enabled.
 Adds a fifth copy of every standard tile.
+Base mod for Cosmic Riichi. Adds most relevant yaku and sets up the score table for things like haneyakuman.
+Add mixed triplets, or kontsu. If you have the same number in three suits, that counts as one of your sets towards four sets and a pair. For example, 1m1s1p is a kontsu. Also considered kontsu: 3 different winds, or one of each dragon.
+Add the following calls: Ton (calls a pair), Chon (calls kontsu), and Fuun (calls a set of 4 different winds). The precedence is Ton < Chii < Chon < Fuun < Pon < Kan.
+A wind kontsu counts as 0.5 han if it contains both the round wind and seat wind. A dragon kontsu is always 0.5 han, and is called mini-sangen. Having two of the same kontsu in a closed hand is 1 han (ryandoukon), having three is 2 han open 3 han closed (sandoukon), and having four is yakuman (yondoukon).
+1 han for winning off the tile that upgrades a wind kontsu to a fuun.
+1 han if you win off the tile discarded by a player who just called fuun.
+2 han if each of your four sets is of a different kind: sequence, triplet, mixed triplet (kontsu), kan, mixed quad (fuun).
+Local yaku. 1 han for having three concealed kontsu. 3 han for having four, and 6 han for having four waiting on your pair.
+This is a utility mod for Cosmic Riichi that changes all yakuman to be 13 han. You may disable it if you don't want yakuman to stack with normal yaku.
+The game ends once the next draw is the last dora indicator.
+Four flowers are added to the game and act as nukidora. Flowers cannot form sequences, triplets, or pairs. North winds are no longer nukidora, but they are now yakuhai: a triplet is worth 1 han, and a pair is worth 2 fu.
+Riichi is disallowed while in furiten.
+All scores are rounded to 1000s instead of 100s.
+Fu is fixed at 30.
+Fu is fixed at 40.
+Enable zan shuugi: having 4 flowers is 10 chips ron / 5 chips tsumo. Same payment for non-kazoe yakuman.
+Use the zan scoring table.
+When you tsumo, you get the same total points as if it was a ron payment. (Nondealer tsumo mangan splits north's payment, giving you 5000+3000 instead of 4000+2000.)
 Mahjong Soul
 tenhou.net
 Riichi City
 WRC 2022
 M.League
 Just Like Modded Minecraft
+Zan Sanma
 Other
 Rules
 Abortive Draws
@@ -681,6 +669,8 @@ Yaku
 Mangan
 Yakuman
 Other
+Cosmic
+Kansai
 value
 is
 below

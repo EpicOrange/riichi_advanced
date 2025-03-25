@@ -514,18 +514,6 @@ msgstr "进入"
 msgid "Enter room code:"
 msgstr "输入房间码："
 
-msgid "Entered a %{ruleset} game, room code %{room_code}"
-msgstr "已加入%{ruleset}对局，房间码%{room_code}"
-
-msgid "Entered a %{ruleset} game, room code %{room_code} with mods %{mods}"
-msgstr "已加入%{ruleset}对局，房间码%{room_code}，模组%{mods}"
-
-msgid "Entered lobby for variant %{ruleset}"
-msgstr "已进入%{ruleset}变体大厅"
-
-msgid "Entered room %{room_code} for variant %{ruleset}"
-msgstr "已进入%{ruleset}规则的%{room_code}房间"
-
 msgid "Even"
 msgstr "偶数"
 
@@ -564,6 +552,15 @@ msgstr "福州"
 
 msgid "Galaxy Mahjong"
 msgstr "银河麻将"
+
+msgid "Game ended after three winners"
+msgstr "游戏在三位胜者产生后结束"
+
+msgid "Game ended by abortive draw: (%{draw_name})"
+msgstr "游戏因流局结束：(%{draw_name})"
+
+msgid "Game ended by exhaustive draw"
+msgstr "游戏因荒牌流局结束"
 
 msgid "German"
 msgstr "德语"
@@ -1072,6 +1069,9 @@ msgstr "立直后禁止暗杠"
 msgid "No description provided."
 msgstr "无描述。"
 
+msgid "Noten payments are tripled (Ikeda Kana)"
+msgstr "未听支付三倍（池田华菜）"
+
 msgid "Number of points each player starts with. You can also set this by writing the following in the Config tab: \\\"initial_score\\\": 100000"
 msgstr "每位玩家的初始点数。也可在配置选项卡中输入\"initial_score: 100000\"进行设置"
 
@@ -1131,6 +1131,9 @@ msgstr "碰"
 
 msgid "Pong"
 msgstr "碰"
+
+msgid "Possible hand:"
+msgstr "可能的手牌："
 
 msgid "Private"
 msgstr "私人"
@@ -1209,6 +1212,9 @@ msgstr "规则集"
 
 msgid "Rulesets"
 msgstr "规则集"
+
+msgid "Running joker solver..."
+msgstr "正在运行万能牌解析器..."
 
 msgid "Ryandoukou"
 msgstr "两同刻"
@@ -1522,6 +1528,9 @@ msgstr "马点"
 msgid "Ura"
 msgstr "里宝牌"
 
+msgid "Using joker assignment"
+msgstr "使用万能牌分配"
+
 msgid "Uumensai"
 msgstr "五门齐"
 
@@ -1542,6 +1551,9 @@ msgstr "越南万能牌"
 
 msgid "View log"
 msgstr "查看日志"
+
+msgid "Viewing log for a"
+msgstr "查看日志："
 
 msgid "Visayan"
 msgstr "米沙鄢"
@@ -1594,23 +1606,20 @@ msgstr "低于"
 msgid "bet"
 msgstr "下注"
 
-msgid "called %{call}"
-msgstr "叫了%{call}"
+msgid "bets their tsumo payment instead of paying out (Ezaki Hitomi)"
+msgstr "用自摸支付下注而非赔付（江崎仁美）"
 
 msgid "called %{call} on"
 msgstr "叫了%{call}"
 
-msgid "called %{call} on %{tile}"
-msgstr "在%{tile}叫了%{call}"
-
-msgid "called %{call} on %{tile} with %{choice}"
-msgstr "在%{tile}叫了%{call}（选择：%{choice}）"
-
 msgid "called %{call} on %{tile} with hand %{hand}"
 msgstr "在%{tile}叫了%{call}（手牌：%{hand}）"
 
-msgid "declared riichi"
-msgstr "宣布立直"
+msgid "chose the following cards: %{choices}"
+msgstr "选择了以下牌：%{choices}"
+
+msgid "declared the following yaku:"
+msgstr "声明了以下役种："
 
 msgid "discarded %{tile}"
 msgstr "打出%{tile}"
@@ -1630,93 +1639,6 @@ msgstr "无"
 msgid "from hand"
 msgstr "手切"
 
-msgid "goal"
-msgstr "目标分"
-
-msgid "is"
-msgstr "为"
-
-msgid "man"
-msgstr "万"
-
-msgid "min"
-msgstr "最小"
-
-msgid "north"
-msgstr "北"
-
-msgid "penalty"
-msgstr "罚分"
-
-msgid "pin"
-msgstr "筒"
-
-msgid "points"
-msgstr "分数"
-
-msgid "scored a %{score}-point hand"
-msgstr "和了%{score}分的牌"
-
-msgid "sou"
-msgstr "索"
-
-msgid "south"
-msgstr "南"
-
-msgid "start_indicators"
-msgstr "初始宝牌数"
-
-msgid "tenhou.net"
-msgstr "天凤"
-
-msgid "true"
-msgstr "有"
-
-msgid "value"
-msgstr "分值"
-
-msgid "west"
-msgstr "西"
-
-msgid "worth"
-msgstr "价值"
-
-msgid "Game ended after three winners"
-msgstr "游戏在三位胜者产生后结束"
-
-msgid "Game ended by abortive draw: (%{draw_name})"
-msgstr "游戏因流局结束：(%{draw_name})"
-
-msgid "Game ended by exhaustive draw"
-msgstr "游戏因荒牌流局结束"
-
-msgid "Noten payments are tripled (Ikeda Kana)"
-msgstr "未听支付三倍（池田华菜）"
-
-msgid "Possible hand:"
-msgstr "可能的手牌："
-
-msgid "Running joker solver..."
-msgstr "正在运行万能牌解析器..."
-
-msgid "Using joker assignment"
-msgstr "使用万能牌分配"
-
-msgid "Viewing log for a"
-msgstr "查看日志："
-
-msgid "bets their tsumo payment instead of paying out (Ezaki Hitomi)"
-msgstr "用自摸支付下注而非赔付（江崎仁美）"
-
-msgid "chose the following cards: %{choices}"
-msgstr "选择了以下牌：%{choices}"
-
-msgid "dealt in while tenpai with hand %{hand} which, if won on %{tile} scores a minimum value of %{score} via the following yaku:"
-msgstr "听牌 %{hand} 时放铳，若用 %{tile} 和牌，通过以下役种至少得 %{score} 分："
-
-msgid "declared the following yaku:"
-msgstr "声明了以下役种："
-
 msgid "gains double points for wareme"
 msgstr "因破目获得双倍点数"
 
@@ -1725,6 +1647,9 @@ msgstr "游戏"
 
 msgid "gets double points for winning under someone else's ippatsu (Tsujigaito Satoha)"
 msgstr "在他人一発后和牌获得双倍点数（辻垣内沙智华）"
+
+msgid "goal"
+msgstr "目标分"
 
 msgid "has greater tenpai value than their deal-in value, and therefore reverses the payment, not including riichi sticks (Ezaki Hitomi)"
 msgstr "听牌价值高于放铳价值，因此逆转支付（不含立直棒）（江崎仁美）"
@@ -1738,6 +1663,9 @@ msgstr "自摸支付每1000点赌注减少300点（%{delta}）（本内成香）
 msgid "has tsumo payments increased by 300 per 1000 bet (%{delta}) (Motouchi Naruka)"
 msgstr "自摸支付每1000点赌注增加300点（%{delta}）（本内成香）"
 
+msgid "is"
+msgstr "为"
+
 msgid "is considering declaring a player's hand dead"
 msgstr "正在考虑宣布玩家手牌为死亡状态"
 
@@ -1749,6 +1677,15 @@ msgstr "计分时视为庄家（龙门渕透华）"
 
 msgid "loses double points for wareme"
 msgstr "因破目失去双倍点数"
+
+msgid "man"
+msgstr "万"
+
+msgid "min"
+msgstr "最小"
+
+msgid "north"
+msgstr "北"
 
 msgid "pays double (Yae Kobashiri)"
 msgstr "支付双倍（小走八重）"
@@ -1765,8 +1702,29 @@ msgstr "向其决斗对象支付双倍（梅根·达文）"
 msgid "pays half due to dealing in with their voided suit (Yoshitome Miharu)"
 msgstr "因放铳于其空花色而支付半数（吉留未晴）"
 
+msgid "penalty"
+msgstr "罚分"
+
+msgid "pin"
+msgstr "筒"
+
+msgid "points"
+msgstr "分数"
+
 msgid "revealed tiles %{tiles}"
 msgstr "展示了牌：%{tiles}"
+
+msgid "scored a %{score}-point hand"
+msgstr "和了%{score}分的牌"
+
+msgid "sou"
+msgstr "索"
+
+msgid "south"
+msgstr "南"
+
+msgid "start_indicators"
+msgstr "初始宝牌数"
 
 msgid "stays at zero points, and receives 8000 points from first place (Hanada Kirame)"
 msgstr "保持零分，并从第一名获得8000点（花田煌）"
@@ -1777,6 +1735,18 @@ msgstr "从鸣牌 %{call} 中替换了一张万能牌"
 msgid "takes all bets on the table (%{pot}) and is paid 1500 by every player (Nelly Virsaladze)"
 msgstr "收取桌上所有赌注（%{pot}）并每位玩家支付1500点（妮莉·维沙拉泽）"
 
+msgid "tenhou.net"
+msgstr "天凤"
+
+msgid "true"
+msgstr "有"
+
+msgid "value"
+msgstr "分值"
+
+msgid "west"
+msgstr "西"
+
 msgid "with hand"
 msgstr "手牌："
 
@@ -1786,5 +1756,122 @@ msgstr "带修改："
 msgid "with yaku:"
 msgstr "役种："
 
+msgid "worth"
+msgstr "价值"
+
 msgid "→"
 msgstr "→"
+
+msgid "1 han for winning off the tile that upgrades a wind kontsu to a fuun."
+msgstr "用使风刻升级为风牌的牌和了时1番。"
+
+msgid "1 han if you win off the tile discarded by a player who just called fuun."
+msgstr "用刚宣告风牌的玩家打出的牌和了时1番。"
+
+msgid "2 han if each of your four sets is of a different kind: sequence, triplet, mixed triplet (kontsu), kan, mixed quad (fuun)."
+msgstr "4个面子分别为不同种类（顺子、刻子、混刻(混刻)、杠、风牌）时2番。"
+
+msgid "30 Fu"
+msgstr "30符"
+
+msgid "40 Fu"
+msgstr "40符"
+
+msgid "A wind kontsu counts as 0.5 han if it contains both the round wind and seat wind. A dragon kontsu is always 0.5 han, and is called mini-sangen. Having two of the same kontsu in a closed hand is 1 han (ryandoukon), having three is 2 han open 3 han closed (sandoukon), and having four is yakuman (yondoukon)."
+msgstr "风刻同时包含场风和自风时计0.5番。龙刻恒为0.5番（小三元）。手牌中有两副相同混刻时1番（两同刻），三副时2番（副露）/3番（门清）（三同刻），四副时役满（四同刻）。"
+
+msgid "Add mixed triplets, or kontsu. If you have the same number in three suits, that counts as one of your sets towards four sets and a pair. For example, 1m1s1p is a kontsu. Also considered kontsu: 3 different winds, or one of each dragon."
+msgstr "添加混刻规则。三色同数牌可组成一个面子（例：1万1索1筒）。三种不同风牌或三种龙牌也可组成混刻。"
+
+msgid "Add the following calls: Ton (calls a pair), Chon (calls kontsu), and Fuun (calls a set of 4 different winds). The precedence is Ton < Chii < Chon < Fuun < Pon < Kan."
+msgstr "新增以下鸣牌：Ton（对子）、Chon（混刻）、Fuun（四风牌）。优先级：Ton < 吃 < Chon < Fuun < 碰 < 杠。"
+
+msgid "All scores are rounded to 1000s instead of 100s."
+msgstr "所有得分按1000而非100取整。"
+
+msgid "Base mod for Cosmic Riichi. Adds most relevant yaku and sets up the score table for things like haneyakuman."
+msgstr "Cosmic立直基础模组。添加主要役种并设置跳满等分数表。"
+
+msgid "Chanfuun"
+msgstr "长风牌"
+
+msgid "Cosmic"
+msgstr "宇宙"
+
+msgid "Cosmic Calls"
+msgstr "宇宙鸣牌"
+
+msgid "Draw To Dora Indicator"
+msgstr "摸至宝牌指示牌时流局"
+
+msgid "Enable zan shuugi: having 4 flowers is 10 chips ron / 5 chips tsumo. Same payment for non-kazoe yakuman."
+msgstr "启用攒酒规则：持有4花牌时荣和10筹码/自摸5筹码。数え役满同理。"
+
+msgid "Four flowers are added to the game and act as nukidora. Flowers cannot form sequences, triplets, or pairs. North winds are no longer nukidora, but they are now yakuhai: a triplet is worth 1 han, and a pair is worth 2 fu."
+msgstr "新增4张花牌作为拔宝。花牌不可组成顺子、刻子或对子。北风不再是拔宝牌，改为役牌：刻子1番，对子2符。"
+
+msgid "Fu is fixed at 30."
+msgstr "固定30符。"
+
+msgid "Fu is fixed at 40."
+msgstr "固定40符。"
+
+msgid "Fuunburi"
+msgstr "风牌振"
+
+msgid "Kansai"
+msgstr "关西规则"
+
+msgid "Kansai Flowers"
+msgstr "关西花牌"
+
+msgid "Kontsu"
+msgstr "混刻"
+
+msgid "Kontsu Yaku"
+msgstr "混刻役"
+
+msgid "Local yaku. 1 han for having three concealed kontsu. 3 han for having four, and 6 han for having four waiting on your pair."
+msgstr "地方役。3暗混刻1番，4暗混刻3番，4暗混刻且单骑听牌6番。"
+
+msgid "No 100 sticks"
+msgstr "无100点棒"
+
+msgid "No Furiten Riichi"
+msgstr "振听禁止立直"
+
+msgid "No Tsumo Loss"
+msgstr "自摸不减点"
+
+msgid "Riichi is disallowed while in furiten."
+msgstr "振听状态下禁止立直。"
+
+msgid "Sanankon"
+msgstr "三暗混刻"
+
+msgid "The game ends once the next draw is the last dora indicator."
+msgstr "下次摸牌为最后宝牌指示牌时终局。"
+
+msgid "This is a utility mod for Cosmic Riichi that changes all yakuman to be 13 han. You may disable it if you don't want yakuman to stack with normal yaku."
+msgstr "Cosmic立直工具模组，将役满统一设为13番。若需禁用役满与普通役复合可关闭此功能。"
+
+msgid "Use the zan scoring table."
+msgstr "使用攒点数表"
+
+msgid "Uumensai (cosmic)"
+msgstr "宇宙门牌（Cosmic）"
+
+msgid "When you tsumo, you get the same total points as if it was a ron payment. (Nondealer tsumo mangan splits north's payment, giving you 5000+3000 instead of 4000+2000.)"
+msgstr "自摸时获得与荣和同总点数（子家自摸满贯时北家支付拆分为5000+3000而非4000+2000）。"
+
+msgid "Yakuman 13 Han"
+msgstr "役满13番"
+
+msgid "Zan Sanma"
+msgstr "攒三麻"
+
+msgid "Zan Scoring"
+msgstr "攒计分"
+
+msgid "Zan Shuugi"
+msgstr "攒酒规则"
