@@ -889,7 +889,7 @@ msgstr ""
 msgid "Local yaku. \\\"Three Wind Triplets\\\". 2 han if you have three wind triplets."
 msgstr ""
 
-msgid "Local yaku. \\\"Twelve Tiles Down\\\" 1 han if you win with four calls (and therefore on a single tile wait). Closed kans are permitted."
+msgid "Local yaku. \\\"Twelve Tiles Down\\\". 1 han if you win with four calls (and therefore on a single tile wait). Closed kans are permitted."
 msgstr ""
 
 msgid "Local yaku. \\\"Twice Double Triplets\\\". A double triplet is when you have two triplets of the same number in different suits, like 333m 333p. 2 han for having two sets of double triplets."

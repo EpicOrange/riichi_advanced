@@ -42,16 +42,16 @@ msgid "147"
 msgstr "１４７"
 
 msgid "16-tile mahjong where all honor tiles are flower tiles."
-msgstr ""
+msgstr "字牌がすべて花牌になる16枚麻雀です。"
 
 msgid "16-tile mahjong where you can form dragon and wind sequences."
-msgstr ""
+msgstr "字牌で順子（シュンツ）を作れる16枚麻雀です。"
 
 msgid "16-tile mahjong with a version of dora that doesn't give you han, but becomes a unique winning condition by itself."
-msgstr ""
+msgstr "ドラが翻にならず、特別な和了条件となる16枚麻雀です。"
 
 msgid "16-tile mahjong with riichi mechanics."
-msgstr ""
+msgstr "リーチのある16枚麻雀です。"
 
 msgid "19"
 msgstr "１９"
@@ -102,16 +102,16 @@ msgid "789"
 msgstr "７８９"
 
 msgid "A Space Mahjong variant with mixed triplets, more yaku, and more calls."
-msgstr ""
+msgstr "対子・刻子が混ざるセット、追加役、鳴きの多い宇宙麻雀のバリアントです。"
 
 msgid "A pair of round+seat winds is worth 4 fu instead of 2 fu."
-msgstr ""
+msgstr "場風と自風の対子は2符ではなく4符になります。"
 
 msgid "A round repeats if the dealer is tenpai at draw."
-msgstr ""
+msgstr "流局時に親がテンパイなら連荘します。"
 
 msgid "A round repeats if the dealer wins."
-msgstr ""
+msgstr "親が和了すると連荘します。"
 
 msgid "Abortive Draws"
 msgstr "流局"
@@ -120,79 +120,79 @@ msgid "About"
 msgstr "について"
 
 msgid "Add some UI that shows waits."
-msgstr ""
+msgstr "待ち牌を表示するUIを追加します。"
 
 msgid "Adds 10m, 10p, and 10s."
-msgstr ""
+msgstr "萬子・筒子・索子に10を追加します（10m、10p、10s）。"
 
 msgid "Adds 10m, 10p, and 10s. Changes dora accordingly (if dora is enabled). Tanyao now allows nines, and chanta/junchan/honroutou require tens instead. 13 Orphans now requires the ten instead of the nine of each suit. Ittsu allows 23456789T."
-msgstr ""
+msgstr "萬子・筒子・索子に10を追加します（10m、10p、10s）。ドラが有効な場合は、対応するドラ表示も変更されます。タンヤオは9を含めることができるようになり、チャンタ・ジュンチャン・ホンローは代わりに10が必要になります。国士無双は各色の9の代わりに10が必要になります。一通は23456789十でも成立します。"
 
 msgid "Adds a copy of the 123 joker, which looks like 小 and can be used as any 1, 2, or 3."
-msgstr ""
+msgstr "1・2・3として使えるジョーカー牌「小」を1枚追加します。"
 
 msgid "Adds a copy of the 147 joker, which can be used as any 1, 4, or 7."
-msgstr ""
+msgstr "1・4・7として使えるジョーカー牌を1枚追加します。"
 
 msgid "Adds a copy of the 19 joker, which can be used as any 1 or 9."
-msgstr ""
+msgstr "1または9として使えるジョーカー牌を1枚追加します。"
 
 msgid "Adds a copy of the 258 joker, which can be used as any 2, 5, or 8."
-msgstr ""
+msgstr "2・5・8として使えるジョーカー牌を1枚追加します。"
 
 msgid "Adds a copy of the 369 joker, which can be used as any 3, 6, or 9."
-msgstr ""
+msgstr "3・6・9として使えるジョーカー牌を1枚追加します。"
 
 msgid "Adds a copy of the 37 joker, which can be used as any 3 or 7."
-msgstr ""
+msgstr "3または7として使えるジョーカー牌を1枚追加します。"
 
 msgid "Adds a copy of the 456 joker, which looks like 中 and can be used as any 4, 5, or 6. Don't confuse it with the red dragon!"
-msgstr ""
+msgstr "4・5・6として使えるジョーカー牌「中」を1枚追加します。赤ドラと間違えないように注意！"
 
 msgid "Adds a copy of the 46 joker, which can be used as any 4 or 6."
-msgstr ""
+msgstr "4または6として使えるジョーカー牌を1枚追加します。"
 
 msgid "Adds a copy of the 789 joker, which looks like 大 and can be used as any 7, 8, or 9."
-msgstr ""
+msgstr "7・8・9として使えるジョーカー牌「大」を1枚追加します。"
 
 msgid "Adds a copy of the even joker, which looks like 雙 and can be used as any even number tile."
-msgstr ""
+msgstr "偶数（2・4・6・8）として使えるジョーカー牌「雙」を1枚追加します。"
 
 msgid "Adds a copy of the odd joker, which looks like 單 and can be used as any odd number tile."
-msgstr ""
+msgstr "奇数（1・3・5・7・9）として使えるジョーカー牌「單」を1枚追加します。"
 
 msgid "Adds a fifth copy of every standard tile."
-msgstr ""
+msgstr "すべての通常牌に5枚目を追加します。"
 
 msgid "Adds a fourth suit (stars). This suit does not form yaku. This mod is in beta because we should probably write some yaku for it."
-msgstr ""
+msgstr "第4のスート（星）を追加します。このスートでは役は成立しません。このMODはベータ版です（そのうち役を作るかもしれません）。"
 
 msgid "Adds a single manzu joker to the game. The manzu joker looks like 萬 and can represent any character tile."
-msgstr ""
+msgstr "萬子のジョーカー牌（「萬」）を1枚追加します。任意の萬子として扱えます。"
 
 msgid "Adds a single pinzu joker to the game. The pinzu joker looks like 筒 and can represent any character tile."
-msgstr ""
+msgstr "筒子のジョーカー牌（「筒」）を1枚追加します。任意の筒子として扱えます。"
 
 msgid "Adds a single souzu joker to the game. The souzu joker looks like 索 and can represent any character tile."
-msgstr ""
+msgstr "索子のジョーカー牌（「索」）を1枚追加します。任意の索子として扱えます。"
 
 msgid "Adds aka nines, worth 1 han each."
-msgstr ""
+msgstr "赤九を追加します。1枚につき1翻になります。"
 
 msgid "Adds aka ones, worth 1 han each."
-msgstr ""
+msgstr "赤一を追加します。1枚につき1翻になります。"
 
 msgid "Adds aka sevens, worth 1 han each."
-msgstr ""
+msgstr "赤七を追加します。1枚につき1翻になります。"
 
 msgid "Adds aka threes, worth 1 han each."
-msgstr ""
+msgstr "赤三を追加します。1枚につき1翻になります。"
 
 msgid "Adds eight jokers to the game. See the Vietnamese ruleset to learn how they work. Note that this mod adds a honors joker instead of a flower joker."
-msgstr ""
+msgstr "ジョーカー牌を8枚追加します。詳細はベトナムルールをご参照ください。このMODでは花牌の代わりに字牌ジョーカーが追加されます。"
 
 msgid "Adds the Chinese blue-framed white dragon as a fourth dragon tile (hakuban). Yaku treats it as an honor tile. Shousangen is reduced to 1 han (+2 from dragons) and Daisangen is reduced to 2 han (+3 from dragons). Adds Shousuugen (3 dragons + dragon pair) as yakuman and Daisuugen (4 dragons) as double yakuman. This mod is in beta because pao is not yet implemented for blue dragon."
-msgstr ""
+msgstr "中国風の青枠の白を第4の三元牌（白板）として追加します。役としては字牌として扱われます。小三元は1翻（＋三元牌2翻）、大三元は2翻（＋三元牌3翻）に調整されます。小数元（3種の三元牌＋対子）を役満、大全元（4種すべて）をダブル役満とします。このMODはベータ版です（青龍に対する包（パオ）は未実装です）。"
 
 msgid "Agarirenchan"
 msgstr "アガリ連荘"
@@ -216,22 +216,22 @@ msgid "Aka 9"
 msgstr "赤ドラ９"
 
 msgid "All Last doesn't repeat if the dealer is first place and wins."
-msgstr ""
+msgstr "オーラスで親がトップかつ和了した場合、連荘しません。"
 
 msgid "All Last doesn't repeat if the dealer is in first place and is tenpai at draw."
-msgstr ""
+msgstr "オーラスで親がトップかつテンパイだった場合、連荘しません。"
 
 msgid "Allow robbing ankans if in tenpai for kokushi musou."
-msgstr ""
+msgstr "国士無双のテンパイ時に限り、暗槓の槍槓を許可します。"
 
 msgid "American (2024 NMJL)"
-msgstr ""
+msgstr "アメリカン（2024 NMJL）"
 
 msgid "American Civil War"
 msgstr "南北戦争"
 
 msgid "American Mah-Jongg. Assemble hands with jokers, and declare other players' hands dead. Rules are slightly different from MJME (see rules page)."
-msgstr ""
+msgstr "アメリカン麻雀。ジョーカーを使って指定の手を揃え、他家の手を死に手にできます。MJMEとは若干ルールが異なります（詳細はルールページへ）。"
 
 msgid "Ankan"
 msgstr "暗槓"
@@ -246,7 +246,7 @@ msgid "At the end of the game, all leftover riichi sticks on the table are given
 msgstr "ゲーム終了時、場に残っているリーチ棒はすべてトップに渡されます（通常は失われます）。"
 
 msgid "Australian"
-msgstr ""
+msgstr "オーストラリア"
 
 msgid "Back"
 msgstr "戻る"
@@ -255,16 +255,16 @@ msgid "Baiman"
 msgstr "倍満"
 
 msgid "Basic flow of the game"
-msgstr ""
+msgstr "ゲームの基本的な流れ"
 
 msgid "Benikujaku"
 msgstr "紅孔雀"
 
 msgid "Bloody 30-Faan Jokers"
-msgstr ""
+msgstr "ブラッディ30ファーンジョーカーズ"
 
 msgid "Bloody end rules mahjong, with Vietnamese jokers, and somehow more yaku than MCR."
-msgstr ""
+msgstr "ブラッディ・エンドルールの麻雀。ベトナム式ジョーカーを使用し、なぜかMCRより多くの役があります。"
 
 msgid "Blue Dragon (beta)"
 msgstr "四元牌（ベータ）"
@@ -276,13 +276,13 @@ msgid "Both East and West are round winds during East Round, and North and South
 msgstr "東場では東と西、南場では南と北が場風になります。"
 
 msgid "British"
-msgstr ""
+msgstr "イギリス"
 
 msgid "Button"
 msgstr "ボタン"
 
 msgid "Calling tiles"
-msgstr ""
+msgstr "呼び牌"
 
 msgid "Calls Are Forced"
 msgstr "鳴き強制"
@@ -294,10 +294,10 @@ msgid "Cancellable Riichi"
 msgstr "リーチ取り消し可能"
 
 msgid "Changes all standard tiles to aka."
-msgstr ""
+msgstr "すべての数牌を赤牌に変更します。"
 
 msgid "Changsha"
-msgstr ""
+msgstr "長沙"
 
 msgid "Chankan"
 msgstr "槍槓"
@@ -318,13 +318,13 @@ msgid "Chiitoitsu"
 msgstr "七対子"
 
 msgid "Chiitoitsu now allows repeated pairs."
-msgstr ""
+msgstr "七対子で同じ対子を複数含めることができます。"
 
 msgid "Chinchii Toushii"
 msgstr "金鶏奪食"
 
 msgid "Chinese Classical"
-msgstr ""
+msgstr "中国古典"
 
 msgid "Chinitsu"
 msgstr "清一色"
@@ -384,13 +384,13 @@ msgid "Copy log"
 msgstr "ログコピー"
 
 msgid "Cosmic Riichi"
-msgstr ""
+msgstr "コズミック・リーチ"
 
 msgid "Create a room"
 msgstr "部屋作成"
 
 msgid "Create and play your own custom ruleset."
-msgstr ""
+msgstr "独自のカスタムルールを作成してプレイできます。"
 
 msgid "Create your own tutorial!"
 msgstr "自分だけのチュートリアルを作ろう！"
@@ -399,7 +399,7 @@ msgid "Created by Dani in their spare time."
 msgstr "ダニが余暇を利用して制作した。"
 
 msgid "Custom"
-msgstr ""
+msgstr "カスタム"
 
 msgid "Daichikurin"
 msgstr "大竹林"
@@ -423,25 +423,25 @@ msgid "Daisuushii"
 msgstr "大四喜"
 
 msgid "Differences from four-player"
-msgstr ""
+msgstr "四人打ちとの違い"
 
 msgid "Disable double yakuman. Yakuman still stacks, but each yaku that typically awards double yakuman only awards one stack of yakuman."
-msgstr ""
+msgstr "ダブル役満を無効にします。役満は重複可能ですが、通常ダブル役満となる役も1つ分の役満として扱います。"
 
 msgid "Disable kazoe yakuman. 13+ han is worth sanbaiman."
-msgstr ""
+msgstr "数え役満を無効にします。13翻以上でも三倍満となります。"
 
 msgid "Disables the initial tile pass."
-msgstr ""
+msgstr "開始時の牌交換（パス）を無効にします。"
 
 msgid "Disallow any concealed kan while in riichi, not just ones that change your waits."
-msgstr ""
+msgstr "リーチ中は待ちが変わらなくても暗槓を禁止します。"
 
 msgid "Disallow open tanyao."
-msgstr ""
+msgstr "鳴きタンヤオを無効にします。"
 
 msgid "Disallow swap-calling."
-msgstr ""
+msgstr "喰い替え（スワップ）鳴きを禁止します。"
 
 msgid "Discard"
 msgstr "ロン"
@@ -474,7 +474,7 @@ msgid "Draw"
 msgstr "ツモ"
 
 msgid "Dutch"
-msgstr ""
+msgstr "オランダ語"
 
 msgid "Each tile in the wall is transparent and visible to all, except for one copy. Unflipped dora indicators are not visible."
 msgstr ""
@@ -555,7 +555,7 @@ msgid "Entered a %{ruleset} game, room code %{room_code} with mods %{mods}"
 msgstr "%{ruleset}戦に参加（ルームコード：%{room_code}、MOD：%{mods}）"
 
 msgid "Entered lobby for variant %{ruleset}"
-msgstr ""
+msgstr "変種%{ruleset}のロビーに入った。"
 
 msgid "Entered room %{room_code} for variant %{ruleset}"
 msgstr "%{ruleset}のルールでルーム%{room_code}に参加"
@@ -570,7 +570,7 @@ msgid "Fifth Tile"
 msgstr "牌5枚化"
 
 msgid "Filipino"
-msgstr ""
+msgstr "フィリピン語"
 
 msgid "First Gets Riichi Sticks"
 msgstr "リーチ棒をトップ取り"
@@ -585,7 +585,7 @@ msgid "Forces you to make all available calls, including riichi (if enabled). Yo
 msgstr ""
 
 msgid "French"
-msgstr ""
+msgstr "フランス語"
 
 msgid "Fu"
 msgstr "符"
@@ -594,13 +594,13 @@ msgid "Fuukasetsugetsu"
 msgstr "風花雪月"
 
 msgid "Fuzhou"
-msgstr ""
+msgstr "福州"
 
 msgid "Galaxy Mahjong"
 msgstr "銀河麻将"
 
 msgid "German"
-msgstr ""
+msgstr "ドイツ語"
 
 msgid "Golden Chun"
 msgstr "金の中"
@@ -627,7 +627,7 @@ msgid "Head Bump"
 msgstr "頭跳ね"
 
 msgid "Hefei"
-msgstr ""
+msgstr "合肥"
 
 msgid "Hit the back button to return to the main menu."
 msgstr "戻るボタンでメインメニューに戻る。"
@@ -636,7 +636,7 @@ msgid "Honba"
 msgstr "本場"
 
 msgid "Hong Kong"
-msgstr ""
+msgstr "香港"
 
 msgid "Hong Kong Old Style mahjong. Three point minimum, everyone pays for a win, and win instantly if you have seven flowers."
 msgstr ""
@@ -684,13 +684,13 @@ msgid "Includes Tianjin mahjong joker tiles, but adds more yaku and played with 
 msgstr ""
 
 msgid "Intro to cosmic mahjong"
-msgstr ""
+msgstr "コズミック・リーチ入門"
 
 msgid "Intro to galaxy mahjong"
-msgstr ""
+msgstr "銀河麻雀入門"
 
 msgid "Intro to space mahjong"
-msgstr ""
+msgstr "宇宙麻雀入門"
 
 msgid "Ippatsu"
 msgstr "一発"
@@ -708,7 +708,7 @@ msgid "It's All Aka?"
 msgstr "全部赤ドラ！？"
 
 msgid "Italian"
-msgstr ""
+msgstr "イタリア"
 
 msgid "Ittsu"
 msgstr "一気通貫"
@@ -786,7 +786,7 @@ msgid "Kong"
 msgstr "槓"
 
 msgid "Korean"
-msgstr ""
+msgstr "韓国"
 
 msgid "Kouitten"
 msgstr "紅一点"
@@ -819,7 +819,7 @@ msgid "Loading..."
 msgstr "読み込み中..."
 
 msgid "Lobby"
-msgstr ""
+msgstr "ロビー"
 
 msgid "Local yaku. 1 han for having a three-color straight, like 123m 456p 789s. 2 han if closed."
 msgstr ""
@@ -908,7 +908,7 @@ msgstr ""
 msgid "Local yaku. \\\"Three Wind Triplets\\\". 2 han if you have three wind triplets."
 msgstr ""
 
-msgid "Local yaku. \\\"Twelve Tiles Down\\\" 1 han if you win with four calls (and therefore on a single tile wait). Closed kans are permitted."
+msgid "Local yaku. \\\"Twelve Tiles Down\\\". 1 han if you win with four calls (and therefore on a single tile wait). Closed kans are permitted."
 msgstr ""
 
 msgid "Local yaku. \\\"Twice Double Triplets\\\". A double triplet is when you have two triplets of the same number in different suits, like 333m 333p. 2 han for having two sets of double triplets."
@@ -1050,7 +1050,7 @@ msgid "Make dora display shiny."
 msgstr ""
 
 msgid "Malaysian"
-msgstr ""
+msgstr "マレーシア"
 
 msgid "Maneshi Mangan"
 msgstr "真似満貫"
@@ -1062,7 +1062,7 @@ msgid "Manzu"
 msgstr "萬子"
 
 msgid "Milky Way"
-msgstr ""
+msgstr "天の川"
 
 msgid "Minefield"
 msgstr "地雷"
@@ -1086,10 +1086,10 @@ msgid "Nickname (optional)"
 msgstr "ニックネーム（任意）"
 
 msgid "Ningbo"
-msgstr ""
+msgstr "寧波"
 
 msgid "No Charleston"
-msgstr ""
+msgstr "チャールストンなし"
 
 msgid "No Double Yakuman"
 msgstr "ダブル役満なし"
@@ -1263,7 +1263,7 @@ msgid "Ryuukyoku"
 msgstr "流局"
 
 msgid "Sakicards v1.3"
-msgstr ""
+msgstr "サキカードv1.3"
 
 msgid "Sanankou"
 msgstr "三暗刻"
@@ -1329,7 +1329,7 @@ msgid "Shanron Chonchu"
 msgstr "双竜争珠"
 
 msgid "Shenyang"
-msgstr ""
+msgstr "瀋陽"
 
 msgid "Shiiaru Raotai"
 msgstr "十二落抬"
@@ -1383,13 +1383,13 @@ msgid "Shuugi"
 msgstr "祝儀"
 
 msgid "Sichuan Bloody"
-msgstr ""
+msgstr "四川ブラッディ"
 
 msgid "Sichuan Bloody mahjong. Trade tiles, void a suit, and play until three players win (bloody end rules)."
 msgstr ""
 
 msgid "Singaporean"
-msgstr ""
+msgstr "シンガポール"
 
 msgid "Skip"
 msgstr "スキップ"
@@ -1422,7 +1422,7 @@ msgid "Starting game..."
 msgstr "試合開始..."
 
 msgid "Sudden Death"
-msgstr "西入"
+msgstr "延長戦"
 
 msgid "Sujipaikou"
 msgstr "筋牌刻"
@@ -1461,7 +1461,7 @@ msgid "Suuzuukou"
 msgstr "四字刻"
 
 msgid "Taiwanese"
-msgstr ""
+msgstr "台湾"
 
 msgid "Tanfonhou"
 msgstr "断紅和"
@@ -1494,7 +1494,7 @@ msgid "Three-player mahjong with 16 flowers, a unique joker tile, and instant pa
 msgstr ""
 
 msgid "Tianjin"
-msgstr ""
+msgstr "天津"
 
 msgid "To be implemented:"
 msgstr "実施予定："
@@ -1578,7 +1578,7 @@ msgid "View log"
 msgstr "ログを見る"
 
 msgid "Visayan"
-msgstr ""
+msgstr "ビサヤ人"
 
 msgid "WRC 2022"
 msgstr "2022 WRC"
@@ -1595,9 +1595,8 @@ msgstr "ようこそRiichi Advancedへ！"
 msgid "Yakitori"
 msgstr "焼き鳥"
 
-#, fuzzy
 msgid "Yaku"
-msgstr "役満"
+msgstr ""
 
 msgid "Yakuman"
 msgstr "役満"
@@ -1606,7 +1605,7 @@ msgid "You have the option to declare open riichi, which is worth 2 han but reve
 msgstr ""
 
 msgid "Zung Jung"
-msgstr ""
+msgstr "ズン・ジョン"
 
 msgid "_1st"
 msgstr "1位"
@@ -1624,7 +1623,7 @@ msgid "ante"
 msgstr "価値"
 
 msgid "below"
-msgstr "以下"
+msgstr "最小"
 
 msgid "bet"
 msgstr "ベット"

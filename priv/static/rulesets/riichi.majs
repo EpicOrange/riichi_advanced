@@ -685,7 +685,7 @@ config_mod "yaku/riichi", name: "bet", values: [1000,2000,3000,4000,5000]
 config_mod "yaku/riichi", name: "drawless", values: [false, true]
 define_mod "yaku/ippatsu", order: 2, name: "Ippatsu", deps: ["yaku/riichi"], desc: "Enables ippatsu. \"One-shot\". 1 han if you win before or during your next draw after riichi. Calls invalidate."
 define_mod "yaku/tsubame_gaeshi", name: "Tsubame Gaeshi", deps: ["yaku/riichi"], desc: "Local yaku. \"Swallow Reversal\". 1 han if you win off a riichi declaration discard."
-define_mod "yaku/shiiaru_raotai", name: "Shiiaru Raotai", desc: "Local yaku. \"Twelve Tiles Down\" 1 han if you win with four calls (and therefore on a single tile wait). Closed kans are permitted."
+define_mod "yaku/shiiaru_raotai", name: "Shiiaru Raotai", desc: "Local yaku. \"Twelve Tiles Down\". 1 han if you win with four calls (and therefore on a single tile wait). Closed kans are permitted."
 define_mod "yaku/kanburi", deps: ["kan"], name: "Kanburi", desc: "Local yaku. \"Shoot After Kan\". 1 han if you win off the tile discarded by a player who just called kan."
 define_mod "yaku/honors_chiitoitsu", name: "Honors Chiitoitsu", desc: "Local yaku. 1 han on top of chiitoitsu if three of your pairs are dragons, or if four of your pairs are winds. If you have all seven honor pairs? Double yakuman."
 define_mod "yaku/uushin_tsuukan", name: "Uushin Tsuukan", desc: "Local yaku. \"Five-Heart Straight\". 1 han on top of ittsu if the winning tile is the five needed for ittsu."

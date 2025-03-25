@@ -553,7 +553,7 @@ Adds a copy of the even joker, which looks like 雙 and can be used as any even 
 Enable riichi declarations. When you are tenpai with at least 1000 points (and it is not your last discard), you may declare riichi before discarding. If the discard passes, you automatically bet 1000 and can no longer change your hand. If you win under this condition, you get the riichi yaku (1 han). If you riichi on your first discard (calls invalidate), this is called Double Riichi and worth 2 han.
 Enables ippatsu. \\\"One-shot\\\". 1 han if you win before or during your next draw after riichi. Calls invalidate.
 Local yaku. \\\"Swallow Reversal\\\". 1 han if you win off a riichi declaration discard.
-Local yaku. \\\"Twelve Tiles Down\\\" 1 han if you win with four calls (and therefore on a single tile wait). Closed kans are permitted.
+Local yaku. \\\"Twelve Tiles Down\\\". 1 han if you win with four calls (and therefore on a single tile wait). Closed kans are permitted.
 Local yaku. \\\"Shoot After Kan\\\". 1 han if you win off the tile discarded by a player who just called kan.
 Local yaku. 1 han on top of chiitoitsu if three of your pairs are dragons, or if four of your pairs are winds. If you have all seven honor pairs? Double yakuman.
 Local yaku. \\\"Five-Heart Straight\\\". 1 han on top of ittsu if the winning tile is the five needed for ittsu.
