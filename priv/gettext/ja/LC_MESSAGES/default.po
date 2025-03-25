@@ -1,0 +1,162 @@
+# # "msgid"s in this file come from POT (.pot) files.
+# ##
+# ## Do not add, change, or remove "msgid"s manually here as
+# ## they're tied to the ones in the corresponding POT file
+# ## (with the same domain).
+# ##
+# ## Use "mix gettext.extract --merge" or "mix gettext.merge"
+# ## to merge POT files into PO files.
+msgid ""
+msgstr ""
+"Project-Id-Version: \n"
+"POT-Creation-Date: \n"
+"PO-Revision-Date: \n"
+"Last-Translator: \n"
+"Language-Team: \n"
+"Language: ja\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=1; plural=0;\n"
+"X-Generator: Poedit 3.5\n"
+
+msgid "&lt;disconnected&gt;"
+msgstr "&lt;バラバラ&gt;"
+
+msgid "(ongoing)"
+msgstr "（進行中）"
+
+msgid "(reconnect?)"
+msgstr "（再接続？）"
+
+msgid "(with AI)"
+msgstr "（AI搭載）"
+
+msgid "About"
+msgstr "について"
+
+msgid "Back"
+msgstr "戻る"
+
+msgid "Button"
+msgstr "ボタン"
+
+msgid "Cancel"
+msgstr "キャンセル"
+
+msgid "Clear"
+msgstr "クリア"
+
+msgid "Close"
+msgstr "閉じる"
+
+msgid "Config"
+msgstr "設定"
+
+msgid "Copy log"
+msgstr "ログコピー"
+
+msgid "Create a room"
+msgstr "部屋作成"
+
+msgid "Create your own tutorial!"
+msgstr "自分だけのチュートリアルを作ろう！"
+
+msgid "Created by Dani in their spare time."
+msgstr "ダニが余暇を利用して制作した。"
+
+msgid "Discord"
+msgstr "ディスコード"
+
+msgid "Empty"
+msgstr "空"
+
+msgid "Enter"
+msgstr "ゲームに入る"
+
+msgid "For more information, drop a message in our Discord!"
+msgstr "詳しくはDiscordにメッセージをください！"
+
+msgid "Hit the back button to return to the main menu."
+msgstr "戻るボタンでメインメニューに戻る。"
+
+msgid "Join private room"
+msgstr "個室に入る"
+
+msgid "Learn"
+msgstr "学ぶ"
+
+msgid "Loading..."
+msgstr "読み込み中..."
+
+msgid "Log ID:"
+msgstr "ログID："
+
+msgid "Logs"
+msgstr "ログ"
+
+msgid "Mods"
+msgstr "MOD"
+
+msgid "Nickname (optional)"
+msgstr "ニックネーム（任意）"
+
+msgid "Play"
+msgstr "プレー"
+
+msgid "Randomize mods"
+msgstr "MODのランダム化"
+
+msgid "Reset mods to default"
+msgstr "MODをデフォルトに戻す"
+
+msgid "Ruleset"
+msgstr "ルールセット"
+
+msgid "Rulesets"
+msgstr "ルールセット"
+
+msgid "Show wall"
+msgstr "壁を見せる"
+
+msgid "Shuffle seats on start?"
+msgstr "スタート時にシャッフルシート？"
+
+msgid "Skip"
+msgstr "スキップ"
+
+msgid "Sorry, there are currently no tutorials for this ruleset!"
+msgstr "申し訳ありませんが、現在このルールセットに関するチュートリアルはありません！"
+
+msgid "Source"
+msgstr "ソース"
+
+msgid "Special thanks to our beta testers:"
+msgstr "ベータテスターに感謝する："
+
+msgid "Start game"
+msgstr "試合開始"
+
+msgid "Starting game..."
+msgstr "試合開始..."
+
+msgid "To be implemented:"
+msgstr "実施予定："
+
+msgid "Toggle all"
+msgstr "すべてトグル"
+
+msgid "Tutorial"
+msgstr "チュートリアル"
+
+msgid "Tutorials for ruleset:"
+msgstr "ルールセットのチュートリアル："
+
+msgid "Variant:"
+msgstr "バリアント："
+
+msgid "View log"
+msgstr "ログを見る"
+
+msgid "Welcome to Riichi Advanced!"
+msgstr "ようこそRiichi Advancedへ！"

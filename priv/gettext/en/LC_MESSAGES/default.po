@@ -1,0 +1,153 @@
+## "msgid"s in this file come from POT (.pot) files.
+###
+### Do not add, change, or remove "msgid"s manually here as
+### they're tied to the ones in the corresponding POT file
+### (with the same domain).
+###
+### Use "mix gettext.extract --merge" or "mix gettext.merge"
+### to merge POT files into PO files.
+msgid ""
+msgstr ""
+"Language: en\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+
+msgid "&lt;disconnected&gt;"
+msgstr ""
+
+msgid "(ongoing)"
+msgstr ""
+
+msgid "(reconnect?)"
+msgstr ""
+
+msgid "(with AI)"
+msgstr ""
+
+msgid "About"
+msgstr ""
+
+msgid "Back"
+msgstr ""
+
+msgid "Button"
+msgstr ""
+
+msgid "Cancel"
+msgstr ""
+
+msgid "Clear"
+msgstr ""
+
+msgid "Close"
+msgstr ""
+
+msgid "Config"
+msgstr ""
+
+msgid "Copy log"
+msgstr ""
+
+msgid "Create a room"
+msgstr ""
+
+msgid "Create your own tutorial!"
+msgstr ""
+
+msgid "Created by Dani in their spare time."
+msgstr ""
+
+msgid "Discord"
+msgstr ""
+
+msgid "Empty"
+msgstr ""
+
+msgid "Enter"
+msgstr ""
+
+msgid "For more information, drop a message in our Discord!"
+msgstr ""
+
+msgid "Hit the back button to return to the main menu."
+msgstr ""
+
+msgid "Join private room"
+msgstr ""
+
+msgid "Learn"
+msgstr ""
+
+msgid "Loading..."
+msgstr ""
+
+msgid "Log ID:"
+msgstr ""
+
+msgid "Logs"
+msgstr ""
+
+msgid "Mods"
+msgstr ""
+
+msgid "Nickname (optional)"
+msgstr ""
+
+msgid "Play"
+msgstr ""
+
+msgid "Randomize mods"
+msgstr ""
+
+msgid "Reset mods to default"
+msgstr ""
+
+msgid "Ruleset"
+msgstr ""
+
+msgid "Rulesets"
+msgstr ""
+
+msgid "Show wall"
+msgstr ""
+
+msgid "Shuffle seats on start?"
+msgstr ""
+
+msgid "Skip"
+msgstr ""
+
+msgid "Sorry, there are currently no tutorials for this ruleset!"
+msgstr ""
+
+msgid "Source"
+msgstr ""
+
+msgid "Special thanks to our beta testers:"
+msgstr ""
+
+msgid "Start game"
+msgstr ""
+
+msgid "Starting game..."
+msgstr ""
+
+msgid "To be implemented:"
+msgstr ""
+
+msgid "Toggle all"
+msgstr ""
+
+msgid "Tutorial"
+msgstr ""
+
+msgid "Tutorials for ruleset:"
+msgstr ""
+
+msgid "Variant:"
+msgstr ""
+
+msgid "View log"
+msgstr ""
+
+msgid "Welcome to Riichi Advanced!"
+msgstr ""

@@ -5,12 +5,15 @@ defmodule RiichiAdvancedWeb.LogLive do
   alias RiichiAdvanced.ModLoader, as: ModLoader
   alias RiichiAdvanced.Utils, as: Utils
   use RiichiAdvancedWeb, :live_view
+  use Gettext, backend: RiichiAdvancedWeb.Gettext
+  import RiichiAdvancedWeb.Translations
 
   def mount(params, session, socket) do
     socket = socket
     |> assign(:session_id, session["session_id"])
     |> assign(:log_id, params["log_id"])
     |> assign(:nickname, Map.get(params, "nickname", ""))
+    |> assign(:lang, Map.get(params, "lang", "en"))
     |> assign(:game_state, nil)
     |> assign(:log_control_state, nil)
     |> assign(:messages, [])
@@ -225,7 +228,7 @@ defmodule RiichiAdvancedWeb.LogLive do
         state={@state}
         log={@log}
         log_control_state={@log_control_state} />
-      <div class={["big-text"]} :if={@loading}>Loading...</div>
+      <div class={["big-text"]} :if={@loading}><%= t(@lang, "Loading...") %></div>
       <%= if RiichiAdvanced.GameState.Debug.debug_status() or Rules.get(@state.rules_ref, "debug_status", false) do %>
         <div class={["status-line", Utils.get_relative_seat(@seat, seat)]} :for={{seat, player} <- @state.players}>
           <div class="status-text" :for={status <- player.status}><%= status %></div>
@@ -252,7 +255,7 @@ defmodule RiichiAdvancedWeb.LogLive do
           display_honba={@display_honba} />
         <.live_component module={RiichiAdvancedWeb.MenuButtonsComponent} id="menu-buttons" log_button={true} />
       </div>
-      <.live_component module={RiichiAdvancedWeb.MessagesComponent} id="messages" messages={@messages} />
+      <.live_component module={RiichiAdvancedWeb.MessagesComponent} id="messages" messages={@messages} lang={@lang} />
       <div class="ruleset">
         <textarea readonly><%= Rules.get(@state.rules_ref, :ruleset_json) %></textarea>
       </div>
@@ -261,7 +264,7 @@ defmodule RiichiAdvancedWeb.LogLive do
   end
 
   def handle_event("back", _assigns, socket) do
-    socket = push_navigate(socket, to: ~p"/?nickname=#{socket.assigns.nickname}")
+    socket = push_navigate(socket, to: ~p"/?nickname=#{socket.assigns.nickname}&lang=#{socket.assigns.lang}")
     {:noreply, socket}
   end
 
@@ -328,6 +331,12 @@ defmodule RiichiAdvancedWeb.LogLive do
     GenServer.cast(socket.assigns.game_state, {:ready_for_next_round, :west})
     GenServer.cast(socket.assigns.game_state, {:ready_for_next_round, :north})
     socket = assign(socket, :timer, 0)
+    {:noreply, socket}
+  end
+
+  def handle_event("change_language", %{"lang" => lang}, socket), do: {:noreply, assign(socket, :lang, lang)}
+
+  def handle_event(_event, _assigns, socket) do
     {:noreply, socket}
   end
 
