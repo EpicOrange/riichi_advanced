@@ -1,0 +1,692 @@
+
+Private
+Public
+Documentation
+Rules
+Room settings
+Ruleset
+Rulesets
+Mods
+Rulesets
+Mods
+Config
+Toggle all
+Reset mods to default
+Randomize mods
+(reconnect?)
+&lt;disconnected&gt;
+Empty
+Shuffle seats on start?
+Starting game...
+Start game
+(with AI)
+Lobby
+Variant:
+(ongoing)
+Enter
+Create a room
+Close
+Join private room
+Loading...
+Play
+Clear
+Cancel
+Cancel
+Skip
+Button
+Show wall
+Loading...
+Loading...
+To be implemented:
+Nickname (optional)
+Play
+Learn
+Close
+Join private room
+About
+Source
+Discord
+Logs
+Log ID:
+View log
+About
+Source
+Discord
+Back
+Tutorials for ruleset:
+Sorry, there are currently no tutorials for this ruleset!
+Hit the back button to return to the main menu.
+Create your own tutorial!
+Tutorial
+Loading...
+Create your own tutorial!
+Play
+Created by Dani in their spare time.
+For more information, drop a message in our Discord!
+Special thanks to our beta testers:
+Back
+Source
+Discord
+Logs
+Enter room code:
+1st
+2nd
+3rd
+4th
+Loading...
+Back
+Copy log
+true
+false
+Welcome to Riichi Advanced!
+Player
+Player %{nickname} joined as %{seat}
+east
+south
+west
+north
+exited
+called %{call} on %{tile} with hand %{hand}
+discarded %{tile}
+from hand
+scored a %{score}-point hand
+declared riichi
+called %{call}
+called %{call} on %{tile} with %{choice}
+called %{call} on %{tile}
+Entered room %{room_code} for variant %{ruleset}
+Entered a %{ruleset} game, room code %{room_code} with mods %{mods}
+Entered a %{ruleset} game, room code %{room_code}
+Entered lobby for variant %{ruleset}
+Rules
+1 Han
+2 Han
+3 Han
+4 Han
+5 Han
+Yakuman
+Chii
+Pon
+Kan
+Ankan
+Riichi
+Ron
+Tsumo
+Open Riichi
+Chow
+Pong
+Pung
+Kong
+Mah Jongg
+Discard
+Draw
+Mangan
+Haneman
+Baiman
+Sanbaiman
+Kazoe Yakuman
+Han
+Fu
+Double Ron
+Triple Ron
+Sanchahou
+Ryuukyoku
+Riichi
+Tsumo
+Ippatsu
+Chankan
+Rinshan
+Haitei
+Houtei
+Pinfu
+Tanyao
+Iipeikou
+Seat Wind
+Round Wind
+Haku
+Hatsu
+Chun
+Double Riichi
+Chiitoitsu
+Chanta
+Ittsu
+Sanshoku
+Sanshoku Doukou
+Sankantsu
+Toitoi
+Sanankou
+Shousangen
+Honroutou
+Ryanpeikou
+Junchan
+Honitsu
+Chinitsu
+Renhou
+Tenhou
+Chiihou
+Daisangen
+Suuankou
+Suuankou Tanki
+Tsuuiisou
+Ryuuiisou
+Junsei Ryuuiisou
+Chinroutou
+Chuurenpoutou
+Junsei Chuurenpoutou
+Kokushi Musou
+Kokushi Musou Juusan Menmachi
+Daisuushii
+Shousuushii
+Suukantsu
+Dora
+Ura
+Aka
+Pei
+Tsubame Gaeshi
+Shiiaru Raotai
+Kanburi
+Sangen Chiitoitsu
+Suushi Chiitoitsu
+Daichisei
+Uushin Tsuukan
+Sanrenkou
+Sanshoku Ittsu
+Kyandonhou
+Ryandoukou
+Choupaikou
+Sujipaikou
+Chousankou
+Sanshoku Choupaikou
+Sanshoku Sujipaikou
+Sanshoku Chousankou
+Suuzuukou
+Open Riichi
+Open Double Riichi
+Isshoku Sanjun
+Sanpuukou
+Uumensai
+Renkaihou
+Ittsu Chanta
+Ittsu Junchan
+Tanfonhou
+Chintanfon
+Chinpeikou
+Renhou
+Kinkei Dokuritsu
+Touchao Hanchanshue
+Uupin Kaihou
+Ryanzou Chankan
+Iipin Mouyue
+Chuupin Raoyui
+Shanron Chonchu
+Chiishin Uushii
+Maneshi Mangan
+Paarenchan
+Ishino Uenimo Sannen
+Toukanhou
+Shiisanpuutaa
+Shiisanuushi
+Suurenkou
+Suuchoupaikou
+Daisharin
+Daichikurin
+Daisuurin
+Shousharin
+Shouchikurin
+Shousuurin
+Isshoku Yonjun
+Hyakuman Goku
+Kachoufuugetsu
+Fuukasetsugetsu
+Kouitten
+Benikujaku
+Kokuiisou
+Ryuuiisourin
+Kouittenrin
+Golden Gate Bridge
+American Civil War
+Tohoku Expressway
+Tohoku Shinkansen
+Blue Tunnel
+Chinryuusou
+Chousangen
+Chousuushii
+Riichi
+Sanma
+Space Mahjong
+Cosmic Riichi
+Galaxy Mahjong
+Kansai Sanma
+Chinitsu
+Minefield
+Sakicards v1.3
+Hong Kong
+Sichuan Bloody
+MCR
+Taiwanese
+Bloody 30-Faan Jokers
+American (2024 NMJL)
+Vietnamese
+Malaysian
+Singaporean
+Chinese Classical
+Fuzhou
+Tianjin
+Ningbo
+Hefei
+Zung Jung
+Custom
+Filipino
+Visayan
+Changsha
+Shenyang
+Korean
+British
+Italian
+Dutch
+German
+French
+Australian
+The classic riichi ruleset, now with an assortment of mods to pick and choose at your liking.
+Three-player Riichi.
+Riichi, but sequences can wrap (891, 912), and you can make sequences from winds and dragons. In addition, you can chii from any direction, and form open kokushi (3 han).
+A Space Mahjong variant with mixed triplets, more yaku, and more calls.
+Riichi, but one of each tile is replaced with a blue galaxy tile that acts as a wildcard of its number. Galaxy winds are wind wildcards, and galaxy dragons are dragon wildcards.
+Sanma, but you draw until the last visible dora indicator. In addition, all fives are akadora, fu is fixed at 30, there is no tsumo loss, and scores are rounded to the nearest 1000. Flowers act as nukidora in place of north winds, which are now yakuhai. Exhaustive draws in south round always result in a repeat regardless of who's tenpai.
+Two-player variant where the only tiles are bamboo tiles. Try not to chombo!
+Two-player variant where you start with 34 tiles to make a mangan+ hand, and your remaining tiles are your discards.
+Riichi, but everyone gets a different Saki power, which changes the game quite a bit. Some give you bonus han every time you use your power. Some let you recover dead discards. Some let you swap tiles around the entire board, including the dora indicator.
+Hong Kong Old Style mahjong. Three point minimum, everyone pays for a win, and win instantly if you have seven flowers.
+Sichuan Bloody mahjong. Trade tiles, void a suit, and play until three players win (bloody end rules).
+Mahjong Competition Rules. Has a scoring system of a different kind of complexity than Riichi.
+16-tile mahjong with riichi mechanics.
+Bloody end rules mahjong, with Vietnamese jokers, and somehow more yaku than MCR.
+American Mah-Jongg. Assemble hands with jokers, and declare other players' hands dead. Rules are slightly different from MJME (see rules page).
+Mahjong with eight differently powerful joker tiles.
+Three-player mahjong with 16 flowers, a unique joker tile, and instant payouts.
+Mahjong with various instant payouts and various unique ways to get penalized by pao.
+Mahjong but every pung and kong gives you points, and every hand pattern doubles your points.
+16-tile mahjong with a version of dora that doesn't give you han, but becomes a unique winning condition by itself.
+Mahjong except the dora indicator actually indicates joker tiles.
+Includes Tianjin mahjong joker tiles, but adds more yaku and played with a 4-tai minimum.
+Mahjong with no honor tiles, but you must have at least eight tiles of a single suit to win.
+Mahjong with an additive (rather than multiplicative) scoring system.
+Create and play your own custom ruleset.
+16-tile mahjong where all honor tiles are flower tiles.
+16-tile mahjong where you can form dragon and wind sequences.
+Mahjong, but every win gets two chances at ura dora. However, a standard hand must have a pair of 22, 55, or 88.
+Mahjong, but every hand must be open, contain every suit, contain a terminal/honor, and contain either a triplet, kan, or dragon pair.
+Like Riichi but with a two-han minimum. There is also a side race to see who reaches three wins first.
+No description provided.
+Basic flow of the game
+Calling tiles
+Differences from four-player
+Intro to space mahjong
+Intro to cosmic mahjong
+Intro to galaxy mahjong
+Milky Way
+Show Waits
+Open Hands
+Kan
+Honba
+Nagashi
+Tobi
+Uma
+Oka
+Agarirenchan
+Tenpairenchan
+Agariyame
+Tenpaiyame
+Sudden Death
+Tonpuu
+Kuitan Nashi
+Kuikae Nashi
+Kiriage Mangan
+Head Bump
+Double Wind 4 Fu
+Double Round Wind
+Sekinin Barai
+Suukantsu Pao
+Rinshan Pao
+No Kazoe Yakuman
+No Double Yakuman
+Wareme
+Aotenjou
+Yakitori
+Shuugi
+Toriuchi
+Kansai Chiitoitsu
+Minimum Han
+No Riichi Ankan
+Kokushi Chankan
+First Gets Riichi Sticks
+Starting Points
+Suufon Renda
+Suucha Riichi
+Suukaikan
+Sanchahou
+Kyuushu Kyuuhai
+Dora
+Ura
+Aka
+Kandora
+Immediate Kan Dora
+Ao
+Kin
+Aka 1
+Aka 3
+Aka 7
+Aka 9
+It's All Aka?
+Shiny Dora
+Manzu
+Pinzu
+Souzu
+Vietnamese Jokers
+19
+37
+46
+147
+258
+369
+123
+456
+789
+Odd
+Even
+Riichi
+Ippatsu
+Tsubame Gaeshi
+Shiiaru Raotai
+Kanburi
+Honors Chiitoitsu
+Uushin Tsuukan
+Ketsupaihou
+Open Riichi
+Sanrenkou
+Sanshoku Ittsu
+Kyandonhou
+Ryandoukou
+Shoutate
+Choupaikou etc.
+Suuzuukou
+Uumensai
+Sanpuukou
+Renkaihou
+Mondeikou
+Isshoku Sanjun
+Ittsu Chanta
+Tanfonhou
+Chinpeikou
+Chinchii Toushii
+Renhou
+Kinkei Dokuritsu
+Touchao Hanchanshue
+Uupin Kaihou
+Ryanzou Chankan
+Iipin Mouyue
+Chuupin Raoyui
+Shanron Chonchu
+Chiishin Uushii
+Maneshi Mangan
+Rentsuu Honitsu
+Dorahairi Chinroutou Chiitoitsu
+Paarenchan
+Ishino Uenimo Sannen
+Toukanhou
+Shiisanpuutaa
+Shiisanuushi
+Suurenkou
+Suuchoupaikou
+Daisharin etc.
+Shousharin etc.
+Isshoku Yonjun
+Hyakuman Goku
+Kachoufuugetsu
+Fuukasetsugetsu
+Kouitten
+Benikujaku
+Kokuiisou
+Ryuuiisourin
+Kouittenrin
+Golden Gate Bridge
+American Civil War
+Tohoku Expressway
+Tohoku Shinkansen
+Blue Tunnel
+Junsei Ryuuiisou
+Chousangen
+Chousuushii
+Show Waits
+Open Hands
+Cancellable Riichi
+Ten
+Star Suit (beta)
+Space Mahjong
+Galaxy Mahjong
+Fifth Tile
+No Honors
+Shiro Pocchi
+Golden Chun
+Blue Dragon (beta)
+Shouhai
+Chinitsu
+Washizu
+Calls Are Forced
+Chombo
+Show Waits
+Open Hands
+No Charleston
+Ten
+Space Mahjong
+Chinitsu
+Fifth Tile
+Add some UI that shows waits.
+Everyone plays with tiles shown.
+Enable kan. If you have four of a tile in hand, you may create a concealed kan (ankan). If you have three of a tile and someone discards the fourth, you may create an open kan (daiminkan). If you have called a triplet and draw the fourth tile, you may create an added kan (kakan). Kan calls count as triplets for the purposes of winning and scoring, but they award 4x triplet fu. In all three cases, after declaring kan you draw a replacement tile from the dead wall. Winning on this replacement tile awards the rinshan yaku (1 han). One may also call ron on a tile added to an added kan (kakan) for the chankan yaku (1 han). Having three kans is 2 han (sankantsu), and having four is yakuman. There can be at most four kans in a single game.
+Enables honba.
+Enable nagashi mangan. When you discards are all terminals and honors at exhaustive draw, and none of your discards have been called, then you are paid mangan tsumo at draw.
+Enable busting. Once anyone's points is reduced below zero, the game ends.
+Enable uma. At the end of the game, points are awarded or deducted based on placement.
+Enable oka. Everyone antes the given amount, and the total is awarded to first place at the end of the game.
+A round repeats if the dealer wins.
+A round repeats if the dealer is tenpai at draw.
+All Last doesn't repeat if the dealer is first place and wins.
+All Last doesn't repeat if the dealer is in first place and is tenpai at draw.
+Sets the goal points before the game can end. If the game reaches South 4 (or East 4, in the case of tonpuu) and every player is below [goal] points, play continues to the West (South) round until someone surpasses [goal] points, or at the end of West 4 (South 4).
+Limit the game to the East round only.
+Disallow open tanyao.
+Disallow swap-calling.
+3 han 60 fu and 4 han 30 fu are worth mangan.
+Enable head bump. In case of multiple ron, only the person closest in turn order gets the win.
+A pair of round+seat winds is worth 4 fu instead of 2 fu.
+Both East and West are round winds during East Round, and North and South during South Round. Similarly for West and North Rounds.
+If you deal the last dragon called for a daisangen hand, or the last wind called for a daisuushii hand, you are responsible for the yakuman payment if they tsumo, or half of the payment if they ron off someone else.
+If you deal the last kan tile called for a suukantsu hand, you are responsible for the yakuman payment if they tsumo, or half the payment if they ron off someone else.
+If someone calls kan on your discard and wins off the kan draw, you are responsible for the full payment.
+Disable kazoe yakuman. 13+ han is worth sanbaiman.
+Disable double yakuman. Yakuman still stacks, but each yaku that typically awards double yakuman only awards one stack of yakuman.
+In each round, the player whose wall is broken is given the wareme marker. If the wareme player wins, they are paid double the amount of points. If the wareme player has to pay points, they pay double the amount of points. Riichi sticks and honba payments are not affected.
+Removes limit hands. Score grows exponentially with han according to the formula 4 * fu * 2^(2+han). Not recommended with tobi enabled.
+If you do not win any hands by the end of the game, you pay each player a penalty.
+Play with shuugi (poker chips). Players start with zero shuugi, each is worth some number of points each at the end. Win payments include shuugi along with points. On ron you get shuugi from the discarder; on tsumo you get shuugi from everyone. Each aka, ura, and ippatsu is worth one shuugi. Yakuman is worth 5 shuugi.
+On ron, each 1s (bird) tile is worth 1 shuugi, unless the discarder's hand contains 7p (pistol) which would shoot the birds dead. That is, unless the winner's hand contains 8s (birdcage) which would protect the birds from gunfire.
+Chiitoitsu now allows repeated pairs.
+Minimum han required to win.
+Disallow any concealed kan while in riichi, not just ones that change your waits.
+Allow robbing ankans if in tenpai for kokushi musou.
+At the end of the game, all leftover riichi sticks on the table are given to first place. (Otherwise they are lost.)
+Number of points each player starts with. You can also set this by writing the following in the Config tab: \\\"initial_score\\\": 100000
+Enable 4 wind abortive draw.
+Enable 4 riichi abortive draw.
+Enable 4 kan abortive draw.
+Enable triple ron abortive draw.
+Enable 9 distinct terminal/honor abortive draw.
+Enables dora.
+Enables ura dora.
+Enables aka dora (red fives), worth 1 han each.
+Enables dora flip on kan.
+Flip kan dora immediately after daiminkan and kakan.
+Enables ao dora (blue fives), worth 2 han each.
+Enables kin dora (gold fives), worth 3 han each.
+Adds aka ones, worth 1 han each.
+Adds aka threes, worth 1 han each.
+Adds aka sevens, worth 1 han each.
+Adds aka nines, worth 1 han each.
+Changes all standard tiles to aka.
+Make dora display shiny.
+Adds a single manzu joker to the game. The manzu joker looks like 萬 and can represent any character tile.
+Adds a single pinzu joker to the game. The pinzu joker looks like 筒 and can represent any character tile.
+Adds a single souzu joker to the game. The souzu joker looks like 索 and can represent any character tile.
+Adds eight jokers to the game. See the Vietnamese ruleset to learn how they work. Note that this mod adds a honors joker instead of a flower joker.
+Adds a copy of the 19 joker, which can be used as any 1 or 9.
+Adds a copy of the 37 joker, which can be used as any 3 or 7.
+Adds a copy of the 46 joker, which can be used as any 4 or 6.
+Adds a copy of the 147 joker, which can be used as any 1, 4, or 7.
+Adds a copy of the 258 joker, which can be used as any 2, 5, or 8.
+Adds a copy of the 369 joker, which can be used as any 3, 6, or 9.
+Adds a copy of the 123 joker, which looks like 小 and can be used as any 1, 2, or 3.
+Adds a copy of the 456 joker, which looks like 中 and can be used as any 4, 5, or 6. Don't confuse it with the red dragon!
+Adds a copy of the 789 joker, which looks like 大 and can be used as any 7, 8, or 9.
+Adds a copy of the odd joker, which looks like 單 and can be used as any odd number tile.
+Adds a copy of the even joker, which looks like 雙 and can be used as any even number tile.
+Enable riichi declarations. When you are tenpai with at least 1000 points (and it is not your last discard), you may declare riichi before discarding. If the discard passes, you automatically bet 1000 and can no longer change your hand. If you win under this condition, you get the riichi yaku (1 han). If you riichi on your first discard (calls invalidate), this is called Double Riichi and worth 2 han.
+Enables ippatsu. \\\"One-shot\\\". 1 han if you win before or during your next draw after riichi. Calls invalidate.
+Local yaku. \\\"Swallow Reversal\\\". 1 han if you win off a riichi declaration discard.
+Local yaku. \\\"Twelve Tiles Down\\\" 1 han if you win with four calls (and therefore on a single tile wait). Closed kans are permitted.
+Local yaku. \\\"Shoot After Kan\\\". 1 han if you win off the tile discarded by a player who just called kan.
+Local yaku. 1 han on top of chiitoitsu if three of your pairs are dragons, or if four of your pairs are winds. If you have all seven honor pairs? Double yakuman.
+Local yaku. \\\"Five-Heart Straight\\\". 1 han on top of ittsu if the winning tile is the five needed for ittsu.
+Local yaku. \\\"Missing Tile\\\". 1 han if you have an edge (12, 89) or middle (24, 57) wait on a tile for which three are already publicly visible (so 12333 winning on 3 doesn't count).
+You have the option to declare open riichi, which is worth 2 han but reveals your hand to the table. Open double riichi is 3 han.
+Local yaku. \\\"Three Consecutive Triplets\\\". 2 han for having three triplets of the same suit in sequence, like 222 333 444.
+Local yaku. 1 han for having a three-color straight, like 123m 456p 789s. 2 han if closed.
+Local yaku. \\\"Twice Mixed Double Sequence\\\". A mixed double sequence is when you have two sequences of the same number in different suits, like 345m 345p. 2 han for having two mixed double sequences.
+Local yaku. \\\"Twice Double Triplets\\\". A double triplet is when you have two triplets of the same number in different suits, like 333m 333p. 2 han for having two sets of double triplets.
+Local yaku. \\\"Little Mixed Triplets\\\". 2 han for having sanshoku doukou, except one of the triplets is a pair.
+Local yaku. 2 han for having the pattern 111333555 (choupaikou), 111444777 (sujipaikou), or 111555999 (chousankou) in one suit. The pattern does not have to start with 1, but cannot wrap. 1 han if instead, all three triplets are in different suits.
+Local yaku. \\\"Four Honor Triplets\\\". 2 han for having four honor tile triplets.
+Local yaku. \\\"Five Suits Collected\\\". 2 han if your hand includes all five suits (character, circle, bamboo, wind, dragon).
+Local yaku. \\\"Three Wind Triplets\\\". 2 han if you have three wind triplets.
+Local yaku. \\\"Consecutive Blossom\\\". 2 han if you kan off the rinshan tile and win off of _that_ rinshan tile. Does not stack with rinshan.
+Local yaku. If you have 4 aka, 2 han on top of aka. This counts as a yaku.
+Local yaku. \\\"Pure Triple Sequences\\\". 2 han if you have three of the exact same sequence in one suit, like 123 123 123. Like iipeikou but three. +1 han if closed. Does not stack with iipeikou (123 123) or sanrenkou (111 222 333).
+Local yaku. 2 han if you have ittsu, and (except the 456) the rest of your hand is chanta (or junchan, in which case it's 3 han). +1 han if closed. Does not stack with ittsu.
+Local yaku. \\\"Win Without Red\\\". 2 han if your hand contains no red. This means you can have only 248p (2,4,8 circles), 23468s (2,3,4,6,8 bamboo), and any honors except red dragon. 5 han instead if no honor tiles (chintanfon). +1 han if closed.
+Local yaku. 3 han on top of ryanpeikou if your ryanpeikou sequences are all the same numbers (may be different suits), like 112233 112233. No restriction on the pair, so you can have an honor pair (despite 'chin' being in the name).
+Local yaku. \\\"Golden Rooster Steals Food\\\". 4 han instead of the usual 2 han if you win ketsupaihou by chankan.
+Local yaku. Instant mangan/yakuman if you win off the first tile someone dropped before your first draw. Calls invalidate.
+Local yaku. \\\"Golden Rooster Standing Alone\\\". Mangan if you are waiting on 1s (1 bamboo, the bird tile) with four calls. Can be open or closed.
+Local yaku. \\\"Fishing Alone in the Cold River Snow\\\". Mangan if you are waiting on 5z (white dragon) with four calls (open or closed).
+Local yaku. \\\"Gathering a Plum Blossom from the Roof\\\". Mangan if you win with rinshan on the 5p (5 circles).
+Local yaku. \\\"Scratching a Carrying Pole\\\". Mangan if you win with chankan on the 2s (2 bamboo).
+Local yaku. \\\"Plucking the Moon from the Bottom of the Sea\\\". Mangan if you win with haitei (not houtei) on the 1p (1 circles).
+Local yaku. \\\"Catching Fish from the Bottom of the River\\\". Mangan if you win with houtei (not haitei) on the 9p (9 circles).
+Local yaku. \\\"Two Dragons Fighting Over Pearls\\\". Mangan if you have kyandonhou (two mixed double sequences) in manzu and souzu, plus a pinzu pair. For the manzu and souzu suits, your two sequences in that suit should not overlap.
+Local yaku. \\\"Seven Stars Disconnected\\\". Mangan if you have one of every honor tile, plus 7 of 9 tiles in different suji (e.g. 14m25p369s).
+Local yaku. \\\"Imitation Mangan\\\". If you copy any opponent's first five discards exactly, they will pay mangan if you win, but only if you win less than mangan. Calls invalidate.
+Local yaku. Mangan if you have honitsu with dragon yakuhai matching the suit: manzu with chun, pinzu with hatsu (not a typo), or souzu with haku (also not a typo).
+Local yaku. Mangan if you have chiitoitsu composed of each terminal tile with the seventh pair being dora.
+Local yakuman. The eighth consecutive dealer win is worth yakuman. Exhaustive and abortive draws break the streak. After 5 wins, the minimum han required for the dealer becomes 2 han.
+Local yakuman. \\\"Three Years on a Rock\\\". If you win with double riichi and haitei/houtei, it's yakuman.
+Local yakuman. \\\"First Kan Win\\\". If you kan (concealed or from a player) before discarding any tile, and win with rinshan, it's yakuman. Any call from an opponent invalidates this.
+Local yakuman. \\\"Thirteen Unconnected\\\". If you start with 13 disconnected tiles (with one forming a pair), it's yakuman. Calls invalidate.
+Local yakuman. \\\"Thirteen Independent\\\". If you start with 14 disconnected tiles, it's yakuman. Calls invalidate.
+Local yakuman. \\\"Four Consecutive Triplets\\\". If you have four triplets of the same suit of increasing number, like 111 222 333 444, it's yakuman. Pao is applied if the fourth triplet is called.
+Local yakuman. \\\"Four Skipped Tile Triplets\\\". If you have four triplets of the same suit whose numbers step by 2, like 111 333 555 777, it's yakuman. Pao is applied if the fourth triplet is called.
+Local yakuman. If your hand is closed and your winning hand is 22334455667788 in one suit, it's yakuman.
+Local yakuman. If your hand is closed and your winning hand is 11223344556677 or 33445566778899 in one suit, it's yakuman.
+Local yakuman. \\\"Pure Quadruple Sequences\\\". If you have four of the exact same sequence in one suit, like 123m 123m 123m 123m, it's yakuman. Like iipeikou but four. Pao is applied if the fourth sequence is called.
+Local yakuman. \\\"One Million Stones\\\". If your hand is purely character tiles whose numbers sum up to at least 100, it's yakuman.
+Local yakuman. \\\"Flower, Bird, Wind, Moon\\\". If your hand is 555p (5 circles) + 111s (birds) + triplet of round or seat wind + 111p (1 circles), it's yakuman.
+Local yakuman. \\\"Flower, Bird, Snow, Moon\\\". If your hand is 555p (5 circles) + 555z (white dragon) + triplet of round or seat wind + 111p (1 circles), it's yakuman.
+Local yakuman. \\\"A Little Red\\\". Like ryuuiisou, except instead of green dragon, it's red dragon (you must include red dragons).
+Local yakuman. \\\"Red Peacock\\\". Like ryuuiisou but red bamboo only: you can only have 1579s and red dragon.
+Local yakuman. \\\"All Black\\\". Like ryuuiisou but black: you can only have 248p and winds.
+Local yakuman. Like ryuuiisou, except you have a pair of 5s (5 bamboo).
+Local yakuman. Like kouitten, except you have a pair of 5s (5 bamboo).
+Local yakuman. If your hand contains 123 345 567 789 all in one suit, it's yakuman. No restrictions on your pair.
+Local yakuman. If you have no calls (not even ankan) and your hand consists of the tiles 1861 in one suit, 1865 in another suit, and you have triplets of north and south winds, it's yakuman.
+Local yakuman. If your hand consists of only 246p (2,4,6 circles) and east/north winds, it's yakuman.
+Local yakuman. If your closed hand consists of an ittsu and east/north winds, it's yakuman.
+Local yakuman. If your hand consists of only 248p (2,4,8 circles), green dragon, and one type of wind, it's yakuman.
+Local yakuman. If you have ryuuiisou without green dragon, it's double yakuman. Doesn't stack with ryuuiisou.
+Local yakuman. If you have kans of all three dragons, it's double yakuman. Doesn't stack with daisangen.
+Local yakuman. If you have kans of all four winds, it's quadruple yakuman. Doesn't stack with daisuushi and suukantsu.
+Add some UI that shows waits.
+Everyone plays with tiles shown.
+Everyone plays with tiles shown.
+Adds 10m, 10p, and 10s. Changes dora accordingly (if dora is enabled). Tanyao now allows nines, and chanta/junchan/honroutou require tens instead. 13 Orphans now requires the ten instead of the nine of each suit. Ittsu allows 23456789T.
+Adds a fourth suit (stars). This suit does not form yaku. This mod is in beta because we should probably write some yaku for it.
+Sequences can wrap (891, 912). Winds and dragons can make sequences. You can chii from any direction. Chiitoitsu is disabled. Open kokushi is allowed and worth 3 han.
+Replaces one of each tile with a blue 'galaxy' tile that acts as a wildcard of its number. For example, galaxy 3s can be used as 3m, 3p, or 3s. Galaxy winds are wind wildcards, and galaxy dragons are dragon wildcards.
+Adds a fifth copy of every standard tile.
+Removes the honor tiles (winds and dragons) from the game.
+One of the white dragons is shiro pocchi. Shiro pocchi acts a joker tile when drawn while in riichi.
+One of each dragon tile is a special tile. The special white dragon is shiro pocchi, which acts a joker tile when drawn while in riichi. The special green dragon is an aka dora. The special red dragon is the golden chun, which can be used as a five of any suit, and grants 1 han when used as a five. Completing a hand via shiro pocchi while using the golden chun as a five and having the aka green dragon scores yakuman. If playing with shuugi, a golden chun used as a five scores 1 shuugi.
+Adds the Chinese blue-framed white dragon as a fourth dragon tile (hakuban). Yaku treats it as an honor tile. Shousangen is reduced to 1 han (+2 from dragons) and Daisangen is reduced to 2 han (+3 from dragons). Adds Shousuugen (3 dragons + dragon pair) as yakuman and Daisuugen (4 dragons) as double yakuman. This mod is in beta because pao is not yet implemented for blue dragon.
+Reduces tiles in hand from 13 to 12. The goal is to achieve a tenpai hand rather than a winning hand. The idea is that your 13th tile is replaced with an invisible 'joker' tile that can be used to complete any hand.
+Replace the wall with 16 copies of each bamboo tile. Includes 10s if Ten is enabled.
+Each tile in the wall is transparent and visible to all, except for one copy. Unflipped dora indicators are not visible.
+Forces you to make all available calls, including riichi (if enabled). You still get to choose if multiple calls are available.
+The tsumo and ron buttons are enabled on every draw and discard. If you make an incorrect win call, your hand is dead and you cannot make a win call for the remainder of the round.
+Add some UI that shows waits.
+Everyone plays with tiles shown.
+Disables the initial tile pass.
+Adds 10m, 10p, and 10s.
+Sequences can wrap (891, 912).
+Replace the wall with 16 copies of each bamboo tile. Includes 10s if Ten is enabled.
+Adds a fifth copy of every standard tile.
+Mahjong Soul
+tenhou.net
+Riichi City
+WRC 2022
+M.League
+Just Like Modded Minecraft
+Other
+Rules
+Abortive Draws
+Dora
+Jokers
+Yaku
+Mangan
+Yakuman
+Other
+value
+is
+below
+_1st
+_2nd
+_3rd
+_4th
+ante
+goal
+penalty
+worth
+min
+points
+start_indicators
+man
+pin
+sou
+man
+pin
+sou
+man
+pin
+sou
+man
+pin
+sou
+man
+pin
+sou
+man
+pin
+sou
+man
+pin
+sou
+bet
+drawless
+is

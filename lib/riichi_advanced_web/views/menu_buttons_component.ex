@@ -12,14 +12,16 @@ defmodule RiichiAdvancedWeb.MenuButtonsComponent do
   def render(assigns) do
     ~H"""
     <div class={[@id]}>
-      <%= if @back_button do %>
-        <button class="back" phx-cancellable-click="back"><%= t(@lang, "Back") %></button>
-      <% end %>
       <button class="language-dropdown-container">
         <form class="language-dropdown" phx-change="change_language">
           <select id="language-dropdown" name="lang">
-            <option value="en">English</option>
-            <option value="ja">日本語</option>
+            <%= for {name, code} <- [{"English", "en"}, {"日本語", "ja"}] do %>
+              <%= if code == @lang do %>
+                <option value={code} selected><%= name %></option>
+              <% else %>
+                <option value={code}><%= name %></option>
+              <% end %>
+            <% end %>
           </select>
         </form>
         <div>
@@ -28,6 +30,9 @@ defmodule RiichiAdvancedWeb.MenuButtonsComponent do
           </svg>
         </div>
       </button>
+      <%= if @back_button do %>
+        <button class="back" phx-cancellable-click="back"><%= t(@lang, "Back") %></button>
+      <% end %>
       <%= if @log_button do %>
         <button class="log" phx-cancellable-click="log"><%= t(@lang, "Copy log") %></button>
       <% end %>

@@ -52,8 +52,12 @@ defmodule RiichiAdvancedWeb.LobbyLive do
         # subscribe to message updates
         Phoenix.PubSub.subscribe(RiichiAdvanced.PubSub, "messages:" <> socket.id)
         GenServer.cast(messages_init.messages_state, {:add_message, [
-          %{text: "Entered lobby for variant"},
-          %{bold: true, text: socket.assigns.ruleset}
+          %{
+            text: "Entered lobby for variant %{ruleset}",
+            vars: %{
+              ruleset: {:text, socket.assigns.ruleset, %{bold: true}}
+            }
+          },
         ]})
         socket
       else socket end
@@ -67,7 +71,7 @@ defmodule RiichiAdvancedWeb.LobbyLive do
     ~H"""
     <div id="container" class="lobby" phx-hook="ClickListener">
       <header>
-        <h1>Lobby</h1>
+        <h1><%= t(@lang, "Lobby") %></h1>
         <div class="variant"><%= t(@lang, "Variant:") %>&nbsp;<b><%= @display_name %></b></div>
       </header>
       <div class="rooms">
@@ -79,7 +83,7 @@ defmodule RiichiAdvancedWeb.LobbyLive do
           </button>
           <div class="room-mods">
             <%= for mod <- room.mods do %>
-              <div class="room-mod"><%= mod %></div>
+              <div class="room-mod"><%= dt(@lang, mod) %></div>
             <% end %>
           </div>
           <div class="room-players">
@@ -89,7 +93,7 @@ defmodule RiichiAdvancedWeb.LobbyLive do
         </div>
       </div>
       <%= if @show_room_code_buttons do %>
-        <.live_component module={RiichiAdvancedWeb.RoomCodeComponent} id="room-code" set_room_code={&send(self(), {:set_room_code, &1})} />
+        <.live_component module={RiichiAdvancedWeb.RoomCodeComponent} id="room-code" lang={@lang} set_room_code={&send(self(), {:set_room_code, &1})} />
       <% end %>
       <div class="enter-buttons">
         <button class="create-room" phx-cancellable-click="create_room">
@@ -154,7 +158,7 @@ defmodule RiichiAdvancedWeb.LobbyLive do
       case GenServer.call(socket.assigns.lobby_state, :create_room) do
         :no_names_remaining -> {:noreply, socket}
         {:ok, room_code}    ->
-          socket = push_navigate(socket, to: ~p"/room/#{socket.assigns.ruleset}/#{room_code}?nickname=#{socket.assigns.nickname}&lang=#{socket.assigns.lang}")
+          socket = push_navigate(socket, to: ~p"/room/#{socket.assigns.ruleset}/#{room_code}?nickname=#{socket.assigns.nickname}&lang=#{socket.assigns.lang}&from=lobby")
           {:noreply, socket}
       end
     end

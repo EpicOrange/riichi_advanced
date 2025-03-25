@@ -3205,7 +3205,6 @@ div.room > div.sidebar {
   font-size: calc(1 * var(--tile-size));
   position: absolute;
   right: 0;
-  width: 50%;
 }
 div.room > div.sidebar > a {
   white-space: nowrap;

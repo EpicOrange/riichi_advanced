@@ -33,8 +33,7 @@ defmodule RiichiAdvancedWeb.LogMenuLive do
         <div class="tile 7z"></div>
       </div>
       <form phx-submit="redirect">
-        <%= t(@lang, "Log ID:") %>
-        <input type="text" name="log_id" placeholder="Log ID" value={@log_id}/>
+        <input type="text" name="log_id" placeholder={t(@lang, "Log ID:")} value={@log_id}/>
         <br/>
         <%= if @error_message != nil do %>
           <div class="form-error"><%= @error_message %></div>

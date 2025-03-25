@@ -54,7 +54,7 @@ defmodule RiichiAdvancedWeb.TutorialMenuLive do
     ~H"""
     <div id="container" phx-hook="ClickListener">
       <header class="tutorial-menu-header">
-        <h3><%= t(@lang, "Tutorials for ruleset:") %><b><%= @display_name %></b></h3>
+        <h3><%= t(@lang, "Tutorials for ruleset:") %><b><%= dt(@lang, @display_name) %></b></h3>
       </header>
       <div class="tutorial-menu-container">
         <%= if Enum.empty?(@available_tutorials) do %>
@@ -70,7 +70,7 @@ defmodule RiichiAdvancedWeb.TutorialMenuLive do
           <div class="tutorial-menu-buttons">
             <button phx-cancellable-click="goto_tutorial" phx-value-index={i} phx-value-sequence={sequence} phx-value-seat={seat} :for={{{sequence, name, seat}, i} <- Enum.with_index(@available_tutorials)}>
               <%= t(@lang, "Tutorial") %> <%= i + 1 %>:
-              <%= if @clicked_index == Integer.to_string(i) do %> <%= t(@lang, "Loading...") %> <% else %> <%= name %> <% end %>
+              <%= if @clicked_index == Integer.to_string(i) do %> <%= t(@lang, "Loading...") %> <% else %> <%= dt(@lang, name) %> <% end %>
             </button>
             <button phx-cancellable-click="create_tutorial">
               <%= t(@lang, "Create your own tutorial!") %>
@@ -80,7 +80,7 @@ defmodule RiichiAdvancedWeb.TutorialMenuLive do
       </div>
       <footer class="tutorial-menu-footer">
         <button phx-cancellable-click="play_game">
-          <%= t(@lang, "Play") %> <%= @display_name %>!
+          <%= t(@lang, "Play") %> <%= dt(@lang, @display_name) %>!
         </button>
       </footer>
       <div class="top-right-container">

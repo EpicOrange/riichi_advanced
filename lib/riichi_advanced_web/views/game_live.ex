@@ -733,13 +733,25 @@ defmodule RiichiAdvancedWeb.GameLive do
         # subscribe to message updates
         Phoenix.PubSub.subscribe(RiichiAdvanced.PubSub, "messages:" <> socket.id)
         GenServer.cast(messages_init.messages_state, {:add_message, [
-          %{text: t(socket.assigns.lang, "Entered a")},
-          %{bold: true, text: socket.assigns.ruleset},
-          %{text: t(socket.assigns.lang, "game, room code")},
-          %{bold: true, text: socket.assigns.room_code}
-        ] ++ if socket.assigns.state.mods != nil and not Enum.empty?(socket.assigns.state.mods) do
-          [%{text: t(socket.assigns.lang, "with mods")}] ++ Enum.map(socket.assigns.state.mods, fn mod -> %{bold: true, text: ModLoader.get_mod_name(mod)} end)
-        else [] end})
+          if socket.assigns.state.mods != nil and not Enum.empty?(socket.assigns.state.mods) do
+            %{
+              text: "Entered a %{ruleset} game, room code %{room_code} with mods %{mods}",
+              vars: %{
+                ruleset: {:text, socket.assigns.ruleset, %{bold: true}},
+                room_code: {:text, socket.assigns.room_code, %{bold: true}},
+                mods: {:text, Enum.map_join(socket.assigns.state.mods, ", ", &ModLoader.get_mod_name/1), %{bold: true}}
+              }
+            }
+          else
+            %{
+              text: "Entered a %{ruleset} game, room code %{room_code}",
+              vars: %{
+                ruleset: {:text, socket.assigns.ruleset, %{bold: true}},
+                room_code: {:text, socket.assigns.room_code, %{bold: true}}
+              }
+            }
+          end
+        ]})
         socket
       else socket end
       {:noreply, socket}

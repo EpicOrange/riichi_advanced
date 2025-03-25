@@ -52,10 +52,13 @@ defmodule RiichiAdvancedWeb.RoomLive do
         # subscribe to message updates
         Phoenix.PubSub.subscribe(RiichiAdvanced.PubSub, "messages:" <> socket.id)
         GenServer.cast(messages_init.messages_state, {:add_message, [
-          %{text: "Entered room"},
-          %{bold: true, text: socket.assigns.room_code},
-          %{text: "for variant"},
-          %{bold: true, text: socket.assigns.ruleset}
+          %{
+            text: "Entered room %{room_code} for variant %{ruleset}",
+            vars: %{
+              room_code: {:text, socket.assigns.room_code, %{bold: true}},
+              ruleset: {:text, socket.assigns.ruleset, %{bold: true}}
+            }
+          }
         ]})
         socket
       else socket end
@@ -77,7 +80,7 @@ defmodule RiichiAdvancedWeb.RoomLive do
     ~H"""
     <div id="container" class="room" phx-hook="ClickListener">
       <header>
-        <h3><%= @display_name %></h3>
+        <h3><%= dt(@lang, @display_name) %></h3>
         <div class="session">
           <%= for tile <- String.split(@room_code, ",") do %>
             <div class={["tile", tile]}></div>
@@ -86,12 +89,12 @@ defmodule RiichiAdvancedWeb.RoomLive do
         <input id="private-toggle" type="checkbox" phx-click="private_toggled" phx-value-enabled={if @state.private do "true" else "false" end} checked={not @state.private}>
         <label for="private-toggle" class="private-toggle-label">
           <%= if @state.private do %>
-            Private
+            <%= t(@lang, "Private") %>
             <svg xmlns="http://www.w3.org/2000/svg" width="1.2em" height="1.2em" fill="none" viewBox="0 0 24 24">
               <path stroke="white" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 14v3m-3-6V7a3 3 0 1 1 6 0v4m-8 0h10a1 1 0 0 1 1 1v7a1 1 0 0 1-1 1H7a1 1 0 0 1-1-1v-7a1 1 0 0 1 1-1Z"/>
             </svg>
           <% else %>
-            Public
+            <%= t(@lang, "Public") %>
             <svg xmlns="http://www.w3.org/2000/svg" width="1.2em" height="1.2em" fill="none" viewBox="0 0 24 24">
               <path stroke="white" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 14v3m4-6V7a3 3 0 1 1 6 0v4M5 11h10a1 1 0 0 1 1 1v7a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1v-7a1 1 0 0 1 1-1Z"/>
             </svg>
@@ -102,9 +105,9 @@ defmodule RiichiAdvancedWeb.RoomLive do
         <%= if @state.tutorial_link != nil do %>
           <a class="tutorial-link" href={@state.tutorial_link} target="_blank">
             <%= if @ruleset == "custom" do %>
-              Documentation
+              <%= t(@lang, "Documentation") %>
             <% else %>
-              Rules
+              <%= t(@lang, "Rules") %>
             <% end %>
             <svg xmlns="http://www.w3.org/2000/svg" width="1.2em" height="1.2em" fill="none" viewBox="0 0 24 24">
               <path stroke="white" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 19V4a1 1 0 0 1 1-1h12a1 1 0 0 1 1 1v13H7a2 2 0 0 0-2 2Zm0 0a2 2 0 0 0 2 2h12M9 3v14m7 0v4"/>
@@ -113,7 +116,7 @@ defmodule RiichiAdvancedWeb.RoomLive do
         <% end %>
         <br/>
         <label for="room-settings-toggle" class="room-settings-toggle">
-          Room settings
+          <%= t(@lang, "Room settings") %>
           <svg xmlns="http://www.w3.org/2000/svg" width="1.2em" height="1.2em" fill="none" viewBox="0 0 24 24">
             <path stroke="white" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 13v-2a1 1 0 0 0-1-1h-.757l-.707-1.707.535-.536a1 1 0 0 0 0-1.414l-1.414-1.414a1 1 0 0 0-1.414 0l-.536.535L14 4.757V4a1 1 0 0 0-1-1h-2a1 1 0 0 0-1 1v.757l-1.707.707-.536-.535a1 1 0 0 0-1.414 0L4.929 6.343a1 1 0 0 0 0 1.414l.536.536L4.757 10H4a1 1 0 0 0-1 1v2a1 1 0 0 0 1 1h.757l.707 1.707-.535.536a1 1 0 0 0 0 1.414l1.414 1.414a1 1 0 0 0 1.414 0l.536-.535 1.707.707V20a1 1 0 0 0 1 1h2a1 1 0 0 0 1-1v-.757l1.707-.708.536.536a1 1 0 0 0 1.414 0l1.414-1.414a1 1 0 0 0 0-1.414l-.535-.536.707-1.707H20a1 1 0 0 0 1-1Z"/>
             <path stroke="white" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15a3 3 0 1 0 0-6 3 3 0 0 0 0 6Z"/>
@@ -152,41 +155,41 @@ defmodule RiichiAdvancedWeb.RoomLive do
               <% else %>
                 <input type="radio" id={"preset-#{i}"} name="presets" phx-click="set_preset" phx-value-index={i}>
               <% end %>
-              <label for={"preset-#{i}"} class="presets-title"><%= preset["display_name"] %></label>
+              <label for={"preset-#{i}"} class="presets-title"><%= dt(@lang, preset["display_name"]) %></label>
             <% end %>
           </div>
           <div class={["mods", "mods-#{@state.ruleset}"]}>
             <div class="mods-inner-container">
               <%= for {category, mods} <- Enum.group_by(@state.mods, fn {_name, mod} -> mod.category end) |> Enum.sort_by(fn {category, _mods} -> Enum.find_index(@state.categories, & &1 == category) end) do %>
                 <div class="mod-category" :if={category}>
-                  <%= category %>
+                  <%= dt(@lang, category) %>
                   <button class="mod-menu-button" phx-cancellable-click="toggle_category" phx-value-category={category}><%= t(@lang, "Toggle all") %></button>
                 </div>
-                <%= for {mod_name, mod} <- Enum.sort_by(mods, fn {_mod_name, mod} -> mod.index end) do %>
-                  <input id={mod_name} type="checkbox" phx-click="toggle_mod" phx-value-mod={mod_name} phx-value-enabled={if @state.mods[mod_name].enabled do "true" else "false" end} checked={@state.mods[mod_name].enabled}>
-                  <label for={mod_name} title={mod.desc} data-name={mod.name} tabindex={mod.index} class={["mod", mod.class]}>
-                    <%= mod.name %>
+                <%= for {mod_id, mod} <- Enum.sort_by(mods, fn {_mod_name, mod} -> mod.index end) do %>
+                  <input id={mod_id} type="checkbox" phx-click="toggle_mod" phx-value-mod={mod_id} phx-value-enabled={if @state.mods[mod_id].enabled do "true" else "false" end} checked={@state.mods[mod_id].enabled}>
+                  <label for={mod_id} title={dt(@lang, mod.desc)} data-name={mod.name} tabindex={mod.index} class={["mod", mod.class]}>
+                    <%= dt(@lang, mod.name) %>
                     <%= if mod.enabled and not Enum.empty?(mod.config) do %>
                       |
                       <%= for {config_name, config} <- mod.config do %>
-                        <span class="mod-config-name"><%= String.replace_prefix(config_name, "_", "") %>:</span>
+                        <span class="mod-config-name"><%= dt(@lang, String.replace_prefix(config_name, "_", "")) %>:</span>
                         <%= case config["type"] do %>
                           <% "dropdown" -> %>
-                            <form class="mod-config-dropdown" phx-change="change_mod_config" phx-value-mod={mod_name} phx-value-name={config_name}>
+                            <form class="mod-config-dropdown" phx-change="change_mod_config" phx-value-mod={mod_id} phx-value-name={config_name}>
                               <select name={config_name}>
                                 <%= for {value, i} <- Enum.with_index(config["values"]) do %>
                                   <%= if value == config.value do %>
-                                    <option value={i} selected><%= value %></option>
+                                    <option value={i} selected><%= dt(@lang, to_string(value)) %></option>
                                   <% else %>
-                                    <option value={i}><%= value %></option>
+                                    <option value={i}><%= dt(@lang, to_string(value)) %></option>
                                   <% end %>
                                 <% end %>
                               </select>
                             </form>
                           <% "slider" -> %>
-                            <form class="mod-config-slider" phx-change="change_mod_config" phx-value-mod={mod_name} phx-value-name={config_name}>
-                              <input type="range" name={config_name} list={"#{mod_name}-#{config_name}-list"} min="0" max={length(config["values"])-1}>
-                              <datalist id={"#{mod_name}-#{config_name}-list"}>
+                            <form class="mod-config-slider" phx-change="change_mod_config" phx-value-mod={mod_id} phx-value-name={config_name}>
+                              <input type="range" name={config_name} list={"#{mod_id}-#{config_name}-list"} min="0" max={length(config["values"])-1}>
+                              <datalist id={"#{mod_id}-#{config_name}-list"}>
                                 <option value={i} :for={{value, i} <- Enum.with_index(config["values"])}><%= value %></option>
                               </datalist>
                             </form>

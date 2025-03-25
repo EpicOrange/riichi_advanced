@@ -769,7 +769,6 @@ define_mod chinitsu, conflicts: ["aka", "aka1", "aka3", "aka7", "aka9", "yaku/mo
 define_mod washizu, order: -1, name: "Washizu", desc: "Each tile in the wall is transparent and visible to all, except for one copy. Unflipped dora indicators are not visible."
 define_mod calls_are_forced, conflicts: ["chombo"], name: "Calls Are Forced", desc: "Forces you to make all available calls, including riichi (if enabled). You still get to choose if multiple calls are available."
 define_mod chombo, conflicts: ["calls_are_forced"], name: "Chombo", desc: "The tsumo and ron buttons are enabled on every draw and discard. If you make an incorrect win call, your hand is dead and you cannot make a win call for the remainder of the round."
-define_mod riichi_jp, name: "Japanese Yaku Names", desc: "Display yaku names in Japanese."
 
 set default_mods, [
   "kan", "honba", "yaku/riichi", "dora", "ura", "kandora", "aka",

@@ -353,10 +353,12 @@ defmodule RiichiAdvanced.GameState.Actions do
       # messages and log
       cond do
         hidden ->
-          push_message(state, player_prefix(state, seat) ++ [
-            %{text: "called"},
-            %{bold: true, text: "#{call_name}"}
-          ])
+          push_message(state, player_prefix(state, seat) ++ [%{
+            text: "called %{call}",
+            vars: %{
+              call: {:text, call_name, %{bold: true}}
+            }
+          }])
         called_tile != nil ->
           push_message(state, player_prefix(state, seat) ++ [%{
             text: "called %{call} on %{tile} with %{choice}",
