@@ -1347,7 +1347,7 @@ defmodule RiichiAdvanced.GameState do
     if not spectator do
       # tell everyone else if it's a new player
       if Map.get(state, seat, nil) == nil do
-        push_message(state, %{text: "Player #{nickname} joined as #{seat}"})
+        push_message(state, %{text: "Player %{nickname} joined as %{seat}", vars: %{"nickname": nickname, "seat": Atom.to_string(seat)}})
       end
 
       # initialize the player

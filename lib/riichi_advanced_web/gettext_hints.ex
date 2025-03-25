@@ -5,5 +5,10 @@ defmodule RiichiAdvancedWeb.GettextHints do
   def gettext_hints do
     # messages
     t_noop("Welcome to Riichi Advanced!")
+    t_noop("Player %{nickname} joined as %{seat}")
+    t_noop("east")
+    t_noop("south")
+    t_noop("west")
+    t_noop("north")
   end
 end

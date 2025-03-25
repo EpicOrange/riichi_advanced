@@ -65,6 +65,10 @@ msgstr ""
 msgid "Enter"
 msgstr ""
 
+#, fuzzy
+msgid "Entered a"
+msgstr ""
+
 msgid "For more information, drop a message in our Discord!"
 msgstr ""
 
@@ -93,6 +97,9 @@ msgid "Nickname (optional)"
 msgstr ""
 
 msgid "Play"
+msgstr ""
+
+msgid "Player %{nickname} joined as %{seat}"
 msgstr ""
 
 msgid "Randomize mods"
@@ -150,4 +157,22 @@ msgid "View log"
 msgstr ""
 
 msgid "Welcome to Riichi Advanced!"
+msgstr ""
+
+msgid "east"
+msgstr ""
+
+msgid "game, room code"
+msgstr ""
+
+msgid "north"
+msgstr ""
+
+msgid "south"
+msgstr ""
+
+msgid "west"
+msgstr ""
+
+msgid "with mods"
 msgstr ""

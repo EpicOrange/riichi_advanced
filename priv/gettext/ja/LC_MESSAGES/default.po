@@ -74,6 +74,9 @@ msgstr "空"
 msgid "Enter"
 msgstr "ゲームに入る"
 
+msgid "Entered a"
+msgstr "参加しました"
+
 msgid "For more information, drop a message in our Discord!"
 msgstr "詳しくはDiscordにメッセージをください！"
 
@@ -103,6 +106,9 @@ msgstr "ニックネーム（任意）"
 
 msgid "Play"
 msgstr "プレー"
+
+msgid "Player %{nickname} joined as %{seat}"
+msgstr "プレイヤー%{nickname}が%{seat}として参加しました"
 
 msgid "Randomize mods"
 msgstr "MODのランダム化"
@@ -160,3 +166,21 @@ msgstr "ログを見る"
 
 msgid "Welcome to Riichi Advanced!"
 msgstr "ようこそRiichi Advancedへ！"
+
+msgid "east"
+msgstr "東"
+
+msgid "game, room code"
+msgstr "ゲーム、ルームコード"
+
+msgid "north"
+msgstr "北"
+
+msgid "south"
+msgstr "南"
+
+msgid "west"
+msgstr "西"
+
+msgid "with mods"
+msgstr "MOD付き"
