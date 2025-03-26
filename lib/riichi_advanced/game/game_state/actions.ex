@@ -786,7 +786,7 @@ defmodule RiichiAdvanced.GameState.Actions do
     state = if copy_dst do
       Enum.reduce(src_targets, state, fn {_source, tile, _seat, _ix}, state ->
         case destination do
-          "hand" -> update_player(state, seat, &%Player{ &1 | hand: &1.hand ++ [tile] })
+          "hand" -> update_player(state, seat, &%Player{ &1 | hand: &1.hand ++ [Utils.remove_attr(tile, ["_draw"])] })
           "draw" -> update_player(state, seat, &%Player{ &1 | draw: &1.draw ++ [tile] })
           "calls" -> update_player(state, seat, &%Player{ &1 | calls: &1.calls ++ [tile] })
           "aside" -> update_player(state, seat, &%Player{ &1 | aside: &1.aside ++ [tile] })
