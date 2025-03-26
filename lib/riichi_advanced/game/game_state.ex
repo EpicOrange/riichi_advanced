@@ -107,6 +107,28 @@ defmodule RiichiAdvanced.GameState do
       end)
       %TileBehavior{ tile_behavior | aliases: new_aliases }
     end
+    # get an assignment for the obvious jokers (the ones with only one assignable value)
+    def get_obvious_joker_assignment(tile_behavior, smt_hand, smt_calls) do
+      obvious_joker_map = tile_mappings(tile_behavior)
+      |> Enum.flat_map(fn
+        {joker, [assign]} -> [{joker, assign}]
+        _ -> []
+      end)
+      |> Map.new()
+      # return a map %{index => tile}
+      Enum.with_index(smt_hand ++ Enum.concat(smt_calls))
+      |> Enum.flat_map(fn {tile, ix} ->
+        case Enum.find(obvious_joker_map, fn {from, _to} -> Utils.same_tile(tile, from) end) do
+          nil         -> []
+          {from, to} ->
+            # replace any tiles
+            base = if Utils.strip_attrs(to) == :any do tile else to end
+            attrs = (Utils.get_attrs(tile) ++ Utils.get_attrs(to)) -- Utils.get_attrs(from)
+            [{ix, Utils.add_attr(base, attrs)}]
+        end
+      end)
+      |> Map.new()
+    end
   end
 
   defmodule Player do
@@ -1154,7 +1176,12 @@ defmodule RiichiAdvanced.GameState do
     end
   end
 
-  def update_winning_tile(state, seat, :draw, fun), do: update_in(state.players[seat].draw, &[fun.(Enum.at(&1, 0))])
+  def update_winning_tile(state, seat, :draw, fun) do
+    update_in(state.players[seat].draw, fn
+      [draw] -> [fun.(draw)]
+      draw -> draw # no op if 0 or 2+ draws
+    end)
+  end
   def update_winning_tile(state, seat, :best_draw, fun), do: update_winning_tile(state, seat, :draw, fun)
   def update_winning_tile(state, _seat, :call, fun) do
     last_call_action = get_last_call_action(state)

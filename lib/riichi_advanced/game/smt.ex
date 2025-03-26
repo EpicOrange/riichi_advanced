@@ -2,7 +2,6 @@ defmodule RiichiAdvanced.SMT do
   alias RiichiAdvanced.GameState.Debug, as: Debug
   alias RiichiAdvanced.GameState.TileBehavior, as: TileBehavior
   alias RiichiAdvanced.Match, as: Match
-  alias RiichiAdvanced.Riichi, as: Riichi
   alias RiichiAdvanced.Utils, as: Utils
   use Nebulex.Caching
   
@@ -400,8 +399,6 @@ defmodule RiichiAdvanced.SMT do
     tile_mappings = TileBehavior.tile_mappings(tile_behavior)
 
     calls = calls
-    |> Enum.reject(fn {call_name, _call} -> call_name in Riichi.flower_names() end)
-    |> Enum.map(&Utils.call_to_tiles/1)
     |> Enum.map(&Enum.take(&1, 3)) # ignore kans
     |> Enum.with_index()
 

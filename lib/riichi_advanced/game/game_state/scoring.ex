@@ -114,17 +114,8 @@ defmodule RiichiAdvanced.GameState.Scoring do
   end
 
   def seat_scores_points(state, yaku_list_names, min_points, min_minipoints, seat, winning_tile, win_source) do
-    score_rules = Rules.get(state.rules_ref, "score_calculation", %{})
-    use_smt = Map.get(score_rules, "use_smt", true)
-    call_tiles = Enum.flat_map(state.players[seat].calls, &Utils.call_to_tiles/1)
-    tile_behavior = state.players[seat].tile_behavior
-    joker_assignments = if not use_smt or Enum.empty?(tile_behavior.aliases) do Stream.concat([[%{}]]) else
-      smt_hand = state.players[seat].hand ++ if winning_tile != nil do [winning_tile] else [] end
-      if Enum.any?(smt_hand ++ call_tiles, &TileBehavior.is_joker?(&1, tile_behavior)) do
-        RiichiAdvanced.SMT.match_hand_smt_v3(state.smt_solver, smt_hand, state.players[seat].calls, Rules.translate_match_definitions(state.rules_ref, ["win"]), tile_behavior)
-      else Stream.concat([[%{}]]) end
-    end
-    Task.async_stream(joker_assignments, fn joker_assignment ->
+    solve_for_jokers(state, seat, winning_tile)
+    |> Task.async_stream(fn joker_assignment ->
       state = apply_joker_assignment(state, seat, joker_assignment, win_source)
 
       # run before_win actions
@@ -906,14 +897,14 @@ defmodule RiichiAdvanced.GameState.Scoring do
     end
 
     # get smt hand for the next steps
-    orig_call_tiles = orig_calls
+    smt_hand = orig_hand ++ if winning_tile != nil do [winning_tile] else [] end
+    smt_calls = state.players[seat].calls
     |> Enum.reject(fn {call_name, _call} -> call_name in Riichi.flower_names() end)
-    |> Enum.flat_map(fn call -> Enum.take(Utils.call_to_tiles(call), 3) end) # ignore kans
-    smt_hand = orig_hand ++ if winning_tile != nil do [winning_tile] else [] end ++ orig_call_tiles
+    |> Enum.map(&Utils.call_to_tiles/1)
 
     # create an alternate separated_hand where sets are separated
     win_definitions = Rules.translate_match_definitions(state.rules_ref, ["win"])
-    assigned_tile_behavior = TileBehavior.from_joker_assignment(tile_behavior, smt_hand, joker_assignment)
+    assigned_tile_behavior = TileBehavior.from_joker_assignment(tile_behavior, smt_hand ++ Enum.concat(smt_calls), joker_assignment)
     separated_hands = [arranged_hand]
     |> Riichi.prepend_group_all(orig_calls, [winning_tile], [0, 0, 0, 1, 1, 1, 2, 2, 2], win_definitions, assigned_tile_behavior)
     |> Riichi.prepend_group_all(orig_calls, [winning_tile], [0, 0, 1, 1, 2, 2], win_definitions, assigned_tile_behavior)
@@ -949,13 +940,12 @@ defmodule RiichiAdvanced.GameState.Scoring do
     |> Enum.intersperse([:"7x"])
     |> Enum.concat()
 
-    # push message saying which joker maps to what
-    joker_assignment = joker_assignment
-    |> Enum.map(fn {joker_ix, tile} -> {Enum.at(smt_hand, joker_ix), tile} end)
-    |> Enum.reject(fn {joker_tile, _tile} -> Riichi.is_aka?(joker_tile) end)
-    |> Map.new()
-    if not Enum.empty?(joker_assignment) do
-      joker_assignment_message = joker_assignment
+    # push message saying which joker maps to what, excluding obvious jokers
+    obvious_joker_assignment = TileBehavior.get_obvious_joker_assignment(tile_behavior, smt_hand, smt_calls)
+    non_obvious_joker_assignment = Map.drop(joker_assignment, Map.keys(obvious_joker_assignment))
+    |> Enum.map(fn {joker_ix, tile} -> {Enum.at(smt_hand ++ Enum.concat(smt_calls), joker_ix), tile} end)
+    if not Enum.empty?(non_obvious_joker_assignment) do
+      joker_assignment_message = non_obvious_joker_assignment
       |> Enum.map_intersperse([%{text: ","}], fn {joker_tile, tile} -> [Utils.pt(joker_tile), %{text: "→"}, Utils.pt(tile)] end)
       |> Enum.concat()
       push_message(state, [%{text: "Using joker assignment"}] ++ joker_assignment_message)
@@ -1056,7 +1046,32 @@ defmodule RiichiAdvanced.GameState.Scoring do
       fn -> nil end # empty stream
     )
   end
+  def solve_for_jokers(state, seat, winning_tile) do
+    # first grab the obvious jokers (the ones that map only to one value)
+    tile_behavior = state.players[seat].tile_behavior
+    smt_hand = state.players[seat].hand ++ if winning_tile != nil do [winning_tile] else [] end
+    smt_calls = state.players[seat].calls
+    |> Enum.reject(fn {call_name, _call} -> call_name in Riichi.flower_names() end)
+    |> Enum.map(&Utils.call_to_tiles/1)
+    obvious_joker_assignment = TileBehavior.get_obvious_joker_assignment(tile_behavior, smt_hand, smt_calls)
 
+    score_rules = Rules.get(state.rules_ref, "score_calculation", %{})
+    use_smt = Map.get(score_rules, "use_smt", true)
+    if use_smt do
+      # replace smt hand/calls with obvious jokers, so the smt solver doesn't solve for those
+      {[smt_hand | smt_calls], _} = for group <- [smt_hand | smt_calls], reduce: {[], 0} do
+        {acc, start_ix} ->
+          {acc ++ [for {tile, ix} <- Enum.with_index(group) do
+            Map.get(obvious_joker_assignment, start_ix + ix, tile)
+          end], start_ix + length(group)}
+      end
+      # then run smt, if other jokers exist
+      if Enum.any?(smt_hand ++ Enum.concat(smt_calls), &TileBehavior.is_joker?(&1, tile_behavior)) do
+        RiichiAdvanced.SMT.match_hand_smt_v3(state.smt_solver, smt_hand, smt_calls, Rules.translate_match_definitions(state.rules_ref, ["win"]), tile_behavior)
+      else Stream.concat([[%{}]]) end
+    else Stream.concat([[%{}]]) end
+    |> Enum.map(&Map.merge(obvious_joker_assignment, &1))
+  end
 
   # The main scoring calculator is calculate_winner_details/3
   # It's kind of complicated so here's a short explainer
@@ -1078,8 +1093,6 @@ defmodule RiichiAdvanced.GameState.Scoring do
   # - so we parallelize but that's it
   # - solving that is problem #3, which remains unsolved to this day
 
-
-
   # generate a winner object for a given seat
   def calculate_winner_details(state, seat, win_source) do
     score_rules = Rules.get(state.rules_ref, "score_calculation", %{})
@@ -1090,16 +1103,6 @@ defmodule RiichiAdvanced.GameState.Scoring do
     call_tiles = Enum.flat_map(state.players[seat].calls, &Utils.call_to_tiles/1)
     winning_hand = state.players[seat].hand ++ call_tiles ++ if winning_tile != nil do [winning_tile] else [] end
     state = update_player(state, seat, &%Player{ &1 | cache: %PlayerCache{ &1.cache | winning_hand: winning_hand } })
-
-    # deal with jokers
-    tile_behavior = state.players[seat].tile_behavior
-    use_smt = Map.get(score_rules, "use_smt", true)
-    joker_assignments = if not use_smt or Enum.empty?(tile_behavior.aliases) do Stream.concat([[%{}]]) else
-      smt_hand = state.players[seat].hand ++ if winning_tile != nil do [winning_tile] else [] end
-      if Enum.any?(smt_hand ++ call_tiles, &TileBehavior.is_joker?(&1, tile_behavior)) do
-        RiichiAdvanced.SMT.match_hand_smt_v3(state.smt_solver, smt_hand, state.players[seat].calls, Rules.translate_match_definitions(state.rules_ref, ["win"]), tile_behavior)
-      else Stream.concat([[%{}]]) end
-    end
 
     # check if we're dealer
     is_dealer = Riichi.get_east_player_seat(state.kyoku, state.available_seats) == seat
@@ -1130,7 +1133,7 @@ defmodule RiichiAdvanced.GameState.Scoring do
       is_dealer: is_dealer
     }
     winner_details = Task.async_stream(
-      joker_assignments,
+      solve_for_jokers(state, seat, winning_tile),
       &calculate_winner_details_task(state, context, &1),
       timeout: :infinity, ordered: false
     )
