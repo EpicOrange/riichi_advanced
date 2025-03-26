@@ -605,9 +605,9 @@ defmodule RiichiAdvanced.Compiler do
 
     with {:ok, prepend} <- prepend do
       if prepend do
-        {:ok, ".available_mods |= [#{name}] + ."}
+        {:ok, "if ((.available_mods // []) | index(#{name})) then .available_mods |= [#{name}] + . else . end"}
       else
-        {:ok, ".available_mods += [#{name}]"}
+        {:ok, "if ((.available_mods // []) | index(#{name})) then .available_mods += [#{name}] else . end"}
       end
     end
   end
