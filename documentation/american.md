@@ -166,6 +166,7 @@ To read the Card:
 The following mods are currently available for American:
 
 - Zombie Blanks: Adds four "zombie blanks" to the wall. Zombie blanks may not be passed during the Charleston or discarded. On a player's turn, they may swap a zombie blank in their hand with any natural tile in the discard pool. Blanks have no other purpose; they do not act as jokers; players may not declare Mah Jongg if they have a zombie blank in their hand; nor may they make exposures using blanks; or joker exchanges with blanks.
+- PIE: Each player starts with a set amount of points. Players' point totals can't go negative. If a player runs out of points, they need not pay.
 - ILM Card: Play with the free [ILoveMahj Card](https://ilovemahj.com/ilmCard).
 - ATF Card: Play with the free [ATeacherFirst Mah Jongg Fake Card](https://www.ateacherfirst.com/bridge/mah-jongg/).
 - MahjLife Card: Play with the free [MahjLife Mock Card](https://mahjlife.com/document/mahj-life-mock-card-print/). Introduced along with [this video](https://www.youtube.com/watch?v=7WygnpfFbMQ). (Implemented with permission from Michele Frizzell.)
@@ -176,7 +177,6 @@ The following mods are currently available for American:
 - Open Hands: The contents of all hands are revealed to everyone. Primarily useful as a debug or teaching feature.
 
 The following mods are planned to be supported (not necessarily in this order):
-- PIE: Each player starts with 600¢. If a player runs out of ¢, they need not pay.
 - Stacks: Instead of performing the Charleston with other players, perform the Charleston with 7 stacks of 3 tiles in front of you. After the Charleston is complete, the remaining tiles are all shuffled back into the wall.
 - Futures: Each player gets to peek at their next draw.
 - Hot Wall: If a player deals in with a previously-undiscarded tile during the last portion of the wall, they pay for the table.
