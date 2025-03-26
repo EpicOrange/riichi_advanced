@@ -1,0 +1,18 @@
+set initial_score, $starting_score
+    # during "after_scoring", we want to set every non-winner's payout to the maximum of {their payout, their score * -1}
+    # note that payouts are negative
+apply append, "after_scoring.actions" do
+  set_counter_all("temp_score", score)
+  as("all", multiply_counter("temp_score", -1))
+  modify_payout("others", "temp_score", max)
+    # then we want to set the winner's payout to -1 * (sum of other three player's payouts)
+  as("shimocha", set_counter_all("payout_shimocha", payout))
+  as("toimen", set_counter_all("payout_toimen", payout))
+  as("kamicha", set_counter_all("payout_kamicha", payout))
+  as("self", set_counter("total", 0))
+  as("self", add_counter("total", "payout_shimocha"))
+  as("self", add_counter("total", "payout_toimen"))
+  as("self", add_counter("total", "payout_kamicha"))
+  as("self", multiply_counter("total", -1))
+  modify_payout("self", "total", set)
+end
