@@ -447,8 +447,8 @@ defmodule RiichiAdvanced.Compiler do
 
   defp compile_command("define_yaku", name, args, line, column) do
     yaku_spec = case args do
-      [display_name, value, condition] when is_binary(display_name) -> {:ok, {display_name, value, condition, []}}
-      [display_name, value, condition, supercedes] when is_binary(display_name) and is_list(supercedes) -> {:ok, {display_name, value, condition, supercedes}}
+      [display_name, value, condition] -> {:ok, {display_name, value, condition, []}}
+      [display_name, value, condition, supercedes] when is_list(supercedes) -> {:ok, {display_name, value, condition, supercedes}}
       _ -> {:error, "Compiler.compile: at line #{line}:#{column}, `define_yaku` command expects a yaku list name, a display name, a value, and a condition, got #{inspect(args)}"}
     end
 
@@ -771,12 +771,13 @@ defmodule RiichiAdvanced.Compiler do
     case ast do
       {cmd, [line: line, column: column], [name | args]} when is_binary(cmd) ->
         name = case name do
-          name when is_binary(name) -> {:ok, name}
-          {name, _pos, _params} -> {:ok, name}
+          name when is_binary(name) -> Validator.validate_json(name)
+          {:@, _, [{name, _, nil}]} -> Validator.validate_constant(name)
+          {:+, _, [{name, _, nil}]} -> Validator.validate_variable(name)
+          {name, _pos, _params} -> Validator.validate_json(name)
           _ -> {:error, "Compiler.compile: at line #{line}:#{column}, `#{cmd}` command got invalid name #{inspect(name)}"}
         end
         with {:ok, name} <- name,
-             {:ok, name} <- Validator.validate_json(name),
              {:ok, name} <- Jason.encode(name) do
           compile_command(cmd, name, args, line, column)
           case args do
