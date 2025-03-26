@@ -76,7 +76,6 @@ defmodule RiichiAdvancedWeb.RoomLive do
   end
 
   def render(assigns) do
-    IO.inspect(assigns.lang, label: "lang in render")
     ~H"""
     <div id="container" class="room" phx-hook="ClickListener">
       <header>
@@ -237,7 +236,7 @@ defmodule RiichiAdvancedWeb.RoomLive do
           </div>
         <% end %>
         <input id="shuffle-seats" type="checkbox" phx-click="shuffle_seats_toggled" phx-value-enabled={if @state.shuffle do "true" else "false" end} checked={@state.shuffle}>
-        <label for="shuffle-seats" class="shuffle-seats"><%= IO.inspect(t(@lang, "Shuffle seats on start?")) %></label>
+        <label for="shuffle-seats" class="shuffle-seats"><%= t(@lang, "Shuffle seats on start?") %></label>
         <%= if not Enum.all?(@state.seats, fn {_seat, player} -> player == nil end) do %>
           <%= if @state.starting do %>
             <button class="start-game-button">
