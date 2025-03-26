@@ -296,6 +296,8 @@ defmodule RiichiAdvanced.Compiler do
          {:ok, value_val} <- compile_constant(value, line, column),
          {:ok, value} <- Jason.encode(value_val) do
       op = Jason.decode!(name)
+      default_to_set = String.starts_with?(op, "set_")
+      op = if default_to_set do String.replace_leading(op, "set_", "") else op end
       operation = case op do
         "set"                                  -> {:ok, "#{path} = #{value}"}
         "add"                                  -> {:ok, "#{path} += #{value}"}
@@ -327,8 +329,9 @@ defmodule RiichiAdvanced.Compiler do
           {:ok, operation}
         else
           # only perform operation if the parent path exists
+          otherwise = if default_to_set do "#{path} = #{value}" else "." end
           with {:ok, parent_path} <- Validator.get_parent_path(path) do
-            ret = "if (#{parent_path}? != null) then (#{operation}) else . end"
+            ret = "if (#{parent_path}? != null) then (#{operation}) else #{otherwise} end"
             # IO.puts(ret)
             {:ok, ret}
           end
