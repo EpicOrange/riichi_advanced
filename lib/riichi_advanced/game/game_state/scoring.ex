@@ -1041,7 +1041,7 @@ defmodule RiichiAdvanced.GameState.Scoring do
   end
   def get_best_winner_details(winner_details_stream, get_worst_instead \\ false) do
     Enum.max_by(winner_details_stream,
-      fn %{score: score, points: points, points2: points2, yaku: yaku, yaku2: yaku2} -> {score, points, points2, -length(yaku), -length(yaku2)} end,
+      fn %{score: score, points: points, points2: points2, minipoints: minipoints, yaku: yaku, yaku2: yaku2} -> {score, points, points2, minipoints, -length(yaku), -length(yaku2)} end,
       if get_worst_instead do &<=/2 else &>=/2 end,
       fn -> nil end # empty stream
     )
