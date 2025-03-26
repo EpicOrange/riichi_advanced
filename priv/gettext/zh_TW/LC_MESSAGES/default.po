@@ -68,7 +68,7 @@ msgid "789"
 msgstr "７８９"
 
 msgid "A Space Mahjong variant with mixed triplets, more yaku, and more calls."
-msgstr "宇宙麻將變體：混合刻子、更多役種和鳴牌方式。"
+msgstr "宇宙立直變體：混合刻子、更多役種和鳴牌方式。"
 
 msgid "A pair of round+seat winds is worth 4 fu instead of 2 fu."
 msgstr "場風+自風對子計4符而非2符。"
@@ -191,7 +191,7 @@ msgid "Allow robbing ankans if in tenpai for kokushi musou."
 msgstr "國士無雙聽牌時允許搶暗槓。"
 
 msgid "American (2024 NMJL)"
-msgstr "美式麻將(2024 NMJL)"
+msgstr "美式(2024 NMJL)"
 
 msgid "American Civil War"
 msgstr "南北戰爭"
@@ -227,7 +227,7 @@ msgid "Benikujaku"
 msgstr "紅孔雀"
 
 msgid "Bloody 30-Faan Jokers"
-msgstr "血腥30番百搭牌"
+msgstr "血戰三十番百搭"
 
 msgid "Bloody end rules mahjong, with Vietnamese jokers, and somehow more yaku than MCR."
 msgstr "血戰規則麻將，使用越南百搭牌，役種比國標更多。"
@@ -536,7 +536,7 @@ msgid "Fifth Tile"
 msgstr "第五張牌"
 
 msgid "Filipino"
-msgstr "菲律賓語"
+msgstr "菲律賓"
 
 msgid "First Gets Riichi Sticks"
 msgstr "頭名獲得立直棒"
@@ -551,7 +551,7 @@ msgid "Forces you to make all available calls, including riichi (if enabled). Yo
 msgstr "強制所有可行鳴牌(包括立直)，多選項時仍可自選。"
 
 msgid "French"
-msgstr "法語"
+msgstr "法國"
 
 msgid "Fu"
 msgstr "符"
@@ -563,10 +563,10 @@ msgid "Fuzhou"
 msgstr "福州"
 
 msgid "Galaxy Mahjong"
-msgstr "銀河麻將"
+msgstr "銀河立直"
 
 msgid "German"
-msgstr "德語"
+msgstr "德國"
 
 msgid "Golden Chun"
 msgstr "黃金中"
@@ -650,13 +650,13 @@ msgid "Includes Tianjin mahjong joker tiles, but adds more yaku and played with 
 msgstr "包含天津麻將百搭牌，追加更多役種且4台起和。"
 
 msgid "Intro to cosmic mahjong"
-msgstr "宇宙麻將入門"
+msgstr "宇宙立直入門"
 
 msgid "Intro to galaxy mahjong"
-msgstr "銀河麻將入門"
+msgstr "銀河立直入門"
 
 msgid "Intro to space mahjong"
-msgstr "太空麻將入門"
+msgstr "太空立直入門"
 
 msgid "Ippatsu"
 msgstr "一發"
@@ -674,7 +674,7 @@ msgid "It's All Aka?"
 msgstr "全是紅寶？"
 
 msgid "Italian"
-msgstr "義大利語"
+msgstr "義大利國"
 
 msgid "Ittsu"
 msgstr "一氣通貫"
@@ -752,7 +752,7 @@ msgid "Kong"
 msgstr "槓"
 
 msgid "Korean"
-msgstr "韓語"
+msgstr "韓國"
 
 msgid "Kouitten"
 msgstr "紅一點"
@@ -920,7 +920,7 @@ msgid "M.League"
 msgstr "M聯賽"
 
 msgid "MCR"
-msgstr "國標麻將"
+msgstr "國標"
 
 msgid "Mah Jongg"
 msgstr "和牌"
@@ -1313,7 +1313,7 @@ msgid "Souzu"
 msgstr "索子"
 
 msgid "Space Mahjong"
-msgstr "太空麻將"
+msgstr "太空立直"
 
 msgid "Special thanks to our beta testers:"
 msgstr "特別感謝測試人員："
@@ -1514,7 +1514,7 @@ msgid "You have the option to declare open riichi, which is worth 2 han but reve
 msgstr "可聲明明牌立直(2番但公開手牌)，明牌雙立直計3番。"
 
 msgid "Zung Jung"
-msgstr "中庸麻將"
+msgstr "中庸"
 
 msgid "_1st"
 msgstr "第1名"
