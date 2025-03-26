@@ -31,7 +31,7 @@ set wall, ["1m", "1m", "1m", "1m",
            "2z", "2z", "2z", "2z",
            "3z", "3z", "3z", "3z",
            "4z", "4z", "4z", "4z",
-           "0z", "0z", "0z", "0z",
+           "5z", "5z", "5z", "5z",
            "6z", "6z", "6z", "6z",
            "7z", "7z", "7z", "7z",
            "1f", "2f", "3f", "4f",
@@ -47,18 +47,18 @@ define_set ton, ~s"1z 1z 1z"
 define_set nan, ~s"2z 2z 2z"
 define_set shaa, ~s"3z 3z 3z"
 define_set pei, ~s"4z 4z 4z"
-define_set haku, ~s"0z 0z 0z"
+define_set haku, ~s"5z 5z 5z"
 define_set hatsu, ~s"6z 6z 6z"
 define_set chun, ~s"7z 7z 7z"
 define_set ton_pair, ~s"1z 1z"
 define_set nan_pair, ~s"2z 2z"
 define_set shaa_pair, ~s"3z 3z"
 define_set pei_pair, ~s"4z 4z"
-define_set haku_pair, ~s"0z 0z"
+define_set haku_pair, ~s"5z 5z"
 define_set hatsu_pair, ~s"6z 6z"
 define_set chun_pair, ~s"7z 7z"
-define_set orphans_all, ~s"1m 9m 1p 9p 1s 9s 1z 2z 3z 4z 0z 6z 7z"
-define_set orphans_any, ~s"1m|9m|1p|9p|1s|9s|1z|2z|3z|4z|0z|6z|7z"
+define_set orphans_all, ~s"1m 9m 1p 9p 1s 9s 1z 2z 3z 4z 5z 6z 7z"
+define_set orphans_any, ~s"1m|9m|1p|9p|1s|9s|1z|2z|3z|4z|5z|6z|7z"
 define_set chuurenpoutou, ~s"0 0 0 1 2 3 4 5 6 7 8 8 8"
 
 define_match standard_tenpai, ~m"exhaustive, mentsu:3, taatsu:1, pair:1 | exhaustive, mentsu:4"
@@ -68,16 +68,6 @@ define_match tenpai, "standard_tenpai", "kokushi_tenpai"
 define_match standard_win, ~m"exhaustive, mentsu:4, pair:1"
 define_match kokushi_win, ~m"unique, dismantle_calls, orphans_any:13, orphans_any:1"
 define_match win, "standard_win", "kokushi_win"
-
-define_match shousuushii,
-  ~m"""
-  ton:1, nan:1, shaa:1, pei_pair:1
-  | ton:1, nan:1, shaa_pair:1, pei:1
-  | ton:1, nan_pair:1, shaa:1, pei:1
-  | ton_pair:1, nan:1, shaa:1, pei:1
-  """
-
-define_match daisuushii, ~m"ton:1, nan:1, shaa:1, pei:1"
 
 define_match sanankou_tsumo,
   ~m"""
@@ -89,8 +79,6 @@ define_match sanankou_ron,
   exhaustive, (pon daiminkan kakan):-1, koutsu:3, (any@winning_tile):0, mentsu:1, pair:1
   | exhaustive, (pon daiminkan kakan):-2, koutsu:4, (any@winning_tile):0, pair:1
   """
-define_match suuankou_tsumo, ~m"(pon daiminkan kakan):-1, koutsu:4, pair:1"
-define_match suuankou_ron, ~m"exhaustive, (pon daiminkan kakan):-1, koutsu:4, (any@winning_tile):0, pair:1"
 
 define_const closed_hand, has_no_call_named("chii", "pon", "daiminkan", "kakan")
 
@@ -99,30 +87,11 @@ define_yaku yaku, "All Triplets", 1, match(["hand", "calls", "winning_tile"], ~m
 define_yaku yaku, "Three Concealed Triplets", 1,
      (won_by_draw and match(["hand", "calls", "winning_tile"], ["sanankou_tsumo"]))
   or (not_won_by_draw and match(["hand", "calls", "winning_tile"], ["sanankou_ron"]))
-define_yaku yaku, "White Dragon", 1, match(["hand", "calls", "winning_tile"], ~m"exhaustive, haku:1, mentsu:3, pair:1")
-define_yaku yaku, "Green Dragon", 1, match(["hand", "calls", "winning_tile"], ~m"exhaustive, hatsu:1, mentsu:3, pair:1")
-define_yaku yaku, "Red Dragon", 1, match(["hand", "calls", "winning_tile"], ~m"exhaustive, chun:1, mentsu:3, pair:1")
 define_yaku yaku, "Little Three Dragons", 3, match(["hand", "calls", "winning_tile"], ~m"(haku hatsu chun):2, (haku_pair hatsu_pair chun_pair):1")
 define_yaku yaku, "All Simples", 1, winning_hand_consists_of("2m","3m","4m","5m","6m","7m","8m","2p","3p","4p","5p","6p","7p","8p","2s","3s","4s","5s","6s","7s","8s")
 
-# prevalent and seat winds
-def add_scoring_attrs do
-  if round_wind_is("east") do add_attr(["hand", "calls", "winning_tile"], ["_prevalent"], ["1z"]) end
-  if round_wind_is("south") do add_attr(["hand", "calls", "winning_tile"], ["_prevalent"], ["2z"]) end
-  if round_wind_is("west") do add_attr(["hand", "calls", "winning_tile"], ["_prevalent"], ["3z"]) end
-  if round_wind_is("north") do add_attr(["hand", "calls", "winning_tile"], ["_prevalent"], ["4z"]) end
-  if seat_is("east") do add_attr(["hand", "calls", "winning_tile"], ["_seat"], ["1z"]) end
-  if seat_is("south") do add_attr(["hand", "calls", "winning_tile"], ["_seat"], ["2z"]) end
-  if seat_is("west") do add_attr(["hand", "calls", "winning_tile"], ["_seat"], ["3z"]) end
-  if seat_is("north") do add_attr(["hand", "calls", "winning_tile"], ["_seat"], ["4z"]) end
-end
-define_set prevalent_wind, ~s"0@prevalent 0@prevalent 0@prevalent"
-define_set seat_wind, ~s"0@seat 0@seat 0@seat"
-define_yaku yaku, "Prevalent Wind", 1, match(["hand", "calls", "winning_tile"], ~m"exhaustive, prevalent_wind:1, mentsu:3, pair:1")
-define_yaku yaku, "Seat Wind", 1, match(["hand", "calls", "winning_tile"], ~m"exhaustive, seat_wind:1, mentsu:3, pair:1")
-
 # outside hand
-apply append, "functions.add_scoring_attrs" do
+apply set_append, "functions.add_scoring_attrs" do
   add_attr(["hand", "calls", "winning_tile"], ["_yaochuu"], ["yaochuuhai"])
 end
 define_set yaochuu_l, ~s"0@yaochuu 1 2"
@@ -132,11 +101,11 @@ define_set yaochuu_pair, ~s"0@yaochuu 0@yaochuu"
 define_match chanta, ~m"exhaustive, (yaochuu_l yaochuu_r yaochuu_t):4, yaochuu_pair:1" 
 define_yaku yaku, "Outside Hand", 1, match(["hand", "calls", "winning_tile"], ["chanta"])
 
-define_yaku yaku, "All Terminals and Honors", 1, winning_hand_consists_of("1m","9m","1p","9p","1s","9s","1z","2z","3z","4z","0z","6z","7z")
+define_yaku yaku, "All Terminals and Honors", 1, winning_hand_consists_of("1m","9m","1p","9p","1s","9s","1z","2z","3z","4z","5z","6z","7z")
 define_yaku yaku, "Half Flush", 1,
-     winning_hand_consists_of("1m","2m","3m","4m","5m","6m","7m","8m","9m","1z","2z","3z","4z","0z","6z","7z")
-  or winning_hand_consists_of("1p","2p","3p","4p","5p","6p","7p","8p","9p","1z","2z","3z","4z","0z","6z","7z")
-  or winning_hand_consists_of("1s","2s","3s","4s","5s","6s","7s","8s","9s","1z","2z","3z","4z","0z","6z","7z")
+     winning_hand_consists_of("1m","2m","3m","4m","5m","6m","7m","8m","9m","1z","2z","3z","4z","5z","6z","7z")
+  or winning_hand_consists_of("1p","2p","3p","4p","5p","6p","7p","8p","9p","1z","2z","3z","4z","5z","6z","7z")
+  or winning_hand_consists_of("1s","2s","3s","4s","5s","6s","7s","8s","9s","1z","2z","3z","4z","5z","6z","7z")
 define_yaku yaku, "Out on a Replacement", 1, status("kan") or status("flower")
 define_yaku yaku, "Robbing the Kong", 1, won_by_call
 define_yaku yaku, "Last Tile Draw", 1, no_tiles_remaining and won_by_draw
@@ -159,21 +128,16 @@ define_yaku yaku, "Full Flush", 4,
 define_yaku yaku, "All Flowers", 4, match(["flowers"], ~m"1f:1, 2f:1, 3f:1, 4f:1")
 define_yaku yaku, "All Seasons", 4, match(["flowers"], ~m"1g:1, 2g:1, 3g:1, 4g:1")
 
-
-
 define_yaku yakuman, "Blessing of Heaven", 1, status("first_turn") and won_by_draw and seat_is("east")
 define_yaku yakuman, "Blessing of Earth", 1, status("first_turn") and won_by_draw and not_seat_is("east")
-define_yaku yakuman, "Four Concealed Triplets", 1,
-     (won_by_draw and match(["hand", "calls", "winning_tile"], ["suuankou_tsumo"]))
-  or (not_won_by_draw and match(["hand", "calls", "winning_tile"], ["suuankou_ron"]))
 define_yaku yakuman, "Four Kongs", 1, match(["calls"], ~m"(daiminkan ankan kakan):4")
 define_yaku yakuman, "All Terminals", 1, winning_hand_consists_of("1m","9m","1p","9p","1s","9s")
-define_yaku yakuman, "All Honors", 1, winning_hand_consists_of("1z","2z","3z","4z","0z","6z","7z")
+define_yaku yakuman, "All Honors", 1, winning_hand_consists_of("1z","2z","3z","4z","5z","6z","7z")
 define_yaku yakuman, "Thirteen Orphans", 1, match(["hand", "winning_tile"], ~m"orphans_all:1")
 define_yaku yakuman, "Nine Gates", 1, match(["hand", "winning_tile"], ~m"chuurenpoutou:1")
-define_yaku yakuman, "Big Three Dragons", 1, match(["hand", "calls", "winning_tile"], ["daisangen"])
-define_yaku yakuman, "Little Four Winds", 1, match(["hand", "calls", "winning_tile"], ["shousuushii"])
-define_yaku yakuman, "Big Four Winds", 1, match(["hand", "calls", "winning_tile"], ["daisuushii"])
+define_yaku yakuman, "Big Three Dragons", 1, match(["hand", "calls", "winning_tile"], ~m"unique, (haku hatsu chun):3")
+define_yaku yakuman, "Small Four Winds", 1, match(["hand", "calls", "winning_tile"], ~m"unique, (ton nan shaa pei):3, (ton_pair nan_pair shaa_pair pei_pair):1")
+define_yaku yakuman, "Big Four Winds", 1, match(["hand", "calls", "winning_tile"], ~m"unique, (ton nan shaa pei):4")
 define_yaku yakuman, "Plucking the Moon from the Bottom of the Sea", 1, no_tiles_remaining and won_by_draw and match(["winning_tile"], ~m"1p:1")
 define_yaku yakuman, "Gathering the Plum Blossom from the Roof", 1, status("kan") and match(["winning_tile"], ~m"5p:1")
 define_yaku yakuman, "Scratching a Carrying-Pole", 1, won_by_call and match(["winning_tile"], ~m"2s:1")
@@ -188,7 +152,6 @@ define_yaku_precedence "After Multiple Kongs", ["After a Kong"]
 define_yaku_precedence "Full Flush", ["Half Flush"]
 define_yaku_precedence "Big Four Winds", ["Small Four Winds"]
 define_yaku_precedence "Big Three Dragons", ["Small Three Dragons"]
-define_yaku_precedence "Blessing of Earth", ["Blessing of Man"]
 define_yaku_precedence "Four Concealed Triplets", ["All Triplets"]
 define_yaku_precedence "All Honours", ["Round Wind", "Seat Wind", "All Triplets", "Half Flush", "All Terminals and Honors"]
 
@@ -221,7 +184,7 @@ set score_calculation, %{
 
 define play_restriction, "flower", true
 
-define_const calls_fu, %{pon: 2, ankan: 16, daiminkan: 8, kakan: 8, flower: 2}
+define_const calls_fu, %{pon: 2, ankan: 16, daiminkan: 8, kakan: 8, flower: 2, start_flower: 2}
 define_const winning_groups_fu, [
   # kanchan
   %{groups: ~s"-1 0@winning_tile 1", value: 2},
@@ -238,7 +201,7 @@ define_const winning_groups_fu, [
   %{groups: ~s"0@yaochuu 0@yaochuu 0@winning_tile&tsumo", value: 8},
   # tanki
   %{groups: ~s"0 0@winning_tile", value: 2},
-  %{groups: ~s"0@prevalent 0@winning_tile | 0@seat 0@winning_tile | 0z 0z@winning_tile | 6z 6z@winning_tile | 7z 7z@winning_tile", value: 4},
+  %{groups: ~s"0@prevalent 0@winning_tile | 0@seat 0@winning_tile | 5z 5z@winning_tile | 6z 6z@winning_tile | 7z 7z@winning_tile", value: 4},
   %{groups: ~s"0@prevalent&seat 0@winning_tile", value: 6}
 ]
 define_const groups_fu, [
@@ -247,11 +210,11 @@ define_const groups_fu, [
   %{groups: ~s"0@yaochuu 0@yaochuu 0@yaochuu", value: 8},
   # pair
   %{groups: ~s"0 0"},
-  %{groups: ~s"0@prevalent 0@prevalent | 0@seat 0@seat | 0z 0z | 6z 6z | 7z 7z", value: 2},
+  %{groups: ~s"0@prevalent 0@prevalent | 0@seat 0@seat | 5z 5z | 6z 6z | 7z 7z", value: 2},
   %{groups: ~s"0@prevalent&seat 0@prevalent&seat", value: 4}
 ]
 
-apply append, "functions.add_scoring_attrs" do
+apply set_append, "functions.add_scoring_attrs" do
   add_attr(["hand", "calls", "winning_tile"], ["_terminal"], ["terminal"])
   add_attr(["hand", "calls", "winning_tile"], ["_tanyao"], ["tanyaohai"])
   # tag winning tile with some attributes
@@ -311,6 +274,9 @@ on after_turn_change do
 end
 
 on after_call do
+  if not_last_call_is("start_flower") do
+    unset_status("first_turn")
+  end
   if match(["last_call"], ~m"(haku hatsu chun):1") and match(["calls"], ~m"haku:1, hatsu:1, chun:1") do
     as callee do
       set_status("pao")
@@ -323,7 +289,7 @@ on after_call do
   end
 end
 
-on before_win do
+on before_scoring do
   set_counter("dealer_repeats", "honba")
   add_scoring_attrs
   calculate_fu
@@ -354,6 +320,7 @@ define_button start_no_flower,
   do
     big_text("No Flowers")
     set_status("no_flowers")
+    move_tiles("draw", "hand")
     advance_turn
     recalculate_buttons
   end
@@ -412,7 +379,8 @@ define_button ankan,
   show_when: status_missing("match_start")
     and our_turn
     and not_no_tiles_remaining
-    and has_draw
+    and not_just_discarded
+    and not_just_called
     and self_call_available,
   call: [[0, 0, 0]]
   do
@@ -430,9 +398,11 @@ define_button kakan,
   show_when: status_missing("match_start")
     and our_turn
     and not_no_tiles_remaining
-    and has_draw
+    and not_just_discarded
+    and not_just_called
     and can_upgrade_call,
-  call: [[0, 0, 0]]
+  call: [[0, 0, 0]],
+  upgrades: "pon"
   do
     big_text("Kong")
     upgrade_call

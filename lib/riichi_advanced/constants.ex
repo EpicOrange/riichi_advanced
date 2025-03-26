@@ -340,6 +340,24 @@ defmodule RiichiAdvanced.Constants do
       display_name: "Speed Mahjong",
       ruleset: "riichi",
       mods: ["kan", %{name: "yaku/riichi", config: %{bet: 1000, drawless: false}}, "speed"]
+    },
+    "hk" => %{
+      display_name: "Hong Kong Old Style",
+      ruleset: "hk",
+      mods: [
+        "global_mods", "framed_5z",
+        "yaku/yakuhai",
+        %{name: "yaku/suuankou", config: %{list: "yaku", name: "Four Concealed Triplets", value: 8}}
+      ]
+    },
+    "classical" => %{
+      display_name: "Chinese Classical",
+      ruleset: "classical",
+      mods: [
+        "global_mods", "framed_5z",
+        "yaku/yakuhai",
+        %{name: "yaku/suuankou", config: %{list: "yakuman", name: "Four Concealed Triplets", value: 1}}
+      ]
     }
   }
 
