@@ -1,0 +1,3 @@
+on after_start do
+  unset_status_all("match_start", "first_charleston", "charleston_right", "heavenly_available")
+end

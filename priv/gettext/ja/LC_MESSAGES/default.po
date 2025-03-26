@@ -1,0 +1,1819 @@
+# # "msgid"s in this file come from POT (.pot) files.
+# ##
+# ## Do not add, change, or remove "msgid"s manually here as
+# ## they're tied to the ones in the corresponding POT file
+# ## (with the same domain).
+# ##
+# ## Use "mix gettext.extract --merge" or "mix gettext.merge"
+# ## to merge POT files into PO files.
+msgid ""
+msgstr ""
+"Project-Id-Version: \n"
+"POT-Creation-Date: \n"
+"PO-Revision-Date: \n"
+"Last-Translator: \n"
+"Language-Team: \n"
+"Language: ja\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=1; plural=0;\n"
+"X-Generator: Poedit 3.5\n"
+
+msgid "&lt;disconnected&gt;"
+msgstr "&lt;バラバラ&gt;"
+
+msgid "(ongoing)"
+msgstr "（進行中）"
+
+msgid "(reconnect?)"
+msgstr "（再接続？）"
+
+msgid "(with AI)"
+msgstr "（AI搭載）"
+
+msgid ","
+msgstr "、"
+
+msgid "/"
+msgstr "/"
+
+msgid "1 Han"
+msgstr "1飜"
+
+msgid "123"
+msgstr "１２３"
+
+msgid "147"
+msgstr "１４７"
+
+msgid "16-tile mahjong where all honor tiles are flower tiles."
+msgstr "字牌がすべて花牌になる16枚麻雀です。"
+
+msgid "16-tile mahjong where you can form dragon and wind sequences."
+msgstr "字牌で順子（シュンツ）を作れる16枚麻雀です。"
+
+msgid "16-tile mahjong with a version of dora that doesn't give you han, but becomes a unique winning condition by itself."
+msgstr "ドラが翻にならず、特別な和了条件となる16枚麻雀です。"
+
+msgid "16-tile mahjong with riichi mechanics."
+msgstr "リーチのある16枚麻雀です。"
+
+msgid "19"
+msgstr "１９"
+
+msgid "2 Han"
+msgstr "2飜"
+
+msgid "258"
+msgstr "２５８"
+
+msgid "3 Han"
+msgstr "3飜"
+
+msgid "3 han 60 fu and 4 han 30 fu are worth mangan."
+msgstr "3翻60符と4翻30符は満貫になります。"
+
+msgid "369"
+msgstr "３６９"
+
+msgid "37"
+msgstr "３７"
+
+msgid "4 Han"
+msgstr "4飜"
+
+msgid "456"
+msgstr "４５６"
+
+msgid "46"
+msgstr "４６"
+
+msgid "5 Han"
+msgstr "5飜"
+
+msgid "789"
+msgstr "７８９"
+
+msgid "A Space Mahjong variant with mixed triplets, more yaku, and more calls."
+msgstr "対子・刻子が混ざるセット、追加役、鳴きの多い宇宙麻雀のバリアントです。"
+
+msgid "A pair of round+seat winds is worth 4 fu instead of 2 fu."
+msgstr "場風と自風の対子は2符ではなく4符になります。"
+
+msgid "A round repeats if the dealer is tenpai at draw."
+msgstr "流局時に親がテンパイなら連荘します。"
+
+msgid "A round repeats if the dealer wins."
+msgstr "親が和了すると連荘します。"
+
+msgid "Abortive Draws"
+msgstr "流局"
+
+msgid "About"
+msgstr "について"
+
+msgid "Add some UI that shows waits."
+msgstr "待ち牌を表示するUIを追加します。"
+
+msgid "Adds 10m, 10p, and 10s."
+msgstr "萬子・筒子・索子に10を追加します（10m、10p、10s）。"
+
+msgid "Adds 10m, 10p, and 10s. Changes dora accordingly (if dora is enabled). Tanyao now allows nines, and chanta/junchan/honroutou require tens instead. 13 Orphans now requires the ten instead of the nine of each suit. Ittsu allows 23456789T."
+msgstr "萬子・筒子・索子に10を追加します（10m、10p、10s）。ドラが有効な場合は、対応するドラ表示も変更されます。タンヤオは9を含めることができるようになり、チャンタ・ジュンチャン・ホンローは代わりに10が必要になります。国士無双は各色の9の代わりに10が必要になります。一通は23456789十でも成立します。"
+
+msgid "Adds a copy of the 123 joker, which looks like 小 and can be used as any 1, 2, or 3."
+msgstr "1・2・3として使えるジョーカー牌「小」を1枚追加します。"
+
+msgid "Adds a copy of the 147 joker, which can be used as any 1, 4, or 7."
+msgstr "1・4・7として使えるジョーカー牌を1枚追加します。"
+
+msgid "Adds a copy of the 19 joker, which can be used as any 1 or 9."
+msgstr "1または9として使えるジョーカー牌を1枚追加します。"
+
+msgid "Adds a copy of the 258 joker, which can be used as any 2, 5, or 8."
+msgstr "2・5・8として使えるジョーカー牌を1枚追加します。"
+
+msgid "Adds a copy of the 369 joker, which can be used as any 3, 6, or 9."
+msgstr "3・6・9として使えるジョーカー牌を1枚追加します。"
+
+msgid "Adds a copy of the 37 joker, which can be used as any 3 or 7."
+msgstr "3または7として使えるジョーカー牌を1枚追加します。"
+
+msgid "Adds a copy of the 456 joker, which looks like 中 and can be used as any 4, 5, or 6. Don't confuse it with the red dragon!"
+msgstr "4・5・6として使えるジョーカー牌「中」を1枚追加します。赤ドラと間違えないように注意！"
+
+msgid "Adds a copy of the 46 joker, which can be used as any 4 or 6."
+msgstr "4または6として使えるジョーカー牌を1枚追加します。"
+
+msgid "Adds a copy of the 789 joker, which looks like 大 and can be used as any 7, 8, or 9."
+msgstr "7・8・9として使えるジョーカー牌「大」を1枚追加します。"
+
+msgid "Adds a copy of the even joker, which looks like 雙 and can be used as any even number tile."
+msgstr "偶数（2・4・6・8）として使えるジョーカー牌「雙」を1枚追加します。"
+
+msgid "Adds a copy of the odd joker, which looks like 單 and can be used as any odd number tile."
+msgstr "奇数（1・3・5・7・9）として使えるジョーカー牌「單」を1枚追加します。"
+
+msgid "Adds a fifth copy of every standard tile."
+msgstr "すべての通常牌に5枚目を追加します。"
+
+msgid "Adds a fourth suit (stars). This suit does not form yaku. This mod is in beta because we should probably write some yaku for it."
+msgstr "第4のスート（星）を追加します。このスートでは役は成立しません。このMODはベータ版です（そのうち役を作るかもしれません）。"
+
+msgid "Adds a single manzu joker to the game. The manzu joker looks like 萬 and can represent any character tile."
+msgstr "萬子のジョーカー牌（「萬」）を1枚追加します。任意の萬子として扱えます。"
+
+msgid "Adds a single pinzu joker to the game. The pinzu joker looks like 筒 and can represent any character tile."
+msgstr "筒子のジョーカー牌（「筒」）を1枚追加します。任意の筒子として扱えます。"
+
+msgid "Adds a single souzu joker to the game. The souzu joker looks like 索 and can represent any character tile."
+msgstr "索子のジョーカー牌（「索」）を1枚追加します。任意の索子として扱えます。"
+
+msgid "Adds aka nines, worth 1 han each."
+msgstr "赤九を追加します。1枚につき1翻になります。"
+
+msgid "Adds aka ones, worth 1 han each."
+msgstr "赤一を追加します。1枚につき1翻になります。"
+
+msgid "Adds aka sevens, worth 1 han each."
+msgstr "赤七を追加します。1枚につき1翻になります。"
+
+msgid "Adds aka threes, worth 1 han each."
+msgstr "赤三を追加します。1枚につき1翻になります。"
+
+msgid "Adds eight jokers to the game. See the Vietnamese ruleset to learn how they work. Note that this mod adds a honors joker instead of a flower joker."
+msgstr "ジョーカー牌を8枚追加します。詳細はベトナムルールをご参照ください。このMODでは花牌の代わりに字牌ジョーカーが追加されます。"
+
+msgid "Adds the Chinese blue-framed white dragon as a fourth dragon tile (hakuban). Yaku treats it as an honor tile. Shousangen is reduced to 1 han (+2 from dragons) and Daisangen is reduced to 2 han (+3 from dragons). Adds Shousuugen (3 dragons + dragon pair) as yakuman and Daisuugen (4 dragons) as double yakuman. This mod is in beta because pao is not yet implemented for blue dragon."
+msgstr "中国風の青枠の白を第4の三元牌（白板）として追加します。役としては字牌として扱われます。小三元は1翻（＋三元牌2翻）、大三元は2翻（＋三元牌3翻）に調整されます。小数元（3種の三元牌＋対子）を役満、大全元（4種すべて）をダブル役満とします。このMODはベータ版です（青龍に対する包（パオ）は未実装です）。"
+
+msgid "Agarirenchan"
+msgstr "アガリ連荘"
+
+msgid "Agariyame"
+msgstr "アガリやめ"
+
+msgid "Aka"
+msgstr "赤ドラ"
+
+msgid "Aka 1"
+msgstr "赤ドラ１"
+
+msgid "Aka 3"
+msgstr "赤ドラ３"
+
+msgid "Aka 7"
+msgstr "赤ドラ７"
+
+msgid "Aka 9"
+msgstr "赤ドラ９"
+
+msgid "All Last doesn't repeat if the dealer is first place and wins."
+msgstr "オーラスで親がトップかつ和了した場合、連荘しません。"
+
+msgid "All Last doesn't repeat if the dealer is in first place and is tenpai at draw."
+msgstr "オーラスで親がトップかつテンパイだった場合、連荘しません。"
+
+msgid "Allow robbing ankans if in tenpai for kokushi musou."
+msgstr "国士無双のテンパイ時に限り、暗槓の槍槓を許可します。"
+
+msgid "American (2024 NMJL)"
+msgstr "アメリカン（2024 NMJL）"
+
+msgid "American Civil War"
+msgstr "南北戦争"
+
+msgid "American Mah-Jongg. Assemble hands with jokers, and declare other players' hands dead. Rules are slightly different from MJME (see rules page)."
+msgstr "アメリカン麻雀。ジョーカーを使って指定の手を揃え、他家の手を死に手にできます。MJMEとは若干ルールが異なります（詳細はルールページへ）。"
+
+msgid "Ankan"
+msgstr "暗槓"
+
+msgid "Ao"
+msgstr "青"
+
+msgid "Aotenjou"
+msgstr "青天井"
+
+msgid "At the end of the game, all leftover riichi sticks on the table are given to first place. (Otherwise they are lost.)"
+msgstr "ゲーム終了時、場に残っているリーチ棒はすべてトップに渡されます（通常は失われます）。"
+
+msgid "Australian"
+msgstr "オーストラリア"
+
+msgid "Back"
+msgstr "戻る"
+
+msgid "Baiman"
+msgstr "倍満"
+
+msgid "Basic flow of the game"
+msgstr "ゲームの基本的な流れ"
+
+msgid "Benikujaku"
+msgstr "紅孔雀"
+
+msgid "Bloody 30-Faan Jokers"
+msgstr "ブラッディ30ファーンジョーカーズ"
+
+msgid "Bloody end rules mahjong, with Vietnamese jokers, and somehow more yaku than MCR."
+msgstr "ブラッディ・エンドルールの麻雀。ベトナム式ジョーカーを使用し、なぜかMCRより多くの役があります。"
+
+msgid "Blue Dragon (beta)"
+msgstr "四元牌（ベータ）"
+
+msgid "Blue Tunnel"
+msgstr "青ノ洞門"
+
+msgid "Both East and West are round winds during East Round, and North and South during South Round. Similarly for West and North Rounds."
+msgstr "東場では東と西、南場では南と北が場風になります。"
+
+msgid "British"
+msgstr "イギリス"
+
+msgid "Button"
+msgstr "ボタン"
+
+msgid "Calling tiles"
+msgstr "呼び牌"
+
+msgid "Calls Are Forced"
+msgstr "鳴き強制"
+
+msgid "Cancel"
+msgstr "キャンセル"
+
+msgid "Cancellable Riichi"
+msgstr "リーチ取り消し可能"
+
+msgid "Changes all standard tiles to aka."
+msgstr "すべての数牌を赤牌に変更します。"
+
+msgid "Changsha"
+msgstr "長沙"
+
+msgid "Chankan"
+msgstr "槍槓"
+
+msgid "Chanta"
+msgstr "混全帯幺九"
+
+msgid "Chii"
+msgstr "吃"
+
+msgid "Chiihou"
+msgstr "地和"
+
+msgid "Chiishin Uushii"
+msgstr "七星無靠"
+
+msgid "Chiitoitsu"
+msgstr "七対子"
+
+msgid "Chiitoitsu now allows repeated pairs."
+msgstr "七対子で同じ対子を複数含めることができます。"
+
+msgid "Chinchii Toushii"
+msgstr "金鶏奪食"
+
+msgid "Chinese Classical"
+msgstr "中国古典"
+
+msgid "Chinitsu"
+msgstr "清一色"
+
+msgid "Chinpeikou"
+msgstr "清盃口"
+
+msgid "Chinroutou"
+msgstr "清老頭"
+
+msgid "Chinryuusou"
+msgstr "清緑色"
+
+msgid "Chintanfon"
+msgstr "清断紅"
+
+msgid "Chombo"
+msgstr "冲合"
+
+msgid "Choupaikou"
+msgstr "跳牌刻"
+
+msgid "Choupaikou etc."
+msgstr "跳牌刻など"
+
+msgid "Chousangen"
+msgstr "超三元"
+
+msgid "Chousankou"
+msgstr "頂三刻"
+
+msgid "Chousuushii"
+msgstr "超四喜"
+
+msgid "Chow"
+msgstr "吃"
+
+msgid "Chun"
+msgstr "役牌 中"
+
+msgid "Chuupin Raoyui"
+msgstr "九筒撈魚"
+
+msgid "Chuurenpoutou"
+msgstr "九蓮宝燈"
+
+msgid "Clear"
+msgstr "クリア"
+
+msgid "Close"
+msgstr "閉じる"
+
+msgid "Config"
+msgstr "設定"
+
+msgid "Copy log"
+msgstr "ログコピー"
+
+msgid "Cosmic Riichi"
+msgstr "コズミック・リーチ"
+
+msgid "Create a room"
+msgstr "部屋作成"
+
+msgid "Create and play your own custom ruleset."
+msgstr "独自のカスタムルールを作成してプレイできます。"
+
+msgid "Create your own tutorial!"
+msgstr "自分だけのチュートリアルを作ろう！"
+
+msgid "Created by Dani in their spare time."
+msgstr "ダニが余暇を利用して制作した。"
+
+msgid "Custom"
+msgstr "カスタム"
+
+msgid "Daichikurin"
+msgstr "大竹林"
+
+msgid "Daichisei"
+msgstr "大七星"
+
+msgid "Daisangen"
+msgstr "大三元"
+
+msgid "Daisharin"
+msgstr "大車輪"
+
+msgid "Daisharin etc."
+msgstr "大車輪など"
+
+msgid "Daisuurin"
+msgstr "大数隣"
+
+msgid "Daisuushii"
+msgstr "大四喜"
+
+msgid "Differences from four-player"
+msgstr "四人打ちとの違い"
+
+msgid "Disable double yakuman. Yakuman still stacks, but each yaku that typically awards double yakuman only awards one stack of yakuman."
+msgstr "ダブル役満を無効にします。役満は重複可能ですが、通常ダブル役満となる役も1つ分の役満として扱います。"
+
+msgid "Disable kazoe yakuman. 13+ han is worth sanbaiman."
+msgstr "数え役満を無効にします。13翻以上でも三倍満となります。"
+
+msgid "Disables the initial tile pass."
+msgstr "開始時の牌交換（パス）を無効にします。"
+
+msgid "Disallow any concealed kan while in riichi, not just ones that change your waits."
+msgstr "リーチ中は待ちが変わらなくても暗槓を禁止します。"
+
+msgid "Disallow open tanyao."
+msgstr "鳴きタンヤオを無効にします。"
+
+msgid "Disallow swap-calling."
+msgstr "喰い替え（スワップ）鳴きを禁止します。"
+
+msgid "Discard"
+msgstr "ロン"
+
+msgid "Discord"
+msgstr "ディスコード"
+
+msgid "Documentation"
+msgstr "ドキュメント"
+
+msgid "Dora"
+msgstr "ドラ"
+
+msgid "Dorahairi Chinroutou Chiitoitsu"
+msgstr "ドラ入り清老頭七対子"
+
+msgid "Double Riichi"
+msgstr "ダブル立直"
+
+msgid "Double Ron"
+msgstr "二人あがり"
+
+msgid "Double Round Wind"
+msgstr "ダブル場風"
+
+msgid "Double Wind 4 Fu"
+msgstr "役牌対子4符"
+
+msgid "Draw"
+msgstr "ツモ"
+
+msgid "Dutch"
+msgstr "オランダ語"
+
+msgid "Each tile in the wall is transparent and visible to all, except for one copy. Unflipped dora indicators are not visible."
+msgstr "牌山のすべての牌が透けて見える状態になりますが、各種類につき1枚だけは非公開です。裏返していないドラ表示牌は見えません。"
+
+msgid "Empty"
+msgstr "空"
+
+msgid "Enable 4 kan abortive draw."
+msgstr "四槓流れ（4回のカンで流局）を有効にします。"
+
+msgid "Enable 4 riichi abortive draw."
+msgstr "四家立直流れ（4人リーチで流局）を有効にします。"
+
+msgid "Enable 4 wind abortive draw."
+msgstr "四風連打流れ（4人が同じ風牌を切った場合の流局）を有効にします。"
+
+msgid "Enable 9 distinct terminal/honor abortive draw."
+msgstr "九種九牌流れ（第一ツモで9種以上の么九牌があるときの流局）を有効にします。"
+
+msgid "Enable busting. Once anyone's points is reduced below zero, the game ends."
+msgstr "トビ終了（持ち点が0点未満になるとゲーム終了）を有効にします。"
+
+msgid "Enable head bump. In case of multiple ron, only the person closest in turn order gets the win."
+msgstr "頭ハネ（複数ロンの際、上家から最も近いプレイヤーのみが和了）を有効にします。"
+
+msgid "Enable kan. If you have four of a tile in hand, you may create a concealed kan (ankan). If you have three of a tile and someone discards the fourth, you may create an open kan (daiminkan). If you have called a triplet and draw the fourth tile, you may create an added kan (kakan). Kan calls count as triplets for the purposes of winning and scoring, but they award 4x triplet fu. In all three cases, after declaring kan you draw a replacement tile from the dead wall. Winning on this replacement tile awards the rinshan yaku (1 han). One may also call ron on a tile added to an added kan (kakan) for the chankan yaku (1 han). Having three kans is 2 han (sankantsu), and having four is yakuman. There can be at most four kans in a single game."
+msgstr "カンを有効にします。 同じ牌を4枚持っている場合は暗槓（アンカン）、3枚持っていて他家が4枚目を捨てた場合は大明槓（ダイミンカン）、明刻を鳴いた後に4枚目をツモった場合は加槓（カカン）としてカンが可能です。 カンは三暗刻のように刻子として扱われ、符計算では刻子の4倍の符になります。カン後は嶺上牌から1枚ツモります。この牌で和了すれば嶺上開花（1翻）となります。加槓に対しては槍槓（チャンカン）でロンが可能です（三家和無効時を除く）。 また、カンを3回成立させれば三槓子（2翻）、4回で四槓子（役満）となります。ゲーム中の最大カン回数は4回です。"
+
+msgid "Enable nagashi mangan. When you discards are all terminals and honors at exhaustive draw, and none of your discards have been called, then you are paid mangan tsumo at draw."
+msgstr "流し満貫を有効にします。流局時、捨て牌がすべて么九牌で、かつ誰にも鳴かれていない場合、満貫ツモ扱いとなります。"
+
+msgid "Enable oka. Everyone antes the given amount, and the total is awarded to first place at the end of the game."
+msgstr "オカ（トップ賞）を有効にします。各プレイヤーが設定された点数を供託し、ゲーム終了時にトップがその合計を獲得します。"
+
+msgid "Enable riichi declarations. When you are tenpai with at least 1000 points (and it is not your last discard), you may declare riichi before discarding. If the discard passes, you automatically bet 1000 and can no longer change your hand. If you win under this condition, you get the riichi yaku (1 han). If you riichi on your first discard (calls invalidate), this is called Double Riichi and worth 2 han."
+msgstr "リーチを有効にします。テンパイ時に1000点以上所持していれば、打牌前にリーチを宣言できます。打牌が通れば自動的に1000点を供託し、手牌の変更はできなくなります。この状態で和了すればリーチ（1翻）が付きます。最初の捨て牌でリーチした場合（副露なし）はダブルリーチ（2翻）になります。"
+
+msgid "Enable triple ron abortive draw."
+msgstr "三家和流れ（3人ロンが発生した場合の流局）を有効にします。"
+
+msgid "Enable uma. At the end of the game, points are awarded or deducted based on placement."
+msgstr "ウマを有効にします。ゲーム終了時、最終順位に応じて得点が加算・減算されます。"
+
+msgid "Enables aka dora (red fives), worth 1 han each."
+msgstr "赤ドラ（赤五）を有効にします。1翻ずつの価値があります。"
+
+msgid "Enables ao dora (blue fives), worth 2 han each."
+msgstr "青ドラ（青五）を有効にします。1枚で2翻になります。"
+
+msgid "Enables dora flip on kan."
+msgstr "カン時のドラ追加を有効にします。"
+
+msgid "Enables dora."
+msgstr "ドラを有効にします。"
+
+msgid "Enables honba."
+msgstr "本場（連荘による加点）を有効にします。"
+
+msgid "Enables ippatsu. \\\"One-shot\\\". 1 han if you win before or during your next draw after riichi. Calls invalidate."
+msgstr "一発（リーチ後の最初のツモまたはロンでの和了）を有効にします。副露すると無効になります。"
+
+msgid "Enables kin dora (gold fives), worth 3 han each."
+msgstr "金ドラ（黄金の五）を有効にします。1枚で3翻になります。"
+
+msgid "Enables ura dora."
+msgstr "裏ドラを有効にします。"
+
+msgid "Enter"
+msgstr "ゲームに入る"
+
+msgid "Enter room code:"
+msgstr "ルームコードを入力："
+
+msgid "Entered a %{ruleset} game, room code %{room_code}"
+msgstr "%{ruleset}戦に参加（ルームコード：%{room_code}）"
+
+msgid "Entered a %{ruleset} game, room code %{room_code} with mods %{mods}"
+msgstr "%{ruleset}戦に参加（ルームコード：%{room_code}、MOD：%{mods}）"
+
+msgid "Entered lobby for variant %{ruleset}"
+msgstr "変種%{ruleset}のロビーに入った。"
+
+msgid "Entered room %{room_code} for variant %{ruleset}"
+msgstr "%{ruleset}のルールでルーム%{room_code}に参加"
+
+msgid "Even"
+msgstr "偶数"
+
+msgid "Everyone plays with tiles shown."
+msgstr "全員の手牌が公開された状態でプレイします。"
+
+msgid "Fifth Tile"
+msgstr "牌5枚化"
+
+msgid "Filipino"
+msgstr "フィリピン語"
+
+msgid "First Gets Riichi Sticks"
+msgstr "リーチ棒をトップ取り"
+
+msgid "Flip kan dora immediately after daiminkan and kakan."
+msgstr "大明槓・加槓の直後にカンドラを即表示します。"
+
+msgid "For more information, drop a message in our Discord!"
+msgstr "詳しくはDiscordにメッセージをください！"
+
+msgid "Forces you to make all available calls, including riichi (if enabled). You still get to choose if multiple calls are available."
+msgstr "鳴きやリーチ（有効な場合）など、可能な行動はすべて強制されます。ただし、複数の選択肢がある場合は選べます。"
+
+msgid "French"
+msgstr "フランス語"
+
+msgid "Fu"
+msgstr "符"
+
+msgid "Fuukasetsugetsu"
+msgstr "風花雪月"
+
+msgid "Fuzhou"
+msgstr "福州"
+
+msgid "Galaxy Mahjong"
+msgstr "銀河麻将"
+
+msgid "Game ended after three winners"
+msgstr "三人の勝者が決まったためゲーム終了"
+
+msgid "Game ended by abortive draw: (%{draw_name})"
+msgstr "流局によりゲーム終了: (%{draw_name})"
+
+msgid "Game ended by exhaustive draw"
+msgstr "流局によりゲーム終了"
+
+msgid "German"
+msgstr "ドイツ語"
+
+msgid "Golden Chun"
+msgstr "金の中"
+
+msgid "Golden Gate Bridge"
+msgstr "金門橋"
+
+msgid "Haitei"
+msgstr "海底摸月"
+
+msgid "Haku"
+msgstr "役牌 白"
+
+msgid "Han"
+msgstr "飜"
+
+msgid "Haneman"
+msgstr "跳満"
+
+msgid "Hatsu"
+msgstr "役牌 發"
+
+msgid "Head Bump"
+msgstr "頭跳ね"
+
+msgid "Hefei"
+msgstr "合肥"
+
+msgid "Hit the back button to return to the main menu."
+msgstr "戻るボタンでメインメニューに戻る。"
+
+msgid "Honba"
+msgstr "本場"
+
+msgid "Hong Kong"
+msgstr "香港"
+
+msgid "Hong Kong Old Style mahjong. Three point minimum, everyone pays for a win, and win instantly if you have seven flowers."
+msgstr "香港オールドスタイル麻雀。最低3点で和了可能、和了時は全員から支払いが発生します。花牌が7枚あると即和了になります。"
+
+msgid "Honitsu"
+msgstr "混一色"
+
+msgid "Honors Chiitoitsu"
+msgstr "字牌七対子"
+
+msgid "Honroutou"
+msgstr "混老頭"
+
+msgid "Houtei"
+msgstr "河底撈魚"
+
+msgid "Hyakuman Goku"
+msgstr "百万石"
+
+msgid "If someone calls kan on your discard and wins off the kan draw, you are responsible for the full payment."
+msgstr "自分の捨て牌でカンされ、その嶺上牌で和了された場合、全額責任払いになります。"
+
+msgid "If you deal the last dragon called for a daisangen hand, or the last wind called for a daisuushii hand, you are responsible for the yakuman payment if they tsumo, or half of the payment if they ron off someone else."
+msgstr "大三元の最後の三元牌、または大四喜の最後の風牌を鳴かせた場合、ツモなら役満の全額責任払い、ロンなら半額を支払います。"
+
+msgid "If you deal the last kan tile called for a suukantsu hand, you are responsible for the yakuman payment if they tsumo, or half the payment if they ron off someone else."
+msgstr "四槓子の最後の槓牌を鳴かせた場合、ツモなら役満の全額責任払い、ロンなら半額を支払います。"
+
+msgid "If you do not win any hands by the end of the game, you pay each player a penalty."
+msgstr "ゲーム終了時に一度も和了していない場合、他のプレイヤー全員にペナルティを支払います。"
+
+msgid "Iipeikou"
+msgstr "一盃口"
+
+msgid "Iipin Mouyue"
+msgstr "一筒摸月"
+
+msgid "Immediate Kan Dora"
+msgstr "カン即ドラ表示"
+
+msgid "In each round, the player whose wall is broken is given the wareme marker. If the wareme player wins, they are paid double the amount of points. If the wareme player has to pay points, they pay double the amount of points. Riichi sticks and honba payments are not affected."
+msgstr "毎局、山が割れた位置のプレイヤーが割れ目になります。割れ目が和了した場合は得点2倍、支払い時も2倍になります。リーチ棒や本場の支払いには影響しません。"
+
+msgid "Includes Tianjin mahjong joker tiles, but adds more yaku and played with a 4-tai minimum."
+msgstr "天津麻雀のジョーカー牌を採用し、役を追加した4台以上のルールでプレイします。"
+
+msgid "Intro to cosmic mahjong"
+msgstr "コズミック・リーチ入門"
+
+msgid "Intro to galaxy mahjong"
+msgstr "銀河麻雀入門"
+
+msgid "Intro to space mahjong"
+msgstr "宇宙麻雀入門"
+
+msgid "Ippatsu"
+msgstr "一発"
+
+msgid "Ishino Uenimo Sannen"
+msgstr "石の上にも三年"
+
+msgid "Isshoku Sanjun"
+msgstr "一色三順"
+
+msgid "Isshoku Yonjun"
+msgstr "一色四順"
+
+msgid "It's All Aka?"
+msgstr "全部赤ドラ！？"
+
+msgid "Italian"
+msgstr "イタリア"
+
+msgid "Ittsu"
+msgstr "一気通貫"
+
+msgid "Ittsu Chanta"
+msgstr "一気通貫全帯么九"
+
+msgid "Ittsu Junchan"
+msgstr "純一気通貫全帯么九"
+
+msgid "Join private room"
+msgstr "個室に入る"
+
+msgid "Jokers"
+msgstr "ジョーカー牌"
+
+msgid "Junchan"
+msgstr "純全帯幺九"
+
+msgid "Junsei Chuurenpoutou"
+msgstr "純正九蓮宝燈"
+
+msgid "Junsei Ryuuiisou"
+msgstr "純正緑一色"
+
+msgid "Just Like Modded Minecraft"
+msgstr "MOD盛りマイクラ風"
+
+msgid "Kachoufuugetsu"
+msgstr "花鳥風月"
+
+msgid "Kan"
+msgstr "槓"
+
+msgid "Kanburi"
+msgstr "槓振り"
+
+msgid "Kandora"
+msgstr "カンドラ"
+
+msgid "Kansai Chiitoitsu"
+msgstr "関西チートイツ"
+
+msgid "Kansai Sanma"
+msgstr "関西三麻"
+
+msgid "Kazoe Yakuman"
+msgstr "数え役満"
+
+msgid "Ketsupaihou"
+msgstr "欠牌和"
+
+msgid "Kin"
+msgstr "金"
+
+msgid "Kinkei Dokuritsu"
+msgstr "金鶏独立"
+
+msgid "Kiriage Mangan"
+msgstr "切り上げ満貫"
+
+msgid "Kokuiisou"
+msgstr "黒一色"
+
+msgid "Kokushi Chankan"
+msgstr "国士無双の槍槓あり"
+
+msgid "Kokushi Musou"
+msgstr "国士無双"
+
+msgid "Kokushi Musou Juusan Menmachi"
+msgstr "国士無双十三面待ち"
+
+msgid "Kong"
+msgstr "槓"
+
+msgid "Korean"
+msgstr "韓国"
+
+msgid "Kouitten"
+msgstr "紅一点"
+
+msgid "Kouittenrin"
+msgstr "紅一点輪"
+
+msgid "Kuikae Nashi"
+msgstr "喰い替えなし"
+
+msgid "Kuitan Nashi"
+msgstr "喰い断なし"
+
+msgid "Kyandonhou"
+msgstr "鏡同和"
+
+msgid "Kyuushu Kyuuhai"
+msgstr "九種九牌"
+
+msgid "Learn"
+msgstr "学ぶ"
+
+msgid "Like Riichi but with a two-han minimum. There is also a side race to see who reaches three wins first."
+msgstr "リーチ麻雀に似ていますが、和了には2翻以上が必要です。さらに、先に3回和了したプレイヤーが勝利するサイドレースがあります。"
+
+msgid "Limit the game to the East round only."
+msgstr "東場のみでゲームを終了します。"
+
+msgid "Loading..."
+msgstr "読み込み中..."
+
+msgid "Lobby"
+msgstr "ロビー"
+
+msgid "Local yaku. 1 han for having a three-color straight, like 123m 456p 789s. 2 han if closed."
+msgstr "123m 456p 789s のような三色の順子で1翻。門前なら2翻。"
+
+msgid "Local yaku. 1 han on top of chiitoitsu if three of your pairs are dragons, or if four of your pairs are winds. If you have all seven honor pairs? Double yakuman."
+msgstr "公開されている牌が3枚ある牌で嵌張（24, 57）または辺張（12, 89）待ちで和了ると1翻（例：12333で3待ちは対象外）。"
+
+msgid "Local yaku. 2 han for having the pattern 111333555 (choupaikou), 111444777 (sujipaikou), or 111555999 (chousankou) in one suit. The pattern does not have to start with 1, but cannot wrap. 1 han if instead, all three triplets are in different suits."
+msgstr "リーチ宣言牌で和了ると1翻。"
+
+msgid "Local yaku. 2 han if you have ittsu, and (except the 456) the rest of your hand is chanta (or junchan, in which case it's 3 han). +1 han if closed. Does not stack with ittsu."
+msgstr "カンをしたプレイヤーの捨て牌で和了ると1翻。"
+
+msgid "Local yaku. 3 han on top of ryanpeikou if your ryanpeikou sequences are all the same numbers (may be different suits), like 112233 112233. No restriction on the pair, so you can have an honor pair (despite 'chin' being in the name)."
+msgstr "4回副露して単騎待ちで和了ると1翻（暗カンも可）。"
+
+msgid "Local yaku. If you have 4 aka, 2 han on top of aka. This counts as a yaku."
+msgstr "七対子に加え、3組が三元牌または4組が風牌の場合1翻。7組全てが字牌ならダブル役満。"
+
+msgid "Local yaku. Instant mangan/yakuman if you win off the first tile someone dropped before your first draw. Calls invalidate."
+msgstr "一気通貫の完成牌（5）で和了ると1翻追加。"
+
+msgid "Local yaku. Mangan if you have chiitoitsu composed of each terminal tile with the seventh pair being dora."
+msgstr "風牌の刻子を4組作ると2翻。"
+
+msgid "Local yaku. Mangan if you have honitsu with dragon yakuhai matching the suit: manzu with chun, pinzu with hatsu (not a typo), or souzu with haku (also not a typo)."
+msgstr "三色同刻のうち1組が対子の場合2翻。"
+
+msgid "Local yaku. \\\"Catching Fish from the Bottom of the River\\\". Mangan if you win with houtei (not haitei) on the 9p (9 circles)."
+msgstr "111333555（超牌効）、111444777（数字牌効）、111555999（超三刻）のような連続しない刻子パターンで2翻。異なる種類の刻子3組なら1翻。"
+
+msgid "Local yaku. \\\"Consecutive Blossom\\\". 2 han if you kan off the rinshan tile and win off of _that_ rinshan tile. Does not stack with rinshan."
+msgstr "222 333 444 のように同種の連続する刻子3組で2翻。"
+
+msgid "Local yaku. \\\"Fishing Alone in the Cold River Snow\\\". Mangan if you are waiting on 5z (white dragon) with four calls (open or closed)."
+msgstr "一気通貫に加え、456以外が混全帯（または純全帯なら3翻）。門前なら+1翻（一気通貫とは複合不可）。"
+
+msgid "Local yaku. \\\"Five Suits Collected\\\". 2 han if your hand includes all five suits (character, circle, bamboo, wind, dragon)."
+msgstr "123 123 123 のように同種の順子を3組作ると2翻。門前なら+1翻（一盃口・三連刻とは複合不可）。"
+
+msgid "Local yaku. \\\"Five-Heart Straight\\\". 1 han on top of ittsu if the winning tile is the five needed for ittsu."
+msgstr "風牌の刻子を3組作ると2翻。"
+
+msgid "Local yaku. \\\"Four Honor Triplets\\\". 2 han for having four honor tile triplets."
+msgstr "カンした嶺上牌で和了ると2翻（通常の嶺上開花とは複合不可）。"
+
+msgid "Local yaku. \\\"Gathering a Plum Blossom from the Roof\\\". Mangan if you win with rinshan on the 5p (5 circles)."
+msgstr "赤牌なし（248p、23468s、白・發のみの字牌）で2翻。字牌なし（清単風）なら5翻。門前なら+1翻。"
+
+msgid "Local yaku. \\\"Golden Rooster Standing Alone\\\". Mangan if you are waiting on 1s (1 bamboo, the bird tile) with four calls. Can be open or closed."
+msgstr "萬子・筒子・索子・風牌・三元牌全てを含む手で2翻。"
+
+msgid "Local yaku. \\\"Golden Rooster Steals Food\\\". 4 han instead of the usual 2 han if you win ketsupaihou by chankan."
+msgstr "二盃口に加え、順子が全て同数字（異なる種類可）の場合3翻。対子は字牌でも可（「純」の名前に反するが許容）。"
+
+msgid "Local yaku. \\\"Imitation Mangan\\\". If you copy any opponent's first five discards exactly, they will pay mangan if you win, but only if you win less than mangan. Calls invalidate."
+msgstr "搶槓で和了った場合、通常2翻の代わりに4翻。"
+
+msgid "Local yaku. \\\"Little Mixed Triplets\\\". 2 han for having sanshoku doukou, except one of the triplets is a pair."
+msgstr "333m 333p のように同数字の異なる種類の刻子2組で2翻。"
+
+msgid "Local yaku. \\\"Missing Tile\\\". 1 han if you have an edge (12, 89) or middle (24, 57) wait on a tile for which three are already publicly visible (so 12333 winning on 3 doesn't count)."
+msgstr "345m 345p のように同数字の異なる種類の順子2組で2翻。"
+
+msgid "Local yaku. \\\"Plucking the Moon from the Bottom of the Sea\\\". Mangan if you win with haitei (not houtei) on the 1p (1 circles)."
+msgstr "相手の最初の5捨て牌を完全に模倣した場合、和了時に満貫未満なら相手に満貫支払い義務（副露すると無効）。"
+
+msgid "Local yaku. \\\"Pure Triple Sequences\\\". 2 han if you have three of the exact same sequence in one suit, like 123 123 123. Like iipeikou but three. +1 han if closed. Does not stack with iipeikou (123 123) or sanrenkou (111 222 333)."
+msgstr "赤牌を4枚持つと2翻追加（役として扱う）。"
+
+msgid "Local yaku. \\\"Scratching a Carrying Pole\\\". Mangan if you win with chankan on the 2s (2 bamboo)."
+msgstr "最初の自摸前に他家の第一打牌で和了ると即満貫/役満（副露すると無効）。"
+
+msgid "Local yaku. \\\"Seven Stars Disconnected\\\". Mangan if you have one of every honor tile, plus 7 of 9 tiles in different suji (e.g. 14m25p369s)."
+msgstr "1s（一索）を四副露で待つと満貫（鳴き可）。"
+
+msgid "Local yaku. \\\"Shoot After Kan\\\". 1 han if you win off the tile discarded by a player who just called kan."
+msgstr "5z（白）を四副露で待つと満貫（鳴き可）。"
+
+msgid "Local yaku. \\\"Swallow Reversal\\\". 1 han if you win off a riichi declaration discard."
+msgstr "七対子が全て幺九牌でドラ対子を含む場合満貫。"
+
+msgid "Local yaku. \\\"Three Consecutive Triplets\\\". 2 han for having three triplets of the same suit in sequence, like 222 333 444."
+msgstr "混一色で三元牌が萬子（中）・筒子（發）・索子（白）と一致すると満貫。"
+
+msgid "Local yaku. \\\"Three Wind Triplets\\\". 2 han if you have three wind triplets."
+msgstr "萬子と索子で連順2組（重複なし）＋筒子対子で満貫。"
+
+msgid "Local yaku. \\\"Twelve Tiles Down\\\". 1 han if you win with four calls (and therefore on a single tile wait). Closed kans are permitted."
+msgstr "全種類の字牌＋7種のスジ牌（例：14m25p369s）で満貫。"
+
+msgid "Local yaku. \\\"Twice Double Triplets\\\". A double triplet is when you have two triplets of the same number in different suits, like 333m 333p. 2 han for having two sets of double triplets."
+msgstr "2s（二索）で搶槓和了すると満貫。"
+
+msgid "Local yaku. \\\"Twice Mixed Double Sequence\\\". A mixed double sequence is when you have two sequences of the same number in different suits, like 345m 345p. 2 han for having two mixed double sequences."
+msgstr "海底で1p（一筒）和了ると満貫。"
+
+msgid "Local yaku. \\\"Two Dragons Fighting Over Pearls\\\". Mangan if you have kyandonhou (two mixed double sequences) in manzu and souzu, plus a pinzu pair. For the manzu and souzu suits, your two sequences in that suit should not overlap."
+msgstr "河底で9p（九筒）和了ると満貫。"
+
+msgid "Local yaku. \\\"Win Without Red\\\". 2 han if your hand contains no red. This means you can have only 248p (2,4,8 circles), 23468s (2,3,4,6,8 bamboo), and any honors except red dragon. 5 han instead if no honor tiles (chintanfon). +1 han if closed."
+msgstr "嶺上で5p（五筒）和了ると満貫。"
+
+msgid "Local yakuman. If you have kans of all four winds, it's quadruple yakuman. Doesn't stack with daisuushi and suukantsu."
+msgstr "123m 123m 123m 123m のように同順子4組で役満。第4順子が鳴きなら包則適用。"
+
+msgid "Local yakuman. If you have kans of all three dragons, it's double yakuman. Doesn't stack with daisangen."
+msgstr "111 222 333 444 のように同種の連続刻子4組で役満。第4刻子が鳴きなら包則適用。"
+
+msgid "Local yakuman. If you have no calls (not even ankan) and your hand consists of the tiles 1861 in one suit, 1865 in another suit, and you have triplets of north and south winds, it's yakuman."
+msgstr "111 333 555 777 のように同種の飛び刻子4組で役満。第4刻子が鳴きなら包則適用。"
+
+msgid "Local yakuman. If you have ryuuiisou without green dragon, it's double yakuman. Doesn't stack with ryuuiisou."
+msgstr "四風牌のカン4組で四倍役満（大四喜・四槓子と複合不可）。"
+
+msgid "Local yakuman. If your closed hand consists of an ittsu and east/north winds, it's yakuman."
+msgstr "三元牌のカン3組でダブル役満（大三元と複合不可）。"
+
+msgid "Local yakuman. If your hand consists of only 246p (2,4,6 circles) and east/north winds, it's yakuman."
+msgstr "一色で1861、他色で1865＋北・南刻子で役満（副露不可）。"
+
+msgid "Local yakuman. If your hand consists of only 248p (2,4,8 circles), green dragon, and one type of wind, it's yakuman."
+msgstr "緑一色から青發を除外するとダブル役満（緑一色と複合不可）。"
+
+msgid "Local yakuman. If your hand contains 123 345 567 789 all in one suit, it's yakuman. No restrictions on your pair."
+msgstr "第一打前にカンして嶺上和了ると役満（他家の鳴きで無効）。"
+
+msgid "Local yakuman. If your hand is closed and your winning hand is 11223344556677 or 33445566778899 in one suit, it's yakuman."
+msgstr "13枚の不連続牌（1対子）で役満（副露不可）。"
+
+msgid "Local yakuman. If your hand is closed and your winning hand is 22334455667788 in one suit, it's yakuman."
+msgstr "14枚の不連続牌で役満（副露不可）。"
+
+msgid "Local yakuman. Like kouitten, except you have a pair of 5s (5 bamboo)."
+msgstr "両立直＋海底/河底和了で役満。"
+
+msgid "Local yakuman. Like ryuuiisou, except you have a pair of 5s (5 bamboo)."
+msgstr "門前で一気通貫＋東・北刻子で役満。"
+
+msgid "Local yakuman. The eighth consecutive dealer win is worth yakuman. Exhaustive and abortive draws break the streak. After 5 wins, the minimum han required for the dealer becomes 2 han."
+msgstr "246p＋東・北刻子のみで役満。"
+
+msgid "Local yakuman. \\\"A Little Red\\\". Like ryuuiisou, except instead of green dragon, it's red dragon (you must include red dragons)."
+msgstr "248p＋發＋単一風牌で役満。"
+
+msgid "Local yakuman. \\\"All Black\\\". Like ryuuiisou but black: you can only have 248p and winds."
+msgstr "一色で123 345 567 789＋任意対子で役満。"
+
+msgid "Local yakuman. \\\"First Kan Win\\\". If you kan (concealed or from a player) before discarding any tile, and win with rinshan, it's yakuman. Any call from an opponent invalidates this."
+msgstr "555p＋111s＋自風/場風刻子＋111pで役満。"
+
+msgid "Local yakuman. \\\"Flower, Bird, Snow, Moon\\\". If your hand is 555p (5 circles) + 555z (white dragon) + triplet of round or seat wind + 111p (1 circles), it's yakuman."
+msgstr "555p＋555z＋自風/場風刻子＋111pで役満。"
+
+msgid "Local yakuman. \\\"Flower, Bird, Wind, Moon\\\". If your hand is 555p (5 circles) + 111s (birds) + triplet of round or seat wind + 111p (1 circles), it's yakuman."
+msgstr "門前で11223344556677 または 33445566778899（一色）で役満。"
+
+msgid "Local yakuman. \\\"Four Consecutive Triplets\\\". If you have four triplets of the same suit of increasing number, like 111 222 333 444, it's yakuman. Pao is applied if the fourth triplet is called."
+msgstr "門前で22334455667788（一色）で役満。"
+
+msgid "Local yakuman. \\\"Four Skipped Tile Triplets\\\". If you have four triplets of the same suit whose numbers step by 2, like 111 333 555 777, it's yakuman. Pao is applied if the fourth triplet is called."
+msgstr "萬子のみで数字の合計が100以上で役満。"
+
+msgid "Local yakuman. \\\"One Million Stones\\\". If your hand is purely character tiles whose numbers sum up to at least 100, it's yakuman."
+msgstr "緑一色＋5s対子で役満。"
+
+msgid "Local yakuman. \\\"Pure Quadruple Sequences\\\". If you have four of the exact same sequence in one suit, like 123m 123m 123m 123m, it's yakuman. Like iipeikou but four. Pao is applied if the fourth sequence is called."
+msgstr "248p＋風牌のみで役満。"
+
+msgid "Local yakuman. \\\"Red Peacock\\\". Like ryuuiisou but red bamboo only: you can only have 1579s and red dragon."
+msgstr "1579s＋中のみで役満。"
+
+msgid "Local yakuman. \\\"Thirteen Independent\\\". If you start with 14 disconnected tiles, it's yakuman. Calls invalidate."
+msgstr "緑一色の發を中に置換で役満。"
+
+msgid "Local yakuman. \\\"Thirteen Unconnected\\\". If you start with 13 disconnected tiles (with one forming a pair), it's yakuman. Calls invalidate."
+msgstr "緑一色＋5s対子で役満。"
+
+msgid "Local yakuman. \\\"Three Years on a Rock\\\". If you win with double riichi and haitei/houtei, it's yakuman."
+msgstr "8回連続で親和了ると役満。流局/途中流局でリセット。5回以降は2翻縛り。"
+
+msgid "Log ID:"
+msgstr "ログID："
+
+msgid "Logs"
+msgstr "ログ"
+
+msgid "M.League"
+msgstr "Mリーグ"
+
+msgid "MCR"
+msgstr "こくさいルール"
+
+msgid "Mah Jongg"
+msgstr "和がり"
+
+msgid "Mahjong Competition Rules. Has a scoring system of a different kind of complexity than Riichi."
+msgstr "ポンとカンで点数が入り、役ごとに点数が2倍になる麻雀。"
+
+msgid "Mahjong Soul"
+msgstr "雀魂"
+
+msgid "Mahjong but every pung and kong gives you points, and every hand pattern doubles your points."
+msgstr "競技麻雀ルール。リーチ麻雀とは異なる複雑な点数システムを採用。"
+
+msgid "Mahjong except the dora indicator actually indicates joker tiles."
+msgstr "ドラ表示牌がジョーカー牌を示す麻雀。"
+
+msgid "Mahjong with an additive (rather than multiplicative) scoring system."
+msgstr "乗算ではなく加算方式の点数システムを採用した麻雀。"
+
+msgid "Mahjong with eight differently powerful joker tiles."
+msgstr "8種類の強力なジョーカー牌がある麻雀。"
+
+msgid "Mahjong with no honor tiles, but you must have at least eight tiles of a single suit to win."
+msgstr "風牌・三元牌なし。ただし和了るには一色8枚以上必要。"
+
+msgid "Mahjong with various instant payouts and various unique ways to get penalized by pao."
+msgstr "様々な即時支払いと特殊なパオ罰則がある麻雀。"
+
+msgid "Mahjong, but every hand must be open, contain every suit, contain a terminal/honor, and contain either a triplet, kan, or dragon pair."
+msgstr "すべての手牌が鳴き状態で、全種類の数牌を含み、一九字牌を含み、刻子・カン・三元対子のいずれかが必要な麻雀。"
+
+msgid "Mahjong, but every win gets two chances at ura dora. However, a standard hand must have a pair of 22, 55, or 88."
+msgstr "和了るごとに裏ドラを2回確認可能。ただし通常手では22・55・88の対子が必要。"
+
+msgid "Make dora display shiny."
+msgstr "ドラ表示を光らせる。"
+
+msgid "Malaysian"
+msgstr "マレーシア"
+
+msgid "Maneshi Mangan"
+msgstr "真似満貫"
+
+msgid "Mangan"
+msgstr "満貫"
+
+msgid "Manzu"
+msgstr "萬子"
+
+msgid "Milky Way"
+msgstr "天の川"
+
+msgid "Minefield"
+msgstr "地雷"
+
+msgid "Minimum Han"
+msgstr "飜縛り"
+
+msgid "Minimum han required to win."
+msgstr "和了に必要な最小翻数。"
+
+msgid "Mods"
+msgstr "MOD"
+
+msgid "Mondeikou"
+msgstr "門泥公"
+
+msgid "Nagashi"
+msgstr "流し満貫"
+
+msgid "Nickname (optional)"
+msgstr "ニックネーム（任意）"
+
+msgid "Ningbo"
+msgstr "寧波"
+
+msgid "No Charleston"
+msgstr "チャールストンなし"
+
+msgid "No Double Yakuman"
+msgstr "ダブル役満なし"
+
+msgid "No Honors"
+msgstr "字牌なし"
+
+msgid "No Kazoe Yakuman"
+msgstr "数え役満なし"
+
+msgid "No Riichi Ankan"
+msgstr "リーチ中の暗槓禁止"
+
+msgid "No description provided."
+msgstr "説明なし。"
+
+msgid "Noten payments are tripled (Ikeda Kana)"
+msgstr "ノーテン罰符が3倍 (池田佳菜)"
+
+msgid "Number of points each player starts with. You can also set this by writing the following in the Config tab: \\\"initial_score\\\": 100000"
+msgstr "各プレイヤーの初期点数。Configタブに「initial_score: 100000」と入力しても設定可能。"
+
+msgid "Odd"
+msgstr "奇数"
+
+msgid "Oka"
+msgstr "オカ"
+
+msgid "On ron, each 1s (bird) tile is worth 1 shuugi, unless the discarder's hand contains 7p (pistol) which would shoot the birds dead. That is, unless the winner's hand contains 8s (birdcage) which would protect the birds from gunfire."
+msgstr "ロン時、1索（鳥）1枚につき1祝儀。ただし捨て方の手牌に7筒（銃）がある場合は無効。さらに和了者の手牌に8索（鳥かご）がある場合は銃撃を防げる。"
+
+msgid "One of each dragon tile is a special tile. The special white dragon is shiro pocchi, which acts a joker tile when drawn while in riichi. The special green dragon is an aka dora. The special red dragon is the golden chun, which can be used as a five of any suit, and grants 1 han when used as a five. Completing a hand via shiro pocchi while using the golden chun as a five and having the aka green dragon scores yakuman. If playing with shuugi, a golden chun used as a five scores 1 shuugi."
+msgstr "各三元牌に特殊牌あり。白ポッチ（白）はリーチ中に引くとジョーカー。青ドラ（發）。黄金中（中）は任意の5として使用可能（使用時1翻）。白ポッチで和了＋黄金中5使用＋青ドラ所持で役満。祝儀使用時、黄金中5使用で1祝儀。"
+
+msgid "One of the white dragons is shiro pocchi. Shiro pocchi acts a joker tile when drawn while in riichi."
+msgstr "白ポッチ（白の特殊牌）。リーチ中に引くとジョーカーとして機能。"
+
+msgid "Open Double Riichi"
+msgstr "開ダブル立直"
+
+msgid "Open Hands"
+msgstr "公開手"
+
+msgid "Open Riichi"
+msgstr "開立直"
+
+msgid "Other"
+msgstr "その他"
+
+msgid "Paarenchan"
+msgstr "八連荘"
+
+msgid "Pei"
+msgstr "抜きドラ"
+
+msgid "Pinfu"
+msgstr "平和"
+
+msgid "Pinzu"
+msgstr "筒子"
+
+msgid "Play"
+msgstr "プレー"
+
+msgid "Play with shuugi (poker chips). Players start with zero shuugi, each is worth some number of points each at the end. Win payments include shuugi along with points. On ron you get shuugi from the discarder; on tsumo you get shuugi from everyone. Each aka, ura, and ippatsu is worth one shuugi. Yakuman is worth 5 shuugi."
+msgstr "祝儀（ポーカーチップ）を使用。開始時0枚、終了時に点数換算。和了報酬に祝儀を含む。ロン時は捨て方から、ツモ時は全員から祝儀を獲得。赤ドラ・裏ドラ・一発各1祝儀。役満5祝儀。"
+
+msgid "Player"
+msgstr "プレイヤ"
+
+msgid "Player %{nickname} joined as %{seat}"
+msgstr "プレイヤー%{nickname}が%{seat}として参加しました"
+
+msgid "Pon"
+msgstr "ポン"
+
+msgid "Pong"
+msgstr "ポン"
+
+msgid "Possible hand:"
+msgstr "可能な手:"
+
+msgid "Private"
+msgstr "プライベート"
+
+msgid "Public"
+msgstr "パブリック"
+
+msgid "Pung"
+msgstr "ポン"
+
+msgid "Randomize mods"
+msgstr "MODのランダム化"
+
+msgid "Reduces tiles in hand from 13 to 12. The goal is to achieve a tenpai hand rather than a winning hand. The idea is that your 13th tile is replaced with an invisible 'joker' tile that can be used to complete any hand."
+msgstr "手牌を13枚→12枚に変更。和了形ではなく聴牌形を目指す。13枚目は「ジョーカー牌」として任意の牌で完成可能。"
+
+msgid "Removes limit hands. Score grows exponentially with han according to the formula 4 * fu * 2^(2+han). Not recommended with tobi enabled."
+msgstr "役満廃止。点数計算式は4×符×2^(2+翻)。飛びあり時は非推奨。"
+
+msgid "Removes the honor tiles (winds and dragons) from the game."
+msgstr "風牌・三元牌をすべて除外。"
+
+msgid "Renhou"
+msgstr "人和"
+
+msgid "Renkaihou"
+msgstr "連開花"
+
+msgid "Rentsuu Honitsu"
+msgstr "連字混一色"
+
+msgid "Replace the wall with 16 copies of each bamboo tile. Includes 10s if Ten is enabled."
+msgstr "壁牌を索子16枚ずつに変更（「十」有効時は10索も含む）。"
+
+msgid "Replaces one of each tile with a blue 'galaxy' tile that acts as a wildcard of its number. For example, galaxy 3s can be used as 3m, 3p, or 3s. Galaxy winds are wind wildcards, and galaxy dragons are dragon wildcards."
+msgstr "各牌1枚を「銀河牌」（数字ワイルドカード）に変更。例: 銀河3索＝3万/3筒/3索。風牌・三元牌も同様。"
+
+msgid "Reset mods to default"
+msgstr "MODをデフォルトに戻す"
+
+msgid "Riichi"
+msgstr "立直"
+
+msgid "Riichi City"
+msgstr "麻雀一番街"
+
+msgid "Riichi, but everyone gets a different Saki power, which changes the game quite a bit. Some give you bonus han every time you use your power. Some let you recover dead discards. Some let you swap tiles around the entire board, including the dora indicator."
+msgstr "リーチ麻雀＋各プレイヤーに異なる「咲能力」付与。能力使用で追加翻数、捨て牌回収、盤上の牌（ドラ表示含む）交換など可能。"
+
+msgid "Riichi, but one of each tile is replaced with a blue galaxy tile that acts as a wildcard of its number. Galaxy winds are wind wildcards, and galaxy dragons are dragon wildcards."
+msgstr "リーチ麻雀＋各牌1枚を銀河牌（数字ワイルドカード）に変更。風牌・三元牌も同様。"
+
+msgid "Riichi, but sequences can wrap (891, 912), and you can make sequences from winds and dragons. In addition, you can chii from any direction, and form open kokushi (3 han)."
+msgstr "リーチ麻雀＋順子の連続（891・912）可能。風牌・三元牌でも順子形成可能。チーは全方向から可能。オープン国士（3翻）可能。"
+
+msgid "Rinshan"
+msgstr "嶺上開花"
+
+msgid "Rinshan Pao"
+msgstr "嶺上開花包"
+
+msgid "Ron"
+msgstr "ロン"
+
+msgid "Room settings"
+msgstr "ルーム設定"
+
+msgid "Round Wind"
+msgstr "場風"
+
+msgid "Rules"
+msgstr "ルール"
+
+msgid "Ruleset"
+msgstr "ルールセット"
+
+msgid "Rulesets"
+msgstr "ルールセット"
+
+msgid "Running joker solver..."
+msgstr "ジョーカー解決中..."
+
+msgid "Ryandoukou"
+msgstr "両同刻"
+
+msgid "Ryanpeikou"
+msgstr "二盃口"
+
+msgid "Ryanzou Chankan"
+msgstr "二索槍槓"
+
+msgid "Ryuuiisou"
+msgstr "緑一色"
+
+msgid "Ryuuiisourin"
+msgstr "緑一色輪"
+
+msgid "Ryuukyoku"
+msgstr "流局"
+
+msgid "Sakicards v1.3"
+msgstr "サキカードv1.3"
+
+msgid "Sanankou"
+msgstr "三暗刻"
+
+msgid "Sanbaiman"
+msgstr "三倍満"
+
+msgid "Sanchahou"
+msgstr "三家和"
+
+msgid "Sangen Chiitoitsu"
+msgstr "三元七対子"
+
+msgid "Sankantsu"
+msgstr "三槓子"
+
+msgid "Sanma"
+msgstr "三麻"
+
+msgid "Sanma, but you draw until the last visible dora indicator. In addition, all fives are akadora, fu is fixed at 30, there is no tsumo loss, and scores are rounded to the nearest 1000. Flowers act as nukidora in place of north winds, which are now yakuhai. Exhaustive draws in south round always result in a repeat regardless of who's tenpai."
+msgstr "三麻＋最後のドラ表示牌まで自摸。全5が赤ドラ、符固定30、ツモ失点なし、点数1000単位四捨五入。花牌は抜きドラ（北風は役牌）。南場の流局は必ず再起。"
+
+msgid "Sanpuukou"
+msgstr "三風刻"
+
+msgid "Sanrenkou"
+msgstr "三連刻"
+
+msgid "Sanshoku"
+msgstr "三色同順"
+
+msgid "Sanshoku Choupaikou"
+msgstr "三色跳牌刻"
+
+msgid "Sanshoku Chousankou"
+msgstr "三色頂三刻"
+
+msgid "Sanshoku Doukou"
+msgstr "三色同刻"
+
+msgid "Sanshoku Ittsu"
+msgstr "混一気通貫"
+
+msgid "Sanshoku Sujipaikou"
+msgstr "三色筋牌刻"
+
+msgid "Seat Wind"
+msgstr "自風"
+
+msgid "Sekinin Barai"
+msgstr "責任払い"
+
+msgid "Sequences can wrap (891, 912)."
+msgstr "順子の連続（891・912）可能。"
+
+msgid "Sequences can wrap (891, 912). Winds and dragons can make sequences. You can chii from any direction. Chiitoitsu is disabled. Open kokushi is allowed and worth 3 han."
+msgstr "順子の連続（891・912）可能。風牌・三元牌で順子形成可能。チー全方向可能。七対子不可。オープン国士（3翻）可能。"
+
+msgid "Sets the goal points before the game can end. If the game reaches South 4 (or East 4, in the case of tonpuu) and every player is below [goal] points, play continues to the West (South) round until someone surpasses [goal] points, or at the end of West 4 (South 4)."
+msgstr "終了目標点数設定。南4局（東風戦は東4局）終了時全員未達の場合、西場（南場）に突入し誰かが目標突破するか西4局（南4局）終了まで継続。"
+
+msgid "Shanron Chonchu"
+msgstr "双竜争珠"
+
+msgid "Shenyang"
+msgstr "瀋陽"
+
+msgid "Shiiaru Raotai"
+msgstr "十二落抬"
+
+msgid "Shiisanpuutaa"
+msgstr "十三不塔"
+
+msgid "Shiisanuushi"
+msgstr "十三無靠"
+
+msgid "Shiny Dora"
+msgstr "光るドラ"
+
+msgid "Shiro Pocchi"
+msgstr "白ポッチ"
+
+msgid "Shouchikurin"
+msgstr "小竹林"
+
+msgid "Shouhai"
+msgstr "少牌"
+
+msgid "Shousangen"
+msgstr "小三元"
+
+msgid "Shousharin"
+msgstr "小車輪"
+
+msgid "Shousharin etc."
+msgstr "小車輪など"
+
+msgid "Shousuurin"
+msgstr "小数隣"
+
+msgid "Shousuushii"
+msgstr "小四喜"
+
+msgid "Shoutate"
+msgstr "小タテ"
+
+msgid "Show Waits"
+msgstr "待ち表示"
+
+msgid "Show wall"
+msgstr "壁を見せる"
+
+msgid "Shuffle seats on start?"
+msgstr "スタート時にシャッフルシート？"
+
+msgid "Shuugi"
+msgstr "祝儀"
+
+msgid "Sichuan Bloody"
+msgstr "四川ブラッディ"
+
+msgid "Sichuan Bloody mahjong. Trade tiles, void a suit, and play until three players win (bloody end rules)."
+msgstr "四川血戦麻雀。牌交換・索子消滅・3人和了るまで続行（血戦終了ルール）。"
+
+msgid "Singaporean"
+msgstr "シンガポール"
+
+msgid "Skip"
+msgstr "スキップ"
+
+msgid "Sorry, there are currently no tutorials for this ruleset!"
+msgstr "申し訳ありませんが、現在このルールセットに関するチュートリアルはありません！"
+
+msgid "Source"
+msgstr "ソース"
+
+msgid "Souzu"
+msgstr "索子"
+
+msgid "Space Mahjong"
+msgstr "宇宙麻雀"
+
+msgid "Special thanks to our beta testers:"
+msgstr "ベータテスターに感謝する："
+
+msgid "Star Suit (beta)"
+msgstr "星子（ベータ）"
+
+msgid "Start game"
+msgstr "試合開始"
+
+msgid "Starting Points"
+msgstr "持ち点"
+
+msgid "Starting game..."
+msgstr "試合開始..."
+
+msgid "Sudden Death"
+msgstr "延長戦"
+
+msgid "Sujipaikou"
+msgstr "筋牌刻"
+
+msgid "Suuankou"
+msgstr "四暗刻"
+
+msgid "Suuankou Tanki"
+msgstr "四暗刻単騎"
+
+msgid "Suucha Riichi"
+msgstr "四家立直"
+
+msgid "Suuchoupaikou"
+msgstr "四跳牌刻"
+
+msgid "Suufon Renda"
+msgstr "四風連打"
+
+msgid "Suukaikan"
+msgstr "四開槓"
+
+msgid "Suukantsu"
+msgstr "四槓子"
+
+msgid "Suukantsu Pao"
+msgstr "四槓子包"
+
+msgid "Suurenkou"
+msgstr "四連刻"
+
+msgid "Suushi Chiitoitsu"
+msgstr "四喜七対子"
+
+msgid "Suuzuukou"
+msgstr "四字刻"
+
+msgid "Taiwanese"
+msgstr "台湾"
+
+msgid "Tanfonhou"
+msgstr "断紅和"
+
+msgid "Tanyao"
+msgstr "断幺九"
+
+msgid "Ten"
+msgstr "十"
+
+msgid "Tenhou"
+msgstr "天和"
+
+msgid "Tenpairenchan"
+msgstr "聴牌連荘"
+
+msgid "Tenpaiyame"
+msgstr "聴牌やめ"
+
+msgid "The classic riichi ruleset, now with an assortment of mods to pick and choose at your liking."
+msgstr "古典的リーチルール＋自由に選択可能な各種モード。"
+
+msgid "The tsumo and ron buttons are enabled on every draw and discard. If you make an incorrect win call, your hand is dead and you cannot make a win call for the remainder of the round."
+msgstr "ツモ/ロンボタン常時有効。誤ロンすると手牌流れ、その局では和了不可。"
+
+msgid "Three-player Riichi."
+msgstr "三麻＋16花牌・特殊ジョーカー牌・即時支払いシステム。"
+
+msgid "Three-player mahjong with 16 flowers, a unique joker tile, and instant payouts."
+msgstr "三人打ちリーチ麻雀。"
+
+msgid "Tianjin"
+msgstr "天津"
+
+msgid "To be implemented:"
+msgstr "実施予定："
+
+msgid "Tobi"
+msgstr "とび"
+
+msgid "Toggle all"
+msgstr "すべてトグル"
+
+msgid "Tohoku Expressway"
+msgstr "東北自動車道"
+
+msgid "Tohoku Shinkansen"
+msgstr "東北新幹線"
+
+msgid "Toitoi"
+msgstr "対々和"
+
+msgid "Tonpuu"
+msgstr "東風戦"
+
+msgid "Toriuchi"
+msgstr "鳥撃ち"
+
+msgid "Touchao Hanchanshue"
+msgstr "独釣寒江雪"
+
+msgid "Toukanhou"
+msgstr "頭槓和"
+
+msgid "Triple Ron"
+msgstr "三家和"
+
+msgid "Tsubame Gaeshi"
+msgstr "燕返し"
+
+msgid "Tsumo"
+msgstr "門前清自摸和"
+
+msgid "Tsuuiisou"
+msgstr "字一色"
+
+msgid "Tutorial"
+msgstr "チュートリアル"
+
+msgid "Tutorials for ruleset:"
+msgstr "ルールセットのチュートリアル："
+
+msgid "Two-player variant where the only tiles are bamboo tiles. Try not to chombo!"
+msgstr "二人打ち索子専用麻雀。チョンボ注意！"
+
+msgid "Two-player variant where you start with 34 tiles to make a mangan+ hand, and your remaining tiles are your discards."
+msgstr "二人打ち変則ルール。初期手牌34枚で満貫以上を作り、残り牌が捨て牌。"
+
+msgid "Uma"
+msgstr "ウマ"
+
+msgid "Ura"
+msgstr "裏ドラ"
+
+msgid "Using joker assignment"
+msgstr "ジョーカー割り当てを使用"
+
+msgid "Uumensai"
+msgstr "五門斉"
+
+msgid "Uupin Kaihou"
+msgstr "五筒開花"
+
+msgid "Uushin Tsuukan"
+msgstr "五心通貫"
+
+msgid "Variant:"
+msgstr "バリアント："
+
+msgid "Vietnamese"
+msgstr "ベトナム"
+
+msgid "Vietnamese Jokers"
+msgstr "ベトナムジョーカー"
+
+msgid "View log"
+msgstr "ログを見る"
+
+msgid "Viewing log for a"
+msgstr "ログを表示中:"
+
+msgid "Visayan"
+msgstr "ビサヤ人"
+
+msgid "WRC 2022"
+msgstr "2022 WRC"
+
+msgid "Wareme"
+msgstr "割れ目"
+
+msgid "Washizu"
+msgstr "ワシズ"
+
+msgid "Welcome to Riichi Advanced!"
+msgstr "ようこそRiichi Advancedへ！"
+
+msgid "Yakitori"
+msgstr "焼き鳥"
+
+msgid "Yaku"
+msgstr "役"
+
+msgid "Yakuman"
+msgstr "役満"
+
+msgid "You have the option to declare open riichi, which is worth 2 han but reveals your hand to the table. Open double riichi is 3 han."
+msgstr "オープン立直可能（2翻・手牌公開）。ダブル立直は3翻。"
+
+msgid "Zung Jung"
+msgstr "ズン・ジョン"
+
+msgid "_1st"
+msgstr "1位"
+
+msgid "_2nd"
+msgstr "2位"
+
+msgid "_3rd"
+msgstr "3位"
+
+msgid "_4th"
+msgstr "4位"
+
+msgid "ante"
+msgstr "価値"
+
+msgid "below"
+msgstr "最小"
+
+msgid "bet"
+msgstr "ベット"
+
+msgid "bets their tsumo payment instead of paying out (Ezaki Hitomi)"
+msgstr "ツモ支払いの代わりにベットする (江崎仁美)"
+
+msgid "called %{call}"
+msgstr "が%{call}"
+
+#, fuzzy
+msgid "called %{call} on"
+msgstr "が%{call}"
+
+msgid "called %{call} on %{tile}"
+msgstr "が%{tile}で%{call}"
+
+msgid "called %{call} on %{tile} with %{choice}"
+msgstr "が%{tile}で%{call}（選択：%{choice}）"
+
+msgid "called %{call} on %{tile} with hand %{hand}"
+msgstr "が%{tile}で%{call}をしました（手牌：%{hand}）"
+
+msgid "chose the following cards: %{choices}"
+msgstr "次の牌を選択: %{choices}"
+
+msgid "dealt in while tenpai with hand %{hand} which, if won on %{tile} scores a minimum value of %{score} via the following yaku: %{yaku} (Ezaki Hitomi)"
+msgstr "手牌 %{hand} で聴牌状態で放銃。%{tile} で和了した場合、以下の役で最低 %{score} 点:"
+
+msgid "declared riichi"
+msgstr "がリーチを宣言"
+
+msgid "declared the following yaku:"
+msgstr "以下の役を宣言:"
+
+msgid "discarded %{tile}"
+msgstr "が%{tile}を打"
+
+msgid "drawless"
+msgstr "残りツモなし"
+
+msgid "east"
+msgstr "東"
+
+msgid "exited"
+msgstr "退場"
+
+msgid "false"
+msgstr "なし"
+
+msgid "from hand"
+msgstr "手出し"
+
+msgid "gains double points for wareme"
+msgstr "割れ目で2倍得点"
+
+msgid "game"
+msgstr "ゲーム"
+
+msgid "gets double points for winning under someone else's ippatsu (Tsujigaito Satoha)"
+msgstr "他人の一発後に和了で2倍得点 (辻ヶ戸爽葉)"
+
+msgid "goal"
+msgstr "目標点"
+
+msgid "has greater tenpai value than their deal-in value, and therefore reverses the payment, not including riichi sticks (Ezaki Hitomi)"
+msgstr "聴牌価値が放銃価値より高いため、支払いが逆転 (リーチ棒除く) (江崎仁美)"
+
+msgid "has less or equal tenpai value than their deal-in value, and therefore the payment proceeds as normal (Ezaki Hitomi)"
+msgstr "聴牌価値が放銃価値以下なので通常通り支払い (江崎仁美)"
+
+msgid "has tsumo payments decreased by 300 per 1000 bet (%{delta}) (Motouchi Naruka)"
+msgstr "ツモ支払いが1000点ベットごとに300点減少 (%{delta}) (元内成香)"
+
+msgid "has tsumo payments increased by 300 per 1000 bet (%{delta}) (Motouchi Naruka)"
+msgstr "ツモ支払いが1000点ベットごとに300点増加 (%{delta}) (元内成香)"
+
+msgid "is"
+msgstr "である"
+
+msgid "is considering declaring a player's hand dead"
+msgstr "手牌の死亡を宣言検討中"
+
+msgid "is damaten, and immune to tsumo payments (Atago Hiroe)"
+msgstr "黙聴状態でツモ支払い免除 (愛宕洋恵)"
+
+msgid "is treated as a dealer for scoring purposes (Ryuumonbuchi Touka)"
+msgstr "得点計算上親として扱われる (龍門淵透華)"
+
+msgid "loses double points for wareme"
+msgstr "割れ目で2倍失点"
+
+msgid "man"
+msgstr "萬"
+
+msgid "min"
+msgstr "最小"
+
+msgid "north"
+msgstr "北"
+
+msgid "pays double (Yae Kobashiri)"
+msgstr "2倍支払い (小走やえ)"
+
+msgid "pays double for tsumo (Maya Yukiko)"
+msgstr "ツモで2倍支払い (摩耶幸子)"
+
+msgid "pays double since the wall ends on their side (Kanbara Satomi)"
+msgstr "山が自側で終了するため2倍支払い (神原聡美)"
+
+msgid "pays double to their duelist (Megan Davin)"
+msgstr "対戦相手に2倍支払い (メーガン・ダヴィン)"
+
+msgid "pays half due to dealing in with their voided suit (Yoshitome Miharu)"
+msgstr "捨て牌で放銃したため半額支払い (吉留美陽)"
+
+msgid "penalty"
+msgstr "罰符"
+
+msgid "pin"
+msgstr "筒"
+
+msgid "points"
+msgstr "点数"
+
+msgid "revealed tiles %{tiles}"
+msgstr "公開された牌: %{tiles}"
+
+msgid "scored a %{score}-point hand"
+msgstr "が%{score}点の和了"
+
+msgid "sou"
+msgstr "索"
+
+msgid "south"
+msgstr "南"
+
+msgid "start_indicators"
+msgstr "初期ドラ枚数"
+
+msgid "stays at zero points, and receives 8000 points from first place (Hanada Kirame)"
+msgstr "0点で留まり、1位から8000点獲得 (花田煌め)"
+
+msgid "swapped out a joker from the call %{call}"
+msgstr "鳴き %{call} からジョーカーを交換"
+
+msgid "takes all bets on the table (%{pot}) and is paid 1500 by every player (Nelly Virsaladze)"
+msgstr "テーブルの全ベット (%{pot}) を獲得し、各プレイヤーから1500点受け取る (ネリー・ヴィルサラーゼ)"
+
+msgid "tenhou.net"
+msgstr "tenhou.net"
+
+msgid "true"
+msgstr "あり"
+
+msgid "value"
+msgstr "点数"
+
+msgid "west"
+msgstr "西"
+
+msgid "with hand"
+msgstr "手牌:"
+
+msgid "with mods"
+msgstr "修正付き:"
+
+msgid "with yaku:"
+msgstr "役:"
+
+msgid "worth"
+msgstr "点数"
+
+msgid "→"
+msgstr "→"

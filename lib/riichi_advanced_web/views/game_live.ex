@@ -2,9 +2,12 @@ defmodule RiichiAdvancedWeb.GameLive do
   alias RiichiAdvanced.Constants, as: Constants
   alias RiichiAdvanced.GameState.Debug, as: Debug
   alias RiichiAdvanced.GameState.Game, as: Game
+  alias RiichiAdvanced.GameState.Rules, as: Rules
   alias RiichiAdvanced.ModLoader, as: ModLoader
   alias RiichiAdvanced.Utils, as: Utils
+  use Gettext, backend: RiichiAdvancedWeb.Gettext
   use RiichiAdvancedWeb, :live_view
+  import RiichiAdvancedWeb.Translations
 
   def mount(params, session, socket) do
     socket = socket
@@ -14,6 +17,7 @@ defmodule RiichiAdvancedWeb.GameLive do
     |> assign(:nickname, Map.get(params, "nickname", ""))
     |> assign(:seat_param, params["seat"])
     |> assign(:tutorial_sequence_name, params["sequence"])
+    |> assign(:lang, Map.get(params, "lang", "en"))
     |> assign(:game_state, nil)
     |> assign(:messages, [])
     |> assign(:state, %Game{})
@@ -73,7 +77,11 @@ defmodule RiichiAdvancedWeb.GameLive do
       # make sure to do this before starting a game process!
       Phoenix.PubSub.subscribe(RiichiAdvanced.PubSub, socket.assigns.ruleset <> ":" <> socket.assigns.room_code)
       # start a new game process, if it doesn't exist already
-      init_actions = [["init_player", socket.assigns.session_id, socket.assigns.seat_param], ["initialize_game"]]
+      init_actions = [
+        ["init_player", socket.assigns.session_id, socket.assigns.seat_param],
+        ["fetch_messages", socket.assigns.session_id],
+        ["initialize_game"]
+      ]
       init_actions = if Map.has_key?(socket.assigns, :tutorial_sequence) do
         [["initialize_tutorial"] | init_actions] # block events if we're a tutorial
       else init_actions end
@@ -103,8 +111,8 @@ defmodule RiichiAdvancedWeb.GameLive do
   def render(assigns) do
     ~H"""
     <div id="container" class={[@ruleset == "minefield" && "minefield"]} phx-hook="ClickListener">
-      <%= if Map.has_key?(@state.rules, "custom_style") do %>
-        <.live_component module={RiichiAdvancedWeb.CustomStyleComponent} id="custom-tiles" style={@state.rules["custom_style"]}/>
+      <%= if Rules.has_key?(@state.rules_ref, "custom_style") do %>
+        <.live_component module={RiichiAdvancedWeb.CustomStyleComponent} id="custom-tiles" style={Rules.get(@state.rules_ref, "custom_style", %{})}/>
       <% end %>
       <input id="mobile-zoom-checkbox" type="checkbox" class="mobile-zoom-checkbox" phx-update="ignore">
       <label for="mobile-zoom-checkbox"></label>
@@ -130,7 +138,7 @@ defmodule RiichiAdvancedWeb.GameLive do
         playable_indices={@playable_indices}
         selected_index={@selected_index}
         preplayed_index={@preplayed_index}
-        dead_hand_buttons={Map.get(@state.rules, "dead_hand_buttons", false)}
+        dead_hand_buttons={Rules.get(@state.rules_ref, "dead_hand_buttons", false)}
         dead_hand?={"dead_hand" in @state.players[seat].status}
         play_tile={&send(self(), {:play_tile, &1})}
         mark_tile={&send(self(), {:mark_tile, &1, &2})}
@@ -150,7 +158,7 @@ defmodule RiichiAdvancedWeb.GameLive do
         riichi={"riichi" in player.status}
         saki={if Map.has_key?(@state, :saki) do @state.saki else nil end}
         marking={@state.marking[@seat]}
-        four_rows?={Map.get(@state.rules, "four_rows_discards", false)}
+        four_rows?={Rules.get(@state.rules_ref, "four_rows_discards", false)}
         :for={{seat, player} <- @state.players} />
       <.live_component module={RiichiAdvancedWeb.CornerInfoComponent}
         id={"corner-info #{Utils.get_relative_seat(@seat, seat)}"}
@@ -162,7 +170,7 @@ defmodule RiichiAdvancedWeb.GameLive do
         saki={if Map.has_key?(@state, :saki) do @state.saki else nil end}
         all_drafted={if Map.has_key?(@state, :saki) do RiichiAdvanced.GameState.Saki.check_if_all_drafted(@state) else nil end}
         num_players={length(@state.available_seats)}
-        display_round_marker={Map.get(@state.rules, "display_round_marker", true)}
+        display_round_marker={Rules.get(@state.rules_ref, "display_round_marker", true)}
         ai_thinking={@state.players[seat].ai_thinking}
         :for={{seat, player} <- @state.players} />
       <.live_component module={RiichiAdvancedWeb.BigTextComponent}
@@ -170,6 +178,7 @@ defmodule RiichiAdvancedWeb.GameLive do
         game_state={@game_state}
         seat={seat}
         relative_seat={Utils.get_relative_seat(@seat, seat)}
+        lang={@lang}
         big_text={player.big_text}
         :if={player.big_text != ""}
         :for={{seat, player} <- @state.players} />
@@ -182,35 +191,35 @@ defmodule RiichiAdvancedWeb.GameLive do
         tiles_left={length(@state.wall) - @state.wall_index}
         kyoku={@state.kyoku}
         honba={@state.honba}
-        riichi_sticks={Utils.try_integer(@state.pot / max(1, (get_in(@state.rules["score_calculation"]["riichi_value"]) || 1)))}
+        riichi_sticks={Utils.try_integer(@state.pot / max(1, Rules.get(@state.rules_ref, "score_calculation", %{}) |> Map.get("riichi_value", 1)))}
         riichi={Map.new(@state.players, fn {seat, player} -> {seat, player.riichi_stick} end)}
         score={Map.new(@state.players, fn {seat, player} -> {seat, player.score} end)}
         display_riichi_sticks={@display_riichi_sticks}
         display_honba={@display_honba}
-        score_e_notation={Map.get(@state.rules, "score_e_notation", false)}
+        score_e_notation={Rules.get(@state.rules_ref, "score_e_notation", false)}
         available_seats={@state.available_seats}
         is_bot={Map.new([:east, :south, :west, :north], fn seat -> {seat, is_pid(Map.get(@state, seat))} end)} />
       <%= if @state.visible_screen != nil do %>
-        <.live_component module={RiichiAdvancedWeb.WinWindowComponent} id="win-window" game_state={@game_state} seat={@seat} winner={Map.get(@state.winners, Enum.at(@state.winner_seats, @state.winner_index), nil)} timer={@state.timer} visible_screen={@state.visible_screen}/>
-        <.live_component module={RiichiAdvancedWeb.ScoreWindowComponent} id="score-window" game_state={@game_state} seat={@seat} players={@state.players} winners={@state.winners} delta_scores={@state.delta_scores} delta_scores_reason={@state.delta_scores_reason} timer={@state.timer} visible_screen={@state.visible_screen} available_seats={@state.available_seats}/>
-        <.live_component module={RiichiAdvancedWeb.EndWindowComponent} id="end-window" game_state={@game_state} seat={@seat} players={@state.players} visible_screen={@state.visible_screen}/>
+        <.live_component module={RiichiAdvancedWeb.WinWindowComponent} id="win-window" game_state={@game_state} seat={@seat} lang={@lang} winner={Map.get(@state.winners, Enum.at(@state.winner_seats, @state.winner_index), nil)} timer={@state.timer} visible_screen={@state.visible_screen}/>
+        <.live_component module={RiichiAdvancedWeb.ScoreWindowComponent} id="score-window" game_state={@game_state} seat={@seat} lang={@lang} players={@state.players} winners={@state.winners} delta_scores={@state.delta_scores} delta_scores_reason={@state.delta_scores_reason} timer={@state.timer} visible_screen={@state.visible_screen} available_seats={@state.available_seats}/>
+        <.live_component module={RiichiAdvancedWeb.EndWindowComponent} id="end-window" game_state={@game_state} seat={@seat} lang={@lang} players={@state.players} visible_screen={@state.visible_screen}/>
       <% end %>
       <%= if @state.error != nil do %>
-        <.live_component module={RiichiAdvancedWeb.ErrorWindowComponent} id="error-window" game_state={@game_state} seat={@seat} players={@state.players} error={@state.error}/>
+        <.live_component module={RiichiAdvancedWeb.ErrorWindowComponent} id="error-window" game_state={@game_state} seat={@seat} lang={@lang} players={@state.players} error={@state.error}/>
       <% end %>
       <%= if @viewer != :spectator do %>
         <div class="buttons" :if={not @hide_buttons and @state.players[@seat].declared_yaku != []}>
           <%= if @marking and not Enum.empty?(@state.marking[@seat]) do %>
-            <button class="button" phx-cancellable-click="clear_marked_objects" :if={RiichiAdvanced.GameState.Marking.num_objects_needed(@state.marking[@seat]) > 1}>Clear</button>
-            <button class="button" phx-cancellable-click="cancel_marked_objects" :if={Keyword.get(@state.marking[@seat], :cancellable)}>Cancel</button>
+            <button class="button" phx-cancellable-click="clear_marked_objects" :if={RiichiAdvanced.GameState.Marking.num_objects_needed(@state.marking[@seat]) > 1}><%= t(@lang, "Clear") %></button>
+            <button class="button" phx-cancellable-click="cancel_marked_objects" :if={Keyword.get(@state.marking[@seat], :cancellable)}><%= t(@lang, "Cancel") %></button>
           <% else %>
             <%= if not Enum.empty?(@state.players[@seat].call_buttons) do %>
               <%= if Enum.all?(@state.players[@seat].call_buttons, fn {called_tile, _choices} -> called_tile != "saki" end) do %>
-                <button class="button" phx-cancellable-click="cancel_call_buttons">Cancel</button>
+                <button class="button" phx-cancellable-click="cancel_call_buttons"><%= t(@lang, "Cancel") %></button>
               <% end %>
             <% else %>
-              <%= for {button, button_name} <- Enum.map(@state.players[@seat].buttons, fn button -> {button, if button == "skip" do "Skip" else Map.get(@state.rules["buttons"][button], "display_name", "Button") end} end) do %>
-                <button class={["button", String.length(button_name) >= 40 && "small-text"]} phx-cancellable-click="button_clicked" phx-hover="hover_button" phx-hover-off="hover_off" phx-value-name={button}><%= button_name %></button>
+              <%= for {button, button_display_name} <- Enum.map(@state.players[@seat].buttons, fn button -> {button, if button == "skip" do t(@lang, "Skip") else Map.get(Rules.get(@state.rules_ref, "buttons")[button], "display_name", t(@lang, "Button")) end} end) do %>
+                <button class={["button", String.length(button_display_name) >= 40 && "small-text"]} phx-cancellable-click="button_clicked" phx-hover="hover_button" phx-hover-off="hover_off" phx-value-name={button}><%= dt(@lang, button_display_name) %></button>
               <% end %>
             <% end %>
           <% end %>
@@ -218,7 +227,7 @@ defmodule RiichiAdvancedWeb.GameLive do
         <div class="auto-buttons">
           <%= for {{name, desc, checked}, i} <- Enum.with_index(@state.players[@seat].auto_buttons) do %>
             <input id={"auto-button-" <> name} type="checkbox" class="auto-button" phx-click="auto_button_toggled" phx-value-name={name} phx-value-enabled={if checked do "true" else "false" end} checked={checked}>
-            <label for={"auto-button-" <> name} title={desc} data-name={@state.rules["auto_buttons"][name]["display_name"]} tabindex={i}><%= @state.rules["auto_buttons"][name]["display_name"] %></label>
+            <label for={"auto-button-" <> name} title={desc} data-name={Rules.get(@state.rules_ref, "auto_buttons", %{})[name]["display_name"]} tabindex={i}><%= Rules.get(@state.rules_ref, "auto_buttons", %{})[name]["display_name"] %></label>
           <% end %>
         </div>
         <div class="call-buttons-container">
@@ -271,9 +280,9 @@ defmodule RiichiAdvancedWeb.GameLive do
         id="declare-yaku"
         game_state={@game_state}
         viewer={@viewer}
-        yakus={Map.get(@state.rules, "declarable_yaku", [])}
+        yakus={Rules.get(@state.rules_ref, "declarable_yaku", [])}
         :if={@state.players[@seat].declared_yaku == []} />
-      <div class="display-wall-hover" :if={Map.get(@state.rules, "display_wall", false)}></div>
+      <div class="display-wall-hover" :if={Rules.get(@state.rules_ref, "display_wall", false)}><%= t(@lang, "Show wall") %></div>
       <.live_component module={RiichiAdvancedWeb.DisplayWallComponent}
         id="display-wall"
         game_state={@game_state}
@@ -283,7 +292,7 @@ defmodule RiichiAdvancedWeb.GameLive do
         wall={@state.wall}
         dead_wall={@state.dead_wall}
         atop_wall={@state.atop_wall}
-        wall_length={length(Map.get(@state.rules, "wall", []))}
+        wall_length={length(Rules.get(@state.rules_ref, "wall", []))}
         dice={@state.dice}
         dice_roll={Enum.sum(@state.dice)}
         wall_index={@state.wall_index}
@@ -292,10 +301,10 @@ defmodule RiichiAdvancedWeb.GameLive do
         reserved_tiles={@state.reserved_tiles}
         drawn_reserved_tiles={@state.drawn_reserved_tiles}
         available_seats={@state.available_seats}
-        :if={Map.get(@state.rules, "display_wall", false)} />
-      <div class={["big-text"]} :if={@loading}>Loading...</div>
-      <div class="display-am-hand-hover" :if={Map.get(@state.rules, "show_nearest_american_hand", false)}></div>
-      <div class="display-am-hand-container" :if={Map.get(@state.rules, "show_nearest_american_hand", false)}>
+        :if={Rules.get(@state.rules_ref, "display_wall", false)} />
+      <div class={["big-text"]} :if={@loading}><%= t(@lang, "Loading...") %></div>
+      <div class="display-am-hand-hover" :if={Rules.get(@state.rules_ref, "show_nearest_american_hand", false)}></div>
+      <div class="display-am-hand-container" :if={Rules.get(@state.rules_ref, "show_nearest_american_hand", false)}>
         <%= for {_am_match_definition, _shanten, arranged_hand} <- @state.players[@seat].cache.closest_american_hands do %>
           <div class="display-am-hand" :if={arranged_hand})>
             <%= for tile <- arranged_hand do %>
@@ -304,8 +313,8 @@ defmodule RiichiAdvancedWeb.GameLive do
           </div>
         <% end %>
       </div>
-      <div class={["big-text"]} :if={@loading}>Loading...</div>
-      <%= if RiichiAdvanced.GameState.Debug.debug_status() or Map.get(@state.rules, "debug_status", false) do %>
+      <div class={["big-text"]} :if={@loading}><%= t(@lang, "Loading...") %></div>
+      <%= if RiichiAdvanced.GameState.Debug.debug_status() or Rules.get(@state.rules_ref, "debug_status", false) do %>
         <div class={["status-line", Utils.get_relative_seat(@seat, seat)]} :for={{seat, player} <- @state.players}>
           <div class="status-text" :for={status <- player.status}><%= status %></div>
           <div class="status-text" :for={{name, value} <- player.counters}><%= "#{name}: #{value}" %></div>
@@ -313,10 +322,10 @@ defmodule RiichiAdvancedWeb.GameLive do
         </div>
       <% else %>
         <div class={["status-line", Utils.get_relative_seat(@seat, seat)]} :for={{seat, player} <- @state.players}>
-          <%= for status <- player.status, status in Map.get(@state.rules, "shown_statuses_public", []) or (seat == @viewer and status in Map.get(@state.rules, "shown_statuses", [])) do %>
+          <%= for status <- player.status, status in Rules.get(@state.rules_ref, "shown_statuses_public", []) or (seat == @viewer and status in Rules.get(@state.rules_ref, "shown_statuses", [])) do %>
             <div class="status-text"><%= status %></div>
           <% end %>
-          <%= for {name, value} <- player.counters, name in Map.get(@state.rules, "shown_statuses_public", []) or (seat == @viewer and name in Map.get(@state.rules, "shown_statuses", [])) do %>
+          <%= for {name, value} <- player.counters, name in Rules.get(@state.rules_ref, "shown_statuses_public", []) or (seat == @viewer and name in Rules.get(@state.rules_ref, "shown_statuses", [])) do %>
             <div class="status-text"><%= "#{name}: #{value}" %></div>
           <% end %>
         </div>
@@ -349,16 +358,16 @@ defmodule RiichiAdvancedWeb.GameLive do
           id="centerpiece-status-bar"
           tiles_left={length(@state.wall) - @state.wall_index}
           honba={@state.honba}
-          riichi_sticks={Utils.try_integer(@state.pot / max(1, (get_in(@state.rules["score_calculation"]["riichi_value"]) || 1)))}
+          riichi_sticks={Utils.try_integer(@state.pot / max(1, Rules.get(@state.rules_ref, "score_calculation", %{}) |> Map.get("riichi_value", 1)))}
           display_riichi_sticks={@display_riichi_sticks}
           display_honba={@display_honba} />
-        <.live_component module={RiichiAdvancedWeb.MenuButtonsComponent} id="menu-buttons" log_button={true} />
+        <.live_component module={RiichiAdvancedWeb.MenuButtonsComponent} id="menu-buttons" log_button={true} lang={@lang} />
       </div>
 
       <div class="rules-wrapper">
         <%= for rules_text_name <- @state.rules_text_order, not Enum.empty?(@state.rules_text[rules_text_name]) do %>
           <input type="radio" id={"rules-popover-radio-#{rules_text_name}"} name="rules-popover-tab" class="rules-popover-radio" phx-update="ignore">
-          <label for={"rules-popover-radio-#{rules_text_name}"}><%= rules_text_name %></label>
+          <label for={"rules-popover-radio-#{rules_text_name}"}><%= dt(@lang, rules_text_name) %></label>
           <div class="rules-popover-container">
             <div class="rules-popover">
               <%= for {title, {text, priority}} <- Enum.sort_by(@state.rules_text[rules_text_name], fn {_title, {text, priority}} -> {priority, String.length(text)} end) do %>
@@ -373,9 +382,9 @@ defmodule RiichiAdvancedWeb.GameLive do
         <input type="radio" id={"rules-popover-unselect"} name="rules-popover-tab" class="rules-popover-unselect" phx-update="ignore">
         <label for={"rules-popover-unselect"}></label>
       </div>
-      <.live_component module={RiichiAdvancedWeb.MessagesComponent} id="messages" messages={@messages} />
+      <.live_component module={RiichiAdvancedWeb.MessagesComponent} id="messages" messages={@messages} lang={@lang} />
       <div class="ruleset">
-        <textarea readonly><%= @state.ruleset_json %></textarea>
+        <textarea readonly><%= Rules.get(@state.rules_ref, :ruleset_json) %></textarea>
       </div>
     </div>
     """
@@ -474,12 +483,12 @@ defmodule RiichiAdvancedWeb.GameLive do
   defp navigate_back(socket) do
     if Map.has_key?(socket.assigns, :tutorial_sequence) do
       if socket.assigns.return_to_editor do
-        push_navigate(socket, to: ~p"/tutorial_creator?ruleset=#{socket.assigns.ruleset}&seat=#{socket.assigns.seat_param}&tutorial_id=#{socket.assigns.tutorial_sequence_name}&nickname=#{socket.assigns.nickname}")
+        push_navigate(socket, to: ~p"/tutorial_creator?ruleset=#{socket.assigns.ruleset}&seat=#{socket.assigns.seat_param}&tutorial_id=#{socket.assigns.tutorial_sequence_name}&nickname=#{socket.assigns.nickname}&lang=#{socket.assigns.lang}")
       else
-        push_navigate(socket, to: ~p"/tutorial/#{socket.assigns.ruleset}?nickname=#{socket.assigns.nickname}")
+        push_navigate(socket, to: ~p"/tutorial/#{socket.assigns.ruleset}?nickname=#{socket.assigns.nickname}&lang=#{socket.assigns.lang}")
       end
     else
-      push_navigate(socket, to: ~p"/room/#{socket.assigns.ruleset}/#{socket.assigns.room_code}?nickname=#{socket.assigns.nickname}")
+      push_navigate(socket, to: ~p"/room/#{socket.assigns.ruleset}/#{socket.assigns.room_code}?nickname=#{socket.assigns.nickname}&lang=#{socket.assigns.lang}")
     end
   end
 
@@ -582,7 +591,8 @@ defmodule RiichiAdvancedWeb.GameLive do
       _ -> {nil, nil}
     end
     socket = assign(socket, :hovered_called_tile, called_tile)
-    is_upgrade = get_in(socket.assigns.state.rules, ["buttons", name, "upgrades"]) != nil
+    buttons = Rules.get(socket.assigns.state.rules_ref, "buttons", %{})
+    is_upgrade = get_in(buttons[name]["upgrades"]) != nil
     socket = assign(socket, :hovered_call_choice, if is_upgrade do nil else call_choice end)
     {:noreply, socket}
   end
@@ -615,6 +625,12 @@ defmodule RiichiAdvancedWeb.GameLive do
       socket = trigger_next_tutorial_scene(socket, 0)
       {:noreply, socket}
     else {:noreply, socket} end
+  end
+
+  def handle_event("change_language", %{"lang" => lang}, socket), do: {:noreply, assign(socket, :lang, lang)}
+
+  def handle_event(_event, _assigns, socket) do
+    {:noreply, socket}
   end
 
   def handle_info(:back, socket) do
@@ -699,11 +715,18 @@ defmodule RiichiAdvancedWeb.GameLive do
       |> assign(:state, state)
       |> assign(:seat, seat)
       |> assign(:viewer, if spectator do :spectator else seat end)
-      |> assign(:display_riichi_sticks, Map.get(state.rules, "display_riichi_sticks", false))
-      |> assign(:display_honba, Map.get(state.rules, "display_honba", false))
+      |> assign(:display_riichi_sticks, Rules.get(state.rules_ref, "display_riichi_sticks", false))
+      |> assign(:display_honba, Rules.get(state.rules_ref, "display_honba", false))
       |> assign(:marking, RiichiAdvanced.GameState.Marking.needs_marking?(state, seat))
       |> assign(:loading, false)
+      {:noreply, socket}
+    else
+      {:noreply, socket}
+    end
+  end
 
+  def handle_info(%{topic: topic, event: "fetch_messages", payload: %{"session_id" => session_id}}, socket) do
+    if topic == (socket.assigns.ruleset <> ":" <> socket.assigns.room_code) and session_id != nil and socket.assigns.session_id == session_id do
       # fetch messages
       messages_init = RiichiAdvanced.MessagesState.init_socket(socket)
       socket = if Map.has_key?(messages_init, :messages_state) do
@@ -711,16 +734,27 @@ defmodule RiichiAdvancedWeb.GameLive do
         # subscribe to message updates
         Phoenix.PubSub.subscribe(RiichiAdvanced.PubSub, "messages:" <> socket.id)
         GenServer.cast(messages_init.messages_state, {:add_message, [
-          %{text: "Entered a "},
-          %{bold: true, text: socket.assigns.ruleset},
-          %{text: "game, room code"},
-          %{bold: true, text: socket.assigns.room_code}
-        ] ++ if state.mods != nil and not Enum.empty?(state.mods) do
-          [%{text: "with mods"}] ++ Enum.map(state.mods, fn mod -> %{bold: true, text: ModLoader.get_mod_name(mod)} end)
-        else [] end})
+          if socket.assigns.state.mods != nil and not Enum.empty?(socket.assigns.state.mods) do
+            %{
+              text: "Entered a %{ruleset} game, room code %{room_code} with mods %{mods}",
+              vars: %{
+                ruleset: {:text, socket.assigns.ruleset, %{bold: true}},
+                room_code: {:text, socket.assigns.room_code, %{bold: true}},
+                mods: {:text, Enum.map_join(socket.assigns.state.mods, ", ", &ModLoader.get_mod_name/1), %{bold: true}}
+              }
+            }
+          else
+            %{
+              text: "Entered a %{ruleset} game, room code %{room_code}",
+              vars: %{
+                ruleset: {:text, socket.assigns.ruleset, %{bold: true}},
+                room_code: {:text, socket.assigns.room_code, %{bold: true}}
+              }
+            }
+          end
+        ]})
         socket
       else socket end
-
       {:noreply, socket}
     else
       {:noreply, socket}

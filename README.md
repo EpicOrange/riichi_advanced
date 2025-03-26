@@ -7,11 +7,26 @@
 
 Infinitely extensible mahjong web client featuring the following:
 
-- Many base rulesets, including Riichi, Hong Kong Old Style, Sichuan Bloody, and Bloody 30-Faan Jokers. You can even play Riichi Mahjong with Saki powers!
+- 24+ base rulesets, including:
+  + Riichi,
+  + Hong Kong Old Style,
+  + Sichuan Bloody,
+  + Space Mahjong,
+  + Kansai Sanma,
+  + MCR,
+  + Bloody 30-Faan Jokers,
+  + you can even play Riichi Mahjong with Saki powers!
+- A variety of mods for each ruleset! Play with:
+  + head bump,
+  + sequences wrapping from 9 to 1,
+  + a "ten" tile for each suit
+  + every local yaku in existence
+  + transparent Washizu tiles
+  + every tile is aka dora
+  + and more! (there are currently about 200 mods!)
 - Support for 3-player modes like Sanma, and 2-player modes like Minefield!
-- A variety of mods for each ruleset! Play with head bump, sequences wrapping from 9 to 1, a "ten" tile for each suit, and more!
 - Multiplayer lobby system with public/private rooms! Invite your friends, or play against AI!
-- Infinitely customizable ruleset! Change the rules by copying an existing ruleset, and play your modified ruleset directly in the client!
+- Infinitely customizable ruleset! Beyond mods, you can change the rules by writing [MahjongScript](documentation/mahjongscript.md) to make minute changes to a game!
 
 Join the [Discord](https://discord.gg/5QQHmZQavP) for development updates and bug reporting! (There are a lot of funny bugs, don't miss out!)
 
@@ -29,6 +44,30 @@ If interested in contributing, check out the [contributing doc](CONTRIBUTING.md)
 
 ## Changelog
 
+- __20 Mar 2025__: v1.3.1:
+  + Added ability to unselect marked tiles in hand
+  + Added `counter_more_than`, `counter_less_than` conditions
+  + Added `dragon` and `wind` and `not_*` tile specs
+  + Added mobile tooltips
+  + Added `not` for conditions in mahjongscript
+  + Added or-patterns to American match specifications
+  + Added or-patterns to set definitions
+  + Added "responsibility" logic to Zung Jung
+  + Added reset honba on exhaustive draw mod to Fuzhou
+  + Added test coverage for space mahjong, cosmic riichi, galaxy mahjong, and zan sanma -- we're at 419 tests now
+  + Added top-level JSON constants that get substituted on load
+  + Added Zan Sanma preset for kansai sanma
+  + Fixed AI going too fast and discarding invalid tiles when cancellable riichi mod is on
+  + Fixed button clicks not registering if you click the top of a button
+  + Fixed Concealed Hand being scored for Seven Pairs and Thirteen Terminals hands in Zung Jung
+  + Fixed cosmic riichi awarding both kontsu and triplet yaku for the same hand
+  + Fixed facedown tiles identity being visible if you just look at the HTML
+  + Fixed head bump actually being a race of who clicks the ron button first
+  + Fixed joker solver not being able to solve for tiles with attributes
+  + Fixed robbing the gold not working for nondealers in Fuzhou mahjong
+  + Fixed some more crashes
+  + Fixed transparent Washizu tiles not being replaced with aka/ao/kindora
+  + Fixed variables not being substituted in certain locations in functions
 - __14 Mar 2025__: v1.3.0:
   + Added `dismantle_calls` match spec keyword that will only remove the matching part from a call
   + Added `modify_winner` and `modify_payout` actions for custom scoring
@@ -208,6 +247,8 @@ Once you enter the lobby or room for a ruleset you can scroll down to view the J
 
 If you're looking to make a custom ruleset using the game's MahjongScript ruleset language, that documentation is available [here](documentation/documentation.md). To play a custom ruleset, simply select Custom on the main page, click Room Settings, and paste and edit your ruleset in the box provided.
 
+Otherwise, click Room Settings and the Config tab to reveal an [MahjongScript](documentation/mahjongscript.md) editor, where any MahjongScript you write will be applied to the game.
+
 ## How can I contribute?
 
 Mostly we need people to play and [report bugs](https://github.com/EpicOrange/riichi_advanced/issues), of which there are likely many. We also accept pull requests so if you see an [issue](https://github.com/EpicOrange/riichi_advanced/issues) you'd like to tackle, feel free to do so!
@@ -236,10 +277,12 @@ Here is a breakdown of all the directories:
     │   │   ├── game (everything related to the game screen)
     │   │   ├── lobby (everything related to the lobby screen)
     │   │   ├── log (everything related to the log viewing screen)
+    │   │   ├── majs (everything related to the mahjongscript interpreter)
     │   │   ├── messages (everything related to the messages panel)
     │   │   ├── room (everything related to the room screen)
     │   │   ├── application.ex (main thing! OTP root application/supervisor)
-    │   │   ├── cache.ex (general-purpose ETS cache)
+    │   │   ├── cache.ex (Nebulex cache for function caching)
+    │   │   ├── ets-cache.ex (general-purpose ETS cache)
     │   │   ├── exit_monitor.ex (general-purpose disconnection monitor process)
     │   │   ├── mailer.ex (unused)
     │   │   ├── repo.ex (unused)
@@ -263,7 +306,14 @@ Here is a breakdown of all the directories:
     │       ├── rulesets (all rulesets)
     │       ├── favicon.ico
     │       └── robots.txt
-    └── test (all tests)
+    └── test
+        ├── riichi_advanced
+        │   ├── parsing (tests related to reading files)
+        │   ├── yaku_test (all yaku tests)
+        │   └── a bunch of other tests that end with _test.exs
+        ├── support
+        │   └── test_utils.exs (util functions called by tests)
+        └── test_helper.exs (boilerplate)
 
 ## Running the server locally
 
@@ -280,13 +330,15 @@ Then run:
     # Generate self-signed certs for local https
     mix phx.gen.cert
 
-    # Get Node dependencies
+    # Get Node dependencies (there aren't many)
     (cd assets; npm i)
 
     # Start the server
     HTTPS_PORT=4000 iex -S mix phx.server
 
 This should start the server up at `https://localhost:4000`. (Make sure to use `https`! `http` doesn't work locally for some reason.) Phoenix should live-reload all your changes to Elixir/JS/CSS files while the server is running.
+
+If it complains about a daemon not running, open a separate terminal and run `epmd` (Erlang Port Mapper Daemon), and try again.
 
 ## Acknowledgments
 

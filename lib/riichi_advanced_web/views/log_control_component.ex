@@ -130,29 +130,37 @@ defmodule RiichiAdvancedWeb.LogControlComponent do
   end
 
   def handle_event("back", _assigns, socket) do
-    socket = socket
-    |> rewind()
-    |> seek_to_match()
-    {:noreply, socket}
+    if socket.assigns.state.game_active do
+      socket = socket
+      |> rewind()
+      |> seek_to_match()
+      {:noreply, socket}
+    else
+      {:noreply, socket}
+    end
   end
 
   def handle_event("next", _assigns, socket) do
-    socket = advance(socket)
-    curr_event = get_current_event(socket)
-    IO.inspect({socket.assigns.kyoku_index, socket.assigns.event_index, curr_event})
-    state = if curr_event == nil do
-      GenServer.cast(socket.assigns.log_control_state, {:seek, socket.assigns.kyoku_index, socket.assigns.event_index})
-      GenServer.call(socket.assigns.log_control_state, :get_game_state)
-    else
-      case curr_event["type"] do
-        "discard"         -> GenServer.call(socket.assigns.log_control_state, {:send_discard, false, curr_event})
-        "buttons_pressed" -> GenServer.call(socket.assigns.log_control_state, {:send_button_press, false, curr_event})
-        "mark"            -> GenServer.call(socket.assigns.log_control_state, {:send_mark, false, curr_event})
-        _                 -> socket.assigns.state
+    if socket.assigns.state.game_active do
+      socket = advance(socket)
+      curr_event = get_current_event(socket)
+      IO.inspect({socket.assigns.kyoku_index, socket.assigns.event_index, curr_event})
+      state = if curr_event == nil do
+        GenServer.cast(socket.assigns.log_control_state, {:seek, socket.assigns.kyoku_index, socket.assigns.event_index})
+        GenServer.call(socket.assigns.log_control_state, :get_game_state)
+      else
+        case curr_event["type"] do
+          "discard"         -> GenServer.call(socket.assigns.log_control_state, {:send_discard, false, curr_event})
+          "buttons_pressed" -> GenServer.call(socket.assigns.log_control_state, {:send_button_press, false, curr_event})
+          "mark"            -> GenServer.call(socket.assigns.log_control_state, {:send_mark, false, curr_event})
+          _                 -> socket.assigns.state
+        end
       end
+      socket = assign(socket, :state, state)
+      {:noreply, socket}
+    else
+      {:noreply, socket}
     end
-    socket = assign(socket, :state, state)
-    {:noreply, socket}
   end
 
   def handle_event("next_kyoku", _assigns, socket) do

@@ -1,7 +1,7 @@
 defmodule RiichiAdvanced.Constants do
   alias RiichiAdvanced.Utils, as: Utils
 
-  @version "v1.3.0." <> (System.cmd("git", ["rev-parse", "--short", "HEAD"]) |> elem(0) |> String.trim())
+  @version "v1.3.1." <> (System.cmd("git", ["rev-parse", "--short", "HEAD"]) |> elem(0) |> String.trim())
 
   def version, do: @version
 
@@ -243,7 +243,7 @@ defmodule RiichiAdvanced.Constants do
     {"mcr",          "MCR", "Mahjong Competition Rules. Has a scoring system of a different kind of complexity than Riichi."},
     {"taiwanese",    "Taiwanese", "16-tile mahjong with riichi mechanics."},
     {"bloody30faan", "Bloody 30-Faan Jokers", "Bloody end rules mahjong, with Vietnamese jokers, and somehow more yaku than MCR."},
-    {"american",     "American (2024 NMJL)", "American mahjong. Assemble hands with jokers, and declare other players' hands dead. Rules are not available for this one."},
+    {"american",     "American (2024 NMJL)", "American Mah-Jongg. Assemble hands with jokers, and declare other players' hands dead. Rules are slightly different from MJME (see rules page)."},
     {"vietnamese",   "Vietnamese", "Mahjong with eight differently powerful joker tiles."},
     {"malaysian",    "Malaysian", "Three-player mahjong with 16 flowers, a unique joker tile, and instant payouts."},
     {"singaporean",  "Singaporean", "Mahjong with various instant payouts and various unique ways to get penalized by pao."},
@@ -291,7 +291,7 @@ defmodule RiichiAdvanced.Constants do
       display_name: "No Jokers Mahjong League 2024",
       tutorial_link: "https://docs.google.com/document/d/1APpd-YBnsKKssGmyLQiCp90Wk-06SlIScV1sKpJUbQo/edit?usp=sharing",
       ruleset: "riichi",
-      mods: ["nojokersmahjongleague", "kiriage_mangan", "agarirenchan", "tenpairenchan", "dora", "ura", "kandora", "yaku/ippatsu", "tobi", "immediate_kan_dora", "head_bump", "no_double_yakuman"],
+      mods: ["kiriage_mangan", "agarirenchan", "tenpairenchan", %{name: "dora", config: %{start_indicators: 1}}, "ura", "kandora", "yaku/ippatsu", %{name: "tobi", config: %{below: 0}}, "immediate_kan_dora", "head_bump", "no_double_yakuman", "nojokersmahjongleague"],
       default_mods: ["show_waits"],
     },
     "space" => %{
@@ -312,21 +312,21 @@ defmodule RiichiAdvanced.Constants do
       display_name: "Chinitsu Challenge",
       tutorial_link: "https://github.com/EpicOrange/riichi_advanced/blob/main/documentation/chinitsu_challenge.md",
       ruleset: "riichi",
-      mods: ["yaku/riichi", "chinitsu_challenge"],
+      mods: [%{name: "yaku/riichi", config: %{bet: 1000, drawless: false}}, "chinitsu_challenge"],
       default_mods: ["chombo", "tobi", "yaku/renhou_yakuman", "no_honors"],
     },
     "minefield" => %{
       display_name: "Minefield",
       tutorial_link: "https://riichi.wiki/Minefield_mahjong",
       ruleset: "riichi",
-      mods: ["minefield"],
+      mods: [%{name: "yaku/riichi", config: %{bet: 1000, drawless: false}}, "minefield"],
       default_mods: ["kiriage_mangan"],
     },
     "kansai" => %{
       display_name: "Kansai Sanma",
       tutorial_link: "https://github.com/EpicOrange/riichi_advanced/blob/main/documentation/kansai.md",
       ruleset: "riichi",
-      mods: ["sanma", "kansai"],
+      mods: ["sanma", "sanma_presets", "kansai", "kansai_chiitoitsu"],
       default_mods: ["tobi"],
     },
     "aka_test" => %{
@@ -339,7 +339,7 @@ defmodule RiichiAdvanced.Constants do
     "speed" => %{
       display_name: "Speed Mahjong",
       ruleset: "riichi",
-      mods: ["kan", "yaku/riichi", "speed"]
+      mods: ["kan", %{name: "yaku/riichi", config: %{bet: 1000, drawless: false}}, "speed"]
     }
   }
 
@@ -366,5 +366,14 @@ defmodule RiichiAdvanced.Constants do
   }
 
   def tutorials, do: @tutorials
+
+  @langs [
+    {"English", "en"},
+    {"日本語", "ja"},
+    {"简体中文", "zh_CN"},
+    {"繁體中文", "zh_TW"}
+  ]
+
+  def langs, do: @langs
 
 end

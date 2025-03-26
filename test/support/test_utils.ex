@@ -40,7 +40,7 @@ defmodule RiichiAdvanced.TestUtils do
   def initialize_test_state(ruleset, mods, config \\ nil) do
     room_code = Ecto.UUID.generate()
     game_spec = {RiichiAdvanced.GameSupervisor, room_code: room_code, ruleset: ruleset, mods: mods, config: config, name: Utils.via_registry("game", ruleset, room_code)}
-    {:ok, game} = DynamicSupervisor.start_child(RiichiAdvanced.GameSessionSupervisor, game_spec)
+    {:ok, _game} = DynamicSupervisor.start_child(RiichiAdvanced.GameSessionSupervisor, game_spec)
     [{game_state, _}] = Utils.registry_lookup("game_state", ruleset, room_code)
 
     # suppress all IO from game_state
@@ -56,7 +56,6 @@ defmodule RiichiAdvanced.TestUtils do
     %LogControl.LogControl{
       ruleset: ruleset,
       room_code: room_code,
-      supervisor: game,
       game_state_pid: game_state,
     }
   end
@@ -116,16 +115,17 @@ defmodule RiichiAdvanced.TestUtils do
         if [] not in errs do
           for tuples <- errs, {k, actual, expected} <- tuples do
             IO.puts("#{k}:\n\n    #{inspect(actual)}\n\nexpected #{k}:\n\n    #{inspect(expected)}")
-            assert actual == expected
           end
+          assert false
         end
       end
     else
       assert Enum.empty?(state.winner_seats)
-      no_win_buttons = Enum.all?(state.players, fn {_seat, player} ->
-        Enum.all?(["ron", "chankan", "tsumo"], & &1 not in player.buttons)
+      win_buttons = Enum.all?(state.players, fn {seat, player} ->
+        {seat, Enum.filter(["ron", "chankan", "tsumo"], & &1 in player.buttons)}
       end)
-      assert no_win_buttons
+      expected_win_buttons = Enum.all?(state.players, fn {seat, _player} -> {seat, []} end)
+      assert win_buttons == expected_win_buttons
     end
 
     if Map.has_key?(expected_state, :delta_scores) do
@@ -133,6 +133,13 @@ defmodule RiichiAdvanced.TestUtils do
         Map.get(state.delta_scores, seat, 0)
       end
       assert_list(delta_scores, expected_state.delta_scores)
+    end
+
+    if Map.has_key?(expected_state, :shuugi) do
+      shuugi = for seat <- [:east, :south, :west, :north], seat in state.available_seats do
+        Map.get(state.players[seat].counters, "shuugi", 0)
+      end
+      assert_list(shuugi, expected_state.shuugi)
     end
 
     if Map.has_key?(expected_state, :scores) do

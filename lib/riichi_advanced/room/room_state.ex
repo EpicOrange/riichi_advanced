@@ -327,6 +327,19 @@ defmodule RiichiAdvanced.RoomState do
     end
   end
 
+  def randomize_mods(state) do
+    random_mods = Map.get(state.rules, "available_mods", [])
+    |> Enum.filter(&is_map/1)
+    |> Enum.map(& &1["id"])
+    random_mods = Enum.take_random(random_mods, Integer.floor_div(length(random_mods), 2))
+    for {mod_name, _mod} <- state.mods, reduce: state do
+      state ->
+        state = toggle_mod(state, mod_name, mod_name in random_mods)
+        state = update_in(state.mods[mod_name].config, &Map.new(&1, fn {config_name, config} -> {config_name, Map.put(config, :value, Map.get(config, "values") |> Enum.random())} end))
+        state
+    end
+  end
+
   def broadcast_state_change(state) do
     # IO.puts("broadcast_state_change called")
     RiichiAdvancedWeb.Endpoint.broadcast(state.ruleset <> "-room:" <> state.room_code, "state_updated", %{"state" => state})
@@ -488,6 +501,12 @@ defmodule RiichiAdvanced.RoomState do
     {:noreply, state}
   end
 
+  def handle_cast(:randomize_mods, state) do
+    state = randomize_mods(state)
+    state = broadcast_state_change(state)
+    {:noreply, state}
+  end
+
   def handle_cast({:get_up, socket_id}, state) do
     state = update_seats(state, fn player -> if player == nil or player.id == socket_id do nil else player end end)
     state = put_in(state.players[socket_id].seat, nil)
@@ -524,7 +543,10 @@ defmodule RiichiAdvanced.RoomState do
     state = Map.update!(state, :seats, &Map.new(&1, fn {seat, player} -> {seat_map[seat], player} end))
 
     reserved_seats = Map.new(state.players, fn {_id, player} -> {seat_map[player.seat], player.session_id} end)
-    init_actions = [["vacate_room"]] ++ Enum.map(state.players, fn {_id, player} -> ["init_player", player.session_id, Atom.to_string(player.seat)] end) ++ [["initialize_game"]]
+    init_actions = [["vacate_room"]] ++ Enum.flat_map(state.players, fn {_id, player} -> [
+      ["init_player", player.session_id, Atom.to_string(player.seat)],
+      ["fetch_messages", player.session_id]
+    ] end) ++ [["initialize_game"]]
     args = [room_code: state.room_code, ruleset: state.ruleset, mods: mods, config: config, private: state.private, reserved_seats: reserved_seats, init_actions: init_actions, name: Utils.via_registry("game", state.ruleset, state.room_code)]
     game_spec = %{
       id: {RiichiAdvanced.GameSupervisor, state.ruleset, state.room_code},

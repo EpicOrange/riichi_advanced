@@ -1,0 +1,5 @@
+on after_initialization do
+  add_rule("1 Han", "Tsubame Gaeshi", "Win off a riichi discard.")
+end
+
+define_yaku yaku, "Tsubame Gaeshi", 1, won_by_discard and discarder_status("just_reached")

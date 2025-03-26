@@ -50,7 +50,12 @@ defmodule RiichiAdvanced.ModLoader do
         modded_json = apply_multiple_mods(ruleset_json, mods)
 
         if Debug.print_mods() do
-          IO.puts("Loading #{ruleset}: [\n  #{Enum.map_join(mods, ",\n  ", &Jason.encode!/1)}\n]")
+          mod_string = Enum.map_join(mods, ",\n  ", &Jason.encode!/1)
+          |> String.replace(",\"", ", \"")
+          |> String.replace(~r"\"([a-zA-Z0-9_]+?)\":", "\\1: ")
+          |> String.replace("\":", "\" => ")
+          |> String.replace("{", "%{")
+          IO.puts("Loading #{ruleset}: [\n  #{mod_string}\n]")
         end
         
         if not Debug.skip_ruleset_caching() do

@@ -1,4 +1,30 @@
+defmodule RiichiAdvanced.Compiler.Constant do
+  defstruct [
+    name: "constant"
+  ]
+end
+
+defimpl Jason.Encoder, for: RiichiAdvanced.Compiler.Constant do
+  def encode(%RiichiAdvanced.Compiler.Constant{name: name}, opts) do
+    Jason.Encode.string("@" <> name, opts)
+  end
+end
+
+defmodule RiichiAdvanced.Compiler.Variable do
+  defstruct [
+    name: "variable"
+  ]
+end
+
+defimpl Jason.Encoder, for: RiichiAdvanced.Compiler.Variable do
+  def encode(%RiichiAdvanced.Compiler.Variable{name: name}, _opts) do
+    "$" <> name
+  end
+end
+
 defmodule RiichiAdvanced.Compiler do
+  alias RiichiAdvanced.Compiler.Constant
+  alias RiichiAdvanced.Compiler.Variable
   alias RiichiAdvanced.Parser
   alias RiichiAdvanced.Utils
   alias RiichiAdvanced.Validator
@@ -6,28 +32,56 @@ defmodule RiichiAdvanced.Compiler do
   @binops ["atan2", "copysign", "drem", "fdim", "fmax", "fmin", "fmod", "frexp", "hypot", "jn", "ldexp", "modf", "nextafter", "nexttoward", "pow", "remainder", "scalb", "scalbln", "yn"]
 
   defp compile_condition(condition, line, column) do
-    condition = case condition do
-      false -> {:ok, {"false", []}}
-      true -> {:ok, {"true", []}}
-      condition when is_binary(condition) -> {:ok, {condition, []}}
-      {condition, _pos, nil} when is_binary(condition) -> {:ok, {condition, []}}
-      {condition, _pos, opts} when is_binary(condition) -> {:ok, {condition, opts}}
-      %{"name" => condition, "opts" => opts} -> {:ok, {condition, opts}}
-      {:%{}, [line: line, column: column], map} -> compile_condition(Map.new(map), line, column)
-      _ -> {:error, "Compiler.compile_condition: at line #{line}:#{column}, expecting a condition, got #{inspect(condition)}"}
-    end
-    with {:ok, {condition, opts}} <- condition,
-         {:ok, opts} <- Parser.parse_sigils(opts),
-         {:ok, opts} <- Validator.validate_json(opts) do
-      if Validator.validate_condition_name(condition) do
-        if Enum.empty?(opts) do
-          {:ok, condition}
-        else
-          {:ok, %{"name" => condition, "opts" => opts}}
+    case condition do
+      {:==, pos, [{l, _, nil}, {r, _, nil}]} -> compile_condition({"counter_equals", pos, [l, r]}, line, column)
+      {:==, pos, [{l, _, nil}, r]} -> compile_condition({"counter_equals", pos, [l, r]}, line, column)
+      {:!=, pos, [{l, _, nil}, {r, _, nil}]} -> compile_condition({"not_counter_equals", pos, [l, r]}, line, column)
+      {:!=, pos, [{l, _, nil}, r]} -> compile_condition({"not_counter_equals", pos, [l, r]}, line, column)
+      {:<=, pos, [{l, _, nil}, {r, _, nil}]} -> compile_condition({"counter_at_most", pos, [l, r]}, line, column)
+      {:<=, pos, [{l, _, nil}, r]} -> compile_condition({"counter_at_most", pos, [l, r]}, line, column)
+      {:>=, pos, [{l, _, nil}, {r, _, nil}]} -> compile_condition({"counter_at_least", pos, [l, r]}, line, column)
+      {:>=, pos, [{l, _, nil}, r]} -> compile_condition({"counter_at_least", pos, [l, r]}, line, column)
+      {:<, pos, [{l, _, nil}, {r, _, nil}]} -> compile_condition({"counter_less_than", pos, [l, r]}, line, column)
+      {:<, pos, [{l, _, nil}, r]} -> compile_condition({"counter_less_than", pos, [l, r]}, line, column)
+      {:>, pos, [{l, _, nil}, {r, _, nil}]} -> compile_condition({"counter_more_than", pos, [l, r]}, line, column)
+      {:>, pos, [{l, _, nil}, r]} -> compile_condition({"counter_more_than", pos, [l, r]}, line, column)
+      {:not, _, [condition]} ->
+        with {:ok, result} <- compile_cnf_condition(condition, line, column) do
+          {:ok, %{"name" => "not", "opts" => [result]}}
         end
-      else
-        {:error, "Compiler.compile_condition: at line #{line}:#{column}, #{inspect(condition)} is not a valid condition"}
-      end
+      {:@, _, [{name, _, nil}]} -> Validator.validate_constant(name)
+      {:+, _, [{name, _, nil}]} -> Validator.validate_variable(name)
+      _ ->
+        condition = case condition do
+          false -> {:ok, {"false", []}}
+          true -> {:ok, {"true", []}}
+          condition when is_binary(condition) -> {:ok, {condition, []}}
+          {condition, _, nil} when is_binary(condition) -> {:ok, {condition, []}}
+          {condition, _, opts} when is_binary(condition) -> {:ok, {condition, opts}}
+          %{"name" => condition, "opts" => opts} -> {:ok, {condition, opts}}
+          condition ->
+            case Validator.validate_json(condition) do
+              {:ok, %Constant{} = condition} -> {:ok, {condition, []}}
+              {:ok, %Variable{} = condition} -> {:ok, {condition, []}}
+              _ -> {:error, "Compiler.compile_condition: at line #{line}:#{column}, expecting a condition, got #{inspect(condition)}"}
+            end
+        end
+        with {:ok, {condition, opts}} <- condition,
+             {:ok, opts} <- Parser.parse_sigils(opts),
+             {:ok, opts} <- Validator.validate_json(opts) do
+          if Validator.validate_condition_name(condition) do
+            if Enum.empty?(opts) do
+              {:ok, condition}
+            else
+              case Enum.at(opts, -1) do
+                %{"as" => seats} -> {:ok, %{"name" => condition, "as" => seats, "opts" => Enum.drop(opts, -1)}} 
+                _                -> {:ok, %{"name" => condition, "opts" => opts}}
+              end
+            end
+          else
+            {:error, "Compiler.compile_condition: at line #{line}:#{column}, #{inspect(condition)} is not a valid condition"}
+          end
+        end
     end
   end
 
@@ -59,6 +113,16 @@ defmodule RiichiAdvanced.Compiler do
     end
   end
 
+  defp compile_condition_list(condition, line, column) do
+    with {:ok, condition} <- compile_cnf_condition(condition, line, column) do
+      case condition do
+        %Constant{} -> {:ok, condition}
+        %Variable{} -> {:ok, condition}
+        _           -> {:ok, List.wrap(condition)}
+      end
+    end
+  end
+
   # defp compile_action!(action, line, column) do
   #   case compile_action(action, line, column) do
   #     {:ok, json} -> json
@@ -67,10 +131,20 @@ defmodule RiichiAdvanced.Compiler do
   # end
   defp compile_action(action, line, column) do
     case action do
+      {:=, pos, [{l, _, nil}, {:+, _, [{l, _, nil}, {r, _, nil}]}]} -> compile_action({"add_counter", pos, [l, r]}, line, column)
+      {:=, pos, [{l, _, nil}, {:-, _, [{l, _, nil}, {r, _, nil}]}]} -> compile_action({"subtract_counter", pos, [l, r]}, line, column)
+      {:=, pos, [{l, _, nil}, {:*, _, [{l, _, nil}, {r, _, nil}]}]} -> compile_action({"multiply_counter", pos, [l, r]}, line, column)
+      {:=, pos, [{l, _, nil}, {:/, _, [{l, _, nil}, {r, _, nil}]}]} -> compile_action({"divide_counter", pos, [l, r]}, line, column)
+      {:=, pos, [{l, _, nil}, {:+, _, [{l, _, nil}, r]}]} -> compile_action({"add_counter", pos, [l, r]}, line, column)
+      {:=, pos, [{l, _, nil}, {:-, _, [{l, _, nil}, r]}]} -> compile_action({"subtract_counter", pos, [l, r]}, line, column)
+      {:=, pos, [{l, _, nil}, {:*, _, [{l, _, nil}, r]}]} -> compile_action({"multiply_counter", pos, [l, r]}, line, column)
+      {:=, pos, [{l, _, nil}, {:/, _, [{l, _, nil}, r]}]} -> compile_action({"divide_counter", pos, [l, r]}, line, column)
+      {:=, pos, [{l, _, nil}, {r, _, nil}]} -> compile_action({"set_counter", pos, [l, r]}, line, column)
+      {:=, pos, [{l, _, nil}, r]} -> compile_action({"set_counter", pos, [l, r]}, line, column)
       {"if", [line: line, column: column], opts} ->
         case opts do
           [condition, actions] ->
-            with {:ok, condition} <- compile_cnf_condition(condition, line, column),
+            with {:ok, condition} <- compile_condition_list(condition, line, column),
                  {:ok, then_branch} <- compile_action_list(Keyword.get(actions, :do), line, column) do
               else_branch_ast = Keyword.get(actions, :else)
               if else_branch_ast == nil do
@@ -82,6 +156,22 @@ defmodule RiichiAdvanced.Compiler do
               end
             end
           _ -> {:error, "\"if\" got invalid parameters: #{inspect(opts)}"}
+        end
+      {"unless", [line: line, column: column], opts} ->
+        case opts do
+          [condition, actions] ->
+            with {:ok, condition} <- compile_condition_list(condition, line, column),
+                 {:ok, then_branch} <- compile_action_list(Keyword.get(actions, :do), line, column) do
+              else_branch_ast = Keyword.get(actions, :else)
+              if else_branch_ast == nil do
+                {:ok, ["unless", condition, then_branch]}
+              else
+                with {:ok, else_branch} <- compile_action_list(else_branch_ast, line, column) do
+                  {:ok, ["ite", condition, else_branch, then_branch]}
+                end
+              end
+            end
+          _ -> {:error, "\"unless\" got invalid parameters: #{inspect(opts)}"}
         end
       {"as", [line: line, column: column], opts} ->
         case opts do
@@ -100,19 +190,8 @@ defmodule RiichiAdvanced.Compiler do
       {name, [line: line, column: column], args} when is_binary(name) ->
         if name in Validator.allowed_actions() do
           if args != nil do
-            # each action in a do block should be treated as another parameter
-            args = Enum.map(Enum.with_index(args), &case &1 do
-              {[do: actions], _i} -> compile_action_list(actions, line, column)
-              {arg, i} when name == "add" and i == 1 ->
-                with {:ok, condition} <- compile_cnf_condition(arg, line, column) do
-                  {:ok, [condition]}
-                end
-              {arg, _i} -> {:ok, [arg]}
-            end)
-            |> Utils.sequence()
-            with {:ok, args} <- args,
-                 {:ok, args} <- Parser.parse_sigils(args),
-                 {:ok, args} <- args |> Enum.concat() |> Enum.map(&Validator.validate_json/1) |> Utils.sequence() do
+            with {:ok, args} <- Enum.map(args, &compile_constant(&1, line, column)) |> Utils.sequence(),
+                 {:ok, args} <- args |> Enum.map(&Validator.validate_json/1) |> Utils.sequence() do
               {:ok, [name | args]}
             end
           else
@@ -129,7 +208,12 @@ defmodule RiichiAdvanced.Compiler do
             end
           end
         end
-      _ -> {:error, "Compiler.compile_action: at line #{line}:#{column}, expected an action or a if block, got #{inspect(action)}"}
+      action ->
+        case Validator.validate_json(action) do
+          {:ok, %Constant{} = action} -> {:ok, action}
+          {:ok, %Variable{} = action} -> {:ok, action}
+          _ -> {:error, "Compiler.compile_action: at line #{line}:#{column}, expected an action or a if block, got #{inspect(action)}"}
+        end
     end
   end
 
@@ -145,6 +229,40 @@ defmodule RiichiAdvanced.Compiler do
       {_name, [line: line, column: column], _actions} -> compile_action_list([ast], line, column)
       actions when is_list(actions) -> Utils.sequence(Enum.map(actions, &compile_action(&1, line, column)))
       _ -> {:error, "Compiler.compile_action_list: at line #{line}:#{column}, expected an action list, got #{inspect(ast)}"}
+    end
+  end
+
+  defp compile_constant(true, _line, _column), do: {:ok, true}
+  defp compile_constant(false, _line, _column), do: {:ok, false}
+  defp compile_constant(value, line, column) do
+    case value do
+      # if it's a do block, use compile_action_list
+      [do: actions] -> compile_action_list(actions, line, column)
+      # otherwise, try a bunch of things
+      # this order is important: 
+      # compile_action will treat conditions as custom actions (function calls)
+      # validate_json will treat actions/conditions as raw JSON
+      # compile_cnf_condition defaults to a single condition
+      _ ->
+        with {:ok, value} <- Parser.parse_sigils(value),
+             {:error, _} <- compile_condition(value, line, column),
+             {:error, _} <- compile_action(value, line, column),
+             {:error, _} <- Validator.validate_json(value),
+             {:error, _} <- compile_cnf_condition(value, line, column) do
+          {:error, "Compiler.compile_constant: at line #{line}:#{column}, expected JSON, condition, action, or do block, got #{inspect(value)}"}
+        end
+    end
+  end
+
+  defp compile_command("var", name, args, line, column) do
+    value = case args do
+      [value] -> {:ok, value}
+      _ -> {:error, "Compiler.compile: at line #{line}:#{column}, `var` command expects only one value, got #{inspect(args)}"}
+    end
+    with {:ok, value} <- value,
+         {:ok, value} <- Validator.validate_json(value),
+         {:ok, value} <- Jason.encode(value) do
+      {:ok, ".[#{name}] = #{value}"}
     end
   end
 
@@ -174,41 +292,69 @@ defmodule RiichiAdvanced.Compiler do
       _ -> {:error, "Compiler.compile: at line #{line}:#{column}, `apply` command expects a jq path string and an optional string value, got #{inspect(args)}"}
     end
     with {:ok, {path, value}} <- path_value,
-         {:ok, value_val} <- (case Validator.validate_json(value) do
-                               {:ok, value_val} -> {:ok, value_val}
-                               {:error, _} -> compile_cnf_condition(value, line, column)
-                             end),
+         {:ok, path} <- Validator.validate_json_path(path),
+         {:ok, value_val} <- compile_constant(value, line, column),
          {:ok, value} <- Jason.encode(value_val) do
-      path = if String.starts_with?(path, ".") do path else "." <> path end
-      if Validator.validate_json_path(path) do
-        case Jason.decode!(name) do
-          "set"                                  -> {:ok, "#{path} = #{value}"}
-          "add"                                  -> {:ok, "#{path} += #{value}"}
-          "prepend"                              -> {:ok, "#{path} |= #{value} + ."}
-          "append"                               -> {:ok, "#{path} += #{value}"}
-          "subtract"                             -> {:ok, "#{path} -= #{value}"}
-          "delete"                               -> {:ok, "#{path} -= #{value}"}
-          "multiply"                             -> {:ok, "#{path} *= #{value}"}
-          "merge"                                -> {:ok, "#{path} *= #{value}"}
-          "divide"     when is_number(value_val) -> {:ok, "#{path} /= #{value}"}
-          "modulo"     when is_number(value_val) -> {:ok, "#{path} %= #{value}"}
-          "delete_key" when is_binary(value_val) -> {:ok, "#{path} |= del(.[#{value}])"}
-          "delete_key" when is_list(value_val)   ->
-            if Enum.all?(value_val, &is_binary/1) do
-              {:ok, "#{path} |= (reduce #{value}[] as $_k (.; del(.[$_k])))"}
-            else
-              {:error, "Compiler.compile: at line #{line}:#{column}, `apply delete_key` tried to delete a non-string or non-list-of-strings #{value}"}
-            end
-          "replace_all" when is_list(value_val)  ->
-            case value_val do
-              [from, to] -> {:ok, "#{path} |= walk(if . == #{Jason.encode!(from)} then #{Jason.encode!(to)} else . end)"}
-              _          -> {:error, "Compiler.compile: at line #{line}:#{column}, `apply replace_all` requires a 2-element list [from, to] as the value"}
-            end
-          op when op in @binops -> {:ok, "#{path} = #{op}(#{path};#{value})"}
-          _ -> {:error, "Compiler.compile: at line #{line}:#{column}, `apply` got invalid method #{name}"}
+      op = Jason.decode!(name)
+      operation = case op do
+        "set"                                  -> {:ok, "#{path} = #{value}"}
+        "add"                                  -> {:ok, "#{path} += #{value}"}
+        "prepend"    when is_list(value_val)   -> {:ok, "#{path} |= #{value} + ."}
+        "prepend"                              -> {:ok, "#{path} |= #{Jason.encode!(List.wrap(value_val))} + ."}
+        "append"     when is_list(value_val)   -> {:ok, "#{path} += #{value}"}
+        "append"                               -> {:ok, "#{path} += #{Jason.encode!(List.wrap(value_val))}"}
+        "merge"      when is_map(value_val)    -> {:ok, "#{path} += #{value}"}
+        "merge"                                -> {:ok, "#{path} += #{Jason.encode!(Map.new(value_val))}"}
+        "subtract"                             -> {:ok, "#{path} -= #{value}"}
+        "delete"     when is_list(value_val)   -> {:ok, "#{path} |= map(select(#{value} | index(.) | not))"}
+        "delete"                               -> {:ok, "#{path} |= map(select(. != #{value}))"}
+        "multiply"                             -> {:ok, "#{path} *= #{value}"}
+        "deep_merge"                           -> {:ok, "#{path} *= #{value}"}
+        "divide"     when is_number(value_val) -> {:ok, "#{path} /= #{value}"}
+        "modulo"     when is_number(value_val) -> {:ok, "#{path} %= #{value}"}
+        "delete_key" when is_binary(value_val) -> {:ok, "#{path} |= del(.[#{value}])"}
+        "delete_key" when is_list(value_val)   ->
+          if Enum.all?(value_val, &is_binary/1) do
+            {:ok, "#{path} |= (reduce #{value}[] as $_k (.; del(.[$_k])))"}
+          else
+            {:error, "Compiler.compile: at line #{line}:#{column}, `apply delete_key` tried to delete a non-string or non-list-of-strings #{value}"}
+          end
+        op when op in @binops -> {:ok, "#{path} = #{op}(#{path};#{value})"}
+        _ -> {:error, "Compiler.compile: at line #{line}:#{column}, `apply` got invalid method #{name}"}
+      end
+      with {:ok, operation} <- operation do
+        if op == "set" do
+          {:ok, operation}
+        else
+          # only perform operation if the parent path exists
+          with {:ok, parent_path} <- Validator.get_parent_path(path) do
+            ret = "if (#{parent_path}? != null) then (#{operation}) else . end"
+            # IO.puts(ret)
+            {:ok, ret}
+          end
         end
-      else
-        {:error, "Compiler.compile: at line #{line}:#{column}, `apply` got invalid path #{path}"}
+      end
+    end
+  end
+
+  defp compile_command("replace", name, args, line, column) do
+    path_value1_value2 = case args do
+      [path, value1, value2] when is_binary(path) -> {:ok, {path, value1, value2}}
+      _ -> {:error, "Compiler.compile: at line #{line}:#{column}, `replace all` command expects a jq path string followed by two values, `to_replace` and `replacement`, instead got #{inspect(args)}"}
+    end
+    with {:ok, {path, value1, value2}} <- path_value1_value2,
+         {:ok, path} <- Validator.validate_json_path(path),
+         {:ok, value1_val} <- compile_constant(value1, line, column),
+         {:ok, value1} <- Jason.encode(value1_val),
+         {:ok, value2_val} <- compile_constant(value2, line, column),
+         {:ok, value2} <- Jason.encode(value2_val) do
+      operation = case Jason.decode!(name) do
+        "all" -> {:ok, "#{path} |= walk(if . == #{value1} then #{value2} else . end)"}
+        _     -> {:error, "Compiler.compile: at line #{line}:#{column}, `replace` got invalid method #{name}"}
+      end
+      with {:ok, operation} <- operation do
+        # only perform operation if the path exists
+        {:ok, "if (#{path} | type) != \"null\" then #{operation} else . end"}
       end
     end
   end
@@ -240,10 +386,40 @@ defmodule RiichiAdvanced.Compiler do
     end
   end
 
-  defp compile_command("define_match", name, args, line, column) do
+  defp compile_command("define_match", name, args, _line, _column) do
+    match_specs = Enum.map(args, fn
+      {:sigil_m, _, [{:<<>>, _, [match_spec]}, _args]} ->
+        # standard match definition
+        with {:ok, match_spec} <- Parser.parse_match(match_spec),
+             {:ok, match_spec} <- Validator.validate_json(match_spec),
+             {:ok, match_spec} <- Jason.encode(match_spec) do
+          {:ok, "#{match_spec}"}
+        end
+      {:sigil_a, _, [{:<<>>, _, [match_spec]}, _args]} ->
+        # american match definition
+        with {:ok, match_spec} <- Validator.validate_json(match_spec),
+             {:ok, match_spec} <- Jason.encode(match_spec) do
+          {:ok, "[#{match_spec}]"}
+        end
+      match_spec when is_binary(match_spec) ->
+        # existing match definition
+        with {:ok, match_spec} <- Validator.validate_json(match_spec) do
+          {:ok, ".#{match_spec}_definition"}
+        end
+    end)
+    |> Utils.sequence()
+    with {:ok, match_specs} <- match_specs do
+      # `name` is already escaped, so we just insert _definition right before the last quote
+      name = Utils.insert_at(name, "_definition", -2)
+      match_specs = Enum.join(match_specs, " + ")
+      {:ok, ".[#{name}] = #{match_specs}"}
+    end
+  end
+
+  defp compile_command("extend_match", name, args, line, column) do
     match_spec = case args do
       [{:sigil_m, _, [{:<<>>, _, [match_spec]}, _args]}] when is_binary(match_spec) -> {:ok, match_spec}
-      _ -> {:error, "Compiler.compile: at line #{line}:#{column}, `define_match` command expects a single string value, got #{inspect(args)}"}
+      _ -> {:error, "Compiler.compile: at line #{line}:#{column}, `extend_match` command expects a single string value, got #{inspect(args)}"}
     end
 
     with {:ok, match_spec} <- match_spec,
@@ -252,15 +428,28 @@ defmodule RiichiAdvanced.Compiler do
          {:ok, match_spec} <- Jason.encode(match_spec) do
       # `name` is already escaped, so we just insert _definition right before the last quote
       name = Utils.insert_at(name, "_definition", -2)
-      {:ok, ".[#{name}] = #{match_spec}"}
+      {:ok, ".[#{name}] += #{match_spec}"}
+    end
+  end
+
+  defp compile_command("define_const", name, args, line, column) do
+    value = case args do
+      [value] -> {:ok, value}
+      _ -> {:error, "Compiler.compile: at line #{line}:#{column}, `define_const` command expects a single JSON, condition, action, or do block, got #{inspect(args)}"}
+    end
+
+    with {:ok, value} <- value,
+         {:ok, value} <- compile_constant(value, line, column),
+         {:ok, value} <- Jason.encode(value) do
+      {:ok, ".constants[#{name}] = #{value}"}
     end
   end
 
   defp compile_command("define_yaku", name, args, line, column) do
     yaku_spec = case args do
-      [display_name, value, condition] when is_binary(display_name) and (is_number(value) or is_binary(value)) -> {:ok, {display_name, value, condition, []}}
-      [display_name, value, condition, supercedes] when is_binary(display_name) and (is_number(value) or is_binary(value)) and is_list(supercedes) -> {:ok, {display_name, value, condition, supercedes}}
-      _ -> {:error, "Compiler.compile: at line #{line}:#{column}, `define_yaku` command expects a yaku list, a display name, a value, and a condition, got #{inspect(args)}"}
+      [display_name, value, condition] when is_binary(display_name) -> {:ok, {display_name, value, condition, []}}
+      [display_name, value, condition, supercedes] when is_binary(display_name) and is_list(supercedes) -> {:ok, {display_name, value, condition, supercedes}}
+      _ -> {:error, "Compiler.compile: at line #{line}:#{column}, `define_yaku` command expects a yaku list name, a display name, a value, and a condition, got #{inspect(args)}"}
     end
 
     with {:ok, {display_name, value, condition, supercedes}} <- yaku_spec,
@@ -268,10 +457,57 @@ defmodule RiichiAdvanced.Compiler do
          {:ok, display_name} <- Jason.encode(display_name),
          {:ok, value} <- Validator.validate_json(value),
          {:ok, value} <- Jason.encode(value),
-         {:ok, condition} <- compile_cnf_condition(condition, line, column),
-         {:ok, condition} <- Validator.validate_json(List.wrap(condition)),
+         {:ok, condition} <- compile_condition_list(condition, line, column),
+         {:ok, condition} <- Validator.validate_json(condition),
          {:ok, condition} <- Jason.encode(condition) do
       add_yaku = ".[#{name}] += [{\"display_name\": #{display_name}, \"value\": #{value}, \"when\": #{condition}}]"
+      if Enum.empty?(supercedes) do
+        {:ok, add_yaku}
+      else
+        with {:ok, supercedes} <- Validator.validate_json(supercedes),
+             {:ok, supercedes} <- Jason.encode(supercedes) do
+          {:ok, add_yaku <> "\n| .yaku_precedence[#{display_name}] += #{supercedes}"}
+        end
+      end
+    end
+  end
+
+  defp compile_command("remove_yaku", name, args, line, column) do
+    names = case args do
+      [names] when is_binary(names) -> {:ok, [names]}
+      [names] when is_list(names) -> {:ok, names}
+      _ -> {:error, "Compiler.compile: at line #{line}:#{column}, `remove_yaku` command expects a name or a list of names, got #{inspect(args)}"}
+    end
+
+    with {:ok, names} <- names,
+         {:ok, names} <- Validator.validate_json(names),
+         {:ok, names} <- Enum.map(names, &Jason.encode/1) |> Utils.sequence() do
+      {:ok, ~s"""
+      .[#{name}] |= map(select(.display_name | IN(#{Enum.join(names, ",")}) | not))
+      """}
+    end
+  end
+
+  defp compile_command("replace_yaku", name, args, line, column) do
+    yaku_spec = case args do
+      [display_name, value, condition] when is_binary(display_name) and (is_number(value) or is_binary(value)) -> {:ok, {display_name, value, condition, []}}
+      [display_name, value, condition, supercedes] when is_binary(display_name) and (is_number(value) or is_binary(value)) and is_list(supercedes) -> {:ok, {display_name, value, condition, supercedes}}
+      _ -> {:error, "Compiler.compile: at line #{line}:#{column}, `replace_yaku` command expects a yaku list name, a display name, a value, and a condition, got #{inspect(args)}"}
+    end
+
+    with {:ok, {display_name, value, condition, supercedes}} <- yaku_spec,
+         {:ok, display_name} <- Validator.validate_json(display_name),
+         {:ok, display_name} <- Jason.encode(display_name),
+         {:ok, value} <- Validator.validate_json(value),
+         {:ok, value} <- Jason.encode(value),
+         {:ok, condition} <- compile_condition_list(condition, line, column),
+         {:ok, condition} <- Validator.validate_json(condition),
+         {:ok, condition} <- Jason.encode(condition) do
+      add_yaku = """
+        if .[#{name}] | any(.display_name == #{display_name}) then
+          .[#{name}] |= map(select(.display_name != #{display_name})) + [{\"display_name\": #{display_name}, \"value\": #{value}, \"when\": #{condition}}]
+        else . end
+      """
       if Enum.empty?(supercedes) do
         {:ok, add_yaku}
       else
@@ -298,84 +534,62 @@ defmodule RiichiAdvanced.Compiler do
 
   defp compile_command("define_button", name, args, line, column) do
     args = case args do
-      [args, [do: actions]] -> {:ok, Map.new(args) |> Map.put(:actions, actions)}
+      [args, [do: actions]] -> {:ok, Map.new(args) |> Map.put("actions", actions)}
       _ -> {:error, "Compiler.compile: at line #{line}:#{column}, `define_button` command expects a keyword list followed by a do block, got #{inspect(args)}"}
     end
-
+    field_names = [
+      "display_name", "show_when", "actions",
+      "precedence_over", "unskippable", "cancellable", "upgrades", "interrupt_level",
+      "call", "call_conditions", "call_style"
+    ]
     with {:ok, args} <- args,
-         {:ok, display_name} <- Validator.validate_json(Map.get(args, "display_name", "Button")),
-         {:ok, display_name} <- Jason.encode(display_name),
-         {:ok, show_when} <- compile_cnf_condition(Map.get(args, "show_when", "false"), line, column),
-         {:ok, show_when} <- Validator.validate_json(List.wrap(show_when)),
-         {:ok, show_when} <- Jason.encode(show_when),
-         {:ok, actions} <- compile_action_list(args.actions, line, column),
-         {:ok, actions} <- Validator.validate_json(actions),
-         {:ok, actions} <- Jason.encode(actions),
-         {:ok, precedence_over} <- Validator.validate_json(Map.get(args, "precedence_over", [])),
-         {:ok, precedence_over} <- Jason.encode(precedence_over),
-         {:ok, unskippable} <- Validator.validate_json(Map.get(args, "unskippable", false)),
-         {:ok, unskippable} <- Jason.encode(unskippable),
-         {:ok, cancellable} <- Validator.validate_json(Map.get(args, "cancellable", false)),
-         {:ok, cancellable} <- Jason.encode(cancellable),
-         {:ok, interrupt_level} <- Validator.validate_json(Map.get(args, "interrupt_level", 100)),
-         {:ok, interrupt_level} <- Jason.encode(interrupt_level) do
+         {:ok, fields} <- Utils.sequence(for field_name <- field_names do
+           field_json = Map.get(args, field_name, nil)
+           with {:ok, field_json} <- (cond do
+                  field_json == nil -> {:ok, nil}
+                  field_name == "actions" -> compile_action_list(field_json, line, column)
+                  field_name in ["show_when", "call_conditions"] -> compile_condition_list(field_json, line, column)
+                  true -> {:ok, field_json}
+                end),
+                {:ok, field_val} <- Validator.validate_json(field_json),
+                {:ok, field} <- (if field_val != nil do Jason.encode(field_val) else {:ok, nil} end) do
+             {:ok, if field != nil do "\"#{field_name}\": #{field}" else nil end}
+           end
+         end) do
+      fields = Enum.reject(fields, &is_nil/1)
       add_button = ~s"""
       .buttons[#{name}] = {
-        "display_name": #{display_name},
-        "show_when": #{show_when},
-        "actions": #{actions},
-        "precedence_over": #{precedence_over},
-        "unskippable": #{unskippable},
-        "cancellable": #{cancellable},
-        "interrupt_level": #{interrupt_level}
+        #{Enum.map_join(fields, ",\n", &"  "<>&1)}
       }
       """
-      if Enum.empty?(Map.get(args, "call", [])) do
-        {:ok, add_button}
-      else
-        with {:ok, call} <- Validator.validate_json(Map.get(args, "call", [])),
-             {:ok, call} <- Jason.encode(call),
-             {:ok, call_conditions} <- compile_cnf_condition(Map.get(args, "call_conditions", "true"), line, column),
-             {:ok, call_conditions} <- Validator.validate_json(List.wrap(call_conditions)),
-             {:ok, call_conditions} <- Jason.encode(call_conditions),
-             {:ok, call_style} <- Validator.validate_json(Map.get(args, "call_style", [])),
-             {:ok, call_style} <- Jason.encode(call_style) do
-
-          add_call_button = ~s"""
-          .buttons[#{name}] += {
-            "call": #{call},
-            "call_conditions": #{call_conditions},
-            "call_style": #{call_style}
-          }
-          """
-          {:ok, add_button <> "\n| " <> add_call_button}
-        end
-      end
+      {:ok, add_button}
     end
   end
 
   defp compile_command("define_auto_button", name, args, line, column) do
     args = case args do
-      [args, [do: actions]] -> {:ok, Map.new(args) |> Map.put(:actions, actions)}
+      [args, [do: actions]] -> {:ok, Map.new(args) |> Map.put("actions", actions)}
       _ -> {:error, "Compiler.compile: at line #{line}:#{column}, `define_auto_button` command expects a keyword list followed by a do block of actions, got #{inspect(args)}"}
     end
 
+    field_names = ["display_name", "desc", "actions", "enabled_at_start"]
     with {:ok, args} <- args,
-         {:ok, display_name} <- Validator.validate_json(Map.get(args, "display_name", "A")),
-         {:ok, display_name} <- Jason.encode(display_name),
-         {:ok, desc} <- Validator.validate_json(Map.get(args, "desc", "")),
-         {:ok, desc} <- Jason.encode(desc),
-         {:ok, actions} <- compile_action_list(args.actions, line, column),
-         {:ok, actions} <- Validator.validate_json(actions),
-         {:ok, actions} <- Jason.encode(actions),
-         {:ok, enabled_at_start} <- Validator.validate_json(Map.get(args, "enabled_at_start", false)),
-         {:ok, enabled_at_start} <- Jason.encode(enabled_at_start) do
+         {:ok, fields} <- Utils.sequence(for field_name <- field_names do
+           field_json = Map.get(args, field_name, nil)
+           with {:ok, field_json} <- (cond do
+                  field_json == nil -> {:ok, nil}
+                  field_name == "actions" -> compile_action_list(field_json, line, column)
+                  true -> {:ok, field_json}
+                end),
+                {:ok, field_val} <- Validator.validate_json(field_json),
+                {:ok, field} <- (if field_val != nil do Jason.encode(field_val) else {:ok, nil} end) do
+             {:ok, if field != nil do "\"#{field_name}\": #{field}" else nil end}
+           end
+         end) do
+      fields = Enum.reject(fields, &is_nil/1)
       add_button = ~s"""
       .auto_buttons[#{name}] = {
-        "display_name": #{display_name},
-        "desc": #{desc},
-        "actions": #{actions},
-        "enabled_at_start": #{enabled_at_start}
+        #{Enum.map_join(fields, ",\n", &"  "<>&1)}
       }
       """
       {:ok, add_button}
@@ -491,6 +705,21 @@ defmodule RiichiAdvanced.Compiler do
     end
   end
 
+  defp compile_command("remove_mod", name, args, line, column) do
+    names = if is_list(args) and Enum.all?(args, &is_binary/1) do
+      {:ok, [Jason.decode!(name) | List.wrap(args)]}
+    else
+      {:error, "Compiler.compile: at line #{line}:#{column}, `remove_mod` command expects a mod id or a list of mod ids, got #{inspect(args)}"}
+    end
+    with {:ok, names} <- names,
+         {:ok, names} <- Validator.validate_json(names),
+         {:ok, names} <- Enum.map(names, &Jason.encode/1) |> Utils.sequence() do
+      {:ok, ~s"""
+      .available_mods |= map(select(type != "object" or .id | IN(#{Enum.join(names, ",")}) | not))
+      """}
+    end
+  end
+
   defp compile_command("define_preset", name, args, line, column) do
     mods = case args do
       [mods] -> {:ok, mods}
@@ -509,19 +738,22 @@ defmodule RiichiAdvanced.Compiler do
     end
   end
 
-  defp compile_command("remove_yaku", name, args, line, column) do
-    names = case args do
-      [names] when is_binary(names) -> {:ok, [names]}
-      [names] when is_list(names) -> {:ok, names}
-      _ -> {:error, "Compiler.compile: at line #{line}:#{column}, `remove_yaku` command expects a name or a list of names, got #{inspect(args)}"}
-    end
+  defp compile_command("define", name, args, line, column) do
+    case Jason.decode!(name) do
+      "play_restriction" -> 
+        args = case args do
+          [targets, condition] -> {:ok, {List.wrap(targets), condition}}
+          _ -> {:error, "Compiler.compile: at line #{line}:#{column}, `define play_restriction` command expects a target (or list of targets) and a condition, got #{inspect(args)}"}
+        end
 
-    with {:ok, names} <- names,
-         {:ok, names} <- Validator.validate_json(names),
-         {:ok, names} <- Enum.map(names, &Jason.encode/1) |> Utils.sequence() do
-      {:ok, ~s"""
-      .[#{name}] |= map(select(.display_name | IN(#{Enum.join(names, ",")}) | not))
-      """}
+        with {:ok, {targets, condition}} <- args,
+             {:ok, targets} <- Validator.validate_json(targets),
+             {:ok, targets} <- Jason.encode(targets),
+             {:ok, condition} <- compile_condition_list(condition, line, column),
+             {:ok, condition} <- Jason.encode(condition) do
+          {:ok, ".play_restrictions += [[#{targets}, #{condition}]]"}
+        end
+      _ -> {:error, "Compiler.compile: at line #{line}:#{column}, `define` got invalid type #{name}"}
     end
   end
 
@@ -571,9 +803,12 @@ defmodule RiichiAdvanced.Compiler do
     case ast do
       {:__block__, _pos, []} -> {:ok, "."}
       {:__block__, _pos, nodes} ->
-        # IO.inspect(nodes, label: "AST")
+        # IO.inspect(nodes, label: "AST", limit: :infinity)
         case Utils.sequence(Enum.map(nodes, &compile_jq_toplevel/1)) do
-          {:ok, val}    -> {:ok, Enum.join(val, "\n| ")}
+          {:ok, val}    ->
+            ret = Enum.map_join(val, "\n|", &"(" <> &1 <> ")")
+            # IO.puts(ret)
+            {:ok, ret}
           {:error, msg} -> {:error, msg}
         end
       {_name, _pos, _actions} -> compile_jq({:__block__, [], [ast]})

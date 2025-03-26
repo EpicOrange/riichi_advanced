@@ -51,22 +51,21 @@ if .num_players == 3 then
   .dora_indicators["1m"] = ["9m"]
 else . end
 |
-# $last_tile parameter is for minefield
 .functions.calculate_dora = [
   ["set_counter", "dora", 0],
-  ["when", [{"name": "tile_revealed", "opts": [-6]}], [["add_counter", "dora", "count_dora", -6, ["hand", "calls", "flowers", "$last_tile"]]]],
-  ["when", [{"name": "tile_revealed", "opts": [-8]}], [["add_counter", "dora", "count_dora", -8, ["hand", "calls", "flowers", "$last_tile"]]]],
-  ["when", [{"name": "tile_revealed", "opts": [-10]}], [["add_counter", "dora", "count_dora", -10, ["hand", "calls", "flowers", "$last_tile"]]]],
-  ["when", [{"name": "tile_revealed", "opts": [-12]}], [["add_counter", "dora", "count_dora", -12, ["hand", "calls", "flowers", "$last_tile"]]]],
-  ["when", [{"name": "tile_revealed", "opts": [-14]}], [["add_counter", "dora", "count_dora", -14, ["hand", "calls", "flowers", "$last_tile"]]]],
-  ["when", [{"name": "tile_revealed", "opts": [-16]}], [["add_counter", "dora", "count_dora", -16, ["hand", "calls", "flowers", "$last_tile"]]]],
-  ["when", [{"name": "tile_revealed", "opts": [-18]}], [["add_counter", "dora", "count_dora", -18, ["hand", "calls", "flowers", "$last_tile"]]]]
+  ["when", [{"name": "tile_revealed", "opts": [-6]}], [["add_counter", "dora", "count_dora", -6, ["hand", "calls", "flowers", "winning_tile"]]]],
+  ["when", [{"name": "tile_revealed", "opts": [-8]}], [["add_counter", "dora", "count_dora", -8, ["hand", "calls", "flowers", "winning_tile"]]]],
+  ["when", [{"name": "tile_revealed", "opts": [-10]}], [["add_counter", "dora", "count_dora", -10, ["hand", "calls", "flowers", "winning_tile"]]]],
+  ["when", [{"name": "tile_revealed", "opts": [-12]}], [["add_counter", "dora", "count_dora", -12, ["hand", "calls", "flowers", "winning_tile"]]]],
+  ["when", [{"name": "tile_revealed", "opts": [-14]}], [["add_counter", "dora", "count_dora", -14, ["hand", "calls", "flowers", "winning_tile"]]]],
+  ["when", [{"name": "tile_revealed", "opts": [-16]}], [["add_counter", "dora", "count_dora", -16, ["hand", "calls", "flowers", "winning_tile"]]]],
+  ["when", [{"name": "tile_revealed", "opts": [-18]}], [["add_counter", "dora", "count_dora", -18, ["hand", "calls", "flowers", "winning_tile"]]]]
 ]
 |
 # count dora
-.before_win.actions += [["run", "calculate_dora", {"last_tile": "winning_tile"}]]
+.before_win.actions += [["run", "calculate_dora"]]
 |
-.before_scoring.actions += [["run", "calculate_dora", {"last_tile": "winning_tile"}]]
+.before_scoring.actions += [["run", "calculate_dora"]]
 |
 # add dora yaku
 .extra_yaku += [

@@ -34,23 +34,41 @@ def change_button_name($button; $text):
   "exhaustive_draw_name": "Draw",
 }
 |
-.buttons.chii |= change_button_name("Run"; "Run")
+if (.buttons | has("chii")) then
+  .buttons.chii |= change_button_name("Run"; "Run")
+else . end
 |
-.buttons.pon |= change_button_name("Pung"; "Pung")
+if (.buttons | has("pon")) then
+  .buttons.pon |= change_button_name("Pung"; "Pung")
+else . end
 |
-.buttons.daiminkan |= change_button_name("Kong"; "Kong")
+if (.buttons | has("daiminkan")) then
+  .buttons.daiminkan |= change_button_name("Kong"; "Kong")
+else . end
 |
-.buttons.ankan |= change_button_name("Concealed Kong"; "Kong")
+if (.buttons | has("ankan")) then
+  .buttons.ankan |= change_button_name("Concealed Kong"; "Kong")
+else . end
 |
-.buttons.kakan |= change_button_name("Kong"; "Kong")
+if (.buttons | has("kakan")) then
+  .buttons.kakan |= change_button_name("Kong"; "Kong")
+else . end
 |
-.buttons.riichi |= change_button_name("Declare Ready"; "Ready")
+if (.buttons | has("riichi")) then
+  .buttons.riichi |= change_button_name("Declare Ready"; "Ready")
+else . end
 |
-.buttons.ron |= change_button_name("Mah Jongg"; "Mah Jongg")
+if (.buttons | has("ron")) then
+  .buttons.ron |= change_button_name("Mah Jongg"; "Mah Jongg")
+else . end
 |
-.buttons.chankan |= change_button_name("Mah Jongg"; "Mah Jongg")
+if (.buttons | has("chankan")) then
+  .buttons.chankan |= change_button_name("Mah Jongg"; "Mah Jongg")
+else . end
 |
-.buttons.tsumo |= change_button_name("Mah Jongg"; "Mah Jongg")
+if (.buttons | has("tsumo")) then
+  .buttons.tsumo |= change_button_name("Mah Jongg"; "Mah Jongg")
+else . end
 |
 .translations = {
   "Riichi": "Miscellaneous #1 (Ready)",

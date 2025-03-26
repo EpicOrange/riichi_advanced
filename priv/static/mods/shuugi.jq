@@ -8,7 +8,7 @@
   ["add_counter", "shuugi_payment", "ura"],
   ["when", [{"name": "status", "opts": ["riichi", "shiro_pocchi"]}], [["add_counter", "shuugi_payment", 1]]],
   ["when", [{"name": "status", "opts": ["kindora"]}], [["add_counter", "shuugi_payment", 2]]],
-  ["when", [{"name": "has_yaku2", "opts": [1]}], [["set_status", "yakuman"], ["add_counter", "shuugi_payment", 5]]],
+  ["when", [{"name": "has_yaku2", "opts": [1]}], [["set_status", "yakuman"], ["add_counter", "yakuman_payment", 5], ["add_counter", "shuugi_payment", "yakuman_payment"]]],
   ["add_counter", "shuugi_payment", "toriuchi"],
   ["add_counter", "shuugi_payment", "galaxy_shuugi"],
   ["set_counter_all", "shuugi_payment", "shuugi_payment"],
@@ -18,7 +18,7 @@
     ["when", [{"name": "counter_at_least", "opts": ["kin", 1]}], [["push_system_message", "Discarder pays 3 chip per kin dora in a closed hand (shuugi)"]]],
     ["when", [{"name": "counter_at_least", "opts": ["ura", 1]}], [["push_system_message", "Discarder pays 1 chip per ura dora (shuugi)"]]],
     ["when", [{"name": "status", "opts": ["ippatsu"]}, {"name": "status_missing", "opts": ["call_made"]}], [["push_system_message", "Discarder pays 1 chip for ippatsu (shuugi)"]]],
-    ["when", [{"name": "status", "opts": ["yakuman"]}], [["push_system_message", "Discarder pays 5 chips for a yakuman win (shuugi)"]]],
+    ["when", [{"name": "status", "opts": ["yakuman"]}], [["push_system_message", "Discarder pays $chips chips for a yakuman win (shuugi)", {"chips": "yakuman_payment"}]]],
     ["when", [{"name": "status", "opts": ["kindora"]}], [["push_system_message", "Discarder pays 1 chip for golden chun used as a five (golden chun)"]]],
     ["when", [{"name": "counter_at_least", "opts": ["toriuchi", 1]}], [["push_system_message", "Discarder pays 1 chip per bird tile (toriuchi)"]]],
     ["when", [{"name": "counter_at_least", "opts": ["galaxy_shuugi", 1]}], [["push_system_message", "Discarder pays 1 chip per galaxy joker used as their original value (galaxy)"]]],
@@ -31,15 +31,15 @@
     ["when", [{"name": "counter_at_least", "opts": ["kin", 1]}], [["push_system_message", "Everyone pays 3 chip per kin dora in a closed hand (shuugi)"]]],
     ["when", [{"name": "counter_at_least", "opts": ["ura", 1]}], [["push_system_message", "Everyone pays 1 chip per ura dora (shuugi)"]]],
     ["when", [{"name": "status", "opts": ["ippatsu"]}, {"name": "status_missing", "opts": ["call_made"]}], [["push_system_message", "Everyone pays 1 chip for ippatsu (shuugi)"]]],
-    ["when", [{"name": "status", "opts": ["yakuman"]}], [["push_system_message", "Everyone pays 5 chips for a yakuman win (shuugi)"]]],
+    ["when", [{"name": "status", "opts": ["yakuman"]}], [["push_system_message", "Everyone pays $chips chips for a yakuman win (shuugi)", {"chips": "yakuman_payment"}]]],
     ["when", [{"name": "status", "opts": ["kindora"]}], [["push_system_message", "Everyone pays 1 chip for golden chun used as a five (golden chun)"]]],
     ["when", [{"name": "counter_at_least", "opts": ["toriuchi", 1]}], [["push_system_message", "Everyone pays 1 chip per bird tile (toriuchi)"]]],
     ["when", [{"name": "counter_at_least", "opts": ["galaxy_shuugi", 1]}], [["push_system_message", "Everyone pays 1 chip per galaxy joker used as their original value(galaxy)"]]],
     ["when", [{"name": "status", "opts": ["riichi", "shiro_pocchi"]}], [["push_system_message", "Everyone pays 1 chip for winning on shiro pocchi (shuugi)"]]],
-    ["as", "others", [["subtract_counter", "shuugi", "shuugi_payment"]]],
-    ["add_counter", "shuugi", "shuugi_payment"],
-    ["add_counter", "shuugi", "shuugi_payment"],
-    ["add_counter", "shuugi", "shuugi_payment"]
+    ["as", "others", [
+      ["subtract_counter", "shuugi", "shuugi_payment"],
+      ["as", "prev_seat", [["add_counter", "shuugi", "shuugi_payment"]]]
+    ]]
   ]]
 ]
 |

@@ -1,0 +1,2 @@
+apply append, "constants.winning_groups_fu", %{groups: ~s"0@prevalent&seat 0@winning_tile", value: 6}
+apply append, "constants.groups_fu", %{groups: ~s"0@prevalent&seat 0@prevalent&seat", value: 4}

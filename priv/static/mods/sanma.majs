@@ -16,18 +16,16 @@ apply subtract, "wall", [
   "8m", "8m", "8m", "8m"
 ]
 
-apply delete, "default_mods", ["suufon_renda", "suucha_riichi"]
-
 # change "pei" set to "pei_triplet" (since our call is named "pei")
 apply delete_key, "set_definitions", "pei"
 define_set pei_triplet, ~s"4z 4z 4z"
-apply replace_all, "", ["pei", "pei_triplet"]
+replace all, ".", "pei", "pei_triplet"
 
 # now we can add stuff related to pei button and status
 apply prepend, "functions.discard_passed", [["as", "others", [["unset_status", "pei"]]]]
 
 # change tenpai payments and add tsumo loss
-apply append, "score_calculation", %{
+apply merge, "score_calculation", %{
   draw_tenpai_payments: [1000, 2000, 0],
   tsumo_loss: true
 }
@@ -85,6 +83,8 @@ def do_kan_draw do
   shift_tile_to_dead_wall(1)
   draw(1, "opposite_end")
 end
+# chankan should work on pei
+# TODO make last_call_is a constant
 define_button chankan,
   display_name: "Ron", 
   show_when: not_our_turn

@@ -16,6 +16,7 @@ end
 
 defmodule RiichiAdvanced.GameState.Log do
   alias RiichiAdvanced.GameState.Marking, as: Marking
+  alias RiichiAdvanced.GameState.Rules, as: Rules
   alias RiichiAdvanced.Utils, as: Utils
 
   defmodule GameEvent do
@@ -27,12 +28,15 @@ defmodule RiichiAdvanced.GameState.Log do
   end
 
   def init_log(state) do
-    state = Map.put(state, :log_state, %{
-      log: [],
-      kyokus: [],
-      calls: Map.new(state.players, fn {seat, _player} -> {seat, nil} end)
-    })
-    state
+    Map.put(state, :log_state, %{kyokus: []})
+    |> initialize_new_round()
+  end
+
+  def initialize_new_round(state) do
+    log_state = state.log_state
+    |> Map.put(:log, [])
+    |> Map.put(:calls, Map.new(state.players, fn {seat, _player} -> {seat, nil} end))
+    Map.put(state, :log_state, log_state)
   end
 
   def to_seat(seat) do
@@ -165,19 +169,24 @@ defmodule RiichiAdvanced.GameState.Log do
   end
 
   def finalize_kyoku(state) do
-    state = update_in(state.log_state.kyokus, fn kyokus -> [%{
-      index: length(state.log_state.kyokus),
+    score_rules = Rules.get(state.rules_ref, "score_calculation", %{})
+    existing_kyoku = case state.log_state.kyokus do
+      [] -> nil
+      [kyoku | _kyokus] -> if kyoku.kyoku == state.kyoku and kyoku.honba == state.honba do kyoku else nil end
+    end
+    kyoku = %{
+      index: if existing_kyoku != nil do existing_kyoku.index else length(state.log_state.kyokus) end,
       players: Enum.map(state.available_seats, fn dir -> %{
         points: state.players[dir].start_score,
         haipai: state.haipai[dir]
       } end),
       kyoku: state.kyoku,
-      honba: if Map.get(state.rules, "display_riichi_sticks", false) do state.honba else 0 end,
-      riichi_sticks: if Map.get(state.rules, "display_riichi_sticks", false) do Integer.floor_div(state.pot, Map.get(state.rules["score_calculation"], "riichi_value", 1)) else 0 end,
+      honba: if Rules.get(state.rules_ref, "display_riichi_sticks", false) do state.honba else 0 end,
+      riichi_sticks: if Rules.get(state.rules_ref, "display_riichi_sticks", false) do Integer.floor_div(state.pot, Map.get(score_rules, "riichi_value", 1)) else 0 end,
       doras: for i <- -6..-14//-2 do Enum.at(state.dead_wall, i) end |> Enum.filter(& &1 != nil),
       uras: for i <- -5..-14//-2 do Enum.at(state.dead_wall, i) end |> Enum.filter(& &1 != nil),
       kan_tiles: [-2, -1, -4, -3] |> Enum.map(&Enum.at(state.dead_wall, &1)),
-      wall: state.wall |> Enum.drop(4 * Map.get(state.rules, "starting_tiles", 0)),
+      wall: state.wall |> Enum.drop(length(state.available_seats) * Rules.get(state.rules_ref, "starting_tiles", 0)),
       die1: state.dice |> Enum.at(0),
       die2: state.dice |> Enum.at(1),
       events: state.log_state.log
@@ -200,9 +209,11 @@ defmodule RiichiAdvanced.GameState.Log do
           delta_points: Enum.map(state.available_seats, fn dir -> state.delta_scores[dir] end),
         }
       end
-    } | kyokus] end)
-    state = put_in(state.log_state.log, [])
-    state
+    }
+    update_in(state.log_state.kyokus, fn
+      [_ | kyokus] when existing_kyoku != nil -> [kyoku | kyokus]
+      kyokus -> [kyoku | kyokus]
+    end)
   end
 
   # output functions
@@ -224,12 +235,13 @@ defmodule RiichiAdvanced.GameState.Log do
       rules: %{
         ruleset: state.ruleset,
         ruleset_json: "",
-        mods: state.mods
+        mods: state.mods,
+        config: state.config
       },
       kyokus: Enum.reverse(state.log_state.kyokus)
     }
     out = if state.ruleset == "custom" do
-      put_in(out.rules.ruleset_json, state.ruleset_json)
+      put_in(out.rules.ruleset_json, Rules.get(state.rules_ref, :ruleset_json))
     else out end
     Jason.encode!(out)
   end

@@ -1,5 +1,6 @@
 defmodule RiichiAdvancedWeb.BigTextComponent do
   use RiichiAdvancedWeb, :live_component
+  import RiichiAdvancedWeb.Translations
 
   def mount(socket) do
     socket = assign(socket, :length, 2)
@@ -8,7 +9,7 @@ defmodule RiichiAdvancedWeb.BigTextComponent do
 
   def render(assigns) do
     ~H"""
-    <div class={["big-text", @relative_seat]} style={"--big-text-length: #{@length}"}><%= @big_text %></div>
+    <div class={["big-text", @relative_seat]} style={"--big-text-length: #{@length}"}><%= dt(@lang, @big_text) %></div>
     """
   end
 
