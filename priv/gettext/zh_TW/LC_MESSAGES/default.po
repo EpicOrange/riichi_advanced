@@ -8,7 +8,7 @@ msgid "(reconnect?)"
 msgstr "（重連？）"
 
 msgid "(with AI)"
-msgstr "（帶AI）"
+msgstr "（用AI）"
 
 msgid "1 Han"
 msgstr "1番"
@@ -20,16 +20,16 @@ msgid "147"
 msgstr "１４７"
 
 msgid "16-tile mahjong where all honor tiles are flower tiles."
-msgstr "字牌全部變為花牌的16張麻將。"
+msgstr "16張麻將：字牌全部變為花牌。"
 
 msgid "16-tile mahjong where you can form dragon and wind sequences."
-msgstr "可以用字牌組成順子的16張麻將。"
+msgstr "16張麻將：可以用字牌組成順子。"
 
 msgid "16-tile mahjong with a version of dora that doesn't give you han, but becomes a unique winning condition by itself."
-msgstr "寶牌不計番但作為特殊和牌條件的16張麻將。"
+msgstr "16張麻將：寶牌不計番但作為特殊和牌條件。"
 
 msgid "16-tile mahjong with riichi mechanics."
-msgstr "帶立直規則的16張麻將。"
+msgstr "16張麻將：包含立直規則。"
 
 msgid "19"
 msgstr "１９"
@@ -68,7 +68,7 @@ msgid "789"
 msgstr "７８９"
 
 msgid "A Space Mahjong variant with mixed triplets, more yaku, and more calls."
-msgstr "宇宙立直變體：混合刻子、更多役種和鳴牌方式。"
+msgstr "宇宙立直變體：混色刻子、更多役種和鳴牌方式。"
 
 msgid "A pair of round+seat winds is worth 4 fu instead of 2 fu."
 msgstr "場風+自風對子計4符而非2符。"
@@ -89,10 +89,10 @@ msgid "Add some UI that shows waits."
 msgstr "添加顯示待牌的使用者介面。"
 
 msgid "Adds 10m, 10p, and 10s."
-msgstr "添加10萬、10筒和10條。"
+msgstr "添加10萬、10筒和10索。"
 
 msgid "Adds 10m, 10p, and 10s. Changes dora accordingly (if dora is enabled). Tanyao now allows nines, and chanta/junchan/honroutou require tens instead. 13 Orphans now requires the ten instead of the nine of each suit. Ittsu allows 23456789T."
-msgstr "添加10萬/筒/條（若寶牌啟用則相應調整）。斷幺九允許包含9，全帶/純全/混老頭需要10代替。國士無雙需要各花色10而非9。一氣通貫允許23456789十。"
+msgstr "添加10萬/筒/索（若寶牌啟用則相應調整）。斷幺九允許包含9，全帶/純全/混老頭需要10代替。國士無雙需要各花色10而非9。一氣通貫允許23456789十。"
 
 msgid "Adds a copy of the 123 joker, which looks like 小 and can be used as any 1, 2, or 3."
 msgstr "添加可作任意1/2/3的'小'字百搭牌。"
@@ -113,7 +113,7 @@ msgid "Adds a copy of the 37 joker, which can be used as any 3 or 7."
 msgstr "添加可作任意3或7的百搭牌。"
 
 msgid "Adds a copy of the 456 joker, which looks like 中 and can be used as any 4, 5, or 6. Don't confuse it with the red dragon!"
-msgstr "添加可作任意4/5/6的'中'字百搭牌（勿與紅中混淆）。"
+msgstr "添加可作任意4/5/6的'中'字百搭牌。（勿與紅中混淆！）"
 
 msgid "Adds a copy of the 46 joker, which can be used as any 4 or 6."
 msgstr "添加可作任意4或6的百搭牌。"
@@ -122,25 +122,25 @@ msgid "Adds a copy of the 789 joker, which looks like 大 and can be used as any
 msgstr "添加可作任意7/8/9的'大'字百搭牌。"
 
 msgid "Adds a copy of the even joker, which looks like 雙 and can be used as any even number tile."
-msgstr "添加可作任意偶數的'雙'字百搭牌。"
+msgstr "添加可作任意雙數的百搭牌。"
 
 msgid "Adds a copy of the odd joker, which looks like 單 and can be used as any odd number tile."
-msgstr "添加可作任意奇數的'單'字百搭牌。"
+msgstr "添加可作任意單數的百搭牌。"
 
 msgid "Adds a fifth copy of every standard tile."
 msgstr "每種普通牌添加第五張。"
 
 msgid "Adds a fourth suit (stars). This suit does not form yaku. This mod is in beta because we should probably write some yaku for it."
-msgstr "添加第四種花色（星子）。該花色不組成役種。（測試版，未來可能添加相關役種）"
+msgstr "添加第四種花色（星子）。該花色不組成役種。（測試版，未來可能添加相關役種。）"
 
 msgid "Adds a single manzu joker to the game. The manzu joker looks like 萬 and can represent any character tile."
-msgstr "添加可作任意萬子的'萬'字百搭牌。"
+msgstr "添加可作任意萬子的百搭牌。"
 
 msgid "Adds a single pinzu joker to the game. The pinzu joker looks like 筒 and can represent any character tile."
-msgstr "添加可作任意筒子的'筒'字百搭牌。"
+msgstr "添加可作任意筒子的百搭牌。"
 
 msgid "Adds a single souzu joker to the game. The souzu joker looks like 索 and can represent any character tile."
-msgstr "添加可作任意條子的'索'字百搭牌。"
+msgstr "添加可作任意索子的百搭牌。"
 
 msgid "Adds aka nines, worth 1 han each."
 msgstr "添加赤九，每張計1番。"
@@ -155,10 +155,10 @@ msgid "Adds aka threes, worth 1 han each."
 msgstr "添加赤三，每張計1番。"
 
 msgid "Adds eight jokers to the game. See the Vietnamese ruleset to learn how they work. Note that this mod adds a honors joker instead of a flower joker."
-msgstr "添加8張百搭牌（參見越南規則說明）。注意：本模組添加字牌百搭而非花牌。"
+msgstr "添加8張越式百搭牌（參見越南規則說明）。注意：本模組添加字牌百搭而非花牌。"
 
 msgid "Adds the Chinese blue-framed white dragon as a fourth dragon tile (hakuban). Yaku treats it as an honor tile. Shousangen is reduced to 1 han (+2 from dragons) and Daisangen is reduced to 2 han (+3 from dragons). Adds Shousuugen (3 dragons + dragon pair) as yakuman and Daisuugen (4 dragons) as double yakuman. This mod is in beta because pao is not yet implemented for blue dragon."
-msgstr "添加中國式藍框白板作為第四種三元牌。小三元降為1番（+三元2番），大三元降為2番（+三元3番）。新增'小四元'（3種三元+對子）為役滿，'大四元'（4種）為雙倍役滿。（測試版：藍龍包牌未實現）"
+msgstr "添加中國式藍框白板作為第四種三元牌。小三元降為1番（+三元牌2番），大三元降為2番（+三元牌3番）。新增'小四元'（3種三元+對子）為役滿，'大四元'（4種）為雙倍役滿。（測試版：藍龍包牌未實現）"
 
 msgid "Agarirenchan"
 msgstr "和牌連莊"
@@ -197,7 +197,7 @@ msgid "American Civil War"
 msgstr "南北戰爭"
 
 msgid "American Mah-Jongg. Assemble hands with jokers, and declare other players' hands dead. Rules are slightly different from MJME (see rules page)."
-msgstr "美式麻將：使用百搭牌組牌，可宣布他家手牌無效。（與MJME規則略有不同，詳見規則頁）"
+msgstr "美式麻將：使用百搭牌組牌，可宣布他家手牌無效。（與MJME規則略有不同，詳見規則頁。）"
 
 msgid "Ankan"
 msgstr "暗槓"
@@ -209,10 +209,10 @@ msgid "Aotenjou"
 msgstr "青天井"
 
 msgid "At the end of the game, all leftover riichi sticks on the table are given to first place. (Otherwise they are lost.)"
-msgstr "遊戲結束時所有剩餘立直棒歸第一名。（默認情況下會消失）"
+msgstr "遊戲結束時所有剩餘立直棒歸第一名。（默認情況下會消失。）"
 
 msgid "Australian"
-msgstr "澳大利亞"
+msgstr "澳洲"
 
 msgid "Back"
 msgstr "返回"
@@ -239,7 +239,7 @@ msgid "Blue Tunnel"
 msgstr "藍洞"
 
 msgid "Both East and West are round winds during East Round, and North and South during South Round. Similarly for West and North Rounds."
-msgstr "東風圈時東/西均為場風，南風圈時南/北均為場風（西/北圈同理）。"
+msgstr "東風圈時東/西均為場風，南風圈時南/北均為場風。（西/北圈同理。）"
 
 msgid "British"
 msgstr "英國"
@@ -347,7 +347,7 @@ msgid "Config"
 msgstr "配置"
 
 msgid "Copy log"
-msgstr "複製日誌"
+msgstr "複製紀錄"
 
 msgid "Cosmic Riichi"
 msgstr "宇宙立直"
@@ -427,6 +427,7 @@ msgstr "寶牌清老頭七對子"
 msgid "Double Riichi"
 msgstr "兩立直"
 
+# TODO: check that this is the correct translation
 msgid "Double Ron"
 msgstr "雙響"
 
@@ -527,7 +528,7 @@ msgid "Entered room %{room_code} for variant %{ruleset}"
 msgstr "已進入%{ruleset}規則的%{room_code}房間"
 
 msgid "Even"
-msgstr "偶數"
+msgstr "雙數"
 
 msgid "Everyone plays with tiles shown."
 msgstr "所有玩家手牌公開。"
@@ -674,7 +675,7 @@ msgid "It's All Aka?"
 msgstr "全是紅寶？"
 
 msgid "Italian"
-msgstr "義大利國"
+msgstr "義大利"
 
 msgid "Ittsu"
 msgstr "一氣通貫"
@@ -839,7 +840,7 @@ msgid "Local yaku. \\\"Twice Mixed Double Sequence\\\". A mixed double sequence 
 msgstr "地方役「雙同順」。兩組不同花色同數字順子（如345萬 345筒）2翻。"
 
 msgid "Local yaku. \\\"Win Without Red\\\". 2 han if your hand contains no red. This means you can have only 248p (2,4,8 circles), 23468s (2,3,4,6,8 bamboo), and any honors except red dragon. 5 han instead if no honor tiles (chintanfon). +1 han if closed."
-msgstr "地方役「無赤和」。手牌無赤牌（僅248筒、23468條及非紅中字牌）2翻，無字牌5翻，門清+1翻。"
+msgstr "地方役「無赤和」。手牌無赤牌（僅248筒、23468索及非紅中字牌）2翻，無字牌5翻，門清+1翻。"
 
 msgid "Local yakuman. If you have kans of all four winds, it's quadruple yakuman. Doesn't stack with daisuushi and suukantsu."
 msgstr "地方役滿：四風牌槓子四倍役滿（不與大四喜、四槓子複合）。"
@@ -905,16 +906,16 @@ msgid "Local yakuman. \\\"Pure Quadruple Sequences\\\". If you have four of the 
 msgstr "地方役滿「純四同順」：同花色完全相同的四組順子（如123萬×4）時役滿（第四組鳴牌則包牌）。"
 
 msgid "Local yakuman. \\\"Red Peacock\\\". Like ryuuiisou but red bamboo only: you can only have 1579s and red dragon."
-msgstr "地方役滿「紅孔雀」：僅1579條+紅中時役滿。"
+msgstr "地方役滿「紅孔雀」：僅1579索+紅中時役滿。"
 
 msgid "Local yakuman. \\\"Thirteen Unconnected\\\". If you start with 13 disconnected tiles (with one forming a pair), it's yakuman. Calls invalidate."
 msgstr "地方役滿「十三幺」：13張不關聯牌（含一對）起手時役滿（鳴牌無效）。"
 
 msgid "Log ID:"
-msgstr "日誌ID："
+msgstr "紀錄ID："
 
 msgid "Logs"
-msgstr "日誌"
+msgstr "紀錄"
 
 msgid "M.League"
 msgstr "M聯賽"
@@ -1019,7 +1020,7 @@ msgid "Number of points each player starts with. You can also set this by writin
 msgstr "每位玩家的初始點數。也可在配置選項卡中輸入\"initial_score: 100000\"進行設置"
 
 msgid "Odd"
-msgstr "奇數"
+msgstr "單數"
 
 msgid "Oka"
 msgstr "頭名賞"
@@ -1276,6 +1277,7 @@ msgstr "小數鄰"
 msgid "Shousuushii"
 msgstr "小四喜"
 
+# TODO: check this translation; should it instead be "小三色同刻"?
 msgid "Shoutate"
 msgstr "小立直"
 
@@ -1484,7 +1486,7 @@ msgid "Vietnamese Jokers"
 msgstr "越南萬能牌"
 
 msgid "View log"
-msgstr "查看日誌"
+msgstr "查看紀錄"
 
 msgid "Visayan"
 msgstr "米沙鄢"
@@ -1646,7 +1648,7 @@ msgid "Using joker assignment"
 msgstr "使用鬼牌分配"
 
 msgid "Viewing log for a"
-msgstr "查看日誌於"
+msgstr "查看紀錄於"
 
 msgid "bets their tsumo payment instead of paying out (Ezaki Hitomi)"
 msgstr "以自摸支付額下注而非支付 (江崎仁美)"
