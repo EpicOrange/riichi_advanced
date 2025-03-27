@@ -832,7 +832,9 @@ defmodule RiichiAdvanced.Compiler do
       ["@list$" + (.[1:])]
     elif type == "array" then
       .
-    else [] end;
+    elif type == "null" then
+      []
+    else [.] end;
   def _safe_append(l; r):
     (l | _ensure_list) + (r | _ensure_list);
   """

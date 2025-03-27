@@ -1059,7 +1059,7 @@ Every 6 Phán is worth one Mủn, and each Mủn represents a multiplier on the 
 
 All you need to specify is the score value of 0-6 Phán in the same manner as the `"score_table"` method:
 
-    "score_table": {"0": 0.5, "1": 1, "2": 2, "3": 4, "4": 8, "5": 16, "max": 32},
+    "score_table": {"0": 0.5, "1": 1, "2": 2, "3": 4, "4": 8, "5": 16, max: 32},
 
 `"max"` must be present here, as it is the value used for the `Mủn` multiplier.
 

@@ -3,7 +3,7 @@ define_yaku_precedence "All Honours", ["Round Wind", "Seat Wind", "All Triplets"
 
 set score_calculation, %{
   scoring_method: "score_table",
-  score_table: %{"0": 1, "1": 2, "2": 4, "3": 8, "4": 16, "5": 24, "6": 32, "7": 48, "8": 64, "9": 96, "10": 128, "11": 192, "12": 256, "max": 384},
+  score_table: %{"0": 1, "1": 2, "2": 4, "3": 8, "4": 16, "5": 24, "6": 32, "7": 48, "8": 64, "9": 96, "10": 128, "11": 192, "12": 256, max: 384},
   discarder_multiplier: 2,
   non_discarder_multiplier: 0,
   self_draw_multiplier: 1,
