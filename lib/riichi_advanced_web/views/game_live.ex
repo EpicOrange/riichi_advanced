@@ -86,10 +86,10 @@ defmodule RiichiAdvancedWeb.GameLive do
         [["initialize_tutorial"] | init_actions] # block events if we're a tutorial
       else init_actions end
       args = [room_code: socket.assigns.room_code, ruleset: socket.assigns.ruleset, mods: mods, config: config, init_actions: init_actions, name: Utils.via_registry("game", socket.assigns.ruleset, socket.assigns.room_code)]
-      game_spec = %{
+      game_spec = Supervisor.child_spec(%{
         id: {RiichiAdvanced.GameSupervisor, socket.assigns.ruleset, socket.assigns.room_code},
         start: {RiichiAdvanced.GameSupervisor, :start_link, [args]}
-      }
+      }, restart: :temporary)
       case DynamicSupervisor.start_child(RiichiAdvanced.GameSessionSupervisor, game_spec) do
         {:ok, _pid} ->
           IO.puts("Starting game session #{socket.assigns.room_code}")

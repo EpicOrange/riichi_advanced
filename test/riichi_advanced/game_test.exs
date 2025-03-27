@@ -9,7 +9,7 @@ defmodule RiichiAdvanced.GameTest do
     ruleset = "riichi"
     mods = []
     config = nil
-    game_spec = {RiichiAdvanced.GameSupervisor, room_code: room_code, ruleset: ruleset, mods: mods, config: config, name: {:via, Registry, {:game_registry, Utils.to_registry_name("game", ruleset, room_code)}}}
+    game_spec = {RiichiAdvanced.GameSupervisor, room_code: room_code, ruleset: ruleset, mods: mods, config: config, name: Utils.via_registry("game", ruleset, room_code), restart: :temporary}
     {:ok, _pid} = DynamicSupervisor.start_child(RiichiAdvanced.GameSessionSupervisor, game_spec)
     [{game, _}] = Registry.lookup(:game_registry, Utils.to_registry_name("game", ruleset, room_code))
     [{game_state, _}] = Registry.lookup(:game_registry, Utils.to_registry_name("game_state", ruleset, room_code))

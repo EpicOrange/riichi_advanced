@@ -80,10 +80,10 @@ defmodule RiichiAdvancedWeb.LogLive do
         ["initialize_game", socket.assigns.session_id, Enum.at(log["kyokus"], 0)]
       ]
       args = [room_code: socket.assigns.room_code, ruleset: socket.assigns.ruleset, mods: mods, config: config, init_actions: init_actions, log_id: socket.assigns.log_id, name: Utils.via_registry("log", socket.assigns.ruleset, socket.assigns.room_code)]
-      log_spec = %{
+      log_spec = Supervisor.child_spec(%{
         id: {RiichiAdvanced.LogSupervisor, socket.assigns.ruleset, socket.assigns.room_code},
         start: {RiichiAdvanced.LogSupervisor, :start_link, [args]}
-      }
+      }, restart: :temporary)
       case DynamicSupervisor.start_child(RiichiAdvanced.GameSessionSupervisor, log_spec) do
         {:ok, _pid} ->
           IO.puts("Starting game session #{socket.assigns.room_code}")

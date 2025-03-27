@@ -1485,7 +1485,7 @@ defmodule RiichiAdvanced.GameState do
       if map_size(state.reserved_seats) <= 1 do
         # immediately stop solo games
         IO.puts("Stopping game #{state.room_code} #{inspect(self())}")
-        DynamicSupervisor.terminate_child(RiichiAdvanced.GameSessionSupervisor, state.supervisor)
+        GenServer.cast(self(), :terminate_game)
       else
         IO.puts("Stopping game #{state.room_code} #{inspect(self())} in 60 seconds")
         :timer.apply_after(60000, GenServer, :cast, [self(), :terminate_game_if_empty])
@@ -1530,11 +1530,17 @@ defmodule RiichiAdvanced.GameState do
     {:noreply, state}
   end
 
+  def handle_cast(:terminate_game, state) do
+    GenServer.stop(state.supervisor, :normal)
+    {:noreply, state}
+  end
+
   def handle_cast(:terminate_game_if_empty, state) do
     if Enum.all?(state.messages_states, fn {_seat, messages_state} -> messages_state == nil end) do
       # all players and spectators have left, shutdown
       IO.puts("Stopping game #{state.room_code} #{inspect(self())}")
-      DynamicSupervisor.terminate_child(RiichiAdvanced.GameSessionSupervisor, state.supervisor)
+      # DynamicSupervisor.terminate_child(RiichiAdvanced.GameSessionSupervisor, state.supervisor)
+      GenServer.stop(state.supervisor, :normal)
     else
       IO.puts("Not stopping game #{state.room_code} #{inspect(self())}")
     end
@@ -2223,10 +2229,11 @@ defmodule RiichiAdvanced.GameState do
     sanitized_state = sanitize_state(state)
     init_actions = [["put_state", sanitized_state]]
     args = [room_code: state.room_code, ruleset: state.ruleset, mods: state.mods, config: state.config, private: state.private, reserved_seats: state.reserved_seats, init_actions: init_actions, name: Utils.via_registry("game", state.ruleset, state.room_code)]
-    game_spec = %{
+    game_spec = Supervisor.child_spec(%{
       id: {RiichiAdvanced.GameSupervisor, state.ruleset, state.room_code},
-      start: {RiichiAdvanced.GameSupervisor, :start_link, [args]}
-    }
+      start: {RiichiAdvanced.GameSupervisor, :start_link, [args]},
+    }, restart: :temporary)
+    
     :rpc.cast(node_sname, DynamicSupervisor, :start_child, [RiichiAdvanced.GameSessionSupervisor, game_spec])
     # kill this game instance
     DynamicSupervisor.terminate_child(RiichiAdvanced.GameSessionSupervisor, state.supervisor)

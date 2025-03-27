@@ -39,7 +39,11 @@ defmodule RiichiAdvanced.TestUtils do
 
   def initialize_test_state(ruleset, mods, config \\ nil) do
     room_code = Ecto.UUID.generate()
-    game_spec = {RiichiAdvanced.GameSupervisor, room_code: room_code, ruleset: ruleset, mods: mods, config: config, name: Utils.via_registry("game", ruleset, room_code)}
+    args = [room_code: room_code, ruleset: ruleset, mods: mods, config: config, name: Utils.via_registry("game", ruleset, room_code)]
+    game_spec = Supervisor.child_spec(%{
+      id: {RiichiAdvanced.GameSupervisor, ruleset, room_code},
+      start: {RiichiAdvanced.GameSupervisor, :start_link, [args]}
+    }, restart: :temporary)
     {:ok, _game} = DynamicSupervisor.start_child(RiichiAdvanced.GameSessionSupervisor, game_spec)
     [{game_state, _}] = Utils.registry_lookup("game_state", ruleset, room_code)
 
@@ -86,6 +90,7 @@ defmodule RiichiAdvanced.TestUtils do
     end
 
     state = GenServer.call(test_state.game_state_pid, :get_state)
+    GenServer.cast(test_state.game_state_pid, :terminate_game)
 
     # debug
     # IO.inspect(state.players.east.hand)

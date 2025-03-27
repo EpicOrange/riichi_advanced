@@ -83,17 +83,25 @@ defmodule RiichiAdvanced.GameState.Rules do
   def get(rules_ref, key, default \\ nil)
   def get(nil, _key, default), do: default
   def get(rules_ref, key, default) do
-    case :ets.lookup(rules_ref, key) do
-      [{_key, value}] -> value
-      [] -> default
+    try do
+      case :ets.lookup(rules_ref, key) do
+        [{_key, value}] -> value
+        [] -> default
+      end
+    rescue
+      _ -> default
     end
   end
 
   def has_key?(nil, _key), do: false
   def has_key?(rules_ref, key) do
-    case :ets.lookup(rules_ref, key) do
-      [_] -> true
-      [] -> false
+    try do
+      case :ets.lookup(rules_ref, key) do
+        [_] -> true
+        [] -> false
+      end
+    rescue
+      _ -> false
     end
   end
 

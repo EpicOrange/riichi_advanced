@@ -548,11 +548,10 @@ defmodule RiichiAdvanced.RoomState do
       ["fetch_messages", player.session_id]
     ] end) ++ [["initialize_game"]]
     args = [room_code: state.room_code, ruleset: state.ruleset, mods: mods, config: config, private: state.private, reserved_seats: reserved_seats, init_actions: init_actions, name: Utils.via_registry("game", state.ruleset, state.room_code)]
-    game_spec = %{
+    game_spec = Supervisor.child_spec(%{
       id: {RiichiAdvanced.GameSupervisor, state.ruleset, state.room_code},
       start: {RiichiAdvanced.GameSupervisor, :start_link, [args]}
-    }
-
+    }, restart: :temporary)
     # start a new game process, if it doesn't exist already
     state = case Utils.registry_lookup("game_state", state.ruleset, state.room_code) do
       [{_game_state, _}] ->
