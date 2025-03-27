@@ -90,6 +90,7 @@ Here are differences between Riichi Advanced and real life/other mahjong clients
 The following Cards are supported by Riichi Advanced:
 
 - [NMJL 2024](https://www.nationalmahjonggleague.org/store.aspx) (cost: 14USD)
+- [NMJL 2025](https://www.nationalmahjonggleague.org/store.aspx) (cost: 14USD)
 - [ILoveMahj Card](https://ilovemahj.com/ilmCard) (free)
 - [ATeacherFirst Mah Jongg Fake Card](https://www.ateacherfirst.com/bridge/mah-jongg/) (free)
 - [MahjLife Mock Card](https://mahjlife.com/document/mahj-life-mock-card-print/) (free, used with permission from Michele Frizzell)
@@ -166,6 +167,7 @@ To read the Card:
 The following mods are currently available for American:
 
 - Zombie Blanks: Adds four "zombie blanks" to the wall. Zombie blanks may not be passed during the Charleston or discarded. On a player's turn, they may swap a zombie blank in their hand with any natural tile in the discard pool. Blanks have no other purpose; they do not act as jokers; players may not declare Mah Jongg if they have a zombie blank in their hand; nor may they make exposures using blanks; or joker exchanges with blanks.
+- NMJL 2025 Card: Play with the [NMJL 2025 Card](https://www.nationalmahjonggleague.org/store.aspx).
 - ILM Card: Play with the free [ILoveMahj Card](https://ilovemahj.com/ilmCard).
 - ATF Card: Play with the free [ATeacherFirst Mah Jongg Fake Card](https://www.ateacherfirst.com/bridge/mah-jongg/).
 - MahjLife Card: Play with the free [MahjLife Mock Card](https://mahjlife.com/document/mahj-life-mock-card-print/). Introduced along with [this video](https://www.youtube.com/watch?v=7WygnpfFbMQ). (Implemented with permission from Michele Frizzell.)
