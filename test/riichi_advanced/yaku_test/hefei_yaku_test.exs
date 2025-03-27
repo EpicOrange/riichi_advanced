@@ -235,9 +235,9 @@ defmodule RiichiAdvanced.YakuTest.HefeiYaku do
     {
       "starting_hand": {
         "east": ["3m", "3m", "3m", "5m", "5m", "5m", "8m", "8m", "2s", "2s", "7p", "7p", "7p"],
-        "south": ["2m", "4m", "7m", "2p", "3p", "4p", "6p", "8p", "4s", "5s", "6s", "7s", "8s"],
-        "west": ["2m", "4m", "7m", "2p", "3p", "4p", "6p", "8p", "4s", "5s", "6s", "7s", "8s"],
-        "north": ["2m", "4m", "7m", "2p", "3p", "4p", "6p", "8p", "4s", "5s", "6s", "7s", "8s"]
+        "south": ["2m", "4m", "6m", "7m", "2p", "3p", "4p", "6p", "4s", "5s", "6s", "7s", "8s"],
+        "west": ["2m", "4m", "6m", "7m", "2p", "3p", "4p", "6p", "4s", "5s", "6s", "7s", "8s"],
+        "north": ["2m", "4m", "6m", "7m", "2p", "3p", "4p", "6p", "4s", "5s", "6s", "7s", "8s"]
       },
       "starting_draws": ["8p", "5s", "5p", "8p", "2s"]
     }
@@ -423,7 +423,7 @@ defmodule RiichiAdvanced.YakuTest.HefeiYaku do
     {
       "starting_hand": {
         "east": ["2m", "3m", "4m", "5m", "6m", "7m", "8m", "8m", "3p", "4p", "4p", "5p", "6p"],
-        "south": ["2m", "4m", "7m", "2p", "3p", "4p", "6p", "2s", "4s", "5s", "6s", "7s", "8s"],
+        "south": ["2m", "4m", "7m", "2p", "3p", "5p", "6p", "2s", "4s", "5s", "6s", "7s", "8s"],
         "west": ["2m", "4m", "7m", "2p", "3p", "4p", "6p", "2s", "4s", "5s", "6s", "7s", "8s"],
         "north": ["2m", "4m", "7m", "2p", "3p", "4p", "6p", "2s", "4s", "5s", "6s", "7s", "8s"]
       },
@@ -656,9 +656,9 @@ defmodule RiichiAdvanced.YakuTest.HefeiYaku do
     {
       "starting_hand": {
         "east": ["6m", "6m", "6m", "7m", "7m", "7m", "8m", "8m", "8m", "3s", "4p", "5p", "6p"],
-        "south": ["2m", "4m", "7m", "2p", "3p", "4p", "6p", "2s", "4s", "5s", "6s", "7s", "8s"],
-        "west": ["2m", "4m", "7m", "2p", "3p", "4p", "6p", "2s", "4s", "5s", "6s", "7s", "8s"],
-        "north": ["2m", "4m", "7m", "2p", "3p", "4p", "6p", "2s", "4s", "5s", "6s", "7s", "8s"]
+        "south": ["2m", "4m", "5m", "2p", "3p", "4p", "6p", "2s", "4s", "5s", "6s", "7s", "8s"],
+        "west": ["2m", "4m", "5m", "2p", "3p", "4p", "6p", "2s", "4s", "5s", "6s", "7s", "8s"],
+        "north": ["2m", "4m", "5m", "2p", "3p", "4p", "6p", "2s", "4s", "5s", "6s", "7s", "8s"]
       },
       "starting_draws": ["8p", "3s"]
     }
@@ -679,9 +679,9 @@ defmodule RiichiAdvanced.YakuTest.HefeiYaku do
     {
       "starting_hand": {
         "east": ["6m", "6m", "6m", "7m", "7m", "7m", "8m", "8m", "3s", "3s", "4p", "5p", "6p"],
-        "south": ["2m", "4m", "7m", "2p", "3p", "4p", "6p", "2s", "4s", "5s", "6s", "7s", "8s"],
-        "west": ["2m", "4m", "7m", "2p", "3p", "4p", "6p", "2s", "4s", "5s", "6s", "7s", "8s"],
-        "north": ["2m", "4m", "7m", "2p", "3p", "4p", "6p", "2s", "4s", "5s", "6s", "7s", "8s"]
+        "south": ["2m", "4m", "5m", "2p", "3p", "4p", "6p", "2s", "4s", "5s", "6s", "7s", "8s"],
+        "west": ["2m", "4m", "5m", "2p", "3p", "4p", "6p", "2s", "4s", "5s", "6s", "7s", "8s"],
+        "north": ["2m", "4m", "5m", "2p", "3p", "4p", "6p", "2s", "4s", "5s", "6s", "7s", "8s"]
       },
       "starting_draws": ["8p", "8m"]
     }
@@ -702,9 +702,9 @@ defmodule RiichiAdvanced.YakuTest.HefeiYaku do
     {
       "starting_hand": {
         "east": ["6m", "6m", "6m", "7m", "7m", "7m", "8m", "8m", "3s", "3s", "4p", "5p", "6p"],
-        "south": ["2m", "4m", "7m", "2p", "3p", "4p", "6p", "2s", "4s", "5s", "6s", "7s", "8s"],
-        "west": ["2m", "4m", "7m", "2p", "3p", "4p", "6p", "2s", "4s", "5s", "6s", "7s", "8s"],
-        "north": ["2m", "4m", "7m", "2p", "3p", "4p", "6p", "2s", "4s", "5s", "6s", "7s", "8s"]
+        "south": ["2m", "4m", "5m", "2p", "3p", "4p", "6p", "2s", "4s", "5s", "6s", "7s", "8s"],
+        "west": ["2m", "4m", "5m", "2p", "3p", "4p", "6p", "2s", "4s", "5s", "6s", "7s", "8s"],
+        "north": ["2m", "4m", "5m", "2p", "3p", "4p", "6p", "2s", "4s", "5s", "6s", "7s", "8s"]
       },
       "starting_draws": ["8p", "7p", "8p", "7p", "8m"]
     }
@@ -1113,7 +1113,7 @@ defmodule RiichiAdvanced.YakuTest.HefeiYaku do
       "starting_hand": {
         "east": ["5p","6p","8p","4m","5m","6m","3s","2p","6s","7p","7s","8s","6s"],
         "south": ["7m","4p","2s","3m","5s","2p","8s","3s","5s","7m","2s","3m","2p"],
-        "west": ["7p","3m","4m","6s","8m","2s","5s","8m","2m","8p","7p","8p","7s"],
+        "west": ["7p","3m","4m","6s","8m","2s","5s","8m","2m","7p","7p","8p","7s"],
         "north": ["5p","5p","4s","2s","7s","6m","3s","3s","5m","5s","8s","2m","6m"]
       },
       "starting_draws": ["4p","7m","7m","4m","6p","8s","5m","3m","3p","4p","2p","4s","3p","8p","8m","4p","8m","6p","7s","6s","6m","3p","2m","4s","3p","5p","6p","4s","5m","4m","8p","2m"],
