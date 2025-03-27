@@ -518,13 +518,26 @@ defmodule RiichiAdvanced.Utils do
     end
   end
 
-  def walk_json(action, fun) do
-    # this just walks the action and calls fun on every node
-    case fun.(action) do
-      action when is_list(action) -> Enum.map(action, &walk_json(&1, fun))
-      action when is_map(action) -> Map.new(action, fn {k, v} -> {k, walk_json(v, fun)} end)
-      action -> action
+  def walk_json(json, fun) do
+    # this just walks the json and calls fun on every node
+    case fun.(json) do
+      json when is_list(json) -> Enum.map(json, &walk_json(&1, fun))
+      json when is_map(json) -> Map.new(json, fn {k, v} -> {k, walk_json(v, fun)} end)
+      json -> json
     end
   end
 
+  # walks the json, calling fun on every node,
+  # where fun returns a list that should get merged into any containing list
+  def splat_json(json, fun), do: splat_json_rec(json, fun) |> Enum.at(0)
+  def splat_json_rec(json, fun) do
+    case fun.(json) do
+      [json] when is_list(json) ->
+        [for x <- json, item <- splat_json_rec(x, fun) do
+          item
+        end]
+      [json] when is_map(json) -> [Map.new(json, fn {k, v} -> {k, splat_json(v, fun)} end)]
+      jsons -> jsons # branch b
+    end
+  end
 end

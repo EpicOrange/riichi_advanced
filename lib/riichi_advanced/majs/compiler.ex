@@ -146,13 +146,12 @@ defmodule RiichiAdvanced.Compiler do
           [condition, actions] ->
             with {:ok, condition} <- compile_condition_list(condition, line, column),
                  {:ok, then_branch} <- compile_action_list(Keyword.get(actions, :do), line, column) do
-              else_branch_ast = Keyword.get(actions, :else)
-              if else_branch_ast == nil do
-                {:ok, ["when", condition, then_branch]}
-              else
-                with {:ok, else_branch} <- compile_action_list(else_branch_ast, line, column) do
-                  {:ok, ["ite", condition, then_branch, else_branch]}
-                end
+              case Keyword.get(actions, :else) do
+                nil -> {:ok, ["when", condition, then_branch]}
+                else_branch_ast ->
+                  with {:ok, else_branch} <- compile_action_list(else_branch_ast, line, column) do
+                    {:ok, ["ite", condition, then_branch, else_branch]}
+                  end
               end
             end
           _ -> {:error, "\"if\" got invalid parameters: #{inspect(opts)}"}
@@ -300,12 +299,10 @@ defmodule RiichiAdvanced.Compiler do
         "set"                                  -> {:ok, "#{path} = #{value}"}
         "initialize"                           -> {:ok, "#{path} = #{value}"}
         "add"                                  -> {:ok, "#{path} += #{value}"}
-        "prepend"    when is_list(value_val)   -> {:ok, "#{path} |= #{value} + ."}
-        "prepend"                              -> {:ok, "#{path} |= #{Jason.encode!(List.wrap(value_val))} + ."}
-        "append"     when is_list(value_val)   -> {:ok, "#{path} += #{value}"}
-        "append"                               -> {:ok, "#{path} += #{Jason.encode!(List.wrap(value_val))}"}
+        "prepend"                              -> {:ok, "#{path} |= safe_append(#{value}; .)"}
+        "append"                               -> {:ok, "#{path} |= safe_append(.; #{value})"}
         "merge"      when is_map(value_val)    -> {:ok, "#{path} += #{value}"}
-        "merge"                                -> {:ok, "#{path} += #{Jason.encode!(Map.new(value_val))}"}
+        "merge"                                -> {:error, "tried to merge a non-map value #{inspect(value_val)}"}
         "subtract"                             -> {:ok, "#{path} -= #{value}"}
         "delete"     when is_list(value_val)   -> {:ok, "#{path} |= map(select(#{value} | index(.) | not))"}
         "delete"                               -> {:ok, "#{path} |= map(select(. != #{value}))"}
@@ -398,31 +395,49 @@ defmodule RiichiAdvanced.Compiler do
   end
 
   defp compile_command("define_match", name, args, _line, _column) do
-    match_specs = Enum.map(args, fn
-      {:sigil_m, _, [{:<<>>, _, [match_spec]}, _args]} ->
-        # standard match definition
-        with {:ok, match_spec} <- Parser.parse_match(match_spec),
-             {:ok, match_spec} <- Validator.validate_json(match_spec),
+    match_specs = case args do
+      [{:@, _, [{name, _, nil}]}] ->
+        # constant
+        with {:ok, match_spec} <- Validator.validate_constant(name),
              {:ok, match_spec} <- Jason.encode(match_spec) do
           {:ok, "#{match_spec}"}
         end
-      {:sigil_a, _, [{:<<>>, _, [match_spec]}, _args]} ->
-        # american match definition
-        with {:ok, match_spec} <- Validator.validate_json(match_spec),
+      [{:+, _, [{name, _, nil}]}] ->
+        # variable
+        with {:ok, match_spec} <- Validator.validate_variable(name),
              {:ok, match_spec} <- Jason.encode(match_spec) do
-          {:ok, "[#{match_spec}]"}
+          {:ok, "#{match_spec}"}
         end
-      match_spec when is_binary(match_spec) ->
-        # existing match definition
-        with {:ok, match_spec} <- Validator.validate_json(match_spec) do
-          {:ok, ".#{match_spec}_definition"}
+      _ ->
+        match_specs = Enum.map(args, fn
+          {:sigil_m, _, [{:<<>>, _, [match_spec]}, _args]} ->
+            # standard match definition
+            with {:ok, match_spec} <- Parser.parse_match(match_spec),
+                 {:ok, match_spec} <- Validator.validate_json(match_spec),
+                 {:ok, match_spec} <- Jason.encode(match_spec) do
+              {:ok, "#{match_spec}"}
+            end
+          {:sigil_a, _, [{:<<>>, _, [match_spec]}, _args]} ->
+            # american match definition
+            with {:ok, match_spec} <- Validator.validate_json(match_spec),
+                 {:ok, match_spec} <- Jason.encode(match_spec) do
+              {:ok, "[#{match_spec}]"}
+            end
+          match_spec when is_binary(match_spec) ->
+            # existing match definition
+            with {:ok, match_spec} <- Validator.validate_json(match_spec) do
+              {:ok, ".#{match_spec}_definition"}
+            end
+        end)
+        |> Utils.sequence()
+        with {:ok, match_specs} <- match_specs do
+          {:ok, Enum.join(match_specs, " + ")}
         end
-    end)
-    |> Utils.sequence()
+    end
     with {:ok, match_specs} <- match_specs do
       # `name` is already escaped, so we just insert _definition right before the last quote
       name = Utils.insert_at(name, "_definition", -2)
-      match_specs = Enum.join(match_specs, " + ")
+      # IO.puts(".[#{name}] = #{match_specs}")
       {:ok, ".[#{name}] = #{match_specs}"}
     end
   end
@@ -811,6 +826,17 @@ defmodule RiichiAdvanced.Compiler do
     end
   end
 
+  @header """
+  def ensure_list:
+    if type == "string" and startswith("@") then
+      ["@list$" + (.[1:])]
+    elif type == "array" then
+      .
+    else [] end;
+  def safe_append(l; r):
+    (l | ensure_list) + (r | ensure_list);
+  """
+
   def compile_jq(ast) do
     case ast do
       {:__block__, _pos, []} -> {:ok, "."}
@@ -818,7 +844,7 @@ defmodule RiichiAdvanced.Compiler do
         # IO.inspect(nodes, label: "AST", limit: :infinity)
         case Utils.sequence(Enum.map(nodes, &compile_jq_toplevel/1)) do
           {:ok, val}    ->
-            ret = Enum.map_join(val, "\n|", &"(" <> &1 <> ")")
+            ret = @header <> Enum.map_join(val, "\n|", &"(" <> &1 <> ")")
             # IO.puts(ret)
             {:ok, ret}
           {:error, msg} -> {:error, msg}

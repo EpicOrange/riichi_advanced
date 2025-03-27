@@ -37,13 +37,10 @@ defmodule RiichiAdvanced.GameState.Rules do
   defp replace_constants(rules) do
     # replace all @ constants in rules
     rules = if Map.has_key?(rules, "constants") do
-      Utils.walk_json(rules, fn
-        value when is_binary(value) ->
-          cond do
-            String.starts_with?(value, "@") -> Map.get(rules["constants"], String.replace_leading(value, "@", ""), value)
-            true -> value
-          end
-        value -> value
+      Utils.splat_json(rules, fn
+        <<"@list$" <> name>> -> List.wrap(Map.get(rules["constants"], name, name))
+        <<"@" <> name>> -> [Map.get(rules["constants"], name, name)]
+        value -> [value]
       end)
     else rules end
     {:ok, rules}
