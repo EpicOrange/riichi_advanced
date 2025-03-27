@@ -3072,14 +3072,14 @@ div#container > form > ul.beta-testers {
 div#container > form > ul.beta-testers > li { padding: 0.1em 0.25em; }
 div#container > form > ul.beta-testers > li:nth-child(2n) { transform: translateY(-0.25em); }
 /* enter buttons for index and lobby */
-div#container > form > div.enter-buttons {
+div#container > div.enter-buttons {
   width: 100%;
   display: flex;
   flex-flow: row nowrap;
   justify-content: stretch;
   margin-top: calc(0.5 * var(--tile-size));
 }
-div#container > form > div.enter-buttons > button {
+div#container > div.enter-buttons > button {
   font-size: calc(0.6 * var(--tile-size));
   flex-grow: 1;
 }
