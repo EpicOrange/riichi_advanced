@@ -26,7 +26,8 @@ else . end
 |
 .functions.discard_passed |= [
   # unset ippatsu status if your own discard passes
-  ["as", "last_discarder", [["when", [{"name": "status_missing", "opts": ["just_reached"]}], [["unset_status", "ippatsu"]]]]],
-  # unset everyone's ippatsu status after any call
-  ["when", ["just_called"], [["unset_status_all", "ippatsu"]]]
+  ["as", "last_discarder", [["when", [{"name": "status_missing", "opts": ["just_reached"]}], [["unset_status", "ippatsu"]]]]]
 ] + .
+|
+# unset everyone's ippatsu status after any call
+.before_call.actions |= [["unset_status_all", "ippatsu"]] + .

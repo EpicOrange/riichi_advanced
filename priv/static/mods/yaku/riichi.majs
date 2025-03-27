@@ -53,6 +53,10 @@ apply prepend, "functions.discard_passed" do
   end
 end
 
+on before_call, prepend: true do
+  unset_status("just_reached")
+end
+
 def place_riichi_stick do
   if status_missing("riichi_stick_placed") do
     subtract_score("riichi_value")
