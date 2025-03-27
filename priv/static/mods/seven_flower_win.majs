@@ -1,0 +1,10 @@
+on after_initialization do
+  add_rule("Rules", "Flowers", "- If you have all eight flowers, you may declare a win for an additional 3 Fan.")
+end
+
+define_const seven_flowers, ~m"unique, (1f 2f 3f 4f 1g 2g 3g 4g):7"
+
+apply set_append, "tenpai_definition", @seven_flowers
+apply set_append, "win_definition", @seven_flowers
+
+define_yaku yaku, "Seven Flowers", 3, match(["flowers"], @seven_flowers)

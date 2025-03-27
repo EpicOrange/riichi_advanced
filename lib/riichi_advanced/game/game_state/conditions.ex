@@ -206,6 +206,7 @@ defmodule RiichiAdvanced.GameState.Conditions do
       "not"                         -> not check_cnf_condition(state, Enum.at(opts, 0), context)
       "true"                        -> true
       "false"                       -> false
+      "equals"                      -> Enum.at(opts, 0) == Enum.at(opts, 1)
       "print"                       ->
         IO.inspect(opts)
         true

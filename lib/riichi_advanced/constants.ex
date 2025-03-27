@@ -344,19 +344,128 @@ defmodule RiichiAdvanced.Constants do
     "hk" => %{
       display_name: "Hong Kong Old Style",
       ruleset: "hk",
+      globals: %{
+        chii_name: "Chow",
+        pon_name: "Pong",
+        kan_name: "Kong",
+        ankan_name: "Concealed Kong",
+        ron_name: "Hu",
+        tsumo_name: "Zimo",
+        han: "Fan"
+      },
       mods: [
-        "global_mods", "framed_5z",
-        "yaku/yakuhai",
-        %{name: "yaku/suuankou", config: %{list: "yaku", name: "Four Concealed Triplets", value: 8}}
+        "base",
+        "global_mods", "default_auto_buttons",
+        "standard_wall", "framed_5z",
+        "standard_win", "yaku/yakuhai",
+        "chii", "pon", "kan", "ron", "tsumo",
+        %{name: "default_flowers", config: %{unskippable: true, four_flowers_value: 2}},
+        %{name: "yaku/no_flowers", config: %{list: "yaku", name: "No Flowers", value: 1}},
+        %{name: "yaku/tsumo", config: %{list: "yaku", name: "Self Draw", value: 1}},
+        %{name: "yaku/chankan", config: %{list: "yaku", name: "Robbing a Kong", value: 1}},
+        %{name: "yaku/rinshan", config: %{
+          list: "yaku", name: "After a Kong", value: 1,
+          double_list: "yaku", double_name: "After Multiple Kongs", double_value: 8
+        }},
+        %{name: "yaku/menzenchin", config: %{list: "yaku", name: "Concealed Hand", value: 1}},
+        %{name: "yaku/honitsu", config: %{
+          hon_list: "yaku", hon_name: "Half Flush", hon_value: 3,
+          chin_list: "yaku", chin_name: "Full Flush", chin_value: 7
+        }},
+        %{name: "yaku/honroutou", config: %{
+          hon_list: "yaku", hon_name: "Mixed Terminals", hon_value: 4,
+          chin_list: "yaku", chin_name: "All Terminals", chin_value: 13
+        }},
+        %{name: "yaku/pinghu", config: %{list: "yaku", name: "All Sequences", value: 1}},
+        %{name: "yaku/toitoi", config: %{list: "yaku", name: "All Triplets", value: 3}},
+        %{name: "yaku/haitei", config: %{
+          haitei_list: "yaku", haitei_name: "Final Tile", haitei_value: 1,
+          houtei_list: "yaku", houtei_name: "Final Tile", houtei_value: 1
+        }},
+        %{name: "yaku/suuankou", config: %{list: "yaku", name: "Four Concealed Triplets", value: 8}},
+        %{name: "yaku/suukantsu", config: %{list: "yaku", name: "Four Kongs", value: 13}},
+        %{name: "yaku/kokushi", config: %{list: "yaku", name: "Thirteen Orphans", value: 13}},
+        %{name: "yaku/chuurenpoutou", config: %{list: "yaku", name: "Nine Gates", value: 13}},
+        %{name: "yaku/tsuuiisou", config: %{list: "yaku", name: "All Honours", value: 10}},
+        %{name: "yaku/daisangen", config: %{
+          shou_list: "yaku", shou_name: "Little Three Dragons", shou_value: 5,
+          dai_list: "yaku", dai_name: "Big Three Dragons", dai_value: 8
+        }},
+        %{name: "yaku/daisuushii", config: %{
+          shou_list: "yaku", shou_name: "Little Four Winds", shou_value: 6,
+          dai_list: "yaku", dai_name: "Big Four Winds", dai_value: 13
+        }},
+        %{name: "yaku/tenhou", config: %{
+          tenhou_list: "yaku", tenhou_name: "Blessing of Heaven", tenhou_value: 13,
+          chiihou_list: "yaku", chiihou_name: "Blessing of Earth", chiihou_value: 13,
+          renhou_list: "yaku", renhou_name: "Blessing of Man", renhou_value: 13,
+          chiihou_is_tsumo: false, renhou_disabled: false
+        }},
       ]
     },
     "classical" => %{
       display_name: "Chinese Classical",
       ruleset: "classical",
+      globals: %{
+        chii_name: "Chow",
+        pon_name: "Pung",
+        kan_name: "Kong",
+        ankan_name: "Concealed Kong",
+        ron_name: "Hu",
+        tsumo_name: "Zimo",
+        han: "Doubles"
+      },
       mods: [
-        "global_mods", "framed_5z",
-        "yaku/yakuhai",
-        %{name: "yaku/suuankou", config: %{list: "yakuman", name: "Four Concealed Triplets", value: 1}}
+        "base",
+        "global_mods", "default_auto_buttons",
+        "standard_wall", "framed_5z",
+        "standard_win", "yaku/yakuhai",
+        "chii", "pon", "kan", "ron", "tsumo",
+        "head_bump",
+        %{name: "default_flowers", config: %{unskippable: true, four_flowers_value: 4}}, # should go after chii/pon/kan/ron/chankan/tsumo
+        %{name: "yaku/menzentsumo", config: %{list: "yaku", name: "Concealed Hand", value: 1}},
+        %{name: "yaku/chankan", config: %{list: "yaku", name: "Robbing the Kong", value: 1}},
+        %{name: "yaku/rinshan", config: %{
+          list: "yaku", name: "Out on a Replacement", value: 1,
+          double_list: "yakuman", double_name: "Two-Fold Fortune", double_value: 1
+        }},
+        %{name: "yaku/honitsu", config: %{
+          hon_list: "yaku", hon_name: "Half Flush", hon_value: 1,
+          chin_list: "yaku", chin_name: "Full Flush", chin_value: 4
+        }},
+        %{name: "yaku/ittsu", config: %{list: "yaku", name: "Pure Straight", value: 1}},
+        %{name: "yaku/tanyao", config: %{list: "yaku", name: "All Simples", value: 1}},
+        %{name: "yaku/honroutou", config: %{
+          hon_list: "yaku", hon_name: "All Terminals and Honors", hon_value: 1,
+          chin_list: "yakuman", chin_name: "All Terminals", chin_value: 1
+        }},
+        %{name: "yaku/toitoi", config: %{list: "yaku", name: "All Triplets", value: 1}},
+        %{name: "yaku/chanta", config: %{list: "yaku", name: "Outside Hand", value: 1}},
+        %{name: "yaku/haitei", config: %{
+          haitei_list: "yaku", haitei_name: "Last Tile Draw", haitei_value: 1,
+          houtei_list: "yaku", houtei_name: "Last Tile Discard", houtei_value: 1
+        }},
+        %{name: "yaku/sanankou", config: %{list: "yaku", name: "Three Concealed Triplets", value: 1}},
+        %{name: "yaku/suuankou", config: %{list: "yakuman", name: "Four Concealed Triplets", value: 1}},
+        %{name: "yaku/suukantsu", config: %{list: "yakuman", name: "Four Kongs", value: 1}},
+        %{name: "yaku/kokushi", config: %{list: "yakuman", name: "Thirteen Orphans", value: 1}},
+        %{name: "yaku/chuurenpoutou", config: %{list: "yakuman", name: "Nine Gates", value: 1}},
+        %{name: "yaku/tsuuiisou", config: %{list: "yakuman", name: "All Honors", value: 1}},
+        %{name: "yaku/daisangen", config: %{
+          shou_list: "yaku", shou_name: "Little Three Dragons", shou_value: 3,
+          dai_list: "yakuman", dai_name: "Big Three Dragons", dai_value: 1
+        }},
+        %{name: "yaku/daisuushii", config: %{
+          shou_list: "yakuman", shou_name: "Little Four Winds", shou_value: 1,
+          dai_list: "yakuman", dai_name: "Big Four Winds", dai_value: 1
+        }},
+        %{name: "yaku/tenhou", config: %{
+          tenhou_list: "yakuman", tenhou_name: "Blessing of Heaven", tenhou_value: 1,
+          chiihou_list: "yakuman", chiihou_name: "Blessing of Earth", chiihou_value: 1,
+          renhou_list: "yakuman", renhou_name: "Blessing of Man", renhou_value: 1,
+          chiihou_is_tsumo: true, renhou_disabled: true
+        }},
+        "classical_fu",
       ]
     }
   }

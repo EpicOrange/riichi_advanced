@@ -1,3 +1,12 @@
+on after_initialization do
+  add_rule("1 $han", "Value Triplets", """
+  Each of the following adds 1 $han:
+  - A triplet of dragon tiles
+  - A triplet of winds matching the round marker
+  - A triplet of winds matching your seat
+  """, %{han: +han})
+end
+
 # dragons
 define_set haku, ~s"5z 5z 5z"
 define_set hatsu, ~s"6z 6z 6z"
@@ -7,7 +16,7 @@ define_yaku yaku, "Green Dragon", 1, match(["hand", "calls", "winning_tile"], ~m
 define_yaku yaku, "Red Dragon", 1, match(["hand", "calls", "winning_tile"], ~m"exhaustive, chun:1, mentsu:3, pair:1")
 
 # prevalent and seat winds
-apply append, "functions.add_scoring_attrs" do
+on before_scoring do
   if round_wind_is("east") do add_attr(["hand", "calls", "winning_tile"], ["_prevalent"], ["1z"]) end
   if round_wind_is("south") do add_attr(["hand", "calls", "winning_tile"], ["_prevalent"], ["2z"]) end
   if round_wind_is("west") do add_attr(["hand", "calls", "winning_tile"], ["_prevalent"], ["3z"]) end

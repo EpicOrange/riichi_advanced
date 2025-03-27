@@ -1,0 +1,86 @@
+on after_initialization do
+  add_rule("Rules", +kan_name, """
+  You may declare $kan to set aside four tiles in three situations:
+  - (open) If you have three of a kind, you can claim the fourth if someone discarded it.
+  - (added) If you previously called $pon, you can add the fourth tile to it but only if you draw the tile yourself.
+  - (concealed) If you have four of a kind, you can declare them as $ankan.
+  - In each case, you must then draw a replacement tile from the back of the wall.
+  """, %{kan: +kan_name, ankan: +ankan_name, pon: +pon_name})
+end
+
+define_button daiminkan,
+  display_name: +kan_name, 
+  show_when: not_our_turn
+    and not_no_tiles_remaining
+    and someone_else_just_discarded
+    and call_available,
+  precedence_over: ["chii", "pon"],
+  call: [[0, 0, 0]]
+  do
+    big_text(+kan_name)
+    call
+    change_turn("self")
+    if status("kan") do
+      set_status("double_kan")
+    end
+    set_status("kan")
+    draw(1, "opposite_end")
+  end
+
+define_button ankan,
+  display_name: +ankan_name, 
+  show_when: our_turn
+    and not_no_tiles_remaining
+    and not_just_discarded
+    and not_just_called
+    and self_call_available,
+  call: [[0, 0, 0]]
+  do
+    big_text(+kan_name)
+    self_call
+    if status("kan") do
+      set_status("double_kan")
+    end
+    set_status("kan")
+    draw(1, "opposite_end")
+  end
+
+define_button kakan,
+  display_name: +kan_name, 
+  show_when: our_turn
+    and not_no_tiles_remaining
+    and not_just_discarded
+    and not_just_called
+    and can_upgrade_call,
+  call: [[0, 0, 0]],
+  upgrades: "pon"
+  do
+    big_text(+kan_name)
+    upgrade_call
+    if status("kan") do
+      set_status("double_kan")
+    end
+    set_status("kan")
+    draw(1, "opposite_end")
+  end
+
+on before_turn_change do
+  unset_status("kan", "double_kan")
+end
+
+apply append, "interruptible_actions", ["call", "self_call", "upgrade_call"]
+
+define_button chankan,
+  display_name: +ron_name, 
+  show_when: not_our_turn
+    and ((last_call_is("kakan") and match(["hand", "calls", "last_called_tile"], ["win"]))
+     or (last_call_is("ankan") and match(["hand", "calls"], ["kokushi_tenpai"]) and match(["hand", "calls", "last_called_tile"], ["win"]))),
+  precedence_over: ["chii", "pon", "daiminkan"]
+  do
+    big_text(+ron_name)
+    pause(1000)
+    reveal_hand
+    win_by_call
+  end
+
+apply set_append, "interruptible_actions", ["upgrade_call"]

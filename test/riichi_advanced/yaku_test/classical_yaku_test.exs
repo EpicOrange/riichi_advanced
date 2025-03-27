@@ -846,14 +846,490 @@ defmodule RiichiAdvanced.YakuTest.ClassicalYaku do
     })
   end
 
-  # TODO:
+  test "classical - uupin kaihou" do
+    TestUtils.test_yaku_advanced("classical", [], """
+    {
+      "starting_hand": {
+        "east": ["1m", "2m", "3m", "7m", "8m", "9m", "4p", "6p", "8s", "8s", "8s", "9s", "9s"],
+        "south": ["1m", "4m", "7m", "2p", "5p", "8p", "3s", "6s", "7s", "1z", "2z", "3z", "4z"],
+        "west": ["1m", "4m", "7m", "2p", "5p", "8p", "3s", "6s", "7s", "1z", "2z", "3z", "4z"],
+        "north": ["1m", "3m", "7m", "2p", "5p", "8p", "3s", "6s", "7s", "1z", "2z", "3z", "4z"]
+      },
+      "starting_draws": ["8s"],
+      "starting_dead_wall": ["5p"]
+    }
+    """, [
+      %{"type" => "buttons_pressed", "buttons" => [%{"button" => "start_no_flower"}, nil, nil, nil]},
+      %{"type" => "buttons_pressed", "buttons" => [nil, %{"button" => "start_no_flower"}, nil, nil]},
+      %{"type" => "buttons_pressed", "buttons" => [nil, nil, %{"button" => "start_no_flower"}, nil]},
+      %{"type" => "buttons_pressed", "buttons" => [nil, nil, nil, %{"button" => "start_no_flower"}]},
+      %{"type" => "buttons_pressed", "buttons" => [%{"button" => "ankan"}, nil, nil, nil]},
+      %{"type" => "buttons_pressed", "buttons" => [%{"button" => "tsumo"}, nil, nil, nil]}
+    ], %{
+      east: %{
+        yaku: [],
+        yaku2: [{"Gathering the Plum Blossom from the Roof", 1}],
+        minipoints: 50, # 32 closed tsumo + 2 middle wait + 16 closed kan = 50
+        score: 500 # limit
+      }
+    })
+  end
 
-  # "Plucking the Moon from the Bottom of the Sea"
-  # "Gathering the Plum Blossom from the Roof"
-  # "Scratching a Carrying-Pole"
-  # "Dealer's 13 Consecutive Win"
+  test "classical - ryanzou chankan" do
+    TestUtils.test_yaku_advanced("classical", [], """
+    {
+      "starting_hand": {
+        "east": ["2m", "2m", "2m", "3m", "3m", "4m", "4m", "7p", "8p", "9p", "3s", "4s", "1m"],
+        "south": ["2s", "2s", "3m", "2p", "5p", "6p", "3s", "6s", "8s", "1s", "4s", "5s", "7s"],
+        "west": ["1m", "4m", "7m", "2p", "5p", "6p", "3s", "6s", "8s", "1s", "4s", "5s", "7s"],
+        "north": ["1m", "4m", "7m", "2p", "5p", "6p", "3s", "6s", "8s", "1s", "9s", "9s", "9s"]
+      },
+      "starting_draws": ["2s", "2s"]
+    }
+    """, [
+      %{"type" => "buttons_pressed", "buttons" => [%{"button" => "start_no_flower"}, nil, nil, nil]},
+      %{"type" => "buttons_pressed", "buttons" => [nil, %{"button" => "start_no_flower"}, nil, nil]},
+      %{"type" => "buttons_pressed", "buttons" => [nil, nil, %{"button" => "start_no_flower"}, nil]},
+      %{"type" => "buttons_pressed", "buttons" => [nil, nil, nil, %{"button" => "start_no_flower"}]},
+      %{"type" => "discard", "tile" => "2s", "player" => 0, "tsumogiri" => false},
+      %{"type" => "buttons_pressed", "buttons" => [nil, %{"button" => "pon"}, nil, nil]},
+      %{"type" => "discard", "tile" => "3m", "player" => 1, "tsumogiri" => false},
+      %{"type" => "buttons_pressed", "buttons" => [%{"button" => "pon"}, nil, nil, nil]},
+      %{"type" => "discard", "tile" => "1m", "player" => 0, "tsumogiri" => false},
+      %{"type" => "buttons_pressed", "buttons" => [nil, %{"button" => "kakan"}, nil, nil]},
+      %{"type" => "buttons_pressed", "buttons" => [%{"button" => "chankan"}, nil, nil, nil]}
+    ], %{
+      east: %{
+        yaku: [],
+        yaku2: [{"Scratching a Carrying-Pole", 1}],
+        minipoints: 26, # 20 open ron + 2 open triplet + 4 closed triplet = 26
+        score: 500 # 1 doubling, dealer x2
+      }
+    })
+  end
+
+  test "classical - dealer's 13 consecutive win" do
+    TestUtils.test_yaku_advanced("classical", [], """
+    {
+      "starting_hand": {
+        "east": ["1m", "2m", "3m", "5m", "5m", "5m", "7m", "8m", "9m", "8s", "8s", "8s", "6p"],
+        "south": ["1m", "4m", "7m", "2p", "5p", "8p", "3s", "6s", "9s", "1z", "2z", "3z", "4z"],
+        "west": ["1m", "4m", "7m", "2p", "5p", "8p", "3s", "6s", "9s", "1z", "2z", "3z", "4z"],
+        "north": ["1m", "3m", "7m", "2p", "5p", "8p", "3s", "6s", "9s", "1z", "2z", "3z", "4z"]
+      },
+      "starting_draws": ["1z", "6p"],
+      "starting_honba": 12
+    }
+    """, [
+      %{"type" => "buttons_pressed", "buttons" => [%{"button" => "start_no_flower"}, nil, nil, nil]},
+      %{"type" => "buttons_pressed", "buttons" => [nil, %{"button" => "start_no_flower"}, nil, nil]},
+      %{"type" => "buttons_pressed", "buttons" => [nil, nil, %{"button" => "start_no_flower"}, nil]},
+      %{"type" => "buttons_pressed", "buttons" => [nil, nil, nil, %{"button" => "start_no_flower"}]},
+      %{"type" => "discard", "tile" => "1z", "player" => 0, "tsumogiri" => false},
+      %{"type" => "discard", "tile" => "6p", "player" => 1, "tsumogiri" => true},
+      %{"type" => "buttons_pressed", "buttons" => [%{"button" => "ron"}, nil, nil, nil]}
+    ], %{
+      east: %{
+        yaku: [],
+        yaku2: [{"Dealer's 13 Consecutive Win", 1}],
+        minipoints: 40, # 30 closed ron + 2 tanki wait + 2x4 closed triplet = 40
+        score: 500 # dealer x2
+      }
+    })
+  end
   
-  # "Last Tile Draw"
-  # "Last Tile Discard"
+  test "classical - dealer's 12th consecutive win is not awarded" do
+    TestUtils.test_yaku_advanced("classical", [], """
+    {
+      "starting_hand": {
+        "east": ["1m", "2m", "3m", "5m", "5m", "5m", "7m", "8m", "9m", "8s", "8s", "8s", "6p"],
+        "south": ["1m", "4m", "7m", "2p", "5p", "8p", "3s", "6s", "9s", "1z", "2z", "3z", "4z"],
+        "west": ["1m", "4m", "7m", "2p", "5p", "8p", "3s", "6s", "9s", "1z", "2z", "3z", "4z"],
+        "north": ["1m", "3m", "7m", "2p", "5p", "8p", "3s", "6s", "9s", "1z", "2z", "3z", "4z"]
+      },
+      "starting_draws": ["1z", "6p"],
+      "starting_honba": 11
+    }
+    """, [
+      %{"type" => "buttons_pressed", "buttons" => [%{"button" => "start_no_flower"}, nil, nil, nil]},
+      %{"type" => "buttons_pressed", "buttons" => [nil, %{"button" => "start_no_flower"}, nil, nil]},
+      %{"type" => "buttons_pressed", "buttons" => [nil, nil, %{"button" => "start_no_flower"}, nil]},
+      %{"type" => "buttons_pressed", "buttons" => [nil, nil, nil, %{"button" => "start_no_flower"}]},
+      %{"type" => "discard", "tile" => "1z", "player" => 0, "tsumogiri" => false},
+      %{"type" => "discard", "tile" => "6p", "player" => 1, "tsumogiri" => true},
+      %{"type" => "buttons_pressed", "buttons" => [%{"button" => "ron"}, nil, nil, nil]}
+    ], %{
+      east: %{
+        yaku: [],
+        yaku2: [],
+        minipoints: 40, # 30 closed ron + 2 tanki wait + 2x4 closed triplet = 40
+        score: 80 # dealer x2
+      }
+    })
+  end
+
+  test "classical - haitei" do
+    TestUtils.test_yaku_advanced("classical", [], """
+    {
+      "starting_hand": {
+        "east": ["5m","8m","4z","8p","2p","4s","6m","7p","2s","6s","5p","7s","1s"],
+        "south": ["1s","8s","7z","5m","5m","3s","2m","1p","2p","4p","7z","1z","3z"],
+        "west": ["4z","2p","7s","0z","4z","0z","4s","6z","8p","3s","8s","8p","1s"],
+        "north": ["2s","6p","2m","5p","2s","0z","3s","8m","4p","3z","9p","4s","3z"]
+      },
+      "starting_draws": ["7m","8p","9s","1m","3m","4m","9s","5p","7s","2f","2p","3m","5s","4m","3p","8s","1p","2z","6z","7p","5s","2z","3p","1g","2z","1m","8m","7p","7m","7z","1f","9p","8m","6m","0z","7z","3g","2m","5p","1p","6z","7p","6z","4m","3p","1m","8s","9s","1z","3m","4s","3p","4z","3f","9s","1z","6s","2g","7m","6p","4p","9m","6s","9m","4f","4p","9m","4m","6m","7s","2z","3s","6p","2m","9m","5m","6p","6s","7m","2s","5s","4g","9p","3z"],
+      "starting_dead_wall": ["1m","1s","6m","5s","9p","3m","1z","1p"],
+      "starting_round": 0,
+      "starting_honba": 0
+    }
+    """, [
+      %{"buttons" => [%{"button" => "start_no_flower"}, nil, nil, nil], "type" => "buttons_pressed"},
+      %{"buttons" => [nil, %{"button" => "start_no_flower"}, nil, nil], "type" => "buttons_pressed"},
+      %{"buttons" => [nil, nil, %{"button" => "start_no_flower"}, nil], "type" => "buttons_pressed"},
+      %{"buttons" => [nil, nil, nil, %{"button" => "start_no_flower"}], "type" => "buttons_pressed"},
+      %{"player" => 0, "tile" => "4z", "tsumogiri" => false, "type" => "discard"},
+      %{"player" => 1, "tile" => "8p", "tsumogiri" => true, "type" => "discard"},
+      %{"player" => 2, "tile" => "9s", "tsumogiri" => true, "type" => "discard"},
+      %{"player" => 3, "tile" => "0z", "tsumogiri" => false, "type" => "discard"},
+      %{"player" => 0, "tile" => "3m", "tsumogiri" => true, "type" => "discard"},
+      %{"player" => 1, "tile" => "4m", "tsumogiri" => true, "type" => "discard"},
+      %{"player" => 2, "tile" => "9s", "tsumogiri" => true, "type" => "discard"},
+      %{"player" => 3, "tile" => "9p", "tsumogiri" => false, "type" => "discard"},
+      %{"player" => 0, "tile" => "7s", "tsumogiri" => true, "type" => "discard"},
+      %{"buttons" => [nil, %{"button" => "flower", "call_choice" => ["2f"], "called_tile" => nil}, nil, nil], "type" => "buttons_pressed"},
+      %{"player" => 1, "tile" => "1m", "tsumogiri" => true, "type" => "discard"},
+      %{"player" => 2, "tile" => "2p", "tsumogiri" => true, "type" => "discard"},
+      %{"player" => 3, "tile" => "8m", "tsumogiri" => false, "type" => "discard"},
+      %{"player" => 0, "tile" => "5s", "tsumogiri" => true, "type" => "discard"},
+      %{"player" => 1, "tile" => "4m", "tsumogiri" => true, "type" => "discard"},
+      %{"player" => 2, "tile" => "3p", "tsumogiri" => true, "type" => "discard"},
+      %{"player" => 3, "tile" => "8s", "tsumogiri" => true, "type" => "discard"},
+      %{"player" => 0, "tile" => "1p", "tsumogiri" => true, "type" => "discard"},
+      %{"player" => 1, "tile" => "2z", "tsumogiri" => true, "type" => "discard"},
+      %{"player" => 2, "tile" => "6z", "tsumogiri" => true, "type" => "discard"},
+      %{"player" => 3, "tile" => "2s", "tsumogiri" => false, "type" => "discard"},
+      %{"player" => 0, "tile" => "5s", "tsumogiri" => true, "type" => "discard"},
+      %{"player" => 1, "tile" => "2z", "tsumogiri" => true, "type" => "discard"},
+      %{"player" => 2, "tile" => "3p", "tsumogiri" => true, "type" => "discard"},
+      %{"buttons" => [nil, nil, nil, %{"button" => "flower", "call_choice" => ["1g"], "called_tile" => nil}], "type" => "buttons_pressed"},
+      %{"player" => 3, "tile" => "1s", "tsumogiri" => true, "type" => "discard"},
+      %{"player" => 0, "tile" => "2z", "tsumogiri" => true, "type" => "discard"},
+      %{"player" => 1, "tile" => "1m", "tsumogiri" => true, "type" => "discard"},
+      %{"player" => 2, "tile" => "8m", "tsumogiri" => true, "type" => "discard"},
+      %{"player" => 3, "tile" => "7p", "tsumogiri" => true, "type" => "discard"},
+      %{"player" => 0, "tile" => "7m", "tsumogiri" => true, "type" => "discard"},
+      %{"player" => 1, "tile" => "7z", "tsumogiri" => true, "type" => "discard"},
+      %{"buttons" => [nil, nil, %{"button" => "flower", "call_choice" => ["1f"], "called_tile" => nil}, nil], "type" => "buttons_pressed"},
+      %{"player" => 2, "tile" => "6m", "tsumogiri" => true, "type" => "discard"},
+      %{"player" => 3, "tile" => "9p", "tsumogiri" => true, "type" => "discard"},
+      %{"player" => 0, "tile" => "8m", "tsumogiri" => true, "type" => "discard"},
+      %{"player" => 1, "tile" => "6m", "tsumogiri" => true, "type" => "discard"},
+      %{"player" => 2, "tile" => "0z", "tsumogiri" => true, "type" => "discard"},
+      %{"player" => 3, "tile" => "7z", "tsumogiri" => true, "type" => "discard"},
+      %{"buttons" => [%{"button" => "flower", "call_choice" => ["3g"], "called_tile" => nil}, nil, nil, nil], "type" => "buttons_pressed"},
+      %{"player" => 0, "tile" => "5s", "tsumogiri" => true, "type" => "discard"},
+      %{"player" => 1, "tile" => "2m", "tsumogiri" => true, "type" => "discard"},
+      %{"player" => 2, "tile" => "5p", "tsumogiri" => true, "type" => "discard"},
+      %{"player" => 3, "tile" => "1p", "tsumogiri" => true, "type" => "discard"},
+      %{"player" => 0, "tile" => "6z", "tsumogiri" => true, "type" => "discard"},
+      %{"player" => 1, "tile" => "7p", "tsumogiri" => true, "type" => "discard"},
+      %{"player" => 2, "tile" => "6z", "tsumogiri" => true, "type" => "discard"},
+      %{"player" => 3, "tile" => "4m", "tsumogiri" => true, "type" => "discard"},
+      %{"player" => 0, "tile" => "3p", "tsumogiri" => true, "type" => "discard"},
+      %{"player" => 1, "tile" => "1m", "tsumogiri" => true, "type" => "discard"},
+      %{"player" => 2, "tile" => "8s", "tsumogiri" => true, "type" => "discard"},
+      %{"player" => 3, "tile" => "9s", "tsumogiri" => true, "type" => "discard"},
+      %{"player" => 0, "tile" => "1z", "tsumogiri" => true, "type" => "discard"},
+      %{"player" => 1, "tile" => "3m", "tsumogiri" => true, "type" => "discard"},
+      %{"player" => 2, "tile" => "4s", "tsumogiri" => true, "type" => "discard"},
+      %{"player" => 3, "tile" => "3z", "tsumogiri" => false, "type" => "discard"},
+      %{"player" => 0, "tile" => "4z", "tsumogiri" => true, "type" => "discard"},
+      %{"buttons" => [nil, %{"button" => "flower", "call_choice" => ["3f"], "called_tile" => nil}, nil, nil], "type" => "buttons_pressed"},
+      %{"player" => 1, "tile" => "9p", "tsumogiri" => true, "type" => "discard"},
+      %{"player" => 2, "tile" => "9s", "tsumogiri" => true, "type" => "discard"},
+      %{"player" => 3, "tile" => "1z", "tsumogiri" => true, "type" => "discard"},
+      %{"player" => 0, "tile" => "6s", "tsumogiri" => true, "type" => "discard"},
+      %{"buttons" => [nil, %{"button" => "flower", "call_choice" => ["2g"], "called_tile" => nil}, nil, nil], "type" => "buttons_pressed"},
+      %{"player" => 1, "tile" => "3m", "tsumogiri" => true, "type" => "discard"},
+      %{"player" => 2, "tile" => "7m", "tsumogiri" => true, "type" => "discard"},
+      %{"player" => 3, "tile" => "6p", "tsumogiri" => true, "type" => "discard"},
+      %{"player" => 0, "tile" => "4p", "tsumogiri" => true, "type" => "discard"},
+      %{"player" => 1, "tile" => "9m", "tsumogiri" => true, "type" => "discard"},
+      %{"player" => 2, "tile" => "6s", "tsumogiri" => true, "type" => "discard"},
+      %{"player" => 3, "tile" => "9m", "tsumogiri" => true, "type" => "discard"},
+      %{"buttons" => [%{"button" => "flower", "call_choice" => ["4f"], "called_tile" => nil}, nil, nil, nil], "type" => "buttons_pressed"},
+      %{"player" => 0, "tile" => "1z", "tsumogiri" => true, "type" => "discard"},
+      %{"player" => 1, "tile" => "4p", "tsumogiri" => true, "type" => "discard"},
+      %{"player" => 2, "tile" => "9m", "tsumogiri" => true, "type" => "discard"},
+      %{"player" => 3, "tile" => "4m", "tsumogiri" => true, "type" => "discard"},
+      %{"player" => 0, "tile" => "6m", "tsumogiri" => true, "type" => "discard"},
+      %{"player" => 1, "tile" => "7s", "tsumogiri" => true, "type" => "discard"},
+      %{"player" => 2, "tile" => "2z", "tsumogiri" => true, "type" => "discard"},
+      %{"player" => 3, "tile" => "3s", "tsumogiri" => true, "type" => "discard"},
+      %{"player" => 0, "tile" => "6p", "tsumogiri" => true, "type" => "discard"},
+      %{"player" => 1, "tile" => "2m", "tsumogiri" => true, "type" => "discard"},
+      %{"player" => 2, "tile" => "9m", "tsumogiri" => true, "type" => "discard"},
+      %{"player" => 3, "tile" => "5m", "tsumogiri" => true, "type" => "discard"},
+      %{"player" => 0, "tile" => "6p", "tsumogiri" => true, "type" => "discard"},
+      %{"player" => 1, "tile" => "6s", "tsumogiri" => true, "type" => "discard"},
+      %{"player" => 2, "tile" => "7m", "tsumogiri" => true, "type" => "discard"},
+      %{"player" => 3, "tile" => "2s", "tsumogiri" => true, "type" => "discard"},
+      %{"player" => 0, "tile" => "5s", "tsumogiri" => true, "type" => "discard"},
+      %{"buttons" => [nil, %{"button" => "flower", "call_choice" => ["4g"], "called_tile" => nil}, nil, nil], "type" => "buttons_pressed"},
+      %{"player" => 1, "tile" => "1p", "tsumogiri" => true, "type" => "discard"},
+      %{"player" => 2, "tile" => "9p", "tsumogiri" => true, "type" => "discard"},
+      %{"buttons" => [nil, nil, nil, %{"button" => "tsumo"}], "type" => "buttons_pressed"},
+    ], %{
+      north: %{
+        yaku: [{"Concealed Hand", 1},{"Last Tile Draw", 1}],
+        yaku2: [],
+        minipoints: 38, # 32 closed ron + 2 tanki wait + 4 flower
+        score: 152 # 2 doublings
+      }
+    })
+  end
+
+  test "classical - houtei" do
+    TestUtils.test_yaku_advanced("classical", [], """
+    {
+      "starting_hand": {
+        "east": ["6z","2f","9s","3s","4p","4s","3s","7p","6p","2p","8s","8p","1p"],
+        "south": ["8m","3m","6z","1p","1z","1p","8s","7m","4s","8s","2s","6m","4m"],
+        "west": ["2m","4s","4m","2g","1s","7z","3m","3g","4g","4p","9m","2z","9p"],
+        "north": ["6m","7m","5m","2p","9m","5m","3z","6s","7z","3p","4m","2s","9p"]
+      },
+      "starting_draws": ["5p","1f","4z","1s","1z","4z","9s","6m","7m","2m","3s","9s","8p","4m","9s","9m","4p","3z","3p","4f","5m","7p","1s","8m","2p","2s","2z","5s","2p","9p","7s","1m","7z","9p","5m","5p","7s","1s","5s","6p","5s","7p","1m","0z","5p","8m","3z","6z","1z","8p","1m","7s","0z","7p","7s","6s","4s","2m","9m","2s","8p","6z","0z","3m","3p","2z","3p","5p","1g","4z","5s","8s","1p","1z","8m","7z","3m","2m","7m","2z","6m","4p","6p","3f"],
+      "starting_dead_wall": ["0z","6s","1m","4z","6s","6p","3z","3s"],
+      "starting_round": 0,
+      "starting_honba": 0
+    }
+    """, [
+      %{"buttons" => [%{"button" => "start_flower", "call_choice" => ["2f"], "called_tile" => nil}, nil, nil, nil], "type" => "buttons_pressed"},
+      %{"buttons" => [%{"button" => "start_no_flower"}, nil, nil, nil], "type" => "buttons_pressed"},
+      %{"buttons" => [nil, %{"button" => "start_no_flower"}, nil, nil], "type" => "buttons_pressed"},
+      %{"buttons" => [nil, nil, %{"button" => "start_flower", "call_choice" => ["4g"], "called_tile" => nil}, nil], "type" => "buttons_pressed"},
+      %{"buttons" => [nil, nil, %{"button" => "flower", "call_choice" => ["2g"], "called_tile" => nil}, nil], "type" => "buttons_pressed"},
+      %{"buttons" => [nil, nil, %{"button" => "flower", "call_choice" => ["3g"], "called_tile" => nil}, nil], "type" => "buttons_pressed"},
+      %{"buttons" => [nil, nil, %{"button" => "start_no_flower"}, nil], "type" => "buttons_pressed"},
+      %{"buttons" => [nil, nil, nil, %{"button" => "start_no_flower"}], "type" => "buttons_pressed"},
+      %{"player" => 0, "tile" => "0z", "tsumogiri" => false, "type" => "discard"},
+      %{"buttons" => [nil, %{"button" => "flower", "call_choice" => ["1f"], "called_tile" => nil}, nil, nil], "type" => "buttons_pressed"},
+      %{"player" => 1, "tile" => "6s", "tsumogiri" => true, "type" => "discard"},
+      %{"player" => 2, "tile" => "4z", "tsumogiri" => true, "type" => "discard"},
+      %{"player" => 3, "tile" => "1s", "tsumogiri" => true, "type" => "discard"},
+      %{"player" => 0, "tile" => "6z", "tsumogiri" => false, "type" => "discard"},
+      %{"player" => 1, "tile" => "4z", "tsumogiri" => true, "type" => "discard"},
+      %{"player" => 2, "tile" => "9s", "tsumogiri" => true, "type" => "discard"},
+      %{"player" => 3, "tile" => "6m", "tsumogiri" => true, "type" => "discard"},
+      %{"player" => 0, "tile" => "1z", "tsumogiri" => false, "type" => "discard"},
+      %{"player" => 1, "tile" => "2m", "tsumogiri" => true, "type" => "discard"},
+      %{"player" => 2, "tile" => "3s", "tsumogiri" => true, "type" => "discard"},
+      %{"player" => 3, "tile" => "9s", "tsumogiri" => true, "type" => "discard"},
+      %{"player" => 0, "tile" => "7m", "tsumogiri" => false, "type" => "discard"},
+      %{"player" => 1, "tile" => "4m", "tsumogiri" => true, "type" => "discard"},
+      %{"player" => 2, "tile" => "9s", "tsumogiri" => true, "type" => "discard"},
+      %{"player" => 3, "tile" => "9m", "tsumogiri" => true, "type" => "discard"},
+      %{"player" => 0, "tile" => "4p", "tsumogiri" => true, "type" => "discard"},
+      %{"player" => 1, "tile" => "3z", "tsumogiri" => true, "type" => "discard"},
+      %{"player" => 2, "tile" => "3p", "tsumogiri" => true, "type" => "discard"},
+      %{"buttons" => [nil, nil, nil, %{"button" => "flower", "call_choice" => ["4f"], "called_tile" => nil}], "type" => "buttons_pressed"},
+      %{"player" => 3, "tile" => "6p", "tsumogiri" => true, "type" => "discard"},
+      %{"player" => 0, "tile" => "9s", "tsumogiri" => false, "type" => "discard"},
+      %{"player" => 1, "tile" => "7p", "tsumogiri" => true, "type" => "discard"},
+      %{"player" => 2, "tile" => "1s", "tsumogiri" => true, "type" => "discard"},
+      %{"player" => 3, "tile" => "8m", "tsumogiri" => true, "type" => "discard"},
+      %{"player" => 0, "tile" => "8s", "tsumogiri" => false, "type" => "discard"},
+      %{"player" => 1, "tile" => "2s", "tsumogiri" => true, "type" => "discard"},
+      %{"player" => 2, "tile" => "2z", "tsumogiri" => true, "type" => "discard"},
+      %{"player" => 3, "tile" => "5s", "tsumogiri" => true, "type" => "discard"},
+      %{"player" => 0, "tile" => "1p", "tsumogiri" => false, "type" => "discard"},
+      %{"player" => 1, "tile" => "9p", "tsumogiri" => true, "type" => "discard"},
+      %{"player" => 2, "tile" => "7s", "tsumogiri" => true, "type" => "discard"},
+      %{"player" => 3, "tile" => "1m", "tsumogiri" => true, "type" => "discard"},
+      %{"player" => 0, "tile" => "7z", "tsumogiri" => true, "type" => "discard"},
+      %{"player" => 1, "tile" => "9p", "tsumogiri" => true, "type" => "discard"},
+      %{"player" => 2, "tile" => "5m", "tsumogiri" => true, "type" => "discard"},
+      %{"player" => 3, "tile" => "5p", "tsumogiri" => true, "type" => "discard"},
+      %{"player" => 0, "tile" => "7s", "tsumogiri" => true, "type" => "discard"},
+      %{"player" => 1, "tile" => "1s", "tsumogiri" => true, "type" => "discard"},
+      %{"player" => 2, "tile" => "5s", "tsumogiri" => true, "type" => "discard"},
+      %{"player" => 3, "tile" => "6p", "tsumogiri" => true, "type" => "discard"},
+      %{"player" => 0, "tile" => "3s", "tsumogiri" => false, "type" => "discard"},
+      %{"player" => 1, "tile" => "7p", "tsumogiri" => true, "type" => "discard"},
+      %{"player" => 2, "tile" => "1m", "tsumogiri" => true, "type" => "discard"},
+      %{"player" => 3, "tile" => "0z", "tsumogiri" => true, "type" => "discard"},
+      %{"player" => 0, "tile" => "5m", "tsumogiri" => false, "type" => "discard"},
+      %{"player" => 1, "tile" => "8m", "tsumogiri" => true, "type" => "discard"},
+      %{"player" => 2, "tile" => "3z", "tsumogiri" => true, "type" => "discard"},
+      %{"player" => 3, "tile" => "6z", "tsumogiri" => true, "type" => "discard"},
+      %{"player" => 0, "tile" => "1z", "tsumogiri" => true, "type" => "discard"},
+      %{"player" => 1, "tile" => "8p", "tsumogiri" => true, "type" => "discard"},
+      %{"player" => 2, "tile" => "1m", "tsumogiri" => true, "type" => "discard"},
+      %{"player" => 3, "tile" => "7s", "tsumogiri" => true, "type" => "discard"},
+      %{"player" => 0, "tile" => "0z", "tsumogiri" => true, "type" => "discard"},
+      %{"player" => 1, "tile" => "7p", "tsumogiri" => true, "type" => "discard"},
+      %{"player" => 2, "tile" => "7s", "tsumogiri" => true, "type" => "discard"},
+      %{"player" => 3, "tile" => "6s", "tsumogiri" => true, "type" => "discard"},
+      %{"player" => 0, "tile" => "4s", "tsumogiri" => true, "type" => "discard"},
+      %{"player" => 1, "tile" => "2m", "tsumogiri" => true, "type" => "discard"},
+      %{"player" => 2, "tile" => "9m", "tsumogiri" => true, "type" => "discard"},
+      %{"player" => 3, "tile" => "2s", "tsumogiri" => true, "type" => "discard"},
+      %{"player" => 0, "tile" => "8p", "tsumogiri" => true, "type" => "discard"},
+      %{"player" => 1, "tile" => "6z", "tsumogiri" => true, "type" => "discard"},
+      %{"player" => 2, "tile" => "0z", "tsumogiri" => true, "type" => "discard"},
+      %{"player" => 3, "tile" => "3m", "tsumogiri" => true, "type" => "discard"},
+      %{"player" => 0, "tile" => "3s", "tsumogiri" => false, "type" => "discard"},
+      %{"player" => 1, "tile" => "2z", "tsumogiri" => true, "type" => "discard"},
+      %{"player" => 2, "tile" => "3p", "tsumogiri" => true, "type" => "discard"},
+      %{"player" => 3, "tile" => "5p", "tsumogiri" => true, "type" => "discard"},
+      %{"buttons" => [%{"button" => "flower", "call_choice" => ["1g"], "called_tile" => nil}, nil, nil, nil], "type" => "buttons_pressed"},
+      %{"player" => 0, "tile" => "3z", "tsumogiri" => true, "type" => "discard"},
+      %{"player" => 1, "tile" => "4z", "tsumogiri" => true, "type" => "discard"},
+      %{"player" => 2, "tile" => "5s", "tsumogiri" => true, "type" => "discard"},
+      %{"player" => 3, "tile" => "8s", "tsumogiri" => true, "type" => "discard"},
+      %{"player" => 0, "tile" => "1p", "tsumogiri" => true, "type" => "discard"},
+      %{"player" => 1, "tile" => "1z", "tsumogiri" => true, "type" => "discard"},
+      %{"player" => 2, "tile" => "8m", "tsumogiri" => true, "type" => "discard"},
+      %{"player" => 3, "tile" => "7z", "tsumogiri" => true, "type" => "discard"},
+      %{"player" => 0, "tile" => "3m", "tsumogiri" => true, "type" => "discard"},
+      %{"player" => 1, "tile" => "2m", "tsumogiri" => true, "type" => "discard"},
+      %{"player" => 2, "tile" => "7m", "tsumogiri" => true, "type" => "discard"},
+      %{"player" => 3, "tile" => "2z", "tsumogiri" => true, "type" => "discard"},
+      %{"player" => 0, "tile" => "6m", "tsumogiri" => true, "type" => "discard"},
+      %{"player" => 1, "tile" => "4p", "tsumogiri" => true, "type" => "discard"},
+      %{"player" => 2, "tile" => "6p", "tsumogiri" => true, "type" => "discard"},
+      %{"buttons" => [nil, nil, nil, %{"button" => "flower", "call_choice" => ["3f"], "called_tile" => nil}], "type" => "buttons_pressed"},
+      %{"player" => 3, "tile" => "3s", "tsumogiri" => true, "type" => "discard"},
+      %{"buttons" => [%{"button" => "ron"}, nil, nil, nil], "type" => "buttons_pressed"}
+    ], %{
+      east: %{
+        yaku: [{"All Simples", 1}, {"Last Tile Discard", 1}, {"Seat Season", 1}],
+        yaku2: [],
+        minipoints: 42, # 30 closed ron + 4 closed triplet + 2x4 flower
+        score: 500 # 3 doublings, dealer x2
+      }
+    })
+  end
+
+  test "classical - iipin mouyue" do
+    TestUtils.test_yaku_advanced("classical", [], """
+    {
+      "starting_hand": {
+        "east": ["7p","2m","3z","2s","8m","9p","8s","7m","9m","6m","6z","8s","7p"],
+        "south": ["2z","8p","7s","3s","6p","5s","3p","2m","1m","5m","5s","2p","4p"],
+        "west": ["6s","4m","4m","8m","6z","9m","7p","4s","4z","7s","5m","0z","9m"],
+        "north": ["1z","8s","9s","9s","1g","6z","9m","1f","9s","8p","2s","5p","3z"]
+      },
+      "starting_draws": ["9p","3s","4p","1p","2s","5s","7p","8m","2z","1z","5p","2m","7z","3f","7s","7z","6p","6s","3z","7s","6m","5p","3s","4g","5s","9p","1z","0z","6p","7m","3m","9s","9p","3p","2z","1p","2p","4m","4s","3z","5m","8p","2z","3p","3m","7m","1m","7m","4s","6m","4m","0z","2p","6z","6p","2p","1s","4p","1z","2m","6m","7z","2f","4s","5m","1m","4p","8m","2g","7z","6s","4z","3m","2s","8s","3s","1s","6s","4f","3g","1s","0z","3p","1p"],
+      "starting_dead_wall": ["5p","3m","4z","4z","1s","1m","8p","1p"],
+      "starting_round": 0,
+      "starting_honba": 0
+    }
+    """, [
+      %{"buttons" => [%{"button" => "start_no_flower"}, nil, nil, nil], "type" => "buttons_pressed"},
+      %{"buttons" => [nil, %{"button" => "start_no_flower"}, nil, nil], "type" => "buttons_pressed"},
+      %{"buttons" => [nil, nil, %{"button" => "start_no_flower"}, nil], "type" => "buttons_pressed"},
+      %{"buttons" => [nil, nil, nil, %{"button" => "start_flower", "call_choice" => ["1f"], "called_tile" => nil}], "type" => "buttons_pressed"},
+      %{"buttons" => [nil, nil, nil, %{"button" => "start_flower", "call_choice" => ["1g"], "called_tile" => nil}], "type" => "buttons_pressed"},
+      %{"buttons" => [nil, nil, nil, %{"button" => "start_no_flower"}], "type" => "buttons_pressed"},
+      %{"player" => 0, "tile" => "6z", "tsumogiri" => false, "type" => "discard"},
+      %{"player" => 1, "tile" => "3s", "tsumogiri" => true, "type" => "discard"},
+      %{"player" => 2, "tile" => "4p", "tsumogiri" => true, "type" => "discard"},
+      %{"player" => 3, "tile" => "6z", "tsumogiri" => false, "type" => "discard"},
+      %{"player" => 0, "tile" => "2s", "tsumogiri" => true, "type" => "discard"},
+      %{"player" => 1, "tile" => "5s", "tsumogiri" => true, "type" => "discard"},
+      %{"player" => 2, "tile" => "7p", "tsumogiri" => true, "type" => "discard"},
+      %{"player" => 3, "tile" => "3z", "tsumogiri" => false, "type" => "discard"},
+      %{"player" => 0, "tile" => "2z", "tsumogiri" => true, "type" => "discard"},
+      %{"player" => 1, "tile" => "1z", "tsumogiri" => true, "type" => "discard"},
+      %{"player" => 2, "tile" => "5p", "tsumogiri" => true, "type" => "discard"},
+      %{"player" => 3, "tile" => "1z", "tsumogiri" => false, "type" => "discard"},
+      %{"player" => 0, "tile" => "7z", "tsumogiri" => true, "type" => "discard"},
+      %{"buttons" => [nil, %{"button" => "flower", "call_choice" => ["3f"], "called_tile" => nil}, nil, nil], "type" => "buttons_pressed"},
+      %{"player" => 1, "tile" => "4z", "tsumogiri" => true, "type" => "discard"},
+      %{"player" => 2, "tile" => "7s", "tsumogiri" => true, "type" => "discard"},
+      %{"player" => 3, "tile" => "7z", "tsumogiri" => true, "type" => "discard"},
+      %{"player" => 0, "tile" => "6p", "tsumogiri" => true, "type" => "discard"},
+      %{"player" => 1, "tile" => "6s", "tsumogiri" => true, "type" => "discard"},
+      %{"player" => 2, "tile" => "3z", "tsumogiri" => true, "type" => "discard"},
+      %{"player" => 3, "tile" => "2s", "tsumogiri" => false, "type" => "discard"},
+      %{"player" => 0, "tile" => "6m", "tsumogiri" => true, "type" => "discard"},
+      %{"player" => 1, "tile" => "5p", "tsumogiri" => true, "type" => "discard"},
+      %{"player" => 2, "tile" => "3s", "tsumogiri" => true, "type" => "discard"},
+      %{"buttons" => [nil, nil, nil, %{"button" => "flower", "call_choice" => ["4g"], "called_tile" => nil}], "type" => "buttons_pressed"},
+      %{"player" => 3, "tile" => "4z", "tsumogiri" => true, "type" => "discard"},
+      %{"player" => 0, "tile" => "5s", "tsumogiri" => true, "type" => "discard"},
+      %{"player" => 1, "tile" => "9p", "tsumogiri" => true, "type" => "discard"},
+      %{"player" => 2, "tile" => "1z", "tsumogiri" => true, "type" => "discard"},
+      %{"player" => 3, "tile" => "0z", "tsumogiri" => true, "type" => "discard"},
+      %{"player" => 0, "tile" => "6p", "tsumogiri" => true, "type" => "discard"},
+      %{"player" => 1, "tile" => "7m", "tsumogiri" => true, "type" => "discard"},
+      %{"player" => 2, "tile" => "3m", "tsumogiri" => true, "type" => "discard"},
+      %{"player" => 3, "tile" => "8p", "tsumogiri" => false, "type" => "discard"},
+      %{"player" => 0, "tile" => "9p", "tsumogiri" => true, "type" => "discard"},
+      %{"player" => 1, "tile" => "3p", "tsumogiri" => true, "type" => "discard"},
+      %{"player" => 2, "tile" => "2z", "tsumogiri" => true, "type" => "discard"},
+      %{"player" => 3, "tile" => "9m", "tsumogiri" => false, "type" => "discard"},
+      %{"player" => 0, "tile" => "2p", "tsumogiri" => true, "type" => "discard"},
+      %{"player" => 1, "tile" => "4m", "tsumogiri" => true, "type" => "discard"},
+      %{"player" => 2, "tile" => "4s", "tsumogiri" => true, "type" => "discard"},
+      %{"player" => 3, "tile" => "3z", "tsumogiri" => true, "type" => "discard"},
+      %{"player" => 0, "tile" => "5m", "tsumogiri" => true, "type" => "discard"},
+      %{"player" => 1, "tile" => "8p", "tsumogiri" => true, "type" => "discard"},
+      %{"player" => 2, "tile" => "2z", "tsumogiri" => true, "type" => "discard"},
+      %{"player" => 3, "tile" => "8m", "tsumogiri" => false, "type" => "discard"},
+      %{"player" => 0, "tile" => "3m", "tsumogiri" => true, "type" => "discard"},
+      %{"player" => 1, "tile" => "7m", "tsumogiri" => true, "type" => "discard"},
+      %{"player" => 2, "tile" => "1m", "tsumogiri" => true, "type" => "discard"},
+      %{"player" => 3, "tile" => "7m", "tsumogiri" => true, "type" => "discard"},
+      %{"player" => 0, "tile" => "4s", "tsumogiri" => true, "type" => "discard"},
+      %{"player" => 1, "tile" => "6m", "tsumogiri" => true, "type" => "discard"},
+      %{"player" => 2, "tile" => "4m", "tsumogiri" => true, "type" => "discard"},
+      %{"player" => 3, "tile" => "0z", "tsumogiri" => true, "type" => "discard"},
+      %{"player" => 0, "tile" => "2p", "tsumogiri" => true, "type" => "discard"},
+      %{"player" => 1, "tile" => "6z", "tsumogiri" => true, "type" => "discard"},
+      %{"player" => 2, "tile" => "6p", "tsumogiri" => true, "type" => "discard"},
+      %{"player" => 3, "tile" => "3m", "tsumogiri" => false, "type" => "discard"},
+      %{"player" => 0, "tile" => "1s", "tsumogiri" => true, "type" => "discard"},
+      %{"player" => 1, "tile" => "4p", "tsumogiri" => true, "type" => "discard"},
+      %{"player" => 2, "tile" => "1z", "tsumogiri" => true, "type" => "discard"},
+      %{"player" => 3, "tile" => "2m", "tsumogiri" => true, "type" => "discard"},
+      %{"player" => 0, "tile" => "6m", "tsumogiri" => true, "type" => "discard"},
+      %{"player" => 1, "tile" => "7z", "tsumogiri" => true, "type" => "discard"},
+      %{"buttons" => [nil, nil, %{"button" => "flower", "call_choice" => ["2f"], "called_tile" => nil}, nil], "type" => "buttons_pressed"},
+      %{"player" => 2, "tile" => "1s", "tsumogiri" => true, "type" => "discard"},
+      %{"player" => 3, "tile" => "4s", "tsumogiri" => true, "type" => "discard"},
+      %{"player" => 0, "tile" => "5m", "tsumogiri" => true, "type" => "discard"},
+      %{"player" => 1, "tile" => "1m", "tsumogiri" => true, "type" => "discard"},
+      %{"player" => 2, "tile" => "4p", "tsumogiri" => true, "type" => "discard"},
+      %{"player" => 3, "tile" => "8m", "tsumogiri" => true, "type" => "discard"},
+      %{"buttons" => [%{"button" => "flower", "call_choice" => ["2g"], "called_tile" => nil}, nil, nil, nil], "type" => "buttons_pressed"},
+      %{"player" => 0, "tile" => "1m", "tsumogiri" => true, "type" => "discard"},
+      %{"player" => 1, "tile" => "7z", "tsumogiri" => true, "type" => "discard"},
+      %{"player" => 2, "tile" => "6s", "tsumogiri" => true, "type" => "discard"},
+      %{"player" => 3, "tile" => "2m", "tsumogiri" => false, "type" => "discard"},
+      %{"player" => 0, "tile" => "3m", "tsumogiri" => true, "type" => "discard"},
+      %{"player" => 1, "tile" => "2s", "tsumogiri" => true, "type" => "discard"},
+      %{"player" => 2, "tile" => "8s", "tsumogiri" => true, "type" => "discard"},
+      %{"player" => 3, "tile" => "3s", "tsumogiri" => true, "type" => "discard"},
+      %{"player" => 0, "tile" => "1s", "tsumogiri" => true, "type" => "discard"},
+      %{"player" => 1, "tile" => "6s", "tsumogiri" => true, "type" => "discard"},
+      %{"buttons" => [nil, nil, %{"button" => "flower", "call_choice" => ["4f"], "called_tile" => nil}, nil], "type" => "buttons_pressed"},
+      %{"player" => 2, "tile" => "8p", "tsumogiri" => true, "type" => "discard"},
+      %{"buttons" => [nil, nil, nil, %{"button" => "flower", "call_choice" => ["3g"], "called_tile" => nil}], "type" => "buttons_pressed"},
+      %{"player" => 3, "tile" => "4z", "tsumogiri" => false, "type" => "discard"},
+      %{"player" => 0, "tile" => "1s", "tsumogiri" => true, "type" => "discard"},
+      %{"player" => 1, "tile" => "0z", "tsumogiri" => true, "type" => "discard"},
+      %{"player" => 2, "tile" => "3p", "tsumogiri" => true, "type" => "discard"},
+      %{"buttons" => [nil, nil, nil, %{"button" => "tsumo"}], "type" => "buttons_pressed"},
+    ], %{
+      north: %{
+        yaku: [],
+        yaku2: [{"Plucking the Moon from the Bottom of the Sea", 1}],
+        minipoints: 64, # 32 closed tsumo + 2x8 closed terminal triplet + 4x4 flowers
+        score: 500
+      }
+    })
+  end
 
 end

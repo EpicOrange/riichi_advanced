@@ -90,7 +90,7 @@ defmodule RiichiAdvanced.MahjongScriptSecurityTest do
     end
     """
     assert {:ok, parsed} = Parser.parse(script)
-    assert {:error, compiled} = Compiler.compile_jq(parsed)
+    assert {:error, _msg} = Compiler.compile_jq(parsed)
   end
 
   test "mahjongscript - parse rejects scripts larger than 4MB" do

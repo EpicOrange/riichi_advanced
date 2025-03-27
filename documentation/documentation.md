@@ -638,7 +638,7 @@ Colors are specified as CSS color strings like `"#808080"` or `"lightblue"`. Exa
 ## Actions
 
 - `["noop"]`: does nothing, but you can put it in `interruptible_actions` to make it an interrupt.
-- `push_message(message, vars)`: Sends a message to all players using the current player as a label. Example: `["push_message", "declared riichi"]`. You may specify numbers (actual numbers or counter names) to interpolate into the message with `vars`. Example: `["push_message", "is on their $nth repeat", %{n: "honba"}]`.
+- `push_message(message, vars)`: Sends a message to all players using the current player as a label. Example: `["push_message", "declared riichi"]`. You may specify numbers (actual numbers or counter names) or strings to interpolate into the message with `vars`. Example: `["push_message", "is on their $nth repeat", %{n: "honba"}]`.
 - `push_system_message(message, vars)`: Sends a message to all players, with no label. Example: `["push_system_message", "Converted each shuugi to 2000 points."]`
 - `add_rule(tab, title, text, sort_order)`: Adds the string `text` to the corresponding rules `tab` on the left. Keep it brief! `title` is a required string identifier that is also used for deleting this rule later -- you can also specify an existing identifier to append a `text` to that rule (on its own line). `sort_order` is an optional integer argument that defaults to `0` -- the rules on the rules list are sorted from lowest `sort_order` to highest. Rules with negative `sort_order` are displayed full-width while other rules are half-width.
 - `update_rule(tab, title, text, sort_order)`: Same as `"add_rule"`, but only appends `text` (does nothing if the rule `title` does not exist).
@@ -686,7 +686,7 @@ Colors are specified as CSS color strings like `"#808080"` or `"lightblue"`. Exa
 - `subtract_counter(counter_name, amount or spec, ...opts)`: Same as `add_counter`, but subtracts.
 - `multiply_counter(counter_name, amount or spec, ...opts)`: Same as `add_counter`, but multiplies.
 - `divide_counter(counter_name, amount or spec, ...opts)`: Same as `add_counter`, but divides. The resulting counter is floored to get an integer.
-- `big_text(text, vars)`: Popup big text for the current player. The text displayed is `text`. If you want to interpolate numbers into the text you may specify it much like you do for `push_message`: `["big_text", "$ctr/$max", {"ctr": "my_counter", "max": 100}]`
+- `big_text(text, vars)`: Popup big text for the current player. The text displayed is `text`. If you want to interpolate numbers or strings into the text you may specify it much like you do for `push_message`: `big_text("$ctr/$max", %{ctr: "my_counter", max: 100})`
 - `pause(ms)`: Pause for `ms` milliseconds. Useful after a `big_text` to make actions happen only after players see the big text.
 - `sort_hand`: Sort the current player's hand.
 - `reveal_tile(tile)`: Show a given tile above the game for the remainder of the round.
@@ -1046,7 +1046,7 @@ Here, `points` is used as a (string) index into a points table, whose keys must 
 
     set score_calculation, {
       "scoring_method": "score_table",
-      "score_table": {"0": 1, "1": 2, "2": 4, "3": 8, "4": 16, "5": 24, "6": 32, "7": 48, "8": 64, "9": 96, "10": 128, "11": 192, "12": 256, "max": 384},
+      "score_table": {"0": 1, "1": 2, "2": 4, "3": 8, "4": 16, "5": 24, "6": 32, "7": 48, "8": 64, "9": 96, "10": 128, "11": 192, "12": 256, max: 384},
     }
 
 If there is a `"dealer_multiplier"` key and the winner is the dealer, then this score is multiplied by that.

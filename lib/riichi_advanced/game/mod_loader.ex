@@ -21,20 +21,23 @@ defmodule RiichiAdvanced.ModLoader do
     end
   end
 
-  def apply_multiple_mods(ruleset_json, mods) do
+  def apply_multiple_mods(ruleset_json, mods, globals \\ %{}) do
     mod_contents = mods
     |> Enum.map(&read_mod/1)
     |> Enum.map(&String.trim/1)
-    |> Enum.map_join(&" | (#{&1}\n) as $_result\n|\n$_result")
-    |> then(&".enabled_mods += #{Jason.encode!(mods)}"<>&1)
-
+    |> Enum.map(&String.replace(&1, Compiler.header(), ""))
+    |> Enum.map(&"(#{&1}\n) as $_result\n|\n$_result")
+    global_jq = Enum.map(globals, fn {name, val} -> "(#{Jason.encode!(val)}) as $#{name}" end)
+    boilerplate = [Compiler.header() <> "\n.enabled_mods += #{Jason.encode!(mods)}"]
+    mod_jq = Enum.join(boilerplate ++ global_jq ++ mod_contents, "\n|")
+    # IO.puts(mod_jq)
     if Debug.print_mods() do
       IO.puts("Applying mods [#{Enum.map_join(mods, ", ", &inspect/1)}]")
     end
-    JQ.query_string_with_string!(ruleset_json, mod_contents)
+    JQ.query_string_with_string!(ruleset_json, mod_jq)
   end
 
-  def apply_mods(ruleset_json, mods, ruleset) do
+  def apply_mods(ruleset_json, mods, ruleset, globals \\ %{}) do
     orig_mods = mods
     mods = Enum.uniq(mods)
     if length(mods) < length(orig_mods) do
@@ -47,7 +50,7 @@ defmodule RiichiAdvanced.ModLoader do
       []     -> 
         # apply the mods
         # modded_json = Enum.reduce(mods, ruleset_json, &apply_mod/2)
-        modded_json = apply_multiple_mods(ruleset_json, mods)
+        modded_json = apply_multiple_mods(ruleset_json, mods, globals)
 
         if Debug.print_mods() do
           mod_string = Enum.map_join(mods, ",\n  ", &Jason.encode!/1)
@@ -103,7 +106,9 @@ defmodule RiichiAdvanced.ModLoader do
       {:error, _err}      ->
         case File.read(Application.app_dir(:riichi_advanced, "/priv/static/mods/#{name}.majs")) do
           {:ok, mod_majs} -> convert_to_jq(mod_majs)
-          {:error, _err}  -> "."
+          {:error, _err}  ->
+            IO.puts("WARNING: Could not find mod #{name}!")
+            "."
         end
     end
   end
@@ -129,7 +134,7 @@ defmodule RiichiAdvanced.ModLoader do
         modpack.ruleset
         |> read_ruleset_json()
         |> strip_comments()
-        |> apply_mods(mods, modpack.ruleset)
+        |> apply_mods(mods, modpack.ruleset, Map.get(modpack, :globals, %{}))
         |> JQ.query_string_with_string!(query)
       true ->
         ruleset_json = read_ruleset_json(ruleset)

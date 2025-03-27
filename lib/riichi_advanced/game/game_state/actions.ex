@@ -457,6 +457,40 @@ defmodule RiichiAdvanced.GameState.Actions do
     state
   end
 
+  @amt_specs [
+    "count_matches",
+    "count_matching_ways",
+    "tiles_in_wall",
+    "num_discards",
+    "num_aside",
+    "num_facedown_tiles",
+    "num_facedown_tiles_others",
+    "num_matching_revealed_tiles_all",
+    "num_matching_melded_tiles_all",
+    "current_score",
+    "half_score",
+    "100_times_tile_number",
+    "count_tiles",
+    "count_draws",
+    "count_dora",
+    "count_reverse_dora",
+    "dice",
+    "pot",
+    "honba",
+    "riichi_value",
+    "honba_value",
+    "payout",
+    "points",
+    "points2",
+    "score",
+    "minipoints"
+  ]
+  def is_amount?(state, seat, value) do
+    is_number(value)
+    or (List.wrap(value) |> Enum.at(0)) in @amt_specs
+    or value in state.players[seat].counters
+  end
+
   def interpret_amount(state, context, amt_spec) do
     amt_spec = List.wrap(amt_spec)
     # counters should take precedence over keywords
@@ -685,7 +719,11 @@ defmodule RiichiAdvanced.GameState.Actions do
 
   def interpolate_string(state, context, str, assigns) do
     for {name, value} <- assigns, reduce: str do
-      str -> String.replace(str, "$" <> name, Integer.to_string(interpret_amount(state, context, value)))
+      str ->
+        value = if is_amount?(state, context.seat, value) do
+          to_string(interpret_amount(state, context, value))
+        else value end
+        String.replace(str, "$" <> name, value)
     end
   end
 
@@ -1003,13 +1041,15 @@ defmodule RiichiAdvanced.GameState.Actions do
       "add_rule"             ->
         tab = Enum.at(opts, 0, "Rules")
         id = Enum.at(opts, 1, "")
-        {text, priority} = if is_map(Enum.at(opts, 3)) do
-          text = interpolate_string(state, context, Enum.at(opts, 2, ""), Enum.at(opts, 3, %{}))
+        text = Enum.at(opts, 2, "")
+        {tab, id, text, priority} = if is_map(Enum.at(opts, 3)) do
+          vars = Enum.at(opts, 3, %{})
+          tab = interpolate_string(state, context, tab, vars)
+          id = interpolate_string(state, context, id, vars)
+          text = interpolate_string(state, context, text, vars)
           priority = Enum.at(opts, 4, nil)
-          {text, priority}
-        else
-          {text, priority} = {Enum.at(opts, 2, ""), Enum.at(opts, 3, nil)}
-        end
+          {tab, id, text, priority}
+        else {tab, id, text, Enum.at(opts, 3, nil)} end
         state = if not Map.has_key?(state.rules_text, tab) do
           state = put_in(state.rules_text[tab], %{})
           state = update_in(state.rules_text_order, & &1 ++ [tab])
@@ -1019,24 +1059,32 @@ defmodule RiichiAdvanced.GameState.Actions do
       "update_rule"             ->
         tab = Enum.at(opts, 0, "Rules")
         id = Enum.at(opts, 1, "")
+        text = Enum.at(opts, 2, "")
+        {tab, id, text, priority} = if is_map(Enum.at(opts, 3)) do
+          vars = Enum.at(opts, 3, %{})
+          tab = String.trim(interpolate_string(state, context, tab, vars))
+          id = String.trim(interpolate_string(state, context, id, vars))
+          text = interpolate_string(state, context, text, vars)
+          priority = Enum.at(opts, 4, nil)
+          {tab, id, text, priority}
+        else {tab, id, text, Enum.at(opts, 3, nil)} end
         if Map.has_key?(state.rules_text, tab) and Map.has_key?(state.rules_text[tab], id) do
-          {text, priority} = if is_map(Enum.at(opts, 3)) do
-            text = interpolate_string(state, context, Enum.at(opts, 2, ""), Enum.at(opts, 3, %{}))
-            priority = Enum.at(opts, 4, nil)
-            {text, priority}
-          else
-            {text, priority} = {Enum.at(opts, 2, ""), Enum.at(opts, 3, nil)}
-          end
           update_in(state.rules_text[tab], &Map.update!(&1, id, fn {orig_text, orig_priority} -> {orig_text <> "\n" <> text, if priority == nil do orig_priority else priority end} end))
         else state end
       "delete_rule"             ->
         tab = Enum.at(opts, 0, "Rules")
         id = Enum.at(opts, 1, "")
+        {tab, id} = if is_map(Enum.at(opts, 3)) do
+          vars = Enum.at(opts, 3, %{})
+          tab = String.trim(interpolate_string(state, context, tab, vars))
+          id = String.trim(interpolate_string(state, context, id, vars))
+          {tab, id}
+        else {tab, id} end
         if Map.has_key?(state.rules_text, tab) and Map.has_key?(state.rules_text[tab], id) do
           update_in(state.rules_text[tab], &Map.delete(&1, id))
         else state end
       "add_rule_tab"             ->
-        tab = Enum.at(opts, 0, "Rules")
+        tab = String.trim(interpolate_string(state, context, Enum.at(opts, 0, "Rules"), Enum.at(opts, 1, %{})))
         if not Map.has_key?(state.rules_text, tab) do
           state = put_in(state.rules_text[tab], %{})
           state = update_in(state.rules_text_order, & &1 ++ [tab])

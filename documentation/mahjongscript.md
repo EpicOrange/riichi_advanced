@@ -20,7 +20,15 @@ The following values are JSON:
 - Arrays: `["points", 1000]`
 - Objects: `%{points: 1000}`
 
-Note that objects differ from typical JSON syntax `{"points": 1000}`. This is a consequence of this language being based on Elixir's map syntax.
+Note that objects differ from typical JSON syntax `{"points": 1000}`. This is a consequence of this language being based on Elixir's map syntax. However, this also means you can declare multiline strings:
+
+```
+%{str: """
+  This is my multiline string
+  The indents before these lines are removed
+  since the ending quotes below are indented too
+  """}
+```
 
 In addition, there is a concept of a numeric "amount". An **amount** is either a number or one of the following strings which translate into some amount:
 

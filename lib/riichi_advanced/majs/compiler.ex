@@ -299,8 +299,8 @@ defmodule RiichiAdvanced.Compiler do
         "set"                                  -> {:ok, "#{path} = #{value}"}
         "initialize"                           -> {:ok, "#{path} = #{value}"}
         "add"                                  -> {:ok, "#{path} += #{value}"}
-        "prepend"                              -> {:ok, "#{path} |= safe_append(#{value}; .)"}
-        "append"                               -> {:ok, "#{path} |= safe_append(.; #{value})"}
+        "prepend"                              -> {:ok, "#{path} |= _safe_append(#{value}; .)"}
+        "append"                               -> {:ok, "#{path} |= _safe_append(.; #{value})"}
         "merge"      when is_map(value_val)    -> {:ok, "#{path} += #{value}"}
         "merge"                                -> {:error, "tried to merge a non-map value #{inspect(value_val)}"}
         "subtract"                             -> {:ok, "#{path} -= #{value}"}
@@ -827,15 +827,16 @@ defmodule RiichiAdvanced.Compiler do
   end
 
   @header """
-  def ensure_list:
+  def _ensure_list:
     if type == "string" and startswith("@") then
       ["@list$" + (.[1:])]
     elif type == "array" then
       .
     else [] end;
-  def safe_append(l; r):
-    (l | ensure_list) + (r | ensure_list);
+  def _safe_append(l; r):
+    (l | _ensure_list) + (r | _ensure_list);
   """
+  def header(), do: @header
 
   def compile_jq(ast) do
     case ast do
