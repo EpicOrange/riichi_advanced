@@ -29,7 +29,7 @@ defmodule RiichiAdvanced.TestUtils do
     "ura",
     "kandora",
     "yaku/ippatsu",
-    %{name: "yaku/renhou", config: %{"is" => "Yakuman"}},
+    %{name: "yaku/riichi_renhou", config: %{"is" => "Yakuman"}},
     "show_waits",
     %{name: "min_han", config: %{"min" => 1}},
     %{name: "aka", config: %{"man" => 1, "pin" => 1, "sou" => 1}}

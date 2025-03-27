@@ -26,7 +26,7 @@ defmodule RiichiAdvanced.YakuTest.CosmicYaku do
     "yaku/kanburi",
     "yaku/uumensai",
     "yaku/isshoku_sanjun",
-    %{name: "yaku/renhou", config: %{is: "Yakuman"}},
+    %{name: "yaku/riichi_renhou", config: %{is: "Yakuman"}},
     "yaku/isshoku_yonjun",
     "show_waits",
     %{name: "min_han", config: %{min: 1}},

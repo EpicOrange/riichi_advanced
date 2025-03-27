@@ -711,8 +711,8 @@ define_mod "yaku/chinpeikou", name: "Chinpeikou", desc: "Local yaku. 3 han on to
 # 4 han
 define_mod "yaku/chinchii_toushii", deps: ["riichi_kan", "yaku/ketsupaihou"], name: "Chinchii Toushii", desc: "Local yaku. \"Golden Rooster Steals Food\". 4 han instead of the usual 2 han if you win ketsupaihou by chankan."
 define_mod_category "Mangan"
-define_mod "yaku/renhou", name: "Renhou", desc: "Local yaku. Instant mangan/yakuman if you win off the first tile someone dropped before your first draw. Calls invalidate."
-config_mod "yaku/renhou", name: "is", values: ["Mangan", "Yakuman"], default: "Yakuman"
+define_mod "yaku/riichi_renhou", name: "Renhou", desc: "Local yaku. Instant mangan/yakuman if you win off the first tile someone dropped before your first draw. Calls invalidate."
+config_mod "yaku/riichi_renhou", name: "is", values: ["Mangan", "Yakuman"], default: "Yakuman"
 define_mod "yaku/kinkei_dokuritsu", name: "Kinkei Dokuritsu", desc: "Local yaku. \"Golden Rooster Standing Alone\". Mangan if you are waiting on 1s (1 bamboo, the bird tile) with four calls. Can be open or closed."
 define_mod "yaku/touchao_hanchanshue", name: "Touchao Hanchanshue", desc: "Local yaku. \"Fishing Alone in the Cold River Snow\". Mangan if you are waiting on 5z (white dragon) with four calls (open or closed)."
 define_mod "yaku/uupin_kaihou", deps: ["riichi_kan"], name: "Uupin Kaihou", desc: "Local yaku. \"Gathering a Plum Blossom from the Roof\". Mangan if you win with rinshan on the 5p (5 circles)."
@@ -784,7 +784,7 @@ set default_mods, [
   "agarirenchan", "tenpairenchan",
   "kyuushu_kyuuhai",
   "double_wind_4_fu",
-  "yaku/renhou", "pao", "kokushi_chankan",
+  "yaku/riichi_renhou", "pao", "kokushi_chankan",
   "cancellable_riichi",
   "show_waits"
 ]
@@ -903,7 +903,7 @@ define_preset "WRC 2022", [
   "ura",
   "kandora",
   "yaku/ippatsu",
-  %{name: "yaku/renhou", config: %{is: "Mangan"}},
+  %{name: "yaku/riichi_renhou", config: %{is: "Mangan"}},
   "show_waits",
   %{name: "min_han", config: %{min: 1}},
   "cancellable_riichi",
@@ -994,7 +994,7 @@ define_preset "Just Like Modded Minecraft", [
   "yaku/tanfonhou",
   "yaku/chinpeikou",
   "yaku/chinchii_toushii",
-  %{name: "yaku/renhou", config: %{is: "Yakuman"}},
+  %{name: "yaku/riichi_renhou", config: %{is: "Yakuman"}},
   "yaku/kinkei_dokuritsu",
   "yaku/touchao_hanchanshue",
   "yaku/uupin_kaihou",

@@ -27,7 +27,7 @@ defmodule RiichiAdvanced.YakuTest.KansaiZanYaku do
     "yaku/open_riichi",
     "yaku/sanrenkou",
     "yaku/sanpuukou",
-    %{name: "yaku/renhou", config: %{is: "Yakuman"}},
+    %{name: "yaku/riichi_renhou", config: %{is: "Yakuman"}},
     "yaku/suurenkou",
     "show_waits",
     %{name: "shuugi", config: %{worth: 1000}},

@@ -21,7 +21,7 @@ defmodule RiichiAdvanced.YakuTest.KansaiYaku do
     # %{name: "dora", config: %{start_indicators: 1}},
     # "ura",
     # "kandora",
-    %{name: "yaku/renhou", config: %{is: "Yakuman"}},
+    %{name: "yaku/riichi_renhou", config: %{is: "Yakuman"}},
     "show_waits",
     %{name: "min_han", config: %{min: 1}},
     # "cancellable_riichi",
