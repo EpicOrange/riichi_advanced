@@ -1187,13 +1187,19 @@ defmodule RiichiAdvanced.GameState.Actions do
       "reveal_hand"           -> update_player(state, context.seat, fn player -> %Player{ player | hand_revealed: true } end)
       "reveal_other_hands"    -> update_all_players(state, fn seat, player -> %Player{ player | hand_revealed: player.hand_revealed or seat != context.seat } end)
       "discard_draw"          ->
-        GenServer.cast(self(), {:play_tile, context.seat, length(state.players[context.seat].hand)})
+        if not state.log_seeking_mode and not state.log_loading_mode do
+          GenServer.cast(self(), {:play_tile, context.seat, length(state.players[context.seat].hand)})
+        end
         state
       "press_button"          ->
-        GenServer.cast(self(), {:press_button, context.seat, Enum.at(opts, 0, "skip")})
+        if not state.log_seeking_mode and not state.log_loading_mode do
+          GenServer.cast(self(), {:press_button, context.seat, Enum.at(opts, 0, "skip")})
+        end
         state
       "press_first_call_button" ->
-        GenServer.cast(self(), {:press_first_call_button, context.seat, Enum.at(opts, 0, "skip")})
+        if not state.log_seeking_mode and not state.log_loading_mode do
+          GenServer.cast(self(), {:press_first_call_button, context.seat, Enum.at(opts, 0, "skip")})
+        end
         state
       "when"                  -> if Conditions.check_cnf_condition(state, Enum.at(opts, 0, []), context) do run_actions(state, Enum.at(opts, 1, []), context) else state end
       "unless"                -> if Conditions.check_cnf_condition(state, Enum.at(opts, 0, []), context) do state else run_actions(state, Enum.at(opts, 1, []), context) end
