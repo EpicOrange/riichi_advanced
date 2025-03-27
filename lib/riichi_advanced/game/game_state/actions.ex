@@ -1003,8 +1003,13 @@ defmodule RiichiAdvanced.GameState.Actions do
       "add_rule"             ->
         tab = Enum.at(opts, 0, "Rules")
         id = Enum.at(opts, 1, "")
-        text = Enum.at(opts, 2, "")
-        priority = Enum.at(opts, 3, nil)
+        {text, priority} = if is_map(Enum.at(opts, 3)) do
+          text = interpolate_string(state, context, Enum.at(opts, 2, ""), Enum.at(opts, 3, %{}))
+          priority = Enum.at(opts, 4, nil)
+          {text, priority}
+        else
+          {text, priority} = {Enum.at(opts, 2, ""), Enum.at(opts, 3, nil)}
+        end
         state = if not Map.has_key?(state.rules_text, tab) do
           state = put_in(state.rules_text[tab], %{})
           state = update_in(state.rules_text_order, & &1 ++ [tab])
@@ -1015,8 +1020,13 @@ defmodule RiichiAdvanced.GameState.Actions do
         tab = Enum.at(opts, 0, "Rules")
         id = Enum.at(opts, 1, "")
         if Map.has_key?(state.rules_text, tab) and Map.has_key?(state.rules_text[tab], id) do
-          text = Enum.at(opts, 2, "")
-          priority = Enum.at(opts, 3, nil)
+          {text, priority} = if is_map(Enum.at(opts, 3)) do
+            text = interpolate_string(state, context, Enum.at(opts, 2, ""), Enum.at(opts, 3, %{}))
+            priority = Enum.at(opts, 4, nil)
+            {text, priority}
+          else
+            {text, priority} = {Enum.at(opts, 2, ""), Enum.at(opts, 3, nil)}
+          end
           update_in(state.rules_text[tab], &Map.update!(&1, id, fn {orig_text, orig_priority} -> {orig_text <> "\n" <> text, if priority == nil do orig_priority else priority end} end))
         else state end
       "delete_rule"             ->
