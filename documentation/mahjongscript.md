@@ -248,12 +248,18 @@ To set arbitrary paths, see `apply` below.
 ### `on`: Add a new handler for an event
 
 ```elixir
+# append to list of existing handlers
 on before_win do
+  actions
+end
+
+# prepend to list of existing handlers
+on before_win, prepend: true do
   actions
 end
 ```
 
-Note that this handler will run after any existing handlers for that event. To prepend instead of append to existing handlers, see `apply` below.
+The first handler will run after any existing handlers for that event, while the second handler will run before any existing handlers.
 
 ### `define_set`: Define a set for reference in matches
 
@@ -404,18 +410,12 @@ apply append, "functions.myfunc" do
     add_score(1000)
   end
 end
-
-# prepend to an event handler
-apply prepend, "before_win.actions" do
-  as everyone do
-    add_score(1000)
-  end
-end
 ```
 
 The allowed methods for `apply <method>` are:
 
 - `"set"`: set the value at the given path.
+- `"initialize"`: set the value at the given path, but only if it doesn't exist
 - `"add"`: add a numeric value.
 - `"prepend"`: prepend an element or an array to an array.
 - `"append"`: append an element or an array to an array, or create the array if it doesn't exist.
@@ -429,7 +429,7 @@ The allowed methods for `apply <method>` are:
 - `"delete_key"`: remove a key or an array of keys from an object. (specify keys as strings)
 - any of the following C binary numeric operations theoretically work too: `"atan2", "copysign", "drem", "fdim", "fmax", "fmin", "fmod", "frexp", "hypot", "jn", "ldexp", "modf", "nextafter", "nexttoward", "pow", "remainder", "scalb", "scalbln", "yn"`
 
-If the parent node for the given path doesn't exist, the command does nothing (with the exception of `apply set`, in which case the path is created). You can also make an exception for this by prepending `set_` to the method, such as `apply set_append` -- this will `append` but default to `set` if the path doesn't exist.
+If the parent node for the given path doesn't exist, the command does nothing (with the exception of `apply initialize` or `apply set`, in which case the path is created). You can also make an exception for this by prepending `set_` to the method, such as `apply set_append` -- this will `append` but default to `set` if the path doesn't exist.
 
 ### (advanced) `replace all`: Replace all nodes under a path
 

@@ -217,17 +217,15 @@ defmodule RiichiAdvanced.Compiler do
     end
   end
 
-  # defp compile_action_list!(action, line, column) do
-  #   case compile_action_list(action, line, column) do
-  #     {:ok, json} -> json
-  #     {:error, error} -> raise error
-  #   end
-  # end
   defp compile_action_list(ast, line, column) do
     case ast do
       {:__block__, [], actions} -> compile_action_list(actions, line, column)
       {_name, [line: line, column: column], _actions} -> compile_action_list([ast], line, column)
-      actions when is_list(actions) -> Utils.sequence(Enum.map(actions, &compile_action(&1, line, column)))
+      actions when is_list(actions) ->
+        case Keyword.get(actions, :do) do
+          nil -> Utils.sequence(Enum.map(actions, &compile_action(&1, line, column)))
+          ast -> compile_action_list(ast, line, column)
+        end
       _ -> {:error, "Compiler.compile_action_list: at line #{line}:#{column}, expected an action list, got #{inspect(ast)}"}
     end
   end
@@ -300,6 +298,7 @@ defmodule RiichiAdvanced.Compiler do
       op = if default_to_set do String.replace_leading(op, "set_", "") else op end
       operation = case op do
         "set"                                  -> {:ok, "#{path} = #{value}"}
+        "initialize"                           -> {:ok, "#{path} = #{value}"}
         "add"                                  -> {:ok, "#{path} += #{value}"}
         "prepend"    when is_list(value_val)   -> {:ok, "#{path} |= #{value} + ."}
         "prepend"                              -> {:ok, "#{path} |= #{Jason.encode!(List.wrap(value_val))} + ."}
@@ -363,6 +362,11 @@ defmodule RiichiAdvanced.Compiler do
   end
 
   defp compile_command("on", name, args, line, column) do
+    {prepend, args} = case args do
+      [[{"prepend", prepend}], args] -> {prepend, args}
+      [[{"prepend", prepend}] | args] -> {prepend, args}
+      _ -> {false, args}
+    end
     body = case args do
       [fn_name] when is_binary(fn_name) -> {:ok, [["run", fn_name]]}
       [{fn_name, _pos, nil}] when is_binary(fn_name) -> {:ok, [["run", fn_name]]}
@@ -371,7 +375,11 @@ defmodule RiichiAdvanced.Compiler do
     with {:ok, body} <- body,
          {:ok, body} <- Validator.validate_json(body),
          {:ok, body} <- Jason.encode(body) do
-      {:ok, ".[#{name}].actions += #{body}"}
+      if prepend do
+        {:ok, ".[#{name}].actions |= #{body} + ."}
+      else
+        {:ok, ".[#{name}].actions += #{body}"}
+      end
     end
   end
 
