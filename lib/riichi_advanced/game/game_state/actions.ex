@@ -211,12 +211,38 @@ defmodule RiichiAdvanced.GameState.Actions do
           end
       end
     else
-      # run after_draw actions
-      state = trigger_event(state, "after_draw", %{seat: seat})
+      if num < 0 do
+        # un-draw that many tiles
+        undo_draw(state, seat, -num)
+      else
+        # run after_draw actions
+        state = trigger_event(state, "after_draw", %{seat: seat})
 
+        # update playable_indices
+        GenServer.cast(self(), :calculate_playable_indices)
+
+        state
+      end
+    end
+  end
+
+  def undo_draw(state, seat, num) do
+    if num > 0 do
+      # only allow this if a tile in draw matches the previous wall tile
+      wall_tile = Enum.at(state.wall, state.wall_index - 1)
+      draw = state.players[seat].draw
+      case Enum.find_index(draw, &Utils.same_tile(&1, wall_tile)) do
+        nil -> undo_draw(state, seat, 0) # halt
+        ix ->
+          # remove tile from draw, update wall index, and recurse
+          state
+          |> update_player(seat, &%Player{ &1 | draw: List.delete_at(draw, ix) })
+          |> Map.put(:wall_index, state.wall_index -  1)
+          |> undo_draw(seat, num - 1)
+      end
+    else
       # update playable_indices
       GenServer.cast(self(), :calculate_playable_indices)
-
       state
     end
   end
