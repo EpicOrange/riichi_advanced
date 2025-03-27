@@ -339,7 +339,7 @@ defmodule RiichiAdvanced.Constants do
     "speed" => %{
       display_name: "Speed Mahjong",
       ruleset: "riichi",
-      mods: ["kan", %{name: "yaku/riichi", config: %{bet: 1000, drawless: false}}, "speed"]
+      mods: ["riichi_kan", %{name: "yaku/riichi", config: %{bet: 1000, drawless: false}}, "speed"]
     },
     "hk" => %{
       display_name: "Hong Kong Old Style",

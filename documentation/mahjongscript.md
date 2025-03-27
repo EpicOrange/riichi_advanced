@@ -447,7 +447,7 @@ Given a path and two values `from` and `to`, look at all subnodes of the given `
 
 ```elixir
 define_preset "Mahjong Soul", [
-  "kan",
+  "riichi_kan",
   %{name: "honba", config: %{value: 100}},
   %{name: "yaku/riichi", config: %{bet: 1000, drawless: false}},
   %{name: "nagashi", config: %{is: "Mangan"}},

@@ -6,7 +6,7 @@ defmodule RiichiAdvanced.TestUtils do
   @suppress_io true
   # @suppress_io false
   @default_riichi_mods [
-    "kan",
+    "riichi_kan",
     %{name: "honba", config: %{"value" => 100}},
     %{name: "yaku/riichi", config: %{"bet" => 1000, "drawless" => false}},
     %{name: "nagashi", config: %{"is" => "Mangan"}},

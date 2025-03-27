@@ -32,7 +32,7 @@ defmodule RiichiAdvanced.YakuTest.RiichiLocalYaku do
   end
 
   test "riichi - chinchii toushii" do
-    TestUtils.test_yaku_advanced("riichi", ["kan", "yaku/ketsupaihou", "yaku/chinchii_toushii"], """
+    TestUtils.test_yaku_advanced("riichi", ["riichi/kan", "yaku/ketsupaihou", "yaku/chinchii_toushii"], """
     {
       "starting_hand": {
         "east": ["3m", "3m", "3m", "7p", "7p", "7p", "2s", "2s", "2s", "4p", "6z", "5m", "5m"],

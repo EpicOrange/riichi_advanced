@@ -4,7 +4,7 @@ on after_initialization do
 end
 
 
-apply prepend, "after_win.actions" do
+on after_win, prepend: true do
   # (non-kazoe) yakuman ron is worth 10, not 5
   if has_yaku2 and not_won_by_draw do
     yakuman_payment = yakuman_payment + 5
