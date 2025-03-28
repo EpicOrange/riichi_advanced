@@ -42,7 +42,7 @@
     "FF 11a 33a 111b 333b 55c", "FF 55a 77a 555b 777b 99c", # concealed
     # Winds and Dragons
     "NNNN EEE WWW SSSS", "NNN EEEE WWWW SSS",
-    "FF X0X1X2a DDb DDDc DDDDa",
+    "FF X0X1X2a|X0X1X2b|X0X1X2c DDb DDDc DDDDa", # apparently the run here can match any of the dragons, not just the kong
     "FFF NN EE WWW SSSS",
     "FFFF DDDa NEWS DDDb",
     "NNNN 1a 11b 111c SSSS", "NNNN 3a 33b 333c SSSS", "NNNN 5a 55b 555c SSSS", "NNNN 7a 77b 777c SSSS", "NNNN 9a 99b 999c SSSS",
