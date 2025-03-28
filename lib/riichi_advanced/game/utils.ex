@@ -28,6 +28,14 @@ defmodule RiichiAdvanced.Utils do
     else nil end
   end
 
+  def hand_to_string(hand) do
+    hand
+    |> Enum.map(&Atom.to_string/1)
+    |> Enum.group_by(fn <<_num, suit>> -> <<suit>> end, fn <<num, _>> -> <<num>> end)
+    |> Enum.map(fn {suit, nums} -> Enum.join(nums) <> suit end)
+    |> Enum.join()
+  end
+
   def to_attr_tile(tile) do
     case tile do
       {tile, attrs} -> {tile, attrs}

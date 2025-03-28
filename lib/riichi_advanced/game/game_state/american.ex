@@ -459,8 +459,7 @@ defmodule RiichiAdvanced.GameState.American do
           i   -> List.delete_at(joker, i)
         end
     end |> Enum.concat()
-
-    if Enum.empty?(joker) or nil in joker or nil in nojoker do nil else {joker, nojoker} end
+    if Enum.empty?(joker ++ nojoker) or nil in joker or nil in nojoker do nil else {joker, nojoker} end
   end
 
   def compute_closest_american_hands(state, seat, am_match_definitions, num) do
