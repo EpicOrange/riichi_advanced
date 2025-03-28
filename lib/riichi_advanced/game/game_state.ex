@@ -81,8 +81,17 @@ defmodule RiichiAdvanced.GameState do
       :erlang.phash2({tile_behavior.aliases, tile_behavior.ordering, tile_behavior.tile_freqs, tile_behavior.dismantle_calls, tile_behavior.ignore_suit})
     end
     def joker_power(tile, tile_behavior) do
-      aliases = Utils.apply_tile_aliases(tile, tile_behavior)
-      if :any in aliases do 1000000 else MapSet.size(aliases) end
+      is_any_joker = case Map.get(tile_behavior.aliases, :any) do
+        nil -> false
+        attrs_aliases ->
+          Map.values(attrs_aliases)
+          |> Enum.concat()
+          |> Utils.has_matching_tile?([tile])
+      end
+      if is_any_joker do 1000000 else
+        aliases = Utils.apply_tile_aliases(tile, tile_behavior)
+        MapSet.size(aliases)
+      end
     end
     # the idea is to move the most powerful jokers to the back
     # power is just number of aliases

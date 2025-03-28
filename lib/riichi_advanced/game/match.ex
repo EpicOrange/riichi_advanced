@@ -164,13 +164,17 @@ defmodule RiichiAdvanced.Match do
       # even if there are no jokers,
       # we want to sort by attr length so tiles with more attrs get removed last
       hand = TileBehavior.sort_by_joker_power(hand, tile_behavior)
+      if nil in tiles do
+        IO.puts("WARNING: try_remove_all_tiles was passed a nil tile!")
+      end
       _try_remove_all_tiles(hand, tiles, tile_behavior)
     else [] end
   end
 
+  def remove_from_hand_calls(hand, calls, [], tile_behavior), do: [{hand, calls}]
   def remove_from_hand_calls(hand, calls, tiles, tile_behavior) do
-    if Enum.empty?(tiles) do
-      [{hand, calls}]
+    if nil in tiles do
+      []
     else
       from_hand = try_remove_all_tiles(hand, tiles, tile_behavior) |> Enum.map(fn hand -> {hand, calls} end)
       from_calls = calls
@@ -188,7 +192,8 @@ defmodule RiichiAdvanced.Match do
           end
         end
       end)
-      from_hand ++ from_calls |> Enum.uniq()
+      # prioritize removing calls
+      Enum.uniq(from_calls ++ from_hand)
     end
   end
 
