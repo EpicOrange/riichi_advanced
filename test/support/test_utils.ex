@@ -259,24 +259,20 @@ defmodule RiichiAdvanced.TestUtils do
     test_generic(ruleset, mods, test_spec)
   end
 
-  # these won't work for games that use tile aliases(non-american jokers) or
-  # nonstandard orderings. this is because we just pull the definitions
-  # directly from the ruleset without running any init actions (which might
-  # populate tile aliases or tile ordering)
-  defp match_hand_simple(rules_ref, match_definition_name, hand, calls) do
+  defp match_hand(rules_ref, match_definition_name, hand, calls, tile_aliases) do
     hand = interpret_hand(hand)
     calls = interpret_calls(calls)
     {am_win_definitions, win_definitions} = Enum.split_with(Rules.get(rules_ref, match_definition_name <> "_definition"), &is_binary/1)
     translated_win_definitions = Rules.translate_sets_in_match_definitions(win_definitions, Rules.get(rules_ref, "set_definitions"))
     translated_am_win_definitions = American.translate_american_match_definitions(am_win_definitions)
     win_definitions = translated_win_definitions ++ translated_am_win_definitions
-    tile_behavior = %TileBehavior{ tile_freqs: Enum.frequencies(Rules.get(rules_ref, "wall")) }
+    tile_behavior = %TileBehavior{ aliases: tile_aliases, tile_freqs: Enum.frequencies(Rules.get(rules_ref, "wall")) }
     Match.match_hand(hand, calls, win_definitions, tile_behavior)
   end
-  def assert_winning_hand(rules_ref, match_definition_name, hand, calls \\ []) do
-    assert match_hand_simple(rules_ref, match_definition_name, hand, calls), "Not a winning hand: #{to_string(hand)} #{to_string(calls)}"
+  def assert_winning_hand(rules_ref, match_definition_name, hand, calls \\ [], tile_aliases \\ %{}) do
+    assert match_hand(rules_ref, match_definition_name, hand, calls, tile_aliases), "Not a winning hand: #{to_string(hand)} #{to_string(calls)}"
   end
-  def refute_winning_hand(rules_ref, match_definition_name, hand, calls \\ []) do
-    refute match_hand_simple(rules_ref, match_definition_name, hand, calls), "Shouldn't be a winning hand: #{to_string(hand)} #{to_string(calls)}"
+  def refute_winning_hand(rules_ref, match_definition_name, hand, calls \\ [], tile_aliases \\ %{}) do
+    refute match_hand(rules_ref, match_definition_name, hand, calls, tile_aliases), "Shouldn't be a winning hand: #{to_string(hand)} #{to_string(calls)}"
   end
 end
