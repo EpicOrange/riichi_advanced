@@ -171,7 +171,7 @@ defmodule RiichiAdvanced.Match do
     else [] end
   end
 
-  def remove_from_hand_calls(hand, calls, [], tile_behavior), do: [{hand, calls}]
+  def remove_from_hand_calls(hand, calls, [], _tile_behavior), do: [{hand, calls}]
   def remove_from_hand_calls(hand, calls, tiles, tile_behavior) do
     if nil in tiles do
       []
