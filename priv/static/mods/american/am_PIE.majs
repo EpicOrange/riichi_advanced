@@ -4,18 +4,28 @@ set initial_score, +starting_points
     # yes they are
 apply append, "after_scoring.actions" do
   set_counter_all("temp_score", "current_score")
-  as("all", multiply_counter("temp_score", -1))
+  as everyone do
+    multiply_counter("temp_score", -1)
+  end
   modify_payout("others", "temp_score", "max")
     # then we want to set the winner's payout to -1 * (sum of other three players' payouts)
     # find the sum of shimo, toimen, and kami's payouts:
-  as("shimocha", set_counter_all("payout_shimocha", "payout"))
-  as("toimen", set_counter_all("payout_toimen", "payout"))
-  as("kamicha", set_counter_all("payout_kamicha", "payout"))
-  as("self", set_counter("total", "payout_shimocha"))
-  as("self", add_counter("total", "payout_toimen"))
-  as("self", add_counter("total", "payout_kamicha"))
+  as shimocha do
+    set_counter_all("payout_shimocha", "payout")
+  end
+  as toimen do
+    set_counter_all("payout_toimen", "payout")
+  end
+  as kamicha do
+    set_counter_all("payout_kamicha", "payout")
+  end
+  as self do
+    set_counter("total", "payout_shimocha")
+    add_counter("total", "payout_toimen")
+    add_counter("total", "payout_kamicha")
     # now multiply by -1 (since shimo/toimen/kami's payouts are all negative, but self's payout should be positive)
-  as("self", multiply_counter("total", -1))
+    multiply_counter("total", -1)
+  end
     # and set winner's payout to that
   modify_payout("self", "total", "set")
 end
