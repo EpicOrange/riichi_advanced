@@ -37,7 +37,9 @@ defmodule RiichiAdvanced.ModLoader do
     JQ.query_string_with_string!(ruleset_json, mod_jq)
   end
 
-  def apply_mods(ruleset_json, mods, ruleset, globals \\ %{}) do
+  def apply_mods(ruleset_json, mods, ruleset, globals \\ %{})
+  def apply_mods(ruleset_json, [], _ruleset, _globals), do: ruleset_json
+  def apply_mods(ruleset_json, mods, ruleset, globals) do
     orig_mods = mods
     mods = Enum.uniq(mods)
     if length(mods) < length(orig_mods) do
@@ -45,7 +47,7 @@ defmodule RiichiAdvanced.ModLoader do
     end
     case RiichiAdvanced.ETSCache.get({ruleset, mods}, [], :cache_mods) do
       [modded_json] ->
-        IO.puts("Using cached mods for ruleset #{ruleset}: #{inspect(mods)}")
+        # IO.puts("Using cached mods for ruleset #{ruleset}: #{inspect(mods)}")
         modded_json
       []     -> 
         # apply the mods
