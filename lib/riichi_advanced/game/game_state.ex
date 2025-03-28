@@ -358,7 +358,7 @@ defmodule RiichiAdvanced.GameState do
       timer_debouncer: timer_debouncer
     })
 
-    state = case Rules.load_rules(state.ruleset, ruleset_json) do
+    state = case Rules.load_rules(ruleset_json, state.ruleset) do
       {:ok, rules_ref} -> Map.put(state, :rules_ref, rules_ref)
       {:error, msg}    -> show_error(state, msg)
     end

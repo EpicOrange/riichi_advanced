@@ -138,7 +138,7 @@ defmodule RiichiAdvanced.GameState.American do
     
     # note: do NOT add "exhaustive" (game will refuse to start)
 
-    ret = use_jokers ++ nojokers
+    ret = ["dismantle_calls"] ++ use_jokers ++ nojokers
     if am_match_definition in Debug.debug_am_match_definitions() do
       ["debug"] ++ ret
     else ret end

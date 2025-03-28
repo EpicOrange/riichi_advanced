@@ -46,7 +46,7 @@ defmodule RiichiAdvanced.GameState.Rules do
     {:ok, rules}
   end
 
-  def load_rules(ruleset, ruleset_json) do
+  def load_rules(ruleset_json, ruleset) do
     with {:ok, rules} <- decode_rules(ruleset, ruleset_json),
          {:ok, rules} <- replace_constants(rules),
          {:ok, rules} <- check_rules(rules) do
@@ -107,7 +107,7 @@ defmodule RiichiAdvanced.GameState.Rules do
 
 
 
-  defp translate_sets_in_match_definitions(match_definitions, set_definitions) do
+  def translate_sets_in_match_definitions(match_definitions, set_definitions) do
     for match_definition <- match_definitions do
       for match_definition_elem <- match_definition do
         case match_definition_elem do

@@ -1,4 +1,8 @@
 defmodule RiichiAdvanced.TestUtils do
+  alias RiichiAdvanced.GameState.American, as: American
+  alias RiichiAdvanced.GameState.Rules, as: Rules
+  alias RiichiAdvanced.GameState.TileBehavior, as: TileBehavior
+  alias RiichiAdvanced.Match, as: Match
   alias RiichiAdvanced.ModLoader, as: ModLoader
   alias RiichiAdvanced.LogControlState, as: LogControl
   alias RiichiAdvanced.Utils, as: Utils
@@ -168,34 +172,34 @@ defmodule RiichiAdvanced.TestUtils do
     end
   end
 
-  defp get_rules!(ruleset, mods) do
-    assert {:ok, rules} = ModLoader.get_ruleset_json(ruleset)
+  def get_rules!(ruleset, mods) do
+    assert {:ok, rules_ref} = ModLoader.get_ruleset_json(ruleset)
     |> ModLoader.strip_comments()
     |> ModLoader.apply_mods(mods, ruleset)
-    |> Jason.decode()
-    rules
+    |> Rules.load_rules(ruleset)
+    rules_ref
   end
 
-  defp interpret_hand(hand) when is_list(hand), do: Enum.map(hand, &Utils.to_tile/1)
-  defp interpret_hand(hand) when is_binary(hand) do
+  def interpret_hand(hand) when is_list(hand), do: Enum.map(hand, &Utils.to_tile/1)
+  def interpret_hand(hand) when is_binary(hand) do
     case String.split(hand, " ", trim: true) do
       [hand_spec] -> for [_, nums, suit] <- Regex.scan(~r/(\d+)([a-zA-Z])/, hand_spec), num <- String.graphemes(nums), do: "#{num}#{suit}"
       hand -> hand
     end
     |> interpret_hand()
   end
-  # defp interpret_call(call) do
-  #   with [call_name, call] <- String.split(call, ":", trim: true) do
-  #     {call_name, interpret_hand(call)}
-  #   end
-  # end
-  # defp interpret_calls(calls) when is_list(calls), do: Enum.map(calls, &interpret_call/1)
-  # defp interpret_calls(calls) when is_binary(calls), do: interpret_calls(String.split(calls, " ", trim: true))
+  defp interpret_call(call) do
+    with [call_name, call] <- String.split(call, ":", trim: true) do
+      {call_name, interpret_hand(call)}
+    end
+  end
+  defp interpret_calls(calls) when is_list(calls), do: Enum.map(calls, &interpret_call/1)
+  defp interpret_calls(calls) when is_binary(calls), do: interpret_calls(String.split(calls, " ", trim: true))
   defp test_generic(ruleset, mods, test_spec) do
     hand = interpret_hand(Keyword.get(test_spec, :hand, []))
     {hand, winning_tile} = Enum.split(hand, -1)
-    rules = get_rules!(ruleset, mods)
-    wall = rules["wall"]
+    rules_ref = get_rules!(ruleset, mods)
+    wall = Rules.get(rules_ref, "wall", [])
     unused = wall -- hand
     non_furiten_tile = if winning_tile == :"1z" do :"2z" else :"1z" end
     starting_draws = Enum.take(unused, 3) ++ [non_furiten_tile] ++ Enum.take(unused, 2) ++ [winning_tile, winning_tile]
@@ -255,4 +259,24 @@ defmodule RiichiAdvanced.TestUtils do
     test_generic(ruleset, mods, test_spec)
   end
 
+  # these won't work for games that use tile aliases(non-american jokers) or
+  # nonstandard orderings. this is because we just pull the definitions
+  # directly from the ruleset without running any init actions (which might
+  # populate tile aliases or tile ordering)
+  defp match_hand_simple(rules_ref, match_definition_name, hand, calls) do
+    hand = interpret_hand(hand)
+    calls = interpret_calls(calls)
+    {am_win_definitions, win_definitions} = Enum.split_with(Rules.get(rules_ref, match_definition_name <> "_definition"), &is_binary/1)
+    translated_win_definitions = Rules.translate_sets_in_match_definitions(win_definitions, Rules.get(rules_ref, "set_definitions"))
+    translated_am_win_definitions = American.translate_american_match_definitions(am_win_definitions)
+    win_definitions = translated_win_definitions ++ translated_am_win_definitions
+    tile_behavior = %TileBehavior{ tile_freqs: Enum.frequencies(Rules.get(rules_ref, "wall")) }
+    Match.match_hand(hand, calls, win_definitions, tile_behavior)
+  end
+  def assert_winning_hand(rules_ref, match_definition_name, hand, calls \\ []) do
+    assert match_hand_simple(rules_ref, match_definition_name, hand, calls), "Not a winning hand: #{to_string(hand)} #{to_string(calls)}"
+  end
+  def refute_winning_hand(rules_ref, match_definition_name, hand, calls \\ []) do
+    refute match_hand_simple(rules_ref, match_definition_name, hand, calls), "Shouldn't be a winning hand: #{to_string(hand)} #{to_string(calls)}"
+  end
 end
