@@ -1,9 +1,9 @@
 .win_definition = [
     # 2025
     "FFFF 2025a 222b 222c", "FFFF 2025a 555b 555c",
-    "222a 0000b 222c 5555c",
+    "222a 0000 222c 5555c",
     "2025a 222b 555b DDDDc",
-    "FF 222a 000c 222b 555c", # concealed
+    "FF 222a 000 222b 555c", # concealed
     # 2468
     "222a 4444a 666a 8888a", "222a 4444a 666b 8888b",
     "FF 2222a 4444b 6666c", "FF 2222a 6666b 8888c",
@@ -68,7 +68,7 @@
 .open_win_definition = [
     # 2025
     "FFFF 2025a 222b 222c", "FFFF 2025a 555b 555c",
-    "222a 0000b 222c 5555c",
+    "222a 0000 222c 5555c",
     "2025a 222b 555b DDDDc",
     # 2468
     "222a 4444a 666a 8888a", "222a 4444a 666b 8888b",
@@ -129,9 +129,9 @@
 |
 .yaku = [
     { "display_name": "2025 #1", "value": 25, "when": [{"name": "match", "opts": [["hand", "call_tiles", "winning_tile"], ["FFFF 2025a 222b 222c", "FFFF 2025a 555b 555c"]]}] },
-    { "display_name": "2025 #2", "value": 25, "when": [{"name": "match", "opts": [["hand", "call_tiles", "winning_tile"], ["222a 0000b 222c 5555c"]]}] },
+    { "display_name": "2025 #2", "value": 25, "when": [{"name": "match", "opts": [["hand", "call_tiles", "winning_tile"], ["222a 0000 222c 5555c"]]}] },
     { "display_name": "2025 #3", "value": 25, "when": [{"name": "match", "opts": [["hand", "call_tiles", "winning_tile"], ["2025a 222b 555b DDDDc"]]}] },
-    { "display_name": "2025 #4", "value": 30, "when": [{"name": "has_no_call_named", "opts": ["am_pung", "am_kong", "am_quint"]}, {"name": "match", "opts": [["hand", "call_tiles", "winning_tile"], ["FF 222a 000c 222b 555c"]]} ] },
+    { "display_name": "2025 #4", "value": 30, "when": [{"name": "has_no_call_named", "opts": ["am_pung", "am_kong", "am_quint"]}, {"name": "match", "opts": [["hand", "call_tiles", "winning_tile"], ["FF 222a 000 222b 555c"]]} ] },
     { "display_name": "2468 #1", "value": 25, "when": [{"name": "match", "opts": [["hand", "call_tiles", "winning_tile"], ["222a 4444a 666a 8888a", "222a 4444a 666b 8888b"]]}] },
     { "display_name": "2468 #2", "value": 25, "when": [{"name": "match", "opts": [["hand", "call_tiles", "winning_tile"], ["FF 2222a 4444b 6666c", "FF 2222a 6666b 8888c"]]}] },
     { "display_name": "2468 #3", "value": 25, "when": [{"name": "match", "opts": [["hand", "call_tiles", "winning_tile"], ["22a 444a 66a 888a DDDDa"]]}] },
