@@ -404,7 +404,7 @@ defmodule RiichiAdvanced.GameState.Actions do
             text: "called %{call} on %{tile}",
             vars: %{
               call: {:text, msg_name, %{bold: true}},
-              tile: {:tile, called_tile}
+              tile: {:hand, call_choice}
             }
           }])
       end
