@@ -1,4 +1,4 @@
-set initial_score, +starting_points
+set initial_score, !starting_points
     # during "after_scoring", we want to set every non-winner's payout to the maximum of {their payout, their score * -1}
     # note that payouts are negative. actually, are they? will have to check again
     # yes they are

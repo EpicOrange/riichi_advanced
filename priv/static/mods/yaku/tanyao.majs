@@ -1,5 +1,5 @@
 on after_initialization do
-  add_rule("$value $han", "$name", "Your hand consists only of 2-8 number tiles.", %{value: +value, han: +han, name: +name})
+  add_rule("$value $han", "$name", "Your hand consists only of 2-8 number tiles.", %{value: !value, han: !han, name: !name})
 end
 
 on before_scoring do
@@ -8,4 +8,4 @@ end
 
 define_set yaochuuhai, ~s"any@yaochuu"
 
-define_yaku +list, +name, +value, not_match(["hand", "calls", "winning_tile"], ~m"yaochuuhai:1")
+define_yaku !list, !name, !value, not_match(["hand", "calls", "winning_tile"], ~m"yaochuuhai:1")

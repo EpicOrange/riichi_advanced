@@ -1,5 +1,5 @@
 on after_initialization do
-  add_rule("$value $han", "$name", "You have three concealed triplets.", %{value: +value, han: +han, name: +name})
+  add_rule("$value $han", "$name", "You have three concealed triplets.", %{value: !value, han: !han, name: !name})
 end
 
 define_set pair, ~s"0 0"
@@ -21,6 +21,6 @@ define_match sanankou_ron,
   | exhaustive, (pon daiminkan kakan):-2, koutsu:4, (any@winning_tile):0, pair:1
   """
 
-define_yaku +list, +name, +value,
+define_yaku !list, !name, !value,
      (won_by_draw and match(["hand", "calls", "winning_tile"], ["sanankou_tsumo"]))
   or (not_won_by_draw and match(["hand", "calls", "winning_tile"], ["sanankou_ron"]))

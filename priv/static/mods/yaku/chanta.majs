@@ -1,5 +1,5 @@
 on after_initialization do
-  add_rule("$value $han", "$name", "Every set/pair in your hand contains a terminal or honor tile.", %{value: +value, han: +han, name: +name})
+  add_rule("$value $han", "$name", "Every set/pair in your hand contains a terminal or honor tile.", %{value: !value, han: !han, name: !name})
 end
 
 on before_scoring do
@@ -11,4 +11,4 @@ define_set yaochuu_r, ~s"0 1 2@yaochuu"
 define_set yaochuu_t, ~s"0@yaochuu 0@yaochuu 0@yaochuu"
 define_set yaochuu_pair, ~s"0@yaochuu 0@yaochuu"
 
-define_yaku +list, +name, +value, match(["hand", "calls", "winning_tile"], ~m"exhaustive, (yaochuu_l yaochuu_r yaochuu_t):4, yaochuu_pair:1")
+define_yaku !list, !name, !value, match(["hand", "calls", "winning_tile"], ~m"exhaustive, (yaochuu_l yaochuu_r yaochuu_t):4, yaochuu_pair:1")

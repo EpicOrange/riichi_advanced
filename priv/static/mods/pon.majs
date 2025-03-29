@@ -3,7 +3,7 @@ on after_initialization do
 end
 
 define_button pon,
-  display_name: +pon_name, 
+  display_name: !pon_name, 
   show_when: not_our_turn
     and not_no_tiles_remaining
     and someone_else_just_discarded
@@ -11,7 +11,7 @@ define_button pon,
   precedence_over: ["chii"],
   call: [[0, 0]]
   do
-    big_text(+pon_name)
+    big_text(!pon_name)
     call
     change_turn("self")
   end

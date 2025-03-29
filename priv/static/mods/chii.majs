@@ -3,14 +3,14 @@ on after_initialization do
 end
 
 define_button chii,
-  display_name: +chii_name, 
+  display_name: !chii_name, 
   show_when: not_our_turn
     and not_no_tiles_remaining
     and kamicha_discarded
     and call_available,
   call: [[-2, -1], [-1, 1], [1, 2]]
   do
-    big_text(+chii_name)
+    big_text(!chii_name)
     call
     change_turn("self")
   end

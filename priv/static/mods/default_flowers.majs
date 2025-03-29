@@ -3,7 +3,7 @@ on after_initialization do
   - Flower tiles must be declared and replaced by a draw from the back of the wall.
   - A flower tile is worth 1 if its number matches your seat (1=east, 2=south, 3=west, 4=north)
   - Having all 4 flower tiles or all 4 season tiles is worth $four_flowers_value.
-  """, %{four_flowers_value: +four_flowers_value})
+  """, %{four_flowers_value: !four_flowers_value})
 end
 
 apply append, "wall", ["1f", "2f", "3f", "4f", "1g", "2g", "3g", "4g"]
@@ -16,8 +16,8 @@ define_yaku yaku, "Seat Season", 1, seat_is("east") and match(["flowers"], ~m"1g
 define_yaku yaku, "Seat Season", 1, seat_is("south") and match(["flowers"], ~m"2g:1")
 define_yaku yaku, "Seat Season", 1, seat_is("west") and match(["flowers"], ~m"3g:1")
 define_yaku yaku, "Seat Season", 1, seat_is("north") and match(["flowers"], ~m"4g:1")
-define_yaku yaku, "All Flowers", +four_flowers_value, match(["flowers"], ~m"1f:1, 2f:1, 3f:1, 4f:1")
-define_yaku yaku, "All Seasons", +four_flowers_value, match(["flowers"], ~m"1g:1, 2g:1, 3g:1, 4g:1")
+define_yaku yaku, "All Flowers", !four_flowers_value, match(["flowers"], ~m"1f:1, 2f:1, 3f:1, 4f:1")
+define_yaku yaku, "All Seasons", !four_flowers_value, match(["flowers"], ~m"1g:1, 2g:1, 3g:1, 4g:1")
 define_yaku_precedence "All Flowers", ["Seat Flower"]
 define_yaku_precedence "All Seasons", ["Seat Season"]
 
@@ -60,7 +60,7 @@ apply prepend, "buttons.ron.show_when", status_missing("initial_flowers")
 apply prepend, "buttons.chankan.show_when", status_missing("initial_flowers")
 apply prepend, "buttons.tsumo.show_when", status_missing("initial_flowers")
 
-define play_restriction, "flower", +unskippable
+define play_restriction, "flower", !unskippable
 
 define_button flower,
   display_name: "Flower", 
@@ -68,7 +68,7 @@ define_button flower,
     and has_draw
     and not_just_discarded
     and match(["hand", "draw"], ~m"(1f 2f 3f 4f 1g 2g 3g 4g):1"),
-  unskippable: +unskippable
+  unskippable: !unskippable
   do
     big_text("Flower")
     flower("1f", "2f", "3f", "4f", "1g", "2g", "3g", "4g")

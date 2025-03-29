@@ -11,7 +11,7 @@ define_match tenpai_14, "standard_tenpai", "chiitoitsu_tenpai_14", "kokushi_tenp
 
 set display_riichi_sticks, true
 
-apply set, "score_calculation.riichi_value", +bet
+apply set, "score_calculation.riichi_value", !bet
 
 define_button riichi,
   display_name: "Riichi", 
@@ -19,7 +19,7 @@ define_button riichi,
     and has_draw
     and status_missing("riichi")
     and has_score("riichi_value")
-    and (+drawless or next_draw_possible)
+    and (!drawless or next_draw_possible)
     and @closed_hand
     and match(["hand", "calls", "draw"], ["tenpai_14"])
   do

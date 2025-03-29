@@ -1,8 +1,8 @@
 on after_initialization do
-  if equals(+list, "yakuman") do
-    add_rule("Limit", "$name", "Your hand consists only of honor tiles.", %{name: +name})
+  if equals(!list, "yakuman") do
+    add_rule("Limit", "$name", "Your hand consists only of honor tiles.", %{name: !name})
   else
-    add_rule("$value $han", "$name", "Your hand consists only of honor tiles.", %{value: +value, han: +han, name: +name})
+    add_rule("$value $han", "$name", "Your hand consists only of honor tiles.", %{value: !value, han: !han, name: !name})
   end
 end
 
@@ -14,4 +14,4 @@ end
 define_set tanyaohai, ~s"any@tanyao"
 define_set terminal, ~s"any@terminal"
 
-define_yaku +list, +name, +value, not_match(["hand", "calls", "winning_tile"], ~m"(tanyaohai terminal):1")
+define_yaku !list, !name, !value, not_match(["hand", "calls", "winning_tile"], ~m"(tanyaohai terminal):1")

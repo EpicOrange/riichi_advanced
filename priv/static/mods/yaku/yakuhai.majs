@@ -4,7 +4,7 @@ on after_initialization do
   - A triplet of dragon tiles
   - A triplet of winds matching the round marker
   - A triplet of winds matching your seat
-  """, %{han: +han})
+  """, %{han: !han})
 end
 
 # dragons

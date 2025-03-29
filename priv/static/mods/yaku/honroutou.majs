@@ -1,9 +1,9 @@
 on after_initialization do
-  add_rule("$value $han", "$name", "Your hand consists only of 1, 9, and honor tiles.", %{value: +hon_value, han: +han, name: +hon_name})
-  if equals(+chin_list, "yakuman") do
-    add_rule("Limit", "$name", "Your hand consists only of 1 and 9.", %{name: +chin_name})
+  add_rule("$value $han", "$name", "Your hand consists only of 1, 9, and honor tiles.", %{value: !hon_value, han: !han, name: !hon_name})
+  if equals(!chin_list, "yakuman") do
+    add_rule("Limit", "$name", "Your hand consists only of 1 and 9.", %{name: !chin_name})
   else
-    add_rule("$value $han", "$name", "Your hand consists only of 1 and 9.", %{value: +chin_value, han: +han, name: +chin_name})
+    add_rule("$value $han", "$name", "Your hand consists only of 1 and 9.", %{value: !chin_value, han: !han, name: !chin_name})
   end
 end
 
@@ -15,6 +15,6 @@ end
 define_set tanyaohai, ~s"any@tanyao"
 define_set jihai, ~s"any@jihai"
 
-define_yaku +hon_list, +hon_name, +hon_value, not_match(["hand", "calls", "winning_tile"], ~m"tanyaohai:1")
-define_yaku +chin_list, +chin_name, +chin_value, not_match(["hand", "calls", "winning_tile"], ~m"(tanyaohai jihai):1")
-define_yaku_precedence +chin_name, [+hon_name]
+define_yaku !hon_list, !hon_name, !hon_value, not_match(["hand", "calls", "winning_tile"], ~m"tanyaohai:1")
+define_yaku !chin_list, !chin_name, !chin_value, not_match(["hand", "calls", "winning_tile"], ~m"(tanyaohai jihai):1")
+define_yaku_precedence !chin_name, [!hon_name]

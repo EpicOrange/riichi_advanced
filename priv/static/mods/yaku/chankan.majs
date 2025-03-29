@@ -1,5 +1,5 @@
 on after_initialization do
-  add_rule("$value $han", "$name", "Win off an added $kong.", %{value: +value, han: +han, name: +name, kong: +kan_name})
+  add_rule("$value $han", "$name", "Win off an added $kong.", %{value: !value, han: !han, name: !name, kong: !kan_name})
 end
 
-define_yaku +list, +name, +value, won_by_call
+define_yaku !list, !name, !value, won_by_call
