@@ -366,8 +366,9 @@ defmodule RiichiAdvancedWeb.GameLive do
 
       <div class="rules-wrapper">
         <%= for rules_text_name <- @state.rules_text_order, not Enum.empty?(@state.rules_text[rules_text_name]) do %>
-          <input type="radio" id={"rules-popover-radio-#{rules_text_name}"} name="rules-popover-tab" class="rules-popover-radio" phx-update="ignore">
-          <label for={"rules-popover-radio-#{rules_text_name}"} class={"lang-#{@lang}"}><%= dt(@lang, rules_text_name) %></label>
+          <% rules_id = "rules-popover-radio-#{String.replace(rules_text_name, " ", "-")}" %>
+          <input type="radio" id={rules_id} name="rules-popover-tab" class="rules-popover-radio" phx-update="ignore">
+          <label for={rules_id} class={"lang-#{@lang}"}><%= dt(@lang, rules_text_name) %></label>
           <div class="rules-popover-container">
             <div class="rules-popover">
               <%= for {title, {text, vars, priority}} <- Enum.sort_by(@state.rules_text[rules_text_name], fn {_title, {text, _vars, priority}} -> {priority, text |> Enum.join("\n") |> String.length()} end) do %>
