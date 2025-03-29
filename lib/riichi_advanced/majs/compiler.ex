@@ -49,8 +49,9 @@ defmodule RiichiAdvanced.Compiler do
         with {:ok, result} <- compile_cnf_condition(condition, line, column) do
           {:ok, %{"name" => "not", "opts" => [result]}}
         end
-      {:@, _, [{name, _, nil}]} -> Validator.validate_constant(name)
-      {:+, _, [{name, _, nil}]} -> Validator.validate_variable(name)
+      {:+, _, _} -> Validator.validate_json(condition)
+      {:@, _, _} -> Validator.validate_json(condition)
+      {:!, _, _} -> Validator.validate_json(condition)
       _ ->
         condition = case condition do
           false -> {:ok, {"false", []}}
@@ -60,7 +61,7 @@ defmodule RiichiAdvanced.Compiler do
           {condition, _, opts} when is_binary(condition) -> {:ok, {condition, opts}}
           %{"name" => condition, "opts" => opts} -> {:ok, {condition, opts}}
           condition ->
-            case Validator.validate_json(condition) do
+            case condition do
               {:ok, %Constant{} = condition} -> {:ok, {condition, []}}
               {:ok, %Variable{} = condition} -> {:ok, {condition, []}}
               _ -> {:error, "Compiler.compile_condition: at line #{line}:#{column}, expecting a condition, got #{inspect(condition)}"}
@@ -189,8 +190,7 @@ defmodule RiichiAdvanced.Compiler do
       {name, [line: line, column: column], args} when is_binary(name) ->
         if name in Validator.allowed_actions() do
           if args != nil do
-            with {:ok, args} <- Enum.map(args, &compile_constant(&1, line, column)) |> Utils.sequence(),
-                 {:ok, args} <- args |> Enum.map(&Validator.validate_json/1) |> Utils.sequence() do
+            with {:ok, args} <- Enum.map(args, &compile_constant(&1, line, column)) |> Utils.sequence() do
               {:ok, [name | args]}
             end
           else
@@ -208,7 +208,7 @@ defmodule RiichiAdvanced.Compiler do
           end
         end
       action ->
-        case Validator.validate_json(action) do
+        case action do
           {:ok, %Constant{} = action} -> {:ok, action}
           {:ok, %Variable{} = action} -> {:ok, action}
           _ -> {:error, "Compiler.compile_action: at line #{line}:#{column}, expected an action or a if block, got #{inspect(action)}"}
@@ -265,7 +265,6 @@ defmodule RiichiAdvanced.Compiler do
 
   defp compile_command("def", name, args, line, column) do
     with {:ok, actions} <- compile_action_list(args, line, column),
-         {:ok, actions} <- Validator.validate_json(actions),
          {:ok, actions} <- Jason.encode(actions) do
       {:ok, ".functions[#{name}] = #{actions}"}
     end
@@ -365,12 +364,11 @@ defmodule RiichiAdvanced.Compiler do
       _ -> {false, args}
     end
     body = case args do
-      [fn_name] when is_binary(fn_name) -> {:ok, [["run", fn_name]]}
-      [{fn_name, _pos, nil}] when is_binary(fn_name) -> {:ok, [["run", fn_name]]}
+      [fn_name] when is_binary(fn_name) -> {:ok, [["run", Validator.sanitize_string(fn_name)]]}
+      [{fn_name, _pos, nil}] when is_binary(fn_name) -> {:ok, [["run", Validator.sanitize_string(fn_name)]]}
       _ -> compile_action_list(args, line, column)
     end
     with {:ok, body} <- body,
-         {:ok, body} <- Validator.validate_json(body),
          {:ok, body} <- Jason.encode(body) do
       if prepend do
         {:ok, ".[#{name}].actions |= #{body} + ."}
@@ -396,19 +394,15 @@ defmodule RiichiAdvanced.Compiler do
 
   defp compile_command("define_match", name, args, _line, _column) do
     match_specs = case args do
-      [{:@, _, [{name, _, nil}]}] ->
-        # constant
-        with {:ok, match_spec} <- Validator.validate_constant(name),
-             {:ok, match_spec} <- Jason.encode(match_spec) do
-          {:ok, "#{match_spec}"}
-        end
-      [{:+, _, [{name, _, nil}]}] ->
-        # variable
-        with {:ok, match_spec} <- Validator.validate_variable(name),
+      # single args
+      [{prefix, _, _} = arg] when prefix == :+ or prefix == :@ or prefix == :! ->
+        # constant or variable
+        with {:ok, match_spec} <- Validator.validate_json(arg),
              {:ok, match_spec} <- Jason.encode(match_spec) do
           {:ok, "#{match_spec}"}
         end
       _ ->
+        # multiple args
         match_specs = Enum.map(args, fn
           {:sigil_m, _, [{:<<>>, _, [match_spec]}, _args]} ->
             # standard match definition
@@ -484,7 +478,6 @@ defmodule RiichiAdvanced.Compiler do
          {:ok, value} <- Validator.validate_json(value),
          {:ok, value} <- Jason.encode(value),
          {:ok, condition} <- compile_condition_list(condition, line, column),
-         {:ok, condition} <- Validator.validate_json(condition),
          {:ok, condition} <- Jason.encode(condition) do
       add_yaku = ".[#{name}] += [{\"display_name\": #{display_name}, \"value\": #{value}, \"when\": #{condition}}]"
       if Enum.empty?(supercedes) do
@@ -570,16 +563,17 @@ defmodule RiichiAdvanced.Compiler do
     ]
     with {:ok, args} <- args,
          {:ok, fields} <- Utils.sequence(for field_name <- field_names do
-           field_json = Map.get(args, field_name, nil)
-           with {:ok, field_json} <- (cond do
-                  field_json == nil -> {:ok, nil}
-                  field_name == "actions" -> compile_action_list(field_json, line, column)
-                  field_name in ["show_when", "call_conditions"] -> compile_condition_list(field_json, line, column)
-                  true -> {:ok, field_json}
-                end),
-                {:ok, field_val} <- Validator.validate_json(field_json),
-                {:ok, field} <- (if field_val != nil do Jason.encode(field_val) else {:ok, nil} end) do
-             {:ok, if field != nil do "\"#{field_name}\": #{field}" else nil end}
+           case Map.get(args, field_name, nil) do
+             nil -> {:ok, nil}
+             field_json ->
+               with {:ok, field_val} <- (cond do
+                      field_name == "actions" -> compile_action_list(field_json, line, column)
+                      field_name in ["show_when", "call_conditions"] -> compile_condition_list(field_json, line, column)
+                      true -> Validator.validate_json(field_json)
+                    end),
+                    {:ok, field} <- (if field_val != nil do Jason.encode(field_val) else {:ok, nil} end) do
+                 {:ok, if field != nil do "\"#{field_name}\": #{field}" else nil end}
+               end |> add_error_cxt("while at line #{line}:#{column} compiling field #{to_string(field_name)} for button #{to_string(name)}")
            end
          end) do
       fields = Enum.reject(fields, &is_nil/1)
@@ -602,12 +596,11 @@ defmodule RiichiAdvanced.Compiler do
     with {:ok, args} <- args,
          {:ok, fields} <- Utils.sequence(for field_name <- field_names do
            field_json = Map.get(args, field_name, nil)
-           with {:ok, field_json} <- (cond do
+           with {:ok, field_val} <- (cond do
                   field_json == nil -> {:ok, nil}
                   field_name == "actions" -> compile_action_list(field_json, line, column)
-                  true -> {:ok, field_json}
+                  true -> Validator.validate_json(field_json)
                 end),
-                {:ok, field_val} <- Validator.validate_json(field_json),
                 {:ok, field} <- (if field_val != nil do Jason.encode(field_val) else {:ok, nil} end) do
              {:ok, if field != nil do "\"#{field_name}\": #{field}" else nil end}
            end
@@ -798,9 +791,10 @@ defmodule RiichiAdvanced.Compiler do
       {cmd, [line: line, column: column], [name | args]} when is_binary(cmd) ->
         name = case name do
           name when is_binary(name) -> Validator.validate_json(name)
-          {:@, _, [{name, _, nil}]} -> Validator.validate_constant(name)
-          {:+, _, [{name, _, nil}]} -> Validator.validate_variable(name)
-          {name, _pos, _params} -> Validator.validate_json(name)
+          {name, _pos, _params} when is_binary(name) -> Validator.validate_json(name)
+          {:+, _pos, _params} -> Validator.validate_json(name)
+          {:@, _pos, _params} -> Validator.validate_json(name)
+          {:!, _pos, _params} -> Validator.validate_json(name)
           _ -> {:error, "Compiler.compile: at line #{line}:#{column}, `#{cmd}` command got invalid name #{inspect(name)}"}
         end
         with {:ok, name} <- name,
@@ -829,7 +823,7 @@ defmodule RiichiAdvanced.Compiler do
   @header """
   def _ensure_list:
     if type == "string" and startswith("@") then
-      ["@list$" + (.[1:])]
+      ["@splat$" + (.[1:])]
     elif type == "array" then
       .
     elif type == "null" then
@@ -857,7 +851,8 @@ defmodule RiichiAdvanced.Compiler do
     end
   end
 
-
+  def add_error_cxt({:ok, data}, _msg), do: {:ok, data}
+  def add_error_cxt({:error, data}, msg), do: {:error, data <> "\n" <> msg}
 
   # WIP simple decompiler: json -> majs
 

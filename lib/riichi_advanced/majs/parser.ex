@@ -31,7 +31,7 @@ defmodule RiichiAdvanced.Parser do
             if Enum.empty?(attrs) do
               {:ok, offset}
             else
-              {:ok, %{"offset" => offset, "attrs" => attrs}}
+              {:ok, {:%{}, [], [{"offset", offset}, {"attrs", attrs}]}}
             end
           end
         end |> Utils.sequence()
@@ -73,7 +73,7 @@ defmodule RiichiAdvanced.Parser do
           with {:ok, {base, attrs}} <- base_attrs do
             groups = case attrs do
               [] -> base
-              attrs -> %{"tile" => base, "attrs" => attrs}
+              attrs -> {:%{}, [], [{"tile", base}, {"attrs", attrs}]}
             end
             {:ok, groups}
           end
@@ -121,11 +121,8 @@ defmodule RiichiAdvanced.Parser do
   end
   def parse_sigils(%RiichiAdvanced.Compiler.Constant{} = ast), do: {:ok, ast}
   def parse_sigils(%RiichiAdvanced.Compiler.Variable{} = ast), do: {:ok, ast}
-  def parse_sigils(ast) when is_map(ast), do: parse_sigils_map(ast)
-  def parse_sigils({:%{}, _pos, contents}), do: parse_sigils_map(contents)
-  def parse_sigils({_other, _pos, _nodes} = ast), do: {:ok, ast}
-  def parse_sigils_map(map) do
-    parsed_map = map
+  def parse_sigils({:%{}, pos, contents}) do
+    parsed_map = contents
     |> Enum.map(fn {key, val} ->
       if is_binary(key) do
         case parse_sigils(val) do
@@ -136,8 +133,9 @@ defmodule RiichiAdvanced.Parser do
     end)
     |> Utils.sequence()
     with {:ok, parsed_map} <- parsed_map do
-      {:ok, Map.new(parsed_map)}
+      {:ok, {:%{}, pos, parsed_map}}
     end
   end
+  def parse_sigils({_other, _pos, _nodes} = ast), do: {:ok, ast}
 
 end

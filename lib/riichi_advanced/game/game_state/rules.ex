@@ -1,4 +1,5 @@
 defmodule RiichiAdvanced.GameState.Rules do
+  alias RiichiAdvanced.Compiler, as: Compiler
   alias RiichiAdvanced.GameState.American, as: American
   alias RiichiAdvanced.GameState.Debug, as: Debug
   alias RiichiAdvanced.Match, as: Match
@@ -38,7 +39,7 @@ defmodule RiichiAdvanced.GameState.Rules do
     # replace all @ constants in rules
     rules = if Map.has_key?(rules, "constants") do
       Utils.splat_json(rules, fn
-        <<"@list$" <> name>> -> List.wrap(Map.get(rules["constants"], name, name))
+        <<"@splat$" <> name>> -> List.wrap(Map.get(rules["constants"], name, name))
         <<"@" <> name>> -> [Map.get(rules["constants"], name, name)]
         value -> [value]
       end)

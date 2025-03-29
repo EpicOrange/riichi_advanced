@@ -15,19 +15,22 @@ defmodule RiichiAdvanced.Validator do
   @allowed_events ["after_bloody_end", "after_call", "after_charleston", "after_discard_passed", "after_draw", "after_initialization", "after_saki_start", "after_scoring", "after_start", "after_turn_change", "after_win", "before_abortive_draw", "before_call", "before_conclusion", "before_continue", "before_exhaustive_draw", "before_scoring", "before_start", "before_turn_change", "before_win", "on_no_valid_tiles"]
   def allowed_events, do: @allowed_events
 
+  def sanitize_string(str) when is_binary(str), do: String.replace(str, "\\(", "\\\\(") # disallow any string interpolation
+
   # all of json, but don't allow null, true, or false
   def validate_json(nil), do: {:ok, nil}
   def validate_json(true), do: {:ok, true}
   def validate_json(false), do: {:ok, false}
   def validate_json(ast) when is_integer(ast) or is_float(ast), do: {:ok, ast}
   def validate_json({:-, _pos, [value]}) when is_integer(value), do: {:ok, -value} # negative literals
-  def validate_json(ast) when is_binary(ast), do: {:ok, String.replace(ast, "\\(", "\\\\(")} # disallow any string interpolation
+  def validate_json(ast) when is_binary(ast), do: {:ok, sanitize_string(ast)}
   def validate_json(ast) when is_list(ast), do: ast |> Enum.map(&validate_json(&1)) |> Utils.sequence()
-  def validate_json({:@, _, [{name, _, nil}]}), do: validate_constant(name)
-  def validate_json({:+, _, [{name, _, nil}]}), do: validate_variable(name)
-  def validate_json(%RiichiAdvanced.Compiler.Constant{name: name}), do: validate_constant(name)
-  def validate_json(%RiichiAdvanced.Compiler.Variable{name: name}), do: validate_variable(name)
-  def validate_json(ast) when is_map(ast), do: validate_map(ast)
+  def validate_json({:+, _, [{:@, _, [{name, _, nil}]}]}) when is_binary(name), do: validate_constant(name, true)
+  def validate_json({:@, _, [{name, _, nil}]}) when is_binary(name), do: validate_constant(name)
+  def validate_json({:!, _, [{name, _, nil}]}) when is_binary(name), do: validate_variable(name)
+  # def validate_json(%RiichiAdvanced.Compiler.Constant{name: name}), do: validate_constant(name)
+  # def validate_json(%RiichiAdvanced.Compiler.Variable{name: name}), do: validate_variable(name)
+  # def validate_json(ast) when is_map(ast), do: validate_map(ast) # this matches structs...
   def validate_json({:%{}, _pos, contents}), do: validate_map(contents)
   def validate_json(not_json) do
     # IO.inspect(Process.info(self(), :current_stacktrace))
@@ -88,14 +91,16 @@ defmodule RiichiAdvanced.Validator do
   def get_parent_path(path), do: {:error, "got non-string path #{inspect(path)}"}
 
   @valid_constant_regex ~r/^[a-z_][a-z0-9_]*$/
-  def validate_constant(name) when is_binary(name) do
+  def validate_constant(name, splatted \\ false)
+  def validate_constant(name, splatted) when is_binary(name) do
     if Regex.match?(@valid_constant_regex, name) do
-      {:ok, %RiichiAdvanced.Compiler.Constant{name: name}}
+      {:ok, %RiichiAdvanced.Compiler.Constant{name: if splatted do "splat$" else "" end <> name}}
     else
+      IO.inspect(Process.info(self(), :current_stacktrace))
       {:error, "invalid constant name: #{inspect(name)}"}
     end
   end
-  def validate_constant(name), do: {:error, "non-string constant name: #{inspect(name)}"}
+  def validate_constant(name, _splatted), do: {:error, "non-string constant name: #{inspect(name)}"}
 
   @valid_variable_regex ~r/^[a-z_][a-z0-9_]*$/
   def validate_variable(name) when is_binary(name) do
