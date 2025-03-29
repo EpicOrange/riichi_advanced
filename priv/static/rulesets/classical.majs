@@ -23,7 +23,7 @@ set score_calculation, %{
   yaku2_overrides_yaku1: true,
   agarirenchan: true,
   right_display: "minipoints",
-  point_name: "Doubles",
+  point_name: "Fan",
   point2_name: "Limit",
   minipoint_name: "Pts",
   win_by_discard_label: "Hu",

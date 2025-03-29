@@ -1,11 +1,9 @@
 defmodule RiichiAdvanced.GameState.Rules do
-  alias RiichiAdvanced.Compiler, as: Compiler
   alias RiichiAdvanced.GameState.American, as: American
   alias RiichiAdvanced.GameState.Debug, as: Debug
   alias RiichiAdvanced.Match, as: Match
   alias RiichiAdvanced.ModLoader, as: ModLoader
   alias RiichiAdvanced.Utils, as: Utils
-  # import RiichiAdvanced.GameState
 
   defp decode_rules(ruleset, ruleset_json) do
     # decode the rules json

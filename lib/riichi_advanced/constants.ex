@@ -413,7 +413,7 @@ defmodule RiichiAdvanced.Constants do
         ankan_name: "Concealed Kong",
         ron_name: "Hu",
         tsumo_name: "Zimo",
-        han: "Doubles"
+        han: "Fan"
       },
       mods: [
         "base",
