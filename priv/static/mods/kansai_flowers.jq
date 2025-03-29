@@ -17,22 +17,13 @@
 ]
 |
 # add flower call (identical to pei call, but is forced)
-.buttons.flower = {
-  "display_name": "Flower",
-  "show_when": ["our_turn", "not_no_tiles_remaining", "has_draw", {"name": "not_status", "opts": ["just_reached"]}, {"name": "match", "opts": [["hand", "draw"], [[[["1f", "2f", "3f", "4f"], 1]]]]}, {"name": "tile_not_drawn", "opts": [-8]}],
-  "actions": [["big_text", "Flower"], ["flower", "1f", "2f", "3f", "4f"], ["run", "do_kan_draw", {"status": "pei"}], ["unset_status", "kan"]],
-  "unskippable": true
-}
+.buttons.flower.unskippable = true
 |
-# add flower autobutton
-.auto_buttons["_5_auto_flower"] = {
-  "display_name": "F",
-  "desc": "Automatically declare all flowers.",
-  "actions": [
-    ["when", [{"name": "buttons_include", "opts": ["flower"]}], [["press_button", "flower"], ["press_first_call_button", "flower"]]]
-  ],
-  "enabled_at_start": true
-}
+.buttons.flower.actions |= map(if . == ["flower", "4z"] then ["flower", "1f", "2f", "3f", "4f"] else . end)
+|
+.auto_buttons._5_auto_pei.display_name = "F"
+|
+.auto_buttons._5_auto_pei.desc = "Automatically declare all flowers.",
 |
 # add flower dora indicators
 .dora_indicators += {
@@ -42,7 +33,8 @@
   "4f": ["1f","2f","3f"]
 }
 |
-# count flowers
+# count flowers, stop counting pei
 .before_win.actions += [
-  ["add_counter", "flowers", "count_matches", ["flowers"], [[ "nojoker", [["1f","2f","3f","4f"], 1] ]]]
+  ["add_counter", "flowers", "count_matches", ["flowers"], [[ "nojoker", [["1f","2f","3f","4f"], 1] ]]],
+  ["set_counter", "nukidora", 0]
 ]

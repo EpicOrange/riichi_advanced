@@ -26,7 +26,7 @@ defmodule RiichiAdvanced.GameState.Conditions do
           "discards" -> [{hand ++ state.players[context.seat].discards, calls}]
           "aside" -> [{hand ++ state.players[context.seat].aside, calls}]
           "calls" -> [{hand, calls ++ Enum.reject(state.players[context.seat].calls, fn {call_name, _call} -> call_name in Riichi.flower_names() end)}]
-          "flowers" -> [{hand, calls ++ Enum.filter(state.players[context.seat].calls, fn {call_name, _call} -> call_name in ["flower", "start_flower", "pei"] end)}]
+          "flowers" -> [{hand, calls ++ Enum.filter(state.players[context.seat].calls, fn {call_name, _call} -> call_name in ["flower", "start_flower"] end)}]
           "start_flowers" -> [{hand, calls ++ Enum.filter(state.players[context.seat].calls, fn {call_name, _call} -> call_name == "start_flower" end)}]
           "jokers" -> [{hand, calls ++ Enum.filter(state.players[context.seat].calls, fn {call_name, _call} -> call_name in ["joker", "start_joker"] end)}]
           "start_jokers" -> [{hand, calls ++ Enum.filter(state.players[context.seat].calls, fn {call_name, _call} -> call_name == "start_joker" end)}]

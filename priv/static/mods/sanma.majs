@@ -16,11 +16,6 @@ apply subtract, "wall", [
   "8m", "8m", "8m", "8m"
 ]
 
-# change "pei" set to "pei_triplet" (since our call is named "pei")
-apply delete_key, "set_definitions", "pei"
-define_set pei_triplet, ~s"4z 4z 4z"
-replace all, ".", "pei", "pei_triplet"
-
 # now we can add stuff related to pei button and status
 apply prepend, "functions.discard_passed", [["as", "others", [["unset_status", "pei"]]]]
 
@@ -33,14 +28,14 @@ apply merge, "score_calculation", %{
 # nukidora
 define_yaku extra_yaku, "Pei", "nukidora", counter_at_least("nukidora", 1)
 on before_win do
-  add_counter("nukidora", "count_matches", ["flowers"], ~m"pei:1")
+  add_counter("nukidora", "count_matches", ["flowers"], ~m"flower:1")
 end
 
 # no chii
 apply delete_key, "buttons", "chii"
 
 # pei button
-define_button pei,
+define_button flower,
   display_name: "Pei", 
   show_when: our_turn
     and not_no_tiles_remaining
@@ -53,7 +48,6 @@ define_button pei,
     flower("4z")
     discard_passed
     do_kan_draw(status: "pei")
-    unset_status("kan")
   end
 
 # pei auto button
@@ -61,9 +55,9 @@ define_auto_button _5_auto_pei,
   display_name: "K",
   desc: "Automatically declare pei."
   do
-    if buttons_include("pei") do
-      press_button("pei")
-      press_first_call_button("pei")
+    if buttons_include("flower") do
+      press_button("flower")
+      press_first_call_button("flower")
     end
   end
 
@@ -72,7 +66,7 @@ define_auto_button _4_auto_discard,
   display_name: "D",
   desc: "Automatically discard your drawn tile."
   do
-    if our_turn and buttons_exclude("tsumo", "ankan", "pei") and has_draw do
+    if our_turn and buttons_exclude("tsumo", "ankan", "flower") and has_draw do
       discard_draw
     end
   end
@@ -83,6 +77,9 @@ def do_kan_draw do
   shift_tile_to_dead_wall(1)
   draw(1, "opposite_end")
 end
+
+replace all, "constants.can_chankan", ["kakan"], ["kakanlast_call_is("kakan")
+
 # chankan should work on pei
 # TODO make last_call_is a constant
 define_button chankan,
@@ -90,7 +87,7 @@ define_button chankan,
   show_when: not_our_turn
     and match(["hand", "calls"], ["tenpai"])
     and status_missing("furiten", "just_reached")
-    and last_call_is("kakan", "pei")
+    and last_call_is("kakan", "flower")
     and match(["hand", "calls", "last_called_tile"], ["win"])
   do
     big_text("Ron")

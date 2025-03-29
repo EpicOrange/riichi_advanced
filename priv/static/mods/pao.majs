@@ -1,0 +1,21 @@
+on after_initialization do
+  add_rule("Rules", "Sekinin Barai (Pao)", "If you deal the last dragon called for a daisangen hand, or the last wind called for a daisuushii hand, you are responsible for that single yakuman payment if they tsumo, or half of the yakuman payment if they ron off someone else.")
+end
+
+on after_call do
+  if last_call_is("pon", "daiminkan") do
+    if match(["last_call"], ~m"(haku hatsu chun):1") and match(["calls"], ~m"haku:1, hatsu:1, chun:1") do
+      as callee do
+        set_status("pao")
+      end
+    end
+    if match(["last_call"], ~m"(ton nan shaa pei):1") and match(["calls"], ~m"ton:1, nan:1, shaa:1, pei:1") do
+      as callee do
+        set_status("pao")
+      end
+    end
+  end
+end
+
+apply set_append, "score_calculation.pao_eligible_yaku", ["Daisangen", "Daisuushii"]
+apply set, "score_calculation.win_with_pao_name", "Sekinin Barai"

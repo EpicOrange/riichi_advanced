@@ -15,7 +15,7 @@ define_button chankan,
   show_when: not_our_turn
     and match(["hand", "calls"], ["tenpai"])
     and status_missing("furiten", "just_reached")
-    and last_call_is("kakan", "kakakan", "pei")
+    and last_call_is("kakan", "kapon", "kakakan", "flower")
     and match(["hand", "calls", "last_called_tile"], ["win"])
   do
     big_text("Ron")

@@ -15,7 +15,7 @@ defmodule RiichiAdvanced.YakuTest.SanmaYaku do
     """, [
       %{"type" => "buttons_pressed", "buttons" => [%{"button" => "riichi"}, nil, nil]},
       %{"type" => "discard", "tile" => "1z", "player" => 0, "tsumogiri" => true},
-      %{"type" => "buttons_pressed", "buttons" => [nil, %{"button" => "pei"}, nil]},
+      %{"type" => "buttons_pressed", "buttons" => [nil, %{"button" => "flower"}, nil]},
       %{"type" => "buttons_pressed", "buttons" => [%{"button" => "chankan"}, nil, nil]}
     ], %{
       east: %{
@@ -39,7 +39,7 @@ defmodule RiichiAdvanced.YakuTest.SanmaYaku do
     """, [
       %{"type" => "buttons_pressed", "buttons" => [%{"button" => "riichi"}, nil, nil]},
       %{"type" => "discard", "tile" => "1z", "player" => 0, "tsumogiri" => true},
-      %{"type" => "buttons_pressed", "buttons" => [nil, %{"button" => "pei"}, nil]},
+      %{"type" => "buttons_pressed", "buttons" => [nil, %{"button" => "flower"}, nil]},
       %{"type" => "discard", "tile" => "5z", "player" => 1, "tsumogiri" => false},
       %{"type" => "buttons_pressed", "buttons" => [%{"button" => "ron"}, nil, nil]}
     ], %{
@@ -110,7 +110,7 @@ defmodule RiichiAdvanced.YakuTest.SanmaYaku do
       "starting_dead_wall": ["1z"]
     }
     """, [
-      %{"type" => "buttons_pressed", "buttons" => [%{"button" => "pei"}, nil, nil, nil]},
+      %{"type" => "buttons_pressed", "buttons" => [%{"button" => "flower"}, nil, nil, nil]},
       %{"type" => "buttons_pressed", "buttons" => [%{"button" => "riichi"}, nil, nil, nil]},
       %{"type" => "discard", "tile" => "1z", "player" => 0, "tsumogiri" => true},
       %{"type" => "discard", "tile" => "4p", "player" => 1, "tsumogiri" => true},
