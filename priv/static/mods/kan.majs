@@ -18,12 +18,12 @@ define_button daiminkan,
   call: [[0, 0, 0]]
   do
     big_text(!kan_name)
-    call
-    change_turn("self")
     if status("kan") do
       set_status("double_kan")
     end
     set_status("kan")
+    call
+    change_turn("self")
     draw(1, "opposite_end")
   end
 
@@ -37,11 +37,11 @@ define_button ankan,
   call: [[0, 0, 0]]
   do
     big_text(!kan_name)
-    self_call
     if status("kan") do
       set_status("double_kan")
     end
     set_status("kan")
+    self_call
     draw(1, "opposite_end")
   end
 
@@ -56,33 +56,15 @@ define_button kakan,
   upgrades: "pon"
   do
     big_text(!kan_name)
-    upgrade_call
     if status("kan") do
       set_status("double_kan")
     end
-    set_status("kan")
+    set_status("kan", "can_chankan")
+    upgrade_call
+    unset_status("can_chankan")
     draw(1, "opposite_end")
   end
 
 on before_turn_change do
   unset_status("kan", "double_kan")
 end
-
-apply append, "interruptible_actions", ["call", "self_call", "upgrade_call"]
-
-define_const chankan_calls, ["kakan"]
-
-define_button chankan,
-  display_name: !ron_name, 
-  show_when: not_our_turn
-    and ((last_call_is(+@chankan_calls) and match(["hand", "calls", "last_called_tile"], ["win"]))
-     or (last_call_is("ankan") and match(["hand", "calls"], ["kokushi_tenpai"]) and match(["hand", "calls", "last_called_tile"], ["win"]))),
-  precedence_over: ["chii", "pon", "daiminkan"]
-  do
-    big_text(!ron_name)
-    pause(1000)
-    reveal_hand
-    win_by_call
-  end
-
-apply set_append, "interruptible_actions", ["upgrade_call"]

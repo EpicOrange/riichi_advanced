@@ -349,8 +349,6 @@ defmodule RiichiAdvanced.Constants do
         pon_name: "Pong",
         kan_name: "Kong",
         ankan_name: "Concealed Kong",
-        ron_name: "Hu",
-        tsumo_name: "Zimo",
         han: "Fan"
       },
       mods: [
@@ -364,7 +362,7 @@ defmodule RiichiAdvanced.Constants do
         %{name: "yaku/tsumo", config: %{list: "yaku", name: "Self Draw", value: 1}},
         %{name: "yaku/chankan", config: %{list: "yaku", name: "Robbing a Kong", value: 1}},
         %{name: "yaku/rinshan", config: %{
-          list: "yaku", name: "After a Kong", value: 1,
+          list: "yaku", rinshan_name: "After a Kong", flower_name: "After a Flower", value: 1,
           double_list: "yaku", double_name: "After Multiple Kongs", double_value: 8
         }},
         %{name: "yaku/menzenchin", config: %{list: "yaku", name: "Concealed Hand", value: 1}},
@@ -426,7 +424,7 @@ defmodule RiichiAdvanced.Constants do
         %{name: "yaku/menzentsumo", config: %{list: "yaku", name: "Concealed Hand", value: 1}},
         %{name: "yaku/chankan", config: %{list: "yaku", name: "Robbing the Kong", value: 1}},
         %{name: "yaku/rinshan", config: %{
-          list: "yaku", name: "Out on a Replacement", value: 1,
+          list: "yaku", kong_name: "Out on a Replacement", flower_name: "Out on a Replacement", value: 1,
           double_list: "yakuman", double_name: "Two-Fold Fortune", double_value: 1
         }},
         %{name: "yaku/honitsu", config: %{

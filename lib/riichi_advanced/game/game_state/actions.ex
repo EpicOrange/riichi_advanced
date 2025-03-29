@@ -1017,23 +1017,27 @@ defmodule RiichiAdvanced.GameState.Actions do
         IO.inspect(opts)
         state
       "print_status"          ->
-        seat = Conditions.from_seat_spec(state, context, Enum.at(opts, 0, "self"))
-        IO.inspect({seat, state.players[seat].status})
+        for seat <- Conditions.from_seats_spec(state, context, Enum.at(opts, 0, "self")) do
+          IO.inspect({seat, state.players[seat].status})
+        end
         state
       "print_counters"         ->
-        seat = Conditions.from_seat_spec(state, context, Enum.at(opts, 0, "self"))
-        IO.inspect({seat, state.players[seat].counters})
+        for seat <- Conditions.from_seats_spec(state, context, Enum.at(opts, 0, "self")) do
+          IO.inspect({seat, state.players[seat].counters})
+        end
         state
       "print_context"         ->
         IO.inspect(context)
         state
       "print_hand"         ->
-        seat = Conditions.from_seat_spec(state, context, Enum.at(opts, 0, "self"))
-        IO.inspect({seat, state.players[seat].hand, state.players[seat].draw, state.players[seat].calls})
+        for seat <- Conditions.from_seats_spec(state, context, Enum.at(opts, 0, "self")) do
+          IO.inspect({seat, state.players[seat].hand, state.players[seat].draw, state.players[seat].calls})
+        end
         state
       "print_discards"         ->
-        seat = Conditions.from_seat_spec(state, context, Enum.at(opts, 0, "self"))
-        IO.inspect({seat, state.players[seat].discards})
+        for seat <- Conditions.from_seats_spec(state, context, Enum.at(opts, 0, "self")) do
+          IO.inspect({seat, state.players[seat].discards})
+        end
         state
       "print_tags"         ->
         IO.inspect(state.tags)

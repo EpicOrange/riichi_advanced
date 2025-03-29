@@ -30,10 +30,14 @@ on after_start do
   set_status_all("first_turn")
 end
 on before_turn_change do
-  unset_status("first_turn")
+  if status("first_turn") and match(["discards"], ~m"any:1") do
+    unset_status("first_turn")
+  end
 end
 on after_call do
-  unset_status("first_turn")
+  if status("first_turn") and not_last_call_is("flower", "start_flower") do
+    unset_status("first_turn")
+  end
 end
 
 define_yaku !tenhou_list, !tenhou_name, !tenhou_value, status("first_turn") and won_by_draw and seat_is("east")
@@ -49,7 +53,7 @@ on before_win do
       unset_status("first_turn")
     end
   else
-    if won_by_draw do
+    if not_seat_is("east") and won_by_draw do
       unset_status("first_turn")
     end
   end

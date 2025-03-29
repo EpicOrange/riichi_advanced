@@ -132,7 +132,7 @@ defmodule RiichiAdvanced.TestUtils do
     else
       assert Enum.empty?(state.winner_seats)
       win_buttons = Enum.all?(state.players, fn {seat, player} ->
-        {seat, Enum.filter(["ron", "chankan", "tsumo"], & &1 in player.buttons)}
+        {seat, Enum.filter(["ron", "chankan", "tsumo", "flower_win"], & &1 in player.buttons)}
       end)
       expected_win_buttons = Enum.all?(state.players, fn {seat, _player} -> {seat, []} end)
       assert win_buttons == expected_win_buttons

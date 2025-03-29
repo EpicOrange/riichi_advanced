@@ -1,5 +1,14 @@
 define_yaku_precedence "Four Concealed Triplets", ["All Triplets"]
-define_yaku_precedence "All Honours", ["Round Wind", "Seat Wind", "All Triplets", "Half Flush", "Mixed Terminals"]
+define_yaku_precedence "Four Kongs", ["All Triplets"]
+define_yaku_precedence "All Terminals", ["All Triplets"]
+define_yaku_precedence "Thirteen Orphans", ["Mixed Terminals"]
+define_yaku_precedence "Nine Gates", ["Full Flush", "Concealed Hand"]
+define_yaku_precedence "Big Three Dragons", ["White Dragon", "Green Dragon", "Red Dragon"]
+define_yaku_precedence "Big Four Winds", ["Prevalent Wind", "Seat Wind"]
+define_yaku_precedence "All Honours", ["Prevalent Wind", "Seat Wind", "All Triplets", "Half Flush", "Mixed Terminals"]
+define_yaku_precedence "Blessing of Heaven", ["Self Draw", "Concealed Hand"]
+define_yaku_precedence "Blessing of Earth", ["Self Draw", "Concealed Hand"]
+define_yaku_precedence "Blessing of Man", ["Concealed Hand"]
 
 set score_calculation, %{
   scoring_method: "score_table",
@@ -22,10 +31,10 @@ set score_calculation, %{
 # mods
 define_mod_category "Rules"
 define_mod hk_three_point_minimum, name: "Three Fan Minimum", desc: "Only allow wins worth 3+ fan."
-define_mod seven_flower_win, name: "Seven Flower Win", deps: ["eight_flower_win"], conflicts: ["remove_flowers"], desc: "Allow instant win upon obtaining 7 flowers."
-define_mod eight_flower_win, name: "Eight Flower Win", conflicts: ["remove_flowers"], desc: "Allow instant win upon obtaining 8 flowers."
+define_mod seven_flower_win, name: "Seven Flower Bonus", conflicts: ["remove_flowers"], desc: "Adds bonuses for obtaining 7 or 8 flowers. You can also allow instant win upon obtaining 7 or 8 flowers."
+config_mod seven_flower_win, name: "win_on", values: ["7 flowers", "8 flowers", "none"]
 define_mod hk_flowers_open_hand, name: "Flowers Open Hand", desc: "A hand with flowers declared cannot earn 1 fan from Concealed Hand."
-define_mod remove_flowers, name: "Remove Flowers", conflicts: ["seven_flower_win", "eight_flower_win"], desc: "Remove all eight flowers from the wall."
+define_mod remove_flowers, name: "Remove Flowers", conflicts: ["seven_flower_win"], desc: "Remove all eight flowers from the wall."
 define_mod head_bump, name: "Head Bump", desc: "Enable head bump. In case of multiple hu, only the person closest in turn order gets the win."
 define_mod hk_seven_pairs, name: "Seven Pairs", desc: "Add seven pairs as a possible winning hand, worth 4 fan."
 define_mod hk_everyone_pays, name: "Everyone Pays On Discard", desc: "Discarder pays 2x hand value, other players pay 1x."

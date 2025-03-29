@@ -191,8 +191,12 @@ defmodule RiichiAdvanced.Riichi do
         |> Utils.strip_attrs()
         |> Enum.flat_map(fn instance ->
           target_tiles = Enum.map(call_spec, &Match.offset_tile(instance, &1, tile_behavior))
-          possible_removals = Match.try_remove_all_tiles(hand, target_tiles, tile_behavior)
-          Enum.map(possible_removals, fn remaining -> Utils.sort_tiles(hand -- remaining) end)
+          if nil in target_tiles do
+            []
+          else
+            possible_removals = Match.try_remove_all_tiles(hand, target_tiles, tile_behavior)
+            Enum.map(possible_removals, fn remaining -> Utils.sort_tiles(hand -- remaining) end)
+          end
         end)
       end) |> Enum.uniq()}
     end |> Enum.uniq_by(fn {tile, choices} -> Enum.map(choices, fn choice -> Enum.sort([tile | choice]) end) end) |> Map.new()

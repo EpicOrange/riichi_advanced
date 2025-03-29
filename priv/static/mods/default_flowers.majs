@@ -18,8 +18,8 @@ define_yaku yaku, "Seat Season", 1, seat_is("west") and match(["flowers"], ~m"3g
 define_yaku yaku, "Seat Season", 1, seat_is("north") and match(["flowers"], ~m"4g:1")
 define_yaku yaku, "All Flowers", !four_flowers_value, match(["flowers"], ~m"1f:1, 2f:1, 3f:1, 4f:1")
 define_yaku yaku, "All Seasons", !four_flowers_value, match(["flowers"], ~m"1g:1, 2g:1, 3g:1, 4g:1")
-define_yaku_precedence "All Flowers", ["Seat Flower"]
-define_yaku_precedence "All Seasons", ["Seat Season"]
+# define_yaku_precedence "All Flowers", ["Seat Flower"]
+# define_yaku_precedence "All Seasons", ["Seat Season"]
 
 on after_start do
   set_status_all("initial_flowers")
@@ -73,6 +73,7 @@ define_button flower,
     big_text("Flower")
     flower("1f", "2f", "3f", "4f", "1g", "2g", "3g", "4g")
     set_status("flower")
+    unset_status("kan")
     if no_tiles_remaining do
       advance_turn
     else
