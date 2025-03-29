@@ -113,6 +113,7 @@ defmodule RiichiAdvanced.GameState.Conditions do
     "shimocha",
     "toimen",
     "kamicha",
+    "current_turn",
     "last_discarder",
     "caller",
     "callee",
@@ -133,6 +134,7 @@ defmodule RiichiAdvanced.GameState.Conditions do
       "shimocha" -> Utils.get_seat(context.seat, :shimocha)
       "toimen" -> Utils.get_seat(context.seat, :toimen)
       "kamicha" -> Utils.get_seat(context.seat, :kamicha)
+      "current_turn" -> state.turn
       "last_discarder" ->
         last_discard_action = get_last_discard_action(state)
         if last_discard_action != nil do last_discard_action.seat else context.seat end
