@@ -1940,13 +1940,14 @@ div.rules-wrapper > label {
   font-size: calc(0.5 * var(--tile-size));
   bottom: calc(-1.5 * var(--tile-size));
   width: calc(0.5 * var(--tile-size));
-  display: flex;
   pointer-events: initial;
-  justify-content: center;
-  align-items: center;
   writing-mode: tb;
-  transform: rotate(180deg);
+  line-height: calc(100% - 0.1em); /* centers text better than flexbox */
 }
+div.rules-wrapper > label.lang-en {
+  transform: rotate(180deg); /* make text face right */
+}
+
 /*
   hack; add invisible "unselect" radio option to allow unselecting
   this appears above the selected label, but below unselected labels
