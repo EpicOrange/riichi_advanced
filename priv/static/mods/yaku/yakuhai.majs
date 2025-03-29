@@ -1,6 +1,6 @@
 on after_initialization do
   add_rule("1 $han", "Value Triplets", """
-  Each of the following adds 1 $han:
+  Each of the following adds 1 %{han}:
   - A triplet of dragon tiles
   - A triplet of winds matching the round marker
   - A triplet of winds matching your seat

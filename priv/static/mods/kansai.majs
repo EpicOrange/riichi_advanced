@@ -68,13 +68,13 @@ on before_conclusion do
   as everyone do
     if placement(1) do
       payout = first_payout
-      push_message("was awarded $payout chips for placing first", %{payout: "payout"})
+      push_message("was awarded %{payout} chips for placing first", %{payout: "payout"})
     end
     if placement(2) do
-      push_message("was awarded $payout chips for placing second with $points points", %{payout: "payout", points: "score"})
+      push_message("was awarded %{payout} chips for placing second with %{points} points", %{payout: "payout", points: "score"})
     end
     if placement(3) do
-      push_message("was awarded $payout chips for placing third with $points points", %{payout: "payout", points: "score"})
+      push_message("was awarded %{payout} chips for placing third with %{points} points", %{payout: "payout", points: "score"})
     end
     shuugi = shuugi + payout
   end

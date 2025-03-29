@@ -2,7 +2,7 @@ on after_initialization do
   add_rule("Rules", "Flowers", """
   - Flower tiles must be declared and replaced by a draw from the back of the wall.
   - A flower tile is worth 1 if its number matches your seat (1=east, 2=south, 3=west, 4=north)
-  - Having all 4 flower tiles or all 4 season tiles is worth $four_flowers_value.
+  - Having all 4 flower tiles or all 4 season tiles is worth %{four_flowers_value}.
   """, %{four_flowers_value: !four_flowers_value})
 end
 

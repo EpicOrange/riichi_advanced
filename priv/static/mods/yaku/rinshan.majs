@@ -2,9 +2,9 @@ on after_initialization do
   add_rule("$value $han", "$name", "You won off a replacement tile.", %{value: !value, han: !han, name: !name})
 
   if equals(!double_list, "yakuman") do
-    add_rule("Limit", "$name", "You called $kan multiple times and won off a replacement tile.", %{name: !double_name, kan: !kan_name})
+    add_rule("Limit", "$name", "You called %{kan} multiple times and won off a replacement tile.", %{name: !double_name, kan: !kan_name})
   else
-    add_rule("$value $han", "$name", "You called $kan multiple times and won off a replacement tile.", %{value: !double_value, han: !han, name: !double_name, kan: !kan_name})
+    add_rule("$value $han", "$name", "You called %{kan} multiple times and won off a replacement tile.", %{value: !double_value, han: !han, name: !double_name, kan: !kan_name})
   end
 end
 

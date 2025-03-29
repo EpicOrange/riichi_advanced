@@ -681,6 +681,14 @@ defmodule RiichiAdvanced.GameState.Actions do
         0
     end
   end
+  # useful function to replace all amounts in a vars map used for interpolation
+  def map_var_amounts(state, context, vars) do
+    for {k, v} <- vars, into: %{} do
+      if is_amount?(state, context.seat, v) do
+        {k, to_string(interpret_amount(state, context, v))}
+      else {k, v} end
+    end
+  end
 
   defp set_counter(state, context, counter_name, amt_spec) do
     amount = interpret_amount(state, context, amt_spec)
@@ -1031,46 +1039,61 @@ defmodule RiichiAdvanced.GameState.Actions do
         IO.inspect(state.tags)
         state
       "push_message"          ->
-        message = interpolate_string(state, context, Enum.at(opts, 0, ""), Enum.at(opts, 1, %{}))
+        vars = Enum.at(opts, 1, %{})
+        message = interpolate_string(state, context, Enum.at(opts, 0, ""), vars)
         # IO.inspect(["Player #{player_name(state, context.seat)}", message], label: "Sent message")
-        push_message(state, player_prefix(state, context.seat) ++ [%{text: message}])
+        push_message(state, player_prefix(state, context.seat) ++ [%{text: message, vars: map_var_amounts(state, context, vars)}])
         state
       "push_system_message"   ->
-        message = interpolate_string(state, context, Enum.at(opts, 0, ""), Enum.at(opts, 1, %{}))
-        push_message(state, [%{text: message}])
+        vars = Enum.at(opts, 1, %{})
+        message = interpolate_string(state, context, Enum.at(opts, 0, ""), vars)
+        push_message(state, [%{text: message, vars: map_var_amounts(state, context, vars)}])
         state
       "add_rule"             ->
         tab = Enum.at(opts, 0, "Rules")
         id = Enum.at(opts, 1, "")
         text = Enum.at(opts, 2, "")
-        {tab, id, text, priority} = if is_map(Enum.at(opts, 3)) do
+        {tab, id, text, vars, priority} = if is_map(Enum.at(opts, 3)) do
           vars = Enum.at(opts, 3, %{})
           tab = interpolate_string(state, context, tab, vars)
           id = interpolate_string(state, context, id, vars)
           text = interpolate_string(state, context, text, vars)
           priority = Enum.at(opts, 4, nil)
-          {tab, id, text, priority}
-        else {tab, id, text, Enum.at(opts, 3, nil)} end
+          {tab, id, text, vars, priority}
+        else {tab, id, text, %{}, Enum.at(opts, 3, nil)} end
         state = if not Map.has_key?(state.rules_text, tab) do
           state = put_in(state.rules_text[tab], %{})
           state = update_in(state.rules_text_order, & &1 ++ [tab])
           state
         else state end
-        update_in(state.rules_text[tab], &Map.update(&1, id, {text, if priority == nil do 0 else priority end}, fn {orig_text, orig_priority} -> {orig_text <> "\n" <> text, if priority == nil do orig_priority else priority end} end))
+        update_in(state.rules_text[tab], &Map.update(&1, id,
+          {[text], map_var_amounts(state, context, vars), if priority == nil do 0 else priority end},
+          fn {orig_text, orig_vars, orig_priority} -> {
+              orig_text ++ [text],
+              Map.merge(orig_vars, map_var_amounts(state, context, vars)),
+              priority || orig_priority
+          } end)
+        )
       "update_rule"             ->
         tab = Enum.at(opts, 0, "Rules")
         id = Enum.at(opts, 1, "")
         text = Enum.at(opts, 2, "")
-        {tab, id, text, priority} = if is_map(Enum.at(opts, 3)) do
+        {tab, id, text, vars, priority} = if is_map(Enum.at(opts, 3)) do
           vars = Enum.at(opts, 3, %{})
           tab = String.trim(interpolate_string(state, context, tab, vars))
           id = String.trim(interpolate_string(state, context, id, vars))
           text = interpolate_string(state, context, text, vars)
           priority = Enum.at(opts, 4, nil)
-          {tab, id, text, priority}
-        else {tab, id, text, Enum.at(opts, 3, nil)} end
+          {tab, id, text, vars, priority}
+        else {tab, id, text, %{}, Enum.at(opts, 3, nil)} end
         if Map.has_key?(state.rules_text, tab) and Map.has_key?(state.rules_text[tab], id) do
-          update_in(state.rules_text[tab], &Map.update!(&1, id, fn {orig_text, orig_priority} -> {orig_text <> "\n" <> text, if priority == nil do orig_priority else priority end} end))
+          update_in(state.rules_text[tab], &Map.update!(&1, id,
+            fn {orig_text, orig_vars, orig_priority} -> {
+                orig_text ++ [text],
+                Map.merge(orig_vars, map_var_amounts(state, context, vars)),
+                priority || orig_priority
+            } end)
+          )
         else state end
       "delete_rule"             ->
         tab = Enum.at(opts, 0, "Rules")

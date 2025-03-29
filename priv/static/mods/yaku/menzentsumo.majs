@@ -1,5 +1,5 @@
 on after_initialization do
-  add_rule("$value $han", "$name", "You have no calls (except $ankan) and you won by self-draw.", %{value: !value, han: !han, name: !name, ankan: !ankan_name})
+  add_rule("$value $han", "$name", "You have no calls (except %{ankan}) and you won by self-draw.", %{value: !value, han: !han, name: !name, ankan: !ankan_name})
 end
 
 define_const closed_hand, has_no_call_named("chii", "pon", "daiminkan", "kakan")

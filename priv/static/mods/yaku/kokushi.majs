@@ -1,5 +1,5 @@
 on after_initialization do
-  add_rule("Rules", "Win Condition", "- ($name) All thirteen terminal/honor tiles plus one forming a pair.", %{name: !name}, -100)
+  add_rule("Rules", "Win Condition", "- (%{name}) All thirteen terminal/honor tiles plus one forming a pair.", %{name: !name}, -100)
   if equals(!list, "yakuman") do
     add_rule("Limit", "$name", "You have each terminal and honor tile, with one of them forming a pair.", %{name: !name})
   else

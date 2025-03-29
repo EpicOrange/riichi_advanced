@@ -1,9 +1,9 @@
 on after_initialization do
   add_rule("Rules", !kan_name, """
-  You may declare $kan to set aside four tiles in three situations:
+  You may declare %{kan} to set aside four tiles in three situations:
   - (open) If you have three of a kind, you can claim the fourth if someone discarded it.
-  - (added) If you previously called $pon, you can add the fourth tile to it but only if you draw the tile yourself.
-  - (concealed) If you have four of a kind, you can declare them as $ankan.
+  - (added) If you previously called %{pon}, you can add the fourth tile to it but only if you draw the tile yourself.
+  - (concealed) If you have four of a kind, you can declare them as %{ankan}.
   - In each case, you must then draw a replacement tile from the back of the wall.
   """, %{kan: !kan_name, ankan: !ankan_name, pon: !pon_name})
 end

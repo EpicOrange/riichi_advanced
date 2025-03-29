@@ -370,10 +370,11 @@ defmodule RiichiAdvancedWeb.GameLive do
           <label for={"rules-popover-radio-#{rules_text_name}"}><%= dt(@lang, rules_text_name) %></label>
           <div class="rules-popover-container">
             <div class="rules-popover">
-              <%= for {title, {text, priority}} <- Enum.sort_by(@state.rules_text[rules_text_name], fn {_title, {text, priority}} -> {priority, String.length(text)} end) do %>
+              <%= for {title, {text, vars, priority}} <- Enum.sort_by(@state.rules_text[rules_text_name], fn {_title, {text, _vars, priority}} -> {priority, text |> Enum.join("\n") |> String.length()} end) do %>
+                <% vars = Enum.map(vars, fn {k, v} -> {k, dt(@lang, v)} end) %>
                 <div class={["rules-popover-rule", priority < 0 && "full-width"]}>
-                  <div class="rules-popover-title"><%= title %></div>
-                  <div class="rules-popover-text"><%= text %></div>
+                  <div class="rules-popover-title"><%= dt(@lang, title, vars) %></div>
+                  <div class="rules-popover-text"><%= Enum.map_join(text, "\n", &dt(@lang, &1, vars)) %></div>
                 </div>
               <% end %>
             </div>

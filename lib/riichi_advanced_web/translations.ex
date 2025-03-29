@@ -8,10 +8,16 @@ defmodule RiichiAdvancedWeb.Translations do
     end)
   end
   def t(lang, ident, bindings) do
-    Gettext.with_locale(RiichiAdvancedWeb.Gettext, lang, fn ->
-      localized = Map.new(bindings, fn {k, v} -> {k, Gettext.dgettext(RiichiAdvancedWeb.Gettext, "default", v)} end)
-      Gettext.gettext(RiichiAdvancedWeb.Gettext, ident, localized)
+    bindings = Map.new(bindings, fn {k, v} -> {k, Gettext.dgettext(RiichiAdvancedWeb.Gettext, "default", v)} end)
+    ret = Gettext.with_locale(RiichiAdvancedWeb.Gettext, lang, fn ->
+      Gettext.gettext(RiichiAdvancedWeb.Gettext, ident, bindings)
     end)
+    if ident == ret do
+      # no entry found, so gettext doesn't do substitution, so substitute variables manually
+      for {from, to} <- bindings, reduce: ident do
+        ident -> String.replace(ident, "%{#{from}}", to)
+      end
+    else ret end
   end
 
   # dynamic
@@ -21,10 +27,17 @@ defmodule RiichiAdvancedWeb.Translations do
     end)
   end
   def dt(lang, ident, bindings) do
-    Gettext.with_locale(RiichiAdvancedWeb.Gettext, lang, fn ->
-      localized = Map.new(bindings, fn {k, v} -> {k, Gettext.dgettext(RiichiAdvancedWeb.Gettext, "default", v)} end)
-      Gettext.dgettext(RiichiAdvancedWeb.Gettext, "default", ident, localized)
+    bindings = Map.new(bindings, fn {k, v} -> {k, Gettext.dgettext(RiichiAdvancedWeb.Gettext, "default", v)} end)
+    ret = Gettext.with_locale(RiichiAdvancedWeb.Gettext, lang, fn ->
+      Gettext.dgettext(RiichiAdvancedWeb.Gettext, "default", ident, bindings)
     end)
+    IO.inspect({ident, ret, bindings})
+    if ident == ret do
+      # no entry found, so gettext doesn't do substitution, so substitute variables manually
+      for {from, to} <- bindings, reduce: ident do
+        ident -> String.replace(ident, "%{#{from}}", to)
+      end
+    else ret end
   end
 
   # hints
