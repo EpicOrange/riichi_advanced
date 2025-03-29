@@ -3,7 +3,7 @@ defmodule RiichiAdvanced.YakuTest.SanmaYaku do
   alias RiichiAdvanced.TestUtils, as: TestUtils
 
   test "sanma - chankan pei awards ippatsu" do
-    TestUtils.test_yaku_advanced("sanma", [%{name: "yaku/riichi", config: %{"bet" => 1000, "drawless" => false}}, "yaku/ippatsu"], """
+    TestUtils.test_yaku_advanced("sanma", ["riichi_kan", %{name: "yaku/riichi", config: %{"bet" => 1000, "drawless" => false}}, "yaku/ippatsu"], """
     {
       "starting_hand": {
         "east": ["2p", "3p", "4p", "4p", "5p", "6p", "7z", "7z", "7z", "8s", "8s", "8s", "4z"],

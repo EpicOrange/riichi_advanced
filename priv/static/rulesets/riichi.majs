@@ -553,11 +553,12 @@ define_auto_button _3_auto_no_call,
     end
   end
 
+define_const no_auto_discard_calls, ["tsumo", "ankan"]
 define_auto_button _4_auto_discard,
   display_name: "D",
   desc: "Automatically discard your drawn tile."
   do
-    if our_turn and buttons_exclude("tsumo", "ankan") and has_draw do
+    if our_turn and buttons_exclude(+@no_auto_discard_calls) and has_draw do
       discard_draw
     end
   end
@@ -616,7 +617,7 @@ define_mod kansai_chiitoitsu, name: "Kansai Chiitoitsu", desc: "Chiitoitsu now a
 define_mod min_han, order: 1, name: "Minimum Han", desc: "Minimum han required to win."
 config_mod min_han, name: "min", values: [1, 2, 3, 4, "Mangan", "Yakuman"], default: 1
 define_mod no_riichi_ankan, deps: ["riichi_kan", "yaku/riichi"], name: "No Riichi Ankan", desc: "Disallow any concealed kan while in riichi, not just ones that change your waits."
-define_mod kokushi_chankan, deps: ["riichi_kan"], name: "Kokushi Chankan", desc: "Allow robbing ankans if in tenpai for kokushi musou."
+define_mod kokushi_ankan_chankan, deps: ["riichi_kan"], name: "Kokushi Chankan", desc: "Allow robbing ankans if in tenpai for kokushi musou."
 define_mod first_gets_riichi_sticks, deps: ["yaku/riichi"], name: "First Gets Riichi Sticks", desc: "At the end of the game, all leftover riichi sticks on the table are given to first place. (Otherwise they are lost.)"
 define_mod starting_score, order: -2, name: "Starting Points", desc: "Number of points each player starts with. You can also set this by writing the following in the Config tab: \"initial_score\": 100000"
 config_mod starting_score, name: "points", values: [0,5000,10000,15000,20000,25000,30000,35000,40000,45000,50000,100000], default: 25000
@@ -784,7 +785,7 @@ set default_mods, [
   "agarirenchan", "tenpairenchan",
   "kyuushu_kyuuhai",
   "double_wind_4_fu",
-  "yaku/riichi_renhou", "pao", "kokushi_chankan",
+  "yaku/riichi_renhou", "pao", "kokushi_ankan_chankan",
   "cancellable_riichi",
   "show_waits"
 ]

@@ -5,7 +5,7 @@ on after_initialization do
   add_rule("Yakuman", "Suukantsu", "Your hand contains four kans.")
 end
 
-define_yaku yaku, "Chankan", 1, won_by_call
+define_yaku yaku, "Chankan", 1, won_by_call and status("kan", as: "caller")
 define_yaku yaku, "Rinshan", 1, status("kan")
 define_yaku yaku, "Sankantsu", 2, match(["calls"], ~m"(daiminkan ankan kakan):3")
 define_yaku yakuman, "Suukantsu", 1, match(["calls"], ~m"(daiminkan ankan kakan):4")
@@ -52,6 +52,7 @@ define_button daiminkan,
   }
   do
     big_text("Kan")
+    set_status("kan")
     call
     change_turn("self")
     do_kan_draw(status: "kan")
@@ -71,6 +72,7 @@ define_button ankan,
   call_style: %{self: [["1x", 2], 0, 1, ["1x", 3]]}
   do
     big_text("Kan")
+    set_status("kan")
     self_call
     do_kan_draw(status: "kan")
   end
@@ -94,17 +96,20 @@ define_button kakan,
   }
   do
     big_text("Kan")
+    set_status("kan", "can_chankan")
     upgrade_call
+    unset_status("can_chankan")
     discard_passed
     do_kan_draw(status: "kan")
   end
 
+define_const can_chankan, status("can_chankan", as: "caller")
 define_button chankan,
   display_name: "Ron", 
   show_when: not_our_turn
     and someone_else_just_called
     and status_missing("furiten", "just_reached")
-    and last_call_is("kakan")
+    and +@can_chankan
     and match(["hand", "calls"], ["tenpai"])
     and match(["hand", "calls", "last_called_tile"], ["win"]),
   precedence_over: ["chii", "pon", "daiminkan"]

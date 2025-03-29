@@ -202,7 +202,7 @@ defmodule RiichiAdvanced.Compiler do
                {:ok, args} <- Parser.parse_sigils(args),
                {:ok, args} <- Validator.validate_json(args) do
             case args do
-              [args] -> {:ok, ["run", name, Map.new(args)]}
+              [args] -> {:ok, ["run", name, args]}
               _      -> {:ok, ["run", name]}
             end
           end

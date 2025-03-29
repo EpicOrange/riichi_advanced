@@ -1,3 +1,9 @@
+on after_initialization do
+  add_rule("Rules", "No Chii", "(Sanma) You cannot call chii in sanma.")
+  add_rule("Rules", "Wall", "(Sanma) The 2 to 8 of characters are removed from the wall.", -99)
+  add_rule("Rules", "Pei", "(Sanma) You may declare north winds to draw a replacement tile from the dead wall. Each is worth 1 han. North winds are still usable to form pairs and triplets. If you are waiting on the north wind, you may ron a north wind declaration much like chankan (but you are not awarded chankan).")
+end
+
 set num_players, 3
 set initial_score, 35000
 set max_rounds, 6
@@ -45,7 +51,9 @@ define_button flower,
     and tile_not_drawn(-8)
   do
     big_text("Pei")
+    set_status("can_chankan")
     flower("4z")
+    unset_status("can_chankan")
     discard_passed
     do_kan_draw(status: "pei")
   end
@@ -62,14 +70,7 @@ define_auto_button _5_auto_pei,
   end
 
 # don't let auto discard button skip pei
-define_auto_button _4_auto_discard,
-  display_name: "D",
-  desc: "Automatically discard your drawn tile."
-  do
-    if our_turn and buttons_exclude("tsumo", "ankan", "flower") and has_draw do
-      discard_draw
-    end
-  end
+apply append, "constants.no_auto_discard_calls", "flower"
 
 # we need these in case kan mod is not enabled
 def do_kan_draw do
@@ -77,24 +78,6 @@ def do_kan_draw do
   shift_tile_to_dead_wall(1)
   draw(1, "opposite_end")
 end
-
-replace all, "constants.can_chankan", ["kakan"], ["kakanlast_call_is("kakan")
-
-# chankan should work on pei
-# TODO make last_call_is a constant
-define_button chankan,
-  display_name: "Ron", 
-  show_when: not_our_turn
-    and match(["hand", "calls"], ["tenpai"])
-    and status_missing("furiten", "just_reached")
-    and last_call_is("kakan", "flower")
-    and match(["hand", "calls", "last_called_tile"], ["win"])
-  do
-    big_text("Ron")
-    pause(1000)
-    reveal_hand
-    win_by_call
-  end
 
 # allow chankan on pei calls
 apply append, "interruptible_actions", ["flower"]

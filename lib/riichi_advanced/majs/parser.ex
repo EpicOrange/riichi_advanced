@@ -112,10 +112,11 @@ defmodule RiichiAdvanced.Parser do
     if Enum.all?(ast, &match?({k, _v} when is_binary(k), &1)) do
       {ks, vs} = Enum.unzip(ast)
       with {:ok, vs} <- vs |> Enum.map(&parse_sigils/1) |> Utils.sequence() do
-        # turn it into a map (JSON object)
-        {:ok, Enum.zip(ks, vs) |> Map.new()}
+        # turn it into a map
+        {:ok, {:%{}, [], Enum.zip(ks, vs)}}
       end
     else
+      # otherwise, it's just a regular list
       ast |> Enum.map(&parse_sigils/1) |> Utils.sequence()
     end
   end

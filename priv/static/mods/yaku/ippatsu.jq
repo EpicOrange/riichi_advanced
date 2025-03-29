@@ -33,7 +33,7 @@ else . end
 |
 # unset everyone's ippatsu status after any call (except for chankan-able calls)
 .after_call.actions |= [
-  ["unless", [{"name": "last_call_is", "opts": ["kakan", "kakakan", "kapon", "pei"]}], [
+  ["unless", [{"name": "status", "opts": ["can_chankan"]}], [
     ["unset_status_all", "ippatsu"]
   ]]
 ] + .

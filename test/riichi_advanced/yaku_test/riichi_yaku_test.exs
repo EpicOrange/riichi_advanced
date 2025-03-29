@@ -212,6 +212,61 @@ defmodule RiichiAdvanced.YakuTest.RiichiYaku do
     })
   end
 
+  test "riichi - kokushi chankan" do
+    TestUtils.test_yaku_advanced("riichi", ["riichi_kan"], """
+    {
+      "starting_hand": {
+        "east": ["1m", "4m", "7m", "2p", "5p", "8p", "3s", "6s", "9s", "2z", "3z", "3z", "5z"],
+        "south": ["1m", "9m", "1p", "9p", "1s", "9s", "2z", "2z", "3z", "4z", "5z", "6z", "7z"],
+        "west": ["1m", "4m", "7m", "2p", "5p", "8p", "3s", "6s", "9s", "2z", "4z", "4z", "4z"],
+        "north": ["1z", "1z", "7m", "2p", "5p", "8p", "3s", "6s", "9s", "5z", "5z", "7z", "7z"]
+      },
+      "starting_draws": ["1z", "5m", "6p", "6p", "1z"]
+    }
+    """, [
+      %{"type" => "discard", "tile" => "1z", "player" => 0, "tsumogiri" => true},
+      %{"type" => "buttons_pressed", "buttons" => [nil, nil, nil, %{"button" => "pon"}]},
+      %{"type" => "discard", "tile" => "5z", "player" => 3, "tsumogiri" => false},
+      %{"type" => "discard", "tile" => "5m", "player" => 0, "tsumogiri" => true},
+      %{"type" => "discard", "tile" => "6p", "player" => 1, "tsumogiri" => true},
+      %{"type" => "discard", "tile" => "6p", "player" => 2, "tsumogiri" => true},
+      %{"type" => "buttons_pressed", "buttons" => [nil, nil, nil, %{"button" => "kakan"}]},
+      %{"type" => "buttons_pressed", "buttons" => [nil, %{"button" => "chankan"}, nil, nil]}
+    ], %{
+      south: %{
+        yaku: [],
+        yaku2: [{"Kokushi Musou", 1}],
+        minipoints: 40
+      }
+    })
+  end
+
+  test "riichi - kokushi ankan chankan" do
+    TestUtils.test_yaku_advanced("riichi", ["riichi_kan", "kokushi_ankan_chankan"], """
+    {
+      "starting_hand": {
+        "east": ["1m", "4m", "7m", "2p", "5p", "8p", "3s", "6s", "9s", "2z", "3z", "3z", "5z"],
+        "south": ["1m", "9m", "1p", "9p", "1s", "9s", "2z", "2z", "3z", "4z", "5z", "6z", "7z"],
+        "west": ["1m", "4m", "7m", "2p", "5p", "8p", "3s", "6s", "9s", "2z", "4z", "4z", "4z"],
+        "north": ["1z", "1z", "1z", "2p", "5p", "8p", "3s", "6s", "9s", "5z", "5z", "7z", "7z"]
+      },
+      "starting_draws": ["5m", "6p", "6p", "1z"]
+    }
+    """, [
+      %{"type" => "discard", "tile" => "5m", "player" => 0, "tsumogiri" => true},
+      %{"type" => "discard", "tile" => "6p", "player" => 1, "tsumogiri" => true},
+      %{"type" => "discard", "tile" => "6p", "player" => 2, "tsumogiri" => true},
+      %{"type" => "buttons_pressed", "buttons" => [nil, nil, nil, %{"button" => "ankan"}]},
+      %{"type" => "buttons_pressed", "buttons" => [nil, %{"button" => "chankan"}, nil, nil]}
+    ], %{
+      south: %{
+        yaku: [],
+        yaku2: [{"Kokushi Musou", 1}],
+        minipoints: 40
+      }
+    })
+  end
+
   test "riichi - rinshan" do
     TestUtils.test_yaku_advanced("riichi", ["riichi_kan"], """
     {

@@ -49,7 +49,7 @@ In addition, there is a concept of a numeric "amount". An **amount** is either a
 - `"score"`
 - `"minipoints"`
 
-In addition, you may refer to constants defined by `define_const` by writing `@myconstant` and (for mods) mod parameters by writing `+myvar`. For security reasons, constant and variable names cannot contain uppercase letters.
+In addition, you may refer to constants defined by `define_const` by writing `@myconstant` and (for mods) mod parameters by writing `!myvar`. For security reasons, constant and variable names cannot contain uppercase letters.
 
 ## Conditions
 
