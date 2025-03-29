@@ -35,7 +35,7 @@ defmodule RiichiAdvanced.RoomState do
       end
 
     define_button pair,
-      display_name: "Pair", 
+      display_name: "Pair",
       show_when: not_our_turn
         and not_no_tiles_remaining
         and someone_else_just_discarded

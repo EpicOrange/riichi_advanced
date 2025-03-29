@@ -186,7 +186,7 @@ on after_charleston do
 end
 
 define_button charleston_left,
-  display_name: "Select three tiles to pass left", 
+  display_name: "Select three tiles to pass left",
   show_when: status("charleston_left"),
   unskippable: true,
   cancellable: false
@@ -196,7 +196,7 @@ define_button charleston_left,
   end
 
 define_button charleston_across,
-  display_name: "Select three tiles to pass across", 
+  display_name: "Select three tiles to pass across",
   show_when: status("charleston_across"),
   unskippable: true,
   cancellable: false
@@ -206,7 +206,7 @@ define_button charleston_across,
   end
 
 define_button charleston_right,
-  display_name: "Select three tiles to pass right", 
+  display_name: "Select three tiles to pass right",
   show_when: status("charleston_right"),
   unskippable: true,
   cancellable: false
@@ -216,7 +216,7 @@ define_button charleston_right,
   end
 
 define_button void_manzu,
-  display_name: "No Craks", 
+  display_name: "No Craks",
   show_when: status("round_start"),
   unskippable: true,
   cancellable: false
@@ -235,7 +235,7 @@ define_button void_manzu,
   end
 
 define_button void_pinzu,
-  display_name: "No Dots", 
+  display_name: "No Dots",
   show_when: status("round_start"),
   unskippable: true,
   cancellable: false
@@ -254,7 +254,7 @@ define_button void_pinzu,
   end
 
 define_button void_souzu,
-  display_name: "No Bams", 
+  display_name: "No Bams",
   show_when: status("round_start"),
   unskippable: true,
   cancellable: false
@@ -278,7 +278,7 @@ define_const no_voided_calls,
   or (status("void_souzu") and not_call_contains(["1s", "2s", "3s", "4s", "5s", "6s", "7s", "8s", "9s"], 1))
 
 define_button pon,
-  display_name: "Pong", 
+  display_name: "Pong",
   show_when: not_our_turn
     and status_missing("won")
     and not_no_tiles_remaining
@@ -347,7 +347,7 @@ end
 
 
 define_button daiminkan,
-  display_name: "Kong", 
+  display_name: "Kong",
   show_when: not_our_turn
     and status_missing("won")
     and not_no_tiles_remaining
@@ -370,7 +370,7 @@ define_button daiminkan,
   end
 
 define_button ankan,
-  display_name: "Concealed Kong", 
+  display_name: "Concealed Kong",
   show_when: our_turn
     and status_missing("won", "round_start")
     and not_no_tiles_remaining
@@ -390,7 +390,7 @@ define_button ankan,
 
 define_set kakan_tile, ~s"any@kakan"
 define_button kakan,
-  display_name: "Kong", 
+  display_name: "Kong",
   show_when: our_turn
     and status_missing("won", "round_start")
     and not_no_tiles_remaining
@@ -415,7 +415,7 @@ define_button kakan,
   end
 
 define_button ron,
-  display_name: "Hu", 
+  display_name: "Hu",
   show_when: not_our_turn
     and status_missing("won")
     and someone_else_just_discarded
@@ -434,7 +434,7 @@ define_button ron,
   end
 
 define_button chankan,
-  display_name: "Hu", 
+  display_name: "Hu",
   show_when: not_our_turn
     and status_missing("won")
     and someone_else_just_called
@@ -454,7 +454,7 @@ define_button chankan,
   end
 
 define_button tsumo,
-  display_name: "Zimo", 
+  display_name: "Zimo",
   show_when: our_turn
     and status_missing("won", "round_start")
     and match(["hand", "calls"], ["tenpai"])

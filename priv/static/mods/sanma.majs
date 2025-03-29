@@ -42,7 +42,8 @@ apply delete_key, "buttons", "chii"
 
 # pei button
 define_button flower,
-  display_name: "Pei", 
+  display_name: "Pei",
+  msg_name: "pei",
   show_when: our_turn
     and not_no_tiles_remaining
     and has_draw

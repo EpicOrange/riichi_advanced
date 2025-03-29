@@ -14,7 +14,7 @@ set display_riichi_sticks, true
 apply set, "score_calculation.riichi_value", !bet
 
 define_button riichi,
-  display_name: "Riichi", 
+  display_name: "Riichi",
   show_when: our_turn
     and has_draw
     and status_missing("riichi")

@@ -335,6 +335,7 @@ defmodule RiichiAdvanced.GameState.Actions do
 
     buttons = Rules.get(state.rules_ref, "buttons", %{})
     call_name = Map.get(buttons[button_name], "call_name", button_name)
+    msg_name = Map.get(buttons[button_name], "msg_name", call_name)
     default_call_style = Map.new(["self", "kamicha", "toimen", "shimocha"], fn dir -> {dir, 0..length(call_choice)} end)
     call_style = Map.merge(default_call_style, Map.get(buttons[button_name], "call_style", %{}))
 
@@ -386,14 +387,14 @@ defmodule RiichiAdvanced.GameState.Actions do
           push_message(state, player_prefix(state, seat) ++ [%{
             text: "called %{call}",
             vars: %{
-              call: {:text, call_name, %{bold: true}}
+              call: {:text, msg_name, %{bold: true}}
             }
           }])
         called_tile != nil ->
           push_message(state, player_prefix(state, seat) ++ [%{
             text: "called %{call} on %{tile} with %{choice}",
             vars: %{
-              call: {:text, call_name, %{bold: true}},
+              call: {:text, msg_name, %{bold: true}},
               tile: {:tile, called_tile},
               choice: {:hand, call_choice}
             }
@@ -402,7 +403,7 @@ defmodule RiichiAdvanced.GameState.Actions do
           push_message(state, player_prefix(state, seat) ++ [%{
             text: "called %{call} on %{tile}",
             vars: %{
-              call: {:text, call_name, %{bold: true}},
+              call: {:text, msg_name, %{bold: true}},
               tile: {:tile, called_tile}
             }
           }])

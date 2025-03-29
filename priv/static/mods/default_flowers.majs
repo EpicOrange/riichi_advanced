@@ -26,7 +26,7 @@ on after_start do
 end
 
 define_button start_flower,
-  display_name: "Reveal flower", 
+  display_name: "Reveal flower",
   show_when: status("initial_flowers")
     and our_turn
     and match(["hand", "draw"], ~m"(1f 2f 3f 4f 1g 2g 3g 4g):1"),
@@ -38,7 +38,7 @@ define_button start_flower,
   end
 
 define_button start_no_flower,
-  display_name: "No flowers", 
+  display_name: "No flowers",
   show_when: status("initial_flowers")
     and our_turn
     and not_match(["hand", "draw"], ~m"(1f 2f 3f 4f 1g 2g 3g 4g):1"),
@@ -63,7 +63,7 @@ apply prepend, "buttons.tsumo.show_when", status_missing("initial_flowers")
 define play_restriction, "flower", !unskippable
 
 define_button flower,
-  display_name: "Flower", 
+  display_name: "Flower",
   show_when: our_turn
     and has_draw
     and not_just_discarded

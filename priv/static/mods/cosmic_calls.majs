@@ -11,7 +11,7 @@ end
 # chankan should work on kakakan
 # TODO make last_call_is a constant
 define_button chankan,
-  display_name: "Ron", 
+  display_name: "Ron",
   show_when: not_our_turn
     and match(["hand", "calls"], ["tenpai"])
     and status_missing("furiten", "just_reached")
@@ -26,7 +26,7 @@ define_button chankan,
 
 # the calls themselves
 define_button ton,
-  display_name: "Ton", 
+  display_name: "Ton",
   show_when:
         not_our_turn
     and not_no_tiles_remaining
@@ -47,7 +47,7 @@ define_button ton,
   end
 
 define_button chon,
-  display_name: "Chon", 
+  display_name: "Chon",
   show_when:
         not_our_turn
     and not_no_tiles_remaining
@@ -69,7 +69,8 @@ define_button chon,
   end
 
 define_button chon_honors,
-  display_name: "Chon", 
+  display_name: "Chon",
+  msg_name: "chon",
   show_when:
         not_our_turn
     and not_no_tiles_remaining
@@ -94,7 +95,7 @@ define_button chon_honors,
 apply append, "buttons.chii.call_conditions", not_match(["called_tile"], ~m"(1z 2z 3z 4z 5z 6z 7z):1")
 
 define_button daiminfuun,
-  display_name: "Fuun", 
+  display_name: "Fuun",
   show_when:
         not_our_turn
     and not_no_tiles_remaining
@@ -118,7 +119,7 @@ define_button daiminfuun,
   end
 
 define_button anfuun,
-  display_name: "Anfuun", 
+  display_name: "Anfuun",
   show_when:
         our_turn
     and not_no_tiles_remaining
@@ -139,7 +140,7 @@ define_button anfuun,
   end
 
 define_button kapon,
-  display_name: "Pon", 
+  display_name: "Pon",
   show_when:
         our_turn
     and not_no_tiles_remaining
@@ -160,7 +161,7 @@ define_button kapon,
   end
 
 define_button kakakan,
-  display_name: "Kan", 
+  display_name: "Kan",
   show_when:
         our_turn
     and not_no_tiles_remaining
@@ -182,7 +183,7 @@ define_button kakakan,
   end
 
 define_button kafuun,
-  display_name: "Fuun", 
+  display_name: "Fuun",
   show_when:
         our_turn
     and not_no_tiles_remaining
@@ -209,7 +210,7 @@ define_button kafuun,
   end
 
 define_button chanfuun,
-  display_name: "Ron", 
+  display_name: "Ron",
   show_when:
         not_our_turn
     and match(["hand", "calls"], ["tenpai", "kokushi_tenpai"])

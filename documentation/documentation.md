@@ -216,7 +216,7 @@ Let's say you want the ability to call pairs -- if someone drops a tile and you 
 We will spend this section breaking down the following implementation.
 
     define_button pair,
-      display_name: "Pair", 
+      display_name: "Pair",
       show_when: not_our_turn
         and not_no_tiles_remaining
         and someone_else_just_discarded
@@ -263,7 +263,7 @@ The buttons defined by `define_button` do not need to be call buttons. Call butt
 Here's an example: a riichi button.
 
     define_button riichi,
-      display_name: "Riichi", 
+      display_name: "Riichi",
       show_when: our turn
         and has_draw
         and status_missing("riichi")

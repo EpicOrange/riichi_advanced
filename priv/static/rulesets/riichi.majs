@@ -460,7 +460,7 @@ set play_effects, [
 ]
 
 define_button chii,
-  display_name: "Chii", 
+  display_name: "Chii",
   show_when: not_our_turn and not_no_tiles_remaining and kamicha_discarded and call_available,
   call_conditions: can_discard_after_call,
   precedence_over: ["chii"],
@@ -477,7 +477,7 @@ define_button chii,
   end
 
 define_button pon,
-  display_name: "Pon", 
+  display_name: "Pon",
   show_when: not_our_turn
     and not_no_tiles_remaining
     and someone_else_just_discarded
@@ -497,7 +497,7 @@ define_button pon,
   end
 
 define_button ron,
-  display_name: "Ron", 
+  display_name: "Ron",
   show_when: not_our_turn
     and someone_else_just_discarded
     and match(["hand", "calls"], ["tenpai"])
@@ -512,7 +512,7 @@ define_button ron,
   end
 
 define_button tsumo,
-  display_name: "Tsumo", 
+  display_name: "Tsumo",
   show_when: our_turn
     and has_draw
     and match(["hand", "calls"], ["tenpai"])

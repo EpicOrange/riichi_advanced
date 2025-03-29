@@ -35,7 +35,7 @@ end
 apply append, "buttons.ron.precedence_over", ["daiminkan"]
 
 define_button daiminkan,
-  display_name: "Kan", 
+  display_name: "Kan",
   show_when:
         not_our_turn
     and not_no_tiles_remaining
@@ -59,7 +59,7 @@ define_button daiminkan,
   end
 
 define_button ankan,
-  display_name: "Ankan", 
+  display_name: "Ankan",
   show_when:
         our_turn
     and not_no_tiles_remaining
@@ -78,7 +78,7 @@ define_button ankan,
   end
 
 define_button kakan,
-  display_name: "Kan", 
+  display_name: "Kan",
   show_when:
         our_turn
     and not_no_tiles_remaining
@@ -105,7 +105,7 @@ define_button kakan,
 
 define_const can_chankan, status("can_chankan", as: "caller")
 define_button chankan,
-  display_name: "Ron", 
+  display_name: "Ron",
   show_when: not_our_turn
     and someone_else_just_called
     and status_missing("furiten", "just_reached")

@@ -559,7 +559,8 @@ defmodule RiichiAdvanced.Compiler do
     field_names = [
       "display_name", "show_when", "actions",
       "precedence_over", "unskippable", "cancellable", "upgrades", "interrupt_level",
-      "call", "call_conditions", "call_style"
+      "call", "call_conditions", "call_style",
+      "call_name", "msg_name"
     ]
     with {:ok, args} <- args,
          {:ok, fields} <- Utils.sequence(for field_name <- field_names do
