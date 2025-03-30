@@ -141,7 +141,7 @@ defmodule RiichiAdvanced.GameState do
   end
 
   defmodule Player do
-    # ensure this stays at or below 32 keys (currently 28)
+    # ensure this stays at or below 32 keys (currently 29)
     defstruct [
       # persistent
       score: 0,
@@ -171,6 +171,7 @@ defmodule RiichiAdvanced.GameState do
       last_discard: nil, # for animation purposes and to avoid double discarding
       ready: false,
       ai_thinking: false,
+      pao_map: %{}, # an entry %{seat => [yaku]} means if this player wins, `seat` must pay for `yaku`
       tile_behavior: %TileBehavior{},
       cache: %PlayerCache{},
     ]

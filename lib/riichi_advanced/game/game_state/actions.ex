@@ -1690,6 +1690,11 @@ defmodule RiichiAdvanced.GameState.Actions do
           end
         else state end
       "set_scoring_header" -> Map.put(state, :delta_scores_reason, Enum.at(opts, 0, ""))
+      "make_responsible_for" ->
+        # player.pao_map: an entry %{seat => [yaku]} means if this player wins, `seat` must pay for `yaku`
+        for_seat = Conditions.from_seat_spec(state, context, Enum.at(opts, 0, "self"))
+        pao_yaku = List.wrap(Enum.at(opts, 1, "all"))
+        update_player(state, for_seat, &%Player{ &1 | pao_map: Map.update(&1.pao_map, context.seat, pao_yaku, fn yakus -> yakus ++ pao_yaku end) })
       _                 ->
         IO.puts("Unhandled action #{action}")
         state

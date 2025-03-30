@@ -579,6 +579,16 @@ defmodule RiichiAdvanced.GameState.Conditions do
       "minipoints_equals"   -> Map.get(context, :minipoints, 0) == Enum.at(opts, 0, 0)
       "minipoints_at_least" -> Map.get(context, :minipoints, 0) >= Enum.at(opts, 0, 0)
       "minipoints_at_most"  -> Map.get(context, :minipoints, 0) <= Enum.at(opts, 0, 0)
+      "rule_exists"         ->
+        tab = Enum.at(opts, 0, "Rules")
+        id = Enum.at(opts, 1, "")
+        {tab, id} = if is_map(Enum.at(opts, 3)) do
+          vars = Enum.at(opts, 3, %{})
+          tab = String.trim(Actions.interpolate_string(state, context, tab, vars))
+          id = String.trim(Actions.interpolate_string(state, context, id, vars))
+          {tab, id}
+        else {tab, id} end
+        Map.has_key?(state.rules_text, tab) and Map.has_key?(state.rules_text[tab], id)
       _                     ->
         IO.puts "Unhandled condition #{inspect(cond_spec)}"
         false
