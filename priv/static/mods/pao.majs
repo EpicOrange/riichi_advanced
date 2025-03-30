@@ -6,16 +6,17 @@ on after_call do
   if last_call_is("pon", "daiminkan") do
     if match(["last_call"], ~m"(haku hatsu chun):1") and match(["calls"], ~m"haku:1, hatsu:1, chun:1") do
       as callee do
-        set_status("pao")
+        make_responsible_for("caller", "Daisangen")
       end
     end
     if match(["last_call"], ~m"(ton nan shaa pei):1") and match(["calls"], ~m"ton:1, nan:1, shaa:1, pei:1") do
       as callee do
-        set_status("pao")
+        make_responsible_for("caller", "Daisuushii")
       end
     end
   end
 end
 
-apply set_append, "score_calculation.pao_eligible_yaku", ["Daisangen", "Daisuushii"]
+# apply set_append, "score_calculation.pao_eligible_yaku", ["Daisangen", "Daisuushii"]
+apply set, "score_calculation.split_pao_ron", true
 apply set, "score_calculation.win_with_pao_name", "Sekinin Barai"
