@@ -1,5 +1,5 @@
 on after_initialization do
-  add_rule("Rules", "12 Tile Pao", "If your discard is called by another player with three existing calls (yours being the fourth), you are liable for paying their whole hand if they win..")
+  add_rule("Rules", "12 Tile Pao", "If your discard is called by another player with three existing calls (yours being the fourth), you are liable for paying their whole hand if they win.")
 end
 
 on after_call do
