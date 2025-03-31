@@ -1031,6 +1031,11 @@ defmodule RiichiAdvanced.GameState.Actions do
           IO.inspect({seat, state.players[seat].counters})
         end
         state
+      "print_pao_map"         ->
+        for seat <- Conditions.from_seats_spec(state, context, Enum.at(opts, 0, "self")) do
+          IO.inspect({seat, state.players[seat].pao_map})
+        end
+        state
       "print_context"         ->
         IO.inspect(context)
         state
