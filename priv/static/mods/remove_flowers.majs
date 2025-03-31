@@ -7,5 +7,5 @@ on after_initialization do
 end
 
 apply append, "after_start.actions" do
-  unset_status_all("match_start")
+  unset_status_all("initial_flowers")
 end

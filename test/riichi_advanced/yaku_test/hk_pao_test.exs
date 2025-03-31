@@ -1,4 +1,4 @@
-defmodule RiichiAdvanced.YakuTest.RiichiPaoTest do
+defmodule RiichiAdvanced.YakuTest.HKOSPaoTest do
   use ExUnit.Case, async: true
   alias RiichiAdvanced.TestUtils, as: TestUtils
 

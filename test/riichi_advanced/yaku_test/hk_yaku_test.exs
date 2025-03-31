@@ -733,7 +733,7 @@ defmodule RiichiAdvanced.YakuTest.HKOSYaku do
     })
   end 
 
-  test "hk - kokushi" do
+  test "hk - tenhou kokushi" do
     TestUtils.test_yaku_advanced("hk", [], """
     {
       "starting_hand": {
@@ -754,7 +754,7 @@ defmodule RiichiAdvanced.YakuTest.HKOSYaku do
       %{"type" => "buttons_pressed", "buttons" => [%{"button" => "tsumo"}, nil, nil, nil]}
     ], %{
       east: %{
-        yaku: [{"Concealed Hand", 1}, {"Self Draw", 1}, {"Thirteen Orphans", 13}]
+        yaku: [{"Blessing of Heaven", 13}, {"Thirteen Orphans", 13}]
       }
     })
   end
