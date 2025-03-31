@@ -617,6 +617,7 @@ define_mod kansai_chiitoitsu, name: "Kansai Chiitoitsu", desc: "Chiitoitsu now a
 define_mod min_han, order: 1, name: "Minimum Han", desc: "Minimum han required to win."
 config_mod min_han, name: "min", values: [1, 2, 3, 4, "Mangan", "Yakuman"], default: 1
 define_mod no_riichi_ankan, deps: ["riichi_kan", "yaku/riichi"], name: "No Riichi Ankan", desc: "Disallow any concealed kan while in riichi, not just ones that change your waits."
+define_mod no_fifth_tile_tenpai, deps: ["yaku/riichi"], name: "No Fifth Tile Tenpai", desc: "At exhaustive draw, you are not considered tenpai if all four tiles of each wait is in hand: for example, 123456789m1111p. You may still declare riichi with such a hand, however."
 define_mod kokushi_ankan_chankan, deps: ["riichi_kan"], name: "Kokushi Chankan", desc: "Allow robbing ankans if in tenpai for kokushi musou."
 define_mod first_gets_riichi_sticks, deps: ["yaku/riichi"], name: "First Gets Riichi Sticks", desc: "At the end of the game, all leftover riichi sticks on the table are given to first place. (Otherwise they are lost.)"
 define_mod starting_score, order: -2, name: "Starting Points", desc: "Number of points each player starts with. You can also set this by writing the following in the Config tab: \"initial_score\": 100000"
@@ -836,6 +837,7 @@ define_preset "tenhou.net", [
   "kuikae_nashi",
   "double_wind_4_fu",
   "pao",
+  "no_fifth_tile_tenpai",
   "kokushi_ankan_chankan",
   "suufon_renda",
   "suucha_riichi",

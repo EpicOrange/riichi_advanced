@@ -484,6 +484,12 @@ defmodule RiichiAdvanced.GameState.Conditions do
         else ukeire end
         # IO.puts("Ukeire: #{inspect(ukeire)}")
         Enum.sum(Map.values(ukeire)) == 1
+      "all_waits_are_in_hand" ->
+        wait_definitions = Rules.translate_match_definitions(state.rules_ref, opts)
+        waits = Riichi.get_waits(cxt_player.hand, cxt_player.calls, wait_definitions, cxt_player.tile_behavior)
+        Enum.all?(waits, fn wait ->
+          Match.match_hand(cxt_player.hand, cxt_player.calls, [[[[wait], 4]]], cxt_player.tile_behavior)
+        end)
       "third_row_discard"   -> length(cxt_player.pond) >= 12
       "tiles_in_hand"       -> length(cxt_player.hand ++ cxt_player.draw) in opts
       "anyone"              -> Enum.any?(state.players, fn {seat, _player} -> check_cnf_condition(state, opts, %{seat: seat}) end)

@@ -832,6 +832,11 @@ defmodule RiichiAdvanced.GameState.Scoring do
         [pay1, pay2, pay3] = draw_tenpai_payments
         # do tenpai payments
         delta_scores = case length(state.available_seats) do
+          2 -> case num_tenpai do
+            0 -> Map.new(tenpai, fn {seat, _tenpai} -> {seat, 0} end)
+            1 -> Map.new(tenpai, fn {seat, tenpai} -> {seat, if tenpai do pay1 else -pay1 end} end)
+            2 -> Map.new(tenpai, fn {seat, _tenpai} -> {seat, 0} end)
+          end
           3 -> case num_tenpai do
             0 -> Map.new(tenpai, fn {seat, _tenpai} -> {seat, 0} end)
             1 -> Map.new(tenpai, fn {seat, tenpai} -> {seat, if tenpai do 2 * pay1 else -pay1 end} end)
