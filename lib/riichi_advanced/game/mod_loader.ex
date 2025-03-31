@@ -71,6 +71,15 @@ defmodule RiichiAdvanced.ModLoader do
     end
   end
 
+  def apply_post_mods(ruleset_json, ruleset) do
+    modpacks = Constants.modpacks()
+    if Map.has_key?(modpacks, ruleset) do
+      modpack = modpacks[ruleset]
+      post_mods = Map.get(modpack, :post_mods, [])
+      apply_mods(ruleset_json, post_mods, modpack.ruleset, Map.get(modpack, :globals, %{}))
+    else ruleset_json end
+  end
+
   def convert_to_jq(majs) do
     # first check that it's not actually json
     case Jason.decode(majs) do
@@ -130,9 +139,21 @@ defmodule RiichiAdvanced.ModLoader do
       Map.has_key?(modpacks, ruleset) ->
         modpack = modpacks[ruleset]
         mods = Map.get(modpack, :mods, [])
+        post_mods = Map.get(modpack, :post_mods, [])
+        all_mod_names = Enum.map(mods ++ post_mods, fn
+          %{name: name} -> name
+          name          -> name
+        end)
+        default_mods = Map.get(modpack, :default_mods, []) |> Enum.reject(& &1 in all_mod_names)
         display_name = Map.get(modpack, :display_name, ruleset)
-        query = ".default_mods += #{Jason.encode!(Map.get(modpack, :default_mods, []))} | .display_name = \"#{display_name}\""
+        # set default mods and display name
+        query = ".default_mods += #{Jason.encode!(default_mods)} | .display_name = \"#{display_name}\""
+        # set or remove tutorial link
         query = query <> " | " <> if Map.has_key?(modpack, :tutorial_link) do ".tutorial_link = \"#{modpack.tutorial_link}\"" else "del(.tutorial_link)" end
+        # remove already applied mods
+        query = query <> " | " <> ".default_mods = (.default_mods // []) - #{Jason.encode!(mods ++ post_mods)}"
+        query = query <> " | " <> ".available_mods = ((.available_mods // []) | map(select(if type == \"object\" then .id else .  end | IN(#{Enum.map_join(all_mod_names, ", ", &Jason.encode!/1)}) | not)))"
+        # now use this query on the ruleset
         modpack.ruleset
         |> read_ruleset_json()
         |> strip_comments()

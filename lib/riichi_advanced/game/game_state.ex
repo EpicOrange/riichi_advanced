@@ -330,6 +330,7 @@ defmodule RiichiAdvanced.GameState do
     ruleset_json = if state.ruleset != "custom" and not Enum.empty?(mods) do
       ModLoader.apply_mods(ruleset_json, mods, state.ruleset)
     else ruleset_json end
+    |> ModLoader.apply_post_mods(state.ruleset)
     if not Enum.empty?(mods) do
       # cache mods
       RiichiAdvanced.ETSCache.put({state.ruleset, state.room_code}, mods, :cache_mods)
