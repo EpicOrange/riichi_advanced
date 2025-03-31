@@ -14,7 +14,7 @@
 .suuchoupaikou_definition = [[ [[[[0,0,0],[2,2,2],[4,4,4],[6,6,6]]], 1], [["pair"], 1] ]]
 |
 .after_call.actions += [
-  ["when", [{"name": "match", "opts": [["hand", "calls"], ["suuchoupaikou"]]}], [["as", "callee", [["set_status", "pao"]]]]]
+  ["when", [{"name": "match", "opts": [["hand", "calls"], ["suuchoupaikou"]]}], [["as", "callee", [["make_responsible_for", "prev_seat", "all"]]]]]
 ]
 |
 .score_calculation.pao_eligible_yaku += ["Suuchoupaikou"]

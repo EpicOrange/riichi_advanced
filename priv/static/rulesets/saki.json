@@ -1159,8 +1159,8 @@
         ]],
         [["set_status", "furiten"]]
       ],
-      ["when", [{"name": "match", "opts": [["last_call"], [[[["haku", "hatsu", "chun"], 1]]]]}, {"name": "match", "opts": [["calls"], [[[["haku"], 1], [["hatsu"], 1], [["chun"], 1]]]]}], [["as", "callee", [["set_status", "pao"]]]]],
-      ["when", [{"name": "match", "opts": [["last_call"], [[[["ton", "nan", "shaa", "pei"], 1]]]]}, {"name": "match", "opts": [["calls"], [[[["ton"], 1], [["nan"], 1], [["shaa"], 1], [["pei"], 1]]]]}], [["as", "callee", [["set_status", "pao"]]]]],
+      ["when", [{"name": "match", "opts": [["last_call"], [[[["haku", "hatsu", "chun"], 1]]]]}, {"name": "match", "opts": [["calls"], [[[["haku"], 1], [["hatsu"], 1], [["chun"], 1]]]]}], [["as", "callee", [["make_responsible_for", "prev_seat", "all"]]]]],
+      ["when", [{"name": "match", "opts": [["last_call"], [[[["ton", "nan", "shaa", "pei"], 1]]]]}, {"name": "match", "opts": [["calls"], [[[["ton"], 1], [["nan"], 1], [["shaa"], 1], [["pei"], 1]]]]}], [["as", "callee", [["make_responsible_for", "prev_seat", "all"]]]]],
       ["when", [{"name": "anyone_status", "opts": ["miyanaga-teru"]}], [["add_honba"]]],
       ["when_anyone", [{"name": "status", "opts": ["atago-kinue"]}, "not_no_tiles_remaining"], [
         ["draw_aside"],

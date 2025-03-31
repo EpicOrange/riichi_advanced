@@ -266,9 +266,9 @@
   "before_scoring": {
     "actions": [
       ["flip_all_calls_faceup"],
-      ["when", [{"name": "counter_at_least", "opts": ["calls_from_shimocha", 3]}], [["as", "shimocha", [["set_status", "pao"]]]]],
-      ["when", [{"name": "counter_at_least", "opts": ["calls_from_toimen", 3]}], [["as", "toimen", [["set_status", "pao"]]]]],
-      ["when", [{"name": "counter_at_least", "opts": ["calls_from_kamicha", 3]}], [["as", "kamicha", [["set_status", "pao"]]]]],
+      ["when", [{"name": "counter_at_least", "opts": ["calls_from_shimocha", 3]}], [["as", "shimocha", [["make_responsible_for", "prev_seat", "all"]]]]],
+      ["when", [{"name": "counter_at_least", "opts": ["calls_from_toimen", 3]}], [["as", "toimen", [["make_responsible_for", "prev_seat", "all"]]]]],
+      ["when", [{"name": "counter_at_least", "opts": ["calls_from_kamicha", 3]}], [["as", "kamicha", [["make_responsible_for", "prev_seat", "all"]]]]],
       ["add_counter", "baida_reuse", "count_matches", ["winning_hand"], [[[[{"tile": "any", "attrs": ["original"]}], 1]]]]
     ]
   },
