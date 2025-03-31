@@ -18,6 +18,7 @@ set score_calculation, %{
   self_draw_multiplier: 1,
   yaku_lists: ["yaku"],
   agarirenchan: true,
+  split_pao_ron: false,
   point_name: "Fan",
   win_by_discard_label: "Hu",
   win_by_draw_label: "Zimo",
@@ -25,7 +26,8 @@ set score_calculation, %{
   win_by_discard_name_2: "Double Hu",
   win_by_discard_name_3: "Triple Hu",
   win_by_draw_name: "Zimo",
-  exhaustive_draw_name: "Draw"
+  exhaustive_draw_name: "Draw",
+  win_with_pao_name: "Bao"
 }
 
 # mods

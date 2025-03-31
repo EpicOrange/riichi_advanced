@@ -26,7 +26,7 @@ define_yaku_precedence !dai_name, [!shou_name]
 on after_call do
   if match(["last_call"], ~m"(ton nan shaa pei):1") and match(["calls"], ~m"ton:1, nan:1, shaa:1, pei:1") do
     as callee do
-      set_status("pao")
+      make_responsible_for("caller", "all")
     end
   end
 end

@@ -368,11 +368,12 @@ defmodule RiichiAdvanced.GameState.Scoring do
         delta_scores
     end
   end
-  defp calculate_payment(state, winner, payer, basic_score) do
+  defp apply_ron_score_modifiers(state, winner, payer, basic_score) do
+    payment = basic_score
     payment = if "wareme" in state.players[winner.seat].status do
       push_message(state, player_prefix(state, winner.seat) ++ [%{text: "gains double points for wareme"}])
-      basic_score * 2
-    else basic_score end
+      payment * 2
+    else payment end
     payment = if "megan_davin_double_payment" in state.players[winner.seat].status and "megan_davin_double_payment" in state.players[payer].status do
       push_message(state, player_prefix(state, payer) ++ [%{text: "pays double to their duelist (Megan Davin)"}])
       payment * 2
@@ -404,30 +405,55 @@ defmodule RiichiAdvanced.GameState.Scoring do
     score_rules = Rules.get(state.rules_ref, "score_calculation", %{})
     delta_scores = Map.new(state.players, fn {seat, _player} -> {seat, 0} end)
 
-    Map.get(score_rules, "split_pao_ron")
-    # split into several payments if pao
-    # liabilities is a list of {payer, {yaku, yaku2, shares}}
-    # zero shares means liable for the full payment
-    # first element of liabilities is always the original one (from winner map)
-    liabilities = [{winner.payer, {winner.yaku, winner.yaku2, 0}}]
-    liabilities = for seat <- winner.opponents -- [winner.payer], reduce: liabilities do
-      [{payer, {yaku, yaku2, shares}} | liabilities] ->
+    # get riichi and honba payment
+    {riichi_payment, honba_payment} = if collect_sticks do {state.pot, Map.get(score_rules, "honba_value", 0) * state.honba} else {0, 0} end
+    honba_payment = if "multiply_honba_with_han" in state.players[winner.seat].status do honba_payment * winner.points else honba_payment end
+    add_honba = fn {payer, {yaku, yaku2, shares, mult, penalty}}, honba_payment -> {payer, {yaku, yaku2, shares, mult, penalty + honba_payment}} end
+
+    # calculate liabilities for the payer (discarder) and non-discarders
+
+    # calculate some surprise tools that will help us later
+    discarder_multiplier = Map.get(score_rules, "discarder_multiplier", 1)
+    discarder_penalty = Map.get(score_rules, "discarder_penalty", 0)
+    non_discarder_multiplier = Map.get(score_rules, "non_discarder_multiplier", 0)
+    non_discarder_penalty = Map.get(score_rules, "non_discarder_penalty", 0)
+    self_draw_multiplier = Map.get(score_rules, "self_draw_multiplier", 1)
+    self_draw_penalty = Map.get(score_rules, "self_draw_penalty", 0)
+    payer_liability = if winner.payer == nil do
+      {winner.payer, {winner.yaku, winner.yaku2, 0, self_draw_multiplier, self_draw_penalty}}
+    else
+      {winner.payer, {winner.yaku, winner.yaku2, 1, discarder_multiplier, discarder_penalty}}
+    end
+    nonpayer_liabilities_ron = for seat <- winner.opponents -- [winner.payer] do
+      {seat, {winner.yaku, winner.yaku2, 1, non_discarder_multiplier, non_discarder_penalty}}
+    end
+    # nonpayer_liabilities_tsumo = for seat <- winner.opponents -- [winner.payer] do
+    #   {seat, {winner.yaku, winner.yaku2, self_draw_multiplier, 1, self_draw_penalty}}
+    # end
+
+    # split into several more payments if pao
+    # liabilities is a list of {payer, {yaku, yaku2, shares, mult, penalty}}
+    # first element of liabilities is always the original payer (from winner map)
+    liabilities = for seat <- winner.opponents -- [winner.payer], reduce: [payer_liability] do
+      [{payer, {yaku, yaku2, shares, mult, penalty}} | liabilities] ->
         case Map.get(state.players[winner.seat].pao_map, seat) do
-          nil -> [{payer, {yaku, yaku2, shares}} | liabilities]
+          nil -> [{payer, {yaku, yaku2, shares, mult, penalty}} | liabilities]
           pao_yaku_list ->
+            # take original yaku if complete pao happens
             complete_pao = "all" in pao_yaku_list
-            {pao_yaku, yaku} = if complete_pao do {yaku, []} else Enum.split_with(yaku, fn {name, _value} -> name in pao_yaku_list end) end
-            {pao_yaku2, yaku2} = if complete_pao do {yaku2, []} else Enum.split_with(yaku2, fn {name, _value} -> name in pao_yaku_list end) end
+            {pao_yaku, yaku} = if complete_pao do {winner.yaku, []} else Enum.split_with(yaku, fn {name, _value} -> name in pao_yaku_list end) end
+            {pao_yaku2, yaku2} = if complete_pao do {winner.yaku2, []} else Enum.split_with(yaku2, fn {name, _value} -> name in pao_yaku_list end) end
             if payer != nil and Map.get(score_rules, "split_pao_ron", true) do
-              [{payer, {yaku ++ pao_yaku, yaku2 ++ pao_yaku2, 1}}, {seat, {pao_yaku, pao_yaku2, 1}} | liabilities]
+              [{payer, {yaku ++ pao_yaku, yaku2 ++ pao_yaku2, shares, mult, penalty}}, {seat, {pao_yaku, pao_yaku2, 1, discarder_multiplier, penalty}} | liabilities]
             else
-              [{payer, {yaku, yaku2, shares + 1}}, {seat, {pao_yaku, pao_yaku2, 1}} | liabilities]
+              [{payer, {yaku, yaku2, shares, mult, penalty}}, {seat, {pao_yaku, pao_yaku2, 1, discarder_multiplier, penalty}} | liabilities]
             end
         end
     end
     |> case do
-      # remove first liability if no yaku and there's at least one pao player
-      [{_, {[], [], _}}, pao | rest] -> [pao | rest]
+      # zero out first liability (original payer) if no yaku and there's at least one pao player
+      [{payer, {[], [], _, _, _}}, pao | rest] -> [{payer, {[], [], 0, 0, 0}}, pao | rest]
+      # otherwise keep original payer liability + possible pao liabilities
       liabilities -> liabilities
     end
     # put original payer liability last while ordering pao liabilities in atamahane order
@@ -442,54 +468,54 @@ defmodule RiichiAdvanced.GameState.Scoring do
         _ -> 4
       end
     end)
-    # |> IO.inspect()
+    # add honba as additional penalty
+    |> case do
+      # if tsumo with no pao players, add 1x honba payment
+      [{nil, _} = liability] -> [add_honba.(liability, honba_payment)]
+      # otherwise, for ron with no pao players, only the payer (discarder) pays (num_opponents)x honba
+      [liability] -> [add_honba.(liability, length(winner.opponents) * honba_payment) | nonpayer_liabilities_ron]
+      # otherwise, first pao player pays (num_opponents)x honba
+      [liability | rest] -> [add_honba.(liability, length(winner.opponents) * honba_payment) | rest]
+    end
+    # |> IO.inspect(label: "liabilities")
 
     # determine dealer
     is_dealer = Riichi.get_east_player_seat(state.kyoku, state.available_seats) == winner.seat
     # handle ryuumonbuchi touka's scoring quirk
     is_dealer = is_dealer or "score_as_dealer" in state.players[winner.seat].status
 
-    # get riichi and honba payment
-    {riichi_payment, honba_payment} = if collect_sticks do {state.pot, Map.get(score_rules, "honba_value", 0) * state.honba} else {0, 0} end
-    honba_payment = if "multiply_honba_with_han" in state.players[winner.seat].status do honba_payment * winner.points else honba_payment end
-
     # first get the total number of shares (only applicable for ron)
-    total_shares = Enum.map(liabilities, fn {payer, {_yaku, _yaku2, shares}} -> if payer != nil do shares else 0 end end) |> Enum.sum()
+    total_shares = Enum.map(liabilities, fn {_payer, {_yaku, _yaku2, shares, _mult, _penalty}} -> shares end) |> Enum.sum()
     # then calculate payments individually
-    delta_scores = for {{payer, {yaku, yaku2, shares}}, i} <- Enum.with_index(liabilities), reduce: delta_scores do
+    delta_scores = for {payer, {yaku, yaku2, shares, mult, penalty}} <- liabilities, reduce: delta_scores do
       delta_scores when payer == nil ->
         # tsumo
         {basic_score, _, _, _} = score_yaku(state, winner.seat, yaku, yaku2, is_dealer, true, winner.minipoints)
-        delta_scores = for {seat, score} <- calculate_delta_scores_tsumo(state, winner, basic_score, is_dealer), reduce: delta_scores do
+        tsumo_delta_scores = calculate_delta_scores_tsumo(state, winner, basic_score, is_dealer)
+        # apply mult and penalty to tsumo_delta_scores
+        tsumo_delta_scores = for seat <- winner.opponents, reduce: tsumo_delta_scores do
+          delta_scores -> delta_scores |> Map.update!(winner.seat, & (&1 * mult) + penalty) |> Map.update!(seat, & (&1 * mult) - penalty)
+        end
+        # add tsumo delta scores to accumulator
+        delta_scores = for {seat, score} <- tsumo_delta_scores, reduce: delta_scores do
           delta_scores -> Map.update!(delta_scores, seat, & &1 + score)
         end
-        # honba payments
-        delta_scores = if i == 0 do
-          for seat <- winner.opponents, reduce: delta_scores do
-            delta_scores -> delta_scores |> Map.update!(winner.seat, & &1 + honba_payment) |> Map.update!(seat, & &1 - honba_payment)
-          end
-        else delta_scores end
         delta_scores
       delta_scores ->
-        # ron or pao
+        # ron or pao or single tsumo payment
         {basic_score, _, _, _} = score_yaku(state, winner.seat, yaku, yaku2, is_dealer, false, winner.minipoints)
-        basic_score = if total_shares > 0 do Utils.try_integer(basic_score * shares / total_shares) else basic_score end
+        basic_score = if total_shares > 0 do Utils.try_integer(basic_score * (shares / total_shares)) else basic_score end
 
-        payment = calculate_payment(state, winner, payer, basic_score)
-        payment = if i == 0 do payment + honba_payment * (length(state.available_seats) - 1) else payment end
-        # apply payment to all opponents
-        discarder_multiplier = Map.get(score_rules, "discarder_multiplier", 1)
-        discarder_penalty = Map.get(score_rules, "discarder_penalty", 0)
-        non_discarder_multiplier = Map.get(score_rules, "non_discarder_multiplier", 0)
-        non_discarder_penalty = Map.get(score_rules, "non_discarder_penalty", 0)
-        for paying_seat <- winner.opponents, reduce: delta_scores do
-          delta_scores ->
-            multiplier = if paying_seat == payer do discarder_multiplier else non_discarder_multiplier end
-            penalty = if paying_seat == payer do discarder_penalty else non_discarder_penalty end
-            delta_scores
-            |> Map.update!(paying_seat, & &1 - (payment * multiplier) - penalty)
-            |> Map.update!(winner.seat, & &1 + (payment * multiplier) + penalty)
-        end
+        # apply score modifiers from player statuses
+        payment = apply_ron_score_modifiers(state, winner, payer, basic_score)
+
+        # apply mult and penalty to payment
+        payment = (payment * mult) + penalty
+
+        # apply payment to delta_scores
+        delta_scores
+        |> Map.update!(payer, & &1 - payment)
+        |> Map.update!(winner.seat, & &1 + payment)
     end
     # award riichi sticks (pot)
     |> Map.update!(winner.seat, & &1 + riichi_payment)
@@ -651,8 +677,7 @@ defmodule RiichiAdvanced.GameState.Scoring do
     delta_scores = Map.new(delta_scores, fn {seat, delta} -> {seat, delta + Map.get(state.players[seat].counters, "delta_score", 0)} end)
 
     is_tsumo = Enum.any?(winners, fn {_seat, winner} -> winner.payer == nil end)
-    pao_eligible_yaku = Map.get(score_rules, "pao_eligible_yaku", [])
-    is_pao = Enum.any?(winners, fn {_seat, winner} -> Map.get(winner, :pao_seat, nil) != nil and Enum.any?(winner.yaku ++ winner.yaku2, fn {name, _value} -> name in pao_eligible_yaku end) end)
+    is_pao = Enum.any?(winners, fn {_seat, winner} -> not Enum.empty?(winner.player.pao_map) end)
 
     # handle ezaki hitomi's scoring quirk
     {state, delta_scores} = if is_tsumo do
@@ -1034,9 +1059,9 @@ defmodule RiichiAdvanced.GameState.Scoring do
     winning_tiles = get_winning_tiles(state, seat, win_source)
 
     # obtain yaku and minipoints
-    {yaku, minipoints, new_winning_tile} = get_best_yaku_from_lists(state, score_rules["yaku_lists"], seat, winning_tiles, win_source)
+    {yaku, minipoints, new_winning_tile} = get_best_yaku_from_lists(state, Map.get(score_rules, "yaku_lists", []), seat, winning_tiles, win_source)
     {yaku2, _minipoints, _new_winning_tile} = if Map.has_key?(score_rules, "yaku2_lists") do
-      get_best_yaku_from_lists(state, score_rules["yaku2_lists"], seat, winning_tiles, win_source)
+      get_best_yaku_from_lists(state, Map.get(score_rules, "yaku2_lists", []), seat, winning_tiles, win_source)
     else {[], minipoints, new_winning_tile} end
     if Debug.print_wins() do
       assigned_winning_hand = state.players[seat].cache.winning_hand
