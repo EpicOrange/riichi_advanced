@@ -589,7 +589,7 @@
     "actions": [
       // cap the score at 320 unless we have any listed limit hand
       ["set_counter", "score", "score"],
-      ["unless", [["has_yaku2", {"name": "counter_at_most", "opts": ["score", 319]}]], [
+      ["when", [["has_yaku2", {"name": "counter_at_least", "opts": ["score", 320]}]], [
         ["push_message", "has their score capped at 320"],
         ["modify_winner", "score", 320, "set"]
       ]]
@@ -598,7 +598,8 @@
   "after_scoring": {
     "actions": [
       ["set_counter", "score", "score"],
-      ["unless", [["has_yaku2", {"name": "counter_at_most", "opts": ["score", 319]}]], [
+      ["set_counter", "payout", "payout"],
+      ["when", [["has_yaku2", {"name": "counter_at_least", "opts": ["score", 320]}]], [
         ["modify_payout", "self", 960, "set"],
         ["modify_payout", "others", -320, "set"]
       ]],

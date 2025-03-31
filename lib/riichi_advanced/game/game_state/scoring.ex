@@ -485,7 +485,7 @@ defmodule RiichiAdvanced.GameState.Scoring do
     is_dealer = is_dealer or "score_as_dealer" in state.players[winner.seat].status
 
     # first get the total number of shares (only applicable for ron)
-    total_shares = Enum.map(liabilities, fn {_payer, {_yaku, _yaku2, shares, _mult, _penalty}} -> shares end) |> Enum.sum()
+    total_shares = Enum.map(liabilities, fn {_payer, {_yaku, _yaku2, shares, mult, penalty}} -> if mult != 0 and penalty != 0 do shares else 0 end end) |> Enum.sum()
     # then calculate payments individually
     delta_scores = for {payer, {yaku, yaku2, shares, mult, penalty}} <- liabilities, reduce: delta_scores do
       delta_scores when payer == nil ->
@@ -510,7 +510,7 @@ defmodule RiichiAdvanced.GameState.Scoring do
         payment = apply_ron_score_modifiers(state, winner, payer, basic_score)
 
         # apply mult and penalty to payment
-        payment = (payment * mult) + penalty
+        payment = Utils.try_integer((payment * mult) + penalty)
 
         # apply payment to delta_scores
         delta_scores

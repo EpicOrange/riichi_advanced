@@ -288,7 +288,7 @@ defmodule RiichiAdvanced.Utils do
   end
 
   def try_integer(value) do
-    if value == trunc(value) do trunc(value) else value end
+    if abs(value - round(value)) < 0.000001 do round(value) else value end
   end
 
   def half_score_rounded_up(value) do

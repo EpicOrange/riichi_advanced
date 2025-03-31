@@ -722,8 +722,13 @@ defmodule RiichiAdvanced.GameState.Actions do
   
   defp divide_counter(state, context, counter_name, amt_spec) do
     amount = interpret_amount(state, context, amt_spec)
-    new_ctr = Integer.floor_div(Map.get(state.players[context.seat].counters, counter_name, 0), amount)
-    put_in(state.players[context.seat].counters[counter_name], new_ctr)
+    if amount == 0 do
+      IO.puts("WARNING: tried to divide by zero")
+      state
+    else
+      new_ctr = Utils.try_integer(Map.get(state.players[context.seat].counters, counter_name, 0) / amount)
+      put_in(state.players[context.seat].counters[counter_name], new_ctr)
+    end
   end
 
   def interpolate_string(state, context, str, assigns) do
