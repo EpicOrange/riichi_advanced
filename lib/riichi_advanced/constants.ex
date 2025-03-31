@@ -273,18 +273,25 @@ defmodule RiichiAdvanced.Constants do
   def unimplemented_rulesets, do: @unimplemented_rulesets
 
   @modpacks %{
+    "riichi" => %{
+      display_name: "Riichi",
+      tutorial_link: "https://github.com/EpicOrange/riichi_advanced/blob/main/documentation/riichi.md",
+      ruleset: "riichi",
+      mods: ["riichi_kan"],
+      default_mods: []
+    },
     "sanma" => %{
       display_name: "Sanma",
       tutorial_link: "https://github.com/EpicOrange/riichi_advanced/blob/main/documentation/sanma.md",
       ruleset: "riichi",
-      mods: ["sanma", "sanma_presets"],
-      default_mods: [],
+      mods: ["riichi_kan", "sanma", "sanma_presets"],
+      default_mods: []
     },
     "cosmic" => %{
       display_name: "Cosmic Riichi",
       tutorial_link: "https://docs.google.com/document/d/1F-NhQ5fdi5CnAyEqwNE_qWR0Og99NtCo2NGkvBc5EwU/edit",
       ruleset: "riichi",
-      mods: ["cosmic_base"],
+      mods: ["riichi_kan", "cosmic_base"],
       post_mods: ["yakuman_13_han"],
       default_mods: ["cosmic", "space", "kontsu", "yaku/kontsu_yaku", "yaku/chanfuun", "yaku/fuunburi", "yaku/uumensai_cosmic", "cosmic_calls", "yaku/tsubame_gaeshi", "yaku/kanburi", "yaku/uumensai", "yaku/isshoku_sanjun", "yaku/isshoku_yonjun"],
     },
@@ -292,49 +299,49 @@ defmodule RiichiAdvanced.Constants do
       display_name: "No Jokers Mahjong League 2024",
       tutorial_link: "https://docs.google.com/document/d/1APpd-YBnsKKssGmyLQiCp90Wk-06SlIScV1sKpJUbQo/edit?usp=sharing",
       ruleset: "riichi",
-      mods: ["kiriage_mangan", "agarirenchan", "tenpairenchan", %{name: "dora", config: %{start_indicators: 1}}, "ura", "kandora", "yaku/ippatsu", %{name: "tobi", config: %{below: 0}}, "immediate_kan_dora", "head_bump", "no_double_yakuman", "nojokersmahjongleague"],
+      mods: ["riichi_kan", "kiriage_mangan", "agarirenchan", "tenpairenchan", %{name: "dora", config: %{start_indicators: 1}}, "ura", "kandora", "yaku/ippatsu", %{name: "tobi", config: %{below: 0}}, "immediate_kan_dora", "head_bump", "no_double_yakuman", "nojokersmahjongleague"],
       default_mods: ["show_waits"],
     },
     "space" => %{
       display_name: "Space Mahjong",
       tutorial_link: "https://riichi.wiki/Space_mahjong",
       ruleset: "riichi",
-      mods: [],
+      mods: ["riichi_kan"],
       default_mods: ["space"],
     },
     "galaxy" => %{
       display_name: "Galaxy Mahjong",
       tutorial_link: "https://github.com/EpicOrange/riichi_advanced/blob/main/documentation/galaxy.md",
       ruleset: "riichi",
-      mods: [],
+      mods: ["riichi_kan"],
       default_mods: ["galaxy"],
     },
     "chinitsu" => %{
       display_name: "Chinitsu Challenge",
       tutorial_link: "https://github.com/EpicOrange/riichi_advanced/blob/main/documentation/chinitsu_challenge.md",
       ruleset: "riichi",
-      mods: [%{name: "yaku/riichi", config: %{bet: 1000, drawless: false}}, "chinitsu_challenge"],
+      mods: ["riichi_kan", %{name: "yaku/riichi", config: %{bet: 1000, drawless: false}}, "chinitsu_challenge"],
       default_mods: ["chombo", "tobi", "yaku/renhou_yakuman", "no_honors"],
     },
     "minefield" => %{
       display_name: "Minefield",
       tutorial_link: "https://riichi.wiki/Minefield_mahjong",
       ruleset: "riichi",
-      mods: [%{name: "yaku/riichi", config: %{bet: 1000, drawless: false}}, "minefield"],
+      mods: ["riichi_kan", %{name: "yaku/riichi", config: %{bet: 1000, drawless: false}}, "minefield"],
       default_mods: ["kiriage_mangan"],
     },
     "kansai" => %{
       display_name: "Kansai Sanma",
       tutorial_link: "https://github.com/EpicOrange/riichi_advanced/blob/main/documentation/kansai.md",
       ruleset: "riichi",
-      mods: ["sanma", "sanma_presets", "kansai", "kansai_chiitoitsu"],
+      mods: ["riichi_kan", "sanma", "sanma_presets", "kansai", "kansai_chiitoitsu"],
       default_mods: ["tobi"],
     },
     "aka_test" => %{
       display_name: "Kansai Sanma",
       tutorial_link: "https://github.com/EpicOrange/riichi_advanced/blob/main/documentation/kansai.md",
       ruleset: "riichi",
-      mods: ["sanma", %{name: "aka", config: %{"man" => 1, "pin" => 1, "sou" => 1}}],
+      mods: ["riichi_kan", "sanma", %{name: "aka", config: %{"man" => 1, "pin" => 1, "sou" => 1}}],
       default_mods: ["tobi"],
     },
     "speed" => %{
