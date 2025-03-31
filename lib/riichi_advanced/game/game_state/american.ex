@@ -37,7 +37,7 @@ defmodule RiichiAdvanced.GameState.American do
           cond do
             # unsuited groups include F (flowers), Z (winds), 0 (5z), and any wind group (NNN, NEWS, EW, etc)
             # the rest (1-9, D (dragons), X (relative)) are suited
-            t in ["F", "Z", "0", "G", "R", "N", "E", "W", "S"] ->
+            t in ["F", "Z", "0", "G", "R", "N", "E", "W", "S", "J"] ->
               # unsuited group
               groups = for {c, freq} <- group |> String.graphemes() |> Enum.frequencies() do
                 case c do
@@ -51,6 +51,7 @@ defmodule RiichiAdvanced.GameState.American do
                   "E" -> [[[List.duplicate("1z", freq)], 1]]
                   "W" -> [[[List.duplicate("3z", freq)], 1]]
                   "S" -> [[[List.duplicate("2z", freq)], 1]]
+                  "J" -> [[[List.duplicate("1j", freq)], 1]]
                   _   -> 
                     IO.inspect("Unknown character #{inspect(c)} in unsuited group #{inspect(group)}")
                     []
