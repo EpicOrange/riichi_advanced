@@ -32,7 +32,7 @@ replace_yaku yaku, "Seat Wind", 1,
      (seat_is("east") and match(["hand", "calls", "winning_tile"], ~m"exhaustive, ton:1, mentsu:3, pair:1"))
   or (seat_is("south") and match(["hand", "calls", "winning_tile"], ~m"exhaustive, nan:1, mentsu:3, pair:1"))
   or (seat_is("west") and match(["hand", "calls", "winning_tile"], ~m"exhaustive, shaa:1, mentsu:3, pair:1"))
-define_yaku yaku, "North Wind", 1, match(["hand", "calls", "winning_tile"], ~m"exhaustive, pei_triplet:1, mentsu:3, pair:1")
+define_yaku yaku, "North Wind", 1, match(["hand", "calls", "winning_tile"], ~m"exhaustive, pei:1, mentsu:3, pair:1")
 
 # end-of-game shuugi payment
 on before_conclusion do
@@ -119,7 +119,7 @@ define_preset "Zan Sanma", [
   "tenpaiyame",
   "kuikae_nashi",
   "double_wind_4_fu",
-  "kokushi_chankan",
+  "kokushi_ankan_chankan",
   "first_gets_riichi_sticks",
   "sanma_no_tsumo_loss",
   "suufon_renda",

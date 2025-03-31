@@ -424,7 +424,7 @@ defmodule RiichiAdvanced.Constants do
         %{name: "yaku/menzentsumo", config: %{list: "yaku", name: "Concealed Hand", value: 1}},
         %{name: "yaku/chankan", config: %{list: "yaku", name: "Robbing the Kong", value: 1}},
         %{name: "yaku/rinshan", config: %{
-          list: "yaku", kong_name: "Out on a Replacement", flower_name: "Out on a Replacement", value: 1,
+          list: "yaku", rinshan_name: "Out on a Replacement", flower_name: "Out on a Replacement", value: 1,
           double_list: "yakuman", double_name: "Two-Fold Fortune", double_value: 1
         }},
         %{name: "yaku/honitsu", config: %{

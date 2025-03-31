@@ -14,7 +14,7 @@ defmodule RiichiAdvanced.YakuTest.KansaiYaku do
     "kuikae_nashi",
     "double_wind_4_fu",
     "pao",
-    "kokushi_chankan",
+    "kokushi_ankan_chankan",
     "sanma_no_tsumo_loss",
     "suukaikan",
     "kyuushu_kyuuhai",

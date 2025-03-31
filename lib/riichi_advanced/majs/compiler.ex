@@ -520,7 +520,6 @@ defmodule RiichiAdvanced.Compiler do
          {:ok, value} <- Validator.validate_json(value),
          {:ok, value} <- Jason.encode(value),
          {:ok, condition} <- compile_condition_list(condition, line, column),
-         {:ok, condition} <- Validator.validate_json(condition),
          {:ok, condition} <- Jason.encode(condition) do
       add_yaku = """
         if .[#{name}] | any(.display_name == #{display_name}) then

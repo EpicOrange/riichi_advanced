@@ -14,7 +14,7 @@ defmodule RiichiAdvanced.CosmicScoring do
     "kuikae_nashi",
     "double_wind_4_fu",
     "pao",
-    "kokushi_chankan",
+    "kokushi_ankan_chankan",
     "suufon_renda",
     "suucha_riichi",
     "suukaikan",

@@ -16,7 +16,7 @@ defmodule RiichiAdvanced.ModLoader do
       %{name: name, config: config} -> 
         mod_contents = read_mod_jq(name)
         config_queries = for {key, val} <- config, is_integer(val) or is_boolean(val) or is_binary(val), do: "(#{inspect(val)}) as $#{key}\n|\n"
-        Enum.join(config_queries) <> mod_contents
+        Enum.join(config_queries) <> "(" <> mod_contents <> ")"
       name -> read_mod_jq(name)
     end
   end

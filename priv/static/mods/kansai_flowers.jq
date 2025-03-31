@@ -19,11 +19,11 @@
 # add flower call (identical to pei call, but is forced)
 .buttons.flower.unskippable = true
 |
-.buttons.flower.actions |= map(if . == ["flower", "4z"] then ["flower", "1f", "2f", "3f", "4f"] else . end)
+.buttons.flower |= walk(if type == "array" and index("4z") then . - ["4z"] + ["1f", "2f", "3f", "4f"] else . end)
 |
 .auto_buttons._5_auto_pei.display_name = "F"
 |
-.auto_buttons._5_auto_pei.desc = "Automatically declare all flowers.",
+.auto_buttons._5_auto_pei.desc = "Automatically declare all flowers."
 |
 # add flower dora indicators
 .dora_indicators += {

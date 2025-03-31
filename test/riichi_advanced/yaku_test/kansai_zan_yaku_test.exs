@@ -14,7 +14,7 @@ defmodule RiichiAdvanced.YakuTest.KansaiZanYaku do
     "tenpaiyame",
     "kuikae_nashi",
     "double_wind_4_fu",
-    "kokushi_chankan",
+    "kokushi_ankan_chankan",
     "first_gets_riichi_sticks",
     "sanma_no_tsumo_loss",
     "suufon_renda",
