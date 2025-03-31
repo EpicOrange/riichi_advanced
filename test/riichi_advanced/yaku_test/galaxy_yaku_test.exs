@@ -31,9 +31,9 @@ defmodule RiichiAdvanced.YakuTest.GalaxyYaku do
     {
       "starting_hand": {
         "east": ["2m", "3m", "4m", "4m", "5m", "6m", "7p", "7p", "7p", "8s", "8s", "15z", "16z"],
-        "south": ["1m", "4m", "7m", "2p", "5p", "8p", "3s", "6s", "9s", "1z", "2z", "3z", "4z"],
-        "west": ["1m", "4m", "7m", "2p", "5p", "8p", "3s", "6s", "9s", "1z", "2z", "3z", "4z"],
-        "north": ["1m", "3m", "7m", "2p", "5p", "8p", "3s", "6s", "9s", "1z", "2z", "3z", "4z"]
+        "south": ["1m", "2m", "7m", "2p", "5p", "8p", "3s", "6s", "9s", "2z", "3z", "4z", "7z"],
+        "west": ["1m", "2m", "7m", "2p", "5p", "8p", "3s", "6s", "9s", "2z", "3z", "4z", "7z"],
+        "north": ["1m", "3m", "7m", "2p", "5p", "8p", "3s", "6s", "9s", "2z", "3z", "4z", "7z"]
       },
       "starting_draws": ["1z", "17z"]
     }
@@ -87,9 +87,9 @@ defmodule RiichiAdvanced.YakuTest.GalaxyYaku do
     {
       "starting_hand": {
         "east": ["2m", "3m", "4m", "4m", "5m", "6m", "7p", "7p", "7p", "8s", "8s", "12z", "13z"],
-        "south": ["1m", "4m", "7m", "2p", "5p", "8p", "3s", "6s", "9s", "1z", "2z", "3z", "4z"],
-        "west": ["1m", "4m", "7m", "2p", "5p", "8p", "3s", "6s", "9s", "1z", "2z", "3z", "4z"],
-        "north": ["1m", "3m", "7m", "2p", "5p", "8p", "3s", "6s", "9s", "1z", "2z", "3z", "4z"]
+        "south": ["1m", "2m", "7m", "2p", "5p", "8p", "3s", "6s", "9s", "2z", "3z", "4z", "7z"],
+        "west": ["1m", "2m", "7m", "2p", "5p", "8p", "3s", "6s", "9s", "2z", "3z", "4z", "7z"],
+        "north": ["1m", "3m", "7m", "2p", "5p", "8p", "3s", "6s", "9s", "2z", "3z", "4z", "7z"]
       },
       "starting_draws": ["14z", "1z"]
     }

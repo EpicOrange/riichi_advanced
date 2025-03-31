@@ -31,9 +31,9 @@ defmodule RiichiAdvanced.YakuTest.SpaceYaku do
     {
       "starting_hand": {
         "east": ["5z", "6z", "7z", "1z", "2z", "3z", "2z", "3z", "4z", "2m", "2m", "2m", "6m"],
-        "south": ["1m", "4m", "7m", "2p", "5p", "8p", "3s", "6s", "9s", "1z", "5z", "6z", "7z"],
-        "west": ["1m", "4m", "7m", "2p", "5p", "8p", "3s", "6s", "9s", "1z", "5z", "6z", "7z"],
-        "north": ["1m", "3m", "7m", "2p", "5p", "8p", "3s", "6s", "9s", "1z", "5z", "6z", "7z"]
+        "south": ["1m", "4m", "5m", "7m", "2p", "5p", "8p", "3s", "6s", "9s", "1z", "5z", "7z"],
+        "west": ["1m", "4m", "5m", "7m", "2p", "5p", "8p", "3s", "6s", "9s", "1z", "5z", "7z"],
+        "north": ["1m", "3m", "5m", "7m", "2p", "5p", "8p", "3s", "6s", "9s", "1z", "5z", "7z"]
       },
       "starting_draws": ["6z", "6m"]
     }

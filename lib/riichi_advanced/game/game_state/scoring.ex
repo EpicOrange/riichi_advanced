@@ -144,13 +144,11 @@ defmodule RiichiAdvanced.GameState.Scoring do
 
     scoring_method = score_rules["scoring_method"]
     # TODO generalize this
-    {yaku, scoring_method} = if is_list(scoring_method) do
-      if yaku2_overrides do
-        {yaku2, Enum.at(scoring_method, 1)}
-      else
-        {yaku, Enum.at(scoring_method, 0)}
-      end
-    else {yaku, scoring_method} end
+    {yaku, scoring_method} = if yaku2_overrides and not Enum.empty?(yaku2) do
+      {yaku2, if is_list(scoring_method) do Enum.at(scoring_method, 1, Enum.at(scoring_method, 0)) else scoring_method end}
+    else
+      {yaku, if is_list(scoring_method) do Enum.at(scoring_method, 0) else scoring_method end}
+    end
 
     {score, points, points2, name} = case scoring_method do
       "multiplier" ->
@@ -485,7 +483,7 @@ defmodule RiichiAdvanced.GameState.Scoring do
     is_dealer = is_dealer or "score_as_dealer" in state.players[winner.seat].status
 
     # first get the total number of shares (only applicable for ron)
-    total_shares = Enum.map(liabilities, fn {_payer, {_yaku, _yaku2, shares, mult, penalty}} -> if mult != 0 and penalty != 0 do shares else 0 end end) |> Enum.sum()
+    total_shares = Enum.map(liabilities, fn {_payer, {_yaku, _yaku2, shares, mult, penalty}} -> if mult != 0 or penalty != 0 do shares else 0 end end) |> Enum.sum()
     # then calculate payments individually
     delta_scores = for {payer, {yaku, yaku2, shares, mult, penalty}} <- liabilities, reduce: delta_scores do
       delta_scores when payer == nil ->
@@ -498,7 +496,7 @@ defmodule RiichiAdvanced.GameState.Scoring do
         end
         # add tsumo delta scores to accumulator
         delta_scores = for {seat, score} <- tsumo_delta_scores, reduce: delta_scores do
-          delta_scores -> Map.update!(delta_scores, seat, & &1 + score)
+          delta_scores -> Map.update!(delta_scores, seat, &Utils.try_integer(&1 + score))
         end
         delta_scores
       delta_scores ->
@@ -514,8 +512,8 @@ defmodule RiichiAdvanced.GameState.Scoring do
 
         # apply payment to delta_scores
         delta_scores
-        |> Map.update!(payer, & &1 - payment)
-        |> Map.update!(winner.seat, & &1 + payment)
+        |> Map.update!(payer, &Utils.try_integer(&1 - payment))
+        |> Map.update!(winner.seat, &Utils.try_integer(&1 + payment))
     end
     # award riichi sticks (pot)
     |> Map.update!(winner.seat, & &1 + riichi_payment)

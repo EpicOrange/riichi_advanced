@@ -690,12 +690,20 @@ defmodule RiichiAdvanced.GameState.Actions do
     end
   end
 
+  defp warn_counter(counter_name) do
+    if counter_name in @amt_specs do
+      IO.puts("WARNING: do not set a counter to an amount name like \"#{counter_name}\", since it makes the amount name unusable")
+    end
+  end
+
   defp set_counter(state, context, counter_name, amt_spec) do
+    warn_counter(counter_name)
     amount = interpret_amount(state, context, amt_spec)
     put_in(state.players[context.seat].counters[counter_name], amount)
   end
 
   defp set_counter_all(state, context, counter_name, amt_spec) do
+    warn_counter(counter_name)
     amount = interpret_amount(state, context, amt_spec)
     for dir <- state.available_seats, reduce: state do
       state -> put_in(state.players[dir].counters[counter_name], amount)
@@ -703,24 +711,28 @@ defmodule RiichiAdvanced.GameState.Actions do
   end
 
   defp add_counter(state, context, counter_name, amt_spec) do
+    warn_counter(counter_name)
     amount = interpret_amount(state, context, amt_spec)
     new_ctr = amount + Map.get(state.players[context.seat].counters, counter_name, 0)
     put_in(state.players[context.seat].counters[counter_name], new_ctr)
   end
 
   defp subtract_counter(state, context, counter_name, amt_spec) do
+    warn_counter(counter_name)
     amount = interpret_amount(state, context, amt_spec)
     new_ctr = -amount + Map.get(state.players[context.seat].counters, counter_name, 0)
     put_in(state.players[context.seat].counters[counter_name], new_ctr)
   end
   
   defp multiply_counter(state, context, counter_name, amt_spec) do
+    warn_counter(counter_name)
     amount = interpret_amount(state, context, amt_spec)
     new_ctr = Utils.try_integer(amount * Map.get(state.players[context.seat].counters, counter_name, 0))
     put_in(state.players[context.seat].counters[counter_name], new_ctr)
   end
   
   defp divide_counter(state, context, counter_name, amt_spec) do
+    warn_counter(counter_name)
     amount = interpret_amount(state, context, amt_spec)
     if amount == 0 do
       IO.puts("WARNING: tried to divide by zero")
@@ -1696,9 +1708,12 @@ defmodule RiichiAdvanced.GameState.Actions do
               :divide   -> Integer.floor_div(prev_value, value)
               :min      -> min(prev_value, value)
               :max      -> max(prev_value, value)
-            end end))
+            end |> Utils.try_integer() end))
           end
-        else state end
+        else
+          IO.puts("WARNING: called modify_payout before payouts were calculated")
+          state
+        end
       "set_scoring_header" -> Map.put(state, :delta_scores_reason, Enum.at(opts, 0, ""))
       "make_responsible_for" ->
         # player.pao_map: an entry %{seat => [yaku]} means if this player wins, `seat` must pay for `yaku`

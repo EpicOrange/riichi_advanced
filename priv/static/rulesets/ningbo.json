@@ -263,12 +263,16 @@
       ["when", [{"name": "seat_is", "as": "kamicha", "opts": ["callee"]}], [["add_counter", "calls_from_kamicha", 1]]]
     ]
   },
-  "before_scoring": {
+  "before_win": {
     "actions": [
       ["flip_all_calls_faceup"],
       ["when", [{"name": "counter_at_least", "opts": ["calls_from_shimocha", 3]}], [["as", "shimocha", [["make_responsible_for", "prev_seat", "all"]]]]],
       ["when", [{"name": "counter_at_least", "opts": ["calls_from_toimen", 3]}], [["as", "toimen", [["make_responsible_for", "prev_seat", "all"]]]]],
-      ["when", [{"name": "counter_at_least", "opts": ["calls_from_kamicha", 3]}], [["as", "kamicha", [["make_responsible_for", "prev_seat", "all"]]]]],
+      ["when", [{"name": "counter_at_least", "opts": ["calls_from_kamicha", 3]}], [["as", "kamicha", [["make_responsible_for", "prev_seat", "all"]]]]]
+    ]
+  },
+  "before_scoring": {
+    "actions": [
       ["add_counter", "baida_reuse", "count_matches", ["winning_hand"], [[[[{"tile": "any", "attrs": ["original"]}], 1]]]]
     ]
   },

@@ -37,46 +37,46 @@ define_yaku yaku, "North Wind", 1, match(["hand", "calls", "winning_tile"], ~m"e
 # end-of-game shuugi payment
 on before_conclusion do
   as everyone do
-    score = score
+    curr_score = score
     if placement(2) do
-      payout = -12
-      if score >= 0 do payout = -10 end
-      if score >= 10000 do payout = -8 end
-      if score >= 20000 do payout = -6 end
-      if score >= 30000 do payout = -4 end
-      if score >= 40000 do payout = -2 end
-      if score >= 50000 do payout = 0 end
-      if score >= 60000 do payout = 2 end
-      if score >= 70000 do payout = 4 end
-      if score >= 80000 do payout = 6 end
-      if score >= 90000 do payout = 8 end
-      first_payout = first_payout - payout
-      set_counter_all("first_payout", "first_payout")
+      shuugi_payout = -12
+      if curr_score >= 0 do shuugi_payout = -10 end
+      if curr_score >= 10000 do shuugi_payout = -8 end
+      if curr_score >= 20000 do shuugi_payout = -6 end
+      if curr_score >= 30000 do shuugi_payout = -4 end
+      if curr_score >= 40000 do shuugi_payout = -2 end
+      if curr_score >= 50000 do shuugi_payout = 0 end
+      if curr_score >= 60000 do shuugi_payout = 2 end
+      if curr_score >= 70000 do shuugi_payout = 4 end
+      if curr_score >= 80000 do shuugi_payout = 6 end
+      if curr_score >= 90000 do shuugi_payout = 8 end
+      first_shuugi_payout = first_shuugi_payout - shuugi_payout
+      set_counter_all("first_shuugi_payout", "first_shuugi_payout")
     end
     if placement(3) do
-      payout = -18
-      if score >= 0 do payout = -16 end
-      if score >= 10000 do payout = -14 end
-      if score >= 20000 do payout = -12 end
-      if score >= 30000 do payout = -10 end
-      if score >= 40000 do payout = -8 end
-      if score >= 50000 do payout = -6 end
-      first_payout = first_payout - payout
-      set_counter_all("first_payout", "first_payout")
+      shuugi_payout = -18
+      if curr_score >= 0 do shuugi_payout = -16 end
+      if curr_score >= 10000 do shuugi_payout = -14 end
+      if curr_score >= 20000 do shuugi_payout = -12 end
+      if curr_score >= 30000 do shuugi_payout = -10 end
+      if curr_score >= 40000 do shuugi_payout = -8 end
+      if curr_score >= 50000 do shuugi_payout = -6 end
+      first_shuugi_payout = first_shuugi_payout - shuugi_payout
+      set_counter_all("first_shuugi_payout", "first_shuugi_payout")
     end
   end
   as everyone do
     if placement(1) do
-      payout = first_payout
-      push_message("was awarded %{payout} chips for placing first", %{payout: "payout"})
+      shuugi_payout = first_shuugi_payout
+      push_message("was awarded %{payout} chips for placing first", %{payout: "shuugi_payout"})
     end
     if placement(2) do
-      push_message("was awarded %{payout} chips for placing second with %{points} points", %{payout: "payout", points: "score"})
+      push_message("was awarded %{payout} chips for placing second with %{points} points", %{payout: "shuugi_payout", points: "curr_score"})
     end
     if placement(3) do
-      push_message("was awarded %{payout} chips for placing third with %{points} points", %{payout: "payout", points: "score"})
+      push_message("was awarded %{payout} chips for placing third with %{points} points", %{payout: "shuugi_payout", points: "curr_score"})
     end
-    shuugi = shuugi + payout
+    shuugi = shuugi + shuugi_payout
   end
 end
 

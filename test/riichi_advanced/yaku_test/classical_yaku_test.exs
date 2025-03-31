@@ -541,8 +541,8 @@ defmodule RiichiAdvanced.YakuTest.ClassicalYaku do
         "west": ["1m", "4m", "7m", "2p", "5p", "8p", "3s", "6s", "9s", "1z", "2z", "3z", "4z"],
         "north": ["1m", "3m", "7m", "2p", "5p", "8p", "3s", "6s", "9s", "1z", "2z", "3z", "4z"]
       },
-      "starting_draws": ["1z", "1f"],
-      "starting_dead_wall": ["2f", "3f", "4f", "6p"]
+      "starting_draws": ["1z", "1f", "6p"],
+      "starting_dead_wall": ["2f", "3f", "4f", "2z"]
     }
     """, [
       %{"type" => "buttons_pressed", "buttons" => [%{"button" => "start_no_flower"}, nil, nil, nil]},
@@ -554,12 +554,14 @@ defmodule RiichiAdvanced.YakuTest.ClassicalYaku do
       %{"type" => "buttons_pressed", "buttons" => [nil, %{"button" => "flower"}, nil, nil]},
       %{"type" => "buttons_pressed", "buttons" => [nil, %{"button" => "flower"}, nil, nil]},
       %{"type" => "buttons_pressed", "buttons" => [nil, %{"button" => "flower"}, nil, nil]},
-      %{"type" => "buttons_pressed", "buttons" => [nil, %{"button" => "tsumo"}, nil, nil]}
+      %{"type" => "discard", "tile" => "2z", "player" => 1, "tsumogiri" => true},
+      %{"type" => "discard", "tile" => "6p", "player" => 2, "tsumogiri" => true},
+      %{"type" => "buttons_pressed", "buttons" => [nil, %{"button" => "ron"}, nil, nil]}
     ], %{
       south: %{
-        yaku: [{"All Flowers", 4}, {"Concealed Hand", 1}, {"Out on a Replacement", 1}],
+        yaku: [{"All Flowers", 4}, {"Seat Flower", 1}],
         yaku2: [],
-        minipoints: 58, # 32 closed tsumo + 2 tanki wait + 2x4 closed triplet + 4x4 flowers = 58
+        minipoints: 56, # 30 closed ron + 2 tanki wait + 2x4 closed triplet + 4x4 flowers = 56
         score: 500 # 6 doublings
       }
     })
@@ -574,8 +576,8 @@ defmodule RiichiAdvanced.YakuTest.ClassicalYaku do
         "west": ["1m", "4m", "7m", "2p", "5p", "8p", "3s", "6s", "9s", "1z", "2z", "3z", "4z"],
         "north": ["1m", "3m", "7m", "2p", "5p", "8p", "3s", "6s", "9s", "1z", "2z", "3z", "4z"]
       },
-      "starting_draws": ["1z", "1g"],
-      "starting_dead_wall": ["2g", "3g", "4g", "6p"]
+      "starting_draws": ["1z", "1g", "6p"],
+      "starting_dead_wall": ["2g", "3g", "4g", "2z"]
     }
     """, [
       %{"type" => "buttons_pressed", "buttons" => [%{"button" => "start_no_flower"}, nil, nil, nil]},
@@ -587,12 +589,14 @@ defmodule RiichiAdvanced.YakuTest.ClassicalYaku do
       %{"type" => "buttons_pressed", "buttons" => [nil, %{"button" => "flower"}, nil, nil]},
       %{"type" => "buttons_pressed", "buttons" => [nil, %{"button" => "flower"}, nil, nil]},
       %{"type" => "buttons_pressed", "buttons" => [nil, %{"button" => "flower"}, nil, nil]},
-      %{"type" => "buttons_pressed", "buttons" => [nil, %{"button" => "tsumo"}, nil, nil]}
+      %{"type" => "discard", "tile" => "2z", "player" => 1, "tsumogiri" => true},
+      %{"type" => "discard", "tile" => "6p", "player" => 2, "tsumogiri" => true},
+      %{"type" => "buttons_pressed", "buttons" => [nil, %{"button" => "ron"}, nil, nil]}
     ], %{
       south: %{
-        yaku: [{"All Seasons", 4}, {"Concealed Hand", 1}, {"Out on a Replacement", 1}],
+        yaku: [{"All Seasons", 4}, {"Seat Season", 1}],
         yaku2: [],
-        minipoints: 58, # 32 closed tsumo + 2 tanki wait + 2x4 closed triplet + 4x4 flowers = 58
+        minipoints: 56, # 30 closed ron + 2 tanki wait + 2x4 closed triplet + 4x4 flowers = 56
         score: 500 # 6 doublings
       }
     })

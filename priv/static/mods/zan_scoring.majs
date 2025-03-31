@@ -9,57 +9,57 @@ apply merge, "score_calculation", %{
 }
 
 on after_win do
-  points = points
-  points2 = points2
-  if points2 == 0 do
+  end_points = points
+  end_points2 = points2
+  if end_points2 == 0 do
     # manual scoring if not yakuman
     if seat_is("east") do
       # dealer
       if won_by_draw do
         # tsumo
-        if points == 1 do payment = 1000 end
-        if points == 2 do payment = 2000 end
-        if points == 3 do payment = 3000 end
-        if points >= 4 do payment = 6000; modify_winner("score_name", "Mangan") end
-        if points >= 6 do payment = 9000; modify_winner("score_name", "Haneman") end
-        if points >= 8 do payment = 12000; modify_winner("score_name", "Baiman") end
-        if points >= 11 do payment = 18000; modify_winner("score_name", "Sanbaiman") end
-        if points >= 13 do payment = 24000; modify_winner("score_name", "Kazoe Yakuman") end
+        if end_points == 1 do payment = 1000 end
+        if end_points == 2 do payment = 2000 end
+        if end_points == 3 do payment = 3000 end
+        if end_points >= 4 do payment = 6000; modify_winner("score_name", "Mangan") end
+        if end_points >= 6 do payment = 9000; modify_winner("score_name", "Haneman") end
+        if end_points >= 8 do payment = 12000; modify_winner("score_name", "Baiman") end
+        if end_points >= 11 do payment = 18000; modify_winner("score_name", "Sanbaiman") end
+        if end_points >= 13 do payment = 24000; modify_winner("score_name", "Kazoe Yakuman") end
         dealer_payment = payment
       else
         # ron/chankan
-        if points == 1 do payment = 2000 end
-        if points == 2 do payment = 3000 end
-        if points == 3 do payment = 6000 end
-        if points >= 4 do payment = 12000; modify_winner("score_name", "Mangan") end
-        if points >= 6 do payment = 18000; modify_winner("score_name", "Haneman") end
-        if points >= 8 do payment = 24000; modify_winner("score_name", "Baiman") end
-        if points >= 11 do payment = 36000; modify_winner("score_name", "Sanbaiman") end
-        if points >= 13 do payment = 48000; modify_winner("score_name", "Kazoe Yakuman") end
+        if end_points == 1 do payment = 2000 end
+        if end_points == 2 do payment = 3000 end
+        if end_points == 3 do payment = 6000 end
+        if end_points >= 4 do payment = 12000; modify_winner("score_name", "Mangan") end
+        if end_points >= 6 do payment = 18000; modify_winner("score_name", "Haneman") end
+        if end_points >= 8 do payment = 24000; modify_winner("score_name", "Baiman") end
+        if end_points >= 11 do payment = 36000; modify_winner("score_name", "Sanbaiman") end
+        if end_points >= 13 do payment = 48000; modify_winner("score_name", "Kazoe Yakuman") end
         dealer_payment = 0
       end
     else
       # nondealer
       if won_by_draw do
         # tsumo
-        if points == 1 do payment = 1000; dealer_payment = 1000 end
-        if points == 2 do payment = 1000; dealer_payment = 1000 end
-        if points == 3 do payment = 1000; dealer_payment = 3000 end
-        if points >= 4 do payment = 3000; dealer_payment = 5000; modify_winner("score_name", "Mangan") end
-        if points >= 6 do payment = 4000; dealer_payment = 8000; modify_winner("score_name", "Haneman") end
-        if points >= 8 do payment = 6000; dealer_payment = 10000; modify_winner("score_name", "Baiman") end
-        if points >= 11 do payment = 8000; dealer_payment = 16000; modify_winner("score_name", "Sanbaiman") end
-        if points >= 13 do payment = 12000; dealer_payment = 20000; modify_winner("score_name", "Kazoe Yakuman") end
+        if end_points == 1 do payment = 1000; dealer_payment = 1000 end
+        if end_points == 2 do payment = 1000; dealer_payment = 1000 end
+        if end_points == 3 do payment = 1000; dealer_payment = 3000 end
+        if end_points >= 4 do payment = 3000; dealer_payment = 5000; modify_winner("score_name", "Mangan") end
+        if end_points >= 6 do payment = 4000; dealer_payment = 8000; modify_winner("score_name", "Haneman") end
+        if end_points >= 8 do payment = 6000; dealer_payment = 10000; modify_winner("score_name", "Baiman") end
+        if end_points >= 11 do payment = 8000; dealer_payment = 16000; modify_winner("score_name", "Sanbaiman") end
+        if end_points >= 13 do payment = 12000; dealer_payment = 20000; modify_winner("score_name", "Kazoe Yakuman") end
       else
         # ron/chankan
-        if points == 1 do payment = 1000 end
-        if points == 2 do payment = 2000 end
-        if points == 3 do payment = 4000 end
-        if points >= 4 do payment = 8000; modify_winner("score_name", "Mangan") end
-        if points >= 6 do payment = 12000; modify_winner("score_name", "Haneman") end
-        if points >= 8 do payment = 16000; modify_winner("score_name", "Baiman") end
-        if points >= 11 do payment = 24000; modify_winner("score_name", "Sanbaiman") end
-        if points >= 13 do payment = 32000; modify_winner("score_name", "Kazoe Yakuman") end
+        if end_points == 1 do payment = 1000 end
+        if end_points == 2 do payment = 2000 end
+        if end_points == 3 do payment = 4000 end
+        if end_points >= 4 do payment = 8000; modify_winner("score_name", "Mangan") end
+        if end_points >= 6 do payment = 12000; modify_winner("score_name", "Haneman") end
+        if end_points >= 8 do payment = 16000; modify_winner("score_name", "Baiman") end
+        if end_points >= 11 do payment = 24000; modify_winner("score_name", "Sanbaiman") end
+        if end_points >= 13 do payment = 32000; modify_winner("score_name", "Kazoe Yakuman") end
         dealer_payment = 0
       end
     end
@@ -69,7 +69,7 @@ on after_win do
 end
 
 on after_scoring do
-  if points2 == 0 do
+  if end_points2 == 0 do
     # manual scoring if not yakuman
     if won_by_draw do
       if seat_is("east") do

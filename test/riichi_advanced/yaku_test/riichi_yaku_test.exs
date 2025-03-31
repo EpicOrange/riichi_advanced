@@ -1392,9 +1392,9 @@ defmodule RiichiAdvanced.YakuTest.RiichiYaku do
     {
       "starting_hand": {
         "east": ["1m", "2m", "3m", "6m", "7m", "8m", "5p", "5p", "7p", "8p", "2p", "3p", "1z"],
-        "south": ["1m", "4m", "7m", "2p", "5p", "8p", "3s", "4s", "5s", "6s", "7s", "8s", "9s"],
-        "west": ["1m", "4m", "7m", "2p", "5p", "8p", "3s", "4s", "5s", "6s", "7s", "8s", "9s"],
-        "north": ["1m", "4m", "7m", "2p", "5p", "8p", "3s", "4s", "5s", "6s", "7s", "8s", "9s"]
+        "south": ["1m", "4m", "7m", "2p", "3p", "8p", "3s", "4s", "5s", "6s", "7s", "8s", "9s"],
+        "west": ["1m", "4m", "7m", "2p", "3p", "8p", "3s", "4s", "5s", "6s", "7s", "8s", "9s"],
+        "north": ["1m", "4m", "7m", "2p", "3p", "8p", "3s", "4s", "5s", "6s", "7s", "8s", "9s"]
       },
       "starting_draws": ["1z", "2z", "3z", "4p", "6p"]
     }
@@ -1451,9 +1451,9 @@ defmodule RiichiAdvanced.YakuTest.RiichiYaku do
     {
       "starting_hand": {
         "east": ["1m", "1m", "4m", "4m", "4m", "4m", "2p", "2p", "4p", "6s", "6s", "1z", "1z"],
-        "south": ["1m", "4m", "7m", "2p", "5p", "8p", "3s", "4s", "5s", "6s", "7s", "8s", "9s"],
-        "west": ["1m", "4m", "7m", "2p", "5p", "8p", "3s", "4s", "5s", "6s", "7s", "8s", "9s"],
-        "north": ["3z", "3z", "3z", "1z", "1z", "1z", "5m", "5m", "7m", "8m", "2p", "3p", "1z"]
+        "south": ["1m", "3m", "7m", "3p", "5p", "8p", "3s", "4s", "5s", "6s", "7s", "8s", "9s"],
+        "west": ["1m", "3m", "7m", "3p", "5p", "8p", "3s", "4s", "5s", "6s", "7s", "8s", "9s"],
+        "north": ["3z", "3z", "3z", "2z", "2z", "2z", "5m", "5m", "7m", "8m", "2p", "3p", "1z"]
       },
       "starting_draws": ["1z", "4p"]
     }
@@ -1468,9 +1468,9 @@ defmodule RiichiAdvanced.YakuTest.RiichiYaku do
     {
       "starting_hand": {
         "east": ["1m", "1m", "3p", "4p", "5p", "6p", "7p", "1p", "2p", "8p", "9p", "2z", "3z"],
-        "south": ["1m", "4m", "7m", "2p", "5p", "8p", "3s", "4s", "5s", "6s", "7s", "8s", "9s"],
-        "west": ["1m", "4m", "7m", "2p", "5p", "8p", "3s", "4s", "5s", "6s", "7s", "8s", "9s"],
-        "north": ["1m", "4m", "7m", "2p", "5p", "8p", "3s", "4s", "5s", "6s", "7s", "8s", "9s"]
+        "south": ["2m", "4m", "7m", "2p", "4p", "8p", "3s", "4s", "5s", "6s", "7s", "8s", "9s"],
+        "west": ["2m", "4m", "7m", "2p", "4p", "8p", "3s", "4s", "5s", "6s", "7s", "8s", "9s"],
+        "north": ["2m", "4m", "7m", "2p", "4p", "8p", "3s", "4s", "5s", "6s", "7s", "8s", "9s"]
       },
       "starting_draws": ["1z", "2z", "3z", "3p", "4z", "1z", "7p", "5p"]
     }
@@ -1502,9 +1502,9 @@ defmodule RiichiAdvanced.YakuTest.RiichiYaku do
     {
       "starting_hand": {
         "east": ["1m", "1m", "1m", "7s", "8s", "9s", "3z", "3z", "5z", "5z", "2p", "2p", "1z"],
-        "south": ["1m", "4m", "7m", "2p", "5p", "8p", "3s", "4s", "5s", "6s", "7s", "8s", "9s"],
-        "west": ["1m", "4m", "7m", "2p", "5p", "8p", "3s", "4s", "5s", "6s", "7s", "8s", "9s"],
-        "north": ["1m", "4m", "7m", "2p", "5p", "8p", "3s", "4s", "5s", "6s", "7s", "8s", "9s"]
+        "south": ["2m", "4m", "7m", "1p", "5p", "8p", "3s", "4s", "5s", "6s", "7s", "8s", "9s"],
+        "west": ["2m", "4m", "7m", "1p", "5p", "8p", "3s", "4s", "5s", "6s", "7s", "8s", "9s"],
+        "north": ["2m", "4m", "7m", "1p", "5p", "8p", "3s", "4s", "5s", "6s", "7s", "8s", "9s"]
       },
       "starting_draws": ["1z", "2p", "2z", "1z", "4z", "3z"]
     }
@@ -1531,9 +1531,9 @@ defmodule RiichiAdvanced.YakuTest.RiichiYaku do
     {
       "starting_hand": {
         "east": ["1m", "1m", "1m", "2m", "3m", "4m", "5m", "6m", "7m", "8m", "9m", "9m", "2z"],
-        "south": ["1m", "4m", "7m", "2p", "5p", "8p", "3s", "4s", "5s", "6s", "7s", "8s", "9s"],
-        "west": ["1m", "4m", "7m", "2p", "5p", "8p", "3s", "4s", "5s", "6s", "7s", "8s", "9s"],
-        "north": ["1m", "4m", "7m", "2p", "5p", "8p", "3s", "4s", "5s", "6s", "7s", "8s", "9s"]
+        "south": ["2m", "4m", "7m", "2p", "5p", "8p", "3s", "4s", "5s", "6s", "7s", "8s", "9s"],
+        "west": ["2m", "4m", "7m", "2p", "5p", "8p", "3s", "4s", "5s", "6s", "7s", "8s", "9s"],
+        "north": ["2m", "4m", "7m", "2p", "5p", "8p", "3s", "4s", "5s", "6s", "7s", "8s", "9s"]
       },
       "starting_draws": ["1z", "9m", "9m"]
     }
