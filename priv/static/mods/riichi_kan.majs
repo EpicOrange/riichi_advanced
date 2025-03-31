@@ -11,7 +11,6 @@ define_yaku yaku, "Sankantsu", 2, match(["calls"], ~m"(daiminkan ankan kakan):3"
 define_yaku yakuman, "Suukantsu", 1, match(["calls"], ~m"(daiminkan ankan kakan):4")
 
 def do_kan_draw do
-  set_status("$status")
   shift_tile_to_dead_wall(1)
   draw(1, "opposite_end")
 end
@@ -55,7 +54,7 @@ define_button daiminkan,
     set_status("kan")
     call
     change_turn("self")
-    do_kan_draw(status: "kan")
+    do_kan_draw
   end
 
 define_button ankan,
@@ -74,7 +73,7 @@ define_button ankan,
     big_text("Kan")
     set_status("kan")
     self_call
-    do_kan_draw(status: "kan")
+    do_kan_draw
   end
 
 define_button kakan,
@@ -100,7 +99,7 @@ define_button kakan,
     upgrade_call
     unset_status("can_chankan")
     discard_passed
-    do_kan_draw(status: "kan")
+    do_kan_draw
   end
 
 define_const can_chankan, status("can_chankan", as: "caller")

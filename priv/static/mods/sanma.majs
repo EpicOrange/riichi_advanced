@@ -52,11 +52,11 @@ define_button flower,
     and tile_not_drawn(-8)
   do
     big_text("Pei")
-    set_status("can_chankan")
+    set_status("pei", "can_chankan")
     flower("4z")
     unset_status("can_chankan")
     discard_passed
-    do_kan_draw(status: "pei")
+    do_kan_draw
   end
 
 # pei auto button
@@ -75,7 +75,6 @@ apply append, "constants.no_auto_discard_calls", "flower"
 
 # we need these in case kan mod is not enabled
 def do_kan_draw do
-  set_status("$status")
   shift_tile_to_dead_wall(1)
   draw(1, "opposite_end")
 end
