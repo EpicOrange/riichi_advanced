@@ -124,10 +124,11 @@ defmodule RiichiAdvanced.ModLoader do
     end
   end
 
-  def get_ruleset_json(ruleset, room_code \\ nil, strip_comments? \\ false) do
+  def get_ruleset_json(ruleset, room_code \\ nil, strip_comments? \\ false, visited \\ [], prev_query \\ ".", prev_mods \\ [], globals \\ %{}) do
+    # IO.puts("Fetching ruleset #{ruleset}")
     modpacks = Constants.modpacks()
     cond do
-      ruleset == "custom" ->
+      ruleset == "custom" and Enum.empty?(visited) ->
         case RiichiAdvanced.ETSCache.get(room_code, ["{}"], :cache_rulesets) do
           [ruleset_json_or_majs] ->
             case Jason.decode(ruleset_json_or_majs) do
@@ -136,7 +137,7 @@ defmodule RiichiAdvanced.ModLoader do
             end
           _ -> "{}"
         end
-      Map.has_key?(modpacks, ruleset) ->
+      Map.has_key?(modpacks, ruleset) and ruleset not in visited ->
         modpack = modpacks[ruleset]
         mods = Map.get(modpack, :mods, [])
         post_mods = Map.get(modpack, :post_mods, [])
@@ -151,17 +152,27 @@ defmodule RiichiAdvanced.ModLoader do
         # set or remove tutorial link
         query = query <> " | " <> if Map.has_key?(modpack, :tutorial_link) do ".tutorial_link = \"#{modpack.tutorial_link}\"" else "del(.tutorial_link)" end
         # remove already applied mods
-        query = query <> " | " <> ".default_mods = (.default_mods // []) - #{Jason.encode!(mods ++ post_mods)}"
+        query = query <> " | " <> ".default_mods = (.default_mods // []) - #{Jason.encode!(all_mod_names)}"
         query = query <> " | " <> ".available_mods = ((.available_mods // []) | map(select(if type == \"object\" then .id else .  end | IN(#{Enum.map_join(all_mod_names, ", ", &Jason.encode!/1)}) | not)))"
-        # now use this query on the ruleset
-        modpack.ruleset
-        |> read_ruleset_json()
-        |> strip_comments()
-        |> apply_mods(mods, modpack.ruleset, Map.get(modpack, :globals, %{}))
-        |> JQ.query_string_with_string!(query)
+        # we're traversing down, so "new" query/mods/globals should be run before "old" ones
+        query = query <> "\n|\n" <> prev_query
+        mods = mods ++ prev_mods
+        globals = Map.merge(Map.get(modpack, :globals, %{}), globals)
+        # now recurse
+        get_ruleset_json(modpack.ruleset, room_code, true, [ruleset | visited], query, mods, globals)
       true ->
         ruleset_json = read_ruleset_json(ruleset)
-        if strip_comments? do strip_comments(ruleset_json) else ruleset_json end
+        if strip_comments? do
+          mods = Enum.uniq(prev_mods)
+          duplicates = prev_mods -- mods
+          if not Enum.empty?(duplicates) do
+            IO.puts("WARNING: these mods were included twice: #{inspect(duplicates)}")
+          end
+          ruleset_json
+          |> strip_comments()
+          |> apply_mods(mods, ruleset, globals)
+          |> JQ.query_string_with_string!(prev_query)
+        else ruleset_json end
     end
   end
 

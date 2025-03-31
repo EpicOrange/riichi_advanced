@@ -14,6 +14,7 @@ on after_initialization do
   add_rule_tab("12 $han", %{han: !han})
   add_rule_tab("13 $han", %{han: !han})
   add_rule_tab("Limit")
+  add_rule_tab("Yakuman")
   add_rule("Rules", "Win Condition", "You may win with one of the following:", -100)
 end
 
@@ -26,7 +27,6 @@ on after_turn_change do
   end
 end
 
-set initial_score, 0
 set starting_tiles, 13
 set max_rounds, 16
 set four_rows_discards, true

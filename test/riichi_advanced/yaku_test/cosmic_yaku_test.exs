@@ -3,7 +3,6 @@ defmodule RiichiAdvanced.YakuTest.CosmicYaku do
   alias RiichiAdvanced.TestUtils, as: TestUtils
 
   @cosmic_mods [
-    "riichi_kan",
     %{name: "honba", config: %{value: 100}},
     %{name: "nagashi", config: %{is: "Mangan"}},
     %{name: "tobi", config: %{below: 0}},

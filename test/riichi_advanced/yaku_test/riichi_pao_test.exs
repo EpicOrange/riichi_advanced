@@ -3,7 +3,7 @@ defmodule RiichiAdvanced.YakuTest.RiichiPaoTest do
   alias RiichiAdvanced.TestUtils, as: TestUtils
 
   test "riichi - daisangen pao ron split" do
-    TestUtils.test_yaku_advanced("riichi", ["riichi_kan", %{name: "honba", config: %{"value" => 100}}, "pao"], """
+    TestUtils.test_yaku_advanced("riichi", [%{name: "honba", config: %{"value" => 100}}, "pao"], """
     {
       "starting_hand": {
         "east": ["2m", "3m", "4m", "4m", "5m", "6m", "7m", "5z", "5z", "6z", "6z", "7z", "7z"],
@@ -32,7 +32,7 @@ defmodule RiichiAdvanced.YakuTest.RiichiPaoTest do
   end
 
   test "riichi - daisangen pao ron split reverse honba" do
-    TestUtils.test_yaku_advanced("riichi", ["riichi_kan", %{name: "honba", config: %{"value" => 100}}, "pao"], """
+    TestUtils.test_yaku_advanced("riichi", [%{name: "honba", config: %{"value" => 100}}, "pao"], """
     {
       "starting_hand": {
         "east": ["2m", "3m", "4m", "4m", "5m", "6m", "7m", "5z", "5z", "6z", "6z", "7z", "7z"],
@@ -61,7 +61,7 @@ defmodule RiichiAdvanced.YakuTest.RiichiPaoTest do
   end
 
   test "riichi - daisangen pao kan rinshan" do
-    TestUtils.test_yaku_advanced("riichi", ["riichi_kan", %{name: "honba", config: %{"value" => 100}}, "pao"], """
+    TestUtils.test_yaku_advanced("riichi", [%{name: "honba", config: %{"value" => 100}}, "pao"], """
     {
       "starting_hand": {
         "east": ["2m", "3m", "4m", "5m", "6m", "7m", "5z", "5z", "6z", "6z", "7z", "7z", "7z"],
@@ -88,7 +88,7 @@ defmodule RiichiAdvanced.YakuTest.RiichiPaoTest do
   end
 
   test "riichi - daisuushii suukantsu not pao" do
-    TestUtils.test_yaku_advanced("riichi", ["riichi_kan", %{name: "honba", config: %{"value" => 100}}, "pao"], """
+    TestUtils.test_yaku_advanced("riichi", [%{name: "honba", config: %{"value" => 100}}, "pao"], """
     {
       "starting_hand": {
         "east": ["2p", "3p", "1z", "1z", "2z", "2z", "2z", "3z", "3z", "3z", "4z", "4z", "4z"],
@@ -115,7 +115,7 @@ defmodule RiichiAdvanced.YakuTest.RiichiPaoTest do
   end
 
   test "riichi - daisuushii suukantsu pao tsumo" do
-    TestUtils.test_yaku_advanced("riichi", ["riichi_kan", %{name: "honba", config: %{"value" => 100}}, "pao"], """
+    TestUtils.test_yaku_advanced("riichi", [%{name: "honba", config: %{"value" => 100}}, "pao"], """
     {
       "starting_hand": {
         "east": ["2p", "3p", "1z", "1z", "2z", "2z", "2z", "3z", "3z", "3z", "4z", "4z", "4z"],
@@ -144,7 +144,7 @@ defmodule RiichiAdvanced.YakuTest.RiichiPaoTest do
   end
 
   test "riichi - daisuushii suukantsu double pao tsumo" do
-    TestUtils.test_yaku_advanced("riichi", ["riichi_kan", %{name: "honba", config: %{"value" => 100}}, "pao", "pao_suukantsu"], """
+    TestUtils.test_yaku_advanced("riichi", [%{name: "honba", config: %{"value" => 100}}, "pao", "pao_suukantsu"], """
     {
       "starting_hand": {
         "east": ["2p", "3p", "1z", "1z", "2z", "2z", "2z", "3z", "3z", "3z", "4z", "4z", "4z"],
@@ -173,7 +173,7 @@ defmodule RiichiAdvanced.YakuTest.RiichiPaoTest do
   end
 
   test "riichi - rinshan no pao" do
-    TestUtils.test_yaku_advanced("riichi", ["riichi_kan", %{name: "honba", config: %{"value" => 100}}], """
+    TestUtils.test_yaku_advanced("riichi", [%{name: "honba", config: %{"value" => 100}}], """
     {
       "starting_hand": {
         "east": ["2m", "3m", "4m", "4m", "5m", "6m", "7m", "5z", "5z", "5z", "7z", "7z", "7z"],
@@ -194,7 +194,7 @@ defmodule RiichiAdvanced.YakuTest.RiichiPaoTest do
   end
 
   test "riichi - rinshan pao" do
-    TestUtils.test_yaku_advanced("riichi", ["riichi_kan", %{name: "honba", config: %{"value" => 100}}, "pao_rinshan"], """
+    TestUtils.test_yaku_advanced("riichi", [%{name: "honba", config: %{"value" => 100}}, "pao_rinshan"], """
     {
       "starting_hand": {
         "east": ["2m", "3m", "4m", "4m", "5m", "6m", "7m", "5z", "5z", "5z", "7z", "7z", "7z"],
@@ -215,7 +215,7 @@ defmodule RiichiAdvanced.YakuTest.RiichiPaoTest do
   end
 
   test "riichi - suukantsu no pao" do
-    TestUtils.test_yaku_advanced("riichi", ["riichi_kan", %{name: "honba", config: %{"value" => 100}}], """
+    TestUtils.test_yaku_advanced("riichi", [%{name: "honba", config: %{"value" => 100}}], """
     {
       "starting_hand": {
         "east": ["2p", "3p", "1z", "1z", "2z", "2z", "2z", "3z", "3z", "3z", "7z", "7z", "7z"],
@@ -244,7 +244,7 @@ defmodule RiichiAdvanced.YakuTest.RiichiPaoTest do
   end
 
   test "riichi - suukantsu pao" do
-    TestUtils.test_yaku_advanced("riichi", ["riichi_kan", %{name: "honba", config: %{"value" => 100}}, "pao_suukantsu"], """
+    TestUtils.test_yaku_advanced("riichi", [%{name: "honba", config: %{"value" => 100}}, "pao_suukantsu"], """
     {
       "starting_hand": {
         "east": ["2p", "3p", "1z", "1z", "2z", "2z", "2z", "3z", "3z", "3z", "7z", "7z", "7z"],

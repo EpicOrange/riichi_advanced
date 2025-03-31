@@ -3,7 +3,7 @@ defmodule RiichiAdvanced.YakuTest.SpaceYaku do
   alias RiichiAdvanced.TestUtils, as: TestUtils
 
   test "space - sequences wrap" do
-    TestUtils.test_yaku_advanced("riichi", ["space"], """
+    TestUtils.test_yaku_advanced("space", [], """
     {
       "starting_hand": {
         "east": ["9m", "1m", "2m", "8p", "9p", "1p", "1s", "2s", "3s", "7z", "7z", "7z", "6p"],
@@ -27,7 +27,7 @@ defmodule RiichiAdvanced.YakuTest.SpaceYaku do
   end
 
   test "space - honors form sequences" do
-    TestUtils.test_yaku_advanced("riichi", ["space"], """
+    TestUtils.test_yaku_advanced("space", [], """
     {
       "starting_hand": {
         "east": ["5z", "6z", "7z", "1z", "2z", "3z", "2z", "3z", "4z", "2m", "2m", "2m", "6m"],
@@ -51,7 +51,7 @@ defmodule RiichiAdvanced.YakuTest.SpaceYaku do
   end
 
   test "space - honors sequences wrap" do
-    TestUtils.test_yaku_advanced("riichi", ["space"], """
+    TestUtils.test_yaku_advanced("space", [], """
     {
       "starting_hand": {
         "east": ["5z", "6z", "7z", "1z", "2z", "4z", "5m", "5m", "5m", "2m", "2m", "2m", "6m"],
@@ -75,7 +75,7 @@ defmodule RiichiAdvanced.YakuTest.SpaceYaku do
   end
 
   test "space - chiitoitsu doesn't work" do
-    TestUtils.test_yaku_advanced("riichi", ["space"], """
+    TestUtils.test_yaku_advanced("space", [], """
     {
       "starting_hand": {
         "east": ["2m", "2m", "5m", "5m", "7m", "7m", "1p", "1p", "4p", "4p", "4s", "4s", "5s"],
@@ -92,7 +92,7 @@ defmodule RiichiAdvanced.YakuTest.SpaceYaku do
   end
 
   test "space - can chii from toimen" do
-    TestUtils.test_yaku_advanced("riichi", ["space"], """
+    TestUtils.test_yaku_advanced("space", [], """
     {
       "starting_hand": {
         "east": ["5z", "6z", "7z", "1z", "2z", "4z", "5m", "5m", "5m", "2m", "2m", "2m", "6m"],
@@ -117,7 +117,7 @@ defmodule RiichiAdvanced.YakuTest.SpaceYaku do
   end
 
   test "space - can chii from shimocha" do
-    TestUtils.test_yaku_advanced("riichi", ["space"], """
+    TestUtils.test_yaku_advanced("space", [], """
     {
       "starting_hand": {
         "east": ["5z", "6z", "7z", "1z", "2z", "4z", "5m", "5m", "5m", "2m", "2m", "2m", "6m"],
@@ -142,7 +142,7 @@ defmodule RiichiAdvanced.YakuTest.SpaceYaku do
   end
 
   test "space - open kokushi" do
-    TestUtils.test_yaku_advanced("riichi", ["space"], """
+    TestUtils.test_yaku_advanced("space", [], """
     {
       "starting_hand": {
         "east": ["1m", "9m", "1p", "9p", "1s", "9s", "5m", "2z", "3z", "4z", "5m", "6z", "7z"],
@@ -172,7 +172,7 @@ defmodule RiichiAdvanced.YakuTest.SpaceYaku do
   end
 
   test "space - chanta" do
-    TestUtils.test_yaku_advanced("riichi", ["space"], """
+    TestUtils.test_yaku_advanced("space", [], """
     {
       "starting_hand": {
         "east": ["9m", "1m", "2m", "8p", "9p", "1p", "1s", "2s", "3s", "7z", "7z", "9s", "9s"],
@@ -196,7 +196,7 @@ defmodule RiichiAdvanced.YakuTest.SpaceYaku do
   end
 
   test "space - junchan" do
-    TestUtils.test_yaku_advanced("riichi", ["space"], """
+    TestUtils.test_yaku_advanced("space", [], """
     {
       "starting_hand": {
         "east": ["9m", "1m", "2m", "8p", "9p", "1p", "1s", "2s", "3s", "9p", "9p", "9s", "9s"],
@@ -244,7 +244,7 @@ defmodule RiichiAdvanced.YakuTest.SpaceYaku do
   end
 
   test "space - chuuren go spinny" do
-    TestUtils.test_yaku_advanced("riichi", ["space"], """
+    TestUtils.test_yaku_advanced("space", [], """
     {
       "starting_hand": {
         "east": ["4m", "4m", "4m", "5m", "6m", "7m", "8m", "9m", "1m", "2m", "3m", "3m", "3m"],

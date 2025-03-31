@@ -3,7 +3,7 @@ defmodule RiichiAdvanced.YakuTest.GalaxyYaku do
   alias RiichiAdvanced.TestUtils, as: TestUtils
 
   test "galaxy - galaxy jokers work" do
-    TestUtils.test_yaku_advanced("galaxy", ["galaxy"], """
+    TestUtils.test_yaku_advanced("galaxy", [], """
     {
       "starting_hand": {
         "east": ["2m", "3m", "14s", "14p", "5m", "6m", "7p", "7p", "17m", "5z", "16z", "1z", "14z"],
@@ -27,7 +27,7 @@ defmodule RiichiAdvanced.YakuTest.GalaxyYaku do
   end
 
   test "galaxy - galaxy jokers should only give one dragon yaku" do
-    TestUtils.test_yaku_advanced("galaxy", ["galaxy"], """
+    TestUtils.test_yaku_advanced("galaxy", [], """
     {
       "starting_hand": {
         "east": ["2m", "3m", "4m", "4m", "5m", "6m", "7p", "7p", "7p", "8s", "8s", "15z", "16z"],
@@ -59,7 +59,7 @@ defmodule RiichiAdvanced.YakuTest.GalaxyYaku do
   end
 
   test "galaxy - galaxy jokers should give the best wind yaku" do
-    TestUtils.test_yaku_advanced("galaxy", ["galaxy"], """
+    TestUtils.test_yaku_advanced("galaxy", [], """
     {
       "starting_hand": {
         "east": ["2m", "3m", "4m", "4m", "5m", "6m", "7p", "7p", "7p", "8s", "8s", "12z", "13z"],
@@ -83,7 +83,7 @@ defmodule RiichiAdvanced.YakuTest.GalaxyYaku do
   end
 
   test "galaxy - furiten works" do
-    TestUtils.test_yaku_advanced("galaxy", ["galaxy"], """
+    TestUtils.test_yaku_advanced("galaxy", [], """
     {
       "starting_hand": {
         "east": ["2m", "3m", "4m", "4m", "5m", "6m", "7p", "7p", "7p", "8s", "8s", "12z", "13z"],
@@ -100,7 +100,7 @@ defmodule RiichiAdvanced.YakuTest.GalaxyYaku do
   end
 
   test "galaxy - milky way" do
-    TestUtils.test_yaku_advanced("galaxy", ["galaxy"], """
+    TestUtils.test_yaku_advanced("galaxy", [], """
     {
       "starting_hand": {
         "east": ["13m", "14m", "18m", "19m", "12p", "15p", "16p", "17p", "11s", "18s", "14s", "15z", "16z"],
@@ -123,7 +123,7 @@ defmodule RiichiAdvanced.YakuTest.GalaxyYaku do
 
   # # fails with [{"Tenhou", 1}, {"Milky Way", 1}] on github's servers for some reason
   # test "galaxy - milky way ryuuiisou" do
-  #   TestUtils.test_yaku_advanced("galaxy", ["galaxy"], """
+  #   TestUtils.test_yaku_advanced("galaxy", [], """
   #   {
   #     "starting_hand": {
   #       "east": ["12m", "13m", "14m", "16m", "18m", "16p", "18p", "12s", "13s", "14s", "16s", "18s", "16z"],

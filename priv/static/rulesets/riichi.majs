@@ -398,12 +398,6 @@ on after_turn_change do
   if not_game_start do
     discard_passed
   end
-  if no_tiles_remaining do
-    pause(1000)
-    ryuukyoku
-  else
-    draw
-  end
 end
 
 on before_call do
@@ -489,56 +483,16 @@ define_button tsumo,
     win_by_draw
   end
 
-define_auto_button _1_auto_sort,
-  display_name: "A",
-  desc: "Automatically sort your hand.",
-  enabled_at_start: true
-  do
-    sort_hand
-  end
-
-define_auto_button _2_auto_ron,
-  display_name: "R",
-  desc: "Automatically declare wins."
-  do
-    if buttons_include("ron") do
-      press_button("ron")
-    end
-    if buttons_include("tsumo") do
-      press_button("tsumo")
-    end
-  end
-
-define_auto_button _3_auto_no_call,
-  display_name: "C",
-  desc: "Skip all calls except wins."
-  do
-    if not_our_turn and buttons_include("skip") and buttons_exclude("ron", "chankan") do
-      press_button("skip")
-    end
-  end
-
-define_const no_auto_discard_calls, ["tsumo", "ankan"]
-define_auto_button _4_auto_discard,
-  display_name: "D",
-  desc: "Automatically discard your drawn tile."
-  do
-    if our_turn and buttons_exclude(+@no_auto_discard_calls) and has_draw do
-      discard_draw
-    end
-  end
-
 set interruptible_actions, ["play_tile", "draw", "advance_turn", "self_call", "upgrade_call", "recalculate_buttons"]
 set shown_statuses, ["furiten"]
 set display_wall, true
 set initial_score, 25000
 set initial_dead_wall_length, 14
-set starting_tiles, 13
 set max_rounds, 8
+set four_rows_discards, false
 
 # mods
 define_mod_category "Rules"
-define_mod riichi_kan, name: "Kan", order: -2, desc: "Enable kan. If you have four of a tile in hand, you may create a concealed kan (ankan). If you have three of a tile and someone discards the fourth, you may create an open kan (daiminkan). If you have called a triplet and draw the fourth tile, you may create an added kan (kakan). Kan calls count as triplets for the purposes of winning and scoring, but they award 4x triplet fu. In all three cases, after declaring kan you draw a replacement tile from the dead wall. Winning on this replacement tile awards the rinshan yaku (1 han). One may also call ron on a tile added to an added kan (kakan) for the chankan yaku (1 han). Having three kans is 2 han (sankantsu), and having four is yakuman. There can be at most four kans in a single game."
 define_mod honba, name: "Honba", order: -1, desc: "Enables honba."
 config_mod honba, name: "value", values: [100, 500, 1000]
 define_mod nagashi, name: "Nagashi", order: -1, desc: "Enable nagashi mangan. When you discards are all terminals and honors at exhaustive draw, and none of your discards have been called, then you are paid mangan tsumo at draw."

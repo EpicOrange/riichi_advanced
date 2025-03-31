@@ -3,7 +3,6 @@ defmodule RiichiAdvanced.KansaiZanScoring do
   alias RiichiAdvanced.TestUtils, as: TestUtils
 
   @zan_mods [
-    "riichi_kan",
     %{name: "honba", config: %{value: 1000}},
     %{name: "nagashi", config: %{is: "Yakuman"}},
     %{name: "tobi", config: %{below: 1}},

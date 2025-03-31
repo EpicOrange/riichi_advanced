@@ -27,11 +27,12 @@ define_auto_button _3_auto_no_call,
     end
   end
 
+define_const no_auto_discard_calls, ["tsumo", "ankan"]
 define_auto_button _4_auto_discard,
   display_name: "D",
   desc: "Automatically discard your drawn tile."
   do
-    if our_turn and buttons_exclude("tsumo", "ankan") and has_draw do
+    if our_turn and buttons_exclude(+@no_auto_discard_calls) and has_draw do
       discard_draw
     end
   end
