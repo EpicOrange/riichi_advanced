@@ -111,9 +111,22 @@ defmodule RiichiAdvanced.ModLoader do
     end
   end
 
+  @some_majs_commands ["set", "on", "define_set", "define_match", "define_const", "define_yaku", "define_yaku_precedence", "remove_yaku", "replace_yaku", "define_button", "define_auto_button", "define_mod_category", "define_mod", "config_mod", "remove_mod", "apply", "replace_all"]
+  defp verify_jq(name, jq) do
+    # this is mostly for in case you forget to change the .jq extension to .majs
+    jq
+    |> String.split("\n", trim: true)
+    |> Enum.map(&String.split(&1) |> Enum.at(0))
+    |> Enum.any?(& &1 in @some_majs_commands)
+    |> if do
+      IO.puts("\nWARNING: file #{name}.jq looks kind of like .majs!\n")
+    end
+  end
   def read_mod_jq(name) do
     case File.read(Application.app_dir(:riichi_advanced, "/priv/static/mods/#{name}.jq")) do
-      {:ok, mod_jq} -> mod_jq
+      {:ok, mod_jq} ->
+        verify_jq(name, mod_jq)
+        mod_jq
       {:error, _err}      ->
         case File.read(Application.app_dir(:riichi_advanced, "/priv/static/mods/#{name}.majs")) do
           {:ok, mod_majs} -> convert_to_jq(mod_majs)

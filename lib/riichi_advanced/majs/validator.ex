@@ -21,13 +21,16 @@ defmodule RiichiAdvanced.Validator do
   def validate_json(nil), do: {:ok, nil}
   def validate_json(true), do: {:ok, true}
   def validate_json(false), do: {:ok, false}
-  def validate_json(ast) when is_integer(ast) or is_float(ast), do: {:ok, ast}
+  def validate_json(ast) when is_number(ast), do: {:ok, ast}
   def validate_json({:-, _pos, [value]}) when is_integer(value), do: {:ok, -value} # negative literals
   def validate_json(ast) when is_binary(ast), do: {:ok, sanitize_string(ast)}
   def validate_json(ast) when is_list(ast), do: ast |> Enum.map(&validate_json(&1)) |> Utils.sequence()
   def validate_json({:+, _, [{:@, _, [{name, _, nil}]}]}) when is_binary(name), do: validate_constant(name, true)
   def validate_json({:@, _, [{name, _, nil}]}) when is_binary(name), do: validate_constant(name)
   def validate_json({:!, _, [{name, _, nil}]}) when is_binary(name), do: validate_variable(name)
+  def validate_json({:+, _, _} = ast), do: validate_expression(ast)
+  def validate_json({:-, _, _} = ast), do: validate_expression(ast)
+  def validate_json({:*, _, _} = ast), do: validate_expression(ast)
   # def validate_json(%RiichiAdvanced.Compiler.Constant{name: name}), do: validate_constant(name)
   # def validate_json(%RiichiAdvanced.Compiler.Variable{name: name}), do: validate_variable(name)
   # def validate_json(ast) when is_map(ast), do: validate_map(ast) # this matches structs...
@@ -35,6 +38,20 @@ defmodule RiichiAdvanced.Validator do
   def validate_json(not_json) do
     # IO.inspect(Process.info(self(), :current_stacktrace))
     {:error, "invalid JSON: #{inspect(not_json)}"}
+  end
+
+  # numeric expressions can only contain numeric expressions, not JSON
+  def validate_expression(ast) when is_number(ast), do: {:ok, ast}
+  def validate_expression({:!, _, [{name, _, nil}]}), do: validate_variable(name)
+  def validate_expression({:+, _, [l, r]}), do: validate_operands(:+, l, r)
+  def validate_expression({:-, _, [l, r]}), do: validate_operands(:-, l, r)
+  def validate_expression({:*, _, [l, r]}), do: validate_operands(:*, l, r)
+  def validate_expression(ast), do: {:error, "non-numeric node in expression: #{inspect(ast)}"}
+  def validate_operands(op, l, r) when is_atom(op) do
+    with {:ok, l} <- validate_expression(l),
+         {:ok, r} <- validate_expression(r) do
+      {:ok, %RiichiAdvanced.Compiler.Expression{op: op, l: l, r: r}}
+    end
   end
 
   def validate_map(map) do

@@ -99,13 +99,8 @@ defmodule RiichiAdvanced.Parser do
       end
     end |> Utils.sequence()
   end
-  def parse_sigils(nil), do: {:ok, nil}
-  def parse_sigils(true), do: {:ok, true}
-  def parse_sigils(false), do: {:ok, false}
-  def parse_sigils(ast) when is_integer(ast) or is_float(ast) or is_binary(ast), do: {:ok, ast}
   def parse_sigils({:sigil_s, _, [{:<<>>, _, [set_spec]}, _args]}) when is_binary(set_spec), do: parse_set(set_spec)
   def parse_sigils({:sigil_m, _, [{:<<>>, _, [match_spec]}, _args]}) when is_binary(match_spec), do: parse_match(match_spec)
-  def parse_sigils([]), do: {:ok, []}
   def parse_sigils([do: expr]), do: parse_sigils(expr)
   def parse_sigils(ast) when is_list(ast) do
     # check if keyword list (except the keys are binaries, not atoms)
@@ -120,8 +115,6 @@ defmodule RiichiAdvanced.Parser do
       ast |> Enum.map(&parse_sigils/1) |> Utils.sequence()
     end
   end
-  def parse_sigils(%RiichiAdvanced.Compiler.Constant{} = ast), do: {:ok, ast}
-  def parse_sigils(%RiichiAdvanced.Compiler.Variable{} = ast), do: {:ok, ast}
   def parse_sigils({:%{}, pos, contents}) do
     parsed_map = contents
     |> Enum.map(fn {key, val} ->
@@ -137,6 +130,6 @@ defmodule RiichiAdvanced.Parser do
       {:ok, {:%{}, pos, parsed_map}}
     end
   end
-  def parse_sigils({_other, _pos, _nodes} = ast), do: {:ok, ast}
+  def parse_sigils(ast), do: {:ok, ast}
 
 end

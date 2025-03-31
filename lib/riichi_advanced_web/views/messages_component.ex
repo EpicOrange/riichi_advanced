@@ -43,7 +43,7 @@ defmodule RiichiAdvancedWeb.MessagesComponent do
           case segment do
             <<"%{" <> rest>> ->
               var_name = String.trim_trailing(rest, "}")
-              case Map.get(vars, String.to_existing_atom(var_name)) do
+              case Map.get(vars, String.to_existing_atom(var_name)) || Map.get(vars, var_name) do
                 {:tile, tile} ->
                   acc = acc ++ [Map.merge(message, %{text: current, vars: current_vars})] ++ [Utils.pt(tile)]
                   {acc, "", %{}}
@@ -53,6 +53,9 @@ defmodule RiichiAdvancedWeb.MessagesComponent do
                 {:text, text, attrs} ->
                   acc = acc ++ [Map.merge(message, %{text: current, vars: current_vars}), Map.put(attrs, :text, text)]
                   {acc, "", %{}}
+                nil ->
+                  IO.puts("WARNING: tried to reference gettext interpolation variable #{var_name} but it was not provided")
+                  {acc, current, current_vars}
                 val ->
                   current = current <> "%{#{var_name}}"
                   current_vars = Map.put(current_vars, String.to_existing_atom(var_name), to_string(val))

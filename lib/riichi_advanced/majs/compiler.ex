@@ -22,6 +22,26 @@ defimpl Jason.Encoder, for: RiichiAdvanced.Compiler.Variable do
   end
 end
 
+defmodule RiichiAdvanced.Compiler.Expression do
+  defstruct [
+    op: :+,
+    l: nil,
+    r: nil
+  ]
+end
+
+defimpl Jason.Encoder, for: RiichiAdvanced.Compiler.Expression do
+  # runtime check that variables in expressions are numbers
+  def encode_operand(%RiichiAdvanced.Compiler.Variable{name: name} = var, opts) do
+    json = Jason.Encode.value(var, opts) |> IO.iodata_to_binary()
+    ["(if ", json, " | type == \"number\" then ", json, " else error(\"variable ", json, " in expression is not a number\") end)"]
+  end
+  def encode_operand(operand, opts), do: Jason.Encode.value(operand, opts)
+  def encode(%RiichiAdvanced.Compiler.Expression{op: op, l: l, r: r}, opts) do
+    ["("] ++ List.wrap(encode_operand(l, opts)) ++ [Atom.to_string(op)] ++ List.wrap(encode_operand(r, opts)) ++ [")"]
+  end
+end
+
 defmodule RiichiAdvanced.Compiler do
   alias RiichiAdvanced.Compiler.Constant
   alias RiichiAdvanced.Compiler.Variable
@@ -51,6 +71,10 @@ defmodule RiichiAdvanced.Compiler do
         end
       {:+, _, _} -> Validator.validate_json(condition)
       {:@, _, _} -> Validator.validate_json(condition)
+      # since conditions are checked first in compile_constant/3, 
+      # the below case will catch all variables that aren't in expressions,
+      # whose type we don't know at compile time
+      # so just return it as is, even though we're supposed to return booleans
       {:!, _, _} -> Validator.validate_json(condition)
       _ ->
         condition = case condition do
@@ -231,23 +255,21 @@ defmodule RiichiAdvanced.Compiler do
 
   defp compile_constant(true, _line, _column), do: {:ok, true}
   defp compile_constant(false, _line, _column), do: {:ok, false}
+  # if it's a do block, use compile_action_list
+  defp compile_constant([do: actions], line, column), do: compile_action_list(actions, line, column)
   defp compile_constant(value, line, column) do
-    case value do
-      # if it's a do block, use compile_action_list
-      [do: actions] -> compile_action_list(actions, line, column)
-      # otherwise, try a bunch of things
-      # this order is important: 
-      # compile_action will treat conditions as custom actions (function calls)
-      # validate_json will treat actions/conditions as raw JSON
-      # compile_cnf_condition defaults to a single condition
-      _ ->
-        with {:ok, value} <- Parser.parse_sigils(value),
-             {:error, _} <- compile_condition(value, line, column),
-             {:error, _} <- compile_action(value, line, column),
-             {:error, _} <- Validator.validate_json(value),
-             {:error, _} <- compile_cnf_condition(value, line, column) do
-          {:error, "Compiler.compile_constant: at line #{line}:#{column}, expected JSON, condition, action, or do block, got #{inspect(value)}"}
-        end
+    # otherwise, try a bunch of things
+    # this order is important: 
+    # compile_action will treat conditions as custom actions (function calls)
+    # validate_json will treat actions/conditions as raw JSON
+    # compile_cnf_condition defaults to a single condition
+    with {:ok, value} <- Parser.parse_sigils(value),
+         {:error, _} <- compile_condition(value, line, column),
+         {:error, _} <- compile_action(value, line, column),
+         {:error, _} <- Validator.validate_expression(value),
+         {:error, _} <- Validator.validate_json(value),
+         {:error, _} <- compile_cnf_condition(value, line, column) do
+      {:error, "Compiler.compile_constant: at line #{line}:#{column}, expected JSON, condition, action, or do block, got #{inspect(value)}"}
     end
   end
 
