@@ -277,7 +277,19 @@ defmodule RiichiAdvanced.Constants do
       display_name: "Riichi",
       tutorial_link: "https://github.com/EpicOrange/riichi_advanced/blob/main/documentation/riichi.md",
       ruleset: "riichi",
-      mods: ["riichi_kan"],
+      globals: %{
+        chii_name: "Chii",
+        pon_name: "Pon",
+        kan_name: "Kan",
+        ankan_name: "Ankan",
+        han: "Han"
+      },
+      mods: [
+        "base",
+        "global_mods", "default_auto_buttons",
+        "standard_wall", "framed_5z",
+        "riichi_kan"
+      ],
       default_mods: []
     },
     "sanma" => %{

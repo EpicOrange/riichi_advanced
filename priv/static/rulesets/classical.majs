@@ -34,10 +34,3 @@ set score_calculation, %{
   win_by_draw_name: "Zimo",
   exhaustive_draw_name: "Draw"
 }
-
-# mods
-define_mod_category "Other"
-define_mod show_waits, name: "Show Waits", desc: "Add some UI that shows waits."
-define_mod open_hands, name: "Open Hands", desc: "Everyone plays with tiles shown."
-
-set default_mods, ["show_waits"]
