@@ -31,7 +31,6 @@ defmodule RiichiAdvancedWeb.Translations do
     ret = Gettext.with_locale(RiichiAdvancedWeb.Gettext, lang, fn ->
       Gettext.dgettext(RiichiAdvancedWeb.Gettext, "default", ident, bindings)
     end)
-    IO.inspect({ident, ret, bindings})
     if ident == ret do
       # no entry found, so gettext doesn't do substitution, so substitute variables manually
       for {from, to} <- bindings, reduce: ident do

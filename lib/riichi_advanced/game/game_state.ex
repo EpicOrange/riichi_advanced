@@ -1271,7 +1271,7 @@ defmodule RiichiAdvanced.GameState do
     |> Enum.map(fn {hand, _calls} -> tiles -- hand end)
     |> Enum.uniq()
     |> Enum.map(fn hand ->
-      state = update_player(state, seat, &%Player{ &1 | hand: hand, status: ["riichi"] }) # avoid renhou
+      state = update_player(state, seat, &%Player{ &1 | hand: hand, status: MapSet.new(["riichi"]) }) # avoid renhou
       # run before_win actions
       state = Actions.trigger_event(state, "before_win", %{seat: seat, win_source: :discard})
       # run before_scoring actions
