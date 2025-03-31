@@ -84,6 +84,19 @@ Rules
 3 Han
 4 Han
 5 Han
+1 Fan
+2 Fan
+3 Fan
+4 Fan
+5 Fan
+6 Fan
+7 Fan
+8 Fan
+9 Fan
+10 Fan
+11 Fan
+12 Fan
+13 Fan
 Yakuman
 Chii
 Pon
@@ -305,8 +318,14 @@ Intro to space mahjong
 Intro to cosmic mahjong
 Intro to galaxy mahjong
 Milky Way
-Show Waits
-Open Hands
+Three Fan Minimum
+Seven Flower Bonus
+12 Tile Pao
+Flowers Open Hand
+Remove Flowers
+Head Bump
+Seven Pairs
+Everyone Pays On Discard
 Kan
 Honba
 Nagashi
@@ -338,6 +357,7 @@ Toriuchi
 Kansai Chiitoitsu
 Minimum Han
 No Riichi Ankan
+No Fifth Tile Tenpai
 Kokushi Chankan
 First Gets Riichi Sticks
 Starting Points
@@ -437,8 +457,6 @@ Blue Tunnel
 Junsei Ryuuiisou
 Chousangen
 Chousuushii
-Show Waits
-Open Hands
 Cancellable Riichi
 Ten
 Star Suit (beta)
@@ -469,7 +487,8 @@ Chanfuun
 Fuunburi
 Uumensai (cosmic)
 Sanankon
-Yakuman 13 Han
+Show Waits
+Open Hands
 Draw To Dora Indicator
 Kansai Flowers
 No Furiten Riichi
@@ -479,8 +498,14 @@ No 100 sticks
 Zan Shuugi
 Zan Scoring
 No Tsumo Loss
-Add some UI that shows waits.
-Everyone plays with tiles shown.
+Only allow wins worth 3+ fan.
+Adds bonuses for obtaining 7 or 8 flowers. You can also allow instant win upon obtaining 7 or 8 flowers.
+If you discarded a tile called as someone's fourth call, you are liable for paying for their hand if they win.
+A hand with flowers declared cannot earn 1 fan from Concealed Hand.
+Remove all eight flowers from the wall.
+Enable head bump. In case of multiple hu, only the person closest in turn order gets the win.
+Add seven pairs as a possible winning hand, worth 4 fan.
+Discarder pays 2x hand value, other players pay 1x.
 Enable kan. If you have four of a tile in hand, you may create a concealed kan (ankan). If you have three of a tile and someone discards the fourth, you may create an open kan (daiminkan). If you have called a triplet and draw the fourth tile, you may create an added kan (kakan). Kan calls count as triplets for the purposes of winning and scoring, but they award 4x triplet fu. In all three cases, after declaring kan you draw a replacement tile from the dead wall. Winning on this replacement tile awards the rinshan yaku (1 han). One may also call ron on a tile added to an added kan (kakan) for the chankan yaku (1 han). Having three kans is 2 han (sankantsu), and having four is yakuman. There can be at most four kans in a single game.
 Enables honba.
 Enable nagashi mangan. When you discards are all terminals and honors at exhaustive draw, and none of your discards have been called, then you are paid mangan tsumo at draw.
@@ -512,6 +537,7 @@ On ron, each 1s (bird) tile is worth 1 shuugi, unless the discarder's hand conta
 Chiitoitsu now allows repeated pairs.
 Minimum han required to win.
 Disallow any concealed kan while in riichi, not just ones that change your waits.
+At exhaustive draw, you are not considered tenpai if all four tiles of each wait is in hand: for example, 123456789m1111p. You may still declare riichi with such a hand, however.
 Allow robbing ankans if in tenpai for kokushi musou.
 At the end of the game, all leftover riichi sticks on the table are given to first place. (Otherwise they are lost.)
 Number of points each player starts with. You can also set this by writing the following in the Config tab: \\\"initial_score\\\": 100000
@@ -611,8 +637,6 @@ Local yakuman. If your hand consists of only 248p (2,4,8 circles), green dragon,
 Local yakuman. If you have ryuuiisou without green dragon, it's double yakuman. Doesn't stack with ryuuiisou.
 Local yakuman. If you have kans of all three dragons, it's double yakuman. Doesn't stack with daisangen.
 Local yakuman. If you have kans of all four winds, it's quadruple yakuman. Doesn't stack with daisuushi and suukantsu.
-Add some UI that shows waits.
-Everyone plays with tiles shown.
 Everyone plays with tiles shown.
 Adds 10m, 10p, and 10s. Changes dora accordingly (if dora is enabled). Tanyao now allows nines, and chanta/junchan/honroutou require tens instead. 13 Orphans now requires the ten instead of the nine of each suit. Ittsu allows 23456789T.
 Adds a fourth suit (stars). This suit does not form yaku. This mod is in beta because we should probably write some yaku for it.
@@ -643,7 +667,8 @@ A wind kontsu counts as 0.5 han if it contains both the round wind and seat wind
 1 han if you win off the tile discarded by a player who just called fuun.
 2 han if each of your four sets is of a different kind: sequence, triplet, mixed triplet (kontsu), kan, mixed quad (fuun).
 Local yaku. 1 han for having three concealed kontsu. 3 han for having four, and 6 han for having four waiting on your pair.
-This is a utility mod for Cosmic Riichi that changes all yakuman to be 13 han. You may disable it if you don't want yakuman to stack with normal yaku.
+Add some UI that shows waits.
+Everyone plays with tiles shown.
 The game ends once the next draw is the last dora indicator.
 Four flowers are added to the game and act as nukidora. Flowers cannot form sequences, triplets, or pairs. North winds are no longer nukidora, but they are now yakuhai: a triplet is worth 1 han, and a pair is worth 2 fu.
 Riichi is disallowed while in furiten.
@@ -660,7 +685,7 @@ WRC 2022
 M.League
 Just Like Modded Minecraft
 Zan Sanma
-Other
+Rules
 Rules
 Abortive Draws
 Dora
@@ -670,7 +695,9 @@ Mangan
 Yakuman
 Other
 Cosmic
+Other
 Kansai
+win_on
 value
 is
 below
@@ -709,6 +736,3011 @@ sou
 bet
 drawless
 is
+Riichi
+Sanma
+Cosmic Riichi
+No Jokers Mahjong League 2024
+Space Mahjong
+Galaxy Mahjong
+Chinitsu Challenge
+Minefield
+Kansai Sanma
+Kansai Sanma
+Speed Mahjong
+Hong Kong Old Style
+Chinese Classical
+A
+Pair
+Chii
+Pon
+Ron
+Tsumo
+A
+R
+C
+D
+Select three tiles to pass left
+Select three tiles to pass across
+Select three tiles to pass right
+No Craks
+No Dots
+No Bams
+Pong
+Kong
+Concealed Kong
+Kong
+Hu
+Hu
+Zimo
+A
+R
+C
+D
+V
+American
+Any Like Numbers #1
+Any Like Numbers #2
+Any Like Numbers #3
+Lucky Sevens #1
+Lucky Sevens #2
+Lucky Sevens #3
+Winds and Dragons #1
+Winds and Dragons #2
+Winds and Dragons #3
+Winds and Dragons #4
+Winds and Dragons #5
+Winds and Dragons #6
+Winds and Dragons #7
+Singles and Pairs #1
+Singles and Pairs #2
+Singles and Pairs #3
+Singles and Pairs #4
+Singles and Pairs #5
+Singles and Pairs #6
+Quints #1
+Quints #2
+Quints #3
+Quints #4
+Consecutive Run #1
+Consecutive Run #2
+Consecutive Run #3
+Consecutive Run #4
+Consecutive Run #5
+Consecutive Run #6
+Consecutive Run #7
+Consecutive Run #8
+Select three tiles to pass left
+Select three tiles to pass across
+Select three tiles to pass right
+Continue Charleston
+Skip Charleston
+Offer 0
+Offer 1
+Offer 2
+Offer 3
+Pass no tiles across
+Select a tile to pass across
+Select two tiles to pass across
+Select three tiles to pass across
+Pung
+Kong
+Quint
+Swap for exposed joker
+Mah Jongg
+Mah Jongg
+Mah Jongg
+Declare hand on right dead
+Declare hand across dead
+Declare hand on left dead
+Cancel
+A
+M
+C
+JC
+DC
+D
+DD
+Bloody 30 Faan Jokers
+Flower
+Flower
+Flower
+Flower
+Flower
+Flower
+Flower
+Flower
+No Honors or Flowers
+No Jokers
+All Honors
+White Dragon
+Green Dragon
+Red Dragon
+Round Wind
+Seat Wind
+Little Three Winds
+Little Three Dragons
+Big Three Winds
+Big Three Dragons
+Little Four Winds
+Big Four Winds
+Terminal Sequences
+All Simples
+Mixed Outside Hand
+Pure Outside Hand
+Double Terminal Sequences
+Pure Double Terminal Sequences
+Mixed Terminals
+Pure Terminals
+One Voided Suit
+All Types
+Mixed Flush
+Full Flush
+Open Nine Gates
+Nine Gates
+Open Kong
+Concealed Kong
+Two Kongs
+Three Kongs
+Four Kongs
+Two Concealed Triplets
+Three Concealed Triplets
+Four Concealed Triplets
+Two Shifted Triplets
+Three Small Shifted Triplets
+Three Pure Shifted Triplets
+Four Pure Small Shifted Triplets
+Four Pure Shifted Triplets
+Three Mixed Small Shifted Triplets
+Three Mixed Shifted Triplets
+Four Mixed Small Shifted Triplets
+Four Mixed Shifted Triplets
+Five Mixed Small Shifted Triplets
+Double Triplets
+Small Triple Triplets
+Triple Triplets
+Quadruple Triplets
+All Triplets
+Double Sequences
+Double Sequences
+Triple Sequences
+Pure Triple Sequence
+Pure Quadruple Sequence
+Short Straight
+Short Straight
+Double Short Straight
+Pure Double Short Straight
+Identical Sequences
+Double Identical Sequences
+Pure Double Identical Sequences
+Three Mixed Shifted Sequences
+Four Mixed Shifted Sequences
+Three Pure Shifted Sequences
+Four Pure Shifted Sequences
+Three Mixed Linked Sequences
+Three Pure Linked Sequences
+Golden Gate Bridge
+Mixed Straight
+Pure Straight
+All Sequences
+Tile Hog (2)
+Tile Hog (3)
+Tile Hog (4)
+Double Tile Hog
+Triple Tile Hog
+All Like Numbers
+All Odds
+All Evens
+One Suji Only
+Three Number Hand
+Two Number Hand
+After a Flower
+After a Kong
+Robbing a Kong
+Under the Sea
+Within Ten Tiles
+Within Seven Tiles
+Hand of Man
+Hand of Heaven
+Hand of Earth
+Concealed Hand
+Fully Concealed Hand
+Self Drawn Melded Hand
+Melded Hand
+Hell Wait
+Seven Pairs
+Three Consecutive Pairs
+Five Consecutive Pairs
+Seven Consecutive Pairs
+Three Identical Pairs
+Three Dragons Seven Pairs
+Four Winds Seven Pairs
+Thirteen Unconnected
+Knitted Short Straight
+Knitted Short Straight
+Knitted Terminal Sequences
+Knitted Terminal Sequences
+Knitted Straight
+Knitted Triplets
+Knitted Honors
+Eyes of the General
+University Train
+Thirteen Orphans
+Mixed Shifted Linked Sequences
+Pure Shifted Linked Sequences
+Chicken Hand
+Thirteen Orphans
+Thirteen Orphans
+Sheung
+Pung
+Kong
+Self Kong
+Kong
+Hu
+Hu
+Zimo
+Flower
+A
+R
+C
+D
+A
+Pair
+Fuzhou
+Base Points
+Flowers
+Flowers
+Gold
+Gold
+Dealer Continuation
+Dealer Continuation
+Open Kong
+Open Kong
+Open Kong
+Open Kong
+Concealed Kong
+Concealed Kong
+Concealed Kong
+Concealed Kong
+Full Bloom (Flowers)
+Full Bloom (Seasons)
+Full Bloom (East)
+Full Bloom (South)
+Full Bloom (West)
+Full Bloom (North)
+Full Bloom (White)
+Full Bloom (Green)
+Full Bloom (Red)
+All Sequences
+Only One Flower
+Golden Pair
+Three Gold Knockdown
+Golden Dragon
+Robbing the Gold
+Blessing of Heaven
+Blessing of Earth
+Reveal flower
+No flowers
+Chow
+Pung
+Kong
+Self Kong
+Kong
+Hu
+Hu
+Qiangjin
+Skip
+Zimo
+Flower
+A
+R
+F
+C
+D
+Hefei Mahjong
+Suit Bonus
+Single Wait
+Same Number Bonus
+Concealed Pung
+Concealed Pungs
+Concealed Pungs
+Double Sequences
+Two Suits Only
+Concealed Double Sequences
+Concealed Kong
+Concealed Kongs
+Concealed Kongs
+Concealed Kongs
+Four of a Kind
+Dealer Repeat
+Dealer Repeats
+Seven Pairs
+Luxury Seven Pairs
+Double Luxury Seven Pairs
+Sea Floor
+Pure Suit
+Three Consecutive Pungs
+Four Concealed Pungs
+Ten Identical Tiles
+Double Concealed Double Sequences
+Heavenly Win
+Earthly Win
+Dealer Repeat
+Dealer Repeats
+Pong
+Kong
+Concealed Kong
+Kong
+Hu
+Hu
+Zimo
+No Win
+A
+R
+C
+D
+Malaysian
+Face
+Four Faces
+Animal
+All Animals
+All Flowers
+All Seasons
+Seat Flower
+Seat Flower
+Seat Flower
+Four Flower
+Seat Season
+Seat Season
+Seat Season
+Four Season
+East Wind
+North Wind
+Seat Wind
+White Dragon
+Green Dragon
+Red Dragon
+Small Three Dragons
+Half Flush
+Full Flush
+All Sequences with Dot Eye
+All Triplets
+After a Flower
+After a Gong
+Seven Pairs
+Robbing a Gong
+Nine Gates
+Small Four Winds
+Big Four Winds
+No Flowers
+Four Gongs
+Big Three Dragons
+After Multiple Gongs
+Four Concealed Triplets
+Four Fly
+Blessing of Heaven
+Blessing of Earth
+Final Tile
+All Honours
+All Sixteen Flowers
+Reveal flower
+Reveal fly
+No flowers
+Chow
+Pong
+Gong
+Concealed Gong
+Gong
+Wu
+Wu
+Wu
+Four Fly Win
+Flower
+Fly
+A
+R
+F
+C
+D
+MCR
+Big Four Winds
+Big Three Dragons
+All Green
+Nine Gates
+Four Kongs
+Seven Shifted Pairs
+Thirteen Orphans
+All Terminals
+Little Four Winds
+Little Three Dragons
+All Honors
+Four Concealed Pungs
+Pure Terminal Chows
+Quadruple Chow
+Four Pure Shifted Pungs
+Four Pure Shifted Chows
+Three Kongs
+All Terminals and Honors
+Seven Pairs
+Greater Honors and Knitted Tiles
+All Even Pungs
+Full Flush
+Pure Triple Chow
+Pure Shifted Pungs
+Upper Tiles
+Middle Tiles
+Lower Tiles
+Pure Straight
+Three-Suited Terminal Chows
+Pure Shifted Chows
+All Fives
+Triple Pung
+Three Concealed Pungs
+Lesser Honors and Knitted Tiles
+Knitted Straight
+Upper Four
+Lower Four
+Big Three Winds
+Mixed Straight
+Reversible Tiles
+Mixed Triple Chow
+Mixed Shifted Pungs
+Last Tile Draw
+Last Tile Claim
+Out with Replacement Tile
+Robbing The Kong
+Two Concealed Kongs
+All Pungs
+Half Flush
+Mixed Shifted Chows
+All Types
+Melded Hand
+Two Dragon Pungs
+Two Kongs
+Outside Hand
+Fully Concealed Hand
+Two Melded Kongs
+Last Tile
+White Dragon
+Green Dragon
+Red Dragon
+Prevalent Wind
+Seat Wind
+Concealed Hand
+All Chows
+Tile Hog
+Double Pung
+Two Concealed Pungs
+Concealed Kong
+All Simples
+Pure Double Chow
+Pure Double Chow
+Mixed Double Chow
+Mixed Double Chow
+Short Straight
+Short Straight
+Two Terminal Chows
+Two Terminal Chows
+Pung of Terminals
+Pung of Terminals
+Pung of Terminals
+Pung of Terminals
+Pung of Honors
+Pung of Honors
+Pung of Honors
+Pung of Honors
+Melded Kong
+One Voided Suit
+No Honors
+Self-Drawn
+Edge Wait
+Closed Wait
+Single Wait
+Chicken Hand
+Exclusionary Rule
+Exclusionary Rule
+Exclusionary Rule
+Flower Tiles
+Hua
+Pass
+Chi
+Pung
+Kong
+Self Kong
+Kong
+Hu
+Hu
+Hu
+Hua
+A
+H
+F
+C
+D
+Ningbo Mahjong
+Edge Wait
+Closed Wait
+Single Wait
+Win On Baida
+No Baida
+Half Flush
+Pure Flush
+All Triplets
+After a Kong
+Last Tile
+Self Draw
+Baida Reuse
+Baida Pair Win
+White Dragon
+Green Dragon
+Red Dragon
+Round Wind
+Seat Wind
+Eight Flowers
+All Honours
+Blessing of Heaven
+Blessing of Earth
+Robbing a Kong
+Robbing a Kong
+After a Kong
+Three Meld Penalty
+Reveal flower
+No flowers
+Pong
+Kong
+Self Kong
+Kong
+Hu
+Hu
+Zimo
+Flower
+A
+R
+F
+C
+D
+Sakicards v1.3
+Riichi
+Tsumo
+Chankan
+Rinshan
+Haitei
+Houtei
+Pinfu
+Tanyao
+Iipeikou
+Haku
+Hatsu
+Chun
+Round Wind
+Seat Wind
+Double Riichi
+Chiitoitsu
+Chanta
+Ittsu
+Sanshoku
+Sanshoku Doukou
+Sankantsu
+Toitoi
+Sanankou
+Shousangen
+Honroutou
+Ryanpeikou
+Junchan
+Honitsu
+Chinitsu
+Inazuma Riichi
+Chasing Riichi
+Chasing Riichi
+Shiiaru Raotai
+All Fives
+Upper Four
+Lower Four
+Mixed Straight
+Mixed Shifted Chows
+Pure Shifted Chows
+Riichi
+Uumensai
+Chanta
+Ittsu
+Sanshoku
+Junchan
+Honitsu
+Chinitsu
+All Fives
+Upper Four
+Lower Four
+Mixed Straight
+Mixed Shifted Chows
+Pure Shifted Chows
+Tanyao
+Pinfu
+Chiitoitsu
+Tsumo
+Iipeikou
+Ryanpeikou
+Riichi
+Ippatsu
+Double Riichi
+Riichi
+Tsumo
+Ippatsu
+Chankan
+Rinshan
+Haitei
+Houtei
+Pinfu
+Tanyao
+Iipeikou
+Seat Wind
+Round Wind
+Haku
+Hatsu
+Chun
+Chanta
+Ittsu
+Sanshoku
+No Yaku
+Tenhou
+Chiihou
+Daisangen
+Suuankou
+Suuankou Tanki
+Tsuuiisou
+Ryuuiisou
+Chinroutou
+Chuurenpoutou
+Junsei Chuurenpoutou
+Kokushi Musou
+Kokushi Musou Juusan Menmachi
+Daisuushii
+Shousuushii
+Suukantsu
+Suuankou Tanki
+Junsei Chuurenpoutou
+Kokushi Musou Juusan Menmachi
+Dora
+Aka
+Ura
+Reverse Dora
+Discarded Triplets
+Triplets
+Warm Tiles
+Warm Tiles
+Warm Tiles
+Warm Tiles
+Reversible tiles
+Reversible tiles
+Reversible tiles
+Reversible tiles
+Three-Sided Wait
+Single Wait
+Takimi Haru
+Furiten Tsumo
+Haku Tsumo
+Nelly Virsaladze
+Nelly Virsaladze
+Nelly Virsaladze
+Facedown Tiles
+Facedown Tiles
+Facedown Tiles
+Facedown Tiles
+Facedown Tiles
+Facedown Tiles
+Each 2000 Bet
+Aside Tiles
+Ryuuka Tsumo
+Aside Tiles
+Aside Tiles
+Aside Tiles
+Wind Melds
+Revealed Tiles
+Voided Suit
+Voided Suit
+Hirose Sumire
+Hirose Sumire
+Four Suits
+Draft Character Card
+Swap a discard with same suit in hand
+Swap dora indicator with same suit in hand
+Swap last discard with a terminal/honor
+Discard facedown
+Inazuma Riichi
+Place 4 tiles at the end of the live wall (last selection is haitei)
+Set aside 4th tile from discards
+Skip
+Place 2 tiles at the end of the dead wall (last selection is first kan draw)
+Place 2 tiles at the end of the dead wall (last selection is first kan draw)
+Draw an extra tile and set it aside
+Draw aside tile
+Draw from wall
+Swap tile with aside
+Discard facedown
+Draw from your discards
+Skip
+Discard facedown
+Move haitei tile from live wall to dead wall
+Move two tiles instead
+Bet 1000 to change wait to aside tiles
+Swap a number tile with any same number discard
+Swap a number tile with any same number discard
+Interrupt call
+Interrupt swap
+Interrupt facedown discard
+Skip
+Skip
+Manzu
+Pinzu
+Souzu
+Jihai
+Reveal and set aside 3 tiles
+Draw from aside
+Draw from Suehara Kyouko's aside
+Draw from Suehara Kyouko's aside
+Draw from Suehara Kyouko's aside
+Draw from wall
+Manzu
+Pinzu
+Souzu
+Jihai
+Bet half of points to flip 3 dora indicators
+Discard facedown
+Swap a number tile with any discarded wind tile
+Declare iishanten
+Riichi
+Steal tile and declare riichi
+Skip
+Manzu
+Pinzu
+Souzu
+Ron previous discard
+Discard same tile again
+Look at next two tiles in the wall
+No swap
+Swap 1
+Swap 2
+Swap out dora indicator
+Reveal next tile from wall
+Set 10 tiles aside faceup
+Declare yaku
+Draw from aside
+Swap open melds
+Flip any discard facedown
+Tell shimocha/toimen to swap
+Tell shimocha/kamicha to swap
+Tell toimen/kamicha to swap
+Perform swap
+Pay 1500 to decline the swap
+Pay 1500 to decline the swap
+Pay 1500 to decline the swap
+Swap with shimocha
+Swap with toimen
+Swap with kamicha
+Duel shimocha
+Duel toimen
+Duel kamicha
+Choose shimocha
+Choose toimen
+Choose kamicha
+Reveal three tiles and uradora
+Swap two tiles
+Done swapping
+Choose a tile to draw
+Select order to place remaining tiles (second selection is haitei)
+Kan (closed)
+Kan (closed)
+Chii
+Chii with priority
+Pon
+Pon red dragon with priority
+Kan
+Ankan
+Kan
+Riichi
+Ron
+Ron
+Tsumo
+Kyuushu Kyuuhai
+Take extra turn
+Skip extra turn
+Skip extra turn to discard facedown
+A
+R
+C
+D
+Singaporean
+Animal Tiles
+Animal Tiles
+Animal Tiles
+Animal Tiles
+Seat Flower
+Seat Flower
+Seat Flower
+Seat Flower
+Seat Season
+Seat Season
+Seat Season
+Seat Season
+White Dragon
+Green Dragon
+Red Dragon
+Prevailing Wind
+Seat Wind
+Little Ping Hu
+Fully Concealed Hand
+Final Tile
+After a Flower
+After a Kong
+Robbing a Kong
+All Flowers
+All Seasons
+Half Flush
+All Pungs
+Three Lesser Scholars
+Full Flush
+Big Ping Hu
+All Terminals Or Honors
+Four Lesser Blessings
+Seven Flowers
+Eight Flowers
+All Animals
+All Honors
+All Terminals
+Hidden Treasure
+Thirteen Orphans
+All Green
+Nine Gates
+Eighteen Arhats
+Kong On Kong
+Heavenly Hand
+Earthly Hand
+Three Great Scholars
+Four Great Blessings
+Reveal flower
+No flowers
+Chow
+Pong
+Kong
+Self Kong
+Kong
+Hu
+Hu
+Zimo
+Flower
+A
+R
+F
+C
+D
+Taiwanese
+Dealer
+Dealer Continuation
+No Flowers
+Flowers
+Flowers
+Flowers
+Flowers
+Flowers
+Flowers
+Flowers
+Flowers
+Seven Flowers Robbing Eighth
+Eight Flowers
+Ting
+Ready Hand
+Self Draw
+Concealed Hand
+Fully Concealed Hand
+All Revealed
+Last Tile (draw)
+Last Tile (discard)
+Robbing a Kong
+Closed Wait
+Single Wait
+Within Ten Discards
+Within Five Discards
+Half Flush
+Full Flush
+White Dragon
+Green Dragon
+Red Dragon
+Winds
+Winds
+Winds
+Winds
+No Honors
+No Honors or Flowers
+Little Three Winds
+Little Three Dragons
+Big Three Winds
+Big Three Dragons
+Little Four Winds
+Big Four Winds
+All Triplets
+Open Kong
+Open Kong
+Open Kong
+Open Kong
+Concealed Kong
+Concealed Kong
+Concealed Kong
+Concealed Kong
+Two Concealed Triplets
+Three Concealed Triplets
+Four Concealed Triplets
+Five Concealed Triplets
+All Sequences
+Open Straight
+Closed Straight
+Seven Pairs
+Blessing of Heaven
+Blessing of Earth
+Fully Concealed Hand
+All Sequences (Full)
+Reveal flower
+No flowers
+Chow
+Pung
+Kong
+Self Kong
+Kong
+Ting
+Hu
+Hu
+Zimo
+Flower
+A
+R
+F
+C
+D
+Tianjin Mahjong
+Pure Hand
+Wild Card Single Wait
+Double Wild Card Set Wait
+Capturing the Five
+Dragon
+Kong Blossom
+Heavenly Hand
+Earthly Hand
+Kong Blossom
+Different Patterns
+Different Patterns
+Different Patterns
+Different Patterns
+Different Patterns
+Different Patterns
+Kong Blossom
+Heavenly Hand
+Earthly Hand
+Double Down
+Challenge Dealer
+Challenge Dealer x2
+Pass
+Pung
+Kong
+Concealed Kong
+Kong
+Hu
+Zimo
+A
+R
+C
+D
+Uno
+A
+Vietnamese
+All Sequences
+All Triplets
+All Sequences With Honors
+Seat Flower
+Seat Flower
+Seat Flower
+Seat Flower
+Seat Season
+Seat Season
+Seat Season
+Seat Season
+Seat King
+Seat King
+Seat King
+Seat King
+Seat Queen
+Seat Queen
+Seat Queen
+Seat Queen
+Matched Royalty
+Matched Royalty
+Matched Royalty
+Matched Royalty
+Tổng (縂)
+Tổng (縂)
+Hợp (合)
+Hợp (合)
+Hoa (花)
+Nguyên (元)
+Nguyên (元)
+Hỷ (喜)
+Hỷ (喜)
+Thùng (筒)
+Thùng (筒)
+Soọc (索)
+Soọc (索)
+Thay (萬)
+Thay (萬)
+No Flowers, No Leaves
+No Flowers, No Leaves
+From NFNL Player
+All Triplets With Honors
+All Called Triplets
+All Called Triplets With Honors
+All Triplets with 1 and 9
+No Flowers or Honors
+No Flowers, Honors, or Triplets
+Full Flush
+Pure Straight
+All Honors
+Thirteen Orphans
+Small Three Dragons
+Big Three Dragons
+Four Concealed Triplets
+Four Concealed Triplets
+Four Quads
+Four Quads
+Four Quads
+Small Four Winds
+Small Four Winds
+Big Four Winds
+Big Four Winds
+Blessing of Heaven
+Blessing of Earth
+Blessing of Man
+Reveal flower
+Reveal joker
+No flowers
+Phình
+Phỗng
+Khàn
+Self Khàn
+Khàn
+Tự ù
+Flower
+Joker
+A
+R
+F
+C
+D
+Zung Jung
+All Sequences
+Concealed Hand
+No Terminals
+Mixed One-Suit
+Pure One-Suit
+Value Honor
+Value Honor
+Value Honor
+Value Honor
+Small Three Dragons
+Big Three Dragons
+Small Three Winds
+Big Three Winds
+All Triplets
+Two Concealed Triplets
+Three Concealed Triplets
+Four Concealed Triplets
+One Kong
+Two Kong
+Three Kong
+Two Identical Sequences
+Two Identical Sequences Twice
+Three Identical Sequences
+Three Similar Sequences
+Small Three Similar Triplets
+Three Similar Triplets
+Nine-Tile Straight
+Three Consecutive Triplets
+Four Consecutive Triplets
+Mixed Lesser Terminals
+Pure Lesser Terminals
+Mixed Greater Terminals
+Final Draw
+Final Discard
+Win on Kong
+Robbing a Kong
+Blessing of Heaven
+Blessing of Earth
+Thirteen Terminals
+Seven Pairs
+Small Four Winds
+Big Four Winds
+All Honours
+Four Kong
+Four Identical Sequences
+Pure Greater Terminals
+Nine Gates
+Chicken Hand
+Chow
+Pong
+Kong
+Self Kong
+Kong
+Hu
+Hu
+Zimo
+A
+R
+C
+D
+Ron
+Ton
+Chon
+Chon
+Fuun
+Anfuun
+Pon
+Kan
+Fuun
+Ron
+A
+R
+C
+D
+Reveal flower
+No flowers
+Flower
+F
+Kan
+Ankan
+Kan
+Ron
+Pei
+K
+Riichi
+Chii
+Pon
+Kan
+Ankan
+Sanma
+Cosmic Riichi
+No Jokers Mahjong League 2024
+Space Mahjong
+Galaxy Mahjong
+Chinitsu Challenge
+Minefield
+Kansai Sanma
+Kansai Sanma
+Speed Mahjong
+Hong Kong Old Style
+Chow
+Pong
+Kong
+Concealed Kong
+No Flowers
+Self Draw
+Robbing a Kong
+After a Kong
+After a Flower
+After Multiple Kongs
+Concealed Hand
+Half Flush
+Full Flush
+Mixed Terminals
+All Terminals
+All Sequences
+All Triplets
+Final Tile
+Final Tile
+Four Concealed Triplets
+Four Kongs
+Thirteen Orphans
+Nine Gates
+All Honours
+Little Three Dragons
+Big Three Dragons
+Little Four Winds
+Big Four Winds
+Blessing of Heaven
+Blessing of Earth
+Blessing of Man
+Chinese Classical
+Chow
+Pung
+Kong
+Concealed Kong
+Hu
+Zimo
+Concealed Hand
+Robbing the Kong
+Out on a Replacement
+Out on a Replacement
+Two-Fold Fortune
+Half Flush
+Full Flush
+Pure Straight
+All Simples
+All Terminals and Honors
+All Terminals
+All Triplets
+Outside Hand
+Last Tile Draw
+Last Tile Discard
+Three Concealed Triplets
+Four Concealed Triplets
+Four Kongs
+Thirteen Orphans
+Nine Gates
+All Honors
+Little Three Dragons
+Big Three Dragons
+Little Four Winds
+Big Four Winds
+Blessing of Heaven
+Blessing of Earth
+Blessing of Man
+A
+Pair
+Fan
+Limit
+Pts
+Hu
+Zimo
+Draw
+Fan
+Hu
+Zimo
+Draw
+Bao
+Three Fan Minimum
+Seven Flower Bonus
+Flowers Open Hand
+Remove Flowers
+Head Bump
+Seven Pairs
+Everyone Pays On Discard
+Yakuman
+Han
+Fu
+Ron
+Tsumo
+Sanchahou
+Ryuukyoku
+Chii
+Pon
+Ron
+Tsumo
+A
+R
+C
+D
+Kan
+Honba
+Nagashi
+Tobi
+Uma
+Oka
+Agarirenchan
+Tenpairenchan
+Agariyame
+Tenpaiyame
+Sudden Death
+Tonpuu
+Kuitan Nashi
+Kuikae Nashi
+Kiriage Mangan
+Head Bump
+Double Wind 4 Fu
+Double Round Wind
+Sekinin Barai
+Suukantsu Pao
+Rinshan Pao
+No Kazoe Yakuman
+No Double Yakuman
+Wareme
+Aotenjou
+Yakitori
+Shuugi
+Toriuchi
+Kansai Chiitoitsu
+Minimum Han
+No Riichi Ankan
+No Fifth Tile Tenpai
+Kokushi Chankan
+First Gets Riichi Sticks
+Starting Points
+Suufon Renda
+Suucha Riichi
+Suukaikan
+Sanchahou
+Kyuushu Kyuuhai
+Dora
+Ura
+Aka
+Kandora
+Immediate Kan Dora
+Ao
+Kin
+Aka 1
+Aka 3
+Aka 7
+Aka 9
+It's All Aka?
+Shiny Dora
+Manzu
+Pinzu
+Souzu
+Vietnamese Jokers
+Odd
+Even
+Riichi
+Ippatsu
+Tsubame Gaeshi
+Shiiaru Raotai
+Kanburi
+Honors Chiitoitsu
+Uushin Tsuukan
+Ketsupaihou
+Open Riichi
+Sanrenkou
+Sanshoku Ittsu
+Kyandonhou
+Ryandoukou
+Shoutate
+Choupaikou etc.
+Suuzuukou
+Uumensai
+Sanpuukou
+Renkaihou
+Mondeikou
+Isshoku Sanjun
+Ittsu Chanta
+Tanfonhou
+Chinpeikou
+Chinchii Toushii
+Renhou
+Kinkei Dokuritsu
+Touchao Hanchanshue
+Uupin Kaihou
+Ryanzou Chankan
+Iipin Mouyue
+Chuupin Raoyui
+Shanron Chonchu
+Chiishin Uushii
+Maneshi Mangan
+Rentsuu Honitsu
+Dorahairi Chinroutou Chiitoitsu
+Paarenchan
+Ishino Uenimo Sannen
+Toukanhou
+Shiisanpuutaa
+Shiisanuushi
+Suurenkou
+Suuchoupaikou
+Daisharin etc.
+Shousharin etc.
+Isshoku Yonjun
+Hyakuman Goku
+Kachoufuugetsu
+Fuukasetsugetsu
+Kouitten
+Benikujaku
+Kokuiisou
+Ryuuiisourin
+Kouittenrin
+Golden Gate Bridge
+American Civil War
+Tohoku Expressway
+Tohoku Shinkansen
+Blue Tunnel
+Junsei Ryuuiisou
+Chousangen
+Chousuushii
+Cancellable Riichi
+Ten
+Star Suit (beta)
+Space Mahjong
+Galaxy Mahjong
+Fifth Tile
+No Honors
+Shiro Pocchi
+Golden Chun
+Blue Dragon (beta)
+Shouhai
+Chinitsu
+Washizu
+Calls Are Forced
+Chombo
+Fan
+Hu
+Zimo
+Draw
+Select three tiles to pass left
+Select three tiles to pass across
+Select three tiles to pass right
+No Craks
+No Dots
+No Bams
+Pong
+Kong
+Concealed Kong
+Kong
+Hu
+Hu
+Zimo
+A
+R
+C
+D
+V
+Show Waits
+Open Hands
+No Charleston
+Ten
+Space Mahjong
+Chinitsu
+Fifth Tile
+Zombie Blanks
+PIE
+NMJL 2025 Card
+ILM Card
+ATF Card
+MahjLife Card
+AMJFE Card (beta)
+Card-Free (beta)
+Show Waits
+Show Nearest Hands
+Open Hands
+American
+Any Like Numbers #1
+Any Like Numbers #2
+Any Like Numbers #3
+Lucky Sevens #1
+Lucky Sevens #2
+Lucky Sevens #3
+Winds and Dragons #1
+Winds and Dragons #2
+Winds and Dragons #3
+Winds and Dragons #4
+Winds and Dragons #5
+Winds and Dragons #6
+Winds and Dragons #7
+Singles and Pairs #1
+Singles and Pairs #2
+Singles and Pairs #3
+Singles and Pairs #4
+Singles and Pairs #5
+Singles and Pairs #6
+Quints #1
+Quints #2
+Quints #3
+Quints #4
+Consecutive Run #1
+Consecutive Run #2
+Consecutive Run #3
+Consecutive Run #4
+Consecutive Run #5
+Consecutive Run #6
+Consecutive Run #7
+Consecutive Run #8
+Pts
+Mah Jongg
+Mah Jongg
+Draw
+Select three tiles to pass left
+Select three tiles to pass across
+Select three tiles to pass right
+Continue Charleston
+Skip Charleston
+Offer 0
+Offer 1
+Offer 2
+Offer 3
+Pass no tiles across
+Select a tile to pass across
+Select two tiles to pass across
+Select three tiles to pass across
+Pung
+Kong
+Quint
+Swap for exposed joker
+Mah Jongg
+Mah Jongg
+Mah Jongg
+Declare hand on right dead
+Declare hand across dead
+Declare hand on left dead
+Cancel
+A
+M
+C
+JC
+DC
+D
+DD
+Show Waits
+Open Hands
+Chinese Yaku Names
+Bloody 30 Faan Jokers
+Flower
+Flower
+Flower
+Flower
+Flower
+Flower
+Flower
+Flower
+No Honors or Flowers
+No Jokers
+All Honors
+White Dragon
+Green Dragon
+Red Dragon
+Round Wind
+Seat Wind
+Little Three Winds
+Little Three Dragons
+Big Three Winds
+Big Three Dragons
+Little Four Winds
+Big Four Winds
+Terminal Sequences
+All Simples
+Mixed Outside Hand
+Pure Outside Hand
+Double Terminal Sequences
+Pure Double Terminal Sequences
+Mixed Terminals
+Pure Terminals
+One Voided Suit
+All Types
+Mixed Flush
+Full Flush
+Open Nine Gates
+Nine Gates
+Open Kong
+Concealed Kong
+Two Kongs
+Three Kongs
+Four Kongs
+Two Concealed Triplets
+Three Concealed Triplets
+Four Concealed Triplets
+Two Shifted Triplets
+Three Small Shifted Triplets
+Three Pure Shifted Triplets
+Four Pure Small Shifted Triplets
+Four Pure Shifted Triplets
+Three Mixed Small Shifted Triplets
+Three Mixed Shifted Triplets
+Four Mixed Small Shifted Triplets
+Four Mixed Shifted Triplets
+Five Mixed Small Shifted Triplets
+Double Triplets
+Small Triple Triplets
+Triple Triplets
+Quadruple Triplets
+All Triplets
+Double Sequences
+Double Sequences
+Triple Sequences
+Pure Triple Sequence
+Pure Quadruple Sequence
+Short Straight
+Short Straight
+Double Short Straight
+Pure Double Short Straight
+Identical Sequences
+Double Identical Sequences
+Pure Double Identical Sequences
+Three Mixed Shifted Sequences
+Four Mixed Shifted Sequences
+Three Pure Shifted Sequences
+Four Pure Shifted Sequences
+Three Mixed Linked Sequences
+Three Pure Linked Sequences
+Golden Gate Bridge
+Mixed Straight
+Pure Straight
+All Sequences
+Tile Hog (2)
+Tile Hog (3)
+Tile Hog (4)
+Double Tile Hog
+Triple Tile Hog
+All Like Numbers
+All Odds
+All Evens
+One Suji Only
+Three Number Hand
+Two Number Hand
+After a Flower
+After a Kong
+Robbing a Kong
+Under the Sea
+Within Ten Tiles
+Within Seven Tiles
+Hand of Man
+Hand of Heaven
+Hand of Earth
+Concealed Hand
+Fully Concealed Hand
+Self Drawn Melded Hand
+Melded Hand
+Hell Wait
+Seven Pairs
+Three Consecutive Pairs
+Five Consecutive Pairs
+Seven Consecutive Pairs
+Three Identical Pairs
+Three Dragons Seven Pairs
+Four Winds Seven Pairs
+Thirteen Unconnected
+Knitted Short Straight
+Knitted Short Straight
+Knitted Terminal Sequences
+Knitted Terminal Sequences
+Knitted Straight
+Knitted Triplets
+Knitted Honors
+Eyes of the General
+University Train
+Thirteen Orphans
+Mixed Shifted Linked Sequences
+Pure Shifted Linked Sequences
+Chicken Hand
+Thirteen Orphans
+Thirteen Orphans
+Faan
+Hu
+Zimo
+Draw
+Sheung
+Pung
+Kong
+Self Kong
+Kong
+Hu
+Hu
+Zimo
+Flower
+A
+R
+C
+D
+A
+Pair
+Forced Flowers
+Discardable Flowers
+No Gold Flowers
+Everyone Pays On Discard
+Draws Reset Dealer Bonus
+Show Waits
+Open Hands
+Fuzhou
+Base Points
+Flowers
+Flowers
+Gold
+Gold
+Dealer Continuation
+Dealer Continuation
+Open Kong
+Open Kong
+Open Kong
+Open Kong
+Concealed Kong
+Concealed Kong
+Concealed Kong
+Concealed Kong
+Full Bloom (Flowers)
+Full Bloom (Seasons)
+Full Bloom (East)
+Full Bloom (South)
+Full Bloom (West)
+Full Bloom (North)
+Full Bloom (White)
+Full Bloom (Green)
+Full Bloom (Red)
+All Sequences
+Only One Flower
+Golden Pair
+Three Gold Knockdown
+Golden Dragon
+Robbing the Gold
+Blessing of Heaven
+Blessing of Earth
+Hu
+Zimo
+Draw
+Reveal flower
+No flowers
+Chow
+Pung
+Kong
+Self Kong
+Kong
+Hu
+Hu
+Qiangjin
+Skip
+Zimo
+Flower
+A
+R
+F
+C
+D
+Show Waits
+Open Hands
+Hefei Mahjong
+Suit Bonus
+Single Wait
+Same Number Bonus
+Concealed Pung
+Concealed Pungs
+Concealed Pungs
+Double Sequences
+Two Suits Only
+Concealed Double Sequences
+Concealed Kong
+Concealed Kongs
+Concealed Kongs
+Concealed Kongs
+Four of a Kind
+Dealer Repeat
+Dealer Repeats
+Seven Pairs
+Luxury Seven Pairs
+Double Luxury Seven Pairs
+Sea Floor
+Pure Suit
+Three Consecutive Pungs
+Four Concealed Pungs
+Ten Identical Tiles
+Double Concealed Double Sequences
+Heavenly Win
+Earthly Win
+Dealer Repeat
+Dealer Repeats
+Hu
+Zimo
+Draw
+Pong
+Kong
+Concealed Kong
+Kong
+Hu
+Hu
+Zimo
+No Win
+A
+R
+C
+D
+Five Fan Minimum
+Replaceable Fly Joker
+Show Waits
+Open Hands
+Malaysian
+Face
+Four Faces
+Animal
+All Animals
+All Flowers
+All Seasons
+Seat Flower
+Seat Flower
+Seat Flower
+Four Flower
+Seat Season
+Seat Season
+Seat Season
+Four Season
+East Wind
+North Wind
+Seat Wind
+White Dragon
+Green Dragon
+Red Dragon
+Small Three Dragons
+Half Flush
+Full Flush
+All Sequences with Dot Eye
+All Triplets
+After a Flower
+After a Gong
+Seven Pairs
+Robbing a Gong
+Nine Gates
+Small Four Winds
+Big Four Winds
+No Flowers
+Four Gongs
+Big Three Dragons
+After Multiple Gongs
+Four Concealed Triplets
+Four Fly
+Blessing of Heaven
+Blessing of Earth
+Final Tile
+All Honours
+All Sixteen Flowers
+Fan
+Wu
+Wu
+Draw
+Reveal flower
+Reveal fly
+No flowers
+Chow
+Pong
+Gong
+Concealed Gong
+Gong
+Wu
+Wu
+Wu
+Four Fly Win
+Flower
+Fly
+A
+R
+F
+C
+D
+Show Waits
+Open Hands
+MCR
+Big Four Winds
+Big Three Dragons
+All Green
+Nine Gates
+Four Kongs
+Seven Shifted Pairs
+Thirteen Orphans
+All Terminals
+Little Four Winds
+Little Three Dragons
+All Honors
+Four Concealed Pungs
+Pure Terminal Chows
+Quadruple Chow
+Four Pure Shifted Pungs
+Four Pure Shifted Chows
+Three Kongs
+All Terminals and Honors
+Seven Pairs
+Greater Honors and Knitted Tiles
+All Even Pungs
+Full Flush
+Pure Triple Chow
+Pure Shifted Pungs
+Upper Tiles
+Middle Tiles
+Lower Tiles
+Pure Straight
+Three-Suited Terminal Chows
+Pure Shifted Chows
+All Fives
+Triple Pung
+Three Concealed Pungs
+Lesser Honors and Knitted Tiles
+Knitted Straight
+Upper Four
+Lower Four
+Big Three Winds
+Mixed Straight
+Reversible Tiles
+Mixed Triple Chow
+Mixed Shifted Pungs
+Last Tile Draw
+Last Tile Claim
+Out with Replacement Tile
+Robbing The Kong
+Two Concealed Kongs
+All Pungs
+Half Flush
+Mixed Shifted Chows
+All Types
+Melded Hand
+Two Dragon Pungs
+Two Kongs
+Outside Hand
+Fully Concealed Hand
+Two Melded Kongs
+Last Tile
+White Dragon
+Green Dragon
+Red Dragon
+Prevalent Wind
+Seat Wind
+Concealed Hand
+All Chows
+Tile Hog
+Double Pung
+Two Concealed Pungs
+Concealed Kong
+All Simples
+Pure Double Chow
+Pure Double Chow
+Mixed Double Chow
+Mixed Double Chow
+Short Straight
+Short Straight
+Two Terminal Chows
+Two Terminal Chows
+Pung of Terminals
+Pung of Terminals
+Pung of Terminals
+Pung of Terminals
+Pung of Honors
+Pung of Honors
+Pung of Honors
+Pung of Honors
+Melded Kong
+One Voided Suit
+No Honors
+Self-Drawn
+Edge Wait
+Closed Wait
+Single Wait
+Chicken Hand
+Exclusionary Rule
+Exclusionary Rule
+Exclusionary Rule
+Flower Tiles
+Fan
+Hu
+Zimo
+Draw
+Hua
+Pass
+Chi
+Pung
+Kong
+Self Kong
+Kong
+Hu
+Hu
+Hu
+Hua
+A
+H
+F
+C
+D
+Show Waits
+Open Hands
+Ningbo Mahjong
+Edge Wait
+Closed Wait
+Single Wait
+Win On Baida
+No Baida
+Half Flush
+Pure Flush
+All Triplets
+After a Kong
+Last Tile
+Self Draw
+Baida Reuse
+Baida Pair Win
+White Dragon
+Green Dragon
+Red Dragon
+Round Wind
+Seat Wind
+Eight Flowers
+All Honours
+Blessing of Heaven
+Blessing of Earth
+Robbing a Kong
+Robbing a Kong
+After a Kong
+Three Meld Penalty
+Tai
+Hu
+Zimo
+Draw
+Reveal flower
+No flowers
+Pong
+Kong
+Self Kong
+Kong
+Hu
+Hu
+Zimo
+Flower
+A
+R
+F
+C
+D
+Tobi
+Agarirenchan
+Tenpairenchan
+Agariyame
+Tenpaiyame
+Tonpuu
+Kuitan Nashi
+Kuikae Nashi
+Kiriage Mangan
+Head Bump
+Open Riichi
+Sekinin Barai
+No Kazoe Yakuman
+No Double Yakuman
+Wareme
+Aotenjou
+Sanchahou
+Atarashi Ako
+Choe Myeonghwa
+Haramura Nodoka
+Ikeda Kana
+Jindai Komaki
+Kakura Kurumi
+Kataoka Yuuki
+Mase Yuuko
+Matano Seiko
+Matsumi Kuro
+Matsumi Yuu
+Miyanaga Saki
+Miyanaga Teru
+Nanpo Kazue
+Sagimori Arata
+Sawamura Tomoki
+Senoo Kaori
+Shibuya Takami
+Someya Mako
+Takakamo Shizuno
+Takei Hisa
+Takimi Haru
+Toyouko Momoko
+Usuzawa Sae
+Usuzumi Hatsumi
+Yumeno Maho
+Aislinn Wishart
+Amae Koromo
+Anetai Toyone
+Arakawa Kei
+Atago Hiroe
+Hirose Sumire
+Inoue Jun
+Iwato Kasumi
+Kajiki Yumi
+Karijuku Tomoe
+Kosegawa Shiromi
+Maya Yukiko
+Megan Davin
+Nelly Virsaladze
+Oohoshi Awai
+Onjouji Toki
+Ryuumonbuchi Touka
+Ezaki Hitomi
+Fukuji Mihoko
+Hanada Kirame
+Hao Huiyu
+Kainou Yoshiko
+Kanbara Satomi
+Kunihiro Hajime
+Shimizudani Ryuuka
+Shirouzu Mairu
+Tsujigaito Satoha
+Atago Kinue
+Funakubo Hiroko
+Iwadate Yuan
+Motouchi Naruka
+Shishihara Sawaya
+Suehara Kyouko
+Ueshige Suzu
+Yae Kobashiri
+Yoshitome Miharu
+Persistent Cards
+Two Saki Cards
+Show Waits
+Open Hands
+Ten
+Star Suit (beta)
+Space Mahjong
+Galaxy Mahjong
+Fifth Tile
+No Honors
+Shiro Pocchi
+Golden Chun
+Blue Dragon (beta)
+Shouhai
+Chinitsu
+Calls Are Forced
+Sakicards v1.3
+Riichi
+Tsumo
+Chankan
+Rinshan
+Haitei
+Houtei
+Pinfu
+Tanyao
+Iipeikou
+Haku
+Hatsu
+Chun
+Round Wind
+Seat Wind
+Double Riichi
+Chiitoitsu
+Chanta
+Ittsu
+Sanshoku
+Sanshoku Doukou
+Sankantsu
+Toitoi
+Sanankou
+Shousangen
+Honroutou
+Ryanpeikou
+Junchan
+Honitsu
+Chinitsu
+Inazuma Riichi
+Chasing Riichi
+Chasing Riichi
+Shiiaru Raotai
+All Fives
+Upper Four
+Lower Four
+Mixed Straight
+Mixed Shifted Chows
+Pure Shifted Chows
+Riichi
+Uumensai
+Chanta
+Ittsu
+Sanshoku
+Junchan
+Honitsu
+Chinitsu
+All Fives
+Upper Four
+Lower Four
+Mixed Straight
+Mixed Shifted Chows
+Pure Shifted Chows
+Tanyao
+Pinfu
+Chiitoitsu
+Tsumo
+Iipeikou
+Ryanpeikou
+Riichi
+Ippatsu
+Double Riichi
+Riichi
+Tsumo
+Ippatsu
+Chankan
+Rinshan
+Haitei
+Houtei
+Pinfu
+Tanyao
+Iipeikou
+Seat Wind
+Round Wind
+Haku
+Hatsu
+Chun
+Chanta
+Ittsu
+Sanshoku
+No Yaku
+Tenhou
+Chiihou
+Daisangen
+Suuankou
+Suuankou Tanki
+Tsuuiisou
+Ryuuiisou
+Chinroutou
+Chuurenpoutou
+Junsei Chuurenpoutou
+Kokushi Musou
+Kokushi Musou Juusan Menmachi
+Daisuushii
+Shousuushii
+Suukantsu
+Suuankou Tanki
+Junsei Chuurenpoutou
+Kokushi Musou Juusan Menmachi
+Dora
+Aka
+Ura
+Reverse Dora
+Discarded Triplets
+Triplets
+Warm Tiles
+Warm Tiles
+Warm Tiles
+Warm Tiles
+Reversible tiles
+Reversible tiles
+Reversible tiles
+Reversible tiles
+Three-Sided Wait
+Single Wait
+Takimi Haru
+Furiten Tsumo
+Haku Tsumo
+Nelly Virsaladze
+Nelly Virsaladze
+Nelly Virsaladze
+Facedown Tiles
+Facedown Tiles
+Facedown Tiles
+Facedown Tiles
+Facedown Tiles
+Facedown Tiles
+Each 2000 Bet
+Aside Tiles
+Ryuuka Tsumo
+Aside Tiles
+Aside Tiles
+Aside Tiles
+Wind Melds
+Revealed Tiles
+Voided Suit
+Voided Suit
+Hirose Sumire
+Hirose Sumire
+Four Suits
+Han
+Fu
+Ron
+Tsumo
+Sekinin Barai
+Sanchahou
+Ryuukyoku
+Nagashi Mangan
+Draft Character Card
+Swap a discard with same suit in hand
+Swap dora indicator with same suit in hand
+Swap last discard with a terminal/honor
+Discard facedown
+Inazuma Riichi
+Place 4 tiles at the end of the live wall (last selection is haitei)
+Set aside 4th tile from discards
+Skip
+Place 2 tiles at the end of the dead wall (last selection is first kan draw)
+Place 2 tiles at the end of the dead wall (last selection is first kan draw)
+Draw an extra tile and set it aside
+Draw aside tile
+Draw from wall
+Swap tile with aside
+Discard facedown
+Draw from your discards
+Skip
+Discard facedown
+Move haitei tile from live wall to dead wall
+Move two tiles instead
+Bet 1000 to change wait to aside tiles
+Swap a number tile with any same number discard
+Swap a number tile with any same number discard
+Interrupt call
+Interrupt swap
+Interrupt facedown discard
+Skip
+Skip
+Manzu
+Pinzu
+Souzu
+Jihai
+Reveal and set aside 3 tiles
+Draw from aside
+Draw from Suehara Kyouko's aside
+Draw from Suehara Kyouko's aside
+Draw from Suehara Kyouko's aside
+Draw from wall
+Manzu
+Pinzu
+Souzu
+Jihai
+Bet half of points to flip 3 dora indicators
+Discard facedown
+Swap a number tile with any discarded wind tile
+Declare iishanten
+Riichi
+Steal tile and declare riichi
+Skip
+Manzu
+Pinzu
+Souzu
+Ron previous discard
+Discard same tile again
+Look at next two tiles in the wall
+No swap
+Swap 1
+Swap 2
+Swap out dora indicator
+Reveal next tile from wall
+Set 10 tiles aside faceup
+Declare yaku
+Draw from aside
+Swap open melds
+Flip any discard facedown
+Tell shimocha/toimen to swap
+Tell shimocha/kamicha to swap
+Tell toimen/kamicha to swap
+Perform swap
+Pay 1500 to decline the swap
+Pay 1500 to decline the swap
+Pay 1500 to decline the swap
+Swap with shimocha
+Swap with toimen
+Swap with kamicha
+Duel shimocha
+Duel toimen
+Duel kamicha
+Choose shimocha
+Choose toimen
+Choose kamicha
+Reveal three tiles and uradora
+Swap two tiles
+Done swapping
+Choose a tile to draw
+Select order to place remaining tiles (second selection is haitei)
+Kan (closed)
+Kan (closed)
+Chii
+Chii with priority
+Pon
+Pon red dragon with priority
+Kan
+Ankan
+Kan
+Riichi
+Ron
+Ron
+Tsumo
+Kyuushu Kyuuhai
+Take extra turn
+Skip extra turn
+Skip extra turn to discard facedown
+A
+R
+C
+D
+Show Waits
+Open Hands
+Singaporean
+Animal Tiles
+Animal Tiles
+Animal Tiles
+Animal Tiles
+Seat Flower
+Seat Flower
+Seat Flower
+Seat Flower
+Seat Season
+Seat Season
+Seat Season
+Seat Season
+White Dragon
+Green Dragon
+Red Dragon
+Prevailing Wind
+Seat Wind
+Little Ping Hu
+Fully Concealed Hand
+Final Tile
+After a Flower
+After a Kong
+Robbing a Kong
+All Flowers
+All Seasons
+Half Flush
+All Pungs
+Three Lesser Scholars
+Full Flush
+Big Ping Hu
+All Terminals Or Honors
+Four Lesser Blessings
+Seven Flowers
+Eight Flowers
+All Animals
+All Honors
+All Terminals
+Hidden Treasure
+Thirteen Orphans
+All Green
+Nine Gates
+Eighteen Arhats
+Kong On Kong
+Heavenly Hand
+Earthly Hand
+Three Great Scholars
+Four Great Blessings
+Fan
+Hu
+Zimo
+Draw
+Reveal flower
+No flowers
+Chow
+Pong
+Kong
+Self Kong
+Kong
+Hu
+Hu
+Zimo
+Flower
+A
+R
+F
+C
+D
+Eight Flower Win
+Draws Reset Dealer Bonus
+Show Waits
+Open Hands
+Taiwanese
+Dealer
+Dealer Continuation
+No Flowers
+Flowers
+Flowers
+Flowers
+Flowers
+Flowers
+Flowers
+Flowers
+Flowers
+Seven Flowers Robbing Eighth
+Eight Flowers
+Ting
+Ready Hand
+Self Draw
+Concealed Hand
+Fully Concealed Hand
+All Revealed
+Last Tile (draw)
+Last Tile (discard)
+Robbing a Kong
+Closed Wait
+Single Wait
+Within Ten Discards
+Within Five Discards
+Half Flush
+Full Flush
+White Dragon
+Green Dragon
+Red Dragon
+Winds
+Winds
+Winds
+Winds
+No Honors
+No Honors or Flowers
+Little Three Winds
+Little Three Dragons
+Big Three Winds
+Big Three Dragons
+Little Four Winds
+Big Four Winds
+All Triplets
+Open Kong
+Open Kong
+Open Kong
+Open Kong
+Concealed Kong
+Concealed Kong
+Concealed Kong
+Concealed Kong
+Two Concealed Triplets
+Three Concealed Triplets
+Four Concealed Triplets
+Five Concealed Triplets
+All Sequences
+Open Straight
+Closed Straight
+Seven Pairs
+Blessing of Heaven
+Blessing of Earth
+Fully Concealed Hand
+All Sequences (Full)
+Tai
+Hu
+Zimo
+Pao
+Draw
+Reveal flower
+No flowers
+Chow
+Pung
+Kong
+Self Kong
+Kong
+Ting
+Hu
+Hu
+Zimo
+Flower
+A
+R
+F
+C
+D
+Show Waits
+Open Hands
+Tianjin Mahjong
+Pure Hand
+Wild Card Single Wait
+Double Wild Card Set Wait
+Capturing the Five
+Dragon
+Kong Blossom
+Heavenly Hand
+Earthly Hand
+Kong Blossom
+Different Patterns
+Different Patterns
+Different Patterns
+Different Patterns
+Different Patterns
+Different Patterns
+Kong Blossom
+Heavenly Hand
+Earthly Hand
+Fan
+Zimo
+Draw
+Double Down
+Challenge Dealer
+Challenge Dealer x2
+Pass
+Pung
+Kong
+Concealed Kong
+Kong
+Hu
+Zimo
+A
+R
+C
+D
+Winner
+Uno
+A
+Show Waits
+Open Hands
+Vietnamese
+All Sequences
+All Triplets
+All Sequences With Honors
+Seat Flower
+Seat Flower
+Seat Flower
+Seat Flower
+Seat Season
+Seat Season
+Seat Season
+Seat Season
+Seat King
+Seat King
+Seat King
+Seat King
+Seat Queen
+Seat Queen
+Seat Queen
+Seat Queen
+Matched Royalty
+Matched Royalty
+Matched Royalty
+Matched Royalty
+Tổng (縂)
+Tổng (縂)
+Hợp (合)
+Hợp (合)
+Hoa (花)
+Nguyên (元)
+Nguyên (元)
+Hỷ (喜)
+Hỷ (喜)
+Thùng (筒)
+Thùng (筒)
+Soọc (索)
+Soọc (索)
+Thay (萬)
+Thay (萬)
+No Flowers, No Leaves
+No Flowers, No Leaves
+From NFNL Player
+All Triplets With Honors
+All Called Triplets
+All Called Triplets With Honors
+All Triplets with 1 and 9
+No Flowers or Honors
+No Flowers, Honors, or Triplets
+Full Flush
+Pure Straight
+All Honors
+Thirteen Orphans
+Small Three Dragons
+Big Three Dragons
+Four Concealed Triplets
+Four Concealed Triplets
+Four Quads
+Four Quads
+Four Quads
+Small Four Winds
+Small Four Winds
+Big Four Winds
+Big Four Winds
+Blessing of Heaven
+Blessing of Earth
+Blessing of Man
+Phán
+Mủn
+Tự ù
+Tự ù
+Draw
+Reveal flower
+Reveal joker
+No flowers
+Phình
+Phỗng
+Khàn
+Self Khàn
+Khàn
+Tự ù
+Flower
+Joker
+A
+R
+F
+C
+D
+Bonus Tiles
+Zung Jung
+All Sequences
+Concealed Hand
+No Terminals
+Mixed One-Suit
+Pure One-Suit
+Value Honor
+Value Honor
+Value Honor
+Value Honor
+Small Three Dragons
+Big Three Dragons
+Small Three Winds
+Big Three Winds
+All Triplets
+Two Concealed Triplets
+Three Concealed Triplets
+Four Concealed Triplets
+One Kong
+Two Kong
+Three Kong
+Two Identical Sequences
+Two Identical Sequences Twice
+Three Identical Sequences
+Three Similar Sequences
+Small Three Similar Triplets
+Three Similar Triplets
+Nine-Tile Straight
+Three Consecutive Triplets
+Four Consecutive Triplets
+Mixed Lesser Terminals
+Pure Lesser Terminals
+Mixed Greater Terminals
+Final Draw
+Final Discard
+Win on Kong
+Robbing a Kong
+Blessing of Heaven
+Blessing of Earth
+Thirteen Terminals
+Seven Pairs
+Small Four Winds
+Big Four Winds
+All Honours
+Four Kong
+Four Identical Sequences
+Pure Greater Terminals
+Nine Gates
+Chicken Hand
+Hu
+Zimo
+Draw
+Chow
+Pong
+Kong
+Self Kong
+Kong
+Hu
+Hu
+Zimo
+A
+R
+C
+D
+Cosmic
+Kontsu
+Cosmic Calls
+Kontsu Yaku
+Chanfuun
+Fuunburi
+Uumensai (cosmic)
+Sanankon
+Ron
+Ton
+Chon
+Chon
+Fuun
+Anfuun
+Pon
+Kan
+Fuun
+Ron
+A
+R
+C
+D
+Reveal flower
+No flowers
+Flower
+F
+Show Waits
+Open Hands
+Draw To Dora Indicator
+Kansai Flowers
+No Furiten Riichi
+No 100 sticks
+Zan Shuugi
+Zan Scoring
+Kan
+Ankan
+Kan
+Ron
+No Tsumo Loss
+Pei
+K
+Rules
+Rules
+Rules
+Rules
+Rules
+1 Han
+1 Han
+1 Han
+1 Han
+1 Han
+1 Han
+1 Han
+2 Han
+1 Han
+2 Han
+1 Han
+1 Han
+2 Han
+2 Han
+2 Han
+2 Han
+2 Han
+3 Han
+2 Han
+5 Han
+Yakuman
+Yakuman
+Yakuman
+Yakuman
+Yakuman
+Yakuman
+Yakuman
+Yakuman
+Yakuman
+Yakuman
+Yakuman
+Yakuman
+Yakuman
+Yakuman
+Rules
+Rules
+Rules
+Rules
+Rules
+Rules
+Rules
+Rules
+4 Fan
+Rules
+Rules
+Rules
+Rules
+5 Han
+Yakuman
+Yakuman
+Rules
+Rules
+Rules
+Rules
+Rules
+Rules
+Rules
+Rules
+Rules
+Rules
+1 Han
+1 Han
+2 Han
+Yakuman
+Rules
+Rules
+Rules
+3 Fan
+8 Fan
+Rules
+Rules
+Rules
+Rules
+3 Han
+Rules
+Tenpai Payments
+Win Condition
+Win Condition
+Win Condition
+Win Condition
+Tsumo
+Haitei
+Houtei
+Pinfu
+Tanyao
+Iipeikou
+Yakuhai
+Chiitoitsu
+Chanta
+Junchan
+Ittsu
+Sanshoku
+Sanshoku Doukou
+Toitoi
+Sanankou
+Shousangen
+Honroutou
+Ryanpeikou
+Honitsu
+Chinitsu
+Tenhou
+Chiihou
+Daisangen
+Suuankou
+Suuankou Tanki
+Tsuuiisou
+Ryuuiisou
+Chinroutou
+Chuurenpoutou
+Junsei Chuurenpoutou
+Kokushi Musou
+Kokushi Musou Juusan Menmachi
+Daisuushii
+Shousuushii
+Agarirenchan
+Honba
+Win Condition
+Chii
+Scoring
+Win Condition
+Flowers
+Win Condition
+Seven Pairs
+Initial Score
+Notenrenchan
+North Wind
+Shousharin
+Daisharin
+Manzu Honitsu
+Shuugi
+Shuugi
+Chankan
+Sekinin Barai (Pao)
+12 Tile Pao
+Sekinin Barai (Pao)
+Sekinin Barai (Pao)
+Sekinin Barai (Pao)
+Sekinin Barai (Pao)
+Pon
+Rinshan
+Chankan
+Sankantsu
+Suukantsu
+No Chii
+Wall
+Pei
+Flowers
+Flowers
+Flowers
+Flowers
+Space Mahjong
+Win Condition
+Open Kokushi Musou
+Win Condition
+In event of an exhaustive draw, players not in tenpai pay players in tenpai. 3000 points total are paid, with the payment split among the non-tenpai players. If all or no players are tenpai, no payment occurs.
+You may win with one of the following:
+- Four sets (sequences or triplets) and a pair.
+- (Chiitoitsu) Seven distinct pairs.
+- (Kokushi Musou) All thirteen terminal/honor tiles plus one forming a pair.
+Win by self-draw with a closed hand.
+Win off the last tile in the wall.
+Win off the discard after the last tile in the wall is drawn.
+You won off a double-sided sequence wait, with an all-sequence hand whose pair is not yakuhai.
+Your hand contains only tiles numbered 2-8.
+Your closed hand has a double sequence: two copies of the exact same sequence in one suit, like 123 123.
+1 han for each triplet of: dragons, wind matching the round marker, and wind matching your seat.
+Your hand consists of seven non-repeating pairs, and is not ryanpeikou.
+1 han if each of the 5 blocks in your hand contains a terminal or honor. 2 han if closed.
+2 han if each of the 5 blocks in your hand contains a terminal. 3 han if closed.
+1 han if your hand contains the sequences 123 456 789 in one suit. 2 han if closed.
+1 han if your hand contains the same number sequence in all three suits. 2 han if closed.
+2 han if your hand contains the same number triplet in all three suits.
+2 han if your hand is all triplets.
+2 han if your hand has three closed triplets. A triplet formed by a self-draw win counts as closed.
+2 han on top of yakuhai if you have two dragon triplets/kans and a dragon pair.
+2 han if your hand contains only terminal and honor tiles.
+3 han if you have two double sequences, each being two copies of the exact same sequence in one suit, like 123 123. Such hands are not considered seven pairs.
+2 han if your hand is comprised of one suit plus honor tiles. 3 han if closed.
+5 han if your hand is comprised of one suit only (no honor tiles). 6 han if closed.
+Win with your initial hand as dealer.
+Win with your first draw as non-dealer.
+Your hand contains triplets or kans of all three dragons.
+Your hand has three closed triplets in hand, and you won by self-drawing the fourth.
+Double yakuman if your hand has four closed triplets in hand, and you won by completing your pair.
+Your hand consists of only honor tiles.
+Your hand consists of only all-green tiles (23468 bamboo and green dragon).
+Your hand consists of only terminals.
+You have no calls and your winning hand is the pattern 1112345678999 in one suit, plus one additional tile.
+Double yakuman if your hand was 1112345678999 in one suit, and you won via its nine-sided wait.
+Your winning hand consists of one of each terminal/honor tile plus one forming a pair.
+Double yakuman if your winning hand consists of one of each terminal/honor tile and you won with a thirteen-sided wait for the pair.
+Double yakuman if your hand contains triplets or kans of all four winds.
+Your hand contains triplets or kans of three winds, plus a pair of the fourth wind.
+If the dealer (East wind) wins, the round repeats.
+(Agarirenchan) One honba stick is also added if the dealer (East wind) wins.
+You may win with one of the following:
+When the player to your left discards a tile you can use to complete a 3 tile sequence, you may call Chii to take that tile instead of drawing.
+- (Cosmic Riichi) Seven Pairs is again a possible winning hand.
+- Seven pairs (allows repeats).
+Your hand consists of seven pairs (repeats allowed).
+(Kansai) Everyone starts with 50000 points.
+(Kansai) In the south round only, the round repeats on exhaustive draws regardless of anyone's tenpai status.
+(Kansai) In the south round only, the round repeats on exhaustive draws regardless of anyone's tenpai status.
+(Kansai) 6 han if you have chiitoitsu honitsu.
+(Kansai) Yakuman if you have chiitoitsu chinitsu.
+(Kansai) Yakuman if you have manzu honitsu.
+(Kansai) Non-kazoe yakuman ron is worth 10 chips instead of 5. Having all four flowers also awards 10 chips (ron) or 5 chips each (tsumo).
+(Kansai) At the end of the game, chips are exchanged based on placement and points.
+You may also call ron on concealed kans, but only if you are tenpai for kokushi musou.
+If you deal the last dragon called for a daisangen hand, or the last wind called for a daisuushii hand, you are responsible for that single yakuman payment if they tsumo, or half of the yakuman payment if they ron off someone else.
+If your discard is called by another player with three existing calls (yours being the fourth), you are liable for paying their whole hand if they win.
+(Rinshan Pao) Dealing a discard called for kan by a player, who then immediately wins with rinshan, also counts, except you pay for the full hand (not just rinshan).
+If someone kans your discard and tsumos off the replacement tile (rinshan), you pay the full amount.
+(Suukantsu Pao) Dealing the last tile called for kan for a suukantsu hand also counts.
+If you deal the last tile called for kan for a suukantsu hand, you are responsible for that single yakuman payment if they tsumo, or half of the yakuman payment if they ron off someone else.
+When any player discards a tile you can use to complete a triplet, you may call Pon to take that tile. Then it becomes your turn to discard.
+If you kan and then tsumo on the replacement tile, you are awarded rinshan (1 han).
+If someone calls kan to upgrade an open triplet, you may call ron on the added tile. Doing so awards chankan (1 han).)
+Your hand contains three kans.
+Your hand contains four kans.
+(Sanma) You cannot call chii in sanma.
+(Sanma) The 2 to 8 of characters are removed from the wall.
+(Sanma) You may declare north winds to draw a replacement tile from the dead wall. Each is worth 1 han. North winds are still usable to form pairs and triplets. If you are waiting on the north wind, you may ron a north wind declaration much like chankan (but you are not awarded chankan).
+You won with seven flowers.
+You won with eight flowers.
+- As soon as you draw a seventh flower, you may declare a win for an additional 3 Fan, or 8 Fan if you have eight flowers.
+- As soon as you draw an eighth flower, you may declare a win for an additional 8 Fan.
+Sequences can wrap (891, 912). Winds and dragons can make sequences. You can chii from any direction.
+- (Space Mahjong) Seven Pairs is no longer a winning hand.
+(Space Mahjong) Open kokushi musou is worth 3 han.
+- Four sets (sequences or triplets) and a pair.
 scored a %{score}-point hand
 with yaku:
 /
@@ -721,11 +3753,6 @@ Log ID:
 exited
 stays at zero points, and receives 8000 points from first place (Hanada Kirame)
 gains double points for wareme
-pays double to their duelist (Megan Davin)
-pays double (Yae Kobashiri)
-pays double since the wall ends on their side (Kanbara Satomi)
-gets double points for winning under someone else's ippatsu (Tsujigaito Satoha)
-pays half due to dealing in with their voided suit (Yoshitome Miharu)
 has tsumo payments increased by 300 per 1000 bet (%{delta}) (Motouchi Naruka)
 has tsumo payments decreased by 300 per 1000 bet (%{delta}) (Motouchi Naruka)
 is damaten, and immune to tsumo payments (Atago Hiroe)
@@ -735,6 +3762,12 @@ pays double to their duelist (Megan Davin)
 pays double since the wall ends on their side (Kanbara Satomi)
 gets double points for winning under someone else's ippatsu (Tsujigaito Satoha)
 loses double points for wareme
+gains double points for wareme
+pays double to their duelist (Megan Davin)
+pays double (Yae Kobashiri)
+pays double since the wall ends on their side (Kanbara Satomi)
+gets double points for winning under someone else's ippatsu (Tsujigaito Satoha)
+pays half due to dealing in with their voided suit (Yoshitome Miharu)
 dealt in while tenpai with hand %{hand} which, if won on %{tile} scores a minimum value of %{score} via the following yaku: %{yaku} (Ezaki Hitomi)
 has greater tenpai value than their deal-in value, and therefore reverses the payment, not including riichi sticks (Ezaki Hitomi)
 has less or equal tenpai value than their deal-in value, and therefore the payment proceeds as normal (Ezaki Hitomi)

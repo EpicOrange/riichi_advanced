@@ -14,6 +14,48 @@ msgstr ""
 msgid "&lt;disconnected&gt;"
 msgstr ""
 
+msgid "(Agarirenchan) One honba stick is also added if the dealer (East wind) wins."
+msgstr ""
+
+msgid "(Kansai) 6 han if you have chiitoitsu honitsu."
+msgstr ""
+
+msgid "(Kansai) At the end of the game, chips are exchanged based on placement and points."
+msgstr ""
+
+msgid "(Kansai) Everyone starts with 50000 points."
+msgstr ""
+
+msgid "(Kansai) In the south round only, the round repeats on exhaustive draws regardless of anyone's tenpai status."
+msgstr ""
+
+msgid "(Kansai) Non-kazoe yakuman ron is worth 10 chips instead of 5. Having all four flowers also awards 10 chips (ron) or 5 chips each (tsumo)."
+msgstr ""
+
+msgid "(Kansai) Yakuman if you have chiitoitsu chinitsu."
+msgstr ""
+
+msgid "(Kansai) Yakuman if you have manzu honitsu."
+msgstr ""
+
+msgid "(Rinshan Pao) Dealing a discard called for kan by a player, who then immediately wins with rinshan, also counts, except you pay for the full hand (not just rinshan)."
+msgstr ""
+
+msgid "(Sanma) The 2 to 8 of characters are removed from the wall."
+msgstr ""
+
+msgid "(Sanma) You cannot call chii in sanma."
+msgstr ""
+
+msgid "(Sanma) You may declare north winds to draw a replacement tile from the dead wall. Each is worth 1 han. North winds are still usable to form pairs and triplets. If you are waiting on the north wind, you may ron a north wind declaration much like chankan (but you are not awarded chankan)."
+msgstr ""
+
+msgid "(Space Mahjong) Open kokushi musou is worth 3 han."
+msgstr ""
+
+msgid "(Suukantsu Pao) Dealing the last tile called for kan for a suukantsu hand also counts."
+msgstr ""
+
 msgid "(ongoing)"
 msgstr ""
 
@@ -26,19 +68,73 @@ msgstr ""
 msgid ","
 msgstr ""
 
+msgid "- (Chiitoitsu) Seven distinct pairs."
+msgstr ""
+
+msgid "- (Cosmic Riichi) Seven Pairs is again a possible winning hand."
+msgstr ""
+
+msgid "- (Kokushi Musou) All thirteen terminal/honor tiles plus one forming a pair."
+msgstr ""
+
+msgid "- (Space Mahjong) Seven Pairs is no longer a winning hand."
+msgstr ""
+
+msgid "- As soon as you draw a seventh flower, you may declare a win for an additional 3 Fan, or 8 Fan if you have eight flowers."
+msgstr ""
+
+msgid "- As soon as you draw an eighth flower, you may declare a win for an additional 8 Fan."
+msgstr ""
+
+msgid "- Four sets (sequences or triplets) and a pair."
+msgstr ""
+
+msgid "- Seven pairs (allows repeats)."
+msgstr ""
+
 msgid "/"
+msgstr ""
+
+msgid "1 Fan"
 msgstr ""
 
 msgid "1 Han"
 msgstr ""
 
+msgid "1 han for each triplet of: dragons, wind matching the round marker, and wind matching your seat."
+msgstr ""
+
 msgid "1 han for winning off the tile that upgrades a wind kontsu to a fuun."
+msgstr ""
+
+msgid "1 han if each of the 5 blocks in your hand contains a terminal or honor. 2 han if closed."
 msgstr ""
 
 msgid "1 han if you win off the tile discarded by a player who just called fuun."
 msgstr ""
 
+msgid "1 han if your hand contains the same number sequence in all three suits. 2 han if closed."
+msgstr ""
+
+msgid "1 han if your hand contains the sequences 123 456 789 in one suit. 2 han if closed."
+msgstr ""
+
+msgid "10 Fan"
+msgstr ""
+
+msgid "11 Fan"
+msgstr ""
+
+msgid "12 Fan"
+msgstr ""
+
+msgid "12 Tile Pao"
+msgstr ""
+
 msgid "123"
+msgstr ""
+
+msgid "13 Fan"
 msgstr ""
 
 msgid "147"
@@ -59,19 +155,49 @@ msgstr ""
 msgid "19"
 msgstr ""
 
+msgid "2 Fan"
+msgstr ""
+
 msgid "2 Han"
+msgstr ""
+
+msgid "2 han if each of the 5 blocks in your hand contains a terminal. 3 han if closed."
 msgstr ""
 
 msgid "2 han if each of your four sets is of a different kind: sequence, triplet, mixed triplet (kontsu), kan, mixed quad (fuun)."
 msgstr ""
 
+msgid "2 han if your hand contains only terminal and honor tiles."
+msgstr ""
+
+msgid "2 han if your hand contains the same number triplet in all three suits."
+msgstr ""
+
+msgid "2 han if your hand has three closed triplets. A triplet formed by a self-draw win counts as closed."
+msgstr ""
+
+msgid "2 han if your hand is all triplets."
+msgstr ""
+
+msgid "2 han if your hand is comprised of one suit plus honor tiles. 3 han if closed."
+msgstr ""
+
+msgid "2 han on top of yakuhai if you have two dragon triplets/kans and a dragon pair."
+msgstr ""
+
 msgid "258"
+msgstr ""
+
+msgid "3 Fan"
 msgstr ""
 
 msgid "3 Han"
 msgstr ""
 
 msgid "3 han 60 fu and 4 han 30 fu are worth mangan."
+msgstr ""
+
+msgid "3 han if you have two double sequences, each being two copies of the exact same sequence in one suit, like 123 123. Such hands are not considered seven pairs."
 msgstr ""
 
 msgid "30 Fu"
@@ -81,6 +207,9 @@ msgid "369"
 msgstr ""
 
 msgid "37"
+msgstr ""
+
+msgid "4 Fan"
 msgstr ""
 
 msgid "4 Han"
@@ -95,13 +224,37 @@ msgstr ""
 msgid "46"
 msgstr ""
 
+msgid "5 Fan"
+msgstr ""
+
 msgid "5 Han"
+msgstr ""
+
+msgid "5 han if your hand is comprised of one suit only (no honor tiles). 6 han if closed."
+msgstr ""
+
+msgid "6 Fan"
+msgstr ""
+
+msgid "7 Fan"
 msgstr ""
 
 msgid "789"
 msgstr ""
 
+msgid "8 Fan"
+msgstr ""
+
+msgid "9 Fan"
+msgstr ""
+
+msgid "A"
+msgstr ""
+
 msgid "A Space Mahjong variant with mixed triplets, more yaku, and more calls."
+msgstr ""
+
+msgid "A hand with flowers declared cannot earn 1 fan from Concealed Hand."
 msgstr ""
 
 msgid "A pair of round+seat winds is worth 4 fu instead of 2 fu."
@@ -116,6 +269,12 @@ msgstr ""
 msgid "A wind kontsu counts as 0.5 han if it contains both the round wind and seat wind. A dragon kontsu is always 0.5 han, and is called mini-sangen. Having two of the same kontsu in a closed hand is 1 han (ryandoukon), having three is 2 han open 3 han closed (sandoukon), and having four is yakuman (yondoukon)."
 msgstr ""
 
+msgid "AMJFE Card (beta)"
+msgstr ""
+
+msgid "ATF Card"
+msgstr ""
+
 msgid "Abortive Draws"
 msgstr ""
 
@@ -123,6 +282,9 @@ msgid "About"
 msgstr ""
 
 msgid "Add mixed triplets, or kontsu. If you have the same number in three suits, that counts as one of your sets towards four sets and a pair. For example, 1m1s1p is a kontsu. Also considered kontsu: 3 different winds, or one of each dragon."
+msgstr ""
+
+msgid "Add seven pairs as a possible winning hand, worth 4 fan."
 msgstr ""
 
 msgid "Add some UI that shows waits."
@@ -197,10 +359,28 @@ msgstr ""
 msgid "Adds aka threes, worth 1 han each."
 msgstr ""
 
+msgid "Adds bonuses for obtaining 7 or 8 flowers. You can also allow instant win upon obtaining 7 or 8 flowers."
+msgstr ""
+
 msgid "Adds eight jokers to the game. See the Vietnamese ruleset to learn how they work. Note that this mod adds a honors joker instead of a flower joker."
 msgstr ""
 
 msgid "Adds the Chinese blue-framed white dragon as a fourth dragon tile (hakuban). Yaku treats it as an honor tile. Shousangen is reduced to 1 han (+2 from dragons) and Daisangen is reduced to 2 han (+3 from dragons). Adds Shousuugen (3 dragons + dragon pair) as yakuman and Daisuugen (4 dragons) as double yakuman. This mod is in beta because pao is not yet implemented for blue dragon."
+msgstr ""
+
+msgid "After Multiple Gongs"
+msgstr ""
+
+msgid "After Multiple Kongs"
+msgstr ""
+
+msgid "After a Flower"
+msgstr ""
+
+msgid "After a Gong"
+msgstr ""
+
+msgid "After a Kong"
 msgstr ""
 
 #, fuzzy
@@ -208,6 +388,9 @@ msgid "Agarirenchan"
 msgstr ""
 
 msgid "Agariyame"
+msgstr ""
+
+msgid "Aislinn Wishart"
 msgstr ""
 
 #, fuzzy
@@ -230,16 +413,109 @@ msgstr ""
 msgid "Aka 9"
 msgstr ""
 
+msgid "All Animals"
+msgstr ""
+
+msgid "All Called Triplets"
+msgstr ""
+
+msgid "All Called Triplets With Honors"
+msgstr ""
+
+msgid "All Chows"
+msgstr ""
+
+msgid "All Even Pungs"
+msgstr ""
+
+msgid "All Evens"
+msgstr ""
+
+msgid "All Fives"
+msgstr ""
+
+msgid "All Flowers"
+msgstr ""
+
+msgid "All Green"
+msgstr ""
+
+msgid "All Honors"
+msgstr ""
+
+msgid "All Honours"
+msgstr ""
+
 msgid "All Last doesn't repeat if the dealer is first place and wins."
 msgstr ""
 
 msgid "All Last doesn't repeat if the dealer is in first place and is tenpai at draw."
 msgstr ""
 
+msgid "All Like Numbers"
+msgstr ""
+
+msgid "All Odds"
+msgstr ""
+
+msgid "All Pungs"
+msgstr ""
+
+msgid "All Revealed"
+msgstr ""
+
+msgid "All Seasons"
+msgstr ""
+
+msgid "All Sequences"
+msgstr ""
+
+msgid "All Sequences (Full)"
+msgstr ""
+
+msgid "All Sequences With Honors"
+msgstr ""
+
+msgid "All Sequences with Dot Eye"
+msgstr ""
+
+msgid "All Simples"
+msgstr ""
+
+msgid "All Sixteen Flowers"
+msgstr ""
+
+msgid "All Terminals"
+msgstr ""
+
+msgid "All Terminals Or Honors"
+msgstr ""
+
+msgid "All Terminals and Honors"
+msgstr ""
+
+msgid "All Triplets"
+msgstr ""
+
+msgid "All Triplets With Honors"
+msgstr ""
+
+msgid "All Triplets with 1 and 9"
+msgstr ""
+
+msgid "All Types"
+msgstr ""
+
 msgid "All scores are rounded to 1000s instead of 100s."
 msgstr ""
 
 msgid "Allow robbing ankans if in tenpai for kokushi musou."
+msgstr ""
+
+msgid "Amae Koromo"
+msgstr ""
+
+msgid "American"
 msgstr ""
 
 msgid "American (2024 NMJL)"
@@ -251,7 +527,28 @@ msgstr ""
 msgid "American Mah-Jongg. Assemble hands with jokers, and declare other players' hands dead. Rules are slightly different from MJME (see rules page)."
 msgstr ""
 
+msgid "Anetai Toyone"
+msgstr ""
+
+msgid "Anfuun"
+msgstr ""
+
+msgid "Animal"
+msgstr ""
+
+msgid "Animal Tiles"
+msgstr ""
+
 msgid "Ankan"
+msgstr ""
+
+msgid "Any Like Numbers #1"
+msgstr ""
+
+msgid "Any Like Numbers #2"
+msgstr ""
+
+msgid "Any Like Numbers #3"
 msgstr ""
 
 msgid "Ao"
@@ -260,7 +557,25 @@ msgstr ""
 msgid "Aotenjou"
 msgstr ""
 
+msgid "Arakawa Kei"
+msgstr ""
+
+msgid "Aside Tiles"
+msgstr ""
+
+msgid "At exhaustive draw, you are not considered tenpai if all four tiles of each wait is in hand: for example, 123456789m1111p. You may still declare riichi with such a hand, however."
+msgstr ""
+
 msgid "At the end of the game, all leftover riichi sticks on the table are given to first place. (Otherwise they are lost.)"
+msgstr ""
+
+msgid "Atago Hiroe"
+msgstr ""
+
+msgid "Atago Kinue"
+msgstr ""
+
+msgid "Atarashi Ako"
 msgstr ""
 
 msgid "Australian"
@@ -269,7 +584,19 @@ msgstr ""
 msgid "Back"
 msgstr ""
 
+msgid "Baida Pair Win"
+msgstr ""
+
+msgid "Baida Reuse"
+msgstr ""
+
 msgid "Baiman"
+msgstr ""
+
+msgid "Bao"
+msgstr ""
+
+msgid "Base Points"
 msgstr ""
 
 msgid "Base mod for Cosmic Riichi. Adds most relevant yaku and sets up the score table for things like haneyakuman."
@@ -279,6 +606,36 @@ msgid "Basic flow of the game"
 msgstr ""
 
 msgid "Benikujaku"
+msgstr ""
+
+msgid "Bet 1000 to change wait to aside tiles"
+msgstr ""
+
+msgid "Bet half of points to flip 3 dora indicators"
+msgstr ""
+
+msgid "Big Four Winds"
+msgstr ""
+
+msgid "Big Ping Hu"
+msgstr ""
+
+msgid "Big Three Dragons"
+msgstr ""
+
+msgid "Big Three Winds"
+msgstr ""
+
+msgid "Blessing of Earth"
+msgstr ""
+
+msgid "Blessing of Heaven"
+msgstr ""
+
+msgid "Blessing of Man"
+msgstr ""
+
+msgid "Bloody 30 Faan Jokers"
 msgstr ""
 
 msgid "Bloody 30-Faan Jokers"
@@ -293,6 +650,9 @@ msgstr ""
 msgid "Blue Tunnel"
 msgstr ""
 
+msgid "Bonus Tiles"
+msgstr ""
+
 msgid "Both East and West are round winds during East Round, and North and South during South Round. Similarly for West and North Rounds."
 msgstr ""
 
@@ -300,6 +660,9 @@ msgid "British"
 msgstr ""
 
 msgid "Button"
+msgstr ""
+
+msgid "C"
 msgstr ""
 
 msgid "Calling tiles"
@@ -312,6 +675,18 @@ msgid "Cancel"
 msgstr ""
 
 msgid "Cancellable Riichi"
+msgstr ""
+
+msgid "Capturing the Five"
+msgstr ""
+
+msgid "Card-Free (beta)"
+msgstr ""
+
+msgid "Challenge Dealer"
+msgstr ""
+
+msgid "Challenge Dealer x2"
 msgstr ""
 
 msgid "Chanfuun"
@@ -330,7 +705,19 @@ msgstr ""
 msgid "Chanta"
 msgstr ""
 
+msgid "Chasing Riichi"
+msgstr ""
+
+msgid "Chi"
+msgstr ""
+
+msgid "Chicken Hand"
+msgstr ""
+
 msgid "Chii"
+msgstr ""
+
+msgid "Chii with priority"
 msgstr ""
 
 #, fuzzy
@@ -353,8 +740,14 @@ msgstr ""
 msgid "Chinese Classical"
 msgstr ""
 
+msgid "Chinese Yaku Names"
+msgstr ""
+
 #, fuzzy
 msgid "Chinitsu"
+msgstr ""
+
+msgid "Chinitsu Challenge"
 msgstr ""
 
 msgid "Chinpeikou"
@@ -369,7 +762,25 @@ msgstr ""
 msgid "Chintanfon"
 msgstr ""
 
+msgid "Choe Myeonghwa"
+msgstr ""
+
 msgid "Chombo"
+msgstr ""
+
+msgid "Chon"
+msgstr ""
+
+msgid "Choose a tile to draw"
+msgstr ""
+
+msgid "Choose kamicha"
+msgstr ""
+
+msgid "Choose shimocha"
+msgstr ""
+
+msgid "Choose toimen"
 msgstr ""
 
 msgid "Choupaikou"
@@ -406,7 +817,61 @@ msgstr ""
 msgid "Close"
 msgstr ""
 
+msgid "Closed Straight"
+msgstr ""
+
+msgid "Closed Wait"
+msgstr ""
+
+msgid "Concealed Double Sequences"
+msgstr ""
+
+msgid "Concealed Gong"
+msgstr ""
+
+msgid "Concealed Hand"
+msgstr ""
+
+msgid "Concealed Kong"
+msgstr ""
+
+msgid "Concealed Kongs"
+msgstr ""
+
+msgid "Concealed Pung"
+msgstr ""
+
+msgid "Concealed Pungs"
+msgstr ""
+
 msgid "Config"
+msgstr ""
+
+msgid "Consecutive Run #1"
+msgstr ""
+
+msgid "Consecutive Run #2"
+msgstr ""
+
+msgid "Consecutive Run #3"
+msgstr ""
+
+msgid "Consecutive Run #4"
+msgstr ""
+
+msgid "Consecutive Run #5"
+msgstr ""
+
+msgid "Consecutive Run #6"
+msgstr ""
+
+msgid "Consecutive Run #7"
+msgstr ""
+
+msgid "Consecutive Run #8"
+msgstr ""
+
+msgid "Continue Charleston"
 msgstr ""
 
 msgid "Copy log"
@@ -436,6 +901,15 @@ msgstr ""
 msgid "Custom"
 msgstr ""
 
+msgid "D"
+msgstr ""
+
+msgid "DC"
+msgstr ""
+
+msgid "DD"
+msgstr ""
+
 msgid "Daichikurin"
 msgstr ""
 
@@ -458,7 +932,37 @@ msgstr ""
 msgid "Daisuushii"
 msgstr ""
 
+msgid "Dealer"
+msgstr ""
+
+msgid "Dealer Continuation"
+msgstr ""
+
+msgid "Dealer Repeat"
+msgstr ""
+
+msgid "Dealer Repeats"
+msgstr ""
+
+msgid "Declare hand across dead"
+msgstr ""
+
+msgid "Declare hand on left dead"
+msgstr ""
+
+msgid "Declare hand on right dead"
+msgstr ""
+
+msgid "Declare iishanten"
+msgstr ""
+
+msgid "Declare yaku"
+msgstr ""
+
 msgid "Differences from four-player"
+msgstr ""
+
+msgid "Different Patterns"
 msgstr ""
 
 msgid "Disable double yakuman. Yakuman still stacks, but each yaku that typically awards double yakuman only awards one stack of yakuman."
@@ -483,10 +987,28 @@ msgstr ""
 msgid "Discard"
 msgstr ""
 
+msgid "Discard facedown"
+msgstr ""
+
+msgid "Discard same tile again"
+msgstr ""
+
+msgid "Discardable Flowers"
+msgstr ""
+
+msgid "Discarded Triplets"
+msgstr ""
+
+msgid "Discarder pays 2x hand value, other players pay 1x."
+msgstr ""
+
 msgid "Discord"
 msgstr ""
 
 msgid "Documentation"
+msgstr ""
+
+msgid "Done swapping"
 msgstr ""
 
 #, fuzzy
@@ -494,6 +1016,21 @@ msgid "Dora"
 msgstr ""
 
 msgid "Dorahairi Chinroutou Chiitoitsu"
+msgstr ""
+
+msgid "Double Concealed Double Sequences"
+msgstr ""
+
+msgid "Double Down"
+msgstr ""
+
+msgid "Double Identical Sequences"
+msgstr ""
+
+msgid "Double Luxury Seven Pairs"
+msgstr ""
+
+msgid "Double Pung"
 msgstr ""
 
 #, fuzzy
@@ -508,7 +1045,43 @@ msgstr ""
 msgid "Double Round Wind"
 msgstr ""
 
+msgid "Double Sequences"
+msgstr ""
+
+msgid "Double Short Straight"
+msgstr ""
+
+msgid "Double Terminal Sequences"
+msgstr ""
+
+msgid "Double Tile Hog"
+msgstr ""
+
+msgid "Double Triplets"
+msgstr ""
+
+msgid "Double Wild Card Set Wait"
+msgstr ""
+
 msgid "Double Wind 4 Fu"
+msgstr ""
+
+msgid "Double yakuman if your hand contains triplets or kans of all four winds."
+msgstr ""
+
+msgid "Double yakuman if your hand has four closed triplets in hand, and you won by completing your pair."
+msgstr ""
+
+msgid "Double yakuman if your hand was 1112345678999 in one suit, and you won via its nine-sided wait."
+msgstr ""
+
+msgid "Double yakuman if your winning hand consists of one of each terminal/honor tile and you won with a thirteen-sided wait for the pair."
+msgstr ""
+
+msgid "Draft Character Card"
+msgstr ""
+
+msgid "Dragon"
 msgstr ""
 
 msgid "Draw"
@@ -517,10 +1090,64 @@ msgstr ""
 msgid "Draw To Dora Indicator"
 msgstr ""
 
+msgid "Draw an extra tile and set it aside"
+msgstr ""
+
+msgid "Draw aside tile"
+msgstr ""
+
+msgid "Draw from Suehara Kyouko's aside"
+msgstr ""
+
+msgid "Draw from aside"
+msgstr ""
+
+msgid "Draw from wall"
+msgstr ""
+
+msgid "Draw from your discards"
+msgstr ""
+
+msgid "Draws Reset Dealer Bonus"
+msgstr ""
+
+msgid "Duel kamicha"
+msgstr ""
+
+msgid "Duel shimocha"
+msgstr ""
+
+msgid "Duel toimen"
+msgstr ""
+
 msgid "Dutch"
 msgstr ""
 
+msgid "Each 2000 Bet"
+msgstr ""
+
 msgid "Each tile in the wall is transparent and visible to all, except for one copy. Unflipped dora indicators are not visible."
+msgstr ""
+
+msgid "Earthly Hand"
+msgstr ""
+
+msgid "Earthly Win"
+msgstr ""
+
+msgid "East Wind"
+msgstr ""
+
+msgid "Edge Wait"
+msgstr ""
+
+msgid "Eight Flower Win"
+msgstr ""
+
+msgid "Eight Flowers"
+msgstr ""
+
+msgid "Eighteen Arhats"
 msgstr ""
 
 msgid "Empty"
@@ -539,6 +1166,9 @@ msgid "Enable 9 distinct terminal/honor abortive draw."
 msgstr ""
 
 msgid "Enable busting. Once anyone's points is reduced below zero, the game ends."
+msgstr ""
+
+msgid "Enable head bump. In case of multiple hu, only the person closest in turn order gets the win."
 msgstr ""
 
 msgid "Enable head bump. In case of multiple ron, only the person closest in turn order gets the win."
@@ -598,7 +1228,34 @@ msgstr ""
 msgid "Even"
 msgstr ""
 
+msgid "Everyone Pays On Discard"
+msgstr ""
+
 msgid "Everyone plays with tiles shown."
+msgstr ""
+
+msgid "Exclusionary Rule"
+msgstr ""
+
+msgid "Eyes of the General"
+msgstr ""
+
+msgid "Ezaki Hitomi"
+msgstr ""
+
+msgid "F"
+msgstr ""
+
+msgid "Faan"
+msgstr ""
+
+msgid "Face"
+msgstr ""
+
+msgid "Facedown Tiles"
+msgstr ""
+
+msgid "Fan"
 msgstr ""
 
 msgid "Fifth Tile"
@@ -607,22 +1264,145 @@ msgstr ""
 msgid "Filipino"
 msgstr ""
 
+msgid "Final Discard"
+msgstr ""
+
+msgid "Final Draw"
+msgstr ""
+
+msgid "Final Tile"
+msgstr ""
+
 msgid "First Gets Riichi Sticks"
+msgstr ""
+
+msgid "Five Concealed Triplets"
+msgstr ""
+
+msgid "Five Consecutive Pairs"
+msgstr ""
+
+msgid "Five Fan Minimum"
+msgstr ""
+
+msgid "Five Mixed Small Shifted Triplets"
+msgstr ""
+
+msgid "Flip any discard facedown"
 msgstr ""
 
 msgid "Flip kan dora immediately after daiminkan and kakan."
 msgstr ""
 
+msgid "Flower"
+msgstr ""
+
+msgid "Flower Tiles"
+msgstr ""
+
+msgid "Flowers"
+msgstr ""
+
+msgid "Flowers Open Hand"
+msgstr ""
+
+msgid "Fly"
+msgstr ""
+
 msgid "For more information, drop a message in our Discord!"
+msgstr ""
+
+msgid "Forced Flowers"
 msgstr ""
 
 msgid "Forces you to make all available calls, including riichi (if enabled). You still get to choose if multiple calls are available."
 msgstr ""
 
+msgid "Four Concealed Pungs"
+msgstr ""
+
+msgid "Four Concealed Triplets"
+msgstr ""
+
+msgid "Four Consecutive Triplets"
+msgstr ""
+
+msgid "Four Faces"
+msgstr ""
+
+msgid "Four Flower"
+msgstr ""
+
+msgid "Four Fly"
+msgstr ""
+
+msgid "Four Fly Win"
+msgstr ""
+
+msgid "Four Gongs"
+msgstr ""
+
+msgid "Four Great Blessings"
+msgstr ""
+
+msgid "Four Identical Sequences"
+msgstr ""
+
+msgid "Four Kong"
+msgstr ""
+
+msgid "Four Kongs"
+msgstr ""
+
+msgid "Four Lesser Blessings"
+msgstr ""
+
+msgid "Four Mixed Shifted Sequences"
+msgstr ""
+
+msgid "Four Mixed Shifted Triplets"
+msgstr ""
+
+msgid "Four Mixed Small Shifted Triplets"
+msgstr ""
+
+msgid "Four Pure Shifted Chows"
+msgstr ""
+
+msgid "Four Pure Shifted Pungs"
+msgstr ""
+
+msgid "Four Pure Shifted Sequences"
+msgstr ""
+
+msgid "Four Pure Shifted Triplets"
+msgstr ""
+
+msgid "Four Pure Small Shifted Triplets"
+msgstr ""
+
+msgid "Four Quads"
+msgstr ""
+
+msgid "Four Season"
+msgstr ""
+
+msgid "Four Suits"
+msgstr ""
+
+msgid "Four Winds Seven Pairs"
+msgstr ""
+
 msgid "Four flowers are added to the game and act as nukidora. Flowers cannot form sequences, triplets, or pairs. North winds are no longer nukidora, but they are now yakuhai: a triplet is worth 1 han, and a pair is worth 2 fu."
 msgstr ""
 
+msgid "Four of a Kind"
+msgstr ""
+
 msgid "French"
+msgstr ""
+
+msgid "From NFNL Player"
 msgstr ""
 
 msgid "Fu"
@@ -634,7 +1414,52 @@ msgstr ""
 msgid "Fu is fixed at 40."
 msgstr ""
 
+msgid "Fukuji Mihoko"
+msgstr ""
+
+msgid "Full Bloom (East)"
+msgstr ""
+
+msgid "Full Bloom (Flowers)"
+msgstr ""
+
+msgid "Full Bloom (Green)"
+msgstr ""
+
+msgid "Full Bloom (North)"
+msgstr ""
+
+msgid "Full Bloom (Red)"
+msgstr ""
+
+msgid "Full Bloom (Seasons)"
+msgstr ""
+
+msgid "Full Bloom (South)"
+msgstr ""
+
+msgid "Full Bloom (West)"
+msgstr ""
+
+msgid "Full Bloom (White)"
+msgstr ""
+
+msgid "Full Flush"
+msgstr ""
+
+msgid "Fully Concealed Hand"
+msgstr ""
+
+msgid "Funakubo Hiroko"
+msgstr ""
+
+msgid "Furiten Tsumo"
+msgstr ""
+
 msgid "Fuukasetsugetsu"
+msgstr ""
+
+msgid "Fuun"
 msgstr ""
 
 msgid "Fuunburi"
@@ -658,10 +1483,31 @@ msgstr ""
 msgid "German"
 msgstr ""
 
+msgid "Gold"
+msgstr ""
+
 msgid "Golden Chun"
 msgstr ""
 
+msgid "Golden Dragon"
+msgstr ""
+
 msgid "Golden Gate Bridge"
+msgstr ""
+
+msgid "Golden Pair"
+msgstr ""
+
+msgid "Gong"
+msgstr ""
+
+msgid "Greater Honors and Knitted Tiles"
+msgstr ""
+
+msgid "Green Dragon"
+msgstr ""
+
+msgid "H"
 msgstr ""
 
 msgid "Haitei"
@@ -670,10 +1516,34 @@ msgstr ""
 msgid "Haku"
 msgstr ""
 
+msgid "Haku Tsumo"
+msgstr ""
+
+msgid "Half Flush"
+msgstr ""
+
 msgid "Han"
 msgstr ""
 
+msgid "Hanada Kirame"
+msgstr ""
+
+msgid "Hand of Earth"
+msgstr ""
+
+msgid "Hand of Heaven"
+msgstr ""
+
+msgid "Hand of Man"
+msgstr ""
+
 msgid "Haneman"
+msgstr ""
+
+msgid "Hao Huiyu"
+msgstr ""
+
+msgid "Haramura Nodoka"
 msgstr ""
 
 msgid "Hatsu"
@@ -682,16 +1552,40 @@ msgstr ""
 msgid "Head Bump"
 msgstr ""
 
+msgid "Heavenly Hand"
+msgstr ""
+
+msgid "Heavenly Win"
+msgstr ""
+
 msgid "Hefei"
 msgstr ""
 
+msgid "Hefei Mahjong"
+msgstr ""
+
+msgid "Hell Wait"
+msgstr ""
+
+msgid "Hidden Treasure"
+msgstr ""
+
+msgid "Hirose Sumire"
+msgstr ""
+
 msgid "Hit the back button to return to the main menu."
+msgstr ""
+
+msgid "Hoa (花)"
 msgstr ""
 
 msgid "Honba"
 msgstr ""
 
 msgid "Hong Kong"
+msgstr ""
+
+msgid "Hong Kong Old Style"
 msgstr ""
 
 msgid "Hong Kong Old Style mahjong. Three point minimum, everyone pays for a win, and win instantly if you have seven flowers."
@@ -710,10 +1604,40 @@ msgstr ""
 msgid "Houtei"
 msgstr ""
 
+msgid "Hu"
+msgstr ""
+
+msgid "Hua"
+msgstr ""
+
 msgid "Hyakuman Goku"
 msgstr ""
 
+msgid "Hỷ (喜)"
+msgstr ""
+
+msgid "Hợp (合)"
+msgstr ""
+
+msgid "ILM Card"
+msgstr ""
+
+msgid "Identical Sequences"
+msgstr ""
+
 msgid "If someone calls kan on your discard and wins off the kan draw, you are responsible for the full payment."
+msgstr ""
+
+msgid "If someone calls kan to upgrade an open triplet, you may call ron on the added tile. Doing so awards chankan (1 han).)"
+msgstr ""
+
+msgid "If someone kans your discard and tsumos off the replacement tile (rinshan), you pay the full amount."
+msgstr ""
+
+msgid "If the dealer (East wind) wins, the round repeats."
+msgstr ""
+
+msgid "If you deal the last dragon called for a daisangen hand, or the last wind called for a daisuushii hand, you are responsible for that single yakuman payment if they tsumo, or half of the yakuman payment if they ron off someone else."
 msgstr ""
 
 msgid "If you deal the last dragon called for a daisangen hand, or the last wind called for a daisuushii hand, you are responsible for the yakuman payment if they tsumo, or half of the payment if they ron off someone else."
@@ -722,7 +1646,19 @@ msgstr ""
 msgid "If you deal the last kan tile called for a suukantsu hand, you are responsible for the yakuman payment if they tsumo, or half the payment if they ron off someone else."
 msgstr ""
 
+msgid "If you deal the last tile called for kan for a suukantsu hand, you are responsible for that single yakuman payment if they tsumo, or half of the yakuman payment if they ron off someone else."
+msgstr ""
+
+msgid "If you discarded a tile called as someone's fourth call, you are liable for paying for their hand if they win."
+msgstr ""
+
 msgid "If you do not win any hands by the end of the game, you pay each player a penalty."
+msgstr ""
+
+msgid "If you kan and then tsumo on the replacement tile, you are awarded rinshan (1 han)."
+msgstr ""
+
+msgid "If your discard is called by another player with three existing calls (yours being the fourth), you are liable for paying their whole hand if they win."
 msgstr ""
 
 msgid "Iipeikou"
@@ -731,13 +1667,37 @@ msgstr ""
 msgid "Iipin Mouyue"
 msgstr ""
 
+msgid "Ikeda Kana"
+msgstr ""
+
 msgid "Immediate Kan Dora"
 msgstr ""
 
 msgid "In each round, the player whose wall is broken is given the wareme marker. If the wareme player wins, they are paid double the amount of points. If the wareme player has to pay points, they pay double the amount of points. Riichi sticks and honba payments are not affected."
 msgstr ""
 
+msgid "In event of an exhaustive draw, players not in tenpai pay players in tenpai. 3000 points total are paid, with the payment split among the non-tenpai players. If all or no players are tenpai, no payment occurs."
+msgstr ""
+
+msgid "Inazuma Riichi"
+msgstr ""
+
 msgid "Includes Tianjin mahjong joker tiles, but adds more yaku and played with a 4-tai minimum."
+msgstr ""
+
+msgid "Initial Score"
+msgstr ""
+
+msgid "Inoue Jun"
+msgstr ""
+
+msgid "Interrupt call"
+msgstr ""
+
+msgid "Interrupt facedown discard"
+msgstr ""
+
+msgid "Interrupt swap"
 msgstr ""
 
 msgid "Intro to cosmic mahjong"
@@ -777,7 +1737,25 @@ msgstr ""
 msgid "Ittsu Junchan"
 msgstr ""
 
+msgid "Iwadate Yuan"
+msgstr ""
+
+msgid "Iwato Kasumi"
+msgstr ""
+
+msgid "JC"
+msgstr ""
+
+msgid "Jihai"
+msgstr ""
+
+msgid "Jindai Komaki"
+msgstr ""
+
 msgid "Join private room"
+msgstr ""
+
+msgid "Joker"
 msgstr ""
 
 msgid "Jokers"
@@ -795,10 +1773,28 @@ msgstr ""
 msgid "Just Like Modded Minecraft"
 msgstr ""
 
+msgid "K"
+msgstr ""
+
 msgid "Kachoufuugetsu"
 msgstr ""
 
+msgid "Kainou Yoshiko"
+msgstr ""
+
+msgid "Kajiki Yumi"
+msgstr ""
+
+msgid "Kakura Kurumi"
+msgstr ""
+
 msgid "Kan"
+msgstr ""
+
+msgid "Kan (closed)"
+msgstr ""
+
+msgid "Kanbara Satomi"
 msgstr ""
 
 #, fuzzy
@@ -821,10 +1817,19 @@ msgstr ""
 msgid "Kansai Sanma"
 msgstr ""
 
+msgid "Karijuku Tomoe"
+msgstr ""
+
+msgid "Kataoka Yuuki"
+msgstr ""
+
 msgid "Kazoe Yakuman"
 msgstr ""
 
 msgid "Ketsupaihou"
+msgstr ""
+
+msgid "Khàn"
 msgstr ""
 
 msgid "Kin"
@@ -834,6 +1839,21 @@ msgid "Kinkei Dokuritsu"
 msgstr ""
 
 msgid "Kiriage Mangan"
+msgstr ""
+
+msgid "Knitted Honors"
+msgstr ""
+
+msgid "Knitted Short Straight"
+msgstr ""
+
+msgid "Knitted Straight"
+msgstr ""
+
+msgid "Knitted Terminal Sequences"
+msgstr ""
+
+msgid "Knitted Triplets"
 msgstr ""
 
 msgid "Kokuiisou"
@@ -851,6 +1871,12 @@ msgstr ""
 msgid "Kong"
 msgstr ""
 
+msgid "Kong Blossom"
+msgstr ""
+
+msgid "Kong On Kong"
+msgstr ""
+
 msgid "Kontsu"
 msgstr ""
 
@@ -858,6 +1884,9 @@ msgid "Kontsu Yaku"
 msgstr ""
 
 msgid "Korean"
+msgstr ""
+
+msgid "Kosegawa Shiromi"
 msgstr ""
 
 msgid "Kouitten"
@@ -872,19 +1901,58 @@ msgstr ""
 msgid "Kuitan Nashi"
 msgstr ""
 
+msgid "Kunihiro Hajime"
+msgstr ""
+
 msgid "Kyandonhou"
 msgstr ""
 
 msgid "Kyuushu Kyuuhai"
 msgstr ""
 
+msgid "Last Tile"
+msgstr ""
+
+msgid "Last Tile (discard)"
+msgstr ""
+
+msgid "Last Tile (draw)"
+msgstr ""
+
+msgid "Last Tile Claim"
+msgstr ""
+
+msgid "Last Tile Discard"
+msgstr ""
+
+msgid "Last Tile Draw"
+msgstr ""
+
 msgid "Learn"
+msgstr ""
+
+msgid "Lesser Honors and Knitted Tiles"
 msgstr ""
 
 msgid "Like Riichi but with a two-han minimum. There is also a side race to see who reaches three wins first."
 msgstr ""
 
+msgid "Limit"
+msgstr ""
+
 msgid "Limit the game to the East round only."
+msgstr ""
+
+msgid "Little Four Winds"
+msgstr ""
+
+msgid "Little Ping Hu"
+msgstr ""
+
+msgid "Little Three Dragons"
+msgstr ""
+
+msgid "Little Three Winds"
 msgstr ""
 
 msgid "Loading..."
@@ -1083,6 +2151,30 @@ msgstr ""
 msgid "Logs"
 msgstr ""
 
+msgid "Look at next two tiles in the wall"
+msgstr ""
+
+msgid "Lower Four"
+msgstr ""
+
+msgid "Lower Tiles"
+msgstr ""
+
+msgid "Lucky Sevens #1"
+msgstr ""
+
+msgid "Lucky Sevens #2"
+msgstr ""
+
+msgid "Lucky Sevens #3"
+msgstr ""
+
+msgid "Luxury Seven Pairs"
+msgstr ""
+
+msgid "M"
+msgstr ""
+
 msgid "M.League"
 msgstr ""
 
@@ -1090,6 +2182,9 @@ msgid "MCR"
 msgstr ""
 
 msgid "Mah Jongg"
+msgstr ""
+
+msgid "MahjLife Card"
 msgstr ""
 
 msgid "Mahjong Competition Rules. Has a scoring system of a different kind of complexity than Riichi."
@@ -1137,6 +2232,39 @@ msgstr ""
 msgid "Manzu"
 msgstr ""
 
+msgid "Manzu Honitsu"
+msgstr ""
+
+msgid "Mase Yuuko"
+msgstr ""
+
+msgid "Matano Seiko"
+msgstr ""
+
+msgid "Matched Royalty"
+msgstr ""
+
+msgid "Matsumi Kuro"
+msgstr ""
+
+msgid "Matsumi Yuu"
+msgstr ""
+
+msgid "Maya Yukiko"
+msgstr ""
+
+msgid "Megan Davin"
+msgstr ""
+
+msgid "Melded Hand"
+msgstr ""
+
+msgid "Melded Kong"
+msgstr ""
+
+msgid "Middle Tiles"
+msgstr ""
+
 msgid "Milky Way"
 msgstr ""
 
@@ -1149,34 +2277,154 @@ msgstr ""
 msgid "Minimum han required to win."
 msgstr ""
 
+msgid "Mixed Double Chow"
+msgstr ""
+
+msgid "Mixed Flush"
+msgstr ""
+
+msgid "Mixed Greater Terminals"
+msgstr ""
+
+msgid "Mixed Lesser Terminals"
+msgstr ""
+
+msgid "Mixed One-Suit"
+msgstr ""
+
+msgid "Mixed Outside Hand"
+msgstr ""
+
+msgid "Mixed Shifted Chows"
+msgstr ""
+
+msgid "Mixed Shifted Linked Sequences"
+msgstr ""
+
+msgid "Mixed Shifted Pungs"
+msgstr ""
+
+msgid "Mixed Straight"
+msgstr ""
+
+msgid "Mixed Terminals"
+msgstr ""
+
+msgid "Mixed Triple Chow"
+msgstr ""
+
+msgid "Miyanaga Saki"
+msgstr ""
+
+msgid "Miyanaga Teru"
+msgstr ""
+
 msgid "Mods"
 msgstr ""
 
 msgid "Mondeikou"
 msgstr ""
 
+msgid "Motouchi Naruka"
+msgstr ""
+
+msgid "Move haitei tile from live wall to dead wall"
+msgstr ""
+
+msgid "Move two tiles instead"
+msgstr ""
+
+msgid "Mủn"
+msgstr ""
+
+msgid "NMJL 2025 Card"
+msgstr ""
+
 msgid "Nagashi"
+msgstr ""
+
+msgid "Nagashi Mangan"
+msgstr ""
+
+msgid "Nanpo Kazue"
+msgstr ""
+
+msgid "Nelly Virsaladze"
+msgstr ""
+
+msgid "Nguyên (元)"
 msgstr ""
 
 msgid "Nickname (optional)"
 msgstr ""
 
+msgid "Nine Gates"
+msgstr ""
+
+msgid "Nine-Tile Straight"
+msgstr ""
+
 msgid "Ningbo"
+msgstr ""
+
+msgid "Ningbo Mahjong"
 msgstr ""
 
 msgid "No 100 sticks"
 msgstr ""
 
+msgid "No Baida"
+msgstr ""
+
+msgid "No Bams"
+msgstr ""
+
 msgid "No Charleston"
+msgstr ""
+
+msgid "No Chii"
+msgstr ""
+
+msgid "No Craks"
+msgstr ""
+
+msgid "No Dots"
 msgstr ""
 
 msgid "No Double Yakuman"
 msgstr ""
 
+msgid "No Fifth Tile Tenpai"
+msgstr ""
+
+msgid "No Flowers"
+msgstr ""
+
+msgid "No Flowers or Honors"
+msgstr ""
+
+msgid "No Flowers, Honors, or Triplets"
+msgstr ""
+
+msgid "No Flowers, No Leaves"
+msgstr ""
+
 msgid "No Furiten Riichi"
 msgstr ""
 
+msgid "No Gold Flowers"
+msgstr ""
+
 msgid "No Honors"
+msgstr ""
+
+msgid "No Honors or Flowers"
+msgstr ""
+
+msgid "No Jokers"
+msgstr ""
+
+msgid "No Jokers Mahjong League 2024"
 msgstr ""
 
 #, fuzzy
@@ -1186,13 +2434,34 @@ msgstr ""
 msgid "No Riichi Ankan"
 msgstr ""
 
+msgid "No Terminals"
+msgstr ""
+
 msgid "No Tsumo Loss"
+msgstr ""
+
+msgid "No Win"
+msgstr ""
+
+msgid "No Yaku"
 msgstr ""
 
 msgid "No description provided."
 msgstr ""
 
+msgid "No flowers"
+msgstr ""
+
+msgid "No swap"
+msgstr ""
+
+msgid "North Wind"
+msgstr ""
+
 msgid "Noten payments are tripled (Ikeda Kana)"
+msgstr ""
+
+msgid "Notenrenchan"
 msgstr ""
 
 msgid "Number of points each player starts with. You can also set this by writing the following in the Config tab: \\\"initial_score\\\": 100000"
@@ -1201,16 +2470,49 @@ msgstr ""
 msgid "Odd"
 msgstr ""
 
+msgid "Offer 0"
+msgstr ""
+
+msgid "Offer 1"
+msgstr ""
+
+msgid "Offer 2"
+msgstr ""
+
+msgid "Offer 3"
+msgstr ""
+
 msgid "Oka"
 msgstr ""
 
 msgid "On ron, each 1s (bird) tile is worth 1 shuugi, unless the discarder's hand contains 7p (pistol) which would shoot the birds dead. That is, unless the winner's hand contains 8s (birdcage) which would protect the birds from gunfire."
 msgstr ""
 
+msgid "One Kong"
+msgstr ""
+
+msgid "One Suji Only"
+msgstr ""
+
+msgid "One Voided Suit"
+msgstr ""
+
 msgid "One of each dragon tile is a special tile. The special white dragon is shiro pocchi, which acts a joker tile when drawn while in riichi. The special green dragon is an aka dora. The special red dragon is the golden chun, which can be used as a five of any suit, and grants 1 han when used as a five. Completing a hand via shiro pocchi while using the golden chun as a five and having the aka green dragon scores yakuman. If playing with shuugi, a golden chun used as a five scores 1 shuugi."
 msgstr ""
 
 msgid "One of the white dragons is shiro pocchi. Shiro pocchi acts a joker tile when drawn while in riichi."
+msgstr ""
+
+msgid "Onjouji Toki"
+msgstr ""
+
+msgid "Only One Flower"
+msgstr ""
+
+msgid "Only allow wins worth 3+ fan."
+msgstr ""
+
+msgid "Oohoshi Awai"
 msgstr ""
 
 #, fuzzy
@@ -1220,16 +2522,70 @@ msgstr ""
 msgid "Open Hands"
 msgstr ""
 
+msgid "Open Kokushi Musou"
+msgstr ""
+
+msgid "Open Kong"
+msgstr ""
+
+msgid "Open Nine Gates"
+msgstr ""
+
 msgid "Open Riichi"
+msgstr ""
+
+msgid "Open Straight"
 msgstr ""
 
 msgid "Other"
 msgstr ""
 
+msgid "Out on a Replacement"
+msgstr ""
+
+msgid "Out with Replacement Tile"
+msgstr ""
+
+msgid "Outside Hand"
+msgstr ""
+
+msgid "PIE"
+msgstr ""
+
 msgid "Paarenchan"
 msgstr ""
 
+msgid "Pair"
+msgstr ""
+
+msgid "Pao"
+msgstr ""
+
+msgid "Pass"
+msgstr ""
+
+msgid "Pass no tiles across"
+msgstr ""
+
+msgid "Pay 1500 to decline the swap"
+msgstr ""
+
 msgid "Pei"
+msgstr ""
+
+msgid "Perform swap"
+msgstr ""
+
+msgid "Persistent Cards"
+msgstr ""
+
+msgid "Phán"
+msgstr ""
+
+msgid "Phình"
+msgstr ""
+
+msgid "Phỗng"
 msgstr ""
 
 msgid "Pinfu"
@@ -1237,6 +2593,12 @@ msgstr ""
 
 #, fuzzy
 msgid "Pinzu"
+msgstr ""
+
+msgid "Place 2 tiles at the end of the dead wall (last selection is first kan draw)"
+msgstr ""
+
+msgid "Place 4 tiles at the end of the live wall (last selection is haitei)"
 msgstr ""
 
 msgid "Play"
@@ -1255,13 +2617,25 @@ msgstr ""
 msgid "Pon"
 msgstr ""
 
+msgid "Pon red dragon with priority"
+msgstr ""
+
 msgid "Pong"
 msgstr ""
 
 msgid "Possible hand:"
 msgstr ""
 
+msgid "Prevailing Wind"
+msgstr ""
+
+msgid "Prevalent Wind"
+msgstr ""
+
 msgid "Private"
+msgstr ""
+
+msgid "Pts"
 msgstr ""
 
 msgid "Public"
@@ -1270,10 +2644,115 @@ msgstr ""
 msgid "Pung"
 msgstr ""
 
+msgid "Pung of Honors"
+msgstr ""
+
+msgid "Pung of Terminals"
+msgstr ""
+
+msgid "Pure Double Chow"
+msgstr ""
+
+msgid "Pure Double Identical Sequences"
+msgstr ""
+
+msgid "Pure Double Short Straight"
+msgstr ""
+
+msgid "Pure Double Terminal Sequences"
+msgstr ""
+
+msgid "Pure Flush"
+msgstr ""
+
+msgid "Pure Greater Terminals"
+msgstr ""
+
+msgid "Pure Hand"
+msgstr ""
+
+msgid "Pure Lesser Terminals"
+msgstr ""
+
+msgid "Pure One-Suit"
+msgstr ""
+
+msgid "Pure Outside Hand"
+msgstr ""
+
+msgid "Pure Quadruple Sequence"
+msgstr ""
+
+msgid "Pure Shifted Chows"
+msgstr ""
+
+msgid "Pure Shifted Linked Sequences"
+msgstr ""
+
+msgid "Pure Shifted Pungs"
+msgstr ""
+
+msgid "Pure Straight"
+msgstr ""
+
+msgid "Pure Suit"
+msgstr ""
+
+msgid "Pure Terminal Chows"
+msgstr ""
+
+msgid "Pure Terminals"
+msgstr ""
+
+msgid "Pure Triple Chow"
+msgstr ""
+
+msgid "Pure Triple Sequence"
+msgstr ""
+
+msgid "Qiangjin"
+msgstr ""
+
+msgid "Quadruple Chow"
+msgstr ""
+
+msgid "Quadruple Triplets"
+msgstr ""
+
+msgid "Quint"
+msgstr ""
+
+msgid "Quints #1"
+msgstr ""
+
+msgid "Quints #2"
+msgstr ""
+
+msgid "Quints #3"
+msgstr ""
+
+msgid "Quints #4"
+msgstr ""
+
+msgid "R"
+msgstr ""
+
 msgid "Randomize mods"
 msgstr ""
 
+msgid "Ready Hand"
+msgstr ""
+
+msgid "Red Dragon"
+msgstr ""
+
 msgid "Reduces tiles in hand from 13 to 12. The goal is to achieve a tenpai hand rather than a winning hand. The idea is that your 13th tile is replaced with an invisible 'joker' tile that can be used to complete any hand."
+msgstr ""
+
+msgid "Remove Flowers"
+msgstr ""
+
+msgid "Remove all eight flowers from the wall."
 msgstr ""
 
 msgid "Removes limit hands. Score grows exponentially with han according to the formula 4 * fu * 2^(2+han). Not recommended with tobi enabled."
@@ -1294,10 +2773,43 @@ msgstr ""
 msgid "Replace the wall with 16 copies of each bamboo tile. Includes 10s if Ten is enabled."
 msgstr ""
 
+msgid "Replaceable Fly Joker"
+msgstr ""
+
 msgid "Replaces one of each tile with a blue 'galaxy' tile that acts as a wildcard of its number. For example, galaxy 3s can be used as 3m, 3p, or 3s. Galaxy winds are wind wildcards, and galaxy dragons are dragon wildcards."
 msgstr ""
 
 msgid "Reset mods to default"
+msgstr ""
+
+msgid "Reveal and set aside 3 tiles"
+msgstr ""
+
+msgid "Reveal flower"
+msgstr ""
+
+msgid "Reveal fly"
+msgstr ""
+
+msgid "Reveal joker"
+msgstr ""
+
+msgid "Reveal next tile from wall"
+msgstr ""
+
+msgid "Reveal three tiles and uradora"
+msgstr ""
+
+msgid "Revealed Tiles"
+msgstr ""
+
+msgid "Reverse Dora"
+msgstr ""
+
+msgid "Reversible Tiles"
+msgstr ""
+
+msgid "Reversible tiles"
 msgstr ""
 
 msgid "Riichi"
@@ -1326,7 +2838,25 @@ msgstr ""
 msgid "Rinshan Pao"
 msgstr ""
 
+msgid "Robbing The Kong"
+msgstr ""
+
+msgid "Robbing a Gong"
+msgstr ""
+
+msgid "Robbing a Kong"
+msgstr ""
+
+msgid "Robbing the Gold"
+msgstr ""
+
+msgid "Robbing the Kong"
+msgstr ""
+
 msgid "Ron"
+msgstr ""
+
+msgid "Ron previous discard"
 msgstr ""
 
 msgid "Room settings"
@@ -1363,10 +2893,22 @@ msgstr ""
 msgid "Ryuuiisourin"
 msgstr ""
 
+msgid "Ryuuka Tsumo"
+msgstr ""
+
 msgid "Ryuukyoku"
 msgstr ""
 
+msgid "Ryuumonbuchi Touka"
+msgstr ""
+
+msgid "Sagimori Arata"
+msgstr ""
+
 msgid "Sakicards v1.3"
+msgstr ""
+
+msgid "Same Number Bonus"
 msgstr ""
 
 msgid "Sanankon"
@@ -1420,25 +2962,118 @@ msgstr ""
 msgid "Sanshoku Sujipaikou"
 msgstr ""
 
+msgid "Sawamura Tomoki"
+msgstr ""
+
+msgid "Scoring"
+msgstr ""
+
+msgid "Sea Floor"
+msgstr ""
+
+msgid "Seat Flower"
+msgstr ""
+
+msgid "Seat King"
+msgstr ""
+
+msgid "Seat Queen"
+msgstr ""
+
+msgid "Seat Season"
+msgstr ""
+
 msgid "Seat Wind"
 msgstr ""
 
 msgid "Sekinin Barai"
 msgstr ""
 
+msgid "Sekinin Barai (Pao)"
+msgstr ""
+
+msgid "Select a tile to pass across"
+msgstr ""
+
+msgid "Select order to place remaining tiles (second selection is haitei)"
+msgstr ""
+
+msgid "Select three tiles to pass across"
+msgstr ""
+
+msgid "Select three tiles to pass left"
+msgstr ""
+
+msgid "Select three tiles to pass right"
+msgstr ""
+
+msgid "Select two tiles to pass across"
+msgstr ""
+
+msgid "Self Draw"
+msgstr ""
+
+msgid "Self Drawn Melded Hand"
+msgstr ""
+
+msgid "Self Khàn"
+msgstr ""
+
+msgid "Self Kong"
+msgstr ""
+
+msgid "Self-Drawn"
+msgstr ""
+
+msgid "Senoo Kaori"
+msgstr ""
+
 msgid "Sequences can wrap (891, 912)."
+msgstr ""
+
+msgid "Sequences can wrap (891, 912). Winds and dragons can make sequences. You can chii from any direction."
 msgstr ""
 
 msgid "Sequences can wrap (891, 912). Winds and dragons can make sequences. You can chii from any direction. Chiitoitsu is disabled. Open kokushi is allowed and worth 3 han."
 msgstr ""
 
+msgid "Set 10 tiles aside faceup"
+msgstr ""
+
+msgid "Set aside 4th tile from discards"
+msgstr ""
+
 msgid "Sets the goal points before the game can end. If the game reaches South 4 (or East 4, in the case of tonpuu) and every player is below [goal] points, play continues to the West (South) round until someone surpasses [goal] points, or at the end of West 4 (South 4)."
+msgstr ""
+
+msgid "Seven Consecutive Pairs"
+msgstr ""
+
+msgid "Seven Flower Bonus"
+msgstr ""
+
+msgid "Seven Flowers"
+msgstr ""
+
+msgid "Seven Flowers Robbing Eighth"
+msgstr ""
+
+msgid "Seven Pairs"
+msgstr ""
+
+msgid "Seven Shifted Pairs"
 msgstr ""
 
 msgid "Shanron Chonchu"
 msgstr ""
 
 msgid "Shenyang"
+msgstr ""
+
+msgid "Sheung"
+msgstr ""
+
+msgid "Shibuya Takami"
 msgstr ""
 
 msgid "Shiiaru Raotai"
@@ -1450,10 +3085,22 @@ msgstr ""
 msgid "Shiisanuushi"
 msgstr ""
 
+msgid "Shimizudani Ryuuka"
+msgstr ""
+
 msgid "Shiny Dora"
 msgstr ""
 
 msgid "Shiro Pocchi"
+msgstr ""
+
+msgid "Shirouzu Mairu"
+msgstr ""
+
+msgid "Shishihara Sawaya"
+msgstr ""
+
+msgid "Short Straight"
 msgstr ""
 
 msgid "Shouchikurin"
@@ -1482,6 +3129,9 @@ msgstr ""
 msgid "Shoutate"
 msgstr ""
 
+msgid "Show Nearest Hands"
+msgstr ""
+
 msgid "Show Waits"
 msgstr ""
 
@@ -1503,7 +3153,55 @@ msgstr ""
 msgid "Singaporean"
 msgstr ""
 
+msgid "Single Wait"
+msgstr ""
+
+msgid "Singles and Pairs #1"
+msgstr ""
+
+msgid "Singles and Pairs #2"
+msgstr ""
+
+msgid "Singles and Pairs #3"
+msgstr ""
+
+msgid "Singles and Pairs #4"
+msgstr ""
+
+msgid "Singles and Pairs #5"
+msgstr ""
+
+msgid "Singles and Pairs #6"
+msgstr ""
+
 msgid "Skip"
+msgstr ""
+
+msgid "Skip Charleston"
+msgstr ""
+
+msgid "Skip extra turn"
+msgstr ""
+
+msgid "Skip extra turn to discard facedown"
+msgstr ""
+
+msgid "Small Four Winds"
+msgstr ""
+
+msgid "Small Three Dragons"
+msgstr ""
+
+msgid "Small Three Similar Triplets"
+msgstr ""
+
+msgid "Small Three Winds"
+msgstr ""
+
+msgid "Small Triple Triplets"
+msgstr ""
+
+msgid "Someya Mako"
 msgstr ""
 
 msgid "Sorry, there are currently no tutorials for this ruleset!"
@@ -1515,10 +3213,16 @@ msgstr ""
 msgid "Souzu"
 msgstr ""
 
+msgid "Soọc (索)"
+msgstr ""
+
 msgid "Space Mahjong"
 msgstr ""
 
 msgid "Special thanks to our beta testers:"
+msgstr ""
+
+msgid "Speed Mahjong"
 msgstr ""
 
 msgid "Star Suit (beta)"
@@ -1533,7 +3237,16 @@ msgstr ""
 msgid "Starting game..."
 msgstr ""
 
+msgid "Steal tile and declare riichi"
+msgstr ""
+
 msgid "Sudden Death"
+msgstr ""
+
+msgid "Suehara Kyouko"
+msgstr ""
+
+msgid "Suit Bonus"
 msgstr ""
 
 msgid "Sujipaikou"
@@ -1573,7 +3286,67 @@ msgstr ""
 msgid "Suuzuukou"
 msgstr ""
 
+msgid "Swap 1"
+msgstr ""
+
+msgid "Swap 2"
+msgstr ""
+
+msgid "Swap a discard with same suit in hand"
+msgstr ""
+
+msgid "Swap a number tile with any discarded wind tile"
+msgstr ""
+
+msgid "Swap a number tile with any same number discard"
+msgstr ""
+
+msgid "Swap dora indicator with same suit in hand"
+msgstr ""
+
+msgid "Swap for exposed joker"
+msgstr ""
+
+msgid "Swap last discard with a terminal/honor"
+msgstr ""
+
+msgid "Swap open melds"
+msgstr ""
+
+msgid "Swap out dora indicator"
+msgstr ""
+
+msgid "Swap tile with aside"
+msgstr ""
+
+msgid "Swap two tiles"
+msgstr ""
+
+msgid "Swap with kamicha"
+msgstr ""
+
+msgid "Swap with shimocha"
+msgstr ""
+
+msgid "Swap with toimen"
+msgstr ""
+
+msgid "Tai"
+msgstr ""
+
 msgid "Taiwanese"
+msgstr ""
+
+msgid "Takakamo Shizuno"
+msgstr ""
+
+msgid "Take extra turn"
+msgstr ""
+
+msgid "Takei Hisa"
+msgstr ""
+
+msgid "Takimi Haru"
 msgstr ""
 
 msgid "Tanfonhou"
@@ -1582,17 +3355,38 @@ msgstr ""
 msgid "Tanyao"
 msgstr ""
 
+msgid "Tell shimocha/kamicha to swap"
+msgstr ""
+
+msgid "Tell shimocha/toimen to swap"
+msgstr ""
+
+msgid "Tell toimen/kamicha to swap"
+msgstr ""
+
 #, fuzzy
 msgid "Ten"
 msgstr ""
 
+msgid "Ten Identical Tiles"
+msgstr ""
+
 msgid "Tenhou"
+msgstr ""
+
+msgid "Tenpai Payments"
 msgstr ""
 
 msgid "Tenpairenchan"
 msgstr ""
 
 msgid "Tenpaiyame"
+msgstr ""
+
+msgid "Terminal Sequences"
+msgstr ""
+
+msgid "Thay (萬)"
 msgstr ""
 
 msgid "The classic riichi ruleset, now with an assortment of mods to pick and choose at your liking."
@@ -1604,7 +3398,97 @@ msgstr ""
 msgid "The tsumo and ron buttons are enabled on every draw and discard. If you make an incorrect win call, your hand is dead and you cannot make a win call for the remainder of the round."
 msgstr ""
 
-msgid "This is a utility mod for Cosmic Riichi that changes all yakuman to be 13 han. You may disable it if you don't want yakuman to stack with normal yaku."
+msgid "Thirteen Orphans"
+msgstr ""
+
+msgid "Thirteen Terminals"
+msgstr ""
+
+msgid "Thirteen Unconnected"
+msgstr ""
+
+msgid "Three Concealed Pungs"
+msgstr ""
+
+msgid "Three Concealed Triplets"
+msgstr ""
+
+msgid "Three Consecutive Pairs"
+msgstr ""
+
+msgid "Three Consecutive Pungs"
+msgstr ""
+
+msgid "Three Consecutive Triplets"
+msgstr ""
+
+msgid "Three Dragons Seven Pairs"
+msgstr ""
+
+msgid "Three Fan Minimum"
+msgstr ""
+
+msgid "Three Gold Knockdown"
+msgstr ""
+
+msgid "Three Great Scholars"
+msgstr ""
+
+msgid "Three Identical Pairs"
+msgstr ""
+
+msgid "Three Identical Sequences"
+msgstr ""
+
+msgid "Three Kong"
+msgstr ""
+
+msgid "Three Kongs"
+msgstr ""
+
+msgid "Three Lesser Scholars"
+msgstr ""
+
+msgid "Three Meld Penalty"
+msgstr ""
+
+msgid "Three Mixed Linked Sequences"
+msgstr ""
+
+msgid "Three Mixed Shifted Sequences"
+msgstr ""
+
+msgid "Three Mixed Shifted Triplets"
+msgstr ""
+
+msgid "Three Mixed Small Shifted Triplets"
+msgstr ""
+
+msgid "Three Number Hand"
+msgstr ""
+
+msgid "Three Pure Linked Sequences"
+msgstr ""
+
+msgid "Three Pure Shifted Sequences"
+msgstr ""
+
+msgid "Three Pure Shifted Triplets"
+msgstr ""
+
+msgid "Three Similar Sequences"
+msgstr ""
+
+msgid "Three Similar Triplets"
+msgstr ""
+
+msgid "Three Small Shifted Triplets"
+msgstr ""
+
+msgid "Three-Sided Wait"
+msgstr ""
+
+msgid "Three-Suited Terminal Chows"
 msgstr ""
 
 msgid "Three-player Riichi."
@@ -1613,7 +3497,28 @@ msgstr ""
 msgid "Three-player mahjong with 16 flowers, a unique joker tile, and instant payouts."
 msgstr ""
 
+msgid "Thùng (筒)"
+msgstr ""
+
 msgid "Tianjin"
+msgstr ""
+
+msgid "Tianjin Mahjong"
+msgstr ""
+
+msgid "Tile Hog"
+msgstr ""
+
+msgid "Tile Hog (2)"
+msgstr ""
+
+msgid "Tile Hog (3)"
+msgstr ""
+
+msgid "Tile Hog (4)"
+msgstr ""
+
+msgid "Ting"
 msgstr ""
 
 msgid "To be implemented:"
@@ -1634,6 +3539,9 @@ msgstr ""
 msgid "Toitoi"
 msgstr ""
 
+msgid "Ton"
+msgstr ""
+
 msgid "Tonpuu"
 msgstr ""
 
@@ -1646,10 +3554,31 @@ msgstr ""
 msgid "Toukanhou"
 msgstr ""
 
+msgid "Toyouko Momoko"
+msgstr ""
+
+msgid "Triple Pung"
+msgstr ""
+
 msgid "Triple Ron"
 msgstr ""
 
+msgid "Triple Sequences"
+msgstr ""
+
+msgid "Triple Tile Hog"
+msgstr ""
+
+msgid "Triple Triplets"
+msgstr ""
+
+msgid "Triplets"
+msgstr ""
+
 msgid "Tsubame Gaeshi"
+msgstr ""
+
+msgid "Tsujigaito Satoha"
 msgstr ""
 
 msgid "Tsumo"
@@ -1664,13 +3593,82 @@ msgstr ""
 msgid "Tutorials for ruleset:"
 msgstr ""
 
+msgid "Two Concealed Kongs"
+msgstr ""
+
+msgid "Two Concealed Pungs"
+msgstr ""
+
+msgid "Two Concealed Triplets"
+msgstr ""
+
+msgid "Two Dragon Pungs"
+msgstr ""
+
+msgid "Two Identical Sequences"
+msgstr ""
+
+msgid "Two Identical Sequences Twice"
+msgstr ""
+
+msgid "Two Kong"
+msgstr ""
+
+msgid "Two Kongs"
+msgstr ""
+
+msgid "Two Melded Kongs"
+msgstr ""
+
+msgid "Two Number Hand"
+msgstr ""
+
+msgid "Two Saki Cards"
+msgstr ""
+
+msgid "Two Shifted Triplets"
+msgstr ""
+
+msgid "Two Suits Only"
+msgstr ""
+
+msgid "Two Terminal Chows"
+msgstr ""
+
+msgid "Two-Fold Fortune"
+msgstr ""
+
 msgid "Two-player variant where the only tiles are bamboo tiles. Try not to chombo!"
 msgstr ""
 
 msgid "Two-player variant where you start with 34 tiles to make a mangan+ hand, and your remaining tiles are your discards."
 msgstr ""
 
+msgid "Tự ù"
+msgstr ""
+
+msgid "Tổng (縂)"
+msgstr ""
+
+msgid "Ueshige Suzu"
+msgstr ""
+
 msgid "Uma"
+msgstr ""
+
+msgid "Under the Sea"
+msgstr ""
+
+msgid "University Train"
+msgstr ""
+
+msgid "Uno"
+msgstr ""
+
+msgid "Upper Four"
+msgstr ""
+
+msgid "Upper Tiles"
 msgstr ""
 
 msgid "Ura"
@@ -1680,6 +3678,12 @@ msgid "Use the zan scoring table."
 msgstr ""
 
 msgid "Using joker assignment"
+msgstr ""
+
+msgid "Usuzawa Sae"
+msgstr ""
+
+msgid "Usuzumi Hatsumi"
 msgstr ""
 
 msgid "Uumensai"
@@ -1692,6 +3696,12 @@ msgid "Uupin Kaihou"
 msgstr ""
 
 msgid "Uushin Tsuukan"
+msgstr ""
+
+msgid "V"
+msgstr ""
+
+msgid "Value Honor"
 msgstr ""
 
 msgid "Variant:"
@@ -1713,10 +3723,19 @@ msgstr ""
 msgid "Visayan"
 msgstr ""
 
+msgid "Voided Suit"
+msgstr ""
+
 msgid "WRC 2022"
 msgstr ""
 
+msgid "Wall"
+msgstr ""
+
 msgid "Wareme"
+msgstr ""
+
+msgid "Warm Tiles"
 msgstr ""
 
 msgid "Washizu"
@@ -1725,7 +3744,91 @@ msgstr ""
 msgid "Welcome to Riichi Advanced!"
 msgstr ""
 
+msgid "When any player discards a tile you can use to complete a triplet, you may call Pon to take that tile. Then it becomes your turn to discard."
+msgstr ""
+
+msgid "When the player to your left discards a tile you can use to complete a 3 tile sequence, you may call Chii to take that tile instead of drawing."
+msgstr ""
+
 msgid "When you tsumo, you get the same total points as if it was a ron payment. (Nondealer tsumo mangan splits north's payment, giving you 5000+3000 instead of 4000+2000.)"
+msgstr ""
+
+msgid "White Dragon"
+msgstr ""
+
+msgid "Wild Card Single Wait"
+msgstr ""
+
+msgid "Win Condition"
+msgstr ""
+
+msgid "Win On Baida"
+msgstr ""
+
+msgid "Win by self-draw with a closed hand."
+msgstr ""
+
+msgid "Win off the discard after the last tile in the wall is drawn."
+msgstr ""
+
+msgid "Win off the last tile in the wall."
+msgstr ""
+
+msgid "Win on Kong"
+msgstr ""
+
+msgid "Win with your first draw as non-dealer."
+msgstr ""
+
+msgid "Win with your initial hand as dealer."
+msgstr ""
+
+msgid "Wind Melds"
+msgstr ""
+
+msgid "Winds"
+msgstr ""
+
+msgid "Winds and Dragons #1"
+msgstr ""
+
+msgid "Winds and Dragons #2"
+msgstr ""
+
+msgid "Winds and Dragons #3"
+msgstr ""
+
+msgid "Winds and Dragons #4"
+msgstr ""
+
+msgid "Winds and Dragons #5"
+msgstr ""
+
+msgid "Winds and Dragons #6"
+msgstr ""
+
+msgid "Winds and Dragons #7"
+msgstr ""
+
+msgid "Winner"
+msgstr ""
+
+msgid "Within Five Discards"
+msgstr ""
+
+msgid "Within Seven Tiles"
+msgstr ""
+
+msgid "Within Ten Discards"
+msgstr ""
+
+msgid "Within Ten Tiles"
+msgstr ""
+
+msgid "Wu"
+msgstr ""
+
+msgid "Yae Kobashiri"
 msgstr ""
 
 msgid "Yakitori"
@@ -1735,13 +3838,76 @@ msgstr ""
 msgid "Yaku"
 msgstr ""
 
+msgid "Yakuhai"
+msgstr ""
+
 msgid "Yakuman"
 msgstr ""
 
-msgid "Yakuman 13 Han"
+msgid "Yoshitome Miharu"
+msgstr ""
+
+msgid "You have no calls and your winning hand is the pattern 1112345678999 in one suit, plus one additional tile."
 msgstr ""
 
 msgid "You have the option to declare open riichi, which is worth 2 han but reveals your hand to the table. Open double riichi is 3 han."
+msgstr ""
+
+msgid "You may also call ron on concealed kans, but only if you are tenpai for kokushi musou."
+msgstr ""
+
+msgid "You may win with one of the following:"
+msgstr ""
+
+msgid "You won off a double-sided sequence wait, with an all-sequence hand whose pair is not yakuhai."
+msgstr ""
+
+msgid "You won with eight flowers."
+msgstr ""
+
+msgid "You won with seven flowers."
+msgstr ""
+
+msgid "Your closed hand has a double sequence: two copies of the exact same sequence in one suit, like 123 123."
+msgstr ""
+
+msgid "Your hand consists of only all-green tiles (23468 bamboo and green dragon)."
+msgstr ""
+
+msgid "Your hand consists of only honor tiles."
+msgstr ""
+
+msgid "Your hand consists of only terminals."
+msgstr ""
+
+msgid "Your hand consists of seven non-repeating pairs, and is not ryanpeikou."
+msgstr ""
+
+msgid "Your hand consists of seven pairs (repeats allowed)."
+msgstr ""
+
+msgid "Your hand contains four kans."
+msgstr ""
+
+msgid "Your hand contains only tiles numbered 2-8."
+msgstr ""
+
+msgid "Your hand contains three kans."
+msgstr ""
+
+msgid "Your hand contains triplets or kans of all three dragons."
+msgstr ""
+
+msgid "Your hand contains triplets or kans of three winds, plus a pair of the fourth wind."
+msgstr ""
+
+msgid "Your hand has three closed triplets in hand, and you won by self-drawing the fourth."
+msgstr ""
+
+msgid "Your winning hand consists of one of each terminal/honor tile plus one forming a pair."
+msgstr ""
+
+msgid "Yumeno Maho"
 msgstr ""
 
 msgid "Zan Sanma"
@@ -1751,6 +3917,12 @@ msgid "Zan Scoring"
 msgstr ""
 
 msgid "Zan Shuugi"
+msgstr ""
+
+msgid "Zimo"
+msgstr ""
+
+msgid "Zombie Blanks"
 msgstr ""
 
 msgid "Zung Jung"
@@ -1927,6 +4099,9 @@ msgstr ""
 msgid "west"
 msgstr ""
 
+msgid "win_on"
+msgstr ""
+
 msgid "with hand"
 msgstr ""
 
@@ -1941,4 +4116,41 @@ msgid "worth"
 msgstr ""
 
 msgid "→"
+msgstr ""
+
+msgid ""
+"Your base score is calculated via the following:\n"
+"- 20 base\n"
+"- +2 if won off self-draw\n"
+"- +10 if concealed hand\n"
+"- +2 if single wait (edge, closed, or pair wait)\n"
+"- +2 if pair is a dragon, round wind, or seat wind\n"
+"- +2 per triplet, times 2 if concealed, times 2 if terminal/honor\n"
+"- +8 per kong, times 2 if concealed, times 2 if terminal/honor\n"
+"- +4 per flower\n"
+""
+msgstr ""
+
+msgid ""
+"- Flower tiles must be declared and replaced by a draw from the back of the wall.\n"
+"- A flower tile is worth 1 if its number matches your seat (1=east, 2=south, 3=west, 4=north)\n"
+"- Having all 4 flower tiles or all 4 season tiles is worth %{four_flowers_value}.\n"
+""
+msgstr ""
+
+msgid ""
+"You may declare %{kan} to set aside four tiles in three situations:\n"
+"- (open) If you have three of a kind, you can claim the fourth if someone discarded it.\n"
+"- (added) If you previously called %{pon}, you can add the fourth tile to it but only if you draw the tile yourself.\n"
+"- (concealed) If you have four of a kind, you can declare them as %{ankan}.\n"
+"- In each case, you must then draw a replacement tile from the back of the wall.\n"
+""
+msgstr ""
+
+msgid ""
+"Each of the following adds 1 %{han}:\n"
+"- A triplet of dragon tiles\n"
+"- A triplet of winds matching the round marker\n"
+"- A triplet of winds matching your seat\n"
+""
 msgstr ""
