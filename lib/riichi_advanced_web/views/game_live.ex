@@ -115,7 +115,14 @@ defmodule RiichiAdvancedWeb.GameLive do
         <.live_component module={RiichiAdvancedWeb.CustomStyleComponent} id="custom-tiles" style={Rules.get(@state.rules_ref, "custom_style", %{})}/>
       <% end %>
       <input id="mobile-zoom-checkbox" type="checkbox" class="mobile-zoom-checkbox" phx-update="ignore">
-      <label for="mobile-zoom-checkbox"></label>
+      <label for="mobile-zoom-checkbox">
+        <svg xmlns="http://www.w3.org/2000/svg" width="100%" height="100%" stroke="#f4f0eb" fill="#f4f0eb" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M8 4H4m0 0v4m0-4 5 5m7-5h4m0 0v4m0-4-5 5M8 20H4m0 0v-4m0 4 5-5m7 5h4m0 0v-4m0 4-5-5"/>
+        </svg>
+        <svg xmlns="http://www.w3.org/2000/svg" width="100%" height="100%" stroke="#f4f0eb" fill="#f4f0eb" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M5 9h4m0 0V5m0 4L4 4m15 5h-4m0 0V5m0 4 5-5M5 15h4m0 0v4m0-4-5 5m15-5h-4m0 0v4m0-4 5 5"/>
+        </svg>
+      </label>
       <input id="tile-numbers-checkbox" type="checkbox" class="tile-numbers-checkbox" phx-update="ignore">
       <label for="tile-numbers-checkbox">123</label>
       <.live_component module={RiichiAdvancedWeb.HandComponent}

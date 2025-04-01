@@ -532,6 +532,7 @@ div.pond.kamicha {
     --mobile-scale-factor: 1.5;
   }
   input.mobile-zoom-checkbox + label {
+    background: none;
     position: absolute;
     left: calc(1.25 * var(--tile-size));
     bottom: calc(2 * var(--tile-size));
@@ -540,57 +541,52 @@ div.pond.kamicha {
     margin: 0;
     padding: 0;
     z-index: 1000;
+    width: calc(1.5 * var(--tile-size));
+    height: calc(1.5 * var(--tile-size));
   }
-  input.mobile-zoom-checkbox + label::before {
-    content: "+";
-    font-size: calc(1.5 * var(--tile-size));
-    display: block;
-    text-align: center;
-    width: calc(2 * var(--tile-size));
-    height: calc(2 * var(--tile-size));
-  }
-  input.mobile-zoom-checkbox:checked + label::before {
-    content: "–";
+  input.mobile-zoom-checkbox:not(:checked) + label > svg:first-child,
+  input.mobile-zoom-checkbox:checked + label > svg:last-child {
+    display: none;
   }
   /* hover-zoom view of our own hand */
-  input.mobile-zoom-checkbox:checked ~ div.hand.self {
+  input.mobile-zoom-checkbox:not(:checked) ~ div.hand.self {
     transform: scale(var(--mobile-scale-factor));
     transform-origin: 0% 100%;
     margin-left: calc(-0.125 * var(--tile-size));
     padding-top: calc(0.25 * var(--tile-size));
     max-width: calc(11 * var(--tile-size));
   }
-  input.mobile-zoom-checkbox:checked ~ div.hand.self {
+  input.mobile-zoom-checkbox:not(:checked) ~ div.hand.self {
     flex-flow: row wrap-reverse;
     justify-content: center;
     row-gap: calc(0.25 * var(--tile-size));
   }
-  input.mobile-zoom-checkbox:checked ~ div.hand.self > div.tiles {
+  input.mobile-zoom-checkbox:not(:checked) ~ div.hand.self > div.tiles {
     margin-left: 0;
     flex-grow: 1;
   }
-  input.mobile-zoom-checkbox:checked ~ div.hand.self > div.calls {
+  input.mobile-zoom-checkbox:not(:checked) ~ div.hand.self > div.calls {
     transform: scale(calc(1 / var(--mobile-scale-factor)));
     transform-origin: 100% 100%;
   }
-  input.mobile-zoom-checkbox:checked ~ div.hand.self > div.tiles:hover::before,
-  input.mobile-zoom-checkbox:checked ~ div.hand.self > div.calls:hover::before {
+  input.mobile-zoom-checkbox:not(:checked) ~ div.hand.self > div.tiles:hover::before,
+  input.mobile-zoom-checkbox:not(:checked) ~ div.hand.self > div.calls:hover::before {
     display: none;
   }
   /* move buttons up */
-  input.mobile-zoom-checkbox:checked ~ div.buttons,
-  input.mobile-zoom-checkbox:checked ~ div.call-buttons-container {
+  input.mobile-zoom-checkbox:not(:checked) ~ div.buttons,
+  input.mobile-zoom-checkbox:not(:checked) ~ div.call-buttons-container {
     bottom: calc(2 * var(--tile-size));
   }
   div#container.minefield input.mobile-zoom-checkbox + label {
     bottom: calc(7 * var(--tile-size));
   }
-  div#container.minefield input.mobile-zoom-checkbox:checked ~ div.hand.self > div.calls > div.call.aside {
+  div#container.minefield input.mobile-zoom-checkbox:not(:checked) ~ div.hand.self > div.calls > div.call.aside {
     transform: translateY(calc(-2 * var(--tile-size))) scale(var(--mobile-scale-factor));
     transform-origin: 100% 100%;
   }
-  div#container.minefield input.mobile-zoom-checkbox:checked ~ div.buttons,
-  div#container.minefield input.mobile-zoom-checkbox:checked ~ div.call-buttons-container {
+  div#container.minefield input.mobile-zoom-checkbox:not(:checked) ~ div.buttons,
+  div#container.minefield input.mobile-zoom-checkbox:not(:checked) ~ div.call-buttons-container {
     bottom: calc(5.75 * var(--tile-size));
   }
 }
