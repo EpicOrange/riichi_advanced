@@ -7,16 +7,38 @@ html, body {
   overflow-y: visible;
   height: 100%;
   scrollbar-width: none; /* Firefox */
-  --tile-size: min(calc(90vw / 16), calc(80vh / 16));
 }
+/* landscape */
+@media (min-aspect-ratio: 6/5) {
+  html, body {
+    /* 16 (table height)
+      + 1 (table margin)
+    + 1.5 (top margin)
+    + 1.5 (bottom margin)
+    = 20 */
+    --tile-size: calc(100vh / 20);
+  }
+  body > div {
+    margin: 0 calc(0.5 * var(--tile-size));
+  }
+}
+/* portrait (mobile) */
+@media (max-aspect-ratio: 6/5) {
+  html, body {
+    /* 16 (table width/height)
+      + 1 (table margin)
+      + 1 (left margin)
+      + 1 (right margin)
+     = 19 */
+    --tile-size: min(calc(100vw / 19), calc(80vh / 19));
+  }
+}
+
 html::-webkit-scrollbar, body::-webkit-scrollbar { 
   display: none; /* Safari/Chrome */
 }
-body > div {
-  padding: 0 calc(1 * var(--tile-size));
-}
 main {
-  max-height: 80vh;
+  height: calc(16 * var(--tile-size));
   aspect-ratio: 1/1;
   margin: calc(2 * var(--tile-size)) auto;
   --tile-front: #f4f0eb;
@@ -84,10 +106,10 @@ main div.messages-container > div.messages {
 /* landscape */
 @media (min-aspect-ratio: 6/5) {
   main::before {
-    left: calc(-20% + -0.5 * var(--tile-size));
+    left: calc(-20vh + 0.5 * var(--tile-size));
   }
   main div#container {
-    left: -20%;
+    left: calc(-20vh + 1 * var(--tile-size));
   }
   main div.messages-container {
     left: calc(100% + var(--tile-size));
@@ -95,11 +117,6 @@ main div.messages-container > div.messages {
 }
 /* portrait (mobile) */
 @media (max-aspect-ratio: 6/5) {
-  main {
-    max-height: 60vh;
-    --tile-size: min(calc(90vw / 16), calc(60vh / 16));
-  }
-  /* CSS rules for viewports where the height is greater than the width */
   main div.messages-container {
     left: calc(-0.5 * var(--tile-size));
     top: calc(100% + 1.5 * var(--tile-size));
@@ -823,8 +840,8 @@ div.corner-info {
   transform-origin: calc(-2.5 * var(--tile-size)) calc(-2.5 * var(--tile-size));
   width: calc(3 * var(--tile-size));
   height: calc(3 * var(--tile-size));
-  left: calc(10.5 * var(--tile-size));
-  top: calc(10.5 * var(--tile-size));
+  right: calc(2.5 * var(--tile-size));
+  bottom: calc(2.5 * var(--tile-size));
   font-size: calc(0.5 * var(--tile-size));
   padding-top: calc(1.5 * var(--tile-size) - 2em);
   box-sizing: border-box;
