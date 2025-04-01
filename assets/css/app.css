@@ -889,8 +889,9 @@ div.corner-info.self {
 
 /* tiles */
 div.tile {
-  --tile-width: calc(0.75 * var(--tile-size));
-  --tile-height: calc(1 * var(--tile-size));
+  --tile-scale-factor: 1;
+  --tile-width: calc(var(--tile-scale-factor) * 0.75 * var(--tile-size));
+  --tile-height: calc(var(--tile-scale-factor) * 1 * var(--tile-size));
   --tile-color: transparent;
   --number-color: black;
   --aka-color: #c14938;
@@ -903,7 +904,7 @@ div.tile {
   width: var(--tile-width);
   height: var(--tile-height);
   background: url("/images/tiles.png") no-repeat, conic-gradient(var(--tile-color) 0 0);
-  background-size: auto calc(var(--num-tiles) * var(--tile-size));
+  background-size: auto calc(var(--tile-scale-factor) * var(--num-tiles) * var(--tile-size));
   background-position: 0 0;
   border: var(--border-width) solid var(--border-color);
   border-radius: calc(0.10 * var(--tile-size));
@@ -961,373 +962,373 @@ div.tile.markable:hover, div.tile.marked {
   --border-width: calc(0.1 * var(--tile-size));
   --border-color: var(--tile-back);
 }
-div.tile { background-position-x: calc(0 * var(--tile-size) - var(--border-width)); }
-div.tile.sideways { width: var(--tile-height); height: var(--tile-width); background-position-x: calc(-1.5 * var(--tile-size) - var(--border-width)); }
-div.tile.dora:not(.\31 x) { background-position-x: calc(-0.75 * var(--tile-size) - var(--border-width)); }
-div.tile.dora:not(.\31 x).sideways { background-position-x: calc(-2.5 * var(--tile-size) - var(--border-width)); }
-div.tile.\30 m { --number-color: var(--aka-color); background-position-y: calc(-0 * var(--tile-size) - var(--border-width)); }
-div.tile.\31 m { background-position-y: calc(-1 * var(--tile-size) - var(--border-width)); }
-div.tile.\32 m { background-position-y: calc(-2 * var(--tile-size) - var(--border-width)); }
-div.tile.\33 m { background-position-y: calc(-3 * var(--tile-size) - var(--border-width)); }
-div.tile.\34 m { background-position-y: calc(-4 * var(--tile-size) - var(--border-width)); }
-div.tile.\35 m { background-position-y: calc(-5 * var(--tile-size) - var(--border-width)); }
-div.tile.\36 m { background-position-y: calc(-6 * var(--tile-size) - var(--border-width)); }
-div.tile.\37 m { background-position-y: calc(-7 * var(--tile-size) - var(--border-width)); }
-div.tile.\38 m { background-position-y: calc(-8 * var(--tile-size) - var(--border-width)); }
-div.tile.\39 m { background-position-y: calc(-9 * var(--tile-size) - var(--border-width)); }
-div.tile.\30 p { --number-color: var(--aka-color); background-position-y: calc(-10 * var(--tile-size) - var(--border-width)); }
-div.tile.\31 p { background-position-y: calc(-11 * var(--tile-size) - var(--border-width)); }
-div.tile.\32 p { background-position-y: calc(-12 * var(--tile-size) - var(--border-width)); }
-div.tile.\33 p { background-position-y: calc(-13 * var(--tile-size) - var(--border-width)); }
-div.tile.\34 p { background-position-y: calc(-14 * var(--tile-size) - var(--border-width)); }
-div.tile.\35 p { background-position-y: calc(-15 * var(--tile-size) - var(--border-width)); }
-div.tile.\36 p { background-position-y: calc(-16 * var(--tile-size) - var(--border-width)); }
-div.tile.\37 p { background-position-y: calc(-17 * var(--tile-size) - var(--border-width)); }
-div.tile.\38 p { background-position-y: calc(-18 * var(--tile-size) - var(--border-width)); }
-div.tile.\39 p { background-position-y: calc(-19 * var(--tile-size) - var(--border-width)); }
-div.tile.\30 s { --number-color: var(--aka-color); background-position-y: calc(-20 * var(--tile-size) - var(--border-width)); }
-div.tile.\31 s { background-position-y: calc(-21 * var(--tile-size) - var(--border-width)); }
-div.tile.\32 s { background-position-y: calc(-22 * var(--tile-size) - var(--border-width)); }
-div.tile.\33 s { background-position-y: calc(-23 * var(--tile-size) - var(--border-width)); }
-div.tile.\34 s { background-position-y: calc(-24 * var(--tile-size) - var(--border-width)); }
-div.tile.\35 s { background-position-y: calc(-25 * var(--tile-size) - var(--border-width)); }
-div.tile.\36 s { background-position-y: calc(-26 * var(--tile-size) - var(--border-width)); }
-div.tile.\37 s { background-position-y: calc(-27 * var(--tile-size) - var(--border-width)); }
-div.tile.\38 s { background-position-y: calc(-28 * var(--tile-size) - var(--border-width)); }
-div.tile.\39 s { background-position-y: calc(-29 * var(--tile-size) - var(--border-width)); }
-div.tile.\31 z { background-position-y: calc(-30 * var(--tile-size) - var(--border-width)); }
-div.tile.\32 z { background-position-y: calc(-31 * var(--tile-size) - var(--border-width)); }
-div.tile.\33 z { background-position-y: calc(-32 * var(--tile-size) - var(--border-width)); }
-div.tile.\34 z { background-position-y: calc(-33 * var(--tile-size) - var(--border-width)); }
-div.tile.\35 z, div.tile.\31 x.transparent { background-position-y: calc(-34 * var(--tile-size) - var(--border-width)); }
-div.tile.\36 z { background-position-y: calc(-35 * var(--tile-size) - var(--border-width)); }
-div.tile.\37 z { background-position-y: calc(-36 * var(--tile-size) - var(--border-width)); }
-div.tile.\30 z { background-position-y: calc(-37 * var(--tile-size) - var(--border-width)); }
-div.tile.\38 z { background-position-y: calc(-38 * var(--tile-size) - var(--border-width)); }
-div.tile.\39 z { background-position-y: calc(-39 * var(--tile-size) - var(--border-width)); }
-div.tile.\30 \30 s { background-position-y: calc(-40 * var(--tile-size) - var(--border-width)); }
-div.tile.\31 \30 m { background-position-y: calc(-41 * var(--tile-size) - var(--border-width)); }
-div.tile.\31 \30 p { background-position-y: calc(-42 * var(--tile-size) - var(--border-width)); }
-div.tile.\31 \30 s { background-position-y: calc(-43 * var(--tile-size) - var(--border-width)); }
-div.tile.\31 x { background-position-y: calc(-44 * var(--tile-size) - var(--border-width)); }
-div.tile.\31 f { background-position-y: calc(-45 * var(--tile-size) - var(--border-width)); }
-div.tile.\32 f { background-position-y: calc(-46 * var(--tile-size) - var(--border-width)); }
-div.tile.\33 f { background-position-y: calc(-47 * var(--tile-size) - var(--border-width)); }
-div.tile.\34 f { background-position-y: calc(-48 * var(--tile-size) - var(--border-width)); }
-div.tile.\31 g { background-position-y: calc(-49 * var(--tile-size) - var(--border-width)); }
-div.tile.\32 g { background-position-y: calc(-50 * var(--tile-size) - var(--border-width)); }
-div.tile.\33 g { background-position-y: calc(-51 * var(--tile-size) - var(--border-width)); }
-div.tile.\34 g { background-position-y: calc(-52 * var(--tile-size) - var(--border-width)); }
-div.tile.\31 a { background-position-y: calc(-53 * var(--tile-size) - var(--border-width)); }
-div.tile.\32 a { background-position-y: calc(-54 * var(--tile-size) - var(--border-width)); }
-div.tile.\33 a { background-position-y: calc(-55 * var(--tile-size) - var(--border-width)); }
-div.tile.\34 a { background-position-y: calc(-56 * var(--tile-size) - var(--border-width)); }
-div.tile.\31 k { background-position-y: calc(-57 * var(--tile-size) - var(--border-width)); }
-div.tile.\32 k { background-position-y: calc(-58 * var(--tile-size) - var(--border-width)); }
-div.tile.\33 k { background-position-y: calc(-59 * var(--tile-size) - var(--border-width)); }
-div.tile.\34 k { background-position-y: calc(-60 * var(--tile-size) - var(--border-width)); }
-div.tile.\31 q { background-position-y: calc(-61 * var(--tile-size) - var(--border-width)); }
-div.tile.\32 q { background-position-y: calc(-62 * var(--tile-size) - var(--border-width)); }
-div.tile.\33 q { background-position-y: calc(-63 * var(--tile-size) - var(--border-width)); }
-div.tile.\34 q { background-position-y: calc(-64 * var(--tile-size) - var(--border-width)); }
-div.tile.\31 y { background-position-y: calc(-65 * var(--tile-size) - var(--border-width)); }
-div.tile.\31 t { background-position-y: calc(-66 * var(--tile-size) - var(--border-width)); }
-div.tile.\32 t { background-position-y: calc(-67 * var(--tile-size) - var(--border-width)); }
-div.tile.\33 t { background-position-y: calc(-68 * var(--tile-size) - var(--border-width)); }
-div.tile.\34 t { background-position-y: calc(-69 * var(--tile-size) - var(--border-width)); }
-div.tile.\35 t { background-position-y: calc(-70 * var(--tile-size) - var(--border-width)); }
-div.tile.\36 t { background-position-y: calc(-71 * var(--tile-size) - var(--border-width)); }
-div.tile.\37 t { background-position-y: calc(-72 * var(--tile-size) - var(--border-width)); }
-div.tile.\38 t { background-position-y: calc(-73 * var(--tile-size) - var(--border-width)); }
-div.tile.\39 t { background-position-y: calc(-74 * var(--tile-size) - var(--border-width)); }
-div.tile.\31 \30 t { background-position-y: calc(-75 * var(--tile-size) - var(--border-width)); }
-div.tile.\31 j { background-position-y: calc(-76 * var(--tile-size) - var(--border-width)); }
-div.tile.\30 j { background-position-y: calc(-77 * var(--tile-size) - var(--border-width)); }
-div.tile.\32 j { background-position-y: calc(-78 * var(--tile-size) - var(--border-width)); }
-div.tile.\39 j { background-position-y: calc(-79 * var(--tile-size) - var(--border-width)); }
-div.tile.\34 j { background-position-y: calc(-80 * var(--tile-size) - var(--border-width)); }
-div.tile.\35 j { background-position-y: calc(-81 * var(--tile-size) - var(--border-width)); }
-div.tile.\36 j, div.tile.\31 \36 j { background-position-y: calc(-82 * var(--tile-size) - var(--border-width)); }
-div.tile.\37 j { background-position-y: calc(-83 * var(--tile-size) - var(--border-width)); }
-div.tile.\38 j { background-position-y: calc(-84 * var(--tile-size) - var(--border-width)); }
-div.tile.\31 \30 j { background-position-y: calc(-85 * var(--tile-size) - var(--border-width)); }
-div.tile.\31 \32 j { background-position-y: calc(-86 * var(--tile-size) - var(--border-width)); }
-div.tile.\33 j, div.tile.\31 \33 j { background-position-y: calc(-87 * var(--tile-size) - var(--border-width)); }
-div.tile.\31 \34 j { background-position-y: calc(-88 * var(--tile-size) - var(--border-width)); }
-div.tile.\31 \35 j { background-position-y: calc(-89 * var(--tile-size) - var(--border-width)); }
-div.tile.\31 \37 j { background-position-y: calc(-90 * var(--tile-size) - var(--border-width)); }
-div.tile.\31 \38 j { background-position-y: calc(-91 * var(--tile-size) - var(--border-width)); }
-div.tile.\31 \39 j { background-position-y: calc(-92 * var(--tile-size) - var(--border-width)); }
-div.tile.\33 \37 j { background-position-y: calc(-93 * var(--tile-size) - var(--border-width)); }
-div.tile.\34 \36 j { background-position-y: calc(-94 * var(--tile-size) - var(--border-width)); }
-div.tile.\31 \34 \37 j { background-position-y: calc(-95 * var(--tile-size) - var(--border-width)); }
-div.tile.\32 \35 \38 j { background-position-y: calc(-96 * var(--tile-size) - var(--border-width)); }
-div.tile.\33 \36 \39 j { background-position-y: calc(-97 * var(--tile-size) - var(--border-width)); }
-div.tile.\37 \38 \39 j { background-position-y: calc(-98 * var(--tile-size) - var(--border-width)); }
-div.tile.\34 \35 \36 j { background-position-y: calc(-99 * var(--tile-size) - var(--border-width)); }
-div.tile.\31 \32 \33 j { background-position-y: calc(-100 * var(--tile-size) - var(--border-width)); }
-div.tile.\31 \31 j { background-position-y: calc(-101 * var(--tile-size) - var(--border-width)); }
-div.tile.\32 \32 j { background-position-y: calc(-102 * var(--tile-size) - var(--border-width)); }
-div.tile.\32 \30 j { background-position-y: calc(-103 * var(--tile-size) - var(--border-width)); }
-div.tile.\39 \31 j { background-position-y: calc(-104 * var(--tile-size) - var(--border-width)); }
-div.tile.\36 \34 j { background-position-y: calc(-105 * var(--tile-size) - var(--border-width)); }
-div.tile.\37 \33 j { background-position-y: calc(-106 * var(--tile-size) - var(--border-width)); }
-div.tile.\38 \35 \32 j { background-position-y: calc(-107 * var(--tile-size) - var(--border-width)); }
-div.tile.\33 \30 j { background-position-y: calc(-108 * var(--tile-size) - var(--border-width)); }
-div.tile.\33 \31 j { background-position-y: calc(-109 * var(--tile-size) - var(--border-width)); }
-div.tile.\33 \32 j { background-position-y: calc(-110 * var(--tile-size) - var(--border-width)); }
-div.tile.\33 \33 j { background-position-y: calc(-111 * var(--tile-size) - var(--border-width)); }
-div.tile.\33 \34 j { background-position-y: calc(-112 * var(--tile-size) - var(--border-width)); }
-div.tile.\32 y { background-position-y: calc(-113 * var(--tile-size) - var(--border-width)); }
-div.tile.\30 \31 m { --tile-color: var(--aka-color); --number-color: var(--aka-color); background-position-y: calc(-114 * var(--tile-size) - var(--border-width)); }
-div.tile.\30 \32 m { --tile-color: var(--aka-color); --number-color: var(--aka-color); background-position-y: calc(-115 * var(--tile-size) - var(--border-width)); }
-div.tile.\30 \33 m { --tile-color: var(--aka-color); --number-color: var(--aka-color); background-position-y: calc(-116 * var(--tile-size) - var(--border-width)); }
-div.tile.\30 \34 m { --tile-color: var(--aka-color); --number-color: var(--aka-color); background-position-y: calc(-117 * var(--tile-size) - var(--border-width)); }
-div.tile.\30 \35 m { --tile-color: var(--aka-color); --number-color: var(--aka-color); background-position-y: calc(-118 * var(--tile-size) - var(--border-width)); }
-div.tile.\30 \36 m { --tile-color: var(--aka-color); --number-color: var(--aka-color); background-position-y: calc(-119 * var(--tile-size) - var(--border-width)); }
-div.tile.\30 \37 m { --tile-color: var(--aka-color); --number-color: var(--aka-color); background-position-y: calc(-120 * var(--tile-size) - var(--border-width)); }
-div.tile.\30 \38 m { --tile-color: var(--aka-color); --number-color: var(--aka-color); background-position-y: calc(-121 * var(--tile-size) - var(--border-width)); }
-div.tile.\30 \39 m { --tile-color: var(--aka-color); --number-color: var(--aka-color); background-position-y: calc(-122 * var(--tile-size) - var(--border-width)); }
-div.tile.\30 \31 \30 m { --tile-color: var(--aka-color); --number-color: var(--aka-color); background-position-y: calc(-123 * var(--tile-size) - var(--border-width)); }
-div.tile.\30 \31 p { --tile-color: var(--aka-color); --number-color: var(--aka-color); background-position-y: calc(-124 * var(--tile-size) - var(--border-width)); }
-div.tile.\30 \32 p { --tile-color: var(--aka-color); --number-color: var(--aka-color); background-position-y: calc(-125 * var(--tile-size) - var(--border-width)); }
-div.tile.\30 \33 p { --tile-color: var(--aka-color); --number-color: var(--aka-color); background-position-y: calc(-126 * var(--tile-size) - var(--border-width)); }
-div.tile.\30 \34 p { --tile-color: var(--aka-color); --number-color: var(--aka-color); background-position-y: calc(-127 * var(--tile-size) - var(--border-width)); }
-div.tile.\30 \35 p { --tile-color: var(--aka-color); --number-color: var(--aka-color); background-position-y: calc(-128 * var(--tile-size) - var(--border-width)); }
-div.tile.\30 \36 p { --tile-color: var(--aka-color); --number-color: var(--aka-color); background-position-y: calc(-129 * var(--tile-size) - var(--border-width)); }
-div.tile.\30 \37 p { --tile-color: var(--aka-color); --number-color: var(--aka-color); background-position-y: calc(-130 * var(--tile-size) - var(--border-width)); }
-div.tile.\30 \38 p { --tile-color: var(--aka-color); --number-color: var(--aka-color); background-position-y: calc(-131 * var(--tile-size) - var(--border-width)); }
-div.tile.\30 \39 p { --tile-color: var(--aka-color); --number-color: var(--aka-color); background-position-y: calc(-132 * var(--tile-size) - var(--border-width)); }
-div.tile.\30 \31 \30 p { --tile-color: var(--aka-color); --number-color: var(--aka-color); background-position-y: calc(-133 * var(--tile-size) - var(--border-width)); }
-div.tile.\30 \31 s { --tile-color: var(--aka-color); --number-color: var(--aka-color); background-position-y: calc(-134 * var(--tile-size) - var(--border-width)); }
-div.tile.\30 \32 s { --tile-color: var(--aka-color); --number-color: var(--aka-color); background-position-y: calc(-135 * var(--tile-size) - var(--border-width)); }
-div.tile.\30 \33 s { --tile-color: var(--aka-color); --number-color: var(--aka-color); background-position-y: calc(-136 * var(--tile-size) - var(--border-width)); }
-div.tile.\30 \34 s { --tile-color: var(--aka-color); --number-color: var(--aka-color); background-position-y: calc(-137 * var(--tile-size) - var(--border-width)); }
-div.tile.\30 \35 s { --tile-color: var(--aka-color); --number-color: var(--aka-color); background-position-y: calc(-138 * var(--tile-size) - var(--border-width)); }
-div.tile.\30 \36 s { --tile-color: var(--aka-color); --number-color: var(--aka-color); background-position-y: calc(-139 * var(--tile-size) - var(--border-width)); }
-div.tile.\30 \37 s { --tile-color: var(--aka-color); --number-color: var(--aka-color); background-position-y: calc(-140 * var(--tile-size) - var(--border-width)); }
-div.tile.\30 \38 s { --tile-color: var(--aka-color); --number-color: var(--aka-color); background-position-y: calc(-141 * var(--tile-size) - var(--border-width)); }
-div.tile.\30 \39 s { --tile-color: var(--aka-color); --number-color: var(--aka-color); background-position-y: calc(-142 * var(--tile-size) - var(--border-width)); }
-div.tile.\30 \31 \30 s { --tile-color: var(--aka-color); --number-color: var(--aka-color); background-position-y: calc(-143 * var(--tile-size) - var(--border-width)); }
-div.tile.\30 \31 t { --tile-color: var(--aka-color); --number-color: var(--aka-color); background-position-y: calc(-144 * var(--tile-size) - var(--border-width)); }
-div.tile.\30 \32 t { --tile-color: var(--aka-color); --number-color: var(--aka-color); background-position-y: calc(-145 * var(--tile-size) - var(--border-width)); }
-div.tile.\30 \33 t { --tile-color: var(--aka-color); --number-color: var(--aka-color); background-position-y: calc(-146 * var(--tile-size) - var(--border-width)); }
-div.tile.\30 \34 t { --tile-color: var(--aka-color); --number-color: var(--aka-color); background-position-y: calc(-147 * var(--tile-size) - var(--border-width)); }
-div.tile.\30 \35 t, div.tile.\30 t { --tile-color: var(--aka-color); --number-color: var(--aka-color); background-position-y: calc(-148 * var(--tile-size) - var(--border-width)); }
-div.tile.\30 \36 t { --tile-color: var(--aka-color); --number-color: var(--aka-color); background-position-y: calc(-149 * var(--tile-size) - var(--border-width)); }
-div.tile.\30 \37 t { --tile-color: var(--aka-color); --number-color: var(--aka-color); background-position-y: calc(-150 * var(--tile-size) - var(--border-width)); }
-div.tile.\30 \38 t { --tile-color: var(--aka-color); --number-color: var(--aka-color); background-position-y: calc(-151 * var(--tile-size) - var(--border-width)); }
-div.tile.\30 \39 t { --tile-color: var(--aka-color); --number-color: var(--aka-color); background-position-y: calc(-152 * var(--tile-size) - var(--border-width)); }
-div.tile.\30 \31 \30 t { --tile-color: var(--aka-color); --number-color: var(--aka-color); background-position-y: calc(-153 * var(--tile-size) - var(--border-width)); }
-div.tile.\30 \30 z { --tile-color: var(--aka-color); --number-color: var(--aka-color); background-position-y: calc(-154 * var(--tile-size) - var(--border-width)); }
-div.tile.\30 \31 z { --tile-color: var(--aka-color); --number-color: var(--aka-color); background-position-y: calc(-155 * var(--tile-size) - var(--border-width)); }
-div.tile.\30 \32 z { --tile-color: var(--aka-color); --number-color: var(--aka-color); background-position-y: calc(-156 * var(--tile-size) - var(--border-width)); }
-div.tile.\30 \33 z { --tile-color: var(--aka-color); --number-color: var(--aka-color); background-position-y: calc(-157 * var(--tile-size) - var(--border-width)); }
-div.tile.\30 \34 z { --tile-color: var(--aka-color); --number-color: var(--aka-color); background-position-y: calc(-158 * var(--tile-size) - var(--border-width)); }
-div.tile.\30 \35 z { --tile-color: var(--aka-color); --number-color: var(--aka-color); background-position-y: calc(-159 * var(--tile-size) - var(--border-width)); }
-div.tile.\30 \36 z { --tile-color: var(--aka-color); --number-color: var(--aka-color); background-position-y: calc(-160 * var(--tile-size) - var(--border-width)); }
-div.tile.\30 \37 z { --tile-color: var(--aka-color); --number-color: var(--aka-color); background-position-y: calc(-161 * var(--tile-size) - var(--border-width)); }
-div.tile.\30 \38 z { --tile-color: var(--aka-color); --number-color: var(--aka-color); background-position-y: calc(-162 * var(--tile-size) - var(--border-width)); }
-div.tile.\30 \30 \30 s { --tile-color: var(--aka-color); --number-color: var(--aka-color); background-position-y: calc(-163 * var(--tile-size) - var(--border-width)); }
-div.tile.\32 \31 m { --tile-color: var(--ao-color); --number-color: var(--ao-color); background-position-y: calc(-114 * var(--tile-size) - var(--border-width)); }
-div.tile.\32 \32 m { --tile-color: var(--ao-color); --number-color: var(--ao-color); background-position-y: calc(-115 * var(--tile-size) - var(--border-width)); }
-div.tile.\32 \33 m { --tile-color: var(--ao-color); --number-color: var(--ao-color); background-position-y: calc(-116 * var(--tile-size) - var(--border-width)); }
-div.tile.\32 \34 m { --tile-color: var(--ao-color); --number-color: var(--ao-color); background-position-y: calc(-117 * var(--tile-size) - var(--border-width)); }
-div.tile.\32 \35 m { --tile-color: var(--ao-color); --number-color: var(--ao-color); background-position-y: calc(-118 * var(--tile-size) - var(--border-width)); }
-div.tile.\32 \36 m { --tile-color: var(--ao-color); --number-color: var(--ao-color); background-position-y: calc(-119 * var(--tile-size) - var(--border-width)); }
-div.tile.\32 \37 m { --tile-color: var(--ao-color); --number-color: var(--ao-color); background-position-y: calc(-120 * var(--tile-size) - var(--border-width)); }
-div.tile.\32 \38 m { --tile-color: var(--ao-color); --number-color: var(--ao-color); background-position-y: calc(-121 * var(--tile-size) - var(--border-width)); }
-div.tile.\32 \39 m { --tile-color: var(--ao-color); --number-color: var(--ao-color); background-position-y: calc(-122 * var(--tile-size) - var(--border-width)); }
-div.tile.\32 \31 \30 m { --tile-color: var(--ao-color); --number-color: var(--ao-color); background-position-y: calc(-123 * var(--tile-size) - var(--border-width)); }
-div.tile.\32 \31 p { --tile-color: var(--ao-color); --number-color: var(--ao-color); background-position-y: calc(-124 * var(--tile-size) - var(--border-width)); }
-div.tile.\32 \32 p { --tile-color: var(--ao-color); --number-color: var(--ao-color); background-position-y: calc(-125 * var(--tile-size) - var(--border-width)); }
-div.tile.\32 \33 p { --tile-color: var(--ao-color); --number-color: var(--ao-color); background-position-y: calc(-126 * var(--tile-size) - var(--border-width)); }
-div.tile.\32 \34 p { --tile-color: var(--ao-color); --number-color: var(--ao-color); background-position-y: calc(-127 * var(--tile-size) - var(--border-width)); }
-div.tile.\32 \35 p { --tile-color: var(--ao-color); --number-color: var(--ao-color); background-position-y: calc(-128 * var(--tile-size) - var(--border-width)); }
-div.tile.\32 \36 p { --tile-color: var(--ao-color); --number-color: var(--ao-color); background-position-y: calc(-129 * var(--tile-size) - var(--border-width)); }
-div.tile.\32 \37 p { --tile-color: var(--ao-color); --number-color: var(--ao-color); background-position-y: calc(-130 * var(--tile-size) - var(--border-width)); }
-div.tile.\32 \38 p { --tile-color: var(--ao-color); --number-color: var(--ao-color); background-position-y: calc(-131 * var(--tile-size) - var(--border-width)); }
-div.tile.\32 \39 p { --tile-color: var(--ao-color); --number-color: var(--ao-color); background-position-y: calc(-132 * var(--tile-size) - var(--border-width)); }
-div.tile.\32 \31 \30 p { --tile-color: var(--ao-color); --number-color: var(--ao-color); background-position-y: calc(-133 * var(--tile-size) - var(--border-width)); }
-div.tile.\32 \31 s { --tile-color: var(--ao-color); --number-color: var(--ao-color); background-position-y: calc(-134 * var(--tile-size) - var(--border-width)); }
-div.tile.\32 \32 s { --tile-color: var(--ao-color); --number-color: var(--ao-color); background-position-y: calc(-135 * var(--tile-size) - var(--border-width)); }
-div.tile.\32 \33 s { --tile-color: var(--ao-color); --number-color: var(--ao-color); background-position-y: calc(-136 * var(--tile-size) - var(--border-width)); }
-div.tile.\32 \34 s { --tile-color: var(--ao-color); --number-color: var(--ao-color); background-position-y: calc(-137 * var(--tile-size) - var(--border-width)); }
-div.tile.\32 \35 s { --tile-color: var(--ao-color); --number-color: var(--ao-color); background-position-y: calc(-138 * var(--tile-size) - var(--border-width)); }
-div.tile.\32 \36 s { --tile-color: var(--ao-color); --number-color: var(--ao-color); background-position-y: calc(-139 * var(--tile-size) - var(--border-width)); }
-div.tile.\32 \37 s { --tile-color: var(--ao-color); --number-color: var(--ao-color); background-position-y: calc(-140 * var(--tile-size) - var(--border-width)); }
-div.tile.\32 \38 s { --tile-color: var(--ao-color); --number-color: var(--ao-color); background-position-y: calc(-141 * var(--tile-size) - var(--border-width)); }
-div.tile.\32 \39 s { --tile-color: var(--ao-color); --number-color: var(--ao-color); background-position-y: calc(-142 * var(--tile-size) - var(--border-width)); }
-div.tile.\32 \31 \30 s { --tile-color: var(--ao-color); --number-color: var(--ao-color); background-position-y: calc(-143 * var(--tile-size) - var(--border-width)); }
-div.tile.\32 \31 t { --tile-color: var(--ao-color); --number-color: var(--ao-color); background-position-y: calc(-144 * var(--tile-size) - var(--border-width)); }
-div.tile.\32 \32 t { --tile-color: var(--ao-color); --number-color: var(--ao-color); background-position-y: calc(-145 * var(--tile-size) - var(--border-width)); }
-div.tile.\32 \33 t { --tile-color: var(--ao-color); --number-color: var(--ao-color); background-position-y: calc(-146 * var(--tile-size) - var(--border-width)); }
-div.tile.\32 \34 t { --tile-color: var(--ao-color); --number-color: var(--ao-color); background-position-y: calc(-147 * var(--tile-size) - var(--border-width)); }
-div.tile.\32 \35 t { --tile-color: var(--ao-color); --number-color: var(--ao-color); background-position-y: calc(-148 * var(--tile-size) - var(--border-width)); }
-div.tile.\32 \36 t { --tile-color: var(--ao-color); --number-color: var(--ao-color); background-position-y: calc(-149 * var(--tile-size) - var(--border-width)); }
-div.tile.\32 \37 t { --tile-color: var(--ao-color); --number-color: var(--ao-color); background-position-y: calc(-150 * var(--tile-size) - var(--border-width)); }
-div.tile.\32 \38 t { --tile-color: var(--ao-color); --number-color: var(--ao-color); background-position-y: calc(-151 * var(--tile-size) - var(--border-width)); }
-div.tile.\32 \39 t { --tile-color: var(--ao-color); --number-color: var(--ao-color); background-position-y: calc(-152 * var(--tile-size) - var(--border-width)); }
-div.tile.\32 \31 \30 t { --tile-color: var(--ao-color); --number-color: var(--ao-color); background-position-y: calc(-153 * var(--tile-size) - var(--border-width)); }
-div.tile.\32 \30 z { --tile-color: var(--ao-color); --number-color: var(--ao-color); background-position-y: calc(-154 * var(--tile-size) - var(--border-width)); }
-div.tile.\32 \31 z { --tile-color: var(--ao-color); --number-color: var(--ao-color); background-position-y: calc(-155 * var(--tile-size) - var(--border-width)); }
-div.tile.\32 \32 z { --tile-color: var(--ao-color); --number-color: var(--ao-color); background-position-y: calc(-156 * var(--tile-size) - var(--border-width)); }
-div.tile.\32 \33 z { --tile-color: var(--ao-color); --number-color: var(--ao-color); background-position-y: calc(-157 * var(--tile-size) - var(--border-width)); }
-div.tile.\32 \34 z { --tile-color: var(--ao-color); --number-color: var(--ao-color); background-position-y: calc(-158 * var(--tile-size) - var(--border-width)); }
-div.tile.\32 \35 z { --tile-color: var(--ao-color); --number-color: var(--ao-color); background-position-y: calc(-159 * var(--tile-size) - var(--border-width)); }
-div.tile.\32 \36 z { --tile-color: var(--ao-color); --number-color: var(--ao-color); background-position-y: calc(-160 * var(--tile-size) - var(--border-width)); }
-div.tile.\32 \37 z { --tile-color: var(--ao-color); --number-color: var(--ao-color); background-position-y: calc(-161 * var(--tile-size) - var(--border-width)); }
-div.tile.\32 \38 z { --tile-color: var(--ao-color); --number-color: var(--ao-color); background-position-y: calc(-162 * var(--tile-size) - var(--border-width)); }
-div.tile.\32 \30 \30 s { --tile-color: var(--ao-color); --number-color: var(--ao-color); background-position-y: calc(-163 * var(--tile-size) - var(--border-width)); }
-div.tile.\33 \31 m { --tile-color: var(--kin-color); background-position-y: calc(-114 * var(--tile-size) - var(--border-width)); }
-div.tile.\33 \32 m { --tile-color: var(--kin-color); background-position-y: calc(-115 * var(--tile-size) - var(--border-width)); }
-div.tile.\33 \33 m { --tile-color: var(--kin-color); background-position-y: calc(-116 * var(--tile-size) - var(--border-width)); }
-div.tile.\33 \34 m { --tile-color: var(--kin-color); background-position-y: calc(-117 * var(--tile-size) - var(--border-width)); }
-div.tile.\33 \35 m { --tile-color: var(--kin-color); background-position-y: calc(-118 * var(--tile-size) - var(--border-width)); }
-div.tile.\33 \36 m { --tile-color: var(--kin-color); background-position-y: calc(-119 * var(--tile-size) - var(--border-width)); }
-div.tile.\33 \37 m { --tile-color: var(--kin-color); background-position-y: calc(-120 * var(--tile-size) - var(--border-width)); }
-div.tile.\33 \38 m { --tile-color: var(--kin-color); background-position-y: calc(-121 * var(--tile-size) - var(--border-width)); }
-div.tile.\33 \39 m { --tile-color: var(--kin-color); background-position-y: calc(-122 * var(--tile-size) - var(--border-width)); }
-div.tile.\33 \31 \30 m { --tile-color: var(--kin-color); background-position-y: calc(-123 * var(--tile-size) - var(--border-width)); }
-div.tile.\33 \31 p { --tile-color: var(--kin-color); background-position-y: calc(-124 * var(--tile-size) - var(--border-width)); }
-div.tile.\33 \32 p { --tile-color: var(--kin-color); background-position-y: calc(-125 * var(--tile-size) - var(--border-width)); }
-div.tile.\33 \33 p { --tile-color: var(--kin-color); background-position-y: calc(-126 * var(--tile-size) - var(--border-width)); }
-div.tile.\33 \34 p { --tile-color: var(--kin-color); background-position-y: calc(-127 * var(--tile-size) - var(--border-width)); }
-div.tile.\33 \35 p { --tile-color: var(--kin-color); background-position-y: calc(-128 * var(--tile-size) - var(--border-width)); }
-div.tile.\33 \36 p { --tile-color: var(--kin-color); background-position-y: calc(-129 * var(--tile-size) - var(--border-width)); }
-div.tile.\33 \37 p { --tile-color: var(--kin-color); background-position-y: calc(-130 * var(--tile-size) - var(--border-width)); }
-div.tile.\33 \38 p { --tile-color: var(--kin-color); background-position-y: calc(-131 * var(--tile-size) - var(--border-width)); }
-div.tile.\33 \39 p { --tile-color: var(--kin-color); background-position-y: calc(-132 * var(--tile-size) - var(--border-width)); }
-div.tile.\33 \31 \30 p { --tile-color: var(--kin-color); background-position-y: calc(-133 * var(--tile-size) - var(--border-width)); }
-div.tile.\33 \31 s { --tile-color: var(--kin-color); background-position-y: calc(-134 * var(--tile-size) - var(--border-width)); }
-div.tile.\33 \32 s { --tile-color: var(--kin-color); background-position-y: calc(-135 * var(--tile-size) - var(--border-width)); }
-div.tile.\33 \33 s { --tile-color: var(--kin-color); background-position-y: calc(-136 * var(--tile-size) - var(--border-width)); }
-div.tile.\33 \34 s { --tile-color: var(--kin-color); background-position-y: calc(-137 * var(--tile-size) - var(--border-width)); }
-div.tile.\33 \35 s { --tile-color: var(--kin-color); background-position-y: calc(-138 * var(--tile-size) - var(--border-width)); }
-div.tile.\33 \36 s { --tile-color: var(--kin-color); background-position-y: calc(-139 * var(--tile-size) - var(--border-width)); }
-div.tile.\33 \37 s { --tile-color: var(--kin-color); background-position-y: calc(-140 * var(--tile-size) - var(--border-width)); }
-div.tile.\33 \38 s { --tile-color: var(--kin-color); background-position-y: calc(-141 * var(--tile-size) - var(--border-width)); }
-div.tile.\33 \39 s { --tile-color: var(--kin-color); background-position-y: calc(-142 * var(--tile-size) - var(--border-width)); }
-div.tile.\33 \31 \30 s { --tile-color: var(--kin-color); background-position-y: calc(-143 * var(--tile-size) - var(--border-width)); }
-div.tile.\33 \31 t { --tile-color: var(--kin-color); background-position-y: calc(-144 * var(--tile-size) - var(--border-width)); }
-div.tile.\33 \32 t { --tile-color: var(--kin-color); background-position-y: calc(-145 * var(--tile-size) - var(--border-width)); }
-div.tile.\33 \33 t { --tile-color: var(--kin-color); background-position-y: calc(-146 * var(--tile-size) - var(--border-width)); }
-div.tile.\33 \34 t { --tile-color: var(--kin-color); background-position-y: calc(-147 * var(--tile-size) - var(--border-width)); }
-div.tile.\33 \35 t { --tile-color: var(--kin-color); background-position-y: calc(-148 * var(--tile-size) - var(--border-width)); }
-div.tile.\33 \36 t { --tile-color: var(--kin-color); background-position-y: calc(-149 * var(--tile-size) - var(--border-width)); }
-div.tile.\33 \37 t { --tile-color: var(--kin-color); background-position-y: calc(-150 * var(--tile-size) - var(--border-width)); }
-div.tile.\33 \38 t { --tile-color: var(--kin-color); background-position-y: calc(-151 * var(--tile-size) - var(--border-width)); }
-div.tile.\33 \39 t { --tile-color: var(--kin-color); background-position-y: calc(-152 * var(--tile-size) - var(--border-width)); }
-div.tile.\33 \31 \30 t { --tile-color: var(--kin-color); background-position-y: calc(-153 * var(--tile-size) - var(--border-width)); }
-div.tile.\33 \30 z { --tile-color: var(--kin-color); background-position-y: calc(-154 * var(--tile-size) - var(--border-width)); }
-div.tile.\33 \31 z { --tile-color: var(--kin-color); background-position-y: calc(-155 * var(--tile-size) - var(--border-width)); }
-div.tile.\33 \32 z { --tile-color: var(--kin-color); background-position-y: calc(-156 * var(--tile-size) - var(--border-width)); }
-div.tile.\33 \33 z { --tile-color: var(--kin-color); background-position-y: calc(-157 * var(--tile-size) - var(--border-width)); }
-div.tile.\33 \34 z { --tile-color: var(--kin-color); background-position-y: calc(-158 * var(--tile-size) - var(--border-width)); }
-div.tile.\33 \35 z { --tile-color: var(--kin-color); background-position-y: calc(-159 * var(--tile-size) - var(--border-width)); }
-div.tile.\33 \36 z { --tile-color: var(--kin-color); background-position-y: calc(-160 * var(--tile-size) - var(--border-width)); }
-div.tile.\33 \37 z { --tile-color: var(--kin-color); background-position-y: calc(-161 * var(--tile-size) - var(--border-width)); }
-div.tile.\33 \38 z { --tile-color: var(--kin-color); background-position-y: calc(-162 * var(--tile-size) - var(--border-width)); }
-div.tile.\33 \30 \30 s { --tile-color: var(--kin-color); background-position-y: calc(-163 * var(--tile-size) - var(--border-width)); }
-div.tile.\34 \31 m { background-position-y: calc(-114 * var(--tile-size) - var(--border-width)); }
-div.tile.\34 \32 m { background-position-y: calc(-115 * var(--tile-size) - var(--border-width)); }
-div.tile.\34 \33 m { background-position-y: calc(-116 * var(--tile-size) - var(--border-width)); }
-div.tile.\34 \34 m { background-position-y: calc(-117 * var(--tile-size) - var(--border-width)); }
-div.tile.\34 \35 m { background-position-y: calc(-118 * var(--tile-size) - var(--border-width)); }
-div.tile.\34 \36 m { background-position-y: calc(-119 * var(--tile-size) - var(--border-width)); }
-div.tile.\34 \37 m { background-position-y: calc(-120 * var(--tile-size) - var(--border-width)); }
-div.tile.\34 \38 m { background-position-y: calc(-121 * var(--tile-size) - var(--border-width)); }
-div.tile.\34 \39 m { background-position-y: calc(-122 * var(--tile-size) - var(--border-width)); }
-div.tile.\34 \31 \30 m { background-position-y: calc(-123 * var(--tile-size) - var(--border-width)); }
-div.tile.\34 \31 p { background-position-y: calc(-124 * var(--tile-size) - var(--border-width)); }
-div.tile.\34 \32 p { background-position-y: calc(-125 * var(--tile-size) - var(--border-width)); }
-div.tile.\34 \33 p { background-position-y: calc(-126 * var(--tile-size) - var(--border-width)); }
-div.tile.\34 \34 p { background-position-y: calc(-127 * var(--tile-size) - var(--border-width)); }
-div.tile.\34 \35 p { background-position-y: calc(-128 * var(--tile-size) - var(--border-width)); }
-div.tile.\34 \36 p { background-position-y: calc(-129 * var(--tile-size) - var(--border-width)); }
-div.tile.\34 \37 p { background-position-y: calc(-130 * var(--tile-size) - var(--border-width)); }
-div.tile.\34 \38 p { background-position-y: calc(-131 * var(--tile-size) - var(--border-width)); }
-div.tile.\34 \39 p { background-position-y: calc(-132 * var(--tile-size) - var(--border-width)); }
-div.tile.\34 \31 \30 p { background-position-y: calc(-133 * var(--tile-size) - var(--border-width)); }
-div.tile.\34 \31 s { background-position-y: calc(-134 * var(--tile-size) - var(--border-width)); }
-div.tile.\34 \32 s { background-position-y: calc(-135 * var(--tile-size) - var(--border-width)); }
-div.tile.\34 \33 s { background-position-y: calc(-136 * var(--tile-size) - var(--border-width)); }
-div.tile.\34 \34 s { background-position-y: calc(-137 * var(--tile-size) - var(--border-width)); }
-div.tile.\34 \35 s { background-position-y: calc(-138 * var(--tile-size) - var(--border-width)); }
-div.tile.\34 \36 s { background-position-y: calc(-139 * var(--tile-size) - var(--border-width)); }
-div.tile.\34 \37 s { background-position-y: calc(-140 * var(--tile-size) - var(--border-width)); }
-div.tile.\34 \38 s { background-position-y: calc(-141 * var(--tile-size) - var(--border-width)); }
-div.tile.\34 \39 s { background-position-y: calc(-142 * var(--tile-size) - var(--border-width)); }
-div.tile.\34 \31 \30 s { background-position-y: calc(-143 * var(--tile-size) - var(--border-width)); }
-div.tile.\34 \31 t { background-position-y: calc(-144 * var(--tile-size) - var(--border-width)); }
-div.tile.\34 \32 t { background-position-y: calc(-145 * var(--tile-size) - var(--border-width)); }
-div.tile.\34 \33 t { background-position-y: calc(-146 * var(--tile-size) - var(--border-width)); }
-div.tile.\34 \34 t { background-position-y: calc(-147 * var(--tile-size) - var(--border-width)); }
-div.tile.\34 \35 t { background-position-y: calc(-148 * var(--tile-size) - var(--border-width)); }
-div.tile.\34 \36 t { background-position-y: calc(-149 * var(--tile-size) - var(--border-width)); }
-div.tile.\34 \37 t { background-position-y: calc(-150 * var(--tile-size) - var(--border-width)); }
-div.tile.\34 \38 t { background-position-y: calc(-151 * var(--tile-size) - var(--border-width)); }
-div.tile.\34 \39 t { background-position-y: calc(-152 * var(--tile-size) - var(--border-width)); }
-div.tile.\34 \31 \30 t { background-position-y: calc(-153 * var(--tile-size) - var(--border-width)); }
-div.tile.\34 \30 z { background-position-y: calc(-154 * var(--tile-size) - var(--border-width)); }
-div.tile.\34 \31 z { background-position-y: calc(-155 * var(--tile-size) - var(--border-width)); }
-div.tile.\34 \32 z { background-position-y: calc(-156 * var(--tile-size) - var(--border-width)); }
-div.tile.\34 \33 z { background-position-y: calc(-157 * var(--tile-size) - var(--border-width)); }
-div.tile.\34 \34 z { background-position-y: calc(-158 * var(--tile-size) - var(--border-width)); }
-div.tile.\34 \35 z { background-position-y: calc(-159 * var(--tile-size) - var(--border-width)); }
-div.tile.\34 \36 z { background-position-y: calc(-160 * var(--tile-size) - var(--border-width)); }
-div.tile.\34 \37 z { background-position-y: calc(-161 * var(--tile-size) - var(--border-width)); }
-div.tile.\34 \38 z { background-position-y: calc(-162 * var(--tile-size) - var(--border-width)); }
-div.tile.\34 \30 \30 s { background-position-y: calc(-163 * var(--tile-size) - var(--border-width)); }
-div.tile.\31 \31 m { background-position-y: calc(-164 * var(--tile-size) - var(--border-width)); }
-div.tile.\31 \32 m { background-position-y: calc(-165 * var(--tile-size) - var(--border-width)); }
-div.tile.\31 \33 m { background-position-y: calc(-166 * var(--tile-size) - var(--border-width)); }
-div.tile.\31 \34 m { background-position-y: calc(-167 * var(--tile-size) - var(--border-width)); }
-div.tile.\31 \35 m { background-position-y: calc(-168 * var(--tile-size) - var(--border-width)); }
-div.tile.\31 \36 m { background-position-y: calc(-169 * var(--tile-size) - var(--border-width)); }
-div.tile.\31 \37 m { background-position-y: calc(-170 * var(--tile-size) - var(--border-width)); }
-div.tile.\31 \38 m { background-position-y: calc(-171 * var(--tile-size) - var(--border-width)); }
-div.tile.\31 \39 m { background-position-y: calc(-172 * var(--tile-size) - var(--border-width)); }
-div.tile.\31 \31 \30 m { background-position-y: calc(-173 * var(--tile-size) - var(--border-width)); }
-div.tile.\31 \31 p { background-position-y: calc(-174 * var(--tile-size) - var(--border-width)); }
-div.tile.\31 \32 p { background-position-y: calc(-175 * var(--tile-size) - var(--border-width)); }
-div.tile.\31 \33 p { background-position-y: calc(-176 * var(--tile-size) - var(--border-width)); }
-div.tile.\31 \34 p { background-position-y: calc(-177 * var(--tile-size) - var(--border-width)); }
-div.tile.\31 \35 p { background-position-y: calc(-178 * var(--tile-size) - var(--border-width)); }
-div.tile.\31 \36 p { background-position-y: calc(-179 * var(--tile-size) - var(--border-width)); }
-div.tile.\31 \37 p { background-position-y: calc(-180 * var(--tile-size) - var(--border-width)); }
-div.tile.\31 \38 p { background-position-y: calc(-181 * var(--tile-size) - var(--border-width)); }
-div.tile.\31 \39 p { background-position-y: calc(-182 * var(--tile-size) - var(--border-width)); }
-div.tile.\31 \31 \30 p { background-position-y: calc(-183 * var(--tile-size) - var(--border-width)); }
-div.tile.\31 \31 s { background-position-y: calc(-184 * var(--tile-size) - var(--border-width)); }
-div.tile.\31 \32 s { background-position-y: calc(-185 * var(--tile-size) - var(--border-width)); }
-div.tile.\31 \33 s { background-position-y: calc(-186 * var(--tile-size) - var(--border-width)); }
-div.tile.\31 \34 s { background-position-y: calc(-187 * var(--tile-size) - var(--border-width)); }
-div.tile.\31 \35 s { background-position-y: calc(-188 * var(--tile-size) - var(--border-width)); }
-div.tile.\31 \36 s { background-position-y: calc(-189 * var(--tile-size) - var(--border-width)); }
-div.tile.\31 \37 s { background-position-y: calc(-190 * var(--tile-size) - var(--border-width)); }
-div.tile.\31 \38 s { background-position-y: calc(-191 * var(--tile-size) - var(--border-width)); }
-div.tile.\31 \39 s { background-position-y: calc(-192 * var(--tile-size) - var(--border-width)); }
-div.tile.\31 \31 \30 s { background-position-y: calc(-193 * var(--tile-size) - var(--border-width)); }
-div.tile.\31 \31 t { background-position-y: calc(-194 * var(--tile-size) - var(--border-width)); }
-div.tile.\31 \32 t { background-position-y: calc(-195 * var(--tile-size) - var(--border-width)); }
-div.tile.\31 \33 t { background-position-y: calc(-196 * var(--tile-size) - var(--border-width)); }
-div.tile.\31 \34 t { background-position-y: calc(-197 * var(--tile-size) - var(--border-width)); }
-div.tile.\31 \35 t { background-position-y: calc(-198 * var(--tile-size) - var(--border-width)); }
-div.tile.\31 \36 t { background-position-y: calc(-199 * var(--tile-size) - var(--border-width)); }
-div.tile.\31 \37 t { background-position-y: calc(-200 * var(--tile-size) - var(--border-width)); }
-div.tile.\31 \38 t { background-position-y: calc(-201 * var(--tile-size) - var(--border-width)); }
-div.tile.\31 \39 t { background-position-y: calc(-202 * var(--tile-size) - var(--border-width)); }
-div.tile.\31 \31 \30 t { background-position-y: calc(-203 * var(--tile-size) - var(--border-width)); }
-div.tile.\31 \31 z { background-position-y: calc(-204 * var(--tile-size) - var(--border-width)); }
-div.tile.\31 \32 z { background-position-y: calc(-205 * var(--tile-size) - var(--border-width)); }
-div.tile.\31 \33 z { background-position-y: calc(-206 * var(--tile-size) - var(--border-width)); }
-div.tile.\31 \34 z { background-position-y: calc(-207 * var(--tile-size) - var(--border-width)); }
-div.tile.\31 \35 z { background-position-y: calc(-208 * var(--tile-size) - var(--border-width)); }
-div.tile.\31 \36 z { background-position-y: calc(-209 * var(--tile-size) - var(--border-width)); }
-div.tile.\31 \37 z { background-position-y: calc(-210 * var(--tile-size) - var(--border-width)); }
-div.tile.\31 \38 z { background-position-y: calc(-211 * var(--tile-size) - var(--border-width)); }
-div.tile.\31 \30 \30 s { background-position-y: calc(-212 * var(--tile-size) - var(--border-width)); }
+div.tile { background-position-x: calc(0 * var(--tile-size) * var(--tile-scale-factor) - var(--border-width)); }
+div.tile.sideways { width: var(--tile-height); height: var(--tile-width); background-position-x: calc(-1.5 * var(--tile-size) * var(--tile-scale-factor) - var(--border-width)); }
+div.tile.dora:not(.\31 x) { background-position-x: calc(-0.75 * var(--tile-size) * var(--tile-scale-factor) - var(--border-width)); }
+div.tile.dora:not(.\31 x).sideways { background-position-x: calc(-2.5 * var(--tile-size) * var(--tile-scale-factor) - var(--border-width)); }
+div.tile.\30 m { --number-color: var(--aka-color); background-position-y: calc(-0 * var(--tile-size) * var(--tile-scale-factor) - var(--border-width)); }
+div.tile.\31 m { background-position-y: calc(-1 * var(--tile-size) * var(--tile-scale-factor) - var(--border-width)); }
+div.tile.\32 m { background-position-y: calc(-2 * var(--tile-size) * var(--tile-scale-factor) - var(--border-width)); }
+div.tile.\33 m { background-position-y: calc(-3 * var(--tile-size) * var(--tile-scale-factor) - var(--border-width)); }
+div.tile.\34 m { background-position-y: calc(-4 * var(--tile-size) * var(--tile-scale-factor) - var(--border-width)); }
+div.tile.\35 m { background-position-y: calc(-5 * var(--tile-size) * var(--tile-scale-factor) - var(--border-width)); }
+div.tile.\36 m { background-position-y: calc(-6 * var(--tile-size) * var(--tile-scale-factor) - var(--border-width)); }
+div.tile.\37 m { background-position-y: calc(-7 * var(--tile-size) * var(--tile-scale-factor) - var(--border-width)); }
+div.tile.\38 m { background-position-y: calc(-8 * var(--tile-size) * var(--tile-scale-factor) - var(--border-width)); }
+div.tile.\39 m { background-position-y: calc(-9 * var(--tile-size) * var(--tile-scale-factor) - var(--border-width)); }
+div.tile.\30 p { --number-color: var(--aka-color); background-position-y: calc(-10 * var(--tile-size) * var(--tile-scale-factor) - var(--border-width)); }
+div.tile.\31 p { background-position-y: calc(-11 * var(--tile-size) * var(--tile-scale-factor) - var(--border-width)); }
+div.tile.\32 p { background-position-y: calc(-12 * var(--tile-size) * var(--tile-scale-factor) - var(--border-width)); }
+div.tile.\33 p { background-position-y: calc(-13 * var(--tile-size) * var(--tile-scale-factor) - var(--border-width)); }
+div.tile.\34 p { background-position-y: calc(-14 * var(--tile-size) * var(--tile-scale-factor) - var(--border-width)); }
+div.tile.\35 p { background-position-y: calc(-15 * var(--tile-size) * var(--tile-scale-factor) - var(--border-width)); }
+div.tile.\36 p { background-position-y: calc(-16 * var(--tile-size) * var(--tile-scale-factor) - var(--border-width)); }
+div.tile.\37 p { background-position-y: calc(-17 * var(--tile-size) * var(--tile-scale-factor) - var(--border-width)); }
+div.tile.\38 p { background-position-y: calc(-18 * var(--tile-size) * var(--tile-scale-factor) - var(--border-width)); }
+div.tile.\39 p { background-position-y: calc(-19 * var(--tile-size) * var(--tile-scale-factor) - var(--border-width)); }
+div.tile.\30 s { --number-color: var(--aka-color); background-position-y: calc(-20 * var(--tile-size) * var(--tile-scale-factor) - var(--border-width)); }
+div.tile.\31 s { background-position-y: calc(-21 * var(--tile-size) * var(--tile-scale-factor) - var(--border-width)); }
+div.tile.\32 s { background-position-y: calc(-22 * var(--tile-size) * var(--tile-scale-factor) - var(--border-width)); }
+div.tile.\33 s { background-position-y: calc(-23 * var(--tile-size) * var(--tile-scale-factor) - var(--border-width)); }
+div.tile.\34 s { background-position-y: calc(-24 * var(--tile-size) * var(--tile-scale-factor) - var(--border-width)); }
+div.tile.\35 s { background-position-y: calc(-25 * var(--tile-size) * var(--tile-scale-factor) - var(--border-width)); }
+div.tile.\36 s { background-position-y: calc(-26 * var(--tile-size) * var(--tile-scale-factor) - var(--border-width)); }
+div.tile.\37 s { background-position-y: calc(-27 * var(--tile-size) * var(--tile-scale-factor) - var(--border-width)); }
+div.tile.\38 s { background-position-y: calc(-28 * var(--tile-size) * var(--tile-scale-factor) - var(--border-width)); }
+div.tile.\39 s { background-position-y: calc(-29 * var(--tile-size) * var(--tile-scale-factor) - var(--border-width)); }
+div.tile.\31 z { background-position-y: calc(-30 * var(--tile-size) * var(--tile-scale-factor) - var(--border-width)); }
+div.tile.\32 z { background-position-y: calc(-31 * var(--tile-size) * var(--tile-scale-factor) - var(--border-width)); }
+div.tile.\33 z { background-position-y: calc(-32 * var(--tile-size) * var(--tile-scale-factor) - var(--border-width)); }
+div.tile.\34 z { background-position-y: calc(-33 * var(--tile-size) * var(--tile-scale-factor) - var(--border-width)); }
+div.tile.\35 z, div.tile.\31 x.transparent { background-position-y: calc(-34 * var(--tile-size) * var(--tile-scale-factor) - var(--border-width)); }
+div.tile.\36 z { background-position-y: calc(-35 * var(--tile-size) * var(--tile-scale-factor) - var(--border-width)); }
+div.tile.\37 z { background-position-y: calc(-36 * var(--tile-size) * var(--tile-scale-factor) - var(--border-width)); }
+div.tile.\30 z { background-position-y: calc(-37 * var(--tile-size) * var(--tile-scale-factor) - var(--border-width)); }
+div.tile.\38 z { background-position-y: calc(-38 * var(--tile-size) * var(--tile-scale-factor) - var(--border-width)); }
+div.tile.\39 z { background-position-y: calc(-39 * var(--tile-size) * var(--tile-scale-factor) - var(--border-width)); }
+div.tile.\30 \30 s { background-position-y: calc(-40 * var(--tile-size) * var(--tile-scale-factor) - var(--border-width)); }
+div.tile.\31 \30 m { background-position-y: calc(-41 * var(--tile-size) * var(--tile-scale-factor) - var(--border-width)); }
+div.tile.\31 \30 p { background-position-y: calc(-42 * var(--tile-size) * var(--tile-scale-factor) - var(--border-width)); }
+div.tile.\31 \30 s { background-position-y: calc(-43 * var(--tile-size) * var(--tile-scale-factor) - var(--border-width)); }
+div.tile.\31 x { background-position-y: calc(-44 * var(--tile-size) * var(--tile-scale-factor) - var(--border-width)); }
+div.tile.\31 f { background-position-y: calc(-45 * var(--tile-size) * var(--tile-scale-factor) - var(--border-width)); }
+div.tile.\32 f { background-position-y: calc(-46 * var(--tile-size) * var(--tile-scale-factor) - var(--border-width)); }
+div.tile.\33 f { background-position-y: calc(-47 * var(--tile-size) * var(--tile-scale-factor) - var(--border-width)); }
+div.tile.\34 f { background-position-y: calc(-48 * var(--tile-size) * var(--tile-scale-factor) - var(--border-width)); }
+div.tile.\31 g { background-position-y: calc(-49 * var(--tile-size) * var(--tile-scale-factor) - var(--border-width)); }
+div.tile.\32 g { background-position-y: calc(-50 * var(--tile-size) * var(--tile-scale-factor) - var(--border-width)); }
+div.tile.\33 g { background-position-y: calc(-51 * var(--tile-size) * var(--tile-scale-factor) - var(--border-width)); }
+div.tile.\34 g { background-position-y: calc(-52 * var(--tile-size) * var(--tile-scale-factor) - var(--border-width)); }
+div.tile.\31 a { background-position-y: calc(-53 * var(--tile-size) * var(--tile-scale-factor) - var(--border-width)); }
+div.tile.\32 a { background-position-y: calc(-54 * var(--tile-size) * var(--tile-scale-factor) - var(--border-width)); }
+div.tile.\33 a { background-position-y: calc(-55 * var(--tile-size) * var(--tile-scale-factor) - var(--border-width)); }
+div.tile.\34 a { background-position-y: calc(-56 * var(--tile-size) * var(--tile-scale-factor) - var(--border-width)); }
+div.tile.\31 k { background-position-y: calc(-57 * var(--tile-size) * var(--tile-scale-factor) - var(--border-width)); }
+div.tile.\32 k { background-position-y: calc(-58 * var(--tile-size) * var(--tile-scale-factor) - var(--border-width)); }
+div.tile.\33 k { background-position-y: calc(-59 * var(--tile-size) * var(--tile-scale-factor) - var(--border-width)); }
+div.tile.\34 k { background-position-y: calc(-60 * var(--tile-size) * var(--tile-scale-factor) - var(--border-width)); }
+div.tile.\31 q { background-position-y: calc(-61 * var(--tile-size) * var(--tile-scale-factor) - var(--border-width)); }
+div.tile.\32 q { background-position-y: calc(-62 * var(--tile-size) * var(--tile-scale-factor) - var(--border-width)); }
+div.tile.\33 q { background-position-y: calc(-63 * var(--tile-size) * var(--tile-scale-factor) - var(--border-width)); }
+div.tile.\34 q { background-position-y: calc(-64 * var(--tile-size) * var(--tile-scale-factor) - var(--border-width)); }
+div.tile.\31 y { background-position-y: calc(-65 * var(--tile-size) * var(--tile-scale-factor) - var(--border-width)); }
+div.tile.\31 t { background-position-y: calc(-66 * var(--tile-size) * var(--tile-scale-factor) - var(--border-width)); }
+div.tile.\32 t { background-position-y: calc(-67 * var(--tile-size) * var(--tile-scale-factor) - var(--border-width)); }
+div.tile.\33 t { background-position-y: calc(-68 * var(--tile-size) * var(--tile-scale-factor) - var(--border-width)); }
+div.tile.\34 t { background-position-y: calc(-69 * var(--tile-size) * var(--tile-scale-factor) - var(--border-width)); }
+div.tile.\35 t { background-position-y: calc(-70 * var(--tile-size) * var(--tile-scale-factor) - var(--border-width)); }
+div.tile.\36 t { background-position-y: calc(-71 * var(--tile-size) * var(--tile-scale-factor) - var(--border-width)); }
+div.tile.\37 t { background-position-y: calc(-72 * var(--tile-size) * var(--tile-scale-factor) - var(--border-width)); }
+div.tile.\38 t { background-position-y: calc(-73 * var(--tile-size) * var(--tile-scale-factor) - var(--border-width)); }
+div.tile.\39 t { background-position-y: calc(-74 * var(--tile-size) * var(--tile-scale-factor) - var(--border-width)); }
+div.tile.\31 \30 t { background-position-y: calc(-75 * var(--tile-size) * var(--tile-scale-factor) - var(--border-width)); }
+div.tile.\31 j { background-position-y: calc(-76 * var(--tile-size) * var(--tile-scale-factor) - var(--border-width)); }
+div.tile.\30 j { background-position-y: calc(-77 * var(--tile-size) * var(--tile-scale-factor) - var(--border-width)); }
+div.tile.\32 j { background-position-y: calc(-78 * var(--tile-size) * var(--tile-scale-factor) - var(--border-width)); }
+div.tile.\39 j { background-position-y: calc(-79 * var(--tile-size) * var(--tile-scale-factor) - var(--border-width)); }
+div.tile.\34 j { background-position-y: calc(-80 * var(--tile-size) * var(--tile-scale-factor) - var(--border-width)); }
+div.tile.\35 j { background-position-y: calc(-81 * var(--tile-size) * var(--tile-scale-factor) - var(--border-width)); }
+div.tile.\36 j, div.tile.\31 \36 j { background-position-y: calc(-82 * var(--tile-size) * var(--tile-scale-factor) - var(--border-width)); }
+div.tile.\37 j { background-position-y: calc(-83 * var(--tile-size) * var(--tile-scale-factor) - var(--border-width)); }
+div.tile.\38 j { background-position-y: calc(-84 * var(--tile-size) * var(--tile-scale-factor) - var(--border-width)); }
+div.tile.\31 \30 j { background-position-y: calc(-85 * var(--tile-size) * var(--tile-scale-factor) - var(--border-width)); }
+div.tile.\31 \32 j { background-position-y: calc(-86 * var(--tile-size) * var(--tile-scale-factor) - var(--border-width)); }
+div.tile.\33 j, div.tile.\31 \33 j { background-position-y: calc(-87 * var(--tile-size) * var(--tile-scale-factor) - var(--border-width)); }
+div.tile.\31 \34 j { background-position-y: calc(-88 * var(--tile-size) * var(--tile-scale-factor) - var(--border-width)); }
+div.tile.\31 \35 j { background-position-y: calc(-89 * var(--tile-size) * var(--tile-scale-factor) - var(--border-width)); }
+div.tile.\31 \37 j { background-position-y: calc(-90 * var(--tile-size) * var(--tile-scale-factor) - var(--border-width)); }
+div.tile.\31 \38 j { background-position-y: calc(-91 * var(--tile-size) * var(--tile-scale-factor) - var(--border-width)); }
+div.tile.\31 \39 j { background-position-y: calc(-92 * var(--tile-size) * var(--tile-scale-factor) - var(--border-width)); }
+div.tile.\33 \37 j { background-position-y: calc(-93 * var(--tile-size) * var(--tile-scale-factor) - var(--border-width)); }
+div.tile.\34 \36 j { background-position-y: calc(-94 * var(--tile-size) * var(--tile-scale-factor) - var(--border-width)); }
+div.tile.\31 \34 \37 j { background-position-y: calc(-95 * var(--tile-size) * var(--tile-scale-factor) - var(--border-width)); }
+div.tile.\32 \35 \38 j { background-position-y: calc(-96 * var(--tile-size) * var(--tile-scale-factor) - var(--border-width)); }
+div.tile.\33 \36 \39 j { background-position-y: calc(-97 * var(--tile-size) * var(--tile-scale-factor) - var(--border-width)); }
+div.tile.\37 \38 \39 j { background-position-y: calc(-98 * var(--tile-size) * var(--tile-scale-factor) - var(--border-width)); }
+div.tile.\34 \35 \36 j { background-position-y: calc(-99 * var(--tile-size) * var(--tile-scale-factor) - var(--border-width)); }
+div.tile.\31 \32 \33 j { background-position-y: calc(-100 * var(--tile-size) * var(--tile-scale-factor) - var(--border-width)); }
+div.tile.\31 \31 j { background-position-y: calc(-101 * var(--tile-size) * var(--tile-scale-factor) - var(--border-width)); }
+div.tile.\32 \32 j { background-position-y: calc(-102 * var(--tile-size) * var(--tile-scale-factor) - var(--border-width)); }
+div.tile.\32 \30 j { background-position-y: calc(-103 * var(--tile-size) * var(--tile-scale-factor) - var(--border-width)); }
+div.tile.\39 \31 j { background-position-y: calc(-104 * var(--tile-size) * var(--tile-scale-factor) - var(--border-width)); }
+div.tile.\36 \34 j { background-position-y: calc(-105 * var(--tile-size) * var(--tile-scale-factor) - var(--border-width)); }
+div.tile.\37 \33 j { background-position-y: calc(-106 * var(--tile-size) * var(--tile-scale-factor) - var(--border-width)); }
+div.tile.\38 \35 \32 j { background-position-y: calc(-107 * var(--tile-size) * var(--tile-scale-factor) - var(--border-width)); }
+div.tile.\33 \30 j { background-position-y: calc(-108 * var(--tile-size) * var(--tile-scale-factor) - var(--border-width)); }
+div.tile.\33 \31 j { background-position-y: calc(-109 * var(--tile-size) * var(--tile-scale-factor) - var(--border-width)); }
+div.tile.\33 \32 j { background-position-y: calc(-110 * var(--tile-size) * var(--tile-scale-factor) - var(--border-width)); }
+div.tile.\33 \33 j { background-position-y: calc(-111 * var(--tile-size) * var(--tile-scale-factor) - var(--border-width)); }
+div.tile.\33 \34 j { background-position-y: calc(-112 * var(--tile-size) * var(--tile-scale-factor) - var(--border-width)); }
+div.tile.\32 y { background-position-y: calc(-113 * var(--tile-size) * var(--tile-scale-factor) - var(--border-width)); }
+div.tile.\30 \31 m { --tile-color: var(--aka-color); --number-color: var(--aka-color); background-position-y: calc(-114 * var(--tile-size) * var(--tile-scale-factor) - var(--border-width)); }
+div.tile.\30 \32 m { --tile-color: var(--aka-color); --number-color: var(--aka-color); background-position-y: calc(-115 * var(--tile-size) * var(--tile-scale-factor) - var(--border-width)); }
+div.tile.\30 \33 m { --tile-color: var(--aka-color); --number-color: var(--aka-color); background-position-y: calc(-116 * var(--tile-size) * var(--tile-scale-factor) - var(--border-width)); }
+div.tile.\30 \34 m { --tile-color: var(--aka-color); --number-color: var(--aka-color); background-position-y: calc(-117 * var(--tile-size) * var(--tile-scale-factor) - var(--border-width)); }
+div.tile.\30 \35 m { --tile-color: var(--aka-color); --number-color: var(--aka-color); background-position-y: calc(-118 * var(--tile-size) * var(--tile-scale-factor) - var(--border-width)); }
+div.tile.\30 \36 m { --tile-color: var(--aka-color); --number-color: var(--aka-color); background-position-y: calc(-119 * var(--tile-size) * var(--tile-scale-factor) - var(--border-width)); }
+div.tile.\30 \37 m { --tile-color: var(--aka-color); --number-color: var(--aka-color); background-position-y: calc(-120 * var(--tile-size) * var(--tile-scale-factor) - var(--border-width)); }
+div.tile.\30 \38 m { --tile-color: var(--aka-color); --number-color: var(--aka-color); background-position-y: calc(-121 * var(--tile-size) * var(--tile-scale-factor) - var(--border-width)); }
+div.tile.\30 \39 m { --tile-color: var(--aka-color); --number-color: var(--aka-color); background-position-y: calc(-122 * var(--tile-size) * var(--tile-scale-factor) - var(--border-width)); }
+div.tile.\30 \31 \30 m { --tile-color: var(--aka-color); --number-color: var(--aka-color); background-position-y: calc(-123 * var(--tile-size) * var(--tile-scale-factor) - var(--border-width)); }
+div.tile.\30 \31 p { --tile-color: var(--aka-color); --number-color: var(--aka-color); background-position-y: calc(-124 * var(--tile-size) * var(--tile-scale-factor) - var(--border-width)); }
+div.tile.\30 \32 p { --tile-color: var(--aka-color); --number-color: var(--aka-color); background-position-y: calc(-125 * var(--tile-size) * var(--tile-scale-factor) - var(--border-width)); }
+div.tile.\30 \33 p { --tile-color: var(--aka-color); --number-color: var(--aka-color); background-position-y: calc(-126 * var(--tile-size) * var(--tile-scale-factor) - var(--border-width)); }
+div.tile.\30 \34 p { --tile-color: var(--aka-color); --number-color: var(--aka-color); background-position-y: calc(-127 * var(--tile-size) * var(--tile-scale-factor) - var(--border-width)); }
+div.tile.\30 \35 p { --tile-color: var(--aka-color); --number-color: var(--aka-color); background-position-y: calc(-128 * var(--tile-size) * var(--tile-scale-factor) - var(--border-width)); }
+div.tile.\30 \36 p { --tile-color: var(--aka-color); --number-color: var(--aka-color); background-position-y: calc(-129 * var(--tile-size) * var(--tile-scale-factor) - var(--border-width)); }
+div.tile.\30 \37 p { --tile-color: var(--aka-color); --number-color: var(--aka-color); background-position-y: calc(-130 * var(--tile-size) * var(--tile-scale-factor) - var(--border-width)); }
+div.tile.\30 \38 p { --tile-color: var(--aka-color); --number-color: var(--aka-color); background-position-y: calc(-131 * var(--tile-size) * var(--tile-scale-factor) - var(--border-width)); }
+div.tile.\30 \39 p { --tile-color: var(--aka-color); --number-color: var(--aka-color); background-position-y: calc(-132 * var(--tile-size) * var(--tile-scale-factor) - var(--border-width)); }
+div.tile.\30 \31 \30 p { --tile-color: var(--aka-color); --number-color: var(--aka-color); background-position-y: calc(-133 * var(--tile-size) * var(--tile-scale-factor) - var(--border-width)); }
+div.tile.\30 \31 s { --tile-color: var(--aka-color); --number-color: var(--aka-color); background-position-y: calc(-134 * var(--tile-size) * var(--tile-scale-factor) - var(--border-width)); }
+div.tile.\30 \32 s { --tile-color: var(--aka-color); --number-color: var(--aka-color); background-position-y: calc(-135 * var(--tile-size) * var(--tile-scale-factor) - var(--border-width)); }
+div.tile.\30 \33 s { --tile-color: var(--aka-color); --number-color: var(--aka-color); background-position-y: calc(-136 * var(--tile-size) * var(--tile-scale-factor) - var(--border-width)); }
+div.tile.\30 \34 s { --tile-color: var(--aka-color); --number-color: var(--aka-color); background-position-y: calc(-137 * var(--tile-size) * var(--tile-scale-factor) - var(--border-width)); }
+div.tile.\30 \35 s { --tile-color: var(--aka-color); --number-color: var(--aka-color); background-position-y: calc(-138 * var(--tile-size) * var(--tile-scale-factor) - var(--border-width)); }
+div.tile.\30 \36 s { --tile-color: var(--aka-color); --number-color: var(--aka-color); background-position-y: calc(-139 * var(--tile-size) * var(--tile-scale-factor) - var(--border-width)); }
+div.tile.\30 \37 s { --tile-color: var(--aka-color); --number-color: var(--aka-color); background-position-y: calc(-140 * var(--tile-size) * var(--tile-scale-factor) - var(--border-width)); }
+div.tile.\30 \38 s { --tile-color: var(--aka-color); --number-color: var(--aka-color); background-position-y: calc(-141 * var(--tile-size) * var(--tile-scale-factor) - var(--border-width)); }
+div.tile.\30 \39 s { --tile-color: var(--aka-color); --number-color: var(--aka-color); background-position-y: calc(-142 * var(--tile-size) * var(--tile-scale-factor) - var(--border-width)); }
+div.tile.\30 \31 \30 s { --tile-color: var(--aka-color); --number-color: var(--aka-color); background-position-y: calc(-143 * var(--tile-size) * var(--tile-scale-factor) - var(--border-width)); }
+div.tile.\30 \31 t { --tile-color: var(--aka-color); --number-color: var(--aka-color); background-position-y: calc(-144 * var(--tile-size) * var(--tile-scale-factor) - var(--border-width)); }
+div.tile.\30 \32 t { --tile-color: var(--aka-color); --number-color: var(--aka-color); background-position-y: calc(-145 * var(--tile-size) * var(--tile-scale-factor) - var(--border-width)); }
+div.tile.\30 \33 t { --tile-color: var(--aka-color); --number-color: var(--aka-color); background-position-y: calc(-146 * var(--tile-size) * var(--tile-scale-factor) - var(--border-width)); }
+div.tile.\30 \34 t { --tile-color: var(--aka-color); --number-color: var(--aka-color); background-position-y: calc(-147 * var(--tile-size) * var(--tile-scale-factor) - var(--border-width)); }
+div.tile.\30 \35 t, div.tile.\30 t { --tile-color: var(--aka-color); --number-color: var(--aka-color); background-position-y: calc(-148 * var(--tile-size) * var(--tile-scale-factor) - var(--border-width)); }
+div.tile.\30 \36 t { --tile-color: var(--aka-color); --number-color: var(--aka-color); background-position-y: calc(-149 * var(--tile-size) * var(--tile-scale-factor) - var(--border-width)); }
+div.tile.\30 \37 t { --tile-color: var(--aka-color); --number-color: var(--aka-color); background-position-y: calc(-150 * var(--tile-size) * var(--tile-scale-factor) - var(--border-width)); }
+div.tile.\30 \38 t { --tile-color: var(--aka-color); --number-color: var(--aka-color); background-position-y: calc(-151 * var(--tile-size) * var(--tile-scale-factor) - var(--border-width)); }
+div.tile.\30 \39 t { --tile-color: var(--aka-color); --number-color: var(--aka-color); background-position-y: calc(-152 * var(--tile-size) * var(--tile-scale-factor) - var(--border-width)); }
+div.tile.\30 \31 \30 t { --tile-color: var(--aka-color); --number-color: var(--aka-color); background-position-y: calc(-153 * var(--tile-size) * var(--tile-scale-factor) - var(--border-width)); }
+div.tile.\30 \30 z { --tile-color: var(--aka-color); --number-color: var(--aka-color); background-position-y: calc(-154 * var(--tile-size) * var(--tile-scale-factor) - var(--border-width)); }
+div.tile.\30 \31 z { --tile-color: var(--aka-color); --number-color: var(--aka-color); background-position-y: calc(-155 * var(--tile-size) * var(--tile-scale-factor) - var(--border-width)); }
+div.tile.\30 \32 z { --tile-color: var(--aka-color); --number-color: var(--aka-color); background-position-y: calc(-156 * var(--tile-size) * var(--tile-scale-factor) - var(--border-width)); }
+div.tile.\30 \33 z { --tile-color: var(--aka-color); --number-color: var(--aka-color); background-position-y: calc(-157 * var(--tile-size) * var(--tile-scale-factor) - var(--border-width)); }
+div.tile.\30 \34 z { --tile-color: var(--aka-color); --number-color: var(--aka-color); background-position-y: calc(-158 * var(--tile-size) * var(--tile-scale-factor) - var(--border-width)); }
+div.tile.\30 \35 z { --tile-color: var(--aka-color); --number-color: var(--aka-color); background-position-y: calc(-159 * var(--tile-size) * var(--tile-scale-factor) - var(--border-width)); }
+div.tile.\30 \36 z { --tile-color: var(--aka-color); --number-color: var(--aka-color); background-position-y: calc(-160 * var(--tile-size) * var(--tile-scale-factor) - var(--border-width)); }
+div.tile.\30 \37 z { --tile-color: var(--aka-color); --number-color: var(--aka-color); background-position-y: calc(-161 * var(--tile-size) * var(--tile-scale-factor) - var(--border-width)); }
+div.tile.\30 \38 z { --tile-color: var(--aka-color); --number-color: var(--aka-color); background-position-y: calc(-162 * var(--tile-size) * var(--tile-scale-factor) - var(--border-width)); }
+div.tile.\30 \30 \30 s { --tile-color: var(--aka-color); --number-color: var(--aka-color); background-position-y: calc(-163 * var(--tile-size) * var(--tile-scale-factor) - var(--border-width)); }
+div.tile.\32 \31 m { --tile-color: var(--ao-color); --number-color: var(--ao-color); background-position-y: calc(-114 * var(--tile-size) * var(--tile-scale-factor) - var(--border-width)); }
+div.tile.\32 \32 m { --tile-color: var(--ao-color); --number-color: var(--ao-color); background-position-y: calc(-115 * var(--tile-size) * var(--tile-scale-factor) - var(--border-width)); }
+div.tile.\32 \33 m { --tile-color: var(--ao-color); --number-color: var(--ao-color); background-position-y: calc(-116 * var(--tile-size) * var(--tile-scale-factor) - var(--border-width)); }
+div.tile.\32 \34 m { --tile-color: var(--ao-color); --number-color: var(--ao-color); background-position-y: calc(-117 * var(--tile-size) * var(--tile-scale-factor) - var(--border-width)); }
+div.tile.\32 \35 m { --tile-color: var(--ao-color); --number-color: var(--ao-color); background-position-y: calc(-118 * var(--tile-size) * var(--tile-scale-factor) - var(--border-width)); }
+div.tile.\32 \36 m { --tile-color: var(--ao-color); --number-color: var(--ao-color); background-position-y: calc(-119 * var(--tile-size) * var(--tile-scale-factor) - var(--border-width)); }
+div.tile.\32 \37 m { --tile-color: var(--ao-color); --number-color: var(--ao-color); background-position-y: calc(-120 * var(--tile-size) * var(--tile-scale-factor) - var(--border-width)); }
+div.tile.\32 \38 m { --tile-color: var(--ao-color); --number-color: var(--ao-color); background-position-y: calc(-121 * var(--tile-size) * var(--tile-scale-factor) - var(--border-width)); }
+div.tile.\32 \39 m { --tile-color: var(--ao-color); --number-color: var(--ao-color); background-position-y: calc(-122 * var(--tile-size) * var(--tile-scale-factor) - var(--border-width)); }
+div.tile.\32 \31 \30 m { --tile-color: var(--ao-color); --number-color: var(--ao-color); background-position-y: calc(-123 * var(--tile-size) * var(--tile-scale-factor) - var(--border-width)); }
+div.tile.\32 \31 p { --tile-color: var(--ao-color); --number-color: var(--ao-color); background-position-y: calc(-124 * var(--tile-size) * var(--tile-scale-factor) - var(--border-width)); }
+div.tile.\32 \32 p { --tile-color: var(--ao-color); --number-color: var(--ao-color); background-position-y: calc(-125 * var(--tile-size) * var(--tile-scale-factor) - var(--border-width)); }
+div.tile.\32 \33 p { --tile-color: var(--ao-color); --number-color: var(--ao-color); background-position-y: calc(-126 * var(--tile-size) * var(--tile-scale-factor) - var(--border-width)); }
+div.tile.\32 \34 p { --tile-color: var(--ao-color); --number-color: var(--ao-color); background-position-y: calc(-127 * var(--tile-size) * var(--tile-scale-factor) - var(--border-width)); }
+div.tile.\32 \35 p { --tile-color: var(--ao-color); --number-color: var(--ao-color); background-position-y: calc(-128 * var(--tile-size) * var(--tile-scale-factor) - var(--border-width)); }
+div.tile.\32 \36 p { --tile-color: var(--ao-color); --number-color: var(--ao-color); background-position-y: calc(-129 * var(--tile-size) * var(--tile-scale-factor) - var(--border-width)); }
+div.tile.\32 \37 p { --tile-color: var(--ao-color); --number-color: var(--ao-color); background-position-y: calc(-130 * var(--tile-size) * var(--tile-scale-factor) - var(--border-width)); }
+div.tile.\32 \38 p { --tile-color: var(--ao-color); --number-color: var(--ao-color); background-position-y: calc(-131 * var(--tile-size) * var(--tile-scale-factor) - var(--border-width)); }
+div.tile.\32 \39 p { --tile-color: var(--ao-color); --number-color: var(--ao-color); background-position-y: calc(-132 * var(--tile-size) * var(--tile-scale-factor) - var(--border-width)); }
+div.tile.\32 \31 \30 p { --tile-color: var(--ao-color); --number-color: var(--ao-color); background-position-y: calc(-133 * var(--tile-size) * var(--tile-scale-factor) - var(--border-width)); }
+div.tile.\32 \31 s { --tile-color: var(--ao-color); --number-color: var(--ao-color); background-position-y: calc(-134 * var(--tile-size) * var(--tile-scale-factor) - var(--border-width)); }
+div.tile.\32 \32 s { --tile-color: var(--ao-color); --number-color: var(--ao-color); background-position-y: calc(-135 * var(--tile-size) * var(--tile-scale-factor) - var(--border-width)); }
+div.tile.\32 \33 s { --tile-color: var(--ao-color); --number-color: var(--ao-color); background-position-y: calc(-136 * var(--tile-size) * var(--tile-scale-factor) - var(--border-width)); }
+div.tile.\32 \34 s { --tile-color: var(--ao-color); --number-color: var(--ao-color); background-position-y: calc(-137 * var(--tile-size) * var(--tile-scale-factor) - var(--border-width)); }
+div.tile.\32 \35 s { --tile-color: var(--ao-color); --number-color: var(--ao-color); background-position-y: calc(-138 * var(--tile-size) * var(--tile-scale-factor) - var(--border-width)); }
+div.tile.\32 \36 s { --tile-color: var(--ao-color); --number-color: var(--ao-color); background-position-y: calc(-139 * var(--tile-size) * var(--tile-scale-factor) - var(--border-width)); }
+div.tile.\32 \37 s { --tile-color: var(--ao-color); --number-color: var(--ao-color); background-position-y: calc(-140 * var(--tile-size) * var(--tile-scale-factor) - var(--border-width)); }
+div.tile.\32 \38 s { --tile-color: var(--ao-color); --number-color: var(--ao-color); background-position-y: calc(-141 * var(--tile-size) * var(--tile-scale-factor) - var(--border-width)); }
+div.tile.\32 \39 s { --tile-color: var(--ao-color); --number-color: var(--ao-color); background-position-y: calc(-142 * var(--tile-size) * var(--tile-scale-factor) - var(--border-width)); }
+div.tile.\32 \31 \30 s { --tile-color: var(--ao-color); --number-color: var(--ao-color); background-position-y: calc(-143 * var(--tile-size) * var(--tile-scale-factor) - var(--border-width)); }
+div.tile.\32 \31 t { --tile-color: var(--ao-color); --number-color: var(--ao-color); background-position-y: calc(-144 * var(--tile-size) * var(--tile-scale-factor) - var(--border-width)); }
+div.tile.\32 \32 t { --tile-color: var(--ao-color); --number-color: var(--ao-color); background-position-y: calc(-145 * var(--tile-size) * var(--tile-scale-factor) - var(--border-width)); }
+div.tile.\32 \33 t { --tile-color: var(--ao-color); --number-color: var(--ao-color); background-position-y: calc(-146 * var(--tile-size) * var(--tile-scale-factor) - var(--border-width)); }
+div.tile.\32 \34 t { --tile-color: var(--ao-color); --number-color: var(--ao-color); background-position-y: calc(-147 * var(--tile-size) * var(--tile-scale-factor) - var(--border-width)); }
+div.tile.\32 \35 t { --tile-color: var(--ao-color); --number-color: var(--ao-color); background-position-y: calc(-148 * var(--tile-size) * var(--tile-scale-factor) - var(--border-width)); }
+div.tile.\32 \36 t { --tile-color: var(--ao-color); --number-color: var(--ao-color); background-position-y: calc(-149 * var(--tile-size) * var(--tile-scale-factor) - var(--border-width)); }
+div.tile.\32 \37 t { --tile-color: var(--ao-color); --number-color: var(--ao-color); background-position-y: calc(-150 * var(--tile-size) * var(--tile-scale-factor) - var(--border-width)); }
+div.tile.\32 \38 t { --tile-color: var(--ao-color); --number-color: var(--ao-color); background-position-y: calc(-151 * var(--tile-size) * var(--tile-scale-factor) - var(--border-width)); }
+div.tile.\32 \39 t { --tile-color: var(--ao-color); --number-color: var(--ao-color); background-position-y: calc(-152 * var(--tile-size) * var(--tile-scale-factor) - var(--border-width)); }
+div.tile.\32 \31 \30 t { --tile-color: var(--ao-color); --number-color: var(--ao-color); background-position-y: calc(-153 * var(--tile-size) * var(--tile-scale-factor) - var(--border-width)); }
+div.tile.\32 \30 z { --tile-color: var(--ao-color); --number-color: var(--ao-color); background-position-y: calc(-154 * var(--tile-size) * var(--tile-scale-factor) - var(--border-width)); }
+div.tile.\32 \31 z { --tile-color: var(--ao-color); --number-color: var(--ao-color); background-position-y: calc(-155 * var(--tile-size) * var(--tile-scale-factor) - var(--border-width)); }
+div.tile.\32 \32 z { --tile-color: var(--ao-color); --number-color: var(--ao-color); background-position-y: calc(-156 * var(--tile-size) * var(--tile-scale-factor) - var(--border-width)); }
+div.tile.\32 \33 z { --tile-color: var(--ao-color); --number-color: var(--ao-color); background-position-y: calc(-157 * var(--tile-size) * var(--tile-scale-factor) - var(--border-width)); }
+div.tile.\32 \34 z { --tile-color: var(--ao-color); --number-color: var(--ao-color); background-position-y: calc(-158 * var(--tile-size) * var(--tile-scale-factor) - var(--border-width)); }
+div.tile.\32 \35 z { --tile-color: var(--ao-color); --number-color: var(--ao-color); background-position-y: calc(-159 * var(--tile-size) * var(--tile-scale-factor) - var(--border-width)); }
+div.tile.\32 \36 z { --tile-color: var(--ao-color); --number-color: var(--ao-color); background-position-y: calc(-160 * var(--tile-size) * var(--tile-scale-factor) - var(--border-width)); }
+div.tile.\32 \37 z { --tile-color: var(--ao-color); --number-color: var(--ao-color); background-position-y: calc(-161 * var(--tile-size) * var(--tile-scale-factor) - var(--border-width)); }
+div.tile.\32 \38 z { --tile-color: var(--ao-color); --number-color: var(--ao-color); background-position-y: calc(-162 * var(--tile-size) * var(--tile-scale-factor) - var(--border-width)); }
+div.tile.\32 \30 \30 s { --tile-color: var(--ao-color); --number-color: var(--ao-color); background-position-y: calc(-163 * var(--tile-size) * var(--tile-scale-factor) - var(--border-width)); }
+div.tile.\33 \31 m { --tile-color: var(--kin-color); background-position-y: calc(-114 * var(--tile-size) * var(--tile-scale-factor) - var(--border-width)); }
+div.tile.\33 \32 m { --tile-color: var(--kin-color); background-position-y: calc(-115 * var(--tile-size) * var(--tile-scale-factor) - var(--border-width)); }
+div.tile.\33 \33 m { --tile-color: var(--kin-color); background-position-y: calc(-116 * var(--tile-size) * var(--tile-scale-factor) - var(--border-width)); }
+div.tile.\33 \34 m { --tile-color: var(--kin-color); background-position-y: calc(-117 * var(--tile-size) * var(--tile-scale-factor) - var(--border-width)); }
+div.tile.\33 \35 m { --tile-color: var(--kin-color); background-position-y: calc(-118 * var(--tile-size) * var(--tile-scale-factor) - var(--border-width)); }
+div.tile.\33 \36 m { --tile-color: var(--kin-color); background-position-y: calc(-119 * var(--tile-size) * var(--tile-scale-factor) - var(--border-width)); }
+div.tile.\33 \37 m { --tile-color: var(--kin-color); background-position-y: calc(-120 * var(--tile-size) * var(--tile-scale-factor) - var(--border-width)); }
+div.tile.\33 \38 m { --tile-color: var(--kin-color); background-position-y: calc(-121 * var(--tile-size) * var(--tile-scale-factor) - var(--border-width)); }
+div.tile.\33 \39 m { --tile-color: var(--kin-color); background-position-y: calc(-122 * var(--tile-size) * var(--tile-scale-factor) - var(--border-width)); }
+div.tile.\33 \31 \30 m { --tile-color: var(--kin-color); background-position-y: calc(-123 * var(--tile-size) * var(--tile-scale-factor) - var(--border-width)); }
+div.tile.\33 \31 p { --tile-color: var(--kin-color); background-position-y: calc(-124 * var(--tile-size) * var(--tile-scale-factor) - var(--border-width)); }
+div.tile.\33 \32 p { --tile-color: var(--kin-color); background-position-y: calc(-125 * var(--tile-size) * var(--tile-scale-factor) - var(--border-width)); }
+div.tile.\33 \33 p { --tile-color: var(--kin-color); background-position-y: calc(-126 * var(--tile-size) * var(--tile-scale-factor) - var(--border-width)); }
+div.tile.\33 \34 p { --tile-color: var(--kin-color); background-position-y: calc(-127 * var(--tile-size) * var(--tile-scale-factor) - var(--border-width)); }
+div.tile.\33 \35 p { --tile-color: var(--kin-color); background-position-y: calc(-128 * var(--tile-size) * var(--tile-scale-factor) - var(--border-width)); }
+div.tile.\33 \36 p { --tile-color: var(--kin-color); background-position-y: calc(-129 * var(--tile-size) * var(--tile-scale-factor) - var(--border-width)); }
+div.tile.\33 \37 p { --tile-color: var(--kin-color); background-position-y: calc(-130 * var(--tile-size) * var(--tile-scale-factor) - var(--border-width)); }
+div.tile.\33 \38 p { --tile-color: var(--kin-color); background-position-y: calc(-131 * var(--tile-size) * var(--tile-scale-factor) - var(--border-width)); }
+div.tile.\33 \39 p { --tile-color: var(--kin-color); background-position-y: calc(-132 * var(--tile-size) * var(--tile-scale-factor) - var(--border-width)); }
+div.tile.\33 \31 \30 p { --tile-color: var(--kin-color); background-position-y: calc(-133 * var(--tile-size) * var(--tile-scale-factor) - var(--border-width)); }
+div.tile.\33 \31 s { --tile-color: var(--kin-color); background-position-y: calc(-134 * var(--tile-size) * var(--tile-scale-factor) - var(--border-width)); }
+div.tile.\33 \32 s { --tile-color: var(--kin-color); background-position-y: calc(-135 * var(--tile-size) * var(--tile-scale-factor) - var(--border-width)); }
+div.tile.\33 \33 s { --tile-color: var(--kin-color); background-position-y: calc(-136 * var(--tile-size) * var(--tile-scale-factor) - var(--border-width)); }
+div.tile.\33 \34 s { --tile-color: var(--kin-color); background-position-y: calc(-137 * var(--tile-size) * var(--tile-scale-factor) - var(--border-width)); }
+div.tile.\33 \35 s { --tile-color: var(--kin-color); background-position-y: calc(-138 * var(--tile-size) * var(--tile-scale-factor) - var(--border-width)); }
+div.tile.\33 \36 s { --tile-color: var(--kin-color); background-position-y: calc(-139 * var(--tile-size) * var(--tile-scale-factor) - var(--border-width)); }
+div.tile.\33 \37 s { --tile-color: var(--kin-color); background-position-y: calc(-140 * var(--tile-size) * var(--tile-scale-factor) - var(--border-width)); }
+div.tile.\33 \38 s { --tile-color: var(--kin-color); background-position-y: calc(-141 * var(--tile-size) * var(--tile-scale-factor) - var(--border-width)); }
+div.tile.\33 \39 s { --tile-color: var(--kin-color); background-position-y: calc(-142 * var(--tile-size) * var(--tile-scale-factor) - var(--border-width)); }
+div.tile.\33 \31 \30 s { --tile-color: var(--kin-color); background-position-y: calc(-143 * var(--tile-size) * var(--tile-scale-factor) - var(--border-width)); }
+div.tile.\33 \31 t { --tile-color: var(--kin-color); background-position-y: calc(-144 * var(--tile-size) * var(--tile-scale-factor) - var(--border-width)); }
+div.tile.\33 \32 t { --tile-color: var(--kin-color); background-position-y: calc(-145 * var(--tile-size) * var(--tile-scale-factor) - var(--border-width)); }
+div.tile.\33 \33 t { --tile-color: var(--kin-color); background-position-y: calc(-146 * var(--tile-size) * var(--tile-scale-factor) - var(--border-width)); }
+div.tile.\33 \34 t { --tile-color: var(--kin-color); background-position-y: calc(-147 * var(--tile-size) * var(--tile-scale-factor) - var(--border-width)); }
+div.tile.\33 \35 t { --tile-color: var(--kin-color); background-position-y: calc(-148 * var(--tile-size) * var(--tile-scale-factor) - var(--border-width)); }
+div.tile.\33 \36 t { --tile-color: var(--kin-color); background-position-y: calc(-149 * var(--tile-size) * var(--tile-scale-factor) - var(--border-width)); }
+div.tile.\33 \37 t { --tile-color: var(--kin-color); background-position-y: calc(-150 * var(--tile-size) * var(--tile-scale-factor) - var(--border-width)); }
+div.tile.\33 \38 t { --tile-color: var(--kin-color); background-position-y: calc(-151 * var(--tile-size) * var(--tile-scale-factor) - var(--border-width)); }
+div.tile.\33 \39 t { --tile-color: var(--kin-color); background-position-y: calc(-152 * var(--tile-size) * var(--tile-scale-factor) - var(--border-width)); }
+div.tile.\33 \31 \30 t { --tile-color: var(--kin-color); background-position-y: calc(-153 * var(--tile-size) * var(--tile-scale-factor) - var(--border-width)); }
+div.tile.\33 \30 z { --tile-color: var(--kin-color); background-position-y: calc(-154 * var(--tile-size) * var(--tile-scale-factor) - var(--border-width)); }
+div.tile.\33 \31 z { --tile-color: var(--kin-color); background-position-y: calc(-155 * var(--tile-size) * var(--tile-scale-factor) - var(--border-width)); }
+div.tile.\33 \32 z { --tile-color: var(--kin-color); background-position-y: calc(-156 * var(--tile-size) * var(--tile-scale-factor) - var(--border-width)); }
+div.tile.\33 \33 z { --tile-color: var(--kin-color); background-position-y: calc(-157 * var(--tile-size) * var(--tile-scale-factor) - var(--border-width)); }
+div.tile.\33 \34 z { --tile-color: var(--kin-color); background-position-y: calc(-158 * var(--tile-size) * var(--tile-scale-factor) - var(--border-width)); }
+div.tile.\33 \35 z { --tile-color: var(--kin-color); background-position-y: calc(-159 * var(--tile-size) * var(--tile-scale-factor) - var(--border-width)); }
+div.tile.\33 \36 z { --tile-color: var(--kin-color); background-position-y: calc(-160 * var(--tile-size) * var(--tile-scale-factor) - var(--border-width)); }
+div.tile.\33 \37 z { --tile-color: var(--kin-color); background-position-y: calc(-161 * var(--tile-size) * var(--tile-scale-factor) - var(--border-width)); }
+div.tile.\33 \38 z { --tile-color: var(--kin-color); background-position-y: calc(-162 * var(--tile-size) * var(--tile-scale-factor) - var(--border-width)); }
+div.tile.\33 \30 \30 s { --tile-color: var(--kin-color); background-position-y: calc(-163 * var(--tile-size) * var(--tile-scale-factor) - var(--border-width)); }
+div.tile.\34 \31 m { background-position-y: calc(-114 * var(--tile-size) * var(--tile-scale-factor) - var(--border-width)); }
+div.tile.\34 \32 m { background-position-y: calc(-115 * var(--tile-size) * var(--tile-scale-factor) - var(--border-width)); }
+div.tile.\34 \33 m { background-position-y: calc(-116 * var(--tile-size) * var(--tile-scale-factor) - var(--border-width)); }
+div.tile.\34 \34 m { background-position-y: calc(-117 * var(--tile-size) * var(--tile-scale-factor) - var(--border-width)); }
+div.tile.\34 \35 m { background-position-y: calc(-118 * var(--tile-size) * var(--tile-scale-factor) - var(--border-width)); }
+div.tile.\34 \36 m { background-position-y: calc(-119 * var(--tile-size) * var(--tile-scale-factor) - var(--border-width)); }
+div.tile.\34 \37 m { background-position-y: calc(-120 * var(--tile-size) * var(--tile-scale-factor) - var(--border-width)); }
+div.tile.\34 \38 m { background-position-y: calc(-121 * var(--tile-size) * var(--tile-scale-factor) - var(--border-width)); }
+div.tile.\34 \39 m { background-position-y: calc(-122 * var(--tile-size) * var(--tile-scale-factor) - var(--border-width)); }
+div.tile.\34 \31 \30 m { background-position-y: calc(-123 * var(--tile-size) * var(--tile-scale-factor) - var(--border-width)); }
+div.tile.\34 \31 p { background-position-y: calc(-124 * var(--tile-size) * var(--tile-scale-factor) - var(--border-width)); }
+div.tile.\34 \32 p { background-position-y: calc(-125 * var(--tile-size) * var(--tile-scale-factor) - var(--border-width)); }
+div.tile.\34 \33 p { background-position-y: calc(-126 * var(--tile-size) * var(--tile-scale-factor) - var(--border-width)); }
+div.tile.\34 \34 p { background-position-y: calc(-127 * var(--tile-size) * var(--tile-scale-factor) - var(--border-width)); }
+div.tile.\34 \35 p { background-position-y: calc(-128 * var(--tile-size) * var(--tile-scale-factor) - var(--border-width)); }
+div.tile.\34 \36 p { background-position-y: calc(-129 * var(--tile-size) * var(--tile-scale-factor) - var(--border-width)); }
+div.tile.\34 \37 p { background-position-y: calc(-130 * var(--tile-size) * var(--tile-scale-factor) - var(--border-width)); }
+div.tile.\34 \38 p { background-position-y: calc(-131 * var(--tile-size) * var(--tile-scale-factor) - var(--border-width)); }
+div.tile.\34 \39 p { background-position-y: calc(-132 * var(--tile-size) * var(--tile-scale-factor) - var(--border-width)); }
+div.tile.\34 \31 \30 p { background-position-y: calc(-133 * var(--tile-size) * var(--tile-scale-factor) - var(--border-width)); }
+div.tile.\34 \31 s { background-position-y: calc(-134 * var(--tile-size) * var(--tile-scale-factor) - var(--border-width)); }
+div.tile.\34 \32 s { background-position-y: calc(-135 * var(--tile-size) * var(--tile-scale-factor) - var(--border-width)); }
+div.tile.\34 \33 s { background-position-y: calc(-136 * var(--tile-size) * var(--tile-scale-factor) - var(--border-width)); }
+div.tile.\34 \34 s { background-position-y: calc(-137 * var(--tile-size) * var(--tile-scale-factor) - var(--border-width)); }
+div.tile.\34 \35 s { background-position-y: calc(-138 * var(--tile-size) * var(--tile-scale-factor) - var(--border-width)); }
+div.tile.\34 \36 s { background-position-y: calc(-139 * var(--tile-size) * var(--tile-scale-factor) - var(--border-width)); }
+div.tile.\34 \37 s { background-position-y: calc(-140 * var(--tile-size) * var(--tile-scale-factor) - var(--border-width)); }
+div.tile.\34 \38 s { background-position-y: calc(-141 * var(--tile-size) * var(--tile-scale-factor) - var(--border-width)); }
+div.tile.\34 \39 s { background-position-y: calc(-142 * var(--tile-size) * var(--tile-scale-factor) - var(--border-width)); }
+div.tile.\34 \31 \30 s { background-position-y: calc(-143 * var(--tile-size) * var(--tile-scale-factor) - var(--border-width)); }
+div.tile.\34 \31 t { background-position-y: calc(-144 * var(--tile-size) * var(--tile-scale-factor) - var(--border-width)); }
+div.tile.\34 \32 t { background-position-y: calc(-145 * var(--tile-size) * var(--tile-scale-factor) - var(--border-width)); }
+div.tile.\34 \33 t { background-position-y: calc(-146 * var(--tile-size) * var(--tile-scale-factor) - var(--border-width)); }
+div.tile.\34 \34 t { background-position-y: calc(-147 * var(--tile-size) * var(--tile-scale-factor) - var(--border-width)); }
+div.tile.\34 \35 t { background-position-y: calc(-148 * var(--tile-size) * var(--tile-scale-factor) - var(--border-width)); }
+div.tile.\34 \36 t { background-position-y: calc(-149 * var(--tile-size) * var(--tile-scale-factor) - var(--border-width)); }
+div.tile.\34 \37 t { background-position-y: calc(-150 * var(--tile-size) * var(--tile-scale-factor) - var(--border-width)); }
+div.tile.\34 \38 t { background-position-y: calc(-151 * var(--tile-size) * var(--tile-scale-factor) - var(--border-width)); }
+div.tile.\34 \39 t { background-position-y: calc(-152 * var(--tile-size) * var(--tile-scale-factor) - var(--border-width)); }
+div.tile.\34 \31 \30 t { background-position-y: calc(-153 * var(--tile-size) * var(--tile-scale-factor) - var(--border-width)); }
+div.tile.\34 \30 z { background-position-y: calc(-154 * var(--tile-size) * var(--tile-scale-factor) - var(--border-width)); }
+div.tile.\34 \31 z { background-position-y: calc(-155 * var(--tile-size) * var(--tile-scale-factor) - var(--border-width)); }
+div.tile.\34 \32 z { background-position-y: calc(-156 * var(--tile-size) * var(--tile-scale-factor) - var(--border-width)); }
+div.tile.\34 \33 z { background-position-y: calc(-157 * var(--tile-size) * var(--tile-scale-factor) - var(--border-width)); }
+div.tile.\34 \34 z { background-position-y: calc(-158 * var(--tile-size) * var(--tile-scale-factor) - var(--border-width)); }
+div.tile.\34 \35 z { background-position-y: calc(-159 * var(--tile-size) * var(--tile-scale-factor) - var(--border-width)); }
+div.tile.\34 \36 z { background-position-y: calc(-160 * var(--tile-size) * var(--tile-scale-factor) - var(--border-width)); }
+div.tile.\34 \37 z { background-position-y: calc(-161 * var(--tile-size) * var(--tile-scale-factor) - var(--border-width)); }
+div.tile.\34 \38 z { background-position-y: calc(-162 * var(--tile-size) * var(--tile-scale-factor) - var(--border-width)); }
+div.tile.\34 \30 \30 s { background-position-y: calc(-163 * var(--tile-size) * var(--tile-scale-factor) - var(--border-width)); }
+div.tile.\31 \31 m { background-position-y: calc(-164 * var(--tile-size) * var(--tile-scale-factor) - var(--border-width)); }
+div.tile.\31 \32 m { background-position-y: calc(-165 * var(--tile-size) * var(--tile-scale-factor) - var(--border-width)); }
+div.tile.\31 \33 m { background-position-y: calc(-166 * var(--tile-size) * var(--tile-scale-factor) - var(--border-width)); }
+div.tile.\31 \34 m { background-position-y: calc(-167 * var(--tile-size) * var(--tile-scale-factor) - var(--border-width)); }
+div.tile.\31 \35 m { background-position-y: calc(-168 * var(--tile-size) * var(--tile-scale-factor) - var(--border-width)); }
+div.tile.\31 \36 m { background-position-y: calc(-169 * var(--tile-size) * var(--tile-scale-factor) - var(--border-width)); }
+div.tile.\31 \37 m { background-position-y: calc(-170 * var(--tile-size) * var(--tile-scale-factor) - var(--border-width)); }
+div.tile.\31 \38 m { background-position-y: calc(-171 * var(--tile-size) * var(--tile-scale-factor) - var(--border-width)); }
+div.tile.\31 \39 m { background-position-y: calc(-172 * var(--tile-size) * var(--tile-scale-factor) - var(--border-width)); }
+div.tile.\31 \31 \30 m { background-position-y: calc(-173 * var(--tile-size) * var(--tile-scale-factor) - var(--border-width)); }
+div.tile.\31 \31 p { background-position-y: calc(-174 * var(--tile-size) * var(--tile-scale-factor) - var(--border-width)); }
+div.tile.\31 \32 p { background-position-y: calc(-175 * var(--tile-size) * var(--tile-scale-factor) - var(--border-width)); }
+div.tile.\31 \33 p { background-position-y: calc(-176 * var(--tile-size) * var(--tile-scale-factor) - var(--border-width)); }
+div.tile.\31 \34 p { background-position-y: calc(-177 * var(--tile-size) * var(--tile-scale-factor) - var(--border-width)); }
+div.tile.\31 \35 p { background-position-y: calc(-178 * var(--tile-size) * var(--tile-scale-factor) - var(--border-width)); }
+div.tile.\31 \36 p { background-position-y: calc(-179 * var(--tile-size) * var(--tile-scale-factor) - var(--border-width)); }
+div.tile.\31 \37 p { background-position-y: calc(-180 * var(--tile-size) * var(--tile-scale-factor) - var(--border-width)); }
+div.tile.\31 \38 p { background-position-y: calc(-181 * var(--tile-size) * var(--tile-scale-factor) - var(--border-width)); }
+div.tile.\31 \39 p { background-position-y: calc(-182 * var(--tile-size) * var(--tile-scale-factor) - var(--border-width)); }
+div.tile.\31 \31 \30 p { background-position-y: calc(-183 * var(--tile-size) * var(--tile-scale-factor) - var(--border-width)); }
+div.tile.\31 \31 s { background-position-y: calc(-184 * var(--tile-size) * var(--tile-scale-factor) - var(--border-width)); }
+div.tile.\31 \32 s { background-position-y: calc(-185 * var(--tile-size) * var(--tile-scale-factor) - var(--border-width)); }
+div.tile.\31 \33 s { background-position-y: calc(-186 * var(--tile-size) * var(--tile-scale-factor) - var(--border-width)); }
+div.tile.\31 \34 s { background-position-y: calc(-187 * var(--tile-size) * var(--tile-scale-factor) - var(--border-width)); }
+div.tile.\31 \35 s { background-position-y: calc(-188 * var(--tile-size) * var(--tile-scale-factor) - var(--border-width)); }
+div.tile.\31 \36 s { background-position-y: calc(-189 * var(--tile-size) * var(--tile-scale-factor) - var(--border-width)); }
+div.tile.\31 \37 s { background-position-y: calc(-190 * var(--tile-size) * var(--tile-scale-factor) - var(--border-width)); }
+div.tile.\31 \38 s { background-position-y: calc(-191 * var(--tile-size) * var(--tile-scale-factor) - var(--border-width)); }
+div.tile.\31 \39 s { background-position-y: calc(-192 * var(--tile-size) * var(--tile-scale-factor) - var(--border-width)); }
+div.tile.\31 \31 \30 s { background-position-y: calc(-193 * var(--tile-size) * var(--tile-scale-factor) - var(--border-width)); }
+div.tile.\31 \31 t { background-position-y: calc(-194 * var(--tile-size) * var(--tile-scale-factor) - var(--border-width)); }
+div.tile.\31 \32 t { background-position-y: calc(-195 * var(--tile-size) * var(--tile-scale-factor) - var(--border-width)); }
+div.tile.\31 \33 t { background-position-y: calc(-196 * var(--tile-size) * var(--tile-scale-factor) - var(--border-width)); }
+div.tile.\31 \34 t { background-position-y: calc(-197 * var(--tile-size) * var(--tile-scale-factor) - var(--border-width)); }
+div.tile.\31 \35 t { background-position-y: calc(-198 * var(--tile-size) * var(--tile-scale-factor) - var(--border-width)); }
+div.tile.\31 \36 t { background-position-y: calc(-199 * var(--tile-size) * var(--tile-scale-factor) - var(--border-width)); }
+div.tile.\31 \37 t { background-position-y: calc(-200 * var(--tile-size) * var(--tile-scale-factor) - var(--border-width)); }
+div.tile.\31 \38 t { background-position-y: calc(-201 * var(--tile-size) * var(--tile-scale-factor) - var(--border-width)); }
+div.tile.\31 \39 t { background-position-y: calc(-202 * var(--tile-size) * var(--tile-scale-factor) - var(--border-width)); }
+div.tile.\31 \31 \30 t { background-position-y: calc(-203 * var(--tile-size) * var(--tile-scale-factor) - var(--border-width)); }
+div.tile.\31 \31 z { background-position-y: calc(-204 * var(--tile-size) * var(--tile-scale-factor) - var(--border-width)); }
+div.tile.\31 \32 z { background-position-y: calc(-205 * var(--tile-size) * var(--tile-scale-factor) - var(--border-width)); }
+div.tile.\31 \33 z { background-position-y: calc(-206 * var(--tile-size) * var(--tile-scale-factor) - var(--border-width)); }
+div.tile.\31 \34 z { background-position-y: calc(-207 * var(--tile-size) * var(--tile-scale-factor) - var(--border-width)); }
+div.tile.\31 \35 z { background-position-y: calc(-208 * var(--tile-size) * var(--tile-scale-factor) - var(--border-width)); }
+div.tile.\31 \36 z { background-position-y: calc(-209 * var(--tile-size) * var(--tile-scale-factor) - var(--border-width)); }
+div.tile.\31 \37 z { background-position-y: calc(-210 * var(--tile-size) * var(--tile-scale-factor) - var(--border-width)); }
+div.tile.\31 \38 z { background-position-y: calc(-211 * var(--tile-size) * var(--tile-scale-factor) - var(--border-width)); }
+div.tile.\31 \30 \30 s { background-position-y: calc(-212 * var(--tile-size) * var(--tile-scale-factor) - var(--border-width)); }
 div.tile.\32 x { visibility: hidden; } /* blank space */
 div.tile.\33 x { visibility: hidden; width: calc(0.5 * var(--tile-width)); } /* half blank space */
 div.tile.\34 x { display: none; } /* fully invisible tile */
@@ -1337,30 +1338,30 @@ div.tile.\37 x { visibility: hidden; width: calc(0.0625 * var(--tile-width)); } 
 div.tile.\38 x { visibility: hidden; width: calc(0.03125 * var(--tile-width)); } /* 32th blank space */
 /* punctuation names for alt tiles */
 /* alternate 1s: 1's */
-div.tile.\31 \27 s { background-position-y: calc(-40 * var(--tile-size) - var(--border-width)); }
-div.tile.\30 \31 \27 s { --tile-color: var(--aka-color); --number-color: var(--aka-color); background-position-y: calc(-163 * var(--tile-size) - var(--border-width)); }
-div.tile.\32 \31 \27 s { --tile-color: var(--ao-color); --number-color: var(--ao-color); background-position-y: calc(-163 * var(--tile-size) - var(--border-width)); }
-div.tile.\33 \31 \27 s { --tile-color: var(--kin-color); background-position-y: calc(-163 * var(--tile-size) - var(--border-width)); }
-div.tile.\34 \31 \27 s { background-position-y: calc(-163 * var(--tile-size) - var(--border-width)); }
-div.tile.\31 \31 \27 s { background-position-y: calc(-212 * var(--tile-size) - var(--border-width)); }
+div.tile.\31 \27 s { background-position-y: calc(-40 * var(--tile-size) * var(--tile-scale-factor) - var(--border-width)); }
+div.tile.\30 \31 \27 s { --tile-color: var(--aka-color); --number-color: var(--aka-color); background-position-y: calc(-163 * var(--tile-size) * var(--tile-scale-factor) - var(--border-width)); }
+div.tile.\32 \31 \27 s { --tile-color: var(--ao-color); --number-color: var(--ao-color); background-position-y: calc(-163 * var(--tile-size) * var(--tile-scale-factor) - var(--border-width)); }
+div.tile.\33 \31 \27 s { --tile-color: var(--kin-color); background-position-y: calc(-163 * var(--tile-size) * var(--tile-scale-factor) - var(--border-width)); }
+div.tile.\34 \31 \27 s { background-position-y: calc(-163 * var(--tile-size) * var(--tile-scale-factor) - var(--border-width)); }
+div.tile.\31 \31 \27 s { background-position-y: calc(-212 * var(--tile-size) * var(--tile-scale-factor) - var(--border-width)); }
 /* alternate 0z: 5'z */
-div.tile.\35 \27 z { background-position-y: calc(-37 * var(--tile-size) - var(--border-width)); }
-div.tile.\30 \35 \27 z { --tile-color: var(--aka-color); --number-color: var(--aka-color); background-position-y: calc(-154 * var(--tile-size) - var(--border-width)); }
-div.tile.\32 \35 \27 z { --tile-color: var(--ao-color); --number-color: var(--ao-color); background-position-y: calc(-154 * var(--tile-size) - var(--border-width)); }
-div.tile.\33 \35 \27 z { --tile-color: var(--kin-color); background-position-y: calc(-154 * var(--tile-size) - var(--border-width)); }
-div.tile.\34 \35 \27 z { background-position-y: calc(-154 * var(--tile-size) - var(--border-width)); }
+div.tile.\35 \27 z { background-position-y: calc(-37 * var(--tile-size) * var(--tile-scale-factor) - var(--border-width)); }
+div.tile.\30 \35 \27 z { --tile-color: var(--aka-color); --number-color: var(--aka-color); background-position-y: calc(-154 * var(--tile-size) * var(--tile-scale-factor) - var(--border-width)); }
+div.tile.\32 \35 \27 z { --tile-color: var(--ao-color); --number-color: var(--ao-color); background-position-y: calc(-154 * var(--tile-size) * var(--tile-scale-factor) - var(--border-width)); }
+div.tile.\33 \35 \27 z { --tile-color: var(--kin-color); background-position-y: calc(-154 * var(--tile-size) * var(--tile-scale-factor) - var(--border-width)); }
+div.tile.\34 \35 \27 z { background-position-y: calc(-154 * var(--tile-size) * var(--tile-scale-factor) - var(--border-width)); }
 /* malaysian 0z: 5`z */
-div.tile.\35 \60 z { background-position-y: calc(-38 * var(--tile-size) - var(--border-width)); }
-div.tile.\30 \35 \60 z { --tile-color: var(--aka-color); --number-color: var(--aka-color); background-position-y: calc(-162 * var(--tile-size) - var(--border-width)); }
-div.tile.\32 \35 \60 z { --tile-color: var(--ao-color); --number-color: var(--ao-color); background-position-y: calc(-162 * var(--tile-size) - var(--border-width)); }
-div.tile.\33 \35 \60 z { --tile-color: var(--kin-color); background-position-y: calc(-162 * var(--tile-size) - var(--border-width)); }
-div.tile.\34 \35 \60 z { background-position-y: calc(-162 * var(--tile-size) - var(--border-width)); }
-div.tile.\31 \35 \60 z { background-position-y: calc(-211 * var(--tile-size) - var(--border-width)); }
+div.tile.\35 \60 z { background-position-y: calc(-38 * var(--tile-size) * var(--tile-scale-factor) - var(--border-width)); }
+div.tile.\30 \35 \60 z { --tile-color: var(--aka-color); --number-color: var(--aka-color); background-position-y: calc(-162 * var(--tile-size) * var(--tile-scale-factor) - var(--border-width)); }
+div.tile.\32 \35 \60 z { --tile-color: var(--ao-color); --number-color: var(--ao-color); background-position-y: calc(-162 * var(--tile-size) * var(--tile-scale-factor) - var(--border-width)); }
+div.tile.\33 \35 \60 z { --tile-color: var(--kin-color); background-position-y: calc(-162 * var(--tile-size) * var(--tile-scale-factor) - var(--border-width)); }
+div.tile.\34 \35 \60 z { background-position-y: calc(-162 * var(--tile-size) * var(--tile-scale-factor) - var(--border-width)); }
+div.tile.\31 \35 \60 z { background-position-y: calc(-211 * var(--tile-size) * var(--tile-scale-factor) - var(--border-width)); }
 /* shiro pocchi: 5^z */
-div.tile.\35 \5e z { background-position-y: calc(-39 * var(--tile-size) - var(--border-width)); }
+div.tile.\35 \5e z { background-position-y: calc(-39 * var(--tile-size) * var(--tile-scale-factor) - var(--border-width)); }
 
 /* facedown tiles should match 1x */
-div.tile.facedown { background-position-y: calc(-44 * var(--tile-size) - var(--border-width)); }
+div.tile.facedown { background-position-y: calc(-44 * var(--tile-size) * var(--tile-scale-factor) - var(--border-width)); }
 
 /* custom coloring */
 div.tile.red { --tile-color: var(--aka-color); --number-color: var(--aka-color); }
@@ -2046,6 +2047,11 @@ div.rules-popover-text {
   white-space: pre-wrap;
   font-size: calc(0.5 * var(--tile-size));
   margin: calc(0.25 * var(--tile-size));
+}
+div.rules-popover-text > div.tile {
+  display: inline-block;
+  --tile-scale-factor: calc(2 / 3); /* enough for 14 tiles to be in a row */
+  margin-top: calc(0.25 * var(--tile-scale-factor) * var(--tile-size));
 }
 
 /* tile numbers */
@@ -2976,16 +2982,16 @@ div.title > div.title-advanced {
   top: calc(3 * var(--tile-size));
 }
 div.title > div.tile {
-  --tile-size: min(calc(90vw / 6), calc(80vh / 6));
-  top: calc(0.2 * var(--tile-size));
+  --tile-scale-factor: 3;
+  top: calc(0.6 * var(--tile-size));
 }
 div.title > div.tile.\38 m {
   transform: rotate(10deg);
-  left: calc(0.2 * var(--tile-size));
+  left: calc(0.6 * var(--tile-size));
 }
 div.title > div.tile.\37 z {
   transform: rotate(-10deg);
-  right: calc(0.2 * var(--tile-size));
+  right: calc(0.6 * var(--tile-size));
 }
 div.title > div.title-riichi::before,
 div.title > div.title-advanced::before {

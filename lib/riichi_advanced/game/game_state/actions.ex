@@ -745,6 +745,7 @@ defmodule RiichiAdvanced.GameState.Actions do
 
   def interpolate_string(state, context, str, assigns) do
     for {name, value} <- assigns, reduce: str do
+      str when is_list(value) -> str
       str ->
         value = if is_amount?(state, context.seat, value) do
           to_string(interpret_amount(state, context, value))

@@ -379,10 +379,10 @@ defmodule RiichiAdvancedWeb.GameLive do
           <div class="rules-popover-container" phx-click="noop">
             <div class="rules-popover">
               <%= for {title, {text, vars, priority}} <- Enum.sort_by(@state.rules_text[rules_text_name], fn {_title, {text, _vars, priority}} -> {priority, text |> Enum.join("\n") |> String.length()} end) do %>
-                <% vars = Enum.map(vars, fn {k, v} -> {k, dt(@lang, v)} end) %>
+                <% vars = Map.new(vars, fn {k, v} -> {k, if is_binary(v) do dt(@lang, v) else v end} end) %>
                 <div class={["rules-popover-rule", priority < 0 && "full-width"]}>
                   <div class="rules-popover-title"><%= dt(@lang, title, vars) %></div>
-                  <div class="rules-popover-text"><%= Enum.map_join(text, "\n", &dt(@lang, &1, vars)) %></div>
+                  <div class="rules-popover-text"><%= raw Enum.map_join(text, "\n", &dt(@lang, &1, vars)) %></div>
                 </div>
               <% end %>
             </div>

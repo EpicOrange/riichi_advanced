@@ -359,6 +359,7 @@ defmodule RiichiAdvanced.Utils do
       riichi && "sideways",
       selected && "selected",
     ] ++ extra_classes ++ number_class ++ color_classes
+    |> Enum.reject(& &1 == false)
   end
 
   def call_to_tiles({_name, call}, replace_am_jokers \\ false) do

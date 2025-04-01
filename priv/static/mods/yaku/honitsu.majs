@@ -1,5 +1,6 @@
 on after_initialization do
   add_rule("$value $han", "$name", "Your hand consists of only one suit plus honor tiles.", %{value: !hon_value, han: !han, name: !hon_name})
+  update_rule("$value $han", "$name", "%{example_hand}", %{value: !hon_value, han: !han, name: !hon_name, example_hand: ~t"123345888p11z22z 2z"})
   add_rule("$value $han", "$name", "Your hand consists of only one suit, no honor tiles.", %{value: !chin_value, han: !han, name: !chin_name})
 end
 

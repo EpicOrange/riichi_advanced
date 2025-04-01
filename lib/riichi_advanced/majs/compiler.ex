@@ -32,7 +32,7 @@ end
 
 defimpl Jason.Encoder, for: RiichiAdvanced.Compiler.Expression do
   # runtime check that variables in expressions are numbers
-  def encode_operand(%RiichiAdvanced.Compiler.Variable{name: name} = var, opts) do
+  def encode_operand(%RiichiAdvanced.Compiler.Variable{} = var, opts) do
     json = Jason.Encode.value(var, opts) |> IO.iodata_to_binary()
     ["(if ", json, " | type == \"number\" then ", json, " else error(\"variable ", json, " in expression is not a number\") end)"]
   end

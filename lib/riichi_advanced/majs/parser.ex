@@ -13,7 +13,23 @@ defmodule RiichiAdvanced.Parser do
     end
   end
 
-  def parse_set(set_spec) do
+  def parse_tiles(tiles_spec) when is_binary(tiles_spec) do
+    ret = for hand <- String.split(tiles_spec, " ", trim: true), reduce: [] do
+      tiles ->
+        new_tiles =for [_, nums, suit, attrs] <- Regex.scan(~r/(\d+)([a-z])(@[a-z_&]+|)/, hand), num <- String.graphemes(nums) do
+          tile = "#{num}#{suit}"
+          attrs = String.split(attrs, "&", trim: true)
+          if Enum.empty?(attrs) do tile else {:%{}, [], [{"tile", tile}, {"attrs", attrs}]} end
+        end
+        [new_tiles | tiles]
+    end
+    |> Enum.reverse()
+    |> Enum.intersperse(["3x"])
+    |> Enum.concat()
+    {:ok, ret}
+  end
+
+  def parse_set(set_spec) when is_binary(set_spec) do
     set_spec = for group <- String.split(set_spec, "|") |> Enum.map(&String.trim/1) do
       for subgroup <- String.split(group, ",", trim: true) |> Enum.map(&String.trim/1) do
         for item <- String.split(subgroup, " ", trim: true) |> Enum.map(&String.trim/1) do
@@ -87,7 +103,7 @@ defmodule RiichiAdvanced.Parser do
     end
   end
 
-  def parse_match(match_spec) do
+  def parse_match(match_spec) when is_binary(match_spec) do
     for match_definition <- String.split(match_spec, "|", trim: true) |> Enum.map(&String.trim/1) do
       items = String.split(match_definition, ",", trim: true) |> Enum.map(&String.trim/1)
       if "american" in items do
@@ -99,8 +115,10 @@ defmodule RiichiAdvanced.Parser do
       end
     end |> Utils.sequence()
   end
-  def parse_sigils({:sigil_s, _, [{:<<>>, _, [set_spec]}, _args]}) when is_binary(set_spec), do: parse_set(set_spec)
-  def parse_sigils({:sigil_m, _, [{:<<>>, _, [match_spec]}, _args]}) when is_binary(match_spec), do: parse_match(match_spec)
+
+  def parse_sigils({:sigil_t, _, [{:<<>>, _, [tiles_spec]}, _args]}), do: parse_tiles(tiles_spec)
+  def parse_sigils({:sigil_s, _, [{:<<>>, _, [set_spec]}, _args]}), do: parse_set(set_spec)
+  def parse_sigils({:sigil_m, _, [{:<<>>, _, [match_spec]}, _args]}), do: parse_match(match_spec)
   def parse_sigils([do: expr]), do: parse_sigils(expr)
   def parse_sigils(ast) when is_list(ast) do
     # check if keyword list (except the keys are binaries, not atoms)
