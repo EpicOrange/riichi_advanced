@@ -234,7 +234,7 @@ defmodule RiichiAdvancedWeb.GameLive do
         <div class="auto-buttons">
           <%= for {{name, desc, checked}, i} <- Enum.with_index(@state.players[@seat].auto_buttons) do %>
             <input id={"auto-button-" <> name} type="checkbox" class="auto-button" phx-click="auto_button_toggled" phx-value-name={name} phx-value-enabled={if checked do "true" else "false" end} checked={checked}>
-            <label for={"auto-button-" <> name} title={desc} data-name={Rules.get(@state.rules_ref, "auto_buttons", %{})[name]["display_name"]} tabindex={i}><%= Rules.get(@state.rules_ref, "auto_buttons", %{})[name]["display_name"] %></label>
+            <label for={"auto-button-" <> name} title={desc} data-name={t(@lang, Rules.get(@state.rules_ref, "auto_buttons", %{})[name]["display_name"])} tabindex={i}><%= Rules.get(@state.rules_ref, "auto_buttons", %{})[name]["display_name"] %></label>
           <% end %>
         </div>
         <div class="call-buttons-container">
