@@ -10,7 +10,7 @@ defmodule RiichiAdvancedWeb.MessagesComponent do
 
   def render(assigns) do
     ~H"""
-    <div class="messages-container">
+    <div class="messages-container" phx-click="noop" phx-target={@myself}>
       <div class="messages">
         <%= for msg <- @messages do %>
           <span>
@@ -25,6 +25,8 @@ defmodule RiichiAdvancedWeb.MessagesComponent do
     </div>
     """
   end
+
+  def handle_event("noop", _assigns, socket), do: {:noreply, socket}
 
   def preprocess(message, lang) do
     # convert

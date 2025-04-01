@@ -376,7 +376,7 @@ defmodule RiichiAdvancedWeb.GameLive do
           <% rules_id = "rules-popover-radio-#{String.replace(rules_text_name, " ", "-")}" %>
           <input type="radio" id={rules_id} name="rules-popover-tab" class="rules-popover-radio" phx-update="ignore">
           <label for={rules_id} class={"lang-#{@lang}"}><%= dt(@lang, rules_text_name) %></label>
-          <div class="rules-popover-container">
+          <div class="rules-popover-container" phx-click="noop">
             <div class="rules-popover">
               <%= for {title, {text, vars, priority}} <- Enum.sort_by(@state.rules_text[rules_text_name], fn {_title, {text, _vars, priority}} -> {priority, text |> Enum.join("\n") |> String.length()} end) do %>
                 <% vars = Enum.map(vars, fn {k, v} -> {k, dt(@lang, v)} end) %>
@@ -502,9 +502,8 @@ defmodule RiichiAdvancedWeb.GameLive do
     end
   end
 
-  def handle_event("back", _assigns, socket) do
-    {:noreply, navigate_back(socket)}
-  end
+  def handle_event("noop", _assigns, socket), do: {:noreply, socket}
+  def handle_event("back", _assigns, socket), do: {:noreply, navigate_back(socket)}
 
   def handle_event("log", _assigns, socket) do
     log = GenServer.call(socket.assigns.game_state, :get_log)

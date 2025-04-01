@@ -49,10 +49,12 @@ function getHoverTarget(elem) {
   if (elem.attributes.hasOwnProperty("phx-hover")) return elem;
   return getHoverTarget(elem.parentElement);
 }
-function inLabelOrButton(elem) {
+function shouldIgnoreDoubleOrRightClick(elem) {
   if (!elem) return false;
   if (elem.tagName == "LABEL" || elem.tagName == "BUTTON") return true;
-  return inLabelOrButton(elem.parentElement);
+  var attrs = elem.attributes
+  if (attrs.hasOwnProperty("phx-click") || attrs.hasOwnProperty("phx-cancellable-click")) return true;
+  return shouldIgnoreDoubleOrRightClick(elem.parentElement);
 }
 
 window.mouseDownElement = null;
@@ -66,7 +68,7 @@ Hooks.ClickListener = {
         window.mouseDownElement = target;
       }
       // prevent double click if the first click was on a button
-      window.ignoreDoubleClick = inLabelOrButton(e.target);
+      window.ignoreDoubleClick = shouldIgnoreDoubleOrRightClick(e.target);
     });
     this.el.addEventListener('mouseup', e => {
       var target = getCancellableClickTarget(e.target);
@@ -90,13 +92,13 @@ Hooks.ClickListener = {
     });
     this.el.addEventListener('dblclick', e => {
       e.preventDefault();
-      if (!inLabelOrButton(e.target) && !window.ignoreDoubleClick && !e.target.attributes.hasOwnProperty("phx-click") && !e.target.attributes.hasOwnProperty("phx-cancellable-click")) {
+      if (!shouldIgnoreDoubleOrRightClick(e.target) && !window.ignoreDoubleClick) {
         this.pushEvent("double_clicked", {"tag_name": e.target.tagName, "classes": [...e.target.classList]});
       }
     });
     this.el.addEventListener('contextmenu', e => {
       e.preventDefault();
-      if (!inLabelOrButton(e.target) && !e.target.attributes.hasOwnProperty("phx-click") && !e.target.attributes.hasOwnProperty("phx-cancellable-click")) {
+      if (!shouldIgnoreDoubleOrRightClick(e.target)) {
         this.pushEvent("right_clicked", {"tag_name": e.target.tagName, "classes": [...e.target.classList]});
       }
     });
