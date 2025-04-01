@@ -187,6 +187,7 @@ textarea {
   white-space: pre;
   box-sizing: border-box;
   scrollbar-width: none; /* Firefox */
+  font-size: calc(var(--tile-size) / 3);
 }
 textarea::-webkit-scrollbar { 
   display: none; /* Safari/Chrome */
@@ -2681,16 +2682,14 @@ div.ruleset {
   position: absolute;
   top: calc(100vh + (2 * var(--tile-size)) + 1.2em);
   left: calc(50% - min(90vw, 80vh) / 2);
-  background: #0f6f2f;
   width: min(90vw, 80vh);
   height: 90vh;
   user-select: text;
 }
-div.ruleset::before {
-  position: absolute;
+div.ruleset > div.ruleset-text {
   content: "Ruleset:";
-  top: -1.2em;
   color: white;
+  font-size: calc(1 * var(--tile-size));
 }
 /* landscape */
 @media (min-aspect-ratio: 6/5) {

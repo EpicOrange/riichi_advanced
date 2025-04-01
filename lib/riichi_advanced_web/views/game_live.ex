@@ -393,6 +393,7 @@ defmodule RiichiAdvancedWeb.GameLive do
       </div>
       <.live_component module={RiichiAdvancedWeb.MessagesComponent} id="messages" messages={@messages} lang={@lang} />
       <div class="ruleset">
+        <div class="ruleset-text"><%= t(@lang, "Ruleset:") %></div>
         <textarea readonly><%= Rules.get(@state.rules_ref, :ruleset_json) %></textarea>
       </div>
     </div>

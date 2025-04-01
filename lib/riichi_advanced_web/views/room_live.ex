@@ -258,6 +258,7 @@ defmodule RiichiAdvancedWeb.RoomLive do
       </div>
       <.live_component module={RiichiAdvancedWeb.MessagesComponent} id="messages" messages={@messages} lang={@lang} />
       <div class="ruleset">
+        <div class="ruleset-text"><%= t(@lang, "Ruleset:") %></div>
         <textarea readonly><%= @state.ruleset_json %></textarea>
       </div>
     </div>
