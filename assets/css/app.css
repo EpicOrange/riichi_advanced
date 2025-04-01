@@ -1955,7 +1955,9 @@ div.rules-wrapper > label {
   width: calc(0.5 * var(--tile-size));
   pointer-events: initial;
   writing-mode: tb;
-  line-height: calc(100% - 0.1em); /* centers text better than flexbox */
+  display: flex;
+  justify-content: center;
+  align-items: center;
 }
 div.rules-wrapper > label.lang-en {
   transform: rotate(180deg); /* make text face right */
