@@ -3701,8 +3701,8 @@ div.tutorial-focus {
 }
 div.tutorial-focus.mobile { display: none; }
 @media (max-aspect-ratio: 6/5) {
-  input.mobile-zoom-checkbox:checked ~ div.tutorial-overlay div.tutorial-focus.desktop { display: none; }
-  input.mobile-zoom-checkbox:checked ~ div.tutorial-overlay div.tutorial-focus.mobile { display: block; }
+  input.mobile-zoom-checkbox:not(:checked) ~ div.tutorial-overlay div.tutorial-focus.desktop { display: none; }
+  input.mobile-zoom-checkbox:not(:checked) ~ div.tutorial-overlay div.tutorial-focus.mobile { display: block; }
 }
 
 /* tutorial select menu */
