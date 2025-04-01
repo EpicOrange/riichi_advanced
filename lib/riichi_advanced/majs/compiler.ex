@@ -104,6 +104,7 @@ defmodule RiichiAdvanced.Compiler do
               end
             end
           else
+            # IO.puts("Tried to compile invalid condition #{inspect(condition)}")
             {:error, "Compiler.compile_condition: at line #{line}:#{column}, #{inspect(condition)} is not a valid condition"}
           end
         end
@@ -477,6 +478,7 @@ defmodule RiichiAdvanced.Compiler do
   defp compile_command("define_const", name, args, line, column) do
     value = case args do
       [value] -> {:ok, value}
+      {_, _, _} -> {:ok, args}
       _ -> {:error, "Compiler.compile: at line #{line}:#{column}, `define_const` command expects a single JSON, condition, action, or do block, got #{inspect(args)}"}
     end
 

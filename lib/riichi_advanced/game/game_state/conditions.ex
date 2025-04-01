@@ -144,7 +144,14 @@ defmodule RiichiAdvanced.GameState.Conditions do
       "callee" ->
         last_call_action = get_last_call_action(state)
         Map.get(context, :callee, if last_call_action != nil do last_call_action.from else context.seat end)
+      "last_caller" ->
+        last_call_action = get_last_call_action(state)
+        if last_call_action != nil do last_call_action.seat else context.seat end
+      "last_callee" ->
+        last_call_action = get_last_call_action(state)
+        if last_call_action != nil do last_call_action.from else context.seat end
       "prev_seat" -> Map.get(context, :prev_seat, context.seat)
+      "last_seat" -> Map.get(context, :prev_seat, context.seat)
       _ -> context.seat
     end
   end
@@ -595,6 +602,9 @@ defmodule RiichiAdvanced.GameState.Conditions do
           {tab, id}
         else {tab, id} end
         Map.has_key?(state.rules_text, tab) and Map.has_key?(state.rules_text[tab], id)
+      "is_responsible_for"  ->
+        seat = from_seat_spec(state, context, Enum.at(opts, 0, "self"))
+        Map.has_key?(state.players[seat].pao_map, context.seat)
       _                     ->
         IO.puts "Unhandled condition #{inspect(cond_spec)}"
         false

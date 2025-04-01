@@ -20,3 +20,17 @@ end
 # apply set_append, "score_calculation.pao_eligible_yaku", ["Daisangen", "Daisuushii"]
 apply set, "score_calculation.split_pao_ron", true
 apply set, "score_calculation.win_with_pao_name", "Sekinin Barai"
+
+define_const pao_text do
+  as others do
+    if is_responsible_for("prev_seat") do
+      big_text("Pao")
+    else
+      print_status
+    end
+  end
+end
+
+apply prepend, "buttons.ron.actions", [@pao_text]
+apply prepend, "buttons.chankan.actions", [@pao_text]
+apply prepend, "buttons.tsumo.actions", [@pao_text]

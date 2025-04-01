@@ -2012,7 +2012,7 @@ defmodule RiichiAdvanced.GameState do
         state = timer_finished(state)
         state
       true ->
-        IO.inspect(Map.new(state.players, fn {seat, player} -> {seat, player.ready} end))
+        # IO.inspect(Map.new(state.players, fn {seat, player} -> {seat, player.ready} end))
         Debounce.apply(state.timer_debouncer)
         state = Map.put(state, :timer, state.timer - 1)
         state
