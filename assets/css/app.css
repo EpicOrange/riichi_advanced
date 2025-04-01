@@ -910,37 +910,24 @@ div.tile {
   border-radius: calc(0.10 * var(--tile-size));
   flex-shrink: 0;
   box-sizing: border-box;
+  overflow: hidden;
 }
-/* old code for giving tiles a shadow around the edges */
-/*
-div.tile::after {
+@keyframes doraShine {
+  0% { transform: translate(-100%, -100%) rotate(135deg); }
+  100% { transform: translate(100%, 100%) rotate(135deg); }
+}
+div.tile.dora:not(.\31 x)::before {
   content: "";
   position: absolute;
-  bottom: 0;
-  --shadow-width: calc(0.95 * var(--tile-width));
-  --shadow-height: calc(0.95 * var(--tile-height));
-  --shadow-end-width: var(--tile-width);
-  --shadow-end-height: var(--tile-height);
-  --shadow-radial1: calc(0.5 * var(--tile-height));
-  --shadow-radial2: calc(0.6 * var(--tile-height));
-  --shadow-color: rgba(0,0,0,0.05);
-  background:
-   radial-gradient(circle at center, transparent var(--shadow-radial1), var(--shadow-color) var(--shadow-radial2)),
-   linear-gradient(to bottom, transparent var(--shadow-height), var(--shadow-color) var(--shadow-end-height), transparent var(--shadow-end-height)) bottom,
-   linear-gradient(to left,   transparent var(--shadow-width), var(--shadow-color) var(--shadow-end-width), transparent var(--shadow-end-width)) left,
-   linear-gradient(to right,  transparent var(--shadow-width), var(--shadow-color) var(--shadow-end-width), transparent var(--shadow-end-width)) right,
-   linear-gradient(to top,    transparent var(--shadow-height), var(--shadow-color) var(--shadow-end-height), transparent var(--shadow-end-height)) top;
-  border-radius: calc(0.1 * var(--tile-size));
+  top: 0;
+  left: 0;
+  animation: doraShine 3s infinite;
+  width: 400%;
+  height: 400%;
+  background: 
+    linear-gradient(0deg, transparent 25%, #ffffff7f 35%, transparent 45%),
+    linear-gradient(0deg, transparent 55%, #ffffff7f 65%, transparent 75%);
 }
-div.tile.sideways::after {
-  width: var(--tile-height);
-  height: var(--tile-width);
-  --shadow-width: calc(0.95 * var(--tile-height));
-  --shadow-height: calc(0.95 * var(--tile-width));
-  --shadow-end-width: var(--tile-height);
-  --shadow-end-height: var(--tile-width);
-}
-*/
 div.tile.sideways + div.tile.sideways { width: 0; }
 div.tile.sideways + div.tile.sideways::before {
   display: block;
@@ -964,8 +951,8 @@ div.tile.markable:hover, div.tile.marked {
 }
 div.tile { background-position-x: calc(0 * var(--tile-size) * var(--tile-scale-factor) - var(--border-width)); }
 div.tile.sideways { width: var(--tile-height); height: var(--tile-width); background-position-x: calc(-1.5 * var(--tile-size) * var(--tile-scale-factor) - var(--border-width)); }
-div.tile.dora:not(.\31 x) { background-position-x: calc(-0.75 * var(--tile-size) * var(--tile-scale-factor) - var(--border-width)); }
-div.tile.dora:not(.\31 x).sideways { background-position-x: calc(-2.5 * var(--tile-size) * var(--tile-scale-factor) - var(--border-width)); }
+/*div.tile.dora:not(.\31 x) { background-position-x: calc(-0.75 * var(--tile-size) * var(--tile-scale-factor) - var(--border-width)); }*/
+/*div.tile.dora:not(.\31 x).sideways { background-position-x: calc(-2.5 * var(--tile-size) * var(--tile-scale-factor) - var(--border-width)); }*/
 div.tile.\30 m { --number-color: var(--aka-color); background-position-y: calc(-0 * var(--tile-size) * var(--tile-scale-factor) - var(--border-width)); }
 div.tile.\31 m { background-position-y: calc(-1 * var(--tile-size) * var(--tile-scale-factor) - var(--border-width)); }
 div.tile.\32 m { background-position-y: calc(-2 * var(--tile-size) * var(--tile-scale-factor) - var(--border-width)); }
