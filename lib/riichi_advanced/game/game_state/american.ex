@@ -63,18 +63,31 @@ defmodule RiichiAdvanced.GameState.American do
                 "a" -> :a
                 "b" -> :b
                 "c" -> :c
+                _   -> nil
               end
-              tiles = group |> String.graphemes() |> Enum.drop(-1)
-              result ++ [{suit, tiles}]
+              if suit == nil do
+                tiles = group |> String.graphemes()
+                result ++ [{:unsuited, [[tiles], 1]}]
+              else
+                tiles = group |> String.graphemes() |> Enum.drop(-1)
+                result ++ [{suit, tiles}]
+              end
             t == "X" ->
               suit = case String.last(group) do
                 "a" -> :a
                 "b" -> :b
                 "c" -> :c
+                _   -> nil
               end
-              num = group |> String.graphemes() |> Enum.drop(-2) |> length()
-              shift = String.slice(group, -2, 1) |> String.to_integer()
-              result ++ [{suit, List.duplicate(shift, num)}]
+              if suit == nil do
+                num = group |> String.graphemes() |> Enum.drop(-1) |> length()
+                shift = String.last(group) |> String.to_integer()
+                result ++ [{:unsuited, [[List.duplicate(shift, num)], 1]}]
+              else
+                num = group |> String.graphemes() |> Enum.drop(-2) |> length()
+                shift = String.slice(group, -2, 1) |> String.to_integer()
+                result ++ [{suit, List.duplicate(shift, num)}]
+              end
           end
         end
     end
