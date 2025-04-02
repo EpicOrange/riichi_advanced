@@ -37,7 +37,7 @@ define_yaku yaku, "North Wind", 1, match(["hand", "calls", "winning_tile"], ~m"e
 # end-of-game shuugi payment
 on before_conclusion do
   as everyone do
-    curr_score = score
+    curr_score = "current_score"
     if placement(2) do
       shuugi_payout = -12
       if curr_score >= 0 do shuugi_payout = -10 end

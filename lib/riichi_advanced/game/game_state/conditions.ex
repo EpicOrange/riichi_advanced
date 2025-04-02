@@ -236,16 +236,16 @@ defmodule RiichiAdvanced.GameState.Conditions do
       "no_calls_yet"                -> last_call_action == nil
       "last_call_is"                -> last_call_action != nil and last_call_action.call_name in opts
       # TODO replace with "as": keyword
-      "kamicha_discarded"           -> last_discard_action != nil and last_discard_action.seat == Utils.prev_turn(context.seat)
-      "toimen_discarded"            -> last_discard_action != nil and last_discard_action.seat == Utils.prev_turn(context.seat, 2)
-      "shimocha_discarded"          -> last_discard_action != nil and last_discard_action.seat == Utils.prev_turn(context.seat, 3)
-      "anyone_just_discarded"       -> last_discard_action != nil
-      "someone_else_just_discarded" -> last_discard_action != nil and last_action.seat != context.seat
-      "just_discarded"              -> last_discard_action != nil and last_action.seat == context.seat
-      "anyone_just_called"          -> last_call_action != nil
-      "someone_else_just_called"    -> last_call_action != nil and last_action.seat != context.seat
-      "just_called"                 -> last_call_action != nil and last_action.seat == state.turn
-      "just_self_called"            -> last_call_action != nil and last_action.seat == state.turn and last_action.from == state.turn
+      "kamicha_discarded"           -> last_discard_action != nil and last_action == last_discard_action and last_action.seat == Utils.prev_turn(context.seat)
+      "toimen_discarded"            -> last_discard_action != nil and last_action == last_discard_action and last_action.seat == Utils.prev_turn(context.seat, 2)
+      "shimocha_discarded"          -> last_discard_action != nil and last_action == last_discard_action and last_action.seat == Utils.prev_turn(context.seat, 3)
+      "anyone_just_discarded"       -> last_discard_action != nil and last_action == last_discard_action and last_action.seat == state.turn
+      "someone_else_just_discarded" -> last_discard_action != nil and last_action == last_discard_action and last_action.seat == state.turn and last_action.seat != context.seat
+      "just_discarded"              -> last_discard_action != nil and last_action == last_discard_action and last_action.seat == state.turn and last_action.seat == context.seat
+      "anyone_just_called"          -> last_call_action != nil and last_action == last_call_action
+      "someone_else_just_called"    -> last_call_action != nil and last_action == last_call_action and last_action.seat != context.seat
+      "just_called"                 -> last_call_action != nil and last_action == last_call_action and last_action.seat == state.turn
+      "just_self_called"            -> last_call_action != nil and last_action == last_call_action and last_action.seat == state.turn and last_action.from == state.turn
       "call_available"              -> last_action != nil and last_action.action == :discard and Riichi.can_call?(context.calls_spec, Utils.add_attr(cxt_player.hand, ["_hand"]), cxt_player.tile_behavior, [last_action.tile])
       "self_call_available"         -> Riichi.can_call?(context.calls_spec, Utils.add_attr(cxt_player.hand, ["_hand"]) ++ Utils.add_attr(cxt_player.draw, ["_hand"]), cxt_player.tile_behavior, [])
       "can_upgrade_call"            -> cxt_player.calls

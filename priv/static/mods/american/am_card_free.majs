@@ -79,8 +79,9 @@ apply delete, "buttons.mahjong_heavenly.show_when", "is_tenpai_american"
 apply delete, "buttons.mahjong_draw.show_when", "is_tenpai_american"
 apply delete, "buttons.mahjong_discard.show_when", "is_tenpai_american"
 
-set open_win_definition, [[]]
-set win_definition, [[]]
+# the empty match always matches
+set open_win_definition, ~m""
+set win_definition, ~m""
 apply set, "score_calculation.arrange_american_yaku", false
 apply set, "score_calculation.highest_scoring_yaku_only", false
 

@@ -84,7 +84,7 @@ defmodule RiichiAdvanced.GameState.Rules do
   def get(rules_ref, key, default) do
     try do
       case :ets.lookup(rules_ref, key) do
-        [{_key, value}] -> value
+        [{^key, value}] -> value
         [] -> default
       end
     rescue

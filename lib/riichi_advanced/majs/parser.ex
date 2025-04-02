@@ -16,7 +16,7 @@ defmodule RiichiAdvanced.Parser do
   end
 
   def parse_tiles(tiles_spec) when is_binary(tiles_spec) do
-    ret = for group <- String.split(tiles_spec, " ", trim: true), [_, num, suit | attrs] <- Regex.scan(~r/(\d+)([a-z])(@([a-z0-9_&]+))?/, group) |> IO.inspect() do
+    ret = for group <- String.split(tiles_spec, " ", trim: true), [_, num, suit | attrs] <- Regex.scan(~r/(\d+)([a-z])(@([a-z0-9_&]+))?/, group) do
       tile = "#{num}#{suit}"
       attrs = case attrs do
         [_, attrs] -> String.split(attrs, "&", trim: true)
@@ -120,7 +120,7 @@ defmodule RiichiAdvanced.Parser do
   end
 
   def parse_match(match_spec) when is_binary(match_spec) do
-    for match_definition <- String.split(match_spec, "|", trim: true) |> Enum.map(&String.trim/1) do
+    for match_definition <- String.split(match_spec, "|") |> Enum.map(&String.trim/1) do
       items = String.split(match_definition, ",", trim: true) |> Enum.map(&String.trim/1)
       if "american" in items do
         {:ok, Enum.find(items, & &1 != "american")}

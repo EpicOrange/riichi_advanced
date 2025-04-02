@@ -4,7 +4,6 @@ end
 
 on after_win do
   # calculate payment
-  shuugi_payment = 0
   if @closed_hand do
     shuugi_payment += aka
     shuugi_payment += ko
@@ -78,4 +77,3 @@ end
 
 apply append, "persistent_counters", "shuugi"
 apply append, "shown_statuses_public", "shuugi"
-set max_rounds, 0

@@ -4,6 +4,6 @@ end
 
 define play_restriction, "any", just_called and last_called_tile_matches("kuikae")
 
-apply set_append, "buttons.chii.call_conditions", can_discard_after_call
-apply set_append, "buttons.pon.call_conditions", can_discard_after_call
-apply set_append, "buttons.daiminkan.call_conditions", can_discard_after_call
+apply append, "buttons.chii.call_conditions", can_discard_after_call
+apply append, "buttons.pon.call_conditions", can_discard_after_call
+apply append, "buttons.daiminkan.call_conditions", can_discard_after_call

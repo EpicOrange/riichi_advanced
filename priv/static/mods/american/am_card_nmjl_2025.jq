@@ -19,7 +19,7 @@
     "FF XXX0a XXX0b XXX0c DDDa", # concealed
     # Quints
     "FF XXX0a XXXX1b XXXXX2c",
-    "XXXXX0a NNNN|EEEE|WWWW|SSSS XXXXX1a",
+    "XXXXX0a ZZZZ XXXXX1a",
     "FF XXXXX0a XX0b XXXXX0c",
     # Consecutive Run
     "11a 222a 3333a 444a 55a", "55a 666a 7777a 888a 99a",
@@ -42,7 +42,7 @@
     "FF 11a 33a 111b 333b 55c", "FF 55a 77a 555b 777b 99c", # concealed
     # Winds and Dragons
     "NNNN EEE WWW SSSS", "NNN EEEE WWWW SSS",
-    "FF X0X1X2a|X0X1X2b|X0X1X2c DDb DDDc DDDDa", # apparently the run here can match any of the dragons, not just the kong
+    "FF X0X1X2 DDb DDDc DDDDa", # apparently the run here can match any of the dragons, not just the kong
     "FFF NN EE WWW SSSS",
     "FFFF DDDa NEWS DDDb",
     "NNNN 1a 11b 111c SSSS", "NNNN 3a 33b 333c SSSS", "NNNN 5a 55b 555c SSSS", "NNNN 7a 77b 777c SSSS", "NNNN 9a 99b 999c SSSS",
@@ -59,7 +59,7 @@
     # Singles and Pairs
     "NN EW SS XX0a XX1a XX2a XX3a", # concealed
     "FF 2468a DDa 2468b DDb", # concealed
-    "336699a 336699b 33c|66c|99c", # concealed
+    "336699a 336699b 33c|336699a 336699b 66c|336699a 336699b 99c", # concealed
     "FF XX0a XX1a XX0b XX1b XX0c XX1c", # concealed
     "11a 33a 55a 77a 99a 11b 11c", "11a 33a 55a 77a 99a 33b 33c", "11a 33a 55a 77a 99a 55b 55c", "11a 33a 55a 77a 99a 77b 77c", "11a 33a 55a 77a 99a 99b 99c", # concealed
     "FF 2025a 2025b 2025c" # concealed
@@ -83,7 +83,7 @@
     "FFFF XX0a XXX0b XXX0c XX0a",
     # Quints
     "FF XXX0a XXXX1b XXXXX2c",
-    "XXXXX0a NNNN|EEEE|WWWW|SSSS XXXXX1a",
+    "XXXXX0a ZZZZ XXXXX1a",
     "FF XXXXX0a XX0b XXXXX0c",
     # Consecutive Run
     "11a 222a 3333a 444a 55a", "55a 666a 7777a 888a 99a",
@@ -121,7 +121,7 @@
 .singles_win_definition = [
     "NN EW SS XX0a XX1a XX2a XX3a", # concealed
     "FF 2468a DDa 2468b DDb", # concealed
-    "336699a 336699b 33c|66c|99c", # concealed
+    "336699a 336699b 33c|336699a 336699b 66c|336699a 336699b 99c", # concealed
     "FF XX0a XX1a XX0b XX1b XX0c XX1c", # concealed
     "11a 33a 55a 77a 99a 11b 11c", "11a 33a 55a 77a 99a 33b 33c", "11a 33a 55a 77a 99a 55b 55c", "11a 33a 55a 77a 99a 77b 77c", "11a 33a 55a 77a 99a 99b 99c", # concealed
     "FF 2025a 2025b 2025c" # concealed
@@ -144,7 +144,7 @@
     { "display_name": "Any Like Numbers #2", "value": 30, "when": [{"name": "match", "opts": [["hand", "call_tiles", "winning_tile"], ["FFFF XX0a XXX0b XXX0c XX0a"]]}] },
     { "display_name": "Any Like Numbers #3", "value": 30, "when": [{"name": "has_no_call_named", "opts": ["am_pung", "am_kong", "am_quint"]}, {"name": "match", "opts": [["hand", "call_tiles", "winning_tile"], ["FF XXX0a XXX0b XXX0c DDDa"]]} ] },
     { "display_name": "Quints #1", "value": 40, "when": [{"name": "match", "opts": [["hand", "call_tiles", "winning_tile"], ["FF XXX0a XXXX1b XXXXX2c"]]}] },
-    { "display_name": "Quints #2", "value": 45, "when": [{"name": "match", "opts": [["hand", "call_tiles", "winning_tile"], ["XXXXX0a NNNN|EEEE|WWWW|SSSS XXXXX1a"]]}] },
+    { "display_name": "Quints #2", "value": 45, "when": [{"name": "match", "opts": [["hand", "call_tiles", "winning_tile"], ["XXXXX0a ZZZZ XXXXX1a"]]}] },
     { "display_name": "Quints #3", "value": 45, "when": [{"name": "match", "opts": [["hand", "call_tiles", "winning_tile"], ["FF XXXXX0a XX0b XXXXX0c"]]}] },
     { "display_name": "Consecutive Run #1", "value": 25, "when": [{"name": "match", "opts": [["hand", "call_tiles", "winning_tile"], ["11a 222a 3333a 444a 55a", "55a 666a 7777a 888a 99a"]]}] },
     { "display_name": "Consecutive Run #2", "value": 25, "when": [{"name": "match", "opts": [["hand", "call_tiles", "winning_tile"], ["XXX0a XXXX1a XXX2a XXXX3a", "XXX0a XXXX1a XXX2b XXXX3b"]]}] },
@@ -179,7 +179,7 @@
     { "display_name": "369 #6", "value": 30, "when": [{"name": "has_no_call_named", "opts": ["am_pung", "am_kong", "am_quint"]}, {"name": "match", "opts": [["hand", "call_tiles", "winning_tile"], ["FF 333a Da 666b Db 999c Dc"]]}] },
     { "display_name": "Singles and Pairs #1", "value": 50, "when": [{"name": "has_no_call_named", "opts": ["am_pung", "am_kong", "am_quint"]}, {"name": "match", "opts": [["hand", "call_tiles", "winning_tile"], ["NN EW SS XX0a XX1a XX2a XX3a"]]} ] },
     { "display_name": "Singles and Pairs #2", "value": 50, "when": [{"name": "has_no_call_named", "opts": ["am_pung", "am_kong", "am_quint"]}, {"name": "match", "opts": [["hand", "call_tiles", "winning_tile"], ["FF 2468a DDa 2468b DDb"]]} ] },
-    { "display_name": "Singles and Pairs #3", "value": 50, "when": [{"name": "has_no_call_named", "opts": ["am_pung", "am_kong", "am_quint"]}, {"name": "match", "opts": [["hand", "call_tiles", "winning_tile"], ["336699a 336699b 33c|66c|99c"]]} ] },
+    { "display_name": "Singles and Pairs #3", "value": 50, "when": [{"name": "has_no_call_named", "opts": ["am_pung", "am_kong", "am_quint"]}, {"name": "match", "opts": [["hand", "call_tiles", "winning_tile"], ["336699a 336699b 33c|336699a 336699b 66c|336699a 336699b 99c"]]} ] },
     { "display_name": "Singles and Pairs #4", "value": 50, "when": [{"name": "has_no_call_named", "opts": ["am_pung", "am_kong", "am_quint"]}, {"name": "match", "opts": [["hand", "call_tiles", "winning_tile"], ["FF XX0a XX1a XX0b XX1b XX0c XX1c"]]} ] },
     { "display_name": "Singles and Pairs #5", "value": 50, "when": [{"name": "has_no_call_named", "opts": ["am_pung", "am_kong", "am_quint"]}, {"name": "match", "opts": [["hand", "call_tiles", "winning_tile"], ["11a 33a 55a 77a 99a 11b 11c", "11a 33a 55a 77a 99a 33b 33c", "11a 33a 55a 77a 99a 55b 55c", "11a 33a 55a 77a 99a 77b 77c", "11a 33a 55a 77a 99a 99b 99c"]]} ] },
     { "display_name": "Singles and Pairs #6", "value": 75, "when": [{"name": "has_no_call_named", "opts": ["am_pung", "am_kong", "am_quint"]}, {"name": "match", "opts": [["hand", "call_tiles", "winning_tile"], ["FF 2025a 2025b 2025c"]]} ] }
