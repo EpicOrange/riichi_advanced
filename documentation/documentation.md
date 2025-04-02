@@ -637,9 +637,9 @@ Colors are specified as CSS color strings like `"#808080"` or `"lightblue"`. Exa
 
 ## Actions
 
-- `["noop"]`: does nothing, but you can put it in `interruptible_actions` to make it an interrupt.
-- `push_message(message, vars)`: Sends a message to all players using the current player as a label. Example: `["push_message", "declared riichi"]`. You may specify numbers (actual numbers or counter names) or strings to interpolate into the message with `vars`. Example: `["push_message", "is on their $nth repeat", %{n: "honba"}]`.
-- `push_system_message(message, vars)`: Sends a message to all players, with no label. Example: `["push_system_message", "Converted each shuugi to 2000 points."]`
+- `noop`: does nothing, but you can put it in `interruptible_actions` to make it an interrupt.
+- `push_message(message, vars)`: Sends a message to all players using the current player as a label. Example: `push_message("declared riichi")`. You may specify numbers (actual numbers or counter names) or strings to interpolate into the message with `vars`. Example: `push_message("is on their $nth repeat", %{n: "honba"})`.
+- `push_system_message(message, vars)`: Sends a message to all players, with no label. Example: `push_system_message("Converted each shuugi to 2000 points.")`
 - `add_rule(tab, title, text, sort_order)`: Adds the string `text` to the corresponding rules `tab` on the left. Keep it brief! `title` is a required string identifier that is also used for deleting this rule later -- you can also specify an existing identifier to append a `text` to that rule (on its own line). `sort_order` is an optional integer argument that defaults to `0` -- the rules on the rules list are sorted from lowest `sort_order` to highest. Rules with negative `sort_order` are displayed full-width while other rules are half-width.
 - `update_rule(tab, title, text, sort_order)`: Same as `"add_rule"`, but only appends `text` (does nothing if the rule `title` does not exist).
 - `delete_rule(tab, title)`: Deletes the rule text identified by `title`.
