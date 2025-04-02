@@ -7,6 +7,7 @@
     "Table Rules",
     {"id": "american/zombie_blanks", "name": "Zombie Blanks", "config": [{"type": "dropdown", "name": "count", "values": [2,4,6,8,10], "default": 4}], "desc": "Adds some \"Zombie Blanks\" to the wall, which may be swapped out for already-discarded tiles."},
     {"id": "american/am_PIE", "name": "PIE", "config": [{"type": "dropdown", "name": "starting_points", "values": [200,400,600,800,1000,1200], "default": 600}], "desc": "Each player starts with a set amount of points. Players' point totals can't go negative. If a player runs out of points, they need not pay."},
+    {"id": "american/no_charleston", "name": "No Charleston", "desc": "Disables the initial Charleston pass."},
     "Card",
     {"id": "american/am_card_nmjl_2025", "conflicts": ["american/am_card_ILoveMahj", "american/am_card_ATeacherFirst", "american/am_card_MahjLife", "american/BETA_am_card_AMJForEveryone", "american/am_card_free"], "name": "NMJL 2025 Card", "desc": "Play with the NMJL 2025 Card."},
     {"id": "american/am_card_ILoveMahj", "conflicts": ["american/am_card_nmjl_2025", "american/am_card_ATeacherFirst", "american/am_card_MahjLife", "american/BETA_am_card_AMJForEveryone", "american/am_card_free"], "name": "ILM Card", "desc": "Play with the free ILoveMahj Card."},
@@ -362,6 +363,11 @@
       ], [
         ["push_message", "gets double score for a jokerless hand"],
         ["modify_payout", "all", 2, "multiply"]
+      ]],
+      // on wins by dicard, engine splits score evenly across all 3 players,
+      // this undoes that
+      ["when", ["won_by_discard"], [
+        ["modify_payout", "everyone", 3, "multiply"]
       ]]
     ]
   },
