@@ -198,14 +198,16 @@ defmodule RiichiAdvanced.LogControlState do
       seat = Log.from_seat(seat_num)
       button = button_data["button"]
       if button != nil do
+        state = for _ <- 1..10, reduce: state do
+          state ->
+            if button not in state.game_state.players[seat].buttons do
+              skip_buttons(state)
+              Map.put(state, :game_state, GenServer.call(state.game_state_pid, :get_state, 300000))
+            else state end
+        end
         if button not in state.game_state.players[seat].buttons do
-          state_before = state
-          skip_buttons(state)
-          state = Map.put(state, :game_state, GenServer.call(state.game_state_pid, :get_state, 300000))
-          if button not in state.game_state.players[seat].buttons do
-            IO.puts("log warning: Tried to press nonexistent button #{button} for #{seat}")
-            print_game_state(state_before)
-          end
+          IO.puts("log warning: Tried to press nonexistent button #{button} for #{seat}")
+          print_game_state(state)
         end
         GenServer.cast(state.game_state_pid, {:press_button, seat, button})
       end

@@ -25,8 +25,6 @@ define_const pao_text do
   as others do
     if is_responsible_for("prev_seat") do
       big_text("Pao")
-    else
-      print_status
     end
   end
 end
