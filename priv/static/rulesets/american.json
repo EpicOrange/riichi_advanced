@@ -6,6 +6,7 @@
   "available_mods": [
     "Table Rules",
     {"id": "american/zombie_blanks", "name": "Zombie Blanks", "config": [{"type": "dropdown", "name": "count", "values": [2,4,6,8,10], "default": 4}], "desc": "Adds some \"Zombie Blanks\" to the wall, which may be swapped out for already-discarded tiles."},
+    {"id": "american/am_num_jokers_flowers", "name": "Different Number of Flowers/Jokers", "config": [{"type": "dropdown", "name": "flowers", "values": [0,2,4,6,8,10,12,14,16,18,20,22,24], "default": 8}, {"type": "dropdown", "name": "jokers", "values": [0,2,4,6,8,10,12,14,16], "default": 8}], "desc": "Change the number of flowers and jokers. Note that this doesn't allow you to play by pre-1971 rules, where flowers are treated as jokers."},
     {"id": "american/am_PIE", "name": "PIE", "config": [{"type": "dropdown", "name": "starting_points", "values": [200,400,600,800,1000,1200], "default": 600}], "desc": "Each player starts with a set amount of points. Players' point totals can't go negative. If a player runs out of points, they need not pay."},
     "Card",
     {"id": "american/am_card_nmjl_2025", "conflicts": ["american/am_card_ILoveMahj", "american/am_card_ATeacherFirst", "american/am_card_MahjLife", "american/BETA_am_card_AMJForEveryone", "american/am_card_free"], "name": "NMJL 2025 Card", "desc": "Play with the NMJL 2025 Card."},
