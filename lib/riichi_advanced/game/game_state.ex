@@ -815,7 +815,7 @@ defmodule RiichiAdvanced.GameState do
   end
 
   def exhaustive_draw(state, draw_name) do
-    state = Map.put(state, :round_result, :draw)
+    state = Map.put(state, :round_result, :exhaustive_draw)
 
     push_message(state, [%{text: "Game ended by exhaustive draw"}])
 
@@ -847,7 +847,7 @@ defmodule RiichiAdvanced.GameState do
   end
 
   def abortive_draw(state, draw_name) do
-    state = Map.put(state, :round_result, :draw)
+    state = Map.put(state, :round_result, :abortive_draw)
     IO.puts("Abort")
 
     push_message(state, [%{text: "Game ended by abortive draw: (%{draw_name})", vars: %{draw_name: draw_name}}])
@@ -1027,7 +1027,7 @@ defmodule RiichiAdvanced.GameState do
     forced = state.round_result == :end_game # e.g. tobi
     dealer = Riichi.get_east_player_seat(state.kyoku, state.available_seats)
     agariyame = Rules.get(state.rules_ref, "agariyame", false) and state.round_result == :win and dealer in state.winner_seats
-    tenpaiyame = Rules.get(state.rules_ref, "tenpaiyame", false) and state.round_result == :draw and "tenpai" in state.players[dealer].status
+    tenpaiyame = Rules.get(state.rules_ref, "tenpaiyame", false) and state.round_result in [:exhaustive_draw, :abortive_draw] and "tenpai" in state.players[dealer].status
     max_rounds = Rules.get(state.rules_ref, "max_rounds", :infinity)
     past_max_rounds = state.kyoku >= max_rounds
     forced or (agariyame and past_max_rounds) or (tenpaiyame and past_max_rounds) or if Rules.has_key?(state.rules_ref, "sudden_death_goal") do

@@ -261,6 +261,8 @@ defmodule RiichiAdvanced.GameState.Conditions do
       "won_by_call"              -> Map.get(context, :win_source, nil) == :call
       "won_by_draw"              -> Map.get(context, :win_source, nil) == :draw
       "won_by_discard"           -> Map.get(context, :win_source, nil) == :discard
+      "ended_by_exhaustive_draw" -> state.round_result == :exhaustive_draw
+      "ended_by_abortive_draw"   -> state.round_result == :abortive_draw
       "has_yaku"                 -> context.seat in state.winner_seats and Scoring.seat_scores_points(state, get_yaku_lists(state), Enum.at(opts, 0, 1), Enum.at(opts, 1, 0), context.seat, state.winners[context.seat].winning_tile, state.winners[context.seat].win_source)
       "has_yaku2"                -> context.seat in state.winner_seats and Scoring.seat_scores_points(state, get_yaku2_lists(state), Enum.at(opts, 0, 1), Enum.at(opts, 1, 0), context.seat, state.winners[context.seat].winning_tile, state.winners[context.seat].win_source)
       "has_yaku_with_hand"       -> Scoring.seat_scores_points(state, get_yaku_lists(state), Enum.at(opts, 0, 1), Enum.at(opts, 1, 0), context.seat, Enum.at(cxt_player.draw, 0, nil), :draw)

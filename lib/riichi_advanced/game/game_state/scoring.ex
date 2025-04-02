@@ -709,8 +709,9 @@ defmodule RiichiAdvanced.GameState.Scoring do
     delta_scores = Map.new(delta_scores, fn {seat, delta} -> {seat, delta + Map.get(state.players[seat].counters, "delta_score", 0)} end)
 
     # get delta scores reason
+    is_draw = state.round_result in [:exhaustive_draw, :abortive_draw]
     delta_scores_reason = cond do
-      state.round_result == :draw  -> Map.get(score_rules, "exhaustive_draw_name", "Draw")
+      is_draw                      -> Map.get(score_rules, "exhaustive_draw_name", "Draw")
       sanchahou                    -> Map.get(score_rules, "triple_win_draw_name", "Sanchahou")
       is_pao                       -> Map.get(score_rules, "win_with_pao_name", "Sekinin Barai")
       is_tsumo                     -> Map.get(score_rules, "win_by_draw_name", "Win by Draw")
@@ -727,9 +728,9 @@ defmodule RiichiAdvanced.GameState.Scoring do
         {_seat, winner} = Enum.at(winners, 0)
         dealer_seat = Riichi.get_east_player_seat(state.kyoku, state.available_seats)
         new_dealer_seat = cond do
-          state.round_result == :draw -> dealer_seat # if there is no first winner, dealer stays the same
-          map_size(winners) == 1      -> winner.seat # otherwise, the first winner becomes the next dealer
-          true                        -> winner.payer # if there are multiple first winners, the payer becomes the next dealer instead
+          is_draw                -> dealer_seat # if there is no first winner, dealer stays the same
+          map_size(winners) == 1 -> winner.seat # otherwise, the first winner becomes the next dealer
+          true                   -> winner.payer # if there are multiple first winners, the payer becomes the next dealer instead
         end
         Utils.get_relative_seat(dealer_seat, new_dealer_seat)
       agarirenchan and Riichi.get_east_player_seat(state.kyoku, state.available_seats) in state.winner_seats -> :self
