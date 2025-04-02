@@ -1378,13 +1378,11 @@ defmodule RiichiAdvanced.GameState do
     state
   end
 
-  # identifier is either seat or socket.id
+  # identifier is either seat or session_id
   def handle_call({:link_player_socket, id, seat, spectator, nickname}, {from_pid, _}, state) do
     # make it call :delete_player if the pid goes down
     identifier = if spectator do id else seat end
-    GenServer.call(state.exit_monitor, {:new_player, from_pid, identifier})
-
-    # initialize message state
+    # initialize message state and exit monitor
     messages_state = Map.get(RiichiAdvanced.MessagesState.link_player_socket(from_pid, id), :messages_state, nil)
     state = update_in(state.messages_states[identifier], &case &1 do
       nil -> %{id => messages_state}

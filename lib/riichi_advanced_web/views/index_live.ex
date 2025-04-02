@@ -15,11 +15,11 @@ defmodule RiichiAdvancedWeb.IndexLive do
     |> assign(:show_room_code_buttons, false)
     |> assign(:room_code, [])
     |> assign(:version, Constants.version())
-    messages_init = RiichiAdvanced.MessagesState.init_socket(socket)
+    messages_init = RiichiAdvanced.MessagesState.link_player_socket(socket.root_pid, socket.assigns.session_id)
     socket = if Map.has_key?(messages_init, :messages_state) do
       socket = assign(socket, :messages_state, messages_init.messages_state)
       # subscribe to message updates
-      Phoenix.PubSub.subscribe(RiichiAdvanced.PubSub, "messages:" <> socket.id)
+      Phoenix.PubSub.subscribe(RiichiAdvanced.PubSub, "messages:" <> socket.assigns.session_id)
       GenServer.cast(messages_init.messages_state, {:add_message, %{text: "Welcome to Riichi Advanced!"}})
       socket
     else socket end
@@ -158,7 +158,7 @@ defmodule RiichiAdvancedWeb.IndexLive do
   end
 
   def handle_info(%{topic: topic, event: "messages_updated", payload: %{"state" => state}}, socket) do
-    if topic == "messages:" <> socket.id do
+    if topic == "messages:" <> socket.assigns.session_id do
       socket = assign(socket, :messages, state.messages)
       {:noreply, socket}
     else

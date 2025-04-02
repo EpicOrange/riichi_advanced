@@ -100,6 +100,7 @@ defmodule RiichiAdvancedWeb.GameLive do
           [{game_state, _}] = Utils.registry_lookup("game_state", socket.assigns.ruleset, socket.assigns.room_code)
           IO.puts("Already started game session #{socket.assigns.room_code} #{inspect(game_state)}")
           GenServer.cast(game_state, {:init_player, socket.assigns.session_id, socket.assigns.seat_param})
+          GenServer.cast(game_state, {:fetch_messages, socket.assigns.session_id})
       end
 
       {:ok, socket}
@@ -717,7 +718,7 @@ defmodule RiichiAdvancedWeb.GameLive do
   def handle_info(%{topic: topic, event: "initialize_player", payload: %{"session_id" => session_id, "game_state" => game_state, "state" => state, "seat" => seat, "spectator" => spectator}}, socket) do
     if topic == (socket.assigns.ruleset <> ":" <> socket.assigns.room_code) and session_id != nil and socket.assigns.session_id == session_id do
       # subscribe to this game state's exit monitor and init messages
-      GenServer.call(game_state, {:link_player_socket, socket.id, seat, spectator, socket.assigns.nickname})
+      GenServer.call(game_state, {:link_player_socket, socket.assigns.session_id, seat, spectator, socket.assigns.nickname})
 
       socket = socket
       |> assign(:game_state, game_state)
@@ -737,11 +738,11 @@ defmodule RiichiAdvancedWeb.GameLive do
   def handle_info(%{topic: topic, event: "fetch_messages", payload: %{"session_id" => session_id}}, socket) do
     if topic == (socket.assigns.ruleset <> ":" <> socket.assigns.room_code) and session_id != nil and socket.assigns.session_id == session_id do
       # fetch messages
-      messages_init = RiichiAdvanced.MessagesState.init_socket(socket)
+      messages_init = RiichiAdvanced.MessagesState.link_player_socket(socket.root_pid, socket.assigns.session_id)
       socket = if Map.has_key?(messages_init, :messages_state) do
         socket = assign(socket, :messages_state, messages_init.messages_state)
         # subscribe to message updates
-        Phoenix.PubSub.subscribe(RiichiAdvanced.PubSub, "messages:" <> socket.id)
+        Phoenix.PubSub.subscribe(RiichiAdvanced.PubSub, "messages:" <> socket.assigns.session_id)
         GenServer.cast(messages_init.messages_state, {:add_message, [
           if socket.assigns.state.mods != nil and not Enum.empty?(socket.assigns.state.mods) do
             %{
@@ -825,7 +826,7 @@ defmodule RiichiAdvancedWeb.GameLive do
   end
 
   def handle_info(%{topic: topic, event: "messages_updated", payload: %{"state" => state}}, socket) do
-    if topic == "messages:" <> socket.id do
+    if topic == "messages:" <> socket.assigns.session_id do
       socket = assign(socket, :messages, state.messages)
       {:noreply, socket}
     else
