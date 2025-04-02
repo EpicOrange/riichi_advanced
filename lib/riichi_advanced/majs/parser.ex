@@ -14,23 +14,25 @@ defmodule RiichiAdvanced.Parser do
   end
 
   def parse_tiles(tiles_spec) when is_binary(tiles_spec) do
-    ret = for tile <- String.split(tiles_spec, " ", trim: true) do
-      for [_, num, suit, attrs] <- Regex.scan(~r/(\d+)([a-z])(@[a-z_&]+|)/, tile) do
-        tile = "#{num}#{suit}"
-        attrs = String.split(attrs, "&", trim: true)
-        if Enum.empty?(attrs) do tile else {:%{}, [], [{"tile", tile}, {"attrs", attrs}]} end
+    ret = for group <- String.split(tiles_spec, " ", trim: true), [_, num, suit | attrs] <- Regex.scan(~r/(\d+)([a-z])(@([a-z0-9_&]+))?/, group) |> IO.inspect() do
+      tile = "#{num}#{suit}"
+      attrs = case attrs do
+        [_, attrs] -> String.split(attrs, "&", trim: true)
+        _ -> []
       end
+      if Enum.empty?(attrs) do tile else {:%{}, [], [{"tile", tile}, {"attrs", attrs}]} end
     end
-    |> Enum.concat()
-    |> IO.inspect()
     {:ok, ret}
   end
   def parse_short_notation(tiles_spec) when is_binary(tiles_spec) do
     ret = for hand <- String.split(tiles_spec, " ", trim: true), reduce: [] do
       tiles ->
-        new_tiles = for [_, nums, suit, attrs] <- Regex.scan(~r/(\d+)([a-z])(@[a-z_&]+|)/, hand), num <- String.graphemes(nums) do
+        new_tiles = for [_, nums, suit | attrs] <- Regex.scan(~r/(\d+)([a-z])(@([a-z0-9_&]+))?/, hand) |> IO.inspect(), num <- String.graphemes(nums) do
           tile = "#{num}#{suit}"
-          attrs = String.split(attrs, "&", trim: true)
+          attrs = case attrs do
+            [_, attrs] -> String.split(attrs, "&", trim: true)
+            _ -> []
+          end
           if Enum.empty?(attrs) do tile else {:%{}, [], [{"tile", tile}, {"attrs", attrs}]} end
         end
         [new_tiles | tiles]

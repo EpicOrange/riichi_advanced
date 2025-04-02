@@ -229,6 +229,34 @@ This compiles to
 ]}
 ```
 
+### Tile sigils
+
+`~t"111m222p333s@attribute"` and `~T"11m 12m 13m@attribute"` are both ways to specify tiles. The lowercase `~t` lets you specify an array of tiles using the standard mahjong compact format. The uppercase `~t` lets you specify any of Riichi Advanced's extended tiles (see [tiles.md](./tiles.md)).
+
+```elixir
+~t"111m222p333s@attribute"
+# compiles to [
+#   "1m","1m","1m","2p","2p","2p",
+#   {tile: "3s", attrs: ["attribute"]},
+#   {tile: "3s", attrs: ["attribute"]},
+#   {tile: "3s", attrs: ["attribute"]}
+# ]
+
+~T"11m 12m 13m@attr1&attr2"
+# compiles to [
+#   "11m", "12m",
+#   {tile: "13m", attrs: ["attr1", "attr2"]}
+# ]
+```
+
+Tile sigils are basically only used for interpolation into rules text. In the future it will also be used to interpolate into messages.
+
+```elixir
+on after_initialization do
+  add_rule("2 Han", "Honitsu", "%{example_hand}", %{example_hand: ~t"123345888p11z22z 2z"})
+end
+```
+
 ## Constants
 
 Consider the following snippet from the Sichuan Bloody ruleset (`sichuan.majs`):
