@@ -1717,7 +1717,7 @@ defmodule RiichiAdvanced.GameState.Actions do
           IO.puts("WARNING: called modify_payout before payouts were calculated")
           state
         end
-      "set_scoring_header" -> Map.put(state, :delta_scores_reason, Enum.at(opts, 0, ""))
+      "set_scoring_header" -> Map.put(state, :delta_scores_reason, interpolate_string(state, context, Enum.at(opts, 0, ""), Enum.at(opts, 1, %{})))
       "make_responsible_for" ->
         # player.pao_map: an entry %{seat => [yaku]} means if this player wins, `seat` must pay for `yaku`
         for_seat = Conditions.from_seat_spec(state, context, Enum.at(opts, 0, "self"))

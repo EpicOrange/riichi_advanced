@@ -414,7 +414,7 @@ on after_start do
   set_status_all("discards_empty")
 end
 
-set play_effects, [
+apply set_append, "play_effects", [
   ["any", [["unset_status", "discards_empty"]]]
 ]
 

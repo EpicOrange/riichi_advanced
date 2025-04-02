@@ -64,6 +64,8 @@ defmodule RiichiAdvancedWeb.GettextHints do
     t_noop("Triple Ron")
     t_noop("Sanchahou")
     t_noop("Ryuukyoku")
+    t_noop("Nagashi Mangan")
+    t_noop("Nagashi Yakuman")
 
     # yaku
     t_noop("Riichi")
