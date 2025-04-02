@@ -1378,15 +1378,15 @@ defmodule RiichiAdvanced.GameState do
     state
   end
 
-  # identifier is either seat or session_id
-  def handle_call({:link_player_socket, id, seat, spectator, nickname}, {from_pid, _}, state) do
+  def handle_call({:link_player_socket, session_id, seat, spectator, nickname}, {from_pid, _}, state) do
     # make it call :delete_player if the pid goes down
-    identifier = if spectator do id else seat end
+    identifier = if spectator do session_id else seat end
     # initialize message state and exit monitor
-    messages_state = Map.get(RiichiAdvanced.MessagesState.link_player_socket(from_pid, id), :messages_state, nil)
+    messages_state = Map.get(RiichiAdvanced.MessagesState.link_player_socket(from_pid, session_id), :messages_state, nil)
+    GenServer.call(state.exit_monitor, {:new_player, from_pid, session_id})
     state = update_in(state.messages_states[identifier], &case &1 do
-      nil -> %{id => messages_state}
-      mss -> Map.put(mss, id, messages_state)
+      nil -> %{session_id => messages_state}
+      mss -> Map.put(mss, session_id, messages_state)
     end)
 
     if not spectator do
@@ -1397,11 +1397,11 @@ defmodule RiichiAdvanced.GameState do
 
       # initialize the player
       state = Map.update!(state, seat, &case &1 do
-        nil -> [id]
-        ids -> if id in ids do ids else [id | ids] end
+        nil -> [session_id]
+        ids -> if session_id in ids do ids else [session_id | ids] end
       end)
       state = update_player(state, seat, &%Player{ &1 | nickname: nickname })
-      IO.puts("#{inspect(from_pid)} Player #{id} joined as #{seat}")
+      IO.puts("#{inspect(from_pid)} Player #{session_id} joined as #{seat}")
 
       # tell them about the replay UUID, unless this is a tutorial
       if state.forced_events == nil do
@@ -1469,7 +1469,13 @@ defmodule RiichiAdvanced.GameState do
   end
 
   # called by exit monitor
-  def handle_call({:delete_player, seat}, _from, state) do
+  def handle_call({:delete_player, session_id}, _from, state) do
+    seat = Map.take(state, [:east, :south, :west, :north])
+    |> Enum.find(fn {_seat, session_ids} -> session_id in session_ids end)
+    |> case do
+      nil -> nil
+      {seat, _session_ids} -> seat
+    end
     state = if seat in [:east, :south, :west, :north] do
       case Map.get(state, seat) do
         nil  ->
