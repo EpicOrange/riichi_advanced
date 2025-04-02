@@ -121,7 +121,7 @@ main div.messages-container > div.messages {
     left: calc(-0.5 * var(--tile-size));
     top: calc(100% + 1.5 * var(--tile-size));
     width: calc(100% + var(--tile-size));
-    height: max(10rem, calc(100vh - 100% - 4 * var(--tile-size)));
+    height: max(10rem, calc(100vh - 100%));
     flex-direction: column;
     justify-content: flex-start;
   }
