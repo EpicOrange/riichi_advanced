@@ -2,7 +2,7 @@
 
 Writing a ruleset requires knowing the JSON specification, which involves a lot of balancing brackets and not forgetting commas. MahjongScript was created for the purpose of avoiding these errors. Based on Elixir syntax, MahjongScript (.majs) is essentially a list of commands which compile down to jq. This jq is then applied to the empty object in order to create a JSON ruleset, or it can be applied to an existing JSON ruleset to mod it.
 
-There are four classes of data in MahjongScript:
+There are four types of data in MahjongScript:
 
 - [**JSON**](#json): numbers, strings, arrays, and objects
 - [**Conditions**](#conditions): conditions with `and`, `or`, `not`
@@ -48,8 +48,6 @@ In addition, there is a concept of a numeric "amount". An **amount** is either a
 - `"points2"`
 - `"score"`
 - `"minipoints"`
-
-In addition, you may refer to constants defined by `define_const` by writing `@myconstant` and (for mods) mod parameters by writing `!myvar`. For security reasons, constant and variable names cannot contain uppercase letters.
 
 ## Conditions
 
@@ -231,6 +229,131 @@ This compiles to
 ]}
 ```
 
+## Constants
+
+Consider the following snippet from the Sichuan Bloody ruleset (`sichuan.majs`):
+
+```elixir
+define_button pon,
+  ...
+  call_conditions:
+       (status("void_manzu") and not_call_contains(["1m", "2m", "3m", "4m", "5m", "6m", "7m", "8m", "9m"], 1))
+    or (status("void_pinzu") and not_call_contains(["1p", "2p", "3p", "4p", "5p", "6p", "7p", "8p", "9p"], 1))
+    or (status("void_souzu") and not_call_contains(["1s", "2s", "3s", "4s", "5s", "6s", "7s", "8s", "9s"], 1)),
+  ...
+
+define_button daiminkan,
+  ...
+  call_conditions:
+       (status("void_manzu") and not_call_contains(["1m", "2m", "3m", "4m", "5m", "6m", "7m", "8m", "9m"], 1))
+    or (status("void_pinzu") and not_call_contains(["1p", "2p", "3p", "4p", "5p", "6p", "7p", "8p", "9p"], 1))
+    or (status("void_souzu") and not_call_contains(["1s", "2s", "3s", "4s", "5s", "6s", "7s", "8s", "9s"], 1)),
+  ...
+  
+define_button ankan,
+  ...
+  call_conditions:
+       (status("void_manzu") and not_call_contains(["1m", "2m", "3m", "4m", "5m", "6m", "7m", "8m", "9m"], 1))
+    or (status("void_pinzu") and not_call_contains(["1p", "2p", "3p", "4p", "5p", "6p", "7p", "8p", "9p"], 1))
+    or (status("void_souzu") and not_call_contains(["1s", "2s", "3s", "4s", "5s", "6s", "7s", "8s", "9s"], 1)),
+  ...
+  
+define_button kakan,
+  ...
+  call_conditions:
+       (status("void_manzu") and not_call_contains(["1m", "2m", "3m", "4m", "5m", "6m", "7m", "8m", "9m"], 1))
+    or (status("void_pinzu") and not_call_contains(["1p", "2p", "3p", "4p", "5p", "6p", "7p", "8p", "9p"], 1))
+    or (status("void_souzu") and not_call_contains(["1s", "2s", "3s", "4s", "5s", "6s", "7s", "8s", "9s"], 1)),
+  ...
+```
+
+To avoid repeating code, the command `define_const` can be used to define constants. Constants can hold any MahjongScript data type, including do-blocks of actions! So the above becomes:
+
+```elixir
+define_const no_voided_calls,
+     (status("void_manzu") and not_call_contains(["1m", "2m", "3m", "4m", "5m", "6m", "7m", "8m", "9m"], 1))
+  or (status("void_pinzu") and not_call_contains(["1p", "2p", "3p", "4p", "5p", "6p", "7p", "8p", "9p"], 1))
+  or (status("void_souzu") and not_call_contains(["1s", "2s", "3s", "4s", "5s", "6s", "7s", "8s", "9s"], 1))
+
+define_button pon,
+  ...
+  call_conditions: @no_voided_calls,
+  ...
+
+define_button daiminkan,
+  ...
+  call_conditions: @no_voided_calls,
+  ...
+  
+define_button ankan,
+  ...
+  call_conditions: @no_voided_calls,
+  ...
+  
+define_button kakan,
+  ...
+  call_conditions: @no_voided_calls,
+  ...
+```
+
+Constants are referenced with the `@` symbol. The underlying mechanism is that each reference to a constant is replaced by the string `"@my_constant"`, and the engine walks through the entire JSON, replacing instances of `"@my_constant"` with its corresponding value.
+
+When writing mods, you can extend the item at the path `"constants.my_constant"` using the `apply` command, for example:
+
+```elixir
+# from the ruleset
+define_const always_yakuhai, ["5z", "6z", "7z"]
+
+# from the mod
+apply append, "constants.always_yakuhai", "4z"
+```
+
+Since constants are expanded at runtime, one way to configure behavior is to put your configurable condition or action into a constant, and have mods modify or replace the constant. For instance:
+
+```elixir
+define_const closed_hand, has_no_call_named("chii", "pon", "daiminkan", "kakan")
+# but in cosmic riichi:
+define_const closed_hand, has_no_call_named("ton", "chii", "chon", "chon_honors", "daiminfuun", "pon", "daiminkan", "kapon", "kakakan", "kafuun", "kakan")
+# all instances of @closed_hand will now use the latest definition
+```
+
+For security reasons, constant names cannot contain uppercase letters.
+
+## Advanced: Splatted constants
+
+Consider the following:
+
+```elixir
+define_const can_chankan, status("can_chankan", as: "caller")
+define_button chankan,
+  display_name: "Ron",
+  show_when: not_our_turn
+    and someone_else_just_called
+    and status_missing("furiten", "just_reached")
+    and +@can_chankan
+    and match(["hand", "calls"], ["tenpai"])
+    and match(["hand", "calls", "last_called_tile"], ["win"]),
+  ...
+```
+
+The idea is that one of the conditions in `show_when` has been factored out as a constant, so that the Kokushi Ankan Chankan mod can just modify that constant, instead of modifying every button. Since conditions are internally represented by a list `[cond1, cond2, ...]`, the constant `@can_chankan` is actually internally an array `[{"name": "status", "as": "caller", "opts": ["can_chankan"]}]`. Replacing it directly would result in something like `[cond1, cond2, [{"name": "status", "as": "caller", "opts": ["can_chankan"]}], ...]` -- turning it into an OR condition, which may be undesirable.
+
+The prefix `+@` solves this by "splatting" the constant. That is, whenever the splatted constant reference appears inside an array, it injects its contents directly into the surrounding array.
+
+You can splat conditions and even do-blocks, since both are represented internally as arrays.
+
+## Variables
+
+The user of a .majs mod (e.g. a ruleset) can pass variables into it. For instance, the Tobi mod accepts a `below` variable specifying the minimum score a player can have.
+
+Variables are referenced by prepending with `!`. Here's the Tobi mod:
+
+```elixir
+apply set, "score_calculation.tobi", !below
+```
+
+For security reasons, variables cannot contain uppercase letters.
+
 # Command Reference
 
 ### `def`: Function definition
@@ -244,8 +367,18 @@ def my_function_name do
   else
     action4
   end
+
+  unless condition2 do
+    action5
+  end
+
+  as everyone do
+    action6
+  end
 end
 ```
+
+The above showcases all the special forms: `if/do/end` and `if/do/else/end` is are typical conditionals, `unless` is like `if` but inverts its condition, and `as` lets you switch the current player (and sort of serves as a loop, if multiple players are specified).
 
 ### `set`: Set any toplevel parameter
 
@@ -253,7 +386,7 @@ end
 set initial_points, 25000
 ```
 
-To set arbitrary paths, see `apply` below.
+To set (or otherwise modify) arbitrary paths, see `apply` below.
 
 ### `on`: Add a new handler for an event
 
@@ -269,7 +402,7 @@ on before_win, prepend: true do
 end
 ```
 
-The first handler will run after any existing handlers for that event, while the second handler will run before any existing handlers.
+`on` can be used to append or prepend to the list of existing handlers. In the above example, the second handler will run before the first handler.
 
 ### `define_set`: Define a set for reference in matches
 
@@ -277,7 +410,11 @@ The first handler will run after any existing handlers for that event, while the
 define_set pair ~s"0 0"
 ```
 
-### `define_match`: Define a match for reference in conditions
+This command can only take set sigils (see above).
+
+Defined sets are used in match sigils.
+
+### `define_match`: Define a match for reference in the `match` condition
 
 ```elixir
 define_match mymatch1, ~m"pair:7"
@@ -285,14 +422,48 @@ define_match mymatch2, ~a"FF XXXX0a NEWS XXXX0b"
 define_match mymatch3, "existing_match_1", "existing_match_2"
 ```
 
+This command can only take match sigils (see above). You may specify multiple match sigils, separated by commas -- it will act as an OR of the given matches.
+
+```elixir
+define_match mymatch1, ~m"pair:7", ~a"FF XXXX0a NEWS XXXX0b"
+```
+
+After defining them, you may use these match definitions by referencing them in the `match` condition:
+
+```elixir
+# mymatch1 OR mymatch2
+match(["hand", "calls", "winning_tile"], ["mymatch1", "mymatch2"])
+```
+
+Note that you can directly pass in a match sigil to `match`, so `define_match` is simply a convenience command.
+
+```elixir
+match(["hand", "calls", "winning_tile"], ~m"pair:7")
+```
+
 ### `define_const`: Define a constant JSON value that can be referenced later in actions
 
 ```elixir
+# arbitrary json
 define_const foo, "asdf"
 def bar do
   print(@foo) # prints "asdf"
 end
+
+# sigils
+define_const bar, ~m"pair:7"
+
+# conditions
+define_const bar, match(["hand", "calls", "winning_tile"], ~m"pair:7")
+
+# do-blocks
+define_const baz do # note the lack of comma before do
+  action1
+  action2
+end
 ```
+
+See the explanation of constants above.
 
 ### `define_yaku`: Add a new yaku
 
@@ -300,7 +471,7 @@ end
 define_yaku list_name, display_name, value, condition
 ```
 
-Note that this new yaku combines with any yaku of the same name, i.e. if you get the same yaku twice then you get that yaku whose value is the sum.
+If you define a yaku with the same `display_name` of an existing yaku, then obtaining both yaku adds the value of both yakus.
 
 After the condition you may optionally specify a list of yaku names as shorthand for the below:
 
@@ -314,8 +485,13 @@ define_yaku_precedence display_name, supercedes_list
 ### `define_yaku_precedence`: Define precedence for a given yaku
 
 ```elixir
-define_yaku_precedence display_name, supercedes_list
+define_yaku_precedence "Daisangen", ["Shousangen", "Haku", "Hatsu", "Chun"]
+define_yaku_precedence "Renhou", [1,2,3,4]
 ```
+
+You may specify a list of yaku `display_name`s that the given yaku overrides. This means whenever the given yaku on the left is awarded, it erases all of the overridden yaku on the right. You can also have it override itself, effectively making it so the yaku only exists to override other yaku.
+
+You can also specify a list of numbers -- this specifies all yaku of a given value. You can also mix `display_name`s and numbers.
 
 ### `remove_yaku`: Remove all instances of a given yaku by name
 
@@ -346,7 +522,7 @@ define_button id,
   end
 ```
 
-Note that any existing button of the same `id` will be overwritten.
+Note that any existing button of the same `id` will be overwritten. See the button documentation in the [main documentation](./documentation.md#the-define-button-command).
 
 ### `define_auto_button`: Add a new auto button
 
@@ -360,7 +536,7 @@ define_auto_button id,
   end
 ```
 
-Note that any existing auto button of the same `id` will be overwritten.
+Note that any existing auto button of the same `id` will be overwritten. See the auto buttons documentation in the [main documentation](./documentation.md#the-define-auto-button-command).
 
 ### `define_mod_category`: Add a mod category
 
@@ -372,7 +548,7 @@ define_mod_category "Other"
 define_mod_category "Rules", prepend: true
 ```
 
-Note that you can have multiple instances of a category, however only the first one will be added to when adding mods to a category.
+You can have multiple instances of a category, but this is largely useless since `define_mod` below only adds to the first instance.
 
 ### `define_mod`: Add a new mod
 
@@ -441,6 +617,8 @@ The allowed methods for `apply <method>` are:
 
 If the parent node for the given path doesn't exist, the command does nothing (with the exception of `apply initialize` or `apply set`, in which case the path is created). You can also make an exception for this by prepending `set_` to the method, such as `apply set_append` -- this will `append` but default to `set` if the path doesn't exist.
 
+The path syntax is simple: it's `.key` to access a key and `[0]` to access the first element of an array. e.g. `toplevel_key.some_key[1]`.
+
 ### (advanced) `replace all`: Replace all nodes under a path
 
 ```elixir
@@ -451,7 +629,7 @@ replace all, "available_mods",
   %{type: "dropdown", name: "below", values: [0, 1, 1000, 1001], default: 1}
 ```
 
-Given a path and two values `from` and `to`, look at all subnodes of the given `path` and replace all instances of `from` with `to`.
+Essentially: given a path and two values `from` and `to`, look at all subnodes of the given `path` and replace all instances of `from` with `to`.
 
 ### (advanced) `define_preset`: Add a new mod preset
 
