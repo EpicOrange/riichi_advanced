@@ -468,6 +468,7 @@ defmodule RiichiAdvanced.GameState.Actions do
     "num_facedown_tiles_others",
     "num_matching_revealed_tiles_all",
     "num_matching_melded_tiles_all",
+    "num_players",
     "current_score",
     "half_score",
     "100_times_tile_number",
@@ -532,6 +533,7 @@ defmodule RiichiAdvanced.GameState.Actions do
           |> Enum.flat_map(&Utils.call_to_tiles/1)
           |> Enum.count(&Riichi.tile_matches(opts, %{tile: &1}))
         end |> Enum.sum()
+      ["num_players" | _opts] -> length(state.available_seats)
       ["current_score" | _opts] -> state.players[context.seat].score
       ["half_score" | _opts] -> Utils.half_score_rounded_up(state.players[context.seat].score)
       ["100_times_tile_number" | _opts] ->
