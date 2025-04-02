@@ -14,9 +14,21 @@ defmodule RiichiAdvanced.Parser do
   end
 
   def parse_tiles(tiles_spec) when is_binary(tiles_spec) do
+    ret = for tile <- String.split(tiles_spec, " ", trim: true) do
+      for [_, num, suit, attrs] <- Regex.scan(~r/(\d+)([a-z])(@[a-z_&]+|)/, tile) do
+        tile = "#{num}#{suit}"
+        attrs = String.split(attrs, "&", trim: true)
+        if Enum.empty?(attrs) do tile else {:%{}, [], [{"tile", tile}, {"attrs", attrs}]} end
+      end
+    end
+    |> Enum.concat()
+    |> IO.inspect()
+    {:ok, ret}
+  end
+  def parse_short_notation(tiles_spec) when is_binary(tiles_spec) do
     ret = for hand <- String.split(tiles_spec, " ", trim: true), reduce: [] do
       tiles ->
-        new_tiles =for [_, nums, suit, attrs] <- Regex.scan(~r/(\d+)([a-z])(@[a-z_&]+|)/, hand), num <- String.graphemes(nums) do
+        new_tiles = for [_, nums, suit, attrs] <- Regex.scan(~r/(\d+)([a-z])(@[a-z_&]+|)/, hand), num <- String.graphemes(nums) do
           tile = "#{num}#{suit}"
           attrs = String.split(attrs, "&", trim: true)
           if Enum.empty?(attrs) do tile else {:%{}, [], [{"tile", tile}, {"attrs", attrs}]} end
@@ -116,7 +128,8 @@ defmodule RiichiAdvanced.Parser do
     end |> Utils.sequence()
   end
 
-  def parse_sigils({:sigil_t, _, [{:<<>>, _, [tiles_spec]}, _args]}), do: parse_tiles(tiles_spec)
+  def parse_sigils({:sigil_t, _, [{:<<>>, _, [tiles_spec]}, _args]}), do: parse_short_notation(tiles_spec)
+  def parse_sigils({:sigil_T, _, [{:<<>>, _, [tiles_spec]}, _args]}), do: parse_tiles(tiles_spec)
   def parse_sigils({:sigil_s, _, [{:<<>>, _, [set_spec]}, _args]}), do: parse_set(set_spec)
   def parse_sigils({:sigil_m, _, [{:<<>>, _, [match_spec]}, _args]}), do: parse_match(match_spec)
   def parse_sigils([do: expr]), do: parse_sigils(expr)

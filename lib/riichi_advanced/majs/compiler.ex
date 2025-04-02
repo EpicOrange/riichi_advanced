@@ -299,6 +299,7 @@ defmodule RiichiAdvanced.Compiler do
       _ -> {:error, "Compiler.compile: at line #{line}:#{column}, `set` command expects only one value, got #{inspect(args)}"}
     end
     with {:ok, value} <- value,
+         {:ok, value} <- Parser.parse_sigils(value),
          {:ok, value} <- Validator.validate_json(value),
          {:ok, value} <- Jason.encode(value) do
       {:ok, ".[#{name}] = #{value}"}
