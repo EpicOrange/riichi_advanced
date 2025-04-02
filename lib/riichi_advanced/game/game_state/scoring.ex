@@ -750,12 +750,7 @@ defmodule RiichiAdvanced.GameState.Scoring do
 
   def adjudicate_draw_scoring(state) do
     score_rules = Rules.get(state.rules_ref, "score_calculation", %{})
-    draw_tenpai_payments = Map.get(score_rules, "draw_tenpai_payments", nil)
-    draw_nagashi_payments = Map.get(score_rules, "draw_nagashi_payments", nil)
     tenpai = Map.new(state.players, fn {seat, player} -> {seat, "tenpai" in player.status} end)
-    nagashi = Map.new(state.players, fn {seat, player} -> {seat, "nagashi" in player.status} end)
-    num_tenpai = tenpai |> Map.values() |> Enum.count(& &1)
-    num_nagashi = nagashi |> Map.values() |> Enum.count(& &1)
     delta_scores = Map.new(state.players, fn {seat, _player} -> {seat, 0} end)
 
     # handle sichuan style scoring best hands at draw (if there are 2+ non-winners and anyone is tenpai)
@@ -788,111 +783,10 @@ defmodule RiichiAdvanced.GameState.Scoring do
       {state, delta_scores}
     else {state, delta_scores} end
 
-    # handle nagashi and tenpai payments
-    {state, delta_scores} = cond do
-      # handle nagashi
-      draw_nagashi_payments && num_nagashi > 0 -> 
-        # do nagashi payments
-        # the way we do it kind of sucks: we modify the state and calculate the delta scores based on the total modification
-        # TODO refactor to calculate the delta scores first, then apply it to the state
-        [pay_ko, pay_oya] = draw_nagashi_payments
-        dealer_multiplier = Map.get(score_rules, "dealer_multiplier", 1)
-        pay_oya_split = if length(state.available_seats) == 4 do
-          Utils.try_integer(dealer_multiplier * (2 * pay_ko + pay_oya) / 2) # yonma
-        else
-          Utils.try_integer(dealer_multiplier * (pay_ko + pay_oya) / 2) # sanma
-        end
-        scores_before = Map.new(state.players, fn {seat, player} -> {seat, player.score} end)
-        state = for {seat, nagashi?} <- nagashi, nagashi?, payer <- state.available_seats -- [seat], reduce: state do
-          state ->
-            dealer_seat = Riichi.get_east_player_seat(state.kyoku, state.available_seats)
-            is_dealer = seat == dealer_seat
-
-
-            oya_payment = if is_dealer do pay_oya_split else pay_oya end
-            ko_payment = if is_dealer do pay_oya_split else pay_ko end
-            payment = if payer == dealer_seat do oya_payment else ko_payment end
-
-            # handle kanbara satomi's scoring quirk
-            payment = if "kanbara_satomi_double_loss" in state.players[payer].status do
-              push_message(state, player_prefix(state, payer) ++ [%{text: "pays double since the wall ends on their side (Kanbara Satomi)"}])
-              payment * 2
-            else payment end
-
-            state
-            |> update_player(seat, &%Player{ &1 | score: &1.score + payment })
-            |> update_player(payer, &%Player{ &1 | score: &1.score - payment })
-        end
-        delta_scores = Map.new(state.players, fn {seat, player} -> {seat, delta_scores[seat] + player.score - scores_before[seat]} end)
-        {state, delta_scores}
-      draw_tenpai_payments != nil ->
-        [pay1, pay2, pay3] = draw_tenpai_payments
-        # do tenpai payments
-        delta_scores = case length(state.available_seats) do
-          2 -> case num_tenpai do
-            0 -> Map.new(tenpai, fn {seat, _tenpai} -> {seat, 0} end)
-            1 -> Map.new(tenpai, fn {seat, tenpai} -> {seat, if tenpai do pay1 else -pay1 end} end)
-            2 -> Map.new(tenpai, fn {seat, _tenpai} -> {seat, 0} end)
-          end
-          3 -> case num_tenpai do
-            0 -> Map.new(tenpai, fn {seat, _tenpai} -> {seat, 0} end)
-            1 -> Map.new(tenpai, fn {seat, tenpai} -> {seat, if tenpai do 2 * pay1 else -pay1 end} end)
-            2 -> Map.new(tenpai, fn {seat, tenpai} -> {seat, if tenpai do Utils.try_integer(pay2 / 2) else -pay2 end} end)
-            3 -> Map.new(tenpai, fn {seat, _tenpai} -> {seat, 0} end)
-          end
-          4 -> case num_tenpai do
-            0 -> Map.new(tenpai, fn {seat, _tenpai} -> {seat, 0} end)
-            1 -> Map.new(tenpai, fn {seat, tenpai} -> {seat, if tenpai do 3 * pay1 else -pay1 end} end)
-            2 -> Map.new(tenpai, fn {seat, tenpai} -> {seat, if tenpai do pay2 else -pay2 end} end)
-            3 -> Map.new(tenpai, fn {seat, tenpai} -> {seat, if tenpai do Utils.try_integer(pay3 / 3) else -pay3 end} end)
-            4 -> Map.new(tenpai, fn {seat, _tenpai} -> {seat, 0} end)
-          end
-          _ -> Map.new(state.available_seats, fn seat -> {seat, 0} end)
-        end
-
-        # handle kanbara satomi's scoring quirk
-        # (the reason it's long is because doubling 1500 payments is a special case)
-        delta_scores = case Enum.find(state.players, fn {_seat, player} -> "kanbara_satomi_double_loss" in player.status end) do
-          nil -> delta_scores
-          {payer, _payer_player} ->
-            delta = delta_scores[payer]
-            if delta < 0 do
-              payment = -delta
-              push_message(state, player_prefix(state, payer) ++ [%{text: "pays double since the wall ends on their side (Kanbara Satomi)"}])
-              delta_scores = Map.update!(delta_scores, payer, & &1 + (delta * 2))
-              case num_tenpai do
-                2 -> 
-                  # player who gets the doubled payment is predetermined:
-                  # always pay to your right, unless right is also paying
-                  recipient = Utils.next_turn(payer)
-                  recipient = if delta_scores[recipient] < 0 do Utils.prev_turn(payer) else recipient end
-                  Map.update!(delta_scores, recipient, & &1 + (delta_scores[recipient] * 2))
-                _ -> Map.new(tenpai, fn {seat, tenpai} -> {seat, delta_scores[seat] + if tenpai do Integer.floor_div(payment, num_tenpai) else 0 end} end)
-              end
-            else delta_scores end
-        end
-
-        # handle ikeda kana's scoring quirk
-        delta_scores = if Enum.any?(state.players, fn {_seat, player} -> "triple_noten_payments" in player.status end) do
-          push_message(state, [%{text: "Noten payments are tripled (Ikeda Kana)"}])
-          Map.new(delta_scores, fn {seat, delta} -> {seat, delta * 3} end)
-        else delta_scores end
-
-        # reveal hand for those players that are tenpai
-        state = update_all_players(state, fn seat, player -> %Player{ player | hand_revealed: player.hand_revealed or tenpai[seat] } end)
-
-        {state, delta_scores}
-      true -> {state, delta_scores}
-    end
-
     # handle hanada kirame's scoring quirk
     {state, delta_scores} = hanada_kirame_score_protection(state, delta_scores)
 
-    delta_scores_reason = if draw_nagashi_payments && num_nagashi > 0 do
-      Map.get(score_rules, "nagashi_name", "Nagashi Mangan")
-    else
-      Map.get(score_rules, "exhaustive_draw_name", "Draw")
-    end
+    delta_scores_reason = Map.get(score_rules, "exhaustive_draw_name", "Draw")
 
     tenpairenchan = Map.get(score_rules, "tenpairenchan", false)
     notenrenchan_south = Map.get(score_rules, "notenrenchan_south", false)

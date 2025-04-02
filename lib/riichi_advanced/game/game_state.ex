@@ -983,11 +983,20 @@ defmodule RiichiAdvanced.GameState do
                     |> Map.update!(:kyoku, & &1 + 1)
                     |> Map.put(:honba, 0)
                     |> Map.put(:visible_screen, nil)
-                :draw when state.next_dealer == :self ->
+                :exhaustive_draw when state.next_dealer == :self ->
                   state
                     |> Map.update!(:honba, & &1 + 1)
                     |> Map.put(:visible_screen, nil)
-                :draw ->
+                :exhaustive_draw ->
+                  state
+                    |> Map.update!(:kyoku, & &1 + 1)
+                    |> Map.update!(:honba, & &1 + 1)
+                    |> Map.put(:visible_screen, nil)
+                :abortive_draw when state.next_dealer == :self ->
+                  state
+                    |> Map.update!(:honba, & &1 + 1)
+                    |> Map.put(:visible_screen, nil)
+                :abortive_draw ->
                   state
                     |> Map.update!(:kyoku, & &1 + 1)
                     |> Map.update!(:honba, & &1 + 1)

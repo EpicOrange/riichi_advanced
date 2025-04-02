@@ -25,6 +25,9 @@ on before_abortive_draw do
 end
 
 # pay out for nagashi
+# TODO note for future sakicards implementation:
+# - if kanbara satomi is in play, the player whose wall the last dora indicator is on loses double points
+# - logic for double 1500 payments is "always pay to your right, unless right is also paying"
 on after_scoring do
   if ended_by_exhaustive_draw and anyone_status("nagashi") do
     set_scoring_header("Nagashi $is", %{is: !is})

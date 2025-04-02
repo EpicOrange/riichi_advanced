@@ -199,7 +199,6 @@ set score_calculation, %{
     yaku2_lists: ["yakuman", "meta_yakuman"],
     extra_yaku_lists: ["extra_yaku"],
     yaku2_overrides_yaku1: true,
-    draw_tenpai_payments: [1000, 1500, 3000],
     split_oya_ko_payment: true,
     right_display: "minipoints",
     point_name: "Han",
@@ -218,13 +217,7 @@ set score_calculation, %{
 def turn_cleanup do
   # unset furiten
   unset_status("furiten")
-
-  # tenpai check
-  if match(["hand", "calls", "draw"], ["tenpai"]) do
-    set_status("tenpai")
-  else
-    unset_status("tenpai")
-  end
+  check_tenpai
 end
 
 def discard_passed do
@@ -233,6 +226,52 @@ def discard_passed do
     if match(["hand", "calls", "last_discard"], ["win"]) do
       set_status("furiten")
     end
+  end
+end
+
+# tenpai check
+# this is used to determine furiten and noten payments
+def check_tenpai do
+  if match(["hand", "calls", "draw"], ["tenpai"]) do
+    set_status("tenpai")
+  else
+    unset_status("tenpai")
+  end
+end
+
+# noten payments
+# TODO note for future sakicards implementation:
+# - if kanbara satomi is in play, the player whose wall the last dora indicator is on loses double points
+#   + special logic for doubled 1500 payments is: if shimocha is tenpai, double payment to shimocha, otherwise double payment to kamicha
+# - ikeda kana triples noten payments
+def noten_payments do
+  # first check tenpai, and reveal tenpai hands
+  as everyone do
+    check_tenpai
+    if status("tenpai") do reveal_hand end
+  end
+  # determine how much each player pays
+  tenpai_count = 0
+  if status("tenpai") do tenpai_count = tenpai_count + 1 end
+  if status("tenpai", as: "shimocha") do tenpai_count = tenpai_count + 1 end
+  if status("tenpai", as: "toimen") do tenpai_count = tenpai_count + 1 end
+  if status("tenpai", as: "kamicha") do tenpai_count = tenpai_count + 1 end
+  set_counter_all("tenpai_count", "tenpai_count")
+  as everyone do
+    if tenpai_count == 1 do 
+      if status("tenpai") do modify_payout("self", 3000) else modify_payout("self", -1000) end
+    end
+    if tenpai_count == 2 do 
+      if status("tenpai") do modify_payout("self", 1500) else modify_payout("self", -1500) end
+    end
+    if tenpai_count == 3 do 
+      if status("tenpai") do modify_payout("self", 1000) else modify_payout("self", -3000) end
+    end
+  end
+end
+on after_scoring do
+  if ended_by_exhaustive_draw do
+    noten_payments
   end
 end
 
