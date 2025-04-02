@@ -10,6 +10,9 @@ def add_n_tiles($tile; $num):
       add_n_tiles($tile; $num - 1)
   else . end;
 
+# first, remove all flowers and jokers from the wall (it's implemented this way in case some bozo decides to turn the mod off then complain that there aren't any flowers or jokers)
+.wall -= ["1f", "2f", "3f", "4f", "1g", "2g", "3g", "4g", "1j", "1j", "1j", "1j", "1j", "1j", "1j", "1j"]
+|
 # add $jokers number of jokers to the wall
 .wall |= add_n_tiles("1j"; $jokers)
 |
