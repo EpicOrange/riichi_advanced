@@ -919,7 +919,7 @@ div.tile {
 /* dora shine */
 @keyframes doraShine {
   0% { transform: translate(-100%, -100%) rotate(135deg); }
-  100% { transform: translate(100%, 100%) rotate(135deg); }
+  100% { transform: translate(50%, 50%) rotate(135deg); }
 }
 div.tile.dora:not(.\31 x):not(.selected) { overflow: hidden; }
 div.tile.dora:not(.\31 x):not(.selected)::before {
@@ -933,7 +933,7 @@ div.tile.dora:not(.\31 x):not(.selected)::before {
   height: 400%;
   background: 
     linear-gradient(0deg, transparent 25%, #ffffff7f 35%, transparent 45%),
-    linear-gradient(0deg, transparent 55%, #ffffff7f 65%, transparent 75%);
+    linear-gradient(0deg, transparent 45%, #ffffff7f 65%, transparent 85%);
 }
 div.tile.sideways + div.tile.sideways {
   margin-right: calc(-1 * var(--tile-height));
