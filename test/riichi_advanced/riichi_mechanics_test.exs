@@ -2,6 +2,138 @@ defmodule RiichiAdvanced.RiichiMechanics do
   use ExUnit.Case, async: true
   alias RiichiAdvanced.TestUtils, as: TestUtils
 
+  test "riichi - kuikae ari" do
+    TestUtils.test_yaku_advanced("riichi", [], """
+    {
+      "starting_hand": {
+        "east": ["2m", "2m", "5z", "5m", "5m", "5z", "6m", "6m", "5z", "5s", "6s", "7s", "8s"],
+        "south": ["4m", "4m", "4m", "2p", "2p", "2p", "3s", "3s", "3s", "7z", "7z", "6s", "6s"],
+        "west": ["1m", "4m", "7m", "3p", "5p", "8p", "4s", "5s", "8s", "1z", "2z", "3z", "4z"],
+        "north": ["1m", "3m", "7m", "3p", "5p", "8p", "4s", "5s", "8s", "1z", "2z", "3z", "4z"]
+      },
+      "starting_draws": ["5z", "2m", "5m", "6m", "6z", "6z", "9s"]
+    }
+    """, [
+      %{"type" => "discard", "tile" => "5z", "player" => 0, "tsumogiri" => true},
+      %{"type" => "discard", "tile" => "2m", "player" => 1, "tsumogiri" => true},
+      %{"type" => "buttons_pressed", "buttons" => [%{"button" => "pon"}, nil, nil, nil]},
+      %{"type" => "discard", "tile" => "5z", "player" => 0, "tsumogiri" => false},
+      %{"type" => "discard", "tile" => "5m", "player" => 1, "tsumogiri" => true},
+      %{"type" => "buttons_pressed", "buttons" => [%{"button" => "pon"}, nil, nil, nil]},
+      %{"type" => "discard", "tile" => "5z", "player" => 0, "tsumogiri" => false},
+      %{"type" => "discard", "tile" => "6m", "player" => 1, "tsumogiri" => true},
+      %{"type" => "buttons_pressed", "buttons" => [%{"button" => "pon"}, nil, nil, nil]},
+      %{"type" => "discard", "tile" => "5z", "player" => 0, "tsumogiri" => false},
+      %{"type" => "discard", "tile" => "6z", "player" => 1, "tsumogiri" => true},
+      %{"type" => "discard", "tile" => "6z", "player" => 2, "tsumogiri" => true},
+      %{"type" => "discard", "tile" => "9s", "player" => 3, "tsumogiri" => true},
+      %{"type" => "buttons_pressed", "buttons" => [%{"button" => "chii"}, nil, nil, nil]},
+      %{"type" => "discard", "tile" => "6s", "player" => 0, "tsumogiri" => false},
+      %{"type" => "buttons_pressed", "buttons" => [nil, %{"button" => "ron"}, nil, nil]},
+    ], %{
+      south: %{
+        yaku: [{"Sanankou", 2}, {"Toitoi", 2}],
+        yaku2: [],
+        minipoints: 50
+      }
+    })
+  end
+
+  test "riichi - kuikae nashi" do
+    TestUtils.test_yaku_advanced("riichi", ["kuikae_nashi"], """
+    {
+      "starting_hand": {
+        "east": ["2m", "2m", "5z", "5m", "5m", "5z", "6m", "6m", "5z", "5s", "6s", "7s", "8s"],
+        "south": ["4m", "4m", "4m", "2p", "2p", "2p", "3s", "3s", "3s", "7z", "7z", "6s", "6s"],
+        "west": ["1m", "4m", "7m", "3p", "5p", "8p", "4s", "5s", "8s", "1z", "2z", "3z", "4z"],
+        "north": ["1m", "3m", "7m", "3p", "5p", "8p", "4s", "5s", "8s", "1z", "2z", "3z", "4z"]
+      },
+      "starting_draws": ["5z", "2m", "5m", "6m", "6z", "6z", "9s"]
+    }
+    """, [
+      %{"type" => "discard", "tile" => "5z", "player" => 0, "tsumogiri" => true},
+      %{"type" => "discard", "tile" => "2m", "player" => 1, "tsumogiri" => true},
+      %{"type" => "buttons_pressed", "buttons" => [%{"button" => "pon"}, nil, nil, nil]},
+      %{"type" => "discard", "tile" => "5z", "player" => 0, "tsumogiri" => false},
+      %{"type" => "discard", "tile" => "5m", "player" => 1, "tsumogiri" => true},
+      %{"type" => "buttons_pressed", "buttons" => [%{"button" => "pon"}, nil, nil, nil]},
+      %{"type" => "discard", "tile" => "5z", "player" => 0, "tsumogiri" => false},
+      %{"type" => "discard", "tile" => "6m", "player" => 1, "tsumogiri" => true},
+      %{"type" => "buttons_pressed", "buttons" => [%{"button" => "pon"}, nil, nil, nil]},
+      %{"type" => "discard", "tile" => "5z", "player" => 0, "tsumogiri" => false},
+      %{"type" => "discard", "tile" => "6z", "player" => 1, "tsumogiri" => true},
+      %{"type" => "discard", "tile" => "6z", "player" => 2, "tsumogiri" => true},
+      %{"type" => "discard", "tile" => "9s", "player" => 3, "tsumogiri" => true},
+      %{"type" => "buttons_pressed", "buttons" => [%{"button" => "chii"}, nil, nil, nil]},
+      # this is illegal, you know
+      %{"type" => "discard", "tile" => "6s", "player" => 0, "tsumogiri" => false}
+      # check that south cannot ron 6s, since it never came out
+    ], :no_buttons)
+  end
+
+  test "riichi - kuikae nashi 2" do
+    TestUtils.test_yaku_advanced("riichi", ["kuikae_nashi"], """
+    {
+      "starting_hand": {
+        "east": ["2m", "2m", "5z", "5m", "5m", "5z", "6m", "6m", "5z", "5s", "6s", "7s", "8s"],
+        "south": ["4m", "4m", "4m", "2p", "2p", "2p", "3s", "3s", "3s", "7z", "7z", "7s", "7s"],
+        "west": ["1m", "4m", "7m", "3p", "5p", "8p", "4s", "5s", "8s", "1z", "2z", "3z", "4z"],
+        "north": ["1m", "3m", "7m", "3p", "5p", "8p", "4s", "5s", "8s", "1z", "2z", "3z", "4z"]
+      },
+      "starting_draws": ["5z", "2m", "5m", "6m", "6z", "6z", "7s"]
+    }
+    """, [
+      %{"type" => "discard", "tile" => "5z", "player" => 0, "tsumogiri" => true},
+      %{"type" => "discard", "tile" => "2m", "player" => 1, "tsumogiri" => true},
+      %{"type" => "buttons_pressed", "buttons" => [%{"button" => "pon"}, nil, nil, nil]},
+      %{"type" => "discard", "tile" => "5z", "player" => 0, "tsumogiri" => false},
+      %{"type" => "discard", "tile" => "5m", "player" => 1, "tsumogiri" => true},
+      %{"type" => "buttons_pressed", "buttons" => [%{"button" => "pon"}, nil, nil, nil]},
+      %{"type" => "discard", "tile" => "5z", "player" => 0, "tsumogiri" => false},
+      %{"type" => "discard", "tile" => "6m", "player" => 1, "tsumogiri" => true},
+      %{"type" => "buttons_pressed", "buttons" => [%{"button" => "pon"}, nil, nil, nil]},
+      %{"type" => "discard", "tile" => "5z", "player" => 0, "tsumogiri" => false},
+      %{"type" => "discard", "tile" => "6z", "player" => 1, "tsumogiri" => true},
+      %{"type" => "discard", "tile" => "6z", "player" => 2, "tsumogiri" => true},
+      %{"type" => "discard", "tile" => "7s", "player" => 3, "tsumogiri" => true},
+      %{"type" => "buttons_pressed", "buttons" => [%{"button" => "chii"}, nil, nil, nil]},
+      %{"type" => "discard", "tile" => "7s", "player" => 0, "tsumogiri" => false}
+      # check that south cannot ron 7s, since it never came out
+    ], :no_winners)
+  end
+
+  test "riichi - can't kuikae softlock" do
+    TestUtils.test_yaku_advanced("riichi", ["kuikae_nashi"], """
+    {
+      "starting_hand": {
+        "east": ["2m", "2m", "5z", "5m", "5m", "5z", "6m", "6m", "5z", "6s", "6s", "7s", "8s"],
+        "south": ["4m", "4m", "4m", "2p", "2p", "2p", "3s", "3s", "3s", "1z", "7z", "6s", "6s"],
+        "west": ["1m", "4m", "7m", "3p", "5p", "8p", "4s", "5s", "8s", "1z", "2z", "3z", "4z"],
+        "north": ["1m", "3m", "7m", "3p", "5p", "8p", "4s", "5s", "8s", "1z", "2z", "3z", "4z"]
+      },
+      "starting_draws": ["5z", "2m", "5m", "6m", "6z", "6z", "9s"]
+    }
+    """, [
+      %{"type" => "discard", "tile" => "5z", "player" => 0, "tsumogiri" => true},
+      %{"type" => "discard", "tile" => "2m", "player" => 1, "tsumogiri" => true},
+      %{"type" => "buttons_pressed", "buttons" => [%{"button" => "pon"}, nil, nil, nil]},
+      %{"type" => "discard", "tile" => "5z", "player" => 0, "tsumogiri" => false},
+      %{"type" => "discard", "tile" => "5m", "player" => 1, "tsumogiri" => true},
+      %{"type" => "buttons_pressed", "buttons" => [%{"button" => "pon"}, nil, nil, nil]},
+      %{"type" => "discard", "tile" => "5z", "player" => 0, "tsumogiri" => false},
+      %{"type" => "discard", "tile" => "6m", "player" => 1, "tsumogiri" => true},
+      %{"type" => "buttons_pressed", "buttons" => [%{"button" => "pon"}, nil, nil, nil]},
+      %{"type" => "discard", "tile" => "5z", "player" => 0, "tsumogiri" => false},
+      %{"type" => "discard", "tile" => "6z", "player" => 1, "tsumogiri" => true},
+      %{"type" => "discard", "tile" => "6z", "player" => 2, "tsumogiri" => true},
+      %{"type" => "discard", "tile" => "9s", "player" => 3, "tsumogiri" => true},
+      # can't chii since it would softlock us
+      %{"type" => "buttons_pressed", "buttons" => [%{"button" => "chii"}, nil, nil, nil]},
+      %{"type" => "discard", "tile" => "6s", "player" => 0, "tsumogiri" => false}
+    ], :no_winners)
+  end
+
+
   test "chinitsu - fifth tile tenpai" do
     TestUtils.test_yaku_advanced("chinitsu", [%{name: "yaku/riichi", config: %{bet: 1000, drawless: true}}, "no_honors"], """
     {

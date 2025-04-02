@@ -464,7 +464,6 @@ apply set_append, "play_effects", [
 define_button chii,
   display_name: "Chii",
   show_when: not_our_turn and not_no_tiles_remaining and kamicha_discarded and call_available,
-  call_conditions: can_discard_after_call,
   precedence_over: ["chii"],
   call: [[-2, -1], [-1, 1], [1, 2]],
   call_style: %{
@@ -490,8 +489,7 @@ define_button pon,
     kamicha: ["call_sideways", 0, 1],
     toimen: [0, "call_sideways", 1],
     shimocha: [0, 1, "call_sideways"]
-  },
-  call_conditions: can_discard_after_call
+  }
   do
     big_text("Pon")
     call

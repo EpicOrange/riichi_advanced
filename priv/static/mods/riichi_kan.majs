@@ -41,7 +41,6 @@ define_button daiminkan,
     and someone_else_just_discarded
     and tile_not_drawn(-4)
     and call_available,
-  call_conditions: can_discard_after_call,
   precedence_over: ["chii", "pon", "daiminkan"],
   call: [[0, 0, 0]],
   call_style: %{
