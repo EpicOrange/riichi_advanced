@@ -252,20 +252,24 @@ def noten_payments do
   end
   # determine how much each player pays
   tenpai_count = 0
-  if status("tenpai") do tenpai_count = tenpai_count + 1 end
-  if status("tenpai", as: "shimocha") do tenpai_count = tenpai_count + 1 end
-  if status("tenpai", as: "toimen") do tenpai_count = tenpai_count + 1 end
-  if status("tenpai", as: "kamicha") do tenpai_count = tenpai_count + 1 end
-  set_counter_all("tenpai_count", "tenpai_count")
+  if status("tenpai") do tenpai_count += 1 end
+  if shimocha_exists and status("tenpai", as: "shimocha") do tenpai_count += 1 end
+  if toimen_exists and status("tenpai", as: "toimen") do tenpai_count += 1 end
+  if kamicha_exists and status("tenpai", as: "kamicha") do tenpai_count += 1 end
+  n = num_players
+  if n == 4 and tenpai_count == 1 do tenpai_points = 3000; noten_points = -1000 end
+  if n == 4 and tenpai_count == 2 do tenpai_points = 1500; noten_points = -1500 end
+  if n == 4 and tenpai_count == 3 do tenpai_points = 1000; noten_points = -3000 end
+  if n == 3 and tenpai_count == 1 do tenpai_points = 1000; noten_points = -2000 end
+  if n == 3 and tenpai_count == 2 do tenpai_points = 2000; noten_points = -1000 end
+  if n == 2 and tenpai_count == 1 do tenpai_points = 1000; noten_points = -1000 end
+  set_counter_all("tenpai_points", "tenpai_points")
+  set_counter_all("noten_points", "noten_points")
   as everyone do
-    if tenpai_count == 1 do 
-      if status("tenpai") do modify_payout("self", 3000) else modify_payout("self", -1000) end
-    end
-    if tenpai_count == 2 do 
-      if status("tenpai") do modify_payout("self", 1500) else modify_payout("self", -1500) end
-    end
-    if tenpai_count == 3 do 
-      if status("tenpai") do modify_payout("self", 1000) else modify_payout("self", -3000) end
+    if status("tenpai") do
+      modify_payout("self", "tenpai_points")
+    else
+      modify_payout("self", "noten_points")
     end
   end
 end
