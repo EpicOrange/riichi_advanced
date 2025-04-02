@@ -490,7 +490,7 @@ defmodule RiichiAdvanced.GameState.Actions do
   def is_amount?(state, seat, value) do
     is_number(value)
     or (List.wrap(value) |> Enum.at(0)) in @amt_specs
-    or value in state.players[seat].counters
+    or value in Map.keys(state.players[seat].counters)
   end
 
   def interpret_amount(state, context, amt_spec) do
