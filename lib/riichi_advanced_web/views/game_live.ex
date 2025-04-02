@@ -290,7 +290,7 @@ defmodule RiichiAdvancedWeb.GameLive do
         viewer={@viewer}
         yakus={Rules.get(@state.rules_ref, "declarable_yaku", [])}
         :if={@state.players[@seat].declared_yaku == []} />
-      <div class="display-wall-hover" :if={Rules.get(@state.rules_ref, "display_wall", false)}><%= t(@lang, "Show wall") %></div>
+      <div class="display-wall-hover" :if={Rules.get(@state.rules_ref, "display_wall", false)} phx-click="noop"><%= t(@lang, "Show wall") %></div>
       <.live_component module={RiichiAdvancedWeb.DisplayWallComponent}
         id="display-wall"
         game_state={@game_state}
