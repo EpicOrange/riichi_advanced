@@ -596,7 +596,7 @@
       "actions": [
         ["big_text", "Mah Jongg"], ["pause", 1000], ["reveal_hand"], ["win_by_draw"]
       ],
-      "precedence_over": ["am_pung", "am_kong", "am_quint"]
+      "precedence_over": ["1_am_pung", "2_am_kong", "3_am_quint"]
     },
     "mahjong_draw": {
       "display_name": "Mah Jongg",
@@ -613,7 +613,7 @@
       "actions": [
         ["big_text", "Mah Jongg"], ["pause", 1000], ["reveal_hand"], ["win_by_draw"]
       ],
-      "precedence_over": ["am_pung", "am_kong", "am_quint"]
+      "precedence_over": ["1_am_pung", "2_am_kong", "3_am_quint"]
     },
     "mahjong_discard": {
       "display_name": "Mah Jongg",
@@ -631,7 +631,7 @@
       "actions": [
         ["big_text", "Mah Jongg"], ["pause", 1000], ["reveal_hand"], ["win_by_discard"]
       ],
-      "precedence_over": ["am_pung", "am_kong", "am_quint", "mahjong_discard"]
+      "precedence_over": ["1_am_pung", "2_am_kong", "3_am_quint", "mahjong_discard"]
     },
     // TODO: Change push messages to mention player's names instead of just saying the player directions.
     "declare_dead_0_shimocha": {

@@ -846,7 +846,7 @@ defmodule RiichiAdvanced.Compiler do
 
   @header """
   def _ensure_list:
-    if type == "string" and startswith("@") then
+    if type == "string" and startswith("@") and (startswith("@splat$") | not) then
       ["@splat$" + (.[1:])]
     elif type == "array" then
       .
