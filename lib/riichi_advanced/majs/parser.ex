@@ -6,7 +6,9 @@ defmodule RiichiAdvanced.Parser do
       size when size > 4 * 1024 * 1024 ->
         {:error, "script too large (#{size / 1024 / 1024} MB > 4 MB)"}
       _ ->
-        case Code.string_to_quoted(input, columns: true, existing_atoms_only: true, static_atoms_encoder: fn name, _pos -> {:ok, if name == "do" do :do else name end} end) do
+        Regex.replace(~r/(\w+)\s*([+\-*\/])=\s*/, input, "\\1 = \\1 \\2 ") # convert x += 2 to x = x + 2
+        |> Code.string_to_quoted(columns: true, existing_atoms_only: true, static_atoms_encoder: fn name, _pos -> {:ok, if name == "do" do :do else name end} end)
+        |> case do
           {:ok, ast} -> {:ok, ast}
           {:error, err} -> {:error, err}
         end

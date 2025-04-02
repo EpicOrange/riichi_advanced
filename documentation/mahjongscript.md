@@ -131,10 +131,7 @@ def myfun2 do
   counter_name = "score"
 
   # this becomes ["add_counter", "counter_name", 1]
-  counter_name = counter_name + 1
-  # you do have to repeat counter_name, since += is not Elixir syntax
-  # the RHS must be (counter_name) (operator) (amount)
-  # this will definitely have to be expanded in the future
+  counter_name += 1
 end
 ```
 
@@ -249,12 +246,14 @@ This compiles to
 # ]
 ```
 
-Tile sigils are basically only used for interpolation into rules text. In the future it will also be used to interpolate into messages.
+Tile sigils are basically only used for interpolation into rules text and for rigging the hand/wall. In the future it will also be used to interpolate into messages.
 
 ```elixir
 on after_initialization do
   add_rule("2 Han", "Honitsu", "%{example_hand}", %{example_hand: ~t"123345888p11z22z 2z"})
 end
+set starting_hand, %{east: ~t"19m19p19s1234567z"}
+set starting_draws, ~T"45m@_rainbow&_anim&_dora"
 ```
 
 ## Constants
