@@ -1067,9 +1067,14 @@ defmodule RiichiAdvanced.GameState do
   end
 
   def is_playable?(state, seat, tile) do
-    tile != nil and not has_unskippable_button?(state, seat) and not Utils.has_attr?(tile, ["no_discard"]) and if Rules.has_key?(state.rules_ref, "play_restrictions") do
-      Enum.all?(Rules.get(state.rules_ref, "play_restrictions", []), fn [tile_spec, cond_spec] ->
-        not Riichi.tile_matches(tile_spec, %{seat: seat, tile: tile, players: state.players}) or not Conditions.check_cnf_condition(state, cond_spec, %{seat: seat, tile: tile})
+    tile != nil
+    and not has_unskippable_button?(state, seat)
+    and not Utils.has_attr?(tile, ["no_discard"])
+    and if Rules.has_key?(state.rules_ref, "play_restrictions") do
+      Enum.all?(Rules.get(state.rules_ref, "play_restrictions"), fn [tile_spec, cond_spec] ->
+        not Riichi.tile_matches(tile_spec, %{seat: seat, tile: tile, players: state.players})
+        or not Conditions.check_cnf_condition(state, cond_spec, %{seat: seat, tile: tile})
+        # or not (Conditions.check_cnf_condition(state, cond_spec, %{seat: seat, tile: tile}) |> IO.inspect(label: inspect({seat, tile, cond_spec})))
       end)
     else true end
   end
@@ -1716,9 +1721,9 @@ defmodule RiichiAdvanced.GameState do
       tile = Enum.at(state.players[seat].hand ++ state.players[seat].draw, index)
       can_discard = Actions.can_discard(state, seat)
       playable = is_playable?(state, seat, tile)
-      if not can_discard or not playable do
-        IO.puts("#{seat} tried to play an unplayable tile: #{inspect{tile}}")
-      end
+      # if not can_discard or not playable do
+      #   IO.puts("#{seat} tried to play an unplayable tile: #{inspect{tile}}")
+      # end
       state = if can_discard and playable and (state.play_tile_debounce[seat] == false or state.log_loading_mode) do
         state = Actions.temp_disable_play_tile(state, seat)
         # assume we're skipping our button choices

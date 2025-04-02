@@ -239,13 +239,13 @@ defmodule RiichiAdvanced.GameState.Conditions do
       "kamicha_discarded"           -> last_discard_action != nil and last_discard_action.seat == Utils.prev_turn(context.seat)
       "toimen_discarded"            -> last_discard_action != nil and last_discard_action.seat == Utils.prev_turn(context.seat, 2)
       "shimocha_discarded"          -> last_discard_action != nil and last_discard_action.seat == Utils.prev_turn(context.seat, 3)
-      "anyone_just_discarded"       -> last_action != nil and last_action.action == :discard
-      "someone_else_just_discarded" -> last_action != nil and last_action.action == :discard and last_action.seat == state.turn and state.turn != context.seat
-      "just_discarded"              -> last_action != nil and last_action.action == :discard and last_action.seat == state.turn and state.turn == context.seat
-      "anyone_just_called"          -> last_action != nil and last_action.action == :call
-      "someone_else_just_called"    -> last_action != nil and last_action.action == :call and last_action.seat == state.turn and state.turn != context.seat
-      "just_called"                 -> last_action != nil and last_action.action == :call and last_action.seat == state.turn and state.turn == context.seat
-      "just_self_called"            -> last_action != nil and last_action.action == :call and last_action.seat == state.turn and last_action.from == state.turn and state.turn == context.seat
+      "anyone_just_discarded"       -> last_discard_action != nil
+      "someone_else_just_discarded" -> last_discard_action != nil and last_action.seat != context.seat
+      "just_discarded"              -> last_discard_action != nil and last_action.seat == context.seat
+      "anyone_just_called"          -> last_call_action != nil
+      "someone_else_just_called"    -> last_call_action != nil and last_action.seat != context.seat
+      "just_called"                 -> last_call_action != nil and last_action.seat == state.turn
+      "just_self_called"            -> last_call_action != nil and last_action.seat == state.turn and last_action.from == state.turn
       "call_available"              -> last_action != nil and last_action.action == :discard and Riichi.can_call?(context.calls_spec, Utils.add_attr(cxt_player.hand, ["_hand"]), cxt_player.tile_behavior, [last_action.tile])
       "self_call_available"         -> Riichi.can_call?(context.calls_spec, Utils.add_attr(cxt_player.hand, ["_hand"]) ++ Utils.add_attr(cxt_player.draw, ["_hand"]), cxt_player.tile_behavior, [])
       "can_upgrade_call"            -> cxt_player.calls
@@ -589,8 +589,9 @@ defmodule RiichiAdvanced.GameState.Conditions do
         # TODO need to call upgrade_call instead, in the case of upgrade calls
         # though there's not yet a need to check this condition for upgrade calls
         state2 = Actions.trigger_call(state, context.seat, context.choice.name, context.choice.chosen_call_choice, context.choice.chosen_called_tile, context.call_source, true)
-        hand2 = state2.players[context.seat].hand ++ state2.players[context.seat].draw
-        Enum.any?(hand2, &is_playable?(state2, context.seat, &1))
+        state2.players[context.seat].hand ++ state2.players[context.seat].draw
+        |> Enum.uniq()
+        |> Enum.any?(&is_playable?(state2, context.seat, &1))
       "minipoints_equals"   -> Map.get(context, :minipoints, 0) == Enum.at(opts, 0, 0)
       "minipoints_at_least" -> Map.get(context, :minipoints, 0) >= Enum.at(opts, 0, 0)
       "minipoints_at_most"  -> Map.get(context, :minipoints, 0) <= Enum.at(opts, 0, 0)
