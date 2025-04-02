@@ -132,8 +132,18 @@ Hooks.ClickListener = {
         window.hoverElement = null;
       }
     });
+  },
+  // sync dora animations
+  // TODO rename ClickListener, since it does more than listen
+  updated() {
+    document.querySelectorAll("div.tile.dora").forEach(tile => {
+      for (const anim of tile.getAnimations({subtree: true}))
+        if (anim.animationName === "doraShine")
+          anim.startTime = 0;
+    });
   }
-}
+};
+
 
 import Delta from "quill-delta";
 import { v4 as uuidv4 } from "uuid";

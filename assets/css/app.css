@@ -476,6 +476,11 @@ div#container > input.tile-numbers-checkbox:checked ~ * div.tile::after {
   height: calc(0.25 * var(--tile-size));
   z-index: 1;
 }
+div#container > input.tile-numbers-checkbox:checked ~ * div.tile.sideways::after {
+  top: unset;
+  bottom: calc(0.04 * var(--tile-size));
+  transform: rotate(90deg);
+}
 
 /* ponds */
 div.pond, div.secondary-pond {
@@ -910,34 +915,31 @@ div.tile {
   border-radius: calc(0.10 * var(--tile-size));
   flex-shrink: 0;
   box-sizing: border-box;
-  overflow: hidden;
 }
+/* dora shine */
 @keyframes doraShine {
   0% { transform: translate(-100%, -100%) rotate(135deg); }
   100% { transform: translate(100%, 100%) rotate(135deg); }
 }
-div.tile.dora:not(.\31 x)::before {
+div.tile.dora:not(.\31 x):not(.selected) { overflow: hidden; }
+div.tile.dora:not(.\31 x):not(.selected)::before {
   content: "";
   position: absolute;
   top: 0;
   left: 0;
   animation: doraShine 3s infinite;
+  animation-delay: var(--dora-anim-delay, 0ms);
   width: 400%;
   height: 400%;
   background: 
     linear-gradient(0deg, transparent 25%, #ffffff7f 35%, transparent 45%),
     linear-gradient(0deg, transparent 55%, #ffffff7f 65%, transparent 75%);
 }
-div.tile.sideways + div.tile.sideways { width: 0; }
-div.tile.sideways + div.tile.sideways::before {
-  display: block;
-  content: "";
-  width: var(--tile-height);
-  height: var(--tile-height);
-  background: inherit;
+div.tile.sideways + div.tile.sideways {
+  margin-right: calc(-1 * var(--tile-height));
   transform: translateX(calc(-1 * var(--tile-height))) translateY(calc(-1 * var(--tile-width)));
 }
-div.tile.sideways + div.tile.sideways + div.tile.sideways::before {
+div.tile.sideways + div.tile.sideways + div.tile.sideways {
   transform: translateX(calc(-1 * var(--tile-height))) translateY(calc(-2 * var(--tile-width)));
 }
 div.tile.markable {
