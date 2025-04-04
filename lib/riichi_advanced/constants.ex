@@ -364,6 +364,7 @@ defmodule RiichiAdvanced.Constants do
     },
     "hk" => %{
       display_name: "Hong Kong Old Style",
+      tutorial_link: "https://github.com/EpicOrange/riichi_advanced/blob/main/documentation/hk.md",
       ruleset: "hk",
       globals: %{
         chii_name: "Chow",
