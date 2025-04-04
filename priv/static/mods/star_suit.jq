@@ -17,6 +17,9 @@ def add_aka_status($actions; $check):
   "9t", "9t", "9t", "9t"
 ]
 |
+# TODO: add indices
+
+# |
 .after_start.actions += [
   ["set_tile_ordering", ["1t", "2t", "3t", "4t", "5t", "6t", "7t", "8t", "9t"]]
 ]
@@ -53,9 +56,9 @@ else . end
 |
 .set_definitions.junchan_pair_8 = ["9t", "9t"]
 |
-# .set_definitions.orphans_all = [????]
+# TODO: .set_definitions.orphans_all = [????]
 |
-# change tenpai_definition, kokushi_tenpai_definition, win_definition, and kokushi_definition to accommodate for 1t and 9t, allowing a 15-way wait
+# TODO: change tenpai_definition, kokushi_tenpai_definition, win_definition, and kokushi_definition to accommodate for 1t and 9t, allowing a 15-way wait
 .tenpai_definition -= [
     [ "unique",
       [["1m","9m","1p","9p","1s","9s","1z","2z","3z","4z","5z","6z","7z"], 12],
@@ -112,7 +115,7 @@ else . end
     ]
 ]
 |
-# change yaku to accommodate star suit
+# TODO: change yaku to accommodate star suit
 # need to change the following yaku:
 # * ✅ tanyao (now 2~8m, 2~8s, 2~8p, and 2~8t)
 # * ✅ honrou/chinrou (add 1t, 9t)
@@ -141,7 +144,7 @@ else . end
   else . end
 )
 |
-# add the following yaku:
+# TODO: add the following yaku:
 # * yonshoku doujun (4/3 han open)
 # * yonshoku doukou (5 han)
 
