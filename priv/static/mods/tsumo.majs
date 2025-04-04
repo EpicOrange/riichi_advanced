@@ -1,0 +1,15 @@
+define_const tsumo_name, @tsumo_name
+
+define_button tsumo,
+  display_name: @tsumo_name, 
+  show_when: our_turn
+    and match(["hand", "calls", "draw", "flowers"], ["tenpai"])
+    and match(["hand", "calls", "draw", "flowers"], ["win"])
+  do
+    big_text(@tsumo_name)
+    pause(1000)
+    reveal_hand
+    win_by_draw
+  end
+
+apply set_append, "interruptible_actions", ["draw"]

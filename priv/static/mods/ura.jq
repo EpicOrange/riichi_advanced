@@ -1,9 +1,9 @@
 .after_initialization.actions += [
-  ["update_rule", "Dora", "(Ura) Players in riichi are also eligible for ura dora, worth 1 extra han each. Ura dora are indicated by ura dora indicators, the tiles underneath each dora indicator at the time a win is declared."],
-  ["update_rule", "Shuugi", "(Ura) Each ura dora is worth 1 shuugi."]
+  ["update_rule", "Rules", "Dora", "(Ura) Players in riichi are also eligible for ura dora, worth 1 extra han each. Ura dora are indicated by ura dora indicators, the tiles underneath each dora indicator at the time a win is declared."],
+  ["update_rule", "Rules", "Shuugi", "(Ura) Each ura dora is worth 1 shuugi."]
 ]
 |
-# reveal ura after riichi win and count ura
+# reveal ura after riichi win
 .before_win.actions += [
   ["when", [{"name": "status", "opts": ["riichi"]}, {"name": "status_missing", "opts": ["ura_revealed"]}], [
     ["set_status_all", "ura_revealed"],
@@ -40,17 +40,10 @@
       ["when", [{"name": "tile_not_revealed", "opts": [-15]}], [["reveal_tile", "1x"]]],
       ["when", [{"name": "tile_not_revealed", "opts": [-17]}], [["reveal_tile", "1x"]]]
     ]]
-  ]],
-  ["when", [{"name": "tile_revealed", "opts": [-5]}], [["add_counter", "ura", "count_dora", -5, ["hand", "calls", "flowers", "winning_tile"]]]],
-  ["when", [{"name": "tile_revealed", "opts": [-7]}], [["add_counter", "ura", "count_dora", -7, ["hand", "calls", "flowers", "winning_tile"]]]],
-  ["when", [{"name": "tile_revealed", "opts": [-9]}], [["add_counter", "ura", "count_dora", -9, ["hand", "calls", "flowers", "winning_tile"]]]],
-  ["when", [{"name": "tile_revealed", "opts": [-11]}], [["add_counter", "ura", "count_dora", -11, ["hand", "calls", "flowers", "winning_tile"]]]],
-  ["when", [{"name": "tile_revealed", "opts": [-13]}], [["add_counter", "ura", "count_dora", -13, ["hand", "calls", "flowers", "winning_tile"]]]],
-  ["when", [{"name": "tile_revealed", "opts": [-15]}], [["add_counter", "ura", "count_dora", -15, ["hand", "calls", "flowers", "winning_tile"]]]],
-  ["when", [{"name": "tile_revealed", "opts": [-17]}], [["add_counter", "ura", "count_dora", -17, ["hand", "calls", "flowers", "winning_tile"]]]]
+  ]]
 ]
 |
-.before_scoring.actions |= [["set_counter", "ura", 0]] + . + [
+.functions.calculate_dora |= [["set_counter", "ura", 0]] + . + [
   ["when", [{"name": "tile_revealed", "opts": [-5]}], [["add_counter", "ura", "count_dora", -5, ["hand", "calls", "flowers", "winning_tile"]]]],
   ["when", [{"name": "tile_revealed", "opts": [-7]}], [["add_counter", "ura", "count_dora", -7, ["hand", "calls", "flowers", "winning_tile"]]]],
   ["when", [{"name": "tile_revealed", "opts": [-9]}], [["add_counter", "ura", "count_dora", -9, ["hand", "calls", "flowers", "winning_tile"]]]],
@@ -62,5 +55,6 @@
 |
 # add ura yaku
 .extra_yaku += [
-  {"display_name": "Ura", "value": "ura", "when": [{"name": "counter_at_least", "opts": ["ura", 1]}]}
+  # the "won" is there because of minefield, where dora counts but ura doesn't (until the actual win)
+  {"display_name": "Ura", "value": "ura", "when": ["won", {"name": "counter_at_least", "opts": ["ura", 1]}]}
 ]

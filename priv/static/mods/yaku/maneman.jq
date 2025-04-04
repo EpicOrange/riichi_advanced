@@ -1,4 +1,4 @@
-.after_initialization.actions += [["add_rule", "Local Yaku (Mangan)", "(Maneman) \"Imitation Mangan\". If you copy any opponent's first five discards exactly, they will pay mangan if you win with less than mangan. Calls invalidate.", 105]]
+.after_initialization.actions += [["add_rule", "Mangan", "Maneman", "\"Imitation Mangan\". If you copy any opponent's first five discards exactly, they will pay mangan if you win with less than mangan. Calls invalidate.", 105]]
 |
 .maneman += [
   {
@@ -45,9 +45,9 @@
 # if maneman made it to the yaku list, set pao on the maneman player
 .after_win.actions += [
   ["when", [{"name": "has_existing_yaku", "opts": [["Maneman", 5]]}], [
-    ["when", [{"name": "status", "opts": ["maneman_kamicha"]}], [["as", "kamicha", [["set_status", "pao"]]]]],
-    ["when", [{"name": "status", "opts": ["maneman_toimen"]}], [["as", "toimen", [["set_status", "pao"]]]]],
-    ["when", [{"name": "status", "opts": ["maneman_shimocha"]}], [["as", "shimocha", [["set_status", "pao"]]]]]
+    ["when", [{"name": "status", "opts": ["maneman_kamicha"]}], [["as", "kamicha", [["make_responsible_for", "prev_seat", "all"]]]]],
+    ["when", [{"name": "status", "opts": ["maneman_toimen"]}], [["as", "toimen", [["make_responsible_for", "prev_seat", "all"]]]]],
+    ["when", [{"name": "status", "opts": ["maneman_shimocha"]}], [["as", "shimocha", [["make_responsible_for", "prev_seat", "all"]]]]]
   ]]
 ]
 |

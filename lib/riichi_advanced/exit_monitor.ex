@@ -21,8 +21,8 @@ defmodule RiichiAdvanced.ExitMonitor do
   end
 
   def handle_info({:DOWN, _monitor_ref, :process, pid, _reason}, state) do
-    # IO.puts("#{inspect(self())}: #{inspect(pid)} just went down! state: #{inspect(state)}")
-    GenServer.call(Map.get(state, pid).from, {:delete_player, Map.get(state, pid).identifier})
+    # IO.puts("#{inspect(self())}: #{inspect(pid)} just went down! notifying #{inspect(state[pid].from)}\nstate: #{inspect(state)}")
+    GenServer.call(state[pid].from, {:delete_player, state[pid].identifier})
     {:noreply, Map.delete(state, pid)}
   end
 end

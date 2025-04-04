@@ -1,4 +1,4 @@
-.after_initialization.actions += [["add_rule", "Local Yaku (Yakuman)", "(Ryuuiisourin) \"All Black\". Like ryuuiisou, except you have a pair of 5s (5 bamboo).", 113]]
+.after_initialization.actions += [["add_rule", "Yakuman", "Ryuuiisourin", "\"All Black\". Like ryuuiisou, except you have a pair of 5s (5 bamboo).", 113]]
 |
 .yakuman += [
   {

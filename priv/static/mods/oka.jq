@@ -1,4 +1,4 @@
-.after_initialization.actions += [["add_rule", "Oka", "At the end of the game, 1st/2nd/3rd/4th receive a bonus of \($ante * 3000)/\($ante * -1000)/\($ante * -1000)/\($ante * -1000) points."]]
+.after_initialization.actions += [["add_rule", "Rules", "Oka", "At the end of the game, 1st/2nd/3rd/4th receive a bonus of \($ante * 3000)/\($ante * -1000)/\($ante * -1000)/\($ante * -1000) points."]]
 |
 .before_conclusion.actions += [
   ["push_system_message", "Applied oka of \($ante)"],

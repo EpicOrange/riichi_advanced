@@ -1,0 +1,11 @@
+on after_initialization do
+  add_rule("Rules", "12 Tile Pao", "If your discard is called by another player with three existing calls (yours being the fourth), you are liable for paying their whole hand if they win.")
+end
+
+on after_call do
+  if match(["calls"], ~m"(chii pon daiminkan ankan kakan):4") do
+    as callee do
+      make_responsible_for("caller", "all")
+    end
+  end
+end

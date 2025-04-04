@@ -1,0 +1,151 @@
+on after_initialization do
+  add_rule("Rules", "Initial Score", "(Kansai) Everyone starts with 50000 points.")
+  add_rule("Rules", "Notenrenchan", "(Kansai) In the south round only, the round repeats on exhaustive draws regardless of anyone's tenpai status.")
+  add_rule("Rules", "North Wind", "(Kansai) In the south round only, the round repeats on exhaustive draws regardless of anyone's tenpai status.")
+  add_rule("5 Han", "Shousharin", "(Kansai) 6 han if you have chiitoitsu honitsu.")
+  add_rule("Yakuman", "Daisharin", "(Kansai) Yakuman if you have chiitoitsu chinitsu.")
+  add_rule("Yakuman", "Manzu Honitsu", "(Kansai) Yakuman if you have manzu honitsu.")
+end
+
+# start with 50k
+set initial_score, 50000
+
+# notenrenchan for south round only
+apply set, "score_calculation.notenrenchan_south", true
+
+# north wind pair grants 2 fu in order to invalidate pinfu
+apply append, "constants.always_yakuhai", "4z"
+
+# some new yaku
+define_yaku yaku, "Shousharin", 6, match(["hand", "calls", "winning_tile"], ~m"pair:7") and 
+    (winning_hand_consists_of("1m","9m","1z","2z","3z","4z","5z","6z","7z")
+  or winning_hand_consists_of("1p","2p","3p","4p","5p","6p","7p","8p","9p","1z","2z","3z","4z","5z","6z","7z")
+  or winning_hand_consists_of("1s","2s","3s","4s","5s","6s","7s","8s","9s","1z","2z","3z","4z","5z","6z","7z"))
+define_yaku yakuman, "Daisharin", 1, match(["hand", "calls", "winning_tile"], ~m"pair:7") and 
+    (winning_hand_consists_of("1p","2p","3p","4p","5p","6p","7p","8p","9p")
+  or winning_hand_consists_of("1s","2s","3s","4s","5s","6s","7s","8s","9s"))
+define_yaku yakuman, "Manzu Honitsu", 1, winning_hand_consists_of("1m","9m","1z","2z","3z","4z","5z","6z","7z")
+define_yaku_precedence "Shousharin", ["Chiitoitsu", "Honitsu"]
+define_yaku_precedence "Daisharin", ["Chiitoitsu", "Chinitsu"]
+define_yaku_precedence "Manzu Honitsu", ["Honitsu", "Chinitsu"]
+replace_yaku yaku, "Seat Wind", 1,
+     (seat_is("east") and match(["hand", "calls", "winning_tile"], ~m"exhaustive, ton:1, mentsu:3, pair:1"))
+  or (seat_is("south") and match(["hand", "calls", "winning_tile"], ~m"exhaustive, nan:1, mentsu:3, pair:1"))
+  or (seat_is("west") and match(["hand", "calls", "winning_tile"], ~m"exhaustive, shaa:1, mentsu:3, pair:1"))
+define_yaku yaku, "North Wind", 1, match(["hand", "calls", "winning_tile"], ~m"exhaustive, pei:1, mentsu:3, pair:1")
+
+# end-of-game shuugi payment
+on before_conclusion do
+  as everyone do
+    curr_score = "current_score"
+    if placement(2) do
+      shuugi_payout = -12
+      if curr_score >= 0 do shuugi_payout = -10 end
+      if curr_score >= 10000 do shuugi_payout = -8 end
+      if curr_score >= 20000 do shuugi_payout = -6 end
+      if curr_score >= 30000 do shuugi_payout = -4 end
+      if curr_score >= 40000 do shuugi_payout = -2 end
+      if curr_score >= 50000 do shuugi_payout = 0 end
+      if curr_score >= 60000 do shuugi_payout = 2 end
+      if curr_score >= 70000 do shuugi_payout = 4 end
+      if curr_score >= 80000 do shuugi_payout = 6 end
+      if curr_score >= 90000 do shuugi_payout = 8 end
+      first_shuugi_payout = first_shuugi_payout - shuugi_payout
+      set_counter_all("first_shuugi_payout", "first_shuugi_payout")
+    end
+    if placement(3) do
+      shuugi_payout = -18
+      if curr_score >= 0 do shuugi_payout = -16 end
+      if curr_score >= 10000 do shuugi_payout = -14 end
+      if curr_score >= 20000 do shuugi_payout = -12 end
+      if curr_score >= 30000 do shuugi_payout = -10 end
+      if curr_score >= 40000 do shuugi_payout = -8 end
+      if curr_score >= 50000 do shuugi_payout = -6 end
+      first_shuugi_payout = first_shuugi_payout - shuugi_payout
+      set_counter_all("first_shuugi_payout", "first_shuugi_payout")
+    end
+  end
+  as everyone do
+    if placement(1) do
+      shuugi_payout = first_shuugi_payout
+      push_message("was awarded %{payout} chips for placing first", %{payout: "shuugi_payout"})
+    end
+    if placement(2) do
+      push_message("was awarded %{payout} chips for placing second with %{points} points", %{payout: "shuugi_payout", points: "curr_score"})
+    end
+    if placement(3) do
+      push_message("was awarded %{payout} chips for placing third with %{points} points", %{payout: "shuugi_payout", points: "curr_score"})
+    end
+    shuugi = shuugi + shuugi_payout
+  end
+end
+
+# below is mod and preset stuff
+
+remove_mod "kansai_chiitoitsu" # this is preapplied
+
+define_mod_category "Kansai", prepend: true
+define_mod kansai_draw, name: "Draw To Dora Indicator", category: "Kansai", order: 6, deps: ["dora"], desc: "The game ends once the next draw is the last dora indicator."
+define_mod kansai_flowers, name: "Kansai Flowers", category: "Kansai", order: 5, desc: "Four flowers are added to the game and act as nukidora. Flowers cannot form sequences, triplets, or pairs. North winds are no longer nukidora, but they are now yakuhai: a triplet is worth 1 han, and a pair is worth 2 fu."
+define_mod kansai_no_furiten_riichi, name: "No Furiten Riichi", category: "Kansai", order: 6, deps: ["yaku/riichi"], desc: "Riichi is disallowed while in furiten."
+define_mod kansai_no_100_sticks, name: "No 100 sticks", category: "Kansai", order: 5, desc: "All scores are rounded to 1000s instead of 100s."
+define_mod kansai_30_fu, name: "30 Fu", category: "Kansai", order: 5, conflicts: ["kansai_40_fu"], desc: "Fu is fixed at 30."
+define_mod kansai_40_fu, name: "40 Fu", category: "Kansai", order: 5, conflicts: ["kansai_30_fu"], desc: "Fu is fixed at 40."
+define_mod kansai_shuugi, name: "Zan Shuugi", category: "Kansai", order: 5, deps: ["shuugi"], desc: "Enable zan shuugi: having 4 flowers is 10 chips ron / 5 chips tsumo. Same payment for non-kazoe yakuman."
+define_mod zan_scoring, name: "Zan Scoring", category: "Kansai", order: 5, desc: "Use the zan scoring table."
+
+apply append, "default_mods", ["kansai_draw", "kansai_flowers", "kansai_yaku", "kansai_no_furiten_riichi", "kansai_no_100_sticks", "kansai_30_fu", "sanma_no_tsumo_loss", "kansai_shuugi", "zan_scoring"]
+
+# set default tobi option to below 1
+replace all, "available_mods",
+  %{type: "dropdown", name: "below", values: [0, 1, 1000, 1001]},
+  %{type: "dropdown", name: "below", values: [0, 1, 1000, 1001], default: 1}
+
+# set default nagashi and renhou option to be yakuman
+replace all, "available_mods",
+  %{type: "dropdown", name: "is", values: ["Mangan", "Yakuman"], default: "Mangan"},
+  %{type: "dropdown", name: "is", values: ["Mangan", "Yakuman"], default: "Yakuman"}
+
+# add zan preset
+define_preset "Zan Sanma", [
+  %{name: "honba", config: %{value: 1000}},
+  %{name: "nagashi", config: %{is: "Yakuman"}},
+  %{name: "tobi", config: %{below: 1}},
+  %{name: "yaku/riichi", config: %{bet: 1000, drawless: true}},
+  %{name: "uma", config: %{_1st: 30, _2nd: 10, _3rd: -10, _4th: -30}},
+  "agarirenchan",
+  "tenpairenchan",
+  "tenpaiyame",
+  "kuikae_nashi",
+  "double_wind_4_fu",
+  "kokushi_ankan_chankan",
+  "first_gets_riichi_sticks",
+  "sanma_no_tsumo_loss",
+  "suufon_renda",
+  "suucha_riichi",
+  "sanchahou",
+  "kyuushu_kyuuhai",
+  %{name: "dora", config: %{start_indicators: 1}},
+  "ura",
+  "kandora",
+  "yaku/open_riichi",
+  "yaku/sanrenkou",
+  "yaku/sanpuukou",
+  %{name: "yaku/riichi_renhou", config: %{is: "Yakuman"}},
+  "yaku/suurenkou",
+  "show_waits",
+  %{name: "shuugi", config: %{worth: 1000}},
+  %{name: "min_han", config: %{min: 1}},
+  "cancellable_riichi",
+  "yaku/ippatsu",
+  "shiro_pocchi",
+  %{name: "aka", config: %{man: 4, pin: 4, sou: 4}},
+  "shiny_dora",
+  "kansai_draw",
+  "kansai_flowers",
+  "kansai_no_100_sticks",
+  "kansai_40_fu",
+  "kansai_shuugi",
+  "zan_scoring",
+  "kansai_no_furiten_riichi"
+]

@@ -83,6 +83,16 @@ defmodule RiichiAdvanced.MahjongScriptSecurityTest do
     refute is_unsafe_jq?(compiled)
   end
 
+  test "mahjongscript - prevents plus variable injection" do
+    script = """
+    def foo do
+      print(+ENV)
+    end
+    """
+    assert {:ok, parsed} = Parser.parse(script)
+    assert {:error, _msg} = Compiler.compile_jq(parsed)
+  end
+
   test "mahjongscript - parse rejects scripts larger than 4MB" do
     script = "set #{String.duplicate("x", 4 * 1024 * 1024)}, 1"
     assert {:error, msg} = Parser.parse(script)

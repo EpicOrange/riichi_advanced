@@ -1,0 +1,4 @@
+replace all, ".wall", "5z", "0z"
+on after_start do
+  set_tile_alias_all(["0z"], ["5z"])
+end

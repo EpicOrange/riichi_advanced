@@ -1,6 +1,6 @@
-.default_mods |= map(select(IN("kan", "yaku/riichi", "kandora", "aka", "yaku/renhou_yakuman", "kyuushu_kyuuhai", "pao", "suufon_renda", "suucha_riichi", "suukaikan", "show_waits") | not))
+.default_mods |= map(select(IN("riichi_kan", "yaku/riichi", "kandora", "aka", "yaku/renhou_yakuman", "kyuushu_kyuuhai", "pao", "suufon_renda", "suucha_riichi", "suukaikan", "show_waits") | not))
 |
-.available_mods |= map(select(type != "object" or (.id | IN("kan", "yaku/riichi") | not)))
+.available_mods |= map(select(type != "object" or (.id | IN("riichi_kan", "yaku/riichi") | not)))
 |
 .starting_tiles = 34
 |
@@ -34,13 +34,15 @@
     "display_name": "Choose 13 tiles to form a mangan+ hand",
     "show_when": [{"name": "status", "opts": ["building"]}],
     "actions": [
-      ["unset_status", "building"],
       ["mark", [["hand", 13, ["self"]]]],
       ["move_tiles", {"hand": ["marked"]}, "aside"],
       ["clear_marking"],
       ["swap_tiles", "hand", "aside"],
-      ["put_down_riichi_stick"],
-      ["set_status", "match_start", "just_reached", "riichi", "ippatsu"]
+      ["unset_status", "building"],
+      ["when", [{"name": "not_anyone_status", "opts": ["building"]}], [
+        ["set_status_all", "match_start", "just_reached", "riichi", "ippatsu"],
+        ["as", "everyone", [["run", "place_riichi_stick"]]]
+      ]]
     ],
     "unskippable": true,
     "cancellable": false
@@ -54,15 +56,22 @@
       ["register_last_discard"],
       ["when", [{"name": "not_last_discard_matches", "opts": ["yaochuuhai"]}], [["unset_status", "nagashi"]]],
       ["clear_marking"],
-      ["as", "toimen", [["run", "calculate_dora", {"last_tile": "last_discard"}]]],
-      ["unset_status", "just_reached"],
+      ["unset_status", "discards_empty"],
       ["recalculate_buttons"], # allow for ron to pop up
+      ["run", "discard_passed"],
       ["advance_turn"]
     ],
     "unskippable": true,
     "cancellable": false
   }
 }
+|
+if (.functions | has("calculate_dora")) then
+  .functions.calculate_dora += [
+    # ura doesn't count if we haven't actually won yet
+    ["when", ["not_won"], [["set_counter", "ura", 0]]]
+  ]
+else . end
 |
 .buttons.ron.show_when |= [{"name": "status", "opts": ["match_start"]}] + .
 |

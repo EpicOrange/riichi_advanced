@@ -1,4 +1,4 @@
-.after_initialization.actions += [["add_rule", "Local Yaku (2 Han)", "(Sanrenkou) \"Three Consecutive Triplets\". Your hand has three triplets of the same suit in sequence, like 222 333 444.", 102]]
+.after_initialization.actions += [["add_rule", "2 Han", "Sanrenkou", "\"Three Consecutive Triplets\". Your hand has three triplets of the same suit in sequence, like 222 333 444.", 102]]
 |
 (if .set_definitions | has("kontsu") then ["shuntsu", "kontsu", "koutsu"] else ["shuntsu", "koutsu"] end) as $others
 |

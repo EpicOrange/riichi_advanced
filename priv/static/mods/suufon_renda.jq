@@ -1,4 +1,4 @@
-.after_initialization.actions += [["add_rule", "Suufon Renda", "If all four players discard the same wind tile as their first discard, the game ends in an abortive draw."]]
+.after_initialization.actions += [["add_rule", "Rules", "Suufon Renda", "If all four players discard the same wind tile as their first discard, the game ends in an abortive draw."]]
 |
 .play_effects = [
   ["1z", [["when", [{"name": "status", "opts": ["discards_empty"]}], [

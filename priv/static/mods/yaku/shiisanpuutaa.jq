@@ -1,6 +1,6 @@
 .after_initialization.actions += [
-  ["add_rule", "Local Yaku (Yakuman)", "(Shiisanpuutaa) \"Thirteen Unconnected\". Start with 13 disconnected tiles, plus one forming a pair. Calls invalidate.", 113],
-  ["add_rule", "Win Condition", "- (Shiisanpuutaa) Start with 13 disconnected tiles, plus one forming a pair.", -100]
+  ["add_rule", "Yakuman", "Shiisanpuutaa", "\"Thirteen Unconnected\". Start with 13 disconnected tiles, plus one forming a pair. Calls invalidate.", 113],
+  ["add_rule", "Rules", "Win Condition", "- (Shiisanpuutaa) Start with 13 disconnected tiles, plus one forming a pair.", -100]
 ]
 |
 .yakuman += [
@@ -15,7 +15,7 @@
   "Shiisanpuutaa": ["Tenhou", "Chiihou"]
 }
 |
-.shiisanpuutaa_definition = [[ [["pair"], 1], [["pair", "ryanmen/penchan", "kanchan"], -1] ]]
+.shiisanpuutaa_definition = [[ [["pair"], 1], [["pair", [0, 1], [0, 2]], -1] ]]
 |
 .buttons.shiisanpuutaa = {
   "display_name": "Tsumo",

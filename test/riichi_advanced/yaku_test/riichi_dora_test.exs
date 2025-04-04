@@ -7,9 +7,9 @@ defmodule RiichiAdvanced.YakuTest.RiichiDoraTest do
     {
       "starting_hand": {
         "east": ["2m", "3m", "4m", "4m", "5m", "6m", "7p", "7p", "7p", "8s", "8s", "8s", "6p"],
-        "south": ["1m", "4m", "7m", "2p", "5p", "8p", "3s", "6s", "9s", "1z", "2z", "3z", "4z"],
-        "west": ["1m", "4m", "7m", "2p", "5p", "8p", "3s", "6s", "9s", "1z", "2z", "3z", "4z"],
-        "north": ["1m", "4m", "7m", "2p", "5p", "8p", "3s", "6s", "9s", "1z", "2z", "3z", "4z"]
+        "south": ["1m", "3m", "7m", "2p", "5p", "8p", "3s", "6s", "9s", "2z", "3z", "4z", "7z"],
+        "west": ["1m", "3m", "7m", "2p", "5p", "8p", "3s", "6s", "9s", "2z", "3z", "4z", "7z"],
+        "north": ["1m", "4m", "7m", "2p", "5p", "8p", "3s", "6s", "9s", "2z", "3z", "4z", "7z"]
       },
       "starting_draws": ["1z", "6p"],
       "starting_dead_wall": ["2z", "1z", "4z", "3z", "6p", "5z"]
@@ -163,9 +163,9 @@ defmodule RiichiAdvanced.YakuTest.RiichiDoraTest do
     {
       "starting_hand": {
         "east": ["3p", "4p", "4p", "4p", "5p", "16p", "6s", "17p", "7s", "8s", "13p", "11z", "2z"],
-        "south": ["1m", "4m", "7m", "2p", "5p", "8p", "3s", "6s", "9s", "1z", "2z", "3z", "4z"],
-        "west": ["1m", "4m", "7m", "2p", "5p", "8p", "3s", "6s", "9s", "1z", "2z", "3z", "4z"],
-        "north": ["1m", "4m", "7m", "2p", "5p", "8p", "3s", "6s", "9s", "1z", "2z", "3z", "4z"]
+        "south": ["1m", "4m", "7m", "2p", "6p", "8p", "3s", "6s", "9s", "1z", "2z", "6z", "7z"],
+        "west": ["1m", "4m", "7m", "2p", "6p", "8p", "3s", "6s", "9s", "1z", "3z", "6z", "7z"],
+        "north": ["1m", "4m", "7m", "3p", "6p", "8p", "3s", "7s", "9s", "3z", "4z", "6z", "7z"]
       },
       "starting_draws": ["1p", "2p", "5p", "7p", "13z"],
       "starting_dead_wall": ["2z", "1z", "4z", "3z", "4z", "5z"]

@@ -1,4 +1,4 @@
-defmodule RiichiAdvanced.YakuTest.TianjinPayments do
+defmodule RiichiAdvanced.TianjinPaymentsTest do
   use ExUnit.Case, async: true
   alias RiichiAdvanced.TestUtils, as: TestUtils
 

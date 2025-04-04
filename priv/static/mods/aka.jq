@@ -1,17 +1,23 @@
 def replace_n_tiles($tile; $aka; $num):
   if $num > 0 then
-    index($tile) as $ix
+    (map(if type == "object" then .tile elif type == "array" then .[0] else . end) | index($tile)) as $ix
     |
     if $ix then
-      .[$ix] = $aka
+      if .[$ix] | type == "object" then
+        .[$ix].tile = $aka
+      elif .[$ix] | type == "array" then
+        .[$ix][0] = $aka
+      else
+        .[$ix] = $aka
+      end
       |
       replace_n_tiles($tile; $aka; $num - 1)
     else . end
   else . end;
 
 .after_initialization.actions += [
-  ["add_rule", "Wall", "(Aka) \($man)x 5m, \($pin)x 5p, and \($sou)x 5p are replaced with red \"aka dora\" fives that are worth one extra han each.", -99],
-  ["update_rule", "Shuugi", "(Aka) If your hand is closed, each aka dora is worth 1 shuugi."]
+  ["add_rule", "Rules", "Wall", "(Aka) \($man)x 5m, \($pin)x 5p, and \($sou)x 5s are replaced with red \"aka dora\" fives that are worth one extra han each.", -99],
+  ["update_rule", "Rules", "Shuugi", "(Aka) If your hand is closed, each aka dora is worth 1 shuugi."]
 ]
 |
 # replace 5m,5p,5s in wall with 0m,0p,0s
@@ -39,6 +45,14 @@ if any(.wall[]; . == "1t") then
     ["set_tile_alias_all", ["0t"], ["5t"]],
     ["tag_tiles", "dora", ["0t"]]
   ]
+  |
+  .before_win.actions += [
+    ["add_counter", "aka", "count_matches", ["hand", "calls", "winning_tile"], [[ "nojoker", [["0t"], 1] ]]]
+  ]
+  |
+  .dora_indicators += {
+    "0t": ["6t"]
+  }
 else . end
 |
 # count aka

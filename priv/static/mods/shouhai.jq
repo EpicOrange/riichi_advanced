@@ -3,7 +3,7 @@ def add_call_conditions($call):
     .buttons[$call].call_conditions += [{"name": "not_call_contains", "opts": [["4x"], 1]}]
   else . end;
 
-.after_initialization.actions += [["add_rule", "Shouhai", "Reduces tiles in hand from 13 to 12. The goal is to achieve a tenpai hand rather than a winning hand. The idea is that your 13th tile is replaced with an invisible 'joker' tile that can be used to complete any hand."]]
+.after_initialization.actions += [["add_rule", "Rules", "Shouhai", "Reduces tiles in hand from 13 to 12. The goal is to achieve a tenpai hand rather than a winning hand. The idea is that your 13th tile is replaced with an invisible 'joker' tile that can be used to complete any hand."]]
 |
 if .starting_tiles == 34 and (.buttons | has("build")) then
   # for minefield, change the required hand size instead

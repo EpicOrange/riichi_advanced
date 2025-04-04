@@ -1,4 +1,4 @@
-.after_initialization.actions += [["add_rule", "Local Yaku (Mangan)", "(Dorahairi Chinroutou Chiitoitsu) Mangan if you have chiitoitsu composed of each terminal tile with the seventh pair being dora.", 105]]
+.after_initialization.actions += [["add_rule", "Mangan", "Dorahairi Chinroutou Chiitoitsu", "Mangan if you have chiitoitsu composed of each terminal tile with the seventh pair being dora.", 105]]
 |
 .yaku_dorahairi_chinroutou_chiitoitsu += [
   {

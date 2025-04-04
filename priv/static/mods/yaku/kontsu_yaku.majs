@@ -1,0 +1,353 @@
+on after_initialization do
+  add_rule("0.5 Han", "Mini-Sangen", "0.5 han is awarded for each mixed triplet of dragons.")
+  add_rule("0.5 Han", "Mixed Winds", "0.5 han is awarded for each mixed triplet of winds that contain both the round wind and the seat wind.")
+  add_rule("1 Han", "Toikon", "1 han if your hand is all kontsu. 2 han if closed.")
+  add_rule("1 Han", "Ryandoukon", "1 han if your closed hand contains two copies of the exact same kontsu.")
+  add_rule("2 Han", "Sandoukon", "2 han if your closed hand contains three copies of the exact same kontsu. 3 han if closed.")
+  add_rule("Yakuman", "Yondoukon", "Yakuman if your closed hand contains four copies of the exact same kontsu.")
+  add_rule("1 Han", "Rinshan", "(Cosmic) If you fuun and then tsumo on the replacement tile, you are awarded rinshan (1 han).")
+end
+
+define_set kontsu, ~s"0 10 20 | 1z 2z 3z | 1z 2z 4z | 1z 3z 4z | 2z 3z 4z | 5z 6z 7z"
+define_set honors_kontsu, ~s"1z 2z 3z | 1z 2z 4z | 1z 3z 4z | 2z 3z 4z | 5z 6z 7z"
+define_set kontsu_123, ~s"1z 2z 3z"
+define_set kontsu_124, ~s"1z 2z 4z"
+define_set kontsu_134, ~s"1z 3z 4z"
+define_set kontsu_234, ~s"2z 3z 4z"
+define_set kontsu_567, ~s"5z 6z 7z"
+define_set fuun, ~s"1z 2z 3z 4z"
+define_set ryandoukon, ~s"0 10 20, 0 10 20 | 1z 2z 3z, 1z 2z 3z | 1z 2z 4z, 1z 2z 4z | 1z 3z 4z, 1z 3z 4z | 2z 3z 4z, 2z 3z 4z | 5z 6z 7z, 5z 6z 7z"
+define_set sandoukon, ~s"0 10 20, 0 10 20, 0 10 20 | 1z 2z 3z, 1z 2z 3z, 1z 2z 3z | 1z 2z 4z, 1z 2z 4z, 1z 2z 4z | 1z 3z 4z, 1z 3z 4z, 1z 3z 4z | 2z 3z 4z, 2z 3z 4z, 2z 3z 4z | 5z 6z 7z, 5z 6z 7z, 5z 6z 7z"
+define_set yondoukon, ~s"0 10 20, 0 10 20, 0 10 20, 0 10 20 | 1z 2z 3z, 1z 2z 3z, 1z 2z 3z, 1z 2z 3z | 1z 2z 4z, 1z 2z 4z, 1z 2z 4z, 1z 2z 4z | 1z 3z 4z, 1z 3z 4z, 1z 3z 4z, 1z 3z 4z | 2z 3z 4z, 2z 3z 4z, 2z 3z 4z, 2z 3z 4z | 5z 6z 7z, 5z 6z 7z, 5z 6z 7z, 5z 6z 7z"
+
+# to calculate fu, we need to know which sets are kontsu and which are triplets
+# unfortunately, we can only determine this by comparing yaku
+# the relevant triplets yaku are:
+# - toitoi (2 han)
+# - sanshoku doukou (2 han)
+# - sanankou (2 han)
+# - suuankou (13 han)
+# - suuankou tanki (26 han)
+# - shousuushii (13 han)
+# - daisuushii (26 han)
+# - daisangen (13 han)
+# - yakuhai (1 han each)
+# the relevant kontsu yaku are:
+# - toikon (1 han open, 2 han closed)
+# - sandoukon (2 han open, 3 han closed)
+# - yondoukon (13 han)
+# - mini-sangen (0.5 han each)
+# - mixed winds (0.5 han each)
+# they are not mutually exclusive -- in particular, yakuhai can be awarded alongside kontsu
+# but we can make some determinations:
+# the following yaku completely determine all sets
+# - toitoi (all triplets)
+# - suuankou (all triplets)
+# - suuankou tanki (all triplets)
+# - shousuushii (all triplets)
+# - daisuushii (all triplets)
+# - daisangen (all triplets)
+# - toikon (all kontsu)
+# - yondoukon (all kontsu)
+# the others determine 1 or 3 sets
+# this narrows it down to 4 cases
+# - 4 triplets
+# - 3 triplets, 1 kontsu
+# - 3 kontsu, 1 triplet
+# - 4 kontsu
+on before_scoring do
+  four_triplet_points = 0
+  three_triplet_points = 0
+  four_kontsu_points = 0
+  three_kontsu_points = 0
+  # toitoi
+  if match(["hand", "calls", "winning_tile"], ~m"koutsu:4, pair:1") do
+    four_triplet_points = four_triplet_points + 2
+  end
+  # sanshoku doukou
+  if match(["hand", "calls", "winning_tile"], ~m"exhaustive, sanshoku_doukou:1, mentsu:1, pair:1") do
+    four_triplet_points = four_triplet_points + 2
+    three_triplet_points = three_triplet_points + 2
+  end
+  # sanankou
+  if (won_by_draw and match(["hand", "calls", "winning_tile"], ["sanankou_tsumo"])) or (not_won_by_draw and match(["hand", "calls", "winning_tile"], ["sanankou_ron"])) do
+    four_triplet_points = four_triplet_points + 2
+    three_triplet_points = three_triplet_points + 2
+  end
+  # suuankou
+  if won_by_draw and @closed_hand and match(["hand", "calls"], ~m"koutsu:3, pair:2") do
+    four_triplet_points = four_triplet_points + 13
+  end
+  # suuankou tanki
+  if @closed_hand and match(["hand", "calls"], ~m"koutsu:4") and match(["hand", "calls", "winning_tile"], ~m"koutsu:4, pair:1") do
+    four_triplet_points = four_triplet_points + 26
+  end
+  # shousuushii
+  if match(["hand", "calls", "winning_tile"], ["shousuushii"]) do
+    four_triplet_points = four_triplet_points + 13
+    three_triplet_points = three_triplet_points + 13
+  end
+  # daisuushii
+  if match(["hand", "calls", "winning_tile"], ["daisuushii"]) do
+    four_triplet_points = four_triplet_points + 26
+  end
+  # daisangen
+  if match(["hand", "calls", "winning_tile"], ["daisangen"]) do
+    four_triplet_points = four_triplet_points + 13
+    three_triplet_points = three_triplet_points + 13
+  end
+  # yakuhai
+  if match(["hand", "calls", "winning_tile"], ~m"exhaustive, (haku hatsu chun):1, mentsu:3, pair:1") do
+    four_triplet_points = four_triplet_points + 1
+    three_triplet_points = three_triplet_points + 1
+    three_kontsu_points = three_kontsu_points + 1
+  end
+  if (round_wind_is("east") and match(["hand", "calls", "winning_tile"], ~m"exhaustive, ton:1, mentsu:3, pair:1"))
+      or (round_wind_is("south") and match(["hand", "calls", "winning_tile"], ~m"exhaustive, nan:1, mentsu:3, pair:1"))
+      or (round_wind_is("west") and match(["hand", "calls", "winning_tile"], ~m"exhaustive, shaa:1, mentsu:3, pair:1"))
+      or (round_wind_is("north") and match(["hand", "calls", "winning_tile"], ~m"exhaustive, pei:1, mentsu:3, pair:1")) do
+    four_triplet_points = four_triplet_points + 1
+    three_triplet_points = three_triplet_points + 1
+    three_kontsu_points = three_kontsu_points + 1
+  end
+  if (seat_is("east") and match(["hand", "calls", "winning_tile"], ~m"exhaustive, ton:1, mentsu:3, pair:1"))
+      or (seat_is("south") and match(["hand", "calls", "winning_tile"], ~m"exhaustive, nan:1, mentsu:3, pair:1"))
+      or (seat_is("west") and match(["hand", "calls", "winning_tile"], ~m"exhaustive, shaa:1, mentsu:3, pair:1"))
+      or (seat_is("north") and match(["hand", "calls", "winning_tile"], ~m"exhaustive, pei:1, mentsu:3, pair:1")) do
+    four_triplet_points = four_triplet_points + 1
+    three_triplet_points = three_triplet_points + 1
+    three_kontsu_points = three_kontsu_points + 1
+  end
+
+  # toikon
+  if match(["hand", "calls", "winning_tile"], ~m"exhaustive, kontsu:4, pair:1") do
+    four_kontsu_points = four_kontsu_points + 1
+    if @closed_hand do
+      four_kontsu_points = four_kontsu_points + 1
+    end
+  end
+  # yondoukon
+  if match(["hand", "calls", "winning_tile"], ~m"exhaustive, yondoukon:1, pair:1") do
+    four_kontsu_points = four_kontsu_points + 13
+  end
+  # sandoukon
+  if match(["hand", "calls", "winning_tile"], ~m"exhaustive, sandoukon:1, mentsu:1, pair:1") do
+    four_kontsu_points = four_kontsu_points + 2
+    three_kontsu_points = three_kontsu_points + 2
+    if @closed_hand do
+      four_kontsu_points = four_kontsu_points + 1
+      three_kontsu_points = three_kontsu_points + 1
+    end
+  end
+  # 1 honors kontsu
+  if match(["hand", "calls", "winning_tile"], ~m"exhaustive, honors_kontsu:1, mentsu:3, pair:1") do
+    four_kontsu_points = four_kontsu_points + 0.5
+    three_kontsu_points = three_kontsu_points + 0.5
+    three_triplet_points = three_triplet_points + 0.5
+  end
+  # 3 honors kontsu
+  if match(["hand", "calls", "winning_tile"], ~m"exhaustive, honors_kontsu:3, mentsu:1, pair:1") do
+    four_kontsu_points = four_kontsu_points + 1
+    three_kontsu_points = three_kontsu_points + 1
+  end
+  # 4 honors kontsu
+  if match(["hand", "calls", "winning_tile"], ~m"exhaustive, honors_kontsu:4, pair:1") do
+    four_kontsu_points = four_kontsu_points + 0.5
+    three_kontsu_points = three_kontsu_points + 0.5
+  end
+  # now set variables for max number of kontsu and triplets
+  max_kontsu = 4
+  max_triplets = 4
+  if three_kontsu_points >= four_kontsu_points do
+    max_kontsu = 3
+    four_kontsu_points = 0
+  end
+  if three_triplet_points >= four_triplet_points do
+    max_triplets = 3
+    four_triplet_points = 0
+  end
+  if three_triplet_points > three_kontsu_points and three_triplet_points > four_kontsu_points do
+    max_kontsu = 1
+  end
+  if three_kontsu_points > three_triplet_points and three_kontsu_points > four_triplet_points do
+    max_triplets = 1
+  end
+  if four_triplet_points > three_kontsu_points and four_triplet_points > four_kontsu_points do
+    max_kontsu = 0
+  end
+  if four_kontsu_points > three_triplet_points and four_kontsu_points > four_triplet_points do
+    max_triplets = 0
+  end
+end
+
+# handle mini-sangen counting
+on before_scoring do
+  set_counter("mini_sangen", 0)
+  # count each mini sangen and multiply by 0.5
+  add_counter("mini_sangen", "count_matches", ["hand", "calls", "winning_tile"], ~m"kontsu_567:1")
+  multiply_counter("mini_sangen", 0.5)
+end
+define_yaku yaku, "Mini-Sangen", "mini_sangen", counter_at_least("mini_sangen", 0.5)
+
+# handle mixed winds counting
+define_const mixed_winds_groups, [
+  %{groups: ~s"""
+      0@prevalent 1@seat 2@wind
+    | 0@prevalent 1@wind 2@seat
+    | 0@seat 1@prevalent 2@wind
+    | 0@seat 1@wind 2@prevalent
+    | 0@wind 1@prevalent 2@seat
+    | 0@wind 1@seat 2@prevalent
+    | 0@prevalent&seat 1@wind 2@wind
+    | 0@wind 1@prevalent&seat 2@wind
+    | 0@wind 1@wind 2@prevalent&seat
+    """, value: 1},
+  %{groups: ~s""} # no-op
+]
+define_const yakuhai_wind_groups, [
+  %{groups: ~s"""
+      0@prevalent 0@prevalent 0@prevalent
+    | 0@seat 0@seat 0@seat
+    """, value: 2},
+  %{groups: ~s"0@prevalent&seat 0@prevalent&seat 0@prevalent&seat", value: 4},
+  %{groups: ~s""} # no-op
+]
+on before_scoring do
+  add_attr(["hand", "calls", "winning_tile"], "_wind", ["wind"])
+
+  # first check hand
+  set_counter("mixed_winds", "minipoints") do
+    remove_calls
+    remove_groups(@yakuhai_wind_groups, max_triplets >= 1)
+    remove_groups(@yakuhai_wind_groups, max_triplets >= 2)
+    remove_groups(@yakuhai_wind_groups, max_triplets >= 3)
+    remove_groups(@yakuhai_wind_groups, max_triplets >= 4)
+    remove_groups(@mixed_winds_groups, max_kontsu >= 1)
+    remove_groups(@mixed_winds_groups, max_kontsu >= 2)
+    remove_groups(@mixed_winds_groups, max_kontsu >= 3)
+    remove_groups(@mixed_winds_groups, max_kontsu >= 4)
+    # remove remaining groups
+    remove_groups([%{groups: ~s"0 0 0 | 0 1 2 | 0 10 20 |"}])
+    remove_groups([%{groups: ~s"0 0 0 | 0 1 2 | 0 10 20 |"}])
+    remove_groups([%{groups: ~s"0 0 0 | 0 1 2 | 0 10 20 |"}])
+    remove_groups([%{groups: ~s"0 0 0 | 0 1 2 | 0 10 20 |"}])
+    # remove pair
+    remove_groups([%{groups: ~s"0 0 |"}])
+    retain_empty_hands
+    take_maximum
+  end
+  # on a non-pinfu win, must adjust minipoints to match
+  if max_triplets >= 1 or max_kontsu >= 1 do
+    calculate_fu_with_maximums
+  end
+  # then check calls (chons/fuuns)
+  add_counter("fuun_count", "count_matches", ["calls"], ~m"fuun:1")
+  unless round_wind_is("north") and seat_is("north") do add_counter("chon_123_count", "count_matches", ["calls"], ~m"kontsu_123:1") end
+  unless round_wind_is("west") and seat_is("west") do add_counter("chon_124_count", "count_matches", ["calls"], ~m"kontsu_124:1") end
+  unless round_wind_is("south") and seat_is("south") do add_counter("chon_134_count", "count_matches", ["calls"], ~m"kontsu_134:1") end
+  unless round_wind_is("east") and seat_is("east") do add_counter("chon_234_count", "count_matches", ["calls"], ~m"kontsu_234:1") end
+  # the above chon counts will also count fuuns, so subtract fuun count from each
+  subtract_counter("chon_123_count", "fuun_count")
+  subtract_counter("chon_124_count", "fuun_count")
+  subtract_counter("chon_134_count", "fuun_count")
+  subtract_counter("chon_234_count", "fuun_count")
+  # add all positive counts to the total
+  add_counter("mixed_winds", "fuun_count")
+  if counter_at_least("chon_123_count", 1) do add_counter("mixed_winds", "chon_123_count") end
+  if counter_at_least("chon_124_count", 1) do add_counter("mixed_winds", "chon_124_count") end
+  if counter_at_least("chon_134_count", 1) do add_counter("mixed_winds", "chon_134_count") end
+  if counter_at_least("chon_234_count", 1) do add_counter("mixed_winds", "chon_234_count") end
+  mixed_winds = mixed_winds * 0.5
+  remove_attr_all("wind", "prevalent", "seat")
+end
+define_yaku yaku, "Mixed Winds", "mixed_winds", counter_at_least("mixed_winds", 0.5)
+define_const triplets_fu, [
+  %{groups: ~s"0@tanyao 0@tanyao 0@tanyao", value: 4},
+  %{groups: ~s"0@yaochuu 0@yaochuu 0@yaochuu", value: 8},
+  %{groups: ~s""} # no-op
+]
+define_const kontsu_fu, [
+  %{groups: ~s"0@tanyao 10@tanyao 20@tanyao", value: 2},
+  %{groups: ~s"0@terminal 10@terminal 20@terminal", value: 4},
+  %{groups: ~s"0@jihai 1@jihai 2@jihai", value: 4},
+  %{groups: ~s""} # no-op
+]
+
+def calculate_fu_with_maximums do
+  # if we previously calculated pinfu, chiitoitsu, or kokushi, don't bother recalculating fu
+  unless (won_by_draw and minipoints_equals(20))
+      or (not_won_by_draw and minipoints_equals(30))
+      or match(["hand", "calls", "winning_tile"], ["chiitoitsu_win"])
+      or match(["hand", "calls", "winning_tile"], ["kokushi_win"]) do
+    set_counter("fu", "minipoints") do
+      # score calls
+      convert_calls(@calls_fu)
+      remove_calls(["tanyaohai"])
+      convert_calls(@calls_fu)
+      remove_calls
+
+      # first remove anywhere between 0-4 sequences (not honors kontsu)
+      remove_groups(@winning_groups_fu)
+      remove_groups([%{groups: ~s"0@terminal 1 2 | 0@tanyao 1 2 |"}])
+      remove_groups([%{groups: ~s"0@terminal 1 2 | 0@tanyao 1 2 |"}])
+      remove_groups([%{groups: ~s"0@terminal 1 2 | 0@tanyao 1 2 |"}])
+      remove_groups([%{groups: ~s"0@terminal 1 2 | 0@tanyao 1 2 |"}])
+      # then try removing 0-max triplets and 0-max kontsu
+      remove_groups(@triplets_fu, max_triplets >= 1)
+      remove_groups(@triplets_fu, max_triplets >= 2)
+      remove_groups(@triplets_fu, max_triplets >= 3)
+      remove_groups(@triplets_fu, max_triplets >= 4)
+      remove_groups(@kontsu_fu, max_kontsu >= 1)
+      remove_groups(@kontsu_fu, max_kontsu >= 2)
+      remove_groups(@kontsu_fu, max_kontsu >= 3)
+      remove_groups(@kontsu_fu, max_kontsu >= 4)
+      remove_groups([%{groups: ~s"0 0 |"}])
+
+      # only retain configurations with 0 tiles remaining
+      retain_empty_hands
+
+      # base 20, tsumo +2 or closed ron +10, take max, round up
+      add(20)
+      add(2, won_by_draw)
+      add(10, not_won_by_draw and @closed_hand)
+      take_maximum
+      round_up(10)
+    end
+  end
+end
+
+# other kontsu yaku
+
+define_const closed_hand, has_no_call_named("ton", "chii", "chon", "chon_honors", "daiminfuun", "pon", "daiminkan", "kapon", "kakakan", "kafuun", "kakan")
+
+# make sure sequence-based yaku don't take honors kontsu
+replace_yaku yaku, "Ittsu", 1, match(["hand", "calls", "winning_tile"], ~m"exhaustive, mentsu:1, pair:1, kontsu:-1, ittsu:1")
+replace_yaku yaku, "Iipeikou", 1, @closed_hand and match(["hand", "calls", "winning_tile"], ~m"exhaustive, mentsu:2, pair:1, kontsu:-1, iipeikou:1")
+replace_yaku yaku, "Isshoku Sanjun", 2, match(["hand", "calls", "winning_tile"], ~m"exhaustive, mentsu:1, pair:1, kontsu:-1, iishoku_sanjun:1")
+replace_yaku yakuman, "Isshoku Yonjun", 1, match(["hand", "calls", "winning_tile"], ~m"exhaustive, kontsu:-1, iishoku_yonjun:1, pair:1")
+replace_yaku yaku, "Ryanpeikou", 1, match(["hand", "calls", "winning_tile"], ~m"exhaustive, pair:1, kontsu:-1, iipeikou:2")
+# rinshan also works with fuun
+replace_yaku yaku, "Rinshan", 1, status("kan") or status("fuun")
+
+define_yaku yaku, "Toikon", 1, match(["hand", "calls", "winning_tile"], ~m"exhaustive, kontsu:4, pair:1")
+define_yaku yaku, "Ryandoukon", 1, @closed_hand and match(["hand", "calls", "winning_tile"], ~m"exhaustive, ryandoukon:1, mentsu:2, pair:1")
+define_yaku yaku, "Sandoukon", 2, match(["hand", "calls", "winning_tile"], ~m"exhaustive, sandoukon:1, mentsu:1, pair:1")
+define_yaku yakuman, "Yondoukon", 1, match(["hand", "calls", "winning_tile"], ~m"exhaustive, yondoukon:1, pair:1")
+define_yaku meta_yaku, "Toikon", 1, @closed_hand and has_existing_yaku("Toikon")
+define_yaku meta_yaku, "Sandoukon", 1, @closed_hand and has_existing_yaku("Sandoukon")
+
+define_yaku_precedence "Yondoukon", ["Sandoukon", "Round Wind", "Seat Wind", "Toitoi", "Sanankou", "Sanshoku Doukou"]
+define_yaku_precedence "Sandoukon", ["Ryandoukon"]
+define_yaku_precedence "Kokushi Musou", ["Mixed Winds", "Mini-Sangen"]
+define_yaku_precedence "Kokushi Musou Juusan Menmachi", ["Mixed Winds", "Mini-Sangen"]
+
+# now forbid certain yaku based on max_triplets and max_kontsu
+define_yaku meta_yaku, "_no_triplets", 1, max_triplets == 0
+define_yaku meta_yaku, "_one_triplet", 1, max_triplets <= 1
+define_yaku meta_yaku, "_no_kontsu", 1, max_kontsu == 0
+define_yaku meta_yaku, "_one_kontsu", 1, max_kontsu <= 1
+
+define_yaku_precedence "_no_triplets", ["_no_triplets", "Haku", "Hatsu", "Chun", "Round Wind", "Seat Wind"]
+define_yaku_precedence "_one_triplet", ["_one_triplet", "Toitoi", "Sanshoku Doukou", "Sanankou", "Suuankou", "Suuankou Tanki", "Shousuushii", "Daisuushii", "Daisangen"]
+define_yaku_precedence "_no_kontsu", ["_no_kontsu", "Mini-Sangen", "Mixed Winds"]
+define_yaku_precedence "_one_kontsu", ["_one_kontsu", "Toikon", "Sandoukon", "Yondoukon"]

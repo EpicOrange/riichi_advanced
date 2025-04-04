@@ -79,7 +79,6 @@ defmodule RiichiAdvanced.YakuTest.NingboYaku do
   end
 
   test "ningbo - single wait no baida" do
-    # all triplets and single wait
     TestUtils.test_yaku_advanced("ningbo", [], """
     {
       "starting_hand": {
@@ -108,7 +107,6 @@ defmodule RiichiAdvanced.YakuTest.NingboYaku do
   end
 
   test "ningbo - closed wait no baida" do
-    # all triplets and single wait
     TestUtils.test_yaku_advanced("ningbo", [], """
     {
       "starting_hand": {
@@ -137,7 +135,6 @@ defmodule RiichiAdvanced.YakuTest.NingboYaku do
   end
 
   test "ningbo - edge wait no baida" do
-    # all triplets and single wait
     TestUtils.test_yaku_advanced("ningbo", [], """
     {
       "starting_hand": {
@@ -166,7 +163,6 @@ defmodule RiichiAdvanced.YakuTest.NingboYaku do
   end
 
   test "ningbo - single wait win on baida" do
-    # all triplets and single wait
     TestUtils.test_yaku_advanced("ningbo", [], """
     {
       "starting_hand": {
@@ -195,7 +191,6 @@ defmodule RiichiAdvanced.YakuTest.NingboYaku do
   end
 
   test "ningbo - closed wait win on baida" do
-    # all triplets and single wait
     TestUtils.test_yaku_advanced("ningbo", [], """
     {
       "starting_hand": {
@@ -224,7 +219,6 @@ defmodule RiichiAdvanced.YakuTest.NingboYaku do
   end
 
   test "ningbo - edge wait win on baida" do
-    # all triplets and single wait
     TestUtils.test_yaku_advanced("ningbo", [], """
     {
       "starting_hand": {
@@ -253,7 +247,6 @@ defmodule RiichiAdvanced.YakuTest.NingboYaku do
   end
 
   test "ningbo - round and seat winds" do
-    # all triplets and single wait
     TestUtils.test_yaku_advanced("ningbo", [], """
     {
       "starting_hand": {
@@ -282,7 +275,6 @@ defmodule RiichiAdvanced.YakuTest.NingboYaku do
   end
 
   test "ningbo - white dragon" do
-    # all triplets and no baida
     TestUtils.test_yaku_advanced("ningbo", [], """
     {
       "starting_hand": {
@@ -485,7 +477,6 @@ defmodule RiichiAdvanced.YakuTest.NingboYaku do
   end
 
   test "ningbo - all honours" do
-    # all triplets and no baida
     TestUtils.test_yaku_advanced("ningbo", [], """
     {
       "starting_hand": {
@@ -514,7 +505,6 @@ defmodule RiichiAdvanced.YakuTest.NingboYaku do
   end
 
   test "ningbo - blessing of heaven" do
-    # all triplets and no baida
     TestUtils.test_yaku_advanced("ningbo", [], """
     {
       "starting_hand": {
@@ -541,7 +531,6 @@ defmodule RiichiAdvanced.YakuTest.NingboYaku do
   end
 
   test "ningbo - blessing of earth" do
-    # all triplets and no baida
     TestUtils.test_yaku_advanced("ningbo", [], """
     {
       "starting_hand": {

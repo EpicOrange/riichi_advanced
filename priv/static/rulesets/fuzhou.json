@@ -1,10 +1,10 @@
 {
-// TODOs:
-  //⚠️ allow East to qiangjin, by only drawing East's 17th tile after everyone has declared flowers
-// mods/rule-variants
-  // reddit post says only red dragon is a flower, not all 3 dragons
-  // reddit post says if you have 3 gold you win immediately, but here it is just a valuable yaku
-  // mahjongpros also seem to have a few more yaku
+  // TODOs:
+    //⚠️ allow East to qiangjin, by only drawing East's 17th tile after everyone has declared flowers
+  // mods/rule-variants
+    // reddit post says only red dragon is a flower, not all 3 dragons
+    // reddit post says if you have 3 gold you win immediately, but here it is just a valuable yaku
+    // mahjongpros also seem to have a few more yaku
   
   "default_mods": ["show_waits"],
   "available_mods": [
@@ -12,6 +12,7 @@
     {"id": "discardable_flowers", "conflicts": ["forced_flowers"], "name": "Discardable Flowers", "desc": "You may discard flower tiles like normal tiles."},
     {"id": "forbid_golden_flowers", "name": "No Gold Flowers", "desc": "The gold tile is determined by checking each tile in the dead wall until you find a non-flower tile. Flowers revealed in this process are given to the player whose wall is broken. If all nine tiles on the dead wall are flowers, then there is no gold tile for the round."},
     {"id": "fuzhou_everyone_pays", "name": "Everyone Pays On Discard", "desc": "Non-discarders also pay for a win by discard."},
+    {"id": "reset_honba_on_draw", "name": "Draws Reset Dealer Bonus", "desc": "Reset the dealer continuation bonus on exhaustive draws. (The default behavior is to increase the bonus on a draw.)"},
     {"id": "show_waits", "name": "Show Waits", "desc": "Add some UI that shows waits."},
     {"id": "open_hands", "name": "Open Hands", "desc": "Everyone plays with tiles shown."}
   ],
@@ -68,28 +69,28 @@
     "4g": ["1f", "2f", "3f", "4f", "1g", "2g", "3g", "4g"]
   },
   "set_definitions": {
-    "pair": [0, 0],
-    "gold_pair": [{"offset": 0, "attrs": ["is_jin"]}, {"offset": 0, "attrs": ["is_jin"]}],
-    "shuntsu": [0, 1, 2],
-    "koutsu": [0, 0, 0],
-    "gold_koutsu": [{"offset": 0, "attrs": ["is_jin"]}, {"offset": 0, "attrs": ["is_jin"]}, {"offset": 0, "attrs": ["is_jin"]}],
-    "quad": [0, 0, 0, 0],
-    "ryanmen/penchan": [0, 1],
-    "kanchan": [0, 2],
-    "ton": ["nojoker", "1z", "1z", "1z"],
-    "nan": ["nojoker", "2z", "2z", "2z"],
-    "shaa": ["nojoker", "3z", "3z", "3z"],
-    "pei": ["nojoker", "4z", "4z", "4z"],
-    "haku": ["nojoker", "5z", "5z", "5z"],
-    "hatsu": ["nojoker", "6z", "6z", "6z"],
-    "chun": ["nojoker", "7z", "7z", "7z"],
-    "ton_pair": ["nojoker", "1z", "1z"],
-    "nan_pair": ["nojoker", "2z", "2z"],
-    "shaa_pair": ["nojoker", "3z", "3z"],
-    "pei_pair": ["nojoker", "4z", "4z"],
-    "haku_pair": ["nojoker", "5z", "5z"],
-    "hatsu_pair": ["nojoker", "6z", "6z"],
-    "chun_pair": ["nojoker", "7z", "7z"]
+    "pair": [[0, 0]],
+    "gold_pair": [[{"offset": 0, "attrs": ["is_jin"]}, {"offset": 0, "attrs": ["is_jin"]}]],
+    "shuntsu": [[0, 1, 2]],
+    "koutsu": [[0, 0, 0]],
+    "gold_koutsu": [[{"offset": 0, "attrs": ["is_jin"]}, {"offset": 0, "attrs": ["is_jin"]}, {"offset": 0, "attrs": ["is_jin"]}]],
+    "quad": [[0, 0, 0, 0]],
+    "ryanmen/penchan": [[0, 1]],
+    "kanchan": [[0, 2]],
+    "ton": [["nojoker", "1z", "1z", "1z"]],
+    "nan": [["nojoker", "2z", "2z", "2z"]],
+    "shaa": [["nojoker", "3z", "3z", "3z"]],
+    "pei": [["nojoker", "4z", "4z", "4z"]],
+    "haku": [["nojoker", "5z", "5z", "5z"]],
+    "hatsu": [["nojoker", "6z", "6z", "6z"]],
+    "chun": [["nojoker", "7z", "7z", "7z"]],
+    "ton_pair": [["nojoker", "1z", "1z"]],
+    "nan_pair": [["nojoker", "2z", "2z"]],
+    "shaa_pair": [["nojoker", "3z", "3z"]],
+    "pei_pair": [["nojoker", "4z", "4z"]],
+    "haku_pair": [["nojoker", "5z", "5z"]],
+    "hatsu_pair": [["nojoker", "6z", "6z"]],
+    "chun_pair": [["nojoker", "7z", "7z"]]
   },
   "tenpai_definition": [
     [ "exhaustive", [["shuntsu", "koutsu"], 4], [["ryanmen/penchan", "kanchan", "pair"], 1], [["pair"], 1] ],
@@ -208,18 +209,24 @@
   "after_turn_change": {
     "actions": [
       ["when", ["no_tiles_remaining"], [["pause", 1000], ["ryuukyoku"]]],
-      ["when", [{"name": "everyone_status", "opts": ["no_flowers"]}], [["unset_status_all", "no_flowers", "match_start"]]],
+      ["when", [{"name": "everyone_status", "opts": ["no_flowers"]}], [["unset_status_all", "no_flowers", "match_start", "qiangjin"]]],
       ["when", [{"name": "status_missing", "opts": ["match_start"]}, {"name": "tag_exists", "opts": ["jin"]}, "not_no_tiles_remaining"], [["draw"]]]
     ]
   },
   "after_start": {
     "actions": [
-      ["set_status_all", "first_turn", "match_start"],
       ["run", "flip_gold_tile"],
-        // add the "dora" attribute to tiles tagged with "jin", which should make them shiny
+      // add the "dora" attribute to tiles tagged with "jin", which should make them shiny
       ["add_attr_tagged", "jin", ["_dora", "jin"]],
-        // sets any tile with attribute "jin" to be an any-joker with attribute "is_jin"
-      ["set_tile_alias_all", [{"tile": "any", "attrs": ["jin"]}], [{"tile": "any", "attrs": ["is_jin"]}]]
+      // before making jin a joker, check for qiangjin for all players
+      ["as", "everyone", [
+        ["when", [{"name": "match", "opts": [["hand", "revealed_tiles"], ["win"]]}], [
+          ["set_status", "qiangjin"]
+        ]]
+      ]],
+      // sets any tile with attribute "jin" to be an any-joker with attribute "is_jin"
+      ["set_tile_alias", [{"tile": "any", "attrs": ["jin"]}], [{"tile": "any", "attrs": ["is_jin"]}]],
+      ["set_status_all", "first_turn", "match_start"]
     ]
   },
   "before_win": {
@@ -229,18 +236,13 @@
       ["set_counter", "gold_count", "count_matches", ["hand", "calls", "winning_tile", "flowers"], [[ "nojoker", [[{"tile": "any", "attrs": ["jin"]}], 1] ]]]
     ]
   },
-  "before_exhaustive_draw": {
-    "actions": [
-      ["add_honba"]
-    ]
-  },
   "buttons": {
     "start_flower": {
       "display_name": "Reveal flower",
       "show_when": [
         {"name": "status", "opts": ["match_start"]},
         "our_turn",
-        {"name": "status_missing", "opts": ["flower", "no_flowers"]},
+        {"name": "status_missing", "opts": ["qiangjin", "flower", "no_flowers"]},
         {"name": "match", "opts": [["hand", "draw"], [[ "nojoker", [["1f", "2f", "3f", "4f", "1g", "2g", "3g", "4g", "1z", "2z", "3z", "4z", "0z", "6z", "7z"], 1] ]]]}
       ],
       "actions": [
@@ -258,7 +260,7 @@
       "show_when": [
         {"name": "status", "opts": ["match_start"]},
         "our_turn",
-        {"name": "status_missing", "opts": ["flower", "no_flowers"]},
+        {"name": "status_missing", "opts": ["qiangjin", "flower", "no_flowers"]},
         {"name": "not_match", "opts": [["hand", "draw"], [[ "nojoker", [["1f", "2f", "3f", "4f", "1g", "2g", "3g", "4g", "1z", "2z", "3z", "4z", "0z", "6z", "7z"], 1] ]]]}
       ],
       "actions": [["big_text", "No flowers"], ["set_status", "no_flowers"], ["move_tiles", "draw", "hand"], ["advance_turn"]],
@@ -376,13 +378,20 @@
     "qiangjin": {
       "display_name": "Qiangjin",
       "show_when": [
-        {"name": "status", "opts": ["match_start"]},
-        "our_turn",
-        {"name": "status_missing", "opts": ["flower"]},
-        {"name": "match", "opts": [["hand", "revealed_tiles"], ["tenpai"]]},
-        {"name": "match", "opts": [["hand", "revealed_tiles"], ["win"]]}
+        {"name": "status", "opts": ["match_start", "qiangjin"]},
+        {"name": "status_missing", "opts": ["flower"]}
       ],
       "actions": [["big_text", "Qiangjin"], ["pause", 1000], ["move_tiles", "revealed_tile", "draw"], ["reveal_hand"], ["set_status", "qiangjin"], ["win_by_draw"]],
+      "precedence_over": ["start_flower", "start_no_flower"],
+      "unskippable": true
+    },
+    "qiangjin_skip": {
+      "display_name": "Skip",
+      "show_when": [
+        {"name": "status", "opts": ["match_start", "qiangjin"]},
+        {"name": "status_missing", "opts": ["flower"]}
+      ],
+      "actions": [["unset_status", "qiangjin"], ["recalculate_buttons"]],
       "unskippable": true
     },
     "tsumo": {
@@ -457,7 +466,7 @@
     "5_auto_discard": {
       "display_name": "D",
       "desc": "Automatically discard your drawn tile.",
-      "actions": [["when", ["has_draw"], [["discard_draw"]]]],
+      "actions": [["when", ["our_turn", {"name": "buttons_exclude", "opts": ["tsumo", "ankan"]}, "has_draw"], [["discard_draw"]]]],
       "enabled_at_start": false
     }
   },

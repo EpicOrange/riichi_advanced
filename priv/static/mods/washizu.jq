@@ -1,9 +1,9 @@
 .after_initialization.actions += [
-  ["add_rule", "Wall", "(Washizu) Each tile in the wall is transparent and visible to all, except for one copy. Unflipped dora indicators are not visible."],
-  ["add_rule", "Washizu", "Points are replaced with blood. So 1000 points are now 100 ccs of blood."]
+  ["add_rule", "Rules", "Wall", "(Washizu) Each tile in the wall is transparent and visible to all, except for one copy. Unflipped dora indicators are not visible."],
+  ["add_rule", "Rules", "Washizu", "Points are replaced with blood. So 1000 points are now 100 ccs of blood."]
 ]
 |
-.wall |= (to_entries | map(if (.key % 4 != 0) then .value = [.value, "revealed", "transparent"] else . end) | map(.value))
+.wall |= (to_entries | map(if (.key % 4 != 0) then .value = [.value, "_revealed", "_transparent"] else . end) | map(.value))
 |
 # divide all scores by 10 (1000 pts -> 100 ccs)
 .score_calculation += {

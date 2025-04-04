@@ -1,0 +1,32 @@
+on after_initialization do
+  add_rule_tab("Rules")
+  add_rule_tab("1 $han", %{han: !han})
+  add_rule_tab("2 $han", %{han: !han})
+  add_rule_tab("3 $han", %{han: !han})
+  add_rule_tab("4 $han", %{han: !han})
+  add_rule_tab("5 $han", %{han: !han})
+  add_rule_tab("6 $han", %{han: !han})
+  add_rule_tab("7 $han", %{han: !han})
+  add_rule_tab("8 $han", %{han: !han})
+  add_rule_tab("9 $han", %{han: !han})
+  add_rule_tab("10 $han", %{han: !han})
+  add_rule_tab("11 $han", %{han: !han})
+  add_rule_tab("12 $han", %{han: !han})
+  add_rule_tab("13 $han", %{han: !han})
+  add_rule_tab("Limit")
+  add_rule_tab("Yakuman")
+  add_rule("Rules", "Win Condition", "You may win with one of the following:", -100)
+end
+
+on after_turn_change do
+  if no_tiles_remaining do
+    pause(1000)
+    ryuukyoku
+  else
+    draw
+  end
+end
+
+set starting_tiles, 13
+set max_rounds, 16
+set four_rows_discards, true

@@ -1,11 +1,11 @@
 .after_initialization.actions += [
-  ["add_rule", "Wall", "(Blue Dragon) Four blue dragons (framed tiles) are added to the wall.", -99],
-  ["add_rule", "Local Yaku (1 Han)", "(Blue Dragon) A triplet of blue dragons is yakuhai."],
-  ["add_rule", "Local Yaku (1 Han)", "(Blue Dragon) Shousangen is now 1 han (+2 from dragons)."],
-  ["add_rule", "Local Yaku (2 Han)", "(Blue Dragon) Daisangen is now 2 han (+3 from dragons)."],
-  ["add_rule", "Local Yaku (Yakuman)", "(Blue Dragon) Having three dragon triplets and a dragon pair awards the Shousuugen yakuman."],
-  ["add_rule", "Local Yaku (Double Yakuman)", "(Blue Dragon) Having four dragon triplets awards the Daisuugen double yakuman."],
-  ["add_rule", "Dora", "(Blue Dragon) For dragons, the sequence is White, Green, Red, Blue."]
+  ["add_rule", "Rules", "Wall", "(Blue Dragon) Four blue dragons (framed tiles) are added to the wall.", -99],
+  ["add_rule", "1 Han", "Blue Dragon", "A triplet of blue dragons is yakuhai."],
+  ["add_rule", "1 Han", "Shousangen", "(Blue Dragon) Shousangen is now 1 han (+2 from dragons)."],
+  ["add_rule", "2 Han", "Daisangen", "(Blue Dragon) Daisangen is now 2 han (+3 from dragons)."],
+  ["add_rule", "Yakuman", "Shousuugen", "(Blue Dragon) Having three dragon triplets and a dragon pair awards the Shousuugen yakuman."],
+  ["add_rule", "Yakuman", "Daisuugen", "(Blue Dragon) Having four dragon triplets awards the Daisuugen double yakuman."],
+  ["add_rule", "Rules", "Dora", "(Blue Dragon) For dragons, the sequence for dora indicators is White, Green, Red, Blue."]
 ]
 |
 .wall += ["0z", "0z", "0z", "0z"]
@@ -15,11 +15,7 @@
 .set_definitions.baiban_pair = ["0z", "0z"]
 |
 .yaku |= map(
-  if .display_name == "Chanta" then
-    .when[-1].opts[1][0][0][0] += ["baiban"]
-    |
-    .when[-1].opts[1][0][1][0] += ["baiban_pair"]
-  elif .display_name == "Shousangen" then
+  if .display_name == "Shousangen" then
     .value = 1
     |
     .when[0].opts[1] = [[[["haku", "hatsu", "chun", "baiban"], 2], [["haku_pair", "hatsu_pair", "chun_pair", "baiban_pair"], 1]]]

@@ -1,0 +1,63 @@
+on after_initialization do
+  if equals(!tenhou_list, "yakuman") do
+    add_rule("Limit", "$name", "As dealer, you won with your initial draw.", %{value: !tenhou_value, han: !han, name: !tenhou_name})
+  else
+    add_rule("$value $han", "$name", "As dealer, you won with your initial draw.", %{value: !tenhou_value, han: !han, name: !tenhou_name})
+  end
+  if !chiihou_is_tsumo do
+    if equals(!chiihou_list, "yakuman") do
+      add_rule("Limit", "$name", "As a non-dealer, you won with your initial draw.", %{value: !chiihou_value, han: !han, name: !chiihou_name})
+    else
+      add_rule("$value $han", "$name", "As a non-dealer, you won with your initial draw.", %{value: !chiihou_value, han: !han, name: !chiihou_name})
+    end
+  else
+    if equals(!chiihou_list, "yakuman") do
+      add_rule("Limit", "$name", "You won on the dealer's first discard. Calls invalidate.", %{value: !chiihou_value, han: !han, name: !chiihou_name})
+    else
+      add_rule("$value $han", "$name", "You won on the dealer's first discard. Calls invalidate.", %{value: !chiihou_value, han: !han, name: !chiihou_name})
+    end
+  end
+  unless !renhou_disabled do
+    if equals(!renhou_list, "yakuman") do
+      add_rule("Limit", "$name", "You won on someone's discard, before your first draw. Calls invalidate.", %{value: !renhou_value, han: !han, name: !renhou_name})
+    else
+      add_rule("$value $han", "$name", "You won on someone's discard, before your first draw. Calls invalidate.", %{value: !renhou_value, han: !han, name: !renhou_name})
+    end
+  end
+end
+
+on after_start do
+  set_status_all("first_turn")
+end
+on before_turn_change do
+  if status("first_turn") and match(["discards"], ~m"any:1") do
+    unset_status("first_turn")
+  end
+end
+on after_call do
+  if status("first_turn") and not_last_call_is("flower", "start_flower") do
+    unset_status("first_turn")
+  end
+end
+
+define_yaku !tenhou_list, !tenhou_name, !tenhou_value, status("first_turn") and won_by_draw and seat_is("east")
+define_yaku !chiihou_list, !chiihou_name, !chiihou_value, status("first_turn") and won_by_draw and not_seat_is("east")
+define_yaku !chiihou_list, !chiihou_name, !chiihou_value, everyone_status("first_turn") and won_by_discard
+define_yaku !renhou_list, !renhou_name, !renhou_value, not_everyone_status("first_turn") and status("first_turn") and won_by_discard
+define_yaku_precedence !chiihou_name, [!renhou_name]
+
+# invalidate certain wins
+on before_win do
+  if !chiihou_is_tsumo do
+    if not_won_by_draw do
+      unset_status("first_turn")
+    end
+  else
+    if not_seat_is("east") and won_by_draw do
+      unset_status("first_turn")
+    end
+  end
+  if !renhou_disabled and not_won_by_draw do
+    unset_status("first_turn")
+  end
+end

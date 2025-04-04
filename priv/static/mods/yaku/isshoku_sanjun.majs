@@ -1,0 +1,11 @@
+on after_initialization do
+  add_rule("2 Han", "Isshoku Sanjun", "\"Pure Triple Sequences\". 2 han if you have three of the exact same sequence in one suit, like 123 123 123. Like iipeikou but three. 3 han if closed. Does not stack with iipeikou (123 123) or sanrenkou (111 222 333).")
+end
+
+define_set iishoku_sanjun, ~s"0 1 2, 0 1 2, 0 1 2"
+
+define_yaku yaku, "Isshoku Sanjun", 2, match(["hand", "calls", "winning_tile"], ~m"exhaustive, iishoku_sanjun:1, mentsu:1, pair:1")
+define_yaku meta_yaku, "Isshoku Sanjun", 1, @closed_hand and has_existing_yaku("Isshoku Sanjun")
+
+define_yaku_precedence "Isshoku Sanjun", ["Iipeikou", "Sanankou", "Sanrenkou", "Choupaikou", "Sujipaikou", "Chousankou"]
+define_yaku_precedence "Suuankou", ["Isshoku Sanjun"]

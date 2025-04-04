@@ -1,0 +1,5 @@
+on after_initialization do
+  add_rule("$value $han", "$name", "You have no flowers.", %{value: !value, han: !han, name: !name})
+end
+
+define_yaku !list, !name, !value, not_match(["flowers"], ~m"unique, (1f 2f 3f 4f 1g 2g 3g 4g):1")

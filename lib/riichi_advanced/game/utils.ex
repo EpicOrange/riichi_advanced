@@ -28,17 +28,25 @@ defmodule RiichiAdvanced.Utils do
     else nil end
   end
 
-  def tile_to_attrs(tile) do
-    case tile do
-      {tile, attrs} -> [Atom.to_string(tile) | attrs]
-      tile          -> [Atom.to_string(tile)]
-    end
+  def hand_to_string(hand) do
+    hand
+    |> Enum.map(&Atom.to_string/1)
+    |> Enum.group_by(fn <<_num, suit>> -> <<suit>> end, fn <<num, _>> -> <<num>> end)
+    |> Enum.map(fn {suit, nums} -> Enum.join(nums) <> suit end)
+    |> Enum.join()
   end
 
   def to_attr_tile(tile) do
     case tile do
       {tile, attrs} -> {tile, attrs}
       tile          -> {tile, []}
+    end
+  end
+
+  def get_attrs(tile) do
+    case tile do
+      {_tile, attrs} -> attrs
+      _tile          -> []
     end
   end
 
@@ -113,6 +121,12 @@ defmodule RiichiAdvanced.Utils do
   end
   def ph(tiles), do: Enum.map(tiles, &pt/1)
 
+  def print_yaku(yaku) do
+    Enum.flat_map(yaku, fn {name, value} ->
+      [%{text: name}, %{bold: true, text: "(#{value})"}]
+    end)
+  end
+
   def sort_tiles(tiles, joker_assignment \\ %{}) do
     tiles
     |> Enum.with_index()
@@ -130,18 +144,19 @@ defmodule RiichiAdvanced.Utils do
     else
       # every joker is connected to any-tile jokers
       any_tiles = Map.get(tile_behavior.aliases, :any, %{}) |> Map.values() |> Enum.concat()
+      any_tiles = MapSet.new([tile | any_tiles])
       for {tile2, attrs_aliases} <- tile_behavior.aliases, {attrs2, aliases} <- attrs_aliases do
+        # aliases = MapSet of all possible {tile, attrs} that map to {tile2, attrs2}
         t2 = add_attr(tile2, attrs2)
-        cond do
-          has_matching_tile?([tile], aliases) ->
-            # aliases = MapSet of all possible {tile, attrs} that map to {tile2, attrs2}
-            MapSet.new(aliases)
-            |> MapSet.delete(:any) # never return :any
-            |> MapSet.put(t2)
-          same_tile(tile, t2) -> MapSet.new(aliases)
-          true -> MapSet.new()
+        {results, extra_attrs} = case Enum.find(aliases, &same_tile(tile, &1)) do
+          nil -> if same_tile(tile, t2) do {aliases, get_attrs(tile) -- attrs2} else {[], []} end
+          t1  -> {MapSet.put(aliases, t2), get_attrs(tile) -- get_attrs(t1)}
         end
-      end |> Enum.reduce(MapSet.new([tile | any_tiles]), &MapSet.union/2)
+        results
+        |> Enum.reject(&strip_attrs(&1) == :any)
+        |> add_attr(extra_attrs)
+        |> MapSet.new()
+      end |> Enum.reduce(any_tiles, &MapSet.union/2)
     end
   end
 
@@ -195,6 +210,7 @@ defmodule RiichiAdvanced.Utils do
     end |> Enum.sum()
   end
 
+  # TODO what about 3-player
   def next_turn(seat, iterations \\ 1) do
     iterations = rem(iterations, 4)
     next = case seat do
@@ -272,7 +288,7 @@ defmodule RiichiAdvanced.Utils do
   end
 
   def try_integer(value) do
-    if value == trunc(value) do trunc(value) else value end
+    if abs(value - round(value)) < 0.000001 do round(value) else value end
   end
 
   def half_score_rounded_up(value) do
@@ -297,9 +313,10 @@ defmodule RiichiAdvanced.Utils do
     dora = has_attr?(tile, ["dora"])
     last_sideways = has_attr?(tile, ["last_sideways"])
     reversed = transparent and id == :"1x"
-    id = if reversed do flip_faceup(tile) |> strip_attrs() else id end
+    id = if reversed do strip_attrs(tile) else id end
     facedown = has_attr?(tile, ["facedown"]) and Map.get(assigns, :hover_index, nil) != i
     concealed = has_attr?(tile, ["concealed"])
+    anim = has_attr?(tile, ["anim"])
     played = animate_played and Map.get(assigns, :your_hand?, true) and i != nil and Map.get(assigns, :preplayed_index, nil) == i
     sideways = i != nil and i == Map.get(assigns, :riichi_index, nil) or has_attr?(tile, ["sideways"])
     just_played = Map.get(assigns, :just_discarded?, false) and Map.has_key?(assigns, :pond) and i != nil and i == length(assigns.pond) - 1
@@ -337,35 +354,18 @@ defmodule RiichiAdvanced.Utils do
       dora && "dora",
       last_sideways && "last-sideways",
       reversed && "reversed",
+      anim && "anim",
       played && "played",
       sideways && "sideways",
       just_played && "just-played",
       riichi && "sideways",
       selected && "selected",
     ] ++ extra_classes ++ number_class ++ color_classes
-  end
-
-  def flip_faceup(tile) do
-    case tile do
-      {:"1x", attrs} ->
-        tile_attr = Enum.find(attrs, &is_tile/1)
-        if tile_attr != nil do
-          to_tile([tile_attr | attrs]) |> remove_attr([tile_attr])
-        else tile end
-      tile -> tile
-    end
-  end
-
-  def flip_facedown(tile) do
-    case tile do
-      :"1x" -> :"1x"
-      {:"1x", attrs} -> {:"1x", attrs}
-      tile -> {:"1x", tile_to_attrs(tile)}
-    end
+    |> Enum.reject(& &1 == false)
   end
 
   def call_to_tiles({_name, call}, replace_am_jokers \\ false) do
-    tiles = Enum.map(call, &flip_faceup/1)
+    tiles = remove_attr(call, ["_facedown"])
     if replace_am_jokers and has_matching_tile?(tiles, [:"1j"]) do
       # replace all american jokers with the nonjoker tile
       nonjoker = Enum.find(tiles, &not same_tile(&1, :"1j")) |> strip_attrs()
@@ -519,4 +519,36 @@ defmodule RiichiAdvanced.Utils do
     l <> s2 <> r
   end
 
+  def permutations([]), do: [[]]
+  def permutations(xs) when is_list(xs) do
+    for x <- xs, rest <- permutations(xs -- [x]), do: [x | rest]
+  end
+  def make_permutations(xs) when is_list(xs) do
+    for ys <- permutations(xs) do
+      Map.new(Enum.zip(xs, ys))
+    end
+  end
+
+  def walk_json(json, fun) do
+    # this just walks the json and calls fun on every node
+    case fun.(json) do
+      json when is_list(json) -> Enum.map(json, &walk_json(&1, fun))
+      json when is_map(json) -> Map.new(json, fn {k, v} -> {k, walk_json(v, fun)} end)
+      json -> json
+    end
+  end
+
+  # walks the json, calling fun on every node,
+  # where fun returns a list that should get merged into any containing list
+  def splat_json(json, fun), do: splat_json_rec(json, fun) |> Enum.at(0)
+  def splat_json_rec(json, fun) do
+    case fun.(json) do
+      [json] when is_list(json) ->
+        [for x <- json, item <- splat_json_rec(x, fun) do
+          item
+        end]
+      [json] when is_map(json) -> [Map.new(json, fn {k, v} -> {k, splat_json(v, fun)} end)]
+      jsons -> jsons # branch b
+    end
+  end
 end

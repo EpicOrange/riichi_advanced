@@ -1,0 +1,5 @@
+on after_initialization do
+  add_rule("$value $han", "$name", "You won by self-draw.", %{value: !value, han: !han, name: !name})
+end
+
+define_yaku !list, !name, !value, won_by_draw

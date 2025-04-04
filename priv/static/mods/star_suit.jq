@@ -3,7 +3,7 @@ def add_aka_status($actions; $check):
     ["when", [{"name": "match", "opts": [["hand", "calls", $check], [[[["0t"], 1]]]]}], [["set_status", "aka_t"]]]
   ] + $actions;
 
-.after_initialization.actions += [["add_rule", "Wall", "(Star Suit) There is a fourth star suit.", -99]]
+.after_initialization.actions += [["add_rule", "Rules", "Wall", "(Star Suit) There is a fourth star suit.", -99]]
 |
 .wall += [
   "1t", "1t", "1t", "1t",

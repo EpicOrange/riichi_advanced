@@ -1,0 +1,95 @@
+# disable multiplier
+apply merge, "score_calculation", %{
+  scoring_method: ["score_table", "multiplier"],
+  score_table: %{max: 0},
+  score_multiplier: 32000,
+  dealer_multiplier: 1.5,
+  draw_nagashi_payments: [12000, 20000],
+  score_name: ""
+}
+
+on after_win do
+  end_points = points
+  end_points2 = points2
+  if end_points2 == 0 do
+    # manual scoring if not yakuman
+    if seat_is("east") do
+      # dealer
+      if won_by_draw do
+        # tsumo
+        if end_points == 1 do payment = 1000 end
+        if end_points == 2 do payment = 2000 end
+        if end_points == 3 do payment = 3000 end
+        if end_points >= 4 do payment = 6000; modify_winner("score_name", "Mangan") end
+        if end_points >= 6 do payment = 9000; modify_winner("score_name", "Haneman") end
+        if end_points >= 8 do payment = 12000; modify_winner("score_name", "Baiman") end
+        if end_points >= 11 do payment = 18000; modify_winner("score_name", "Sanbaiman") end
+        if end_points >= 13 do payment = 24000; modify_winner("score_name", "Kazoe Yakuman") end
+        dealer_payment = payment
+      else
+        # ron/chankan
+        if end_points == 1 do payment = 2000 end
+        if end_points == 2 do payment = 3000 end
+        if end_points == 3 do payment = 6000 end
+        if end_points >= 4 do payment = 12000; modify_winner("score_name", "Mangan") end
+        if end_points >= 6 do payment = 18000; modify_winner("score_name", "Haneman") end
+        if end_points >= 8 do payment = 24000; modify_winner("score_name", "Baiman") end
+        if end_points >= 11 do payment = 36000; modify_winner("score_name", "Sanbaiman") end
+        if end_points >= 13 do payment = 48000; modify_winner("score_name", "Kazoe Yakuman") end
+        dealer_payment = 0
+      end
+    else
+      # nondealer
+      if won_by_draw do
+        # tsumo
+        if end_points == 1 do payment = 1000; dealer_payment = 1000 end
+        if end_points == 2 do payment = 1000; dealer_payment = 1000 end
+        if end_points == 3 do payment = 1000; dealer_payment = 3000 end
+        if end_points >= 4 do payment = 3000; dealer_payment = 5000; modify_winner("score_name", "Mangan") end
+        if end_points >= 6 do payment = 4000; dealer_payment = 8000; modify_winner("score_name", "Haneman") end
+        if end_points >= 8 do payment = 6000; dealer_payment = 10000; modify_winner("score_name", "Baiman") end
+        if end_points >= 11 do payment = 8000; dealer_payment = 16000; modify_winner("score_name", "Sanbaiman") end
+        if end_points >= 13 do payment = 12000; dealer_payment = 20000; modify_winner("score_name", "Kazoe Yakuman") end
+      else
+        # ron/chankan
+        if end_points == 1 do payment = 1000 end
+        if end_points == 2 do payment = 2000 end
+        if end_points == 3 do payment = 4000 end
+        if end_points >= 4 do payment = 8000; modify_winner("score_name", "Mangan") end
+        if end_points >= 6 do payment = 12000; modify_winner("score_name", "Haneman") end
+        if end_points >= 8 do payment = 16000; modify_winner("score_name", "Baiman") end
+        if end_points >= 11 do payment = 24000; modify_winner("score_name", "Sanbaiman") end
+        if end_points >= 13 do payment = 32000; modify_winner("score_name", "Kazoe Yakuman") end
+        dealer_payment = 0
+      end
+    end
+    modify_winner("score", "payment", "add")
+    modify_winner("score", "dealer_payment", "add")
+  end
+end
+
+on after_scoring do
+  if end_points2 == 0 do
+    # manual scoring if not yakuman
+    if won_by_draw do
+      if seat_is("east") do
+        modify_payout("others", "payment", "subtract")
+        modify_payout("self", "payment", "add")
+        modify_payout("self", "payment", "add")
+      else
+        modify_payout("others", "payment", "subtract")
+        modify_payout("east", "payment", "add")
+        modify_payout("east", "dealer_payment", "subtract")
+        modify_payout("self", "payment", "add")
+        modify_payout("self", "dealer_payment", "add")
+      end
+    else
+      if won_by_call do
+        modify_payout("caller", "payment", "subtract")
+      else
+        modify_payout("last_discarder", "payment", "subtract")
+      end
+      modify_payout("self", "payment", "add")
+    end
+  end
+end

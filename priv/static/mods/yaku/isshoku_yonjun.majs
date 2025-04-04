@@ -1,0 +1,21 @@
+on after_initialization do
+  add_rule("Yakuman", "Isshoku Yonjun", "\"Pure Quadruple Sequences\". You have four of the exact same sequence in one suit, like 123m 123m 123m 123m. Like iipeikou but four.")
+  add_rule("2 Han", "Sekinin Barai (Pao)", "(Isshoku Yonjun) If you win with isshoku yonjun (123123123123 of the same suit) and called the fourth sequence from a player, that player is responsible for the yakuman payment if you tsumo, or half of the payment if you ron off someone else.")
+end
+
+define_set iishoku_yonjun, ~s"0 1 2, 0 1 2, 0 1 2, 0 1 2"
+
+define_yaku yakuman, "Isshoku Yonjun", 1, match(["hand", "calls", "winning_tile"], ~m"exhaustive, iishoku_yonjun:1, pair:1")
+
+define_yaku_precedence "Isshoku Yonjun", ["Isshoku Sanjun", "Ryanpeikou"]
+
+# pao logic
+on after_call do
+  if match(["hand", "calls"], ~m"exhaustive, iishoku_yonjun:1, pair:1") do
+    as callee do
+      set_status("pao")
+    end
+  end
+end
+apply append, "score_calculation.pao_eligible_yaku", "Isshoku Yonjun"
+apply set, "score_calculation.win_with_pao_name", "Sekinin Barai"

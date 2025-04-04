@@ -1,0 +1,25 @@
+on after_initialization do
+  add_rule("Rules", "Space Mahjong", "Sequences can wrap (891, 912). Winds and dragons can make sequences. You can chii from any direction.")
+  add_rule("Rules", "Win Condition", "- (Space Mahjong) Seven Pairs is no longer a winning hand.", -100)
+  add_rule("3 Han", "Open Kokushi Musou", "(Space Mahjong) Open kokushi musou is worth 3 han.")
+end
+
+define_yaku yaku, "Open Kokushi Musou", 3, match(["hand", "call_tiles", "winning_tile"], ~m"orphans_all:1")
+
+# remove chiitoitsu
+remove_yaku yaku, "Chiitoitsu"
+define_match tenpai, "standard_tenpai", "kokushi_tenpai"
+define_match tenpai_14, "standard_tenpai", "kokushi_tenpai"
+define_match win, "standard_win", "kokushi_win"
+
+# sequences wrap, and honors form wrapping sequences
+on after_start do
+  set_tile_ordering_all(["9m", "1m"])
+  set_tile_ordering_all(["9p", "1p"])
+  set_tile_ordering_all(["9s", "1s"])
+  set_tile_ordering_all(["1z", "2z", "3z", "4z", "1z"])
+  set_tile_ordering_all(["5z", "6z", "7z", "5z"])
+end
+
+# chii from anyone
+apply set, "buttons.chii.show_when", not_our_turn and not_no_tiles_remaining and someone_else_just_discarded and call_available

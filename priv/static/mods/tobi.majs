@@ -1,0 +1,5 @@
+on after_initialization do
+  add_rule("Rules", "Tobi", "After a round, if anyone has less than %{below} points, the game ends.", %{below: !below})
+end
+
+apply set, "score_calculation.tobi", !below

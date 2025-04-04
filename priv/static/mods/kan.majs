@@ -1,0 +1,70 @@
+on after_initialization do
+  add_rule("Rules", !kan_name, """
+  You may declare %{kan} to set aside four tiles in three situations:
+  - (open) If you have three of a kind, you can claim the fourth if someone discarded it.
+  - (added) If you previously called %{pon}, you can add the fourth tile to it but only if you draw the tile yourself.
+  - (concealed) If you have four of a kind, you can declare them as %{ankan}.
+  - In each case, you must then draw a replacement tile from the back of the wall.
+  """, %{kan: !kan_name, ankan: !ankan_name, pon: !pon_name})
+end
+
+define_button daiminkan,
+  display_name: !kan_name, 
+  show_when: not_our_turn
+    and not_no_tiles_remaining
+    and someone_else_just_discarded
+    and call_available,
+  precedence_over: ["chii", "pon"],
+  call: [[0, 0, 0]]
+  do
+    big_text(!kan_name)
+    if status("kan") do
+      set_status("double_kan")
+    end
+    set_status("kan")
+    call
+    change_turn("self")
+    draw(1, "opposite_end")
+  end
+
+define_button ankan,
+  display_name: !ankan_name, 
+  show_when: our_turn
+    and not_no_tiles_remaining
+    and not_just_discarded
+    and not_just_called
+    and self_call_available,
+  call: [[0, 0, 0]]
+  do
+    big_text(!kan_name)
+    if status("kan") do
+      set_status("double_kan")
+    end
+    set_status("kan")
+    self_call
+    draw(1, "opposite_end")
+  end
+
+define_button kakan,
+  display_name: !kan_name, 
+  show_when: our_turn
+    and not_no_tiles_remaining
+    and not_just_discarded
+    and not_just_called
+    and can_upgrade_call,
+  call: [[0, 0, 0]],
+  upgrades: "pon"
+  do
+    big_text(!kan_name)
+    if status("kan") do
+      set_status("double_kan")
+    end
+    set_status("kan", "can_chankan")
+    upgrade_call
+    unset_status("can_chankan")
+    draw(1, "opposite_end")
+  end
+
+on before_turn_change do
+  unset_status("kan", "double_kan")
+end

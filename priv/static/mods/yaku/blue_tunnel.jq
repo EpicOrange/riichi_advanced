@@ -1,4 +1,4 @@
-.after_initialization.actions += [["add_rule", "Local Yaku (Yakuman)", "(Blue Tunnel) Your hand consists of only 248p (2,4,8 circles), green dragon, and one type of wind.", 113]]
+.after_initialization.actions += [["add_rule", "Yakuman", "Blue Tunnel", "Your hand consists of only 248p (2,4,8 circles), green dragon, and one type of wind.", 113]]
 |
 .yakuman += [
   {

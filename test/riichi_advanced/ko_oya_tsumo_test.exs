@@ -5,6 +5,35 @@ defmodule RiichiAdvanced.KoOyaTsumoTest do
   alias RiichiAdvanced.Riichi, as: Riichi
   alias RiichiAdvanced.TestUtils, as: TestUtils
 
+  @default_riichi_mods [
+    %{name: "honba", config: %{"value" => 100}},
+    %{name: "yaku/riichi", config: %{"bet" => 1000, "drawless" => false}},
+    %{name: "nagashi", config: %{"is" => "Mangan"}},
+    %{name: "tobi", config: %{"below" => 0}},
+    %{
+     name: "uma",
+     config: %{"_1st" => 10, "_2nd" => 5, "_3rd" => -5, "_4th" => -10}
+    },
+    "agarirenchan",
+    "tenpairenchan",
+    "kuikae_nashi",
+    "double_wind_4_fu",
+    "pao",
+    "kokushi_ankan_chankan",
+    "suufon_renda",
+    "suucha_riichi",
+    "suukaikan",
+    "kyuushu_kyuuhai",
+    %{name: "dora", config: %{"start_indicators" => 1}},
+    "ura",
+    "kandora",
+    "yaku/ippatsu",
+    %{name: "yaku/riichi_renhou", config: %{"is" => "Yakuman"}},
+    "show_waits",
+    %{name: "min_han", config: %{"min" => 1}},
+    %{name: "aka", config: %{"man" => 1, "pin" => 1, "sou" => 1}}
+  ]
+
   def test_ko_oya_3p(score, expected) do
     assert expected == Riichi.calc_ko_oya_points(score, false, 3, 100)
   end
@@ -77,7 +106,7 @@ defmodule RiichiAdvanced.KoOyaTsumoTest do
   end
 
   def tsumo_loss_yakuman_test(tsumo_loss, seat, expected_score, expected_delta_scores) do
-    mods = TestUtils.default_riichi_mods()
+    mods = @default_riichi_mods
     test_state = TestUtils.initialize_test_state("kansai", mods, "{\"score_calculation\": {\"tsumo_loss\": #{inspect(tsumo_loss)}}}")
     state = GenServer.call(test_state.game_state_pid, :get_state)
     hand = [:"2m", :"3m", :"4m", :"4m", :"5m", :"6m", :"7p", :"7p", :"7p", :"8s", :"8s", :"8s", :"6p"]
@@ -88,7 +117,7 @@ defmodule RiichiAdvanced.KoOyaTsumoTest do
     state = put_in(state.players[seat].draw, draw)
     state = put_in(state.players[seat].calls, calls)
     state = update_in(state.players[seat].status, &MapSet.put(&1, "discards_empty")) # trigger tenhou
-    state = GameState.win(state, seat, :"6p", :draw)
+    state = GameState.win(state, seat, :draw)
     {_state, delta_scores, _delta_scores_reason, _next_dealer} = Scoring.adjudicate_win_scoring(state)
     score = state.winners[seat].score
     assert score == expected_score

@@ -48,14 +48,14 @@
     "1z": ["1z", "2z"],  "2z": ["2z", "3z"],  "3z": ["3z", "4z"],  "4z": ["4z", "1z"],  "0z": ["0z", "6z"],  "6z": ["6z", "7z"],  "7z": ["7z", "0z"]
   },
   "set_definitions": {
-    "pair": [0, 0],
-    "shuntsu": [0, 1, 2],
-    "koutsu": [0, 0, 0],
-    "quad": [0, 0, 0, 0],
-    "ryanmen/penchan": [0, 1],
-    "kanchan": [0, 2],
-    "ittsu": [[0,1,2],[3,4,5],[6,7,8]],
-    "middle_kanchan_manzu": ["4m", "6m"]
+    "pair": [[0, 0]],
+    "shuntsu": [[0, 1, 2]],
+    "koutsu": [[0, 0, 0]],
+    "quad": [[0, 0, 0, 0]],
+    "ryanmen/penchan": [[0, 1]],
+    "kanchan": [[0, 2]],
+    "ittsu": [[[0,1,2],[3,4,5],[6,7,8]]],
+    "middle_kanchan_manzu": [["4m", "6m"]]
   },
   "tenpai_definition": [
     [ "exhaustive", [["pair"], 1], [["ryanmen/penchan", "kanchan", "pair"], 1], [["shuntsu", "koutsu"], 3] ],
@@ -373,7 +373,7 @@
     "5_auto_discard": {
       "display_name": "D",
       "desc": "Automatically discard your drawn tile.",
-      "actions": [["when", ["has_draw"], [["discard_draw"]]]],
+      "actions": [["when", ["our_turn", {"name": "buttons_exclude", "opts": ["tsumo", "ankan"]}, "has_draw"], [["discard_draw"]]]],
       "enabled_at_start": false
     }
   },

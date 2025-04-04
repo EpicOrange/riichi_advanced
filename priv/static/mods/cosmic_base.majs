@@ -1,0 +1,12 @@
+# add cosmic mods in front
+define_mod_category "Cosmic", prepend: true
+define_mod cosmic, name: "Cosmic", category: "Cosmic", order: 4, deps: ["space", "kontsu", "cosmic_calls"], desc: "Base mod for Cosmic Riichi. Adds most relevant yaku and sets up the score table for things like haneyakuman."
+define_mod kontsu, name: "Kontsu", category: "Cosmic", order: 5, desc: "Add mixed triplets, or kontsu. If you have the same number in three suits, that counts as one of your sets towards four sets and a pair. For example, 1m1s1p is a kontsu. Also considered kontsu: 3 different winds, or one of each dragon."
+define_mod cosmic_calls, name: "Cosmic Calls", order: 4, category: "Cosmic", deps: ["kontsu"], order: 2, desc: "Add the following calls: Ton (calls a pair), Chon (calls kontsu), and Fuun (calls a set of 4 different winds). The precedence is Ton < Chii < Chon < Fuun < Pon < Kan."
+define_mod "yaku/kontsu_yaku", name: "Kontsu Yaku", order: 4, category: "Cosmic", deps: ["kontsu"], desc: "A wind kontsu counts as 0.5 han if it contains both the round wind and seat wind. A dragon kontsu is always 0.5 han, and is called mini-sangen. Having two of the same kontsu in a closed hand is 1 han (ryandoukon), having three is 2 han open 3 han closed (sandoukon), and having four is yakuman (yondoukon)."
+define_mod "yaku/chanfuun", name: "Chanfuun", order: 4, category: "Cosmic", deps: ["kontsu", "cosmic_calls"], desc: "1 han for winning off the tile that upgrades a wind kontsu to a fuun."
+define_mod "yaku/fuunburi", name: "Fuunburi", order: 4, category: "Cosmic", deps: ["kontsu", "cosmic_calls"], desc: "1 han if you win off the tile discarded by a player who just called fuun."
+define_mod "yaku/uumensai_cosmic", name: "Uumensai (cosmic)", order: 4, category: "Cosmic", deps: ["kontsu"], desc: "2 han if each of your four sets is of a different kind: sequence, triplet, mixed triplet (kontsu), kan, mixed quad (fuun)."
+define_mod "yaku/sanankon", name: "Sanankon", order: 4, category: "Cosmic", deps: ["kontsu"], desc: "Local yaku. 1 han for having three concealed kontsu. 3 han for having four, and 6 han for having four waiting on your pair."
+
+set win_timer, 20

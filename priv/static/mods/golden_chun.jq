@@ -1,8 +1,8 @@
 .after_initialization.actions += [
-  ["add_rule", "Wall", "(Golden Chun) One of the green dragons is red and acts as aka dora."],
-  ["add_rule", "Wall", "(Golden Chun) One of the red dragons is the golden chun, which can be used as a five of any suit, and grants 1 extra han when used as a five."],
-  ["add_rule", "Local Yaku (Yakuman)", "(Golden Chun) Completing a hand via shiro pocchi while using the golden chun as a five and having the aka green dragon scores yakuman."],
-  ["update_rule", "Shuugi", "(Golden Chun) Each golden chun used as a five is worth 1 shuugi."]
+  ["add_rule", "Rules", "Wall", "(Golden Chun) One of the green dragons is red and acts as aka dora."],
+  ["add_rule", "Rules", "Wall", "(Golden Chun) One of the red dragons is the golden chun, which can be used as a five of any suit, and grants 1 extra han when used as a five."],
+  ["add_rule", "Rules", "Local Yaku (Yakuman)", "(Golden Chun) Completing a hand via shiro pocchi while using the golden chun as a five and having the aka green dragon scores yakuman."],
+  ["update_rule", "Rules", "Shuugi", "(Golden Chun) Each golden chun used as a five is worth 1 shuugi."]
 ]
 |
 # replace a 6z with red hatsu

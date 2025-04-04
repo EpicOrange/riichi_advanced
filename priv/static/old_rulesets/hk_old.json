@@ -1,0 +1,423 @@
+{
+  "default_mods": ["hk_three_point_minimum", "seven_flower_win", "show_waits"],
+  "available_mods": [
+    "Rules",
+    {"id": "hk_three_point_minimum", "name": "Three Fan Minimum", "desc": "Only allow wins worth 3+ fan."},
+    {"id": "seven_flower_win", "conflicts": ["remove_flowers"], "name": "Seven Flower Win", "desc": "Allow instant win upon obtaining 7+ flowers."},
+    {"id": "hk_flowers_open_hand", "name": "Flowers Open Hand", "desc": "A hand with flowers declared cannot earn 1 fan from Concealed Hand."},
+    {"id": "remove_flowers", "conflicts": ["seven_flower_win"], "name": "Remove Flowers", "desc": "Remove all eight flowers from the wall."},
+    {"id": "head_bump", "name": "Head Bump", "desc": "Enable head bump. In case of multiple hu, only the person closest in turn order gets the win."},
+    {"id": "hk_seven_pairs", "name": "Seven Pairs", "desc": "Add seven pairs as a possible winning hand, worth 4 fan."},
+    {"id": "hk_everyone_pays", "name": "Everyone Pays On Discard", "desc": "Discarder pays 2x hand value, other players pay 1x."},
+      // {"id": "hk_discarder_pays_for_all", "conflicts": ["hk_everyone_pays"], "name": "Discarder Pays For All", "desc": "Discarder pays 4x hand value, other players pay nothing."},
+    "Other",
+    {"id": "show_waits", "name": "Show Waits", "desc": "Add some UI that shows waits."},
+    {"id": "open_hands", "name": "Open Hands", "desc": "Everyone plays with tiles shown."}
+  ],
+  "display_name": "Hong Kong Old Style",
+  "tutorial_link": "https://github.com/EpicOrange/riichi_advanced/blob/main/documentation/hk.md",
+  "wall": ["1m", "1m", "1m", "1m",
+           "2m", "2m", "2m", "2m",
+           "3m", "3m", "3m", "3m",
+           "4m", "4m", "4m", "4m",
+           "5m", "5m", "5m", "5m",
+           "6m", "6m", "6m", "6m",
+           "7m", "7m", "7m", "7m",
+           "8m", "8m", "8m", "8m",
+           "9m", "9m", "9m", "9m",
+           "1p", "1p", "1p", "1p",
+           "2p", "2p", "2p", "2p",
+           "3p", "3p", "3p", "3p",
+           "4p", "4p", "4p", "4p",
+           "5p", "5p", "5p", "5p",
+           "6p", "6p", "6p", "6p",
+           "7p", "7p", "7p", "7p",
+           "8p", "8p", "8p", "8p",
+           "9p", "9p", "9p", "9p",
+           "1s", "1s", "1s", "1s",
+           "2s", "2s", "2s", "2s",
+           "3s", "3s", "3s", "3s",
+           "4s", "4s", "4s", "4s",
+           "5s", "5s", "5s", "5s",
+           "6s", "6s", "6s", "6s",
+           "7s", "7s", "7s", "7s",
+           "8s", "8s", "8s", "8s",
+           "9s", "9s", "9s", "9s",
+           "1z", "1z", "1z", "1z",
+           "2z", "2z", "2z", "2z",
+           "3z", "3z", "3z", "3z",
+           "4z", "4z", "4z", "4z",
+           "0z", "0z", "0z", "0z",
+           "6z", "6z", "6z", "6z",
+           "7z", "7z", "7z", "7z",
+           "1f", "2f", "3f", "4f",
+           "1g", "2g", "3g", "4g"],
+  "set_definitions": {
+    "pair": [[0, 0]],
+    "shuntsu": [[0, 1, 2]],
+    "koutsu": [[0, 0, 0]],
+    "quad": [[0, 0, 0, 0]],
+    "ryanmen/penchan": [[0, 1]],
+    "kanchan": [[0, 2]],
+    "ton": [["1z", "1z", "1z"]],
+    "nan": [["2z", "2z", "2z"]],
+    "shaa": [["3z", "3z", "3z"]],
+    "pei": [["4z", "4z", "4z"]],
+    "haku": [["0z", "0z", "0z"]],
+    "hatsu": [["6z", "6z", "6z"]],
+    "chun": [["7z", "7z", "7z"]],
+    "ton_pair": [["1z", "1z"]],
+    "nan_pair": [["2z", "2z"]],
+    "shaa_pair": [["3z", "3z"]],
+    "pei_pair": [["4z", "4z"]],
+    "haku_pair": [["0z", "0z"]],
+    "hatsu_pair": [["6z", "6z"]],
+    "chun_pair": [["7z", "7z"]],
+    "orphans_all": [["1m","9m","1p","9p","1s","9s","1z","2z","3z","4z","0z","6z","7z"]],
+    "chuurenpoutou": [[0,0,0,1,2,3,4,5,6,7,8,8,8]]
+  },
+  "tenpai_definition": [
+    [ "exhaustive", [["pair"], 1], [["ryanmen/penchan", "kanchan", "pair"], 1], [["shuntsu", "koutsu"], 3] ],
+    [ "exhaustive", [["shuntsu", "koutsu"], 4] ],
+    [ "unique",
+      [["1m","9m","1p","9p","1s","9s","1z","2z","3z","4z","0z","6z","7z"], 12],
+      [["1m","9m","1p","9p","1s","9s","1z","2z","3z","4z","0z","6z","7z"], 1]
+    ]
+  ],
+  "kokushi_tenpai_definition": [
+    [ "unique",
+      [["1m","9m","1p","9p","1s","9s","1z","2z","3z","4z","0z","6z","7z"], 12],
+      [["1m","9m","1p","9p","1s","9s","1z","2z","3z","4z","0z","6z","7z"], 1]
+    ]
+  ],
+  "win_definition": [
+    [ "exhaustive", [["pair"], 1], [["shuntsu", "koutsu"], 4] ],
+    [ "unique",
+      [["1m","9m","1p","9p","1s","9s","1z","2z","3z","4z","0z","6z","7z"], 13],
+      [["1m","9m","1p","9p","1s","9s","1z","2z","3z","4z","0z","6z","7z"], 1]
+    ]
+  ],
+  "suuankou_tsumo_definition": [
+    [ [["pon", "daiminkan", "kakan"], -1], [["koutsu"], 4], [["pair"], 1] ]
+  ],
+  "suuankou_ron_definition": [
+    [ "exhaustive", [["pon", "daiminkan", "kakan"], -1], [["koutsu"], 4], [[{"tile": "any", "attrs": ["winning_tile"]}], 0], [["pair"], 1] ]
+  ],
+  "all_flowers_definition": [[ "unique", [["1f","2f","3f","4f"], 4] ]],
+  "all_seasons_definition": [[ "unique", [["1g","2g","3g","4g"], 4] ]],
+  "7_flowers_definition": [[ "unique", [["1f","2f","3f","4f","1g","2g","3g","4g"], 7] ]],
+  "8_flowers_definition": [[ "unique", [["1f","2f","3f","4f","1g","2g","3g","4g"], 8] ]],
+  "little_three_dragons_definition": [[ "unique", [["haku", "hatsu", "chun"], 2], [["haku_pair", "hatsu_pair", "chun_pair"], 1] ]],
+  "big_three_dragons_definition": [[ "unique", [["haku", "hatsu", "chun"], 3] ]],
+  "little_four_winds_definition": [[ "unique", [["ton", "nan", "shaa", "pei"], 3], [["ton_pair", "nan_pair", "shaa_pair", "pei_pair"], 1] ]],
+  "big_four_winds_definition": [[ "unique", [["ton", "nan", "shaa", "pei"], 4] ]],
+  "yaku": [
+    // Flowers
+    { "display_name": "No Flowers", "value": 1, "when": [{"name": "not_match", "opts": [["flowers"], [[ "unique", "nojoker", [["1f","2f","3f","4f","1g","2g","3g","4g"], 1] ]]]}] },
+    { "display_name": "Seat Flower", "value": 1, "when": [{"name": "seat_is", "opts": ["east"]}, {"name": "match", "opts": [["flowers"], [[[["1f"], 1]]]]}] },
+    { "display_name": "Seat Flower", "value": 1, "when": [{"name": "seat_is", "opts": ["south"]}, {"name": "match", "opts": [["flowers"], [[[["2f"], 1]]]]}] },
+    { "display_name": "Seat Flower", "value": 1, "when": [{"name": "seat_is", "opts": ["west"]}, {"name": "match", "opts": [["flowers"], [[[["3f"], 1]]]]}] },
+    { "display_name": "Seat Flower", "value": 1, "when": [{"name": "seat_is", "opts": ["north"]}, {"name": "match", "opts": [["flowers"], [[[["4f"], 1]]]]}] },
+    { "display_name": "Seat Season", "value": 1, "when": [{"name": "seat_is", "opts": ["east"]}, {"name": "match", "opts": [["flowers"], [[[["1g"], 1]]]]}] },
+    { "display_name": "Seat Season", "value": 1, "when": [{"name": "seat_is", "opts": ["south"]}, {"name": "match", "opts": [["flowers"], [[[["2g"], 1]]]]}] },
+    { "display_name": "Seat Season", "value": 1, "when": [{"name": "seat_is", "opts": ["west"]}, {"name": "match", "opts": [["flowers"], [[[["3g"], 1]]]]}] },
+    { "display_name": "Seat Season", "value": 1, "when": [{"name": "seat_is", "opts": ["north"]}, {"name": "match", "opts": [["flowers"], [[[["4g"], 1]]]]}] },
+    { "display_name": "All Flowers", "value": 2, "when": [{"name": "match", "opts": [["flowers"], ["all_flowers"]]}] },
+    { "display_name": "All Seasons", "value": 2, "when": [{"name": "match", "opts": [["flowers"], ["all_seasons"]]}] },
+    { "display_name": "Seven Flowers", "value": 3, "when": [{"name": "match", "opts": [["hand", "flowers"], ["7_flowers"]]}] },
+    { "display_name": "Eight Flowers", "value": 8, "when": [{"name": "match", "opts": [["hand", "flowers"], ["8_flowers"]]}] },
+    // Winning methods
+    { "display_name": "Self Draw", "value": 1, "when": ["won_by_draw"] },
+    { "display_name": "Concealed Hand", "value": 1, "when": [{"name": "has_no_call_named", "opts": ["chii", "pon", "daiminkan", "kakan"]}] },
+    { "display_name": "Final Tile", "value": 1, "when": ["no_tiles_remaining"] },
+    { "display_name": "After a Kong", "value": 1, "when": [{"name": "status", "opts": ["kan"]}] },
+    { "display_name": "After Multiple Kongs", "value": 8, "when": [{"name": "status", "opts": ["double_kan"]}] },
+    { "display_name": "Robbing a Kong", "value": 1, "when": ["won_by_call"] },
+    // Suit-based hands
+    {
+      "display_name": "Half Flush",
+      "value": 3,
+      "when": [[
+        {"name": "winning_hand_consists_of", "opts": ["1m","2m","3m","4m","5m","6m","7m","8m","9m","1z","2z","3z","4z","0z","6z","7z"]},
+        {"name": "winning_hand_consists_of", "opts": ["1p","2p","3p","4p","5p","6p","7p","8p","9p","1z","2z","3z","4z","0z","6z","7z"]},
+        {"name": "winning_hand_consists_of", "opts": ["1s","2s","3s","4s","5s","6s","7s","8s","9s","1z","2z","3z","4z","0z","6z","7z"]}
+      ]]
+    },
+    {
+      "display_name": "Full Flush",
+      "value": 7,
+      "when": [[
+        {"name": "winning_hand_consists_of", "opts": ["1m","2m","3m","4m","5m","6m","7m","8m","9m"]},
+        {"name": "winning_hand_consists_of", "opts": ["1p","2p","3p","4p","5p","6p","7p","8p","9p"]},
+        {"name": "winning_hand_consists_of", "opts": ["1s","2s","3s","4s","5s","6s","7s","8s","9s"]}
+      ]]
+    },
+    // Honor tiles
+    { "display_name": "White Dragon", "value": 1, "when": [{"name": "match", "opts": [["hand", "calls", "winning_tile"], [[[["haku"], 1]]]]}] },
+    { "display_name": "Green Dragon", "value": 1, "when": [{"name": "match", "opts": [["hand", "calls", "winning_tile"], [[[["hatsu"], 1]]]]}] },
+    { "display_name": "Red Dragon", "value": 1, "when": [{"name": "match", "opts": [["hand", "calls", "winning_tile"], [[[["chun"], 1]]]]}] },
+    {
+      "display_name": "Round Wind",
+      "value": 1,
+      "when": [[
+        [{"name": "round_wind_is", "opts": ["east"]}, {"name": "match", "opts": [["hand", "calls", "winning_tile"], [[ [["ton"], 1], [["shuntsu", "koutsu"], 3], [["pair"], 1] ]]]}],
+        [{"name": "round_wind_is", "opts": ["south"]}, {"name": "match", "opts": [["hand", "calls", "winning_tile"], [[ [["nan"], 1], [["shuntsu", "koutsu"], 3], [["pair"], 1] ]]]}],
+        [{"name": "round_wind_is", "opts": ["west"]}, {"name": "match", "opts": [["hand", "calls", "winning_tile"], [[ [["shaa"], 1], [["shuntsu", "koutsu"], 3], [["pair"], 1] ]]]}],
+        [{"name": "round_wind_is", "opts": ["north"]}, {"name": "match", "opts": [["hand", "calls", "winning_tile"], [[ [["pei"], 1], [["shuntsu", "koutsu"], 3], [["pair"], 1] ]]]}]
+      ]]
+    },
+    {
+      "display_name": "Seat Wind",
+      "value": 1,
+      "when": [[
+        [{"name": "seat_is", "opts": ["east"]}, {"name": "match", "opts": [["hand", "calls", "winning_tile"], [[ [["ton"], 1], [["shuntsu", "koutsu"], 3], [["pair"], 1] ]]]}],
+        [{"name": "seat_is", "opts": ["south"]}, {"name": "match", "opts": [["hand", "calls", "winning_tile"], [[ [["nan"], 1], [["shuntsu", "koutsu"], 3], [["pair"], 1] ]]]}],
+        [{"name": "seat_is", "opts": ["west"]}, {"name": "match", "opts": [["hand", "calls", "winning_tile"], [[ [["shaa"], 1], [["shuntsu", "koutsu"], 3], [["pair"], 1] ]]]}],
+        [{"name": "seat_is", "opts": ["north"]}, {"name": "match", "opts": [["hand", "calls", "winning_tile"], [[ [["pei"], 1], [["shuntsu", "koutsu"], 3], [["pair"], 1] ]]]}]
+      ]]
+    },
+    { "display_name": "Small Three Dragons", "value": 5, "when": [{"name": "match", "opts": [["hand", "calls", "winning_tile"], ["little_three_dragons"]]}] },
+    { "display_name": "Big Three Dragons", "value": 8, "when": [{"name": "match", "opts": [["hand", "calls", "winning_tile"], ["big_three_dragons"]]}] },
+    { "display_name": "Small Four Winds", "value": 6, "when": [{"name": "match", "opts": [["hand", "calls", "winning_tile"], ["little_four_winds"]]}] },
+    { "display_name": "Big Four Winds", "value": 13, "when": [{"name": "match", "opts": [["hand", "calls", "winning_tile"], ["big_four_winds"]]}] },
+    { "display_name": "All Honours", "value": 10, "when": [{"name": "winning_hand_consists_of", "opts": ["1z","2z","3z","4z","0z","6z","7z"]}] },
+    // Triplet hands
+    { "display_name": "All Triplets", "value": 3, "when": [{"name": "match", "opts": [["hand", "calls", "winning_tile"], [[[["koutsu"], 4], [["pair"], 1]]]]}] },
+    {
+      "display_name": "Four Concealed Triplets",
+      "value": 8,
+      "when": [[
+        ["won_by_draw", {"name": "match", "opts": [["hand", "calls", "winning_tile"], ["suuankou_tsumo"]]}],
+        ["not_won_by_draw", {"name": "match", "opts": [["hand", "calls", "winning_tile"], ["suuankou_ron"]]}]
+      ]]
+    },
+    { "display_name": "Mixed Terminals", "value": 4, "when": [{"name": "winning_hand_consists_of", "opts": ["1m","9m","1p","9p","1s","9s","1z","2z","3z","4z","0z","6z","7z"]}] },
+    { "display_name": "All Terminals", "value": 13, "when": [{"name": "winning_hand_consists_of", "opts": ["1m","9m","1p","9p","1s","9s"]}] },
+    { "display_name": "Four Kongs", "value": 13, "when": [{"name": "match", "opts": [["calls"], [[[["daiminkan", "ankan", "kakan"], 4]]]]}] },
+    // Sequence hands
+    { "display_name": "All Sequences", "value": 1, "when": [{"name": "match", "opts": [["hand", "calls", "winning_tile"], [["exhaustive", [["shuntsu"], 4], [["pair"], 1]]]]}] },
+    // Others
+    { "display_name": "Thirteen Orphans", "value": 13, "when": [{"name": "match", "opts": [["hand", "winning_tile"], [[[["orphans_all"], 1]]]]}] },
+    { "display_name": "Nine Gates", "value": 13, "when": [{"name": "match", "opts": [["hand", "winning_tile"], [[[["chuurenpoutou"], 1]]]]}] },
+    { "display_name": "Blessing of Heaven", "value": 13, "when": [{"name": "status", "opts": ["first_turn"]}, "won_by_draw"] },
+    { "display_name": "Blessing of Earth", "value": 13, "when": [{"name": "everyone_status", "opts": ["first_turn"]}, "won_by_discard"] },
+    { "display_name": "Blessing of Man", "value": 13, "when": [{"name": "status", "opts": ["first_turn"]}, "won_by_discard"] }
+  ],
+  "yaku_precedence": {
+    "All Flowers": ["Seat Flower"],
+    "All Seasons": ["Seat Season"],
+    "Seven Flowers": ["All Flowers", "All Seasons"],
+    "Eight Flowers": ["Seven Flowers"],
+    "After Multiple Kongs": ["After a Kong"],
+    "Full Flush": ["Half Flush"],
+    "Big Four Winds": ["Small Four Winds"],
+    "Big Three Dragons": ["Small Three Dragons"],
+    "Blessing of Earth": ["Blessing of Man"],
+    "Four Concealed Triplets": ["All Triplets"],
+    "All Honours": ["Round Wind", "Seat Wind", "All Triplets", "Half Flush", "Mixed Terminals"]
+  },
+  "score_calculation": {
+    "scoring_method": "score_table",
+    "score_table": {"0": 1, "1": 2, "2": 4, "3": 8, "4": 16, "5": 24, "6": 32, "7": 48, "8": 64, "9": 96, "10": 128, "11": 192, "12": 256, "max": 384},
+    "discarder_multiplier": 2,
+    "non_discarder_multiplier": 0,
+    "self_draw_multiplier": 1,
+    "yaku_lists": ["yaku"],
+    "agarirenchan": true,
+    "point_name": "Fan",
+    "win_by_discard_label": "Hu",
+    "win_by_draw_label": "Zimo",
+    "win_by_discard_name": "Hu",
+    "win_by_discard_name_2": "Double Hu",
+    "win_by_discard_name_3": "Triple Hu",
+    "win_by_draw_name": "Zimo",
+    "exhaustive_draw_name": "Draw"
+  },
+  "play_restrictions": [
+    [["flower"], []]
+  ],
+  "before_turn_change": {
+    "actions": [
+      ["unset_status", "kan", "double_kan"],
+      ["when", [{"name": "status_missing", "opts": ["match_start"]}], [["unset_status", "first_turn"]]]
+    ]
+  },
+  "after_turn_change": {
+    "actions": [
+      ["when", ["no_tiles_remaining"], [["pause", 1000], ["ryuukyoku"]]],
+      ["when", [{"name": "status_missing", "opts": ["match_start"]}, "not_no_tiles_remaining"], [["draw"]]],
+      ["when", [{"name": "everyone_status", "opts": ["no_flowers"]}], [["unset_status_all", "no_flowers", "match_start"], ["change_turn", "east"]]]
+    ]
+  },
+  "after_call": {
+    "actions": [
+      ["when", [{"name": "match", "opts": [["last_call"], [[[["haku", "hatsu", "chun"], 1]]]]}, {"name": "match", "opts": [["calls"], [[[["haku"], 1], [["hatsu"], 1], [["chun"], 1]]]]}], [["as", "callee", [["make_responsible_for", "prev_seat", "all"]]]]],
+      ["when", [{"name": "match", "opts": [["last_call"], [[[["ton", "nan", "shaa", "pei"], 1]]]]}, {"name": "match", "opts": [["calls"], [[[["ton"], 1], [["nan"], 1], [["shaa"], 1], [["pei"], 1]]]]}], [["as", "callee", [["make_responsible_for", "prev_seat", "all"]]]]]
+    ]
+  },
+  "after_start": {
+    "actions": [["set_status_all", "first_turn", "match_start"]]
+  },
+  "buttons": {
+    "start_flower": {
+      "display_name": "Reveal flower",
+      "show_when": [{"name": "status", "opts": ["match_start"]}, "our_turn", {"name": "match", "opts": [["hand", "draw"], [[ "nojoker", [["1f", "2f", "3f", "4f", "1g", "2g", "3g", "4g"], 1] ]]]}],
+      "actions": [["big_text", "Flower"], ["flower", "1f", "2f", "3f", "4f", "1g", "2g", "3g", "4g"], ["draw", 1, "opposite_end"]],
+      "unskippable": true
+    },
+    "start_no_flower": {
+      "display_name": "No flowers",
+      "show_when": [{"name": "status", "opts": ["match_start"]}, "our_turn", {"name": "not_match", "opts": [["hand", "draw"], [[ "nojoker", [["1f", "2f", "3f", "4f", "1g", "2g", "3g", "4g"], 1] ]]]}],
+      "actions": [["big_text", "No flowers"], ["set_status", "no_flowers"], ["advance_turn"], ["recalculate_buttons"]],
+      "unskippable": true
+    },
+    "chii": {
+      "display_name": "Chow",
+      "call": [[-2, -1], [-1, 1], [1, 2]],
+      "show_when": [{"name": "status_missing", "opts": ["match_start"]}, "not_our_turn", "not_no_tiles_remaining", "kamicha_discarded", "call_available"],
+      "actions": [["big_text", "Chow"], ["call"], ["change_turn", "self"]]
+    },
+    "pon": {
+      "display_name": "Pong",
+      "call": [[0, 0]],
+      "show_when": [{"name": "status_missing", "opts": ["match_start"]}, "not_our_turn", "not_no_tiles_remaining", "someone_else_just_discarded", "call_available"],
+      "actions": [["big_text", "Pong"], ["call"], ["change_turn", "self"]],
+      "precedence_over": ["chii"]
+    },
+    "daiminkan": {
+      "display_name": "Kong",
+      "call": [[0, 0, 0]],
+      "show_when": [{"name": "status_missing", "opts": ["match_start"]}, "not_our_turn", "not_no_tiles_remaining", "someone_else_just_discarded", "call_available"],
+      "actions": [
+        ["big_text", "Kong"], ["call"], ["change_turn", "self"],
+        ["when", [{"name": "status", "opts": ["kan"]}], [["set_status", "double_kan"]]],
+        ["set_status", "kan"],
+        ["draw", 1, "opposite_end"]
+      ],
+      "precedence_over": ["chii", "pon"]
+    },
+    "ankan": {
+      "display_name": "Self Kong",
+      "call": [[0, 0, 0]],
+      "show_when": [{"name": "status_missing", "opts": ["match_start"]}, "our_turn", "not_no_tiles_remaining", "has_draw", "self_call_available", {"name": "status_missing", "opts": ["just_reached"]}],
+      "actions": [
+        ["big_text", "Kong"], ["self_call"],
+        ["when", [{"name": "status", "opts": ["kan"]}], [["set_status", "double_kan"]]],
+        ["set_status", "kan"],
+        ["draw", 1, "opposite_end"]
+      ]
+    },
+    "kakan": {
+      "display_name": "Kong",
+      "call": [[0, 0, 0]],
+      "upgrades": "pon",
+      "show_when": [{"name": "status_missing", "opts": ["match_start"]}, "our_turn", "not_no_tiles_remaining", "has_draw", "can_upgrade_call", {"name": "status_missing", "opts": ["just_reached"]}],
+      "actions": [
+        ["big_text", "Kong"], ["upgrade_call"],
+        ["when", [{"name": "status", "opts": ["kan"]}], [["set_status", "double_kan"]]],
+        ["set_status", "kan"],
+        ["draw", 1, "opposite_end"]
+      ]
+    },
+    "ron": {
+      "display_name": "Hu",
+      "show_when": [
+        "not_our_turn",
+        {"name": "match", "opts": [["hand", "calls", "draw"], ["tenpai", "kokushi_tenpai"]]},
+        "someone_else_just_discarded",
+        {"name": "match", "opts": [["hand", "calls", "last_discard"], ["win"]]}
+      ],
+      "actions": [["big_text", "Hu"], ["pause", 1000], ["reveal_hand"], ["win_by_discard"]],
+      "precedence_over": ["chii", "pon", "daiminkan"]
+    },
+    "chankan": {
+      "display_name": "Hu",
+      "show_when": [
+        "not_our_turn",
+        {"name": "match", "opts": [["hand", "calls", "draw"], ["tenpai", "kokushi_tenpai"]]},
+        [
+          [
+            {"name": "last_call_is", "opts": ["kakan"]},
+            {"name": "match", "opts": [["hand", "calls", "last_called_tile"], ["win"]]}
+          ],
+          [
+            {"name": "last_call_is", "opts": ["ankan"]},
+            {"name": "match", "opts": [["hand", "calls", "draw"], ["kokushi_tenpai"]]},
+            {"name": "match", "opts": [["hand", "calls", "last_called_tile"], ["win"]]}
+          ]
+        ]
+      ],
+      "actions": [["big_text", "Hu"], ["pause", 1000], ["reveal_hand"], ["win_by_call"]],
+      "precedence_over": ["chii", "pon", "daiminkan"]
+    },
+    "tsumo": {
+      "display_name": "Zimo",
+      "show_when": [
+        "our_turn",
+        {"name": "status_missing", "opts": ["match_start"]},
+        {"name": "match", "opts": [["hand", "calls", "draw"], ["tenpai", "kokushi_tenpai"]]},
+        {"name": "match", "opts": [["hand", "calls", "draw"], ["win"]]}
+      ],
+      "actions": [["big_text", "Zimo"], ["pause", 1000], ["reveal_hand"], ["win_by_draw"]]
+    },
+    "flower": {
+      "display_name": "Flower",
+      "show_when": ["our_turn", "has_draw", {"name": "status_missing", "opts": ["match_start"]}, "not_just_discarded", {"name": "match", "opts": [["hand", "draw"], [[[["1f", "2f", "3f", "4f", "1g", "2g", "3g", "4g"], 1]]]]}],
+      "actions": [
+        ["big_text", "Flower"],
+        ["flower", "1f", "2f", "3f", "4f", "1g", "2g", "3g", "4g"],
+        ["ite", ["no_tiles_remaining"], [["advance_turn"]], [["draw", 1, "opposite_end"]]]
+      ],
+      "unskippable": true
+    }
+  },
+  "auto_buttons": {
+    "1_auto_sort": {
+      "display_name": "A",
+      "desc": "Automatically sort your hand.",
+      "actions": [["sort_hand"]],
+      "enabled_at_start": true
+    },
+    "2_auto_ron": {
+      "display_name": "R",
+      "desc": "Automatically declare wins.",
+      "actions": [
+        ["when", [{"name": "buttons_include", "opts": ["ron"]}], [["press_button", "ron"]]],
+        ["when", [{"name": "buttons_include", "opts": ["tsumo"]}], [["press_button", "tsumo"]]]
+      ],
+      "enabled_at_start": false
+    },
+    "3_auto_flower": {
+      "display_name": "F",
+      "desc": "Automatically declare all flowers.",
+      "actions": [
+        ["when", [{"name": "buttons_include", "opts": ["start_flower"]}], [["press_button", "start_flower"], ["press_first_call_button", "start_flower"]]],
+        ["when", [{"name": "buttons_include", "opts": ["start_no_flower"]}], [["press_button", "start_no_flower"]]],
+        ["when", [{"name": "buttons_include", "opts": ["flower"]}], [["press_button", "flower"], ["press_first_call_button", "flower"]]]
+      ],
+      "enabled_at_start": true
+    },
+    "4_auto_no_call": {
+      "display_name": "C",
+      "desc": "Skip all calls except wins.",
+      "actions": [
+        ["when", [
+            "not_our_turn",
+            {"name": "buttons_include", "opts": ["skip"]},
+            {"name": "buttons_exclude", "opts": ["ron", "chankan"]}
+          ], [["press_button", "skip"]]]
+      ],
+      "enabled_at_start": false
+    },
+    "5_auto_discard": {
+      "display_name": "D",
+      "desc": "Automatically discard your drawn tile.",
+      "actions": [["when", ["our_turn", {"name": "buttons_exclude", "opts": ["tsumo", "ankan"]}, "has_draw"], [["discard_draw"]]]],
+      "enabled_at_start": false
+    }
+  },
+  "interruptible_actions": ["play_tile", "draw", "call", "self_call", "upgrade_call"],
+  "initial_score": 0,
+  "starting_tiles": 13,
+  "max_rounds": 16
+}

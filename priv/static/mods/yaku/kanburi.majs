@@ -1,0 +1,5 @@
+on after_initialization do
+  add_rule("1 Han", "Kanburi", "Win off the tile discarded by a player who just called kan.")
+end
+
+define_yaku yaku, "Kanburi", 1, won_by_discard and discarder_status("kan")

@@ -5,7 +5,7 @@ defmodule RiichiAdvanced.Riichi do
   alias RiichiAdvanced.Utils, as: Utils
   use Nebulex.Caching
 
-  @flower_names ["start_flower", "start_joker", "flower", "joker", "pei"]
+  @flower_names ["start_flower", "start_joker", "flower", "joker"]
   def flower_names(), do: @flower_names
 
   @manzu      [:"1m", :"2m", :"3m", :"4m", :"5m", :"6m", :"7m", :"8m", :"9m", :"10m", :"0m",
@@ -191,8 +191,12 @@ defmodule RiichiAdvanced.Riichi do
         |> Utils.strip_attrs()
         |> Enum.flat_map(fn instance ->
           target_tiles = Enum.map(call_spec, &Match.offset_tile(instance, &1, tile_behavior))
-          possible_removals = Match.try_remove_all_tiles(hand, target_tiles, tile_behavior)
-          Enum.map(possible_removals, fn remaining -> Utils.sort_tiles(hand -- remaining) end)
+          if nil in target_tiles do
+            []
+          else
+            possible_removals = Match.try_remove_all_tiles(hand, target_tiles, tile_behavior)
+            Enum.map(possible_removals, fn remaining -> Utils.sort_tiles(hand -- remaining) end)
+          end
         end)
       end) |> Enum.uniq()}
     end |> Enum.uniq_by(fn {tile, choices} -> Enum.map(choices, fn choice -> Enum.sort([tile | choice]) end) end) |> Map.new()
@@ -308,46 +312,53 @@ defmodule RiichiAdvanced.Riichi do
   end
 
   def tile_matches(tile_specs, context) do
-    Enum.any?(tile_specs, fn
-      "any" -> true
-      "same" ->  Utils.same_tile(context.tile, context.tile2, context.players[context.seat].tile_behavior)
-      "not_same" -> not Utils.same_tile(context.tile, context.tile2, context.players[context.seat].tile_behavior)
-      "manzu" -> is_manzu?(context.tile)
-      "pinzu" -> is_pinzu?(context.tile)
-      "souzu" -> is_souzu?(context.tile)
-      "jihai" -> is_jihai?(context.tile)
-      "terminal" -> is_terminal?(context.tile)
-      "yaochuuhai" -> is_yaochuuhai?(context.tile)
-      "tanyaohai" -> is_tanyaohai?(context.tile)
-      "flower" -> is_flower?(context.tile)
-      "joker" -> is_joker?(context.tile)
-      "1" -> is_num?(context.tile, 1)
-      "2" -> is_num?(context.tile, 2)
-      "3" -> is_num?(context.tile, 3)
-      "4" -> is_num?(context.tile, 4)
-      "5" -> is_num?(context.tile, 5)
-      "6" -> is_num?(context.tile, 6)
-      "7" -> is_num?(context.tile, 7)
-      "8" -> is_num?(context.tile, 8)
-      "9" -> is_num?(context.tile, 9)
-      "tedashi" -> not Utils.has_attr?(context.tile, ["_draw"])
-      "tsumogiri" -> Utils.has_attr?(context.tile, ["_draw"])
-      "dora" -> Utils.has_matching_tile?([context.tile], context.doras)
-      "kuikae" ->
-        player = context.players[context.seat]
-        base_tiles = Match.collect_base_tiles(player.hand, player.calls, [0,1,2], player.tile_behavior)
-        potential_set = Utils.add_attr(Enum.take(context.call.other_tiles, 2) ++ [context.tile2], ["_hand"])
-        triplet = Match.remove_group(potential_set, [], [0,0,0], base_tiles, player.tile_behavior)
-        sequence = Match.remove_group(potential_set, [], [0,1,2], base_tiles, player.tile_behavior)
-        not Enum.empty?(triplet ++ sequence)
-      tile_spec ->
-        # "1m", "2z" are also specs
-        if Utils.is_tile(tile_spec) do
-          Utils.same_tile(context.tile, Utils.to_tile(tile_spec))
-        else
-          IO.puts("Unhandled tile spec #{inspect(tile_spec)}")
-          true
-        end
+    Enum.any?(tile_specs, fn tile_spec ->
+      negated = String.starts_with?(tile_spec, "not_")
+      tile_spec = if negated do String.replace_leading(tile_spec, "not_", "") else tile_spec end
+      negated != case tile_spec do
+        "any" -> true
+        "same" ->  Utils.same_tile(context.tile, context.tile2, context.players[context.seat].tile_behavior)
+        "not_same" -> not Utils.same_tile(context.tile, context.tile2, context.players[context.seat].tile_behavior)
+        "manzu" -> is_manzu?(context.tile)
+        "pinzu" -> is_pinzu?(context.tile)
+        "souzu" -> is_souzu?(context.tile)
+        "jihai" -> is_jihai?(context.tile)
+        "dragon" -> is_dragon?(context.tile)
+        "wind" -> is_wind?(context.tile)
+        "terminal" -> is_terminal?(context.tile)
+        "yaochuuhai" -> is_yaochuuhai?(context.tile)
+        "tanyaohai" -> is_tanyaohai?(context.tile)
+        "flower" -> is_flower?(context.tile)
+        "joker" -> is_joker?(context.tile)
+        "1" -> is_num?(context.tile, 1)
+        "2" -> is_num?(context.tile, 2)
+        "3" -> is_num?(context.tile, 3)
+        "4" -> is_num?(context.tile, 4)
+        "5" -> is_num?(context.tile, 5)
+        "6" -> is_num?(context.tile, 6)
+        "7" -> is_num?(context.tile, 7)
+        "8" -> is_num?(context.tile, 8)
+        "9" -> is_num?(context.tile, 9)
+        "tedashi" -> not Utils.has_attr?(context.tile, ["_draw"])
+        "tsumogiri" -> Utils.has_attr?(context.tile, ["_draw"])
+        "dora" -> Utils.has_matching_tile?([context.tile], context.doras)
+        "kuikae" ->
+          player = context.players[context.seat]
+          base_tiles = Match.collect_base_tiles(player.hand, player.calls, [0,1,2], player.tile_behavior)
+          potential_set = Utils.add_attr(Enum.take(context.call.other_tiles, 2) ++ [context.tile2], ["_hand"])
+          triplet = Match.remove_group(potential_set, [], [0,0,0], base_tiles, player.tile_behavior)
+          sequence = Match.remove_group(potential_set, [], [0,1,2], base_tiles, player.tile_behavior)
+          not Enum.empty?(triplet ++ sequence)
+        tile_spec ->
+          tile_behavior = Map.get(context, :tile_behavior, %TileBehavior{})
+          # "1m", "2z" are also specs
+          if Utils.is_tile(tile_spec) do
+            Utils.same_tile(context.tile, Utils.to_tile(tile_spec), tile_behavior)
+          else
+            IO.puts("Unhandled tile spec #{inspect(tile_spec)}")
+            true
+          end
+      end
     end)
   end
   def tile_matches_all(tile_specs, context) do
@@ -491,7 +502,8 @@ defmodule RiichiAdvanced.Riichi do
   end
 
   def get_player_from_seat_wind(kyoku, wind, available_seats) do
-    Utils.next_turn(wind, rem(kyoku, length(available_seats)))
+    ix = Enum.find_index(available_seats, & &1 == wind)
+    if ix == nil do nil else Enum.at(available_seats, rem(ix + kyoku, length(available_seats))) end
   end
 
   def get_east_player_seat(kyoku, available_seats) do

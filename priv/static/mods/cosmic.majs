@@ -1,0 +1,71 @@
+on after_initialization do
+  add_rule("Rules", "Win Condition", "- (Cosmic Riichi) Seven Pairs is again a possible winning hand.", -100)
+end
+
+apply set, "score_calculation.limit_thresholds", [
+  [3, 70], [4, 40], [5, 0],
+  [6, 0],
+  [8, 0],
+  [11, 0],
+  [13, 0],
+  [18, 0],
+  [26, 0],
+  [39, 0],
+  [52, 0],
+  [65, 0],
+  [78, 0],
+  [91, 0],
+  [104, 0]
+]
+apply set, "score_calculation.limit_scores", [
+  8000, 8000, 8000,
+  12000,
+  16000,
+  24000,
+  32000,
+  48000,
+  64000,
+  96000,
+  128000,
+  160000,
+  192000,
+  224000,
+  256000
+]
+apply set, "score_calculation.limit_names", [
+  "Mangan", "Mangan", "Mangan",
+  "Haneman",
+  "Baiman",
+  "Sanbaiman",
+  "Yakuman",
+  "Haneyakuman",
+  "Double Yakuman",
+  "Triple Yakuman",
+  "Quadruple Yakuman",
+  "Quintuple Yakuman",
+  "Sextuple Yakuman",
+  "Septuple Yakuman",
+  "Octuple Yakuman"
+]
+
+on after_win do
+  # tsubame gaeshi awards the riichi bet
+  if has_existing_yaku("Tsubame Gaeshi") do
+    as last_discarder do
+      put_down_riichi_stick
+    end
+  end
+end
+
+# modify yaku
+remove_yaku yaku, "Chiitoitsu"
+define_yaku yaku, "Chiitoitsu", 1, match(["hand", "calls", "winning_tile"], ~m"quad:-1, pair:7")
+replace_yaku yaku, "Rinshan", 1, status("kan") or status("fuun")
+replace_yaku yaku, "Ryanpeikou", 1, match(["hand", "calls", "winning_tile"], ~m"exhaustive, iipeikou:2, pair:1")
+define_yaku meta_yaku, "Chiitoitsu", 1, has_existing_yaku("Chiitoitsu") and has_no_call_named("ton", "chii", "chon", "chon_honors", "daiminfuun", "pon", "daiminkan", "kapon", "kakakan", "kafuun", "kakan")
+define_yaku meta_yaku, "Ryanpeikou", 2, has_existing_yaku("Ryanpeikou") and has_no_call_named("ton", "chii", "chon", "chon_honors", "daiminfuun", "pon", "daiminkan", "kapon", "kakakan", "kafuun", "kakan")
+
+# add chiitoitsu back to win definitions (since space mahjong removes it)
+define_match tenpai, "standard_tenpai", "chiitoitsu_tenpai", "kokushi_tenpai"
+define_match tenpai_14, "standard_tenpai", "chiitoitsu_tenpai_14", "kokushi_tenpai"
+define_match win, "standard_win", "chiitoitsu_win", "kokushi_win"

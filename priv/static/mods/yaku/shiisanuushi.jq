@@ -1,6 +1,6 @@
 .after_initialization.actions += [
-  ["add_rule", "Local Yaku (Yakuman)", "(Shiisanuushi) \"Thirteen Independent\". Start with 14 disconnected tiles. Calls invalidate.", 113],
-  ["add_rule", "Win Condition", "- (Shiisanuushi) Start with 14 disconnected tiles.", -100]
+  ["add_rule", "Yakuman", "Shiisanuushi", "\"Thirteen Independent\". Start with 14 disconnected tiles. Calls invalidate.", 113],
+  ["add_rule", "Rules", "Win Condition", "- (Shiisanuushi) Start with 14 disconnected tiles.", -100]
 ]
 |
 .yakuman += [
@@ -15,7 +15,7 @@
   "Shiisanuushi": ["Tenhou", "Chiihou"]
 }
 |
-.shiisanuushi_definition = [[ [["pair", "ryanmen/penchan", "kanchan"], -1] ]]
+.shiisanuushi_definition = [[ [["pair", [0, 1], [0, 2]], -1] ]]
 |
 .buttons.shiisanuushi = {
   "display_name": "Tsumo",

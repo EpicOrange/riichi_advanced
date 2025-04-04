@@ -41,7 +41,7 @@ defmodule RiichiAdvancedWeb.HandComponent do
                   <div class={Utils.get_tile_class(tile, i, assigns, ["markable"])} phx-cancellable-click="mark_tile" phx-hover="hover_tile" phx-hover-off="hover_off" phx-target={@myself} phx-value-index={i}></div>
                 <% else %>
                   <%= if GenServer.call(@game_state, {:is_marked?, @viewer, @seat, i, :hand}) do %>
-                    <div class={Utils.get_tile_class(tile, i, assigns, ["marked"])} phx-hover="hover_tile" phx-hover-off="hover_off" phx-target={@myself} phx-value-index={i}></div>
+                    <div class={Utils.get_tile_class(tile, i, assigns, ["marked", "selected"])} phx-cancellable-click="unmark_tile" phx-hover="hover_tile" phx-hover-off="hover_off" phx-target={@myself} phx-value-index={i}></div>
                   <% else %>
                     <div class={Utils.get_tile_class(tile, i, assigns, ["inactive"])} phx-hover="hover_tile" phx-hover-off="hover_off" phx-target={@myself} phx-value-index={i}></div>
                   <% end %>
@@ -55,7 +55,7 @@ defmodule RiichiAdvancedWeb.HandComponent do
                 <div class={Utils.get_tile_class(tile, i, assigns, ["markable"])} phx-cancellable-click="mark_tile" phx-hover="hover_tile" phx-hover-off="hover_off" phx-target={@myself} phx-value-index={i}></div>
               <% else %>
                 <%= if GenServer.call(@game_state, {:is_marked?, @viewer, @seat, i, :hand}) do %>
-                  <div class={Utils.get_tile_class(tile, i, assigns, ["marked"])} phx-hover="hover_tile" phx-hover-off="hover_off" phx-target={@myself} phx-value-index={i}></div>
+                  <div class={Utils.get_tile_class(tile, i, assigns, ["marked", "selected"])} phx-cancellable-click="unmark_tile" phx-hover="hover_tile" phx-hover-off="hover_off" phx-target={@myself} phx-value-index={i}></div>
                 <% else %>
                   <div class={Utils.get_tile_class(tile, i, assigns, ["inactive"])} phx-hover="hover_tile" phx-hover-off="hover_off" phx-target={@myself} phx-value-index={i}></div>
                 <% end %>
@@ -109,7 +109,7 @@ defmodule RiichiAdvancedWeb.HandComponent do
               </div>
             <% else %>
               <%= if GenServer.call(@game_state, {:is_marked?, @viewer, @seat, i, :calls}) do %>
-                <div class="call">
+                <div class="call" phx-cancellable-click="unmark_call" phx-target={@myself} phx-value-index={i}>
                   <div class={Utils.get_tile_class(tile, i, assigns, ["marked"])} :for={tile <- call}></div>
                 </div>
               <% else %>
@@ -184,9 +184,21 @@ defmodule RiichiAdvancedWeb.HandComponent do
     {:noreply, socket}
   end
 
+  def handle_event("unmark_tile", %{"index" => index}, socket) do
+    {ix, _} = Integer.parse(index)
+    socket.assigns.unmark_tile.(ix, :hand)
+    {:noreply, socket}
+  end
+
   def handle_event("mark_call", %{"index" => index}, socket) do
     {ix, _} = Integer.parse(index)
     socket.assigns.mark_tile.(ix, :calls)
+    {:noreply, socket}
+  end
+
+  def handle_event("unmark_call", %{"index" => index}, socket) do
+    {ix, _} = Integer.parse(index)
+    socket.assigns.unmark_tile.(ix, :calls)
     {:noreply, socket}
   end
 

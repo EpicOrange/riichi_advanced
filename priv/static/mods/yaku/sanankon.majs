@@ -1,0 +1,34 @@
+on after_initialization do
+  add_rule("1 Han", "Sanankon", "1 han if your hand has three closed kontsu (mixed triplets). A kontsu (mixed triplet) formed by a self-draw win counts as closed.")
+  add_rule("3 Han", "Suuankon", "3 han if your hand has three closed kontsu (mixed triplets) in hand, and you won by self-drawing the fourth.")
+  add_rule("6 Han", "Suuankon Tanki", "6 han if your hand has four closed kontsu (mixed triplets) in hand, and you won by completing your pair.")
+end
+
+define_match sanankon_tsumo,
+  ~m"""
+  (chon chon_honors daiminfuun kafuun):-1, (kontsu kontsu_123 kontsu_124 kontsu_134 kontsu_234 kontsu_567):3, (shuntsu koutsu kontsu kontsu_123 kontsu_124 kontsu_134 kontsu_234 kontsu_567):1, pair:1
+  | (chon chon_honors daiminfuun kafuun):-2, (kontsu kontsu_123 kontsu_124 kontsu_134 kontsu_234 kontsu_567):4, pair:1
+  """
+
+define_match sanankon_ron,
+  ~m"""
+  exhaustive, (chon chon_honors daiminfuun kafuun):-1, (kontsu kontsu_123 kontsu_124 kontsu_134 kontsu_234 kontsu_567):3, (any@winning_tile):0, (shuntsu koutsu kontsu kontsu_123 kontsu_124 kontsu_134 kontsu_234 kontsu_567):1, pair:1
+  | exhaustive, (chon chon_honors daiminfuun kafuun):-2, (kontsu kontsu_123 kontsu_124 kontsu_134 kontsu_234 kontsu_567):4, (any@winning_tile):0, pair:1
+  """
+
+define_match suuankon_tsumo,
+  ~m"""
+  (chon chon_honors daiminfuun kafuun):-1, (kontsu kontsu_123 kontsu_124 kontsu_134 kontsu_234 kontsu_567):4, pair:1
+  """
+
+define_match suuankon_ron,
+  ~m"""
+  exhaustive, (chon chon_honors daiminfuun kafuun):-1, (kontsu kontsu_123 kontsu_124 kontsu_134 kontsu_234 kontsu_567):4, (any@winning_tile):0, pair:1
+  """
+
+define_yaku yaku, "Sanankon", 2,
+     (won_by_draw and match(["hand", "calls", "winning_tile"], ["sanankon_tsumo"]))
+  or (not_won_by_draw and match(["hand", "calls", "winning_tile"], ["sanankon_ron"]))
+
+define_yaku yaku, "Suuankon", 3, won_by_draw and match(["hand", "calls", "winning_tile"], ["suuankon_tsumo"])
+define_yaku yaku, "Suuankon Tanki", 6, not_won_by_draw and match(["hand", "calls", "winning_tile"], ["suuankon_ron"])

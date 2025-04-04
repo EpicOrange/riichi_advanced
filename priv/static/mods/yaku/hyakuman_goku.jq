@@ -1,4 +1,4 @@
-.after_initialization.actions += [["add_rule", "Local Yaku (Yakuman)", "(Hyakuman Goku) \"One Million Stones\". Your hand is purely character tiles whose numbers sum up to at least 100.", 113]]
+.after_initialization.actions += [["add_rule", "Yakuman", "Hyakuman Goku", "\"One Million Stones\". Your hand is purely character tiles whose numbers sum up to at least 100.", 113]]
 |
 .yakuman += [
   {

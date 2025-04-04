@@ -1,6 +1,6 @@
 .after_initialization.actions += [
-  ["update_rule", "Riichi", "(Ippatsu) If you win before or during your next draw after riichi, you are awarded ippatsu (1 han). Calls invalidate ippatsu."],
-  ["update_rule", "Shuugi", "(Ippatsu) Ippatsu is worth 1 shuugi."]
+  ["update_rule", "Rules", "Riichi", "(Ippatsu) If you win before or during your next draw after riichi, you are awarded ippatsu (1 han). Calls invalidate ippatsu."],
+  ["update_rule", "Rules", "Shuugi", "(Ippatsu) Ippatsu is worth 1 shuugi."]
 ]
 |
 # add ippatsu yaku after riichi
@@ -15,8 +15,13 @@
 ] + .[$ix+1:]
 |
 # set ippatsu status on riichi
-if .buttons.riichi then
-  .buttons.riichi.actions |= map(if .[0] == "set_status" then . + ["ippatsu"] else . end)
+if (.buttons | has("riichi")) then
+  .buttons.riichi.actions += [["set_status", "ippatsu"]]
+else . end
+|
+# set ippatsu status on open riichi
+if (.buttons | has("open_riichi")) then
+  .buttons.open_riichi.actions += [["set_status", "ippatsu"]]
 else . end
 |
 .functions.discard_passed |= [
@@ -24,4 +29,11 @@ else . end
   ["as", "last_discarder", [["when", [{"name": "status_missing", "opts": ["just_reached"]}], [["unset_status", "ippatsu"]]]]],
   # unset everyone's ippatsu status after any call
   ["when", ["just_called"], [["unset_status_all", "ippatsu"]]]
+] + .
+|
+# unset everyone's ippatsu status after any call (except for chankan-able calls)
+.after_call.actions |= [
+  ["unless", [{"name": "status", "opts": ["can_chankan"]}], [
+    ["unset_status_all", "ippatsu"]
+  ]]
 ] + .
