@@ -87,24 +87,29 @@ defmodule RiichiAdvanced.TestUtils do
       end)
     end
 
-    if expected_winners != :no_winners do
-      for {seat, expected_winner} <- expected_winners do
-        assert seat in state.winner_seats
-        errs = Enum.map(List.wrap(expected_winner), &check_winner.(seat, &1))
-        if [] not in errs do
-          for tuples <- errs, {k, actual, expected} <- tuples do
-            IO.puts("#{k}:\n\n    #{inspect(actual)}\n\nexpected #{k}:\n\n    #{inspect(expected)}")
+    case expected_winners do
+      :no_winners -> 
+        assert Enum.empty?(state.winner_seats)
+        win_buttons = Enum.all?(state.players, fn {seat, player} ->
+          {seat, Enum.filter(["ron", "chankan", "tsumo", "flower_win"], & &1 in player.buttons)}
+        end)
+        expected_win_buttons = Enum.all?(state.players, fn {seat, _player} -> {seat, []} end)
+        assert win_buttons == expected_win_buttons
+      :no_buttons ->
+        buttons = Map.new(state.players, fn {seat, player} -> {seat, player.buttons} end)
+        # RiichiAdvanced.LogControlState.print_game_state(%{game_state: state})
+        assert Enum.all?(buttons, fn {_seat, buttons} -> Enum.empty?(buttons) end)
+      _ ->
+        for {seat, expected_winner} <- expected_winners do
+          assert seat in state.winner_seats
+          errs = Enum.map(List.wrap(expected_winner), &check_winner.(seat, &1))
+          if [] not in errs do
+            for tuples <- errs, {k, actual, expected} <- tuples do
+              IO.puts("#{k}:\n\n    #{inspect(actual)}\n\nexpected #{k}:\n\n    #{inspect(expected)}")
+            end
+            assert false
           end
-          assert false
         end
-      end
-    else
-      assert Enum.empty?(state.winner_seats)
-      win_buttons = Enum.all?(state.players, fn {seat, player} ->
-        {seat, Enum.filter(["ron", "chankan", "tsumo", "flower_win"], & &1 in player.buttons)}
-      end)
-      expected_win_buttons = Enum.all?(state.players, fn {seat, _player} -> {seat, []} end)
-      assert win_buttons == expected_win_buttons
     end
 
     if Map.has_key?(expected_state, :delta_scores) do
