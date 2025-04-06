@@ -3,7 +3,6 @@ defmodule RiichiAdvanced.KansaiZanScoring do
   alias RiichiAdvanced.TestUtils, as: TestUtils
 
   @zan_mods [
-    "kan",
     %{name: "honba", config: %{value: 1000}},
     %{name: "nagashi", config: %{is: "Yakuman"}},
     %{name: "tobi", config: %{below: 1}},
@@ -14,7 +13,7 @@ defmodule RiichiAdvanced.KansaiZanScoring do
     "tenpaiyame",
     "kuikae_nashi",
     "double_wind_4_fu",
-    "kokushi_chankan",
+    "kokushi_ankan_chankan",
     "first_gets_riichi_sticks",
     "sanma_no_tsumo_loss",
     "suufon_renda",
@@ -27,7 +26,7 @@ defmodule RiichiAdvanced.KansaiZanScoring do
     "yaku/open_riichi",
     "yaku/sanrenkou",
     "yaku/sanpuukou",
-    %{name: "yaku/renhou", config: %{is: "Yakuman"}},
+    %{name: "yaku/riichi_renhou", config: %{is: "Yakuman"}},
     "yaku/suurenkou",
     "show_waits",
     %{name: "shuugi", config: %{worth: 1000}},
@@ -479,4 +478,30 @@ defmodule RiichiAdvanced.KansaiZanScoring do
     }, %{delta_scores: [-32000, 32000, 0], shuugi: [-10, 10, 0]})
   end
 
+  test "kansai - end of game shuugi payments" do
+    TestUtils.test_yaku_advanced("kansai", @zan_mods ++ [%{name: "dora", config: %{start_indicators: 1}}], """
+    {
+      "starting_hand": {
+        "east": ["1s", "2s", "3p", "2p", "3p", "4p", "3s", "4s", "0s", "2s", "3s", "4s", "4z"],
+        "south": ["2p", "3p", "4p", "6p", "7p", "8p", "1z", "1z", "1z", "6s", "7s", "8s", "8s"],
+        "west": ["1p", "2p", "7p", "2p", "0p", "8p", "3s", "6s", "9s", "5z", "2z", "3z", "4z"]
+      },
+      "starting_draws": ["6z", "6z", "8s"],
+      "starting_dead_wall": ["5z", "5z", "6z", "6z", "2z", "2z", "3z", "3z", "4z", "4z"],
+      "max_rounds": 0
+    }
+    """, [
+      %{"type" => "discard", "tile" => "6z", "player" => 0, "tsumogiri" => true},
+      %{"type" => "discard", "tile" => "6z", "player" => 1, "tsumogiri" => true},
+      %{"type" => "discard", "tile" => "8s", "player" => 2, "tsumogiri" => true},
+      %{"type" => "buttons_pressed", "buttons" => [nil, %{"button" => "ron"}, nil]}
+    ], %{
+      south: %{
+        yaku: [{"Dora", 3}, {"Round Wind", 1}],
+        yaku2: []
+      }
+      # finishing at 50000/58000/42000 means 0/8/-8 chips
+    }, %{delta_scores: [0, 8000, -8000], shuugi: [0, 8, -8]})
+  end
+  
 end

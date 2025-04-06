@@ -577,7 +577,6 @@ Here are all the toplevel keys. Every key is optional.
 
 Events:
 
-- `after_bloody_end`: Triggers after processing the end of a bloody end game (after `after_win`)
 - `after_call`: Triggers at the end of any call. Context: `seat` is the caller's seat, `caller` is the caller's seat, `callee` is the seat called from, and `call` contains call information.
 - `after_charleston`: Triggers after a round of `charleston_*` actions is triggered.
 - `after_discard_passed`: Triggered by the `check_discard_passed` action but only if the last discard had passed.
@@ -618,7 +617,6 @@ Here is the basic event lifecycle for each round:
 - On a draw:
   + `before_exhaustive_draw`/`before_abortive_draw`
   + `after_scoring`
-  + `after_bloody_end` (after 3 players win if bloody end rules are enabled)
 - Then one of these is run:
   - `before_continue` (if bloody end rules are enabled, and 3 players have not won yet)
   - `before_start` (otherwise, unless the game is over)
@@ -855,6 +853,7 @@ Colors are specified as CSS color strings like `"#808080"` or `"lightblue"`. Exa
   + Available values for `seat`: everything usable by the `"as"` action is usable here. In particular, you might want to use `"others"` when `"won_by_draw"` is true, and `"last_discarder"` otherwise.
   + Available values for `amount`: every amount usable by the `"set_counter"` action is usable here.
   + Available values for `method`: See the above action, `"modify_winner"`. Defaults to `"add"`.
+- `["set_scoring_header", header]`: Sets the top banner of the score exchange screen to the given string `header`.
 
 Every unrecognized action is a no-op.
 
@@ -1236,16 +1235,7 @@ You may also have optional keys `"discarder_penalty"`, `"non_discarder_penalty"`
 
 If there is a `"split_oya_ko_payment"` key set to `true`, then self-draw wins are processed differently. Specifically, it splits the score X into Y=X/4 (if winner is non-dealer) or Y=X/3 (if the winner is dealer). The dealer is paid 2Y points rounded up to the nearest `"han_fu_rounding_factor"`, and all non-dealers are paid Y points rounded up to the nearest `"han_fu_rounding_factor"`.
 
-There are typically no payments at exhaustive draw, but you can enable riichi-style tenpai and nagashi exhaustive draw payments via the following:
-
-    "score_calculation": {
-      "draw_tenpai_payments": [1000, 1500, 3000],
-      "draw_nagashi_payments": [2000, 4000],
-    }
-
-These keys check for `"tenpai"` and `"nagashi"` statuses respectively on the players at the time of exhaustive draw. For tenpai payments, tenpai players pay `1000/1500/3000` to non-tenpai players for 1/2/3 players tenpai. For nagashi payments, it's a mangan payment, so 2000 from nondealers and 4000 from dealer (or 4000 all if dealer got nagashi).
-
-Alternatively, you can enable sichuan-style tenpai payments via:
+There are typically no payments at exhaustive draw, but you can enable sichuan-style tenpai payments via:
 
     "score_calculation": {
       "score_best_hand_at_draw": true
@@ -1266,16 +1256,13 @@ To set the value of riichi sticks and honba counters respectively, set:
 
 `"riichi_value"` otherwise defaults to 1000 and `"honba_value"` to 0.
 
-The following keys determine the behavior of pao:
+The following key determines the behavior of pao (activated by the `make_responsible_for` action):
 
     "score_calculation": {
-      "pao_pays_all_yaku": false,
-      "pao_pays_all_yaku2": false,
-      "pao_eligible_yaku": ["Daisangen", "Daisuushii"],
       "split_pao_ron": true,
     }
 
-First, if `"pao_pays_all_yaku"` is true then players who are hit by pao (i.e. have the `"pao"` status on a win) pay the entirety of `yaku`. Same with `"pao_pays_all_yaku2"` and `yaku2`. Otherwise, only yaku named in the `"pao_eligible_yaku"` array has payment handled by pao rules -- the remaining yaku are paid out normally. Finally, `"split_pao_ron"` is true if ron payments are to be split in half (the deal-in player pays half, and the pao player pays half plus honba).
+`"split_pao_ron"` is true if ron payments are to be split in half (the deal-in player pays half, and the pao player pays half plus honba). In the extremely rare case that one player deals into another player's yakuman and the two other players should pay pao, the ron payment is split three ways.
 
 ### Payment-related statuses
 

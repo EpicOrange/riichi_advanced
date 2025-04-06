@@ -15,11 +15,12 @@ def nine_to_ten:
 .wall |= nine_to_ten
 |
 # re-add the same number of nine tiles as there are two tiles
+# (this is to accommodate sanma)
 .wall |= . + map(select(. == "2m") | "9m")
 |
-.wall |= . + map(select(. == "2p") | "9m")
+.wall |= . + map(select(. == "2p") | "9p")
 |
-.wall |= . + map(select(. == "2s") | "9m")
+.wall |= . + map(select(. == "2s") | "9s")
 |
 # add ten ordering
 .after_start.actions += [

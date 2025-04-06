@@ -16,7 +16,8 @@ defmodule RiichiAdvanced.ZungJungScoringTest do
     """, [
       %{"type" => "buttons_pressed", "buttons" => [%{"button" => "ankan"}, nil, nil, nil]},
       %{"type" => "discard", "tile" => "1z", "player" => 0, "tsumogiri" => true},
-      %{"type" => "buttons_pressed", "buttons" => [nil, nil, %{"button" => "ron"}, %{"button" => "ron"}]},
+      %{"type" => "buttons_pressed", "buttons" => [nil, nil, nil, %{"button" => "ron"}]},
+      %{"type" => "buttons_pressed", "buttons" => [nil, nil, %{"button" => "ron"}, nil]},
       %{"type" => "buttons_pressed", "buttons" => [nil, %{"button" => "ron"}, nil, nil]}
     ], %{
       south: %{

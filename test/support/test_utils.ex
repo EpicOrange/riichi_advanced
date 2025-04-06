@@ -1,46 +1,24 @@
 defmodule RiichiAdvanced.TestUtils do
+  alias RiichiAdvanced.GameState.American, as: American
+  alias RiichiAdvanced.GameState.Rules, as: Rules
+  alias RiichiAdvanced.GameState.TileBehavior, as: TileBehavior
+  alias RiichiAdvanced.Match, as: Match
+  alias RiichiAdvanced.ModLoader, as: ModLoader
   alias RiichiAdvanced.LogControlState, as: LogControl
   alias RiichiAdvanced.Utils, as: Utils
   import ExUnit.Assertions
 
   @suppress_io true
   # @suppress_io false
-  @default_riichi_mods [
-    "kan",
-    %{name: "honba", config: %{"value" => 100}},
-    %{name: "yaku/riichi", config: %{"bet" => 1000, "drawless" => false}},
-    %{name: "nagashi", config: %{"is" => "Mangan"}},
-    %{name: "tobi", config: %{"below" => 0}},
-    %{
-     name: "uma",
-     config: %{"_1st" => 10, "_2nd" => 5, "_3rd" => -5, "_4th" => -10}
-    },
-    "agarirenchan",
-    "tenpairenchan",
-    "kuikae_nashi",
-    "double_wind_4_fu",
-    "pao",
-    "kokushi_chankan",
-    "suufon_renda",
-    "suucha_riichi",
-    "suukaikan",
-    "kyuushu_kyuuhai",
-    %{name: "dora", config: %{"start_indicators" => 1}},
-    "ura",
-    "kandora",
-    "yaku/ippatsu",
-    %{name: "yaku/renhou", config: %{"is" => "Yakuman"}},
-    "show_waits",
-    %{name: "min_han", config: %{"min" => 1}},
-    %{name: "aka", config: %{"man" => 1, "pin" => 1, "sou" => 1}}
-  ]
-
-  def default_riichi_mods, do: @default_riichi_mods
 
   def initialize_test_state(ruleset, mods, config \\ nil) do
     room_code = Ecto.UUID.generate()
-    game_spec = {RiichiAdvanced.GameSupervisor, room_code: room_code, ruleset: ruleset, mods: mods, config: config, name: Utils.via_registry("game", ruleset, room_code)}
-    {:ok, game} = DynamicSupervisor.start_child(RiichiAdvanced.GameSessionSupervisor, game_spec)
+    args = [room_code: room_code, ruleset: ruleset, mods: mods, config: config, name: Utils.via_registry("game", ruleset, room_code)]
+    game_spec = Supervisor.child_spec(%{
+      id: {RiichiAdvanced.GameSupervisor, ruleset, room_code},
+      start: {RiichiAdvanced.GameSupervisor, :start_link, [args]}
+    }, restart: :temporary)
+    {:ok, _game} = DynamicSupervisor.start_child(RiichiAdvanced.GameSessionSupervisor, game_spec)
     [{game_state, _}] = Utils.registry_lookup("game_state", ruleset, room_code)
 
     # suppress all IO from game_state
@@ -56,7 +34,6 @@ defmodule RiichiAdvanced.TestUtils do
     %LogControl.LogControl{
       ruleset: ruleset,
       room_code: room_code,
-      supervisor: game,
       game_state_pid: game_state,
     }
   end
@@ -87,6 +64,7 @@ defmodule RiichiAdvanced.TestUtils do
     end
 
     state = GenServer.call(test_state.game_state_pid, :get_state)
+    GenServer.cast(test_state.game_state_pid, :terminate_game)
 
     # debug
     # IO.inspect(state.players.east.hand)
@@ -122,10 +100,11 @@ defmodule RiichiAdvanced.TestUtils do
       end
     else
       assert Enum.empty?(state.winner_seats)
-      no_win_buttons = Enum.all?(state.players, fn {_seat, player} ->
-        Enum.all?(["ron", "chankan", "tsumo"], & &1 not in player.buttons)
+      win_buttons = Enum.all?(state.players, fn {seat, player} ->
+        {seat, Enum.filter(["ron", "chankan", "tsumo", "flower_win"], & &1 in player.buttons)}
       end)
-      assert no_win_buttons
+      expected_win_buttons = Enum.all?(state.players, fn {seat, _player} -> {seat, []} end)
+      assert win_buttons == expected_win_buttons
     end
 
     if Map.has_key?(expected_state, :delta_scores) do
@@ -162,4 +141,107 @@ defmodule RiichiAdvanced.TestUtils do
     end
   end
 
+  def get_rules!(ruleset, mods) do
+    assert {:ok, rules_ref} = ModLoader.get_ruleset_json(ruleset)
+    |> ModLoader.strip_comments()
+    |> ModLoader.apply_mods(mods, ruleset)
+    |> Rules.load_rules(ruleset)
+    rules_ref
+  end
+
+  def interpret_hand(hand) when is_list(hand), do: Enum.map(hand, &Utils.to_tile/1)
+  def interpret_hand(hand) when is_binary(hand) do
+    case String.split(hand, " ", trim: true) do
+      [hand_spec] -> for [_, nums, suit] <- Regex.scan(~r/(\d+)([a-zA-Z])/, hand_spec), num <- String.graphemes(nums), do: "#{num}#{suit}"
+      hand -> hand
+    end
+    |> interpret_hand()
+  end
+  defp interpret_call(call) do
+    with [call_name, call] <- String.split(call, ":", trim: true) do
+      {call_name, interpret_hand(call)}
+    end
+  end
+  defp interpret_calls(calls) when is_list(calls), do: Enum.map(calls, &interpret_call/1)
+  defp interpret_calls(calls) when is_binary(calls), do: interpret_calls(String.split(calls, " ", trim: true))
+  defp test_generic(ruleset, mods, test_spec) do
+    hand = interpret_hand(Keyword.get(test_spec, :hand, []))
+    {hand, winning_tile} = Enum.split(hand, -1)
+    rules_ref = get_rules!(ruleset, mods)
+    wall = Rules.get(rules_ref, "wall", [])
+    unused = wall -- hand
+    non_furiten_tile = if winning_tile == :"1z" do :"2z" else :"1z" end
+    starting_draws = Enum.take(unused, 3) ++ [non_furiten_tile] ++ Enum.take(unused, 2) ++ [winning_tile, winning_tile]
+    config = """
+    {
+      "starting_hand": {
+        "east": [],
+        "south": [],
+        "west": [],
+        "north": #{Jason.encode!(hand)}
+      },
+      "starting_draws": #{Jason.encode!(starting_draws)}
+    }
+    """
+    events = Keyword.get(test_spec, :pre_events, []) ++ [
+      %{"type" => "discard", "tile" => Enum.at(starting_draws, 0), "player" => 0, "tsumogiri" => true},
+        %{"type" => "discard", "tile" => Enum.at(starting_draws, 1), "player" => 1, "tsumogiri" => true},
+        %{"type" => "discard", "tile" => Enum.at(starting_draws, 2), "player" => 2, "tsumogiri" => true},
+        %{"type" => "discard", "tile" => Enum.at(starting_draws, 3), "player" => 3, "tsumogiri" => true},
+        %{"type" => "discard", "tile" => Enum.at(starting_draws, 4), "player" => 0, "tsumogiri" => true},
+        %{"type" => "discard", "tile" => Enum.at(starting_draws, 5), "player" => 1, "tsumogiri" => true},
+        %{"type" => "discard", "tile" => Enum.at(starting_draws, 6), "player" => 2, "tsumogiri" => true},
+    ] ++ Keyword.get(test_spec, :post_events, [])
+    outcome = Keyword.get(test_spec, :outcome, :no_winners)
+    test_yaku_advanced(ruleset, mods, config, events, outcome)
+  end
+
+  # usage:
+  # TestUtils.test_win(ruleset, mods,
+  #   hand: ["2m", "2m", "2p", "2p", "2p", "2p", "2s", "2s", "2s", "2s", "7z", "7z", "7z", "7z"],
+  #   win_button: "ron",
+  #   yaku: [],
+  #   yaku2: []
+  # )
+  def test_win(ruleset, mods, test_spec) do
+    win_button = Keyword.get(test_spec, :win_button, "ron")
+    outcome = %{
+      north: %{
+        yaku: Keyword.get(test_spec, :yaku, []),
+        yaku2: Keyword.get(test_spec, :yaku2, [])
+      }
+    }
+    post_events = [
+      %{"type" => "buttons_pressed", "buttons" => [nil, nil, nil, %{"button" => win_button}]}
+    ]
+    test_spec = Keyword.put(test_spec, :outcome, outcome)
+    test_spec = Keyword.put(test_spec, :post_events, post_events)
+    test_generic(ruleset, mods, test_spec)
+  end
+
+  # usage:
+  # TestUtils.test_no_win(ruleset, mods,
+  #   hand: ["2m", "2m", "2p", "2p", "2p", "2p", "2s", "2s", "2s", "2s", "7z", "7z", "7z", "2z"],
+  # )
+  def test_no_win(ruleset, mods, test_spec) do
+    test_spec = Keyword.put(test_spec, :outcome, :no_winners)
+    test_generic(ruleset, mods, test_spec)
+  end
+
+  defp match_hand(rules_ref, match_definition_name, hand, calls, tile_aliases) do
+    hand = interpret_hand(hand)
+    calls = interpret_calls(calls)
+    {am_win_definitions, win_definitions} = Enum.split_with(Rules.get(rules_ref, match_definition_name <> "_definition"), &is_binary/1)
+    translated_win_definitions = Rules.translate_sets_in_match_definitions(win_definitions, Rules.get(rules_ref, "set_definitions"))
+    translated_am_win_definitions = American.translate_american_match_definitions(am_win_definitions)
+    win_definitions = translated_win_definitions ++ translated_am_win_definitions
+    tile_behavior = %TileBehavior{ aliases: tile_aliases, tile_freqs: Enum.frequencies(Rules.get(rules_ref, "wall")) }
+    Match.match_hand(hand, calls, win_definitions, tile_behavior)
+  end
+  def assert_winning_hand(rules_ref, match_definition_name, hand, calls \\ [], tile_aliases \\ %{}) do
+    assert match_hand(rules_ref, match_definition_name, hand, calls, tile_aliases), "Not a winning hand: #{to_string(hand)} #{to_string(calls)}"
+  end
+  def refute_winning_hand(rules_ref, match_definition_name, hand, calls \\ [], tile_aliases \\ %{}) do
+    refute match_hand(rules_ref, match_definition_name, hand, calls, tile_aliases), "Shouldn't be a winning hand: #{to_string(hand)} #{to_string(calls)}"
+  end
 end

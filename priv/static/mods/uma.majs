@@ -1,0 +1,11 @@
+on after_initialization do
+  add_rule("Rules", "Uma", "At the end of the game, 1st/2nd/3rd/4th receive a bonus of %{_1st}/%{_2nd}/%{_3rd}/%{_4th} points.", %{_1st: !_1st * 1000, _2nd: !_2nd * 1000, _3rd: !_3rd * 1000, _4th: !_4th * 1000})
+end
+
+on before_conclusion do
+  push_system_message("Applied uma of %{_1st}/%{_2nd}/%{_3rd}/%{_4th}.", %{_1st: !_1st, _2nd: !_2nd, _3rd: !_3rd, _4th: !_4th})
+  if placement(1) do add_score(!_1st * 1000) end
+  if placement(2) do add_score(!_2nd * 1000) end
+  if placement(3) do add_score(!_3rd * 1000) end
+  if placement(4) do add_score(!_4th * 1000) end
+end

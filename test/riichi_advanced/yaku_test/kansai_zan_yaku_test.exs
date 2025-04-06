@@ -3,7 +3,6 @@ defmodule RiichiAdvanced.YakuTest.KansaiZanYaku do
   alias RiichiAdvanced.TestUtils, as: TestUtils
 
   @zan_mods [
-    "kan",
     %{name: "honba", config: %{value: 1000}},
     %{name: "nagashi", config: %{is: "Yakuman"}},
     %{name: "tobi", config: %{below: 1}},
@@ -14,7 +13,7 @@ defmodule RiichiAdvanced.YakuTest.KansaiZanYaku do
     "tenpaiyame",
     "kuikae_nashi",
     "double_wind_4_fu",
-    "kokushi_chankan",
+    "kokushi_ankan_chankan",
     "first_gets_riichi_sticks",
     "sanma_no_tsumo_loss",
     "suufon_renda",
@@ -27,7 +26,7 @@ defmodule RiichiAdvanced.YakuTest.KansaiZanYaku do
     "yaku/open_riichi",
     "yaku/sanrenkou",
     "yaku/sanpuukou",
-    %{name: "yaku/renhou", config: %{is: "Yakuman"}},
+    %{name: "yaku/riichi_renhou", config: %{is: "Yakuman"}},
     "yaku/suurenkou",
     "show_waits",
     %{name: "shuugi", config: %{worth: 1000}},

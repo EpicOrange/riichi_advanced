@@ -1,3 +1,9 @@
+on after_initialization do
+  add_rule("Rules", "No Chii", "(Sanma) You cannot call chii in sanma.")
+  add_rule("Rules", "Wall", "(Sanma) The 2 to 8 of characters are removed from the wall.", -99)
+  add_rule("Rules", "Pei", "(Sanma) You may declare north winds to draw a replacement tile from the dead wall. Each is worth 1 han. North winds are still usable to form pairs and triplets. If you are waiting on the north wind, you may ron a north wind declaration much like chankan (but you are not awarded chankan).")
+end
+
 set num_players, 3
 set initial_score, 35000
 set max_rounds, 6
@@ -16,11 +22,6 @@ apply subtract, "wall", [
   "8m", "8m", "8m", "8m"
 ]
 
-# change "pei" set to "pei_triplet" (since our call is named "pei")
-apply delete_key, "set_definitions", "pei"
-define_set pei_triplet, ~s"4z 4z 4z"
-replace all, ".", "pei", "pei_triplet"
-
 # now we can add stuff related to pei button and status
 apply prepend, "functions.discard_passed", [["as", "others", [["unset_status", "pei"]]]]
 
@@ -33,15 +34,16 @@ apply merge, "score_calculation", %{
 # nukidora
 define_yaku extra_yaku, "Pei", "nukidora", counter_at_least("nukidora", 1)
 on before_win do
-  add_counter("nukidora", "count_matches", ["flowers"], ~m"pei:1")
+  add_counter("nukidora", "count_matches", ["flowers"], ~m"flower:1")
 end
 
 # no chii
 apply delete_key, "buttons", "chii"
 
 # pei button
-define_button pei,
-  display_name: "Pei", 
+define_button flower,
+  display_name: "Pei",
+  msg_name: "pei",
   show_when: our_turn
     and not_no_tiles_remaining
     and has_draw
@@ -50,10 +52,11 @@ define_button pei,
     and tile_not_drawn(-8)
   do
     big_text("Pei")
+    set_status("pei", "can_chankan")
     flower("4z")
+    unset_status("can_chankan")
     discard_passed
-    do_kan_draw(status: "pei")
-    unset_status("kan")
+    do_kan_draw
   end
 
 # pei auto button
@@ -61,43 +64,20 @@ define_auto_button _5_auto_pei,
   display_name: "K",
   desc: "Automatically declare pei."
   do
-    if buttons_include("pei") do
-      press_button("pei")
-      press_first_call_button("pei")
+    if buttons_include("flower") do
+      press_button("flower")
+      press_first_call_button("flower")
     end
   end
 
 # don't let auto discard button skip pei
-define_auto_button _4_auto_discard,
-  display_name: "D",
-  desc: "Automatically discard your drawn tile."
-  do
-    if our_turn and buttons_exclude("tsumo", "ankan", "pei") and has_draw do
-      discard_draw
-    end
-  end
+apply append, "constants.no_auto_discard_calls", "flower"
 
 # we need these in case kan mod is not enabled
 def do_kan_draw do
-  set_status("$status")
   shift_tile_to_dead_wall(1)
   draw(1, "opposite_end")
 end
-# chankan should work on pei
-# TODO make last_call_is a constant
-define_button chankan,
-  display_name: "Ron", 
-  show_when: not_our_turn
-    and match(["hand", "calls"], ["tenpai"])
-    and status_missing("furiten", "just_reached")
-    and last_call_is("kakan", "pei")
-    and match(["hand", "calls", "last_called_tile"], ["win"])
-  do
-    big_text("Ron")
-    pause(1000)
-    reveal_hand
-    win_by_call
-  end
 
 # allow chankan on pei calls
 apply append, "interruptible_actions", ["flower"]

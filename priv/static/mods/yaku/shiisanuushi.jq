@@ -15,7 +15,7 @@
   "Shiisanuushi": ["Tenhou", "Chiihou"]
 }
 |
-.shiisanuushi_definition = [[ [["pair", "ryanmen/penchan", "kanchan"], -1] ]]
+.shiisanuushi_definition = [[ [["pair", [0, 1], [0, 2]], -1] ]]
 |
 .buttons.shiisanuushi = {
   "display_name": "Tsumo",

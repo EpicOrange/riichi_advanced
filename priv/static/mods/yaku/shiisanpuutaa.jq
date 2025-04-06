@@ -15,7 +15,7 @@
   "Shiisanpuutaa": ["Tenhou", "Chiihou"]
 }
 |
-.shiisanpuutaa_definition = [[ [["pair"], 1], [["pair", "ryanmen/penchan", "kanchan"], -1] ]]
+.shiisanpuutaa_definition = [[ [["pair"], 1], [["pair", [0, 1], [0, 2]], -1] ]]
 |
 .buttons.shiisanpuutaa = {
   "display_name": "Tsumo",

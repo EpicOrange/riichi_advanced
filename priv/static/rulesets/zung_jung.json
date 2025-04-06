@@ -498,7 +498,7 @@
     "All Honours": ["Small Four Winds"]
   },
   "score_calculation": {
-    "scoring_method": ["multiplier", "multiplier"],
+    "scoring_method": "multiplier",
     "score_multiplier": 1,
     "discarder_multiplier": 1,
     "non_discarder_multiplier": 1,
@@ -587,9 +587,8 @@
   },
   "after_win": {
     "actions": [
-      // cap the score at 320 unless we have any listed limit hand
-      ["set_counter", "score", "score"],
-      ["unless", [["has_yaku2", {"name": "counter_at_most", "opts": ["score", 319]}]], [
+      ["set_counter", "displayed_score", "score"],
+      ["unless", ["not_has_yaku2", {"name": "counter_at_most", "opts": ["displayed_score", 320]}], [
         ["push_message", "has their score capped at 320"],
         ["modify_winner", "score", 320, "set"]
       ]]
@@ -597,15 +596,22 @@
   },
   "after_scoring": {
     "actions": [
-      ["set_counter", "score", "score"],
-      ["unless", [["has_yaku2", {"name": "counter_at_most", "opts": ["score", 319]}]], [
+      ["set_counter", "displayed_score", "score"],
+      ["ite", ["not_has_yaku2", {"name": "counter_at_least", "opts": ["displayed_score", 320]}], [
         ["modify_payout", "self", 960, "set"],
         ["modify_payout", "others", -320, "set"]
+      ], [
+        // on ron, engine splits score evenly across all players,
+        // but we want to pay a total of 3x score
+        ["unless", ["won_by_draw"], [
+          ["modify_payout", "everyone", 3, "multiply"]
+        ]]
       ]],
-      // use our 3x payout to calculate payout for others
+
+      // calculate extra payout
       ["set_counter", "extra_payout", "payout"],
       ["subtract_counter", "extra_payout", 75],
-      ["when", ["won_by_discard", {"name": "counter_at_least", "opts": ["extra_payout", 1]}], [
+      ["unless", [["won_by_draw", {"name": "counter_at_most", "opts": ["extra_payout", 0]}]], [
         // do a normal payout where everyone pays 25 points
         ["modify_payout", "others", -25, "set"],
         ["modify_payout", "self", 75, "set"],

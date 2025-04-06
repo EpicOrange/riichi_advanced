@@ -35,7 +35,7 @@ defmodule RiichiAdvanced.RoomState do
       end
 
     define_button pair,
-      display_name: "Pair", 
+      display_name: "Pair",
       show_when: not_our_turn
         and not_no_tiles_remaining
         and someone_else_just_discarded
@@ -327,6 +327,19 @@ defmodule RiichiAdvanced.RoomState do
     end
   end
 
+  def randomize_mods(state) do
+    random_mods = Map.get(state.rules, "available_mods", [])
+    |> Enum.filter(&is_map/1)
+    |> Enum.map(& &1["id"])
+    random_mods = Enum.take_random(random_mods, Integer.floor_div(length(random_mods), 2))
+    for {mod_name, _mod} <- state.mods, reduce: state do
+      state ->
+        state = toggle_mod(state, mod_name, mod_name in random_mods)
+        state = update_in(state.mods[mod_name].config, &Map.new(&1, fn {config_name, config} -> {config_name, Map.put(config, :value, Map.get(config, "values") |> Enum.random())} end))
+        state
+    end
+  end
+
   def broadcast_state_change(state) do
     # IO.puts("broadcast_state_change called")
     RiichiAdvancedWeb.Endpoint.broadcast(state.ruleset <> "-room:" <> state.room_code, "state_updated", %{"state" => state})
@@ -341,19 +354,19 @@ defmodule RiichiAdvanced.RoomState do
     state
   end
 
-  def handle_call({:new_player, socket}, _from, state) do
-    GenServer.call(state.exit_monitor, {:new_player, socket.root_pid, socket.id})
-    nickname = if socket.assigns.nickname != "" do socket.assigns.nickname else "player" <> String.slice(socket.id, 10, 4) end
-    state = put_in(state.players[socket.id], %RoomPlayer{nickname: nickname, id: socket.id, session_id: socket.assigns.session_id})
-    IO.puts("Player #{socket.id} joined room #{state.room_code} for ruleset #{state.ruleset}")
+  def handle_call({:new_player, pid, session_id, nickname}, _from, state) do
+    GenServer.call(state.exit_monitor, {:new_player, pid, session_id})
+    nickname = if nickname != "" do nickname else "player" <> String.slice(session_id, 10, 4) end
+    state = put_in(state.players[session_id], %RoomPlayer{nickname: nickname, id: session_id, session_id: session_id})
+    IO.puts("Player #{session_id} joined room #{state.room_code} for ruleset #{state.ruleset}")
     state = broadcast_state_change(state)
     {:reply, [state], state}
   end
 
-  def handle_call({:delete_player, socket_id}, _from, state) do
-    state = update_seats(state, fn player -> if player == nil or player.id == socket_id do nil else player end end)
-    {_, state} = pop_in(state.players[socket_id])
-    IO.puts("Player #{socket_id} exited #{state.room_code} for ruleset #{state.ruleset}")
+  def handle_call({:delete_player, session_id}, _from, state) do
+    state = update_seats(state, fn player -> if player == nil or player.id == session_id do nil else player end end)
+    {_, state} = pop_in(state.players[session_id])
+    IO.puts("Player #{session_id} exited #{state.room_code} for ruleset #{state.ruleset}")
     state = if Enum.empty?(state.players) do
       # all players have left, shutdown
       # check if a lobby exists. if so, notify the lobby that this room no longer exists
@@ -432,14 +445,14 @@ defmodule RiichiAdvanced.RoomState do
     {:noreply, state}
   end
 
-  def handle_cast({:sit, socket_id, session_id, seat}, state) do
+  def handle_cast({:sit, session_id, session_id, seat}, state) do
     state = if state.seats[seat] == nil or state.seats[seat].session_id == session_id do
       # first, get up
-      state = update_seats(state, fn player -> if player == nil or player.id == socket_id do nil else player end end)
+      state = update_seats(state, fn player -> if player == nil or player.id == session_id do nil else player end end)
       # then sit
-      state = put_in(state.players[socket_id].seat, seat)
-      state = put_seat(state, seat, state.players[socket_id])
-      IO.puts("Player #{socket_id} sat in seat #{seat}")
+      state = put_in(state.players[session_id].seat, seat)
+      state = put_seat(state, seat, state.players[session_id])
+      IO.puts("Player #{session_id} sat in seat #{seat}")
       state
     else state end
     state = broadcast_state_change(state)
@@ -488,9 +501,15 @@ defmodule RiichiAdvanced.RoomState do
     {:noreply, state}
   end
 
-  def handle_cast({:get_up, socket_id}, state) do
-    state = update_seats(state, fn player -> if player == nil or player.id == socket_id do nil else player end end)
-    state = put_in(state.players[socket_id].seat, nil)
+  def handle_cast(:randomize_mods, state) do
+    state = randomize_mods(state)
+    state = broadcast_state_change(state)
+    {:noreply, state}
+  end
+
+  def handle_cast({:get_up, session_id}, state) do
+    state = update_seats(state, fn player -> if player == nil or player.id == session_id do nil else player end end)
+    state = put_in(state.players[session_id].seat, nil)
     state = broadcast_state_change(state)
     {:noreply, state}
   end
@@ -524,13 +543,15 @@ defmodule RiichiAdvanced.RoomState do
     state = Map.update!(state, :seats, &Map.new(&1, fn {seat, player} -> {seat_map[seat], player} end))
 
     reserved_seats = Map.new(state.players, fn {_id, player} -> {seat_map[player.seat], player.session_id} end)
-    init_actions = [["vacate_room"]] ++ Enum.map(state.players, fn {_id, player} -> ["init_player", player.session_id, Atom.to_string(player.seat)] end) ++ [["initialize_game"]]
+    init_actions = [["vacate_room"]] ++ Enum.flat_map(state.players, fn {_id, player} -> [
+      ["init_player", player.session_id, Atom.to_string(player.seat)],
+      ["fetch_messages", player.session_id]
+    ] end) ++ [["initialize_game"]]
     args = [room_code: state.room_code, ruleset: state.ruleset, mods: mods, config: config, private: state.private, reserved_seats: reserved_seats, init_actions: init_actions, name: Utils.via_registry("game", state.ruleset, state.room_code)]
-    game_spec = %{
+    game_spec = Supervisor.child_spec(%{
       id: {RiichiAdvanced.GameSupervisor, state.ruleset, state.room_code},
       start: {RiichiAdvanced.GameSupervisor, :start_link, [args]}
-    }
-
+    }, restart: :temporary)
     # start a new game process, if it doesn't exist already
     state = case Utils.registry_lookup("game_state", state.ruleset, state.room_code) do
       [{_game_state, _}] ->

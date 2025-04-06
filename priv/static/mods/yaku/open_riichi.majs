@@ -3,7 +3,7 @@ on after_initialization do
 end
 
 define_button open_riichi,
-  display_name: "Open Riichi", 
+  display_name: "Open Riichi",
   show_when: our_turn
     and has_draw
     and status_missing("riichi")

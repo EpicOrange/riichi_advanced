@@ -1,0 +1,537 @@
+set display_name, "Sichuan Bloody"
+set tutorial_link, "https://github.com/EpicOrange/riichi_advanced/blob/main/documentation/sichuan.md"
+set wall, ["1m", "1m", "1m", "1m",
+           "2m", "2m", "2m", "2m",
+           "3m", "3m", "3m", "3m",
+           "4m", "4m", "4m", "4m",
+           "5m", "5m", "5m", "5m",
+           "6m", "6m", "6m", "6m",
+           "7m", "7m", "7m", "7m",
+           "8m", "8m", "8m", "8m",
+           "9m", "9m", "9m", "9m",
+           "1p", "1p", "1p", "1p",
+           "2p", "2p", "2p", "2p",
+           "3p", "3p", "3p", "3p",
+           "4p", "4p", "4p", "4p",
+           "5p", "5p", "5p", "5p",
+           "6p", "6p", "6p", "6p",
+           "7p", "7p", "7p", "7p",
+           "8p", "8p", "8p", "8p",
+           "9p", "9p", "9p", "9p",
+           "1s", "1s", "1s", "1s",
+           "2s", "2s", "2s", "2s",
+           "3s", "3s", "3s", "3s",
+           "4s", "4s", "4s", "4s",
+           "5s", "5s", "5s", "5s",
+           "6s", "6s", "6s", "6s",
+           "7s", "7s", "7s", "7s",
+           "8s", "8s", "8s", "8s",
+           "9s", "9s", "9s", "9s"]
+
+define_set pair, ~s"0 0"
+define_set shuntsu, ~s"0 1 2"
+define_set koutsu, ~s"0 0 0"
+define_set mentsu, ~s"0 0 0 | 0 1 2"
+define_set quad, ~s"0 0 0 0"
+define_set taatsu, ~s"0 0 | 0 1 | 0 2"
+define_set manzu, ~s"1m|2m|3m|4m|5m|6m|7m|8m|9m"
+define_set pinzu, ~s"1p|2p|3p|4p|5p|6p|7p|8p|9p"
+define_set souzu, ~s"1s|2s|3s|4s|5s|6s|7s|8s|9s"
+
+define_match standard_tenpai, ~m"exhaustive, mentsu:3, taatsu:1, pair:1 | exhaustive, mentsu:4"
+define_match chiitoitsu_tenpai, ~m"(daiminkan kakan ankan):-1, pair:6"
+define_match tenpai, "standard_tenpai", "chiitoitsu_tenpai"
+define_match standard_win, ~m"exhaustive, mentsu:4, pair:1"
+define_match chiitoitsu_win, ~m"(daiminkan kakan ankan):-1, pair:7"
+define_match win, "standard_win", "chiitoitsu_win"
+
+define_yaku yaku, "Root", 1, match(["hand", "call_tiles", "winning_tile"], ~m"quad:1")
+define_yaku yaku, "Root", 1, match(["hand", "call_tiles", "winning_tile"], ~m"quad:2")
+define_yaku yaku, "Root", 1, match(["hand", "call_tiles", "winning_tile"], ~m"quad:3")
+define_yaku yaku, "Root", 1, match(["hand", "call_tiles", "winning_tile"], ~m"quad:4")
+define_yaku yaku, "All Triplets", 1, match(["hand", "calls", "winning_tile"], ~m"koutsu:4, pair:1")
+define_yaku yaku, "Full Flush", 2,
+     winning_hand_consists_of("1m","2m","3m","4m","5m","6m","7m","8m","9m")
+  or winning_hand_consists_of("1p","2p","3p","4p","5p","6p","7p","8p","9p")
+  or winning_hand_consists_of("1s","2s","3s","4s","5s","6s","7s","8s","9s")
+define_yaku yaku, "Seven Pairs", 2, match(["hand", "winning_tile"], ~m"(daiminkan kakan ankan):-1, pair:7")
+define_yaku yaku, "Golden Single Wait", 2, match(["calls"], ~m"(pon daiminkan ankan kakan):4")
+define_yaku yaku, "Win After Kong", 1, status("kan")
+define_yaku yaku, "Robbing The Kong", 1, won_by_call
+define_yaku yaku, "Shoot After Kong", 1, discarder_status("kan")
+define_yaku yaku, "Under The Sea", 1, no_tiles_remaining
+define_yaku_precedence "Golden Single Wait", ["All Triplets"]
+
+set score_calculation, %{
+    scoring_method: "score_table",
+    score_table: %{"0": 1, "1": 2, "2": 4, max: 8},
+    yaku_lists: ["yaku"],
+    self_draw_bonus: 1,
+    score_best_hand_at_draw: true,
+    next_dealer_is_first_winner: true,
+    point_name: "Fan",
+    win_by_discard_label: "Hu",
+    win_by_draw_label: "Zimo",
+    win_by_discard_name: "Hu",
+    win_by_discard_name_2: "Double Hu",
+    win_by_discard_name_3: "Triple Hu",
+    win_by_draw_name: "Zimo",
+    exhaustive_draw_name: "Draw"
+  }
+
+on after_start do
+  if dice_equals(3, 6, 9, 12) do
+    set_status_all("charleston_left")
+  end
+  if dice_equals(2, 5, 8, 11) do
+    set_status_all("charleston_across")
+  end
+  if dice_equals(4, 7, 10) do
+    set_status_all("charleston_right")
+  end
+  # debug
+  # set_status_all("round_start")
+end
+
+on before_turn_change do
+  unset_status("first_turn")
+  if match(["hand", "calls", "draw"], ["tenpai"]) do
+    set_status("tenpai")
+  else
+    unset_status("tenpai")
+  end
+end
+
+on after_turn_change do
+  if status("won") do
+    advance_turn
+  else
+    if no_tiles_remaining do
+      pause(1000)
+      ryuukyoku
+    else
+      if not_anyone_status("round_start") do
+        discard_passed
+        draw
+      end
+    end
+  end
+end
+
+on before_continue do
+  advance_turn
+end
+
+on before_exhaustive_draw do
+  set_status_all("ended_by_draw")
+end
+
+on after_scoring do
+  # deny kan payments after a win
+  unset_status_all("kan", "daiminkan", "kakan", "ankan")
+  as east do
+    if status("ended_by_draw") do
+      before_bloody_end
+    else
+      winners = winners + 1
+      if winners >= 3 do
+        before_bloody_end
+      end
+    end
+  end
+end
+
+def before_bloody_end do
+  if status("ended_by_draw") do
+    as winners do
+      # upon exhaustive draw every tenpai player scores takame
+      # so label the takame wait as "Best"
+      modify_winner("winning_tile_text", "Best")
+    end
+  end
+  as everyone do
+    reveal_hand
+    # return kong payments if not tenpai
+    if not match(["hand", "calls"], ["tenpai"])
+       and (owes_shimocha > 0
+         or owes_toimen > 0
+         or owes_kamicha > 0) do
+      # check: they are allowed to have tenpai with voided tiles to keep kong payments?
+      push_message("must return kong payments due to not being ready at the end of the round")
+      modify_payout("shimocha", "owes_shimocha", "add")
+      modify_payout("toimen", "owes_toimen", "add")
+      modify_payout("kamicha", "owes_kamicha", "add")
+      modify_payout("self", "owes_shimocha", "subtract")
+      modify_payout("self", "owes_toimen", "subtract")
+      modify_payout("self", "owes_kamicha", "subtract")
+    end
+    # apply void penalty
+    if     (status("void_manzu") and match(["hand", "calls"], ~m"manzu:1") and match(["discards"], ~m"(pinzu souzu):1"))
+        or (status("void_pinzu") and match(["hand", "calls"], ~m"pinzu:1") and match(["discards"], ~m"(manzu souzu):1"))
+        or (status("void_souzu") and match(["hand", "calls"], ~m"souzu:1") and match(["discards"], ~m"(manzu pinzu):1")) do
+      # pay 16 to each player
+      set_scoring_header("Void Penalty")
+      push_message("must pay 16 to each player for having voided tiles in hand")
+      modify_payout("self", -48)
+      modify_payout("shimocha", 16)
+      modify_payout("toimen", 16)
+      modify_payout("kamicha", 16)
+    end
+  end
+end
+
+on after_charleston do
+  unset_status_all("charleston_left", "charleston_across", "charleston_right")
+  set_status_all("round_start")
+end
+
+define_button charleston_left,
+  display_name: "Select three tiles to pass left",
+  show_when: status("charleston_left"),
+  unskippable: true,
+  cancellable: false
+  do
+    mark([["hand", 3, ["self"]]])
+    charleston_left
+  end
+
+define_button charleston_across,
+  display_name: "Select three tiles to pass across",
+  show_when: status("charleston_across"),
+  unskippable: true,
+  cancellable: false
+  do
+    mark([["hand", 3, ["self"]]])
+    charleston_across
+  end
+
+define_button charleston_right,
+  display_name: "Select three tiles to pass right",
+  show_when: status("charleston_right"),
+  unskippable: true,
+  cancellable: false
+  do
+    mark([["hand", 3, ["self"]]])
+    charleston_right
+  end
+
+define_button void_manzu,
+  display_name: "No Craks",
+  show_when: status("round_start"),
+  unskippable: true,
+  cancellable: false
+  do
+    big_text("No Craks")
+    set_status("void_manzu")
+    if seat_is("east") do reveal_tile("1z") end
+    if seat_is("south") do reveal_tile("2z") end
+    if seat_is("west") do reveal_tile("3z") end
+    if seat_is("north") do reveal_tile("4z") end
+    reveal_tile("1m")
+    reveal_tile("3x")
+    unset_status("round_start")
+    move_tiles("draw", "hand")
+    recalculate_buttons
+  end
+
+define_button void_pinzu,
+  display_name: "No Dots",
+  show_when: status("round_start"),
+  unskippable: true,
+  cancellable: false
+  do
+    big_text("No Dots")
+    set_status("void_pinzu")
+    if seat_is("east") do reveal_tile("1z") end
+    if seat_is("south") do reveal_tile("2z") end
+    if seat_is("west") do reveal_tile("3z") end
+    if seat_is("north") do reveal_tile("4z") end
+    reveal_tile("1p")
+    reveal_tile("3x")
+    unset_status("round_start")
+    move_tiles("draw", "hand")
+    recalculate_buttons
+  end
+
+define_button void_souzu,
+  display_name: "No Bams",
+  show_when: status("round_start"),
+  unskippable: true,
+  cancellable: false
+  do
+    big_text("No Bams")
+    set_status("void_souzu")
+    if seat_is("east") do reveal_tile("1z") end
+    if seat_is("south") do reveal_tile("2z") end
+    if seat_is("west") do reveal_tile("3z") end
+    if seat_is("north") do reveal_tile("4z") end
+    reveal_tile("1s")
+    reveal_tile("3x")
+    unset_status("round_start")
+    move_tiles("draw", "hand")
+    recalculate_buttons
+  end
+
+define_const no_voided_calls,
+     (status("void_manzu") and not_call_contains(["1m", "2m", "3m", "4m", "5m", "6m", "7m", "8m", "9m"], 1))
+  or (status("void_pinzu") and not_call_contains(["1p", "2p", "3p", "4p", "5p", "6p", "7p", "8p", "9p"], 1))
+  or (status("void_souzu") and not_call_contains(["1s", "2s", "3s", "4s", "5s", "6s", "7s", "8s", "9s"], 1))
+
+define_button pon,
+  display_name: "Pong",
+  show_when: not_our_turn
+    and status_missing("won")
+    and not_no_tiles_remaining
+    and someone_else_just_discarded
+    and call_available,
+  precedence_over: ["chii"],
+  call: [[0, 0]],
+  call_style: %{
+    kamicha: ["call_sideways", 0, 1],
+    toimen: [0, "call_sideways", 1],
+    shimocha: [0, 1, "call_sideways"]
+  },
+  call_conditions: @no_voided_calls
+  do
+    big_text("Pong")
+    call
+    change_turn("self")
+  end
+
+def do_kong_payment_single do
+  unless status("won", as: "$seat") do
+    add_score("$score")
+    as "$seat" do
+      subtract_score("$score")
+      big_text("  -$score  ", %{score: "$score"})
+    end
+    # scuffed string comparison technique
+    set_status("$seat")
+    if status("shimocha") do owes_shimocha = owes_shimocha + "$score" end
+    if status("toimen") do owes_toimen = owes_toimen + "$score" end
+    if status("kamicha") do owes_kamicha = owes_kamicha + "$score" end
+    unset_status("$seat")
+  end
+end
+
+def do_kong_payment do
+  do_kong_payment_single(score: "$score", seat: "shimocha")
+  do_kong_payment_single(score: "$score", seat: "toimen")
+  do_kong_payment_single(score: "$score", seat: "kamicha")
+end
+
+def discard_passed do
+  as others do
+    if status("kan") do
+      unset_status("kan")
+      if status("kakan") do
+        if match(["hand"], ~m"kakan_tile:1") do
+          push_system_message("No kong payment is awarded since the added tile came from hand, not draw")
+          remove_attr_hand("_kakan")
+        else
+          do_kong_payment(score: 1)
+        end
+        unset_status("kakan")
+      end
+      if status("ankan") do
+        do_kong_payment(score: 2)
+        unset_status("ankan")
+      end
+      if status("daiminkan") do
+        do_kong_payment_single(score: 2, seat: "callee")
+        unset_status("daiminkan")
+      end
+    end
+  end
+end
+
+
+define_button daiminkan,
+  display_name: "Kong",
+  show_when: not_our_turn
+    and status_missing("won")
+    and not_no_tiles_remaining
+    and someone_else_just_discarded
+    and call_available,
+  precedence_over: ["pon"],
+  call: [[0, 0, 0]],
+  call_style: %{
+    kamicha: ["call_sideways", 0, 1, 2],
+    toimen: [0, "call_sideways", 1, 2],
+    shimocha: [0, 1, 2, "call_sideways"]
+  },
+  call_conditions: @no_voided_calls
+  do
+    big_text("Kong")
+    call
+    change_turn("self")
+    set_status("kan", "daiminkan")
+    draw
+  end
+
+define_button ankan,
+  display_name: "Concealed Kong",
+  show_when: our_turn
+    and status_missing("won", "round_start")
+    and not_no_tiles_remaining
+    and not_just_discarded
+    and not_just_called
+    and self_call_available,
+  precedence_over: ["pon"],
+  call: [[0, 0, 0]],
+  call_style: %{self: [["1x", 2], 0, 1, ["1x", 3]]},
+  call_conditions: @no_voided_calls
+  do
+    big_text("Kong")
+    self_call
+    set_status("kan", "ankan")
+    draw
+  end
+
+define_set kakan_tile, ~s"any@kakan"
+define_button kakan,
+  display_name: "Kong",
+  show_when: our_turn
+    and status_missing("won", "round_start")
+    and not_no_tiles_remaining
+    and not_just_discarded
+    and not_just_called
+    and can_upgrade_call,
+  precedence_over: ["pon"],
+  call: [[0, 0, 0]],
+  upgrades: "pon",
+  call_style: %{
+    kamicha: [["sideways", 0], "call_sideways", 1, 2],
+    toimen: [0, ["sideways", 1], "call_sideways", 2],
+    shimocha: [0, 1, ["sideways", 2], "call_sideways"]
+  },
+  call_conditions: @no_voided_calls
+  do
+    big_text("Kong")
+    add_attr(["draw"], "_kakan")
+    upgrade_call
+    set_status("kan", "kakan")
+    draw
+  end
+
+define_button ron,
+  display_name: "Hu",
+  show_when: not_our_turn
+    and status_missing("won")
+    and someone_else_just_discarded
+    and match(["hand", "calls"], ["tenpai"])
+    and match(["hand", "calls", "last_discard"], ["win"])
+    and ((status("void_manzu") and not_match(["hand", "calls", "last_discard"], ~m"manzu:1"))
+      or (status("void_pinzu") and not_match(["hand", "calls", "last_discard"], ~m"pinzu:1"))
+      or (status("void_souzu") and not_match(["hand", "calls", "last_discard"], ~m"souzu:1"))),
+  precedence_over: ["pon", "daiminkan"]
+  do
+    big_text("Hu")
+    pause(1000)
+    set_status("won")
+    reveal_hand
+    win_by_discard
+  end
+
+define_button chankan,
+  display_name: "Hu",
+  show_when: not_our_turn
+    and status_missing("won")
+    and someone_else_just_called
+    and last_call_is("kakan")
+    and match(["hand", "calls"], ["tenpai"])
+    and match(["hand", "calls", "last_called_tile"], ["win"])
+    and ((status("void_manzu") and not_match(["hand", "calls", "last_called_tile"], ~m"manzu:1"))
+      or (status("void_pinzu") and not_match(["hand", "calls", "last_called_tile"], ~m"pinzu:1"))
+      or (status("void_souzu") and not_match(["hand", "calls", "last_called_tile"], ~m"souzu:1"))),
+  precedence_over: ["pon", "daiminkan"]
+  do
+    big_text("Hu")
+    pause(1000)
+    set_status("won")
+    reveal_hand
+    win_by_call
+  end
+
+define_button tsumo,
+  display_name: "Zimo",
+  show_when: our_turn
+    and status_missing("won", "round_start")
+    and match(["hand", "calls"], ["tenpai"])
+    and match(["hand", "calls", "draw"], ["win"])
+    and ((status("void_manzu") and not_match(["hand", "calls", "draw"], ~m"manzu:1"))
+      or (status("void_pinzu") and not_match(["hand", "calls", "draw"], ~m"pinzu:1"))
+      or (status("void_souzu") and not_match(["hand", "calls", "draw"], ~m"souzu:1")))
+  do
+    big_text("Zimo")
+    pause(1000)
+    set_status("won")
+    reveal_hand
+    win_by_draw
+  end
+
+define_auto_button _1_auto_sort,
+  display_name: "A",
+  desc: "Automatically sort your hand.",
+  enabled_at_start: true
+  do
+    sort_hand
+  end
+
+define_auto_button _2_auto_ron,
+  display_name: "R",
+  desc: "Automatically declare wins."
+  do
+    if buttons_include("ron") do
+      press_button("ron")
+    end
+    if buttons_include("tsumo") do
+      press_button("tsumo")
+    end
+  end
+
+define_auto_button _3_auto_no_call,
+  display_name: "C",
+  desc: "Skip all calls except wins."
+  do
+    if not_our_turn and buttons_include("skip") and buttons_exclude("ron", "chankan") do
+      press_button("skip")
+    end
+  end
+
+define_auto_button _4_auto_discard,
+  display_name: "D",
+  desc: "Automatically discard your drawn tile."
+  do
+    if our_turn and buttons_exclude("tsumo", "ankan") and has_draw do
+      discard_draw
+    end
+  end
+
+define_auto_button _5_auto_discard_void,
+  display_name: "V",
+  desc: "Automatically discard your drawn tile if it's of your voided suit.",
+  enabled_at_start: true
+  do
+    if    (status("void_manzu") and match(["draw"], ~m"manzu:1"))
+       or (status("void_pinzu") and match(["draw"], ~m"pinzu:1"))
+       or (status("void_souzu") and match(["draw"], ~m"souzu:1")) do
+      discard_draw
+    end
+  end
+
+set interruptible_actions, ["play_tile", "draw", "advance_turn", "self_call", "upgrade_call", "recalculate_buttons"]
+set display_wall, true
+set initial_score, 0
+set starting_tiles, 13
+set four_rows_discards, true
+set bloody_end, true
+set max_rounds, 4
+
+define_mod show_waits, name: "Show Waits", desc: "Add some UI that shows waits."
+define_mod open_hands, name: "Open Hands", desc: "Everyone plays with tiles shown."
+define_mod sichuan_no_charleston, name: "No Charleston", desc: "Disables the initial tile pass."
+define_mod ten, name: "Ten", desc: "Adds 10m, 10p, and 10s."
+define_mod space, name: "Space Mahjong", desc: "Sequences can wrap (891, 912)."
+define_mod chinitsu, name: "Chinitsu", conflicts: ["fifth_tile"], desc: "Replace the wall with 16 copies of each bamboo tile. Includes 10s if Ten is enabled."
+define_mod fifth_tile, name: "Fifth Tile", conflicts: ["chinitsu"], desc: "Adds a fifth copy of every standard tile."

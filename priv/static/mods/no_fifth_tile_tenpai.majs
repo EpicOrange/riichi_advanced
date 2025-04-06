@@ -1,0 +1,7 @@
+on before_exhaustive_draw do
+  as everyone do
+    if status("tenpai") and all_waits_are_in_hand("win") do
+      unset_status("tenpai")
+    end
+  end
+end

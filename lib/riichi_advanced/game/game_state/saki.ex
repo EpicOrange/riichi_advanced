@@ -3,6 +3,7 @@ defmodule RiichiAdvanced.GameState.Saki do
   alias RiichiAdvanced.GameState.Buttons, as: Buttons
   alias RiichiAdvanced.GameState.Debug, as: Debug
   alias RiichiAdvanced.GameState.Player, as: Player
+  alias RiichiAdvanced.GameState.Rules, as: Rules
   import RiichiAdvanced.GameState
 
   @card_names %{
@@ -72,7 +73,7 @@ defmodule RiichiAdvanced.GameState.Saki do
   }
 
   def initialize_saki(state) do
-    state = if not Map.has_key?(state.rules, "saki_ver") do
+    state = if not Rules.has_key?(state.rules_ref, "saki_ver") do
       show_error(state, """
       Expected rules file to have key \"saki_ver\".
 
@@ -80,7 +81,7 @@ defmodule RiichiAdvanced.GameState.Saki do
       """)
     else state end
     
-    state = if not Map.has_key?(state.rules, "saki_deck") do
+    state = if not Rules.has_key?(state.rules_ref, "saki_deck") do
       show_error(state, """
       Expected rules file to have key \"saki_deck\".
 
@@ -91,8 +92,8 @@ defmodule RiichiAdvanced.GameState.Saki do
     else state end
     
     state = Map.put(state, :saki, %{
-      version: state.rules["saki_ver"],
-      saki_deck: Enum.shuffle(state.rules["saki_deck"]),
+      version: Rules.get(state.rules_ref, "saki_ver"),
+      saki_deck: Enum.shuffle(Rules.get(state.rules_ref, "saki_deck")),
       saki_deck_index: 0,
     })
 
@@ -120,14 +121,16 @@ defmodule RiichiAdvanced.GameState.Saki do
   end
 
   def saki_start(state) do
-    state = if Map.has_key?(state.rules, "after_saki_start") do
+    state = if Rules.has_key?(state.rules_ref, "after_saki_start") do
       for {seat, _player} <- state.players, reduce: state do
         state ->
-          push_message(state, [
-            %{text: "Player #{seat} #{state.players[seat].nickname} chose "},
-            %{bold: true, text: "#{Enum.map(state.players[seat].status, &@card_names[&1]) |> Enum.reject(& &1 == nil) |> Enum.join(", ")}"}
+          choices = Enum.map(state.players[seat].status, &@card_names[&1])
+          |> Enum.reject(& &1 == nil)
+          |> Enum.join(", ")
+          push_message(state, player_prefix(state, seat) ++ [
+            %{text: "chose the following cards: %{choices}", vars: %{choices: {:text, choices, %{bold: true}}}}
           ])
-          Actions.run_actions(state, state.rules["after_saki_start"]["actions"], %{seat: seat})
+          Actions.trigger_event(state, "after_saki_start", %{seat: seat})
       end
     else state end
 

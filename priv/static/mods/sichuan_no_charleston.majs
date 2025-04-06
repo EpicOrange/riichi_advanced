@@ -1,0 +1,4 @@
+on after_start do
+  unset_status_all("charleston_left", "charleston_across", "charleston_right")
+  set_status_all("round_start")
+end

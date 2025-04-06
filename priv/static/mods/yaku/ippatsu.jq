@@ -30,3 +30,10 @@ else . end
   # unset everyone's ippatsu status after any call
   ["when", ["just_called"], [["unset_status_all", "ippatsu"]]]
 ] + .
+|
+# unset everyone's ippatsu status after any call (except for chankan-able calls)
+.after_call.actions |= [
+  ["unless", [{"name": "status", "opts": ["can_chankan"]}], [
+    ["unset_status_all", "ippatsu"]
+  ]]
+] + .

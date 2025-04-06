@@ -68,6 +68,6 @@ if (.buttons | has("ankan")) then
   .buttons.ankan.call_style = {"self": [0, 1, 2, 3]}
 else . end
 |
-.default_mods |= map(select(IN("yaku/riichi", "kan", "dora", "ura", "kandora") | not))
+.default_mods |= map(select(IN("yaku/riichi", "riichi_kan", "dora", "ura", "kandora") | not))
 |
-.available_mods |= map(select(type != "object" or (.id | IN("yaku/riichi", "kan") | not)))
+.available_mods |= map(select(type != "object" or (.id | IN("yaku/riichi", "riichi_kan") | not)))

@@ -14,7 +14,6 @@ defmodule RiichiAdvanced.LogControlState do
       ruleset: nil,
       room_code: nil,
       # pids
-      supervisor: nil,
       game_state_pid: nil,
       log_walker_pid: nil,
       # state variables
@@ -31,6 +30,7 @@ defmodule RiichiAdvanced.LogControlState do
       %{
         room_code: Keyword.get(init_data, :room_code),
         ruleset: Keyword.get(init_data, :ruleset),
+        log_id: Keyword.get(init_data, :log_id),
       },
       name: Keyword.get(init_data, :name))
   end
@@ -39,18 +39,42 @@ defmodule RiichiAdvanced.LogControlState do
     IO.puts("Log control state PID is #{inspect(self())}")
 
     # lookup pids of the other processes we'll be using
-    [{supervisor, _}] = Registry.lookup(:game_registry, Utils.to_registry_name("game", state.ruleset, state.room_code))
     [{game_state, _}] = Registry.lookup(:game_registry, Utils.to_registry_name("game_state", state.ruleset, state.room_code))
     [{log_walker, _}] = Registry.lookup(:game_registry, Utils.to_registry_name("log_walker", state.ruleset, state.room_code))
+
+    # read in the log
+    log_json = case File.read(Application.app_dir(:riichi_advanced, "/priv/static/logs/#{state.log_id <> ".json"}")) do
+      {:ok, log_json} -> log_json
+      {:error, _err}  -> nil
+    end
+
+    # decode the log json
+    log = try do
+      case Jason.decode(log_json) do
+        {:ok, log} -> log
+        {:error, err} ->
+          IO.puts("WARNING: Failed to read log file at character position #{err.position}!\nRemember that trailing commas are invalid!")
+          %{}
+      end
+    rescue
+      ArgumentError -> 
+        IO.puts("WARNING: Log \"#{state.log_id}\" doesn't exist!")
+        %{}
+    end
 
     state = Map.merge(state, %LogControl{
       ruleset: state.ruleset,
       room_code: state.room_code,
-      supervisor: supervisor,
       game_state_pid: game_state,
       log_walker_pid: log_walker,
       game_state: %Game{},
+      log: log,
     })
+
+    if log != %{} do
+      GenServer.cast(game_state, {:load_log_control_state, self()})
+      GenServer.cast(self(), {:start_walk, 0, 100})
+    end
 
     {:ok, state}
   end
@@ -62,6 +86,7 @@ defmodule RiichiAdvanced.LogControlState do
   def print_game_state(state) do
     south = :south in state.game_state.available_seats
     north = :north in state.game_state.available_seats
+    IO.puts("===")
     IO.inspect({"east's hand", state.game_state.players.east.hand, state.game_state.players.east.draw})
     if south, do: IO.inspect({"south's hand", state.game_state.players.south.hand, state.game_state.players.south.draw})
     IO.inspect({"west's hand", state.game_state.players.west.hand, state.game_state.players.west.draw})
@@ -174,14 +199,16 @@ defmodule RiichiAdvanced.LogControlState do
       seat = Log.from_seat(seat_num)
       button = button_data["button"]
       if button != nil do
+        state = for _ <- 1..10, reduce: state do
+          state ->
+            if button not in state.game_state.players[seat].buttons do
+              skip_buttons(state)
+              Map.put(state, :game_state, GenServer.call(state.game_state_pid, :get_state, 300000))
+            else state end
+        end
         if button not in state.game_state.players[seat].buttons do
-          state_before = state
-          skip_buttons(state)
-          state = Map.put(state, :game_state, GenServer.call(state.game_state_pid, :get_state, 300000))
-          if button not in state.game_state.players[seat].buttons do
-            IO.puts("log warning: Tried to press nonexistent button #{button} for #{seat}")
-            print_game_state(state_before)
-          end
+          IO.puts("log warning: Tried to press nonexistent button #{button} for #{seat}")
+          print_game_state(state)
         end
         GenServer.cast(state.game_state_pid, {:press_button, seat, button})
       end

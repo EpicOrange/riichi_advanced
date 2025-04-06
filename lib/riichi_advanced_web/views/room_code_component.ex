@@ -1,5 +1,6 @@
 defmodule RiichiAdvancedWeb.RoomCodeComponent do
   use RiichiAdvancedWeb, :live_component
+  import RiichiAdvancedWeb.Translations
 
   def mount(socket) do
     socket = assign(socket, :room_code, [])
@@ -10,7 +11,7 @@ defmodule RiichiAdvancedWeb.RoomCodeComponent do
     ~H"""
     <div class="room-code-modal">
       <div class="room-code-display">
-        Enter room code:
+        <%= t(@lang, "Enter room code:") %>
         <div class={["tile", Enum.at(@room_code, 0) || "1x"]}></div>
         <div class={["tile", Enum.at(@room_code, 1) || "1x"]}></div>
         <div class={["tile", Enum.at(@room_code, 2) || "1x"]}></div>

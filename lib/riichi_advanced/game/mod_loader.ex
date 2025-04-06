@@ -16,25 +16,30 @@ defmodule RiichiAdvanced.ModLoader do
       %{name: name, config: config} -> 
         mod_contents = read_mod_jq(name)
         config_queries = for {key, val} <- config, is_integer(val) or is_boolean(val) or is_binary(val), do: "(#{inspect(val)}) as $#{key}\n|\n"
-        Enum.join(config_queries) <> mod_contents
+        Enum.join(config_queries) <> "(" <> mod_contents <> ")"
       name -> read_mod_jq(name)
     end
   end
 
-  def apply_multiple_mods(ruleset_json, mods) do
+  def apply_multiple_mods(ruleset_json, mods, globals \\ %{}) do
     mod_contents = mods
     |> Enum.map(&read_mod/1)
     |> Enum.map(&String.trim/1)
-    |> Enum.map_join(&" | (#{&1}\n) as $_result\n|\n$_result")
-    |> then(&".enabled_mods += #{Jason.encode!(mods)}"<>&1)
-
+    |> Enum.map(&String.replace(&1, Compiler.header(), ""))
+    |> Enum.map(&"(#{&1}\n) as $_result\n|\n$_result")
+    global_jq = Enum.map(globals, fn {name, val} -> "(#{Jason.encode!(val)}) as $#{name}" end)
+    boilerplate = [Compiler.header() <> "\n.enabled_mods += #{Jason.encode!(mods)}"]
+    mod_jq = Enum.join(boilerplate ++ global_jq ++ mod_contents, "\n|")
+    # IO.puts(mod_jq)
     if Debug.print_mods() do
       IO.puts("Applying mods [#{Enum.map_join(mods, ", ", &inspect/1)}]")
     end
-    JQ.query_string_with_string!(ruleset_json, mod_contents)
+    JQ.query_string_with_string!(ruleset_json, mod_jq)
   end
 
-  def apply_mods(ruleset_json, mods, ruleset) do
+  def apply_mods(ruleset_json, mods, ruleset, globals \\ %{})
+  def apply_mods(ruleset_json, [], _ruleset, _globals), do: ruleset_json
+  def apply_mods(ruleset_json, mods, ruleset, globals) do
     orig_mods = mods
     mods = Enum.uniq(mods)
     if length(mods) < length(orig_mods) do
@@ -42,12 +47,12 @@ defmodule RiichiAdvanced.ModLoader do
     end
     case RiichiAdvanced.ETSCache.get({ruleset, mods}, [], :cache_mods) do
       [modded_json] ->
-        IO.puts("Using cached mods for ruleset #{ruleset}: #{inspect(mods)}")
+        # IO.puts("Using cached mods for ruleset #{ruleset}: #{inspect(mods)}")
         modded_json
       []     -> 
         # apply the mods
         # modded_json = Enum.reduce(mods, ruleset_json, &apply_mod/2)
-        modded_json = apply_multiple_mods(ruleset_json, mods)
+        modded_json = apply_multiple_mods(ruleset_json, mods, globals)
 
         if Debug.print_mods() do
           mod_string = Enum.map_join(mods, ",\n  ", &Jason.encode!/1)
@@ -64,6 +69,15 @@ defmodule RiichiAdvanced.ModLoader do
 
         modded_json
     end
+  end
+
+  def apply_post_mods(ruleset_json, ruleset) do
+    modpacks = Constants.modpacks()
+    if Map.has_key?(modpacks, ruleset) do
+      modpack = modpacks[ruleset]
+      post_mods = Map.get(modpack, :post_mods, [])
+      apply_mods(ruleset_json, post_mods, modpack.ruleset, Map.get(modpack, :globals, %{}))
+    else ruleset_json end
   end
 
   def convert_to_jq(majs) do
@@ -97,21 +111,37 @@ defmodule RiichiAdvanced.ModLoader do
     end
   end
 
+  @some_majs_commands ["set", "on", "define_set", "define_match", "define_const", "define_yaku", "define_yaku_precedence", "remove_yaku", "replace_yaku", "define_button", "define_auto_button", "define_mod_category", "define_mod", "config_mod", "remove_mod", "apply", "replace_all"]
+  defp verify_jq(name, jq) do
+    # this is mostly for in case you forget to change the .jq extension to .majs
+    jq
+    |> String.split("\n", trim: true)
+    |> Enum.map(&String.split(&1) |> Enum.at(0))
+    |> Enum.any?(& &1 in @some_majs_commands)
+    |> if do
+      IO.puts("\nWARNING: file #{name}.jq looks kind of like .majs!\n")
+    end
+  end
   def read_mod_jq(name) do
     case File.read(Application.app_dir(:riichi_advanced, "/priv/static/mods/#{name}.jq")) do
-      {:ok, mod_jq} -> mod_jq
+      {:ok, mod_jq} ->
+        verify_jq(name, mod_jq)
+        mod_jq
       {:error, _err}      ->
         case File.read(Application.app_dir(:riichi_advanced, "/priv/static/mods/#{name}.majs")) do
           {:ok, mod_majs} -> convert_to_jq(mod_majs)
-          {:error, _err}  -> "."
+          {:error, _err}  ->
+            IO.puts("WARNING: Could not find mod #{name}!")
+            "."
         end
     end
   end
 
-  def get_ruleset_json(ruleset, room_code \\ nil, strip_comments? \\ false) do
+  def get_ruleset_json(ruleset, room_code \\ nil, strip_comments? \\ false, visited \\ [], prev_query \\ ".", prev_mods \\ [], globals \\ %{}) do
+    # IO.puts("Fetching ruleset #{ruleset}")
     modpacks = Constants.modpacks()
     cond do
-      ruleset == "custom" ->
+      ruleset == "custom" and Enum.empty?(visited) ->
         case RiichiAdvanced.ETSCache.get(room_code, ["{}"], :cache_rulesets) do
           [ruleset_json_or_majs] ->
             case Jason.decode(ruleset_json_or_majs) do
@@ -120,20 +150,42 @@ defmodule RiichiAdvanced.ModLoader do
             end
           _ -> "{}"
         end
-      Map.has_key?(modpacks, ruleset) ->
+      Map.has_key?(modpacks, ruleset) and ruleset not in visited ->
         modpack = modpacks[ruleset]
         mods = Map.get(modpack, :mods, [])
+        post_mods = Map.get(modpack, :post_mods, [])
+        all_mod_names = Enum.map(mods ++ post_mods, fn
+          %{name: name} -> name
+          name          -> name
+        end)
+        default_mods = Map.get(modpack, :default_mods, []) |> Enum.reject(& &1 in all_mod_names)
         display_name = Map.get(modpack, :display_name, ruleset)
-        query = ".default_mods += #{Jason.encode!(Map.get(modpack, :default_mods, []))} | .display_name = \"#{display_name}\""
+        # set default mods and display name
+        query = ".default_mods += #{Jason.encode!(default_mods)} | .display_name = \"#{display_name}\""
+        # set or remove tutorial link
         query = query <> " | " <> if Map.has_key?(modpack, :tutorial_link) do ".tutorial_link = \"#{modpack.tutorial_link}\"" else "del(.tutorial_link)" end
-        modpack.ruleset
-        |> read_ruleset_json()
-        |> strip_comments()
-        |> apply_mods(mods, modpack.ruleset)
-        |> JQ.query_string_with_string!(query)
+        # remove already applied mods
+        query = query <> " | " <> ".default_mods = (.default_mods // []) - #{Jason.encode!(all_mod_names)}"
+        query = query <> " | " <> ".available_mods = ((.available_mods // []) | map(select(if type == \"object\" then .id else .  end | IN(#{Enum.map_join(all_mod_names, ", ", &Jason.encode!/1)}) | not)))"
+        # we're traversing down, so "new" query/mods/globals should be run before "old" ones
+        query = query <> "\n|\n" <> prev_query
+        mods = mods ++ prev_mods
+        globals = Map.merge(Map.get(modpack, :globals, %{}), globals)
+        # now recurse
+        get_ruleset_json(modpack.ruleset, room_code, true, [ruleset | visited], query, mods, globals)
       true ->
         ruleset_json = read_ruleset_json(ruleset)
-        if strip_comments? do strip_comments(ruleset_json) else ruleset_json end
+        if strip_comments? do
+          mods = Enum.uniq(prev_mods)
+          duplicates = prev_mods -- mods
+          if not Enum.empty?(duplicates) do
+            IO.puts("WARNING: these mods were included twice: #{inspect(duplicates)}")
+          end
+          ruleset_json
+          |> strip_comments()
+          |> apply_mods(mods, ruleset, globals)
+          |> JQ.query_string_with_string!(prev_query)
+        else ruleset_json end
     end
   end
 

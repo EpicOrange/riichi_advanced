@@ -4,20 +4,22 @@ defmodule RiichiAdvancedWeb.IndexLive do
   alias RiichiAdvanced.LobbyState.Lobby, as: Lobby
   alias RiichiAdvanced.Utils, as: Utils
   use RiichiAdvancedWeb, :live_view
+  import RiichiAdvancedWeb.Translations
 
   def mount(params, session, socket) do
     socket = socket
     |> assign(:session_id, session["session_id"])
     |> assign(:nickname, Map.get(params, "nickname", ""))
+    |> assign(:lang, Map.get(params, "lang", "en"))
     |> assign(:messages, [])
     |> assign(:show_room_code_buttons, false)
     |> assign(:room_code, [])
     |> assign(:version, Constants.version())
-    messages_init = RiichiAdvanced.MessagesState.init_socket(socket)
+    messages_init = RiichiAdvanced.MessagesState.link_player_socket(socket.root_pid, socket.assigns.session_id)
     socket = if Map.has_key?(messages_init, :messages_state) do
       socket = assign(socket, :messages_state, messages_init.messages_state)
       # subscribe to message updates
-      Phoenix.PubSub.subscribe(RiichiAdvanced.PubSub, "messages:" <> socket.id)
+      Phoenix.PubSub.subscribe(RiichiAdvanced.PubSub, "messages:" <> socket.assigns.session_id)
       GenServer.cast(messages_init.messages_state, {:add_message, %{text: "Welcome to Riichi Advanced!"}})
       socket
     else socket end
@@ -41,41 +43,49 @@ defmodule RiichiAdvancedWeb.IndexLive do
         <div class="ruleset-selection">
           <%= for {{ruleset, name, desc}, i} <- Enum.with_index(@rulesets) do %>
             <input type="radio" id={ruleset} name="ruleset" value={ruleset} checked={i==0} phx-update="ignore">
-            <label for={ruleset} title={desc} data-name={name} tabindex={i}><%= name %></label>
+            <label for={ruleset} title={dt(@lang, desc)} data-name={dt(@lang, name)} tabindex={i}><%= dt(@lang, name) %></label>
           <% end %>
           <br/>
-          To be implemented:
+          <%= t(@lang, "To be implemented:") %>
           <%= for {{ruleset, name, desc, link}, i} <- Enum.with_index(@unimplemented_rulesets) do %>
             <input type="radio" id={ruleset} name="ruleset" value={ruleset} disabled>
-            <label for={ruleset} title={desc} data-name={name} tabindex={i}><a href={link} target="_blank"><%= name %></a></label>
+            <label for={ruleset} title={dt(@lang, desc)} data-name={dt(@lang, name)} tabindex={i}><a href={link} target="_blank"><%= dt(@lang, name) %></a></label>
           <% end %>
         </div>
-        <input class="nickname-input" type="text" name="nickname" placeholder="Nickname (optional)" value={@nickname || ""} />
+        <input class="nickname-input" type="text" name="nickname" placeholder={t(@lang, "Nickname (optional)")} value={@nickname || ""} />
         <div class="enter-buttons">
-          <button name="play" type="submit">Play</button>
-          <button name="learn" type="submit" :if={not @show_room_code_buttons}>Learn</button>
+          <button name="play" type="submit"><%= t(@lang, "Play") %></button>
+          <button name="learn" type="submit" :if={not @show_room_code_buttons}><%= t(@lang, "Learn") %></button>
           <button type="button" phx-cancellable-click="toggle_show_room_code">
             <%= if @show_room_code_buttons do %>
-              Close
+              <%= t(@lang, "Close") %>
             <% else %>
-              Join private room
+              <%= t(@lang, "Join private room") %>
             <% end %>
           </button>
         </div>
       </form>
       <%= if @show_room_code_buttons do %>
-        <.live_component module={RiichiAdvancedWeb.RoomCodeComponent} id="room-code" set_room_code={&send(self(), {:set_room_code, &1})} />
+        <.live_component module={RiichiAdvancedWeb.RoomCodeComponent} id="room-code" lang={@lang} set_room_code={&send(self(), {:set_room_code, &1})} />
       <% end %>
       <div class="index-version"><%= @version %></div>
       <div class="index-bottom-buttons">
-        <button phx-click="goto_about">About</button>
-        <button><a href="https://github.com/EpicOrange/riichi_advanced" target="_blank">Source</a></button>
-        <button><a href="https://discord.gg/5QQHmZQavP" target="_blank">Discord</a></button>
-        <button phx-click="goto_logs">Logs</button>
+        <button phx-click="goto_about"><%= t(@lang, "About") %></button>
+        <button><a href="https://github.com/EpicOrange/riichi_advanced" target="_blank"><%= t(@lang, "Source") %></a></button>
+        <button><a href="https://discord.gg/5QQHmZQavP" target="_blank"><%= t(@lang, "Discord") %></a></button>
+        <button phx-click="goto_logs"><%= t(@lang, "Logs") %></button>
       </div>
-      <.live_component module={RiichiAdvancedWeb.MessagesComponent} id="messages" messages={@messages} />
+      <div class="top-right-container">
+        <.live_component module={RiichiAdvancedWeb.MenuButtonsComponent} id="menu-buttons" lang={@lang} back_button={false} />
+      </div>
+      <.live_component module={RiichiAdvancedWeb.MessagesComponent} id="messages" messages={@messages} lang={@lang} />
     </div>
     """
+  end
+
+  def handle_event("back", _assigns, socket) do
+    socket = push_navigate(socket, to: ~p"/?nickname=#{socket.assigns.nickname}&lang=#{socket.assigns.lang}")
+    {:noreply, socket}
   end
 
   def handle_event("double_clicked", _assigns, socket) do
@@ -115,34 +125,40 @@ defmodule RiichiAdvancedWeb.IndexLive do
           not room_state.private
         end)
         socket = if has_public_room do
-          push_navigate(socket, to: ~p"/lobby/#{ruleset}?nickname=#{nickname}")
+          push_navigate(socket, to: ~p"/lobby/#{ruleset}?nickname=#{nickname}&lang=#{socket.assigns.lang}")
         else
           {:ok, _, room_code} = LobbyState.create_room(%Lobby{ruleset: ruleset})
-          push_navigate(socket, to: ~p"/room/#{ruleset}/#{room_code}?nickname=#{nickname}&from=home")
+          push_navigate(socket, to: ~p"/room/#{ruleset}/#{room_code}?nickname=#{nickname}&from=home&lang=#{socket.assigns.lang}")
         end
         {:noreply, socket}
       end
     else
       # tutorial
       socket = if ruleset != "custom" do
-        push_navigate(socket, to: ~p"/tutorial/#{ruleset}?nickname=#{nickname}")
+        push_navigate(socket, to: ~p"/tutorial/#{ruleset}?nickname=#{nickname}&lang=#{socket.assigns.lang}")
       else socket end
       {:noreply, socket}
     end
   end
   
   def handle_event("goto_about", _assigns, socket) do
-    socket = push_navigate(socket, to: ~p"/about")
+    socket = push_navigate(socket, to: ~p"/about?nickname=#{socket.assigns.nickname}&lang=#{socket.assigns.lang}")
     {:noreply, socket}
   end
   
   def handle_event("goto_logs", _assigns, socket) do
-    socket = push_navigate(socket, to: ~p"/log")
+    socket = push_navigate(socket, to: ~p"/log?nickname=#{socket.assigns.nickname}&lang=#{socket.assigns.lang}")
+    {:noreply, socket}
+  end
+
+  def handle_event("change_language", %{"lang" => lang}, socket), do: {:noreply, assign(socket, :lang, lang)}
+
+  def handle_event(_event, _assigns, socket) do
     {:noreply, socket}
   end
 
   def handle_info(%{topic: topic, event: "messages_updated", payload: %{"state" => state}}, socket) do
-    if topic == "messages:" <> socket.id do
+    if topic == "messages:" <> socket.assigns.session_id do
       socket = assign(socket, :messages, state.messages)
       {:noreply, socket}
     else

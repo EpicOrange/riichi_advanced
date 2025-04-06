@@ -1,0 +1,4 @@
+apply merge, "score_calculation", %{
+  non_discarder_multiplier: 4,
+  self_draw_multiplier: 0
+}

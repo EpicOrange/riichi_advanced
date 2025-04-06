@@ -216,7 +216,7 @@ Let's say you want the ability to call pairs -- if someone drops a tile and you 
 We will spend this section breaking down the following implementation.
 
     define_button pair,
-      display_name: "Pair", 
+      display_name: "Pair",
       show_when: not_our_turn
         and not_no_tiles_remaining
         and someone_else_just_discarded
@@ -263,7 +263,7 @@ The buttons defined by `define_button` do not need to be call buttons. Call butt
 Here's an example: a riichi button.
 
     define_button riichi,
-      display_name: "Riichi", 
+      display_name: "Riichi",
       show_when: our turn
         and has_draw
         and status_missing("riichi")
@@ -420,11 +420,12 @@ Examples:
 - `mark([["hand", 1, ["terminal_honor"]], ["discard", 1, ["last_discard"]]])`: Mark a terminal/honor in hand and the last discard.
 - `mark([["hand", 1, ["match_suit", "not_riichi"]], ["discard", 1, ["match_suit"]]])`: Mark one tile in your own hand, then mark one tile in your discards. Once you mark one tile, the other tile must match the suit of the marked tile. In addition, the tile in hand can only be your drawn tile, if you are in riichi.
 
-The mark action only prompts the user to mark tiles -- it doesn't do anything with them. Once all tiles are marked, the remaining actions are triggered, and there are certain actions that interact with the marked tiles. These four are the most important:
+The mark action only prompts the user to mark tiles -- it doesn't do anything with them. Once all tiles are marked, the remaining actions are triggered, and there are certain actions that interact with the marked tiles. These five are the most important:
 
 - `move_tiles(src, dst)`: Move tiles from `src` to `dst`.
 - `swap_tiles(src, dst)`: Swap tiles between `src` and `dst`.
 - `copy_tiles(src, dst)`: Copy tiles from `src` to `dst`.
+- `delete_tiles(src)`: Delete every instance of the given tiles in `src` from the current player's hand/draw.
 - `clear_marking`: Exit marking mode. This is required after you're done with moving around marked tiles, since marking mode essentially pauses the game.
 
 There are a number of ad-hoc actions that also interact with the marked tiles, but they are not meant to be used beyond Sakicards (since they are very specific actions, and the plan is to replace them in the future). For example:
@@ -527,7 +528,6 @@ Here are all the toplevel keys. Every key is optional.
 
 Events:
 
-- `after_bloody_end`: Triggers after processing the end of a bloody end game (after `after_win`)
 - `after_call`: Triggers at the end of any call. Context: `seat` is the caller's seat, `caller` is the caller's seat, `callee` is the seat called from, and `call` contains call information.
 - `after_charleston`: Triggers after a round of `charleston_*` actions is triggered.
 - `after_discard_passed`: Triggered by the `check_discard_passed` action but only if the last discard had passed.
@@ -565,10 +565,9 @@ Here is the basic event lifecycle for each round:
   + `after_win`
   + `after_scoring`
   + `before_continue` (if bloody end rules are enabled)
-- On a draw:
+- On a draw (or after 3 players win in bloody end rules):
   + `before_exhaustive_draw`/`before_abortive_draw`
   + `after_scoring`
-  + `after_bloody_end` (after 3 players win if bloody end rules are enabled)
 - Then one of these is run:
   - `before_continue` (if bloody end rules are enabled, and 3 players have not won yet)
   - `before_start` (otherwise, unless the game is over)
@@ -638,9 +637,9 @@ Colors are specified as CSS color strings like `"#808080"` or `"lightblue"`. Exa
 
 ## Actions
 
-- `["noop"]`: does nothing, but you can put it in `interruptible_actions` to make it an interrupt.
-- `push_message(message, vars)`: Sends a message to all players using the current player as a label. Example: `["push_message", "declared riichi"]`. You may specify numbers (actual numbers or counter names) to interpolate into the message with `vars`. Example: `["push_message", "is on their $nth repeat", %{n: "honba"}]`.
-- `push_system_message(message, vars)`: Sends a message to all players, with no label. Example: `["push_system_message", "Converted each shuugi to 2000 points."]`
+- `noop`: does nothing, but you can put it in `interruptible_actions` to make it an interrupt.
+- `push_message(message, vars)`: Sends a message to all players using the current player as a label. Example: `push_message("declared riichi")`. You may specify numbers (actual numbers or counter names) or strings to interpolate into the message with `vars`. Example: `push_message("is on their $nth repeat", %{n: "honba"})`.
+- `push_system_message(message, vars)`: Sends a message to all players, with no label. Example: `push_system_message("Converted each shuugi to 2000 points.")`
 - `add_rule(tab, title, text, sort_order)`: Adds the string `text` to the corresponding rules `tab` on the left. Keep it brief! `title` is a required string identifier that is also used for deleting this rule later -- you can also specify an existing identifier to append a `text` to that rule (on its own line). `sort_order` is an optional integer argument that defaults to `0` -- the rules on the rules list are sorted from lowest `sort_order` to highest. Rules with negative `sort_order` are displayed full-width while other rules are half-width.
 - `update_rule(tab, title, text, sort_order)`: Same as `"add_rule"`, but only appends `text` (does nothing if the rule `title` does not exist).
 - `delete_rule(tab, title)`: Deletes the rule text identified by `title`.
@@ -687,7 +686,7 @@ Colors are specified as CSS color strings like `"#808080"` or `"lightblue"`. Exa
 - `subtract_counter(counter_name, amount or spec, ...opts)`: Same as `add_counter`, but subtracts.
 - `multiply_counter(counter_name, amount or spec, ...opts)`: Same as `add_counter`, but multiplies.
 - `divide_counter(counter_name, amount or spec, ...opts)`: Same as `add_counter`, but divides. The resulting counter is floored to get an integer.
-- `big_text(text, vars)`: Popup big text for the current player. The text displayed is `text`. If you want to interpolate numbers into the text you may specify it much like you do for `push_message`: `["big_text", "$ctr/$max", {"ctr": "my_counter", "max": 100}]`
+- `big_text(text, vars)`: Popup big text for the current player. The text displayed is `text`. If you want to interpolate numbers or strings into the text you may specify it much like you do for `push_message`: `big_text("$ctr/$max", %{ctr: "my_counter", max: 100})`
 - `pause(ms)`: Pause for `ms` milliseconds. Useful after a `big_text` to make actions happen only after players see the big text.
 - `sort_hand`: Sort the current player's hand.
 - `reveal_tile(tile)`: Show a given tile above the game for the remainder of the round.
@@ -774,10 +773,9 @@ Colors are specified as CSS color strings like `"#808080"` or `"lightblue"`. Exa
 - `save_revealed_tiles`: Save the current state of the revealed tiles (e.g. dora indicators).
 - `load_revealed_tiles`: Load the previously saved state of the revealed tiles (e.g. dora indicators).
 - `merge_draw`: Move the draw into the hand. This action will be removed in the future in favor of `"move_tiles"`.
-- `delete_tiles(tile1, tile2, ...)`: Delete every instance of the given tiles from the current player's hand/draw.
 - `pass_draws(seat_spec, num)`: Move up to `num` tiles from the current player's draw to the given seat's draw. This action will be removed in the future in favor of `"move_tiles"`.
 - `saki_start`: Prints some messages about what cards each player chose, and triggers the `after_saki_start` event.
-- `modify_winner(key, value, method)`: Only available in `"after_win"`, which runs on every win. Replaces the one of the following possible properties of the current winner after their points have been calculated. Example: `["modify_winner", "score_name", "Mangan"]`. This will only affect the win screen; to modify the final payouts, see the next action `"modify_payout"`.
+- `modify_winner(key, value, method)`: Only available in `"after_win"`, which runs on every win. Replaces the one of the following possible properties of the current winner after their points have been calculated. Example: `modify_winner("score_name", "Mangan")`. This will only affect the win screen; to modify the final payouts, see the next action `"modify_payout"`.
   + Allowed values for `key` are:
     * `key = "score"`: Final score, displayed at the bottom of the win screen.
     * `key = "points"`: Points (e.g. han)
@@ -803,10 +801,11 @@ Colors are specified as CSS color strings like `"#808080"` or `"lightblue"`. Exa
   + For string values (everything else):
     * `method = "prepend"`
     * `method = "append"`
-- `modify_payout(seat, amount, method)`: Only available in `"after_scoring"`, which runs once per winner, or one time after an exhaustive or abortive draw. This action directly modifies the payouts incurred in the scoring phase by adding `amount` to `seat`'s final payout. For example, to have dealer pay everyone 1000, you might do `[["modify_payout", "east", -3000], ["modify_payout", "not_east", 1000]]`.
+- `modify_payout(seat, amount, method)`: Only available in `"after_scoring"`, which runs once per winner, or one time after an exhaustive or abortive draw. This action directly modifies the payouts incurred in the scoring phase by adding `amount` to `seat`'s final payout. For example, to have dealer pay everyone 1000, you might do `modify_payout("east", -3000); modify_payout("not_east", 1000)]`.
   + Available values for `seat`: everything usable by the `"as"` action is usable here. In particular, you might want to use `"others"` when `"won_by_draw"` is true, and `"last_discarder"` otherwise.
   + Available values for `amount`: every amount usable by the `"set_counter"` action is usable here.
   + Available values for `method`: See the above action, `"modify_winner"`. Defaults to `"add"`.
+- `set_scoring_header(header)`: Sets the top banner of the score exchange screen to the given string `header`.
 
 Every unrecognized action is a no-op.
 
@@ -1017,7 +1016,6 @@ The following are optional string keys that are in place for each of the strings
       "win_with_pao_name": "Sekinin Barai",
       "triple_win_draw_name": "Sanchahou",
       "exhaustive_draw_name": "Ryuukyoku",
-      "nagashi_name": "Nagashi Mangan",
       // secondary points to display to the right of points
       // can be "points", "points2", or "minipoints"
       "right_display": "minipoints",
@@ -1047,7 +1045,7 @@ Here, `points` is used as a (string) index into a points table, whose keys must 
 
     set score_calculation, {
       "scoring_method": "score_table",
-      "score_table": {"0": 1, "1": 2, "2": 4, "3": 8, "4": 16, "5": 24, "6": 32, "7": 48, "8": 64, "9": 96, "10": 128, "11": 192, "12": 256, "max": 384},
+      "score_table": {"0": 1, "1": 2, "2": 4, "3": 8, "4": 16, "5": 24, "6": 32, "7": 48, "8": 64, "9": 96, "10": 128, "11": 192, "12": 256, max: 384},
     }
 
 If there is a `"dealer_multiplier"` key and the winner is the dealer, then this score is multiplied by that.
@@ -1060,7 +1058,7 @@ Every 6 Phán is worth one Mủn, and each Mủn represents a multiplier on the 
 
 All you need to specify is the score value of 0-6 Phán in the same manner as the `"score_table"` method:
 
-    "score_table": {"0": 0.5, "1": 1, "2": 2, "3": 4, "4": 8, "5": 16, "max": 32},
+    "score_table": {"0": 0.5, "1": 1, "2": 2, "3": 4, "4": 8, "5": 16, max: 32},
 
 `"max"` must be present here, as it is the value used for the `Mủn` multiplier.
 
@@ -1189,24 +1187,13 @@ You may also have optional keys `"discarder_penalty"`, `"non_discarder_penalty"`
 
 If there is a `"split_oya_ko_payment"` key set to `true`, then self-draw wins are processed differently. Specifically, it splits the score X into Y=X/4 (if winner is non-dealer) or Y=X/3 (if the winner is dealer). The dealer is paid 2Y points rounded up to the nearest `"han_fu_rounding_factor"`, and all non-dealers are paid Y points rounded up to the nearest `"han_fu_rounding_factor"`.
 
-There are typically no payments at exhaustive draw, but you can enable riichi-style tenpai and nagashi exhaustive draw payments via the following:
-
-    apply append, score_calculation, {
-      "draw_tenpai_payments": [1000, 1500, 3000],
-      "draw_nagashi_payments": [2000, 4000],
-    }
-
-These keys check for `"tenpai"` and `"nagashi"` statuses respectively on the players at the time of exhaustive draw. For tenpai payments, tenpai players pay `1000/1500/3000` to non-tenpai players for 1/2/3 players tenpai. For nagashi payments, it's a mangan payment, so 2000 from nondealers and 4000 from dealer (or 4000 all if dealer got nagashi).
-
-Alternatively, you can enable sichuan-style tenpai payments via:
+There are typically no payments at exhaustive draw, but you can enable sichuan-style tenpai payments via:
 
     apply append, score_calculation, {
       "score_best_hand_at_draw": true
     }
 
 This scores every tenpai player's hand (where players with the `"tenpai"` status are considered tenpai) and awards them the highest possible hand they could have won, so payments proceed as if they won.
-
-This option takes precedence over tenpai and nagashi payments (and nagashi takes precedence over tenpai payments).
 
 ### Payment-related keys
 
@@ -1219,16 +1206,13 @@ To set the value of riichi sticks and honba counters respectively, set:
 
 `"riichi_value"` otherwise defaults to 1000 and `"honba_value"` to 0.
 
-The following keys determine the behavior of pao:
+The following key determines the behavior of pao (activated by the `make_responsible_for` action):
 
     apply append, score_calculation, {
-      "pao_pays_all_yaku": false,
-      "pao_pays_all_yaku2": false,
-      "pao_eligible_yaku": ["Daisangen", "Daisuushii"],
       "split_pao_ron": true,
     }
 
-First, if `"pao_pays_all_yaku"` is true then players who are hit by pao (i.e. have the `"pao"` status on a win) pay the entirety of `yaku`. Same with `"pao_pays_all_yaku2"` and `yaku2`. Otherwise, only yaku named in the `"pao_eligible_yaku"` array has payment handled by pao rules -- the remaining yaku are paid out normally. Finally, `"split_pao_ron"` is true if ron payments are to be split in half (the deal-in player pays half, and the pao player pays half plus honba).
+`"split_pao_ron"` is true if ron payments are to be split in half (the deal-in player pays half, and the pao player pays half plus honba). In the extremely rare case that one player deals into another player's yakuman and the two other players should pay pao, the ron payment is split three ways.
 
 ### Payment-related statuses
 

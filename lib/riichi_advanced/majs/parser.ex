@@ -6,14 +6,46 @@ defmodule RiichiAdvanced.Parser do
       size when size > 4 * 1024 * 1024 ->
         {:error, "script too large (#{size / 1024 / 1024} MB > 4 MB)"}
       _ ->
-        case Code.string_to_quoted(input, columns: true, existing_atoms_only: true, static_atoms_encoder: fn name, _pos -> {:ok, if name == "do" do :do else name end} end) do
+        Regex.replace(~r/(\w+)\s*([+\-*\/])=\s*/, input, "\\1 = \\1 \\2 ") # convert x += 2 to x = x + 2
+        |> Code.string_to_quoted(columns: true, existing_atoms_only: true, static_atoms_encoder: fn name, _pos -> {:ok, if name == "do" do :do else name end} end)
+        |> case do
           {:ok, ast} -> {:ok, ast}
           {:error, err} -> {:error, err}
         end
     end
   end
 
-  def parse_set(set_spec) do
+  def parse_tiles(tiles_spec) when is_binary(tiles_spec) do
+    ret = for group <- String.split(tiles_spec, " ", trim: true), [_, num, suit | attrs] <- Regex.scan(~r/(\d+)([a-z])(@([a-z0-9_&]+))?/, group) do
+      tile = "#{num}#{suit}"
+      attrs = case attrs do
+        [_, attrs] -> String.split(attrs, "&", trim: true)
+        _ -> []
+      end
+      if Enum.empty?(attrs) do tile else {:%{}, [], [{"tile", tile}, {"attrs", attrs}]} end
+    end
+    {:ok, ret}
+  end
+  def parse_short_notation(tiles_spec) when is_binary(tiles_spec) do
+    ret = for hand <- String.split(tiles_spec, " ", trim: true), reduce: [] do
+      tiles ->
+        new_tiles = for [_, nums, suit | attrs] <- Regex.scan(~r/(\d+)([a-z])(@([a-z0-9_&]+))?/, hand) |> IO.inspect(), num <- String.graphemes(nums) do
+          tile = "#{num}#{suit}"
+          attrs = case attrs do
+            [_, attrs] -> String.split(attrs, "&", trim: true)
+            _ -> []
+          end
+          if Enum.empty?(attrs) do tile else {:%{}, [], [{"tile", tile}, {"attrs", attrs}]} end
+        end
+        [new_tiles | tiles]
+    end
+    |> Enum.reverse()
+    |> Enum.intersperse(["3x"])
+    |> Enum.concat()
+    {:ok, ret}
+  end
+
+  def parse_set(set_spec) when is_binary(set_spec) do
     set_spec = for group <- String.split(set_spec, "|") |> Enum.map(&String.trim/1) do
       for subgroup <- String.split(group, ",", trim: true) |> Enum.map(&String.trim/1) do
         for item <- String.split(subgroup, " ", trim: true) |> Enum.map(&String.trim/1) do
@@ -31,7 +63,7 @@ defmodule RiichiAdvanced.Parser do
             if Enum.empty?(attrs) do
               {:ok, offset}
             else
-              {:ok, %{"offset" => offset, "attrs" => attrs}}
+              {:ok, {:%{}, [], [{"offset", offset}, {"attrs", attrs}]}}
             end
           end
         end |> Utils.sequence()
@@ -73,7 +105,7 @@ defmodule RiichiAdvanced.Parser do
           with {:ok, {base, attrs}} <- base_attrs do
             groups = case attrs do
               [] -> base
-              attrs -> %{"tile" => base, "attrs" => attrs}
+              attrs -> {:%{}, [], [{"tile", base}, {"attrs", attrs}]}
             end
             {:ok, groups}
           end
@@ -87,8 +119,8 @@ defmodule RiichiAdvanced.Parser do
     end
   end
 
-  def parse_match(match_spec) do
-    for match_definition <- String.split(match_spec, "|", trim: true) |> Enum.map(&String.trim/1) do
+  def parse_match(match_spec) when is_binary(match_spec) do
+    for match_definition <- String.split(match_spec, "|") |> Enum.map(&String.trim/1) do
       items = String.split(match_definition, ",", trim: true) |> Enum.map(&String.trim/1)
       if "american" in items do
         {:ok, Enum.find(items, & &1 != "american")}
@@ -99,33 +131,27 @@ defmodule RiichiAdvanced.Parser do
       end
     end |> Utils.sequence()
   end
-  def parse_sigils(nil), do: {:ok, nil}
-  def parse_sigils(true), do: {:ok, true}
-  def parse_sigils(false), do: {:ok, false}
-  def parse_sigils(ast) when is_integer(ast) or is_float(ast) or is_binary(ast), do: {:ok, ast}
-  def parse_sigils({:sigil_s, _, [{:<<>>, _, [set_spec]}, _args]}) when is_binary(set_spec), do: parse_set(set_spec)
-  def parse_sigils({:sigil_m, _, [{:<<>>, _, [match_spec]}, _args]}) when is_binary(match_spec), do: parse_match(match_spec)
-  def parse_sigils([]), do: {:ok, []}
+
+  def parse_sigils({:sigil_t, _, [{:<<>>, _, [tiles_spec]}, _args]}), do: parse_short_notation(tiles_spec)
+  def parse_sigils({:sigil_T, _, [{:<<>>, _, [tiles_spec]}, _args]}), do: parse_tiles(tiles_spec)
+  def parse_sigils({:sigil_s, _, [{:<<>>, _, [set_spec]}, _args]}), do: parse_set(set_spec)
+  def parse_sigils({:sigil_m, _, [{:<<>>, _, [match_spec]}, _args]}), do: parse_match(match_spec)
   def parse_sigils([do: expr]), do: parse_sigils(expr)
   def parse_sigils(ast) when is_list(ast) do
     # check if keyword list (except the keys are binaries, not atoms)
     if Enum.all?(ast, &match?({k, _v} when is_binary(k), &1)) do
       {ks, vs} = Enum.unzip(ast)
       with {:ok, vs} <- vs |> Enum.map(&parse_sigils/1) |> Utils.sequence() do
-        # turn it into a map (JSON object)
-        {:ok, Enum.zip(ks, vs) |> Map.new()}
+        # turn it into a map
+        {:ok, {:%{}, [], Enum.zip(ks, vs)}}
       end
     else
+      # otherwise, it's just a regular list
       ast |> Enum.map(&parse_sigils/1) |> Utils.sequence()
     end
   end
-  def parse_sigils(%RiichiAdvanced.Compiler.Constant{} = ast), do: {:ok, ast}
-  def parse_sigils(%RiichiAdvanced.Compiler.Variable{} = ast), do: {:ok, ast}
-  def parse_sigils(ast) when is_map(ast), do: parse_sigils_map(ast)
-  def parse_sigils({:%{}, _pos, contents}), do: parse_sigils_map(contents)
-  def parse_sigils({_other, _pos, _nodes} = ast), do: {:ok, ast}
-  def parse_sigils_map(map) do
-    parsed_map = map
+  def parse_sigils({:%{}, pos, contents}) do
+    parsed_map = contents
     |> Enum.map(fn {key, val} ->
       if is_binary(key) do
         case parse_sigils(val) do
@@ -136,8 +162,9 @@ defmodule RiichiAdvanced.Parser do
     end)
     |> Utils.sequence()
     with {:ok, parsed_map} <- parsed_map do
-      {:ok, Map.new(parsed_map)}
+      {:ok, {:%{}, pos, parsed_map}}
     end
   end
+  def parse_sigils(ast), do: {:ok, ast}
 
 end
