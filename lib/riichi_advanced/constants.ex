@@ -211,18 +211,25 @@ defmodule RiichiAdvanced.Constants do
   end
 
   @ai_names [
+    "Agarihouki (AI)",
+    "Bakahon (AI)",
     "Betaori (AI)",
     "Chombo (AI)",
     "Furiten (AI)",
+    "Goumii (AI)",
+    "Houjuu (AI)",
     "Jigoku (AI)",
+    "Kuikae (AI)",
     "Noten (AI)",
     "Oyakaburi (AI)",
     "Pao (AI)",
     "Penchan (AI)",
+    "Sashikomi (AI)",
     "Tobi (AI)",
     "Uushanten (AI)",
     "Yakitori (AI)",
     "Yakuless (AI)",
+    "Yamagoshi (AI)",
     "Yasume (AI)",
   ]
 
