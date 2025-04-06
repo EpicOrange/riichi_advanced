@@ -107,6 +107,15 @@ defmodule RiichiAdvanced.Utils do
     end
   end
 
+  def to_salient_attrs(tile) do
+    case tile do
+      {tile, attrs} -> {tile, Enum.map(attrs, &String.replace_leading(&1, "_", "")) |> Enum.sort()}
+      _ when is_list(tile) -> Enum.map(tile, &to_salient_attrs(&1))
+      _ when is_struct(tile, MapSet) -> MapSet.new(tile, &to_salient_attrs(&1))
+      tile -> tile
+    end
+  end
+
   def tile_color(tile), do: Map.get(Constants.tile_color(), tile, "white")
 
   def is_space?(tile), do: has_matching_tile?([tile], [:"2x", :"3x", :"4x", :"5x", :"6x", :"7x", :"8x"]) or has_attr?(tile, ["hidden"])
@@ -179,7 +188,7 @@ defmodule RiichiAdvanced.Utils do
     same_id = t1 in l2 or t2 in l1
       or (:faceup in l2 and Enum.any?(l1, fn tile -> tile not in [:"1x", :"2x", :"3x", :"4x"] end))
       or :any in l1 or :any in l2
-    attrs_match = has_attr?(tile1, attrs2)
+    attrs_match = has_attr?(tile1, Enum.reject(attrs2, &String.starts_with?(&1, "_")))
     same_id and attrs_match
   end
 
