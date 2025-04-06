@@ -30,6 +30,7 @@ defmodule RiichiAdvanced.Utils do
 
   def hand_to_string(hand) do
     hand
+    |> strip_attrs()
     |> Enum.map(&Atom.to_string/1)
     |> Enum.group_by(fn <<_num, suit>> -> <<suit>> end, fn <<num, _>> -> <<num>> end)
     |> Enum.map(fn {suit, nums} -> Enum.join(nums) <> suit end)

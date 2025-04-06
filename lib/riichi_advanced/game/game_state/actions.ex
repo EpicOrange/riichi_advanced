@@ -674,20 +674,27 @@ defmodule RiichiAdvanced.GameState.Actions do
                     tiles = Match.collect_base_tiles(hand, [], group, tile_behavior)
                     {hands, _} = Match.remove_group(hand, [], group, tiles, tile_behavior)
                     |> Enum.unzip()
-                    Enum.map(hands, &{hand -- &1, value})
+                    hands
+                    |> Enum.uniq()
+                    |> Enum.map(&{hand -- &1, value})
                   end
                   |> Enum.concat()
                   |> Enum.uniq()
                   if may_remove_later do
-                    for {group, _value} <- group_value do
-                      remaining = hand -- group
-                      # get all groups that overlap this group
-                      for {group2, value} <- group_value,
-                          length(remaining -- group2) > length(remaining) - length(group2) do
-                        {group2, value}
-                      end
+                    # IO.inspect(Enum.map(group_value, fn {group, _value} -> Utils.hand_to_string(group) end), label: "Choices for #{Utils.hand_to_string(hand)}")
+                    ret = for {group, _value} <- group_value do
+                      Enum.filter(group_value, fn {group2, _} -> Enum.any?(group2, & &1 in group) end)
                     end
+                    |> Enum.reject(&Enum.empty?/1)
                     |> Enum.min_by(&length/1, &<=/2, fn -> [] end)
+                    # if there's a choice to take nothing, always include it as an option
+                    ret = case Enum.find(group_value, fn {group, _value} -> group == [] end) do
+                      nil -> ret
+                      empty_group -> [empty_group | ret]
+                    end
+                    # IO.inspect(Enum.map(ret, fn {group, _value} -> Utils.hand_to_string(group) end), label: "Removing from #{Utils.hand_to_string(hand)}")
+                    # IO.inspect(Enum.map(group_value -- ret, fn {group, _value} -> Utils.hand_to_string(group) end), label: "Not removing from #{Utils.hand_to_string(hand)}")
+                    ret
                   else group_value end
                   |> Enum.map(fn {group, value} -> {hand -- group, calls, Enum.map(fus, & &1 + value)} end)
                 end)

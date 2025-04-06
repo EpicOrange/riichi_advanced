@@ -143,5 +143,28 @@ defmodule RiichiAdvanced.YakuTest.GalaxyYaku do
   #     }]
   #   })
   # end
+  
+  # # takes like 90s
+  # test "galaxy - kokushi or suuankou" do
+  #   TestUtils.test_yaku_advanced("galaxy", [], """
+  #   {
+  #     "starting_hand": {
+  #       "east": ["11m", "19m", "11p", "19p", "11s", "19s", "11z", "12z", "13z", "14z", "15z", "16z", "17z"],
+  #       "south": ["1m", "4m", "7m", "2p", "5p", "8p", "3s", "6s", "9s", "5z", "2z", "3z", "4z"],
+  #       "west": ["1m", "4m", "7m", "2p", "5p", "8p", "3s", "6s", "9s", "1z", "2z", "3z", "4z"],
+  #       "north": ["1m", "3m", "7m", "2p", "5p", "8p", "3s", "6s", "9s", "1z", "2z", "3z", "4z"]
+  #     },
+  #     "starting_draws": ["1z"]
+  #   }
+  #   """, [
+  #     %{"type" => "buttons_pressed", "buttons" => [%{"button" => "tsumo"}, nil, nil, nil]}
+  #   ], %{
+  #     east: [%{
+  #       yaku: [],
+  #       yaku2: [{"Tenhou", 1}, {"Kokushi Musou Juusan Menmachi", 2}],
+  #       minipoints: 60
+  #     }]
+  #   })
+  # end
 
 end
