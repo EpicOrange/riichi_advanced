@@ -8,8 +8,9 @@ defmodule RiichiAdvancedWeb.TutorialMenuLive do
   use Gettext, backend: RiichiAdvancedWeb.Gettext
   import RiichiAdvancedWeb.Translations
 
-  def mount(params, _session, socket) do
+  def mount(params, session, socket) do
     socket = socket
+    |> assign(:session_id, session["session_id"])
     |> assign(:messages, [])
     |> assign(:ruleset, params["ruleset"])
     |> assign(:nickname, Map.get(params, "nickname", ""))
