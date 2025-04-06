@@ -29,7 +29,7 @@ defmodule RiichiAdvanced.Parser do
   def parse_short_notation(tiles_spec) when is_binary(tiles_spec) do
     ret = for hand <- String.split(tiles_spec, " ", trim: true), reduce: [] do
       tiles ->
-        new_tiles = for [_, nums, suit | attrs] <- Regex.scan(~r/(\d+)([a-z])(@([a-z0-9_&]+))?/, hand) |> IO.inspect(), num <- String.graphemes(nums) do
+        new_tiles = for [_, nums, suit | attrs] <- Regex.scan(~r/(\d+)([a-z])(@([a-z0-9_&]+))?/, hand), num <- String.graphemes(nums) do
           tile = "#{num}#{suit}"
           attrs = case attrs do
             [_, attrs] -> String.split(attrs, "&", trim: true)
