@@ -718,7 +718,7 @@ define_mod "yaku/junsei_ryuuiisou", name: "Junsei Ryuuiisou", desc: "Local yakum
 define_mod "yaku/chousangen", name: "Chousangen", desc: "Local yakuman. If you have kans of all three dragons, it's double yakuman. Doesn't stack with daisangen."
 define_mod "yaku/chousuushii", name: "Chousuushii", desc: "Local yakuman. If you have kans of all four winds, it's quadruple yakuman. Doesn't stack with daisuushi and suukantsu."
 define_mod_category "Other"
-define_mod cancellable_riichi, order: 1, deps: ["yaku/riichi"], name: "Cancellable Riichi", desc: "Everyone plays with tiles shown."
+define_mod cancellable_riichi, order: 1, deps: ["yaku/riichi"], name: "Cancellable Riichi", desc: "Riichi declarations happen only after you confirm by discarding a tile."
 define_mod ten, order: 3, name: "Ten", desc: "Adds 10m, 10p, and 10s. Changes dora accordingly (if dora is enabled). Tanyao now allows nines, and chanta/junchan/honroutou require tens instead. 13 Orphans now requires the ten instead of the nine of each suit. Ittsu allows 23456789T."
 define_mod star_suit, order: 2, name: "Star Suit (beta)", desc: "Adds a fourth suit (stars). This suit does not form yaku. This mod is in beta because we should probably write some yaku for it."
 define_mod space, order: 2, name: "Space Mahjong", desc: "Sequences can wrap (891, 912). Winds and dragons can make sequences. You can chii from any direction. Chiitoitsu is disabled. Open kokushi is allowed and worth 3 han."
