@@ -1038,10 +1038,10 @@ defmodule RiichiAdvanced.GameState do
     agariyame = Rules.get(state.rules_ref, "agariyame", false) and state.round_result == :win and dealer in state.winner_seats
     tenpaiyame = Rules.get(state.rules_ref, "tenpaiyame", false) and state.round_result in [:exhaustive_draw, :abortive_draw] and "tenpai" in state.players[dealer].status
     max_rounds = Rules.get(state.rules_ref, "max_rounds", :infinity)
-    past_max_rounds = state.kyoku >= max_rounds
+    past_max_rounds = state.kyoku >= max_rounds - 1
     forced or (agariyame and past_max_rounds) or (tenpaiyame and past_max_rounds) or if Rules.has_key?(state.rules_ref, "sudden_death_goal") do
       above_goal = Enum.any?(state.players, fn {_seat, player} -> player.score >= Rules.get(state.rules_ref, "sudden_death_goal") end)
-      past_extra_max_rounds = state.kyoku >= max_rounds + 4
+      past_extra_max_rounds = state.kyoku >= max_rounds + 3
       (above_goal and past_max_rounds) or past_extra_max_rounds
     else past_max_rounds end
   end
