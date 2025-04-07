@@ -362,7 +362,7 @@ defmodule RiichiAdvanced.Compiler do
   defp compile_command("replace", name, args, line, column) do
     path_value1_value2 = case args do
       [path, value1, value2] when is_binary(path) -> {:ok, {path, value1, value2}}
-      _ -> {:error, "Compiler.compile: at line #{line}:#{column}, `replace all` command expects a jq path string followed by two values, `to_replace` and `replacement`, instead got #{inspect(args)}"}
+      _ -> {:error, "Compiler.compile: at line #{line}:#{column}, `replace` command expects either \"all\" or an integer, followed by a jq path string and two values, `to_replace` and `replacement`, instead got #{inspect(args)}"}
     end
     with {:ok, {path, value1, value2}} <- path_value1_value2,
          {:ok, path} <- Validator.validate_json_path(path),
@@ -370,13 +370,17 @@ defmodule RiichiAdvanced.Compiler do
          {:ok, value1} <- Jason.encode(value1_val),
          {:ok, value2_val} <- compile_constant(value2, line, column),
          {:ok, value2} <- Jason.encode(value2_val) do
-      operation = case Jason.decode!(name) do
-        "all" -> {:ok, "#{path} |= walk(if . == #{value1} then #{value2} else . end)"}
-        _     -> {:error, "Compiler.compile: at line #{line}:#{column}, `replace` got invalid method #{name}"}
+      operation = case Jason.decode(name) do
+        {:ok, "all"} -> {:ok, "walk(if . == #{value1} then #{value2} else . end)"}
+        {:ok, n} when is_integer(n) -> {:ok, "reduce limit(#{n}; paths(. == #{value1})) as $_path (.; setpath($_path; #{value2}))"}
+        {:error, _} -> case name do
+          <<"$" <> _>> = var -> {:ok, "if (#{var} | type == \"number\") then reduce limit(#{var}; paths(. == #{value1})) as $_path (.; setpath($_path; #{value2})) else . end"}
+          _ -> {:error, "Compiler.compile: at line #{line}:#{column}, `replace` got invalid method #{name}"}
+        end
       end
       with {:ok, operation} <- operation do
         # only perform operation if the path exists
-        {:ok, "if (#{path} | type) != \"null\" then #{operation} else . end"}
+        {:ok, "#{path} |= if type != \"null\" then #{operation} else . end"}
       end
     end
   end
@@ -815,8 +819,8 @@ defmodule RiichiAdvanced.Compiler do
     case ast do
       {cmd, [line: line, column: column], [name | args]} when is_binary(cmd) ->
         name = case name do
-          name when is_binary(name) -> Validator.validate_json(name)
-          {name, _pos, _params} when is_binary(name) -> Validator.validate_json(name)
+          name when is_binary(name) or is_integer(name) -> Validator.validate_json(name)
+          {name, _pos, _params} when is_binary(name) or is_integer(name) -> Validator.validate_json(name)
           {:+, _pos, _params} -> Validator.validate_json(name)
           {:@, _pos, _params} -> Validator.validate_json(name)
           {:!, _pos, _params} -> Validator.validate_json(name)
