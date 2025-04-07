@@ -1850,7 +1850,7 @@ div.display-am-hand-hover::before {
 div.display-am-hand-container {
   position: absolute;
   display: none;
-  width: calc(100% - 2 * var(--tile-size));
+  width: calc(100% - 2.5 * var(--tile-size));
   left: calc(1 * var(--tile-size));
   bottom: calc(2.5 * var(--tile-size));
   background: #0000007F;
@@ -1873,6 +1873,14 @@ div.display-am-hand {
   flex-flow: row;
   justify-content: center;
   align-items: center;
+  position: relative;
+}
+div.display-am-hand-type {
+  position: absolute;
+  font-size: calc(0.75 * var(--tile-size));
+  border-radius: calc(0.25 * var(--tile-size));
+  bottom: 0;
+  right: calc(-0.5 * var(--tile-size));
 }
 
 /* revealed tiles */

@@ -2163,8 +2163,10 @@ defmodule RiichiAdvanced.GameState do
     end
     self = self()
     {:ok, pid} = Task.start(fn ->
-      win_definition = Rules.get(state.rules_ref, "win_definition", [])
+      closed_win_definition = Rules.get(state.rules_ref, "win_definition", [])
+      open_win_definition = Rules.get(state.rules_ref, "open_win_definition", [])
       for seat <- state.available_seats do
+        win_definition = if Enum.empty?(state.players[seat].calls) do closed_win_definition else open_win_definition end
         closest_american_hands = American.compute_closest_american_hands(state, seat, win_definition, 5)
         GenServer.cast(self, {:set_closest_american_hands, seat, closest_american_hands})
       end

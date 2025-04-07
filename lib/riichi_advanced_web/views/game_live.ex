@@ -313,10 +313,16 @@ defmodule RiichiAdvancedWeb.GameLive do
       <div class={["big-text"]} :if={@loading}><%= t(@lang, "Loading...") %></div>
       <div class="display-am-hand-hover" :if={Rules.get(@state.rules_ref, "show_nearest_american_hand", false)}></div>
       <div class="display-am-hand-container" :if={Rules.get(@state.rules_ref, "show_nearest_american_hand", false)}>
-        <%= for {_am_match_definition, _shanten, arranged_hand} <- @state.players[@seat].cache.closest_american_hands do %>
+        <% open_definitions = Rules.get(@state.rules_ref, "open_win_definition", []) %>
+        <%= for {am_match_definition, _shanten, arranged_hand} <- @state.players[@seat].cache.closest_american_hands do %>
           <div class="display-am-hand" :if={arranged_hand})>
             <%= for tile <- arranged_hand do %>
               <div class={Utils.get_tile_class(tile)}></div>
+            <% end %>
+            <%= if am_match_definition in open_definitions do %>
+              <div class="display-am-hand-type"><%= t(@lang, "x") %></div>
+            <% else %>
+              <div class="display-am-hand-type"><%= t(@lang, "c") %></div>
             <% end %>
           </div>
         <% end %>
