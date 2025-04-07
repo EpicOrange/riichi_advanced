@@ -845,6 +845,37 @@ define_preset "Riichi City", [
   "shiny_dora",
   "first_gets_riichi_sticks"
 ]
+# amatsuki rules seem to be a clone of mahjong soul rules
+define_preset "Amatsuki Mahjong", [
+  %{name: "honba", config: %{value: 100}},
+  %{name: "yaku/riichi", config: %{bet: 1000, drawless: false}},
+  %{name: "nagashi", config: %{is: "Mangan"}},
+  %{name: "tobi", config: %{below: 0}},
+  %{name: "uma", config: %{_1st: 10, _2nd: 5, _3rd: -5, _4th: -10}},
+  "agarirenchan",
+  "tenpairenchan",
+  "agariyame",
+  "tenpaiyame",
+  %{name: "sudden_death", config: %{goal: 30000}},
+  "kuikae_nashi",
+  "double_wind_4_fu",
+  "pao",
+  "kokushi_ankan_chankan",
+  "suufon_renda",
+  "suucha_riichi",
+  "suukaikan",
+  "kyuushu_kyuuhai",
+  %{name: "dora", config: %{start_indicators: 1}},
+  "ura",
+  "kandora",
+  "yaku/ippatsu",
+  "show_waits",
+  %{name: "min_han", config: %{min: 1}},
+  "cancellable_riichi",
+  %{name: "aka", config: %{man: 1, pin: 1, sou: 1}},
+  "shiny_dora",
+  "first_gets_riichi_sticks"
+]
 define_preset "WRC 2022", [
   %{name: "honba", config: %{value: 100}},
   %{name: "yaku/riichi", config: %{bet: 1000, drawless: false}},
