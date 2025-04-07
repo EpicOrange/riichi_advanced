@@ -1179,7 +1179,7 @@ defmodule RiichiAdvanced.GameState.Actions do
         if Map.has_key?(state.rules_text, tab) and Map.has_key?(state.rules_text[tab], id) do
           update_in(state.rules_text[tab], &Map.update!(&1, id,
             fn {orig_text, orig_vars, orig_priority} -> {
-                orig_text ++ [text],
+                if text in orig_text do orig_text else orig_text ++ [text] end,
                 Map.merge(orig_vars, map_var_amounts(state, context, vars)),
                 priority || orig_priority
             } end)
