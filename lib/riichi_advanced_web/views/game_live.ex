@@ -389,10 +389,9 @@ defmodule RiichiAdvancedWeb.GameLive do
             <div class="rules-popover">
               <%= for {title, {text, vars, priority}} <- Enum.sort_by(@state.rules_text[rules_text_name], fn {_title, {text, _vars, priority}} -> {priority, text |> Enum.join("\n") |> String.length()} end) do %>
                 <%
-                  vars = Map.new(vars, fn {k, v} -> {k, if is_binary(v) do dt(@lang, v) else v end} end)
-                  |> Map.merge(%{
+                  vars = Map.merge(vars, %{
                     "round_wind_triplet" => get_wind_triplet(Riichi.get_round_wind(@state.kyoku, length(@state.available_seats))),
-                    "seat_wind_triplet" => get_wind_triplet(@viewer),
+                    "seat_wind_triplet" => get_wind_triplet(@seat),
                   })
                 %>
                 <div class={["rules-popover-rule", priority < 0 && "full-width"]}>
@@ -437,10 +436,10 @@ defmodule RiichiAdvancedWeb.GameLive do
     end
   end
 
-  def get_wind_triplet(:east), do: [:"1z", :"1z", :"1z"]
-  def get_wind_triplet(:south), do: [:"2z", :"2z", :"2z"]
-  def get_wind_triplet(:west), do: [:"3z", :"3z", :"3z"]
-  def get_wind_triplet(:north), do: [:"4z", :"4z", :"4z"]
+  def get_wind_triplet(:east), do: ["1z", "1z", "1z"]
+  def get_wind_triplet(:south), do: ["2z", "2z", "2z"]
+  def get_wind_triplet(:west), do: ["3z", "3z", "3z"]
+  def get_wind_triplet(:north), do: ["4z", "4z", "4z"]
   def get_wind_triplet(_), do: []
 
   def get_visible_waits(socket, index) do
