@@ -1,0 +1,20 @@
+on after_initialization do
+  add_rule("Rules", "Kyuushu Kyuuhai", "If a player starts with nine different kinds of terminals, they have the option to call an abortive draw. Any call (chii, pon, etc) invalidates this opportunity for all players.")
+end
+
+define_set orphans_any, ~s"1m|9m|1p|9p|1s|9s|1z|2z|3z|4z|5z|6z|7z"
+define_match kyuushu_kyuuhai, ~m"unique, orphans_any:9"
+
+define_button kyuushu_kyuuhai,
+  display_name: "Kyuushu Kyuuhai",
+  show_when: our_turn
+    and has_draw
+    and status("discards_empty")
+    and status_missing("just_reached", "call_made")
+    and match(["hand", "draw"], ["kyuushu_kyuuhai"])
+  do
+    big_text("Kyushuu Kyuuhai")
+    reveal_hand
+    pause(1000)
+    abortive_draw("Kyushuu Kyuuhai")
+  end

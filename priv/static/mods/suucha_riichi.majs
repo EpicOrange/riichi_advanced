@@ -1,0 +1,13 @@
+on after_initialization do
+  add_rule("Rules", "Suucha Riichi", "If all four players have declared riichi (and the final discard passes), the game ends in an abortive draw.")
+end
+
+on before_turn_change, prepend: true do
+  if num_players(4) and everyone_status("riichi") do
+    subtract_score("riichi_value")
+    place_riichi_stick
+    unset_status("just_reached")
+    pause(1000)
+    abortive_draw("Suucha Riichi")
+  end
+end

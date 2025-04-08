@@ -1,0 +1,5 @@
+on after_start do
+  as everyone do
+    reveal_hand
+  end
+end
