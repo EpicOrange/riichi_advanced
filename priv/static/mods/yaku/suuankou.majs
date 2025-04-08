@@ -1,8 +1,10 @@
 on after_initialization do
   if equals(!list, "yakuman") do
-    add_rule("Limit", "$name", "You have four concealed triplets.", %{name: !name})
+    add_rule("Limit", "$name", "You have four concealed triplets. A triplet completed by a self-draw win counts as concealed.", %{name: !name})
+    update_rule("Limit", "$name", "%{example_hand}", %{value: !value, han: !han, name: !name, example_hand: ~t"222888m444p333s1z 1z"})
   else
-    add_rule("$value $han", "$name", "You have four concealed triplets.", %{value: !value, han: !han, name: !name})
+    add_rule("$value $han", "$name", "You have four concealed triplets. A triplet completed by a self-draw win counts as concealed.", %{value: !value, han: !han, name: !name})
+    update_rule("$value $han", "$name", "%{example_hand}", %{value: !value, han: !han, name: !name, example_hand: ~t"222888m444p333s1z 1z"})
   end
 end
 

@@ -1,8 +1,10 @@
 on after_initialization do
   if equals(!list, "yakuman") do
     add_rule("Limit", "$name", "Your final hand (including winning tile) looks like 1112345678999 of any suit, plus one additional tile of that suit.", %{name: !name})
+    update_rule("Limit", "$name", "%{example_hand}", %{value: !value, han: !han, name: !name, example_hand: ~t"1112345568999s 7s"})
   else
     add_rule("$value $han", "$name", "Your final hand (including winning tile) looks like 1112345678999 of any suit, plus one additional tile of that suit.", %{value: !value, han: !han, name: !name})
+    update_rule("$value $han", "$name", "%{example_hand}", %{value: !value, han: !han, name: !name, example_hand: ~t"1112345568999s 7s"})
   end
 end
 

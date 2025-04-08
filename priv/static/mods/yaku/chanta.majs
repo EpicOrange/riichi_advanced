@@ -1,5 +1,6 @@
 on after_initialization do
   add_rule("$value $han", "$name", "Every set/pair in your hand contains a terminal or honor tile.", %{value: !value, han: !han, name: !name})
+  update_rule("$value $han", "$name", "%{example_hand}", %{value: !value, han: !han, name: !name, example_hand: ~t"123m79p789s77z 111p 8p"})
 end
 
 on before_scoring do

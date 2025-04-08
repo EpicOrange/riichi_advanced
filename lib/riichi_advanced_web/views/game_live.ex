@@ -4,6 +4,7 @@ defmodule RiichiAdvancedWeb.GameLive do
   alias RiichiAdvanced.GameState.Game, as: Game
   alias RiichiAdvanced.GameState.Rules, as: Rules
   alias RiichiAdvanced.ModLoader, as: ModLoader
+  alias RiichiAdvanced.Riichi, as: Riichi
   alias RiichiAdvanced.Utils, as: Utils
   use Gettext, backend: RiichiAdvancedWeb.Gettext
   use RiichiAdvancedWeb, :live_view
@@ -386,7 +387,14 @@ defmodule RiichiAdvancedWeb.GameLive do
           <div class="rules-popover-container" phx-click="noop">
             <div class="rules-popover">
               <%= for {title, {text, vars, priority}} <- Enum.sort_by(@state.rules_text[rules_text_name], fn {_title, {text, _vars, priority}} -> {priority, text |> Enum.join("\n") |> String.length()} end) do %>
-                <% vars = Map.new(vars, fn {k, v} -> {k, if is_binary(v) do dt(@lang, v) else v end} end) %>
+                <%
+                  vars = Map.new(vars, fn {k, v} -> {k, if is_binary(v) do dt(@lang, v) else v end} end)
+                  |> Map.merge(%{
+                    "round_wind_triplet" => get_wind_triplet(Riichi.get_round_wind(@state.kyoku, length(@state.available_seats))),
+                    "seat_wind_triplet" => get_wind_triplet(@viewer),
+                  })
+                  |> IO.inspect()
+                %>
                 <div class={["rules-popover-rule", priority < 0 && "full-width"]}>
                   <div class="rules-popover-title"><%= dt(@lang, title, vars) %></div>
                   <div class="rules-popover-text"><%= raw Enum.map_join(text, "\n", &dt(@lang, &1, vars)) %></div>
@@ -428,6 +436,12 @@ defmodule RiichiAdvancedWeb.GameLive do
       assign(socket, :selected_index, nil)
     end
   end
+
+  def get_wind_triplet(:east), do: [:"1z", :"1z", :"1z"]
+  def get_wind_triplet(:south), do: [:"2z", :"2z", :"2z"]
+  def get_wind_triplet(:west), do: [:"3z", :"3z", :"3z"]
+  def get_wind_triplet(:north), do: [:"4z", :"4z", :"4z"]
+  def get_wind_triplet(_), do: []
 
   def get_visible_waits(socket, index) do
     hand = socket.assigns.state.players[socket.assigns.seat].hand

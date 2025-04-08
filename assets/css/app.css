@@ -2074,7 +2074,8 @@ input.rules-popover-radio:checked + label + div.rules-popover-container::before 
 }
 div.rules-popover {
   width: 100%;
-  height: 100%;
+  height: calc(100% - calc(0.25 * var(--tile-size)));
+  margin: calc(0.125 * var(--tile-size)) 0;
   position: relative;
   display: flex;
   flex-flow: row wrap;

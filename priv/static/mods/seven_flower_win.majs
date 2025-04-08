@@ -1,10 +1,12 @@
 on after_initialization do
   add_rule("3 Fan", "Flowers", "You won with seven flowers.")
   add_rule("8 Fan", "Flowers", "You won with eight flowers.")
+  update_rule("3 Fan", "Flowers", "%{example_hand}", %{example_hand: ~t"1234f123g"})
+  update_rule("8 Fan", "Flowers", "%{example_hand}", %{example_hand: ~t"1234f1234g"})
   if equals(!win_on, "7 flowers") do
     add_rule("Rules", "Flowers", "- As soon as you draw a seventh flower, you may declare a win for an additional 3 Fan, or 8 Fan if you have eight flowers.")
   end
-  if equals(!win_on, "7 flowers") do
+  if equals(!win_on, "8 flowers") do
     add_rule("Rules", "Flowers", "- As soon as you draw an eighth flower, you may declare a win for an additional 8 Fan.")
   end
 end

@@ -1,13 +1,17 @@
 on after_initialization do
   if equals(!shou_list, "yakuman") do
     add_rule("Limit", "$name", "You have triplets of three different winds, and a pair of the fourth.", %{name: !shou_name})
+    update_rule("Limit", "$name", "%{example_hand}", %{value: !shou_value, han: !han, name: !shou_name, example_hand: ~t"23s22233444z 111z 4s"})
   else
     add_rule("$value $han", "$name", "You have triplets of three different winds, and a pair of the fourth.", %{value: !shou_value, han: !han, name: !shou_name})
+    update_rule("$value $han", "$name", "%{example_hand}", %{value: !shou_value, han: !han, name: !shou_name, example_hand: ~t"23s22233444z 111z 4s"})
   end
   if equals(!dai_list, "yakuman") do
     add_rule("Limit", "$name", "You have triplets of all four winds.", %{name: !dai_name})
+    update_rule("Limit", "$name", "%{example_hand}", %{value: !dai_value, han: !han, name: !dai_name, example_hand: ~t"22s22233444z 111z 3z"})
   else
     add_rule("$value $han", "$name", "You have triplets of all four winds.", %{value: !dai_value, han: !han, name: !dai_name})
+    update_rule("$value $han", "$name", "%{example_hand}", %{value: !dai_value, han: !han, name: !dai_name, example_hand: ~t"22s22233444z 111z 3z"})
   end
 end
 
