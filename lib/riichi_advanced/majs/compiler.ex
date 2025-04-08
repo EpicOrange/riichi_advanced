@@ -809,19 +809,38 @@ defmodule RiichiAdvanced.Compiler do
     {:error, "Compiler.compile: at line #{line}:#{column}, #{inspect(cmd)} is not a valid toplevel command}"}
   end
 
-  defp compile_toplevel_condition(condition, _line, _column) do
+  def compile_toplevel_constant(constant, line, column) do
+    # basically compile_constant but disallowing actual constants
+    case constant do
+      {:+, _, _} -> {:error, "cannot use constants in toplevel conditions"}
+      {:@, _, _} -> {:error, "cannot use constants in toplevel conditions"}
+      _          -> compile_constant(constant, line, column)
+    end
+  end
+
+  defp compile_toplevel_condition(condition, line, column) do
     case condition do
       {"true", _, _} -> {:ok, "true"}
       {"false", _, _} -> {:ok, "false"}
       {"equals", [line: line, column: column], [l, r]} ->
-        with {:ok, l} <- compile_toplevel_condition(l, line, column),
-             {:ok, r} <- compile_toplevel_condition(r, line, column) do
+        with {:ok, l} <- compile_toplevel_constant(l, line, column),
+             {:ok, r} <- compile_toplevel_constant(r, line, column),
+             {:ok, l} <- Jason.encode(l),
+             {:ok, r} <- Jason.encode(r) do
           {:ok, "(#{l} == #{r})"}
         end
       {:==, [line: line, column: column], [l, r]} ->
-        with {:ok, l} <- compile_toplevel_condition(l, line, column),
-             {:ok, r} <- compile_toplevel_condition(r, line, column) do
+        with {:ok, l} <- compile_toplevel_constant(l, line, column),
+             {:ok, r} <- compile_toplevel_constant(r, line, column),
+             {:ok, l} <- Jason.encode(l),
+             {:ok, r} <- Jason.encode(r) do
           {:ok, "(#{l} == #{r})"}
+        end
+      {:in, [line: line, column: column], [l, r]} ->
+        with {:ok, r} <- Validator.validate_json_path(r),
+             {:ok, l} <- compile_toplevel_constant(l, line, column),
+             {:ok, l} <- Jason.encode(l) do
+          {:ok, "(#{r} | any(. == #{l}))"}
         end
       {:not, [line: line, column: column], [arg]} ->
         with {:ok, compiled_arg} <- compile_toplevel_condition(arg, line, column) do
@@ -835,10 +854,8 @@ defmodule RiichiAdvanced.Compiler do
         with {:ok, compiled_args} <- Utils.sequence(Enum.map(args, &compile_toplevel_condition(&1, line, column))) do
           {:ok, "(#{Enum.join(compiled_args, " and ")})"}
         end
-      {:+, _, _} -> {:error, "cannot use constants in toplevel conditions"}
-      {:@, _, _} -> {:error, "cannot use constants in toplevel conditions"}
       _ ->
-        with {:ok, json} <- Validator.validate_json(condition),
+        with {:ok, json} <- compile_toplevel_constant(condition, line, column),
              {:ok, value} <- Jason.encode(json) do
           {:ok, "#{value}"}
         end

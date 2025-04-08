@@ -610,6 +610,10 @@ defmodule RiichiAdvanced.GameState.Conditions do
       "is_responsible_for"  ->
         seat = from_seat_spec(state, context, Enum.at(opts, 0, "self"))
         Map.has_key?(state.players[seat].pao_map, context.seat)
+      "yaku_exists"         ->
+        list = Enum.at(opts, 0, "yaku")
+        name = Enum.at(opts, 1, "Riichi")
+        Enum.any?(Rules.get(state.rules_ref, list, []), & &1["display_name"] == name)
       _                     ->
         IO.puts "Unhandled condition #{inspect(cond_spec)}"
         false
