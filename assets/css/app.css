@@ -479,7 +479,7 @@ div#container > input.tile-numbers-checkbox:checked ~ * div.tile::after {
 div#container > input.tile-numbers-checkbox:checked ~ * div.tile.sideways::after {
   top: unset;
   bottom: calc(0.04 * var(--tile-size));
-  transform: rotate(90deg);
+  transform: rotate(-90deg);
 }
 
 /* ponds */
@@ -2107,7 +2107,7 @@ div.rules-popover-text {
 }
 div.rules-popover-text > div.tile {
   display: inline-block;
-  --tile-scale-factor: calc(2 / 3); /* enough for 14 tiles to be in a row */
+  --tile-scale-factor: 0.65; /* enough for 14 tiles to be in a row */
   margin-top: calc(0.25 * var(--tile-scale-factor) * var(--tile-size));
 }
 
