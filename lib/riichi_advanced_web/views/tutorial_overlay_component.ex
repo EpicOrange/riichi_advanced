@@ -1,4 +1,5 @@
 defmodule RiichiAdvancedWeb.TutorialOverlayComponent do
+  import RiichiAdvancedWeb.Translations
   use RiichiAdvancedWeb, :live_component
 
   def mount(socket) do
@@ -77,7 +78,7 @@ defmodule RiichiAdvancedWeb.TutorialOverlayComponent do
         <%= case obj do %>
           <% "text" -> %>
             <div class="tutorial-text" style={"--width: #{Map.get(params, "width", 0)}; --size: #{Map.get(params, "size", 0.5)}; --x: #{Map.get(params, "x", 0)}; --y: #{Map.get(params, "y", 0)}"}>
-              <p :for={p <- String.split(params["text"], "\n")}><%= p %></p>
+              <p :for={p <- String.split(params["text"], "\n")}><%= dt(@lang, p) %></p>
             </div>
           <% _ -> %>
             <div>

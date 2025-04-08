@@ -363,6 +363,7 @@ defmodule RiichiAdvancedWeb.GameLive do
           id="tutorial-overlay"
           game_state={@game_state}
           ruleset={@ruleset}
+          lang={@lang}
           waiting_for_click={@waiting_for_click}
           play_scene={&send(self(), {:play_scene, &1})}
           await_click={&send(self(), {:await_click, &1})}
