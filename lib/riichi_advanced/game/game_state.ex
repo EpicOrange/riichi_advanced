@@ -1380,6 +1380,20 @@ defmodule RiichiAdvanced.GameState do
     state
   end
 
+  def kill_all_tasks(state) do
+    for seat <- state.available_seats do
+      if state.calculate_playable_indices_pids[seat] do
+        Process.exit(state.calculate_playable_indices_pids[seat], :kill)
+      end
+    end
+    if state.calculate_closest_american_hands_pid do
+      Process.exit(state.calculate_closest_american_hands_pid, :kill)
+    end
+    if state.get_best_minefield_hand_pid do
+      Process.exit(state.get_best_minefield_hand_pid, :kill)
+    end
+  end
+
   defp start_timer(state) do
     state = Map.put(state, :timer, Rules.get(state.rules_ref, "win_timer", 10))
     state = update_all_players(state, fn seat, player -> %Player{ player | ready: is_pid(Map.get(state, seat)) } end)
@@ -1560,6 +1574,7 @@ defmodule RiichiAdvanced.GameState do
   end
 
   def handle_cast(:terminate_game, state) do
+    kill_all_tasks(state)
     GenServer.stop(state.supervisor, :normal)
     {:noreply, state}
   end
@@ -1569,6 +1584,7 @@ defmodule RiichiAdvanced.GameState do
       # all players and spectators have left, shutdown
       IO.puts("Stopping game #{state.room_code} #{inspect(self())}")
       # DynamicSupervisor.terminate_child(RiichiAdvanced.GameSessionSupervisor, state.supervisor)
+      kill_all_tasks(state)
       GenServer.stop(state.supervisor, :normal)
     else
       IO.puts("Not stopping game #{state.room_code} #{inspect(self())}")
