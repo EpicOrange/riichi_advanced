@@ -809,14 +809,65 @@ defmodule RiichiAdvanced.Compiler do
     {:error, "Compiler.compile: at line #{line}:#{column}, #{inspect(cmd)} is not a valid toplevel command}"}
   end
 
+  defp compile_toplevel_condition(condition, _line, _column) do
+    case condition do
+      {"true", _, _} -> {:ok, "true"}
+      {"false", _, _} -> {:ok, "false"}
+      {"equals", [line: line, column: column], [l, r]} ->
+        with {:ok, l} <- compile_toplevel_condition(l, line, column),
+             {:ok, r} <- compile_toplevel_condition(r, line, column) do
+          {:ok, "(#{l} == #{r})"}
+        end
+      {:==, [line: line, column: column], [l, r]} ->
+        with {:ok, l} <- compile_toplevel_condition(l, line, column),
+             {:ok, r} <- compile_toplevel_condition(r, line, column) do
+          {:ok, "(#{l} == #{r})"}
+        end
+      {:not, [line: line, column: column], [arg]} ->
+        with {:ok, compiled_arg} <- compile_toplevel_condition(arg, line, column) do
+          {:ok, "(#{compiled_arg} | not)"}
+        end
+      {:or, [line: line, column: column], args} ->
+        with {:ok, compiled_args} <- Utils.sequence(Enum.map(args, &compile_toplevel_condition(&1, line, column))) do
+          {:ok, "(#{Enum.join(compiled_args, " or ")})"}
+        end
+      {:and, [line: line, column: column], args} ->
+        with {:ok, compiled_args} <- Utils.sequence(Enum.map(args, &compile_toplevel_condition(&1, line, column))) do
+          {:ok, "(#{Enum.join(compiled_args, " and ")})"}
+        end
+      {:+, _, _} -> {:error, "cannot use constants in toplevel conditions"}
+      {:@, _, _} -> {:error, "cannot use constants in toplevel conditions"}
+      _ ->
+        with {:ok, json} <- Validator.validate_json(condition),
+             {:ok, value} <- Jason.encode(json) do
+          {:ok, "#{value}"}
+        end
+    end
+  end
   # def compile_jq_toplevel!(ast) do
   #   case compile_jq_toplevel(ast) do
   #     {:ok, jq} -> jq
   #     {:error, error} -> raise error
   #   end
   # end
-  defp compile_jq_toplevel(ast) do
+  defp compile_jq_toplevel(ast, line, column) do
     case ast do
+      {"if", [line: line, column: column], [condition, [do: then_cmds, else: else_cmds]]} ->
+        with {:ok, condition} <- compile_toplevel_condition(condition, line, column),
+             {:ok, then_cmds} <- compile_jq_toplevel(then_cmds, line, column),
+             {:ok, else_cmds} <- compile_jq_toplevel(else_cmds, line, column) do
+          {:ok, "if #{condition} then\n#{then_cmds}\nelse\n#{else_cmds}\nend"}
+        end
+      {"if", [line: line, column: column], [condition, [do: then_cmds]]} ->
+        with {:ok, condition} <- compile_toplevel_condition(condition, line, column),
+             {:ok, then_cmds} <- compile_jq_toplevel(then_cmds, line, column) do
+          {:ok, "if #{condition} then\n#{then_cmds}\nelse . end"}
+        end
+      {"unless", [line: line, column: column], [condition, [do: else_cmds]]} ->
+        with {:ok, condition} <- compile_toplevel_condition(condition, line, column),
+             {:ok, else_cmds} <- compile_jq_toplevel(else_cmds, line, column) do
+          {:ok, "if #{condition} then . else\n#{else_cmds}\nend"}
+        end
       {cmd, [line: line, column: column], [name | args]} when is_binary(cmd) ->
         name = case name do
           name when is_binary(name) or is_integer(name) -> Validator.validate_json(name)
@@ -838,8 +889,25 @@ defmodule RiichiAdvanced.Compiler do
         end
       {cmd, [line: line, column: column], args} when is_binary(cmd) ->
         {:error, "Compiler.compile: at line #{line}:#{column}, `#{cmd}` command expects arguments, got #{inspect(args)}"}
+      {:__block__, _pos, []} -> {:ok, "."}
+      {:__block__, pos, nodes} ->
+        {line, column} = case pos do
+          [line: line, column: column] -> {line, column}
+          _ -> {0, 0}
+        end
+        compile_jq_toplevel(nodes, line, column)
+      _ when is_list(ast) ->
+        ast
+        |> Enum.map(&compile_jq_toplevel(&1, line, column))
+        |> Utils.sequence()
+        |> case do
+          {:ok, val}    ->
+            ret = Enum.map_join(val, "\n|", &"(" <> &1 <> ")")
+            {:ok, ret}
+          {:error, msg} -> {:error, msg}
+        end
       _ -> {:error, "Compiler.compile: expected toplevel command, got #{inspect(ast)}"}
-    end
+    end |> add_error_cxt("while compiling toplevel command at line #{line}:#{column}")
   end
 
   def compile_jq!(ast) do
@@ -866,13 +934,14 @@ defmodule RiichiAdvanced.Compiler do
   def compile_jq(ast) do
     case ast do
       {:__block__, _pos, []} -> {:ok, "."}
-      {:__block__, _pos, nodes} ->
+      {:__block__, pos, nodes} ->
         # IO.inspect(nodes, label: "AST", limit: :infinity)
-        case Utils.sequence(Enum.map(nodes, &compile_jq_toplevel/1)) do
-          {:ok, val}    ->
-            ret = @header <> Enum.map_join(val, "\n|", &"(" <> &1 <> ")")
-            # IO.puts(ret)
-            {:ok, ret}
+        {line, column} = case pos do
+          [line: line, column: column] -> {line, column}
+          _ -> {0, 0}
+        end
+        case compile_jq_toplevel(nodes, line, column) do
+          {:ok, val}    -> {:ok, @header <> val}
           {:error, msg} -> {:error, msg}
         end
       {_name, _pos, _actions} -> compile_jq({:__block__, [], [ast]})
