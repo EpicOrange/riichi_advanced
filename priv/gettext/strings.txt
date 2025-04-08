@@ -1898,6 +1898,8 @@ Kan
 Ron
 Pei
 K
+Open Riichi
+Riichi
 Riichi
 Chii
 Pon
@@ -3505,6 +3507,8 @@ Ron
 No Tsumo Loss
 Pei
 K
+Open Riichi
+Riichi
 Rules
 Rules
 Rules
@@ -3633,6 +3637,108 @@ Rules
 Rules
 Rules
 Rules
+1 Han
+$value $han
+$value $han
+$value $han
+Limit
+Limit
+$value $han
+$value $han
+Limit
+Limit
+$value $han
+$value $han
+Limit
+Limit
+$value $han
+$value $han
+Limit
+Limit
+$value $han
+$value $han
+Limit
+Limit
+$value $han
+$value $han
+1 Han
+$value $han
+$value $han
+$value $han
+$value $han
+$value $han
+$value $han
+$value $han
+$value $han
+$value $han
+Limit
+Limit
+$value $han
+$value $han
+2 Han
+Yakuman
+2 Han
+$value $han
+$value $han
+1 Han
+1 Han
+Rules
+Limit
+Limit
+$value $han
+$value $han
+0.5 Han
+0.5 Han
+1 Han
+1 Han
+2 Han
+Yakuman
+1 Han
+$value $han
+$value $han
+$value $han
+Rules
+$value $han
+$value $han
+1 Han
+$value $han
+$value $han
+$value $han
+Limit
+$value $han
+1 Han
+3 Han
+6 Han
+$value $han
+$value $han
+Limit
+Limit
+$value $han
+$value $han
+Limit
+$value $han
+$value $han
+$value $han
+Limit
+$value $han
+Limit
+$value $han
+Limit
+$value $han
+Limit
+$value $han
+$value $han
+$value $han
+1 Han
+$value $han
+Limit
+Limit
+$value $han
+$value $han
+2 Han
+2 Han
+2 Han
+1 $han
 Tenpai Payments
 Win Condition
 Win Condition
@@ -3760,6 +3866,108 @@ Open Kokushi Musou
 Win Condition
 Tobi
 Uma
+Chanfuun
+$name
+$name
+$name
+$name
+$name
+$name
+$name
+$name
+$name
+$name
+$name
+$name
+$name
+$name
+$name
+$name
+$name
+$name
+$name
+$name
+$name
+$name
+$name
+Fuunburi
+$name
+$name
+$name
+$name
+$name
+$name
+$name
+$name
+$name
+$name
+$name
+$name
+$name
+Isshoku Sanjun
+Isshoku Yonjun
+Sekinin Barai (Pao)
+$name
+$name
+Kanburi
+Ketsupaihou
+Win Condition
+$name
+$name
+$name
+$name
+Mini-Sangen
+Mixed Winds
+Toikon
+Ryandoukon
+Sandoukon
+Yondoukon
+Rinshan
+$name
+$name
+$name
+Riichi
+$name
+$name
+Riichi
+$name
+$name
+$name
+$name
+$name
+Sanankon
+Suuankon
+Suuankon Tanki
+$name
+$name
+$name
+$name
+$name
+$name
+$name
+$name
+$name
+$name
+$name
+$name
+$name
+$name
+$name
+$name
+$name
+$name
+$name
+$name
+Tsubame Gaeshi
+$name
+$name
+$name
+$name
+$name
+Uumensai
+Uumensai
+Uumensai (Cosmic)
+Value Triplets
 In event of an exhaustive draw, players not in tenpai pay players in tenpai. 3000 points total are paid, with the payment split among the non-tenpai players. If all or no players are tenpai, no payment occurs.
 You may win with one of the following:
 - Four sets (sequences or triplets) and a pair.
@@ -3830,13 +4038,13 @@ If the dealer (East wind) wins, the round repeats.
 (Agarirenchan) One honba stick is also added if the dealer (East wind) wins.
 (Aka) %{man}x 5m, %{pin}x 5p, and %{sou}x 5s are replaced with red \\\"aka dora\\\" fives that are worth one extra han each.
 (Aka) If your hand is closed, each aka dora is worth 1 shuugi chip.
-(Aka) %{man}x 1m, %{pin}x 1p, and %{sou}x 1s are replaced with red \\\"aka dora\\\" fives that are worth one extra han each.
+(Aka) %{man}x 1m, %{pin}x 1p, and %{sou}x 1s are replaced with red \\\"aka dora\\\" ones that are worth one extra han each.
 (Aka) If your hand is closed, each aka dora is worth 1 shuugi chip.
-(Aka) %{man}x 3m, %{pin}x 3p, and %{sou}x 3s are replaced with red \\\"aka dora\\\" fives that are worth one extra han each.
+(Aka) %{man}x 3m, %{pin}x 3p, and %{sou}x 3s are replaced with red \\\"aka dora\\\" threes that are worth one extra han each.
 (Aka) If your hand is closed, each aka dora is worth 1 shuugi chip.
-(Aka) %{man}x 7m, %{pin}x 7p, and %{sou}x 7s are replaced with red \\\"aka dora\\\" fives that are worth one extra han each.
+(Aka) %{man}x 7m, %{pin}x 7p, and %{sou}x 7s are replaced with red \\\"aka dora\\\" sevens that are worth one extra han each.
 (Aka) If your hand is closed, each aka dora is worth 1 shuugi chip.
-(Aka) %{man}x 9m, %{pin}x 9p, and %{sou}x 9s are replaced with red \\\"aka dora\\\" fives that are worth one extra han each.
+(Aka) %{man}x 9m, %{pin}x 9p, and %{sou}x 9s are replaced with red \\\"aka dora\\\" nines that are worth one extra han each.
 (Aka) If your hand is closed, each aka dora is worth 1 shuugi chip.
 You may win with one of the following:
 When the player to your left discards a tile you can use to complete a 3 tile sequence, you may call Chii to take that tile instead of drawing.
@@ -3884,6 +4092,107 @@ Sequences can wrap (891, 912). Winds and dragons can make sequences. You can chi
 - Four sets (sequences or triplets) and a pair.
 After a round, if anyone has less than %{below} points, the game ends.
 At the end of the game, 1st/2nd/3rd/4th receive a bonus of %{_1st}/%{_2nd}/%{_3rd}/%{_4th} points.
+If someone calls fuun to upgrade a chon of winds, you may call ron on the added tile. Doing so awards chanfuun (1 han).)
+Win off someone else adding a drawn tile to an existing %{pung} to form a %{kong}.
+Every set/pair in your hand contains a terminal or honor tile.
+%{example_hand}
+Your final hand (including winning tile) looks like 1112345678999 of any suit, plus one additional tile of that suit.
+%{example_hand}
+Your final hand (including winning tile) looks like 1112345678999 of any suit, plus one additional tile of that suit.
+%{example_hand}
+You have triplets of two different dragons, and a pair of the third.
+%{example_hand}
+You have triplets of two different dragons, and a pair of the third.
+%{example_hand}
+You have triplets of all three dragons.
+%{example_hand}
+You have triplets of all three dragons.
+%{example_hand}
+You have triplets of three different winds, and a pair of the fourth.
+%{example_hand}
+You have triplets of three different winds, and a pair of the fourth.
+%{example_hand}
+You have triplets of all four winds.
+%{example_hand}
+You have triplets of all four winds.
+%{example_hand}
+Win off the tile discarded by a player who just called fuun.
+You won off the last draw or discard.
+You won by drawing the last tile in the wall.
+Win off a discard after the last tile in the wall is drawn.
+Your hand consists of only one suit plus honor tiles.
+%{example_hand}
+Your hand consists of only one suit, no honor tiles.
+%{example_hand}
+Your hand consists only of 1, 9, and honor tiles.
+%{example_hand}
+Your hand consists only of 1 and 9 tiles.
+%{example_hand}
+Your hand consists only of 1 and 9 tiles.
+%{example_hand}
+\\\"Pure Triple Sequences\\\". 2 han if you have three of the exact same sequence in one suit, like 123 123 123. Like iipeikou but three. 3 han if closed. Does not stack with iipeikou (123 123) or sanrenkou (111 222 333).
+\\\"Pure Quadruple Sequences\\\". You have four of the exact same sequence in one suit, like 123m 123m 123m 123m. Like iipeikou but four.
+(Isshoku Yonjun) If you win with isshoku yonjun (123123123123 of the same suit) and called the fourth sequence from a player, that player is responsible for the yakuman payment if you tsumo, or half of the payment if you ron off someone else.
+Your hand contains the sequences 123 456 879 in one suit.
+%{example_hand}
+Win off the tile discarded by a player who just called kan.
+\\\"Missing Tile\\\". Win with an edge or middle wait on a tile for which three copies are already publicly visible.
+- (%{name}) All thirteen terminal/honor tiles plus one forming a pair.
+You have each terminal and honor tile, with one of them forming a pair.
+%{example_hand}
+You have each terminal and honor tile, with one of them forming a pair.
+%{example_hand}
+0.5 han is awarded for each mixed triplet of dragons.
+0.5 han is awarded for each mixed triplet of winds that contain both the round wind and the seat wind.
+1 han if your hand is all kontsu. 2 han if closed.
+1 han if your closed hand contains two copies of the exact same kontsu.
+2 han if your closed hand contains three copies of the exact same kontsu. 3 han if closed.
+Yakuman if your closed hand contains four copies of the exact same kontsu.
+(Cosmic) If you fuun and then tsumo on the replacement tile, you are awarded rinshan (1 han).
+You have no calls (except %{ankan}).
+You have no calls (except %{ankan}) and you won by self-draw.
+You have no flowers.
+(Open Riichi) You may also declare open riichi, which reveals your hand but is worth 1 more han if you win.
+All four of your sets are sequences.
+%{example_hand}
+If you can, you may discard into tenpai with riichi to lock your hand. If your discard passes, you bet 1000 points. If you win, you are awarded riichi (1 han). If you declared riichi on your very first discard, then you are instead awarded double riichi (2 han). Calls before the riichi declaration invalidate double riichi.
+You won off a %{kan} or flower replacement tile.
+You won off a %{kan} replacement tile.
+You won off a flower replacement tile.
+You called %{kan} multiple times and won off a replacement tile.
+You called %{kan} multiple times and won off a replacement tile.
+1 han if your hand has three closed kontsu (mixed triplets). A kontsu (mixed triplet) formed by a self-draw win counts as closed.
+3 han if your hand has three closed kontsu (mixed triplets) in hand, and you won by self-drawing the fourth.
+6 han if your hand has four closed kontsu (mixed triplets) in hand, and you won by completing your pair.
+You have three concealed triplets. A triplet completed by a self-draw win counts as concealed.
+%{example_hand}
+You have four concealed triplets. A triplet completed by a self-draw win counts as concealed.
+%{example_hand}
+You have four concealed triplets. A triplet completed by a self-draw win counts as concealed.
+%{example_hand}
+You called %{kan} four times.
+You called %{kan} four times.
+Your hand consists only of 2-8 number tiles.
+%{example_hand}
+As dealer, you won with your initial draw.
+As dealer, you won with your initial draw.
+As a non-dealer, you won with your initial draw.
+As a non-dealer, you won with your initial draw.
+You won on the dealer's first discard. Calls invalidate.
+You won on the dealer's first discard. Calls invalidate.
+You won on someone's discard, before your first draw. Calls invalidate.
+You won on someone's discard, before your first draw. Calls invalidate.
+All four of your sets are triplets.
+%{example_hand}
+Win off a riichi discard.
+You won by self-draw.
+Your hand consists only of honor tiles.
+%{example_hand}
+Your hand consists only of honor tiles.
+%{example_hand}
+\\\"Five Suits Collected\\\". Your standard hand (4 sets and a pair) includes all five suits (character, circle, bamboo, wind, dragon).
+\\\"Five Suits Collected\\\". Your standard hand (4 sets and a pair) includes all five suits (character, circle, bamboo, wind, dragon). Mixed triplets (kontsu) of winds and dragons can be used, but not mixed triplets of suited tiles.
+Your standard hand (4 sets and a pair) includes five different kinds of groups. That is, you have five out of: pair, sequence, triplet, kontsu, kan, fuun.
 scored a %{score}-point hand
 with yaku:
 /
