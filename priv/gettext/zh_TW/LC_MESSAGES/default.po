@@ -4721,3 +4721,60 @@ msgstr ""
 "- 與場風相同的風牌刻子 %{round_wind_triplet}\n"
 "- 與座風相同的風牌刻子 %{seat_wind_triplet}\n"
 ""
+
+msgid "$is"
+msgstr "$is"
+
+msgid "%{is} if you win off the first tile someone dropped before your first draw. Calls invalidate."
+msgstr "%{is} 若你在第一次摸牌前就胡了別人打出的第一張牌。有任何吃碰槓則無效。"
+
+msgid "(Agariyame) An exception is if it's the last round with the dealer ending in first place -- then the game just ends."
+msgstr "(和了止) 例外情況是最後一局莊家以第一名結束時——則遊戲直接結束。"
+
+msgid "(Ao) %{man}x 5m, %{pin}x 5p, and %{sou}x 5s are replaced with blue \\\"ao dora\\\" fives that are worth two extra han each."
+msgstr "(青) %{man}x 5萬、%{pin}x 5筒、%{sou}x 5條會被替換為藍色「青寶牌」五，每個額外值2番。"
+
+msgid "(Ao) If your hand is closed, each ao dora is worth two shuugi chips."
+msgstr "(青) 若你門清，每個青寶牌值2個祝儀籌碼。"
+
+msgid "(Dora counts.)"
+msgstr "(計算寶牌。)"
+
+msgid "(Dora does not count.)"
+msgstr "(不計算寶牌。)"
+
+msgid "(Ippatsu) If you win before or during your next draw after riichi, you are awarded ippatsu (1 han). Calls invalidate ippatsu."
+msgstr "(一發) 立直後在下一次摸牌前或摸牌時和牌，可獲得一發(1番)。有任何吃碰槓則無效。"
+
+msgid "(Ippatsu) Ippatsu is worth 1 shuugi."
+msgstr "(一發) 一發值1個祝儀籌碼。"
+
+msgid "(Kin) %{man}x 5m, %{pin}x 5p, and %{sou}x 5s are replaced with gold \\\"kin dora\\\" fives that are worth three extra han each."
+msgstr "(金) %{man}x 5萬、%{pin}x 5筒、%{sou}x 5條會被替換為金色「金寶牌」五，每個額外值3番。"
+
+msgid "(Kin) If your hand is closed, each kin dora is worth three shuugi chips."
+msgstr "(金) 若你門清，每個金寶牌值3個祝儀籌碼。"
+
+msgid "(Tenpaiyame) An exception is if it's the last round and the tenpai dealer becomes first place -- then the game just ends."
+msgstr "(聽牌止) 例外情況是最後一局聽牌的莊家取得第一名時——則遊戲直接結束。"
+
+msgid "If a player starts with nine different kinds of terminals, they have the option to call an abortive draw. Any call (chii, pon, etc) invalidates this opportunity for all players."
+msgstr "若有玩家起始手牌有九種不同的么九牌，可選擇宣告流局。任何吃碰等行為會使所有玩家失去此機會。"
+
+msgid "If all four players discard the same wind tile as their first discard, the game ends in an abortive draw."
+msgstr "若四家第一張捨牌都是相同的風牌，則流局。"
+
+msgid "If all four players have declared riichi (and the final discard passes), the game ends in an abortive draw."
+msgstr "若四家皆宣告立直(且最後一張捨牌無人胡)，則流局。"
+
+msgid "If the dealer (East wind) is tenpai at exhaustive draw, the round repeats. If honba is enabled, this adds one honba."
+msgstr "若莊家(東家)在流局時聽牌，則重複該局。若有計算本場，則增加一本場。"
+
+msgid "Only yakuman hands can win."
+msgstr "僅役滿牌型可和牌。"
+
+msgid "Your hand must score at least %{score} han to win."
+msgstr "你的牌型必須至少有%{score}番才能和牌。"
+
+msgid "Your hand must score at least mangan to win."
+msgstr "你的牌型必須至少達到滿貫才能和牌。"

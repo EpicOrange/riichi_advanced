@@ -1892,6 +1892,7 @@ Reveal flower
 No flowers
 Flower
 F
+Kyuushu Kyuuhai
 Kan
 Ankan
 Kan
@@ -3500,6 +3501,7 @@ No Furiten Riichi
 No 100 sticks
 Zan Shuugi
 Zan Scoring
+Kyuushu Kyuuhai
 Kan
 Ankan
 Kan
@@ -3594,6 +3596,9 @@ Rules
 Rules
 Rules
 Rules
+Rules
+Rules
+Rules
 4 Fan
 4 Fan
 Rules
@@ -3605,6 +3610,14 @@ Rules
 5 Han
 Yakuman
 Yakuman
+Rules
+Rules
+Rules
+Rules
+Rules
+Rules
+Rules
+Rules
 Rules
 Rules
 Rules
@@ -3637,6 +3650,10 @@ Rules
 Rules
 Rules
 Rules
+Rules
+Rules
+Rules
+Rules
 1 Han
 $value $han
 $value $han
@@ -3675,6 +3692,8 @@ Limit
 Limit
 $value $han
 $value $han
+Rules
+Rules
 2 Han
 Yakuman
 2 Han
@@ -3701,6 +3720,7 @@ Rules
 $value $han
 $value $han
 1 Han
+$is
 $value $han
 $value $han
 $value $han
@@ -3808,6 +3828,9 @@ Daisuushii
 Daisuushii
 Agarirenchan
 Honba
+Agarirenchan
+Wall
+Shuugi
 Wall
 Shuugi
 Wall
@@ -3836,8 +3859,16 @@ Daisharin
 Manzu Honitsu
 Shuugi
 Shuugi
+Wall
+Shuugi
 Chankan
 Kuikae Nashi
+Kyuushu Kyuuhai
+Minimum Han
+Minimum Han
+Minimum Han
+Minimum Han
+Minimum Han
 Nagashi $is
 Sekinin Barai (Pao)
 12 Tile Pao
@@ -3864,6 +3895,10 @@ Space Mahjong
 Win Condition
 Open Kokushi Musou
 Win Condition
+Suucha Riichi
+Suufon Renda
+Tenpairenchan
+Tenpairenchan
 Tobi
 Uma
 Chanfuun
@@ -3904,6 +3939,8 @@ $name
 $name
 $name
 $name
+Riichi
+Shuugi
 Isshoku Sanjun
 Isshoku Yonjun
 Sekinin Barai (Pao)
@@ -3930,6 +3967,7 @@ Riichi
 $name
 $name
 Riichi
+Renhou
 $name
 $name
 $name
@@ -4036,6 +4074,7 @@ Double yakuman if your hand contains triplets or kans of all four winds.
 %{example_hand}
 If the dealer (East wind) wins, the round repeats.
 (Agarirenchan) One honba stick is also added if the dealer (East wind) wins.
+(Agariyame) An exception is if it's the last round with the dealer ending in first place -- then the game just ends.
 (Aka) %{man}x 5m, %{pin}x 5p, and %{sou}x 5s are replaced with red \\\"aka dora\\\" fives that are worth one extra han each.
 (Aka) If your hand is closed, each aka dora is worth 1 shuugi chip.
 (Aka) %{man}x 1m, %{pin}x 1p, and %{sou}x 1s are replaced with red \\\"aka dora\\\" ones that are worth one extra han each.
@@ -4046,6 +4085,8 @@ If the dealer (East wind) wins, the round repeats.
 (Aka) If your hand is closed, each aka dora is worth 1 shuugi chip.
 (Aka) %{man}x 9m, %{pin}x 9p, and %{sou}x 9s are replaced with red \\\"aka dora\\\" nines that are worth one extra han each.
 (Aka) If your hand is closed, each aka dora is worth 1 shuugi chip.
+(Ao) %{man}x 5m, %{pin}x 5p, and %{sou}x 5s are replaced with blue \\\"ao dora\\\" fives that are worth two extra han each.
+(Ao) If your hand is closed, each ao dora is worth two shuugi chips.
 You may win with one of the following:
 When the player to your left discards a tile you can use to complete a 3 tile sequence, you may call Chii to take that tile instead of drawing.
 - (Cosmic Riichi) Seven Pairs is again a possible winning hand.
@@ -4062,8 +4103,16 @@ The 100 point sticks in the middle count honba. Each adds %{value} extra points 
 (Kansai) Yakuman if you have manzu honitsu.
 (Kansai) Non-kazoe yakuman ron is worth 10 chips instead of 5. Having all four flowers also awards 10 chips (ron) or 5 chips each (tsumo).
 (Kansai) At the end of the game, chips are exchanged based on placement and points.
+(Kin) %{man}x 5m, %{pin}x 5p, and %{sou}x 5s are replaced with gold \\\"kin dora\\\" fives that are worth three extra han each.
+(Kin) If your hand is closed, each kin dora is worth three shuugi chips.
 You may also call ron on concealed kans, but only if you are tenpai for kokushi musou.
 Swap-calling is disallowed. That is, if you call two tiles, you cannot discard a tile that could have made a set with those two tiles. (e.g. calling a red five and discarding a normal five)
+If a player starts with nine different kinds of terminals, they have the option to call an abortive draw. Any call (chii, pon, etc) invalidates this opportunity for all players.
+Your hand must score at least mangan to win.
+Only yakuman hands can win.
+Your hand must score at least %{score} han to win.
+(Dora does not count.)
+(Dora counts.)
 If you end with an exhaustive draw, and no one has called any of your discards, and your discards are all terminal or honor tiles, a nagashi payment occurs, which is equivalent to a %{is} tsumo.
 If you deal the last dragon called for a daisangen hand, or the last wind called for a daisuushii hand, you are responsible for that single yakuman payment if they tsumo, or half of the yakuman payment if they ron off someone else.
 If your discard is called by another player with three existing calls (yours being the fourth), you are liable for paying their whole hand if they win.
@@ -4090,6 +4139,10 @@ Sequences can wrap (891, 912). Winds and dragons can make sequences. You can chi
 - (Space Mahjong) Seven Pairs is no longer a winning hand.
 (Space Mahjong) Open kokushi musou is worth 3 han.
 - Four sets (sequences or triplets) and a pair.
+If all four players have declared riichi (and the final discard passes), the game ends in an abortive draw.
+If all four players discard the same wind tile as their first discard, the game ends in an abortive draw.
+If the dealer (East wind) is tenpai at exhaustive draw, the round repeats. If honba is enabled, this adds one honba.
+(Tenpaiyame) An exception is if it's the last round and the tenpai dealer becomes first place -- then the game just ends.
 After a round, if anyone has less than %{below} points, the game ends.
 At the end of the game, 1st/2nd/3rd/4th receive a bonus of %{_1st}/%{_2nd}/%{_3rd}/%{_4th} points.
 If someone calls fuun to upgrade a chon of winds, you may call ron on the added tile. Doing so awards chanfuun (1 han).)
@@ -4130,6 +4183,8 @@ Your hand consists only of 1 and 9 tiles.
 %{example_hand}
 Your hand consists only of 1 and 9 tiles.
 %{example_hand}
+(Ippatsu) If you win before or during your next draw after riichi, you are awarded ippatsu (1 han). Calls invalidate ippatsu.
+(Ippatsu) Ippatsu is worth 1 shuugi.
 \\\"Pure Triple Sequences\\\". 2 han if you have three of the exact same sequence in one suit, like 123 123 123. Like iipeikou but three. 3 han if closed. Does not stack with iipeikou (123 123) or sanrenkou (111 222 333).
 \\\"Pure Quadruple Sequences\\\". You have four of the exact same sequence in one suit, like 123m 123m 123m 123m. Like iipeikou but four.
 (Isshoku Yonjun) If you win with isshoku yonjun (123123123123 of the same suit) and called the fourth sequence from a player, that player is responsible for the yakuman payment if you tsumo, or half of the payment if you ron off someone else.
@@ -4156,6 +4211,7 @@ You have no flowers.
 All four of your sets are sequences.
 %{example_hand}
 If you can, you may discard into tenpai with riichi to lock your hand. If your discard passes, you bet 1000 points. If you win, you are awarded riichi (1 han). If you declared riichi on your very first discard, then you are instead awarded double riichi (2 han). Calls before the riichi declaration invalidate double riichi.
+%{is} if you win off the first tile someone dropped before your first draw. Calls invalidate.
 You won off a %{kan} or flower replacement tile.
 You won off a %{kan} replacement tile.
 You won off a flower replacement tile.

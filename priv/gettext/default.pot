@@ -4,6 +4,9 @@ msgstr ""
 msgid "#{tile}"
 msgstr ""
 
+msgid "$is"
+msgstr ""
+
 msgid "$name"
 msgstr ""
 
@@ -13,6 +16,9 @@ msgstr ""
 msgid "%{example_hand}"
 msgstr ""
 
+msgid "%{is} if you win off the first tile someone dropped before your first draw. Calls invalidate."
+msgstr ""
+
 msgid "&lt;disconnected&gt;"
 msgstr ""
 
@@ -20,6 +26,9 @@ msgid "(#{value})"
 msgstr ""
 
 msgid "(Agarirenchan) One honba stick is also added if the dealer (East wind) wins."
+msgstr ""
+
+msgid "(Agariyame) An exception is if it's the last round with the dealer ending in first place -- then the game just ends."
 msgstr ""
 
 msgid "(Aka) %{man}x 1m, %{pin}x 1p, and %{sou}x 1s are replaced with red \\\"aka dora\\\" ones that are worth one extra han each."
@@ -40,6 +49,12 @@ msgstr ""
 msgid "(Aka) If your hand is closed, each aka dora is worth 1 shuugi chip."
 msgstr ""
 
+msgid "(Ao) %{man}x 5m, %{pin}x 5p, and %{sou}x 5s are replaced with blue \\\"ao dora\\\" fives that are worth two extra han each."
+msgstr ""
+
+msgid "(Ao) If your hand is closed, each ao dora is worth two shuugi chips."
+msgstr ""
+
 msgid "(Click the tile to discard it.)"
 msgstr ""
 
@@ -47,6 +62,18 @@ msgid "(Click to continue)"
 msgstr ""
 
 msgid "(Cosmic) If you fuun and then tsumo on the replacement tile, you are awarded rinshan (1 han)."
+msgstr ""
+
+msgid "(Dora counts.)"
+msgstr ""
+
+msgid "(Dora does not count.)"
+msgstr ""
+
+msgid "(Ippatsu) If you win before or during your next draw after riichi, you are awarded ippatsu (1 han). Calls invalidate ippatsu."
+msgstr ""
+
+msgid "(Ippatsu) Ippatsu is worth 1 shuugi."
 msgstr ""
 
 msgid "(Isshoku Yonjun) If you win with isshoku yonjun (123123123123 of the same suit) and called the fourth sequence from a player, that player is responsible for the yakuman payment if you tsumo, or half of the payment if you ron off someone else."
@@ -73,6 +100,12 @@ msgstr ""
 msgid "(Kansai) Yakuman if you have manzu honitsu."
 msgstr ""
 
+msgid "(Kin) %{man}x 5m, %{pin}x 5p, and %{sou}x 5s are replaced with gold \\\"kin dora\\\" fives that are worth three extra han each."
+msgstr ""
+
+msgid "(Kin) If your hand is closed, each kin dora is worth three shuugi chips."
+msgstr ""
+
 msgid "(Open Riichi) You may also declare open riichi, which reveals your hand but is worth 1 more han if you win."
 msgstr ""
 
@@ -92,6 +125,9 @@ msgid "(Space Mahjong) Open kokushi musou is worth 3 han."
 msgstr ""
 
 msgid "(Suukantsu Pao) Dealing the last tile called for kan for a suukantsu hand also counts."
+msgstr ""
+
+msgid "(Tenpaiyame) An exception is if it's the last round and the tenpai dealer becomes first place -- then the game just ends."
 msgstr ""
 
 msgid "(ongoing)"
@@ -1780,6 +1816,15 @@ msgstr ""
 msgid "Identical Sequences"
 msgstr ""
 
+msgid "If a player starts with nine different kinds of terminals, they have the option to call an abortive draw. Any call (chii, pon, etc) invalidates this opportunity for all players."
+msgstr ""
+
+msgid "If all four players discard the same wind tile as their first discard, the game ends in an abortive draw."
+msgstr ""
+
+msgid "If all four players have declared riichi (and the final discard passes), the game ends in an abortive draw."
+msgstr ""
+
 msgid "If someone calls fuun to upgrade a chon of winds, you may call ron on the added tile. Doing so awards chanfuun (1 han).)"
 msgstr ""
 
@@ -1790,6 +1835,9 @@ msgid "If someone calls kan to upgrade an open triplet, you may call ron on the 
 msgstr ""
 
 msgid "If someone kans your discard and tsumos off the replacement tile (rinshan), you pay the full amount."
+msgstr ""
+
+msgid "If the dealer (East wind) is tenpai at exhaustive draw, the round repeats. If honba is enabled, this adds one honba."
 msgstr ""
 
 msgid "If the dealer (East wind) wins, the round repeats."
@@ -2759,6 +2807,9 @@ msgid "Only One Flower"
 msgstr ""
 
 msgid "Only allow wins worth 3+ fan."
+msgstr ""
+
+msgid "Only yakuman hands can win."
 msgstr ""
 
 msgid "Oohoshi Awai"
@@ -4409,6 +4460,12 @@ msgid "Your hand contains triplets or kans of three winds, plus a pair of the fo
 msgstr ""
 
 msgid "Your hand has three closed triplets in hand, and you won by self-drawing the fourth."
+msgstr ""
+
+msgid "Your hand must score at least %{score} han to win."
+msgstr ""
+
+msgid "Your hand must score at least mangan to win."
 msgstr ""
 
 msgid "Your standard hand (4 sets and a pair) includes five different kinds of groups. That is, you have five out of: pair, sequence, triplet, kontsu, kan, fuun."
