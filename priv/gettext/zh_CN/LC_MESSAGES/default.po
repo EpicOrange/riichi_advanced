@@ -101,7 +101,7 @@ msgid ","
 msgstr "，"
 
 msgid "- (%{name}) All thirteen terminal/honor tiles plus one forming a pair."
-msgstr "- (%{name}) 所有13种幺九牌/字牌各一，其中一种成对"
+msgstr "- (%{name}) 所有13种幺九牌/字牌各一，其中一种成对。"
 
 msgid "- (Chiitoitsu) Seven distinct pairs."
 msgstr "- (七对子) 七组不同对子。"
@@ -137,10 +137,10 @@ msgid "0.5 Han"
 msgstr "0.5番"
 
 msgid "0.5 han is awarded for each mixed triplet of dragons."
-msgstr "每组混同刻(三元牌)加计0.5番"
+msgstr "每组混同刻(三元牌)加计0.5番。"
 
 msgid "0.5 han is awarded for each mixed triplet of winds that contain both the round wind and the seat wind."
-msgstr "每组包含场风与自风的混同刻(风牌)加计0.5番"
+msgstr "每组包含场风与自风的混同刻(风牌)加计0.5番。"
 
 msgid "1 $han"
 msgstr "1番"
@@ -161,7 +161,7 @@ msgid "1 han if you win off the tile discarded by a player who just called fuun.
 msgstr "用刚宣告风牌的玩家打出的牌和了时１番。"
 
 msgid "1 han if your closed hand contains two copies of the exact same kontsu."
-msgstr "门前有两组相同刻子时加计1番"
+msgstr "门前有两组相同刻子时加计1番。"
 
 msgid "1 han if your hand contains the same number sequence in all three suits. 2 han if closed."
 msgstr "三色同顺计１番(门前２番)。"
@@ -173,7 +173,7 @@ msgid "1 han if your hand has three closed kontsu (mixed triplets). A kontsu (mi
 msgstr "手牌有三组暗刻(混同刻)时加计1番(门前)。自摸形成的刻子亦视为暗刻。"
 
 msgid "1 han if your hand is all kontsu. 2 han if closed."
-msgstr "全刻子手牌加计1番。门前则2番"
+msgstr "全刻子手牌加计1番。门前则2番。"
 
 msgid "10 Fan"
 msgstr "１０番"
@@ -224,7 +224,7 @@ msgid "2 han if each of your four sets is of a different kind: sequence, triplet
 msgstr "４个面子分别为不同种类（顺子、刻子、混刻(混刻)、杠、风牌）时２番。"
 
 msgid "2 han if your closed hand contains three copies of the exact same kontsu. 3 han if closed."
-msgstr "门前有三组相同刻子时加计2番。门前则3番"
+msgstr "门前有三组相同刻子时加计2番。门前则3番。"
 
 msgid "2 han if your hand contains only terminal and honor tiles."
 msgstr "混老头计２番。"
@@ -263,7 +263,7 @@ msgid "3 han if you have two double sequences, each being two copies of the exac
 msgstr "如果拥有两个相同的顺子（例如１２３ １２３），则为３番。不计为七对子。"
 
 msgid "3 han if your hand has three closed kontsu (mixed triplets) in hand, and you won by self-drawing the fourth."
-msgstr "持有三组暗刻(混同刻)并自摸第四组和牌时加计3番"
+msgstr "持有三组暗刻(混同刻)并自摸第四组和牌时加计3番。"
 
 msgid "30 Fu"
 msgstr "３０符"
@@ -305,7 +305,7 @@ msgid "6 Han"
 msgstr "6番"
 
 msgid "6 han if your hand has four closed kontsu (mixed triplets) in hand, and you won by completing your pair."
-msgstr "持有四组暗刻(混同刻)并以对子和牌时加计6番"
+msgstr "持有四组暗刻(混同刻)并以对子和牌时加计6番。"
 
 msgid "7 Fan"
 msgstr "７番"
@@ -410,7 +410,7 @@ msgid "Adds a fifth copy of every standard tile."
 msgstr "每种普通牌添加第五张。"
 
 msgid "Adds a fourth suit (stars). This suit does not form yaku. This mod is in beta because we should probably write some yaku for it."
-msgstr "添加第四种花色（星子）。该花色不组成役种。（测试版，未来可能添加相关役种）"
+msgstr "添加第四种花色（星子）。该花色不组成役种。（测试版，未来可能添加相关役种）。"
 
 msgid "Adds a single manzu joker to the game. The manzu joker looks like 萬 and can represent any character tile."
 msgstr "添加可作任意万子的'万'字百搭牌。"
@@ -440,7 +440,7 @@ msgid "Adds eight jokers to the game. See the Vietnamese ruleset to learn how th
 msgstr "添加８张百搭牌（参见越南规则说明）。注意：本模组添加字牌百搭而非花牌。"
 
 msgid "Adds the Chinese blue-framed white dragon as a fourth dragon tile (hakuban). Yaku treats it as an honor tile. Shousangen is reduced to 1 han (+2 from dragons) and Daisangen is reduced to 2 han (+3 from dragons). Adds Shousuugen (3 dragons + dragon pair) as yakuman and Daisuugen (4 dragons) as double yakuman. This mod is in beta because pao is not yet implemented for blue dragon."
-msgstr "添加中国式蓝框白板作为第四种三元牌。小三元降为１番（+三元２番），大三元降为２番（+三元３番）。新增'小四元'（３种三元+对子）为役满，'大四元'（４种）为双倍役满。（测试版：蓝龙包牌未实现）"
+msgstr "添加中国式蓝框白板作为第四种三元牌。小三元降为１番（+三元２番），大三元降为２番（+三元３番）。新增'小四元'（３种三元+对子）为役满，'大四元'（４种）为双倍役满。（测试版：蓝龙包牌未实现）。"
 
 msgid "After Multiple Gongs"
 msgstr "多杠后"
@@ -578,10 +578,10 @@ msgid "All Types"
 msgstr "全种类"
 
 msgid "All four of your sets are sequences."
-msgstr "四组均为顺子"
+msgstr "四组均为顺子。"
 
 msgid "All four of your sets are triplets."
-msgstr "四组均为刻子"
+msgstr "四组均为刻子。"
 
 msgid "All scores are rounded to 1000s instead of 100s."
 msgstr "所有得分按１０００而非１００取整。"
@@ -605,7 +605,7 @@ msgid "American Civil War"
 msgstr "南北战争"
 
 msgid "American Mah-Jongg. Assemble hands with jokers, and declare other players' hands dead. Rules are slightly different from MJME (see rules page)."
-msgstr "美式麻将：使用百搭牌组牌，可宣布他家手牌无效。（与MJME规则略有不同，详见规则页）"
+msgstr "美式麻将：使用百搭牌组牌，可宣布他家手牌无效。（与MJME规则略有不同，详见规则页）。"
 
 msgid "Anetai Toyone"
 msgstr "姊带丰音"
@@ -644,10 +644,10 @@ msgid "Arakawa Kei"
 msgstr "荒川慧"
 
 msgid "As a non-dealer, you won with your initial draw."
-msgstr "子家配牌天和"
+msgstr "子家配牌天和。"
 
 msgid "As dealer, you won with your initial draw."
-msgstr "亲家配牌天和"
+msgstr "亲家配牌天和。"
 
 msgid "As for the fu calculation, that's tsumo (+2), open kakakan (+8), open terminal chon (+2), open fuun (+8), closed honor kontsu (+4), and closed wait (+2)."
 msgstr "符数计算为：自摸（+２）、明加加杠（+８）、明幺九吞（+２）、明风云（+８）、暗刻字牌（+４）和门前听牌（+２）。"
@@ -917,10 +917,10 @@ msgid "Clear"
 msgstr "清除"
 
 msgid "Click to exit."
-msgstr "点击退出"
+msgstr "点击退出。"
 
 msgid "Click to return to the list of tutorials."
-msgstr "点击返回教学列表"
+msgstr "点击返回教学列表。"
 
 msgid "Close"
 msgstr "关闭"
@@ -1103,7 +1103,7 @@ msgid "Discard"
 msgstr "弃牌"
 
 msgid "Discard a character tile to continue."
-msgstr "打出一张万子继续"
+msgstr "打出一张万子继续。"
 
 msgid "Discard facedown"
 msgstr "盖牌舍弃"
@@ -1115,10 +1115,10 @@ msgid "Discard the 5 of bamboo. Some might argue that ones and nines are better 
 msgstr "打出５索。有人可能会说在宇宙麻将中１和９比５更好，因为它们可以组成混全带幺九！"
 
 msgid "Discard the 7 of bamboo to continue."
-msgstr "打出７索继续"
+msgstr "打出７索继续。"
 
 msgid "Discard the other character tile to continue."
-msgstr "打出另一张万子继续"
+msgstr "打出另一张万子继续。"
 
 msgid "Discardable Flowers"
 msgstr "可弃花牌"
@@ -1127,7 +1127,7 @@ msgid "Discarded Triplets"
 msgstr "已弃刻子"
 
 msgid "Discarder pays 2x hand value, other players pay 1x."
-msgstr "放铳者付２倍，其他玩家付１倍"
+msgstr "放铳者付２倍，其他玩家付１倍。"
 
 msgid "Discord"
 msgstr "Discord"
@@ -1190,16 +1190,16 @@ msgid "Double Wind 4 Fu"
 msgstr "双风对子４符"
 
 msgid "Double yakuman if your hand contains triplets or kans of all four winds."
-msgstr "四风刻子则双倍役满"
+msgstr "四风刻子则双倍役满。"
 
 msgid "Double yakuman if your hand has four closed triplets in hand, and you won by completing your pair."
-msgstr "四暗刻单骑达成时双倍役满"
+msgstr "四暗刻单骑达成时双倍役满。"
 
 msgid "Double yakuman if your hand was 1112345678999 in one suit, and you won via its nine-sided wait."
-msgstr "纯正九莲宝灯达成时双倍役满"
+msgstr "纯正九莲宝灯达成时双倍役满。"
 
 msgid "Double yakuman if your winning hand consists of one of each terminal/honor tile and you won with a thirteen-sided wait for the pair."
-msgstr "国士无双十三面听达成时双倍役满"
+msgstr "国士无双十三面听达成时双倍役满。"
 
 msgid "Draft Character Card"
 msgstr "角色卡草稿"
@@ -1295,7 +1295,7 @@ msgid "Enable busting. Once anyone's points is reduced below zero, the game ends
 msgstr "启用击飞。任何玩家分数低于零时游戏结束。"
 
 msgid "Enable head bump. In case of multiple hu, only the person closest in turn order gets the win."
-msgstr "启用头跳规则。多人同时和牌时，仅由顺位最近者和牌"
+msgstr "启用头跳规则。多人同时和牌时，仅由顺位最近者和牌。"
 
 msgid "Enable head bump. In case of multiple ron, only the person closest in turn order gets the win."
 msgstr "启用头跳。多人荣和时仅最近顺位者和牌。"
@@ -1364,7 +1364,7 @@ msgid "Even"
 msgstr "偶数"
 
 msgid "Every set/pair in your hand contains a terminal or honor tile."
-msgstr "所有组/对子均含幺九牌或字牌"
+msgstr "所有组/对子均含幺九牌或字牌。"
 
 msgid "Everyone Pays On Discard"
 msgstr "放铳时全员支付"
@@ -1625,10 +1625,10 @@ msgid "Go ahead and discard one of the 2 bamboos. Note that you are now waiting 
 msgstr "继续打出一张２索。注意你现在正在等待绿发来完成混一色的刻子。"
 
 msgid "Go ahead and discard the 1 of characters."
-msgstr "继续打出１万"
+msgstr "继续打出１万。"
 
 msgid "Go ahead and discard this east wind to continue."
-msgstr "继续打出这张东风"
+msgstr "继续打出这张东风。"
 
 msgid "Gold"
 msgstr "金牌"
@@ -1787,16 +1787,16 @@ msgid "If someone calls kan to upgrade an open triplet, you may call ron on the 
 msgstr "当有人加杠明刻时，你可以抢杠和牌（枪杠１番）"
 
 msgid "If someone kans your discard and tsumos off the replacement tile (rinshan), you pay the full amount."
-msgstr "若有人杠你的舍牌并岭上开花，你需支付全额"
+msgstr "若有人杠你的舍牌并岭上开花，你需支付全额。"
 
 msgid "If the dealer (East wind) wins, the round repeats."
-msgstr "庄家（东家）和牌时连庄"
+msgstr "庄家（东家）和牌时连庄。"
 
 msgid "If you can, you may discard into tenpai with riichi to lock your hand. If your discard passes, you bet 1000 points. If you win, you are awarded riichi (1 han). If you declared riichi on your very first discard, then you are instead awarded double riichi (2 han). Calls before the riichi declaration invalidate double riichi."
 msgstr "听牌时可宣告立直锁定手牌。宣告牌通过后供托1000点。和牌时加计立直(1番)。第一打即立直则计双立直(2番)。立直前鸣牌将使双立直无效。"
 
 msgid "If you deal the last dragon called for a daisangen hand, or the last wind called for a daisuushii hand, you are responsible for that single yakuman payment if they tsumo, or half of the yakuman payment if they ron off someone else."
-msgstr "若你打出大三元的最末三元牌或大四喜的最末风牌，对方自摸时需支付役满全额，荣和时支付半额"
+msgstr "若你打出大三元的最末三元牌或大四喜的最末风牌，对方自摸时需支付役满全额，荣和时支付半额。"
 
 msgid "If you deal the last dragon called for a daisangen hand, or the last wind called for a daisuushii hand, you are responsible for the yakuman payment if they tsumo, or half of the payment if they ron off someone else."
 msgstr "若你打出大三元最后一张三元牌或大四喜最后一张风牌，对方自摸时你需支付役满全额，荣和时支付半额。"
@@ -1805,10 +1805,10 @@ msgid "If you deal the last kan tile called for a suukantsu hand, you are respon
 msgstr "若你打出四杠子最后一张杠牌，对方自摸时你需支付役满全额，荣和时支付半额。"
 
 msgid "If you deal the last tile called for kan for a suukantsu hand, you are responsible for that single yakuman payment if they tsumo, or half of the yakuman payment if they ron off someone else."
-msgstr "若你打出四杠子的最末杠牌，对方自摸时需支付役满全额，荣和时支付半额"
+msgstr "若你打出四杠子的最末杠牌，对方自摸时需支付役满全额，荣和时支付半额。"
 
 msgid "If you discarded a tile called as someone's fourth call, you are liable for paying for their hand if they win."
-msgstr "若你打出的牌成为他人第四次鸣牌，对方和牌时你需负担支付责任"
+msgstr "若你打出的牌成为他人第四次鸣牌，对方和牌时你需负担支付责任。"
 
 msgid "If you do not win any hands by the end of the game, you pay each player a penalty."
 msgstr "游戏结束时若未和过牌，需向每位玩家支付罚分。"
@@ -1820,10 +1820,10 @@ msgid "If you hover over your 9 bamboos, you can see that your wait is not only 
 msgstr "如果你将鼠标悬停在９索上，可以看到你不仅在等４索，还在等任何银河４！让我们打出９索。"
 
 msgid "If you kan and then tsumo on the replacement tile, you are awarded rinshan (1 han)."
-msgstr "若杠牌后岭上自摸，可获得岭上开花（１番）"
+msgstr "若杠牌后岭上自摸，可获得岭上开花（１番）。"
 
 msgid "If your discard is called by another player with three existing calls (yours being the fourth), you are liable for paying their whole hand if they win."
-msgstr "若你打出的牌成为他人第四次鸣牌，对方和牌时你需负担全额支付"
+msgstr "若你打出的牌成为他人第四次鸣牌，对方和牌时你需负担全额支付。"
 
 msgid "Iipeikou"
 msgstr "一杯口"
@@ -1850,7 +1850,7 @@ msgid "In each round, the player whose wall is broken is given the wareme marker
 msgstr "每局破壁玩家成为割目。割目和牌得分翻倍，支付时也翻倍。立直棒与本场费不受影响。"
 
 msgid "In event of an exhaustive draw, players not in tenpai pay players in tenpai. 3000 points total are paid, with the payment split among the non-tenpai players. If all or no players are tenpai, no payment occurs."
-msgstr "流局时，未听牌者需支付听牌者共３０００点（由未听牌者分摊）。若全员听牌或未听牌则不需支付"
+msgstr "流局时，未听牌者需支付听牌者共３０００点（由未听牌者分摊）。若全员听牌或未听牌则不需支付。"
 
 msgid "In fact, that means you have a triplet of 2 circles here! So in fact our hand is not honitsu, it's toitoi."
 msgstr "事实上，这意味着你这里有２筒的刻子！所以实际上我们的手牌不是混一色，而是对对和。"
@@ -2141,7 +2141,7 @@ msgid "Little Three Winds"
 msgstr "小三风"
 
 msgid "Loading..."
-msgstr "加载中..."
+msgstr "加载中...。"
 
 msgid "Lobby"
 msgstr "大厅"
@@ -2570,7 +2570,7 @@ msgid "Nice work! When you make a call such as Chii, the resulting set is reveal
 msgstr "做得好！当你进行如吃这样的鸣牌时，结果的组合会展示给所有人看，被叫的牌会朝向叫牌来源的玩家。"
 
 msgid "Nice! Let's see what you draw next..."
-msgstr "很好！让我们看看你下一张摸什么..."
+msgstr "很好！让我们看看你下一张摸什么...。"
 
 msgid "Nickname (optional)"
 msgstr "昵称（可选）"
@@ -2756,7 +2756,7 @@ msgid "Only One Flower"
 msgstr "仅一张花牌"
 
 msgid "Only allow wins worth 3+ fan."
-msgstr "只允许３番以上和牌"
+msgstr "只允许３番以上和牌。"
 
 msgid "Oohoshi Awai"
 msgstr "大星淡"
@@ -3014,7 +3014,7 @@ msgid "Remove Flowers"
 msgstr "移除花牌"
 
 msgid "Remove all eight flowers from the wall."
-msgstr "从牌墙移除所有八张花牌"
+msgstr "从牌墙移除所有八张花牌。"
 
 msgid "Removes limit hands. Score grows exponentially with han according to the formula 4 * fu * 2^(2+han). Not recommended with tobi enabled."
 msgstr "移除役满限制。分数按公式４×符×２^(２+翻)计算。不建议与击飞规则同时使用。"
@@ -3140,7 +3140,7 @@ msgid "Rulesets"
 msgstr "规则集"
 
 msgid "Running joker solver..."
-msgstr "正在运行万能牌解析器..."
+msgstr "正在运行万能牌解析器...。"
 
 msgid "Ryandoukon"
 msgstr "两同刻"
@@ -3299,7 +3299,7 @@ msgid "Sequences can wrap (891, 912)."
 msgstr "允许顺子循环(８９１/９１２)。"
 
 msgid "Sequences can wrap (891, 912). Winds and dragons can make sequences. You can chii from any direction."
-msgstr "顺子可循环(８９１, ９１２)。风牌和箭牌可组成顺子。可从任何方向吃牌"
+msgstr "顺子可循环(８９１, ９１２)。风牌和箭牌可组成顺子。可从任何方向吃牌。"
 
 msgid "Sequences can wrap (891, 912). Winds and dragons can make sequences. You can chii from any direction. Chiitoitsu is disabled. Open kokushi is allowed and worth 3 han."
 msgstr "允许顺子循环(８９１/９１２)且可用字牌组成顺子。可从任意方向吃牌。禁用七对子。允许明牌国士无双(３番)。"
@@ -3524,7 +3524,7 @@ msgid "Starting Points"
 msgstr "起始分数"
 
 msgid "Starting game..."
-msgstr "游戏开始中..."
+msgstr "游戏开始中...。"
 
 msgid "Steal tile and declare riichi"
 msgstr "抢牌并宣告立直"
@@ -4025,7 +4025,7 @@ msgid "Ura"
 msgstr "里宝牌"
 
 msgid "Use the zan scoring table."
-msgstr "使用攒点数表"
+msgstr "使用攒点数表。"
 
 msgid "Using joker assignment"
 msgstr "使用万能牌分配"
@@ -4100,7 +4100,7 @@ msgid "Washizu"
 msgstr "鹫巢"
 
 msgid "We are now in \\\"tenpai\\\": our hand is waiting for the 2 or 5 of characters in order to complete our remaining set and win. We could either self draw the tile..."
-msgstr "我们现在处于\\\"听牌\\\"状态：手牌正在等待２万或５万来完成最后的面子和牌。我们可以自摸..."
+msgstr "我们现在处于\\\"听牌\\\"状态：手牌正在等待２万或５万来完成最后的面子和牌。我们可以自摸...。"
 
 msgid "We are very close to winning: we just need one more tile. Go ahead and discard a 4 of characters."
 msgstr "我们非常接近和牌：只需要再一张牌。请舍弃４万。"
@@ -4154,31 +4154,31 @@ msgid "Win by drawing the last tile in the wall."
 msgstr "摸到牌墙最后一张牌和牌。"
 
 msgid "Win by self-draw with a closed hand."
-msgstr "门前清自摸和"
+msgstr "门前清自摸和。"
 
 msgid "Win off a discard after the last tile in the wall is drawn."
 msgstr "在牌墙最后一张牌被摸走后，用舍牌和牌。"
 
 msgid "Win off a riichi discard."
-msgstr "立直宣言牌和牌"
+msgstr "立直宣言牌和牌。"
 
 msgid "Win off someone else adding a drawn tile to an existing %{pung} to form a %{kong}."
-msgstr "他家将%{pung}加杠为%{kong}时和牌"
+msgstr "他家将%{pung}加杠为%{kong}时和牌。"
 
 msgid "Win off the tile discarded by a player who just called fuun."
-msgstr "杠宣言后立即舍牌和牌"
+msgstr "杠宣言后立即舍牌和牌。"
 
 msgid "Win off the tile discarded by a player who just called kan."
-msgstr "杠宣言后立即舍牌和牌"
+msgstr "杠宣言后立即舍牌和牌。"
 
 msgid "Win on Kong"
 msgstr "杠上开花"
 
 msgid "Win with your first draw as non-dealer."
-msgstr "子家第一巡自摸和"
+msgstr "子家第一巡自摸和。"
 
 msgid "Win with your initial hand as dealer."
-msgstr "天和"
+msgstr "天和。"
 
 msgid "Wind Melds"
 msgstr "风牌刻子"
@@ -4247,7 +4247,7 @@ msgid "Yakuman"
 msgstr "役满"
 
 msgid "Yakuman if your closed hand contains four copies of the exact same kontsu."
-msgstr "门前有四组相同刻子时计役满"
+msgstr "门前有四组相同刻子时计役满。"
 
 msgid "Yeah, that's what I thought."
 msgstr "嗯，正如我所想。"
@@ -4259,52 +4259,52 @@ msgid "Yoshitome Miharu"
 msgstr "吉留美春"
 
 msgid "You called %{kan} four times."
-msgstr "宣告%{kan}四次"
+msgstr "宣告%{kan}四次。"
 
 msgid "You called %{kan} multiple times and won off a replacement tile."
-msgstr "多次宣告%{kan}并以补牌和牌"
+msgstr "多次宣告%{kan}并以补牌和牌。"
 
 msgid "You drew a north wind! In sanma, north winds are akin to flower tiles in other variants -- you may declare them and draw a replacement tile. Each north wind (\\\"pei\\\") is worth one extra han, and is otherwise not counted as part of your hand."
 msgstr "您摸到了北风！在三麻中，北风类似于其他变体中的花牌——您可以宣告它们并摸补牌。每张北风（\\\"北\\\"）值１番，且不计入手牌。"
 
 msgid "You have each terminal and honor tile, with one of them forming a pair."
-msgstr "持有所有幺九牌与字牌各一，其中一种成对"
+msgstr "持有所有幺九牌与字牌各一，其中一种成对。"
 
 msgid "You have four concealed triplets. A triplet completed by a self-draw win counts as concealed."
-msgstr "四组暗刻(含自摸形成的刻子)"
+msgstr "四组暗刻(含自摸形成的刻子)。"
 
 msgid "You have no calls (except %{ankan}) and you won by self-draw."
-msgstr "无鸣牌(%{ankan}除外)且自摸和牌"
+msgstr "无鸣牌(%{ankan}除外)且自摸和牌。"
 
 msgid "You have no calls (except %{ankan})."
-msgstr "无鸣牌(%{ankan}除外)"
+msgstr "无鸣牌(%{ankan}除外)。"
 
 msgid "You have no calls and your winning hand is the pattern 1112345678999 in one suit, plus one additional tile."
-msgstr "无鸣牌且和牌型为１１１２３４５６７８９９９加一张牌"
+msgstr "无鸣牌且和牌型为１１１２３４５６７８９９９加一张牌。"
 
 msgid "You have no flowers."
-msgstr "无花牌"
+msgstr "无花牌。"
 
 msgid "You have the option to declare open riichi, which is worth 2 han but reveals your hand to the table. Open double riichi is 3 han."
 msgstr "可声明明牌立直(２番但公开手牌)，明牌双立直计３番。"
 
 msgid "You have three concealed triplets. A triplet completed by a self-draw win counts as concealed."
-msgstr "三组暗刻(含自摸形成的刻子)"
+msgstr "三组暗刻(含自摸形成的刻子)。"
 
 msgid "You have triplets of all four winds."
-msgstr "四风牌刻子俱全"
+msgstr "四风牌刻子俱全。"
 
 msgid "You have triplets of all three dragons."
-msgstr "三元牌刻子俱全"
+msgstr "三元牌刻子俱全。"
 
 msgid "You have triplets of three different winds, and a pair of the fourth."
-msgstr "三种风牌刻子与第四种对子"
+msgstr "三种风牌刻子与第四种对子。"
 
 msgid "You have triplets of two different dragons, and a pair of the third."
-msgstr "两种三元牌刻子与第三种对子"
+msgstr "两种三元牌刻子与第三种对子。"
 
 msgid "You may also call ron on concealed kans, but only if you are tenpai for kokushi musou."
-msgstr "你也可以对暗杠喊「荣」，但必须是国士无双听牌状态"
+msgstr "你也可以对暗杠喊「荣」，但必须是国士无双听牌状态。"
 
 msgid "You may win with one of the following:"
 msgstr "你可以通过以下方式之一和牌："
@@ -4313,106 +4313,106 @@ msgid "You might also note the distinct lack of character tiles in your hand. Th
 msgstr "您可能也注意到手牌中明显缺少万子。这是因为除了１万和９万外，大部分万子都被移除了。"
 
 msgid "You won by drawing the last tile in the wall."
-msgstr "海底捞月"
+msgstr "海底捞月。"
 
 msgid "You won by self-draw."
-msgstr "自摸和牌"
+msgstr "自摸和牌。"
 
 msgid "You won off a %{kan} or flower replacement tile."
-msgstr "以%{kan}或花牌补牌和牌"
+msgstr "以%{kan}或花牌补牌和牌。"
 
 msgid "You won off a %{kan} replacement tile."
-msgstr "以%{kan}补牌和牌"
+msgstr "以%{kan}补牌和牌。"
 
 msgid "You won off a double-sided sequence wait, with an all-sequence hand whose pair is not yakuhai."
-msgstr "两面听牌和牌，纯顺子手且雀头非役牌"
+msgstr "两面听牌和牌，纯顺子手且雀头非役牌。"
 
 msgid "You won off a flower replacement tile."
-msgstr "以花牌补牌和牌"
+msgstr "以花牌补牌和牌。"
 
 msgid "You won off the last draw or discard."
-msgstr "河底捞鱼"
+msgstr "河底捞鱼。"
 
 msgid "You won on someone's discard, before your first draw. Calls invalidate."
-msgstr "第一自摸前荣和(鸣牌则无效)"
+msgstr "第一自摸前荣和(鸣牌则无效)。"
 
 msgid "You won on the dealer's first discard. Calls invalidate."
-msgstr "亲家第一舍牌荣和(鸣牌则无效)"
+msgstr "亲家第一舍牌荣和(鸣牌则无效)。"
 
 msgid "You won with eight flowers."
-msgstr "八花和"
+msgstr "八花和。"
 
 msgid "You won with seven flowers."
-msgstr "七花和"
+msgstr "七花和。"
 
 msgid "You're the first to play, so let's start by discarding this tile."
 msgstr "您是第一位玩家，所以让我们从舍弃这张牌开始。"
 
 msgid "Your closed hand has a double sequence: two copies of the exact same sequence in one suit, like 123 123."
-msgstr "门前有同色同顺两组（例如１２３ １２３）"
+msgstr "门前有同色同顺两组（例如１２３ １２３）。"
 
 msgid "Your final hand (including winning tile) looks like 1112345678999 of any suit, plus one additional tile of that suit."
-msgstr "最终手牌(含和牌)为同种1112345678999加同种一张"
+msgstr "最终手牌(含和牌)为同种1112345678999加同种一张。"
 
 msgid "Your hand consists of only all-green tiles (23468 bamboo and green dragon)."
-msgstr "绿一色（２３４６８索和发财）"
+msgstr "绿一色（２３４６８索和发财）。"
 
 msgid "Your hand consists of only honor tiles."
-msgstr "字一色"
+msgstr "字一色。"
 
 msgid "Your hand consists of only one suit plus honor tiles."
-msgstr "清一色加字牌"
+msgstr "清一色加字牌。"
 
 msgid "Your hand consists of only one suit, no honor tiles."
-msgstr "纯一色(无字牌)"
+msgstr "纯一色(无字牌)。"
 
 msgid "Your hand consists of only terminals."
-msgstr "断幺九"
+msgstr "断幺九。"
 
 msgid "Your hand consists of seven non-repeating pairs."
 msgstr "您的手牌由七组不重复的对子组成。"
 
 msgid "Your hand consists of seven pairs (repeats allowed)."
-msgstr "七对子（允许重复）"
+msgstr "七对子（允许重复）。"
 
 msgid "Your hand consists only of 1 and 9 tiles."
-msgstr "全带幺九"
+msgstr "全带幺九。"
 
 msgid "Your hand consists only of 1, 9, and honor tiles."
-msgstr "混老头(幺九牌加字牌)"
+msgstr "混老头(幺九牌加字牌)。"
 
 msgid "Your hand consists only of 2-8 number tiles."
-msgstr "断幺(2-8数牌)"
+msgstr "断幺(2-8数牌)。"
 
 msgid "Your hand consists only of honor tiles."
-msgstr "字一色"
+msgstr "字一色。"
 
 msgid "Your hand contains four kans."
-msgstr "四杠子"
+msgstr "四杠子。"
 
 msgid "Your hand contains only tiles numbered 2-8."
-msgstr "断幺九（２-８的牌）"
+msgstr "断幺九（２-８的牌）。"
 
 msgid "Your hand contains the sequences 123 456 879 in one suit."
-msgstr "同种123・456・789顺子"
+msgstr "同种123・456・789顺子。"
 
 msgid "Your hand contains three kans."
-msgstr "三杠子"
+msgstr "三杠子。"
 
 msgid "Your hand contains triplets or kans of all three dragons."
-msgstr "三元牌（三种龙刻子/杠子）"
+msgstr "三元牌（三种龙刻子/杠子）。"
 
 msgid "Your hand contains triplets or kans of three winds, plus a pair of the fourth wind."
-msgstr "三风刻加第四风雀头"
+msgstr "三风刻加第四风雀头。"
 
 msgid "Your hand has three closed triplets in hand, and you won by self-drawing the fourth."
-msgstr "三暗刻自摸和"
+msgstr "三暗刻自摸和。"
 
 msgid "Your standard hand (4 sets and a pair) includes five different kinds of groups. That is, you have five out of: pair, sequence, triplet, kontsu, kan, fuun."
-msgstr "基本手牌(4组加对子)包含五种不同组合(对子・顺子・刻子・混同刻・杠・杠上开花中五种)"
+msgstr "基本手牌(4组加对子)包含五种不同组合(对子・顺子・刻子・混同刻・杠・杠上开花中五种)。"
 
 msgid "Your winning hand consists of one of each terminal/honor tile plus one forming a pair."
-msgstr "国士无双（所有幺九牌各一张加一对）"
+msgstr "国士无双（所有幺九牌各一张加一对）。"
 
 msgid "Yumeno Maho"
 msgstr "梦野真帆"
@@ -4436,19 +4436,19 @@ msgid "Zung Jung"
 msgstr "中庸麻将"
 
 msgid "\\\"Five Suits Collected\\\". Your standard hand (4 sets and a pair) includes all five suits (character, circle, bamboo, wind, dragon)."
-msgstr "\\\"五门齐\\\"。基本手牌(4组加对子)包含万・筒・索・风・元五种牌"
+msgstr "\\\"五门齐\\\"。基本手牌(4组加对子)包含万・筒・索・风・元五种牌。"
 
 msgid "\\\"Five Suits Collected\\\". Your standard hand (4 sets and a pair) includes all five suits (character, circle, bamboo, wind, dragon). Mixed triplets (kontsu) of winds and dragons can be used, but not mixed triplets of suited tiles."
-msgstr "\\\"五门齐\\\"。基本手牌(4组加对子)包含万・筒・索・风・元五种牌(风牌与元牌混同刻可，数牌混同刻不可)"
+msgstr "\\\"五门齐\\\"。基本手牌(4组加对子)包含万・筒・索・风・元五种牌(风牌与元牌混同刻可，数牌混同刻不可)。"
 
 msgid "\\\"Missing Tile\\\". Win with an edge or middle wait on a tile for which three copies are already publicly visible."
-msgstr "\\\"欠张\\\"。以已见三张的牌进行边张或嵌张和牌"
+msgstr "\\\"欠张\\\"。以已见三张的牌进行边张或嵌张和牌。"
 
 msgid "\\\"Pure Quadruple Sequences\\\". You have four of the exact same sequence in one suit, like 123m 123m 123m 123m. Like iipeikou but four."
-msgstr "\\\"一色四顺\\\"。同种相同顺子四组(如123m 123m 123m 123m)。一杯口四组版"
+msgstr "\\\"一色四顺\\\"。同种相同顺子四组(如123m 123m 123m 123m)。一杯口四组版。"
 
 msgid "\\\"Pure Triple Sequences\\\". 2 han if you have three of the exact same sequence in one suit, like 123 123 123. Like iipeikou but three. 3 han if closed. Does not stack with iipeikou (123 123) or sanrenkou (111 222 333)."
-msgstr "\\\"一色三顺\\\"。同种相同顺子三组(如123 123 123)。一杯口三组版。门前3番。不与一杯口(123 123)或三连刻(111 222 333)复合"
+msgstr "\\\"一色三顺\\\"。同种相同顺子三组(如123 123 123)。一杯口三组版。门前3番。不与一杯口(123 123)或三连刻(111 222 333)复合。"
 
 msgid "_1st"
 msgstr "第１名"
