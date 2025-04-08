@@ -4193,6 +4193,7 @@ Your hand consists only of honor tiles.
 \\\"Five Suits Collected\\\". Your standard hand (4 sets and a pair) includes all five suits (character, circle, bamboo, wind, dragon).
 \\\"Five Suits Collected\\\". Your standard hand (4 sets and a pair) includes all five suits (character, circle, bamboo, wind, dragon). Mixed triplets (kontsu) of winds and dragons can be used, but not mixed triplets of suited tiles.
 Your standard hand (4 sets and a pair) includes five different kinds of groups. That is, you have five out of: pair, sequence, triplet, kontsu, kan, fuun.
+called %{call} on %{tile} with hand %{hand}
 scored a %{score}-point hand
 with yaku:
 /
@@ -4220,6 +4221,9 @@ pays double (Yae Kobashiri)
 pays double since the wall ends on their side (Kanbara Satomi)
 gets double points for winning under someone else's ippatsu (Tsujigaito Satoha)
 pays half due to dealing in with their voided suit (Yoshitome Miharu)
+is paid 1000 additional points (%{amount}) by everyone for each ura, each aka, ippatsu, and each chun used as five (Iwadate Yuan)
+is paid %{payment} by everyone for having %{ukeire} live out(s) (Arakawa Kei)
+is paid %{payment} by winner for having %{num} wait(s) in hand (Arakawa Kei)
 dealt in while tenpai with hand %{hand} which, if won on %{tile} scores a minimum value of %{score} via the following yaku: %{yaku} (Ezaki Hitomi)
 has greater tenpai value than their deal-in value, and therefore reverses the payment, not including riichi sticks (Ezaki Hitomi)
 has less or equal tenpai value than their deal-in value, and therefore the payment proceeds as normal (Ezaki Hitomi)
@@ -4233,14 +4237,23 @@ Running joker solver...
 chose the following cards: %{choices}
 discarded %{tile}
 from hand
+called %{call}
+called %{call} on %{tile} with %{choice}
+called %{call} on %{tile}
 declared the following yaku:
 swapped out a joker from the call %{call}
 revealed tiles %{tiles}
 is considering declaring a player's hand dead
 Possible hand:
+#{tile}
+(#{value})
+Entered room %{room_code} for variant %{ruleset}
 called %{call} on %{tile} with hand %{hand}
 called %{call} on
 with hand
+Entered lobby for variant %{ruleset}
+Entered a %{ruleset} game, room code %{room_code} with mods %{mods}
+Entered a %{ruleset} game, room code %{room_code}
 Welcome to Riichi Advanced!
 Viewing log for a
 game

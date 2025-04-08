@@ -1,3 +1,6 @@
+msgid "#{tile}"
+msgstr "#{tile}"
+
 msgid "$name"
 msgstr "$name"
 
@@ -9,6 +12,9 @@ msgstr "%{example_hand}"
 
 msgid "&lt;disconnected&gt;"
 msgstr "&lt;断线&gt;"
+
+msgid "(#{value})"
+msgstr "(#{value})"
 
 msgid "(Agarirenchan) One honba stick is also added if the dealer (East wind) wins."
 msgstr "(连庄) 庄家(东风)和牌时，本场棒也增加１根。"
@@ -1341,6 +1347,18 @@ msgstr "进入"
 
 msgid "Enter room code:"
 msgstr "输入房间码："
+
+msgid "Entered a %{ruleset} game, room code %{room_code}"
+msgstr "已加入%{ruleset}规则游戏，房间代码%{room_code}"
+
+msgid "Entered a %{ruleset} game, room code %{room_code} with mods %{mods}"
+msgstr "已加入%{ruleset}规则游戏，房间代码%{room_code}，模组%{mods}"
+
+msgid "Entered lobby for variant %{ruleset}"
+msgstr "已进入%{ruleset}变体的游戏大厅"
+
+msgid "Entered room %{room_code} for variant %{ruleset}"
+msgstr "已进入%{ruleset}变体的房间%{room_code}"
 
 msgid "Even"
 msgstr "偶数"
@@ -4459,8 +4477,17 @@ msgstr "用自摸支付下注而非赔付（江崎仁美）"
 msgid "c"
 msgstr "c"
 
+msgid "called %{call}"
+msgstr "宣告%{call}"
+
 msgid "called %{call} on"
 msgstr "叫了%{call}"
+
+msgid "called %{call} on %{tile}"
+msgstr "用%{tile}宣告%{call}"
+
+msgid "called %{call} on %{tile} with %{choice}"
+msgstr "用%{tile}宣告%{call}(选择%{choice})"
 
 msgid "called %{call} on %{tile} with hand %{hand}"
 msgstr "在%{tile}叫了%{call}（手牌：%{hand}）"
@@ -4524,6 +4551,15 @@ msgstr "正在考虑宣布玩家手牌为死亡状态"
 
 msgid "is damaten, and immune to tsumo payments (Atago Hiroe)"
 msgstr "处于默听状态，免疫自摸支付（愛宕洋榎）"
+
+msgid "is paid %{payment} by everyone for having %{ukeire} live out(s) (Arakawa Kei)"
+msgstr "因有%{ukeire}张有效牌而从所有人获得%{payment}点(荒川系规则)"
+
+msgid "is paid %{payment} by winner for having %{num} wait(s) in hand (Arakawa Kei)"
+msgstr "因有%{num}种听牌形态而从和牌者获得%{payment}点(荒川系规则)"
+
+msgid "is paid 1000 additional points (%{amount}) by everyone for each ura, each aka, ippatsu, and each chun used as five (Iwadate Yuan)"
+msgstr "每张里宝牌、红宝牌、一发、中张5各追加1000点(%{amount})，从所有人获得(岩馆流规则)"
 
 msgid "is treated as a dealer for scoring purposes (Ryuumonbuchi Touka)"
 msgstr "计分时视为庄家（龙门渕透华）"

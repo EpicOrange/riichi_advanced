@@ -1,14 +1,20 @@
+msgid "#{tile}"
+msgstr "#{tile}"
+
 msgid "$name"
-msgstr ""
+msgstr "$name"
 
 msgid "$value $han"
-msgstr ""
+msgstr "$value $han"
 
 msgid "%{example_hand}"
 msgstr "%{example_hand}"
 
 msgid "&lt;disconnected&gt;"
 msgstr "&lt;バラバラ&gt;"
+
+msgid "(#{value})"
+msgstr "(#{value})"
 
 msgid "(Agarirenchan) One honba stick is also added if the dealer (East wind) wins."
 msgstr "(連荘) 親が和了した場合、本場が１本増えます。"
@@ -38,10 +44,10 @@ msgid "(Click to continue)"
 msgstr "(クリックで続行)"
 
 msgid "(Cosmic) If you fuun and then tsumo on the replacement tile, you are awarded rinshan (1 han)."
-msgstr ""
+msgstr "(宇宙) 伏和後に代替牌でツモ和了した場合、嶺上開花(1翻)が与えられます。"
 
 msgid "(Isshoku Yonjun) If you win with isshoku yonjun (123123123123 of the same suit) and called the fourth sequence from a player, that player is responsible for the yakuman payment if you tsumo, or half of the payment if you ron off someone else."
-msgstr ""
+msgstr "(一色四順) 一色四順(同種123123123123)で和了し、4つ目の順子を他家から鳴いた場合、ツモ和了時はその玩家が役満支払いを、他家からロン和了時はその半額を負担します。"
 
 msgid "(Kansai) 6 han if you have chiitoitsu honitsu."
 msgstr "(関西) 七対子混一色で６翻。"
@@ -65,7 +71,7 @@ msgid "(Kansai) Yakuman if you have manzu honitsu."
 msgstr "(関西) 萬子混一色は役満。"
 
 msgid "(Open Riichi) You may also declare open riichi, which reveals your hand but is worth 1 more han if you win."
-msgstr ""
+msgstr "(オープン立直) 手牌を公開するオープン立直を宣言でき、和了時には1翻追加されます。"
 
 msgid "(Rinshan Pao) Dealing a discard called for kan by a player, who then immediately wins with rinshan, also counts, except you pay for the full hand (not just rinshan)."
 msgstr "(嶺上包) 誰かがカンした牌を捨て、その直後に嶺上開花で和了した場合も適用されますが、全額を支払います(嶺上分だけではありません)。"
@@ -95,7 +101,7 @@ msgid ","
 msgstr "、"
 
 msgid "- (%{name}) All thirteen terminal/honor tiles plus one forming a pair."
-msgstr ""
+msgstr "- (%{name}) 一九字牌13種類各1枚＋そのいずれか1枚の対子で構成。"
 
 msgid "- (Chiitoitsu) Seven distinct pairs."
 msgstr "- (七対子) 異なる７つの対子。"
@@ -128,16 +134,16 @@ msgid "/"
 msgstr "/"
 
 msgid "0.5 Han"
-msgstr ""
+msgstr "0.5翻"
 
 msgid "0.5 han is awarded for each mixed triplet of dragons."
-msgstr ""
+msgstr "混老頭の各刻子に対して0.5翻が与えられます。"
 
 msgid "0.5 han is awarded for each mixed triplet of winds that contain both the round wind and the seat wind."
-msgstr ""
+msgstr "場風と自風の両方を含む風牌の混老頭刻子に対して0.5翻が与えられます。"
 
 msgid "1 $han"
-msgstr ""
+msgstr "1翻"
 
 msgid "1 Fan"
 msgstr "１翻"
@@ -155,7 +161,7 @@ msgid "1 han if you win off the tile discarded by a player who just called fuun.
 msgstr "フウンペイを宣言したプレイヤーが捨てた牌で和了した場合１翻。"
 
 msgid "1 han if your closed hand contains two copies of the exact same kontsu."
-msgstr ""
+msgstr "同種同順の刻子が2組ある場合1翻(門前)。"
 
 msgid "1 han if your hand contains the same number sequence in all three suits. 2 han if closed."
 msgstr "三色同順で１翻(門前２翻)。"
@@ -164,10 +170,10 @@ msgid "1 han if your hand contains the sequences 123 456 789 in one suit. 2 han 
 msgstr "一気通貫で１翻(門前２翻)。"
 
 msgid "1 han if your hand has three closed kontsu (mixed triplets). A kontsu (mixed triplet) formed by a self-draw win counts as closed."
-msgstr ""
+msgstr "3組の混老頭刻子がある場合1翻(門前)。ツモ和了で完成した刻子も門前として扱います。"
 
 msgid "1 han if your hand is all kontsu. 2 han if closed."
-msgstr ""
+msgstr "すべて刻子の手の場合1翻。門前なら2翻。"
 
 msgid "10 Fan"
 msgstr "１０翻"
@@ -218,7 +224,7 @@ msgid "2 han if each of your four sets is of a different kind: sequence, triplet
 msgstr "４つの面子がそれぞれ異なる種類（順子、刻子、コンツ、カン、フウンペイ）の場合２翻。"
 
 msgid "2 han if your closed hand contains three copies of the exact same kontsu. 3 han if closed."
-msgstr ""
+msgstr "同種同順の刻子が3組ある場合2翻(門前)。門前なら3翻。"
 
 msgid "2 han if your hand contains only terminal and honor tiles."
 msgstr "混老頭で２翻。"
@@ -257,7 +263,7 @@ msgid "3 han if you have two double sequences, each being two copies of the exac
 msgstr "同じ色で全く同じ順子が2つある場合（例：123 123）、3翻になります。七対子とは別の役です。"
 
 msgid "3 han if your hand has three closed kontsu (mixed triplets) in hand, and you won by self-drawing the fourth."
-msgstr ""
+msgstr "3組の混老頭刻子(門前)があり、4つ目をツモで和了した場合3翻。"
 
 msgid "30 Fu"
 msgstr "３０符"
@@ -296,10 +302,10 @@ msgid "6 Fan"
 msgstr "６翻"
 
 msgid "6 Han"
-msgstr ""
+msgstr "6翻"
 
 msgid "6 han if your hand has four closed kontsu (mixed triplets) in hand, and you won by completing your pair."
-msgstr ""
+msgstr "4組の混老頭刻子(門前)があり、対子で和了した場合6翻。"
 
 msgid "7 Fan"
 msgstr "７翻"
@@ -572,10 +578,10 @@ msgid "All Types"
 msgstr "全種類"
 
 msgid "All four of your sets are sequences."
-msgstr ""
+msgstr "4組すべてが順子で構成。"
 
 msgid "All four of your sets are triplets."
-msgstr ""
+msgstr "4組すべてが刻子で構成。"
 
 msgid "All scores are rounded to 1000s instead of 100s."
 msgstr "全ての得点は１００単位ではなく１０００単位に切り上げ。"
@@ -638,10 +644,10 @@ msgid "Arakawa Kei"
 msgstr "荒川慧"
 
 msgid "As a non-dealer, you won with your initial draw."
-msgstr ""
+msgstr "子の配牌時天和。"
 
 msgid "As dealer, you won with your initial draw."
-msgstr ""
+msgstr "親の配牌時天和。"
 
 msgid "As for the fu calculation, that's tsumo (+2), open kakakan (+8), open terminal chon (+2), open fuun (+8), closed honor kontsu (+4), and closed wait (+2)."
 msgstr "符計算は、ツモ（+2）、明カカカン（+8）、明チャンターチョン（+2）、明風雲（+8）、暗刻（+4）、門前待ち（+2）です。"
@@ -1342,11 +1348,23 @@ msgstr "ゲームに入る"
 msgid "Enter room code:"
 msgstr "ルームコードを入力："
 
+msgid "Entered a %{ruleset} game, room code %{room_code}"
+msgstr "%{ruleset}ゲームに参加、部屋コード%{room_code}"
+
+msgid "Entered a %{ruleset} game, room code %{room_code} with mods %{mods}"
+msgstr "%{ruleset}ゲームに参加、部屋コード%{room_code}、改造%{mods}"
+
+msgid "Entered lobby for variant %{ruleset}"
+msgstr "%{ruleset}バリアントのロビーに入室"
+
+msgid "Entered room %{room_code} for variant %{ruleset}"
+msgstr "%{ruleset}バリアントの部屋%{room_code}に入室"
+
 msgid "Even"
 msgstr "偶数"
 
 msgid "Every set/pair in your hand contains a terminal or honor tile."
-msgstr ""
+msgstr "すべての組・対子に一九字牌が含まれる。"
 
 msgid "Everyone Pays On Discard"
 msgstr "全員払い（放銃時）"
@@ -1760,7 +1778,7 @@ msgid "Identical Sequences"
 msgstr "同順子"
 
 msgid "If someone calls fuun to upgrade a chon of winds, you may call ron on the added tile. Doing so awards chanfuun (1 han).)"
-msgstr ""
+msgstr "他家が風牌のポンを伏和でカンにした場合、追加牌でロンできます。和了すると搶伏(1翻)を得ます。"
 
 msgid "If someone calls kan on your discard and wins off the kan draw, you are responsible for the full payment."
 msgstr "自分の捨て牌でカンされ、その嶺上牌で和了された場合、全額責任払いになります。"
@@ -1775,7 +1793,7 @@ msgid "If the dealer (East wind) wins, the round repeats."
 msgstr "親（東家）が和了した場合、連荘する"
 
 msgid "If you can, you may discard into tenpai with riichi to lock your hand. If your discard passes, you bet 1000 points. If you win, you are awarded riichi (1 han). If you declared riichi on your very first discard, then you are instead awarded double riichi (2 han). Calls before the riichi declaration invalidate double riichi."
-msgstr ""
+msgstr "聴牌状態で立直を宣言し手牌を確定できます。宣言牌が通れば1000点を供託。和了時は立直(1翻)を得ます。最初の捨て牌で立直した場合はダブル立直(2翻)となります。立直前の鳴きはダブル立直を無効にします。"
 
 msgid "If you deal the last dragon called for a daisangen hand, or the last wind called for a daisuushii hand, you are responsible for that single yakuman payment if they tsumo, or half of the yakuman payment if they ron off someone else."
 msgstr "大三元の最後のドラゴン、または大四喜の最後の風牌を打った場合、ツモ時は役満全額、ロン時は役満半額を支払う責任がある"
@@ -2450,7 +2468,7 @@ msgid "Minefield"
 msgstr "地雷"
 
 msgid "Mini-Sangen"
-msgstr ""
+msgstr "小三元"
 
 msgid "Minimum Han"
 msgstr "翻縛り"
@@ -2495,7 +2513,7 @@ msgid "Mixed Triple Chow"
 msgstr "三色同順"
 
 msgid "Mixed Winds"
-msgstr ""
+msgstr "混全帯風"
 
 msgid "Miyanaga Saki"
 msgstr "宮永咲"
@@ -3125,7 +3143,7 @@ msgid "Running joker solver..."
 msgstr "ジョーカー解決中..."
 
 msgid "Ryandoukon"
-msgstr ""
+msgstr "両同刻"
 
 msgid "Ryandoukou"
 msgstr "両同刻"
@@ -3173,7 +3191,7 @@ msgid "Sanchahou"
 msgstr "三家和"
 
 msgid "Sandoukon"
-msgstr ""
+msgstr "三同刻"
 
 msgid "Sangen Chiitoitsu"
 msgstr "三元七対子"
@@ -3524,10 +3542,10 @@ msgid "Sujipaikou"
 msgstr "筋牌刻"
 
 msgid "Suuankon"
-msgstr ""
+msgstr "四暗刻"
 
 msgid "Suuankon Tanki"
-msgstr ""
+msgstr "四暗刻単騎"
 
 msgid "Suuankou"
 msgstr "四暗刻"
@@ -3860,7 +3878,7 @@ msgid "Tohoku Shinkansen"
 msgstr "東北新幹線"
 
 msgid "Toikon"
-msgstr ""
+msgstr "対々和"
 
 msgid "Toitoi"
 msgstr "対々和"
@@ -4025,7 +4043,7 @@ msgid "Uumensai"
 msgstr "五門斉"
 
 msgid "Uumensai (Cosmic)"
-msgstr ""
+msgstr "宇宙無双(宇宙)"
 
 msgid "Uumensai (cosmic)"
 msgstr "五面斉"
@@ -4043,7 +4061,7 @@ msgid "Value Honor"
 msgstr "役牌"
 
 msgid "Value Triplets"
-msgstr ""
+msgstr "三色同刻"
 
 msgid "Variant:"
 msgstr "バリアント："
@@ -4142,16 +4160,16 @@ msgid "Win off a discard after the last tile in the wall is drawn."
 msgstr "山の最後の牌が引かれた後に捨て牌で和了します。"
 
 msgid "Win off a riichi discard."
-msgstr ""
+msgstr "立直宣言牌でロン和了。"
 
 msgid "Win off someone else adding a drawn tile to an existing %{pung} to form a %{kong}."
-msgstr ""
+msgstr "他家が%{pung}に牌を追加して%{kong}にした牌でロン和了。"
 
 msgid "Win off the tile discarded by a player who just called fuun."
-msgstr ""
+msgstr "伏和を宣言した玩家の捨て牌でロン和了。"
 
 msgid "Win off the tile discarded by a player who just called kan."
-msgstr ""
+msgstr "カンを宣言した玩家の捨て牌でロン和了。"
 
 msgid "Win on Kong"
 msgstr "槓上開花"
@@ -4229,61 +4247,61 @@ msgid "Yakuman"
 msgstr "役満"
 
 msgid "Yakuman if your closed hand contains four copies of the exact same kontsu."
-msgstr ""
+msgstr "同種同順の刻子が4組ある場合役満(門前)。"
 
 msgid "Yeah, that's what I thought."
 msgstr "ええ、そうだと思いました。"
 
 msgid "Yondoukon"
-msgstr ""
+msgstr "四同刻"
 
 msgid "Yoshitome Miharu"
 msgstr "吉留美春"
 
 msgid "You called %{kan} four times."
-msgstr ""
+msgstr "%{kan}を4回宣言。"
 
 msgid "You called %{kan} multiple times and won off a replacement tile."
-msgstr ""
+msgstr "%{kan}を複数回宣言し、代替牌で和了。"
 
 msgid "You drew a north wind! In sanma, north winds are akin to flower tiles in other variants -- you may declare them and draw a replacement tile. Each north wind (\\\"pei\\\") is worth one extra han, and is otherwise not counted as part of your hand."
 msgstr "北風を引きました！三麻では、北風は他のバリアントの花牌に似ています――宣言して補充牌を引くことができます。各北風（「北」）は1翻追加され、それ以外は手牌の一部としてカウントされません。"
 
 msgid "You have each terminal and honor tile, with one of them forming a pair."
-msgstr ""
+msgstr "一九字牌13種類各1枚＋そのいずれか1枚の対子で構成。"
 
 msgid "You have four concealed triplets. A triplet completed by a self-draw win counts as concealed."
-msgstr ""
+msgstr "4組の暗刻(ツモ和了で完成した刻子も含む)。"
 
 msgid "You have no calls (except %{ankan}) and you won by self-draw."
-msgstr ""
+msgstr "鳴きなし(%{ankan}除く)かつツモ和了。"
 
 msgid "You have no calls (except %{ankan})."
-msgstr ""
+msgstr "鳴きなし(%{ankan}除く)。"
 
 msgid "You have no calls and your winning hand is the pattern 1112345678999 in one suit, plus one additional tile."
 msgstr "鳴きなしで１１１２３４５６７８９９９の形に１牌加えた和了形"
 
 msgid "You have no flowers."
-msgstr ""
+msgstr "花牌なし。"
 
 msgid "You have the option to declare open riichi, which is worth 2 han but reveals your hand to the table. Open double riichi is 3 han."
 msgstr "オープン立直可能（２翻・手牌公開）。ダブル立直は３翻。"
 
 msgid "You have three concealed triplets. A triplet completed by a self-draw win counts as concealed."
-msgstr ""
+msgstr "3組の暗刻(ツモ和了で完成した刻子も含む)。"
 
 msgid "You have triplets of all four winds."
-msgstr ""
+msgstr "四風子の刻子。"
 
 msgid "You have triplets of all three dragons."
-msgstr ""
+msgstr "三元牌の刻子。"
 
 msgid "You have triplets of three different winds, and a pair of the fourth."
-msgstr ""
+msgstr "3種類の風牌刻子＋残り1種類の対子。"
 
 msgid "You have triplets of two different dragons, and a pair of the third."
-msgstr ""
+msgstr "2種類の三元牌刻子＋残り1種類の対子。"
 
 msgid "You may also call ron on concealed kans, but only if you are tenpai for kokushi musou."
 msgstr "暗槓にもロンできますが、国士無双の聴牌の場合のみです"
@@ -4295,31 +4313,31 @@ msgid "You might also note the distinct lack of character tiles in your hand. Th
 msgstr "手牌に萬子がほとんどないことにも気づくかもしれません。これは1萬と9萬を除く萬子のほとんどが削除されているためです。"
 
 msgid "You won by drawing the last tile in the wall."
-msgstr ""
+msgstr "海底摸月で和了。"
 
 msgid "You won by self-draw."
-msgstr ""
+msgstr "ツモ和了。"
 
 msgid "You won off a %{kan} or flower replacement tile."
-msgstr ""
+msgstr "%{kan}または花牌の代替牌で和了。"
 
 msgid "You won off a %{kan} replacement tile."
-msgstr ""
+msgstr "%{kan}の代替牌で和了。"
 
 msgid "You won off a double-sided sequence wait, with an all-sequence hand whose pair is not yakuhai."
 msgstr "両面待ちで和了、雀頭が役牌ではない純粋な順子手"
 
 msgid "You won off a flower replacement tile."
-msgstr ""
+msgstr "花牌の代替牌で和了。"
 
 msgid "You won off the last draw or discard."
-msgstr ""
+msgstr "河底撈魚または海底摸月で和了。"
 
 msgid "You won on someone's discard, before your first draw. Calls invalidate."
-msgstr ""
+msgstr "第一ツモ前に他家の捨て牌でロン和了(鳴きは無効)。"
 
 msgid "You won on the dealer's first discard. Calls invalidate."
-msgstr ""
+msgstr "親の第一捨て牌でロン和了(鳴きは無効)。"
 
 msgid "You won with eight flowers."
 msgstr "八花で和了"
@@ -4334,7 +4352,7 @@ msgid "Your closed hand has a double sequence: two copies of the exact same sequ
 msgstr "門前に同色同順の二組（例:１２３ １２３）がある"
 
 msgid "Your final hand (including winning tile) looks like 1112345678999 of any suit, plus one additional tile of that suit."
-msgstr ""
+msgstr "最終手牌(和了牌含む)が同種1112345678999＋同種任意1枚の形。"
 
 msgid "Your hand consists of only all-green tiles (23468 bamboo and green dragon)."
 msgstr "緑一色（索子２３４６８と發のみ）の手"
@@ -4343,10 +4361,10 @@ msgid "Your hand consists of only honor tiles."
 msgstr "字一色の手"
 
 msgid "Your hand consists of only one suit plus honor tiles."
-msgstr ""
+msgstr "一色＋字牌で構成。"
 
 msgid "Your hand consists of only one suit, no honor tiles."
-msgstr ""
+msgstr "純一色(字牌なし)で構成。"
 
 msgid "Your hand consists of only terminals."
 msgstr "断么九の手"
@@ -4358,16 +4376,16 @@ msgid "Your hand consists of seven pairs (repeats allowed)."
 msgstr "七対子（重複可）の手"
 
 msgid "Your hand consists only of 1 and 9 tiles."
-msgstr ""
+msgstr "一九牌のみで構成。"
 
 msgid "Your hand consists only of 1, 9, and honor tiles."
-msgstr ""
+msgstr "一九字牌のみで構成。"
 
 msgid "Your hand consists only of 2-8 number tiles."
-msgstr ""
+msgstr "中張牌(2-8)のみで構成。"
 
 msgid "Your hand consists only of honor tiles."
-msgstr ""
+msgstr "字牌のみで構成。"
 
 msgid "Your hand contains four kans."
 msgstr "四槓子の手"
@@ -4376,7 +4394,7 @@ msgid "Your hand contains only tiles numbered 2-8."
 msgstr "断么九（２-８のみ）の手"
 
 msgid "Your hand contains the sequences 123 456 879 in one suit."
-msgstr ""
+msgstr "同種で123・456・789の順子を含む。"
 
 msgid "Your hand contains three kans."
 msgstr "三槓子の手"
@@ -4391,7 +4409,7 @@ msgid "Your hand has three closed triplets in hand, and you won by self-drawing 
 msgstr "三暗刻で自摸和了"
 
 msgid "Your standard hand (4 sets and a pair) includes five different kinds of groups. That is, you have five out of: pair, sequence, triplet, kontsu, kan, fuun."
-msgstr ""
+msgstr "通常手(4組＋対子)が5種類のグループを含む(対子・順子・刻子・混老頭・カン・伏和のうち5つ)。"
 
 msgid "Your winning hand consists of one of each terminal/honor tile plus one forming a pair."
 msgstr "国士無双（么九牌各１枚＋対子１組）"
@@ -4418,19 +4436,19 @@ msgid "Zung Jung"
 msgstr "ズン・ジョン"
 
 msgid "\\\"Five Suits Collected\\\". Your standard hand (4 sets and a pair) includes all five suits (character, circle, bamboo, wind, dragon)."
-msgstr ""
+msgstr "\\\"五色揃い\\\"。通常手(4組＋対子)が五色(萬子・筒子・索子・風牌・三元牌)すべてを含む。"
 
 msgid "\\\"Five Suits Collected\\\". Your standard hand (4 sets and a pair) includes all five suits (character, circle, bamboo, wind, dragon). Mixed triplets (kontsu) of winds and dragons can be used, but not mixed triplets of suited tiles."
-msgstr ""
+msgstr "\\\"五色揃い\\\"。通常手(4組＋対子)が五色(萬子・筒子・索子・風牌・三元牌)すべてを含む。風牌・三元牌の混老頭は可だが、数牌の混老頭は不可。"
 
 msgid "\\\"Missing Tile\\\". Win with an edge or middle wait on a tile for which three copies are already publicly visible."
-msgstr ""
+msgstr "\\\"欠張\\\"。3枚が既に見えている牌の辺張または嵌張待ちで和了。"
 
 msgid "\\\"Pure Quadruple Sequences\\\". You have four of the exact same sequence in one suit, like 123m 123m 123m 123m. Like iipeikou but four."
-msgstr ""
+msgstr "\\\"一色四順\\\"。同種同順の順子4組(例:123m123m123m123m)。一盃口の4組版。"
 
 msgid "\\\"Pure Triple Sequences\\\". 2 han if you have three of the exact same sequence in one suit, like 123 123 123. Like iipeikou but three. 3 han if closed. Does not stack with iipeikou (123 123) or sanrenkou (111 222 333)."
-msgstr ""
+msgstr "\\\"一色三順\\\"。同種同順の順子3組(例:123123123)で2翻。門前なら3翻。一盃口(123123)や三連刻(111222333)と複合しない。"
 
 msgid "_1st"
 msgstr "１位"
@@ -4459,8 +4477,17 @@ msgstr "ツモ支払いの代わりにベットする (江崎仁美)"
 msgid "c"
 msgstr "c"
 
+msgid "called %{call}"
+msgstr "%{call}を宣言"
+
 msgid "called %{call} on"
 msgstr "が%{call}"
+
+msgid "called %{call} on %{tile}"
+msgstr "%{tile}で%{call}を宣言"
+
+msgid "called %{call} on %{tile} with %{choice}"
+msgstr "%{tile}で%{call}を宣言(%{choice})"
 
 msgid "called %{call} on %{tile} with hand %{hand}"
 msgstr "が%{tile}で%{call}をしました（手牌：%{hand}）"
@@ -4524,6 +4551,15 @@ msgstr "手牌の死亡を宣言検討中"
 
 msgid "is damaten, and immune to tsumo payments (Atago Hiroe)"
 msgstr "黙聴状態でツモ支払い免除 (愛宕洋恵)"
+
+msgid "is paid %{payment} by everyone for having %{ukeire} live out(s) (Arakawa Kei)"
+msgstr "%{ukeire}枚の生き残りにより全員から%{payment}を受取(荒川系)"
+
+msgid "is paid %{payment} by winner for having %{num} wait(s) in hand (Arakawa Kei)"
+msgstr "%{num}種類の待ちにより和了者から%{payment}を受取(荒川系)"
+
+msgid "is paid 1000 additional points (%{amount}) by everyone for each ura, each aka, ippatsu, and each chun used as five (Iwadate Yuan)"
+msgstr "裏ドラ・赤ドラ・一発・中張5各1枚につき全員から追加1000点(%{amount})を受取(岩館流)"
 
 msgid "is treated as a dealer for scoring purposes (Ryuumonbuchi Touka)"
 msgstr "得点計算上親として扱われる (龍門淵透華)"

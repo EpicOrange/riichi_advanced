@@ -1,6 +1,9 @@
 msgid ""
 msgstr ""
 
+msgid "#{tile}"
+msgstr ""
+
 msgid "$name"
 msgstr ""
 
@@ -11,6 +14,9 @@ msgid "%{example_hand}"
 msgstr ""
 
 msgid "&lt;disconnected&gt;"
+msgstr ""
+
+msgid "(#{value})"
 msgstr ""
 
 msgid "(Agarirenchan) One honba stick is also added if the dealer (East wind) wins."
@@ -1343,6 +1349,18 @@ msgid "Enter"
 msgstr ""
 
 msgid "Enter room code:"
+msgstr ""
+
+msgid "Entered a %{ruleset} game, room code %{room_code}"
+msgstr ""
+
+msgid "Entered a %{ruleset} game, room code %{room_code} with mods %{mods}"
+msgstr ""
+
+msgid "Entered lobby for variant %{ruleset}"
+msgstr ""
+
+msgid "Entered room %{room_code} for variant %{ruleset}"
 msgstr ""
 
 msgid "Even"
@@ -4462,7 +4480,16 @@ msgstr ""
 msgid "c"
 msgstr ""
 
+msgid "called %{call}"
+msgstr ""
+
 msgid "called %{call} on"
+msgstr ""
+
+msgid "called %{call} on %{tile}"
+msgstr ""
+
+msgid "called %{call} on %{tile} with %{choice}"
 msgstr ""
 
 msgid "called %{call} on %{tile} with hand %{hand}"
@@ -4526,6 +4553,15 @@ msgid "is considering declaring a player's hand dead"
 msgstr ""
 
 msgid "is damaten, and immune to tsumo payments (Atago Hiroe)"
+msgstr ""
+
+msgid "is paid %{payment} by everyone for having %{ukeire} live out(s) (Arakawa Kei)"
+msgstr ""
+
+msgid "is paid %{payment} by winner for having %{num} wait(s) in hand (Arakawa Kei)"
+msgstr ""
+
+msgid "is paid 1000 additional points (%{amount}) by everyone for each ura, each aka, ippatsu, and each chun used as five (Iwadate Yuan)"
 msgstr ""
 
 msgid "is treated as a dealer for scoring purposes (Ryuumonbuchi Touka)"
