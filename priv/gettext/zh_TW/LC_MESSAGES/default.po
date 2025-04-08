@@ -1,14 +1,80 @@
 msgid "&lt;disconnected&gt;"
 msgstr "&lt;斷線&gt;"
 
+msgid "(Agarirenchan) One honba stick is also added if the dealer (East wind) wins."
+msgstr "(連莊) 莊家(東風)和牌時，本場棒也增加1根。"
+
+msgid "(Kansai) 6 han if you have chiitoitsu honitsu."
+msgstr "(關西) 七對子混一色計6翻。"
+
+msgid "(Kansai) At the end of the game, chips are exchanged based on placement and points."
+msgstr "(關西) 遊戲結束時，根據名次和點數交換籌碼。"
+
+msgid "(Kansai) Everyone starts with 50000 points."
+msgstr "(關西) 所有人初始50000點。"
+
+msgid "(Kansai) In the south round only, the round repeats on exhaustive draws regardless of anyone's tenpai status."
+msgstr "(關西) 僅在南場，流局時無論聽牌狀態均連莊。"
+
+msgid "(Kansai) Non-kazoe yakuman ron is worth 10 chips instead of 5. Having all four flowers also awards 10 chips (ron) or 5 chips each (tsumo)."
+msgstr "(關西) 非累計役滿榮和值10籌碼(非5)。四花也獎勵10籌碼(榮和)或各5籌碼(自摸)。"
+
+msgid "(Kansai) Yakuman if you have chiitoitsu chinitsu."
+msgstr "(關西) 七對子清一色為役滿。"
+
+msgid "(Kansai) Yakuman if you have manzu honitsu."
+msgstr "(關西) 萬子混一色為役滿。"
+
+msgid "(Rinshan Pao) Dealing a discard called for kan by a player, who then immediately wins with rinshan, also counts, except you pay for the full hand (not just rinshan)."
+msgstr "(嶺上包) 供給他人開槓牌後立即嶺上開花和牌也適用，但需支付全額(不僅嶺上部分)。"
+
+msgid "(Sanma) The 2 to 8 of characters are removed from the wall."
+msgstr "(三麻) 萬子2-8從牌牆移除。"
+
+msgid "(Sanma) You cannot call chii in sanma."
+msgstr "(三麻) 三麻中不能吃牌。"
+
+msgid "(Sanma) You may declare north winds to draw a replacement tile from the dead wall. Each is worth 1 han. North winds are still usable to form pairs and triplets. If you are waiting on the north wind, you may ron a north wind declaration much like chankan (but you are not awarded chankan)."
+msgstr "(三麻) 可宣告北風從王牌補牌，每張計1翻。北風仍可用作對子或刻子。若聽北風，可像搶槓般榮和北風宣告(但不計搶槓)。"
+
+msgid "(Space Mahjong) Open kokushi musou is worth 3 han."
+msgstr "(宇宙麻雀) 明牌國士無雙計3翻。"
+
+msgid "(Suukantsu Pao) Dealing the last tile called for kan for a suukantsu hand also counts."
+msgstr "(四槓子包) 供給四槓子最後的槓牌也適用。"
+
 msgid "(ongoing)"
 msgstr "（進行中）"
 
-msgid "(reconnect?)"
-msgstr "（重連？）"
-
 msgid "(with AI)"
 msgstr "（帶AI）"
+
+msgid "- (Chiitoitsu) Seven distinct pairs."
+msgstr "- (七對子) 七組不同對子。"
+
+msgid "- (Cosmic Riichi) Seven Pairs is again a possible winning hand."
+msgstr "- (宇宙立直) 七對子再次成為可能和牌形。"
+
+msgid "- (Kokushi Musou) All thirteen terminal/honor tiles plus one forming a pair."
+msgstr "- (國士無雙) 十三種幺九牌加一對子。"
+
+msgid "- (Space Mahjong) Seven Pairs is no longer a winning hand."
+msgstr "- (宇宙麻雀) 七對子不再作為和牌形。"
+
+msgid "- As soon as you draw a seventh flower, you may declare a win for an additional 3 Fan, or 8 Fan if you have eight flowers."
+msgstr "- 摸到第七張花牌時，可宣告和牌追加3番(八花則8番)。"
+
+msgid "- As soon as you draw an eighth flower, you may declare a win for an additional 8 Fan."
+msgstr "- 摸到第八張花牌時，可宣告和牌追加8番。"
+
+msgid "- Four sets (sequences or triplets) and a pair."
+msgstr "- 四組面子(順子或刻子)加一對子。"
+
+msgid "- Seven pairs (allows repeats)."
+msgstr "- 七對子(允許重複)。"
+
+msgid "1 Fan"
+msgstr "1番"
 
 msgid "1 Han"
 msgstr "1番"
@@ -16,11 +82,35 @@ msgstr "1番"
 msgid "1 han for winning off the tile that upgrades a wind kontsu to a fuun."
 msgstr "用使風刻升級為風組的牌和了時1番。"
 
+msgid "1 han if each of the 5 blocks in your hand contains a terminal or honor. 2 han if closed."
+msgstr "五組牌均含幺九牌計1翻(門前2翻)。"
+
 msgid "1 han if you win off the tile discarded by a player who just called fuun."
 msgstr "用剛宣告風組的玩家打出的牌和了時1番。"
 
+msgid "1 han if your hand contains the same number sequence in all three suits. 2 han if closed."
+msgstr "三色同順計1翻(門前2翻)。"
+
+msgid "1 han if your hand contains the sequences 123 456 789 in one suit. 2 han if closed."
+msgstr "一氣通貫計1翻(門前2翻)。"
+
+msgid "10 Fan"
+msgstr "10番"
+
+msgid "11 Fan"
+msgstr "11番"
+
+msgid "12 Fan"
+msgstr "12番"
+
+msgid "12 Tile Pao"
+msgstr "12牌包"
+
 msgid "123"
 msgstr "１２３"
+
+msgid "13 Fan"
+msgstr "13番"
 
 msgid "147"
 msgstr "１４７"
@@ -40,14 +130,41 @@ msgstr "帶立直規則的16張麻將。"
 msgid "19"
 msgstr "１９"
 
+msgid "2 Fan"
+msgstr "2番"
+
 msgid "2 Han"
 msgstr "2番"
+
+msgid "2 han if each of the 5 blocks in your hand contains a terminal. 3 han if closed."
+msgstr "五組牌均含幺九牌計2翻(門前3翻)。"
 
 msgid "2 han if each of your four sets is of a different kind: sequence, triplet, mixed triplet (kontsu), kan, mixed quad (fuun)."
 msgstr "4個面子分別為不同種類（順子、刻子、混刻(混刻)、槓、風組）時2番。"
 
+msgid "2 han if your hand contains only terminal and honor tiles."
+msgstr "混老頭計2翻。"
+
+msgid "2 han if your hand contains the same number triplet in all three suits."
+msgstr "三色同刻計2翻。"
+
+msgid "2 han if your hand has three closed triplets. A triplet formed by a self-draw win counts as closed."
+msgstr "三暗刻計2翻(自摸完成刻子也算暗刻)。"
+
+msgid "2 han if your hand is all triplets."
+msgstr "對對和計2翻。"
+
+msgid "2 han if your hand is comprised of one suit plus honor tiles. 3 han if closed."
+msgstr "混一色計2翻(門前3翻)。"
+
+msgid "2 han on top of yakuhai if you have two dragon triplets/kans and a dragon pair."
+msgstr "若有三元牌刻子/槓子兩組加對子，在役牌基礎上加2翻。"
+
 msgid "258"
 msgstr "２５８"
+
+msgid "3 Fan"
+msgstr "3番"
 
 msgid "3 Han"
 msgstr "3番"
@@ -64,6 +181,9 @@ msgstr "３６９"
 msgid "37"
 msgstr "３７"
 
+msgid "4 Fan"
+msgstr "4番"
+
 msgid "4 Han"
 msgstr "4番"
 
@@ -76,14 +196,38 @@ msgstr "４５６"
 msgid "46"
 msgstr "４６"
 
+msgid "5 Fan"
+msgstr "5番"
+
 msgid "5 Han"
 msgstr "5番"
+
+msgid "5 han if your hand is comprised of one suit only (no honor tiles). 6 han if closed."
+msgstr "清一色計5翻(門前6翻)。"
+
+msgid "6 Fan"
+msgstr "6番"
+
+msgid "7 Fan"
+msgstr "7番"
 
 msgid "789"
 msgstr "７８９"
 
+msgid "8 Fan"
+msgstr "8番"
+
+msgid "9 Fan"
+msgstr "9番"
+
+msgid "A"
+msgstr "A"
+
 msgid "A Space Mahjong variant with mixed triplets, more yaku, and more calls."
 msgstr "宇宙麻將變體：混合刻子、更多役種和鳴牌方式。"
+
+msgid "A hand with flowers declared cannot earn 1 fan from Concealed Hand."
+msgstr "宣告花牌的手牌無法獲得門清1番。"
 
 msgid "A pair of round+seat winds is worth 4 fu instead of 2 fu."
 msgstr "場風+自風對子計4符而非2符。"
@@ -97,6 +241,12 @@ msgstr "莊家和牌則連莊。"
 msgid "A wind kontsu counts as 0.5 han if it contains both the round wind and seat wind. A dragon kontsu is always 0.5 han, and is called mini-sangen. Having two of the same kontsu in a closed hand is 1 han (ryandoukon), having three is 2 han open 3 han closed (sandoukon), and having four is yakuman (yondoukon)."
 msgstr "風刻同時包含場風和自風時計0.5番。龍刻恆為0.5番（小三元）。手牌中有兩副相同混刻時1番（兩同刻），三副時2番（副露）/3番（門清）（三同刻），四副時役滿（四同刻）。"
 
+msgid "AMJFE Card (beta)"
+msgstr "AMJFE卡(測試版)"
+
+msgid "ATF Card"
+msgstr "ATF卡"
+
 msgid "Abortive Draws"
 msgstr "流局規則"
 
@@ -105,6 +255,9 @@ msgstr "關於"
 
 msgid "Add mixed triplets, or kontsu. If you have the same number in three suits, that counts as one of your sets towards four sets and a pair. For example, 1m1s1p is a kontsu. Also considered kontsu: 3 different winds, or one of each dragon."
 msgstr "新增混刻規則。三色同數牌可組成一個面子（例：1萬1索1筒）。三種不同風牌或三種龍牌也可組成混刻。"
+
+msgid "Add seven pairs as a possible winning hand, worth 4 fan."
+msgstr "增加七對子作為可能和牌形，值4番。"
 
 msgid "Add some UI that shows waits."
 msgstr "添加顯示待牌的使用者介面。"
@@ -178,17 +331,38 @@ msgstr "添加赤七，每張計1番。"
 msgid "Adds aka threes, worth 1 han each."
 msgstr "添加赤三，每張計1番。"
 
+msgid "Adds bonuses for obtaining 7 or 8 flowers. You can also allow instant win upon obtaining 7 or 8 flowers."
+msgstr "增加7或8花獎勵。可設定7或8花時立即和牌。"
+
 msgid "Adds eight jokers to the game. See the Vietnamese ruleset to learn how they work. Note that this mod adds a honors joker instead of a flower joker."
 msgstr "添加8張百搭牌（參見越南規則說明）。注意：本模組添加字牌百搭而非花牌。"
 
 msgid "Adds the Chinese blue-framed white dragon as a fourth dragon tile (hakuban). Yaku treats it as an honor tile. Shousangen is reduced to 1 han (+2 from dragons) and Daisangen is reduced to 2 han (+3 from dragons). Adds Shousuugen (3 dragons + dragon pair) as yakuman and Daisuugen (4 dragons) as double yakuman. This mod is in beta because pao is not yet implemented for blue dragon."
 msgstr "添加中國式藍框白板作為第四種三元牌。小三元降為1番（+三元2番），大三元降為2番（+三元3番）。新增'小四元'（3種三元+對子）為役滿，'大四元'（4種）為雙倍役滿。（測試版：藍龍包牌未實現）"
 
+msgid "After Multiple Gongs"
+msgstr "多槓後"
+
+msgid "After Multiple Kongs"
+msgstr "多槓後"
+
+msgid "After a Flower"
+msgstr "花牌後"
+
+msgid "After a Gong"
+msgstr "槓後"
+
+msgid "After a Kong"
+msgstr "槓後"
+
 msgid "Agarirenchan"
 msgstr "和牌連莊"
 
 msgid "Agariyame"
 msgstr "和牌止"
+
+msgid "Aislinn Wishart"
+msgstr "艾斯琳·維沙特"
 
 msgid "Aka"
 msgstr "赤寶牌"
@@ -205,17 +379,110 @@ msgstr "赤七"
 msgid "Aka 9"
 msgstr "赤九"
 
+msgid "All Animals"
+msgstr "全動物牌"
+
+msgid "All Called Triplets"
+msgstr "全明刻"
+
+msgid "All Called Triplets With Honors"
+msgstr "全明刻(含字牌)"
+
+msgid "All Chows"
+msgstr "全順子"
+
+msgid "All Even Pungs"
+msgstr "全偶刻"
+
+msgid "All Evens"
+msgstr "全偶數"
+
+msgid "All Fives"
+msgstr "全五"
+
+msgid "All Flowers"
+msgstr "全花牌"
+
+msgid "All Green"
+msgstr "綠一色"
+
+msgid "All Honors"
+msgstr "全字牌"
+
+msgid "All Honours"
+msgstr "全字牌"
+
 msgid "All Last doesn't repeat if the dealer is first place and wins."
 msgstr "最終局莊家第一名和牌時不連莊。"
 
 msgid "All Last doesn't repeat if the dealer is in first place and is tenpai at draw."
 msgstr "最終局莊家第一名聽牌時不連莊。"
 
+msgid "All Like Numbers"
+msgstr "全同數"
+
+msgid "All Odds"
+msgstr "全奇數"
+
+msgid "All Pungs"
+msgstr "全刻子"
+
+msgid "All Revealed"
+msgstr "全明"
+
+msgid "All Seasons"
+msgstr "全季牌"
+
+msgid "All Sequences"
+msgstr "全順子"
+
+msgid "All Sequences (Full)"
+msgstr "全順子(完整)"
+
+msgid "All Sequences With Honors"
+msgstr "全順子(含字牌)"
+
+msgid "All Sequences with Dot Eye"
+msgstr "全順子(筒眼)"
+
+msgid "All Simples"
+msgstr "斷幺九"
+
+msgid "All Sixteen Flowers"
+msgstr "全16花牌"
+
+msgid "All Terminals"
+msgstr "全幺九"
+
+msgid "All Terminals Or Honors"
+msgstr "全幺九或字牌"
+
+msgid "All Terminals and Honors"
+msgstr "混老頭"
+
+msgid "All Triplets"
+msgstr "全刻子"
+
+msgid "All Triplets With Honors"
+msgstr "全刻子(含字牌)"
+
+msgid "All Triplets with 1 and 9"
+msgstr "全19刻子"
+
+msgid "All Types"
+msgstr "全種類"
+
 msgid "All scores are rounded to 1000s instead of 100s."
 msgstr "所有得分按1000而非100取整。"
 
 msgid "Allow robbing ankans if in tenpai for kokushi musou."
 msgstr "國士無雙聽牌時允許搶暗槓。"
+
+msgid "Amae Koromo"
+msgstr "甘衣小衣"
+
+msgid "American"
+msgstr "美式"
 
 msgid "American (2024 NMJL)"
 msgstr "美式麻將(2024 NMJL)"
@@ -226,8 +493,29 @@ msgstr "南北戰爭"
 msgid "American Mah-Jongg. Assemble hands with jokers, and declare other players' hands dead. Rules are slightly different from MJME (see rules page)."
 msgstr "美式麻將：使用百搭牌組牌，可宣布他家手牌無效。（與MJME規則略有不同，詳見規則頁）"
 
+msgid "Anetai Toyone"
+msgstr "姉帶豐音"
+
+msgid "Anfuun"
+msgstr "暗風雲"
+
+msgid "Animal"
+msgstr "動物牌"
+
+msgid "Animal Tiles"
+msgstr "動物牌"
+
 msgid "Ankan"
 msgstr "暗槓"
+
+msgid "Any Like Numbers #1"
+msgstr "任意同數#1"
+
+msgid "Any Like Numbers #2"
+msgstr "任意同數#2"
+
+msgid "Any Like Numbers #3"
+msgstr "任意同數#3"
 
 msgid "Ao"
 msgstr "青寶牌"
@@ -235,8 +523,26 @@ msgstr "青寶牌"
 msgid "Aotenjou"
 msgstr "青天井"
 
+msgid "Arakawa Kei"
+msgstr "荒川慧"
+
+msgid "Aside Tiles"
+msgstr "側邊牌"
+
+msgid "At exhaustive draw, you are not considered tenpai if all four tiles of each wait is in hand: for example, 123456789m1111p. You may still declare riichi with such a hand, however."
+msgstr "流局時若所有待牌已在手(如123456789m1111p)不算聽牌，但仍可宣告立直。"
+
 msgid "At the end of the game, all leftover riichi sticks on the table are given to first place. (Otherwise they are lost.)"
 msgstr "遊戲結束時所有剩餘立直棒歸第一名。（默認情況下會消失）"
+
+msgid "Atago Hiroe"
+msgstr "愛宕洋惠"
+
+msgid "Atago Kinue"
+msgstr "愛宕絹惠"
+
+msgid "Atarashi Ako"
+msgstr "新子憧"
 
 msgid "Australian"
 msgstr "澳大利亞"
@@ -244,8 +550,20 @@ msgstr "澳大利亞"
 msgid "Back"
 msgstr "返回"
 
+msgid "Baida Pair Win"
+msgstr "白搭對子和"
+
+msgid "Baida Reuse"
+msgstr "白搭重用"
+
 msgid "Baiman"
 msgstr "倍滿"
+
+msgid "Bao"
+msgstr "包"
+
+msgid "Base Points"
+msgstr "基本點"
 
 msgid "Base mod for Cosmic Riichi. Adds most relevant yaku and sets up the score table for things like haneyakuman."
 msgstr "Cosmic立直基礎模組。添加主要役種並設置跳滿等分數表。"
@@ -255,6 +573,36 @@ msgstr "遊戲基本流程"
 
 msgid "Benikujaku"
 msgstr "紅孔雀"
+
+msgid "Bet 1000 to change wait to aside tiles"
+msgstr "下注1000點將待牌改為側邊牌"
+
+msgid "Bet half of points to flip 3 dora indicators"
+msgstr "下注半數點數翻轉3張寶牌指示牌"
+
+msgid "Big Four Winds"
+msgstr "大四喜"
+
+msgid "Big Ping Hu"
+msgstr "大平和"
+
+msgid "Big Three Dragons"
+msgstr "大三元"
+
+msgid "Big Three Winds"
+msgstr "大三風"
+
+msgid "Blessing of Earth"
+msgstr "地和"
+
+msgid "Blessing of Heaven"
+msgstr "天和"
+
+msgid "Blessing of Man"
+msgstr "人和"
+
+msgid "Bloody 30 Faan Jokers"
+msgstr "血戰30番鬼牌"
 
 msgid "Bloody 30-Faan Jokers"
 msgstr "血腥30番百搭牌"
@@ -268,6 +616,9 @@ msgstr "藍龍(測試版)"
 msgid "Blue Tunnel"
 msgstr "藍洞"
 
+msgid "Bonus Tiles"
+msgstr "懸賞牌"
+
 msgid "Both East and West are round winds during East Round, and North and South during South Round. Similarly for West and North Rounds."
 msgstr "東風圈時東/西均為場風，南風圈時南/北均為場風（西/北圈同理）。"
 
@@ -276,6 +627,9 @@ msgstr "英國"
 
 msgid "Button"
 msgstr "按鈕"
+
+msgid "C"
+msgstr "C"
 
 msgid "Calling tiles"
 msgstr "鳴牌"
@@ -288,6 +642,18 @@ msgstr "取消"
 
 msgid "Cancellable Riichi"
 msgstr "可取消立直"
+
+msgid "Capturing the Five"
+msgstr "捉五"
+
+msgid "Card-Free (beta)"
+msgstr "免卡(測試版)"
+
+msgid "Challenge Dealer"
+msgstr "挑戰莊家"
+
+msgid "Challenge Dealer x2"
+msgstr "挑戰莊家x2"
 
 msgid "Chanfuun"
 msgstr "長風組"
@@ -304,8 +670,20 @@ msgstr "搶槓"
 msgid "Chanta"
 msgstr "混全帶幺九"
 
+msgid "Chasing Riichi"
+msgstr "追立直"
+
+msgid "Chi"
+msgstr "吃"
+
+msgid "Chicken Hand"
+msgstr "雞和"
+
 msgid "Chii"
 msgstr "吃"
+
+msgid "Chii with priority"
+msgstr "優先吃"
 
 msgid "Chiihou"
 msgstr "地和"
@@ -325,8 +703,14 @@ msgstr "金雞奪食"
 msgid "Chinese Classical"
 msgstr "中國古典"
 
+msgid "Chinese Yaku Names"
+msgstr "中文役名"
+
 msgid "Chinitsu"
 msgstr "清一色"
+
+msgid "Chinitsu Challenge"
+msgstr "清一色挑戰"
 
 msgid "Chinpeikou"
 msgstr "清一杯口"
@@ -340,8 +724,26 @@ msgstr "純綠一色"
 msgid "Chintanfon"
 msgstr "清斷紅"
 
+msgid "Choe Myeonghwa"
+msgstr "崔明華"
+
 msgid "Chombo"
 msgstr "沖和"
+
+msgid "Chon"
+msgstr "沖"
+
+msgid "Choose a tile to draw"
+msgstr "選擇要摸的牌"
+
+msgid "Choose kamicha"
+msgstr "選擇上家"
+
+msgid "Choose shimocha"
+msgstr "選擇下家"
+
+msgid "Choose toimen"
+msgstr "選擇對家"
 
 msgid "Choupaikou"
 msgstr "跳牌刻"
@@ -376,8 +778,62 @@ msgstr "清除"
 msgid "Close"
 msgstr "關閉"
 
+msgid "Closed Straight"
+msgstr "門前一氣通貫"
+
+msgid "Closed Wait"
+msgstr "單騎待"
+
+msgid "Concealed Double Sequences"
+msgstr "門前二盃口"
+
+msgid "Concealed Gong"
+msgstr "暗槓"
+
+msgid "Concealed Hand"
+msgstr "門前清"
+
+msgid "Concealed Kong"
+msgstr "暗槓"
+
+msgid "Concealed Kongs"
+msgstr "暗槓"
+
+msgid "Concealed Pung"
+msgstr "暗刻"
+
+msgid "Concealed Pungs"
+msgstr "暗刻"
+
 msgid "Config"
 msgstr "配置"
+
+msgid "Consecutive Run #1"
+msgstr "連續順#1"
+
+msgid "Consecutive Run #2"
+msgstr "連續順#2"
+
+msgid "Consecutive Run #3"
+msgstr "連續順#3"
+
+msgid "Consecutive Run #4"
+msgstr "連續順#4"
+
+msgid "Consecutive Run #5"
+msgstr "連續順#5"
+
+msgid "Consecutive Run #6"
+msgstr "連續順#6"
+
+msgid "Consecutive Run #7"
+msgstr "連續順#7"
+
+msgid "Consecutive Run #8"
+msgstr "連續順#8"
+
+msgid "Continue Charleston"
+msgstr "繼續查爾斯頓"
 
 msgid "Copy log"
 msgstr "複製日誌"
@@ -406,6 +862,15 @@ msgstr "由Dani業餘時間開發。"
 msgid "Custom"
 msgstr "自訂"
 
+msgid "D"
+msgstr "D"
+
+msgid "DC"
+msgstr "DC"
+
+msgid "DD"
+msgstr "DD"
+
 msgid "Daichikurin"
 msgstr "大竹林"
 
@@ -427,8 +892,38 @@ msgstr "大數鄰"
 msgid "Daisuushii"
 msgstr "大四喜"
 
+msgid "Dealer"
+msgstr "莊家"
+
+msgid "Dealer Continuation"
+msgstr "莊家連莊"
+
+msgid "Dealer Repeat"
+msgstr "莊家連莊"
+
+msgid "Dealer Repeats"
+msgstr "莊家連莊"
+
+msgid "Declare hand across dead"
+msgstr "宣告對家死牌"
+
+msgid "Declare hand on left dead"
+msgstr "宣告左家死牌"
+
+msgid "Declare hand on right dead"
+msgstr "宣告右家死牌"
+
+msgid "Declare iishanten"
+msgstr "宣告一向聽"
+
+msgid "Declare yaku"
+msgstr "宣告役"
+
 msgid "Differences from four-player"
 msgstr "與四人麻將的區別"
+
+msgid "Different Patterns"
+msgstr "不同模式"
 
 msgid "Disable double yakuman. Yakuman still stacks, but each yaku that typically awards double yakuman only awards one stack of yakuman."
 msgstr "禁用雙倍役滿。役滿仍可疊加，但通常授予雙倍役滿的役種只計單倍。"
@@ -451,17 +946,50 @@ msgstr "禁止食替。"
 msgid "Discard"
 msgstr "棄牌"
 
+msgid "Discard facedown"
+msgstr "蓋牌捨棄"
+
+msgid "Discard same tile again"
+msgstr "再次捨棄相同牌"
+
+msgid "Discardable Flowers"
+msgstr "可棄花牌"
+
+msgid "Discarded Triplets"
+msgstr "已棄刻子"
+
+msgid "Discarder pays 2x hand value, other players pay 1x."
+msgstr "放銃者付2倍，其他玩家付1倍"
+
 msgid "Discord"
 msgstr "Discord"
 
 msgid "Documentation"
 msgstr "文檔"
 
+msgid "Done swapping"
+msgstr "交換完成"
+
 msgid "Dora"
 msgstr "寶牌"
 
 msgid "Dorahairi Chinroutou Chiitoitsu"
 msgstr "寶牌清老頭七對子"
+
+msgid "Double Concealed Double Sequences"
+msgstr "雙門前二盃口"
+
+msgid "Double Down"
+msgstr "雙倍下注"
+
+msgid "Double Identical Sequences"
+msgstr "雙同順"
+
+msgid "Double Luxury Seven Pairs"
+msgstr "雙倍役滿七對子"
+
+msgid "Double Pung"
+msgstr "雙刻"
 
 msgid "Double Riichi"
 msgstr "兩立直"
@@ -472,8 +1000,44 @@ msgstr "雙響"
 msgid "Double Round Wind"
 msgstr "雙場風"
 
+msgid "Double Sequences"
+msgstr "雙順"
+
+msgid "Double Short Straight"
+msgstr "雙短順"
+
+msgid "Double Terminal Sequences"
+msgstr "雙幺九順"
+
+msgid "Double Tile Hog"
+msgstr "雙牌壟斷"
+
+msgid "Double Triplets"
+msgstr "雙刻"
+
+msgid "Double Wild Card Set Wait"
+msgstr "雙鬼牌設定待牌"
+
 msgid "Double Wind 4 Fu"
 msgstr "雙風對子4符"
+
+msgid "Double yakuman if your hand contains triplets or kans of all four winds."
+msgstr "四風刻子則雙倍役滿"
+
+msgid "Double yakuman if your hand has four closed triplets in hand, and you won by completing your pair."
+msgstr "四暗刻單騎達成時雙倍役滿"
+
+msgid "Double yakuman if your hand was 1112345678999 in one suit, and you won via its nine-sided wait."
+msgstr "純正九蓮寶燈達成時雙倍役滿"
+
+msgid "Double yakuman if your winning hand consists of one of each terminal/honor tile and you won with a thirteen-sided wait for the pair."
+msgstr "國士無雙十三面聽達成時雙倍役滿"
+
+msgid "Draft Character Card"
+msgstr "角色卡草稿"
+
+msgid "Dragon"
+msgstr "三元牌"
 
 msgid "Draw"
 msgstr "摸牌"
@@ -481,11 +1045,65 @@ msgstr "摸牌"
 msgid "Draw To Dora Indicator"
 msgstr "摸至寶牌指示牌時流局"
 
+msgid "Draw an extra tile and set it aside"
+msgstr "抽取額外牌並置於一旁"
+
+msgid "Draw aside tile"
+msgstr "抽取側邊牌"
+
+msgid "Draw from Suehara Kyouko's aside"
+msgstr "從末原恭子的側邊牌抽取"
+
+msgid "Draw from aside"
+msgstr "從側邊牌抽取"
+
+msgid "Draw from wall"
+msgstr "從牌牆抽取"
+
+msgid "Draw from your discards"
+msgstr "從自己的捨牌中抽取"
+
+msgid "Draws Reset Dealer Bonus"
+msgstr "流局時莊家連莊重置"
+
+msgid "Duel kamicha"
+msgstr "與上家對決"
+
+msgid "Duel shimocha"
+msgstr "與下家對決"
+
+msgid "Duel toimen"
+msgstr "與對家對決"
+
 msgid "Dutch"
 msgstr "荷蘭"
 
+msgid "Each 2000 Bet"
+msgstr "每注2000點"
+
 msgid "Each tile in the wall is transparent and visible to all, except for one copy. Unflipped dora indicators are not visible."
 msgstr "牌牆除每種牌保留一張外全部透明可見。未翻開的寶牌指示牌不可見。"
+
+msgid "Earthly Hand"
+msgstr "地和"
+
+msgid "Earthly Win"
+msgstr "地和"
+
+msgid "East Wind"
+msgstr "東風"
+
+msgid "Edge Wait"
+msgstr "邊張聽牌"
+
+msgid "Eight Flower Win"
+msgstr "八花齊和"
+
+msgid "Eight Flowers"
+msgstr "八花"
+
+msgid "Eighteen Arhats"
+msgstr "十八羅漢"
 
 msgid "Empty"
 msgstr "空"
@@ -505,11 +1123,11 @@ msgstr "啟用九種九牌流局。"
 msgid "Enable busting. Once anyone's points is reduced below zero, the game ends."
 msgstr "啟用擊飛。任何玩家分數低於零時遊戲結束。"
 
+msgid "Enable head bump. In case of multiple hu, only the person closest in turn order gets the win."
+msgstr "啟用頭跳規則。多人同時和牌時，僅由順位最近者和牌"
+
 msgid "Enable head bump. In case of multiple ron, only the person closest in turn order gets the win."
 msgstr "啟用頭跳。多人榮和時僅最近順位者和牌。"
-
-msgid "Enable kan. If you have four of a tile in hand, you may create a concealed kan (ankan). If you have three of a tile and someone discards the fourth, you may create an open kan (daiminkan). If you have called a triplet and draw the fourth tile, you may create an added kan (kakan). Kan calls count as triplets for the purposes of winning and scoring, but they award 4x triplet fu. In all three cases, after declaring kan you draw a replacement tile from the dead wall. Winning on this replacement tile awards the rinshan yaku (1 han). One may also call ron on a tile added to an added kan (kakan) for the chankan yaku (1 han). Having three kans is 2 han (sankantsu), and having four is yakuman. There can be at most four kans in a single game."
-msgstr "開啟槓功能。手中有四張相同牌時可暗槓；有三張且別人打出第四張時可明槓；已碰刻子後摸到第四張時可加槓。槓作為刻子計番但得4倍刻子符。槓後從王牌補牌，嶺上開花和牌得1番。加槓時被搶槓和牌得1番(槍槓)。三槓子2番，四槓子役滿。一局最多四次槓。"
 
 msgid "Enable nagashi mangan. When you discards are all terminals and honors at exhaustive draw, and none of your discards have been called, then you are paid mangan tsumo at draw."
 msgstr "開啟流局滿貫。流局時若所有捨牌均為幺九牌且未被鳴，則按滿貫自摸結算。"
@@ -562,8 +1180,35 @@ msgstr "輸入房間碼："
 msgid "Even"
 msgstr "偶數"
 
+msgid "Everyone Pays On Discard"
+msgstr "放銃時全員支付"
+
 msgid "Everyone plays with tiles shown."
 msgstr "所有玩家手牌公開。"
+
+msgid "Exclusionary Rule"
+msgstr "除外規則"
+
+msgid "Eyes of the General"
+msgstr "將軍之眼"
+
+msgid "Ezaki Hitomi"
+msgstr "江崎仁美"
+
+msgid "F"
+msgstr "F"
+
+msgid "Faan"
+msgstr "番"
+
+msgid "Face"
+msgstr "正面"
+
+msgid "Facedown Tiles"
+msgstr "蓋牌"
+
+msgid "Fan"
+msgstr "番"
 
 msgid "Fifth Tile"
 msgstr "第五張牌"
@@ -571,23 +1216,146 @@ msgstr "第五張牌"
 msgid "Filipino"
 msgstr "菲律賓語"
 
+msgid "Final Discard"
+msgstr "最後捨牌"
+
+msgid "Final Draw"
+msgstr "最後自摸"
+
+msgid "Final Tile"
+msgstr "最終牌"
+
 msgid "First Gets Riichi Sticks"
 msgstr "頭名獲得立直棒"
+
+msgid "Five Concealed Triplets"
+msgstr "五暗刻"
+
+msgid "Five Consecutive Pairs"
+msgstr "一氣通貫七對子"
+
+msgid "Five Fan Minimum"
+msgstr "五番縛り"
+
+msgid "Five Mixed Small Shifted Triplets"
+msgstr "五連刻"
+
+msgid "Flip any discard facedown"
+msgstr "將任意捨牌蓋牌"
 
 msgid "Flip kan dora immediately after daiminkan and kakan."
 msgstr "明槓/加槓後立即顯示槓寶牌。"
 
+msgid "Flower"
+msgstr "花牌"
+
+msgid "Flower Tiles"
+msgstr "花牌"
+
+msgid "Flowers"
+msgstr "花牌"
+
+msgid "Flowers Open Hand"
+msgstr "花牌鳴牌手"
+
+msgid "Fly"
+msgstr "飛牌"
+
 msgid "For more information, drop a message in our Discord!"
 msgstr "更多資訊請訪問我們的Discord！"
+
+msgid "Forced Flowers"
+msgstr "強制花牌"
 
 msgid "Forces you to make all available calls, including riichi (if enabled). You still get to choose if multiple calls are available."
 msgstr "強制所有可行鳴牌(包括立直)，多選項時仍可自選。"
 
+msgid "Four Concealed Pungs"
+msgstr "四暗刻"
+
+msgid "Four Concealed Triplets"
+msgstr "四暗刻"
+
+msgid "Four Consecutive Triplets"
+msgstr "四連刻"
+
+msgid "Four Faces"
+msgstr "四面子"
+
+msgid "Four Flower"
+msgstr "四花"
+
+msgid "Four Fly"
+msgstr "四飛"
+
+msgid "Four Fly Win"
+msgstr "四飛和牌"
+
+msgid "Four Gongs"
+msgstr "四槓子"
+
+msgid "Four Great Blessings"
+msgstr "大四喜"
+
+msgid "Four Identical Sequences"
+msgstr "一色四順"
+
+msgid "Four Kong"
+msgstr "四槓子"
+
+msgid "Four Kongs"
+msgstr "四槓子"
+
+msgid "Four Lesser Blessings"
+msgstr "小四喜"
+
+msgid "Four Mixed Shifted Sequences"
+msgstr "四色四順"
+
+msgid "Four Mixed Shifted Triplets"
+msgstr "四色四刻"
+
+msgid "Four Mixed Small Shifted Triplets"
+msgstr "四連刻"
+
+msgid "Four Pure Shifted Chows"
+msgstr "一色四順"
+
+msgid "Four Pure Shifted Pungs"
+msgstr "一色四刻"
+
+msgid "Four Pure Shifted Sequences"
+msgstr "一色四順"
+
+msgid "Four Pure Shifted Triplets"
+msgstr "一色四刻"
+
+msgid "Four Pure Small Shifted Triplets"
+msgstr "四連刻"
+
+msgid "Four Quads"
+msgstr "四槓子"
+
+msgid "Four Season"
+msgstr "四季"
+
+msgid "Four Suits"
+msgstr "四色"
+
+msgid "Four Winds Seven Pairs"
+msgstr "四風子七對子"
+
 msgid "Four flowers are added to the game and act as nukidora. Flowers cannot form sequences, triplets, or pairs. North winds are no longer nukidora, but they are now yakuhai: a triplet is worth 1 han, and a pair is worth 2 fu."
 msgstr "新增4張花牌作為拔寶。花牌不可組成順子、刻子或對子。北風不再是拔寶牌，改為役牌：刻子1番，對子2符。"
 
+msgid "Four of a Kind"
+msgstr "四刻子"
+
 msgid "French"
 msgstr "法語"
+
+msgid "From NFNL Player"
+msgstr "來自NFNL玩家"
 
 msgid "Fu"
 msgstr "符"
@@ -598,8 +1366,53 @@ msgstr "固定30符。"
 msgid "Fu is fixed at 40."
 msgstr "固定40符。"
 
+msgid "Fukuji Mihoko"
+msgstr "福路美穗子"
+
+msgid "Full Bloom (East)"
+msgstr "滿開（東）"
+
+msgid "Full Bloom (Flowers)"
+msgstr "滿開（花）"
+
+msgid "Full Bloom (Green)"
+msgstr "滿開（綠）"
+
+msgid "Full Bloom (North)"
+msgstr "滿開（北）"
+
+msgid "Full Bloom (Red)"
+msgstr "滿開（紅）"
+
+msgid "Full Bloom (Seasons)"
+msgstr "滿開（季節）"
+
+msgid "Full Bloom (South)"
+msgstr "滿開（南）"
+
+msgid "Full Bloom (West)"
+msgstr "滿開（西）"
+
+msgid "Full Bloom (White)"
+msgstr "滿開（白）"
+
+msgid "Full Flush"
+msgstr "清一色"
+
+msgid "Fully Concealed Hand"
+msgstr "門前清自摸和"
+
+msgid "Funakubo Hiroko"
+msgstr "船久保浩子"
+
+msgid "Furiten Tsumo"
+msgstr "振聽自摸"
+
 msgid "Fuukasetsugetsu"
 msgstr "風花雪月"
+
+msgid "Fuun"
+msgstr "風雲"
 
 msgid "Fuunburi"
 msgstr "風組振"
@@ -622,11 +1435,32 @@ msgstr "遊戲因荒牌流局結束"
 msgid "German"
 msgstr "德語"
 
+msgid "Gold"
+msgstr "金牌"
+
 msgid "Golden Chun"
 msgstr "黃金中"
 
+msgid "Golden Dragon"
+msgstr "金龍"
+
 msgid "Golden Gate Bridge"
 msgstr "金門大橋"
+
+msgid "Golden Pair"
+msgstr "金對子"
+
+msgid "Gong"
+msgstr "槓"
+
+msgid "Greater Honors and Knitted Tiles"
+msgstr "大車輪"
+
+msgid "Green Dragon"
+msgstr "綠發"
+
+msgid "H"
+msgstr "H"
 
 msgid "Haitei"
 msgstr "海底撈月"
@@ -634,11 +1468,35 @@ msgstr "海底撈月"
 msgid "Haku"
 msgstr "白"
 
+msgid "Haku Tsumo"
+msgstr "白板自摸"
+
+msgid "Half Flush"
+msgstr "混一色"
+
 msgid "Han"
 msgstr "番"
 
+msgid "Hanada Kirame"
+msgstr "花田煌"
+
+msgid "Hand of Earth"
+msgstr "地和"
+
+msgid "Hand of Heaven"
+msgstr "天和"
+
+msgid "Hand of Man"
+msgstr "人和"
+
 msgid "Haneman"
 msgstr "跳滿"
+
+msgid "Hao Huiyu"
+msgstr "郝慧宇"
+
+msgid "Haramura Nodoka"
+msgstr "原村和"
 
 msgid "Hatsu"
 msgstr "發"
@@ -646,17 +1504,41 @@ msgstr "發"
 msgid "Head Bump"
 msgstr "頭跳"
 
+msgid "Heavenly Hand"
+msgstr "天和"
+
+msgid "Heavenly Win"
+msgstr "天和"
+
 msgid "Hefei"
 msgstr "合肥"
 
+msgid "Hefei Mahjong"
+msgstr "合肥麻將"
+
+msgid "Hell Wait"
+msgstr "地獄聽牌"
+
+msgid "Hidden Treasure"
+msgstr "裏寶牌"
+
+msgid "Hirose Sumire"
+msgstr "廣瀨菫"
+
 msgid "Hit the back button to return to the main menu."
 msgstr "點擊返回鍵回到主選單。"
+
+msgid "Hoa (花)"
+msgstr "花牌"
 
 msgid "Honba"
 msgstr "本場"
 
 msgid "Hong Kong"
 msgstr "香港"
+
+msgid "Hong Kong Old Style"
+msgstr "香港舊式"
 
 msgid "Hong Kong Old Style mahjong. Three point minimum, everyone pays for a win, and win instantly if you have seven flowers."
 msgstr "香港老章麻將。3番起和，和牌時全員支付，集齊七花即和。"
@@ -673,11 +1555,41 @@ msgstr "混老頭"
 msgid "Houtei"
 msgstr "河底撈魚"
 
+msgid "Hu"
+msgstr "和牌"
+
+msgid "Hua"
+msgstr "花牌"
+
 msgid "Hyakuman Goku"
 msgstr "百萬石"
 
+msgid "Hỷ (喜)"
+msgstr "喜牌"
+
+msgid "Hợp (合)"
+msgstr "合牌"
+
+msgid "ILM Card"
+msgstr "ILM卡"
+
+msgid "Identical Sequences"
+msgstr "同順子"
+
 msgid "If someone calls kan on your discard and wins off the kan draw, you are responsible for the full payment."
 msgstr "若他人用你的捨牌槓牌後嶺上和牌，你需全額支付。"
+
+msgid "If someone calls kan to upgrade an open triplet, you may call ron on the added tile. Doing so awards chankan (1 han).)"
+msgstr "當有人加槓明刻時，你可以搶槓和牌（槍槓1番）"
+
+msgid "If someone kans your discard and tsumos off the replacement tile (rinshan), you pay the full amount."
+msgstr "若有人槓你的捨牌並嶺上開花，你需支付全額"
+
+msgid "If the dealer (East wind) wins, the round repeats."
+msgstr "莊家（東家）和牌時連莊"
+
+msgid "If you deal the last dragon called for a daisangen hand, or the last wind called for a daisuushii hand, you are responsible for that single yakuman payment if they tsumo, or half of the yakuman payment if they ron off someone else."
+msgstr "若你打出大三元的最後三元牌或大四喜的最後風牌，對方自摸時需支付役滿全額，榮和時支付半額"
 
 msgid "If you deal the last dragon called for a daisangen hand, or the last wind called for a daisuushii hand, you are responsible for the yakuman payment if they tsumo, or half of the payment if they ron off someone else."
 msgstr "若你打出大三元最後一張三元牌或大四喜最後一張風牌，對方自摸時你需支付役滿全額，榮和時支付半額。"
@@ -685,8 +1597,20 @@ msgstr "若你打出大三元最後一張三元牌或大四喜最後一張風牌
 msgid "If you deal the last kan tile called for a suukantsu hand, you are responsible for the yakuman payment if they tsumo, or half the payment if they ron off someone else."
 msgstr "若你打出四槓子最後一張槓牌，對方自摸時你需支付役滿全額，榮和時支付半額。"
 
+msgid "If you deal the last tile called for kan for a suukantsu hand, you are responsible for that single yakuman payment if they tsumo, or half of the yakuman payment if they ron off someone else."
+msgstr "若你打出四槓子的最後槓牌，對方自摸時需支付役滿全額，榮和時支付半額"
+
+msgid "If you discarded a tile called as someone's fourth call, you are liable for paying for their hand if they win."
+msgstr "若你打出的牌成為他人第四次鳴牌，對方和牌時你需負擔支付責任"
+
 msgid "If you do not win any hands by the end of the game, you pay each player a penalty."
 msgstr "遊戲結束時若未和過牌，需向每位玩家支付罰分。"
+
+msgid "If you kan and then tsumo on the replacement tile, you are awarded rinshan (1 han)."
+msgstr "若槓牌後嶺上自摸，可獲得嶺上開花（1番）"
+
+msgid "If your discard is called by another player with three existing calls (yours being the fourth), you are liable for paying their whole hand if they win."
+msgstr "若你打出的牌成為他人第四次鳴牌，對方和牌時你需負擔全額支付"
 
 msgid "Iipeikou"
 msgstr "一盃口"
@@ -694,14 +1618,38 @@ msgstr "一盃口"
 msgid "Iipin Mouyue"
 msgstr "一筒摸月"
 
+msgid "Ikeda Kana"
+msgstr "池田華菜"
+
 msgid "Immediate Kan Dora"
 msgstr "槓後即顯寶牌"
 
 msgid "In each round, the player whose wall is broken is given the wareme marker. If the wareme player wins, they are paid double the amount of points. If the wareme player has to pay points, they pay double the amount of points. Riichi sticks and honba payments are not affected."
 msgstr "每局破壁玩家成為割目。割目和牌得分翻倍，支付時也翻倍。立直棒與本場費不受影響。"
 
+msgid "In event of an exhaustive draw, players not in tenpai pay players in tenpai. 3000 points total are paid, with the payment split among the non-tenpai players. If all or no players are tenpai, no payment occurs."
+msgstr "流局時，未聽牌者需支付聽牌者共3000點（由未聽牌者分攤）。若全員聽牌或未聽牌則不需支付"
+
+msgid "Inazuma Riichi"
+msgstr "閃電立直"
+
 msgid "Includes Tianjin mahjong joker tiles, but adds more yaku and played with a 4-tai minimum."
 msgstr "包含天津麻將百搭牌，追加更多役種且4台起和。"
+
+msgid "Initial Score"
+msgstr "初始分數"
+
+msgid "Inoue Jun"
+msgstr "井上純"
+
+msgid "Interrupt call"
+msgstr "中斷鳴牌"
+
+msgid "Interrupt facedown discard"
+msgstr "中斷蓋牌"
+
+msgid "Interrupt swap"
+msgstr "中斷交換"
 
 msgid "Intro to cosmic mahjong"
 msgstr "宇宙麻將入門"
@@ -739,8 +1687,26 @@ msgstr "一氣通貫全帶幺"
 msgid "Ittsu Junchan"
 msgstr "純一氣全帶幺"
 
+msgid "Iwadate Yuan"
+msgstr "岩館圓"
+
+msgid "Iwato Kasumi"
+msgstr "岩戶霞"
+
+msgid "JC"
+msgstr "JC"
+
+msgid "Jihai"
+msgstr "字牌"
+
+msgid "Jindai Komaki"
+msgstr "神代小蒔"
+
 msgid "Join private room"
 msgstr "加入私人房間"
+
+msgid "Joker"
+msgstr "百搭牌"
 
 msgid "Jokers"
 msgstr "百搭牌"
@@ -757,11 +1723,29 @@ msgstr "純正綠一色"
 msgid "Just Like Modded Minecraft"
 msgstr "模組版我的世界"
 
+msgid "K"
+msgstr "K"
+
 msgid "Kachoufuugetsu"
 msgstr "花鳥風月"
 
+msgid "Kainou Yoshiko"
+msgstr "海野良子"
+
+msgid "Kajiki Yumi"
+msgstr "梶原由美"
+
+msgid "Kakura Kurumi"
+msgstr "鹿倉胡桃"
+
 msgid "Kan"
 msgstr "槓"
+
+msgid "Kan (closed)"
+msgstr "暗槓"
+
+msgid "Kanbara Satomi"
+msgstr "神原知美"
 
 msgid "Kanburi"
 msgstr "槓振"
@@ -781,11 +1765,20 @@ msgstr "關西花牌"
 msgid "Kansai Sanma"
 msgstr "關西三麻"
 
+msgid "Karijuku Tomoe"
+msgstr "雁櫓巴"
+
+msgid "Kataoka Yuuki"
+msgstr "片岡優希"
+
 msgid "Kazoe Yakuman"
 msgstr "累計役滿"
 
 msgid "Ketsupaihou"
 msgstr "缺牌和"
+
+msgid "Khàn"
+msgstr "槓"
 
 msgid "Kin"
 msgstr "金"
@@ -795,6 +1788,21 @@ msgstr "金雞獨立"
 
 msgid "Kiriage Mangan"
 msgstr "切上滿貫"
+
+msgid "Knitted Honors"
+msgstr "組合字牌"
+
+msgid "Knitted Short Straight"
+msgstr "組合一氣通貫"
+
+msgid "Knitted Straight"
+msgstr "組合一氣通貫"
+
+msgid "Knitted Terminal Sequences"
+msgstr "組合幺九牌"
+
+msgid "Knitted Triplets"
+msgstr "組合刻子"
 
 msgid "Kokuiisou"
 msgstr "黑一色"
@@ -811,6 +1819,12 @@ msgstr "國士無雙十三面"
 msgid "Kong"
 msgstr "槓"
 
+msgid "Kong Blossom"
+msgstr "槓上開花"
+
+msgid "Kong On Kong"
+msgstr "槓上槓"
+
 msgid "Kontsu"
 msgstr "混刻"
 
@@ -819,6 +1833,9 @@ msgstr "混刻役"
 
 msgid "Korean"
 msgstr "韓語"
+
+msgid "Kosegawa Shiromi"
+msgstr "小瀨川白望"
 
 msgid "Kouitten"
 msgstr "紅一點"
@@ -832,20 +1849,59 @@ msgstr "禁止食替"
 msgid "Kuitan Nashi"
 msgstr "禁止食斷"
 
+msgid "Kunihiro Hajime"
+msgstr "國廣一"
+
 msgid "Kyandonhou"
 msgstr "鏡同和"
 
 msgid "Kyuushu Kyuuhai"
 msgstr "九種九牌"
 
+msgid "Last Tile"
+msgstr "最後牌"
+
+msgid "Last Tile (discard)"
+msgstr "河底牌"
+
+msgid "Last Tile (draw)"
+msgstr "海底牌"
+
+msgid "Last Tile Claim"
+msgstr "河底撈魚"
+
+msgid "Last Tile Discard"
+msgstr "河底牌"
+
+msgid "Last Tile Draw"
+msgstr "海底牌"
+
 msgid "Learn"
 msgstr "學習"
+
+msgid "Lesser Honors and Knitted Tiles"
+msgstr "小車輪"
 
 msgid "Like Riichi but with a two-han minimum. There is also a side race to see who reaches three wins first."
 msgstr "類似立直麻將但需2番起和，另有先和三局者勝的附加賽。"
 
+msgid "Limit"
+msgstr "滿貫"
+
 msgid "Limit the game to the East round only."
 msgstr "僅進行東風場。"
+
+msgid "Little Four Winds"
+msgstr "小四喜"
+
+msgid "Little Ping Hu"
+msgstr "小平和"
+
+msgid "Little Three Dragons"
+msgstr "小三元"
+
+msgid "Little Three Winds"
+msgstr "小三風"
 
 msgid "Loading..."
 msgstr "載入中..."
@@ -985,6 +2041,30 @@ msgstr "日誌ID："
 msgid "Logs"
 msgstr "日誌"
 
+msgid "Look at next two tiles in the wall"
+msgstr "查看牌牆下兩張牌"
+
+msgid "Lower Four"
+msgstr "下家四"
+
+msgid "Lower Tiles"
+msgstr "下家牌"
+
+msgid "Lucky Sevens #1"
+msgstr "幸運七 #1"
+
+msgid "Lucky Sevens #2"
+msgstr "幸運七 #2"
+
+msgid "Lucky Sevens #3"
+msgstr "幸運七 #3"
+
+msgid "Luxury Seven Pairs"
+msgstr "七對子"
+
+msgid "M"
+msgstr "M"
+
 msgid "M.League"
 msgstr "M聯賽"
 
@@ -993,6 +2073,9 @@ msgstr "國標麻將"
 
 msgid "Mah Jongg"
 msgstr "和牌"
+
+msgid "MahjLife Card"
+msgstr "MahjLife卡"
 
 msgid "Mahjong Competition Rules. Has a scoring system of a different kind of complexity than Riichi."
 msgstr "競技麻將規則。擁有與立直麻將不同複雜度的計分系統。"
@@ -1039,6 +2122,39 @@ msgstr "滿貫"
 msgid "Manzu"
 msgstr "萬子"
 
+msgid "Manzu Honitsu"
+msgstr "萬子混一色"
+
+msgid "Mase Yuuko"
+msgstr "間瀨遊子"
+
+msgid "Matano Seiko"
+msgstr "又野誠子"
+
+msgid "Matched Royalty"
+msgstr "對子役牌"
+
+msgid "Matsumi Kuro"
+msgstr "松實玄"
+
+msgid "Matsumi Yuu"
+msgstr "松實宥"
+
+msgid "Maya Yukiko"
+msgstr "真屋由紀子"
+
+msgid "Megan Davin"
+msgstr "梅根·戴文"
+
+msgid "Melded Hand"
+msgstr "鳴牌手"
+
+msgid "Melded Kong"
+msgstr "明槓"
+
+msgid "Middle Tiles"
+msgstr "中張牌"
+
 msgid "Milky Way"
 msgstr "銀河"
 
@@ -1051,35 +2167,155 @@ msgstr "起和番數"
 msgid "Minimum han required to win."
 msgstr "和牌所需最低番數。"
 
+msgid "Mixed Double Chow"
+msgstr "二色同順"
+
+msgid "Mixed Flush"
+msgstr "混一色"
+
+msgid "Mixed Greater Terminals"
+msgstr "混老頭"
+
+msgid "Mixed Lesser Terminals"
+msgstr "混老頭"
+
+msgid "Mixed One-Suit"
+msgstr "混一色"
+
+msgid "Mixed Outside Hand"
+msgstr "混全帶幺九"
+
+msgid "Mixed Shifted Chows"
+msgstr "二色同順"
+
+msgid "Mixed Shifted Linked Sequences"
+msgstr "二色二順"
+
+msgid "Mixed Shifted Pungs"
+msgstr "二色同刻"
+
+msgid "Mixed Straight"
+msgstr "一氣通貫"
+
+msgid "Mixed Terminals"
+msgstr "混老頭"
+
+msgid "Mixed Triple Chow"
+msgstr "三色同順"
+
+msgid "Miyanaga Saki"
+msgstr "宮永咲"
+
+msgid "Miyanaga Teru"
+msgstr "宮永照"
+
 msgid "Mods"
 msgstr "模組"
 
 msgid "Mondeikou"
 msgstr "門泥公"
 
+msgid "Motouchi Naruka"
+msgstr "本內成香"
+
+msgid "Move haitei tile from live wall to dead wall"
+msgstr "將海底牌移至王牌區"
+
+msgid "Move two tiles instead"
+msgstr "改為移動兩張牌"
+
+msgid "Mủn"
+msgstr "門"
+
+msgid "NMJL 2025 Card"
+msgstr "NMJL 2025卡"
+
 msgid "Nagashi"
 msgstr "流局滿貫"
+
+msgid "Nagashi Mangan"
+msgstr "流局滿貫"
+
+msgid "Nanpo Kazue"
+msgstr "南波和惠"
+
+msgid "Nelly Virsaladze"
+msgstr "內莉·維爾薩拉澤"
+
+msgid "Nguyên (元)"
+msgstr "元牌"
 
 msgid "Nickname (optional)"
 msgstr "暱稱（可選）"
 
+msgid "Nine Gates"
+msgstr "九蓮寶燈"
+
+msgid "Nine-Tile Straight"
+msgstr "一氣通貫"
+
 msgid "Ningbo"
 msgstr "寧波"
+
+msgid "Ningbo Mahjong"
+msgstr "寧波麻將"
 
 msgid "No 100 sticks"
 msgstr "無100點棒"
 
+msgid "No Baida"
+msgstr "無白搭"
+
+msgid "No Bams"
+msgstr "無索子"
+
 msgid "No Charleston"
 msgstr "無換牌階段"
+
+msgid "No Chii"
+msgstr "不可吃"
+
+msgid "No Craks"
+msgstr "無萬子"
+
+msgid "No Dots"
+msgstr "無筒子"
 
 msgid "No Double Yakuman"
 msgstr "無雙倍役滿"
 
+msgid "No Fifth Tile Tenpai"
+msgstr "無第五張聽牌"
+
+msgid "No Flowers"
+msgstr "無花牌"
+
+msgid "No Flowers or Honors"
+msgstr "無花牌字牌"
+
+msgid "No Flowers, Honors, or Triplets"
+msgstr "無花牌字牌刻子"
+
+msgid "No Flowers, No Leaves"
+msgstr "無花牌風牌"
+
 msgid "No Furiten Riichi"
 msgstr "振聽禁止立直"
 
+msgid "No Gold Flowers"
+msgstr "無金花"
+
 msgid "No Honors"
 msgstr "無字牌"
+
+msgid "No Honors or Flowers"
+msgstr "無字牌無花牌"
+
+msgid "No Jokers"
+msgstr "無百搭牌"
+
+msgid "No Jokers Mahjong League 2024"
+msgstr "無百搭麻雀聯盟2024"
 
 msgid "No Kazoe Yakuman"
 msgstr "無數倍役滿"
@@ -1087,14 +2323,32 @@ msgstr "無數倍役滿"
 msgid "No Riichi Ankan"
 msgstr "立直後禁止暗槓"
 
+msgid "No Terminals"
+msgstr "無么九牌"
+
 msgid "No Tsumo Loss"
 msgstr "自摸不減點"
+
+msgid "No Win"
+msgstr "不可和牌"
+
+msgid "No Yaku"
+msgstr "無役"
 
 msgid "No description provided."
 msgstr "無描述。"
 
-msgid "Noten payments are tripled (Ikeda Kana)"
-msgstr "未聽支付三倍 (池田華菜)"
+msgid "No flowers"
+msgstr "無花牌"
+
+msgid "No swap"
+msgstr "不可交換"
+
+msgid "North Wind"
+msgstr "北風"
+
+msgid "Notenrenchan"
+msgstr "無聽連莊"
 
 msgid "Number of points each player starts with. You can also set this by writing the following in the Config tab: \\\"initial_score\\\": 100000"
 msgstr "每位玩家的初始點數。也可在配置選項卡中輸入\"initial_score: 100000\"進行設置"
@@ -1102,11 +2356,32 @@ msgstr "每位玩家的初始點數。也可在配置選項卡中輸入\"initial
 msgid "Odd"
 msgstr "奇數"
 
+msgid "Offer 0"
+msgstr "提供0"
+
+msgid "Offer 1"
+msgstr "提供1"
+
+msgid "Offer 2"
+msgstr "提供2"
+
+msgid "Offer 3"
+msgstr "提供3"
+
 msgid "Oka"
 msgstr "頭名賞"
 
 msgid "On ron, each 1s (bird) tile is worth 1 shuugi, unless the discarder's hand contains 7p (pistol) which would shoot the birds dead. That is, unless the winner's hand contains 8s (birdcage) which would protect the birds from gunfire."
 msgstr "榮和時每張1索(鳥)計1祝儀，除非放銃者手牌有7筒(槍)可擊落鳥。若和牌者手牌有8索(鳥籠)則可抵擋槍擊。"
+
+msgid "One Kong"
+msgstr "一槓"
+
+msgid "One Suji Only"
+msgstr "僅限一筋"
+
+msgid "One Voided Suit"
+msgstr "缺一門"
 
 msgid "One of each dragon tile is a special tile. The special white dragon is shiro pocchi, which acts a joker tile when drawn while in riichi. The special green dragon is an aka dora. The special red dragon is the golden chun, which can be used as a five of any suit, and grants 1 han when used as a five. Completing a hand via shiro pocchi while using the golden chun as a five and having the aka green dragon scores yakuman. If playing with shuugi, a golden chun used as a five scores 1 shuugi."
 msgstr "每種三元牌各有一張特殊牌：白波奇(白)在立直後摸到可當萬能牌；青寶牌(發)；黃金中(中)可當任意花色5使用(計1番)。用白波奇和牌+黃金中當5+持有青寶牌時計役滿。使用祝儀時黃金中當5可獲1祝儀。"
@@ -1114,29 +2389,101 @@ msgstr "每種三元牌各有一張特殊牌：白波奇(白)在立直後摸到�
 msgid "One of the white dragons is shiro pocchi. Shiro pocchi acts a joker tile when drawn while in riichi."
 msgstr "其中一張白牌是白波奇，立直後摸到可當萬能牌使用。"
 
+msgid "Onjouji Toki"
+msgstr "恩上寺時生"
+
+msgid "Only One Flower"
+msgstr "僅一張花牌"
+
+msgid "Only allow wins worth 3+ fan."
+msgstr "只允許3翻以上和牌"
+
+msgid "Oohoshi Awai"
+msgstr "大星淡"
+
 msgid "Open Double Riichi"
 msgstr "明牌雙立直"
 
 msgid "Open Hands"
 msgstr "明牌模式"
 
+msgid "Open Kokushi Musou"
+msgstr "明國士無雙"
+
+msgid "Open Kong"
+msgstr "明槓"
+
+msgid "Open Nine Gates"
+msgstr "明九蓮寶燈"
+
 msgid "Open Riichi"
 msgstr "明牌立直"
+
+msgid "Open Straight"
+msgstr "明一氣通貫"
 
 msgid "Other"
 msgstr "其他"
 
+msgid "Out on a Replacement"
+msgstr "嶺上開花"
+
+msgid "Out with Replacement Tile"
+msgstr "嶺上開花"
+
+msgid "Outside Hand"
+msgstr "混老頭"
+
+msgid "PIE"
+msgstr "PIE"
+
 msgid "Paarenchan"
 msgstr "八連莊"
 
+msgid "Pair"
+msgstr "對子"
+
+msgid "Pao"
+msgstr "包牌"
+
+msgid "Pass"
+msgstr "過"
+
+msgid "Pass no tiles across"
+msgstr "不可傳牌"
+
+msgid "Pay 1500 to decline the swap"
+msgstr "支付1500點拒絕交換"
+
 msgid "Pei"
 msgstr "拔寶牌"
+
+msgid "Perform swap"
+msgstr "執行交換"
+
+msgid "Persistent Cards"
+msgstr "永久牌"
+
+msgid "Phán"
+msgstr "判"
+
+msgid "Phình"
+msgstr "碰"
+
+msgid "Phỗng"
+msgstr "碰"
 
 msgid "Pinfu"
 msgstr "平和"
 
 msgid "Pinzu"
 msgstr "筒子"
+
+msgid "Place 2 tiles at the end of the dead wall (last selection is first kan draw)"
+msgstr "將2張牌置於王牌末尾（最後選擇為第一張槓牌）"
+
+msgid "Place 4 tiles at the end of the live wall (last selection is haitei)"
+msgstr "將4張牌置於活牌牆末尾（最後選擇為海底牌）"
 
 msgid "Play"
 msgstr "遊戲"
@@ -1153,14 +2500,26 @@ msgstr "玩家%{nickname}以%{seat}身份加入"
 msgid "Pon"
 msgstr "碰"
 
+msgid "Pon red dragon with priority"
+msgstr "優先碰紅中"
+
 msgid "Pong"
 msgstr "碰"
 
 msgid "Possible hand:"
 msgstr "可能的手牌："
 
+msgid "Prevailing Wind"
+msgstr "場風"
+
+msgid "Prevalent Wind"
+msgstr "場風"
+
 msgid "Private"
 msgstr "私人"
+
+msgid "Pts"
+msgstr "點"
 
 msgid "Public"
 msgstr "公開"
@@ -1168,11 +2527,116 @@ msgstr "公開"
 msgid "Pung"
 msgstr "碰"
 
+msgid "Pung of Honors"
+msgstr "字牌刻子"
+
+msgid "Pung of Terminals"
+msgstr "么九刻子"
+
+msgid "Pure Double Chow"
+msgstr "純正二杯口"
+
+msgid "Pure Double Identical Sequences"
+msgstr "純正同色二順"
+
+msgid "Pure Double Short Straight"
+msgstr "純正一氣通貫二順"
+
+msgid "Pure Double Terminal Sequences"
+msgstr "純正老頭二順"
+
+msgid "Pure Flush"
+msgstr "清一色"
+
+msgid "Pure Greater Terminals"
+msgstr "純正大老頭"
+
+msgid "Pure Hand"
+msgstr "純正手牌"
+
+msgid "Pure Lesser Terminals"
+msgstr "純正小老頭"
+
+msgid "Pure One-Suit"
+msgstr "清一色"
+
+msgid "Pure Outside Hand"
+msgstr "純正混老頭"
+
+msgid "Pure Quadruple Sequence"
+msgstr "純正四順子"
+
+msgid "Pure Shifted Chows"
+msgstr "純正連順子"
+
+msgid "Pure Shifted Linked Sequences"
+msgstr "純正連一色"
+
+msgid "Pure Shifted Pungs"
+msgstr "純正連刻子"
+
+msgid "Pure Straight"
+msgstr "純正一氣通貫"
+
+msgid "Pure Suit"
+msgstr "純正一色"
+
+msgid "Pure Terminal Chows"
+msgstr "純正老頭順子"
+
+msgid "Pure Terminals"
+msgstr "純正老頭"
+
+msgid "Pure Triple Chow"
+msgstr "純正三順子"
+
+msgid "Pure Triple Sequence"
+msgstr "純正三順子"
+
+msgid "Qiangjin"
+msgstr "搶金"
+
+msgid "Quadruple Chow"
+msgstr "四順子"
+
+msgid "Quadruple Triplets"
+msgstr "四刻子"
+
+msgid "Quint"
+msgstr "五連子"
+
+msgid "Quints #1"
+msgstr "五連子#1"
+
+msgid "Quints #2"
+msgstr "五連子#2"
+
+msgid "Quints #3"
+msgstr "五連子#3"
+
+msgid "Quints #4"
+msgstr "五連子#4"
+
+msgid "R"
+msgstr "R"
+
 msgid "Randomize mods"
 msgstr "隨機規則"
 
+msgid "Ready Hand"
+msgstr "立直"
+
+msgid "Red Dragon"
+msgstr "紅中"
+
 msgid "Reduces tiles in hand from 13 to 12. The goal is to achieve a tenpai hand rather than a winning hand. The idea is that your 13th tile is replaced with an invisible 'joker' tile that can be used to complete any hand."
 msgstr "手牌減至12張，目標為聽牌而非和牌。第13張牌視為可完成任意牌型的隱形'萬能牌'。"
+
+msgid "Remove Flowers"
+msgstr "移除花牌"
+
+msgid "Remove all eight flowers from the wall."
+msgstr "從牌牆移除所有八張花牌"
 
 msgid "Removes limit hands. Score grows exponentially with han according to the formula 4 * fu * 2^(2+han). Not recommended with tobi enabled."
 msgstr "移除役滿限制。分數按公式4×符×2^(2+翻)計算。不建議與擊飛規則同時使用。"
@@ -1192,11 +2656,44 @@ msgstr "連字混一色"
 msgid "Replace the wall with 16 copies of each bamboo tile. Includes 10s if Ten is enabled."
 msgstr "將所有牌替換為16張索子(若啟用'十'規則則包含10索)。"
 
+msgid "Replaceable Fly Joker"
+msgstr "可替換百搭牌"
+
 msgid "Replaces one of each tile with a blue 'galaxy' tile that acts as a wildcard of its number. For example, galaxy 3s can be used as 3m, 3p, or 3s. Galaxy winds are wind wildcards, and galaxy dragons are dragon wildcards."
 msgstr "每種牌替換一張藍色'銀河牌'(數字萬能牌)。例如銀河3索可當3萬/3筒/3索使用。風牌與三元牌同理。"
 
 msgid "Reset mods to default"
 msgstr "重置規則"
+
+msgid "Reveal and set aside 3 tiles"
+msgstr "展示並置於一旁3張牌"
+
+msgid "Reveal flower"
+msgstr "展示花牌"
+
+msgid "Reveal fly"
+msgstr "展示百搭牌"
+
+msgid "Reveal joker"
+msgstr "展示百搭牌"
+
+msgid "Reveal next tile from wall"
+msgstr "展示牌牆下一張牌"
+
+msgid "Reveal three tiles and uradora"
+msgstr "展示三張牌及裏寶牌"
+
+msgid "Revealed Tiles"
+msgstr "展示牌"
+
+msgid "Reverse Dora"
+msgstr "逆寶牌"
+
+msgid "Reversible Tiles"
+msgstr "可翻轉牌"
+
+msgid "Reversible tiles"
+msgstr "可翻轉牌"
 
 msgid "Riichi"
 msgstr "立直"
@@ -1222,8 +2719,26 @@ msgstr "嶺上開花"
 msgid "Rinshan Pao"
 msgstr "嶺上包"
 
+msgid "Robbing The Kong"
+msgstr "搶槓"
+
+msgid "Robbing a Gong"
+msgstr "搶槓"
+
+msgid "Robbing a Kong"
+msgstr "搶槓"
+
+msgid "Robbing the Gold"
+msgstr "搶金"
+
+msgid "Robbing the Kong"
+msgstr "搶槓"
+
 msgid "Ron"
 msgstr "榮和"
+
+msgid "Ron previous discard"
+msgstr "榮和前一張捨牌"
 
 msgid "Room settings"
 msgstr "房間設置"
@@ -1258,11 +2773,23 @@ msgstr "綠一色"
 msgid "Ryuuiisourin"
 msgstr "綠一色輪"
 
+msgid "Ryuuka Tsumo"
+msgstr "龍華自摸"
+
 msgid "Ryuukyoku"
 msgstr "流局"
 
+msgid "Ryuumonbuchi Touka"
+msgstr "龍門淵透華"
+
+msgid "Sagimori Arata"
+msgstr "鷺森新"
+
 msgid "Sakicards v1.3"
 msgstr "咲卡v1.3"
+
+msgid "Same Number Bonus"
+msgstr "同數獎勵"
 
 msgid "Sanankon"
 msgstr "三暗混刻"
@@ -1312,26 +2839,119 @@ msgstr "混一氣通貫"
 msgid "Sanshoku Sujipaikou"
 msgstr "三色筋牌刻"
 
+msgid "Sawamura Tomoki"
+msgstr "澤村智紀"
+
+msgid "Scoring"
+msgstr "計分"
+
+msgid "Sea Floor"
+msgstr "海底"
+
+msgid "Seat Flower"
+msgstr "自風花"
+
+msgid "Seat King"
+msgstr "自風王"
+
+msgid "Seat Queen"
+msgstr "自風后"
+
+msgid "Seat Season"
+msgstr "自風季"
+
 msgid "Seat Wind"
 msgstr "自風"
 
 msgid "Sekinin Barai"
 msgstr "責任支付"
 
+msgid "Sekinin Barai (Pao)"
+msgstr "責任払い（包）"
+
+msgid "Select a tile to pass across"
+msgstr "選擇一張牌傳給對家"
+
+msgid "Select order to place remaining tiles (second selection is haitei)"
+msgstr "選擇剩餘牌放置順序（第二選擇為海底牌）"
+
+msgid "Select three tiles to pass across"
+msgstr "選擇三張牌傳給對家"
+
+msgid "Select three tiles to pass left"
+msgstr "選擇三張牌傳給上家"
+
+msgid "Select three tiles to pass right"
+msgstr "選擇三張牌傳給下家"
+
+msgid "Select two tiles to pass across"
+msgstr "選擇兩張牌傳給對家"
+
+msgid "Self Draw"
+msgstr "自摸"
+
+msgid "Self Drawn Melded Hand"
+msgstr "自摸副露手"
+
+msgid "Self Khàn"
+msgstr "暗槓"
+
+msgid "Self Kong"
+msgstr "暗槓"
+
+msgid "Self-Drawn"
+msgstr "自摸"
+
+msgid "Senoo Kaori"
+msgstr "妹尾香織"
+
 msgid "Sequences can wrap (891, 912)."
 msgstr "允許順子循環(891/912)。"
+
+msgid "Sequences can wrap (891, 912). Winds and dragons can make sequences. You can chii from any direction."
+msgstr "順子可循環(891, 912)。風牌和箭牌可組成順子。可從任何方向吃牌"
 
 msgid "Sequences can wrap (891, 912). Winds and dragons can make sequences. You can chii from any direction. Chiitoitsu is disabled. Open kokushi is allowed and worth 3 han."
 msgstr "允許順子循環(891/912)且可用字牌組成順子。可從任意方向吃牌。禁用七對子。允許明牌國士無雙(3番)。"
 
+msgid "Set 10 tiles aside faceup"
+msgstr "將10張牌面朝上置於一旁"
+
+msgid "Set aside 4th tile from discards"
+msgstr "將捨牌中第4張牌置於一旁"
+
 msgid "Sets the goal points before the game can end. If the game reaches South 4 (or East 4, in the case of tonpuu) and every player is below [goal] points, play continues to the West (South) round until someone surpasses [goal] points, or at the end of West 4 (South 4)."
 msgstr "設置終局目標分數。若南4局(東風戰為東4局)結束時無人達標，則繼續西場(南場)直至有人達標或西4局(南4局)結束。"
+
+msgid "Seven Consecutive Pairs"
+msgstr "七對子"
+
+msgid "Seven Flower Bonus"
+msgstr "七花獎勵"
+
+msgid "Seven Flowers"
+msgstr "七花"
+
+msgid "Seven Flowers Robbing Eighth"
+msgstr "七花搶八"
+
+msgid "Seven Pairs"
+msgstr "七對子"
+
+msgid "Seven Shifted Pairs"
+msgstr "七對移位"
 
 msgid "Shanron Chonchu"
 msgstr "雙龍爭珠"
 
 msgid "Shenyang"
 msgstr "瀋陽"
+
+msgid "Sheung"
+msgstr "上"
+
+msgid "Shibuya Takami"
+msgstr "澀谷高美"
 
 msgid "Shiiaru Raotai"
 msgstr "十二落抬"
@@ -1342,11 +2962,23 @@ msgstr "十三不搭"
 msgid "Shiisanuushi"
 msgstr "十三無靠"
 
+msgid "Shimizudani Ryuuka"
+msgstr "清水谷龍華"
+
 msgid "Shiny Dora"
 msgstr "閃光寶牌"
 
 msgid "Shiro Pocchi"
 msgstr "白波奇"
+
+msgid "Shirouzu Mairu"
+msgstr "白水舞留"
+
+msgid "Shishihara Sawaya"
+msgstr "宍原沙和也"
+
+msgid "Short Straight"
+msgstr "一氣通貫"
 
 msgid "Shouchikurin"
 msgstr "小竹林"
@@ -1372,6 +3004,9 @@ msgstr "小四喜"
 msgid "Shoutate"
 msgstr "小立直"
 
+msgid "Show Nearest Hands"
+msgstr "顯示最近手牌"
+
 msgid "Show Waits"
 msgstr "顯示待牌"
 
@@ -1393,8 +3028,56 @@ msgstr "四川血戰麻將。換牌/清空花色/直至三人和牌(血戰結束
 msgid "Singaporean"
 msgstr "新加坡"
 
+msgid "Single Wait"
+msgstr "單騎待"
+
+msgid "Singles and Pairs #1"
+msgstr "單騎與對子#1"
+
+msgid "Singles and Pairs #2"
+msgstr "單騎與對子#2"
+
+msgid "Singles and Pairs #3"
+msgstr "單騎與對子#3"
+
+msgid "Singles and Pairs #4"
+msgstr "單騎與對子#4"
+
+msgid "Singles and Pairs #5"
+msgstr "單騎與對子#5"
+
+msgid "Singles and Pairs #6"
+msgstr "單騎與對子#6"
+
 msgid "Skip"
 msgstr "跳過"
+
+msgid "Skip Charleston"
+msgstr "跳過查爾斯頓"
+
+msgid "Skip extra turn"
+msgstr "跳過額外回合"
+
+msgid "Skip extra turn to discard facedown"
+msgstr "跳過額外回合並暗槓"
+
+msgid "Small Four Winds"
+msgstr "小四喜"
+
+msgid "Small Three Dragons"
+msgstr "小三元"
+
+msgid "Small Three Similar Triplets"
+msgstr "小三同刻"
+
+msgid "Small Three Winds"
+msgstr "小三風"
+
+msgid "Small Triple Triplets"
+msgstr "小三刻"
+
+msgid "Someya Mako"
+msgstr "染谷真子"
 
 msgid "Sorry, there are currently no tutorials for this ruleset!"
 msgstr "抱歉，目前沒有此規則集的教程！"
@@ -1405,11 +3088,17 @@ msgstr "來源"
 msgid "Souzu"
 msgstr "索子"
 
+msgid "Soọc (索)"
+msgstr "索子"
+
 msgid "Space Mahjong"
 msgstr "太空麻將"
 
 msgid "Special thanks to our beta testers:"
 msgstr "特別感謝測試人員："
+
+msgid "Speed Mahjong"
+msgstr "快速麻雀"
 
 msgid "Star Suit (beta)"
 msgstr "星子(測試版)"
@@ -1423,8 +3112,17 @@ msgstr "起始分數"
 msgid "Starting game..."
 msgstr "遊戲開始中..."
 
+msgid "Steal tile and declare riichi"
+msgstr "搶牌並宣告立直"
+
 msgid "Sudden Death"
 msgstr "突然死亡"
+
+msgid "Suehara Kyouko"
+msgstr "末原恭子"
+
+msgid "Suit Bonus"
+msgstr "花色獎勵"
 
 msgid "Sujipaikou"
 msgstr "筋牌刻"
@@ -1462,8 +3160,68 @@ msgstr "四喜七對子"
 msgid "Suuzuukou"
 msgstr "四字刻"
 
+msgid "Swap 1"
+msgstr "交換1"
+
+msgid "Swap 2"
+msgstr "交換2"
+
+msgid "Swap a discard with same suit in hand"
+msgstr "用手牌同花色牌交換捨牌"
+
+msgid "Swap a number tile with any discarded wind tile"
+msgstr "用數字牌交換任何捨棄的風牌"
+
+msgid "Swap a number tile with any same number discard"
+msgstr "用數字牌交換任何相同數字的捨牌"
+
+msgid "Swap dora indicator with same suit in hand"
+msgstr "用手牌同花色牌交換寶牌指示牌"
+
+msgid "Swap for exposed joker"
+msgstr "交換已展示的百搭牌"
+
+msgid "Swap last discard with a terminal/honor"
+msgstr "用么九牌/字牌交換最後一張捨牌"
+
+msgid "Swap open melds"
+msgstr "交換副露組"
+
+msgid "Swap out dora indicator"
+msgstr "交換出寶牌指示牌"
+
+msgid "Swap tile with aside"
+msgstr "用一旁牌交換"
+
+msgid "Swap two tiles"
+msgstr "交換兩張牌"
+
+msgid "Swap with kamicha"
+msgstr "與上家交換"
+
+msgid "Swap with shimocha"
+msgstr "與下家交換"
+
+msgid "Swap with toimen"
+msgstr "與對家交換"
+
+msgid "Tai"
+msgstr "台"
+
 msgid "Taiwanese"
 msgstr "台灣"
+
+msgid "Takakamo Shizuno"
+msgstr "高鴨靜乃"
+
+msgid "Take extra turn"
+msgstr "獲得額外回合"
+
+msgid "Takei Hisa"
+msgstr "武井久"
+
+msgid "Takimi Haru"
+msgstr "瀧見春"
 
 msgid "Tanfonhou"
 msgstr "斷紅和"
@@ -1471,17 +3229,38 @@ msgstr "斷紅和"
 msgid "Tanyao"
 msgstr "斷幺九"
 
+msgid "Tell shimocha/kamicha to swap"
+msgstr "告知下家/上家交換"
+
+msgid "Tell shimocha/toimen to swap"
+msgstr "告知下家/對家交換"
+
+msgid "Tell toimen/kamicha to swap"
+msgstr "告知對家/上家交換"
+
 msgid "Ten"
 msgstr "十"
 
+msgid "Ten Identical Tiles"
+msgstr "十同牌"
+
 msgid "Tenhou"
 msgstr "天和"
+
+msgid "Tenpai Payments"
+msgstr "聽牌支付"
 
 msgid "Tenpairenchan"
 msgstr "聽牌連莊"
 
 msgid "Tenpaiyame"
 msgstr "聽牌止步"
+
+msgid "Terminal Sequences"
+msgstr "老頭順子"
+
+msgid "Thay (萬)"
+msgstr "萬子"
 
 msgid "The classic riichi ruleset, now with an assortment of mods to pick and choose at your liking."
 msgstr "經典立直規則+可自由組合的多種變體。"
@@ -1492,14 +3271,128 @@ msgstr "下次摸牌為最後寶牌指示牌時終局。"
 msgid "The tsumo and ron buttons are enabled on every draw and discard. If you make an incorrect win call, your hand is dead and you cannot make a win call for the remainder of the round."
 msgstr "每次摸牌/捨牌時都可自摸/榮和。誤和則手牌作廢且本局不可再和。"
 
+msgid "Thirteen Orphans"
+msgstr "國士無雙"
+
+msgid "Thirteen Terminals"
+msgstr "十三老頭"
+
+msgid "Thirteen Unconnected"
+msgstr "十三不搭"
+
+msgid "Three Concealed Pungs"
+msgstr "三暗刻"
+
+msgid "Three Concealed Triplets"
+msgstr "三暗刻"
+
+msgid "Three Consecutive Pairs"
+msgstr "三連對"
+
+msgid "Three Consecutive Pungs"
+msgstr "三連刻"
+
+msgid "Three Consecutive Triplets"
+msgstr "三連刻"
+
+msgid "Three Dragons Seven Pairs"
+msgstr "三元七對子"
+
+msgid "Three Fan Minimum"
+msgstr "三翻限制"
+
+msgid "Three Gold Knockdown"
+msgstr "三金倒"
+
+msgid "Three Great Scholars"
+msgstr "大三賢"
+
+msgid "Three Identical Pairs"
+msgstr "三同對"
+
+msgid "Three Identical Sequences"
+msgstr "三色同順"
+
+msgid "Three Kong"
+msgstr "三槓"
+
+msgid "Three Kongs"
+msgstr "三槓"
+
+msgid "Three Lesser Scholars"
+msgstr "小三賢"
+
+msgid "Three Meld Penalty"
+msgstr "三副露懲罰"
+
+msgid "Three Mixed Linked Sequences"
+msgstr "三色連順"
+
+msgid "Three Mixed Shifted Sequences"
+msgstr "三色移位順"
+
+msgid "Three Mixed Shifted Triplets"
+msgstr "三色移位刻"
+
+msgid "Three Mixed Small Shifted Triplets"
+msgstr "三色小移位刻"
+
+msgid "Three Number Hand"
+msgstr "三色手"
+
+msgid "Three Pure Linked Sequences"
+msgstr "一色連順"
+
+msgid "Three Pure Shifted Sequences"
+msgstr "一色移位順"
+
+msgid "Three Pure Shifted Triplets"
+msgstr "一色移位刻"
+
+msgid "Three Similar Sequences"
+msgstr "三色同順"
+
+msgid "Three Similar Triplets"
+msgstr "三色同刻"
+
+msgid "Three Small Shifted Triplets"
+msgstr "三小移位刻"
+
+msgid "Three-Sided Wait"
+msgstr "三面待"
+
+msgid "Three-Suited Terminal Chows"
+msgstr "三色老頭順"
+
 msgid "Three-player Riichi."
 msgstr "三人立直麻將。"
 
 msgid "Three-player mahjong with 16 flowers, a unique joker tile, and instant payouts."
 msgstr "三人麻將+16張花牌/特殊萬能牌/即時結算。"
 
+msgid "Thùng (筒)"
+msgstr "筒子"
+
 msgid "Tianjin"
 msgstr "天津"
+
+msgid "Tianjin Mahjong"
+msgstr "天津麻雀"
+
+msgid "Tile Hog"
+msgstr "一氣通貫"
+
+msgid "Tile Hog (2)"
+msgstr "一氣通貫 (2)"
+
+msgid "Tile Hog (3)"
+msgstr "一氣通貫 (3)"
+
+msgid "Tile Hog (4)"
+msgstr "一氣通貫 (4)"
+
+msgid "Ting"
+msgstr "聽牌"
 
 msgid "To be implemented:"
 msgstr "待實現："
@@ -1519,6 +3412,9 @@ msgstr "東北新幹線"
 msgid "Toitoi"
 msgstr "對對和"
 
+msgid "Ton"
+msgstr "東"
+
 msgid "Tonpuu"
 msgstr "東風戰"
 
@@ -1531,11 +3427,32 @@ msgstr "獨釣寒江雪"
 msgid "Toukanhou"
 msgstr "頭槓和"
 
+msgid "Toyouko Momoko"
+msgstr "東橫桃子"
+
+msgid "Triple Pung"
+msgstr "三暗刻"
+
 msgid "Triple Ron"
 msgstr "三家和"
 
+msgid "Triple Sequences"
+msgstr "三色同順"
+
+msgid "Triple Tile Hog"
+msgstr "三色一氣通貫"
+
+msgid "Triple Triplets"
+msgstr "三暗刻"
+
+msgid "Triplets"
+msgstr "刻子"
+
 msgid "Tsubame Gaeshi"
 msgstr "燕返"
+
+msgid "Tsujigaito Satoha"
+msgstr "辻垣內聰葉"
 
 msgid "Tsumo"
 msgstr "自摸"
@@ -1549,14 +3466,83 @@ msgstr "教程"
 msgid "Tutorials for ruleset:"
 msgstr "規則集教程："
 
+msgid "Two Concealed Kongs"
+msgstr "二暗槓"
+
+msgid "Two Concealed Pungs"
+msgstr "二暗刻"
+
+msgid "Two Concealed Triplets"
+msgstr "二暗刻"
+
+msgid "Two Dragon Pungs"
+msgstr "二盃口"
+
+msgid "Two Identical Sequences"
+msgstr "一盃口"
+
+msgid "Two Identical Sequences Twice"
+msgstr "二盃口"
+
+msgid "Two Kong"
+msgstr "二槓"
+
+msgid "Two Kongs"
+msgstr "二槓"
+
+msgid "Two Melded Kongs"
+msgstr "二明槓"
+
+msgid "Two Number Hand"
+msgstr "二色手"
+
+msgid "Two Saki Cards"
+msgstr "二索牌"
+
+msgid "Two Shifted Triplets"
+msgstr "二連刻"
+
+msgid "Two Suits Only"
+msgstr "混一色"
+
+msgid "Two Terminal Chows"
+msgstr "老少副"
+
+msgid "Two-Fold Fortune"
+msgstr "兩重役"
+
 msgid "Two-player variant where the only tiles are bamboo tiles. Try not to chombo!"
 msgstr "二人索子專用麻將。注意不要犯規！"
 
 msgid "Two-player variant where you start with 34 tiles to make a mangan+ hand, and your remaining tiles are your discards."
 msgstr "二人變體：初始34張手牌需組成滿貫以上牌型，剩餘牌作為捨牌。"
 
+msgid "Tự ù"
+msgstr "自摸"
+
+msgid "Tổng (縂)"
+msgstr "總計"
+
+msgid "Ueshige Suzu"
+msgstr "上重鈴"
+
 msgid "Uma"
 msgstr "馬點"
+
+msgid "Under the Sea"
+msgstr "海底撈月"
+
+msgid "University Train"
+msgstr "大學線"
+
+msgid "Uno"
+msgstr "烏諾"
+
+msgid "Upper Four"
+msgstr "上家四"
+
+msgid "Upper Tiles"
+msgstr "上家牌"
 
 msgid "Ura"
 msgstr "裏寶牌"
@@ -1566,6 +3552,12 @@ msgstr "使用攢點數表"
 
 msgid "Using joker assignment"
 msgstr "使用鬼牌分配"
+
+msgid "Usuzawa Sae"
+msgstr "薄澤冴"
+
+msgid "Usuzumi Hatsumi"
+msgstr "薄墨初美"
 
 msgid "Uumensai"
 msgstr "五門齊"
@@ -1578,6 +3570,12 @@ msgstr "五筒開花"
 
 msgid "Uushin Tsuukan"
 msgstr "五心通貫"
+
+msgid "V"
+msgstr "五"
+
+msgid "Value Honor"
+msgstr "役牌"
 
 msgid "Variant:"
 msgstr "變體："
@@ -1597,11 +3595,20 @@ msgstr "查看日誌於"
 msgid "Visayan"
 msgstr "米沙鄢"
 
+msgid "Voided Suit"
+msgstr "清一色"
+
 msgid "WRC 2022"
 msgstr "2022世標"
 
+msgid "Wall"
+msgstr "牌山"
+
 msgid "Wareme"
 msgstr "裂縫"
+
+msgid "Warm Tiles"
+msgstr "溫牌"
 
 msgid "Washizu"
 msgstr "鷲巢"
@@ -1609,8 +3616,86 @@ msgstr "鷲巢"
 msgid "Welcome to Riichi Advanced!"
 msgstr "歡迎來到進階Riichi Advanced！"
 
+msgid "When any player discards a tile you can use to complete a triplet, you may call Pon to take that tile. Then it becomes your turn to discard."
+msgstr "當任何玩家打出的牌可以讓你完成刻子時，你可以喊「碰」來拿走那張牌。然後輪到你打牌。"
+
+msgid "When the player to your left discards a tile you can use to complete a 3 tile sequence, you may call Chii to take that tile instead of drawing."
+msgstr "當上家打出的牌可以讓你完成順子時，你可以喊「吃」來拿走那張牌而不需要摸牌。"
+
 msgid "When you tsumo, you get the same total points as if it was a ron payment. (Nondealer tsumo mangan splits north's payment, giving you 5000+3000 instead of 4000+2000.)"
 msgstr "自摸時獲得與榮和同總點數（子家自摸滿貫時北家支付拆分為5000+3000而非4000+2000）。"
+
+msgid "White Dragon"
+msgstr "白板"
+
+msgid "Wild Card Single Wait"
+msgstr "單騎聽牌"
+
+msgid "Win Condition"
+msgstr "和牌條件"
+
+msgid "Win On Baida"
+msgstr "白板成和"
+
+msgid "Win by self-draw with a closed hand."
+msgstr "門前清自摸和"
+
+msgid "Win on Kong"
+msgstr "槓上開花"
+
+msgid "Win with your first draw as non-dealer."
+msgstr "子家第一巡自摸和"
+
+msgid "Win with your initial hand as dealer."
+msgstr "天和"
+
+msgid "Wind Melds"
+msgstr "風牌刻子"
+
+msgid "Winds"
+msgstr "風牌"
+
+msgid "Winds and Dragons #1"
+msgstr "風牌與三元牌 #1"
+
+msgid "Winds and Dragons #2"
+msgstr "風牌與三元牌 #2"
+
+msgid "Winds and Dragons #3"
+msgstr "風牌與三元牌 #3"
+
+msgid "Winds and Dragons #4"
+msgstr "風牌與三元牌 #4"
+
+msgid "Winds and Dragons #5"
+msgstr "風牌與三元牌 #5"
+
+msgid "Winds and Dragons #6"
+msgstr "風牌與三元牌 #6"
+
+msgid "Winds and Dragons #7"
+msgstr "風牌與三元牌 #7"
+
+msgid "Winner"
+msgstr "和牌者"
+
+msgid "Within Five Discards"
+msgstr "五捨牌內"
+
+msgid "Within Seven Tiles"
+msgstr "七牌內"
+
+msgid "Within Ten Discards"
+msgstr "十捨牌內"
+
+msgid "Within Ten Tiles"
+msgstr "十牌內"
+
+msgid "Wu"
+msgstr "和"
+
+msgid "Yae Kobashiri"
+msgstr "八重小走"
 
 msgid "Yakitori"
 msgstr "燒鳥"
@@ -1618,11 +3703,74 @@ msgstr "燒鳥"
 msgid "Yaku"
 msgstr "役種"
 
+msgid "Yakuhai"
+msgstr "役牌"
+
 msgid "Yakuman"
 msgstr "役滿"
 
+msgid "Yoshitome Miharu"
+msgstr "吉留美春"
+
+msgid "You have no calls and your winning hand is the pattern 1112345678999 in one suit, plus one additional tile."
+msgstr "無鳴牌且和牌型為1112345678999加一張牌"
+
 msgid "You have the option to declare open riichi, which is worth 2 han but reveals your hand to the table. Open double riichi is 3 han."
 msgstr "可聲明明牌立直(2番但公開手牌)，明牌雙立直計3番。"
+
+msgid "You may also call ron on concealed kans, but only if you are tenpai for kokushi musou."
+msgstr "你也可以對暗槓喊「榮」，但必須是國士無雙聽牌狀態"
+
+msgid "You may win with one of the following:"
+msgstr "你可以通過以下方式之一和牌："
+
+msgid "You won off a double-sided sequence wait, with an all-sequence hand whose pair is not yakuhai."
+msgstr "兩面聽牌和牌，純順子手且雀頭非役牌"
+
+msgid "You won with eight flowers."
+msgstr "八花和"
+
+msgid "You won with seven flowers."
+msgstr "七花和"
+
+msgid "Your closed hand has a double sequence: two copies of the exact same sequence in one suit, like 123 123."
+msgstr "門前有同色同順兩組（例如123 123）"
+
+msgid "Your hand consists of only all-green tiles (23468 bamboo and green dragon)."
+msgstr "綠一色（23468索和發財）"
+
+msgid "Your hand consists of only honor tiles."
+msgstr "字一色"
+
+msgid "Your hand consists of only terminals."
+msgstr "斷么九"
+
+msgid "Your hand consists of seven pairs (repeats allowed)."
+msgstr "七對子（允許重複）"
+
+msgid "Your hand contains four kans."
+msgstr "四槓子"
+
+msgid "Your hand contains only tiles numbered 2-8."
+msgstr "斷么九（2-8的牌）"
+
+msgid "Your hand contains three kans."
+msgstr "三槓子"
+
+msgid "Your hand contains triplets or kans of all three dragons."
+msgstr "三元牌（三種龍刻子/槓子）"
+
+msgid "Your hand contains triplets or kans of three winds, plus a pair of the fourth wind."
+msgstr "三風刻加第四風雀頭"
+
+msgid "Your hand has three closed triplets in hand, and you won by self-drawing the fourth."
+msgstr "三暗刻自摸和"
+
+msgid "Your winning hand consists of one of each terminal/honor tile plus one forming a pair."
+msgstr "國士無雙（所有么九牌各一張加一對）"
+
+msgid "Yumeno Maho"
+msgstr "夢野真帆"
 
 msgid "Zan Sanma"
 msgstr "攢三麻"
@@ -1632,6 +3780,12 @@ msgstr "攢計分"
 
 msgid "Zan Shuugi"
 msgstr "攢酒規則"
+
+msgid "Zimo"
+msgstr "自摸"
+
+msgid "Zombie Blanks"
+msgstr "空白牌"
 
 msgid "Zung Jung"
 msgstr "中庸麻將"
@@ -1798,6 +3952,9 @@ msgstr "分值"
 msgid "west"
 msgstr "西"
 
+msgid "win_on"
+msgstr "和牌方式"
+
 msgid "with hand"
 msgstr "手牌"
 
@@ -1812,2187 +3969,6 @@ msgstr "價值"
 
 msgid "→"
 msgstr "→"
-
-msgid "(Agarirenchan) One honba stick is also added if the dealer (East wind) wins."
-msgstr "(連莊) 莊家(東風)和牌時，本場棒也增加1根。"
-
-msgid "(Kansai) 6 han if you have chiitoitsu honitsu."
-msgstr "(關西) 七對子混一色計6翻。"
-
-msgid "(Kansai) At the end of the game, chips are exchanged based on placement and points."
-msgstr "(關西) 遊戲結束時，根據名次和點數交換籌碼。"
-
-msgid "(Kansai) Everyone starts with 50000 points."
-msgstr "(關西) 所有人初始50000點。"
-
-msgid "(Kansai) In the south round only, the round repeats on exhaustive draws regardless of anyone's tenpai status."
-msgstr "(關西) 僅在南場，流局時無論聽牌狀態均連莊。"
-
-msgid "(Kansai) Non-kazoe yakuman ron is worth 10 chips instead of 5. Having all four flowers also awards 10 chips (ron) or 5 chips each (tsumo)."
-msgstr "(關西) 非累計役滿榮和值10籌碼(非5)。四花也獎勵10籌碼(榮和)或各5籌碼(自摸)。"
-
-msgid "(Kansai) Yakuman if you have chiitoitsu chinitsu."
-msgstr "(關西) 七對子清一色為役滿。"
-
-msgid "(Kansai) Yakuman if you have manzu honitsu."
-msgstr "(關西) 萬子混一色為役滿。"
-
-msgid "(Rinshan Pao) Dealing a discard called for kan by a player, who then immediately wins with rinshan, also counts, except you pay for the full hand (not just rinshan)."
-msgstr "(嶺上包) 供給他人開槓牌後立即嶺上開花和牌也適用，但需支付全額(不僅嶺上部分)。"
-
-msgid "(Sanma) The 2 to 8 of characters are removed from the wall."
-msgstr "(三麻) 萬子2-8從牌牆移除。"
-
-msgid "(Sanma) You cannot call chii in sanma."
-msgstr "(三麻) 三麻中不能吃牌。"
-
-msgid "(Sanma) You may declare north winds to draw a replacement tile from the dead wall. Each is worth 1 han. North winds are still usable to form pairs and triplets. If you are waiting on the north wind, you may ron a north wind declaration much like chankan (but you are not awarded chankan)."
-msgstr "(三麻) 可宣告北風從王牌補牌，每張計1翻。北風仍可用作對子或刻子。若聽北風，可像搶槓般榮和北風宣告(但不計搶槓)。"
-
-msgid "(Space Mahjong) Open kokushi musou is worth 3 han."
-msgstr "(宇宙麻雀) 明牌國士無雙計3翻。"
-
-msgid "(Suukantsu Pao) Dealing the last tile called for kan for a suukantsu hand also counts."
-msgstr "(四槓子包) 供給四槓子最後的槓牌也適用。"
-
-msgid "- (Chiitoitsu) Seven distinct pairs."
-msgstr "- (七對子) 七組不同對子。"
-
-msgid "- (Cosmic Riichi) Seven Pairs is again a possible winning hand."
-msgstr "- (宇宙立直) 七對子再次成為可能和牌形。"
-
-msgid "- (Kokushi Musou) All thirteen terminal/honor tiles plus one forming a pair."
-msgstr "- (國士無雙) 十三種幺九牌加一對子。"
-
-msgid "- (Space Mahjong) Seven Pairs is no longer a winning hand."
-msgstr "- (宇宙麻雀) 七對子不再作為和牌形。"
-
-msgid "- As soon as you draw a seventh flower, you may declare a win for an additional 3 Fan, or 8 Fan if you have eight flowers."
-msgstr "- 摸到第七張花牌時，可宣告和牌追加3番(八花則8番)。"
-
-msgid "- As soon as you draw an eighth flower, you may declare a win for an additional 8 Fan."
-msgstr "- 摸到第八張花牌時，可宣告和牌追加8番。"
-
-msgid "- Four sets (sequences or triplets) and a pair."
-msgstr "- 四組面子(順子或刻子)加一對子。"
-
-msgid "- Seven pairs (allows repeats)."
-msgstr "- 七對子(允許重複)。"
-
-msgid "1 Fan"
-msgstr "1番"
-
-msgid "1 han for each triplet of: dragons, wind matching the round marker, and wind matching your seat."
-msgstr "每組刻子計1翻：三元牌、場風牌、自風牌。"
-
-msgid "1 han if each of the 5 blocks in your hand contains a terminal or honor. 2 han if closed."
-msgstr "五組牌均含幺九牌計1翻(門前2翻)。"
-
-msgid "1 han if your hand contains the same number sequence in all three suits. 2 han if closed."
-msgstr "三色同順計1翻(門前2翻)。"
-
-msgid "1 han if your hand contains the sequences 123 456 789 in one suit. 2 han if closed."
-msgstr "一氣通貫計1翻(門前2翻)。"
-
-msgid "10 Fan"
-msgstr "10番"
-
-msgid "11 Fan"
-msgstr "11番"
-
-msgid "12 Fan"
-msgstr "12番"
-
-msgid "12 Tile Pao"
-msgstr "12牌包"
-
-msgid "13 Fan"
-msgstr "13番"
-
-msgid "2 Fan"
-msgstr "2番"
-
-msgid "2 han if each of the 5 blocks in your hand contains a terminal. 3 han if closed."
-msgstr "五組牌均含幺九牌計2翻(門前3翻)。"
-
-msgid "2 han if your hand contains only terminal and honor tiles."
-msgstr "混老頭計2翻。"
-
-msgid "2 han if your hand contains the same number triplet in all three suits."
-msgstr "三色同刻計2翻。"
-
-msgid "2 han if your hand has three closed triplets. A triplet formed by a self-draw win counts as closed."
-msgstr "三暗刻計2翻(自摸完成刻子也算暗刻)。"
-
-msgid "2 han if your hand is all triplets."
-msgstr "對對和計2翻。"
-
-msgid "2 han if your hand is comprised of one suit plus honor tiles. 3 han if closed."
-msgstr "混一色計2翻(門前3翻)。"
-
-msgid "2 han on top of yakuhai if you have two dragon triplets/kans and a dragon pair."
-msgstr "若有三元牌刻子/槓子兩組加對子，在役牌基礎上加2翻。"
-
-msgid "3 Fan"
-msgstr "3番"
-
-msgid "3 han if you have two double sequences, each being two copies of the exact same sequence in one suit, like 123 123. Such hands are not considered seven pairs."
-msgstr "二盃口計3翻(如123 123同花色雙順，不視為七對子)。"
-
-msgid "4 Fan"
-msgstr "4番"
-
-msgid "5 Fan"
-msgstr "5番"
-
-msgid "5 han if your hand is comprised of one suit only (no honor tiles). 6 han if closed."
-msgstr "清一色計5翻(門前6翻)。"
-
-msgid "6 Fan"
-msgstr "6番"
-
-msgid "7 Fan"
-msgstr "7番"
-
-msgid "8 Fan"
-msgstr "8番"
-
-msgid "9 Fan"
-msgstr "9番"
-
-msgid "A"
-msgstr "A"
-
-msgid "A hand with flowers declared cannot earn 1 fan from Concealed Hand."
-msgstr "宣告花牌的手牌無法獲得門清1番。"
-
-msgid "AMJFE Card (beta)"
-msgstr "AMJFE卡(測試版)"
-
-msgid "ATF Card"
-msgstr "ATF卡"
-
-msgid "Add seven pairs as a possible winning hand, worth 4 fan."
-msgstr "增加七對子作為可能和牌形，值4番。"
-
-msgid "Adds bonuses for obtaining 7 or 8 flowers. You can also allow instant win upon obtaining 7 or 8 flowers."
-msgstr "增加7或8花獎勵。可設定7或8花時立即和牌。"
-
-msgid "After Multiple Gongs"
-msgstr "多槓後"
-
-msgid "After Multiple Kongs"
-msgstr "多槓後"
-
-msgid "After a Flower"
-msgstr "花牌後"
-
-msgid "After a Gong"
-msgstr "槓後"
-
-msgid "After a Kong"
-msgstr "槓後"
-
-msgid "Aislinn Wishart"
-msgstr "艾斯琳·維沙特"
-
-msgid "All Animals"
-msgstr "全動物牌"
-
-msgid "All Called Triplets"
-msgstr "全明刻"
-
-msgid "All Called Triplets With Honors"
-msgstr "全明刻(含字牌)"
-
-msgid "All Chows"
-msgstr "全順子"
-
-msgid "All Even Pungs"
-msgstr "全偶刻"
-
-msgid "All Evens"
-msgstr "全偶數"
-
-msgid "All Fives"
-msgstr "全五"
-
-msgid "All Flowers"
-msgstr "全花牌"
-
-msgid "All Green"
-msgstr "綠一色"
-
-msgid "All Honors"
-msgstr "全字牌"
-
-msgid "All Honours"
-msgstr "全字牌"
-
-msgid "All Like Numbers"
-msgstr "全同數"
-
-msgid "All Odds"
-msgstr "全奇數"
-
-msgid "All Pungs"
-msgstr "全刻子"
-
-msgid "All Revealed"
-msgstr "全明"
-
-msgid "All Seasons"
-msgstr "全季牌"
-
-msgid "All Sequences"
-msgstr "全順子"
-
-msgid "All Sequences (Full)"
-msgstr "全順子(完整)"
-
-msgid "All Sequences With Honors"
-msgstr "全順子(含字牌)"
-
-msgid "All Sequences with Dot Eye"
-msgstr "全順子(筒眼)"
-
-msgid "All Simples"
-msgstr "斷幺九"
-
-msgid "All Sixteen Flowers"
-msgstr "全16花牌"
-
-msgid "All Terminals"
-msgstr "全幺九"
-
-msgid "All Terminals Or Honors"
-msgstr "全幺九或字牌"
-
-msgid "All Terminals and Honors"
-msgstr "混老頭"
-
-msgid "All Triplets"
-msgstr "全刻子"
-
-msgid "All Triplets With Honors"
-msgstr "全刻子(含字牌)"
-
-msgid "All Triplets with 1 and 9"
-msgstr "全19刻子"
-
-msgid "All Types"
-msgstr "全種類"
-
-msgid "Amae Koromo"
-msgstr "甘衣小衣"
-
-msgid "American"
-msgstr "美式"
-
-msgid "Anetai Toyone"
-msgstr "姉帶豐音"
-
-msgid "Anfuun"
-msgstr "暗風雲"
-
-msgid "Animal"
-msgstr "動物牌"
-
-msgid "Animal Tiles"
-msgstr "動物牌"
-
-msgid "Any Like Numbers #1"
-msgstr "任意同數#1"
-
-msgid "Any Like Numbers #2"
-msgstr "任意同數#2"
-
-msgid "Any Like Numbers #3"
-msgstr "任意同數#3"
-
-msgid "Arakawa Kei"
-msgstr "荒川慧"
-
-msgid "Aside Tiles"
-msgstr "側邊牌"
-
-msgid "At exhaustive draw, you are not considered tenpai if all four tiles of each wait is in hand: for example, 123456789m1111p. You may still declare riichi with such a hand, however."
-msgstr "流局時若所有待牌已在手(如123456789m1111p)不算聽牌，但仍可宣告立直。"
-
-msgid "Atago Hiroe"
-msgstr "愛宕洋惠"
-
-msgid "Atago Kinue"
-msgstr "愛宕絹惠"
-
-msgid "Atarashi Ako"
-msgstr "新子憧"
-
-msgid "Baida Pair Win"
-msgstr "白搭對子和"
-
-msgid "Baida Reuse"
-msgstr "白搭重用"
-
-msgid "Bao"
-msgstr "包"
-
-msgid "Base Points"
-msgstr "基本點"
-
-msgid "Bet 1000 to change wait to aside tiles"
-msgstr "下注1000點將待牌改為側邊牌"
-
-msgid "Bet half of points to flip 3 dora indicators"
-msgstr "下注半數點數翻轉3張寶牌指示牌"
-
-msgid "Big Four Winds"
-msgstr "大四喜"
-
-msgid "Big Ping Hu"
-msgstr "大平和"
-
-msgid "Big Three Dragons"
-msgstr "大三元"
-
-msgid "Big Three Winds"
-msgstr "大三風"
-
-msgid "Blessing of Earth"
-msgstr "地和"
-
-msgid "Blessing of Heaven"
-msgstr "天和"
-
-msgid "Blessing of Man"
-msgstr "人和"
-
-msgid "Bloody 30 Faan Jokers"
-msgstr "血戰30番鬼牌"
-
-msgid "Bonus Tiles"
-msgstr "懸賞牌"
-
-msgid "C"
-msgstr "C"
-
-msgid "Capturing the Five"
-msgstr "捉五"
-
-msgid "Card-Free (beta)"
-msgstr "免卡(測試版)"
-
-msgid "Challenge Dealer"
-msgstr "挑戰莊家"
-
-msgid "Challenge Dealer x2"
-msgstr "挑戰莊家x2"
-
-msgid "Chasing Riichi"
-msgstr "追立直"
-
-msgid "Chi"
-msgstr "吃"
-
-msgid "Chicken Hand"
-msgstr "雞和"
-
-msgid "Chii with priority"
-msgstr "優先吃"
-
-msgid "Chinese Yaku Names"
-msgstr "中文役名"
-
-msgid "Chinitsu Challenge"
-msgstr "清一色挑戰"
-
-msgid "Choe Myeonghwa"
-msgstr "崔明華"
-
-msgid "Chon"
-msgstr "沖"
-
-msgid "Choose a tile to draw"
-msgstr "選擇要摸的牌"
-
-msgid "Choose kamicha"
-msgstr "選擇上家"
-
-msgid "Choose shimocha"
-msgstr "選擇下家"
-
-msgid "Choose toimen"
-msgstr "選擇對家"
-
-msgid "Closed Straight"
-msgstr "門前一氣通貫"
-
-msgid "Closed Wait"
-msgstr "單騎待"
-
-msgid "Concealed Double Sequences"
-msgstr "門前二盃口"
-
-msgid "Concealed Gong"
-msgstr "暗槓"
-
-msgid "Concealed Hand"
-msgstr "門前清"
-
-msgid "Concealed Kong"
-msgstr "暗槓"
-
-msgid "Concealed Kongs"
-msgstr "暗槓"
-
-msgid "Concealed Pung"
-msgstr "暗刻"
-
-msgid "Concealed Pungs"
-msgstr "暗刻"
-
-msgid "Consecutive Run #1"
-msgstr "連續順#1"
-
-msgid "Consecutive Run #2"
-msgstr "連續順#2"
-
-msgid "Consecutive Run #3"
-msgstr "連續順#3"
-
-msgid "Consecutive Run #4"
-msgstr "連續順#4"
-
-msgid "Consecutive Run #5"
-msgstr "連續順#5"
-
-msgid "Consecutive Run #6"
-msgstr "連續順#6"
-
-msgid "Consecutive Run #7"
-msgstr "連續順#7"
-
-msgid "Consecutive Run #8"
-msgstr "連續順#8"
-
-msgid "Continue Charleston"
-msgstr "繼續查爾斯頓"
-
-msgid "D"
-msgstr "D"
-
-msgid "DC"
-msgstr "DC"
-
-msgid "DD"
-msgstr "DD"
-
-msgid "Dealer"
-msgstr "莊家"
-
-msgid "Dealer Continuation"
-msgstr "莊家連莊"
-
-msgid "Dealer Repeat"
-msgstr "莊家連莊"
-
-msgid "Dealer Repeats"
-msgstr "莊家連莊"
-
-msgid "Declare hand across dead"
-msgstr "宣告對家死牌"
-
-msgid "Declare hand on left dead"
-msgstr "宣告左家死牌"
-
-msgid "Declare hand on right dead"
-msgstr "宣告右家死牌"
-
-msgid "Declare iishanten"
-msgstr "宣告一向聽"
-
-msgid "Declare yaku"
-msgstr "宣告役"
-
-msgid "Different Patterns"
-msgstr "不同模式"
-
-msgid "Discard facedown"
-msgstr "蓋牌捨棄"
-
-msgid "Discard same tile again"
-msgstr "再次捨棄相同牌"
-
-msgid "Discardable Flowers"
-msgstr "可棄花牌"
-
-msgid "Discarded Triplets"
-msgstr "已棄刻子"
-
-msgid "Discarder pays 2x hand value, other players pay 1x."
-msgstr "放銃者付2倍，其他玩家付1倍"
-
-msgid "Done swapping"
-msgstr "交換完成"
-
-msgid "Double Concealed Double Sequences"
-msgstr "雙門前二盃口"
-
-msgid "Double Down"
-msgstr "雙倍下注"
-
-msgid "Double Identical Sequences"
-msgstr "雙同順"
-
-msgid "Double Luxury Seven Pairs"
-msgstr "雙倍役滿七對子"
-
-msgid "Double Pung"
-msgstr "雙刻"
-
-msgid "Double Sequences"
-msgstr "雙順"
-
-msgid "Double Short Straight"
-msgstr "雙短順"
-
-msgid "Double Terminal Sequences"
-msgstr "雙幺九順"
-
-msgid "Double Tile Hog"
-msgstr "雙牌壟斷"
-
-msgid "Double Triplets"
-msgstr "雙刻"
-
-msgid "Double Wild Card Set Wait"
-msgstr "雙鬼牌設定待牌"
-
-msgid "Double yakuman if your hand contains triplets or kans of all four winds."
-msgstr "四風刻子則雙倍役滿"
-
-msgid "Double yakuman if your hand has four closed triplets in hand, and you won by completing your pair."
-msgstr "四暗刻單騎達成時雙倍役滿"
-
-msgid "Double yakuman if your hand was 1112345678999 in one suit, and you won via its nine-sided wait."
-msgstr "純正九蓮寶燈達成時雙倍役滿"
-
-msgid "Double yakuman if your winning hand consists of one of each terminal/honor tile and you won with a thirteen-sided wait for the pair."
-msgstr "國士無雙十三面聽達成時雙倍役滿"
-
-msgid "Draft Character Card"
-msgstr "角色卡草稿"
-
-msgid "Dragon"
-msgstr "三元牌"
-
-msgid "Draw an extra tile and set it aside"
-msgstr "抽取額外牌並置於一旁"
-
-msgid "Draw aside tile"
-msgstr "抽取側邊牌"
-
-msgid "Draw from Suehara Kyouko's aside"
-msgstr "從末原恭子的側邊牌抽取"
-
-msgid "Draw from aside"
-msgstr "從側邊牌抽取"
-
-msgid "Draw from wall"
-msgstr "從牌牆抽取"
-
-msgid "Draw from your discards"
-msgstr "從自己的捨牌中抽取"
-
-msgid "Draws Reset Dealer Bonus"
-msgstr "流局時莊家連莊重置"
-
-msgid "Duel kamicha"
-msgstr "與上家對決"
-
-msgid "Duel shimocha"
-msgstr "與下家對決"
-
-msgid "Duel toimen"
-msgstr "與對家對決"
-
-msgid "Each 2000 Bet"
-msgstr "每注2000點"
-
-msgid "Earthly Hand"
-msgstr "地和"
-
-msgid "Earthly Win"
-msgstr "地和"
-
-msgid "East Wind"
-msgstr "東風"
-
-msgid "Edge Wait"
-msgstr "邊張聽牌"
-
-msgid "Eight Flower Win"
-msgstr "八花齊和"
-
-msgid "Eight Flowers"
-msgstr "八花"
-
-msgid "Eighteen Arhats"
-msgstr "十八羅漢"
-
-msgid "Enable head bump. In case of multiple hu, only the person closest in turn order gets the win."
-msgstr "啟用頭跳規則。多人同時和牌時，僅由順位最近者和牌"
-
-msgid "Everyone Pays On Discard"
-msgstr "放銃時全員支付"
-
-msgid "Exclusionary Rule"
-msgstr "除外規則"
-
-msgid "Eyes of the General"
-msgstr "將軍之眼"
-
-msgid "Ezaki Hitomi"
-msgstr "江崎仁美"
-
-msgid "F"
-msgstr "F"
-
-msgid "Faan"
-msgstr "番"
-
-msgid "Face"
-msgstr "正面"
-
-msgid "Facedown Tiles"
-msgstr "蓋牌"
-
-msgid "Fan"
-msgstr "番"
-
-msgid "Final Discard"
-msgstr "最後捨牌"
-
-msgid "Final Draw"
-msgstr "最後自摸"
-
-msgid "Final Tile"
-msgstr "最終牌"
-
-msgid "Five Concealed Triplets"
-msgstr "五暗刻"
-
-msgid "Five Consecutive Pairs"
-msgstr "一氣通貫七對子"
-
-msgid "Five Fan Minimum"
-msgstr "五番縛り"
-
-msgid "Five Mixed Small Shifted Triplets"
-msgstr "五連刻"
-
-msgid "Flip any discard facedown"
-msgstr "將任意捨牌蓋牌"
-
-msgid "Flower"
-msgstr "花牌"
-
-msgid "Flower Tiles"
-msgstr "花牌"
-
-msgid "Flowers"
-msgstr "花牌"
-
-msgid "Flowers Open Hand"
-msgstr "花牌鳴牌手"
-
-msgid "Fly"
-msgstr "飛牌"
-
-msgid "Forced Flowers"
-msgstr "強制花牌"
-
-msgid "Four Concealed Pungs"
-msgstr "四暗刻"
-
-msgid "Four Concealed Triplets"
-msgstr "四暗刻"
-
-msgid "Four Consecutive Triplets"
-msgstr "四連刻"
-
-msgid "Four Faces"
-msgstr "四面子"
-
-msgid "Four Flower"
-msgstr "四花"
-
-msgid "Four Fly"
-msgstr "四飛"
-
-msgid "Four Fly Win"
-msgstr "四飛和牌"
-
-msgid "Four Gongs"
-msgstr "四槓子"
-
-msgid "Four Great Blessings"
-msgstr "大四喜"
-
-msgid "Four Identical Sequences"
-msgstr "一色四順"
-
-msgid "Four Kong"
-msgstr "四槓子"
-
-msgid "Four Kongs"
-msgstr "四槓子"
-
-msgid "Four Lesser Blessings"
-msgstr "小四喜"
-
-msgid "Four Mixed Shifted Sequences"
-msgstr "四色四順"
-
-msgid "Four Mixed Shifted Triplets"
-msgstr "四色四刻"
-
-msgid "Four Mixed Small Shifted Triplets"
-msgstr "四連刻"
-
-msgid "Four Pure Shifted Chows"
-msgstr "一色四順"
-
-msgid "Four Pure Shifted Pungs"
-msgstr "一色四刻"
-
-msgid "Four Pure Shifted Sequences"
-msgstr "一色四順"
-
-msgid "Four Pure Shifted Triplets"
-msgstr "一色四刻"
-
-msgid "Four Pure Small Shifted Triplets"
-msgstr "四連刻"
-
-msgid "Four Quads"
-msgstr "四槓子"
-
-msgid "Four Season"
-msgstr "四季"
-
-msgid "Four Suits"
-msgstr "四色"
-
-msgid "Four Winds Seven Pairs"
-msgstr "四風子七對子"
-
-msgid "Four of a Kind"
-msgstr "四刻子"
-
-msgid "From NFNL Player"
-msgstr "來自NFNL玩家"
-
-msgid "Fukuji Mihoko"
-msgstr "福路美穗子"
-
-msgid "Full Bloom (East)"
-msgstr "滿開（東）"
-
-msgid "Full Bloom (Flowers)"
-msgstr "滿開（花）"
-
-msgid "Full Bloom (Green)"
-msgstr "滿開（綠）"
-
-msgid "Full Bloom (North)"
-msgstr "滿開（北）"
-
-msgid "Full Bloom (Red)"
-msgstr "滿開（紅）"
-
-msgid "Full Bloom (Seasons)"
-msgstr "滿開（季節）"
-
-msgid "Full Bloom (South)"
-msgstr "滿開（南）"
-
-msgid "Full Bloom (West)"
-msgstr "滿開（西）"
-
-msgid "Full Bloom (White)"
-msgstr "滿開（白）"
-
-msgid "Full Flush"
-msgstr "清一色"
-
-msgid "Fully Concealed Hand"
-msgstr "門前清自摸和"
-
-msgid "Funakubo Hiroko"
-msgstr "船久保浩子"
-
-msgid "Furiten Tsumo"
-msgstr "振聽自摸"
-
-msgid "Fuun"
-msgstr "風雲"
-
-msgid "Gold"
-msgstr "金牌"
-
-msgid "Golden Dragon"
-msgstr "金龍"
-
-msgid "Golden Pair"
-msgstr "金對子"
-
-msgid "Gong"
-msgstr "槓"
-
-msgid "Greater Honors and Knitted Tiles"
-msgstr "大車輪"
-
-msgid "Green Dragon"
-msgstr "綠發"
-
-msgid "H"
-msgstr "H"
-
-msgid "Haku Tsumo"
-msgstr "白板自摸"
-
-msgid "Half Flush"
-msgstr "混一色"
-
-msgid "Hanada Kirame"
-msgstr "花田煌"
-
-msgid "Hand of Earth"
-msgstr "地和"
-
-msgid "Hand of Heaven"
-msgstr "天和"
-
-msgid "Hand of Man"
-msgstr "人和"
-
-msgid "Hao Huiyu"
-msgstr "郝慧宇"
-
-msgid "Haramura Nodoka"
-msgstr "原村和"
-
-msgid "Heavenly Hand"
-msgstr "天和"
-
-msgid "Heavenly Win"
-msgstr "天和"
-
-msgid "Hefei Mahjong"
-msgstr "合肥麻將"
-
-msgid "Hell Wait"
-msgstr "地獄聽牌"
-
-msgid "Hidden Treasure"
-msgstr "裏寶牌"
-
-msgid "Hirose Sumire"
-msgstr "廣瀨菫"
-
-msgid "Hoa (花)"
-msgstr "花牌"
-
-msgid "Hong Kong Old Style"
-msgstr "香港舊式"
-
-msgid "Hu"
-msgstr "和牌"
-
-msgid "Hua"
-msgstr "花牌"
-
-msgid "Hỷ (喜)"
-msgstr "喜牌"
-
-msgid "Hợp (合)"
-msgstr "合牌"
-
-msgid "ILM Card"
-msgstr "ILM卡"
-
-msgid "Identical Sequences"
-msgstr "同順子"
-
-msgid "If someone calls kan to upgrade an open triplet, you may call ron on the added tile. Doing so awards chankan (1 han).)"
-msgstr "當有人加槓明刻時，你可以搶槓和牌（槍槓1番）"
-
-msgid "If someone kans your discard and tsumos off the replacement tile (rinshan), you pay the full amount."
-msgstr "若有人槓你的捨牌並嶺上開花，你需支付全額"
-
-msgid "If the dealer (East wind) wins, the round repeats."
-msgstr "莊家（東家）和牌時連莊"
-
-msgid "If you deal the last dragon called for a daisangen hand, or the last wind called for a daisuushii hand, you are responsible for that single yakuman payment if they tsumo, or half of the yakuman payment if they ron off someone else."
-msgstr "若你打出大三元的最後三元牌或大四喜的最後風牌，對方自摸時需支付役滿全額，榮和時支付半額"
-
-msgid "If you deal the last tile called for kan for a suukantsu hand, you are responsible for that single yakuman payment if they tsumo, or half of the yakuman payment if they ron off someone else."
-msgstr "若你打出四槓子的最後槓牌，對方自摸時需支付役滿全額，榮和時支付半額"
-
-msgid "If you discarded a tile called as someone's fourth call, you are liable for paying for their hand if they win."
-msgstr "若你打出的牌成為他人第四次鳴牌，對方和牌時你需負擔支付責任"
-
-msgid "If you kan and then tsumo on the replacement tile, you are awarded rinshan (1 han)."
-msgstr "若槓牌後嶺上自摸，可獲得嶺上開花（1番）"
-
-msgid "If your discard is called by another player with three existing calls (yours being the fourth), you are liable for paying their whole hand if they win."
-msgstr "若你打出的牌成為他人第四次鳴牌，對方和牌時你需負擔全額支付"
-
-msgid "Ikeda Kana"
-msgstr "池田華菜"
-
-msgid "In event of an exhaustive draw, players not in tenpai pay players in tenpai. 3000 points total are paid, with the payment split among the non-tenpai players. If all or no players are tenpai, no payment occurs."
-msgstr "流局時，未聽牌者需支付聽牌者共3000點（由未聽牌者分攤）。若全員聽牌或未聽牌則不需支付"
-
-msgid "Inazuma Riichi"
-msgstr "閃電立直"
-
-msgid "Initial Score"
-msgstr "初始分數"
-
-msgid "Inoue Jun"
-msgstr "井上純"
-
-msgid "Interrupt call"
-msgstr "中斷鳴牌"
-
-msgid "Interrupt facedown discard"
-msgstr "中斷蓋牌"
-
-msgid "Interrupt swap"
-msgstr "中斷交換"
-
-msgid "Iwadate Yuan"
-msgstr "岩館圓"
-
-msgid "Iwato Kasumi"
-msgstr "岩戶霞"
-
-msgid "JC"
-msgstr "JC"
-
-msgid "Jihai"
-msgstr "字牌"
-
-msgid "Jindai Komaki"
-msgstr "神代小蒔"
-
-msgid "Joker"
-msgstr "百搭牌"
-
-msgid "K"
-msgstr "K"
-
-msgid "Kainou Yoshiko"
-msgstr "海野良子"
-
-msgid "Kajiki Yumi"
-msgstr "梶原由美"
-
-msgid "Kakura Kurumi"
-msgstr "鹿倉胡桃"
-
-msgid "Kan (closed)"
-msgstr "暗槓"
-
-msgid "Kanbara Satomi"
-msgstr "神原知美"
-
-msgid "Karijuku Tomoe"
-msgstr "雁櫓巴"
-
-msgid "Kataoka Yuuki"
-msgstr "片岡優希"
-
-msgid "Khàn"
-msgstr "槓"
-
-msgid "Knitted Honors"
-msgstr "組合字牌"
-
-msgid "Knitted Short Straight"
-msgstr "組合一氣通貫"
-
-msgid "Knitted Straight"
-msgstr "組合一氣通貫"
-
-msgid "Knitted Terminal Sequences"
-msgstr "組合幺九牌"
-
-msgid "Knitted Triplets"
-msgstr "組合刻子"
-
-msgid "Kong Blossom"
-msgstr "槓上開花"
-
-msgid "Kong On Kong"
-msgstr "槓上槓"
-
-msgid "Kosegawa Shiromi"
-msgstr "小瀨川白望"
-
-msgid "Kunihiro Hajime"
-msgstr "國廣一"
-
-msgid "Last Tile"
-msgstr "最後牌"
-
-msgid "Last Tile (discard)"
-msgstr "河底牌"
-
-msgid "Last Tile (draw)"
-msgstr "海底牌"
-
-msgid "Last Tile Claim"
-msgstr "河底撈魚"
-
-msgid "Last Tile Discard"
-msgstr "河底牌"
-
-msgid "Last Tile Draw"
-msgstr "海底牌"
-
-msgid "Lesser Honors and Knitted Tiles"
-msgstr "小車輪"
-
-msgid "Limit"
-msgstr "滿貫"
-
-msgid "Little Four Winds"
-msgstr "小四喜"
-
-msgid "Little Ping Hu"
-msgstr "小平和"
-
-msgid "Little Three Dragons"
-msgstr "小三元"
-
-msgid "Little Three Winds"
-msgstr "小三風"
-
-msgid "Look at next two tiles in the wall"
-msgstr "查看牌牆下兩張牌"
-
-msgid "Lower Four"
-msgstr "下家四"
-
-msgid "Lower Tiles"
-msgstr "下家牌"
-
-msgid "Lucky Sevens #1"
-msgstr "幸運七 #1"
-
-msgid "Lucky Sevens #2"
-msgstr "幸運七 #2"
-
-msgid "Lucky Sevens #3"
-msgstr "幸運七 #3"
-
-msgid "Luxury Seven Pairs"
-msgstr "七對子"
-
-msgid "M"
-msgstr "M"
-
-msgid "MahjLife Card"
-msgstr "MahjLife卡"
-
-msgid "Manzu Honitsu"
-msgstr "萬子混一色"
-
-msgid "Mase Yuuko"
-msgstr "間瀨遊子"
-
-msgid "Matano Seiko"
-msgstr "又野誠子"
-
-msgid "Matched Royalty"
-msgstr "對子役牌"
-
-msgid "Matsumi Kuro"
-msgstr "松實玄"
-
-msgid "Matsumi Yuu"
-msgstr "松實宥"
-
-msgid "Maya Yukiko"
-msgstr "真屋由紀子"
-
-msgid "Megan Davin"
-msgstr "梅根·戴文"
-
-msgid "Melded Hand"
-msgstr "鳴牌手"
-
-msgid "Melded Kong"
-msgstr "明槓"
-
-msgid "Middle Tiles"
-msgstr "中張牌"
-
-msgid "Mixed Double Chow"
-msgstr "二色同順"
-
-msgid "Mixed Flush"
-msgstr "混一色"
-
-msgid "Mixed Greater Terminals"
-msgstr "混老頭"
-
-msgid "Mixed Lesser Terminals"
-msgstr "混老頭"
-
-msgid "Mixed One-Suit"
-msgstr "混一色"
-
-msgid "Mixed Outside Hand"
-msgstr "混全帶幺九"
-
-msgid "Mixed Shifted Chows"
-msgstr "二色同順"
-
-msgid "Mixed Shifted Linked Sequences"
-msgstr "二色二順"
-
-msgid "Mixed Shifted Pungs"
-msgstr "二色同刻"
-
-msgid "Mixed Straight"
-msgstr "一氣通貫"
-
-msgid "Mixed Terminals"
-msgstr "混老頭"
-
-msgid "Mixed Triple Chow"
-msgstr "三色同順"
-
-msgid "Miyanaga Saki"
-msgstr "宮永咲"
-
-msgid "Miyanaga Teru"
-msgstr "宮永照"
-
-msgid "Motouchi Naruka"
-msgstr "本內成香"
-
-msgid "Move haitei tile from live wall to dead wall"
-msgstr "將海底牌移至王牌區"
-
-msgid "Move two tiles instead"
-msgstr "改為移動兩張牌"
-
-msgid "Mủn"
-msgstr "門"
-
-msgid "NMJL 2025 Card"
-msgstr "NMJL 2025卡"
-
-msgid "Nagashi Mangan"
-msgstr "流局滿貫"
-
-msgid "Nanpo Kazue"
-msgstr "南波和惠"
-
-msgid "Nelly Virsaladze"
-msgstr "內莉·維爾薩拉澤"
-
-msgid "Nguyên (元)"
-msgstr "元牌"
-
-msgid "Nine Gates"
-msgstr "九蓮寶燈"
-
-msgid "Nine-Tile Straight"
-msgstr "一氣通貫"
-
-msgid "Ningbo Mahjong"
-msgstr "寧波麻將"
-
-msgid "No Baida"
-msgstr "無白搭"
-
-msgid "No Bams"
-msgstr "無索子"
-
-msgid "No Chii"
-msgstr "不可吃"
-
-msgid "No Craks"
-msgstr "無萬子"
-
-msgid "No Dots"
-msgstr "無筒子"
-
-msgid "No Fifth Tile Tenpai"
-msgstr "無第五張聽牌"
-
-msgid "No Flowers"
-msgstr "無花牌"
-
-msgid "No Flowers or Honors"
-msgstr "無花牌字牌"
-
-msgid "No Flowers, Honors, or Triplets"
-msgstr "無花牌字牌刻子"
-
-msgid "No Flowers, No Leaves"
-msgstr "無花牌風牌"
-
-msgid "No Gold Flowers"
-msgstr "無金花"
-
-msgid "No Honors or Flowers"
-msgstr "無字牌無花牌"
-
-msgid "No Jokers"
-msgstr "無百搭牌"
-
-msgid "No Jokers Mahjong League 2024"
-msgstr "無百搭麻雀聯盟2024"
-
-msgid "No Terminals"
-msgstr "無么九牌"
-
-msgid "No Win"
-msgstr "不可和牌"
-
-msgid "No Yaku"
-msgstr "無役"
-
-msgid "No flowers"
-msgstr "無花牌"
-
-msgid "No swap"
-msgstr "不可交換"
-
-msgid "North Wind"
-msgstr "北風"
-
-msgid "Notenrenchan"
-msgstr "無聽連莊"
-
-msgid "Offer 0"
-msgstr "提供0"
-
-msgid "Offer 1"
-msgstr "提供1"
-
-msgid "Offer 2"
-msgstr "提供2"
-
-msgid "Offer 3"
-msgstr "提供3"
-
-msgid "One Kong"
-msgstr "一槓"
-
-msgid "One Suji Only"
-msgstr "僅限一筋"
-
-msgid "One Voided Suit"
-msgstr "缺一門"
-
-msgid "Onjouji Toki"
-msgstr "恩上寺時生"
-
-msgid "Only One Flower"
-msgstr "僅一張花牌"
-
-msgid "Only allow wins worth 3+ fan."
-msgstr "只允許3翻以上和牌"
-
-msgid "Oohoshi Awai"
-msgstr "大星淡"
-
-msgid "Open Kokushi Musou"
-msgstr "明國士無雙"
-
-msgid "Open Kong"
-msgstr "明槓"
-
-msgid "Open Nine Gates"
-msgstr "明九蓮寶燈"
-
-msgid "Open Straight"
-msgstr "明一氣通貫"
-
-msgid "Out on a Replacement"
-msgstr "嶺上開花"
-
-msgid "Out with Replacement Tile"
-msgstr "嶺上開花"
-
-msgid "Outside Hand"
-msgstr "混老頭"
-
-msgid "PIE"
-msgstr "PIE"
-
-msgid "Pair"
-msgstr "對子"
-
-msgid "Pao"
-msgstr "包牌"
-
-msgid "Pass"
-msgstr "過"
-
-msgid "Pass no tiles across"
-msgstr "不可傳牌"
-
-msgid "Pay 1500 to decline the swap"
-msgstr "支付1500點拒絕交換"
-
-msgid "Perform swap"
-msgstr "執行交換"
-
-msgid "Persistent Cards"
-msgstr "永久牌"
-
-msgid "Phán"
-msgstr "判"
-
-msgid "Phình"
-msgstr "碰"
-
-msgid "Phỗng"
-msgstr "碰"
-
-msgid "Place 2 tiles at the end of the dead wall (last selection is first kan draw)"
-msgstr "將2張牌置於王牌末尾（最後選擇為第一張槓牌）"
-
-msgid "Place 4 tiles at the end of the live wall (last selection is haitei)"
-msgstr "將4張牌置於活牌牆末尾（最後選擇為海底牌）"
-
-msgid "Pon red dragon with priority"
-msgstr "優先碰紅中"
-
-msgid "Prevailing Wind"
-msgstr "場風"
-
-msgid "Prevalent Wind"
-msgstr "場風"
-
-msgid "Pts"
-msgstr "點"
-
-msgid "Pung of Honors"
-msgstr "字牌刻子"
-
-msgid "Pung of Terminals"
-msgstr "么九刻子"
-
-msgid "Pure Double Chow"
-msgstr "純正二杯口"
-
-msgid "Pure Double Identical Sequences"
-msgstr "純正同色二順"
-
-msgid "Pure Double Short Straight"
-msgstr "純正一氣通貫二順"
-
-msgid "Pure Double Terminal Sequences"
-msgstr "純正老頭二順"
-
-msgid "Pure Flush"
-msgstr "清一色"
-
-msgid "Pure Greater Terminals"
-msgstr "純正大老頭"
-
-msgid "Pure Hand"
-msgstr "純正手牌"
-
-msgid "Pure Lesser Terminals"
-msgstr "純正小老頭"
-
-msgid "Pure One-Suit"
-msgstr "清一色"
-
-msgid "Pure Outside Hand"
-msgstr "純正混老頭"
-
-msgid "Pure Quadruple Sequence"
-msgstr "純正四順子"
-
-msgid "Pure Shifted Chows"
-msgstr "純正連順子"
-
-msgid "Pure Shifted Linked Sequences"
-msgstr "純正連一色"
-
-msgid "Pure Shifted Pungs"
-msgstr "純正連刻子"
-
-msgid "Pure Straight"
-msgstr "純正一氣通貫"
-
-msgid "Pure Suit"
-msgstr "純正一色"
-
-msgid "Pure Terminal Chows"
-msgstr "純正老頭順子"
-
-msgid "Pure Terminals"
-msgstr "純正老頭"
-
-msgid "Pure Triple Chow"
-msgstr "純正三順子"
-
-msgid "Pure Triple Sequence"
-msgstr "純正三順子"
-
-msgid "Qiangjin"
-msgstr "搶金"
-
-msgid "Quadruple Chow"
-msgstr "四順子"
-
-msgid "Quadruple Triplets"
-msgstr "四刻子"
-
-msgid "Quint"
-msgstr "五連子"
-
-msgid "Quints #1"
-msgstr "五連子#1"
-
-msgid "Quints #2"
-msgstr "五連子#2"
-
-msgid "Quints #3"
-msgstr "五連子#3"
-
-msgid "Quints #4"
-msgstr "五連子#4"
-
-msgid "R"
-msgstr "R"
-
-msgid "Ready Hand"
-msgstr "立直"
-
-msgid "Red Dragon"
-msgstr "紅中"
-
-msgid "Remove Flowers"
-msgstr "移除花牌"
-
-msgid "Remove all eight flowers from the wall."
-msgstr "從牌牆移除所有八張花牌"
-
-msgid "Replaceable Fly Joker"
-msgstr "可替換百搭牌"
-
-msgid "Reveal and set aside 3 tiles"
-msgstr "展示並置於一旁3張牌"
-
-msgid "Reveal flower"
-msgstr "展示花牌"
-
-msgid "Reveal fly"
-msgstr "展示百搭牌"
-
-msgid "Reveal joker"
-msgstr "展示百搭牌"
-
-msgid "Reveal next tile from wall"
-msgstr "展示牌牆下一張牌"
-
-msgid "Reveal three tiles and uradora"
-msgstr "展示三張牌及裏寶牌"
-
-msgid "Revealed Tiles"
-msgstr "展示牌"
-
-msgid "Reverse Dora"
-msgstr "逆寶牌"
-
-msgid "Reversible Tiles"
-msgstr "可翻轉牌"
-
-msgid "Reversible tiles"
-msgstr "可翻轉牌"
-
-msgid "Robbing The Kong"
-msgstr "搶槓"
-
-msgid "Robbing a Gong"
-msgstr "搶槓"
-
-msgid "Robbing a Kong"
-msgstr "搶槓"
-
-msgid "Robbing the Gold"
-msgstr "搶金"
-
-msgid "Robbing the Kong"
-msgstr "搶槓"
-
-msgid "Ron previous discard"
-msgstr "榮和前一張捨牌"
-
-msgid "Ryuuka Tsumo"
-msgstr "龍華自摸"
-
-msgid "Ryuumonbuchi Touka"
-msgstr "龍門淵透華"
-
-msgid "Sagimori Arata"
-msgstr "鷺森新"
-
-msgid "Same Number Bonus"
-msgstr "同數獎勵"
-
-msgid "Sawamura Tomoki"
-msgstr "澤村智紀"
-
-msgid "Scoring"
-msgstr "計分"
-
-msgid "Sea Floor"
-msgstr "海底"
-
-msgid "Seat Flower"
-msgstr "自風花"
-
-msgid "Seat King"
-msgstr "自風王"
-
-msgid "Seat Queen"
-msgstr "自風后"
-
-msgid "Seat Season"
-msgstr "自風季"
-
-msgid "Sekinin Barai (Pao)"
-msgstr "責任払い（包）"
-
-msgid "Select a tile to pass across"
-msgstr "選擇一張牌傳給對家"
-
-msgid "Select order to place remaining tiles (second selection is haitei)"
-msgstr "選擇剩餘牌放置順序（第二選擇為海底牌）"
-
-msgid "Select three tiles to pass across"
-msgstr "選擇三張牌傳給對家"
-
-msgid "Select three tiles to pass left"
-msgstr "選擇三張牌傳給上家"
-
-msgid "Select three tiles to pass right"
-msgstr "選擇三張牌傳給下家"
-
-msgid "Select two tiles to pass across"
-msgstr "選擇兩張牌傳給對家"
-
-msgid "Self Draw"
-msgstr "自摸"
-
-msgid "Self Drawn Melded Hand"
-msgstr "自摸副露手"
-
-msgid "Self Khàn"
-msgstr "暗槓"
-
-msgid "Self Kong"
-msgstr "暗槓"
-
-msgid "Self-Drawn"
-msgstr "自摸"
-
-msgid "Senoo Kaori"
-msgstr "妹尾香織"
-
-msgid "Sequences can wrap (891, 912). Winds and dragons can make sequences. You can chii from any direction."
-msgstr "順子可循環(891, 912)。風牌和箭牌可組成順子。可從任何方向吃牌"
-
-msgid "Set 10 tiles aside faceup"
-msgstr "將10張牌面朝上置於一旁"
-
-msgid "Set aside 4th tile from discards"
-msgstr "將捨牌中第4張牌置於一旁"
-
-msgid "Seven Consecutive Pairs"
-msgstr "七對子"
-
-msgid "Seven Flower Bonus"
-msgstr "七花獎勵"
-
-msgid "Seven Flowers"
-msgstr "七花"
-
-msgid "Seven Flowers Robbing Eighth"
-msgstr "七花搶八"
-
-msgid "Seven Pairs"
-msgstr "七對子"
-
-msgid "Seven Shifted Pairs"
-msgstr "七對移位"
-
-msgid "Sheung"
-msgstr "上"
-
-msgid "Shibuya Takami"
-msgstr "澀谷高美"
-
-msgid "Shimizudani Ryuuka"
-msgstr "清水谷龍華"
-
-msgid "Shirouzu Mairu"
-msgstr "白水舞留"
-
-msgid "Shishihara Sawaya"
-msgstr "宍原沙和也"
-
-msgid "Short Straight"
-msgstr "一氣通貫"
-
-msgid "Show Nearest Hands"
-msgstr "顯示最近手牌"
-
-msgid "Single Wait"
-msgstr "單騎待"
-
-msgid "Singles and Pairs #1"
-msgstr "單騎與對子#1"
-
-msgid "Singles and Pairs #2"
-msgstr "單騎與對子#2"
-
-msgid "Singles and Pairs #3"
-msgstr "單騎與對子#3"
-
-msgid "Singles and Pairs #4"
-msgstr "單騎與對子#4"
-
-msgid "Singles and Pairs #5"
-msgstr "單騎與對子#5"
-
-msgid "Singles and Pairs #6"
-msgstr "單騎與對子#6"
-
-msgid "Skip Charleston"
-msgstr "跳過查爾斯頓"
-
-msgid "Skip extra turn"
-msgstr "跳過額外回合"
-
-msgid "Skip extra turn to discard facedown"
-msgstr "跳過額外回合並暗槓"
-
-msgid "Small Four Winds"
-msgstr "小四喜"
-
-msgid "Small Three Dragons"
-msgstr "小三元"
-
-msgid "Small Three Similar Triplets"
-msgstr "小三同刻"
-
-msgid "Small Three Winds"
-msgstr "小三風"
-
-msgid "Small Triple Triplets"
-msgstr "小三刻"
-
-msgid "Someya Mako"
-msgstr "染谷真子"
-
-msgid "Soọc (索)"
-msgstr "索子"
-
-msgid "Speed Mahjong"
-msgstr "快速麻雀"
-
-msgid "Steal tile and declare riichi"
-msgstr "搶牌並宣告立直"
-
-msgid "Suehara Kyouko"
-msgstr "末原恭子"
-
-msgid "Suit Bonus"
-msgstr "花色獎勵"
-
-msgid "Swap 1"
-msgstr "交換1"
-
-msgid "Swap 2"
-msgstr "交換2"
-
-msgid "Swap a discard with same suit in hand"
-msgstr "用手牌同花色牌交換捨牌"
-
-msgid "Swap a number tile with any discarded wind tile"
-msgstr "用數字牌交換任何捨棄的風牌"
-
-msgid "Swap a number tile with any same number discard"
-msgstr "用數字牌交換任何相同數字的捨牌"
-
-msgid "Swap dora indicator with same suit in hand"
-msgstr "用手牌同花色牌交換寶牌指示牌"
-
-msgid "Swap for exposed joker"
-msgstr "交換已展示的百搭牌"
-
-msgid "Swap last discard with a terminal/honor"
-msgstr "用么九牌/字牌交換最後一張捨牌"
-
-msgid "Swap open melds"
-msgstr "交換副露組"
-
-msgid "Swap out dora indicator"
-msgstr "交換出寶牌指示牌"
-
-msgid "Swap tile with aside"
-msgstr "用一旁牌交換"
-
-msgid "Swap two tiles"
-msgstr "交換兩張牌"
-
-msgid "Swap with kamicha"
-msgstr "與上家交換"
-
-msgid "Swap with shimocha"
-msgstr "與下家交換"
-
-msgid "Swap with toimen"
-msgstr "與對家交換"
-
-msgid "Tai"
-msgstr "台"
-
-msgid "Takakamo Shizuno"
-msgstr "高鴨靜乃"
-
-msgid "Take extra turn"
-msgstr "獲得額外回合"
-
-msgid "Takei Hisa"
-msgstr "武井久"
-
-msgid "Takimi Haru"
-msgstr "瀧見春"
-
-msgid "Tell shimocha/kamicha to swap"
-msgstr "告知下家/上家交換"
-
-msgid "Tell shimocha/toimen to swap"
-msgstr "告知下家/對家交換"
-
-msgid "Tell toimen/kamicha to swap"
-msgstr "告知對家/上家交換"
-
-msgid "Ten Identical Tiles"
-msgstr "十同牌"
-
-msgid "Tenpai Payments"
-msgstr "聽牌支付"
-
-msgid "Terminal Sequences"
-msgstr "老頭順子"
-
-msgid "Thay (萬)"
-msgstr "萬子"
-
-msgid "Thirteen Orphans"
-msgstr "國士無雙"
-
-msgid "Thirteen Terminals"
-msgstr "十三老頭"
-
-msgid "Thirteen Unconnected"
-msgstr "十三不搭"
-
-msgid "Three Concealed Pungs"
-msgstr "三暗刻"
-
-msgid "Three Concealed Triplets"
-msgstr "三暗刻"
-
-msgid "Three Consecutive Pairs"
-msgstr "三連對"
-
-msgid "Three Consecutive Pungs"
-msgstr "三連刻"
-
-msgid "Three Consecutive Triplets"
-msgstr "三連刻"
-
-msgid "Three Dragons Seven Pairs"
-msgstr "三元七對子"
-
-msgid "Three Fan Minimum"
-msgstr "三翻限制"
-
-msgid "Three Gold Knockdown"
-msgstr "三金倒"
-
-msgid "Three Great Scholars"
-msgstr "大三賢"
-
-msgid "Three Identical Pairs"
-msgstr "三同對"
-
-msgid "Three Identical Sequences"
-msgstr "三色同順"
-
-msgid "Three Kong"
-msgstr "三槓"
-
-msgid "Three Kongs"
-msgstr "三槓"
-
-msgid "Three Lesser Scholars"
-msgstr "小三賢"
-
-msgid "Three Meld Penalty"
-msgstr "三副露懲罰"
-
-msgid "Three Mixed Linked Sequences"
-msgstr "三色連順"
-
-msgid "Three Mixed Shifted Sequences"
-msgstr "三色移位順"
-
-msgid "Three Mixed Shifted Triplets"
-msgstr "三色移位刻"
-
-msgid "Three Mixed Small Shifted Triplets"
-msgstr "三色小移位刻"
-
-msgid "Three Number Hand"
-msgstr "三色手"
-
-msgid "Three Pure Linked Sequences"
-msgstr "一色連順"
-
-msgid "Three Pure Shifted Sequences"
-msgstr "一色移位順"
-
-msgid "Three Pure Shifted Triplets"
-msgstr "一色移位刻"
-
-msgid "Three Similar Sequences"
-msgstr "三色同順"
-
-msgid "Three Similar Triplets"
-msgstr "三色同刻"
-
-msgid "Three Small Shifted Triplets"
-msgstr "三小移位刻"
-
-msgid "Three-Sided Wait"
-msgstr "三面待"
-
-msgid "Three-Suited Terminal Chows"
-msgstr "三色老頭順"
-
-msgid "Thùng (筒)"
-msgstr "筒子"
-
-msgid "Tianjin Mahjong"
-msgstr "天津麻雀"
-
-msgid "Tile Hog"
-msgstr "一氣通貫"
-
-msgid "Tile Hog (2)"
-msgstr "一氣通貫 (2)"
-
-msgid "Tile Hog (3)"
-msgstr "一氣通貫 (3)"
-
-msgid "Tile Hog (4)"
-msgstr "一氣通貫 (4)"
-
-msgid "Ting"
-msgstr "聽牌"
-
-msgid "Ton"
-msgstr "東"
-
-msgid "Toyouko Momoko"
-msgstr "東橫桃子"
-
-msgid "Triple Pung"
-msgstr "三暗刻"
-
-msgid "Triple Sequences"
-msgstr "三色同順"
-
-msgid "Triple Tile Hog"
-msgstr "三色一氣通貫"
-
-msgid "Triple Triplets"
-msgstr "三暗刻"
-
-msgid "Triplets"
-msgstr "刻子"
-
-msgid "Tsujigaito Satoha"
-msgstr "辻垣內聰葉"
-
-msgid "Two Concealed Kongs"
-msgstr "二暗槓"
-
-msgid "Two Concealed Pungs"
-msgstr "二暗刻"
-
-msgid "Two Concealed Triplets"
-msgstr "二暗刻"
-
-msgid "Two Dragon Pungs"
-msgstr "二盃口"
-
-msgid "Two Identical Sequences"
-msgstr "一盃口"
-
-msgid "Two Identical Sequences Twice"
-msgstr "二盃口"
-
-msgid "Two Kong"
-msgstr "二槓"
-
-msgid "Two Kongs"
-msgstr "二槓"
-
-msgid "Two Melded Kongs"
-msgstr "二明槓"
-
-msgid "Two Number Hand"
-msgstr "二色手"
-
-msgid "Two Saki Cards"
-msgstr "二索牌"
-
-msgid "Two Shifted Triplets"
-msgstr "二連刻"
-
-msgid "Two Suits Only"
-msgstr "混一色"
-
-msgid "Two Terminal Chows"
-msgstr "老少副"
-
-msgid "Two-Fold Fortune"
-msgstr "兩重役"
-
-msgid "Tự ù"
-msgstr "自摸"
-
-msgid "Tổng (縂)"
-msgstr "總計"
-
-msgid "Ueshige Suzu"
-msgstr "上重鈴"
-
-msgid "Under the Sea"
-msgstr "海底撈月"
-
-msgid "University Train"
-msgstr "大學線"
-
-msgid "Uno"
-msgstr "烏諾"
-
-msgid "Upper Four"
-msgstr "上家四"
-
-msgid "Upper Tiles"
-msgstr "上家牌"
-
-msgid "Usuzawa Sae"
-msgstr "薄澤冴"
-
-msgid "Usuzumi Hatsumi"
-msgstr "薄墨初美"
-
-msgid "V"
-msgstr "五"
-
-msgid "Value Honor"
-msgstr "役牌"
-
-msgid "Voided Suit"
-msgstr "清一色"
-
-msgid "Wall"
-msgstr "牌山"
-
-msgid "Warm Tiles"
-msgstr "溫牌"
-
-msgid "When any player discards a tile you can use to complete a triplet, you may call Pon to take that tile. Then it becomes your turn to discard."
-msgstr "當任何玩家打出的牌可以讓你完成刻子時，你可以喊「碰」來拿走那張牌。然後輪到你打牌。"
-
-msgid "When the player to your left discards a tile you can use to complete a 3 tile sequence, you may call Chii to take that tile instead of drawing."
-msgstr "當上家打出的牌可以讓你完成順子時，你可以喊「吃」來拿走那張牌而不需要摸牌。"
-
-msgid "White Dragon"
-msgstr "白板"
-
-msgid "Wild Card Single Wait"
-msgstr "單騎聽牌"
-
-msgid "Win Condition"
-msgstr "和牌條件"
-
-msgid "Win On Baida"
-msgstr "白板成和"
-
-msgid "Win by self-draw with a closed hand."
-msgstr "門前清自摸和"
-
-msgid "Win off the discard after the last tile in the wall is drawn."
-msgstr "海底撈月"
-
-msgid "Win off the last tile in the wall."
-msgstr "河底撈魚"
-
-msgid "Win on Kong"
-msgstr "槓上開花"
-
-msgid "Win with your first draw as non-dealer."
-msgstr "子家第一巡自摸和"
-
-msgid "Win with your initial hand as dealer."
-msgstr "天和"
-
-msgid "Wind Melds"
-msgstr "風牌刻子"
-
-msgid "Winds"
-msgstr "風牌"
-
-msgid "Winds and Dragons #1"
-msgstr "風牌與三元牌 #1"
-
-msgid "Winds and Dragons #2"
-msgstr "風牌與三元牌 #2"
-
-msgid "Winds and Dragons #3"
-msgstr "風牌與三元牌 #3"
-
-msgid "Winds and Dragons #4"
-msgstr "風牌與三元牌 #4"
-
-msgid "Winds and Dragons #5"
-msgstr "風牌與三元牌 #5"
-
-msgid "Winds and Dragons #6"
-msgstr "風牌與三元牌 #6"
-
-msgid "Winds and Dragons #7"
-msgstr "風牌與三元牌 #7"
-
-msgid "Winner"
-msgstr "和牌者"
-
-msgid "Within Five Discards"
-msgstr "五捨牌內"
-
-msgid "Within Seven Tiles"
-msgstr "七牌內"
-
-msgid "Within Ten Discards"
-msgstr "十捨牌內"
-
-msgid "Within Ten Tiles"
-msgstr "十牌內"
-
-msgid "Wu"
-msgstr "和"
-
-msgid "Yae Kobashiri"
-msgstr "八重小走"
-
-msgid "Yakuhai"
-msgstr "役牌"
-
-msgid "Yoshitome Miharu"
-msgstr "吉留美春"
-
-msgid "You have no calls and your winning hand is the pattern 1112345678999 in one suit, plus one additional tile."
-msgstr "無鳴牌且和牌型為1112345678999加一張牌"
-
-msgid "You may also call ron on concealed kans, but only if you are tenpai for kokushi musou."
-msgstr "你也可以對暗槓喊「榮」，但必須是國士無雙聽牌狀態"
-
-msgid "You may win with one of the following:"
-msgstr "你可以通過以下方式之一和牌："
-
-msgid "You won off a double-sided sequence wait, with an all-sequence hand whose pair is not yakuhai."
-msgstr "兩面聽牌和牌，純順子手且雀頭非役牌"
-
-msgid "You won with eight flowers."
-msgstr "八花和"
-
-msgid "You won with seven flowers."
-msgstr "七花和"
-
-msgid "Your closed hand has a double sequence: two copies of the exact same sequence in one suit, like 123 123."
-msgstr "門前有同色同順兩組（例如123 123）"
-
-msgid "Your hand consists of only all-green tiles (23468 bamboo and green dragon)."
-msgstr "綠一色（23468索和發財）"
-
-msgid "Your hand consists of only honor tiles."
-msgstr "字一色"
-
-msgid "Your hand consists of only terminals."
-msgstr "斷么九"
-
-msgid "Your hand consists of seven non-repeating pairs, and is not ryanpeikou."
-msgstr "七對子（無重複）且非二盃口"
-
-msgid "Your hand consists of seven pairs (repeats allowed)."
-msgstr "七對子（允許重複）"
-
-msgid "Your hand contains four kans."
-msgstr "四槓子"
-
-msgid "Your hand contains only tiles numbered 2-8."
-msgstr "斷么九（2-8的牌）"
-
-msgid "Your hand contains three kans."
-msgstr "三槓子"
-
-msgid "Your hand contains triplets or kans of all three dragons."
-msgstr "三元牌（三種龍刻子/槓子）"
-
-msgid "Your hand contains triplets or kans of three winds, plus a pair of the fourth wind."
-msgstr "三風刻加第四風雀頭"
-
-msgid "Your hand has three closed triplets in hand, and you won by self-drawing the fourth."
-msgstr "三暗刻自摸和"
-
-msgid "Your winning hand consists of one of each terminal/honor tile plus one forming a pair."
-msgstr "國士無雙（所有么九牌各一張加一對）"
-
-msgid "Yumeno Maho"
-msgstr "夢野真帆"
-
-msgid "Zimo"
-msgstr "自摸"
-
-msgid "Zombie Blanks"
-msgstr "空白牌"
-
-msgid "win_on"
-msgstr "和牌方式"
 
 msgid ""
 "Your base score is calculated via the following:\n"
@@ -4055,3 +4031,372 @@ msgstr ""
 "- 與場風相同的風牌刻子\n"
 "- 與座風相同的風牌刻子\n"
 ""
+
+msgid "%{example_hand}"
+msgstr "%{example_hand}"
+
+msgid "(Aka) %{man}x 1m, %{pin}x 1p, and %{sou}x 1s are replaced with red \\\"aka dora\\\" ones that are worth one extra han each."
+msgstr "(赤) %{man}x 1萬、%{pin}x 1筒、%{sou}x 1索會被替換為赤寶牌，每個額外增加1番。"
+
+msgid "(Aka) %{man}x 3m, %{pin}x 3p, and %{sou}x 3s are replaced with red \\\"aka dora\\\" threes that are worth one extra han each."
+msgstr "(赤) %{man}x 3萬、%{pin}x 3筒、%{sou}x 3索會被替換為赤寶牌，每個額外增加1番。"
+
+msgid "(Aka) %{man}x 5m, %{pin}x 5p, and %{sou}x 5s are replaced with red \\\"aka dora\\\" fives that are worth one extra han each."
+msgstr "(赤) %{man}x 5萬、%{pin}x 5筒、%{sou}x 5索會被替換為赤寶牌，每個額外增加1番。"
+
+msgid "(Aka) %{man}x 7m, %{pin}x 7p, and %{sou}x 7s are replaced with red \\\"aka dora\\\" sevens that are worth one extra han each."
+msgstr "(赤) %{man}x 7萬、%{pin}x 7筒、%{sou}x 7索會被替換為赤寶牌，每個額外增加1番。"
+
+msgid "(Aka) %{man}x 9m, %{pin}x 9p, and %{sou}x 9s are replaced with red \\\"aka dora\\\" nines that are worth one extra han each."
+msgstr "(赤) %{man}x 9萬、%{pin}x 9筒、%{sou}x 9索會被替換為赤寶牌，每個額外增加1番。"
+
+msgid "(Aka) If your hand is closed, each aka dora is worth 1 shuugi chip."
+msgstr "(赤) 如果手牌是門前清，每個赤寶牌價值1個祝儀籌碼。"
+
+msgid "(Click the tile to discard it.)"
+msgstr "(點擊牌來打出)"
+
+msgid "(Click to continue)"
+msgstr "(點擊繼續)"
+
+msgid "...or someone else can discard it!"
+msgstr "...或者其他玩家可能會打出它！"
+
+msgid "20+2+8+2+8+4+2 is 46, so 50 fu."
+msgstr "20+2+8+2+8+4+2等於46，所以是50符。"
+
+msgid "3 han if you have two double sequences, each being two copies of the exact same sequence in one suit, like 123 123. Does not count as chiitoitsu (7 pairs)."
+msgstr "如果擁有兩個相同的順子（例如123 123），則為3番。不計為七對子。"
+
+msgid "A ton call is just like pon, but for a pair instead of a triplet. It's usually not useful to call a pair, but doing so is a valid way to rush chiitoitsu (1 han open) in cosmic riichi."
+msgstr "「吞」類似碰，但是針對對子而非刻子。通常叫對子沒什麼用，但在宇宙立直中是快速組成七對子（1番副露）的有效方法。"
+
+msgid "After a round, if anyone has less than %{below} points, the game ends."
+msgstr "一局結束後，如果有玩家低於%{below}分，遊戲結束。"
+
+msgid "Amatsuki Mahjong"
+msgstr "天月麻雀"
+
+msgid "Anyways, that's basically all the new calls in cosmic riichi! The call priority is as follows:"
+msgstr "總之，這些就是宇宙立直中所有新的鳴牌方式！優先順序如下："
+
+msgid "As for the fu calculation, that's tsumo (+2), open kakakan (+8), open terminal chon (+2), open fuun (+8), closed honor kontsu (+4), and closed wait (+2)."
+msgstr "符數計算為：自摸（+2）、明加加槓（+8）、明幺九吞（+2）、明風雲（+8）、暗刻字牌（+4）和門前聽牌（+2）。"
+
+msgid "At the end of the game, 1st/2nd/3rd/4th receive a bonus of %{_1st}/%{_2nd}/%{_3rd}/%{_4th} points."
+msgstr "遊戲結束時，第1/2/3/4名會獲得%{_1st}/%{_2nd}/%{_3rd}/%{_4th}分的獎勵。"
+
+msgid "Because it won't get us any closer to winning, let's not call chii. Press Cancel."
+msgstr "因為這不會讓我們更接近和牌，所以不要吃。按取消。"
+
+msgid "Because the last discard can complete a sequence, we can call Chii to take the last discard, in lieu of drawing a tile. Do so now."
+msgstr "因為最後打出的牌可以完成順子，我們可以選擇吃而不是摸牌。現在就這樣做。"
+
+msgid "Because the last discard can complete a triplet in our hand, we can immediately call Pon to take the last discard. Do so now."
+msgstr "因為最後打出的牌可以完成刻子，我們可以立即碰牌。現在就這樣做。"
+
+msgid "Besides rinshan, every mixed triplet of dragons (mini-sangen) is worth 0.5 han, and every mixed triplet of winds that contain both the round and seat wind is worth 0.5 han. So we didn't need rinshan."
+msgstr "除了嶺上開花，每個混三元（小三元）值0.5番，每個包含場風和自風的混風刻也值0.5番。所以我們不需要嶺上開花。"
+
+msgid "Click to exit."
+msgstr "點擊退出"
+
+msgid "Click to return to the list of tutorials."
+msgstr "點擊返回教學列表"
+
+msgid "Congrats, you have a chance at 912 sanshoku! Now go ahead and play the 3 of circles so you can wait on 39 bamboo. A 3 bamboo will give us sanshoku."
+msgstr "恭喜，你有機會組成912三色！現在打出3筒，這樣你可以聽39索。3索會讓我們達成三色。"
+
+msgid "Declare Riichi to find out!"
+msgstr "宣告立直來看看吧！"
+
+msgid "Different Number of Jokers/Flowers"
+msgstr "不同的百搭牌/花牌數量"
+
+msgid "Discard a character tile to continue."
+msgstr "打出一張萬子繼續"
+
+msgid "Discard the 5 of bamboo. Some might argue that ones and nines are better than fives in space mahjong, because they can form chanta!"
+msgstr "打出5索。有人可能會說在宇宙麻雀中1和9比5更好，因為它們可以組成混全帶幺九！"
+
+msgid "Discard the 7 of bamboo to continue."
+msgstr "打出7索繼續"
+
+msgid "Discard the other character tile to continue."
+msgstr "打出另一張萬子繼續"
+
+msgid "East just discarded a 1 of bamboo. With your 1 of characters and 1 of circles in hand, in cosmic riichi, you may call Chon to form a mixed triplet (kontsu). Try it now."
+msgstr "東家剛打出1索。在宇宙立直中，如果你手上有1萬和1筒，你可以叫「沖」來組成混一色的刻子。現在試試看。"
+
+msgid "Go ahead and discard one of the 2 bamboos. Note that you are now waiting on the green dragon to complete a mixed triplet of dragons."
+msgstr "繼續打出一張2索。注意你現在正在等待綠發來完成混一色的刻子。"
+
+msgid "Go ahead and discard the 1 of characters."
+msgstr "繼續打出1萬"
+
+msgid "Go ahead and discard this east wind to continue."
+msgstr "繼續打出這張東風"
+
+msgid "Hello, world!"
+msgstr "你好，世界！"
+
+msgid "Hey, looks like you have options!"
+msgstr "嘿，看來你有選擇！"
+
+msgid "If you end with an exhaustive draw, and no one has called any of your discards, and your discards are all terminal or honor tiles, a nagashi payment occurs, which is equivalent to a %{is} tsumo."
+msgstr "如果以流局結束，且沒有人叫過你打出的任何牌，並且你打出的牌都是幺九牌或字牌，則會發生流局滿貫，相當於%{is}自摸。"
+
+msgid "If you hover over your 9 bamboos, you can see that your wait is not only the 4 bamboo, but also any galaxy four! Let's discard a 9 bamboo."
+msgstr "如果你將鼠標懸停在9索上，可以看到你不僅在等4索，還在等任何銀河4！讓我們打出9索。"
+
+msgid "In addition, all yakuman now award 13 or 26 han, and having 18+ han awards haneyakuman (12000-24000). By the way, if you were wondering what score you get for having 1.5 han, guess you'll just have to play to find out!"
+msgstr "此外，所有役滿現在獎勵13或26番，擁有18+番會獎勵跳滿（12000-24000）。順便說一句，如果你想知道1.5番能得到多少分，猜你只能通過遊戲來發現！"
+
+msgid "In addition, note that you were not given the option to chii this 3 of bamboo. This is because you cannot call chii in sanma! All other calls are allowed."
+msgstr "另外，請注意你沒有獲得吃這張3索的選項。這是因為在三麻中不能吃！其他鳴牌都是允許的。"
+
+msgid "In cosmic riichi, kontsu like the one you just called are also valid sets in your goal to form four sets and a pair."
+msgstr "在宇宙立直中，像你剛才叫的刻子也是組成四組一對的有效組合。"
+
+msgid "In fact, that means you have a triplet of 2 circles here! So in fact our hand is not honitsu, it's toitoi."
+msgstr "事實上，這意味著你這裡有2筒的刻子！所以實際上我們的手牌不是混一色，而是對對和。"
+
+msgid "In fact, there are three possible sequences that this 3 of circles can complete."
+msgstr "事實上，這張3筒可以完成三個可能的順子。"
+
+msgid "Just like how galaxy twos are two wildcards, galaxy winds are wind wildcards -- they can be any wind! So we have yakuhai east already, and are tenpai!"
+msgstr "就像銀河2是2的百搭牌一樣，銀河風牌是風牌的百搭牌——它們可以是任何風！所以我們已經有役牌東，並且聽牌了！"
+
+msgid "Kontsu are worth 1 fu open, 2 fu closed, and double that for a terminal or honor kontsu. (Honor sequences are considered kontsu, not shuntsu.) So your called kontsu is worth 2 fu, and the one in hand is worth 4 fu."
+msgstr "刻子明刻1符，暗刻2符，幺九或字牌刻子加倍。（字牌順子視為刻子而非順子。）所以你叫的刻子值2符，手牌中的刻子值4符。"
+
+msgid "Let's talk about dora! As you can see, both the dora and ura indicators up top are galaxy tiles."
+msgstr "讓我們談談寶牌！如你所見，頂部的寶牌和裡寶牌指示牌都是銀河牌。"
+
+msgid "Look at that hand! Can you guess what tiles it is waiting on?"
+msgstr "看看這手牌！你能猜到它在等什麼牌嗎？"
+
+msgid "Looking at your hand, you already have 234,456,777 of circles and 888 of bamboo."
+msgstr "看看你的手牌，你已經有234筒、456筒、777筒和888索。"
+
+msgid "Looks like you drew another 3 of bamboo! Because you have a pair of 3 bamboo in your calls, you may call Pon on your turn in order to upgrade it to a triplet (kapon, added triplet). Try it now!"
+msgstr "看來你又摸到了一張3索！因為你已經有一對3索，你可以在輪到你時叫碰來升級為刻子（加碰，附加刻子）。現在試試看！"
+
+msgid "Looks like you drew the last 3 bamboo! Just like with kapon, you can call Kan here to form a glorious added-added kan (kakakan). Go right ahead!"
+msgstr "看來你摸到了最後一張3索！就像加碰一樣，你可以在這裡叫槓來組成華麗的加加槓（加加槓）。繼續吧！"
+
+msgid "Nagashi $is"
+msgstr "流局$is"
+
+msgid "Nagashi Yakuman"
+msgstr "流局役滿"
+
+msgid "Nice play!"
+msgstr "打得好！"
+
+msgid "Nice work! When you make a call such as Chii, the resulting set is revealed to the table, with the called tile facing in the direction of the player you called it from."
+msgstr "做得好！當你進行如吃這樣的鳴牌時，結果的組合會展示給所有人看，被叫的牌會朝向叫牌來源的玩家。"
+
+msgid "Nice! Let's see what you draw next..."
+msgstr "很好！讓我們看看你下一張摸什麼..."
+
+msgid "No one goes for the meme wait!"
+msgstr "沒有人會選擇搞笑聽牌！"
+
+msgid "Not only that, the replacement tile was our winning green dragon! Winning after a fuun replacement tile awards rinshan, which is our yaku. Declare tsumo!"
+msgstr "不僅如此，補牌是我們的和牌綠發！在風雲補牌後和牌會獎勵嶺上開花，這是我們的役。宣告自摸！"
+
+msgid "Note that unlike Chii, which can only be called from your left, calling Pon messes with the turn order. The left player's turn got skipped, and now it's your turn to discard."
+msgstr "請注意，與只能從左家吃的吃不同，碰會打亂出牌順序。左家的回合被跳過，現在輪到你出牌。"
+
+msgid "Note that you are not given a replacement tile for calling an added pon. This makes sense, since you aren't 'extra' one tile after calling, unlike with kan."
+msgstr "請注意，加碰不會給你補牌。這是有道理的，因為與槓不同，叫牌後你並沒有'額外'的一張牌。"
+
+msgid "Note that you were not prompted to call ton on this white dragon. Since there's no way to orient the called tile to indicate \\\"across\\\", you can only call ton from your left or your right, not across."
+msgstr "請注意，你沒有被提示在這張白板上叫吞。因為無法定位被叫的牌來指示\"對面\"，你只能從左家或右家叫吞，不能從對面。"
+
+msgid "Note that your existing 3 of circles is grayed out -- it cannot be discarded. This is because we are playing with a rule called \\\"kuikae nashi\\\", i.e. no swap-calling. You cannot call with 45 of circles and subsequently discard 3 or 6 of circles."
+msgstr "請注意，你現有的3筒是灰色的——不能打出。這是因為我們正在使用\"喰替禁止\"規則，即禁止交換叫牌。你不能用45筒叫牌然後隨後打出3或6筒。"
+
+msgid "Now you have four sets and a pair! Click Tsumo to declare a win!"
+msgstr "現在你有四組一對！點擊自摸宣告和牌！"
+
+msgid "Now you must discard a tile."
+msgstr "現在你必須打出一張牌。"
+
+msgid "Oh strange, why do we have options?"
+msgstr "哦奇怪，為什麼我們有選擇？"
+
+msgid "Okay, do you go for the wider wait by declaring riichi on the wind, or jump for the funny wind wait by discarding 8 of bamboo?"
+msgstr "好的，你是選擇在風牌上宣告立直以獲得更大的聽牌範圍，還是打出8索來選擇搞笑的風牌聽牌？"
+
+msgid "One thing you'll note is that everybody starts with a score of 35000 instead of 25000."
+msgstr "你會注意到的一件事是，每個人的起始分數是35000而不是25000。"
+
+msgid "Open fuutsu are worth 8 fu, and closed fuutsu are worth 16. Just like with kans, you get a replacement tile for calling fuun. Unlike with kans, this replacement tile comes from the live wall, not the dead wall."
+msgstr "明風通8符，暗風通16符。就像槓一樣，叫風雲會獲得補牌。與槓不同的是，這補牌來自活牆而非死牆。"
+
+msgid "Other players might make inferences about your hand based on your calls. In addition, you may no longer discard these tiles -- they are \\\"locked in\\\" for your hand."
+msgstr "其他玩家可能會根據你的叫牌推斷你的手牌。此外，你不能再打出這些牌——它們被\"鎖定\"在你的手牌中。"
+
+msgid "Our initial hand is looking like it's going to be a half flush, but let's see."
+msgstr "我們的初始手牌看起來像是要組成混一色，但讓我們看看。"
+
+msgid "Part of the player's starting score is composed of shuugi chips worth %{worth} each, which are gained and lost separately from points."
+msgstr "玩家起始分數的一部分由價值%{worth}的祝儀籌碼組成，這些籌碼與分數分開獲得和失去。"
+
+msgid "Riichi declarations happen only after you confirm by discarding a tile."
+msgstr "立直宣言必須在您確認捨牌後才能進行。"
+
+msgid "Ruleset:"
+msgstr "規則設定："
+
+msgid "Since we want to keep the 123 sequence in our hand, it is wisest to use the 45. Let's give that a try."
+msgstr "因為我們想保留手牌中的123順子，所以使用45是最明智的選擇。讓我們試試看。"
+
+msgid "So all you need is to draw another 4 bamboo to complete your pair!"
+msgstr "現在您只需要再摸一張4索就能完成對子！"
+
+msgid "So go ahead and discard the white dragon."
+msgstr "請直接捨棄白板。"
+
+msgid "Sorry for the trick question! Galaxy mahjong adds a new win condition: having an entire hand of galaxy tiles. So if you discard the 4 of bamboo, you will wait on any galaxy tile. Let's see what that looks like!"
+msgstr "抱歉這是個陷阱題！銀河麻將新增了和牌條件：手牌全部由銀河牌組成。所以如果您捨棄4索，就會等待任何銀河牌。讓我們看看會發生什麼！"
+
+msgid "South just discarded a west wind. Because you have one of each other wind, you can call Fuun to declare an open mixed quad of winds (fuutsu)! Try it now."
+msgstr "下家剛捨出西風。因為您持有其他風牌各一張，可以呼叫「風通」來宣告明槓混四風！現在試試看。"
+
+msgid "South just played a bamboo tile! If we're going for half flush, we'll probably want to take it. Call chii!"
+msgstr "下家剛打出一張索子！如果我們要做混一色，應該會想吃進這張牌。喊吃！"
+
+msgid "South just played a tile that matches one in your hand. Because of this, you can call ton on the tile to call a pair. Try it!"
+msgstr "下家剛打出一張與您手牌配對的牌。因此您可以呼叫「對」來組成對子。試試看！"
+
+msgid "Space mahjong is implemented as a riichi mod, so you're actually just playing a modified riichi right now. This also means that here on Riichi Advanced, you can combine space mahjong with any riichi variant!"
+msgstr "太空麻將是作為立直模組實現的，所以您現在實際上是在玩改良版立直。這也意味著在立直進階版中，您可以將太空麻將與任何立直變體結合！"
+
+msgid "Swap-calling is disallowed. That is, if you call two tiles, you cannot discard a tile that could have made a set with those two tiles. (e.g. calling a red five and discarding a normal five)"
+msgstr "禁止交換呼叫。也就是說，如果您呼叫兩張牌，就不能捨棄能與那兩張牌組成面子的牌。（例如呼叫紅五後捨棄普通五）"
+
+msgid "That's about all there is to galaxy mahjong!"
+msgstr "這就是銀河麻將的全部內容了！"
+
+msgid "The 100 point sticks in the middle count honba. Each adds %{value} extra points to the winning value. One honba stick is added for every drawn round, and reset to 0 on a win."
+msgstr "中央的100點棒計算本場數。每根會為和牌點數增加%{value}點。每流局一次增加一根本場棒，和牌時重置為0。"
+
+msgid "The distinguishing factor of space mahjong is that sequences can wrap. In other words, 891 and 912 are valid sequences."
+msgstr "太空麻將的特色是順子可以循環。換句話說，891和912都是有效的順子。"
+
+msgid "The dora indicator is a galaxy white dragon. Since galaxy dragons are dragon wildcards, they indicate all other dragons as dora, including your two actual white dragons."
+msgstr "寶牌指示牌是銀河白板。由於銀河役牌是萬用牌，它們會指示所有其他役牌為寶牌，包括您實際持有的兩張白板。"
+
+msgid "The object of the game is to obtain four sets and a pair. A set is a sequence of three, like 123, or a triplet, like 555."
+msgstr "遊戲目標是組成四個面子和一個對子。面子可以是三張連續的順子如123，或是三張相同的刻子如555。"
+
+msgid "The player across from you has just discarded the east wind, which you have two of."
+msgstr "對家剛捨出東風，而您手上有兩張東風。"
+
+msgid "The player to your right just played the 2 of circles. In space mahjong, you can chii from any direction, not just from your left. Try it now!"
+msgstr "上家剛打出2筒。在太空麻將中，您可以從任何方向吃牌，不僅限於下家。現在試試看！"
+
+msgid "The previous player just tossed the 3 of circles, and it's about to be your turn."
+msgstr "前一位玩家剛捨出3筒，馬上就要輪到您了。"
+
+msgid "The replacement tile gives us three sets and a pair, so we're tenpai. Now declare riichi on the 9 of bamboo!"
+msgstr "補牌讓我們有了三個面子和一個對子，現在是聽牌狀態。請用9索宣告立直！"
+
+msgid "The ura indicator is a galaxy eight circles, which similarly indicates all nines as dora, including your nine of bamboo."
+msgstr "裏寶指示牌是銀河8筒，同樣會指示所有9為寶牌，包括您的9索。"
+
+msgid "This is a tutorial, so of course you get the tile you want immediately. Press Ron."
+msgstr "這是教學模式，所以您當然會立即摸到想要的牌。按榮和。"
+
+msgid "This is because galaxy tiles are suitless! A galaxy 2 can be used as any 2 tile, including 2 of bamboo. So we could chii 234, if we wished."
+msgstr "這是因為銀河牌沒有花色限制！銀河2可以當作任何2牌使用，包括2索。所以如果我們願意，可以用234來吃牌。"
+
+msgid "This is your hand. Whenever it's your turn, you will automatically draw a tile and discard a tile."
+msgstr "這是您的手牌。每當輪到您時，系統會自動摸牌和捨牌。"
+
+msgid "This means that your 91 in circles is actually a double-sided wait for 8 and 2. Pretty silly, right? Let's try going for sanshoku on 912."
+msgstr "這表示您的筒子91實際上是8和2的兩面聽。很蠢對吧？讓我們試試用912來做三色同順。"
+
+msgid "To declare a north wind, press the Pei button."
+msgstr "要宣告北風，請按北按鈕。"
+
+msgid "Unfortunately our tenpai is kind of garbage (waits on 4 bamboo) but declare Riichi anyway, you'll soon see why."
+msgstr "不幸的是我們的聽牌很糟糕（聽4索），但還是宣告立直吧，您很快就會知道原因。"
+
+msgid "Unlike kapon, kakakan gives you a replacement tile. Winning off this tile awards rinshan just like any other kan."
+msgstr "與加槓不同，開槓會給您補牌。用這張牌和牌會獲得嶺上開花，就像其他槓一樣。"
+
+msgid "Usually, on your turn, you get to draw a tile. However, this 3 of circles can complete a sequence in our hand."
+msgstr "通常輪到您時會摸一張牌。但這張3筒可以完成我們手牌中的順子。"
+
+msgid "We are now in \\\"tenpai\\\": our hand is waiting for the 2 or 5 of characters in order to complete our remaining set and win. We could either self draw the tile..."
+msgstr "我們現在處於「聽牌」狀態：手牌正在等待2萬或5萬來完成最後的面子和牌。我們可以自摸..."
+
+msgid "We are very close to winning: we just need one more tile. Go ahead and discard a 4 of characters."
+msgstr "我們非常接近和牌：只需要再一張牌。請捨棄4萬。"
+
+msgid "We drew a galaxy north wind! But what's the riichi button doing there?"
+msgstr "我們摸到了銀河北風！但立直按鈕為什麼會在那裡？"
+
+msgid "We're now tenpai, waiting on white dragon, but unfortunately we have no yaku. What to do?"
+msgstr "我們現在聽牌，等待白板，但不幸的是沒有役。該怎麼辦？"
+
+msgid "Welcome to cosmic riichi! This is a space mahjong variant that adds several new calls and ways to earn +0.5 han and +1 fu. Let's get started."
+msgstr "歡迎來到宇宙立直！這是太空麻將的變體，新增了幾種呼叫方式和獲得+0.5番與+1符的方法。讓我們開始吧。"
+
+msgid "Welcome to galaxy mahjong, a riichi variant that replaces 1 of each kind of tile with a light blue 'galaxy' tile. What do these mysterious tiles do? Let's find out!"
+msgstr "歡迎來到銀河麻將，這是立直的變體，每種牌都有一張被替換為淺藍色的「銀河」牌。這些神秘的牌有什麼作用？讓我們一探究竟！"
+
+msgid "Welcome to sanma! This is the standard three-player variant of riichi, where the name of the game is forming big hands."
+msgstr "歡迎來到三麻！這是標準的三人立直變體，遊戲的重點在於組成大牌。"
+
+msgid "Welcome to space mahjong! Let's get started by discarding this white dragon -- you'll soon see why."
+msgstr "歡迎來到太空麻將！讓我們從捨棄這張白板開始——您很快就會明白原因。"
+
+msgid "When someone discards the final tile you need in order to win, you can declare a win by calling Ron. Do so now."
+msgstr "當有人捨出您和牌所需的最後一張牌時，您可以呼叫「榮」來宣告和牌。現在就這樣做。"
+
+msgid "Win by drawing the last tile in the wall."
+msgstr "摸到牌牆最後一張牌和牌。"
+
+msgid "Win off a discard after the last tile in the wall is drawn."
+msgstr "在牌牆最後一張牌被摸走後，用捨牌和牌。"
+
+msgid "Winds and dragons can also form sequences! So this is a valid sequence."
+msgstr "風牌和役牌也能組成順子！所以這是有效的順子。"
+
+msgid "Winning this way awards the Milky Way yakuman! That's the only yaku galaxy mahjong adds."
+msgstr "以這種方式和牌會獲得「銀河」役滿！這是銀河麻將新增的唯一役種。"
+
+msgid "Yeah, that's what I thought."
+msgstr "嗯，正如我所想。"
+
+msgid "You drew a north wind! In sanma, north winds are akin to flower tiles in other variants -- you may declare them and draw a replacement tile. Each north wind (\\\"pei\\\") is worth one extra han, and is otherwise not counted as part of your hand."
+msgstr "您摸到了北風！在三麻中，北風類似於其他變體中的花牌——您可以宣告它們並摸補牌。每張北風（「北」）值1番，且不計入手牌。"
+
+msgid "You might also note the distinct lack of character tiles in your hand. This is because most of the character suit has been removed, except for the 1 and 9 of characters."
+msgstr "您可能也注意到手牌中明顯缺少萬子。這是因為除了1萬和9萬外，大部分萬子都被移除了。"
+
+msgid "You're the first to play, so let's start by discarding this tile."
+msgstr "您是第一位玩家，所以讓我們從捨棄這張牌開始。"
+
+msgid "Your hand consists of seven non-repeating pairs."
+msgstr "您的手牌由七組不重複的對子組成。"
+
+msgid "c"
+msgstr "c"
+
+msgid "ton < chii < chon < fuun < pon = kan < ron"
+msgstr "對 < 吃 < 衝 < 風通 < 碰 = 槓 < 榮"
+
+msgid "x"
+msgstr "x"
+
+msgid "Press Ron."
+msgstr "按榮和。"
+
+msgid "Press Skip."
+msgstr "按跳過。"

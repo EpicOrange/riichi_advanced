@@ -13,13 +13,13 @@ Config
 Toggle all
 Reset mods to default
 Randomize mods
-(reconnect?)
 &lt;disconnected&gt;
 Empty
 Shuffle seats on start?
 Starting game...
 Start game
 (with AI)
+Ruleset:
 Lobby
 Variant:
 (ongoing)
@@ -27,6 +27,7 @@ Enter
 Create a room
 Close
 Join private room
+Ruleset:
 Loading...
 Play
 Clear
@@ -36,7 +37,10 @@ Skip
 Button
 Show wall
 Loading...
+x
+c
 Loading...
+Ruleset:
 To be implemented:
 Nickname (optional)
 Play
@@ -61,6 +65,7 @@ Tutorial
 Loading...
 Create your own tutorial!
 Play
+Ruleset:
 Created by Dani in their spare time.
 For more information, drop a message in our Discord!
 Special thanks to our beta testers:
@@ -70,6 +75,7 @@ Discord
 Logs
 Enter room code:
 Loading...
+Ruleset:
 Back
 Copy log
 true
@@ -124,6 +130,8 @@ Double Ron
 Triple Ron
 Sanchahou
 Ryuukyoku
+Nagashi Mangan
+Nagashi Yakuman
 Riichi
 Tsumo
 Ippatsu
@@ -326,7 +334,6 @@ Remove Flowers
 Head Bump
 Seven Pairs
 Everyone Pays On Discard
-Kan
 Honba
 Nagashi
 Tobi
@@ -506,7 +513,6 @@ Remove all eight flowers from the wall.
 Enable head bump. In case of multiple hu, only the person closest in turn order gets the win.
 Add seven pairs as a possible winning hand, worth 4 fan.
 Discarder pays 2x hand value, other players pay 1x.
-Enable kan. If you have four of a tile in hand, you may create a concealed kan (ankan). If you have three of a tile and someone discards the fourth, you may create an open kan (daiminkan). If you have called a triplet and draw the fourth tile, you may create an added kan (kakan). Kan calls count as triplets for the purposes of winning and scoring, but they award 4x triplet fu. In all three cases, after declaring kan you draw a replacement tile from the dead wall. Winning on this replacement tile awards the rinshan yaku (1 han). One may also call ron on a tile added to an added kan (kakan) for the chankan yaku (1 han). Having three kans is 2 han (sankantsu), and having four is yakuman. There can be at most four kans in a single game.
 Enables honba.
 Enable nagashi mangan. When you discards are all terminals and honors at exhaustive draw, and none of your discards have been called, then you are paid mangan tsumo at draw.
 Enable busting. Once anyone's points is reduced below zero, the game ends.
@@ -637,7 +643,7 @@ Local yakuman. If your hand consists of only 248p (2,4,8 circles), green dragon,
 Local yakuman. If you have ryuuiisou without green dragon, it's double yakuman. Doesn't stack with ryuuiisou.
 Local yakuman. If you have kans of all three dragons, it's double yakuman. Doesn't stack with daisangen.
 Local yakuman. If you have kans of all four winds, it's quadruple yakuman. Doesn't stack with daisuushi and suukantsu.
-Everyone plays with tiles shown.
+Riichi declarations happen only after you confirm by discarding a tile.
 Adds 10m, 10p, and 10s. Changes dora accordingly (if dora is enabled). Tanyao now allows nines, and chanta/junchan/honroutou require tens instead. 13 Orphans now requires the ten instead of the nine of each suit. Ittsu allows 23456789T.
 Adds a fourth suit (stars). This suit does not form yaku. This mod is in beta because we should probably write some yaku for it.
 Sequences can wrap (891, 912). Winds and dragons can make sequences. You can chii from any direction. Chiitoitsu is disabled. Open kokushi is allowed and worth 3 han.
@@ -681,6 +687,7 @@ When you tsumo, you get the same total points as if it was a ron payment. (Nonde
 Mahjong Soul
 tenhou.net
 Riichi City
+Amatsuki Mahjong
 WRC 2022
 M.League
 Just Like Modded Minecraft
@@ -755,10 +762,6 @@ Chii
 Pon
 Ron
 Tsumo
-A
-R
-C
-D
 Select three tiles to pass left
 Select three tiles to pass across
 Select three tiles to pass right
@@ -2008,11 +2011,6 @@ Chii
 Pon
 Ron
 Tsumo
-A
-R
-C
-D
-Kan
 Honba
 Nagashi
 Tobi
@@ -2179,7 +2177,9 @@ Space Mahjong
 Chinitsu
 Fifth Tile
 Zombie Blanks
+Different Number of Jokers/Flowers
 PIE
+No Charleston
 NMJL 2025 Card
 ILM Card
 ATF Card
@@ -3517,18 +3517,34 @@ Rules
 1 Han
 1 Han
 1 Han
+1 Han
+1 Han
+1 Han
+2 Han
+2 Han
+1 Han
+1 Han
+2 Han
+2 Han
+1 Han
+1 Han
+1 Han
+1 Han
 2 Han
 1 Han
 2 Han
-1 Han
-1 Han
+2 Han
+2 Han
+2 Han
+2 Han
 2 Han
 2 Han
 2 Han
 2 Han
 2 Han
 3 Han
-2 Han
+3 Han
+5 Han
 5 Han
 Yakuman
 Yakuman
@@ -3544,6 +3560,28 @@ Yakuman
 Yakuman
 Yakuman
 Yakuman
+Yakuman
+Yakuman
+Yakuman
+Yakuman
+Yakuman
+Yakuman
+Yakuman
+Yakuman
+Yakuman
+Yakuman
+Yakuman
+Yakuman
+Rules
+Rules
+Rules
+Rules
+Rules
+Rules
+Rules
+Rules
+Rules
+Rules
 Rules
 Rules
 Rules
@@ -3553,6 +3591,9 @@ Rules
 Rules
 Rules
 4 Fan
+4 Fan
+Rules
+Rules
 Rules
 Rules
 Rules
@@ -3560,6 +3601,8 @@ Rules
 5 Han
 Yakuman
 Yakuman
+Rules
+Rules
 Rules
 Rules
 Rules
@@ -3579,11 +3622,16 @@ Rules
 Rules
 3 Fan
 8 Fan
+3 Fan
+8 Fan
+Rules
 Rules
 Rules
 Rules
 Rules
 3 Han
+Rules
+Rules
 Rules
 Tenpai Payments
 Win Condition
@@ -3594,38 +3642,76 @@ Tsumo
 Haitei
 Houtei
 Pinfu
+Pinfu
 Tanyao
+Tanyao
+Iipeikou
 Iipeikou
 Yakuhai
 Chiitoitsu
+Chiitoitsu
+Chanta
 Chanta
 Junchan
+Junchan
+Ittsu
 Ittsu
 Sanshoku
+Sanshoku
 Sanshoku Doukou
+Sanshoku
+Toitoi
 Toitoi
 Sanankou
+Sanankou
+Shousangen
 Shousangen
 Honroutou
-Ryanpeikou
+Honroutou
 Honitsu
+Honitsu
+Ryanpeikou
+Ryanpeikou
+Chinitsu
 Chinitsu
 Tenhou
 Chiihou
 Daisangen
+Daisangen
+Suuankou
 Suuankou
 Suuankou Tanki
+Suuankou Tanki
+Tsuuiisou
 Tsuuiisou
 Ryuuiisou
+Ryuuiisou
+Chinroutou
 Chinroutou
 Chuurenpoutou
+Chuurenpoutou
+Junsei Chuurenpoutou
 Junsei Chuurenpoutou
 Kokushi Musou
+Kokushi Musou
 Kokushi Musou Juusan Menmachi
-Daisuushii
+Kokushi Musou Juusan Menmachi
 Shousuushii
+Shousuushii
+Daisuushii
+Daisuushii
 Agarirenchan
 Honba
+Wall
+Shuugi
+Wall
+Shuugi
+Wall
+Shuugi
+Wall
+Shuugi
+Wall
+Shuugi
 Win Condition
 Chii
 Scoring
@@ -3633,6 +3719,9 @@ Win Condition
 Flowers
 Win Condition
 Seven Pairs
+Seven Pairs
+Honba
+Honba
 Initial Score
 Notenrenchan
 North Wind
@@ -3642,6 +3731,8 @@ Manzu Honitsu
 Shuugi
 Shuugi
 Chankan
+Kuikae Nashi
+Nagashi $is
 Sekinin Barai (Pao)
 12 Tile Pao
 Sekinin Barai (Pao)
@@ -3660,56 +3751,101 @@ Flowers
 Flowers
 Flowers
 Flowers
+Flowers
+Flowers
+Shuugi
 Space Mahjong
 Win Condition
 Open Kokushi Musou
 Win Condition
+Tobi
+Uma
 In event of an exhaustive draw, players not in tenpai pay players in tenpai. 3000 points total are paid, with the payment split among the non-tenpai players. If all or no players are tenpai, no payment occurs.
 You may win with one of the following:
 - Four sets (sequences or triplets) and a pair.
 - (Chiitoitsu) Seven distinct pairs.
 - (Kokushi Musou) All thirteen terminal/honor tiles plus one forming a pair.
 Win by self-draw with a closed hand.
-Win off the last tile in the wall.
-Win off the discard after the last tile in the wall is drawn.
+Win by drawing the last tile in the wall.
+Win off a discard after the last tile in the wall is drawn.
 You won off a double-sided sequence wait, with an all-sequence hand whose pair is not yakuhai.
+%{example_hand}
 Your hand contains only tiles numbered 2-8.
+%{example_hand}
 Your closed hand has a double sequence: two copies of the exact same sequence in one suit, like 123 123.
-1 han for each triplet of: dragons, wind matching the round marker, and wind matching your seat.
-Your hand consists of seven non-repeating pairs, and is not ryanpeikou.
+%{example_hand}
+Your hand consists of seven non-repeating pairs.
+%{example_hand}
 1 han if each of the 5 blocks in your hand contains a terminal or honor. 2 han if closed.
+%{example_hand}
 2 han if each of the 5 blocks in your hand contains a terminal. 3 han if closed.
+%{example_hand}
 1 han if your hand contains the sequences 123 456 789 in one suit. 2 han if closed.
+%{example_hand}
 1 han if your hand contains the same number sequence in all three suits. 2 han if closed.
+%{example_hand}
 2 han if your hand contains the same number triplet in all three suits.
+%{example_hand}
 2 han if your hand is all triplets.
+%{example_hand}
 2 han if your hand has three closed triplets. A triplet formed by a self-draw win counts as closed.
+%{example_hand}
 2 han on top of yakuhai if you have two dragon triplets/kans and a dragon pair.
+%{example_hand}
 2 han if your hand contains only terminal and honor tiles.
-3 han if you have two double sequences, each being two copies of the exact same sequence in one suit, like 123 123. Such hands are not considered seven pairs.
+%{example_hand}
 2 han if your hand is comprised of one suit plus honor tiles. 3 han if closed.
+%{example_hand}
+3 han if you have two double sequences, each being two copies of the exact same sequence in one suit, like 123 123. Does not count as chiitoitsu (7 pairs).
+%{example_hand}
 5 han if your hand is comprised of one suit only (no honor tiles). 6 han if closed.
+%{example_hand}
 Win with your initial hand as dealer.
 Win with your first draw as non-dealer.
 Your hand contains triplets or kans of all three dragons.
+%{example_hand}
 Your hand has three closed triplets in hand, and you won by self-drawing the fourth.
+%{example_hand}
 Double yakuman if your hand has four closed triplets in hand, and you won by completing your pair.
+%{example_hand}
 Your hand consists of only honor tiles.
+%{example_hand}
 Your hand consists of only all-green tiles (23468 bamboo and green dragon).
+%{example_hand}
 Your hand consists of only terminals.
+%{example_hand}
 You have no calls and your winning hand is the pattern 1112345678999 in one suit, plus one additional tile.
+%{example_hand}
 Double yakuman if your hand was 1112345678999 in one suit, and you won via its nine-sided wait.
+%{example_hand}
 Your winning hand consists of one of each terminal/honor tile plus one forming a pair.
+%{example_hand}
 Double yakuman if your winning hand consists of one of each terminal/honor tile and you won with a thirteen-sided wait for the pair.
-Double yakuman if your hand contains triplets or kans of all four winds.
+%{example_hand}
 Your hand contains triplets or kans of three winds, plus a pair of the fourth wind.
+%{example_hand}
+Double yakuman if your hand contains triplets or kans of all four winds.
+%{example_hand}
 If the dealer (East wind) wins, the round repeats.
 (Agarirenchan) One honba stick is also added if the dealer (East wind) wins.
+(Aka) %{man}x 5m, %{pin}x 5p, and %{sou}x 5s are replaced with red \\\"aka dora\\\" fives that are worth one extra han each.
+(Aka) If your hand is closed, each aka dora is worth 1 shuugi chip.
+(Aka) %{man}x 1m, %{pin}x 1p, and %{sou}x 1s are replaced with red \\\"aka dora\\\" fives that are worth one extra han each.
+(Aka) If your hand is closed, each aka dora is worth 1 shuugi chip.
+(Aka) %{man}x 3m, %{pin}x 3p, and %{sou}x 3s are replaced with red \\\"aka dora\\\" fives that are worth one extra han each.
+(Aka) If your hand is closed, each aka dora is worth 1 shuugi chip.
+(Aka) %{man}x 7m, %{pin}x 7p, and %{sou}x 7s are replaced with red \\\"aka dora\\\" fives that are worth one extra han each.
+(Aka) If your hand is closed, each aka dora is worth 1 shuugi chip.
+(Aka) %{man}x 9m, %{pin}x 9p, and %{sou}x 9s are replaced with red \\\"aka dora\\\" fives that are worth one extra han each.
+(Aka) If your hand is closed, each aka dora is worth 1 shuugi chip.
 You may win with one of the following:
 When the player to your left discards a tile you can use to complete a 3 tile sequence, you may call Chii to take that tile instead of drawing.
 - (Cosmic Riichi) Seven Pairs is again a possible winning hand.
 - Seven pairs (allows repeats).
 Your hand consists of seven pairs (repeats allowed).
+%{example_hand}
+The 100 point sticks in the middle count honba. Each adds %{value} extra points to the winning value. One honba stick is added for every drawn round, and reset to 0 on a win.
+The 100 point sticks in the middle count honba. Each adds %{value} extra points to the winning value. One honba stick is added for every drawn round, and reset to 0 on a win.
 (Kansai) Everyone starts with 50000 points.
 (Kansai) In the south round only, the round repeats on exhaustive draws regardless of anyone's tenpai status.
 (Kansai) In the south round only, the round repeats on exhaustive draws regardless of anyone's tenpai status.
@@ -3719,6 +3855,8 @@ Your hand consists of seven pairs (repeats allowed).
 (Kansai) Non-kazoe yakuman ron is worth 10 chips instead of 5. Having all four flowers also awards 10 chips (ron) or 5 chips each (tsumo).
 (Kansai) At the end of the game, chips are exchanged based on placement and points.
 You may also call ron on concealed kans, but only if you are tenpai for kokushi musou.
+Swap-calling is disallowed. That is, if you call two tiles, you cannot discard a tile that could have made a set with those two tiles. (e.g. calling a red five and discarding a normal five)
+If you end with an exhaustive draw, and no one has called any of your discards, and your discards are all terminal or honor tiles, a nagashi payment occurs, which is equivalent to a %{is} tsumo.
 If you deal the last dragon called for a daisangen hand, or the last wind called for a daisuushii hand, you are responsible for that single yakuman payment if they tsumo, or half of the yakuman payment if they ron off someone else.
 If your discard is called by another player with three existing calls (yours being the fourth), you are liable for paying their whole hand if they win.
 (Rinshan Pao) Dealing a discard called for kan by a player, who then immediately wins with rinshan, also counts, except you pay for the full hand (not just rinshan).
@@ -3735,12 +3873,17 @@ Your hand contains four kans.
 (Sanma) You may declare north winds to draw a replacement tile from the dead wall. Each is worth 1 han. North winds are still usable to form pairs and triplets. If you are waiting on the north wind, you may ron a north wind declaration much like chankan (but you are not awarded chankan).
 You won with seven flowers.
 You won with eight flowers.
+%{example_hand}
+%{example_hand}
 - As soon as you draw a seventh flower, you may declare a win for an additional 3 Fan, or 8 Fan if you have eight flowers.
 - As soon as you draw an eighth flower, you may declare a win for an additional 8 Fan.
+Part of the player's starting score is composed of shuugi chips worth %{worth} each, which are gained and lost separately from points.
 Sequences can wrap (891, 912). Winds and dragons can make sequences. You can chii from any direction.
 - (Space Mahjong) Seven Pairs is no longer a winning hand.
 (Space Mahjong) Open kokushi musou is worth 3 han.
 - Four sets (sequences or triplets) and a pair.
+After a round, if anyone has less than %{below} points, the game ends.
+At the end of the game, 1st/2nd/3rd/4th receive a bonus of %{_1st}/%{_2nd}/%{_3rd}/%{_4th} points.
 scored a %{score}-point hand
 with yaku:
 /
@@ -3773,9 +3916,6 @@ has greater tenpai value than their deal-in value, and therefore reverses the pa
 has less or equal tenpai value than their deal-in value, and therefore the payment proceeds as normal (Ezaki Hitomi)
 takes all bets on the table (%{pot}) and is paid 1500 by every player (Nelly Virsaladze)
 bets their tsumo payment instead of paying out (Ezaki Hitomi)
-pays double since the wall ends on their side (Kanbara Satomi)
-pays double since the wall ends on their side (Kanbara Satomi)
-Noten payments are tripled (Ikeda Kana)
 ,
 →
 Using joker assignment
@@ -3796,3 +3936,157 @@ Welcome to Riichi Advanced!
 Viewing log for a
 game
 with mods
+Hello, world!
+Welcome to cosmic riichi! This is a space mahjong variant that adds several new calls and ways to earn +0.5 han and +1 fu. Let's get started.
+(Click to continue)
+South just played a tile that matches one in your hand. Because of this, you can call ton on the tile to call a pair. Try it!
+A ton call is just like pon, but for a pair instead of a triplet. It's usually not useful to call a pair, but doing so is a valid way to rush chiitoitsu (1 han open) in cosmic riichi.
+(Click to continue)
+Note that you were not prompted to call ton on this white dragon. Since there's no way to orient the called tile to indicate \\\"across\\\", you can only call ton from your left or your right, not across.
+(Click to continue)
+Discard the 7 of bamboo to continue.
+East just discarded a 1 of bamboo. With your 1 of characters and 1 of circles in hand, in cosmic riichi, you may call Chon to form a mixed triplet (kontsu). Try it now.
+In cosmic riichi, kontsu like the one you just called are also valid sets in your goal to form four sets and a pair.
+(Click to continue)
+Kontsu are worth 1 fu open, 2 fu closed, and double that for a terminal or honor kontsu. (Honor sequences are considered kontsu, not shuntsu.) So your called kontsu is worth 2 fu, and the one in hand is worth 4 fu.
+(Click to continue)
+Discard a character tile to continue.
+Looks like you drew another 3 of bamboo! Because you have a pair of 3 bamboo in your calls, you may call Pon on your turn in order to upgrade it to a triplet (kapon, added triplet). Try it now!
+Note that you are not given a replacement tile for calling an added pon. This makes sense, since you aren't 'extra' one tile after calling, unlike with kan.
+(Click to continue)
+We're now tenpai, waiting on white dragon, but unfortunately we have no yaku. What to do?
+Discard the other character tile to continue.
+Looks like you drew the last 3 bamboo! Just like with kapon, you can call Kan here to form a glorious added-added kan (kakakan). Go right ahead!
+Unlike kapon, kakakan gives you a replacement tile. Winning off this tile awards rinshan just like any other kan.
+(Click to continue)
+Go ahead and discard one of the 2 bamboos. Note that you are now waiting on the green dragon to complete a mixed triplet of dragons.
+South just discarded a west wind. Because you have one of each other wind, you can call Fuun to declare an open mixed quad of winds (fuutsu)! Try it now.
+Open fuutsu are worth 8 fu, and closed fuutsu are worth 16. Just like with kans, you get a replacement tile for calling fuun. Unlike with kans, this replacement tile comes from the live wall, not the dead wall.
+(Click to continue)
+Not only that, the replacement tile was our winning green dragon! Winning after a fuun replacement tile awards rinshan, which is our yaku. Declare tsumo!
+Besides rinshan, every mixed triplet of dragons (mini-sangen) is worth 0.5 han, and every mixed triplet of winds that contain both the round and seat wind is worth 0.5 han. So we didn't need rinshan.
+(Click to continue)
+As for the fu calculation, that's tsumo (+2), open kakakan (+8), open terminal chon (+2), open fuun (+8), closed honor kontsu (+4), and closed wait (+2).
+20+2+8+2+8+4+2 is 46, so 50 fu.
+(Click to continue)
+Anyways, that's basically all the new calls in cosmic riichi! The call priority is as follows:
+ton < chii < chon < fuun < pon = kan < ron
+(Click to continue)
+In addition, all yakuman now award 13 or 26 han, and having 18+ han awards haneyakuman (12000-24000). By the way, if you were wondering what score you get for having 1.5 han, guess you'll just have to play to find out!
+(Click to continue)
+Click to return to the list of tutorials.
+Welcome to galaxy mahjong, a riichi variant that replaces 1 of each kind of tile with a light blue 'galaxy' tile. What do these mysterious tiles do? Let's find out!
+(Click to continue)
+Our initial hand is looking like it's going to be a half flush, but let's see.
+(Click to continue)
+South just played a bamboo tile! If we're going for half flush, we'll probably want to take it. Call chii!
+Oh strange, why do we have options?
+(Click to continue)
+This is because galaxy tiles are suitless! A galaxy 2 can be used as any 2 tile, including 2 of bamboo. So we could chii 234, if we wished.
+(Click to continue)
+In fact, that means you have a triplet of 2 circles here! So in fact our hand is not honitsu, it's toitoi.
+(Click to continue)
+Because it won't get us any closer to winning, let's not call chii. Press Cancel.
+Press Skip.
+We drew a galaxy north wind! But what's the riichi button doing there?
+(Click to continue)
+Just like how galaxy twos are two wildcards, galaxy winds are wind wildcards -- they can be any wind! So we have yakuhai east already, and are tenpai!
+(Click to continue)
+Unfortunately our tenpai is kind of garbage (waits on 4 bamboo) but declare Riichi anyway, you'll soon see why.
+If you hover over your 9 bamboos, you can see that your wait is not only the 4 bamboo, but also any galaxy four! Let's discard a 9 bamboo.
+This is a tutorial, so of course you get the tile you want immediately. Press Ron.
+Let's talk about dora! As you can see, both the dora and ura indicators up top are galaxy tiles.
+(Click to continue)
+The dora indicator is a galaxy white dragon. Since galaxy dragons are dragon wildcards, they indicate all other dragons as dora, including your two actual white dragons.
+(Click to continue)
+The ura indicator is a galaxy eight circles, which similarly indicates all nines as dora, including your nine of bamboo.
+(Click to continue)
+That's about all there is to galaxy mahjong!
+(Click to continue)
+Click to return to the list of tutorials.
+Look at that hand! Can you guess what tiles it is waiting on?
+(Click to continue)
+Declare Riichi to find out!
+Sorry for the trick question! Galaxy mahjong adds a new win condition: having an entire hand of galaxy tiles. So if you discard the 4 of bamboo, you will wait on any galaxy tile. Let's see what that looks like!
+Press Ron.
+Winning this way awards the Milky Way yakuman! That's the only yaku galaxy mahjong adds.
+(Click to continue)
+Click to return to the list of tutorials.
+Welcome to Riichi Advanced!
+You're the first to play, so let's start by discarding this tile.
+(Click the tile to discard it.)
+Nice play!
+(Click to continue)
+This is your hand. Whenever it's your turn, you will automatically draw a tile and discard a tile.
+(Click to continue)
+The object of the game is to obtain four sets and a pair. A set is a sequence of three, like 123, or a triplet, like 555.
+(Click to continue)
+Looking at your hand, you already have 234,456,777 of circles and 888 of bamboo.
+(Click to continue)
+So all you need is to draw another 4 bamboo to complete your pair!
+(Click to continue)
+Go ahead and discard the 1 of characters.
+Nice! Let's see what you draw next...
+Now you have four sets and a pair! Click Tsumo to declare a win!
+Click to return to the list of tutorials.
+The previous player just tossed the 3 of circles, and it's about to be your turn.
+(Click to continue)
+Usually, on your turn, you get to draw a tile. However, this 3 of circles can complete a sequence in our hand.
+(Click to continue)
+Because the last discard can complete a sequence, we can call Chii to take the last discard, in lieu of drawing a tile. Do so now.
+In fact, there are three possible sequences that this 3 of circles can complete.
+(Click to continue)
+Since we want to keep the 123 sequence in our hand, it is wisest to use the 45. Let's give that a try.
+Nice work! When you make a call such as Chii, the resulting set is revealed to the table, with the called tile facing in the direction of the player you called it from.
+(Click to continue)
+Other players might make inferences about your hand based on your calls. In addition, you may no longer discard these tiles -- they are \\\"locked in\\\" for your hand.
+(Click to continue)
+Now you must discard a tile.
+(Click to continue)
+Note that your existing 3 of circles is grayed out -- it cannot be discarded. This is because we are playing with a rule called \\\"kuikae nashi\\\", i.e. no swap-calling. You cannot call with 45 of circles and subsequently discard 3 or 6 of circles.
+(Click to continue)
+So go ahead and discard the white dragon.
+The player across from you has just discarded the east wind, which you have two of.
+(Click to continue)
+Because the last discard can complete a triplet in our hand, we can immediately call Pon to take the last discard. Do so now.
+Note that unlike Chii, which can only be called from your left, calling Pon messes with the turn order. The left player's turn got skipped, and now it's your turn to discard.
+(Click to continue)
+We are very close to winning: we just need one more tile. Go ahead and discard a 4 of characters.
+We are now in \\\"tenpai\\\": our hand is waiting for the 2 or 5 of characters in order to complete our remaining set and win. We could either self draw the tile...
+(Click to continue)
+...or someone else can discard it!
+(Click to continue)
+When someone discards the final tile you need in order to win, you can declare a win by calling Ron. Do so now.
+Click to return to the list of tutorials.
+Okay, do you go for the wider wait by declaring riichi on the wind, or jump for the funny wind wait by discarding 8 of bamboo?
+Yeah, that's what I thought.
+No one goes for the meme wait!
+Click to exit.
+Welcome to sanma! This is the standard three-player variant of riichi, where the name of the game is forming big hands.
+(Click to continue)
+One thing you'll note is that everybody starts with a score of 35000 instead of 25000.
+(Click to continue)
+You might also note the distinct lack of character tiles in your hand. This is because most of the character suit has been removed, except for the 1 and 9 of characters.
+(Click to continue)
+In addition, note that you were not given the option to chii this 3 of bamboo. This is because you cannot call chii in sanma! All other calls are allowed.
+(Click to continue)
+Go ahead and discard this east wind to continue.
+You drew a north wind! In sanma, north winds are akin to flower tiles in other variants -- you may declare them and draw a replacement tile. Each north wind (\\\"pei\\\") is worth one extra han, and is otherwise not counted as part of your hand.
+(Click to continue)
+To declare a north wind, press the Pei button.
+The replacement tile gives us three sets and a pair, so we're tenpai. Now declare riichi on the 9 of bamboo!
+Click to return to the list of tutorials.
+Welcome to space mahjong! Let's get started by discarding this white dragon -- you'll soon see why.
+The player to your right just played the 2 of circles. In space mahjong, you can chii from any direction, not just from your left. Try it now!
+Hey, looks like you have options!
+(Click to continue)
+The distinguishing factor of space mahjong is that sequences can wrap. In other words, 891 and 912 are valid sequences.
+(Click to continue)
+Winds and dragons can also form sequences! So this is a valid sequence.
+(Click to continue)
+This means that your 91 in circles is actually a double-sided wait for 8 and 2. Pretty silly, right? Let's try going for sanshoku on 912.
+Discard the 5 of bamboo. Some might argue that ones and nines are better than fives in space mahjong, because they can form chanta!
+Congrats, you have a chance at 912 sanshoku! Now go ahead and play the 3 of circles so you can wait on 39 bamboo. A 3 bamboo will give us sanshoku.
+Space mahjong is implemented as a riichi mod, so you're actually just playing a modified riichi right now. This also means that here on Riichi Advanced, you can combine space mahjong with any riichi variant!
+(Click to continue)
+Click to return to the list of tutorials.
