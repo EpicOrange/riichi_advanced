@@ -394,7 +394,6 @@ defmodule RiichiAdvancedWeb.GameLive do
                     "round_wind_triplet" => get_wind_triplet(Riichi.get_round_wind(@state.kyoku, length(@state.available_seats))),
                     "seat_wind_triplet" => get_wind_triplet(@viewer),
                   })
-                  |> IO.inspect()
                 %>
                 <div class={["rules-popover-rule", priority < 0 && "full-width"]}>
                   <div class="rules-popover-title"><%= dt(@lang, title, vars) %></div>
