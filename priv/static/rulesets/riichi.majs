@@ -407,11 +407,11 @@ on after_initialization do
   add_rule("1 Han", "Iipeikou", "Your closed hand has a double sequence: two copies of the exact same sequence in one suit, like 123 123.")
   update_rule("1 Han", "Iipeikou", "%{example_hand}", %{example_hand: ~t"33445m33777p 678s 5m"})
   add_rule("1 Han", "Yakuhai", """
-  1 Han for each of the following triplets in your hand:
+  1 %{han} for each of the following triplets in your hand:
   - A triplet of dragon tiles %{dragons}
   - A triplet of winds matching the round marker %{round_wind_triplet}
   - A triplet of winds matching your seat %{seat_wind_triplet}
-  """, %{dragons: ~t"777z"})
+  """, %{han: "Han", dragons: ~t"777z"})
   add_rule("2 Han", "Chiitoitsu", "Your hand consists of seven non-repeating pairs.")
   update_rule("2 Han", "Chiitoitsu", "%{example_hand}", %{example_hand: ~t"2266m99p24477s33z 2s"})
   add_rule("1 Han", "Chanta", "1 han if each of the 5 blocks in your hand contains a terminal or honor. 2 han if closed.")
