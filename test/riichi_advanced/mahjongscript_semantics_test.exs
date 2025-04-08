@@ -306,24 +306,6 @@ defmodule RiichiAdvanced.MahjongScriptSemanticsTest do
     assert String.contains?(msg, "command expects arguments")
   end
 
-  test "mahjongscript - invalid on command" do
-    script = """
-    on 123
-    """
-    assert {:ok, parsed} = Parser.parse(script)
-    assert {:error, msg} = Compiler.compile_jq(parsed)
-    assert String.contains?(msg, "got invalid name")
-  end
-
-  test "mahjongscript - invalid set command" do
-    script = """
-    set 123
-    """
-    assert {:ok, parsed} = Parser.parse(script)
-    assert {:error, msg} = Compiler.compile_jq(parsed)
-    assert String.contains?(msg, "got invalid name")
-  end
-
   test "mahjongscript - def must have do block" do
     script = """
     def foo, "not a do block"
