@@ -7,5 +7,5 @@ if !is == "Mangan" do
   define_yaku_precedence("Renhou", [1, 2, 3, 4])
   apply set_append, "score_calculation.yaku_lists", "yaku_renhou"
 else
-  define_yaku yakuman, "Renhou", 5, status("discards_empty") and status_missing("call_made") and won_by_discard
+  define_yaku yakuman, "Renhou", 1, status("discards_empty") and status_missing("call_made") and won_by_discard
 end

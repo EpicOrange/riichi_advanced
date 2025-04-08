@@ -261,15 +261,13 @@ defmodule RiichiAdvanced.Compiler do
   defp compile_constant(value, line, column) do
     # otherwise, try a bunch of things
     # this order is important: 
-    # compile_action will treat conditions as custom actions (function calls)
     # validate_json will treat actions/conditions as raw JSON
     # compile_cnf_condition defaults to a single condition
     with {:ok, value} <- Parser.parse_sigils(value),
-         {:error, _} <- compile_condition(value, line, column),
-         {:error, _} <- compile_action(value, line, column),
          {:error, _} <- Validator.validate_expression(value),
          {:error, _} <- Validator.validate_json(value),
-         {:error, _} <- compile_cnf_condition(value, line, column) do
+         {:error, _} <- compile_cnf_condition(value, line, column),
+         {:error, _} <- compile_action(value, line, column) do
       {:error, "Compiler.compile_constant: at line #{line}:#{column}, expected JSON, condition, action, or do block, got #{inspect(value)}"}
     end
   end
@@ -486,11 +484,21 @@ defmodule RiichiAdvanced.Compiler do
       {_, _, _} -> {:ok, args}
       _ -> {:error, "Compiler.compile: at line #{line}:#{column}, `define_const` command expects a single JSON, condition, action, or do block, got #{inspect(args)}"}
     end
-
-    with {:ok, value} <- value,
-         {:ok, value} <- compile_constant(value, line, column),
-         {:ok, value} <- Jason.encode(value) do
-      {:ok, ".constants[#{name}] = #{value}"}
+    with {:ok, value} <- value do
+      case value do
+        {:@, _, _} -> 
+          # copy an existing constant
+          with {:ok, %Constant{name: const_name}} <- Validator.validate_json(value),
+               {:ok, const_name} <- Jason.encode(const_name) do
+            {:ok, ".constants[#{name}] = .constants[#{const_name}]"}
+          end
+        _ ->
+          # set a constant
+          with {:ok, value} <- compile_constant(value, line, column),
+               {:ok, value} <- Jason.encode(value) do
+            {:ok, ".constants[#{name}] = #{value}"}
+          end
+      end
     end
   end
 
@@ -936,9 +944,7 @@ defmodule RiichiAdvanced.Compiler do
 
   @header """
   def _ensure_list:
-    if type == "string" and startswith("@") and (startswith("@splat$") | not) then
-      ["@splat$" + (.[1:])]
-    elif type == "array" then
+    if type == "array" then
       .
     elif type == "null" then
       []

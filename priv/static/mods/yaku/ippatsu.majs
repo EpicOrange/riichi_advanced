@@ -6,10 +6,10 @@ end
 define_yaku riichi_yaku, "Ippatsu", 1, status("ippatsu")
 
 # set ippatsu status on riichi
-apply append, "buttons.riichi.actions", set_status("ippatsu")
-apply append, "buttons.open_riichi.actions", set_status("ippatsu")
+apply prepend, "buttons.riichi.actions" do set_status("ippatsu") end
+apply prepend, "buttons.open_riichi.actions" do set_status("ippatsu") end
 
-apply set_append, "functions.discard_passed" do
+apply set_prepend, "functions.discard_passed" do
   # unset ippatsu status if your own discard passes
   as last_discarder do
     if status_missing("just_reached") do

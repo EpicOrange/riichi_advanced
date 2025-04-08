@@ -20,13 +20,13 @@ end
 if !min == "Mangan" do
   # check for kiriage
   if [3, 60] in "score_calculation.limit_thresholds" do
-    define_const min_han_check,
+    define_const min_han_check_discard,
          has_yaku_with_discard(3, 60)
       or has_yaku_with_discard(4, 30)
       or has_yaku_with_discard(5)
       or has_yaku2_with_discard(1)
   else
-    define_const min_han_check,
+    define_const min_han_check_discard,
          has_yaku_with_discard(3, 70)
       or has_yaku_with_discard(4, 40)
       or has_yaku_with_discard(5)
@@ -36,15 +36,21 @@ else
   if !min == "Yakuman" do
     # check for existence of kazoe
     if [13, 0] in "score_calculation.limit_thresholds" do
-      define_const min_han_check, has_yaku_with_discard(13) or has_yaku2_with_discard(1)
+      define_const min_han_check_discard, has_yaku_with_discard(13) or has_yaku2_with_discard(1)
     else
-      define_const min_han_check, has_yaku2_with_discard(1)
+      define_const min_han_check_discard, has_yaku2_with_discard(1)
     end
   else
-    define_const min_han_check, has_yaku_with_discard(!min) or has_yaku2_with_discard(1)
+    define_const min_han_check_discard, has_yaku_with_discard(!min) or has_yaku2_with_discard(1)
   end
 end
+define_const min_han_check_call, @min_han_check_discard
+replace all, "constants.min_han_check_call", "has_yaku_with_discard", "has_yaku_with_call"
+replace all, "constants.min_han_check_call", "has_yaku2_with_discard", "has_yaku2_with_call"
+define_const min_han_check_hand, @min_han_check_discard
+replace all, "constants.min_han_check_hand", "has_yaku_with_discard", "has_yaku_with_hand"
+replace all, "constants.min_han_check_hand", "has_yaku2_with_discard", "has_yaku2_with_hand"
 
-apply append, "buttons.ron.show_when", @min_han_check
-apply append, "buttons.chankan.show_when", @min_han_check
-apply append, "buttons.tsumo.show_when", @min_han_check
+apply append, "buttons.ron.show_when", +@min_han_check_discard
+apply append, "buttons.chankan.show_when", +@min_han_check_call
+apply append, "buttons.tsumo.show_when", +@min_han_check_hand

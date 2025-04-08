@@ -20,6 +20,7 @@ end
 on before_win do
   # use set_counter to be compatible with other kin mods
   set_counter("kin", "count_matches", ["hand", "calls", "winning_tile"], ~m"nojoker, (35m 35p 35s 35t):1")
+  kin *= 3
 end
 
 define_yaku extra_yaku, "Kin", "kin", counter_at_least("kin", 1)
