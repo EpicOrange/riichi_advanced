@@ -581,12 +581,11 @@ div.pond.kamicha {
   }
   input.mobile-zoom-checkbox:not(:checked) ~ div.hand.self {
     flex-flow: row wrap-reverse;
-    justify-content: center;
+    justify-content: flex-start;
     row-gap: calc(0.25 * var(--tile-size));
   }
   input.mobile-zoom-checkbox:not(:checked) ~ div.hand.self > div.tiles {
     margin-left: 0;
-    flex-grow: 1;
   }
   input.mobile-zoom-checkbox:not(:checked) ~ div.hand.self > div.calls {
     transform: scale(calc(1 / var(--mobile-scale-factor)));
