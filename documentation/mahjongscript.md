@@ -468,6 +468,21 @@ Note that you can directly pass in a match sigil to `match`, so `define_match` i
 match(["hand", "calls", "winning_tile"], ~m"pair:7")
 ```
 
+### `extend_match`: Extend an existing match
+
+Same syntax and function as `define_match`, but if the match exists, it will extend the match with the given match definitions.
+
+```elixir
+define_match mymatch, ~m"mentsu:4, pair:1"
+extend_match mymatch, ~m"pair:7"
+```
+
+is the same as
+
+```elixir
+define_match mymatch, ~m"mentsu:4, pair:1", ~m"pair:7"
+```
+
 ### `define_const`: Define a constant JSON value that can be referenced later in actions
 
 ```elixir
@@ -490,7 +505,7 @@ define_const baz do # note the lack of comma before do
 end
 ```
 
-See the explanation of constants above.
+See the [explanation of constants above](#constants).
 
 ### `define_yaku`: Add a new yaku
 

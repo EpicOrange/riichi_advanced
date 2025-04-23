@@ -272,6 +272,7 @@ defmodule RiichiAdvanced.Compiler do
     end
   end
 
+  # TODO deprecate
   defp compile_command("var", name, args, line, column) do
     value = case args do
       [value] -> {:ok, value}
@@ -794,6 +795,7 @@ defmodule RiichiAdvanced.Compiler do
     end
   end
 
+  # TODO deprecate
   defp compile_command("define", name, args, line, column) do
     case Jason.decode!(name) do
       "play_restriction" -> 
