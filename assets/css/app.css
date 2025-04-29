@@ -70,6 +70,8 @@ main div#container {
   flex-flow: column nowrap;
   user-select: none;
   contain: layout; /* make {position: fixed;} elements relative to this */
+  font-size: calc(0.5 * var(--tile-size));
+  color: white;
 }
 main div.messages-container {
   position: absolute;
@@ -3026,6 +3028,7 @@ div.title > div {
 }
 div.title > div.title-riichi {
   font-size: calc(3 * var(--tile-size));
+  color: black;
   transform: rotate(2deg);  
   top: 0;
   width: calc(10 * var(--tile-size));
@@ -3033,6 +3036,7 @@ div.title > div.title-riichi {
 }
 div.title > div.title-advanced {
   font-size: calc(2 * var(--tile-size));
+  color: black;
   transform: rotate(-10deg);  
   left: calc(4.5 * var(--tile-size));
   top: calc(3 * var(--tile-size));
@@ -3086,7 +3090,7 @@ div#container > div.index-bottom-buttons {
 div#container > div.index-bottom-buttons > button {
   font-size: calc(0.5 * var(--tile-size));
 }
-div#container > form {
+div#container > form.ruleset-selection-form {
   position: absolute;
   width: calc(100% - 3 * var(--tile-size));
   height: calc(7 * var(--tile-size));
@@ -3102,20 +3106,20 @@ div#container > form {
   flex-direction: column;
   align-items: space-around;
 }
-div#container > form input, div#container > form button {
+div#container > form.ruleset-selection-form input, div#container > form.ruleset-selection-form button {
   font-size: calc(0.75 * var(--tile-size));
 }
-div#container > form > div.form-error {
+div#container > form.ruleset-selection-form > div.form-error {
   font-size: calc(0.5 * var(--tile-size));
   color: white;
 }
-div#container > form > input.nickname-input {
+div#container > form.ruleset-selection-form > input.nickname-input {
   margin: calc(0.5 * var(--tile-size));
   font-size: calc(0.75 * var(--tile-size));
   height: 1em;
   margin-bottom: 0;
 }
-div#container > form > div.ruleset-selection {
+div#container > form.ruleset-selection-form > div.ruleset-selection {
   overflow-y: auto;
   line-height: 1;
   text-align: center;
@@ -3123,20 +3127,20 @@ div#container > form > div.ruleset-selection {
   color: white;
   font-size: calc(0.55 * var(--tile-size));
 }
-div#container > form > div.ruleset-selection > label {
+div#container > form.ruleset-selection-form > div.ruleset-selection > label {
   font-size: calc(0.55 * var(--tile-size));
   padding: calc(0.15 * var(--tile-size));
 }
-div#container > form > div.ruleset-selection > label > a {
+div#container > form.ruleset-selection-form > div.ruleset-selection > label > a {
   text-decoration: none;
   color: white;
   font-size: calc(0.55 * var(--tile-size));
 }
-div#container > form > div.ruleset-selection > input[disabled] + label {
+div#container > form.ruleset-selection-form > div.ruleset-selection > input[disabled] + label {
   opacity: 0.4;
 }
 /* about page */
-div#container > form > ul.beta-testers {
+div#container > form.ruleset-selection-form > ul.beta-testers {
   display: flex;
   flex-flow: row wrap;
   justify-content: space-around;
@@ -3146,8 +3150,8 @@ div#container > form > ul.beta-testers {
   margin: 0.5em;
   user-select: text;
 }
-div#container > form > ul.beta-testers > li { padding: 0.1em 0.25em; }
-div#container > form > ul.beta-testers > li:nth-child(2n) { transform: translateY(-0.25em); }
+div#container > form.ruleset-selection-form > ul.beta-testers > li { padding: 0.1em 0.25em; }
+div#container > form.ruleset-selection-form > ul.beta-testers > li:nth-child(2n) { transform: translateY(-0.25em); }
 /* enter buttons for index and lobby */
 div#container div.enter-buttons {
   width: 100%;
@@ -3397,7 +3401,7 @@ div.room > div.seats > div.player-slot > button {
   height: calc(1.2 * var(--tile-size));
 }
 div.room div.presets,
-div.room div.mods,
+div.mods,
 div.room div.config,
 div.room div.custom-json {
   top: calc(3 * var(--tile-size));
@@ -3412,7 +3416,7 @@ div.room div.presets {
   margin-top: calc(0.5 * var(--tile-size));
   font-size: calc(0.75 * var(--tile-size));
 }
-div.room div.mods > div.mods-inner-container {
+div.mods > div.mods-inner-container {
   display: flex;
   flex-flow: row wrap;
   row-gap: calc(0.0625 * var(--tile-size));
@@ -3420,25 +3424,25 @@ div.room div.mods > div.mods-inner-container {
   justify-content: flex-start;
   align-items: flex-start;
 }
-div.room div.mods {
+div.mods {
   padding-top: calc(0.25 * var(--tile-size));
   padding-bottom: calc(0.25 * var(--tile-size));
 }
-div.room div.mods.mods-saki > div.mods-inner-container {
+div.mods.mods-saki > div.mods-inner-container {
   /* saki needs room for hoverable cards */
   width: 100%;
   padding-right: 100%;
 }
-div.room div.mods > div.mods-inner-container > div.mod-category,
-div.room div.mods > div.mods-inner-container > div.mod-category-spacer {
+div.mods > div.mods-inner-container > div.mod-category,
+div.mods > div.mods-inner-container > div.mod-category-spacer {
   width: 100%;
   min-height: 0.5em;
   margin-left: -0.5em;
 }
-div.room div.mods > div.mods-inner-container button.mod-menu-button {
+div.mods > div.mods-inner-container button.mod-menu-button {
   font-size: 75%;
 }
-div.room div.mods > div.mods-inner-container div.mods-bottom-buttons {
+div.mods > div.mods-inner-container div.mods-bottom-buttons {
   width: 100%;
   text-align: center;
 }
@@ -3480,16 +3484,16 @@ label.mod {
   flex-direction: row;
   align-items: center;
 }
-div.room div.mods > div.mods-inner-container span.mod-config-name {
+div.mods > div.mods-inner-container span.mod-config-name {
   font-size: 67%;
   margin: 0 calc(0.0625 * var(--tile-size));
 }
 /* dropdown */
-div.room div.mods > div.mods-inner-container form.mod-config-dropdown {
+div.mods > div.mods-inner-container form.mod-config-dropdown {
   margin: 0;
   display: flex;
 }
-div.room div.mods > div.mods-inner-container form.mod-config-dropdown > select {
+div.mods > div.mods-inner-container form.mod-config-dropdown > select {
   -webkit-appearance: none;
   font-size: 67%;
   background-color: var(--tile-front);
@@ -3501,13 +3505,13 @@ div.room div.mods > div.mods-inner-container form.mod-config-dropdown > select {
   text-align: center;
 }
 /* slider -- do not use, since safari does not display datalist values */
-div.room div.mods > div.mods-inner-container form.mod-config-slider {
+div.mods > div.mods-inner-container form.mod-config-slider {
   display: flex;
   flex-flow: column;
   height: 100%;
   --thumb-size: calc(0.4 * var(--tile-size));
 }
-div.room div.mods > div.mods-inner-container form.mod-config-slider > input {
+div.mods > div.mods-inner-container form.mod-config-slider > input {
   -webkit-appearance: none;
   width: calc(3 * var(--tile-size));
   height: 0.5em;
@@ -3517,8 +3521,8 @@ div.room div.mods > div.mods-inner-container form.mod-config-slider > input {
   background: var(--tile-front);
   z-index: 1;
 }
-div.room div.mods > div.mods-inner-container form.mod-config-slider > input::-webkit-slider-thumb,
-div.room div.mods > div.mods-inner-container form.mod-config-slider > input::-moz-range-thumb {
+div.mods > div.mods-inner-container form.mod-config-slider > input::-webkit-slider-thumb,
+div.mods > div.mods-inner-container form.mod-config-slider > input::-moz-range-thumb {
   width: var(--thumb-size);
   height: var(--thumb-size);
   border-radius: 50%;
@@ -3526,8 +3530,8 @@ div.room div.mods > div.mods-inner-container form.mod-config-slider > input::-mo
   border-color: black;
   cursor: pointer;
 }
-div.room div.mods > div.mods-inner-container form.mod-config-slider > input::-webkit-slider-runnable-track,
-div.room div.mods > div.mods-inner-container form.mod-config-slider > input::-moz-range-track {
+div.mods > div.mods-inner-container form.mod-config-slider > input::-webkit-slider-runnable-track,
+div.mods > div.mods-inner-container form.mod-config-slider > input::-moz-range-track {
   -webkit-appearance: none;
   width: calc(100% - var(--thumb-size));
   height: calc(0.5 * var(--thumb-size));
@@ -3535,14 +3539,14 @@ div.room div.mods > div.mods-inner-container form.mod-config-slider > input::-mo
   background: var(--tile-front);
   z-index: 1;
 }
-div.room div.mods > div.mods-inner-container form.mod-config-slider > datalist {
+div.mods > div.mods-inner-container form.mod-config-slider > datalist {
   display: flex;
   flex-direction: row;
   writing-mode: horizontal-tb;
   font-size: 50%;
   height: 0.5em;
 }
-div.room div.mods > div.mods-inner-container form.mod-config-slider > datalist > option {
+div.mods > div.mods-inner-container form.mod-config-slider > datalist > option {
   margin: auto;
 }
 
@@ -3844,4 +3848,53 @@ form.tutorial-menu-container > header > label {
 }
 form.tutorial-menu-container > textarea {
   font-size: calc(0.25 * var(--tile-size));
+}
+
+
+
+/* majstest */
+
+div.majstest-container > label {
+  position: absolute;
+  top: 0;
+  right: 0;
+}
+div.majstest-container > form {
+  display: flex;
+  flex-direction: column;
+  row-gap: calc(0.25 * var(--tile-size));
+  padding: calc(0.25 * var(--tile-size)) 0;
+}
+div.majstest-container > form > select {
+  font-size: calc(0.6 * var(--tile-size));
+  background-color: var(--tile-front);
+  border: none;
+  border-radius: calc(0.25 * var(--tile-size));
+  flex-grow: 1;
+}
+div.majstest-container > form > textarea {
+  height: calc(5.25 * var(--tile-size));
+  font-size: calc(0.25 * var(--tile-size));
+  border-width: calc(0.05 * var(--tile-size));
+}
+div.majstest-container > form > button {
+  width: 100%;
+}
+div.majstest-container > div.mods-container {
+  display: none;
+  position: absolute;
+  width: 100%;
+  height: calc(100% - 0.75 * var(--tile-size));
+  border-radius: calc(0.25 * var(--tile-size));
+  padding: calc(0.5 * var(--tile-size));
+
+  top: calc(0.75 * var(--tile-size));
+  left: 0;
+  background: #609060;
+  box-sizing: border-box;
+  overflow-y: scroll;
+  z-index: 2;
+}
+div.majstest-container > input.show-mods-checkbox:checked ~ div.mods-container {
+  display: block;
 }

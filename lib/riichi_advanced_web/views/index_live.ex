@@ -39,7 +39,7 @@ defmodule RiichiAdvancedWeb.IndexLive do
       </div>
       <input type="checkbox" id="expand-checkbox" class="expand-checkbox for-rulesets" phx-update="ignore"/>
       <label for="expand-checkbox"/>
-      <form phx-submit="redirect">
+      <form class="ruleset-selection-form" phx-submit="redirect">
         <div class="ruleset-selection">
           <%= for {{ruleset, name, desc}, i} <- Enum.with_index(@rulesets) do %>
             <input type="radio" id={ruleset} name="ruleset" value={ruleset} checked={i==0} phx-update="ignore">
@@ -88,13 +88,9 @@ defmodule RiichiAdvancedWeb.IndexLive do
     {:noreply, socket}
   end
 
-  def handle_event("double_clicked", _assigns, socket) do
-    {:noreply, socket}
-  end
-
-  def handle_event("right_clicked", _assigns, socket) do
-    {:noreply, socket}
-  end
+  def handle_event("double_clicked", _assigns, socket), do: {:noreply, socket}
+  def handle_event("right_clicked", _assigns, socket), do: {:noreply, socket}
+  def handle_event("change_language", %{"lang" => lang}, socket), do: {:noreply, assign(socket, :lang, lang)}
 
   def handle_event("toggle_show_room_code", _assigns, socket) do
     socket = assign(socket, :show_room_code_buttons, not socket.assigns.show_room_code_buttons)
@@ -150,8 +146,6 @@ defmodule RiichiAdvancedWeb.IndexLive do
     socket = push_navigate(socket, to: ~p"/log?nickname=#{socket.assigns.nickname}&lang=#{socket.assigns.lang}")
     {:noreply, socket}
   end
-
-  def handle_event("change_language", %{"lang" => lang}, socket), do: {:noreply, assign(socket, :lang, lang)}
 
   def handle_event(_event, _assigns, socket) do
     {:noreply, socket}
