@@ -432,6 +432,7 @@ defmodule RiichiAdvanced.Constants do
     },
     "classical" => %{
       display_name: "Chinese Classical",
+      tutorial_link: "http://mahjong.wikidot.com/rules:chinese-classical-scoring",
       ruleset: "classical",
       globals: %{
         chii_name: "Chow",
