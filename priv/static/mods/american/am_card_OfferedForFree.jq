@@ -65,7 +65,7 @@
     "FF 123a 345b 567a 789b", "FF 123a 345b 567c 789a", # concealed
     "FF 2025a NN EE WW SS", # concealed
     "F 19a Da 19b Db 19c Dc NEWS", # concealed
-    "0FFEREDa F0R FREE", "0FFSRSDa F0R FRSS", "0FFWRWDa F0R FRWW", "0FFWRWDa F0R FRWW" # concealed
+    "0FFEREDa F0R FREE", "0FFSRSDa F0R FRSS", "0FFWRWDa F0R FRWW", "0FFNRNDa F0R FRNN" # concealed
   ]
 |
 .open_win_definition = [
@@ -131,7 +131,7 @@
     "FF 123a 345b 567a 789b", "FF 123a 345b 567c 789a", # concealed
     "FF 2025a NN EE WW SS", # concealed
     "F 19a Da 19b Db 19c Dc NEWS", # concealed
-    "0FFEREDa F0R FREE", "0FFSRSDa F0R FRSS", "0FFWRWDa F0R FRWW", "0FFWRWDa F0R FRWW" # concealed
+    "0FFEREDa F0R FREE", "0FFSRSDa F0R FRSS", "0FFWRWDa F0R FRWW", "0FFNRNDa F0R FRNN" # concealed
   ]
 |
 .yaku = [
@@ -192,5 +192,5 @@
     { "display_name": "Singles and Pairs #5", "value": 50, "when": [{"name": "has_no_call_named", "opts": ["am_pung", "am_kong", "am_quint"]}, {"name": "match", "opts": [["hand", "call_tiles", "winning_tile"], ["FF 123a 345b 567a 789b"]]} ] },
     { "display_name": "Singles and Pairs #6", "value": 50, "when": [{"name": "has_no_call_named", "opts": ["am_pung", "am_kong", "am_quint"]}, {"name": "match", "opts": [["hand", "call_tiles", "winning_tile"], ["FF 2025a NN EE WW SS"]]} ] },
     { "display_name": "Singles and Pairs #7", "value": 50, "when": [{"name": "has_no_call_named", "opts": ["am_pung", "am_kong", "am_quint"]}, {"name": "match", "opts": [["hand", "call_tiles", "winning_tile"], ["F 19a Da 19b Db 19c Dc NEWS"]]} ] },
-    { "display_name": "Singles and Pairs #8", "value": 100, "when": [{"name": "has_no_call_named", "opts": ["am_pung", "am_kong", "am_quint"]}, {"name": "match", "opts": [["hand", "call_tiles", "winning_tile"], ["0FFEREDa F0R FREE", "0FFSRSDa F0R FRSS", "0FFWRWDa F0R FRWW", "0FFWRWDa F0R FRWW"]]} ] }
+    { "display_name": "Singles and Pairs #8", "value": 100, "when": [{"name": "has_no_call_named", "opts": ["am_pung", "am_kong", "am_quint"]}, {"name": "match", "opts": [["hand", "call_tiles", "winning_tile"], ["0FFEREDa F0R FREE", "0FFSRSDa F0R FRSS", "0FFWRWDa F0R FRWW", "0FFNRNDa F0R FRNN"]]} ] }
   ]
