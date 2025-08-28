@@ -612,7 +612,7 @@
   "score_calculation": {
     "scoring_method": "multiplier",
     "score_multiplier": 1,
-    "discarder_multiplier": 1,
+    "discarder_multiplier": 3, //hotfix due to the hand's score being divided by 3 for some reason; remove when that underlying bug is fixed
     "discarder_penalty": 8,
     "non_discarder_multiplier": 0,
     "non_discarder_penalty": 8,
