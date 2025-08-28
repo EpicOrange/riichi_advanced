@@ -508,7 +508,7 @@
     { "display_name": "Exclusionary Rule", "value": -1, "when": [{"name": "has_existing_yaku", "opts": ["Pure Straight", "Pure Double Chow", "Short Straight"]}] }
   ],
   "extra_yaku": [
-    { "display_name": "Flower Tiles", "value": "flower_count", "when": [{"name": "counter_at_least", "opts": ["flower", 1]}]}
+    { "display_name": "Flower Tiles", "value": "flower_count", "when": [{"name": "counter_at_least", "opts": ["flower_count", 1]}]}
   ],
   "yaku_precedence": {
       // <TODO LIST FOR THIS SECTION: everything below `----------` needs first pass, everything below `==========` line needs second pass>
