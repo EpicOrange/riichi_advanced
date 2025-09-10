@@ -337,9 +337,13 @@ def calculate_fu do
       # now remove all closed groups
       remove_groups(@winning_groups_fu)
       remove_groups(@groups_fu)
+      prune(method: "tile_count", num_tiles: [1,4,7,10])
       remove_groups(@groups_fu)
+      prune(method: "tile_count", num_tiles: [1,4,7,10])
       remove_groups(@groups_fu)
+      prune(method: "tile_count", num_tiles: [1,4,7,10])
       remove_groups(@groups_fu)
+      prune(method: "tile_count", num_tiles: [1,4,7,10])
 
       # only retain configurations with 0 tiles remaining
       retain_empty_hands
@@ -394,39 +398,72 @@ on after_initialization do
   add_rule("Rules", "Win Condition", "- (Chiitoitsu) Seven distinct pairs.", -100)
   add_rule("Rules", "Win Condition", "- (Kokushi Musou) All thirteen terminal/honor tiles plus one forming a pair.", -100)
   add_rule("1 Han", "Tsumo", "Win by self-draw with a closed hand.")
-  add_rule("1 Han", "Haitei", "Win off the last tile in the wall.")
-  add_rule("1 Han", "Houtei", "Win off the discard after the last tile in the wall is drawn.")
+  add_rule("1 Han", "Haitei", "Win by drawing the last tile in the wall.")
+  add_rule("1 Han", "Houtei", "Win off a discard after the last tile in the wall is drawn.")
   add_rule("1 Han", "Pinfu", "You won off a double-sided sequence wait, with an all-sequence hand whose pair is not yakuhai.")
+  update_rule("1 Han", "Pinfu", "%{example_hand}", %{example_hand: ~t"345789m45p23499s 6p"})
   add_rule("1 Han", "Tanyao", "Your hand contains only tiles numbered 2-8.")
+  update_rule("1 Han", "Tanyao", "%{example_hand}", %{example_hand: ~t"234m33777p 45678s 6s"})
   add_rule("1 Han", "Iipeikou", "Your closed hand has a double sequence: two copies of the exact same sequence in one suit, like 123 123.")
-  add_rule("1 Han", "Yakuhai", "1 han for each triplet of: dragons, wind matching the round marker, and wind matching your seat.")
-  add_rule("2 Han", "Chiitoitsu", "Your hand consists of seven non-repeating pairs, and is not ryanpeikou.")
+  update_rule("1 Han", "Iipeikou", "%{example_hand}", %{example_hand: ~t"33445m33777p 678s 5m"})
+  add_rule("1 Han", "Yakuhai", """
+  1 %{han} for each of the following triplets in your hand:
+  - A triplet of dragon tiles %{dragons}
+  - A triplet of winds matching the round marker %{round_wind_triplet}
+  - A triplet of winds matching your seat %{seat_wind_triplet}
+  """, %{han: "Han", dragons: ~t"777z"})
+  add_rule("2 Han", "Chiitoitsu", "Your hand consists of seven non-repeating pairs.")
+  update_rule("2 Han", "Chiitoitsu", "%{example_hand}", %{example_hand: ~t"2266m99p24477s33z 2s"})
   add_rule("1 Han", "Chanta", "1 han if each of the 5 blocks in your hand contains a terminal or honor. 2 han if closed.")
+  update_rule("1 Han", "Chanta", "%{example_hand}", %{example_hand: ~t"123m79p789s77z 11p1P 8p"})
   add_rule("2 Han", "Junchan", "2 han if each of the 5 blocks in your hand contains a terminal. 3 han if closed.")
+  update_rule("2 Han", "Junchan", "%{example_hand}", %{example_hand: ~t"123m79p78999s 1P11p 8p"})
   add_rule("1 Han", "Ittsu", "1 han if your hand contains the sequences 123 456 789 in one suit. 2 han if closed.")
+  update_rule("1 Han", "Ittsu", "%{example_hand}", %{example_hand: ~t"234p4567779s 12s3S 8s"})
   add_rule("1 Han", "Sanshoku", "1 han if your hand contains the same number sequence in all three suits. 2 han if closed.")
+  update_rule("1 Han", "Sanshoku", "%{example_hand}", %{example_hand: ~t"24p23334678s 2M34m 3p"})
   add_rule("2 Han", "Sanshoku Doukou", "2 han if your hand contains the same number triplet in all three suits.")
+  update_rule("1 Han", "Sanshoku", "%{example_hand}", %{example_hand: ~t"2244p222456s 2M22m 2p"})
   add_rule("2 Han", "Toitoi", "2 han if your hand is all triplets.")
+  update_rule("2 Han", "Toitoi", "%{example_hand}", %{example_hand: ~t"888m222p33s22z 1z1Z1z 3s"})
   add_rule("2 Han", "Sanankou", "2 han if your hand has three closed triplets. A triplet formed by a self-draw win counts as closed.")
+  update_rule("2 Han", "Sanankou", "%{example_hand}", %{example_hand: ~t"222888m444p123s1z 1z"})
   add_rule("2 Han", "Shousangen", "2 han on top of yakuhai if you have two dragon triplets/kans and a dragon pair.")
+  update_rule("2 Han", "Shousangen", "%{example_hand}", %{example_hand: ~t"123m23s66777z 55z5Z 4s"})
   add_rule("2 Han", "Honroutou", "2 han if your hand contains only terminal and honor tiles.")
-  add_rule("3 Han", "Ryanpeikou", "3 han if you have two double sequences, each being two copies of the exact same sequence in one suit, like 123 123. Such hands are not considered seven pairs.")
+  update_rule("2 Han", "Honroutou", "%{example_hand}", %{example_hand: ~t"111m2223344z 9p9P9p 4z"})
   add_rule("2 Han", "Honitsu", "2 han if your hand is comprised of one suit plus honor tiles. 3 han if closed.")
+  update_rule("2 Han", "Honitsu", "%{example_hand}", %{example_hand: ~t"123345888p11z22z 2z"})
+  add_rule("3 Han", "Ryanpeikou", "3 han if you have two double sequences, each being two copies of the exact same sequence in one suit, like 123 123. Does not count as chiitoitsu (7 pairs).")
+  update_rule("3 Han", "Ryanpeikou", "%{example_hand}", %{example_hand: ~t"3344566m112233s 5m"})
   add_rule("5 Han", "Chinitsu", "5 han if your hand is comprised of one suit only (no honor tiles). 6 han if closed.")
+  update_rule("5 Han", "Chinitsu", "%{example_hand}", %{example_hand: ~t"1233445568889s 7s"})
   add_rule("Yakuman", "Tenhou", "Win with your initial hand as dealer.")
   add_rule("Yakuman", "Chiihou", "Win with your first draw as non-dealer.")
   add_rule("Yakuman", "Daisangen", "Your hand contains triplets or kans of all three dragons.")
+  update_rule("Yakuman", "Daisangen", "%{example_hand}", %{example_hand: ~t"123m22s66777z 55z5Z 6z"})
   add_rule("Yakuman", "Suuankou", "Your hand has three closed triplets in hand, and you won by self-drawing the fourth.")
+  update_rule("Yakuman", "Suuankou", "%{example_hand}", %{example_hand: ~t"222888m444p33s11z 1z"})
   add_rule("Yakuman", "Suuankou Tanki", "Double yakuman if your hand has four closed triplets in hand, and you won by completing your pair.", 2)
+  update_rule("Yakuman", "Suuankou Tanki", "%{example_hand}", %{example_hand: ~t"222888m444p333s1z 1z"})
   add_rule("Yakuman", "Tsuuiisou", "Your hand consists of only honor tiles.")
+  update_rule("Yakuman", "Tsuuiisou", "%{example_hand}", %{example_hand: ~t"1112224477z 66z6Z 4z"})
   add_rule("Yakuman", "Ryuuiisou", "Your hand consists of only all-green tiles (23468 bamboo and green dragon).")
+  update_rule("Yakuman", "Ryuuiisou", "%{example_hand}", %{example_hand: ~t"2234466888s 6Z66z 3s"})
   add_rule("Yakuman", "Chinroutou", "Your hand consists of only terminals.")
+  update_rule("Yakuman", "Chinroutou", "%{example_hand}", %{example_hand: ~t"111m999p1199s 9M99m 9s"})
   add_rule("Yakuman", "Chuurenpoutou", "You have no calls and your winning hand is the pattern 1112345678999 in one suit, plus one additional tile.")
+  update_rule("Yakuman", "Chuurenpoutou", "%{example_hand}", %{example_hand: ~t"1112345568999s 7s"})
   add_rule("Yakuman", "Junsei Chuurenpoutou", "Double yakuman if your hand was 1112345678999 in one suit, and you won via its nine-sided wait.", 2)
+  update_rule("Yakuman", "Junsei Chuurenpoutou", "%{example_hand}", %{example_hand: ~t"1112345678999s 7s"})
   add_rule("Yakuman", "Kokushi Musou", "Your winning hand consists of one of each terminal/honor tile plus one forming a pair.")
+  update_rule("Yakuman", "Kokushi Musou", "%{example_hand}", %{example_hand: ~t"19m99p19s1234567z 1p"})
   add_rule("Yakuman", "Kokushi Musou Juusan Menmachi", "Double yakuman if your winning hand consists of one of each terminal/honor tile and you won with a thirteen-sided wait for the pair.", 2)
-  add_rule("Yakuman", "Daisuushii", "Double yakuman if your hand contains triplets or kans of all four winds.", 2)
+  update_rule("Yakuman", "Kokushi Musou Juusan Menmachi", "%{example_hand}", %{example_hand: ~t"19m19p19s1234567z 1p"})
   add_rule("Yakuman", "Shousuushii", "Your hand contains triplets or kans of three winds, plus a pair of the fourth wind.")
+  update_rule("Yakuman", "Shousuushii", "%{example_hand}", %{example_hand: ~t"23s22233444z 1z1Z1z 4s"})
+  add_rule("Yakuman", "Daisuushii", "Double yakuman if your hand contains triplets or kans of all four winds.", 2)
+  update_rule("Yakuman", "Daisuushii", "%{example_hand}", %{example_hand: ~t"22s22233444z 1z1Z1z 3z"})
 end
 
 on before_turn_change do
@@ -714,7 +751,7 @@ define_mod "yaku/junsei_ryuuiisou", name: "Junsei Ryuuiisou", desc: "Local yakum
 define_mod "yaku/chousangen", name: "Chousangen", desc: "Local yakuman. If you have kans of all three dragons, it's double yakuman. Doesn't stack with daisangen."
 define_mod "yaku/chousuushii", name: "Chousuushii", desc: "Local yakuman. If you have kans of all four winds, it's quadruple yakuman. Doesn't stack with daisuushi and suukantsu."
 define_mod_category "Other"
-define_mod cancellable_riichi, order: 1, deps: ["yaku/riichi"], name: "Cancellable Riichi", desc: "Everyone plays with tiles shown."
+define_mod cancellable_riichi, order: 1, deps: ["yaku/riichi"], name: "Cancellable Riichi", desc: "Riichi declarations happen only after you confirm by discarding a tile."
 define_mod ten, order: 3, name: "Ten", desc: "Adds 10m, 10p, and 10s. Changes dora accordingly (if dora is enabled). Tanyao now allows nines, and chanta/junchan/honroutou require tens instead. 13 Orphans now requires the ten instead of the nine of each suit. Ittsu allows 23456789T."
 define_mod star_suit, order: 2, name: "Star Suit (beta)", desc: "Adds a fourth suit (stars). This suit does not form yaku. This mod is in beta because we should probably write some yaku for it."
 define_mod space, order: 2, name: "Space Mahjong", desc: "Sequences can wrap (891, 912). Winds and dragons can make sequences. You can chii from any direction. Chiitoitsu is disabled. Open kokushi is allowed and worth 3 han."
@@ -829,6 +866,37 @@ define_preset "Riichi City", [
   "suucha_riichi",
   "suukaikan",
   "sanchahou",
+  "kyuushu_kyuuhai",
+  %{name: "dora", config: %{start_indicators: 1}},
+  "ura",
+  "kandora",
+  "yaku/ippatsu",
+  "show_waits",
+  %{name: "min_han", config: %{min: 1}},
+  "cancellable_riichi",
+  %{name: "aka", config: %{man: 1, pin: 1, sou: 1}},
+  "shiny_dora",
+  "first_gets_riichi_sticks"
+]
+# amatsuki rules seem to be a clone of mahjong soul rules
+define_preset "Amatsuki Mahjong", [
+  %{name: "honba", config: %{value: 100}},
+  %{name: "yaku/riichi", config: %{bet: 1000, drawless: false}},
+  %{name: "nagashi", config: %{is: "Mangan"}},
+  %{name: "tobi", config: %{below: 0}},
+  %{name: "uma", config: %{_1st: 10, _2nd: 5, _3rd: -5, _4th: -10}},
+  "agarirenchan",
+  "tenpairenchan",
+  "agariyame",
+  "tenpaiyame",
+  %{name: "sudden_death", config: %{goal: 30000}},
+  "kuikae_nashi",
+  "double_wind_4_fu",
+  "pao",
+  "kokushi_ankan_chankan",
+  "suufon_renda",
+  "suucha_riichi",
+  "suukaikan",
   "kyuushu_kyuuhai",
   %{name: "dora", config: %{start_indicators: 1}},
   "ura",

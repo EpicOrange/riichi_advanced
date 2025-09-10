@@ -1,10 +1,10 @@
 on after_initialization do
   add_rule("1 $han", "Value Triplets", """
-  Each of the following adds 1 %{han}:
-  - A triplet of dragon tiles
-  - A triplet of winds matching the round marker
-  - A triplet of winds matching your seat
-  """, %{han: !han})
+  1 %{han} for each of the following triplets in your hand:
+  - A triplet of dragon tiles %{dragons}
+  - A triplet of winds matching the round marker %{round_wind_triplet}
+  - A triplet of winds matching your seat %{seat_wind_triplet}
+  """, %{han: !han, dragons: ~t"777z"})
 end
 
 # dragons

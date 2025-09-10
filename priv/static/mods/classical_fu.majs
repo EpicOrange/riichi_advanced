@@ -75,10 +75,13 @@ def calculate_fu do
     # now remove all closed groups
     remove_groups(@winning_groups_fu)
     remove_groups(@groups_fu)
+    prune(method: "tile_count", num_tiles: [1,4,7,10])
     remove_groups(@groups_fu)
+    prune(method: "tile_count", num_tiles: [1,4,7,10])
     remove_groups(@groups_fu)
+    prune(method: "tile_count", num_tiles: [1,4,7,10])
     remove_groups(@groups_fu)
-
+    prune(method: "tile_count", num_tiles: [1,4,7,10])
     # only retain configurations with 0 tiles remaining
     retain_empty_hands
 

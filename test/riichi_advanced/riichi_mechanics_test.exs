@@ -180,4 +180,74 @@ defmodule RiichiAdvanced.RiichiMechanics do
     ], :no_winners, %{delta_scores: [1000, -1000]})
   end
 
+  test "riichi - kazoe" do
+    TestUtils.test_yaku_advanced("riichi", [%{name: "yaku/riichi", config: %{bet: 1000, drawless: false}}, "yaku/ippatsu", %{name: "min_han", config: %{min: 1}}], """
+    {
+      "starting_hand": {
+        "east": ["2p", "2p", "3p", "3p", "4p", "4p", "5p", "5p", "6p", "6p", "7p", "7p", "8p"],
+        "south": ["1m", "2m", "3m", "4m", "5m", "7m", "3s", "6s", "9s", "1z", "2z", "3z", "4z"],
+        "west": ["1m", "2m", "3m", "4m", "5m", "7m", "3s", "6s", "9s", "1z", "2z", "3z", "4z"],
+        "north": ["1m", "2m", "3m", "4m", "5m", "7m", "3s", "6s", "9s", "1z", "2z", "3z", "4z"]
+      },
+      "starting_draws": ["3z", "8p"]
+    }
+    """, [
+      %{"type" => "buttons_pressed", "buttons" => [%{"button" => "riichi"}, nil, nil, nil]},
+      %{"type" => "discard", "tile" => "3z", "player" => 0, "tsumogiri" => true},
+      %{"type" => "discard", "tile" => "8p", "player" => 1, "tsumogiri" => true},
+      %{"type" => "buttons_pressed", "buttons" => [%{"button" => "ron"}, nil, nil, nil]}
+    ], %{
+      east: %{
+        yaku: [{"Double Riichi", 2}, {"Ippatsu", 1}, {"Pinfu", 1}, {"Tanyao", 1}, {"Ryanpeikou", 3}, {"Chinitsu", 6}],
+        yaku2: [],
+        minipoints: 30,
+        score: 48000
+      }
+    })
+  end
+
+  test "riichi - no kazoe" do
+    TestUtils.test_yaku_advanced("riichi", [%{name: "yaku/riichi", config: %{bet: 1000, drawless: false}}, "yaku/ippatsu", "no_kazoe_yakuman", %{name: "min_han", config: %{min: 1}}], """
+    {
+      "starting_hand": {
+        "east": ["2p", "2p", "3p", "3p", "4p", "4p", "5p", "5p", "6p", "6p", "7p", "7p", "8p"],
+        "south": ["1m", "2m", "3m", "4m", "5m", "7m", "3s", "6s", "9s", "1z", "2z", "3z", "4z"],
+        "west": ["1m", "2m", "3m", "4m", "5m", "7m", "3s", "6s", "9s", "1z", "2z", "3z", "4z"],
+        "north": ["1m", "2m", "3m", "4m", "5m", "7m", "3s", "6s", "9s", "1z", "2z", "3z", "4z"]
+      },
+      "starting_draws": ["3z", "8p"]
+    }
+    """, [
+      %{"type" => "buttons_pressed", "buttons" => [%{"button" => "riichi"}, nil, nil, nil]},
+      %{"type" => "discard", "tile" => "3z", "player" => 0, "tsumogiri" => true},
+      %{"type" => "discard", "tile" => "8p", "player" => 1, "tsumogiri" => true},
+      %{"type" => "buttons_pressed", "buttons" => [%{"button" => "ron"}, nil, nil, nil]}
+    ], %{
+      east: %{
+        yaku: [{"Double Riichi", 2}, {"Ippatsu", 1}, {"Pinfu", 1}, {"Tanyao", 1}, {"Ryanpeikou", 3}, {"Chinitsu", 6}],
+        yaku2: [],
+        minipoints: 30,
+        score: 36000
+      }
+    })
+  end
+
+  test "riichi - kazoe with yakuman only" do
+    TestUtils.test_yaku_advanced("riichi", [%{name: "yaku/riichi", config: %{bet: 1000, drawless: false}}, "yaku/ippatsu", "no_kazoe_yakuman", %{name: "min_han", config: %{min: "Yakuman"}}], """
+    {
+      "starting_hand": {
+        "east": ["2p", "2p", "3p", "3p", "4p", "4p", "5p", "5p", "6p", "6p", "7p", "7p", "8p"],
+        "south": ["1m", "2m", "3m", "4m", "5m", "7m", "3s", "6s", "9s", "1z", "2z", "3z", "4z"],
+        "west": ["1m", "2m", "3m", "4m", "5m", "7m", "3s", "6s", "9s", "1z", "2z", "3z", "4z"],
+        "north": ["1m", "2m", "3m", "4m", "5m", "7m", "3s", "6s", "9s", "1z", "2z", "3z", "4z"]
+      },
+      "starting_draws": ["3z", "8p"]
+    }
+    """, [
+      %{"type" => "buttons_pressed", "buttons" => [%{"button" => "riichi"}, nil, nil, nil]},
+      %{"type" => "discard", "tile" => "3z", "player" => 0, "tsumogiri" => true},
+      %{"type" => "discard", "tile" => "8p", "player" => 1, "tsumogiri" => true}
+    ], :no_winners)
+  end
+
 end

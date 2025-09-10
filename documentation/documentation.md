@@ -982,7 +982,7 @@ In addition, a couple selectors allow you to select _multiple_ targets. For exam
 
 - `"aside_unique"`: selects each player's aside tile individually.
 - `"all_last_discards"`: selects the last discard for each player.
-- `"any_discard"`: selects each player's discarded tile individually (includes called discards).
+- `"any_discard"`: selects each of the current player's discarded tiles individually (includes called discards).
 - `"others_discards"`: selects each player's discarded tile individually (includes called discards), excluding the current player's pond.
 - `"any_visible_tile"`: selects each tile visible to the current player individually.
 - `"hand_any"`: selects each tile in hand individually. Does not include the draw.

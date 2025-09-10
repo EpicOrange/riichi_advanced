@@ -596,85 +596,146 @@ defmodule RiichiAdvanced.GameState.Actions do
       ["minipoints" | _opts] when is_map_key(context, :minipoints) -> context.minipoints
       ["minipoints" | opts] ->
         score_actions = Enum.at(opts, 0)
+        actions_with_lookahead = for action <- Enum.reverse(score_actions), reduce: [] do
+          [] -> [{action, [nil]}]
+          [{["print" | _], next_action} | _] = acc -> [{action, next_action} | acc]
+          [{["count" | _], next_action} | _] = acc -> [{action, next_action} | acc]
+          [{["prune" | _], next_action} | _] = acc -> [{action, next_action} | acc]
+          [{next_action, _} | _] = acc -> [{action, next_action} | acc]
+        end
+        # IO.inspect(Enum.map(actions_with_lookahead, fn {[a|_],[b|_]} -> {a, b} end))
         player = state.players[context.seat]
         tile_behavior = player.tile_behavior
-        initial_hand_calls_fu = get_winning_tiles(state, context.seat, context.win_source)
-        |> Enum.map(&{[&1 | player.hand], player.calls, 0})
-        for [action | opts] <- score_actions, reduce: initial_hand_calls_fu do
-          hand_calls_fu -> 
+        initial_hand_calls_fus = get_winning_tiles(state, context.seat, context.win_source)
+        |> Enum.map(&{[&1 | player.hand], player.calls, [0]})
+        for {[action | opts], [next_action | next_opts]} <- actions_with_lookahead, reduce: initial_hand_calls_fus do
+          hand_calls_fus -> 
             conditions = Enum.at(opts, 1, [])
             passes_conditions = Conditions.check_cnf_condition(state, conditions, context)
-            # IO.inspect(hand_calls_fu, label: action)
+            # IO.inspect(hand_calls_fus, label: action)
             case action do
               "add" ->
                 amt = interpret_amount(state, context, Enum.at(opts, 0, 0))
-                for {hand, calls, fu} <- hand_calls_fu do
-                  context = Map.put(context, :minipoints, fu)
-                  if Conditions.check_cnf_condition(state, conditions, context) do
-                    {hand, calls, fu + amt}
-                  else {hand, calls, fu} end
+                for {hand, calls, fus} <- hand_calls_fus do
+                  {hand, calls, for fu <- fus do
+                    context = Map.put(context, :minipoints, fu)
+                    if Conditions.check_cnf_condition(state, conditions, context) do
+                      fu + amt
+                    else fu end
+                  end}
                 end
-              _ when not passes_conditions -> hand_calls_fu
+              _ when not passes_conditions -> hand_calls_fus
+              "prune" ->
+                case Enum.at(opts, 0, %{}) do
+                  %{"method" => "tile_count", "num_tiles" => num_tiles} ->
+                    Enum.reject(hand_calls_fus, fn {hand, _calls, _fus} ->
+                      length(hand) in num_tiles
+                    end)
+                  arg ->
+                    IO.puts("WARNING: unknown pruning method #{inspect(arg)}")
+                    hand_calls_fus
+                end
+                hand_calls_fus
               "put_calls_in_hand" ->
                 call_names = List.wrap(Enum.at(opts, 0, []))
-                for {hand, calls, fu} <- hand_calls_fu do
+                for {hand, calls, fus} <- hand_calls_fus do
                   {match, nomatch} = Enum.split_with(calls, fn {name, _call} -> name in call_names or Enum.empty?(call_names) end)
-                  {hand ++ Enum.flat_map(match, &Utils.call_to_tiles/1), nomatch, fu}
+                  {hand ++ Enum.flat_map(match, &Utils.call_to_tiles/1), nomatch, fus}
                 end
               "remove_attrs" ->
-                for {hand, calls, fu} <- hand_calls_fu do
-                  {Utils.strip_attrs(hand), Enum.map(calls, fn {name, call} -> {name, Utils.strip_attrs(call)} end), fu}
+                for {hand, calls, fus} <- hand_calls_fus do
+                  {Utils.strip_attrs(hand), Enum.map(calls, fn {name, call} -> {name, Utils.strip_attrs(call)} end), fus}
                 end
               "convert_calls" ->
                 value_map = Enum.at(opts, 0, %{})
-                for {hand, calls, fu} <- hand_calls_fu do
+                for {hand, calls, fus} <- hand_calls_fus do
                   value = Enum.map(calls, fn {name, _call} -> Map.get(value_map, name, 0) end)
                   |> Enum.sum()
-                  {hand, calls, fu + value}
+                  {hand, calls, Enum.map(fus, & &1 + value)}
                 end
               "remove_calls" ->
                 tile_specs = List.wrap(Enum.at(opts, 0, []))
-                for {hand, calls, fu} <- hand_calls_fu do
-                  {hand, Enum.reject(calls, fn {_name, call} -> Enum.any?(call, &Riichi.tile_matches_all(tile_specs, %{tile: &1})) end), fu}
+                for {hand, calls, fus} <- hand_calls_fus do
+                  {hand, Enum.reject(calls, fn {_name, call} -> Enum.any?(call, &Riichi.tile_matches_all(tile_specs, %{tile: &1})) end), fus}
                 end
               "remove_groups" ->
-                result = Enum.flat_map(Enum.at(opts, 0), fn group_spec ->
-                  groups = Map.get(group_spec, "groups", [])
-                  value = Map.get(group_spec, "value", 0)
-                  for group <- groups,
-                      {hand, calls, fu} <- hand_calls_fu,
-                      tile <- Match.collect_base_tiles(hand, [], group, tile_behavior),
-                      {hand, _calls} <- Match._remove_group(hand, [], group, tile, tile_behavior) do
-                    {hand, calls, fu + value}
+                # if the next action is also remove_groups,
+                # during removals, if two non-overlapping groups are removal candidates
+                # only remove one of the groups (since the other groups can be removed later)
+                # this enforces a kind of ordering on group removal, reducing redundancy
+                group_specs = Enum.at(opts, 0)
+                next_group_specs = if next_action == "remove_groups" do
+                  Enum.at(next_opts, 0, [])
+                else [] end
+                may_remove_later = group_specs == next_group_specs
+                result = Enum.flat_map(hand_calls_fus, fn {hand, calls, fus} ->
+                  group_value = for %{"groups" => groups} = group_spec <- group_specs, group <- groups do
+                    value = Map.get(group_spec, "value", 0)
+                    tiles = Match.collect_base_tiles(hand, [], group, tile_behavior)
+                    {hands, _} = Match.remove_group(hand, [], group, tiles, tile_behavior)
+                    |> Enum.unzip()
+                    hands
+                    |> Enum.uniq()
+                    |> Enum.map(&{hand -- &1, value})
                   end
+                  |> Enum.concat()
+                  |> Enum.uniq()
+                  if may_remove_later do
+                    # IO.inspect(Enum.map(group_value, fn {group, _value} -> Utils.hand_to_string(group) end), label: "Choices for #{Utils.hand_to_string(hand)}")
+                    ret = for {group, _value} <- group_value do
+                      Enum.filter(group_value, fn {group2, _} -> Enum.any?(group2, & &1 in group) end)
+                    end
+                    |> Enum.reject(&Enum.empty?/1)
+                    |> Enum.min_by(&length/1, &<=/2, fn -> [] end)
+                    # if there's a choice to take nothing, always include it as an option
+                    ret = case Enum.find(group_value, fn {group, _value} -> group == [] end) do
+                      nil -> ret
+                      empty_group -> [empty_group | ret]
+                    end
+                    # IO.inspect(Enum.map(ret, fn {group, _value} -> Utils.hand_to_string(group) end), label: "Removing from #{Utils.hand_to_string(hand)}")
+                    # IO.inspect(Enum.map(group_value -- ret, fn {group, _value} -> Utils.hand_to_string(group) end), label: "Not removing from #{Utils.hand_to_string(hand)}")
+                    ret
+                  else group_value end
+                  |> Enum.map(fn {group, value} -> {hand -- group, calls, Enum.map(fus, & &1 + value)} end)
                 end)
-                if Enum.empty?(result) do hand_calls_fu else result end
+                # roll back if no matches
+                if Enum.empty?(result) do hand_calls_fus else result end
               "retain_empty_hands" ->
-                for {[], [], fu} <- hand_calls_fu do
-                  {[], [], fu}
+                for {[], [], fus} <- hand_calls_fus do
+                  {[], [], fus}
                 end
               "round_up" ->
                 to = Enum.at(opts, 0, 10)
                 to = if to == 0 do 10 else to end
-                for {hand, calls, fu} <- hand_calls_fu do
-                  remainder = rem(fu, to)
-                  {hand, calls, if remainder == 0 do fu else fu - remainder + to end}
+                for {hand, calls, fus} <- hand_calls_fus do
+                  {hand, calls, for fu <- fus, uniq: true do
+                    remainder = rem(fu, to)
+                    if remainder == 0 do fu else fu - remainder + to end
+                  end}
                 end
               "take_maximum" ->
-                if not Enum.empty?(hand_calls_fu) do
-                  {_hand, _calls, max_fu} = Enum.max_by(hand_calls_fu, fn {_hand, _calls, fu} -> fu end)
-                  for {hand, calls, fu} <- hand_calls_fu, fu == max_fu do
-                    {hand, calls, fu}
+                if not Enum.empty?(hand_calls_fus) do
+                  max_fu = Enum.flat_map(hand_calls_fus, fn {_hand, _calls, fus} -> fus end) |> Enum.max()
+                  for {hand, calls, fus} <- hand_calls_fus, max_fu in fus do
+                    {hand, calls, [max_fu]}
                   end
-                else hand_calls_fu end
-              "add_original_hand" -> hand_calls_fu ++ initial_hand_calls_fu
+                else [] end
+              "add_original_hand" -> hand_calls_fus ++ initial_hand_calls_fus
               "print" ->
-                IO.inspect(hand_calls_fu, limit: :infinity)
-                hand_calls_fu
-            end |> Enum.uniq()
+                IO.inspect(Enum.take(hand_calls_fus, Enum.at(opts, 0, length(hand_calls_fus))), limit: :infinity)
+                hand_calls_fus
+              "count" ->
+                IO.inspect(length(hand_calls_fus))
+                hand_calls_fus
+            end
+            # uniq by hand/calls while preserving min and max fus
+            |> Enum.group_by(fn {hand, calls, _fus} -> {hand, calls} end)
+            |> Enum.map(fn {{hand, calls}, hand_calls_fus} -> 
+              {hand, calls, Enum.flat_map(hand_calls_fus, fn {_hand, _calls, fus} -> fus end) |> Enum.uniq()}
+            end)
         end
         |> Enum.take(1)
-        |> Enum.map(fn {_hand, _calls, fu} -> fu end)
+        |> Enum.map(fn {_hand, _calls, fus} -> Enum.max(fus) end)
         |> Enum.at(0, 0)
       [amount | _opts] when is_binary(amount) -> Map.get(state.players[context.seat].counters, amount, 0)
       [amount | _opts] when is_number(amount) -> Utils.try_integer(amount)
@@ -1118,7 +1179,7 @@ defmodule RiichiAdvanced.GameState.Actions do
         if Map.has_key?(state.rules_text, tab) and Map.has_key?(state.rules_text[tab], id) do
           update_in(state.rules_text[tab], &Map.update!(&1, id,
             fn {orig_text, orig_vars, orig_priority} -> {
-                orig_text ++ [text],
+                if text in orig_text do orig_text else orig_text ++ [text] end,
                 Map.merge(orig_vars, map_var_amounts(state, context, vars)),
                 priority || orig_priority
             } end)

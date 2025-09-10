@@ -1,13 +1,17 @@
 on after_initialization do
   if equals(!shou_list, "yakuman") do
     add_rule("Limit", "$name", "You have triplets of two different dragons, and a pair of the third.", %{name: !shou_name})
+    update_rule("Limit", "$name", "%{example_hand}", %{value: !shou_value, han: !han, name: !shou_name, example_hand: ~t"123m23s66777z 000z 4s"})
   else
     add_rule("$value $han", "$name", "You have triplets of two different dragons, and a pair of the third.", %{value: !shou_value, han: !han, name: !shou_name})
+    update_rule("$value $han", "$name", "%{example_hand}", %{value: !shou_value, han: !han, name: !shou_name, example_hand: ~t"123m23s66777z 000z 4s"})
   end
   if equals(!dai_list, "yakuman") do
     add_rule("Limit", "$name", "You have triplets of all three dragons.", %{name: !dai_name})
+    update_rule("Limit", "$name", "%{example_hand}", %{value: !dai_value, han: !han, name: !dai_name, example_hand: ~t"123m22s66777z 000z 6z"})
   else
     add_rule("$value $han", "$name", "You have triplets of all three dragons.", %{value: !dai_value, han: !han, name: !dai_name})
+    update_rule("$value $han", "$name", "%{example_hand}", %{value: !dai_value, han: !han, name: !dai_name, example_hand: ~t"123m22s66777z 000z 6z"})
   end
 end
 

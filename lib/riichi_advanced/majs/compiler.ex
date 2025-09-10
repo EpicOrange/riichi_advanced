@@ -261,19 +261,18 @@ defmodule RiichiAdvanced.Compiler do
   defp compile_constant(value, line, column) do
     # otherwise, try a bunch of things
     # this order is important: 
-    # compile_action will treat conditions as custom actions (function calls)
     # validate_json will treat actions/conditions as raw JSON
     # compile_cnf_condition defaults to a single condition
     with {:ok, value} <- Parser.parse_sigils(value),
-         {:error, _} <- compile_condition(value, line, column),
-         {:error, _} <- compile_action(value, line, column),
          {:error, _} <- Validator.validate_expression(value),
          {:error, _} <- Validator.validate_json(value),
-         {:error, _} <- compile_cnf_condition(value, line, column) do
+         {:error, _} <- compile_cnf_condition(value, line, column),
+         {:error, _} <- compile_action(value, line, column) do
       {:error, "Compiler.compile_constant: at line #{line}:#{column}, expected JSON, condition, action, or do block, got #{inspect(value)}"}
     end
   end
 
+  # TODO deprecate
   defp compile_command("var", name, args, line, column) do
     value = case args do
       [value] -> {:ok, value}
@@ -362,7 +361,7 @@ defmodule RiichiAdvanced.Compiler do
   defp compile_command("replace", name, args, line, column) do
     path_value1_value2 = case args do
       [path, value1, value2] when is_binary(path) -> {:ok, {path, value1, value2}}
-      _ -> {:error, "Compiler.compile: at line #{line}:#{column}, `replace all` command expects a jq path string followed by two values, `to_replace` and `replacement`, instead got #{inspect(args)}"}
+      _ -> {:error, "Compiler.compile: at line #{line}:#{column}, `replace` command expects either \"all\" or an integer, followed by a jq path string and two values, `to_replace` and `replacement`, instead got #{inspect(args)}"}
     end
     with {:ok, {path, value1, value2}} <- path_value1_value2,
          {:ok, path} <- Validator.validate_json_path(path),
@@ -370,13 +369,17 @@ defmodule RiichiAdvanced.Compiler do
          {:ok, value1} <- Jason.encode(value1_val),
          {:ok, value2_val} <- compile_constant(value2, line, column),
          {:ok, value2} <- Jason.encode(value2_val) do
-      operation = case Jason.decode!(name) do
-        "all" -> {:ok, "#{path} |= walk(if . == #{value1} then #{value2} else . end)"}
-        _     -> {:error, "Compiler.compile: at line #{line}:#{column}, `replace` got invalid method #{name}"}
+      operation = case Jason.decode(name) do
+        {:ok, "all"} -> {:ok, "walk(if . == #{value1} then #{value2} else . end)"}
+        {:ok, n} when is_integer(n) -> {:ok, "reduce limit(#{n}; paths(. == #{value1})) as $_path (.; setpath($_path; #{value2}))"}
+        {:error, _} -> case name do
+          <<"$" <> _>> = var -> {:ok, "if (#{var} | type == \"number\") then reduce limit(#{var}; paths(. == #{value1})) as $_path (.; setpath($_path; #{value2})) else . end"}
+          _ -> {:error, "Compiler.compile: at line #{line}:#{column}, `replace` got invalid method #{name}"}
+        end
       end
       with {:ok, operation} <- operation do
         # only perform operation if the path exists
-        {:ok, "if (#{path} | type) != \"null\" then #{operation} else . end"}
+        {:ok, "#{path} |= if type != \"null\" then #{operation} else . end"}
       end
     end
   end
@@ -482,11 +485,21 @@ defmodule RiichiAdvanced.Compiler do
       {_, _, _} -> {:ok, args}
       _ -> {:error, "Compiler.compile: at line #{line}:#{column}, `define_const` command expects a single JSON, condition, action, or do block, got #{inspect(args)}"}
     end
-
-    with {:ok, value} <- value,
-         {:ok, value} <- compile_constant(value, line, column),
-         {:ok, value} <- Jason.encode(value) do
-      {:ok, ".constants[#{name}] = #{value}"}
+    with {:ok, value} <- value do
+      case value do
+        {:@, _, _} -> 
+          # copy an existing constant
+          with {:ok, %Constant{name: const_name}} <- Validator.validate_json(value),
+               {:ok, const_name} <- Jason.encode(const_name) do
+            {:ok, ".constants[#{name}] = .constants[#{const_name}]"}
+          end
+        _ ->
+          # set a constant
+          with {:ok, value} <- compile_constant(value, line, column),
+               {:ok, value} <- Jason.encode(value) do
+            {:ok, ".constants[#{name}] = #{value}"}
+          end
+      end
     end
   end
 
@@ -782,6 +795,7 @@ defmodule RiichiAdvanced.Compiler do
     end
   end
 
+  # TODO deprecate
   defp compile_command("define", name, args, line, column) do
     case Jason.decode!(name) do
       "play_restriction" -> 
@@ -805,18 +819,86 @@ defmodule RiichiAdvanced.Compiler do
     {:error, "Compiler.compile: at line #{line}:#{column}, #{inspect(cmd)} is not a valid toplevel command}"}
   end
 
+  def compile_toplevel_constant(constant, line, column) do
+    # basically compile_constant but disallowing actual constants
+    case constant do
+      {:+, _, _} -> {:error, "cannot use constants in toplevel conditions"}
+      {:@, _, _} -> {:error, "cannot use constants in toplevel conditions"}
+      _          -> compile_constant(constant, line, column)
+    end
+  end
+
+  defp compile_toplevel_condition(condition, line, column) do
+    case condition do
+      {"true", _, _} -> {:ok, "true"}
+      {"false", _, _} -> {:ok, "false"}
+      {"equals", [line: line, column: column], [l, r]} ->
+        with {:ok, l} <- compile_toplevel_constant(l, line, column),
+             {:ok, r} <- compile_toplevel_constant(r, line, column),
+             {:ok, l} <- Jason.encode(l),
+             {:ok, r} <- Jason.encode(r) do
+          {:ok, "(#{l} == #{r})"}
+        end
+      {:==, [line: line, column: column], [l, r]} ->
+        with {:ok, l} <- compile_toplevel_constant(l, line, column),
+             {:ok, r} <- compile_toplevel_constant(r, line, column),
+             {:ok, l} <- Jason.encode(l),
+             {:ok, r} <- Jason.encode(r) do
+          {:ok, "(#{l} == #{r})"}
+        end
+      {:in, [line: line, column: column], [l, r]} ->
+        with {:ok, r} <- Validator.validate_json_path(r),
+             {:ok, l} <- compile_toplevel_constant(l, line, column),
+             {:ok, l} <- Jason.encode(l) do
+          {:ok, "(#{r} | any(. == #{l}))"}
+        end
+      {:not, [line: line, column: column], [arg]} ->
+        with {:ok, compiled_arg} <- compile_toplevel_condition(arg, line, column) do
+          {:ok, "(#{compiled_arg} | not)"}
+        end
+      {:or, [line: line, column: column], args} ->
+        with {:ok, compiled_args} <- Utils.sequence(Enum.map(args, &compile_toplevel_condition(&1, line, column))) do
+          {:ok, "(#{Enum.join(compiled_args, " or ")})"}
+        end
+      {:and, [line: line, column: column], args} ->
+        with {:ok, compiled_args} <- Utils.sequence(Enum.map(args, &compile_toplevel_condition(&1, line, column))) do
+          {:ok, "(#{Enum.join(compiled_args, " and ")})"}
+        end
+      _ ->
+        with {:ok, json} <- compile_toplevel_constant(condition, line, column),
+             {:ok, value} <- Jason.encode(json) do
+          {:ok, "#{value}"}
+        end
+    end
+  end
   # def compile_jq_toplevel!(ast) do
   #   case compile_jq_toplevel(ast) do
   #     {:ok, jq} -> jq
   #     {:error, error} -> raise error
   #   end
   # end
-  defp compile_jq_toplevel(ast) do
+  defp compile_jq_toplevel(ast, line, column) do
     case ast do
+      {"if", [line: line, column: column], [condition, [do: then_cmds, else: else_cmds]]} ->
+        with {:ok, condition} <- compile_toplevel_condition(condition, line, column),
+             {:ok, then_cmds} <- compile_jq_toplevel(then_cmds, line, column),
+             {:ok, else_cmds} <- compile_jq_toplevel(else_cmds, line, column) do
+          {:ok, "if #{condition} then\n#{then_cmds}\nelse\n#{else_cmds}\nend"}
+        end
+      {"if", [line: line, column: column], [condition, [do: then_cmds]]} ->
+        with {:ok, condition} <- compile_toplevel_condition(condition, line, column),
+             {:ok, then_cmds} <- compile_jq_toplevel(then_cmds, line, column) do
+          {:ok, "if #{condition} then\n#{then_cmds}\nelse . end"}
+        end
+      {"unless", [line: line, column: column], [condition, [do: else_cmds]]} ->
+        with {:ok, condition} <- compile_toplevel_condition(condition, line, column),
+             {:ok, else_cmds} <- compile_jq_toplevel(else_cmds, line, column) do
+          {:ok, "if #{condition} then . else\n#{else_cmds}\nend"}
+        end
       {cmd, [line: line, column: column], [name | args]} when is_binary(cmd) ->
         name = case name do
-          name when is_binary(name) -> Validator.validate_json(name)
-          {name, _pos, _params} when is_binary(name) -> Validator.validate_json(name)
+          name when is_binary(name) or is_integer(name) -> Validator.validate_json(name)
+          {name, _pos, _params} when is_binary(name) or is_integer(name) -> Validator.validate_json(name)
           {:+, _pos, _params} -> Validator.validate_json(name)
           {:@, _pos, _params} -> Validator.validate_json(name)
           {:!, _pos, _params} -> Validator.validate_json(name)
@@ -834,8 +916,25 @@ defmodule RiichiAdvanced.Compiler do
         end
       {cmd, [line: line, column: column], args} when is_binary(cmd) ->
         {:error, "Compiler.compile: at line #{line}:#{column}, `#{cmd}` command expects arguments, got #{inspect(args)}"}
+      {:__block__, _pos, []} -> {:ok, "."}
+      {:__block__, pos, nodes} ->
+        {line, column} = case pos do
+          [line: line, column: column] -> {line, column}
+          _ -> {0, 0}
+        end
+        compile_jq_toplevel(nodes, line, column)
+      _ when is_list(ast) ->
+        ast
+        |> Enum.map(&compile_jq_toplevel(&1, line, column))
+        |> Utils.sequence()
+        |> case do
+          {:ok, val}    ->
+            ret = Enum.map_join(val, "\n|", &"(" <> &1 <> ")")
+            {:ok, ret}
+          {:error, msg} -> {:error, msg}
+        end
       _ -> {:error, "Compiler.compile: expected toplevel command, got #{inspect(ast)}"}
-    end
+    end |> add_error_cxt("while compiling toplevel command at line #{line}:#{column}")
   end
 
   def compile_jq!(ast) do
@@ -847,9 +946,7 @@ defmodule RiichiAdvanced.Compiler do
 
   @header """
   def _ensure_list:
-    if type == "string" and startswith("@") and (startswith("@splat$") | not) then
-      ["@splat$" + (.[1:])]
-    elif type == "array" then
+    if type == "array" then
       .
     elif type == "null" then
       []
@@ -862,13 +959,14 @@ defmodule RiichiAdvanced.Compiler do
   def compile_jq(ast) do
     case ast do
       {:__block__, _pos, []} -> {:ok, "."}
-      {:__block__, _pos, nodes} ->
+      {:__block__, pos, nodes} ->
         # IO.inspect(nodes, label: "AST", limit: :infinity)
-        case Utils.sequence(Enum.map(nodes, &compile_jq_toplevel/1)) do
-          {:ok, val}    ->
-            ret = @header <> Enum.map_join(val, "\n|", &"(" <> &1 <> ")")
-            # IO.puts(ret)
-            {:ok, ret}
+        {line, column} = case pos do
+          [line: line, column: column] -> {line, column}
+          _ -> {0, 0}
+        end
+        case compile_jq_toplevel(nodes, line, column) do
+          {:ok, val}    -> {:ok, @header <> val}
           {:error, msg} -> {:error, msg}
         end
       {_name, _pos, _actions} -> compile_jq({:__block__, [], [ast]})

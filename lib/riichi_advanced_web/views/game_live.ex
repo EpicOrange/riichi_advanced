@@ -4,6 +4,7 @@ defmodule RiichiAdvancedWeb.GameLive do
   alias RiichiAdvanced.GameState.Game, as: Game
   alias RiichiAdvanced.GameState.Rules, as: Rules
   alias RiichiAdvanced.ModLoader, as: ModLoader
+  alias RiichiAdvanced.Riichi, as: Riichi
   alias RiichiAdvanced.Utils, as: Utils
   use Gettext, backend: RiichiAdvancedWeb.Gettext
   use RiichiAdvancedWeb, :live_view
@@ -313,10 +314,16 @@ defmodule RiichiAdvancedWeb.GameLive do
       <div class={["big-text"]} :if={@loading}><%= t(@lang, "Loading...") %></div>
       <div class="display-am-hand-hover" :if={Rules.get(@state.rules_ref, "show_nearest_american_hand", false)}></div>
       <div class="display-am-hand-container" :if={Rules.get(@state.rules_ref, "show_nearest_american_hand", false)}>
-        <%= for {_am_match_definition, _shanten, arranged_hand} <- @state.players[@seat].cache.closest_american_hands do %>
+        <% open_definitions = Rules.get(@state.rules_ref, "open_win_definition", []) %>
+        <%= for {am_match_definition, _shanten, arranged_hand} <- @state.players[@seat].cache.closest_american_hands do %>
           <div class="display-am-hand" :if={arranged_hand})>
             <%= for tile <- arranged_hand do %>
               <div class={Utils.get_tile_class(tile)}></div>
+            <% end %>
+            <%= if am_match_definition in open_definitions do %>
+              <div class="display-am-hand-type"><%= t(@lang, "x") %></div>
+            <% else %>
+              <div class="display-am-hand-type"><%= t(@lang, "c") %></div>
             <% end %>
           </div>
         <% end %>
@@ -356,6 +363,7 @@ defmodule RiichiAdvancedWeb.GameLive do
           id="tutorial-overlay"
           game_state={@game_state}
           ruleset={@ruleset}
+          lang={@lang}
           waiting_for_click={@waiting_for_click}
           play_scene={&send(self(), {:play_scene, &1})}
           await_click={&send(self(), {:await_click, &1})}
@@ -380,7 +388,12 @@ defmodule RiichiAdvancedWeb.GameLive do
           <div class="rules-popover-container" phx-click="noop">
             <div class="rules-popover">
               <%= for {title, {text, vars, priority}} <- Enum.sort_by(@state.rules_text[rules_text_name], fn {_title, {text, _vars, priority}} -> {priority, text |> Enum.join("\n") |> String.length()} end) do %>
-                <% vars = Map.new(vars, fn {k, v} -> {k, if is_binary(v) do dt(@lang, v) else v end} end) %>
+                <%
+                  vars = Map.merge(vars, %{
+                    "round_wind_triplet" => get_wind_triplet(Riichi.get_round_wind(@state.kyoku, length(@state.available_seats))),
+                    "seat_wind_triplet" => get_wind_triplet(@seat),
+                  })
+                %>
                 <div class={["rules-popover-rule", priority < 0 && "full-width"]}>
                   <div class="rules-popover-title"><%= dt(@lang, title, vars) %></div>
                   <div class="rules-popover-text"><%= raw Enum.map_join(text, "\n", &dt(@lang, &1, vars)) %></div>
@@ -422,6 +435,12 @@ defmodule RiichiAdvancedWeb.GameLive do
       assign(socket, :selected_index, nil)
     end
   end
+
+  def get_wind_triplet(:east), do: ["1z", "1z", "1z"]
+  def get_wind_triplet(:south), do: ["2z", "2z", "2z"]
+  def get_wind_triplet(:west), do: ["3z", "3z", "3z"]
+  def get_wind_triplet(:north), do: ["4z", "4z", "4z"]
+  def get_wind_triplet(_), do: []
 
   def get_visible_waits(socket, index) do
     hand = socket.assigns.state.players[socket.assigns.seat].hand

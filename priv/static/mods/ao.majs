@@ -1,0 +1,33 @@
+on after_initialization do
+  add_rule("Rules", "Wall", "(Ao) %{man}x 5m, %{pin}x 5p, and %{sou}x 5s are replaced with blue \"ao dora\" fives that are worth two extra han each.", %{man: !man, pin: !pin, sou: !sou}, -99)
+  update_rule("Rules", "Shuugi", "(Ao) If your hand is closed, each ao dora is worth two shuugi chips.")
+end
+
+replace !man, "wall", "5m", "25m"
+replace !pin, "wall", "5p", "25p"
+replace !sou, "wall", "5s", "25s"
+replace !man, "wall", "5t", "25t" # just reuse !man, keep it simple
+
+on after_start do
+  set_tile_alias_all(["25m"], ["5m"])
+  set_tile_alias_all(["25p"], ["5p"])
+  set_tile_alias_all(["25s"], ["5s"])
+  set_tile_alias_all(["25t"], ["5t"])
+  tag_tiles("dora", ["25m", "25p", "25s", "25t"])
+end
+
+# count ao
+on before_win do
+  # use set_counter to be compatible with other ao mods
+  set_counter("ao", "count_matches", ["hand", "calls", "winning_tile"], ~m"nojoker, (25m 25p 25s 25t):1")
+  ao *= 2
+end
+
+define_yaku extra_yaku, "Ao", "ao", counter_at_least("ao", 1)
+
+apply set_merge, "dora_indicators", %{
+  "25m": ["6m"],
+  "25p": ["6p"],
+  "25s": ["6s"],
+  "25t": ["6t"]
+}

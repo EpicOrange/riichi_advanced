@@ -31,8 +31,9 @@ defmodule RiichiAdvancedWeb.AboutLive do
     "JustKidding",
   ]
 
-  def mount(params, _session, socket) do
+  def mount(params, session, socket) do
     socket = socket
+    |> assign(:session_id, session["session_id"])
     |> assign(:messages, [])
     |> assign(:nickname, Map.get(params, "nickname", ""))
     |> assign(:lang, Map.get(params, "lang", "en"))

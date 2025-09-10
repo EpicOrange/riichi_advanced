@@ -9,22 +9,28 @@ defmodule RiichiAdvancedWeb.Translations do
     end)
   end
   def t(lang, ident, bindings) when is_map(bindings) do
-    bindings = Map.new(bindings, fn {k, v} -> {k, Gettext.dgettext(RiichiAdvancedWeb.Gettext, "default", v)} end)
-    ret = Gettext.with_locale(RiichiAdvancedWeb.Gettext, lang, fn ->
-      Gettext.gettext(RiichiAdvancedWeb.Gettext, ident, bindings)
-    end)
-    if ident == ret do
-      # no entry found, so gettext doesn't do substitution, so substitute variables manually
-      for {from, to} <- bindings, reduce: ident do
-        ident -> String.replace(ident, "%{#{from}}", to)
+    Gettext.with_locale(RiichiAdvancedWeb.Gettext, lang, fn ->
+      # replace tile bindings with divs
+      bindings = bindings
+      |> Map.new(fn {k, v} ->
+        {k, Gettext.gettext(RiichiAdvancedWeb.Gettext, "default",
+          if is_list(v) do Enum.map_join(v, "", &tile_to_div/1) else v end)}
+      end)
+      # translate
+      ret = Gettext.gettext(RiichiAdvancedWeb.Gettext, "default", ident)
+      # we have to replace bindings manually,
+      # since gettext expects atom keys in bindings
+      # but keys are user-provided, thus cannot be atoms
+      for {from, to} <- bindings, reduce: ret do
+        ret -> String.replace(ret, "%{#{from}}", to)
       end
-    else ret end
+    end)
   end
 
   # dynamic
   def dt(_lang, nil) do
-    IO.puts("WARNING: tried to translate nil!")
-    IO.inspect(Process.info(self(), :current_stacktrace))
+    # IO.puts("WARNING: tried to translate nil!")
+    # IO.inspect(Process.info(self(), :current_stacktrace))
     ""
   end
   def dt(lang, ident) do
@@ -33,28 +39,28 @@ defmodule RiichiAdvancedWeb.Translations do
     end)
   end
   def dt(_lang, nil, _bindings) do
-    IO.puts("WARNING: tried to translate nil!")
-    IO.inspect(Process.info(self(), :current_stacktrace))
+    # IO.puts("WARNING: tried to translate nil!")
+    # IO.inspect(Process.info(self(), :current_stacktrace))
     ""
   end
   # use <%= raw dt_tiles() %> if you want to display tiles
   def dt(lang, ident, bindings) when is_map(bindings) do
-    # remove tile bindings
-    {tile_bindings, bindings} = Enum.split_with(bindings, fn {_k, v} -> is_list(v) end)
-    bindings = bindings
-    |> Map.new()
-    |> Map.merge(Map.new(tile_bindings, fn {k, v} -> {k, Enum.map_join(v, "", &tile_to_div/1)} end))
-    # translate
-    |> Map.new(fn {k, v} -> {k, Gettext.dgettext(RiichiAdvancedWeb.Gettext, "default", v)} end)
-    ret = Gettext.with_locale(RiichiAdvancedWeb.Gettext, lang, fn ->
-      Gettext.dgettext(RiichiAdvancedWeb.Gettext, "default", ident, bindings)
-    end)
-    if ident == ret do
-      # no entry found, so gettext doesn't do substitution, so substitute variables manually
-      for {from, to} <- bindings, reduce: ident do
-        ident -> String.replace(ident, "%{#{from}}", to)
+    Gettext.with_locale(RiichiAdvancedWeb.Gettext, lang, fn ->
+      # replace tile bindings with divs
+      bindings = bindings
+      |> Map.new(fn {k, v} ->
+        {k, Gettext.dgettext(RiichiAdvancedWeb.Gettext, "default",
+          if is_list(v) do Enum.map_join(v, "", &tile_to_div/1) else v end)}
+      end)
+      # translate
+      ret = Gettext.dgettext(RiichiAdvancedWeb.Gettext, "default", ident)
+      # we have to replace bindings manually,
+      # since gettext expects atom keys in bindings
+      # but keys are user-provided, thus cannot be atoms
+      for {from, to} <- bindings, reduce: ret do
+        ret -> String.replace(ret, "%{#{from}}", to)
       end
-    else ret end
+    end)
   end
 
   def tile_to_div(tile) do

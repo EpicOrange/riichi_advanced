@@ -1,5 +1,6 @@
 on after_initialization do
   add_rule("$value $han", "$name", "Your hand contains the sequences 123 456 879 in one suit.", %{value: !value, han: !han, name: !name})
+  update_rule("$value $han", "$name", "%{example_hand}", %{value: !value, han: !han, name: !name, example_hand: ~t"234p4567779s 123s 8s"})
 end
 
 define_set pair, ~s"0 0"

@@ -583,7 +583,9 @@ defmodule RiichiAdvanced.GameState.Conditions do
       "is_tenpai_american"  ->
         done_calculating = state.calculate_closest_american_hands_pid == nil
         player = state.players[context.seat]
-        done_calculating and Enum.any?(player.cache.closest_american_hands, fn {_am_match_definition, pairing_r, _arranged_hand} -> map_size(pairing_r) == length(player.hand ++ player.draw) end)
+        done_calculating and Enum.any?(player.cache.closest_american_hands, fn {_am_match_definition, pairing_r, _arranged_hand} ->
+          map_size(pairing_r) >= length(player.hand ++ player.draw)
+        end)
       "can_discard_after_call" ->
         # simulate the call
         # TODO need to call upgrade_call instead, in the case of upgrade calls
@@ -608,6 +610,10 @@ defmodule RiichiAdvanced.GameState.Conditions do
       "is_responsible_for"  ->
         seat = from_seat_spec(state, context, Enum.at(opts, 0, "self"))
         Map.has_key?(state.players[seat].pao_map, context.seat)
+      "yaku_exists"         ->
+        list = Enum.at(opts, 0, "yaku")
+        name = Enum.at(opts, 1, "Riichi")
+        Enum.any?(Rules.get(state.rules_ref, list, []), & &1["display_name"] == name)
       _                     ->
         IO.puts "Unhandled condition #{inspect(cond_spec)}"
         false

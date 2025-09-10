@@ -211,18 +211,25 @@ defmodule RiichiAdvanced.Constants do
   end
 
   @ai_names [
+    "Agarihouki (AI)",
+    "Bakahon (AI)",
     "Betaori (AI)",
     "Chombo (AI)",
     "Furiten (AI)",
+    "Goumii (AI)",
+    "Houjuu (AI)",
     "Jigoku (AI)",
+    "Kuikae (AI)",
     "Noten (AI)",
     "Oyakaburi (AI)",
     "Pao (AI)",
     "Penchan (AI)",
+    "Sashikomi (AI)",
     "Tobi (AI)",
     "Uushanten (AI)",
     "Yakitori (AI)",
     "Yakuless (AI)",
+    "Yamagoshi (AI)",
     "Yasume (AI)",
   ]
 
@@ -364,6 +371,7 @@ defmodule RiichiAdvanced.Constants do
     },
     "hk" => %{
       display_name: "Hong Kong Old Style",
+      tutorial_link: "https://github.com/EpicOrange/riichi_advanced/blob/main/documentation/hk.md",
       ruleset: "hk",
       globals: %{
         chii_name: "Chow",

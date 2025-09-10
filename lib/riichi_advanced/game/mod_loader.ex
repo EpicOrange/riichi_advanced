@@ -207,6 +207,8 @@ defmodule RiichiAdvanced.ModLoader do
   # set debug_status, true # show statuses, counters, and buttons
   """
 
+  def default_config, do: @default_config
+
   def get_config_majs(ruleset, room_code) do
     case RiichiAdvanced.ETSCache.get({ruleset, room_code}, nil, :cache_configs) do
       [config_majs] -> config_majs

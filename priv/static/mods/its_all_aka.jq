@@ -69,7 +69,7 @@ def make_aka:
 |
 # count aka
 .before_win.actions += [
-  ["add_counter", "aka", "count_matches", ["hand", "calls", "winning_tile"], [[ "nojoker", [["01m","02m","03m","04m","05m","06m","07m","08m","09m","010m","01p","02p","03p","04p","05p","06p","07p","08p","09p","010p","01s","02s","03s","04s","05s","06s","07s","08s","09s","010s","01t","02t","03t","04t","05t","06t","07t","08t","09t","010t","01z","02z","03z","04z","05z","06z","07z","00z"], 1] ]]]
+  ["set_counter", "aka", "count_matches", ["hand", "calls", "winning_tile"], [[ "nojoker", [["01m","02m","03m","04m","05m","06m","07m","08m","09m","010m","01p","02p","03p","04p","05p","06p","07p","08p","09p","010p","01s","02s","03s","04s","05s","06s","07s","08s","09s","010s","01t","02t","03t","04t","05t","06t","07t","08t","09t","010t","01z","02z","03z","04z","05z","06z","07z","00z"], 1] ]]]
 ]
 |
 # make sure they indicate dora

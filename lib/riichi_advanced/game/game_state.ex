@@ -1038,10 +1038,10 @@ defmodule RiichiAdvanced.GameState do
     agariyame = Rules.get(state.rules_ref, "agariyame", false) and state.round_result == :win and dealer in state.winner_seats
     tenpaiyame = Rules.get(state.rules_ref, "tenpaiyame", false) and state.round_result in [:exhaustive_draw, :abortive_draw] and "tenpai" in state.players[dealer].status
     max_rounds = Rules.get(state.rules_ref, "max_rounds", :infinity)
-    past_max_rounds = state.kyoku >= max_rounds
+    past_max_rounds = state.kyoku >= max_rounds - 1
     forced or (agariyame and past_max_rounds) or (tenpaiyame and past_max_rounds) or if Rules.has_key?(state.rules_ref, "sudden_death_goal") do
       above_goal = Enum.any?(state.players, fn {_seat, player} -> player.score >= Rules.get(state.rules_ref, "sudden_death_goal") end)
-      past_extra_max_rounds = state.kyoku >= max_rounds + 4
+      past_extra_max_rounds = state.kyoku >= max_rounds + 3
       (above_goal and past_max_rounds) or past_extra_max_rounds
     else past_max_rounds end
   end
@@ -1380,6 +1380,20 @@ defmodule RiichiAdvanced.GameState do
     state
   end
 
+  def kill_all_tasks(state) do
+    for seat <- state.available_seats do
+      if state.calculate_playable_indices_pids[seat] do
+        Process.exit(state.calculate_playable_indices_pids[seat], :kill)
+      end
+    end
+    if state.calculate_closest_american_hands_pid do
+      Process.exit(state.calculate_closest_american_hands_pid, :kill)
+    end
+    if state.get_best_minefield_hand_pid do
+      Process.exit(state.get_best_minefield_hand_pid, :kill)
+    end
+  end
+
   defp start_timer(state) do
     state = Map.put(state, :timer, Rules.get(state.rules_ref, "win_timer", 10))
     state = update_all_players(state, fn seat, player -> %Player{ player | ready: is_pid(Map.get(state, seat)) } end)
@@ -1560,6 +1574,7 @@ defmodule RiichiAdvanced.GameState do
   end
 
   def handle_cast(:terminate_game, state) do
+    kill_all_tasks(state)
     GenServer.stop(state.supervisor, :normal)
     {:noreply, state}
   end
@@ -1569,6 +1584,7 @@ defmodule RiichiAdvanced.GameState do
       # all players and spectators have left, shutdown
       IO.puts("Stopping game #{state.room_code} #{inspect(self())}")
       # DynamicSupervisor.terminate_child(RiichiAdvanced.GameSessionSupervisor, state.supervisor)
+      kill_all_tasks(state)
       GenServer.stop(state.supervisor, :normal)
     else
       IO.puts("Not stopping game #{state.room_code} #{inspect(self())}")
@@ -2163,8 +2179,10 @@ defmodule RiichiAdvanced.GameState do
     end
     self = self()
     {:ok, pid} = Task.start(fn ->
-      win_definition = Rules.get(state.rules_ref, "win_definition", [])
+      closed_win_definition = Rules.get(state.rules_ref, "win_definition", [])
+      open_win_definition = Rules.get(state.rules_ref, "open_win_definition", [])
       for seat <- state.available_seats do
+        win_definition = if Enum.empty?(state.players[seat].calls) do closed_win_definition else open_win_definition end
         closest_american_hands = American.compute_closest_american_hands(state, seat, win_definition, 5)
         GenServer.cast(self, {:set_closest_american_hands, seat, closest_american_hands})
       end
