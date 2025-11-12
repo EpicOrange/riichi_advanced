@@ -206,7 +206,7 @@ defmodule RiichiAdvancedWeb.GettextHints do
     t_noop("MCR")
     t_noop("Taiwanese")
     t_noop("Bloody 30-Faan Jokers")
-    t_noop("American (2024 NMJL)")
+    t_noop("American (NMJL)")
     t_noop("Vietnamese")
     t_noop("Malaysian")
     t_noop("Singaporean")
