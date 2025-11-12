@@ -1,4 +1,5 @@
 .win_definition = [
+    # 2022
     "FF GGGG 2022a RRRR",
     "222a 000 2222b 2222c",
     "FFFF 2022a 222b 222c",
@@ -65,6 +66,7 @@
   ]
 |
 .open_win_definition = [
+    # 2022
     "FF GGGG 2022a RRRR",
     "222a 000 2222b 2222c",
     "FFFF 2022a 222b 222c",
