@@ -99,7 +99,7 @@ The following Cards are supported by Riichi Advanced:
 - [Mah Jongg Network 2025~2026](https://shop.mahjonggnetwork.com/) (cost: 15USD)
 - [Mah Jongg Network 2025~2026 Jr](https://shop.mahjonggnetwork.com/) (cost: 14USD)
 - [Mahjong Press 2026](https://themahjongpress.com/) (cost: ???USD)
-- [ShariUniqueCreations Vegas Card](https://www.etsy.com/listing/690122975) (cost: 6~7USD)
+- [ShariUniqueCreations Vegas Card](https://www.etsy.com/listing/690122975) (cost: 8.45~9.45CAD)
 - [ILoveMahj Card](https://ilovemahj.com/ilmCard) (free)
 - [ATeacherFirst Mah Jongg Fake Card](https://www.ateacherfirst.com/bridge/mah-jongg/) (free)
 - [MahjLife Mock Card](https://mahjlife.com/document/mahj-life-mock-card-print/) (free, used with permission from Michele Frizzell)
@@ -107,7 +107,7 @@ The following Cards are supported by Riichi Advanced:
 - [American Mah Jongg for Everyone Card](https://americanmahjonggforeveryone.com/our-card-and-tile-set/) (free)
 - [John Burton's Card Free American Mah Jongg](https://johnburtongames.com/cardfreemahj/) (free, technically not a Card)
 
-[TODO: Implement the Marvelous, Mah Jongg Network, and Press Cards. Implement the 75-point hand on the AMJfE Card. Implement the six missing hands on the Evergreen Card.]
+[TODO: Implement the Marvelous, Mah Jongg Network, and Press Cards when we acquire copies of them. Implement the 75-point hand on the AMJfE Card. Implement the six missing hands on the Evergreen Card.]
 
 (The rest of this ruleset will use the free ILoveMahj Card as examples.)
 
@@ -183,12 +183,12 @@ The following mods are currently available for American:
 - [WIP] Mah Jongg Network [Year] Card: Play with the [Mah Jongg Network Card](https://shop.mahjonggnetwork.com/) from the year of your choice (between 2025 and 2026). [TODO: remove the WIP tag when you implement this]
 - [WIP] Mah Jongg Network [Year] Jr Card: Play with the [Mah Jongg Network Jr Card](https://shop.mahjonggnetwork.com/) from the year of your choice (between 2025 and 2026). [TODO: remove the WIP tag when you implement this]
 - [WIP] Mahjong Press [Year] Card: Play with the [Mahjong Press Card](https://themahjongpress.com/) from the year of your choice (2026 only). [TODO: remove the WIP tag when you implement this]
-- [BETA] ShariUniqueCreations Vegas Card: Play with the [ShariUniqueCreations Vegas Card](https://www.etsy.com/listing/690122975). (May contain bugs.)
+- ShariUniqueCreations Vegas Card (beta): Play with the [ShariUniqueCreations Vegas Card](https://www.etsy.com/listing/690122975). (May contain bugs.)
 - ILM Card: Play with the free [ILoveMahj Card](https://ilovemahj.com/ilmCard).
 - ATF Card: Play with the free [ATeacherFirst Mah Jongg Fake Card](https://www.ateacherfirst.com/bridge/mah-jongg/).
 - MahjLife Card: Play with the free [MahjLife Mock Card](https://mahjlife.com/document/mahj-life-mock-card-print/). Introduced along with [this video](https://www.youtube.com/watch?v=7WygnpfFbMQ). (Implemented with permission from Michele Frizzell.)
-- MahjForAll Evergreen Card: Play with the free [MahjForAll Evergreen Card](https://mahjforall.org/product/perennial-evergreen-american-mahjong-card-instant-download/). (The Special Years hands, Blast from the Past #1, and Blast from the Past #4 are not yet implemented.)
-- AMJFE Card: Play with the free [American Mah Jongg for Everyone Card](https://americanmahjonggforeveryone.com/our-card-and-tile-set/). (The 75-point hand is not yet implemented.)
+- MahjForAll Evergreen Card (beta): Play with the free [MahjForAll Evergreen Card](https://mahjforall.org/product/perennial-evergreen-american-mahjong-card-instant-download/). (The Special Years hands, Blast from the Past #1, and Blast from the Past #4 are not yet implemented.)
+- AMJFE Card (beta): Play with the free [American Mah Jongg for Everyone Card](https://americanmahjonggforeveryone.com/our-card-and-tile-set/). (The 75-point hand is not yet implemented.)
 - Card Free (beta): Play with [John Burton's Card Free American Mah Jongg rules](https://johnburtongames.com/cardfreemahj/).
 - Show Waits: When you can discard a tile to become one tile away from winning, hovering over that tile will tell you what your winning tiles are, and will also tell you how many of them are still available. On by default.
 - Show Nearest Hands: Shows the five nearest hands to yours, when you hover on the "Show Nearest Hands" button in the bottom right. [TODO: Implement score and exposed/concealed info for each hand in this display.]
