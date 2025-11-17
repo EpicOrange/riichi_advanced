@@ -1,3 +1,5 @@
+# Currently still in beta because I have no clue if "W1Na", "10SEb" etc. groupings work as intended.
+
 .win_definition = [
     # Playing The Slots
     "W1Na W1Nb 7777a 7777b",
@@ -15,11 +17,9 @@
     "XXX0a XX1a DDa XXX0b XX1b DDb",
     "FF XXXX0a XXXX0b XXXX0c",
     "FFFF XX0a XX0b DDb XX0c DDc", # concealed
-
-        ### <TODO: check whether the 3s and 8s can be any numbers, or must be exactly as written>
     # Jokers Are Wild
     "ZZZZZ DDDDa XXXXX0a|XXXXX0b",
-    "FFFF 33333a 88888a|88888b",
+    "FFFF 33333a 88888a|88888b", # NOTE: 3s and 8s in this hand must be as written, not Any Two Numbers.
     "3333a 88888a 88888b",
     "33333a 33333b 8888c",
     # Know When To Run
@@ -106,7 +106,7 @@
   ]
 |
 .singles_win_definition = [
-    ### <TODO: check whether these hands are considered Singles and Pairs hands>
+    ### NOTE: These hands apparently ARE Singles and Pairs hands despite their category not being called "Singles and Pairs".
     # Blackjack
     "FF DDa|DDb|DDc 4a 5a 9a 2b 2b 6b 11b 21c", # concealed
     "123456a 123456b 21c", # concealed
