@@ -153,9 +153,6 @@
     { "display_name": "To Air Is Human #4", "value": 30, "when": [{"name": "match", "opts": [["hand", "call_tiles", "winning_tile"], ["10SEa W1Nb DDDDb DDDa"]]}] },
     { "display_name": "To Air Is Human #5", "value": 30, "when": [{"name": "match", "opts": [["hand", "call_tiles", "winning_tile"], ["SSSS 11a NNNN DDDDa"]]}] },
     { "display_name": "To Air Is Human #6", "value": 35, "when": [{"name": "has_no_call_named", "opts": ["am_pung", "am_kong", "am_quint"]}, {"name": "match", "opts": [["hand", "call_tiles", "winning_tile"], ["FF DDDa DDDb DDDc SSS"]]} ] },
-
-    ### CURRENT PROGRESS
-
     { "display_name": "Three Card Monte #1", "value": 25, "when": [{"name": "match", "opts": [["hand", "call_tiles", "winning_tile"], ["FFF 3333a 666a 9999a"]]}] },
     { "display_name": "Three Card Monte #2", "value": 25, "when": [{"name": "match", "opts": [["hand", "call_tiles", "winning_tile"], ["DDDa 333a 6666a 9999a"]]}] },
     { "display_name": "Three Card Monte #3", "value": 25, "when": [{"name": "match", "opts": [["hand", "call_tiles", "winning_tile"], ["DDDa 333a DDDDb 9999b"]]}] },
