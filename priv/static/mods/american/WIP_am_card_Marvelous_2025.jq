@@ -1,5 +1,38 @@
 .win_definition = [
+        # Snake Bit
+    "222a 4a 6b 888b 444c 666c", # x25
+    "222a 444a 25a 666a 888a", "222a 444a 25b 666c 888c", # x25
+    # "AS KKKK 4Aa|4Ab|4Ac 2a 22b 222c", # 2s any single even number, x25
+    "FF 222a DDDa|DDDb|DDDc 444b|666b|888b ZZZ", "FF 444a DDDa|DDDb|DDDc 666b|888b ZZZ", "FF 666a DDDa|DDDb|DDDc 888b ZZZ", # diff evens, 2 suits, any wind, x25
+    # "WJ PPP KKKK 666a 88a", # x35
+    # "FFF 2468a PPP 2468b", # x35
+    # "C7E0 PPP A 222 R AA", # x40
+        # Snake Eyes
+    "F 1a 333a 555a 999b 999c", # x25
+    "111a 333a 25a 777a 999a", "111a 333a 25b 777c 999c", # x25
+    # "AS KKKK 4Aa|4Ab|4Ac 5a 55b 555c", # 5s any single even number, x25
+    "FF 111a DDDa|DDDb|DDDc 333b|555b|777b|999b ZZZ", "FF 333a DDDa|DDDb|DDDc 555b|777b|999b ZZZ", "FF 555a DDDa|DDDb|DDDc 777b|999b ZZZ", "FF 777a DDDa|DDDb|DDDc 999b ZZZ", # diff odds, 2 suits, any wind, x25
+    # "WJ PPP KKKK 333a 55a", # x35
+    # "F 13579a PPP 13579b", # x40
+    # "R0 777a 1a|1b|1c PPP 0 777b 1a|1b|1c", # x40
+        # Atomic
+    # "A20W1C 22 33 77 55", # four different numbers of pairs in any suit, x35
+        # Sub-Atomic
+    # "A 123456789a|123456789b|123456789c 2a 0 2b 5c", # c50
+        # Dead Ringer
+    # "FFF AA NNN GGG SSS", # x25
+    # "E KKKK A SNA KKKK E", # x25
+    # "S71 PPP N S71 DDD E", # all tiles any suit, x30
+    # "7 11 WWW B 7 EEE SSS", # all tiles any suit, x30
+    # "AA SN AA KKKK E B12", # all tiles any suit, x35
+    # "SER PPP 11a N 22b 1NE", # unmarked tiles any suit, x40
+    # "A C07D KKKK 1 77 ER", # all tiles any suit", x40
+        # Snake Charmer
     ### CURRENT PROGRESS
+        # Do The Numbers
+        # On The Straight And Narrow
+        # Anaconda
+        # MJ-Antidote
     
     # 2025
     "222a 000 2222b 5555b", "222a 000 2222b 2222c",
