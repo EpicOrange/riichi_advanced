@@ -39,7 +39,7 @@
     "FF 444a 5555a 666a 10a", "FF 444a 5555b 666b 10c", # x25
     # "452543 N 362145 E", # all tiles any suit, c25
         # On The Straight And Narrow
-    "XX0a XXX1a XXXX2a XX3a XXX4a", ""XX0a XXX1a XXXX2b XX3c XXX4c", # x25
+    "XX0a XXX1a XXXX2a XX3a XXX4a", "XX0a XXX1a XXXX2b XX3c XXX4c", # x25
     "X0a XXX1a X2a X3a XXX4a X5a X6a XXX7a", "X0a XXX1a X2a X3b XXX4b X5b X6c XXX7c", # x25
     "20a XXX0a EEE XXXX2a 25a", "20a XXX0b EEE XXXX2b 25c", # x30
     # "AA X0a X0b X0c XXX1a XXX2b X3a X3b X3c", # x35
