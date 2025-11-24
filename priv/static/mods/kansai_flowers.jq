@@ -29,13 +29,11 @@
 |
 .auto_buttons._5_auto_flower.desc = "Automatically declare all flowers."
 |
-.auto_buttons._5_auto_flower.actions = [[
+.auto_buttons._5_auto_flower.actions = [
         ["when", [{"name": "buttons_include", "opts": ["start_flower"]}], [["press_button", "start_flower"], ["press_first_call_button", "start_flower"]]],
         ["when", [{"name": "buttons_include", "opts": ["start_no_flower"]}], [["press_button", "start_no_flower"]]],
         ["when", [{"name": "buttons_include", "opts": ["flower"]}], [["press_button", "flower"], ["press_first_call_button", "flower"]]]
       ]
-|
-.auto_buttons._5_auto_flower.enabled_at_start = false
 |
 # add flower dora indicators
 .dora_indicators += {
