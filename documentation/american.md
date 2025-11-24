@@ -27,12 +27,13 @@ Here are differences between Riichi Advanced and real life/other mahjong clients
 ---
 ## TODOS:
 
-- Implement the Marvelous, Mah Jongg Network, and Mahjong Press Cards. Currently waiting on these companies to send us copies of their Cards.
+- Implement the Marvelous, and Mahjong Press Cards. Currently waiting on these companies to send us copies of their Cards.
 - Implement the 75-point hand on the AMJfE Card. Currently it's unimplemented because it would require us to write down 98 different hands.
 - Implement the six missing hands on the MahjForAll Evergreen Card. Currently we need:
   - Some way for players to specify a year before drawing a Card;
   - Some way to indicate that jokers MAY NOT be used in a given grouping; and
   - Some way to indicate that flowers MAY be used as jokers in a given grouping.
+- Double-check rules differences on the Mah Jongg Network and Mah Jongg Network Junior Cards.
 - Implement Sextets. To be done when we implement a Card that has a Sextet.
 - Implement score and exposed/concealed info for each hand in "Show Nearest Hands".
 
@@ -180,8 +181,8 @@ The following mods are currently available for American:
 - PIE: Each player starts with a set amount of points. Players' point totals can't go negative. If a player runs out of points, they need not pay.
 - NMJL [Year] Card: Play with the [NMJL Card](https://www.nationalmahjonggleague.org/store.aspx) from the year of your choice (between 2020 and 2025).
 - [WIP] Marvelous [Year] Card: Play with the [Marvelous Card](https://marvelousmahjongg.com/) from the year of your choice (2025 only). [TODO: remove the WIP tag when you implement this]
-- [WIP] Mah Jongg Network [Year] Card: Play with the [Mah Jongg Network Card](https://shop.mahjonggnetwork.com/) from the year of your choice (between 2025 and 2026). [TODO: remove the WIP tag when you implement this]
-- [WIP] Mah Jongg Network [Year] Jr Card: Play with the [Mah Jongg Network Jr Card](https://shop.mahjonggnetwork.com/) from the year of your choice (between 2025 and 2026). [TODO: remove the WIP tag when you implement this]
+- Mah Jongg Network [Year] Card (beta): Play with the [Mah Jongg Network Card](https://shop.mahjonggnetwork.com/) from the year of your choice (2025 only).
+- Mah Jongg Network [Year] Jr Card (beta): Play with the [Mah Jongg Network Jr Card](https://shop.mahjonggnetwork.com/) from the year of your choice (2025 only).
 - [WIP] Mahjong Press [Year] Card: Play with the [Mahjong Press Card](https://themahjongpress.com/) from the year of your choice (2026 only). [TODO: remove the WIP tag when you implement this]
 - ShariUniqueCreations Vegas Card (beta): Play with the [ShariUniqueCreations Vegas Card](https://www.etsy.com/listing/690122975). (May contain bugs.)
 - ILM Card: Play with the free [ILoveMahj Card](https://ilovemahj.com/ilmCard).
