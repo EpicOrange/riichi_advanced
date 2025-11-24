@@ -35,6 +35,8 @@
         ["when", [{"name": "buttons_include", "opts": ["flower"]}], [["press_button", "flower"], ["press_first_call_button", "flower"]]]
       ]
 |
+.auto_buttons._5_auto_flower.enabled_at_start = true
+|
 # add flower dora indicators
 .dora_indicators += {
   "1f": ["2f","3f","4f"],
