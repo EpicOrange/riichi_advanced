@@ -1,0 +1,27 @@
+on after_initialization do
+  add_rule("$value $han", "$name", "You have three concealed triplets. A triplet completed by a self-draw win counts as concealed.", %{value: !value, han: !han, name: !name})
+  update_rule("$value $han", "$name", "%{example_hand}", %{value: !value, han: !han, name: !name, example_hand: ~t"222888m444p123s1z 1z"})
+end
+
+define_set pair, ~s"0 0"
+define_set koutsu, ~s"0 0 0"
+define_set mentsu, ~s"0 0 0 | 0 1 2"
+
+on before_scoring do
+  add_attr(["winning_tile"], ["_winning_tile"])
+end
+
+define_match sanankou_tsumo,
+  ~m"""
+  (pon daiminkan kakan):-1, koutsu:3, mentsu:1, pair:1
+  | (pon daiminkan kakan):-2, koutsu:4, pair:1
+  """
+define_match sanankou_ron,
+  ~m"""
+  exhaustive, (pon daiminkan kakan):-1, koutsu:3, (any@winning_tile):0, mentsu:1, pair:1
+  | exhaustive, (pon daiminkan kakan):-2, koutsu:4, (any@winning_tile):0, pair:1
+  """
+
+define_yaku !list, !name, !value,
+     (won_by_draw and match(["hand", "calls", "winning_tile"], ["sanankou_tsumo"]))
+  or (not_won_by_draw and match(["hand", "calls", "winning_tile"], ["sanankou_ron"]))

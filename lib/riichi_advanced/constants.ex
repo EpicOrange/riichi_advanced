@@ -1,7 +1,7 @@
 defmodule RiichiAdvanced.Constants do
   alias RiichiAdvanced.Utils, as: Utils
 
-  @version "v1.1.1." <> (System.cmd("git", ["rev-parse", "--short", "HEAD"]) |> elem(0) |> String.trim())
+  @version "v1.3.1." <> (System.cmd("git", ["rev-parse", "--short", "HEAD"]) |> elem(0) |> String.trim())
 
   def version, do: @version
 
@@ -205,23 +205,31 @@ defmodule RiichiAdvanced.Constants do
 
       _ ->
         IO.puts("Unrecognized tile #{inspect(tile)}, cannot sort!")
+        # IO.inspect(Process.info(self(), :current_stacktrace))
         0
     end
   end
 
   @ai_names [
+    "Agarihouki (AI)",
+    "Bakahon (AI)",
     "Betaori (AI)",
     "Chombo (AI)",
     "Furiten (AI)",
+    "Goumii (AI)",
+    "Houjuu (AI)",
     "Jigoku (AI)",
+    "Kuikae (AI)",
     "Noten (AI)",
     "Oyakaburi (AI)",
     "Pao (AI)",
     "Penchan (AI)",
+    "Sashikomi (AI)",
     "Tobi (AI)",
     "Uushanten (AI)",
     "Yakitori (AI)",
     "Yakuless (AI)",
+    "Yamagoshi (AI)",
     "Yasume (AI)",
   ]
 
@@ -242,24 +250,24 @@ defmodule RiichiAdvanced.Constants do
     {"mcr",          "MCR", "Mahjong Competition Rules. Has a scoring system of a different kind of complexity than Riichi."},
     {"taiwanese",    "Taiwanese", "16-tile mahjong with riichi mechanics."},
     {"bloody30faan", "Bloody 30-Faan Jokers", "Bloody end rules mahjong, with Vietnamese jokers, and somehow more yaku than MCR."},
-    {"american",     "American (2024 NMJL)", "American mahjong. Assemble hands with jokers, and declare other players' hands dead. Rules are not available for this one."},
+    {"american",     "American (NMJL)", "American Mah-Jongg. Assemble hands with jokers, and declare other players' hands dead. Rules are slightly different from MJME 2024 (see rules page)."},
     {"vietnamese",   "Vietnamese", "Mahjong with eight differently powerful joker tiles."},
     {"malaysian",    "Malaysian", "Three-player mahjong with 16 flowers, a unique joker tile, and instant payouts."},
     {"singaporean",  "Singaporean", "Mahjong with various instant payouts and various unique ways to get penalized by pao."},
+    {"classical",    "Chinese Classical", "Mahjong but every pung and kong gives you points, and every hand pattern doubles your points."},
+    {"fuzhou",       "Fuzhou", "16-tile mahjong with a version of dora that doesn't give you han, but becomes a unique winning condition by itself."},
+    {"tianjin",      "Tianjin", "Mahjong except the dora indicator actually indicates joker tiles."},
+    {"ningbo",       "Ningbo", "Includes Tianjin mahjong joker tiles, but adds more yaku and played with a 4-tai minimum."},
+    {"hefei",        "Hefei", "Mahjong with no honor tiles, but you must have at least eight tiles of a single suit to win."},
+    {"zung_jung",    "Zung Jung", "Mahjong with an additive (rather than multiplicative) scoring system."},
     {"custom",       "Custom", "Create and play your own custom ruleset."},
   ]
   @unimplemented_rulesets [
-    {"fuzhou",       "Fuzhou", "16-tile mahjong with a version of dora that doesn't give you han, but becomes a unique winning condition by itself.", "https://old.reddit.com/r/Mahjong/comments/171izis/fuzhou_mahjong_rules_corrected/"},
     {"filipino",     "Filipino", "16-tile mahjong where all honor tiles are flower tiles.", "https://mahjongpros.com/blogs/mahjong-rules-and-scoring-tables/official-filipino-mahjong-rules"},
     {"visayan",      "Visayan", "16-tile mahjong where you can form dragon and wind sequences.", "https://mahjongpros.com/blogs/how-to-play/beginners-guide-to-filipino-visayan-mahjong"},
-    {"tianjin",      "Tianjin", "Mahjong except the dora indicator actually indicates joker tiles.", "https://michaelxing.com/mahjong/instr.php"},
-    {"ningbo",       "Ningbo", "Includes Tianjin mahjong joker tiles, but adds more yaku and played with a 4-tai minimum.", "https://mahjongpros.com/blogs/how-to-play/beginners-guide-to-ningbo-mahjong-rules"},
-    {"hefei",        "Hefei", "Mahjong with no honor tiles, but you must have at least eight tiles of a single suit to win.", "https://mahjongpros.com/blogs/how-to-play/beginners-guide-to-hefei-mahjong"},
     {"changsha",     "Changsha", "Mahjong, but every win gets two chances at ura dora. However, a standard hand must have a pair of 22, 55, or 88.", "https://mahjongpros.com/blogs/how-to-play/beginners-guide-to-changsha-mahjong"},
     {"shenyang",     "Shenyang", "Mahjong, but every hand must be open, contain every suit, contain a terminal/honor, and contain either a triplet, kan, or dragon pair.", "https://peterish.com/riichi-docs/shenyang-mahjong-rules/"},
     {"korean",       "Korean", "Like Riichi but with a two-han minimum. There is also a side race to see who reaches three wins first.", "https://mahjongpros.com/blogs/mahjong-rules-and-scoring-tables/official-korean-mahjong-rules"},
-    {"cn_classical", "Chinese Classical", "Mahjong but every pung and kong gives you points, and every hand pattern doubles your points.", "http://mahjong.wikidot.com/rules:chinese-classical-scoring"},
-    {"zung_jung",    "Zung Jung", "Mahjong with an additive (rather than multiplicative) scoring system.", "https://www.zj-mahjong.info/zj33_rules_eng.html"},
     {"british",      "British", "No description provided.", "https://wonderfuloldthings.wordpress.com/wp-content/uploads/2013/09/british-rules-guide-to-mahjong-v2-1.pdf"},
     {"italian",      "Italian", "No description provided.", "https://www.fimj.it/wp-content/uploads/2012/01/111213_Regolamento_FIMJ_A4.pdf"},
     {"dutch",        "Dutch", "No description provided.", "https://mahjongbond.org/wp-content/uploads/2019/10/NMB-NTS-Spelregelboekje.pdf"},
@@ -272,60 +280,81 @@ defmodule RiichiAdvanced.Constants do
   def unimplemented_rulesets, do: @unimplemented_rulesets
 
   @modpacks %{
+    "riichi" => %{
+      display_name: "Riichi",
+      tutorial_link: "https://github.com/EpicOrange/riichi_advanced/blob/main/documentation/riichi.md",
+      ruleset: "riichi",
+      globals: %{
+        chii_name: "Chii",
+        pon_name: "Pon",
+        kan_name: "Kan",
+        ankan_name: "Ankan",
+        han: "Han"
+      },
+      mods: [
+        "base",
+        "global_mods",
+        "standard_wall",
+        "default_auto_buttons",
+        "riichi_kan"
+      ],
+      default_mods: []
+    },
     "sanma" => %{
       display_name: "Sanma",
       tutorial_link: "https://github.com/EpicOrange/riichi_advanced/blob/main/documentation/sanma.md",
       ruleset: "riichi",
-      mods: ["sanma"],
-      default_mods: [],
+      mods: ["sanma", "sanma_presets"],
+      default_mods: []
     },
     "cosmic" => %{
       display_name: "Cosmic Riichi",
       tutorial_link: "https://docs.google.com/document/d/1F-NhQ5fdi5CnAyEqwNE_qWR0Og99NtCo2NGkvBc5EwU/edit",
       ruleset: "riichi",
       mods: ["cosmic_base"],
-      default_mods: ["cosmic", "space", "kontsu", "yaku/kontsu_yaku", "yaku/chanfuun", "yaku/fuunburi", "yaku/uumensai_cosmic", "cosmic_calls", "yakuman_13_han", "yaku/tsubame_gaeshi", "yaku/kanburi", "yaku/uumensai", "yaku/isshoku_sanjun", "yaku/isshoku_yonjun"],
+      post_mods: ["yakuman_13_han"],
+      default_mods: ["cosmic", "space", "kontsu", "yaku/kontsu_yaku", "yaku/chanfuun", "yaku/fuunburi", "yaku/uumensai_cosmic", "cosmic_calls", "yaku/tsubame_gaeshi", "yaku/kanburi", "yaku/uumensai", "yaku/isshoku_sanjun", "yaku/isshoku_yonjun"],
     },
     "nojokersmahjongleague" => %{
       display_name: "No Jokers Mahjong League 2024",
       tutorial_link: "https://docs.google.com/document/d/1APpd-YBnsKKssGmyLQiCp90Wk-06SlIScV1sKpJUbQo/edit?usp=sharing",
       ruleset: "riichi",
-      mods: ["nojokersmahjongleague", "kiriage_mangan", "agarirenchan", "tenpairenchan", "dora", "ura", "kandora", "yaku/ippatsu", "tobi", "immediate_kan_dora", "head_bump", "no_double_yakuman"],
+      mods: ["kiriage_mangan", "agarirenchan", "tenpairenchan", %{name: "dora", config: %{start_indicators: 1}}, "ura", "kandora", "yaku/ippatsu", %{name: "tobi", config: %{below: 0}}, "immediate_kan_dora", "head_bump", "no_double_yakuman", "nojokersmahjongleague"],
       default_mods: ["show_waits"],
     },
     "space" => %{
       display_name: "Space Mahjong",
       tutorial_link: "https://riichi.wiki/Space_mahjong",
       ruleset: "riichi",
-      mods: [],
-      default_mods: ["space"],
+      mods: ["space"],
+      default_mods: [],
     },
     "galaxy" => %{
       display_name: "Galaxy Mahjong",
       tutorial_link: "https://github.com/EpicOrange/riichi_advanced/blob/main/documentation/galaxy.md",
       ruleset: "riichi",
-      mods: [],
-      default_mods: ["galaxy"],
+      mods: ["galaxy"],
+      default_mods: [],
     },
     "chinitsu" => %{
       display_name: "Chinitsu Challenge",
       tutorial_link: "https://github.com/EpicOrange/riichi_advanced/blob/main/documentation/chinitsu_challenge.md",
       ruleset: "riichi",
-      mods: ["yaku/riichi", "chinitsu_challenge"],
+      mods: [%{name: "yaku/riichi", config: %{bet: 1000, drawless: false}}, "chinitsu_challenge"],
       default_mods: ["chombo", "tobi", "yaku/renhou_yakuman", "no_honors"],
     },
     "minefield" => %{
       display_name: "Minefield",
       tutorial_link: "https://riichi.wiki/Minefield_mahjong",
       ruleset: "riichi",
-      mods: ["minefield"],
+      mods: [%{name: "yaku/riichi", config: %{bet: 1000, drawless: false}}, "minefield"],
       default_mods: ["kiriage_mangan"],
     },
     "kansai" => %{
       display_name: "Kansai Sanma",
       tutorial_link: "https://github.com/EpicOrange/riichi_advanced/blob/main/documentation/kansai.md",
       ruleset: "riichi",
-      mods: ["sanma", "kansai"],
+      mods: ["sanma", "sanma_presets", "kansai", "kansai_chiitoitsu"],
       default_mods: ["tobi"],
     },
     "aka_test" => %{
@@ -338,7 +367,134 @@ defmodule RiichiAdvanced.Constants do
     "speed" => %{
       display_name: "Speed Mahjong",
       ruleset: "riichi",
-      mods: ["kan", "yaku/riichi", "speed"]
+      mods: [%{name: "yaku/riichi", config: %{bet: 1000, drawless: false}}, "speed"]
+    },
+    "hk" => %{
+      display_name: "Hong Kong Old Style",
+      tutorial_link: "https://github.com/EpicOrange/riichi_advanced/blob/main/documentation/hk.md",
+      ruleset: "hk",
+      globals: %{
+        chii_name: "Chow",
+        pon_name: "Pong",
+        kan_name: "Kong",
+        ankan_name: "Concealed Kong",
+        han: "Fan"
+      },
+      mods: [
+        "base",
+        "global_mods", "default_auto_buttons",
+        "standard_wall", "framed_5z",
+        "standard_win", "yaku/yakuhai",
+        "chii", "pon", "kan", "ron", "tsumo",
+        %{name: "default_flowers", config: %{unskippable: true, four_flowers_value: 2}},
+        %{name: "yaku/no_flowers", config: %{list: "yaku", name: "No Flowers", value: 1}},
+        %{name: "yaku/tsumo", config: %{list: "yaku", name: "Self Draw", value: 1}},
+        %{name: "yaku/chankan", config: %{list: "yaku", name: "Robbing a Kong", value: 1}},
+        %{name: "yaku/rinshan", config: %{
+          list: "yaku", rinshan_name: "After a Kong", flower_name: "After a Flower", value: 1,
+          double_list: "yaku", double_name: "After Multiple Kongs", double_value: 8
+        }},
+        %{name: "yaku/menzenchin", config: %{list: "yaku", name: "Concealed Hand", value: 1}},
+        %{name: "yaku/honitsu", config: %{
+          hon_list: "yaku", hon_name: "Half Flush", hon_value: 3,
+          chin_list: "yaku", chin_name: "Full Flush", chin_value: 7
+        }},
+        %{name: "yaku/honroutou", config: %{
+          hon_list: "yaku", hon_name: "Mixed Terminals", hon_value: 4,
+          chin_list: "yaku", chin_name: "All Terminals", chin_value: 13
+        }},
+        %{name: "yaku/pinghu", config: %{list: "yaku", name: "All Sequences", value: 1}},
+        %{name: "yaku/toitoi", config: %{list: "yaku", name: "All Triplets", value: 3}},
+        %{name: "yaku/haitei", config: %{
+          haitei_list: "yaku", haitei_name: "Final Tile", haitei_value: 1,
+          houtei_list: "yaku", houtei_name: "Final Tile", houtei_value: 1
+        }},
+        %{name: "yaku/suuankou", config: %{list: "yaku", name: "Four Concealed Triplets", value: 8}},
+        %{name: "yaku/suukantsu", config: %{list: "yaku", name: "Four Kongs", value: 13}},
+        %{name: "yaku/kokushi", config: %{list: "yaku", name: "Thirteen Orphans", value: 13}},
+        %{name: "yaku/chuurenpoutou", config: %{list: "yaku", name: "Nine Gates", value: 13}},
+        %{name: "yaku/tsuuiisou", config: %{list: "yaku", name: "All Honours", value: 10}},
+        %{name: "yaku/daisangen", config: %{
+          shou_list: "yaku", shou_name: "Little Three Dragons", shou_value: 5,
+          dai_list: "yaku", dai_name: "Big Three Dragons", dai_value: 8
+        }},
+        %{name: "yaku/daisuushii", config: %{
+          shou_list: "yaku", shou_name: "Little Four Winds", shou_value: 6,
+          dai_list: "yaku", dai_name: "Big Four Winds", dai_value: 13
+        }},
+        %{name: "yaku/tenhou", config: %{
+          tenhou_list: "yaku", tenhou_name: "Blessing of Heaven", tenhou_value: 13,
+          chiihou_list: "yaku", chiihou_name: "Blessing of Earth", chiihou_value: 13,
+          renhou_list: "yaku", renhou_name: "Blessing of Man", renhou_value: 13,
+          chiihou_is_tsumo: false, renhou_disabled: false
+        }},
+      ]
+    },
+    "classical" => %{
+      display_name: "Chinese Classical",
+      tutorial_link: "http://mahjong.wikidot.com/rules:chinese-classical-scoring",
+      ruleset: "classical",
+      globals: %{
+        chii_name: "Chow",
+        pon_name: "Pung",
+        kan_name: "Kong",
+        ankan_name: "Concealed Kong",
+        ron_name: "Hu",
+        tsumo_name: "Zimo",
+        han: "Fan"
+      },
+      mods: [
+        "base",
+        "global_mods", "default_auto_buttons",
+        "standard_wall", "framed_5z",
+        "standard_win", "yaku/yakuhai",
+        "chii", "pon", "kan", "ron", "tsumo",
+        "head_bump",
+        %{name: "default_flowers", config: %{unskippable: true, four_flowers_value: 4}}, # should go after chii/pon/kan/ron/chankan/tsumo
+        %{name: "yaku/menzentsumo", config: %{list: "yaku", name: "Concealed Hand", value: 1}},
+        %{name: "yaku/chankan", config: %{list: "yaku", name: "Robbing the Kong", value: 1}},
+        %{name: "yaku/rinshan", config: %{
+          list: "yaku", rinshan_name: "Out on a Replacement", flower_name: "Out on a Replacement", value: 1,
+          double_list: "yakuman", double_name: "Two-Fold Fortune", double_value: 1
+        }},
+        %{name: "yaku/honitsu", config: %{
+          hon_list: "yaku", hon_name: "Half Flush", hon_value: 1,
+          chin_list: "yaku", chin_name: "Full Flush", chin_value: 4
+        }},
+        %{name: "yaku/ittsu", config: %{list: "yaku", name: "Pure Straight", value: 1}},
+        %{name: "yaku/tanyao", config: %{list: "yaku", name: "All Simples", value: 1}},
+        %{name: "yaku/honroutou", config: %{
+          hon_list: "yaku", hon_name: "All Terminals and Honors", hon_value: 1,
+          chin_list: "yakuman", chin_name: "All Terminals", chin_value: 1
+        }},
+        %{name: "yaku/toitoi", config: %{list: "yaku", name: "All Triplets", value: 1}},
+        %{name: "yaku/chanta", config: %{list: "yaku", name: "Outside Hand", value: 1}},
+        %{name: "yaku/haitei", config: %{
+          haitei_list: "yaku", haitei_name: "Last Tile Draw", haitei_value: 1,
+          houtei_list: "yaku", houtei_name: "Last Tile Discard", houtei_value: 1
+        }},
+        %{name: "yaku/sanankou", config: %{list: "yaku", name: "Three Concealed Triplets", value: 1}},
+        %{name: "yaku/suuankou", config: %{list: "yakuman", name: "Four Concealed Triplets", value: 1}},
+        %{name: "yaku/suukantsu", config: %{list: "yakuman", name: "Four Kongs", value: 1}},
+        %{name: "yaku/kokushi", config: %{list: "yakuman", name: "Thirteen Orphans", value: 1}},
+        %{name: "yaku/chuurenpoutou", config: %{list: "yakuman", name: "Nine Gates", value: 1}},
+        %{name: "yaku/tsuuiisou", config: %{list: "yakuman", name: "All Honors", value: 1}},
+        %{name: "yaku/daisangen", config: %{
+          shou_list: "yaku", shou_name: "Little Three Dragons", shou_value: 3,
+          dai_list: "yakuman", dai_name: "Big Three Dragons", dai_value: 1
+        }},
+        %{name: "yaku/daisuushii", config: %{
+          shou_list: "yakuman", shou_name: "Little Four Winds", shou_value: 1,
+          dai_list: "yakuman", dai_name: "Big Four Winds", dai_value: 1
+        }},
+        %{name: "yaku/tenhou", config: %{
+          tenhou_list: "yakuman", tenhou_name: "Blessing of Heaven", tenhou_value: 1,
+          chiihou_list: "yakuman", chiihou_name: "Blessing of Earth", chiihou_value: 1,
+          renhou_list: "yakuman", renhou_name: "Blessing of Man", renhou_value: 1,
+          chiihou_is_tsumo: true, renhou_disabled: true
+        }},
+        "classical_fu",
+      ]
     }
   }
 
@@ -365,5 +521,14 @@ defmodule RiichiAdvanced.Constants do
   }
 
   def tutorials, do: @tutorials
+
+  @langs [
+    {"English", "en"},
+    {"日本語", "ja"},
+    {"简体中文", "zh_CN"},
+    {"繁體中文", "zh_TW"}
+  ]
+
+  def langs, do: @langs
 
 end

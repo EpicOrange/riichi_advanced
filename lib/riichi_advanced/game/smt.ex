@@ -2,7 +2,6 @@ defmodule RiichiAdvanced.SMT do
   alias RiichiAdvanced.GameState.Debug, as: Debug
   alias RiichiAdvanced.GameState.TileBehavior, as: TileBehavior
   alias RiichiAdvanced.Match, as: Match
-  alias RiichiAdvanced.Riichi, as: Riichi
   alias RiichiAdvanced.Utils, as: Utils
   use Nebulex.Caching
   
@@ -55,26 +54,122 @@ defmodule RiichiAdvanced.SMT do
     Enum.reduce(args, fn arg, acc -> "(#{fun} #{arg} #{acc})" end)
   end
 
-  def obtain_all_solutions(solver_pid, encoding, encoding_r, joker_ixs, last_assignment \\ nil, result \\ []) do
-    cond do
-      length(joker_ixs) == 0 -> [%{}]
-      length(result) >= Integer.floor_div(100, length(joker_ixs)) -> result
-      true ->
-        contra = if last_assignment == nil do "" else Enum.map(joker_ixs, fn i -> "(equal_digits joker#{i} #{to_smt_tile(last_assignment[i], encoding)})" end) end
-        contra = if last_assignment == nil do "" else "(assert (not (and #{Enum.join(contra, " ")})))\n" end
-        query = "(get-value (#{Enum.join(Enum.map(joker_ixs, fn i -> "joker#{i}" end), " ")}))\n"
-        smt = Enum.join([contra, "(check-sat)\n", query])
-        if Debug.print_smt() do
-          IO.puts(smt)
-        end
-        {:ok, response} = GenServer.call(solver_pid, {:query, smt, false}, 60000)
-        case ExSMT.Solver.ResponseParser.parse(response) do
-          [:sat | assigns] ->
-            new_assignment = Map.new(Enum.zip(joker_ixs, Enum.flat_map(assigns, &Enum.map(&1, fn [_, val] -> encoding_r[val] end))))
-            obtain_all_solutions(solver_pid, encoding, encoding_r, joker_ixs, new_assignment, [new_assignment | result])
-          [:unsat | _] -> result
-        end
+  defp contradict_assignment(assignment, joker_ixs, encoding) do
+    contra = Enum.map(joker_ixs, fn i -> "(equal_digits joker#{i} #{to_smt_tile(assignment[i], encoding)})" end)
+    contra = "(assert (not (and #{Enum.join(contra, " ")})))\n"
+    contra
+  end
+
+  # an assignment a1 overlaps a2
+  # if a1 is just a2 with the same attributes or more attributes
+  defp assignment_overlaps(a1, a2) do
+    Enum.all?(a1, fn {ix, tile} ->
+      {tile1, attrs1} = Utils.to_attr_tile(tile)
+      {tile2, attrs2} = Utils.to_attr_tile(Map.get(a2, ix, tile1))
+      tile1 == tile2 and MapSet.subset?(MapSet.new(attrs2), MapSet.new(attrs1))
+    end)
+  end
+  # filters out assignments that are overlapped by some other assignment
+  def remove_overlapping_assignments(assignments, acc \\ [])
+  def remove_overlapping_assignments([], acc), do: acc
+  def remove_overlapping_assignments([assignment | assignments], acc) do
+    if Enum.any?(assignments, &assignment_overlaps(&1, assignment)) do
+      remove_overlapping_assignments(assignments, acc)
+    else
+      remove_overlapping_assignments(assignments, [assignment | acc])
     end
+  end
+
+  def obtain_all_solutions(_solver_pid, _encoding, _encoding_r, [], _smt_hand, _tile_behavior, _start_time), do: Stream.concat([[%{}]])
+  def obtain_all_solutions(solver_pid, encoding, encoding_r, joker_ixs, smt_hand, tile_behavior, start_time) do
+    {precomputed_mappings, precomputed_mappings_r} = precompute_joker_mappings(smt_hand, joker_ixs, tile_behavior)
+    # |> IO.inspect(label: "precomputed", charlists: :as_lists)
+    get_attr_tiles = fn {ix, tile} ->
+      tile = Utils.strip_attrs(tile)
+      tiles = Map.get(precomputed_mappings, {ix, tile}, [])
+      any_tiles = Map.get(precomputed_mappings, {ix, :any}, [])
+      |> Enum.map(fn {:any, attrs} -> {tile, attrs} end)
+      Enum.uniq(tiles ++ any_tiles)
+    end
+    get_ixs = fn tile ->
+      ixs = Map.get(precomputed_mappings_r, tile, [])
+      any_ixs = Map.get(precomputed_mappings_r, {:any, Utils.get_attrs(tile)}, [])
+      Enum.uniq(ixs ++ any_ixs)
+    end
+    # return a lazy stream of solutions
+    Stream.resource(
+      fn -> [] end, # state = last assignments
+      fn last_assignments ->
+        cond do
+          System.system_time(:millisecond) - start_time >= 30000 -> {:halt, nil}
+          true ->
+            # contradict the last assignments
+            contra = for assignment <- last_assignments, do: contradict_assignment(assignment, joker_ixs, encoding)
+            # get a new assignment
+            query = "(get-value (#{Enum.join(Enum.map(joker_ixs, fn i -> "joker#{i}" end), " ")}))\n"
+            smt = Enum.join(contra ++ ["(check-sat)\n", query])
+            if Debug.print_smt() do
+              IO.puts(smt)
+            end
+            {:ok, response} = GenServer.call(solver_pid, {:query, smt, false}, 60000)
+            case ExSMT.Solver.ResponseParser.parse(response) do
+              [:sat | assigns] ->
+                # IO.puts("===")
+                new_assignment = Map.new(Enum.zip(joker_ixs, Enum.flat_map(assigns, &Enum.map(&1, fn [_, val] -> encoding_r[val] end))))
+                # |> IO.inspect()
+                # for each assignment, for each tile mapped to,
+                # check if other indices can map to the same tile
+                # if so, add a new assignment swapping those indices
+                apply_permutation = fn orig_assignment, permutation ->
+                  for {ix, tile} <- orig_assignment, reduce: [%{}] do
+                    acc ->
+                      new_ix = Map.get(permutation, ix, ix)
+                      for assignment <- acc, potential_tile <- get_attr_tiles.({new_ix, tile}) do
+                        Map.put(assignment, new_ix, potential_tile)
+                      end
+                      |> remove_overlapping_assignments()
+                  end
+                  # |> IO.inspect(label: "Permuting #{inspect(orig_assignment)} with #{inspect(permutation)}")
+                end
+                final_assignments = new_assignment
+                |> Enum.flat_map(get_attr_tiles)
+                |> Enum.uniq()
+                |> Enum.map(get_ixs)
+                |> Enum.uniq()
+                |> Enum.flat_map(&Utils.make_permutations/1)
+                |> Enum.flat_map(&apply_permutation.(new_assignment, &1))
+                |> remove_overlapping_assignments()
+
+                # # deduplicate assignments that result in the exact same tiles
+                # # for example, 4 => 4m, 5 => 5s is the same as 4 => 5s, 5 => 4m
+                # ret = Enum.uniq_by(final_assignments, &Map.values(&1) |> Enum.sort())
+
+                # v2: the above, but for each equivalence class, keep "maximal" assignments
+                # ("maximal" meaning no other set of tiles has more attrs)
+                all_tiles = for assignment <- final_assignments, {_ix, tile} <- assignment, uniq: true, do: {tile, Utils.to_salient_attrs(tile)}
+                # treat _attr as attr for purposes of "most attrs"
+                # so adj_cache[{l, r}] = l <= r (r has at least the attrs of l)
+                adj_cache = for {l_, l} <- all_tiles, {r_, r} <- all_tiles, into: %{}, do: {{l_, r_}, Utils.same_tile(r, l)}
+                ret = final_assignments
+                |> Enum.group_by(&Map.values(&1) |> Utils.strip_attrs(:invisible) |> Enum.sort())
+                |> Map.values()
+                # in each equivalence class, filter for assignments that have at least the same attrs as every assignment, i.e. perfect matching can be formed with all other assignments
+                |> Enum.flat_map(&Enum.filter(&1, fn l -> Enum.all?(&1, fn r ->
+                  l = Map.values(l) |> Enum.sort()
+                  r = Map.values(r) |> Enum.sort()
+                  if l == r do true else
+                    adj = Map.new(Enum.with_index(l), fn {tile, i} -> {i, for {tile2, j} <- Enum.with_index(r), adj_cache[{tile, tile2}] do j end} end)
+                    {pairing, _pairing_r} = Utils.maximum_bipartite_matching(adj)
+                    map_size(pairing) < length(l)
+                  end
+                end) end))
+                {ret, final_assignments}
+              [:unsat | _] -> {:halt, nil}
+            end
+        end
+      end,
+      fn _ -> nil end
+    )
   end
 
   def get_chain(ordering, x, depth \\ 0)
@@ -279,14 +374,48 @@ defmodule RiichiAdvanced.SMT do
     end
   end
 
-  @decorate cacheable(cache: RiichiAdvanced.Cache, key: {:match_hand_smt_v2, hand, calls, match_definitions, TileBehavior.hash(tile_behavior)})
-  def match_hand_smt_v2(solver_pid, hand, calls, match_definitions, tile_behavior) do
+  defp precompute_joker_mappings(smt_hand, joker_ixs, tile_behavior) do
+    # return two maps:
+    # 1. %{{ix, tile} => list of potential tiles (with attributes)}
+    # 2. %{potential tiles => list of ixs that can map to that tile}
+    # attributes are sorted by Enum.sort
+    for ix <- joker_ixs,
+        {tile, attrs_aliases} <- tile_behavior.aliases,
+        {attrs, aliases} <- attrs_aliases,
+        from_tile <- aliases,
+        Utils.same_tile(Enum.at(smt_hand, ix), from_tile),
+        reduce: {%{}, %{}} do
+      {acc1, acc2} ->
+        orig_attrs = Utils.get_attrs(Enum.at(smt_hand, ix)) -- Utils.get_attrs(from_tile)
+        potential_tile = Utils.add_attr(tile, Enum.sort(attrs ++ orig_attrs))
+        acc1 = Map.update(acc1, {ix, tile}, [potential_tile], &[potential_tile | &1])
+        acc2 = Map.update(acc2, potential_tile, [ix], &[ix | &1])
+        {acc1, acc2}
+    end
+  end
+
+  # deprecated in favor of the above
+  # defp add_attrs_to_assignment(joker_assignment, smt_hand, tile_behavior) do
+  #   for {ix, assigned_tile} <- joker_assignment, reduce: MapSet.new([%{}]) do
+  #     acc -> for {tile, attrs_aliases} <- tile_behavior.aliases,
+  #                Utils.same_tile(tile, assigned_tile), # allow for :any to match
+  #                {attrs, aliases} <- attrs_aliases,
+  #                Utils.has_matching_tile?([Enum.at(smt_hand, ix)], aliases),
+  #                assignment <- acc,
+  #                into: MapSet.new() do
+  #       from_tile = Enum.find(aliases, &Utils.same_tile(Enum.at(smt_hand, ix), &1))
+  #       # orig_attrs = all attributes from the original hand tile that aren't "used up" by the aliasing
+  #       orig_attrs = Utils.get_attrs(Enum.at(smt_hand, ix)) -- Utils.get_attrs(from_tile)
+  #       Map.put(assignment, ix, Utils.add_attr(assigned_tile, attrs ++ orig_attrs))
+  #     end
+  #   end
+  # end
+
+  def _match_hand_smt_v3(solver_pid, hand, calls, match_definitions, tile_behavior) do
     ordering = tile_behavior.ordering
     tile_mappings = TileBehavior.tile_mappings(tile_behavior)
 
     calls = calls
-    |> Enum.reject(fn {call_name, _call} -> call_name in Riichi.flower_names() end)
-    |> Enum.map(&Utils.call_to_tiles/1)
     |> Enum.map(&Enum.take(&1, 3)) # ignore kans
     |> Enum.with_index()
 
@@ -301,7 +430,7 @@ defmodule RiichiAdvanced.SMT do
     |> Enum.map(&MapSet.new/1)
     |> Enum.reduce(MapSet.new(Map.keys(tile_behavior.tile_freqs)), &MapSet.union/2)
     |> MapSet.new(&Utils.strip_attrs/1)
-    |> Enum.reject(& &1 in jokers) # we're solving for jokers, so don't include them as assignables
+    |> Enum.reject(& &1 in jokers or &1 == :any) # we're solving for jokers, so don't include them as assignables
     # IO.puts("Non-joker tiles are #{inspect(all_tiles)}")
     {len, encoding, encoding_r, encoding_boilerplate} = determine_encoding(ordering, all_tiles)
     # encoding = %{
@@ -650,9 +779,38 @@ defmodule RiichiAdvanced.SMT do
       # IO.inspect(encoding)
     end
     {:ok, _response} = GenServer.call(solver_pid, {:query, smt, true}, 60000)
-    result = obtain_all_solutions(solver_pid, encoding, encoding_r, joker_ixs)
-    # IO.inspect(result)
-    result
+
+    # stream responses
+    obtain_all_solutions(solver_pid, encoding, encoding_r, joker_ixs, hand ++ call_tiles, tile_behavior, System.system_time(:millisecond))
+  end
+
+  # now with streaming without losing memoization!
+  def match_hand_smt_v3(solver_pid, hand, calls, match_definitions, tile_behavior) do
+    cache_key = {:match_hand_smt_v3, hand, calls, match_definitions, TileBehavior.hash(tile_behavior)}
+    if value = RiichiAdvanced.Cache.get(cache_key) do
+      Stream.concat([value])
+    else
+      {:ok, solutions_agent} = Agent.start_link(fn -> [] end)
+      _match_hand_smt_v3(solver_pid, hand, calls, match_definitions, tile_behavior)
+      |> Stream.concat([:end_stream])
+      |> Stream.flat_map(fn
+        :end_stream ->
+          try do
+            # assuming order of solutions do not matter (it's reversed)
+            solutions = Agent.get(solutions_agent, & &1)
+            if Debug.print_wins() do
+              IO.puts("#{inspect(length(solutions))} joker assignments: #{inspect(solutions)}")
+            end
+            RiichiAdvanced.Cache.put(cache_key, solutions)
+          after
+            Agent.stop(solutions_agent)
+          end
+          []
+        solution ->
+          Agent.update(solutions_agent, &[solution | &1])
+          [solution]
+      end)
+    end
   end
 
 end

@@ -1,0 +1,4 @@
+define_mod_category "Other"
+define_mod show_waits, name: "Show Waits", category: "Other", desc: "Add some UI that shows waits."
+define_mod open_hands, name: "Open Hands", category: "Other", desc: "Everyone plays with tiles shown."
+apply set_append, "default_mods", ["show_waits"]

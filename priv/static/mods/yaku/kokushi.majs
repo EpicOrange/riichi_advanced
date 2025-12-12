@@ -1,0 +1,21 @@
+on after_initialization do
+  add_rule("Rules", "Win Condition", "- (%{name}) All thirteen terminal/honor tiles plus one forming a pair.", %{name: !name}, -100)
+  if equals(!list, "yakuman") do
+    add_rule("Limit", "$name", "You have each terminal and honor tile, with one of them forming a pair.", %{name: !name})
+    update_rule("Limit", "$name", "%{example_hand}", %{value: !value, han: !han, name: !name, example_hand: ~t"19m99p19s1234567z 1p"})
+  else
+    add_rule("$value $han", "$name", "You have each terminal and honor tile, with one of them forming a pair.", %{value: !value, han: !han, name: !name})
+    update_rule("$value $han", "$name", "%{example_hand}", %{value: !value, han: !han, name: !name, example_hand: ~t"19m99p19s1234567z 1p"})
+  end
+end
+
+define_set orphans_any, ~s"1m|9m|1p|9p|1s|9s|1z|2z|3z|4z|5z|6z|7z"
+define_set orphans_all, ~s"1m 9m 1p 9p 1s 9s 1z 2z 3z 4z 5z 6z 7z"
+
+define_const kokushi_tenpai, ~m"unique, dismantle_calls, orphans_any:12, orphans_any:1"
+define_const kokushi_win, ~m"unique, dismantle_calls, orphans_any:13, orphans_any:1"
+
+apply set_append, "tenpai_definition", +@kokushi_tenpai
+apply set_append, "win_definition", +@kokushi_win
+
+define_yaku !list, !name, !value, match(["hand", "winning_tile"], ~m"orphans_all:1")

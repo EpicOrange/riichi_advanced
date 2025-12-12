@@ -137,10 +137,10 @@ defmodule RiichiAdvanced.AIPlayer do
   
   def handle_info({:your_turn, params}, state) do
     t = System.os_time(:millisecond)
-    %{player: player, visible_tiles: visible_tiles, closest_american_hands: closest_american_hands} = params
+    %{player: player, open_riichis: open_riichis, visible_tiles: visible_tiles, closest_american_hands: closest_american_hands} = params
     if state.initialized do
       state = Map.put(state, :player, player)
-      if GenServer.call(state.game_state, {:can_discard, state.seat}) do
+      if GenServer.call(state.game_state, {:can_discard, state.seat}, :infinity) do
         state = Map.put(state, :player, player)
         playable_hand = player.hand
         |> Enum.with_index()
@@ -148,7 +148,7 @@ defmodule RiichiAdvanced.AIPlayer do
         |> Enum.with_index()
         |> Enum.map(fn {tile, i} -> {tile, i + length(player.hand)} end)
         playables = playable_hand ++ playable_draw
-        |> Enum.filter(fn {tile, _i} -> GenServer.call(state.game_state, {:is_playable, state.seat, tile}) end)
+        |> Enum.filter(fn {tile, _i} -> GenServer.call(state.game_state, {:is_playable, state.seat, tile}, :infinity) end)
 
         non_voided_playables = cond do
           "void_manzu" in player.status -> Enum.filter(playables, fn {tile, _i} -> Riichi.is_manzu?(tile) end)
@@ -156,7 +156,18 @@ defmodule RiichiAdvanced.AIPlayer do
           "void_souzu" in player.status -> Enum.filter(playables, fn {tile, _i} -> Riichi.is_souzu?(tile) end)
           true -> []
         end
+
         playables = if Enum.empty?(non_voided_playables) do playables else non_voided_playables end
+
+        # if anyone is open riichi, don't deal into them
+        playables = if not Enum.empty?(open_riichis) do
+          danger_tiles = for {hand, calls, tile_behavior} <- open_riichis, into: MapSet.new() do
+            Riichi.get_waits(hand, calls, state.shanten_definitions.win, tile_behavior)
+          end
+          |> Enum.reduce(MapSet.new(), &MapSet.union/2)
+          safe_playables = Enum.reject(playables, fn {tile, _i} -> Utils.has_matching_tile?([tile], danger_tiles) end)
+          if Enum.empty?(safe_playables) do playables else safe_playables end
+        else playables end
 
         if not Enum.empty?(playables) do
           # pick a random tile
@@ -284,7 +295,6 @@ defmodule RiichiAdvanced.AIPlayer do
           # "chii" in player.buttons -> "chii"
           "anfuun" in player.buttons -> "anfuun"
           "flower" in player.buttons -> "flower"
-          "pei" in player.buttons -> "pei"
           "start_flower" in player.buttons -> "start_flower"
           "start_no_flower" in player.buttons -> "start_no_flower"
           "continue_charleston" in player.buttons -> "continue_charleston"
@@ -378,7 +388,7 @@ defmodule RiichiAdvanced.AIPlayer do
       choices = marked_objects
       |> Enum.reject(fn {source, mark_info} -> source in Marking.special_keys() or (mark_info != nil and length(mark_info.marked) >= mark_info.needed) end)
       |> Enum.flat_map(fn {source, _mark_info} -> get_mark_choices(source, players, revealed_tiles, scryed_tiles) end)
-      |> Enum.filter(fn {{seat, source, _obj}, i} -> GenServer.call(state.game_state, {:can_mark?, state.seat, seat, i, source}) end)
+      |> Enum.filter(fn {{seat, source, _obj}, i} -> GenServer.call(state.game_state, {:can_mark?, state.seat, seat, i, source}, :infinity) end)
       |> Enum.shuffle()
 
       has_minefield_hand = if length(player.hand) == 34 do
@@ -394,7 +404,7 @@ defmodule RiichiAdvanced.AIPlayer do
                 {state, Enum.filter(choices, fn {{_seat, _source, tile}, _i} -> Utils.has_matching_tile?([tile], remaining_tiles) end)}
               else
                 GenServer.cast(state.game_state, {:ai_thinking, state.seat})
-                GenServer.cast(state.game_state, {:get_best_minefield_hand, state.seat, state.shanten_definitions.win})
+                GenServer.cast(state.game_state, {:get_best_minefield_hand, state.seat, state.shanten_definitions.tenpai})
                 {state, []}
               end
             Marking.is_marking?(marked_objects, :aside) and length(player.hand) == 13 ->

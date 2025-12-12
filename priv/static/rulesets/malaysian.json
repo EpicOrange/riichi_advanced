@@ -30,28 +30,27 @@
            "1y", "1y", "1y", "1y",
            "2y", "2y", "2y", "2y"],
   "set_definitions": {
-    "pair": [0, 0],
-    "shuntsu": [0, 1, 2],
-    "koutsu": [0, 0, 0],
-    "quad": [0, 0, 0, 0],
-    "ryanmen/penchan": [0, 1],
-    "kanchan": [0, 2],
-    "iipeikou": [0, 0, 1, 1, 2, 2],
-    "ton": ["1z", "1z", "1z"],
-    "nan": ["2z", "2z", "2z"],
-    "shaa": ["3z", "3z", "3z"],
-    "pei": ["4z", "4z", "4z"],
-    "haku": ["8z", "8z", "8z"],
-    "hatsu": ["6z", "6z", "6z"],
-    "chun": ["7z", "7z", "7z"],
-    "ton_pair": ["1z", "1z"],
-    "nan_pair": ["2z", "2z"],
-    "shaa_pair": ["3z", "3z"],
-    "pei_pair": ["4z", "4z"],
-    "haku_pair": ["8z", "8z"],
-    "hatsu_pair": ["6z", "6z"],
-    "chun_pair": ["7z", "7z"],
-    "chuurenpoutou": [0,0,0,1,2,3,4,5,6,7,8,8,8]
+    "pair": [[0, 0]],
+    "shuntsu": [[0, 1, 2]],
+    "koutsu": [[0, 0, 0]],
+    "quad": [[0, 0, 0, 0]],
+    "ryanmen/penchan": [[0, 1]],
+    "kanchan": [[0, 2]],
+    "ton": [["1z", "1z", "1z"]],
+    "nan": [["2z", "2z", "2z"]],
+    "shaa": [["3z", "3z", "3z"]],
+    "pei": [["4z", "4z", "4z"]],
+    "haku": [["8z", "8z", "8z"]],
+    "hatsu": [["6z", "6z", "6z"]],
+    "chun": [["7z", "7z", "7z"]],
+    "ton_pair": [["1z", "1z"]],
+    "nan_pair": [["2z", "2z"]],
+    "shaa_pair": [["3z", "3z"]],
+    "pei_pair": [["4z", "4z"]],
+    "haku_pair": [["8z", "8z"]],
+    "hatsu_pair": [["6z", "6z"]],
+    "chun_pair": [["7z", "7z"]],
+    "chuurenpoutou": [[0,0,0,1,2,3,4,5,6,7,8,8,8]]
   },
   "tenpai_definition": [
     [ "exhaustive", [["shuntsu", "koutsu"], 3], [["ryanmen/penchan", "kanchan", "pair"], 1], [["pair"], 1] ],
@@ -342,8 +341,8 @@
   },
   "after_call": {
     "actions": [
-      ["when", [{"name": "match", "opts": [["last_call"], [[[["haku", "hatsu", "chun"], 1]]]]}, {"name": "match", "opts": [["calls"], [[[["haku"], 1], [["hatsu"], 1], [["chun"], 1]]]]}], [["as", "callee", [["set_status", "pao"]]]]],
-      ["when", [{"name": "match", "opts": [["last_call"], [[[["ton", "nan", "shaa", "pei"], 1]]]]}, {"name": "match", "opts": [["calls"], [[[["ton"], 1], [["nan"], 1], [["shaa"], 1], [["pei"], 1]]]]}], [["as", "callee", [["set_status", "pao"]]]]]
+      ["when", [{"name": "match", "opts": [["last_call"], [[[["haku", "hatsu", "chun"], 1]]]]}, {"name": "match", "opts": [["calls"], [[[["haku"], 1], [["hatsu"], 1], [["chun"], 1]]]]}], [["as", "callee", [["make_responsible_for", "prev_seat", "all"]]]]],
+      ["when", [{"name": "match", "opts": [["last_call"], [[[["ton", "nan", "shaa", "pei"], 1]]]]}, {"name": "match", "opts": [["calls"], [[[["ton"], 1], [["nan"], 1], [["shaa"], 1], [["pei"], 1]]]]}], [["as", "callee", [["make_responsible_for", "prev_seat", "all"]]]]]
     ]
   },
   "after_start": {
@@ -570,13 +569,13 @@
           ["when", ["kamicha_exists"], [["add_score", 50], ["subtract_score", 50, "kamicha"], ["as", "kamicha", [["big_text", "  -50  "]]]]]
         ]],
         ["set_status", "flower"],
-        ["when", ["not_no_tiles_remaining"], [["draw", 1, "opposite_end"]]]
+        ["ite", ["no_tiles_remaining"], [["advance_turn"]], [["draw", 1, "opposite_end"]]]
       ]
     },
     "joker": {
       "display_name": "Fly",
       "show_when": ["our_turn", {"name": "status_missing", "opts": ["match_start"]}, "not_just_discarded", "has_draw", {"name": "match", "opts": [["hand", "draw"], [[[["2y"], 1]]]]}],
-      "actions": [["big_text", "Fly"], ["flower", "2y"], ["set_status", "flower"], ["draw"]]
+      "actions": [["big_text", "Fly"], ["flower", "2y"], ["set_status", "flower"], ["ite", ["no_tiles_remaining"], [["advance_turn"]], [["draw"]]]]
     }
   },
   "auto_buttons": {
@@ -612,7 +611,7 @@
         ["when", [
             "not_our_turn",
             {"name": "buttons_include", "opts": ["skip"]},
-            {"name": "buttons_exclude", "opts": ["ron"]}
+            {"name": "buttons_exclude", "opts": ["ron", "chankan"]}
           ], [["press_button", "skip"]]]
       ],
       "enabled_at_start": false
@@ -620,7 +619,7 @@
     "5_auto_discard": {
       "display_name": "D",
       "desc": "Automatically discard your drawn tile.",
-      "actions": [["when", ["has_draw"], [["discard_draw"]]]],
+      "actions": [["when", ["our_turn", {"name": "buttons_exclude", "opts": ["tsumo", "ankan"]}, "has_draw"], [["discard_draw"]]]],
       "enabled_at_start": false
     }
   },

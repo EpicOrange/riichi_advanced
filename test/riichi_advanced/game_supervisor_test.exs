@@ -7,7 +7,7 @@ defmodule RiichiAdvanced.GameSupervisorTest do
     ruleset = "riichi"
     mods = []
     config = nil
-    game_spec = {RiichiAdvanced.GameSupervisor, room_code: room_code, ruleset: ruleset, mods: mods, config: config, name: {:via, Registry, {:game_registry, Utils.to_registry_name("game", ruleset, room_code)}}}
+    game_spec = {RiichiAdvanced.GameSupervisor, room_code: room_code, ruleset: ruleset, mods: mods, config: config, name: Utils.via_registry("game", ruleset, room_code), restart: :temporary}
     {:ok, _pid} = DynamicSupervisor.start_child(RiichiAdvanced.GameSessionSupervisor, game_spec)
     {:ok, %{room_code: room_code, ruleset: ruleset}}
   end
@@ -18,7 +18,7 @@ defmodule RiichiAdvanced.GameSupervisorTest do
   end
 
   test "can't start a duplicate room_code GameSupervisor", %{room_code: room_code, ruleset: ruleset} do
-    game_spec = {RiichiAdvanced.GameSupervisor, room_code: room_code, ruleset: ruleset, mods: [], config: nil, name: {:via, Registry, {:game_registry, Utils.to_registry_name("game", ruleset, room_code)}}}
+    game_spec = {RiichiAdvanced.GameSupervisor, room_code: room_code, ruleset: ruleset, mods: [], config: nil, name: Utils.via_registry("game", ruleset, room_code), restart: :temporary}
     {:error, {:already_started, _pid}} = DynamicSupervisor.start_child(RiichiAdvanced.GameSessionSupervisor, game_spec)
   end
 

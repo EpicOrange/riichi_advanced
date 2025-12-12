@@ -1,0 +1,496 @@
+{
+  "default_mods": ["show_waits"],
+  "available_mods": [
+    {"id": "show_waits", "name": "Show Waits", "desc": "Add some UI that shows waits."},
+    {"id": "open_hands", "name": "Open Hands", "desc": "Everyone plays with tiles shown."},
+    {"id": "ten", "name": "Ten", "desc": "Adds 10m, 10p, and 10s."},
+    {"id": "space", "name": "Space Mahjong", "desc": "Sequences can wrap (891, 912)."},
+    {"id": "chinitsu", "conflicts": ["fifth_tile"], "name": "Chinitsu", "desc": "Replace the wall with 16 copies of each bamboo tile. Includes 10s if Ten is enabled."},
+    {"id": "fifth_tile", "conflicts": ["chinitsu"], "name": "Fifth Tile", "desc": "Adds a fifth copy of every standard tile."}
+  ],
+  "display_name": "Sichuan Bloody",
+  "tutorial_link": "https://github.com/EpicOrange/riichi_advanced/blob/main/documentation/sichuan.md",
+  "wall": ["1m", "1m", "1m", "1m",
+           "2m", "2m", "2m", "2m",
+           "3m", "3m", "3m", "3m",
+           "4m", "4m", "4m", "4m",
+           "5m", "5m", "5m", "5m",
+           "6m", "6m", "6m", "6m",
+           "7m", "7m", "7m", "7m",
+           "8m", "8m", "8m", "8m",
+           "9m", "9m", "9m", "9m",
+           "1p", "1p", "1p", "1p",
+           "2p", "2p", "2p", "2p",
+           "3p", "3p", "3p", "3p",
+           "4p", "4p", "4p", "4p",
+           "5p", "5p", "5p", "5p",
+           "6p", "6p", "6p", "6p",
+           "7p", "7p", "7p", "7p",
+           "8p", "8p", "8p", "8p",
+           "9p", "9p", "9p", "9p",
+           "1s", "1s", "1s", "1s",
+           "2s", "2s", "2s", "2s",
+           "3s", "3s", "3s", "3s",
+           "4s", "4s", "4s", "4s",
+           "5s", "5s", "5s", "5s",
+           "6s", "6s", "6s", "6s",
+           "7s", "7s", "7s", "7s",
+           "8s", "8s", "8s", "8s",
+           "9s", "9s", "9s", "9s"],
+  "set_definitions": {
+    "pair": [[0, 0]],
+    "shuntsu": [[0, 1, 2]],
+    "koutsu": [[0, 0, 0]],
+    "quad": [[0, 0, 0, 0]],
+    "ryanmen/penchan": [[0, 1]],
+    "kanchan": [[0, 2]],
+    "ton": [["1z", "1z", "1z"]],
+    "nan": [["2z", "2z", "2z"]],
+    "shaa": [["3z", "3z", "3z"]],
+    "pei": [["4z", "4z", "4z"]],
+    "haku": [["5z", "5z", "5z"]],
+    "hatsu": [["6z", "6z", "6z"]],
+    "chun": [["7z", "7z", "7z"]]
+  },
+  "manzu_definition": [[[["1m","2m","3m","4m","5m","6m","7m","8m","9m"], 1]]],
+  "pinzu_definition": [[[["1p","2p","3p","4p","5p","6p","7p","8p","9p"], 1]]],
+  "souzu_definition": [[[["1s","2s","3s","4s","5s","6s","7s","8s","9s"], 1]]],
+  "tenpai_definition": [
+    [ "exhaustive", [["pair"], 1], [["ryanmen/penchan", "kanchan", "pair"], 1], [["shuntsu", "koutsu"], 3] ],
+    [ "exhaustive", [["shuntsu", "koutsu"], 4] ],
+    [ [["nojoker", "koutsu"], -1], [["pair"], 6] ],
+    [ "unique",
+      [["1m","9m","1p","9p","1s","9s","1z","2z","3z","4z","5z","6z","7z"], 12],
+      [["1m","9m","1p","9p","1s","9s","1z","2z","3z","4z","5z","6z","7z"], 1]
+    ]
+  ],
+  "win_definition": [
+    [ "exhaustive", [["pair"], 1], [["shuntsu", "koutsu"], 4] ],
+    [ [["nojoker", "quad"], -1], [["pair"], 7] ],
+    [ "unique",
+      [["1m","9m","1p","9p","1s","9s","1z","2z","3z","4z","5z","6z","7z"], 13],
+      [["1m","9m","1p","9p","1s","9s","1z","2z","3z","4z","5z","6z","7z"], 1]
+    ]
+  ],
+  "yaku": [
+    { "display_name": "Root", "value": 1, "when": [{"name": "match", "opts": [["hand", "call_tiles", "winning_tile"], [[[["quad"], 1]]]]}] },
+    { "display_name": "Root", "value": 1, "when": [{"name": "match", "opts": [["hand", "call_tiles", "winning_tile"], [[[["quad"], 2]]]]}] },
+    { "display_name": "Root", "value": 1, "when": [{"name": "match", "opts": [["hand", "call_tiles", "winning_tile"], [[[["quad"], 3]]]]}] },
+    { "display_name": "Root", "value": 1, "when": [{"name": "match", "opts": [["hand", "call_tiles", "winning_tile"], [[[["quad"], 4]]]]}] },
+    { "display_name": "All Triplets", "value": 1, "when": [{"name": "match", "opts": [["hand", "calls", "winning_tile"], [[[["koutsu"], 4], [["pair"], 1]]]]}] },
+    {
+      "display_name": "Full Flush",
+      "value": 2,
+      "when": [[
+        {"name": "winning_hand_consists_of", "opts": ["1m","2m","3m","4m","5m","6m","7m","8m","9m"]},
+        {"name": "winning_hand_consists_of", "opts": ["1p","2p","3p","4p","5p","6p","7p","8p","9p"]},
+        {"name": "winning_hand_consists_of", "opts": ["1s","2s","3s","4s","5s","6s","7s","8s","9s"]}
+      ]]
+    },
+    { "display_name": "Seven Pairs", "value": 2, "when": [{"name": "match", "opts": [["hand", "winning_tile"], [[[["quad"], -1], [["pair"], 7]]]]}] },
+    { "display_name": "Golden Single Wait", "value": 2, "when": [{"name": "match", "opts": [["calls"], [[[["pon", "daiminkan", "ankan", "kakan"], 4]]]]}] },
+    { "display_name": "Win After Kong", "value": 1, "when": [{"name": "status", "opts": ["kan"]}] },
+    { "display_name": "Robbing The Kong", "value": 1, "when": ["won_by_call"] },
+    { "display_name": "Shoot After Kong", "value": 1, "when": [{"name": "discarder_status", "opts": ["kan"]}] },
+    { "display_name": "Under The Sea", "value": 1, "when": ["no_tiles_remaining"] },
+    { "display_name": "Voided Suit", "value": -1, "when": [{"name": "status", "opts": ["void_penalty"]}] },
+    { "display_name": "Voided Suit", "value": -1, "when": ["won_by_draw", {"name": "status", "opts": ["void_penalty"]}] }
+  ],
+  "yaku_precedence": {
+    "Golden Single Wait": ["All Triplets"],
+    "Voided Suit": [1, 2]
+  },
+  "score_calculation": {
+    "scoring_method": "score_table",
+    "score_table": {"-2": -1, "-1": 0, "0": 1, "1": 2, "2": 4, "max": 8},
+    "yaku_lists": ["yaku"],
+    "min_score": -1,
+    "self_draw_bonus": 1,
+    "score_best_hand_at_draw": true,
+    "next_dealer_is_first_winner": true,
+    "point_name": "Fan",
+    "win_by_discard_label": "Hu",
+    "win_by_draw_label": "Zimo",
+    "win_by_discard_name": "Hu",
+    "win_by_discard_name_2": "Double Hu",
+    "win_by_discard_name_3": "Triple Hu",
+    "win_by_draw_name": "Zimo",
+    "exhaustive_draw_name": "Draw",
+      // note: this is currently a bodge, using the nagashi payments for the void-penalty payments.
+    "draw_nagashi_payments": [16, 16],
+    "nagashi_name": "Void Penalty"
+  },
+  "play_restrictions": [
+    [["any"], [{"name": "status_missing", "opts": ["void_manzu", "void_pinzu", "void_souzu"]}]]
+  ],
+  "functions": {
+    "assign_void_penalty": [
+      ["when_anyone", [[
+        [
+          {"name": "status", "opts": ["void_manzu"]},
+          {"name": "match", "opts": [["hand", "calls", "winning_tile"], ["manzu"]]},
+          {"name": "match", "opts": [["discards"], ["pinzu", "souzu"]]}
+        ],
+        [
+          {"name": "status", "opts": ["void_pinzu"]},
+          {"name": "match", "opts": [["hand", "calls", "winning_tile"], ["pinzu"]]},
+          {"name": "match", "opts": [["discards"], ["manzu", "souzu"]]}
+        ],
+        [
+          {"name": "status", "opts": ["void_souzu"]},
+          {"name": "match", "opts": [["hand", "calls", "winning_tile"], ["souzu"]]},
+          {"name": "match", "opts": [["discards"], ["manzu", "pinzu"]]}
+        ]
+      ]], [["set_status", "void_penalty"]]],
+        // note: this is currently a bodge, using the nagashi payments for the void-penalty payments.
+      ["when_anyone", [{"name": "status_missing", "opts": ["void_penalty"]}], [["set_status", "nagashi"]]]
+    ]
+  },
+  "after_start": {
+    "actions": [
+      ["when", [{"name": "dice_equals", "opts": [3, 6, 9, 12]}], [["set_status_all", "charleston_left"]]],
+      ["when", [{"name": "dice_equals", "opts": [2, 5, 8, 11]}], [["set_status_all", "charleston_across"]]],
+      ["when", [{"name": "dice_equals", "opts": [4, 7, 10]}], [["set_status_all", "charleston_right"]]]
+      // debug
+      // ["set_status_all", "round_start"]
+    ]
+  },
+  "before_turn_change": {
+    "actions": [
+      ["unset_status", "kan", "first_turn"],
+      ["ite", [{"name": "match", "opts": [["hand", "calls", "draw"], ["tenpai"]]}], [["set_status", "tenpai"]], [["unset_status", "tenpai"]]]
+    ]
+  },
+  "after_turn_change": {
+    "actions": [
+      ["when", ["no_tiles_remaining"], [["pause", 1000], ["ryuukyoku"]]],
+      ["when", [{"name": "not_status_missing", "opts": ["void_manzu", "void_pinzu", "void_souzu"]}, {"name": "not_status", "opts": ["won"]}, "not_no_tiles_remaining"], [["draw"]]],
+      ["when", [{"name": "status", "opts": ["won"]}], [["advance_turn"]]]
+    ]
+  },
+  "before_continue": {
+    "actions": [["advance_turn"]]
+  },
+  "before_exhaustive_draw": {
+    "actions": [["run", "assign_void_penalty"]]
+  },
+  "before_win": {
+    "actions": [
+      ["when", {"name": "counter_at_least", "as": "east", "opts": ["winners", 2]}, [["run", "assign_void_penalty"]]]
+    ]
+  },
+  "after_win": {
+    "actions": [["as", "east", [["add_counter", "winners", 1]]]]
+  },
+  "after_bloody_end": {
+    "actions": [["when_anyone", [{"name": "status", "opts": ["void_penalty"]}], [["reveal_hand"]]]]
+  },
+  "buttons": {
+    "charleston_left": {
+      "display_name": "Select three tiles to pass left",
+      "show_when": [{"name": "status", "opts": ["charleston_left"]}],
+      "actions": [["mark", [["hand", 3, ["self"]]], [["unset_status", "charleston_left"]]], ["charleston_left"], ["set_status", "round_start"]],
+      "unskippable": true,
+      "cancellable": false
+    },
+    "charleston_across": {
+      "display_name": "Select three tiles to pass across",
+      "show_when": [{"name": "status", "opts": ["charleston_across"]}],
+      "actions": [["mark", [["hand", 3, ["self"]]], [["unset_status", "charleston_across"]]], ["charleston_across"], ["set_status", "round_start"]],
+      "unskippable": true,
+      "cancellable": false
+    },
+    "charleston_right": {
+      "display_name": "Select three tiles to pass right",
+      "show_when": [{"name": "status", "opts": ["charleston_right"]}],
+      "actions": [["mark", [["hand", 3, ["self"]]], [["unset_status", "charleston_right"]]], ["charleston_right"], ["set_status", "round_start"]],
+      "unskippable": true,
+      "cancellable": false
+    },
+    "void_manzu": {
+      "display_name": "No Craks",
+      "show_when": [{"name": "status", "opts": ["round_start"]}],
+      "actions": [
+        ["big_text", "No Craks"], ["set_status", "void_manzu"], ["unset_status", "round_start"],
+        ["when", [{"name": "seat_is", "opts": ["east"]}], [["reveal_tile", "1z"]]],
+        ["when", [{"name": "seat_is", "opts": ["south"]}], [["reveal_tile", "2z"]]],
+        ["when", [{"name": "seat_is", "opts": ["west"]}], [["reveal_tile", "3z"]]],
+        ["when", [{"name": "seat_is", "opts": ["north"]}], [["reveal_tile", "4z"]]],
+        ["reveal_tile", "1m"],
+        ["reveal_tile", "3x"],
+        ["merge_draw"],
+        ["advance_turn"]
+      ],
+      "unskippable": true,
+      "cancellable": false
+    },
+    "void_pinzu": {
+      "display_name": "No Dots",
+      "show_when": [{"name": "status", "opts": ["round_start"]}],
+      "actions": [
+        ["big_text", "No Dots"], ["set_status", "void_pinzu"], ["unset_status", "round_start"],
+        ["when", [{"name": "seat_is", "opts": ["east"]}], [["reveal_tile", "1z"]]],
+        ["when", [{"name": "seat_is", "opts": ["south"]}], [["reveal_tile", "2z"]]],
+        ["when", [{"name": "seat_is", "opts": ["west"]}], [["reveal_tile", "3z"]]],
+        ["when", [{"name": "seat_is", "opts": ["north"]}], [["reveal_tile", "4z"]]],
+        ["reveal_tile", "1p"],
+        ["reveal_tile", "3x"],
+        ["merge_draw"],
+        ["advance_turn"]
+      ],
+      "unskippable": true,
+      "cancellable": false
+    },
+    "void_souzu": {
+      "display_name": "No Bams",
+      "show_when": [{"name": "status", "opts": ["round_start"]}],
+      "actions": [
+        ["big_text", "No Bams"], ["set_status", "void_souzu"], ["unset_status", "round_start"],
+        ["when", [{"name": "seat_is", "opts": ["east"]}], [["reveal_tile", "1z"]]],
+        ["when", [{"name": "seat_is", "opts": ["south"]}], [["reveal_tile", "2z"]]],
+        ["when", [{"name": "seat_is", "opts": ["west"]}], [["reveal_tile", "3z"]]],
+        ["when", [{"name": "seat_is", "opts": ["north"]}], [["reveal_tile", "4z"]]],
+        ["reveal_tile", "1s"],
+        ["reveal_tile", "3x"],
+        ["merge_draw"],
+        ["advance_turn"]
+      ],
+      "unskippable": true,
+      "cancellable": false
+    },
+    "pon": {
+      "display_name": "Pong",
+      "call": [[0, 0]],
+      "call_style": {"kamicha": ["call_sideways", 0, 1], "toimen": [0, "call_sideways", 1], "shimocha": [0, 1, "call_sideways"]},
+      "call_conditions": [
+        [
+          {"name": "not_status", "opts": ["void_manzu"]},
+          {"name": "not_call_contains", "opts": [["1m", "2m", "3m", "4m", "5m", "6m", "7m", "8m", "9m"], 1]}
+        ],
+        [
+          {"name": "not_status", "opts": ["void_pinzu"]},
+          {"name": "not_call_contains", "opts": [["1p", "2p", "3p", "4p", "5p", "6p", "7p", "8p", "9p"], 1]}
+        ],
+        [
+          {"name": "not_status", "opts": ["void_souzu"]},
+          {"name": "not_call_contains", "opts": [["1s", "2s", "3s", "4s", "5s", "6s", "7s", "8s", "9s"], 1]}
+        ]
+      ],
+      "show_when": ["not_our_turn", {"name": "not_status", "opts": ["won"]}, "not_no_tiles_remaining", "someone_else_just_discarded", "call_available"],
+      "actions": [["big_text", "Pong"], ["call"], ["change_turn", "self"]]
+    },
+    "daiminkan": {
+      "display_name": "Kong",
+      "call": [[0, 0, 0]],
+      "call_style": {"kamicha": ["call_sideways", 0, 1, 2], "toimen": [0, "call_sideways", 1, 2], "shimocha": [0, 1, 2, "call_sideways"]},
+      "show_when": [
+        "not_our_turn", {"name": "not_status", "opts": ["won"]}, "not_no_tiles_remaining", "someone_else_just_discarded", "call_available",
+        [
+          [
+            {"name": "status", "opts": ["void_manzu"]},
+            {"name": "not_match", "opts": [["last_discard"], ["manzu"]]}
+          ],
+          [
+            {"name": "status", "opts": ["void_pinzu"]},
+            {"name": "not_match", "opts": [["last_discard"], ["pinzu"]]}
+          ],
+          [
+            {"name": "status", "opts": ["void_souzu"]},
+            {"name": "not_match", "opts": [["last_discard"], ["souzu"]]}
+          ]
+        ]
+      ],
+      "actions": [
+        ["big_text", "Kong"], ["call"],
+        ["add_score", 2], ["subtract_score", 2, "last_discarder"], ["as", "last_discarder", [["big_text", "  -2  "]]],
+        ["change_turn", "self"], ["set_status", "kan"], ["draw"]
+      ],
+      "precedence_over": ["pon"]
+    },
+    "ankan": {
+      "display_name": "Concealed Kong",
+      "call": [[0, 0, 0]],
+      "call_style": {"self": [["1x", 2], 0, 1, ["1x", 3]]},
+      "call_conditions": [
+        [
+          {"name": "not_status", "opts": ["void_manzu"]},
+          {"name": "not_call_contains", "opts": [["1m", "2m", "3m", "4m", "5m", "6m", "7m", "8m", "9m"], 1]}
+        ],
+        [
+          {"name": "not_status", "opts": ["void_pinzu"]},
+          {"name": "not_call_contains", "opts": [["1p", "2p", "3p", "4p", "5p", "6p", "7p", "8p", "9p"], 1]}
+        ],
+        [
+          {"name": "not_status", "opts": ["void_souzu"]},
+          {"name": "not_call_contains", "opts": [["1s", "2s", "3s", "4s", "5s", "6s", "7s", "8s", "9s"], 1]}
+        ]
+      ],
+      "show_when": ["our_turn", {"name": "not_status", "opts": ["won"]}, {"name": "not_status", "opts": ["round_start"]}, "not_no_tiles_remaining", "has_draw", "self_call_available"],
+      "actions": [
+        ["big_text", "Kong"], ["self_call"], ["set_status", "kan"],
+        ["when", [{"name": "not_shimocha_status", "opts": ["won"]}], [["add_score", 2], ["subtract_score", 2, "shimocha"], ["as", "shimocha", [["big_text", "  -2  "]]]]],
+        ["when", [{"name": "not_toimen_status", "opts": ["won"]}], [["add_score", 2], ["subtract_score", 2, "toimen"], ["as", "toimen", [["big_text", "  -2  "]]]]],
+        ["when", [{"name": "not_kamicha_status", "opts": ["won"]}], [["add_score", 2], ["subtract_score", 2, "kamicha"], ["as", "kamicha", [["big_text", "  -2  "]]]]],
+        ["draw"]
+      ]
+    },
+    "kakan": {
+      "display_name": "Kong",
+      "call": [[0, 0, 0]],
+      "upgrades": "pon",
+      "show_when": ["our_turn", {"name": "not_status", "opts": ["won"]}, "not_no_tiles_remaining", "has_draw", "can_upgrade_call"],
+      "actions": [
+        ["big_text", "Kong"], ["upgrade_call"], ["set_status", "kan"],
+        ["when", [{"name": "not_shimocha_status", "opts": ["won"]}], [["add_score", 1], ["subtract_score", 1, "shimocha"], ["as", "shimocha", [["big_text", "  -1  "]]]]],
+        ["when", [{"name": "not_toimen_status", "opts": ["won"]}], [["add_score", 1], ["subtract_score", 1, "toimen"], ["as", "toimen", [["big_text", "  -1  "]]]]],
+        ["when", [{"name": "not_kamicha_status", "opts": ["won"]}], [["add_score", 1], ["subtract_score", 1, "kamicha"], ["as", "kamicha", [["big_text", "  -1  "]]]]],
+        ["draw"]
+      ]
+    },
+    "ron": {
+      "display_name": "Hu",
+      "show_when": [
+        "not_our_turn",
+        {"name": "not_status", "opts": ["won"]}, 
+        "someone_else_just_discarded",
+        {"name": "match", "opts": [["hand", "calls", "draw"], ["tenpai"]]},
+        {"name": "match", "opts": [["hand", "calls", "last_discard"], ["win"]]},
+        [
+          [
+            {"name": "status", "opts": ["void_manzu"]},
+            {"name": "not_match", "opts": [["hand", "calls"], ["manzu"]]}
+          ],
+          [
+            {"name": "status", "opts": ["void_pinzu"]},
+            {"name": "not_match", "opts": [["hand", "calls"], ["pinzu"]]}
+          ],
+          [
+            {"name": "status", "opts": ["void_souzu"]},
+            {"name": "not_match", "opts": [["hand", "calls"], ["souzu"]]}
+          ]
+        ]
+      ],
+      "actions": [["big_text", "Hu"], ["pause", 1000], ["set_status", "won"], ["reveal_hand"], ["win_by_discard"]],
+      "precedence_over": ["pon", "kan", "riichi", "daiminkan", "ankan", "kakan"]
+    },
+    "chankan": {
+      "display_name": "Hu",
+      "show_when": [
+        "not_our_turn",
+        {"name": "not_status", "opts": ["won"]}, 
+        {"name": "match", "opts": [["hand", "calls", "draw"], ["tenpai"]]},
+        {"name": "last_call_is", "opts": ["kakan"]},
+        {"name": "match", "opts": [["hand", "calls", "last_called_tile"], ["win"]]},
+        [
+          [
+            {"name": "status", "opts": ["void_manzu"]},
+            {"name": "not_match", "opts": [["hand", "calls"], ["manzu"]]}
+          ],
+          [
+            {"name": "status", "opts": ["void_pinzu"]},
+            {"name": "not_match", "opts": [["hand", "calls"], ["pinzu"]]}
+          ],
+          [
+            {"name": "status", "opts": ["void_souzu"]},
+            {"name": "not_match", "opts": [["hand", "calls"], ["souzu"]]}
+          ]
+        ]
+      ],
+      "actions": [["big_text", "Hu"], ["pause", 1000], ["set_status", "won"], ["reveal_hand"], ["win_by_call"]],
+      "precedence_over": ["pon", "kan", "riichi", "daiminkan", "ankan", "kakan"]
+    },
+    "tsumo": {
+      "display_name": "Zimo",
+      "show_when": [
+        "our_turn",
+        {"name": "not_status", "opts": ["won"]}, 
+        {"name": "not_status", "opts": ["round_start"]}, 
+        {"name": "match", "opts": [["hand", "calls", "draw"], ["tenpai"]]},
+        {"name": "match", "opts": [["hand", "calls", "draw"], ["win"]]},
+        [
+          [
+            {"name": "status", "opts": ["void_manzu"]},
+            {"name": "not_match", "opts": [["hand", "calls"], ["manzu"]]}
+          ],
+          [
+            {"name": "status", "opts": ["void_pinzu"]},
+            {"name": "not_match", "opts": [["hand", "calls"], ["pinzu"]]}
+          ],
+          [
+            {"name": "status", "opts": ["void_souzu"]},
+            {"name": "not_match", "opts": [["hand", "calls"], ["souzu"]]}
+          ]
+        ]
+      ],
+      "actions": [["big_text", "Zimo"], ["pause", 1000], ["set_status", "won"], ["reveal_hand"], ["win_by_draw"]],
+      "precedence_over": ["pon", "kan", "riichi", "daiminkan", "ankan", "kakan"]
+    }
+  },
+  "auto_buttons": {
+    "1_auto_sort": {
+      "display_name": "A",
+      "desc": "Automatically sort your hand.",
+      "actions": [["sort_hand"]],
+      "enabled_at_start": true
+    },
+    "2_auto_ron": {
+      "display_name": "R",
+      "desc": "Automatically declare wins.",
+      "actions": [
+        ["when", [{"name": "buttons_include", "opts": ["ron"]}], [["press_button", "ron"]]],
+        ["when", [{"name": "buttons_include", "opts": ["tsumo"]}], [["press_button", "tsumo"]]]
+      ],
+      "enabled_at_start": false
+    },
+    "3_auto_no_call": {
+      "display_name": "C",
+      "desc": "Skip all calls except wins.",
+      "actions": [
+        ["when", [
+            "not_our_turn",
+            {"name": "buttons_include", "opts": ["skip"]},
+            {"name": "buttons_exclude", "opts": ["ron", "chankan"]}
+          ], [["press_button", "skip"]]]
+      ],
+      "enabled_at_start": false
+    },
+    "4_auto_discard": {
+      "display_name": "D",
+      "desc": "Automatically discard your drawn tile.",
+      "actions": [["when", ["our_turn", {"name": "buttons_exclude", "opts": ["tsumo", "ankan", "ankan"]}, "has_draw"], [["discard_draw"]]]],
+      "enabled_at_start": false
+    },
+      // have to figure out how to get the autobutton to discard the leftmost tile
+      // For now, auto_void automatically discards draws of the void suit. Better than nothing.
+    "5_auto_discard_void": {
+      "display_name": "DV",
+      "desc": "Automatically discard your drawn tile if it's of your voided suit.",
+      "actions": [["when",
+          [
+            [
+              {"name": "status", "opts": ["void_manzu"]},
+              {"name": "match", "opts": [["draw"], ["manzu"]]}
+            ],
+            [
+              {"name": "status", "opts": ["void_pinzu"]},
+              {"name": "match", "opts": [["draw"], ["pinzu"]]}
+            ],
+            [
+              {"name": "status", "opts": ["void_souzu"]},
+              {"name": "match", "opts": [["draw"], ["souzu"]]}
+            ]
+          ],
+          [["discard_draw"]]
+        ]
+      ],
+      "enabled_at_start": false
+    }
+  },
+  "interruptible_actions": ["play_tile", "draw", "advance_turn", "self_call", "upgrade_call"],
+  "display_wall": true,
+  "initial_score": 0,
+  "starting_tiles": 13,
+  "four_rows_discards": true,
+  "bloody_end": true,
+  "max_rounds": 4
+}

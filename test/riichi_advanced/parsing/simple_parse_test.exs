@@ -7,7 +7,22 @@ defmodule RiichiAdvanced.SimpleParseTest do
     for ruleset_path <- Path.wildcard(Application.app_dir(:riichi_advanced, "/priv/static/rulesets/**.json")) do
       ruleset = Path.basename(ruleset_path, ".json")
       ruleset_json = ModLoader.get_ruleset_json(ruleset)
-      assert ruleset_json != ""
+      assert ruleset_json not in [nil, "", "{}"]
+    end
+  end
+
+  test "parse all modpacks" do
+    for modpack <- Map.keys(Constants.modpacks()) do
+      ruleset_json = ModLoader.get_ruleset_json(modpack)
+      assert ruleset_json not in [nil, "", "{}"]
+    end
+  end
+
+  test "parse all mahjongscript" do
+    for ruleset_path <- Path.wildcard(Application.app_dir(:riichi_advanced, "/priv/static/rulesets/**.majs")) do
+      ruleset = Path.basename(ruleset_path, ".majs")
+      ruleset_json = ModLoader.get_ruleset_json(ruleset)
+      assert ruleset_json not in [nil, "", "{}"]
     end
   end
 
@@ -54,8 +69,14 @@ defmodule RiichiAdvanced.SimpleParseTest do
         |> Enum.map(&mods[&1].spec)
         mod_specs = mod_specs ++ [mod.spec]
         # IO.inspect(mod_specs)
-        modded = ModLoader.apply_multiple_mods(ruleset_json, mod_specs)
-        assert modded != nil, "Failed to apply mods #{inspect(mod_specs)} to ruleset #{ruleset})"
+        try do
+          modded = ModLoader.apply_multiple_mods(ruleset_json, mod_specs)
+          assert modded != nil, "Failed to apply mods #{inspect(mod_specs)} to ruleset #{ruleset})"
+        rescue
+          _ ->
+            IO.puts("Failed to apply mods #{inspect(mod_specs)} to ruleset #{ruleset})")
+            assert false
+        end
       end
     end
   end

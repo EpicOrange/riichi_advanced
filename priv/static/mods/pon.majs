@@ -1,0 +1,19 @@
+on after_initialization do
+  add_rule("Rules", "Pon", "When any player discards a tile you can use to complete a triplet, you may call Pon to take that tile. Then it becomes your turn to discard.")
+end
+
+define_button pon,
+  display_name: !pon_name, 
+  show_when: not_our_turn
+    and not_no_tiles_remaining
+    and someone_else_just_discarded
+    and call_available,
+  precedence_over: ["chii"],
+  call: [[0, 0]]
+  do
+    big_text(!pon_name)
+    call
+    change_turn("self")
+  end
+
+apply append, "interruptible_actions", "call"

@@ -42,6 +42,7 @@ defmodule JQ do
   end
 
   def query_string_with_string!(payload, query) do
+    # IO.puts(query)
     {fd, query_path} = Temp.open!(%{mode: [:write, :utf8]})
     IO.write(fd, query)
     File.close(fd)
@@ -53,48 +54,50 @@ defmodule JQ do
     end
   end
 
-  def merge_jsons!(json1, json2) do
-    {fd1, json1_path} = Temp.open!(%{mode: [:write, :utf8]})
-    IO.write(fd1, json1)
-    File.close(fd1)
-    {fd2, json2_path} = Temp.open!(%{mode: [:write, :utf8]})
-    IO.write(fd2, json2)
-    File.close(fd2)
+  # deprecated
 
-    try do
-      args = ["-s", ".[0] * .[1]", json1_path, json2_path]
-      case System.cmd("jq", args, stderr_to_stdout: true) do
-        {_, code} = error when is_integer(code) and code != 0 ->
-          raise(SystemCmdException, result: error, command: "jq", args: args)
+  # def merge_jsons!(json1, json2) do
+  #   {fd1, json1_path} = Temp.open!(%{mode: [:write, :utf8]})
+  #   IO.write(fd1, json1)
+  #   File.close(fd1)
+  #   {fd2, json2_path} = Temp.open!(%{mode: [:write, :utf8]})
+  #   IO.write(fd2, json2)
+  #   File.close(fd2)
 
-        {value, code} when is_integer(code) and code == 0 ->
-          result = value
-          unless result, do: raise(NoResultException)
+  #   try do
+  #     args = ["-s", ".[0] * .[1]", json1_path, json2_path]
+  #     case System.cmd("jq", args, stderr_to_stdout: true) do
+  #       {_, code} = error when is_integer(code) and code != 0 ->
+  #         raise(SystemCmdException, result: error, command: "jq", args: args)
 
-          # postprocess the result
-          fd = File.open!(json1_path, [:write, :utf8])
-          IO.write(fd, result)
-          File.close(fd)
-          args = ["formatter.py", json1_path, "2", "180", "8"]
-          case System.cmd("python3", args, stderr_to_stdout: true) do
-            {_, code} = error when is_integer(code) and code != 0 ->
-              raise(SystemCmdException, result: error, command: "python", args: args)
+  #       {value, code} when is_integer(code) and code == 0 ->
+  #         result = value
+  #         unless result, do: raise(NoResultException)
 
-            {value, code} when is_integer(code) and code == 0 ->
-              result = value
-              unless result, do: raise(NoResultException)
-              result
+  #         # postprocess the result
+  #         fd = File.open!(json1_path, [:write, :utf8])
+  #         IO.write(fd, result)
+  #         File.close(fd)
+  #         args = ["formatter.py", json1_path, "2", "180", "8"]
+  #         case System.cmd("python3", args, stderr_to_stdout: true) do
+  #           {_, code} = error when is_integer(code) and code != 0 ->
+  #             raise(SystemCmdException, result: error, command: "python", args: args)
 
-            error ->
-              raise(UnknownException, error)
-          end
-        error ->
-          raise(UnknownException, error)
-      end
-    after
-      File.rm!(json1_path)
-      File.rm!(json2_path)
-    end
-  end
+  #           {value, code} when is_integer(code) and code == 0 ->
+  #             result = value
+  #             unless result, do: raise(NoResultException)
+  #             result
+
+  #           error ->
+  #             raise(UnknownException, error)
+  #         end
+  #       error ->
+  #         raise(UnknownException, error)
+  #     end
+  #   after
+  #     File.rm!(json1_path)
+  #     File.rm!(json2_path)
+  #   end
+  # end
 
 end

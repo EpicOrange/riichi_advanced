@@ -1,0 +1,43 @@
+define_set mixed_pair, ~s"0 1"
+define_set mixed_pair, ~s"0 1"
+define_set mentsu, ~s"0 0 0 | 0 1 2 | 0 10 20"
+define_set taatsu, ~s"0 0 | 0 1 | 0 2 | 0 10"
+
+# welcome to the chanta zone
+define_set terminal_k, ~s"0@terminal 10 20"
+define_set yaochuu_k, ~s"0@terminal 10 20"
+define_match chanta, ~m"exhaustive, (yaochuu_l yaochuu_r yaochuu_t yaochuu_k):4, yaochuu_pair:1" 
+define_match junchan, ~m"exhaustive, (terminal_l terminal_r terminal_t terminal_k):4, terminal_pair:1" 
+# now leaving the chanta zone
+
+# kontsu fu
+apply merge, "constants.calls_fu", %{
+  chon: 1,
+  kapon: 2,
+  kakakan: 8,
+  chon_honors: 1,
+  anfuun: 8,
+  daiminfuun: 4,
+  kafuun: 4
+}
+apply append, "constants.winning_groups_fu", [
+  # anything can be ryanmen now (not honors though)
+  %{groups: ~s"0@winning_tile&tanyao 1 2"},
+  %{groups: ~s"0@winning_tile&terminal 1 2"},
+  %{groups: ~s"0@winning_tile&tanyao -1 -2"},
+  %{groups: ~s"0@winning_tile&terminal -1 -2"},
+  # kontsu wait
+  %{groups: ~s"0@winning_tile 10@tanyao 20@tanyao", value: 3},
+  %{groups: ~s"0@winning_tile 10@yaochuu 20@yaochuu", value: 4}
+]
+apply append, "constants.groups_fu", [
+  %{groups: ~s"0@tanyao 10@tanyao 20@tanyao", value: 2},
+  %{groups: ~s"0@terminal 10@terminal 20@terminal", value: 4},
+  %{groups: ~s"0@jihai 1@jihai 2@jihai", value: 4}
+]
+apply append, "functions.add_scoring_attrs" do
+  add_attr(["hand", "calls", "winning_tile"], ["_jihai"], ["jihai"])
+end
+apply prepend, "functions.calculate_fu[0][3]" do
+  put_calls_in_hand("ton")
+end

@@ -1,0 +1,11 @@
+replace all, "available_presets", %{name: "aka", config: %{man: 1, pin: 1, sou: 1}}, %{name: "aka", config: %{man: 0, pin: 1, sou: 1}}
+replace all, "available_presets", %{name: "sudden_death", config: %{goal: 30000}}, %{name: "sudden_death", config: %{goal: 40000}}
+
+# Mahjong Soul uma: 15/0/-15
+replace all, "available_presets[0]", %{name: "uma", config: %{_1st: 10, _2nd: 5, _3rd: -5, _4th: -10}}, %{name: "uma", config: %{_1st: 15, _2nd: 0, _3rd: -15, _4th: 0}}
+# tenhou.net uma: 20/0/-20
+replace all, "available_presets[1]", %{name: "uma", config: %{_1st: 20, _2nd: 10, _3rd: -10, _4th: -20}}, %{name: "uma", config: %{_1st: 20, _2nd: 0, _3rd: -20, _4th: 0}}
+# Riichi City uma: 20/0/-20
+replace all, "available_presets[2]", %{name: "uma", config: %{_1st: 30, _2nd: 10, _3rd: -10, _4th: -30}}, %{name: "uma", config: %{_1st: 20, _2nd: 0, _3rd: -20, _4th: 0}}
+# Amatsuki Mahjong uma: 10/0/-10
+replace all, "available_presets[3]", %{name: "uma", config: %{_1st: 10, _2nd: 5, _3rd: -5, _4th: -10}}, %{name: "uma", config: %{_1st: 10, _2nd: 0, _3rd: -10, _4th: 0}}

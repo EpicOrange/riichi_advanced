@@ -1,0 +1,257 @@
+# replace closed call check
+replace all, "", ["chii", "pon", "daiminkan", "kakan"], ["ton", "chii", "chon", "chon_honors", "daiminfuun", "pon", "daiminkan", "kapon", "kakakan", "kafuun", "kakan"]
+replace all, "buttons.kakan.show_when", ["kakan"], ["kakan", "kakakan"]
+
+# we need these in case kan mod is not enabled
+def do_kan_draw do
+  shift_tile_to_dead_wall(1)
+  draw(1, "opposite_end")
+end
+# chankan should work on kakakan
+# TODO make last_call_is a constant
+define_button chankan,
+  display_name: "Ron",
+  show_when: not_our_turn
+    and match(["hand", "calls"], ["tenpai"])
+    and status_missing("furiten", "just_reached")
+    and last_call_is("kakan", "kapon", "kakakan", "flower")
+    and match(["hand", "calls", "last_called_tile"], ["win"])
+  do
+    big_text("Ron")
+    pause(1000)
+    reveal_hand
+    win_by_call
+  end
+
+# the calls themselves
+define_button ton,
+  display_name: "Ton",
+  show_when:
+        not_our_turn
+    and not_no_tiles_remaining
+    and (kamicha_discarded or shimocha_discarded)
+    and status_missing("riichi")
+    and call_available,
+  call_conditions: can_discard_after_call,
+  precedence_over: ["chii"],
+  call: [[0]],
+  call_style: %{
+    kamicha: ["call_sideways", 0],
+    shimocha: [0, "call_sideways"]
+  }
+  do
+    big_text("Ton")
+    call
+    change_turn("self")
+  end
+
+define_button chon,
+  display_name: "Chon",
+  show_when:
+        not_our_turn
+    and not_no_tiles_remaining
+    and someone_else_just_discarded
+    and status_missing("riichi")
+    and call_available,
+  call_conditions: can_discard_after_call and not_match(["called_tile"], ~m"(1z 2z 3z 4z 5z 6z 7z):1"),
+  precedence_over: ["ton", "chii", "chon", "chon_honors"],
+  call: [[10, 20]],
+  call_style: %{
+    kamicha: ["call_sideways", 0, 1],
+    toimen: [0, "call_sideways", 1],
+    shimocha: [0, 1, "call_sideways"]
+  }
+  do
+    big_text("Chon")
+    call
+    change_turn("self")
+  end
+
+define_button chon_honors,
+  display_name: "Chon",
+  msg_name: "chon",
+  show_when:
+        not_our_turn
+    and not_no_tiles_remaining
+    and someone_else_just_discarded
+    and status_missing("riichi")
+    and call_available,
+  call_conditions: can_discard_after_call and match(["called_tile"], ~m"(1z 2z 3z 4z 5z 6z 7z):1"),
+  precedence_over: ["ton", "chii", "chon", "chon_honors"],
+  call: [[-2, -1], [-1, 1], [1, 2]],
+  call_style: %{
+    kamicha: ["call_sideways", 0, 1],
+    toimen: [0, "call_sideways", 1],
+    shimocha: [0, 1, "call_sideways"]
+  }
+  do
+    big_text("Chon")
+    call
+    change_turn("self")
+  end
+
+# since chon_honors is basically chii for honors, make it so normal chii can't use honors
+apply append, "buttons.chii.call_conditions", not_match(["called_tile"], ~m"(1z 2z 3z 4z 5z 6z 7z):1")
+
+define_button daiminfuun,
+  display_name: "Fuun",
+  show_when:
+        not_our_turn
+    and not_no_tiles_remaining
+    and someone_else_just_discarded
+    and status_missing("riichi")
+    and call_available,
+  call_conditions: can_discard_after_call and match(["called_tile"], ~m"(1z 2z 3z 4z):1"),
+  precedence_over: ["ton", "chii", "chon", "chon_honors", "daiminfuun"],
+  call: [[1, 2, 3]],
+  call_style: %{
+    kamicha: ["call_sideways", 0, 1],
+    toimen: [0, "call_sideways", 1],
+    shimocha: [0, 1, "call_sideways"]
+  }
+  do
+    big_text("Fuun")
+    set_status("fuun")
+    call
+    change_turn("self")
+    draw
+  end
+
+define_button anfuun,
+  display_name: "Anfuun",
+  show_when:
+        our_turn
+    and not_no_tiles_remaining
+    and has_draw
+    and status_missing("just_reached")
+    and (status_missing("riichi") or not_call_would_change_waits("win"))
+    and self_call_available,
+  call_conditions: match(["called_tile"], ~m"(1z 2z 3z 4z):1") and (status_missing("riichi") or not_call_changes_waits("win")),
+  call: [[1, 2, 3]],
+  call_style: %{
+    self: [["1x", 2], 0, 1, ["1x", 3]]
+  }
+  do
+    big_text("Fuun")
+    set_status("fuun")
+    self_call
+    draw
+  end
+
+define_button kapon,
+  display_name: "Pon",
+  show_when:
+        our_turn
+    and not_no_tiles_remaining
+    and has_draw
+    and status_missing("just_reached")
+    and (status_missing("riichi") or not_call_would_change_waits("win"))
+    and can_upgrade_call,
+  call_conditions: status_missing("riichi") or not_call_changes_waits("win"),
+  call: [[0, 0]],
+  upgrades: "ton",
+  call_style: %{
+    kamicha: [["sideways", 0], "call_sideways", 1],
+    shimocha: [0, ["sideways", 1], "call_sideways"]
+  }
+  do
+    big_text("Pon")
+    set_status("kan", "can_chankan")
+    upgrade_call
+    unset_status("can_chankan")
+  end
+
+define_button kakakan,
+  display_name: "Kan",
+  show_when:
+        our_turn
+    and not_no_tiles_remaining
+    and has_draw
+    and status_missing("just_reached")
+    and (status_missing("riichi") or not_call_would_change_waits("win"))
+    and can_upgrade_call,
+  call_conditions: status_missing("riichi") or not_call_changes_waits("win"),
+  call: [[0, 0, 0]],
+  upgrades: "kapon",
+  call_style: %{
+    kamicha: [["sideways", 0], ["sideways", 1], "call_sideways", 2],
+    shimocha: [0, ["sideways", 1], ["sideways", 2], "call_sideways"]
+  }
+  do
+    big_text("Pon")
+    set_status("kan", "can_chankan")
+    upgrade_call
+    unset_status("can_chankan")
+    do_kan_draw
+  end
+
+define_button kafuun,
+  display_name: "Fuun",
+  show_when:
+        our_turn
+    and not_no_tiles_remaining
+    and has_draw
+    and status_missing("just_reached")
+    and (status_missing("riichi") or not_call_would_change_waits("win"))
+    and can_upgrade_call,
+  call_conditions:
+        can_discard_after_call
+    and match(["called_tile"], ~m"(1z 2z 3z 4z):1")
+    and (status_missing("riichi") or not_call_changes_waits("win")),
+  call: [[1, 2, 3]],
+  upgrades: "chon_honors",
+  call_style: %{
+    kamicha: [["sideways", 0], "call_sideways", 1, 2],
+    toimen: [0, ["sideways", 1], "call_sideways", 2],
+    shimocha: [0, 1, ["sideways", 2], "call_sideways"]
+  }
+  do
+    big_text("Fuun")
+    set_status("fuun")
+    upgrade_call
+    draw
+  end
+
+define_button chanfuun,
+  display_name: "Ron",
+  show_when:
+        not_our_turn
+    and match(["hand", "calls"], ["tenpai", "kokushi_tenpai"])
+    and status_missing("furiten")
+    and status_missing("just_reached")
+    and last_call_is("kafuun")
+    and match(["hand", "calls", "last_called_tile"], ["win"]),
+  call_conditions:
+        can_discard_after_call
+    and match(["called_tile"], ~m"(1z 2z 3z 4z):1")
+    and (status_missing("riichi") or not_call_changes_waits("win")),
+  call: [[1, 2, 3]],
+  upgrades: "chon_honors",
+  precedence_over: ["ton", "chii", "chon", "chon_honors", "daiminfuun", "pon", "daiminkan"],
+  call_style: %{
+    kamicha: [["sideways", 0], "call_sideways", 1, 2],
+    toimen: [0, ["sideways", 1], "call_sideways", 2],
+    shimocha: [0, 1, ["sideways", 2], "call_sideways"]
+  }
+  do
+    big_text("Ron")
+    pause(1000)
+    reveal_hand
+    set_status("chanfuun")
+    win_by_call
+  end
+
+# clear kan/fuun status on discard passing
+apply prepend, "functions.discard_passed" do
+  as others do
+    unset_status("kan", "fuun")
+  end
+end
+
+# update precedence
+apply append, "buttons.chii.precedence_over", ["ton"]
+apply append, "buttons.pon.precedence_over", ["ton", "chon", "chon_honors", "daiminfuun"]
+apply append, "buttons.daiminkan.precedence_over", ["ton", "chon", "chon_honors", "daiminfuun"]
+apply append, "buttons.ron.precedence_over", ["ton", "chon", "chon_honors", "daiminfuun"]
+apply append, "buttons.chankan.precedence_over", ["ton", "chon", "chon_honors", "daiminfuun"]
+apply append, "buttons.notexist.precedence_over", ["ton", "chon", "chon_honors", "daiminfuun"]

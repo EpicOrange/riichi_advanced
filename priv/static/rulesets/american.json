@@ -2,16 +2,30 @@
   "custom_style": {
     "tile_indices": {"5z": "", "0z": "0", "1f": "F", "2f": "F", "3f": "F", "4f": "F", "1g": "F", "2g": "F", "3g": "F", "4g": "F", "1j": "J"}
   },
-  "default_mods": ["show_waits"],
+  "default_mods": ["american/am_card_nmjl_2025", "show_waits"],
+      // Reminder: Each year, add the next year's Card, and then switch the default mod over.
   "available_mods": [
+    "Table Rules",
+    {"id": "american/zombie_blanks", "name": "Zombie Blanks", "config": [{"type": "dropdown", "name": "count", "values": [2,4,6,8,10], "default": 4}], "desc": "Adds some \"Zombie Blanks\" to the wall, which may be swapped out for already-discarded tiles."},
+    {"id": "american/am_num_jokers_flowers", "name": "Different Number of Jokers/Flowers", "config": [{"type": "dropdown", "name": "jokers", "values": [0,2,4,6,8,10,12,14,16], "default": 8}, {"type": "dropdown", "name": "flowers", "values": [0,2,4,6,8,10,12,14,16,18,20,22,24], "default": 8}], "desc": "Change the numbers of jokers and flowers. Note that this doesn't allow you to play by pre-1971 rules, where flowers are treated as jokers."},
+    {"id": "american/am_PIE", "name": "PIE", "config": [{"type": "dropdown", "name": "starting_points", "values": [200,400,600,800,1000,1200], "default": 600}], "desc": "Each player starts with a set amount of points. Players' point totals can't go negative. If a player runs out of points, they need not pay."},
+    {"id": "american/no_charleston", "name": "No Charleston", "desc": "Disables the initial Charleston pass."},
+    "Card",
+    {"id": "american/am_card_nmjl_2020", "conflicts": ["american/am_card_nmjl_2021", "american/am_card_nmjl_2022", "american/am_card_nmjl_2023", "american/am_card_nmjl_2024", "american/am_card_nmjl_2025", "american/am_card_ILoveMahj", "american/am_card_ATeacherFirst", "american/am_card_MahjLife", "american/BETA_am_card_AMJForEveryone", "american/am_card_free"], "name": "NMJL 2020 Card", "desc": "Play with the NMJL 2020 Card."},
+    {"id": "american/am_card_nmjl_2021", "conflicts": ["american/am_card_nmjl_2020", "american/am_card_nmjl_2022", "american/am_card_nmjl_2023", "american/am_card_nmjl_2024", "american/am_card_nmjl_2025", "american/am_card_ILoveMahj", "american/am_card_ATeacherFirst", "american/am_card_MahjLife", "american/BETA_am_card_AMJForEveryone", "american/am_card_free"], "name": "NMJL 2021 Card", "desc": "Play with the NMJL 2021 Card."},
+    {"id": "american/am_card_nmjl_2022", "conflicts": ["american/am_card_nmjl_2020", "american/am_card_nmjl_2021", "american/am_card_nmjl_2023", "american/am_card_nmjl_2024", "american/am_card_nmjl_2025", "american/am_card_ILoveMahj", "american/am_card_ATeacherFirst", "american/am_card_MahjLife", "american/BETA_am_card_AMJForEveryone", "american/am_card_free"], "name": "NMJL 2022 Card", "desc": "Play with the NMJL 2022 Card."},
+    {"id": "american/am_card_nmjl_2023", "conflicts": ["american/am_card_nmjl_2020", "american/am_card_nmjl_2021", "american/am_card_nmjl_2022", "american/am_card_nmjl_2024", "american/am_card_nmjl_2025", "american/am_card_ILoveMahj", "american/am_card_ATeacherFirst", "american/am_card_MahjLife", "american/BETA_am_card_AMJForEveryone", "american/am_card_free"], "name": "NMJL 2023 Card", "desc": "Play with the NMJL 2023 Card."},
+    {"id": "american/am_card_nmjl_2024", "conflicts": ["american/am_card_nmjl_2020", "american/am_card_nmjl_2021", "american/am_card_nmjl_2022", "american/am_card_nmjl_2023", "american/am_card_nmjl_2025", "american/am_card_ILoveMahj", "american/am_card_ATeacherFirst", "american/am_card_MahjLife", "american/BETA_am_card_AMJForEveryone", "american/am_card_free"], "name": "NMJL 2024 Card", "desc": "Play with the NMJL 2024 Card."},
+    {"id": "american/am_card_nmjl_2025", "conflicts": ["american/am_card_nmjl_2020", "american/am_card_nmjl_2021", "american/am_card_nmjl_2022", "american/am_card_nmjl_2023", "american/am_card_nmjl_2024", "american/am_card_ILoveMahj", "american/am_card_ATeacherFirst", "american/am_card_MahjLife", "american/BETA_am_card_AMJForEveryone", "american/am_card_free"], "name": "NMJL 2025 Card", "desc": "Play with the NMJL 2025 Card."},
+    {"id": "american/am_card_ILoveMahj", "conflicts": ["american/am_card_nmjl_2022", "american/am_card_nmjl_2023", "american/am_card_nmjl_2024", "american/am_card_nmjl_2025", "american/am_card_ATeacherFirst", "american/am_card_MahjLife", "american/BETA_am_card_AMJForEveryone", "american/am_card_free"], "name": "ILM Card", "desc": "Play with the free ILoveMahj Card."},
+    {"id": "american/am_card_ATeacherFirst", "conflicts": ["american/am_card_nmjl_2020", "american/am_card_nmjl_2021", "american/am_card_nmjl_2022", "american/am_card_nmjl_2023", "american/am_card_nmjl_2024", "american/am_card_nmjl_2025", "american/am_card_ILoveMahj", "american/am_card_MahjLife", "american/BETA_am_card_AMJForEveryone", "american/am_card_free"], "name": "ATF Card", "desc": "Play with the free ATeacherFirst Card."},
+    {"id": "american/am_card_MahjLife", "conflicts": ["american/am_card_nmjl_2020", "american/am_card_nmjl_2021", "american/am_card_nmjl_2022", "american/am_card_nmjl_2023", "american/am_card_nmjl_2024", "american/am_card_nmjl_2025", "american/am_card_ILoveMahj", "american/am_card_ATeacherFirst", "american/BETA_am_card_AMJForEveryone", "american/am_card_free"], "name": "MahjLife Card", "desc": "Play with the free MahjLife Card."},
+    {"id": "american/BETA_am_card_AMJForEveryone", "conflicts": ["american/am_card_nmjl_2020", "american/am_card_nmjl_2021", "american/am_card_nmjl_2022", "american/am_card_nmjl_2023", "american/am_card_nmjl_2024", "american/am_card_nmjl_2025", "american/am_card_ILoveMahj", "american/am_card_ATeacherFirst", "american/am_card_MahjLife", "american/am_card_free"], "name": "AMJFE Card (beta)", "desc": "Play with the free American Mah Jongg for Everyone Card. The 75-point hand is not yet implemented."},
+    {"id": "american/am_card_free", "conflicts": ["american/am_card_nmjl_2020", "american/am_card_nmjl_2021", "american/am_card_nmjl_2022", "american/am_card_nmjl_2023", "american/am_card_nmjl_2024", "american/am_card_nmjl_2025", "american/am_card_ILoveMahj", "american/am_card_ATeacherFirst", "american/am_card_MahjLife", "american/BETA_am_card_AMJForEveryone"], "name": "Card-Free (beta)", "desc": "Play with card-free rules: your hand must consist of two types of melds only, and these melds must match one of the following patterns: Any Like Numbers, NEWS, NS, EW, 369, 2468, 135, 357, 579, or Consecutive Run."},
+    "Miscellaneous",
     {"id": "show_waits", "name": "Show Waits", "desc": "Add some UI that shows waits."},
     {"id": "american/show_nearest_american_hand", "name": "Show Nearest Hands", "desc": "Add some UI that shows nearest hands."},
-    {"id": "open_hands", "name": "Open Hands", "desc": "Everyone plays with tiles shown."},
-    {"id": "american/zombie_blanks", "name": "Zombie Blanks", "config": [{"type": "dropdown", "name": "count", "values": [2,4,6,8,10], "default": 4}], "desc": "Adds some \"Zombie Blanks\" to the wall, which may be swapped out for already-discarded tiles."},
-    {"id": "american/am_card_ILoveMahj", "conflicts": ["am_card_ATeacherFirst", "am_card_MahjLife", "BETA_am_card_AMJForEveryone"], "name": "ILM Card", "desc": "Play with the free ILoveMahj Card."},
-    {"id": "american/am_card_ATeacherFirst", "conflicts": ["am_card_ILoveMahj", "am_card_MahjLife", "BETA_am_card_AMJForEveryone"], "name": "ATF Card", "desc": "Play with the free ATeacherFirst Card."},
-    {"id": "american/am_card_MahjLife", "conflicts": ["am_card_ILoveMahj", "am_card_ATeacherFirst", "BETA_am_card_AMJForEveryone"], "name": "MahjLife Card", "desc": "Play with the free MahjLife Card."},
-    {"id": "american/BETA_am_card_AMJForEveryone", "conflicts": ["am_card_ILoveMahj", "am_card_ATeacherFirst", "am_card_MahjLife"], "name": "AMJFE Card (beta)", "desc": "Play with the free American Mah Jongg for Everyone Card. The 75-point hand is not yet implemented."}
+    {"id": "open_hands", "name": "Open Hands", "desc": "Everyone plays with tiles shown."}
   ],
   "display_name": "American",
   "tutorial_link": "https://github.com/EpicOrange/riichi_advanced/blob/main/documentation/american.md",
@@ -54,7 +68,7 @@
            "1j", "1j", "1j", "1j",
            "1j", "1j", "1j", "1j"],
   "set_definitions": {
-    "pair": [0, 0]
+    "pair": [[0, 0]]
   },
   "win_definition": [
     // 2024
@@ -102,7 +116,7 @@
     "2024a NN EW SS 2024b", // concealed
     // Quints
     "FF XXXXX0a XX1a XXXXX2a",
-    "XXXXX0a ZZZZ XXXXX1b", "XXXXX0a ZZZZ XXXXX2b", "XXXXX0a ZZZZ XXXXX3b", "XXXXX0a ZZZZ XXXXX4b", "XXXXX0a ZZZZ XXXXX5b", "XXXXX0a ZZZZ XXXXX6b", "XXXXX0a ZZZZ XXXXX7b", "XXXXX0a ZZZZ XXXXX8b",
+    "XXXXX0a ZZZZ XXXXX1b|XXXXX2b|XXXXX3b|XXXXX4b|XXXXX5b|XXXXX6b|XXXXX7b|XXXXX8b",
     "XX0a XXXXX1a XX0b XXXXX1b",
     "FFFFF DDDDa XXXXX0b",
     // Consecutive Run
@@ -158,7 +172,7 @@
     "FFFF 33a 66a 999a DDDb",
     // Quints
     "FF XXXXX0a XX1a XXXXX2a",
-    "XXXXX0a ZZZZ XXXXX1b", "XXXXX0a ZZZZ XXXXX2b", "XXXXX0a ZZZZ XXXXX3b", "XXXXX0a ZZZZ XXXXX4b", "XXXXX0a ZZZZ XXXXX5b", "XXXXX0a ZZZZ XXXXX6b", "XXXXX0a ZZZZ XXXXX7b", "XXXXX0a ZZZZ XXXXX8b",
+    "XXXXX0a ZZZZ XXXXX1b|XXXXX2b|XXXXX3b|XXXXX4b|XXXXX5b|XXXXX6b|XXXXX7b|XXXXX8b",
     "XX0a XXXXX1a XX0b XXXXX1b",
     "FFFFF DDDDa XXXXX0b",
     // Consecutive Run
@@ -223,7 +237,7 @@
     { "display_name": "Singles and Pairs #5", "value": 50, "when": [{"name": "has_no_call_named", "opts": ["am_pung", "am_kong", "am_quint"]}, {"name": "match", "opts": [["hand", "call_tiles", "winning_tile"], ["XX0a XX1a XX2a XX3a XX4a DDb DDc"]]} ] },
     { "display_name": "Singles and Pairs #6", "value": 75, "when": [{"name": "has_no_call_named", "opts": ["am_pung", "am_kong", "am_quint"]}, {"name": "match", "opts": [["hand", "call_tiles", "winning_tile"], ["2024a NN EW SS 2024b"]]} ] },
     { "display_name": "Quints #1", "value": 40, "when": [{"name": "match", "opts": [["hand", "call_tiles", "winning_tile"], ["FF XXXXX0a XX1a XXXXX2a"]]}] },
-    { "display_name": "Quints #2", "value": 40, "when": [{"name": "match", "opts": [["hand", "call_tiles", "winning_tile"], ["XXXXX0a ZZZZ XXXXX1b", "XXXXX0a ZZZZ XXXXX2b", "XXXXX0a ZZZZ XXXXX3b", "XXXXX0a ZZZZ XXXXX4b", "XXXXX0a ZZZZ XXXXX5b", "XXXXX0a ZZZZ XXXXX6b", "XXXXX0a ZZZZ XXXXX7b", "XXXXX0a ZZZZ XXXXX8b"]]}] },
+    { "display_name": "Quints #2", "value": 40, "when": [{"name": "match", "opts": [["hand", "call_tiles", "winning_tile"], ["XXXXX0a ZZZZ XXXXX1b|XXXXX2b|XXXXX3b|XXXXX4b|XXXXX5b|XXXXX6b|XXXXX7b|XXXXX8b"]]}] },
     { "display_name": "Quints #3", "value": 45, "when": [{"name": "match", "opts": [["hand", "call_tiles", "winning_tile"], ["XX0a XXXXX1a XX0b XXXXX1b"]]}] },
     { "display_name": "Quints #4", "value": 40, "when": [{"name": "match", "opts": [["hand", "call_tiles", "winning_tile"], ["FFFFF DDDDa XXXXX0b"]]}] },
     { "display_name": "Consecutive Run #1", "value": 25, "when": [{"name": "match", "opts": [["hand", "call_tiles", "winning_tile"], ["111a 22a 3333a 44a 555a", "555a 66a 7777a 88a 999a"]]}] },
@@ -313,7 +327,7 @@
     "actions": [
       ["when", [{"name": "status", "opts": ["blind_pass_left"]}], [
         ["unset_status_all", "blind_pass_left"],
-        ["as", "everyone", [["delete_tiles", "1x"]]],
+        ["as", "everyone", [["delete_tiles", {"hand": ["1x"], "draw": ["1x"]}]]],
         ["as", "everyone", [
           ["set_counter", "to_pass", 3],
           ["subtract_counter", "to_pass", "count_draws", "kamicha"]
@@ -325,7 +339,7 @@
       ]],
       ["when", [{"name": "status", "opts": ["blind_pass_right"]}], [
         ["unset_status_all", "blind_pass_right"],
-        ["as", "everyone", [["delete_tiles", "1x"]]],
+        ["as", "everyone", [["delete_tiles", {"hand": ["1x"], "draw": ["1x"]}]]],
         ["as", "everyone", [
           ["set_counter", "to_pass", 3],
           ["subtract_counter", "to_pass", "count_draws", "shimocha"]
@@ -347,7 +361,7 @@
       ]]
     ]
   },
-  "before_win": {
+  "after_scoring": {
     "actions": [
       // jokerless bonus
       ["when", [
@@ -355,7 +369,12 @@
         {"name": "not_match", "opts": [["hand", "call_tiles", "winning_tile"], ["singles_win"]]}
       ], [
         ["push_message", "gets double score for a jokerless hand"],
-        ["set_counter_all", "delta_score_multiplier", 2]
+        ["modify_payout", "all", 2, "multiply"]
+      ]],
+      // on wins by dicard, engine splits score evenly across all 3 players,
+      // this undoes that
+      ["when", ["won_by_discard"], [
+        ["modify_payout", "everyone", 3, "multiply"]
       ]]
     ]
   },
@@ -584,7 +603,7 @@
       "actions": [
         ["big_text", "Mah Jongg"], ["pause", 1000], ["reveal_hand"], ["win_by_draw"]
       ],
-      "precedence_over": ["am_pung", "am_kong", "am_quint"]
+      "precedence_over": ["1_am_pung", "2_am_kong", "3_am_quint"]
     },
     "mahjong_draw": {
       "display_name": "Mah Jongg",
@@ -601,7 +620,7 @@
       "actions": [
         ["big_text", "Mah Jongg"], ["pause", 1000], ["reveal_hand"], ["win_by_draw"]
       ],
-      "precedence_over": ["am_pung", "am_kong", "am_quint"]
+      "precedence_over": ["1_am_pung", "2_am_kong", "3_am_quint"]
     },
     "mahjong_discard": {
       "display_name": "Mah Jongg",
@@ -619,7 +638,7 @@
       "actions": [
         ["big_text", "Mah Jongg"], ["pause", 1000], ["reveal_hand"], ["win_by_discard"]
       ],
-      "precedence_over": ["am_pung", "am_kong", "am_quint", "mahjong_discard"]
+      "precedence_over": ["1_am_pung", "2_am_kong", "3_am_quint", "mahjong_discard"]
     },
     // TODO: Change push messages to mention player's names instead of just saying the player directions.
     "declare_dead_0_shimocha": {

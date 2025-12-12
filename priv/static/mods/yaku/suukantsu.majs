@@ -1,0 +1,9 @@
+on after_initialization do
+  if equals(!list, "yakuman") do
+    add_rule("Limit", "$name", "You called %{kan} four times.", %{name: !name, kan: !kan_name})
+  else
+    add_rule("$value $han", "$name", "You called %{kan} four times.", %{value: !value, han: !han, name: !name, kan: !kan_name})
+  end
+end
+
+define_yaku !list, !name, !value, match(["calls"], ~m"(daiminkan ankan kakan):4")

@@ -1,0 +1,133 @@
+define_set am_pung, ~s"0 0 0"
+define_set am_kong, ~s"0 0 0 0"
+define_set am_quint, ~s"0 0 0 0 0"
+define_set am_news_kong, ~s"1z 2z 3z 4z"
+define_set am_dragon_pung, ~s"0z 6z 7z"
+define_set am_dragons_wings, ~s"1s 1s 0z 0z 0z 0z 6z 6z 6z 6z 7z 7z 7z 7z"
+
+# category
+define_match any_like_numbers_true, ~a"X0a X0b X0c"
+define_match any_like_numbers_false, ~a"NN|EE|WW|SS", ~a"X0 X1|X0 X2|X0 X3|X0 X4|X0 X5|X0 X6|X0 X7|X0 X8"
+define_match winds_news_true, ~a"NN EE WW SS"
+define_match winds_news_false, ~a"X0"
+define_match winds_ns_true, ~a"NN SS"
+define_match winds_ns_false, ~a"X0", ~a"EE|WW"
+define_match winds_ew_true, ~a"EE WW"
+define_match winds_ew_false, ~a"X0", ~a"NN|SS"
+define_match num_369_true, ~a"3 6 9"
+define_match num_369_false, ~a"1|2|4|5|7|8|NN|EE|WW|SS"
+define_match num_2468_true, ~a"2 4 6", ~a"4 6 8"
+define_match num_2468_false, ~a"1|3|5|7|9|NN|EE|WW|SS"
+define_match num_135_true, ~a"1 3 5"
+define_match num_135_false, ~a"2|4|6|8|9|NN|EE|WW|SS"
+define_match num_579_true, ~a"5 7 9"
+define_match num_579_false, ~a"2|4|6|8|1|NN|EE|WW|SS"
+define_match num_357_true, ~a"3 5 7"
+define_match num_357_false, ~a"2|4|6|8|1|9|NN|EE|WW|SS"
+define_match consecutive_run_34_true, ~a"X0 X1 X2"
+define_match consecutive_run_34_false, ~a"X0 X4|X0 X5|X0 X6|X0 X7|X0 X8", ~a"NN|EE|WW|SS"
+define_match consecutive_run_56_true, ~a"X0 X1 X2 X3 X4"
+define_match consecutive_run_56_false, ~a"X0 X6|X0 X7|X0 X8", ~a"NN|EE|WW|SS"
+
+# block pattern
+# 3 unique blocks
+define_match blocks_7, ~m"exhaustive, (am_pung am_dragon_pung):2, am_quint:1"
+define_match blocks_8, ~m"exhaustive, (am_kong am_news_kong):1, am_quint:2"
+# 4 unique blocks
+define_match blocks_1, ~m"exhaustive, pair:1, (am_kong am_news_kong):3"
+define_match blocks_6, ~m"exhaustive, pair:2, am_quint:2"
+define_match blocks_9, ~m"exhaustive, (am_pung am_dragon_pung):2, (am_kong am_news_kong):2"
+# 5 unique blocks
+define_match blocks_2, ~m"exhaustive, pair:3, (am_kong am_news_kong):2"
+define_match blocks_4, ~m"exhaustive, pair:1, (am_pung am_dragon_pung):4"
+# 6 unique blocks
+define_match blocks_3, ~m"exhaustive, pair:5, (am_kong am_news_kong):1"
+define_match blocks_5, ~m"exhaustive, pair:4, (am_pung am_dragon_pung):2"
+
+define_match am_dragons_love, ~a"DDDDa DDDDb FFF FFF"
+define_match am_dragons_wings, ~m"am_dragons_wings:1"
+define_match am_dragons_breath, ~a"NN EE WW SS RR GG 00"
+define_match dragon_hand_win, "am_dragons_love", "am_dragons_wings", "am_dragons_breath"
+
+# unique tiles
+on after_start do
+  tag_tiles("flower", ["1f", "2f", "3f", "4f", "1g", "2g", "3g", "4g"])
+  add_attr_tagged("flower", ["_flower"])
+end
+define_set unique_tile, ~s"""
+    1m | 2m | 3m | 4m | 5m | 6m | 7m | 8m | 9m
+  | 1p | 2p | 3p | 4p | 5p | 6p | 7p | 8p | 9p
+  | 1s | 2s | 3s | 4s | 5s | 6s | 7s | 8s | 9s
+  | 1z | 2z | 3z | 4z | 0z | 6z | 7z | any@flower
+  """
+define_match unique_3, ~m"(unique unique_tile):3"
+define_match unique_4, ~m"(unique unique_tile):4"
+define_match unique_5, ~m"(unique unique_tile):5"
+define_match unique_6, ~m"(unique unique_tile):6"
+
+define_yaku yaku, "Base Value", 25, not_match(["hand", "call_tiles", "winning_tile"], ["dragon_hand_win"])
+define_yaku yaku, "Quints", 5, match(["hand", "call_tiles", "winning_tile"], ~m"am_quint:1")
+define_yaku yaku, "Quints", 5, match(["hand", "call_tiles", "winning_tile"], ~m"am_quint:2")
+define_yaku yaku, "Pure", 5, not_match(["hand", "call_tiles", "winning_tile"], ~m"(1z 2z 3z 4z 0z 6z 7z any@flower):1")
+define_yaku yaku, "Suit", 5,
+     winning_hand_consists_of("1m","2m","3m","4m","5m","6m","7m","8m","9m","1z","2z","3z","4z","7z")
+  or winning_hand_consists_of("1p","2p","3p","4p","5p","6p","7p","8p","9p","1z","2z","3z","4z","0z")
+  or winning_hand_consists_of("1s","2s","3s","4s","5s","6s","7s","8s","9s","1z","2z","3z","4z","6z")
+define_yaku yaku, "Concealed", 10, has_no_call_named("am_pung", "am_kong", "am_quint")
+
+apply delete, "buttons.mahjong_heavenly.show_when", "is_tenpai_american"
+apply delete, "buttons.mahjong_draw.show_when", "is_tenpai_american"
+apply delete, "buttons.mahjong_discard.show_when", "is_tenpai_american"
+
+# the empty match always matches
+set open_win_definition, ~m""
+set win_definition, ~m""
+apply set, "score_calculation.arrange_american_yaku", false
+apply set, "score_calculation.highest_scoring_yaku_only", false
+
+define_const win_con_draw, match(["hand", "call_tiles", "draw"], ["dragon_hand_win"])
+    or ((
+       (match(["hand", "call_tiles", "draw"], ["unique_3"]) and match(["hand", "call_tiles", "draw"], ["blocks_7", "blocks_8"]))
+    or (match(["hand", "call_tiles", "draw"], ["unique_4"]) and match(["hand", "call_tiles", "draw"], ["blocks_1", "blocks_6", "blocks_9"]))
+    or (match(["hand", "call_tiles", "draw"], ["unique_5"]) and match(["hand", "call_tiles", "draw"], ["blocks_2", "blocks_4"]))
+    or (match(["hand", "call_tiles", "draw"], ["unique_6"]) and match(["hand", "call_tiles", "draw"], ["blocks_3", "blocks_5"]))
+    ) and (
+       (match(["hand", "call_tiles", "draw"], ["any_like_numbers_true"]) and not_match(["hand", "call_tiles", "draw"], ["any_like_numbers_false"]))
+    or (match(["hand", "call_tiles", "draw"], ["winds_news_true"]) and not_match(["hand", "call_tiles", "draw"], ["winds_news_false"]))
+    or (match(["hand", "call_tiles", "draw"], ["winds_ns_true"]) and not_match(["hand", "call_tiles", "draw"], ["winds_ns_false"]))
+    or (match(["hand", "call_tiles", "draw"], ["winds_ew_true"]) and not_match(["hand", "call_tiles", "draw"], ["winds_ew_false"]))
+    or (match(["hand", "call_tiles", "draw"], ["num_369_true"]) and not_match(["hand", "call_tiles", "draw"], ["num_369_false"]))
+    or (match(["hand", "call_tiles", "draw"], ["num_2468_true"]) and not_match(["hand", "call_tiles", "draw"], ["num_2468_false"]))
+    or (match(["hand", "call_tiles", "draw"], ["num_135_true"]) and not_match(["hand", "call_tiles", "draw"], ["num_135_false"]))
+    or (match(["hand", "call_tiles", "draw"], ["num_579_true"]) and not_match(["hand", "call_tiles", "draw"], ["num_579_false"]))
+    or (match(["hand", "call_tiles", "draw"], ["num_357_true"]) and not_match(["hand", "call_tiles", "draw"], ["num_357_false"]))
+    or (match(["hand", "call_tiles", "draw"], ["consecutive_run_34_true"]) and not_match(["hand", "call_tiles", "draw"], ["consecutive_run_34_false"]))
+    or (match(["hand", "call_tiles", "draw"], ["consecutive_run_56_true"]) and not_match(["hand", "call_tiles", "draw"], ["consecutive_run_56_false"]))
+  ))
+
+define_const win_con_discard, match(["hand", "call_tiles", "last_discard"], ["dragon_hand_win"])
+    or ((
+       (match(["hand", "call_tiles", "last_discard"], ["unique_3"]) and match(["hand", "call_tiles", "last_discard"], ["blocks_7", "blocks_8"]))
+    or (match(["hand", "call_tiles", "last_discard"], ["unique_4"]) and match(["hand", "call_tiles", "last_discard"], ["blocks_1", "blocks_6", "blocks_9"]))
+    or (match(["hand", "call_tiles", "last_discard"], ["unique_5"]) and match(["hand", "call_tiles", "last_discard"], ["blocks_2", "blocks_4"]))
+    or (match(["hand", "call_tiles", "last_discard"], ["unique_6"]) and match(["hand", "call_tiles", "last_discard"], ["blocks_3", "blocks_5"]))
+    ) and (
+       (match(["hand", "call_tiles", "last_discard"], ["any_like_numbers_true"]) and not_match(["hand", "call_tiles", "last_discard"], ["any_like_numbers_false"]))
+    or (match(["hand", "call_tiles", "last_discard"], ["winds_news_true"]) and not_match(["hand", "call_tiles", "last_discard"], ["winds_news_false"]))
+    or (match(["hand", "call_tiles", "last_discard"], ["winds_ns_true"]) and not_match(["hand", "call_tiles", "last_discard"], ["winds_ns_false"]))
+    or (match(["hand", "call_tiles", "last_discard"], ["winds_ew_true"]) and not_match(["hand", "call_tiles", "last_discard"], ["winds_ew_false"]))
+    or (match(["hand", "call_tiles", "last_discard"], ["num_369_true"]) and not_match(["hand", "call_tiles", "last_discard"], ["num_369_false"]))
+    or (match(["hand", "call_tiles", "last_discard"], ["num_2468_true"]) and not_match(["hand", "call_tiles", "last_discard"], ["num_2468_false"]))
+    or (match(["hand", "call_tiles", "last_discard"], ["num_135_true"]) and not_match(["hand", "call_tiles", "last_discard"], ["num_135_false"]))
+    or (match(["hand", "call_tiles", "last_discard"], ["num_579_true"]) and not_match(["hand", "call_tiles", "last_discard"], ["num_579_false"]))
+    or (match(["hand", "call_tiles", "last_discard"], ["num_357_true"]) and not_match(["hand", "call_tiles", "last_discard"], ["num_357_false"]))
+    or (match(["hand", "call_tiles", "last_discard"], ["consecutive_run_34_true"]) and not_match(["hand", "call_tiles", "last_discard"], ["consecutive_run_34_false"]))
+    or (match(["hand", "call_tiles", "last_discard"], ["consecutive_run_56_true"]) and not_match(["hand", "call_tiles", "last_discard"], ["consecutive_run_56_false"]))
+  ))
+
+apply append, "buttons.mahjong_heavenly.show_when", +@win_con_draw
+apply append, "buttons.mahjong_draw.show_when", +@win_con_draw
+apply append, "buttons.mahjong_discard.show_when", +@win_con_discard
+replace all, "buttons.mahjong_heavenly.show_when", "is_tenpai_american", "true"
+replace all, "buttons.mahjong_discard.show_when", "is_tenpai_american", "true"
+replace all, "buttons.mahjong_draw.show_when", "is_tenpai_american", "true"

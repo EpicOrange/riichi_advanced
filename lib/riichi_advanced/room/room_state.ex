@@ -13,7 +13,41 @@ defmodule RiichiAdvanced.RoomState do
   end
 
   defmodule Room do
-    @initial_textarea Delta.Op.insert("{}")
+    @initial_textarea """
+    # check out the documentation link above to see how this works!
+
+    set wall, ["1m", "1m", "1m", "1m", "2m", "2m", "2m", "2m", "3m", "3m", "3m", "3m", "4m", "4m", "4m", "4m", "5m", "5m", "5m", "5m", "6m", "6m", "6m", "6m", "7m", "7m", "7m", "7m", "8m", "8m", "8m", "8m", "9m", "9m", "9m", "9m",
+               "1p", "1p", "1p", "1p", "2p", "2p", "2p", "2p", "3p", "3p", "3p", "3p", "4p", "4p", "4p", "4p", "5p", "5p", "5p", "5p", "6p", "6p", "6p", "6p", "7p", "7p", "7p", "7p", "8p", "8p", "8p", "8p", "9p", "9p", "9p", "9p",
+               "1s", "1s", "1s", "1s", "2s", "2s", "2s", "2s", "3s", "3s", "3s", "3s", "4s", "4s", "4s", "4s", "5s", "5s", "5s", "5s", "6s", "6s", "6s", "6s", "7s", "7s", "7s", "7s", "8s", "8s", "8s", "8s", "9s", "9s", "9s", "9s"]
+
+    set starting_tiles, 13
+
+    on after_turn_change do
+      if no_tiles_remaining do ryuukyoku else draw end
+    end
+
+    define_auto_button auto_sort,
+      display_name: "A",
+      desc: "Automatically sort your hand.",
+      enabled_at_start: true
+      do
+        sort_hand
+      end
+
+    define_button pair,
+      display_name: "Pair",
+      show_when: not_our_turn
+        and not_no_tiles_remaining
+        and someone_else_just_discarded
+        and call_available,
+      call: [[0]]
+      do
+        call
+        change_turn("self")
+      end
+
+    set interruptible_actions, ["play_tile", "draw", "advance_turn"]
+    """
     def initial_textarea, do: @initial_textarea
     defstruct [
       # params
@@ -42,8 +76,8 @@ defmodule RiichiAdvanced.RoomState do
       selected_preset_ix: nil,
       categories: [],
       tutorial_link: nil,
-      textarea: [@initial_textarea],
-      textarea_deltas: [[@initial_textarea]],
+      textarea: [Delta.Op.insert(@initial_textarea)],
+      textarea_deltas: [[Delta.Op.insert(@initial_textarea)]],
       textarea_delta_uuids: [[]],
       textarea_version: 0,
     ]
@@ -67,45 +101,42 @@ defmodule RiichiAdvanced.RoomState do
     [{supervisor, _}] = Utils.registry_lookup("room", state.ruleset, state.room_code)
     [{exit_monitor, _}] = Utils.registry_lookup("exit_monitor_room", state.ruleset, state.room_code)
 
-    # read in the ruleset
-    ruleset_json = ModLoader.get_ruleset_json(state.ruleset, state.room_code)
-    config = ModLoader.get_config_json(state.ruleset, state.room_code)
+    # read in the last cached ruleset
+    ruleset_json = case RiichiAdvanced.ETSCache.get(state.room_code, nil, :cache_rulesets) do
+      [ruleset_json_or_majs] -> ruleset_json_or_majs
+      _ ->
+        if state.ruleset == "config" do
+          Room.initial_textarea()
+        else
+          ModLoader.get_ruleset_json(state.ruleset, state.room_code, true)
+        end
+    end
+
+    config_majs = ModLoader.get_config_majs(state.ruleset, state.room_code)
 
     # parse the ruleset now, in order to get the list of eligible mods
-    {state, rules} = try do
-      case Jason.decode(RiichiAdvanced.ModLoader.strip_comments(ruleset_json)) do
-        {:ok, rules} -> {state, rules}
-        {:error, err} ->
-          state = show_error(state, "WARNING: Failed to read rules file at character position #{err.position}!\nRemember that trailing commas are invalid!")
+    {state, rules} = if state.ruleset != "custom" do
+      try do
+        case Jason.decode(RiichiAdvanced.ModLoader.strip_comments(ruleset_json)) do
+          {:ok, rules} -> {state, rules}
+          {:error, err} ->
+            state = show_error(state, "WARNING: Failed to read rules file at character position #{err.position}!\nRemember that trailing commas are invalid!")
+            {state, %{}}
+        end
+      rescue
+        ArgumentError ->
+          state = show_error(state, "WARNING: Ruleset \"#{state.ruleset}\" doesn't exist!")
           {state, %{}}
       end
-    rescue
-      ArgumentError ->
-        state = show_error(state, "WARNING: Ruleset \"#{state.ruleset}\" doesn't exist!")
-        {state, %{}}
-    end
+    else {state, %{}} end
 
     presets = Map.get(rules, "available_presets", [])
 
-    {mods, categories} = for {item, i} <- Map.get(rules, "available_mods", []) |> Enum.with_index(), reduce: {[], []} do
-      {result, categories} -> cond do
-        is_map(item) -> {[item |> Map.put("index", i) |> Map.put("category", Enum.at(categories, 0, nil)) | result], categories}
-        is_binary(item) -> {result, [item | categories]}
-      end
-    end
-    categories = Enum.reverse(categories)
-
-    available_mods = Enum.map(mods, & &1["id"])
     starting_mods = case RiichiAdvanced.ETSCache.get({state.ruleset, state.room_code}, [], :cache_mods) do
       [mods] -> mods
       []     -> Map.get(rules, "default_mods", [])
     end
-    |> Enum.map(&case &1 do
-      %{name: mod_name, config: config} -> {mod_name, config}
-      mod_name when is_binary(mod_name) -> {mod_name, nil}
-    end)
-    |> Enum.filter(fn {mod_name, _config} -> mod_name in available_mods end)
-    |> Map.new()
+    {mods, categories} = parse_available_mods(Map.get(rules, "available_mods", []), starting_mods)
 
     # calculate available_seats
     available_seats = case Map.get(rules, "num_players", 4) do
@@ -114,6 +145,11 @@ defmodule RiichiAdvanced.RoomState do
       3 -> [:east, :south, :west]
       4 -> [:east, :south, :west, :north]
     end
+
+    # replace ruleset_json with default if ruleset doesn't exist
+    # because modloader gives "{}" if ruleset doesn't exist
+    ruleset_json = if String.trim(ruleset_json) == "{}" do Room.initial_textarea() else ruleset_json end
+
     # put params and process ids into state
     state = Map.merge(state, %Room{
       available_seats: available_seats,
@@ -125,31 +161,8 @@ defmodule RiichiAdvanced.RoomState do
       error: state.error,
       supervisor: supervisor,
       exit_monitor: exit_monitor,
-      display_name: Map.get(rules, "display_name", state.ruleset),
-      mods: mods |> Map.new(fn mod -> {mod["id"], %{
-        enabled: Map.has_key?(starting_mods, mod["id"]),
-        index: mod["index"],
-        name: mod["name"],
-        desc: mod["desc"],
-        category: mod["category"],
-        config: Map.get(mod, "config", [])
-             |> Map.new(&Map.pop(&1, "name"))
-             |> Map.new(fn {config_name, config} ->
-                  default = if starting_mods[mod["id"]] != nil do
-                    # load the previous config's value as the default
-                    old_config = starting_mods[mod["id"]]
-                    old_config[config_name]
-                  else
-                    Map.get(config, "default", Enum.at(config["values"], 0))
-                  end
-                  config = Map.put(config, :value, default)
-                  {config_name, config}
-                end),
-        order: Map.get(mod, "order", 0), # TODO replace this with "load_after" array, and do toposort on the result
-        class: mod["class"],
-        deps: Map.get(mod, "deps", []),
-        conflicts: Map.get(mod, "conflicts", [])
-      }} end),
+      display_name: Map.get(rules, "display_name", if state.ruleset == "custom" do "Custom" else state.ruleset end),
+      mods: mods,
       presets: presets,
       selected_preset_ix: nil,
       categories: categories,
@@ -159,9 +172,9 @@ defmodule RiichiAdvanced.RoomState do
         Map.get(rules, "tutorial_link", nil)
       end,
       textarea: if state.ruleset == "custom" do
-        [Delta.Op.insert(ruleset_json)]
+        [Delta.Op.insert(ruleset_json)] # could be majs as well
       else
-        [Delta.Op.insert(config)]
+        [Delta.Op.insert(config_majs)]
       end,
     })
 
@@ -190,6 +203,50 @@ defmodule RiichiAdvanced.RoomState do
     state = Map.update!(state, :error, fn err -> if err == nil do message else err <> "\n\n" <> message end end)
     state = broadcast_state_change(state)
     state
+  end
+
+  def parse_available_mods(available_mods, starting_mods) do
+    {mods, categories} = for {item, i} <- available_mods |> Enum.with_index(), reduce: {[], []} do
+      {result, categories} -> cond do
+        is_map(item) -> {[item |> Map.put("index", i) |> Map.put("category", Enum.at(categories, 0, nil)) | result], categories}
+        is_binary(item) -> {result, [item | categories]}
+      end
+    end
+
+    available_mods = Enum.map(mods, & &1["id"])
+    starting_mods = starting_mods
+    |> Enum.map(&case &1 do
+      %{name: mod_name, config: config} -> {mod_name, config}
+      mod_name when is_binary(mod_name) -> {mod_name, nil}
+    end)
+    |> Enum.filter(fn {mod_name, _config} -> mod_name in available_mods end)
+    |> Map.new()
+
+    mods = Map.new(mods, fn mod -> {mod["id"], %{
+      enabled: Map.has_key?(starting_mods, mod["id"]),
+      index: mod["index"],
+      name: mod["name"],
+      desc: mod["desc"],
+      category: mod["category"],
+      config: Map.get(mod, "config", [])
+           |> Map.new(&Map.pop(&1, "name"))
+           |> Map.new(fn {config_name, config} ->
+                default = if starting_mods[mod["id"]] != nil do
+                  # load the previous config's value as the default
+                  old_config = starting_mods[mod["id"]]
+                  old_config[config_name]
+                else
+                  Map.get(config, "default", Enum.at(config["values"], 0))
+                end
+                config = Map.put(config, :value, default)
+                {config_name, config}
+              end),
+      order: Map.get(mod, "order", 0), # TODO replace this with "load_after" array, and do toposort on the result
+      class: mod["class"],
+      deps: Map.get(mod, "deps", []),
+      conflicts: Map.get(mod, "conflicts", [])
+    }} end)
+    {mods, Enum.reverse(categories)}
   end
 
   def get_enabled_mods(state) do
@@ -277,6 +334,19 @@ defmodule RiichiAdvanced.RoomState do
     end
   end
 
+  def randomize_mods(state) do
+    random_mods = Map.get(state.rules, "available_mods", [])
+    |> Enum.filter(&is_map/1)
+    |> Enum.map(& &1["id"])
+    random_mods = Enum.take_random(random_mods, Integer.floor_div(length(random_mods), 2))
+    for {mod_name, _mod} <- state.mods, reduce: state do
+      state ->
+        state = toggle_mod(state, mod_name, mod_name in random_mods)
+        state = update_in(state.mods[mod_name].config, &Map.new(&1, fn {config_name, config} -> {config_name, Map.put(config, :value, Map.get(config, "values") |> Enum.random())} end))
+        state
+    end
+  end
+
   def broadcast_state_change(state) do
     # IO.puts("broadcast_state_change called")
     RiichiAdvancedWeb.Endpoint.broadcast(state.ruleset <> "-room:" <> state.room_code, "state_updated", %{"state" => state})
@@ -291,19 +361,19 @@ defmodule RiichiAdvanced.RoomState do
     state
   end
 
-  def handle_call({:new_player, socket}, _from, state) do
-    GenServer.call(state.exit_monitor, {:new_player, socket.root_pid, socket.id})
-    nickname = if socket.assigns.nickname != "" do socket.assigns.nickname else "player" <> String.slice(socket.id, 10, 4) end
-    state = put_in(state.players[socket.id], %RoomPlayer{nickname: nickname, id: socket.id, session_id: socket.assigns.session_id})
-    IO.puts("Player #{socket.id} joined room #{state.room_code} for ruleset #{state.ruleset}")
+  def handle_call({:new_player, pid, session_id, nickname}, _from, state) do
+    GenServer.call(state.exit_monitor, {:new_player, pid, session_id})
+    nickname = if nickname != "" do nickname else "player" <> String.slice(session_id, 10, 4) end
+    state = put_in(state.players[session_id], %RoomPlayer{nickname: nickname, id: session_id, session_id: session_id})
+    IO.puts("Player #{session_id} joined room #{state.room_code} for ruleset #{state.ruleset}")
     state = broadcast_state_change(state)
     {:reply, [state], state}
   end
 
-  def handle_call({:delete_player, socket_id}, _from, state) do
-    state = update_seats(state, fn player -> if player == nil or player.id == socket_id do nil else player end end)
-    {_, state} = pop_in(state.players[socket_id])
-    IO.puts("Player #{socket_id} exited #{state.room_code} for ruleset #{state.ruleset}")
+  def handle_call({:delete_player, session_id}, _from, state) do
+    state = update_seats(state, fn player -> if player == nil or player.id == session_id do nil else player end end)
+    {_, state} = pop_in(state.players[session_id])
+    IO.puts("Player #{session_id} exited #{state.room_code} for ruleset #{state.ruleset}")
     state = if Enum.empty?(state.players) do
       # all players have left, shutdown
       # check if a lobby exists. if so, notify the lobby that this room no longer exists
@@ -382,14 +452,14 @@ defmodule RiichiAdvanced.RoomState do
     {:noreply, state}
   end
 
-  def handle_cast({:sit, socket_id, session_id, seat}, state) do
+  def handle_cast({:sit, session_id, session_id, seat}, state) do
     state = if state.seats[seat] == nil or state.seats[seat].session_id == session_id do
       # first, get up
-      state = update_seats(state, fn player -> if player == nil or player.id == socket_id do nil else player end end)
+      state = update_seats(state, fn player -> if player == nil or player.id == session_id do nil else player end end)
       # then sit
-      state = put_in(state.players[socket_id].seat, seat)
-      state = put_seat(state, seat, state.players[socket_id])
-      IO.puts("Player #{socket_id} sat in seat #{seat}")
+      state = put_in(state.players[session_id].seat, seat)
+      state = put_seat(state, seat, state.players[session_id])
+      IO.puts("Player #{session_id} sat in seat #{seat}")
       state
     else state end
     state = broadcast_state_change(state)
@@ -438,9 +508,15 @@ defmodule RiichiAdvanced.RoomState do
     {:noreply, state}
   end
 
-  def handle_cast({:get_up, socket_id}, state) do
-    state = update_seats(state, fn player -> if player == nil or player.id == socket_id do nil else player end end)
-    state = put_in(state.players[socket_id].seat, nil)
+  def handle_cast(:randomize_mods, state) do
+    state = randomize_mods(state)
+    state = broadcast_state_change(state)
+    {:noreply, state}
+  end
+
+  def handle_cast({:get_up, session_id}, state) do
+    state = update_seats(state, fn player -> if player == nil or player.id == session_id do nil else player end end)
+    state = put_in(state.players[session_id].seat, nil)
     state = broadcast_state_change(state)
     {:noreply, state}
   end
@@ -448,20 +524,25 @@ defmodule RiichiAdvanced.RoomState do
   def handle_cast(:start_game, state) do
     state = Map.put(state, :starting, true)
     state = broadcast_state_change(state)
-    {mods, config} = if state.ruleset == "custom" do
-      ruleset_json = Enum.at(state.textarea, 0)["insert"]
-      # 2MB char limit on ruleset_json
-      if ruleset_json != nil and byte_size(ruleset_json) <= 2 * 1024 * 1024 do
-        RiichiAdvanced.ETSCache.put(state.room_code, ruleset_json, :cache_rulesets)
-      end
-      {[], nil}
-    else
-      config = Enum.at(state.textarea, 0)["insert"]
-      if config != nil do
+
+    # for custom, config is just the submitted ruleset
+    config = Enum.at(state.textarea, 0)["insert"]
+
+    # check for 4MB limit, and save if within limit
+    state = if byte_size(config) <= 4 * 1024 * 1024 do
+      if state.ruleset == "custom" do
+        RiichiAdvanced.ETSCache.put(state.room_code, config, :cache_rulesets)
+      else
         RiichiAdvanced.ETSCache.put({state.ruleset, state.room_code}, config, :cache_configs)
       end
-      {get_enabled_mods(state), config}
+      state
+    else
+      show_error(state, "WARNING: ruleset too large (>4MB)!")
     end
+
+    # get mods if any
+    mods = if state.ruleset == "custom" do [] else get_enabled_mods(state) end
+
     # shuffle seats
     seat_map = if state.shuffle do Enum.shuffle(state.available_seats) else state.available_seats end
     |> Enum.zip(state.available_seats)
@@ -469,13 +550,15 @@ defmodule RiichiAdvanced.RoomState do
     state = Map.update!(state, :seats, &Map.new(&1, fn {seat, player} -> {seat_map[seat], player} end))
 
     reserved_seats = Map.new(state.players, fn {_id, player} -> {seat_map[player.seat], player.session_id} end)
-    init_actions = [["vacate_room"]] ++ Enum.map(state.players, fn {_id, player} -> ["init_player", player.session_id, Atom.to_string(player.seat)] end) ++ [["initialize_game"]]
+    init_actions = [["vacate_room"]] ++ Enum.flat_map(state.players, fn {_id, player} -> [
+      ["init_player", player.session_id, Atom.to_string(player.seat)],
+      ["fetch_messages", player.session_id]
+    ] end) ++ [["initialize_game"]]
     args = [room_code: state.room_code, ruleset: state.ruleset, mods: mods, config: config, private: state.private, reserved_seats: reserved_seats, init_actions: init_actions, name: Utils.via_registry("game", state.ruleset, state.room_code)]
-    game_spec = %{
+    game_spec = Supervisor.child_spec(%{
       id: {RiichiAdvanced.GameSupervisor, state.ruleset, state.room_code},
       start: {RiichiAdvanced.GameSupervisor, :start_link, [args]}
-    }
-
+    }, restart: :temporary)
     # start a new game process, if it doesn't exist already
     state = case Utils.registry_lookup("game_state", state.ruleset, state.room_code) do
       [{_game_state, _}] ->

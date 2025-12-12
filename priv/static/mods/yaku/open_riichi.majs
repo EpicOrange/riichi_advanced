@@ -1,0 +1,30 @@
+on after_initialization do
+  update_rule("Rules", "Riichi", "(Open Riichi) You may also declare open riichi, which reveals your hand but is worth 1 more han if you win.")
+end
+
+define_button open_riichi,
+  display_name: "Open Riichi",
+  show_when: our_turn
+    and has_draw
+    and status_missing("riichi")
+    and has_score("riichi_value")
+    and next_draw_possible # TODO drawless riichi?
+    and @closed_hand
+    and match(["hand", "calls", "draw"], ["tenpai_14"])
+  do
+    big_text("Open Riichi")
+    set_status("riichi", "open_riichi", "just_reached")
+    push_message("declared open riichi")
+    enable_auto_button("_4_auto_discard")
+    if status("discards_empty") and no_calls_yet do
+      set_status("double_riichi")
+    end
+  end
+
+define_yaku riichi_yaku, "Open Riichi", 2, status("open_riichi")
+define_yaku riichi_yaku, "Open Double Riichi", 3, status("open_riichi", "double_riichi")
+define_yaku_precedence "Open Riichi", ["Riichi"]
+define_yaku_precedence "Open Double Riichi", ["Open Riichi", "Double Riichi"]
+
+# dealing into open riichi while not in riichi is worth yakuman
+define_yaku yakuman, "Open Riichi", 1, status("open_riichi") and not_discarder_status("riichi")

@@ -2,6 +2,7 @@ defmodule RiichiAdvancedWeb.LobbyLive do
   alias RiichiAdvanced.LobbyState.Lobby, as: Lobby
   alias RiichiAdvanced.Utils, as: Utils
   use RiichiAdvancedWeb, :live_view
+  import RiichiAdvancedWeb.Translations
 
   def mount(params, session, socket) do
     socket = socket
@@ -9,7 +10,7 @@ defmodule RiichiAdvancedWeb.LobbyLive do
     |> assign(:ruleset, params["ruleset"])
     |> assign(:display_name, params["ruleset"])
     |> assign(:nickname, Map.get(params, "nickname", ""))
-    |> assign(:id, socket.id)
+    |> assign(:lang, Map.get(params, "lang", "en"))
     |> assign(:lobby_state, nil)
     |> assign(:messages, [])
     |> assign(:state, %Lobby{})
@@ -37,21 +38,25 @@ defmodule RiichiAdvancedWeb.LobbyLive do
       end
 
       # init a new player and get the current state
-      [state] = GenServer.call(lobby_state, {:new_player, socket})
+      [state] = GenServer.call(lobby_state, {:new_player, socket.root_pid, socket.assigns.session_id, socket.assigns.nickname})
       socket = socket
       |> assign(:lobby_state, lobby_state)
       |> assign(:state, state)
       |> assign(:display_name, state.display_name)
 
       # fetch messages
-      messages_init = RiichiAdvanced.MessagesState.init_socket(socket)
+      messages_init = RiichiAdvanced.MessagesState.link_player_socket(socket.root_pid, socket.assigns.session_id)
       socket = if Map.has_key?(messages_init, :messages_state) do
         socket = assign(socket, :messages_state, messages_init.messages_state)
         # subscribe to message updates
-        Phoenix.PubSub.subscribe(RiichiAdvanced.PubSub, "messages:" <> socket.id)
+        Phoenix.PubSub.subscribe(RiichiAdvanced.PubSub, "messages:" <> socket.assigns.session_id)
         GenServer.cast(messages_init.messages_state, {:add_message, [
-          %{text: "Entered lobby for variant"},
-          %{bold: true, text: socket.assigns.ruleset}
+          %{
+            text: "Entered lobby for variant %{ruleset}",
+            vars: %{
+              ruleset: {:text, socket.assigns.ruleset, %{bold: true}}
+            }
+          },
         ]})
         socket
       else socket end
@@ -65,8 +70,8 @@ defmodule RiichiAdvancedWeb.LobbyLive do
     ~H"""
     <div id="container" class="lobby" phx-hook="ClickListener">
       <header>
-        <h1>Lobby</h1>
-        <div class="variant">Variant:&nbsp;<b><%= @display_name %></b></div>
+        <h1><%= t(@lang, "Lobby") %></h1>
+        <div class="variant"><%= t(@lang, "Variant:") %>&nbsp;<b><%= @display_name %></b></div>
       </header>
       <div class="rooms">
         <div class="lobby-room" :for={{room_name, room} <- @state.rooms} :if={not room.private}>
@@ -77,40 +82,41 @@ defmodule RiichiAdvancedWeb.LobbyLive do
           </button>
           <div class="room-mods">
             <%= for mod <- room.mods do %>
-              <div class="room-mod"><%= mod %></div>
+              <div class="room-mod"><%= dt(@lang, mod) %></div>
             <% end %>
           </div>
           <div class="room-players">
             <div class="room-player-count"><%= Map.values(room.players) |> Enum.count(& &1 != nil) %>/<%= map_size(room.players) %></div>
-            <div class="room-started" :if={room.started}>(ongoing)</div>
+            <div class="room-started" :if={room.started}><%= t(@lang, "(ongoing)") %></div>
           </div>
         </div>
       </div>
       <%= if @show_room_code_buttons do %>
-        <.live_component module={RiichiAdvancedWeb.RoomCodeComponent} id="room-code" set_room_code={&send(self(), {:set_room_code, &1})} />
+        <.live_component module={RiichiAdvancedWeb.RoomCodeComponent} id="room-code" lang={@lang} set_room_code={&send(self(), {:set_room_code, &1})} />
       <% end %>
       <div class="enter-buttons">
         <button class="create-room" phx-cancellable-click="create_room">
           <%= if @show_room_code_buttons do %>
-            Enter
+            <%= t(@lang, "Enter") %>
           <% else %>
-            Create a room
+            <%= t(@lang, "Create a room") %>
           <% end %>
         </button>
         <button phx-cancellable-click="toggle_show_room_code">
           <%= if @show_room_code_buttons do %>
-            Close
+            <%= t(@lang, "Close") %>
           <% else %>
-            Join private room
+            <%= t(@lang, "Join private room") %>
           <% end %>
         </button>
       </div>
       <.live_component module={RiichiAdvancedWeb.ErrorWindowComponent} id="error-window" game_state={@lobby_state} error={@state.error}/>
       <div class="top-right-container">
-        <.live_component module={RiichiAdvancedWeb.MenuButtonsComponent} id="menu-buttons" />
+        <.live_component module={RiichiAdvancedWeb.MenuButtonsComponent} id="menu-buttons" lang={@lang} />
       </div>
-      <.live_component module={RiichiAdvancedWeb.MessagesComponent} id="messages" messages={@messages} />
+      <.live_component module={RiichiAdvancedWeb.MessagesComponent} id="messages" messages={@messages} lang={@lang} />
       <div class="ruleset">
+        <div class="ruleset-text"><%= t(@lang, "Ruleset:") %></div>
         <textarea readonly><%= @state.ruleset_json %></textarea>
       </div>
     </div>
@@ -118,7 +124,7 @@ defmodule RiichiAdvancedWeb.LobbyLive do
   end
 
   def handle_event("back", _assigns, socket) do
-    socket = push_navigate(socket, to: ~p"/?nickname=#{socket.assigns.nickname}")
+    socket = push_navigate(socket, to: ~p"/?nickname=#{socket.assigns.nickname}&lang=#{socket.assigns.lang}")
     {:noreply, socket}
   end
 
@@ -136,7 +142,7 @@ defmodule RiichiAdvancedWeb.LobbyLive do
   end
 
   def handle_event("join_room", %{"name" => room_code}, socket) do
-    socket = push_navigate(socket, to: ~p"/room/#{socket.assigns.ruleset}/#{room_code}?nickname=#{socket.assigns.nickname}&from=lobby")
+    socket = push_navigate(socket, to: ~p"/room/#{socket.assigns.ruleset}/#{room_code}?nickname=#{socket.assigns.nickname}&lang=#{socket.assigns.lang}&from=lobby")
     {:noreply, socket}
   end
 
@@ -145,17 +151,23 @@ defmodule RiichiAdvancedWeb.LobbyLive do
       socket = if length(socket.assigns.room_code) == 3 do
         # enter private room, or create a new room
         room_code = Enum.join(socket.assigns.room_code, ",")
-        push_navigate(socket, to: ~p"/room/#{socket.assigns.ruleset}/#{room_code}?nickname=#{socket.assigns.nickname}&from=lobby")
+        push_navigate(socket, to: ~p"/room/#{socket.assigns.ruleset}/#{room_code}?nickname=#{socket.assigns.nickname}&lang=#{socket.assigns.lang}&from=lobby")
       else socket end
       {:noreply, socket}
     else
       case GenServer.call(socket.assigns.lobby_state, :create_room) do
         :no_names_remaining -> {:noreply, socket}
         {:ok, room_code}    ->
-          socket = push_navigate(socket, to: ~p"/room/#{socket.assigns.ruleset}/#{room_code}?nickname=#{socket.assigns.nickname}")
+          socket = push_navigate(socket, to: ~p"/room/#{socket.assigns.ruleset}/#{room_code}?nickname=#{socket.assigns.nickname}&lang=#{socket.assigns.lang}&from=lobby")
           {:noreply, socket}
       end
     end
+  end
+
+  def handle_event("change_language", %{"lang" => lang}, socket), do: {:noreply, assign(socket, :lang, lang)}
+
+  def handle_event(_event, _assigns, socket) do
+    {:noreply, socket}
   end
 
   def handle_info(%{topic: topic, event: "state_updated", payload: %{"state" => state}}, socket) do
@@ -183,7 +195,7 @@ defmodule RiichiAdvancedWeb.LobbyLive do
   end
 
   def handle_info(%{topic: topic, event: "messages_updated", payload: %{"state" => state}}, socket) do
-    if topic == "messages:" <> socket.id do
+    if topic == "messages:" <> socket.assigns.session_id do
       socket = assign(socket, :messages, state.messages)
       {:noreply, socket}
     else

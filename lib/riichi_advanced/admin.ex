@@ -1,5 +1,8 @@
 defmodule RiichiAdvanced.Admin do
+  alias RiichiAdvanced.GameState.American, as: American
   alias RiichiAdvanced.GameState.Log, as: Log
+  alias RiichiAdvanced.GameState.TileBehavior, as: TileBehavior
+  alias RiichiAdvanced.Utils, as: Utils
   use GenServer
 
   def start_link(_) do
@@ -20,7 +23,7 @@ defmodule RiichiAdvanced.Admin do
   end
 
   # hell yeah automated test case generation let's goooo
-  # RiichiAdvanced.Utils.logs_to_test_case(["riichi"])
+  # RiichiAdvanced.Admin.logs_to_test_case(["riichi"])
   def log_to_test_case(log_id, kyoku_index \\ nil) do
     # read in the log
     log_json = case File.read(Application.app_dir(:riichi_advanced, "/priv/static/logs/#{log_id <> ".json"}")) do
@@ -44,16 +47,19 @@ defmodule RiichiAdvanced.Admin do
 
     # get ruleset and mods
     ruleset = log["rules"]["ruleset"]
-    mods = Jason.encode!(log["rules"]["mods"])
+    mods = Enum.map_join(log["rules"]["mods"], ", ", &case &1 do
+      %{"name" => name, "config" => config} -> "%{name: \"#{name}\", config: #{inspect(config, limit: :infinity)}}"
+      name -> "\"#{name}\""
+    end)
 
-    calls = for {kyoku, i} <- Enum.with_index(if kyoku_index == nil do log["kyokus"] else [Enum.at(log["kyokus"], kyoku_index)] end) do
+    calls = for {kyoku, i} <- (if kyoku_index == nil do Enum.with_index(log["kyokus"]) else [{Enum.at(log["kyokus"], kyoku_index), kyoku_index}] end) do
       # get config
       starting_hands = kyoku["players"]
       |> Enum.with_index()
       |> Enum.map_join(",\n", fn {player, i} -> "    \"#{Log.from_seat(i)}\": #{Jason.encode!(player["haipai"])}" end)
       starting_draws = kyoku["wall"]
       |> Jason.encode!()
-      starting_dead_wall = (Enum.reverse(kyoku["kan_tiles"]) ++ Enum.concat(Enum.zip_with(kyoku["uras"], kyoku["doras"], &[&1, &2])))
+      starting_dead_wall = (kyoku["kan_tiles"] ++ Enum.concat(Enum.zip_with(kyoku["doras"], kyoku["uras"], &[&1, &2])))
       |> Jason.encode!()
 
       # get event list
@@ -76,13 +82,15 @@ defmodule RiichiAdvanced.Admin do
 
       """
       # kyoku #{i}:
-      TestUtils.test_yaku_advanced("#{ruleset}", #{mods}, \"\"\"
+      TestUtils.test_yaku_advanced("#{ruleset}", [#{mods}], \"\"\"
       {
         "starting_hand": {
       #{starting_hands}
         },
         "starting_draws": #{starting_draws},
-        "starting_dead_wall": #{starting_dead_wall}
+        "starting_dead_wall": #{starting_dead_wall},
+        "starting_round": #{kyoku["kyoku"]},
+        "starting_honba": #{kyoku["honba"]}
       }
       \"\"\", [
         #{events}
@@ -109,21 +117,47 @@ defmodule RiichiAdvanced.Admin do
   end
   def logs_to_test_case(log_ids) do
     log_ids
-    |> Enum.map_join("\n", &log_to_test_case/1)
+    |> Enum.map_join("\n", &case &1 do
+      {log_id, kyoku} -> log_to_test_case(log_id, kyoku)
+      log_id -> log_to_test_case(log_id)
+    end)
     |> IO.puts()
   end
+
+  @am_wall [:"1m", :"1m", :"1m", :"1m", :"2m", :"2m", :"2m", :"2m", :"3m", :"3m", :"3m", :"3m", :"4m", :"4m", :"4m", :"4m", :"5m", :"5m", :"5m", :"5m", :"6m", :"6m", :"6m", :"6m", :"7m", :"7m", :"7m", :"7m", :"8m", :"8m", :"8m", :"8m", :"9m", :"9m", :"9m", :"9m", :"1p", :"1p", :"1p", :"1p", :"2p", :"2p", :"2p", :"2p", :"3p", :"3p", :"3p", :"3p", :"4p", :"4p", :"4p", :"4p", :"5p", :"5p", :"5p", :"5p", :"6p", :"6p", :"6p", :"6p", :"7p", :"7p", :"7p", :"7p", :"8p", :"8p", :"8p", :"8p", :"9p", :"9p", :"9p", :"9p", :"1s", :"1s", :"1s", :"1s", :"2s", :"2s", :"2s", :"2s", :"3s", :"3s", :"3s", :"3s", :"4s", :"4s", :"4s", :"4s", :"5s", :"5s", :"5s", :"5s", :"6s", :"6s", :"6s", :"6s", :"7s", :"7s", :"7s", :"7s", :"8s", :"8s", :"8s", :"8s", :"9s", :"9s", :"9s", :"9s", :"1z", :"1z", :"1z", :"1z", :"2z", :"2z", :"2z", :"2z", :"3z", :"3z", :"3z", :"3z", :"4z", :"4z", :"4z", :"4z", :"0z", :"0z", :"0z", :"0z", :"6z", :"6z", :"6z", :"6z", :"7z", :"7z", :"7z", :"7z", :"1f", :"2f", :"3f", :"4f", :"1g", :"2g", :"3g", :"4g"]
+  # use like this:
+  # ["222a 000 2222b 4444b"] |> Enum.each(&RiichiAdvanced.Admin.instantiate_am_hand/1)
+  def instantiate_am_hand(hand) do
+    hands = American.translate_american_match_definitions([hand])
+    |> Enum.map(&American.instantiate_match_definition(&1, @am_wall, [], :"1p", %TileBehavior{}))
+    |> Enum.map(fn
+      nil -> []
+      {a, b} -> Utils.sort_tiles(a ++ b)
+    end)
+    |> Enum.map(&Utils.hand_to_string/1)
+    |> Enum.map(fn
+      <<"11111f" <> rest>> -> "1234f1g" <> rest
+      <<"1111f" <> rest>> -> "1234f" <> rest
+      <<"111f" <> rest>> -> "123f" <> rest
+      <<"11f" <> rest>> -> "12f" <> rest
+      x -> x
+    end)
+    ["    # #{hand}" | Enum.map(hands, &"TestUtils.assert_winning_hand(rules_ref, \"win\", \"#{&1}\", \"\", @am_aliases)")]
+    |> Enum.join("\n    ")
+    |> IO.puts()
+  end
+
 
   def handle_cast({:migrate, dst}, state) do
     try do
       if Node.connect(dst) == true do
-        IO.puts("Pulling running games from #{inspect(dst)}")
+        IO.puts("Pushing running games to #{inspect(dst)}")
         DynamicSupervisor.which_children(RiichiAdvanced.GameSessionSupervisor)
         |> Enum.flat_map(fn {_, pid, _, _} -> Registry.keys(:game_registry, pid) end)
         |> Enum.map(&String.replace(&1, "game", "game_state"))
         |> Enum.map(&Registry.lookup(:game_registry, &1))
         |> Enum.map(fn [{pid, _}] -> pid end)
         |> Enum.each(&GenServer.cast(&1, {:respawn_on, dst}))
-        DynamicSupervisor.which_children(RiichiAdvanced.GameSessionSupervisor)
         GenServer.cast(self(), :close_server)
       else
         IO.puts("Failed to connect to #{inspect(dst)}!")

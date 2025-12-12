@@ -1,0 +1,32 @@
+on after_initialization do
+  add_rule("Rules", "Wall", "(Aka) %{man}x 5m, %{pin}x 5p, and %{sou}x 5s are replaced with red \"aka dora\" fives that are worth one extra han each.", %{man: !man, pin: !pin, sou: !sou}, -99)
+  update_rule("Rules", "Shuugi", "(Aka) If your hand is closed, each aka dora is worth 1 shuugi chip.")
+end
+
+replace !man, "wall", "5m", "0m"
+replace !pin, "wall", "5p", "0p"
+replace !sou, "wall", "5s", "0s"
+replace !man, "wall", "5t", "0t" # just reuse !man, keep it simple
+
+on after_start do
+  set_tile_alias_all(["0m"], ["5m"])
+  set_tile_alias_all(["0p"], ["5p"])
+  set_tile_alias_all(["0s"], ["5s"])
+  set_tile_alias_all(["0t"], ["5t"])
+  tag_tiles("dora", ["0m", "0p", "0s", "0t"])
+end
+
+# count aka
+on before_win do
+  # use set_counter to be compatible with other aka mods
+  set_counter("aka", "count_matches", ["hand", "calls", "winning_tile"], ~m"nojoker, (0m 0p 0s 0t):1")
+end
+
+define_yaku extra_yaku, "Aka", "aka", counter_at_least("aka", 1)
+
+apply set_merge, "dora_indicators", %{
+  "0m": ["6m"],
+  "0p": ["6p"],
+  "0s": ["6s"],
+  "0t": ["6t"]
+}

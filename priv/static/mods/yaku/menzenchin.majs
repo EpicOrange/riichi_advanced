@@ -1,0 +1,7 @@
+on after_initialization do
+  add_rule("$value $han", "$name", "You have no calls (except %{ankan}).", %{value: !value, han: !han, name: !name, ankan: !ankan_name})
+end
+
+define_const closed_hand, has_no_call_named("chii", "pon", "daiminkan", "kakan")
+
+define_yaku !list, !name, !value, @closed_hand

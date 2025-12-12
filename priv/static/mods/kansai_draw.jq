@@ -15,3 +15,19 @@ def replace($from; $to):
     .when = [{"name": "tile_revealed", "opts": [0]}, "not_won_by_draw"]
   else . end
 )
+|
+if (.buttons | has("daiminkan")) then
+  .buttons.ankan.show_when |= map(replace("not_no_tiles_remaining"; {"name": "not_tile_revealed", "opts": [0]}))
+else . end
+|
+if (.buttons | has("kakan")) then
+  .buttons.ankan.show_when |= map(replace("not_no_tiles_remaining"; {"name": "not_tile_revealed", "opts": [0]}))
+else . end
+|
+if (.buttons | has("ankan")) then
+  .buttons.ankan.show_when |= map(replace("not_no_tiles_remaining"; {"name": "not_tile_revealed", "opts": [0]}))
+else . end
+|
+if (.buttons | has("flower")) then
+  .buttons.flower.show_when |= map(replace("not_no_tiles_remaining"; {"name": "not_tile_revealed", "opts": [0]}))
+else . end

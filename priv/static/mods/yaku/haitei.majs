@@ -1,0 +1,11 @@
+on after_initialization do
+  if equals(!haitei_name, !houtei_name) and equals(!haitei_value, !houtei_value) do
+    add_rule("$value $han", "$name", "You won off the last draw or discard.", %{value: !haitei_value, han: !han, name: !haitei_name})
+  else
+    add_rule("$value $han", "$name", "You won by drawing the last tile in the wall.", %{value: !haitei_value, han: !han, name: !haitei_name})
+    add_rule("$value $han", "$name", "Win off a discard after the last tile in the wall is drawn.", %{value: !houtei_value, han: !han, name: !houtei_name})
+  end
+end
+
+define_yaku !haitei_list, !haitei_name, !haitei_value, no_tiles_remaining and won_by_draw
+define_yaku !houtei_list, !houtei_name, !houtei_value, no_tiles_remaining and not_won_by_draw

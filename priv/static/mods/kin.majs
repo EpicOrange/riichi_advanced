@@ -1,0 +1,33 @@
+on after_initialization do
+  add_rule("Rules", "Wall", "(Kin) %{man}x 5m, %{pin}x 5p, and %{sou}x 5s are replaced with gold \"kin dora\" fives that are worth three extra han each.", %{man: !man, pin: !pin, sou: !sou}, -99)
+  update_rule("Rules", "Shuugi", "(Kin) If your hand is closed, each kin dora is worth three shuugi chips.")
+end
+
+replace !man, "wall", "5m", "35m"
+replace !pin, "wall", "5p", "35p"
+replace !sou, "wall", "5s", "35s"
+replace !man, "wall", "5t", "35t" # just reuse !man, keep it simple
+
+on after_start do
+  set_tile_alias_all(["35m"], ["5m"])
+  set_tile_alias_all(["35p"], ["5p"])
+  set_tile_alias_all(["35s"], ["5s"])
+  set_tile_alias_all(["35t"], ["5t"])
+  tag_tiles("dora", ["35m", "35p", "35s", "35t"])
+end
+
+# count kin
+on before_win do
+  # use set_counter to be compatible with other kin mods
+  set_counter("kin", "count_matches", ["hand", "calls", "winning_tile"], ~m"nojoker, (35m 35p 35s 35t):1")
+  kin *= 3
+end
+
+define_yaku extra_yaku, "Kin", "kin", counter_at_least("kin", 1)
+
+apply set_merge, "dora_indicators", %{
+  "35m": ["6m"],
+  "35p": ["6p"],
+  "35s": ["6s"],
+  "35t": ["6t"]
+}

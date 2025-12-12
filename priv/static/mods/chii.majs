@@ -1,0 +1,18 @@
+on after_initialization do
+  add_rule("Rules", "Chii", "When the player to your left discards a tile you can use to complete a 3 tile sequence, you may call Chii to take that tile instead of drawing.")
+end
+
+define_button chii,
+  display_name: !chii_name, 
+  show_when: not_our_turn
+    and not_no_tiles_remaining
+    and kamicha_discarded
+    and call_available,
+  call: [[-2, -1], [-1, 1], [1, 2]]
+  do
+    big_text(!chii_name)
+    call
+    change_turn("self")
+  end
+
+apply append, "interruptible_actions", "call"

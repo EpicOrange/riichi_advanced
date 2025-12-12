@@ -1,15 +1,19 @@
 defmodule RiichiAdvancedWeb.LogLive do
   alias RiichiAdvanced.GameState.Game, as: Game
   alias RiichiAdvanced.GameState.Choice, as: Choice
+  alias RiichiAdvanced.GameState.Rules, as: Rules
   alias RiichiAdvanced.ModLoader, as: ModLoader
   alias RiichiAdvanced.Utils, as: Utils
   use RiichiAdvancedWeb, :live_view
+  use Gettext, backend: RiichiAdvancedWeb.Gettext
+  import RiichiAdvancedWeb.Translations
 
   def mount(params, session, socket) do
     socket = socket
     |> assign(:session_id, session["session_id"])
     |> assign(:log_id, params["log_id"])
     |> assign(:nickname, Map.get(params, "nickname", ""))
+    |> assign(:lang, Map.get(params, "lang", "en"))
     |> assign(:game_state, nil)
     |> assign(:log_control_state, nil)
     |> assign(:messages, [])
@@ -52,6 +56,7 @@ defmodule RiichiAdvancedWeb.LogLive do
 
       ruleset = Map.get(log["rules"], "ruleset", "riichi")
       mods = Map.get(log["rules"], "mods", [])
+      config = Map.get(log["rules"], "config", nil)
 
       socket = socket
       |> assign(:ruleset, ruleset)
@@ -65,61 +70,31 @@ defmodule RiichiAdvancedWeb.LogLive do
         RiichiAdvanced.ETSCache.put(socket.assigns.room_code <> "_walker", log["rules"]["ruleset_json"], :cache_rulesets)
       end
 
-      # start a new game process
-      log_spec = {RiichiAdvanced.LogSupervisor, room_code: socket.assigns.room_code, ruleset: socket.assigns.ruleset, mods: mods, name: Utils.via_registry("log", socket.assigns.ruleset, socket.assigns.room_code)}
-      {game_state, log_control_state} = case DynamicSupervisor.start_child(RiichiAdvanced.GameSessionSupervisor, log_spec) do
-        {:ok, _pid} ->
-          IO.puts("Starting log session #{socket.assigns.room_code}")
-          [{game_state, _}] = Utils.registry_lookup("game_state", socket.assigns.ruleset, socket.assigns.room_code)
-          GenServer.cast(game_state, {:initialize_game, Enum.at(log["kyokus"], 0)})
-          GenServer.call(game_state, {:put_log_seeking_mode, true})
-          [{log_control_state, _}] = Utils.registry_lookup("log_control_state", socket.assigns.ruleset, socket.assigns.room_code)
-          GenServer.cast(log_control_state, {:put_log, log})
-          GenServer.cast(log_control_state, {:start_walk, 0, 100})
-          {game_state, log_control_state}
-        {:error, {:shutdown, error}} ->
-          IO.puts("Error when starting log session #{socket.assigns.room_code}")
-          IO.inspect(error)
-          {nil, nil}
-        {:error, {:already_started, _pid}} ->
-          IO.puts("Already started log session #{socket.assigns.room_code}")
-          [{game_state, _}] = Utils.registry_lookup("game_state", socket.assigns.ruleset, socket.assigns.room_code)
-          [{log_control_state, _}] = Utils.registry_lookup("log_control_state", socket.assigns.ruleset, socket.assigns.room_code)
-          {game_state, log_control_state}
-      end
       # subscribe to state updates
+      # make sure to do this before starting a game process!
       Phoenix.PubSub.subscribe(RiichiAdvanced.PubSub, socket.assigns.ruleset <> ":" <> socket.assigns.room_code)
-
-
-      # init a new player and get the current state
-      {state, seat, spectator} = GenServer.call(game_state, {:spectate, socket.assigns.session_id})
-
-      socket = socket
-      |> assign(:game_state, game_state)
-      |> assign(:log_control_state, log_control_state)
-      |> assign(:state, state)
-      |> assign(:seat, seat)
-      |> assign(:viewer, if spectator do :spectator else seat end)
-      |> assign(:display_riichi_sticks, Map.get(state.rules, "display_riichi_sticks"))
-      |> assign(:display_honba, Map.get(state.rules, "display_honba"))
-      |> assign(:loading, false)
-      |> assign(:marking, false)
-
-      # fetch messages
-      messages_init = RiichiAdvanced.MessagesState.init_socket(socket)
-      socket = if Map.has_key?(messages_init, :messages_state) do
-        socket = assign(socket, :messages_state, messages_init.messages_state)
-        # subscribe to message updates
-        Phoenix.PubSub.subscribe(RiichiAdvanced.PubSub, "messages:" <> socket.id)
-        GenServer.cast(messages_init.messages_state, {:add_message, [
-          %{text: "Viewing log for a"},
-          %{bold: true, text: socket.assigns.ruleset},
-          %{text: "game"},
-        ] ++ if state.mods != nil and not Enum.empty?(state.mods) do
-          [%{text: "with mods"}] ++ Enum.map(state.mods, fn mod -> %{bold: true, text: ModLoader.get_mod_name(mod)} end)
-        else [] end})
-        socket
-      else socket end
+      # start a new game process, if it doesn't exist already
+      init_actions = [
+        ["set_log_seeking_mode", true],
+        ["fetch_messages", socket.assigns.session_id],
+        ["initialize_game", socket.assigns.session_id, Enum.at(log["kyokus"], 0)]
+      ]
+      args = [room_code: socket.assigns.room_code, ruleset: socket.assigns.ruleset, mods: mods, config: config, init_actions: init_actions, log_id: socket.assigns.log_id, name: Utils.via_registry("log", socket.assigns.ruleset, socket.assigns.room_code)]
+      log_spec = Supervisor.child_spec(%{
+        id: {RiichiAdvanced.LogSupervisor, socket.assigns.ruleset, socket.assigns.room_code},
+        start: {RiichiAdvanced.LogSupervisor, :start_link, [args]}
+      }, restart: :temporary)
+      case DynamicSupervisor.start_child(RiichiAdvanced.GameSessionSupervisor, log_spec) do
+        {:ok, _pid} ->
+          IO.puts("Starting game session #{socket.assigns.room_code}")
+        {:error, {:shutdown, error}} ->
+          IO.puts("Error when starting game session #{socket.assigns.room_code}")
+          IO.inspect(error)
+        {:error, {:already_started, _pid}} ->
+          [{game_state, _}] = Utils.registry_lookup("game_state", socket.assigns.ruleset, socket.assigns.room_code)
+          IO.puts("Already started game session #{socket.assigns.room_code} #{inspect(game_state)}")
+          GenServer.cast(game_state, {:init_player, socket.assigns.session_id, socket.assigns.seat_param})
+      end
 
       {:ok, socket}
     else
@@ -130,8 +105,8 @@ defmodule RiichiAdvancedWeb.LogLive do
   def render(assigns) do
     ~H"""
     <div id="container" phx-hook="ClickListener">
-      <%= if Map.has_key?(@state.rules, "custom_style") do %>
-        <.live_component module={RiichiAdvancedWeb.CustomStyleComponent} id="custom-tiles" style={@state.rules["custom_style"]}/>
+      <%= if Rules.has_key?(@state.rules_ref, "custom_style") do %>
+        <.live_component module={RiichiAdvancedWeb.CustomStyleComponent} id="custom-tiles" style={Rules.get(@state.rules_ref, "custom_style", %{})}/>
       <% end %>
       <.live_component module={RiichiAdvancedWeb.HandComponent}
         id={"hand #{Utils.get_relative_seat(@seat, seat)}"}
@@ -178,7 +153,7 @@ defmodule RiichiAdvancedWeb.LogLive do
         all_drafted={if Map.has_key?(@state, :saki) do RiichiAdvanced.GameState.Saki.check_if_all_drafted(@state) else nil end}
         num_players={length(@state.available_seats)}
         dead_hand_buttons={false}
-        display_round_marker={Map.get(@state.rules, "display_round_marker", true)}
+        display_round_marker={Rules.get(@state.rules_ref, "display_round_marker", true)}
         :for={{seat, player} <- @state.players} />
       <.live_component module={RiichiAdvancedWeb.BigTextComponent}
         id={"big-text #{Utils.get_relative_seat(@seat, seat)}"}
@@ -197,12 +172,12 @@ defmodule RiichiAdvancedWeb.LogLive do
         tiles_left={length(@state.wall) - @state.wall_index}
         kyoku={@state.kyoku}
         honba={@state.honba}
-        riichi_sticks={Utils.try_integer(@state.pot / max(1, (get_in(@state.rules["score_calculation"]["riichi_value"]) || 1)))}
+        riichi_sticks={Utils.try_integer(@state.pot / max(1, Rules.get(@state.rules_ref, "score_calculation", %{}) |> Map.get("riichi_value", 1)))}
         riichi={Map.new(@state.players, fn {seat, player} -> {seat, player.riichi_stick} end)}
         score={Map.new(@state.players, fn {seat, player} -> {seat, player.score} end)}
         display_riichi_sticks={@display_riichi_sticks}
         display_honba={@display_honba}
-        score_e_notation={Map.get(@state.rules, "score_e_notation", false)}
+        score_e_notation={Rules.get(@state.rules_ref, "score_e_notation", false)}
         available_seats={@state.available_seats}
         is_bot={Map.new([:east, :south, :west, :north], fn seat -> {seat, is_pid(Map.get(@state, seat))} end)} />
       <%= if @state.visible_screen != nil do %>
@@ -229,7 +204,7 @@ defmodule RiichiAdvancedWeb.LogLive do
         num_scryed_tiles={@state.players[@seat].num_scryed_tiles}
         marking={@state.marking[@seat]}
         :if={@state.players[@seat].num_scryed_tiles > 0} />
-      <div class="display-wall-hover" :if={Map.get(@state.rules, "display_wall", false)}></div>
+      <div class="display-wall-hover" :if={Rules.get(@state.rules_ref, "display_wall", false)}></div>
       <.live_component module={RiichiAdvancedWeb.DisplayWallComponent}
         id="display-wall"
         game_state={@game_state}
@@ -238,23 +213,23 @@ defmodule RiichiAdvancedWeb.LogLive do
         kyoku={@state.kyoku}
         wall={@state.wall}
         dead_wall={@state.dead_wall}
-        wall_length={length(Map.get(@state.rules, "wall", []))}
-        die1={@state.die1}
-        die2={@state.die2}
-        dice_roll={@state.die1 + @state.die2}
+        atop_wall={@state.atop_wall}
+        wall_length={length(Rules.get(@state.rules_ref, "wall", []))}
+        dice={@state.dice}
+        dice_roll={Enum.sum(@state.dice)}
         wall_index={@state.wall_index}
         revealed_tiles={@state.revealed_tiles}
         reserved_tiles={@state.reserved_tiles}
         drawn_reserved_tiles={@state.drawn_reserved_tiles}
         available_seats={@state.available_seats}
-        :if={Map.get(@state.rules, "display_wall", false)} />
+        :if={Rules.get(@state.rules_ref, "display_wall", false)} />
       <.live_component module={RiichiAdvancedWeb.LogControlComponent}
         id="log-control"
         state={@state}
         log={@log}
         log_control_state={@log_control_state} />
-      <div class={["big-text"]} :if={@loading}>Loading...</div>
-      <%= if RiichiAdvanced.GameState.Debug.debug_status() or Map.get(@state.rules, "debug_status", false) do %>
+      <div class={["big-text"]} :if={@loading}><%= t(@lang, "Loading...") %></div>
+      <%= if RiichiAdvanced.GameState.Debug.debug_status() or Rules.get(@state.rules_ref, "debug_status", false) do %>
         <div class={["status-line", Utils.get_relative_seat(@seat, seat)]} :for={{seat, player} <- @state.players}>
           <div class="status-text" :for={status <- player.status}><%= status %></div>
           <div class="status-text" :for={{name, value} <- player.counters}><%= "#{name}: #{value}" %></div>
@@ -262,10 +237,10 @@ defmodule RiichiAdvancedWeb.LogLive do
         </div>
       <% else %>
         <div class={["status-line", Utils.get_relative_seat(@seat, seat)]} :for={{seat, player} <- @state.players}>
-          <%= for status <- player.status, status in Map.get(@state.rules, "shown_statuses_public", []) or (seat == @viewer and status in Map.get(@state.rules, "shown_statuses", [])) do %>
+          <%= for status <- player.status, status in Rules.get(@state.rules_ref, "shown_statuses_public", []) or (seat == @viewer and status in Rules.get(@state.rules_ref, "shown_statuses", [])) do %>
             <div class="status-text"><%= status %></div>
           <% end %>
-          <%= for {name, value} <- player.counters, name in Map.get(@state.rules, "shown_statuses_public", []) or (seat == @viewer and name in Map.get(@state.rules, "shown_statuses", [])) do %>
+          <%= for {name, value} <- player.counters, name in Rules.get(@state.rules_ref, "shown_statuses_public", []) or (seat == @viewer and name in Rules.get(@state.rules_ref, "shown_statuses", [])) do %>
             <div class="status-text"><%= "#{name}: #{value}" %></div>
           <% end %>
         </div>
@@ -275,21 +250,22 @@ defmodule RiichiAdvancedWeb.LogLive do
           id="centerpiece-status-bar"
           tiles_left={length(@state.wall) - @state.wall_index}
           honba={@state.honba}
-          riichi_sticks={Utils.try_integer(@state.pot / max(1, (get_in(@state.rules["score_calculation"]["riichi_value"]) || 1)))}
+          riichi_sticks={Utils.try_integer(@state.pot / max(1, Rules.get(@state.rules_ref, "score_calculation", %{}) |> Map.get("riichi_value", 1)))}
           display_riichi_sticks={@display_riichi_sticks}
           display_honba={@display_honba} />
         <.live_component module={RiichiAdvancedWeb.MenuButtonsComponent} id="menu-buttons" log_button={true} />
       </div>
-      <.live_component module={RiichiAdvancedWeb.MessagesComponent} id="messages" messages={@messages} />
+      <.live_component module={RiichiAdvancedWeb.MessagesComponent} id="messages" messages={@messages} lang={@lang} />
       <div class="ruleset">
-        <textarea readonly><%= @state.ruleset_json %></textarea>
+        <div class="ruleset-text"><%= t(@lang, "Ruleset:") %></div>
+        <textarea readonly><%= Rules.get(@state.rules_ref, :ruleset_json) %></textarea>
       </div>
     </div>
     """
   end
 
   def handle_event("back", _assigns, socket) do
-    socket = push_navigate(socket, to: ~p"/?nickname=#{socket.assigns.nickname}")
+    socket = push_navigate(socket, to: ~p"/?nickname=#{socket.assigns.nickname}&lang=#{socket.assigns.lang}")
     {:noreply, socket}
   end
 
@@ -359,6 +335,54 @@ defmodule RiichiAdvancedWeb.LogLive do
     {:noreply, socket}
   end
 
+  def handle_event("change_language", %{"lang" => lang}, socket), do: {:noreply, assign(socket, :lang, lang)}
+
+  def handle_event(_event, _assigns, socket) do
+    {:noreply, socket}
+  end
+
+  def handle_info(%{topic: topic, event: "load_log_control_state", payload: %{"session_id" => session_id, "game_state" => game_state, "log_control_state" => log_control_state}}, socket) do
+    if topic == (socket.assigns.ruleset <> ":" <> socket.assigns.room_code) and session_id != nil and socket.assigns.session_id == session_id do
+      socket = assign(socket, :game_state, game_state)
+      socket = assign(socket, :log_control_state, log_control_state)
+      {:noreply, socket}
+    else
+      {:noreply, socket}
+    end
+  end
+
+  def handle_info(%{topic: topic, event: "fetch_messages", payload: %{"session_id" => session_id}}, socket) do
+    if topic == (socket.assigns.ruleset <> ":" <> socket.assigns.room_code) and session_id != nil and socket.assigns.session_id == session_id do
+      # fetch messages
+      messages_init = RiichiAdvanced.MessagesState.link_player_socket(socket.root_pid, socket.assigns.session_id)
+      socket = if Map.has_key?(messages_init, :messages_state) do
+        socket = assign(socket, :messages_state, messages_init.messages_state)
+        # subscribe to message updates
+        Phoenix.PubSub.subscribe(RiichiAdvanced.PubSub, "messages:" <> socket.assigns.session_id)
+        GenServer.cast(messages_init.messages_state, {:add_message, [
+          %{text: "Viewing log for a"},
+          %{bold: true, text: socket.assigns.ruleset},
+          %{text: "game"},
+        ] ++ if socket.assigns.state.mods != nil and not Enum.empty?(socket.assigns.state.mods) do
+          [%{text: "with mods"}] ++ Enum.map(socket.assigns.state.mods, fn mod -> %{bold: true, text: ModLoader.get_mod_name(mod)} end)
+        else [] end})
+        socket
+      else socket end
+      {:noreply, socket}
+    else
+      {:noreply, socket}
+    end
+  end
+
+  def handle_info(%{topic: topic, event: "load_log_control_state", payload: %{"session_id" => session_id, "log_control_state" => log_control_state}}, socket) do
+    if topic == (socket.assigns.ruleset <> ":" <> socket.assigns.room_code) and session_id != nil and socket.assigns.session_id == session_id do
+      socket = assign(socket, :log_control_state, log_control_state)
+      {:noreply, socket}
+    else
+      {:noreply, socket}
+    end
+  end
+
   def handle_info(%{topic: topic, event: "state_updated", payload: %{"state" => state}}, socket) do
     if topic == (socket.assigns.ruleset <> ":" <> socket.assigns.room_code) do
       # animate new calls
@@ -400,7 +424,7 @@ defmodule RiichiAdvancedWeb.LogLive do
   end
 
   def handle_info(%{topic: topic, event: "messages_updated", payload: %{"state" => state}}, socket) do
-    if topic == "messages:" <> socket.id do
+    if topic == "messages:" <> socket.assigns.session_id do
       socket = assign(socket, :messages, state.messages)
       {:noreply, socket}
     else

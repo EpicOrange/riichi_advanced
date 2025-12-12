@@ -6,6 +6,7 @@ defmodule RiichiAdvancedWeb.RevealedTilesComponent do
     socket = assign(socket, :game_state, nil)
     socket = assign(socket, :revealed_tiles, nil)
     socket = assign(socket, :max_revealed_tiles, 0)
+    socket = assign(socket, :reveal_hidden_tiles, true) # used by Utils.get_tile_class 
     socket = assign(socket, :marking, %{})
     {:ok, socket}
   end

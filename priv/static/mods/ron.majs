@@ -1,0 +1,17 @@
+define_const ron_name, @ron_name
+
+define_button ron,
+  display_name: @ron_name, 
+  show_when: not_our_turn
+    and someone_else_just_discarded
+    and match(["hand", "calls"], ["tenpai"])
+    and match(["hand", "calls", "last_discard"], ["win"]),
+  precedence_over: ["chii", "pon", "daiminkan"]
+  do
+    big_text(@ron_name)
+    pause(1000)
+    reveal_hand
+    win_by_discard
+  end
+
+apply set_append, "interruptible_actions", ["play_tile"]

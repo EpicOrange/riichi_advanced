@@ -1,0 +1,36 @@
+on after_initialization do
+  if equals(!shou_list, "yakuman") do
+    add_rule("Limit", "$name", "You have triplets of three different winds, and a pair of the fourth.", %{name: !shou_name})
+    update_rule("Limit", "$name", "%{example_hand}", %{value: !shou_value, han: !han, name: !shou_name, example_hand: ~t"23s22233444z 111z 4s"})
+  else
+    add_rule("$value $han", "$name", "You have triplets of three different winds, and a pair of the fourth.", %{value: !shou_value, han: !han, name: !shou_name})
+    update_rule("$value $han", "$name", "%{example_hand}", %{value: !shou_value, han: !han, name: !shou_name, example_hand: ~t"23s22233444z 111z 4s"})
+  end
+  if equals(!dai_list, "yakuman") do
+    add_rule("Limit", "$name", "You have triplets of all four winds.", %{name: !dai_name})
+    update_rule("Limit", "$name", "%{example_hand}", %{value: !dai_value, han: !han, name: !dai_name, example_hand: ~t"22s22233444z 111z 3z"})
+  else
+    add_rule("$value $han", "$name", "You have triplets of all four winds.", %{value: !dai_value, han: !han, name: !dai_name})
+    update_rule("$value $han", "$name", "%{example_hand}", %{value: !dai_value, han: !han, name: !dai_name, example_hand: ~t"22s22233444z 111z 3z"})
+  end
+end
+
+define_set ton, ~s"1z 1z 1z"
+define_set nan, ~s"2z 2z 2z"
+define_set shaa, ~s"3z 3z 3z"
+define_set pei, ~s"4z 4z 4z"
+define_set ton_pair, ~s"1z 1z"
+define_set nan_pair, ~s"2z 2z"
+define_set shaa_pair, ~s"3z 3z"
+define_set pei_pair, ~s"4z 4z"
+define_yaku !shou_list, !shou_name, !shou_value, match(["hand", "calls", "winning_tile"], ~m"unique, (ton nan shaa pei):3, (ton_pair nan_pair shaa_pair pei_pair):1")
+define_yaku !dai_list, !dai_name, !dai_value, match(["hand", "calls", "winning_tile"], ~m"unique, (ton nan shaa pei):4")
+define_yaku_precedence !dai_name, [!shou_name]
+
+on after_call do
+  if match(["last_call"], ~m"(ton nan shaa pei):1") and match(["calls"], ~m"ton:1, nan:1, shaa:1, pei:1") do
+    as callee do
+      make_responsible_for("caller", "all")
+    end
+  end
+end

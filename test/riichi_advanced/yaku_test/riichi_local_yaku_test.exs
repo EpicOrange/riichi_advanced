@@ -32,7 +32,7 @@ defmodule RiichiAdvanced.YakuTest.RiichiLocalYaku do
   end
 
   test "riichi - chinchii toushii" do
-    TestUtils.test_yaku_advanced("riichi", ["kan", "yaku/ketsupaihou", "yaku/chinchii_toushii"], """
+    TestUtils.test_yaku_advanced("riichi", ["yaku/ketsupaihou", "yaku/chinchii_toushii"], """
     {
       "starting_hand": {
         "east": ["3m", "3m", "3m", "7p", "7p", "7p", "2s", "2s", "2s", "4p", "6z", "5m", "5m"],
@@ -67,9 +67,9 @@ defmodule RiichiAdvanced.YakuTest.RiichiLocalYaku do
     {
       "starting_hand": {
         "east": ["3m", "3m", "3m", "4m", "5m", "6m", "7m", "7m", "8m", "8m", "8m", "7z", "7z"],
-        "south": ["1m", "4m", "7m", "2p", "5p", "8p", "3s", "6s", "9s", "1z", "2z", "3z", "4z"],
-        "west": ["1m", "4m", "7m", "2p", "5p", "8p", "3s", "6s", "9s", "1z", "2z", "3z", "4z"],
-        "north": ["3p", "3p", "7m", "2p", "5p", "8p", "3s", "6s", "9s", "1z", "2z", "3z", "4z"]
+        "south": ["1m", "4m", "6m", "2p", "5p", "8p", "3s", "6s", "9s", "1z", "2z", "3z", "4z"],
+        "west": ["1m", "4m", "6m", "2p", "5p", "8p", "3s", "6s", "9s", "1z", "2z", "3z", "4z"],
+        "north": ["3p", "3p", "6m", "2p", "5p", "8p", "3s", "6s", "9s", "1z", "2z", "3z", "4z"]
       },
       "starting_draws": ["1z", "7z"]
     }
@@ -93,11 +93,11 @@ defmodule RiichiAdvanced.YakuTest.RiichiLocalYaku do
       "starting_hand": {
         "east": ["1m", "1m", "9m", "9m", "1p", "1p", "7m", "7m", "9p", "9p", "1s", "1s", "9s"],
         "south": ["1m", "4m", "7m", "2p", "5p", "8p", "3s", "6s", "9s", "1z", "2z", "3z", "4z"],
-        "west": ["1m", "4m", "7m", "2p", "5p", "8p", "3s", "6s", "9s", "1z", "2z", "3z", "4z"],
-        "north": ["3p", "3p", "7m", "2p", "5p", "8p", "3s", "6s", "9s", "1z", "2z", "3z", "4z"]
+        "west": ["2m", "4m", "7m", "2p", "5p", "8p", "3s", "6s", "9s", "1z", "2z", "3z", "4z"],
+        "north": ["3p", "3p", "8m", "2p", "5p", "8p", "3s", "6s", "8s", "1z", "2z", "3z", "4z"]
       },
       "starting_draws": ["1z", "9s"],
-      "starting_dead_wall": ["1m", "2m", "3m", "4m", "5m", "6m"]
+      "starting_dead_wall": ["2m", "1m", "4m", "3m", "6m", "5m"]
     }
     """, [
       %{"type" => "discard", "tile" => "1z", "player" => 0, "tsumogiri" => true},

@@ -2,19 +2,7 @@
 .buttons |= del(.pei)
 |
 # remove pei autobutton
-.auto_buttons |= del(.["5_auto_pei"])
-|
-# add pei yakuhai
-.yaku += [
-  {
-    "display_name": "North Wind",
-    "value": 1,
-    "when": [{"name": "match", "opts": [["hand", "calls", "winning_tile"], [[[["pei_triplet"], 1]]]]}]
-  }
-]
-|
-# pei pair gives yakuhai 2 fu
-.score_calculation.north_wind_yakuhai = true
+.auto_buttons |= del(.["_5_auto_pei"])
 |
 # add flowers
 .wall += ["1f", "2f", "3f", "4f"]
@@ -29,32 +17,36 @@
 ]
 |
 # add flower call (identical to pei call, but is forced)
-.buttons.flower = {
-  "display_name": "Flower",
-  "show_when": ["our_turn", "not_no_tiles_remaining", "has_draw", {"name": "not_status", "opts": ["just_reached"]}, {"name": "match", "opts": [["hand", "draw"], [[[["1f", "2f", "3f", "4f"], 1]]]]}, {"name": "tile_not_drawn", "opts": [-8]}],
-  "actions": [["big_text", "Flower"], ["flower", "1f", "2f", "3f", "4f"], ["run", "do_kan_draw", {"status": "pei"}], ["unset_status", "kan"]],
-  "unskippable": true
-}
+.buttons.flower.display_name = "Flower"
 |
-# add flower autobutton
-.auto_buttons["5_auto_flower"] = {
-  "display_name": "F",
-  "desc": "Automatically declare all flowers.",
-  "actions": [
-    ["when", [{"name": "buttons_include", "opts": ["flower"]}], [["press_button", "flower"], ["press_first_call_button", "flower"]]]
-  ],
-  "enabled_at_start": true
-}
+.buttons.flower.msg_name = "flower"
+|
+.buttons.flower.unskippable = true
+|
+.buttons.flower |= walk(if type == "array" and index("4z") then . - ["4z"] + ["1f", "2f", "3f", "4f"] else . end)
+|
+.auto_buttons._5_auto_flower.display_name = "F"
+|
+.auto_buttons._5_auto_flower.desc = "Automatically declare all flowers."
+|
+.auto_buttons._5_auto_flower.actions = [
+        ["when", [{"name": "buttons_include", "opts": ["start_flower"]}], [["press_button", "start_flower"], ["press_first_call_button", "start_flower"]]],
+        ["when", [{"name": "buttons_include", "opts": ["start_no_flower"]}], [["press_button", "start_no_flower"]]],
+        ["when", [{"name": "buttons_include", "opts": ["flower"]}], [["press_button", "flower"], ["press_first_call_button", "flower"]]]
+      ]
+|
+.auto_buttons._5_auto_flower.enabled_at_start = true
 |
 # add flower dora indicators
 .dora_indicators += {
-  "1f": ["1f","2f","3f","4f"],
-  "2f": ["1f","2f","3f","4f"],
-  "3f": ["1f","2f","3f","4f"],
-  "4f": ["1f","2f","3f","4f"]
+  "1f": ["2f","3f","4f"],
+  "2f": ["1f","3f","4f"],
+  "3f": ["1f","2f","4f"],
+  "4f": ["1f","2f","3f"]
 }
 |
-# count flowers
+# count flowers, stop counting pei
 .before_win.actions += [
-  ["add_counter", "flowers", "count_matches", ["flowers"], [[ "nojoker", [["1f","2f","3f","4f"], 1] ]]]
+  ["add_counter", "flowers", "count_matches", ["flowers"], [[ "nojoker", [["1f","2f","3f","4f"], 1] ]]],
+  ["set_counter", "nukidora", 0]
 ]

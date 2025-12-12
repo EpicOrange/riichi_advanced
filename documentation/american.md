@@ -89,11 +89,12 @@ Here are differences between Riichi Advanced and real life/other mahjong clients
 
 The following Cards are supported by Riichi Advanced:
 
-- [NMJL 2024](https://www.nationalmahjonggleague.org/store.aspx) (cost: 14USD)
+- [NMJL 2020~2025](https://www.nationalmahjonggleague.org/store.aspx) (cost: 14USD)
 - [ILoveMahj Card](https://ilovemahj.com/ilmCard) (free)
 - [ATeacherFirst Mah Jongg Fake Card](https://www.ateacherfirst.com/bridge/mah-jongg/) (free)
 - [MahjLife Mock Card](https://mahjlife.com/document/mahj-life-mock-card-print/) (free, used with permission from Michele Frizzell)
 - [American Mah Jongg for Everyone Card](https://americanmahjonggforeveryone.com/our-card-and-tile-set/) (free)
+- [John Burton's Card Free American Mah Jongg](https://johnburtongames.com/cardfreemahj/) (free, technically not a Card)
 
 [TODO: implement the 75-point hand on the AMJfE Card.]
 
@@ -164,25 +165,27 @@ To read the Card:
 
 The following mods are currently available for American:
 
-- Show Waits: When you can discard a tile to become one tile away from winning, hovering over that tile will tell you what your winning tiles are, and will also tell you how many of them are still available. On by default.
-- Show Nearest Hands: Shows the five nearest hands to yours, when you hover on the "Show Nearest Hands" button in the bottom right. [TODO: Implement score and exposed/concealed info for each hand in this display.]
-- Open Hands: The contents of all hands are revealed to everyone. Primarily useful as a debug or teaching feature.
-- Zombie Blanks: Adds four "zombie blanks" to the wall. Zombie blanks may not be passed during the Charleston. On a player's turn, they may swap a zombie blank in their hand with any natural tile in the discard pool. Blanks have no other purpose; they do not act as jokers; players may not declare Mah Jongg if they have a zombie blank in their hand; nor may they make exposures using blanks; or joker exchanges with blanks.
+- Zombie Blanks: Adds four "zombie blanks" to the wall. Zombie blanks may not be passed during the Charleston or discarded. On a player's turn, they may swap a zombie blank in their hand with any natural tile in the discard pool. Blanks have no other purpose; they do not act as jokers; players may not declare Mah Jongg if they have a zombie blank in their hand; nor may they make exposures using blanks; or joker exchanges with blanks.
+- PIE: Each player starts with a set amount of points. Players' point totals can't go negative. If a player runs out of points, they need not pay.
+- NMJL [Year] Card: Play with the [NMJL Card](https://www.nationalmahjonggleague.org/store.aspx) from the year of your choice (between 2020 and 2025).
 - ILM Card: Play with the free [ILoveMahj Card](https://ilovemahj.com/ilmCard).
 - ATF Card: Play with the free [ATeacherFirst Mah Jongg Fake Card](https://www.ateacherfirst.com/bridge/mah-jongg/).
 - MahjLife Card: Play with the free [MahjLife Mock Card](https://mahjlife.com/document/mahj-life-mock-card-print/). Introduced along with [this video](https://www.youtube.com/watch?v=7WygnpfFbMQ). (Implemented with permission from Michele Frizzell.)
 - AMJFE Card: Play with the free [American Mah Jongg for Everyone Card](https://americanmahjonggforeveryone.com/our-card-and-tile-set/). (The 75-point hand is not yet implemented.)
+- Card Free (beta): Play with [John Burton's Card Free American Mah Jongg rules](https://johnburtongames.com/cardfreemahj/).
+- Show Waits: When you can discard a tile to become one tile away from winning, hovering over that tile will tell you what your winning tiles are, and will also tell you how many of them are still available. On by default.
+- Show Nearest Hands: Shows the five nearest hands to yours, when you hover on the "Show Nearest Hands" button in the bottom right. [TODO: Implement score and exposed/concealed info for each hand in this display.]
+- Open Hands: The contents of all hands are revealed to everyone. Primarily useful as a debug or teaching feature.
 
 The following mods are planned to be supported (not necessarily in this order):
-- PIE: Each player starts with 600¢. If a player runs out of ¢, they need not pay.
 - Stacks: Instead of performing the Charleston with other players, perform the Charleston with 7 stacks of 3 tiles in front of you. After the Charleston is complete, the remaining tiles are all shuffled back into the wall.
 - Futures: Each player gets to peek at their next draw.
 - Hot Wall: If a player deals in with a previously-undiscarded tile during the last portion of the wall, they pay for the table.
 - Cold Wall: During the last portion of the wall, players may only win by self-draw.
-- NMJL [Year] Card: Play with an NMJL Card from the year of your choice.
+- NMJL [Year] Card: Play with the NMJL Card from the year of your choice (before 2020).
 - Siamese [Year] Card: Play with the paid [Siamese Card](https://mahjongg.org/siamese-products/) from the year of your choice.
 - Marvelous [Year] Card: Play with the paid [Marvelous Card](https://marvelousmahjongg.com/) from the year of your choice.
+- Mah Jongg Network [Year] Card: Play with the paid [Mah Jongg Network Card](https://shop.mahjonggnetwork.com/) from the year of your choice.
 - MAHJ-X: Play with [MAHJ-X rules](https://www.mahjx.com/).
-- Card Free: Play with [John Burton's Card Free American Mah Jongg rules](https://johnburtongames.com/cardfreemahj/).
 - Siamese: Play with [Siamese rules](https://mahjongg.org/siamese-rules/).
 - Royale Siamese: Play with [Royale Siamese rules](https://mahjongg.org/siamese-rules/#royale).

@@ -1,0 +1,481 @@
+{
+  // TODOs:
+    //⚠️ allow East to qiangjin, by only drawing East's 17th tile after everyone has declared flowers
+  // mods/rule-variants
+    // reddit post says only red dragon is a flower, not all 3 dragons
+    // reddit post says if you have 3 gold you win immediately, but here it is just a valuable yaku
+    // mahjongpros also seem to have a few more yaku
+  
+  "default_mods": ["show_waits"],
+  "available_mods": [
+    {"id": "forced_flowers", "conflicts": ["discardable_flowers"], "name": "Forced Flowers", "desc": "Every drawn flower must be replaced immediately."},
+    {"id": "discardable_flowers", "conflicts": ["forced_flowers"], "name": "Discardable Flowers", "desc": "You may discard flower tiles like normal tiles."},
+    {"id": "forbid_golden_flowers", "name": "No Gold Flowers", "desc": "The gold tile is determined by checking each tile in the dead wall until you find a non-flower tile. Flowers revealed in this process are given to the player whose wall is broken. If all nine tiles on the dead wall are flowers, then there is no gold tile for the round."},
+    {"id": "fuzhou_everyone_pays", "name": "Everyone Pays On Discard", "desc": "Non-discarders also pay for a win by discard."},
+    {"id": "reset_honba_on_draw", "name": "Draws Reset Dealer Bonus", "desc": "Reset the dealer continuation bonus on exhaustive draws. (The default behavior is to increase the bonus on a draw.)"},
+    {"id": "show_waits", "name": "Show Waits", "desc": "Add some UI that shows waits."},
+    {"id": "open_hands", "name": "Open Hands", "desc": "Everyone plays with tiles shown."}
+  ],
+  "display_name": "Fuzhou",
+  "tutorial_link": "https://mahjongpros.com/blogs/how-to-play/beginners-guide-to-fuzhou-mahjong",
+  "wall": ["1m", "1m", "1m", "1m",
+           "2m", "2m", "2m", "2m",
+           "3m", "3m", "3m", "3m",
+           "4m", "4m", "4m", "4m",
+           "5m", "5m", "5m", "5m",
+           "6m", "6m", "6m", "6m",
+           "7m", "7m", "7m", "7m",
+           "8m", "8m", "8m", "8m",
+           "9m", "9m", "9m", "9m",
+           "1p", "1p", "1p", "1p",
+           "2p", "2p", "2p", "2p",
+           "3p", "3p", "3p", "3p",
+           "4p", "4p", "4p", "4p",
+           "5p", "5p", "5p", "5p",
+           "6p", "6p", "6p", "6p",
+           "7p", "7p", "7p", "7p",
+           "8p", "8p", "8p", "8p",
+           "9p", "9p", "9p", "9p",
+           "1s", "1s", "1s", "1s",
+           "2s", "2s", "2s", "2s",
+           "3s", "3s", "3s", "3s",
+           "4s", "4s", "4s", "4s",
+           "5s", "5s", "5s", "5s",
+           "6s", "6s", "6s", "6s",
+           "7s", "7s", "7s", "7s",
+           "8s", "8s", "8s", "8s",
+           "9s", "9s", "9s", "9s",
+           "1z", "1z", "1z", "1z",
+           "2z", "2z", "2z", "2z",
+           "3z", "3z", "3z", "3z",
+           "4z", "4z", "4z", "4z",
+           "0z", "0z", "0z", "0z",
+           "6z", "6z", "6z", "6z",
+           "7z", "7z", "7z", "7z",
+           "1f", "2f", "3f", "4f",
+           "1g", "2g", "3g", "4g"],
+  "dora_indicators": {
+    "1m": ["1m"],  "2m": ["2m"],  "3m": ["3m"],  "4m": ["4m"],  "5m": ["5m"],  "6m": ["6m"],  "7m": ["7m"],  "8m": ["8m"],  "9m": ["9m"],  "0m": ["5m"],
+    "1p": ["1p"],  "2p": ["2p"],  "3p": ["3p"],  "4p": ["4p"],  "5p": ["5p"],  "6p": ["6p"],  "7p": ["7p"],  "8p": ["8p"],  "9p": ["9p"],  "0p": ["5p"],
+    "1s": ["1s"],  "2s": ["2s"],  "3s": ["3s"],  "4s": ["4s"],  "5s": ["5s"],  "6s": ["6s"],  "7s": ["7s"],  "8s": ["8s"],  "9s": ["9s"],  "0s": ["5s"],
+    "1z": ["1z"],  "2z": ["2z"],  "3z": ["3z"],  "4z": ["4z"],  "0z": ["0z"],  "6z": ["6z"],  "7z": ["7z"],
+    "1f": ["1f", "2f", "3f", "4f", "1g", "2g", "3g", "4g"],
+    "2f": ["1f", "2f", "3f", "4f", "1g", "2g", "3g", "4g"],
+    "3f": ["1f", "2f", "3f", "4f", "1g", "2g", "3g", "4g"],
+    "4f": ["1f", "2f", "3f", "4f", "1g", "2g", "3g", "4g"],
+    "1g": ["1f", "2f", "3f", "4f", "1g", "2g", "3g", "4g"],
+    "2g": ["1f", "2f", "3f", "4f", "1g", "2g", "3g", "4g"],
+    "3g": ["1f", "2f", "3f", "4f", "1g", "2g", "3g", "4g"],
+    "4g": ["1f", "2f", "3f", "4f", "1g", "2g", "3g", "4g"]
+  },
+  "set_definitions": {
+    "pair": [[0, 0]],
+    "gold_pair": [[{"offset": 0, "attrs": ["is_jin"]}, {"offset": 0, "attrs": ["is_jin"]}]],
+    "shuntsu": [[0, 1, 2]],
+    "koutsu": [[0, 0, 0]],
+    "gold_koutsu": [[{"offset": 0, "attrs": ["is_jin"]}, {"offset": 0, "attrs": ["is_jin"]}, {"offset": 0, "attrs": ["is_jin"]}]],
+    "quad": [[0, 0, 0, 0]],
+    "ryanmen/penchan": [[0, 1]],
+    "kanchan": [[0, 2]],
+    "ton": [["nojoker", "1z", "1z", "1z"]],
+    "nan": [["nojoker", "2z", "2z", "2z"]],
+    "shaa": [["nojoker", "3z", "3z", "3z"]],
+    "pei": [["nojoker", "4z", "4z", "4z"]],
+    "haku": [["nojoker", "5z", "5z", "5z"]],
+    "hatsu": [["nojoker", "6z", "6z", "6z"]],
+    "chun": [["nojoker", "7z", "7z", "7z"]],
+    "ton_pair": [["nojoker", "1z", "1z"]],
+    "nan_pair": [["nojoker", "2z", "2z"]],
+    "shaa_pair": [["nojoker", "3z", "3z"]],
+    "pei_pair": [["nojoker", "4z", "4z"]],
+    "haku_pair": [["nojoker", "5z", "5z"]],
+    "hatsu_pair": [["nojoker", "6z", "6z"]],
+    "chun_pair": [["nojoker", "7z", "7z"]]
+  },
+  "tenpai_definition": [
+    [ "exhaustive", [["shuntsu", "koutsu"], 4], [["ryanmen/penchan", "kanchan", "pair"], 1], [["pair"], 1] ],
+    [ "exhaustive", [["shuntsu", "koutsu"], 5] ]
+  ],
+  "win_definition": [
+    [ "exhaustive", [["shuntsu", "koutsu"], 5], [["pair"], 1] ]
+  ],
+  "false_win_definition": [
+    [ [["ton", "nan", "shaa", "pei", "haku", "hatsu", "chun"], 1], "exhaustive", [["shuntsu", "koutsu"], 4], [["pair"], 1] ],
+    [ [["ton_pair", "nan_pair", "shaa_pair", "pei_pair", "haku_pair", "hatsu_pair", "chun_pair"], 1], "exhaustive", [["shuntsu", "koutsu"], 5] ]
+  ],
+  "all_flowers_definition": [[ "nojoker", "unique", [["1f","2f","3f","4f"], 4] ]],
+  "all_seasons_definition": [[ "nojoker", "unique", [["1g","2g","3g","4g"], 4] ]],
+  "any_flower_definition": [[ "nojoker", [["1f","2f","3f","4f","1g","2g","3g","4g","1z","2z","3z","4z","0z","6z","7z"], 1] ]],
+  "7_flowers_definition": [[ "nojoker", "unique", [["1f","2f","3f","4f","1g","2g","3g","4g"], 7] ]],
+  "8_flowers_definition": [[ "nojoker", "unique", [["1f","2f","3f","4f","1g","2g","3g","4g"], 8] ]],
+  "closed_wait_definition": [
+    [ "exhaustive", [["shuntsu", "koutsu"], 4], [["kanchan"], 1], [["pair"], 1] ]
+  ],
+  "single_wait_definition": [
+    [ "exhaustive", [["shuntsu", "koutsu"], 5] ]
+  ],
+  "golden_pair_definition": [
+    [ "exhaustive", [["nojoker", "gold_pair"], 1], [["shuntsu", "koutsu"], 5] ]
+  ],
+  "golden_dragon_definition": [
+    [ "exhaustive", [["nojoker", "gold_koutsu"], 1], [["shuntsu", "koutsu"], 4], [["pair"], 1] ]
+  ],
+  "yaku": [
+    { "display_name": "Base Points", "value": 10, "when": [] },
+      // apparently the scoring for these "1 per" yaku is doubled, so these are actually "2 per" yaku. "Gold" being duplicated here is intentional. ditto for "Dealer Continuation".
+    { "display_name": "Flowers", "value": "flower_count", "when": [{"name": "counter_at_least", "opts": ["flower_count", 1]}]},
+    { "display_name": "Flowers", "value": "flower_count", "when": [{"name": "counter_at_least", "opts": ["flower_count", 1]}]},
+    { "display_name": "Gold", "value": "gold_count", "when": [{"name": "counter_at_least", "opts": ["gold_count", 1]}]},
+    { "display_name": "Gold", "value": "gold_count", "when": [{"name": "counter_at_least", "opts": ["gold_count", 1]}]},
+    { "display_name": "Dealer Continuation", "value": "dealer_continuation", "when": [{"name": "seat_is", "opts": ["east"]}, {"name": "counter_at_least", "opts": ["dealer_continuation", 1]}] },
+    { "display_name": "Dealer Continuation", "value": "dealer_continuation", "when": [{"name": "seat_is", "opts": ["east"]}, {"name": "counter_at_least", "opts": ["dealer_continuation", 1]}] },
+    { "display_name": "Open Kong", "value": 2, "when": [{"name": "match", "opts": [["calls"], [[[["daiminkan", "kakan"], 1]]]]}] },
+    { "display_name": "Open Kong", "value": 2, "when": [{"name": "match", "opts": [["calls"], [[[["daiminkan", "kakan"], 2]]]]}] },
+    { "display_name": "Open Kong", "value": 2, "when": [{"name": "match", "opts": [["calls"], [[[["daiminkan", "kakan"], 3]]]]}] },
+    { "display_name": "Open Kong", "value": 2, "when": [{"name": "match", "opts": [["calls"], [[[["daiminkan", "kakan"], 4]]]]}] },
+    { "display_name": "Concealed Kong", "value": 2, "when": [{"name": "match", "opts": [["calls"], [[[["ankan"], 1]]]]}] },
+    { "display_name": "Concealed Kong", "value": 2, "when": [{"name": "match", "opts": [["calls"], [[[["ankan"], 2]]]]}] },
+    { "display_name": "Concealed Kong", "value": 2, "when": [{"name": "match", "opts": [["calls"], [[[["ankan"], 3]]]]}] },
+    { "display_name": "Concealed Kong", "value": 2, "when": [{"name": "match", "opts": [["calls"], [[[["ankan"], 4]]]]}] },
+    { "display_name": "Full Bloom (Flowers)", "value": 12, "when": [{"name": "match", "opts": [["flowers"], ["all_flowers"]]}] },
+    { "display_name": "Full Bloom (Seasons)", "value": 12, "when": [{"name": "match", "opts": [["flowers"], ["all_seasons"]]}] },
+    { "display_name": "Full Bloom (East)", "value": 12, "when": [{"name": "match", "opts": [["flowers"], [[[["1z"], 4]]]]}] },
+    { "display_name": "Full Bloom (South)", "value": 12, "when": [{"name": "match", "opts": [["flowers"], [[[["2z"], 4]]]]}] },
+    { "display_name": "Full Bloom (West)", "value": 12, "when": [{"name": "match", "opts": [["flowers"], [[[["3z"], 4]]]]}] },
+    { "display_name": "Full Bloom (North)", "value": 12, "when": [{"name": "match", "opts": [["flowers"], [[[["4z"], 4]]]]}] },
+    { "display_name": "Full Bloom (White)", "value": 12, "when": [{"name": "match", "opts": [["flowers"], [[[["0z"], 4]]]]}] },
+    { "display_name": "Full Bloom (Green)", "value": 12, "when": [{"name": "match", "opts": [["flowers"], [[[["6z"], 4]]]]}] },
+    { "display_name": "Full Bloom (Red)", "value": 12, "when": [{"name": "match", "opts": [["flowers"], [[[["7z"], 4]]]]}] },
+    {
+      "display_name": "All Sequences",
+      "value": 10,
+      // note: this is probably the slowest yaku to check
+      "when": [{"name": "match", "opts": [["hand", "calls", "winning_tile"], [["exhaustive", [["shuntsu"], 5], [["pair"], 1]]]]}]
+    },
+    { "display_name": "Only One Flower", "value": 15,
+      "when": [
+        {"name": "match", "opts": [["flowers"], [[[["1f", "2f", "3f", "4f", "1g", "2g", "3g", "4g", "1z", "2z", "3z", "4z", "0z", "6z", "7z"], 1]]]]},
+        {"name": "not_match", "opts": [["flowers"], [[[["1f", "2f", "3f", "4f", "1g", "2g", "3g", "4g", "1z", "2z", "3z", "4z", "0z", "6z", "7z"], 2]]]]}
+      ]
+    },
+    { "display_name": "Golden Pair", "value": 20, "when": [{"name": "match", "opts": [["hand", "calls", "winning_tile"], ["golden_pair"]]}] },
+    { "display_name": "Three Gold Knockdown", "value": 30, "when": [{"name": "counter_at_least", "opts": ["gold_count", 3]}] },
+    { "display_name": "Golden Dragon", "value": 40, "when": [{"name": "match", "opts": [["hand", "calls", "winning_tile"], ["golden_dragon"]]}] },
+    { "display_name": "Robbing the Gold", "value": 50, "when": [{"name": "status", "opts": ["qiangjin"]}] },
+    { "display_name": "Blessing of Heaven", "value": 50, "when": [{"name": "seat_is", "opts": ["east"]}, {"name": "status", "opts": ["first_turn"]}, "won_by_draw"] },
+    { "display_name": "Blessing of Earth", "value": 40, "when": [{"name": "not_seat_is", "opts": ["east"]}, {"name": "status", "opts": ["first_turn"]}, "won_by_draw"] }
+  ],
+  "yaku_precedence": {
+    "Golden Pair": ["Gold"],
+    "Three Gold Knockdown": ["Golden Pair", "Gold"],
+    "Golden Dragon": ["All Sequences", "Three Gold Knockdown", "Golden Pair", "Gold"],
+    "Robbing the Gold": ["Blessing of Heaven", "Blessing of Earth"]
+  },
+  "score_calculation": {
+    "scoring_method": "multiplier",
+    "score_multiplier": 1,
+    "discarder_multiplier": 1,
+    "non_discarder_multiplier": 0,
+    "self_draw_multiplier": 1,
+    "yaku_lists": ["yaku"],
+    "agarirenchan": true,
+    "point_name": "",
+    "win_by_discard_label": "Hu",
+    "win_by_draw_label": "Zimo",
+    "win_by_discard_name": "Hu",
+    "win_by_draw_name": "Zimo",
+    "exhaustive_draw_name": "Draw"
+  },
+  "functions": {
+    "flip_gold_tile": [
+      ["tag_dora", "jin", -2],
+      ["reveal_tile", -2],
+      ["copy_tiles", {"dead_wall": [-2]}, {"atop_wall": [-9]}],
+      ["add_attr", [-2], ["_skip_draw", "_hidden"]]
+    ]
+  },
+  "play_restrictions": [
+    [["flower", "1z", "2z", "3z", "4z", "0z", "6z", "7z"], []]
+  ],
+  "play_effects": [
+    ["dora", [["set_status", "tsumo_only"]]]
+  ],
+  "before_turn_change": {
+    "actions": [
+      ["unset_status", "kan", "double_kan", "flower", "just_reached"],
+      ["when", [{"name": "status_missing", "opts": ["match_start"]}], [["unset_status", "first_turn"]]]
+    ]
+  },
+  "after_turn_change": {
+    "actions": [
+      ["when", ["no_tiles_remaining"], [["pause", 1000], ["ryuukyoku"]]],
+      ["when", [{"name": "everyone_status", "opts": ["no_flowers"]}], [["unset_status_all", "no_flowers", "match_start", "qiangjin"]]],
+      ["when", [{"name": "status_missing", "opts": ["match_start"]}, {"name": "tag_exists", "opts": ["jin"]}, "not_no_tiles_remaining"], [["draw"]]]
+    ]
+  },
+  "after_start": {
+    "actions": [
+      ["run", "flip_gold_tile"],
+      // add the "dora" attribute to tiles tagged with "jin", which should make them shiny
+      ["add_attr_tagged", "jin", ["_dora", "jin"]],
+      // before making jin a joker, check for qiangjin for all players
+      ["as", "everyone", [
+        ["when", [{"name": "match", "opts": [["hand", "revealed_tiles"], ["win"]]}], [
+          ["set_status", "qiangjin"]
+        ]]
+      ]],
+      // sets any tile with attribute "jin" to be an any-joker with attribute "is_jin"
+      ["set_tile_alias", [{"tile": "any", "attrs": ["jin"]}], [{"tile": "any", "attrs": ["is_jin"]}]],
+      ["set_status_all", "first_turn", "match_start"]
+    ]
+  },
+  "before_win": {
+    "actions": [
+      ["when", [{"name": "seat_is", "opts": ["east"]}], [["set_counter", "dealer_continuation", "honba"]]],
+      ["set_counter", "flower_count", "count_matches", ["flowers"], ["any_flower"]],
+      ["set_counter", "gold_count", "count_matches", ["hand", "calls", "winning_tile", "flowers"], [[ "nojoker", [[{"tile": "any", "attrs": ["jin"]}], 1] ]]]
+    ]
+  },
+  "buttons": {
+    "start_flower": {
+      "display_name": "Reveal flower",
+      "show_when": [
+        {"name": "status", "opts": ["match_start"]},
+        "our_turn",
+        {"name": "status_missing", "opts": ["qiangjin", "flower", "no_flowers"]},
+        {"name": "match", "opts": [["hand", "draw"], [[ "nojoker", [["1f", "2f", "3f", "4f", "1g", "2g", "3g", "4g", "1z", "2z", "3z", "4z", "0z", "6z", "7z"], 1] ]]]}
+      ],
+      "actions": [
+        ["big_text", "Flower"],
+        ["set_status", "flower"],
+        ["flower", "1f", "2f", "3f", "4f", "1g", "2g", "3g", "4g", "1z", "2z", "3z", "4z", "0z", "6z", "7z"],
+        ["unset_status", "flower"],
+        ["shift_tile_to_dead_wall", 1],
+        ["draw", 1, "opposite_end"]
+      ],
+      "unskippable": true
+    },
+    "start_no_flower": {
+      "display_name": "No flowers",
+      "show_when": [
+        {"name": "status", "opts": ["match_start"]},
+        "our_turn",
+        {"name": "status_missing", "opts": ["qiangjin", "flower", "no_flowers"]},
+        {"name": "not_match", "opts": [["hand", "draw"], [[ "nojoker", [["1f", "2f", "3f", "4f", "1g", "2g", "3g", "4g", "1z", "2z", "3z", "4z", "0z", "6z", "7z"], 1] ]]]}
+      ],
+      "actions": [["big_text", "No flowers"], ["set_status", "no_flowers"], ["move_tiles", "draw", "hand"], ["advance_turn"]],
+      "unskippable": true
+    },
+    "chii": {
+      "display_name": "Chow",
+      "call": [[-2, -1], [-1, 1], [1, 2]],
+      "show_when": [{"name": "status_missing", "opts": ["match_start"]}, "not_our_turn", "not_no_tiles_remaining", "kamicha_discarded", "call_available"],
+      "call_conditions": [
+        {"name": "not_call_contains", "opts": [[{"tile": "any", "attrs": ["jin"]}], 1]}
+      ],
+      "actions": [["big_text", "Chow"], ["call"], ["change_turn", "self"]]
+    },
+    "pon": {
+      "display_name": "Pung",
+      "call": [[0, 0]],
+      "show_when": [{"name": "status_missing", "opts": ["match_start"]}, "not_our_turn", "not_no_tiles_remaining", "someone_else_just_discarded", "call_available"],
+      "call_conditions": [
+        {"name": "not_call_contains", "opts": [[{"tile": "any", "attrs": ["jin"]}], 1]}
+      ],
+      "actions": [["big_text", "Pung"], ["call"], ["change_turn", "self"]],
+      "precedence_over": ["chii"]
+    },
+    "daiminkan": {
+      "display_name": "Kong",
+      "call": [[0, 0, 0]],
+      "show_when": [{"name": "status_missing", "opts": ["match_start"]}, "not_our_turn", "not_no_tiles_remaining", "someone_else_just_discarded", "call_available"],
+      "call_conditions": [
+        {"name": "not_call_contains", "opts": [[{"tile": "any", "attrs": ["jin"]}], 1]}
+      ],
+      "actions": [
+        ["big_text", "Kong"], ["call"], ["change_turn", "self"],
+        ["when", [{"name": "status", "opts": ["kan"]}], [["set_status", "double_kan"]]],
+        ["set_status", "kan"],
+        ["shift_tile_to_dead_wall", 1],
+        ["draw", 1, "opposite_end"]
+      ],
+      "precedence_over": ["chii", "pon"]
+    },
+    "ankan": {
+      "display_name": "Self Kong",
+      "call": [[0, 0, 0]],
+      "call_conditions": [[
+        {"name": "not_call_changes_waits", "opts": ["win"]}
+      ]],
+      "show_when": [{"name": "status_missing", "opts": ["match_start"]}, "our_turn", "not_no_tiles_remaining", "has_draw", "self_call_available", {"name": "status_missing", "opts": ["just_reached"]}],
+      "call_conditions": [
+        {"name": "not_call_contains", "opts": [[{"tile": "any", "attrs": ["jin"]}], 1]}
+      ],
+      "actions": [
+        ["big_text", "Kong"], ["self_call"],
+        ["when", [{"name": "status", "opts": ["kan"]}], [["set_status", "double_kan"]]],
+        ["set_status", "kan"],
+        // ankan moves two tiles
+        ["shift_tile_to_dead_wall", 1],
+        ["shift_tile_to_dead_wall", 1],
+        ["draw", 1, "opposite_end"]
+      ]
+    },
+    "kakan": {
+      "display_name": "Kong",
+      "call": [[0, 0, 0]],
+      "upgrades": "pon",
+      "show_when": [{"name": "status_missing", "opts": ["match_start"]}, "our_turn", "not_no_tiles_remaining", "has_draw", "can_upgrade_call", {"name": "status_missing", "opts": ["just_reached"]}],
+      "call_conditions": [
+        {"name": "not_call_contains", "opts": [[{"tile": "any", "attrs": ["jin"]}], 1]}
+      ],
+      "actions": [
+        ["big_text", "Kong"], ["upgrade_call"],
+        ["when", [{"name": "status", "opts": ["kan"]}], [["set_status", "double_kan"]]],
+        ["set_status", "kan"],
+        ["shift_tile_to_dead_wall", 1],
+        ["draw", 1, "opposite_end"]
+      ]
+    },
+    "ron": {
+      "display_name": "Hu",
+      "show_when": [
+        "not_our_turn",
+        {"name": "status_missing", "opts": ["match_start", "tsumo_only"]},
+        {"name": "match", "opts": [["hand", "calls", "draw"], ["tenpai"]]},
+        "someone_else_just_discarded",
+        {"name": "match", "opts": [["hand", "calls", "last_discard"], ["win"]]},
+        {"name": "not_match", "opts": [["last_discard"], [[[[{"tile": "any", "attrs": ["jin"]}], 1]]]]},
+        {"name": "not_match", "opts": [["hand", "calls", "last_discard"], ["false_win"]]}
+      ],
+      "actions": [["big_text", "Hu"], ["pause", 1000], ["reveal_hand"], ["win_by_discard"]],
+      "precedence_over": ["chii", "pon", "kan", "daiminkan", "ankan", "kakan", "ron", "chankan"]
+    },
+    "chankan": {
+      "display_name": "Hu",
+      "show_when": [
+        "not_our_turn",
+        {"name": "match", "opts": [["hand", "calls", "draw"], ["tenpai"]]},
+        [
+          [
+            {"name": "status_missing", "opts": ["match_start", "tsumo_only"]},
+            {"name": "last_call_is", "opts": ["kakan", "start_flower", "flower"]},
+            [{"name": "caller_status", "opts": ["kan"]}, {"name": "caller_status", "opts": ["flower"]}],
+            {"name": "match", "opts": [["hand", "calls", "last_called_tile"], ["win"]]}
+          ],
+          [
+            {"name": "status", "opts": ["match_start"]},
+            {"name": "last_call_is", "opts": ["start_flower"]},
+            {"name": "caller_status", "opts": ["flower"]},
+            {"name": "match", "opts": [["hand", "flowers", "last_called_tile"], ["8_flowers"]]}
+          ]
+        ],
+        {"name": "not_match", "opts": [["hand", "calls", "last_called_tile"], ["false_win"]]}
+      ],
+      "actions": [["big_text", "Hu"], ["pause", 1000], ["reveal_hand"], ["win_by_call"]],
+      "precedence_over": ["chii", "pon", "kan", "daiminkan", "ankan", "kakan", "ron", "chankan"]
+    },
+    "qiangjin": {
+      "display_name": "Qiangjin",
+      "show_when": [
+        {"name": "status", "opts": ["match_start", "qiangjin"]},
+        {"name": "status_missing", "opts": ["flower"]}
+      ],
+      "actions": [["big_text", "Qiangjin"], ["pause", 1000], ["move_tiles", "revealed_tile", "draw"], ["reveal_hand"], ["set_status", "qiangjin"], ["win_by_draw"]],
+      "precedence_over": ["start_flower", "start_no_flower"],
+      "unskippable": true
+    },
+    "qiangjin_skip": {
+      "display_name": "Skip",
+      "show_when": [
+        {"name": "status", "opts": ["match_start", "qiangjin"]},
+        {"name": "status_missing", "opts": ["flower"]}
+      ],
+      "actions": [["unset_status", "qiangjin"], ["recalculate_buttons"]],
+      "unskippable": true
+    },
+    "tsumo": {
+      "display_name": "Zimo",
+      "show_when": [
+        "our_turn",
+        "not_just_called",
+        {"name": "status_missing", "opts": ["match_start"]},
+        {"name": "match", "opts": [["hand", "calls", "draw"], ["tenpai"]]},
+        {"name": "match", "opts": [["hand", "calls", "draw"], ["win"]]},
+        {"name": "not_match", "opts": [["hand", "calls", "draw"], ["false_win"]]}
+      ],
+      "actions": [["big_text", "Zimo"], ["pause", 1000], ["reveal_hand"], ["win_by_draw"]],
+      "precedence_over": ["chii", "pon", "kan", "daiminkan", "ankan", "kakan"]
+    },
+    // flowers drawn during the game are by default not forced, but we have a mod that makes them forced
+    "flower": {
+      "display_name": "Flower",
+      "show_when": [
+        "our_turn",
+        {"name": "status_missing", "opts": ["match_start", "flower", "no_flowers"]},
+        "not_just_discarded",
+        {"name": "match", "opts": [["hand", "draw"], [[ "nojoker", [["1f", "2f", "3f", "4f", "1g", "2g", "3g", "4g", "1z", "2z", "3z", "4z", "0z", "6z", "7z"], 1] ]]]}
+      ],
+      "actions": [
+        ["big_text", "Flower"],
+        ["set_status", "flower"],
+        ["flower", "1f", "2f", "3f", "4f", "1g", "2g", "3g", "4g", "1z", "2z", "3z", "4z", "0z", "6z", "7z"],
+        ["unset_status", "flower"],
+        ["ite", ["no_tiles_remaining"], [["advance_turn"]], [["shift_tile_to_dead_wall", 1], ["draw", 1, "opposite_end"]]]
+      ]
+    }
+  },
+  "auto_buttons": {
+    "1_auto_sort": {
+      "display_name": "A",
+      "desc": "Automatically sort your hand.",
+      "actions": [["sort_hand"]],
+      "enabled_at_start": true
+    },
+    "2_auto_ron": {
+      "display_name": "R",
+      "desc": "Automatically declare wins.",
+      "actions": [
+        ["when", [{"name": "buttons_include", "opts": ["ron"]}], [["press_button", "ron"]]],
+        ["when", [{"name": "buttons_include", "opts": ["tsumo"]}], [["press_button", "tsumo"]]]
+      ],
+      "enabled_at_start": false
+    },
+    "3_auto_flower": {
+      "display_name": "F",
+      "desc": "Automatically declare all flowers.",
+      "actions": [
+        ["when", [{"name": "buttons_include", "opts": ["start_flower"]}], [["press_button", "start_flower"], ["press_first_call_button", "start_flower"]]],
+        ["when", [{"name": "buttons_include", "opts": ["start_no_flower"]}], [["press_button", "start_no_flower"]]],
+        ["when", [{"name": "buttons_include", "opts": ["flower"]}], [["press_button", "flower"], ["press_first_call_button", "flower"]]]
+      ],
+      "enabled_at_start": true
+    },
+    "4_auto_no_call": {
+      "display_name": "C",
+      "desc": "Skip all calls except wins.",
+      "actions": [
+        ["when", [
+            "not_our_turn",
+            {"name": "buttons_include", "opts": ["skip"]},
+            {"name": "buttons_exclude", "opts": ["ron", "chankan"]}
+          ], [["press_button", "skip"]]]
+      ],
+      "enabled_at_start": false
+    },
+    "5_auto_discard": {
+      "display_name": "D",
+      "desc": "Automatically discard your drawn tile.",
+      "actions": [["when", ["our_turn", {"name": "buttons_exclude", "opts": ["tsumo", "ankan"]}, "has_draw"], [["discard_draw"]]]],
+      "enabled_at_start": false
+    }
+  },
+  "interruptible_actions": ["play_tile", "draw", "advance_turn", "upgrade_call", "flower"],
+  "display_honba": true,
+  "display_wall": true,
+  "initial_score": 0,
+  "initial_dead_wall_length": 18,
+  "starting_tiles": 16,
+  "max_rounds": 16,
+  "win_timer": 20
+}

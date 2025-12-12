@@ -1,7 +1,9 @@
 {
-  "default_mods": ["eight_flower_win", "show_waits"],
+  "default_mods": ["show_waits"],
+  // "default_mods": ["eight_flower_win", "show_waits"],
   "available_mods": [
-    {"id": "eight_flower_win", "name": "Eight Flower Win", "desc": "Allow instant win upon obtaining 8 flowers. If you have 7 flowers, you may steal the declaration of an 8th flower."},
+    // {"id": "eight_flower_win", "name": "Eight Flower Win", "desc": "Allow instant win upon obtaining 8 flowers. If you have 7 flowers, you may steal the declaration of an 8th flower."},
+    {"id": "reset_honba_on_draw", "name": "Draws Reset Dealer Bonus", "desc": "Reset the dealer continuation bonus on exhaustive draws. (The default behavior is to increase the bonus on a draw.)"},
     {"id": "show_waits", "name": "Show Waits", "desc": "Add some UI that shows waits."},
     {"id": "open_hands", "name": "Open Hands", "desc": "Everyone plays with tiles shown."}
   ],
@@ -44,35 +46,33 @@
            "1f", "2f", "3f", "4f",
            "1g", "2g", "3g", "4g"],
   "set_definitions": {
-    "pair": [0, 0],
-    "shuntsu": [0, 1, 2],
-    "koutsu": [0, 0, 0],
-    "quad": [0, 0, 0, 0],
-    "ryanmen/penchan": [0, 1],
-    "kanchan": [0, 2],
-    "iipeikou": [0, 0, 1, 1, 2, 2],
-    "ton": ["1z", "1z", "1z"],
-    "nan": ["2z", "2z", "2z"],
-    "shaa": ["3z", "3z", "3z"],
-    "pei": ["4z", "4z", "4z"],
-    "haku": ["0z", "0z", "0z"],
-    "hatsu": ["6z", "6z", "6z"],
-    "chun": ["7z", "7z", "7z"],
-    "ton_pair": ["1z", "1z"],
-    "nan_pair": ["2z", "2z"],
-    "shaa_pair": ["3z", "3z"],
-    "pei_pair": ["4z", "4z"],
-    "haku_pair": ["0z", "0z"],
-    "hatsu_pair": ["6z", "6z"],
-    "chun_pair": ["7z", "7z"],
-    "chuurenpoutou": [0,0,0,1,2,3,4,5,6,7,8,8,8],
-    "full_straight": [[0,1,2],[3,4,5],[6,7,8]],
-    "manzu": ["1m","2m","3m","4m","5m","6m","7m","8m","9m"],
-    "pinzu": ["1p","2p","3p","4p","5p","6p","7p","8p","9p"],
-    "souzu": ["1s","2s","3s","4s","5s","6s","7s","8s","9s"],
-    "manzu_3": [["1m","2m","3m","4m","5m","6m","7m","8m","9m"],["1m","2m","3m","4m","5m","6m","7m","8m","9m"],["1m","2m","3m","4m","5m","6m","7m","8m","9m"]],
-    "pinzu_3": [["1p","2p","3p","4p","5p","6p","7p","8p","9p"],["1p","2p","3p","4p","5p","6p","7p","8p","9p"],["1p","2p","3p","4p","5p","6p","7p","8p","9p"]],
-    "souzu_3": [["1s","2s","3s","4s","5s","6s","7s","8s","9s"],["1s","2s","3s","4s","5s","6s","7s","8s","9s"],["1s","2s","3s","4s","5s","6s","7s","8s","9s"]]
+    "pair": [[0, 0]],
+    "shuntsu": [[0, 1, 2]],
+    "koutsu": [[0, 0, 0]],
+    "quad": [[0, 0, 0, 0]],
+    "ryanmen/penchan": [[0, 1]],
+    "kanchan": [[0, 2]],
+    "ittsu": [[[0,1,2],[3,4,5],[6,7,8]]],
+    "ton": [["1z", "1z", "1z"]],
+    "nan": [["2z", "2z", "2z"]],
+    "shaa": [["3z", "3z", "3z"]],
+    "pei": [["4z", "4z", "4z"]],
+    "haku": [["0z", "0z", "0z"]],
+    "hatsu": [["6z", "6z", "6z"]],
+    "chun": [["7z", "7z", "7z"]],
+    "ton_pair": [["1z", "1z"]],
+    "nan_pair": [["2z", "2z"]],
+    "shaa_pair": [["3z", "3z"]],
+    "pei_pair": [["4z", "4z"]],
+    "haku_pair": [["0z", "0z"]],
+    "hatsu_pair": [["6z", "6z"]],
+    "chun_pair": [["7z", "7z"]],
+    "manzu": [["1m","2m","3m","4m","5m","6m","7m","8m","9m"]],
+    "pinzu": [["1p","2p","3p","4p","5p","6p","7p","8p","9p"]],
+    "souzu": [["1s","2s","3s","4s","5s","6s","7s","8s","9s"]],
+    "manzu_3": [[["1m","2m","3m","4m","5m","6m","7m","8m","9m"],["1m","2m","3m","4m","5m","6m","7m","8m","9m"],["1m","2m","3m","4m","5m","6m","7m","8m","9m"]]],
+    "pinzu_3": [[["1p","2p","3p","4p","5p","6p","7p","8p","9p"],["1p","2p","3p","4p","5p","6p","7p","8p","9p"],["1p","2p","3p","4p","5p","6p","7p","8p","9p"]]],
+    "souzu_3": [[["1s","2s","3s","4s","5s","6s","7s","8s","9s"],["1s","2s","3s","4s","5s","6s","7s","8s","9s"],["1s","2s","3s","4s","5s","6s","7s","8s","9s"]]]
   },
   "tenpai_definition": [
     [ "exhaustive", [["pair"], 1], [["ryanmen/penchan", "kanchan", "pair"], 1], [["shuntsu", "koutsu"], 4] ],
@@ -80,29 +80,6 @@
     [ [["pair"], 6], [["koutsu"], 1] ],
     [ [["pair"], 8] ]
   ],  
-  "iishanten_definition": [
-    [ "exhaustive", [["pair"], 1], [["ryanmen/penchan", "kanchan", "pair"], 2], [["shuntsu", "koutsu"], 3] ],
-    [ "exhaustive", [["ryanmen/penchan", "kanchan", "pair"], 1], [["shuntsu", "koutsu"], 4] ],
-    [ [["pair"], 5], [["koutsu"], 1] ],
-    [ [["pair"], 7] ]
-  ],
-  "ryanshanten_definition": [
-    [ "exhaustive", [["pair"], 1], [["ryanmen/penchan", "kanchan", "pair"], 3], [["shuntsu", "koutsu"], 2] ],
-    [ "exhaustive", [["ryanmen/penchan", "kanchan", "pair"], 3], [["shuntsu", "koutsu"], 3] ],
-    [ "exhaustive", [["pair"], 1], [["ryanmen/penchan", "kanchan", "pair"], 1], [["shuntsu", "koutsu"], 3] ],
-    [ "exhaustive", [["shuntsu", "koutsu"], 4] ],
-    [ [["pair"], 4], [["koutsu"], 1] ],
-    [ [["pair"], 6] ]
-  ],
-  "sanshanten_definition": [
-    [ "exhaustive", [["pair"], 1], [["ryanmen/penchan", "kanchan", "pair"], 4] ],
-    [ "exhaustive", [["pair"], 1], [["ryanmen/penchan", "kanchan", "pair"], 2], [["shuntsu", "koutsu"], 2] ],
-    [ "exhaustive", [["ryanmen/penchan", "kanchan", "pair"], 4], [["shuntsu", "koutsu"], 2] ],
-    [ "exhaustive", [["ryanmen/penchan", "kanchan", "pair"], 1], [["shuntsu", "koutsu"], 3] ],
-    [ "exhaustive", [["shuntsu", "koutsu"], 4] ],
-    [ [["pair"], 3], [["koutsu"], 1] ],
-    [ [["pair"], 5] ]
-  ],
   // used to check for ting eligibility
   "win_definition": [
     [ "exhaustive", [["pair"], 1], [["shuntsu", "koutsu"], 5] ],
@@ -162,7 +139,7 @@
     [ "exhaustive", [["shuntsu", "koutsu"], 5] ]
   ],
   "full_straight_definition": [
-    [ "exhaustive", [["full_straight"], 1], [["shuntsu", "koutsu"], 2], [["pair"], 1] ]
+    [ "exhaustive", [["ittsu"], 1], [["shuntsu", "koutsu"], 2], [["pair"], 1] ]
   ],
   "yaku": [
     // Dealer
@@ -292,16 +269,16 @@
       "display_name": "Open Straight",
       "value": 5,
       "when": [
-        {"name": "match", "opts": [["hand", "calls", "winning_tile"], ["full_straight"]]},
-        {"name": "not_match", "opts": [["hand", "winning_tile"], [[ [["full_straight"], 1] ]]]}
+        {"name": "match", "opts": [["hand", "calls", "winning_tile"], ["ittsu"]]},
+        {"name": "not_match", "opts": [["hand", "winning_tile"], [[ [["ittsu"], 1] ]]]}
       ]
     },
     {
       "display_name": "Closed Straight",
       "value": 10,
       "when": [
-        {"name": "match", "opts": [["hand", "calls", "winning_tile"], ["full_straight"]]},
-        {"name": "match", "opts": [["hand", "winning_tile"], [[ [["full_straight"], 1] ]]]}
+        {"name": "match", "opts": [["hand", "calls", "winning_tile"], ["ittsu"]]},
+        {"name": "match", "opts": [["hand", "winning_tile"], [[ [["ittsu"], 1] ]]]}
       ]
     },
     // Others
@@ -373,11 +350,11 @@
   },
   "after_call": {
     "actions": [
-      ["when", [{"name": "match", "opts": [["last_call"], [[[["haku", "hatsu", "chun"], 1]]]]}, {"name": "match", "opts": [["calls"], [[[["haku"], 1], [["hatsu"], 1], [["chun"], 1]]]]}], [["as", "callee", [["set_status", "pao"]]]]],
-      ["when", [{"name": "match", "opts": [["last_call"], [[[["ton", "nan", "shaa", "pei"], 1]]]]}, {"name": "match", "opts": [["calls"], [[[["ton"], 1], [["nan"], 1], [["shaa"], 1], [["pei"], 1]]]]}], [["as", "callee", [["set_status", "pao"]]]]],
-      ["when", [{"name": "match", "opts": [["last_call"], [[[["manzu"], 1]]]]}, {"name": "match", "opts": [["calls"], [[[["manzu_3"], 5]]]]}], [["as", "callee", [["set_status", "pao"]]]]],
-      ["when", [{"name": "match", "opts": [["last_call"], [[[["pinzu"], 1]]]]}, {"name": "match", "opts": [["calls"], [[[["pinzu_3"], 5]]]]}], [["as", "callee", [["set_status", "pao"]]]]],
-      ["when", [{"name": "match", "opts": [["last_call"], [[[["souzu"], 1]]]]}, {"name": "match", "opts": [["calls"], [[[["souzu_3"], 5]]]]}], [["as", "callee", [["set_status", "pao"]]]]]
+      ["when", [{"name": "match", "opts": [["last_call"], [[[["haku", "hatsu", "chun"], 1]]]]}, {"name": "match", "opts": [["calls"], [[[["haku"], 1], [["hatsu"], 1], [["chun"], 1]]]]}], [["as", "callee", [["make_responsible_for", "prev_seat", "all"]]]]],
+      ["when", [{"name": "match", "opts": [["last_call"], [[[["ton", "nan", "shaa", "pei"], 1]]]]}, {"name": "match", "opts": [["calls"], [[[["ton"], 1], [["nan"], 1], [["shaa"], 1], [["pei"], 1]]]]}], [["as", "callee", [["make_responsible_for", "prev_seat", "all"]]]]],
+      ["when", [{"name": "match", "opts": [["last_call"], [[[["manzu"], 1]]]]}, {"name": "match", "opts": [["calls"], [[[["manzu_3"], 5]]]]}], [["as", "callee", [["make_responsible_for", "prev_seat", "all"]]]]],
+      ["when", [{"name": "match", "opts": [["last_call"], [[[["pinzu"], 1]]]]}, {"name": "match", "opts": [["calls"], [[[["pinzu_3"], 5]]]]}], [["as", "callee", [["make_responsible_for", "prev_seat", "all"]]]]],
+      ["when", [{"name": "match", "opts": [["last_call"], [[[["souzu"], 1]]]]}, {"name": "match", "opts": [["calls"], [[[["souzu_3"], 5]]]]}], [["as", "callee", [["make_responsible_for", "prev_seat", "all"]]]]]
     ]
   },
   "after_start": {
@@ -589,7 +566,7 @@
         ["when", [
             "not_our_turn",
             {"name": "buttons_include", "opts": ["skip"]},
-            {"name": "buttons_exclude", "opts": ["ron"]}
+            {"name": "buttons_exclude", "opts": ["ron", "chankan"]}
           ], [["press_button", "skip"]]]
       ],
       "enabled_at_start": false
@@ -597,7 +574,7 @@
     "5_auto_discard": {
       "display_name": "D",
       "desc": "Automatically discard your drawn tile.",
-      "actions": [["when", ["has_draw"], [["discard_draw"]]]],
+      "actions": [["when", ["our_turn", {"name": "buttons_exclude", "opts": ["tsumo", "ankan"]}, "has_draw"], [["discard_draw"]]]],
       "enabled_at_start": false
     }
   },

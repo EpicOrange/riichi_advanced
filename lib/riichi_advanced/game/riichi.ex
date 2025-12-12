@@ -5,10 +5,7 @@ defmodule RiichiAdvanced.Riichi do
   alias RiichiAdvanced.Utils, as: Utils
   use Nebulex.Caching
 
-  # for fu calculation only
-  @terminal_honors [:"1m",:"9m",:"1p",:"9p",:"1s",:"9s",:"1z",:"2z",:"3z",:"4z",:"5z",:"6z",:"7z"]
-
-  @flower_names ["start_flower", "start_joker", "flower", "joker", "pei"]
+  @flower_names ["start_flower", "start_joker", "flower", "joker"]
   def flower_names(), do: @flower_names
 
   @manzu      [:"1m", :"2m", :"3m", :"4m", :"5m", :"6m", :"7m", :"8m", :"9m", :"10m", :"0m",
@@ -187,14 +184,19 @@ defmodule RiichiAdvanced.Riichi do
         hand = if from_hand do List.delete(hand, tile) else hand end
         # before we make calls using the offsets,
         # we must instantiate the tile in case it's a joker
-        instances = Utils.apply_tile_aliases(tile,  tile_behavior)
+        instances = Utils.apply_tile_aliases(tile, tile_behavior)
         if :any in instances do hand else instances end
+        |> Enum.reject(fn tile -> with {tile, _attrs} <- Utils.to_attr_tile(tile) do tile == :any end end)
         |> Enum.reject(&TileBehavior.is_joker?(&1, tile_behavior))
         |> Utils.strip_attrs()
         |> Enum.flat_map(fn instance ->
           target_tiles = Enum.map(call_spec, &Match.offset_tile(instance, &1, tile_behavior))
-          possible_removals = Match.try_remove_all_tiles(hand, target_tiles, tile_behavior)
-          Enum.map(possible_removals, fn remaining -> Utils.sort_tiles(hand -- remaining) end)
+          if nil in target_tiles do
+            []
+          else
+            possible_removals = Match.try_remove_all_tiles(hand, target_tiles, tile_behavior)
+            Enum.map(possible_removals, fn remaining -> Utils.sort_tiles(hand -- remaining) end)
+          end
         end)
       end) |> Enum.uniq()}
     end |> Enum.uniq_by(fn {tile, choices} -> Enum.map(choices, fn choice -> Enum.sort([tile | choice]) end) end) |> Map.new()
@@ -210,6 +212,7 @@ defmodule RiichiAdvanced.Riichi do
 
   # get all unique waits for a given 14-tile match definition, like win
   # will not remove a wait if you have four of the tile in hand or calls
+  @decorate cacheable(cache: RiichiAdvanced.Cache, key: {:get_waits, hand, calls, match_definitions, TileBehavior.hash(tile_behavior)})
   def get_waits(hand, calls, match_definitions, tile_behavior, skip_tenpai_check \\ false) do
     # only check for waits if we're tenpai
     if skip_tenpai_check or Match.match_hand(hand, calls, Enum.map(match_definitions, &["almost" | &1]), tile_behavior) do
@@ -220,14 +223,19 @@ defmodule RiichiAdvanced.Riichi do
         # make it exhaustive, unless it's unique
         match_definition = if "unique" not in match_definition and "exhaustive" not in match_definition do ["exhaustive" | match_definition] else match_definition end
         # IO.puts("\n" <> inspect(match_definition))
-        {_keywords, waits_complement} = for {last_match_definition_elem, i} <- Enum.with_index(match_definition), reduce: {[], tile_behavior.tile_freqs} do
-          {keywords, waits_complement} -> case last_match_definition_elem do
-            keyword when is_binary(keyword) -> {keywords ++ [keyword], waits_complement}
-            [_groups, num] when num <= 0 -> {keywords, waits_complement} # ignore lookaheads
+        {_keywords, waits_complement, waits_complement_across_restarts} = for {last_match_definition_elem, i} <- Enum.with_index(match_definition), reduce: {[], tile_behavior.tile_freqs, %{}} do
+          {keywords, waits_complement, waits_complement_across_restarts} -> case last_match_definition_elem do
+            "restart" -> {keywords ++ ["restart"], tile_behavior.tile_freqs, Map.merge(waits_complement, waits_complement_across_restarts, fn _k, l, r -> max(l, r) end) }
+            keyword when is_binary(keyword) -> {keywords ++ [keyword], waits_complement, waits_complement_across_restarts}
+            [_groups, num] when num <= 0 -> {keywords, waits_complement, waits_complement_across_restarts} # ignore lookaheads
             [groups, num] ->
+              # get all other groups in the current restart of our match definition
+              remaining_match_definition = List.delete_at(match_definition, i)
+              |> Utils.split_on("restart")
+              |> Enum.at(Enum.count(keywords, & &1 == "restart"))
+
               # first remove all other groups
               hand_calls = [{hand, calls}]
-              remaining_match_definition = List.delete_at(match_definition, i)
               hand_calls = Enum.flat_map(hand_calls, fn {hand, calls} ->
                 Match.remove_match_definition(hand, calls, remaining_match_definition, tile_behavior)
               end)
@@ -265,13 +273,15 @@ defmodule RiichiAdvanced.Riichi do
                     Match.match_hand([wait | hand], calls, [final_match_definition], tile_behavior)
                   end)
                 end) |> Map.new()
-              else tile_behavior.tile_freqs end
+              else %{} end # the match definition succeeding without having to add a tile implies all tiles are a wait
 
-              {keywords, waits_complement}
-            _ -> {keywords, waits_complement}
+              {keywords, waits_complement, waits_complement_across_restarts}
+            _ -> {keywords, waits_complement, waits_complement_across_restarts}
           end
         end
-        waits = Utils.inverse_frequencies(waits_complement, tile_behavior)
+        # IO.inspect({match_definition, Utils.inverse_frequencies(waits_complement, tile_behavior), Utils.inverse_frequencies(waits_complement_across_restarts, tile_behavior)})
+        waits_complement_across_restarts = Map.merge(waits_complement, waits_complement_across_restarts, fn _k, l, r -> max(l, r) end)
+        waits = Utils.inverse_frequencies(waits_complement_across_restarts, tile_behavior)
         |> Map.keys()
         |> MapSet.new()
         # IO.inspect(hand, label: "===\nhand")
@@ -302,46 +312,53 @@ defmodule RiichiAdvanced.Riichi do
   end
 
   def tile_matches(tile_specs, context) do
-    Enum.any?(tile_specs, fn
-      "any" -> true
-      "same" ->  Utils.same_tile(context.tile, context.tile2, context.players[context.seat].tile_behavior)
-      "not_same" -> not Utils.same_tile(context.tile, context.tile2, context.players[context.seat].tile_behavior)
-      "manzu" -> is_manzu?(context.tile)
-      "pinzu" -> is_pinzu?(context.tile)
-      "souzu" -> is_souzu?(context.tile)
-      "jihai" -> is_jihai?(context.tile)
-      "terminal" -> is_terminal?(context.tile)
-      "yaochuuhai" -> is_yaochuuhai?(context.tile)
-      "tanyaohai" -> is_tanyaohai?(context.tile)
-      "flower" -> is_flower?(context.tile)
-      "joker" -> is_joker?(context.tile)
-      "1" -> is_num?(context.tile, 1)
-      "2" -> is_num?(context.tile, 2)
-      "3" -> is_num?(context.tile, 3)
-      "4" -> is_num?(context.tile, 4)
-      "5" -> is_num?(context.tile, 5)
-      "6" -> is_num?(context.tile, 6)
-      "7" -> is_num?(context.tile, 7)
-      "8" -> is_num?(context.tile, 8)
-      "9" -> is_num?(context.tile, 9)
-      "tedashi" -> not Utils.has_attr?(context.tile, ["_draw"])
-      "tsumogiri" -> Utils.has_attr?(context.tile, ["_draw"])
-      "dora" -> Utils.has_matching_tile?([context.tile], context.doras)
-      "kuikae" ->
-        player = context.players[context.seat]
-        base_tiles = Match.collect_base_tiles(player.hand, player.calls, [0,1,2], player.tile_behavior)
-        potential_set = Utils.add_attr(Enum.take(context.call.other_tiles, 2) ++ [context.tile2], ["_hand"])
-        triplet = Match.remove_group(potential_set, [], [0,0,0], base_tiles, player.tile_behavior)
-        sequence = Match.remove_group(potential_set, [], [0,1,2], base_tiles, player.tile_behavior)
-        not Enum.empty?(triplet ++ sequence)
-      tile_spec ->
-        # "1m", "2z" are also specs
-        if Utils.is_tile(tile_spec) do
-          Utils.same_tile(context.tile, Utils.to_tile(tile_spec))
-        else
-          IO.puts("Unhandled tile spec #{inspect(tile_spec)}")
-          true
-        end
+    Enum.any?(tile_specs, fn tile_spec ->
+      negated = String.starts_with?(tile_spec, "not_")
+      tile_spec = if negated do String.replace_leading(tile_spec, "not_", "") else tile_spec end
+      negated != case tile_spec do
+        "any" -> true
+        "same" ->  Utils.same_tile(context.tile, context.tile2, context.players[context.seat].tile_behavior)
+        "not_same" -> not Utils.same_tile(context.tile, context.tile2, context.players[context.seat].tile_behavior)
+        "manzu" -> is_manzu?(context.tile)
+        "pinzu" -> is_pinzu?(context.tile)
+        "souzu" -> is_souzu?(context.tile)
+        "jihai" -> is_jihai?(context.tile)
+        "dragon" -> is_dragon?(context.tile)
+        "wind" -> is_wind?(context.tile)
+        "terminal" -> is_terminal?(context.tile)
+        "yaochuuhai" -> is_yaochuuhai?(context.tile)
+        "tanyaohai" -> is_tanyaohai?(context.tile)
+        "flower" -> is_flower?(context.tile)
+        "joker" -> is_joker?(context.tile)
+        "1" -> is_num?(context.tile, 1)
+        "2" -> is_num?(context.tile, 2)
+        "3" -> is_num?(context.tile, 3)
+        "4" -> is_num?(context.tile, 4)
+        "5" -> is_num?(context.tile, 5)
+        "6" -> is_num?(context.tile, 6)
+        "7" -> is_num?(context.tile, 7)
+        "8" -> is_num?(context.tile, 8)
+        "9" -> is_num?(context.tile, 9)
+        "tedashi" -> not Utils.has_attr?(context.tile, ["_draw"])
+        "tsumogiri" -> Utils.has_attr?(context.tile, ["_draw"])
+        "dora" -> Utils.has_matching_tile?([context.tile], context.doras)
+        "kuikae" ->
+          player = context.players[context.seat]
+          base_tiles = Match.collect_base_tiles(player.hand, player.calls, [0,1,2], player.tile_behavior)
+          potential_set = Utils.add_attr(Enum.take(context.call.other_tiles, 2) ++ [context.tile2], ["_hand"])
+          triplet = Match.remove_group(potential_set, [], [0,0,0], base_tiles, player.tile_behavior)
+          sequence = Match.remove_group(potential_set, [], [0,1,2], base_tiles, player.tile_behavior)
+          not Enum.empty?(triplet ++ sequence)
+        tile_spec ->
+          tile_behavior = Map.get(context, :tile_behavior, %TileBehavior{})
+          # "1m", "2z" are also specs
+          if Utils.is_tile(tile_spec) do
+            Utils.same_tile(context.tile, Utils.to_tile(tile_spec), tile_behavior)
+          else
+            IO.puts("Unhandled tile spec #{inspect(tile_spec)}")
+            true
+          end
+      end
     end)
   end
   def tile_matches_all(tile_specs, context) do
@@ -352,11 +369,11 @@ defmodule RiichiAdvanced.Riichi do
   # return all the (unique) tiles that are not needed to match the definitions
   @decorate cacheable(cache: RiichiAdvanced.Cache, key: {:get_unneeded_tiles, hand, calls, match_definitions, TileBehavior.hash(tile_behavior)})
   def get_unneeded_tiles(hand, calls, match_definitions, tile_behavior) do
-    # t = System.os_time(:millisecond)
+    t = System.os_time(:millisecond)
     tile_behavior = Match.filter_irrelevant_tile_aliases(tile_behavior, hand ++ Enum.flat_map(calls, &Utils.call_to_tiles/1))
 
     {match_definitions, hand_calls} = for match_definition <- match_definitions do
-      # initial guess comes from just removing the match definition
+      # initial guess comes from just removing each match definition and seeing what's left
       hand_calls = Match.remove_match_definition(hand, calls, match_definition, tile_behavior)
       # filter out lookaheads from match definition
       match_definition = Enum.filter(match_definition, fn match_definition_elem -> is_binary(match_definition_elem) or with [_groups, num] <- match_definition_elem do num > 0 end end)
@@ -373,6 +390,11 @@ defmodule RiichiAdvanced.Riichi do
     |> Enum.concat()
     |> Enum.flat_map(fn {hand, _calls} -> hand end)
     |> Enum.uniq()
+
+    elapsed_time = System.os_time(:millisecond) - t
+    if elapsed_time > 250 do
+      IO.puts("get_unneeded_tiles: #{inspect(elapsed_time)} ms to get initial tiles")
+    end
 
     ret = if not Enum.empty?(match_definitions) do
       # # method 1: keep tiles in hand that are not needed to match the given match definitions
@@ -408,17 +430,36 @@ defmodule RiichiAdvanced.Riichi do
       # ret = Enum.uniq(ret ++ leftover_tiles)
       # ret |> IO.inspect(label: "c")
 
-      # method 4: same as method 3 but we already have an initial set from above
+      # # method 4: same as method 3 but we already have an initial set from above
+      # remaining = Enum.uniq(hand) -- unneeded
+      # IO.puts("get_unneeded_tiles: now checking each of #{inspect(remaining)} individually")
+      # ret = Enum.filter(remaining, &Match.match_hand(hand -- [&1], calls, match_definitions, tile_behavior))
+      # ret = Enum.uniq(ret ++ unneeded)
+      # ret
+
+      # method 5: same as method 4 but parallel
       remaining = Enum.uniq(hand) -- unneeded
-      ret = Enum.filter(remaining, &Match.match_hand(hand -- [&1], calls, match_definitions, tile_behavior))
+      # IO.puts("get_unneeded_tiles: now checking each of #{inspect(remaining)} individually")
+      ret = for tile <- remaining do
+        Task.async(fn -> if Match.match_hand(hand -- [tile], calls, match_definitions, tile_behavior) do [tile] else [] end end)
+      end
+      |> Task.yield_many(timeout: :infinity)
+      |> Enum.flat_map(fn {_task, {:ok, res}} -> res end)
       ret = Enum.uniq(ret ++ unneeded)
       ret
+
+      # i think a good method 6 is to use prepend_group_all on individual groups in a match definition
+      # like take all the groups appearing in match definitions
+      # then take each group, say [groups, n]
+      # use prepend_group_all to get all instances of removing n of those groups
+      # oh, but what if groups is multiple groups?
+
     else [] end
 
-    # elapsed_time = System.os_time(:millisecond) - t
-    # if elapsed_time > 10 do
-    #   IO.puts("get_unneeded_tiles: #{inspect(elapsed_time)} ms")
-    # end
+    elapsed_time = System.os_time(:millisecond) - t
+    if elapsed_time > 250 do
+      IO.puts("get_unneeded_tiles: #{inspect(elapsed_time)} ms")
+    end
     ret
   end
 
@@ -461,7 +502,8 @@ defmodule RiichiAdvanced.Riichi do
   end
 
   def get_player_from_seat_wind(kyoku, wind, available_seats) do
-    Utils.next_turn(wind, rem(kyoku, length(available_seats)))
+    ix = Enum.find_index(available_seats, & &1 == wind)
+    if ix == nil do nil else Enum.at(available_seats, rem(ix + kyoku, length(available_seats))) end
   end
 
   def get_east_player_seat(kyoku, available_seats) do
@@ -485,232 +527,6 @@ defmodule RiichiAdvanced.Riichi do
       true                    -> :east
     end
     get_seat_wind(kyoku, seat, available_seats) |> Utils.get_relative_seat(wall_dir)
-  end
-
-  defp calculate_call_fu({name, call}) do
-    relevant_tile = Utils.call_to_tiles({name, call}) |> Utils.strip_attrs() |> Enum.at(0)
-    case name do
-      "chii"        -> 0
-      "pon"         -> if relevant_tile in @terminal_honors do 4 else 2 end
-      "ankan"       -> if relevant_tile in @terminal_honors do 32 else 16 end
-      "daiminkan"   -> if relevant_tile in @terminal_honors do 16 else 8 end
-      "kakan"       -> if relevant_tile in @terminal_honors do 16 else 8 end
-      "chon"        -> if relevant_tile in @terminal_honors do 2 else 1 end
-      "kapon"       -> if relevant_tile in @terminal_honors do 4 else 2 end
-      "kakakan"     -> if relevant_tile in @terminal_honors do 16 else 8 end
-      "chon_honors" -> 2
-      "anfuun"      -> 16
-      "daiminfuun"  -> 8
-      "kafuun"      -> 8
-      _             -> 0
-    end
-  end
-
-  defp calculate_pair_fu(tile, yakuhai, tile_behavior) do
-    2 * Utils.count_tiles(yakuhai, [Utils.strip_attrs(tile)], tile_behavior)
-  end
-
-  @decorate cacheable(cache: RiichiAdvanced.Cache, key: {:calculate_fu, starting_hand, calls, winning_tile, win_source, yakuhai, TileBehavior.hash(tile_behavior), enable_kontsu_fu})
-  def calculate_fu(starting_hand, calls, winning_tile, win_source, yakuhai, tile_behavior, enable_kontsu_fu) do
-    # t = System.os_time(:millisecond)
-
-    # IO.puts("Calculating fu for hand: #{inspect(Utils.sort_tiles(starting_hand))} + #{inspect(winning_tile)} and calls #{inspect(calls)}")
-
-    # first put all ton calls back into the hand
-    ton_tiles = calls
-    |> Enum.filter(fn {name, _call} -> name == "ton" end)
-    |> Enum.flat_map(&Utils.call_to_tiles/1)
-    
-    starting_hand = starting_hand ++ ton_tiles |> Utils.strip_attrs()
-    winning_tiles = Utils.apply_tile_aliases([winning_tile], tile_behavior) |> Utils.strip_attrs()
-
-    # initial fu: 20 (open ron), 22 (tsumo), or 30 (closed ron)
-    is_closed_hand = Enum.all?(calls, fn {name, _call} -> name == "ankan" end)
-    fu = cond do
-      win_source == :draw -> 22
-      is_closed_hand      -> 30
-      true                -> 20
-    end
-
-    # add fu of called triplets
-    fu = fu + (Enum.map(calls, &calculate_call_fu/1) |> Enum.sum)
-
-    # add all hands with winning kanchan/penchan removed, associated with fu = fu+2
-    possible_penchan_kanchan_removed = winning_tiles
-    |> Enum.flat_map(fn tile ->
-      prev = Map.get(tile_behavior.ordering_r, tile, nil)
-      prev2 = Map.get(tile_behavior.ordering_r, prev, nil)
-      penchan_l_possible = prev2 != nil and not Map.has_key?(tile_behavior.ordering_r, prev2)
-      next = Map.get(tile_behavior.ordering, tile, nil)
-      next2 = Map.get(tile_behavior.ordering, next, nil)
-      penchan_r_possible = next2 != nil and not Map.has_key?(tile_behavior.ordering, next2)
-      kanchan_possible = prev != nil and next != nil
-      if penchan_l_possible do [[prev, prev2]] else [] end
-      ++ if penchan_r_possible do [[next, next2]] else [] end
-      ++ if kanchan_possible do [[prev, next]] else [] end
-    end)
-    |> Enum.flat_map(&Match.try_remove_all_tiles(starting_hand, &1, tile_behavior))
-    |> Enum.map(&{&1, fu+2})
-
-    # add all hands with winning ryanmen removed, associated with fu = fu
-    possible_left_ryanmen_removed = Enum.flat_map(winning_tiles, fn winning_tile ->
-      if Match.offset_tile(winning_tile, -3, tile_behavior) != nil do
-        Match.try_remove_all_tiles(starting_hand, [Match.offset_tile(winning_tile, -2, tile_behavior), Match.offset_tile(winning_tile, -1, tile_behavior)], tile_behavior)
-        |> Enum.map(fn hand -> {hand, fu+(if enable_kontsu_fu and Match.offset_tile(winning_tile, 10, tile_behavior) == nil do (if win_source == :draw do 4 else 2 end) else 0 end)} end)
-      else [] end
-    end)
-    possible_right_ryanmen_removed = Enum.flat_map(winning_tiles, fn winning_tile ->
-      if Match.offset_tile(winning_tile, 3, tile_behavior) != nil do
-        Match.try_remove_all_tiles(starting_hand, [Match.offset_tile(winning_tile, 1, tile_behavior), Match.offset_tile(winning_tile, 2, tile_behavior)], tile_behavior)
-        |> Enum.map(fn hand -> {hand, fu+(if enable_kontsu_fu and Match.offset_tile(winning_tile, 10, tile_behavior) == nil do (if win_source == :draw do 4 else 2 end) else 0 end)} end)
-      else [] end
-    end)
-
-    # add all hands with winning kontsu removed, associated with fu = fu+1,2,4 (depending on kontsu)
-    # note that this should also award +2 fu for closed waits in event of dragons (which are always closed waits) or opposite winds
-    possible_kontsu_removed = if enable_kontsu_fu do
-      Enum.flat_map(winning_tiles, fn winning_tile ->
-        tiles = [Match.offset_tile(winning_tile, 10, tile_behavior), Match.offset_tile(winning_tile, 20, tile_behavior)]
-        prev_next = [Match.offset_tile(winning_tile, -1, tile_behavior), Match.offset_tile(winning_tile, 1, tile_behavior)]
-        tiles = if nil in tiles do prev_next else tiles end
-        closed_wait_fu = if MapSet.new(prev_next) == MapSet.new(tiles) do 2 else 0 end
-        Match.try_remove_all_tiles(starting_hand, tiles, tile_behavior)
-        |> Enum.map(fn hand -> {hand, fu+closed_wait_fu+((if win_source == :draw do 2 else 1 end)*(if winning_tile in @terminal_honors do 2 else 1 end))} end)
-      end)
-    else [] end
-
-    # all the {hand, fu}s together
-    hands_fu = possible_penchan_kanchan_removed ++ possible_left_ryanmen_removed ++ possible_right_ryanmen_removed ++ possible_kontsu_removed ++ [{starting_hand, fu}]
-
-    # from these, remove all triplets and add the according amount of closed triplet fu
-    hands_fu = for _ <- 1..4, reduce: hands_fu do
-      all_hands ->
-        Enum.flat_map(all_hands, fn {hand, fu} ->
-          Match.collect_base_tiles(hand, [], [0, 0, 0], tile_behavior)
-          |> Enum.flat_map(fn base_tile ->
-            case Match.try_remove_all_tiles(hand, [base_tile, base_tile, base_tile], tile_behavior) do
-              [] -> [{hand, fu}]
-              removed -> Enum.map(removed, fn hand -> {hand, fu + if base_tile in @terminal_honors do 8 else 4 end} end)
-            end
-          end) |> Enum.uniq()
-        end) |> Enum.uniq()
-    end
-
-    # if kontsu (mixed triplets) is enabled, remove all kontsu and add the corresponding closed kontsu fu
-    hands_fu = if enable_kontsu_fu do
-      for _ <- 1..4, reduce: hands_fu do
-        all_hands ->
-          Enum.flat_map(all_hands, fn {hand, fu} ->
-            {honors, suited} = Match.collect_base_tiles(hand, [], [0, 10, 20, 1, 2], tile_behavior)
-            |> Enum.split_with(fn base_tile -> Match.offset_tile(base_tile, 10, tile_behavior) == nil end)
-            # remove suited kontsu
-            suited_hands_fu = Enum.flat_map(suited, fn base_tile ->
-              case Match.try_remove_all_tiles(hand, [base_tile, Match.offset_tile(base_tile, 10, tile_behavior), Match.offset_tile(base_tile, 20, tile_behavior)], tile_behavior) do
-                [] -> [{hand, fu}]
-                removed -> Enum.map(removed, fn hand -> {hand, fu + if base_tile in @terminal_honors do 4 else 2 end} end)
-              end
-            end)
-            # remove honor kontsu
-            honors_hands_fu = Enum.flat_map(honors, fn base_tile ->
-              case Match.try_remove_all_tiles(hand, [Match.offset_tile(base_tile, -1, tile_behavior), base_tile, Match.offset_tile(base_tile, 1, tile_behavior)], tile_behavior) do
-                [] -> [{hand, fu}]
-                removed -> Enum.map(removed, fn hand -> {hand, fu + 4} end)
-              end
-            end)
-            Enum.uniq(suited_hands_fu ++ honors_hands_fu)
-          end) |> Enum.uniq()
-      end
-    else hands_fu end
-
-    # now remove all sequences (no increase in fu)
-    hands_fu = for _ <- 1..4, reduce: hands_fu do
-      all_hands ->
-        Enum.flat_map(all_hands, fn {hand, fu} ->
-          sequence_tiles = Match.collect_base_tiles(hand, [], [0, 1, 2], tile_behavior)
-          sequence_tiles = if enable_kontsu_fu do
-            # honor sequences are considered mixed triplets, ignore them
-            Enum.reject(sequence_tiles, fn base_tile -> Match.offset_tile(base_tile, 10, tile_behavior) == nil end)
-          else sequence_tiles end
-          sequence_tiles |> Enum.flat_map(fn base_tile -> 
-            case Match.try_remove_all_tiles(hand, [Match.offset_tile(base_tile, -1, tile_behavior), base_tile, Match.offset_tile(base_tile, 1, tile_behavior)], tile_behavior) do
-              [] -> [{hand, fu}]
-              removed -> Enum.map(removed, fn hand -> {hand, fu} end)
-            end
-          end)
-        end) |> Enum.uniq()
-    end
-
-    # IO.inspect(hands_fu)
-
-    # standard hands should either have:
-    # - one tile remaining (tanki)
-    # - one pair remaining (standard)
-    # - two pairs remaining (shanpon)
-    # cosmic hand can also have
-    # - one pair, one mixed pair remaining
-    fus = Enum.flat_map(hands_fu, fn {hand, fu} ->
-      num_pairs = Match.binary_search_count_matches([{hand, []}], [[[[[0, 0]], 1]]], tile_behavior)
-      cond do
-        length(hand) == 1 and Utils.has_matching_tile?(hand, winning_tiles, tile_behavior) -> [fu + 2 + calculate_pair_fu(Enum.at(hand, 0), yakuhai, tile_behavior)]
-        length(hand) == 2 and num_pairs == 1 -> [fu + calculate_pair_fu(Enum.at(hand, 0), yakuhai, tile_behavior)]
-        length(hand) == 4 and num_pairs == 2 ->
-          base_tiles = Match.collect_base_tiles(hand, [], [0, 0, 0], tile_behavior)
-          Enum.flat_map(winning_tiles, fn winning_tile ->
-            triplet_fu = (if winning_tile in @terminal_honors do 4 else 2 end * if win_source == :draw do 2 else 1 end)
-            Match.remove_group([winning_tile | hand], [], [0, 0, 0], base_tiles, tile_behavior)
-            |> Enum.map(fn {[tile | _], []} -> fu + triplet_fu + calculate_pair_fu(tile, yakuhai, tile_behavior) end)
-          end)
-        # cosmic hand
-        enable_kontsu_fu and length(hand) == 4 and num_pairs == 1 ->
-          base_tiles = Match.collect_base_tiles(hand, [], [0, 10, 20], tile_behavior)
-          Enum.flat_map(winning_tiles, fn winning_tile ->
-            kontsu_fu = (if winning_tile in @terminal_honors do 2 else 1 end * if win_source == :draw do 2 else 1 end)
-            Match.remove_group([winning_tile | hand], [], [0, 10, 20], base_tiles, tile_behavior)
-            |> Enum.map(fn {[tile | _], []} -> fu + kontsu_fu + calculate_pair_fu(tile, yakuhai, tile_behavior) end)
-          end)
-        true                                                    -> []
-      end
-    end)
-
-    # IO.inspect(winning_tiles)
-    # IO.inspect(fus, charlists: :as_lists)
-
-    # if we can get (closed) pinfu, we should
-    # otherwise, get the max fu possible (= 0 if not a standard hand)
-    closed_pinfu_fu = if win_source == :draw do 22 else 30 end
-    fu = if closed_pinfu_fu in fus do closed_pinfu_fu else Enum.max(fus, &>=/2, fn -> 0 end) end
-
-    # if it's kokushi, 30 fu (tsumo) or 40 fu (ron)
-    # this is balanced for open kokushi being 3 han in space mahjong
-    kokushi_tiles = [:"1m", :"9m", :"1p", :"9p", :"1s", :"9s", :"1z", :"2z", :"3z", :"4z", :"5z", :"6z", :"7z"]
-    fu = Enum.flat_map(winning_tiles, fn winning_tile ->
-      case Match.try_remove_all_tiles(starting_hand ++ [winning_tile], kokushi_tiles, tile_behavior) do
-        [] -> [fu]
-        _  -> [if win_source == :draw do 30 else 40 end]
-      end
-    end) |> Enum.max()
-
-    # IO.inspect(fu)
-
-    num_pairs = Match.binary_search_count_matches([{starting_hand, []}], [[[[[0, 0]], 1]]], tile_behavior)
-    ret = cond do
-      fu == 22 and win_source == :draw and is_closed_hand -> 20 # closed pinfu tsumo
-      fu == 30 and win_source != :draw and is_closed_hand -> 30 # closed pinfu ron
-      fu == 20 and not is_closed_hand                     -> 30 # open pinfu
-      Enum.empty?(fus) and num_pairs == 6                 -> 25 # chiitoitsu
-      Enum.empty?(fus) and num_pairs == 5                 -> 30 # kakura kurumi (saki card)
-      true                                                ->
-        # round up to nearest 10
-        remainder = rem(fu, 10)
-        if remainder == 0 do fu else fu - remainder + 10 end
-    end
-
-    # elapsed_time = System.os_time(:millisecond) - t
-    # if elapsed_time > 4 do
-    #   IO.puts("calculate_fu: #{inspect(elapsed_time)} ms")
-    # end
-
-    ret
   end
 
   def calc_ko_oya_points(score, is_dealer, num_players, han_fu_rounding_factor) do
@@ -795,27 +611,67 @@ defmodule RiichiAdvanced.Riichi do
     # we will only arrange the contents of the hand after that
     ix = Enum.find_index(Enum.reverse(hand), & &1 == :separator)
     {prearranged, hand} = if ix == nil do {[], hand} else Enum.split(hand, length(hand) - ix) end
+    prearranged_as_calls = prearranged
+    |> Utils.split_on(:separator)
+    |> Enum.reject(&Enum.empty?/1)
+    |> Enum.map(&{"", &1})
+    calls = calls ++ prearranged_as_calls
+
+    # add "dismantle_calls" in case `group` contains multiple sets
+    win_definitions = Enum.map(win_definitions, &["dismantle_calls" | &1])
 
     Enum.flat_map(winning_tiles, fn winning_tile ->
-      Match.extract_groups([winning_tile | hand], group, tile_behavior)
-      |> Enum.find(fn {hand, groups} -> Match.match_hand(prearranged ++ hand ++ Enum.concat(groups), calls, win_definitions, tile_behavior) end)
-      |> case do
-        nil            -> []
-        {hand, groups} -> [{winning_tile, hand, groups}]
+      hand_groups = Match.extract_groups([winning_tile | hand], group, tile_behavior)
+
+      # `hand_groups` is sorted starting with greatest number of groups
+      # if we have {hand, [group1, group2, group3]} and it matches,
+      # then {hand ++ group1, [group2, group3]} also obviously matches
+      # use this to reduce the number of calls to `match_hand`
+
+      # also, we want to remove a maximal number of groups that matches
+      # so if we ever find a matching solution with e.g. 3 groups,
+      # drop all `hand_groups` with less than 3 groups
+
+      {hand_groups, _cache, _max_groups} = for {hand, groups} <- hand_groups, reduce: {[], [], 0} do
+        # {return value, groups that match, the largest number of groups in cache}
+        {acc, cache, max_groups} ->
+          groups_set = MapSet.new(groups)
+          num_groups = MapSet.size(groups_set)
+          cond do
+            # ignore if num of groups is less than highest seen so far
+            num_groups < max_groups -> {acc, cache, max_groups}
+            # check cache to see if a larger set of groups matched; if so, this obviously matches
+            Enum.any?(cache, &MapSet.subset?(groups_set, &1)) -> {[{hand, groups} | acc], cache, max_groups}
+            # otherwise call the match function to see if these groups match
+            Match.match_hand(hand, calls ++ Enum.map(groups, &{"", &1}), win_definitions, tile_behavior) ->
+              {[{hand, groups} | acc], [groups_set | cache], max(num_groups, max_groups)}
+            true -> {acc, cache, max_groups}
+          end
       end
+      Enum.map(hand_groups, fn {hand, groups} -> {winning_tile, hand, groups} end)
     end)
-    |> case do
-      [] -> hand
-      [{winning_tile, hand, groups} | _] ->
-        groups = groups
-        |> Enum.sort_by(fn [t | _] -> Constants.sort_value(t) end)
-        |> Enum.map(& &1 ++ [:separator]) # add a spacing marker after each group
-        |> Enum.concat()
-        # delete last instance of winning tile
-        prearranged ++ groups ++ hand
-        |> Enum.reverse()
-        |> List.delete(winning_tile)
-        |> Enum.reverse()
+    |> Enum.map(fn {winning_tile, hand, groups} ->
+      groups = groups
+      |> Enum.sort_by(fn [t | _] -> Constants.sort_value(t) end)
+      |> Enum.map(& &1 ++ [:separator]) # add a spacing marker after each group
+      |> Enum.concat()
+      # delete last instance of winning tile
+      prearranged ++ groups ++ hand
+      |> Enum.reverse()
+      |> List.delete(winning_tile)
+      |> Enum.reverse()
+    end)
+    |> then(& &1 ++ [prearranged ++ hand]) # append original handm
+  end
+  def prepend_group_all(hands, calls, winning_tiles, group, win_definitions, tile_behavior) do
+    hands = Enum.flat_map(hands, &prepend_group(&1, calls, winning_tiles, group, win_definitions, tile_behavior))
+    if Enum.empty?(hands) do [] else
+      num_ungrouped_tiles = Enum.map(hands, &Utils.split_on(&1, :separator) |> Enum.at(-1) |> length())
+      min_ungrouped_tiles = Enum.min(num_ungrouped_tiles)
+      hands
+      |> Enum.zip(num_ungrouped_tiles)
+      |> Enum.filter(fn {_hand, num} -> num == min_ungrouped_tiles end)
+      |> Enum.map(fn {hand, _num} -> hand end)
     end
   end
 

@@ -1,6 +1,7 @@
 defmodule RiichiAdvancedWeb.AboutLive do
   alias RiichiAdvanced.Constants, as: Constants
   use RiichiAdvancedWeb, :live_view
+  import RiichiAdvancedWeb.Translations
 
   @beta_testers [
     "Hyperistic",
@@ -30,17 +31,19 @@ defmodule RiichiAdvancedWeb.AboutLive do
     "JustKidding",
   ]
 
-  def mount(params, _session, socket) do
+  def mount(params, session, socket) do
     socket = socket
+    |> assign(:session_id, session["session_id"])
     |> assign(:messages, [])
     |> assign(:nickname, Map.get(params, "nickname", ""))
+    |> assign(:lang, Map.get(params, "lang", "en"))
     |> assign(:beta_testers, @beta_testers)
     |> assign(:version, Constants.version())
-    messages_init = RiichiAdvanced.MessagesState.init_socket(socket)
+    messages_init = RiichiAdvanced.MessagesState.link_player_socket(socket.root_pid, socket.assigns.session_id)
     socket = if Map.has_key?(messages_init, :messages_state) do
       socket = assign(socket, :messages_state, messages_init.messages_state)
       # subscribe to message updates
-      Phoenix.PubSub.subscribe(RiichiAdvanced.PubSub, "messages:" <> socket.id)
+      Phoenix.PubSub.subscribe(RiichiAdvanced.PubSub, "messages:" <> socket.assigns.session_id)
       GenServer.cast(messages_init.messages_state, :poll_messages)
       socket
     else socket end
@@ -57,24 +60,32 @@ defmodule RiichiAdvancedWeb.AboutLive do
         <div class="tile 7z"></div>
       </div>
       <form>
-        Created by Dani in their spare time.
-        For more information, drop a message in our Discord!
+        <%= t(@lang, "Created by Dani in their spare time.") %>
+        <%= t(@lang, "For more information, drop a message in our Discord!") %>
         <hr/>
-        Special thanks to our beta testers:
+        <%= t(@lang, "Special thanks to our beta testers:") %>
         <ul class="beta-testers">
           <li :for={user <- Enum.shuffle(@beta_testers)}><%= user %></li>
         </ul>
       </form>
       <div class="index-version"><%= @version %></div>
       <div class="index-bottom-buttons">
-        <button phx-click="goto_index">Back</button>
-        <button><a href="https://github.com/EpicOrange/riichi_advanced">Source</a></button>
-        <button><a href="https://discord.gg/5QQHmZQavP">Discord</a></button>
-        <button phx-click="goto_logs">Logs</button>
+        <button phx-click="goto_index"><%= t(@lang, "Back") %></button>
+        <button><a href="https://github.com/EpicOrange/riichi_advanced"><%= t(@lang, "Source") %></a></button>
+        <button><a href="https://discord.gg/5QQHmZQavP"><%= t(@lang, "Discord") %></a></button>
+        <button phx-click="goto_logs"><%= t(@lang, "Logs") %></button>
       </div>
-      <.live_component module={RiichiAdvancedWeb.MessagesComponent} id="messages" messages={@messages} />
+      <div class="top-right-container">
+        <.live_component module={RiichiAdvancedWeb.MenuButtonsComponent} id="menu-buttons" lang={@lang} />
+      </div>
+      <.live_component module={RiichiAdvancedWeb.MessagesComponent} id="messages" messages={@messages} lang={@lang} />
     </div>
     """
+  end
+
+  def handle_event("back", _assigns, socket) do
+    socket = push_navigate(socket, to: ~p"/?nickname=#{socket.assigns.nickname}&lang=#{socket.assigns.lang}")
+    {:noreply, socket}
   end
 
   def handle_event("double_clicked", _assigns, socket) do
@@ -86,17 +97,23 @@ defmodule RiichiAdvancedWeb.AboutLive do
   end
 
   def handle_event("goto_index", _assigns, socket) do
-    socket = push_navigate(socket, to: ~p"/?nickname=#{socket.assigns.nickname}")
+    socket = push_navigate(socket, to: ~p"/?nickname=#{socket.assigns.nickname}&lang=#{socket.assigns.lang}")
     {:noreply, socket}
   end
   
   def handle_event("goto_logs", _assigns, socket) do
-    socket = push_navigate(socket, to: ~p"/log?nickname=#{socket.assigns.nickname}")
+    socket = push_navigate(socket, to: ~p"/log?nickname=#{socket.assigns.nickname}&lang=#{socket.assigns.lang}")
+    {:noreply, socket}
+  end
+
+  def handle_event("change_language", %{"lang" => lang}, socket), do: {:noreply, assign(socket, :lang, lang)}
+  
+  def handle_event(_event, _assigns, socket) do
     {:noreply, socket}
   end
 
   def handle_info(%{topic: topic, event: "messages_updated", payload: %{"state" => state}}, socket) do
-    if topic == "messages:" <> socket.id do
+    if topic == "messages:" <> socket.assigns.session_id do
       socket = assign(socket, :messages, state.messages)
       {:noreply, socket}
     else

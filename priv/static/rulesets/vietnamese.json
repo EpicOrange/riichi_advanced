@@ -47,28 +47,28 @@
            "1k", "2k", "3k", "4k",
            "1q", "2q", "3q", "4q"],
   "set_definitions": {
-    "pair": [0, 0],
-    "shuntsu": [0, 1, 2],
-    "koutsu": [0, 0, 0],
-    "quad": [0, 0, 0, 0],
-    "ryanmen/penchan": [0, 1],
-    "kanchan": [0, 2],
-    "ittsu": [[0,1,2],[3,4,5],[6,7,8]],
-    "ton": ["1z", "1z", "1z"],
-    "nan": ["2z", "2z", "2z"],
-    "shaa": ["3z", "3z", "3z"],
-    "pei": ["4z", "4z", "4z"],
-    "haku": ["0z", "0z", "0z"],
-    "hatsu": ["6z", "6z", "6z"],
-    "chun": ["7z", "7z", "7z"],
-    "ton_pair": ["1z", "1z"],
-    "nan_pair": ["2z", "2z"],
-    "shaa_pair": ["3z", "3z"],
-    "pei_pair": ["4z", "4z"],
-    "haku_pair": ["0z", "0z"],
-    "hatsu_pair": ["6z", "6z"],
-    "chun_pair": ["7z", "7z"],
-    "orphans_all": ["1m","9m","1p","9p","1s","9s","1z","2z","3z","4z","0z","6z","7z"]
+    "pair": [[0, 0]],
+    "shuntsu": [[0, 1, 2]],
+    "koutsu": [[0, 0, 0]],
+    "quad": [[0, 0, 0, 0]],
+    "ryanmen/penchan": [[0, 1]],
+    "kanchan": [[0, 2]],
+    "ittsu": [[[0,1,2],[3,4,5],[6,7,8]]],
+    "ton": [["1z", "1z", "1z"]],
+    "nan": [["2z", "2z", "2z"]],
+    "shaa": [["3z", "3z", "3z"]],
+    "pei": [["4z", "4z", "4z"]],
+    "haku": [["0z", "0z", "0z"]],
+    "hatsu": [["6z", "6z", "6z"]],
+    "chun": [["7z", "7z", "7z"]],
+    "ton_pair": [["1z", "1z"]],
+    "nan_pair": [["2z", "2z"]],
+    "shaa_pair": [["3z", "3z"]],
+    "pei_pair": [["4z", "4z"]],
+    "haku_pair": [["0z", "0z"]],
+    "hatsu_pair": [["6z", "6z"]],
+    "chun_pair": [["7z", "7z"]],
+    "orphans_all": [["1m","9m","1p","9p","1s","9s","1z","2z","3z","4z","0z","6z","7z"]]
   },
   "tenpai_definition": [
     [ "exhaustive", [["pair"], 1], [["ryanmen/penchan", "kanchan", "pair"], 1], [["shuntsu", "koutsu"], 3] ],
@@ -700,12 +700,20 @@
     "flower": {
       "display_name": "Flower",
       "show_when": [{"name": "status_missing", "opts": ["match_start", "just_called"]}, "our_turn", "not_just_discarded", {"name": "match", "opts": [["hand", "draw"], ["any_flower"]]}],
-      "actions": [["big_text", "Flower"], ["flower", "1f", "2f", "3f", "4f", "1g", "2g", "3g", "4g", "1k", "2k", "3k", "4k", "1q", "2q", "3q", "4q", "9j"], ["when", ["not_no_tiles_remaining"], [["draw", 1, "opposite_end"]]]]
+      "actions": [
+        ["big_text", "Flower"],
+        ["flower", "1f", "2f", "3f", "4f", "1g", "2g", "3g", "4g", "1k", "2k", "3k", "4k", "1q", "2q", "3q", "4q", "9j"],
+        ["ite", ["no_tiles_remaining"], [["advance_turn"]], [["draw", 1, "opposite_end"]]]
+      ]
     },
     "joker": {
       "display_name": "Joker",
       "show_when": [{"name": "status_missing", "opts": ["match_start", "just_called"]}, "our_turn", "not_just_discarded", {"name": "match", "opts": [["hand", "draw"], [[ "nojoker", [["0j", "2j", "4j", "5j", "6j", "7j", "8j"], 1] ]]]}],
-      "actions": [["big_text", "Joker"], ["flower", "0j", "2j", "4j", "5j", "6j", "7j", "8j"], ["draw", 1, "opposite_end"]]
+      "actions": [
+        ["big_text", "Joker"],
+        ["flower", "0j", "2j", "4j", "5j", "6j", "7j", "8j"],
+        ["ite", ["no_tiles_remaining"], [["advance_turn"]], [["draw", 1, "opposite_end"]]]
+      ]
     }
   },
   "auto_buttons": {
@@ -741,7 +749,7 @@
         ["when", [
             "not_our_turn",
             {"name": "buttons_include", "opts": ["skip"]},
-            {"name": "buttons_exclude", "opts": ["ron"]}
+            {"name": "buttons_exclude", "opts": ["ron", "chankan"]}
           ], [["press_button", "skip"]]]
       ],
       "enabled_at_start": false
@@ -749,7 +757,7 @@
     "5_auto_discard": {
       "display_name": "D",
       "desc": "Automatically discard your drawn tile.",
-      "actions": [["when", ["has_draw"], [["discard_draw"]]]],
+      "actions": [["when", ["our_turn", {"name": "buttons_exclude", "opts": ["tsumo", "ankan"]}, "has_draw"], [["discard_draw"]]]],
       "enabled_at_start": false
     }
   },

@@ -1,0 +1,63 @@
+on after_initialization do
+  add_rule("Rules", "Nagashi $is", "If you end with an exhaustive draw, and no one has called any of your discards, and your discards are all terminal or honor tiles, a nagashi payment occurs, which is equivalent to a %{is} tsumo.", %{is: !is})
+end
+
+# start with nagashi set
+on after_start do
+  set_status_all("nagashi")
+end
+
+# unset nagashi when called from
+on before_call do
+  unless seat_is("self", as: "caller") do
+    unset_status("nagashi")
+  end
+end
+
+# unset nagashi when playing tanyaohai
+apply set_append, "play_effects", [
+  ["tanyaohai", [["unset_status", "nagashi"]]]
+]
+
+# aborts don't award nagashi
+on before_abortive_draw do
+  unset_status_all("nagashi")
+end
+
+# pay out for nagashi
+# TODO note for future sakicards implementation:
+# - if kanbara satomi is in play, the player whose wall the last dora indicator is on loses double points
+# - logic for double 1500 payments is "always pay to your right, unless right is also paying"
+on after_scoring do
+  if ended_by_exhaustive_draw and anyone_status("nagashi") do
+    set_scoring_header("Nagashi $is", %{is: !is})
+    # clear tenpai payments
+    as everyone do
+      modify_payout("self", 0, "set")
+    end
+    as everyone do
+      if status("nagashi") do
+        # do payout for each other player
+        as others do
+          if equals(!is, "Mangan") do
+            if seat_is("east") do
+              modify_payout("self", 4000, "subtract")
+              modify_payout("prev_seat", 4000, "add")
+            else
+              modify_payout("self", 2000, "subtract")
+              modify_payout("prev_seat", 2000, "add")
+            end
+          else
+            if seat_is("east") do
+              modify_payout("self", 16000, "subtract")
+              modify_payout("prev_seat", 16000, "add")
+            else
+              modify_payout("self", 8000, "subtract")
+              modify_payout("prev_seat", 8000, "add")
+            end
+          end
+        end
+      end
+    end
+  end
+end

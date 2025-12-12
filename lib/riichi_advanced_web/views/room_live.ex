@@ -2,6 +2,7 @@ defmodule RiichiAdvancedWeb.RoomLive do
   alias RiichiAdvanced.RoomState.Room, as: Room
   alias RiichiAdvanced.Utils, as: Utils
   use RiichiAdvancedWeb, :live_view
+  import RiichiAdvancedWeb.Translations
 
   def mount(params, session, socket) do
     socket = socket
@@ -11,7 +12,7 @@ defmodule RiichiAdvancedWeb.RoomLive do
     |> assign(:display_name, params["ruleset"])
     |> assign(:nickname, Map.get(params, "nickname", ""))
     |> assign(:from, Map.get(params, "from", nil))
-    |> assign(:id, socket.id)
+    |> assign(:lang, Map.get(params, "lang", "en"))
     |> assign(:players, %{east: nil, south: nil, west: nil, north: nil})
     |> assign(:room_state, nil)
     |> assign(:messages, [])
@@ -37,31 +38,36 @@ defmodule RiichiAdvancedWeb.RoomLive do
       # subscribe to state updates
       Phoenix.PubSub.subscribe(RiichiAdvanced.PubSub, socket.assigns.ruleset <> "-room:" <> socket.assigns.room_code)
       # init a new player and get the current state
-      [state] = GenServer.call(room_state, {:new_player, socket})
+      [state] = GenServer.call(room_state, {:new_player, socket.root_pid, socket.assigns.session_id, socket.assigns.nickname})
       socket = socket
       |> assign(:room_state, room_state)
       |> assign(:state, state)
       |> assign(:display_name, state.display_name)
 
       # fetch messages
-      messages_init = RiichiAdvanced.MessagesState.init_socket(socket)
+      messages_init = RiichiAdvanced.MessagesState.link_player_socket(socket.root_pid, socket.assigns.session_id)
       socket = if Map.has_key?(messages_init, :messages_state) do
         socket = assign(socket, :messages_state, messages_init.messages_state)
         # subscribe to message updates
-        Phoenix.PubSub.subscribe(RiichiAdvanced.PubSub, "messages:" <> socket.id)
+        Phoenix.PubSub.subscribe(RiichiAdvanced.PubSub, "messages:" <> socket.assigns.session_id)
         GenServer.cast(messages_init.messages_state, {:add_message, [
-          %{text: "Entered room"},
-          %{bold: true, text: socket.assigns.room_code},
-          %{text: "for variant"},
-          %{bold: true, text: socket.assigns.ruleset}
+          %{
+            text: "Entered room %{room_code} for variant %{ruleset}",
+            vars: %{
+              room_code: {:text, socket.assigns.room_code, %{bold: true}},
+              ruleset: {:text, socket.assigns.ruleset, %{bold: true}}
+            }
+          }
         ]})
         socket
       else socket end
 
-      # sit in first available seat
-      case Enum.find(state.available_seats, fn seat -> state.seats[seat] == nil end) do
-        nil  -> :ok
-        seat -> GenServer.cast(socket.assigns.room_state, {:sit, socket.id, socket.assigns.session_id, seat})
+      # sit in first available seat, if we're not already in one
+      if not Enum.any?(state.available_seats, fn seat -> get_in(state.seats[seat].session_id) == socket.assigns.session_id end) do
+        case Enum.find(state.available_seats, fn seat -> state.seats[seat] == nil end) do
+          nil  -> :ok
+          seat -> GenServer.cast(socket.assigns.room_state, {:sit, socket.assigns.session_id, socket.assigns.session_id, seat})
+        end
       end
 
       {:ok, socket}
@@ -74,7 +80,7 @@ defmodule RiichiAdvancedWeb.RoomLive do
     ~H"""
     <div id="container" class="room" phx-hook="ClickListener">
       <header>
-        <h3><%= @display_name %></h3>
+        <h3><%= dt(@lang, @display_name) %></h3>
         <div class="session">
           <%= for tile <- String.split(@room_code, ",") do %>
             <div class={["tile", tile]}></div>
@@ -83,12 +89,12 @@ defmodule RiichiAdvancedWeb.RoomLive do
         <input id="private-toggle" type="checkbox" phx-click="private_toggled" phx-value-enabled={if @state.private do "true" else "false" end} checked={not @state.private}>
         <label for="private-toggle" class="private-toggle-label">
           <%= if @state.private do %>
-            Private
+            <%= t(@lang, "Private") %>
             <svg xmlns="http://www.w3.org/2000/svg" width="1.2em" height="1.2em" fill="none" viewBox="0 0 24 24">
               <path stroke="white" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 14v3m-3-6V7a3 3 0 1 1 6 0v4m-8 0h10a1 1 0 0 1 1 1v7a1 1 0 0 1-1 1H7a1 1 0 0 1-1-1v-7a1 1 0 0 1 1-1Z"/>
             </svg>
           <% else %>
-            Public
+            <%= t(@lang, "Public") %>
             <svg xmlns="http://www.w3.org/2000/svg" width="1.2em" height="1.2em" fill="none" viewBox="0 0 24 24">
               <path stroke="white" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 14v3m4-6V7a3 3 0 1 1 6 0v4M5 11h10a1 1 0 0 1 1 1v7a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1v-7a1 1 0 0 1 1-1Z"/>
             </svg>
@@ -99,9 +105,9 @@ defmodule RiichiAdvancedWeb.RoomLive do
         <%= if @state.tutorial_link != nil do %>
           <a class="tutorial-link" href={@state.tutorial_link} target="_blank">
             <%= if @ruleset == "custom" do %>
-              Documentation
+              <%= t(@lang, "Documentation") %>
             <% else %>
-              Rules
+              <%= t(@lang, "Rules") %>
             <% end %>
             <svg xmlns="http://www.w3.org/2000/svg" width="1.2em" height="1.2em" fill="none" viewBox="0 0 24 24">
               <path stroke="white" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 19V4a1 1 0 0 1 1-1h12a1 1 0 0 1 1 1v13H7a2 2 0 0 0-2 2Zm0 0a2 2 0 0 0 2 2h12M9 3v14m7 0v4"/>
@@ -110,7 +116,7 @@ defmodule RiichiAdvancedWeb.RoomLive do
         <% end %>
         <br/>
         <label for="room-settings-toggle" class="room-settings-toggle">
-          Room settings
+          <%= t(@lang, "Room settings") %>
           <svg xmlns="http://www.w3.org/2000/svg" width="1.2em" height="1.2em" fill="none" viewBox="0 0 24 24">
             <path stroke="white" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 13v-2a1 1 0 0 0-1-1h-.757l-.707-1.707.535-.536a1 1 0 0 0 0-1.414l-1.414-1.414a1 1 0 0 0-1.414 0l-.536.535L14 4.757V4a1 1 0 0 0-1-1h-2a1 1 0 0 0-1 1v.757l-1.707.707-.536-.535a1 1 0 0 0-1.414 0L4.929 6.343a1 1 0 0 0 0 1.414l.536.536L4.757 10H4a1 1 0 0 0-1 1v2a1 1 0 0 0 1 1h.757l.707 1.707-.535.536a1 1 0 0 0 0 1.414l1.414 1.414a1 1 0 0 0 1.414 0l.536-.535 1.707.707V20a1 1 0 0 0 1 1h2a1 1 0 0 0 1-1v-.757l1.707-.708.536.536a1 1 0 0 0 1.414 0l1.414-1.414a1 1 0 0 0 0-1.414l-.535-.536.707-1.707H20a1 1 0 0 0 1-1Z"/>
             <path stroke="white" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15a3 3 0 1 0 0-6 3 3 0 0 0 0 6Z"/>
@@ -124,24 +130,24 @@ defmodule RiichiAdvancedWeb.RoomLive do
           <label for="expand-checkbox"/>
         <% end %>
         <%= if @ruleset == "custom" do %>
-          <div class="mods-title">Ruleset</div>
+          <div class="mods-title"><%= t(@lang, "Ruleset") %></div>
           <div class="custom-json">
             <.live_component module={RiichiAdvancedWeb.CollaborativeTextareaComponent} id="custom-json-textarea" ruleset={@ruleset} room_code={@room_code} room_state={@room_state} />
           </div>
         <% else %>
           <%= if Enum.empty?(@state.presets) do %>
             <input type="radio" id="presets-tab" name="room-settings-tab" phx-update="ignore">
-            <label for="presets-tab" class="room-tab-title">Rulesets</label>
+            <label for="presets-tab" class="room-tab-title"><%= t(@lang, "Rulesets") %></label>
             <input type="radio" id="mods-tab" name="room-settings-tab" checked phx-update="ignore">
-            <label for="mods-tab" class="room-tab-title">Mods</label>
+            <label for="mods-tab" class="room-tab-title"><%= t(@lang, "Mods") %></label>
           <% else %>
             <input type="radio" id="presets-tab" name="room-settings-tab" checked phx-update="ignore">
-            <label for="presets-tab" class="room-tab-title">Rulesets</label>
+            <label for="presets-tab" class="room-tab-title"><%= t(@lang, "Rulesets") %></label>
             <input type="radio" id="mods-tab" name="room-settings-tab" phx-update="ignore">
-            <label for="mods-tab" class="room-tab-title">Mods</label>
+            <label for="mods-tab" class="room-tab-title"><%= t(@lang, "Mods") %></label>
           <% end %>
           <input type="radio" id="config-tab" name="room-settings-tab" phx-update="ignore">
-          <label for="config-tab" class="room-tab-title">Config</label>
+          <label for="config-tab" class="room-tab-title"><%= t(@lang, "Config") %></label>
           <div class="presets">
             <%= for {preset, i} <- Enum.with_index(@state.presets) do %>
               <%= if i == @state.selected_preset_ix do %>
@@ -149,57 +155,10 @@ defmodule RiichiAdvancedWeb.RoomLive do
               <% else %>
                 <input type="radio" id={"preset-#{i}"} name="presets" phx-click="set_preset" phx-value-index={i}>
               <% end %>
-              <label for={"preset-#{i}"} class="presets-title"><%= preset["display_name"] %></label>
+              <label for={"preset-#{i}"} class="presets-title"><%= dt(@lang, preset["display_name"]) %></label>
             <% end %>
           </div>
-          <div class={["mods", "mods-#{@state.ruleset}"]}>
-            <div class="mods-inner-container">
-              <%= for {category, mods} <- Enum.group_by(@state.mods, fn {_name, mod} -> mod.category end) |> Enum.sort_by(fn {category, _mods} -> Enum.find_index(@state.categories, & &1 == category) end) do %>
-                <div class="mod-category" :if={category}>
-                  <%= category %>
-                  <button class="mod-menu-button" phx-cancellable-click="toggle_category" phx-value-category={category}>Toggle all</button>
-                </div>
-                <%= for {mod_name, mod} <- Enum.sort_by(mods, fn {_mod_name, mod} -> mod.index end) do %>
-                  <input id={mod_name} type="checkbox" phx-click="toggle_mod" phx-value-mod={mod_name} phx-value-enabled={if @state.mods[mod_name].enabled do "true" else "false" end} checked={@state.mods[mod_name].enabled}>
-                  <label for={mod_name} title={mod.desc} class={["mod", mod.class]}>
-                    <%= mod.name %>
-                    <%= if mod.enabled and not Enum.empty?(mod.config) do %>
-                      |
-                      <%= for {config_name, config} <- mod.config do %>
-                        <span class="mod-config-name"><%= String.replace_prefix(config_name, "_", "") %>:</span>
-                        <%= case config["type"] do %>
-                          <% "dropdown" -> %>
-                            <form class="mod-config-dropdown" phx-change="change_mod_config" phx-value-mod={mod_name} phx-value-name={config_name}>
-                              <select name={config_name}>
-                                <%= for {value, i} <- Enum.with_index(config["values"]) do %>
-                                  <%= if value == config.value do %>
-                                    <option value={i} selected><%= value %></option>
-                                  <% else %>
-                                    <option value={i}><%= value %></option>
-                                  <% end %>
-                                <% end %>
-                              </select>
-                            </form>
-                          <% "slider" -> %>
-                            <form class="mod-config-slider" phx-change="change_mod_config" phx-value-mod={mod_name} phx-value-name={config_name}>
-                              <input type="range" name={config_name} list={"#{mod_name}-#{config_name}-list"} min="0" max={length(config["values"])-1}>
-                              <datalist id={"#{mod_name}-#{config_name}-list"}>
-                                <option value={i} :for={{value, i} <- Enum.with_index(config["values"])}><%= value %></option>
-                              </datalist>
-                            </form>
-                          <% _ -> %>
-                        <% end %>
-                      <% end %>
-                    <% end %>
-                  </label>
-                <% end %>
-                <div class="mod-category-spacer"></div>
-              <% end %>
-              <div class="reset-to-default-button">
-                <button class="mod-menu-button" phx-cancellable-click="reset_mods_to_default">Reset mods to default</button>
-              </div>
-            </div>
-          </div>
+          <.live_component module={RiichiAdvancedWeb.ModSelectionComponent} id="room-mods" lang={@lang} ruleset={@ruleset} mods={@state.mods} categories={@state.categories} />
           <div class="config">
             <.live_component module={RiichiAdvancedWeb.CollaborativeTextareaComponent} id="config-textarea" ruleset={@ruleset} room_code={@room_code} room_state={@room_state} />
           </div>
@@ -210,37 +169,33 @@ defmodule RiichiAdvancedWeb.RoomLive do
           <div class={["player-slot", @state.seats[seat] != nil && "filled"]}>
           <div class="player-slot-label"><%= @symbols[seat] %></div>
           <%= if @state.seats[seat] != nil do %>
-            <%= if @state.seats[seat].id == @id do %>
+            <%= if @state.seats[seat].session_id == @session_id do %>
               <div class="player-slot-name" phx-cancellable-click="get_up"><%= @state.seats[seat].nickname %></div>
               <button class="player-slot-button" phx-cancellable-click="get_up">–</button>
             <% else %>
               <%= if @state.seats[seat].nickname == nil do %>
-                <%= if @state.seats[seat].session_id == @session_id do %>
-                  <div class="player-slot-name empty" phx-cancellable-click="sit" phx-value-seat={seat}>(reconnect?)</div>
-                <% else %>
-                  <div class="player-slot-name">&lt;disconnected&gt;</div>
-                <% end %>
+                <div class="player-slot-name"><%= t(@lang, "&lt;disconnected&gt;") %></div>
               <% else %>
                 <div class="player-slot-name"><%= @state.seats[seat].nickname %></div>
               <% end %>
             <% end %>
           <% else %>
-            <div class="player-slot-name empty" phx-cancellable-click="sit" phx-value-seat={seat}>Empty</div>
+            <div class="player-slot-name empty" phx-cancellable-click="sit" phx-value-seat={seat}><%= t(@lang, "Empty") %></div>
           <% end %>
           </div>
         <% end %>
         <input id="shuffle-seats" type="checkbox" phx-click="shuffle_seats_toggled" phx-value-enabled={if @state.shuffle do "true" else "false" end} checked={@state.shuffle}>
-        <label for="shuffle-seats" class="shuffle-seats">Shuffle seats on start?</label>
+        <label for="shuffle-seats" class="shuffle-seats"><%= t(@lang, "Shuffle seats on start?") %></label>
         <%= if not Enum.all?(@state.seats, fn {_seat, player} -> player == nil end) do %>
           <%= if @state.starting do %>
             <button class="start-game-button">
-              Starting game...
+              <%= t(@lang, "Starting game...") %>
             </button>
           <% else %>
             <button class="start-game-button" phx-cancellable-click="start_game">
-              Start game
+              <%= t(@lang, "Start game") %>
               <%= if nil in Map.values(@state.seats) do %>
-              (with AI)
+              <%= t(@lang, "(with AI)") %>
               <% end %>
             </button>
           <% end %>
@@ -248,10 +203,11 @@ defmodule RiichiAdvancedWeb.RoomLive do
       </div>
       <.live_component module={RiichiAdvancedWeb.ErrorWindowComponent} id="error-window" game_state={@room_state} error={@state.error}/>
       <div class="top-right-container">
-        <.live_component module={RiichiAdvancedWeb.MenuButtonsComponent} id="menu-buttons" />
+        <.live_component module={RiichiAdvancedWeb.MenuButtonsComponent} id="menu-buttons" lang={@lang} />
       </div>
-      <.live_component module={RiichiAdvancedWeb.MessagesComponent} id="messages" messages={@messages} />
+      <.live_component module={RiichiAdvancedWeb.MessagesComponent} id="messages" messages={@messages} lang={@lang} />
       <div class="ruleset">
+        <div class="ruleset-text"><%= t(@lang, "Ruleset:") %></div>
         <textarea readonly><%= @state.ruleset_json %></textarea>
       </div>
     </div>
@@ -261,9 +217,9 @@ defmodule RiichiAdvancedWeb.RoomLive do
   def handle_event("back", _assigns, socket) do
     socket = push_event(socket, "left-page", %{})
     socket = case socket.assigns.from do
-      "lobby" -> push_navigate(socket, to: ~p"/lobby/#{socket.assigns.ruleset}?nickname=#{socket.assigns.nickname}")
-      "learn" -> push_navigate(socket, to: ~p"/tutorial/#{socket.assigns.ruleset}?nickname=#{socket.assigns.nickname}")
-      _       -> push_navigate(socket, to: ~p"/?nickname=#{socket.assigns.nickname}")
+      "lobby" -> push_navigate(socket, to: ~p"/lobby/#{socket.assigns.ruleset}?nickname=#{socket.assigns.nickname}&lang=#{socket.assigns.lang}")
+      "learn" -> push_navigate(socket, to: ~p"/tutorial/#{socket.assigns.ruleset}?nickname=#{socket.assigns.nickname}&lang=#{socket.assigns.lang}")
+      _       -> push_navigate(socket, to: ~p"/?nickname=#{socket.assigns.nickname}&lang=#{socket.assigns.lang}")
     end
     {:noreply, socket}
   end
@@ -283,12 +239,12 @@ defmodule RiichiAdvancedWeb.RoomLive do
       "north" -> :north
       _       -> :east
     end
-    GenServer.cast(socket.assigns.room_state, {:sit, socket.id, socket.assigns.session_id, seat})
+    GenServer.cast(socket.assigns.room_state, {:sit, socket.assigns.session_id, socket.assigns.session_id, seat})
     {:noreply, socket}
   end
 
   def handle_event("get_up", _assigns, socket) do
-    GenServer.cast(socket.assigns.room_state, {:get_up, socket.id})
+    GenServer.cast(socket.assigns.room_state, {:get_up, socket.assigns.session_id})
     {:noreply, socket}
   end
 
@@ -333,10 +289,17 @@ defmodule RiichiAdvancedWeb.RoomLive do
     {:noreply, socket}
   end
 
+  def handle_event("randomize_mods", _assigns, socket) do
+    GenServer.cast(socket.assigns.room_state, :randomize_mods)
+    {:noreply, socket}
+  end
+
   def handle_event("start_game", _assigns, socket) do
     GenServer.cast(socket.assigns.room_state, :start_game)
     {:noreply, socket}
   end
+  
+  def handle_event("change_language", %{"lang" => lang}, socket), do: {:noreply, assign(socket, :lang, lang)}
 
   def handle_event(_event, _assigns, socket) do
     {:noreply, socket}
@@ -344,14 +307,14 @@ defmodule RiichiAdvancedWeb.RoomLive do
 
   def vacate_room(socket) do
     seat = cond do
-      :east  in socket.assigns.state.available_seats and get_in(socket.assigns.state.seats.east.id)  == socket.id -> :east
-      :south in socket.assigns.state.available_seats and get_in(socket.assigns.state.seats.south.id) == socket.id -> :south
-      :west  in socket.assigns.state.available_seats and get_in(socket.assigns.state.seats.west.id)  == socket.id -> :west
-      :north in socket.assigns.state.available_seats and get_in(socket.assigns.state.seats.north.id) == socket.id -> :north
+      :east  in socket.assigns.state.available_seats and get_in(socket.assigns.state.seats.east.id)  == socket.assigns.session_id -> :east
+      :south in socket.assigns.state.available_seats and get_in(socket.assigns.state.seats.south.id) == socket.assigns.session_id -> :south
+      :west  in socket.assigns.state.available_seats and get_in(socket.assigns.state.seats.west.id)  == socket.assigns.session_id -> :west
+      :north in socket.assigns.state.available_seats and get_in(socket.assigns.state.seats.north.id) == socket.assigns.session_id -> :north
       true                                      -> :spectator
     end
     socket = push_event(socket, "left-page", %{})
-    push_navigate(socket, to: ~p"/game/#{socket.assigns.ruleset}/#{socket.assigns.room_code}?nickname=#{socket.assigns.nickname}&seat=#{seat}")
+    push_navigate(socket, to: ~p"/game/#{socket.assigns.ruleset}/#{socket.assigns.room_code}?nickname=#{socket.assigns.nickname}&lang=#{socket.assigns.lang}&seat=#{seat}")
   end
 
   def handle_info(%{topic: topic, event: "state_updated", payload: %{"state" => state}}, socket) do
@@ -382,7 +345,7 @@ defmodule RiichiAdvancedWeb.RoomLive do
   end
 
   def handle_info(%{topic: topic, event: "messages_updated", payload: %{"state" => state}}, socket) do
-    if topic == "messages:" <> socket.id do
+    if topic == "messages:" <> socket.assigns.session_id do
       socket = assign(socket, :messages, state.messages)
       {:noreply, socket}
     else

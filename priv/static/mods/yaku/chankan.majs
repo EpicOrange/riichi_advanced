@@ -1,0 +1,21 @@
+on after_initialization do
+  add_rule("$value $han", "$name", "Win off someone else adding a drawn tile to an existing %{pung} to form a %{kong}.", %{value: !value, han: !han, name: !name, pung: !pon_name, kong: !kan_name})
+end
+
+define_button chankan,
+  display_name: @ron_name, 
+  show_when: not_our_turn
+    and someone_else_just_called
+    and status("can_chankan", as: "caller")
+    and match(["hand", "calls", "last_called_tile"], ["win"]),
+  precedence_over: ["chii", "pon", "daiminkan"]
+  do
+    big_text(@ron_name)
+    pause(1000)
+    reveal_hand
+    win_by_call
+  end
+
+apply set_append, "interruptible_actions", ["upgrade_call"]
+
+define_yaku !list, !name, !value, won_by_call and status("kan", as: "caller")

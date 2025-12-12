@@ -1,6 +1,6 @@
 .after_initialization.actions += [
-  ["add_rule", "Local Yaku (Mangan)", "(Chiishin Uushii) \"Seven Stars Disconnected\". Mangan if you have one of every honor tile, plus 7 of 9 tiles in different suji (e.g. 14m25p369s).", 105],
-  ["add_rule", "Win Condition", "- (Chiishin Uushii) All seven honor tiles plus 7 of 9 tiles in different suji (e.g. 14m25p369s).", -100]
+  ["add_rule", "Mangan", "Chiishin Uushii", "\"Seven Stars Disconnected\". Mangan if you have one of every honor tile, plus 7 of 9 tiles in different suji (e.g. 14m25p369s).", 105],
+  ["add_rule", "Rules", "Win Condition", "- (Chiishin Uushii) All seven honor tiles plus 7 of 9 tiles in different suji (e.g. 14m25p369s).", -100]
 ]
 |
 .chiishin_uushii += [

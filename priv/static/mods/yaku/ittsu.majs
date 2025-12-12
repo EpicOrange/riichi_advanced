@@ -1,0 +1,10 @@
+on after_initialization do
+  add_rule("$value $han", "$name", "Your hand contains the sequences 123 456 879 in one suit.", %{value: !value, han: !han, name: !name})
+  update_rule("$value $han", "$name", "%{example_hand}", %{value: !value, han: !han, name: !name, example_hand: ~t"234p4567779s 123s 8s"})
+end
+
+define_set pair, ~s"0 0"
+define_set ittsu, ~s"0 1 2, 3 4 5, 6 7 8"
+define_set mentsu, ~s"0 0 0 | 0 1 2"
+
+define_yaku !list, !name, !value, match(["hand", "calls", "winning_tile"], ~m"exhaustive, ittsu:1, mentsu:1, pair:1")

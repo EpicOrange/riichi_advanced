@@ -1,0 +1,36 @@
+define_yaku yakuman, "Gathering the Plum Blossom from the Roof", 1, status("kan") and match(["winning_tile"], ~m"5p:1")
+define_yaku yakuman, "Scratching a Carrying-Pole", 1, won_by_call and match(["winning_tile"], ~m"2s:1")
+define_yaku yakuman, "Plucking the Moon from the Bottom of the Sea", 1, no_tiles_remaining and won_by_draw and match(["winning_tile"], ~m"1p:1")
+define_yaku_precedence "All Honours", ["Round Wind", "Seat Wind", "All Triplets", "Half Flush", "All Terminals and Honors"]
+
+on before_scoring do
+  set_counter("dealer_repeats", "honba")
+end
+define_yaku yakuman, "Dealer's 13 Consecutive Win", 1, seat_is("east") and counter_at_least("dealer_repeats", 12)
+
+set score_calculation, %{
+  scoring_method: ["han_fu_formula", "multiplier"],
+  score_multiplier: 500,
+  han_fu_starting_han: 0,
+  han_fu_multiplier: 1,
+  han_fu_rounding_factor: 1,
+  dealer_multiplier: 2,
+  self_draw_multiplier: 1,
+  dealer_self_draw_multiplier: 2,
+  max_score: 500,
+  yaku_lists: ["yaku"],
+  yaku2_lists: ["yakuman"],
+  yaku2_overrides_yaku1: true,
+  agarirenchan: true,
+  right_display: "minipoints",
+  point_name: "Fan",
+  point2_name: "Limit",
+  minipoint_name: "Pts",
+  win_by_discard_label: "Hu",
+  win_by_draw_label: "Zimo",
+  win_by_discard_name: "Hu",
+  win_by_discard_name_2: "Double Hu",
+  win_by_discard_name_3: "Triple Hu",
+  win_by_draw_name: "Zimo",
+  exhaustive_draw_name: "Draw"
+}

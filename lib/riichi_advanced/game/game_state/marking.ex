@@ -8,7 +8,7 @@ defmodule RiichiAdvanced.GameState.Marking do
   alias RiichiAdvanced.Utils, as: Utils
   import RiichiAdvanced.GameState
 
-  @special_keys [:done, :cancellable, :post_actions]
+  @special_keys [:done, :cancellable, :post_actions, :cancel_actions]
   @mark_targets %{
     "hand" => :hand,
     "call" => :calls,
@@ -41,8 +41,8 @@ defmodule RiichiAdvanced.GameState.Marking do
     Map.put(state, :marking, Map.new(state.available_seats, fn seat -> {seat, []} end))
   end
 
-  def setup_marking(state, seat, to_mark, cancellable, post_actions) do
-    init = [done: false, cancellable: cancellable, post_actions: post_actions]
+  def setup_marking(state, seat, to_mark, cancellable, post_actions, cancel_actions) do
+    init = [done: false, cancellable: cancellable, post_actions: post_actions, cancel_actions: cancel_actions]
     state = put_in(state.marking[seat], for {target, amount, restrictions} <- to_mark, reduce: init do
       marked_objects ->
         mark_spec = %{marked: [], needed: amount, restrictions: restrictions}
@@ -75,7 +75,7 @@ defmodule RiichiAdvanced.GameState.Marking do
     end
   end
 
-  defp get_mark_infos(marked_objects, source) do
+  def get_mark_infos(marked_objects, source) do
     Enum.filter(marked_objects, fn {src, _mark_info} -> src == source end)
   end
 
@@ -161,6 +161,7 @@ defmodule RiichiAdvanced.GameState.Marking do
         "not_joker"         -> not TileBehavior.is_any_joker?(tile, state.players[marking_player].tile_behavior)
         "call_has_joker"    -> Enum.any?(Utils.call_to_tiles(tile), &TileBehavior.is_any_joker?(&1, state.players[marking_player].tile_behavior))
         "not_riichi"        -> "riichi" not in state.players[marking_player].status or index >= length(state.players[marking_player].hand)
+        "can_discard"       -> index in state.players[marking_player].cache.playable_indices
         "last_discard"      ->
           case source do
             :discard ->
@@ -205,8 +206,20 @@ defmodule RiichiAdvanced.GameState.Marking do
     if not Enum.empty?(state.marking[marking_player]) do
       valid_mark_info_ix = state.marking[marking_player]
       |> Enum.find_index(fn {src, mark_info} -> src == source and _can_mark?(state, marking_player, seat, index, source, mark_info) end)
+      if valid_mark_info_ix != nil do
+        update_in(state.marking[marking_player], &List.update_at(&1, valid_mark_info_ix, fn {src, mark_info} ->
+          {src, update_in(mark_info.marked, fn marked -> marked ++ [{get_object(state, seat, index, source), seat, index}] end)}
+        end))
+      else state end
+    else state end
+  end
+
+  def unmark_tile(state, marking_player, seat, index, source) do
+    if not Enum.empty?(state.marking[marking_player]) do
+      valid_mark_info_ix = state.marking[marking_player]
+      |> Enum.find_index(fn {src, mark_info} -> src == source and _can_mark?(state, marking_player, seat, index, source, mark_info) end)
       update_in(state.marking[marking_player], &List.update_at(&1, valid_mark_info_ix, fn {src, mark_info} ->
-        {src, update_in(mark_info.marked, fn marked -> marked ++ [{get_object(state, seat, index, source), seat, index}] end)}
+        {src, update_in(mark_info.marked, fn marked -> marked -- [{get_object(state, seat, index, source), seat, index}] end)}
       end))
     else state end
   end

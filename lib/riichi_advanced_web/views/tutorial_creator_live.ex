@@ -1,6 +1,8 @@
 defmodule RiichiAdvancedWeb.TutorialCreatorLive do
   alias RiichiAdvanced.Constants, as: Constants
   use RiichiAdvancedWeb, :live_view
+  use Gettext, backend: RiichiAdvancedWeb.Gettext
+  import RiichiAdvancedWeb.Translations
 
   @initial_sequence_json """
   {
@@ -25,14 +27,16 @@ defmodule RiichiAdvancedWeb.TutorialCreatorLive do
   }
   """
 
-  def mount(params, _session, socket) do
+  def mount(params, session, socket) do
     socket = socket
+    |> assign(:session_id, session["session_id"])
     |> assign(:messages, [])
     |> assign(:nickname, Map.get(params, "nickname", ""))
     |> assign(:ruleset, Map.get(params, "ruleset", "riichi"))
     |> assign(:seat, Map.get(params, "seat", "east"))
     |> assign(:tutorial_id, Map.get(params, "tutorial_id", nil))
     |> assign(:from, Map.get(params, "from", nil))
+    |> assign(:lang, Map.get(params, "lang", "en"))
     |> assign(:loading, false)
 
     sequence_json = if socket.assigns.tutorial_id != nil do
@@ -43,11 +47,11 @@ defmodule RiichiAdvancedWeb.TutorialCreatorLive do
     else @initial_sequence_json end
     socket = assign(socket, :sequence_json, sequence_json)
 
-    messages_init = RiichiAdvanced.MessagesState.init_socket(socket)
+    messages_init = RiichiAdvanced.MessagesState.link_player_socket(socket.root_pid, socket.assigns.session_id)
     socket = if Map.has_key?(messages_init, :messages_state) do
       socket = assign(socket, :messages_state, messages_init.messages_state)
       # subscribe to message updates
-      Phoenix.PubSub.subscribe(RiichiAdvanced.PubSub, "messages:" <> socket.id)
+      Phoenix.PubSub.subscribe(RiichiAdvanced.PubSub, "messages:" <> socket.assigns.session_id)
       GenServer.cast(messages_init.messages_state, :poll_messages)
       socket
     else socket end
@@ -76,21 +80,21 @@ defmodule RiichiAdvancedWeb.TutorialCreatorLive do
         </header>
         <textarea name="sequence_json"><%= @sequence_json %></textarea>
         <button type="submit">
-          <%= if @loading do %>Loading...<% else %>Play<% end %>
+          <%= if @loading do %><%= t(@lang, "Loading...") %><% else %><%= t(@lang, "Play") %><% end %>
         </button>
       </form>
       <div class="top-right-container">
-        <.live_component module={RiichiAdvancedWeb.MenuButtonsComponent} id="menu-buttons" />
+        <.live_component module={RiichiAdvancedWeb.MenuButtonsComponent} id="menu-buttons" lang={@lang} />
       </div>
-      <.live_component module={RiichiAdvancedWeb.MessagesComponent} id="messages" messages={@messages} />
+      <.live_component module={RiichiAdvancedWeb.MessagesComponent} id="messages" messages={@messages} lang={@lang} />
     </div>
     """
   end
 
   def handle_event("back", _assigns, socket) do
     socket = case socket.assigns.from do
-      nil     -> push_navigate(socket, to: ~p"/?nickname=#{socket.assigns.nickname}")
-      ruleset -> push_navigate(socket, to: ~p"/tutorial/#{ruleset}?nickname=#{socket.assigns.nickname}")
+      nil     -> push_navigate(socket, to: ~p"/?nickname=#{socket.assigns.nickname}&lang=#{socket.assigns.lang}")
+      ruleset -> push_navigate(socket, to: ~p"/tutorial/#{ruleset}?nickname=#{socket.assigns.nickname}&lang=#{socket.assigns.lang}")
     end
     {:noreply, socket}
   end
@@ -112,7 +116,9 @@ defmodule RiichiAdvancedWeb.TutorialCreatorLive do
     {:noreply, socket}
   end
 
-  def handle_event(_, _assigns, socket) do
+  def handle_event("change_language", %{"lang" => lang}, socket), do: {:noreply, assign(socket, :lang, lang)}
+
+  def handle_event(_event, _assigns, socket) do
     {:noreply, socket}
   end
 
@@ -121,13 +127,13 @@ defmodule RiichiAdvancedWeb.TutorialCreatorLive do
     if sequence_json != nil and byte_size(sequence_json) <= 2 * 1024 * 1024 do
       uuid = Ecto.UUID.generate()
       RiichiAdvanced.ETSCache.put({ruleset, uuid}, sequence_json, :cache_sequences)
-      socket = push_navigate(socket, to: ~p"/tutorial/#{ruleset}/#{uuid}?seat=#{seat}&nickname=#{socket.assigns.nickname}")
+      socket = push_navigate(socket, to: ~p"/tutorial/#{ruleset}/#{uuid}?seat=#{seat}&nickname=#{socket.assigns.nickname}&lang=#{socket.assigns.lang}")
       {:noreply, socket}
     else {:noreply, socket} end
   end
 
   def handle_info(%{topic: topic, event: "messages_updated", payload: %{"state" => state}}, socket) do
-    if topic == "messages:" <> socket.id do
+    if topic == "messages:" <> socket.assigns.session_id do
       socket = assign(socket, :messages, state.messages)
       {:noreply, socket}
     else

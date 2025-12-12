@@ -1,0 +1,71 @@
+on after_initialization do
+  add_rule("1 Han", "Riichi", "If you can, you may discard into tenpai with riichi to lock your hand. If your discard passes, you bet 1000 points. If you win, you are awarded riichi (1 han). If you declared riichi on your very first discard, then you are instead awarded double riichi (2 han). Calls before the riichi declaration invalidate double riichi.")
+end
+
+apply set_prepend, "score_calculation.yaku_lists", "riichi_yaku"
+
+define_yaku riichi_yaku, "Riichi", 1, status("riichi")
+define_yaku riichi_yaku, "Double Riichi", 2, status("double_riichi")
+define_yaku_precedence "Double Riichi", ["Riichi"]
+
+define_match chiitoitsu_tenpai_14, ~m"(nojoker quad):-1, (nojoker koutsu):-2, pair:6"
+define_match tenpai_14, "standard_tenpai", "chiitoitsu_tenpai_14", "kokushi_tenpai"
+
+set display_riichi_sticks, true
+
+apply set, "score_calculation.riichi_value", !bet
+
+define_button riichi,
+  display_name: "Riichi",
+  show_when: our_turn
+    and has_draw
+    and status_missing("riichi")
+    and has_score("riichi_value")
+    and (!drawless or next_draw_possible)
+    and @closed_hand
+    and match(["hand", "calls", "draw"], ["tenpai_14"])
+  do
+    big_text("Riichi")
+    set_status("riichi", "just_reached")
+    push_message("declared riichi")
+    enable_auto_button("_4_auto_discard")
+    if status("discards_empty") and no_calls_yet do
+      set_status("double_riichi")
+    end
+  end
+
+apply append, "buttons.chii.show_when", status_missing("riichi")
+apply append, "buttons.pon.show_when", status_missing("riichi")
+apply append, "buttons.daiminkan.show_when", status_missing("riichi")
+apply append, "buttons.kakan.call_conditions", status_missing("riichi") or not_call_changes_waits("win")
+apply append, "buttons.ankan.call_conditions", status_missing("riichi") or not_call_changes_waits("win")
+apply append, "buttons.ron.show_when", status_missing("just_reached")
+apply append, "buttons.chankan.show_when", status_missing("just_reached")
+apply append, "buttons.tsumo.show_when", status_missing("just_reached")
+
+# unset furiten (unless in riichi)
+replace all, "functions.turn_cleanup", unset_status("furiten"), (if status_missing("riichi") do unset_status("furiten") end)
+
+apply prepend, "functions.discard_passed" do
+  as others do
+    if status("just_reached") do
+      place_riichi_stick
+    end
+    unset_status("just_reached")
+  end
+end
+
+on before_call, prepend: true do
+  unset_status("just_reached")
+end
+
+def place_riichi_stick do
+  if status_missing("riichi_stick_placed") do
+    subtract_score("riichi_value")
+    put_down_riichi_stick
+    set_status("riichi_stick_placed")
+  end
+end
+
+define play_restriction, "any", status("riichi") and status_missing("just_reached") and not_is_drawn_tile
+define play_restriction, "any", status("riichi", "just_reached") and needed_for_hand("tenpai")

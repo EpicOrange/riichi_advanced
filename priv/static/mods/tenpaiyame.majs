@@ -1,0 +1,5 @@
+on after_initialization do
+  update_rule("Rules", "Tenpairenchan", "(Tenpaiyame) An exception is if it's the last round and the tenpai dealer becomes first place -- then the game just ends.")
+end
+
+apply set, "tenpaiyame", true

@@ -5,13 +5,17 @@ defmodule RiichiAdvancedWeb.TutorialMenuLive do
   alias RiichiAdvanced.ModLoader, as: ModLoader
   alias RiichiAdvanced.Utils, as: Utils
   use RiichiAdvancedWeb, :live_view
+  use Gettext, backend: RiichiAdvancedWeb.Gettext
+  import RiichiAdvancedWeb.Translations
 
-  def mount(params, _session, socket) do
+  def mount(params, session, socket) do
     socket = socket
+    |> assign(:session_id, session["session_id"])
     |> assign(:messages, [])
     |> assign(:ruleset, params["ruleset"])
     |> assign(:nickname, Map.get(params, "nickname", ""))
     |> assign(:display_name, params["ruleset"])
+    |> assign(:lang, Map.get(params, "lang", "en"))
     |> assign(:available_tutorials, Map.get(Constants.tutorials(), params["ruleset"], []))
     |> assign(:clicked_index, nil)
 
@@ -35,11 +39,11 @@ defmodule RiichiAdvancedWeb.TutorialMenuLive do
     end
     socket = assign(socket, :display_name, Map.get(rules, "display_name", socket.assigns.display_name))
 
-    messages_init = RiichiAdvanced.MessagesState.init_socket(socket)
+    messages_init = RiichiAdvanced.MessagesState.link_player_socket(socket.root_pid, socket.assigns.session_id)
     socket = if Map.has_key?(messages_init, :messages_state) do
       socket = assign(socket, :messages_state, messages_init.messages_state)
       # subscribe to message updates
-      Phoenix.PubSub.subscribe(RiichiAdvanced.PubSub, "messages:" <> socket.id)
+      Phoenix.PubSub.subscribe(RiichiAdvanced.PubSub, "messages:" <> socket.assigns.session_id)
       GenServer.cast(messages_init.messages_state, :poll_messages)
       socket
     else socket end
@@ -51,40 +55,41 @@ defmodule RiichiAdvancedWeb.TutorialMenuLive do
     ~H"""
     <div id="container" phx-hook="ClickListener">
       <header class="tutorial-menu-header">
-        <h3>Tutorials for ruleset: <b><%= @display_name %></b></h3>
+        <h3><%= t(@lang, "Tutorials for ruleset:") %><b><%= dt(@lang, @display_name) %></b></h3>
       </header>
       <div class="tutorial-menu-container">
         <%= if Enum.empty?(@available_tutorials) do %>
-          Sorry, there are currently no tutorials for this ruleset!
+          <%= t(@lang, "Sorry, there are currently no tutorials for this ruleset!") %>
           <br/>
-          Hit the back button to return to the main menu.
+          <%= t(@lang, "Hit the back button to return to the main menu.") %>
           <div class="tutorial-menu-buttons">
             <button phx-cancellable-click="create_tutorial">
-              Create your own tutorial!
+              <%= t(@lang, "Create your own tutorial!") %>
             </button>
           </div>
         <% else %>
           <div class="tutorial-menu-buttons">
             <button phx-cancellable-click="goto_tutorial" phx-value-index={i} phx-value-sequence={sequence} phx-value-seat={seat} :for={{{sequence, name, seat}, i} <- Enum.with_index(@available_tutorials)}>
-              Tutorial <%= i + 1 %>:
-              <%= if @clicked_index == Integer.to_string(i) do %> Loading... <% else %> <%= name %> <% end %>
+              <%= t(@lang, "Tutorial") %> <%= i + 1 %>:
+              <%= if @clicked_index == Integer.to_string(i) do %> <%= t(@lang, "Loading...") %> <% else %> <%= dt(@lang, name) %> <% end %>
             </button>
             <button phx-cancellable-click="create_tutorial">
-              Create your own tutorial!
+              <%= t(@lang, "Create your own tutorial!") %>
             </button>
           </div>
         <% end %>
       </div>
       <footer class="tutorial-menu-footer">
         <button phx-cancellable-click="play_game">
-          Play <%= @display_name %>!
+          <%= t(@lang, "Play") %> <%= dt(@lang, @display_name) %>!
         </button>
       </footer>
       <div class="top-right-container">
-        <.live_component module={RiichiAdvancedWeb.MenuButtonsComponent} id="menu-buttons" />
+        <.live_component module={RiichiAdvancedWeb.MenuButtonsComponent} id="menu-buttons" lang={@lang} />
       </div>
-      <.live_component module={RiichiAdvancedWeb.MessagesComponent} id="messages" messages={@messages} />
+      <.live_component module={RiichiAdvancedWeb.MessagesComponent} id="messages" messages={@messages} lang={@lang} />
       <div class="ruleset">
+        <div class="ruleset-text"><%= t(@lang, "Ruleset:") %></div>
         <textarea readonly><%= @ruleset_json %></textarea>
       </div>
     </div>
@@ -92,7 +97,7 @@ defmodule RiichiAdvancedWeb.TutorialMenuLive do
   end
 
   def handle_event("back", _assigns, socket) do
-    socket = push_navigate(socket, to: ~p"/?nickname=#{socket.assigns.nickname}")
+    socket = push_navigate(socket, to: ~p"/?nickname=#{socket.assigns.nickname}&lang=#{socket.assigns.lang}")
     {:noreply, socket}
   end
 
@@ -125,30 +130,32 @@ defmodule RiichiAdvancedWeb.TutorialMenuLive do
       not room_state.private
     end)
     socket = if has_public_room do
-      push_navigate(socket, to: ~p"/lobby/#{ruleset}?nickname=#{socket.assigns.nickname}")
+      push_navigate(socket, to: ~p"/lobby/#{ruleset}?nickname=#{socket.assigns.nickname}&lang=#{socket.assigns.lang}")
     else
       {:ok, _, room_code} = LobbyState.create_room(%Lobby{ruleset: ruleset})
-      push_navigate(socket, to: ~p"/room/#{ruleset}/#{room_code}?nickname=#{socket.assigns.nickname}&from=learn")
+      push_navigate(socket, to: ~p"/room/#{ruleset}/#{room_code}?nickname=#{socket.assigns.nickname}&lang=#{socket.assigns.lang}&from=learn")
     end
     {:noreply, socket}
   end
   
   def handle_event("create_tutorial", _assigns, socket) do
-    socket = push_navigate(socket, to: ~p"/tutorial_creator?ruleset=#{socket.assigns.ruleset}&from=#{socket.assigns.ruleset}&nickname=#{socket.assigns.nickname}")
+    socket = push_navigate(socket, to: ~p"/tutorial_creator?ruleset=#{socket.assigns.ruleset}&from=#{socket.assigns.ruleset}&nickname=#{socket.assigns.nickname}&lang=#{socket.assigns.lang}")
     {:noreply, socket}
   end
 
-  def handle_event(_, _assigns, socket) do
+  def handle_event("change_language", %{"lang" => lang}, socket), do: {:noreply, assign(socket, :lang, lang)}
+
+  def handle_event(_event, _assigns, socket) do
     {:noreply, socket}
   end
 
   def handle_info({:goto_tutorial, sequence, seat}, socket) do
-    socket = push_navigate(socket, to: ~p"/tutorial/#{socket.assigns.ruleset}/#{sequence}?nickname=#{socket.assigns.nickname}&seat=#{seat}")
+    socket = push_navigate(socket, to: ~p"/tutorial/#{socket.assigns.ruleset}/#{sequence}?nickname=#{socket.assigns.nickname}&lang=#{socket.assigns.lang}&seat=#{seat}")
     {:noreply, socket}
   end
 
   def handle_info(%{topic: topic, event: "messages_updated", payload: %{"state" => state}}, socket) do
-    if topic == "messages:" <> socket.id do
+    if topic == "messages:" <> socket.assigns.session_id do
       socket = assign(socket, :messages, state.messages)
       {:noreply, socket}
     else

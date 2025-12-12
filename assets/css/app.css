@@ -7,16 +7,38 @@ html, body {
   overflow-y: visible;
   height: 100%;
   scrollbar-width: none; /* Firefox */
-  --tile-size: min(calc(90vw / 16), calc(80vh / 16));
 }
+/* landscape */
+@media (min-aspect-ratio: 6/5) {
+  html, body {
+    /* 16 (table height)
+      + 1 (table margin)
+    + 1.5 (top margin)
+    + 1.5 (bottom margin)
+    = 20 */
+    --tile-size: calc(100vh / 20);
+  }
+  body > div {
+    margin: 0 calc(0.5 * var(--tile-size));
+  }
+}
+/* portrait (mobile) */
+@media (max-aspect-ratio: 6/5) {
+  html, body {
+    /* 16 (table width/height)
+      + 1 (table margin)
+      + 1 (left margin)
+      + 1 (right margin)
+     = 19 */
+    --tile-size: min(calc(100vw / 19), calc(80vh / 19));
+  }
+}
+
 html::-webkit-scrollbar, body::-webkit-scrollbar { 
   display: none; /* Safari/Chrome */
 }
-body > div {
-  padding: 0 calc(1 * var(--tile-size));
-}
 main {
-  max-height: 80vh;
+  height: calc(16 * var(--tile-size));
   aspect-ratio: 1/1;
   margin: calc(2 * var(--tile-size)) auto;
   --tile-front: #f4f0eb;
@@ -47,6 +69,9 @@ main div#container {
   display: flex;
   flex-flow: column nowrap;
   user-select: none;
+  contain: layout; /* make {position: fixed;} elements relative to this */
+  font-size: calc(0.5 * var(--tile-size));
+  color: white;
 }
 main div.messages-container {
   position: absolute;
@@ -83,10 +108,10 @@ main div.messages-container > div.messages {
 /* landscape */
 @media (min-aspect-ratio: 6/5) {
   main::before {
-    left: calc(-20% + -0.5 * var(--tile-size));
+    left: calc(-20vh + 0.5 * var(--tile-size));
   }
   main div#container {
-    left: -20%;
+    left: calc(-20vh + 1 * var(--tile-size));
   }
   main div.messages-container {
     left: calc(100% + var(--tile-size));
@@ -94,21 +119,47 @@ main div.messages-container > div.messages {
 }
 /* portrait (mobile) */
 @media (max-aspect-ratio: 6/5) {
-  main {
-    max-height: 60vh;
-    --tile-size: min(calc(90vw / 16), calc(60vh / 16));
-  }
-  /* CSS rules for viewports where the height is greater than the width */
   main div.messages-container {
     left: calc(-0.5 * var(--tile-size));
     top: calc(100% + 1.5 * var(--tile-size));
     width: calc(100% + var(--tile-size));
-    height: max(10rem, calc(100vh - 100% - 4 * var(--tile-size)));
+    height: max(10rem, calc(100vh - 100%));
     flex-direction: column;
     justify-content: flex-start;
   }
   main div.messages-container > div.messages {
     flex-direction: column-reverse;
+  }
+}
+/* all tooltips: https://stackoverflow.com/a/60660207 */
+@media (pointer: coarse), (hover: none) {
+  label[data-name][title]:not(.saki-card):focus::before,
+  label[data-name][title]:not(.saki-card):focus::after {
+    position: fixed;
+    font-weight: 500;
+    left: calc(1 * var(--tile-size));
+    color: var(--tile-front);
+    background: inherit;
+    border: none;
+    width: calc(100% - 2 * var(--tile-size));
+    height: fit-content;
+    padding: calc(0.25 * var(--tile-size));
+    box-sizing: border-box;
+    line-height: 1;
+    z-index: 100;
+  }
+  label[data-name][title]:not(.saki-card):focus::before {
+    content: attr(data-name);
+    font-size: calc(0.75 * var(--tile-size));
+    top: calc(0.25 * var(--tile-size));
+    border-radius: calc(0.5 * var(--tile-size)) calc(0.5 * var(--tile-size)) 0 0;
+  }
+  label[data-name][title]:not(.saki-card):focus::after {
+    content: attr(title);
+    font-size: calc(0.5 * var(--tile-size));
+    top: calc(1.5 * var(--tile-size));
+    border-radius: 0 0 calc(0.5 * var(--tile-size)) calc(0.5 * var(--tile-size));
+    white-space: pre-wrap;
   }
 }
 
@@ -138,6 +189,7 @@ textarea {
   white-space: pre;
   box-sizing: border-box;
   scrollbar-width: none; /* Firefox */
+  font-size: calc(var(--tile-size) / 3);
 }
 textarea::-webkit-scrollbar { 
   display: none; /* Safari/Chrome */
@@ -159,6 +211,17 @@ button {
 button:active {
   filter: drop-shadow(0 calc(var(--tile-size) / 8) 0 var(--tile-front-side));
   transform: translateY(0);
+}
+button:active::before,
+button:active::before {
+  /* add a clickable area above the button */
+  content: "";
+  position: absolute;
+  background: transparent;
+  width: 100%;
+  height: calc(0.125 * var(--tile-size));
+  top: calc(-0.125 * var(--tile-size));
+  left: 0;
 }
 
 /* hands */
@@ -415,6 +478,11 @@ div#container > input.tile-numbers-checkbox:checked ~ * div.tile::after {
   height: calc(0.25 * var(--tile-size));
   z-index: 1;
 }
+div#container > input.tile-numbers-checkbox:checked ~ * div.tile.sideways::after {
+  top: unset;
+  bottom: calc(0.04 * var(--tile-size));
+  transform: rotate(-90deg);
+}
 
 /* ponds */
 div.pond, div.secondary-pond {
@@ -489,6 +557,7 @@ div.pond.kamicha {
     --mobile-scale-factor: 1.5;
   }
   input.mobile-zoom-checkbox + label {
+    background: none;
     position: absolute;
     left: calc(1.25 * var(--tile-size));
     bottom: calc(2 * var(--tile-size));
@@ -497,51 +566,51 @@ div.pond.kamicha {
     margin: 0;
     padding: 0;
     z-index: 1000;
+    width: calc(1.5 * var(--tile-size));
+    height: calc(1.5 * var(--tile-size));
   }
-  input.mobile-zoom-checkbox + label::before {
-    content: "+";
-    font-size: calc(1.5 * var(--tile-size));
-    display: block;
-    text-align: center;
-    width: calc(2 * var(--tile-size));
-    height: calc(2 * var(--tile-size));
-  }
-  input.mobile-zoom-checkbox:checked + label::before {
-    content: "–";
+  input.mobile-zoom-checkbox:not(:checked) + label > svg:first-child,
+  input.mobile-zoom-checkbox:checked + label > svg:last-child {
+    display: none;
   }
   /* hover-zoom view of our own hand */
-  input.mobile-zoom-checkbox:checked ~ div.hand.self {
+  input.mobile-zoom-checkbox:not(:checked) ~ div.hand.self {
     transform: scale(var(--mobile-scale-factor));
     transform-origin: 0% 100%;
     margin-left: calc(-0.125 * var(--tile-size));
     padding-top: calc(0.25 * var(--tile-size));
     max-width: calc(11 * var(--tile-size));
   }
-  input.mobile-zoom-checkbox:checked ~ div.hand.self > div.tiles {
+  input.mobile-zoom-checkbox:not(:checked) ~ div.hand.self {
+    flex-flow: row wrap-reverse;
+    justify-content: flex-start;
+    row-gap: calc(0.25 * var(--tile-size));
+  }
+  input.mobile-zoom-checkbox:not(:checked) ~ div.hand.self > div.tiles {
     margin-left: 0;
   }
-  input.mobile-zoom-checkbox:checked ~ div.hand.self > div.calls {
+  input.mobile-zoom-checkbox:not(:checked) ~ div.hand.self > div.calls {
     transform: scale(calc(1 / var(--mobile-scale-factor)));
     transform-origin: 100% 100%;
   }
-  input.mobile-zoom-checkbox:checked ~ div.hand.self > div.tiles:hover::before,
-  input.mobile-zoom-checkbox:checked ~ div.hand.self > div.calls:hover::before {
+  input.mobile-zoom-checkbox:not(:checked) ~ div.hand.self > div.tiles:hover::before,
+  input.mobile-zoom-checkbox:not(:checked) ~ div.hand.self > div.calls:hover::before {
     display: none;
   }
   /* move buttons up */
-  input.mobile-zoom-checkbox:checked ~ div.buttons,
-  input.mobile-zoom-checkbox:checked ~ div.call-buttons-container {
+  input.mobile-zoom-checkbox:not(:checked) ~ div.buttons,
+  input.mobile-zoom-checkbox:not(:checked) ~ div.call-buttons-container {
     bottom: calc(2 * var(--tile-size));
   }
   div#container.minefield input.mobile-zoom-checkbox + label {
     bottom: calc(7 * var(--tile-size));
   }
-  div#container.minefield input.mobile-zoom-checkbox:checked ~ div.hand.self > div.calls > div.call.aside {
+  div#container.minefield input.mobile-zoom-checkbox:not(:checked) ~ div.hand.self > div.calls > div.call.aside {
     transform: translateY(calc(-2 * var(--tile-size))) scale(var(--mobile-scale-factor));
     transform-origin: 100% 100%;
   }
-  div#container.minefield input.mobile-zoom-checkbox:checked ~ div.buttons,
-  div#container.minefield input.mobile-zoom-checkbox:checked ~ div.call-buttons-container {
+  div#container.minefield input.mobile-zoom-checkbox:not(:checked) ~ div.buttons,
+  div#container.minefield input.mobile-zoom-checkbox:not(:checked) ~ div.call-buttons-container {
     bottom: calc(5.75 * var(--tile-size));
   }
 }
@@ -778,10 +847,10 @@ div.corner-info {
   transform-origin: calc(-2.5 * var(--tile-size)) calc(-2.5 * var(--tile-size));
   width: calc(3 * var(--tile-size));
   height: calc(3 * var(--tile-size));
-  left: calc(50% + 2.5 * var(--tile-size));
-  top: calc(50% + 2.5 * var(--tile-size));
+  right: calc(2.5 * var(--tile-size));
+  bottom: calc(2.5 * var(--tile-size));
   font-size: calc(0.5 * var(--tile-size));
-  padding-top: calc(1.5 * var(--tile-size) - 0.75em);
+  padding-top: calc(1.5 * var(--tile-size) - 2em);
   box-sizing: border-box;
   user-select: none;
   z-index: 2;
@@ -826,8 +895,9 @@ div.corner-info.self {
 
 /* tiles */
 div.tile {
-  --tile-width: calc(0.75 * var(--tile-size));
-  --tile-height: calc(1 * var(--tile-size));
+  --tile-scale-factor: 1;
+  --tile-width: calc(var(--tile-scale-factor) * 0.75 * var(--tile-size));
+  --tile-height: calc(var(--tile-scale-factor) * 1 * var(--tile-size));
   --tile-color: transparent;
   --number-color: black;
   --aka-color: #c14938;
@@ -836,57 +906,41 @@ div.tile {
   --kin-color: #c9a146;
   --border-width: calc(0 * var(--tile-size));
   --border-color: transparent;
-  --num-tiles: 213;
+  --num-tiles: 214;
   width: var(--tile-width);
   height: var(--tile-height);
   background: url("/images/tiles.png") no-repeat, conic-gradient(var(--tile-color) 0 0);
-  background-size: auto calc(var(--num-tiles) * var(--tile-size));
+  background-size: auto calc(var(--tile-scale-factor) * var(--num-tiles) * var(--tile-size));
   background-position: 0 0;
   border: var(--border-width) solid var(--border-color);
   border-radius: calc(0.10 * var(--tile-size));
   flex-shrink: 0;
   box-sizing: border-box;
 }
-/* old code for giving tiles a shadow around the edges */
-/*
-div.tile::after {
+/* dora shine */
+@keyframes doraShine {
+  0% { transform: translate(-100%, -100%) rotate(135deg); }
+  100% { transform: translate(50%, 50%) rotate(135deg); }
+}
+div.tile.dora:not(.\31 x):not(.selected) { overflow: hidden; }
+div.tile.dora:not(.\31 x):not(.selected)::before {
   content: "";
   position: absolute;
-  bottom: 0;
-  --shadow-width: calc(0.95 * var(--tile-width));
-  --shadow-height: calc(0.95 * var(--tile-height));
-  --shadow-end-width: var(--tile-width);
-  --shadow-end-height: var(--tile-height);
-  --shadow-radial1: calc(0.5 * var(--tile-height));
-  --shadow-radial2: calc(0.6 * var(--tile-height));
-  --shadow-color: rgba(0,0,0,0.05);
-  background:
-   radial-gradient(circle at center, transparent var(--shadow-radial1), var(--shadow-color) var(--shadow-radial2)),
-   linear-gradient(to bottom, transparent var(--shadow-height), var(--shadow-color) var(--shadow-end-height), transparent var(--shadow-end-height)) bottom,
-   linear-gradient(to left,   transparent var(--shadow-width), var(--shadow-color) var(--shadow-end-width), transparent var(--shadow-end-width)) left,
-   linear-gradient(to right,  transparent var(--shadow-width), var(--shadow-color) var(--shadow-end-width), transparent var(--shadow-end-width)) right,
-   linear-gradient(to top,    transparent var(--shadow-height), var(--shadow-color) var(--shadow-end-height), transparent var(--shadow-end-height)) top;
-  border-radius: calc(0.1 * var(--tile-size));
+  top: 0;
+  left: 0;
+  animation: doraShine 3s infinite;
+  animation-delay: var(--dora-anim-delay, 0ms);
+  width: 400%;
+  height: 400%;
+  background: 
+    linear-gradient(0deg, transparent 25%, #ffffff7f 35%, transparent 45%),
+    linear-gradient(0deg, transparent 45%, #ffffff7f 65%, transparent 85%);
 }
-div.tile.sideways::after {
-  width: var(--tile-height);
-  height: var(--tile-width);
-  --shadow-width: calc(0.95 * var(--tile-height));
-  --shadow-height: calc(0.95 * var(--tile-width));
-  --shadow-end-width: var(--tile-height);
-  --shadow-end-height: var(--tile-width);
-}
-*/
-div.tile.sideways + div.tile.sideways { width: 0; clip-path: none; }
-div.tile.sideways + div.tile.sideways::before {
-  display: block;
-  content: "";
-  width: var(--tile-height);
-  height: var(--tile-height);
-  background: inherit;
+div.tile.sideways + div.tile.sideways {
+  margin-right: calc(-1 * var(--tile-height));
   transform: translateX(calc(-1 * var(--tile-height))) translateY(calc(-1 * var(--tile-width)));
 }
-div.tile.sideways + div.tile.sideways + div.tile.sideways::before {
+div.tile.sideways + div.tile.sideways + div.tile.sideways {
   transform: translateX(calc(-1 * var(--tile-height))) translateY(calc(-2 * var(--tile-width)));
 }
 div.tile.markable {
@@ -898,373 +952,421 @@ div.tile.markable:hover, div.tile.marked {
   --border-width: calc(0.1 * var(--tile-size));
   --border-color: var(--tile-back);
 }
-div.tile { background-position-x: calc(0 * var(--tile-size) - var(--border-width)); }
-div.tile.sideways { width: var(--tile-height); height: var(--tile-width); background-position-x: calc(-1.5 * var(--tile-size) - var(--border-width)); }
-div.tile.dora { background-position-x: calc(-0.75 * var(--tile-size) - var(--border-width)); }
-div.tile.dora.sideways { background-position-x: calc(-2.5 * var(--tile-size) - var(--border-width)); }
-div.tile.\30 m { --number-color: var(--aka-color); background-position-y: calc(-0 * var(--tile-size) - var(--border-width)); }
-div.tile.\31 m { background-position-y: calc(-1 * var(--tile-size) - var(--border-width)); }
-div.tile.\32 m { background-position-y: calc(-2 * var(--tile-size) - var(--border-width)); }
-div.tile.\33 m { background-position-y: calc(-3 * var(--tile-size) - var(--border-width)); }
-div.tile.\34 m { background-position-y: calc(-4 * var(--tile-size) - var(--border-width)); }
-div.tile.\35 m { background-position-y: calc(-5 * var(--tile-size) - var(--border-width)); }
-div.tile.\36 m { background-position-y: calc(-6 * var(--tile-size) - var(--border-width)); }
-div.tile.\37 m { background-position-y: calc(-7 * var(--tile-size) - var(--border-width)); }
-div.tile.\38 m { background-position-y: calc(-8 * var(--tile-size) - var(--border-width)); }
-div.tile.\39 m { background-position-y: calc(-9 * var(--tile-size) - var(--border-width)); }
-div.tile.\30 p { --number-color: var(--aka-color); background-position-y: calc(-10 * var(--tile-size) - var(--border-width)); }
-div.tile.\31 p { background-position-y: calc(-11 * var(--tile-size) - var(--border-width)); }
-div.tile.\32 p { background-position-y: calc(-12 * var(--tile-size) - var(--border-width)); }
-div.tile.\33 p { background-position-y: calc(-13 * var(--tile-size) - var(--border-width)); }
-div.tile.\34 p { background-position-y: calc(-14 * var(--tile-size) - var(--border-width)); }
-div.tile.\35 p { background-position-y: calc(-15 * var(--tile-size) - var(--border-width)); }
-div.tile.\36 p { background-position-y: calc(-16 * var(--tile-size) - var(--border-width)); }
-div.tile.\37 p { background-position-y: calc(-17 * var(--tile-size) - var(--border-width)); }
-div.tile.\38 p { background-position-y: calc(-18 * var(--tile-size) - var(--border-width)); }
-div.tile.\39 p { background-position-y: calc(-19 * var(--tile-size) - var(--border-width)); }
-div.tile.\30 s { --number-color: var(--aka-color); background-position-y: calc(-20 * var(--tile-size) - var(--border-width)); }
-div.tile.\31 s { background-position-y: calc(-21 * var(--tile-size) - var(--border-width)); }
-div.tile.\32 s { background-position-y: calc(-22 * var(--tile-size) - var(--border-width)); }
-div.tile.\33 s { background-position-y: calc(-23 * var(--tile-size) - var(--border-width)); }
-div.tile.\34 s { background-position-y: calc(-24 * var(--tile-size) - var(--border-width)); }
-div.tile.\35 s { background-position-y: calc(-25 * var(--tile-size) - var(--border-width)); }
-div.tile.\36 s { background-position-y: calc(-26 * var(--tile-size) - var(--border-width)); }
-div.tile.\37 s { background-position-y: calc(-27 * var(--tile-size) - var(--border-width)); }
-div.tile.\38 s { background-position-y: calc(-28 * var(--tile-size) - var(--border-width)); }
-div.tile.\39 s { background-position-y: calc(-29 * var(--tile-size) - var(--border-width)); }
-div.tile.\31 z { background-position-y: calc(-30 * var(--tile-size) - var(--border-width)); }
-div.tile.\32 z { background-position-y: calc(-31 * var(--tile-size) - var(--border-width)); }
-div.tile.\33 z { background-position-y: calc(-32 * var(--tile-size) - var(--border-width)); }
-div.tile.\34 z { background-position-y: calc(-33 * var(--tile-size) - var(--border-width)); }
-div.tile.\35 z, div.tile.\31 x.transparent { background-position-y: calc(-34 * var(--tile-size) - var(--border-width)); }
-div.tile.\36 z { background-position-y: calc(-35 * var(--tile-size) - var(--border-width)); }
-div.tile.\37 z { background-position-y: calc(-36 * var(--tile-size) - var(--border-width)); }
-div.tile.\30 z { background-position-y: calc(-37 * var(--tile-size) - var(--border-width)); }
-div.tile.\38 z { background-position-y: calc(-38 * var(--tile-size) - var(--border-width)); }
-div.tile.\39 z { background-position-y: calc(-39 * var(--tile-size) - var(--border-width)); }
-div.tile.\30 \30 s { background-position-y: calc(-40 * var(--tile-size) - var(--border-width)); }
-div.tile.\31 \30 m { background-position-y: calc(-41 * var(--tile-size) - var(--border-width)); }
-div.tile.\31 \30 p { background-position-y: calc(-42 * var(--tile-size) - var(--border-width)); }
-div.tile.\31 \30 s { background-position-y: calc(-43 * var(--tile-size) - var(--border-width)); }
-div.tile.\31 x { background-position-y: calc(-44 * var(--tile-size) - var(--border-width)); }
-div.tile.\31 f { background-position-y: calc(-45 * var(--tile-size) - var(--border-width)); }
-div.tile.\32 f { background-position-y: calc(-46 * var(--tile-size) - var(--border-width)); }
-div.tile.\33 f { background-position-y: calc(-47 * var(--tile-size) - var(--border-width)); }
-div.tile.\34 f { background-position-y: calc(-48 * var(--tile-size) - var(--border-width)); }
-div.tile.\31 g { background-position-y: calc(-49 * var(--tile-size) - var(--border-width)); }
-div.tile.\32 g { background-position-y: calc(-50 * var(--tile-size) - var(--border-width)); }
-div.tile.\33 g { background-position-y: calc(-51 * var(--tile-size) - var(--border-width)); }
-div.tile.\34 g { background-position-y: calc(-52 * var(--tile-size) - var(--border-width)); }
-div.tile.\31 a { background-position-y: calc(-53 * var(--tile-size) - var(--border-width)); }
-div.tile.\32 a { background-position-y: calc(-54 * var(--tile-size) - var(--border-width)); }
-div.tile.\33 a { background-position-y: calc(-55 * var(--tile-size) - var(--border-width)); }
-div.tile.\34 a { background-position-y: calc(-56 * var(--tile-size) - var(--border-width)); }
-div.tile.\31 k { background-position-y: calc(-57 * var(--tile-size) - var(--border-width)); }
-div.tile.\32 k { background-position-y: calc(-58 * var(--tile-size) - var(--border-width)); }
-div.tile.\33 k { background-position-y: calc(-59 * var(--tile-size) - var(--border-width)); }
-div.tile.\34 k { background-position-y: calc(-60 * var(--tile-size) - var(--border-width)); }
-div.tile.\31 q { background-position-y: calc(-61 * var(--tile-size) - var(--border-width)); }
-div.tile.\32 q { background-position-y: calc(-62 * var(--tile-size) - var(--border-width)); }
-div.tile.\33 q { background-position-y: calc(-63 * var(--tile-size) - var(--border-width)); }
-div.tile.\34 q { background-position-y: calc(-64 * var(--tile-size) - var(--border-width)); }
-div.tile.\31 y { background-position-y: calc(-65 * var(--tile-size) - var(--border-width)); }
-div.tile.\31 t { background-position-y: calc(-66 * var(--tile-size) - var(--border-width)); }
-div.tile.\32 t { background-position-y: calc(-67 * var(--tile-size) - var(--border-width)); }
-div.tile.\33 t { background-position-y: calc(-68 * var(--tile-size) - var(--border-width)); }
-div.tile.\34 t { background-position-y: calc(-69 * var(--tile-size) - var(--border-width)); }
-div.tile.\35 t { background-position-y: calc(-70 * var(--tile-size) - var(--border-width)); }
-div.tile.\36 t { background-position-y: calc(-71 * var(--tile-size) - var(--border-width)); }
-div.tile.\37 t { background-position-y: calc(-72 * var(--tile-size) - var(--border-width)); }
-div.tile.\38 t { background-position-y: calc(-73 * var(--tile-size) - var(--border-width)); }
-div.tile.\39 t { background-position-y: calc(-74 * var(--tile-size) - var(--border-width)); }
-div.tile.\31 \30 t { background-position-y: calc(-75 * var(--tile-size) - var(--border-width)); }
-div.tile.\31 j { background-position-y: calc(-76 * var(--tile-size) - var(--border-width)); }
-div.tile.\30 j { background-position-y: calc(-77 * var(--tile-size) - var(--border-width)); }
-div.tile.\32 j { background-position-y: calc(-78 * var(--tile-size) - var(--border-width)); }
-div.tile.\39 j { background-position-y: calc(-79 * var(--tile-size) - var(--border-width)); }
-div.tile.\34 j { background-position-y: calc(-80 * var(--tile-size) - var(--border-width)); }
-div.tile.\35 j { background-position-y: calc(-81 * var(--tile-size) - var(--border-width)); }
-div.tile.\36 j, div.tile.\31 \36 j { background-position-y: calc(-82 * var(--tile-size) - var(--border-width)); }
-div.tile.\37 j { background-position-y: calc(-83 * var(--tile-size) - var(--border-width)); }
-div.tile.\38 j { background-position-y: calc(-84 * var(--tile-size) - var(--border-width)); }
-div.tile.\31 \30 j { background-position-y: calc(-85 * var(--tile-size) - var(--border-width)); }
-div.tile.\31 \32 j { background-position-y: calc(-86 * var(--tile-size) - var(--border-width)); }
-div.tile.\33 j, div.tile.\31 \33 j { background-position-y: calc(-87 * var(--tile-size) - var(--border-width)); }
-div.tile.\31 \34 j { background-position-y: calc(-88 * var(--tile-size) - var(--border-width)); }
-div.tile.\31 \35 j { background-position-y: calc(-89 * var(--tile-size) - var(--border-width)); }
-div.tile.\31 \37 j { background-position-y: calc(-90 * var(--tile-size) - var(--border-width)); }
-div.tile.\31 \38 j { background-position-y: calc(-91 * var(--tile-size) - var(--border-width)); }
-div.tile.\31 \39 j { background-position-y: calc(-92 * var(--tile-size) - var(--border-width)); }
-div.tile.\33 \37 j { background-position-y: calc(-93 * var(--tile-size) - var(--border-width)); }
-div.tile.\34 \36 j { background-position-y: calc(-94 * var(--tile-size) - var(--border-width)); }
-div.tile.\31 \34 \37 j { background-position-y: calc(-95 * var(--tile-size) - var(--border-width)); }
-div.tile.\32 \35 \38 j { background-position-y: calc(-96 * var(--tile-size) - var(--border-width)); }
-div.tile.\33 \36 \39 j { background-position-y: calc(-97 * var(--tile-size) - var(--border-width)); }
-div.tile.\37 \38 \39 j { background-position-y: calc(-98 * var(--tile-size) - var(--border-width)); }
-div.tile.\34 \35 \36 j { background-position-y: calc(-99 * var(--tile-size) - var(--border-width)); }
-div.tile.\31 \32 \33 j { background-position-y: calc(-100 * var(--tile-size) - var(--border-width)); }
-div.tile.\31 \31 j { background-position-y: calc(-101 * var(--tile-size) - var(--border-width)); }
-div.tile.\32 \32 j { background-position-y: calc(-102 * var(--tile-size) - var(--border-width)); }
-div.tile.\32 \30 j { background-position-y: calc(-103 * var(--tile-size) - var(--border-width)); }
-div.tile.\39 \31 j { background-position-y: calc(-104 * var(--tile-size) - var(--border-width)); }
-div.tile.\36 \34 j { background-position-y: calc(-105 * var(--tile-size) - var(--border-width)); }
-div.tile.\37 \33 j { background-position-y: calc(-106 * var(--tile-size) - var(--border-width)); }
-div.tile.\38 \35 \32 j { background-position-y: calc(-107 * var(--tile-size) - var(--border-width)); }
-div.tile.\33 \30 j { background-position-y: calc(-108 * var(--tile-size) - var(--border-width)); }
-div.tile.\33 \31 j { background-position-y: calc(-109 * var(--tile-size) - var(--border-width)); }
-div.tile.\33 \32 j { background-position-y: calc(-110 * var(--tile-size) - var(--border-width)); }
-div.tile.\33 \33 j { background-position-y: calc(-111 * var(--tile-size) - var(--border-width)); }
-div.tile.\33 \34 j { background-position-y: calc(-112 * var(--tile-size) - var(--border-width)); }
-div.tile.\32 y { background-position-y: calc(-113 * var(--tile-size) - var(--border-width)); }
-div.tile.\30 \31 m { --tile-color: var(--aka-color); --number-color: var(--aka-color); background-position-y: calc(-114 * var(--tile-size) - var(--border-width)); }
-div.tile.\30 \32 m { --tile-color: var(--aka-color); --number-color: var(--aka-color); background-position-y: calc(-115 * var(--tile-size) - var(--border-width)); }
-div.tile.\30 \33 m { --tile-color: var(--aka-color); --number-color: var(--aka-color); background-position-y: calc(-116 * var(--tile-size) - var(--border-width)); }
-div.tile.\30 \34 m { --tile-color: var(--aka-color); --number-color: var(--aka-color); background-position-y: calc(-117 * var(--tile-size) - var(--border-width)); }
-div.tile.\30 \35 m { --tile-color: var(--aka-color); --number-color: var(--aka-color); background-position-y: calc(-118 * var(--tile-size) - var(--border-width)); }
-div.tile.\30 \36 m { --tile-color: var(--aka-color); --number-color: var(--aka-color); background-position-y: calc(-119 * var(--tile-size) - var(--border-width)); }
-div.tile.\30 \37 m { --tile-color: var(--aka-color); --number-color: var(--aka-color); background-position-y: calc(-120 * var(--tile-size) - var(--border-width)); }
-div.tile.\30 \38 m { --tile-color: var(--aka-color); --number-color: var(--aka-color); background-position-y: calc(-121 * var(--tile-size) - var(--border-width)); }
-div.tile.\30 \39 m { --tile-color: var(--aka-color); --number-color: var(--aka-color); background-position-y: calc(-122 * var(--tile-size) - var(--border-width)); }
-div.tile.\30 \31 \30 m { --tile-color: var(--aka-color); --number-color: var(--aka-color); background-position-y: calc(-123 * var(--tile-size) - var(--border-width)); }
-div.tile.\30 \31 p { --tile-color: var(--aka-color); --number-color: var(--aka-color); background-position-y: calc(-124 * var(--tile-size) - var(--border-width)); }
-div.tile.\30 \32 p { --tile-color: var(--aka-color); --number-color: var(--aka-color); background-position-y: calc(-125 * var(--tile-size) - var(--border-width)); }
-div.tile.\30 \33 p { --tile-color: var(--aka-color); --number-color: var(--aka-color); background-position-y: calc(-126 * var(--tile-size) - var(--border-width)); }
-div.tile.\30 \34 p { --tile-color: var(--aka-color); --number-color: var(--aka-color); background-position-y: calc(-127 * var(--tile-size) - var(--border-width)); }
-div.tile.\30 \35 p { --tile-color: var(--aka-color); --number-color: var(--aka-color); background-position-y: calc(-128 * var(--tile-size) - var(--border-width)); }
-div.tile.\30 \36 p { --tile-color: var(--aka-color); --number-color: var(--aka-color); background-position-y: calc(-129 * var(--tile-size) - var(--border-width)); }
-div.tile.\30 \37 p { --tile-color: var(--aka-color); --number-color: var(--aka-color); background-position-y: calc(-130 * var(--tile-size) - var(--border-width)); }
-div.tile.\30 \38 p { --tile-color: var(--aka-color); --number-color: var(--aka-color); background-position-y: calc(-131 * var(--tile-size) - var(--border-width)); }
-div.tile.\30 \39 p { --tile-color: var(--aka-color); --number-color: var(--aka-color); background-position-y: calc(-132 * var(--tile-size) - var(--border-width)); }
-div.tile.\30 \31 \30 p { --tile-color: var(--aka-color); --number-color: var(--aka-color); background-position-y: calc(-133 * var(--tile-size) - var(--border-width)); }
-div.tile.\30 \31 s { --tile-color: var(--aka-color); --number-color: var(--aka-color); background-position-y: calc(-134 * var(--tile-size) - var(--border-width)); }
-div.tile.\30 \32 s { --tile-color: var(--aka-color); --number-color: var(--aka-color); background-position-y: calc(-135 * var(--tile-size) - var(--border-width)); }
-div.tile.\30 \33 s { --tile-color: var(--aka-color); --number-color: var(--aka-color); background-position-y: calc(-136 * var(--tile-size) - var(--border-width)); }
-div.tile.\30 \34 s { --tile-color: var(--aka-color); --number-color: var(--aka-color); background-position-y: calc(-137 * var(--tile-size) - var(--border-width)); }
-div.tile.\30 \35 s { --tile-color: var(--aka-color); --number-color: var(--aka-color); background-position-y: calc(-138 * var(--tile-size) - var(--border-width)); }
-div.tile.\30 \36 s { --tile-color: var(--aka-color); --number-color: var(--aka-color); background-position-y: calc(-139 * var(--tile-size) - var(--border-width)); }
-div.tile.\30 \37 s { --tile-color: var(--aka-color); --number-color: var(--aka-color); background-position-y: calc(-140 * var(--tile-size) - var(--border-width)); }
-div.tile.\30 \38 s { --tile-color: var(--aka-color); --number-color: var(--aka-color); background-position-y: calc(-141 * var(--tile-size) - var(--border-width)); }
-div.tile.\30 \39 s { --tile-color: var(--aka-color); --number-color: var(--aka-color); background-position-y: calc(-142 * var(--tile-size) - var(--border-width)); }
-div.tile.\30 \31 \30 s { --tile-color: var(--aka-color); --number-color: var(--aka-color); background-position-y: calc(-143 * var(--tile-size) - var(--border-width)); }
-div.tile.\30 \31 t { --tile-color: var(--aka-color); --number-color: var(--aka-color); background-position-y: calc(-144 * var(--tile-size) - var(--border-width)); }
-div.tile.\30 \32 t { --tile-color: var(--aka-color); --number-color: var(--aka-color); background-position-y: calc(-145 * var(--tile-size) - var(--border-width)); }
-div.tile.\30 \33 t { --tile-color: var(--aka-color); --number-color: var(--aka-color); background-position-y: calc(-146 * var(--tile-size) - var(--border-width)); }
-div.tile.\30 \34 t { --tile-color: var(--aka-color); --number-color: var(--aka-color); background-position-y: calc(-147 * var(--tile-size) - var(--border-width)); }
-div.tile.\30 \35 t, div.tile.\30 t { --tile-color: var(--aka-color); --number-color: var(--aka-color); background-position-y: calc(-148 * var(--tile-size) - var(--border-width)); }
-div.tile.\30 \36 t { --tile-color: var(--aka-color); --number-color: var(--aka-color); background-position-y: calc(-149 * var(--tile-size) - var(--border-width)); }
-div.tile.\30 \37 t { --tile-color: var(--aka-color); --number-color: var(--aka-color); background-position-y: calc(-150 * var(--tile-size) - var(--border-width)); }
-div.tile.\30 \38 t { --tile-color: var(--aka-color); --number-color: var(--aka-color); background-position-y: calc(-151 * var(--tile-size) - var(--border-width)); }
-div.tile.\30 \39 t { --tile-color: var(--aka-color); --number-color: var(--aka-color); background-position-y: calc(-152 * var(--tile-size) - var(--border-width)); }
-div.tile.\30 \31 \30 t { --tile-color: var(--aka-color); --number-color: var(--aka-color); background-position-y: calc(-153 * var(--tile-size) - var(--border-width)); }
-div.tile.\30 \30 z { --tile-color: var(--aka-color); --number-color: var(--aka-color); background-position-y: calc(-154 * var(--tile-size) - var(--border-width)); }
-div.tile.\30 \31 z { --tile-color: var(--aka-color); --number-color: var(--aka-color); background-position-y: calc(-155 * var(--tile-size) - var(--border-width)); }
-div.tile.\30 \32 z { --tile-color: var(--aka-color); --number-color: var(--aka-color); background-position-y: calc(-156 * var(--tile-size) - var(--border-width)); }
-div.tile.\30 \33 z { --tile-color: var(--aka-color); --number-color: var(--aka-color); background-position-y: calc(-157 * var(--tile-size) - var(--border-width)); }
-div.tile.\30 \34 z { --tile-color: var(--aka-color); --number-color: var(--aka-color); background-position-y: calc(-158 * var(--tile-size) - var(--border-width)); }
-div.tile.\30 \35 z { --tile-color: var(--aka-color); --number-color: var(--aka-color); background-position-y: calc(-159 * var(--tile-size) - var(--border-width)); }
-div.tile.\30 \36 z { --tile-color: var(--aka-color); --number-color: var(--aka-color); background-position-y: calc(-160 * var(--tile-size) - var(--border-width)); }
-div.tile.\30 \37 z { --tile-color: var(--aka-color); --number-color: var(--aka-color); background-position-y: calc(-161 * var(--tile-size) - var(--border-width)); }
-div.tile.\30 \38 z { --tile-color: var(--aka-color); --number-color: var(--aka-color); background-position-y: calc(-162 * var(--tile-size) - var(--border-width)); }
-div.tile.\30 \30 \30 s { --tile-color: var(--aka-color); --number-color: var(--aka-color); background-position-y: calc(-163 * var(--tile-size) - var(--border-width)); }
-div.tile.\32 \31 m { --tile-color: var(--ao-color); --number-color: var(--ao-color); background-position-y: calc(-114 * var(--tile-size) - var(--border-width)); }
-div.tile.\32 \32 m { --tile-color: var(--ao-color); --number-color: var(--ao-color); background-position-y: calc(-115 * var(--tile-size) - var(--border-width)); }
-div.tile.\32 \33 m { --tile-color: var(--ao-color); --number-color: var(--ao-color); background-position-y: calc(-116 * var(--tile-size) - var(--border-width)); }
-div.tile.\32 \34 m { --tile-color: var(--ao-color); --number-color: var(--ao-color); background-position-y: calc(-117 * var(--tile-size) - var(--border-width)); }
-div.tile.\32 \35 m { --tile-color: var(--ao-color); --number-color: var(--ao-color); background-position-y: calc(-118 * var(--tile-size) - var(--border-width)); }
-div.tile.\32 \36 m { --tile-color: var(--ao-color); --number-color: var(--ao-color); background-position-y: calc(-119 * var(--tile-size) - var(--border-width)); }
-div.tile.\32 \37 m { --tile-color: var(--ao-color); --number-color: var(--ao-color); background-position-y: calc(-120 * var(--tile-size) - var(--border-width)); }
-div.tile.\32 \38 m { --tile-color: var(--ao-color); --number-color: var(--ao-color); background-position-y: calc(-121 * var(--tile-size) - var(--border-width)); }
-div.tile.\32 \39 m { --tile-color: var(--ao-color); --number-color: var(--ao-color); background-position-y: calc(-122 * var(--tile-size) - var(--border-width)); }
-div.tile.\32 \31 \30 m { --tile-color: var(--ao-color); --number-color: var(--ao-color); background-position-y: calc(-123 * var(--tile-size) - var(--border-width)); }
-div.tile.\32 \31 p { --tile-color: var(--ao-color); --number-color: var(--ao-color); background-position-y: calc(-124 * var(--tile-size) - var(--border-width)); }
-div.tile.\32 \32 p { --tile-color: var(--ao-color); --number-color: var(--ao-color); background-position-y: calc(-125 * var(--tile-size) - var(--border-width)); }
-div.tile.\32 \33 p { --tile-color: var(--ao-color); --number-color: var(--ao-color); background-position-y: calc(-126 * var(--tile-size) - var(--border-width)); }
-div.tile.\32 \34 p { --tile-color: var(--ao-color); --number-color: var(--ao-color); background-position-y: calc(-127 * var(--tile-size) - var(--border-width)); }
-div.tile.\32 \35 p { --tile-color: var(--ao-color); --number-color: var(--ao-color); background-position-y: calc(-128 * var(--tile-size) - var(--border-width)); }
-div.tile.\32 \36 p { --tile-color: var(--ao-color); --number-color: var(--ao-color); background-position-y: calc(-129 * var(--tile-size) - var(--border-width)); }
-div.tile.\32 \37 p { --tile-color: var(--ao-color); --number-color: var(--ao-color); background-position-y: calc(-130 * var(--tile-size) - var(--border-width)); }
-div.tile.\32 \38 p { --tile-color: var(--ao-color); --number-color: var(--ao-color); background-position-y: calc(-131 * var(--tile-size) - var(--border-width)); }
-div.tile.\32 \39 p { --tile-color: var(--ao-color); --number-color: var(--ao-color); background-position-y: calc(-132 * var(--tile-size) - var(--border-width)); }
-div.tile.\32 \31 \30 p { --tile-color: var(--ao-color); --number-color: var(--ao-color); background-position-y: calc(-133 * var(--tile-size) - var(--border-width)); }
-div.tile.\32 \31 s { --tile-color: var(--ao-color); --number-color: var(--ao-color); background-position-y: calc(-134 * var(--tile-size) - var(--border-width)); }
-div.tile.\32 \32 s { --tile-color: var(--ao-color); --number-color: var(--ao-color); background-position-y: calc(-135 * var(--tile-size) - var(--border-width)); }
-div.tile.\32 \33 s { --tile-color: var(--ao-color); --number-color: var(--ao-color); background-position-y: calc(-136 * var(--tile-size) - var(--border-width)); }
-div.tile.\32 \34 s { --tile-color: var(--ao-color); --number-color: var(--ao-color); background-position-y: calc(-137 * var(--tile-size) - var(--border-width)); }
-div.tile.\32 \35 s { --tile-color: var(--ao-color); --number-color: var(--ao-color); background-position-y: calc(-138 * var(--tile-size) - var(--border-width)); }
-div.tile.\32 \36 s { --tile-color: var(--ao-color); --number-color: var(--ao-color); background-position-y: calc(-139 * var(--tile-size) - var(--border-width)); }
-div.tile.\32 \37 s { --tile-color: var(--ao-color); --number-color: var(--ao-color); background-position-y: calc(-140 * var(--tile-size) - var(--border-width)); }
-div.tile.\32 \38 s { --tile-color: var(--ao-color); --number-color: var(--ao-color); background-position-y: calc(-141 * var(--tile-size) - var(--border-width)); }
-div.tile.\32 \39 s { --tile-color: var(--ao-color); --number-color: var(--ao-color); background-position-y: calc(-142 * var(--tile-size) - var(--border-width)); }
-div.tile.\32 \31 \30 s { --tile-color: var(--ao-color); --number-color: var(--ao-color); background-position-y: calc(-143 * var(--tile-size) - var(--border-width)); }
-div.tile.\32 \31 t { --tile-color: var(--ao-color); --number-color: var(--ao-color); background-position-y: calc(-144 * var(--tile-size) - var(--border-width)); }
-div.tile.\32 \32 t { --tile-color: var(--ao-color); --number-color: var(--ao-color); background-position-y: calc(-145 * var(--tile-size) - var(--border-width)); }
-div.tile.\32 \33 t { --tile-color: var(--ao-color); --number-color: var(--ao-color); background-position-y: calc(-146 * var(--tile-size) - var(--border-width)); }
-div.tile.\32 \34 t { --tile-color: var(--ao-color); --number-color: var(--ao-color); background-position-y: calc(-147 * var(--tile-size) - var(--border-width)); }
-div.tile.\32 \35 t { --tile-color: var(--ao-color); --number-color: var(--ao-color); background-position-y: calc(-148 * var(--tile-size) - var(--border-width)); }
-div.tile.\32 \36 t { --tile-color: var(--ao-color); --number-color: var(--ao-color); background-position-y: calc(-149 * var(--tile-size) - var(--border-width)); }
-div.tile.\32 \37 t { --tile-color: var(--ao-color); --number-color: var(--ao-color); background-position-y: calc(-150 * var(--tile-size) - var(--border-width)); }
-div.tile.\32 \38 t { --tile-color: var(--ao-color); --number-color: var(--ao-color); background-position-y: calc(-151 * var(--tile-size) - var(--border-width)); }
-div.tile.\32 \39 t { --tile-color: var(--ao-color); --number-color: var(--ao-color); background-position-y: calc(-152 * var(--tile-size) - var(--border-width)); }
-div.tile.\32 \31 \30 t { --tile-color: var(--ao-color); --number-color: var(--ao-color); background-position-y: calc(-153 * var(--tile-size) - var(--border-width)); }
-div.tile.\32 \30 z { --tile-color: var(--ao-color); --number-color: var(--ao-color); background-position-y: calc(-154 * var(--tile-size) - var(--border-width)); }
-div.tile.\32 \31 z { --tile-color: var(--ao-color); --number-color: var(--ao-color); background-position-y: calc(-155 * var(--tile-size) - var(--border-width)); }
-div.tile.\32 \32 z { --tile-color: var(--ao-color); --number-color: var(--ao-color); background-position-y: calc(-156 * var(--tile-size) - var(--border-width)); }
-div.tile.\32 \33 z { --tile-color: var(--ao-color); --number-color: var(--ao-color); background-position-y: calc(-157 * var(--tile-size) - var(--border-width)); }
-div.tile.\32 \34 z { --tile-color: var(--ao-color); --number-color: var(--ao-color); background-position-y: calc(-158 * var(--tile-size) - var(--border-width)); }
-div.tile.\32 \35 z { --tile-color: var(--ao-color); --number-color: var(--ao-color); background-position-y: calc(-159 * var(--tile-size) - var(--border-width)); }
-div.tile.\32 \36 z { --tile-color: var(--ao-color); --number-color: var(--ao-color); background-position-y: calc(-160 * var(--tile-size) - var(--border-width)); }
-div.tile.\32 \37 z { --tile-color: var(--ao-color); --number-color: var(--ao-color); background-position-y: calc(-161 * var(--tile-size) - var(--border-width)); }
-div.tile.\32 \38 z { --tile-color: var(--ao-color); --number-color: var(--ao-color); background-position-y: calc(-162 * var(--tile-size) - var(--border-width)); }
-div.tile.\32 \30 \30 s { --tile-color: var(--ao-color); --number-color: var(--ao-color); background-position-y: calc(-163 * var(--tile-size) - var(--border-width)); }
-div.tile.\33 \31 m { --tile-color: var(--kin-color); background-position-y: calc(-114 * var(--tile-size) - var(--border-width)); }
-div.tile.\33 \32 m { --tile-color: var(--kin-color); background-position-y: calc(-115 * var(--tile-size) - var(--border-width)); }
-div.tile.\33 \33 m { --tile-color: var(--kin-color); background-position-y: calc(-116 * var(--tile-size) - var(--border-width)); }
-div.tile.\33 \34 m { --tile-color: var(--kin-color); background-position-y: calc(-117 * var(--tile-size) - var(--border-width)); }
-div.tile.\33 \35 m { --tile-color: var(--kin-color); background-position-y: calc(-118 * var(--tile-size) - var(--border-width)); }
-div.tile.\33 \36 m { --tile-color: var(--kin-color); background-position-y: calc(-119 * var(--tile-size) - var(--border-width)); }
-div.tile.\33 \37 m { --tile-color: var(--kin-color); background-position-y: calc(-120 * var(--tile-size) - var(--border-width)); }
-div.tile.\33 \38 m { --tile-color: var(--kin-color); background-position-y: calc(-121 * var(--tile-size) - var(--border-width)); }
-div.tile.\33 \39 m { --tile-color: var(--kin-color); background-position-y: calc(-122 * var(--tile-size) - var(--border-width)); }
-div.tile.\33 \31 \30 m { --tile-color: var(--kin-color); background-position-y: calc(-123 * var(--tile-size) - var(--border-width)); }
-div.tile.\33 \31 p { --tile-color: var(--kin-color); background-position-y: calc(-124 * var(--tile-size) - var(--border-width)); }
-div.tile.\33 \32 p { --tile-color: var(--kin-color); background-position-y: calc(-125 * var(--tile-size) - var(--border-width)); }
-div.tile.\33 \33 p { --tile-color: var(--kin-color); background-position-y: calc(-126 * var(--tile-size) - var(--border-width)); }
-div.tile.\33 \34 p { --tile-color: var(--kin-color); background-position-y: calc(-127 * var(--tile-size) - var(--border-width)); }
-div.tile.\33 \35 p { --tile-color: var(--kin-color); background-position-y: calc(-128 * var(--tile-size) - var(--border-width)); }
-div.tile.\33 \36 p { --tile-color: var(--kin-color); background-position-y: calc(-129 * var(--tile-size) - var(--border-width)); }
-div.tile.\33 \37 p { --tile-color: var(--kin-color); background-position-y: calc(-130 * var(--tile-size) - var(--border-width)); }
-div.tile.\33 \38 p { --tile-color: var(--kin-color); background-position-y: calc(-131 * var(--tile-size) - var(--border-width)); }
-div.tile.\33 \39 p { --tile-color: var(--kin-color); background-position-y: calc(-132 * var(--tile-size) - var(--border-width)); }
-div.tile.\33 \31 \30 p { --tile-color: var(--kin-color); background-position-y: calc(-133 * var(--tile-size) - var(--border-width)); }
-div.tile.\33 \31 s { --tile-color: var(--kin-color); background-position-y: calc(-134 * var(--tile-size) - var(--border-width)); }
-div.tile.\33 \32 s { --tile-color: var(--kin-color); background-position-y: calc(-135 * var(--tile-size) - var(--border-width)); }
-div.tile.\33 \33 s { --tile-color: var(--kin-color); background-position-y: calc(-136 * var(--tile-size) - var(--border-width)); }
-div.tile.\33 \34 s { --tile-color: var(--kin-color); background-position-y: calc(-137 * var(--tile-size) - var(--border-width)); }
-div.tile.\33 \35 s { --tile-color: var(--kin-color); background-position-y: calc(-138 * var(--tile-size) - var(--border-width)); }
-div.tile.\33 \36 s { --tile-color: var(--kin-color); background-position-y: calc(-139 * var(--tile-size) - var(--border-width)); }
-div.tile.\33 \37 s { --tile-color: var(--kin-color); background-position-y: calc(-140 * var(--tile-size) - var(--border-width)); }
-div.tile.\33 \38 s { --tile-color: var(--kin-color); background-position-y: calc(-141 * var(--tile-size) - var(--border-width)); }
-div.tile.\33 \39 s { --tile-color: var(--kin-color); background-position-y: calc(-142 * var(--tile-size) - var(--border-width)); }
-div.tile.\33 \31 \30 s { --tile-color: var(--kin-color); background-position-y: calc(-143 * var(--tile-size) - var(--border-width)); }
-div.tile.\33 \31 t { --tile-color: var(--kin-color); background-position-y: calc(-144 * var(--tile-size) - var(--border-width)); }
-div.tile.\33 \32 t { --tile-color: var(--kin-color); background-position-y: calc(-145 * var(--tile-size) - var(--border-width)); }
-div.tile.\33 \33 t { --tile-color: var(--kin-color); background-position-y: calc(-146 * var(--tile-size) - var(--border-width)); }
-div.tile.\33 \34 t { --tile-color: var(--kin-color); background-position-y: calc(-147 * var(--tile-size) - var(--border-width)); }
-div.tile.\33 \35 t { --tile-color: var(--kin-color); background-position-y: calc(-148 * var(--tile-size) - var(--border-width)); }
-div.tile.\33 \36 t { --tile-color: var(--kin-color); background-position-y: calc(-149 * var(--tile-size) - var(--border-width)); }
-div.tile.\33 \37 t { --tile-color: var(--kin-color); background-position-y: calc(-150 * var(--tile-size) - var(--border-width)); }
-div.tile.\33 \38 t { --tile-color: var(--kin-color); background-position-y: calc(-151 * var(--tile-size) - var(--border-width)); }
-div.tile.\33 \39 t { --tile-color: var(--kin-color); background-position-y: calc(-152 * var(--tile-size) - var(--border-width)); }
-div.tile.\33 \31 \30 t { --tile-color: var(--kin-color); background-position-y: calc(-153 * var(--tile-size) - var(--border-width)); }
-div.tile.\33 \30 z { --tile-color: var(--kin-color); background-position-y: calc(-154 * var(--tile-size) - var(--border-width)); }
-div.tile.\33 \31 z { --tile-color: var(--kin-color); background-position-y: calc(-155 * var(--tile-size) - var(--border-width)); }
-div.tile.\33 \32 z { --tile-color: var(--kin-color); background-position-y: calc(-156 * var(--tile-size) - var(--border-width)); }
-div.tile.\33 \33 z { --tile-color: var(--kin-color); background-position-y: calc(-157 * var(--tile-size) - var(--border-width)); }
-div.tile.\33 \34 z { --tile-color: var(--kin-color); background-position-y: calc(-158 * var(--tile-size) - var(--border-width)); }
-div.tile.\33 \35 z { --tile-color: var(--kin-color); background-position-y: calc(-159 * var(--tile-size) - var(--border-width)); }
-div.tile.\33 \36 z { --tile-color: var(--kin-color); background-position-y: calc(-160 * var(--tile-size) - var(--border-width)); }
-div.tile.\33 \37 z { --tile-color: var(--kin-color); background-position-y: calc(-161 * var(--tile-size) - var(--border-width)); }
-div.tile.\33 \38 z { --tile-color: var(--kin-color); background-position-y: calc(-162 * var(--tile-size) - var(--border-width)); }
-div.tile.\33 \30 \30 s { --tile-color: var(--kin-color); background-position-y: calc(-163 * var(--tile-size) - var(--border-width)); }
-div.tile.\34 \31 m { background-position-y: calc(-114 * var(--tile-size) - var(--border-width)); }
-div.tile.\34 \32 m { background-position-y: calc(-115 * var(--tile-size) - var(--border-width)); }
-div.tile.\34 \33 m { background-position-y: calc(-116 * var(--tile-size) - var(--border-width)); }
-div.tile.\34 \34 m { background-position-y: calc(-117 * var(--tile-size) - var(--border-width)); }
-div.tile.\34 \35 m { background-position-y: calc(-118 * var(--tile-size) - var(--border-width)); }
-div.tile.\34 \36 m { background-position-y: calc(-119 * var(--tile-size) - var(--border-width)); }
-div.tile.\34 \37 m { background-position-y: calc(-120 * var(--tile-size) - var(--border-width)); }
-div.tile.\34 \38 m { background-position-y: calc(-121 * var(--tile-size) - var(--border-width)); }
-div.tile.\34 \39 m { background-position-y: calc(-122 * var(--tile-size) - var(--border-width)); }
-div.tile.\34 \31 \30 m { background-position-y: calc(-123 * var(--tile-size) - var(--border-width)); }
-div.tile.\34 \31 p { background-position-y: calc(-124 * var(--tile-size) - var(--border-width)); }
-div.tile.\34 \32 p { background-position-y: calc(-125 * var(--tile-size) - var(--border-width)); }
-div.tile.\34 \33 p { background-position-y: calc(-126 * var(--tile-size) - var(--border-width)); }
-div.tile.\34 \34 p { background-position-y: calc(-127 * var(--tile-size) - var(--border-width)); }
-div.tile.\34 \35 p { background-position-y: calc(-128 * var(--tile-size) - var(--border-width)); }
-div.tile.\34 \36 p { background-position-y: calc(-129 * var(--tile-size) - var(--border-width)); }
-div.tile.\34 \37 p { background-position-y: calc(-130 * var(--tile-size) - var(--border-width)); }
-div.tile.\34 \38 p { background-position-y: calc(-131 * var(--tile-size) - var(--border-width)); }
-div.tile.\34 \39 p { background-position-y: calc(-132 * var(--tile-size) - var(--border-width)); }
-div.tile.\34 \31 \30 p { background-position-y: calc(-133 * var(--tile-size) - var(--border-width)); }
-div.tile.\34 \31 s { background-position-y: calc(-134 * var(--tile-size) - var(--border-width)); }
-div.tile.\34 \32 s { background-position-y: calc(-135 * var(--tile-size) - var(--border-width)); }
-div.tile.\34 \33 s { background-position-y: calc(-136 * var(--tile-size) - var(--border-width)); }
-div.tile.\34 \34 s { background-position-y: calc(-137 * var(--tile-size) - var(--border-width)); }
-div.tile.\34 \35 s { background-position-y: calc(-138 * var(--tile-size) - var(--border-width)); }
-div.tile.\34 \36 s { background-position-y: calc(-139 * var(--tile-size) - var(--border-width)); }
-div.tile.\34 \37 s { background-position-y: calc(-140 * var(--tile-size) - var(--border-width)); }
-div.tile.\34 \38 s { background-position-y: calc(-141 * var(--tile-size) - var(--border-width)); }
-div.tile.\34 \39 s { background-position-y: calc(-142 * var(--tile-size) - var(--border-width)); }
-div.tile.\34 \31 \30 s { background-position-y: calc(-143 * var(--tile-size) - var(--border-width)); }
-div.tile.\34 \31 t { background-position-y: calc(-144 * var(--tile-size) - var(--border-width)); }
-div.tile.\34 \32 t { background-position-y: calc(-145 * var(--tile-size) - var(--border-width)); }
-div.tile.\34 \33 t { background-position-y: calc(-146 * var(--tile-size) - var(--border-width)); }
-div.tile.\34 \34 t { background-position-y: calc(-147 * var(--tile-size) - var(--border-width)); }
-div.tile.\34 \35 t { background-position-y: calc(-148 * var(--tile-size) - var(--border-width)); }
-div.tile.\34 \36 t { background-position-y: calc(-149 * var(--tile-size) - var(--border-width)); }
-div.tile.\34 \37 t { background-position-y: calc(-150 * var(--tile-size) - var(--border-width)); }
-div.tile.\34 \38 t { background-position-y: calc(-151 * var(--tile-size) - var(--border-width)); }
-div.tile.\34 \39 t { background-position-y: calc(-152 * var(--tile-size) - var(--border-width)); }
-div.tile.\34 \31 \30 t { background-position-y: calc(-153 * var(--tile-size) - var(--border-width)); }
-div.tile.\34 \30 z { background-position-y: calc(-154 * var(--tile-size) - var(--border-width)); }
-div.tile.\34 \31 z { background-position-y: calc(-155 * var(--tile-size) - var(--border-width)); }
-div.tile.\34 \32 z { background-position-y: calc(-156 * var(--tile-size) - var(--border-width)); }
-div.tile.\34 \33 z { background-position-y: calc(-157 * var(--tile-size) - var(--border-width)); }
-div.tile.\34 \34 z { background-position-y: calc(-158 * var(--tile-size) - var(--border-width)); }
-div.tile.\34 \35 z { background-position-y: calc(-159 * var(--tile-size) - var(--border-width)); }
-div.tile.\34 \36 z { background-position-y: calc(-160 * var(--tile-size) - var(--border-width)); }
-div.tile.\34 \37 z { background-position-y: calc(-161 * var(--tile-size) - var(--border-width)); }
-div.tile.\34 \38 z { background-position-y: calc(-162 * var(--tile-size) - var(--border-width)); }
-div.tile.\34 \30 \30 s { background-position-y: calc(-163 * var(--tile-size) - var(--border-width)); }
-div.tile.\31 \31 m { background-position-y: calc(-164 * var(--tile-size) - var(--border-width)); }
-div.tile.\31 \32 m { background-position-y: calc(-165 * var(--tile-size) - var(--border-width)); }
-div.tile.\31 \33 m { background-position-y: calc(-166 * var(--tile-size) - var(--border-width)); }
-div.tile.\31 \34 m { background-position-y: calc(-167 * var(--tile-size) - var(--border-width)); }
-div.tile.\31 \35 m { background-position-y: calc(-168 * var(--tile-size) - var(--border-width)); }
-div.tile.\31 \36 m { background-position-y: calc(-169 * var(--tile-size) - var(--border-width)); }
-div.tile.\31 \37 m { background-position-y: calc(-170 * var(--tile-size) - var(--border-width)); }
-div.tile.\31 \38 m { background-position-y: calc(-171 * var(--tile-size) - var(--border-width)); }
-div.tile.\31 \39 m { background-position-y: calc(-172 * var(--tile-size) - var(--border-width)); }
-div.tile.\31 \31 \30 m { background-position-y: calc(-173 * var(--tile-size) - var(--border-width)); }
-div.tile.\31 \31 p { background-position-y: calc(-174 * var(--tile-size) - var(--border-width)); }
-div.tile.\31 \32 p { background-position-y: calc(-175 * var(--tile-size) - var(--border-width)); }
-div.tile.\31 \33 p { background-position-y: calc(-176 * var(--tile-size) - var(--border-width)); }
-div.tile.\31 \34 p { background-position-y: calc(-177 * var(--tile-size) - var(--border-width)); }
-div.tile.\31 \35 p { background-position-y: calc(-178 * var(--tile-size) - var(--border-width)); }
-div.tile.\31 \36 p { background-position-y: calc(-179 * var(--tile-size) - var(--border-width)); }
-div.tile.\31 \37 p { background-position-y: calc(-180 * var(--tile-size) - var(--border-width)); }
-div.tile.\31 \38 p { background-position-y: calc(-181 * var(--tile-size) - var(--border-width)); }
-div.tile.\31 \39 p { background-position-y: calc(-182 * var(--tile-size) - var(--border-width)); }
-div.tile.\31 \31 \30 p { background-position-y: calc(-183 * var(--tile-size) - var(--border-width)); }
-div.tile.\31 \31 s { background-position-y: calc(-184 * var(--tile-size) - var(--border-width)); }
-div.tile.\31 \32 s { background-position-y: calc(-185 * var(--tile-size) - var(--border-width)); }
-div.tile.\31 \33 s { background-position-y: calc(-186 * var(--tile-size) - var(--border-width)); }
-div.tile.\31 \34 s { background-position-y: calc(-187 * var(--tile-size) - var(--border-width)); }
-div.tile.\31 \35 s { background-position-y: calc(-188 * var(--tile-size) - var(--border-width)); }
-div.tile.\31 \36 s { background-position-y: calc(-189 * var(--tile-size) - var(--border-width)); }
-div.tile.\31 \37 s { background-position-y: calc(-190 * var(--tile-size) - var(--border-width)); }
-div.tile.\31 \38 s { background-position-y: calc(-191 * var(--tile-size) - var(--border-width)); }
-div.tile.\31 \39 s { background-position-y: calc(-192 * var(--tile-size) - var(--border-width)); }
-div.tile.\31 \31 \30 s { background-position-y: calc(-193 * var(--tile-size) - var(--border-width)); }
-div.tile.\31 \31 t { background-position-y: calc(-194 * var(--tile-size) - var(--border-width)); }
-div.tile.\31 \32 t { background-position-y: calc(-195 * var(--tile-size) - var(--border-width)); }
-div.tile.\31 \33 t { background-position-y: calc(-196 * var(--tile-size) - var(--border-width)); }
-div.tile.\31 \34 t { background-position-y: calc(-197 * var(--tile-size) - var(--border-width)); }
-div.tile.\31 \35 t { background-position-y: calc(-198 * var(--tile-size) - var(--border-width)); }
-div.tile.\31 \36 t { background-position-y: calc(-199 * var(--tile-size) - var(--border-width)); }
-div.tile.\31 \37 t { background-position-y: calc(-200 * var(--tile-size) - var(--border-width)); }
-div.tile.\31 \38 t { background-position-y: calc(-201 * var(--tile-size) - var(--border-width)); }
-div.tile.\31 \39 t { background-position-y: calc(-202 * var(--tile-size) - var(--border-width)); }
-div.tile.\31 \31 \30 t { background-position-y: calc(-203 * var(--tile-size) - var(--border-width)); }
-div.tile.\31 \31 z { background-position-y: calc(-204 * var(--tile-size) - var(--border-width)); }
-div.tile.\31 \32 z { background-position-y: calc(-205 * var(--tile-size) - var(--border-width)); }
-div.tile.\31 \33 z { background-position-y: calc(-206 * var(--tile-size) - var(--border-width)); }
-div.tile.\31 \34 z { background-position-y: calc(-207 * var(--tile-size) - var(--border-width)); }
-div.tile.\31 \35 z { background-position-y: calc(-208 * var(--tile-size) - var(--border-width)); }
-div.tile.\31 \36 z { background-position-y: calc(-209 * var(--tile-size) - var(--border-width)); }
-div.tile.\31 \37 z { background-position-y: calc(-210 * var(--tile-size) - var(--border-width)); }
-div.tile.\31 \38 z { background-position-y: calc(-211 * var(--tile-size) - var(--border-width)); }
-div.tile.\31 \30 \30 s { background-position-y: calc(-212 * var(--tile-size) - var(--border-width)); }
+div.tile { background-position-x: calc(0 * var(--tile-size) * var(--tile-scale-factor) - var(--border-width)); background-position-y: calc(-1 * var(--tile-index) * var(--tile-size) * var(--tile-scale-factor) - var(--border-width)); }
+div.tile.sideways { width: var(--tile-height); height: var(--tile-width); background-position-x: calc(-0.75 * var(--tile-size) * var(--tile-scale-factor) - var(--border-width)); }
+div.tile.\30 m { --number-color: var(--aka-color); --tile-index: 0; }
+div.tile.\31 m { --tile-index: 1; }
+div.tile.\32 m { --tile-index: 2; }
+div.tile.\33 m { --tile-index: 3; }
+div.tile.\34 m { --tile-index: 4; }
+div.tile.\35 m { --tile-index: 5; }
+div.tile.\36 m { --tile-index: 6; }
+div.tile.\37 m { --tile-index: 7; }
+div.tile.\38 m { --tile-index: 8; }
+div.tile.\39 m { --tile-index: 9; }
+div.tile.\30 p { --number-color: var(--aka-color); --tile-index: 10; }
+div.tile.\31 p { --tile-index: 11; }
+div.tile.\32 p { --tile-index: 12; }
+div.tile.\33 p { --tile-index: 13; }
+div.tile.\34 p { --tile-index: 14; }
+div.tile.\35 p { --tile-index: 15; }
+div.tile.\36 p { --tile-index: 16; }
+div.tile.\37 p { --tile-index: 17; }
+div.tile.\38 p { --tile-index: 18; }
+div.tile.\39 p { --tile-index: 19; }
+div.tile.\30 s { --number-color: var(--aka-color); --tile-index: 20; }
+div.tile.\31 s { --tile-index: 21; }
+div.tile.\32 s { --tile-index: 22; }
+div.tile.\33 s { --tile-index: 23; }
+div.tile.\34 s { --tile-index: 24; }
+div.tile.\35 s { --tile-index: 25; }
+div.tile.\36 s { --tile-index: 26; }
+div.tile.\37 s { --tile-index: 27; }
+div.tile.\38 s { --tile-index: 28; }
+div.tile.\39 s { --tile-index: 29; }
+div.tile.\31 z { --tile-index: 30; }
+div.tile.\32 z { --tile-index: 31; }
+div.tile.\33 z { --tile-index: 32; }
+div.tile.\34 z { --tile-index: 33; }
+div.tile.\35 z, div.tile.\31 x.transparent { --tile-index: 34; }
+div.tile.\36 z { --tile-index: 35; }
+div.tile.\37 z { --tile-index: 36; }
+div.tile.\30 z { --tile-index: 37; }
+div.tile.\38 z { --tile-index: 38; }
+div.tile.\39 z { --tile-index: 39; }
+div.tile.\30 \30 s { --tile-index: 40; }
+div.tile.\31 \30 m { --tile-index: 41; }
+div.tile.\31 \30 p { --tile-index: 42; }
+div.tile.\31 \30 s { --tile-index: 43; }
+div.tile.\31 x { --tile-index: 44; }
+div.tile.\31 f { --tile-index: 45; }
+div.tile.\32 f { --tile-index: 46; }
+div.tile.\33 f { --tile-index: 47; }
+div.tile.\34 f { --tile-index: 48; }
+div.tile.\31 g { --tile-index: 49; }
+div.tile.\32 g { --tile-index: 50; }
+div.tile.\33 g { --tile-index: 51; }
+div.tile.\34 g { --tile-index: 52; }
+div.tile.\31 a { --tile-index: 53; }
+div.tile.\32 a { --tile-index: 54; }
+div.tile.\33 a { --tile-index: 55; }
+div.tile.\34 a { --tile-index: 56; }
+div.tile.\31 k { --tile-index: 57; }
+div.tile.\32 k { --tile-index: 58; }
+div.tile.\33 k { --tile-index: 59; }
+div.tile.\34 k { --tile-index: 60; }
+div.tile.\31 q { --tile-index: 61; }
+div.tile.\32 q { --tile-index: 62; }
+div.tile.\33 q { --tile-index: 63; }
+div.tile.\34 q { --tile-index: 64; }
+div.tile.\31 y { --tile-index: 65; }
+div.tile.\31 t { --tile-index: 66; }
+div.tile.\32 t { --tile-index: 67; }
+div.tile.\33 t { --tile-index: 68; }
+div.tile.\34 t { --tile-index: 69; }
+div.tile.\35 t { --tile-index: 70; }
+div.tile.\36 t { --tile-index: 71; }
+div.tile.\37 t { --tile-index: 72; }
+div.tile.\38 t { --tile-index: 73; }
+div.tile.\39 t { --tile-index: 74; }
+div.tile.\31 \30 t { --tile-index: 75; }
+div.tile.\31 j { --tile-index: 76; }
+div.tile.\30 j { --tile-index: 77; }
+div.tile.\32 j { --tile-index: 78; }
+div.tile.\39 j { --tile-index: 79; }
+div.tile.\34 j { --tile-index: 80; }
+div.tile.\35 j { --tile-index: 81; }
+div.tile.\36 j, div.tile.\31 \36 j { --tile-index: 82; }
+div.tile.\37 j { --tile-index: 83; }
+div.tile.\38 j { --tile-index: 84; }
+div.tile.\31 \30 j { --tile-index: 85; }
+div.tile.\31 \32 j { --tile-index: 86; }
+div.tile.\33 j, div.tile.\31 \33 j { --tile-index: 87; }
+div.tile.\31 \34 j { --tile-index: 88; }
+div.tile.\31 \35 j { --tile-index: 89; }
+div.tile.\31 \37 j { --tile-index: 90; }
+div.tile.\31 \38 j { --tile-index: 91; }
+div.tile.\31 \39 j { --tile-index: 92; }
+div.tile.\33 \37 j { --tile-index: 93; }
+div.tile.\34 \36 j { --tile-index: 94; }
+div.tile.\31 \34 \37 j { --tile-index: 95; }
+div.tile.\32 \35 \38 j { --tile-index: 96; }
+div.tile.\33 \36 \39 j { --tile-index: 97; }
+div.tile.\37 \38 \39 j { --tile-index: 98; }
+div.tile.\34 \35 \36 j { --tile-index: 99; }
+div.tile.\31 \32 \33 j { --tile-index: 100; }
+div.tile.\31 \31 j { --tile-index: 101; }
+div.tile.\32 \32 j { --tile-index: 102; }
+div.tile.\32 \30 j { --tile-index: 103; }
+div.tile.\39 \31 j { --tile-index: 104; }
+div.tile.\36 \34 j { --tile-index: 105; }
+div.tile.\37 \33 j { --tile-index: 106; }
+div.tile.\38 \35 \32 j { --tile-index: 107; }
+div.tile.\33 \30 j { --tile-index: 108; }
+div.tile.\33 \31 j { --tile-index: 109; }
+div.tile.\33 \32 j { --tile-index: 110; }
+div.tile.\33 \33 j { --tile-index: 111; }
+div.tile.\33 \34 j { --tile-index: 112; }
+div.tile.\32 y { --tile-index: 113; }
+div.tile.\30 \31 m { --tile-color: var(--aka-color); --number-color: var(--aka-color); --tile-index: 164; }
+div.tile.\30 \32 m { --tile-color: var(--aka-color); --number-color: var(--aka-color); --tile-index: 165; }
+div.tile.\30 \33 m { --tile-color: var(--aka-color); --number-color: var(--aka-color); --tile-index: 166; }
+div.tile.\30 \34 m { --tile-color: var(--aka-color); --number-color: var(--aka-color); --tile-index: 167; }
+div.tile.\30 \35 m { --tile-color: var(--aka-color); --number-color: var(--aka-color); --tile-index: 168; }
+div.tile.\30 \36 m { --tile-color: var(--aka-color); --number-color: var(--aka-color); --tile-index: 169; }
+div.tile.\30 \37 m { --tile-color: var(--aka-color); --number-color: var(--aka-color); --tile-index: 170; }
+div.tile.\30 \38 m { --tile-color: var(--aka-color); --number-color: var(--aka-color); --tile-index: 171; }
+div.tile.\30 \39 m { --tile-color: var(--aka-color); --number-color: var(--aka-color); --tile-index: 172; }
+div.tile.\30 \31 \30 m { --tile-color: var(--aka-color); --number-color: var(--aka-color); --tile-index: 173; }
+div.tile.\30 \31 p { --tile-color: var(--aka-color); --number-color: var(--aka-color); --tile-index: 174; }
+div.tile.\30 \32 p { --tile-color: var(--aka-color); --number-color: var(--aka-color); --tile-index: 175; }
+div.tile.\30 \33 p { --tile-color: var(--aka-color); --number-color: var(--aka-color); --tile-index: 176; }
+div.tile.\30 \34 p { --tile-color: var(--aka-color); --number-color: var(--aka-color); --tile-index: 177; }
+div.tile.\30 \35 p { --tile-color: var(--aka-color); --number-color: var(--aka-color); --tile-index: 178; }
+div.tile.\30 \36 p { --tile-color: var(--aka-color); --number-color: var(--aka-color); --tile-index: 179; }
+div.tile.\30 \37 p { --tile-color: var(--aka-color); --number-color: var(--aka-color); --tile-index: 180; }
+div.tile.\30 \38 p { --tile-color: var(--aka-color); --number-color: var(--aka-color); --tile-index: 181; }
+div.tile.\30 \39 p { --tile-color: var(--aka-color); --number-color: var(--aka-color); --tile-index: 182; }
+div.tile.\30 \31 \30 p { --tile-color: var(--aka-color); --number-color: var(--aka-color); --tile-index: 183; }
+div.tile.\30 \31 s { --tile-color: var(--aka-color); --number-color: var(--aka-color); --tile-index: 184; }
+div.tile.\30 \32 s { --tile-color: var(--aka-color); --number-color: var(--aka-color); --tile-index: 185; }
+div.tile.\30 \33 s { --tile-color: var(--aka-color); --number-color: var(--aka-color); --tile-index: 186; }
+div.tile.\30 \34 s { --tile-color: var(--aka-color); --number-color: var(--aka-color); --tile-index: 187; }
+div.tile.\30 \35 s { --tile-color: var(--aka-color); --number-color: var(--aka-color); --tile-index: 188; }
+div.tile.\30 \36 s { --tile-color: var(--aka-color); --number-color: var(--aka-color); --tile-index: 189; }
+div.tile.\30 \37 s { --tile-color: var(--aka-color); --number-color: var(--aka-color); --tile-index: 190; }
+div.tile.\30 \38 s { --tile-color: var(--aka-color); --number-color: var(--aka-color); --tile-index: 191; }
+div.tile.\30 \39 s { --tile-color: var(--aka-color); --number-color: var(--aka-color); --tile-index: 192; }
+div.tile.\30 \31 \30 s { --tile-color: var(--aka-color); --number-color: var(--aka-color); --tile-index: 193; }
+div.tile.\30 \31 t { --tile-color: var(--aka-color); --number-color: var(--aka-color); --tile-index: 194; }
+div.tile.\30 \32 t { --tile-color: var(--aka-color); --number-color: var(--aka-color); --tile-index: 195; }
+div.tile.\30 \33 t { --tile-color: var(--aka-color); --number-color: var(--aka-color); --tile-index: 196; }
+div.tile.\30 \34 t { --tile-color: var(--aka-color); --number-color: var(--aka-color); --tile-index: 197; }
+div.tile.\30 \35 t, div.tile.\30 t { --tile-color: var(--aka-color); --number-color: var(--aka-color); --tile-index: 198; }
+div.tile.\30 \36 t { --tile-color: var(--aka-color); --number-color: var(--aka-color); --tile-index: 199; }
+div.tile.\30 \37 t { --tile-color: var(--aka-color); --number-color: var(--aka-color); --tile-index: 200; }
+div.tile.\30 \38 t { --tile-color: var(--aka-color); --number-color: var(--aka-color); --tile-index: 201; }
+div.tile.\30 \39 t { --tile-color: var(--aka-color); --number-color: var(--aka-color); --tile-index: 202; }
+div.tile.\30 \31 \30 t { --tile-color: var(--aka-color); --number-color: var(--aka-color); --tile-index: 203; }
+div.tile.\30 \30 z { --tile-color: var(--aka-color); --number-color: var(--aka-color); --tile-index: 204; }
+div.tile.\30 \31 z { --tile-color: var(--aka-color); --number-color: var(--aka-color); --tile-index: 205; }
+div.tile.\30 \32 z { --tile-color: var(--aka-color); --number-color: var(--aka-color); --tile-index: 206; }
+div.tile.\30 \33 z { --tile-color: var(--aka-color); --number-color: var(--aka-color); --tile-index: 207; }
+div.tile.\30 \34 z { --tile-color: var(--aka-color); --number-color: var(--aka-color); --tile-index: 208; }
+div.tile.\30 \35 z { --tile-color: var(--aka-color); --number-color: var(--aka-color); --tile-index: 209; }
+div.tile.\30 \36 z { --tile-color: var(--aka-color); --number-color: var(--aka-color); --tile-index: 210; }
+div.tile.\30 \37 z { --tile-color: var(--aka-color); --number-color: var(--aka-color); --tile-index: 211; }
+div.tile.\30 \38 z { --tile-color: var(--aka-color); --number-color: var(--aka-color); --tile-index: 212; }
+div.tile.\30 \30 \30 s { --tile-color: var(--aka-color); --number-color: var(--aka-color); --tile-index: 213; }
+div.tile.\31 \31 m { --tile-color: var(--galaxy-color); --tile-index: 114; }
+div.tile.\31 \32 m { --tile-color: var(--galaxy-color); --tile-index: 115; }
+div.tile.\31 \33 m { --tile-color: var(--galaxy-color); --tile-index: 116; }
+div.tile.\31 \34 m { --tile-color: var(--galaxy-color); --tile-index: 117; }
+div.tile.\31 \35 m { --tile-color: var(--galaxy-color); --tile-index: 118; }
+div.tile.\31 \36 m { --tile-color: var(--galaxy-color); --tile-index: 119; }
+div.tile.\31 \37 m { --tile-color: var(--galaxy-color); --tile-index: 120; }
+div.tile.\31 \38 m { --tile-color: var(--galaxy-color); --tile-index: 121; }
+div.tile.\31 \39 m { --tile-color: var(--galaxy-color); --tile-index: 122; }
+div.tile.\31 \31 \30 m { --tile-color: var(--galaxy-color); --tile-index: 123; }
+div.tile.\31 \31 p { --tile-color: var(--galaxy-color); --tile-index: 124; }
+div.tile.\31 \32 p { --tile-color: var(--galaxy-color); --tile-index: 125; }
+div.tile.\31 \33 p { --tile-color: var(--galaxy-color); --tile-index: 126; }
+div.tile.\31 \34 p { --tile-color: var(--galaxy-color); --tile-index: 127; }
+div.tile.\31 \35 p { --tile-color: var(--galaxy-color); --tile-index: 128; }
+div.tile.\31 \36 p { --tile-color: var(--galaxy-color); --tile-index: 129; }
+div.tile.\31 \37 p { --tile-color: var(--galaxy-color); --tile-index: 130; }
+div.tile.\31 \38 p { --tile-color: var(--galaxy-color); --tile-index: 131; }
+div.tile.\31 \39 p { --tile-color: var(--galaxy-color); --tile-index: 132; }
+div.tile.\31 \31 \30 p { --tile-color: var(--galaxy-color); --tile-index: 133; }
+div.tile.\31 \31 s { --tile-color: var(--galaxy-color); --tile-index: 134; }
+div.tile.\31 \32 s { --tile-color: var(--galaxy-color); --tile-index: 135; }
+div.tile.\31 \33 s { --tile-color: var(--galaxy-color); --tile-index: 136; }
+div.tile.\31 \34 s { --tile-color: var(--galaxy-color); --tile-index: 137; }
+div.tile.\31 \35 s { --tile-color: var(--galaxy-color); --tile-index: 138; }
+div.tile.\31 \36 s { --tile-color: var(--galaxy-color); --tile-index: 139; }
+div.tile.\31 \37 s { --tile-color: var(--galaxy-color); --tile-index: 140; }
+div.tile.\31 \38 s { --tile-color: var(--galaxy-color); --tile-index: 141; }
+div.tile.\31 \39 s { --tile-color: var(--galaxy-color); --tile-index: 142; }
+div.tile.\31 \31 \30 s { --tile-color: var(--galaxy-color); --tile-index: 143; }
+div.tile.\31 \31 t { --tile-color: var(--galaxy-color); --tile-index: 144; }
+div.tile.\31 \32 t { --tile-color: var(--galaxy-color); --tile-index: 145; }
+div.tile.\31 \33 t { --tile-color: var(--galaxy-color); --tile-index: 146; }
+div.tile.\31 \34 t { --tile-color: var(--galaxy-color); --tile-index: 147; }
+div.tile.\31 \35 t { --tile-color: var(--galaxy-color); --tile-index: 148; }
+div.tile.\31 \36 t { --tile-color: var(--galaxy-color); --tile-index: 149; }
+div.tile.\31 \37 t { --tile-color: var(--galaxy-color); --tile-index: 150; }
+div.tile.\31 \38 t { --tile-color: var(--galaxy-color); --tile-index: 151; }
+div.tile.\31 \39 t { --tile-color: var(--galaxy-color); --tile-index: 152; }
+div.tile.\31 \31 \30 t { --tile-color: var(--galaxy-color); --tile-index: 153; }
+div.tile.\31 \31 z { --tile-color: var(--galaxy-color); --tile-index: 155; }
+div.tile.\31 \32 z { --tile-color: var(--galaxy-color); --tile-index: 156; }
+div.tile.\31 \33 z { --tile-color: var(--galaxy-color); --tile-index: 157; }
+div.tile.\31 \34 z { --tile-color: var(--galaxy-color); --tile-index: 158; }
+div.tile.\31 \35 z { --tile-color: var(--galaxy-color); --tile-index: 159; }
+div.tile.\31 \36 z { --tile-color: var(--galaxy-color); --tile-index: 160; }
+div.tile.\31 \37 z { --tile-color: var(--galaxy-color); --tile-index: 161; }
+div.tile.\31 \38 z { --tile-color: var(--galaxy-color); --tile-index: 162; }
+div.tile.\31 \30 \30 s { --tile-color: var(--galaxy-color); --tile-index: 163; }
+div.tile.\32 \31 m { --tile-color: var(--ao-color); --number-color: var(--ao-color); --tile-index: 164; }
+div.tile.\32 \32 m { --tile-color: var(--ao-color); --number-color: var(--ao-color); --tile-index: 165; }
+div.tile.\32 \33 m { --tile-color: var(--ao-color); --number-color: var(--ao-color); --tile-index: 166; }
+div.tile.\32 \34 m { --tile-color: var(--ao-color); --number-color: var(--ao-color); --tile-index: 167; }
+div.tile.\32 \35 m { --tile-color: var(--ao-color); --number-color: var(--ao-color); --tile-index: 168; }
+div.tile.\32 \36 m { --tile-color: var(--ao-color); --number-color: var(--ao-color); --tile-index: 169; }
+div.tile.\32 \37 m { --tile-color: var(--ao-color); --number-color: var(--ao-color); --tile-index: 170; }
+div.tile.\32 \38 m { --tile-color: var(--ao-color); --number-color: var(--ao-color); --tile-index: 171; }
+div.tile.\32 \39 m { --tile-color: var(--ao-color); --number-color: var(--ao-color); --tile-index: 172; }
+div.tile.\32 \31 \30 m { --tile-color: var(--ao-color); --number-color: var(--ao-color); --tile-index: 173; }
+div.tile.\32 \31 p { --tile-color: var(--ao-color); --number-color: var(--ao-color); --tile-index: 174; }
+div.tile.\32 \32 p { --tile-color: var(--ao-color); --number-color: var(--ao-color); --tile-index: 175; }
+div.tile.\32 \33 p { --tile-color: var(--ao-color); --number-color: var(--ao-color); --tile-index: 176; }
+div.tile.\32 \34 p { --tile-color: var(--ao-color); --number-color: var(--ao-color); --tile-index: 177; }
+div.tile.\32 \35 p { --tile-color: var(--ao-color); --number-color: var(--ao-color); --tile-index: 178; }
+div.tile.\32 \36 p { --tile-color: var(--ao-color); --number-color: var(--ao-color); --tile-index: 179; }
+div.tile.\32 \37 p { --tile-color: var(--ao-color); --number-color: var(--ao-color); --tile-index: 180; }
+div.tile.\32 \38 p { --tile-color: var(--ao-color); --number-color: var(--ao-color); --tile-index: 181; }
+div.tile.\32 \39 p { --tile-color: var(--ao-color); --number-color: var(--ao-color); --tile-index: 182; }
+div.tile.\32 \31 \30 p { --tile-color: var(--ao-color); --number-color: var(--ao-color); --tile-index: 183; }
+div.tile.\32 \31 s { --tile-color: var(--ao-color); --number-color: var(--ao-color); --tile-index: 184; }
+div.tile.\32 \32 s { --tile-color: var(--ao-color); --number-color: var(--ao-color); --tile-index: 185; }
+div.tile.\32 \33 s { --tile-color: var(--ao-color); --number-color: var(--ao-color); --tile-index: 186; }
+div.tile.\32 \34 s { --tile-color: var(--ao-color); --number-color: var(--ao-color); --tile-index: 187; }
+div.tile.\32 \35 s { --tile-color: var(--ao-color); --number-color: var(--ao-color); --tile-index: 188; }
+div.tile.\32 \36 s { --tile-color: var(--ao-color); --number-color: var(--ao-color); --tile-index: 189; }
+div.tile.\32 \37 s { --tile-color: var(--ao-color); --number-color: var(--ao-color); --tile-index: 190; }
+div.tile.\32 \38 s { --tile-color: var(--ao-color); --number-color: var(--ao-color); --tile-index: 191; }
+div.tile.\32 \39 s { --tile-color: var(--ao-color); --number-color: var(--ao-color); --tile-index: 192; }
+div.tile.\32 \31 \30 s { --tile-color: var(--ao-color); --number-color: var(--ao-color); --tile-index: 193; }
+div.tile.\32 \31 t { --tile-color: var(--ao-color); --number-color: var(--ao-color); --tile-index: 194; }
+div.tile.\32 \32 t { --tile-color: var(--ao-color); --number-color: var(--ao-color); --tile-index: 195; }
+div.tile.\32 \33 t { --tile-color: var(--ao-color); --number-color: var(--ao-color); --tile-index: 196; }
+div.tile.\32 \34 t { --tile-color: var(--ao-color); --number-color: var(--ao-color); --tile-index: 197; }
+div.tile.\32 \35 t { --tile-color: var(--ao-color); --number-color: var(--ao-color); --tile-index: 198; }
+div.tile.\32 \36 t { --tile-color: var(--ao-color); --number-color: var(--ao-color); --tile-index: 199; }
+div.tile.\32 \37 t { --tile-color: var(--ao-color); --number-color: var(--ao-color); --tile-index: 200; }
+div.tile.\32 \38 t { --tile-color: var(--ao-color); --number-color: var(--ao-color); --tile-index: 201; }
+div.tile.\32 \39 t { --tile-color: var(--ao-color); --number-color: var(--ao-color); --tile-index: 202; }
+div.tile.\32 \31 \30 t { --tile-color: var(--ao-color); --number-color: var(--ao-color); --tile-index: 203; }
+div.tile.\32 \30 z { --tile-color: var(--ao-color); --number-color: var(--ao-color); --tile-index: 204; }
+div.tile.\32 \31 z { --tile-color: var(--ao-color); --number-color: var(--ao-color); --tile-index: 205; }
+div.tile.\32 \32 z { --tile-color: var(--ao-color); --number-color: var(--ao-color); --tile-index: 206; }
+div.tile.\32 \33 z { --tile-color: var(--ao-color); --number-color: var(--ao-color); --tile-index: 207; }
+div.tile.\32 \34 z { --tile-color: var(--ao-color); --number-color: var(--ao-color); --tile-index: 208; }
+div.tile.\32 \35 z { --tile-color: var(--ao-color); --number-color: var(--ao-color); --tile-index: 209; }
+div.tile.\32 \36 z { --tile-color: var(--ao-color); --number-color: var(--ao-color); --tile-index: 210; }
+div.tile.\32 \37 z { --tile-color: var(--ao-color); --number-color: var(--ao-color); --tile-index: 211; }
+div.tile.\32 \38 z { --tile-color: var(--ao-color); --number-color: var(--ao-color); --tile-index: 212; }
+div.tile.\32 \30 \30 s { --tile-color: var(--ao-color); --number-color: var(--ao-color); --tile-index: 213; }
+div.tile.\33 \31 m { --tile-color: var(--kin-color); --tile-index: 164; }
+div.tile.\33 \32 m { --tile-color: var(--kin-color); --tile-index: 165; }
+div.tile.\33 \33 m { --tile-color: var(--kin-color); --tile-index: 166; }
+div.tile.\33 \34 m { --tile-color: var(--kin-color); --tile-index: 167; }
+div.tile.\33 \35 m { --tile-color: var(--kin-color); --tile-index: 168; }
+div.tile.\33 \36 m { --tile-color: var(--kin-color); --tile-index: 169; }
+div.tile.\33 \37 m { --tile-color: var(--kin-color); --tile-index: 170; }
+div.tile.\33 \38 m { --tile-color: var(--kin-color); --tile-index: 171; }
+div.tile.\33 \39 m { --tile-color: var(--kin-color); --tile-index: 172; }
+div.tile.\33 \31 \30 m { --tile-color: var(--kin-color); --tile-index: 173; }
+div.tile.\33 \31 p { --tile-color: var(--kin-color); --tile-index: 174; }
+div.tile.\33 \32 p { --tile-color: var(--kin-color); --tile-index: 175; }
+div.tile.\33 \33 p { --tile-color: var(--kin-color); --tile-index: 176; }
+div.tile.\33 \34 p { --tile-color: var(--kin-color); --tile-index: 177; }
+div.tile.\33 \35 p { --tile-color: var(--kin-color); --tile-index: 178; }
+div.tile.\33 \36 p { --tile-color: var(--kin-color); --tile-index: 179; }
+div.tile.\33 \37 p { --tile-color: var(--kin-color); --tile-index: 180; }
+div.tile.\33 \38 p { --tile-color: var(--kin-color); --tile-index: 181; }
+div.tile.\33 \39 p { --tile-color: var(--kin-color); --tile-index: 182; }
+div.tile.\33 \31 \30 p { --tile-color: var(--kin-color); --tile-index: 183; }
+div.tile.\33 \31 s { --tile-color: var(--kin-color); --tile-index: 184; }
+div.tile.\33 \32 s { --tile-color: var(--kin-color); --tile-index: 185; }
+div.tile.\33 \33 s { --tile-color: var(--kin-color); --tile-index: 186; }
+div.tile.\33 \34 s { --tile-color: var(--kin-color); --tile-index: 187; }
+div.tile.\33 \35 s { --tile-color: var(--kin-color); --tile-index: 188; }
+div.tile.\33 \36 s { --tile-color: var(--kin-color); --tile-index: 189; }
+div.tile.\33 \37 s { --tile-color: var(--kin-color); --tile-index: 190; }
+div.tile.\33 \38 s { --tile-color: var(--kin-color); --tile-index: 191; }
+div.tile.\33 \39 s { --tile-color: var(--kin-color); --tile-index: 192; }
+div.tile.\33 \31 \30 s { --tile-color: var(--kin-color); --tile-index: 193; }
+div.tile.\33 \31 t { --tile-color: var(--kin-color); --tile-index: 194; }
+div.tile.\33 \32 t { --tile-color: var(--kin-color); --tile-index: 195; }
+div.tile.\33 \33 t { --tile-color: var(--kin-color); --tile-index: 196; }
+div.tile.\33 \34 t { --tile-color: var(--kin-color); --tile-index: 197; }
+div.tile.\33 \35 t { --tile-color: var(--kin-color); --tile-index: 198; }
+div.tile.\33 \36 t { --tile-color: var(--kin-color); --tile-index: 199; }
+div.tile.\33 \37 t { --tile-color: var(--kin-color); --tile-index: 200; }
+div.tile.\33 \38 t { --tile-color: var(--kin-color); --tile-index: 201; }
+div.tile.\33 \39 t { --tile-color: var(--kin-color); --tile-index: 202; }
+div.tile.\33 \31 \30 t { --tile-color: var(--kin-color); --tile-index: 203; }
+div.tile.\33 \30 z { --tile-color: var(--kin-color); --tile-index: 204; }
+div.tile.\33 \31 z { --tile-color: var(--kin-color); --tile-index: 205; }
+div.tile.\33 \32 z { --tile-color: var(--kin-color); --tile-index: 206; }
+div.tile.\33 \33 z { --tile-color: var(--kin-color); --tile-index: 207; }
+div.tile.\33 \34 z { --tile-color: var(--kin-color); --tile-index: 208; }
+div.tile.\33 \35 z { --tile-color: var(--kin-color); --tile-index: 209; }
+div.tile.\33 \36 z { --tile-color: var(--kin-color); --tile-index: 210; }
+div.tile.\33 \37 z { --tile-color: var(--kin-color); --tile-index: 211; }
+div.tile.\33 \38 z { --tile-color: var(--kin-color); --tile-index: 212; }
+div.tile.\33 \30 \30 s { --tile-color: var(--kin-color); --tile-index: 213; }
+div.tile.\34 \31 m { --tile-index: 114; }
+div.tile.\34 \32 m { --tile-index: 115; }
+div.tile.\34 \33 m { --tile-index: 116; }
+div.tile.\34 \34 m { --tile-index: 117; }
+div.tile.\34 \35 m { --tile-index: 118; }
+div.tile.\34 \36 m { --tile-index: 119; }
+div.tile.\34 \37 m { --tile-index: 120; }
+div.tile.\34 \38 m { --tile-index: 121; }
+div.tile.\34 \39 m { --tile-index: 122; }
+div.tile.\34 \31 \30 m { --tile-index: 123; }
+div.tile.\34 \31 p { --tile-index: 124; }
+div.tile.\34 \32 p { --tile-index: 125; }
+div.tile.\34 \33 p { --tile-index: 126; }
+div.tile.\34 \34 p { --tile-index: 127; }
+div.tile.\34 \35 p { --tile-index: 128; }
+div.tile.\34 \36 p { --tile-index: 129; }
+div.tile.\34 \37 p { --tile-index: 130; }
+div.tile.\34 \38 p { --tile-index: 131; }
+div.tile.\34 \39 p { --tile-index: 132; }
+div.tile.\34 \31 \30 p { --tile-index: 133; }
+div.tile.\34 \31 s { --tile-index: 134; }
+div.tile.\34 \32 s { --tile-index: 135; }
+div.tile.\34 \33 s { --tile-index: 136; }
+div.tile.\34 \34 s { --tile-index: 137; }
+div.tile.\34 \35 s { --tile-index: 138; }
+div.tile.\34 \36 s { --tile-index: 139; }
+div.tile.\34 \37 s { --tile-index: 140; }
+div.tile.\34 \38 s { --tile-index: 141; }
+div.tile.\34 \39 s { --tile-index: 142; }
+div.tile.\34 \31 \30 s { --tile-index: 143; }
+div.tile.\34 \31 t { --tile-index: 144; }
+div.tile.\34 \32 t { --tile-index: 145; }
+div.tile.\34 \33 t { --tile-index: 146; }
+div.tile.\34 \34 t { --tile-index: 147; }
+div.tile.\34 \35 t { --tile-index: 148; }
+div.tile.\34 \36 t { --tile-index: 149; }
+div.tile.\34 \37 t { --tile-index: 150; }
+div.tile.\34 \38 t { --tile-index: 151; }
+div.tile.\34 \39 t { --tile-index: 152; }
+div.tile.\34 \31 \30 t { --tile-index: 153; }
+div.tile.\34 \30 z { --tile-index: 154; }
+div.tile.\34 \31 z { --tile-index: 155; }
+div.tile.\34 \32 z { --tile-index: 156; }
+div.tile.\34 \33 z { --tile-index: 157; }
+div.tile.\34 \34 z { --tile-index: 158; }
+div.tile.\34 \35 z { --tile-index: 159; }
+div.tile.\34 \36 z { --tile-index: 160; }
+div.tile.\34 \37 z { --tile-index: 161; }
+div.tile.\34 \38 z { --tile-index: 162; }
+div.tile.\34 \30 \30 s { --tile-index: 163; }
+div.tile.\35 \31 m { --tile-index: 164; }
+div.tile.\35 \32 m { --tile-index: 165; }
+div.tile.\35 \33 m { --tile-index: 166; }
+div.tile.\35 \34 m { --tile-index: 167; }
+div.tile.\35 \35 m { --tile-index: 168; }
+div.tile.\35 \36 m { --tile-index: 169; }
+div.tile.\35 \37 m { --tile-index: 170; }
+div.tile.\35 \38 m { --tile-index: 171; }
+div.tile.\35 \39 m { --tile-index: 172; }
+div.tile.\35 \31 \30 m { --tile-index: 173; }
+div.tile.\35 \31 p { --tile-index: 174; }
+div.tile.\35 \32 p { --tile-index: 175; }
+div.tile.\35 \33 p { --tile-index: 176; }
+div.tile.\35 \34 p { --tile-index: 177; }
+div.tile.\35 \35 p { --tile-index: 178; }
+div.tile.\35 \36 p { --tile-index: 179; }
+div.tile.\35 \37 p { --tile-index: 180; }
+div.tile.\35 \38 p { --tile-index: 181; }
+div.tile.\35 \39 p { --tile-index: 182; }
+div.tile.\35 \31 \30 p { --tile-index: 183; }
+div.tile.\35 \31 s { --tile-index: 184; }
+div.tile.\35 \32 s { --tile-index: 185; }
+div.tile.\35 \33 s { --tile-index: 186; }
+div.tile.\35 \34 s { --tile-index: 187; }
+div.tile.\35 \35 s { --tile-index: 188; }
+div.tile.\35 \36 s { --tile-index: 189; }
+div.tile.\35 \37 s { --tile-index: 190; }
+div.tile.\35 \38 s { --tile-index: 191; }
+div.tile.\35 \39 s { --tile-index: 192; }
+div.tile.\35 \31 \30 s { --tile-index: 193; }
+div.tile.\35 \31 t { --tile-index: 194; }
+div.tile.\35 \32 t { --tile-index: 195; }
+div.tile.\35 \33 t { --tile-index: 196; }
+div.tile.\35 \34 t { --tile-index: 197; }
+div.tile.\35 \35 t { --tile-index: 198; }
+div.tile.\35 \36 t { --tile-index: 199; }
+div.tile.\35 \37 t { --tile-index: 200; }
+div.tile.\35 \38 t { --tile-index: 201; }
+div.tile.\35 \39 t { --tile-index: 202; }
+div.tile.\35 \31 \30 t { --tile-index: 203; }
+div.tile.\35 \30 z { --tile-index: 204; }
+div.tile.\35 \31 z { --tile-index: 205; }
+div.tile.\35 \32 z { --tile-index: 206; }
+div.tile.\35 \33 z { --tile-index: 207; }
+div.tile.\35 \34 z { --tile-index: 208; }
+div.tile.\35 \35 z { --tile-index: 209; }
+div.tile.\35 \36 z { --tile-index: 210; }
+div.tile.\35 \37 z { --tile-index: 211; }
+div.tile.\35 \38 z { --tile-index: 212; }
+div.tile.\35 \30 \30 s { --tile-index: 213; }
 div.tile.\32 x { visibility: hidden; } /* blank space */
 div.tile.\33 x { visibility: hidden; width: calc(0.5 * var(--tile-width)); } /* half blank space */
 div.tile.\34 x { display: none; } /* fully invisible tile */
@@ -1274,30 +1376,30 @@ div.tile.\37 x { visibility: hidden; width: calc(0.0625 * var(--tile-width)); } 
 div.tile.\38 x { visibility: hidden; width: calc(0.03125 * var(--tile-width)); } /* 32th blank space */
 /* punctuation names for alt tiles */
 /* alternate 1s: 1's */
-div.tile.\31 \27 s { background-position-y: calc(-40 * var(--tile-size) - var(--border-width)); }
-div.tile.\30 \31 \27 s { --tile-color: var(--aka-color); --number-color: var(--aka-color); background-position-y: calc(-163 * var(--tile-size) - var(--border-width)); }
-div.tile.\32 \31 \27 s { --tile-color: var(--ao-color); --number-color: var(--ao-color); background-position-y: calc(-163 * var(--tile-size) - var(--border-width)); }
-div.tile.\33 \31 \27 s { --tile-color: var(--kin-color); background-position-y: calc(-163 * var(--tile-size) - var(--border-width)); }
-div.tile.\34 \31 \27 s { background-position-y: calc(-163 * var(--tile-size) - var(--border-width)); }
-div.tile.\31 \31 \27 s { background-position-y: calc(-212 * var(--tile-size) - var(--border-width)); }
+div.tile.\31 \27 s { --tile-index: 40; }
+div.tile.\30 \31 \27 s { --tile-color: var(--aka-color); --number-color: var(--aka-color); --tile-index: 184; }
+div.tile.\31 \31 \27 s { --tile-index: 212; }
+div.tile.\32 \31 \27 s { --tile-color: var(--ao-color); --number-color: var(--ao-color); --tile-index: 184; }
+div.tile.\33 \31 \27 s { --tile-color: var(--kin-color); --tile-index: 184; }
+div.tile.\34 \31 \27 s { --tile-index: 184; }
 /* alternate 0z: 5'z */
-div.tile.\35 \27 z { background-position-y: calc(-37 * var(--tile-size) - var(--border-width)); }
-div.tile.\30 \35 \27 z { --tile-color: var(--aka-color); --number-color: var(--aka-color); background-position-y: calc(-154 * var(--tile-size) - var(--border-width)); }
-div.tile.\32 \35 \27 z { --tile-color: var(--ao-color); --number-color: var(--ao-color); background-position-y: calc(-154 * var(--tile-size) - var(--border-width)); }
-div.tile.\33 \35 \27 z { --tile-color: var(--kin-color); background-position-y: calc(-154 * var(--tile-size) - var(--border-width)); }
-div.tile.\34 \35 \27 z { background-position-y: calc(-154 * var(--tile-size) - var(--border-width)); }
+div.tile.\35 \27 z { --tile-index: 37; }
+div.tile.\30 \35 \27 z { --tile-color: var(--aka-color); --number-color: var(--aka-color); --tile-index: 209; }
+div.tile.\32 \35 \27 z { --tile-color: var(--ao-color); --number-color: var(--ao-color); --tile-index: 209; }
+div.tile.\33 \35 \27 z { --tile-color: var(--kin-color); --tile-index: 209; }
+div.tile.\34 \35 \27 z { --tile-index: 209; }
 /* malaysian 0z: 5`z */
-div.tile.\35 \60 z { background-position-y: calc(-38 * var(--tile-size) - var(--border-width)); }
-div.tile.\30 \35 \60 z { --tile-color: var(--aka-color); --number-color: var(--aka-color); background-position-y: calc(-162 * var(--tile-size) - var(--border-width)); }
-div.tile.\32 \35 \60 z { --tile-color: var(--ao-color); --number-color: var(--ao-color); background-position-y: calc(-162 * var(--tile-size) - var(--border-width)); }
-div.tile.\33 \35 \60 z { --tile-color: var(--kin-color); background-position-y: calc(-162 * var(--tile-size) - var(--border-width)); }
-div.tile.\34 \35 \60 z { background-position-y: calc(-162 * var(--tile-size) - var(--border-width)); }
-div.tile.\31 \35 \60 z { background-position-y: calc(-211 * var(--tile-size) - var(--border-width)); }
+div.tile.\35 \60 z { --tile-index: 38; }
+div.tile.\30 \35 \60 z { --tile-color: var(--aka-color); --number-color: var(--aka-color); --tile-index: 212; }
+div.tile.\31 \35 \60 z { --tile-index: 162; }
+div.tile.\32 \35 \60 z { --tile-color: var(--ao-color); --number-color: var(--ao-color); --tile-index: 212; }
+div.tile.\33 \35 \60 z { --tile-color: var(--kin-color); --tile-index: 212; }
+div.tile.\34 \35 \60 z { --tile-index: 212; }
 /* shiro pocchi: 5^z */
-div.tile.\35 \5e z { background-position-y: calc(-39 * var(--tile-size) - var(--border-width)); }
+div.tile.\35 \5e z { --tile-index: 39; }
 
 /* facedown tiles should match 1x */
-div.tile.facedown { background-position-y: calc(-44 * var(--tile-size) - var(--border-width)); }
+div.tile.facedown { --tile-index: 44; }
 
 /* custom coloring */
 div.tile.red { --tile-color: var(--aka-color); --number-color: var(--aka-color); }
@@ -1334,6 +1436,17 @@ div.tile.rainbow {
     rgba(255, 0, 0, 1) calc(1 * var(--tile-size))
   );
 }
+/* tile animations */
+@keyframes rainbowAnim {
+  100% {
+    background-position-y: calc(-1 * var(--tile-index) * var(--tile-size) * var(--tile-scale-factor) - var(--border-width)), calc(2 * var(--tile-size));
+  }
+}
+div.tile.rainbow.anim {
+  /* from https://stackoverflow.com/questions/56418763/ */
+  background-position-y: calc(-1 * var(--tile-index) * var(--tile-size) * var(--tile-scale-factor) - var(--border-width)), calc(1 * var(--tile-size));
+  animation: rainbowAnim 4s linear forwards infinite;
+}
 /* tile 3d */
 div.tile {
   --tile-brightness: 100%;
@@ -1341,10 +1454,26 @@ div.tile {
   filter: brightness(var(--tile-brightness)) saturate(var(--tile-saturate));
 }
 div.tile:not(.flat) {
-  transform: translateZ(0); /* https://stackoverflow.com/a/77475473 */
+  padding-top: calc(0.25 * var(--tile-size));
   filter: drop-shadow(0 calc(var(--tile-height) / -8) 0 var(--tile-front-side))
           drop-shadow(0 calc(var(--tile-height) / -8) 0 var(--tile-back-side))
           brightness(var(--tile-brightness)) saturate(var(--tile-saturate));
+}
+div.hand.self div.tiles > div.tile.selected,
+div.hand.self div.draws > div.tile.selected {
+  /* this is here to override the translateZ(0) */
+  transform: translateY(calc(-0.25 * var(--tile-size)));
+  position: relative;
+}
+div.hand.self div.tiles > div.tile.selected::before,
+div.hand.self div.draws > div.tile.selected::before {
+  /* add a clickable area under the tile */
+  content: "";
+  position: absolute;
+  background: transparent;
+  width: 100%;
+  height: calc(0.25 * var(--tile-size));
+  bottom: calc(-0.25 * var(--tile-size));
 }
 div.tile.sideways:not(.flat) {
   filter: drop-shadow(0 calc(var(--tile-height) / -16) 0 var(--tile-front-side))
@@ -1445,38 +1574,33 @@ div.self div.tile:nth-child(29) { z-index: 28; }
 div.self div.tile:nth-child(30) { z-index: 29; }
 
 /* all 3d effects should have reversed color for upside down tiles */
-div.tile.\31 x:not(.flat),
-div.tile.facedown:not(.flat) {
+div.tile.\31 x:not(.flat) {
   filter: drop-shadow(0 calc(var(--tile-height) / -8) 0 var(--tile-back-side))
           drop-shadow(0 calc(var(--tile-height) / -8) 0 var(--tile-front-side))
           brightness(var(--tile-brightness)) saturate(var(--tile-saturate));
 }
-div.tile.\31 x.sideways:not(.flat),
-div.tile.facedown.sideways:not(.flat) {
+div.tile.\31 x.sideways:not(.flat) {
   filter: drop-shadow(0 calc(var(--tile-height) / -16) 0 var(--tile-back-side))
           drop-shadow(0 calc(var(--tile-height) / -8) 0 var(--tile-front-side))
           brightness(var(--tile-brightness)) saturate(var(--tile-saturate));
 }
-div.pond.self div.tile.\31 x:not(.flat),
-div.pond.self div.tile.facedown:not(.flat) {
+div.pond.self div.tile.\31 x:not(.flat) {
   filter: drop-shadow(0 calc(var(--tile-height) / 8) 0 var(--tile-back-side))
           drop-shadow(0 calc(var(--tile-height) / 8) 0 var(--tile-front-side))
           brightness(var(--tile-brightness)) saturate(var(--tile-saturate));
 }
-div.shimocha div.tile.\31 x:not(.flat),
-div.shimocha div.tile.facedown:not(.flat) {
+div.shimocha div.tile.\31 x:not(.flat) {
   filter: drop-shadow(calc(var(--tile-height) / -8) 0 0 var(--tile-back-side))
           drop-shadow(calc(var(--tile-height) / -8) 0 0 var(--tile-front-side))
           brightness(var(--tile-brightness)) saturate(var(--tile-saturate));
 }
-div.kamicha div.tile.\31 x:not(.flat),
-div.kamicha div.tile.facedown:not(.flat) {
+div.kamicha div.tile.\31 x:not(.flat) {
   filter: drop-shadow(calc(var(--tile-height) / 8) 0 0 var(--tile-back-side))
           drop-shadow(calc(var(--tile-height) / 8) 0 0 var(--tile-front-side))
           brightness(var(--tile-brightness)) saturate(var(--tile-saturate));
 }
-/* facedown tiles should look facedown */
-div.hand div.tile.facedown:not(.flat) {
+/* facedown tiles in hand should look facedown */
+div.tiles div.tile.facedown:not(.flat) {
   filter: drop-shadow(0 calc(var(--tile-height) / 8) 0 var(--tile-back-side))
           drop-shadow(0 calc(var(--tile-height) / 8) 0 var(--tile-front-side))
           brightness(var(--tile-brightness)) saturate(var(--tile-saturate));
@@ -1501,6 +1625,7 @@ div.tile.removed {
 div.tile.removed ~ div.tile.draw {
   margin-left: 0;
 }
+/* tiles just discarded in pond */
 @keyframes slideUp {
   0% {
     transform: translateY(calc(2 * var(--tile-size)));
@@ -1511,8 +1636,11 @@ div.tile.removed ~ div.tile.draw {
 div.pond > div.tile.just-played:last-child {
   animation: slideUp 0.2s ease forwards;
 }
+/* tiles just played in hand */
 @keyframes slideUp2 {
-  0% {}
+  0% {
+    transform: translateY(calc(-0.25 * var(--tile-size)));
+  }
   100% {
     transform: translateY(calc(-2 * var(--tile-size)));
     opacity: 0;
@@ -1610,6 +1738,7 @@ div.call-buttons > button {
   padding: 0 calc(0.1625 * var(--tile-size));
   background: var(--tile-back);
   filter: none;
+  transform: none;
 }
 div.buttons > button.small-text {
   font-size: calc(0.33 * var(--tile-size));
@@ -1722,7 +1851,7 @@ div.display-am-hand-hover::before {
 div.display-am-hand-container {
   position: absolute;
   display: none;
-  width: calc(100% - 2 * var(--tile-size));
+  width: calc(100% - 2.5 * var(--tile-size));
   left: calc(1 * var(--tile-size));
   bottom: calc(2.5 * var(--tile-size));
   background: #0000007F;
@@ -1745,6 +1874,14 @@ div.display-am-hand {
   flex-flow: row;
   justify-content: center;
   align-items: center;
+  position: relative;
+}
+div.display-am-hand-type {
+  position: absolute;
+  font-size: calc(0.75 * var(--tile-size));
+  border-radius: calc(0.25 * var(--tile-size));
+  bottom: 0;
+  right: calc(-0.5 * var(--tile-size));
 }
 
 /* revealed tiles */
@@ -1856,24 +1993,61 @@ div.declare-yaku button.declare-yaku-button:active {
 }
 
 /* rules */
-input.rules-popover-checkbox + label {
+div.rules-wrapper {
+  z-index: 10000;
+  width: 100%;
+  height: 100%;
+  user-select: none;
+  pointer-events: none;
   position: absolute;
-  padding: 0 calc(0.125 * var(--tile-size));
-  border-radius: calc(0.125 * var(--tile-size));
-  font-size: calc(0.75 * var(--tile-size));
-  bottom: calc(-1.5 * var(--tile-size));
-  width: calc(0.75 * var(--tile-size));
-  height: calc(2 * var(--tile-size));
-  left: calc(-1.5 * var(--tile-size));
+  left: calc(-1.25 * var(--tile-size));
   top: calc(-0.5 * var(--tile-size));
+  display: flex;
+  flex-flow: column nowrap;
+  row-gap: calc(0.25 * var(--tile-size));
+}
+div.rules-wrapper > label {
+  padding: calc(0.125 * var(--tile-size));
+  border-radius: calc(0.125 * var(--tile-size));
+  font-size: calc(0.5 * var(--tile-size));
+  bottom: calc(-1.5 * var(--tile-size));
+  width: calc(0.5 * var(--tile-size));
+  pointer-events: initial;
+  writing-mode: tb;
   display: flex;
   justify-content: center;
   align-items: center;
-  writing-mode: sideways-lr;
+}
+div.rules-wrapper > label.lang-en {
+  transform: rotate(180deg); /* make text face right */
+}
+
+/*
+  hack; add invisible "unselect" radio option to allow unselecting
+  this appears above the selected label, but below unselected labels
+*/
+input.rules-popover-unselect + label {
+  background: transparent;
+  width: calc(0.5 * var(--tile-size));
+  height: calc(100% + 1 * var(--tile-size));
+  top: 0;
+  position: absolute;
+  z-index: -2;
+}
+input.rules-popover-radio:checked ~ input.rules-popover-unselect + label {
+  z-index: 0;
+}
+input.rules-popover-radio:checked + label {
+  z-index: -1;
+}
+input.rules-popover-radio:not(:checked) + label {
+  z-index: 1;
 }
 div.rules-popover-container {
   z-index: 10000;
   position: absolute;
+  left: calc(1.25 * var(--tile-size));
+  top: calc(0.5 * var(--tile-size));
   width: 0;
   transition: width 0.1s ease;
   height: 100%;
@@ -1891,16 +2065,18 @@ div.rules-popover-container::before {
   z-index: -1;
   transition: border-width 0.1s cubic-bezier(0, 1, 0, 1);
 }
-input.rules-popover-checkbox:checked ~ div.rules-popover-container {
+input.rules-popover-radio:checked + label + div.rules-popover-container {
   width: 100%;
+  pointer-events: initial;
   user-select: text;
 }
-input.rules-popover-checkbox:checked ~ div.rules-popover-container::before {
+input.rules-popover-radio:checked + label + div.rules-popover-container::before {
   border-width: calc(0.125 * var(--tile-size));
 }
 div.rules-popover {
   width: 100%;
-  height: 100%;
+  height: calc(100% - calc(0.25 * var(--tile-size)));
+  margin: calc(0.125 * var(--tile-size)) 0;
   position: relative;
   display: flex;
   flex-flow: row wrap;
@@ -1930,6 +2106,11 @@ div.rules-popover-text {
   font-size: calc(0.5 * var(--tile-size));
   margin: calc(0.25 * var(--tile-size));
 }
+div.rules-popover-text > div.tile {
+  display: inline-block;
+  --tile-scale-factor: 0.65; /* enough for 14 tiles to be in a row */
+  margin-top: calc(0.25 * var(--tile-scale-factor) * var(--tile-size));
+}
 
 /* tile numbers */
 input.tile-numbers-checkbox + label {
@@ -1947,8 +2128,7 @@ input.tile-numbers-checkbox + label {
 }
 
 /* display wall */
-div.display-wall-hover::before {
-  content: "Show wall";
+div.display-wall-hover {
   background: gray;
   position: absolute;
   padding: 0 calc(0.125 * var(--tile-size));
@@ -1990,32 +2170,40 @@ div.display-wall.minimized {
 }
 div.display-wall > div.wall {
   display: flex;
-  flex-flow: row-reverse;  
+  flex-flow: row-reverse;
   transform-style: preserve-3d;
   transform-origin: 50% 50%;
+  width: calc(18 * 0.75 * var(--tile-size));
+  height: var(--tile-size);
   position: absolute;
 }
+/* debug */
+/*
+div.display-wall-container { display: block; z-index: 100; }
+div.display-wall > div.wall { background: red; }
+div.display-wall > div.wall * { visibility: hidden; }
+*/
 div.display-wall > div.wall.toimen {
   justify-items: flex-end;
-  top: calc(0.5 * var(--tile-size));
-  left: calc(1.25 * var(--tile-size));
+  top: calc(0.25 * var(--tile-size));
+  left: calc(0.5 * var(--tile-size));
   transform: rotate(180deg);
 }
 div.display-wall > div.wall.shimocha {
-  right: calc(2.5 * var(--tile-size));
-  top: calc(1.25 * var(--tile-size));
+  right: calc(1.5 * var(--tile-size));
+  top: calc(0.75 * var(--tile-size));
   transform: rotate(270deg);
   transform-origin: top right;
 }
 div.display-wall > div.wall.self {
   flex-direction: row;
-  bottom: calc(0 * var(--tile-size));
-  left: calc(1.5 * var(--tile-size));
+  bottom: calc(0.5 * var(--tile-size));
+  left: calc(1.75 * var(--tile-size));
   transform: rotate(180deg);
 }
 div.display-wall > div.wall.kamicha {
-  left: calc(2.5 * var(--tile-size));
-  top: calc(1.75 * var(--tile-size));
+  left: calc(1.5 * var(--tile-size));
+  top: calc(1.5 * var(--tile-size));
   transform: rotate(90deg);
   transform-origin: top left;
 }
@@ -2024,15 +2212,18 @@ div.display-wall > div.wall > div.tile-stack {
   flex-direction: column-reverse;
 }
 div.display-wall > div.wall > div.spacer {
-  width: calc(0.5 * var(--tile-size));
+  min-width: calc(0.5 * var(--tile-size));
 }
-div.display-wall > div.wall > div.tile-stack > div.tile.top { z-index: 2; }
-div.display-wall > div.wall > div.tile-stack > div.tile.bottom { z-index: 1; transform: translateY(calc(0.75 * var(--tile-size))); }
-div.display-wall > div.wall > div.tile-stack > div.tile:first-child:last-child { transform: translateY(calc(-0.25 * var(--tile-size))); }
-div.display-wall > div.wall.shimocha > div.tile-stack > div.tile.bottom { transform: translateX(calc(-0.25 * var(--tile-size))) translateY(calc(1 * var(--tile-size))); }
-div.display-wall > div.wall.shimocha > div.tile-stack > div.tile:first-child:last-child { transform: translateX(calc(-0.25 * var(--tile-size))); }
-div.display-wall > div.wall.kamicha > div.tile-stack > div.tile.bottom { transform: translateX(calc(0.25 * var(--tile-size))) translateY(calc(1 * var(--tile-size))); }
-div.display-wall > div.wall.kamicha > div.tile-stack > div.tile:first-child:last-child { transform: translateX(calc(0.25 * var(--tile-size))); }
+div.display-wall > div.wall > div.tile-stack > div.tile {
+  z-index: var(--level);
+  transform: translateY(calc(1.25 * var(--level) * var(--tile-size)));
+}
+div.display-wall > div.wall.shimocha > div.tile-stack > div.tile {
+  transform: translateX(calc(0.25 * var(--level) * var(--tile-size))) translateY(calc(1 * var(--level) * var(--tile-size)));
+}
+div.display-wall > div.wall.kamicha > div.tile-stack > div.tile {
+  transform: translateX(calc(-0.25 * var(--level) * var(--tile-size))) translateY(calc(1 * var(--level) * var(--tile-size)));
+}
 div.display-wall > div.wall.kamicha > div.tile-stack:nth-child(1) { z-index: -1; }
 div.display-wall > div.wall.kamicha > div.tile-stack:nth-child(2) { z-index: -2; }
 div.display-wall > div.wall.kamicha > div.tile-stack:nth-child(3) { z-index: -3; }
@@ -2051,16 +2242,29 @@ div.display-wall > div.wall.kamicha > div.tile-stack:nth-child(15) { z-index: -1
 div.display-wall > div.wall.kamicha > div.tile-stack:nth-child(16) { z-index: -16; }
 div.display-wall > div.wall.kamicha > div.tile-stack:nth-child(17) { z-index: -17; }
 div.display-wall > div.wall.kamicha > div.tile-stack:nth-child(18) { z-index: -18; }
+div.display-wall > div.wall.kamicha > div.tile-stack:nth-child(19) { z-index: -19; }
+div.display-wall > div.wall.kamicha > div.tile-stack:nth-child(20) { z-index: -20; }
+div.display-wall > div.wall.kamicha > div.tile-stack:nth-child(21) { z-index: -21; }
+div.display-wall > div.wall.kamicha > div.tile-stack:nth-child(22) { z-index: -22; }
+div.display-wall > div.wall.kamicha > div.tile-stack:nth-child(23) { z-index: -23; }
+div.display-wall > div.wall.kamicha > div.tile-stack:nth-child(24) { z-index: -24; }
+div.display-wall > div.wall.kamicha > div.tile-stack:nth-child(25) { z-index: -25; }
+div.display-wall > div.wall.kamicha > div.tile-stack:nth-child(26) { z-index: -26; }
+div.display-wall > div.wall.kamicha > div.tile-stack:nth-child(27) { z-index: -27; }
+div.display-wall > div.wall.kamicha > div.tile-stack:nth-child(28) { z-index: -28; }
+div.display-wall > div.wall.kamicha > div.tile-stack:nth-child(29) { z-index: -29; }
+div.display-wall > div.wall.kamicha > div.tile-stack:nth-child(30) { z-index: -30; }
+div.display-wall > div.wall.kamicha > div.tile-stack:nth-child(31) { z-index: -31; }
+div.display-wall > div.wall.kamicha > div.tile-stack:nth-child(32) { z-index: -32; }
 div.display-wall > div.dice {
   position: absolute;
-  width: calc(1.75 * var(--tile-size));
+  width: 100%;
   height: calc(1.5 * var(--tile-size));
-  left: calc(50% - 0.875 * var(--tile-size));
   top: calc(50% + 2 * var(--tile-size));
   column-gap: calc(0.25 * var(--tile-size));
   display: flex;
   flex-direction: row;
-  justify-content: space-between;
+  justify-content: center;
   align-items: center;
 }
 div.display-wall > div.dice > div.die {
@@ -2134,7 +2338,8 @@ div.game-modal-container {
   transition: opacity 0.5s ease;
 }
 div.game-modal-container.inactive,
-div.game-modal-hide:active {
+div.game-modal-hide:active,
+div.game-modal-hide:active + div.timer {
   opacity: 0;
   pointer-events: none;
   user-select: none;
@@ -2183,6 +2388,24 @@ div.hand.winning-hand {
   width: 100%;
   justify-content: center;
   display: none;
+}
+/* stack flowers in winning hand if needed */
+div.hand.winning-hand > div.call.winning-flowers {
+  position: relative;
+}
+div.hand.winning-hand > div.call.winning-flowers > div.tile:not(:last-child) {
+  margin-right: calc(-0.5 * var(--tile-size));
+}
+div.hand.winning-hand > div.call.winning-flowers > div.flower-count {
+  background: var(--tile-front);
+  padding: calc(0.05 * var(--tile-size));
+  border-radius: calc(0.2 * var(--tile-size));
+  filter: drop-shadow(calc(var(--tile-size) / -16) calc(var(--tile-size) / -16) 0 var(--tile-back-side));
+  position: absolute;
+  font-size: calc(0.4 * var(--tile-size));
+  bottom: calc(-0.25 * var(--tile-size));
+  right: calc(-0.25 * var(--tile-size));
+  z-index: 1;
 }
 /* yakus */
 div.yakus {
@@ -2523,16 +2746,14 @@ div.ruleset {
   position: absolute;
   top: calc(100vh + (2 * var(--tile-size)) + 1.2em);
   left: calc(50% - min(90vw, 80vh) / 2);
-  background: #0f6f2f;
   width: min(90vw, 80vh);
   height: 90vh;
   user-select: text;
 }
-div.ruleset::before {
-  position: absolute;
+div.ruleset > div.ruleset-text {
   content: "Ruleset:";
-  top: -1.2em;
   color: white;
+  font-size: calc(1 * var(--tile-size));
 }
 /* landscape */
 @media (min-aspect-ratio: 6/5) {
@@ -2546,209 +2767,240 @@ div.ruleset::before {
 
 
 /* saki cards */
+/* TODO check why hovering corner info leads to flickering drop-shadow */
 div.saki-card {
   position: relative;
   width: var(--card-width);
   height: var(--card-height);
   border-radius: calc(0.15 * var(--tile-size));
   flex-shrink: 0;
+  z-index: 0;
+}
+div.saki-card:hover {
+  z-index: 1;
 }
 label.mod {
   position: relative;
 }
-div.saki-card:hover::before, div.saki-card:hover::after, label.mod:hover::before, label.mod:hover::after {
+div.saki-card::before, div.saki-card::after, label.mod::before, label.mod::after {
   position: absolute;
   background: inherit;
   width: var(--card-width);
   height: var(--card-height);
   pointer-events: none;
   left: -350%;
-  top: -700%;
+  bottom: 50%;
   transform-origin: 50% 100%;
   z-index: 10;
+  content: none;
 }
 label.mod:hover::before { left: 0; }
 label.mod:hover::after { left: calc(1 * var(--card-width)); }
 label.mod:hover::before, label.mod:hover::after { top: calc(-1 * var(--card-height)); }
 div.saki-card:hover::before, label.mod:hover::before { content: ""; }
-div.saki-card.v12, label.mod.v12:hover::before, label.mod.v12:hover::after {
+div.saki-card.v12, label.mod.v12::before, label.mod.v12::after {
   --card-width: calc(0.89 * var(--tile-size));
   --card-height: calc(1.25 * var(--tile-size));
   background: url("/images/sakicardsv12.png") no-repeat;
   background-size: auto calc(6 * var(--card-height));
 }
-div.saki-card.v13, label.mod.v13:hover::before, label.mod.v13:hover::after {
+div.saki-card.v13, label.mod.v13::before, label.mod.v13::after {
   --card-width: calc(0.865 * var(--tile-size));
   --card-height: calc(1.25 * var(--tile-size));
   background: url("/images/sakicardsv13.png") no-repeat;
   background-size: auto calc(7 * var(--card-height));
 }
-div.saki-card.v12:hover::before, label.mod.v12:hover::after, label.mod.v12:hover::before, label.mod.v12:hover::after {
+div.saki-card.v12::before, div.saki-card.v12::after, label.mod.v12::after, label.mod.v12::before, label.mod.v12::after {
   --card-width: calc(7.12 * var(--tile-size));
   --card-height: calc(10 * var(--tile-size));
   background-size: auto calc(6 * var(--card-height));
 }
-div.saki-card.v13:hover::before, label.mod.v13:hover::after, label.mod.v13:hover::before, label.mod.v13:hover::after {
+div.saki-card.v13::before, div.saki-card.v13::after, label.mod.v13::after, label.mod.v13::before, label.mod.v13::after {
   --card-width: calc(6.92 * var(--tile-size));
   --card-height: calc(10 * var(--tile-size));
   background-size: auto calc(7 * var(--card-height));
 }
-div.saki-card.v12.aislinn-wishart, div.saki-card.v12.aislinn-wishart:hover::before, label.mod.v12.aislinn-wishart:hover::before { background-position-x: calc(-0 * var(--card-width)); background-position-y: calc(-0 * var(--card-height)); }
-div.saki-card.v12.amae-koromo, div.saki-card.v12.amae-koromo:hover::before, label.mod.v12.amae-koromo:hover::before { background-position-x: calc(-1 * var(--card-width)); background-position-y: calc(-0 * var(--card-height)); }
-div.saki-card.v12.anetai-toyone, div.saki-card.v12.anetai-toyone:hover::before, label.mod.v12.anetai-toyone:hover::before { background-position-x: calc(-2 * var(--card-width)); background-position-y: calc(-0 * var(--card-height)); }
-div.saki-card.v12.arakawa-kei, div.saki-card.v12.arakawa-kei:hover::before, label.mod.v12.arakawa-kei:hover::before { background-position-x: calc(-3 * var(--card-width)); background-position-y: calc(-0 * var(--card-height)); }
-div.saki-card.v12.atago-hiroe, div.saki-card.v12.atago-hiroe:hover::before, label.mod.v12.atago-hiroe:hover::before { background-position-x: calc(-4 * var(--card-width)); background-position-y: calc(-0 * var(--card-height)); }
-div.saki-card.v12.atarashi-ako, div.saki-card.v12.atarashi-ako:hover::before, label.mod.v12.atarashi-ako:hover::before { background-position-x: calc(-5 * var(--card-width)); background-position-y: calc(-0 * var(--card-height)); }
-div.saki-card.v12.choe-myeonghwa, div.saki-card.v12.choe-myeonghwa:hover::before, label.mod.v12.choe-myeonghwa:hover::before { background-position-x: calc(-6 * var(--card-width)); background-position-y: calc(-0 * var(--card-height)); }
-div.saki-card.v12.ezaki-hitomi, div.saki-card.v12.ezaki-hitomi:hover::before, label.mod.v12.ezaki-hitomi:hover::before { background-position-x: calc(-7 * var(--card-width)); background-position-y: calc(-0 * var(--card-height)); }
-div.saki-card.v12.fukuji-mihoko, div.saki-card.v12.fukuji-mihoko:hover::before, label.mod.v12.fukuji-mihoko:hover::before { background-position-x: calc(-8 * var(--card-width)); background-position-y: calc(-0 * var(--card-height)); }
-div.saki-card.v12.hanada-kirame, div.saki-card.v12.hanada-kirame:hover::before, label.mod.v12.hanada-kirame:hover::before { background-position-x: calc(-0 * var(--card-width)); background-position-y: calc(-1 * var(--card-height)); }
-div.saki-card.v12.hao-huiyu, div.saki-card.v12.hao-huiyu:hover::before, label.mod.v12.hao-huiyu:hover::before { background-position-x: calc(-1 * var(--card-width)); background-position-y: calc(-1 * var(--card-height)); }
-div.saki-card.v12.haramura-nodoka, div.saki-card.v12.haramura-nodoka:hover::before, label.mod.v12.haramura-nodoka:hover::before { background-position-x: calc(-2 * var(--card-width)); background-position-y: calc(-1 * var(--card-height)); }
-div.saki-card.v12.hirose-sumire, div.saki-card.v12.hirose-sumire:hover::before, label.mod.v12.hirose-sumire:hover::before { background-position-x: calc(-3 * var(--card-width)); background-position-y: calc(-1 * var(--card-height)); }
-div.saki-card.v12.ikeda-kana, div.saki-card.v12.ikeda-kana:hover::before, label.mod.v12.ikeda-kana:hover::before { background-position-x: calc(-4 * var(--card-width)); background-position-y: calc(-1 * var(--card-height)); }
-div.saki-card.v12.inoue-jun, div.saki-card.v12.inoue-jun:hover::before, label.mod.v12.inoue-jun:hover::before { background-position-x: calc(-5 * var(--card-width)); background-position-y: calc(-1 * var(--card-height)); }
-div.saki-card.v12.iwato-kasumi, div.saki-card.v12.iwato-kasumi:hover::before, label.mod.v12.iwato-kasumi:hover::before { background-position-x: calc(-6 * var(--card-width)); background-position-y: calc(-1 * var(--card-height)); }
-div.saki-card.v12.jindai-komaki, div.saki-card.v12.jindai-komaki:hover::before, label.mod.v12.jindai-komaki:hover::before { background-position-x: calc(-7 * var(--card-width)); background-position-y: calc(-1 * var(--card-height)); }
-div.saki-card.v12.kajiki-yumi, div.saki-card.v12.kajiki-yumi:hover::before, label.mod.v12.kajiki-yumi:hover::before { background-position-x: calc(-8 * var(--card-width)); background-position-y: calc(-1 * var(--card-height)); }
-div.saki-card.v12.kainou-yoshiko, div.saki-card.v12.kainou-yoshiko:hover::before, label.mod.v12.kainou-yoshiko:hover::before { background-position-x: calc(-0 * var(--card-width)); background-position-y: calc(-2 * var(--card-height)); }
-div.saki-card.v12.kakura-kurumi, div.saki-card.v12.kakura-kurumi:hover::before, label.mod.v12.kakura-kurumi:hover::before { background-position-x: calc(-1 * var(--card-width)); background-position-y: calc(-2 * var(--card-height)); }
-div.saki-card.v12.kanbara-satomi, div.saki-card.v12.kanbara-satomi:hover::before, label.mod.v12.kanbara-satomi:hover::before { background-position-x: calc(-2 * var(--card-width)); background-position-y: calc(-2 * var(--card-height)); }
-div.saki-card.v12.karijuku-tomoe, div.saki-card.v12.karijuku-tomoe:hover::before, label.mod.v12.karijuku-tomoe:hover::before { background-position-x: calc(-3 * var(--card-width)); background-position-y: calc(-2 * var(--card-height)); }
-div.saki-card.v12.kataoka-yuuki, div.saki-card.v12.kataoka-yuuki:hover::before, label.mod.v12.kataoka-yuuki:hover::before { background-position-x: calc(-4 * var(--card-width)); background-position-y: calc(-2 * var(--card-height)); }
-div.saki-card.v12.kosegawa-shiromi, div.saki-card.v12.kosegawa-shiromi:hover::before, label.mod.v12.kosegawa-shiromi:hover::before { background-position-x: calc(-5 * var(--card-width)); background-position-y: calc(-2 * var(--card-height)); }
-div.saki-card.v12.kunihiro-hajime, div.saki-card.v12.kunihiro-hajime:hover::before, label.mod.v12.kunihiro-hajime:hover::before { background-position-x: calc(-6 * var(--card-width)); background-position-y: calc(-2 * var(--card-height)); }
-div.saki-card.v12.mase-yuuko, div.saki-card.v12.mase-yuuko:hover::before, label.mod.v12.mase-yuuko:hover::before { background-position-x: calc(-7 * var(--card-width)); background-position-y: calc(-2 * var(--card-height)); }
-div.saki-card.v12.matano-seiko, div.saki-card.v12.matano-seiko:hover::before, label.mod.v12.matano-seiko:hover::before { background-position-x: calc(-8 * var(--card-width)); background-position-y: calc(-2 * var(--card-height)); }
-div.saki-card.v12.matsumi-kuro, div.saki-card.v12.matsumi-kuro:hover::before, label.mod.v12.matsumi-kuro:hover::before { background-position-x: calc(-0 * var(--card-width)); background-position-y: calc(-3 * var(--card-height)); }
-div.saki-card.v12.matsumi-yuu, div.saki-card.v12.matsumi-yuu:hover::before, label.mod.v12.matsumi-yuu:hover::before { background-position-x: calc(-1 * var(--card-width)); background-position-y: calc(-3 * var(--card-height)); }
-div.saki-card.v12.maya-yukiko, div.saki-card.v12.maya-yukiko:hover::before, label.mod.v12.maya-yukiko:hover::before { background-position-x: calc(-2 * var(--card-width)); background-position-y: calc(-3 * var(--card-height)); }
-div.saki-card.v12.megan-davin, div.saki-card.v12.megan-davin:hover::before, label.mod.v12.megan-davin:hover::before { background-position-x: calc(-3 * var(--card-width)); background-position-y: calc(-3 * var(--card-height)); }
-div.saki-card.v12.miyanaga-saki, div.saki-card.v12.miyanaga-saki:hover::before, label.mod.v12.miyanaga-saki:hover::before { background-position-x: calc(-4 * var(--card-width)); background-position-y: calc(-3 * var(--card-height)); }
-div.saki-card.v12.miyanaga-teru, div.saki-card.v12.miyanaga-teru:hover::before, label.mod.v12.miyanaga-teru:hover::before { background-position-x: calc(-5 * var(--card-width)); background-position-y: calc(-3 * var(--card-height)); }
-div.saki-card.v12.nanpo-kazue, div.saki-card.v12.nanpo-kazue:hover::before, label.mod.v12.nanpo-kazue:hover::before { background-position-x: calc(-6 * var(--card-width)); background-position-y: calc(-3 * var(--card-height)); }
-div.saki-card.v12.nelly-virsaladze, div.saki-card.v12.nelly-virsaladze:hover::before, label.mod.v12.nelly-virsaladze:hover::before { background-position-x: calc(-7 * var(--card-width)); background-position-y: calc(-3 * var(--card-height)); }
-div.saki-card.v12.onjouji-toki, div.saki-card.v12.onjouji-toki:hover::before, label.mod.v12.onjouji-toki:hover::before { background-position-x: calc(-8 * var(--card-width)); background-position-y: calc(-3 * var(--card-height)); }
-div.saki-card.v12.oohoshi-awai, div.saki-card.v12.oohoshi-awai:hover::before, label.mod.v12.oohoshi-awai:hover::before { background-position-x: calc(-0 * var(--card-width)); background-position-y: calc(-4 * var(--card-height)); }
-div.saki-card.v12.ryuumonbuchi-touka, div.saki-card.v12.ryuumonbuchi-touka:hover::before, label.mod.v12.ryuumonbuchi-touka:hover::before { background-position-x: calc(-1 * var(--card-width)); background-position-y: calc(-4 * var(--card-height)); }
-div.saki-card.v12.sagimori-arata, div.saki-card.v12.sagimori-arata:hover::before, label.mod.v12.sagimori-arata:hover::before { background-position-x: calc(-2 * var(--card-width)); background-position-y: calc(-4 * var(--card-height)); }
-div.saki-card.v12.sawamura-tomoki, div.saki-card.v12.sawamura-tomoki:hover::before, label.mod.v12.sawamura-tomoki:hover::before { background-position-x: calc(-3 * var(--card-width)); background-position-y: calc(-4 * var(--card-height)); }
-div.saki-card.v12.senoo-kaori, div.saki-card.v12.senoo-kaori:hover::before, label.mod.v12.senoo-kaori:hover::before { background-position-x: calc(-4 * var(--card-width)); background-position-y: calc(-4 * var(--card-height)); }
-div.saki-card.v12.shibuya-takami, div.saki-card.v12.shibuya-takami:hover::before, label.mod.v12.shibuya-takami:hover::before { background-position-x: calc(-5 * var(--card-width)); background-position-y: calc(-4 * var(--card-height)); }
-div.saki-card.v12.shimizudani-ryuuka, div.saki-card.v12.shimizudani-ryuuka:hover::before, label.mod.v12.shimizudani-ryuuka:hover::before { background-position-x: calc(-6 * var(--card-width)); background-position-y: calc(-4 * var(--card-height)); }
-div.saki-card.v12.shirouzu-mairu, div.saki-card.v12.shirouzu-mairu:hover::before, label.mod.v12.shirouzu-mairu:hover::before { background-position-x: calc(-7 * var(--card-width)); background-position-y: calc(-4 * var(--card-height)); }
-div.saki-card.v12.someya-mako, div.saki-card.v12.someya-mako:hover::before, label.mod.v12.someya-mako:hover::before { background-position-x: calc(-8 * var(--card-width)); background-position-y: calc(-4 * var(--card-height)); }
-div.saki-card.v12.takakamo-shizuno, div.saki-card.v12.takakamo-shizuno:hover::before, label.mod.v12.takakamo-shizuno:hover::before { background-position-x: calc(-0 * var(--card-width)); background-position-y: calc(-5 * var(--card-height)); }
-div.saki-card.v12.takei-hisa, div.saki-card.v12.takei-hisa:hover::before, label.mod.v12.takei-hisa:hover::before { background-position-x: calc(-1 * var(--card-width)); background-position-y: calc(-5 * var(--card-height)); }
-div.saki-card.v12.takimi-haru, div.saki-card.v12.takimi-haru:hover::before, label.mod.v12.takimi-haru:hover::before { background-position-x: calc(-2 * var(--card-width)); background-position-y: calc(-5 * var(--card-height)); }
-div.saki-card.v12.toyouko-momoko, div.saki-card.v12.toyouko-momoko:hover::before, label.mod.v12.toyouko-momoko:hover::before { background-position-x: calc(-3 * var(--card-width)); background-position-y: calc(-5 * var(--card-height)); }
-div.saki-card.v12.tsujigaito-satoha, div.saki-card.v12.tsujigaito-satoha:hover::before, label.mod.v12.tsujigaito-satoha:hover::before { background-position-x: calc(-4 * var(--card-width)); background-position-y: calc(-5 * var(--card-height)); }
-div.saki-card.v12.tsuruta-himeko, div.saki-card.v12.tsuruta-himeko:hover::before, label.mod.v12.tsuruta-himeko:hover::before { background-position-x: calc(-5 * var(--card-width)); background-position-y: calc(-5 * var(--card-height)); }
-div.saki-card.v12.usuzawa-sae, div.saki-card.v12.usuzawa-sae:hover::before, label.mod.v12.usuzawa-sae:hover::before { background-position-x: calc(-6 * var(--card-width)); background-position-y: calc(-5 * var(--card-height)); }
-div.saki-card.v12.usuzumi-hatsumi, div.saki-card.v12.usuzumi-hatsumi:hover::before, label.mod.v12.usuzumi-hatsumi:hover::before { background-position-x: calc(-7 * var(--card-width)); background-position-y: calc(-5 * var(--card-height)); }
-div.saki-card.v12.yumeno-maho, div.saki-card.v12.yumeno-maho:hover::before, label.mod.v12.yumeno-maho:hover::before { background-position-x: calc(-8 * var(--card-width)); background-position-y: calc(-5 * var(--card-height)); }
-div.saki-card.v13.aislinn-wishart, div.saki-card.v13.aislinn-wishart:hover::before, label.mod.v13.aislinn-wishart:hover::before { background-position-x: calc(-0 * var(--card-width)); background-position-y: calc(-0 * var(--card-height)); }
-div.saki-card.v13.amae-koromo, div.saki-card.v13.amae-koromo:hover::before, label.mod.v13.amae-koromo:hover::before { background-position-x: calc(-1 * var(--card-width)); background-position-y: calc(-0 * var(--card-height)); }
-div.saki-card.v13.anetai-toyone, div.saki-card.v13.anetai-toyone:hover::before, label.mod.v13.anetai-toyone:hover::before { background-position-x: calc(-2 * var(--card-width)); background-position-y: calc(-0 * var(--card-height)); }
-div.saki-card.v13.arakawa-kei, div.saki-card.v13.arakawa-kei:hover::before, label.mod.v13.arakawa-kei:hover::before { background-position-x: calc(-3 * var(--card-width)); background-position-y: calc(-0 * var(--card-height)); }
-div.saki-card.v13.atago-hiroe, div.saki-card.v13.atago-hiroe:hover::before, label.mod.v13.atago-hiroe:hover::before { background-position-x: calc(-4 * var(--card-width)); background-position-y: calc(-0 * var(--card-height)); }
-div.saki-card.v13.atago-kinue, div.saki-card.v13.atago-kinue:hover::before, label.mod.v13.atago-kinue:hover::before { background-position-x: calc(-5 * var(--card-width)); background-position-y: calc(-0 * var(--card-height)); }
-div.saki-card.v13.atarashi-ako, div.saki-card.v13.atarashi-ako:hover::before, label.mod.v13.atarashi-ako:hover::before { background-position-x: calc(-6 * var(--card-width)); background-position-y: calc(-0 * var(--card-height)); }
-div.saki-card.v13.choe-myeonghwa, div.saki-card.v13.choe-myeonghwa:hover::before, label.mod.v13.choe-myeonghwa:hover::before { background-position-x: calc(-7 * var(--card-width)); background-position-y: calc(-0 * var(--card-height)); }
-div.saki-card.v13.ezaki-hitomi, div.saki-card.v13.ezaki-hitomi:hover::before, label.mod.v13.ezaki-hitomi:hover::before { background-position-x: calc(-8 * var(--card-width)); background-position-y: calc(-0 * var(--card-height)); }
-div.saki-card.v13.fukuji-mihoko, div.saki-card.v13.fukuji-mihoko:hover::before, label.mod.v13.fukuji-mihoko:hover::before { background-position-x: calc(-0 * var(--card-width)); background-position-y: calc(-1 * var(--card-height)); }
-div.saki-card.v13.funakubo-hiroko, div.saki-card.v13.funakubo-hiroko:hover::before, label.mod.v13.funakubo-hiroko:hover::before { background-position-x: calc(-1 * var(--card-width)); background-position-y: calc(-1 * var(--card-height)); }
-div.saki-card.v13.hanada-kirame, div.saki-card.v13.hanada-kirame:hover::before, label.mod.v13.hanada-kirame:hover::before { background-position-x: calc(-2 * var(--card-width)); background-position-y: calc(-1 * var(--card-height)); }
-div.saki-card.v13.hao-huiyu, div.saki-card.v13.hao-huiyu:hover::before, label.mod.v13.hao-huiyu:hover::before { background-position-x: calc(-3 * var(--card-width)); background-position-y: calc(-1 * var(--card-height)); }
-div.saki-card.v13.haramura-nodoka, div.saki-card.v13.haramura-nodoka:hover::before, label.mod.v13.haramura-nodoka:hover::before { background-position-x: calc(-4 * var(--card-width)); background-position-y: calc(-1 * var(--card-height)); }
-div.saki-card.v13.hirose-sumire, div.saki-card.v13.hirose-sumire:hover::before, label.mod.v13.hirose-sumire:hover::before { background-position-x: calc(-5 * var(--card-width)); background-position-y: calc(-1 * var(--card-height)); }
-div.saki-card.v13.ikeda-kana, div.saki-card.v13.ikeda-kana:hover::before, label.mod.v13.ikeda-kana:hover::before { background-position-x: calc(-6 * var(--card-width)); background-position-y: calc(-1 * var(--card-height)); }
-div.saki-card.v13.inoue-jun, div.saki-card.v13.inoue-jun:hover::before, label.mod.v13.inoue-jun:hover::before { background-position-x: calc(-7 * var(--card-width)); background-position-y: calc(-1 * var(--card-height)); }
-div.saki-card.v13.iwadate-yuan, div.saki-card.v13.iwadate-yuan:hover::before, label.mod.v13.iwadate-yuan:hover::before { background-position-x: calc(-8 * var(--card-width)); background-position-y: calc(-1 * var(--card-height)); }
-div.saki-card.v13.iwato-kasumi, div.saki-card.v13.iwato-kasumi:hover::before, label.mod.v13.iwato-kasumi:hover::before { background-position-x: calc(-0 * var(--card-width)); background-position-y: calc(-2 * var(--card-height)); }
-div.saki-card.v13.jindai-komaki, div.saki-card.v13.jindai-komaki:hover::before, label.mod.v13.jindai-komaki:hover::before { background-position-x: calc(-1 * var(--card-width)); background-position-y: calc(-2 * var(--card-height)); }
-div.saki-card.v13.kajiki-yumi, div.saki-card.v13.kajiki-yumi:hover::before, label.mod.v13.kajiki-yumi:hover::before { background-position-x: calc(-2 * var(--card-width)); background-position-y: calc(-2 * var(--card-height)); }
-div.saki-card.v13.kainou-yoshiko, div.saki-card.v13.kainou-yoshiko:hover::before, label.mod.v13.kainou-yoshiko:hover::before { background-position-x: calc(-3 * var(--card-width)); background-position-y: calc(-2 * var(--card-height)); }
-div.saki-card.v13.kakura-kurumi, div.saki-card.v13.kakura-kurumi:hover::before, label.mod.v13.kakura-kurumi:hover::before { background-position-x: calc(-4 * var(--card-width)); background-position-y: calc(-2 * var(--card-height)); }
-div.saki-card.v13.kanbara-satomi, div.saki-card.v13.kanbara-satomi:hover::before, label.mod.v13.kanbara-satomi:hover::before { background-position-x: calc(-5 * var(--card-width)); background-position-y: calc(-2 * var(--card-height)); }
-div.saki-card.v13.karijuku-tomoe, div.saki-card.v13.karijuku-tomoe:hover::before, label.mod.v13.karijuku-tomoe:hover::before { background-position-x: calc(-6 * var(--card-width)); background-position-y: calc(-2 * var(--card-height)); }
-div.saki-card.v13.kataoka-yuuki, div.saki-card.v13.kataoka-yuuki:hover::before, label.mod.v13.kataoka-yuuki:hover::before { background-position-x: calc(-7 * var(--card-width)); background-position-y: calc(-2 * var(--card-height)); }
-div.saki-card.v13.kosegawa-shiromi, div.saki-card.v13.kosegawa-shiromi:hover::before, label.mod.v13.kosegawa-shiromi:hover::before { background-position-x: calc(-8 * var(--card-width)); background-position-y: calc(-2 * var(--card-height)); }
-div.saki-card.v13.kunihiro-hajime, div.saki-card.v13.kunihiro-hajime:hover::before, label.mod.v13.kunihiro-hajime:hover::before { background-position-x: calc(-0 * var(--card-width)); background-position-y: calc(-3 * var(--card-height)); }
-div.saki-card.v13.mase-yuuko, div.saki-card.v13.mase-yuuko:hover::before, label.mod.v13.mase-yuuko:hover::before { background-position-x: calc(-1 * var(--card-width)); background-position-y: calc(-3 * var(--card-height)); }
-div.saki-card.v13.matano-seiko, div.saki-card.v13.matano-seiko:hover::before, label.mod.v13.matano-seiko:hover::before { background-position-x: calc(-2 * var(--card-width)); background-position-y: calc(-3 * var(--card-height)); }
-div.saki-card.v13.matsumi-kuro, div.saki-card.v13.matsumi-kuro:hover::before, label.mod.v13.matsumi-kuro:hover::before { background-position-x: calc(-3 * var(--card-width)); background-position-y: calc(-3 * var(--card-height)); }
-div.saki-card.v13.matsumi-yuu, div.saki-card.v13.matsumi-yuu:hover::before, label.mod.v13.matsumi-yuu:hover::before { background-position-x: calc(-4 * var(--card-width)); background-position-y: calc(-3 * var(--card-height)); }
-div.saki-card.v13.maya-yukiko, div.saki-card.v13.maya-yukiko:hover::before, label.mod.v13.maya-yukiko:hover::before { background-position-x: calc(-5 * var(--card-width)); background-position-y: calc(-3 * var(--card-height)); }
-div.saki-card.v13.megan-davin, div.saki-card.v13.megan-davin:hover::before, label.mod.v13.megan-davin:hover::before { background-position-x: calc(-6 * var(--card-width)); background-position-y: calc(-3 * var(--card-height)); }
-div.saki-card.v13.miyanaga-saki, div.saki-card.v13.miyanaga-saki:hover::before, label.mod.v13.miyanaga-saki:hover::before { background-position-x: calc(-7 * var(--card-width)); background-position-y: calc(-3 * var(--card-height)); }
-div.saki-card.v13.miyanaga-teru, div.saki-card.v13.miyanaga-teru:hover::before, label.mod.v13.miyanaga-teru:hover::before { background-position-x: calc(-8 * var(--card-width)); background-position-y: calc(-3 * var(--card-height)); }
-div.saki-card.v13.motouchi-naruka, div.saki-card.v13.motouchi-naruka:hover::before, label.mod.v13.motouchi-naruka:hover::before { background-position-x: calc(-0 * var(--card-width)); background-position-y: calc(-4 * var(--card-height)); }
-div.saki-card.v13.nanpo-kazue, div.saki-card.v13.nanpo-kazue:hover::before, label.mod.v13.nanpo-kazue:hover::before { background-position-x: calc(-1 * var(--card-width)); background-position-y: calc(-4 * var(--card-height)); }
-div.saki-card.v13.nelly-virsaladze, div.saki-card.v13.nelly-virsaladze:hover::before, label.mod.v13.nelly-virsaladze:hover::before { background-position-x: calc(-2 * var(--card-width)); background-position-y: calc(-4 * var(--card-height)); }
-div.saki-card.v13.onjouji-toki, div.saki-card.v13.onjouji-toki:hover::before, label.mod.v13.onjouji-toki:hover::before { background-position-x: calc(-3 * var(--card-width)); background-position-y: calc(-4 * var(--card-height)); }
-div.saki-card.v13.oohoshi-awai, div.saki-card.v13.oohoshi-awai:hover::before, label.mod.v13.oohoshi-awai:hover::before { background-position-x: calc(-4 * var(--card-width)); background-position-y: calc(-4 * var(--card-height)); }
-div.saki-card.v13.ryuumonbuchi-touka, div.saki-card.v13.ryuumonbuchi-touka:hover::before, label.mod.v13.ryuumonbuchi-touka:hover::before { background-position-x: calc(-5 * var(--card-width)); background-position-y: calc(-4 * var(--card-height)); }
-div.saki-card.v13.sagimori-arata, div.saki-card.v13.sagimori-arata:hover::before, label.mod.v13.sagimori-arata:hover::before { background-position-x: calc(-6 * var(--card-width)); background-position-y: calc(-4 * var(--card-height)); }
-div.saki-card.v13.sawamura-tomoki, div.saki-card.v13.sawamura-tomoki:hover::before, label.mod.v13.sawamura-tomoki:hover::before { background-position-x: calc(-7 * var(--card-width)); background-position-y: calc(-4 * var(--card-height)); }
-div.saki-card.v13.senoo-kaori, div.saki-card.v13.senoo-kaori:hover::before, label.mod.v13.senoo-kaori:hover::before { background-position-x: calc(-8 * var(--card-width)); background-position-y: calc(-4 * var(--card-height)); }
-div.saki-card.v13.shibuya-takami, div.saki-card.v13.shibuya-takami:hover::before, label.mod.v13.shibuya-takami:hover::before { background-position-x: calc(-0 * var(--card-width)); background-position-y: calc(-5 * var(--card-height)); }
-div.saki-card.v13.shimizudani-ryuuka, div.saki-card.v13.shimizudani-ryuuka:hover::before, label.mod.v13.shimizudani-ryuuka:hover::before { background-position-x: calc(-1 * var(--card-width)); background-position-y: calc(-5 * var(--card-height)); }
-div.saki-card.v13.shirouzu-mairu, div.saki-card.v13.shirouzu-mairu:hover::before, label.mod.v13.shirouzu-mairu:hover::before { background-position-x: calc(-2 * var(--card-width)); background-position-y: calc(-5 * var(--card-height)); }
-div.saki-card.v13.shishihara-sawaya, div.saki-card.v13.shishihara-sawaya:hover::before, label.mod.v13.shishihara-sawaya:hover::before { background-position-x: calc(-3 * var(--card-width)); background-position-y: calc(-5 * var(--card-height)); }
-div.saki-card.v13.someya-mako, div.saki-card.v13.someya-mako:hover::before, label.mod.v13.someya-mako:hover::before { background-position-x: calc(-4 * var(--card-width)); background-position-y: calc(-5 * var(--card-height)); }
-div.saki-card.v13.suehara-kyouko, div.saki-card.v13.suehara-kyouko:hover::before, label.mod.v13.suehara-kyouko:hover::before { background-position-x: calc(-5 * var(--card-width)); background-position-y: calc(-5 * var(--card-height)); }
-div.saki-card.v13.takakamo-shizuno, div.saki-card.v13.takakamo-shizuno:hover::before, label.mod.v13.takakamo-shizuno:hover::before { background-position-x: calc(-6 * var(--card-width)); background-position-y: calc(-5 * var(--card-height)); }
-div.saki-card.v13.takei-hisa, div.saki-card.v13.takei-hisa:hover::before, label.mod.v13.takei-hisa:hover::before { background-position-x: calc(-7 * var(--card-width)); background-position-y: calc(-5 * var(--card-height)); }
-div.saki-card.v13.takimi-haru, div.saki-card.v13.takimi-haru:hover::before, label.mod.v13.takimi-haru:hover::before { background-position-x: calc(-8 * var(--card-width)); background-position-y: calc(-5 * var(--card-height)); }
-div.saki-card.v13.toyouko-momoko, div.saki-card.v13.toyouko-momoko:hover::before, label.mod.v13.toyouko-momoko:hover::before { background-position-x: calc(-0 * var(--card-width)); background-position-y: calc(-6 * var(--card-height)); }
-div.saki-card.v13.tsujigaito-satoha, div.saki-card.v13.tsujigaito-satoha:hover::before, label.mod.v13.tsujigaito-satoha:hover::before { background-position-x: calc(-1 * var(--card-width)); background-position-y: calc(-6 * var(--card-height)); }
-div.saki-card.v13.tsuruta-himeko, div.saki-card.v13.tsuruta-himeko:hover::before, label.mod.v13.tsuruta-himeko:hover::before { background-position-x: calc(-2 * var(--card-width)); background-position-y: calc(-6 * var(--card-height)); }
-div.saki-card.v13.ueshige-suzu, div.saki-card.v13.ueshige-suzu:hover::before, label.mod.v13.ueshige-suzu:hover::before { background-position-x: calc(-3 * var(--card-width)); background-position-y: calc(-6 * var(--card-height)); }
-div.saki-card.v13.usuzawa-sae, div.saki-card.v13.usuzawa-sae:hover::before, label.mod.v13.usuzawa-sae:hover::before { background-position-x: calc(-4 * var(--card-width)); background-position-y: calc(-6 * var(--card-height)); }
-div.saki-card.v13.usuzumi-hatsumi, div.saki-card.v13.usuzumi-hatsumi:hover::before, label.mod.v13.usuzumi-hatsumi:hover::before { background-position-x: calc(-5 * var(--card-width)); background-position-y: calc(-6 * var(--card-height)); }
-div.saki-card.v13.yae-kobashiri, div.saki-card.v13.yae-kobashiri:hover::before, label.mod.v13.yae-kobashiri:hover::before { background-position-x: calc(-6 * var(--card-width)); background-position-y: calc(-6 * var(--card-height)); }
-div.saki-card.v13.yoshitome-miharu, div.saki-card.v13.yoshitome-miharu:hover::before, label.mod.v13.yoshitome-miharu:hover::before { background-position-x: calc(-7 * var(--card-width)); background-position-y: calc(-6 * var(--card-height)); }
-div.saki-card.v13.yumeno-maho, div.saki-card.v13.yumeno-maho:hover::before, label.mod.v13.yumeno-maho:hover::before { background-position-x: calc(-8 * var(--card-width)); background-position-y: calc(-6 * var(--card-height)); }
-label.mod.v13:hover::before { background-position-x: calc(-8 * var(--card-width)); background-position-y: calc(-6 * var(--card-height)); }
-div.shimocha div.saki-card:hover::before { transform: rotate(90deg) translateX(calc(-0.75 * var(--tile-size))) translateY(calc(3 * var(--tile-size))); }
-div.toimen div.saki-card:hover::before { transform: rotate(180deg) translateY(calc(5 * var(--tile-size))); }
-div.kamicha div.saki-card:hover::before { transform: rotate(270deg) translateX(calc(0.75 * var(--tile-size))) translateY(calc(0.5 * var(--tile-size))); }
-div.saki-card.disabled, div.saki-card.disabled:hover::before { filter: saturate(0%); }
+div.saki-card.v12.aislinn-wishart, div.saki-card.v12.aislinn-wishart::before, label.mod.v12.aislinn-wishart::before { background-position-x: calc(-0 * var(--card-width)); background-position-y: calc(-0 * var(--card-height)); }
+div.saki-card.v12.amae-koromo, div.saki-card.v12.amae-koromo::before, label.mod.v12.amae-koromo::before { background-position-x: calc(-1 * var(--card-width)); background-position-y: calc(-0 * var(--card-height)); }
+div.saki-card.v12.anetai-toyone, div.saki-card.v12.anetai-toyone::before, label.mod.v12.anetai-toyone::before { background-position-x: calc(-2 * var(--card-width)); background-position-y: calc(-0 * var(--card-height)); }
+div.saki-card.v12.arakawa-kei, div.saki-card.v12.arakawa-kei::before, label.mod.v12.arakawa-kei::before { background-position-x: calc(-3 * var(--card-width)); background-position-y: calc(-0 * var(--card-height)); }
+div.saki-card.v12.atago-hiroe, div.saki-card.v12.atago-hiroe::before, label.mod.v12.atago-hiroe::before { background-position-x: calc(-4 * var(--card-width)); background-position-y: calc(-0 * var(--card-height)); }
+div.saki-card.v12.atarashi-ako, div.saki-card.v12.atarashi-ako::before, label.mod.v12.atarashi-ako::before { background-position-x: calc(-5 * var(--card-width)); background-position-y: calc(-0 * var(--card-height)); }
+div.saki-card.v12.choe-myeonghwa, div.saki-card.v12.choe-myeonghwa::before, label.mod.v12.choe-myeonghwa::before { background-position-x: calc(-6 * var(--card-width)); background-position-y: calc(-0 * var(--card-height)); }
+div.saki-card.v12.ezaki-hitomi, div.saki-card.v12.ezaki-hitomi::before, label.mod.v12.ezaki-hitomi::before { background-position-x: calc(-7 * var(--card-width)); background-position-y: calc(-0 * var(--card-height)); }
+div.saki-card.v12.fukuji-mihoko, div.saki-card.v12.fukuji-mihoko::before, label.mod.v12.fukuji-mihoko::before { background-position-x: calc(-8 * var(--card-width)); background-position-y: calc(-0 * var(--card-height)); }
+div.saki-card.v12.hanada-kirame, div.saki-card.v12.hanada-kirame::before, label.mod.v12.hanada-kirame::before { background-position-x: calc(-0 * var(--card-width)); background-position-y: calc(-1 * var(--card-height)); }
+div.saki-card.v12.hao-huiyu, div.saki-card.v12.hao-huiyu::before, label.mod.v12.hao-huiyu::before { background-position-x: calc(-1 * var(--card-width)); background-position-y: calc(-1 * var(--card-height)); }
+div.saki-card.v12.haramura-nodoka, div.saki-card.v12.haramura-nodoka::before, label.mod.v12.haramura-nodoka::before { background-position-x: calc(-2 * var(--card-width)); background-position-y: calc(-1 * var(--card-height)); }
+div.saki-card.v12.hirose-sumire, div.saki-card.v12.hirose-sumire::before, label.mod.v12.hirose-sumire::before { background-position-x: calc(-3 * var(--card-width)); background-position-y: calc(-1 * var(--card-height)); }
+div.saki-card.v12.ikeda-kana, div.saki-card.v12.ikeda-kana::before, label.mod.v12.ikeda-kana::before { background-position-x: calc(-4 * var(--card-width)); background-position-y: calc(-1 * var(--card-height)); }
+div.saki-card.v12.inoue-jun, div.saki-card.v12.inoue-jun::before, label.mod.v12.inoue-jun::before { background-position-x: calc(-5 * var(--card-width)); background-position-y: calc(-1 * var(--card-height)); }
+div.saki-card.v12.iwato-kasumi, div.saki-card.v12.iwato-kasumi::before, label.mod.v12.iwato-kasumi::before { background-position-x: calc(-6 * var(--card-width)); background-position-y: calc(-1 * var(--card-height)); }
+div.saki-card.v12.jindai-komaki, div.saki-card.v12.jindai-komaki::before, label.mod.v12.jindai-komaki::before { background-position-x: calc(-7 * var(--card-width)); background-position-y: calc(-1 * var(--card-height)); }
+div.saki-card.v12.kajiki-yumi, div.saki-card.v12.kajiki-yumi::before, label.mod.v12.kajiki-yumi::before { background-position-x: calc(-8 * var(--card-width)); background-position-y: calc(-1 * var(--card-height)); }
+div.saki-card.v12.kainou-yoshiko, div.saki-card.v12.kainou-yoshiko::before, label.mod.v12.kainou-yoshiko::before { background-position-x: calc(-0 * var(--card-width)); background-position-y: calc(-2 * var(--card-height)); }
+div.saki-card.v12.kakura-kurumi, div.saki-card.v12.kakura-kurumi::before, label.mod.v12.kakura-kurumi::before { background-position-x: calc(-1 * var(--card-width)); background-position-y: calc(-2 * var(--card-height)); }
+div.saki-card.v12.kanbara-satomi, div.saki-card.v12.kanbara-satomi::before, label.mod.v12.kanbara-satomi::before { background-position-x: calc(-2 * var(--card-width)); background-position-y: calc(-2 * var(--card-height)); }
+div.saki-card.v12.karijuku-tomoe, div.saki-card.v12.karijuku-tomoe::before, label.mod.v12.karijuku-tomoe::before { background-position-x: calc(-3 * var(--card-width)); background-position-y: calc(-2 * var(--card-height)); }
+div.saki-card.v12.kataoka-yuuki, div.saki-card.v12.kataoka-yuuki::before, label.mod.v12.kataoka-yuuki::before { background-position-x: calc(-4 * var(--card-width)); background-position-y: calc(-2 * var(--card-height)); }
+div.saki-card.v12.kosegawa-shiromi, div.saki-card.v12.kosegawa-shiromi::before, label.mod.v12.kosegawa-shiromi::before { background-position-x: calc(-5 * var(--card-width)); background-position-y: calc(-2 * var(--card-height)); }
+div.saki-card.v12.kunihiro-hajime, div.saki-card.v12.kunihiro-hajime::before, label.mod.v12.kunihiro-hajime::before { background-position-x: calc(-6 * var(--card-width)); background-position-y: calc(-2 * var(--card-height)); }
+div.saki-card.v12.mase-yuuko, div.saki-card.v12.mase-yuuko::before, label.mod.v12.mase-yuuko::before { background-position-x: calc(-7 * var(--card-width)); background-position-y: calc(-2 * var(--card-height)); }
+div.saki-card.v12.matano-seiko, div.saki-card.v12.matano-seiko::before, label.mod.v12.matano-seiko::before { background-position-x: calc(-8 * var(--card-width)); background-position-y: calc(-2 * var(--card-height)); }
+div.saki-card.v12.matsumi-kuro, div.saki-card.v12.matsumi-kuro::before, label.mod.v12.matsumi-kuro::before { background-position-x: calc(-0 * var(--card-width)); background-position-y: calc(-3 * var(--card-height)); }
+div.saki-card.v12.matsumi-yuu, div.saki-card.v12.matsumi-yuu::before, label.mod.v12.matsumi-yuu::before { background-position-x: calc(-1 * var(--card-width)); background-position-y: calc(-3 * var(--card-height)); }
+div.saki-card.v12.maya-yukiko, div.saki-card.v12.maya-yukiko::before, label.mod.v12.maya-yukiko::before { background-position-x: calc(-2 * var(--card-width)); background-position-y: calc(-3 * var(--card-height)); }
+div.saki-card.v12.megan-davin, div.saki-card.v12.megan-davin::before, label.mod.v12.megan-davin::before { background-position-x: calc(-3 * var(--card-width)); background-position-y: calc(-3 * var(--card-height)); }
+div.saki-card.v12.miyanaga-saki, div.saki-card.v12.miyanaga-saki::before, label.mod.v12.miyanaga-saki::before { background-position-x: calc(-4 * var(--card-width)); background-position-y: calc(-3 * var(--card-height)); }
+div.saki-card.v12.miyanaga-teru, div.saki-card.v12.miyanaga-teru::before, label.mod.v12.miyanaga-teru::before { background-position-x: calc(-5 * var(--card-width)); background-position-y: calc(-3 * var(--card-height)); }
+div.saki-card.v12.nanpo-kazue, div.saki-card.v12.nanpo-kazue::before, label.mod.v12.nanpo-kazue::before { background-position-x: calc(-6 * var(--card-width)); background-position-y: calc(-3 * var(--card-height)); }
+div.saki-card.v12.nelly-virsaladze, div.saki-card.v12.nelly-virsaladze::before, label.mod.v12.nelly-virsaladze::before { background-position-x: calc(-7 * var(--card-width)); background-position-y: calc(-3 * var(--card-height)); }
+div.saki-card.v12.onjouji-toki, div.saki-card.v12.onjouji-toki::before, label.mod.v12.onjouji-toki::before { background-position-x: calc(-8 * var(--card-width)); background-position-y: calc(-3 * var(--card-height)); }
+div.saki-card.v12.oohoshi-awai, div.saki-card.v12.oohoshi-awai::before, label.mod.v12.oohoshi-awai::before { background-position-x: calc(-0 * var(--card-width)); background-position-y: calc(-4 * var(--card-height)); }
+div.saki-card.v12.ryuumonbuchi-touka, div.saki-card.v12.ryuumonbuchi-touka::before, label.mod.v12.ryuumonbuchi-touka::before { background-position-x: calc(-1 * var(--card-width)); background-position-y: calc(-4 * var(--card-height)); }
+div.saki-card.v12.sagimori-arata, div.saki-card.v12.sagimori-arata::before, label.mod.v12.sagimori-arata::before { background-position-x: calc(-2 * var(--card-width)); background-position-y: calc(-4 * var(--card-height)); }
+div.saki-card.v12.sawamura-tomoki, div.saki-card.v12.sawamura-tomoki::before, label.mod.v12.sawamura-tomoki::before { background-position-x: calc(-3 * var(--card-width)); background-position-y: calc(-4 * var(--card-height)); }
+div.saki-card.v12.senoo-kaori, div.saki-card.v12.senoo-kaori::before, label.mod.v12.senoo-kaori::before { background-position-x: calc(-4 * var(--card-width)); background-position-y: calc(-4 * var(--card-height)); }
+div.saki-card.v12.shibuya-takami, div.saki-card.v12.shibuya-takami::before, label.mod.v12.shibuya-takami::before { background-position-x: calc(-5 * var(--card-width)); background-position-y: calc(-4 * var(--card-height)); }
+div.saki-card.v12.shimizudani-ryuuka, div.saki-card.v12.shimizudani-ryuuka::before, label.mod.v12.shimizudani-ryuuka::before { background-position-x: calc(-6 * var(--card-width)); background-position-y: calc(-4 * var(--card-height)); }
+div.saki-card.v12.shirouzu-mairu, div.saki-card.v12.shirouzu-mairu::before, label.mod.v12.shirouzu-mairu::before { background-position-x: calc(-7 * var(--card-width)); background-position-y: calc(-4 * var(--card-height)); }
+div.saki-card.v12.someya-mako, div.saki-card.v12.someya-mako::before, label.mod.v12.someya-mako::before { background-position-x: calc(-8 * var(--card-width)); background-position-y: calc(-4 * var(--card-height)); }
+div.saki-card.v12.takakamo-shizuno, div.saki-card.v12.takakamo-shizuno::before, label.mod.v12.takakamo-shizuno::before { background-position-x: calc(-0 * var(--card-width)); background-position-y: calc(-5 * var(--card-height)); }
+div.saki-card.v12.takei-hisa, div.saki-card.v12.takei-hisa::before, label.mod.v12.takei-hisa::before { background-position-x: calc(-1 * var(--card-width)); background-position-y: calc(-5 * var(--card-height)); }
+div.saki-card.v12.takimi-haru, div.saki-card.v12.takimi-haru::before, label.mod.v12.takimi-haru::before { background-position-x: calc(-2 * var(--card-width)); background-position-y: calc(-5 * var(--card-height)); }
+div.saki-card.v12.toyouko-momoko, div.saki-card.v12.toyouko-momoko::before, label.mod.v12.toyouko-momoko::before { background-position-x: calc(-3 * var(--card-width)); background-position-y: calc(-5 * var(--card-height)); }
+div.saki-card.v12.tsujigaito-satoha, div.saki-card.v12.tsujigaito-satoha::before, label.mod.v12.tsujigaito-satoha::before { background-position-x: calc(-4 * var(--card-width)); background-position-y: calc(-5 * var(--card-height)); }
+div.saki-card.v12.tsuruta-himeko, div.saki-card.v12.tsuruta-himeko::before, label.mod.v12.tsuruta-himeko::before { background-position-x: calc(-5 * var(--card-width)); background-position-y: calc(-5 * var(--card-height)); }
+div.saki-card.v12.usuzawa-sae, div.saki-card.v12.usuzawa-sae::before, label.mod.v12.usuzawa-sae::before { background-position-x: calc(-6 * var(--card-width)); background-position-y: calc(-5 * var(--card-height)); }
+div.saki-card.v12.usuzumi-hatsumi, div.saki-card.v12.usuzumi-hatsumi::before, label.mod.v12.usuzumi-hatsumi::before { background-position-x: calc(-7 * var(--card-width)); background-position-y: calc(-5 * var(--card-height)); }
+div.saki-card.v12.yumeno-maho, div.saki-card.v12.yumeno-maho::before, label.mod.v12.yumeno-maho::before { background-position-x: calc(-8 * var(--card-width)); background-position-y: calc(-5 * var(--card-height)); }
+div.saki-card.v13.aislinn-wishart, div.saki-card.v13.aislinn-wishart::before, label.mod.v13.aislinn-wishart::before { background-position-x: calc(-0 * var(--card-width)); background-position-y: calc(-0 * var(--card-height)); }
+div.saki-card.v13.amae-koromo, div.saki-card.v13.amae-koromo::before, label.mod.v13.amae-koromo::before { background-position-x: calc(-1 * var(--card-width)); background-position-y: calc(-0 * var(--card-height)); }
+div.saki-card.v13.anetai-toyone, div.saki-card.v13.anetai-toyone::before, label.mod.v13.anetai-toyone::before { background-position-x: calc(-2 * var(--card-width)); background-position-y: calc(-0 * var(--card-height)); }
+div.saki-card.v13.arakawa-kei, div.saki-card.v13.arakawa-kei::before, label.mod.v13.arakawa-kei::before { background-position-x: calc(-3 * var(--card-width)); background-position-y: calc(-0 * var(--card-height)); }
+div.saki-card.v13.atago-hiroe, div.saki-card.v13.atago-hiroe::before, label.mod.v13.atago-hiroe::before { background-position-x: calc(-4 * var(--card-width)); background-position-y: calc(-0 * var(--card-height)); }
+div.saki-card.v13.atago-kinue, div.saki-card.v13.atago-kinue::before, label.mod.v13.atago-kinue::before { background-position-x: calc(-5 * var(--card-width)); background-position-y: calc(-0 * var(--card-height)); }
+div.saki-card.v13.atarashi-ako, div.saki-card.v13.atarashi-ako::before, label.mod.v13.atarashi-ako::before { background-position-x: calc(-6 * var(--card-width)); background-position-y: calc(-0 * var(--card-height)); }
+div.saki-card.v13.choe-myeonghwa, div.saki-card.v13.choe-myeonghwa::before, label.mod.v13.choe-myeonghwa::before { background-position-x: calc(-7 * var(--card-width)); background-position-y: calc(-0 * var(--card-height)); }
+div.saki-card.v13.ezaki-hitomi, div.saki-card.v13.ezaki-hitomi::before, label.mod.v13.ezaki-hitomi::before { background-position-x: calc(-8 * var(--card-width)); background-position-y: calc(-0 * var(--card-height)); }
+div.saki-card.v13.fukuji-mihoko, div.saki-card.v13.fukuji-mihoko::before, label.mod.v13.fukuji-mihoko::before { background-position-x: calc(-0 * var(--card-width)); background-position-y: calc(-1 * var(--card-height)); }
+div.saki-card.v13.funakubo-hiroko, div.saki-card.v13.funakubo-hiroko::before, label.mod.v13.funakubo-hiroko::before { background-position-x: calc(-1 * var(--card-width)); background-position-y: calc(-1 * var(--card-height)); }
+div.saki-card.v13.hanada-kirame, div.saki-card.v13.hanada-kirame::before, label.mod.v13.hanada-kirame::before { background-position-x: calc(-2 * var(--card-width)); background-position-y: calc(-1 * var(--card-height)); }
+div.saki-card.v13.hao-huiyu, div.saki-card.v13.hao-huiyu::before, label.mod.v13.hao-huiyu::before { background-position-x: calc(-3 * var(--card-width)); background-position-y: calc(-1 * var(--card-height)); }
+div.saki-card.v13.haramura-nodoka, div.saki-card.v13.haramura-nodoka::before, label.mod.v13.haramura-nodoka::before { background-position-x: calc(-4 * var(--card-width)); background-position-y: calc(-1 * var(--card-height)); }
+div.saki-card.v13.hirose-sumire, div.saki-card.v13.hirose-sumire::before, label.mod.v13.hirose-sumire::before { background-position-x: calc(-5 * var(--card-width)); background-position-y: calc(-1 * var(--card-height)); }
+div.saki-card.v13.ikeda-kana, div.saki-card.v13.ikeda-kana::before, label.mod.v13.ikeda-kana::before { background-position-x: calc(-6 * var(--card-width)); background-position-y: calc(-1 * var(--card-height)); }
+div.saki-card.v13.inoue-jun, div.saki-card.v13.inoue-jun::before, label.mod.v13.inoue-jun::before { background-position-x: calc(-7 * var(--card-width)); background-position-y: calc(-1 * var(--card-height)); }
+div.saki-card.v13.iwadate-yuan, div.saki-card.v13.iwadate-yuan::before, label.mod.v13.iwadate-yuan::before { background-position-x: calc(-8 * var(--card-width)); background-position-y: calc(-1 * var(--card-height)); }
+div.saki-card.v13.iwato-kasumi, div.saki-card.v13.iwato-kasumi::before, label.mod.v13.iwato-kasumi::before { background-position-x: calc(-0 * var(--card-width)); background-position-y: calc(-2 * var(--card-height)); }
+div.saki-card.v13.jindai-komaki, div.saki-card.v13.jindai-komaki::before, label.mod.v13.jindai-komaki::before { background-position-x: calc(-1 * var(--card-width)); background-position-y: calc(-2 * var(--card-height)); }
+div.saki-card.v13.kajiki-yumi, div.saki-card.v13.kajiki-yumi::before, label.mod.v13.kajiki-yumi::before { background-position-x: calc(-2 * var(--card-width)); background-position-y: calc(-2 * var(--card-height)); }
+div.saki-card.v13.kainou-yoshiko, div.saki-card.v13.kainou-yoshiko::before, label.mod.v13.kainou-yoshiko::before { background-position-x: calc(-3 * var(--card-width)); background-position-y: calc(-2 * var(--card-height)); }
+div.saki-card.v13.kakura-kurumi, div.saki-card.v13.kakura-kurumi::before, label.mod.v13.kakura-kurumi::before { background-position-x: calc(-4 * var(--card-width)); background-position-y: calc(-2 * var(--card-height)); }
+div.saki-card.v13.kanbara-satomi, div.saki-card.v13.kanbara-satomi::before, label.mod.v13.kanbara-satomi::before { background-position-x: calc(-5 * var(--card-width)); background-position-y: calc(-2 * var(--card-height)); }
+div.saki-card.v13.karijuku-tomoe, div.saki-card.v13.karijuku-tomoe::before, label.mod.v13.karijuku-tomoe::before { background-position-x: calc(-6 * var(--card-width)); background-position-y: calc(-2 * var(--card-height)); }
+div.saki-card.v13.kataoka-yuuki, div.saki-card.v13.kataoka-yuuki::before, label.mod.v13.kataoka-yuuki::before { background-position-x: calc(-7 * var(--card-width)); background-position-y: calc(-2 * var(--card-height)); }
+div.saki-card.v13.kosegawa-shiromi, div.saki-card.v13.kosegawa-shiromi::before, label.mod.v13.kosegawa-shiromi::before { background-position-x: calc(-8 * var(--card-width)); background-position-y: calc(-2 * var(--card-height)); }
+div.saki-card.v13.kunihiro-hajime, div.saki-card.v13.kunihiro-hajime::before, label.mod.v13.kunihiro-hajime::before { background-position-x: calc(-0 * var(--card-width)); background-position-y: calc(-3 * var(--card-height)); }
+div.saki-card.v13.mase-yuuko, div.saki-card.v13.mase-yuuko::before, label.mod.v13.mase-yuuko::before { background-position-x: calc(-1 * var(--card-width)); background-position-y: calc(-3 * var(--card-height)); }
+div.saki-card.v13.matano-seiko, div.saki-card.v13.matano-seiko::before, label.mod.v13.matano-seiko::before { background-position-x: calc(-2 * var(--card-width)); background-position-y: calc(-3 * var(--card-height)); }
+div.saki-card.v13.matsumi-kuro, div.saki-card.v13.matsumi-kuro::before, label.mod.v13.matsumi-kuro::before { background-position-x: calc(-3 * var(--card-width)); background-position-y: calc(-3 * var(--card-height)); }
+div.saki-card.v13.matsumi-yuu, div.saki-card.v13.matsumi-yuu::before, label.mod.v13.matsumi-yuu::before { background-position-x: calc(-4 * var(--card-width)); background-position-y: calc(-3 * var(--card-height)); }
+div.saki-card.v13.maya-yukiko, div.saki-card.v13.maya-yukiko::before, label.mod.v13.maya-yukiko::before { background-position-x: calc(-5 * var(--card-width)); background-position-y: calc(-3 * var(--card-height)); }
+div.saki-card.v13.megan-davin, div.saki-card.v13.megan-davin::before, label.mod.v13.megan-davin::before { background-position-x: calc(-6 * var(--card-width)); background-position-y: calc(-3 * var(--card-height)); }
+div.saki-card.v13.miyanaga-saki, div.saki-card.v13.miyanaga-saki::before, label.mod.v13.miyanaga-saki::before { background-position-x: calc(-7 * var(--card-width)); background-position-y: calc(-3 * var(--card-height)); }
+div.saki-card.v13.miyanaga-teru, div.saki-card.v13.miyanaga-teru::before, label.mod.v13.miyanaga-teru::before { background-position-x: calc(-8 * var(--card-width)); background-position-y: calc(-3 * var(--card-height)); }
+div.saki-card.v13.motouchi-naruka, div.saki-card.v13.motouchi-naruka::before, label.mod.v13.motouchi-naruka::before { background-position-x: calc(-0 * var(--card-width)); background-position-y: calc(-4 * var(--card-height)); }
+div.saki-card.v13.nanpo-kazue, div.saki-card.v13.nanpo-kazue::before, label.mod.v13.nanpo-kazue::before { background-position-x: calc(-1 * var(--card-width)); background-position-y: calc(-4 * var(--card-height)); }
+div.saki-card.v13.nelly-virsaladze, div.saki-card.v13.nelly-virsaladze::before, label.mod.v13.nelly-virsaladze::before { background-position-x: calc(-2 * var(--card-width)); background-position-y: calc(-4 * var(--card-height)); }
+div.saki-card.v13.onjouji-toki, div.saki-card.v13.onjouji-toki::before, label.mod.v13.onjouji-toki::before { background-position-x: calc(-3 * var(--card-width)); background-position-y: calc(-4 * var(--card-height)); }
+div.saki-card.v13.oohoshi-awai, div.saki-card.v13.oohoshi-awai::before, label.mod.v13.oohoshi-awai::before { background-position-x: calc(-4 * var(--card-width)); background-position-y: calc(-4 * var(--card-height)); }
+div.saki-card.v13.ryuumonbuchi-touka, div.saki-card.v13.ryuumonbuchi-touka::before, label.mod.v13.ryuumonbuchi-touka::before { background-position-x: calc(-5 * var(--card-width)); background-position-y: calc(-4 * var(--card-height)); }
+div.saki-card.v13.sagimori-arata, div.saki-card.v13.sagimori-arata::before, label.mod.v13.sagimori-arata::before { background-position-x: calc(-6 * var(--card-width)); background-position-y: calc(-4 * var(--card-height)); }
+div.saki-card.v13.sawamura-tomoki, div.saki-card.v13.sawamura-tomoki::before, label.mod.v13.sawamura-tomoki::before { background-position-x: calc(-7 * var(--card-width)); background-position-y: calc(-4 * var(--card-height)); }
+div.saki-card.v13.senoo-kaori, div.saki-card.v13.senoo-kaori::before, label.mod.v13.senoo-kaori::before { background-position-x: calc(-8 * var(--card-width)); background-position-y: calc(-4 * var(--card-height)); }
+div.saki-card.v13.shibuya-takami, div.saki-card.v13.shibuya-takami::before, label.mod.v13.shibuya-takami::before { background-position-x: calc(-0 * var(--card-width)); background-position-y: calc(-5 * var(--card-height)); }
+div.saki-card.v13.shimizudani-ryuuka, div.saki-card.v13.shimizudani-ryuuka::before, label.mod.v13.shimizudani-ryuuka::before { background-position-x: calc(-1 * var(--card-width)); background-position-y: calc(-5 * var(--card-height)); }
+div.saki-card.v13.shirouzu-mairu, div.saki-card.v13.shirouzu-mairu::before, label.mod.v13.shirouzu-mairu::before { background-position-x: calc(-2 * var(--card-width)); background-position-y: calc(-5 * var(--card-height)); }
+div.saki-card.v13.shishihara-sawaya, div.saki-card.v13.shishihara-sawaya::before, label.mod.v13.shishihara-sawaya::before { background-position-x: calc(-3 * var(--card-width)); background-position-y: calc(-5 * var(--card-height)); }
+div.saki-card.v13.someya-mako, div.saki-card.v13.someya-mako::before, label.mod.v13.someya-mako::before { background-position-x: calc(-4 * var(--card-width)); background-position-y: calc(-5 * var(--card-height)); }
+div.saki-card.v13.suehara-kyouko, div.saki-card.v13.suehara-kyouko::before, label.mod.v13.suehara-kyouko::before { background-position-x: calc(-5 * var(--card-width)); background-position-y: calc(-5 * var(--card-height)); }
+div.saki-card.v13.takakamo-shizuno, div.saki-card.v13.takakamo-shizuno::before, label.mod.v13.takakamo-shizuno::before { background-position-x: calc(-6 * var(--card-width)); background-position-y: calc(-5 * var(--card-height)); }
+div.saki-card.v13.takei-hisa, div.saki-card.v13.takei-hisa::before, label.mod.v13.takei-hisa::before { background-position-x: calc(-7 * var(--card-width)); background-position-y: calc(-5 * var(--card-height)); }
+div.saki-card.v13.takimi-haru, div.saki-card.v13.takimi-haru::before, label.mod.v13.takimi-haru::before { background-position-x: calc(-8 * var(--card-width)); background-position-y: calc(-5 * var(--card-height)); }
+div.saki-card.v13.toyouko-momoko, div.saki-card.v13.toyouko-momoko::before, label.mod.v13.toyouko-momoko::before { background-position-x: calc(-0 * var(--card-width)); background-position-y: calc(-6 * var(--card-height)); }
+div.saki-card.v13.tsujigaito-satoha, div.saki-card.v13.tsujigaito-satoha::before, label.mod.v13.tsujigaito-satoha::before { background-position-x: calc(-1 * var(--card-width)); background-position-y: calc(-6 * var(--card-height)); }
+div.saki-card.v13.tsuruta-himeko, div.saki-card.v13.tsuruta-himeko::before, label.mod.v13.tsuruta-himeko::before { background-position-x: calc(-2 * var(--card-width)); background-position-y: calc(-6 * var(--card-height)); }
+div.saki-card.v13.ueshige-suzu, div.saki-card.v13.ueshige-suzu::before, label.mod.v13.ueshige-suzu::before { background-position-x: calc(-3 * var(--card-width)); background-position-y: calc(-6 * var(--card-height)); }
+div.saki-card.v13.usuzawa-sae, div.saki-card.v13.usuzawa-sae::before, label.mod.v13.usuzawa-sae::before { background-position-x: calc(-4 * var(--card-width)); background-position-y: calc(-6 * var(--card-height)); }
+div.saki-card.v13.usuzumi-hatsumi, div.saki-card.v13.usuzumi-hatsumi::before, label.mod.v13.usuzumi-hatsumi::before { background-position-x: calc(-5 * var(--card-width)); background-position-y: calc(-6 * var(--card-height)); }
+div.saki-card.v13.yae-kobashiri, div.saki-card.v13.yae-kobashiri::before, label.mod.v13.yae-kobashiri::before { background-position-x: calc(-6 * var(--card-width)); background-position-y: calc(-6 * var(--card-height)); }
+div.saki-card.v13.yoshitome-miharu, div.saki-card.v13.yoshitome-miharu::before, label.mod.v13.yoshitome-miharu::before { background-position-x: calc(-7 * var(--card-width)); background-position-y: calc(-6 * var(--card-height)); }
+div.saki-card.v13.yumeno-maho, div.saki-card.v13.yumeno-maho::before, label.mod.v13.yumeno-maho::before { background-position-x: calc(-8 * var(--card-width)); background-position-y: calc(-6 * var(--card-height)); }
+label.mod.v13::before { background-position-x: calc(-8 * var(--card-width)); background-position-y: calc(-6 * var(--card-height)); }
+div.shimocha div.saki-card::before, div.shimocha div.saki-card::after {
+  transform: rotate(90deg)
+             translateY(calc(3 * var(--tile-size)));
+}
+div.toimen div.saki-card::before, div.toimen div.saki-card::after {
+  transform: rotate(180deg)
+             translateY(calc(5 * var(--tile-size)));
+}
+div.kamicha div.saki-card::before, div.kamicha div.saki-card::after {
+  transform: rotate(270deg)
+             translateY(calc(0.5 * var(--tile-size)));
+}
+div.saki-card.disabled, div.saki-card.disabled::before { filter: saturate(0%); }
 /* double card view for mairu/himeko */
-div.saki-card.shirouzu-mairu:hover::after,
-div.saki-card.tsuruta-himeko:hover::after {
+div.saki-card.shirouzu-mairu::after,
+div.saki-card.tsuruta-himeko::after {
   left: calc(-350% + 0.5 * var(--card-width));
   z-index: 10;
 }
-div.saki-card.v12.shirouzu-mairu:hover::after, label.mod.v12.shirouzu-mairu:hover::after { content: ""; background-position-x: calc(-5 * var(--card-width)); background-position-y: calc(-5 * var(--card-height)); }
+div.saki-card.v12.shirouzu-mairu:hover::after, label.mod.v12.shirouzu-mairu::after { content: ""; background-position-x: calc(-5 * var(--card-width)); background-position-y: calc(-5 * var(--card-height)); }
 div.saki-card.v12.tsuruta-himeko:hover::after { content: ""; background-position-x: calc(-7 * var(--card-width)); background-position-y: calc(-4 * var(--card-height)); }
-div.saki-card.v13.shirouzu-mairu:hover::after, label.mod.v13.shirouzu-mairu:hover::after { content: ""; background-position-x: calc(-2 * var(--card-width)); background-position-y: calc(-6 * var(--card-height)); }
+div.saki-card.v13.shirouzu-mairu:hover::after, label.mod.v13.shirouzu-mairu::after { content: ""; background-position-x: calc(-2 * var(--card-width)); background-position-y: calc(-6 * var(--card-height)); }
 div.saki-card.v13.tsuruta-himeko:hover::after { content: ""; background-position-x: calc(-2 * var(--card-width)); background-position-y: calc(-5 * var(--card-height)); }
-div.saki-card.shirouzu-mairu:hover::before,
-div.saki-card.tsuruta-himeko:hover::before {
+div.saki-card.shirouzu-mairu::before,
+div.saki-card.tsuruta-himeko::before {
   transform: translateX(calc(-0.5 * var(--card-width)));
 }
-div.shimocha div.saki-card.shirouzu-mairu:hover::before,
-div.shimocha div.saki-card.tsuruta-himeko:hover::before {
-  transform: translateY(calc(-0.5 * var(--card-width))) rotate(90deg) translateX(calc(-0.75 * var(--tile-size))) translateY(calc(3 * var(--tile-size)));
+div.shimocha div.saki-card.shirouzu-mairu::before,
+div.shimocha div.saki-card.tsuruta-himeko::before {
+  transform: rotate(90deg)
+             translateX(calc(-0.5 * var(--card-width)))
+             translateY(calc(3 * var(--tile-size)));
 }
-div.toimen div.saki-card.shirouzu-mairu:hover::before,
-div.toimen div.saki-card.tsuruta-himeko:hover::before {
-  transform: translateX(calc(0.5 * var(--card-width))) rotate(180deg) translateY(calc(5 * var(--tile-size)));
+div.toimen div.saki-card.shirouzu-mairu::before,
+div.toimen div.saki-card.tsuruta-himeko::before {
+  transform: rotate(180deg)
+             translateX(calc(-0.5 * var(--card-width)))
+             translateY(calc(5 * var(--tile-size)));
 }
-div.kamicha div.saki-card.shirouzu-mairu:hover::before,
-div.kamicha div.saki-card.tsuruta-himeko:hover::before {
-  transform: translateY(calc(0.5 * var(--card-width))) rotate(270deg) translateX(calc(0.75 * var(--tile-size))) translateY(calc(0.5 * var(--tile-size)));
+div.kamicha div.saki-card.shirouzu-mairu::before,
+div.kamicha div.saki-card.tsuruta-himeko::before {
+  transform: rotate(270deg)
+             translateX(calc(-0.5 * var(--card-width)));
 }
-div.shimocha div.saki-card:hover::after {
-  transform: translateY(calc(0.5 * var(--card-width))) rotate(90deg) translateY(calc(0.5 * var(--card-width))) translateX(calc(-0.75 * var(--tile-size))) translateY(calc(3 * var(--tile-size)));
+div.shimocha div.saki-card.shirouzu-mairu::after,
+div.shimocha div.saki-card.tsuruta-himeko::after {
+  transform: rotate(90deg)
+             translateX(calc(0.5 * var(--card-width)))
+             translateY(calc(0.5 * var(--card-height)))
+             translateY(calc(1.5 * var(--tile-size)));
 }
-div.toimen div.saki-card:hover::after {
-  transform: rotate(180deg) translateX(var(--card-width)) translateY(calc(5 * var(--tile-size)));
+div.toimen div.saki-card.shirouzu-mairu::after,
+div.toimen div.saki-card.tsuruta-himeko::after {
+  transform: rotate(180deg)
+             translateX(calc(1 * var(--card-width)))
+             translateY(calc(0.5 * var(--card-height)));
 }
-div.kamicha div.saki-card:hover::after {
-  transform: translateY(calc(-0.5 * var(--card-width))) rotate(270deg) translateY(calc(-0.5 * var(--card-width))) translateX(calc(0.75 * var(--tile-size))) translateY(calc(0.5 * var(--tile-size)));
+div.kamicha div.saki-card.shirouzu-mairu::after,
+div.kamicha div.saki-card.tsuruta-himeko::after {
+  transform: rotate(270deg)
+             translateX(calc(0.5 * var(--card-width)))
+             translateY(calc(-0.5 * var(--card-height)))
+             translateY(calc(1.5 * var(--tile-size)));
 }
 
 
@@ -2776,6 +3028,7 @@ div.title > div {
 }
 div.title > div.title-riichi {
   font-size: calc(3 * var(--tile-size));
+  color: black;
   transform: rotate(2deg);  
   top: 0;
   width: calc(10 * var(--tile-size));
@@ -2783,21 +3036,22 @@ div.title > div.title-riichi {
 }
 div.title > div.title-advanced {
   font-size: calc(2 * var(--tile-size));
+  color: black;
   transform: rotate(-10deg);  
   left: calc(4.5 * var(--tile-size));
   top: calc(3 * var(--tile-size));
 }
 div.title > div.tile {
-  --tile-size: min(calc(90vw / 6), calc(80vh / 6));
-  top: calc(0.2 * var(--tile-size));
+  --tile-scale-factor: 3;
+  top: calc(0.6 * var(--tile-size));
 }
 div.title > div.tile.\38 m {
   transform: rotate(10deg);
-  left: calc(0.2 * var(--tile-size));
+  left: calc(0.6 * var(--tile-size));
 }
 div.title > div.tile.\37 z {
   transform: rotate(-10deg);
-  right: calc(0.2 * var(--tile-size));
+  right: calc(0.6 * var(--tile-size));
 }
 div.title > div.title-riichi::before,
 div.title > div.title-advanced::before {
@@ -2836,10 +3090,10 @@ div#container > div.index-bottom-buttons {
 div#container > div.index-bottom-buttons > button {
   font-size: calc(0.5 * var(--tile-size));
 }
-div#container > form {
+div#container > form.ruleset-selection-form {
   position: absolute;
   width: calc(100% - 3 * var(--tile-size));
-  height: calc(7.5 * var(--tile-size));
+  height: calc(7 * var(--tile-size));
   top: calc(50% - 1.5 * var(--tile-size));
   left: calc(1 * var(--tile-size));
   padding: calc(0.5 * var(--tile-size));
@@ -2852,18 +3106,20 @@ div#container > form {
   flex-direction: column;
   align-items: space-around;
 }
-div#container > form input, div#container > form button {
+div#container > form.ruleset-selection-form input, div#container > form.ruleset-selection-form button {
   font-size: calc(0.75 * var(--tile-size));
 }
-div#container > form > div.form-error {
+div#container > form.ruleset-selection-form > div.form-error {
   font-size: calc(0.5 * var(--tile-size));
   color: white;
 }
-div#container > form > input.nickname-input {
+div#container > form.ruleset-selection-form > input.nickname-input {
   margin: calc(0.5 * var(--tile-size));
+  font-size: calc(0.75 * var(--tile-size));
+  height: 1em;
   margin-bottom: 0;
 }
-div#container > form > div.ruleset-selection {
+div#container > form.ruleset-selection-form > div.ruleset-selection {
   overflow-y: auto;
   line-height: 1;
   text-align: center;
@@ -2871,20 +3127,20 @@ div#container > form > div.ruleset-selection {
   color: white;
   font-size: calc(0.55 * var(--tile-size));
 }
-div#container > form > div.ruleset-selection > label {
+div#container > form.ruleset-selection-form > div.ruleset-selection > label {
   font-size: calc(0.55 * var(--tile-size));
   padding: calc(0.15 * var(--tile-size));
 }
-div#container > form > div.ruleset-selection > label > a {
+div#container > form.ruleset-selection-form > div.ruleset-selection > label > a {
   text-decoration: none;
   color: white;
   font-size: calc(0.55 * var(--tile-size));
 }
-div#container > form > div.ruleset-selection > input[disabled] + label {
+div#container > form.ruleset-selection-form > div.ruleset-selection > input[disabled] + label {
   opacity: 0.4;
 }
 /* about page */
-div#container > form > ul.beta-testers {
+div#container > form.ruleset-selection-form > ul.beta-testers {
   display: flex;
   flex-flow: row wrap;
   justify-content: space-around;
@@ -2894,18 +3150,18 @@ div#container > form > ul.beta-testers {
   margin: 0.5em;
   user-select: text;
 }
-div#container > form > ul.beta-testers > li { padding: 0.1em 0.25em; }
-div#container > form > ul.beta-testers > li:nth-child(2n) { transform: translateY(-0.25em); }
-
+div#container > form.ruleset-selection-form > ul.beta-testers > li { padding: 0.1em 0.25em; }
+div#container > form.ruleset-selection-form > ul.beta-testers > li:nth-child(2n) { transform: translateY(-0.25em); }
 /* enter buttons for index and lobby */
-div.enter-buttons {
+div#container div.enter-buttons {
   width: 100%;
   display: flex;
   flex-flow: row nowrap;
   justify-content: stretch;
   margin-top: calc(0.5 * var(--tile-size));
 }
-div.enter-buttons > button {
+div#container div.enter-buttons > button {
+  font-size: calc(0.6 * var(--tile-size));
   flex-grow: 1;
 }
 
@@ -3056,7 +3312,6 @@ div.room > div.sidebar {
   font-size: calc(1 * var(--tile-size));
   position: absolute;
   right: 0;
-  width: 50%;
 }
 div.room > div.sidebar > a {
   white-space: nowrap;
@@ -3095,7 +3350,7 @@ div.room > div.seats {
   position: relative;
   padding: calc(0.5 * var(--tile-size));
   width: calc(100% - 1 * var(--tile-size));
-  top: calc(5.5 * var(--tile-size));
+  top: calc(3.5 * var(--tile-size));
   left: 0;
   display: flex;
   flex-direction: column;
@@ -3146,7 +3401,7 @@ div.room > div.seats > div.player-slot > button {
   height: calc(1.2 * var(--tile-size));
 }
 div.room div.presets,
-div.room div.mods,
+div.mods,
 div.room div.config,
 div.room div.custom-json {
   top: calc(3 * var(--tile-size));
@@ -3161,7 +3416,7 @@ div.room div.presets {
   margin-top: calc(0.5 * var(--tile-size));
   font-size: calc(0.75 * var(--tile-size));
 }
-div.room div.mods > div.mods-inner-container {
+div.mods > div.mods-inner-container {
   display: flex;
   flex-flow: row wrap;
   row-gap: calc(0.0625 * var(--tile-size));
@@ -3169,25 +3424,25 @@ div.room div.mods > div.mods-inner-container {
   justify-content: flex-start;
   align-items: flex-start;
 }
-div.room div.mods {
+div.mods {
   padding-top: calc(0.25 * var(--tile-size));
   padding-bottom: calc(0.25 * var(--tile-size));
 }
-div.room div.mods.mods-saki > div.mods-inner-container {
+div.mods.mods-saki > div.mods-inner-container {
   /* saki needs room for hoverable cards */
   width: 100%;
   padding-right: 100%;
 }
-div.room div.mods > div.mods-inner-container > div.mod-category,
-div.room div.mods > div.mods-inner-container > div.mod-category-spacer {
+div.mods > div.mods-inner-container > div.mod-category,
+div.mods > div.mods-inner-container > div.mod-category-spacer {
   width: 100%;
   min-height: 0.5em;
   margin-left: -0.5em;
 }
-div.room div.mods > div.mods-inner-container button.mod-menu-button {
+div.mods > div.mods-inner-container button.mod-menu-button {
   font-size: 75%;
 }
-div.room div.mods > div.mods-inner-container div.reset-to-default-button {
+div.mods > div.mods-inner-container div.mods-bottom-buttons {
   width: 100%;
   text-align: center;
 }
@@ -3229,16 +3484,16 @@ label.mod {
   flex-direction: row;
   align-items: center;
 }
-div.room div.mods > div.mods-inner-container span.mod-config-name {
+div.mods > div.mods-inner-container span.mod-config-name {
   font-size: 67%;
   margin: 0 calc(0.0625 * var(--tile-size));
 }
 /* dropdown */
-div.room div.mods > div.mods-inner-container form.mod-config-dropdown {
+div.mods > div.mods-inner-container form.mod-config-dropdown {
   margin: 0;
   display: flex;
 }
-div.room div.mods > div.mods-inner-container form.mod-config-dropdown > select {
+div.mods > div.mods-inner-container form.mod-config-dropdown > select {
   -webkit-appearance: none;
   font-size: 67%;
   background-color: var(--tile-front);
@@ -3250,13 +3505,13 @@ div.room div.mods > div.mods-inner-container form.mod-config-dropdown > select {
   text-align: center;
 }
 /* slider -- do not use, since safari does not display datalist values */
-div.room div.mods > div.mods-inner-container form.mod-config-slider {
+div.mods > div.mods-inner-container form.mod-config-slider {
   display: flex;
   flex-flow: column;
   height: 100%;
   --thumb-size: calc(0.4 * var(--tile-size));
 }
-div.room div.mods > div.mods-inner-container form.mod-config-slider > input {
+div.mods > div.mods-inner-container form.mod-config-slider > input {
   -webkit-appearance: none;
   width: calc(3 * var(--tile-size));
   height: 0.5em;
@@ -3266,8 +3521,8 @@ div.room div.mods > div.mods-inner-container form.mod-config-slider > input {
   background: var(--tile-front);
   z-index: 1;
 }
-div.room div.mods > div.mods-inner-container form.mod-config-slider > input::-webkit-slider-thumb,
-div.room div.mods > div.mods-inner-container form.mod-config-slider > input::-moz-range-thumb {
+div.mods > div.mods-inner-container form.mod-config-slider > input::-webkit-slider-thumb,
+div.mods > div.mods-inner-container form.mod-config-slider > input::-moz-range-thumb {
   width: var(--thumb-size);
   height: var(--thumb-size);
   border-radius: 50%;
@@ -3275,8 +3530,8 @@ div.room div.mods > div.mods-inner-container form.mod-config-slider > input::-mo
   border-color: black;
   cursor: pointer;
 }
-div.room div.mods > div.mods-inner-container form.mod-config-slider > input::-webkit-slider-runnable-track,
-div.room div.mods > div.mods-inner-container form.mod-config-slider > input::-moz-range-track {
+div.mods > div.mods-inner-container form.mod-config-slider > input::-webkit-slider-runnable-track,
+div.mods > div.mods-inner-container form.mod-config-slider > input::-moz-range-track {
   -webkit-appearance: none;
   width: calc(100% - var(--thumb-size));
   height: calc(0.5 * var(--thumb-size));
@@ -3284,14 +3539,14 @@ div.room div.mods > div.mods-inner-container form.mod-config-slider > input::-mo
   background: var(--tile-front);
   z-index: 1;
 }
-div.room div.mods > div.mods-inner-container form.mod-config-slider > datalist {
+div.mods > div.mods-inner-container form.mod-config-slider > datalist {
   display: flex;
   flex-direction: row;
   writing-mode: horizontal-tb;
   font-size: 50%;
   height: 0.5em;
 }
-div.room div.mods > div.mods-inner-container form.mod-config-slider > datalist > option {
+div.mods > div.mods-inner-container form.mod-config-slider > datalist > option {
   margin: auto;
 }
 
@@ -3361,6 +3616,38 @@ div.menu-buttons {
   display: flex;
   flex-direction: row-reverse;
   column-gap: calc(0.25 * var(--tile-size));
+}
+div.menu-buttons > button.language-dropdown-container {
+  position: relative;
+}
+div.menu-buttons > button.language-dropdown-container form.language-dropdown > select {
+  appearance: none;
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  background: none;
+  border: none;
+  color: transparent;
+  width: 100%;
+  height: 150%; /* so you can click the drop shadow part */
+  cursor: pointer;
+}
+div.menu-buttons > button.language-dropdown-container form.language-dropdown {
+  position: absolute;
+  top: 0;
+  left: 0;
+  appearance: none;
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  background: none;
+  border: none;
+  color: transparent;
+  height: 150%; /* so you can click the drop shadow part */
+  cursor: pointer;
+}
+div.menu-buttons > button.language-dropdown-container form.language-dropdown + div {
+  pointer-events: none;
+  height: 100%;
+  aspect-ratio: 1/1;
 }
 /* landscape */
 @media (min-aspect-ratio: 6/5) {
@@ -3432,6 +3719,7 @@ div.log-control > button.log-control-button {
   height: calc(0.8 * var(--tile-size));
   background: transparent;
   padding: 0;
+  transform: translateY(0);
   filter: none;
 }
 
@@ -3478,8 +3766,8 @@ div.tutorial-focus {
 }
 div.tutorial-focus.mobile { display: none; }
 @media (max-aspect-ratio: 6/5) {
-  input.mobile-zoom-checkbox:checked ~ div.tutorial-overlay div.tutorial-focus.desktop { display: none; }
-  input.mobile-zoom-checkbox:checked ~ div.tutorial-overlay div.tutorial-focus.mobile { display: block; }
+  input.mobile-zoom-checkbox:not(:checked) ~ div.tutorial-overlay div.tutorial-focus.desktop { display: none; }
+  input.mobile-zoom-checkbox:not(:checked) ~ div.tutorial-overlay div.tutorial-focus.mobile { display: block; }
 }
 
 /* tutorial select menu */
@@ -3560,4 +3848,53 @@ form.tutorial-menu-container > header > label {
 }
 form.tutorial-menu-container > textarea {
   font-size: calc(0.25 * var(--tile-size));
+}
+
+
+
+/* majstest */
+
+div.majstest-container > label {
+  position: absolute;
+  top: 0;
+  right: 0;
+}
+div.majstest-container > form {
+  display: flex;
+  flex-direction: column;
+  row-gap: calc(0.25 * var(--tile-size));
+  padding: calc(0.25 * var(--tile-size)) 0;
+}
+div.majstest-container > form > select {
+  font-size: calc(0.6 * var(--tile-size));
+  background-color: var(--tile-front);
+  border: none;
+  border-radius: calc(0.25 * var(--tile-size));
+  flex-grow: 1;
+}
+div.majstest-container > form > textarea {
+  height: calc(5.25 * var(--tile-size));
+  font-size: calc(0.25 * var(--tile-size));
+  border-width: calc(0.05 * var(--tile-size));
+}
+div.majstest-container > form > button {
+  width: 100%;
+}
+div.majstest-container > div.mods-container {
+  display: none;
+  position: absolute;
+  width: 100%;
+  height: calc(100% - 0.75 * var(--tile-size));
+  border-radius: calc(0.25 * var(--tile-size));
+  padding: calc(0.5 * var(--tile-size));
+
+  top: calc(0.75 * var(--tile-size));
+  left: 0;
+  background: #609060;
+  box-sizing: border-box;
+  overflow-y: scroll;
+  z-index: 2;
+}
+div.majstest-container > input.show-mods-checkbox:checked ~ div.mods-container {
+  display: block;
 }

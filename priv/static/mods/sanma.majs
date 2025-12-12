@@ -1,0 +1,83 @@
+on after_initialization do
+  add_rule("Rules", "No Chii", "(Sanma) You cannot call chii in sanma.")
+  add_rule("Rules", "Wall", "(Sanma) The 2 to 8 of characters are removed from the wall.", -99)
+  add_rule("Rules", "Pei", "(Sanma) You may declare north winds to draw a replacement tile from the dead wall. Each is worth 1 han. North winds are still usable to form pairs and triplets. If you are waiting on the north wind, you may ron a north wind declaration much like chankan (but you are not awarded chankan).")
+end
+
+set num_players, 3
+set initial_score, 35000
+set max_rounds, 6
+apply subtract, "default_mods", ["suufon_renda", "suucha_riichi"]
+
+define_mod "sanma_no_tsumo_loss", name: "No Tsumo Loss", category: "Rules", desc: "When you tsumo, you get the same total points as if it was a ron payment. (Nondealer tsumo mangan splits north's payment, giving you 5000+3000 instead of 4000+2000.)"
+
+# remove manzu from wall
+apply subtract, "wall", [
+  "2m", "2m", "2m", "2m",
+  "3m", "3m", "3m", "3m",
+  "4m", "4m", "4m", "4m",
+  "5m", "5m", "5m", "5m",
+  "6m", "6m", "6m", "6m",
+  "7m", "7m", "7m", "7m",
+  "8m", "8m", "8m", "8m"
+]
+
+# now we can add stuff related to pei button and status
+apply prepend, "functions.discard_passed", [["as", "others", [["unset_status", "pei"]]]]
+
+# change tenpai payments and add tsumo loss
+apply merge, "score_calculation", %{
+  draw_tenpai_payments: [1000, 2000, 0],
+  tsumo_loss: true
+}
+
+# nukidora
+define_yaku extra_yaku, "Pei", "nukidora", counter_at_least("nukidora", 1)
+on before_win do
+  add_counter("nukidora", "count_matches", ["flowers"], ~m"flower:1")
+end
+
+# no chii
+apply delete_key, "buttons", "chii"
+
+# pei button
+define_button flower,
+  display_name: "Pei",
+  msg_name: "pei",
+  show_when: our_turn
+    and not_no_tiles_remaining
+    and has_draw
+    and not_status("just_reached")
+    and match(["hand", "draw"], ~m"4z:1")
+    and tile_not_drawn(-8)
+  do
+    big_text("Pei")
+    set_status("pei", "can_chankan")
+    flower("4z")
+    unset_status("can_chankan")
+    discard_passed
+    do_kan_draw
+  end
+
+# pei auto button
+define_auto_button _5_auto_pei,
+  display_name: "K",
+  desc: "Automatically declare pei."
+  do
+    if buttons_include("flower") do
+      press_button("flower")
+      press_first_call_button("flower")
+    end
+  end
+
+# don't let auto discard button skip pei
+apply append, "constants.no_auto_discard_calls", "flower"
+
+# we need these in case kan mod is not enabled
+def do_kan_draw do
+  shift_tile_to_dead_wall(1)
+  draw(1, "opposite_end")
+end
+
+# allow chankan on pei calls
+apply append, "interruptible_actions", ["flower"]

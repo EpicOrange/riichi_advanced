@@ -1,11 +1,15 @@
-.yakuman |= map(.value *= 13)
+if has("yakuman") then
+  .yakuman |= map(.value *= 13)
+  |
+  .yaku += .yakuman
+  |
+  .yakuman = []
+else . end
 |
-.yaku += .yakuman
-|
-.yakuman = []
-|
-.meta_yakuman |= map(.value *= 13)
-|
-.meta_yaku += .meta_yakuman
-|
-.meta_yakuman = []
+if has("meta_yakuman") then
+  .meta_yakuman |= map(.value *= 13)
+  |
+  .meta_yaku += .meta_yakuman
+  |
+  .meta_yakuman = []
+else . end

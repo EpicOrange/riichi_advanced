@@ -1,0 +1,98 @@
+on after_initialization do
+  add_rule("Rules", "Scoring", """
+  Your base score is calculated via the following:
+  - 20 base
+  - +2 if won off self-draw
+  - +10 if concealed hand
+  - +2 if single wait (edge, closed, or pair wait)
+  - +2 if pair is a dragon, round wind, or seat wind
+  - +2 per triplet, times 2 if concealed, times 2 if terminal/honor
+  - +8 per kong, times 2 if concealed, times 2 if terminal/honor
+  - +4 per flower
+  """)
+end
+
+on before_scoring do
+  # prevalent and seat winds
+  if round_wind_is("east") do add_attr(["hand", "calls", "winning_tile"], ["_prevalent"], ["1z"]) end
+  if round_wind_is("south") do add_attr(["hand", "calls", "winning_tile"], ["_prevalent"], ["2z"]) end
+  if round_wind_is("west") do add_attr(["hand", "calls", "winning_tile"], ["_prevalent"], ["3z"]) end
+  if round_wind_is("north") do add_attr(["hand", "calls", "winning_tile"], ["_prevalent"], ["4z"]) end
+  if seat_is("east") do add_attr(["hand", "calls", "winning_tile"], ["_seat"], ["1z"]) end
+  if seat_is("south") do add_attr(["hand", "calls", "winning_tile"], ["_seat"], ["2z"]) end
+  if seat_is("west") do add_attr(["hand", "calls", "winning_tile"], ["_seat"], ["3z"]) end
+  if seat_is("north") do add_attr(["hand", "calls", "winning_tile"], ["_seat"], ["4z"]) end
+  # terminals and honors
+  add_attr(["hand", "calls", "winning_tile"], ["_yaochuu"], ["yaochuuhai"])
+  add_attr(["hand", "calls", "winning_tile"], ["_terminal"], ["terminal"])
+  add_attr(["hand", "calls", "winning_tile"], ["_tanyao"], ["tanyaohai"])
+  # tag winning tile with some attributes
+  add_attr(["winning_tile"], ["_winning_tile"])
+  if won_by_draw do
+    add_attr(["winning_tile"], ["_tsumo"])
+  else
+    add_attr(["winning_tile"], ["_ron"])
+  end
+end
+
+define_const calls_fu, %{pon: 2, ankan: 16, daiminkan: 8, kakan: 8, flower: 2, start_flower: 2}
+define_const winning_groups_fu, [
+  # kanchan
+  %{groups: ~s"-1 0@winning_tile 1", value: 2},
+  # penchan
+  %{groups: ~s"0@winning_tile -1@tanyao -2@terminal", value: 2},
+  %{groups: ~s"0@winning_tile 1@tanyao 2@terminal", value: 2},
+  # ryanmen
+  %{groups: ~s"0@winning_tile -1@tanyao -2@tanyao"},
+  %{groups: ~s"0@winning_tile 1@tanyao 2@tanyao"},
+  # shanpon
+  %{groups: ~s"0@tanyao 0@tanyao 0@winning_tile&ron", value: 2},
+  %{groups: ~s"0@yaochuu 0@yaochuu 0@winning_tile&ron", value: 4},
+  %{groups: ~s"0@tanyao 0@tanyao 0@winning_tile&tsumo", value: 4},
+  %{groups: ~s"0@yaochuu 0@yaochuu 0@winning_tile&tsumo", value: 8},
+  # tanki
+  %{groups: ~s"0 0@winning_tile", value: 2},
+  %{groups: ~s"0@prevalent 0@winning_tile | 0@seat 0@winning_tile | 5z 5z@winning_tile | 6z 6z@winning_tile | 7z 7z@winning_tile", value: 4},
+  %{groups: ~s"0@prevalent&seat 0@winning_tile", value: 6}
+]
+define_const groups_fu, [
+  %{groups: ~s"0 1 2"},
+  %{groups: ~s"0@tanyao 0@tanyao 0@tanyao", value: 4},
+  %{groups: ~s"0@yaochuu 0@yaochuu 0@yaochuu", value: 8},
+  # pair
+  %{groups: ~s"0 0"},
+  %{groups: ~s"0@prevalent 0@prevalent | 0@seat 0@seat | 5z 5z | 6z 6z | 7z 7z", value: 2},
+  %{groups: ~s"0@prevalent&seat 0@prevalent&seat", value: 4}
+]
+def calculate_fu do
+  set_counter("fu", "minipoints") do
+    # score calls
+    convert_calls(@calls_fu)
+    remove_calls(["tanyaohai"])
+    convert_calls(@calls_fu)
+    remove_calls
+
+    # now remove all closed groups
+    remove_groups(@winning_groups_fu)
+    remove_groups(@groups_fu)
+    prune(method: "tile_count", num_tiles: [1,4,7,10])
+    remove_groups(@groups_fu)
+    prune(method: "tile_count", num_tiles: [1,4,7,10])
+    remove_groups(@groups_fu)
+    prune(method: "tile_count", num_tiles: [1,4,7,10])
+    remove_groups(@groups_fu)
+    prune(method: "tile_count", num_tiles: [1,4,7,10])
+    # only retain configurations with 0 tiles remaining
+    retain_empty_hands
+
+    # base 20, tsumo +2, closed hand +10, take maximum
+    add(20)
+    add(2, won_by_draw)
+    add(10, @closed_hand)
+    take_maximum
+  end
+end
+
+on before_scoring do
+  calculate_fu
+end

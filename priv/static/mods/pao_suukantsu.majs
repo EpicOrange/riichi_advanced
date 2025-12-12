@@ -1,0 +1,18 @@
+on after_initialization do
+  if rule_exists("Rules", "Sekinin Barai (Pao)") do
+    update_rule("Rules", "Sekinin Barai (Pao)", "(Suukantsu Pao) Dealing the last tile called for kan for a suukantsu hand also counts.")
+  else
+    add_rule("Rules", "Sekinin Barai (Pao)", "If you deal the last tile called for kan for a suukantsu hand, you are responsible for that single yakuman payment if they tsumo, or half of the yakuman payment if they ron off someone else.")
+  end
+end
+
+on after_call do
+  if last_call_is("daiminkan") and match(["calls"], ~m"(daiminkan ankan kakan):4") do
+    as callee do
+      make_responsible_for("caller", "Suukantsu")
+    end
+  end
+end
+
+apply set, "score_calculation.split_pao_ron", true
+apply set, "score_calculation.win_with_pao_name", "Sekinin Barai"

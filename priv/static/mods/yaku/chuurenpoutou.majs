@@ -1,0 +1,13 @@
+on after_initialization do
+  if equals(!list, "yakuman") do
+    add_rule("Limit", "$name", "Your final hand (including winning tile) looks like 1112345678999 of any suit, plus one additional tile of that suit.", %{name: !name})
+    update_rule("Limit", "$name", "%{example_hand}", %{value: !value, han: !han, name: !name, example_hand: ~t"1112345568999s 7s"})
+  else
+    add_rule("$value $han", "$name", "Your final hand (including winning tile) looks like 1112345678999 of any suit, plus one additional tile of that suit.", %{value: !value, han: !han, name: !name})
+    update_rule("$value $han", "$name", "%{example_hand}", %{value: !value, han: !han, name: !name, example_hand: ~t"1112345568999s 7s"})
+  end
+end
+
+define_set chuurenpoutou, ~s"0 0 0 1 2 3 4 5 6 7 8 8 8"
+
+define_yaku !list, !name, !value, match(["hand", "winning_tile"], ~m"chuurenpoutou:1")
