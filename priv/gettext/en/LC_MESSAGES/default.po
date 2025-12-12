@@ -653,7 +653,7 @@ msgstr ""
 msgid "American"
 msgstr ""
 
-msgid "American (2024 NMJL)"
+msgid "American (NMJL)"
 msgstr ""
 
 msgid "American Civil War"

@@ -89,8 +89,7 @@ Here are differences between Riichi Advanced and real life/other mahjong clients
 
 The following Cards are supported by Riichi Advanced:
 
-- [NMJL 2024](https://www.nationalmahjonggleague.org/store.aspx) (cost: 14USD)
-- [NMJL 2025](https://www.nationalmahjonggleague.org/store.aspx) (cost: 14USD)
+- [NMJL 2020~2025](https://www.nationalmahjonggleague.org/store.aspx) (cost: 14USD)
 - [ILoveMahj Card](https://ilovemahj.com/ilmCard) (free)
 - [ATeacherFirst Mah Jongg Fake Card](https://www.ateacherfirst.com/bridge/mah-jongg/) (free)
 - [MahjLife Mock Card](https://mahjlife.com/document/mahj-life-mock-card-print/) (free, used with permission from Michele Frizzell)
@@ -168,7 +167,7 @@ The following mods are currently available for American:
 
 - Zombie Blanks: Adds four "zombie blanks" to the wall. Zombie blanks may not be passed during the Charleston or discarded. On a player's turn, they may swap a zombie blank in their hand with any natural tile in the discard pool. Blanks have no other purpose; they do not act as jokers; players may not declare Mah Jongg if they have a zombie blank in their hand; nor may they make exposures using blanks; or joker exchanges with blanks.
 - PIE: Each player starts with a set amount of points. Players' point totals can't go negative. If a player runs out of points, they need not pay.
-- NMJL 2025 Card: Play with the [NMJL 2025 Card](https://www.nationalmahjonggleague.org/store.aspx).
+- NMJL [Year] Card: Play with the [NMJL Card](https://www.nationalmahjonggleague.org/store.aspx) from the year of your choice (between 2020 and 2025).
 - ILM Card: Play with the free [ILoveMahj Card](https://ilovemahj.com/ilmCard).
 - ATF Card: Play with the free [ATeacherFirst Mah Jongg Fake Card](https://www.ateacherfirst.com/bridge/mah-jongg/).
 - MahjLife Card: Play with the free [MahjLife Mock Card](https://mahjlife.com/document/mahj-life-mock-card-print/). Introduced along with [this video](https://www.youtube.com/watch?v=7WygnpfFbMQ). (Implemented with permission from Michele Frizzell.)
@@ -183,9 +182,10 @@ The following mods are planned to be supported (not necessarily in this order):
 - Futures: Each player gets to peek at their next draw.
 - Hot Wall: If a player deals in with a previously-undiscarded tile during the last portion of the wall, they pay for the table.
 - Cold Wall: During the last portion of the wall, players may only win by self-draw.
-- NMJL [Year] Card: Play with an NMJL Card from the year of your choice.
+- NMJL [Year] Card: Play with the NMJL Card from the year of your choice (before 2020).
 - Siamese [Year] Card: Play with the paid [Siamese Card](https://mahjongg.org/siamese-products/) from the year of your choice.
 - Marvelous [Year] Card: Play with the paid [Marvelous Card](https://marvelousmahjongg.com/) from the year of your choice.
+- Mah Jongg Network [Year] Card: Play with the paid [Mah Jongg Network Card](https://shop.mahjonggnetwork.com/) from the year of your choice.
 - MAHJ-X: Play with [MAHJ-X rules](https://www.mahjx.com/).
 - Siamese: Play with [Siamese rules](https://mahjongg.org/siamese-rules/).
 - Royale Siamese: Play with [Royale Siamese rules](https://mahjongg.org/siamese-rules/#royale).
