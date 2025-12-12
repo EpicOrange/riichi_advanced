@@ -250,7 +250,7 @@ defmodule RiichiAdvanced.Constants do
     {"mcr",          "MCR", "Mahjong Competition Rules. Has a scoring system of a different kind of complexity than Riichi."},
     {"taiwanese",    "Taiwanese", "16-tile mahjong with riichi mechanics."},
     {"bloody30faan", "Bloody 30-Faan Jokers", "Bloody end rules mahjong, with Vietnamese jokers, and somehow more yaku than MCR."},
-    {"american",     "American (2024 NMJL)", "American Mah-Jongg. Assemble hands with jokers, and declare other players' hands dead. Rules are slightly different from MJME (see rules page)."},
+    {"american",     "American (NMJL)", "American Mah-Jongg. Assemble hands with jokers, and declare other players' hands dead. Rules are slightly different from MJME 2024 (see rules page)."},
     {"vietnamese",   "Vietnamese", "Mahjong with eight differently powerful joker tiles."},
     {"malaysian",    "Malaysian", "Three-player mahjong with 16 flowers, a unique joker tile, and instant payouts."},
     {"singaporean",  "Singaporean", "Mahjong with various instant payouts and various unique ways to get penalized by pao."},
@@ -432,6 +432,7 @@ defmodule RiichiAdvanced.Constants do
     },
     "classical" => %{
       display_name: "Chinese Classical",
+      tutorial_link: "http://mahjong.wikidot.com/rules:chinese-classical-scoring",
       ruleset: "classical",
       globals: %{
         chii_name: "Chow",

@@ -598,8 +598,8 @@ msgstr "天月麻将"
 msgid "American"
 msgstr "美式"
 
-msgid "American (2024 NMJL)"
-msgstr "美式麻将(２０２４ NMJL)"
+msgid "American (NMJL)"
+msgstr "美式麻将(NMJL)"
 
 msgid "American Civil War"
 msgstr "南北战争"
