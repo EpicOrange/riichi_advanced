@@ -1,9 +1,7 @@
 // TODOS:
 // * add rule tabs (is this possible in .json?)
-// * check how "Back To Back", "Single", and "Paningit" yaku work, then implement
-  // * implement headbump based on Paningit headbumping Single, and seat order otherwise
-// * check who pays for the Thirteen Flowers instant payout, and implement it
-// * check and implement other instant payouts
+// * implement headbump based on Paningit headbumping Single headbumping Back to Back, and seat order otherwise
+// * fix any other misc bugs
 // * implement mods
 
 {
@@ -94,16 +92,27 @@
   "full_straight_definition": [
     [ "exhaustive", [["ittsu"], 1], [["shuntsu", "koutsu"], 2], [["pair"], 1] ]
   ],
+  "shanpon_wait_definition": [
+    [ "exhaustive", [["shuntsu", "koutsu"], 4], ["pair"], 2] ]
+  ],
+  "edge_wait_definition": [
+    [ "exhaustive", [["pair"], 1], [["shuntsu", "koutsu"], 4], [[["1m", "2m"],["1p", "2p"],["1s", "2s"],["8m", "9m"],["8p", "9p"],["8s", "9s"]], 1] ]
+  ],
+  "closed_wait_definition": [
+    [ "exhaustive", [["pair"], 1], [["shuntsu", "koutsu"], 4], [["kanchan"], 1] ]
+  ],
+  "single_wait_definition": [
+    [ "exhaustive", [["shuntsu", "koutsu"], 5] ]
+  ],
   "yaku": [
-      // Base
-    { "display_name": "Win", "value": 4, "when": [] },
+    { "display_name": "Win", "value": 4, "when": ["true"] },
     { "display_name": "All Chows", "value": 1, "when": [{"name": "match", "opts": [["hand", "calls", "winning_tile"], [["exhaustive", [["shuntsu"], 5], [["pair"], 1]]]]}] },
     { "display_name": "All Pungs", "value": 1, "when": [{"name": "match", "opts": [["hand", "calls", "winning_tile"], [[[["koutsu"], 5], [["pair"], 1]]]]}] },
     { "display_name": "Concealed Hand", "value": 1, "when": [{"name": "has_no_call_named", "opts": ["chii", "pon", "daiminkan", "kakan"]}] },
     { "display_name": "All Revealed", "value": 1, "when": [{"name": "match", "opts": [["calls"], [[[["chii", "pon", "daiminkan", "ankan", "kakan"], 5]]]]}] },
       // Quick Win: Winning within five discards. TODO: calculate the correct number to put on the right here.
-        // actually, because flowers and kongs exist, this doesn't work correctly anyway
-    // { "display_name": "Within Seven Tiles", "value": 8, "when": [{"name": "tiles_remaining", "opts": [74]}] },
+        // actually, because flowers and kongs exist, this doesn't quite work correctly anyway. gonna need a slightly better way to do this, i think?
+    { "display_name": "Quick Win", "value": 1, "when": [{"name": "tiles_remaining", "opts": [74]}] },
     { "display_name": "Pure Straight", "value": 2, "when": [{"name": "match", "opts": [["hand", "calls", "winning_tile"], [[ "exhaustive", [[[[0,1,2],[3,4,5],[6,7,8]]], 1], [["shuntsu", "koutsu"], 2], [["pair"], 1] ]]]}] },
       // note: half-flush is not a yaku because all honors are flowers
     {
@@ -115,19 +124,16 @@
         {"name": "winning_hand_consists_of", "opts": ["1s","2s","3s","4s","5s","6s","7s","8s","9s"]}
       ]]
     },
-    { "display_name": "Seven Pairs", "value": 30, "when": [{"name": "match", "opts": [["hand", "calls", "winning_tile"], [[[["pair"], 7], [["koutsu"], 1]]]]}] },
-      // Back to Back
-        // specifically, this is a hand whose wait is shanpon.
-    // {},
-      // Single
-        // specifically, this is a hand whose only wait is a single tile. can be penchan/kanchan/tanki, or interpretable as multiple shapes e.g. 12234 being either 12+234 or 123+24
-    // {},
-      // Paningit
-        // specifically, this must be a hand whose only wait is a single tile, and which can ONLY be interpreted as a middle wait on that tile. e.g. 12234 being interpreted as 123+24 does NOT count
-    // {},
+    { "display_name": "Seven Pairs", "value": 2, "when": [{"name": "match", "opts": [["hand", "calls", "winning_tile"], [[[["pair"], 7], [["koutsu"], 1]]]]}] },
+      // Back to Back: specifically, this is a hand whose wait is shanpon.
+        // TODO: check whether this works. it is possible that this will match entotsu waits, even if it shouldn't
+    { "display_name": "Back to Back", "value": 1, "when": [{"name": "match", "opts": [["hand", "calls"], ["shanpon_wait"]]}] },
+      // Single: specifically, this is a hand whose only wait is a single tile. can be penchan/kanchan/tanki, or interpretable as multiple shapes e.g. 12234 being either 12+234 or 123+24,
+    { "display_name": "Single", "value": 1, "when": [{"name": "match", "opts": [["hand", "calls"], ["edge_wait", "closed_wait", "single_wait"]]}, {"name": "wait_count_at_most", "opts": [1, ["win"]]}] },
+      // Paníngit: specifically, this must be a hand whose only wait is a single tile, and which can ONLY be interpreted as a middle wait on that tile. e.g. 12234 being interpreted as 123+24 does NOT count,
+    { "display_name": "Paníngit", "value": 1, "when": [{"name": "match", "opts": [["hand", "calls"], ["closed_wait"]]}, {"name": "not_match", "opts": [["hand", "calls"], ["edge_wait", "single_wait"]]}, {"name": "wait_count_at_most", "opts": [1, ["win"]]}] },
       // Flowers
-    { "display_name": "No Flowers (Upon Win)", "value": 1, "when": [{"name": "status", "opts": ["no_flowers"]}, {"name": "not_match", "opts": [["flowers"], [[ "unique", "nojoker", [["1f","2f","3f","4f","1g","2g","3g","4g"], 1] ]]]}] },
-
+    { "display_name": "No Flowers (Upon Win)", "value": 1, "when": [{"name": "status", "opts": ["no_initial_flowers"]}, {"name": "not_match", "opts": [["flowers"], [[ "unique", "nojoker", [["1z", "2z", "3z", "4z", "0z", "6z", "7z", "1f","2f","3f","4f","1g","2g","3g","4g"], 1] ]]]}] }
   ],
   "yaku_precedence": {
     "Seven Pairs": ["Back to Back", "Single"],
@@ -155,7 +161,7 @@
   ],
   "before_turn_change": {
     "actions": [
-      ["unset_status", "kan", "double_kan"],
+      ["unset_status", "kan"],
       ["when", [{"name": "status_missing", "opts": ["match_start"]}], [["unset_status", "first_turn"]]]
     ]
   },
@@ -166,12 +172,6 @@
       ["when", [{"name": "everyone_status", "opts": ["no_flowers"]}], [["unset_status_all", "no_flowers", "match_start"], ["change_turn", "east"]]]
     ]
   },
-  "after_call": {
-    "actions": [
-      ["when", [{"name": "match", "opts": [["last_call"], [[[["haku", "hatsu", "chun"], 1]]]]}, {"name": "match", "opts": [["calls"], [[[["haku"], 1], [["hatsu"], 1], [["chun"], 1]]]]}], [["as", "callee", [["make_responsible_for", "prev_seat", "all"]]]]],
-      ["when", [{"name": "match", "opts": [["last_call"], [[[["ton", "nan", "shaa", "pei"], 1]]]]}, {"name": "match", "opts": [["calls"], [[[["ton"], 1], [["nan"], 1], [["shaa"], 1], [["pei"], 1]]]]}], [["as", "callee", [["make_responsible_for", "prev_seat", "all"]]]]]
-    ]
-  },
   "after_start": {
     "actions": [["set_status_all", "first_turn", "match_start", "no_initial_flowers"]]
   },
@@ -179,15 +179,32 @@
     "start_flower": {
       "display_name": "Reveal flower",
       "show_when": [{"name": "status", "opts": ["match_start"]}, "our_turn", {"name": "match", "opts": [["hand", "draw"], [[ "nojoker", [["1z", "2z", "3z", "4z", "0z", "6z", "7z", "1f", "2f", "3f", "4f", "1g", "2g", "3g", "4g"], 1] ]]]}],
-        // TODO: add an instant payout when a player declares a thirteenth flower
-      "actions": [["big_text", "Flower"], ["flower", "1z", "2z", "3z", "4z", "0z", "6z", "7z", "1f", "2f", "3f", "4f", "1g", "2g", "3g", "4g"], ["draw", 1, "opposite_end"], ["unset_status", "no_initial_flowers"]],
+      "actions": [["big_text", "Flower"], ["flower", "1z", "2z", "3z", "4z", "0z", "6z", "7z", "1f", "2f", "3f", "4f", "1g", "2g", "3g", "4g"],
+        ["when",
+          [{"name": "match", "opts": [["flowers"], [[ "unique", "nojoker", [["1z", "2z", "3z", "4z", "0z", "6z", "7z", "1f","2f","3f","4f","1g","2g","3g","4g"], 13] ]]]}, {"name": "not_match", "opts": [["flowers"], [[ "unique", "nojoker", [["1z", "2z", "3z", "4z", "0z", "6z", "7z", "1f","2f","3f","4f","1g","2g","3g","4g"], 14] ]]]}],
+          [
+            ["big_text", "Thirteen Flowers"], 
+            ["add_score", 1], ["subtract_score", 1, "shimocha"], ["as", "shimocha", [["big_text", "  -1  "]]],
+            ["add_score", 1], ["subtract_score", 1, "shimocha"], ["as", "shimocha", [["big_text", "  -1  "]]],
+            ["add_score", 1], ["subtract_score", 1, "shimocha"], ["as", "shimocha", [["big_text", "  -1  "]]]
+          ]],
+        ["draw", 1, "opposite_end"], ["unset_status", "no_initial_flowers"]],
       "unskippable": true
     },
     "start_no_flower": {
       "display_name": "No flowers",
       "show_when": [{"name": "status", "opts": ["match_start"]}, "our_turn", {"name": "not_match", "opts": [["hand", "draw"], [[ "nojoker", [["1z", "2z", "3z", "4z", "0z", "6z", "7z", "1f", "2f", "3f", "4f", "1g", "2g", "3g", "4g"], 1] ]]]}],
-        // TODO: add an instant payout if the player has the status "no_initial_flowers"
-      "actions": [["big_text", "No flowers"], ["set_status", "no_flowers"], ["advance_turn"], ["recalculate_buttons"]],
+      "actions": [["set_status", "no_flowers"],
+        ["when", [{"name": "status_missing", "opts": ["no_initial_flowers"]}], [
+          ["big_text", "No flowers"]
+        ]],
+        ["when", [{"name": "status", "opts": ["no_initial_flowers"]}], [
+          ["big_text", "No flowers (Upon Start)"], 
+          ["add_score", 1], ["subtract_score", 1, "shimocha"], ["as", "shimocha", [["big_text", "  -1  "]]],
+          ["add_score", 1], ["subtract_score", 1, "shimocha"], ["as", "shimocha", [["big_text", "  -1  "]]],
+          ["add_score", 1], ["subtract_score", 1, "shimocha"], ["as", "shimocha", [["big_text", "  -1  "]]]
+        ]],
+        ["advance_turn"], ["recalculate_buttons"]],
       "unskippable": true
     },
     "chii": {
@@ -200,7 +217,7 @@
       "display_name": "Pung",
       "call": [[0, 0]],
       "show_when": [{"name": "status_missing", "opts": ["match_start"]}, "not_our_turn", "not_no_tiles_remaining", "someone_else_just_discarded", "call_available"],
-      "actions": [["big_text", "Pong"], ["call"], ["change_turn", "self"]],
+      "actions": [["big_text", "Pung"], ["call"], ["change_turn", "self"]],
       "precedence_over": ["chii"]
     },
     "daiminkan": {
@@ -208,34 +225,38 @@
       "call": [[0, 0, 0]],
       "show_when": [{"name": "status_missing", "opts": ["match_start"]}, "not_our_turn", "not_no_tiles_remaining", "someone_else_just_discarded", "call_available"],
       "actions": [
-        ["big_text", "Kong"], ["call"], ["change_turn", "self"],
-        ["when", [{"name": "status", "opts": ["kan"]}], [["set_status", "double_kan"]]],
+        ["big_text", "Kang"], ["call"],
+        ["add_score", 1], ["subtract_score", 1, "last_discarder"], ["as", "last_discarder", [["big_text", "  -1  "]]],
+        ["change_turn", "self"],
         ["set_status", "kan"],
         ["draw", 1, "opposite_end"]
       ],
       "precedence_over": ["chii", "pon"]
     },
-        // TODO: add instant payouts on kan
     "ankan": {
       "display_name": "Secret",
       "call": [[0, 0, 0]],
       "show_when": [{"name": "status_missing", "opts": ["match_start"]}, "our_turn", "not_no_tiles_remaining", "has_draw", "self_call_available", {"name": "status_missing", "opts": ["just_reached"]}],
       "actions": [
-        ["big_text", "Kong"], ["self_call"],
-        ["when", [{"name": "status", "opts": ["kan"]}], [["set_status", "double_kan"]]],
+        ["big_text", "Secret"], ["self_call"],
         ["set_status", "kan"],
+        ["when", [{"name": "not_shimocha_status", "opts": ["won"]}], [["add_score", 2], ["subtract_score", 2, "shimocha"], ["as", "shimocha", [["big_text", "  -2  "]]]]],
+        ["when", [{"name": "not_toimen_status", "opts": ["won"]}], [["add_score", 2], ["subtract_score", 2, "toimen"], ["as", "toimen", [["big_text", "  -2  "]]]]],
+        ["when", [{"name": "not_kamicha_status", "opts": ["won"]}], [["add_score", 2], ["subtract_score", 2, "kamicha"], ["as", "kamicha", [["big_text", "  -2  "]]]]],
         ["draw", 1, "opposite_end"]
       ]
     },
     "kakan": {
-      "display_name": "Kang",
+      "display_name": "Sagása",
       "call": [[0, 0, 0]],
       "upgrades": "pon",
       "show_when": [{"name": "status_missing", "opts": ["match_start"]}, "our_turn", "not_no_tiles_remaining", "has_draw", "can_upgrade_call", {"name": "status_missing", "opts": ["just_reached"]}],
       "actions": [
-        ["big_text", "Kong"], ["upgrade_call"],
-        ["when", [{"name": "status", "opts": ["kan"]}], [["set_status", "double_kan"]]],
+        ["big_text", "Sagása"], ["upgrade_call"],
         ["set_status", "kan"],
+        ["when", [{"name": "not_shimocha_status", "opts": ["won"]}], [["add_score", 1], ["subtract_score", 1, "shimocha"], ["as", "shimocha", [["big_text", "  -1  "]]]]],
+        ["when", [{"name": "not_toimen_status", "opts": ["won"]}], [["add_score", 1], ["subtract_score", 1, "toimen"], ["as", "toimen", [["big_text", "  -1  "]]]]],
+        ["when", [{"name": "not_kamicha_status", "opts": ["won"]}], [["add_score", 1], ["subtract_score", 1, "kamicha"], ["as", "kamicha", [["big_text", "  -1  "]]]]],
         ["draw", 1, "opposite_end"]
       ]
     },
@@ -247,9 +268,10 @@
         "someone_else_just_discarded",
         {"name": "match", "opts": [["hand", "calls", "last_discard"], ["win"]]}
       ],
-      "actions": [["big_text", "Hu"], ["pause", 1000], ["reveal_hand"], ["win_by_discard"]],
-      "precedence_over": ["chii", "pon", "daiminkan"]
+      "actions": [["big_text", "Tódas"], ["pause", 1000], ["reveal_hand"], ["win_by_discard"]],
+      "precedence_over": ["chii", "pon", "daiminkan", "ron"]
     },
+      // TODO: check if chankan is legal
     "chankan": {
       "display_name": "Tódas",
       "show_when": [
@@ -267,8 +289,8 @@
           ]
         ]
       ],
-      "actions": [["big_text", "Hu"], ["pause", 1000], ["reveal_hand"], ["win_by_call"]],
-      "precedence_over": ["chii", "pon", "daiminkan"]
+      "actions": [["big_text", "Tódas"], ["pause", 1000], ["reveal_hand"], ["win_by_call"]],
+      "precedence_over": ["chii", "pon", "daiminkan", "chankan"]
     },
     "tsumo": {
       "display_name": "Búnot",
@@ -278,7 +300,7 @@
         {"name": "match", "opts": [["hand", "calls", "draw"], ["tenpai", "kokushi_tenpai"]]},
         {"name": "match", "opts": [["hand", "calls", "draw"], ["win"]]}
       ],
-      "actions": [["big_text", "Zimo"], ["pause", 1000], ["reveal_hand"], ["win_by_draw"]]
+      "actions": [["big_text", "Búnot"], ["pause", 1000], ["reveal_hand"], ["win_by_draw"]]
     },
     "flower": {
       "display_name": "Flower",
@@ -287,7 +309,7 @@
         ["big_text", "Flower"],
         ["flower", "1z", "2z", "3z", "4z", "0z", "6z", "7z", "1f", "2f", "3f", "4f", "1g", "2g", "3g", "4g"],
         ["ite", ["no_tiles_remaining"], [["advance_turn"]], [["draw", 1, "opposite_end"]]]
-        ["unset_status", "no_flowers", "no_initial_flowers"]
+        ["unset_status", "no_initial_flowers"]
       ],
       "unskippable": true
     }
