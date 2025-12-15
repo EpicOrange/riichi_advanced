@@ -260,11 +260,11 @@ defmodule RiichiAdvanced.Constants do
     {"ningbo",       "Ningbo", "Includes Tianjin mahjong joker tiles, but adds more yaku and played with a 4-tai minimum."},
     {"hefei",        "Hefei", "Mahjong with no honor tiles, but you must have at least eight tiles of a single suit to win."},
     {"zung_jung",    "Zung Jung", "Mahjong with an additive (rather than multiplicative) scoring system."},
+    {"filipino",     "Filipino", "16-tile mahjong where all honor tiles are flower tiles."},
+    {"visayan",      "Visayan", "16-tile mahjong where you can form dragon and wind sequences."},
     {"custom",       "Custom", "Create and play your own custom ruleset."},
   ]
   @unimplemented_rulesets [
-    {"filipino",     "Filipino", "16-tile mahjong where all honor tiles are flower tiles.", "https://mahjongpros.com/blogs/mahjong-rules-and-scoring-tables/official-filipino-mahjong-rules"},
-    {"visayan",      "Visayan", "16-tile mahjong where you can form dragon and wind sequences.", "https://mahjongpros.com/blogs/how-to-play/beginners-guide-to-filipino-visayan-mahjong"},
     {"changsha",     "Changsha", "Mahjong, but every win gets two chances at ura dora. However, a standard hand must have a pair of 22, 55, or 88.", "https://mahjongpros.com/blogs/how-to-play/beginners-guide-to-changsha-mahjong"},
     {"shenyang",     "Shenyang", "Mahjong, but every hand must be open, contain every suit, contain a terminal/honor, and contain either a triplet, kan, or dragon pair.", "https://peterish.com/riichi-docs/shenyang-mahjong-rules/"},
     {"korean",       "Korean", "Like Riichi but with a two-han minimum. There is also a side race to see who reaches three wins first.", "https://mahjongpros.com/blogs/mahjong-rules-and-scoring-tables/official-korean-mahjong-rules"},
