@@ -3,7 +3,6 @@ defmodule RiichiAdvanced.YakuTest.KansaiYaku do
   alias RiichiAdvanced.TestUtils, as: TestUtils
 
   @kansai_mods [
-    "kan",
     %{name: "honba", config: %{value: 100}},
     %{name: "nagashi", config: %{is: "Mangan"}},
     %{name: "tobi", config: %{below: 1}},
@@ -14,14 +13,14 @@ defmodule RiichiAdvanced.YakuTest.KansaiYaku do
     "kuikae_nashi",
     "double_wind_4_fu",
     "pao",
-    "kokushi_chankan",
+    "kokushi_ankan_chankan",
     "sanma_no_tsumo_loss",
     "suukaikan",
     "kyuushu_kyuuhai",
     # %{name: "dora", config: %{start_indicators: 1}},
     # "ura",
     # "kandora",
-    %{name: "yaku/renhou", config: %{is: "Yakuman"}},
+    %{name: "yaku/riichi_renhou", config: %{is: "Yakuman"}},
     "show_waits",
     %{name: "min_han", config: %{min: 1}},
     # "cancellable_riichi",

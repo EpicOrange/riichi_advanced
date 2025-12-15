@@ -89,6 +89,47 @@ defmodule RiichiAdvanced.YakuTest.SichuanYaku do
     })
   end
 
+  test "sichuan - root x4" do
+    TestUtils.test_yaku_advanced("sichuan", ["sichuan_no_charleston"], """
+    {
+      "starting_hand": {
+        "east": ["9m", "9m", "9m", "5m", "2s", "2s", "2s", "3s", "3s", "3s", "4s", "4s", "4s"],
+        "south": ["2m", "4m", "7m", "1p", "3p", "4p", "6p", "7p", "8p", "9p", "1s", "6s", "7s"],
+        "west": ["2m", "4m", "7m", "1p", "3p", "4p", "6p", "7p", "8p", "9p", "1s", "6s", "7s"],
+        "north": ["2m", "4m", "7m", "1p", "3p", "4p", "6p", "7p", "8p", "9p", "1s", "6s", "7s"]
+      },
+      "starting_draws": ["6m", "2s", "1m", "4s", "1m", "9m", "1m", "3s", "1m", "5m"]
+    }
+    """, [
+      %{"type" => "buttons_pressed", "buttons" => [
+        %{"button" => "void_pinzu"},
+        %{"button" => "void_manzu"},
+        %{"button" => "void_manzu"},
+        %{"button" => "void_manzu"}
+      ]},
+      %{"type" => "discard", "tile" => "6m", "player" => 0, "tsumogiri" => false},
+      %{"type" => "discard", "tile" => "2s", "player" => 1, "tsumogiri" => true},
+      %{"type" => "buttons_pressed", "buttons" => [%{"button" => "daiminkan"}, nil, nil, nil]},
+      %{"type" => "discard", "tile" => "1m", "player" => 0, "tsumogiri" => true},
+      %{"type" => "discard", "tile" => "4s", "player" => 1, "tsumogiri" => true},
+      %{"type" => "buttons_pressed", "buttons" => [%{"button" => "daiminkan"}, nil, nil, nil]},
+      %{"type" => "discard", "tile" => "1m", "player" => 0, "tsumogiri" => true},
+      %{"type" => "discard", "tile" => "9m", "player" => 1, "tsumogiri" => true},
+      %{"type" => "buttons_pressed", "buttons" => [%{"button" => "daiminkan"}, nil, nil, nil]},
+      %{"type" => "discard", "tile" => "1m", "player" => 0, "tsumogiri" => true},
+      %{"type" => "discard", "tile" => "3s", "player" => 1, "tsumogiri" => true},
+      %{"type" => "buttons_pressed", "buttons" => [%{"button" => "daiminkan"}, nil, nil, nil]},
+      %{"type" => "discard", "tile" => "1m", "player" => 0, "tsumogiri" => true},
+      %{"type" => "discard", "tile" => "5m", "player" => 1, "tsumogiri" => true},
+      %{"type" => "buttons_pressed", "buttons" => [%{"button" => "ron"}, nil, nil, nil]}
+    ], %{
+      east: %{
+        yaku: [{"Golden Single Wait", 2}, {"Root", 4}],
+        yaku2: []
+      }
+    })
+  end
+
   test "sichuan - all triplets" do
     TestUtils.test_yaku_advanced("sichuan", ["sichuan_no_charleston"], """
     {

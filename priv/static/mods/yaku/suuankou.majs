@@ -1,0 +1,23 @@
+on after_initialization do
+  if equals(!list, "yakuman") do
+    add_rule("Limit", "$name", "You have four concealed triplets. A triplet completed by a self-draw win counts as concealed.", %{name: !name})
+    update_rule("Limit", "$name", "%{example_hand}", %{value: !value, han: !han, name: !name, example_hand: ~t"222888m444p333s1z 1z"})
+  else
+    add_rule("$value $han", "$name", "You have four concealed triplets. A triplet completed by a self-draw win counts as concealed.", %{value: !value, han: !han, name: !name})
+    update_rule("$value $han", "$name", "%{example_hand}", %{value: !value, han: !han, name: !name, example_hand: ~t"222888m444p333s1z 1z"})
+  end
+end
+
+define_set pair, ~s"0 0"
+define_set koutsu, ~s"0 0 0"
+
+on before_scoring do
+  add_attr(["winning_tile"], ["_winning_tile"])
+end
+
+define_match suuankou_tsumo, ~m"(pon daiminkan kakan):-1, koutsu:4, pair:1"
+define_match suuankou_ron, ~m"exhaustive, (pon daiminkan kakan):-1, koutsu:4, (any@winning_tile):0, pair:1"
+ 
+define_yaku !list, !name, !value,
+     (won_by_draw and match(["hand", "calls", "winning_tile"], ["suuankou_tsumo"]))
+  or (not_won_by_draw and match(["hand", "calls", "winning_tile"], ["suuankou_ron"]))

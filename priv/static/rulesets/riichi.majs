@@ -1,39 +1,4 @@
-set display_name, "Riichi"
-set tutorial_link, "https://github.com/EpicOrange/riichi_advanced/blob/main/documentation/riichi.md"
-set wall, ["1m", "1m", "1m", "1m",
-           "2m", "2m", "2m", "2m",
-           "3m", "3m", "3m", "3m",
-           "4m", "4m", "4m", "4m",
-           "5m", "5m", "5m", "5m",
-           "6m", "6m", "6m", "6m",
-           "7m", "7m", "7m", "7m",
-           "8m", "8m", "8m", "8m",
-           "9m", "9m", "9m", "9m",
-           "1p", "1p", "1p", "1p",
-           "2p", "2p", "2p", "2p",
-           "3p", "3p", "3p", "3p",
-           "4p", "4p", "4p", "4p",
-           "5p", "5p", "5p", "5p",
-           "6p", "6p", "6p", "6p",
-           "7p", "7p", "7p", "7p",
-           "8p", "8p", "8p", "8p",
-           "9p", "9p", "9p", "9p",
-           "1s", "1s", "1s", "1s",
-           "2s", "2s", "2s", "2s",
-           "3s", "3s", "3s", "3s",
-           "4s", "4s", "4s", "4s",
-           "5s", "5s", "5s", "5s",
-           "6s", "6s", "6s", "6s",
-           "7s", "7s", "7s", "7s",
-           "8s", "8s", "8s", "8s",
-           "9s", "9s", "9s", "9s",
-           "1z", "1z", "1z", "1z",
-           "2z", "2z", "2z", "2z",
-           "3z", "3z", "3z", "3z",
-           "4z", "4z", "4z", "4z",
-           "5z", "5z", "5z", "5z",
-           "6z", "6z", "6z", "6z",
-           "7z", "7z", "7z", "7z"]
+
 define_set pair, ~s"0 0"
 define_set shuntsu, ~s"0 1 2"
 define_set koutsu, ~s"0 0 0"
@@ -234,7 +199,6 @@ set score_calculation, %{
     yaku2_lists: ["yakuman", "meta_yakuman"],
     extra_yaku_lists: ["extra_yaku"],
     yaku2_overrides_yaku1: true,
-    draw_tenpai_payments: [1000, 1500, 3000],
     split_oya_ko_payment: true,
     right_display: "minipoints",
     point_name: "Han",
@@ -253,13 +217,7 @@ set score_calculation, %{
 def turn_cleanup do
   # unset furiten
   unset_status("furiten")
-
-  # tenpai check
-  if match(["hand", "calls", "draw"], ["tenpai"]) do
-    set_status("tenpai")
-  else
-    unset_status("tenpai")
-  end
+  check_tenpai
 end
 
 def discard_passed do
@@ -268,6 +226,56 @@ def discard_passed do
     if match(["hand", "calls", "last_discard"], ["win"]) do
       set_status("furiten")
     end
+  end
+end
+
+# tenpai check
+# this is used to determine furiten and noten payments
+def check_tenpai do
+  if match(["hand", "calls", "draw"], ["tenpai"]) do
+    set_status("tenpai")
+  else
+    unset_status("tenpai")
+  end
+end
+
+# noten payments
+# TODO note for future sakicards implementation:
+# - if kanbara satomi is in play, the player whose wall the last dora indicator is on loses double points
+#   + special logic for doubled 1500 payments is: if shimocha is tenpai, double payment to shimocha, otherwise double payment to kamicha
+# - ikeda kana triples noten payments
+def noten_payments do
+  # first check tenpai, and reveal tenpai hands
+  as everyone do
+    check_tenpai
+    if status("tenpai") do reveal_hand end
+  end
+  # determine how much each player pays
+  tenpai_count = 0
+  if status("tenpai") do tenpai_count += 1 end
+  if shimocha_exists and status("tenpai", as: "shimocha") do tenpai_count += 1 end
+  if toimen_exists and status("tenpai", as: "toimen") do tenpai_count += 1 end
+  if kamicha_exists and status("tenpai", as: "kamicha") do tenpai_count += 1 end
+  n = num_players
+  if n == 4 and tenpai_count == 1 do tenpai_points = 3000; noten_points = -1000 end
+  if n == 4 and tenpai_count == 2 do tenpai_points = 1500; noten_points = -1500 end
+  if n == 4 and tenpai_count == 3 do tenpai_points = 1000; noten_points = -3000 end
+  if n == 3 and tenpai_count == 1 do tenpai_points = 1000; noten_points = -2000 end
+  if n == 3 and tenpai_count == 2 do tenpai_points = 2000; noten_points = -1000 end
+  if n == 2 and tenpai_count == 1 do tenpai_points = 1000; noten_points = -1000 end
+  set_counter_all("tenpai_points", "tenpai_points")
+  set_counter_all("noten_points", "noten_points")
+  as everyone do
+    if status("tenpai") do
+      modify_payout("self", "tenpai_points")
+    else
+      modify_payout("self", "noten_points")
+    end
+  end
+end
+on after_scoring do
+  if ended_by_exhaustive_draw do
+    noten_payments
   end
 end
 
@@ -329,9 +337,13 @@ def calculate_fu do
       # now remove all closed groups
       remove_groups(@winning_groups_fu)
       remove_groups(@groups_fu)
+      prune(method: "tile_count", num_tiles: [1,4,7,10])
       remove_groups(@groups_fu)
+      prune(method: "tile_count", num_tiles: [1,4,7,10])
       remove_groups(@groups_fu)
+      prune(method: "tile_count", num_tiles: [1,4,7,10])
       remove_groups(@groups_fu)
+      prune(method: "tile_count", num_tiles: [1,4,7,10])
 
       # only retain configurations with 0 tiles remaining
       retain_empty_hands
@@ -386,39 +398,72 @@ on after_initialization do
   add_rule("Rules", "Win Condition", "- (Chiitoitsu) Seven distinct pairs.", -100)
   add_rule("Rules", "Win Condition", "- (Kokushi Musou) All thirteen terminal/honor tiles plus one forming a pair.", -100)
   add_rule("1 Han", "Tsumo", "Win by self-draw with a closed hand.")
-  add_rule("1 Han", "Haitei", "Win off the last tile in the wall.")
-  add_rule("1 Han", "Houtei", "Win off the discard after the last tile in the wall is drawn.")
+  add_rule("1 Han", "Haitei", "Win by drawing the last tile in the wall.")
+  add_rule("1 Han", "Houtei", "Win off a discard after the last tile in the wall is drawn.")
   add_rule("1 Han", "Pinfu", "You won off a double-sided sequence wait, with an all-sequence hand whose pair is not yakuhai.")
+  update_rule("1 Han", "Pinfu", "%{example_hand}", %{example_hand: ~t"345789m45p23499s 6p"})
   add_rule("1 Han", "Tanyao", "Your hand contains only tiles numbered 2-8.")
+  update_rule("1 Han", "Tanyao", "%{example_hand}", %{example_hand: ~t"234m33777p 45678s 6s"})
   add_rule("1 Han", "Iipeikou", "Your closed hand has a double sequence: two copies of the exact same sequence in one suit, like 123 123.")
-  add_rule("1 Han", "Yakuhai", "1 han for each triplet of: dragons, wind matching the round marker, and wind matching your seat.")
-  add_rule("2 Han", "Chiitoitsu", "Your hand consists of seven non-repeating pairs, and is not ryanpeikou.")
+  update_rule("1 Han", "Iipeikou", "%{example_hand}", %{example_hand: ~t"33445m33777p 678s 5m"})
+  add_rule("1 Han", "Yakuhai", """
+  1 %{han} for each of the following triplets in your hand:
+  - A triplet of dragon tiles %{dragons}
+  - A triplet of winds matching the round marker %{round_wind_triplet}
+  - A triplet of winds matching your seat %{seat_wind_triplet}
+  """, %{han: "Han", dragons: ~t"777z"})
+  add_rule("2 Han", "Chiitoitsu", "Your hand consists of seven non-repeating pairs.")
+  update_rule("2 Han", "Chiitoitsu", "%{example_hand}", %{example_hand: ~t"2266m99p24477s33z 2s"})
   add_rule("1 Han", "Chanta", "1 han if each of the 5 blocks in your hand contains a terminal or honor. 2 han if closed.")
+  update_rule("1 Han", "Chanta", "%{example_hand}", %{example_hand: ~t"123m79p789s77z 11p1P 8p"})
   add_rule("2 Han", "Junchan", "2 han if each of the 5 blocks in your hand contains a terminal. 3 han if closed.")
+  update_rule("2 Han", "Junchan", "%{example_hand}", %{example_hand: ~t"123m79p78999s 1P11p 8p"})
   add_rule("1 Han", "Ittsu", "1 han if your hand contains the sequences 123 456 789 in one suit. 2 han if closed.")
+  update_rule("1 Han", "Ittsu", "%{example_hand}", %{example_hand: ~t"234p4567779s 12s3S 8s"})
   add_rule("1 Han", "Sanshoku", "1 han if your hand contains the same number sequence in all three suits. 2 han if closed.")
+  update_rule("1 Han", "Sanshoku", "%{example_hand}", %{example_hand: ~t"24p23334678s 2M34m 3p"})
   add_rule("2 Han", "Sanshoku Doukou", "2 han if your hand contains the same number triplet in all three suits.")
+  update_rule("1 Han", "Sanshoku", "%{example_hand}", %{example_hand: ~t"2244p222456s 2M22m 2p"})
   add_rule("2 Han", "Toitoi", "2 han if your hand is all triplets.")
+  update_rule("2 Han", "Toitoi", "%{example_hand}", %{example_hand: ~t"888m222p33s22z 1z1Z1z 3s"})
   add_rule("2 Han", "Sanankou", "2 han if your hand has three closed triplets. A triplet formed by a self-draw win counts as closed.")
+  update_rule("2 Han", "Sanankou", "%{example_hand}", %{example_hand: ~t"222888m444p123s1z 1z"})
   add_rule("2 Han", "Shousangen", "2 han on top of yakuhai if you have two dragon triplets/kans and a dragon pair.")
+  update_rule("2 Han", "Shousangen", "%{example_hand}", %{example_hand: ~t"123m23s66777z 55z5Z 4s"})
   add_rule("2 Han", "Honroutou", "2 han if your hand contains only terminal and honor tiles.")
-  add_rule("3 Han", "Ryanpeikou", "3 han if you have two double sequences, each being two copies of the exact same sequence in one suit, like 123 123. Such hands are not considered seven pairs.")
+  update_rule("2 Han", "Honroutou", "%{example_hand}", %{example_hand: ~t"111m2223344z 9p9P9p 4z"})
   add_rule("2 Han", "Honitsu", "2 han if your hand is comprised of one suit plus honor tiles. 3 han if closed.")
+  update_rule("2 Han", "Honitsu", "%{example_hand}", %{example_hand: ~t"123345888p11z22z 2z"})
+  add_rule("3 Han", "Ryanpeikou", "3 han if you have two double sequences, each being two copies of the exact same sequence in one suit, like 123 123. Does not count as chiitoitsu (7 pairs).")
+  update_rule("3 Han", "Ryanpeikou", "%{example_hand}", %{example_hand: ~t"3344566m112233s 5m"})
   add_rule("5 Han", "Chinitsu", "5 han if your hand is comprised of one suit only (no honor tiles). 6 han if closed.")
+  update_rule("5 Han", "Chinitsu", "%{example_hand}", %{example_hand: ~t"1233445568889s 7s"})
   add_rule("Yakuman", "Tenhou", "Win with your initial hand as dealer.")
   add_rule("Yakuman", "Chiihou", "Win with your first draw as non-dealer.")
   add_rule("Yakuman", "Daisangen", "Your hand contains triplets or kans of all three dragons.")
+  update_rule("Yakuman", "Daisangen", "%{example_hand}", %{example_hand: ~t"123m22s66777z 55z5Z 6z"})
   add_rule("Yakuman", "Suuankou", "Your hand has three closed triplets in hand, and you won by self-drawing the fourth.")
+  update_rule("Yakuman", "Suuankou", "%{example_hand}", %{example_hand: ~t"222888m444p33s11z 1z"})
   add_rule("Yakuman", "Suuankou Tanki", "Double yakuman if your hand has four closed triplets in hand, and you won by completing your pair.", 2)
+  update_rule("Yakuman", "Suuankou Tanki", "%{example_hand}", %{example_hand: ~t"222888m444p333s1z 1z"})
   add_rule("Yakuman", "Tsuuiisou", "Your hand consists of only honor tiles.")
+  update_rule("Yakuman", "Tsuuiisou", "%{example_hand}", %{example_hand: ~t"1112224477z 66z6Z 4z"})
   add_rule("Yakuman", "Ryuuiisou", "Your hand consists of only all-green tiles (23468 bamboo and green dragon).")
+  update_rule("Yakuman", "Ryuuiisou", "%{example_hand}", %{example_hand: ~t"2234466888s 6Z66z 3s"})
   add_rule("Yakuman", "Chinroutou", "Your hand consists of only terminals.")
+  update_rule("Yakuman", "Chinroutou", "%{example_hand}", %{example_hand: ~t"111m999p1199s 9M99m 9s"})
   add_rule("Yakuman", "Chuurenpoutou", "You have no calls and your winning hand is the pattern 1112345678999 in one suit, plus one additional tile.")
+  update_rule("Yakuman", "Chuurenpoutou", "%{example_hand}", %{example_hand: ~t"1112345568999s 7s"})
   add_rule("Yakuman", "Junsei Chuurenpoutou", "Double yakuman if your hand was 1112345678999 in one suit, and you won via its nine-sided wait.", 2)
+  update_rule("Yakuman", "Junsei Chuurenpoutou", "%{example_hand}", %{example_hand: ~t"1112345678999s 7s"})
   add_rule("Yakuman", "Kokushi Musou", "Your winning hand consists of one of each terminal/honor tile plus one forming a pair.")
+  update_rule("Yakuman", "Kokushi Musou", "%{example_hand}", %{example_hand: ~t"19m99p19s1234567z 1p"})
   add_rule("Yakuman", "Kokushi Musou Juusan Menmachi", "Double yakuman if your winning hand consists of one of each terminal/honor tile and you won with a thirteen-sided wait for the pair.", 2)
-  add_rule("Yakuman", "Daisuushii", "Double yakuman if your hand contains triplets or kans of all four winds.", 2)
+  update_rule("Yakuman", "Kokushi Musou Juusan Menmachi", "%{example_hand}", %{example_hand: ~t"19m19p19s1234567z 1p"})
   add_rule("Yakuman", "Shousuushii", "Your hand contains triplets or kans of three winds, plus a pair of the fourth wind.")
+  update_rule("Yakuman", "Shousuushii", "%{example_hand}", %{example_hand: ~t"23s22233444z 1z1Z1z 4s"})
+  add_rule("Yakuman", "Daisuushii", "Double yakuman if your hand contains triplets or kans of all four winds.", 2)
+  update_rule("Yakuman", "Daisuushii", "%{example_hand}", %{example_hand: ~t"22s22233444z 1z1Z1z 3z"})
 end
 
 on before_turn_change do
@@ -432,12 +477,6 @@ end
 on after_turn_change do
   if not_game_start do
     discard_passed
-  end
-  if no_tiles_remaining do
-    pause(1000)
-    ryuukyoku
-  else
-    draw
   end
 end
 
@@ -455,14 +494,13 @@ on after_start do
   set_status_all("discards_empty")
 end
 
-set play_effects, [
+apply set_append, "play_effects", [
   ["any", [["unset_status", "discards_empty"]]]
 ]
 
 define_button chii,
-  display_name: "Chii", 
+  display_name: "Chii",
   show_when: not_our_turn and not_no_tiles_remaining and kamicha_discarded and call_available,
-  call_conditions: can_discard_after_call,
   precedence_over: ["chii"],
   call: [[-2, -1], [-1, 1], [1, 2]],
   call_style: %{
@@ -477,7 +515,7 @@ define_button chii,
   end
 
 define_button pon,
-  display_name: "Pon", 
+  display_name: "Pon",
   show_when: not_our_turn
     and not_no_tiles_remaining
     and someone_else_just_discarded
@@ -488,8 +526,7 @@ define_button pon,
     kamicha: ["call_sideways", 0, 1],
     toimen: [0, "call_sideways", 1],
     shimocha: [0, 1, "call_sideways"]
-  },
-  call_conditions: can_discard_after_call
+  }
   do
     big_text("Pon")
     call
@@ -497,7 +534,7 @@ define_button pon,
   end
 
 define_button ron,
-  display_name: "Ron", 
+  display_name: "Ron",
   show_when: not_our_turn
     and someone_else_just_discarded
     and match(["hand", "calls"], ["tenpai"])
@@ -512,7 +549,7 @@ define_button ron,
   end
 
 define_button tsumo,
-  display_name: "Tsumo", 
+  display_name: "Tsumo",
   show_when: our_turn
     and has_draw
     and match(["hand", "calls"], ["tenpai"])
@@ -524,55 +561,16 @@ define_button tsumo,
     win_by_draw
   end
 
-define_auto_button _1_auto_sort,
-  display_name: "A",
-  desc: "Automatically sort your hand.",
-  enabled_at_start: true
-  do
-    sort_hand
-  end
-
-define_auto_button _2_auto_ron,
-  display_name: "R",
-  desc: "Automatically declare wins."
-  do
-    if buttons_include("ron") do
-      press_button("ron")
-    end
-    if buttons_include("tsumo") do
-      press_button("tsumo")
-    end
-  end
-
-define_auto_button _3_auto_no_call,
-  display_name: "C",
-  desc: "Skip all calls except wins."
-  do
-    if not_our_turn and buttons_include("skip") and buttons_exclude("ron", "chankan") do
-      press_button("skip")
-    end
-  end
-
-define_auto_button _4_auto_discard,
-  display_name: "D",
-  desc: "Automatically discard your drawn tile."
-  do
-    if our_turn and buttons_exclude("tsumo", "ankan") and has_draw do
-      discard_draw
-    end
-  end
-
 set interruptible_actions, ["play_tile", "draw", "advance_turn", "self_call", "upgrade_call", "recalculate_buttons"]
 set shown_statuses, ["furiten"]
 set display_wall, true
 set initial_score, 25000
 set initial_dead_wall_length, 14
-set starting_tiles, 13
 set max_rounds, 8
+set four_rows_discards, false
 
 # mods
 define_mod_category "Rules"
-define_mod kan, name: "Kan", order: -2, desc: "Enable kan. If you have four of a tile in hand, you may create a concealed kan (ankan). If you have three of a tile and someone discards the fourth, you may create an open kan (daiminkan). If you have called a triplet and draw the fourth tile, you may create an added kan (kakan). Kan calls count as triplets for the purposes of winning and scoring, but they award 4x triplet fu. In all three cases, after declaring kan you draw a replacement tile from the dead wall. Winning on this replacement tile awards the rinshan yaku (1 han). One may also call ron on a tile added to an added kan (kakan) for the chankan yaku (1 han). Having three kans is 2 han (sankantsu), and having four is yakuman. There can be at most four kans in a single game."
 define_mod honba, name: "Honba", order: -1, desc: "Enables honba."
 config_mod honba, name: "value", values: [100, 500, 1000]
 define_mod nagashi, name: "Nagashi", order: -1, desc: "Enable nagashi mangan. When you discards are all terminals and honors at exhaustive draw, and none of your discards have been called, then you are paid mangan tsumo at draw."
@@ -601,8 +599,8 @@ define_mod head_bump, conflicts: ["sanchahou"], name: "Head Bump", desc: "Enable
 define_mod double_wind_4_fu, name: "Double Wind 4 Fu", desc: "A pair of round+seat winds is worth 4 fu instead of 2 fu."
 define_mod double_round_wind, name: "Double Round Wind", desc: "Both East and West are round winds during East Round, and North and South during South Round. Similarly for West and North Rounds."
 define_mod pao, name: "Sekinin Barai", desc: "If you deal the last dragon called for a daisangen hand, or the last wind called for a daisuushii hand, you are responsible for the yakuman payment if they tsumo, or half of the payment if they ron off someone else."
-define_mod pao_suukantsu, deps: ["kan", "pao"], name: "Suukantsu Pao", desc: "If you deal the last kan tile called for a suukantsu hand, you are responsible for the yakuman payment if they tsumo, or half the payment if they ron off someone else."
-define_mod pao_rinshan, deps: ["kan"], name: "Rinshan Pao", desc: "If someone calls kan on your discard and wins off the kan draw, you are responsible for the full payment."
+define_mod pao_suukantsu, name: "Suukantsu Pao", desc: "If you deal the last kan tile called for a suukantsu hand, you are responsible for the yakuman payment if they tsumo, or half the payment if they ron off someone else."
+define_mod pao_rinshan, name: "Rinshan Pao", desc: "If someone calls kan on your discard and wins off the kan draw, you are responsible for the full payment."
 define_mod no_kazoe_yakuman, name: "No Kazoe Yakuman", desc: "Disable kazoe yakuman. 13+ han is worth sanbaiman."
 define_mod no_double_yakuman, name: "No Double Yakuman", desc: "Disable double yakuman. Yakuman still stacks, but each yaku that typically awards double yakuman only awards one stack of yakuman."
 define_mod wareme, order: 1, name: "Wareme", desc: "In each round, the player whose wall is broken is given the wareme marker. If the wareme player wins, they are paid double the amount of points. If the wareme player has to pay points, they pay double the amount of points. Riichi sticks and honba payments are not affected."
@@ -615,15 +613,16 @@ define_mod toriuchi, deps: ["shuugi"], name: "Toriuchi", desc: "On ron, each 1s 
 define_mod kansai_chiitoitsu, name: "Kansai Chiitoitsu", desc: "Chiitoitsu now allows repeated pairs."
 define_mod min_han, order: 1, name: "Minimum Han", desc: "Minimum han required to win."
 config_mod min_han, name: "min", values: [1, 2, 3, 4, "Mangan", "Yakuman"], default: 1
-define_mod no_riichi_ankan, deps: ["kan", "yaku/riichi"], name: "No Riichi Ankan", desc: "Disallow any concealed kan while in riichi, not just ones that change your waits."
-define_mod kokushi_chankan, deps: ["kan"], name: "Kokushi Chankan", desc: "Allow robbing ankans if in tenpai for kokushi musou."
+define_mod no_riichi_ankan, deps: ["yaku/riichi"], name: "No Riichi Ankan", desc: "Disallow any concealed kan while in riichi, not just ones that change your waits."
+define_mod no_fifth_tile_tenpai, deps: ["yaku/riichi"], name: "No Fifth Tile Tenpai", desc: "At exhaustive draw, you are not considered tenpai if all four tiles of each wait is in hand: for example, 123456789m1111p. You may still declare riichi with such a hand, however."
+define_mod kokushi_ankan_chankan, name: "Kokushi Chankan", desc: "Allow robbing ankans if in tenpai for kokushi musou."
 define_mod first_gets_riichi_sticks, deps: ["yaku/riichi"], name: "First Gets Riichi Sticks", desc: "At the end of the game, all leftover riichi sticks on the table are given to first place. (Otherwise they are lost.)"
 define_mod starting_score, order: -2, name: "Starting Points", desc: "Number of points each player starts with. You can also set this by writing the following in the Config tab: \"initial_score\": 100000"
 config_mod starting_score, name: "points", values: [0,5000,10000,15000,20000,25000,30000,35000,40000,45000,50000,100000], default: 25000
 define_mod_category "Abortive Draws"
 define_mod suufon_renda, name: "Suufon Renda", desc: "Enable 4 wind abortive draw."
 define_mod suucha_riichi, name: "Suucha Riichi", deps: ["yaku/riichi"], desc: "Enable 4 riichi abortive draw."
-define_mod suukaikan, deps: ["kan"], name: "Suukaikan", desc: "Enable 4 kan abortive draw."
+define_mod suukaikan, name: "Suukaikan", desc: "Enable 4 kan abortive draw."
 define_mod sanchahou, conflicts: ["head_bump"], name: "Sanchahou", desc: "Enable triple ron abortive draw."
 define_mod kyuushu_kyuuhai, name: "Kyuushu Kyuuhai", desc: "Enable 9 distinct terminal/honor abortive draw."
 define_mod_category "Dora"
@@ -634,8 +633,8 @@ define_mod aka, order: 3, conflicts: ["chinitsu"], name: "Aka", desc: "Enables a
 config_mod aka, name: "man", values: [0,1,2,3,4], default: 1
 config_mod aka, name: "pin", values: [0,1,2,3,4], default: 1
 config_mod aka, name: "sou", values: [0,1,2,3,4], default: 1
-define_mod kandora, deps: ["kan", "dora"], name: "Kandora", desc: "Enables dora flip on kan."
-define_mod immediate_kan_dora, order: 1, deps: ["kan", "kandora", "dora"], name: "Immediate Kan Dora", desc: "Flip kan dora immediately after daiminkan and kakan."
+define_mod kandora, deps: ["dora"], name: "Kandora", desc: "Enables dora flip on kan."
+define_mod immediate_kan_dora, order: 1, deps: ["kandora", "dora"], name: "Immediate Kan Dora", desc: "Flip kan dora immediately after daiminkan and kakan."
 define_mod ao, order: 3, deps: ["aka"], conflicts: ["its_all_aka"], name: "Ao", desc: "Enables ao dora (blue fives), worth 2 han each."
 config_mod ao, name: "man", values: [0,1,2,3,4], default: 1
 config_mod ao, name: "pin", values: [0,1,2,3,4], default: 1
@@ -686,7 +685,7 @@ config_mod "yaku/riichi", name: "drawless", values: [false, true]
 define_mod "yaku/ippatsu", order: 2, name: "Ippatsu", deps: ["yaku/riichi"], desc: "Enables ippatsu. \"One-shot\". 1 han if you win before or during your next draw after riichi. Calls invalidate."
 define_mod "yaku/tsubame_gaeshi", name: "Tsubame Gaeshi", deps: ["yaku/riichi"], desc: "Local yaku. \"Swallow Reversal\". 1 han if you win off a riichi declaration discard."
 define_mod "yaku/shiiaru_raotai", name: "Shiiaru Raotai", desc: "Local yaku. \"Twelve Tiles Down\". 1 han if you win with four calls (and therefore on a single tile wait). Closed kans are permitted."
-define_mod "yaku/kanburi", deps: ["kan"], name: "Kanburi", desc: "Local yaku. \"Shoot After Kan\". 1 han if you win off the tile discarded by a player who just called kan."
+define_mod "yaku/kanburi", name: "Kanburi", desc: "Local yaku. \"Shoot After Kan\". 1 han if you win off the tile discarded by a player who just called kan."
 define_mod "yaku/honors_chiitoitsu", name: "Honors Chiitoitsu", desc: "Local yaku. 1 han on top of chiitoitsu if three of your pairs are dragons, or if four of your pairs are winds. If you have all seven honor pairs? Double yakuman."
 define_mod "yaku/uushin_tsuukan", name: "Uushin Tsuukan", desc: "Local yaku. \"Five-Heart Straight\". 1 han on top of ittsu if the winning tile is the five needed for ittsu."
 define_mod "yaku/ketsupaihou", name: "Ketsupaihou", desc: "Local yaku. \"Missing Tile\". 1 han if you have an edge (12, 89) or middle (24, 57) wait on a tile for which three are already publicly visible (so 12333 winning on 3 doesn't count)."
@@ -701,7 +700,7 @@ define_mod "yaku/choupaikou", name: "Choupaikou etc.", desc: "Local yaku. 2 han 
 define_mod "yaku/suuzuukou", name: "Suuzuukou", desc: "Local yaku. \"Four Honor Triplets\". 2 han for having four honor tile triplets."
 define_mod "yaku/uumensai", name: "Uumensai", desc: "Local yaku. \"Five Suits Collected\". 2 han if your hand includes all five suits (character, circle, bamboo, wind, dragon)."
 define_mod "yaku/sanpuukou", name: "Sanpuukou", desc: "Local yaku. \"Three Wind Triplets\". 2 han if you have three wind triplets."
-define_mod "yaku/renkaihou", deps: ["kan"], name: "Renkaihou", desc: "Local yaku. \"Consecutive Blossom\". 2 han if you kan off the rinshan tile and win off of _that_ rinshan tile. Does not stack with rinshan."
+define_mod "yaku/renkaihou", name: "Renkaihou", desc: "Local yaku. \"Consecutive Blossom\". 2 han if you kan off the rinshan tile and win off of _that_ rinshan tile. Does not stack with rinshan."
 define_mod "yaku/mondeikou", deps: ["aka"], name: "Mondeikou", desc: "Local yaku. If you have 4 aka, 2 han on top of aka. This counts as a yaku."
 # 3 han
 define_mod "yaku/isshoku_sanjun", name: "Isshoku Sanjun", desc: "Local yaku. \"Pure Triple Sequences\". 2 han if you have three of the exact same sequence in one suit, like 123 123 123. Like iipeikou but three. +1 han if closed. Does not stack with iipeikou (123 123) or sanrenkou (111 222 333)."
@@ -709,14 +708,14 @@ define_mod "yaku/ittsu_chanta", name: "Ittsu Chanta", desc: "Local yaku. 2 han i
 define_mod "yaku/tanfonhou", name: "Tanfonhou", desc: "Local yaku. \"Win Without Red\". 2 han if your hand contains no red. This means you can have only 248p (2,4,8 circles), 23468s (2,3,4,6,8 bamboo), and any honors except red dragon. 5 han instead if no honor tiles (chintanfon). +1 han if closed."
 define_mod "yaku/chinpeikou", name: "Chinpeikou", desc: "Local yaku. 3 han on top of ryanpeikou if your ryanpeikou sequences are all the same numbers (may be different suits), like 112233 112233. No restriction on the pair, so you can have an honor pair (despite 'chin' being in the name)."
 # 4 han
-define_mod "yaku/chinchii_toushii", deps: ["kan", "yaku/ketsupaihou"], name: "Chinchii Toushii", desc: "Local yaku. \"Golden Rooster Steals Food\". 4 han instead of the usual 2 han if you win ketsupaihou by chankan."
+define_mod "yaku/chinchii_toushii", deps: ["yaku/ketsupaihou"], name: "Chinchii Toushii", desc: "Local yaku. \"Golden Rooster Steals Food\". 4 han instead of the usual 2 han if you win ketsupaihou by chankan."
 define_mod_category "Mangan"
-define_mod "yaku/renhou", name: "Renhou", desc: "Local yaku. Instant mangan/yakuman if you win off the first tile someone dropped before your first draw. Calls invalidate."
-config_mod "yaku/renhou", name: "is", values: ["Mangan", "Yakuman"], default: "Yakuman"
+define_mod "yaku/riichi_renhou", name: "Renhou", desc: "Local yaku. Instant mangan/yakuman if you win off the first tile someone dropped before your first draw. Calls invalidate."
+config_mod "yaku/riichi_renhou", name: "is", values: ["Mangan", "Yakuman"], default: "Yakuman"
 define_mod "yaku/kinkei_dokuritsu", name: "Kinkei Dokuritsu", desc: "Local yaku. \"Golden Rooster Standing Alone\". Mangan if you are waiting on 1s (1 bamboo, the bird tile) with four calls. Can be open or closed."
 define_mod "yaku/touchao_hanchanshue", name: "Touchao Hanchanshue", desc: "Local yaku. \"Fishing Alone in the Cold River Snow\". Mangan if you are waiting on 5z (white dragon) with four calls (open or closed)."
-define_mod "yaku/uupin_kaihou", deps: ["kan"], name: "Uupin Kaihou", desc: "Local yaku. \"Gathering a Plum Blossom from the Roof\". Mangan if you win with rinshan on the 5p (5 circles)."
-define_mod "yaku/ryanzou_chankan", deps: ["kan"], name: "Ryanzou Chankan", desc: "Local yaku. \"Scratching a Carrying Pole\". Mangan if you win with chankan on the 2s (2 bamboo)."
+define_mod "yaku/uupin_kaihou", name: "Uupin Kaihou", desc: "Local yaku. \"Gathering a Plum Blossom from the Roof\". Mangan if you win with rinshan on the 5p (5 circles)."
+define_mod "yaku/ryanzou_chankan", name: "Ryanzou Chankan", desc: "Local yaku. \"Scratching a Carrying Pole\". Mangan if you win with chankan on the 2s (2 bamboo)."
 define_mod "yaku/iipin_mouyue", name: "Iipin Mouyue", desc: "Local yaku. \"Plucking the Moon from the Bottom of the Sea\". Mangan if you win with haitei (not houtei) on the 1p (1 circles)."
 define_mod "yaku/chuupin_raoyui", name: "Chuupin Raoyui", desc: "Local yaku. \"Catching Fish from the Bottom of the River\". Mangan if you win with houtei (not haitei) on the 9p (9 circles)."
 define_mod "yaku/shanron_chonchu", name: "Shanron Chonchu", desc: "Local yaku. \"Two Dragons Fighting Over Pearls\". Mangan if you have kyandonhou (two mixed double sequences) in manzu and souzu, plus a pinzu pair. For the manzu and souzu suits, your two sequences in that suit should not overlap."
@@ -727,7 +726,7 @@ define_mod "yaku/dorahairi_chinroutou_chiitoitsu", deps: ["dora"], name: "Doraha
 define_mod_category "Yakuman"
 define_mod "yaku/paarenchan", name: "Paarenchan", desc: "Local yakuman. The eighth consecutive dealer win is worth yakuman. Exhaustive and abortive draws break the streak. After 5 wins, the minimum han required for the dealer becomes 2 han."
 define_mod "yaku/ishino_uenimo_sannen", name: "Ishino Uenimo Sannen", deps: ["yaku/riichi"], desc: "Local yakuman. \"Three Years on a Rock\". If you win with double riichi and haitei/houtei, it's yakuman."
-define_mod "yaku/toukanhou", deps: ["kan"], name: "Toukanhou", desc: "Local yakuman. \"First Kan Win\". If you kan (concealed or from a player) before discarding any tile, and win with rinshan, it's yakuman. Any call from an opponent invalidates this."
+define_mod "yaku/toukanhou", name: "Toukanhou", desc: "Local yakuman. \"First Kan Win\". If you kan (concealed or from a player) before discarding any tile, and win with rinshan, it's yakuman. Any call from an opponent invalidates this."
 define_mod "yaku/shiisanpuutaa", name: "Shiisanpuutaa", desc: "Local yakuman. \"Thirteen Unconnected\". If you start with 13 disconnected tiles (with one forming a pair), it's yakuman. Calls invalidate."
 define_mod "yaku/shiisanuushi", name: "Shiisanuushi", desc: "Local yakuman. \"Thirteen Independent\". If you start with 14 disconnected tiles, it's yakuman. Calls invalidate."
 define_mod "yaku/suurenkou", name: "Suurenkou", desc: "Local yakuman. \"Four Consecutive Triplets\". If you have four triplets of the same suit of increasing number, like 111 222 333 444, it's yakuman. Pao is applied if the fourth triplet is called."
@@ -749,12 +748,10 @@ define_mod "yaku/tohoku_expressway", name: "Tohoku Expressway", desc: "Local yak
 define_mod "yaku/tohoku_shinkansen", name: "Tohoku Shinkansen", desc: "Local yakuman. If your closed hand consists of an ittsu and east/north winds, it's yakuman."
 define_mod "yaku/blue_tunnel", name: "Blue Tunnel", desc: "Local yakuman. If your hand consists of only 248p (2,4,8 circles), green dragon, and one type of wind, it's yakuman."
 define_mod "yaku/junsei_ryuuiisou", name: "Junsei Ryuuiisou", desc: "Local yakuman. If you have ryuuiisou without green dragon, it's double yakuman. Doesn't stack with ryuuiisou."
-define_mod "yaku/chousangen", deps: ["kan"], name: "Chousangen", desc: "Local yakuman. If you have kans of all three dragons, it's double yakuman. Doesn't stack with daisangen."
-define_mod "yaku/chousuushii", deps: ["kan"], name: "Chousuushii", desc: "Local yakuman. If you have kans of all four winds, it's quadruple yakuman. Doesn't stack with daisuushi and suukantsu."
+define_mod "yaku/chousangen", name: "Chousangen", desc: "Local yakuman. If you have kans of all three dragons, it's double yakuman. Doesn't stack with daisangen."
+define_mod "yaku/chousuushii", name: "Chousuushii", desc: "Local yakuman. If you have kans of all four winds, it's quadruple yakuman. Doesn't stack with daisuushi and suukantsu."
 define_mod_category "Other"
-define_mod show_waits, name: "Show Waits", desc: "Add some UI that shows waits."
-define_mod open_hands, name: "Open Hands", desc: "Everyone plays with tiles shown."
-define_mod cancellable_riichi, order: 1, deps: ["yaku/riichi"], name: "Cancellable Riichi", desc: "Everyone plays with tiles shown."
+define_mod cancellable_riichi, order: 1, deps: ["yaku/riichi"], name: "Cancellable Riichi", desc: "Riichi declarations happen only after you confirm by discarding a tile."
 define_mod ten, order: 3, name: "Ten", desc: "Adds 10m, 10p, and 10s. Changes dora accordingly (if dora is enabled). Tanyao now allows nines, and chanta/junchan/honroutou require tens instead. 13 Orphans now requires the ten instead of the nine of each suit. Ittsu allows 23456789T."
 define_mod star_suit, order: 2, name: "Star Suit (beta)", desc: "Adds a fourth suit (stars). This suit does not form yaku. This mod is in beta because we should probably write some yaku for it."
 define_mod space, order: 2, name: "Space Mahjong", desc: "Sequences can wrap (891, 912). Winds and dragons can make sequences. You can chii from any direction. Chiitoitsu is disabled. Open kokushi is allowed and worth 3 han."
@@ -771,7 +768,7 @@ define_mod calls_are_forced, conflicts: ["chombo"], name: "Calls Are Forced", de
 define_mod chombo, conflicts: ["calls_are_forced"], name: "Chombo", desc: "The tsumo and ron buttons are enabled on every draw and discard. If you make an incorrect win call, your hand is dead and you cannot make a win call for the remainder of the round."
 
 set default_mods, [
-  "kan", "honba", "yaku/riichi", "dora", "ura", "kandora", "aka",
+  "honba", "yaku/riichi", "dora", "ura", "kandora", "aka",
   "yaku/ippatsu",
   "nagashi",
   "tobi",
@@ -784,13 +781,11 @@ set default_mods, [
   "agarirenchan", "tenpairenchan",
   "kyuushu_kyuuhai",
   "double_wind_4_fu",
-  "yaku/renhou", "pao", "kokushi_chankan",
-  "cancellable_riichi",
-  "show_waits"
+  "yaku/riichi_renhou", "pao", "kokushi_ankan_chankan",
+  "cancellable_riichi"
 ]
 
 define_preset "Mahjong Soul", [
-  "kan",
   %{name: "honba", config: %{value: 100}},
   %{name: "yaku/riichi", config: %{bet: 1000, drawless: false}},
   %{name: "nagashi", config: %{is: "Mangan"}},
@@ -804,7 +799,7 @@ define_preset "Mahjong Soul", [
   "kuikae_nashi",
   "double_wind_4_fu",
   "pao",
-  "kokushi_chankan",
+  "kokushi_ankan_chankan",
   "suufon_renda",
   "suucha_riichi",
   "suukaikan",
@@ -821,7 +816,6 @@ define_preset "Mahjong Soul", [
   "first_gets_riichi_sticks"
 ]
 define_preset "tenhou.net", [
-  "kan",
   %{name: "honba", config: %{value: 100}},
   %{name: "yaku/riichi", config: %{bet: 1000, drawless: false}},
   %{name: "nagashi", config: %{is: "Mangan"}},
@@ -835,7 +829,8 @@ define_preset "tenhou.net", [
   "kuikae_nashi",
   "double_wind_4_fu",
   "pao",
-  "kokushi_chankan",
+  "no_fifth_tile_tenpai",
+  "kokushi_ankan_chankan",
   "suufon_renda",
   "suucha_riichi",
   "suukaikan",
@@ -852,7 +847,6 @@ define_preset "tenhou.net", [
   "first_gets_riichi_sticks"
 ]
 define_preset "Riichi City", [
-  "kan",
   %{name: "honba", config: %{value: 100}},
   %{name: "yaku/riichi", config: %{bet: 1000, drawless: false}},
   %{name: "nagashi", config: %{is: "Mangan"}},
@@ -867,7 +861,7 @@ define_preset "Riichi City", [
   "double_wind_4_fu",
   "pao",
   "pao_rinshan",
-  "kokushi_chankan",
+  "kokushi_ankan_chankan",
   "suufon_renda",
   "suucha_riichi",
   "suukaikan",
@@ -884,8 +878,38 @@ define_preset "Riichi City", [
   "shiny_dora",
   "first_gets_riichi_sticks"
 ]
+# amatsuki rules seem to be a clone of mahjong soul rules
+define_preset "Amatsuki Mahjong", [
+  %{name: "honba", config: %{value: 100}},
+  %{name: "yaku/riichi", config: %{bet: 1000, drawless: false}},
+  %{name: "nagashi", config: %{is: "Mangan"}},
+  %{name: "tobi", config: %{below: 0}},
+  %{name: "uma", config: %{_1st: 10, _2nd: 5, _3rd: -5, _4th: -10}},
+  "agarirenchan",
+  "tenpairenchan",
+  "agariyame",
+  "tenpaiyame",
+  %{name: "sudden_death", config: %{goal: 30000}},
+  "kuikae_nashi",
+  "double_wind_4_fu",
+  "pao",
+  "kokushi_ankan_chankan",
+  "suufon_renda",
+  "suucha_riichi",
+  "suukaikan",
+  "kyuushu_kyuuhai",
+  %{name: "dora", config: %{start_indicators: 1}},
+  "ura",
+  "kandora",
+  "yaku/ippatsu",
+  "show_waits",
+  %{name: "min_han", config: %{min: 1}},
+  "cancellable_riichi",
+  %{name: "aka", config: %{man: 1, pin: 1, sou: 1}},
+  "shiny_dora",
+  "first_gets_riichi_sticks"
+]
 define_preset "WRC 2022", [
-  "kan",
   %{name: "honba", config: %{value: 100}},
   %{name: "yaku/riichi", config: %{bet: 1000, drawless: false}},
   %{name: "uma", config: %{_1st: 15, _2nd: 5, _3rd: -5, _4th: -15}},
@@ -903,14 +927,13 @@ define_preset "WRC 2022", [
   "ura",
   "kandora",
   "yaku/ippatsu",
-  %{name: "yaku/renhou", config: %{is: "Mangan"}},
+  %{name: "yaku/riichi_renhou", config: %{is: "Mangan"}},
   "show_waits",
   %{name: "min_han", config: %{min: 1}},
   "cancellable_riichi",
   %{name: "starting_score", config: %{points: 30000}}
 ]
 define_preset "M.League", [
-  "kan",
   %{name: "honba", config: %{value: 100}},
   %{name: "yaku/riichi", config: %{bet: 1000, drawless: false}},
   %{name: "nagashi", config: %{is: "Mangan"}},
@@ -926,7 +949,7 @@ define_preset "M.League", [
   "pao_suukantsu",
   "no_kazoe_yakuman",
   "no_double_yakuman",
-  "kokushi_chankan",
+  "kokushi_ankan_chankan",
   %{name: "dora", config: %{start_indicators: 1}},
   "ura",
   "kandora",
@@ -938,7 +961,6 @@ define_preset "M.League", [
   %{name: "aka", config: %{man: 1, pin: 1, sou: 1}}
 ]
 define_preset "Just Like Modded Minecraft", [
-  "kan",
   %{name: "starting_score", config: %{points: 25000}},
   %{name: "honba", config: %{value: 500}},
   %{name: "tobi", config: %{below: 0}},
@@ -963,7 +985,7 @@ define_preset "Just Like Modded Minecraft", [
   "pao_suukantsu",
   "pao_rinshan",
   "kansai_chiitoitsu",
-  "kokushi_chankan",
+  "kokushi_ankan_chankan",
   "first_gets_riichi_sticks",
   "suufon_renda",
   "suukaikan",
@@ -994,7 +1016,7 @@ define_preset "Just Like Modded Minecraft", [
   "yaku/tanfonhou",
   "yaku/chinpeikou",
   "yaku/chinchii_toushii",
-  %{name: "yaku/renhou", config: %{is: "Yakuman"}},
+  %{name: "yaku/riichi_renhou", config: %{is: "Yakuman"}},
   "yaku/kinkei_dokuritsu",
   "yaku/touchao_hanchanshue",
   "yaku/uupin_kaihou",

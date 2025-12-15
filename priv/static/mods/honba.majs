@@ -1,0 +1,11 @@
+on after_initialization do
+  players = "num_players"
+  if players == 4 do
+    add_rule("Rules", "Honba", "The 100 point sticks in the middle count honba. Each adds %{value} extra points to the winning value. One honba stick is added for every drawn round, and reset to 0 on a win.", %{value: !value * 3})
+  else
+    add_rule("Rules", "Honba", "The 100 point sticks in the middle count honba. Each adds %{value} extra points to the winning value. One honba stick is added for every drawn round, and reset to 0 on a win.", %{value: !value * 2})
+  end
+end
+
+set display_honba, true
+apply set, "score_calculation.honba_value", !value

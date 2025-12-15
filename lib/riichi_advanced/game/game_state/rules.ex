@@ -4,7 +4,6 @@ defmodule RiichiAdvanced.GameState.Rules do
   alias RiichiAdvanced.Match, as: Match
   alias RiichiAdvanced.ModLoader, as: ModLoader
   alias RiichiAdvanced.Utils, as: Utils
-  # import RiichiAdvanced.GameState
 
   defp decode_rules(ruleset, ruleset_json) do
     # decode the rules json
@@ -37,19 +36,16 @@ defmodule RiichiAdvanced.GameState.Rules do
   defp replace_constants(rules) do
     # replace all @ constants in rules
     rules = if Map.has_key?(rules, "constants") do
-      Utils.walk_json(rules, fn
-        value when is_binary(value) ->
-          cond do
-            String.starts_with?(value, "@") -> Map.get(rules["constants"], String.replace_leading(value, "@", ""), value)
-            true -> value
-          end
-        value -> value
+      Utils.splat_json(rules, fn
+        <<"@splat$" <> name>> -> List.wrap(Map.get(rules["constants"], name, name))
+        <<"@" <> name>> -> [Map.get(rules["constants"], name, name)]
+        value -> [value]
       end)
     else rules end
     {:ok, rules}
   end
 
-  def load_rules(ruleset, ruleset_json) do
+  def load_rules(ruleset_json, ruleset) do
     with {:ok, rules} <- decode_rules(ruleset, ruleset_json),
          {:ok, rules} <- replace_constants(rules),
          {:ok, rules} <- check_rules(rules) do
@@ -86,23 +82,31 @@ defmodule RiichiAdvanced.GameState.Rules do
   def get(rules_ref, key, default \\ nil)
   def get(nil, _key, default), do: default
   def get(rules_ref, key, default) do
-    case :ets.lookup(rules_ref, key) do
-      [{_key, value}] -> value
-      [] -> default
+    try do
+      case :ets.lookup(rules_ref, key) do
+        [{^key, value}] -> value
+        [] -> default
+      end
+    rescue
+      _ -> default
     end
   end
 
   def has_key?(nil, _key), do: false
   def has_key?(rules_ref, key) do
-    case :ets.lookup(rules_ref, key) do
-      [_] -> true
-      [] -> false
+    try do
+      case :ets.lookup(rules_ref, key) do
+        [_] -> true
+        [] -> false
+      end
+    rescue
+      _ -> false
     end
   end
 
 
 
-  defp translate_sets_in_match_definitions(match_definitions, set_definitions) do
+  def translate_sets_in_match_definitions(match_definitions, set_definitions) do
     for match_definition <- match_definitions do
       for match_definition_elem <- match_definition do
         case match_definition_elem do

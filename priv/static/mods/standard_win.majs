@@ -1,0 +1,13 @@
+on after_initialization do
+  add_rule("Rules", "Win Condition", "- Four sets (sequences or triplets) and a pair.", -100)
+end
+
+define_set pair, ~s"0 0"
+define_set mentsu, ~s"0 0 0 | 0 1 2"
+define_set taatsu, ~s"0 0 | 0 1 | 0 2"
+
+define_const standard_tenpai, ~m"exhaustive, mentsu:3, taatsu:1, pair:1 | exhaustive, mentsu:4"
+define_const standard_win, ~m"exhaustive, mentsu:4, pair:1"
+
+apply set_append, "tenpai_definition", +@standard_tenpai
+apply set_append, "win_definition", +@standard_win

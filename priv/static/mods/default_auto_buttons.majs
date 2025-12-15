@@ -1,0 +1,38 @@
+define_auto_button _1_auto_sort,
+  display_name: "A",
+  desc: "Automatically sort your hand.",
+  enabled_at_start: true
+  do
+    sort_hand
+  end
+
+define_auto_button _2_auto_ron,
+  display_name: "R",
+  desc: "Automatically declare wins."
+  do
+    if buttons_include("ron") do
+      press_button("ron")
+    end
+    if buttons_include("tsumo") do
+      press_button("tsumo")
+    end
+  end
+
+define_auto_button _3_auto_no_call,
+  display_name: "C",
+  desc: "Skip all calls except wins."
+  do
+    if not_our_turn and buttons_include("skip") and buttons_exclude("ron", "chankan") do
+      press_button("skip")
+    end
+  end
+
+define_const no_auto_discard_calls, ["tsumo", "ankan"]
+define_auto_button _4_auto_discard,
+  display_name: "D",
+  desc: "Automatically discard your drawn tile."
+  do
+    if our_turn and buttons_exclude(+@no_auto_discard_calls) and has_draw do
+      discard_draw
+    end
+  end

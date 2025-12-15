@@ -1,0 +1,12 @@
+on after_initialization do
+  add_rule("$value $han", "$name", "Your hand consists only of 2-8 number tiles.", %{value: !value, han: !han, name: !name})
+  update_rule("$value $han", "$name", "%{example_hand}", %{value: !value, han: !han, name: !name, example_hand: ~t"234m33777p 45678s 6s"})
+end
+
+on before_scoring do
+  add_attr(["hand", "calls", "winning_tile"], ["_yaochuu"], ["yaochuuhai"])
+end
+
+define_set yaochuuhai, ~s"any@yaochuu"
+
+define_yaku !list, !name, !value, not_match(["hand", "calls", "winning_tile"], ~m"yaochuuhai:1")

@@ -1,0 +1,56 @@
+on after_initialization do
+  if equals(!min, "Mangan") do
+    add_rule("Rules", "Minimum Han", "Your hand must score at least mangan to win.", -10)
+  else
+    if equals(!min, "Yakuman") do
+      add_rule("Rules", "Minimum Han", "Only yakuman hands can win.", -10)
+    else
+      add_rule("Rules", "Minimum Han", "Your hand must score at least %{score} han to win.", %{score: !min}, -10)
+    end
+  end
+  if rule_exists("Rules", "Dora") do
+    if yaku_exists("extra_yaku", "Dora") do
+      update_rule("Rules", "Minimum Han", "(Dora does not count.)", -10)
+    else
+      update_rule("Rules", "Minimum Han", "(Dora counts.)", -10)
+    end
+  end
+end
+
+if !min == "Mangan" do
+  # check for kiriage
+  if [3, 60] in "score_calculation.limit_thresholds" do
+    define_const min_han_check_discard,
+         has_yaku_with_discard(3, 60)
+      or has_yaku_with_discard(4, 30)
+      or has_yaku_with_discard(5)
+      or has_yaku2_with_discard(1)
+  else
+    define_const min_han_check_discard,
+         has_yaku_with_discard(3, 70)
+      or has_yaku_with_discard(4, 40)
+      or has_yaku_with_discard(5)
+      or has_yaku2_with_discard(1)
+  end
+else
+  if !min == "Yakuman" do
+    # check for existence of kazoe
+    if [13, 0] in "score_calculation.limit_thresholds" do
+      define_const min_han_check_discard, has_yaku_with_discard(13) or has_yaku2_with_discard(1)
+    else
+      define_const min_han_check_discard, has_yaku2_with_discard(1)
+    end
+  else
+    define_const min_han_check_discard, has_yaku_with_discard(!min) or has_yaku2_with_discard(1)
+  end
+end
+define_const min_han_check_call, @min_han_check_discard
+replace all, "constants.min_han_check_call", "has_yaku_with_discard", "has_yaku_with_call"
+replace all, "constants.min_han_check_call", "has_yaku2_with_discard", "has_yaku2_with_call"
+define_const min_han_check_hand, @min_han_check_discard
+replace all, "constants.min_han_check_hand", "has_yaku_with_discard", "has_yaku_with_hand"
+replace all, "constants.min_han_check_hand", "has_yaku2_with_discard", "has_yaku2_with_hand"
+
+apply append, "buttons.ron.show_when", +@min_han_check_discard
+apply append, "buttons.chankan.show_when", +@min_han_check_call
+apply append, "buttons.tsumo.show_when", +@min_han_check_hand

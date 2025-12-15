@@ -1,0 +1,5 @@
+on after_initialization do
+  update_rule("Rules", "Agarirenchan", "(Agariyame) An exception is if it's the last round with the dealer ending in first place -- then the game just ends.")
+end
+
+apply set, "agariyame", true

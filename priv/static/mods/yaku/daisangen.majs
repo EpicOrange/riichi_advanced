@@ -1,0 +1,34 @@
+on after_initialization do
+  if equals(!shou_list, "yakuman") do
+    add_rule("Limit", "$name", "You have triplets of two different dragons, and a pair of the third.", %{name: !shou_name})
+    update_rule("Limit", "$name", "%{example_hand}", %{value: !shou_value, han: !han, name: !shou_name, example_hand: ~t"123m23s66777z 000z 4s"})
+  else
+    add_rule("$value $han", "$name", "You have triplets of two different dragons, and a pair of the third.", %{value: !shou_value, han: !han, name: !shou_name})
+    update_rule("$value $han", "$name", "%{example_hand}", %{value: !shou_value, han: !han, name: !shou_name, example_hand: ~t"123m23s66777z 000z 4s"})
+  end
+  if equals(!dai_list, "yakuman") do
+    add_rule("Limit", "$name", "You have triplets of all three dragons.", %{name: !dai_name})
+    update_rule("Limit", "$name", "%{example_hand}", %{value: !dai_value, han: !han, name: !dai_name, example_hand: ~t"123m22s66777z 000z 6z"})
+  else
+    add_rule("$value $han", "$name", "You have triplets of all three dragons.", %{value: !dai_value, han: !han, name: !dai_name})
+    update_rule("$value $han", "$name", "%{example_hand}", %{value: !dai_value, han: !han, name: !dai_name, example_hand: ~t"123m22s66777z 000z 6z"})
+  end
+end
+
+define_set haku, ~s"5z 5z 5z"
+define_set hatsu, ~s"6z 6z 6z"
+define_set chun, ~s"7z 7z 7z"
+define_set haku_pair, ~s"5z 5z"
+define_set hatsu_pair, ~s"6z 6z"
+define_set chun_pair, ~s"7z 7z"
+define_yaku !shou_list, !shou_name, !shou_value, match(["hand", "calls", "winning_tile"], ~m"unique, (haku hatsu chun):2, (haku_pair hatsu_pair chun_pair):1")
+define_yaku !dai_list, !dai_name, !dai_value, match(["hand", "calls", "winning_tile"], ~m"unique, (haku hatsu chun):3")
+define_yaku_precedence !dai_name, [!shou_name]
+
+on after_call do
+  if match(["last_call"], ~m"(haku hatsu chun):1") and match(["calls"], ~m"haku:1, hatsu:1, chun:1") do
+    as callee do
+      make_responsible_for("caller", "all")
+    end
+  end
+end

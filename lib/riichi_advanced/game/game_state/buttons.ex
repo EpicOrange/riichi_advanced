@@ -126,7 +126,9 @@ defmodule RiichiAdvanced.GameState.Buttons do
               Map.get(button, "interrupt_level", 100) >= interrupt_level and 
                 if name in Map.get(Debug.debug_specific_buttons(), seat, []) do
                   case Enum.find(show_when, &not Conditions.check_cnf_condition(state, [&1], %{seat: seat, call_name: name, calls_spec: calls_spec, upgrade_name: upgrades})) do
-                    nil -> true
+                    nil ->
+                      IO.puts("Button #{name} for player #{seat}: passed all conditions")
+                      true
                     condition ->
                       IO.puts("Button #{name} for player #{seat}: failed condition #{inspect(condition)}")
                       false

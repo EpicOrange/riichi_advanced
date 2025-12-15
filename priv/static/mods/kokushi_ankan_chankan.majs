@@ -1,0 +1,7 @@
+on after_initialization do
+  update_rule("Rules", "Chankan", "You may also call ron on concealed kans, but only if you are tenpai for kokushi musou.")
+end
+
+define_const can_chankan, 
+  status("can_chankan", as: "caller")
+  or (last_call_is("ankan") and match(["hand", "calls"], ["kokushi_tenpai"]))

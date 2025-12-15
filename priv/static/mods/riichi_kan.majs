@@ -1,0 +1,125 @@
+on after_initialization do
+  add_rule("1 Han", "Rinshan", "If you kan and then tsumo on the replacement tile, you are awarded rinshan (1 han).")
+  add_rule("1 Han", "Chankan", "If someone calls kan to upgrade an open triplet, you may call ron on the added tile. Doing so awards chankan (1 han).)")
+  add_rule("2 Han", "Sankantsu", "Your hand contains three kans.")
+  add_rule("Yakuman", "Suukantsu", "Your hand contains four kans.")
+end
+
+define_yaku yaku, "Chankan", 1, won_by_call and status("kan", as: "caller")
+define_yaku yaku, "Rinshan", 1, status("kan")
+define_yaku yaku, "Sankantsu", 2, match(["calls"], ~m"(daiminkan ankan kakan):3")
+define_yaku yakuman, "Suukantsu", 1, match(["calls"], ~m"(daiminkan ankan kakan):4")
+
+def do_kan_draw do
+  shift_tile_to_dead_wall(1)
+  draw(1, "opposite_end")
+end
+
+apply prepend, "functions.discard_passed" do
+  as others do
+    unset_status("kan")
+  end
+end
+
+# additional furiten check
+apply append, "functions.discard_passed" do
+  as everyone do
+    if (last_call_is("kakan") and match(["hand", "calls", "last_called_tile"], ["win"]))
+       or (last_call_is("ankan") and match(["hand", "calls"], ["kokushi_tenpai"]) and match(["hand", "calls", "last_called_tile"], ["win"])) do
+      set_status("furiten")
+    end
+  end
+end
+
+apply append, "buttons.ron.precedence_over", ["daiminkan"]
+
+define_button daiminkan,
+  display_name: "Kan",
+  show_when:
+        not_our_turn
+    and not_no_tiles_remaining
+    and someone_else_just_discarded
+    and tile_not_drawn(-4)
+    and call_available,
+  precedence_over: ["chii", "pon", "daiminkan"],
+  call: [[0, 0, 0]],
+  call_style: %{
+    kamicha: ["call_sideways", 0, 1, 2],
+    toimen: [0, "call_sideways", 1, 2],
+    shimocha: [0, 1, 2, "call_sideways"]
+  }
+  do
+    big_text("Kan")
+    set_status("kan")
+    call
+    change_turn("self")
+    do_kan_draw
+  end
+
+define_button ankan,
+  display_name: "Ankan",
+  show_when:
+        our_turn
+    and not_no_tiles_remaining
+    and not_just_discarded
+    and not_just_called
+    and tile_not_drawn(-4)
+    and self_call_available,
+  precedence_over: ["chii", "pon", "daiminkan"],
+  call: [[0, 0, 0]],
+  call_style: %{self: [["1x", 2], 0, 1, ["1x", 3]]}
+  do
+    big_text("Kan")
+    set_status("kan")
+    self_call
+    do_kan_draw
+  end
+
+define_button kakan,
+  display_name: "Kan",
+  show_when:
+        our_turn
+    and not_no_tiles_remaining
+    and not_just_discarded
+    and not_just_called
+    and tile_not_drawn(-4)
+    and can_upgrade_call,
+  precedence_over: ["chii", "pon", "daiminkan"],
+  call: [[0, 0, 0]],
+  upgrades: "pon",
+  call_style: %{
+    kamicha: [["sideways", 0], "call_sideways", 1, 2],
+    toimen: [0, ["sideways", 1], "call_sideways", 2],
+    shimocha: [0, 1, ["sideways", 2], "call_sideways"]
+  }
+  do
+    big_text("Kan")
+    set_status("kan", "can_chankan")
+    upgrade_call
+    unset_status("can_chankan")
+    discard_passed
+    do_kan_draw
+  end
+
+define_const can_chankan, status("can_chankan", as: "caller")
+define_button chankan,
+  display_name: "Ron",
+  show_when: not_our_turn
+    and someone_else_just_called
+    and status_missing("furiten", "just_reached")
+    and +@can_chankan
+    and match(["hand", "calls"], ["tenpai"])
+    and match(["hand", "calls", "last_called_tile"], ["win"]),
+  precedence_over: ["chii", "pon", "daiminkan"]
+  do
+    big_text("Ron")
+    pause(1000)
+    reveal_hand
+    win_by_call
+  end
+
+apply merge, "constants.calls_fu", %{
+  ankan: 16,
+  daiminkan: 8,
+  kakan: 8
+}

@@ -3,7 +3,7 @@ on after_initialization do
 end
 
 define_button open_riichi,
-  display_name: "Open Riichi", 
+  display_name: "Open Riichi",
   show_when: our_turn
     and has_draw
     and status_missing("riichi")
@@ -21,8 +21,8 @@ define_button open_riichi,
     end
   end
 
-define_yaku yaku, "Open Riichi", 2, status("open_riichi")
-define_yaku yaku, "Open Double Riichi", 3, status("open_riichi", "double_riichi")
+define_yaku riichi_yaku, "Open Riichi", 2, status("open_riichi")
+define_yaku riichi_yaku, "Open Double Riichi", 3, status("open_riichi", "double_riichi")
 define_yaku_precedence "Open Riichi", ["Riichi"]
 define_yaku_precedence "Open Double Riichi", ["Open Riichi", "Double Riichi"]
 

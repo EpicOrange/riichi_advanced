@@ -1,0 +1,30 @@
+on after_initialization do
+  update_rule("Rules", "Riichi", "(Ippatsu) If you win before or during your next draw after riichi, you are awarded ippatsu (1 han). Calls invalidate ippatsu.")
+  update_rule("Rules", "Shuugi", "(Ippatsu) Ippatsu is worth 1 shuugi.")
+end
+
+define_yaku riichi_yaku, "Ippatsu", 1, status("ippatsu")
+
+# set ippatsu status on riichi
+apply prepend, "buttons.riichi.actions" do set_status("ippatsu") end
+apply prepend, "buttons.open_riichi.actions" do set_status("ippatsu") end
+
+apply set_prepend, "functions.discard_passed" do
+  # unset ippatsu status if your own discard passes
+  as last_discarder do
+    if status_missing("just_reached") do
+      unset_status("ippatsu")
+    end
+  end
+  # unset everyone's ippatsu status after any call
+  if just_called do
+    unset_status_all("ippatsu")
+  end
+end
+
+# unset everyone's ippatsu status after any call (except for chankan-able calls)
+on after_call do
+  unless status("can_chankan") do
+    unset_status_all("ippatsu")
+  end
+end

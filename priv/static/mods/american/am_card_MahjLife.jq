@@ -1,6 +1,6 @@
 .win_definition = [
     # Year // TODO: change this category every time the year changes.
-    "FF 2025a DDDDb DDDDc", "FF 2025a DDDDa DDDDb", "FF 2025a DDDDa DDDDa", "FF 2025a DDDDb DDDDb", # NOTE: dragon kongs can actually be any suits for this hand, not just the two opposite suits to the year. See https://youtu.be/7WygnpfFbMQ?&t=1488 for clarification.
+    "FF 2025a DDDDa|DDDDb|DDDDc DDDDa|DDDDb|DDDDc", # NOTE: dragon kongs can actually be any suits for this hand, not just the two opposite suits to the year. See https://youtu.be/7WygnpfFbMQ?&t=1488 for clarification.
     "2025a NNNN RR SSSS",
     "2025a EEEE GG WWWW",
     "FF 2025a DDDDb NEWS", # concealed
@@ -65,7 +65,7 @@
 |
 .open_win_definition = [
     # Year // TODO: change this category every time the year changes.
-    "FF 2025a DDDDb DDDDc", "FF 2025a DDDDa DDDDb", "FF 2025a DDDDa DDDDa", "FF 2025a DDDDb DDDDb", # NOTE: dragon kongs can actually be any suits for this hand, not just the two opposite suits to the year. See https://youtu.be/7WygnpfFbMQ?&t=1488 for clarification.
+    "FF 2025a DDDDa|DDDDb|DDDDc DDDDa|DDDDb|DDDDc", # NOTE: dragon kongs can actually be any suits for this hand, not just the two opposite suits to the year. See https://youtu.be/7WygnpfFbMQ?&t=1488 for clarification.
     "2025a NNNN RR SSSS",
     "2025a EEEE GG WWWW",
     # 2468

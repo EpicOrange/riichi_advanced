@@ -2,7 +2,6 @@ defmodule RiichiAdvanced.SMT do
   alias RiichiAdvanced.GameState.Debug, as: Debug
   alias RiichiAdvanced.GameState.TileBehavior, as: TileBehavior
   alias RiichiAdvanced.Match, as: Match
-  alias RiichiAdvanced.Riichi, as: Riichi
   alias RiichiAdvanced.Utils, as: Utils
   use Nebulex.Caching
   
@@ -105,9 +104,7 @@ defmodule RiichiAdvanced.SMT do
           System.system_time(:millisecond) - start_time >= 30000 -> {:halt, nil}
           true ->
             # contradict the last assignments
-            contra = for assignment <- last_assignments do
-              contradict_assignment(assignment, joker_ixs, encoding)
-            end
+            contra = for assignment <- last_assignments, do: contradict_assignment(assignment, joker_ixs, encoding)
             # get a new assignment
             query = "(get-value (#{Enum.join(Enum.map(joker_ixs, fn i -> "joker#{i}" end), " ")}))\n"
             smt = Enum.join(contra ++ ["(check-sat)\n", query])
@@ -143,10 +140,29 @@ defmodule RiichiAdvanced.SMT do
                 |> Enum.flat_map(&apply_permutation.(new_assignment, &1))
                 |> remove_overlapping_assignments()
 
-                # deduplicate assignments that result in the exact same tiles
-                # for example, 4 => 4m, 5 => 5s is the same as 4 => 5s, 5 => 4m
-                ret = Enum.uniq_by(final_assignments, &Map.values(&1) |> Enum.sort())
-                # |> IO.inspect(label: "result")
+                # # deduplicate assignments that result in the exact same tiles
+                # # for example, 4 => 4m, 5 => 5s is the same as 4 => 5s, 5 => 4m
+                # ret = Enum.uniq_by(final_assignments, &Map.values(&1) |> Enum.sort())
+
+                # v2: the above, but for each equivalence class, keep "maximal" assignments
+                # ("maximal" meaning no other set of tiles has more attrs)
+                all_tiles = for assignment <- final_assignments, {_ix, tile} <- assignment, uniq: true, do: {tile, Utils.to_salient_attrs(tile)}
+                # treat _attr as attr for purposes of "most attrs"
+                # so adj_cache[{l, r}] = l <= r (r has at least the attrs of l)
+                adj_cache = for {l_, l} <- all_tiles, {r_, r} <- all_tiles, into: %{}, do: {{l_, r_}, Utils.same_tile(r, l)}
+                ret = final_assignments
+                |> Enum.group_by(&Map.values(&1) |> Utils.strip_attrs(:invisible) |> Enum.sort())
+                |> Map.values()
+                # in each equivalence class, filter for assignments that have at least the same attrs as every assignment, i.e. perfect matching can be formed with all other assignments
+                |> Enum.flat_map(&Enum.filter(&1, fn l -> Enum.all?(&1, fn r ->
+                  l = Map.values(l) |> Enum.sort()
+                  r = Map.values(r) |> Enum.sort()
+                  if l == r do true else
+                    adj = Map.new(Enum.with_index(l), fn {tile, i} -> {i, for {tile2, j} <- Enum.with_index(r), adj_cache[{tile, tile2}] do j end} end)
+                    {pairing, _pairing_r} = Utils.maximum_bipartite_matching(adj)
+                    map_size(pairing) < length(l)
+                  end
+                end) end))
                 {ret, final_assignments}
               [:unsat | _] -> {:halt, nil}
             end
@@ -400,8 +416,6 @@ defmodule RiichiAdvanced.SMT do
     tile_mappings = TileBehavior.tile_mappings(tile_behavior)
 
     calls = calls
-    |> Enum.reject(fn {call_name, _call} -> call_name in Riichi.flower_names() end)
-    |> Enum.map(&Utils.call_to_tiles/1)
     |> Enum.map(&Enum.take(&1, 3)) # ignore kans
     |> Enum.with_index()
 

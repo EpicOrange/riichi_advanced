@@ -81,8 +81,17 @@ defmodule RiichiAdvanced.GameState do
       :erlang.phash2({tile_behavior.aliases, tile_behavior.ordering, tile_behavior.tile_freqs, tile_behavior.dismantle_calls, tile_behavior.ignore_suit})
     end
     def joker_power(tile, tile_behavior) do
-      aliases = Utils.apply_tile_aliases(tile, tile_behavior)
-      if :any in aliases do 1000000 else MapSet.size(aliases) end
+      is_any_joker = case Map.get(tile_behavior.aliases, :any) do
+        nil -> false
+        attrs_aliases ->
+          Map.values(attrs_aliases)
+          |> Enum.concat()
+          |> Utils.has_matching_tile?([tile])
+      end
+      if is_any_joker do 1000000 else
+        aliases = Utils.apply_tile_aliases(tile, tile_behavior)
+        MapSet.size(aliases)
+      end
     end
     # the idea is to move the most powerful jokers to the back
     # power is just number of aliases
@@ -107,10 +116,32 @@ defmodule RiichiAdvanced.GameState do
       end)
       %TileBehavior{ tile_behavior | aliases: new_aliases }
     end
+    # get an assignment for the obvious jokers (the ones with only one assignable value)
+    def get_obvious_joker_assignment(tile_behavior, smt_hand, smt_calls) do
+      obvious_joker_map = tile_mappings(tile_behavior)
+      |> Enum.flat_map(fn
+        {joker, [assign]} -> [{joker, assign}]
+        _ -> []
+      end)
+      |> Map.new()
+      # return a map %{index => tile}
+      Enum.with_index(smt_hand ++ Enum.concat(smt_calls))
+      |> Enum.flat_map(fn {tile, ix} ->
+        case Enum.find(obvious_joker_map, fn {from, _to} -> Utils.same_tile(tile, from) end) do
+          nil         -> []
+          {from, to} ->
+            # replace any tiles
+            base = if Utils.strip_attrs(to) == :any do tile else to end
+            attrs = (Utils.get_attrs(tile) ++ Utils.get_attrs(to)) -- Utils.get_attrs(from)
+            [{ix, Utils.add_attr(base, attrs)}]
+        end
+      end)
+      |> Map.new()
+    end
   end
 
   defmodule Player do
-    # ensure this stays at or below 32 keys (currently 28)
+    # ensure this stays at or below 32 keys (currently 29)
     defstruct [
       # persistent
       score: 0,
@@ -140,6 +171,7 @@ defmodule RiichiAdvanced.GameState do
       last_discard: nil, # for animation purposes and to avoid double discarding
       ready: false,
       ai_thinking: false,
+      pao_map: %{}, # an entry %{seat => [yaku]} means if this player wins, `seat` must pay for `yaku`
       tile_behavior: %TileBehavior{},
       cache: %PlayerCache{},
     ]
@@ -298,6 +330,7 @@ defmodule RiichiAdvanced.GameState do
     ruleset_json = if state.ruleset != "custom" and not Enum.empty?(mods) do
       ModLoader.apply_mods(ruleset_json, mods, state.ruleset)
     else ruleset_json end
+    |> ModLoader.apply_post_mods(state.ruleset)
     if not Enum.empty?(mods) do
       # cache mods
       RiichiAdvanced.ETSCache.put({state.ruleset, state.room_code}, mods, :cache_mods)
@@ -336,7 +369,7 @@ defmodule RiichiAdvanced.GameState do
       timer_debouncer: timer_debouncer
     })
 
-    state = case Rules.load_rules(state.ruleset, ruleset_json) do
+    state = case Rules.load_rules(ruleset_json, state.ruleset) do
       {:ok, rules_ref} -> Map.put(state, :rules_ref, rules_ref)
       {:error, msg}    -> show_error(state, msg)
     end
@@ -782,7 +815,7 @@ defmodule RiichiAdvanced.GameState do
   end
 
   def exhaustive_draw(state, draw_name) do
-    state = Map.put(state, :round_result, :draw)
+    state = Map.put(state, :round_result, :exhaustive_draw)
 
     push_message(state, [%{text: "Game ended by exhaustive draw"}])
 
@@ -814,7 +847,7 @@ defmodule RiichiAdvanced.GameState do
   end
 
   def abortive_draw(state, draw_name) do
-    state = Map.put(state, :round_result, :draw)
+    state = Map.put(state, :round_result, :abortive_draw)
     IO.puts("Abort")
 
     push_message(state, [%{text: "Game ended by abortive draw: (%{draw_name})", vars: %{draw_name: draw_name}}])
@@ -950,11 +983,20 @@ defmodule RiichiAdvanced.GameState do
                     |> Map.update!(:kyoku, & &1 + 1)
                     |> Map.put(:honba, 0)
                     |> Map.put(:visible_screen, nil)
-                :draw when state.next_dealer == :self ->
+                :exhaustive_draw when state.next_dealer == :self ->
                   state
                     |> Map.update!(:honba, & &1 + 1)
                     |> Map.put(:visible_screen, nil)
-                :draw ->
+                :exhaustive_draw ->
+                  state
+                    |> Map.update!(:kyoku, & &1 + 1)
+                    |> Map.update!(:honba, & &1 + 1)
+                    |> Map.put(:visible_screen, nil)
+                :abortive_draw when state.next_dealer == :self ->
+                  state
+                    |> Map.update!(:honba, & &1 + 1)
+                    |> Map.put(:visible_screen, nil)
+                :abortive_draw ->
                   state
                     |> Map.update!(:kyoku, & &1 + 1)
                     |> Map.update!(:honba, & &1 + 1)
@@ -994,12 +1036,12 @@ defmodule RiichiAdvanced.GameState do
     forced = state.round_result == :end_game # e.g. tobi
     dealer = Riichi.get_east_player_seat(state.kyoku, state.available_seats)
     agariyame = Rules.get(state.rules_ref, "agariyame", false) and state.round_result == :win and dealer in state.winner_seats
-    tenpaiyame = Rules.get(state.rules_ref, "tenpaiyame", false) and state.round_result == :draw and "tenpai" in state.players[dealer].status
+    tenpaiyame = Rules.get(state.rules_ref, "tenpaiyame", false) and state.round_result in [:exhaustive_draw, :abortive_draw] and "tenpai" in state.players[dealer].status
     max_rounds = Rules.get(state.rules_ref, "max_rounds", :infinity)
-    past_max_rounds = state.kyoku >= max_rounds
+    past_max_rounds = state.kyoku >= max_rounds - 1
     forced or (agariyame and past_max_rounds) or (tenpaiyame and past_max_rounds) or if Rules.has_key?(state.rules_ref, "sudden_death_goal") do
       above_goal = Enum.any?(state.players, fn {_seat, player} -> player.score >= Rules.get(state.rules_ref, "sudden_death_goal") end)
-      past_extra_max_rounds = state.kyoku >= max_rounds + 4
+      past_extra_max_rounds = state.kyoku >= max_rounds + 3
       (above_goal and past_max_rounds) or past_extra_max_rounds
     else past_max_rounds end
   end
@@ -1025,9 +1067,14 @@ defmodule RiichiAdvanced.GameState do
   end
 
   def is_playable?(state, seat, tile) do
-    tile != nil and not has_unskippable_button?(state, seat) and not Utils.has_attr?(tile, ["no_discard"]) and if Rules.has_key?(state.rules_ref, "play_restrictions") do
-      Enum.all?(Rules.get(state.rules_ref, "play_restrictions", []), fn [tile_spec, cond_spec] ->
-        not Riichi.tile_matches(tile_spec, %{seat: seat, tile: tile, players: state.players}) or not Conditions.check_cnf_condition(state, cond_spec, %{seat: seat, tile: tile})
+    tile != nil
+    and not has_unskippable_button?(state, seat)
+    and not Utils.has_attr?(tile, ["no_discard"])
+    and if Rules.has_key?(state.rules_ref, "play_restrictions") do
+      Enum.all?(Rules.get(state.rules_ref, "play_restrictions"), fn [tile_spec, cond_spec] ->
+        not Riichi.tile_matches(tile_spec, %{seat: seat, tile: tile, players: state.players})
+        or not Conditions.check_cnf_condition(state, cond_spec, %{seat: seat, tile: tile})
+        # or not (Conditions.check_cnf_condition(state, cond_spec, %{seat: seat, tile: tile}) |> IO.inspect(label: inspect({seat, tile, cond_spec})))
       end)
     else true end
   end
@@ -1154,7 +1201,12 @@ defmodule RiichiAdvanced.GameState do
     end
   end
 
-  def update_winning_tile(state, seat, :draw, fun), do: update_in(state.players[seat].draw, &[fun.(Enum.at(&1, 0))])
+  def update_winning_tile(state, seat, :draw, fun) do
+    update_in(state.players[seat].draw, fn
+      [draw] -> [fun.(draw)]
+      draw -> draw # no op if 0 or 2+ draws
+    end)
+  end
   def update_winning_tile(state, seat, :best_draw, fun), do: update_winning_tile(state, seat, :draw, fun)
   def update_winning_tile(state, _seat, :call, fun) do
     last_call_action = get_last_call_action(state)
@@ -1233,7 +1285,7 @@ defmodule RiichiAdvanced.GameState do
     |> Enum.map(fn {hand, _calls} -> tiles -- hand end)
     |> Enum.uniq()
     |> Enum.map(fn hand ->
-      state = update_player(state, seat, &%Player{ &1 | hand: hand, status: ["riichi"] }) # avoid renhou
+      state = update_player(state, seat, &%Player{ &1 | hand: hand, status: MapSet.new(["riichi"]) }) # avoid renhou
       # run before_win actions
       state = Actions.trigger_event(state, "before_win", %{seat: seat, win_source: :discard})
       # run before_scoring actions
@@ -1328,6 +1380,20 @@ defmodule RiichiAdvanced.GameState do
     state
   end
 
+  def kill_all_tasks(state) do
+    for seat <- state.available_seats do
+      if state.calculate_playable_indices_pids[seat] do
+        Process.exit(state.calculate_playable_indices_pids[seat], :kill)
+      end
+    end
+    if state.calculate_closest_american_hands_pid do
+      Process.exit(state.calculate_closest_american_hands_pid, :kill)
+    end
+    if state.get_best_minefield_hand_pid do
+      Process.exit(state.get_best_minefield_hand_pid, :kill)
+    end
+  end
+
   defp start_timer(state) do
     state = Map.put(state, :timer, Rules.get(state.rules_ref, "win_timer", 10))
     state = update_all_players(state, fn seat, player -> %Player{ player | ready: is_pid(Map.get(state, seat)) } end)
@@ -1340,17 +1406,15 @@ defmodule RiichiAdvanced.GameState do
     state
   end
 
-  # identifier is either seat or socket.id
-  def handle_call({:link_player_socket, id, seat, spectator, nickname}, {from_pid, _}, state) do
+  def handle_call({:link_player_socket, session_id, seat, spectator, nickname}, {from_pid, _}, state) do
     # make it call :delete_player if the pid goes down
-    identifier = if spectator do id else seat end
-    GenServer.call(state.exit_monitor, {:new_player, from_pid, identifier})
-
-    # initialize message state
-    messages_state = Map.get(RiichiAdvanced.MessagesState.link_player_socket(from_pid, id), :messages_state, nil)
+    identifier = if spectator do session_id else seat end
+    # initialize message state and exit monitor
+    messages_state = Map.get(RiichiAdvanced.MessagesState.link_player_socket(from_pid, session_id), :messages_state, nil)
+    GenServer.call(state.exit_monitor, {:new_player, from_pid, session_id})
     state = update_in(state.messages_states[identifier], &case &1 do
-      nil -> %{id => messages_state}
-      mss -> Map.put(mss, id, messages_state)
+      nil -> %{session_id => messages_state}
+      mss -> Map.put(mss, session_id, messages_state)
     end)
 
     if not spectator do
@@ -1361,11 +1425,11 @@ defmodule RiichiAdvanced.GameState do
 
       # initialize the player
       state = Map.update!(state, seat, &case &1 do
-        nil -> [id]
-        ids -> if id in ids do ids else [id | ids] end
+        nil -> [session_id]
+        ids -> if session_id in ids do ids else [session_id | ids] end
       end)
       state = update_player(state, seat, &%Player{ &1 | nickname: nickname })
-      IO.puts("#{inspect(from_pid)} Player #{id} joined as #{seat}")
+      IO.puts("#{inspect(from_pid)} Player #{session_id} joined as #{seat}")
 
       # tell them about the replay UUID, unless this is a tutorial
       if state.forced_events == nil do
@@ -1433,7 +1497,13 @@ defmodule RiichiAdvanced.GameState do
   end
 
   # called by exit monitor
-  def handle_call({:delete_player, seat}, _from, state) do
+  def handle_call({:delete_player, session_id}, _from, state) do
+    seat = Map.take(state, [:east, :south, :west, :north])
+    |> Enum.find(fn {_seat, session_ids} -> session_id in session_ids end)
+    |> case do
+      nil -> nil
+      {seat, _session_ids} -> seat
+    end
     state = if seat in [:east, :south, :west, :north] do
       case Map.get(state, seat) do
         nil  ->
@@ -1458,7 +1528,7 @@ defmodule RiichiAdvanced.GameState do
       if map_size(state.reserved_seats) <= 1 do
         # immediately stop solo games
         IO.puts("Stopping game #{state.room_code} #{inspect(self())}")
-        DynamicSupervisor.terminate_child(RiichiAdvanced.GameSessionSupervisor, state.supervisor)
+        GenServer.cast(self(), :terminate_game)
       else
         IO.puts("Stopping game #{state.room_code} #{inspect(self())} in 60 seconds")
         :timer.apply_after(60000, GenServer, :cast, [self(), :terminate_game_if_empty])
@@ -1503,11 +1573,19 @@ defmodule RiichiAdvanced.GameState do
     {:noreply, state}
   end
 
+  def handle_cast(:terminate_game, state) do
+    kill_all_tasks(state)
+    GenServer.stop(state.supervisor, :normal)
+    {:noreply, state}
+  end
+
   def handle_cast(:terminate_game_if_empty, state) do
     if Enum.all?(state.messages_states, fn {_seat, messages_state} -> messages_state == nil end) do
       # all players and spectators have left, shutdown
       IO.puts("Stopping game #{state.room_code} #{inspect(self())}")
-      DynamicSupervisor.terminate_child(RiichiAdvanced.GameSessionSupervisor, state.supervisor)
+      # DynamicSupervisor.terminate_child(RiichiAdvanced.GameSessionSupervisor, state.supervisor)
+      kill_all_tasks(state)
+      GenServer.stop(state.supervisor, :normal)
     else
       IO.puts("Not stopping game #{state.room_code} #{inspect(self())}")
     end
@@ -1659,9 +1737,9 @@ defmodule RiichiAdvanced.GameState do
       tile = Enum.at(state.players[seat].hand ++ state.players[seat].draw, index)
       can_discard = Actions.can_discard(state, seat)
       playable = is_playable?(state, seat, tile)
-      if not can_discard or not playable do
-        IO.puts("#{seat} tried to play an unplayable tile: #{inspect{tile}}")
-      end
+      # if not can_discard or not playable do
+      #   IO.puts("#{seat} tried to play an unplayable tile: #{inspect{tile}}")
+      # end
       state = if can_discard and playable and (state.play_tile_debounce[seat] == false or state.log_loading_mode) do
         state = Actions.temp_disable_play_tile(state, seat)
         # assume we're skipping our button choices
@@ -1968,7 +2046,7 @@ defmodule RiichiAdvanced.GameState do
         state = timer_finished(state)
         state
       true ->
-        IO.inspect(Map.new(state.players, fn {seat, player} -> {seat, player.ready} end))
+        # IO.inspect(Map.new(state.players, fn {seat, player} -> {seat, player.ready} end))
         Debounce.apply(state.timer_debouncer)
         state = Map.put(state, :timer, state.timer - 1)
         state
@@ -2101,8 +2179,10 @@ defmodule RiichiAdvanced.GameState do
     end
     self = self()
     {:ok, pid} = Task.start(fn ->
-      win_definition = Rules.get(state.rules_ref, "win_definition", [])
+      closed_win_definition = Rules.get(state.rules_ref, "win_definition", [])
+      open_win_definition = Rules.get(state.rules_ref, "open_win_definition", [])
       for seat <- state.available_seats do
+        win_definition = if Enum.empty?(state.players[seat].calls) do closed_win_definition else open_win_definition end
         closest_american_hands = American.compute_closest_american_hands(state, seat, win_definition, 5)
         GenServer.cast(self, {:set_closest_american_hands, seat, closest_american_hands})
       end
@@ -2196,10 +2276,11 @@ defmodule RiichiAdvanced.GameState do
     sanitized_state = sanitize_state(state)
     init_actions = [["put_state", sanitized_state]]
     args = [room_code: state.room_code, ruleset: state.ruleset, mods: state.mods, config: state.config, private: state.private, reserved_seats: state.reserved_seats, init_actions: init_actions, name: Utils.via_registry("game", state.ruleset, state.room_code)]
-    game_spec = %{
+    game_spec = Supervisor.child_spec(%{
       id: {RiichiAdvanced.GameSupervisor, state.ruleset, state.room_code},
-      start: {RiichiAdvanced.GameSupervisor, :start_link, [args]}
-    }
+      start: {RiichiAdvanced.GameSupervisor, :start_link, [args]},
+    }, restart: :temporary)
+    
     :rpc.cast(node_sname, DynamicSupervisor, :start_child, [RiichiAdvanced.GameSessionSupervisor, game_spec])
     # kill this game instance
     DynamicSupervisor.terminate_child(RiichiAdvanced.GameSessionSupervisor, state.supervisor)

@@ -11,7 +11,6 @@ defmodule RiichiAdvancedWeb.LobbyLive do
     |> assign(:display_name, params["ruleset"])
     |> assign(:nickname, Map.get(params, "nickname", ""))
     |> assign(:lang, Map.get(params, "lang", "en"))
-    |> assign(:id, socket.id)
     |> assign(:lobby_state, nil)
     |> assign(:messages, [])
     |> assign(:state, %Lobby{})
@@ -39,18 +38,18 @@ defmodule RiichiAdvancedWeb.LobbyLive do
       end
 
       # init a new player and get the current state
-      [state] = GenServer.call(lobby_state, {:new_player, socket})
+      [state] = GenServer.call(lobby_state, {:new_player, socket.root_pid, socket.assigns.session_id, socket.assigns.nickname})
       socket = socket
       |> assign(:lobby_state, lobby_state)
       |> assign(:state, state)
       |> assign(:display_name, state.display_name)
 
       # fetch messages
-      messages_init = RiichiAdvanced.MessagesState.init_socket(socket)
+      messages_init = RiichiAdvanced.MessagesState.link_player_socket(socket.root_pid, socket.assigns.session_id)
       socket = if Map.has_key?(messages_init, :messages_state) do
         socket = assign(socket, :messages_state, messages_init.messages_state)
         # subscribe to message updates
-        Phoenix.PubSub.subscribe(RiichiAdvanced.PubSub, "messages:" <> socket.id)
+        Phoenix.PubSub.subscribe(RiichiAdvanced.PubSub, "messages:" <> socket.assigns.session_id)
         GenServer.cast(messages_init.messages_state, {:add_message, [
           %{
             text: "Entered lobby for variant %{ruleset}",
@@ -117,6 +116,7 @@ defmodule RiichiAdvancedWeb.LobbyLive do
       </div>
       <.live_component module={RiichiAdvancedWeb.MessagesComponent} id="messages" messages={@messages} lang={@lang} />
       <div class="ruleset">
+        <div class="ruleset-text"><%= t(@lang, "Ruleset:") %></div>
         <textarea readonly><%= @state.ruleset_json %></textarea>
       </div>
     </div>
@@ -195,7 +195,7 @@ defmodule RiichiAdvancedWeb.LobbyLive do
   end
 
   def handle_info(%{topic: topic, event: "messages_updated", payload: %{"state" => state}}, socket) do
-    if topic == "messages:" <> socket.id do
+    if topic == "messages:" <> socket.assigns.session_id do
       socket = assign(socket, :messages, state.messages)
       {:noreply, socket}
     else

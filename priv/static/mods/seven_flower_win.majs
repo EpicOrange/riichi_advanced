@@ -1,0 +1,34 @@
+on after_initialization do
+  add_rule("3 Fan", "Flowers", "You won with seven flowers.")
+  add_rule("8 Fan", "Flowers", "You won with eight flowers.")
+  update_rule("3 Fan", "Flowers", "%{example_hand}", %{example_hand: ~t"1234f123g"})
+  update_rule("8 Fan", "Flowers", "%{example_hand}", %{example_hand: ~t"1234f1234g"})
+  if equals(!win_on, "7 flowers") do
+    add_rule("Rules", "Flowers", "- As soon as you draw a seventh flower, you may declare a win for an additional 3 Fan, or 8 Fan if you have eight flowers.")
+  end
+  if equals(!win_on, "8 flowers") do
+    add_rule("Rules", "Flowers", "- As soon as you draw an eighth flower, you may declare a win for an additional 8 Fan.")
+  end
+end
+
+define_button flower_win,
+  display_name: @tsumo_name, 
+  show_when: our_turn
+    and has_draw
+    and match(["draw"], ~m"unique, (1f 2f 3f 4f 1g 2g 3g 4g):1")
+    and (
+        (equals(!win_on, "7 flowers") and match(["flowers"], ~m"unique, (1f 2f 3f 4f 1g 2g 3g 4g):6"))
+     or (equals(!win_on, "8 flowers") and match(["flowers"], ~m"unique, (1f 2f 3f 4f 1g 2g 3g 4g):7"))
+    )
+  do
+    big_text(@tsumo_name)
+    pause(1000)
+    reveal_hand
+    win_by_draw
+  end
+
+# you can still get both yaku regardless of the value of win_on
+# you just can't insta-win on 7 flowers if win_on is 8
+define_yaku yaku, "Seven Flowers", 3, match(["draw", "flowers"], ~m"unique, (1f 2f 3f 4f 1g 2g 3g 4g):7")
+define_yaku yaku, "Eight Flowers", 8, match(["draw", "flowers"], ~m"unique, (1f 2f 3f 4f 1g 2g 3g 4g):8")
+define_yaku_precedence "Eight Flowers", ["Seven Flowers"]

@@ -4,6 +4,7 @@ defmodule RiichiAdvancedWeb.GameLive do
   alias RiichiAdvanced.GameState.Game, as: Game
   alias RiichiAdvanced.GameState.Rules, as: Rules
   alias RiichiAdvanced.ModLoader, as: ModLoader
+  alias RiichiAdvanced.Riichi, as: Riichi
   alias RiichiAdvanced.Utils, as: Utils
   use Gettext, backend: RiichiAdvancedWeb.Gettext
   use RiichiAdvancedWeb, :live_view
@@ -86,10 +87,10 @@ defmodule RiichiAdvancedWeb.GameLive do
         [["initialize_tutorial"] | init_actions] # block events if we're a tutorial
       else init_actions end
       args = [room_code: socket.assigns.room_code, ruleset: socket.assigns.ruleset, mods: mods, config: config, init_actions: init_actions, name: Utils.via_registry("game", socket.assigns.ruleset, socket.assigns.room_code)]
-      game_spec = %{
+      game_spec = Supervisor.child_spec(%{
         id: {RiichiAdvanced.GameSupervisor, socket.assigns.ruleset, socket.assigns.room_code},
         start: {RiichiAdvanced.GameSupervisor, :start_link, [args]}
-      }
+      }, restart: :temporary)
       case DynamicSupervisor.start_child(RiichiAdvanced.GameSessionSupervisor, game_spec) do
         {:ok, _pid} ->
           IO.puts("Starting game session #{socket.assigns.room_code}")
@@ -100,6 +101,7 @@ defmodule RiichiAdvancedWeb.GameLive do
           [{game_state, _}] = Utils.registry_lookup("game_state", socket.assigns.ruleset, socket.assigns.room_code)
           IO.puts("Already started game session #{socket.assigns.room_code} #{inspect(game_state)}")
           GenServer.cast(game_state, {:init_player, socket.assigns.session_id, socket.assigns.seat_param})
+          GenServer.cast(game_state, {:fetch_messages, socket.assigns.session_id})
       end
 
       {:ok, socket}
@@ -115,7 +117,14 @@ defmodule RiichiAdvancedWeb.GameLive do
         <.live_component module={RiichiAdvancedWeb.CustomStyleComponent} id="custom-tiles" style={Rules.get(@state.rules_ref, "custom_style", %{})}/>
       <% end %>
       <input id="mobile-zoom-checkbox" type="checkbox" class="mobile-zoom-checkbox" phx-update="ignore">
-      <label for="mobile-zoom-checkbox"></label>
+      <label for="mobile-zoom-checkbox">
+        <svg xmlns="http://www.w3.org/2000/svg" width="100%" height="100%" stroke="#f4f0eb" fill="#f4f0eb" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M8 4H4m0 0v4m0-4 5 5m7-5h4m0 0v4m0-4-5 5M8 20H4m0 0v-4m0 4 5-5m7 5h4m0 0v-4m0 4-5-5"/>
+        </svg>
+        <svg xmlns="http://www.w3.org/2000/svg" width="100%" height="100%" stroke="#f4f0eb" fill="#f4f0eb" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M5 9h4m0 0V5m0 4L4 4m15 5h-4m0 0V5m0 4 5-5M5 15h4m0 0v4m0-4-5 5m15-5h-4m0 0v4m0-4 5 5"/>
+        </svg>
+      </label>
       <input id="tile-numbers-checkbox" type="checkbox" class="tile-numbers-checkbox" phx-update="ignore">
       <label for="tile-numbers-checkbox">123</label>
       <.live_component module={RiichiAdvancedWeb.HandComponent}
@@ -227,7 +236,7 @@ defmodule RiichiAdvancedWeb.GameLive do
         <div class="auto-buttons">
           <%= for {{name, desc, checked}, i} <- Enum.with_index(@state.players[@seat].auto_buttons) do %>
             <input id={"auto-button-" <> name} type="checkbox" class="auto-button" phx-click="auto_button_toggled" phx-value-name={name} phx-value-enabled={if checked do "true" else "false" end} checked={checked}>
-            <label for={"auto-button-" <> name} title={desc} data-name={Rules.get(@state.rules_ref, "auto_buttons", %{})[name]["display_name"]} tabindex={i}><%= Rules.get(@state.rules_ref, "auto_buttons", %{})[name]["display_name"] %></label>
+            <label for={"auto-button-" <> name} title={desc} data-name={t(@lang, Rules.get(@state.rules_ref, "auto_buttons", %{})[name]["display_name"])} tabindex={i}><%= Rules.get(@state.rules_ref, "auto_buttons", %{})[name]["display_name"] %></label>
           <% end %>
         </div>
         <div class="call-buttons-container">
@@ -282,7 +291,7 @@ defmodule RiichiAdvancedWeb.GameLive do
         viewer={@viewer}
         yakus={Rules.get(@state.rules_ref, "declarable_yaku", [])}
         :if={@state.players[@seat].declared_yaku == []} />
-      <div class="display-wall-hover" :if={Rules.get(@state.rules_ref, "display_wall", false)}><%= t(@lang, "Show wall") %></div>
+      <div class="display-wall-hover" :if={Rules.get(@state.rules_ref, "display_wall", false)} phx-click="noop"><%= t(@lang, "Show wall") %></div>
       <.live_component module={RiichiAdvancedWeb.DisplayWallComponent}
         id="display-wall"
         game_state={@game_state}
@@ -305,10 +314,16 @@ defmodule RiichiAdvancedWeb.GameLive do
       <div class={["big-text"]} :if={@loading}><%= t(@lang, "Loading...") %></div>
       <div class="display-am-hand-hover" :if={Rules.get(@state.rules_ref, "show_nearest_american_hand", false)}></div>
       <div class="display-am-hand-container" :if={Rules.get(@state.rules_ref, "show_nearest_american_hand", false)}>
-        <%= for {_am_match_definition, _shanten, arranged_hand} <- @state.players[@seat].cache.closest_american_hands do %>
+        <% open_definitions = Rules.get(@state.rules_ref, "open_win_definition", []) %>
+        <%= for {am_match_definition, _shanten, arranged_hand} <- @state.players[@seat].cache.closest_american_hands do %>
           <div class="display-am-hand" :if={arranged_hand})>
             <%= for tile <- arranged_hand do %>
               <div class={Utils.get_tile_class(tile)}></div>
+            <% end %>
+            <%= if am_match_definition in open_definitions do %>
+              <div class="display-am-hand-type"><%= t(@lang, "x") %></div>
+            <% else %>
+              <div class="display-am-hand-type"><%= t(@lang, "c") %></div>
             <% end %>
           </div>
         <% end %>
@@ -348,6 +363,7 @@ defmodule RiichiAdvancedWeb.GameLive do
           id="tutorial-overlay"
           game_state={@game_state}
           ruleset={@ruleset}
+          lang={@lang}
           waiting_for_click={@waiting_for_click}
           play_scene={&send(self(), {:play_scene, &1})}
           await_click={&send(self(), {:await_click, &1})}
@@ -366,14 +382,21 @@ defmodule RiichiAdvancedWeb.GameLive do
 
       <div class="rules-wrapper">
         <%= for rules_text_name <- @state.rules_text_order, not Enum.empty?(@state.rules_text[rules_text_name]) do %>
-          <input type="radio" id={"rules-popover-radio-#{rules_text_name}"} name="rules-popover-tab" class="rules-popover-radio" phx-update="ignore">
-          <label for={"rules-popover-radio-#{rules_text_name}"}><%= dt(@lang, rules_text_name) %></label>
-          <div class="rules-popover-container">
+          <% rules_id = "rules-popover-radio-#{String.replace(rules_text_name, " ", "-")}" %>
+          <input type="radio" id={rules_id} name="rules-popover-tab" class="rules-popover-radio" phx-update="ignore">
+          <label for={rules_id} class={"lang-#{@lang}"}><%= dt(@lang, rules_text_name) %></label>
+          <div class="rules-popover-container" phx-click="noop">
             <div class="rules-popover">
-              <%= for {title, {text, priority}} <- Enum.sort_by(@state.rules_text[rules_text_name], fn {_title, {text, priority}} -> {priority, String.length(text)} end) do %>
+              <%= for {title, {text, vars, priority}} <- Enum.sort_by(@state.rules_text[rules_text_name], fn {_title, {text, _vars, priority}} -> {priority, text |> Enum.join("\n") |> String.length()} end) do %>
+                <%
+                  vars = Map.merge(vars, %{
+                    "round_wind_triplet" => get_wind_triplet(Riichi.get_round_wind(@state.kyoku, length(@state.available_seats))),
+                    "seat_wind_triplet" => get_wind_triplet(@seat),
+                  })
+                %>
                 <div class={["rules-popover-rule", priority < 0 && "full-width"]}>
-                  <div class="rules-popover-title"><%= title %></div>
-                  <div class="rules-popover-text"><%= text %></div>
+                  <div class="rules-popover-title"><%= dt(@lang, title, vars) %></div>
+                  <div class="rules-popover-text"><%= raw Enum.map_join(text, "\n", &dt(@lang, &1, vars)) %></div>
                 </div>
               <% end %>
             </div>
@@ -384,6 +407,7 @@ defmodule RiichiAdvancedWeb.GameLive do
       </div>
       <.live_component module={RiichiAdvancedWeb.MessagesComponent} id="messages" messages={@messages} lang={@lang} />
       <div class="ruleset">
+        <div class="ruleset-text"><%= t(@lang, "Ruleset:") %></div>
         <textarea readonly><%= Rules.get(@state.rules_ref, :ruleset_json) %></textarea>
       </div>
     </div>
@@ -411,6 +435,12 @@ defmodule RiichiAdvancedWeb.GameLive do
       assign(socket, :selected_index, nil)
     end
   end
+
+  def get_wind_triplet(:east), do: ["1z", "1z", "1z"]
+  def get_wind_triplet(:south), do: ["2z", "2z", "2z"]
+  def get_wind_triplet(:west), do: ["3z", "3z", "3z"]
+  def get_wind_triplet(:north), do: ["4z", "4z", "4z"]
+  def get_wind_triplet(_), do: []
 
   def get_visible_waits(socket, index) do
     hand = socket.assigns.state.players[socket.assigns.seat].hand
@@ -492,9 +522,8 @@ defmodule RiichiAdvancedWeb.GameLive do
     end
   end
 
-  def handle_event("back", _assigns, socket) do
-    {:noreply, navigate_back(socket)}
-  end
+  def handle_event("noop", _assigns, socket), do: {:noreply, socket}
+  def handle_event("back", _assigns, socket), do: {:noreply, navigate_back(socket)}
 
   def handle_event("log", _assigns, socket) do
     log = GenServer.call(socket.assigns.game_state, :get_log)
@@ -708,7 +737,7 @@ defmodule RiichiAdvancedWeb.GameLive do
   def handle_info(%{topic: topic, event: "initialize_player", payload: %{"session_id" => session_id, "game_state" => game_state, "state" => state, "seat" => seat, "spectator" => spectator}}, socket) do
     if topic == (socket.assigns.ruleset <> ":" <> socket.assigns.room_code) and session_id != nil and socket.assigns.session_id == session_id do
       # subscribe to this game state's exit monitor and init messages
-      GenServer.call(game_state, {:link_player_socket, socket.id, seat, spectator, socket.assigns.nickname})
+      GenServer.call(game_state, {:link_player_socket, socket.assigns.session_id, seat, spectator, socket.assigns.nickname})
 
       socket = socket
       |> assign(:game_state, game_state)
@@ -728,11 +757,11 @@ defmodule RiichiAdvancedWeb.GameLive do
   def handle_info(%{topic: topic, event: "fetch_messages", payload: %{"session_id" => session_id}}, socket) do
     if topic == (socket.assigns.ruleset <> ":" <> socket.assigns.room_code) and session_id != nil and socket.assigns.session_id == session_id do
       # fetch messages
-      messages_init = RiichiAdvanced.MessagesState.init_socket(socket)
+      messages_init = RiichiAdvanced.MessagesState.link_player_socket(socket.root_pid, socket.assigns.session_id)
       socket = if Map.has_key?(messages_init, :messages_state) do
         socket = assign(socket, :messages_state, messages_init.messages_state)
         # subscribe to message updates
-        Phoenix.PubSub.subscribe(RiichiAdvanced.PubSub, "messages:" <> socket.id)
+        Phoenix.PubSub.subscribe(RiichiAdvanced.PubSub, "messages:" <> socket.assigns.session_id)
         GenServer.cast(messages_init.messages_state, {:add_message, [
           if socket.assigns.state.mods != nil and not Enum.empty?(socket.assigns.state.mods) do
             %{
@@ -816,7 +845,7 @@ defmodule RiichiAdvancedWeb.GameLive do
   end
 
   def handle_info(%{topic: topic, event: "messages_updated", payload: %{"state" => state}}, socket) do
-    if topic == "messages:" <> socket.id do
+    if topic == "messages:" <> socket.assigns.session_id do
       socket = assign(socket, :messages, state.messages)
       {:noreply, socket}
     else

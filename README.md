@@ -233,7 +233,7 @@ If interested in contributing, check out the [contributing doc](CONTRIBUTING.md)
 - [__MCR__](documentation/mcr.md): Mahjong Competition Rules. Has a scoring system of a different kind of complexity than Riichi.
 - __Taiwanese__: 16-tile mahjong with riichi mechanics.
 - [__Bloody 30-Faan Jokers__](documentation/bloody30faan.md): Bloody end rules mahjong, with Vietnamese jokers, and somehow more yaku than MCR.
-- [__American (2024 NMJL)__](documentation/american.md): American mahjong. Assemble hands with jokers, and declare other players' hands dead.
+- [__American (NMJL)__](documentation/american.md): American Mah-Jongg. Assemble hands with jokers, and declare other players' hands dead.
 - [__Vietnamese__](documentation/vietnamese.md): Mahjong with eight differently powerful joker tiles.
 - __Malaysian__: Three-player mahjong with 16 flowers, a unique joker tile, and instant payouts.
 - __Singaporean__: Mahjong with various instant payouts and various unique ways to get penalized by pao.

@@ -1,0 +1,32 @@
+on after_initialization do
+  add_rule("1 $han", "Value Triplets", """
+  1 %{han} for each of the following triplets in your hand:
+  - A triplet of dragon tiles %{dragons}
+  - A triplet of winds matching the round marker %{round_wind_triplet}
+  - A triplet of winds matching your seat %{seat_wind_triplet}
+  """, %{han: !han, dragons: ~t"777z"})
+end
+
+# dragons
+define_set haku, ~s"5z 5z 5z"
+define_set hatsu, ~s"6z 6z 6z"
+define_set chun, ~s"7z 7z 7z"
+define_yaku yaku, "White Dragon", 1, match(["hand", "calls", "winning_tile"], ~m"exhaustive, haku:1, mentsu:3, pair:1")
+define_yaku yaku, "Green Dragon", 1, match(["hand", "calls", "winning_tile"], ~m"exhaustive, hatsu:1, mentsu:3, pair:1")
+define_yaku yaku, "Red Dragon", 1, match(["hand", "calls", "winning_tile"], ~m"exhaustive, chun:1, mentsu:3, pair:1")
+
+# prevalent and seat winds
+on before_scoring do
+  if round_wind_is("east") do add_attr(["hand", "calls", "winning_tile"], ["_prevalent"], ["1z"]) end
+  if round_wind_is("south") do add_attr(["hand", "calls", "winning_tile"], ["_prevalent"], ["2z"]) end
+  if round_wind_is("west") do add_attr(["hand", "calls", "winning_tile"], ["_prevalent"], ["3z"]) end
+  if round_wind_is("north") do add_attr(["hand", "calls", "winning_tile"], ["_prevalent"], ["4z"]) end
+  if seat_is("east") do add_attr(["hand", "calls", "winning_tile"], ["_seat"], ["1z"]) end
+  if seat_is("south") do add_attr(["hand", "calls", "winning_tile"], ["_seat"], ["2z"]) end
+  if seat_is("west") do add_attr(["hand", "calls", "winning_tile"], ["_seat"], ["3z"]) end
+  if seat_is("north") do add_attr(["hand", "calls", "winning_tile"], ["_seat"], ["4z"]) end
+end
+define_set prevalent_wind, ~s"0@prevalent 0@prevalent 0@prevalent"
+define_set seat_wind, ~s"0@seat 0@seat 0@seat"
+define_yaku yaku, "Prevalent Wind", 1, match(["hand", "calls", "winning_tile"], ~m"exhaustive, prevalent_wind:1, mentsu:3, pair:1")
+define_yaku yaku, "Seat Wind", 1, match(["hand", "calls", "winning_tile"], ~m"exhaustive, seat_wind:1, mentsu:3, pair:1")

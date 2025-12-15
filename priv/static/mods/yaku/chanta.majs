@@ -1,0 +1,15 @@
+on after_initialization do
+  add_rule("$value $han", "$name", "Every set/pair in your hand contains a terminal or honor tile.", %{value: !value, han: !han, name: !name})
+  update_rule("$value $han", "$name", "%{example_hand}", %{value: !value, han: !han, name: !name, example_hand: ~t"123m79p789s77z 111p 8p"})
+end
+
+on before_scoring do
+  add_attr(["hand", "calls", "winning_tile"], ["_yaochuu"], ["yaochuuhai"])
+end
+
+define_set yaochuu_l, ~s"0@yaochuu 1 2"
+define_set yaochuu_r, ~s"0 1 2@yaochuu"
+define_set yaochuu_t, ~s"0@yaochuu 0@yaochuu 0@yaochuu"
+define_set yaochuu_pair, ~s"0@yaochuu 0@yaochuu"
+
+define_yaku !list, !name, !value, match(["hand", "calls", "winning_tile"], ~m"exhaustive, (yaochuu_l yaochuu_r yaochuu_t):4, yaochuu_pair:1")

@@ -1,0 +1,17 @@
+on after_initialization do
+  add_rule("Rules", "Win Condition", "- Seven pairs (allows repeats).", -100)
+  add_rule("4 Fan", "Seven Pairs", "Your hand consists of seven pairs (repeats allowed).")
+  update_rule("4 Fan", "Seven Pairs", "%{example_hand}", %{example_hand: ~t"2266m99p24477s33z 2s"})
+end
+
+define_set pair, ~s"0 0"
+
+define_const chiitoitsu_tenpai, ~m"pair:6"
+define_const chiitoitsu_win, ~m"pair:7"
+
+apply set_append, "tenpai_definition", +@chiitoitsu_tenpai
+apply set_append, "win_definition", +@chiitoitsu_win
+
+define_yaku yaku, "Seven Pairs", 4, match(["hand", "winning_tile"], @chiitoitsu_win)
+
+apply subtract, ".yaku_precedence[\"All Honours\"]", ["All Triplets"]

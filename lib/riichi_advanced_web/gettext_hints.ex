@@ -20,6 +20,19 @@ defmodule RiichiAdvancedWeb.GettextHints do
     t_noop("3 Han")
     t_noop("4 Han")
     t_noop("5 Han")
+    t_noop("1 Fan")
+    t_noop("2 Fan")
+    t_noop("3 Fan")
+    t_noop("4 Fan")
+    t_noop("5 Fan")
+    t_noop("6 Fan")
+    t_noop("7 Fan")
+    t_noop("8 Fan")
+    t_noop("9 Fan")
+    t_noop("10 Fan")
+    t_noop("11 Fan")
+    t_noop("12 Fan")
+    t_noop("13 Fan")
     t_noop("Yakuman")
 
     # buttons
@@ -51,6 +64,8 @@ defmodule RiichiAdvancedWeb.GettextHints do
     t_noop("Triple Ron")
     t_noop("Sanchahou")
     t_noop("Ryuukyoku")
+    t_noop("Nagashi Mangan")
+    t_noop("Nagashi Yakuman")
 
     # yaku
     t_noop("Riichi")
@@ -191,7 +206,7 @@ defmodule RiichiAdvancedWeb.GettextHints do
     t_noop("MCR")
     t_noop("Taiwanese")
     t_noop("Bloody 30-Faan Jokers")
-    t_noop("American (2024 NMJL)")
+    t_noop("American (NMJL)")
     t_noop("Vietnamese")
     t_noop("Malaysian")
     t_noop("Singaporean")

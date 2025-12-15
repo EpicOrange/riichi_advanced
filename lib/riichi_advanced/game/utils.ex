@@ -28,6 +28,15 @@ defmodule RiichiAdvanced.Utils do
     else nil end
   end
 
+  def hand_to_string(hand) do
+    hand
+    |> strip_attrs()
+    |> Enum.map(&Atom.to_string/1)
+    |> Enum.group_by(fn <<_num, suit>> -> <<suit>> end, fn <<num, _>> -> <<num>> end)
+    |> Enum.map(fn {suit, nums} -> Enum.join(nums) <> suit end)
+    |> Enum.join()
+  end
+
   def to_attr_tile(tile) do
     case tile do
       {tile, attrs} -> {tile, attrs}
@@ -95,6 +104,15 @@ defmodule RiichiAdvanced.Utils do
         end
       _ when is_list(tile) -> Enum.map(tile, &strip_attrs(&1, mode))
       _ when is_struct(tile, MapSet) -> MapSet.new(tile, &strip_attrs(&1, mode))
+      tile -> tile
+    end
+  end
+
+  def to_salient_attrs(tile) do
+    case tile do
+      {tile, attrs} -> {tile, Enum.map(attrs, &String.replace_leading(&1, "_", "")) |> Enum.sort()}
+      _ when is_list(tile) -> Enum.map(tile, &to_salient_attrs(&1))
+      _ when is_struct(tile, MapSet) -> MapSet.new(tile, &to_salient_attrs(&1))
       tile -> tile
     end
   end
@@ -171,7 +189,7 @@ defmodule RiichiAdvanced.Utils do
     same_id = t1 in l2 or t2 in l1
       or (:faceup in l2 and Enum.any?(l1, fn tile -> tile not in [:"1x", :"2x", :"3x", :"4x"] end))
       or :any in l1 or :any in l2
-    attrs_match = has_attr?(tile1, attrs2)
+    attrs_match = has_attr?(tile1, Enum.reject(attrs2, &String.starts_with?(&1, "_")))
     same_id and attrs_match
   end
 
@@ -280,7 +298,7 @@ defmodule RiichiAdvanced.Utils do
   end
 
   def try_integer(value) do
-    if value == trunc(value) do trunc(value) else value end
+    if abs(value - round(value)) < 0.000001 do round(value) else value end
   end
 
   def half_score_rounded_up(value) do
@@ -308,6 +326,7 @@ defmodule RiichiAdvanced.Utils do
     id = if reversed do strip_attrs(tile) else id end
     facedown = has_attr?(tile, ["facedown"]) and Map.get(assigns, :hover_index, nil) != i
     concealed = has_attr?(tile, ["concealed"])
+    anim = has_attr?(tile, ["anim"])
     played = animate_played and Map.get(assigns, :your_hand?, true) and i != nil and Map.get(assigns, :preplayed_index, nil) == i
     sideways = i != nil and i == Map.get(assigns, :riichi_index, nil) or has_attr?(tile, ["sideways"])
     just_played = Map.get(assigns, :just_discarded?, false) and Map.has_key?(assigns, :pond) and i != nil and i == length(assigns.pond) - 1
@@ -345,12 +364,14 @@ defmodule RiichiAdvanced.Utils do
       dora && "dora",
       last_sideways && "last-sideways",
       reversed && "reversed",
+      anim && "anim",
       played && "played",
       sideways && "sideways",
       just_played && "just-played",
       riichi && "sideways",
       selected && "selected",
     ] ++ extra_classes ++ number_class ++ color_classes
+    |> Enum.reject(& &1 == false)
   end
 
   def call_to_tiles({_name, call}, replace_am_jokers \\ false) do
@@ -518,13 +539,26 @@ defmodule RiichiAdvanced.Utils do
     end
   end
 
-  def walk_json(action, fun) do
-    # this just walks the action and calls fun on every node
-    case fun.(action) do
-      action when is_list(action) -> Enum.map(action, &walk_json(&1, fun))
-      action when is_map(action) -> Map.new(action, fn {k, v} -> {k, walk_json(v, fun)} end)
-      action -> action
+  def walk_json(json, fun) do
+    # this just walks the json and calls fun on every node
+    case fun.(json) do
+      json when is_list(json) -> Enum.map(json, &walk_json(&1, fun))
+      json when is_map(json) -> Map.new(json, fn {k, v} -> {k, walk_json(v, fun)} end)
+      json -> json
     end
   end
 
+  # walks the json, calling fun on every node,
+  # where fun returns a list that should get merged into any containing list
+  def splat_json(json, fun), do: splat_json_rec(json, fun) |> Enum.at(0)
+  def splat_json_rec(json, fun) do
+    case fun.(json) do
+      [json] when is_list(json) ->
+        [for x <- json, item <- splat_json_rec(x, fun) do
+          item
+        end]
+      [json] when is_map(json) -> [Map.new(json, fn {k, v} -> {k, splat_json(v, fun)} end)]
+      jsons -> jsons # branch b
+    end
+  end
 end

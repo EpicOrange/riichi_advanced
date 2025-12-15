@@ -3,7 +3,6 @@ defmodule RiichiAdvanced.CosmicScoring do
   alias RiichiAdvanced.TestUtils, as: TestUtils
 
   @cosmic_mods [
-    "kan",
     %{name: "honba", config: %{value: 100}},
     %{name: "nagashi", config: %{is: "Mangan"}},
     %{name: "tobi", config: %{below: 0}},
@@ -14,7 +13,7 @@ defmodule RiichiAdvanced.CosmicScoring do
     "kuikae_nashi",
     "double_wind_4_fu",
     "pao",
-    "kokushi_chankan",
+    "kokushi_ankan_chankan",
     "suufon_renda",
     "suucha_riichi",
     "suukaikan",
@@ -26,7 +25,7 @@ defmodule RiichiAdvanced.CosmicScoring do
     "yaku/kanburi",
     "yaku/uumensai",
     "yaku/isshoku_sanjun",
-    %{name: "yaku/renhou", config: %{is: "Yakuman"}},
+    %{name: "yaku/riichi_renhou", config: %{is: "Yakuman"}},
     "yaku/isshoku_yonjun",
     "show_waits",
     %{name: "min_han", config: %{min: 1}},

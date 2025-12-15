@@ -14,7 +14,7 @@
 .suurenkou_definition = [[ [[[[0,0,0],[1,1,1],[2,2,2],[3,3,3]]], 1], [["pair"], 1] ]]
 |
 .after_call.actions += [
-  ["when", [{"name": "match", "opts": [["hand", "calls"], ["suurenkou"]]}], [["as", "callee", [["set_status", "pao"]]]]]
+  ["when", [{"name": "match", "opts": [["hand", "calls"], ["suurenkou"]]}], [["as", "callee", [["make_responsible_for", "prev_seat", "all"]]]]]
 ]
 |
 .score_calculation.pao_eligible_yaku += ["Suurenkou"]

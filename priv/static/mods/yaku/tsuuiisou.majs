@@ -1,0 +1,19 @@
+on after_initialization do
+  if equals(!list, "yakuman") do
+    add_rule("Limit", "$name", "Your hand consists only of honor tiles.", %{name: !name})
+    update_rule("Limit", "$name", "%{example_hand}", %{value: !value, han: !han, name: !name, example_hand: ~t"1112224477z 666z 4z"})
+  else
+    add_rule("$value $han", "$name", "Your hand consists only of honor tiles.", %{value: !value, han: !han, name: !name})
+    update_rule("$value $han", "$name", "%{example_hand}", %{value: !value, han: !han, name: !name, example_hand: ~t"1112224477z 666z 4z"})
+  end
+end
+
+on before_scoring do
+  add_attr(["hand", "calls", "winning_tile"], ["_tanyao"], ["tanyaohai"])
+  add_attr(["hand", "calls", "winning_tile"], ["_terminal"], ["terminal"])
+end
+
+define_set tanyaohai, ~s"any@tanyao"
+define_set terminal, ~s"any@terminal"
+
+define_yaku !list, !name, !value, not_match(["hand", "calls", "winning_tile"], ~m"(tanyaohai terminal):1")

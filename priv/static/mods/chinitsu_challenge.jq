@@ -35,6 +35,7 @@
   "_clear_yaku": [1,2,3,4,5,6]
 }
 |
+# remove some mods
 .default_mods |= map(select(IN("honba", "yaku/riichi", "dora", "ura", "aka", "kandora", "suufon_renda", "suucha_riichi", "kyuushu_kyuuhai", "show_waits") | not))
 |
 .available_mods |= map(select(type != "object" or (.id | IN("honba", "yaku/riichi", "kyuushu_kyuuhai", "star_suit", "shiro_pocchi", "chinitsu") | not)))

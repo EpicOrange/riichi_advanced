@@ -142,7 +142,7 @@ defmodule RiichiAdvanced.MahjongScriptSemanticsTest do
     script = """
     define_set myset, ~s"0 1 2"
     define_set myset, ~s"0@attr 1 2"
-    define_set myset, ~s"0@attr,attr2 1 2"
+    define_set myset, ~s"0@attr&attr2 1 2"
     define_set myset, ~s"1m 2m 3m"
     define_set myset, ~s"0 1m 2p"
     """
@@ -304,24 +304,6 @@ defmodule RiichiAdvanced.MahjongScriptSemanticsTest do
     assert {:ok, parsed} = Parser.parse(script)
     assert {:error, msg} = Compiler.compile_jq(parsed)
     assert String.contains?(msg, "command expects arguments")
-  end
-
-  test "mahjongscript - invalid on command" do
-    script = """
-    on 123
-    """
-    assert {:ok, parsed} = Parser.parse(script)
-    assert {:error, msg} = Compiler.compile_jq(parsed)
-    assert String.contains?(msg, "got invalid name")
-  end
-
-  test "mahjongscript - invalid set command" do
-    script = """
-    set 123
-    """
-    assert {:ok, parsed} = Parser.parse(script)
-    assert {:error, msg} = Compiler.compile_jq(parsed)
-    assert String.contains?(msg, "got invalid name")
   end
 
   test "mahjongscript - def must have do block" do

@@ -1,0 +1,9 @@
+on after_initialization do
+  add_rule("$value $han", "$name", "All four of your sets are sequences.", %{value: !value, han: !han, name: !name})
+  add_rule("$value $han", "$name", "%{example_hand}", %{value: !value, han: !han, name: !name, example_hand: ~t"345789m46p23499s 5p"})
+end
+
+define_set pair, ~s"0 0"
+define_set shuntsu, ~s"0 1 2"
+
+define_yaku !list, !name, !value, match(["hand", "calls", "winning_tile"], ~m"shuntsu:4, pair:1")

@@ -1,0 +1,120 @@
+on after_initialization do
+  add_rule("Rules", "Flowers", """
+  - Flower tiles must be declared and replaced by a draw from the back of the wall.
+  - A flower tile is worth 1 if its number matches your seat (1=east, 2=south, 3=west, 4=north)
+  - Having all 4 flower tiles or all 4 season tiles is worth %{four_flowers_value}.
+  """, %{four_flowers_value: !four_flowers_value})
+end
+
+apply append, "wall", ["1f", "2f", "3f", "4f", "1g", "2g", "3g", "4g"]
+
+define_yaku yaku, "Seat Flower", 1, seat_is("east") and match(["flowers"], ~m"1f:1")
+define_yaku yaku, "Seat Flower", 1, seat_is("south") and match(["flowers"], ~m"2f:1")
+define_yaku yaku, "Seat Flower", 1, seat_is("west") and match(["flowers"], ~m"3f:1")
+define_yaku yaku, "Seat Flower", 1, seat_is("north") and match(["flowers"], ~m"4f:1")
+define_yaku yaku, "Seat Season", 1, seat_is("east") and match(["flowers"], ~m"1g:1")
+define_yaku yaku, "Seat Season", 1, seat_is("south") and match(["flowers"], ~m"2g:1")
+define_yaku yaku, "Seat Season", 1, seat_is("west") and match(["flowers"], ~m"3g:1")
+define_yaku yaku, "Seat Season", 1, seat_is("north") and match(["flowers"], ~m"4g:1")
+define_yaku yaku, "All Flowers", !four_flowers_value, match(["flowers"], ~m"1f:1, 2f:1, 3f:1, 4f:1")
+define_yaku yaku, "All Seasons", !four_flowers_value, match(["flowers"], ~m"1g:1, 2g:1, 3g:1, 4g:1")
+# define_yaku_precedence "All Flowers", ["Seat Flower"]
+# define_yaku_precedence "All Seasons", ["Seat Season"]
+
+on after_start do
+  set_status_all("initial_flowers")
+end
+
+define_button start_flower,
+  display_name: "Reveal flower",
+  show_when: status("initial_flowers")
+    and our_turn
+    and match(["hand", "draw"], ~m"(1f 2f 3f 4f 1g 2g 3g 4g):1"),
+  unskippable: true
+  do
+    big_text("Flower")
+    flower("1f", "2f", "3f", "4f", "1g", "2g", "3g", "4g")
+    draw(1, "opposite_end")
+  end
+
+define_button start_no_flower,
+  display_name: "No flowers",
+  show_when: status("initial_flowers")
+    and our_turn
+    and not_match(["hand", "draw"], ~m"(1f 2f 3f 4f 1g 2g 3g 4g):1"),
+  unskippable: true
+  do
+    big_text("No Flowers")
+    set_status("no_flowers")
+    move_tiles("draw", "hand")
+    advance_turn
+    recalculate_buttons
+  end
+
+apply prepend, "buttons.chii.show_when", status_missing("initial_flowers")
+apply prepend, "buttons.pon.show_when", status_missing("initial_flowers")
+apply prepend, "buttons.daiminkan.show_when", status_missing("initial_flowers")
+apply prepend, "buttons.ankan.show_when", status_missing("initial_flowers")
+apply prepend, "buttons.kakan.show_when", status_missing("initial_flowers")
+apply prepend, "buttons.ron.show_when", status_missing("initial_flowers")
+apply prepend, "buttons.chankan.show_when", status_missing("initial_flowers")
+apply prepend, "buttons.tsumo.show_when", status_missing("initial_flowers")
+
+define play_restriction, "flower", !unskippable
+
+define_button flower,
+  display_name: "Flower",
+  show_when: our_turn
+    and has_draw
+    and not_just_discarded
+    and match(["hand", "draw"], ~m"(1f 2f 3f 4f 1g 2g 3g 4g):1"),
+  unskippable: !unskippable
+  do
+    big_text("Flower")
+    flower("1f", "2f", "3f", "4f", "1g", "2g", "3g", "4g")
+    set_status("flower")
+    unset_status("kan")
+    if no_tiles_remaining do
+      advance_turn
+    else
+      draw(1, "opposite_end")
+    end
+  end
+
+define_auto_button _5_auto_flower,
+  display_name: "F",
+  desc: "Automatically declare all flowers.",
+  enabled_at_start: true
+  do
+    if buttons_include("start_flower") do
+      press_button("start_flower")
+      press_first_call_button("start_flower")
+    end
+    if buttons_include("start_no_flower") do
+      press_button("start_no_flower")
+    end
+    if buttons_include("flower") do
+      press_button("flower")
+      press_first_call_button("flower")
+    end
+  end
+
+on before_turn_change do
+  unset_status("flower")
+end
+on before_call do
+  unset_status("flower")
+end
+
+on after_turn_change do
+  # un-draw if we're still declaring flowers
+  if status("initial_flowers") do
+    draw(-1)
+  end
+  # exit flower declaration stage
+  if everyone_status("no_flowers") do
+    unset_status_all("no_flowers", "initial_flowers")
+    set_status_all("first_turn")
+    change_turn("east")
+  end
+end

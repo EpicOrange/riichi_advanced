@@ -1,0 +1,79 @@
+on after_initialization do
+  add_rule("Rules", "Shuugi", "Part of the player's starting score is composed of shuugi chips worth %{worth} each, which are gained and lost separately from points.", %{worth: !worth})
+end
+
+on after_win do
+  # calculate payment
+  if @closed_hand do
+    shuugi_payment += aka
+    shuugi_payment += ko
+    shuugi_payment += kin
+  end
+  shuugi_payment += ura
+  if status("ippatsu") and status_missing("call_made") do shuugi_payment = shuugi_payment + 1 end
+  if has_yaku2(1) do
+    set_status("yakuman")
+    yakuman_payment += 5 # for display purposes
+    shuugi_payment += 5
+  end
+  if status("kindora") do shuugi_payment += 2 end
+  shuugi_payment += toriuchi
+  shuugi_payment += galaxy_shuugi
+  if status("riichi", "shiro_pocchi") do shuugi_payment += 1 end
+
+  # execute payment
+  set_counter_all("shuugi_payment", "shuugi_payment")
+  if won_by_draw do
+    if aka >= 1 do push_system_message("Everyone pays 1 chip per aka dora in a closed hand (shuugi)") end
+    if ao >= 1 do push_system_message("Everyone pays 2 chips per ao dora in a closed hand (shuugi)") end
+    if kin >= 1 do push_system_message("Everyone pays 3 chips per kin dora in a closed hand (shuugi)") end
+    if ura >= 1 do push_system_message("Everyone pays 1 chip per ura dora in a closed hand (shuugi)") end
+    if status("ippatsu") and status_missing("call_made") do push_system_message("Everyone pays 1 chip for ippatsu (shuugi)") end
+    if status("yakuman") do push_system_message("Everyone pays %{chips} chips for a yakuman win (shuugi)", %{chips: "yakuman_payment"}) end
+    if status("kindora") do push_system_message("Everyone pays 2 chips for golden chun used as a five (golden chun)") end
+    if toriuchi >= 1 do push_system_message("Everyone pays 1 chip per bird tile (toriuchi)") end
+    if galaxy_shuugi >= 1 do push_system_message("Everyone pays 1 chip per galaxy joker used as their original value (galaxy)") end
+    if status("riichi", "shiro_pocchi") do push_system_message("Everyone pays 1 chip for for shiro pocchi riichi tsumo (shiro_pocchi)") end
+    # as last_discarder do
+    #   shuugi -= shuugi_payment
+    # end
+    as others do
+      shuugi -= shuugi_payment
+      as prev_seat do shuugi += shuugi_payment end
+    end
+  else
+    if aka >= 1 do push_system_message("Discarder pays 1 chip per aka dora in a closed hand (shuugi)") end
+    if ao >= 1 do push_system_message("Discarder pays 2 chips per ao dora in a closed hand (shuugi)") end
+    if kin >= 1 do push_system_message("Discarder pays 3 chips per kin dora in a closed hand (shuugi)") end
+    if ura >= 1 do push_system_message("Discarder pays 1 chip per ura dora in a closed hand (shuugi)") end
+    if status("ippatsu") and status_missing("call_made") do push_system_message("Discarder pays 1 chip for ippatsu (shuugi)") end
+    if status("yakuman") do push_system_message("Discarder pays %{chips} chips for a yakuman win (shuugi)", %{chips: "yakuman_payment"}) end
+    if status("kindora") do push_system_message("Discarder pays 2 chips for golden chun used as a five (golden chun)") end
+    if toriuchi >= 1 do push_system_message("Discarder pays 1 chip per bird tile (toriuchi)") end
+    if galaxy_shuugi >= 1 do push_system_message("Discarder pays 1 chip per galaxy joker used as their original value (galaxy)") end
+    if status("riichi", "shiro_pocchi") do push_system_message("Discarder pays 1 chip for for shiro pocchi riichi tsumo (shiro_pocchi)") end
+    as last_discarder do
+      shuugi -= shuugi_payment
+    end
+    shuugi += shuugi_payment
+  end
+end
+
+on after_start do
+  # set shuugi to 0 so that everyone sees the counter
+  as everyone do
+    shuugi = 0
+  end
+end
+
+on before_conclusion do
+  push_system_message("Converted each shuugi to %{worth} points.", %{worth: !worth})
+  as everyone do
+    shuugi_payout = shuugi
+    shuugi_payout = shuugi_payout * !worth
+    add_score("shuugi_payout")
+  end
+end
+
+apply append, "persistent_counters", "shuugi"
+apply append, "shown_statuses_public", "shuugi"

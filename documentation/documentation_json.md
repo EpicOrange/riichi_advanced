@@ -1235,16 +1235,7 @@ You may also have optional keys `"discarder_penalty"`, `"non_discarder_penalty"`
 
 If there is a `"split_oya_ko_payment"` key set to `true`, then self-draw wins are processed differently. Specifically, it splits the score X into Y=X/4 (if winner is non-dealer) or Y=X/3 (if the winner is dealer). The dealer is paid 2Y points rounded up to the nearest `"han_fu_rounding_factor"`, and all non-dealers are paid Y points rounded up to the nearest `"han_fu_rounding_factor"`.
 
-There are typically no payments at exhaustive draw, but you can enable riichi-style tenpai and nagashi exhaustive draw payments via the following:
-
-    "score_calculation": {
-      "draw_tenpai_payments": [1000, 1500, 3000],
-      "draw_nagashi_payments": [2000, 4000],
-    }
-
-These keys check for `"tenpai"` and `"nagashi"` statuses respectively on the players at the time of exhaustive draw. For tenpai payments, tenpai players pay `1000/1500/3000` to non-tenpai players for 1/2/3 players tenpai. For nagashi payments, it's a mangan payment, so 2000 from nondealers and 4000 from dealer (or 4000 all if dealer got nagashi).
-
-Alternatively, you can enable sichuan-style tenpai payments via:
+There are typically no payments at exhaustive draw, but you can enable sichuan-style tenpai payments via:
 
     "score_calculation": {
       "score_best_hand_at_draw": true
@@ -1265,16 +1256,13 @@ To set the value of riichi sticks and honba counters respectively, set:
 
 `"riichi_value"` otherwise defaults to 1000 and `"honba_value"` to 0.
 
-The following keys determine the behavior of pao:
+The following key determines the behavior of pao (activated by the `make_responsible_for` action):
 
     "score_calculation": {
-      "pao_pays_all_yaku": false,
-      "pao_pays_all_yaku2": false,
-      "pao_eligible_yaku": ["Daisangen", "Daisuushii"],
       "split_pao_ron": true,
     }
 
-First, if `"pao_pays_all_yaku"` is true then players who are hit by pao (i.e. have the `"pao"` status on a win) pay the entirety of `yaku`. Same with `"pao_pays_all_yaku2"` and `yaku2`. Otherwise, only yaku named in the `"pao_eligible_yaku"` array has payment handled by pao rules -- the remaining yaku are paid out normally. Finally, `"split_pao_ron"` is true if ron payments are to be split in half (the deal-in player pays half, and the pao player pays half plus honba).
+`"split_pao_ron"` is true if ron payments are to be split in half (the deal-in player pays half, and the pao player pays half plus honba). In the extremely rare case that one player deals into another player's yakuman and the two other players should pay pao, the ron payment is split three ways.
 
 ### Payment-related statuses
 

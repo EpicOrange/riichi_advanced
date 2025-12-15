@@ -37,7 +37,7 @@ defmodule RiichiAdvanced.GameState.American do
           cond do
             # unsuited groups include F (flowers), Z (winds), 0 (5z), and any wind group (NNN, NEWS, EW, etc)
             # the rest (1-9, D (dragons), X (relative)) are suited
-            t in ["F", "Z", "0", "G", "R", "N", "E", "W", "S"] ->
+            t in ["F", "Z", "0", "G", "R", "N", "E", "W", "S", "J"] ->
               # unsuited group
               groups = for {c, freq} <- group |> String.graphemes() |> Enum.frequencies() do
                 case c do
@@ -51,6 +51,7 @@ defmodule RiichiAdvanced.GameState.American do
                   "E" -> [[[List.duplicate("1z", freq)], 1]]
                   "W" -> [[[List.duplicate("3z", freq)], 1]]
                   "S" -> [[[List.duplicate("2z", freq)], 1]]
+                  "J" -> [[[List.duplicate("1j", freq)], 1]]
                   _   -> 
                     IO.inspect("Unknown character #{inspect(c)} in unsuited group #{inspect(group)}")
                     []
@@ -62,18 +63,31 @@ defmodule RiichiAdvanced.GameState.American do
                 "a" -> :a
                 "b" -> :b
                 "c" -> :c
+                _   -> nil
               end
-              tiles = group |> String.graphemes() |> Enum.drop(-1)
-              result ++ [{suit, tiles}]
+              if suit == nil do
+                tiles = group |> String.graphemes()
+                result ++ [{:unsuited, [[tiles], 1]}]
+              else
+                tiles = group |> String.graphemes() |> Enum.drop(-1)
+                result ++ [{suit, tiles}]
+              end
             t == "X" ->
               suit = case String.last(group) do
                 "a" -> :a
                 "b" -> :b
                 "c" -> :c
+                _   -> nil
               end
-              num = group |> String.graphemes() |> Enum.drop(-2) |> length()
-              shift = String.slice(group, -2, 1) |> String.to_integer()
-              result ++ [{suit, List.duplicate(shift, num)}]
+              if suit == nil do
+                num = group |> String.graphemes() |> Enum.drop(-1) |> length()
+                shift = String.last(group) |> String.to_integer()
+                result ++ [{:unsuited, [[List.duplicate(shift, num)], 1]}]
+              else
+                num = group |> String.graphemes() |> Enum.drop(-2) |> length()
+                shift = String.slice(group, -2, 1) |> String.to_integer()
+                result ++ [{suit, List.duplicate(shift, num)}]
+              end
           end
         end
     end
@@ -138,7 +152,7 @@ defmodule RiichiAdvanced.GameState.American do
     
     # note: do NOT add "exhaustive" (game will refuse to start)
 
-    ret = use_jokers ++ nojokers
+    ret = ["dismantle_calls"] ++ use_jokers ++ nojokers
     if am_match_definition in Debug.debug_am_match_definitions() do
       ["debug"] ++ ret
     else ret end
@@ -459,8 +473,7 @@ defmodule RiichiAdvanced.GameState.American do
           i   -> List.delete_at(joker, i)
         end
     end |> Enum.concat()
-
-    if Enum.empty?(joker) or nil in joker or nil in nojoker do nil else {joker, nojoker} end
+    if Enum.empty?(joker ++ nojoker) or nil in joker or nil in nojoker do nil else {joker, nojoker} end
   end
 
   def compute_closest_american_hands(state, seat, am_match_definitions, num) do

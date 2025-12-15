@@ -86,6 +86,7 @@ defmodule RiichiAdvanced.LogControlState do
   def print_game_state(state) do
     south = :south in state.game_state.available_seats
     north = :north in state.game_state.available_seats
+    IO.puts("===")
     IO.inspect({"east's hand", state.game_state.players.east.hand, state.game_state.players.east.draw})
     if south, do: IO.inspect({"south's hand", state.game_state.players.south.hand, state.game_state.players.south.draw})
     IO.inspect({"west's hand", state.game_state.players.west.hand, state.game_state.players.west.draw})
@@ -198,14 +199,16 @@ defmodule RiichiAdvanced.LogControlState do
       seat = Log.from_seat(seat_num)
       button = button_data["button"]
       if button != nil do
+        state = for _ <- 1..10, reduce: state do
+          state ->
+            if button not in state.game_state.players[seat].buttons do
+              skip_buttons(state)
+              Map.put(state, :game_state, GenServer.call(state.game_state_pid, :get_state, 300000))
+            else state end
+        end
         if button not in state.game_state.players[seat].buttons do
-          state_before = state
-          skip_buttons(state)
-          state = Map.put(state, :game_state, GenServer.call(state.game_state_pid, :get_state, 300000))
-          if button not in state.game_state.players[seat].buttons do
-            IO.puts("log warning: Tried to press nonexistent button #{button} for #{seat}")
-            print_game_state(state_before)
-          end
+          IO.puts("log warning: Tried to press nonexistent button #{button} for #{seat}")
+          print_game_state(state)
         end
         GenServer.cast(state.game_state_pid, {:press_button, seat, button})
       end
