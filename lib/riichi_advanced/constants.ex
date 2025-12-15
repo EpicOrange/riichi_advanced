@@ -260,8 +260,8 @@ defmodule RiichiAdvanced.Constants do
     {"ningbo",       "Ningbo", "Includes Tianjin mahjong joker tiles, but adds more yaku and played with a 4-tai minimum."},
     {"hefei",        "Hefei", "Mahjong with no honor tiles, but you must have at least eight tiles of a single suit to win."},
     {"zung_jung",    "Zung Jung", "Mahjong with an additive (rather than multiplicative) scoring system."},
-    {"filipino",     "Filipino", "16-tile mahjong where all honor tiles are flower tiles."},
-    {"visayan",      "Visayan", "16-tile mahjong where you can form dragon and wind sequences."},
+    {"BETA_filipino",     "Filipino (Beta)", "16-tile mahjong where all honor tiles are flower tiles."},
+    {"BETA_visayan",      "Visayan (Beta)", "16-tile mahjong where you can form dragon and wind sequences."},
     {"custom",       "Custom", "Create and play your own custom ruleset."},
   ]
   @unimplemented_rulesets [
