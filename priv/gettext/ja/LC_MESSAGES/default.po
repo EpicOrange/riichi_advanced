@@ -4079,7 +4079,7 @@ msgid "Viewing log for a"
 msgstr "ログを表示中:"
 
 msgid "Visayan"
-msgstr "ビサヤ人"
+msgstr "ビサヤ"
 
 msgid "Voided Suit"
 msgstr "一色手"
