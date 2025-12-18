@@ -180,5 +180,4 @@
     { "display_name": "Singles and Pairs #5", "value": 50, "when": [{"name": "has_no_call_named", "opts": ["am_pung", "am_kong", "am_quint"]}, {"name": "match", "opts": [["hand", "call_tiles", "winning_tile"], ["FF 33a 66a 99a 33b 66b 99b"]]} ] },
     { "display_name": "Singles and Pairs #6", "value": 50, "when": [{"name": "has_no_call_named", "opts": ["am_pung", "am_kong", "am_quint"]}, {"name": "match", "opts": [["hand", "call_tiles", "winning_tile"], ["FF XX0a XX1a DDa XX0b XX1b DDb"]]} ] },
     { "display_name": "Singles and Pairs #7", "value": 75, "when": [{"name": "has_no_call_named", "opts": ["am_pung", "am_kong", "am_quint"]}, {"name": "match", "opts": [["hand", "call_tiles", "winning_tile"], ["FF 2019a 2019b 2019c"]]} ] }
-      ## PROGRESS ==============================================================================================================================================================================================================
   ]
