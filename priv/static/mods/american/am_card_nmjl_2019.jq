@@ -1,7 +1,7 @@
 .win_definition = [
     # 2019
     "FFFF 2019a 111b 999c",
-    "222a 0000 111a 9999a", "222a 0000 111b 999b",
+    "222a 0000 111a 9999a", "222a 0000 111b 9999b",
     "FF DDDDa 2019b DDDDc", "FF DDDDa 2019b DDDDb",
     "22a 000 NEWS 111a 99a", # concealed
     # 2468
@@ -67,7 +67,7 @@
 .open_win_definition = [
     # 2019
     "FFFF 2019a 111b 999c",
-    "222a 0000 111a 9999a", "222a 0000 111b 999b",
+    "222a 0000 111a 9999a", "222a 0000 111b 9999b",
     "FF DDDDa 2019b DDDDc", "FF DDDDa 2019b DDDDb",
     # 2468
     "FFF 22a 44a 666a 8888a",
@@ -128,7 +128,7 @@
 |
 .yaku = [
     { "display_name": "2019 #1", "value": 25, "when": [{"name": "match", "opts": [["hand", "call_tiles", "winning_tile"], ["FFFF 2019a 111b 999c"]]}] },
-    { "display_name": "2019 #2", "value": 25, "when": [{"name": "match", "opts": [["hand", "call_tiles", "winning_tile"], ["222a 0000 111a 9999a", "222a 0000 111b 999b"]]}] },
+    { "display_name": "2019 #2", "value": 25, "when": [{"name": "match", "opts": [["hand", "call_tiles", "winning_tile"], ["222a 0000 111a 9999a", "222a 0000 111b 9999b"]]}] },
     { "display_name": "2019 #3", "value": 25, "when": [{"name": "match", "opts": [["hand", "call_tiles", "winning_tile"], ["FF DDDDa 2019b DDDDc", "FF DDDDa 2019b DDDDb"]]}] },
     { "display_name": "2019 #4", "value": 30, "when": [{"name": "has_no_call_named", "opts": ["am_pung", "am_kong", "am_quint"]}, {"name": "match", "opts": [["hand", "call_tiles", "winning_tile"], ["22a 000 NEWS 111a 99a"]]}] },
     { "display_name": "2468 #1", "value": 25, "when": [{"name": "match", "opts": [["hand", "call_tiles", "winning_tile"], ["FFF 22a 44a 666a 8888a"]]}] },
