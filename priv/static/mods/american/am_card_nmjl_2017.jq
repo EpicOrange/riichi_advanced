@@ -11,10 +11,10 @@
     "22a 44a 444b 666b 8888c",
     "22a 44a 666b 888b DDDDc",
     "FF 222a 444a 666a 888a", # concealed
-    # Any Like Numbers
+    # Like Numbers
     "FF XXXX0a DDDDb XXXX0c",
     "FFF XXXX0a FFF XXXX0b",
-    # Lucky "13",
+    # Lucky “13”,
     "FFFF 4444a 9999a 13a", "FFFF 4444a 9999b 13c",
     "FFFF 5555a 8888a 13a", "FFFF 5555a 8888b 13c",
     "FFFF 6666a 7777a 13a", "FFFF 6666a 7777b 13c",
@@ -74,10 +74,10 @@
     "2222a 4444a 6666a 88a",
     "22a 44a 444b 666b 8888c",
     "22a 44a 666b 888b DDDDc",
-    # Any Like Numbers
+    # Like Numbers
     "FF XXXX0a DDDDb XXXX0c",
     "FFF XXXX0a FFF XXXX0b",
-    # Lucky "13",
+    # Lucky “13”,
     "FFFF 4444a 9999a 13a", "FFFF 4444a 9999b 13c",
     "FFFF 5555a 8888a 13a", "FFFF 5555a 8888b 13c",
     "FFFF 6666a 7777a 13a", "FFFF 6666a 7777b 13c",
@@ -134,8 +134,8 @@
     { "display_name": "2468 #4", "value": 25, "when": [{"name": "match", "opts": [["hand", "call_tiles", "winning_tile"], ["22a 44a 444b 666b 8888c"]]}] },
     { "display_name": "2468 #5", "value": 25, "when": [{"name": "match", "opts": [["hand", "call_tiles", "winning_tile"], ["22a 44a 666b 888b DDDDc"]]}] },
     { "display_name": "2468 #6", "value": 30, "when": [{"name": "has_no_call_named", "opts": ["am_pung", "am_kong", "am_quint"]}, {"name": "match", "opts": [["hand", "call_tiles", "winning_tile"], ["FF 222a 444a 666a 888a"]]}] },
-    { "display_name": "Any Like Numbers #1", "value": 25, "when": [{"name": "match", "opts": [["hand", "call_tiles", "winning_tile"], ["FF XXXX0a DDDDb XXXX0c"]]}] },
-    { "display_name": "Any Like Numbers #2", "value": 30, "when": [{"name": "match", "opts": [["hand", "call_tiles", "winning_tile"], ["FFF XXXX0a FFF XXXX0b"]]}] },
+    { "display_name": "Like Numbers #1", "value": 25, "when": [{"name": "match", "opts": [["hand", "call_tiles", "winning_tile"], ["FF XXXX0a DDDDb XXXX0c"]]}] },
+    { "display_name": "Like Numbers #2", "value": 30, "when": [{"name": "match", "opts": [["hand", "call_tiles", "winning_tile"], ["FFF XXXX0a FFF XXXX0b"]]}] },
     { "display_name": "Lucky “13” #1", "value": 25, "when": [{"name": "match", "opts": [["hand", "call_tiles", "winning_tile"], ["FFFF 4444a 9999a 13a", "FFFF 4444a 9999b 13c"]]}] },
     { "display_name": "Lucky “13” #2", "value": 25, "when": [{"name": "match", "opts": [["hand", "call_tiles", "winning_tile"], ["FFFF 5555a 8888a 13a", "FFFF 5555a 8888b 13c"]]}] },
     { "display_name": "Lucky “13” #3", "value": 25, "when": [{"name": "match", "opts": [["hand", "call_tiles", "winning_tile"], ["FFFF 6666a 7777a 13a", "FFFF 6666a 7777b 13c"]]}] },
