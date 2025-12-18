@@ -12,7 +12,7 @@
     "22a 44a 444b 666b 8888c",
     "2222a 4444a 6666a 88a",
     "FF 222a DDDa 888b DDDb", # concealed
-    # Any Like Numbers
+    # Like Numbers
     "FFFF XXXX0a XX0b XXXX0c",
     "XX0a DDa XXX0b DDDb XXXX0c", # concealed
     # Eleven Hands
@@ -75,7 +75,7 @@
     "2222a 44a 6666a 88b 88c",
     "22a 44a 444b 666b 8888c",
     "2222a 4444a 6666a 88a",
-    # Any Like Numbers
+    # Like Numbers
     "FFFF XXXX0a XX0b XXXX0c",
     # Eleven Hands
     "FFFF 2222a 9999a 11a", "FFFF 2222a 9999b 11c",
@@ -134,8 +134,8 @@
     { "display_name": "2468 #4", "value": 25, "when": [{"name": "match", "opts": [["hand", "call_tiles", "winning_tile"], ["22a 44a 444b 666b 8888c"]]}] },
     { "display_name": "2468 #5", "value": 25, "when": [{"name": "match", "opts": [["hand", "call_tiles", "winning_tile"], ["2222a 4444a 6666a 88a"]]}] },
     { "display_name": "2468 #6", "value": 30, "when": [{"name": "has_no_call_named", "opts": ["am_pung", "am_kong", "am_quint"]}, {"name": "match", "opts": [["hand", "call_tiles", "winning_tile"], ["FF 222a DDDa 888b DDDb"]]}] },
-    { "display_name": "Any Like Numbers #1", "value": 25, "when": [{"name": "match", "opts": [["hand", "call_tiles", "winning_tile"], ["FFFF XXXX0a XX0b XXXX0c"]]}] },
-    { "display_name": "Any Like Numbers #2", "value": 30, "when": [{"name": "has_no_call_named", "opts": ["am_pung", "am_kong", "am_quint"]}, {"name": "match", "opts": [["hand", "call_tiles", "winning_tile"], ["XX0a DDa XXX0b DDDb XXXX0c"]]}] },
+    { "display_name": "Like Numbers #1", "value": 25, "when": [{"name": "match", "opts": [["hand", "call_tiles", "winning_tile"], ["FFFF XXXX0a XX0b XXXX0c"]]}] },
+    { "display_name": "Like Numbers #2", "value": 30, "when": [{"name": "has_no_call_named", "opts": ["am_pung", "am_kong", "am_quint"]}, {"name": "match", "opts": [["hand", "call_tiles", "winning_tile"], ["XX0a DDa XXX0b DDDb XXXX0c"]]}] },
     { "display_name": "Eleven Hands #1", "value": 25, "when": [{"name": "match", "opts": [["hand", "call_tiles", "winning_tile"], ["FFFF 2222a 9999a 11a", "FFFF 2222a 9999b 11c"]]}] },
     { "display_name": "Eleven Hands #2", "value": 25, "when": [{"name": "match", "opts": [["hand", "call_tiles", "winning_tile"], ["FFFF 3333a 8888a 11a", "FFFF 3333a 8888b 11c"]]}] },
     { "display_name": "Eleven Hands #3", "value": 25, "when": [{"name": "match", "opts": [["hand", "call_tiles", "winning_tile"], ["FFFF 4444a 7777a 11a", "FFFF 4444a 7777b 11c"]]}] },
