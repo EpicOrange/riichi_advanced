@@ -1400,7 +1400,7 @@ msgid "Fifth Tile"
 msgstr "第五張牌"
 
 msgid "Filipino"
-msgstr "菲律賓語"
+msgstr "菲律賓"
 
 msgid "Final Discard"
 msgstr "最後捨牌"
