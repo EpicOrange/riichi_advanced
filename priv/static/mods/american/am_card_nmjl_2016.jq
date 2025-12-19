@@ -1,7 +1,7 @@
 .win_definition = [
     # 2016
-    "FF NNNN 2016 SSSS",
-    "FF EEEE 2016 WWWW",
+    "FF NNNN 2016a SSSS",
+    "FF EEEE 2016a WWWW",
     "222a 000 1111b 6666b",
     "FFFF 2222a 0000 16a",
     "FF 222a 000 111a 666a", # concealed
