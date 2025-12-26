@@ -1,4 +1,5 @@
 .win_definition = [
+    ## TODO: wait for Mahjong Press to send us a copy of the Card
     ### CURRENT PROGRESS
     
     # 2025
