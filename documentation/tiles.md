@@ -1,6 +1,6 @@
 # Tile reference
 
-This document is a reference for all of the tiles currently supported in the tileset.
+This document is a reference for all of the tiles currently supported in the tileset. See [`guide_to_tiles.md`](guide_to_tiles.md) for how these tiles (particularly the jokers) are used in various rulesets.
 
 ## Standard tiles
 
