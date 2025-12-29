@@ -379,7 +379,7 @@
     ]
   },
   "buttons": {
-      <<TODO: change all charleston buttons to require marking three non-unpassables rather than three non-jokers>>
+      // TODO: change all charleston buttons to require marking three non-unpassables rather than three non-jokers
     "charleston_left": {
       "display_name": "Select three tiles to pass left",
       "show_when": [{"name": "match", "opts": [["hand", -3, ["self", "not_unpassable"]]]}, {"name": "status", "opts": ["charleston_left"]}],
@@ -548,9 +548,9 @@
       "unskippable": true,
       "cancellable": false
     },
-      <<TODO: check that this button behaves the way it should. this button is here for any variants where there are more than 10 "unpassable" tiles (e.g. jokers, blanks, flowers in older NMJL rules), and a player has so many tiles that they can't pass three tiles during the Charleston.>>
-      <<TODO: maybe add a requirement to all other Charleston buttons that the hand needs to have at least three passable tiles? might want to add an attribute "unpassable" to some of these tiles>>
-        <<DONE>>
+      // TODO: check that this button behaves the way it should. this button is here for any variants where there are more than 10 "unpassable" tiles (e.g. jokers, blanks, flowers in older NMJL rules), and a player has so many tiles that they can't pass three tiles during the Charleston.
+      // TODO: maybe add a requirement to all other Charleston buttons that the hand needs to have at least three passable tiles? might want to add an attribute "unpassable" to some of these tiles
+        // DONE
     "abort_during_charleston": {
       "display_name": "Can't pass three tiles",
       "show_when": [{"name": "status", "opts": ["match_start"]}, {"name": "match", "opts": [["hand", -3, ["self", "not_unpassable"]]]}],
