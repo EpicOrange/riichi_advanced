@@ -376,7 +376,7 @@
         ["push_message", "gets double score for a jokerless hand"],
         ["modify_payout", "all", 2, "multiply"]
       ]],
-      // on wins by dicard, engine splits score evenly across all 3 players,
+      // on wins by discard, engine splits score evenly across all 3 players,
       // this undoes that
       ["when", ["won_by_discard"], [
         ["modify_payout", "everyone", 3, "multiply"]
@@ -553,8 +553,7 @@
       "cancellable": false
     },
       // TODO: check that this button behaves the way it should. this button is here for any variants where there are more than 10 "unpassable" tiles (e.g. jokers, blanks, flowers in older NMJL rules), and a player has so many tiles that they can't pass three tiles during the Charleston.
-      // TODO: maybe add a requirement to all other Charleston buttons that the hand needs to have at least three passable tiles? might want to add an attribute "unpassable" to some of these tiles
-        // DONE
+        // need to write a custom scenario where this happens
     "abort_during_charleston": {
       "display_name": "Can't pass three tiles",
       "show_when": [{"name": "status", "opts": ["match_start"]}, {"name": "counter_less_than", "opts": ["passables", 3]}],
@@ -608,7 +607,13 @@
     },
     "am_joker_swap": {
       "display_name": "Swap for exposed joker",
-      "show_when": [{"name": "status_missing", "opts": ["match_start", "dead_hand"]}, "our_turn", "not_just_discarded", {"name": "match", "opts": [["hand_draw_nonjoker_any", "anyone_joker_meld_tiles"], [[[["pair"], 1]]]]}],
+      "show_when": [
+        {"name": "status_missing", "opts": ["match_start", "dead_hand"]},
+        "our_turn",
+        "not_just_discarded",
+          // TODO: apparently joker swaps are now not available, and it's probably this line of code's fault, but i'm not immediately sure why
+        {"name": "match", "opts": [["hand_draw_nonjoker_any", "anyone_joker_meld_tiles"], [[[["pair"], 1]]]]}
+      ],
       "actions": [
         ["big_text", "Swap"],
         ["mark", [["call", 1, ["call_has_joker", "match_call_to_marked_hand"]], ["hand", 1, ["self", "not_joker", "match_hand_to_marked_call"]]]],
