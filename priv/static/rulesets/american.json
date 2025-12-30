@@ -320,7 +320,12 @@
     "actions": [
       ["set_status_all", "match_start", "first_charleston", "charleston_right", "heavenly_available"],
       ["set_tile_alias_all", ["1j"], [["1j", "unpassable"], "any"]],
-      ["set_tile_alias_all", ["2f", "3f", "4f", "1g", "2g", "3g", "4g"], ["1f"]]
+      ["set_tile_alias_all", ["2f", "3f", "4f", "1g", "2g", "3g", "4g"], ["1f"]],
+        // compute how many tiles in each player's hand are passable
+      ["as", "all", [
+        ["set_counter", "passables", "count_matches", ["hand"], [[[["any"], 1]]]],
+        ["subtract_counter", "passables", "count_matches", ["hand"], [[[[["any", "unpassable"]], 1]]]]
+      ]]
     ]
   },
   "after_charleston": {
@@ -379,10 +384,9 @@
     ]
   },
   "buttons": {
-      // TODO: change all charleston buttons to require marking three non-unpassables rather than three non-jokers
     "charleston_left": {
       "display_name": "Select three tiles to pass left",
-      "show_when": [{"name": "match", "opts": [["hand", -3, ["self", "not_unpassable"]]]}, {"name": "status", "opts": ["charleston_left"]}],
+      "show_when": [{"name": "counter_at_least", "opts": ["passables", 3]}, {"name": "status", "opts": ["charleston_left"]}],
       "actions": [
         ["mark", [["hand", 3, ["self", "not_joker"]]], [
           ["unset_status", "charleston_left", "heavenly_available"],
@@ -399,7 +403,7 @@
     },
     "charleston_across": {
       "display_name": "Select three tiles to pass across",
-      "show_when": [{"name": "match", "opts": [["hand", -3, ["self", "not_unpassable"]]]}, {"name": "status", "opts": ["charleston_across"]}],
+      "show_when": [{"name": "counter_at_least", "opts": ["passables", 3]}, {"name": "status", "opts": ["charleston_across"]}],
       "actions": [
         ["mark", [["hand", 3, ["self", "not_joker"]]], [["unset_status", "charleston_across", "heavenly_available"], ["merge_draw"], ["sort_hand"]]],
         ["charleston_across"],
@@ -412,7 +416,7 @@
     },
     "charleston_right": {
       "display_name": "Select three tiles to pass right",
-      "show_when": [{"name": "match", "opts": [["hand", -3, ["self", "not_unpassable"]]]}, {"name": "status", "opts": ["charleston_right"]}],
+      "show_when": [{"name": "counter_at_least", "opts": ["passables", 3]}, {"name": "status", "opts": ["charleston_right"]}],
       "actions": [
         ["mark", [["hand", 3, ["self", "not_joker"]]], [
           ["unset_status", "charleston_right", "heavenly_available"],
@@ -429,7 +433,7 @@
     },
     "continue_charleston": {
       "display_name": "Continue Charleston",
-      "show_when": [{"name": "match", "opts": [["hand", -3, ["self", "not_unpassable"]]]}, {"name": "status", "opts": ["decide_charleston"]}, {"name": "not_anyone_status", "opts": ["first_charleston"]}],
+      "show_when": [{"name": "counter_at_least", "opts": ["passables", 3]}, {"name": "status", "opts": ["decide_charleston"]}, {"name": "not_anyone_status", "opts": ["first_charleston"]}],
       "actions": [
         ["unset_status", "decide_charleston"],
         ["set_status", "second_charleston", "charleston_left"],
@@ -439,7 +443,7 @@
     },
     "skip_charleston": {
       "display_name": "Skip Charleston",
-      "show_when": [{"name": "match", "opts": [["hand", -3, ["self", "not_unpassable"]]]}, {"name": "status", "opts": ["decide_charleston"]}],
+      "show_when": [{"name": "counter_at_least", "opts": ["passables", 3]}, {"name": "status", "opts": ["decide_charleston"]}],
       "actions": [
         ["big_text", "Skip"],
         ["unset_status_all", "decide_charleston"],
@@ -464,7 +468,7 @@
     },
     "final_charleston_offer_1": {
       "display_name": "Offer 1",
-      "show_when": [{"name": "match", "opts": [["hand", -1, ["self", "not_unpassable"]]]}, {"name": "status", "opts": ["final_charleston"]}, {"name": "status_missing", "opts": ["charleston_across_0", "charleston_across_1", "charleston_across_2", "charleston_across_3"]}],
+      "show_when": [{"name": "counter_at_least", "opts": ["passables", 1]}, {"name": "status", "opts": ["final_charleston"]}, {"name": "status_missing", "opts": ["charleston_across_0", "charleston_across_1", "charleston_across_2", "charleston_across_3"]}],
       "actions": [
         ["big_text", "Offer 1"],
         ["set_status", "final_charleston", "charleston_across_1"],
@@ -477,7 +481,7 @@
     },
     "final_charleston_offer_2": {
       "display_name": "Offer 2",
-      "show_when": [{"name": "match", "opts": [["hand", -2, ["self", "not_unpassable"]]]}, {"name": "status", "opts": ["final_charleston"]}, {"name": "status_missing", "opts": ["charleston_across_0", "charleston_across_1", "charleston_across_2", "charleston_across_3"]}],
+      "show_when": [{"name": "counter_at_least", "opts": ["passables", 2]}, {"name": "status", "opts": ["final_charleston"]}, {"name": "status_missing", "opts": ["charleston_across_0", "charleston_across_1", "charleston_across_2", "charleston_across_3"]}],
       "actions": [
         ["big_text", "Offer 2"],
         ["set_status", "final_charleston", "charleston_across_2"],
@@ -490,7 +494,7 @@
     },
     "final_charleston_offer_3": {
       "display_name": "Offer 3",
-      "show_when": [{"name": "match", "opts": [["hand", -3, ["self", "not_unpassable"]]]}, {"name": "status", "opts": ["final_charleston"]}, {"name": "status_missing", "opts": ["charleston_across_0", "charleston_across_1", "charleston_across_2", "charleston_across_3"]}],
+      "show_when": [{"name": "counter_at_least", "opts": ["passables", 3]}, {"name": "status", "opts": ["final_charleston"]}, {"name": "status_missing", "opts": ["charleston_across_0", "charleston_across_1", "charleston_across_2", "charleston_across_3"]}],
       "actions": [
         ["big_text", "Offer 3"],
         ["set_status", "final_charleston", "charleston_across_3"],
@@ -514,7 +518,7 @@
     },
     "charleston_across_1": {
       "display_name": "Select a tile to pass across",
-      "show_when": [{"name": "match", "opts": [["hand", -1, ["self", "not_unpassable"]]]}, {"name": "status", "opts": ["final_charleston", "charleston_across_1"]}, {"name": "toimen_status", "opts": ["final_charleston", "charleston_across_1"]}],
+      "show_when": [{"name": "counter_at_least", "opts": ["passables", 1]}, {"name": "status", "opts": ["final_charleston", "charleston_across_1"]}, {"name": "toimen_status", "opts": ["final_charleston", "charleston_across_1"]}],
       "actions": [
         ["mark", [["hand", 1, ["self", "not_joker"]]], [["unset_status", "charleston_across_1"]]],
         ["charleston_across"],
@@ -526,7 +530,7 @@
     },
     "charleston_across_2": {
       "display_name": "Select two tiles to pass across",
-      "show_when": [{"name": "match", "opts": [["hand", -2, ["self", "not_unpassable"]]]}, {"name": "status", "opts": ["final_charleston", "charleston_across_2"]}, {"name": "toimen_status", "opts": ["final_charleston", "charleston_across_2"]}],
+      "show_when": [{"name": "counter_at_least", "opts": ["passables", 2]}, {"name": "status", "opts": ["final_charleston", "charleston_across_2"]}, {"name": "toimen_status", "opts": ["final_charleston", "charleston_across_2"]}],
       "actions": [
         ["mark", [["hand", 2, ["self", "not_joker"]]], [["unset_status", "charleston_across_2"]]],
         ["charleston_across"],
@@ -538,7 +542,7 @@
     },
     "charleston_across_3": {
       "display_name": "Select three tiles to pass across",
-      "show_when": [{"name": "match", "opts": [["hand", -3, ["self", "not_unpassable"]]]}, {"name": "status", "opts": ["final_charleston", "charleston_across_3"]}, {"name": "toimen_status", "opts": ["final_charleston", "charleston_across_3"]}],
+      "show_when": [{"name": "counter_at_least", "opts": ["passables", 3]}, {"name": "status", "opts": ["final_charleston", "charleston_across_3"]}, {"name": "toimen_status", "opts": ["final_charleston", "charleston_across_3"]}],
       "actions": [
         ["mark", [["hand", 3, ["self", "not_joker"]]], [["unset_status", "charleston_across_3"]]],
         ["charleston_across"],
@@ -553,7 +557,7 @@
         // DONE
     "abort_during_charleston": {
       "display_name": "Can't pass three tiles",
-      "show_when": [{"name": "status", "opts": ["match_start"]}, {"name": "match", "opts": [["hand", -3, ["self", "not_unpassable"]]]}],
+      "show_when": [{"name": "status", "opts": ["match_start"]}, {"name": "counter_less_than", "opts": ["passables", 3]}],
       "actions": [
         ["big_text", "Can't pass three tiles"],
         ["pause", 1500],
