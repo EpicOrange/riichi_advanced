@@ -20,8 +20,15 @@ def add_n_tiles($tile; $num):
 .play_restrictions += [ [["5z"], []] ]
 |
 
-# make the blank a joker so that it can't be passed, or marked in discards
-.after_start.actions += [ ["set_tile_alias_all", ["5z"], ["5z"]] ]
+# make the blank unpassable
+.after_start.actions += [ ["set_tile_alias_all", ["5z"], [["5z", "_unpassable"]]],
+    # recalculate number of unpassable tiles
+  ["as", "all", [
+      ["set_counter", "passables", "count_matches", ["hand", "draw"], [[[["any"], 1]]]],
+      ["subtract_counter", "passables", "count_matches", ["hand", "draw"], [[[[["_unpassable"]], 1]]]]
+    ]
+  ]
+]
 |
 
 # disallow Pung, Kong, Quint from having blanks
