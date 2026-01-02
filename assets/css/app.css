@@ -2336,14 +2336,15 @@ div.game-modal-container {
   z-index: 100;
   float: left;
   transition: opacity 0.5s ease;
+  color: black;
 }
 div.game-modal-container.inactive,
 div.game-modal-hide:active,
 div.game-modal-hide:active + div.timer {
   opacity: 0;
-  color: black;
   pointer-events: none;
   user-select: none;
+  color: black;
 }
 div.game-modal {
   position: absolute;
