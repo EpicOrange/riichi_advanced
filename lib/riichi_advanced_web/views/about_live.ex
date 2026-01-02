@@ -59,7 +59,7 @@ defmodule RiichiAdvancedWeb.AboutLive do
         <div class="tile 8m"></div>
         <div class="tile 7z"></div>
       </div>
-      <form>
+      <form class="about-page">
         <%= t(@lang, "Created by Dani in their spare time.") %>
         <%= t(@lang, "For more information, drop a message in our Discord!") %>
         <hr/>
