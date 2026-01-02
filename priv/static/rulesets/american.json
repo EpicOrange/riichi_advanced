@@ -319,12 +319,12 @@
   "after_start": {
     "actions": [
       ["set_status_all", "match_start", "first_charleston", "charleston_right", "heavenly_available"],
-      ["set_tile_alias_all", ["1j"], [["1j", "unpassable"], "any"]],
+      ["set_tile_alias_all", ["1j"], [["1j", "_unpassable"], "any"]],
       ["set_tile_alias_all", ["2f", "3f", "4f", "1g", "2g", "3g", "4g"], ["1f"]],
         // compute how many tiles in each player's hand are passable
       ["as", "all", [
         ["set_counter", "passables", "count_matches", ["hand"], [[[["any"], 1]]]],
-        ["subtract_counter", "passables", "count_matches", ["hand"], [[[[["any", "unpassable"]], 1]]]]
+        ["subtract_counter", "passables", "count_matches", ["hand"], [[[[["any", "_unpassable"]], 1]]]]
       ]]
     ]
   },
@@ -376,7 +376,7 @@
         ["push_message", "gets double score for a jokerless hand"],
         ["modify_payout", "all", 2, "multiply"]
       ]],
-      // on wins by discard, engine splits score evenly across all 3 players,
+      // on wins by dicard, engine splits score evenly across all 3 players,
       // this undoes that
       ["when", ["won_by_discard"], [
         ["modify_payout", "everyone", 3, "multiply"]
@@ -552,8 +552,8 @@
       "unskippable": true,
       "cancellable": false
     },
-      // TODO: check that this button behaves the way it should. this button is here for any variants where there are more than 10 "unpassable" tiles (e.g. jokers, blanks, flowers in older NMJL rules), and a player has so many tiles that they can't pass three tiles during the Charleston.
-        // need to write a custom scenario where this happens
+      // TODO: check that this button behaves the way it should. this button is here for any variants where a player has so many unpassable tiles (e.g. jokers, blanks, flowers in older NMJL rules) that they are unable to pass three tiles during the Charleston.
+      // TODO: need some kind of test scenario to check if this button works correctly
     "abort_during_charleston": {
       "display_name": "Can't pass three tiles",
       "show_when": [{"name": "status", "opts": ["match_start"]}, {"name": "counter_less_than", "opts": ["passables", 3]}],
@@ -609,9 +609,7 @@
       "display_name": "Swap for exposed joker",
       "show_when": [
         {"name": "status_missing", "opts": ["match_start", "dead_hand"]},
-        "our_turn",
-        "not_just_discarded",
-          // TODO: apparently joker swaps are now not available, and it's probably this line of code's fault, but i'm not immediately sure why
+        "our_turn", "not_just_discarded",
         {"name": "match", "opts": [["hand_draw_nonjoker_any", "anyone_joker_meld_tiles"], [[[["pair"], 1]]]]}
       ],
       "actions": [
@@ -823,7 +821,7 @@
   "interruptible_actions": ["play_tile", "draw"],
   "initial_score": 0,
   "starting_tiles": 13,
-  "initial_dead_wall_length": 14,
+  "initial_dead_wall_length": 0,
   "four_rows_discards": true,
   "dead_hand_buttons": true,
   "max_rounds": 8
