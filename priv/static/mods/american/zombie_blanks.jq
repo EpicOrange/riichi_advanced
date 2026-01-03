@@ -20,8 +20,15 @@ def add_n_tiles($tile; $num):
 .play_restrictions += [ [["5z"], []] ]
 |
 
-# make the blank a joker so that it can't be passed, or marked in discards
-.after_start.actions += [ ["set_tile_alias_all", ["5z"], ["5z"]] ]
+# make the blank unpassable
+.after_start.actions += [ ["set_tile_alias_all", ["5z"], [["5z", "_unpassable"]]],
+    # recalculate number of unpassable tiles
+  ["as", "all", [
+      ["set_counter", "passables", "count_matches", ["hand", "draw"], [[[["any"], 1]]]],
+      ["subtract_counter", "passables", "count_matches", ["hand", "draw"], [[[[["_unpassable"]], 1]]]]
+    ]
+  ]
+]
 |
 
 # disallow Pung, Kong, Quint from having blanks
@@ -47,7 +54,7 @@ def add_n_tiles($tile; $num):
     {"name": "status_missing", "opts": ["match_start", "dead_hand"]},
     "our_turn",
     "not_just_discarded",
-    {"name": "match", "opts": [["hand"], [["nojoker", [["5z"], 1]]]]},
+    {"name": "match", "opts": [["hand", "draw"], [["nojoker", [["5z"], 1]]]]},
     {"name": "match", "opts": [["all_ponds"], [["nojoker", [["1m","2m","3m","4m","5m","6m","7m","8m","9m","1p","2p","3p","4p","5p","6p","7p","8p","9p","1s","2s","3s","4s","5s","6s","7s","8s","9s","1z","2z","3z","4z","0z","6z","7z","1f","2f","3f","4f","1g","2g","3g","4g"], 1]]]]}
   ],
   "actions": [
