@@ -20,7 +20,7 @@
     "FFFF 3333a 44a 7777a", "FFFF 3333a 44a 7777a", 
     # Quints
     "22a 333a 4444a 55555a",
-    "XX0aX1aX2a XXXXX0b XXXXX0c", "X0aXX1aX2a XXXXX1b XXXXX1c", "X0aX1aXX2a XXXXX2b XXXXX2c",
+    "XX0a X1a X2a XXXXX0b XXXXX0c", "X0a XX1a X2a XXXXX1b XXXXX1c", "X0a X1a XX2a XXXXX2b XXXXX2c",
     "ZZZZZ DDDDa XXXXX0b",
     "FFFF XXXXX0a XXXXX1a",
     # Consecutive Run
@@ -82,7 +82,7 @@
     "FFFF 3333a 44a 7777a", "FFFF 3333a 44a 7777a", 
     # Quints
     "22a 333a 4444a 55555a",
-    "XX0aX1aX2a XXXXX0b XXXXX0c", "X0aXX1aX2a XXXXX1b XXXXX1c", "X0aX1aXX2a XXXXX2b XXXXX2c",
+    "XX0a X1a X2a XXXXX0b XXXXX0c", "X0a XX1a X2a XXXXX1b XXXXX1c", "X0a X1a XX2a XXXXX2b XXXXX2c",
     "ZZZZZ DDDDa XXXXX0b",
     "FFFF XXXXX0a XXXXX1a",
     # Consecutive Run
@@ -139,7 +139,7 @@
     { "display_name": "Seven Hands #2", "value": 25, "when": [{"name": "match", "opts": [["hand", "call_tiles", "winning_tile"], ["FFFF 2222a 55a 7777a", "FFFF 2222a 55a 7777a"]]}] },
     { "display_name": "Seven Hands #3", "value": 25, "when": [{"name": "match", "opts": [["hand", "call_tiles", "winning_tile"], ["FFFF 3333a 44a 7777a", "FFFF 3333a 44a 7777a"]]}] },
     { "display_name": "Quints #1", "value": 35, "when": [{"name": "match", "opts": [["hand", "call_tiles", "winning_tile"], ["22a 333a 4444a 55555a"]]}] },
-    { "display_name": "Quints #2", "value": 40, "when": [{"name": "match", "opts": [["hand", "call_tiles", "winning_tile"], ["XX0aX1aX2a XXXXX0b XXXXX0c", "X0aXX1aX2a XXXXX1b XXXXX1c", "X0aX1aXX2a XXXXX2b XXXXX2c"]]}] },
+    { "display_name": "Quints #2", "value": 40, "when": [{"name": "match", "opts": [["hand", "call_tiles", "winning_tile"], ["XX0a X1a X2a XXXXX0b XXXXX0c", "X0a XX1a X2a XXXXX1b XXXXX1c", "X0a X1a XX2a XXXXX2b XXXXX2c"]]}] },
     { "display_name": "Quints #3", "value": 45, "when": [{"name": "match", "opts": [["hand", "call_tiles", "winning_tile"], ["ZZZZZ DDDDa XXXXX0b"]]}] },
     { "display_name": "Quints #4", "value": 45, "when": [{"name": "match", "opts": [["hand", "call_tiles", "winning_tile"], ["FFFF XXXXX0a XXXXX1a"]]}] },
     { "display_name": "Consecutive Run #1", "value": 25, "when": [{"name": "match", "opts": [["hand", "call_tiles", "winning_tile"], ["11a 222a 3333a 444a 55a", "55a 666a 7777a 888a 99a"]]}] },
