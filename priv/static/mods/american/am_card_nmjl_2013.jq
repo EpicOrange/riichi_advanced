@@ -19,7 +19,7 @@
     "FFFF 2222a 55a 7777a", "FFFF 2222a 55a 7777a",
     "FFFF 3333a 44a 7777a", "FFFF 3333a 44a 7777a",
     # Quints
-    "XX0aX1aX2a XXXXX0b XXXXX0c", "X0aXX1aX2a XXXXX1b XXXXX1c", "X0aX1aXX2a XXXXX2b XXXXX2c",
+    "XX0a X1a X2a XXXXX0b XXXXX0c", "X0a XX1a X2a XXXXX1b XXXXX1c", "X0a X1a XX2a XXXXX2b XXXXX2c",
     "ZZZZZ DDDDa XXXXX0b",
     "FFFF XXXXX0a XXXXX1b",
     "XXXXX0a XXXX1a XXXXX2a",
@@ -81,7 +81,7 @@
     "FFFF 2222a 55a 7777a", "FFFF 2222a 55a 7777a",
     "FFFF 3333a 44a 7777a", "FFFF 3333a 44a 7777a",
     # Quints
-    "XX0aX1aX2a XXXXX0b XXXXX0c", "X0aXX1aX2a XXXXX1b XXXXX1c", "X0aX1aXX2a XXXXX2b XXXXX2c",
+    "XX0a X1a X2a XXXXX0b XXXXX0c", "X0a XX1a X2a XXXXX1b XXXXX1c", "X0a X1a XX2a XXXXX2b XXXXX2c",
     "ZZZZZ DDDDa XXXXX0b",
     "FFFF XXXXX0a XXXXX1b",
     "XXXXX0a XXXX1a XXXXX2a",
@@ -138,7 +138,7 @@
     { "display_name": "Seven Hands #1", "value": 25, "when": [{"name": "match", "opts": [["hand", "call_tiles", "winning_tile"], ["FFFF 1111a 66a 7777a", "FFFF 1111a 66a 7777a"]]}] },
     { "display_name": "Seven Hands #2", "value": 25, "when": [{"name": "match", "opts": [["hand", "call_tiles", "winning_tile"], ["FFFF 2222a 55a 7777a", "FFFF 2222a 55a 7777a"]]}] },
     { "display_name": "Seven Hands #3", "value": 25, "when": [{"name": "match", "opts": [["hand", "call_tiles", "winning_tile"], ["FFFF 3333a 44a 7777a", "FFFF 3333a 44a 7777a"]]}] },
-    { "display_name": "Quints #1", "value": 40, "when": [{"name": "match", "opts": [["hand", "call_tiles", "winning_tile"], ["XX0aX1aX2a XXXXX0b XXXXX0c", "X0aXX1aX2a XXXXX1b XXXXX1c", "X0aX1aXX2a XXXXX2b XXXXX2c"]]}] },
+    { "display_name": "Quints #1", "value": 40, "when": [{"name": "match", "opts": [["hand", "call_tiles", "winning_tile"], ["XX0a X1a X2a XXXXX0b XXXXX0c", "X0a XX1a X2a XXXXX1b XXXXX1c", "X0a X1a XX2a XXXXX2b XXXXX2c"]]}] },
     { "display_name": "Quints #2", "value": 45, "when": [{"name": "match", "opts": [["hand", "call_tiles", "winning_tile"], ["ZZZZZ DDDDa XXXXX0b"]]}] },
     { "display_name": "Quints #3", "value": 40, "when": [{"name": "match", "opts": [["hand", "call_tiles", "winning_tile"], ["FFFF XXXXX0a XXXXX1b"]]}] },
     { "display_name": "Quints #4", "value": 45, "when": [{"name": "match", "opts": [["hand", "call_tiles", "winning_tile"], ["XXXXX0a XXXX1a XXXXX2a"]]}] },
