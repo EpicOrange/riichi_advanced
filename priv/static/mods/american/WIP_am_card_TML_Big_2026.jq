@@ -121,9 +121,11 @@
     "FF 333a NN E W SS 888a", "FF 333a NN E W SS 888b",
   ]
 |
-  # TODO: add a rule that concealed hands get a +10 bonus, except for hands that are concealed on the Card. probably do it here, as it appears to replace the jokerless bonus rule?
 .singles_win_definition = [
   ]
+# TODO: add a rule that concealed hands get a +10 bonus, except for hands that are concealed on the Card. probably do it here, as it appears to replace the jokerless bonus rule?
+# |
+# code goes here
 |
 .yaku = [
     { "display_name": "2026 #1", "value": 25, "when": [{"name": "match", "opts": [["hand", "call_tiles", "winning_tile"], ["222a 0000 222b 6666c"]]}] },
