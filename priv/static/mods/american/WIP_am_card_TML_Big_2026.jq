@@ -122,10 +122,20 @@
   ]
 |
 .singles_win_definition = [
+    # TODO: check whether the jokerless bonus applies to any of these hands.
   ]
-# TODO: add a rule that concealed hands get a +10 bonus, except for hands that are concealed on the Card. probably do it here, as it appears to replace the jokerless bonus rule?
-# |
-# code goes here
+|
+# Card-specific rule: concealed hands get a +10 bonus, except for hands that are concealed on the Card
+# TODO: check whether this rule works as intended.
+.after_scoring += [
+  ["when", [
+    {"name": "match", "opts": [["hand", "call_tiles", "winning_tile"], ["open_win"]]},
+    {"name": "has_no_call_named", "opts": ["am_pung", "am_kong", "am_quint"]}
+  ], [
+    ["push_message", "gets +10 points for a concealed hand"],
+    ["modify_payout", "others", -10], ["modify_payout", "self", +30]
+  ]]
+]
 |
 .yaku = [
     { "display_name": "2026 #1", "value": 25, "when": [{"name": "match", "opts": [["hand", "call_tiles", "winning_tile"], ["222a 0000 222b 6666c"]]}] },
