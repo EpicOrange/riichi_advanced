@@ -3,7 +3,7 @@
     "2222a 0000 2222b 66c",
     "FFFF 222a 2026b 666c",
     "FF 22a 0000 22a 6666a",
-    "ZZZ 26a 26b 26c ZZZ DDa"
+    "ZZZ 26a 26b 26c ZZZ DDa",
     "DDDa 222b 00 222c 666a", # concealed
     # Three - Six - Nine
     "FFF ZZZ 333a 666b 99c",
