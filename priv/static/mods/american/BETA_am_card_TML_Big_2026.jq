@@ -1,6 +1,6 @@
-# TODO: add a rule that concealed hands get a +10 bonus, except for hands that are concealed on the Card.
-# TODO: clarify whether the jokerless bonus applies to all hands
-# TODO: check whether the Consecutive Numbers category can be played descending rather than ascending.
+# Note: concealed hands get a +10 bonus, except for hands that are concealed on the Card.
+# Note: the jokerless bonus applies to all hands except for those MADE OF singles and pairs. it applies after the +10 bonus for concealed hands.
+# Note: the Consecutive Numbers category cannot be played descending rather than ascending.
 
 .win_definition = [
     # 2026
@@ -17,14 +17,13 @@
     "FF 2222a 4444a|6666a|8888a DDDDa", "FF 4444a 6666a|8888a DDDDa", "FF 6666a 8888a DDDDa", "FF 2222a 4444b|6666b|8888b DDDDc", "FF 4444a 6666b|8888b DDDDc", "FF 6666a 8888b DDDDc",
     "222a 444a 666a 88888a", "222a 444a 666b 88888c",
     "2468Da 2468Db 2468c", # concealed
-    "FF 22a 44a 66a 88a 22b 22c", "FF 22a 44a 66a 88a 44b 44c", "FF 22a 44a 66a 88a 66b 66c", "FF 22a 44a 66a 88a 88b 88c",
+    "FF 22a 44a 66a 88a 22b 22c", "FF 22a 44a 66a 88a 44b 44c", "FF 22a 44a 66a 88a 66b 66c", "FF 22a 44a 66a 88a 88b 88c", # concealed
     # Any Matching Numbers
     "NNN XXX0a XX0b XXX0c SSS", "EEE XXX0a XX0b XXX0c WWW",
     "XXXX0a XXXX0b XXXX0c DDa",
     "XXX0a XXX0b XXX0c DDDDDa",
     "FFF XXXX0a FFF XXXX0b",
     # Consecutive Numbers
-        ## TODO: check whether these "runs" can be played descending rather than ascending.
     "FF XXX0a XXX1a XXX2a XXX3a", "FF XXX0a XXX1a XXX2b XXX3b", 
     "XXX0a XXXX1a XXX0b XXXX1b",
     "FFFF ZZ XXX0a XXX1a DDa",
@@ -79,14 +78,12 @@
     "FF 2a 4a 666a 8888a DDDa", "FF 2a 4a 666b 8888c DDDa",
     "FF 2222a 4444a|6666a|8888a DDDDa", "FF 4444a 6666a|8888a DDDDa", "FF 6666a 8888a DDDDa", "FF 2222a 4444b|6666b|8888b DDDDc", "FF 4444a 6666b|8888b DDDDc", "FF 6666a 8888b DDDDc",
     "222a 444a 666a 88888a", "222a 444a 666b 88888c",
-    "FF 22a 44a 66a 88a 22b 22c", "FF 22a 44a 66a 88a 44b 44c", "FF 22a 44a 66a 88a 66b 66c", "FF 22a 44a 66a 88a 88b 88c",
     # Any Matching Numbers
     "NNN XXX0a XX0b XXX0c SSS", "EEE XXX0a XX0b XXX0c WWW",
     "XXXX0a XXXX0b XXXX0c DDa",
     "XXX0a XXX0b XXX0c DDDDDa",
     "FFF XXXX0a FFF XXXX0b",
     # Consecutive Numbers
-        ## TODO: check whether these "runs" can be played descending rather than ascending.
     "FF XXX0a XXX1a XXX2a XXX3a", "FF XXX0a XXX1a XXX2b XXX3b", 
     "XXX0a XXXX1a XXX0b XXXX1b",
     "FFFF ZZ XXX0a XXX1a DDa",
@@ -122,18 +119,47 @@
   ]
 |
 .singles_win_definition = [
-    # TODO: check whether the jokerless bonus applies to any of these hands.
+    # 2468
+    "2468Da 2468Db 2468c", # concealed
+    "FF 22a 44a 66a 88a 22b 22c", "FF 22a 44a 66a 88a 44b 44c", "FF 22a 44a 66a 88a 66b 66c", "FF 22a 44a 66a 88a 88b 88c", # concealed
+    # Consecutive Numbers
+    "FF 1233a 4566a 7899a", "FF 1233a 4566b 7899c", # concealed
+    # 13579
+    "11a 33a 55a 77a 99a 11b 11c", "11a 33a 55a 77a 99a 33b 33c", "11a 33a 55a 77a 99a 55b 55c", "11a 33a 55a 77a 99a 77b 77c", "11a 33a 55a 77a 99a 99b 99c", # concealed
+    "FF 369Da 369Db 369Dc", # concealed
+    # Mad Math
+    "NEWS 2468a 3579a 44a", "NEWS 2468a 3579b 44c", # concealed
+    # Big Brain
+    "N EE 05a 10a 15a 20a WW S", # concealed
+    "FF NEWS N0W WE W0N", # concealed
   ]
 |
-# Card-specific rule: concealed hands get a +10 bonus, except for hands that are concealed on the Card
+# Card-specific rule: concealed hands get a +10 bonus, except for hands that are concealed on the Card. this occurs before the jokerless bonus
 # TODO: check whether this rule works as intended.
-.after_scoring += [
+ 
+.after_scoring = [
+    # concealed bonus
   ["when", [
-    {"name": "match", "opts": [["hand", "call_tiles", "winning_tile"], ["open_win"]]},
-    {"name": "has_no_call_named", "opts": ["am_pung", "am_kong", "am_quint"]}
-  ], [
-    ["push_message", "gets +10 points for a concealed hand"],
-    ["modify_payout", "others", -10], ["modify_payout", "self", +30]
+      {"name": "match", "opts": [["hand", "call_tiles", "winning_tile"], ["open_win"]]},
+      {"name": "has_no_call_named", "opts": ["am_pung", "am_kong", "am_quint"]}
+    ], [
+      ["push_message", "gets +10 points for a concealed hand"],
+      ["modify_payout", "others", -10], ["modify_payout", "self", +30]
+  ]],
+
+    # jokerless bonus
+  ["when", [
+      {"name": "not_match", "opts": [["hand", "call_tiles", "winning_tile"], [[[["1j"], 1]]]]},
+      {"name": "not_match", "opts": [["hand", "call_tiles", "winning_tile"], ["singles_win"]]}
+    ], [
+      ["push_message", "gets double score for a jokerless hand"],
+      ["modify_payout", "all", 2, "multiply"]
+  ]],
+
+    # on wins by discard, engine splits score evenly across all 3 players,
+    # this undoes that
+  ["when", ["won_by_discard"], [
+      ["modify_payout", "everyone", 3, "multiply"]
   ]]
 ]
 |
