@@ -508,9 +508,15 @@ defmodule RiichiAdvanced.YakuTest.AmericanYaku do
     # NNN EEEE WWWW SSS
     TestUtils.assert_winning_hand(rules_ref, "win", "11112223333444z", "", @am_aliases)
     TestUtils.assert_winning_hand(rules_ref, "win", "11112223333444z", "", @am_aliases)
-    # FF X0X1X2 DDb DDDc DDDDa
-    TestUtils.assert_winning_hand(rules_ref, "win", "12f33333p000066777z", "", @am_aliases)
-    TestUtils.assert_winning_hand(rules_ref, "win", "12f33333p000066677z", "", @am_aliases)
+    # FF X0a X1a X2a DDb DDDc DDDDa
+    TestUtils.assert_winning_hand(rules_ref, "win", "12f123p000066777z", "", @am_aliases)
+    TestUtils.assert_winning_hand(rules_ref, "win", "12f234p000066677z", "", @am_aliases)
+    # FF X0a X1a X2a DDa DDDb DDDDc
+    TestUtils.assert_winning_hand(rules_ref, "win", "12f123p006666777z", "", @am_aliases)
+    TestUtils.assert_winning_hand(rules_ref, "win", "12f234p006667777z", "", @am_aliases)
+    # FF X0a X1a X2a DDc DDDa DDDDb
+    TestUtils.assert_winning_hand(rules_ref, "win", "12f123p000667777z", "", @am_aliases)
+    TestUtils.assert_winning_hand(rules_ref, "win", "12f234p000666677z", "", @am_aliases)
     # FFF NN EE WWW SSSS
     TestUtils.assert_winning_hand(rules_ref, "win", "123f11222233344z", "", @am_aliases)
     TestUtils.assert_winning_hand(rules_ref, "win", "123f11222233344z", "", @am_aliases)
