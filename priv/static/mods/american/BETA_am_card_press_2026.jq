@@ -8,7 +8,7 @@
     "2222a 0000 2222b 66c",
     "FFFF 222a 2026b 666c",
     "FF 22a 0000 22a 6666a",
-    "NNN 26a 26b 26c EEE|WWW|SSS DDa", "EEE 26a 26b 26c WWW|SSS DDa", "WWW 26a 26b 26c SSS DDa", 
+    "ZZZ 26a 26b 26c ZZZ DDa"
     "DDDa 222b 00 222c 666a", # concealed
     # Three - Six - Nine
     "FFF ZZZ 333a 666b 99c",
@@ -18,7 +18,7 @@
     "FF 333a 666b 999a DDDb", # concealed
     # Even Numbers
     "FF 222a 4444b 66b 888c",
-    "FF 2222a ZZZZ 4444a|6666a|8888a", "FF 4444a ZZZZ 6666a|8888a", "FF 6666a ZZZZ 8888a",
+    "FF 2222a|4444a|6666a|8888a ZZZZ 2222a|4444a|6666a|8888a",
     "22a 444a 66b 888b DDDDc",
     "222a 444a 46b 666c 888c",
     "FFF 4444a 8888a DDDa", "FFF 4444a 8888b DDDc",
@@ -61,8 +61,8 @@
     "XXXXX0a NEWS XXXXX1b|XXXXX2b|XXXXX3b|XXXXX4b|XXXXX5b|XXXXX6b|XXXXX7b|XXXXX8b",
     "XXXXX0a XXXX1b XXXXX2a",
     "FFFFF 22222a|44444a|66666a|88888a DDDDa",
-    "FF 11111a DDb 33333a|55555a|77777a|99999a", "FF 33333a DDb 55555a|77777a|99999a", "FF 55555a DDb 77777a|99999a", "FF 77777a DDb 99999a", 
-    "ZZZZZ XXXX0a XXXXX1b|XXXXX2b|XXXXX3b|XXXXX4b|XXXXX5b|XXXXX6b|XXXXX7b|XXXXX8b", "ZZZZZ XXXXX0a XXXX1b|XXXX2b|XXXX3b|XXXX4b|XXXX5b|XXXX6b|XXXX7b|XXXX8b", # concealed
+    "FF 11111a|33333a|55555a|77777a|99999a DDb 11111a|33333a|55555a|77777a|99999a",
+    "ZZZZZ XXXX0a XXXXX0b|XXXXX1b|XXXXX2b|XXXXX3b|XXXXX4b|XXXXX5b|XXXXX6b|XXXXX7b|XXXXX8b", "ZZZZZ XXXX1b|XXXX2b|XXXX3b|XXXX4b|XXXX5b|XXXX6b|XXXX7b|XXXX8b XXXXX0a", # concealed
     # Solos & Pairs
     "22a DDa 44b DDb 66b DDc 88c", # concealed
     "DDa 11a 33b 55b 77b 99c DDc", # concealed
@@ -77,7 +77,7 @@
     "2222a 0000 2222b 66c",
     "FFFF 222a 2026b 666c",
     "FF 22a 0000 22a 6666a",
-    "NNN 26a 26b 26c EEE|WWW|SSS DDa", "EEE 26a 26b 26c WWW|SSS DDa", "WWW 26a 26b 26c SSS DDa", 
+    "ZZZ 26a 26b 26c ZZZ DDa",
     # Three - Six - Nine
     "FFF ZZZ 333a 666b 99c",
     "N 333a E 6666a W 999a S",
@@ -85,7 +85,7 @@
     "3333a 6666a 9999a DDa", "3333a 6666b 9999b DDc",
     # Even Numbers
     "FF 222a 4444b 66b 888c",
-    "FF 2222a ZZZZ 4444a|6666a|8888a", "FF 4444a ZZZZ 6666a|8888a", "FF 6666a ZZZZ 8888a",
+    "FF 2222a|4444a|6666a|8888a ZZZZ 2222a|4444a|6666a|8888a",
     "22a 444a 66b 888b DDDDc",
     "222a 444a 46b 666c 888c",
     "FFF 4444a 8888a DDDa", "FFF 4444a 8888b DDDc",
@@ -123,7 +123,7 @@
     "XXXXX0a NEWS XXXXX1b|XXXXX2b|XXXXX3b|XXXXX4b|XXXXX5b|XXXXX6b|XXXXX7b|XXXXX8b",
     "XXXXX0a XXXX1b XXXXX2a",
     "FFFFF 22222a|44444a|66666a|88888a DDDDa",
-    "FF 11111a DDb 33333a|55555a|77777a|99999a", "FF 33333a DDb 55555a|77777a|99999a", "FF 55555a DDb 77777a|99999a", "FF 77777a DDb 99999a"
+    "FF 11111a|33333a|55555a|77777a|99999a DDb 11111a|33333a|55555a|77777a|99999a"
   ]
 |
 .singles_win_definition = [
@@ -140,7 +140,7 @@
     { "display_name": "Year of the Horse | 2026 #1", "value": 25, "when": [{"name": "match", "opts": [["hand", "call_tiles", "winning_tile"], ["2222a 0000 2222b 66c"]]}] },
     { "display_name": "Year of the Horse | 2026 #2", "value": 25, "when": [{"name": "match", "opts": [["hand", "call_tiles", "winning_tile"], ["FFFF 222a 2026b 666c"]]}] },
     { "display_name": "Year of the Horse | 2026 #3", "value": 30, "when": [{"name": "match", "opts": [["hand", "call_tiles", "winning_tile"], ["FF 22a 0000 22a 6666a"]]}] },
-    { "display_name": "Year of the Horse | 2026 #4", "value": 40, "when": [{"name": "match", "opts": [["hand", "call_tiles", "winning_tile"], ["NNN 26a 26b 26c EEE|WWW|SSS DDa", "EEE 26a 26b 26c WWW|SSS DDa", "WWW 26a 26b 26c SSS DDa"]]}] },
+    { "display_name": "Year of the Horse | 2026 #4", "value": 40, "when": [{"name": "match", "opts": [["hand", "call_tiles", "winning_tile"], ["ZZZ 26a 26b 26c ZZZ DDa"]]}] },
     { "display_name": "Year of the Horse | 2026 #5", "value": 30, "when": [{"name": "has_no_call_named", "opts": ["am_pung", "am_kong", "am_quint"]}, {"name": "match", "opts": [["hand", "call_tiles", "winning_tile"], ["DDDa 222b 00 222c 666a"]]} ] },
     { "display_name": "Three - Six - Nine #1", "value": 25, "when": [{"name": "match", "opts": [["hand", "call_tiles", "winning_tile"], ["FFF ZZZ 333a 666b 99c"]]}] },
     { "display_name": "Three - Six - Nine #2", "value": 25, "when": [{"name": "match", "opts": [["hand", "call_tiles", "winning_tile"], ["N 333a E 6666a W 999a S"]]}] },
@@ -148,7 +148,7 @@
     { "display_name": "Three - Six - Nine #4", "value": 25, "when": [{"name": "match", "opts": [["hand", "call_tiles", "winning_tile"], ["3333a 6666a 9999a DDa", "3333a 6666b 9999b DDc"]]}] },
     { "display_name": "Three - Six - Nine #5", "value": 30, "when": [{"name": "has_no_call_named", "opts": ["am_pung", "am_kong", "am_quint"]}, {"name": "match", "opts": [["hand", "call_tiles", "winning_tile"], ["FF 333a 666b 999a DDDb"]]}] },
     { "display_name": "Even Numbers #1", "value": 25, "when": [{"name": "match", "opts": [["hand", "call_tiles", "winning_tile"], ["FF 222a 4444b 66b 888c"]]}] },
-    { "display_name": "Even Numbers #2", "value": 25, "when": [{"name": "match", "opts": [["hand", "call_tiles", "winning_tile"], ["FF 2222a ZZZZ 4444a|6666a|8888a", "FF 4444a ZZZZ 6666a|8888a", "FF 6666a ZZZZ 8888a"]]}] },
+    { "display_name": "Even Numbers #2", "value": 25, "when": [{"name": "match", "opts": [["hand", "call_tiles", "winning_tile"], ["FF 2222a|4444a|6666a|8888a ZZZZ 2222a|4444a|6666a|8888a"]]}] },
     { "display_name": "Even Numbers #3", "value": 25, "when": [{"name": "match", "opts": [["hand", "call_tiles", "winning_tile"], ["22a 444a 66b 888b DDDDc"]]}] },
     { "display_name": "Even Numbers #4", "value": 25, "when": [{"name": "match", "opts": [["hand", "call_tiles", "winning_tile"], ["222a 444a 46b 666c 888c"]]}] },
     { "display_name": "Even Numbers #5", "value": 25, "when": [{"name": "match", "opts": [["hand", "call_tiles", "winning_tile"], ["FFF 4444a 8888a DDDa", "FFF 4444a 8888b DDDc"]]}] },
@@ -186,8 +186,8 @@
     { "display_name": "Groups of Five #1", "value": 35, "when": [{"name": "match", "opts": [["hand", "call_tiles", "winning_tile"], ["XXXXX0a NEWS XXXXX1b|XXXXX2b|XXXXX3b|XXXXX4b|XXXXX5b|XXXXX6b|XXXXX7b|XXXXX8b"]]}] },
     { "display_name": "Groups of Five #2", "value": 40, "when": [{"name": "match", "opts": [["hand", "call_tiles", "winning_tile"], ["XXXXX0a XXXX1b XXXXX2a"]]}] },
     { "display_name": "Groups of Five #3", "value": 40, "when": [{"name": "match", "opts": [["hand", "call_tiles", "winning_tile"], ["FFFFF 22222a|44444a|66666a|88888a DDDDa"]]}] },
-    { "display_name": "Groups of Five #4", "value": 45, "when": [{"name": "match", "opts": [["hand", "call_tiles", "winning_tile"], ["FF 11111a DDb 33333a|55555a|77777a|99999a", "FF 33333a DDb 55555a|77777a|99999a", "FF 55555a DDb 77777a|99999a", "FF 77777a DDb 99999a"]]}] },
-    { "display_name": "Groups of Five #5", "value": 45, "when": [{"name": "match", "opts": [["hand", "call_tiles", "winning_tile"], ["ZZZZZ XXXX0a XXXXX1b|XXXXX2b|XXXXX3b|XXXXX4b|XXXXX5b|XXXXX6b|XXXXX7b|XXXXX8b", "ZZZZZ XXXXX0a XXXX1b|XXXX2b|XXXX3b|XXXX4b|XXXX5b|XXXX6b|XXXX7b|XXXX8b"]]}] },
+    { "display_name": "Groups of Five #4", "value": 45, "when": [{"name": "match", "opts": [["hand", "call_tiles", "winning_tile"], ["FF 11111a|33333a|55555a|77777a|99999a DDb 11111a|33333a|55555a|77777a|99999a"]]}] },
+    { "display_name": "Groups of Five #5", "value": 45, "when": [{"name": "match", "opts": [["hand", "call_tiles", "winning_tile"], ["ZZZZZ XXXX0a XXXXX0b|XXXXX1b|XXXXX2b|XXXXX3b|XXXXX4b|XXXXX5b|XXXXX6b|XXXXX7b|XXXXX8b", "ZZZZZ XXXX1b|XXXX2b|XXXX3b|XXXX4b|XXXX5b|XXXX6b|XXXX7b|XXXX8b XXXXX0a"]]}] },
     { "display_name": "Solos & Pairs #1", "value": 50, "when": [{"name": "has_no_call_named", "opts": ["am_pung", "am_kong", "am_quint"]}, {"name": "match", "opts": [["hand", "call_tiles", "winning_tile"], ["22a DDa 44b DDb 66b DDc 88c"]]} ] },
     { "display_name": "Solos & Pairs #2", "value": 50, "when": [{"name": "has_no_call_named", "opts": ["am_pung", "am_kong", "am_quint"]}, {"name": "match", "opts": [["hand", "call_tiles", "winning_tile"], ["DDa 11a 33b 55b 77b 99c DDc"]]} ] },
     { "display_name": "Solos & Pairs #3", "value": 50, "when": [{"name": "has_no_call_named", "opts": ["am_pung", "am_kong", "am_quint"]}, {"name": "match", "opts": [["hand", "call_tiles", "winning_tile"], ["NN DDa EE DDb WW DDc SS"]]} ] },
