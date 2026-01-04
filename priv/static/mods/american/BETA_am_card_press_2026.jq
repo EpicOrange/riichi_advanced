@@ -1,8 +1,3 @@
-# TODOS:
-# - Check whether the "Any 2 Winds" and "Any 2 Even Numbers" hands can be made with the same wind or same even number.
-# - Check whether Even Numbers #5 is a "These Numbers Only" hand.
-# - Check whether Dragons & Winds #5 and #6 are "These Winds Only" hands.
-
 .win_definition = [
     # Year Of The Horse | 2026
     "2222a 0000 2222b 66c",
