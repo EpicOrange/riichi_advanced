@@ -27,7 +27,14 @@ Here are differences between Riichi Advanced and real life/other mahjong clients
 ---
 ## TODOS:
 
+- Implement the various Marvelous Cards. Currently waiting on them to send us copies of their Cards.
+- Implement the Mah Jongg Network and Mah Jongg Network Junior Cards. Currently waiting on them to clarify certain rules differences.
+- Implement The Mahjong Line's The Big Card. Currently waiting on them to clarify rules.
 - Implement the 75-point hand on the AMJfE Card. Currently it's unimplemented because it would require us to write down 98 different hands.
+- Implement the six missing hands on the MahjForAll Evergreen Card. Currently we need:
+  - Some way for players to specify a year before drawing a Card;
+  - Some way to indicate that jokers MAY NOT be used in a given grouping; and
+  - Some way to indicate that flowers MAY be used as jokers in a given grouping.
 - Implement Sextets. To be done when we implement a Card that has a Sextet.
 - Implement score and exposed/concealed info for each hand in "Show Nearest Hands".
 
@@ -90,13 +97,22 @@ Here are differences between Riichi Advanced and real life/other mahjong clients
 The following Cards are supported by Riichi Advanced:
 
 - [NMJL 2020~2025](https://www.nationalmahjonggleague.org/store.aspx) (cost: 14USD)
+- [Mahjong Press 2026](https://themahjongpress.com/) (cost: 11USD)
+- [The Big Card 2026](https://thebigcard.com/) (cost: 10USD)
+- [ShariUniqueCreations Vegas Card](https://www.etsy.com/listing/690122975) (cost: 8.45~9.45CAD)
 - [ILoveMahj Card](https://ilovemahj.com/ilmCard) (free)
 - [ATeacherFirst Mah Jongg Fake Card](https://www.ateacherfirst.com/bridge/mah-jongg/) (free)
 - [MahjLife Mock Card](https://mahjlife.com/document/mahj-life-mock-card-print/) (free, used with permission from Michele Frizzell)
+- [MahjForAll Evergreen Card](https://mahjforall.org/product/perennial-evergreen-american-mahjong-card-instant-download/) (free)
 - [American Mah Jongg for Everyone Card](https://americanmahjonggforeveryone.com/our-card-and-tile-set/) (free)
 - [John Burton's Card Free American Mah Jongg](https://johnburtongames.com/cardfreemahj/) (free, technically not a Card)
 
-[TODO: implement the 75-point hand on the AMJfE Card.]
+The following Cards are planned to be supported in the near future:
+- [Mah Jongg Network 2025](https://shop.mahjonggnetwork.com/) (cost: 15USD)
+- [Mah Jongg Network 2025 Jr](https://shop.mahjonggnetwork.com/) (cost: 14USD)
+- [Marvelous 2025](https://marvelousmahjongg.com/) (cost: 11~15USD)
+
+[TODO: Implement the Marvelous Cards when we acquire copies of them. Await feedback on the Network Cards, then implement them. Implement the 75-point hand on the AMJfE Card. Implement the six missing hands on the Evergreen Card.]
 
 (The rest of this ruleset will use the free ILoveMahj Card as examples.)
 
@@ -165,16 +181,20 @@ To read the Card:
 
 The following mods are currently available for American:
 
-- Zombie Blanks: Adds four "zombie blanks" to the wall. Zombie blanks may not be passed during the Charleston or discarded. On a player's turn, they may swap a zombie blank in their hand with any natural tile in the discard pool. Blanks have no other purpose; they do not act as jokers; players may not declare Mah Jongg if they have a zombie blank in their hand; nor may they make exposures using blanks; or joker exchanges with blanks.
+- Zombie Blanks: Adds "zombie blanks" to the wall. Zombie blanks may not be passed during the Charleston or discarded. On a player's turn, they may swap a zombie blank in their hand with any natural tile in the discard pool. Blanks have no other purpose; they do not act as jokers; players may not declare Mah Jongg if they have a zombie blank in their hand; nor may they make exposures using blanks; or joker exchanges with blanks.
+- Different Number of Jokers/Flowers: Play using a different number of jokers and flowers. Note that this does NOT, by default, change the rules to a historical ruleset that uses that many jokers/flowers.
 - PIE: Each player starts with a set amount of points. Players' point totals can't go negative. If a player runs out of points, they need not pay.
+- No Charleston: Play without the Charleston.
 - NMJL [Year] Card: Play with the [NMJL Card](https://www.nationalmahjonggleague.org/store.aspx) from the year of your choice (between 2020 and 2025).
+- Mahjong Press [Year] Card: Play with the [Mahjong Press Card](https://themahjongpress.com/) from the year of your choice (2026 only).
+- ShariUniqueCreations Vegas Card (beta): Play with the [ShariUniqueCreations Vegas Card](https://www.etsy.com/listing/690122975). (May contain bugs.)
 - ILM Card: Play with the free [ILoveMahj Card](https://ilovemahj.com/ilmCard).
 - ATF Card: Play with the free [ATeacherFirst Mah Jongg Fake Card](https://www.ateacherfirst.com/bridge/mah-jongg/).
 - MahjLife Card: Play with the free [MahjLife Mock Card](https://mahjlife.com/document/mahj-life-mock-card-print/). Introduced along with [this video](https://www.youtube.com/watch?v=7WygnpfFbMQ). (Implemented with permission from Michele Frizzell.)
-- AMJFE Card: Play with the free [American Mah Jongg for Everyone Card](https://americanmahjonggforeveryone.com/our-card-and-tile-set/). (The 75-point hand is not yet implemented.)
-- Card Free (beta): Play with [John Burton's Card Free American Mah Jongg rules](https://johnburtongames.com/cardfreemahj/).
+- AMJFE Card (beta): Play with the free [American Mah Jongg for Everyone Card](https://americanmahjonggforeveryone.com/our-card-and-tile-set/). (The 75-point hand is not yet implemented.)
+- Card Free (beta): Play with [John Burton's Card Free American Mah Jongg rules](https://johnburtongames.com/cardfreemahj/). (May contain bugs.)
 - Show Waits: When you can discard a tile to become one tile away from winning, hovering over that tile will tell you what your winning tiles are, and will also tell you how many of them are still available. On by default.
-- Show Nearest Hands: Shows the five nearest hands to yours, when you hover on the "Show Nearest Hands" button in the bottom right. [TODO: Implement score and exposed/concealed info for each hand in this display.]
+- Show Nearest Hands: Shows the five nearest hands to yours, when you hover on the "Show Nearest Hands" button in the bottom right. [TODO: Implement score for each hand in this display.]
 - Open Hands: The contents of all hands are revealed to everyone. Primarily useful as a debug or teaching feature.
 
 The following mods are planned to be supported (not necessarily in this order):
@@ -182,10 +202,13 @@ The following mods are planned to be supported (not necessarily in this order):
 - Futures: Each player gets to peek at their next draw.
 - Hot Wall: If a player deals in with a previously-undiscarded tile during the last portion of the wall, they pay for the table.
 - Cold Wall: During the last portion of the wall, players may only win by self-draw.
+- MahjForAll Evergreen Card (WIP): Play with the free [MahjForAll Evergreen Card](https://mahjforall.org/product/perennial-evergreen-american-mahjong-card-instant-download/).
 - NMJL [Year] Card: Play with the NMJL Card from the year of your choice (before 2020).
-- Siamese [Year] Card: Play with the paid [Siamese Card](https://mahjongg.org/siamese-products/) from the year of your choice.
-- Marvelous [Year] Card: Play with the paid [Marvelous Card](https://marvelousmahjongg.com/) from the year of your choice.
-- Mah Jongg Network [Year] Card: Play with the paid [Mah Jongg Network Card](https://shop.mahjonggnetwork.com/) from the year of your choice.
+- Siamese [Year] Card: Play with the [Siamese Card](https://mahjongg.org/siamese-products/) from the year of your choice.
+- Marvelous [Year] Card: Play with the [Marvelous Card](https://marvelousmahjongg.com/) from the year of your choice.
+- Mah Jongg Network [Year] Card: Play with the [Mah Jongg Network Card](https://shop.mahjonggnetwork.com/) from the year of your choice.
+- Mah Jongg Network [Year] Jr Card (beta): Play with the [Mah Jongg Network Jr Card](https://shop.mahjonggnetwork.com/) from the year of your choice.
 - MAHJ-X: Play with [MAHJ-X rules](https://www.mahjx.com/).
 - Siamese: Play with [Siamese rules](https://mahjongg.org/siamese-rules/).
 - Royale Siamese: Play with [Royale Siamese rules](https://mahjongg.org/siamese-rules/#royale).
+- Historical Rules: Play with the historical ruleset (pre-1994) of your choice.
