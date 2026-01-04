@@ -61,7 +61,7 @@
     "FF 1111a NEWS 6666a", "FF 1111a NEWS 6666b",
     "FF 333a NN E W SS 888a", "FF 333a NN E W SS 888b",
     "N EE 05a 10a 15a 20a WW S", # concealed
-    "FF NEWS N0W WE W0N", # concealed
+    "FF NEWS N0W WE W0N" # concealed
   ]
 |
 .open_win_definition = [
@@ -115,7 +115,7 @@
     # Big Brain
     "FFF 2222a 7777a DDDa", "FFF 2222a 7777b DDDc",
     "FF 1111a NEWS 6666a", "FF 1111a NEWS 6666b",
-    "FF 333a NN E W SS 888a", "FF 333a NN E W SS 888b",
+    "FF 333a NN E W SS 888a", "FF 333a NN E W SS 888b"
   ]
 |
 .singles_win_definition = [
@@ -131,7 +131,7 @@
     "NEWS 2468a 3579a 44a", "NEWS 2468a 3579b 44c", # concealed
     # Big Brain
     "N EE 05a 10a 15a 20a WW S", # concealed
-    "FF NEWS N0W WE W0N", # concealed
+    "FF NEWS N0W WE W0N" # concealed
   ]
 |
 # Card-specific rule: concealed hands get a +10 bonus, except for hands that are concealed on the Card. this occurs before the jokerless bonus
@@ -144,7 +144,7 @@
       {"name": "has_no_call_named", "opts": ["am_pung", "am_kong", "am_quint"]}
     ], [
       ["push_message", "gets +10 points for a concealed hand"],
-      ["modify_payout", "others", -10], ["modify_payout", "self", +30]
+      ["modify_payout", "others", -10], ["modify_payout", "self", 30]
   ]],
 
     # jokerless bonus
