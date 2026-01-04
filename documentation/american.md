@@ -96,7 +96,7 @@ Here are differences between Riichi Advanced and real life/other mahjong clients
 
 The following Cards are supported by Riichi Advanced:
 
-- [NMJL 2020~2025](https://www.nationalmahjonggleague.org/store.aspx) (cost: 14USD)
+- [NMJL 2013~2025](https://www.nationalmahjonggleague.org/store.aspx) (cost: 14USD)
 - [Mahjong Press 2026](https://themahjongpress.com/) (cost: 11USD)
 - [The Big Card 2026](https://thebigcard.com/) (cost: 10USD)
 - [ShariUniqueCreations Vegas Card](https://www.etsy.com/listing/690122975) (cost: 8.45~9.45CAD)
@@ -185,7 +185,7 @@ The following mods are currently available for American:
 - Different Number of Jokers/Flowers: Play using a different number of jokers and flowers. Note that this does NOT, by default, change the rules to a historical ruleset that uses that many jokers/flowers.
 - PIE: Each player starts with a set amount of points. Players' point totals can't go negative. If a player runs out of points, they need not pay.
 - No Charleston: Play without the Charleston.
-- NMJL [Year] Card: Play with the [NMJL Card](https://www.nationalmahjonggleague.org/store.aspx) from the year of your choice (between 2020 and 2025).
+- NMJL [Year] Card: Play with the [NMJL Card](https://www.nationalmahjonggleague.org/store.aspx) from the year of your choice (between 2013 and 2025).
 - Mahjong Press [Year] Card: Play with the [Mahjong Press Card](https://themahjongpress.com/) from the year of your choice (2026 only).
 - ShariUniqueCreations Vegas Card (beta): Play with the [ShariUniqueCreations Vegas Card](https://www.etsy.com/listing/690122975). (May contain bugs.)
 - ILM Card: Play with the free [ILoveMahj Card](https://ilovemahj.com/ilmCard).
@@ -203,7 +203,7 @@ The following mods are planned to be supported (not necessarily in this order):
 - Hot Wall: If a player deals in with a previously-undiscarded tile during the last portion of the wall, they pay for the table.
 - Cold Wall: During the last portion of the wall, players may only win by self-draw.
 - MahjForAll Evergreen Card (WIP): Play with the free [MahjForAll Evergreen Card](https://mahjforall.org/product/perennial-evergreen-american-mahjong-card-instant-download/).
-- NMJL [Year] Card: Play with the NMJL Card from the year of your choice (before 2020).
+- NMJL [Year] Card: Play with the NMJL Card from the year of your choice (before 2013).
 - Siamese [Year] Card: Play with the [Siamese Card](https://mahjongg.org/siamese-products/) from the year of your choice.
 - Marvelous [Year] Card: Play with the [Marvelous Card](https://marvelousmahjongg.com/) from the year of your choice.
 - Mah Jongg Network [Year] Card: Play with the [Mah Jongg Network Card](https://shop.mahjonggnetwork.com/) from the year of your choice.
