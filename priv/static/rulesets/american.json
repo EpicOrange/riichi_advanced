@@ -11,17 +11,23 @@
     {"id": "american/am_PIE", "name": "PIE", "config": [{"type": "dropdown", "name": "starting_points", "values": [200,400,600,800,1000,1200], "default": 600}], "desc": "Each player starts with a set amount of points. Players' point totals can't go negative. If a player runs out of points, they need not pay."},
     {"id": "american/no_charleston", "name": "No Charleston", "desc": "Disables the initial Charleston pass."},
     "Card",
-    {"id": "american/am_card_nmjl_2020", "conflicts": ["american/am_card_nmjl_2021", "american/am_card_nmjl_2022", "american/am_card_nmjl_2023", "american/am_card_nmjl_2024", "american/am_card_nmjl_2025", "american/am_card_ILoveMahj", "american/am_card_ATeacherFirst", "american/am_card_MahjLife", "american/BETA_am_card_AMJForEveryone", "american/am_card_free"], "name": "NMJL 2020 Card", "desc": "Play with the NMJL 2020 Card."},
-    {"id": "american/am_card_nmjl_2021", "conflicts": ["american/am_card_nmjl_2020", "american/am_card_nmjl_2022", "american/am_card_nmjl_2023", "american/am_card_nmjl_2024", "american/am_card_nmjl_2025", "american/am_card_ILoveMahj", "american/am_card_ATeacherFirst", "american/am_card_MahjLife", "american/BETA_am_card_AMJForEveryone", "american/am_card_free"], "name": "NMJL 2021 Card", "desc": "Play with the NMJL 2021 Card."},
-    {"id": "american/am_card_nmjl_2022", "conflicts": ["american/am_card_nmjl_2020", "american/am_card_nmjl_2021", "american/am_card_nmjl_2023", "american/am_card_nmjl_2024", "american/am_card_nmjl_2025", "american/am_card_ILoveMahj", "american/am_card_ATeacherFirst", "american/am_card_MahjLife", "american/BETA_am_card_AMJForEveryone", "american/am_card_free"], "name": "NMJL 2022 Card", "desc": "Play with the NMJL 2022 Card."},
-    {"id": "american/am_card_nmjl_2023", "conflicts": ["american/am_card_nmjl_2020", "american/am_card_nmjl_2021", "american/am_card_nmjl_2022", "american/am_card_nmjl_2024", "american/am_card_nmjl_2025", "american/am_card_ILoveMahj", "american/am_card_ATeacherFirst", "american/am_card_MahjLife", "american/BETA_am_card_AMJForEveryone", "american/am_card_free"], "name": "NMJL 2023 Card", "desc": "Play with the NMJL 2023 Card."},
-    {"id": "american/am_card_nmjl_2024", "conflicts": ["american/am_card_nmjl_2020", "american/am_card_nmjl_2021", "american/am_card_nmjl_2022", "american/am_card_nmjl_2023", "american/am_card_nmjl_2025", "american/am_card_ILoveMahj", "american/am_card_ATeacherFirst", "american/am_card_MahjLife", "american/BETA_am_card_AMJForEveryone", "american/am_card_free"], "name": "NMJL 2024 Card", "desc": "Play with the NMJL 2024 Card."},
-    {"id": "american/am_card_nmjl_2025", "conflicts": ["american/am_card_nmjl_2020", "american/am_card_nmjl_2021", "american/am_card_nmjl_2022", "american/am_card_nmjl_2023", "american/am_card_nmjl_2024", "american/am_card_ILoveMahj", "american/am_card_ATeacherFirst", "american/am_card_MahjLife", "american/BETA_am_card_AMJForEveryone", "american/am_card_free"], "name": "NMJL 2025 Card", "desc": "Play with the NMJL 2025 Card."},
-    {"id": "american/am_card_ILoveMahj", "conflicts": ["american/am_card_nmjl_2022", "american/am_card_nmjl_2023", "american/am_card_nmjl_2024", "american/am_card_nmjl_2025", "american/am_card_ATeacherFirst", "american/am_card_MahjLife", "american/BETA_am_card_AMJForEveryone", "american/am_card_free"], "name": "ILM Card", "desc": "Play with the free ILoveMahj Card."},
-    {"id": "american/am_card_ATeacherFirst", "conflicts": ["american/am_card_nmjl_2020", "american/am_card_nmjl_2021", "american/am_card_nmjl_2022", "american/am_card_nmjl_2023", "american/am_card_nmjl_2024", "american/am_card_nmjl_2025", "american/am_card_ILoveMahj", "american/am_card_MahjLife", "american/BETA_am_card_AMJForEveryone", "american/am_card_free"], "name": "ATF Card", "desc": "Play with the free ATeacherFirst Card."},
-    {"id": "american/am_card_MahjLife", "conflicts": ["american/am_card_nmjl_2020", "american/am_card_nmjl_2021", "american/am_card_nmjl_2022", "american/am_card_nmjl_2023", "american/am_card_nmjl_2024", "american/am_card_nmjl_2025", "american/am_card_ILoveMahj", "american/am_card_ATeacherFirst", "american/BETA_am_card_AMJForEveryone", "american/am_card_free"], "name": "MahjLife Card", "desc": "Play with the free MahjLife Card."},
-    {"id": "american/BETA_am_card_AMJForEveryone", "conflicts": ["american/am_card_nmjl_2020", "american/am_card_nmjl_2021", "american/am_card_nmjl_2022", "american/am_card_nmjl_2023", "american/am_card_nmjl_2024", "american/am_card_nmjl_2025", "american/am_card_ILoveMahj", "american/am_card_ATeacherFirst", "american/am_card_MahjLife", "american/am_card_free"], "name": "AMJFE Card (beta)", "desc": "Play with the free American Mah Jongg for Everyone Card. The 75-point hand is not yet implemented."},
-    {"id": "american/am_card_free", "conflicts": ["american/am_card_nmjl_2020", "american/am_card_nmjl_2021", "american/am_card_nmjl_2022", "american/am_card_nmjl_2023", "american/am_card_nmjl_2024", "american/am_card_nmjl_2025", "american/am_card_ILoveMahj", "american/am_card_ATeacherFirst", "american/am_card_MahjLife", "american/BETA_am_card_AMJForEveryone"], "name": "Card-Free (beta)", "desc": "Play with card-free rules: your hand must consist of two types of melds only, and these melds must match one of the following patterns: Any Like Numbers, NEWS, NS, EW, 369, 2468, 135, 357, 579, or Consecutive Run."},
+    {"id": "american/am_card_nmjl_2020", "conflicts": ["american/am_card_nmjl_2021", "american/am_card_nmjl_2022", "american/am_card_nmjl_2023", "american/am_card_nmjl_2024", "american/am_card_nmjl_2025", "american/WIP_am_card_network_2025", "american/WIP_am_card_network_jr_2025", "american/BETA_am_card_press_2026", "american/BETA_am_card_TML_Big_2026", "american/BETA_am_card_Shari_Vegas", "american/am_card_ILoveMahj", "american/am_card_ATeacherFirst", "american/am_card_MahjLife", "american/WIP_am_card_MahjForAll_Evergreen", "american/BETA_am_card_AMJForEveryone", "american/am_card_free"], "name": "NMJL 2020 Card", "desc": "Play with the NMJL 2020 Card."},
+    {"id": "american/am_card_nmjl_2021", "conflicts": ["american/am_card_nmjl_2020", "american/am_card_nmjl_2022", "american/am_card_nmjl_2023", "american/am_card_nmjl_2024", "american/am_card_nmjl_2025", "american/WIP_am_card_network_2025", "american/WIP_am_card_network_jr_2025", "american/BETA_am_card_press_2026", "american/BETA_am_card_TML_Big_2026", "american/BETA_am_card_Shari_Vegas", "american/am_card_ILoveMahj", "american/am_card_ATeacherFirst", "american/am_card_MahjLife", "american/WIP_am_card_MahjForAll_Evergreen", "american/BETA_am_card_AMJForEveryone", "american/am_card_free"], "name": "NMJL 2021 Card", "desc": "Play with the NMJL 2021 Card."},
+    {"id": "american/am_card_nmjl_2022", "conflicts": ["american/am_card_nmjl_2020", "american/am_card_nmjl_2021", "american/am_card_nmjl_2023", "american/am_card_nmjl_2024", "american/am_card_nmjl_2025", "american/WIP_am_card_network_2025", "american/WIP_am_card_network_jr_2025", "american/BETA_am_card_press_2026", "american/BETA_am_card_TML_Big_2026", "american/BETA_am_card_Shari_Vegas", "american/am_card_ILoveMahj", "american/am_card_ATeacherFirst", "american/am_card_MahjLife", "american/WIP_am_card_MahjForAll_Evergreen", "american/BETA_am_card_AMJForEveryone", "american/am_card_free"], "name": "NMJL 2022 Card", "desc": "Play with the NMJL 2022 Card."},
+    {"id": "american/am_card_nmjl_2023", "conflicts": ["american/am_card_nmjl_2020", "american/am_card_nmjl_2021", "american/am_card_nmjl_2022", "american/am_card_nmjl_2024", "american/am_card_nmjl_2025", "american/WIP_am_card_network_2025", "american/WIP_am_card_network_jr_2025", "american/BETA_am_card_press_2026", "american/BETA_am_card_TML_Big_2026", "american/BETA_am_card_Shari_Vegas", "american/am_card_ILoveMahj", "american/am_card_ATeacherFirst", "american/am_card_MahjLife", "american/WIP_am_card_MahjForAll_Evergreen", "american/BETA_am_card_AMJForEveryone", "american/am_card_free"], "name": "NMJL 2023 Card", "desc": "Play with the NMJL 2023 Card."},
+    {"id": "american/am_card_nmjl_2024", "conflicts": ["american/am_card_nmjl_2020", "american/am_card_nmjl_2021", "american/am_card_nmjl_2022", "american/am_card_nmjl_2023", "american/am_card_nmjl_2025", "american/WIP_am_card_network_2025", "american/WIP_am_card_network_jr_2025", "american/BETA_am_card_press_2026", "american/BETA_am_card_TML_Big_2026", "american/BETA_am_card_Shari_Vegas", "american/am_card_ILoveMahj", "american/am_card_ATeacherFirst", "american/am_card_MahjLife", "american/WIP_am_card_MahjForAll_Evergreen", "american/BETA_am_card_AMJForEveryone", "american/am_card_free"], "name": "NMJL 2024 Card", "desc": "Play with the NMJL 2024 Card."},
+    {"id": "american/am_card_nmjl_2025", "conflicts": ["american/am_card_nmjl_2020", "american/am_card_nmjl_2021", "american/am_card_nmjl_2022", "american/am_card_nmjl_2023", "american/am_card_nmjl_2024", "american/WIP_am_card_network_2025", "american/WIP_am_card_network_jr_2025", "american/BETA_am_card_press_2026", "american/BETA_am_card_TML_Big_2026", "american/BETA_am_card_Shari_Vegas", "american/am_card_ILoveMahj", "american/am_card_ATeacherFirst", "american/am_card_MahjLife", "american/WIP_am_card_MahjForAll_Evergreen", "american/BETA_am_card_AMJForEveryone", "american/am_card_free"], "name": "NMJL 2025 Card", "desc": "Play with the NMJL 2025 Card."},
+    //{"id": "american/WIP_am_card_network_2025", "conflicts": ["american/am_card_nmjl_2020", "american/am_card_nmjl_2021", "american/am_card_nmjl_2022", "american/am_card_nmjl_2023", "american/am_card_nmjl_2024", "american/am_card_nmjl_2025", "american/WIP_am_card_network_jr_2025", "american/BETA_am_card_press_2026", "american/BETA_am_card_TML_Big_2026", "american/BETA_am_card_Shari_Vegas", "american/am_card_ILoveMahj", "american/am_card_ATeacherFirst", "american/am_card_MahjLife", "american/WIP_am_card_MahjForAll_Evergreen", "american/BETA_am_card_AMJForEveryone", "american/am_card_free"], "name": "Network 2025 Card (WIP)", "desc": "Play with the Mah Jongg Network 2025 Card. Not fully implemented yet."},
+    //{"id": "american/WIP_am_card_network_jr_2025", "conflicts": ["american/am_card_nmjl_2020", "american/am_card_nmjl_2021", "american/am_card_nmjl_2022", "american/am_card_nmjl_2023", "american/am_card_nmjl_2024", "american/am_card_nmjl_2025", "american/WIP_am_card_network_2025", "american/BETA_am_card_press_2026", "american/BETA_am_card_TML_Big_2026", "american/BETA_am_card_Shari_Vegas", "american/am_card_ILoveMahj", "american/am_card_ATeacherFirst", "american/am_card_MahjLife", "american/WIP_am_card_MahjForAll_Evergreen", "american/BETA_am_card_AMJForEveryone", "american/am_card_free"], "name": "Network Jr 2025 Card (WIP)", "desc": "Play with the Mah Jongg Network Jr 2025 Card. Not fully implemented yet."},
+    {"id": "american/BETA_am_card_press_2026", "conflicts": ["american/am_card_nmjl_2020", "american/am_card_nmjl_2021", "american/am_card_nmjl_2022", "american/am_card_nmjl_2023", "american/am_card_nmjl_2024", "american/am_card_nmjl_2025", "american/WIP_am_card_network_2025", "american/WIP_am_card_network_jr_2025", "american/BETA_am_card_TML_Big_2026", "american/BETA_am_card_Shari_Vegas", "american/am_card_ILoveMahj", "american/am_card_ATeacherFirst", "american/am_card_MahjLife", "american/WIP_am_card_MahjForAll_Evergreen", "american/BETA_am_card_AMJForEveryone", "american/am_card_free"], "name": "Press 2026 Card (beta)", "desc": "Play with the Mahjong Press 2026 Card."},
+    {"id": "american/BETA_am_card_TML_Big_2026", "conflicts": ["american/am_card_nmjl_2020", "american/am_card_nmjl_2021", "american/am_card_nmjl_2022", "american/am_card_nmjl_2023", "american/am_card_nmjl_2024", "american/am_card_nmjl_2025", "american/WIP_am_card_network_2025", "american/WIP_am_card_network_jr_2025", "american/BETA_am_card_press_2026", "american/BETA_am_card_Shari_Vegas", "american/am_card_ILoveMahj", "american/am_card_ATeacherFirst", "american/am_card_MahjLife", "american/WIP_am_card_MahjForAll_Evergreen", "american/BETA_am_card_AMJForEveryone", "american/am_card_free"], "name": "TML 2026 Big Card (beta)", "desc": "Play with The Mahjong Line's 2026 Big Card."},
+    {"id": "american/BETA_am_card_Shari_Vegas", "conflicts": ["american/am_card_nmjl_2020", "american/am_card_nmjl_2021", "american/am_card_nmjl_2022", "american/am_card_nmjl_2023", "american/am_card_nmjl_2024", "american/am_card_nmjl_2025", "american/WIP_am_card_network_2025", "american/WIP_am_card_network_jr_2025", "american/BETA_am_card_press_2026", "american/BETA_am_card_TML_Big_2026", "american/am_card_ILoveMahj", "american/am_card_ATeacherFirst", "american/am_card_MahjLife", "american/WIP_am_card_MahjForAll_Evergreen", "american/BETA_am_card_AMJForEveryone", "american/am_card_free"], "name": "ShariUniqueCreations Vegas Card (beta)", "desc": "Play with the ShariUniqueCreations Vegas Card. May contain bugs."},
+    {"id": "american/am_card_ILoveMahj", "conflicts": ["american/am_card_nmjl_2020", "american/am_card_nmjl_2021", "american/am_card_nmjl_2022", "american/am_card_nmjl_2023", "american/am_card_nmjl_2024", "american/am_card_nmjl_2025", "american/WIP_am_card_network_2025", "american/WIP_am_card_network_jr_2025", "american/BETA_am_card_press_2026", "american/BETA_am_card_TML_Big_2026", "american/BETA_am_card_Shari_Vegas", "american/am_card_ATeacherFirst", "american/am_card_MahjLife", "american/WIP_am_card_MahjForAll_Evergreen", "american/BETA_am_card_AMJForEveryone", "american/am_card_free"], "name": "ILM Card", "desc": "Play with the free ILoveMahj Card."},
+    {"id": "american/am_card_ATeacherFirst", "conflicts": ["american/am_card_nmjl_2020", "american/am_card_nmjl_2021", "american/am_card_nmjl_2022", "american/am_card_nmjl_2023", "american/am_card_nmjl_2024", "american/am_card_nmjl_2025", "american/WIP_am_card_network_2025", "american/WIP_am_card_network_jr_2025", "american/BETA_am_card_press_2026", "american/BETA_am_card_TML_Big_2026", "american/BETA_am_card_Shari_Vegas", "american/am_card_ILoveMahj", "american/am_card_MahjLife", "american/WIP_am_card_MahjForAll_Evergreen", "american/BETA_am_card_AMJForEveryone", "american/am_card_free"], "name": "ATF Card", "desc": "Play with the free ATeacherFirst Card."},
+    {"id": "american/am_card_MahjLife", "conflicts": ["american/am_card_nmjl_2020", "american/am_card_nmjl_2021", "american/am_card_nmjl_2022", "american/am_card_nmjl_2023", "american/am_card_nmjl_2024", "american/am_card_nmjl_2025", "american/WIP_am_card_network_2025", "american/WIP_am_card_network_jr_2025", "american/BETA_am_card_press_2026", "american/BETA_am_card_TML_Big_2026", "american/BETA_am_card_Shari_Vegas", "american/am_card_ILoveMahj", "american/am_card_ATeacherFirst", "american/WIP_am_card_MahjForAll_Evergreen", "american/BETA_am_card_AMJForEveryone", "american/am_card_free"], "name": "MahjLife Card", "desc": "Play with the free MahjLife Card."},
+    //{"id": "american/WIP_am_card_MahjForAll_Evergreen", "conflicts": ["american/am_card_nmjl_2020", "american/am_card_nmjl_2021", "american/am_card_nmjl_2022", "american/am_card_nmjl_2023", "american/am_card_nmjl_2024", "american/am_card_nmjl_2025", "american/WIP_am_card_network_2025", "american/WIP_am_card_network_jr_2025", "american/BETA_am_card_press_2026", "american/BETA_am_card_TML_Big_2026", "american/BETA_am_card_Shari_Vegas", "american/am_card_ILoveMahj", "american/am_card_ATeacherFirst", "american/am_card_MahjLife", "american/BETA_am_card_AMJForEveryone", "american/am_card_free"], "name": "MahjForAll Evergreen Card (beta)", "desc": "Play with the free MahjForAll Evergreen Card. Six hands are not yet implemented."},
+    {"id": "american/BETA_am_card_AMJForEveryone", "conflicts": ["american/am_card_nmjl_2020", "american/am_card_nmjl_2021", "american/am_card_nmjl_2022", "american/am_card_nmjl_2023", "american/am_card_nmjl_2024", "american/am_card_nmjl_2025", "american/WIP_am_card_network_2025", "american/WIP_am_card_network_jr_2025", "american/BETA_am_card_press_2026", "american/BETA_am_card_TML_Big_2026", "american/BETA_am_card_Shari_Vegas", "american/am_card_ILoveMahj", "american/am_card_ATeacherFirst", "american/am_card_MahjLife", "american/WIP_am_card_MahjForAll_Evergreen", "american/am_card_free"], "name": "AMJFE Card (beta)", "desc": "Play with the free American Mah Jongg for Everyone Card. The 75-point hand is not yet implemented."},
+    {"id": "american/am_card_free", "conflicts": ["american/am_card_nmjl_2020", "american/am_card_nmjl_2021", "american/am_card_nmjl_2022", "american/am_card_nmjl_2023", "american/am_card_nmjl_2024", "american/am_card_nmjl_2025","american/WIP_am_card_network_2025",  "american/WIP_am_card_network_jr_2025", "american/BETA_am_card_press_2026", "american/BETA_am_card_TML_Big_2026", "american/BETA_am_card_Shari_Vegas", "american/am_card_ILoveMahj", "american/am_card_ATeacherFirst", "american/am_card_MahjLife", "american/BETA_am_card_AMJForEveryone", "american/WIP_am_card_MahjForAll_Evergreen"], "name": "Card-Free (beta)", "desc": "Play with card-free rules: your hand must consist of two types of melds only, and these melds must match one of the following patterns: Any Like Numbers, NEWS, NS, EW, 369, 2468, 135, 357, 579, or Consecutive Run."},
     "Miscellaneous",
     {"id": "show_waits", "name": "Show Waits", "desc": "Add some UI that shows waits."},
     {"id": "american/show_nearest_american_hand", "name": "Show Nearest Hands", "desc": "Add some UI that shows nearest hands."},
@@ -319,8 +325,13 @@
   "after_start": {
     "actions": [
       ["set_status_all", "match_start", "first_charleston", "charleston_right", "heavenly_available"],
-      ["set_tile_alias_all", ["1j"], ["any"]],
-      ["set_tile_alias_all", ["2f", "3f", "4f", "1g", "2g", "3g", "4g"], ["1f"]]
+      ["set_tile_alias_all", ["1j"], [["1j", "_unpassable"], "any"]],
+      ["set_tile_alias_all", ["2f", "3f", "4f", "1g", "2g", "3g", "4g"], ["1f"]],
+        // compute how many tiles in each player's hand are passable
+      ["as", "all", [
+        ["set_counter", "passables", "count_matches", ["hand", "draw"], [[[["any"], 1]]]],
+        ["subtract_counter", "passables", "count_matches", ["hand", "draw"], [[[[["_unpassable"]], 1]]]]
+      ]]
     ]
   },
   "after_charleston": {
@@ -381,7 +392,7 @@
   "buttons": {
     "charleston_left": {
       "display_name": "Select three tiles to pass left",
-      "show_when": [{"name": "status", "opts": ["charleston_left"]}],
+      "show_when": [{"name": "counter_at_least", "opts": ["passables", 3]}, {"name": "status", "opts": ["charleston_left"]}],
       "actions": [
         ["mark", [["hand", 3, ["self", "not_joker"]]], [
           ["unset_status", "charleston_left", "heavenly_available"],
@@ -398,7 +409,7 @@
     },
     "charleston_across": {
       "display_name": "Select three tiles to pass across",
-      "show_when": [{"name": "status", "opts": ["charleston_across"]}],
+      "show_when": [{"name": "counter_at_least", "opts": ["passables", 3]}, {"name": "status", "opts": ["charleston_across"]}],
       "actions": [
         ["mark", [["hand", 3, ["self", "not_joker"]]], [["unset_status", "charleston_across", "heavenly_available"], ["merge_draw"], ["sort_hand"]]],
         ["charleston_across"],
@@ -411,7 +422,7 @@
     },
     "charleston_right": {
       "display_name": "Select three tiles to pass right",
-      "show_when": [{"name": "status", "opts": ["charleston_right"]}],
+      "show_when": [{"name": "counter_at_least", "opts": ["passables", 3]}, {"name": "status", "opts": ["charleston_right"]}],
       "actions": [
         ["mark", [["hand", 3, ["self", "not_joker"]]], [
           ["unset_status", "charleston_right", "heavenly_available"],
@@ -428,7 +439,7 @@
     },
     "continue_charleston": {
       "display_name": "Continue Charleston",
-      "show_when": [{"name": "status", "opts": ["decide_charleston"]}, {"name": "not_anyone_status", "opts": ["first_charleston"]}],
+      "show_when": [{"name": "counter_at_least", "opts": ["passables", 3]}, {"name": "status", "opts": ["decide_charleston"]}, {"name": "not_anyone_status", "opts": ["first_charleston"]}],
       "actions": [
         ["unset_status", "decide_charleston"],
         ["set_status", "second_charleston", "charleston_left"],
@@ -438,7 +449,7 @@
     },
     "skip_charleston": {
       "display_name": "Skip Charleston",
-      "show_when": [{"name": "status", "opts": ["decide_charleston"]}],
+      "show_when": [{"name": "counter_at_least", "opts": ["passables", 3]}, {"name": "status", "opts": ["decide_charleston"]}],
       "actions": [
         ["big_text", "Skip"],
         ["unset_status_all", "decide_charleston"],
@@ -463,7 +474,7 @@
     },
     "final_charleston_offer_1": {
       "display_name": "Offer 1",
-      "show_when": [{"name": "status", "opts": ["final_charleston"]}, {"name": "status_missing", "opts": ["charleston_across_0", "charleston_across_1", "charleston_across_2", "charleston_across_3"]}],
+      "show_when": [{"name": "counter_at_least", "opts": ["passables", 1]}, {"name": "status", "opts": ["final_charleston"]}, {"name": "status_missing", "opts": ["charleston_across_0", "charleston_across_1", "charleston_across_2", "charleston_across_3"]}],
       "actions": [
         ["big_text", "Offer 1"],
         ["set_status", "final_charleston", "charleston_across_1"],
@@ -476,7 +487,7 @@
     },
     "final_charleston_offer_2": {
       "display_name": "Offer 2",
-      "show_when": [{"name": "status", "opts": ["final_charleston"]}, {"name": "status_missing", "opts": ["charleston_across_0", "charleston_across_1", "charleston_across_2", "charleston_across_3"]}],
+      "show_when": [{"name": "counter_at_least", "opts": ["passables", 2]}, {"name": "status", "opts": ["final_charleston"]}, {"name": "status_missing", "opts": ["charleston_across_0", "charleston_across_1", "charleston_across_2", "charleston_across_3"]}],
       "actions": [
         ["big_text", "Offer 2"],
         ["set_status", "final_charleston", "charleston_across_2"],
@@ -489,7 +500,7 @@
     },
     "final_charleston_offer_3": {
       "display_name": "Offer 3",
-      "show_when": [{"name": "status", "opts": ["final_charleston"]}, {"name": "status_missing", "opts": ["charleston_across_0", "charleston_across_1", "charleston_across_2", "charleston_across_3"]}],
+      "show_when": [{"name": "counter_at_least", "opts": ["passables", 3]}, {"name": "status", "opts": ["final_charleston"]}, {"name": "status_missing", "opts": ["charleston_across_0", "charleston_across_1", "charleston_across_2", "charleston_across_3"]}],
       "actions": [
         ["big_text", "Offer 3"],
         ["set_status", "final_charleston", "charleston_across_3"],
@@ -513,7 +524,7 @@
     },
     "charleston_across_1": {
       "display_name": "Select a tile to pass across",
-      "show_when": [{"name": "status", "opts": ["final_charleston", "charleston_across_1"]}, {"name": "toimen_status", "opts": ["final_charleston", "charleston_across_1"]}],
+      "show_when": [{"name": "counter_at_least", "opts": ["passables", 1]}, {"name": "status", "opts": ["final_charleston", "charleston_across_1"]}, {"name": "toimen_status", "opts": ["final_charleston", "charleston_across_1"]}],
       "actions": [
         ["mark", [["hand", 1, ["self", "not_joker"]]], [["unset_status", "charleston_across_1"]]],
         ["charleston_across"],
@@ -525,7 +536,7 @@
     },
     "charleston_across_2": {
       "display_name": "Select two tiles to pass across",
-      "show_when": [{"name": "status", "opts": ["final_charleston", "charleston_across_2"]}, {"name": "toimen_status", "opts": ["final_charleston", "charleston_across_2"]}],
+      "show_when": [{"name": "counter_at_least", "opts": ["passables", 2]}, {"name": "status", "opts": ["final_charleston", "charleston_across_2"]}, {"name": "toimen_status", "opts": ["final_charleston", "charleston_across_2"]}],
       "actions": [
         ["mark", [["hand", 2, ["self", "not_joker"]]], [["unset_status", "charleston_across_2"]]],
         ["charleston_across"],
@@ -537,7 +548,7 @@
     },
     "charleston_across_3": {
       "display_name": "Select three tiles to pass across",
-      "show_when": [{"name": "status", "opts": ["final_charleston", "charleston_across_3"]}, {"name": "toimen_status", "opts": ["final_charleston", "charleston_across_3"]}],
+      "show_when": [{"name": "counter_at_least", "opts": ["passables", 3]}, {"name": "status", "opts": ["final_charleston", "charleston_across_3"]}, {"name": "toimen_status", "opts": ["final_charleston", "charleston_across_3"]}],
       "actions": [
         ["mark", [["hand", 3, ["self", "not_joker"]]], [["unset_status", "charleston_across_3"]]],
         ["charleston_across"],
@@ -546,6 +557,20 @@
       ],
       "unskippable": true,
       "cancellable": false
+    },
+      // TODO: check that this button behaves the way it should. this button is here for any variants where a player has so many unpassable tiles (e.g. jokers, blanks, flowers in older NMJL rules) that they are unable to pass three tiles during the Charleston.
+      // TODO: need some kind of test scenario to check if this button works correctly
+    "abort_during_charleston": {
+      "display_name": "Can't pass three tiles",
+      "show_when": [{"name": "status", "opts": ["match_start"]}, {"name": "counter_less_than", "opts": ["passables", 3]}],
+      "actions": [
+        ["big_text", "Can't pass three tiles"],
+        ["pause", 1500],
+        ["abortive_draw", "Throw in all tiles and start again"]
+      ],
+      "unskippable": true,
+      "cancellable": false,
+      "precedence_over": ["charleston_left", "charleston_across", "charleston_right", "continue_charleston", "skip_charleston"]
     },
     "1_am_pung": {
       "display_name": "Pung",
@@ -588,7 +613,11 @@
     },
     "am_joker_swap": {
       "display_name": "Swap for exposed joker",
-      "show_when": [{"name": "status_missing", "opts": ["match_start", "dead_hand"]}, "our_turn", "not_just_discarded", {"name": "match", "opts": [["hand_draw_nonjoker_any", "anyone_joker_meld_tiles"], [[[["pair"], 1]]]]}],
+      "show_when": [
+        {"name": "status_missing", "opts": ["match_start", "dead_hand"]},
+        "our_turn", "not_just_discarded",
+        {"name": "match", "opts": [["hand_draw_nonjoker_any", "anyone_joker_meld_tiles"], [[[["pair"], 1]]]]}
+      ],
       "actions": [
         ["big_text", "Swap"],
         ["mark", [["call", 1, ["call_has_joker", "match_call_to_marked_hand"]], ["hand", 1, ["self", "not_joker", "match_hand_to_marked_call"]]]],
@@ -603,7 +632,7 @@
       "actions": [
         ["big_text", "Mah Jongg"], ["pause", 1000], ["reveal_hand"], ["win_by_draw"]
       ],
-      "precedence_over": ["1_am_pung", "2_am_kong", "3_am_quint"]
+      "precedence_over": ["1_am_pung", "2_am_kong", "3_am_quint", "abort_during_charleston"]
     },
     "mahjong_draw": {
       "display_name": "Mah Jongg",
@@ -798,7 +827,7 @@
   "interruptible_actions": ["play_tile", "draw"],
   "initial_score": 0,
   "starting_tiles": 13,
-  "initial_dead_wall_length": 14,
+  "initial_dead_wall_length": 0,
   "four_rows_discards": true,
   "dead_hand_buttons": true,
   "max_rounds": 8
