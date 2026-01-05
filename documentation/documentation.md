@@ -392,7 +392,7 @@ An American match specification is a `~m""` string . An example is `~m"american,
 
 - `F`: any flower
 - `D`: any dragon
-- `W`: any wind
+- `Z`: any wind
 - `N`,`E`,`W`,`S`: north/east/west/south wind
 - `R`,`G`,`0`: red/green/white dragon
 - `1` to `9`: a number tile
