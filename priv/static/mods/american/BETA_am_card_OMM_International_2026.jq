@@ -131,7 +131,6 @@
   ]
 |
 .yaku = [
-      ### Progress
     { "display_name": "Year of the Horse 2026 #1", "value": 50, "when": [{"name": "match", "opts": [["hand", "call_tiles", "winning_tile"], ["NEWS 2026a DDDb DDDc"]]}] },
     { "display_name": "Year of the Horse 2026 #2", "value": 50, "when": [{"name": "match", "opts": [["hand", "call_tiles", "winning_tile"], ["222a 000 2222b 6666c"]]}] },
     { "display_name": "Year of the Horse 2026 #3", "value": 50, "when": [{"name": "match", "opts": [["hand", "call_tiles", "winning_tile"], ["FFFF 22a 0000 22a 66b"]]}] },
@@ -182,5 +181,5 @@
     { "display_name": "Lucky Eights #3", "value": 50, "when": [{"name": "match", "opts": [["hand", "call_tiles", "winning_tile"], ["FF 3333a 5555b 8888c"]]}] },
     { "display_name": "Lucky Eights #4", "value": 50, "when": [{"name": "match", "opts": [["hand", "call_tiles", "winning_tile"], ["8888a DDDa 8888b DDDb"]]}] },
     { "display_name": "Lucky Eights #5", "value": 75, "when": [{"name": "match", "opts": [["hand", "call_tiles", "winning_tile"], ["FF 22a 66a 88a DDDb DDDc"]]}] },
-    { "display_name": "Lucky Eights #6", "value": 100, "when": [{"name": "has_no_call_named", "opts": ["am_pung", "am_kong", "am_quint"]}, {"name": "match", "opts": [["hand", "call_tiles", "winning_tile"], ["FF 11a 77a 88a 22b 66b 88b"]]} ] },
+    { "display_name": "Lucky Eights #6", "value": 100, "when": [{"name": "has_no_call_named", "opts": ["am_pung", "am_kong", "am_quint"]}, {"name": "match", "opts": [["hand", "call_tiles", "winning_tile"], ["FF 11a 77a 88a 22b 66b 88b"]]} ] }
 ]
