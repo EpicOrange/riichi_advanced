@@ -385,7 +385,7 @@ defmodule RiichiAdvanced.Constants do
         "global_mods", "default_auto_buttons",
         "standard_wall", "framed_5z",
         "standard_win", "yaku/yakuhai",
-        "chii", "pon", "kan", "ron", "tsumo",
+        "chii", "pon", "kan",
         %{name: "default_flowers", config: %{unskippable: true, four_flowers_value: 2}},
         %{name: "yaku/no_flowers", config: %{list: "yaku", name: "No Flowers", value: 1}},
         %{name: "yaku/tsumo", config: %{list: "yaku", name: "Self Draw", value: 1}},
