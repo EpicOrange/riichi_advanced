@@ -30,6 +30,34 @@ set score_calculation, %{
   win_with_pao_name: "Bao"
 }
 
+define_button ron,
+  display_name: "Hu", 
+  show_when: not_our_turn
+    and someone_else_just_discarded
+    and match(["hand", "calls"], ["tenpai"])
+    and match(["hand", "calls", "last_discard"], ["win"]),
+  precedence_over: ["chii", "pon", "daiminkan"]
+  do
+    big_text("Hu")
+    pause(1000)
+    reveal_hand
+    win_by_discard
+  end
+
+define_button tsumo,
+  display_name: "Zimo", 
+  show_when: our_turn
+    and match(["hand", "calls", "draw", "flowers"], ["tenpai"])
+    and match(["hand", "calls", "draw", "flowers"], ["win"])
+  do
+    big_text("Zimo")
+    pause(1000)
+    reveal_hand
+    win_by_draw
+  end
+
+apply set_append, "interruptible_actions", ["play_tile", "draw"]
+
 # mods
 define_mod_category "Rules"
 define_mod hk_three_point_minimum, name: "Three Fan Minimum", desc: "Only allow wins worth 3+ fan."

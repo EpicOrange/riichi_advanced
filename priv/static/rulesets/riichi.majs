@@ -1,3 +1,4 @@
+# TODO: Figure out how to fix the `cancellable_riichi` mod, then re-add it as default as well as in modpacks.
 
 define_set pair, ~s"0 0"
 define_set shuntsu, ~s"0 1 2"
@@ -782,7 +783,7 @@ set default_mods, [
   "kyuushu_kyuuhai",
   "double_wind_4_fu",
   "yaku/riichi_renhou", "pao", "kokushi_ankan_chankan",
-  "cancellable_riichi"
+  # "cancellable_riichi"
 ]
 
 define_preset "Mahjong Soul", [
@@ -810,7 +811,7 @@ define_preset "Mahjong Soul", [
   "yaku/ippatsu",
   "show_waits",
   %{name: "min_han", config: %{min: 1}},
-  "cancellable_riichi",
+  # "cancellable_riichi",
   %{name: "aka", config: %{man: 1, pin: 1, sou: 1}},
   "shiny_dora",
   "first_gets_riichi_sticks"
@@ -873,7 +874,7 @@ define_preset "Riichi City", [
   "yaku/ippatsu",
   "show_waits",
   %{name: "min_han", config: %{min: 1}},
-  "cancellable_riichi",
+  # "cancellable_riichi",
   %{name: "aka", config: %{man: 1, pin: 1, sou: 1}},
   "shiny_dora",
   "first_gets_riichi_sticks"
@@ -904,7 +905,7 @@ define_preset "Amatsuki Mahjong", [
   "yaku/ippatsu",
   "show_waits",
   %{name: "min_han", config: %{min: 1}},
-  "cancellable_riichi",
+  # "cancellable_riichi",
   %{name: "aka", config: %{man: 1, pin: 1, sou: 1}},
   "shiny_dora",
   "first_gets_riichi_sticks"
@@ -930,7 +931,7 @@ define_preset "WRC 2022", [
   %{name: "yaku/riichi_renhou", config: %{is: "Mangan"}},
   "show_waits",
   %{name: "min_han", config: %{min: 1}},
-  "cancellable_riichi",
+  # "cancellable_riichi",
   %{name: "starting_score", config: %{points: 30000}}
 ]
 define_preset "M.League", [
@@ -957,7 +958,7 @@ define_preset "M.League", [
   "yaku/ippatsu",
   "show_waits",
   %{name: "min_han", config: %{min: 1}},
-  "cancellable_riichi",
+  # "cancellable_riichi",
   %{name: "aka", config: %{man: 1, pin: 1, sou: 1}}
 ]
 define_preset "Just Like Modded Minecraft", [
@@ -1059,7 +1060,7 @@ define_preset "Just Like Modded Minecraft", [
   "blue_dragon",
   "wareme",
   %{name: "min_han", config: %{min: 1}},
-  "cancellable_riichi",
+  # "cancellable_riichi",
   "immediate_kan_dora",
   "yaku/ippatsu",
   "star_suit",
