@@ -31,26 +31,26 @@ set score_calculation, %{
 }
 
 define_button ron,
-  display_name: @ron_name, 
+  display_name: "Hu", 
   show_when: not_our_turn
     and someone_else_just_discarded
     and match(["hand", "calls"], ["tenpai"])
     and match(["hand", "calls", "last_discard"], ["win"]),
   precedence_over: ["chii", "pon", "daiminkan"]
   do
-    big_text(@ron_name)
+    big_text("Hu")
     pause(1000)
     reveal_hand
     win_by_discard
   end
 
 define_button tsumo,
-  display_name: @tsumo_name, 
+  display_name: "Zimo", 
   show_when: our_turn
     and match(["hand", "calls", "draw", "flowers"], ["tenpai"])
     and match(["hand", "calls", "draw", "flowers"], ["win"])
   do
-    big_text(@tsumo_name)
+    big_text("Zimo")
     pause(1000)
     reveal_hand
     win_by_draw
