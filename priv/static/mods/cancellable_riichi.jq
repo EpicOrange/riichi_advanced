@@ -7,6 +7,7 @@ if (.buttons | has("riichi")) then
       ["unset_status", "riichi", "just_reached"],
       ["recalculate_playables"]
     ]],
+    # TODO: this is wrong because it doesn't count as discarding the marked tile, so it doesn't trigger buttons that would allow the riichi tile to be called. figure out how to fix.
     ["move_tiles", {"hand": ["marked"]}, "discard"],
     ["move_tiles", "draw", "hand"],
     # internally draws are marked with "_draw" attr, until moved into hand
