@@ -448,7 +448,7 @@ defmodule RiichiAdvanced.Constants do
         "global_mods", "default_auto_buttons",
         "standard_wall", "framed_5z",
         "standard_win", "yaku/yakuhai",
-        "chii", "pon", "kan", "ron", "tsumo",
+        "chii", "pon", "kan",
         "head_bump",
         %{name: "default_flowers", config: %{unskippable: true, four_flowers_value: 4}}, # should go after chii/pon/kan/ron/chankan/tsumo
         %{name: "yaku/menzentsumo", config: %{list: "yaku", name: "Concealed Hand", value: 1}},
