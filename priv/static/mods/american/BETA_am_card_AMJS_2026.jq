@@ -1,5 +1,3 @@
-    ## TODO: confirm that `.singles_win_definition` is correct
-
 .win_definition = [
     # Honor The Legacy
     "DDDDa DDDDb DDDDc ZZ",
@@ -113,21 +111,6 @@
   ]
 |
 .singles_win_definition = [
-        ## TODO: confirm that this is correct
-    # Honor The Legacy
-    "123a 456a 789a RRR EE", # concealed
-    # Palindrome
-    "33a 55b 77c 55b 33a DDa|DDb|DDc ZZ", # concealed
-    "345a 678b DDb 876b 543a", # concealed
-    # A Little Odd
-    "111a 333b 555c 777a 99c", # concealed
-    # Linear Logic
-    "FF XX0a XXXX1a XXXX2a XX3a", # concealed
-    # Repeating
-    "FF 123a 789a 123b 789b", # concealed
-    "XX0a XX0b XX0c DDc ZZ XX0b XX0a", # concealed
-    # Pop Culture
-    "13a 13b 13c 87a NEWS DDa" # concealed
   ]
 |
 .yaku = [
