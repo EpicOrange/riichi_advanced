@@ -15,7 +15,6 @@ define_button open_riichi,
     big_text("Open Riichi")
     set_status("riichi", "open_riichi", "just_reached")
     push_message("declared open riichi")
-    enable_auto_button("_4_auto_discard")
     if status("discards_empty") and no_calls_yet do
       set_status("double_riichi")
     end
