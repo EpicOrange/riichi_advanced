@@ -28,7 +28,6 @@ define_button riichi,
     big_text("Riichi")
     set_status("riichi", "just_reached")
     push_message("declared riichi")
-    enable_auto_button("_4_auto_discard")
     if status("discards_empty") and no_calls_yet do
       set_status("double_riichi")
     end
@@ -50,6 +49,7 @@ apply prepend, "functions.discard_passed" do
   as others do
     if status("just_reached") do
       place_riichi_stick
+      enable_auto_button("_4_auto_discard")
     end
     unset_status("just_reached")
   end
@@ -57,6 +57,7 @@ end
 
 on before_call, prepend: true do
   unset_status("just_reached")
+  enable_auto_button("_4_auto_discard")
 end
 
 def place_riichi_stick do
