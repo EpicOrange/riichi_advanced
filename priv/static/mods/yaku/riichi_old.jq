@@ -37,7 +37,6 @@
     ["big_text", "Riichi"],
     ["set_status", "riichi", "just_reached"],
     ["push_message", "declared riichi"],
-    ["enable_auto_button", "_4_auto_discard"],
     ["when", [{"name": "status", "opts": ["discards_empty"]}, "no_calls_yet"], [["set_status", "double_riichi"]]]
   ]
 }
@@ -90,8 +89,9 @@ else . end
 else . end)
 |
 .functions.discard_passed |= [["as", "others", [
-  # if we just reached then place down a riichi stick
-  ["when", [{"name": "status", "opts": ["just_reached"]}], [["run", "place_riichi_stick"]]],
+  # if we just reached then turn on the auto-discard button and place down a riichi stick
+  ["when", [{"name": "status", "opts": ["just_reached"]}], [
+    ["enable_auto_button", "_4_auto_discard"], ["run", "place_riichi_stick"]]],
   ["unset_status", "just_reached"]
 ]]] + .
 |
