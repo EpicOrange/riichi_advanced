@@ -56,8 +56,11 @@ apply prepend, "functions.discard_passed" do
 end
 
 on before_call, prepend: true do
+  if status("just_reached") do
+    place_riichi_stick
+    enable_auto_button("_4_auto_discard")
+  end
   unset_status("just_reached")
-  enable_auto_button("_4_auto_discard")
 end
 
 def place_riichi_stick do
