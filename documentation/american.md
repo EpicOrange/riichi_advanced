@@ -99,15 +99,17 @@ The following Cards are supported by Riichi Advanced:
 - [NMJL 2013~2025](https://www.nationalmahjonggleague.org/store.aspx) (cost: 14USD)
 - [Mahjong Press 2026](https://themahjongpress.com/) (cost: 11USD)
 - [The Big Card 2026](https://thebigcard.com/) (cost: 10USD)
+- [OMM 2026 International Mahjong Card](https://ohmymahjong.com/products/international-mahjong-card) (cost: 12USD)
+- [AMJS 2026 Card](https://amjsociety.com/products/2026-mahjong-card-digital-download) (free)
 - [ShariUniqueCreations Vegas Card](https://www.etsy.com/listing/690122975) (cost: 8.45~9.45CAD)
 - [ILoveMahj Card](https://ilovemahj.com/ilmCard) (free)
 - [ATeacherFirst Mah Jongg Fake Card](https://www.ateacherfirst.com/bridge/mah-jongg/) (free)
 - [MahjLife Mock Card](https://mahjlife.com/document/mahj-life-mock-card-print/) (free, used with permission from Michele Frizzell)
-- [MahjForAll Evergreen Card](https://mahjforall.org/product/perennial-evergreen-american-mahjong-card-instant-download/) (free)
 - [American Mah Jongg for Everyone Card](https://americanmahjonggforeveryone.com/our-card-and-tile-set/) (free)
 - [John Burton's Card Free American Mah Jongg](https://johnburtongames.com/cardfreemahj/) (free, technically not a Card)
 
 The following Cards are planned to be supported in the near future:
+- [MahjForAll Evergreen Card](https://mahjforall.org/product/perennial-evergreen-american-mahjong-card-instant-download/) (free)
 - [Mah Jongg Network 2025](https://shop.mahjonggnetwork.com/) (cost: 15USD)
 - [Mah Jongg Network 2025 Jr](https://shop.mahjonggnetwork.com/) (cost: 14USD)
 - [Marvelous 2025](https://marvelousmahjongg.com/) (cost: 11~15USD)
@@ -187,6 +189,9 @@ The following mods are currently available for American:
 - No Charleston: Play without the Charleston.
 - NMJL [Year] Card: Play with the [NMJL Card](https://www.nationalmahjonggleague.org/store.aspx) from the year of your choice (between 2013 and 2025).
 - Mahjong Press [Year] Card: Play with the [Mahjong Press Card](https://themahjongpress.com/) from the year of your choice (2026 only).
+- TML [Year] Big Card (beta): Play with the The Mahjong Line's [The Big Card](https://thebigcard.com/) from the year of your choice (2026 only). (May contain bugs.)
+- OMM International [Year] Card: Play with the [OMM International Mahjong Card](https://ohmymahjong.com/products/international-mahjong-card) from the year of your choice (2026 only).
+- AMJS [Year] Card: Play with the [AMJS 2026 Card](https://amjsociety.com/products/2026-mahjong-card-digital-download) from the year of your choice (2026 only).
 - ShariUniqueCreations Vegas Card (beta): Play with the [ShariUniqueCreations Vegas Card](https://www.etsy.com/listing/690122975). (May contain bugs.)
 - ILM Card: Play with the free [ILoveMahj Card](https://ilovemahj.com/ilmCard).
 - ATF Card: Play with the free [ATeacherFirst Mah Jongg Fake Card](https://www.ateacherfirst.com/bridge/mah-jongg/).
@@ -204,11 +209,11 @@ The following mods are planned to be supported (not necessarily in this order):
 - Cold Wall: During the last portion of the wall, players may only win by self-draw.
 - MahjForAll Evergreen Card (WIP): Play with the free [MahjForAll Evergreen Card](https://mahjforall.org/product/perennial-evergreen-american-mahjong-card-instant-download/).
 - NMJL [Year] Card: Play with the NMJL Card from the year of your choice (before 2013).
-- Siamese [Year] Card: Play with the [Siamese Card](https://mahjongg.org/siamese-products/) from the year of your choice.
 - Marvelous [Year] Card: Play with the [Marvelous Card](https://marvelousmahjongg.com/) from the year of your choice.
 - Mah Jongg Network [Year] Card: Play with the [Mah Jongg Network Card](https://shop.mahjonggnetwork.com/) from the year of your choice.
 - Mah Jongg Network [Year] Jr Card (beta): Play with the [Mah Jongg Network Jr Card](https://shop.mahjonggnetwork.com/) from the year of your choice.
 - MAHJ-X: Play with [MAHJ-X rules](https://www.mahjx.com/).
+- Siamese [Year] Card: Play with the [Siamese Card](https://mahjongg.org/siamese-products/) from the year of your choice.
 - Siamese: Play with [Siamese rules](https://mahjongg.org/siamese-rules/).
 - Royale Siamese: Play with [Royale Siamese rules](https://mahjongg.org/siamese-rules/#royale).
 - Historical Rules: Play with the historical ruleset (pre-1994) of your choice.
