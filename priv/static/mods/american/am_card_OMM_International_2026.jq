@@ -1,6 +1,3 @@
-## TODO: confirm whether jokerless bonuses/exceptions exist for this Card
-## TODO: confirm whether the "Same Number" section on this Card really is just an equivalent of the "Any Like Numbers" NMJL section
-
 .win_definition = [
     # Year Of The Horse 2026
     "NEWS 2026a DDDb DDDc",
