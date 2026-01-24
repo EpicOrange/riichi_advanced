@@ -621,7 +621,7 @@ defmodule RiichiAdvancedWeb.GameLive do
     end
     socket = assign(socket, :hovered_called_tile, called_tile)
     buttons = Rules.get(socket.assigns.state.rules_ref, "buttons", %{})
-    is_upgrade = get_in(buttons[name]["upgrades"]) != nil
+    is_upgrade = buttons[name]["upgrades"] != nil
     socket = assign(socket, :hovered_call_choice, if is_upgrade do nil else call_choice end)
     {:noreply, socket}
   end
