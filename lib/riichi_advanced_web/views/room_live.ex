@@ -63,7 +63,7 @@ defmodule RiichiAdvancedWeb.RoomLive do
       else socket end
 
       # sit in first available seat, if we're not already in one
-      if not Enum.any?(state.available_seats, fn seat -> get_in(state.seats[seat].session_id) == socket.assigns.session_id end) do
+      if not Enum.any?(state.available_seats, fn seat -> state.seats[seat] != nil and state.seats[seat].session_id == socket.assigns.session_id end) do
         case Enum.find(state.available_seats, fn seat -> state.seats[seat] == nil end) do
           nil  -> :ok
           seat -> GenServer.cast(socket.assigns.room_state, {:sit, socket.assigns.session_id, socket.assigns.session_id, seat})
@@ -306,12 +306,14 @@ defmodule RiichiAdvancedWeb.RoomLive do
   end
 
   def vacate_room(socket) do
+    seats = socket.assigns.state.seats
+    session_id = socket.assigns.session_id
     seat = cond do
-      :east  in socket.assigns.state.available_seats and get_in(socket.assigns.state.seats.east.id)  == socket.assigns.session_id -> :east
-      :south in socket.assigns.state.available_seats and get_in(socket.assigns.state.seats.south.id) == socket.assigns.session_id -> :south
-      :west  in socket.assigns.state.available_seats and get_in(socket.assigns.state.seats.west.id)  == socket.assigns.session_id -> :west
-      :north in socket.assigns.state.available_seats and get_in(socket.assigns.state.seats.north.id) == socket.assigns.session_id -> :north
-      true                                      -> :spectator
+      :east  in socket.assigns.state.available_seats and seats.east  != nil and seats.east.id  == session_id -> :east
+      :south in socket.assigns.state.available_seats and seats.south != nil and seats.south.id == session_id -> :south
+      :west  in socket.assigns.state.available_seats and seats.west  != nil and seats.west.id  == session_id -> :west
+      :north in socket.assigns.state.available_seats and seats.north != nil and seats.north.id == session_id -> :north
+      true -> :spectator
     end
     socket = push_event(socket, "left-page", %{})
     push_navigate(socket, to: ~p"/game/#{socket.assigns.ruleset}/#{socket.assigns.room_code}?nickname=#{socket.assigns.nickname}&lang=#{socket.assigns.lang}&seat=#{seat}")

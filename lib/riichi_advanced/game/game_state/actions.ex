@@ -2046,7 +2046,7 @@ defmodule RiichiAdvanced.GameState.Actions do
     {_, _, state} = for _ <- ordered_seats, reduce: {ordered_seats, ["skip", "play_tile"], state} do
       {[seat | later_seats], superceded_choices, state} ->
         choice = state.players[seat].choice
-        new_superceded_choices = if choice != nil do get_in(buttons[choice.name]["precedence_over"]) || [] else [] end
+        new_superceded_choices = if choice != nil do buttons[choice.name]["precedence_over"] || [] else [] end
         superceded_choices = superceded_choices ++ new_superceded_choices
         state = if choice != nil and choice.name not in [nil, "skip", "play_tile"] do
           # replace with "skip" every button and choice that is superceded by our choice
@@ -2078,7 +2078,7 @@ defmodule RiichiAdvanced.GameState.Actions do
     # etc. if there are still multiple of the same call then it reverts to "first in turn order"
     conflicting_players = ordered_seats
     |> Enum.map(fn seat -> {seat, state.players[seat].choice} end)
-    |> Enum.filter(fn {_seat, choice} -> choice != nil and get_in(buttons[choice.name]["call_priority_list"]) != nil end)
+    |> Enum.filter(fn {_seat, choice} -> choice != nil and buttons[choice.name]["call_priority_list"] != nil end)
     |> Enum.map(fn {seat, choice} -> %{choice => [seat]} end)
     |> Enum.reduce(%{}, fn m, acc -> Map.merge(m, acc, fn _k, l, r -> l ++ r end) end)
     state = for {choice, seats} <- conflicting_players, reduce: state do
