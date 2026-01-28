@@ -697,7 +697,7 @@
     { "display_name": "Golden Gate Bridge", "value": 20, "when": [{"name": "match", "opts": [["hand", "calls", "winning_tile"], ["金門大橋"]]}] },
     { "display_name": "Mixed Straight", "value": 5, "when": [{"name": "match", "opts": [["hand", "calls", "winning_tile"], ["雜龍"]]}] },
     { "display_name": "Pure Straight", "value": 8, "when": [{"name": "match", "opts": [["hand", "calls", "winning_tile"], ["清龍"]]}] },
-    { "display_name": "All Sequences", "value": 2, "when": [{"name": "match", "opts": [["hand", "calls", "winning_tile"], [[[["shuntsu"], 4], [["pair"], 1]]]]}] },
+    { "display_name": "All Sequences", "value": 2, "when": [{"name": "match", "opts": [["hand", "calls", "winning_tile"], [["exhaustive", [["shuntsu"], 4], [["pair"], 1]]]]}] },
     // (3) 四歸類
     { "display_name": "Tile Hog (2)", "value": 2, "when": [{"name": "match", "opts": [["hand", "calls", "winning_tile"], ["四歸二"]]}] },
     { "display_name": "Tile Hog (3)", "value": 5, "when": [{"name": "match", "opts": [["hand", "calls", "winning_tile"], ["四歸三"]]}] },
