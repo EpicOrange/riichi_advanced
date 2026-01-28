@@ -21,7 +21,7 @@ defmodule RiichiAdvanced.GameState.Rules do
   end
 
   defp check_rules(rules) do
-    if get_in(rules["buttons"]["skip"]) != nil do
+    if rules["buttons"]["skip"] != nil do
       {:error, "Error: \"skip\" is an invalid button name."}
     else
       # if we're debugging american hands then always show the nearest hand button
