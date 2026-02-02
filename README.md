@@ -39,7 +39,8 @@ If interested in contributing, check out the [contributing doc](CONTRIBUTING.md)
 - [Custom rulesets](#custom-rulesets)
 - [How can I contribute?](#how-can-i-contribute)
 - [Developer information](#developer-information)
-- [Running the server locally](#running-the-server-locally)
+- [Running the server locally (MacOS, Linux)](#running-the-server-locally-macos-linux)
+- [Running the server locally (Windows 11)](#running-the-server-locally-windows-11)
 - [Acknowledgments](#acknowledgments)
 
 ## Changelog
@@ -315,7 +316,7 @@ Here is a breakdown of all the directories:
         │   └── test_utils.exs (util functions called by tests)
         └── test_helper.exs (boilerplate)
 
-## Running the server locally
+## Running the server locally (MacOS, Linux)
 
 First, install Elixir (≥ 1.14), `npm`, `z3`, and `jq`.
 
@@ -339,6 +340,28 @@ Then run:
 This should start the server up at `https://localhost:4000`. (Make sure to use `https`! `http` doesn't work locally for some reason.) Phoenix should live-reload all your changes to Elixir/JS/CSS files while the server is running.
 
 If it complains about a daemon not running, open a separate terminal and run `epmd` (Erlang Port Mapper Daemon), and try again.
+
+## Running the server locally (Windows 11)
+
+Steps are mostly identical to the above. However, you will run into trouble as follows:
+
+* Windows does not like to install `npm`. It is recommended to install all necessary packages by first installing [Chocolatey](https://chocolatey.org/install) (which has the option to install `npm` for you immediately after). Be sure to restart your computer.
+
+* Node dependencies are acquired with these three commands instead:
+
+      cd assets
+      npm i
+      cd ..
+
+* The following files should be manually patched: 
+  * In `\lib\ex_jq\jq.ex`, lines 19 to 35 (`# postprocess the result ... raise(UnknownException, error) ↵ end`) should be replaced with `result`.
+  * Near the end of `\lib\riichi_advanced\game\mod_loader.ex`, the regex `Regex.replace(~r{^//.*|\s//.*|/\*[.\n]*?\*/}, json, "")` should be replaced with `Regex.replace(~r{^//.*|\s//.*|/\*[.\r\n]*?\*/}, Regex.replace(~r{\r\n}, json, "\n"), "")`.
+ 
+* The server should be started with:
+
+      iex.bat -S mix phx.server
+
+  * Note that this starts up the server at `http://localhost`. (If you find a way to specify an HTTPS port, let us know!)
 
 ## Acknowledgments
 
