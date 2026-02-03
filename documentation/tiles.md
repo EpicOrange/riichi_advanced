@@ -1,6 +1,6 @@
 # Tile reference
 
-This document is a reference for all of the tiles currently supported in the tileset. See [`guide_to_tiles.md`](guide_to_tiles.md) for how these tiles (particularly the jokers) are used in various rulesets. These tiles are based off of @FluffyStuff's [riichi-mahjong-tiles](https://github.com/FluffyStuff/riichi-mahjong-tiles).
+This document is a reference for all of the tiles currently supported in the tileset. See [`guide_to_tiles.md`](guide_to_tiles.md) for how these tiles (particularly the jokers) are used in various rulesets. These tiles are based off of @FluffyStuff's [riichi-mahjong-tiles](https://github.com/FluffyStuff/riichi-mahjong-tiles). The various jokers use the [Hanyi Senty Tang](https://sentyfont.com/sentytang.htm) font.
 
 ## Standard tiles
 
