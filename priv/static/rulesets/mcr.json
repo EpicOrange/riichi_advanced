@@ -867,5 +867,5 @@
   "initial_score": 0,
   "starting_tiles": 13,
   "four_rows_discards": true,
-  "max_rounds": 4
+  "max_rounds": 16
 }
