@@ -58,6 +58,8 @@ There is no dead wall (the game ends in a draw once the whole wall is drawn), bu
 
 There are the three standard calls: Chow, Pung, and Kong. There are three types of kong: concealed kong is when you take out all four copies of a single tile, added kong is when you add a drawn fourth copy of a tile to your existing pung of that tile, and melded kong is when you call a discard using the other three copies of that discard. All kongs result in drawing a replacement tile, and as such you cannot kong if there are no more tiles in the wall. Concealed kongs are revealed to the table once the round is over. Swap-calling is allowed: if you call a 3 of bamboo, you may subsequently discard a 3 of bamboo in hand. A restriction on calling is that if you call chow or pung, you may not immediately call a concealed or added kong until your next draw. (In other words, those two kongs are only allowed if you have drawn a tile.)
 
+Note that Riichi Advanced's implementation of MCR has everyone stay in the same seat throughout all four rounds, as opposed to moving seats between rounds.
+
 ## Fan table
 
 To win, one must have a hand worth at least 8 fan (additive). Since this is a nontrivial task, there are various strategies to winning that will be covered briefly [at the end](#very-basic-strategy). Note that a hand worth exactly 0 fan scores 8 fan (Chicken Hand #43). Also note that flowers are worth 1 bonus fan each, which don't count towards the 8 fan requirement.
@@ -204,7 +206,7 @@ A canonical example of the Exclusionary Rule is when you have a Mixed Straight w
 
 The Mixed Straight "links" the first three sequences, and the Mixed Double Chow "links" the last two sequences. Then you cannot form a cycle by also linking ![](tiles/4p.svg)![](tiles/5p.svg)![](tiles/6p.svg) and ![](tiles/7p.svg)![](tiles/8p.svg)![](tiles/9p.svg) to form Short Straight, so you can only choose one of Mixed Double Chow or Short Straight to score.
 
-If you are not sure about the Non-repeat principle, here is a list of yaku implications taken directly from [the ruleset](/priv/static/rulesets/mcr.json). Implications are transitive.
+If you are not sure about the Non-repeat principle, here is a list of yaku implications taken directly from [the ruleset](/priv/static/rulesets/mcr.json). Implications are transitive. <<TODO: check again whether this is correct>>
 
 - (88)
   + __"Big Four Winds"__ implies "Little Four Winds", "Half Flush", "Prevalent Wind", "Seat Wind"
