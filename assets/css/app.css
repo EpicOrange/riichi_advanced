@@ -1158,6 +1158,7 @@ div.tile.\31 \37 t { --tile-color: var(--galaxy-color); --tile-index: 150; }
 div.tile.\31 \38 t { --tile-color: var(--galaxy-color); --tile-index: 151; }
 div.tile.\31 \39 t { --tile-color: var(--galaxy-color); --tile-index: 152; }
 div.tile.\31 \31 \30 t { --tile-color: var(--galaxy-color); --tile-index: 153; }
+div.tile.\31 \30 z { --tile-color: var(--galaxy-color); --tile-index: 154; }
 div.tile.\31 \31 z { --tile-color: var(--galaxy-color); --tile-index: 155; }
 div.tile.\31 \32 z { --tile-color: var(--galaxy-color); --tile-index: 156; }
 div.tile.\31 \33 z { --tile-color: var(--galaxy-color); --tile-index: 157; }
