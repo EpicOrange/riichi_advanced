@@ -1,6 +1,7 @@
 {
   "default_mods": ["show_waits"],
   "available_mods": [
+    {"id": "tonpuu", "name": "East Round Only", "desc": "Play only the East Round."},
     {"id": "show_waits", "name": "Show Waits", "desc": "Add some UI that shows waits."},
     {"id": "open_hands", "name": "Open Hands", "desc": "Everyone plays with tiles shown."}
   ],
@@ -867,5 +868,5 @@
   "initial_score": 0,
   "starting_tiles": 13,
   "four_rows_discards": true,
-  "max_rounds": 4
+  "max_rounds": 16
 }
