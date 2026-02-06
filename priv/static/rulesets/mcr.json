@@ -1,7 +1,7 @@
 {
   "default_mods": ["show_waits"],
   "available_mods": [
-    {"id": "tonpuu", "name": "East Round Only", "desc": "Play only the East Round."}
+    {"id": "tonpuu", "name": "East Round Only", "desc": "Play only the East Round."},
     {"id": "show_waits", "name": "Show Waits", "desc": "Add some UI that shows waits."},
     {"id": "open_hands", "name": "Open Hands", "desc": "Everyone plays with tiles shown."}
   ],
