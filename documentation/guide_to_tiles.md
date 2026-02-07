@@ -76,7 +76,7 @@ These are used in [Galaxy Mahjong](galaxy.md). Numbered blue tiles may be used a
 
 ## Aka/Ao/Kin/Transparent
 
-Many of the above natural tiles, now as red, dark-blue, and gold variants (for extra parlour riichi rules). Transparent tiles, starting with `4`, are also included, to allow for setting tiles as any colour you like.
+Many of the above natural tiles, now as red, dark-blue, and gold variants (for extra parlour riichi rules). Transparent tiles, starting with `4`, are also included, to allow for setting tiles as any colour you like (see [`documentation.md`](https://github.com/edderiofer/riichi_advanced/blob/tiles-docs/documentation/documentation.md#visual-effects-via-attributes)). These also have dotted variations, starting with `5` instead.
 
 
 
