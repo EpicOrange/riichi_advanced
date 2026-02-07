@@ -466,7 +466,7 @@ There are a couple of visual effects you can give to a tile by giving it attribu
 - `"sideways"`: Flips the tile sideways.
 - `"transparent"`: Makes the tile look transparent. This transparency is visible to other players, but the identity of the tile is still hidden (it will just look like a transparent blank tile). Combine this with `"revealed"` to get Washizu tiles.
 
-For custom akadora (transparent tiles whose names are prefixed with `4`, see [tiles.md](tiles.md#akaaokintransparent)) the following attributes define the color of the tile:
+For custom akadora (transparent tiles whose names are prefixed with `4` or `5`, see [tiles.md](tiles.md#akaaokintransparent)) the following attributes define the color of the tile:
 
 - `"_red"`: same as akadora
 - `"_blue"`: same as aodora
