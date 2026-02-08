@@ -35,8 +35,14 @@ riichi_advanced-*.tar
 npm-debug.log
 /assets/node_modules/
 
-# my stuff
+# Nix / direnv
+.direnv/
+.envrc
+.nix-hex/
+.nix-mix/
 
+
+# my stuff
 /priv/cert
 *.sh
 /priv/static/logs
