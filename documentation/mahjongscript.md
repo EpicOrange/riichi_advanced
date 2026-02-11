@@ -592,6 +592,8 @@ define_mod_category "Rules", prepend: true
 
 You can have multiple instances of a category, but this is largely useless since `define_mod` below only adds to the first instance.
 
+See [mods.md](./mods.md) to see how this all works.
+
 ### `define_mod`: Add a new mod
 
 ```elixir
@@ -607,6 +609,8 @@ define_mod id,
 
 Note that if `category` is not specified, the mod is simply appended to the end of the mod list.
 
+See [mods.md](./mods.md) to see how this all works.
+
 ### `config_mod`: Add a new config option to a given mod
 
 ```elixir
@@ -615,6 +619,8 @@ config_mod id,
   values: ["Mangan", "Yakuman"],
   default: "Yakuman"
 ```
+
+See [mods.md](./mods.md) to see how this all works.
 
 ### `remove_mod`: Delete mods by id
 

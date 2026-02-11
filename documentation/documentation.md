@@ -580,8 +580,8 @@ Buttons:
 
 Mods:
 
-- `available_mods`: List of available mods
-- `default_mods`: List of mods enabled by default
+- `available_mods`: List of available mods. See the [mods documentation]](./mods.md)
+- `default_mods`: List of ids of mods that are enabled by default
 
 Rules:
 

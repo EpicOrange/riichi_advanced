@@ -11,11 +11,15 @@ defmodule RiichiAdvanced.ModLoader do
     end
   end
 
+  defp is_jq_var?(key) when is_binary(key), do: Regex.match?(~r/^[a-zA-Z_][a-zA-Z0-9_]*$/, key)
+  defp is_jq_var?(key) when is_atom(key), do: Regex.match?(~r/^[a-zA-Z_][a-zA-Z0-9_]*$/, Atom.to_string(key))
+  defp is_jq_var?(key), do: false
+
   def read_mod(mod) do
     case mod do
       %{name: name, config: config} -> 
         mod_contents = read_mod_jq(name)
-        config_queries = for {key, val} <- config, is_integer(val) or is_boolean(val) or is_binary(val), do: "(#{inspect(val)}) as $#{key}\n|\n"
+        config_queries = for {key, val} <- config, is_integer(val) or is_boolean(val) or is_binary(val), is_jq_var?(key), do: "(#{inspect(val)}) as $#{key}\n|\n"
         Enum.join(config_queries) <> "(" <> mod_contents <> ")"
       name -> read_mod_jq(name)
     end
@@ -27,7 +31,7 @@ defmodule RiichiAdvanced.ModLoader do
     |> Enum.map(&String.trim/1)
     |> Enum.map(&String.replace(&1, Compiler.header(), ""))
     |> Enum.map(&"(#{&1}\n) as $_result\n|\n$_result")
-    global_jq = Enum.map(globals, fn {name, val} -> "(#{Jason.encode!(val)}) as $#{name}" end)
+    global_jq = for {name, val} <- globals, is_jq_var?(name), do: "(#{Jason.encode!(val)}) as $#{name}"
     boilerplate = [Compiler.header() <> "\n.enabled_mods += #{Jason.encode!(mods)}"]
     mod_jq = Enum.join(boilerplate ++ global_jq ++ mod_contents, "\n|")
     # IO.puts(mod_jq)
