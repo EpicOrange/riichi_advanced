@@ -88,6 +88,7 @@ defmodule RiichiAdvanced.SMT do
       tile = Utils.strip_attrs(tile)
       tiles = Map.get(precomputed_mappings, {ix, tile}, [])
       any_tiles = Map.get(precomputed_mappings, {ix, :any}, [])
+      |> Enum.map(&Utils.to_attr_tile/1)
       |> Enum.map(fn {:any, attrs} -> {tile, attrs} end)
       Enum.uniq(tiles ++ any_tiles)
     end
@@ -376,7 +377,7 @@ defmodule RiichiAdvanced.SMT do
 
   defp precompute_joker_mappings(smt_hand, joker_ixs, tile_behavior) do
     # return two maps:
-    # 1. %{{ix, tile} => list of potential tiles (with attributes)}
+    # 1. %{{ix, tile} => list of potential tiles (perhaps with attributes)}
     # 2. %{potential tiles => list of ixs that can map to that tile}
     # attributes are sorted by Enum.sort
     for ix <- joker_ixs,
