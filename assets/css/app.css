@@ -909,8 +909,8 @@ div.tile {
   --num-tiles: 214;
   width: var(--tile-width);
   height: var(--tile-height);
-  background: 
-    url("/images/tiles.png") no-repeat, 
+  background-image: 
+    url("/images/tiles.png"), 
     conic-gradient(var(--tile-color) 0 0),
     /* fill gap between tile face and top of tile */
     repeating-linear-gradient(
@@ -920,6 +920,7 @@ div.tile {
       var(--tile-front-side) calc(5.75 * var(--tile-size)),
       var(--tile-front-side) calc(6 * var(--tile-size))
     );
+  background-repeat: no-repeat, initial, initial;
   background-size: auto calc(var(--tile-scale-factor) * var(--num-tiles) * var(--tile-size));
   background-position: 0 0;
   border: var(--border-width) solid var(--border-color);
@@ -928,11 +929,9 @@ div.tile {
   box-sizing: border-box;
 }
 div.tile.flat {
-  background:
-    url("/images/tiles.png") no-repeat,
+  background-image:
+    url("/images/tiles.png"),
     conic-gradient(var(--tile-color) 0 0);
-  background-size: auto calc(var(--tile-scale-factor) * var(--num-tiles) * var(--tile-size));
-  background-position: 0 0;
 }
 /* dora shine */
 @keyframes doraShine {
