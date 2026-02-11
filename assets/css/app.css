@@ -1472,7 +1472,7 @@ div.tile {
   filter: brightness(var(--tile-brightness)) saturate(var(--tile-saturate));
 }
 div.tile:not(.flat) {
-  margin-bottom: calc(0.25 * var(--tile-size));
+  padding-top: calc(0.25 * var(--tile-size));
   box-shadow: 0 calc(var(--tile-height) / -8) 0 0 var(--tile-front-side),
               0 calc(var(--tile-height) / -4) 0 0 var(--tile-back-side);
 }
