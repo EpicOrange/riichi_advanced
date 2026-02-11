@@ -80,49 +80,53 @@ defmodule RiichiAdvancedWeb.RoomLive do
     ~H"""
     <div id="container" class="room" phx-hook="ClickListener">
       <header>
-        <h3><%= dt(@lang, @display_name) %></h3>
-        <div class="session">
-          <%= for tile <- String.split(@room_code, ",") do %>
-            <div class={["tile", tile]}></div>
-          <% end %>
-        </div>
-        <input id="private-toggle" type="checkbox" phx-click="private_toggled" phx-value-enabled={if @state.private do "true" else "false" end} checked={not @state.private}>
-        <label for="private-toggle" class="private-toggle-label">
-          <%= if @state.private do %>
-            <%= t(@lang, "Private") %>
-            <svg xmlns="http://www.w3.org/2000/svg" width="1.2em" height="1.2em" fill="none" viewBox="0 0 24 24">
-              <path stroke="white" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 14v3m-3-6V7a3 3 0 1 1 6 0v4m-8 0h10a1 1 0 0 1 1 1v7a1 1 0 0 1-1 1H7a1 1 0 0 1-1-1v-7a1 1 0 0 1 1-1Z"/>
-            </svg>
-          <% else %>
-            <%= t(@lang, "Public") %>
-            <svg xmlns="http://www.w3.org/2000/svg" width="1.2em" height="1.2em" fill="none" viewBox="0 0 24 24">
-              <path stroke="white" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 14v3m4-6V7a3 3 0 1 1 6 0v4M5 11h10a1 1 0 0 1 1 1v7a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1v-7a1 1 0 0 1 1-1Z"/>
-            </svg>
-          <% end %>
-        </label>
-      </header>
-      <div class="sidebar">
-        <%= if @state.tutorial_link != nil do %>
-          <a class="tutorial-link" href={@state.tutorial_link} target="_blank">
-            <%= if @ruleset == "custom" do %>
-              <%= t(@lang, "Documentation") %>
-            <% else %>
-              <%= t(@lang, "Rules") %>
+        <div class="room-header-title"><%= dt(@lang, @display_name) %></div>
+        <div class="room-header-bottom">
+          <div class="session">
+            <%= for tile <- String.split(@room_code, ",") do %>
+              <div class={["tile", tile]}></div>
             <% end %>
-            <svg xmlns="http://www.w3.org/2000/svg" width="1.2em" height="1.2em" fill="none" viewBox="0 0 24 24">
-              <path stroke="white" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 19V4a1 1 0 0 1 1-1h12a1 1 0 0 1 1 1v13H7a2 2 0 0 0-2 2Zm0 0a2 2 0 0 0 2 2h12M9 3v14m7 0v4"/>
-            </svg>
-          </a>
-        <% end %>
-        <br/>
-        <label for="room-settings-toggle" class="room-settings-toggle">
-          <%= t(@lang, "Room settings") %>
-          <svg xmlns="http://www.w3.org/2000/svg" width="1.2em" height="1.2em" fill="none" viewBox="0 0 24 24">
-            <path stroke="white" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 13v-2a1 1 0 0 0-1-1h-.757l-.707-1.707.535-.536a1 1 0 0 0 0-1.414l-1.414-1.414a1 1 0 0 0-1.414 0l-.536.535L14 4.757V4a1 1 0 0 0-1-1h-2a1 1 0 0 0-1 1v.757l-1.707.707-.536-.535a1 1 0 0 0-1.414 0L4.929 6.343a1 1 0 0 0 0 1.414l.536.536L4.757 10H4a1 1 0 0 0-1 1v2a1 1 0 0 0 1 1h.757l.707 1.707-.535.536a1 1 0 0 0 0 1.414l1.414 1.414a1 1 0 0 0 1.414 0l.536-.535 1.707.707V20a1 1 0 0 0 1 1h2a1 1 0 0 0 1-1v-.757l1.707-.708.536.536a1 1 0 0 0 1.414 0l1.414-1.414a1 1 0 0 0 0-1.414l-.535-.536.707-1.707H20a1 1 0 0 0 1-1Z"/>
-            <path stroke="white" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15a3 3 0 1 0 0-6 3 3 0 0 0 0 6Z"/>
-          </svg>
-        </label>
-      </div>
+            <div class="room-code-text"><%= dt(@lang, "Room code") %></div>
+          </div>
+          <input id="private-toggle" type="checkbox" phx-click="private_toggled" phx-value-enabled={if @state.private do "true" else "false" end} checked={not @state.private}>
+          <label for="private-toggle" class="private-toggle-label">
+            <%= if @state.private do %>
+              <%= t(@lang, "Private") %>
+              <br/>
+              <svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" fill="none" viewBox="0 0 24 24">
+                <path stroke="white" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 14v3m-3-6V7a3 3 0 1 1 6 0v4m-8 0h10a1 1 0 0 1 1 1v7a1 1 0 0 1-1 1H7a1 1 0 0 1-1-1v-7a1 1 0 0 1 1-1Z"/>
+              </svg>
+            <% else %>
+              <%= t(@lang, "Public") %>
+              <br/>
+              <svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" fill="none" viewBox="0 0 24 24">
+                <path stroke="white" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 14v3m4-6V7a3 3 0 1 1 6 0v4M5 11h10a1 1 0 0 1 1 1v7a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1v-7a1 1 0 0 1 1-1Z"/>
+              </svg>
+            <% end %>
+          </label>
+          <div class="room-header-right">
+            <%= if @state.tutorial_link != nil do %>
+              <a class="tutorial-link" href={@state.tutorial_link} target="_blank">
+                <%= if @ruleset == "custom" do %>
+                  <%= t(@lang, "Documentation") %>
+                <% else %>
+                  <%= t(@lang, "Rules") %>
+                <% end %>
+                <svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" fill="none" viewBox="0 0 24 24">
+                  <path stroke="white" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 19V4a1 1 0 0 1 1-1h12a1 1 0 0 1 1 1v13H7a2 2 0 0 0-2 2Zm0 0a2 2 0 0 0 2 2h12M9 3v14m7 0v4"/>
+                </svg>
+              </a>
+            <% end %>
+            <label for="room-settings-toggle" class="room-settings-toggle">
+              <%= t(@lang, "Room settings") %>
+              <svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" fill="none" viewBox="0 0 24 24">
+                <path stroke="white" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 13v-2a1 1 0 0 0-1-1h-.757l-.707-1.707.535-.536a1 1 0 0 0 0-1.414l-1.414-1.414a1 1 0 0 0-1.414 0l-.536.535L14 4.757V4a1 1 0 0 0-1-1h-2a1 1 0 0 0-1 1v.757l-1.707.707-.536-.535a1 1 0 0 0-1.414 0L4.929 6.343a1 1 0 0 0 0 1.414l.536.536L4.757 10H4a1 1 0 0 0-1 1v2a1 1 0 0 0 1 1h.757l.707 1.707-.535.536a1 1 0 0 0 0 1.414l1.414 1.414a1 1 0 0 0 1.414 0l.536-.535 1.707.707V20a1 1 0 0 0 1 1h2a1 1 0 0 0 1-1v-.757l1.707-.708.536.536a1 1 0 0 0 1.414 0l1.414-1.414a1 1 0 0 0 0-1.414l-.535-.536.707-1.707H20a1 1 0 0 0 1-1Z"/>
+                <path stroke="white" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15a3 3 0 1 0 0-6 3 3 0 0 0 0 6Z"/>
+              </svg>
+            </label>
+          </div>
+        </div>
+      </header>
       <input id="room-settings-toggle" type="checkbox" phx-update="ignore">
       <div class="room-settings">
         <%= if false do %>
