@@ -1287,9 +1287,9 @@ defmodule RiichiAdvanced.GameState do
     |> Enum.map(fn hand ->
       state = update_player(state, seat, &%Player{ &1 | hand: hand, status: MapSet.new(["riichi"]) }) # avoid renhou
       # run before_win actions
-      state = Actions.trigger_event(state, "before_win", %{seat: seat, win_source: :discard})
+      state = Actions.trigger_event(state, "before_win", %{seat: seat, win_source: :discard, silent: true})
       # run before_scoring actions
-      state = Actions.trigger_event(state, "before_scoring", %{seat: seat, win_source: :discard})
+      state = Actions.trigger_event(state, "before_scoring", %{seat: seat, win_source: :discard, silent: true})
       {yaku, minipoints, _winning_tile} = Scoring.get_best_yaku_from_lists(state, score_rules["yaku_lists"], seat, [:any], :discard)
       {yaku2, _minipoints, _winning_tile} = Scoring.get_best_yaku_from_lists(state, score_rules["yaku2_lists"], seat, [:any], :discard)
       # IO.inspect({yaku, yaku2, hand})

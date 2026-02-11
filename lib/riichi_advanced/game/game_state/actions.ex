@@ -324,7 +324,7 @@ defmodule RiichiAdvanced.GameState.Actions do
     else call_choice end
   end
 
-  def trigger_call(state, seat, button_name, call_choice, called_tile, call_source, simulated \\ false) do
+  def trigger_call(state, seat, button_name, call_choice, called_tile, call_source, silent \\ false) do
     # get the actual called tile (with attrs)
     called_tile = case call_source do
       :discards -> Enum.at(state.players[state.turn].pond, -1)
@@ -380,7 +380,7 @@ defmodule RiichiAdvanced.GameState.Actions do
 
     state = Log.add_call(state, seat, call_name, call_choice, called_tile)
 
-    if not simulated do
+    if not silent do
       # messages and log
       cond do
         hidden ->
@@ -1088,6 +1088,7 @@ defmodule RiichiAdvanced.GameState.Actions do
     buttons_before = Enum.map(state.players, fn {seat, player} -> {seat, player.buttons} end)
     marked_objects = state.marking[context.seat]
     uninterruptible = String.starts_with?(action, "uninterruptible_")
+    silent = context[:silent] == true
     action = if uninterruptible do String.replace_leading(action, "uninterruptible_", "") else action end
     state = case action do
       "noop"                  -> state
@@ -1129,16 +1130,20 @@ defmodule RiichiAdvanced.GameState.Actions do
         IO.inspect(state.tags)
         state
       "push_message"          ->
-        vars = Enum.at(opts, 1, %{})
-        message = interpolate_string(state, context, Enum.at(opts, 0, ""), vars)
-        # IO.inspect(["Player #{player_name(state, context.seat)}", message], label: "Sent message")
-        push_message(state, player_prefix(state, context.seat) ++ [%{text: message, vars: map_var_amounts(state, context, vars)}])
-        state
+        if not silent do
+          vars = Enum.at(opts, 1, %{})
+          message = interpolate_string(state, context, Enum.at(opts, 0, ""), vars)
+          # IO.inspect(["Player #{player_name(state, context.seat)}", message], label: "Sent message")
+          push_message(state, player_prefix(state, context.seat) ++ [%{text: message, vars: map_var_amounts(state, context, vars)}])
+          state
+        else state end
       "push_system_message"   ->
-        vars = Enum.at(opts, 1, %{})
-        message = interpolate_string(state, context, Enum.at(opts, 0, ""), vars)
-        push_message(state, [%{text: message, vars: map_var_amounts(state, context, vars)}])
-        state
+        if not silent do
+          vars = Enum.at(opts, 1, %{})
+          message = interpolate_string(state, context, Enum.at(opts, 0, ""), vars)
+          push_message(state, [%{text: message, vars: map_var_amounts(state, context, vars)}])
+          state
+        else state end
       "add_rule"             ->
         tab = Enum.at(opts, 0, "Rules")
         id = Enum.at(opts, 1, "")
@@ -1208,10 +1213,10 @@ defmodule RiichiAdvanced.GameState.Actions do
       "play_tile"             -> play_tile(state, context.seat, Enum.at(opts, 0, :"1m"), Enum.at(opts, 1, 0))
       "draw"                  -> draw_tile(state, context.seat, Enum.at(opts, 0, 1), Enum.at(opts, 1, nil), false)
       "draw_aside"            -> draw_tile(state, context.seat, Enum.at(opts, 0, 1), Enum.at(opts, 1, nil), true)
-      "call"                  -> trigger_call(state, context.seat, context.choice.name, context.choice.chosen_call_choice, context.choice.chosen_called_tile, :discards)
-      "self_call"             -> trigger_call(state, context.seat, context.choice.name, context.choice.chosen_call_choice, context.choice.chosen_called_tile, :hand)
+      "call"                  -> trigger_call(state, context.seat, context.choice.name, context.choice.chosen_call_choice, context.choice.chosen_called_tile, :discards, silent)
+      "self_call"             -> trigger_call(state, context.seat, context.choice.name, context.choice.chosen_call_choice, context.choice.chosen_called_tile, :hand, silent)
       "upgrade_call"          -> upgrade_call(state, context.seat, context.choice.name, context.choice.chosen_call_choice, context.choice.chosen_called_tile)
-      "flower"                -> trigger_call(state, context.seat, context.choice.name, context.choice.chosen_call_choice, nil, :hand)
+      "flower"                -> trigger_call(state, context.seat, context.choice.name, context.choice.chosen_call_choice, nil, :hand, silent)
       "trigger_custom_call"   ->
         name = Enum.at(opts, 0, "")
         source = case Enum.at(opts, 1, "") do
@@ -1221,7 +1226,7 @@ defmodule RiichiAdvanced.GameState.Actions do
         {call_choice, _calls} = Conditions.get_hand_calls_spec(state, context, Enum.at(opts, 2, [])) |> Enum.at(0)
         {called_tiles, _calls} = Conditions.get_hand_calls_spec(state, context, Enum.at(opts, 3, [])) |> Enum.at(0)
         called_tile = Enum.at(called_tiles, 0)
-        trigger_call(state, context.seat, name, call_choice, called_tile, source)
+        trigger_call(state, context.seat, name, call_choice, called_tile, source, silent)
       "draft_saki_card"       -> Saki.draft_saki_card(state, context.seat, context.choice.chosen_saki_card)
       "reverse_turn_order"    -> Map.update!(state, :reversed_turn_order, &not &1)
       "advance_turn"          -> advance_turn(state)

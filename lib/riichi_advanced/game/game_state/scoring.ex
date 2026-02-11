@@ -119,9 +119,9 @@ defmodule RiichiAdvanced.GameState.Scoring do
       state = apply_joker_assignment(state, seat, joker_assignment, win_source)
 
       # run before_win actions
-      state = Actions.trigger_event(state, "before_win", %{seat: seat, win_source: win_source})
+      state = Actions.trigger_event(state, "before_win", %{seat: seat, win_source: win_source, silent: true})
       # run before_scoring actions
-      state = Actions.trigger_event(state, "before_scoring", %{seat: seat, win_source: win_source})
+      state = Actions.trigger_event(state, "before_scoring", %{seat: seat, win_source: win_source, silent: true})
 
       # get winning tile after before_scoring does its thing
       winning_tiles = get_winning_tiles(state, seat, win_source)
