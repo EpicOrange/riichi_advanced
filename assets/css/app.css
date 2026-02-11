@@ -909,13 +909,30 @@ div.tile {
   --num-tiles: 214;
   width: var(--tile-width);
   height: var(--tile-height);
-  background: url("/images/tiles.png") no-repeat, conic-gradient(var(--tile-color) 0 0);
+  background: 
+    url("/images/tiles.png") no-repeat, 
+    conic-gradient(var(--tile-color) 0 0),
+    /* fill gap between tile face and top of tile */
+    repeating-linear-gradient(
+      0deg,
+      transparent calc(0 * var(--tile-size)),
+      transparent calc(5.75 * var(--tile-size)),
+      var(--tile-front-side) calc(5.75 * var(--tile-size)),
+      var(--tile-front-side) calc(6 * var(--tile-size))
+    );
   background-size: auto calc(var(--tile-scale-factor) * var(--num-tiles) * var(--tile-size));
   background-position: 0 0;
   border: var(--border-width) solid var(--border-color);
   border-radius: calc(0.10 * var(--tile-size));
   flex-shrink: 0;
   box-sizing: border-box;
+}
+div.tile.flat {
+  background:
+    url("/images/tiles.png") no-repeat,
+    conic-gradient(var(--tile-color) 0 0);
+  background-size: auto calc(var(--tile-scale-factor) * var(--num-tiles) * var(--tile-size));
+  background-position: 0 0;
 }
 /* dora shine */
 @keyframes doraShine {
@@ -1456,8 +1473,7 @@ div.tile {
 }
 div.tile:not(.flat) {
   margin-bottom: calc(0.25 * var(--tile-size));
-  box-shadow: inset 0 1px 0 0 var(--tile-front-side),
-              0 calc(var(--tile-height) / -8) 0 0 var(--tile-front-side),
+  box-shadow: 0 calc(var(--tile-height) / -8) 0 0 var(--tile-front-side),
               0 calc(var(--tile-height) / -4) 0 0 var(--tile-back-side);
 }
 div.hand.self div.tiles > div.tile.selected,
@@ -1477,30 +1493,25 @@ div.hand.self div.draws > div.tile.selected::before {
   bottom: calc(-0.25 * var(--tile-size));
 }
 div.tile.sideways:not(.flat) {
-  box-shadow: inset 0 1px 0 0 var(--tile-front-side),
-              0 calc(var(--tile-height) / -16) 0 0 var(--tile-front-side),
+  box-shadow: 0 calc(var(--tile-height) / -16) 0 0 var(--tile-front-side),
               0 calc(var(--tile-height) / -8) 0 0 var(--tile-back-side);
 }
 div.pond.self div.tile:not(.flat),
 div.self div.flowers div.tile:not(.flat) {
-  box-shadow: inset 0 -1px 0 0 var(--tile-front-side),
-              0 calc(var(--tile-height) / 8) 0 0 var(--tile-front-side),
+  box-shadow: 0 calc(var(--tile-height) / 8) 0 0 var(--tile-front-side),
               0 calc(var(--tile-height) / 4) 0 0 var(--tile-back-side);
 }
 div.shimocha div.tile:not(.flat) {
-  box-shadow: inset 1px 0 0 0 var(--tile-front-side),
-              calc(var(--tile-height) / -8) 0 0 0 var(--tile-front-side),
+  box-shadow: calc(var(--tile-height) / -8) 0 0 0 var(--tile-front-side),
               calc(var(--tile-height) / -4) 0 0 0 var(--tile-back-side);
 }
 div.kamicha div.tile:not(.flat) {
-  box-shadow: inset -1px 0 0 0 var(--tile-front-side),
-              calc(var(--tile-height) / 8) 0 0 0 var(--tile-front-side),
+  box-shadow: calc(var(--tile-height) / 8) 0 0 0 var(--tile-front-side),
               calc(var(--tile-height) / 4) 0 0 0 var(--tile-back-side);
 }
 div.tile.reversed:not(.flat) {
   transform: scaleX(-100%) translateY(calc(var(--tile-height) / -4)) translateZ(0);
-  box-shadow: inset 0 -1px 0 0 var(--tile-front-side),
-              0 calc(var(--tile-height) / 8) 0 0 var(--tile-front-side),
+  box-shadow: 0 calc(var(--tile-height) / 8) 0 0 var(--tile-front-side),
               0 calc(var(--tile-height) / 4) 0 0 var(--tile-back-side);
 }
 div.pond.self div.tile.reversed:not(.flat) {
@@ -1576,34 +1587,28 @@ div.self div.tile:nth-child(30) { z-index: 29; }
 
 /* all 3d effects should have reversed color for upside down tiles */
 div.tile.\31 x:not(.flat) {
-  box-shadow: inset 0 1px 0 0 var(--tile-back-side),
-              0 calc(var(--tile-height) / -8) 0 0 var(--tile-back-side),
+  box-shadow: 0 calc(var(--tile-height) / -8) 0 0 var(--tile-back-side),
               0 calc(var(--tile-height) / -4) 0 0 var(--tile-front-side);
 }
 div.tile.\31 x.sideways:not(.flat) {
-  box-shadow: inset 0 1px 0 0 var(--tile-back-side),
-              0 calc(var(--tile-height) / -16) 0 0 var(--tile-back-side),
+  box-shadow: 0 calc(var(--tile-height) / -16) 0 0 var(--tile-back-side),
               0 calc(var(--tile-height) / -8) 0 0 var(--tile-front-side);
 }
 div.pond.self div.tile.\31 x:not(.flat) {
-  box-shadow: inset 0 -1px 0 0 var(--tile-back-side),
-              0 calc(var(--tile-height) / 8) 0 0 var(--tile-back-side),
+  box-shadow: 0 calc(var(--tile-height) / 8) 0 0 var(--tile-back-side),
               0 calc(var(--tile-height) / 4) 0 0 var(--tile-front-side);
 }
 div.shimocha div.tile.\31 x:not(.flat) {
-  box-shadow: inset 1px 0 0 0 var(--tile-back-side),
-              calc(var(--tile-height) / -8) 0 0 0 var(--tile-back-side),
+  box-shadow: calc(var(--tile-height) / -8) 0 0 0 var(--tile-back-side),
               calc(var(--tile-height) / -4) 0 0 0 var(--tile-front-side);
 }
 div.kamicha div.tile.\31 x:not(.flat) {
-  box-shadow: inset -1px 0 0 0 var(--tile-back-side),
-              calc(var(--tile-height) / 8) 0 0 0 var(--tile-back-side),
+  box-shadow: calc(var(--tile-height) / 8) 0 0 0 var(--tile-back-side),
               calc(var(--tile-height) / 4) 0 0 0 var(--tile-front-side);
 }
 /* facedown tiles in hand should look facedown */
 div.tiles div.tile.facedown:not(.flat) {
-  box-shadow: inset 0 -1px 0 0 var(--tile-back-side),
-              0 calc(var(--tile-height) / 8) 0 0 var(--tile-back-side),
+  box-shadow: 0 calc(var(--tile-height) / 8) 0 0 var(--tile-back-side),
               0 calc(var(--tile-height) / 4) 0 0 var(--tile-front-side);
 }
 
@@ -1620,7 +1625,6 @@ div.tiles div.tile.facedown:not(.flat) {
 }
 div.tile.removed {
   background: transparent;
-  filter: none;
   box-shadow: none;
   animation: tilePlayed 0.75s ease forwards;
 }
