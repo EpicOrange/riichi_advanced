@@ -18,6 +18,7 @@ defmodule RiichiAdvancedWeb.RoomLive do
     |> assign(:messages, [])
     |> assign(:symbols, %{east: "東", south: "南", west: "西", north: "北"})
     |> assign(:state, %Room{})
+    |> assign(:root_pid, socket.root_pid)
     if socket.root_pid != nil do
       # start a new room process, if it doesn't exist already
       room_spec = {RiichiAdvanced.RoomSupervisor, room_code: socket.assigns.room_code, ruleset: socket.assigns.ruleset, name: Utils.via_registry("room", socket.assigns.ruleset, socket.assigns.room_code)}
@@ -205,7 +206,8 @@ defmodule RiichiAdvancedWeb.RoomLive do
           <% end %>
         <% end %>
       </div>
-      <.live_component module={RiichiAdvancedWeb.ErrorWindowComponent} id="error-window" game_state={@room_state} error={@state.error}/>
+      <.live_component module={RiichiAdvancedWeb.TipsComponent} id="tips-component" lang={@lang} root_pid={@root_pid} />
+      <.live_component module={RiichiAdvancedWeb.ErrorWindowComponent} id="error-window" game_state={@room_state} error={@state.error} />
       <div class="top-right-container">
         <.live_component module={RiichiAdvancedWeb.MenuButtonsComponent} id="menu-buttons" lang={@lang} />
       </div>

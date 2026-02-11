@@ -3100,7 +3100,7 @@ div#container > div.index-bottom-buttons > button {
 div#container > form.ruleset-selection-form {
   position: absolute;
   width: calc(100% - 3 * var(--tile-size));
-  height: calc(7 * var(--tile-size));
+  height: calc(7.5 * var(--tile-size));
   top: calc(50% - 1.5 * var(--tile-size));
   left: calc(1 * var(--tile-size));
   padding: calc(0.5 * var(--tile-size));
@@ -3377,6 +3377,12 @@ div.room > header > div.room-header-bottom {
       padding: 0;
     }
   }
+}
+div.room div.tips-component {
+  position: absolute;
+  width: 100%;
+  bottom: 0;
+  cursor: pointer;
 }
 div.room div.room-settings {
   position: relative;
