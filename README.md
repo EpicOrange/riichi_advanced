@@ -39,7 +39,7 @@ If interested in contributing, check out the [contributing doc](CONTRIBUTING.md)
 - [Supported rulesets](#supported-rulesets)
 - [Custom rulesets](#custom-rulesets)
 - [How can I contribute?](#how-can-i-contribute)
-- [Developer information](#developer-information)
+- [Repository breakdown](#repository-breakdown)
 - [Running the server locally](#running-the-server-locally)
 - [Acknowledgments](#acknowledgments)
 
@@ -309,7 +309,7 @@ Also if you know of any English-based mahjong rulesets available online, do tell
 
 Monetary contributions are not accepted at this time.
 
-## Developer information
+## Repository breakdown
 
 This project is written in Elixir with the Phoenix framework, making heavy use of the LiveView library. Like all Phoenix projects, it has two moving parts:
 
