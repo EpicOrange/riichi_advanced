@@ -27,6 +27,7 @@ Infinitely extensible mahjong web client featuring the following:
 - Support for 3-player modes like Sanma, and 2-player modes like Minefield!
 - Multiplayer lobby system with public/private rooms! Invite your friends, or play against AI!
 - Infinitely customizable ruleset! Beyond mods, you can change the rules by writing [MahjongScript](documentation/mahjongscript.md) to make minute changes to a game!
+- Localization support! 中文支持！ 日本語対応！
 
 Join the [Discord](https://discord.gg/5QQHmZQavP) for development updates and bug reporting! (There are a lot of funny bugs, don't miss out!)
 
@@ -45,6 +46,33 @@ If interested in contributing, check out the [contributing doc](CONTRIBUTING.md)
 
 ## Changelog
 
+- __8 Apr 2025__: v1.3.2:
+  + Added `~t`, and `~T` sigils in MahjongScript for specifying lists of tiles
+  + Added 5th tile tenpai mod to riichi
+  + Added 12 tile pao mod to HKOS
+  + Added aka 1,3,7,9 mods (thanks jake)
+  + Added animated rainbow tiles
+  + Added as-conditions to MahjongScript
+  + Added `replace n` command to MahjongScript
+  + Added better graphics for mobile zoom
+  + Added Card-Free, NMJL 2025, and PIE rules to american mahjong (thanks Sophie)
+  + Added dora shine animation
+  + Added `make_responsible_for` action for deciding pao
+  + Added MahjongScript tutorial to `documentation/`
+  + Added WIP localization support for Chinese and Japanese
+  + Added unsuited numbers and dragons to american match grammar
+  + Added randomize mods button
+  + Added `set_scoring_header` action
+  + Added some symmetry/combinatorics nonsense to joker solver making it 2x faster
+  + Added test coverage for sichuan bloody
+  + Changed fu calculations to be based on tile attributes rather than hardcoded tile identities
+  + Changed nagashi and tenpai payments to be action-based rather than hardcoded
+  + Fixed AI crashing randomly due to slow server response
+  + Fixed log viewer somewhat
+  + Fixed minefield not really working
+  + Fixed sichuan bloody not really following the ruleset
+  + Fixed some joker bugs related to having tile attributes on both the joker and the target tile
+  + Fixed some UI issues, especially in Safari
 - __20 Mar 2025__: v1.3.1:
   + Added ability to unselect marked tiles in hand
   + Added `counter_more_than`, `counter_less_than` conditions
@@ -180,7 +208,7 @@ If interested in contributing, check out the [contributing doc](CONTRIBUTING.md)
   + Fixed flower yaku emitting errors in MCR
   + Fixed fully concealed calls from being "visible" to the tile counter
   + Fixed fully concealed calls from printing its contents to the message log
-  + Fixed sanma going into West round when it shouldn't
+  + Fixed sanma going into West round when it shoyperuldn't
   + Fixed some log crashes (log replays are still very unstable)
   + Fixed lots of miscellaneous crashes
   + Fixed kazoe yakuman mod upgrading everyone's limit hand by one tier
