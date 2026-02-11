@@ -46,6 +46,30 @@ If interested in contributing, check out the [contributing doc](CONTRIBUTING.md)
 
 ## Changelog
 
+- __10 Feb 2026__: v1.3.3:
+  + Added a 白 variant of the white dragon, used in Galaxy Mahjong (thanks Sophie)
+  + Added an 'abort pass' button to American Mahjong (thanks Sophie)
+  + Added an experimental .majs to .json translator at /majstest
+  + Added documentation for how mods work: `documentation/mods.md`
+  + Added instructions for running Riichi Advanced on Windows (thanks Sophie)
+  + Added methods for running Riichi Advanced as a Nix flake on Docker (thanks Will)
+  + Added numerous Cards for American Mah-jongg (thanks Sophie)
+  + Fixed 20 copies of the same message playing when calculating scores in Malaysian
+  + Fixed a crash bug involving the joker solver
+  + Fixed all sequences yaku not being awarded sometimes (thanks Sophie)
+  + Fixed auto-discard button not working in Riichi (thanks Sophie)
+  + Fixed auto-flower button not working in Kansai (thanks Sophie)
+  + Fixed flowers not being scored correctly in MCR (thanks Sophie)
+  + Fixed fly jokers not being replaceable in Malaysian (thanks Sophie)
+  + Fixed many American tests (thanks Sophie)
+  + Fixed many bugs with winning hands in American (thanks Sophie)
+  + Fixed many chinese localizations (thanks Sophie)
+  + Fixed rules text for Sanshoku Doujun showing a Doukou hand as an example
+  + Fixed some documentation errors about `any_discard`
+  + Fixed some sources of HKOS/Classical crashes (thanks Sophie)
+  + Fixed the white text on white (thanks Sophie)
+  + Fixed tile sides visually flickering in some browsers (thanks Will)
+  + Fixed documentation for tile sprites (thanks Sophie)
 - __8 Apr 2025__: v1.3.2:
   + Added `~t`, and `~T` sigils in MahjongScript for specifying lists of tiles
   + Added 5th tile tenpai mod to riichi
@@ -208,7 +232,7 @@ If interested in contributing, check out the [contributing doc](CONTRIBUTING.md)
   + Fixed flower yaku emitting errors in MCR
   + Fixed fully concealed calls from being "visible" to the tile counter
   + Fixed fully concealed calls from printing its contents to the message log
-  + Fixed sanma going into West round when it shoyperuldn't
+  + Fixed sanma going into West round when it shouldn't
   + Fixed some log crashes (log replays are still very unstable)
   + Fixed lots of miscellaneous crashes
   + Fixed kazoe yakuman mod upgrading everyone's limit hand by one tier
@@ -306,12 +330,13 @@ Here is a breakdown of all the directories:
     │   │   ├── game (everything related to the game screen)
     │   │   ├── lobby (everything related to the lobby screen)
     │   │   ├── log (everything related to the log viewing screen)
-    │   │   ├── majs (everything related to the mahjongscript interpreter)
+    │   │   ├── majs (everything related to the MahjongScript interpreter)
     │   │   ├── messages (everything related to the messages panel)
     │   │   ├── room (everything related to the room screen)
+    │   │   ├── admin.ex (server administration functions meant to be used in the REPL)
     │   │   ├── application.ex (main thing! OTP root application/supervisor)
     │   │   ├── cache.ex (Nebulex cache for function caching)
-    │   │   ├── ets-cache.ex (general-purpose ETS cache)
+    │   │   ├── ets_cache.ex (general-purpose ETS cache)
     │   │   ├── exit_monitor.ex (general-purpose disconnection monitor process)
     │   │   ├── mailer.ex (unused)
     │   │   ├── repo.ex (unused)
@@ -321,11 +346,14 @@ Here is a breakdown of all the directories:
     │       ├── controllers (stock Phoenix)
     │       ├── views (all LiveViews and live components)
     │       ├── endpoint.ex (main thing! serves all the other files as plugs)
-    │       ├── gettext.ex (unused)
+    │       ├── gettext.ex (stock Phoenix)
+    │       ├── gettext_hints.ex (explicitly sets some strings to be used in gettext translations)
     │       ├── router.ex (LiveView routes)
-    │       └── telemetry.ex (unused)
+    │       ├── telemetry.ex (unused)
+    │       └── translations.ex (helper functions to mark strings for gettext translations)
     ├── priv
-    │   ├── gettext (unused)
+    │   ├── cert (this is generated when you run `mix phx.gen.cert`)
+    │   ├── gettext (stores all gettext translation .po files)
     │   ├── repo (unused)
     │   └── static
     │       ├── audio (all audio)
@@ -333,6 +361,7 @@ Here is a breakdown of all the directories:
     │       ├── logs (save location for all logs)
     │       ├── mods (all mods)
     │       ├── rulesets (all rulesets)
+    │       ├── oldl_rulesets (stores the original .json versions of rulesets rewritten in .majs)
     │       ├── favicon.ico
     │       └── robots.txt
     └── test
