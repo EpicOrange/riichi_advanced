@@ -42,6 +42,7 @@ If interested in contributing, check out the [contributing doc](CONTRIBUTING.md)
 - [Developer information](#developer-information)
 - [Running the server locally (MacOS, Linux)](#running-the-server-locally-macos-linux)
 - [Running the server locally (Windows 11)](#running-the-server-locally-windows-11)
+- [Running with Docker](#running-with-docker)
 - [Acknowledgments](#acknowledgments)
 
 ## Changelog
@@ -375,7 +376,9 @@ Here is a breakdown of all the directories:
 
 ## Running the server locally (MacOS, Linux)
 
-First, install Elixir (≥ 1.14), `npm`, `z3`, and `jq`.
+> **Tip:** For a more contained setup, see [Running with Docker](#running-with-docker).
+
+First, install Erlang (≥ 27), Elixir (≥ 1.18), Node.js, `z3`, and `jq`.
 
 Then run:
 
@@ -400,6 +403,8 @@ If it complains about a daemon not running, open a separate terminal and run `ep
 
 ## Running the server locally (Windows 11)
 
+> **Tip:** For a more contained setup, see [Running with Docker](#running-with-docker).
+
 Steps are mostly identical to the above. However, you will run into trouble as follows:
 
 * Windows does not like to install `npm`. It is recommended to install all necessary packages by first installing [Chocolatey](https://chocolatey.org/install) (which has the option to install `npm` for you immediately after). Be sure to restart your computer.
@@ -419,6 +424,36 @@ Steps are mostly identical to the above. However, you will run into trouble as f
       iex.bat -S mix phx.server
 
   * Note that this starts up the server at `http://localhost`. (If you find a way to specify an HTTPS port, let us know!)
+
+## Running with Docker
+
+Docker provides a consistent environment across all platforms. Both development and production Dockerfiles use a Nix flake for reproducible builds.
+
+### Development (Linux, MacOS, Windows)
+
+    docker build -f Dockerfile.dev -t riichi-dev .
+    docker run -it --rm -v $(pwd):/app -p 80:80 -p 4000:4000 riichi-dev
+
+This mounts your source code into the container for live reloading. Access at `https://localhost:4000`.
+
+On Windows (PowerShell), use `${PWD}` instead of `$(pwd)`:
+
+    docker run -it --rm -v ${PWD}:/app -p 80:80 -p 4000:4000 riichi-dev
+
+### Production
+
+    docker build -t riichi-advanced .
+    docker run -p 80:80 -p 4000:4000 -e SECRET_KEY_BASE=$(mix phx.gen.secret) riichi-advanced
+
+### Using Nix directly (Linux, MacOS)
+
+If you have Nix installed with flakes enabled:
+
+    nix develop
+    mix deps.get
+    mix phx.gen.cert
+    (cd assets && npm i)
+    HTTPS_PORT=4000 iex -S mix phx.server
 
 ## Acknowledgments
 

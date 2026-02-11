@@ -1,0 +1,22 @@
+# Development container with live reload
+# Usage: docker build -f Dockerfile.dev -t riichi-dev .
+#        docker run -it --rm -v $(pwd):/app -p 80:80 -p 4000:4000 riichi-dev
+FROM nixos/nix:latest
+
+# Enable flakes
+RUN echo "experimental-features = nix-command flakes" >> /etc/nix/nix.conf
+
+# UTF-8 support for Elixir (nixos/nix doesn't have locales)
+ENV ELIXIR_ERL_OPTIONS="+fnu"
+
+WORKDIR /app
+
+# Pre-cache the flake dependencies (will be overwritten by volume mount at runtime)
+COPY flake.nix flake.lock ./
+RUN nix develop --command true
+
+EXPOSE 80 4000
+
+# Entry point runs in the nix dev shell
+ENTRYPOINT ["nix", "develop", "--command"]
+CMD ["sh", "-c", "mix deps.get && cd assets && npm install && cd .. && iex -S mix phx.server"]
