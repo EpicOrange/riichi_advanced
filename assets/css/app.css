@@ -3097,7 +3097,7 @@ div#container > div.index-bottom-buttons {
 div#container > div.index-bottom-buttons > button {
   font-size: calc(0.5 * var(--tile-size));
 }
-div#container > form.ruleset-selection-form {
+div#container > form {
   position: absolute;
   width: calc(100% - 3 * var(--tile-size));
   height: calc(7.5 * var(--tile-size));
@@ -3145,6 +3145,20 @@ div#container > form.ruleset-selection-form > div.ruleset-selection > label > a 
 }
 div#container > form.ruleset-selection-form > div.ruleset-selection > input[disabled] + label {
   opacity: 0.4;
+}
+div#container > form.ruleset-selection-form > div.ruleset-selection > input[disabled] + label {
+  opacity: 0.4;
+}
+div#container > form.log-selection-form {
+  display: flex;
+  flex-flow: column nowrap;
+  justify-content: center;
+  align-items: center;
+  row-gap: calc(0.25 * var(--tile-size));
+}
+div#container > form.log-selection-form > input,
+div#container > form.log-selection-form > button {
+  width: 100%;
 }
 /* about page */
 div#container > form.about-page {
