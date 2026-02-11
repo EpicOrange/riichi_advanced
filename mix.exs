@@ -63,6 +63,7 @@ defmodule RiichiAdvanced.MixProject do
       {:diff_match_patch, github: "pzingg/diff_match_patch"},
       {:diffy, "~> 1.1"},
       {:logger_file_backend, "~> 0.0.10"},
+      {:logger_backends, "~> 1.0"},
       {:nebulex, "~> 2.6"},
       {:decorator, "~> 1.4"},
       {:plug_attack, "~> 0.4.2"},
