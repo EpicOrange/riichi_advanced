@@ -923,7 +923,7 @@ div.tile {
   background-size: auto calc(var(--tile-scale-factor) * var(--num-tiles) * var(--tile-size));
   background-position: 0 0;
   border: var(--border-width) solid var(--border-color);
-  border-radius: calc(0.10 * var(--tile-size));
+  border-radius: calc(0.10 * var(--tile-size) * var(--tile-scale-factor));
   flex-shrink: 0;
   box-sizing: border-box;
 }
