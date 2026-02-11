@@ -1912,7 +1912,14 @@ defmodule RiichiAdvanced.GameState do
             last_discard = if last_discard_action != nil do Map.get(last_discard_action, :tile, nil) else nil end
             if is_pid(Map.get(state, seat)) and has_buttons and not has_call_buttons and not has_marking_ui do
               # IO.puts("Notifying #{seat} AI about their buttons: #{inspect(state.players[seat].buttons)}")
-              send(Map.get(state, seat), {:buttons, %{player: state.players[seat], turn: state.turn, last_discard: last_discard}})
+              params = %{
+                player: state.players[seat],
+                turn: state.turn,
+                last_discard: last_discard,
+                closest_american_hands: state.players[state.turn].cache.closest_american_hands,
+                open_am_match_definitions: Rules.get(state.rules_ref, "open_win_definition", []),
+              }
+              send(Map.get(state, seat), {:buttons, params})
             end
           end)
         end

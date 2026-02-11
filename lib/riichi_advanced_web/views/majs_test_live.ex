@@ -17,7 +17,6 @@ defmodule RiichiAdvancedWeb.MajsTestLive do
     |> assign(:ruleset, "riichi")
 
     ruleset_json = ModLoader.get_ruleset_json(socket.assigns.ruleset)
-    rules = Rules.load_rules(ruleset_json, socket.assigns.ruleset)
     rules_ref = case Rules.load_rules(ruleset_json, socket.assigns.ruleset) do
       {:ok, rules_ref} -> rules_ref
       {:error, _msg}   -> nil
@@ -111,6 +110,7 @@ defmodule RiichiAdvancedWeb.MajsTestLive do
         send(self, {:converted_majs, config, ruleset_json})
       end)
       socket = assign(socket, :loading, true)
+      socket = assign(socket, :config, config)
       {:noreply, socket}
     else
       {:noreply, socket}
@@ -121,8 +121,7 @@ defmodule RiichiAdvancedWeb.MajsTestLive do
     {:noreply, socket}
   end
 
-  def handle_info({:converted_majs, config, result}, socket) do
-    socket = assign(socket, :config, config)
+  def handle_info({:converted_majs, _config, result}, socket) do
     socket = assign(socket, :result, result)
     socket = assign(socket, :loading, false)
     {:noreply, socket}

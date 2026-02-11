@@ -185,6 +185,7 @@ defmodule RiichiAdvanced.ModLoader do
           |> strip_comments()
           |> apply_mods(mods, ruleset, globals)
           |> JQ.query_string_with_string!(prev_query)
+          # |> IO.inspect(limit: :infinity)
         else ruleset_json end
     end
   end
