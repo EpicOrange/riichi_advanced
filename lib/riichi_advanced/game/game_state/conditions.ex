@@ -194,12 +194,12 @@ defmodule RiichiAdvanced.GameState.Conditions do
 
   def get_yaku_lists(state) do
     score_rules = Rules.get(state.rules_ref, "score_calculation", %{})
-    (get_in(score_rules["yaku_lists"]) || []) -- (get_in(score_rules["extra_yaku_lists"]) || [])
+    (score_rules["yaku_lists"] || []) -- (score_rules["extra_yaku_lists"] || [])
   end
 
   def get_yaku2_lists(state) do
     score_rules = Rules.get(state.rules_ref, "score_calculation", %{})
-    (get_in(score_rules["yaku2_lists"]) || []) -- (get_in(score_rules["extra_yaku_lists"]) || [])
+    (score_rules["yaku2_lists"] || []) -- (score_rules["extra_yaku_lists"] || [])
   end
 
   def check_condition(state, cond_spec, context \\ %{}, opts \\ []) do

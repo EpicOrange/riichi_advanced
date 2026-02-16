@@ -166,7 +166,7 @@ defmodule RiichiAdvanced.GameState.Buttons do
       # keep existing buttons whose interrupt level is strictly below our interrupt level
       new_button_choices = for {seat, button_choices} <- new_button_choices, into: %{} do
         button_choices = state.players[seat].button_choices
-        |> Enum.filter(fn {name, _spec} -> (get_in(buttons[name]["interrupt_level"]) || 100) < interrupt_level end)
+        |> Enum.filter(fn {name, _spec} -> (buttons[name]["interrupt_level"] || 100) < interrupt_level end)
         |> Map.new()
         |> Map.merge(button_choices)
         {seat, button_choices}
