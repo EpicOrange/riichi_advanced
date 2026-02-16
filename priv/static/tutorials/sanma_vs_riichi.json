@@ -9,12 +9,7 @@
     "starting_draws": ["3s", "1z", "2z", "3z", "4z", "1s"],
     "starting_honba": 1,
     "starting_dead_wall": ["1m"],
-    "tsumogiri_bots": true,
-    "auto_buttons": {
-      "5_auto_pei": {
-        "enabled_at_start": false
-      }
-    }
+    "tsumogiri_bots": true
   },
   "scenes": {
     "start": [
