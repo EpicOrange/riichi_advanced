@@ -14,18 +14,8 @@ defmodule RiichiAdvancedWeb.MajsTestLive do
     |> assign(:config, ModLoader.default_config())
     |> assign(:result, "")
     |> assign(:loading, false)
-    |> assign(:ruleset, "riichi")
 
-    ruleset_json = ModLoader.get_ruleset_json(socket.assigns.ruleset)
-    rules_ref = case Rules.load_rules(ruleset_json, socket.assigns.ruleset) do
-      {:ok, rules_ref} -> rules_ref
-      {:error, _msg}   -> nil
-    end
-
-    {mods, categories} = RiichiAdvanced.RoomState.parse_available_mods(Rules.get(rules_ref, "available_mods", []), Rules.get(rules_ref, "default_mods", []))
-    socket = socket
-    |> assign(:mods, mods)
-    |> assign(:categories, categories)
+    socket = switch_mods_to_ruleset(socket, "riichi")
 
     messages_init = RiichiAdvanced.MessagesState.link_player_socket(socket.root_pid, socket.assigns.session_id)
     socket = if Map.has_key?(messages_init, :messages_state) do
@@ -83,6 +73,22 @@ defmodule RiichiAdvancedWeb.MajsTestLive do
       end end)
   end
   
+  def switch_mods_to_ruleset(socket, ruleset) do
+    socket = assign(socket, :ruleset, ruleset)
+
+    ruleset_json = ModLoader.get_ruleset_json(socket.assigns.ruleset)
+    rules_ref = case Rules.load_rules(ruleset_json, socket.assigns.ruleset) do
+      {:ok, rules_ref} -> rules_ref
+      {:error, _msg}   -> nil
+    end
+
+    {mods, categories} = RiichiAdvanced.RoomState.parse_available_mods(Rules.get(rules_ref, "available_mods", []), Rules.get(rules_ref, "default_mods", []))
+    socket = socket
+    |> assign(:mods, mods)
+    |> assign(:categories, categories)
+    socket
+  end
+
   def handle_event("back", _assigns, socket) do
     socket = push_navigate(socket, to: ~p"/?nickname=#{socket.assigns.nickname}&lang=#{socket.assigns.lang}")
     {:noreply, socket}
@@ -93,7 +99,7 @@ defmodule RiichiAdvancedWeb.MajsTestLive do
   def handle_event("change_language", %{"lang" => lang}, socket), do: {:noreply, assign(socket, :lang, lang)}
   
   def handle_event("switch_ruleset", assigns, socket) do
-    IO.inspect(assigns)
+    socket = switch_mods_to_ruleset(socket, assigns["ruleset"])
     {:noreply, socket}
   end
 
