@@ -767,6 +767,7 @@ define_mod chinitsu, order: -2, conflicts: ["aka", "aka1", "aka3", "aka7", "aka9
 define_mod washizu, order: -1, name: "Washizu", desc: "Each tile in the wall is transparent and visible to all, except for one copy. Unflipped dora indicators are not visible."
 define_mod calls_are_forced, conflicts: ["chombo"], name: "Calls Are Forced", desc: "Forces you to make all available calls, including riichi (if enabled). You still get to choose if multiple calls are available."
 define_mod chombo, conflicts: ["calls_are_forced"], name: "Chombo", desc: "The tsumo and ron buttons are enabled on every draw and discard. If you make an incorrect win call, your hand is dead and you cannot make a win call for the remainder of the round."
+define_mod riichi_en, name: "English Yaku Names", desc:  "Display English yaku names. (e.g. Tanyao -> All Simples)"
 
 set default_mods, [
   "honba", "yaku/riichi", "dora", "ura", "kandora", "aka",
@@ -791,7 +792,7 @@ define_preset "Mahjong Soul", [
   %{name: "yaku/riichi", config: %{bet: 1000, drawless: false}},
   %{name: "nagashi", config: %{is: "Mangan"}},
   %{name: "tobi", config: %{below: 0}},
-  %{name: "uma", config: %{_1st: 10, _2nd: 5, _3rd: -5, _4th: -10}},
+  %{name: "uma", config: %{_1st: 15, _2nd: 5, _3rd: -5, _4th: -15}},
   "agarirenchan",
   "tenpairenchan",
   "agariyame",
@@ -923,6 +924,29 @@ define_preset "WRC 2022", [
   "pao",
   "pao_suukantsu",
   "no_kazoe_yakuman",
+  "no_double_yakuman",
+  %{name: "dora", config: %{start_indicators: 1}},
+  "ura",
+  "kandora",
+  "yaku/ippatsu",
+  %{name: "yaku/riichi_renhou", config: %{is: "Mangan"}},
+  "show_waits",
+  %{name: "min_han", config: %{min: 1}},
+  # "cancellable_riichi",
+  %{name: "starting_score", config: %{points: 30000}}
+]
+define_preset "WRC 2025", [
+  %{name: "honba", config: %{value: 100}},
+  %{name: "yaku/riichi", config: %{bet: 1000, drawless: true}},
+  %{name: "uma", config: %{_1st: 15, _2nd: 5, _3rd: -5, _4th: -15}},
+  "agarirenchan",
+  "tenpairenchan",
+  "tenpaiyame",
+  "kuikae_nashi",
+  "kiriage_mangan",
+  "head_bump",
+  "pao",
+  "pao_suukantsu",
   "no_double_yakuman",
   %{name: "dora", config: %{start_indicators: 1}},
   "ura",

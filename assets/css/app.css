@@ -909,8 +909,8 @@ div.tile {
   --num-tiles: 214;
   width: var(--tile-width);
   height: var(--tile-height);
-  background: 
-    url("/images/tiles.png") no-repeat, 
+  background-image: 
+    url("/images/tiles.png"), 
     conic-gradient(var(--tile-color) 0 0),
     /* fill gap between tile face and top of tile */
     repeating-linear-gradient(
@@ -920,19 +920,18 @@ div.tile {
       var(--tile-front-side) calc(5.75 * var(--tile-size)),
       var(--tile-front-side) calc(6 * var(--tile-size))
     );
+  background-repeat: no-repeat, initial, initial;
   background-size: auto calc(var(--tile-scale-factor) * var(--num-tiles) * var(--tile-size));
   background-position: 0 0;
   border: var(--border-width) solid var(--border-color);
-  border-radius: calc(0.10 * var(--tile-size));
+  border-radius: calc(0.10 * var(--tile-size) * var(--tile-scale-factor));
   flex-shrink: 0;
   box-sizing: border-box;
 }
 div.tile.flat {
-  background:
-    url("/images/tiles.png") no-repeat,
+  background-image:
+    url("/images/tiles.png"),
     conic-gradient(var(--tile-color) 0 0);
-  background-size: auto calc(var(--tile-scale-factor) * var(--num-tiles) * var(--tile-size));
-  background-position: 0 0;
 }
 /* dora shine */
 @keyframes doraShine {
@@ -3098,10 +3097,10 @@ div#container > div.index-bottom-buttons {
 div#container > div.index-bottom-buttons > button {
   font-size: calc(0.5 * var(--tile-size));
 }
-div#container > form.ruleset-selection-form {
+div#container > form {
   position: absolute;
   width: calc(100% - 3 * var(--tile-size));
-  height: calc(7 * var(--tile-size));
+  height: calc(7.5 * var(--tile-size));
   top: calc(50% - 1.5 * var(--tile-size));
   left: calc(1 * var(--tile-size));
   padding: calc(0.5 * var(--tile-size));
@@ -3146,6 +3145,20 @@ div#container > form.ruleset-selection-form > div.ruleset-selection > label > a 
 }
 div#container > form.ruleset-selection-form > div.ruleset-selection > input[disabled] + label {
   opacity: 0.4;
+}
+div#container > form.ruleset-selection-form > div.ruleset-selection > input[disabled] + label {
+  opacity: 0.4;
+}
+div#container > form.log-selection-form {
+  display: flex;
+  flex-flow: column nowrap;
+  justify-content: center;
+  align-items: center;
+  row-gap: calc(0.25 * var(--tile-size));
+}
+div#container > form.log-selection-form > input,
+div#container > form.log-selection-form > button {
+  width: 100%;
 }
 /* about page */
 div#container > form.about-page {
@@ -3299,7 +3312,6 @@ div.lobby > div.rooms > div.lobby-room > div.room-players > div.room-started {
 
 /* room screen */
 div.room {
-  display: flex;
   position: relative;
   row-gap: calc(0.25 * var(--tile-size));
   font-size: calc(1 * var(--tile-size));
@@ -3307,47 +3319,84 @@ div.room {
 }
 div.room > header {
   display: flex;
-  flex-flow: row wrap;
-  justify-content: flex-start;
-  align-items: flex-start;
+  flex-flow: column nowrap;
+  align-items: flex-end;
   column-gap: calc(0.5 * var(--tile-size));
   position: absolute;
-  top: calc(0 * var(--tile-size));
+  top: 0;
+  width: 100%;
+  height: calc(3 * var(--tile-size));
+  font-size: calc(1 * var(--tile-size));
 }
-div.room > header > h3 {
+div.room > header > div.room-header-title {
   width: 100%;
   margin: 0;
-}
-div.room > header > div.session,
-div.room > header > label.private-toggle-label {
-  display: flex;
-  flex-direction: row;
-  align-items: center;
-  font-size: calc(0.9 * var(--tile-size));
-}
-div.room > header > div.session {
-  border: calc(0.05 * var(--tile-size)) solid white;
-  padding: calc(0.25 * var(--tile-size));
-  border-radius: calc(0.5 * var(--tile-size));
-}
-div.room > header > div.session > div.tile,
-div.room > div.sidebar > a > svg {
-  transform: translateY(calc(0.125 * var(--tile-size)));
-}
-div.room > div.sidebar {
-  font-size: calc(1 * var(--tile-size));
-  position: absolute;
-  right: 0;
-}
-div.room > div.sidebar > a {
   white-space: nowrap;
-  position: absolute;
-  color: white;
-  right: 0;
+  font-size: calc(0.75 * var(--tile-size));
+  font-weight: bold;
 }
-div.room > div.sidebar > label.room-settings-toggle {
-  background: none;
-  text-decoration: underline;
+div.room > header > div.room-header-bottom {
+  display: flex;
+  flex-flow: row nowrap;
+  justify-content: space-between;
+  align-items: flex-end;
+  width: 100%;
+  height: 100%;
+  column-gap: calc(0.5 * var(--tile-size));
+  font-size: calc(1 * var(--tile-size));
+  margin-top: calc(-1 * var(--tile-size));
+  & > div.session {
+    display: flex;
+    flex-flow: row nowrap;
+    align-items: center;
+    border: calc(0.05 * var(--tile-size)) solid white;
+    padding: calc(0.25 * var(--tile-size));
+    border-radius: calc(0.5 * var(--tile-size));
+    position: relative;
+    & > div.room-code-text {
+      position: absolute;
+      white-space: nowrap;
+      font-size: calc(0.5 * var(--tile-size));
+      inset: calc(1.5 * var(--tile-size)) 0 0 0;
+      text-align: center;
+    }
+    & > div.tile {
+      transform: translateY(calc(0.125 * var(--tile-size)));
+    }
+  }
+  & > label.private-toggle-label {
+    font-size: calc(0.875 * var(--tile-size));
+    line-height: 1;
+    margin-bottom: calc(-0.5 * var(--tile-size));
+    padding: calc(0.25 * var(--tile-size));
+    width: 8ex;
+  }
+  & svg {
+    vertical-align: sub;
+  }
+  & > div.room-header-right {
+    height: 100%;
+    display: flex;
+    flex-flow: column nowrap;
+    justify-content: space-between;
+    align-items: flex-end;
+    & > a {
+      white-space: nowrap;
+      color: white;
+      right: 0;
+    }
+    & > label.room-settings-toggle {
+      background: none;
+      text-decoration: underline;
+      padding: 0;
+    }
+  }
+}
+div.room div.tips-component {
+  position: absolute;
+  width: 100%;
+  bottom: 0;
+  cursor: pointer;
 }
 div.room div.room-settings {
   position: relative;
