@@ -527,6 +527,7 @@ defmodule RiichiAdvanced.RoomState do
 
     # for custom, config is just the submitted ruleset
     config = Enum.at(state.textarea, 0)["insert"]
+    config = if config == nil do "" else config end
 
     # check for 4MB limit, and save if within limit
     state = if byte_size(config) <= 4 * 1024 * 1024 do
