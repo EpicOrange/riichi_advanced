@@ -337,7 +337,7 @@ defmodule RiichiAdvanced.GameState do
     end
 
     # apply config
-    ruleset_json = if state.config != nil do
+    ruleset_json = if state.config != nil and state.ruleset != "custom" do
       try do
         ruleset_json = ModLoader.strip_comments(ruleset_json)
         query = ModLoader.convert_to_jq(ModLoader.strip_comments(state.config))
