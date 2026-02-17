@@ -92,9 +92,8 @@ Then clone this repository, if you haven't already:
     git clone "https://github.com/EpicOrange/riichi_advanced.git"
     cd riichi_advanced
 
-The following files should be manually patched to deal with Windows line endings. 
+The following file should be manually patched to deal with Windows line endings. 
 
-- In `\lib\ex_jq\jq.ex`, lines 19 to 35 (`# postprocess the result ... raise(UnknownException, error) ↵ end`) should be replaced with `result`.
 - Near the end of `\lib\riichi_advanced\game\mod_loader.ex`, the regex `Regex.replace(~r{^//.*|\s//.*|/\*[.\n]*?\*/}, json, "")` should be replaced with `Regex.replace(~r{^//.*|\s//.*|/\*[.\r\n]*?\*/}, Regex.replace(~r{\r\n}, json, "\n"), "")`.
  
 Then set everything up
