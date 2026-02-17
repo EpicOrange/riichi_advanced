@@ -5,7 +5,7 @@ def replace($from; $to):
   ["add_rule", "Rules", "Win Condition", "- (Kansai Chiitoitsu) Seven pairs (repeats allowed).", -100],
   ["delete_rule", "2 Han", "Chiitoitsu"],
   ["add_rule", "2 Han", "Chiitoitsu", "Your hand consists of seven pairs. Repeats allowed.", 100],
-  ["update_rule", "2 Han", "Chiitoitsu", "%{example_hand}", {"example_hand": ["2m", "2m", "6m", "6m", "9p", "9p", "9p", "4s", "4s", "7s", "7s", "3z", "3z", "3x", "9p"]} "2266m99p24477s33z 2s"}]
+  ["update_rule", "2 Han", "Chiitoitsu", "%{example_hand}", {"example_hand": ["2m", "2m", "6m", "6m", "9p", "9p", "9p", "4s", "4s", "7s", "7s", "3z", "3z", "3x", "9p"]}]
 ]
 |
 .tenpai_definition |= map(replace([ [["nojoker", "koutsu"], -1], [["pair"], 6], [["any"], 1] ]; [ [["pair"], 6], [["any"], 1] ]))
