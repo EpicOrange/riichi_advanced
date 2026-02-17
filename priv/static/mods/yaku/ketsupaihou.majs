@@ -1,5 +1,6 @@
 on after_initialization do
   add_rule("1 Han", "Ketsupaihou", "\"Missing Tile\". Win with an edge or middle wait on a tile for which three copies are already publicly visible.")
+  update_rule("1 Han", "Ketsupaihou", "%{example_hand}", %{example_hand: ~t"12999p11567m 33p3P 3p"})
 end
 
 define_set kanchan, ~s"0 2"

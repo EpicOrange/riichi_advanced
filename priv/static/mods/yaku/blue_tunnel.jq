@@ -1,4 +1,7 @@
-.after_initialization.actions += [["add_rule", "Yakuman", "Blue Tunnel", "Your hand consists of only 248p (2,4,8 circles), green dragon, and one type of wind.", 113]]
+.after_initialization.actions += [
+  ["add_rule", "Yakuman", "Blue Tunnel", "Your hand consists of only 248p (2,4,8 circles), green dragon, and one type of wind.", 113],
+  ["update_rule", "Yakuman", "Blue Tunnel", "%{example_hand}", {"example_hand": ["2p", "2p", "2p", "4p", "4p", "4p", "8p", "8p", "8p", "6z", "6z", "6z", "1z", "3x", "1z"]}]
+]
 |
 .yakuman += [
   {

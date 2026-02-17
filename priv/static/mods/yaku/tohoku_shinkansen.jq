@@ -1,4 +1,7 @@
-.after_initialization.actions += [["add_rule", "Yakuman", "Tohoku Shinkansen", "Your closed hand consists of an ittsu and east/north winds.", 113]]
+.after_initialization.actions += [
+  ["add_rule", "Yakuman", "Tohoku Shinkansen", "Your closed hand consists of an ittsu and east/north winds.", 113],
+  ["update_rule","Yakuman", "Tohoku Shinkansen", "%{example_hand}", {"example_hand": ["1s", "2s", "3s", "4s", "5s", "6s", "7s", "8s", "9s", "1z", "1z", "4z", "4z", "3x", "4z"]}]
+]
 |
 .yakuman += [
   {

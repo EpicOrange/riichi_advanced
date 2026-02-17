@@ -1,10 +1,18 @@
 .after_initialization.actions += [
   ["add_rule", "Rules", "Wall", "(Blue Dragon) Four blue dragons (framed tiles) are added to the wall.", -99],
+  # should the Blue Dragon yaku be integrated into the Yakuhai yaku?
   ["add_rule", "1 Han", "Blue Dragon", "A triplet of blue dragons is yakuhai."],
+  ["update_rule", "1 Han", "Blue Dragon", "%{example_hand}", {"example_hand": ["2m", "3m", "4m", "3p", "3p", "7p", "7p", "7p", "4s", "5s", "0z", "0z", "0z", "3x", "6s"]}],
+  ["delete_rule", "2 Han", "Shousangen"],
+  ["delete_rule", "Yakuman", "Daisangen"],
   ["add_rule", "1 Han", "Shousangen", "(Blue Dragon) Shousangen is now 1 han (+2 from dragons)."],
+  ["update_rule", "1 Han", "Shousangen", "%{example_hand}", {"example_hand": ["2m", "3m", "4m", "5z", "5z", "5z", "6z", "6z", "4s", "5s", "0z", "0z", "0z", "3x", "6s"]}],
   ["add_rule", "2 Han", "Daisangen", "(Blue Dragon) Daisangen is now 2 han (+3 from dragons)."],
+  ["update_rule", "2 Han", "Daisangen", "%{example_hand}", {"example_hand": ["2m", "3m", "4m", "5z", "5z", "5z", "6z", "6z", "4s", "4s", "0z", "0z", "0z", "3x", "6z"]}],
   ["add_rule", "Yakuman", "Shousuugen", "(Blue Dragon) Having three dragon triplets and a dragon pair awards the Shousuugen yakuman."],
+  ["update_rule", "Yakuman", "Shousuugen", "%{example_hand}", {"example_hand": ["2m", "3m", "4m", "5z", "5z", "5z", "6z", "6z", "7z", "7z", "0z", "0z", "0z", "3x", "6z"]}],
   ["add_rule", "Yakuman", "Daisuugen", "(Blue Dragon) Having four dragon triplets awards the Daisuugen double yakuman."],
+  ["update_rule", "Yakuman", "Daisuugen", "%{example_hand}", {"example_hand": ["2m", "2m", "5z", "5z", "5z", "6z", "6z", "7z", "7z", "7z", "0z", "0z", "0z", "3x", "6z"]}],
   ["add_rule", "Rules", "Dora", "(Blue Dragon) For dragons, the sequence for dora indicators is White, Green, Red, Blue."]
 ]
 |

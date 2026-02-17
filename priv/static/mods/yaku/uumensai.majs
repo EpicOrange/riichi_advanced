@@ -1,5 +1,6 @@
 on after_initialization do
   add_rule("2 Han", "Uumensai", "\"Five Suits Collected\". Your standard hand (4 sets and a pair) includes all five suits (character, circle, bamboo, wind, dragon).")
+  update_rule("2 Han", "Uumensai", "%{example_hand}", %{example_hand: ~t"99s66z 4z4Z4z 2m2M2m 6P45p 9s"})
 end
 
 define_yaku yaku, "Uumensai", 2,

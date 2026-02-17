@@ -1,8 +1,10 @@
 on after_initialization do
   if equals(!list, "yakuman") do
     add_rule("Limit", "$name", "You called %{kan} four times.", %{name: !name, kan: !kan_name})
+    update_rule("Limit", "$name", "%{example_hand}", %{name: !name, example_hand: ~t"3z 5555p 8888p 2222z 9999m 3z"})
   else
     add_rule("$value $han", "$name", "You called %{kan} four times.", %{value: !value, han: !han, name: !name, kan: !kan_name})
+    update_rule("$value $han", "$name", "%{example_hand}", %{value: !value, han: !han, name: !name, example_hand: ~t"3z 5555p 8888p 2222z 9999m 3z"})
   end
 end
 

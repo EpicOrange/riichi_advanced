@@ -1,4 +1,7 @@
-.after_initialization.actions += [["add_rule", "1 Han", "Uushin Tsuukan", "\"Five-Heart Straight\". 1 han on top of ittsu if the winning tile is the five needed for ittsu.", 101]]
+.after_initialization.actions += [
+  ["add_rule", "1 Han", "Uushin Tsuukan", "\"Five-Heart Straight\". 1 han on top of ittsu if the winning tile is the five needed for ittsu.", 101],
+  ["update_rule", "1 Han", "Uushin Tsuukan", "%{example_hand}", {"example_hand": ["1m", "2m", "3m", "4m", "6m", "7m", "8m", "9m", "2p", "2p", "3z", "3z", "3z", "3x", "5m"]}]
+]
 |
 (if .set_definitions | has("kontsu") then ["shuntsu", "kontsu", "koutsu"] else ["shuntsu", "koutsu"] end) as $others
 |

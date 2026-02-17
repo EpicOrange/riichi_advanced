@@ -1,10 +1,16 @@
 on after_initialization do
   add_rule("0.5 Han", "Mini-Sangen", "0.5 han is awarded for each mixed triplet of dragons.")
+  update_rule("0.5 Han", "Mini-Sangen", "%{mixed_triplet}", %{mixed_triplet: ~t"567z"})
   add_rule("0.5 Han", "Mixed Winds", "0.5 han is awarded for each mixed triplet of winds that contain both the round wind and the seat wind.")
-  add_rule("1 Han", "Toikon", "1 han if your hand is all kontsu. 2 han if closed.")
+  update_rule("0.5 Han", "Mixed Winds", "%{mixed_triplet}", %{mixed_triplet: ~t"123z"})
+  add_rule("1 Han", "Toikon", "1 han if your hand consists of four kontsu and a pair. 2 han if closed.")
+  update_rule("1 Han", "Toikon", "%{example_hand}", %{example_hand: ~t"6m6p68s124567z 3m3p3S 8s"})
   add_rule("1 Han", "Ryandoukon", "1 han if your closed hand contains two copies of the exact same kontsu.")
-  add_rule("2 Han", "Sandoukon", "2 han if your closed hand contains three copies of the exact same kontsu. 3 han if closed.")
-  add_rule("Yakuman", "Yondoukon", "Yakuman if your closed hand contains four copies of the exact same kontsu.")
+  update_rule("1 Han", "Ryandoukon", "%{example_hand}", %{example_hand: ~t"66m66p668s123p777z 8s"})
+  add_rule("2 Han", "Sandoukon", "2 han if your hand contains three copies of the exact same kontsu. 3 han if closed.")
+  update_rule("2 Han", "Sandoukon", "%{example_hand}", %{example_hand: ~t"66m66p66s1z777z 6m6p6S 1z"})
+  add_rule("Yakuman", "Yondoukon", "Yakuman if your hand contains four copies of the exact same kontsu.")
+  update_rule("Yakuman", "Yondoukon", "%{example_hand}", %{example_hand: ~t"66m66p66s1z 6m6p6S 6M6p6s 1z"})
   add_rule("1 Han", "Rinshan", "(Cosmic) If you fuun and then tsumo on the replacement tile, you are awarded rinshan (1 han).")
 end
 

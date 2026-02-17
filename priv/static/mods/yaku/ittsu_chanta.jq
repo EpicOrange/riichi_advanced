@@ -1,4 +1,7 @@
-.after_initialization.actions += [["add_rule", "2 Han", "Ittsu Chanta", "Ittsu becomes 2 han if the rest of your hand is chanta (or junchan, in which case it's 3 han). +1 han if closed.", 102]]
+.after_initialization.actions += [
+  ["add_rule", "2 Han", "Ittsu Chanta", "Ittsu becomes 2 han if the rest of your hand is chanta (or junchan, in which case it's 3 han). +1 han if closed.", 102],
+  ["update_rule", "2 Han", "Ittsu Chanta", "%{example_hand}", {"example_hand": ["1m", "2m", "3m", "4m", "5m", "6m", "7m", "8m", "9m", "1s", "2s", "3s", "2z", "3x", "2z"]}]
+]
 |
 (if .set_definitions | has("kontsu") then ["shuntsu", "kontsu", "koutsu"] else ["shuntsu", "koutsu"] end) as $others
 |

@@ -1,7 +1,10 @@
 .after_initialization.actions += [
   ["add_rule", "Yakuman", "Shousharin", "Your closed winning hand is 11223344556677 or 33445566778899 of circles.", 113],
+  ["update_rule", "Yakuman", "Shousharin", "%{example_hand}", {"example_hand": ["1p", "1p", "2p", "2p", "3p", "3p", "4p", "4p", "5p", "5p", "6p", "6p", "7p", "3x", "7p"]}],
   ["add_rule", "Yakuman", "Shouchikurin", "Your closed winning hand is 11223344556677 or 33445566778899 of bamboo.", 113],
-  ["add_rule", "Yakuman", "Shousuurin", "Your closed winning hand is 11223344556677 or 33445566778899 of characters.", 113]
+  ["update_rule", "Yakuman", "Shouchikurin", "%{example_hand}", {"example_hand": ["1s", "1s", "2s", "2s", "3s", "3s", "4s", "4s", "5s", "5s", "6s", "6s", "7s", "3x", "7s"]}],
+  ["add_rule", "Yakuman", "Shousuurin", "Your closed winning hand is 11223344556677 or 33445566778899 of characters.", 113],
+  ["update_rule", "Yakuman", "Shousuurin", "%{example_hand}", {"example_hand": ["1m", "1m", "2m", "2m", "3m", "3m", "4m", "4m", "5m", "5m", "6m", "6m", "7m", "3x", "7m"]}]
 ]
 |
 (if .buttons | has("ton") then ["ton", "chii", "chon", "chon_honors", "shouminfuun", "pon", "daiminkan", "kapon", "kakakan", "kafuun", "kakan"] else ["chii", "pon", "daiminkan", "kakan"] end) as $open_calls

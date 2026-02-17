@@ -1,7 +1,10 @@
 on after_initialization do
   add_rule("1 Han", "Sanankon", "1 han if your hand has three closed kontsu (mixed triplets). A kontsu (mixed triplet) formed by a self-draw win counts as closed.")
+  update_rule("1 Han", "Sanankon", "%{example_hand}", %{example_hand: ~t"136m136p1368s 5Z67z 8s"})
   add_rule("3 Han", "Suuankon", "3 han if your hand has three closed kontsu (mixed triplets) in hand, and you won by self-drawing the fourth.")
+  update_rule("3 Han", "Suuankon", "%{example_hand}", %{example_hand: ~t"136m136p13688s67z 5z"})
   add_rule("6 Han", "Suuankon Tanki", "6 han if your hand has four closed kontsu (mixed triplets) in hand, and you won by completing your pair.")
+  update_rule("6 Han", "Suuankon Tanki", "%{example_hand}", %{example_hand: ~t"136m136p1368s567z 8s"})
 end
 
 define_match sanankon_tsumo,
