@@ -2,9 +2,12 @@ on after_initialization do
   add_rule("Rules", "Initial Score", "(Kansai) Everyone starts with 50000 points.")
   add_rule("Rules", "Notenrenchan", "(Kansai) In the south round only, the round repeats on exhaustive draws regardless of anyone's tenpai status.")
   add_rule("Rules", "North Wind", "(Kansai) In the south round only, the round repeats on exhaustive draws regardless of anyone's tenpai status.")
-  add_rule("5 Han", "Shousharin", "(Kansai) 6 han if you have chiitoitsu honitsu.")
+  add_rule("6 Han", "Shousharin", "(Kansai) 6 han if you have chiitoitsu honitsu.")
+  update_rule("6 Han", "Shousharin", "%{example_hand}", %{example_hand: ~t"11224477p11337z 7z"})
   add_rule("Yakuman", "Daisharin", "(Kansai) Yakuman if you have chiitoitsu chinitsu.")
+  update_rule("Yakuman", "Daisharin", "%{example_hand}", %{example_hand: ~t"1122445566779p 9p"})
   add_rule("Yakuman", "Manzu Honitsu", "(Kansai) Yakuman if you have manzu honitsu.")
+  update_rule("Yakuman", "Manzu Honitsu", "%{example_hand}", %{example_hand: ~t"111999m1144477z 7z"})
 end
 
 # start with 50k

@@ -1,4 +1,7 @@
-.after_initialization.actions += [["add_rule", "Yakuman", "Hyakuman Goku", "\"One Million Stones\". Your hand is purely character tiles whose numbers sum up to at least 100.", 113]]
+.after_initialization.actions += [
+  ["add_rule", "Yakuman", "Hyakuman Goku", "\"One Million Stones\". Your hand is purely character tiles whose numbers sum up to at least 100.", 113],
+  ["update_rule", "Yakuman", "Hyakuman Goku", "%{example_hand}", {"example_hand": ["2m", "3m", "6m", "6m", "6m", "7m", "7m", "3x", "1x", "8m", "8m", "1x", "3x", "9m", "9m", "9m", {"attrs": ["_sideways"], "tile": "9m"}, "3x", "1m"]}]
+]
 |
 .yakuman += [
   {

@@ -1,4 +1,7 @@
-.after_initialization.actions += [["add_rule", "Yakuman", "Kouitten", "\"A Little Red\". Like ryuuiisou, except instead of green dragon, it's red dragon (you must include red dragons).", 113]]
+.after_initialization.actions += [
+  ["add_rule", "Yakuman", "Kouitten", "\"A Little Red\". Like ryuuiisou, except instead of green dragon, it's red dragon (you must include red dragons).", 113],
+  ["update_rule", "Yakuman", "Kouitten", "%{example_hand}", {"example_hand": ["2s", "2s", "3s", "4s", "4s", "6s", "6s", "8s", "8s", "8s", "7z", "7z", "7z", "3x", "3s"]}]
+]
 |
 .yakuman += [
   {

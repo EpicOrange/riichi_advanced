@@ -1,4 +1,7 @@
-.after_initialization.actions += [["add_rule", "Yakuman", "Kouittenrin", "Like ryuuiisou, except you have a red dragon triplet and a pair of 5s (5 bamboo).", 113]]
+.after_initialization.actions += [
+  ["add_rule", "Yakuman", "Kouittenrin", "Like ryuuiisou, except you have a red dragon triplet and a pair of 5s (5 bamboo).", 113],
+  ["update_rule", "Yakuman", "Kouittenrin", "%{example_hand}", {"example_hand": ["2s", "2s", "3s", "4s", "4s", "5s", "5s", "8s", "8s", "8s", "7z", "7z", "7z", "3x", "3s"]}]
+]
 |
 .yakuman += [
   {

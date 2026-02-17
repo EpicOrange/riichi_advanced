@@ -394,6 +394,7 @@ on after_initialization do
   add_rule_tab("Mangan")
   add_rule_tab("Yakuman")
   add_rule("Rules", "Tenpai Payments", "In event of an exhaustive draw, players not in tenpai pay players in tenpai. 3000 points total are paid, with the payment split among the non-tenpai players. If all or no players are tenpai, no payment occurs.")
+  delete_rule("Rules", "Win Condition")
   add_rule("Rules", "Win Condition", "You may win with one of the following:", -100)
   add_rule("Rules", "Win Condition", "- Four sets (sequences or triplets) and a pair.", -100)
   add_rule("Rules", "Win Condition", "- (Chiitoitsu) Seven distinct pairs.", -100)
@@ -401,12 +402,12 @@ on after_initialization do
   add_rule("1 Han", "Tsumo", "Win by self-draw with a closed hand.")
   add_rule("1 Han", "Haitei", "Win by drawing the last tile in the wall.")
   add_rule("1 Han", "Houtei", "Win off a discard after the last tile in the wall is drawn.")
-  add_rule("1 Han", "Pinfu", "You won off a double-sided sequence wait, with an all-sequence hand whose pair is not yakuhai.")
+  add_rule("1 Han", "Pinfu", "You won off a double-sided sequence wait, with a closed all-sequence hand whose pair is not yakuhai.")
   update_rule("1 Han", "Pinfu", "%{example_hand}", %{example_hand: ~t"345789m45p23499s 6p"})
   add_rule("1 Han", "Tanyao", "Your hand contains only tiles numbered 2-8.")
-  update_rule("1 Han", "Tanyao", "%{example_hand}", %{example_hand: ~t"234m33777p 45678s 6s"})
+  update_rule("1 Han", "Tanyao", "%{example_hand}", %{example_hand: ~t"234m33777p45678s 6s"})
   add_rule("1 Han", "Iipeikou", "Your closed hand has a double sequence: two copies of the exact same sequence in one suit, like 123 123.")
-  update_rule("1 Han", "Iipeikou", "%{example_hand}", %{example_hand: ~t"33445m33777p 678s 5m"})
+  update_rule("1 Han", "Iipeikou", "%{example_hand}", %{example_hand: ~t"33445m33777p678s 5m"})
   add_rule("1 Han", "Yakuhai", """
   1 %{han} for each of the following triplets in your hand:
   - A triplet of dragon tiles %{dragons}
@@ -424,7 +425,7 @@ on after_initialization do
   add_rule("1 Han", "Sanshoku", "1 han if your hand contains the same number sequence in all three suits. 2 han if closed.")
   update_rule("1 Han", "Sanshoku", "%{example_hand}", %{example_hand: ~t"24p23334678s 2M34m 3p"})
   add_rule("2 Han", "Sanshoku Doukou", "2 han if your hand contains the same number triplet in all three suits.")
-  update_rule("1 Han", "Sanshoku Doukou", "%{example_hand}", %{example_hand: ~t"2244p222456s 2M22m 2p"})
+  update_rule("2 Han", "Sanshoku Doukou", "%{example_hand}", %{example_hand: ~t"2244p222456s 2M22m 2p"})
   add_rule("2 Han", "Toitoi", "2 han if your hand is all triplets.")
   update_rule("2 Han", "Toitoi", "%{example_hand}", %{example_hand: ~t"888m222p33s22z 1z1Z1z 3s"})
   add_rule("2 Han", "Sanankou", "2 han if your hand has three closed triplets. A triplet formed by a self-draw win counts as closed.")

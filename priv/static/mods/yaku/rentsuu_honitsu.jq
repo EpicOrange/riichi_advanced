@@ -1,4 +1,7 @@
-.after_initialization.actions += [["add_rule", "Mangan", "Rentsuu Honitsu", "Mangan if you have honitsu with dragon yakuhai matching the suit: manzu with chun, pinzu with hatsu (not a typo), or souzu with haku (also not a typo)."]]
+.after_initialization.actions += [
+  ["add_rule", "Mangan", "Rentsuu Honitsu", "Mangan if you have honitsu with dragon yakuhai matching the suit: manzu with chun, pinzu with hatsu (not a typo), or souzu with haku (also not a typo)."],
+  ["update_rule", "Mangan", "Rentsuu Honitsu", "%{example_hand}", {"example_hand": ["2p", "2p", "2p", "3p", "4p", "5p", "5p", "6p", "7p", "2z", "2z", "6z", "6z", "3x", "2z"]}]
+]
 |
 .rentsuu_honitsu_definition = [
   [ "exhaustive", [[["1m","2m"],["1p","2p"],["1s","2s"],["8m","9m"],["8p","9p"],["8s","9s"]], 1], [["shuntsu", "koutsu"], 3], [["pair"], 1] ],

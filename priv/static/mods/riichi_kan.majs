@@ -3,6 +3,8 @@ on after_initialization do
   add_rule("1 Han", "Chankan", "If someone calls kan to upgrade an open triplet, you may call ron on the added tile. Doing so awards chankan (1 han).)")
   add_rule("2 Han", "Sankantsu", "Your hand contains three kans.")
   add_rule("Yakuman", "Suukantsu", "Your hand contains four kans.")
+  update_rule("2 Han", "Sankantsu", "%{example_hand}", %{example_hand: ~t"123s3z 55p5P5p 8p88P8p 1x99m1x 3z"})
+  update_rule("Yakuman", "Suukantsu", "%{example_hand}", %{example_hand: ~t"3z 55p5P5p 1x88p1x 22Z22z 1x99m1x 3z"})
 end
 
 define_yaku yaku, "Chankan", 1, won_by_call and status("kan", as: "caller")

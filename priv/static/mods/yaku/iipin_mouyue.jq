@@ -1,4 +1,7 @@
-.after_initialization.actions += [["add_rule", "Mangan", "Iipin Mouyue", "\"Plucking the Moon from the Bottom of the Sea\". Mangan if you win with haitei (not houtei) on the 1p (1 circles).", 105]]
+.after_initialization.actions += [
+  ["add_rule", "Mangan", "Iipin Mouyue", "\"Plucking the Moon from the Bottom of the Sea\". Mangan if you win with haitei (not houtei) on the 1p (1 circles).", 105],
+  ["update_rule", "Mangan", "Iipin Mouyue", "%{example_hand}", {"example_hand": ["1m", "2m", "3m", "9m", "9m", "2p", "3p", "7p", "7p", "7p", "7s", "8s", "9s", "3x", "1p"]}]
+]
 |
 .iipin_mouyue += [
   {

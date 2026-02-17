@@ -1,5 +1,6 @@
 .after_initialization.actions += [
   ["add_rule", "Yakuman", "Shiisanuushi", "\"Thirteen Independent\". Start with 14 disconnected tiles. Calls invalidate.", 113],
+  ["update_rule", "Yakuman", "Shiisanuushi", "%{example_hand}", {"example_hand": ["2m", "0m", "8m", "1p", "4p", "9p", "4s", "7s", "1z", "2z", "3z", "4z", "5z", "6z"]}],
   ["add_rule", "Rules", "Win Condition", "- (Shiisanuushi) Start with 14 disconnected tiles.", -100]
 ]
 |
