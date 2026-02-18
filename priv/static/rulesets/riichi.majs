@@ -391,6 +391,15 @@ on after_initialization do
   add_rule_tab("3 Han")
   add_rule_tab("4 Han")
   add_rule_tab("5 Han")
+  add_rule_tab("6 Han")
+  add_rule_tab("7 Han")
+  add_rule_tab("8 Han")
+  add_rule_tab("9 Han")
+  add_rule_tab("10 Han")
+  add_rule_tab("11 Han")
+  add_rule_tab("12 Han")
+  add_rule_tab("13 Han")
+  add_rule_tab("Limit")
   add_rule_tab("Mangan")
   add_rule_tab("Yakuman")
   add_rule("Rules", "Tenpai Payments", "In event of an exhaustive draw, players not in tenpai pay players in tenpai. 3000 points total are paid, with the payment split among the non-tenpai players. If all or no players are tenpai, no payment occurs.")
@@ -477,6 +486,12 @@ on before_turn_change do
 end
 
 on after_turn_change do
+  if no_tiles_remaining do
+    pause(1000)
+    ryuukyoku
+  else
+    draw
+  end
   if not_game_start do
     discard_passed
   end
@@ -568,6 +583,7 @@ set shown_statuses, ["furiten"]
 set display_wall, true
 set initial_score, 25000
 set initial_dead_wall_length, 14
+set starting_tiles, 13
 set max_rounds, 8
 set four_rows_discards, false
 
