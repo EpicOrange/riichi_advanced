@@ -4,8 +4,10 @@ end
 
 on before_conclusion do
   push_system_message("Applied uma of %{_1st}/%{_2nd}/%{_3rd}/%{_4th}.", %{_1st: !_1st, _2nd: !_2nd, _3rd: !_3rd, _4th: !_4th})
-  if placement(1) do add_score(!_1st * 1000) end
-  if placement(2) do add_score(!_2nd * 1000) end
-  if placement(3) do add_score(!_3rd * 1000) end
-  if placement(4) do add_score(!_4th * 1000) end
+  as all do
+    if placement(1) do add_score(!_1st * 1000) end
+    if placement(2) do add_score(!_2nd * 1000) end
+    if placement(3) do add_score(!_3rd * 1000) end
+    if placement(4) do add_score(!_4th * 1000) end
+  end
 end
