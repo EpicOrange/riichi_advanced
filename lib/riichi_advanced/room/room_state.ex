@@ -1,4 +1,5 @@
 defmodule RiichiAdvanced.RoomState do
+  alias RiichiAdvanced.GameState.Rules, as: Rules
   alias RiichiAdvanced.ModLoader, as: ModLoader
   alias RiichiAdvanced.Utils, as: Utils
   use GenServer
@@ -62,7 +63,7 @@ defmodule RiichiAdvanced.RoomState do
       error: nil,
 
       # state
-      rules: nil,
+      rules_ref: nil,
       seats: %{},
       available_seats: [],
       players: %{},
@@ -115,31 +116,22 @@ defmodule RiichiAdvanced.RoomState do
     config_majs = ModLoader.get_config_majs(state.ruleset, state.room_code)
 
     # parse the ruleset now, in order to get the list of eligible mods
-    {state, rules} = if state.ruleset != "custom" do
-      try do
-        case Jason.decode(RiichiAdvanced.ModLoader.strip_comments(ruleset_json)) do
-          {:ok, rules} -> {state, rules}
-          {:error, err} ->
-            state = show_error(state, "WARNING: Failed to read rules file at character position #{err.position}!\nRemember that trailing commas are invalid!")
-            {state, %{}}
-        end
-      rescue
-        ArgumentError ->
-          state = show_error(state, "WARNING: Ruleset \"#{state.ruleset}\" doesn't exist!")
-          {state, %{}}
-      end
-    else {state, %{}} end
+    state = case Rules.load_rules(ruleset_json, state.ruleset) do
+      {:ok, rules_ref} -> Map.put(state, :rules_ref, rules_ref)
+      {:error, msg}    -> show_error(state, msg)
+    end
+    rules_ref = state.rules_ref
 
-    presets = Map.get(rules, "available_presets", [])
-
+    # we start with default_mods, but if we're coming back to this screen, load the last mod setup instead
     starting_mods = case RiichiAdvanced.ETSCache.get({state.ruleset, state.room_code}, [], :cache_mods) do
       [mods] -> mods
-      []     -> Map.get(rules, "default_mods", [])
+      []     -> Rules.get(rules_ref, "default_mods", [])
     end
-    {mods, categories} = parse_available_mods(Map.get(rules, "available_mods", []), starting_mods)
+    {mods, categories} = parse_available_mods(Rules.get(rules_ref, "available_mods", []), starting_mods)
+    presets = Rules.get(rules_ref, "available_presets", [])
 
     # calculate available_seats
-    available_seats = case Map.get(rules, "num_players", 4) do
+    available_seats = case Rules.get(rules_ref, "num_players", 4) do
       1 -> [:east]
       2 -> [:east, :west]
       3 -> [:east, :south, :west]
@@ -157,11 +149,11 @@ defmodule RiichiAdvanced.RoomState do
       ruleset: state.ruleset,
       ruleset_json: ruleset_json,
       room_code: state.room_code,
-      rules: rules,
+      rules_ref: rules_ref,
       error: state.error,
       supervisor: supervisor,
       exit_monitor: exit_monitor,
-      display_name: Map.get(rules, "display_name", if state.ruleset == "custom" do "Custom" else state.ruleset end),
+      display_name: Rules.get(rules_ref, "display_name", if state.ruleset == "custom" do "Custom" else state.ruleset end),
       mods: mods,
       presets: presets,
       selected_preset_ix: nil,
@@ -169,7 +161,7 @@ defmodule RiichiAdvanced.RoomState do
       tutorial_link: if state.ruleset == "custom" do
         "https://github.com/EpicOrange/riichi_advanced/blob/main/documentation/documentation.md"
       else
-        Map.get(rules, "tutorial_link", nil)
+        Rules.get(rules_ref, "tutorial_link", nil)
       end,
       textarea: if state.ruleset == "custom" do
         [Delta.Op.insert(ruleset_json)] # could be majs as well
@@ -325,7 +317,7 @@ defmodule RiichiAdvanced.RoomState do
   end
 
   def reset_mods_to_default(state) do
-    default_mods = Map.get(state.rules, "default_mods", [])
+    default_mods = Rules.get(state.rules_ref, "default_mods", [])
     for {mod_name, _mod} <- state.mods, reduce: state do
       state ->
         state = put_in(state.mods[mod_name].enabled, mod_name in default_mods)
@@ -335,7 +327,7 @@ defmodule RiichiAdvanced.RoomState do
   end
 
   def randomize_mods(state) do
-    random_mods = Map.get(state.rules, "available_mods", [])
+    random_mods = Rules.get(state.rules_ref, "available_mods", [])
     |> Enum.filter(&is_map/1)
     |> Enum.map(& &1["id"])
     random_mods = Enum.take_random(random_mods, Integer.floor_div(length(random_mods), 2))
@@ -527,6 +519,7 @@ defmodule RiichiAdvanced.RoomState do
 
     # for custom, config is just the submitted ruleset
     config = Enum.at(state.textarea, 0)["insert"]
+    config = if config == nil do "" else config end
 
     # check for 4MB limit, and save if within limit
     state = if byte_size(config) <= 4 * 1024 * 1024 do

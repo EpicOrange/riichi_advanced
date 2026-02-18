@@ -1,7 +1,9 @@
 on after_initialization do
   delete_rule("2 Han", "Uumensai")
   add_rule("2 Han", "Uumensai", "\"Five Suits Collected\". Your standard hand (4 sets and a pair) includes all five suits (character, circle, bamboo, wind, dragon). Mixed triplets (kontsu) of winds and dragons can be used, but not mixed triplets of suited tiles.")
+  update_rule("2 Han", "Uumensai", "%{example_hand}", %{example_hand: ~t"99s66z 1z4Z2z 2m2M2m 6P45p 9s"})
   add_rule("2 Han", "Uumensai (Cosmic)", "Your standard hand (4 sets and a pair) includes five different kinds of groups. That is, you have five out of: pair, sequence, triplet, kontsu, kan, fuun.")
+  update_rule("2 Han", "Uumensai (Cosmic)", "%{example_hand}", %{example_hand: ~t"78s66z 1z4Z2z 2m2M2m 1x23z1x 9s"})
 end
 
 define_match uumensai_win, ~m"exhaustive, (shuntsu koutsu kontsu_123 kontsu_124 kontsu_134 kontsu_234):4, pair:1"

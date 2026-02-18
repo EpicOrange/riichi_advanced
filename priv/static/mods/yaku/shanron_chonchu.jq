@@ -1,4 +1,7 @@
-.after_initialization.actions += [["add_rule", "Mangan", "Shanron Chonchu", "\"Two Dragons Fighting Over Pearls\". Mangan if you have kyandonhou (two mixed double sequences) in manzu and souzu, plus a pinzu pair. For the manzu and souzu suits, your two sequences in that suit should not overlap.", 105]]
+.after_initialization.actions += [
+  ["add_rule", "Mangan", "Shanron Chonchu", "\"Two Dragons Fighting Over Pearls\". Mangan if you have kyandonhou (two mixed double sequences) in manzu and souzu, plus a pinzu pair. For the manzu and souzu suits, your two sequences in that suit should not overlap.", 105],
+  ["update_rule", "Mangan", "Shanron Chonchu", "%{example_hand}", {"example_hand": ["1m", "2m", "3m", "5m", "6m", "7m", "9p", "1s", "2s", "3s", "5s", "6s", "7s", "3x", "9p"]}]
+]
 |
 .shanron_chonchu += [
   {

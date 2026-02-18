@@ -1,4 +1,7 @@
-.after_initialization.actions += [["add_rule", "Mangan", "Dorahairi Chinroutou Chiitoitsu", "Mangan if you have chiitoitsu composed of each terminal tile with the seventh pair being dora.", 105]]
+.after_initialization.actions += [
+  ["add_rule", "Mangan", "Dorahairi Chinroutou Chiitoitsu", "Mangan if you have chiitoitsu composed of each terminal tile with the seventh pair being dora.", 105],
+  ["update_rule", "Mangan", "Dorahairi Chinroutou Chiitoitsu", "%{example_hand}", {"example_hand": ["1m", "1m", "9m", "9m", "1p", "1p", "9p", "9p", "1s", "1s", "9s", "9s", {"attrs": ["dora"], "tile": "8p"}, "3x", {"attrs": ["dora"], "tile": "8p"}]}]
+]
 |
 .yaku_dorahairi_chinroutou_chiitoitsu += [
   {

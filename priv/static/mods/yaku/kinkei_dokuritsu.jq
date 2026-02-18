@@ -1,4 +1,7 @@
-.after_initialization.actions += [["add_rule", "Mangan", "Kinkei Dokuritsu", "\"Golden Rooster Standing Alone\". Mangan if you are waiting on 1s (1 bamboo, the bird tile) with four calls. Can be open or closed.", 105]]
+.after_initialization.actions += [
+  ["add_rule", "Mangan", "Kinkei Dokuritsu", "\"Golden Rooster Standing Alone\". Mangan if you are waiting on 1s (1 bamboo, the bird tile) with four calls. Ankans are allowed.", 105],
+  ["update_rule", "Mangan", "Kinkei Dokuritsu", "%{example_hand}", {"example_hand": ["1s", "3x", "1m", "1m", {"attrs": ["_sideways"], "tile": "1m"}, "3x", "8s", "8s", {"attrs": ["_sideways"], "tile": "8s"}, "3z", {"attrs": ["_sideways"], "tile": "7m"}, "8m", "9m", "3x", "1x", "7p", "7p", "1x", "3x", "1s"]}]
+]
 |
 (if .buttons | has("ton") then ["ton", "chii", "chon", "chon_honors", "daiminfuun", "pon", "daiminkan", "kapon", "kakakan", "kafuun", "kakan", "anfuun", "ankan"] else ["chii", "pon", "daiminkan", "kakan", "ankan"] end) as $all_calls
 |

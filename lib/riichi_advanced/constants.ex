@@ -292,7 +292,6 @@ defmodule RiichiAdvanced.Constants do
         han: "Han"
       },
       mods: [
-        "base",
         "global_mods",
         "standard_wall",
         "default_auto_buttons",

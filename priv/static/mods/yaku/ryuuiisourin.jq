@@ -1,4 +1,7 @@
-.after_initialization.actions += [["add_rule", "Yakuman", "Ryuuiisourin", "\"All Black\". Like ryuuiisou, except you have a pair of 5s (5 bamboo).", 113]]
+.after_initialization.actions += [
+  ["add_rule", "Yakuman", "Ryuuiisourin", "\"All Black\". Like ryuuiisou, except you have a pair of 5s (5 bamboo).", 113],
+  ["update_rule", "Yakuman", "Ryuuiisourin", "%{example_hand}", {"example_hand": ["2s", "2s", "3s", "4s", "4s", "5s", "5s", "8s", "8s", "8s", "6z", "6z", "6z", "3x", "3s"]}]
+]
 |
 .yakuman += [
   {

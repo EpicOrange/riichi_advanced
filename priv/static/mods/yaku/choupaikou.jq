@@ -1,10 +1,16 @@
 .after_initialization.actions += [
   ["add_rule", "1 Han", "Sanshoku Choupaikou", "Your hand has the pattern 111333555 in different suits (doesn't have to start at 1).", 101],
+  ["update_rule", "1 Han", "Sanshoku Choupaikou", "%{example_hand}", {"example_hand": ["2m", "2m", "2m", "4p", "4p", "4p", "6s", "6s", "6s", "4z", "4z", "4z", "5z", "3x", "5z"]}],
   ["add_rule", "1 Han", "Sanshoku Sujipaikou", "Your hand has the pattern 111444777 in different suits (doesn't have to start at 1).", 101],
+  ["update_rule", "1 Han", "Sanshoku Sujipaikou", "%{example_hand}", {"example_hand": ["2m", "2m", "2m", "5p", "5p", "5p", "8s", "8s", "8s", "4z", "4z", "4z", "5z", "3x", "5z"]}],
   ["add_rule", "1 Han", "Sanshoku Chousankou", "Your hand has the pattern 111555999 in different suits.", 101],
+  ["update_rule", "1 Han", "Sanshoku Chousankou", "%{example_hand}", {"example_hand": ["1m", "1m", "1m", "5p", "5p", "5p", "9s", "9s", "9s", "4z", "4z", "4z", "5z", "3x", "5z"]}],
   ["add_rule", "2 Han", "Choupaikou", "Your hand has the pattern 111333555 in the same suit (doesn't have to start at 1).", 102],
+  ["update_rule", "2 Han", "Choupaikou", "%{example_hand}", {"example_hand": ["2m", "2m", "2m", "4m", "4m", "4m", "6m", "6m", "6m", "4s", "5s", "6s", "9s", "3x", "9s"]}],
   ["add_rule", "2 Han", "Sujipaikou", "Your hand has the pattern 111444777 in the same suit (doesn't have to start at 1).", 102],
-  ["add_rule", "2 Han", "Chousankou", "Your hand has the pattern 111555999 in the same suit.", 102]
+  ["update_rule", "2 Han", "Sujipaikou", "%{example_hand}", {"example_hand": ["2m", "2m", "2m", "5m", "5m", "5m", "8m", "8m", "8m", "4s", "5s", "6s", "9s", "3x", "9s"]}],
+  ["add_rule", "2 Han", "Chousankou", "Your hand has the pattern 111555999 in the same suit.", 102],
+  ["update_rule", "2 Han", "Chousankou", "%{example_hand}", {"example_hand": ["1m", "1m", "1m", "5m", "5m", "5m", "9m", "9m", "9m", "4s", "5s", "6s", "9s", "3x", "9s"]}]
 ]
 |
 (if .set_definitions | has("kontsu") then ["shuntsu", "kontsu", "koutsu"] else ["shuntsu", "koutsu"] end) as $others

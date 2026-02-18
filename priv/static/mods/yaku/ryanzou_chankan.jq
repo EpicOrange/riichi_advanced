@@ -1,4 +1,7 @@
-.after_initialization.actions += [["add_rule", "Mangan", "Ryanzou Chankan", "\"Scratching a Carrying Pole\". Mangan if you win with chankan on the 2s (2 bamboo).", 105]]
+.after_initialization.actions += [
+  ["add_rule", "Mangan", "Ryanzou Chankan", "\"Scratching a Carrying Pole\". Mangan if you win with chankan on the 2s (2 bamboo).", 105],
+  ["update_rule", "Mangan", "Ryanzou Chankan", "%{example_hand}", {"example_hand": ["4m", "5m", "6m", "3p", "4p", "0p", "1s", "3s", "6s", "7s", "8s", "9s", "9s", "3x", "2s"]}]
+]
 |
 .ryanzou_chankan += [
   {

@@ -1,4 +1,8 @@
-.after_initialization.actions += [["add_rule", "Yakuman", "Golden Gate Bridge", "Your hand contains 123 345 567 789 all in one suit. No restrictions on your pair.", 113]]
+.after_initialization.actions += [
+  ["add_rule", "Yakuman", "Golden Gate Bridge", "Your hand contains 123 345 567 789 all in one suit. No restrictions on your pair.", 113],
+  ["update_rule", "Yakuman", "Golden Gate Bridge", "%{example_hand}", {"example_hand": ["1m", "2m", "3m", "3m", "4m", "5m", "5m", "6m", "7m", "7m", "8m", "9m", "2s", "3x", "2s"]}]
+  
+]
 |
 .yakuman += [
   {

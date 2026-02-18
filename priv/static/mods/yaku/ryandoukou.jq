@@ -1,4 +1,7 @@
-.after_initialization.actions += [["add_rule", "2 Han", "Ryandoukou", "\"Twice Double Triplets\". Your hand has two double triplets, like 11444m444666p666s. A double triplet is when you have two triplets of the same number in different suits, like 333m 333p.", 102]]
+.after_initialization.actions += [
+  ["add_rule", "2 Han", "Ryandoukou", "\"Twice Double Triplets\". Your hand has two double triplets, like 11444m444666p666s. A double triplet is when you have two triplets of the same number in different suits, like 333m 333p.", 102],
+  ["update_rule", "2 Han", "Ryandoukou", "%{example_hand}", {"example_hand": ["1m", "4m", "4m", "4m", "4p", "4p", "4p", "6p", "6p", "6p", "6s", "6s", "6s", "3x", "1m"]}]
+]
 |
 (if .set_definitions | has("kontsu") then ["shuntsu", "kontsu", "koutsu"] else ["shuntsu", "koutsu"] end) as $others
 |
