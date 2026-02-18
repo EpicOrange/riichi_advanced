@@ -8,6 +8,13 @@ html, body {
   height: 100%;
   scrollbar-width: none; /* Firefox */
 }
+body::after {
+  /* required since chrome fails to overflow html/body
+     to accommodate absolutely positioned elements */
+  content: "";
+  display: block;
+  height: calc(100vh + (6 * var(--tile-size)));
+}
 /* landscape */
 @media (min-aspect-ratio: 6/5) {
   html, body {
@@ -2754,7 +2761,7 @@ div.ruleset {
   top: calc(100vh + (2 * var(--tile-size)) + 1.2em);
   left: calc(50% - min(90vw, 80vh) / 2);
   width: min(90vw, 80vh);
-  height: 90vh;
+  height: calc(20 * var(--tile-size));
   user-select: text;
 }
 div.ruleset > div.ruleset-text {
