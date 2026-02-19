@@ -26,4 +26,4 @@ define_yaku_precedence "Open Riichi", ["Riichi"]
 define_yaku_precedence "Open Double Riichi", ["Open Riichi", "Double Riichi"]
 
 # dealing into open riichi while not in riichi is worth yakuman
-define_yaku yakuman, "Open Riichi", 1, status("open_riichi") and not_discarder_status("riichi")
+define_yaku yakuman, "Open Riichi", 1, status("open_riichi") and won_by_discard and not_discarder_status("riichi")
