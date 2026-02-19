@@ -953,7 +953,7 @@ defmodule RiichiAdvanced.GameState do
         state = case Rules.get(state.rules_ref, "score_calculation") do
           nil -> state
           score_calculation ->
-            if Map.has_key?(score_calculation, "tobi") do
+            if is_number(Map.get(score_calculation, "tobi")) do
               tobi = Map.get(score_calculation, "tobi", 0)
               if Enum.any?(state.players, fn {_seat, player} -> player.score < tobi end) do
                 Map.put(state, :round_result, :end_game)
