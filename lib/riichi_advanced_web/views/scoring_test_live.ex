@@ -1,12 +1,17 @@
 defmodule RiichiAdvancedWeb.ScoringTestLive do
   alias RiichiAdvanced.Constants, as: Constants
+  alias RiichiAdvanced.GameState, as: GameState
+  alias RiichiAdvanced.GameState.Actions, as: Actions
+  alias RiichiAdvanced.GameState.Kyoku, as: Kyoku
+  alias RiichiAdvanced.GameState.Payment, as: Payment
   alias RiichiAdvanced.GameState.Player, as: Player
   alias RiichiAdvanced.GameState.Rules, as: Rules
+  alias RiichiAdvanced.GameState.Scoring, as: Scoring
   alias RiichiAdvanced.ModLoader, as: ModLoader
-  alias RiichiAdvanced.Payment, as: Payment
   alias RiichiAdvanced.RoomState, as: RoomState
   alias RiichiAdvanced.Types.Responsibility, as: Responsibility
   alias RiichiAdvanced.Types.WinInfo, as: WinInfo
+  alias RiichiAdvanced.Utils, as: Utils
   use RiichiAdvancedWeb, :live_view
   import RiichiAdvancedWeb.Translations
 
@@ -195,13 +200,7 @@ defmodule RiichiAdvancedWeb.ScoringTestLive do
       |> Enum.map(fn yaku = %{"display_name" => name, "value" => value} -> %{
         name: name,
         desc: Map.get(yaku, "desc", ""),
-        value:
-          if is_number(value) do value else
-            case Float.parse(value) do
-              {val, _rest} -> Utils.try_integer(val)
-              _            -> 1
-            end
-          end,
+        value: value,
         list_name: list_name,
         value_name: Map.get(point_names, list_name, ""),
         selected: MapSet.member?(prev_selections, name),
@@ -226,6 +225,52 @@ defmodule RiichiAdvancedWeb.ScoringTestLive do
     ) 
     |> assign(:minipoint_name, Map.get(score_rules, "minipoint_name", "Fu"))
     socket
+  end
+
+  def score_yaku(state, selected_yaku, minipoints) do
+    if not Enum.empty?(selected_yaku) do
+      score_rules = Rules.get(state.rules_ref, "score_calculation", %{})
+      points = Enum.flat_map(Map.values(selected_yaku), &Enum.map(&1, fn {_name, value} -> value end)) |> Enum.reduce([], &Scoring.add_yaku_values/2)
+      mock_gamestate = %GameState.Game{
+        log_loading_mode: true,
+        rules_ref: state.rules_ref,
+        players: state.players,
+        log_state: %{log: []},
+      }
+      mock_gamestate = put_in(mock_gamestate.players.south.pao_map, %{east: ["all"]})
+      cxt = %{
+        seat: :east,
+        win_source: :discard,
+        smt_hand: [],
+        smt_calls: [],
+        winning_tile: :"3s",
+        winning_hand: [:"3s"],
+        is_dealer: true,
+        scoring_key: "ron",
+        rules_ref: state.rules_ref,
+        yaku: selected_yaku,
+        minipoints: minipoints,
+        points: Utils.get_from_points_list(points, score_rules["point_name"]),
+        points2: Utils.get_from_points_list(points, score_rules["point2_name"]),
+      }
+      mock_gamestate = mock_gamestate
+      |> Actions.register_discard(:south, :"3s", true, true)
+      |> Actions.trigger_event("before_win", cxt)
+      |> Actions.trigger_event("before_scoring", cxt)
+      |> Payment.run_scoring_logic(cxt, [:south])
+      mock_gamestate.txns
+      |> IO.inspect(label: "txns")
+      value = mock_gamestate.txns |> Enum.filter(& &1.to == :east) |> Payment.consolidate_txns() |> Map.get(:east) |> Payment.get_txn_result()
+      |> IO.inspect(label: "value")
+
+      state
+      |> Map.put(:winners, %{east: %{}})
+      |> Map.put(:winner_seats, [:east])
+      |> Map.put(:winner_index, 0)
+      |> Map.put(:visible_screen, :scores)
+      |> Map.put(:delta_scores, %{east: value, south: -value, west: 0, north: 0})
+      |> Map.put(:txns, mock_gamestate.txns)
+    end
   end
 
   def handle_event("back", _assigns, socket) do
@@ -305,32 +350,20 @@ defmodule RiichiAdvancedWeb.ScoringTestLive do
   def handle_event("score_yaku", _assigns, socket) do
     # silent 4MB limit
     if byte_size(socket.assigns.config) <= 4 * 1024 * 1024 do
-      yaku_lists = socket.assigns.yaku_lists ++ socket.assigns.extra_yaku_lists
-      yaku2_lists = socket.assigns.yaku2_lists
+      # yaku_lists = socket.assigns.yaku_lists ++ socket.assigns.extra_yaku_lists
+      # yaku2_lists = socket.assigns.yaku2_lists
       minipoints = socket.assigns.minipoints
-      score_rules = Rules.get(socket.assigns.rules_ref, "score_calculation", %{})
-      yaku_assign = socket.assigns.yaku
+      # score_rules = Rules.get(socket.assigns.rules_ref, "score_calculation", %{})
+      state = socket.assigns.state
+      |> Map.put(:ruleset, socket.assigns.ruleset)
+      |> Map.put(:config, socket.assigns.config)
+      |> Map.put(:room_code, "scoringtest_" <> String.slice(socket.assigns.session_id, 0..7))
+      |> Map.put(:rules_ref, socket.assigns.rules_ref)
+      # TODO left off here
+      #   somehow scoring_logic is not present in rules_ref
+      selected_yaku = get_selected_yaku(socket.assigns.yaku)
       socket = socket
-      |> start_async(:score_yaku, fn ->
-        selected_yaku = get_selected_yaku(yaku_assign)
-        get_yaku = fn list_name -> Map.get(selected_yaku, list_name, []) end
-        Payment.determine_responsibilities([%WinInfo{
-          seat: :east,
-          won_by: {:discard, :south},
-          yaku: Enum.flat_map(yaku_lists, get_yaku),
-          yaku2: Enum.flat_map(yaku2_lists, get_yaku),
-          minipoints: minipoints,
-          pao_map: %{},
-          available_seats: [:east, :south, :west, :north],
-        }], %{
-          dealer_seat: :east,
-          pot: 0,
-          honba: 0,
-          honba_value: 100,
-          modifiers: []
-        })
-        |> Enum.map(&Payment.calculate_txn(&1, score_rules))
-      end)
+      |> start_async(:put_state, fn -> score_yaku(state, selected_yaku, minipoints) end)
       |> assign(:loading, true)
       {:noreply, socket}
     else
@@ -354,17 +387,9 @@ defmodule RiichiAdvancedWeb.ScoringTestLive do
       {:noreply, retrieve_yaku_lists(socket)}
     else {:noreply, socket} end
   end
-  def handle_async(:score_yaku, {:ok, txns}, socket) do
-    value = Payment.get_txn_result(Enum.at(txns, 0))
+  def handle_async(:put_state, {:ok, state}, socket) do
     socket = socket
-    |> assign(:state, Map.merge(socket.assigns.state, %{
-      winners: %{east: %{}},
-      winner_seats: [:east],
-      winner_index: 0,
-      visible_screen: :scores,
-      delta_scores: %{east: value, south: -value, west: 0, north: 0},
-      txns: txns,
-    }))
+    |> assign(:state, state)
     |> assign(:loading, false)
     {:noreply, socket}
   end

@@ -49,22 +49,25 @@ defmodule RiichiAdvanced.Compiler do
   alias RiichiAdvanced.Utils
   alias RiichiAdvanced.Validator
 
-  @binops ["atan2", "copysign", "drem", "fdim", "fmax", "fmin", "fmod", "frexp", "hypot", "jn", "ldexp", "modf", "nextafter", "nexttoward", "pow", "remainder", "scalb", "scalbln", "yn"]
+  @unops [:-, "round_up"]
+  @binops [:+, :-, :*, :/, :**, :=, "round_up"]
+  # "atan2", "copysign", "drem", "fdim", "fmax", "fmin", "fmod", "frexp", "hypot", "jn", "ldexp",
+  # "modf", "nextafter", "nexttoward", "pow", "remainder", "scalb", "scalbln", "yn"
 
   defp compile_condition(condition, line, column) do
     case condition do
-      {:==, pos, [{l, _, nil}, {r, _, nil}]} -> compile_condition({"counter_equals", pos, [l, r]}, line, column)
-      {:==, pos, [{l, _, nil}, r]} -> compile_condition({"counter_equals", pos, [l, r]}, line, column)
+      {:==, pos, [{l, _, nil}, {r, _, nil}]} -> compile_condition({"amount_equals", pos, [l, r]}, line, column)
+      {:==, pos, [{l, _, nil}, r]} -> compile_condition({"amount_equals", pos, [l, r]}, line, column)
       {:!=, pos, [{l, _, nil}, {r, _, nil}]} -> compile_condition({"not_counter_equals", pos, [l, r]}, line, column)
       {:!=, pos, [{l, _, nil}, r]} -> compile_condition({"not_counter_equals", pos, [l, r]}, line, column)
-      {:<=, pos, [{l, _, nil}, {r, _, nil}]} -> compile_condition({"counter_at_most", pos, [l, r]}, line, column)
-      {:<=, pos, [{l, _, nil}, r]} -> compile_condition({"counter_at_most", pos, [l, r]}, line, column)
-      {:>=, pos, [{l, _, nil}, {r, _, nil}]} -> compile_condition({"counter_at_least", pos, [l, r]}, line, column)
-      {:>=, pos, [{l, _, nil}, r]} -> compile_condition({"counter_at_least", pos, [l, r]}, line, column)
-      {:<, pos, [{l, _, nil}, {r, _, nil}]} -> compile_condition({"counter_less_than", pos, [l, r]}, line, column)
-      {:<, pos, [{l, _, nil}, r]} -> compile_condition({"counter_less_than", pos, [l, r]}, line, column)
-      {:>, pos, [{l, _, nil}, {r, _, nil}]} -> compile_condition({"counter_more_than", pos, [l, r]}, line, column)
-      {:>, pos, [{l, _, nil}, r]} -> compile_condition({"counter_more_than", pos, [l, r]}, line, column)
+      {:<=, pos, [{l, _, nil}, {r, _, nil}]} -> compile_condition({"amount_at_most", pos, [l, r]}, line, column)
+      {:<=, pos, [{l, _, nil}, r]} -> compile_condition({"amount_at_most", pos, [l, r]}, line, column)
+      {:>=, pos, [{l, _, nil}, {r, _, nil}]} -> compile_condition({"amount_at_least", pos, [l, r]}, line, column)
+      {:>=, pos, [{l, _, nil}, r]} -> compile_condition({"amount_at_least", pos, [l, r]}, line, column)
+      {:<, pos, [{l, _, nil}, {r, _, nil}]} -> compile_condition({"amount_less_than", pos, [l, r]}, line, column)
+      {:<, pos, [{l, _, nil}, r]} -> compile_condition({"amount_less_than", pos, [l, r]}, line, column)
+      {:>, pos, [{l, _, nil}, {r, _, nil}]} -> compile_condition({"amount_more_than", pos, [l, r]}, line, column)
+      {:>, pos, [{l, _, nil}, r]} -> compile_condition({"amount_more_than", pos, [l, r]}, line, column)
       {:not, _, [condition]} ->
         with {:ok, result} <- compile_cnf_condition(condition, line, column) do
           {:ok, %{"name" => "not", "opts" => [result]}}
@@ -149,6 +152,35 @@ defmodule RiichiAdvanced.Compiler do
     end
   end
 
+  defp compile_identifier(id, line, column) when is_binary(id) do
+    if Regex.match?(~r/^[a-z_][a-z0-9_]*$/, id) do
+      {:ok, id}
+    else
+      {:error, "Compiler.compile_identifier: at line #{line}:#{column}, invalid identifier #{inspect(id)}"}
+    end
+  end
+  defp compile_identifier(id, line, column) do
+    {:error, "Compiler.compile_identifier: at line #{line}:#{column}, invalid identifier #{inspect(id)}"}
+  end
+
+  defp compile_expr({op, [line: line, column: column], [expr1]}, _line, _column) when op in @unops do
+    with {:ok, expr1} <- compile_expr(expr1, line, column) do
+      {:ok, [if is_atom(op) do Atom.to_string(op) else op end, [expr1]]}
+    end
+  end
+  defp compile_expr({op, [line: line, column: column], [expr1, expr2]}, _line, _column) when op in @binops do
+    with {:ok, expr1} <- compile_expr(expr1, line, column),
+         {:ok, expr2} <- compile_expr(expr2, line, column) do
+      {:ok, [if is_atom(op) do Atom.to_string(op) else op end, [expr1, expr2]]}
+    end
+  end
+  defp compile_expr({name, _, nil}, line, column) when is_binary(name), do: compile_identifier(name, line, column)
+  defp compile_expr(name, line, column) when is_binary(name), do: compile_identifier(name, line, column)
+  defp compile_expr(num, _line, _column) when is_number(num), do: {:ok, num}
+  defp compile_expr(expr, line, column) do
+    {:error, "Compiler.compile_expr: at line #{line}:#{column}, invalid expr #{inspect(expr)}"}
+  end
+
   # defp compile_action!(action, line, column) do
   #   case compile_action(action, line, column) do
   #     {:ok, json} -> json
@@ -157,16 +189,28 @@ defmodule RiichiAdvanced.Compiler do
   # end
   defp compile_action(action, line, column) do
     case action do
-      {:=, pos, [{l, _, nil}, {:+, _, [{l, _, nil}, {r, _, nil}]}]} -> compile_action({"add_counter", pos, [l, r]}, line, column)
-      {:=, pos, [{l, _, nil}, {:-, _, [{l, _, nil}, {r, _, nil}]}]} -> compile_action({"subtract_counter", pos, [l, r]}, line, column)
-      {:=, pos, [{l, _, nil}, {:*, _, [{l, _, nil}, {r, _, nil}]}]} -> compile_action({"multiply_counter", pos, [l, r]}, line, column)
-      {:=, pos, [{l, _, nil}, {:/, _, [{l, _, nil}, {r, _, nil}]}]} -> compile_action({"divide_counter", pos, [l, r]}, line, column)
-      {:=, pos, [{l, _, nil}, {:+, _, [{l, _, nil}, r]}]} -> compile_action({"add_counter", pos, [l, r]}, line, column)
-      {:=, pos, [{l, _, nil}, {:-, _, [{l, _, nil}, r]}]} -> compile_action({"subtract_counter", pos, [l, r]}, line, column)
-      {:=, pos, [{l, _, nil}, {:*, _, [{l, _, nil}, r]}]} -> compile_action({"multiply_counter", pos, [l, r]}, line, column)
-      {:=, pos, [{l, _, nil}, {:/, _, [{l, _, nil}, r]}]} -> compile_action({"divide_counter", pos, [l, r]}, line, column)
-      {:=, pos, [{l, _, nil}, {r, _, nil}]} -> compile_action({"set_counter", pos, [l, r]}, line, column)
-      {:=, pos, [{l, _, nil}, r]} -> compile_action({"set_counter", pos, [l, r]}, line, column)
+      {:"::", [line: line, column: column], [assignment, display_name]} ->
+        case assignment do
+          {:=,    pos, [{l, _, nil}, r]} -> compile_action({"_counter_assignment", pos, [l, "=", r, display_name]}, line, column)
+          {:"+=", pos, [{l, _, nil}, r]} -> compile_action({"_counter_assignment", pos, [l, "+", r, display_name]}, line, column)
+          {:"-=", pos, [{l, _, nil}, r]} -> compile_action({"_counter_assignment", pos, [l, "-", r, display_name]}, line, column)
+          {:"*=", pos, [{l, _, nil}, r]} -> compile_action({"_counter_assignment", pos, [l, "*", r, display_name]}, line, column)
+          {:"/=", pos, [{l, _, nil}, r]} -> compile_action({"_counter_assignment", pos, [l, "/", r, display_name]}, line, column)
+          {:"^=", pos, [{l, _, nil}, r]} -> compile_action({"_counter_assignment", pos, [l, "^", r, display_name]}, line, column)
+          _                              -> {:error, "Compiler.compile_action: at line #{line}:#{column}, expected an assignment, got #{assignment}"}
+        end
+      # {:=, pos, [{l, _, nil}, {:+, _, [{l, _, nil}, {r, _, nil}]}]} -> compile_action({"add_counter", pos, [l, r]}, line, column)
+      # {:=, pos, [{l, _, nil}, {:-, _, [{l, _, nil}, {r, _, nil}]}]} -> compile_action({"subtract_counter", pos, [l, r]}, line, column)
+      # {:=, pos, [{l, _, nil}, {:*, _, [{l, _, nil}, {r, _, nil}]}]} -> compile_action({"multiply_counter", pos, [l, r]}, line, column)
+      # {:=, pos, [{l, _, nil}, {:/, _, [{l, _, nil}, {r, _, nil}]}]} -> compile_action({"divide_counter", pos, [l, r]}, line, column)
+      # {:=, pos, [{l, _, nil}, {:**, _, [{l, _, nil}, {r, _, nil}]}]} -> compile_action({"exponentiate_counter", pos, [l, r]}, line, column)
+      # {:=, pos, [{l, _, nil}, {:+, _, [{l, _, nil}, r]}]} -> compile_action({"add_counter", pos, [l, r]}, line, column)
+      # {:=, pos, [{l, _, nil}, {:-, _, [{l, _, nil}, r]}]} -> compile_action({"subtract_counter", pos, [l, r]}, line, column)
+      # {:=, pos, [{l, _, nil}, {:*, _, [{l, _, nil}, r]}]} -> compile_action({"multiply_counter", pos, [l, r]}, line, column)
+      # {:=, pos, [{l, _, nil}, {:/, _, [{l, _, nil}, r]}]} -> compile_action({"divide_counter", pos, [l, r]}, line, column)
+      # {:=, pos, [{l, _, nil}, {:**, _, [{l, _, nil}, r]}]} -> compile_action({"exponentiate_counter", pos, [l, r]}, line, column)
+      # {:=, pos, [{l, _, nil}, {r, _, nil}]} -> compile_action({"set_counter", pos, [l, r]}, line, column)
+      {:=, pos, [l, r]} -> compile_action({"_set_counter", pos, [l, r]}, line, column)
       {"if", [line: line, column: column], opts} ->
         case opts do
           [condition, actions] ->
@@ -211,6 +255,24 @@ defmodule RiichiAdvanced.Compiler do
               {:ok, ["as", seats_spec, actions]}
             end
           _ -> {:error, "\"as\" got invalid parameters: #{inspect(opts)}"}
+        end
+      {"_counter_assignment", [line: line, column: column], opts} ->
+        case opts do
+          [l, op, r, display_name] ->
+            with {:ok, name} <- Validator.validate_json(l),
+                 {:ok, expr} <- compile_expr(r, line, column) do
+              {:ok, ["_counter_assignment", display_name, name, op, expr]}
+            end
+          _ -> {:error, "Compiler.compile_action: at line #{line}:#{column}, expected an expression, got #{opts}"}
+        end
+      {"_set_counter", pos, opts} ->
+        case opts do
+          [{name, [line: line, column: column], _}, expr] ->
+            with {:ok, name} <- Validator.validate_json(name),
+                 {:ok, expr} <- compile_expr(expr, line, column) do
+              {:ok, ["set_counter", name, "eval_expr", expr]}
+            end
+          _ -> {:error, "\"set_counter\" got invalid parameters: #{inspect(opts)}"}
         end
       {name, [line: line, column: column], args} when is_binary(name) ->
         if name in Validator.allowed_actions() do
@@ -540,7 +602,7 @@ defmodule RiichiAdvanced.Compiler do
          {:ok, names} <- Validator.validate_json(names),
          {:ok, names} <- Enum.map(names, &Jason.encode/1) |> Utils.sequence() do
       {:ok, ~s"""
-      .[#{name}] |= map(select(.display_name | IN(#{Enum.join(names, ",")}) | not))
+      if has(#{name}) then .[#{name}] |= map(select(.display_name | IN(#{Enum.join(names, ",")}) | not)) else . end
       """}
     end
   end
@@ -795,7 +857,24 @@ defmodule RiichiAdvanced.Compiler do
     end
   end
 
-  # TODO deprecate
+  # TODO remove `define`
+
+
+  defp compile_command("define_scoring", name, args, line, column) do
+    body = case args do
+      {:__block__, [], _nodes} -> compile_action_list(args, line, column)
+      action -> case compile_action(args, line, column) do
+        {:ok, action} -> {:ok, [action]}
+        _ -> {:error, "Compiler.compile: at line #{line}:#{column}, `define_scoring` command expects a do block or an action, got #{inspect(args)}"}
+      end
+    end
+    with {:ok, body} <- body,
+         {:ok, body} <- Jason.encode(body) do
+      {:ok, ".scoring_logic[#{name}] += #{body}"}
+    end
+  end
+
+  # TODO remove `define`
   defp compile_command("define", name, args, line, column) do
     case Jason.decode!(name) do
       "play_restriction" -> 

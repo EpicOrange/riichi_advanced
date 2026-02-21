@@ -1,5 +1,5 @@
 defmodule RiichiAdvancedWeb.ScoreWindowComponent do
-  alias RiichiAdvanced.Payment, as: Payment
+  alias RiichiAdvanced.GameState.Payment, as: Payment
   alias RiichiAdvanced.Utils, as: Utils
   use RiichiAdvancedWeb, :live_component
   import RiichiAdvancedWeb.Translations
@@ -71,7 +71,13 @@ defmodule RiichiAdvancedWeb.ScoreWindowComponent do
           <% end %>
         </div>
         </div>
-      <div class="timer" phx-cancellable-click="ready_for_next_round">Skip (<%= @timer %>)</div>
+      <div class="timer" phx-cancellable-click="ready_for_next_round">
+        <%= if @timer == 0 do %>
+          <%= dt(@lang, "Dismiss") %>
+        <% else %>
+          <%= dt(@lang, "Skip") %> (<%= @timer %>)
+        <% end %>
+      </div>
       <svg style="display: none">
         <symbol id="arrow">
           <defs>
@@ -133,7 +139,7 @@ defmodule RiichiAdvancedWeb.ScoreWindowComponent do
     ret = for txn = %{from: from, to: to, line_items: line_items} <- txns, reduce: [] do
       ret -> [{make_key(seat, from, to), Payment.get_txn_result(txn), Enum.reverse(line_items)} | ret]
     end
-    # then make ledgers for individual players who got score
+    # then make ledgers for individual players
     ret = for {seat2, txn} <- Payment.consolidate_txns(txns), reduce: ret do
       ret when seat2 == nil -> ret
       ret ->
@@ -169,12 +175,12 @@ defmodule RiichiAdvancedWeb.ScoreWindowComponent do
 
   def display_op(op) do
     case op do
-      :+ -> "+"
-      :- -> "-"
-      :* -> "×"
-      :/ -> "÷"
-      :round_up -> "↑"
-      :round_down -> "↓"
+      "+" -> "+"
+      "-" -> "-"
+      "*" -> "×"
+      "/" -> "÷"
+      "round_up" -> "↑"
+      "round_down" -> "↓"
       _  -> ""
     end
   end

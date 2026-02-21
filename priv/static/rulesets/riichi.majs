@@ -1,3 +1,5 @@
+
+
 # TODO: Figure out how to fix the `cancellable_riichi` mod, then re-add it as default as well as in modpacks.
 
 define_set pair, ~s"0 0"
@@ -64,17 +66,17 @@ define_match sanankou_ron,
 
 define_const closed_hand, has_no_call_named("chii", "pon", "daiminkan", "kakan")
 
-define_yaku yaku, "Tsumo", 1, won_by_draw and @closed_hand
-define_yaku yaku, "Haitei", 1, no_tiles_remaining and won_by_draw
-define_yaku yaku, "Houtei", 1, no_tiles_remaining and not_won_by_draw
-define_yaku yaku, "Pinfu", 1, @closed_hand
+define_yaku yaku, "Tsumo", [1, "Han"], won_by_draw and @closed_hand
+define_yaku yaku, "Haitei", [1, "Han"], no_tiles_remaining and won_by_draw
+define_yaku yaku, "Houtei", [1, "Han"], no_tiles_remaining and not_won_by_draw
+define_yaku yaku, "Pinfu", [1, "Han"], @closed_hand
   and match(["hand", "calls", "winning_tile"], ["standard_win"])
   and ((won_by_draw and minipoints_equals(20)) or (not_won_by_draw and minipoints_equals(30)))
-define_yaku yaku, "Tanyao", 1, winning_hand_consists_of("2m","3m","4m","5m","6m","7m","8m","2p","3p","4p","5p","6p","7p","8p","2s","3s","4s","5s","6s","7s","8s")
-define_yaku yaku, "Iipeikou", 1, @closed_hand and match(["hand", "calls", "winning_tile"], ~m"exhaustive, iipeikou:1, mentsu:2, pair:1")
-define_yaku yaku, "Haku", 1, match(["hand", "calls", "winning_tile"], ~m"exhaustive, haku:1, mentsu:3, pair:1")
-define_yaku yaku, "Hatsu", 1, match(["hand", "calls", "winning_tile"], ~m"exhaustive, hatsu:1, mentsu:3, pair:1")
-define_yaku yaku, "Chun", 1, match(["hand", "calls", "winning_tile"], ~m"exhaustive, chun:1, mentsu:3, pair:1")
+define_yaku yaku, "Tanyao", [1, "Han"], winning_hand_consists_of("2m","3m","4m","5m","6m","7m","8m","2p","3p","4p","5p","6p","7p","8p","2s","3s","4s","5s","6s","7s","8s")
+define_yaku yaku, "Iipeikou", [1, "Han"], @closed_hand and match(["hand", "calls", "winning_tile"], ~m"exhaustive, iipeikou:1, mentsu:2, pair:1")
+define_yaku yaku, "Haku", [1, "Han"], match(["hand", "calls", "winning_tile"], ~m"exhaustive, haku:1, mentsu:3, pair:1")
+define_yaku yaku, "Hatsu", [1, "Han"], match(["hand", "calls", "winning_tile"], ~m"exhaustive, hatsu:1, mentsu:3, pair:1")
+define_yaku yaku, "Chun", [1, "Han"], match(["hand", "calls", "winning_tile"], ~m"exhaustive, chun:1, mentsu:3, pair:1")
 
 # round and seat winds
 def add_scoring_attrs do
@@ -89,8 +91,8 @@ def add_scoring_attrs do
 end
 define_set prevalent_wind, ~s"0@prevalent 0@prevalent 0@prevalent"
 define_set seat_wind, ~s"0@seat 0@seat 0@seat"
-define_yaku yaku, "Round Wind", 1, match(["hand", "calls", "winning_tile"], ~m"exhaustive, prevalent_wind:1, mentsu:3, pair:1")
-define_yaku yaku, "Seat Wind", 1, match(["hand", "calls", "winning_tile"], ~m"exhaustive, seat_wind:1, mentsu:3, pair:1")
+define_yaku yaku, "Round Wind", [1, "Han"], match(["hand", "calls", "winning_tile"], ~m"exhaustive, prevalent_wind:1, mentsu:3, pair:1")
+define_yaku yaku, "Seat Wind", [1, "Han"], match(["hand", "calls", "winning_tile"], ~m"exhaustive, seat_wind:1, mentsu:3, pair:1")
 
 # welcome to the chanta zone
 apply append, "functions.add_scoring_attrs" do
@@ -108,53 +110,53 @@ define_set yaochuu_t, ~s"0@yaochuu 0@yaochuu 0@yaochuu"
 define_set yaochuu_pair, ~s"0@yaochuu 0@yaochuu"
 define_match chanta, ~m"exhaustive, (yaochuu_l yaochuu_r yaochuu_t):4, yaochuu_pair:1" 
 define_match junchan, ~m"exhaustive, (terminal_l terminal_r terminal_t):4, terminal_pair:1" 
-define_yaku yaku, "Chanta", 1, match(["hand", "calls", "winning_tile"], ["chanta"])
-define_yaku yaku, "Junchan", 2, match(["hand", "calls", "winning_tile"], ["junchan"])
+define_yaku yaku, "Chanta", [1, "Han"], match(["hand", "calls", "winning_tile"], ["chanta"])
+define_yaku yaku, "Junchan", [2, "Han"], match(["hand", "calls", "winning_tile"], ["junchan"])
 # now leaving the chanta zone
 
-define_yaku yaku, "Ittsu", 1, match(["hand", "calls", "winning_tile"], ~m"exhaustive, ittsu:1, mentsu:1, pair:1")
-define_yaku yaku, "Sanshoku", 1, match(["hand", "calls", "winning_tile"], ~m"exhaustive, sanshoku_doujun:1, mentsu:1, pair:1")
-define_yaku yaku, "Sanshoku Doukou", 2, match(["hand", "calls", "winning_tile"], ~m"exhaustive, sanshoku_doukou:1, mentsu:1, pair:1")
-define_yaku yaku, "Toitoi", 2, match(["hand", "calls", "winning_tile"], ~m"koutsu:4, pair:1")
-define_yaku yaku, "Chiitoitsu", 2, match(["hand", "calls", "winning_tile"], ~m"(nojoker quad):-1, pair:7")
-define_yaku yaku, "Sanankou", 2,
+define_yaku yaku, "Ittsu", [1, "Han"], match(["hand", "calls", "winning_tile"], ~m"exhaustive, ittsu:1, mentsu:1, pair:1")
+define_yaku yaku, "Sanshoku", [1, "Han"], match(["hand", "calls", "winning_tile"], ~m"exhaustive, sanshoku_doujun:1, mentsu:1, pair:1")
+define_yaku yaku, "Sanshoku Doukou", [2, "Han"], match(["hand", "calls", "winning_tile"], ~m"exhaustive, sanshoku_doukou:1, mentsu:1, pair:1")
+define_yaku yaku, "Toitoi", [2, "Han"], match(["hand", "calls", "winning_tile"], ~m"koutsu:4, pair:1")
+define_yaku yaku, "Chiitoitsu", [2, "Han"], match(["hand", "calls", "winning_tile"], ~m"(nojoker quad):-1, pair:7")
+define_yaku yaku, "Sanankou", [2, "Han"],
      (won_by_draw and match(["hand", "calls", "winning_tile"], ["sanankou_tsumo"]))
   or (not_won_by_draw and match(["hand", "calls", "winning_tile"], ["sanankou_ron"]))
-define_yaku yaku, "Shousangen", 2, match(["hand", "calls", "winning_tile"], ~m"(haku hatsu chun):2, (haku_pair hatsu_pair chun_pair):1")
-define_yaku yaku, "Honroutou", 2, winning_hand_consists_of("1m","9m","1p","9p","1s","9s","1z","2z","3z","4z","5z","6z","7z")
-define_yaku yaku, "Ryanpeikou", 3, @closed_hand and match(["hand", "calls", "winning_tile"], ~m"exhaustive, iipeikou:2, pair:1")
-define_yaku yaku, "Honitsu", 2,
+define_yaku yaku, "Shousangen", [2, "Han"], match(["hand", "calls", "winning_tile"], ~m"(haku hatsu chun):2, (haku_pair hatsu_pair chun_pair):1")
+define_yaku yaku, "Honroutou", [2, "Han"], winning_hand_consists_of("1m","9m","1p","9p","1s","9s","1z","2z","3z","4z","5z","6z","7z")
+define_yaku yaku, "Ryanpeikou", [3, "Han"], @closed_hand and match(["hand", "calls", "winning_tile"], ~m"exhaustive, iipeikou:2, pair:1")
+define_yaku yaku, "Honitsu", [2, "Han"],
      winning_hand_consists_of("1m","2m","3m","4m","5m","6m","7m","8m","9m","1z","2z","3z","4z","5z","6z","7z")
   or winning_hand_consists_of("1p","2p","3p","4p","5p","6p","7p","8p","9p","1z","2z","3z","4z","5z","6z","7z")
   or winning_hand_consists_of("1s","2s","3s","4s","5s","6s","7s","8s","9s","1z","2z","3z","4z","5z","6z","7z")
-define_yaku yaku, "Chinitsu", 5,
+define_yaku yaku, "Chinitsu", [5, "Han"],
      winning_hand_consists_of("1m","2m","3m","4m","5m","6m","7m","8m","9m")
   or winning_hand_consists_of("1p","2p","3p","4p","5p","6p","7p","8p","9p")
   or winning_hand_consists_of("1s","2s","3s","4s","5s","6s","7s","8s","9s")
-define_yaku meta_yaku, "Chanta", 1, @closed_hand and has_existing_yaku("Chanta")
-define_yaku meta_yaku, "Ittsu", 1, @closed_hand and has_existing_yaku("Ittsu")
-define_yaku meta_yaku, "Sanshoku", 1, @closed_hand and has_existing_yaku("Sanshoku")
-define_yaku meta_yaku, "Junchan", 1, @closed_hand and has_existing_yaku("Junchan")
-define_yaku meta_yaku, "Honitsu", 1, @closed_hand and has_existing_yaku("Honitsu")
-define_yaku meta_yaku, "Chinitsu", 1, @closed_hand and has_existing_yaku("Chinitsu")
-define_yaku yakuman, "Tenhou", 1, status("discards_empty") and won_by_draw and seat_is("east")
-define_yaku yakuman, "Chiihou", 1, status("discards_empty") and won_by_draw and not_seat_is("east")
-define_yaku yakuman, "Daisangen", 1, match(["hand", "calls", "winning_tile"], ~m"haku:1, hatsu:1, chun:1")
-define_yaku yakuman, "Suuankou", 1, won_by_draw and @closed_hand and match(["hand", "calls"], ~m"koutsu:3, pair:2")
-define_yaku yakuman, "Suuankou Tanki", 2, @closed_hand and match(["hand", "calls"], ~m"koutsu:4") and match(["hand", "calls", "winning_tile"], ~m"koutsu:4, pair:1")
-define_yaku yakuman, "Tsuuiisou", 1, winning_hand_consists_of("1z","2z","3z","4z","5z","6z","7z")
-define_yaku yakuman, "Ryuuiisou", 1, winning_hand_consists_of("2s","3s","4s","6s","8s","6z")
-define_yaku yakuman, "Chinroutou", 1, winning_hand_consists_of("1m","9m","1p","9p","1s","9s")
-define_yaku yakuman, "Chuurenpoutou", 1, match(["hand", "winning_tile"], ~m"chuurenpoutou:1")
-define_yaku yakuman, "Junsei Chuurenpoutou", 2, match(["hand"], ~m"chuurenpoutou:1")
-define_yaku yakuman, "Kokushi Musou", 1, match(["hand", "winning_tile"], ~m"orphans_all:1")
+define_yaku meta_yaku, "Chanta", [1, "Han"], @closed_hand and has_existing_yaku("Chanta")
+define_yaku meta_yaku, "Ittsu", [1, "Han"], @closed_hand and has_existing_yaku("Ittsu")
+define_yaku meta_yaku, "Sanshoku", [1, "Han"], @closed_hand and has_existing_yaku("Sanshoku")
+define_yaku meta_yaku, "Junchan", [1, "Han"], @closed_hand and has_existing_yaku("Junchan")
+define_yaku meta_yaku, "Honitsu", [1, "Han"], @closed_hand and has_existing_yaku("Honitsu")
+define_yaku meta_yaku, "Chinitsu", [1, "Han"], @closed_hand and has_existing_yaku("Chinitsu")
+define_yaku yakuman, "Tenhou", [1, "★"], status("discards_empty") and won_by_draw and seat_is("east")
+define_yaku yakuman, "Chiihou", [1, "★"], status("discards_empty") and won_by_draw and not_seat_is("east")
+define_yaku yakuman, "Daisangen", [1, "★"], match(["hand", "calls", "winning_tile"], ~m"haku:1, hatsu:1, chun:1")
+define_yaku yakuman, "Suuankou", [1, "★"], won_by_draw and @closed_hand and match(["hand", "calls"], ~m"koutsu:3, pair:2")
+define_yaku yakuman, "Suuankou Tanki", [2, "★"], @closed_hand and match(["hand", "calls"], ~m"koutsu:4") and match(["hand", "calls", "winning_tile"], ~m"koutsu:4, pair:1")
+define_yaku yakuman, "Tsuuiisou", [1, "★"], winning_hand_consists_of("1z","2z","3z","4z","5z","6z","7z")
+define_yaku yakuman, "Ryuuiisou", [1, "★"], winning_hand_consists_of("2s","3s","4s","6s","8s","6z")
+define_yaku yakuman, "Chinroutou", [1, "★"], winning_hand_consists_of("1m","9m","1p","9p","1s","9s")
+define_yaku yakuman, "Chuurenpoutou", [1, "★"], match(["hand", "winning_tile"], ~m"chuurenpoutou:1")
+define_yaku yakuman, "Junsei Chuurenpoutou", [2, "★"], match(["hand"], ~m"chuurenpoutou:1")
+define_yaku yakuman, "Kokushi Musou", [1, "★"], match(["hand", "winning_tile"], ~m"orphans_all:1")
 define_yaku yakuman, "Kokushi Musou Juusan Menmachi", 2, match(["hand"], ~m"orphans_all:1")
-define_yaku yakuman, "Daisuushii", 2, match(["hand", "calls", "winning_tile"], ["daisuushii"])
-define_yaku yakuman, "Shousuushii", 1, match(["hand", "calls", "winning_tile"], ["shousuushii"])
+define_yaku yakuman, "Daisuushii", [2, "★"], match(["hand", "calls", "winning_tile"], ["daisuushii"])
+define_yaku yakuman, "Shousuushii", [1, "★"], match(["hand", "calls", "winning_tile"], ["shousuushii"])
 # tenhou upgrades certain yakuman to double yakuman
-define_yaku meta_yakuman, "Suuankou Tanki", 2, not_has_existing_yaku("Suuankou Tanki") and has_existing_yaku("Tenhou", "Suuankou")
-define_yaku meta_yakuman, "Junsei Chuurenpoutou", 2, not_has_existing_yaku("Junsei Chuurenpoutou") and has_existing_yaku("Tenhou", "Chuurenpoutou")
-define_yaku meta_yakuman, "Kokushi Musou Juusan Menmachi", 2, not_has_existing_yaku("Kokushi Musou Juusan Menmachi") and has_existing_yaku("Tenhou", "Kokushi Musou")
+define_yaku meta_yakuman, "Suuankou Tanki", [2, "★"], not_has_existing_yaku("Suuankou Tanki") and has_existing_yaku("Tenhou", "Suuankou")
+define_yaku meta_yakuman, "Junsei Chuurenpoutou", [2, "★"], not_has_existing_yaku("Junsei Chuurenpoutou") and has_existing_yaku("Tenhou", "Chuurenpoutou")
+define_yaku meta_yakuman, "Kokushi Musou Juusan Menmachi", [2, "★"], not_has_existing_yaku("Kokushi Musou Juusan Menmachi") and has_existing_yaku("Tenhou", "Kokushi Musou")
 
 define_yaku_precedence "Chinitsu", ["Honitsu"]
 define_yaku_precedence "Chiitoitsu", ["Iipeikou"]
@@ -169,37 +171,183 @@ define_yaku_precedence "Chuurenpoutou", ["Chinitsu"]
 define_yaku_precedence "Junsei Chuurenpoutou", ["Chuurenpoutou"]
 define_yaku_precedence "Kokushi Musou Juusan Menmachi", ["Kokushi Musou"]
 define_yaku_precedence "Daisuushii", ["Shousuushii"]
+define_yaku_precedence "yakuman", ["yaku", "meta_yaku", "extra_yaku"]
+
+def check_limit do
+  if total == 0 and points2 > 0 do
+    total = points2 :: "★"
+    total *= 8000 :: "Yakuman base"
+  end
+  if total == 0 and points >= 13 do
+    total = points :: "Han"
+    total = 8000 :: "Yakuman base"
+  end
+  if total == 0 and points >= 11 do
+    total = points :: "Han"
+    total = 6000 :: "Sanbaiman base"
+  end
+  if total == 0 and points >= 8 do
+    total = points :: "Han"
+    total = 4000 :: "Baiman base"
+  end
+  if total == 0 and points >= 6 do
+    total = points :: "Han"
+    total = 3000 :: "Haneman base"
+  end
+  if total == 0 and points >= 5 do
+    total = points :: "Han"
+    total = 2000 :: "Mangan base"
+  end
+  if total == 0 and points >= 4 and fu >= 40 do
+    total = points :: "Han"
+    total = fu :: "Fu"
+    total = 2000 :: "Mangan base"
+  end
+  if total == 0 and points >= 3 and fu >= 70 do
+    total = points :: "Han"
+    total = fu :: "Fu"
+    total = 2000 :: "Mangan base"
+  end
+end
+
+define_scoring ron do
+  total = 0
+  check_limit()
+  if total == 0 do
+    total = points :: "Han"
+    han_mult = 2 ** (total + 2) :: "Han mult."
+    total = fu :: "Fu"
+    total *= han_mult :: "Base"
+  end
+  if seat_is("east", as: "winner") do
+    total *= 6 :: "Dealer ron"
+  else
+    total *= 4 :: "Nondealer ron"
+  end
+  if limit == 0 do
+    total = round_up(total, 100) :: "Round up"
+  end
+  if honba > 0 do
+    total += honba * 300 :: "Honba"
+  end
+end
+
+define_scoring tsumo do
+  if points2 > 0 do
+    total = points2 :: "★"
+    total *= 8000 :: "Yakuman base"
+    if seat_is("east", as: "winner") do
+      total *= 2 :: "Dealer tsumo"
+    else
+      total *= 1 :: "Nondealer tsumo"
+    end
+    if honba > 0 do
+      total += honba * 100 :: "Honba"
+    end
+  else
+    total = points :: "Han"
+    han_mult = 2 ** (total + 2) :: "Han mult."
+    total = fu :: "Fu"
+    total *= han_mult :: "Base"
+    if seat_is("east", as: "winner") or seat_is("east") do
+      total *= 2 :: "Dealer tsumo"
+    else
+      total *= 1 :: "Nondealer tsumo"
+    end
+    total = round_up(total, 100) :: "Round up"
+    if honba > 0 do
+      total += honba * 100 :: "Honba"
+    end
+  end
+end
+
+def calculate_fu do
+  if fu == 0 do
+    set_counter("fu", "minipoints") do
+      # score calls
+      convert_calls(@calls_fu)
+      remove_calls(["tanyaohai"])
+      convert_calls(@calls_fu)
+      remove_calls
+
+      # now remove all closed groups
+      remove_groups(@winning_groups_fu)
+      remove_groups(@groups_fu)
+      prune(method: "tile_count", num_tiles: [1,4,7,10])
+      remove_groups(@groups_fu)
+      prune(method: "tile_count", num_tiles: [1,4,7,10])
+      remove_groups(@groups_fu)
+      prune(method: "tile_count", num_tiles: [1,4,7,10])
+      remove_groups(@groups_fu)
+      prune(method: "tile_count", num_tiles: [1,4,7,10])
+
+      # only retain configurations with 0 tiles remaining
+      retain_empty_hands
+
+      # add 1000 to pinfu hands so we prioritize pinfu later
+      add(1000, minipoints_equals(0))
+
+      # base 20
+      add(20)
+
+      # tsumo +2 (except closed pinfu tsumo)
+      add(2, won_by_draw and (minipoints_at_most(999) or not @closed_hand))
+
+      # closed ron +10 and open pinfu ron +10
+      add(10, not_won_by_draw and @closed_hand)
+      add(10, not_won_by_draw and not @closed_hand and minipoints_at_least(1000))
+
+      # take max, then subtract 1000 from pinfu hands
+      take_maximum
+      add(-1000, minipoints_at_least(1000))
+
+      # round up to nearest 10
+      round_up(10)
+      
+      # add original hand (for special hands like chiitoitsu and kokushi)
+      add_original_hand
+      
+      # chiitoitsu
+      add(25, minipoints_equals(0) and match(["hand", "calls", "winning_tile"], [[ [["pair"], 7] ]]))
+
+      # kokushi
+      add(40, not_won_by_draw and @closed_hand and minipoints_equals(0) and match(["hand", "calls", "winning_tile"], ["kokushi_win"]))
+      add(30, minipoints_equals(0) and match(["hand", "calls", "winning_tile"], ["kokushi_win"]))
+      take_maximum
+    end
+  end
+end
+
 
 set score_calculation, %{
     scoring_method: ["han_fu_formula", "multiplier"],
-    score_multiplier: 32000, # this is for yakuman
+    score_multiplier: 8000, # this is for yakuman
     dealer_multiplier: 1.5,
     score_name: "Yakuman",
     limit_thresholds: [
-      [3, 70], [4, 40], [5, 0],
-      [6, 0],
-      [8, 0],
+      [13, 0],
       [11, 0],
-      [13, 0]
+      [8, 0],
+      [6, 0],
+      [5, 0], [4, 40], [3, 70]
     ],
     limit_scores: [
-      8000, 8000, 8000,
-      12000,
-      16000,
-      24000,
-      32000
+      8000,
+      6000,
+      4000,
+      3000,
+      2000, 2000, 2000
     ],
     limit_names: [
-      "Mangan", "Mangan", "Mangan",
-      "Haneman",
-      "Baiman",
+      "Kazoe Yakuman",
       "Sanbaiman",
-      "Kazoe Yakuman"
+      "Baiman",
+      "Haneman",
+      "Mangan", "Mangan", "Mangan"
     ],
-    yaku_lists: ["yaku", "meta_yaku", "extra_yaku"],
-    yaku2_lists: ["yakuman", "meta_yakuman"],
+    han_fu_multiplier: 4,
+    yaku_lists: ["yaku", "meta_yaku", "extra_yaku", "yakuman", "meta_yakuman"],
     extra_yaku_lists: ["extra_yaku"],
-    yaku2_overrides_yaku1: true,
     split_oya_ko_payment: true,
     right_display: "minipoints",
     point_name: "Han",
@@ -275,6 +423,9 @@ def noten_payments do
   end
 end
 on after_scoring do
+  if points2 > 0 do
+    modify_winner("point_name", "★")
+  end
   if ended_by_exhaustive_draw do
     noten_payments
   end
@@ -324,62 +475,6 @@ apply append, "functions.add_scoring_attrs" do
     add_attr(["winning_tile"], ["_tsumo"])
   else
     add_attr(["winning_tile"], ["_ron"])
-  end
-end
-def calculate_fu do
-  if fu == 0 do
-    set_counter("fu", "minipoints") do
-      # score calls
-      convert_calls(@calls_fu)
-      remove_calls(["tanyaohai"])
-      convert_calls(@calls_fu)
-      remove_calls
-
-      # now remove all closed groups
-      remove_groups(@winning_groups_fu)
-      remove_groups(@groups_fu)
-      prune(method: "tile_count", num_tiles: [1,4,7,10])
-      remove_groups(@groups_fu)
-      prune(method: "tile_count", num_tiles: [1,4,7,10])
-      remove_groups(@groups_fu)
-      prune(method: "tile_count", num_tiles: [1,4,7,10])
-      remove_groups(@groups_fu)
-      prune(method: "tile_count", num_tiles: [1,4,7,10])
-
-      # only retain configurations with 0 tiles remaining
-      retain_empty_hands
-
-      # add 1000 to pinfu hands so we prioritize pinfu later
-      add(1000, minipoints_equals(0))
-
-      # base 20
-      add(20)
-
-      # tsumo +2 (except closed pinfu tsumo)
-      add(2, won_by_draw and (minipoints_at_most(999) or not @closed_hand))
-
-      # closed ron +10 and open pinfu ron +10
-      add(10, not_won_by_draw and @closed_hand)
-      add(10, not_won_by_draw and not @closed_hand and minipoints_at_least(1000))
-
-      # take max, then subtract 1000 from pinfu hands
-      take_maximum
-      add(-1000, minipoints_at_least(1000))
-
-      # round up to nearest 10
-      round_up(10)
-      
-      # add original hand (for special hands like chiitoitsu and kokushi)
-      add_original_hand
-      
-      # chiitoitsu
-      add(25, minipoints_equals(0) and match(["hand", "calls", "winning_tile"], [[ [["pair"], 7] ]]))
-
-      # kokushi
-      add(40, not_won_by_draw and @closed_hand and minipoints_equals(0) and match(["hand", "calls", "winning_tile"], ["kokushi_win"]))
-      add(30, minipoints_equals(0) and match(["hand", "calls", "winning_tile"], ["kokushi_win"]))
-      take_maximum
-    end
   end
 end
 
@@ -505,6 +600,15 @@ end
 on before_win do
   add_scoring_attrs
   calculate_fu
+  if won_by_draw do
+    make_responsible_for("others", "all")
+  else
+    if won_by_discard do
+      make_responsible_for("last_discarder", "all")
+    else 
+      make_responsible_for("last_caller", "all")
+    end
+  end
 end
 
 on after_start do
@@ -562,7 +666,7 @@ define_button ron,
     big_text("Ron")
     pause(1000)
     reveal_hand
-    win_by_discard
+    win_by_discard("ron")
   end
 
 define_button tsumo,
@@ -575,7 +679,7 @@ define_button tsumo,
     big_text("Tsumo")
     pause(1000)
     reveal_hand
-    win_by_draw
+    win_by_draw("tsumo")
   end
 
 set interruptible_actions, ["play_tile", "draw", "advance_turn", "self_call", "upgrade_call", "recalculate_buttons"]

@@ -2501,15 +2501,14 @@ div.yaku > div.han-counter {
   margin-left: calc(0.5 * var(--tile-size));
 }
 div.yaku > div.han-counter::before,
-div.total-han-display::before,
-div.total-fu-display::before,
+div.total-points-display::before,
 div.total-score-display::before,
 div.total-score-name-display::before {
   background-image: url(/images/brush-bg.svg);
   background-size: 100% 100%;
   background-repeat: no-repeat;
 }
-div.total-fu-display::before,
+div.total-points-display:not(:first-of-type)::before,
 div.total-score-display::before {
   background-image: url(/images/brush-bg2.svg);
 }
@@ -2534,20 +2533,18 @@ div.score-display {
   bottom: 0;
 }
 div.score-display::before { content: ""; width: 100%; order: 1; }
-div.total-han-display,
-div.total-fu-display,
+div.total-points-display,
 div.total-score-display {
   position: relative;
   white-space: nowrap;
   z-index: 1;
 }
-div.total-han-display, div.total-fu-display { font-size: calc(1.25 * var(--tile-size)); }
+div.total-points-display { font-size: calc(1.25 * var(--tile-size)); }
 div.total-score-display { font-size: calc(2 * var(--tile-size)); order: 1; }
 div.total-score-display.small { font-size: calc(1.25 * var(--tile-size)); }
 div.total-score-name-display { font-size: calc(1.2 * var(--tile-size)); order: 1; }
 div.total-score-name-display.small { font-size: calc(1 * var(--tile-size)); }
-div.total-han-display::before,
-div.total-fu-display::before,
+div.total-points-display::before,
 div.total-score-display::before,
 div.total-score-name-display::before {
   position: absolute;
@@ -2558,7 +2555,7 @@ div.total-score-name-display::before {
   bottom: -7.5%;
   z-index: -1;
 }
-div.total-fu-display::before {
+div.total-points-display:not(:first-of-type)::before {
   transform: rotate(180deg);
   width: 160%;
   left: -35%;
@@ -2713,7 +2710,6 @@ div.game-modal > div.score-ledger-container > table.score-ledger {
   & > tbody > tr {
     & > td {
       line-height: 1.2;
-      text-align: right;
       padding: 0 calc(0.125 * var(--tile-size));
       &:first-child { padding-left:  calc(0.5 * var(--tile-size)); }
       &:last-child  { padding-right: calc(0.5 * var(--tile-size)); }
@@ -2728,13 +2724,14 @@ div.game-modal > div.score-ledger-container > table.score-ledger {
   & td.score-ledger-op {
       padding: 0 calc(0.25 * var(--tile-size));
   }
-  & td.score-ledger-value {
+  & td.score-ledger-amount,
+  & td.score-ledger-result {
     font-weight: normal;
   }
   & tr.score-ledger-total {
     & td {
       border-top: calc(0.0625 * var(--tile-size)) solid white;
-      padding: calc(0.125 * var(--tile-size)) 0;
+      padding: calc(0.125 * var(--tile-size));
       font-weight: bold;
       font-size: 125%;
     }

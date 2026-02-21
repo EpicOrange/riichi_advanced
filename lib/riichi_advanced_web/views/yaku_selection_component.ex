@@ -19,7 +19,7 @@ defmodule RiichiAdvancedWeb.YakuSelectionComponent do
               <%= dt(@lang, yaku_name) %>
               (
               <form phx-change="change_yaku_value" phx-value-index={index}>
-                <input name="yaku-value" type="number" value={value} onclick="this.select();" style={"--width: #{if is_number(value) do Integer.to_string(value) else value end |> String.length()};"}>
+                <input name="yaku-value" type="number" value={print_value(value)} onclick="this.select();" style={"--width: #{print_value(value) |> String.length()};"}>
               </form>
               <%= dt(@lang, value_name) %>
               )
@@ -31,4 +31,14 @@ defmodule RiichiAdvancedWeb.YakuSelectionComponent do
     </div>
     """
   end
+
+  def print_value(value) do
+    cond do
+      is_number(value) -> Integer.to_string(value)
+      is_list(value) -> Enum.at(value, 0) |> Integer.to_string()
+      is_binary(value) -> "0"
+      true -> value
+    end
+  end
+
 end

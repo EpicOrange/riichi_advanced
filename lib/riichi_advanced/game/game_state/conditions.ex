@@ -509,6 +509,11 @@ defmodule RiichiAdvanced.GameState.Conditions do
       "counter_at_most"     -> Map.get(cxt_player.counters, Enum.at(opts, 0, "counter"), 0) <= Actions.interpret_amount(state, context, Enum.at(opts, 1, 0))
       "counter_more_than"   -> Map.get(cxt_player.counters, Enum.at(opts, 0, "counter"), 0) > Actions.interpret_amount(state, context, Enum.at(opts, 1, 0))
       "counter_less_than"   -> Map.get(cxt_player.counters, Enum.at(opts, 0, "counter"), 0) < Actions.interpret_amount(state, context, Enum.at(opts, 1, 0))
+      "amount_equals"       -> Actions.interpret_amount(state, context, Enum.at(opts, 0, 0)) in Enum.map(Enum.drop(opts, 1), &Actions.interpret_amount(state, context, &1))
+      "amount_at_least"     -> Actions.interpret_amount(state, context, Enum.at(opts, 0, 0)) >= Actions.interpret_amount(state, context, Enum.at(opts, 1, 0))
+      "amount_at_most"      -> Actions.interpret_amount(state, context, Enum.at(opts, 0, 0)) <= Actions.interpret_amount(state, context, Enum.at(opts, 1, 0))
+      "amount_more_than"    -> Actions.interpret_amount(state, context, Enum.at(opts, 0, 0)) > Actions.interpret_amount(state, context, Enum.at(opts, 1, 0))
+      "amount_less_than"    -> Actions.interpret_amount(state, context, Enum.at(opts, 0, 0)) < Actions.interpret_amount(state, context, Enum.at(opts, 1, 0))
       "genbutsu_shimocha"   ->
         tiles = (Utils.get_seat(context.seat, :shimocha) |> Riichi.get_safe_tiles_against(state.players, state.turn))
         last_discard_action != nil and Utils.has_matching_tile?(tiles, [Utils.strip_attrs(last_discard_action.tile)])

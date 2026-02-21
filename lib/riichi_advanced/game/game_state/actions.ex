@@ -5,6 +5,7 @@ defmodule RiichiAdvanced.GameState.Actions do
   alias RiichiAdvanced.GameState.Choice, as: Choice
   alias RiichiAdvanced.GameState.Conditions, as: Conditions
   alias RiichiAdvanced.GameState.Debug, as: Debug
+  alias RiichiAdvanced.GameState.Kyoku, as: Kyoku
   alias RiichiAdvanced.GameState.Marking, as: Marking
   alias RiichiAdvanced.GameState.Player, as: Player
   alias RiichiAdvanced.GameState.PlayerCache, as: PlayerCache
@@ -538,16 +539,17 @@ defmodule RiichiAdvanced.GameState.Actions do
       ["half_score" | _opts] -> Utils.half_score_rounded_up(state.players[context.seat].score)
       ["100_times_tile_number" | _opts] ->
         cond do
-          Riichi.is_num?(context.tile, 1) -> 100
-          Riichi.is_num?(context.tile, 2) -> 200
-          Riichi.is_num?(context.tile, 3) -> 300
-          Riichi.is_num?(context.tile, 4) -> 400
-          Riichi.is_num?(context.tile, 5) -> 500
-          Riichi.is_num?(context.tile, 6) -> 600
-          Riichi.is_num?(context.tile, 7) -> 700
-          Riichi.is_num?(context.tile, 8) -> 800
-          Riichi.is_num?(context.tile, 9) -> 900
-          true                            -> 0
+          Riichi.is_num?(context.tile, 1)  -> 100
+          Riichi.is_num?(context.tile, 2)  -> 200
+          Riichi.is_num?(context.tile, 3)  -> 300
+          Riichi.is_num?(context.tile, 4)  -> 400
+          Riichi.is_num?(context.tile, 5)  -> 500
+          Riichi.is_num?(context.tile, 6)  -> 600
+          Riichi.is_num?(context.tile, 7)  -> 700
+          Riichi.is_num?(context.tile, 8)  -> 800
+          Riichi.is_num?(context.tile, 9)  -> 900
+          Riichi.is_num?(context.tile, 10) -> 1000
+          true                             -> 0
         end
       ["count_tiles" | opts] ->
         seat = Conditions.from_seat_spec(state, context, Enum.at(opts, 0, "self"))
@@ -759,10 +761,53 @@ defmodule RiichiAdvanced.GameState.Actions do
     end
   end
 
-  defp set_counter(state, context, counter_name, amt_spec) do
+  def set_counter(state, context, counter_name, amt_spec) do
     warn_counter(counter_name)
     amount = interpret_amount(state, context, amt_spec)
     put_in(state.players[context.seat].counters[counter_name], amount)
+  end
+
+  defp eval_expression(state, context, ["=", [l, r]]), do: eval_expression(state, context, r)
+  defp eval_expression(state, context, ["+", [l, r]]), do: eval_expression(state, context, l) + eval_expression(state, context, r)
+  defp eval_expression(state, context, ["-", [l, r]]), do: eval_expression(state, context, l) - eval_expression(state, context, r)
+  defp eval_expression(state, context, ["*", [l, r]]), do: eval_expression(state, context, l) * eval_expression(state, context, r)
+  defp eval_expression(state, context, ["/", [l, r]]), do: eval_expression(state, context, l) / eval_expression(state, context, r)
+  defp eval_expression(state, context, ["**", [l, r]]), do: eval_expression(state, context, l) ** eval_expression(state, context, r)
+  defp eval_expression(state, context, ["round_up", [l, r]]) do
+    l = eval_expression(state, context, l)
+    r = eval_expression(state, context, r)
+    to = if r == 0 do 10 else r end
+    remainder = rem(l, to)
+    if remainder == 0 do l else l - remainder + to end
+  end
+  defp eval_expression(state, context, ["round_down", [l, r]]) do
+    l = eval_expression(state, context, l)
+    r = eval_expression(state, context, r)
+    to = if r == 0 do 10 else r end
+    l - rem(l, to)
+  end
+  defp eval_expression(state, context, v), do: interpret_amount(state, context, v)
+  defp counter_assignment(state, context, display_name, counter_name, op, rhs) do
+    warn_counter(counter_name)
+    # change displayed op
+    {op, rhs} = case {op, rhs} do
+      {"=", [new_op, [^counter_name, rhs2]]} -> {new_op, rhs2}
+      _    -> {op, rhs}
+    end
+    amount = eval_expression(state, context, rhs)
+    new_ctr = eval_expression(state, context, [op, [counter_name, amount]])
+    state = put_in(state.players[context.seat].counters[counter_name], new_ctr)
+    # add as a line item to the most recent transaction
+    line_item = %{
+      op: if op == "=" do nil else op end,
+      amount: if op == "=" do nil else amount end,
+      result: new_ctr,
+      reason: display_name
+    }
+    state = update_in(state.txns, &List.update_at(&1, 0,
+      fn txn -> %{txn | line_items: [line_item | txn.line_items]} end
+    ))
+    state
   end
 
   defp set_counter_all(state, context, counter_name, amt_spec) do
@@ -804,6 +849,13 @@ defmodule RiichiAdvanced.GameState.Actions do
       new_ctr = Utils.try_integer(Map.get(state.players[context.seat].counters, counter_name, 0) / amount)
       put_in(state.players[context.seat].counters[counter_name], new_ctr)
     end
+  end
+
+  defp exponentiate_counter(state, context, counter_name, amt_spec) do
+    warn_counter(counter_name)
+    amount = interpret_amount(state, context, amt_spec)
+    new_ctr = Utils.try_integer(amount ** Map.get(state.players[context.seat].counters, counter_name, 0))
+    put_in(state.players[context.seat].counters[counter_name], new_ctr)
   end
 
   def interpolate_string(state, context, str, assigns) do
@@ -855,7 +907,7 @@ defmodule RiichiAdvanced.GameState.Actions do
     end
   end
 
-  defp set_tile_alias(state, seat, from_tiles, to_tiles) do
+  def set_tile_alias(state, seat, from_tiles, to_tiles) do
     from_tiles = MapSet.new(from_tiles)
     update_player(state, seat, fn player -> %Player{ player | tile_behavior: Map.update!(player.tile_behavior, :aliases, fn aliases ->
       for to <- to_tiles, reduce: aliases do
@@ -1231,22 +1283,25 @@ defmodule RiichiAdvanced.GameState.Actions do
       "reverse_turn_order"    -> Map.update!(state, :reversed_turn_order, &not &1)
       "advance_turn"          -> advance_turn(state)
       "change_turn"           -> change_turn(state, Conditions.from_seat_spec(state, context, Enum.at(opts, 0, "self")), true)
-      "win_by_discard"        -> win(state, context.seat, :discard)
-      "win_by_call"           -> win(state, context.seat, :call)
-      "win_by_draw"           -> win(state, context.seat, :draw)
-      "win_by_second_visible_discard" -> win(state, context.seat, :second_discard)
-      "ryuukyoku"             -> exhaustive_draw(state, Enum.at(opts, 0, nil))
-      "abortive_draw"         -> abortive_draw(state, Enum.at(opts, 0, nil))
-      "set_status"            -> update_player(state, context.seat, fn player -> %Player{ player | status: MapSet.union(player.status, MapSet.new(opts)) } end)
-      "unset_status"          -> update_player(state, context.seat, fn player -> %Player{ player | status: MapSet.difference(player.status, MapSet.new(opts)) } end)
-      "set_status_all"        -> update_all_players(state, fn _seat, player -> %Player{ player | status: MapSet.union(player.status, MapSet.new(opts)) } end)
-      "unset_status_all"      -> update_all_players(state, fn _seat, player -> %Player{ player | status: MapSet.difference(player.status, MapSet.new(opts)) } end)
+      "win_by_discard"        -> Kyoku.win(state, context.seat, :discard, Enum.at(opts, 0, "win"))
+      "win_by_call"           -> Kyoku.win(state, context.seat, :call, Enum.at(opts, 0, "win"))
+      "win_by_draw"           -> Kyoku.win(state, context.seat, :draw, Enum.at(opts, 0, "win"))
+      "win_by_second_visible_discard" -> Kyoku.win(state, context.seat, :second_discard, Enum.at(opts, 0, "win"))
+      "ryuukyoku"             -> Kyoku.exhaustive_draw(state, Enum.at(opts, 0, "win"))
+      "abortive_draw"         -> Kyoku.abortive_draw(state, Enum.at(opts, 0, "win"))
+      "set_status"            -> update_player(state, context.seat, fn player -> %{ player | status: MapSet.union(player.status, MapSet.new(opts)) } end)
+      "unset_status"          -> update_player(state, context.seat, fn player -> %{ player | status: MapSet.difference(player.status, MapSet.new(opts)) } end)
+      "set_status_all"        -> update_all_players(state, fn _seat, player -> %{ player | status: MapSet.union(player.status, MapSet.new(opts)) } end)
+      "unset_status_all"      -> update_all_players(state, fn _seat, player -> %{ player | status: MapSet.difference(player.status, MapSet.new(opts)) } end)
       "set_counter"           -> set_counter(state, context, Enum.at(opts, 0, "counter"), Enum.drop(opts, 1))
+      "_set_counter"          -> set_counter(state, context, Enum.at(opts, 0, "counter"), Enum.drop(opts, 1))
+      "_counter_assignment"   -> counter_assignment(state, context, Enum.at(opts, 0, "Counter"), Enum.at(opts, 1, "counter"), Enum.at(opts, 2, "+"), Enum.at(opts, 3, 0))
       "set_counter_all"       -> set_counter_all(state, context, Enum.at(opts, 0, "counter"), Enum.drop(opts, 1))
       "add_counter"           -> add_counter(state, context, Enum.at(opts, 0, "counter"), Enum.drop(opts, 1))
       "subtract_counter"      -> subtract_counter(state, context, Enum.at(opts, 0, "counter"), Enum.drop(opts, 1))
       "multiply_counter"      -> multiply_counter(state, context, Enum.at(opts, 0, "counter"), Enum.drop(opts, 1))
       "divide_counter"        -> divide_counter(state, context, Enum.at(opts, 0, "counter"), Enum.drop(opts, 1))
+      "exponentiate_counter"  -> exponentiate_counter(state, context, Enum.at(opts, 0, "counter"), Enum.drop(opts, 1))
       "big_text"              -> temp_display_big_text(state, context.seat, interpolate_string(state, context, Enum.at(opts, 0, ""), Enum.at(opts, 1, %{})))
       "pause"                 ->
         if not state.log_loading_mode do
@@ -1786,9 +1841,34 @@ defmodule RiichiAdvanced.GameState.Actions do
       "set_scoring_header" -> Map.put(state, :delta_scores_reason, interpolate_string(state, context, Enum.at(opts, 0, ""), Enum.at(opts, 1, %{})))
       "make_responsible_for" ->
         # player.pao_map: an entry %{seat => [yaku]} means if this player wins, `seat` must pay for `yaku`
-        for_seat = Conditions.from_seat_spec(state, context, Enum.at(opts, 0, "self"))
-        pao_yaku = List.wrap(Enum.at(opts, 1, "all"))
-        update_player(state, for_seat, &%Player{ &1 | pao_map: Map.update(&1.pao_map, context.seat, pao_yaku, fn yakus -> yakus ++ pao_yaku end) })
+        # alternatively %{seat => ["all"]} means paying for all yaku,
+        # and %{seat1 => ["all"], seat2 => ["Daisangen"]} means seat1 pays for all except Daisangen
+        yaku = List.wrap(Enum.at(opts, 1, "all"))
+        for seat <- Conditions.from_seats_spec(state, context, Enum.at(opts, 0, "self")), reduce: state do
+          state -> update_player(state, seat, &%{ &1 | pao_map: Map.update(&1.pao_map, context.seat, yaku, fn yakus -> yakus ++ yaku end) })
+        end
+      # WIP new scoring methods
+      "declare_payment" ->
+        # # e.g. declare_payment("Nondealer Ron", 1300, "add", "nondealers", "winner", 0)
+        # id = Enum.at(opts, 0, "Payment")
+        # amount = Enum.at(opts, 1, 0)
+        # from = Enum.at(opts, 3, "pot")
+        # to = Enum.at(opts, 4, "pot")
+        # priority = Enum.at(opts, 5, 0)
+        # case Enum.at(opts, 2, 0) do
+        #   "add"      -> update_in(state.payments, &[{id, priority, from, to, :add, amount} | &1])
+        #   "subtract" -> update_in(state.payments, &[{id, priority, from, to, :subtract, amount} | &1])
+        #   "multiply" -> update_in(state.payments, &[{id, priority, from, to, :multiply, amount} | &1])
+        #   "divide"   -> update_in(state.payments, &[{id, priority, from, to, :divide, amount} | &1])
+        #   "pow"      -> update_in(state.payments, &[{id, priority, from, to, :pow, amount} | &1])
+        #   "floor"    -> update_in(state.payments, &[{id, priority, from, to, :floor, amount} | &1])
+        #   "ceil"     -> update_in(state.payments, &[{id, priority, from, to, :ceil, amount} | &1])
+        #   "set"      -> update_in(state.payments, &[{id, priority, from, to, :set, amount} | &1])
+        #   _          -> 
+        #     IO.puts("WARNING: add_payment action got unknown method #{Enum.at(opts, 2, 0)}")
+        #     state
+        # end
+        state
       _                 ->
         IO.puts("Unhandled action #{action}")
         state

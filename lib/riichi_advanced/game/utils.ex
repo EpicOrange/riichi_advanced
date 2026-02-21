@@ -569,4 +569,10 @@ defmodule RiichiAdvanced.Utils do
       jsons -> jsons # branch b
     end
   end
+
+  # get_from_points_list([2, "Han", 1, "Shuugi"], "Han") == 2
+  def get_from_points_list(points_list, point_name) do
+    ix = Enum.find_index(points_list, & &1 == point_name)
+    if ix != nil do Enum.at(points_list, ix - 1) else 0 end
+  end
 end

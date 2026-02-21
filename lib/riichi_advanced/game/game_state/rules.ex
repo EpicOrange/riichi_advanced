@@ -59,6 +59,31 @@ defmodule RiichiAdvanced.GameState.Rules do
       # add the json
       :ets.insert(rules_ref, {:ruleset_json, ruleset_json})
 
+      # yaku list names in yaku_precedence add all yaku of specified yaku lists
+      yaku_precedence = get(rules_ref, "yaku_precedence")
+      score_rules = get(rules_ref, "score_calculation")
+      if yaku_precedence != nil and score_rules != nil do
+        yaku_list_names =
+             Map.get(score_rules, "yaku_lists", [])
+          ++ Map.get(score_rules, "yaku2_lists", [])
+          ++ Map.get(score_rules, "extra_yaku_lists", [])
+        # yaku list => names of yaku in that list
+        yaku_name_map = for yaku_list_name <- yaku_list_names, into: %{} do
+          yaku_list = get(rules_ref, yaku_list_name, [])
+          {yaku_list_name, Enum.map(yaku_list, & &1["display_name"]) |> Enum.uniq()}
+        end
+        yaku_precedence =
+          for {name, overrides} <- yaku_precedence,
+              override <- overrides,
+              Enum.member?(yaku_list_names, override),
+              reduce: yaku_precedence do
+          yaku_precedence ->
+            overrides_to_add = Map.get(yaku_name_map, override, [])
+            Map.update(yaku_precedence, name, overrides_to_add, &overrides_to_add ++ &1)
+        end
+        :ets.insert(rules_ref, {"yaku_precedence", yaku_precedence})
+      end
+
       # generate shanten definitions if they don't exist
       shantens = [:win, :tenpai, :iishanten, :ryanshanten, :sanshanten, :suushanten, :uushanten, :roushanten]
       shanten_definitions = Map.new(shantens, fn shanten -> {shanten, translate_match_definitions(rules_ref, Map.get(rules, Atom.to_string(shanten) <> "_definition", []))} end)

@@ -1,13 +1,15 @@
-defmodule RiichiAdvanced.Payment do
+defmodule RiichiAdvanced.GameState.Payment do
+  alias RiichiAdvanced.GameState.Actions, as: Actions
+  alias RiichiAdvanced.GameState.Payment, as: Payment
+  alias RiichiAdvanced.GameState.Rules, as: Rules
   alias RiichiAdvanced.GameState.TileBehavior, as: TileBehavior
+  alias RiichiAdvanced.Riichi, as: Riichi
   alias RiichiAdvanced.Utils, as: Utils
   alias RiichiAdvanced.Types, as: Types
   alias RiichiAdvanced.Types.Responsibility, as: Responsibility
-  alias RiichiAdvanced.Types.Riichi, as: Riichi
-  alias RiichiAdvanced.Types.Scoring, as: Scoring
   alias RiichiAdvanced.Types.Transaction, as: Transaction
   alias RiichiAdvanced.Types.WinInfo, as: WinInfo
-  alias RiichiAdvanced.Types.DrawInfo, as: DrawInfo
+  # alias RiichiAdvanced.Types.DrawInfo, as: DrawInfo
 
   @type seat() :: Types.seat()
   @type line_item() :: Types.line_item()
@@ -25,6 +27,7 @@ defmodule RiichiAdvanced.Payment do
   def seat_to_str(nil), do: "pot"
   def seat_to_str(seat), do: Atom.to_string(seat) |> String.capitalize()
 
+  # TODO this is only for han_fu
   @spec determine_responsibilities(list(WinInfo.t()), %{
     dealer_seat: seat(),
     pot: number(),
@@ -115,7 +118,7 @@ defmodule RiichiAdvanced.Payment do
             ret
           {:call, caller_seat} ->
             # exactly the same as win by discard
-            discard_win_info = %WinInfo{ win_info | won_by: {:discard, caller_seat} }
+            discard_win_info = %{ win_info | won_by: {:discard, caller_seat} }
             ret = determine_responsibilities([discard_win_info], %{opts | pot: 0}) ++ ret
             ret
       end
@@ -124,7 +127,7 @@ defmodule RiichiAdvanced.Payment do
     # first winner takes pot
     ret = if opts.pot > 0 do
       first_winner = Enum.map(winners, & &1.seat) |> order_seats_from(opts.dealer_seat) |> Enum.at(0)
-      [%Responsibility {
+      [%Responsibility{
         from: nil,
         to: first_winner,
         yaku: [],
@@ -189,7 +192,7 @@ defmodule RiichiAdvanced.Payment do
     line_items = [%{op: nil, amount: nil, result: points, reason: score_rules["point_name"]}]
     base = score_multiplier * points
     line_items = [%{op: :*, amount: score_multiplier, result: base, reason: "Base"} | line_items]
-    {total, line_items} = apply_modifiers({base, line_items}, resp.modifiers)
+    {_total, line_items} = apply_modifiers({base, line_items}, resp.modifiers)
 
     %Transaction{
       name: "#{seat_to_str(resp.from)} → #{seat_to_str(resp.to)}",
@@ -230,6 +233,7 @@ defmodule RiichiAdvanced.Payment do
     |> apply_modifiers(modifiers)
 
     %Transaction{
+      name: "#{seat_to_str(resp.from)} → #{seat_to_str(resp.to)}",
       from: resp.from,
       to: resp.to,
       line_items: line_items,
@@ -278,140 +282,39 @@ defmodule RiichiAdvanced.Payment do
     end
     |> Utils.map_over_values(&sum_txns/1)
   end
+  
+  # populates a new entry in state.txns using scoring_logic
+  def run_scoring_logic(state, cxt, payers) do
+    # for each entry in pao_map, make a txn, and populate it by running scoring_logic
+    for {payer, player} <- state.players,
+        {seat, _yaku_spec} <- player.pao_map,
+        seat == cxt.seat,
+        reduce: state do
+      state ->
+        # create an empty txn
+        txn_name = "#{seat_to_str(payer)} → #{seat_to_str(seat)}"
+        txn = %Transaction{name: txn_name, from: payer, to: seat, line_items: []}
+        state = update_in(state.txns, &[txn | &1])
 
+        # run scoring_logic to populate this new txn with line items
+        scoring_logic_actions = Rules.get(state.rules_ref, "scoring_logic", %{}) |> Map.get(cxt.scoring_key, nil)
+        state = if scoring_logic_actions != nil do
+          Actions.run_actions(state, scoring_logic_actions, cxt)
+        else
+          IO.puts("[WARNING] scoring_logic[#{inspect(cxt.scoring_key)}] is empty!")
+          state
+        end
 
-# - is passed in %WinSpec{winning_seat, win_source, winning_tile, the hand and calls, dealer seat, bloody end opponents, score_rules}
-# - launches smt solver if needed
-# - does a joker replacement
-# - scores the hand
-# - returns the {score, etc} of the ideal joker assignment
-
-
-  def is_dealer?(seat, kyoku, available_seats) do
-    Riichi.get_east_player_seat(kyoku, available_seats) == seat
-  end
-  # TODO type these
-  def determine_winning_tile(state, seat, win_source) do
-    winning_tiles = Scoring.get_winning_tiles(state, seat, win_source)
-    winning_tile = if MapSet.size(winning_tiles) == 1 do Enum.at(winning_tiles, 0) else nil end
-    winning_tile
-  end
-  def construct_winning_hand(winning_tile, hand, calls) do
-    hand ++ Enum.flat_map(calls, &Utils.call_to_tiles/1) ++ if winning_tile != nil do [winning_tile] else [] end
-  end
-  def get_smt_hand_calls(state, seat, winning_tile) do
-    smt_hand = state.players[seat].hand ++ if winning_tile != nil do [winning_tile] else [] end
-    smt_calls = state.players[seat].calls
-    |> Enum.reject(fn {call_name, _call} -> call_name in Riichi.flower_names() end)
-    |> Enum.map(&Utils.call_to_tiles/1)
-    {smt_hand, smt_calls}
-  end
-  # get an assignment for the obvious jokers (the ones with only one assignable value)
-  def get_obvious_joker_assignment(tile_behavior, smt_hand, smt_calls) do
-    # first get a map [single-value joker => the tile it maps to]
-    obvious_joker_map = TileBehavior.tile_mappings(tile_behavior)
-    |> Enum.flat_map(fn {joker, [assign]} -> [{joker, assign}]; _ -> [] end)
-    |> Map.new()
-    # return a map %{index => tile}
-    # do this by iterating over the whole hand and replacing with the first joker match
-    Enum.with_index(smt_hand ++ Enum.concat(smt_calls))
-    |> Enum.flat_map(fn {tile, ix} ->
-      case Enum.find(obvious_joker_map, fn {from, _to} -> Utils.same_tile(tile, from) end) do
-        nil        -> []
-        {from, to} ->
-          # replace this tile
-          base = if Utils.strip_attrs(to) == :any do tile else to end
-          attrs = (Utils.get_attrs(tile) ++ Utils.get_attrs(to)) -- Utils.get_attrs(from)
-          [{ix, Utils.add_attr(base, attrs)}]
-      end
-    end)
-    |> Map.new()
-  end
-  def replace_obvious_jokers({smt_hand, smt_calls}, obvious_joker_assignment) do
-      # replace smt hand/calls with obvious jokers, so the smt solver doesn't solve for those
-      {[smt_hand | smt_calls], _} = for group <- [smt_hand | smt_calls], reduce: {[], 0} do
-        {acc, start_ix} ->
-          {acc ++ [for {tile, ix} <- Enum.with_index(group) do
-            Map.get(obvious_joker_assignment, start_ix + ix, tile)
-          end], start_ix + length(group)}
-      end
-  end
-  def solve_for_jokers({smt_hand, smt_calls}, smt_solver, rules_ref, tile_behavior, winning_tile) do
-    # first grab the obvious jokers (the ones that map only to one value, basically red fives)
-    obvious_joker_assignment = Payment.get_obvious_joker_assignment(tile_behavior, smt_hand, smt_calls)
-    {smt_hand, smt_calls} = Payment.replace_obvious_jokers({smt_hand, smt_calls}, obvious_joker_assignment)
-
-    use_smt = Rules.get(rules_ref, "score_calculation", %{}) |> Map.get("use_smt", true)
-    ret = if use_smt and Enum.any?(smt_hand ++ Enum.concat(smt_calls), &TileBehavior.is_joker?(&1, tile_behavior)) do
-      # obtain all joker assignments (as a stream)
-      RiichiAdvanced.SMT.match_hand_smt_v3(smt_solver, smt_hand, smt_calls, Rules.translate_match_definitions(rules_ref, ["win"]), tile_behavior)
-    else Stream.concat([[%{}]]) end
-    # re-add the obvious jokers back into each assignment
-    |> Stream.map(&Map.merge(obvious_joker_assignment, &1))
-    ret
-    # TODO can we somehow check if the stream is empty, and return Stream.new([[obvious_joker_assignment]]) if so?
+        state
+    end
   end
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-  # # calculates the optimal joker assignment in terms of points
-  # # returns that assignment, as well as the calculated yaku, minipoints, etc
-  # @spec calculate_optimal_joker_assignment(WinSpec.t()) :: map()
-  # def calculate_optimal_joker_assignment(%WinSpec{
-  #     score_rules: score_rules,
-  #     winning_seat: winning_seat,
-  #     win_source: win_source,
-  #     winning_tile: winning_tile,
-  #     winning_hand: winning_hand,
-  #     dealer_seat: dealer_seat,
-  #     opponents: opponents}) do
-  #   # push a message if it takes more than 0.5 seconds to solve
-  #   notify_task = Task.async(fn -> :timer.sleep(500); push_message(state, [%{text: "Running joker solver..."}]) end)
-  #   # find the maximum score obtainable across all joker assignments
-  #   winner_details = Task.async_stream(
-  #     Scoring.solve_for_jokers(state, seat, winning_tile),
-  #     &calculate_winner_details_task(state, %{
-  #       seat: seat,
-  #       winning_tile: winning_tile,
-  #       win_source: win_source,
-  #       is_dealer: is_dealer?(seat, state.kyoku, state.available_seats)
-  #     }, &1),
-  #     timeout: :infinity, ordered: false
-  #   )
-  #   |> Stream.map(fn {:ok, res} -> res end)
-  #   |> get_best_winner_details(win_source == :worst_discard)
-  #   winner_details = if winner_details == nil do
-  #     # perhaps it's a special hand not supported by the smt solver,
-  #     # in any case, we got no assignment from the solver,
-  #     # so score the hand as is (with no joker assignment)
-  #     calculate_winner_details_task(state, context, %{})
-  #   else winner_details end
-
-  #   # kill the 0.5s timer if it's still sleeping
-  #   if Task.yield(notify_task, 0) == nil do
-  #     Task.shutdown(notify_task, :brutal_kill)
-  #   end
-
-  #   winner_details
-  # end
-
-
-
+  def get_highest_scoring_txn(state_cxts, get_worst_instead \\ false) do
+    Enum.max_by(state_cxts, fn {state, cxt} -> state.txns |> Enum.filter(& &1.to == cxt.seat) |> sum_txns() |> Payment.get_txn_result() end,
+      if get_worst_instead do &<=/2 else &>=/2 end,
+      fn -> nil end # empty stream
+    )
+  end
 end
 
 # more fleshed out implementation notes
