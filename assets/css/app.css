@@ -2577,10 +2577,13 @@ div.total-score-name-display::before {
 /* delta score window */
 div.game-modal > div.delta-score-reason {
   position: absolute;
-  font-size: calc(1.25 * var(--tile-size));
+  font-size: calc(0.8 * var(--tile-size));
   text-align: center;
-  top: 0;
-  width: 100%;
+  top: calc(50% - 2 * var(--tile-size));
+  margin: 0 auto;
+  left: 0;
+  right: 0;
+  width: 35%;
   user-select: none;
   z-index: 3;
 }
@@ -2592,31 +2595,105 @@ div.game-modal > div.delta-score-reason::before {
   background-repeat: no-repeat;
   transform-origin: 50% calc(50% + var(--tile-size));
   width: 100%;
-  height: calc(3 * var(--tile-size));
+  height: calc(2 * var(--tile-size));
   left: 0;
-  bottom: calc(-0.5 * var(--tile-size));
+  bottom: calc(-0.25 * var(--tile-size));
   z-index: -1;
 }
-div.game-modal > div.delta-score {
+div.game-modal > div.score-badge {
+  background: black;
+  border-radius: calc(0.5 * var(--tile-size));
+  padding: calc(0.5 * var(--tile-size)) calc(0.25 * var(--tile-size));
   line-height: 1;
+  height: 2.5em;
+  width: 12ex;
   position: absolute;
-  font-size: calc(1 * var(--tile-size));
-  text-align: right;
+  font-size: calc(0.5 * var(--tile-size));
+  text-align: center;
   user-select: none;
   z-index: 2;
+  color: white;
 }
-div.game-modal > div.delta-score.self { bottom: calc(0.25 * var(--tile-size)); left: calc(-50% + 11 * var(--tile-size));}
-div.game-modal > div.delta-score.kamicha { left: calc(1.25 * var(--tile-size)); top: calc(-50% + 12 * var(--tile-size)); }
-div.game-modal > div.delta-score.toimen { top: calc(2.25 * var(--tile-size)); left: calc(-50% + 11 * var(--tile-size));}
-div.game-modal > div.delta-score.shimocha { right: calc(1.25 * var(--tile-size)); top: calc(-50% + 12 * var(--tile-size)); }
-div.game-modal > div.delta-score > div.hline::before {
+div.game-modal > div.score-badge.self { inset: 0; top: auto; margin: 0 auto; }
+div.game-modal > div.score-badge.kamicha { inset: 0; left: auto; margin: auto 0; }
+div.game-modal > div.score-badge.toimen { inset: 0; bottom: auto; right: 0; margin: 0 auto; }
+div.game-modal > div.score-badge.shimocha { inset: 0; right: auto; margin: auto 0; }
+div.game-modal > div.score-badge > div.hline::before {
   position: absolute;
   content: "";
-  background: black;
+  background: white;
   width: 100%;
   right: 0;
   height: calc(0.0625 * var(--tile-size));
+  margin-top: calc(0.0625 * var(--tile-size));
 }
+div.game-modal > div.score-badge > div.initial-score {
+  font-size: 150%;
+  font-weight: bold;
+}
+div.game-modal > div.score-badge > div.delta-score {
+  font-weight: bold;
+  position: absolute;
+  top: -0.3em;
+  right: 0;
+  text-align: right;
+  white-space: nowrap;
+}
+div.game-modal > div.score-badge > div.player-name {
+  margin-top: calc(0.125 * var(--tile-size));
+  white-space: nowrap;
+}
+div.game-modal > div.score-badge > div.placement {
+  position: absolute;
+  top: calc(-50% + 0.5 * var(--tile-size));
+  left: calc(-25%);
+  transform: scale(75%);
+}
+
+
+@property --tile-size {
+  /* required for making it unitless below */
+  syntax: '<length>';
+  inherits: true;
+  initial-value: 0;
+}
+svg.arrow {
+  position: absolute;
+  pointer-events: none;
+  fill: white;
+  transform-origin: 0% 50%;
+  width: calc(var(--length) * 200px);
+  height: 200px;
+  /* first scale based on unitless tile-size, then move the tail, then rotate about the tail */
+  zoom: calc(tan(atan2(var(--tile-size), 200px)));
+  transform:
+    translate( calc(var(--xpos) * 200px - 100px)
+             , calc(var(--ypos) * 200px - 200px) )
+    rotate(calc(var(--rotate) * 1deg));
+  --xpos: 0;
+  --ypos: 0;
+  --rotate: 0;
+  --length: 0;
+}
+svg.curve {
+  position: absolute;
+  pointer-events: none;
+  fill: white;
+  zoom: calc(tan(atan2(var(--tile-size), 200px)));
+  transform:
+    translate( calc(var(--xpos) * 200px - 100px)
+             , calc(var(--ypos) * 200px - 100px) )
+    scale(var(--xscale), var(--yscale));
+  width: 550px;
+  height: 800px;
+  overflow: visible;
+  --xpos: 0;
+  --ypos: 0;
+  --xscale: 1;
+  --yscale: 1;
+}
+
+/*
 div.game-modal > div.delta-score::before {
   position: absolute;
   content: "";
@@ -2648,10 +2725,10 @@ div.game-modal > div.delta-score.shimocha::before {
   left: calc(50% - 2.5 * var(--tile-size));
   bottom: calc(50% - 1.5 * var(--tile-size));
 }
-div.game-modal > div.delta-score > div.initial { color: gray; }
-div.game-modal > div.delta-score > div.change.positive { color: green; }
-div.game-modal > div.delta-score > div.change.negative { color: red; }
-div.game-modal > div.delta-score > div.result { transform: translateY(calc(0.125 * var(--tile-size))); }
+*/
+
+div.game-modal > div.score-badge > div.delta-score.positive { color: lightgreen; }
+div.game-modal > div.score-badge > div.delta-score.negative { color: pink; }
 
 /* game end timer */
 
@@ -2698,6 +2775,7 @@ div.scoreboard {
 }
 div.placement > div.placement-place,
 div.placement > div.placement-name {
+  color: black;
   font-size: calc(0.6 * var(--tile-size));
   white-space: nowrap;
   height: 1.2em;
