@@ -125,12 +125,13 @@ defmodule RiichiAdvancedWeb.ScoreWindowComponent do
   end
 
   def get_name(seat, players) do
-    if (seat == nil) do
-      "Pot"
-    else
-      ret = players[seat].nickname
-      ret = if ret == "" or ret == nil do Atom.to_string(seat) |> String.capitalize() else ret end
-      ret
+    cond do
+      seat == nil -> "Pot"
+      not Map.has_key?(players, seat) -> ""
+      true ->
+        ret = players[seat].nickname
+        ret = if ret == "" or ret == nil do Atom.to_string(seat) |> String.capitalize() else ret end
+        ret
     end
   end
 
@@ -211,19 +212,14 @@ defmodule RiichiAdvancedWeb.ScoreWindowComponent do
   end
 
   def key_title(players, seat, key) do
-    dirs = %{
-      u: get_name(Utils.get_seat(seat, :self), players),
-      s: get_name(Utils.get_seat(seat, :shimocha), players),
-      t: get_name(Utils.get_seat(seat, :toimen), players),
-      k: get_name(Utils.get_seat(seat, :kamicha), players),
-    }
-    default = fn s, dir -> s |> Utils.get_seat(dir) |> Atom.to_string() |> String.capitalize() end
-    dirs = %{
-      u: if dirs.u == "" or dirs.u == nil do default.(seat, :self) else dirs.u end,
-      s: if dirs.s == "" or dirs.s == nil do default.(seat, :shimocha) else dirs.s end,
-      t: if dirs.t == "" or dirs.t == nil do default.(seat, :toimen) else dirs.t end,
-      k: if dirs.k == "" or dirs.k == nil do default.(seat, :kamicha) else dirs.k end,
-    }
+    u = Utils.get_seat(seat, :self)
+    s = Utils.get_seat(seat, :shimocha)
+    t = Utils.get_seat(seat, :toimen)
+    k = Utils.get_seat(seat, :kamicha)
+    dirs = Map.new(%{u: u, s: s, t: t, j: k}, fn {key, seat2} ->
+      name = get_name(seat2, players)
+      {key, if name == "" do Utils.get_seat(seat2, :self) |> Atom.to_string() |> String.capitalize() else name end}
+    end)
     case key do
       "self"     -> dirs.u
       "shimocha" -> dirs.s

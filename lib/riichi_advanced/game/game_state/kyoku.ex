@@ -253,7 +253,7 @@ defmodule RiichiAdvanced.GameState.Kyoku do
 
     state = Map.put(state, :game_active, false)
 
-    {state, delta_scores, delta_scores_reason, next_dealer} = Scoring.Scoring.adjudicate_draw_scoring(state)
+    {state, delta_scores, delta_scores_reason, next_dealer} = Scoring.adjudicate_draw_scoring(state)
     state = Map.put(state, :delta_scores, delta_scores)
     state = Map.put(state, :delta_scores_reason, if draw_name do draw_name else delta_scores_reason end)
     state = Map.put(state, :next_dealer, next_dealer)

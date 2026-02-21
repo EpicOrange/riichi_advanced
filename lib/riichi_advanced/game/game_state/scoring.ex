@@ -10,6 +10,7 @@ defmodule RiichiAdvanced.GameState.Scoring do
   alias RiichiAdvanced.GameState.Player, as: Player
   alias RiichiAdvanced.GameState.PlayerCache, as: PlayerCache
   alias RiichiAdvanced.GameState.Rules, as: Rules
+  alias RiichiAdvanced.GameState.Scoring, as: Scoring
   alias RiichiAdvanced.GameState.ScoringOld, as: ScoringOld
   alias RiichiAdvanced.GameState.TileBehavior, as: TileBehavior
   alias RiichiAdvanced.Match, as: Match
@@ -46,7 +47,11 @@ defmodule RiichiAdvanced.GameState.Scoring do
           |> Enum.flat_map(fn [amt, type] -> [Actions.interpret_amount(state, context, amt), type] end)
           {name, value}
         else
-          {name, Actions.interpret_amount(state, context, value)}
+          value = Actions.interpret_amount(state, context, value)
+          # default to point_name for the units
+          score_rules = Rules.get(state.rules_ref, "score_calculation", %{})
+          unit = score_rules["point_name"]
+          {name, [value, unit]}
         end
       end)
     eligible_yaku = eligible_yaku
@@ -62,7 +67,7 @@ defmodule RiichiAdvanced.GameState.Scoring do
       yaku_precedence ->
         excluded_yaku = Enum.flat_map(eligible_yaku, fn {name, _value} -> Map.get(yaku_precedence, name, []) end)
         excluded_yaku = if Enum.empty?(eligible_yaku) do [] else Map.get(yaku_precedence, yaku_list_name, []) end ++ excluded_yaku
-        Enum.reject(existing_yaku ++ eligible_yaku, fn {name, value} -> Enum.any?(excluded_yaku, &Enum.member?([name | value], &1)) end)
+        Enum.reject(existing_yaku ++ eligible_yaku, fn {name, value} -> Enum.any?(excluded_yaku, &Enum.member?([name | List.wrap(value)], &1)) end)
     end
     eligible_yaku
   end
@@ -88,36 +93,38 @@ defmodule RiichiAdvanced.GameState.Scoring do
   end
 
   def seat_scores_points(state, yaku_list_names, min_points, min_minipoints, seat, winning_tile, win_source) do
-    JokerSolver.solve_for_jokers(
-      JokerSolver.get_smt_hand_calls(state, seat, winning_tile),
-      state.smt_solver,
-      state.rules_ref,
-      state.players[seat].tile_behavior,
-      winning_tile)
-    |> Task.async_stream(fn joker_assignment ->
-      # apply joker assignments
-      %{hand: hand, calls: calls} = state.players[seat]
-      {assigned_hand, assigned_calls, assigned_winning_hand, assigned_winning_tile} = JokerSolver.apply_joker_assignment(hand, calls, winning_tile, joker_assignment)
-      state = update_player(state, seat, &%{ &1 | hand: assigned_hand, calls: assigned_calls, cache: %{ &1.cache | winning_hand: assigned_winning_hand } })
-      state = if assigned_winning_tile != nil do
-        update_winning_tile(state, seat, win_source, fn _ -> assigned_winning_tile end)
-      else state end
-      # run before_win actions
-      state = Actions.trigger_event(state, "before_win", %{seat: seat, win_source: win_source, silent: true})
-      # run before_scoring actions
-      state = Actions.trigger_event(state, "before_scoring", %{seat: seat, win_source: win_source, silent: true})
+    for {smt_hand, smt_calls} <- JokerSolver.get_smt_hand_calls(state, seat, winning_tile) do
+      JokerSolver.solve_for_jokers(
+        smt_hand, smt_calls,
+        state.smt_solver,
+        state.rules_ref,
+        state.players[seat].tile_behavior)
+      |> Task.async_stream(fn joker_assignment ->
+        # apply joker assignments
+        %{hand: hand, calls: calls} = state.players[seat]
+        {assigned_hand, assigned_calls, assigned_winning_hand, assigned_winning_tile} = JokerSolver.apply_joker_assignment(hand, calls, joker_assignment)
+        state = update_player(state, seat, &%{ &1 | hand: assigned_hand, calls: assigned_calls, cache: %{ &1.cache | winning_hand: assigned_winning_hand } })
+        state = if assigned_winning_tile != nil do
+          update_winning_tile(state, seat, win_source, fn _ -> assigned_winning_tile end)
+        else state end
+        # run before_win actions
+        state = Actions.trigger_event(state, "before_win", %{seat: seat, win_source: win_source, silent: true})
+        # run before_scoring actions
+        state = Actions.trigger_event(state, "before_scoring", %{seat: seat, win_source: win_source, silent: true})
 
-      # get winning tile after before_scoring does its thing
-      {yaku, minipoints, _winning_tile} = get_yaku_from_lists(state, yaku_list_names, seat, winning_tile, win_source)
-      minipoints >= min_minipoints && case min_points do
-        :declared ->
-          names = Enum.map(yaku, fn {name, _value} -> name end)
-          Enum.all?(state.players[seat].declared_yaku, fn yaku -> yaku in names end)
-        _ ->
-          points = Enum.map(yaku, fn {_name, value} -> value end) |> Enum.sum()
-          points >= min_points
-      end
-    end, timeout: :infinity, ordered: false)
+        # get winning tile after before_scoring does its thing
+        {yaku, minipoints} = get_yaku_from_lists(state, yaku_list_names, seat, winning_tile, win_source)
+        minipoints >= min_minipoints && case min_points do
+          :declared ->
+            names = Enum.map(yaku, fn {name, _value} -> name end)
+            Enum.all?(state.players[seat].declared_yaku, fn yaku -> yaku in names end)
+          _ ->
+            points = Enum.map(yaku, fn {_name, value} -> value end) |> Enum.reduce([], &Scoring.add_yaku_values/2)
+            points >= min_points
+        end
+      end, timeout: :infinity, ordered: false)
+    end
+    |> Enum.concat()
     |> Enum.any?(fn {:ok, result} -> result end)
   end
   

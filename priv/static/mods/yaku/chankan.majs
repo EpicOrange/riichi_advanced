@@ -13,7 +13,7 @@ define_button chankan,
     big_text(@ron_name)
     pause(1000)
     reveal_hand
-    win_by_call
+    win_by_call("ron")
   end
 
 apply set_append, "interruptible_actions", ["upgrade_call"]
