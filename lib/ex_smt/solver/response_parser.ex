@@ -95,7 +95,7 @@ defmodule ExSMT.Solver.ResponseParser do
     sexpr,
   ])
 
-  newline = optional(ignore(ascii_char([?\n])))
+  newline = repeat(ignore(ascii_char([?\r, ?\n])))
 
   defparsec :response, repeat(
     optional(flexible_space)
