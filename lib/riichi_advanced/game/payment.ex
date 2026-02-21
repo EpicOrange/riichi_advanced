@@ -68,7 +68,7 @@ defmodule RiichiAdvanced.Payment do
               if is_pao? do [{:/, 2, "Pao ron halving"}] else [] end ++
               [{:round_up, 100, "Round up"}] ++
               if is_pao? or opts.honba === 0 do [] else [{:+, 3 * opts.honba_value * opts.honba, "Honba"}] end
-            ret = [%Responsibility {
+            ret = [%Responsibility{
               from: discarder_seat,
               to: win_info.seat,
               yaku: win_info.yaku -- all_pao_yaku,
@@ -178,6 +178,7 @@ defmodule RiichiAdvanced.Payment do
     end
   end
 
+  @spec calculate_txn(Responsibility.t(), %{binary() => any()}) :: Transaction.t()
   @spec calculate_txn(Responsibility.t(), %{binary() => any()}, binary()) :: Transaction.t()
   def calculate_txn(resp, score_rules, "multiplier") do
     %{"score_multiplier" => score_multiplier} = score_rules
@@ -226,7 +227,7 @@ defmodule RiichiAdvanced.Payment do
       line_items = [%{op: :*, amount: mult, result: base, reason: "Base"} | line_items]
       {base, line_items}
     end
-    |> apply_modifiers(resp.modifiers)
+    |> apply_modifiers(modifiers)
 
     %Transaction{
       from: resp.from,

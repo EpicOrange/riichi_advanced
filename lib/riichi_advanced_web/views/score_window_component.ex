@@ -6,6 +6,7 @@ defmodule RiichiAdvancedWeb.ScoreWindowComponent do
 
   def mount(socket) do
     socket = assign(socket, :hovered, nil)
+    socket = assign(socket, :txns, [])
     {:ok, socket}
   end
 
@@ -27,7 +28,7 @@ defmodule RiichiAdvancedWeb.ScoreWindowComponent do
         <svg class="curve t2s" phx-hover="hover" phx-hover-off="hover_off" phx-target={@myself} phx-value-key="t2s" style="--xscale: -1; --yscale: -1; --xpos: 8.75; --ypos: 1.5;"><use href="#curve2"/></svg>
         <svg class="curve t2k" phx-hover="hover" phx-hover-off="hover_off" phx-target={@myself} phx-value-key="t2k" style="--xscale: 1; --yscale: -1; --xpos: 2.25; --ypos: 1.5;"><use href="#curve2"/></svg>
         <%= if not Enum.empty?(@delta_scores) do %>
-          <div class="delta-score-reason"><%= dt(@lang, @delta_scores_reason) %></div>
+          <div class="delta-score-reason" :if={@delta_scores_reason}><%= dt(@lang, @delta_scores_reason) %></div>
           <%= for dir <- [:self, :shimocha, :toimen, :kamicha] do %>
             <.live_component module={RiichiAdvancedWeb.ScoreBadgeComponent}
               id={"score-badge-#{dir}"}
@@ -128,10 +129,11 @@ defmodule RiichiAdvancedWeb.ScoreWindowComponent do
   end
 
   def format_txns(txns, seat, _players) do
+    # first make ledger for arrows
     ret = for txn = %{from: from, to: to, line_items: line_items} <- txns, reduce: [] do
       ret -> [{make_key(seat, from, to), Payment.get_txn_result(txn), Enum.reverse(line_items)} | ret]
     end
-    # represent totals as entries in ret
+    # then make ledgers for individual players who got score
     ret = for {seat2, txn} <- Payment.consolidate_txns(txns), reduce: ret do
       ret when seat2 == nil -> ret
       ret ->

@@ -3,7 +3,10 @@ defmodule RiichiAdvancedWeb.ScoringTestLive do
   alias RiichiAdvanced.GameState.Player, as: Player
   alias RiichiAdvanced.GameState.Rules, as: Rules
   alias RiichiAdvanced.ModLoader, as: ModLoader
+  alias RiichiAdvanced.Payment, as: Payment
   alias RiichiAdvanced.RoomState, as: RoomState
+  alias RiichiAdvanced.Types.Responsibility, as: Responsibility
+  alias RiichiAdvanced.Types.WinInfo, as: WinInfo
   use RiichiAdvancedWeb, :live_view
   import RiichiAdvancedWeb.Translations
 
@@ -21,17 +24,24 @@ defmodule RiichiAdvancedWeb.ScoringTestLive do
       winners: %{east: %{}},
       winner_seats: [:east],
       winner_index: 0,
-      timer: 10,
+      timer: 0,
       visible_screen: nil,
-      players: Map.new([:east, :south, :west, :north], fn seat -> {seat, %Player{}} end),
+      players: Map.new([:east, :south, :west, :north], fn seat -> {seat, %Player{
+        score: 25000,
+        nickname: Atom.to_string(seat) |> String.capitalize()
+      }} end),
       delta_scores: %{},
       delta_scores_reason: nil,
       available_seats: [:east, :south, :west, :north],
+      txns: [],
     })
     |> assign(:ruleset, nil)
     |> assign(:ruleset_json, nil)
     |> assign(:yaku, [])
     |> assign(:yaku_list_names, [])
+    |> assign(:yaku_lists, [])
+    |> assign(:yaku2_lists, [])
+    |> assign(:extra_yaku_lists, [])
     |> assign(:minipoint_name, "Fu")
     |> assign(:minipoints, 30)
 
@@ -86,7 +96,7 @@ defmodule RiichiAdvancedWeb.ScoringTestLive do
           <div class="yaku-bottom-buttons">
             <%= if @minipoint_name != nil do %>
               <span class="yaku-bottom-minipoint-name"><%= dt(@lang, @minipoint_name) %></span>
-              <input phx-change="change_minipoints_value" name="minipoints-value" type="number" value={@minipoints} onclick="this.select();">
+              <input phx-blur="change_minipoints_value" name="minipoints-value" type="number" value={@minipoints} onclick="this.select();">
             <% else %>
               <input name="minipoints-value" type="hidden" value={@minipoints}>
             <% end %>
@@ -98,7 +108,18 @@ defmodule RiichiAdvancedWeb.ScoringTestLive do
             <% end %>
           </div>
         </form>
-        <.live_component module={RiichiAdvancedWeb.ScoreWindowComponent} id="score-window" seat={@seat} lang={@lang} players={@state.players} winners={@state.winners} delta_scores={@state.delta_scores} delta_scores_reason={@state.delta_scores_reason} timer={@state.timer} visible_screen={@state.visible_screen} available_seats={@state.available_seats}/>
+        <.live_component module={RiichiAdvancedWeb.ScoreWindowComponent}
+          id="score-window"
+          seat={@seat}
+          lang={@lang}
+          players={@state.players}
+          winners={@state.winners}
+          delta_scores={@state.delta_scores}
+          delta_scores_reason={@state.delta_scores_reason}
+          timer={@state.timer}
+          visible_screen={@state.visible_screen}
+          available_seats={@state.available_seats}
+          txns={@state.txns}/>
       </div>
       <div class="top-right-container">
         <.live_component module={RiichiAdvancedWeb.MenuButtonsComponent} id="menu-buttons" lang={@lang} />
@@ -116,10 +137,11 @@ defmodule RiichiAdvancedWeb.ScoringTestLive do
         %{name: mod, config: Map.new(opts.config, fn {name, config} -> {name, config.value} end)}
       end end)
   end
-  def get_selected_yaku(socket) do
-    socket.assigns.yaku
-    |> Enum.filter(fn yaku -> yaku.selected end)
-    |> Enum.map(fn yaku -> {yaku.name, yaku.value} end)
+  def get_selected_yaku(yaku_assign) do
+    yaku_assign
+    |> Enum.filter(& &1.selected)
+    |> Enum.group_by(& &1.list_name)
+    |> Map.new(fn {list_name, yaku} -> {list_name, Enum.map(yaku, &{&1.name, &1.value})} end)
   end
   
   def switch_to_ruleset(socket, ruleset) when ruleset != socket.assigns.ruleset do
@@ -165,6 +187,9 @@ defmodule RiichiAdvancedWeb.ScoringTestLive do
       "yaku2_lists" => Map.get(score_rules, "point2_name", ""),
       "extra_yaku_lists" => Map.get(score_rules, "point_name", ""),
     }
+    prev_selections = socket.assigns.yaku
+    |> Enum.filter(& &1.selected == true)
+    |> MapSet.new(& &1.name)
     parse_yaku = fn list_name ->
       Rules.get(rules_ref, list_name, [])
       |> Enum.map(fn yaku = %{"display_name" => name, "value" => value} -> %{
@@ -179,16 +204,19 @@ defmodule RiichiAdvancedWeb.ScoringTestLive do
           end,
         list_name: list_name,
         value_name: Map.get(point_names, list_name, ""),
-        selected: false,
+        selected: MapSet.member?(prev_selections, name),
         index: 0,
       } end)
     end
-    yaku = Map.get(score_rules, "yaku_lists", [])
-    yaku2 = Map.get(score_rules, "yaku2_lists", [])
-    extra_yaku = Map.get(score_rules, "extra_yaku_lists", [])
-    yaku_list_names = yaku ++ yaku2 ++ extra_yaku
+    yaku_lists = Map.get(score_rules, "yaku_lists", [])
+    yaku2_lists = Map.get(score_rules, "yaku2_lists", [])
+    extra_yaku_lists = Map.get(score_rules, "extra_yaku_lists", [])
+    yaku_list_names = yaku_lists ++ yaku2_lists ++ extra_yaku_lists
 
     socket = socket
+    |> assign(:yaku_lists, yaku_lists)
+    |> assign(:yaku2_lists, yaku2_lists)
+    |> assign(:extra_yaku_lists, extra_yaku_lists)
     |> assign(:yaku_list_names, yaku_list_names)
     |> assign(:yaku, 
       Enum.flat_map(yaku_list_names, parse_yaku)
@@ -264,27 +292,46 @@ defmodule RiichiAdvancedWeb.ScoringTestLive do
     socket = assign(socket, :yaku, Enum.map(yaku, &Map.put(&1, :selected, false)))
     {:noreply, socket}
   end
-  def handle_event("change_minipoints_value", %{"minipoints-value": minipoints}, socket) do
+  def handle_event("change_minipoints_value", %{"value" => minipoints}, socket) do
+    {minipoints, _rest} = Integer.parse(minipoints)
     socket = assign(socket, :minipoints, minipoints)
     {:noreply, socket}
   end
+  def handle_event("ready_for_next_round", _assigns, socket) do
+    socket = assign(socket, :state, %{socket.assigns.state | visible_screen: nil})
+    {:noreply, socket}
+  end
 
-  def handle_event("score_yaku", %{"config" => config, "minipoints-value" => minipoints}, socket) do
+  def handle_event("score_yaku", _assigns, socket) do
     # silent 4MB limit
-    if byte_size(config) <= 4 * 1024 * 1024 do
+    if byte_size(socket.assigns.config) <= 4 * 1024 * 1024 do
+      yaku_lists = socket.assigns.yaku_lists ++ socket.assigns.extra_yaku_lists
+      yaku2_lists = socket.assigns.yaku2_lists
+      minipoints = socket.assigns.minipoints
+      score_rules = Rules.get(socket.assigns.rules_ref, "score_calculation", %{})
+      yaku_assign = socket.assigns.yaku
       socket = socket
       |> start_async(:score_yaku, fn ->
-        0
+        selected_yaku = get_selected_yaku(yaku_assign)
+        get_yaku = fn list_name -> Map.get(selected_yaku, list_name, []) end
+        Payment.determine_responsibilities([%WinInfo{
+          seat: :east,
+          won_by: {:discard, :south},
+          yaku: Enum.flat_map(yaku_lists, get_yaku),
+          yaku2: Enum.flat_map(yaku2_lists, get_yaku),
+          minipoints: minipoints,
+          pao_map: %{},
+          available_seats: [:east, :south, :west, :north],
+        }], %{
+          dealer_seat: :east,
+          pot: 0,
+          honba: 0,
+          honba_value: 100,
+          modifiers: []
+        })
+        |> Enum.map(&Payment.calculate_txn(&1, score_rules))
       end)
       |> assign(:loading, true)
-      |> assign(:config, config)
-      |> assign(:minipoints, minipoints)
-
-      # debug
-      yaku = get_selected_yaku(socket)
-      |> Enum.map_join(", ", fn {name, value} -> "#{name} (#{value})" end)
-      IO.inspect("yaku: #{yaku}, minipoints: #{minipoints}")
-
       {:noreply, socket}
     else
       {:noreply, socket}
@@ -296,8 +343,6 @@ defmodule RiichiAdvancedWeb.ScoringTestLive do
   end
 
   def handle_async(:reload_ruleset, {:ok, ruleset_json}, socket) do
-    IO.puts("here")
-    IO.inspect(String.length(ruleset_json))
     if ruleset_json != socket.assigns.ruleset_json do
       socket = assign(socket, :ruleset_json, ruleset_json)
 
@@ -309,15 +354,22 @@ defmodule RiichiAdvancedWeb.ScoringTestLive do
       {:noreply, retrieve_yaku_lists(socket)}
     else {:noreply, socket} end
   end
-  def handle_async(id, result, socket) do
-    IO.inspect({id, result})
+  def handle_async(:score_yaku, {:ok, txns}, socket) do
+    value = Payment.get_txn_result(Enum.at(txns, 0))
+    socket = socket
+    |> assign(:state, Map.merge(socket.assigns.state, %{
+      winners: %{east: %{}},
+      winner_seats: [:east],
+      winner_index: 0,
+      visible_screen: :scores,
+      delta_scores: %{east: value, south: -value, west: 0, north: 0},
+      txns: txns,
+    }))
+    |> assign(:loading, false)
     {:noreply, socket}
   end
-
-  def handle_async(:score_yaku, {:ok, ruleset_json}, socket) do
-    socket = assign(socket, :ruleset_json, ruleset_json)
-    socket = assign(socket, :loading, false)
-    socket = assign(socket, :visible_screen, :scores)
+  def handle_async(id, result, socket) do
+    IO.inspect({id, result})
     {:noreply, socket}
   end
 
