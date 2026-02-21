@@ -266,6 +266,10 @@ defmodule RiichiAdvanced.Utils do
       seat2 == next_turn(seat, 3) -> :kamicha
       seat2 == next_turn(seat, 4) -> :self
     end
+  rescue
+    err ->
+      IO.puts("Invalid seats passed to get_relative_seat: #{seat} and #{seat2}")
+      raise err
   end
 
   def get_wind_name(wind) do
@@ -514,13 +518,17 @@ defmodule RiichiAdvanced.Utils do
   def _split_on([x | xs], delim, acc, ret), do: _split_on(xs, delim, [x | acc], ret)
   def split_on(xs, delim), do: _split_on(Enum.reverse(xs), delim, [], [])
 
+  def map_over_values(map, f) do
+    for {k, v} <- map, into: %{}, do: {k, f.(v)}
+  end
+
   def sequence(xs) do
     xs
     |> Enum.with_index()
     |> Enum.find(fn {{tag, _}, _i} -> tag == :error end)
     |> case do
       nil                -> {:ok, Enum.map(xs, fn {:ok, x} -> x end)}
-      {{:error, msg}, i} -> {:error, "index #{i}: " <> msg}
+      {{:error, msg}, i} -> {:error, "index #{i}: #{if is_binary(msg) do msg else inspect(msg) end}"}
     end
   end
 

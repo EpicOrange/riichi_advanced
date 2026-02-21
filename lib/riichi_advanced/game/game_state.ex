@@ -18,7 +18,7 @@ defmodule RiichiAdvanced.GameState do
   alias RiichiAdvanced.RoomState.RoomPlayer, as: RoomPlayer
   alias RiichiAdvanced.Utils, as: Utils
   use GenServer
-  
+
   defmodule Choice do
     defstruct [
       name: "skip",
@@ -115,28 +115,6 @@ defmodule RiichiAdvanced.GameState do
         end
       end)
       %TileBehavior{ tile_behavior | aliases: new_aliases }
-    end
-    # get an assignment for the obvious jokers (the ones with only one assignable value)
-    def get_obvious_joker_assignment(tile_behavior, smt_hand, smt_calls) do
-      obvious_joker_map = tile_mappings(tile_behavior)
-      |> Enum.flat_map(fn
-        {joker, [assign]} -> [{joker, assign}]
-        _ -> []
-      end)
-      |> Map.new()
-      # return a map %{index => tile}
-      Enum.with_index(smt_hand ++ Enum.concat(smt_calls))
-      |> Enum.flat_map(fn {tile, ix} ->
-        case Enum.find(obvious_joker_map, fn {from, _to} -> Utils.same_tile(tile, from) end) do
-          nil         -> []
-          {from, to} ->
-            # replace any tiles
-            base = if Utils.strip_attrs(to) == :any do tile else to end
-            attrs = (Utils.get_attrs(tile) ++ Utils.get_attrs(to)) -- Utils.get_attrs(from)
-            [{ix, Utils.add_attr(base, attrs)}]
-        end
-      end)
-      |> Map.new()
     end
   end
 

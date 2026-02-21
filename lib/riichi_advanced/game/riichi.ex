@@ -509,6 +509,9 @@ defmodule RiichiAdvanced.Riichi do
   def get_east_player_seat(kyoku, available_seats) do
     Enum.at(available_seats, rem(kyoku, length(available_seats)))
   end
+  def is_dealer?(seat, kyoku, available_seats) do
+    get_east_player_seat(kyoku, available_seats) == seat
+  end
 
   def get_seat_scoring_offset(kyoku, seat, available_seats) do
     case get_seat_wind(kyoku, seat, available_seats) do

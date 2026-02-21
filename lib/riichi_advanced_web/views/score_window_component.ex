@@ -1,4 +1,5 @@
 defmodule RiichiAdvancedWeb.ScoreWindowComponent do
+  alias RiichiAdvanced.Payment, as: Payment
   alias RiichiAdvanced.Utils, as: Utils
   use RiichiAdvancedWeb, :live_component
   import RiichiAdvancedWeb.Translations
@@ -117,7 +118,7 @@ defmodule RiichiAdvancedWeb.ScoreWindowComponent do
   end
 
   def get_name(seat, players) do
-    if (seat == :pot) do
+    if (seat == nil) do
       "Pot"
     else
       ret = players[seat].nickname
@@ -126,31 +127,21 @@ defmodule RiichiAdvancedWeb.ScoreWindowComponent do
     end
   end
 
-  def format_txns(txns, seat, players) do
-    # tally up every individual's total as we convert
-    totals = Map.new(Map.keys(players), &{&1, {0, []}})
-    {ret, totals} = for %{from: from, to: to, total: total, line_items: line_items} <- txns, reduce: {[], totals} do
-      {ret, totals} ->
-        ret = [{make_key(seat, from, to), total, Enum.reverse(line_items)} | ret]
-        from_name = get_name(from, players)
-        to_name = get_name(to, players)
-        totals = if from == :pot do
-          totals
-          |> Map.update!(to, fn {acc, items} -> {acc + total, [%{op: :+, amount: total, result: acc + total, reason: "Riichi sticks"} | items]} end)
-        else
-          totals
-          |> Map.update!(from, fn {acc, items} -> {acc - total, [%{op: :-, amount: total, result: acc - total, reason: "To #{to_name}"} | items]} end)
-          |> Map.update!(to,   fn {acc, items} -> {acc + total, [%{op: :+, amount: total, result: acc + total, reason: "From #{from_name}"} | items]} end)
-        end
-        {ret, totals}
+  def format_txns(txns, seat, _players) do
+    ret = for txn = %{from: from, to: to, line_items: line_items} <- txns, reduce: [] do
+      ret -> [{make_key(seat, from, to), Payment.get_txn_result(txn), Enum.reverse(line_items)} | ret]
     end
     # represent totals as entries in ret
-    ret = for {s, {acc, items}} <- totals, reduce: ret do
-      ret when acc == 0 -> ret
-      ret when s == :pot -> ret
+    ret = for {seat2, txn} <- Payment.consolidate_txns(txns), reduce: ret do
+      ret when seat2 == nil -> ret
       ret ->
-        items = [%{op: nil, amount: nil, result: acc, reason: "Total"} | items]
-        [{Utils.get_relative_seat(seat, s) |> Atom.to_string(), acc, Enum.reverse(items)} | ret]
+        result = Payment.get_txn_result(txn)
+        if result == 0 do
+          ret
+        else
+          line_items = [%{op: nil, amount: nil, result: result, reason: "Total"} | txn.line_items]
+          [{Utils.get_relative_seat(seat, seat2) |> Atom.to_string(), result, Enum.reverse(line_items)} | ret]
+        end
     end
     ret
   end
@@ -187,7 +178,7 @@ defmodule RiichiAdvancedWeb.ScoreWindowComponent do
   end
 
   def make_key(seat, from, to) do
-    if from === :pot or to === :pot do
+    if from === nil or to === nil do
       "pot"
     else
       case {Utils.get_relative_seat(seat, from), Utils.get_relative_seat(seat, to)} do

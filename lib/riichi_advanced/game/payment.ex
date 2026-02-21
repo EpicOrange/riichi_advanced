@@ -1,12 +1,16 @@
 defmodule RiichiAdvanced.Payment do
+  alias RiichiAdvanced.GameState.TileBehavior, as: TileBehavior
   alias RiichiAdvanced.Utils, as: Utils
   alias RiichiAdvanced.Types, as: Types
   alias RiichiAdvanced.Types.Responsibility, as: Responsibility
+  alias RiichiAdvanced.Types.Riichi, as: Riichi
+  alias RiichiAdvanced.Types.Scoring, as: Scoring
   alias RiichiAdvanced.Types.Transaction, as: Transaction
   alias RiichiAdvanced.Types.WinInfo, as: WinInfo
   alias RiichiAdvanced.Types.DrawInfo, as: DrawInfo
 
   @type seat() :: Types.seat()
+  @type line_item() :: Types.line_item()
   @type modifier() :: Types.modifier()
 
   @spec order_seats_from(list(seat()), seat()) :: list(seat())
@@ -17,11 +21,21 @@ defmodule RiichiAdvanced.Payment do
     end)
   end
 
-  @spec determine_responsibilities(WinInfo.t(), seat(), number(), number(), number(), list(modifier())) :: list(Responsibility.t())
-  def determine_responsibilities(winners, dealer_seat, pot \\ 0, honba \\ 0, honba_value \\ 100, modifiers \\ []) do
+  @spec seat_to_str(seat: seat()) :: binary()
+  def seat_to_str(nil), do: "pot"
+  def seat_to_str(seat), do: Atom.to_string(seat) |> String.capitalize()
+
+  @spec determine_responsibilities(list(WinInfo.t()), %{
+    dealer_seat: seat(),
+    pot: number(),
+    honba: number(),
+    honba_value: number(),
+    modifiers: list(modifier()),
+  }) :: list(Responsibility.t())
+  def determine_responsibilities(winners, opts) do
     ret = for win_info <- winners, reduce: [] do
       ret ->
-        is_dealer? = win_info.seat == dealer_seat
+        is_dealer? = win_info.seat == opts.dealer_seat
         is_pao? = not Enum.empty?(win_info.pao_map)
         case win_info.won_by do
           {:discard, discarder_seat} ->
@@ -38,22 +52,22 @@ defmodule RiichiAdvanced.Payment do
                     pao_yaku2 = Enum.filter(win_info.yaku2, fn {name, _value} -> name in pao_yaku_names end)
                     pao_win_info = %WinInfo{ win_info | won_by: {:discard, pao_seat}, yaku: pao_yaku, yaku2: pao_yaku2, pao_map: %{}, modifiers: [{:/, 2, "Pao ron halving"}] }
                     first = Enum.empty?(ret)
-                    ret = determine_responsibilities([pao_win_info], dealer_seat, 0, if first do honba else 0 end, honba_value) ++ ret
+                    ret = determine_responsibilities([pao_win_info], %{opts | pot: 0, honba: if first do opts.honba else 0 end}) ++ ret
                     {pao_yaku ++ pao_yaku2 ++ all_pao_yaku, ret}
                 end
               end
               # process pao yaku for discarder
               discarder_win_info = %WinInfo{ win_info | yaku: all_pao_yaku, pao_map: %{} }
-              ret = determine_responsibilities([discarder_win_info], dealer_seat, 0, 0, honba_value) ++ ret
+              ret = determine_responsibilities([discarder_win_info], %{opts | pot: 0, honba: 0}) ++ ret
               {all_pao_yaku, ret}
             else {[], []} end
 
             # then process non-pao yaku for discarder
-            modifiers = modifiers ++
+            modifiers = opts.modifiers ++
               if is_dealer? do [{:*, 6, "Dealer ron"}] else [{:*, 4, "Nondealer ron"}] end ++
               if is_pao? do [{:/, 2, "Pao ron halving"}] else [] end ++
               [{:round_up, 100, "Round up"}] ++
-              if is_pao? or honba === 0 do [] else [{:+, 3 * honba_value * honba, "Honba"}] end
+              if is_pao? or opts.honba === 0 do [] else [{:+, 3 * opts.honba_value * opts.honba, "Honba"}] end
             ret = [%Responsibility {
               from: discarder_seat,
               to: win_info.seat,
@@ -77,7 +91,7 @@ defmodule RiichiAdvanced.Payment do
                     pao_yaku2 = Enum.filter(win_info.yaku2, fn {name, _value} -> name in pao_yaku_names end)
                     pao_win_info = %WinInfo{ win_info | won_by: {:discard, pao_seat}, yaku: pao_yaku, yaku2: pao_yaku2, pao_map: %{}, modifiers: [] }
                     first = Enum.empty?(ret)
-                    ret = determine_responsibilities([pao_win_info], dealer_seat, 0, if first do honba else 0 end, honba_value) ++ ret
+                    ret = determine_responsibilities([pao_win_info], %{opts | pot: 0, honba: if first do opts.honba else 0 end}) ++ ret
                     {pao_yaku ++ all_pao_yaku, ret}
                 end
               end
@@ -86,9 +100,9 @@ defmodule RiichiAdvanced.Payment do
             # regular tsumo payment for all the non-pao yaku
             ret = for seat <- win_info.available_seats -- [win_info.seat], reduce: ret do
               ret ->
-                dealer_bonus = if is_dealer? or seat === dealer_seat do [{:*, 2, "Dealer tsumo"}] else [{:*, 1, "Nondealer tsumo"}] end
+                dealer_bonus = if is_dealer? or seat === opts.dealer_seat do [{:*, 2, "Dealer tsumo"}] else [{:*, 1, "Nondealer tsumo"}] end
                 modifiers = dealer_bonus ++ if Enum.empty?(win_info.yaku2) do [{:round_up, 100, "Round up"}] else [] end
-                modifiers = modifiers ++ if honba === 0 do [] else [{:+, honba_value * honba, "Honba"}] end
+                modifiers = modifiers ++ if opts.honba === 0 do [] else [{:+, opts.honba_value * opts.honba, "Honba"}] end
                 [%Responsibility {
                   from: seat,
                   to: win_info.seat,
@@ -102,132 +116,342 @@ defmodule RiichiAdvanced.Payment do
           {:call, caller_seat} ->
             # exactly the same as win by discard
             discard_win_info = %WinInfo{ win_info | won_by: {:discard, caller_seat} }
-            ret = determine_responsibilities([discard_win_info], dealer_seat, 0, honba, honba_value) ++ ret
+            ret = determine_responsibilities([discard_win_info], %{opts | pot: 0}) ++ ret
             ret
       end
     end
 
     # first winner takes pot
-    ret = if pot > 0 do
-      first_winner = Enum.map(winners, & &1.seat) |> order_seats_from(dealer_seat) |> Enum.at(0)
+    ret = if opts.pot > 0 do
+      first_winner = Enum.map(winners, & &1.seat) |> order_seats_from(opts.dealer_seat) |> Enum.at(0)
       [%Responsibility {
-        from: :pot,
+        from: nil,
         to: first_winner,
         yaku: [],
         minipoints: 0,
-        modifiers: [{:+, pot, "Riichi sticks"}],
+        modifiers: [{:+, opts.pot, "Riichi sticks"}],
       } | ret]
     else ret end
     ret
   end
 
-  # main point of this is converting it into line items, in reverse order
-  @han_fu_opts %{
-    "limit_thresholds" => [
-      [13, 0],
-      [11, 0],
-      [8, 0],
-      [6, 0],
-      [5, 0], [4, 40], [3, 70],
-    ],
-    "limit_scores" => [
-      8000,
-      6000,
-      4000,
-      3000,
-      2000, 2000, 2000,
-    ],
-    "limit_names" => [
-      "Kazoe Yakuman",
-      "Sanbaiman",
-      "Baiman",
-      "Haneman",
-      "Mangan", "Mangan", "Mangan",
-    ],
-    "score_multiplier" => 8000,
-  }
-  @spec calculate_txn(Responsibility.t(), binary(), %{binary() => any()}) :: Transaction.t()
-  # def calculate_txn(resp, "multiplier", opts) do
-
-  # end
-  def calculate_txn(resp, "han_fu", opts \\ @han_fu_opts) do
-    # strategy "han_fu" uses the han fu formula with a couple options
-
-    # first, if we have any yaku2 we do multiplier instead
-    {base, line_items, modifiers} = if not Enum.empty?(resp.yaku2) do
-      %{"score_multiplier" => score_multiplier} = opts
-      yakuman = resp.yaku2
-      |> Enum.map(fn {_yaku, value} -> value end)
-      |> Enum.sum()
-      line_items = [%{op: nil, amount: nil, result: yakuman, reason: "Yakuman"}]
-      base = score_multiplier * yakuman
-      line_items = [%{op: :*, amount: score_multiplier, result: base, reason: "Base"} | line_items]
-      {base, line_items, resp.modifiers}
-    else
-      # han is just the sum of all yaku values
-      han = resp.yaku
-      |> Enum.map(fn {_yaku, value} -> value end)
-      |> Enum.sum()
-      fu = resp.minipoints
-      line_items = [%{op: nil, amount: nil, result: han, reason: "Han"}]
-      # check limit hands to see if we need to fix base to some number
-      %{"limit_thresholds" => limit_thresholds, "limit_scores" => limit_scores, "limit_names" => limit_names} = opts
-      limit_index = Enum.find_index(limit_thresholds, fn [han_limit, fu_limit] -> han >= han_limit and fu >= fu_limit end)
-      {base, line_items} = if limit_index != nil do
-        base = Enum.at(limit_scores, limit_index, 0)
-        name = Enum.at(limit_names, limit_index, "")
-        line_items = [%{op: nil, amount: nil, result: fu, reason: "Fu"} | line_items]
-        line_items = [%{op: :=, amount: nil, result: base, reason: "#{name} base"} | line_items]
-        {base, line_items}
-      else
-        mult = 4 * (2 ** han)
-        base = mult * fu
-        line_items = [%{op: nil, amount: nil, result: mult, reason: "Han mult."} | line_items]
-        line_items = [%{op: nil, amount: nil, result: fu, reason: "Fu"} | line_items]
-        line_items = [%{op: :*, amount: mult, result: base, reason: "Base"} | line_items]
-        {base, line_items}
-      end
-      # remove round_up if it's unnecessary
-      needs_rounding = Enum.empty?(resp.yaku2) and limit_index == nil
-      {base, line_items, if needs_rounding do resp.modifiers else Enum.filter(resp.modifiers, fn {op, _, _} -> op != :round_up end) end}
+  def apply_op(l, op, r) do
+    case op do
+      :+          -> l + r
+      :-          -> l - r
+      :*          -> l * r
+      :/          -> l / r
+      :round_up   -> ceil(l / r) * r
+      :round_down -> floor(l / r) * r
     end
+    |> Utils.try_integer()
+  end
+
+  @spec apply_modifiers({number(), list(line_item())}, list(modifier())) :: {number(), list(line_item())}
+  def apply_modifiers({base, line_items}, modifiers) do
     # apply all modifiers and include them as line items
     {total, line_items} = for {op, value, reason} <- modifiers, reduce: {base, line_items} do
       {acc, line_items} ->
-        acc = case op do
-          :+          -> acc + value
-          :-          -> acc - value
-          :*          -> acc * value
-          :/          -> acc / value
-          :round_up   -> ceil(acc / value) * value
-          :round_down -> floor(acc / value) * value
-        end
-        acc = Utils.try_integer(acc)
+        acc = apply_op(acc, op, value)
         line_items = [%{op: op, amount: value, result: acc, reason: reason} | line_items]
         {acc, line_items}
     end
     line_items = [%{op: :=, amount: nil, result: total, reason: "Total"} | line_items]
+    {total, line_items}
+  end
 
-    # return payment struct
+  @spec calculate_txn(Responsibility.t(), %{binary() => any()}) :: Transaction.t()
+  def calculate_txn(resp, score_rules) do
+    yaku2_overrides_yaku1 = Map.get(score_rules, "yaku2_overrides_yaku1", false)
+    scoring_method = Map.get(score_rules, "scoring_method", "multiplier")
+    case scoring_method do
+      [method1, method2] when yaku2_overrides_yaku1 ->
+        if Enum.empty?(resp.yaku2) do
+          calculate_txn(resp, score_rules, method1)
+        else
+          calculate_txn(%{resp | yaku: resp.yaku2}, %{score_rules | "point_name" => score_rules["point2_name"]}, method2)
+        end
+      [method1, method2] ->
+        calculate_txn(resp, score_rules, method1)
+        calculate_txn(resp, score_rules, method2)
+      method -> calculate_txn(resp, score_rules, method)
+    end
+  end
+
+  @spec calculate_txn(Responsibility.t(), %{binary() => any()}, binary()) :: Transaction.t()
+  def calculate_txn(resp, score_rules, "multiplier") do
+    %{"score_multiplier" => score_multiplier} = score_rules
+
+    points = resp.yaku
+    |> Enum.map(fn {_yaku, value} -> value end)
+    |> Enum.sum()
+    line_items = [%{op: nil, amount: nil, result: points, reason: score_rules["point_name"]}]
+    base = score_multiplier * points
+    line_items = [%{op: :*, amount: score_multiplier, result: base, reason: "Base"} | line_items]
+    {total, line_items} = apply_modifiers({base, line_items}, resp.modifiers)
+
     %Transaction{
+      name: "#{seat_to_str(resp.from)} → #{seat_to_str(resp.to)}",
       from: resp.from,
       to: resp.to,
-      total: total,
       line_items: line_items,
     }
   end
+  def calculate_txn(resp, score_rules, "han_fu_formula") do
+    %{"limit_thresholds" => limit_thresholds, "limit_scores" => limit_scores, "limit_names" => limit_names} = score_rules
+
+    # han is just the sum of all yaku values
+    han = resp.yaku
+    |> Enum.map(fn {_yaku, value} -> value end)
+    |> Enum.sum()
+    fu = resp.minipoints
+    line_items = [%{op: nil, amount: nil, result: han, reason: "Han"}]
+    # check limit hands to see if we need to fix base to some number
+    limit_index = Enum.find_index(limit_thresholds, fn [han_limit, fu_limit] -> han >= han_limit and fu >= fu_limit end)
+
+    # remove round_up from modifiers if it's a limit hand
+    modifiers = if limit_index == nil do resp.modifiers else Enum.filter(resp.modifiers, fn {op, _, _} -> op != :round_up end) end
+
+    {_total, line_items} = if limit_index != nil do
+      base = Enum.at(limit_scores, limit_index, 0)
+      name = Enum.at(limit_names, limit_index, "")
+      line_items = [%{op: nil, amount: nil, result: fu, reason: "Fu"} | line_items]
+      line_items = [%{op: :=, amount: nil, result: base, reason: "#{name} base"} | line_items]
+      {base, line_items}
+    else
+      mult = 4 * (2 ** han)
+      base = mult * fu
+      line_items = [%{op: nil, amount: nil, result: mult, reason: "Han mult."} | line_items]
+      line_items = [%{op: nil, amount: nil, result: fu, reason: "Fu"} | line_items]
+      line_items = [%{op: :*, amount: mult, result: base, reason: "Base"} | line_items]
+      {base, line_items}
+    end
+    |> apply_modifiers(resp.modifiers)
+
+    %Transaction{
+      from: resp.from,
+      to: resp.to,
+      line_items: line_items,
+    }
+  end
+
+  # just adds a blank line item that flips the sign of the result
+  def invert_txn(txn) do
+    %{txn | line_items: [%{op: :*, amount: -1, result: -get_txn_result(txn), reason: ""} | txn.line_items]}
+  end
+
+  # result of a transaction is just the value of its final (index 0) line item
+  def get_txn_result(txn) do
+    if Enum.empty?(txn.line_items) do 0 else Enum.at(txn.line_items, 0).result end
+  end
+  # applies the line items in txn2 on the result of txn1, obtaining a new result
+  # assumes `from`, `to` are the same
+  def sequence_txns(txn1, txn2) do
+    for %{op: op, amount: amount} = line_item <- Enum.reverse(txn2.line_items), reduce: txn1 do
+      ret ->
+        total = apply_op(ret.total, op, amount)
+        %{ret | line_items: [%{line_item | total: total} | ret.line_items]}
+    end
+  end
+  # sum all txns, resulting in a summary txn
+  # assumes `from`, `to` are the same across all txns
+  def sum_txns(txns) do
+    for txn <- txns, reduce: %Transaction{} do
+      ret ->
+        acc = get_txn_result(ret)
+        amount = get_txn_result(txn)
+        result = acc + amount
+        %{ret | line_items: [%{op: :+, amount: amount, result: result, reason: txn.name} | ret.line_items]}
+    end
+  end
+
+  # merge all txns into one big txn for every player whose score changed
+  @spec consolidate_txns(txns: list(Transaction.t())) :: %{seat() => Transaction.t()}
+  def consolidate_txns(txns) do
+    for %{from: from, to: to} = txn <- txns, reduce: %{} do
+      ledger ->
+        txn2 = invert_txn(txn)
+        ledger
+        |> Map.update(to, [txn], &[txn | &1])
+        |> Map.update(from, [txn2], &[txn2 | &1])
+    end
+    |> Utils.map_over_values(&sum_txns/1)
+  end
+
+
+# - is passed in %WinSpec{winning_seat, win_source, winning_tile, the hand and calls, dealer seat, bloody end opponents, score_rules}
+# - launches smt solver if needed
+# - does a joker replacement
+# - scores the hand
+# - returns the {score, etc} of the ideal joker assignment
+
+
+  def is_dealer?(seat, kyoku, available_seats) do
+    Riichi.get_east_player_seat(kyoku, available_seats) == seat
+  end
+  # TODO type these
+  def determine_winning_tile(state, seat, win_source) do
+    winning_tiles = Scoring.get_winning_tiles(state, seat, win_source)
+    winning_tile = if MapSet.size(winning_tiles) == 1 do Enum.at(winning_tiles, 0) else nil end
+    winning_tile
+  end
+  def construct_winning_hand(winning_tile, hand, calls) do
+    hand ++ Enum.flat_map(calls, &Utils.call_to_tiles/1) ++ if winning_tile != nil do [winning_tile] else [] end
+  end
+  def get_smt_hand_calls(state, seat, winning_tile) do
+    smt_hand = state.players[seat].hand ++ if winning_tile != nil do [winning_tile] else [] end
+    smt_calls = state.players[seat].calls
+    |> Enum.reject(fn {call_name, _call} -> call_name in Riichi.flower_names() end)
+    |> Enum.map(&Utils.call_to_tiles/1)
+    {smt_hand, smt_calls}
+  end
+  # get an assignment for the obvious jokers (the ones with only one assignable value)
+  def get_obvious_joker_assignment(tile_behavior, smt_hand, smt_calls) do
+    # first get a map [single-value joker => the tile it maps to]
+    obvious_joker_map = TileBehavior.tile_mappings(tile_behavior)
+    |> Enum.flat_map(fn {joker, [assign]} -> [{joker, assign}]; _ -> [] end)
+    |> Map.new()
+    # return a map %{index => tile}
+    # do this by iterating over the whole hand and replacing with the first joker match
+    Enum.with_index(smt_hand ++ Enum.concat(smt_calls))
+    |> Enum.flat_map(fn {tile, ix} ->
+      case Enum.find(obvious_joker_map, fn {from, _to} -> Utils.same_tile(tile, from) end) do
+        nil        -> []
+        {from, to} ->
+          # replace this tile
+          base = if Utils.strip_attrs(to) == :any do tile else to end
+          attrs = (Utils.get_attrs(tile) ++ Utils.get_attrs(to)) -- Utils.get_attrs(from)
+          [{ix, Utils.add_attr(base, attrs)}]
+      end
+    end)
+    |> Map.new()
+  end
+  def replace_obvious_jokers({smt_hand, smt_calls}, obvious_joker_assignment) do
+      # replace smt hand/calls with obvious jokers, so the smt solver doesn't solve for those
+      {[smt_hand | smt_calls], _} = for group <- [smt_hand | smt_calls], reduce: {[], 0} do
+        {acc, start_ix} ->
+          {acc ++ [for {tile, ix} <- Enum.with_index(group) do
+            Map.get(obvious_joker_assignment, start_ix + ix, tile)
+          end], start_ix + length(group)}
+      end
+  end
+  def solve_for_jokers({smt_hand, smt_calls}, smt_solver, rules_ref, tile_behavior, winning_tile) do
+    # first grab the obvious jokers (the ones that map only to one value, basically red fives)
+    obvious_joker_assignment = Payment.get_obvious_joker_assignment(tile_behavior, smt_hand, smt_calls)
+    {smt_hand, smt_calls} = Payment.replace_obvious_jokers({smt_hand, smt_calls}, obvious_joker_assignment)
+
+    use_smt = Rules.get(rules_ref, "score_calculation", %{}) |> Map.get("use_smt", true)
+    ret = if use_smt and Enum.any?(smt_hand ++ Enum.concat(smt_calls), &TileBehavior.is_joker?(&1, tile_behavior)) do
+      # obtain all joker assignments (as a stream)
+      RiichiAdvanced.SMT.match_hand_smt_v3(smt_solver, smt_hand, smt_calls, Rules.translate_match_definitions(rules_ref, ["win"]), tile_behavior)
+    else Stream.concat([[%{}]]) end
+    # re-add the obvious jokers back into each assignment
+    |> Stream.map(&Map.merge(obvious_joker_assignment, &1))
+    ret
+    # TODO can we somehow check if the stream is empty, and return Stream.new([[obvious_joker_assignment]]) if so?
+  end
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  # # calculates the optimal joker assignment in terms of points
+  # # returns that assignment, as well as the calculated yaku, minipoints, etc
+  # @spec calculate_optimal_joker_assignment(WinSpec.t()) :: map()
+  # def calculate_optimal_joker_assignment(%WinSpec{
+  #     score_rules: score_rules,
+  #     winning_seat: winning_seat,
+  #     win_source: win_source,
+  #     winning_tile: winning_tile,
+  #     winning_hand: winning_hand,
+  #     dealer_seat: dealer_seat,
+  #     opponents: opponents}) do
+  #   # push a message if it takes more than 0.5 seconds to solve
+  #   notify_task = Task.async(fn -> :timer.sleep(500); push_message(state, [%{text: "Running joker solver..."}]) end)
+  #   # find the maximum score obtainable across all joker assignments
+  #   winner_details = Task.async_stream(
+  #     Scoring.solve_for_jokers(state, seat, winning_tile),
+  #     &calculate_winner_details_task(state, %{
+  #       seat: seat,
+  #       winning_tile: winning_tile,
+  #       win_source: win_source,
+  #       is_dealer: is_dealer?(seat, state.kyoku, state.available_seats)
+  #     }, &1),
+  #     timeout: :infinity, ordered: false
+  #   )
+  #   |> Stream.map(fn {:ok, res} -> res end)
+  #   |> get_best_winner_details(win_source == :worst_discard)
+  #   winner_details = if winner_details == nil do
+  #     # perhaps it's a special hand not supported by the smt solver,
+  #     # in any case, we got no assignment from the solver,
+  #     # so score the hand as is (with no joker assignment)
+  #     calculate_winner_details_task(state, context, %{})
+  #   else winner_details end
+
+  #   # kill the 0.5s timer if it's still sleeping
+  #   if Task.yield(notify_task, 0) == nil do
+  #     Task.shutdown(notify_task, :brutal_kill)
+  #   end
+
+  #   winner_details
+  # end
+
+
+
 end
 
-# could be:
-# - ron OR chankan OR tsumo pao (W <- L) = 4x base score, 6x if dealer
-# - tsumo OR hu (W <- LLL) = 2x base score if dealer, 1x if nondealer
-# - ron pao (W <- LL) = 2x base score each
-# - double ron/chankan (WW <- L) = 4x base score each, 6x if dealer
-# - triple ron/chankan (WWW <- L) = 4x base score each, 6x if dealer
-# not handled here:
-# - ryuukyoku (W <- LLL, WW <- LL, WWW <- L) = 0x base score, some penalty
-# - nagashi (W <- LLL) = 2x base score if dealer, 1x if nondealer
+# more fleshed out implementation notes
+# 
+# each win has some easy things to calculate, and some hard things. easy things:
+# - seat that won (the one with the winning hand)
+# - won_by: :discard, :draw, or :call
+# - pao_map
+# - available_seats
+# - dealer_seat
+# - pot, honba
+# - score_rules
+# hard things:
+# - yaku and yaku2 (requires evaluating jokers)
+# - minipoints (is its own thing)
 
+# these are currently handled by Scoring.calculate_winner_details.
+# this function is extremely stateful, and does:
+# - [OK] using passed in win_source, determines which tile was used to win (winning tile)
+# - [NO] sets global winning_hand variable to (hand + calls + winning tile)
+# - [OK] check if we're dealer (also handle ryuumonbuchi touka "i score as if i'm dealer" power)
+# - [OK] for bloody end, save all opponents, to know from whom payments are coming from
+# - [OK] launch smt solver async to get all possible joker assignments. if none was found, then just leave in the jokers
+# - [OK] otherwise, replace jokers with their assigned identities, and score the hand
+# - [NO] run before_scoring (also very stateful), saving hand and calls before doing so
+# - [OK] output all the information ever into a huge object, the winner object, and return it
+
+# the [NO] lines cannot be copypasted over, since they are stateful, but most things can be done here
+# in particular, we can make a function that does all the stuff between the two NO lines
+# 
+# this means we need to make a function that:
+# - is passed in %WinSpec{winning_seat, win_source, winning_tile, the hand and calls, dealer seat, bloody end opponents
+# - launches smt solver if needed
+# - does a joker replacement
+# - scores the hand
+# - returns the {score, etc} of the ideal joker assignment
+
+
+
+# temp implementation notes
+#
 #   structure for payments:
 #   - each payment is from one player to another (multiple payments possible)
 #   - the list of payments is determined after yaku processing (pao needs yaku knowledge)
@@ -261,27 +485,6 @@ end
 #     - calculation history for each arrow
 #       - only insert entries into this via some display_payment_step action?
 #       - combine multiedge arrows into one, to be separated by <hr>
-#     - 
-#   - 
-#   - 
-#   
-
-# definitely good helpers from scoring.ex
-
-  # defp calculate_delta_scores_tsumo(state, winner, basic_score, is_dealer) do
-  # defp calculate_delta_scores_for_single_winner(state, winner, collect_sticks) do
-  # defp calculate_delta_scores_per_player(state, winners) do
-  # def seat_scores_points(state, yaku_list_names, min_points, min_minipoints, seat, winning_tile, win_source) do
-  # defp apply_ron_score_modifiers(state, winner, payer, basic_score) do
-
-# probably entry point
-
-  # def adjudicate_win_scoring(state) do
-  # def adjudicate_draw_scoring(state) do
-
-#   {state, delta_scores, delta_scores_reason, next_dealer} = Scoring.adjudicate_win_scoring(state)
-
-
 
 
 

@@ -14,16 +14,16 @@ defmodule RiichiAdvanced.Types do
     @type seat() :: RiichiAdvanced.Types.seat()
     @type modifier :: RiichiAdvanced.Types.modifier()
     @type t :: %__MODULE__{
-      from: seat() | :pot,
-      to: seat() | :pot,
+      from: seat() | nil,
+      to: seat() | nil,
       yaku: list({binary(), number()}),
       yaku2: list({binary(), number()}),
       minipoints: number(),
       modifiers: list(modifier())
     }
     defstruct [
-      from: :pot, # who is responsible for paying the yaku+minipoints?
-      to: :pot,   # who gets this payment?
+      from: nil, # who is responsible for paying the yaku+minipoints?
+      to: nil,   # who gets this payment?
       yaku: [],
       yaku2: [],
       minipoints: 0,
@@ -35,15 +35,15 @@ defmodule RiichiAdvanced.Types do
     @type modifier_op() :: RiichiAdvanced.Types.modifier_op()
     @type line_item() :: RiichiAdvanced.Types.line_item()
     @type t :: %__MODULE__{
-      from: seat() | :pot,
-      to: seat() | :pot,
-      total: number(),
-      line_items: list(line_item()),
+      name: binary(),
+      from: seat() | nil,
+      to: seat() | nil,
+      line_items: list(line_item()), # reverse order
     }
     defstruct [
+      name: "",
       from: nil,
       to: nil,
-      total: 0,
       line_items: [],
     ]
   end
