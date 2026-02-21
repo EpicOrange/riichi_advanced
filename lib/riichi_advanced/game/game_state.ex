@@ -141,7 +141,7 @@ defmodule RiichiAdvanced.GameState do
   end
 
   defmodule Player do
-    # ensure this stays at or below 32 keys (currently 29)
+    # ensure this stays at or below 32 keys (currently 30)
     defstruct [
       # persistent
       score: 0,
@@ -259,6 +259,7 @@ defmodule RiichiAdvanced.GameState do
       drawn_reserved_tiles: [],
       tags: %{},
       marking: Map.new([:east, :south, :west, :north], fn seat -> {seat, %{}} end),
+      txns: [],
     ]
   end
 
@@ -725,6 +726,7 @@ defmodule RiichiAdvanced.GameState do
     |> Map.put(:delta_scores_reason, nil)
     |> Map.put(:next_dealer, nil)
     |> Map.update!(:tags, &Enum.filter(&1, fn {tag, _tiles} -> tag in persistent_tags end) |> Map.new())
+    |> Map.put(:txns, [])
 
     # initialize marking
     state = Marking.initialize_marking(state)
@@ -778,6 +780,7 @@ defmodule RiichiAdvanced.GameState do
     state = update_player(state, seat, fn player -> %Player{ player | cache: %PlayerCache{ player.cache | arranged_hand: winner.arranged_hand, arranged_calls: winner.arranged_calls } } end)
     state = Map.update!(state, :winners, &Map.put(&1, seat, winner))
     state = Map.update!(state, :winner_seats, & &1 ++ [seat])
+    state = Map.put(state, :txns, winner.txns)
 
     hand = (state.players[seat].hand ++ Enum.flat_map(state.players[seat].calls, &Utils.call_to_tiles/1))
     |> Utils.sort_tiles()

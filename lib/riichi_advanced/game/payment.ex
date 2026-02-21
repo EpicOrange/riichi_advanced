@@ -1,92 +1,13 @@
 defmodule RiichiAdvanced.Payment do
-  alias RiichiAdvanced.GameState, as: GameState
-  alias RiichiAdvanced.GameState.American, as: American
-  alias RiichiAdvanced.GameState.Actions, as: Actions
-  alias RiichiAdvanced.GameState.Conditions, as: Conditions
-  alias RiichiAdvanced.GameState.Debug, as: Debug
-  alias RiichiAdvanced.GameState.Player, as: Player
-  alias RiichiAdvanced.GameState.PlayerCache, as: PlayerCache
-  alias RiichiAdvanced.GameState.Rules, as: Rules
-  alias RiichiAdvanced.GameState.TileBehavior, as: TileBehavior
-  alias RiichiAdvanced.Match, as: Match
-  alias RiichiAdvanced.Riichi, as: Riichi
   alias RiichiAdvanced.Utils, as: Utils
+  alias RiichiAdvanced.Types, as: Types
+  alias RiichiAdvanced.Types.Responsibility, as: Responsibility
+  alias RiichiAdvanced.Types.Transaction, as: Transaction
+  alias RiichiAdvanced.Types.WinInfo, as: WinInfo
+  alias RiichiAdvanced.Types.DrawInfo, as: DrawInfo
 
-  @type seat() :: GameState.seat()
-  @type win_source() :: GameState.win_source()
-  @type modifier_op() :: :+ | :- | :* | :/ | :round_up | :round_down
-  @type modifier() :: {modifier_op(), number() | nil, binary()}
-  @type line_item() :: %{
-    op: modifier_op() | := | nil,
-    amount: number(),
-    result: number(),
-    reason: binary(),
-  }
-
-  defmodule Responsibility do
-    @type seat() :: GameState.seat()
-    @type modifier :: Payment.modifier()
-    @type t :: %__MODULE__{
-      from: seat() | :pot,
-      to: seat() | :pot,
-      yaku: list({binary(), number()}),
-      minipoints: number(),
-      modifiers: list(modifier())
-    }
-    defstruct [
-      from: :pot, # who is responsible for paying the yaku+minipoints?
-      to: :pot,   # who gets this payment?
-      yaku: [],
-      minipoints: 0,
-      modifiers: [], # ordered list of {op, amount, reason}
-    ]
-  end
-  defmodule Payment do
-    @type seat() :: GameState.seat()
-    @type modifier_op() :: Payment.modifier_op()
-    @type line_item() :: Payment.line_item()
-    @type t :: %__MODULE__{
-      from: seat() | :pot,
-      to: seat() | :pot,
-      total: number(),
-      line_items: list(line_item()),
-    }
-    defstruct [
-      from: nil,
-      to: nil,
-      total: 0,
-      line_items: [],
-    ]
-  end
-  defmodule WinInfo do
-    @type seat() :: GameState.seat()
-    @type win_source() :: GameState.win_source()
-    @type modifier :: Payment.modifier()
-    @type t :: %__MODULE__{
-      seat: seat(),
-      won_by: {win_source(), seat()},
-      yaku: list({binary(), number()}),
-      minipoints: number(),
-      pao_map: %{seat() => list(binary())},
-      available_seats: list(seat()),
-      modifiers: list(modifier())
-    }
-    defstruct [
-      seat: :east,
-      won_by: {:discard, :east},
-      yaku: [], # {name, value} pairs
-      minipoints: 0,
-      pao_map: %{}, # %{seat => [yaku]} means `seat` must pay for `yaku`
-      available_seats: [:east, :south, :west, :north],
-      modifiers: [], # ordered list of {op, amount, reason}
-    ]
-  end
-  defmodule DrawInfo do
-    defstruct [
-      tenpai: nil,
-      nagashi: nil
-    ]
-  end
+  @type seat() :: Types.seat()
+  @type modifier() :: Types.modifier()
 
   @spec order_seats_from(list(seat()), seat()) :: list(seat())
   def order_seats_from(seats, starting_seat) do
@@ -97,10 +18,10 @@ defmodule RiichiAdvanced.Payment do
   end
 
   @spec determine_responsibilities(WinInfo.t(), seat(), number(), number(), number(), list(modifier())) :: list(Responsibility.t())
-  def determine_responsibilities(winners, turn, pot \\ 0, honba \\ 0, honba_value \\ 100, modifiers \\ []) do
+  def determine_responsibilities(winners, dealer_seat, pot \\ 0, honba \\ 0, honba_value \\ 100, modifiers \\ []) do
     ret = for win_info <- winners, reduce: [] do
       ret ->
-        is_dealer? = win_info.seat == turn
+        is_dealer? = win_info.seat == dealer_seat
         is_pao? = not Enum.empty?(win_info.pao_map)
         case win_info.won_by do
           {:discard, discarder_seat} ->
@@ -112,16 +33,18 @@ defmodule RiichiAdvanced.Payment do
               {all_pao_yaku, ret} = for seat <- order_seats_from(win_info.available_seats, win_info.seat), reduce: {win_info.yaku, ret} do
                 {all_pao_yaku, ret} -> case win_info.pao_map[seat] do
                   nil -> {all_pao_yaku, ret}
-                  {pao_seat, pao_yaku} -> 
-                    pao_win_info = %WinInfo{ win_info | won_by: {:discard, pao_seat}, yaku: pao_yaku, pao_map: %{}, modifiers: [{:/, 2, "Pao ron halving"}] }
+                  {pao_seat, pao_yaku_names} ->
+                    pao_yaku = Enum.filter(win_info.yaku, fn {name, _value} -> name in pao_yaku_names end)
+                    pao_yaku2 = Enum.filter(win_info.yaku2, fn {name, _value} -> name in pao_yaku_names end)
+                    pao_win_info = %WinInfo{ win_info | won_by: {:discard, pao_seat}, yaku: pao_yaku, yaku2: pao_yaku2, pao_map: %{}, modifiers: [{:/, 2, "Pao ron halving"}] }
                     first = Enum.empty?(ret)
-                    ret = determine_responsibilities([pao_win_info], 0, if first do honba else 0 end, honba_value) ++ ret
-                    {pao_yaku ++ all_pao_yaku, ret}
+                    ret = determine_responsibilities([pao_win_info], dealer_seat, 0, if first do honba else 0 end, honba_value) ++ ret
+                    {pao_yaku ++ pao_yaku2 ++ all_pao_yaku, ret}
                 end
               end
               # process pao yaku for discarder
               discarder_win_info = %WinInfo{ win_info | yaku: all_pao_yaku, pao_map: %{} }
-              ret = determine_responsibilities([discarder_win_info], 0, 0, honba_value) ++ ret
+              ret = determine_responsibilities([discarder_win_info], dealer_seat, 0, 0, honba_value) ++ ret
               {all_pao_yaku, ret}
             else {[], []} end
 
@@ -130,11 +53,12 @@ defmodule RiichiAdvanced.Payment do
               if is_dealer? do [{:*, 6, "Dealer ron"}] else [{:*, 4, "Nondealer ron"}] end ++
               if is_pao? do [{:/, 2, "Pao ron halving"}] else [] end ++
               [{:round_up, 100, "Round up"}] ++
-              if is_pao? do [] else [{:+, 3 * honba_value * honba, "Honba"}] end
+              if is_pao? or honba === 0 do [] else [{:+, 3 * honba_value * honba, "Honba"}] end
             ret = [%Responsibility {
               from: discarder_seat,
               to: win_info.seat,
               yaku: win_info.yaku -- all_pao_yaku,
+              yaku2: win_info.yaku2 -- all_pao_yaku,
               minipoints: win_info.minipoints,
               modifiers: modifiers
             } | ret]
@@ -148,10 +72,12 @@ defmodule RiichiAdvanced.Payment do
               for seat <- order_seats_from(win_info.available_seats, win_info.seat), reduce: {win_info.yaku, ret} do
                 {all_pao_yaku, ret} -> case win_info.pao_map[seat] do
                   nil -> {all_pao_yaku, ret}
-                  {pao_seat, pao_yaku} -> 
-                    pao_win_info = %WinInfo{ win_info | won_by: {:discard, pao_seat}, yaku: pao_yaku, pao_map: %{}, modifiers: [] }
+                  {pao_seat, pao_yaku_names} -> 
+                    pao_yaku = Enum.filter(win_info.yaku, fn {name, _value} -> name in pao_yaku_names end)
+                    pao_yaku2 = Enum.filter(win_info.yaku2, fn {name, _value} -> name in pao_yaku_names end)
+                    pao_win_info = %WinInfo{ win_info | won_by: {:discard, pao_seat}, yaku: pao_yaku, yaku2: pao_yaku2, pao_map: %{}, modifiers: [] }
                     first = Enum.empty?(ret)
-                    ret = determine_responsibilities([pao_win_info], 0, if first do honba else 0 end, honba_value) ++ ret
+                    ret = determine_responsibilities([pao_win_info], dealer_seat, 0, if first do honba else 0 end, honba_value) ++ ret
                     {pao_yaku ++ all_pao_yaku, ret}
                 end
               end
@@ -160,12 +86,14 @@ defmodule RiichiAdvanced.Payment do
             # regular tsumo payment for all the non-pao yaku
             ret = for seat <- win_info.available_seats -- [win_info.seat], reduce: ret do
               ret ->
-                dealer_bonus = if is_dealer? or seat === turn do [{:*, 2, "Dealer"}] else [] end
-                modifiers = dealer_bonus ++ [{:round_up, 100, "Round up"}]
+                dealer_bonus = if is_dealer? or seat === dealer_seat do [{:*, 2, "Dealer tsumo"}] else [{:*, 1, "Nondealer tsumo"}] end
+                modifiers = dealer_bonus ++ if Enum.empty?(win_info.yaku2) do [{:round_up, 100, "Round up"}] else [] end
+                modifiers = modifiers ++ if honba === 0 do [] else [{:+, honba_value * honba, "Honba"}] end
                 [%Responsibility {
                   from: seat,
                   to: win_info.seat,
                   yaku: win_info.yaku -- all_pao_yaku,
+                  yaku2: win_info.yaku2 -- all_pao_yaku,
                   minipoints: win_info.minipoints,
                   modifiers: modifiers,
                 } | ret]
@@ -174,14 +102,14 @@ defmodule RiichiAdvanced.Payment do
           {:call, caller_seat} ->
             # exactly the same as win by discard
             discard_win_info = %WinInfo{ win_info | won_by: {:discard, caller_seat} }
-            ret = determine_responsibilities([discard_win_info], 0, honba, honba_value) ++ ret
+            ret = determine_responsibilities([discard_win_info], dealer_seat, 0, honba, honba_value) ++ ret
             ret
       end
     end
 
     # first winner takes pot
     ret = if pot > 0 do
-      first_winner = Map.keys(winners) |> order_seats_from(turn) |> Enum.at(0)
+      first_winner = Enum.map(winners, & &1.seat) |> order_seats_from(dealer_seat) |> Enum.at(0)
       [%Responsibility {
         from: :pot,
         to: first_winner,
@@ -194,11 +122,6 @@ defmodule RiichiAdvanced.Payment do
   end
 
   # main point of this is converting it into line items, in reverse order
-  @type han_fu_opts :: %{
-    binary() => list(list(number())),
-    binary() => list(number()),
-    binary() => list(binary()),
-  }
   @han_fu_opts %{
     "limit_thresholds" => [
       [13, 0],
@@ -221,52 +144,72 @@ defmodule RiichiAdvanced.Payment do
       "Haneman",
       "Mangan", "Mangan", "Mangan",
     ],
+    "score_multiplier" => 8000,
   }
-  @spec calculate_payment(Responsibility.t(), binary(), han_fu_opts()) :: Payment.t()
-  def calculate_payment(resp, "han_fu", opts \\ @han_fu_opts) do
+  @spec calculate_txn(Responsibility.t(), binary(), %{binary() => any()}) :: Transaction.t()
+  # def calculate_txn(resp, "multiplier", opts) do
+
+  # end
+  def calculate_txn(resp, "han_fu", opts \\ @han_fu_opts) do
     # strategy "han_fu" uses the han fu formula with a couple options
-    # han is just the sum of all yaku values
-    han = resp.yaku
-    |> Enum.map(fn {_yaku, value} -> value end)
-    |> Enum.sum()
-    line_items = [%{op: nil, amount: nil, result: han, reason: "Han"}]
 
-    fu = resp.minipoints
-    line_items = [%{op: nil, amount: nil, result: fu, reason: "Fu"} | line_items]
-
-    # check limit hands to see if we need to fix base to some number
-    %{"limit_thresholds" => limit_thresholds, "limit_scores" => limit_scores, "limit_names" => limit_names} = opts
-      limit_index = Enum.find_index(limit_thresholds, fn [han_limit, fu_limit] -> han >= han_limit and fu >= fu_limit end)
-    {base, line_items} = if limit_index != nil do
-      base = Enum.at(limit_scores, limit_index, 0)
-      name = Enum.at(limit_names, limit_index, "")
-      line_items = [%{op: :=, amount: nil, result: base, reason: "#{name} base"} | line_items]
-      {base, line_items}
+    # first, if we have any yaku2 we do multiplier instead
+    {base, line_items, modifiers} = if not Enum.empty?(resp.yaku2) do
+      %{"score_multiplier" => score_multiplier} = opts
+      yakuman = resp.yaku2
+      |> Enum.map(fn {_yaku, value} -> value end)
+      |> Enum.sum()
+      line_items = [%{op: nil, amount: nil, result: yakuman, reason: "Yakuman"}]
+      base = score_multiplier * yakuman
+      line_items = [%{op: :*, amount: score_multiplier, result: base, reason: "Base"} | line_items]
+      {base, line_items, resp.modifiers}
     else
-      base = 4 * fu * (2 ** han)
-      line_items = [%{op: :=, amount: nil, result: base, reason: "Base"} | line_items]
-      {base, line_items}
+      # han is just the sum of all yaku values
+      han = resp.yaku
+      |> Enum.map(fn {_yaku, value} -> value end)
+      |> Enum.sum()
+      fu = resp.minipoints
+      line_items = [%{op: nil, amount: nil, result: han, reason: "Han"}]
+      # check limit hands to see if we need to fix base to some number
+      %{"limit_thresholds" => limit_thresholds, "limit_scores" => limit_scores, "limit_names" => limit_names} = opts
+      limit_index = Enum.find_index(limit_thresholds, fn [han_limit, fu_limit] -> han >= han_limit and fu >= fu_limit end)
+      {base, line_items} = if limit_index != nil do
+        base = Enum.at(limit_scores, limit_index, 0)
+        name = Enum.at(limit_names, limit_index, "")
+        line_items = [%{op: nil, amount: nil, result: fu, reason: "Fu"} | line_items]
+        line_items = [%{op: :=, amount: nil, result: base, reason: "#{name} base"} | line_items]
+        {base, line_items}
+      else
+        mult = 4 * (2 ** han)
+        base = mult * fu
+        line_items = [%{op: nil, amount: nil, result: mult, reason: "Han mult."} | line_items]
+        line_items = [%{op: nil, amount: nil, result: fu, reason: "Fu"} | line_items]
+        line_items = [%{op: :*, amount: mult, result: base, reason: "Base"} | line_items]
+        {base, line_items}
+      end
+      # remove round_up if it's unnecessary
+      needs_rounding = Enum.empty?(resp.yaku2) and limit_index == nil
+      {base, line_items, if needs_rounding do resp.modifiers else Enum.filter(resp.modifiers, fn {op, _, _} -> op != :round_up end) end}
     end
-
     # apply all modifiers and include them as line items
-    {total, line_items} = for {op, value, reason} <- resp.modifiers, reduce: {base, line_items} do
+    {total, line_items} = for {op, value, reason} <- modifiers, reduce: {base, line_items} do
       {acc, line_items} ->
         acc = case op do
           :+          -> acc + value
           :-          -> acc - value
-          :*          -> Utils.try_integer(acc * value)
-          :/          -> Utils.try_integer(acc / value)
-          :round_up   -> Utils.try_integer(ceil(acc / value) * value)
-          :round_down -> Utils.try_integer(floor(acc / value) * value)
+          :*          -> acc * value
+          :/          -> acc / value
+          :round_up   -> ceil(acc / value) * value
+          :round_down -> floor(acc / value) * value
         end
+        acc = Utils.try_integer(acc)
         line_items = [%{op: op, amount: value, result: acc, reason: reason} | line_items]
         {acc, line_items}
     end
-
     line_items = [%{op: :=, amount: nil, result: total, reason: "Total"} | line_items]
 
     # return payment struct
-    %Payment{
+    %Transaction{
       from: resp.from,
       to: resp.to,
       total: total,

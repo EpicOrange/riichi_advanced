@@ -9,7 +9,9 @@ defmodule RiichiAdvanced.GameState.Scoring do
   alias RiichiAdvanced.GameState.Rules, as: Rules
   alias RiichiAdvanced.GameState.TileBehavior, as: TileBehavior
   alias RiichiAdvanced.Match, as: Match
+  alias RiichiAdvanced.Payment, as: Payment
   alias RiichiAdvanced.Riichi, as: Riichi
+  alias RiichiAdvanced.Types.WinInfo, as: WinInfo
   alias RiichiAdvanced.Utils, as: Utils
   import RiichiAdvanced.GameState
 
@@ -1151,6 +1153,22 @@ defmodule RiichiAdvanced.GameState.Scoring do
     end
     yaku = if yaku2_overrides do [] else yaku end |> Enum.map(fn {name, value} -> {translate(state, name), value} end)
     yaku2 = Enum.map(yaku2, fn {name, value} -> {translate(state, name), value} end)
+
+    # temp testing
+    win_info = [%WinInfo{
+      seat: seat,
+      won_by: {win_source, payer},
+      yaku: yaku,
+      yaku2: yaku2,
+      minipoints: minipoints,
+      pao_map: state.players[seat].pao_map,
+      available_seats: state.available_seats,
+    }]
+    honba_value = Map.get(Rules.get(state.rules_ref, "score_calculation", %{}), "honba_value", 0)
+    dealer_seat = Riichi.get_east_player_seat(state.kyoku, state.available_seats)
+    txns = Payment.determine_responsibilities(win_info, dealer_seat, state.pot, state.honba, honba_value)
+    |> Enum.map(&Payment.calculate_txn(&1, "han_fu"))
+
     %{
       seat: seat,
       player: %Player{ state.players[seat] | hand: arranged_hand, calls: arranged_calls },
@@ -1197,6 +1215,7 @@ defmodule RiichiAdvanced.GameState.Scoring do
       separated_hand: separated_hand,
       arranged_hand: arranged_hand,
       arranged_calls: arranged_calls,
+      txns: txns,
     }
   end
 

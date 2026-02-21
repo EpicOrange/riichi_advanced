@@ -3,62 +3,8 @@ defmodule RiichiAdvancedWeb.ScoreWindowComponent do
   use RiichiAdvancedWeb, :live_component
   import RiichiAdvancedWeb.Translations
 
-  @example_payments %{
-    "self" => [
-        [:set, 3900, "Nondealer Ron"],
-        [:add, 300, "Honba"],
-        [:add, 300, "Arakawa Kei"],
-        [:multiply, 2, "Wareme"],
-        [:add, 2000, "Riichi Bets"],
-        [:total, 11000, "Total"]
-    ],
-    "shimocha" => [
-        [:set, -3900, "Nondealer Ron"],
-        [:add, -300, "Honba"],
-        [:add, -300, "Arakawa Kei"],
-        [:multiply, 2, "Wareme"],
-        [:total, -9000, "Total"]
-    ],
-    "kamicha" => [
-        [:set, -3900, "Nondealer Ron"],
-        [:add, -300, "Honba"],
-        [:add, -300, "Arakawa Kei"],
-        [:multiply, 2, "Wareme"],
-        [:total, -9000, "Total"]
-    ],
-    "toimen" => [
-        [:set, -3900, "Nondealer Ron"],
-        [:add, -300, "Honba"],
-        [:add, -300, "Arakawa Kei"],
-        [:multiply, 2, "Wareme"],
-        [:total, -9000, "Total"]
-    ],
-    "s2u" => [
-        [:set, 3900, "Nondealer Ron"],
-        [:add, 300, "Honba"],
-        [:add, 300, "Arakawa Kei"],
-        [:multiply, 2, "Wareme"],
-        [:total, 9000, "Total"]
-    ],
-    "k2u" => [
-        [:set, 3900, "Nondealer Ron"],
-        [:add, 300, "Honba"],
-        [:add, 300, "Arakawa Kei"],
-        [:multiply, 2, "Wareme"],
-        [:total, 9000, "Total"]
-    ],
-    "t2u" => [
-        [:set, 3900, "Nondealer Ron"],
-        [:add, 300, "Honba"],
-        [:add, 300, "Arakawa Kei"],
-        [:multiply, 2, "Wareme"],
-        [:total, 9000, "Total"]
-    ],
-  }
-
   def mount(socket) do
-    socket = assign(socket, :payments, @example_payments)
-    socket = assign(socket, :hovered, [])
+    socket = assign(socket, :hovered, nil)
     {:ok, socket}
   end
 
@@ -95,11 +41,11 @@ defmodule RiichiAdvancedWeb.ScoreWindowComponent do
               :if={Utils.get_seat(@seat, dir) in @available_seats} />
           <% end %>
         <% end %>
-        <div class={["score-ledger-container"] ++ [@hovered]}>
-          <%= for {key, payments} <- @payments do %>
+        <div class={["score-ledger-container"] ++ [@hovered]} :if={@txns != nil and @players != nil}>
+          <%= for {key, total, line_items} <- format_txns(@txns, @seat, @players) do %>
             <table class={["score-ledger", key]}>
               <thead><tr>
-                <th colspan="3"><%= key_title(@players, @seat, key) %>
+                <th colspan="5"><%= key_title(@players, @seat, key) %>
                   <div class="score-ledger-mini">
                     <span class={["mini-self" | if mini_highlight?(key, :self) do ["selected"] else [] end]}></span>
                     <span class={["mini-shimocha" | if mini_highlight?(key, :shimocha) do ["selected"] else [] end]}></span>
@@ -109,11 +55,13 @@ defmodule RiichiAdvancedWeb.ScoreWindowComponent do
                 </th>
               </tr></thead>
               <tbody>
-                <%= for [op, value, reason] <- payments do %>
-                  <tr class={if op == :total do "score-ledger-total" else nil end}>
-                    <td class="score-ledger-reason"><%= reason %></td>
+                <%= for %{op: op, amount: amount, result: result, reason: reason} <- line_items do %>
+                  <tr class={if reason == "Total" do "score-ledger-total" else nil end}>
                     <td class="score-ledger-op"><%= display_op(op) %></td>
-                    <td class="score-ledger-value"><%= value %></td>
+                    <td class="score-ledger-amount"><%= amount %></td>
+                    <td><%= if op != nil do "=" else "" end %></td>
+                    <td class="score-ledger-result"><%= result %></td>
+                    <td class="score-ledger-reason"><%= reason %></td>
                   </tr>
                 <% end %>
               </tbody>
@@ -168,6 +116,45 @@ defmodule RiichiAdvancedWeb.ScoreWindowComponent do
     """
   end
 
+  def get_name(seat, players) do
+    if (seat == :pot) do
+      "Pot"
+    else
+      ret = players[seat].nickname
+      ret = if ret == "" or ret == nil do Atom.to_string(seat) |> String.capitalize() else ret end
+      ret
+    end
+  end
+
+  def format_txns(txns, seat, players) do
+    # tally up every individual's total as we convert
+    totals = Map.new(Map.keys(players), &{&1, {0, []}})
+    {ret, totals} = for %{from: from, to: to, total: total, line_items: line_items} <- txns, reduce: {[], totals} do
+      {ret, totals} ->
+        ret = [{make_key(seat, from, to), total, Enum.reverse(line_items)} | ret]
+        from_name = get_name(from, players)
+        to_name = get_name(to, players)
+        totals = if from == :pot do
+          totals
+          |> Map.update!(to, fn {acc, items} -> {acc + total, [%{op: :+, amount: total, result: acc + total, reason: "Riichi sticks"} | items]} end)
+        else
+          totals
+          |> Map.update!(from, fn {acc, items} -> {acc - total, [%{op: :-, amount: total, result: acc - total, reason: "To #{to_name}"} | items]} end)
+          |> Map.update!(to,   fn {acc, items} -> {acc + total, [%{op: :+, amount: total, result: acc + total, reason: "From #{from_name}"} | items]} end)
+        end
+        {ret, totals}
+    end
+    # represent totals as entries in ret
+    ret = for {s, {acc, items}} <- totals, reduce: ret do
+      ret when acc == 0 -> ret
+      ret when s == :pot -> ret
+      ret ->
+        items = [%{op: nil, amount: nil, result: acc, reason: "Total"} | items]
+        [{Utils.get_relative_seat(seat, s) |> Atom.to_string(), acc, Enum.reverse(items)} | ret]
+    end
+    ret
+  end
+
   def get_arrow_classes(our_seat, delta_scores) do
     # TODO: just because someone lost pts, doesn't necessarily mean they paid everyone who got points
     # we'll change this once we find an example situation (double ron pao is one of them)
@@ -189,20 +176,47 @@ defmodule RiichiAdvancedWeb.ScoreWindowComponent do
 
   def display_op(op) do
     case op do
-      :add      -> "+"
-      :subtract -> "-"
-      :multiply -> "×"
-      :divide   -> "÷"
-      _         -> ""
+      :+ -> "+"
+      :- -> "-"
+      :* -> "×"
+      :/ -> "÷"
+      :round_up -> "↑"
+      :round_down -> "↓"
+      _  -> ""
+    end
+  end
+
+  def make_key(seat, from, to) do
+    if from === :pot or to === :pot do
+      "pot"
+    else
+      case {Utils.get_relative_seat(seat, from), Utils.get_relative_seat(seat, to)} do
+        {:self, :self}         -> "self"
+        {:self, :shimocha}     -> "u2s"
+        {:self, :toimen}       -> "u2t"
+        {:self, :kamicha}      -> "u2k"
+        {:shimocha, :self}     -> "s2u"
+        {:shimocha, :shimocha} -> "shimocha"
+        {:shimocha, :toimen}   -> "s2t"
+        {:shimocha, :kamicha}  -> "s2k"
+        {:toimen, :self}       -> "t2u"
+        {:toimen, :shimocha}   -> "t2s"
+        {:toimen, :toimen}     -> "toimen"
+        {:toimen, :kamicha}    -> "t2k"
+        {:kamicha, :self}      -> "k2u"
+        {:kamicha, :shimocha}  -> "k2s"
+        {:kamicha, :toimen}    -> "k2t"
+        {:kamicha, :kamicha}   -> "kamicha"
+      end
     end
   end
 
   def key_title(players, seat, key) do
     dirs = %{
-      u: players[Utils.get_seat(seat, :self)].nickname,
-      s: players[Utils.get_seat(seat, :shimocha)].nickname,
-      t: players[Utils.get_seat(seat, :toimen)].nickname,
-      k: players[Utils.get_seat(seat, :kamicha)].nickname,
+      u: get_name(Utils.get_seat(seat, :self), players),
+      s: get_name(Utils.get_seat(seat, :shimocha), players),
+      t: get_name(Utils.get_seat(seat, :toimen), players),
+      k: get_name(Utils.get_seat(seat, :kamicha), players),
     }
     default = fn s, dir -> s |> Utils.get_seat(dir) |> Atom.to_string() |> String.capitalize() end
     dirs = %{
