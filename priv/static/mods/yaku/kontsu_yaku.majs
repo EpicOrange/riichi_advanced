@@ -26,6 +26,21 @@ define_set ryandoukon, ~s"0 10 20, 0 10 20 | 1z 2z 3z, 1z 2z 3z | 1z 2z 4z, 1z 2
 define_set sandoukon, ~s"0 10 20, 0 10 20, 0 10 20 | 1z 2z 3z, 1z 2z 3z, 1z 2z 3z | 1z 2z 4z, 1z 2z 4z, 1z 2z 4z | 1z 3z 4z, 1z 3z 4z, 1z 3z 4z | 2z 3z 4z, 2z 3z 4z, 2z 3z 4z | 5z 6z 7z, 5z 6z 7z, 5z 6z 7z"
 define_set yondoukon, ~s"0 10 20, 0 10 20, 0 10 20, 0 10 20 | 1z 2z 3z, 1z 2z 3z, 1z 2z 3z, 1z 2z 3z | 1z 2z 4z, 1z 2z 4z, 1z 2z 4z, 1z 2z 4z | 1z 3z 4z, 1z 3z 4z, 1z 3z 4z, 1z 3z 4z | 2z 3z 4z, 2z 3z 4z, 2z 3z 4z, 2z 3z 4z | 5z 6z 7z, 5z 6z 7z, 5z 6z 7z, 5z 6z 7z"
 
+define_set ton, ~s"1z 1z 1z"
+define_set nan, ~s"2z 2z 2z"
+define_set shaa, ~s"3z 3z 3z"
+define_set pei, ~s"4z 4z 4z"
+define_set ton_pair, ~s"1z 1z"
+define_set nan_pair, ~s"2z 2z"
+define_set shaa_pair, ~s"3z 3z"
+define_set pei_pair, ~s"4z 4z"
+define_set haku, ~s"5z 5z 5z"
+define_set hatsu, ~s"6z 6z 6z"
+define_set chun, ~s"7z 7z 7z"
+define_set haku_pair, ~s"5z 5z"
+define_set hatsu_pair, ~s"6z 6z"
+define_set chun_pair, ~s"7z 7z"
+
 # to calculate fu, we need to know which sets are kontsu and which are triplets
 # unfortunately, we can only determine this by comparing yaku
 # the relevant triplets yaku are:
@@ -89,16 +104,16 @@ on before_scoring do
     four_triplet_points = four_triplet_points + 26
   end
   # shousuushii
-  if match(["hand", "calls", "winning_tile"], ["shousuushii"]) do
+  if match(["hand", "calls", "winning_tile"], ~m"unique, (ton nan shaa pei):3, (ton_pair nan_pair shaa_pair pei_pair):1") do
     four_triplet_points = four_triplet_points + 13
     three_triplet_points = three_triplet_points + 13
   end
   # daisuushii
-  if match(["hand", "calls", "winning_tile"], ["daisuushii"]) do
+  if match(["hand", "calls", "winning_tile"], ~m"unique, (ton nan shaa pei):4") do
     four_triplet_points = four_triplet_points + 26
   end
   # daisangen
-  if match(["hand", "calls", "winning_tile"], ["daisangen"]) do
+  if match(["hand", "calls", "winning_tile"], ~m"unique, (haku hatsu chun):3") do
     four_triplet_points = four_triplet_points + 13
     three_triplet_points = three_triplet_points + 13
   end

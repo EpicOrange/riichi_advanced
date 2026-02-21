@@ -24,7 +24,7 @@
       ["add_object", "text", {"size": 0.4, "width": 5, "x": 9.125, "y": 8.5,
         "text": "South just played a tile that matches one in your hand. Because of this, you can call ton on the tile to call a pair. Try it!"
       }],
-      ["add_object", "focus", {"width": 0.75, "hand_index": 8}],
+      ["add_object", "focus", {"width": 0.75, "hand_index": 7}],
       ["add_object", "focus", {"width": 0.75, "x": 5.625, "y": 6.375}],
       ["add_object", "focus", {"width": 1.5, "x": 12.25, "y": "buttons"}],
       ["force_event", ["press_button", "east", "skip"]],
