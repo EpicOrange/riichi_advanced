@@ -10,19 +10,19 @@ defmodule RiichiAdvancedWeb.ScoreWindowComponent do
   def render(assigns) do
     ~H"""
     <div class={["game-modal-container", @visible_screen != :scores && "inactive"]}>
-      <div class="game-modal game-modal-hide">
-        <svg class="arrow" style="display: none; --xpos: 6.875; --ypos: 3; --rotate: 90; --length: 7.5;"><use href="#arrow"/></svg>
-        <svg class="arrow" style="display: none; --xpos: 6.875; --ypos: 10.5; --rotate: -90; --length: 7.5;"><use href="#arrow"/></svg>
-        <svg class="arrow" style="display: none; --xpos: 4.5; --ypos: 6.625; --rotate: 0; --length: 5;"><use href="#arrow"/></svg>
-        <svg class="arrow" style="display: none; --xpos: 9.25; --ypos: 6.625; --rotate: 180; --length: 5;"><use href="#arrow"/></svg>
-        <svg class="curve" style="display: none; --xscale: 1; --yscale: 1; --xpos: 2.25; --ypos: 8;"><use href="#curve"/></svg>
-        <svg class="curve" style="display: none; --xscale: -1; --yscale: 1; --xpos: 8.75; --ypos: 8;"><use href="#curve"/></svg>
-        <svg class="curve" style="display: none; --xscale: -1; --yscale: -1; --xpos: 8.75; --ypos: 1.5;"><use href="#curve"/></svg>
-        <svg class="curve" style="display: none; --xscale: 1; --yscale: -1; --xpos: 2.25; --ypos: 1.5;"><use href="#curve"/></svg>
-        <svg class="curve" style="display: none; --xscale: 1; --yscale: 1; --xpos: 2.25; --ypos: 8;"><use href="#curve2"/></svg>
-        <svg class="curve" style="display: none; --xscale: -1; --yscale: 1; --xpos: 8.75; --ypos: 8;"><use href="#curve2"/></svg>
-        <svg class="curve" style="display: none; --xscale: -1; --yscale: -1; --xpos: 8.75; --ypos: 1.5;"><use href="#curve2"/></svg>
-        <svg class="curve" style="display: none; --xscale: 1; --yscale: -1; --xpos: 2.25; --ypos: 1.5;"><use href="#curve2"/></svg>
+      <div class={["game-modal", "game-modal-hide" | get_arrow_classes(@seat, @delta_scores)]}>
+        <svg class="arrow t2u" style="--xpos: 6.875; --ypos: 3; --rotate: 90; --length: 7.5;"><use href="#arrow"/></svg>
+        <svg class="arrow u2t" style="--xpos: 6.875; --ypos: 10.5; --rotate: -90; --length: 7.5;"><use href="#arrow"/></svg>
+        <svg class="arrow k2s" style="--xpos: 4.5; --ypos: 6.625; --rotate: 0; --length: 5;"><use href="#arrow"/></svg>
+        <svg class="arrow s2k" style="--xpos: 9.25; --ypos: 6.625; --rotate: 180; --length: 5;"><use href="#arrow"/></svg>
+        <svg class="curve k2u" style="--xscale: 1; --yscale: 1; --xpos: 2.25; --ypos: 8;"><use href="#curve"/></svg>
+        <svg class="curve s2u" style="--xscale: -1; --yscale: 1; --xpos: 8.75; --ypos: 8;"><use href="#curve"/></svg>
+        <svg class="curve s2t" style="--xscale: -1; --yscale: -1; --xpos: 8.75; --ypos: 1.5;"><use href="#curve"/></svg>
+        <svg class="curve k2t" style="--xscale: 1; --yscale: -1; --xpos: 2.25; --ypos: 1.5;"><use href="#curve"/></svg>
+        <svg class="curve u2k" style="--xscale: 1; --yscale: 1; --xpos: 2.25; --ypos: 8;"><use href="#curve2"/></svg>
+        <svg class="curve u2s" style="--xscale: -1; --yscale: 1; --xpos: 8.75; --ypos: 8;"><use href="#curve2"/></svg>
+        <svg class="curve t2s" style="--xscale: -1; --yscale: -1; --xpos: 8.75; --ypos: 1.5;"><use href="#curve2"/></svg>
+        <svg class="curve t2k" style="--xscale: 1; --yscale: -1; --xpos: 2.25; --ypos: 1.5;"><use href="#curve2"/></svg>
         <%= if not Enum.empty?(@delta_scores) do %>
           <div class="delta-score-reason"><%= dt(@lang, @delta_scores_reason) %></div>
           <%= for dir <- [:self, :shimocha, :toimen, :kamicha] do %>
@@ -86,6 +86,24 @@ defmodule RiichiAdvancedWeb.ScoreWindowComponent do
     """
   end
 
+  def get_arrow_classes(our_seat, delta_scores) do
+    # TODO: just because someone lost pts, doesn't necessarily mean they paid everyone who got points
+    # we'll change this once we find an example situation (double ron is definitely one of them)
+    {winners, losers} = delta_scores
+    |> Enum.filter(fn {_seat, delta} -> delta != 0 end)
+    |> Enum.map(fn {seat, delta} -> case Utils.get_relative_seat(seat, our_seat) do
+      :shimocha -> {"s", delta}
+      :toimen   -> {"t", delta}
+      :kamicha  -> {"k", delta}
+      :self     -> {"u", delta}
+    end end)
+    |> Enum.split_with(fn {_seat, delta} -> delta > 0 end)
+    if length(winners) == 2 and length(losers) == 2 do
+      for {{w, _delta}, {l, _delta2}} <- Enum.zip(winners, losers), do: "#{l}2#{w}"
+    else
+      for {w, _delta} <- winners, {l, _delta} <- losers, do: "#{l}2#{w}"
+    end
+  end
 
   def update(assigns, socket) do
     socket = assigns

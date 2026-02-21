@@ -2657,40 +2657,52 @@ div.game-modal > div.score-badge > div.placement {
   inherits: true;
   initial-value: 0;
 }
-svg.arrow {
+svg.arrow, svg.curve {
   position: absolute;
   pointer-events: none;
   fill: white;
-  transform-origin: 0% 50%;
-  width: calc(var(--length) * 200px);
-  height: 200px;
   /* first scale based on unitless tile-size, then move the tail, then rotate about the tail */
   zoom: calc(tan(atan2(var(--tile-size), 200px)));
-  transform:
-    translate( calc(var(--xpos) * 200px - 100px)
-             , calc(var(--ypos) * 200px - 200px) )
-    rotate(calc(var(--rotate) * 1deg));
+  overflow: visible;
+}
+svg.arrow {
   --xpos: 0;
   --ypos: 0;
   --rotate: 0;
   --length: 0;
-}
-svg.curve {
-  position: absolute;
-  pointer-events: none;
-  fill: white;
-  zoom: calc(tan(atan2(var(--tile-size), 200px)));
+  width: calc(var(--length) * 200px);
+  height: 200px;
+  transform-origin: 0% 50%;
   transform:
     translate( calc(var(--xpos) * 200px - 100px)
-             , calc(var(--ypos) * 200px - 100px) )
-    scale(var(--xscale), var(--yscale));
-  width: 550px;
-  height: 800px;
-  overflow: visible;
+             , calc(var(--ypos) * 200px - 200px) )
+    rotate(calc(var(--rotate) * 1deg));
+}
+svg.curve {
   --xpos: 0;
   --ypos: 0;
   --xscale: 1;
   --yscale: 1;
+  width: 550px;
+  height: 800px;
+  transform:
+    translate( calc(var(--xpos) * 200px - 100px)
+             , calc(var(--ypos) * 200px - 100px) )
+    scale(var(--xscale), var(--yscale));
+}
+div.game-modal:not(.t2u) > svg.t2u,
+div.game-modal:not(.u2t) > svg.u2t,
+div.game-modal:not(.k2s) > svg.k2s,
+div.game-modal:not(.s2k) > svg.s2k,
+div.game-modal:not(.k2u) > svg.k2u,
+div.game-modal:not(.s2u) > svg.s2u,
+div.game-modal:not(.s2t) > svg.s2t,
+div.game-modal:not(.k2t) > svg.k2t,
+div.game-modal:not(.u2k) > svg.u2k,
+div.game-modal:not(.u2s) > svg.u2s,
+div.game-modal:not(.t2s) > svg.t2s,
+div.game-modal:not(.t2k) > svg.t2k {
+  display: none;
 }
 
 /*
