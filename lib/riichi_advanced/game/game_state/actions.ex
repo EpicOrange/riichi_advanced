@@ -1160,9 +1160,9 @@ defmodule RiichiAdvanced.GameState.Actions do
           IO.inspect({seat, state.players[seat].counters})
         end
         state
-      "print_pao_map"         ->
+      "print_responsibilities"         ->
         for seat <- Conditions.from_seats_spec(state, context, Enum.at(opts, 0, "self")) do
-          IO.inspect({seat, state.players[seat].pao_map})
+          IO.inspect({seat, state.players[seat].responsibilities})
         end
         state
       "print_context"         ->
@@ -1840,12 +1840,12 @@ defmodule RiichiAdvanced.GameState.Actions do
         end
       "set_scoring_header" -> Map.put(state, :delta_scores_reason, interpolate_string(state, context, Enum.at(opts, 0, ""), Enum.at(opts, 1, %{})))
       "make_responsible_for" ->
-        # player.pao_map: an entry %{seat => [yaku]} means if this player wins, `seat` must pay for `yaku`
+        # player.responsibilities: an entry %{seat => [yaku]} means if this player wins, `seat` must pay for `yaku`
         # alternatively %{seat => ["all"]} means paying for all yaku,
         # and %{seat1 => ["all"], seat2 => ["Daisangen"]} means seat1 pays for all except Daisangen
         yaku = List.wrap(Enum.at(opts, 1, "all"))
         for seat <- Conditions.from_seats_spec(state, context, Enum.at(opts, 0, "self")), reduce: state do
-          state -> update_player(state, seat, &%{ &1 | pao_map: Map.update(&1.pao_map, context.seat, yaku, fn yakus -> yakus ++ yaku end) })
+          state -> update_player(state, seat, &%{ &1 | responsibilities: Map.update(&1.responsibilities, context.seat, yaku, fn yakus -> yakus ++ yaku end) })
         end
       # WIP new scoring methods
       "declare_payment" ->

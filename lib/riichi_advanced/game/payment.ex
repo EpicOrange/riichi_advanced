@@ -6,260 +6,31 @@ defmodule RiichiAdvanced.GameState.Payment do
   alias RiichiAdvanced.Riichi, as: Riichi
   alias RiichiAdvanced.Utils, as: Utils
   alias RiichiAdvanced.Types, as: Types
-  alias RiichiAdvanced.Types.Responsibility, as: Responsibility
   alias RiichiAdvanced.Types.Transaction, as: Transaction
-  alias RiichiAdvanced.Types.WinInfo, as: WinInfo
   # alias RiichiAdvanced.Types.DrawInfo, as: DrawInfo
 
   @type seat() :: Types.seat()
   @type line_item() :: Types.line_item()
-  @type modifier() :: Types.modifier()
 
-  @spec order_seats_from(list(seat()), seat()) :: list(seat())
-  def order_seats_from(seats, starting_seat) do
-    seats
-    |> Enum.sort_by(fn seat -> Utils.get_relative_seat(starting_seat, seat)
-      |> case do :shimocha -> 1; :toimen -> 2; :kamicha -> 3; _ -> 0; end
-    end)
-  end
-
-  @spec seat_to_str(seat: seat()) :: binary()
+  @spec seat_to_str(seat: seat() | nil) :: binary()
   def seat_to_str(nil), do: "pot"
   def seat_to_str(seat), do: Atom.to_string(seat) |> String.capitalize()
 
-  # TODO this is only for han_fu
-  @spec determine_responsibilities(list(WinInfo.t()), %{
-    dealer_seat: seat(),
-    pot: number(),
-    honba: number(),
-    honba_value: number(),
-    modifiers: list(modifier()),
-  }) :: list(Responsibility.t())
-  def determine_responsibilities(winners, opts) do
-    ret = for win_info <- winners, reduce: [] do
-      ret ->
-        is_dealer? = win_info.seat == opts.dealer_seat
-        is_pao? = not Enum.empty?(win_info.pao_map)
-        case win_info.won_by do
-          {:discard, discarder_seat} ->
-            # process all the pao yaku first (if any)
-            {all_pao_yaku, ret} = if is_pao? do
-              # we start from winner and go in turn order
-              # note: if there are 2 pao players for the same yaku, both still pay half
-              # (also note this cannot occur in standard riichi)
-              {all_pao_yaku, ret} = for seat <- order_seats_from(win_info.available_seats, win_info.seat), reduce: {win_info.yaku, ret} do
-                {all_pao_yaku, ret} -> case win_info.pao_map[seat] do
-                  nil -> {all_pao_yaku, ret}
-                  {pao_seat, pao_yaku_names} ->
-                    pao_yaku = Enum.filter(win_info.yaku, fn {name, _value} -> name in pao_yaku_names end)
-                    pao_yaku2 = Enum.filter(win_info.yaku2, fn {name, _value} -> name in pao_yaku_names end)
-                    pao_win_info = %WinInfo{ win_info | won_by: {:discard, pao_seat}, yaku: pao_yaku, yaku2: pao_yaku2, pao_map: %{}, modifiers: [{:/, 2, "Pao ron halving"}] }
-                    first = Enum.empty?(ret)
-                    ret = determine_responsibilities([pao_win_info], %{opts | pot: 0, honba: if first do opts.honba else 0 end}) ++ ret
-                    {pao_yaku ++ pao_yaku2 ++ all_pao_yaku, ret}
-                end
-              end
-              # process pao yaku for discarder
-              discarder_win_info = %WinInfo{ win_info | yaku: all_pao_yaku, pao_map: %{} }
-              ret = determine_responsibilities([discarder_win_info], %{opts | pot: 0, honba: 0}) ++ ret
-              {all_pao_yaku, ret}
-            else {[], []} end
-
-            # then process non-pao yaku for discarder
-            modifiers = opts.modifiers ++
-              if is_dealer? do [{:*, 6, "Dealer ron"}] else [{:*, 4, "Nondealer ron"}] end ++
-              if is_pao? do [{:/, 2, "Pao ron halving"}] else [] end ++
-              [{:round_up, 100, "Round up"}] ++
-              if is_pao? or opts.honba === 0 do [] else [{:+, 3 * opts.honba_value * opts.honba, "Honba"}] end
-            ret = [%Responsibility{
-              from: discarder_seat,
-              to: win_info.seat,
-              yaku: win_info.yaku -- all_pao_yaku,
-              yaku2: win_info.yaku2 -- all_pao_yaku,
-              minipoints: win_info.minipoints,
-              modifiers: modifiers
-            } | ret]
-
-            ret
-          {:draw, _seat} ->
-            # if it's pao, it's the same as a direct hit ron but only for the pao yaku
-            # if multiple players are pao, they all pay a full direct hit ron :)
-            # (only first one pays honba though)
-            {all_pao_yaku, ret} = if is_pao? do
-              for seat <- order_seats_from(win_info.available_seats, win_info.seat), reduce: {win_info.yaku, ret} do
-                {all_pao_yaku, ret} -> case win_info.pao_map[seat] do
-                  nil -> {all_pao_yaku, ret}
-                  {pao_seat, pao_yaku_names} -> 
-                    pao_yaku = Enum.filter(win_info.yaku, fn {name, _value} -> name in pao_yaku_names end)
-                    pao_yaku2 = Enum.filter(win_info.yaku2, fn {name, _value} -> name in pao_yaku_names end)
-                    pao_win_info = %WinInfo{ win_info | won_by: {:discard, pao_seat}, yaku: pao_yaku, yaku2: pao_yaku2, pao_map: %{}, modifiers: [] }
-                    first = Enum.empty?(ret)
-                    ret = determine_responsibilities([pao_win_info], %{opts | pot: 0, honba: if first do opts.honba else 0 end}) ++ ret
-                    {pao_yaku ++ all_pao_yaku, ret}
-                end
-              end
-            else {[], []} end
-
-            # regular tsumo payment for all the non-pao yaku
-            ret = for seat <- win_info.available_seats -- [win_info.seat], reduce: ret do
-              ret ->
-                dealer_bonus = if is_dealer? or seat === opts.dealer_seat do [{:*, 2, "Dealer tsumo"}] else [{:*, 1, "Nondealer tsumo"}] end
-                modifiers = dealer_bonus ++ if Enum.empty?(win_info.yaku2) do [{:round_up, 100, "Round up"}] else [] end
-                modifiers = modifiers ++ if opts.honba === 0 do [] else [{:+, opts.honba_value * opts.honba, "Honba"}] end
-                [%Responsibility {
-                  from: seat,
-                  to: win_info.seat,
-                  yaku: win_info.yaku -- all_pao_yaku,
-                  yaku2: win_info.yaku2 -- all_pao_yaku,
-                  minipoints: win_info.minipoints,
-                  modifiers: modifiers,
-                } | ret]
-            end
-            ret
-          {:call, caller_seat} ->
-            # exactly the same as win by discard
-            discard_win_info = %{ win_info | won_by: {:discard, caller_seat} }
-            ret = determine_responsibilities([discard_win_info], %{opts | pot: 0}) ++ ret
-            ret
-      end
-    end
-
-    # first winner takes pot
-    ret = if opts.pot > 0 do
-      first_winner = Enum.map(winners, & &1.seat) |> order_seats_from(opts.dealer_seat) |> Enum.at(0)
-      [%Responsibility{
-        from: nil,
-        to: first_winner,
-        yaku: [],
-        minipoints: 0,
-        modifiers: [{:+, opts.pot, "Riichi sticks"}],
-      } | ret]
-    else ret end
-    ret
-  end
-
-  def apply_op(l, op, r) do
-    case op do
-      :+          -> l + r
-      :-          -> l - r
-      :*          -> l * r
-      :/          -> l / r
-      :round_up   -> ceil(l / r) * r
-      :round_down -> floor(l / r) * r
-    end
-    |> Utils.try_integer()
-  end
-
-  @spec apply_modifiers({number(), list(line_item())}, list(modifier())) :: {number(), list(line_item())}
-  def apply_modifiers({base, line_items}, modifiers) do
-    # apply all modifiers and include them as line items
-    {total, line_items} = for {op, value, reason} <- modifiers, reduce: {base, line_items} do
-      {acc, line_items} ->
-        acc = apply_op(acc, op, value)
-        line_items = [%{op: op, amount: value, result: acc, reason: reason} | line_items]
-        {acc, line_items}
-    end
-    line_items = [%{op: :=, amount: nil, result: total, reason: "Total"} | line_items]
-    {total, line_items}
-  end
-
-  @spec calculate_txn(Responsibility.t(), %{binary() => any()}) :: Transaction.t()
-  def calculate_txn(resp, score_rules) do
-    yaku2_overrides_yaku1 = Map.get(score_rules, "yaku2_overrides_yaku1", false)
-    scoring_method = Map.get(score_rules, "scoring_method", "multiplier")
-    case scoring_method do
-      [method1, method2] when yaku2_overrides_yaku1 ->
-        if Enum.empty?(resp.yaku2) do
-          calculate_txn(resp, score_rules, method1)
-        else
-          calculate_txn(%{resp | yaku: resp.yaku2}, %{score_rules | "point_name" => score_rules["point2_name"]}, method2)
-        end
-      [method1, method2] ->
-        calculate_txn(resp, score_rules, method1)
-        calculate_txn(resp, score_rules, method2)
-      method -> calculate_txn(resp, score_rules, method)
-    end
-  end
-
-  @spec calculate_txn(Responsibility.t(), %{binary() => any()}) :: Transaction.t()
-  @spec calculate_txn(Responsibility.t(), %{binary() => any()}, binary()) :: Transaction.t()
-  def calculate_txn(resp, score_rules, "multiplier") do
-    %{"score_multiplier" => score_multiplier} = score_rules
-
-    points = resp.yaku
-    |> Enum.map(fn {_yaku, value} -> value end)
-    |> Enum.sum()
-    line_items = [%{op: nil, amount: nil, result: points, reason: score_rules["point_name"]}]
-    base = score_multiplier * points
-    line_items = [%{op: :*, amount: score_multiplier, result: base, reason: "Base"} | line_items]
-    {_total, line_items} = apply_modifiers({base, line_items}, resp.modifiers)
-
-    %Transaction{
-      name: "#{seat_to_str(resp.from)} → #{seat_to_str(resp.to)}",
-      from: resp.from,
-      to: resp.to,
-      line_items: line_items,
-    }
-  end
-  def calculate_txn(resp, score_rules, "han_fu_formula") do
-    %{"limit_thresholds" => limit_thresholds, "limit_scores" => limit_scores, "limit_names" => limit_names} = score_rules
-
-    # han is just the sum of all yaku values
-    han = resp.yaku
-    |> Enum.map(fn {_yaku, value} -> value end)
-    |> Enum.sum()
-    fu = resp.minipoints
-    line_items = [%{op: nil, amount: nil, result: han, reason: "Han"}]
-    # check limit hands to see if we need to fix base to some number
-    limit_index = Enum.find_index(limit_thresholds, fn [han_limit, fu_limit] -> han >= han_limit and fu >= fu_limit end)
-
-    # remove round_up from modifiers if it's a limit hand
-    modifiers = if limit_index == nil do resp.modifiers else Enum.filter(resp.modifiers, fn {op, _, _} -> op != :round_up end) end
-
-    {_total, line_items} = if limit_index != nil do
-      base = Enum.at(limit_scores, limit_index, 0)
-      name = Enum.at(limit_names, limit_index, "")
-      line_items = [%{op: nil, amount: nil, result: fu, reason: "Fu"} | line_items]
-      line_items = [%{op: :=, amount: nil, result: base, reason: "#{name} base"} | line_items]
-      {base, line_items}
-    else
-      mult = 4 * (2 ** han)
-      base = mult * fu
-      line_items = [%{op: nil, amount: nil, result: mult, reason: "Han mult."} | line_items]
-      line_items = [%{op: nil, amount: nil, result: fu, reason: "Fu"} | line_items]
-      line_items = [%{op: :*, amount: mult, result: base, reason: "Base"} | line_items]
-      {base, line_items}
-    end
-    |> apply_modifiers(modifiers)
-
-    %Transaction{
-      name: "#{seat_to_str(resp.from)} → #{seat_to_str(resp.to)}",
-      from: resp.from,
-      to: resp.to,
-      line_items: line_items,
-    }
-  end
-
   # just adds a blank line item that flips the sign of the result
+  @spec invert_txn(txn: Transaction.t()) :: Transaction.t()
   def invert_txn(txn) do
     %{txn | line_items: [%{op: :*, amount: -1, result: -get_txn_result(txn), reason: ""} | txn.line_items]}
   end
 
   # result of a transaction is just the value of its final (index 0) line item
+  @spec get_txn_result(txn: Transaction.t()) :: number()
   def get_txn_result(txn) do
     if Enum.empty?(txn.line_items) do 0 else Enum.at(txn.line_items, 0).result end
   end
-  # applies the line items in txn2 on the result of txn1, obtaining a new result
-  # assumes `from`, `to` are the same
-  def sequence_txns(txn1, txn2) do
-    for %{op: op, amount: amount} = line_item <- Enum.reverse(txn2.line_items), reduce: txn1 do
-      ret ->
-        total = apply_op(ret.total, op, amount)
-        %{ret | line_items: [%{line_item | total: total} | ret.line_items]}
-    end
-  end
+
   # sum all txns, resulting in a summary txn
   # assumes `from`, `to` are the same across all txns
+  @spec sum_txns(txn: list(Transaction.t())) :: Transaction.t()
   def sum_txns(txns) do
     for txn <- txns, reduce: %Transaction{} do
       ret ->
@@ -285,9 +56,9 @@ defmodule RiichiAdvanced.GameState.Payment do
   
   # populates a new entry in state.txns using scoring_logic
   def run_scoring_logic(state, cxt, payers) do
-    # for each entry in pao_map, make a txn, and populate it by running scoring_logic
+    # for each entry in responsibilities, make a txn, and populate it by running scoring_logic
     for {payer, player} <- state.players,
-        {seat, _yaku_spec} <- player.pao_map,
+        {seat, _yaku_spec} <- player.responsibilities,
         seat == cxt.seat,
         reduce: state do
       state ->
@@ -322,7 +93,7 @@ end
 # each win has some easy things to calculate, and some hard things. easy things:
 # - seat that won (the one with the winning hand)
 # - won_by: :discard, :draw, or :call
-# - pao_map
+# - responsibilities
 # - available_seats
 # - dealer_seat
 # - pot, honba

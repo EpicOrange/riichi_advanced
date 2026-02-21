@@ -196,7 +196,7 @@ defmodule RiichiAdvanced.GameState.Log do
       result: for {seat, winner} <- state.winners do
         %{
           seat: to_seat(seat),
-          pao: to_seat(winner.player.pao_map |> Map.keys() |> Enum.at(0)), # TODO this is not a thing anymore
+          pao: to_seat(winner.player.responsibilities |> Map.keys() |> Enum.at(0)), # TODO this is not a thing anymore
           won_from: if winner.win_source == :draw do nil else to_seat(state.turn) end,
           hand: winner.winning_hand,
           tile: winner.winning_tile,

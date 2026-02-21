@@ -1,20 +1,19 @@
 
 defmodule RiichiAdvanced.GameState.Scoring do
-  alias RiichiAdvanced.GameState.American, as: American
   alias RiichiAdvanced.GameState.Actions, as: Actions
+  alias RiichiAdvanced.GameState.American, as: American
   alias RiichiAdvanced.GameState.Conditions, as: Conditions
   alias RiichiAdvanced.GameState.Debug, as: Debug
+  alias RiichiAdvanced.GameState.JokerSolver, as: JokerSolver
   alias RiichiAdvanced.GameState.Kyoku, as: Kyoku
+  alias RiichiAdvanced.GameState.Payment, as: Payment
   alias RiichiAdvanced.GameState.Player, as: Player
   alias RiichiAdvanced.GameState.PlayerCache, as: PlayerCache
   alias RiichiAdvanced.GameState.Rules, as: Rules
   alias RiichiAdvanced.GameState.ScoringOld, as: ScoringOld
   alias RiichiAdvanced.GameState.TileBehavior, as: TileBehavior
   alias RiichiAdvanced.Match, as: Match
-  alias RiichiAdvanced.GameState.JokerSolver, as: JokerSolver
-  alias RiichiAdvanced.GameState.Payment, as: Payment
   alias RiichiAdvanced.Riichi, as: Riichi
-  alias RiichiAdvanced.Types.WinInfo, as: WinInfo
   alias RiichiAdvanced.Utils, as: Utils
   import RiichiAdvanced.GameState
 
@@ -190,7 +189,7 @@ defmodule RiichiAdvanced.GameState.Scoring do
     delta_scores = Map.new(delta_scores, fn {seat, delta} -> {seat, delta + Map.get(state.players[seat].counters, "delta_score", 0)} end)
 
     is_tsumo = Enum.any?(winners, fn {_seat, winner} -> winner.win_source == :draw end)
-    is_pao = Enum.any?(winners, fn {_seat, winner} -> not Enum.empty?(winner.player.pao_map) end) # TODO this is wrong now
+    is_pao = Enum.any?(winners, fn {_seat, winner} -> not Enum.empty?(winner.player.responsibilities) end) # TODO this is wrong now
 
     # handle ezaki hitomi's scoring quirk
     {state, delta_scores} = if is_tsumo do

@@ -9,8 +9,6 @@ defmodule RiichiAdvancedWeb.ScoringTestLive do
   alias RiichiAdvanced.GameState.Scoring, as: Scoring
   alias RiichiAdvanced.ModLoader, as: ModLoader
   alias RiichiAdvanced.RoomState, as: RoomState
-  alias RiichiAdvanced.Types.Responsibility, as: Responsibility
-  alias RiichiAdvanced.Types.WinInfo, as: WinInfo
   alias RiichiAdvanced.Utils, as: Utils
   use RiichiAdvancedWeb, :live_view
   import RiichiAdvancedWeb.Translations
@@ -237,7 +235,7 @@ defmodule RiichiAdvancedWeb.ScoringTestLive do
         players: state.players,
         log_state: %{log: []},
       }
-      mock_gamestate = put_in(mock_gamestate.players.south.pao_map, %{east: ["all"]})
+      mock_gamestate = put_in(mock_gamestate.players.south.responsibilities, %{east: ["all"]})
       cxt = %{
         seat: :east,
         win_source: :discard,

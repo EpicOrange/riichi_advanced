@@ -151,7 +151,7 @@ defmodule RiichiAdvanced.GameState do
       last_discard: nil, # for animation purposes and to avoid double discarding
       ready: false,
       ai_thinking: false,
-      pao_map: %{}, # an entry %{seat => [yaku]} means if this player wins, `seat` must pay for `yaku`
+      responsibilities: %{}, # an entry %{seat => [yaku]} means if this player wins, `seat` must pay for `yaku`
       tile_behavior: %TileBehavior{},
       cache: %PlayerCache{},
     ]

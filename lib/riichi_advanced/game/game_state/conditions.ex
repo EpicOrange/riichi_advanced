@@ -614,7 +614,7 @@ defmodule RiichiAdvanced.GameState.Conditions do
         Map.has_key?(state.rules_text, tab) and Map.has_key?(state.rules_text[tab], id)
       "is_responsible_for"  ->
         seat = from_seat_spec(state, context, Enum.at(opts, 0, "self"))
-        Map.has_key?(state.players[seat].pao_map, context.seat)
+        Map.has_key?(state.players[seat].responsibilities, context.seat)
       "yaku_exists"         ->
         list = Enum.at(opts, 0, "yaku")
         name = Enum.at(opts, 1, "Riichi")

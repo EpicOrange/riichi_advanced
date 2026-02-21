@@ -14,7 +14,6 @@ defmodule RiichiAdvanced.GameState.ScoringOld do
   alias RiichiAdvanced.GameState.JokerSolver, as: JokerSolver
   alias RiichiAdvanced.GameState.Payment, as: Payment
   alias RiichiAdvanced.Riichi, as: Riichi
-  alias RiichiAdvanced.Types.WinInfo, as: WinInfo
   alias RiichiAdvanced.Utils, as: Utils
   import RiichiAdvanced.GameState
 
@@ -295,7 +294,7 @@ defmodule RiichiAdvanced.GameState.ScoringOld do
     # first element of liabilities is always the original payer (from winner map)
     liabilities = for seat <- winner.opponents -- [winner.payer], reduce: [payer_liability] do
       [{payer, {yaku, yaku2, shares, mult, penalty}} | liabilities] ->
-        case Map.get(state.players[winner.seat].pao_map, seat) do
+        case Map.get(state.players[winner.seat].responsibilities, seat) do
           nil -> [{payer, {yaku, yaku2, shares, mult, penalty}} | liabilities]
           pao_yaku_list ->
             # take original yaku if complete pao happens
