@@ -4180,24 +4180,22 @@ div.majstest-container > input#show-mods:checked ~ div.mods-container { display:
 
 
 /* scoringtest */
-div.scoringtest-container,
-div.scoringtest-container > form {
-  width: 100%;
-  height: 100%;
-}
-div.scoringtest-container > form {
+div.scoringtest-container {
   display: flex;
   flex-direction: column;
+  width: 100%;
+  height: 100%;
   row-gap: calc(0.25 * var(--tile-size));
-  padding: calc(0.25 * var(--tile-size)) 0;
 }
-div.scoringtest-container > form > header {
+div.scoringtest-container > header {
   display: flex;
   flex-direction: row;
   column-gap: calc(0.25 * var(--tile-size));
-  margin-top: calc(-0.5 * var(--tile-size));
 }
-div.scoringtest-container > form > header > label {
+div.scoringtest-container > header > select {
+  flex-grow: 1;
+}
+div.scoringtest-container > header > label {
   width: calc(1.5 * var(--tile-size));
   height: calc(0.75 * var(--tile-size));
 }
@@ -4208,32 +4206,39 @@ div.scoringtest-container label[for="show-none"] {
   opacity: 0;
   position: absolute;
 }
-div.scoringtest-container input#show-mods:checked ~ label[for="show-none"] {
+div.scoringtest-container input#show-mods:checked ~ header > label[for="show-mods"],
+div.scoringtest-container input#show-config:checked ~ header > label[for="show-config"] {
+  background: var(--tile-back);
+}
+div.scoringtest-container input#show-mods:checked ~ header > label[for="show-none"] {
   display: block;
   right: calc(2 * var(--tile-size));
 }
-div.scoringtest-container input#show-config:checked ~ label[for="show-none"] {
+div.scoringtest-container input#show-config:checked ~ header > label[for="show-none"] {
   display: block;
   right: 0;
 }
-div.scoringtest-container > form > header > select {
+div.scoringtest-container > header > form {
+  order: 0;
+  flex-grow: 1;
+}
+div.scoringtest-container > header > form > select {
+  width: 100%;
   font-size: calc(0.6 * var(--tile-size));
   background-color: var(--tile-front);
   border: none;
   border-radius: calc(0.25 * var(--tile-size));
-  order: 0;
-  flex-grow: 1;
 }
-div.scoringtest-container > form textarea {
+div.scoringtest-container textarea {
   height: calc(14.25 * var(--tile-size));
   font-size: calc(0.25 * var(--tile-size));
   border-width: calc(0.05 * var(--tile-size));
 }
 div.scoringtest-container div.mods-container,
 div.scoringtest-container div.config-container,
-div.scoringtest-container div.yaku-container {
+div.scoringtest-container div.yaku-outer-container {
   width: 100%;
-  height: 100%;
+  height: calc(100% - 0.5 * var(--tile-size));
   border-radius: calc(0.25 * var(--tile-size));
   padding: calc(0.5 * var(--tile-size));
   background: #609060;
@@ -4246,7 +4251,6 @@ div.scoringtest-container div.mods-container,
 div.scoringtest-container div.config-container {
   display: none;
   position: absolute;
-  height: calc(100% - 0.75 * var(--tile-size));
   top: calc(0.75 * var(--tile-size));
   left: 0;
   z-index: 2;
@@ -4254,8 +4258,31 @@ div.scoringtest-container div.config-container {
 div.scoringtest-container input#show-mods:checked ~ div.mods-container { display: block; }
 div.scoringtest-container input#show-config:checked ~ div.config-container { display: block; }
 
+/* bottom buttons */
+div.scoringtest-container div.yaku-bottom-buttons {
+  display: flex;
+  order: 2;
+  flex-flow: row wrap;
+  width: 100%;
+  text-align: right;
+  justify-content: center;
+  column-gap: calc(0.25 * var(--tile-size));
+  & > input {
+    --width: 8;
+    text-align: right;
+    font-family: monospace;
+    width: calc(var(--width) * 0.6em);
+    background: lightgray;
+    border: none;
+  }
+  & > span.yaku-bottom-minipoint-name {text-align: right; font-size: 150%;}
+  & > button:first-of-type { font-size: 90%; }
+  & > button:last-of-type { flex-grow: 1; font-size: 150%; }
+  /*& > input[type="number"] { */
+}
+
 /* individual yaku inside yaku-container */
-div.scoringtest-container div.yaku-selection > div.yaku-selection-inner-container {
+div.scoringtest-container div.yaku-container > div.yaku-inner-container {
   display: flex;
   flex-flow: row wrap;
   row-gap: calc(0.0625 * var(--tile-size));
@@ -4278,7 +4305,7 @@ div.scoringtest-container div.yaku-selection > div.yaku-selection-inner-containe
     flex-direction: row;
     align-items: center;
   }
-  & label.yaku-button form > input[type="number"] {
+  & label.yaku-button input[type="number"] {
     --width: 1;
     font-family: monospace;
     font-size: 100%;
@@ -4290,14 +4317,4 @@ div.scoringtest-container div.yaku-selection > div.yaku-selection-inner-containe
     color: white;
     padding: 0;
   }
-}
-div.scoringtest-container div.yaku-bottom-buttons {
-  display: flex;
-  flex-flow: row wrap;
-  width: 100%;
-  text-align: center;
-  justify-content: center;
-  column-gap: calc(0.25 * var(--tile-size));
-  & > button:first-child { font-size: 90% }
-  & > button:not(:first-child) { flex-grow: 1; }
 }

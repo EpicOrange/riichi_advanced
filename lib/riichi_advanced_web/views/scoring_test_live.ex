@@ -28,10 +28,15 @@ defmodule RiichiAdvancedWeb.ScoringTestLive do
       delta_scores_reason: nil,
       available_seats: [:east, :south, :west, :north],
     })
+    |> assign(:ruleset, nil)
+    |> assign(:ruleset_json, nil)
     |> assign(:yaku, [])
     |> assign(:yaku_list_names, [])
+    |> assign(:minipoint_name, "Fu")
+    |> assign(:minipoints, 30)
 
-    socket = switch_mods_to_ruleset(socket, "riichi")
+    socket = switch_to_ruleset(socket, "riichi")
+    |> reload_ruleset()
 
     messages_init = RiichiAdvanced.MessagesState.link_player_socket(socket.root_pid, socket.assigns.session_id)
     socket = if Map.has_key?(messages_init, :messages_state) do
@@ -48,31 +53,43 @@ defmodule RiichiAdvancedWeb.ScoringTestLive do
     ~H"""
     <div id="container" phx-hook="ClickListener">
       <div class="scoringtest-container">
-        <form phx-submit="score_yaku">
-          <header>
-            <div><%= t(@lang, "Ruleset") %></div>
-            <input id="show-mods" name="scoringtest-topright" type="radio" phx-update="ignore">
-            <label for="show-mods" class="shuffle-seats"><%= t(@lang, "Mods") %></label>
-            <input id="show-config" name="scoringtest-topright" type="radio" phx-update="ignore">
-            <label for="show-config" class="shuffle-seats"><%= t(@lang, "Config") %></label>
-            <input id="show-none" name="scoringtest-topright" type="radio" phx-update="ignore">
-            <label for="show-none" class="shuffle-seats"><%= t(@lang, "None") %></label>
-            <div class="mods-container">
-              <.live_component module={RiichiAdvancedWeb.ModSelectionComponent} id="scoringtest-mods" lang={@lang} ruleset={@ruleset} mods={@room_state.mods} categories={@room_state.categories} />
-            </div>
-            <div class="config-container">
-              <textarea name="config"><%= @config %></textarea>
-            </div>
+        <input id="show-mods" name="scoringtest-header" type="radio" phx-update="ignore">
+        <input id="show-config" name="scoringtest-header" type="radio" phx-update="ignore">
+        <input id="show-none" name="scoringtest-header" type="radio" phx-update="ignore" phx-click="save_mods">
+        <header>
+          <div><%= t(@lang, "Ruleset") %></div>
+          <form>
             <select name="ruleset" class="ruleset-dropdown" phx-change="switch_ruleset">
               <%= for {ruleset, name, _desc} <- Constants.available_rulesets() do %>
-                <option value={ruleset}><%= name %></option>
+                <%= if ruleset == @ruleset do %>
+                  <option value={ruleset} selected><%= name %></option>
+                <% else %>
+                  <option value={ruleset}><%= name %></option>
+                <% end %>
               <% end %>
             </select>
-          </header>
-          <div class="yaku-container">
-            <.live_component module={RiichiAdvancedWeb.YakuSelectionComponent} id="scoringtest-yaku" lang={@lang} ruleset={@ruleset} yaku={@yaku} yaku_list_names={@yaku_list_names} />
-          </div>
+          </form>
+          <label for="show-mods" class="shuffle-seats"><%= t(@lang, "Mods") %></label>
+          <label for="show-config" class="shuffle-seats"><%= t(@lang, "Config") %></label>
+          <label for="show-none" class="shuffle-seats"><%= t(@lang, "None") %></label>
+        </header> 
+        <div class="mods-container">
+          <.live_component module={RiichiAdvancedWeb.ModSelectionComponent} id="scoringtest-mods" lang={@lang} ruleset={@ruleset} mods={@room_state.mods} categories={@room_state.categories} />
+        </div>
+        <div class="yaku-outer-container">
+          <.live_component module={RiichiAdvancedWeb.YakuSelectionComponent} id="scoringtest-yaku" lang={@lang} ruleset={@ruleset} yaku={@yaku} yaku_list_names={@yaku_list_names} />
+        </div>
+        <div class="config-container">
+          <textarea name="config" phx-blur="save_config"><%= @config %></textarea>
+        </div>
+        <form phx-submit="score_yaku">
           <div class="yaku-bottom-buttons">
+            <%= if @minipoint_name != nil do %>
+              <span class="yaku-bottom-minipoint-name"><%= dt(@lang, @minipoint_name) %></span>
+              <input phx-change="change_minipoints_value" name="minipoints-value" type="number" value={@minipoints} onclick="this.select();">
+            <% else %>
+              <input name="minipoints-value" type="hidden" value={@minipoints}>
+            <% end %>
             <button phx-cancellable-click="clear_yaku"><%= t(@lang, "Unselect all") %></button>
             <%= if @loading do %>
               <button><%= t(@lang, "Scoring...") %></button>
@@ -81,7 +98,6 @@ defmodule RiichiAdvancedWeb.ScoringTestLive do
             <% end %>
           </div>
         </form>
-        <.live_component module={RiichiAdvancedWeb.WinWindowComponent} id="win-window" seat={@seat} lang={@lang} winner={Map.get(@state.winners, Enum.at(@state.winner_seats, @state.winner_index), nil)} timer={@state.timer} visible_screen={@state.visible_screen}/>
         <.live_component module={RiichiAdvancedWeb.ScoreWindowComponent} id="score-window" seat={@seat} lang={@lang} players={@state.players} winners={@state.winners} delta_scores={@state.delta_scores} delta_scores_reason={@state.delta_scores_reason} timer={@state.timer} visible_screen={@state.visible_screen} available_seats={@state.available_seats}/>
       </div>
       <div class="top-right-container">
@@ -102,34 +118,67 @@ defmodule RiichiAdvancedWeb.ScoringTestLive do
   end
   def get_selected_yaku(socket) do
     socket.assigns.yaku
-    |> Enum.filter(fn {_name, opts} -> opts.selected end)
-    |> Enum.map(fn {name, opts} -> {name, opts.value} end)
+    |> Enum.filter(fn yaku -> yaku.selected end)
+    |> Enum.map(fn yaku -> {yaku.name, yaku.value} end)
   end
   
-  def switch_mods_to_ruleset(socket, ruleset) do
+  def switch_to_ruleset(socket, ruleset) when ruleset != socket.assigns.ruleset do
     socket = assign(socket, :ruleset, ruleset)
-
     ruleset_json = ModLoader.get_ruleset_json(socket.assigns.ruleset)
+
+    # from the base ruleset, get its mod list
     rules_ref = case Rules.load_rules(ruleset_json, socket.assigns.ruleset) do
       {:ok, rules_ref} -> rules_ref
       {:error, _msg}   -> nil
     end
+    socket = assign(socket, :rules_ref, rules_ref)
 
-    {mods, categories} = RoomState.parse_available_mods(Rules.get(rules_ref, "available_mods", []), Rules.get(rules_ref, "default_mods", []))
+    default_mods = Rules.get(rules_ref, "default_mods", [])
+    {mods, categories} = RoomState.parse_available_mods(Rules.get(rules_ref, "available_mods", []), default_mods)
     # mock room state
     socket = assign(socket, :room_state, %{
       mods: mods,
       categories: categories,
       rules_ref: rules_ref,
     })
+    socket
+  end
+  def switch_to_ruleset(socket, _ruleset), do: socket
 
+  def reload_ruleset(socket) do
+    ruleset = socket.assigns.ruleset
+    mods = get_enabled_mods(socket)
+    config = socket.assigns.config
+    start_async(socket, :reload_ruleset, fn ->
+      # apply all default mods + config to base ruleset
+      ModLoader.get_ruleset_json(ruleset)
+      |> ModLoader.apply_multiple_mods(mods)
+      |> JQ.query_string_with_string!(ModLoader.convert_to_jq(config))
+    end)
+  end
+
+  def retrieve_yaku_lists(socket) do
+    rules_ref = socket.assigns.rules_ref
     score_rules = Rules.get(rules_ref, "score_calculation", %{})
+    point_names = %{
+      "yaku_lists" => Map.get(score_rules, "point_name", ""),
+      "yaku2_lists" => Map.get(score_rules, "point2_name", ""),
+      "extra_yaku_lists" => Map.get(score_rules, "point_name", ""),
+    }
     parse_yaku = fn list_name ->
       Rules.get(rules_ref, list_name, [])
-      |> Enum.map(fn %{"display_name" => name, "value" => value} -> %{
+      |> Enum.map(fn yaku = %{"display_name" => name, "value" => value} -> %{
         name: name,
-        value: value,
+        desc: Map.get(yaku, "desc", ""),
+        value:
+          if is_number(value) do value else
+            case Float.parse(value) do
+              {val, _rest} -> Utils.try_integer(val)
+              _            -> 1
+            end
+          end,
         list_name: list_name,
+        value_name: Map.get(point_names, list_name, ""),
         selected: false,
         index: 0,
       } end)
@@ -146,8 +195,8 @@ defmodule RiichiAdvancedWeb.ScoringTestLive do
       |> Enum.uniq()
       |> Enum.with_index()
       |> Enum.map(fn {yaku, i} -> %{yaku | index: i} end)
-    )
-
+    ) 
+    |> assign(:minipoint_name, Map.get(score_rules, "minipoint_name", "Fu"))
     socket
   end
 
@@ -159,11 +208,9 @@ defmodule RiichiAdvancedWeb.ScoringTestLive do
   def handle_event("double_clicked", _assigns, socket), do: {:noreply, socket}
   def handle_event("right_clicked", _assigns, socket), do: {:noreply, socket}
   def handle_event("change_language", %{"lang" => lang}, socket), do: {:noreply, assign(socket, :lang, lang)}
-  
-  def handle_event("switch_ruleset", assigns, socket) do
-    socket = switch_mods_to_ruleset(socket, assigns["ruleset"])
-    {:noreply, socket}
-  end
+  def handle_event("switch_ruleset", %{"ruleset" => ruleset}, socket), do: {:noreply, socket |> switch_to_ruleset(ruleset) |> reload_ruleset()}
+  def handle_event("save_mods", _assigns, socket), do: {:noreply, socket |> reload_ruleset()}
+  def handle_event("save_config", %{"value" => value}, socket), do: {:noreply, socket |> assign(:config, value) |> reload_ruleset()}
 
   # reuse RoomState's functions for mod selection stuff
   # ideally these functions would be in mod_selection_component.ex,
@@ -217,21 +264,27 @@ defmodule RiichiAdvancedWeb.ScoringTestLive do
     socket = assign(socket, :yaku, Enum.map(yaku, &Map.put(&1, :selected, false)))
     {:noreply, socket}
   end
+  def handle_event("change_minipoints_value", %{"minipoints-value": minipoints}, socket) do
+    socket = assign(socket, :minipoints, minipoints)
+    {:noreply, socket}
+  end
 
-  def handle_event("score_yaku", %{"ruleset" => ruleset, "config" => config}, socket) do
+  def handle_event("score_yaku", %{"config" => config, "minipoints-value" => minipoints}, socket) do
     # silent 4MB limit
     if byte_size(config) <= 4 * 1024 * 1024 do
-      self = self()
-      Task.start(fn ->
-        ruleset_json = ModLoader.get_ruleset_json(ruleset)
-        config_query = ModLoader.convert_to_jq(config)
-        mods = get_enabled_mods(socket)
-        ruleset_json = ModLoader.apply_multiple_mods(ruleset_json, mods)
-        ruleset_json = JQ.query_string_with_string!(ruleset_json, config_query)
-        send(self, {:converted_majs, config, ruleset_json})
+      socket = socket
+      |> start_async(:score_yaku, fn ->
+        0
       end)
-      socket = assign(socket, :loading, true)
-      socket = assign(socket, :config, config)
+      |> assign(:loading, true)
+      |> assign(:config, config)
+      |> assign(:minipoints, minipoints)
+
+      # debug
+      yaku = get_selected_yaku(socket)
+      |> Enum.map_join(", ", fn {name, value} -> "#{name} (#{value})" end)
+      IO.inspect("yaku: #{yaku}, minipoints: #{minipoints}")
+
       {:noreply, socket}
     else
       {:noreply, socket}
@@ -242,9 +295,29 @@ defmodule RiichiAdvancedWeb.ScoringTestLive do
     {:noreply, socket}
   end
 
-  def handle_info({:converted_majs, _config, result}, socket) do
-    socket = assign(socket, :result, result)
+  def handle_async(:reload_ruleset, {:ok, ruleset_json}, socket) do
+    IO.puts("here")
+    IO.inspect(String.length(ruleset_json))
+    if ruleset_json != socket.assigns.ruleset_json do
+      socket = assign(socket, :ruleset_json, ruleset_json)
+
+      rules_ref = case Rules.load_rules(ruleset_json, socket.assigns.ruleset) do
+        {:ok, rules_ref} -> rules_ref
+        {:error, _msg}   -> nil
+      end
+      socket = assign(socket, :rules_ref, rules_ref)
+      {:noreply, retrieve_yaku_lists(socket)}
+    else {:noreply, socket} end
+  end
+  def handle_async(id, result, socket) do
+    IO.inspect({id, result})
+    {:noreply, socket}
+  end
+
+  def handle_async(:score_yaku, {:ok, ruleset_json}, socket) do
+    socket = assign(socket, :ruleset_json, ruleset_json)
     socket = assign(socket, :loading, false)
+    socket = assign(socket, :visible_screen, :scores)
     {:noreply, socket}
   end
 

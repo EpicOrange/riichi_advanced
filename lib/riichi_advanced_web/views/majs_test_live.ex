@@ -42,7 +42,11 @@ defmodule RiichiAdvancedWeb.MajsTestLive do
         <form phx-submit="convert_majs">
           <select name="ruleset" class="ruleset-dropdown" phx-change="switch_ruleset">
             <%= for {ruleset, name, _desc} <- Constants.available_rulesets() do %>
-              <option value={ruleset}><%= name %></option>
+              <%= if ruleset == @ruleset do %>
+                <option value={ruleset} selected><%= name %></option>
+              <% else %>
+                <option value={ruleset}><%= name %></option>
+              <% end %>
             <% end %>
           </select>
           <br/>
