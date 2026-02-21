@@ -2615,9 +2615,9 @@ div.game-modal > div.score-badge {
   color: white;
 }
 div.game-modal > div.score-badge.self { inset: 0; top: auto; margin: 0 auto; }
-div.game-modal > div.score-badge.kamicha { inset: 0; left: auto; margin: auto 0; }
+div.game-modal > div.score-badge.shimocha { inset: 0; left: auto; margin: auto 0; }
 div.game-modal > div.score-badge.toimen { inset: 0; bottom: auto; right: 0; margin: 0 auto; }
-div.game-modal > div.score-badge.shimocha { inset: 0; right: auto; margin: auto 0; }
+div.game-modal > div.score-badge.kamicha { inset: 0; right: auto; margin: auto 0; }
 div.game-modal > div.score-badge > div.hline::before {
   position: absolute;
   content: "";

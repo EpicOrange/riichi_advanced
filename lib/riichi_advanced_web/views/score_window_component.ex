@@ -88,10 +88,10 @@ defmodule RiichiAdvancedWeb.ScoreWindowComponent do
 
   def get_arrow_classes(our_seat, delta_scores) do
     # TODO: just because someone lost pts, doesn't necessarily mean they paid everyone who got points
-    # we'll change this once we find an example situation (double ron is definitely one of them)
+    # we'll change this once we find an example situation (double ron pao is one of them)
     {winners, losers} = delta_scores
     |> Enum.filter(fn {_seat, delta} -> delta != 0 end)
-    |> Enum.map(fn {seat, delta} -> case Utils.get_relative_seat(seat, our_seat) do
+    |> Enum.map(fn {seat, delta} -> case Utils.get_relative_seat(our_seat, seat) do
       :shimocha -> {"s", delta}
       :toimen   -> {"t", delta}
       :kamicha  -> {"k", delta}
