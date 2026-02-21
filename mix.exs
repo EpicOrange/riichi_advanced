@@ -58,7 +58,7 @@ defmodule RiichiAdvanced.MixProject do
       {:hackney, "~> 1.9"},
       {:decimal, "~> 2.0"},
       {:nimble_parsec, "~> 1.4.0"},
-      {:porcelain, github: "walkr/porcelain"},
+      {:porcelain, github: "walkr/porcelain"}, # now unused
       {:temp, "~> 0.4"},
       {:diff_match_patch, github: "pzingg/diff_match_patch"},
       {:diffy, "~> 1.1"},
@@ -69,6 +69,7 @@ defmodule RiichiAdvanced.MixProject do
       {:plug_attack, "~> 0.4.2"},
       {:sobelow, "~> 0.13", only: [:dev, :test], runtime: false},
       {:mix_audit, "~> 2.1", only: [:dev, :test], runtime: false},
+      {:ex_cmd, "~> 0.18.0"},
     ]
   end
 

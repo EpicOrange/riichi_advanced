@@ -779,7 +779,7 @@ defmodule RiichiAdvanced.SMT do
       IO.puts(smt)
       # IO.inspect(encoding)
     end
-    {:ok, _response} = GenServer.call(solver_pid, {:query, smt, true}, 60000)
+    GenServer.cast(solver_pid, {:query, smt, true})
 
     # stream responses
     obtain_all_solutions(solver_pid, encoding, encoding_r, joker_ixs, hand ++ call_tiles, tile_behavior, System.system_time(:millisecond))
