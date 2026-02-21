@@ -172,6 +172,8 @@ main div.messages-container > div.messages {
 
 /* global styles */
 
+/* standardize padding */
+select, button, input { padding: 0 calc(0.125 * var(--tile-size)); }
 /* toggle buttons */
 input[type="radio"], input[type="checkbox"] { display: none; }
 label {
@@ -229,6 +231,14 @@ button:active::before {
   height: calc(0.125 * var(--tile-size));
   top: calc(-0.125 * var(--tile-size));
   left: 0;
+}
+/* numeric input */
+input[type="number"] { -moz-appearance: textfield; }    input[type=number]::-webkit-inner-spin-button,
+input[type="number"]::-webkit-outer-spin-button {
+  appearance: none;
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  margin: 0;
 }
 
 /* hands */
@@ -945,7 +955,7 @@ div.tile.flat {
   0% { transform: translate(-100%, -100%) rotate(135deg); }
   100% { transform: translate(50%, 50%) rotate(135deg); }
 }
-div.tile.dora:not(.\31 x):not(.selected) { overflow: hidden; }
+div.tile.dora:not(.\31 x):not(.selected) { position: relative; overflow: hidden; }
 div.tile.dora:not(.\31 x):not(.selected)::before {
   content: "";
   position: absolute;
@@ -2613,7 +2623,12 @@ div.game-modal > div.score-badge {
   user-select: none;
   z-index: 2;
   color: white;
-  &:hover { filter: brightness(90%) sepia(50%); }
+  &:hover > div {
+    &.initial-score, &.player-name, &.hline::before {
+      width: 100%;
+      filter: brightness(75%) sepia(100%) saturate(800%) hue-rotate(-45deg);
+    }
+  }
 }
 div.game-modal > div.score-badge.self { inset: 0; top: auto; margin: 0 auto; }
 div.game-modal > div.score-badge.shimocha { inset: 0; left: auto; margin: auto 0; }
@@ -2687,10 +2702,10 @@ div.game-modal > div.score-ledger-container > table.score-ledger {
         height: calc(0.4 * var(--tile-size));
         border-radius: calc(0.125 * var(--tile-size));
         background: black;
-        &.mini-east { left: 0; right: 0; margin-inline: auto; bottom: 0; }
-        &.mini-south { top: 0; bottom: 0; margin-block: auto; right: 0; }
-        &.mini-west { left: 0; right: 0; margin-inline: auto; top: 0; }
-        &.mini-north { top: 0; bottom: 0; margin-block: auto; left: 0; }
+        &.mini-self { left: 0; right: 0; margin-inline: auto; bottom: 0; }
+        &.mini-shimocha { top: 0; bottom: 0; margin-block: auto; right: 0; }
+        &.mini-toimen { left: 0; right: 0; margin-inline: auto; top: 0; }
+        &.mini-kamicha { top: 0; bottom: 0; margin-block: auto; left: 0; }
         &.selected { background: white; }
       }
     }
@@ -2728,7 +2743,20 @@ div.game-modal > div.score-ledger-container > table.score-ledger {
 div.game-modal > div.score-ledger-container > table.score-ledger { display: none; }
 div.game-modal > div.score-ledger-container.self > table.score-ledger.self { display: block; }
 div.game-modal > div.score-ledger-container.shimocha > table.score-ledger.shimocha { display: block; }
+div.game-modal > div.score-ledger-container.toimen > table.score-ledger.toimen { display: block; }
+div.game-modal > div.score-ledger-container.kamicha > table.score-ledger.kamicha { display: block; }
+div.game-modal > div.score-ledger-container.t2u > table.score-ledger.t2u { display: block; }
+div.game-modal > div.score-ledger-container.u2t > table.score-ledger.u2t { display: block; }
+div.game-modal > div.score-ledger-container.k2s > table.score-ledger.k2s { display: block; }
+div.game-modal > div.score-ledger-container.s2k > table.score-ledger.s2k { display: block; }
+div.game-modal > div.score-ledger-container.k2u > table.score-ledger.k2u { display: block; }
 div.game-modal > div.score-ledger-container.s2u > table.score-ledger.s2u { display: block; }
+div.game-modal > div.score-ledger-container.s2t > table.score-ledger.s2t { display: block; }
+div.game-modal > div.score-ledger-container.k2t > table.score-ledger.k2t { display: block; }
+div.game-modal > div.score-ledger-container.u2k > table.score-ledger.u2k { display: block; }
+div.game-modal > div.score-ledger-container.u2s > table.score-ledger.u2s { display: block; }
+div.game-modal > div.score-ledger-container.t2s > table.score-ledger.t2s { display: block; }
+div.game-modal > div.score-ledger-container.t2k > table.score-ledger.t2k { display: block; }
 
 @property --tile-size {
   /* required for making it unitless below */
@@ -2742,7 +2770,7 @@ svg.arrow, svg.curve {
   /* first scale based on unitless tile-size, then move the tail, then rotate about the tail */
   zoom: calc(tan(atan2(var(--tile-size), 200px)));
   overflow: visible;
-  &:hover { filter: brightness(80%) sepia(100%); }
+  &:hover { filter: brightness(75%) sepia(100%) saturate(800%) hue-rotate(-45deg); }
 }
 svg.arrow {
   --xpos: 0;
@@ -3728,7 +3756,7 @@ div.config {
   height: 100%;
   font-size: calc(0.25 * var(--tile-size));
 }
-/* individal mod config */
+/* individual mod config */
 label.mod {
   flex-shrink: 1;
   display: flex;
@@ -4138,14 +4166,138 @@ div.majstest-container > div.mods-container {
   height: calc(100% - 0.75 * var(--tile-size));
   border-radius: calc(0.25 * var(--tile-size));
   padding: calc(0.5 * var(--tile-size));
-
   top: calc(0.75 * var(--tile-size));
   left: 0;
   background: #609060;
   box-sizing: border-box;
   overflow-y: scroll;
   z-index: 2;
+  scrollbar-width: none; /* Firefox */
+  &::-webkit-scrollbar { display: none; } /* Safari/Chrome */
 }
-div.majstest-container > input.show-mods-checkbox:checked ~ div.mods-container {
+div.majstest-container > input#show-mods:checked ~ div.mods-container { display: block; }
+
+
+
+/* scoringtest */
+div.scoringtest-container,
+div.scoringtest-container > form {
+  width: 100%;
+  height: 100%;
+}
+div.scoringtest-container > form {
+  display: flex;
+  flex-direction: column;
+  row-gap: calc(0.25 * var(--tile-size));
+  padding: calc(0.25 * var(--tile-size)) 0;
+}
+div.scoringtest-container > form > header {
+  display: flex;
+  flex-direction: row;
+  column-gap: calc(0.25 * var(--tile-size));
+  margin-top: calc(-0.5 * var(--tile-size));
+}
+div.scoringtest-container > form > header > label {
+  width: calc(1.5 * var(--tile-size));
+  height: calc(0.75 * var(--tile-size));
+}
+div.scoringtest-container label[for="show-mods"] { order: 1; }
+div.scoringtest-container label[for="show-config"] { order: 2; }
+div.scoringtest-container label[for="show-none"] {
+  display: none;
+  opacity: 0;
+  position: absolute;
+}
+div.scoringtest-container input#show-mods:checked ~ label[for="show-none"] {
   display: block;
+  right: calc(2 * var(--tile-size));
+}
+div.scoringtest-container input#show-config:checked ~ label[for="show-none"] {
+  display: block;
+  right: 0;
+}
+div.scoringtest-container > form > header > select {
+  font-size: calc(0.6 * var(--tile-size));
+  background-color: var(--tile-front);
+  border: none;
+  border-radius: calc(0.25 * var(--tile-size));
+  order: 0;
+  flex-grow: 1;
+}
+div.scoringtest-container > form textarea {
+  height: calc(14.25 * var(--tile-size));
+  font-size: calc(0.25 * var(--tile-size));
+  border-width: calc(0.05 * var(--tile-size));
+}
+div.scoringtest-container div.mods-container,
+div.scoringtest-container div.config-container,
+div.scoringtest-container div.yaku-container {
+  width: 100%;
+  height: 100%;
+  border-radius: calc(0.25 * var(--tile-size));
+  padding: calc(0.5 * var(--tile-size));
+  background: #609060;
+  box-sizing: border-box;
+  overflow-y: scroll;
+  scrollbar-width: none; /* Firefox */
+  &::-webkit-scrollbar { display: none; } /* Safari/Chrome */
+}
+div.scoringtest-container div.mods-container,
+div.scoringtest-container div.config-container {
+  display: none;
+  position: absolute;
+  height: calc(100% - 0.75 * var(--tile-size));
+  top: calc(0.75 * var(--tile-size));
+  left: 0;
+  z-index: 2;
+}
+div.scoringtest-container input#show-mods:checked ~ div.mods-container { display: block; }
+div.scoringtest-container input#show-config:checked ~ div.config-container { display: block; }
+
+/* individual yaku inside yaku-container */
+div.scoringtest-container div.yaku-selection > div.yaku-selection-inner-container {
+  display: flex;
+  flex-flow: row wrap;
+  row-gap: calc(0.0625 * var(--tile-size));
+  column-gap: calc(0.125 * var(--tile-size));
+  justify-content: flex-start;
+  align-items: flex-start;
+  & > div.yaku-list,
+  & > div.yaku-list-spacer {
+    width: 100%;
+    min-height: 0.5em;
+    margin-left: -0.5em;
+    margin-bottom: -0.5em;
+  }
+  & div.yaku-list-name {
+    font-weight: bold;
+  }
+  & label.yaku-button {
+    flex-shrink: 1;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+  }
+  & label.yaku-button form > input[type="number"] {
+    --width: 1;
+    font-family: monospace;
+    font-size: 100%;
+    width: calc(var(--width) * 0.6em);
+    margin: 0 calc(0.0625 * var(--tile-size));
+    background: transparent;
+    border: none;
+    text-align: center;
+    color: white;
+    padding: 0;
+  }
+}
+div.scoringtest-container div.yaku-bottom-buttons {
+  display: flex;
+  flex-flow: row wrap;
+  width: 100%;
+  text-align: center;
+  justify-content: center;
+  column-gap: calc(0.25 * var(--tile-size));
+  & > button:first-child { font-size: 90% }
+  & > button:not(:first-child) { flex-grow: 1; }
 }

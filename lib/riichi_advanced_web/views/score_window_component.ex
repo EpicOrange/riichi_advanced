@@ -19,7 +19,35 @@ defmodule RiichiAdvancedWeb.ScoreWindowComponent do
         [:multiply, 2, "Wareme"],
         [:total, -9000, "Total"]
     ],
+    "kamicha" => [
+        [:set, -3900, "Nondealer Ron"],
+        [:add, -300, "Honba"],
+        [:add, -300, "Arakawa Kei"],
+        [:multiply, 2, "Wareme"],
+        [:total, -9000, "Total"]
+    ],
+    "toimen" => [
+        [:set, -3900, "Nondealer Ron"],
+        [:add, -300, "Honba"],
+        [:add, -300, "Arakawa Kei"],
+        [:multiply, 2, "Wareme"],
+        [:total, -9000, "Total"]
+    ],
     "s2u" => [
+        [:set, 3900, "Nondealer Ron"],
+        [:add, 300, "Honba"],
+        [:add, 300, "Arakawa Kei"],
+        [:multiply, 2, "Wareme"],
+        [:total, 9000, "Total"]
+    ],
+    "k2u" => [
+        [:set, 3900, "Nondealer Ron"],
+        [:add, 300, "Honba"],
+        [:add, 300, "Arakawa Kei"],
+        [:multiply, 2, "Wareme"],
+        [:total, 9000, "Total"]
+    ],
+    "t2u" => [
         [:set, 3900, "Nondealer Ron"],
         [:add, 300, "Honba"],
         [:add, 300, "Arakawa Kei"],
@@ -73,10 +101,10 @@ defmodule RiichiAdvancedWeb.ScoreWindowComponent do
               <thead><tr>
                 <th colspan="3"><%= key_title(@players, @seat, key) %>
                   <div class="score-ledger-mini">
-                    <span class="mini-east selected"></span>
-                    <span class="mini-south"></span>
-                    <span class="mini-west"></span>
-                    <span class="mini-north"></span>
+                    <span class={["mini-self" | if mini_highlight?(key, :self) do ["selected"] else [] end]}></span>
+                    <span class={["mini-shimocha" | if mini_highlight?(key, :shimocha) do ["selected"] else [] end]}></span>
+                    <span class={["mini-toimen" | if mini_highlight?(key, :toimen) do ["selected"] else [] end]}></span>
+                    <span class={["mini-kamicha" | if mini_highlight?(key, :kamicha) do ["selected"] else [] end]}></span>
                   </div>
                 </th>
               </tr></thead>
@@ -178,28 +206,56 @@ defmodule RiichiAdvancedWeb.ScoreWindowComponent do
     }
     default = fn s, dir -> s |> Utils.get_seat(dir) |> Atom.to_string() |> String.capitalize() end
     dirs = %{
-      u: if dirs.u == "" do default.(seat, :self) else dirs.u end,
-      s: if dirs.s == "" do default.(seat, :shimocha) else dirs.s end,
-      t: if dirs.t == "" do default.(seat, :toimen) else dirs.t end,
-      k: if dirs.k == "" do default.(seat, :kamicha) else dirs.k end,
+      u: if dirs.u == "" or dirs.u == nil do default.(seat, :self) else dirs.u end,
+      s: if dirs.s == "" or dirs.s == nil do default.(seat, :shimocha) else dirs.s end,
+      t: if dirs.t == "" or dirs.t == nil do default.(seat, :toimen) else dirs.t end,
+      k: if dirs.k == "" or dirs.k == nil do default.(seat, :kamicha) else dirs.k end,
     }
     case key do
       "self"     -> dirs.u
       "shimocha" -> dirs.s
       "toimen"   -> dirs.t
       "kamicha"  -> dirs.k
-      "t2u"      -> dirs.t <> "→" <> dirs.u
-      "u2t"      -> dirs.u <> "→" <> dirs.t
-      "k2s"      -> dirs.k <> "→" <> dirs.s
-      "s2k"      -> dirs.s <> "→" <> dirs.k
-      "k2u"      -> dirs.k <> "→" <> dirs.u
-      "s2u"      -> dirs.s <> "→" <> dirs.u
-      "s2t"      -> dirs.s <> "→" <> dirs.t
-      "k2t"      -> dirs.k <> "→" <> dirs.t
-      "u2k"      -> dirs.u <> "→" <> dirs.k
-      "u2s"      -> dirs.u <> "→" <> dirs.s
-      "t2s"      -> dirs.t <> "→" <> dirs.s
-      "t2k"      -> dirs.t <> "→" <> dirs.k
+      "t2u"      -> dirs.t <> " → " <> dirs.u
+      "u2t"      -> dirs.u <> " → " <> dirs.t
+      "k2s"      -> dirs.k <> " → " <> dirs.s
+      "s2k"      -> dirs.s <> " → " <> dirs.k
+      "k2u"      -> dirs.k <> " → " <> dirs.u
+      "s2u"      -> dirs.s <> " → " <> dirs.u
+      "s2t"      -> dirs.s <> " → " <> dirs.t
+      "k2t"      -> dirs.k <> " → " <> dirs.t
+      "u2k"      -> dirs.u <> " → " <> dirs.k
+      "u2s"      -> dirs.u <> " → " <> dirs.s
+      "t2s"      -> dirs.t <> " → " <> dirs.s
+      "t2k"      -> dirs.t <> " → " <> dirs.k
+      _ ->
+        IO.puts("score_window_component.ex: key_title/3 got unknown key #{key}")
+        "TODO"
+    end
+  end
+
+  def mini_highlight?(key, dir) do
+    u = dir == :self
+    s = dir == :shimocha
+    t = dir == :toimen
+    k = dir == :kamicha
+    case key do
+      "self"     -> u
+      "shimocha" -> s
+      "toimen"   -> t
+      "kamicha"  -> k
+      "t2u"      -> t or u
+      "u2t"      -> u or t
+      "k2s"      -> k or s
+      "s2k"      -> s or k
+      "k2u"      -> k or u
+      "s2u"      -> s or u
+      "s2t"      -> s or t
+      "k2t"      -> k or t
+      "u2k"      -> u or k
+      "u2s"      -> u or s
+      "t2s"      -> t or s
+      "t2k"      -> t or k
       _ -> "TODO"
     end
   end

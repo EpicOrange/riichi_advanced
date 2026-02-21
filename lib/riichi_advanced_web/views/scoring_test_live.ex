@@ -1,5 +1,6 @@
-defmodule RiichiAdvancedWeb.MajsTestLive do
+defmodule RiichiAdvancedWeb.ScoringTestLive do
   alias RiichiAdvanced.Constants, as: Constants
+  alias RiichiAdvanced.GameState.Player, as: Player
   alias RiichiAdvanced.GameState.Rules, as: Rules
   alias RiichiAdvanced.ModLoader, as: ModLoader
   alias RiichiAdvanced.RoomState, as: RoomState
@@ -15,6 +16,20 @@ defmodule RiichiAdvancedWeb.MajsTestLive do
     |> assign(:config, ModLoader.default_config())
     |> assign(:result, "")
     |> assign(:loading, false)
+    |> assign(:seat, :east)
+    |> assign(:state, %{
+      winners: %{east: %{}},
+      winner_seats: [:east],
+      winner_index: 0,
+      timer: 10,
+      visible_screen: nil,
+      players: Map.new([:east, :south, :west, :north], fn seat -> {seat, %Player{}} end),
+      delta_scores: %{},
+      delta_scores_reason: nil,
+      available_seats: [:east, :south, :west, :north],
+    })
+    |> assign(:yaku, [])
+    |> assign(:yaku_list_names, [])
 
     socket = switch_mods_to_ruleset(socket, "riichi")
 
@@ -32,30 +47,42 @@ defmodule RiichiAdvancedWeb.MajsTestLive do
   def render(assigns) do
     ~H"""
     <div id="container" phx-hook="ClickListener">
-      <div class="majstest-container">
-        <div><%= t(@lang, "Base ruleset") %></div>
-        <input id="show-mods" type="checkbox" phx-update="ignore">
-        <label for="show-mods"><%= t(@lang, "Mods") %></label>
-        <div class="mods-container">
-          <.live_component module={RiichiAdvancedWeb.ModSelectionComponent} id="majstest-mods" lang={@lang} ruleset={@ruleset} mods={@room_state.mods} categories={@room_state.categories} />
-        </div>
-        <form phx-submit="convert_majs">
-          <select name="ruleset" class="ruleset-dropdown" phx-change="switch_ruleset">
-            <%= for {ruleset, name, _desc} <- Constants.available_rulesets() do %>
-              <option value={ruleset}><%= name %></option>
+      <div class="scoringtest-container">
+        <form phx-submit="score_yaku">
+          <header>
+            <div><%= t(@lang, "Ruleset") %></div>
+            <input id="show-mods" name="scoringtest-topright" type="radio" phx-update="ignore">
+            <label for="show-mods" class="shuffle-seats"><%= t(@lang, "Mods") %></label>
+            <input id="show-config" name="scoringtest-topright" type="radio" phx-update="ignore">
+            <label for="show-config" class="shuffle-seats"><%= t(@lang, "Config") %></label>
+            <input id="show-none" name="scoringtest-topright" type="radio" phx-update="ignore">
+            <label for="show-none" class="shuffle-seats"><%= t(@lang, "None") %></label>
+            <div class="mods-container">
+              <.live_component module={RiichiAdvancedWeb.ModSelectionComponent} id="scoringtest-mods" lang={@lang} ruleset={@ruleset} mods={@room_state.mods} categories={@room_state.categories} />
+            </div>
+            <div class="config-container">
+              <textarea name="config"><%= @config %></textarea>
+            </div>
+            <select name="ruleset" class="ruleset-dropdown" phx-change="switch_ruleset">
+              <%= for {ruleset, name, _desc} <- Constants.available_rulesets() do %>
+                <option value={ruleset}><%= name %></option>
+              <% end %>
+            </select>
+          </header>
+          <div class="yaku-container">
+            <.live_component module={RiichiAdvancedWeb.YakuSelectionComponent} id="scoringtest-yaku" lang={@lang} ruleset={@ruleset} yaku={@yaku} yaku_list_names={@yaku_list_names} />
+          </div>
+          <div class="yaku-bottom-buttons">
+            <button phx-cancellable-click="clear_yaku"><%= t(@lang, "Unselect all") %></button>
+            <%= if @loading do %>
+              <button><%= t(@lang, "Scoring...") %></button>
+            <% else %>
+              <button type="submit"><%= t(@lang, "Score") %></button>
             <% end %>
-          </select>
-          <br/>
-          .majs:
-          <textarea name="config"><%= @config %></textarea>
-          <%= if @loading do %>
-            <button><%= t(@lang, "Processing...") %></button>
-          <% else %>
-            <button type="submit"><%= t(@lang, "Apply majs") %></button>
-          <% end %>
-          .json:
-          <textarea><%= @result %></textarea>
+          </div>
         </form>
+        <.live_component module={RiichiAdvancedWeb.WinWindowComponent} id="win-window" seat={@seat} lang={@lang} winner={Map.get(@state.winners, Enum.at(@state.winner_seats, @state.winner_index), nil)} timer={@state.timer} visible_screen={@state.visible_screen}/>
+        <.live_component module={RiichiAdvancedWeb.ScoreWindowComponent} id="score-window" seat={@seat} lang={@lang} players={@state.players} winners={@state.winners} delta_scores={@state.delta_scores} delta_scores_reason={@state.delta_scores_reason} timer={@state.timer} visible_screen={@state.visible_screen} available_seats={@state.available_seats}/>
       </div>
       <div class="top-right-container">
         <.live_component module={RiichiAdvancedWeb.MenuButtonsComponent} id="menu-buttons" lang={@lang} />
@@ -72,6 +99,11 @@ defmodule RiichiAdvancedWeb.MajsTestLive do
     |> Enum.map(fn {mod, opts} -> if Enum.empty?(opts.config) do mod else
         %{name: mod, config: Map.new(opts.config, fn {name, config} -> {name, config.value} end)}
       end end)
+  end
+  def get_selected_yaku(socket) do
+    socket.assigns.yaku
+    |> Enum.filter(fn {_name, opts} -> opts.selected end)
+    |> Enum.map(fn {name, opts} -> {name, opts.value} end)
   end
   
   def switch_mods_to_ruleset(socket, ruleset) do
@@ -90,6 +122,32 @@ defmodule RiichiAdvancedWeb.MajsTestLive do
       categories: categories,
       rules_ref: rules_ref,
     })
+
+    score_rules = Rules.get(rules_ref, "score_calculation", %{})
+    parse_yaku = fn list_name ->
+      Rules.get(rules_ref, list_name, [])
+      |> Enum.map(fn %{"display_name" => name, "value" => value} -> %{
+        name: name,
+        value: value,
+        list_name: list_name,
+        selected: false,
+        index: 0,
+      } end)
+    end
+    yaku = Map.get(score_rules, "yaku_lists", [])
+    yaku2 = Map.get(score_rules, "yaku2_lists", [])
+    extra_yaku = Map.get(score_rules, "extra_yaku_lists", [])
+    yaku_list_names = yaku ++ yaku2 ++ extra_yaku
+
+    socket = socket
+    |> assign(:yaku_list_names, yaku_list_names)
+    |> assign(:yaku, 
+      Enum.flat_map(yaku_list_names, parse_yaku)
+      |> Enum.uniq()
+      |> Enum.with_index()
+      |> Enum.map(fn {yaku, i} -> %{yaku | index: i} end)
+    )
+
     socket
   end
 
@@ -140,7 +198,27 @@ defmodule RiichiAdvancedWeb.MajsTestLive do
     {:noreply, socket}
   end
 
-  def handle_event("convert_majs", %{"ruleset" => ruleset, "config" => config}, socket) do
+  # for yaku_selection_component
+  def handle_event("toggle_yaku", %{"index" => index, "selected" => selected}, socket) do
+    selected = selected == "true"
+    ix = String.to_integer(index)
+    socket = assign(socket, :yaku, List.update_at(socket.assigns.yaku, ix, &Map.put(&1, :selected, not selected)))
+    {:noreply, socket}
+  end
+  def handle_event("change_yaku_value", %{"index" => index, "yaku-value" => value}, socket) do
+    ix = String.to_integer(index)
+    value = String.to_integer(value)
+    yaku = socket.assigns.yaku
+    socket = assign(socket, :yaku, List.update_at(socket.assigns.yaku, ix, &Map.put(&1, :value, value)))
+    {:noreply, socket}
+  end
+  def handle_event("clear_yaku", _assigns, socket) do
+    yaku = socket.assigns.yaku
+    socket = assign(socket, :yaku, Enum.map(yaku, &Map.put(&1, :selected, false)))
+    {:noreply, socket}
+  end
+
+  def handle_event("score_yaku", %{"ruleset" => ruleset, "config" => config}, socket) do
     # silent 4MB limit
     if byte_size(config) <= 4 * 1024 * 1024 do
       self = self()
