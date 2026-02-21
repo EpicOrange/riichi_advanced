@@ -2613,6 +2613,7 @@ div.game-modal > div.score-badge {
   user-select: none;
   z-index: 2;
   color: white;
+  &:hover { filter: brightness(90%) sepia(50%); }
 }
 div.game-modal > div.score-badge.self { inset: 0; top: auto; margin: 0 auto; }
 div.game-modal > div.score-badge.shimocha { inset: 0; left: auto; margin: auto 0; }
@@ -2649,7 +2650,85 @@ div.game-modal > div.score-badge > div.placement {
   left: calc(-25%);
   transform: scale(75%);
 }
+div.game-modal > div.score-ledger-container > table.score-ledger {
+  position: absolute;
+  z-index: 3;
+  opacity: 0.9;
+  background: #0f6f2f;
+  color: white;
+  border: calc(0.0625 * var(--tile-size)) solid white;
+  border-radius: calc(0.5 * var(--tile-size));
+  border-spacing: 0;
+  pointer-events: none;
+  &.kamicha, &.k2u, &.k2t, &.u2k, &.t2k { top: 0; right: 0; }
+  &.toimen { bottom: 0; left: 0; }
+  &:has(tbody > tr) > thead > tr > th {
+    border-bottom: calc(0.0625 * var(--tile-size)) solid white;
+  }
+  --ledger-scale: 85%;
+  &.self, &.shimocha, &.toimen, &.kamicha { --ledger-scale: 125%; }
+  & > thead > tr > th {
+    font-size: var(--ledger-scale);
+    padding-left: calc(0.25 * var(--tile-size));
+    text-align: left;
+    height: calc(1.25 * var(--tile-size));
+    min-width: calc(8 * var(--tile-size));
+    & > div.score-ledger-mini {
+      display: inline-block;
+      position: absolute;
+      top: calc(0.125 * var(--tile-size));
+      right: calc(0.125 * var(--tile-size));
+      width: calc(2 * var(--tile-size));
+      height: calc(1 * var(--tile-size));
+      & > span {
+        display: block;
+        position: absolute;
+        width: calc(0.7 * var(--tile-size));
+        height: calc(0.4 * var(--tile-size));
+        border-radius: calc(0.125 * var(--tile-size));
+        background: black;
+        &.mini-east { left: 0; right: 0; margin-inline: auto; bottom: 0; }
+        &.mini-south { top: 0; bottom: 0; margin-block: auto; right: 0; }
+        &.mini-west { left: 0; right: 0; margin-inline: auto; top: 0; }
+        &.mini-north { top: 0; bottom: 0; margin-block: auto; left: 0; }
+        &.selected { background: white; }
+      }
+    }
+  }
+  & > tbody > tr {
+    & > td {
+      line-height: 1.2;
+      text-align: right;
+      padding: 0 calc(0.125 * var(--tile-size));
+      &:first-child { padding-left:  calc(0.5 * var(--tile-size)); }
+      &:last-child  { padding-right: calc(0.5 * var(--tile-size)); }
+    }
+    &:first-child td, &.score-ledger-total td { padding-top: calc(0.25 * var(--tile-size)); }
+    &:last-child  td, &:has(+ tr.score-ledger-total) td { padding-bottom: calc(0.25 * var(--tile-size)); }
+  }
 
+  & td.score-ledger-reason, & td.score-ledger-op {
+    font-weight: bold;
+  }
+  & td.score-ledger-op {
+      padding: 0 calc(0.25 * var(--tile-size));
+  }
+  & td.score-ledger-value {
+    font-weight: normal;
+  }
+  & tr.score-ledger-total {
+    & td {
+      border-top: calc(0.0625 * var(--tile-size)) solid white;
+      padding: calc(0.125 * var(--tile-size)) 0;
+      font-weight: bold;
+      font-size: 125%;
+    }
+  }
+}
+div.game-modal > div.score-ledger-container > table.score-ledger { display: none; }
+div.game-modal > div.score-ledger-container.self > table.score-ledger.self { display: block; }
+div.game-modal > div.score-ledger-container.shimocha > table.score-ledger.shimocha { display: block; }
+div.game-modal > div.score-ledger-container.s2u > table.score-ledger.s2u { display: block; }
 
 @property --tile-size {
   /* required for making it unitless below */
@@ -2659,11 +2738,11 @@ div.game-modal > div.score-badge > div.placement {
 }
 svg.arrow, svg.curve {
   position: absolute;
-  pointer-events: none;
   fill: white;
   /* first scale based on unitless tile-size, then move the tail, then rotate about the tail */
   zoom: calc(tan(atan2(var(--tile-size), 200px)));
   overflow: visible;
+  &:hover { filter: brightness(80%) sepia(100%); }
 }
 svg.arrow {
   --xpos: 0;

@@ -9,7 +9,7 @@ defmodule RiichiAdvancedWeb.ScoreBadgeComponent do
 
   def render(assigns) do
     ~H"""
-    <div class={["score-badge", @dir]}>
+    <div class={["score-badge", @dir]} phx-hover="hover" phx-hover-off="hover_off" phx-target={@parent_cid} phx-value-key={@dir}>
       <div class="initial-score"><%= @score %></div>
       <%= if @delta_score != 0 do %>
         <div class={["delta-score", if @delta_score >= 0 do "positive" else "negative" end]}>
