@@ -4,7 +4,7 @@
     {"id": "zungjung/zj_five_point_minimum", "name": "5 Point Minimum", "desc": "Adds a requirement of having 5 points in hand in order to win."}
   ],
   "display_name": "Zung Jung",
-  "tutorial_link": "https://www.zj-mahjong.info/zj33_rules_eng.html",
+  "tutorial_link": "https://github.com/EpicOrange/riichi_advanced/blob/main/documentation/zung_jung.md",
   "wall": ["1m", "1m", "1m", "1m",
            "2m", "2m", "2m", "2m",
            "3m", "3m", "3m", "3m",
