@@ -75,72 +75,72 @@
     {
       "display_name": "Face",
       "value": 1,
-      "when": [{"name": "match", "opts": [["calls"], [[ "nojoker", [["1y"], 1] ]]]}]
+      "when": [{"name": "match", "opts": [["flowers"], [[ "nojoker", [["1y"], 1] ]]]}]
     },
     {
       "display_name": "Four Faces",
       "value": 1,
-      "when": [{"name": "match", "opts": [["calls"], [[ "nojoker", [["1y"], 4] ]]]}]
+      "when": [{"name": "match", "opts": [["flowers"], [[ "nojoker", [["1y"], 4] ]]]}]
     },
     {
       "display_name": "Animal",
       "value": 1,
-      "when": [{"name": "match", "opts": [["calls"], [[ "nojoker", [["1a","2a","3a","4a"], 1] ]]]}]
+      "when": [{"name": "match", "opts": [["flowers"], [[ "nojoker", [["1a","2a","3a","4a"], 1] ]]]}]
     },
     {
       "display_name": "All Animals",
       "value": 1,
-      "when": [{"name": "match", "opts": [["calls"], [[ "unique", "nojoker", [["1a","2a","3a","4a"], 4] ]]]}]
+      "when": [{"name": "match", "opts": [["flowers"], [[ "unique", "nojoker", [["1a","2a","3a","4a"], 4] ]]]}]
     },
     {
       "display_name": "All Flowers",
       "value": 1,
-      "when": [{"name": "match", "opts": [["calls"], [[ "unique", "nojoker", [["1f","2f","3f","4f"], 4] ]]]}]
+      "when": [{"name": "match", "opts": [["flowers"], [[ "unique", "nojoker", [["1f","2f","3f","4f"], 4] ]]]}]
     },
     {
       "display_name": "All Seasons",
       "value": 1,
-      "when": [{"name": "match", "opts": [["calls"], [[ "unique", "nojoker", [["1g","2g","3g","4g"], 4] ]]]}]
+      "when": [{"name": "match", "opts": [["flowers"], [[ "unique", "nojoker", [["1g","2g","3g","4g"], 4] ]]]}]
     },
     {
       "display_name": "Seat Flower",
       "value": 1,
-      "when": [{"name": "seat_is", "opts": ["east"]}, {"name": "match", "opts": [["calls"], [[ "nojoker", [["1f"], 1]] ]]}]
+      "when": [{"name": "seat_is", "opts": ["east"]}, {"name": "match", "opts": [["flowers"], [[ "nojoker", [["1f"], 1]] ]]}]
     },
     {
       "display_name": "Seat Flower",
       "value": 1,
-      "when": [{"name": "seat_is", "opts": ["south"]}, {"name": "match", "opts": [["calls"], [[ "nojoker", [["2f"], 1]] ]]}]
+      "when": [{"name": "seat_is", "opts": ["south"]}, {"name": "match", "opts": [["flowers"], [[ "nojoker", [["2f"], 1]] ]]}]
     },
     {
       "display_name": "Seat Flower",
       "value": 1,
-      "when": [{"name": "seat_is", "opts": ["west"]}, {"name": "match", "opts": [["calls"], [[ "nojoker", [["3f"], 1]] ]]}]
+      "when": [{"name": "seat_is", "opts": ["west"]}, {"name": "match", "opts": [["flowers"], [[ "nojoker", [["3f"], 1]] ]]}]
     },
     {
       "display_name": "Four Flower",
       "value": 1,
-      "when": [{"name": "match", "opts": [["calls"], [[[["4f"], 1]]]]}]
+      "when": [{"name": "match", "opts": [["flowers"], [[[["4f"], 1]]]]}]
     },
     {
       "display_name": "Seat Season",
       "value": 1,
-      "when": [{"name": "seat_is", "opts": ["east"]}, {"name": "match", "opts": [["calls"], [[ "nojoker", [["1g"], 1] ]]]}]
+      "when": [{"name": "seat_is", "opts": ["east"]}, {"name": "match", "opts": [["flowers"], [[ "nojoker", [["1g"], 1] ]]]}]
     },
     {
       "display_name": "Seat Season",
       "value": 1,
-      "when": [{"name": "seat_is", "opts": ["south"]}, {"name": "match", "opts": [["calls"], [[ "nojoker", [["2g"], 1] ]]]}]
+      "when": [{"name": "seat_is", "opts": ["south"]}, {"name": "match", "opts": [["flowers"], [[ "nojoker", [["2g"], 1] ]]]}]
     },
     {
       "display_name": "Seat Season",
       "value": 1,
-      "when": [{"name": "seat_is", "opts": ["west"]}, {"name": "match", "opts": [["calls"], [[ "nojoker", [["3g"], 1] ]]]}]
+      "when": [{"name": "seat_is", "opts": ["west"]}, {"name": "match", "opts": [["flowers"], [[ "nojoker", [["3g"], 1] ]]]}]
     },
     {
       "display_name": "Four Season",
       "value": 1,
-      "when": [{"name": "match", "opts": [["calls"], [[[["4g"], 1]]]]}]
+      "when": [{"name": "match", "opts": [["flowers"], [[[["4g"], 1]]]]}]
     },
     {
       "display_name": "East Wind",
@@ -238,7 +238,6 @@
       "value": 10,
       "when": [{"name": "match", "opts": [["hand", "calls", "winning_tile"], ["big_four_winds"]]}]
     },
-      // TODO: Fix that this somehow gets awarded even when you do have flowers.
     {
       "display_name": "No Flowers",
       "value": 10,
