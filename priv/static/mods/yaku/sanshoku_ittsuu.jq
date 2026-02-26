@@ -1,6 +1,6 @@
 .after_initialization.actions += [
-  ["add_rule", "1 Han", "Sanshoku Ittsu", "1 han for having a three-color straight, like 123m 456p 789s. 2 han if closed.", 101],
-  ["update_rule", "1 Han", "Sanshoku Ittsu", "%{example_hand}", {"example_hand": ["1m", "2m", "3m", "4p", "5p", "6p", "7s", "8s", "9s", "1z", "3z", "3z", "3z", "3x", "1z"]}]
+  ["add_rule", "1 Han", "Sanshoku Ittsuu", "1 han for having a three-color straight, like 123m 456p 789s. 2 han if closed.", 101],
+  ["update_rule", "1 Han", "Sanshoku Ittsuu", "%{example_hand}", {"example_hand": ["1m", "2m", "3m", "4p", "5p", "6p", "7s", "8s", "9s", "1z", "3z", "3z", "3z", "3x", "1z"]}]
 ]
 |
 (if .set_definitions | has("kontsu") then ["shuntsu", "kontsu", "koutsu"] else ["shuntsu", "koutsu"] end) as $others
@@ -9,12 +9,12 @@
 |
 .yaku += [
   {
-    "display_name": "Sanshoku Ittsu",
+    "display_name": "Sanshoku Ittsuu",
     "value": 1,
     "when": [{"name": "match", "opts": [["hand", "calls", "winning_tile"], [[ "exhaustive", [[[[0,1,2],[13,14,15],[26,27,28]], [[0,1,2],[23,24,25],[16,17,18]]], 1], [$others, 1], [["pair"], 1] ]]]}]
   }
 ]
 |
 .meta_yaku += [
-  { "display_name": "Sanshoku Ittsu", "value": 1, "when": [{"name": "has_no_call_named", "opts": $open_calls}, {"name": "has_existing_yaku", "opts": ["Sanshoku Ittsu"]}] }
+  { "display_name": "Sanshoku Ittsuu", "value": 1, "when": [{"name": "has_no_call_named", "opts": $open_calls}, {"name": "has_existing_yaku", "opts": ["Sanshoku Ittsuu"]}] }
 ]

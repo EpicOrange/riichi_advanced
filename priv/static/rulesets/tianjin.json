@@ -54,7 +54,7 @@
     "quad": [[0, 0, 0, 0]],
     "ryanmen/penchan": [[0, 1]],
     "kanchan": [[0, 2]],
-    "ittsu": [[[0,1,2],[3,4,5],[6,7,8]]],
+    "ittsuu": [[[0,1,2],[3,4,5],[6,7,8]]],
     "middle_kanchan_manzu": [["4m", "6m"]]
   },
   "tenpai_definition": [
@@ -69,7 +69,7 @@
     { "display_name": "Wild Card Single Wait", "value": 2, "when": [{"name": "match", "opts": [["hand", "calls"], [[ "exhaustive", [["shuntsu", "koutsu"], 4], [[{"tile": "any", "attrs": ["is_wild"]}], 1] ]]]}] },
     { "display_name": "Double Wild Card Set Wait", "value": 2, "when": [{"name": "match", "opts": [["hand", "calls"], [[ "exhaustive", [["shuntsu", "koutsu"], 3], [["pair"], 1], [[{"tile": "any", "attrs": ["is_wild"]}], 2] ]]]}] },
     { "display_name": "Capturing the Five", "value": 3, "when": [{"name": "match", "opts": [["hand", "calls"], [["exhaustive", [["middle_kanchan_manzu"], 1], [["shuntsu", "koutsu"], 3], [["pair"], 1] ]]]}, {"name": "match", "opts": [["winning_tile"], [["5m"], 1]]}] },
-    { "display_name": "Dragon", "value": 4, "when": [{"name": "match", "opts": [["hand", "calls", "winning_tile"], [["exhaustive", [["ittsu"], 1], [["shuntsu", "koutsu"], 1], [["pair"], 1] ]]]}] },
+    { "display_name": "Dragon", "value": 4, "when": [{"name": "match", "opts": [["hand", "calls", "winning_tile"], [["exhaustive", [["ittsuu"], 1], [["shuntsu", "koutsu"], 1], [["pair"], 1] ]]]}] },
     { "display_name": "Kong Blossom", "value": 1, "when": [{"name": "status", "opts": ["kan"]}] },
     { "display_name": "Heavenly Hand", "value": 1, "when": [{"name": "status", "opts": ["first_turn"]}, {"name": "seat_is", "opts": ["east"]}] },
     { "display_name": "Earthly Hand", "value": 1, "when": [{"name": "status", "opts": ["first_turn"]}, {"name": "not_seat_is", "opts": ["east"]}] }

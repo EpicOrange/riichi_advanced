@@ -7,7 +7,7 @@ define_set mentsu, ~s"0 0 0 | 0 1 2"
 define_set quad, ~s"0 0 0 0"
 define_set taatsu, ~s"0 0 | 0 1 | 0 2"
 define_set iipeikou, ~s"0 1 2, 0 1 2"
-define_set ittsu, ~s"0 1 2, 3 4 5, 6 7 8"
+define_set ittsuu, ~s"0 1 2, 3 4 5, 6 7 8"
 define_set sanshoku_doujun, ~s"0 1 2, 10 11 12, 20 21 22"
 define_set sanshoku_doukou, ~s"0 0 0, 10 10 10, 20 20 20"
 define_set ton, ~s"1z 1z 1z"
@@ -112,7 +112,7 @@ define_yaku yaku, "Chanta", 1, match(["hand", "calls", "winning_tile"], ["chanta
 define_yaku yaku, "Junchan", 2, match(["hand", "calls", "winning_tile"], ["junchan"])
 # now leaving the chanta zone
 
-define_yaku yaku, "Ittsu", 1, match(["hand", "calls", "winning_tile"], ~m"exhaustive, ittsu:1, mentsu:1, pair:1")
+define_yaku yaku, "Ittsuu", 1, match(["hand", "calls", "winning_tile"], ~m"exhaustive, ittsuu:1, mentsu:1, pair:1")
 define_yaku yaku, "Sanshoku", 1, match(["hand", "calls", "winning_tile"], ~m"exhaustive, sanshoku_doujun:1, mentsu:1, pair:1")
 define_yaku yaku, "Sanshoku Doukou", 2, match(["hand", "calls", "winning_tile"], ~m"exhaustive, sanshoku_doukou:1, mentsu:1, pair:1")
 define_yaku yaku, "Toitoi", 2, match(["hand", "calls", "winning_tile"], ~m"koutsu:4, pair:1")
@@ -132,7 +132,7 @@ define_yaku yaku, "Chinitsu", 5,
   or winning_hand_consists_of("1p","2p","3p","4p","5p","6p","7p","8p","9p")
   or winning_hand_consists_of("1s","2s","3s","4s","5s","6s","7s","8s","9s")
 define_yaku meta_yaku, "Chanta", 1, @closed_hand and has_existing_yaku("Chanta")
-define_yaku meta_yaku, "Ittsu", 1, @closed_hand and has_existing_yaku("Ittsu")
+define_yaku meta_yaku, "Ittsuu", 1, @closed_hand and has_existing_yaku("Ittsuu")
 define_yaku meta_yaku, "Sanshoku", 1, @closed_hand and has_existing_yaku("Sanshoku")
 define_yaku meta_yaku, "Junchan", 1, @closed_hand and has_existing_yaku("Junchan")
 define_yaku meta_yaku, "Honitsu", 1, @closed_hand and has_existing_yaku("Honitsu")
@@ -429,8 +429,8 @@ on after_initialization do
   update_rule("1 Han", "Chanta", "%{example_hand}", %{example_hand: ~t"123m79p789s77z 11p1P 8p"})
   add_rule("2 Han", "Junchan", "2 han if each of the 5 blocks in your hand contains a terminal. 3 han if closed.")
   update_rule("2 Han", "Junchan", "%{example_hand}", %{example_hand: ~t"123m79p78999s 1P11p 8p"})
-  add_rule("1 Han", "Ittsu", "1 han if your hand contains the sequences 123 456 789 in one suit. 2 han if closed.")
-  update_rule("1 Han", "Ittsu", "%{example_hand}", %{example_hand: ~t"234p4567779s 12s3S 8s"})
+  add_rule("1 Han", "Ittsuu", "1 han if your hand contains the sequences 123 456 789 in one suit. 2 han if closed.")
+  update_rule("1 Han", "Ittsuu", "%{example_hand}", %{example_hand: ~t"234p4567779s 12s3S 8s"})
   add_rule("1 Han", "Sanshoku", "1 han if your hand contains the same number sequence in all three suits. 2 han if closed.")
   update_rule("1 Han", "Sanshoku", "%{example_hand}", %{example_hand: ~t"24p23334678s 2M34m 3p"})
   add_rule("2 Han", "Sanshoku Doukou", "2 han if your hand contains the same number triplet in all three suits.")
@@ -705,12 +705,12 @@ define_mod "yaku/tsubame_gaeshi", name: "Tsubame Gaeshi", deps: ["yaku/riichi"],
 define_mod "yaku/shiiaru_raotai", name: "Shiiaru Raotai", desc: "Local yaku. \"Twelve Tiles Down\". 1 han if you win with four calls (and therefore on a single tile wait). Closed kans are permitted."
 define_mod "yaku/kanburi", name: "Kanburi", desc: "Local yaku. \"Shoot After Kan\". 1 han if you win off the tile discarded by a player who just called kan."
 define_mod "yaku/honors_chiitoitsu", name: "Honors Chiitoitsu", desc: "Local yaku. 1 han on top of chiitoitsu if three of your pairs are dragons, or if four of your pairs are winds. If you have all seven honor pairs? Double yakuman."
-define_mod "yaku/uushin_tsuukan", name: "Uushin Tsuukan", desc: "Local yaku. \"Five-Heart Straight\". 1 han on top of ittsu if the winning tile is the five needed for ittsu."
+define_mod "yaku/uushin_tsuukan", name: "Uushin Tsuukan", desc: "Local yaku. \"Five-Heart Straight\". 1 han on top of ittsuu if the winning tile is the five needed for ittsuu."
 define_mod "yaku/ketsupaihou", name: "Ketsupaihou", desc: "Local yaku. \"Missing Tile\". 1 han if you have an edge (12, 89) or middle (24, 57) wait on a tile for which three are already publicly visible (so 12333 winning on 3 doesn't count)."
 # 2 han
 define_mod "yaku/open_riichi", name: "Open Riichi", deps: ["yaku/riichi"], desc: "You have the option to declare open riichi, which is worth 2 han but reveals your hand to the table. Open double riichi is 3 han."
 define_mod "yaku/sanrenkou", name: "Sanrenkou", desc: "Local yaku. \"Three Consecutive Triplets\". 2 han for having three triplets of the same suit in sequence, like 222 333 444."
-define_mod "yaku/sanshoku_ittsu", name: "Sanshoku Ittsu", desc: "Local yaku. 1 han for having a three-color straight, like 123m 456p 789s. 2 han if closed."
+define_mod "yaku/sanshoku_ittsuu", name: "Sanshoku Ittsuu", desc: "Local yaku. 1 han for having a three-color straight, like 123m 456p 789s. 2 han if closed."
 define_mod "yaku/kyandonhou", name: "Kyandonhou", desc: "Local yaku. \"Twice Mixed Double Sequence\". A mixed double sequence is when you have two sequences of the same number in different suits, like 345m 345p. 2 han for having two mixed double sequences."
 define_mod "yaku/ryandoukou", name: "Ryandoukou", desc: "Local yaku. \"Twice Double Triplets\". A double triplet is when you have two triplets of the same number in different suits, like 333m 333p. 2 han for having two sets of double triplets."
 define_mod "yaku/shoutate", name: "Shoutate", desc: "Local yaku. \"Little Mixed Triplets\". 2 han for having sanshoku doukou, except one of the triplets is a pair."
@@ -722,7 +722,7 @@ define_mod "yaku/renkaihou", name: "Renkaihou", desc: "Local yaku. \"Consecutive
 define_mod "yaku/mondeikou", deps: ["aka"], name: "Mondeikou", desc: "Local yaku. If you have 4 aka, 2 han on top of aka. This counts as a yaku."
 # 3 han
 define_mod "yaku/isshoku_sanjun", name: "Isshoku Sanjun", desc: "Local yaku. \"Pure Triple Sequences\". 2 han if you have three of the exact same sequence in one suit, like 123 123 123. Like iipeikou but three. +1 han if closed. Does not stack with iipeikou (123 123) or sanrenkou (111 222 333)."
-define_mod "yaku/ittsu_chanta", name: "Ittsu Chanta", desc: "Local yaku. 2 han if you have ittsu, and (except the 456) the rest of your hand is chanta (or junchan, in which case it's 3 han). +1 han if closed. Does not stack with ittsu."
+define_mod "yaku/ittsuu_chanta", name: "Ittsuu Chanta", desc: "Local yaku. 2 han if you have ittsuu, and (except the 456) the rest of your hand is chanta (or junchan, in which case it's 3 han). +1 han if closed. Does not stack with ittsuu."
 define_mod "yaku/tanfonhou", name: "Tanfonhou", desc: "Local yaku. \"Win Without Red\". 2 han if your hand contains no red. This means you can have only 248p (2,4,8 circles), 23468s (2,3,4,6,8 bamboo), and any honors except red dragon. 5 han instead if no honor tiles (chintanfon). +1 han if closed."
 define_mod "yaku/chinpeikou", name: "Chinpeikou", desc: "Local yaku. 3 han on top of ryanpeikou if your ryanpeikou sequences are all the same numbers (may be different suits), like 112233 112233. No restriction on the pair, so you can have an honor pair (despite 'chin' being in the name)."
 # 4 han
@@ -763,14 +763,14 @@ define_mod "yaku/kouittenrin", name: "Kouittenrin", desc: "Local yakuman. Like k
 define_mod "yaku/golden_gate_bridge", name: "Golden Gate Bridge", desc: "Local yakuman. If your hand contains 123 345 567 789 all in one suit, it's yakuman. No restrictions on your pair."
 define_mod "yaku/american_civil_war", name: "American Civil War", desc: "Local yakuman. If you have no calls (not even ankan) and your hand consists of the tiles 1861 in one suit, 1865 in another suit, and you have triplets of north and south winds, it's yakuman."
 define_mod "yaku/tohoku_expressway", name: "Tohoku Expressway", desc: "Local yakuman. If your hand consists of only 246p (2,4,6 circles) and east/north winds, it's yakuman."
-define_mod "yaku/tohoku_shinkansen", name: "Tohoku Shinkansen", desc: "Local yakuman. If your closed hand consists of an ittsu and east/north winds, it's yakuman."
+define_mod "yaku/tohoku_shinkansen", name: "Tohoku Shinkansen", desc: "Local yakuman. If your closed hand consists of an ittsuu and east/north winds, it's yakuman."
 define_mod "yaku/blue_tunnel", name: "Blue Tunnel", desc: "Local yakuman. If your hand consists of only 248p (2,4,8 circles), green dragon, and one type of wind, it's yakuman."
 define_mod "yaku/junsei_ryuuiisou", name: "Junsei Ryuuiisou", desc: "Local yakuman. If you have ryuuiisou without green dragon, it's double yakuman. Doesn't stack with ryuuiisou."
 define_mod "yaku/chousangen", name: "Chousangen", desc: "Local yakuman. If you have kans of all three dragons, it's double yakuman. Doesn't stack with daisangen."
 define_mod "yaku/chousuushii", name: "Chousuushii", desc: "Local yakuman. If you have kans of all four winds, it's quadruple yakuman. Doesn't stack with daisuushi and suukantsu."
 define_mod_category "Other"
 define_mod cancellable_riichi, order: 1, deps: ["yaku/riichi"], name: "Cancellable Riichi", desc: "Riichi declarations happen only after you confirm by discarding a tile."
-define_mod ten, order: 3, name: "Ten", desc: "Adds 10m, 10p, and 10s. Changes dora accordingly (if dora is enabled). Tanyao now allows nines, and chanta/junchan/honroutou require tens instead. 13 Orphans now requires the ten instead of the nine of each suit. Ittsu allows 23456789T."
+define_mod ten, order: 3, name: "Ten", desc: "Adds 10m, 10p, and 10s. Changes dora accordingly (if dora is enabled). Tanyao now allows nines, and chanta/junchan/honroutou require tens instead. 13 Orphans now requires the ten instead of the nine of each suit. Ittsuu allows 23456789T."
 define_mod star_suit, order: 2, name: "Star Suit (beta)", desc: "Adds a fourth suit (stars). This suit does not form yaku. This mod is in beta because we should probably write some yaku for it."
 define_mod space, order: 2, name: "Space Mahjong", desc: "Sequences can wrap (891, 912). Winds and dragons can make sequences. You can chii from any direction. Chiitoitsu is disabled. Open kokushi is allowed and worth 3 han."
 define_mod galaxy, order: 2, conflicts: ["chinitsu"], name: "Galaxy Mahjong", desc: "Replaces one of each tile with a blue 'galaxy' tile that acts as a wildcard of its number. For example, galaxy 3s can be used as 3m, 3p, or 3s. Galaxy winds are wind wildcards, and galaxy dragons are dragon wildcards."
@@ -1044,7 +1044,7 @@ define_preset "Just Like Modded Minecraft", [
   "yaku/ketsupaihou",
   "yaku/open_riichi",
   "yaku/sanrenkou",
-  "yaku/sanshoku_ittsu",
+  "yaku/sanshoku_ittsuu",
   "yaku/kyandonhou",
   "yaku/ryandoukou",
   "yaku/shoutate",
@@ -1054,7 +1054,7 @@ define_preset "Just Like Modded Minecraft", [
   "yaku/sanpuukou",
   "yaku/renkaihou",
   "yaku/isshoku_sanjun",
-  "yaku/ittsu_chanta",
+  "yaku/ittsuu_chanta",
   "yaku/tanfonhou",
   "yaku/chinpeikou",
   "yaku/chinchii_toushii",

@@ -89,7 +89,7 @@ else . end
   "Double Riichi": "Miscellaneous #2 (Double Ready)",
   "Chiitoitsu": "Pungs and Pairs #1 (Seven Pairs)",
   "Chanta": "2345678 #2 (Half Outside Hand)",
-  "Ittsu": "Consecutive Run #2 (Pure Straight)",
+  "Ittsuu": "Consecutive Run #2 (Pure Straight)",
   "Sanshoku": "Consecutive Run #1 (Mixed Runs)",
   "Sanshoku Doukou": "Pungs and Pairs #3 (Mixed Triplets)",
   "Sankantsu": "Kongs #1 (Three Kongs)",

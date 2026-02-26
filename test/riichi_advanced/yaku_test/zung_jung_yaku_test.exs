@@ -941,7 +941,7 @@ defmodule RiichiAdvanced.YakuTest.ZungJungYaku do
     }, %{delta_scores: [360, -310, -25, -25]})
   end
 
-  test "zung jung - open ittsu" do
+  test "zung jung - open ittsuu" do
     TestUtils.test_yaku_advanced("zung_jung", [], """
     {
       "starting_hand": {
@@ -973,7 +973,7 @@ defmodule RiichiAdvanced.YakuTest.ZungJungYaku do
     }, %{delta_scores: [120, -70, -25, -25]})
   end
 
-  test "zung jung - closed ittsu" do
+  test "zung jung - closed ittsuu" do
     TestUtils.test_yaku_advanced("zung_jung", [], """
     {
       "starting_hand": {

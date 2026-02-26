@@ -41,7 +41,7 @@
   "Double Riichi",
   "Chiitoitsu",
   "Chanta",
-  "Ittsu",
+  "Ittsuu",
   "Sanshoku Doukou",
   "Sankantsu",
   "Toitoi",
