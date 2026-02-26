@@ -65,7 +65,7 @@ any(.wall[]; . == "1t") as $star
 .yakuman += [{
   "display_name": "Milky Way",
   "value": 1,
-  "when": [{"name": "counter_equals", "opts": ["non_galaxy_jokers", 0]}]
+  "when": [{"name": "counter_at_most", "opts": ["non_galaxy_jokers", 0]}]
 }]
 |
 # add joker rules
@@ -214,7 +214,7 @@ else . end
 |
 .before_win.actions |= [
   ["add_counter", "galaxy_jokers", "count_matches", ["hand", "calls", "winning_tile"], ["any_joker"]],
-  ["set_counter", "non_galaxy_jokers", "count_tiles"],
+  ["set_counter", "non_galaxy_jokers", "count_matches", ["hand", "calls", "winning_tile"], [[[["any"], 1]]]],
   ["subtract_counter", "non_galaxy_jokers", "galaxy_jokers"],
   ["when", [{"name": "counter_at_most", "opts": ["non_galaxy_jokers", 0]}], [
     ["set_counter", "fu", 30], # don't try to calculate fu

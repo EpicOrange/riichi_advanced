@@ -9,12 +9,7 @@
     "starting_draws": ["3s", "1z", "2z", "3z", "4z", "1s"],
     "starting_honba": 1,
     "starting_dead_wall": ["1m"],
-    "tsumogiri_bots": true,
-    "auto_buttons": {
-      "5_auto_pei": {
-        "enabled_at_start": false
-      }
-    }
+    "tsumogiri_bots": true
   },
   "scenes": {
     "start": [
@@ -62,7 +57,7 @@
       }],
       ["add_object", "focus", {"width": 1.5, "x": 12.375, "y": "buttons"}],
       ["add_object", "focus", {"width": 0.75, "draw_index": 13}],
-      ["force_event", ["press_button", "south", "pei"]],
+      ["force_event", ["press_button", "south", "flower"]],
       ["clear_objects"],
       ["add_object", "text", {"size": 0.4, "width": 5, "x": 9.125, "y": 6.5,
         "text": "The replacement tile gives us three sets and a pair, so we're tenpai. Now declare riichi on the 9 of bamboo!"
