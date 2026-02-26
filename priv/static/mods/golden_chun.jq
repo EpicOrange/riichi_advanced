@@ -21,75 +21,38 @@
 # support for star suit mod
 if any(.wall[]; . == "1t") then
   .after_start.actions += [
-    ["set_tile_alias_all", ["37z"], ["5m", "5p", "5s", "5t", "7z"]]
+      # we can use the "_golden" attribute to keep track of when the golden chun is used as a five
+    ["set_tile_alias_all", ["37z"], [["5m", "_golden"], ["5p", "_golden"], ["5s", "_golden"], ["5t", "_golden"], "7z"]]
   ]
 else
   .after_start.actions += [
-    ["set_tile_alias_all", ["37z"], ["5m", "5p", "5s", "7z"]]
+    ["set_tile_alias_all", ["37z"], [["5m", "_golden"], ["5p", "_golden"], ["5s", "_golden"], "7z"]]
   ]
 end
-# add golden chun definition for when it's used as a five
-|
-.golden_chun_77z_win_definition = [
-  [ "exhaustive", [["chun_pair"], 1], [["shuntsu", "koutsu"], 4] ],
-  [ [["chun_pair"], 1], [["pair"], 6] ]
-]
-|
-.golden_chun_777z_win_definition = [
-  [ "debug", "exhaustive", [["chun"], 1], [["pair"], 1], [["shuntsu", "koutsu"], 3] ]
-]
 |
 # add aka and golden chun yaku
 .extra_yaku += [
-  {"display_name": "Kin", "value": 1, "when": [
-    {"name": "status", "opts": ["golden_chun"]},
-    [
-      {"name": "status_missing", "opts": ["7z"]},
-      [
-        {"name": "status", "opts": ["77z"]},
-        {"name": "match", "opts": [["hand", "calls", "winning_tile"], ["golden_chun_77z_win"]]}
-      ],
-      [
-        {"name": "status", "opts": ["777z"]},
-        {"name": "match", "opts": [["hand", "calls", "winning_tile"], ["golden_chun_777z_win"]]}
-      ]
-    ]
-  ]}
+  {"display_name": "Kin", "value": "golden_chuns", "when": [{"name": "counter_at_least", "opts": ["golden_chuns", 1]}]}
 ]
 |
-# count aka and add golden chun statuses
+# add akahatsu to counter. add aka_h status
 .before_win.actions += [
-  ["when", [{"name": "match", "opts": [["hand", "calls", "winning_tile"], [[ "nojoker", [["06z"], 1] ]]]}], [["add_counter", "aka", 1]]],
-  ["when", [{"name": "match", "opts": [["hand", "calls", "winning_tile"], [[ "nojoker", [["37z"], 1] ]]]}], [["set_status", "golden_chun"]]],
-  ["when", [{"name": "match", "opts": [["hand", "calls", "winning_tile"], [[ "nojoker", [["37z"], 1], [["7z"], 1] ]]]}], [["set_status", "7z"]]],
-  ["when", [{"name": "match", "opts": [["hand", "calls", "winning_tile"], [[ "nojoker", [["37z"], 1], [["chun_pair"], 1] ]]]}], [["set_status", "77z"]]],
-  ["when", [{"name": "match", "opts": [["hand", "calls", "winning_tile"], [[ "nojoker", [["37z"], 1], [["chun"], 1] ]]]}], [["set_status", "777z"]]]
+  ["add_counter", "aka", "count_matches", ["hand", "calls", "winning_tile"], [["nojoker", [["06z"], 1] ]]],
+  ["when", [{"name": "match", "opts": [["hand", "calls", "winning_tile"], [["nojoker", [["06z"], 1] ]]]}], [["set_status", "aka_h"]]]      
 ]
 |
-.after_win.actions += [
-  ["when", [
-    {"name": "status", "opts": ["golden_chun"]},
-    [
-      {"name": "status_missing", "opts": ["7z"]},
-      [
-        {"name": "status", "opts": ["77z"]},
-        {"name": "match", "opts": [["assigned_hand", "assigned_calls", "winning_tile"], ["golden_chun_77z_win"]]}
-      ],
-      [
-        {"name": "status", "opts": ["777z"]},
-        {"name": "match", "opts": [["assigned_hand", "assigned_calls", "winning_tile"], ["golden_chun_777z_win"]]}
-      ]
-    ]
-  ], [["set_status", "kindora"]]]
+# add golden chun status
+.before_scoring.actions += [
+  ["add_counter", "golden_chuns", "count_matches", ["hand", "calls", "winning_tile"], [[[[{"tile": "any", "attrs": ["golden"]}], 1]]]],
+  ["when", [{"name": "match", "opts": [["hand", "calls", "winning_tile"], [[[[{"tile": "any", "attrs": ["golden"]}], 1]]]]}], [["set_status", "golden_chun"]]]
 ]
 |
-# add golden chun yakuman
+# add sangen pocchi yakuman
 .yakuman += [
-  {"display_name": "Sangen Pocchi", "value": 1, "when": [{"name": "status", "opts": ["shiro_pocchi", "aka_h", "kindora"]}]}
+  {"display_name": "Sangen Pocchi", "value": 1, "when": [{"name": "status", "opts": ["shiro_pocchi", "aka_h", "golden_chun"]}]}
 ]
 |
 # can't call golden chun unless as a chun
-
 if (.buttons | has("chii")) then
   .buttons.chii.call_conditions += [[
     {"name": "not_call_contains", "opts": [["37z"], 1]},
