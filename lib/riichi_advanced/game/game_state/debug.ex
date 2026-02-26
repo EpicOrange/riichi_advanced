@@ -18,21 +18,22 @@ defmodule RiichiAdvanced.GameState.Debug do
   @print_mods false
   @print_smt false
   @skip_ruleset_caching false
-
-  def debug, do: @debug
-  def debug_status, do: @debug_status
-  def debug_fast_ai, do: @debug_fast_ai
-  def debug_saki_card_ours, do: @debug_saki_card_ours
-  def debug_saki_card_opponent, do: @debug_saki_card_opponent
-  def debug_am_match_definitions, do: @debug_am_match_definitions
-  def debug_actions, do: @debug_actions
-  def debug_buttons, do: @debug_buttons
-  def debug_conditions, do: @debug_conditions
-  def debug_ai, do: @debug_ai
-  def debug_log, do: @debug_log
-  def print_smt, do: @print_smt
-  def skip_ruleset_caching, do: @skip_ruleset_caching
   @print_wins false
+
+  # def debug, do: @debug
+  # def debug_status, do: @debug_status
+  # def debug_fast_ai, do: @debug_fast_ai
+  # def debug_saki_card_ours, do: @debug_saki_card_ours
+  # def debug_saki_card_opponent, do: @debug_saki_card_opponent
+  # def debug_am_match_definitions, do: @debug_am_match_definitions
+  # def debug_actions, do: @debug_actions
+  # def debug_buttons, do: @debug_buttons
+  # def debug_conditions, do: @debug_conditions
+  # def debug_ai, do: @debug_ai
+  # def debug_log, do: @debug_log
+  # def print_smt, do: @print_smt
+  # def skip_ruleset_caching, do: @skip_ruleset_caching
+
   def debug, do: Process.get(:ignore_type_error, @debug)
   def debug_status, do: Process.get(:ignore_type_error, @debug_status)
   def debug_fast_ai, do: Process.get(:ignore_type_error, @debug_fast_ai)
@@ -96,6 +97,10 @@ defmodule RiichiAdvanced.GameState.Debug do
     # wall = List.replace_at(wall, 81, :"8m")
     # wall = List.replace_at(wall, 82, :"8m")
     # wall = List.replace_at(wall, 83, :"8m")
+    # wall = List.replace_at(wall, 39, :"3p") # first draw (malaysian)
+    # wall = List.replace_at(wall, 40, :"4z")
+    # wall = List.replace_at(wall, 41, :"9p")
+    # wall = List.replace_at(wall, 42, :"6m") # second draw (malaysian)
     # wall = List.replace_at(wall, -6, :"6m") # first dora indicator
     # wall = List.replace_at(wall, -8, :"2p") # second dora indicator
     # wall = List.replace_at(wall, -10, :"8s") # third dora indicator
@@ -117,6 +122,12 @@ defmodule RiichiAdvanced.GameState.Debug do
               :south => Enum.slice(wall, 13..25),
               :west  => Enum.slice(wall, 26..38),
               :north => Enum.slice(wall, 39..51)}
+              
+    # # random hand 112233577889p with two fly jokers
+    # hands = %{:east  => Utils.sort_tiles([:"2y", :"1p", :"1p", :"2p", :"2p", :"3p", :"3p", :"5p", :"7p", :"7p", :"8p", :"2y", :"9p"]),
+    #           :south => Enum.slice(wall, 13..25),
+    #           :west  => Enum.slice(wall, 26..38),
+    #           :north => Enum.slice(wall, 39..51)}
 
     # # random hand
     # hands = %{:east  => Utils.sort_tiles([:"3m", :"4m", :"5m", :"2p", :"2p", :"4p", :"4p", :"4p", :"5p", :"6p", :"7p", :"3s", :"3s"]),
@@ -124,6 +135,12 @@ defmodule RiichiAdvanced.GameState.Debug do
     #           :west  => Enum.slice(wall, 26..38),
     #           :north => Enum.slice(wall, 39..51)}
 
+    # # no-yaku hand
+    # hands = %{:east  => Utils.sort_tiles([:"1m", :"2m", :"3m", :"4p", :"4p", :"4p", :"5p", :"6p", :"7p", :"3s", :"4s", :"2z", :"2z"]),
+    #           :south => Enum.slice(wall, 13..25),
+    #           :west  => Enum.slice(wall, 26..38),
+    #           :north => Enum.slice(wall, 39..51)}
+    
     # # naked tanki setup
     # hands = %{:east  => Utils.sort_tiles([:"1m", :"1m", :"3m", :"3m", :"5m", :"5m", :"7m", :"7m", :"9m", :"1z", :"1z", :"1z", :"1z"]),
     #           :south => Enum.slice(wall, 13..25),
@@ -232,14 +249,32 @@ defmodule RiichiAdvanced.GameState.Debug do
     #           :west  => Enum.slice(wall, 26..38),
     #           :north => Enum.slice(wall, 39..51)}
 
+    # # space shouhai chiitoi (invalid)
+    # hands = %{:east  => Utils.sort_tiles([:"6m", :"7m", :"2p", :"3p", :"3p", :"5p", :"5p", :"7p", :"9p", :"9p", :"8s", :"8s"]),
+    #           :south => Enum.slice(wall, 12..23),
+    #           :west  => Enum.slice(wall, 24..35),
+    #           :north => Enum.slice(wall, 36..47)}
+
+    # # space shouhai renhou (invalid)
+    # hands = %{:east  => Utils.sort_tiles([:"4m", :"4m", :"7m", :"8m", :"9m", :"2p", :"3p", :"8p", :"9p", :"1z", :"4z", :"5z"]),
+    #           :south  => Utils.sort_tiles([:"5p", :"5p", :"5p", :"5s", :"5s", :"5s", :"5m", :"5m", :"5m", :"3z", :"3z", :"3z"]),
+    #           :west  => Enum.slice(wall, 24..35),
+    #           :north => Enum.slice(wall, 36..47)}
+
     # # minefield ippatsu sanankou
     # hands = %{:east  => Enum.slice(wall, 0..19) ++ [:"1m", :"1m", :"1m", :"3m", :"3m", :"3m", :"7m", :"7m", :"7m", :"9m", :"9m", :"9m", :"5m", :"5m"],
     #           :south => [],
     #           :west  => List.duplicate(:"5m", 34),
     #           :north => []}
 
-    # # honitsu
+    # # manzu honitsu
     # hands = %{:east  => Utils.sort_tiles([:"1m", :"2m", :"3m", :"4m", :"5m", :"6m", :"7m", :"8m", :"9m", :"2z", :"2z", :"9m", :"2z"]),
+    #           :south => Enum.slice(wall, 13..25),
+    #           :west  => Enum.slice(wall, 26..38),
+    #           :north => Enum.slice(wall, 39..51)}
+
+    # # pinzu honitsu
+    # hands = %{:east  => Utils.sort_tiles([:"1p", :"2p", :"3p", :"4p", :"5p", :"6p", :"7p", :"8p", :"9p", :"2z", :"2z", :"9p", :"2z"]),
     #           :south => Enum.slice(wall, 13..25),
     #           :west  => Enum.slice(wall, 26..38),
     #           :north => Enum.slice(wall, 39..51)}
@@ -300,6 +335,12 @@ defmodule RiichiAdvanced.GameState.Debug do
 
     # # chinitsu
     # hands = %{:east  => Utils.sort_tiles([:"1s", :"2s", :"3s", :"5s", :"5s", :"7s", :"8s", :"9s", :"9s", :"9s", :"10s", :"10s", :"10s"]),
+    #           :south => Enum.slice(wall, 13..25),
+    #           :west  => Enum.slice(wall, 26..38),
+    #           :north => Enum.slice(wall, 39..51)}
+
+    # # chinitsu shouhai (should be able to riichi if you draw 9s)
+    # hands = %{:east  => Utils.sort_tiles([:"2s", :"4s", :"4s", :"5s", :"7s", :"7s", :"7s", :"8s", :"8s", :"9s", :"9s", :"9s"]),
     #           :south => Enum.slice(wall, 13..25),
     #           :west  => Enum.slice(wall, 26..38),
     #           :north => Enum.slice(wall, 39..51)}
@@ -410,6 +451,18 @@ defmodule RiichiAdvanced.GameState.Debug do
     # # any joker test
     # hands = %{:east  => Utils.sort_tiles([:"1p", :"1p", :"1p", :"2p", :"2p", :"2p", :"5p", :"6p", :"6p", :"8p", :"9p", :"12j", :"13j"]),
     #           :south => Utils.sort_tiles([:"1p", :"1p", :"1p", :"2p", :"2p", :"2p", :"5p", :"6p", :"6p", :"8p", :"9p", :"12j", :"13j"]),
+    #           :west  => Utils.sort_tiles([:"1p", :"1p", :"1p", :"2p", :"2p", :"2p", :"5p", :"6p", :"6p", :"8p", :"9p", :"12j", :"13j"]),
+    #           :north => Utils.sort_tiles([:"1p", :"1p", :"1p", :"2p", :"2p", :"2p", :"5p", :"6p", :"6p", :"8p", :"9p", :"12j", :"13j"])}
+
+    # # fly joker test (malaysian)
+    # hands = %{:east  => Utils.sort_tiles([:"1p", :"1p", :"1p", :"2p", :"2p", :"2p", :"5p", :"6p", :"6p", :"8p", :"9p", :"2y", :"2y"]),
+    #           :south => Utils.sort_tiles([:"1p", :"1p", :"1p", :"2p", :"2p", :"2p", :"5p", :"6p", :"6p", :"8p", :"9p", :"12j", :"13j"]),
+    #           :west  => Utils.sort_tiles([:"1p", :"1p", :"1p", :"2p", :"2p", :"2p", :"5p", :"6p", :"6p", :"8p", :"9p", :"12j", :"13j"]),
+    #           :north => Utils.sort_tiles([:"1p", :"1p", :"1p", :"2p", :"2p", :"2p", :"5p", :"6p", :"6p", :"8p", :"9p", :"12j", :"13j"])}
+
+    # # blessing of heaven anti-test (malaysian)
+    # hands = %{:east  => Utils.sort_tiles([:"1z", :"1z", :"1z", :"2z", :"2z", :"2z", :"3z", :"3z", :"3z", :"4z", :"4z", :"6z", :"7z"]),
+    #           :south => Utils.sort_tiles([:"1p", :"1p", :"1p", :"2p", :"2p", :"2p", :"6p", :"6p", :"6p", :"8p", :"8p", :"8p", :"9p"]),
     #           :west  => Utils.sort_tiles([:"1p", :"1p", :"1p", :"2p", :"2p", :"2p", :"5p", :"6p", :"6p", :"8p", :"9p", :"12j", :"13j"]),
     #           :north => Utils.sort_tiles([:"1p", :"1p", :"1p", :"2p", :"2p", :"2p", :"5p", :"6p", :"6p", :"8p", :"9p", :"12j", :"13j"])}
 
