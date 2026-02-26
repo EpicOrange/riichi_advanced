@@ -558,11 +558,11 @@ defmodule RiichiAdvanced.GameState.Debug do
     #           :west  => Enum.slice(wall, 26..38),
     #           :north => Enum.slice(wall, 39..51)}
 
-    # golden chun (recommended to set first draw to 5s so that you get a choice between riichi on 7z or 5s)
-    hands = %{:east  => Utils.sort_tiles([:"1s", :"2s", :"3s", :"7s", :"8s", :"9s", :"7m", :"8m", :"9m", :"06z", :"6z", :"7z", :"37z"]),
-              :south => Enum.slice(wall, 13..25),
-              :west  => Enum.slice(wall, 26..38),
-              :north => Enum.slice(wall, 39..51)}
+    # # golden chun (recommended to set first draw to 5s so that you get a choice between riichi on 7z or 5s)
+    # hands = %{:east  => Utils.sort_tiles([:"1s", :"2s", :"3s", :"7s", :"8s", :"9s", :"7m", :"8m", :"9m", :"06z", :"6z", :"7z", :"37z"]),
+    #           :south => Enum.slice(wall, 13..25),
+    #           :west  => Enum.slice(wall, 26..38),
+    #           :north => Enum.slice(wall, 39..51)}
 
     # # FF 11a 33a 55a 55b 77b 99b
     # hands = %{:east  => Utils.sort_tiles([:"1f", :"1g", :"1m", :"1m", :"3m", :"3m", :"5m", :"5m", :"5p", :"5p", :"7p", :"7p", :"9p"]),
