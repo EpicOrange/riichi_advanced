@@ -503,6 +503,10 @@ on before_call do
 end
 
 on before_win do
+  noop
+end
+
+on before_scoring do
   add_scoring_attrs
   calculate_fu
 end

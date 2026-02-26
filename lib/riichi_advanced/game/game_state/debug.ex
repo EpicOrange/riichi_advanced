@@ -118,10 +118,24 @@ defmodule RiichiAdvanced.GameState.Debug do
     wall
   end
   def set_starting_hand(wall) do
+
+    # 13-tile starting hand
     hands = %{:east  => Enum.slice(wall, 0..12),
               :south => Enum.slice(wall, 13..25),
               :west  => Enum.slice(wall, 26..38),
               :north => Enum.slice(wall, 39..51)}
+
+    # # 12-tile starting hand
+    # hands = %{:east  => Enum.slice(wall, 0..11),
+    #           :south => Enum.slice(wall, 12..23),
+    #           :west  => Enum.slice(wall, 24..35),
+    #           :north => Enum.slice(wall, 36..47)}
+
+    # # 16-tile starting hand
+    # hands = %{:east  => Enum.slice(wall, 0..15),
+    #           :south => Enum.slice(wall, 16..31),
+    #           :west  => Enum.slice(wall, 32..47),
+    #           :north => Enum.slice(wall, 48..63)}
               
     # # random hand 112233577889p with two fly jokers
     # hands = %{:east  => Utils.sort_tiles([:"2y", :"1p", :"1p", :"2p", :"2p", :"3p", :"3p", :"5p", :"7p", :"7p", :"8p", :"2y", :"9p"]),
@@ -543,6 +557,12 @@ defmodule RiichiAdvanced.GameState.Debug do
     #           :south => Enum.slice(wall, 13..25),
     #           :west  => Enum.slice(wall, 26..38),
     #           :north => Enum.slice(wall, 39..51)}
+
+    # golden chun (recommended to set first draw to 5s so that you get a choice between riichi on 7z or 5s)
+    hands = %{:east  => Utils.sort_tiles([:"1s", :"2s", :"3s", :"7s", :"8s", :"9s", :"7m", :"8m", :"9m", :"06z", :"6z", :"7z", :"37z"]),
+              :south => Enum.slice(wall, 13..25),
+              :west  => Enum.slice(wall, 26..38),
+              :north => Enum.slice(wall, 39..51)}
 
     # # FF 11a 33a 55a 55b 77b 99b
     # hands = %{:east  => Utils.sort_tiles([:"1f", :"1g", :"1m", :"1m", :"3m", :"3m", :"5m", :"5m", :"5p", :"5p", :"7p", :"7p", :"9p"]),
