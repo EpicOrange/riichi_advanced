@@ -338,8 +338,8 @@
       ["set_tile_alias_all", ["2f", "3f", "4f", "1g", "2g", "3g", "4g"], ["1f"]],
         // compute how many tiles in each player's hand are passable
       ["as", "all", [
-        ["set_counter", "passables", "count_matches", ["hand", "draw"], [[[["any"], 1]]]],
-        ["subtract_counter", "passables", "count_matches", ["hand", "draw"], [[[[["_unpassable"]], 1]]]]
+        ["set_counter", "passables", "count_matches", ["hand", "draw"], [[[[["any"]], 1]]]],
+        ["subtract_counter", "passables", "count_matches", ["hand", "draw"], [[[[{"tile": "any", "attrs": ["unpassable"]}], 1]]]]
       ]]
     ]
   },
