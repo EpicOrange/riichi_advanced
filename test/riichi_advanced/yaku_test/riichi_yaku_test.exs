@@ -667,7 +667,7 @@ defmodule RiichiAdvanced.YakuTest.RiichiYaku do
     })
   end
 
-  test "riichi - open ittsu" do
+  test "riichi - open ittsuu" do
     TestUtils.test_yaku_advanced("riichi", [], """
     {
       "starting_hand": {
@@ -694,14 +694,14 @@ defmodule RiichiAdvanced.YakuTest.RiichiYaku do
       %{"type" => "buttons_pressed", "buttons" => [%{"button" => "ron"}, nil, nil, nil]}
     ], %{
       east: %{
-        yaku: [{"Ittsu", 1}],
+        yaku: [{"Ittsuu", 1}],
         yaku2: [],
         minipoints: 30
       }
     })
   end
 
-  test "riichi - closed ittsu" do
+  test "riichi - closed ittsuu" do
     TestUtils.test_yaku_advanced("riichi", [], """
     {
       "starting_hand": {
@@ -718,7 +718,7 @@ defmodule RiichiAdvanced.YakuTest.RiichiYaku do
       %{"type" => "buttons_pressed", "buttons" => [%{"button" => "ron"}, nil, nil, nil]}
     ], %{
       east: %{
-        yaku: [{"Pinfu", 1}, {"Ittsu", 2}],
+        yaku: [{"Pinfu", 1}, {"Ittsuu", 2}],
         yaku2: [],
         minipoints: 30
       }
@@ -1352,13 +1352,13 @@ defmodule RiichiAdvanced.YakuTest.RiichiYaku do
       %{"type" => "buttons_pressed", "buttons" => [nil, %{"button" => "ron"}, %{"button" => "ron"}, %{"button" => "ron"}]}
     ], %{
       south: %{
-        yaku: [{"Honitsu", 2}, {"Ittsu", 1}, {"Haku", 1}]
+        yaku: [{"Honitsu", 2}, {"Ittsuu", 1}, {"Haku", 1}]
       },
       west: %{
-        yaku: [{"Honitsu", 2}, {"Ittsu", 1}, {"Hatsu", 1}]
+        yaku: [{"Honitsu", 2}, {"Ittsuu", 1}, {"Hatsu", 1}]
       },
       north: %{
-        yaku: [{"Honitsu", 2}, {"Ittsu", 1}, {"Chun", 1}]
+        yaku: [{"Honitsu", 2}, {"Ittsuu", 1}, {"Chun", 1}]
       }
     })
   end
@@ -1463,7 +1463,7 @@ defmodule RiichiAdvanced.YakuTest.RiichiYaku do
     ], :no_winners)
   end
 
-  test "riichi - false ittsu" do
+  test "riichi - false ittsuu" do
     TestUtils.test_yaku_advanced("riichi", [], """
     {
       "starting_hand": {
@@ -1546,7 +1546,7 @@ defmodule RiichiAdvanced.YakuTest.RiichiYaku do
       %{"type" => "buttons_pressed", "buttons" => [%{"button" => "ron"}, nil, nil, nil]}
     ], %{
       east: %{
-        yaku: [{"Chinitsu", 5}, {"Ittsu", 1}],
+        yaku: [{"Chinitsu", 5}, {"Ittsuu", 1}],
         yaku2: [],
         minipoints: 30
       }

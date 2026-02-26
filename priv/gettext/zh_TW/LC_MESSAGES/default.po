@@ -370,7 +370,7 @@ msgstr "新增以下鳴牌：Ton（對子）、Chon（混刻）、Fuun（四風�
 msgid "Adds 10m, 10p, and 10s."
 msgstr "添加10萬、10筒和10索。"
 
-msgid "Adds 10m, 10p, and 10s. Changes dora accordingly (if dora is enabled). Tanyao now allows nines, and chanta/junchan/honroutou require tens instead. 13 Orphans now requires the ten instead of the nine of each suit. Ittsu allows 23456789T."
+msgid "Adds 10m, 10p, and 10s. Changes dora accordingly (if dora is enabled). Tanyao now allows nines, and chanta/junchan/honroutou require tens instead. 13 Orphans now requires the ten instead of the nine of each suit. Ittsuu allows 23456789T."
 msgstr "添加10萬/筒/索（若寶牌啟用則相應調整）。斷幺九允許包含9，全帶/純全/混老頭需要10代替。國士無雙需要各花色10而非9。一氣通貫允許23456789十。"
 
 msgid "Adds a copy of the 123 joker, which looks like 小 and can be used as any 1, 2, or 3."
@@ -1907,13 +1907,13 @@ msgstr "全是紅寶？"
 msgid "Italian"
 msgstr "義大利"
 
-msgid "Ittsu"
+msgid "Ittsuu"
 msgstr "一氣通貫"
 
-msgid "Ittsu Chanta"
+msgid "Ittsuu Chanta"
 msgstr "一氣通貫全帶幺"
 
-msgid "Ittsu Junchan"
+msgid "Ittsuu Junchan"
 msgstr "純一氣全帶幺"
 
 msgid "Iwadate Yuan"
@@ -2159,7 +2159,7 @@ msgstr "地方役種：七對子基礎上，三元對子３組或風牌對子４
 msgid "Local yaku. 2 han for having the pattern 111333555 (choupaikou), 111444777 (sujipaikou), or 111555999 (chousankou) in one suit. The pattern does not have to start with 1, but cannot wrap. 1 han if instead, all three triplets are in different suits."
 msgstr "地方役種：同種１１１３３３５５５(超牌刻)/１１１４４４７７７(數牌刻)/１１１５５５９９９(超三刻)２番；異種三刻子１番。"
 
-msgid "Local yaku. 2 han if you have ittsu, and (except the 456) the rest of your hand is chanta (or junchan, in which case it's 3 han). +1 han if closed. Does not stack with ittsu."
+msgid "Local yaku. 2 han if you have ittsuu, and (except the 456) the rest of your hand is chanta (or junchan, in which case it's 3 han). +1 han if closed. Does not stack with ittsuu."
 msgstr "地方役種：一氣通貫+全帶幺(純全帶幺則３番)２番，門清+１番(不與一氣複合)。"
 
 msgid "Local yaku. 3 han on top of ryanpeikou if your ryanpeikou sequences are all the same numbers (may be different suits), like 112233 112233. No restriction on the pair, so you can have an honor pair (despite 'chin' being in the name)."
@@ -2189,7 +2189,7 @@ msgstr "地方役「寒江獨釣」：四副露單騎聽白板時滿貫。"
 msgid "Local yaku. \\\"Five Suits Collected\\\". 2 han if your hand includes all five suits (character, circle, bamboo, wind, dragon)."
 msgstr "地方役「五族協和」：手牌含五種花色（萬筒條風元）時２翻。"
 
-msgid "Local yaku. \\\"Five-Heart Straight\\\". 1 han on top of ittsu if the winning tile is the five needed for ittsu."
+msgid "Local yaku. \\\"Five-Heart Straight\\\". 1 han on top of ittsuu if the winning tile is the five needed for ittsuu."
 msgstr "地方役「五心通貫」：一氣通貫時以關鍵五牌和牌追加１翻。"
 
 msgid "Local yaku. \\\"Four Honor Triplets\\\". 2 han for having four honor tile triplets."
@@ -2264,7 +2264,7 @@ msgstr "地方役滿：無副露（含暗槓）且手牌為一色１８６１+�
 msgid "Local yakuman. If you have ryuuiisou without green dragon, it's double yakuman. Doesn't stack with ryuuiisou."
 msgstr "地方役滿：綠一色無發時雙倍役滿（不與綠一色複合）。"
 
-msgid "Local yakuman. If your closed hand consists of an ittsu and east/north winds, it's yakuman."
+msgid "Local yakuman. If your closed hand consists of an ittsuu and east/north winds, it's yakuman."
 msgstr "地方役滿：門清一氣通貫+東北刻子時役滿。"
 
 msgid "Local yakuman. If your hand consists of only 246p (2,4,6 circles) and east/north winds, it's yakuman."
@@ -3224,7 +3224,7 @@ msgstr "三色頂三刻"
 msgid "Sanshoku Doukou"
 msgstr "三色同刻"
 
-msgid "Sanshoku Ittsu"
+msgid "Sanshoku Ittsuu"
 msgstr "混一氣通貫"
 
 msgid "Sanshoku Sujipaikou"

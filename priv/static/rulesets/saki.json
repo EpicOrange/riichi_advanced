@@ -148,7 +148,7 @@
     "Other",
     {"id": "show_waits", "name": "Show Waits", "desc": "Add some UI that shows waits."},
     {"id": "open_hands", "name": "Open Hands", "desc": "Everyone plays with tiles shown."},
-    {"id": "ten", "name": "Ten", "desc": "Adds 10m, 10p, and 10s. Changes dora accordingly (if dora is enabled). Tanyao now allows nines, and chanta/junchan/honroutou require tens instead. 13 Orphans now requires the ten instead of the nine of each suit. Ittsu is unchanged."},
+    {"id": "ten", "name": "Ten", "desc": "Adds 10m, 10p, and 10s. Changes dora accordingly (if dora is enabled). Tanyao now allows nines, and chanta/junchan/honroutou require tens instead. 13 Orphans now requires the ten instead of the nine of each suit. Ittsuu is unchanged."},
     {"id": "star_suit", "name": "Star Suit (beta)", "desc": "Adds a fourth suit (stars). This suit does not form yaku. This mod is in beta because we should probably write some yaku for it."},
     {"id": "space", "name": "Space Mahjong", "desc": "Sequences can wrap (891, 912). Winds and dragons can make sequences. You can chii from any direction. Chiitoitsu is disabled. Open kokushi is allowed and worth 3 han."},
     {"id": "galaxy", "conflicts": ["chinitsu"], "name": "Galaxy Mahjong", "desc": "Replaces one of each tile with a blue 'galaxy' tile that acts as a wildcard of its number. For example, galaxy 3s can be used as 3m, 3p, or 3s. Galaxy winds are wind wildcards, and galaxy dragons are dragon wildcards."},
@@ -292,7 +292,7 @@
     "ryanmen/penchan": [[0, 1]],
     "kanchan": [[0, 2]],
     "iipeikou": [[0, 0, 1, 1, 2, 2]],
-    "ittsu": [[[0,1,2],[3,4,5],[6,7,8]]],
+    "ittsuu": [[[0,1,2],[3,4,5],[6,7,8]]],
     "sanshoku_doujun": [[[0,1,2],[10,11,12],[20,21,22]]],
     "sanshoku_doukou": [[[0,0,0],[10,10,10],[20,20,20]]],
     "ton": [["1z", "1z", "1z"]],
@@ -482,7 +482,7 @@
         ]]]}
       ]
     },
-    { "display_name": "Ittsu", "value": 1, "when": [{"name": "match", "opts": [["hand", "calls", "winning_tile"], [["exhaustive", [["ittsu"], 1], [["shuntsu", "koutsu"], 1], [["pair"], 1] ]]]}] },
+    { "display_name": "Ittsuu", "value": 1, "when": [{"name": "match", "opts": [["hand", "calls", "winning_tile"], [["exhaustive", [["ittsuu"], 1], [["shuntsu", "koutsu"], 1], [["pair"], 1] ]]]}] },
     { "display_name": "Sanshoku", "value": 1, "when": [{"name": "match", "opts": [["hand", "calls", "winning_tile"], [["exhaustive", [["sanshoku_doujun"], 1], [["shuntsu", "koutsu"], 1], [["pair"], 1] ]]]}] },
     { "display_name": "Sanshoku Doukou", "value": 2, "when": [{"name": "match", "opts": [["hand", "calls", "winning_tile"], [["exhaustive", [["sanshoku_doukou"], 1], [["shuntsu", "koutsu"], 1], [["pair"], 1] ]]]}] },
     { "display_name": "Sankantsu", "value": 2, "when": [{"name": "match", "opts": [["hand", "calls", "winning_tile"], [[ [["daiminkan", "ankan", "kakan"], 3] ]]]}] },
@@ -543,7 +543,7 @@
   "meta_yaku": [
     // closed hand or being someya mako upgrades certain yaku
     { "display_name": "Chanta", "value": 1, "when": [[{"name": "has_no_call_named", "opts": ["chii", "pon", "daiminkan", "kakan"]}, {"name": "status", "opts": ["someya-mako"]}], {"name": "has_existing_yaku", "opts": ["Chanta"]}] },
-    { "display_name": "Ittsu", "value": 1, "when": [[{"name": "has_no_call_named", "opts": ["chii", "pon", "daiminkan", "kakan"]}, {"name": "status", "opts": ["someya-mako"]}], {"name": "has_existing_yaku", "opts": ["Ittsu"]}] },
+    { "display_name": "Ittsuu", "value": 1, "when": [[{"name": "has_no_call_named", "opts": ["chii", "pon", "daiminkan", "kakan"]}, {"name": "status", "opts": ["someya-mako"]}], {"name": "has_existing_yaku", "opts": ["Ittsuu"]}] },
     { "display_name": "Sanshoku", "value": 1, "when": [[{"name": "has_no_call_named", "opts": ["chii", "pon", "daiminkan", "kakan"]}, {"name": "status", "opts": ["someya-mako"]}], {"name": "has_existing_yaku", "opts": ["Sanshoku"]}] },
     { "display_name": "Junchan", "value": 1, "when": [[{"name": "has_no_call_named", "opts": ["chii", "pon", "daiminkan", "kakan"]}, {"name": "status", "opts": ["someya-mako"]}], {"name": "has_existing_yaku", "opts": ["Junchan"]}] },
     { "display_name": "Honitsu", "value": 1, "when": [[{"name": "has_no_call_named", "opts": ["chii", "pon", "daiminkan", "kakan"]}, {"name": "status", "opts": ["someya-mako"]}], {"name": "has_existing_yaku", "opts": ["Honitsu"]}] },
@@ -586,7 +586,7 @@
     { "display_name": "Hatsu", "value": 1, "when": [{"name": "status", "opts": ["ikeda-kana"]}, {"name": "placement", "opts": [4]}, {"name": "has_existing_yaku", "opts": [["Hatsu", 1]]}] },
     { "display_name": "Chun", "value": 1, "when": [{"name": "status", "opts": ["ikeda-kana"]}, {"name": "placement", "opts": [4]}, {"name": "has_existing_yaku", "opts": [["Chun", 1]]}] },
     { "display_name": "Chanta", "value": 1, "when": [{"name": "status", "opts": ["ikeda-kana"]}, {"name": "placement", "opts": [4]}, {"name": "has_existing_yaku", "opts": [["Chanta", 1]]}] },
-    { "display_name": "Ittsu", "value": 1, "when": [{"name": "status", "opts": ["ikeda-kana"]}, {"name": "placement", "opts": [4]}, {"name": "has_existing_yaku", "opts": [["Ittsu", 1]]}] },
+    { "display_name": "Ittsuu", "value": 1, "when": [{"name": "status", "opts": ["ikeda-kana"]}, {"name": "placement", "opts": [4]}, {"name": "has_existing_yaku", "opts": [["Ittsuu", 1]]}] },
     { "display_name": "Sanshoku", "value": 1, "when": [{"name": "status", "opts": ["ikeda-kana"]}, {"name": "placement", "opts": [4]}, {"name": "has_existing_yaku", "opts": [["Sanshoku", 1]]}] },
     // senoo kaori gets 1 han for not having yaku
     { "display_name": "No Yaku", "value": 1, "when": [{"name": "status", "opts": ["senoo-kaori"]}, "has_no_yaku"] }
@@ -778,7 +778,7 @@
     "Double Riichi",
     "Chiitoitsu",
     "Chanta",
-    "Ittsu",
+    "Ittsuu",
     "Sanshoku",
     "Sanshoku Doukou",
     "Sankantsu",
@@ -823,7 +823,7 @@
     "Double Riichi": "ダブル立直",
     "Chiitoitsu": "七対子",
     "Chanta": "混全帯幺九",
-    "Ittsu": "一気通貫",
+    "Ittsuu": "一気通貫",
     "Sanshoku": "三色同順",
     "Sanshoku Doukou": "三色同刻",
     "Sankantsu": "三槓子",

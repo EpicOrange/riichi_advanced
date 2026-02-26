@@ -195,7 +195,7 @@ Note that there is an additional common rule called "sudden death" that states t
 - __Iipeikou__ (~3.8% of hands): Your hand contains two identical sequences of the same suit, like ![](tiles/1p.svg)![](tiles/1p.svg)![](tiles/2p.svg)![](tiles/2p.svg)![](tiles/3p.svg)![](tiles/3p.svg). 1 han if closed, does not count if open.
 - __Sanshoku Doujun__ (~3.7% of hands): You have the same sequence in all three suits, like ![](tiles/1m.svg)![](tiles/2m.svg)![](tiles/3m.svg) ![](tiles/1p.svg)![](tiles/2p.svg)![](tiles/3p.svg) ![](tiles/1s.svg)![](tiles/2s.svg)![](tiles/3s.svg). 2 han if closed, 1 han if open.
 - __Chiitoitsu__ (~2.8% of hands): Your hand is seven pairs. 2 han.
-- __Ittsu__ (~1.5% of hands): You have the sequences 123 456 879 of a single suit in hand. 2 han if closed, 1 han if open.
+- __Ittsuu__ (~1.5% of hands): You have the sequences 123 456 879 of a single suit in hand. 2 han if closed, 1 han if open.
 - __Toitoi__ (~1.4% of hands): Your hand is all triplets. 2 han.
 - __Haitei/Houtei__ (~0.82% of hands): You won off the last tile in the wall, or the last discard of the game, respectively. 1 han.
 - __Chanta__ (~0.80% of hands): Every set/pair in your hand contains a terminal or honor tile. 2 han if closed, 1 han if open.

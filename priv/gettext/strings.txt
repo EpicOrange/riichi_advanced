@@ -150,7 +150,7 @@ Chun
 Double Riichi
 Chiitoitsu
 Chanta
-Ittsu
+Ittsuu
 Sanshoku
 Sanshoku Doukou
 Sankantsu
@@ -191,7 +191,7 @@ Suushi Chiitoitsu
 Daichisei
 Uushin Tsuukan
 Sanrenkou
-Sanshoku Ittsu
+Sanshoku Ittsuu
 Kyandonhou
 Ryandoukou
 Choupaikou
@@ -207,8 +207,8 @@ Isshoku Sanjun
 Sanpuukou
 Uumensai
 Renkaihou
-Ittsu Chanta
-Ittsu Junchan
+Ittsuu Chanta
+Ittsuu Junchan
 Tanfonhou
 Chintanfon
 Chinpeikou
@@ -411,7 +411,7 @@ Uushin Tsuukan
 Ketsupaihou
 Open Riichi
 Sanrenkou
-Sanshoku Ittsu
+Sanshoku Ittsuu
 Kyandonhou
 Ryandoukou
 Shoutate
@@ -422,7 +422,7 @@ Sanpuukou
 Renkaihou
 Mondeikou
 Isshoku Sanjun
-Ittsu Chanta
+Ittsuu Chanta
 Tanfonhou
 Chinpeikou
 Chinchii Toushii
@@ -586,7 +586,7 @@ Local yaku. \\\"Swallow Reversal\\\". 1 han if you win off a riichi declaration 
 Local yaku. \\\"Twelve Tiles Down\\\". 1 han if you win with four calls (and therefore on a single tile wait). Closed kans are permitted.
 Local yaku. \\\"Shoot After Kan\\\". 1 han if you win off the tile discarded by a player who just called kan.
 Local yaku. 1 han on top of chiitoitsu if three of your pairs are dragons, or if four of your pairs are winds. If you have all seven honor pairs? Double yakuman.
-Local yaku. \\\"Five-Heart Straight\\\". 1 han on top of ittsu if the winning tile is the five needed for ittsu.
+Local yaku. \\\"Five-Heart Straight\\\". 1 han on top of ittsuu if the winning tile is the five needed for ittsuu.
 Local yaku. \\\"Missing Tile\\\". 1 han if you have an edge (12, 89) or middle (24, 57) wait on a tile for which three are already publicly visible (so 12333 winning on 3 doesn't count).
 You have the option to declare open riichi, which is worth 2 han but reveals your hand to the table. Open double riichi is 3 han.
 Local yaku. \\\"Three Consecutive Triplets\\\". 2 han for having three triplets of the same suit in sequence, like 222 333 444.
@@ -601,7 +601,7 @@ Local yaku. \\\"Three Wind Triplets\\\". 2 han if you have three wind triplets.
 Local yaku. \\\"Consecutive Blossom\\\". 2 han if you kan off the rinshan tile and win off of _that_ rinshan tile. Does not stack with rinshan.
 Local yaku. If you have 4 aka, 2 han on top of aka. This counts as a yaku.
 Local yaku. \\\"Pure Triple Sequences\\\". 2 han if you have three of the exact same sequence in one suit, like 123 123 123. Like iipeikou but three. +1 han if closed. Does not stack with iipeikou (123 123) or sanrenkou (111 222 333).
-Local yaku. 2 han if you have ittsu, and (except the 456) the rest of your hand is chanta (or junchan, in which case it's 3 han). +1 han if closed. Does not stack with ittsu.
+Local yaku. 2 han if you have ittsuu, and (except the 456) the rest of your hand is chanta (or junchan, in which case it's 3 han). +1 han if closed. Does not stack with ittsuu.
 Local yaku. \\\"Win Without Red\\\". 2 han if your hand contains no red. This means you can have only 248p (2,4,8 circles), 23468s (2,3,4,6,8 bamboo), and any honors except red dragon. 5 han instead if no honor tiles (chintanfon). +1 han if closed.
 Local yaku. 3 han on top of ryanpeikou if your ryanpeikou sequences are all the same numbers (may be different suits), like 112233 112233. No restriction on the pair, so you can have an honor pair (despite 'chin' being in the name).
 Local yaku. \\\"Golden Rooster Steals Food\\\". 4 han instead of the usual 2 han if you win ketsupaihou by chankan.
@@ -638,13 +638,13 @@ Local yakuman. Like kouitten, except you have a pair of 5s (5 bamboo).
 Local yakuman. If your hand contains 123 345 567 789 all in one suit, it's yakuman. No restrictions on your pair.
 Local yakuman. If you have no calls (not even ankan) and your hand consists of the tiles 1861 in one suit, 1865 in another suit, and you have triplets of north and south winds, it's yakuman.
 Local yakuman. If your hand consists of only 246p (2,4,6 circles) and east/north winds, it's yakuman.
-Local yakuman. If your closed hand consists of an ittsu and east/north winds, it's yakuman.
+Local yakuman. If your closed hand consists of an ittsuu and east/north winds, it's yakuman.
 Local yakuman. If your hand consists of only 248p (2,4,8 circles), green dragon, and one type of wind, it's yakuman.
 Local yakuman. If you have ryuuiisou without green dragon, it's double yakuman. Doesn't stack with ryuuiisou.
 Local yakuman. If you have kans of all three dragons, it's double yakuman. Doesn't stack with daisangen.
 Local yakuman. If you have kans of all four winds, it's quadruple yakuman. Doesn't stack with daisuushi and suukantsu.
 Riichi declarations happen only after you confirm by discarding a tile.
-Adds 10m, 10p, and 10s. Changes dora accordingly (if dora is enabled). Tanyao now allows nines, and chanta/junchan/honroutou require tens instead. 13 Orphans now requires the ten instead of the nine of each suit. Ittsu allows 23456789T.
+Adds 10m, 10p, and 10s. Changes dora accordingly (if dora is enabled). Tanyao now allows nines, and chanta/junchan/honroutou require tens instead. 13 Orphans now requires the ten instead of the nine of each suit. Ittsuu allows 23456789T.
 Adds a fourth suit (stars). This suit does not form yaku. This mod is in beta because we should probably write some yaku for it.
 Sequences can wrap (891, 912). Winds and dragons can make sequences. You can chii from any direction. Chiitoitsu is disabled. Open kokushi is allowed and worth 3 han.
 Replaces one of each tile with a blue 'galaxy' tile that acts as a wildcard of its number. For example, galaxy 3s can be used as 3m, 3p, or 3s. Galaxy winds are wind wildcards, and galaxy dragons are dragon wildcards.
@@ -1319,7 +1319,7 @@ Seat Wind
 Double Riichi
 Chiitoitsu
 Chanta
-Ittsu
+Ittsuu
 Sanshoku
 Sanshoku Doukou
 Sankantsu
@@ -1344,7 +1344,7 @@ Pure Shifted Chows
 Riichi
 Uumensai
 Chanta
-Ittsu
+Ittsuu
 Sanshoku
 Junchan
 Honitsu
@@ -1380,7 +1380,7 @@ Haku
 Hatsu
 Chun
 Chanta
-Ittsu
+Ittsuu
 Sanshoku
 No Yaku
 Tenhou
@@ -2082,7 +2082,7 @@ Uushin Tsuukan
 Ketsupaihou
 Open Riichi
 Sanrenkou
-Sanshoku Ittsu
+Sanshoku Ittsuu
 Kyandonhou
 Ryandoukou
 Shoutate
@@ -2093,7 +2093,7 @@ Sanpuukou
 Renkaihou
 Mondeikou
 Isshoku Sanjun
-Ittsu Chanta
+Ittsuu Chanta
 Tanfonhou
 Chinpeikou
 Chinchii Toushii
@@ -2872,7 +2872,7 @@ Seat Wind
 Double Riichi
 Chiitoitsu
 Chanta
-Ittsu
+Ittsuu
 Sanshoku
 Sanshoku Doukou
 Sankantsu
@@ -2897,7 +2897,7 @@ Pure Shifted Chows
 Riichi
 Uumensai
 Chanta
-Ittsu
+Ittsuu
 Sanshoku
 Junchan
 Honitsu
@@ -2933,7 +2933,7 @@ Haku
 Hatsu
 Chun
 Chanta
-Ittsu
+Ittsuu
 Sanshoku
 No Yaku
 Tenhou
@@ -3780,8 +3780,8 @@ Chanta
 Chanta
 Junchan
 Junchan
-Ittsu
-Ittsu
+Ittsuu
+Ittsuu
 Sanshoku
 Sanshoku
 Sanshoku Doukou

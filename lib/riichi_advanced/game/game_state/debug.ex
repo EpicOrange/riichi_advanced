@@ -321,7 +321,7 @@ defmodule RiichiAdvanced.GameState.Debug do
     #           :west  => Enum.slice(wall, 26..38),
     #           :north => Enum.slice(wall, 39..51)}
 
-    # # ittsu chanta
+    # # ittsuu chanta
     # hands = %{:east  => Utils.sort_tiles([:"1m", :"2m", :"3m", :"4m", :"5m", :"6m", :"7m", :"8m", :"9m", :"1s", :"1s", :"1s", :"1p"]),
     #           :south => Enum.slice(wall, 13..25),
     #           :west  => Enum.slice(wall, 26..38),
@@ -538,7 +538,7 @@ defmodule RiichiAdvanced.GameState.Debug do
     #           :west  => Enum.slice(wall, 26..38),
     #           :north => Enum.slice(wall, 39..51)}
 
-    # # ittsu
+    # # ittsuu
     # hands = %{:east  => Utils.sort_tiles([:"1s", :"2s", :"3s", :"4s", :"5s", :"6s", :"7s", :"8s", :"3m", :"3m", :"3m", :"2z", :"2z"]),
     #           :south => Enum.slice(wall, 13..25),
     #           :west  => Enum.slice(wall, 26..38),

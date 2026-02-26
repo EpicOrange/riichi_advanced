@@ -460,7 +460,7 @@ defmodule RiichiAdvanced.Constants do
           hon_list: "yaku", hon_name: "Half Flush", hon_value: 1,
           chin_list: "yaku", chin_name: "Full Flush", chin_value: 4
         }},
-        %{name: "yaku/ittsu", config: %{list: "yaku", name: "Pure Straight", value: 1}},
+        %{name: "yaku/ittsuu", config: %{list: "yaku", name: "Pure Straight", value: 1}},
         %{name: "yaku/tanyao", config: %{list: "yaku", name: "All Simples", value: 1}},
         %{name: "yaku/honroutou", config: %{
           hon_list: "yaku", hon_name: "All Terminals and Honors", hon_value: 1,

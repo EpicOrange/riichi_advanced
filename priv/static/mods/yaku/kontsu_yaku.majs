@@ -342,7 +342,7 @@ end
 define_const closed_hand, has_no_call_named("ton", "chii", "chon", "chon_honors", "daiminfuun", "pon", "daiminkan", "kapon", "kakakan", "kafuun", "kakan")
 
 # make sure sequence-based yaku don't take honors kontsu
-replace_yaku yaku, "Ittsu", 1, match(["hand", "calls", "winning_tile"], ~m"exhaustive, mentsu:1, pair:1, kontsu:-1, ittsu:1")
+replace_yaku yaku, "Ittsuu", 1, match(["hand", "calls", "winning_tile"], ~m"exhaustive, mentsu:1, pair:1, kontsu:-1, ittsuu:1")
 replace_yaku yaku, "Iipeikou", 1, @closed_hand and match(["hand", "calls", "winning_tile"], ~m"exhaustive, mentsu:2, pair:1, kontsu:-1, iipeikou:1")
 replace_yaku yaku, "Isshoku Sanjun", 2, match(["hand", "calls", "winning_tile"], ~m"exhaustive, mentsu:1, pair:1, kontsu:-1, iishoku_sanjun:1")
 replace_yaku yakuman, "Isshoku Yonjun", 1, match(["hand", "calls", "winning_tile"], ~m"exhaustive, kontsu:-1, iishoku_yonjun:1, pair:1")
