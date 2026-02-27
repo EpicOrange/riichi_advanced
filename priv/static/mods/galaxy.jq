@@ -101,9 +101,10 @@ any(.wall[]; . == "1t") as $star
   ["set_tile_alias_all", ["12z"], ["1z",["2z","_original"],"3z","4z"]],
   ["set_tile_alias_all", ["13z"], ["1z","2z",["3z","_original"],"4z"]],
   ["set_tile_alias_all", ["14z"], ["1z","2z","3z",["4z","_original"]]],
-  ["set_tile_alias_all", ["15z"], [["5z","_original"],"6z","7z",["0z","_original"]]],
+  ["set_tile_alias_all", ["15z"], [["5z","_original"],"6z","7z","0z"]],
   ["set_tile_alias_all", ["16z"], ["5z",["6z","_original"],"7z","0z"]],
-  ["set_tile_alias_all", ["17z"], ["5z","6z",["7z","_original"],"0z"]]
+  ["set_tile_alias_all", ["17z"], ["5z","6z",["7z","_original"],"0z"]],
+  ["set_tile_alias_all", ["10z"], ["5z","6z","7z",["0z","_original"]]]
 ]
 |
 if $star then
@@ -156,7 +157,8 @@ if .dora_indicators then
     "14z": ["1z", "2z", "3z", "4z"],
     "15z": ["5z", "6z", "7z", "0z"],
     "16z": ["5z", "6z", "7z", "0z"],
-    "17z": ["5z", "6z", "7z", "0z"]
+    "17z": ["5z", "6z", "7z", "0z"],
+    "10z": ["5z", "6z", "7z", "0z"]
   }
   |
   if $star then
@@ -216,8 +218,8 @@ else . end
   ["add_counter", "galaxy_jokers", "count_matches", ["hand", "calls", "winning_tile"], ["any_joker"]],
   ["set_counter", "non_galaxy_jokers", "count_matches", ["hand", "calls", "winning_tile"], [[[["any"], 1]]]],
   ["subtract_counter", "non_galaxy_jokers", "galaxy_jokers"],
+    # optimisation, while galaxy shuugi isn't actually working. remove once we get it working.
   ["when", [{"name": "counter_at_most", "opts": ["non_galaxy_jokers", 0]}], [
-    ["set_counter", "fu", 30], # don't try to calculate fu
     # reset jokers to not have _original (optimization)
     ["clear_tile_aliases"],
     ["set_tile_alias_all", ["11m"], add_star_suit($star; ["1m","1p","1s"])],
@@ -253,14 +255,16 @@ else . end
     ["set_tile_alias_all", ["14z"], ["1z","2z","3z","4z"]],
     ["set_tile_alias_all", ["15z"], ["5z","6z","7z","0z"]],
     ["set_tile_alias_all", ["16z"], ["5z","6z","7z","0z"]],
-    ["set_tile_alias_all", ["17z"], ["5z","6z","7z","0z"]]
+    ["set_tile_alias_all", ["17z"], ["5z","6z","7z","0z"]],
+    ["set_tile_alias_all", ["10z"], ["5z","6z","7z","0z"]]
   ]]
 ] + .
 |
-.after_win.actions |= [
-  ["add_counter", "galaxy_shuugi", "count_matches", ["assigned_hand"], [[[[{"tile": "any", "attrs": ["_original"]}], 1]]]]
-] + .
-|
+  # this bit is commented out because galaxy shuugi currently isn't working
+# .before_scoring.actions |= [
+#   ["set_counter", "galaxy_shuugi", "count_matches", ["hand", "calls", "winning_tile"], [[[[{"tile": "any", "attrs": ["original"]}], 1]]]]
+# ] + .
+# |
 .win_timer = 20
 
 # there is a rule that you gain shuugi equal to the number of galaxy tiles used as their own value,

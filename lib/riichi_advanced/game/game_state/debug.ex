@@ -149,6 +149,12 @@ defmodule RiichiAdvanced.GameState.Debug do
     #           :west  => Enum.slice(wall, 26..38),
     #           :north => Enum.slice(wall, 39..51)}
 
+    # # galaxy hand with six galaxy jokers
+    # hands = %{:east  => Utils.sort_tiles([:"3m", :"14m", :"15m", :"2p", :"12p", :"4p", :"4p", :"14p", :"5p", :"6p", :"17p", :"3s", :"13s"]),
+    #           :south => Enum.slice(wall, 13..25),
+    #           :west  => Enum.slice(wall, 26..38),
+    #           :north => Enum.slice(wall, 39..51)}
+
     # # no-yaku hand
     # hands = %{:east  => Utils.sort_tiles([:"1m", :"2m", :"3m", :"4p", :"4p", :"4p", :"5p", :"6p", :"7p", :"3s", :"4s", :"2z", :"2z"]),
     #           :south => Enum.slice(wall, 13..25),

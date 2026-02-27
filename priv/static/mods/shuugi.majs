@@ -1,5 +1,9 @@
 on after_initialization do
   add_rule("Rules", "Shuugi", "Part of the player's starting score is composed of shuugi chips worth %{worth} each, which are gained and lost separately from points.", %{worth: !worth})
+  # set shuugi to 0 so that everyone sees the counter
+  as everyone do
+    shuugi = 0
+  end
 end
 
 on after_win do
@@ -56,13 +60,6 @@ on after_win do
       shuugi -= shuugi_payment
     end
     shuugi += shuugi_payment
-  end
-end
-
-on after_start do
-  # set shuugi to 0 so that everyone sees the counter
-  as everyone do
-    shuugi = 0
   end
 end
 
