@@ -53,6 +53,15 @@ any(.wall[]; . == "1t") as $star
   ]), 14] ]
 ]
 |
+.galaxy_joker_definition += [
+  [ "nojoker", [add_star_suit($star; [
+    "11m", "12m", "13m", "14m", "15m", "16m", "17m", "18m", "19m", "110m",
+    "11p", "12p", "13p", "14p", "15p", "16p", "17p", "18p", "19p", "110p",
+    "11s", "12s", "13s", "14s", "15s", "16s", "17s", "18s", "19s", "110s",
+    "11z", "12z", "13z", "14z", "15z", "16z", "17z"
+  ]), 1] ]
+]
+|
 .any_joker_definition += [
   [ "nojoker", [add_star_suit($star; [
     "11m", "12m", "13m", "14m", "15m", "16m", "17m", "18m", "19m", "110m",
@@ -215,11 +224,12 @@ if (.buttons | has("ankan")) then
 else . end
 |
 .before_win.actions |= [
-  ["add_counter", "galaxy_jokers", "count_matches", ["hand", "calls", "winning_tile"], ["any_joker"]],
+  ["add_counter", "galaxy_jokers", "count_matches", ["hand", "calls", "winning_tile"], ["galaxy_joker"]],
   ["set_counter", "non_galaxy_jokers", "count_matches", ["hand", "calls", "winning_tile"], [[[["any"], 1]]]],
   ["subtract_counter", "non_galaxy_jokers", "galaxy_jokers"],
-    # optimisation, while galaxy shuugi isn't actually working. remove once we get it working.
+    # special treatment for Milky Way hands. note that it's possible that a Milky Way hand also satisfies some other yakuman, though. so this code is actually inaccurate.
   ["when", [{"name": "counter_at_most", "opts": ["non_galaxy_jokers", 0]}], [
+    ["set_counter", "fu", 30], # Milky Way defaults to 30 fu. unclear if this allows fu calculation afterwards though
     # reset jokers to not have _original (optimization)
     ["clear_tile_aliases"],
     ["set_tile_alias_all", ["11m"], add_star_suit($star; ["1m","1p","1s"])],
