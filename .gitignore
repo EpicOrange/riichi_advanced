@@ -35,9 +35,9 @@ riichi_advanced-*.tar
 npm-debug.log
 /assets/node_modules/
 
+# NOTE: Logs (in /priv/static/logs) and error logs (in /log) are handled with their own .gitignore files in those folders.
+
 # my stuff
 
 /priv/cert
 *.sh
-/priv/static/logs
-/log
