@@ -10,6 +10,7 @@ set max_rounds, 6
 apply subtract, "default_mods", ["suufon_renda", "suucha_riichi"]
 
 define_mod "sanma_no_tsumo_loss", name: "No Tsumo Loss", category: "Rules", desc: "When you tsumo, you get the same total points as if it was a ron payment. (Nondealer tsumo mangan splits north's payment, giving you 5000+3000 instead of 4000+2000.)"
+define_mod "sanma_chii", order: 1, name: "Chii (in Sanma)", category: "Rules", desc: "Allow chii during sanma."
 
 # remove manzu from wall
 apply subtract, "wall", [
