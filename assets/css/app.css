@@ -3710,7 +3710,7 @@ div.menu-buttons > button.language-dropdown-container form.language-dropdown > s
   border: none;
   color: transparent;
   width: 100%;
-  height: 150%; /* so you can click the drop shadow part */
+  height: 100%;
   cursor: pointer;
 }
 div.menu-buttons > button.language-dropdown-container form.language-dropdown {
@@ -3723,8 +3723,11 @@ div.menu-buttons > button.language-dropdown-container form.language-dropdown {
   background: none;
   border: none;
   color: transparent;
-  height: 150%; /* so you can click the drop shadow part */
+  height: 120%; /* so you can click the drop shadow part */
   cursor: pointer;
+}
+div.menu-buttons > button.language-dropdown-container form.language-dropdown select#language-dropdown option {
+  color: black;
 }
 div.menu-buttons > button.language-dropdown-container form.language-dropdown + div {
   pointer-events: none;
