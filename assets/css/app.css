@@ -914,6 +914,7 @@ div.tile {
   --border-width: calc(0 * var(--tile-size));
   --border-color: transparent;
   --num-tiles: 214;
+  position: relative;
   width: var(--tile-width);
   height: var(--tile-height);
   background-image: 
