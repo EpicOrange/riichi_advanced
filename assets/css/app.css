@@ -945,7 +945,7 @@ div.tile.flat {
   0% { transform: translate(-100%, -100%) rotate(135deg); }
   100% { transform: translate(50%, 50%) rotate(135deg); }
 }
-div.tile.dora:not(.\31 x):not(.selected) { overflow: hidden; }
+div.tile.dora:not(.\31 x):not(.selected) { overflow: hidden; position: relative; }
 div.tile.dora:not(.\31 x):not(.selected)::before {
   content: "";
   position: absolute;
