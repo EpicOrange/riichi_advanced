@@ -2,6 +2,8 @@
 |
 .after_start.actions += [["set_tile_alias_all", ["22j"], ["2m", "4m", "6m", "8m", "2p", "4p", "6p", "8p", "2s", "4s", "6s", "8s"]]]
 |
+.custom_style.tile_indices += {"22j": "Even"}
+|
 if any(.wall[]; . == "2t") then
   .after_start.actions += [["set_tile_alias_all", ["22j"], ["2t", "4t", "6t", "8t"]]]
 end

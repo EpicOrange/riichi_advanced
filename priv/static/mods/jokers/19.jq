@@ -2,6 +2,8 @@
 |
 .after_start.actions += [["set_tile_alias_all", ["19j"], ["1m", "9m", "1p", "9p", "1s", "9s"]]]
 |
+.custom_style.tile_indices += {"19j": "19"}
+|
 # TODO support ten mod
 .dora_indicators["19j"] += ["2m", "1m", "2p", "1p", "2s", "1s"]
 |

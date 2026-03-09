@@ -36,3 +36,23 @@ if any(.wall[]; . == "10t") then
     ["set_tile_alias_all", ["2j"], ["10t"]]
   ]
 end
+|
+# blue dragon mod
+if (any(.wall[]; . == "0z") and any(.wall[]; . == "5z")) then
+  .after_start.actions += [
+    ["set_tile_alias_all", ["3j"], ["1z","2z","3z","4z","0z","5z","6z","7z"]],
+    ["set_tile_alias_all", ["4j"], ["0z","5z","6z","7z"]]
+  ]
+end
+|
+.custom_style.tile_indices += {
+  "0j": "Any",
+  "2j": "Number",
+  "3j": "Honour",
+  "4j": "Dragon",
+  "5j": "Wind",
+  "6j": "Pinzu",
+  "7j": "Souzu",
+  "8j": "Manzu"
+}
+

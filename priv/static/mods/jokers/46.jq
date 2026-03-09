@@ -2,6 +2,8 @@
 |
 .after_start.actions += [["set_tile_alias_all", ["46j"], ["4m", "6m", "4p", "6p", "4s", "6s"]]]
 |
+.custom_style.tile_indices += {"46j": "46"}
+|
 .dora_indicators["46j"] += ["5m", "7m", "5p", "7p", "5s", "7s"]
 |
 if any(.wall[]; . == "4t") then

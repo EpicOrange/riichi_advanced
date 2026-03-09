@@ -2,6 +2,8 @@
 |
 .after_start.actions += [["set_tile_alias_all", ["17j"], ["1s","2s","3s","4s","5s","6s","7s","8s","9s"]]]
 |
+.custom_style.tile_indices += {"17j": "Souzu"}
+|
 if any(.wall[]; . == "10s") then
   .after_start.actions += [["set_tile_alias_all", ["17j"], ["10s"]]]
 end
