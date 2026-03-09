@@ -907,7 +907,7 @@ div.tile {
   --tile-height: calc(var(--tile-scale-factor) * 1 * var(--tile-size));
   --tile-color: transparent;
   --number-color: black;
-  --aka-color: #c14938;
+  --aka-color: #d71e1e;
   --galaxy-color: #67b5ef;
   --ao-color: #2f5298;
   --kin-color: #c9a146;
