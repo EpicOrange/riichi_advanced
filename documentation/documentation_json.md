@@ -670,7 +670,7 @@ Saki:
 Other:
 
 - `custom_style`: an object containing any or all of the following keys:
-  + `tile_indices`: Small number or letter displayed for a given tile when tile indices are enabled (123 button at bottom).
+  + `tile_indices`: Small number or letter displayed for a given tile when tile indices are enabled (123 button at bottom). Slashes (`/`) and some other special characters are not allowed in tile indices. (TODO: document which ones)
   + `tile_back_color`: Color of tile back.
   + `tile_side_back_color`: Color of tile back on the side of tiles.
   + `tablecloth_color`: Color of the tablecloth.
