@@ -18,6 +18,10 @@
 |
 .wall += ["0z", "0z", "0z", "0z"]
 |
+.custom_style.tile_indices += {
+  "0z": "B"
+  }
+|
 .set_definitions.baiban = ["0z", "0z", "0z"]
 |
 .set_definitions.baiban_pair = ["0z", "0z"]

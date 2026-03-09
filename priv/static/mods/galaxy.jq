@@ -1,9 +1,7 @@
 def make_galaxy:
   if type == "array" then
     .[0] |= make_galaxy
-  elif . == "0z" then
-    "15z"
-  elif IN("1m","2m","3m","4m","5m","6m","7m","8m","9m","10m","1p","2p","3p","4p","5p","6p","7p","8p","9p","10p","1s","2s","3s","4s","5s","6s","7s","8s","9s","10s","1t","2t","3t","4t","5t","6t","7t","8t","9t","10t","1z","2z","3z","4z","5z","6z","7z") then
+  elif IN("1m","2m","3m","4m","5m","6m","7m","8m","9m","10m","1p","2p","3p","4p","5p","6p","7p","8p","9p","10p","1s","2s","3s","4s","5s","6s","7s","8s","9s","10s","1t","2t","3t","4t","5t","6t","7t","8t","9t","10t","0z","1z","2z","3z","4z","5z","6z","7z") then
     "1" + .
   else . end;
 
@@ -23,7 +21,23 @@ def add_star_suit($enabled; $arr):
 |
 any(.wall[]; . == "1t") as $star
 |
+any(.wall[]; . == "0z") as $blue_dragon
+|
 .wall |= (to_entries | map(if (.key % 4 == 3) then .value |= make_galaxy else . end) | map(.value))
+|
+.custom_style.tile_indices += {
+  "10z": "B",
+  "11t": "1",
+  "12t": "2",
+  "13t": "3",
+  "14t": "4",
+  "15t": "5",
+  "16t": "6",
+  "17t": "7",
+  "18t": "8",
+  "19t": "9",
+  "110t": "10"
+  }
 |
 # add tenpai defs + win def + yakuman def for Milky Way yakuman
 .tenpai_definition += [
@@ -112,8 +126,7 @@ any(.wall[]; . == "1t") as $star
   ["set_tile_alias_all", ["14z"], ["1z","2z","3z",["4z","_original"]]],
   ["set_tile_alias_all", ["15z"], [["5z","_original"],"6z","7z","0z"]],
   ["set_tile_alias_all", ["16z"], ["5z",["6z","_original"],"7z","0z"]],
-  ["set_tile_alias_all", ["17z"], ["5z","6z",["7z","_original"],"0z"]],
-  ["set_tile_alias_all", ["10z"], ["5z","6z","7z",["0z","_original"]]]
+  ["set_tile_alias_all", ["17z"], ["5z","6z",["7z","_original"],"0z"]]
 ]
 |
 if $star then
@@ -127,6 +140,12 @@ if $star then
     ["set_tile_alias_all", ["17t"], ["7m","7s","7p","7t"]],
     ["set_tile_alias_all", ["18t"], ["8m","8s","8p","8t"]],
     ["set_tile_alias_all", ["19t"], ["9m","9s","9p","9t"]]
+  ]
+else . end
+|
+if $blue_dragon then
+  .after_start.actions += [
+    ["set_tile_alias_all", ["10z"], ["5z","6z","7z",["0z","_original"]]]
   ]
 else . end
 |
@@ -166,8 +185,7 @@ if .dora_indicators then
     "14z": ["1z", "2z", "3z", "4z"],
     "15z": ["5z", "6z", "7z", "0z"],
     "16z": ["5z", "6z", "7z", "0z"],
-    "17z": ["5z", "6z", "7z", "0z"],
-    "10z": ["5z", "6z", "7z", "0z"]
+    "17z": ["5z", "6z", "7z", "0z"]
   }
   |
   if $star then
@@ -181,6 +199,12 @@ if .dora_indicators then
       "17t": ["8m", "8p", "8s", "8t"],
       "18t": ["9m", "9p", "9s", "9t"],
       "19t": ["1m", "1p", "1s", "1t"]
+    }
+  else . end
+  |
+  if $blue_dragon then
+    .dora_indicators += {
+    "10z": ["5z", "6z", "7z", "0z"]
     }
   else . end
 else . end
@@ -265,8 +289,7 @@ else . end
     ["set_tile_alias_all", ["14z"], ["1z","2z","3z","4z"]],
     ["set_tile_alias_all", ["15z"], ["5z","6z","7z","0z"]],
     ["set_tile_alias_all", ["16z"], ["5z","6z","7z","0z"]],
-    ["set_tile_alias_all", ["17z"], ["5z","6z","7z","0z"]],
-    ["set_tile_alias_all", ["10z"], ["5z","6z","7z","0z"]]
+    ["set_tile_alias_all", ["17z"], ["5z","6z","7z","0z"]]
   ]]
 ] + .
 |
