@@ -1,5 +1,5 @@
 {
-  "default_mods": ["malaysian_five_point_minimum", "show_waits"],
+  "default_mods": ["malaysian_five_point_minimum", "malaysian_replaceable_fly_joker", "show_waits"],
   "available_mods": [
     {"id": "malaysian_five_point_minimum", "name": "Five Fan Minimum", "desc": "Only allow wins worth 5+ fan."},
     {"id": "malaysian_replaceable_fly_joker", "name": "Replaceable Fly Joker", "desc": "Allow swapping out fly jokers from your own pungs using the same tile."},
@@ -74,7 +74,7 @@
   "yaku": [
     {
       "display_name": "Face",
-      "value": 1,
+      "value": ["count_matches", ["flowers"], [["nojoker", [["1y"], 1] ]]],
       "when": [{"name": "match", "opts": [["flowers"], [[ "nojoker", [["1y"], 1] ]]]}]
     },
     {
@@ -84,7 +84,7 @@
     },
     {
       "display_name": "Animal",
-      "value": 1,
+      "value": ["count_matches", ["flowers"], [[ "nojoker", [["1a","2a","3a","4a"], 1] ]]],
       "when": [{"name": "match", "opts": [["flowers"], [[ "nojoker", [["1a","2a","3a","4a"], 1] ]]]}]
     },
     {
@@ -306,7 +306,8 @@
     "Big Three Dragons": ["Small Three Dragons", "White Dragon", "Green Dragon", "Red Dragon"],
     "Small Three Dragons": ["White Dragon", "Green Dragon", "Red Dragon"],
     "Four Concealed Triplets": ["All Triplets"],
-    "All Honors": ["All Triplets", "Half Flush"]
+    "All Honors": ["All Triplets", "Half Flush"],
+    "All Sequences with Dot Eye": ["Seven Pairs"]
   },
   "score_calculation": {
     "scoring_method": "multiplier",
@@ -449,7 +450,16 @@
       "display_name": "Chow",
       "call": [[-2, -1], [-1, 1], [1, 2]],
       "call_conditions": [{"name": "not_call_contains", "opts": [["2y"], 2]}],
-      "show_when": [{"name": "status_missing", "opts": ["match_start"]}, "not_our_turn", "not_no_tiles_remaining", "kamicha_discarded", "call_available"],
+      "show_when": [
+        {"name": "status_missing",
+        "opts": ["match_start"]},
+        "not_our_turn",
+        "not_no_tiles_remaining",
+          // TODO: change this line so that it works if you're sitting in East's spot, where kamicha doesn't exist.
+          // fingers crossed that this works
+        [["kamicha_exists", "kamicha_discarded"], ["not_kamicha_exists", "toimen_discarded"]],
+        "call_available"
+      ],
       "actions": [["big_text", "Chow"], ["call"], ["change_turn", "self"]]
     },
     "pon": {
