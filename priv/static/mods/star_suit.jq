@@ -48,8 +48,3 @@ if .dora_indicators then
     "8t": ["9t"]
   }
 else . end
-|
-# ten support
-if any(.wall[]; . == "10m") then
-  .wall += ["10t", "10t", "10t", "10t"]
-else . end

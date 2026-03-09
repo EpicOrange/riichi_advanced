@@ -5,6 +5,7 @@ def nine_to_ten:
     if . == "9m" then "10m"
     elif . == "9p" then "10p"
     elif . == "9s" then "10s"
+    elif . == "9t" then "10t"
     else . end
   else
     .
@@ -22,19 +23,40 @@ def nine_to_ten:
 |
 .wall |= . + map(select(. == "2s") | "9s")
 |
+.wall |= . + map(select(. == "2t") | "9t")
+|
+any(.wall[]; . == "1t") as $star
+|
 # add ten ordering
-.after_start.actions += [
-  # check for space mahjong to see if we need to connect 10 to 1
-  ["when", [{"name": "match", "opts": [["1m", "9m"], [[[[[0, 1]], 1]]]]}], [
-    ["set_tile_ordering_all", ["10m", "1m"]],
-    ["set_tile_ordering_all", ["10p", "1p"]],
-    ["set_tile_ordering_all", ["10s", "1s"]]
-  ]],
-  # after that we can replace 9 to connect to 10
-  ["set_tile_ordering_all", ["9m", "10m"]],
-  ["set_tile_ordering_all", ["9p", "10p"]],
-  ["set_tile_ordering_all", ["9s", "10s"]]
-]
+if $star then
+  .after_start.actions += [
+    # check for space mahjong to see if we need to connect 10 to 1
+    ["when", [{"name": "match", "opts": [["1m", "9m"], [[[[[0, 1]], 1]]]]}], [
+      ["set_tile_ordering_all", ["10m", "1m"]],
+      ["set_tile_ordering_all", ["10p", "1p"]],
+      ["set_tile_ordering_all", ["10s", "1s"]],
+      ["set_tile_ordering_all", ["10t", "1t"]]
+    ]],
+    # after that we can replace 9 to connect to 10
+    ["set_tile_ordering_all", ["9m", "10m"]],
+    ["set_tile_ordering_all", ["9p", "10p"]],
+    ["set_tile_ordering_all", ["9s", "10s"]],
+    ["set_tile_ordering_all", ["9t", "10t"]]
+  ]
+else 
+  .after_start.actions += [
+    # check for space mahjong to see if we need to connect 10 to 1
+    ["when", [{"name": "match", "opts": [["1m", "9m"], [[[[[0, 1]], 1]]]]}], [
+      ["set_tile_ordering_all", ["10m", "1m"]],
+      ["set_tile_ordering_all", ["10p", "1p"]],
+      ["set_tile_ordering_all", ["10s", "1s"]]
+    ]],
+    # after that we can replace 9 to connect to 10
+    ["set_tile_ordering_all", ["9m", "10m"]],
+    ["set_tile_ordering_all", ["9p", "10p"]],
+    ["set_tile_ordering_all", ["9s", "10s"]]
+  ]
+end
 |
 # expand dora indicator map, if it exists
 if .dora_indicators then
@@ -42,9 +64,11 @@ if .dora_indicators then
     "9m": ["10m"],
     "9p": ["10p"],
     "9s": ["10s"],
+    "9t": ["10t"],
     "10m": ["1m"],
     "10p": ["1p"],
-    "10s": ["1s"]
+    "10s": ["1s"],
+    "10t": ["1t"]
   }
   |
   .dora_indicators |= if .["1m"] == ["9m"] then
@@ -71,11 +95,11 @@ else . end
 # change tanyao, honroutou, honitsu, chinitsu
 .yaku |= map(
   if .display_name == "Tanyao" then
-    .when[0].opts += ["9m","9p","9s"]
+    .when[0].opts += ["9m","9p","9s","9t"]
   elif .display_name == "Honroutou" then
     .when[0].opts |= nine_to_ten
   elif .display_name == "Honitsu" or .display_name == "Chinitsu" or .display_name == "Half Flush" or .display_name == "Full Flush" then
-    .when[-1][0].opts += ["10m"] | .when[-1][1].opts += ["10p"] | .when[-1][2].opts += ["10s"]
+    .when[-1][0].opts += ["10m"] | .when[-1][1].opts += ["10p"] | .when[-1][2].opts += ["10s"] | .when[-1][2].opts += ["10t"]
   else . end
 )
 |
@@ -107,3 +131,8 @@ end
 if has("souzu_definition") then
   .souzu_definition = [[[["1s","2s","3s","4s","5s","6s","7s","8s","9s","10s"], 1]]]
 end
+|
+if has("star_definition") then
+  .star_definition = [[[["1t","2t","3t","4t","5t","6t","7t","8t","9t","10t"], 1]]]
+end
+
