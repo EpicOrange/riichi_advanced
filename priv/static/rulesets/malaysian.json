@@ -455,8 +455,7 @@
         "opts": ["match_start"]},
         "not_our_turn",
         "not_no_tiles_remaining",
-          // TODO: change this line so that it works if you're sitting in East's spot, where kamicha doesn't exist.
-          // fingers crossed that this works
+          // note: if you're in Initial East, there is no kamicha. in this case, you chow from toimen.
         [["kamicha_exists", "kamicha_discarded"], ["not_kamicha_exists", "toimen_discarded"]],
         "call_available"
       ],
