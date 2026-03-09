@@ -30,3 +30,8 @@ apply set_merge, "dora_indicators", %{
   "0s": ["6s"],
   "0t": ["6t"]
 }
+
+# add tile indices for stars, tens, and so on
+apply set_merge, "custom_style.tile_indices", %{
+    "0t": "5"
+}
