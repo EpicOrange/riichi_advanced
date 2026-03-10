@@ -18,10 +18,12 @@ end
 
 # count aka
 on before_win do
-  # use set_counter to be compatible with other aka mods
-  set_counter("aka", "count_matches", ["hand", "calls", "winning_tile"], ~m"nojoker, (07m 07p 07s 07t):1")
+  # use add_counter to be compatible with other aka mods
+  add_counter("aka", "count_matches", ["hand", "calls", "winning_tile"], ~m"nojoker, (07m 07p 07s 07t):1")
 end
 
+# remove extra_yaku "Aka" if it already exists beforehand, so there should only ever be one copy of "Aka"
+remove_yaku extra_yaku, "Aka"
 define_yaku extra_yaku, "Aka", "aka", counter_at_least("aka", 1)
 
 apply set_merge, "dora_indicators", %{
