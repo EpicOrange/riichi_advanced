@@ -540,7 +540,7 @@ defmodule RiichiAdvanced.Compiler do
          {:ok, names} <- Validator.validate_json(names),
          {:ok, names} <- Enum.map(names, &Jason.encode/1) |> Utils.sequence() do
       {:ok, ~s"""
-      .[#{name}] |= map(select(.display_name | IN(#{Enum.join(names, ",")}) | not))
+      if has(#{name}) then .[#{name}] |= map(select(.display_name | IN(#{Enum.join(names, ",")}) | not)) else . end
       """}
     end
   end
@@ -560,7 +560,7 @@ defmodule RiichiAdvanced.Compiler do
          {:ok, condition} <- compile_condition_list(condition, line, column),
          {:ok, condition} <- Jason.encode(condition) do
       add_yaku = """
-        if .[#{name}] | any(.display_name == #{display_name}) then
+        if has(#{name}) and .[#{name}] | any(.display_name == #{display_name}) then
           .[#{name}] |= map(select(.display_name != #{display_name})) + [{\"display_name\": #{display_name}, \"value\": #{value}, \"when\": #{condition}}]
         else . end
       """
