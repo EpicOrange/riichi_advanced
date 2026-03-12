@@ -560,7 +560,7 @@ defmodule RiichiAdvanced.Compiler do
          {:ok, condition} <- compile_condition_list(condition, line, column),
          {:ok, condition} <- Jason.encode(condition) do
       add_yaku = """
-        if has(#{name}) and .[#{name}] | any(.display_name == #{display_name}) then
+        if has(#{name}) and (.[#{name}] | any(.display_name == #{display_name})) then
           .[#{name}] |= map(select(.display_name != #{display_name})) + [{\"display_name\": #{display_name}, \"value\": #{value}, \"when\": #{condition}}]
         else . end
       """
