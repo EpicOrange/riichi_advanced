@@ -93,15 +93,15 @@ any(.wall[]; . == "0z") as $blue_dragon
 |
 # add joker rules
 .after_start.actions += [
-  ["set_tile_alias_all", ["11m"], add_star_suit($star; [["1m","_original"],"1p","1s"])],
-  ["set_tile_alias_all", ["12m"], add_star_suit($star; [["2m","_original"],"2p","2s"])],
-  ["set_tile_alias_all", ["13m"], add_star_suit($star; [["3m","_original"],"3p","3s"])],
-  ["set_tile_alias_all", ["14m"], add_star_suit($star; [["4m","_original"],"4p","4s"])],
-  ["set_tile_alias_all", ["15m"], add_star_suit($star; [["5m","_original"],"5p","5s"])],
-  ["set_tile_alias_all", ["16m"], add_star_suit($star; [["6m","_original"],"6p","6s"])],
-  ["set_tile_alias_all", ["17m"], add_star_suit($star; [["7m","_original"],"7p","7s"])],
-  ["set_tile_alias_all", ["18m"], add_star_suit($star; [["8m","_original"],"8p","8s"])],
-  ["set_tile_alias_all", ["19m"], add_star_suit($star; [["9m","_original"],"9p","9s"])],
+  ["set_tile_alias_all", ["11m"], add_star_suit($star; [["1m","_original"],"1p","1s","1t"])],
+  ["set_tile_alias_all", ["12m"], add_star_suit($star; [["2m","_original"],"2p","2s","2t"])],
+  ["set_tile_alias_all", ["13m"], add_star_suit($star; [["3m","_original"],"3p","3s","3t"])],
+  ["set_tile_alias_all", ["14m"], add_star_suit($star; [["4m","_original"],"4p","4s","4t"])],
+  ["set_tile_alias_all", ["15m"], add_star_suit($star; [["5m","_original"],"5p","5s","5t"])],
+  ["set_tile_alias_all", ["16m"], add_star_suit($star; [["6m","_original"],"6p","6s","6t"])],
+  ["set_tile_alias_all", ["17m"], add_star_suit($star; [["7m","_original"],"7p","7s","7t"])],
+  ["set_tile_alias_all", ["18m"], add_star_suit($star; [["8m","_original"],"8p","8s","8t"])],
+  ["set_tile_alias_all", ["19m"], add_star_suit($star; [["9m","_original"],"9p","9s","9t"])],
   ["set_tile_alias_all", ["11p"], add_star_suit($star; ["1m",["1p","_original"],"1s"])],
   ["set_tile_alias_all", ["12p"], add_star_suit($star; ["2m",["2p","_original"],"2s"])],
   ["set_tile_alias_all", ["13p"], add_star_suit($star; ["3m",["3p","_original"],"3s"])],
@@ -131,15 +131,15 @@ any(.wall[]; . == "0z") as $blue_dragon
 |
 if $star then
   .after_start.actions += [
-    ["set_tile_alias_all", ["11t"], ["1m","1s","1p","1t"]],
-    ["set_tile_alias_all", ["12t"], ["2m","2s","2p","2t"]],
-    ["set_tile_alias_all", ["13t"], ["3m","3s","3p","3t"]],
-    ["set_tile_alias_all", ["14t"], ["4m","4s","4p","4t"]],
-    ["set_tile_alias_all", ["15t"], ["5m","5s","5p","5t"]],
-    ["set_tile_alias_all", ["16t"], ["6m","6s","6p","6t"]],
-    ["set_tile_alias_all", ["17t"], ["7m","7s","7p","7t"]],
-    ["set_tile_alias_all", ["18t"], ["8m","8s","8p","8t"]],
-    ["set_tile_alias_all", ["19t"], ["9m","9s","9p","9t"]]
+    ["set_tile_alias_all", ["11t"], ["1m","1s","1p",["1t","_original"]]],
+    ["set_tile_alias_all", ["12t"], ["2m","2s","2p",["2t","_original"]]],
+    ["set_tile_alias_all", ["13t"], ["3m","3s","3p",["3t","_original"]]],
+    ["set_tile_alias_all", ["14t"], ["4m","4s","4p",["4t","_original"]]],
+    ["set_tile_alias_all", ["15t"], ["5m","5s","5p",["5t","_original"]]],
+    ["set_tile_alias_all", ["16t"], ["6m","6s","6p",["6t","_original"]]],
+    ["set_tile_alias_all", ["17t"], ["7m","7s","7p",["7t","_original"]]],
+    ["set_tile_alias_all", ["18t"], ["8m","8s","8p",["8t","_original"]]],
+    ["set_tile_alias_all", ["19t"], ["9m","9s","9p",["9t","_original"]]]
   ]
 else . end
 |
@@ -302,4 +302,4 @@ else . end
 
 # there is a rule that you gain shuugi equal to the number of galaxy tiles used as their own value,
 # but our current joker solver does not try to maximize galaxy tiles used as their own value
-# so this is not possible to implement
+# so this is not currently possible to implement
