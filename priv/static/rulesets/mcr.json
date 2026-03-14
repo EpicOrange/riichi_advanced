@@ -428,7 +428,7 @@
     },
     { "display_name": "Fully Concealed Hand", "value": 4, "when": ["won_by_draw", {"name": "has_no_call_named", "opts": ["chii", "pon", "daiminkan", "kakan"]}] },
     { "display_name": "Two Melded Kongs", "value": 4, "when": [{"name": "match", "opts": [["calls"], [[[["daiminkan", "kakan"], 2]]]]}] },
-      // TODO: Check whether this is correctly-awarded. The exact specification is "Winning on a tile that is the last of its kind.", and allows ryanmen 58. This might even be awarded if the other wait is non-hell...
+      // TODO: This is not correct. The exact specification is "Winning on a tile that is the last of its kind.", and allows ryanmen 58. This is awarded even if the other wait is non-hell. So this yaku actually needs to be rewritten in the future.
     { "display_name": "Last Tile", "value": 4, "when": [
       {"name": "has_hell_wait", "opts": ["win"]},
         // should not be awarded if there are copies of the winning tile in concealed hand (calls OK)
