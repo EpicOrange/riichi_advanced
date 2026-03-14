@@ -355,7 +355,7 @@
     { "display_name": "Pure Shifted Pungs", "value": 24, "when": [{"name": "match", "opts": [["hand", "calls", "winning_tile"], ["pure_shifted_pungs"]]}] },
     { "display_name": "Upper Tiles", "value": 24, "when": [{"name": "winning_hand_consists_of", "opts": ["7m","8m","9m","7p","8p","9p","7s","8s","9s"]}] },
     { "display_name": "Middle Tiles", "value": 24, "when": [{"name": "winning_hand_consists_of", "opts": ["4m","5m","6m","4p","5p","6p","4s","5s","6s"]}] },
-    { "display_name": "Lower Tiles", "value": 5, "when": [{"name": "winning_hand_consists_of", "opts": ["1m","2m","3m","1p","2p","3p","1s","2s","3s"]}] },
+    { "display_name": "Lower Tiles", "value": 24, "when": [{"name": "winning_hand_consists_of", "opts": ["1m","2m","3m","1p","2p","3p","1s","2s","3s"]}] },
     // 16
     { "display_name": "Pure Straight", "value": 16, "when": [{"name": "match", "opts": [["hand", "calls", "winning_tile"], ["pure_straight"]]}] },
     { "display_name": "Three-Suited Terminal Chows", "value": 16, "when": [{"name": "match", "opts": [["hand", "calls", "winning_tile"], ["three_suited_terminal_chows"]]}] },
@@ -377,15 +377,15 @@
     { "display_name": "Lower Four", "value": 12, "when": [{"name": "winning_hand_consists_of", "opts": ["1m","2m","3m","4m","1p","2p","3p","4p","1s","2s","3s","4s"]}] },
     { "display_name": "Big Three Winds", "value": 12, "when": [{"name": "match", "opts": [["hand", "calls", "winning_tile"], ["big_three_winds"]]}] },
     // 8
-    { "display_name": "Mixed Straight", "value": 5, "when": [{"name": "match", "opts": [["hand", "calls", "winning_tile"], ["mixed_straight"]]}] },
-    { "display_name": "Reversible Tiles", "value": 24, "when": [{"name": "winning_hand_consists_of", "opts": ["1p","2p","3p","4p","5p","8p","9p","2s","4s","5s","6s","8s","9s","0z"]}] },
-    { "display_name": "Mixed Triple Chow", "value": 5, "when": [{"name": "match", "opts": [["hand", "calls", "winning_tile"], ["mixed_triple_chow"]]}] },
+    { "display_name": "Mixed Straight", "value": 8, "when": [{"name": "match", "opts": [["hand", "calls", "winning_tile"], ["mixed_straight"]]}] },
+    { "display_name": "Reversible Tiles", "value": 8, "when": [{"name": "winning_hand_consists_of", "opts": ["1p","2p","3p","4p","5p","8p","9p","2s","4s","5s","6s","8s","9s","0z"]}] },
+    { "display_name": "Mixed Triple Chow", "value": 8, "when": [{"name": "match", "opts": [["hand", "calls", "winning_tile"], ["mixed_triple_chow"]]}] },
     { "display_name": "Mixed Shifted Pungs", "value": 8, "when": [{"name": "match", "opts": [["hand", "calls", "winning_tile"], ["mixed_shifted_pungs"]]}] },
-    { "display_name": "Last Tile Draw", "value": 2, "when": ["won_by_draw", "no_tiles_remaining"] },
-    { "display_name": "Last Tile Claim", "value": 2, "when": ["won_by_discard", "no_tiles_remaining"] },
-    { "display_name": "Out with Replacement Tile", "value": 1, "when": [{"name": "not_status_missing", "opts": ["kan"]}] },
-    { "display_name": "Robbing The Kong", "value": 5, "when": ["won_by_call"] },
-    { "display_name": "Two Concealed Kongs", "value": 2, "when": [{"name": "match", "opts": [["calls"], [[[["ankan"], 2]]]]}] },
+    { "display_name": "Last Tile Draw", "value": 8, "when": ["won_by_draw", "no_tiles_remaining"] },
+    { "display_name": "Last Tile Claim", "value": 8, "when": ["won_by_discard", "no_tiles_remaining"] },
+    { "display_name": "Out with Replacement Tile", "value": 8, "when": [{"name": "not_status_missing", "opts": ["kan"]}] },
+    { "display_name": "Robbing The Kong", "value": 8, "when": ["won_by_call"] },
+    { "display_name": "Two Concealed Kongs", "value": 8, "when": [{"name": "match", "opts": [["calls"], [[[["ankan"], 2]]]]}] },
     // 6
     { "display_name": "All Pungs", "value": 6, "when": [{"name": "match", "opts": [["hand", "calls", "winning_tile"], [[[["koutsu"], 4], [["pair"], 1]]]]}] },
     {
@@ -428,7 +428,12 @@
     },
     { "display_name": "Fully Concealed Hand", "value": 4, "when": ["won_by_draw", {"name": "has_no_call_named", "opts": ["chii", "pon", "daiminkan", "kakan"]}] },
     { "display_name": "Two Melded Kongs", "value": 4, "when": [{"name": "match", "opts": [["calls"], [[[["daiminkan", "kakan"], 2]]]]}] },
-    { "display_name": "Last Tile", "value": 4, "when": [{"name": "has_hell_wait", "opts": ["win"]}] },
+      // TODO: Check whether this is correctly-awarded. The exact specification is "Winning on a tile that is the last of its kind.", and allows ryanmen 58. This might even be awarded if the other wait is non-hell...
+    { "display_name": "Last Tile", "value": 4, "when": [
+      {"name": "has_hell_wait", "opts": ["win"]},
+        // should not be awarded if there are copies of the winning tile in concealed hand (calls OK)
+      {"name": "not_match", "opts": [["hand_any", "winning_tile"], [[[[[0, 0]], 1]]]]}
+      ] },
     // 2
     { "display_name": "White Dragon", "value": 2, "when": [{"name": "match", "opts": [["hand", "calls", "winning_tile"], [[[["haku"], 1]]]]}] },
     { "display_name": "Green Dragon", "value": 2, "when": [{"name": "match", "opts": [["hand", "calls", "winning_tile"], [[[["hatsu"], 1]]]]}] },
@@ -478,9 +483,10 @@
     { "display_name": "Two Terminal Chows", "value": 1, "when": [{"name": "match", "opts": [["hand", "calls", "winning_tile"], [[ "exhaustive", [["terminal_sequences"], 2], [["pair"], 1] ]]]}] },
     // TODO pung of terminals might take 111s out of 11123s even though the real hand used 11s as a pair
     { "display_name": "Pung of Terminals", "value": 1, "when": [{"name": "match", "opts": [["hand", "calls", "winning_tile"], [[[["junchan_1","junchan_2","junchan_3","junchan_10","junchan_11","junchan_12"], 1]]]]}] },
-    { "display_name": "Pung of Terminals", "value": 1, "when": [{"name": "match", "opts": [["hand", "calls", "winning_tile"], [[[["junchan_1","junchan_2","junchan_3","junchan_10","junchan_11","junchan_12"], 2]]]]}] },
-    { "display_name": "Pung of Terminals", "value": 1, "when": [{"name": "match", "opts": [["hand", "calls", "winning_tile"], [[[["junchan_1","junchan_2","junchan_3","junchan_10","junchan_11","junchan_12"], 3]]]]}] },
-    { "display_name": "Pung of Terminals", "value": 1, "when": [{"name": "match", "opts": [["hand", "calls", "winning_tile"], [[[["junchan_1","junchan_2","junchan_3","junchan_10","junchan_11","junchan_12"], 4]]]]}] },
+      //this is to pluralise this yaku correctly; "Pungs of Terminals" overrides "Pung of Terminals"
+    { "display_name": "Pungs of Terminals", "value": 2, "when": [{"name": "match", "opts": [["hand", "calls", "winning_tile"], [[[["junchan_1","junchan_2","junchan_3","junchan_10","junchan_11","junchan_12"], 2]]]]}] },
+    { "display_name": "Pungs of Terminals", "value": 1, "when": [{"name": "match", "opts": [["hand", "calls", "winning_tile"], [[[["junchan_1","junchan_2","junchan_3","junchan_10","junchan_11","junchan_12"], 3]]]]}] },
+    { "display_name": "Pungs of Terminals", "value": 1, "when": [{"name": "match", "opts": [["hand", "calls", "winning_tile"], [[[["junchan_1","junchan_2","junchan_3","junchan_10","junchan_11","junchan_12"], 4]]]]}] },
     { "display_name": "Pung of Honors", "value": 1, "when": [{"name": "not_round_wind_is", "opts": ["east"]}, {"name": "not_seat_is", "opts": ["east"]}, {"name": "match", "opts": [["hand", "calls", "winning_tile"], [[[["ton"], 1]]]]}] },
     { "display_name": "Pung of Honors", "value": 1, "when": [{"name": "not_round_wind_is", "opts": ["south"]}, {"name": "not_seat_is", "opts": ["south"]}, {"name": "match", "opts": [["hand", "calls", "winning_tile"], [[[["nan"], 1]]]]}] },
     { "display_name": "Pung of Honors", "value": 1, "when": [{"name": "not_round_wind_is", "opts": ["west"]}, {"name": "not_seat_is", "opts": ["west"]}, {"name": "match", "opts": [["hand", "calls", "winning_tile"], [[[["shaa"], 1]]]]}] },
@@ -506,7 +512,12 @@
     // ad-hoc implementation of Exclusionary Rule; just subtract the value of the offending yaku
     { "display_name": "Exclusionary Rule", "value": -1, "when": [{"name": "has_existing_yaku", "opts": [["Mixed Double Chow", 2], ["Two Terminal Chows", 2]]}] },
     { "display_name": "Exclusionary Rule", "value": -1, "when": [{"name": "has_existing_yaku", "opts": ["Mixed Straight", "Mixed Double Chow", "Short Straight"]}] },
-    { "display_name": "Exclusionary Rule", "value": -1, "when": [{"name": "has_existing_yaku", "opts": ["Pure Straight", "Pure Double Chow", "Short Straight"]}] }
+    { "display_name": "Exclusionary Rule", "value": -1, "when": [{"name": "has_existing_yaku", "opts": ["Pure Straight", "Pure Double Chow", "Short Straight"]}] },
+    // ad-hoc implementation of pluralising "Pung of Honors" yaku
+    { "display_name": "Pungs of Honors", "value": 2, "when": [{"name": "has_existing_yaku", "opts": [["Pung of Honors", 2]]}] },
+    { "display_name": "Pungs of Honors", "value": 1, "when": [{"name": "has_existing_yaku", "opts": [["Pung of Honors", 3]]}] },
+    { "display_name": "Pungs of Honors", "value": 1, "when": [{"name": "has_existing_yaku", "opts": [["Pung of Honors", 4]]}] }
+    
   ],
   "extra_yaku": [
     { "display_name": "Flower Tiles", "value": "flower_count", "when": [{"name": "counter_at_least", "opts": ["flower_count", 1]}]}
@@ -518,15 +529,15 @@
     "Big Four Winds": ["Little Four Winds", "Half Flush", "Prevalent Wind", "Seat Wind"],
     "Big Three Dragons": ["Little Three Dragons"],
     "All Green": ["One Voided Suit"],
-    "Nine Gates": ["Full Flush", "Concealed Hand", "Pung of Terminals"],
+    "Nine Gates": ["Full Flush", "Concealed Hand", "Pungs of Terminals", "Pung of Terminals"],
     "Four Kongs": ["Three Kongs", "All Pungs", "Single Wait"],
     "Seven Shifted Pairs": ["Seven Pairs", "Full Flush"],
     "Thirteen Orphans": ["All Types", "All Terminals and Honors", "Concealed Hand", "Single Wait"],
     // 64
-    "All Terminals": ["All Terminals and Honors", "Pung of Terminals", "Pung of Honors", "Outside Hand", "No Honors", "All Pungs"],
-    "Little Four Winds": ["Big Three Winds", "All Pungs", "Pung of Terminals", "Pung of Honors"],
+    "All Terminals": ["All Terminals and Honors", "Pungs of Terminals", "Pung of Terminals", "Pungs of Honors", "Pung of Honors", "Outside Hand", "No Honors", "All Pungs"],
+    "Little Four Winds": ["Big Three Winds", "All Pungs", "Pungs of Terminals", "Pung of Terminals", "Pungs of Honors", "Pung of Honors"],
     "Little Three Dragons": ["Two Dragons Pungs", "White Dragon", "Green Dragon", "Red Dragon"],
-    "All Honors": ["All Terminals and Honors", "Half Flush", "Pung of Terminals", "Pung of Honors", "One Voided Suit", "All Pungs"],
+    "All Honors": ["All Terminals and Honors", "Half Flush", "Pungs of Terminals", "Pung of Terminals", "Pungs of Honors", "Pung of Honors", "One Voided Suit", "All Pungs"],
     "Four Concealed Pungs": ["Three Concealed Pungs", "Two Concealed Pungs", "All Pungs", "Concealed Hand"],
     "Pure Terminal Chows": ["All Chows", "Pure Double Chow", "Two Terminal Chows", "Full Flush", "One Voided Suit", "No Honors"],
     // 48
@@ -536,9 +547,9 @@
     "Four Pure Shifted Chows": ["Pure Shifted Chows", "Short Straight", "Two Terminal Chows"],
       // Apparently Three Kongs can combine with Concealed Kong and Two Concealed Kongs.
     "Three Kongs": ["Two Kongs", "Two Melded Kongs", "Melded Kong"],
-    "All Terminals and Honors": ["Pung of Terminals", "Pung of Honors", "Outside Hand", "All Pungs"],
+    "All Terminals and Honors": ["Pungs of Terminals", "Pung of Terminals", "Pungs of Honors", "Pung of Honors", "Outside Hand", "All Pungs"],
     // 24
-    "Seven Pairs": ["Concealed Hand", "Single Wait"],
+    "Seven Pairs": ["Concealed Hand", "Single Wait", "All Even Pungs"],
     "Greater Honors and Knitted Tiles": ["Lesser Honors and Knitted Tiles"],
     "All Even Pungs": ["All Pungs", "No Honors", "All Simples"],
     "Full Flush": ["Half Flush", "No Honors"],
@@ -560,7 +571,7 @@
     "Upper Four": ["No Honors"],
     "Lower Four": ["No Honors"],
       // Hmmm, we need to bar pungs of winds specifically, but it's possible to still end up with a pung of dragons. And we mustn't bar Round/Seat Wind because it's possible to get Big Three Winds without it.
-    "Big Three Winds": ["Pung of Honors"],
+    "Big Three Winds": ["Pungs of Honors", "Pung of Honors"],
     // 8
     "Mixed Straight": [],
     "Reversible Tiles": ["One Voided Suit"],
@@ -602,7 +613,10 @@
     "Mixed Double Chow": [],
     "Short Straight": [],
     "Two Terminal Chows": [],
+    "Pungs of Terminals": ["Pung of Terminals"],
     "Pung of Terminals": [],
+      // TODO: check whether this works
+    "Pungs of Honors": ["Pung of Honors"],
     "Pung of Honors": [],
     "Melded Kong": [],
     "One Voided Suit": [],
@@ -756,6 +770,7 @@
         ["big_text", "Hu"],
         ["pause", 1000],
         ["reveal_hand"],
+        ["flip_all_calls_faceup"],
         ["set_status", "won"],
         ["win_by_discard"]],
       "precedence_over": ["chii", "pon", "kan", "ron", "riichi", "daiminkan", "ankan", "kakan"]
@@ -783,6 +798,7 @@
         ["big_text", "Hu"],
         ["pause", 1000],
         ["reveal_hand"],
+        ["flip_all_calls_faceup"],
         ["set_status", "won"],
         ["win_by_call"]
       ],
@@ -803,6 +819,7 @@
         ["big_text", "Hu"],
         ["pause", 1000],
         ["reveal_hand"],
+        ["flip_all_calls_faceup"],
         ["set_status", "won"],
         ["win_by_draw"]
       ],

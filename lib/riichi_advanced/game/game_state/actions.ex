@@ -1634,11 +1634,11 @@ defmodule RiichiAdvanced.GameState.Actions do
         state
       "flip_all_calls_faceup"  ->
         update_all_players(state, fn _seat, player ->
-          faceup_calls = Enum.map(player.calls, fn {call_name, call} -> {call_name, Utils.remove_attr(call, ["_facedown"])} end)
+          faceup_calls = Enum.map(player.calls, fn {call_name, call} -> {call_name, Utils.remove_attr(Utils.remove_attr(call, ["_facedown"]), ["_concealed"])} end)
           %Player{ player | calls: faceup_calls }
         end)
       "flip_first_visible_discard_facedown" -> 
-        ix = Enum.find_index(state.players[context.seat].pond, fn tile -> not Utils.has_attr?(tile, ["_facedown"]) and not Utils.same_tile(tile, :"1x") and not Utils.same_tile(tile, :"2x") end)
+        ix = Enum.find_index(state.players[context.seat].pond, fn tile -> not Utils.has_attr?(tile, ["_facedown"]) and not Utils.has_attr?(tile, ["_concealed"]) and not Utils.same_tile(tile, :"1x") and not Utils.same_tile(tile, :"2x") end)
         if ix != nil do
           update_in(state.players[context.seat].pond, &List.update_at(&1, ix, fn tile -> Utils.add_attr(tile, ["_facedown"]) end))
         else state end
