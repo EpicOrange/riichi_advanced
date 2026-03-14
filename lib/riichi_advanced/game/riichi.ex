@@ -27,6 +27,13 @@ defmodule RiichiAdvanced.Riichi do
                :"31s", :"32s", :"33s", :"34s", :"35s", :"36s", :"37s", :"38s", :"39s", :"310s", :"300s",
                :"41s", :"42s", :"44s", :"44s", :"45s", :"46s", :"47s", :"48s", :"49s", :"410s", :"400s",
                :"1's", :"01's", :"11's", :"21's", :"31's", :"41's"]
+  @star       [:"1t", :"2t", :"3t", :"4t", :"5t", :"6t", :"7t", :"8t", :"9t", :"10t", :"0t", :"00t",
+               :"01t", :"02t", :"03t", :"04t", :"05t", :"06t", :"07t", :"08t", :"09t", :"010t", :"000t",
+               :"11t", :"12t", :"13t", :"14t", :"15t", :"16t", :"17t", :"18t", :"19t", :"110t", :"100t",
+               :"21t", :"22t", :"23t", :"24t", :"25t", :"26t", :"27t", :"28t", :"29t", :"210t", :"200t",
+               :"31t", :"32t", :"33t", :"34t", :"35t", :"36t", :"37t", :"38t", :"39t", :"310t", :"300t",
+               :"41t", :"42t", :"44t", :"44t", :"45t", :"46t", :"47t", :"48t", :"49t", :"410t", :"400t",
+               :"1't", :"01't", :"11't", :"21't", :"31't", :"41't"]
   @jihai      [:"1z", :"2z", :"3z", :"4z", :"5z", :"6z", :"7z", :"8z", :"0z",
                :"01z", :"02z", :"03z", :"04z", :"05z", :"06z", :"07z", :"08z", :"00z",
                :"11z", :"12z", :"13z", :"14z", :"15z", :"16z", :"17z", :"18z",
@@ -52,9 +59,11 @@ defmodule RiichiAdvanced.Riichi do
   @terminal   [:"1m", :"01m", :"11m", :"21m", :"31m", :"41m",
                :"1p", :"01p", :"11p", :"21p", :"31p", :"41p",
                :"1s", :"01s", :"11s", :"21s", :"31s", :"41s",
+               :"1t", :"01t", :"11t", :"21t", :"31t", :"41t",
                :"9m", :"09m", :"19m", :"29m", :"39m", :"49m",
                :"9p", :"09p", :"19p", :"29p", :"39p", :"49p",
                :"9s", :"09s", :"19s", :"29s", :"39s", :"49s",
+               :"9t", :"09t", :"19t", :"29t", :"39t", :"49t",
                :"10m", :"010m", :"110m", :"210m", :"310m", :"410m",
                :"10p", :"010p", :"110p", :"210p", :"310p", :"410p",
                :"10s", :"010s", :"110s", :"210s", :"310s", :"410s",
@@ -66,13 +75,15 @@ defmodule RiichiAdvanced.Riichi do
                :"01m", :"02m", :"03m", :"04m", :"05m", :"25m", :"35m", :"06m", :"07m", :"08m", :"09m", :"010m",
                :"01p", :"02p", :"03p", :"04p", :"05p", :"25p", :"35p", :"06p", :"07p", :"08p", :"09p", :"010p",
                :"01s", :"02s", :"03s", :"04s", :"05s", :"25s", :"35s", :"06s", :"07s", :"08s", :"09s", :"010s",
+               :"01t", :"02t", :"03t", :"04t", :"05t", :"25t", :"35t", :"06t", :"07t", :"08t", :"09t", :"010t",
                :"01's", :"05's", :"05`s"]
 
   def is_manzu?(tile), do: Enum.any?(@manzu, &Utils.same_tile(tile, &1))
   def is_pinzu?(tile), do: Enum.any?(@pinzu, &Utils.same_tile(tile, &1))
   def is_souzu?(tile), do: Enum.any?(@souzu, &Utils.same_tile(tile, &1))
+  def is_star?(tile), do: Enum.any?(@star, &Utils.same_tile(tile, &1))
   def is_jihai?(tile), do: Enum.any?(@jihai, &Utils.same_tile(tile, &1))
-  def is_suited?(tile), do: is_manzu?(tile) or is_pinzu?(tile) or is_souzu?(tile)
+  def is_suited?(tile), do: is_manzu?(tile) or is_pinzu?(tile) or is_souzu?(tile) or is_star?(tile)
   def is_wind?(tile), do: Enum.any?(@wind, &Utils.same_tile(tile, &1))
   def is_dragon?(tile), do: Enum.any?(@dragon, &Utils.same_tile(tile, &1))
   def is_terminal?(tile), do: Enum.any?(@terminal, &Utils.same_tile(tile, &1))
@@ -82,7 +93,6 @@ defmodule RiichiAdvanced.Riichi do
   def is_joker?(tile), do: Enum.any?(@joker, &Utils.same_tile(tile, &1))
   def is_aka?(tile), do: Enum.any?(@aka, &Utils.same_tile(tile, &1))
 
-  # TODO: complete this table for the rest of the star-suit tile variants
   @one [:"1m", :"1p", :"1s", :"1t", :"01m", :"01p", :"01s", :"01t", :"11m", :"11p", :"11s", :"11t", :"21m", :"21p", :"21s", :"21t", :"31m", :"31p", :"31s", :"31t", :"41m", :"41p", :"41s", :"41t"]
   @two [:"2m", :"2p", :"2s", :"2t", :"02m", :"02p", :"02s", :"02t", :"12m", :"12p", :"12s", :"12t", :"22m", :"22p", :"22s", :"22t", :"32m", :"32p", :"32s", :"32t", :"42m", :"42p", :"42s", :"42t"]
   @three [:"3m", :"3p", :"3s", :"3t", :"03m", :"03p", :"03s", :"03t", :"13m", :"13p", :"13s", :"13t", :"23m", :"23p", :"23s", :"23t", :"33m", :"33p", :"33s", :"33t", :"43m", :"43p", :"43s", :"43t"]
@@ -149,6 +159,7 @@ defmodule RiichiAdvanced.Riichi do
       is_manzu?(tile) -> is_manzu?(tile2)
       is_pinzu?(tile) -> is_pinzu?(tile2)
       is_souzu?(tile) -> is_souzu?(tile2)
+      is_star?(tile) -> is_star?(tile2)
       is_jihai?(tile) -> is_jihai?(tile2)
       true            -> false
     end
@@ -164,6 +175,7 @@ defmodule RiichiAdvanced.Riichi do
       is_num?(tile, 7) -> is_num?(tile2, 7) 
       is_num?(tile, 8) -> is_num?(tile2, 8) 
       is_num?(tile, 9) -> is_num?(tile2, 9) 
+      is_num?(tile, 10) -> is_num?(tile2, 10) 
       true            -> false
     end
   end
@@ -323,6 +335,7 @@ defmodule RiichiAdvanced.Riichi do
         "manzu" -> is_manzu?(context.tile)
         "pinzu" -> is_pinzu?(context.tile)
         "souzu" -> is_souzu?(context.tile)
+        "star" -> is_star?(context.tile)
         "jihai" -> is_jihai?(context.tile)
         "dragon" -> is_dragon?(context.tile)
         "wind" -> is_wind?(context.tile)
@@ -340,6 +353,7 @@ defmodule RiichiAdvanced.Riichi do
         "7" -> is_num?(context.tile, 7)
         "8" -> is_num?(context.tile, 8)
         "9" -> is_num?(context.tile, 9)
+        "10" -> is_num?(context.tile, 10)
         "tedashi" -> not Utils.has_attr?(context.tile, ["_draw"])
         "tsumogiri" -> Utils.has_attr?(context.tile, ["_draw"])
         "dora" -> Utils.has_matching_tile?([context.tile], context.doras)
@@ -596,6 +610,7 @@ defmodule RiichiAdvanced.Riichi do
 
   def genbutsu_to_suji(genbutsu, tile_behavior) do
     Enum.flat_map(genbutsu, &cond do
+      # TODO: modify this to take Ten tiles into account when Ten tiles exist
       Enum.any?([1,2,3], fn k -> is_num?(&1, k) end) -> if Match.offset_tile(&1, 6, tile_behavior) in genbutsu do [Match.offset_tile(&1, 3, tile_behavior)] else [] end
       Enum.any?([4,5,6], fn k -> is_num?(&1, k) end) -> [Match.offset_tile(&1, -3, tile_behavior), Match.offset_tile(&1, 3, tile_behavior)]
       Enum.any?([7,8,9], fn k -> is_num?(&1, k) end) -> if Match.offset_tile(&1, -6, tile_behavior) in genbutsu do [Match.offset_tile(&1, -3, tile_behavior)] else [] end
