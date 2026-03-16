@@ -2,7 +2,7 @@
 
 This ruleset assumes that you have read [base.md](base.md). The primary source for this guide is [Alan Kwan's site](https://www.zj-mahjong.info/index.html#English).
 
-The wall for HKOS consists of the 1-9 character tiles, 1-9 circle tiles, 1-9 bamboo tiles, the four wind tiles, and the three dragon tiles.
+The wall for Zung Jung consists of the 1-9 character tiles, 1-9 circle tiles, 1-9 bamboo tiles, the four wind tiles, and the three dragon tiles.
 
 To win, you must achieve one of the following:
 
