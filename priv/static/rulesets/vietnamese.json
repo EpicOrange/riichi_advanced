@@ -46,6 +46,26 @@
            "5j", "6j", "7j", "8j",
            "1k", "2k", "3k", "4k",
            "1q", "2q", "3q", "4q"],
+  "custom_style": {
+    "tile_indices": {
+      "0j": "Any",
+      "2j": "Number",
+      "9j": "Flower",
+      "4j": "Dragon",
+      "5j": "Wind",
+      "6j": "Pinzu",
+      "7j": "Souzu",
+      "8j": "Manzu",
+      "1k": "1K",
+      "2k": "2K",
+      "3k": "3K",
+      "4k": "4K",
+      "1q": "1Q",
+      "2q": "2Q",
+      "3q": "3Q",
+      "4q": "1Q"
+    }
+  },
   "set_definitions": {
     "pair": [[0, 0]],
     "shuntsu": [[0, 1, 2]],

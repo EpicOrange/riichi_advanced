@@ -43,6 +43,18 @@
            "7z", "7z", "7z", "7z",
            "10j", "12j", "3j", "14j",
            "15j", "16j", "17j", "18j"],
+  "custom_style": {
+    "tile_indices": {
+      "10j": "Any",
+      "12j": "Number",
+      "3j": "Honour",
+      "14j": "Dragon",
+      "15j": "Wind",
+      "6j": "Pinzu",
+      "17j": "Souzu",
+      "18j": "Manzu"
+    }
+  },
   "set_definitions": {
     "pair": [[0, 0]],
     "shuntsu": [[0, 1, 2]],

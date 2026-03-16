@@ -29,6 +29,16 @@
            "1a", "2a", "3a", "4a",
            "1y", "1y", "1y", "1y",
            "2y", "2y", "2y", "2y"],
+  "custom_style": {
+    "tile_indices": {
+      "1a": "Cat",
+      "2a": "Rat",
+      "3a": "Chicken",
+      "4a": "Centipede",
+      "1y": "Face",
+      "2y": "Fei"
+    }
+  },
   "set_definitions": {
     "pair": [[0, 0]],
     "shuntsu": [[0, 1, 2]],

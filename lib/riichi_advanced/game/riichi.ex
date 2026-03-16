@@ -137,7 +137,7 @@ defmodule RiichiAdvanced.Riichi do
   @south [:"2z", :"02z", :"12z", :"22z", :"32z", :"42z"]
   @west [:"3z", :"03z", :"13z", :"23z", :"33z", :"43z"]
   @north [:"4z", :"04z", :"14z", :"24z", :"34z", :"44z"]
-  @white [:"5z", :"05z", :"15z", :"25z", :"35z", :"45z", :"9z", :"5'z", :"05'z", :"25'z", :"35'z", :"45'z", :"5`z", :"05`z", :"15`z", :"25`z", :"35`z", :"45`z"]
+  @white [:"5z", :"05z", :"15z", :"25z", :"35z", :"45z", :"0z", :"8z", :"9z", :"5'z", :"05'z", :"25'z", :"35'z", :"45'z", :"5`z", :"05`z", :"15`z", :"25`z", :"35`z", :"45`z"]
   @green [:"6z", :"06z", :"16z", :"26z", :"36z", :"46z"]
   @red [:"7z", :"07z", :"17z", :"27z", :"37z", :"47z"]
   def to_letter(tile) do
@@ -159,7 +159,7 @@ defmodule RiichiAdvanced.Riichi do
       is_manzu?(tile) -> is_manzu?(tile2)
       is_pinzu?(tile) -> is_pinzu?(tile2)
       is_souzu?(tile) -> is_souzu?(tile2)
-      is_star?(tile) -> is_star?(tile2)
+      is_star?(tile)  -> is_star?(tile2)
       is_jihai?(tile) -> is_jihai?(tile2)
       true            -> false
     end
