@@ -96,7 +96,7 @@ Here are differences between Riichi Advanced and real life/other mahjong clients
 
 The following Cards are supported by Riichi Advanced:
 
-- [NMJL 2013~2025](https://www.nationalmahjonggleague.org/store.aspx) (cost: 14USD)
+- [NMJL 2013~2026](https://www.nationalmahjonggleague.org/store.aspx) (cost: 14USD)
 - [Mahjong Press 2026](https://themahjongpress.com/) (cost: 11USD)
 - [The Big Card 2026](https://thebigcard.com/) (cost: 10USD)
 - [OMM 2026 International Mahjong Card](https://ohmymahjong.com/products/international-mahjong-card) (cost: 12USD)
@@ -187,7 +187,7 @@ The following mods are currently available for American:
 - Different Number of Jokers/Flowers: Play using a different number of jokers and flowers. Note that this does NOT, by default, change the rules to a historical ruleset that uses that many jokers/flowers.
 - PIE: Each player starts with a set amount of points. Players' point totals can't go negative. If a player runs out of points, they need not pay.
 - No Charleston: Play without the Charleston.
-- NMJL [Year] Card: Play with the [NMJL Card](https://www.nationalmahjonggleague.org/store.aspx) from the year of your choice (between 2013 and 2025).
+- NMJL [Year] Card: Play with the [NMJL Card](https://www.nationalmahjonggleague.org/store.aspx) from the year of your choice (between 2013 and 2026).
 - Mahjong Press [Year] Card: Play with the [Mahjong Press Card](https://themahjongpress.com/) from the year of your choice (2026 only).
 - TML [Year] Big Card (beta): Play with the The Mahjong Line's [The Big Card](https://thebigcard.com/) from the year of your choice (2026 only). (May contain bugs.)
 - OMM International [Year] Card: Play with the [OMM International Mahjong Card](https://ohmymahjong.com/products/international-mahjong-card) from the year of your choice (2026 only).
