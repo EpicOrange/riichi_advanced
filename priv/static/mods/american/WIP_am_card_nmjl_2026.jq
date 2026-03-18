@@ -23,8 +23,7 @@
     "11111a 44444a DDDDb",    # TODO: check if this is these numbers only
     # Consecutive Run
     "11a 222a 33a 444a 5555a", "55a 666a 77a 888a 9999a",
-    "FFF XXXX0a X1a X2a X3a XXXX4a",
-    "FFF XXXX0a X1b X2b X3b XXXX4a",
+    "FFF XXXX0a X1a X2a X3a XXXX4a", "FFF XXXX0a X1b X2b X3b XXXX4a",
     "XX0a XX1a XXX0b XXX1b XXXX2c",
     "XXX0a XXX1a XXXX2a XXXX3a", "XXX0a XXX1a XXXX2b XXXX3b",
     "FF XX0a XX1a XXX2a DDDDa", "FF XX0a XX1b XXX2a DDDDb",
@@ -46,7 +45,7 @@
     "1234a DDDb DDDc DDDDa"    # TODO: check if this can be any 4-straight, and/or if it must match DDDD in suit
     "NNN 1111b 1111c SSS", "NNN 3333b 3333c SSS", "NNN 5555b 5555c SSS", "NNN 7777b 7777c SSS", "NNN 9999b 9999c SSS", # TODO: check if these hands are correct
     "EEE 2222b 2222c WWW", "EEE 4444b 4444c WWW", "EEE 6666b 6666c WWW", "EEE 8888b 8888c WWW",                        # TODO: check if these hands are correct
-    "FFF ZZZZ FFF DDDD",
+    "FFF ZZZZ FFF DDDD",        # TODO: check if this one is indeed "any wind"
     "1a N 2a EE 3a WWW 4a SSSS", # TODO: check if this is these numbers/winds only
     "FF NNNN SSSS DDa DDb", "FF EEEE WWWW DDa DDb", 
     "NN EEE 2026a WWW SS", # concealed
