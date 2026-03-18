@@ -225,18 +225,7 @@
       ["tag_dora", "jin", -2],
       ["reveal_tile", -2],
       ["copy_tiles", {"dead_wall": [-2]}, {"atop_wall": [-9]}],
-      ["add_attr", [-2], ["_skip_draw", "_hidden"]],
-      // add the "dora" attribute to tiles tagged with "jin", which should make them shiny
-      ["add_attr_tagged", "jin", ["_dora", "jin"]],
-      // before making jin a joker, check for qiangjin for all players
-      ["as", "everyone", [
-        ["when", [{"name": "match", "opts": [["hand", "revealed_tiles"], ["win"]]}], [
-          ["set_status", "qiangjin"]
-        ]]
-      ]],
-      ["recalculate_buttons"],
-      // sets any tile with attribute "jin" to be an any-joker with attribute "is_jin"
-      ["set_tile_alias", [{"tile": "any", "attrs": ["jin"]}], [{"tile": "any", "attrs": ["is_jin"]}]]
+      ["add_attr", [-2], ["_skip_draw", "_hidden"]]
     ]
   },
   "play_restrictions": [
@@ -248,23 +237,29 @@
   "before_turn_change": {
     "actions": [
       ["unset_status", "kan", "double_kan", "flower", "just_reached"],
-      ["when", [{"name": "status_missing", "opts": ["match_start"]}], [["unset_status", "first_turn"]]],
-      ["when", [{"name": "everyone_status", "opts": ["no_flowers"]}], [
-        ["run", "flip_gold_tile"]
-      ]]
+      ["when", [{"name": "status_missing", "opts": ["match_start"]}], [["unset_status", "first_turn"]]]
     ]
   },
   "after_turn_change": {
     "actions": [
       ["when", ["no_tiles_remaining"], [["pause", 1000], ["ryuukyoku"]]],
-      ["when", [{"name": "everyone_status", "opts": ["no_flowers"]}], [
-        ["unset_status_all", "no_flowers", "match_start"]
-      ]],
+      ["when", [{"name": "everyone_status", "opts": ["no_flowers"]}], [["unset_status_all", "no_flowers", "match_start", "qiangjin"]]],
       ["when", [{"name": "status_missing", "opts": ["match_start"]}, {"name": "tag_exists", "opts": ["jin"]}, "not_no_tiles_remaining"], [["draw"]]]
     ]
   },
   "after_start": {
     "actions": [
+      ["run", "flip_gold_tile"],
+      // add the "dora" attribute to tiles tagged with "jin", which should make them shiny
+      ["add_attr_tagged", "jin", ["_dora", "jin"]],
+      // before making jin a joker, check for qiangjin for all players
+      ["as", "everyone", [
+        ["when", [{"name": "match", "opts": [["hand", "revealed_tiles"], ["win"]]}], [
+          ["set_status", "qiangjin"]
+        ]]
+      ]],
+      // sets any tile with attribute "jin" to be an any-joker with attribute "is_jin"
+      ["set_tile_alias", [{"tile": "any", "attrs": ["jin"]}], [{"tile": "any", "attrs": ["is_jin"]}]],
       ["set_status_all", "first_turn", "match_start"]
     ]
   },
@@ -343,7 +338,6 @@
     "ankan": {
       "display_name": "Self Kong",
       "call": [[0, 0, 0]],
-        //TODO: figure out why there are two call_conditions here.
       "call_conditions": [[
         {"name": "not_call_changes_waits", "opts": ["win"]}
       ]],
@@ -408,7 +402,7 @@
     "qiangjin": {
       "display_name": "Qiangjin",
       "show_when": [
-        {"name": "status", "opts": ["qiangjin"]},
+        {"name": "status", "opts": ["match_start", "qiangjin"]},
         {"name": "status_missing", "opts": ["flower"]}
       ],
       "actions": [["big_text", "Qiangjin"], ["pause", 1000], ["move_tiles", "revealed_tile", "draw"], ["reveal_hand"], ["set_status", "qiangjin"], ["win_by_draw"]],
@@ -418,7 +412,7 @@
     "qiangjin_skip": {
       "display_name": "Skip",
       "show_when": [
-        {"name": "status", "opts": ["qiangjin"]},
+        {"name": "status", "opts": ["match_start", "qiangjin"]},
         {"name": "status_missing", "opts": ["flower"]}
       ],
       "actions": [["unset_status", "qiangjin"], ["recalculate_buttons"]],
