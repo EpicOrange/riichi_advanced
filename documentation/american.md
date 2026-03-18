@@ -14,6 +14,7 @@ Here are differences between Riichi Advanced and real life/other mahjong clients
 - Riichi Advanced will not let you draw a tile when you shouldn't, or discard a tile when you shouldn't. If you ever have more or fewer tiles than you're supposed to, that's a bug, and you should report it on the [Issues page](https://github.com/EpicOrange/riichi_advanced/issues) or in the Discord.
 - Riichi Advanced will not let you make an incorrect exposure (i.e. one that isn't a Pung, Kong, or Quint) or Mah Jongg in error. It will, however, let you make exposures that would make your hand dead due to no hand on the Card being possible.
 - Riichi Advanced requires you to name what kind of exposure you're calling for (Pung/Kong/Quint).
+- Riichi Advanced will only let you call for Sextets if you are playing with a Card that uses Sextets. Rules for Sextets are more-or-less the same for Pungs/Kongs/Quints.
 - Once you have made an exposure, Riichi Advanced will not let you edit the tiles in that exposure, even if you have not yet discarded or performed a joker exchange. You may, however, perform a joker exchange with the tiles in that exposure.
 - Riichi Advanced will not require you to name your discards.
 - Discards in Riichi Advanced are arranged in order in front of each player. (It's **Riichi** Advanced, so everything is a Riichi variant.)
@@ -35,7 +36,6 @@ Here are differences between Riichi Advanced and real life/other mahjong clients
   - Some way for players to specify a year before drawing a Card;
   - Some way to indicate that jokers MAY NOT be used in a given grouping; and
   - Some way to indicate that flowers MAY be used as jokers in a given grouping.
-- Implement Sextets. To be done when we implement a Card that has a Sextet.
 - Implement score and exposed/concealed info for each hand in "Show Nearest Hands".
 
 ---
