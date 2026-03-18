@@ -65,8 +65,8 @@ define_match sanankou_ron,
 define_const closed_hand, has_no_call_named("chii", "pon", "daiminkan", "kakan")
 
 define_yaku yaku, "Tsumo", 1, won_by_draw and @closed_hand
-define_yaku yaku, "Haitei", 1, no_tiles_remaining and won_by_draw
-define_yaku yaku, "Houtei", 1, no_tiles_remaining and not_won_by_draw
+define_yaku yaku, "Haitei", 1, no_tiles_remaining and won_by_draw and not status("kan")
+define_yaku yaku, "Houtei", 1, no_tiles_remaining and not_won_by_draw and not status("kan")
 define_yaku yaku, "Pinfu", 1, @closed_hand
   and match(["hand", "calls", "winning_tile"], ["standard_win"])
   and ((won_by_draw and minipoints_equals(20)) or (not_won_by_draw and minipoints_equals(30)))
