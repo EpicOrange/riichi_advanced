@@ -213,4 +213,3 @@
 .buttons."mahjong_draw"."precedence_over" += ["am_sextet"]
 |
 .buttons."mahjong_discard"."precedence_over" += ["am_sextet"]
-|
