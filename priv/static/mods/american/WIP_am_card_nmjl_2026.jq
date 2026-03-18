@@ -130,6 +130,7 @@
     "FF 2026a 2026b 2026c"
   ]
 |
+# TODO: finish off the rest of this yaku list, once you confirm a bunch more stuff about the hands
 .yaku = [
     { "display_name": "2024 #1", "value": 25, "when": [{"name": "match", "opts": [["hand", "call_tiles", "winning_tile"], ["222a 000 2222b 4444b"]]}] },
     { "display_name": "2024 #2", "value": 25, "when": [{"name": "match", "opts": [["hand", "call_tiles", "winning_tile"], ["FFFF 2222a 0000 24b"]]}] },
@@ -187,3 +188,32 @@
     { "display_name": "13579 #6", "value": 25, "when": [{"name": "match", "opts": [["hand", "call_tiles", "winning_tile"], ["11a 33a 333b 555b DDDDc", "55a 77a 777b 999b DDDDc"]]}] },
     { "display_name": "13579 #7", "value": 35, "when": [{"name": "has_no_call_named", "opts": ["am_pung", "am_kong", "am_quint"]}, {"name": "match", "opts": [["hand", "call_tiles", "winning_tile"], ["111a 33a 555a 333b 333c", "555a 77a 999a 777b 777c"]]} ] }
   ]
+|
+# The 2026 Card includes hands with a Sextet, so we have to implement that here:
+.buttons."4_am_sextet" = {
+    "display_name": "Sextet",
+    "call": [[0, 0, 0, 0, 0]],
+    "call_name": "am_sextet",
+    "call_conditions": [
+      {"name": "hand_length_at_least", "opts": [6]},
+      {"name": "not_called_tile_contains", "opts": [["1j"], 1]},
+      {"name": "call_contains", "opts": [["1m","2m","3m","4m","5m","6m","7m","8m","9m","1p","2p","3p","4p","5p","6p","7p","8p","9p","1s","2s","3s","4s","5s","6s","7s","8s","9s","1z","2z","3z","4z","0z","6z","7z","1f","2f","3f","4f","1g","2g","3g","4g"], 1]}
+    ],
+    "show_when": [{"name": "status_missing", "opts": ["match_start", "dead_hand"]}, "not_our_turn", "not_no_tiles_remaining", "someone_else_just_discarded", "call_available"],
+    "actions": [["big_text", "Sextet"], ["call"], ["change_turn", "self"]],
+    "precedence_over": ["am_pung", "am_kong", "am_quint", "am_sextet"]
+}
+|
+# also other calls still have precedence over sextets
+.buttons."1_am_pung"."precedence_over" += ["am_sextet"]
+|
+.buttons."2_am_kong"."precedence_over" += ["am_sextet"]
+|
+.buttons."3_am_quint"."precedence_over" += ["am_sextet"]
+|
+.buttons."mahjong_heavenly"."precedence_over" += ["am_sextet"]
+|
+.buttons."mahjong_draw"."precedence_over" += ["am_sextet"]
+|
+.buttons."mahjong_discard"."precedence_over" += ["am_sextet"]
+|
