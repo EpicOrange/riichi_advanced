@@ -664,6 +664,117 @@
       ["when", [{"name": "status_missing", "opts": ["match_start"]}], [["unset_status", "first_turn"]]]
     ]
   },
+  "after_initialization": {
+    "actions": [
+      // giant add-rules section, go!
+        // TODO: prettify all the rules (in particular, we don't want rule section titles that span three lines)
+        // TODO: add examples for all the yaku
+        // TODO: add any other basic rules I've missed
+      ["add_rule", "Rules", "Win Condition", "You may win with one of the following:", -100],
+      ["add_rule", "Rules", "Win Condition", "- Four sets (sequences or triplets) and a pair.", -100],
+      ["add_rule", "Rules", "Win Condition", "- (Seven Pairs) Seven distinct pairs.", -100],
+      ["add_rule", "Rules", "Win Condition", "- (Thirteen Orphans) All thirteen terminal/honor tiles plus one forming a pair.", -100],
+      ["add_rule", "Rules", "Win Condition", "- (Knitted Straight) A knitted straight plus one set and a pair. A knitted straight consists of 147 of one suit, 258 of a second suit, and 369 of a third suit.", -100],
+      ["add_rule", "Rules", "Win Condition", "- (Knitted Hand) 14 unique tiles from the following set: 147 of one suit, 258 of a second suit, 369 of a third suit, all winds, and all dragons.", -100],
+      ["add_rule", "Rules", "8 Fan Minimum", "Your hand must score at least 8 Fan to win. (Flowers don't count.)", -10],
+      // 1 Fan
+      ["add_rule", "1 Fan", "Pung of Terminals or Honors", "You have a triplet of terminals or honors. This triplet can be either called or concealed. Having a pung of dragons, prevalent winds, or seat winds instead awards the 2-fan yaku Dragon Pung, Prevalent Wind, or Seat Wind respectively. Repeatable."],
+      ["add_rule", "1 Fan", "Self-Drawn", "You drew the winning tile yourself."],
+      ["add_rule", "1 Fan", "Closed Wait", "You are only waiting for one kind of tile, and the wait is a 'middle' wait (like 35 waiting for 4)."],
+      ["add_rule", "1 Fan", "Mixed Double Chow", "You have two of the same sequence in different suits."],
+      ["add_rule", "1 Fan", "One Voided Suit", "You lack any tiles from one of the three suits. (Honors and flowers are suitless, so your hand can still contain these.)"],
+      ["add_rule", "1 Fan", "Short Straight", "You have 123 456, 234 567, 345 678, or 456 789 of one suit."],
+      ["add_rule", "1 Fan", "Single Wait", "You are only waiting for one kind of tile, and the wait is a pair wait like 3 waiting for another 3."],
+      ["add_rule", "1 Fan", "No Honors", "You have no honor tiles."],
+      ["add_rule", "1 Fan", "Edge Wait", "You are only waiting for one kind of tile, and the wait is 12 waiting for 3, or 90 waiting for 7."],
+      ["add_rule", "1 Fan", "Melded Kong", "You have called a kong or added a tile to a called triplet to make a kong."],
+      ["add_rule", "1 Fan", "Two Terminal Chows", "You have 123 and 789 of the same suit."],
+      ["add_rule", "1 Fan", "Pure Double Chow", "Two identical chows in the same suit."],
+      ["add_rule", "1 Fan", "Flower Tiles", "You get 1 fan per flower tile, but this does not contribute to the minimum requirement of 8 fan."],
+      // 2 Fan
+      ["add_rule", "2 Fan", "All Chows", "All of your sets are sequences. In addition, you may not have any honor tiles."],
+      ["add_rule", "2 Fan", "Dragon Pung", "You have a triplet of dragons. Having two dragon triplets instead awards the 6-fan yaku Two Dragon Pungs."],
+      ["add_rule", "2 Fan", "Concealed Hand", "You have never called a tile (except flowers and concealed kongs, or except as the winning tile)."],
+        // TODO: rewrite "Ignores flowers"
+      ["add_rule", "2 Fan", "All Simples", "Your hand consists of only number tiles 2-8. (Ignores flowers.)"],
+      ["add_rule", "2 Fan", "Seat Wind", "You have a triplet of the wind matching your seat."],
+      ["add_rule", "2 Fan", "Prevalent Wind", "You have a triplet of the prevalent (round) wind."],
+        // TODO: clarify this one
+      ["add_rule", "2 Fan", "Double Pung", "You have two triplets of the same number (in different suits). Repeatable."],
+      ["add_rule", "2 Fan", "Tile Hog", "Your hand contains all four of a tile (not in a kong). Repeatable."],
+      ["add_rule", "2 Fan", "Two Concealed Pungs", "You have two triplets in hand (not called). Either one may be a Concealed Kong. Having two Concealed Kongs instead awards the 8-fan yaku Two Concealed Kongs. Having three or four Concealed Pungs instead awards the 16-fan yaku Three Concealed Pungs or the 64-fan yaku Four Concealed Pungs respectively."],
+      ["add_rule", "2 Fan", "Concealed Kong", "You have exactly one concealed kong."],
+      // 4 Fan
+      ["add_rule", "4 Fan", "Fully Concealed Hand", "Have no calls except concealed kongs, and win off a self draw."],
+      ["add_rule", "4 Fan", "Last Tile", "Win on the fourth copy of a tile. The other three copies must be visible to all players (so cannot be in your hand)."],
+      ["add_rule", "4 Fan", "Outside Hand", "Each of your sets and pair contains a terminal or honor tile."],
+      ["add_rule", "4 Fan", "Two Melded Kongs", "You have two kongs, both formed by calling the fourth tile or by adding the fourth tile to a called triplet."],
+      // 6 Fan
+      ["add_rule", "6 Fan", "Mixed Shifted Chows", "You have something like 123 234 345, with each sequence being in a different suit."],
+      ["add_rule", "6 Fan", "All Types", "Your hand has each of the five kinds of tiles: characters, circles, bamboo, winds, and dragons. (Ignores flowers.)"],
+      ["add_rule", "6 Fan", "Half Flush", "Your hand consists of one suit plus honors. (Ignores flowers.)"],
+      ["add_rule", "6 Fan", "All Pungs", "All of your sets are triplets (or kongs)."],
+      ["add_rule", "6 Fan", "Melded Hand", "Have four calls and win off a discard or by robbing a kong."],
+      ["add_rule", "6 Fan", "Two Dragon Pungs", "You have two dragon triplets."],
+      ["add_rule", "6 Fan", "Two Kongs", "You have two kongs, one melded (formed by calling the fourth tile or by adding the fourth tile to a called triplet) and one concealed."],
+      // 8 Fan
+      ["add_rule", "8 Fan", "Mixed Triple Chow", "You have three of the same sequence in different suits."],
+      ["add_rule", "8 Fan", "Mixed Straight", "You have 123 456 789, all of different suits."],
+      ["add_rule", "8 Fan", "Chicken Hand", "None of the other fan apply to your hand."],
+      ["add_rule", "8 Fan", "Reversible Tiles", "Your hand is composed of tiles from the following set: 1234589 of circles, 245689 of bamboo, and white dragon. (Ignores flowers.)"],
+      ["add_rule", "8 Fan", "Mixed Shifted Pungs", "You have consecutive triplets in the pattern 111 222 333 in different suits."],
+      ["add_rule", "8 Fan", "Out with Replacement Tile", "Win off the replacement tile after calling a flower of a kong."],
+      ["add_rule", "8 Fan", "Robbing The Kong", "Win off the tile someone tried to add to a pung."],
+      ["add_rule", "8 Fan", "Last Tile Claim", "Win off the last discard."],
+      ["add_rule", "8 Fan", "Last Tile Draw", "Win off the last draw."],
+      ["add_rule", "8 Fan", "Two Concealed Kongs", "You have two concealed kongs."],
+      // 12 Fan
+      ["add_rule", "12 Fan", "Upper Four", "Your hand consists only of the numbers 6789. (Ignores flowers.)"],
+      ["add_rule", "12 Fan", "Lower Four", "Your hand consists only of the numbers 1234. (Ignores flowers.)"],
+      ["add_rule", "12 Fan", "Lesser Honors and Knitted Tiles", "You win from having 14 unique tiles from the following set: 147 of one suit, 258 of a second suit, 369 of a third suit, all winds, and all dragons."],
+      ["add_rule", "12 Fan", "Knitted Straight", "You win with hand containing a knitted straight: 147 of one suit, 258 of a second suit, 369 of a third suit."],
+      ["add_rule", "12 Fan", "Big Three Winds", "You have three wind triplets."],
+      // 16 Fan
+      ["add_rule", "16 Fan", "Pure Straight", "You have 123 456 789 in the same suit."],
+      ["add_rule", "16 Fan", "Pure Shifted Chows", "You have something like 123 234 345 in the same suit, or 123 345 567 in the same suit."],
+      ["add_rule", "16 Fan", "Three Concealed Pungs", "You have three concealed triplets. Triplets obtained via win by self-draw count as concealed, but triplets obtained via win by discard/robbing a kong are not concealed."],
+      ["add_rule", "16 Fan", "All Fives", "All of your sets and your pair contain a five."],
+      ["add_rule", "16 Fan", "Triple Pung", "You have three triplets of the same number."],
+      ["add_rule", "16 Fan", "Three-Suited Terminal Chows", "You have Two Terminal Chows (123 789) twice in different suits, plus a pair of fives."],
+      // 24 Fan
+      ["add_rule", "24+ Fan", "Full Flush (24 Fan)", "Your hand consists of one suit only, no honors. (ignores flowers)"],
+      ["add_rule", "24+ Fan", "Seven Pairs (24 Fan)", "You won with a seven-pair hand. Repeated pairs are allowed (and award the 2-Fan yaku Tile Hog)."],
+      ["add_rule", "24+ Fan", "Greater Honors and Knitted Tiles (24 Fan)", "You have one of each wind and dragon, plus 7 unique tiles from the following set: 147 of one suit, 258 of a second suit, and 369 of a third suit."],
+      ["add_rule", "24+ Fan", "Pure Shifted Pungs (24 Fan)", "You have consecutive triplets in the pattern 111222333, of the same suit."],
+      ["add_rule", "24+ Fan", "Upper Tiles (24 Fan)", "Your hand consists only of the numbers 789. (Ignores flowers.)"],
+      ["add_rule", "24+ Fan", "Lower Tiles (24 Fan)", "Your hand consists only of the numbers 123. (Ignores flowers.)"],
+      ["add_rule", "24+ Fan", "Middle Tiles (24 Fan)", "Your hand consists only of the numbers 456. (Ignores flowers.)"],
+      ["add_rule", "24+ Fan", "All Even Pungs (24 Fan)", "Your hand consists of triplets and pairs of even numbers (2468) only."],
+      ["add_rule", "24+ Fan", "Pure Triple Chow (24 Fan)", "You have three of the same sequence in the same suit."],
+      // 32 Fan
+      ["add_rule", "24+ Fan", "All Terminals and Honors (32 Fan)", "Your hand consists of 1, 9, and honor tiles only. (Ignores flowers.)"],
+      ["add_rule", "24+ Fan", "Four Pure Shifted Chows (32 Fan)", "You have something like 123 234 345 456 in the same suit."],
+      ["add_rule", "24+ Fan", "Three Kongs (32 Fan)", "You have three kongs."],
+      // 48 Fan
+      ["add_rule", "24+ Fan", "Four Pure Shifted Pungs (48 Fan)", "You have consecutive triplets in the pattern 111222333444, of the same suit."],
+      ["add_rule", "24+ Fan", "Quadruple Chow (48 Fan)", "You have four of the same sequence in the same suit."],
+      // 64 Fan
+      ["add_rule", "24+ Fan", "Little Three Dragons (64 Fan)", "You have two dragon triplets and a dragon pair."],
+      ["add_rule", "24+ Fan", "Four Concealed Pungs (64 Fan)", "You have four concealed triplets. Triplets obtained via win by self-draw count as concealed, but triplets obtained via win by discard/robbing a kong are not concealed."],
+      ["add_rule", "24+ Fan", "Little Four Winds (64 Fan)", "You have three wind triplets and a wind pair."],
+      ["add_rule", "24+ Fan", "All Honors (64 Fan)", "Your hand is all honor tiles."],
+      ["add_rule", "24+ Fan", "All Terminals (64 Fan)", "Your hand consists of 1 and 9 tiles only. (Ignores flowers.)"],
+      ["add_rule", "24+ Fan", "Pure Terminal Chows (64 Fan)", "You have exactly 123 123 55 789 789 in the same suit."],
+      // 88 Fan
+      ["add_rule", "24+ Fan", "Big Three Dragons (88 Fan)", "You have three dragon triplets."],
+      ["add_rule", "24+ Fan", "Thirteen Orphans (88 Fan)", "You have one of each terminal and honor tile, one of them forming a pair."],
+      ["add_rule", "24+ Fan", "All Green (88 Fan)", "Your hand consists of tiles from the set 23468 of bamboo and green dragon. (Ignores flowers.)"],
+      ["add_rule", "24+ Fan", "Big Four Winds (88 Fan)", "You have four wind triplets."],
+      ["add_rule", "24+ Fan", "Four Kongs (88 Fan)", "You have four kongs."],
+      ["add_rule", "24+ Fan", "Seven Shifted Pairs (88 Fan)", "You have 11 22 33 44 55 66 77 in one suit. It does not have to start at 1."],
+      ["add_rule", "24+ Fan", "Nine Gates (88 Fan)", "Your hand is concealed and is all one suit in the nine gates shape (1112345678999 + one extra tile)."]
+    ]
+  },
   "after_turn_change": {
     "actions": [
       ["when", ["no_tiles_remaining"], [["pause", 1000], ["ryuukyoku"]]],

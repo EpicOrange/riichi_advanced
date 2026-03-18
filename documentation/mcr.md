@@ -78,7 +78,7 @@ Some fan may have overlapping requirements, and there are some rules about that 
 - __Self-Drawn (#80)__ (19.67%): You drew the winning tile yourself.
 - __Closed Wait (#78)__ (19.03%): You are only waiting for one kind of tile, and the wait is a 'middle' wait like 35 waiting for 4.
 - __Mixed Double Chow (#70)__ (18.47%): You have two of the same sequence in different suits.
-- __One Voided Suit (#75)__ (13.85%): You lack any tiles from one of the three suits. (Honors and flowers are suitless.)
+- __One Voided Suit (#75)__ (13.85%): You lack any tiles from one of the three suits. (Honors and flowers are suitless, so your hand can still contain these.)
 - __Short Straight (#71)__ (12.18%): You have 123 456, 234 567, 345 678, or 456 789 of one suit.
 - __Single Wait (#79)__ (10.69%): You are only waiting for one kind of tile, and the wait is a pair wait like 3 waiting for another 3.
 - __No Honors (#76)__ (10.88%): You have no honor tiles.
@@ -92,14 +92,14 @@ Some fan may have overlapping requirements, and there are some rules about that 
 
 - __All Chows (#63)__ (37.73%): All of your sets are sequences. In addition, you may not have any honor tiles.
 - __Dragon Pung (#59)__ (17.19%): You have a triplet of dragons. Having two dragon triplets instead awards the 6 fan Two Dragon Pungs (#54).
-- __Concealed Hand (#62)__ (9.539%): You have never called a tile (except flowers and concealed kongs).
-- __All Simples (#68)__ (9.117%): Your hand consists of only number tiles 2-8. (ignores flowers)
+- __Concealed Hand (#62)__ (9.539%): You have never called a tile (except flowers and concealed kongs, or except as the winning tile).
+- __All Simples (#68)__ (9.117%): Your hand consists of only number tiles 2-8. (Ignores flowers.)
 - __Seat Wind (#61)__ (6.116%): You have a triplet of the wind matching your seat.
 - __Prevalent Wind (#60)__ (6.078%): You have a triplet of the prevalent (round) wind.
 - __Double Pung (#65)__ (4.290%): You have two triplets of the same number (in different suits). Repeatable.
 - __Tile Hog (#64)__ (4.054%): Your hand contains all four of a tile (not in a kong). Repeatable.
-- __Two Concealed Pungs (#66)__ (3.727%): You have two triplets in hand (not called), except concealed kongs also count. Repeatable.
-- __Concealed Kong (#67)__ (1.562%): You have a concealed kong. Repeatable.
+- __Two Concealed Pungs (#66)__ (3.727%): You have two triplets in hand (not called). Either one may be a Concealed Kong. Having two Concealed Kongs instead awards the 8-fan yaku Two Concealed Kongs (#48). Having three or four Concealed Pungs instead awards the 16-fan yaku Three Concealed Pungs (#33) or the 64-fan yaku Four Concealed Pungs (#12) respectively.
+- __Concealed Kong (#67)__ (1.562%): You have a concealed kong.
 
 ### 4 fan
 
@@ -111,8 +111,8 @@ Some fan may have overlapping requirements, and there are some rules about that 
 ### 6 fan
 
 - __Mixed Shifted Chows (#51)__ (18.40%): You have something like 123 234 345, with each sequence being in a different suit.
-- __All Types (#52)__ (13.32%): Your hand has each of the five kinds of tiles: characters, circles, bamboo, winds, and dragons. (Flowers are ignored.)
-- __Half Flush (#50)__ (11.82%): Your hand consists of one suit plus honors. (ignores flowers)
+- __All Types (#52)__ (13.32%): Your hand has each of the five kinds of tiles: characters, circles, bamboo, winds, and dragons. (Ignores flowers.)
+- __Half Flush (#50)__ (11.82%): Your hand consists of one suit plus honors. (Ignores flowers.)
 - __All Pungs (#49)__ (9.605%): All of your sets are triplets (or kongs).
 - __Melded Hand (#53)__ (2.072%): Have four calls and win off a discard or by robbing a kong.
 - __Two Dragon Pungs (#54)__ (0.9427%): You have two dragon triplets.
@@ -123,7 +123,7 @@ Some fan may have overlapping requirements, and there are some rules about that 
 - __Mixed Triple Chow (#41)__ (10.07%): You have three of the same sequence in different suits.
 - __Mixed Straight (#39)__ (9.624%): You have 123 456 789, all of different suits.
 - __Chicken Hand (#43)__ (0.8192%): None of the other fan apply to your hand.
-- __Reversible Tiles (#40)__ (0.5837%): Your hand is composed of tiles from the following set: 1234589 of circles, 245689 of bamboo, and white dragon. (ignores flowers)
+- __Reversible Tiles (#40)__ (0.5837%): Your hand is composed of tiles from the following set: 1234589 of circles, 245689 of bamboo, and white dragon. (Ignores flowers.)
 - __Mixed Shifted Pungs (#42)__ (0.4544%): You have consecutive triplets in the pattern 111 222 333 in different suits.
 - __Out with Replacement Tile (#46)__ (0.4310%): Win off the replacement tile after calling a flower of a kong.
 - __Robbing The Kong (#47)__ (0.2972%): Win off the tile someone tried to add to a pung.
@@ -133,8 +133,8 @@ Some fan may have overlapping requirements, and there are some rules about that 
 
 ### 12 fan
 
-- __Upper Four (#36)__ (1.993%): Your hand consists only of the numbers 6789 (ignores flowers).
-- __Lower Four (#37)__ (1.893%): Your hand consists only of the numbers 1234 (ignores flowers).
+- __Upper Four (#36)__ (1.993%): Your hand consists only of the numbers 6789. (Ignores flowers.)
+- __Lower Four (#37)__ (1.893%): Your hand consists only of the numbers 1234. (Ignores flowers.)
 - __Lesser Honors and Knitted Tiles (#34)__ (1.520%): You win from having 14 unique tiles from the following set: 147 of one suit, 258 of a second suit, 369 of a third suit, all winds, and all dragons.
 - __Knitted Straight (#35)__ (0.7848%): You win with hand containing a knitted straight: 147 of one suit, 258 of a second suit, 369 of a third suit.
 - __Big Three Winds (#38)__ (0.08589%): You have three wind triplets.
@@ -150,19 +150,19 @@ Some fan may have overlapping requirements, and there are some rules about that 
 
 ### 24 fan
 
-- __Full Flush (#22)__ (2.527%): Your hand consists of one suit only, no honors. (ignores flowers)
+- __Full Flush (#22)__ (2.527%): Your hand consists of one suit only, no honors. (Ignores flowers.)
 - __Seven Pairs (#19)__ (2.161%): You won with a seven-pair hand. Repeated pairs are allowed (and award 2 fan Tile Hog #64).
 - __Greater Honors and Knitted Tiles (#20)__ (0.8308%): You have one of each wind and dragon, plus 7 unique tiles from the following set: 147 of one suit, 258 of a second suit, and 369 of a third suit.
 - __Pure Shifted Pungs (#24)__ (0.4028%): You have consecutive triplets in the pattern 111222333, of the same suit.
-- __Upper Tiles (#25)__ (0.2057%): Your hand consists only of the numbers 789 (ignores flowers).
-- __Lower Tiles (#27)__ (0.1935%): Your hand consists only of the numbers 123 (ignores flowers).
-- __Middle Tiles (#26)__ (0.1681%): Your hand consists only of the numbers 456 (ignores flowers).
+- __Upper Tiles (#25)__ (0.2057%): Your hand consists only of the numbers 789. (Ignores flowers.)
+- __Lower Tiles (#27)__ (0.1935%): Your hand consists only of the numbers 123. (Ignores flowers.)
+- __Middle Tiles (#26)__ (0.1681%): Your hand consists only of the numbers 456. (Ignores flowers.)
 - __All Even Pungs (#21)__ (0.09315%): Your hand consists of triplets and pairs of even numbers (2468) only.
 - __Pure Triple Chow (#23)__ (0.05189%): You have three of the same sequence in the same suit.
 
 ### 32 fan
 
-- __All Terminals and Honors (#18)__ (0.1692%): Your hand consists of 1, 9, and honor tiles only. (ignores flowers)
+- __All Terminals and Honors (#18)__ (0.1692%): Your hand consists of 1, 9, and honor tiles only. (Ignores flowers.)
 - __Four Pure Shifted Chows (#16)__ (0.09270%): You have something like 123 234 345 456 in the same suit.
 - __Three Kongs (#17)__ (0.04093%): You have three kongs (does not matter if they are concealed).
 
@@ -177,14 +177,14 @@ Some fan may have overlapping requirements, and there are some rules about that 
 - __Four Concealed Pungs (#12)__ (0.04824%): You have four concealed triplets. Triplets obtained via win by self-draw count as concealed, but triplets obtained via win by discard/robbing a kong are not concealed.
 - __Little Four Winds (#9)__ (0.01289%): You have three wind triplets and a wind pair.
 - __All Honors (#11)__ (0.007178%): Your hand is all honor tiles.
-- __All Terminals (#8)__ (0.002363%): Your hand consists of 1 and 9 tiles only. (ignores flowers)
+- __All Terminals (#8)__ (0.002363%): Your hand consists of 1 and 9 tiles only. (Ignores flowers.)
 - __Pure Terminal Chows (#13)__ (0.002295%): You have exactly 123 123 55 789 789 in the same suit.
 
 ### 88 fan
 
 - __Big Three Dragons (#2)__ (0.03299%): You have three dragon triplets.
 - __Thirteen Orphans (#7)__ (0.02464%): You have one of each terminal and honor tile, one of them forming a pair.
-- __All Green (#3)__ (0.003197%): Your hand consists of tiles from the set 23468 of bamboo and green dragon (ignores flowers).
+- __All Green (#3)__ (0.003197%): Your hand consists of tiles from the set 23468 of bamboo and green dragon. (Ignores flowers.)
 - __Big Four Winds (#1)__ (0.001368%): You have four wind triplets.
 - __Four Kongs (#5)__ (0.0008438%): You have four kongs (does not matter if they are concealed).
 - __Seven Shifted Pairs (#6)__ (0.0002596%): You have 11 22 33 44 55 66 77 in one suit. It does not have to start at 1.
