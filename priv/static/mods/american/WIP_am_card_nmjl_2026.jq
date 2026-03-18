@@ -1,18 +1,18 @@
 .win_definition = [
-    # 2024
+    # 2026
     "222a 000 2222b 6666b",
-    "2026a DDDa 2222b DDDb", # TODO: check if 2222 can be either 2 or 6
+    "2026a DDDa 2222b|6666b DDDb",
     "FFF 2026a 222b 6666c",
-    "22a 00 222b 666b NEWS", # TODO: check if this one really can be exposed???
+    "22a 00 222b 666b NEWS", # (apparently this one is exposed, not concealed)
     # 2468
     "222a 444a 6666a 8888a", "222a 444a 6666b 8888b",
     "FF 2222a 44b 66b 8888a",
-    "EE 22a 444a 666a 88a WW", # TODO: check if this can be any opposing winds
-    "2222a DDDa 8888b DDDb",   # TODO: check if this requires 2s and 8s specifically
+    "EE 22a 444a 666a 88a WW",
+    "2222a DDDa 8888b DDDb",
     "FFF 22a 44a 666a 8888a",
-    "2468a 2222b Db 2222c Dc", # TODO: check if this is actually any two matching even kongs
-    "FFF 2468a FFF 2222b",     # TODO: check if this can be any even kong
-    "FF 246a 888a 246b 888b",  # concealed, TODO: check if this is these numbers only
+    "2468a 2222b Db 2222c Dc", "2468a 4444b Db 4444c Dc", "2468a 6666b Db 6666c Dc", "2468a 8888b Db 8888c Dc",
+    "FFF 2468a FFF 2222b|4444b|6666b|8888b",
+    "FF 246a 888a 246b 888b",  # concealed
     # Any Like Numbers
     "XXXX0a FFFFFF XXXX0c",
     "XXXX0a Da XXX0b Db XXXX0c Dc",
@@ -20,7 +20,7 @@
     # Quints
     "XXXXX0a XXXX0b XXXXX0c",
     "FF XXXXX0a XX1a XXXXX2a",
-    "11111a 44444a DDDDb",    # TODO: check if this is these numbers only
+    "XXXXX0a XXXXX1a|XXXXX2a|XXXXX3a|XXXXX4a|XXXXX5a|XXXXX6a|XXXXX7a|XXXXX8a DDDDb",
     # Consecutive Run
     "11a 222a 33a 444a 5555a", "55a 666a 77a 888a 9999a",
     "FFF XXXX0a X1a X2a X3a XXXX4a", "FFF XXXX0a X1b X2b X3b XXXX4a",
@@ -33,20 +33,20 @@
     # 13579
     "11a 333a 55a 777a 9999a", "11a 333a 55b 777c 9999c",
     "111a 333a 3333b 5555b", "555a 777a 7777b 9999b",
-    "NN 1111a 33a 5555a SS", "NN 5555a 77a 9999a SS",  # TODO: check if these can be any opposing winds
+    "NN 1111a 33a 5555a SS", "NN 5555a 77a 9999a SS",
     "113579a 1111b 1111c", "133579a 3333b 3333c", "135579a 5555b 5555c", "135779a 7777b 7777c", "135799a 9999b 9999c",
     "FFF 11a 33a 555a DDDDa", "FFF 55a 77a 999a DDDDa",
     "11a 33a 111b 333b 5555c", "55a 77a 555b 777b 9999c",
     "1111a 33a 55a 77a 9999a", "1111a 33b 55b 77b 9999a",
-    "FF 11a 33a 55a 111b 111c", "FF 55a 77a 99a 555b 555c", # concealed, TODO: check if these can be any odd pung
+    "FF 11a 33a 55a 111b 111c", "FF 55a 77a 99a 555b 555c", # concealed
     "FF 135a 777a 999a DDDb" # concealed
     # Winds and Dragons
     "NNNN EEE WWW SSSS", "NNN EEEE WWWW SSS",
-    "1234a DDDb DDDc DDDDa"    # TODO: check if this can be any 4-straight, and/or if it must match DDDD in suit
-    "NNN 1111b 1111c SSS", "NNN 3333b 3333c SSS", "NNN 5555b 5555c SSS", "NNN 7777b 7777c SSS", "NNN 9999b 9999c SSS", # TODO: check if these hands are correct
-    "EEE 2222b 2222c WWW", "EEE 4444b 4444c WWW", "EEE 6666b 6666c WWW", "EEE 8888b 8888c WWW",                        # TODO: check if these hands are correct
-    "FFF ZZZZ FFF DDDD",        # TODO: check if this one is indeed "any wind"
-    "1a N 2a EE 3a WWW 4a SSSS", # TODO: check if this is these numbers/winds only
+    "X0a X1a X2a X3a DDDb DDDc DDDDa"    # TODO: check if X0a X1a X2a X3a must match DDDD in suit
+    "NNN 1111b 1111c SSS", "NNN 3333b 3333c SSS", "NNN 5555b 5555c SSS", "NNN 7777b 7777c SSS", "NNN 9999b 9999c SSS",
+    "EEE 2222b 2222c WWW", "EEE 4444b 4444c WWW", "EEE 6666b 6666c WWW", "EEE 8888b 8888c WWW",
+    "FFF ZZZZ FFF DDDD",
+    "1a N 2a EE 3a WWW 4a SSSS",
     "FF NNNN SSSS DDa DDb", "FF EEEE WWWW DDa DDb", 
     "NN EEE 2026a WWW SS", # concealed
     # 369
@@ -54,11 +54,11 @@
     "33a 66a 333b 666b 9999c",
     "FFF 33a 666a 99a DDDDa", "FFF 33a 666a 99a DDDDb",
     "33a 66a 666b 999b NEWS",
-    "FF 3369a 3333b 3333c",  # TODO: check if this is a "pungs match pair" situation
+    "FF 3369a 3333b 3333c", "FF 3669a 6666b 6666c", "FF 3699a 9999b 9999c",
     "FF 333a 666a 999a 369b", # concealed
     # Singles and Pairs
-    "NN EE WW SS X0a Da X0b Db X0c Dc", # concealed, TODO: check if this is correct
-    "2a 4a 66a 88a 2a 4a 66b 88b 88c", # concealed, TODO: check if last pair must be 8
+    "NN EE WW SS X0a Da X0b Db X0c Dc", # concealed
+    "2a 4a 66a 88a 2a 4a 66b 88b 88c", # concealed
     "FF 3369a 3669b 3699c", # concealed
     "XX0a XX1a XX2a XX3a XX4a XX5a XX6a", # concealed
     "11a 357a 99a 11b 357b 99b", # concealed
@@ -66,19 +66,19 @@
   ]
 |
 .open_win_definition = [
-    # 2024
+    # 2026
     "222a 000 2222b 6666b",
-    "2026a DDDa 2222b DDDb", # TODO: check if 2222 can be either 2 or 6
+    "2026a DDDa 2222b|6666b DDDb",
     "FFF 2026a 222b 6666c",
-    "22a 00 222b 666b NEWS", # TODO: check if this one really can be exposed???
+    "22a 00 222b 666b NEWS", # (apparently this one is exposed, not concealed)
     # 2468
     "222a 444a 6666a 8888a", "222a 444a 6666b 8888b",
     "FF 2222a 44b 66b 8888a",
-    "EE 22a 444a 666a 88a WW", # TODO: check if this can be any opposing winds
-    "2222a DDDa 8888b DDDb",   # TODO: check if this requires 2s and 8s specifically
+    "EE 22a 444a 666a 88a WW",
+    "2222a DDDa 8888b DDDb",
     "FFF 22a 44a 666a 8888a",
-    "2468a 2222b Db 2222c Dc", # TODO: check if this is actually any two matching even kongs
-    "FFF 2468a FFF 2222b",     # TODO: check if this can be any even kong
+    "2468a 2222b Db 2222c Dc", "2468a 4444b Db 4444c Dc", "2468a 6666b Db 6666c Dc", "2468a 8888b Db 8888c Dc",
+    "FFF 2468a FFF 2222b|4444b|6666b|8888b",
     # Any Like Numbers
     "XXXX0a FFFFFF XXXX0c",
     "XXXX0a Da XXX0b Db XXXX0c Dc",
@@ -86,7 +86,7 @@
     # Quints
     "XXXXX0a XXXX0b XXXXX0c",
     "FF XXXXX0a XX1a XXXXX2a",
-    "11111a 44444a DDDDb",    # TODO: check if this is these numbers only
+    "XXXXX0a XXXXX1a|XXXXX2a|XXXXX3a|XXXXX4a|XXXXX5a|XXXXX6a|XXXXX7a|XXXXX8a DDDDb",
     # Consecutive Run
     "11a 222a 33a 444a 5555a", "55a 666a 77a 888a 9999a",
     "FFF XXXX0a X1a X2a X3a XXXX4a", "FFF XXXX0a X1b X2b X3b XXXX4a",
@@ -98,30 +98,30 @@
     # 13579
     "11a 333a 55a 777a 9999a", "11a 333a 55b 777c 9999c",
     "111a 333a 3333b 5555b", "555a 777a 7777b 9999b",
-    "NN 1111a 33a 5555a SS", "NN 5555a 77a 9999a SS",  # TODO: check if these can be any opposing winds
+    "NN 1111a 33a 5555a SS", "NN 5555a 77a 9999a SS",
     "113579a 1111b 1111c", "133579a 3333b 3333c", "135579a 5555b 5555c", "135779a 7777b 7777c", "135799a 9999b 9999c",
     "FFF 11a 33a 555a DDDDa", "FFF 55a 77a 999a DDDDa",
     "11a 33a 111b 333b 5555c", "55a 77a 555b 777b 9999c",
     "1111a 33a 55a 77a 9999a", "1111a 33b 55b 77b 9999a",
     # Winds and Dragons
     "NNNN EEE WWW SSSS", "NNN EEEE WWWW SSS",
-    "1234a DDDb DDDc DDDDa"    # TODO: check if this can be any 4-straight, and/or if it must match DDDD in suit
-    "NNN 1111b 1111c SSS", "NNN 3333b 3333c SSS", "NNN 5555b 5555c SSS", "NNN 7777b 7777c SSS", "NNN 9999b 9999c SSS", # TODO: check if these hands are correct
-    "EEE 2222b 2222c WWW", "EEE 4444b 4444c WWW", "EEE 6666b 6666c WWW", "EEE 8888b 8888c WWW",                        # TODO: check if these hands are correct
-    "FFF ZZZZ FFF DDDD",        # TODO: check if this one is indeed "any wind"
-    "1a N 2a EE 3a WWW 4a SSSS", # TODO: check if this is these numbers/winds only
+    "X0a X1a X2a X3a DDDb DDDc DDDDa"    # TODO: check if X0a X1a X2a X3a must match DDDD in suit
+    "NNN 1111b 1111c SSS", "NNN 3333b 3333c SSS", "NNN 5555b 5555c SSS", "NNN 7777b 7777c SSS", "NNN 9999b 9999c SSS",
+    "EEE 2222b 2222c WWW", "EEE 4444b 4444c WWW", "EEE 6666b 6666c WWW", "EEE 8888b 8888c WWW",
+    "FFF ZZZZ FFF DDDD",
+    "1a N 2a EE 3a WWW 4a SSSS",
     "FF NNNN SSSS DDa DDb", "FF EEEE WWWW DDa DDb", 
     # 369
     "333a 666a 6666b 9999b", "333a 666a 6666b 9999c",
     "33a 66a 333b 666b 9999c",
     "FFF 33a 666a 99a DDDDa", "FFF 33a 666a 99a DDDDb",
     "33a 66a 666b 999b NEWS",
-    "FF 3369a 3333b 3333c"  # TODO: check if this is a "pungs match pair" situation
+    "FF 3369a 3333b 3333c", "FF 3669a 6666b 6666c", "FF 3699a 9999b 9999c"
   ]
 |
 .singles_win_definition = [
-    "NN EE WW SS X0a Da X0b Db X0c Dc", # TODO: check if this is correct
-    "2a 4a 66a 88a 2a 4a 66b 88b 88c", # TODO: check if last pair must be 8
+    "NN EE WW SS X0a Da X0b Db X0c Dc",
+    "2a 4a 66a 88a 2a 4a 66b 88b 88c",
     "FF 3369a 3669b 3699c",
     "XX0a XX1a XX2a XX3a XX4a XX5a XX6a",
     "11a 357a 99a 11b 357b 99b",
