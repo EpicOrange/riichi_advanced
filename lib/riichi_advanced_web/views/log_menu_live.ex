@@ -27,7 +27,7 @@ defmodule RiichiAdvancedWeb.LogMenuLive do
 ### Log viewer is currently non-functional, so replace this entire code with a message telling players that it's nonfunctional. This next code block is temporary.
   def render(assigns) do
     ~H"""
-    <div id="container">
+    <div id="container" phx-hook="ClickListener">
       <div class="title">
         <div class="title-riichi">Riichi</div>
         <div class="title-advanced">Advanced</div>
@@ -58,7 +58,7 @@ defmodule RiichiAdvancedWeb.LogMenuLive do
   end
 #  def render(assigns) do
 #    ~H"""
-#    <div id="container">
+#    <div id="container" phx-hook="ClickListener">
 #      <div class="title">
 #        <div class="title-riichi">Riichi</div>
 #        <div class="title-advanced">Advanced</div>
