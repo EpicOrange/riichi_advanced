@@ -126,6 +126,8 @@ def myfun2 do
   as everyone do
     push_message("says hi")
   end
+  # you can also use as: (like in conditions)
+  push_message("says hi", as: "everyone")
 
   # this becomes ["set_counter", "counter_name", "score"]
   counter_name = "score"

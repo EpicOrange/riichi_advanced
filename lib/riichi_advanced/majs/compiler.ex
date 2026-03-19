@@ -195,6 +195,15 @@ defmodule RiichiAdvanced.Compiler do
   #   end
   # end
   defp compile_action(action, line, column) do
+    # check for "as:"
+    action = with {action_name, pos, opts} <- action do
+      if opts != nil do
+        case Enum.at(opts, -1) do
+          [{"as", seats_spec}] -> {"as", pos, [seats_spec, [do: [{action_name, pos, List.delete_at(opts, -1)}]]]}
+          _ -> action
+        end
+      else action end
+    end
     case action do
       {:"::", [line: line, column: column], [assignment, display_name]} ->
         case assignment do
