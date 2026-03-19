@@ -18,4 +18,4 @@ define_const kokushi_win, ~m"unique, dismantle_calls, orphans_any:13, orphans_an
 apply set_append, "tenpai_definition", +@kokushi_tenpai
 apply set_append, "win_definition", +@kokushi_win
 
-define_yaku !list, !name, !value, match(["hand", "winning_tile"], ~m"orphans_all:1")
+define_yaku !list, !name, [!value, "★"], match(["hand", "winning_tile"], ~m"orphans_all:1")

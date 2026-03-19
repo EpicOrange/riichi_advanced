@@ -7,10 +7,10 @@ on after_initialization do
   update_rule("Yakuman", "Suukantsu", "%{example_hand}", %{example_hand: ~t"3z 55p5P5p 1x88p1x 22Z22z 1x99m1x 3z"})
 end
 
-define_yaku yaku, "Chankan", 1, won_by_call and status("kan", as: "caller")
-define_yaku yaku, "Rinshan", 1, status("kan")
-define_yaku yaku, "Sankantsu", 2, match(["calls"], ~m"(daiminkan ankan kakan):3")
-define_yaku yakuman, "Suukantsu", 1, match(["calls"], ~m"(daiminkan ankan kakan):4")
+define_yaku yaku, "Chankan", [1, "Han"], won_by_call and status("kan", as: "caller")
+define_yaku yaku, "Rinshan", [1, "Han"], status("kan")
+define_yaku yaku, "Sankantsu", [2, "Han"], match(["calls"], ~m"(daiminkan ankan kakan):3")
+define_yaku yakuman, "Suukantsu", [1, "★"], match(["calls"], ~m"(daiminkan ankan kakan):4")
 
 def do_kan_draw do
   shift_tile_to_dead_wall(1)

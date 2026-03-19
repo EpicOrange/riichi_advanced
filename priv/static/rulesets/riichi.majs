@@ -150,7 +150,7 @@ define_yaku yakuman, "Chinroutou", [1, "★"], winning_hand_consists_of("1m","9m
 define_yaku yakuman, "Chuurenpoutou", [1, "★"], match(["hand", "winning_tile"], ~m"chuurenpoutou:1")
 define_yaku yakuman, "Junsei Chuurenpoutou", [2, "★"], match(["hand"], ~m"chuurenpoutou:1")
 define_yaku yakuman, "Kokushi Musou", [1, "★"], match(["hand", "winning_tile"], ~m"orphans_all:1")
-define_yaku yakuman, "Kokushi Musou Juusan Menmachi", 2, match(["hand"], ~m"orphans_all:1")
+define_yaku yakuman, "Kokushi Musou Juusan Menmachi", [2, "★"], match(["hand"], ~m"orphans_all:1")
 define_yaku yakuman, "Daisuushii", [2, "★"], match(["hand", "calls", "winning_tile"], ["daisuushii"])
 define_yaku yakuman, "Shousuushii", [1, "★"], match(["hand", "calls", "winning_tile"], ["shousuushii"])
 # tenhou upgrades certain yakuman to double yakuman

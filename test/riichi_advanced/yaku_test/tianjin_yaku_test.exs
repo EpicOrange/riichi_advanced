@@ -28,8 +28,7 @@ defmodule RiichiAdvanced.YakuTest.TianjinYaku do
       %{"type" => "buttons_pressed", "buttons" => [%{"button" => "tsumo"}, nil, nil, nil]}
     ], %{
       east: %{
-        yaku: [{"Pure Hand", 2}, {"Different Patterns", 1}],
-        yaku2: []
+        yaku: [{"Pure Hand", [2, "Fan"]}, {"Different Patterns", [1, "Fan"]}]
       }
     })
   end
@@ -86,8 +85,7 @@ defmodule RiichiAdvanced.YakuTest.TianjinYaku do
       %{"type" => "buttons_pressed", "buttons" => [%{"button" => "tsumo"}, nil, nil, nil]}
     ], %{
       east: %{
-        yaku: [{"Wild Card Single Wait", 2}, {"Different Patterns", 1}],
-        yaku2: []
+        yaku: [{"Wild Card Single Wait", [2, "Fan"]}, {"Different Patterns", [1, "Fan"]}]
       }
     })
   end
@@ -118,8 +116,7 @@ defmodule RiichiAdvanced.YakuTest.TianjinYaku do
       %{"type" => "buttons_pressed", "buttons" => [%{"button" => "tsumo"}, nil, nil, nil]}
     ], %{
       east: %{
-        yaku: [{"Double Wild Card Set Wait", 2}, {"Different Patterns", 1}],
-        yaku2: []
+        yaku: [{"Double Wild Card Set Wait", [2, "Fan"]}, {"Different Patterns", [1, "Fan"]}]
       }
     })
   end
@@ -150,8 +147,7 @@ defmodule RiichiAdvanced.YakuTest.TianjinYaku do
       %{"type" => "buttons_pressed", "buttons" => [%{"button" => "tsumo"}, nil, nil, nil]}
     ], %{
       east: %{
-        yaku: [{"Capturing the Five", 3}, {"Pure Hand", 2}, {"Different Patterns", 2}],
-        yaku2: []
+        yaku: [{"Capturing the Five", [3, "Fan"]}, {"Pure Hand", [2, "Fan"]}, {"Different Patterns", [2, "Fan"]}]
       }
     })
   end
@@ -182,8 +178,7 @@ defmodule RiichiAdvanced.YakuTest.TianjinYaku do
       %{"type" => "buttons_pressed", "buttons" => [%{"button" => "tsumo"}, nil, nil, nil]}
     ], %{
       east: %{
-        yaku: [{"Dragon", 4}, {"Pure Hand", 2}, {"Different Patterns", 2}],
-        yaku2: []
+        yaku: [{"Dragon", [4, "Fan"]}, {"Pure Hand", [2, "Fan"]}, {"Different Patterns", [2, "Fan"]}]
       }
     })
   end
@@ -213,8 +208,7 @@ defmodule RiichiAdvanced.YakuTest.TianjinYaku do
       %{"type" => "buttons_pressed", "buttons" => [%{"button" => "tsumo"}, nil, nil, nil]}
     ], %{
       east: %{
-        yaku: [{"Dragon", 4}, {"Kong Blossom", 1}, {"Pure Hand", 2}, {"Different Patterns", 3}],
-        yaku2: [{"Kong Blossom", 2}]
+        yaku: [{"Dragon", [4, "Fan"]}, {"Kong Blossom", [1, "Fan", 2, "×"]}, {"Pure Hand", [2, "Fan"]}, {"Different Patterns", [3, "Fan"]}]
       }
     }, %{delta_scores: [60, -20, -20, -20]})
   end
@@ -246,8 +240,7 @@ defmodule RiichiAdvanced.YakuTest.TianjinYaku do
       %{"type" => "buttons_pressed", "buttons" => [%{"button" => "tsumo"}, nil, nil, nil]}
     ], %{
       east: %{
-        yaku: [{"Dragon", 4}, {"Kong Blossom", 2}, {"Pure Hand", 2}, {"Different Patterns", 3}],
-        yaku2: [{"Kong Blossom", 2}]
+        yaku: [{"Dragon", [4, "Fan"]}, {"Kong Blossom", [2, "Fan", 2, "×"]}, {"Pure Hand", [2, "Fan"]}, {"Different Patterns", [3, "Fan"]}]
       }
     }, %{delta_scores: [66, -22, -22, -22]})
   end
@@ -274,8 +267,7 @@ defmodule RiichiAdvanced.YakuTest.TianjinYaku do
       %{"type" => "buttons_pressed", "buttons" => [%{"button" => "tsumo"}, nil, nil, nil]}
     ], %{
       east: %{
-        yaku: [{"Heavenly Hand", 1}],
-        yaku2: [{"Heavenly Hand", 6}]
+        yaku: [{"Heavenly Hand", [1, "Fan", 6, "×"]}]
       }
     }, %{delta_scores: [18, -6, -6, -6]})
   end
@@ -302,8 +294,7 @@ defmodule RiichiAdvanced.YakuTest.TianjinYaku do
       %{"type" => "buttons_pressed", "buttons" => [%{"button" => "tsumo"}, nil, nil, nil]}
     ], %{
       east: %{
-        yaku: [{"Heavenly Hand", 1}, {"Pure Hand", 2}, {"Different Patterns", 1}],
-        yaku2: [{"Heavenly Hand", 6}]
+        yaku: [{"Heavenly Hand", [1, "Fan", 6, "×"]}, {"Pure Hand", [2, "Fan"]}, {"Different Patterns", [1, "Fan"]}]
       }
     }, %{delta_scores: [72, -24, -24, -24]})
   end
@@ -331,8 +322,7 @@ defmodule RiichiAdvanced.YakuTest.TianjinYaku do
       %{"type" => "buttons_pressed", "buttons" => [nil, %{"button" => "tsumo"}, nil, nil]}
     ], %{
       south: %{
-        yaku: [{"Earthly Hand", 1}],
-        yaku2: [{"Earthly Hand", 4}]
+        yaku: [{"Earthly Hand", [1, "Fan", 4, "×"]}]
       }
     }, %{delta_scores: [-4, 12, -4, -4]})
   end
@@ -360,8 +350,7 @@ defmodule RiichiAdvanced.YakuTest.TianjinYaku do
       %{"type" => "buttons_pressed", "buttons" => [nil, %{"button" => "tsumo"}, nil, nil]}
     ], %{
       south: %{
-        yaku: [{"Earthly Hand", 1}, {"Pure Hand", 2}, {"Different Patterns", 1}],
-        yaku2: [{"Earthly Hand", 4}]
+        yaku: [{"Earthly Hand", [1, "Fan", 4, "×"]}, {"Pure Hand", [2, "Fan"]}, {"Different Patterns", [1, "Fan"]}]
       }
     }, %{delta_scores: [-16, 48, -16, -16]})
   end
