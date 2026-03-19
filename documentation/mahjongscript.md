@@ -383,6 +383,48 @@ apply set, "score_calculation.tobi", !below
 
 For security reasons, variables cannot contain uppercase letters.
 
+## Toplevel `if`
+
+You can also write conditionals at the top-level, for example:
+
+```elixir
+if !min == "Mangan" do
+  ...
+end
+```
+
+This runs the commands inside the if the variable `min` is set to `"Mangan"`. You can also do `if`-`else`-`end` and `unless`-`end`. The allowable operators in a conditional are as follows:
+
+- Any variable `!variable`
+- `l == r`: Check equality
+- `l in r`: Check if `l` is an element of array `r`
+- `not cond`: Logical NOT (negates `cond`)
+- `l and r`: Logical AND (true if `l`,`r` are both true)
+- `l or r`: Logical OR (true if one of `l`,`r` is true)
+- `true`: Always true
+- `false`: Always false
+- `defined("foo")`: See below
+
+## `define` (C `#ifdef`-like functionality)
+
+This is meant to be used when multiple mods define the same things, but you only want it to be defined once. Here's the basic example:
+
+```elixir
+unless defined("pao") do
+  define "pao"
+
+  on before_win do
+    ...
+  end
+  ...
+
+end
+```
+
+Essentially this means that only the first mod that hits this top-level conditional will evaluate the commands inside of it, since `"pao"` will be set thereafter.
+
+These `define`s only work for mods, so if you put `define`s in a `majs` ruleset, they will not transfer to mods. If you want to condition mod evaluation based on stuff in a ruleset, you will probably want to define a variable instead.
+
 # Command Reference
 
 ### `def`: Function definition
