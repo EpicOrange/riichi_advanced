@@ -1,4 +1,4 @@
-defmodule RiichiAdvanced.CosmicScoring do
+defmodule RiichiAdvanced.CosmicScoringTest do
   use ExUnit.Case, async: true
   alias RiichiAdvanced.TestUtils, as: TestUtils
 

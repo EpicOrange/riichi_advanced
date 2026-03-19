@@ -1,4 +1,4 @@
-defmodule RiichiAdvanced.CosmicMechanics do
+defmodule RiichiAdvanced.CosmicMechanicsTest do
   use ExUnit.Case, async: true
   alias RiichiAdvanced.TestUtils, as: TestUtils
 

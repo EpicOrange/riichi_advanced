@@ -1,4 +1,4 @@
-defmodule RiichiAdvanced.YakuTest.SichuanMechanics do
+defmodule RiichiAdvanced.SichuanMechanicsTest do
   use ExUnit.Case, async: true
   alias RiichiAdvanced.TestUtils, as: TestUtils
 

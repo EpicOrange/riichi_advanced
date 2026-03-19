@@ -1,4 +1,4 @@
-defmodule RiichiAdvanced.KansaiZanScoring do
+defmodule RiichiAdvanced.KansaiZanScoringTest do
   use ExUnit.Case, async: true
   alias RiichiAdvanced.TestUtils, as: TestUtils
 

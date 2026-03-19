@@ -153,7 +153,7 @@ defmodule RiichiAdvanced.Compiler do
   end
 
   defp compile_identifier(id, line, column) when is_binary(id) do
-    if Regex.match?(~r/^[a-z_][a-z0-9_]*$/, id) do
+    if Regex.match?(~r/^\$?[a-z_][a-z0-9_]*$/, id) do
       {:ok, id}
     else
       {:error, "Compiler.compile_identifier: at line #{line}:#{column}, invalid identifier #{inspect(id)}"}
