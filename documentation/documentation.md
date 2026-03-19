@@ -24,7 +24,8 @@ Note: this file is for the `majs` documentation. The `json` documentation is [he
   + [Conditions](#conditions-1)
   + [Tile specs](#tile-specs)
   + [Match targets](#match-targets)
-  + [Scoring methods](#scoring-methods)
+  + [Scoring methods (new)](#scoring-methods-new)
+  + [Scoring methods (old)](#scoring-methods-old)
     * [`"scoring_method": "multiplier"`](#scoring_method-multiplier)
     * [`"scoring_method": "score_table"`](#scoring_method-score_table)
     * [`"scoring_method": "vietnamese"`](#scoring_method-vietnamese)
@@ -177,7 +178,9 @@ In other words, `define_yaku` is a command that takes the following:
 
 - the name of the **yaku list** to add the yaku to
 - the name of the yaku (if you are awarded two yaku of the same name, their values are added together)
-- the value of the yaku
+- the value of the yaku. Typically this is just a number, but you might see one of the following formats:
+  + `[1, "Han"]`: Specifies the unit of points, if it differs from the default.
+  + `counter_name`: When evaluating the yaku, use the value of this counter (numeric variable) as the value.
 - a condition: the game awards the yaku if the condition is satisfied for the winning player.
   + Here the condition is `no_tiles_remaining and won_by_draw`, which is a combination of two conditions.
 
@@ -990,7 +993,47 @@ In addition, a couple selectors allow you to select _multiple_ targets. For exam
 - `"self_joker_meld_tiles"`: selects one nonjoker tile from own exposed calls containing a joker. (Used in malaysian mahjong)
 - `"anyone_joker_meld_tiles"`: selects one nonjoker tile from each exposed call containing a joker. (Used in american mahjong)
 
-## Scoring methods
+## Scoring methods (new)
+
+There now exists a more customizable way to do scoring. The old scoring system still works, though, and the documentation for that is [right after this section](#scoring-methods-old).
+
+The relevant command is `define_scoring`, which is run for each player declared responsible by the `make_responsible_for` action. Here's an example usage:
+
+    on before_win do
+      if won_by_draw do
+        # make non-winners responsible for all yaku
+        make_responsible_for("others")
+      else
+        if won_by_discard do
+          make_responsible_for("last_discarder")
+        else 
+          make_responsible_for("last_caller")
+        end
+      end
+    end
+
+    define_scoring ron do
+      total = points :: "Han"
+      han_mult = 2 ** (total + 2) :: "Han mult."
+      total = fu :: "Fu"
+      total *= han_mult :: "Base"
+      if seat_is("east", as: "winner") do
+        total *= 6 :: "Dealer ron"
+      else
+        total *= 4 :: "Nondealer ron"
+      end
+      total = round_up(total, 100) :: "Round up"
+    end
+
+This leads to something like:
+
+![](example_score_exchange.png)
+
+In summary, within `define_scoring` you can optionally label assignments by annotating them with `::`. Each usage of `::` will show up on the score exchange screen as shown above. The result of the final assignment using `::` is taken as the actual final score to be paid by the current player to the winner. (So there's nothing special about the name "total".)
+
+The game switches to this scoring system if _any_ `define_scoring` command exists. At the moment it doesn't handle everything (in particular, names of things), so you still need to set `score_calculation` using the old system for things like point names. See below.
+
+## Scoring methods (old)
 
 Scoring refers to the exchange of points after a win or a draw. To enable scoring, the `"score_calculation"` key must exist and must contain an array under a `"yaku_lists"` key:
   
