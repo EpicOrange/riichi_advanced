@@ -493,7 +493,7 @@ defmodule RiichiAdvanced.GameState.Kyoku do
         rules_ref: state.rules_ref,
       }
       Task.async_stream(joker_assignments, fn joker_assignment ->
-        cxt = try do
+        {state, cxt} = try do
           JokerSolver.evaluate_joker_assignment(state, cxt, joker_assignment)
         rescue
           err -> 
@@ -508,9 +508,13 @@ defmodule RiichiAdvanced.GameState.Kyoku do
       |> Stream.map(fn {:ok, state_cxt} -> state_cxt end)
       |> Payment.get_highest_scoring_txn(win_source == :worst_discard)
       |> case do
-        # no joker assignments returned by smt (this should not happen)
-        nil -> Logger.error("[ERROR] no joker assignments returned by smt for hand #{inspect(smt_hand)} #{inspect(smt_calls)}")
-        r -> r
+        nil ->
+          # nil = no joker assignments returned by smt
+          # (this happens for hands the solver doesn't support, like milky way)
+          {state, cxt} = JokerSolver.evaluate_joker_assignment(state, cxt, %{})
+          state = Payment.run_scoring_logic(state, cxt)
+          {state, cxt}
+        r   -> r
       end
     end
     |> Payment.get_highest_scoring_txn(win_source == :worst_discard)

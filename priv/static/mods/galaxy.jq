@@ -64,7 +64,7 @@ any(.wall[]; . == "1t") as $star
 |
 .yakuman += [{
   "display_name": "Milky Way",
-  "value": 1,
+  "value": [1, "★"],
   "when": [{"name": "counter_equals", "opts": ["non_galaxy_jokers", 0]}]
 }]
 |

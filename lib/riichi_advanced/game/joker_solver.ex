@@ -130,7 +130,7 @@ defmodule RiichiAdvanced.GameState.JokerSolver do
     # replace the winner's hand/calls temporarily (for yaku evaluation)
     state = update_player(state, seat, &%{ &1 | hand: assigned_hand, calls: assigned_calls, cache: %{ &1.cache | winning_hand: assigned_winning_hand } })
 
-    # also replace the actual winning tile within state, using joker assignment
+    # also replace the actual winning tile within state
     state = if assigned_winning_tile != nil do
       update_winning_tile(state, seat, win_source, fn _ -> assigned_winning_tile end)
     else
@@ -139,7 +139,13 @@ defmodule RiichiAdvanced.GameState.JokerSolver do
     end
 
     # run before_scoring only after replacing those tiles
+    # this is because before_scoring might add attributes to hand, which will be used for yaku calculation
     state = Actions.trigger_event(state, "before_scoring", cxt)
+
+    # fetch the new hand, calls, and winning tile
+    %{hand: assigned_hand, calls: assigned_calls} = state.players[seat]
+    assigned_winning_tile = get_winning_tile(state, seat, win_source)
+    assigned_winning_hand = assigned_hand ++ Enum.flat_map(assigned_calls, &Utils.call_to_tiles/1) ++ if assigned_winning_tile != nil do [assigned_winning_tile] else [] end
 
     # obtain yaku and minipoints from this state
     {yaku, minipoints} = Scoring.get_yaku_from_lists(state, Map.get(score_rules, "yaku_lists", []), seat, assigned_winning_tile, win_source)
@@ -157,9 +163,7 @@ defmodule RiichiAdvanced.GameState.JokerSolver do
     yaku2 = Enum.map(yaku2, fn {name, value} -> {translate(state, name), value} end)
     points = Enum.map(yaku ++ yaku2, fn {_name, value} -> value end) |> Enum.reduce([], &Scoring.add_yaku_values/2)
 
-    # note: we throw away the state here
-
-    Map.merge(cxt, %{
+    {state, Map.merge(cxt, %{
       yaku: yaku,
       yaku2: yaku2,
       minipoints: minipoints,
@@ -172,7 +176,7 @@ defmodule RiichiAdvanced.GameState.JokerSolver do
       assigned_calls: assigned_calls,
       assigned_winning_hand: assigned_winning_hand,
       assigned_winning_tile: assigned_winning_tile,
-    })
+    })}
   end
   
   def get_highest_scoring_evaluation(evaluations, get_worst_instead \\ false) do
