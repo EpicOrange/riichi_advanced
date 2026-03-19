@@ -195,7 +195,8 @@ defmodule RiichiAdvanced.GameState.Kyoku do
     state = Map.put(state, :round_result, :win)
 
     # run before_win actions
-    state = Actions.trigger_event(state, "before_win", %{seat: seat, win_source: win_source})
+    winning_tile = get_winning_tile(state, seat, win_source)
+    state = Actions.trigger_event(state, "before_win", %{seat: seat, win_source: win_source, winning_tile: winning_tile})
 
     # reset animation (and allow discarding again, in bloody end rules)
     state = update_all_players(state, fn _seat, player -> %{ player | last_discard: nil } end)

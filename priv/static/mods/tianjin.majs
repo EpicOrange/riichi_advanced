@@ -47,39 +47,3 @@ on before_win do
     end
   end
 end
-
-
-
-
-
-
-
-
-
-# "after_scoring": {
-#   "actions": [
-#     ["when", ["won"], [
-#       // if a nondealer won, set dealer's multiplier to the winner's multiplier
-#       // and set all other nondealers' multiplier to 1
-#       // if dealer won, no change is needed
-#       ["when", [{"name": "not_seat_is", "opts": ["east"]}], [
-#         ["set_counter_all", "nondealer_mult", "dealer_mult"],
-#         ["as", "others", [
-#           ["ite", [{"name": "seat_is", "opts": ["east"]}], [
-#             ["set_counter", "dealer_mult", "nondealer_mult"]
-#           ], [
-#             ["set_counter", "dealer_mult", 1]
-#           ]]
-#         ]]
-#       ]],
-#       // everyone pays the winner score * multiplier
-#       ["modify_payout", "all", 0, "set"],
-#       ["as", "others", [
-#         ["set_counter", "basic_score", "score"],
-#         ["multiply_counter", "basic_score", "dealer_mult"],
-#         ["modify_payout", "self", "basic_score", "subtract"],
-#         ["modify_payout", "prev_seat", "basic_score", "add"]
-#       ]]
-#     ]]
-#   ]
-# },

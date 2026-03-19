@@ -1,4 +1,19 @@
+# flag that mods can use to turn off this behavior
 define_const kazoe_yakuman_ari, true
+
+on before_win do
+  add_scoring_attrs
+  calculate_fu
+  if won_by_draw do
+    make_responsible_for("others")
+  else
+    if won_by_discard do
+      make_responsible_for("last_discarder")
+    else 
+      make_responsible_for("last_caller")
+    end
+  end
+end
 
 def check_limit do
   if total == 0 and points2 > 0 do

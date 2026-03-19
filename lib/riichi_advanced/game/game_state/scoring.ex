@@ -91,6 +91,8 @@ defmodule RiichiAdvanced.GameState.Scoring do
     end
   end
 
+  # TODO replace inner loop with JokerSolver.evaluate_joker_assignment?
+  # this is only here bc of shortcutting
   def seat_scores_points(state, yaku_list_names, min_points, min_minipoints, seat, winning_tile, win_source) do
     for {smt_hand, smt_calls} <- JokerSolver.get_smt_hand_calls(state, seat, winning_tile) do
       JokerSolver.solve_for_jokers(
@@ -100,18 +102,17 @@ defmodule RiichiAdvanced.GameState.Scoring do
         state.players[seat].tile_behavior)
       |> Task.async_stream(fn joker_assignment ->
         # apply joker assignments
-        %{hand: hand, calls: calls} = state.players[seat]
-        {assigned_hand, assigned_calls, assigned_winning_hand, assigned_winning_tile} = JokerSolver.apply_joker_assignment(hand, calls, joker_assignment)
+        {assigned_hand, assigned_calls, assigned_winning_hand, assigned_winning_tile} = JokerSolver.apply_joker_assignment(smt_hand, state.players[seat].calls, joker_assignment)
         state = update_player(state, seat, &%{ &1 | hand: assigned_hand, calls: assigned_calls, cache: %{ &1.cache | winning_hand: assigned_winning_hand } })
         state = if assigned_winning_tile != nil do
           update_winning_tile(state, seat, win_source, fn _ -> assigned_winning_tile end)
         else state end
         # run before_win actions
-        state = Actions.trigger_event(state, "before_win", %{seat: seat, win_source: win_source, silent: true})
+        state = Actions.trigger_event(state, "before_win", %{seat: seat, win_source: win_source, winning_tile: assigned_winning_tile, silent: true})
         # run before_scoring actions
-        state = Actions.trigger_event(state, "before_scoring", %{seat: seat, win_source: win_source, silent: true})
-
-        # get winning tile after before_scoring does its thing
+        state = Actions.trigger_event(state, "before_scoring", %{seat: seat, win_source: win_source, winning_tile: assigned_winning_tile, silent: true})
+        
+        # get winning tile, ensure this happens after running before_scoring above
         {yaku, minipoints} = get_yaku_from_lists(state, yaku_list_names, seat, winning_tile, win_source)
         minipoints >= min_minipoints && case min_points do
           :declared ->

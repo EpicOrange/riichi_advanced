@@ -88,7 +88,8 @@ defmodule RiichiAdvanced.GameState.JokerSolver do
       {call_name, _call} -> call_name in Riichi.flower_names()
       _                  -> false
     end)
-    assigned_hand = hand |> Enum.with_index() |> Enum.map(fn {tile, ix} -> Map.get(joker_assignment, ix, tile) end)
+    assigned_hand = hand |> Enum.drop(-1) |> Enum.with_index() |> Enum.map(fn {tile, ix} -> Map.get(joker_assignment, ix, tile) end)
+
     assigned_non_flower_calls = non_flower_calls
     |> Enum.with_index()
     |> Enum.map(fn {{call_name, call}, i} ->
@@ -121,15 +122,12 @@ defmodule RiichiAdvanced.GameState.JokerSolver do
     #   Map.new(joker_assignment, fn {ix, tile} -> {ix, if tile == :"5z" do :"0z" else tile end} end)
     # else joker_assignment end
 
-    # save original hand and calls
-    %{hand: orig_hand, calls: orig_calls} = state.players[seat]
-
     # use the joker assignment to obtain winner's {hand, calls} with jokers replaced by their assignments
-    # must use orig calls, that's what the function expects
-    {assigned_hand, assigned_calls, assigned_winning_hand, assigned_winning_tile} = apply_joker_assignment(smt_hand, orig_calls, joker_assignment)
+    # must use smt hand and orig calls, that's what the function expects
+    {assigned_hand, assigned_calls, assigned_winning_hand, assigned_winning_tile} = apply_joker_assignment(smt_hand, state.players[seat].calls, joker_assignment)
 
     # replace the winner's hand/calls temporarily (for yaku evaluation)
-    update_player(state, seat, &%{ &1 | hand: assigned_hand, calls: assigned_calls, cache: %{ &1.cache | winning_hand: assigned_winning_hand } })
+    state = update_player(state, seat, &%{ &1 | hand: assigned_hand, calls: assigned_calls, cache: %{ &1.cache | winning_hand: assigned_winning_hand } })
 
     # also replace the actual winning tile within state, using joker assignment
     state = if assigned_winning_tile != nil do
@@ -155,8 +153,7 @@ defmodule RiichiAdvanced.GameState.JokerSolver do
     yaku2 = Enum.map(yaku2, fn {name, value} -> {translate(state, name), value} end)
     points = Enum.map(yaku ++ yaku2, fn {_name, value} -> value end) |> Enum.reduce([], &Scoring.add_yaku_values/2)
 
-    # restore orig tiles for visual reasons, since we're done scoring
-    update_player(state, seat, &%{ &1 | hand: orig_hand, calls: orig_calls })
+    # note: we throw away the state here
 
     Map.merge(cxt, %{
       yaku: yaku,
@@ -173,16 +170,6 @@ defmodule RiichiAdvanced.GameState.JokerSolver do
       assigned_winning_tile: assigned_winning_tile,
     })
   end
-
-  
-  
-  
-  
-  
-  
-  
-  
-  
   
   def get_highest_scoring_evaluation(evaluations, get_worst_instead \\ false) do
     Enum.max_by(evaluations,

@@ -509,20 +509,6 @@ on before_call do
   unset_status_all("discards_empty")
 end
 
-on before_win do
-  add_scoring_attrs
-  calculate_fu
-  if won_by_draw do
-    make_responsible_for("others")
-  else
-    if won_by_discard do
-      make_responsible_for("last_discarder")
-    else 
-      make_responsible_for("last_caller")
-    end
-  end
-end
-
 on after_start do
   set_status_all("discards_empty")
 end

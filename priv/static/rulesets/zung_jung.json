@@ -4,7 +4,7 @@
     {"id": "zungjung/zj_five_point_minimum", "name": "5 Point Minimum", "desc": "Adds a requirement of having 5 points in hand in order to win."}
   ],
   "display_name": "Zung Jung",
-  "tutorial_link": "https://www.zj-mahjong.info/zj33_rules_eng.html",
+  "tutorial_link": "https://web.archive.org/web/20230505170402/http://www.zj-mahjong.info/zj33_rules_eng.html",
   "wall": ["1m", "1m", "1m", "1m",
            "2m", "2m", "2m", "2m",
            "3m", "3m", "3m", "3m",
@@ -495,7 +495,8 @@
     "Four Kong": ["Four Identical Sequences", "Big Four Winds", "All Honours", "Small Four Winds", "Pure Greater Terminals", "Three Kong", "Two Kong", "One Kong", "Seven Pairs"],
     "Four Identical Sequences": ["Big Four Winds", "All Honours", "Small Four Winds", "Pure Greater Terminals", "Three Identical Sequences", "Two Identical Sequences Twice", "Two Identical Sequences", "Seven Pairs"],
     "Big Four Winds": ["All Honours", "Small Four Winds", "Small Four Winds", "Big Three Winds", "Small Three Winds"],
-    "All Honours": ["Small Four Winds"]
+    "All Honours": ["Small Four Winds"],
+    "listed_limit_hand": ["yaku", "meta_yaku"]
   },
   "score_calculation": {
     "scoring_method": "multiplier",
@@ -503,11 +504,10 @@
     "discarder_multiplier": 1,
     "non_discarder_multiplier": 1,
     "self_draw_multiplier": 1,
-    "yaku_lists": ["yaku", "meta_yaku"],
-    "yaku2_lists": ["listed_limit_hand"],
+    "yaku_lists": ["yaku", "meta_yaku", "listed_limit_hand"],
     "yaku2_overrides_yaku1": true,
     "point_name": "points",
-    "point2_name": "points",
+    "point2_name": "​points", // zero-width space to distinguish from points name
     "win_by_discard_label": "Hu",
     "win_by_draw_label": "Zimo",
     "win_by_discard_name": "Hu",
@@ -585,19 +585,12 @@
   "after_start": {
     "actions": [["set_status_all", "first_turn"]]
   },
-  "after_win": {
-    "actions": [
-      ["set_counter", "displayed_score", "score"],
-      ["unless", ["not_has_yaku2", {"name": "counter_at_most", "opts": ["displayed_score", 320]}], [
-        ["push_message", "has their score capped at 320"],
-        ["modify_winner", "score", 320, "set"]
-      ]]
-    ]
-  },
   "after_scoring": {
     "actions": [
-      ["set_counter", "displayed_score", "score"],
-      ["ite", ["not_has_yaku2", {"name": "counter_at_least", "opts": ["displayed_score", 320]}], [
+      ["set_counter", "pts", "points"],
+      ["ite", ["not_has_yaku2", {"name": "counter_at_least", "opts": ["pts", 321]}], [
+        ["push_message", "has their score capped at 320"],
+        ["modify_winner", "score", 320, "set"],
         ["modify_payout", "self", 960, "set"],
         ["modify_payout", "others", -320, "set"]
       ], [
