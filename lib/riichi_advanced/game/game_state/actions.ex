@@ -1144,7 +1144,7 @@ defmodule RiichiAdvanced.GameState.Actions do
   end
 
   defp _run_actions(state, [], _context), do: {state, []}
-  defp _run_actions(state, [[action | opts] | actions], context) do
+  defp _run_actions(state, [[action | opts] | actions], context) when is_binary(action) do
     buttons_before = Enum.map(state.players, fn {seat, player} -> {seat, player.buttons} end)
     marked_objects = state.marking[context.seat]
     uninterruptible = String.starts_with?(action, "uninterruptible_")
@@ -1857,8 +1857,21 @@ defmodule RiichiAdvanced.GameState.Actions do
         # and %{seat1 => ["all"], seat2 => ["Daisangen"]} means seat1 pays for all except Daisangen
         yaku = List.wrap(Enum.at(opts, 1, "all"))
         for seat <- Conditions.from_seats_spec(state, context, Enum.at(opts, 0, "self")), reduce: state do
-          state -> update_player(state, seat, &%{ &1 | responsibilities: Map.update(&1.responsibilities, context.seat, yaku, fn yakus -> yakus ++ yaku end) })
+          state -> update_player(state, seat, &%{ &1 | responsibilities: Map.update(&1.responsibilities, context.seat, yaku, fn yakus -> Enum.uniq(yakus ++ yaku) end) })
         end
+      "clear_responsibilities" ->
+        # can pass "all" or an array like ["Daisangen"] or ["all"] to remove that entry only
+        towards = Conditions.from_seats_spec(state, context, Enum.at(opts, 0, "all"))
+        yakus_to_remove = Enum.at(opts, 1, "all")
+        update_in(state.players[context.seat].responsibilities, fn resps ->
+          for {seat, yakus} <- resps, into: %{} do
+            if seat in towards do
+              {seat, if yakus_to_remove == "all" do [] else yakus -- yakus_to_remove end}
+            else
+              {seat, yakus}
+            end
+          end
+        end)
       # WIP new scoring methods
       "declare_payment" ->
         # # e.g. declare_payment("Nondealer Ron", 1300, "add", "nondealers", "winner", 0)
