@@ -779,7 +779,7 @@ defmodule RiichiAdvanced.GameState.Actions do
   defp eval_expression(state, context, ["/", [l, r]]), do: eval_expression(state, context, l) / eval_expression(state, context, r)
   defp eval_expression(state, context, ["**", [l, r]]), do: eval_expression(state, context, l) ** eval_expression(state, context, r)
   defp eval_expression(state, context, ["round_up", [l, r]]) do
-    l = eval_expression(state, context, l)
+    l = eval_expression(state, context, l) |> trunc()
     r = eval_expression(state, context, r)
     to = if r == 0 do 10 else r end
     remainder = rem(l, to)

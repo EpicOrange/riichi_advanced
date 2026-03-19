@@ -3,3 +3,11 @@ on after_initialization do
 end
 
 define_yaku yaku, "Tsubame Gaeshi", [1, "Han"], won_by_discard and discarder_status("just_reached")
+
+# we also need to make it so that riichi stick is added before win check
+def place_riichi_stick do end # disable this function
+apply append, "buttons.riichi.actions" do
+  subtract_score("riichi_value")
+  put_down_riichi_stick
+  set_status("riichi_stick_placed")
+end

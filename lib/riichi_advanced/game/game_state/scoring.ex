@@ -21,7 +21,7 @@ defmodule RiichiAdvanced.GameState.Scoring do
     for [amt, type] <- Enum.chunk_every(value1, 2) ++ Enum.chunk_every(value2, 2), reduce: %{} do
       ret -> Map.update(ret, type, amt, &amt + &1)
     end
-    |> Enum.flat_map(fn {type, amt} -> [amt, type] end)
+    |> Enum.flat_map(fn {type, amt} -> [Utils.try_integer(amt), type] end)
   end
 
   def get_yaku(state, yaku_list, yaku_list_name, seat, winning_tile, win_source, minipoints, existing_yaku \\ []) do
@@ -38,7 +38,7 @@ defmodule RiichiAdvanced.GameState.Scoring do
         if is_list(value) do
           value = value
           |> Enum.chunk_every(2)
-          |> Enum.flat_map(fn [amt, type] -> [Actions.interpret_amount(state, context, amt), type] end)
+          |> Enum.flat_map(fn [amt, type] -> [Actions.interpret_amount(state, context, amt) |> Utils.try_integer(), type] end)
           {name, value}
         else
           value = Actions.interpret_amount(state, context, value)
