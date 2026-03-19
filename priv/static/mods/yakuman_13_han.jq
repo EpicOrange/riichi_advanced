@@ -13,3 +13,6 @@ if has("meta_yakuman") then
   |
   .meta_yakuman = []
 else . end
+|
+# remove existing yaku precedence that yakuman has on regular yaku
+.yaku_precedence |= del(.yakuman)

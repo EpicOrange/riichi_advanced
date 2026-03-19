@@ -1,3 +1,4 @@
+define_const kazoe_yakuman_ari, true
 
 def check_limit do
   if total == 0 and points2 > 0 do
@@ -5,7 +6,7 @@ def check_limit do
     total *= 8000 :: "Yakuman base"
     modify_winner("score_name", "Yakuman")
   end
-  if total == 0 and points >= 13 do
+  if @kazoe_yakuman_ari and total == 0 and points >= 13 do
     total = points :: "Han"
     total = 8000 :: "Yakuman base"
     modify_winner("score_name", "Kazoe Yakuman")

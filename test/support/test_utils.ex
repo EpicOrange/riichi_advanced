@@ -52,7 +52,7 @@ defmodule RiichiAdvanced.TestUtils do
   end
 
   def test_yaku_advanced(ruleset, mods, config, events, expected_winners \\ %{}, expected_state \\ %{}) do
-    if Debug.debug() do
+    if Debug.debug() == true do
       assert false, "Debug.debug is on!"
     end
     test_state = initialize_test_state(ruleset, mods, config)
@@ -108,6 +108,8 @@ defmodule RiichiAdvanced.TestUtils do
           assert seat in state.winner_seats
           errs = Enum.map(List.wrap(expected_winner), &check_winner.(seat, &1))
           if [] not in errs do
+            IO.inspect(state.txns, label: "txns")
+            IO.puts("")
             for tuples <- errs, {k, actual, expected} <- tuples do
               IO.puts("#{k}:\n\n    #{inspect(actual)}\n\nexpected #{k}:\n\n    #{inspect(expected)}")
             end

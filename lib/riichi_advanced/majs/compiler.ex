@@ -574,8 +574,8 @@ defmodule RiichiAdvanced.Compiler do
 
   defp compile_command("define_yaku", name, args, line, column) do
     yaku_spec = case args do
-      [display_name, value, condition] -> {:ok, {display_name, value, condition, []}}
-      [display_name, value, condition, supercedes] when is_list(supercedes) -> {:ok, {display_name, value, condition, supercedes}}
+      [display_name, value, condition] when is_binary(display_name) and (is_number(value) or is_binary(value) or is_list(value)) -> {:ok, {display_name, value, condition, []}}
+      [display_name, value, condition, supercedes] when is_binary(display_name) and (is_number(value) or is_binary(value) or is_list(value)) and is_list(supercedes) -> {:ok, {display_name, value, condition, supercedes}}
       _ -> {:error, "Compiler.compile: at line #{line}:#{column}, `define_yaku` command expects a yaku list name, a display name, a value, and a condition, got #{inspect(args)}"}
     end
 
@@ -616,8 +616,8 @@ defmodule RiichiAdvanced.Compiler do
 
   defp compile_command("replace_yaku", name, args, line, column) do
     yaku_spec = case args do
-      [display_name, value, condition] when is_binary(display_name) and (is_number(value) or is_binary(value)) -> {:ok, {display_name, value, condition, []}}
-      [display_name, value, condition, supercedes] when is_binary(display_name) and (is_number(value) or is_binary(value)) and is_list(supercedes) -> {:ok, {display_name, value, condition, supercedes}}
+      [display_name, value, condition] when is_binary(display_name) and (is_number(value) or is_binary(value) or is_list(value)) -> {:ok, {display_name, value, condition, []}}
+      [display_name, value, condition, supercedes] when is_binary(display_name) and (is_number(value) or is_binary(value) or is_list(value)) and is_list(supercedes) -> {:ok, {display_name, value, condition, supercedes}}
       _ -> {:error, "Compiler.compile: at line #{line}:#{column}, `replace_yaku` command expects a yaku list name, a display name, a value, and a condition, got #{inspect(args)}"}
     end
 

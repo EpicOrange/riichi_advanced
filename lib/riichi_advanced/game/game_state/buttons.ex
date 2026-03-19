@@ -79,7 +79,10 @@ defmodule RiichiAdvanced.GameState.Buttons do
           call_source = if is_call do :discards else :draw end # TODO better way to check call_source
           for {called_tile, choices} <- call_choices do
             # TODO maybe put call_source in choice? we need to define what call_source really is
-            {called_tile, Enum.filter(choices, fn call_choice -> Conditions.check_cnf_condition(state, conditions, %{seat: seat, call_source: call_source, choice: %Choice{ name: button_name, chosen_called_tile: called_tile, chosen_call_choice: call_choice }}) end)}
+            {called_tile, Enum.filter(choices, fn call_choice ->
+              choice = %Choice{ name: button_name, chosen_called_tile: called_tile, chosen_call_choice: call_choice }
+              Conditions.check_cnf_condition(state, conditions, %{seat: seat, call_source: call_source, choice: choice})
+            end)}
           end
         else call_choices end
         |> Map.new()

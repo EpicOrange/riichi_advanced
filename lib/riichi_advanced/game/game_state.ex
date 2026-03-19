@@ -24,7 +24,7 @@ defmodule RiichiAdvanced.GameState do
   defmodule Choice do
     defstruct [
       name: "skip",
-      chosen_actions: nil,
+      chosen_actions: [],
       chosen_called_tile: nil,
       chosen_call_choice: nil,
       chosen_saki_card: nil

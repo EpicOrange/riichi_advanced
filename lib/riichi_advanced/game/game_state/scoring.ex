@@ -33,7 +33,7 @@ defmodule RiichiAdvanced.GameState.Scoring do
       minipoints: minipoints,
       existing_yaku: existing_yaku
     }
-    eligible_yaku = yaku_list
+    new_yaku = yaku_list
       |> Enum.filter(fn %{"when" => cond_spec} -> Conditions.check_cnf_condition(state, cond_spec, context) end)
       |> Enum.map(fn %{"display_name" => name, "value" => value} ->
         if is_list(value) do
@@ -50,7 +50,7 @@ defmodule RiichiAdvanced.GameState.Scoring do
           {name, [value, unit]}
         end
       end)
-    eligible_yaku = eligible_yaku
+    eligible_yaku = existing_yaku ++ new_yaku
     yaku_map = for {name, value} <- eligible_yaku, reduce: %{} do
       acc -> Map.update(acc, name, value, &add_yaku_values(&1, value))
     end
@@ -59,15 +59,15 @@ defmodule RiichiAdvanced.GameState.Scoring do
       |> Enum.uniq()
       |> Enum.map(fn name -> {name, yaku_map[name]} end)
     eligible_yaku = case Rules.get(state.rules_ref, "yaku_precedence") do
-      nil -> existing_yaku ++ eligible_yaku
+      nil -> eligible_yaku
       yaku_precedence ->
-        excluded_yaku = Enum.flat_map(eligible_yaku, fn {name, _value} -> Map.get(yaku_precedence, name, []) end)
-        excluded_yaku = if Enum.empty?(eligible_yaku) do [] else Map.get(yaku_precedence, yaku_list_name, []) end ++ excluded_yaku
-        if Debug.debug_yaku_precedence() and Enum.any?(existing_yaku ++ eligible_yaku, fn {name, _value} -> name in excluded_yaku end) do
-          used_precedence = Enum.filter(yaku_precedence, fn {from, _to} -> Enum.any?(existing_yaku ++ eligible_yaku, fn {name, _value} -> from == name end) or from == yaku_list_name end) |> Map.new()
-          IO.puts("Excluding yaku #{inspect(excluded_yaku)} from #{inspect(existing_yaku ++ eligible_yaku)} due to precedence: #{inspect(used_precedence)}")
+        excluded_yaku = Enum.flat_map(new_yaku, fn {name, _value} -> Map.get(yaku_precedence, name, []) end)
+        excluded_yaku = if Enum.empty?(new_yaku) do [] else Map.get(yaku_precedence, yaku_list_name, []) end ++ excluded_yaku
+        if Debug.debug_yaku_precedence() and Enum.any?(eligible_yaku, fn {name, _value} -> name in excluded_yaku end) do
+          used_precedence = Enum.filter(yaku_precedence, fn {from, _to} -> Enum.any?(eligible_yaku, fn {name, _value} -> from == name end) or from == yaku_list_name end) |> Map.new()
+          IO.puts("Excluding yaku #{inspect(excluded_yaku)} from #{inspect(eligible_yaku)} due to precedence: #{inspect(used_precedence)}")
         end
-        Enum.reject(existing_yaku ++ eligible_yaku, fn {name, value} -> Enum.any?(excluded_yaku, &Enum.member?([name | List.wrap(value)], &1)) end)
+        Enum.reject(eligible_yaku, fn {name, value} -> Enum.any?(excluded_yaku, &Enum.member?([name | List.wrap(value)], &1)) end)
     end
     eligible_yaku
   end

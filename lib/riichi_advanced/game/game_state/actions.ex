@@ -2287,7 +2287,7 @@ defmodule RiichiAdvanced.GameState.Actions do
             Log.add_button_press(state, seat, choice_name, data)
         end
         # set choice now that a choice has been made
-        state = update_player(state, seat, &%{ &1 | choice: %{ name: choice_name, chosen_actions: actions, chosen_called_tile: called_tile, chosen_call_choice: call_choice, chosen_saki_card: saki_card } })
+        state = update_player(state, seat, &%{ &1 | choice: %Choice{ name: choice_name, chosen_actions: actions, chosen_called_tile: called_tile, chosen_call_choice: call_choice, chosen_saki_card: saki_card } })
         state = if choice_name != "skip" do update_player(state, seat, &%{ &1 | deferred_actions: [] }) else state end
         evaluate_choices(state)
       end
