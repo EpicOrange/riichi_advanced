@@ -1190,6 +1190,9 @@ defmodule RiichiAdvanced.GameState.Actions do
       "print_tags"         ->
         IO.inspect(state.tags, charlists: :as_lists)
         state
+      "print_txns"         ->
+        IO.inspect(state.txns, charlists: :as_lists)
+        state
       "push_message"          ->
         if not silent do
           vars = Enum.at(opts, 1, %{})

@@ -13,6 +13,7 @@ defmodule RiichiAdvanced.GameState.Kyoku do
   alias RiichiAdvanced.Riichi, as: Riichi
   alias RiichiAdvanced.Utils, as: Utils
   alias RiichiAdvanced.Types, as: Types
+  alias RiichiAdvanced.Types.Transaction, as: Transaction
   import RiichiAdvanced.GameState
   require Logger
 
@@ -538,7 +539,7 @@ defmodule RiichiAdvanced.GameState.Kyoku do
     # create a winner object since the liveview requires it
     score_rules = Rules.get(state.rules_ref, "score_calculation", %{})
     score = if Map.get(cxt, :scoring_key) != nil do
-      state.txns |> Enum.filter(& &1.to == seat) |> Payment.consolidate_txns(true) |> Map.get(seat) |> Payment.get_txn_result()
+      state.txns |> Enum.filter(& &1.to == seat) |> Payment.consolidate_txns(true) |> Map.get(seat, %Transaction{}) |> Payment.get_txn_result()
     else
       {score, _points, _points2, _score_name} = ScoringOld.score_yaku(state, seat, cxt.yaku, cxt.yaku2, is_dealer, win_source == :draw, cxt.minipoints)
       score

@@ -32,7 +32,7 @@ defmodule RiichiAdvanced.ModLoader do
     |> Enum.map(&String.replace(&1, Compiler.header(), ""))
     |> Enum.map(&"(#{&1}\n) as $_result\n|\n$_result")
     global_jq = for {name, val} <- globals, is_jq_var?(name), do: "(#{Jason.encode!(val)}) as $#{name}"
-    boilerplate = [Compiler.header() <> "\n.enabled_mods += #{Jason.encode!(mods)}"]
+    boilerplate = [Compiler.header() <> if Enum.empty?(mods) do "." else "\n.enabled_mods += #{Jason.encode!(mods)}" end]
     mod_jq = Enum.join(boilerplate ++ global_jq ++ mod_contents, "\n|")
     # IO.puts(mod_jq)
     if Debug.print_mods() do

@@ -495,7 +495,14 @@ defmodule RiichiAdvanced.Constants do
         }},
         "classical_fu",
       ]
-    }
+    },
+    # currently in the process of translating these to majs
+    # this is done by using the json ruleset as a base, and applying a majs mod
+    # which will later become the ruleset
+    "tianjin" => %{
+      ruleset: "tianjin",
+      mods: ["tianjin"],
+    },
   }
 
   def modpacks, do: @modpacks
