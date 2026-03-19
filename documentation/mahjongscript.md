@@ -396,7 +396,7 @@ end
 This runs the commands inside the if the variable `min` is set to `"Mangan"`. You can also do `if`-`else`-`end` and `unless`-`end`. The allowable operators in a conditional are as follows:
 
 - Any variable `!variable`
-- `l == r`: Check equality
+- `l == r` or `equals(l, r)`: Check equality
 - `l in r`: Check if `l` is an element of array `r`
 - `not cond`: Logical NOT (negates `cond`)
 - `l and r`: Logical AND (true if `l`,`r` are both true)
