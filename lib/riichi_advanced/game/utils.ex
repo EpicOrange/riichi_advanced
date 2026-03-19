@@ -248,6 +248,10 @@ defmodule RiichiAdvanced.Utils do
     if iterations <= 0 do seat else prev_turn(prev, iterations - 1) end
   end
   
+  @spec get_seat(
+          :east | :kamicha | :north | :self | :shimocha | :south | :toimen | :west,
+          :kamicha | :self | :shimocha | :toimen
+        ) :: :east | :kamicha | :north | :self | :shimocha | :south | :toimen | :west
   def get_seat(seat, direction) do
     case direction do
       :shimocha -> next_turn(seat)
@@ -530,6 +534,7 @@ defmodule RiichiAdvanced.Utils do
     end
   end
 
+  @spec insert_at(binary(), binary(), integer()) :: binary()
   def insert_at(s1, s2, ix) do
     {l, r} = String.split_at(s1, if ix < 0 do String.length(s1) + ix + 1 else ix end)
     l <> s2 <> r
