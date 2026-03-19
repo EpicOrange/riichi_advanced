@@ -463,7 +463,8 @@ defmodule RiichiAdvanced.GameState.Kyoku do
 
     {state, cxt} = for {smt_hand, smt_calls} <- JokerSolver.get_smt_hand_calls(state, seat, winning_tile) do
       # pop off the winning tile
-      {hand, [winning_tile]} = Enum.split(smt_hand, -1)
+      # {hand, [winning_tile]} = Enum.split(smt_hand, -1)
+      winning_tile = Enum.at(smt_hand, -1)
 
       # save this hand for the win screen
       winning_hand = smt_hand ++ smt_calls
@@ -476,6 +477,7 @@ defmodule RiichiAdvanced.GameState.Kyoku do
       # and find the maximum score obtainable across all joker assignments
       cxt = %{
         seat: seat,
+        winner: seat,
         win_source: win_source,
         smt_hand: smt_hand,
         smt_calls: smt_calls,
@@ -543,7 +545,7 @@ defmodule RiichiAdvanced.GameState.Kyoku do
     #   :call           -> get_last_call_action(state).seat
     # end
     score = if Map.get(cxt, :scoring_key) != nil do
-      state.txns |> Enum.filter(& &1.to == seat) |> Payment.consolidate_txns() |> Map.get(seat) |> Payment.get_txn_result()
+      state.txns |> Enum.filter(& &1.to == seat) |> Payment.consolidate_txns(true) |> Map.get(seat) |> Payment.get_txn_result()
     else
       {score, _points, _points2, _score_name} = ScoringOld.score_yaku(state, seat, cxt.yaku, cxt.yaku2, is_dealer, win_source == :draw, cxt.minipoints)
       score

@@ -728,7 +728,7 @@ defmodule RiichiAdvanced.GameState.Actions do
                 else [] end
               "add_original_hand" -> hand_calls_fus ++ initial_hand_calls_fus
               "print" ->
-                IO.inspect(Enum.take(hand_calls_fus, Enum.at(opts, 0, length(hand_calls_fus))), limit: :infinity)
+                IO.inspect(Enum.take(hand_calls_fus, Enum.at(opts, 0, length(hand_calls_fus))), limit: :infinity, charlists: :as_lists)
                 hand_calls_fus
               "count" ->
                 IO.inspect(length(hand_calls_fus))
@@ -771,6 +771,7 @@ defmodule RiichiAdvanced.GameState.Actions do
     put_in(state.players[context.seat].counters[counter_name], amount)
   end
 
+  defp eval_expression(state, context, ["-", [v]]), do: -eval_expression(state, context, v)
   defp eval_expression(state, context, ["=", [_l, r]]), do: eval_expression(state, context, r)
   defp eval_expression(state, context, ["+", [l, r]]), do: eval_expression(state, context, l) + eval_expression(state, context, r)
   defp eval_expression(state, context, ["-", [l, r]]), do: eval_expression(state, context, l) - eval_expression(state, context, r)
@@ -799,8 +800,10 @@ defmodule RiichiAdvanced.GameState.Actions do
       _    -> {op, rhs}
     end
     amount = eval_expression(state, context, rhs)
-    # IO.inspect({rhs, amount})
+    |> Utils.try_integer()
     new_ctr = eval_expression(state, context, [op, [counter_name, amount]])
+    |> Utils.try_integer()
+    # IO.inspect({op, rhs, amount, new_ctr})
     state = put_in(state.players[context.seat].counters[counter_name], new_ctr)
     # add as a line item to the most recent transaction
     line_item = %{
@@ -1157,34 +1160,35 @@ defmodule RiichiAdvanced.GameState.Actions do
         state
       "print_status"          ->
         for seat <- Conditions.from_seats_spec(state, context, Enum.at(opts, 0, "self")) do
-          IO.inspect({seat, state.players[seat].status})
+          IO.inspect({seat, state.players[seat].status}, charlists: :as_lists)
         end
         state
       "print_counters"         ->
         for seat <- Conditions.from_seats_spec(state, context, Enum.at(opts, 0, "self")) do
-          IO.inspect({seat, state.players[seat].counters})
+          IO.inspect({seat, state.players[seat].counters}, charlists: :as_lists)
         end
         state
       "print_responsibilities"         ->
         for seat <- Conditions.from_seats_spec(state, context, Enum.at(opts, 0, "self")) do
-          IO.inspect({seat, state.players[seat].responsibilities})
+          IO.inspect({seat, state.players[seat].responsibilities}, charlists: :as_lists)
         end
         state
       "print_context"         ->
-        IO.inspect(context)
+        IO.inspect(context, charlists: :as_lists)
+        # IO.inspect(context, limit: :infinity, charlists: :as_lists)
         state
       "print_hand"         ->
         for seat <- Conditions.from_seats_spec(state, context, Enum.at(opts, 0, "self")) do
-          IO.inspect({seat, state.players[seat].hand, state.players[seat].draw, state.players[seat].calls})
+          IO.inspect({seat, state.players[seat].hand, state.players[seat].draw, state.players[seat].calls}, charlists: :as_lists)
         end
         state
       "print_discards"         ->
         for seat <- Conditions.from_seats_spec(state, context, Enum.at(opts, 0, "self")) do
-          IO.inspect({seat, state.players[seat].discards})
+          IO.inspect({seat, state.players[seat].discards}, charlists: :as_lists)
         end
         state
       "print_tags"         ->
-        IO.inspect(state.tags)
+        IO.inspect(state.tags, charlists: :as_lists)
         state
       "push_message"          ->
         if not silent do

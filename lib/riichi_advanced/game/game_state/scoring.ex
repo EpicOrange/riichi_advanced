@@ -2,6 +2,7 @@
 defmodule RiichiAdvanced.GameState.Scoring do
   alias RiichiAdvanced.GameState.Actions, as: Actions
   alias RiichiAdvanced.GameState.Conditions, as: Conditions
+  alias RiichiAdvanced.GameState.Debug, as: Debug
   alias RiichiAdvanced.GameState.JokerSolver, as: JokerSolver
   alias RiichiAdvanced.GameState.Kyoku, as: Kyoku
   alias RiichiAdvanced.GameState.Payment, as: Payment
@@ -62,6 +63,10 @@ defmodule RiichiAdvanced.GameState.Scoring do
       yaku_precedence ->
         excluded_yaku = Enum.flat_map(eligible_yaku, fn {name, _value} -> Map.get(yaku_precedence, name, []) end)
         excluded_yaku = if Enum.empty?(eligible_yaku) do [] else Map.get(yaku_precedence, yaku_list_name, []) end ++ excluded_yaku
+        if Debug.debug_yaku_precedence() and Enum.any?(existing_yaku ++ eligible_yaku, fn {name, _value} -> name in excluded_yaku end) do
+          used_precedence = Enum.filter(yaku_precedence, fn {from, _to} -> Enum.any?(existing_yaku ++ eligible_yaku, fn {name, _value} -> from == name end) or from == yaku_list_name end) |> Map.new()
+          IO.puts("Excluding yaku #{inspect(excluded_yaku)} from #{inspect(existing_yaku ++ eligible_yaku)} due to precedence: #{inspect(used_precedence)}")
+        end
         Enum.reject(existing_yaku ++ eligible_yaku, fn {name, value} -> Enum.any?(excluded_yaku, &Enum.member?([name | List.wrap(value)], &1)) end)
     end
     eligible_yaku

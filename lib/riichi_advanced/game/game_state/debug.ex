@@ -15,9 +15,10 @@ defmodule RiichiAdvanced.GameState.Debug do
   @debug_ai false
   @debug_log true
   @debug_tutorial false
+  @debug_yaku_precedence false
   @print_mods false
   @print_smt false
-  @skip_ruleset_caching false
+  @skip_ruleset_caching true
   @print_wins false
   def debug, do: Process.get(:ignore_type_error, @debug)
   def debug_status, do: Process.get(:ignore_type_error, @debug_status)
@@ -32,17 +33,22 @@ defmodule RiichiAdvanced.GameState.Debug do
   def debug_ai, do: Process.get(:ignore_type_error, @debug_ai)
   def debug_log, do: Process.get(:ignore_type_error, @debug_log)
   def debug_tutorial, do: Process.get(:ignore_type_error, @debug_tutorial)
+  def debug_yaku_precedence, do: Process.get(:ignore_type_error, @debug_yaku_precedence)
   def print_mods, do: Process.get(:ignore_type_error, @print_mods)
   def print_smt, do: Process.get(:ignore_type_error, @print_smt)
   def print_wins, do: Process.get(:ignore_type_error, @print_wins)
   def skip_ruleset_caching, do: Process.get(:ignore_type_error, @skip_ruleset_caching)
 
   def set_wall(wall) do
-    # wall = List.replace_at(wall, 52, :"2s") # first draw
-    # wall = List.replace_at(wall, 53, :"2p")
-    # wall = List.replace_at(wall, 54, :"5m")
-    # wall = List.replace_at(wall, 55, :"7m")
-    # wall = List.replace_at(wall, 56, :"1z") # second draw
+    wall = List.replace_at(wall, 39, :"6z") # first draw (sanma
+    wall = List.replace_at(wall, 40, :"6z")
+    wall = List.replace_at(wall, 41, :"7z")
+    wall = List.replace_at(wall, 42, :"8s")
+    # wall = List.replace_at(wall, 52, :"6z") # first draw
+    # wall = List.replace_at(wall, 53, :"6z")
+    # wall = List.replace_at(wall, 54, :"7z")
+    # wall = List.replace_at(wall, 55, :"8s")
+    # wall = List.replace_at(wall, 56, :"3s") # second draw
     # wall = List.replace_at(wall, 57, :"1m")
     # wall = List.replace_at(wall, 58, :"1m")
     # wall = List.replace_at(wall, 59, :"1m")
@@ -103,6 +109,12 @@ defmodule RiichiAdvanced.GameState.Debug do
               :south => Utils.sort_tiles(Enum.slice(wall, 13..25)),
               :west  => Utils.sort_tiles(Enum.slice(wall, 26..38)),
               :north => Utils.sort_tiles(Enum.slice(wall, 39..51))}
+
+    # testing hand
+    hands = %{:east  => Utils.sort_tiles([:"2p", :"3p", :"4p", :"7p", :"8p", :"9p", :"1s", :"2s", :"3s", :"4z", :"4z", :"6s", :"7s"]),
+              :south => Enum.slice(wall, 13..25),
+              :west  => Enum.slice(wall, 26..38),
+              :north => Enum.slice(wall, 39..51)}
 
     # # random hand
     # hands = %{:east  => Utils.sort_tiles([:"3m", :"4m", :"5m", :"2p", :"2p", :"4p", :"4p", :"4p", :"5p", :"6p", :"7p", :"3s", :"3s"]),

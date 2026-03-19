@@ -34,16 +34,17 @@ defmodule RiichiAdvanced.GameState.Payment do
       ret ->
         acc = get_txn_result(ret)
         amount = get_txn_result(txn)
-        result = acc + amount
+        result = Utils.try_integer(acc + amount)
         op = if Enum.empty?(ret.line_items) do "=" else "+" end # omit the first +
         %{ret | line_items: [%{op: op, amount: amount, result: result, reason: txn.name} | ret.line_items]}
     end
   end
 
   # merge all txns into one big txn for every player whose score changed
-  @spec consolidate_txns(txns: list(Transaction.t())) :: %{seat() => Transaction.t()}
-  def consolidate_txns(txns) do
+  @spec consolidate_txns(txns: list(Transaction.t()), omit_pot_payments: boolean()) :: %{seat() => Transaction.t()}
+  def consolidate_txns(txns, omit_pot_payments \\ false) do
     for %{from: from, to: to} = txn <- txns, reduce: %{} do
+      ledger when omit_pot_payments and from == nil -> ledger
       ledger ->
         txn2 = invert_txn(txn)
         ledger
@@ -56,7 +57,7 @@ defmodule RiichiAdvanced.GameState.Payment do
   # populates a new entry in state.txns using scoring_logic
   def run_scoring_logic(state, cxt) when is_map_key(cxt, :scoring_key) and cxt.scoring_key != nil do
     # for each entry in responsibilities, make a txn, and populate it by running scoring_logic
-    for {payer, player} <- state.players,
+    state = for {payer, player} <- state.players,
         {seat, _yaku_spec} <- player.responsibilities,
         seat == cxt.seat,
         reduce: state do
@@ -69,14 +70,21 @@ defmodule RiichiAdvanced.GameState.Payment do
         # run scoring_logic to populate this new txn with line items
         scoring_logic_actions = Rules.get(state.rules_ref, "scoring_logic", %{}) |> Map.get(cxt.scoring_key, nil)
         state = if scoring_logic_actions != nil do
-          Actions.run_actions(state, scoring_logic_actions, cxt)
+          Actions.run_actions(state, scoring_logic_actions, %{cxt | seat: payer})
         else
           IO.puts("[WARNING] scoring_logic[#{inspect(cxt.scoring_key)}] is empty!")
           state
         end
-
         state
     end
+    # then give pot to winner
+    state = if state.pot > 0 do
+      line_item = %{op: "+", amount: state.pot, result: state.pot, reason: "Riichi sticks"}
+      pot_txn = %Transaction{name: "Riichi sticks", from: nil, to: cxt.seat, line_items: [line_item]}
+      state = update_in(state.txns, &[pot_txn | &1])
+      state
+    else state end
+    state
   end
   def run_scoring_logic(state, _cxt), do: state # do nothing if no scoring key
 

@@ -26,7 +26,7 @@ defmodule RiichiAdvancedWeb.ScoringTestLive do
       winners: %{east: %{}},
       winner_seats: [:east],
       winner_index: 0,
-      timer: 0,
+      timer: -1,
       visible_screen: nil,
       players: Map.new([:east, :south, :west, :north], fn seat -> {seat, %Player{
         score: 25000,

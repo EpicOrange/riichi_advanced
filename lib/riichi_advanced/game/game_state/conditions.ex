@@ -130,6 +130,7 @@ defmodule RiichiAdvanced.GameState.Conditions do
       "south" -> Riichi.get_player_from_seat_wind(state.kyoku, :south, state.available_seats)
       "west" -> Riichi.get_player_from_seat_wind(state.kyoku, :west, state.available_seats)
       "north" -> Riichi.get_player_from_seat_wind(state.kyoku, :north, state.available_seats)
+      "self" -> context.seat
       "shimocha" -> Utils.get_seat(context.seat, :shimocha)
       "toimen" -> Utils.get_seat(context.seat, :toimen)
       "kamicha" -> Utils.get_seat(context.seat, :kamicha)
@@ -151,7 +152,10 @@ defmodule RiichiAdvanced.GameState.Conditions do
         if last_call_action != nil do last_call_action.from else context.seat end
       "prev_seat" -> Map.get(context, :prev_seat, context.seat)
       "last_seat" -> Map.get(context, :prev_seat, context.seat)
-      _ -> context.seat
+      "winner"    -> Map.get(context, :winner, context.seat)
+      _ ->
+        IO.puts("Invalid seat spec #{inspect(seat_spec)}!")
+        context.seat
     end
   end
 
@@ -364,6 +368,10 @@ defmodule RiichiAdvanced.GameState.Conditions do
         non_flower_calls = Enum.reject(cxt_player.calls, fn {call_name, _call} -> call_name in Riichi.flower_names() end)
         winning_hand = cxt_player.hand ++ Enum.flat_map(non_flower_calls, &Utils.call_to_tiles/1)
         winning_tile = get_winning_tile(state, context.seat, context.win_source)
+
+        if Enum.at(opts, 0) == "2m" do
+          IO.inspect({winning_hand, winning_tile}, label: "E")
+        end
         Enum.all?(winning_hand ++ [winning_tile], &Utils.has_matching_tile?([&1] ++ Map.get(tile_mappings, &1, []), tiles))
       "winning_hand_not_tile_consists_of" ->
         tile_mappings = TileBehavior.tile_mappings(cxt_player.tile_behavior)

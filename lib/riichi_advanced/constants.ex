@@ -295,7 +295,8 @@ defmodule RiichiAdvanced.Constants do
         "global_mods",
         "standard_wall",
         "default_auto_buttons",
-        "riichi_kan"
+        "riichi_kan",
+        "riichi_scoring"
       ],
       default_mods: []
     },
@@ -340,7 +341,7 @@ defmodule RiichiAdvanced.Constants do
       tutorial_link: "https://github.com/EpicOrange/riichi_advanced/blob/main/documentation/chinitsu_challenge.md",
       ruleset: "riichi",
       mods: [%{name: "yaku/riichi", config: %{bet: 1000, drawless: false}}, "chinitsu_challenge"],
-      default_mods: ["chombo", "tobi", "yaku/renhou_yakuman", "no_honors"],
+      default_mods: ["chombo", "tobi", %{name: "yaku/riichi_renhou", config: %{is: "Yakuman"}}, "no_honors"],
     },
     "minefield" => %{
       display_name: "Minefield",
@@ -353,7 +354,7 @@ defmodule RiichiAdvanced.Constants do
       display_name: "Kansai Sanma",
       tutorial_link: "https://github.com/EpicOrange/riichi_advanced/blob/main/documentation/kansai.md",
       ruleset: "riichi",
-      mods: ["sanma", "sanma_presets", "kansai", "kansai_chiitoitsu"],
+      mods: ["sanma", "sanma_presets", "kansai", "kansai_yaku", "kansai_chiitoitsu"],
       default_mods: ["tobi"],
     },
     "aka_test" => %{

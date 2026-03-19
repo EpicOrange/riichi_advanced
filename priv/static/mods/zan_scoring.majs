@@ -1,95 +1,167 @@
-# disable multiplier
+# don't display fu
+# (still need to calculate it for pinfu though)
 apply merge, "score_calculation", %{
-  scoring_method: ["score_table", "multiplier"],
-  score_table: %{max: 0},
-  score_multiplier: 32000,
-  dealer_multiplier: 1.5,
-  draw_nagashi_payments: [12000, 20000],
-  score_name: ""
+  right_display: ""
 }
 
-on after_win do
-  end_points = points
-  end_points2 = points2
-  if end_points2 == 0 do
-    # manual scoring if not yakuman
-    if seat_is("east") do
-      # dealer
-      if won_by_draw do
-        # tsumo
-        if end_points == 1 do payment = 1000 end
-        if end_points == 2 do payment = 2000 end
-        if end_points == 3 do payment = 3000 end
-        if end_points >= 4 do payment = 6000; modify_winner("score_name", "Mangan") end
-        if end_points >= 6 do payment = 9000; modify_winner("score_name", "Haneman") end
-        if end_points >= 8 do payment = 12000; modify_winner("score_name", "Baiman") end
-        if end_points >= 11 do payment = 18000; modify_winner("score_name", "Sanbaiman") end
-        if end_points >= 13 do payment = 24000; modify_winner("score_name", "Kazoe Yakuman") end
-        dealer_payment = payment
-      else
-        # ron/chankan
-        if end_points == 1 do payment = 2000 end
-        if end_points == 2 do payment = 3000 end
-        if end_points == 3 do payment = 6000 end
-        if end_points >= 4 do payment = 12000; modify_winner("score_name", "Mangan") end
-        if end_points >= 6 do payment = 18000; modify_winner("score_name", "Haneman") end
-        if end_points >= 8 do payment = 24000; modify_winner("score_name", "Baiman") end
-        if end_points >= 11 do payment = 36000; modify_winner("score_name", "Sanbaiman") end
-        if end_points >= 13 do payment = 48000; modify_winner("score_name", "Kazoe Yakuman") end
-        dealer_payment = 0
-      end
+# tsumo pinfu is ok
+apply delete, "yaku_precedence.Tsumo", "Pinfu"
+
+# use a different scoring logic
+replace all, "buttons", "ron", "zan_ron"
+replace all, "buttons", "tsumo", "zan_tsumo"
+
+define_scoring zan_ron do
+  total = 0
+  if total == 0 and points2 > 0 do
+    total = points2 * 32000 :: "Yakuman ron"
+    modify_winner("score_name", "Yakuman")
+  else
+    han = points :: "Han"
+  end
+  if total == 0 and points >= 13 do
+    total = 32000 :: "Yakuman ron"
+    modify_winner("score_name", "Kazoe Yakuman")
+  end
+  if total == 0 and points >= 11 do
+    total = 24000 :: "Sanbaiman ron"
+    modify_winner("score_name", "Sanbaiman")
+  end
+  if total == 0 and points >= 8 do
+    total = 16000 :: "Baiman ron"
+    modify_winner("score_name", "Baiman")
+  end
+  if total == 0 and points >= 6 do
+    total = 12000 :: "Haneman ron"
+    modify_winner("score_name", "Haneman")
+  end
+  if total == 0 and points >= 4 do
+    total = 8000 :: "Mangan ron"
+    modify_winner("score_name", "Mangan")
+  end
+  if total == 0 and points >= 3 do
+    total = 4000 :: "3 han ron"
+  end
+  if total == 0 and points >= 2 do
+    total = 2000 :: "2 han ron"
+  end
+  if total == 0 do
+    total = 1000 :: "1 han ron"
+    onehan = 1
+  end
+  if seat_is("east", as: "winner") do
+    if onehan == 1 do
+      total *= 2 :: "Dealer"
     else
-      # nondealer
-      if won_by_draw do
-        # tsumo
-        if end_points == 1 do payment = 1000; dealer_payment = 1000 end
-        if end_points == 2 do payment = 1000; dealer_payment = 1000 end
-        if end_points == 3 do payment = 1000; dealer_payment = 3000 end
-        if end_points >= 4 do payment = 3000; dealer_payment = 5000; modify_winner("score_name", "Mangan") end
-        if end_points >= 6 do payment = 4000; dealer_payment = 8000; modify_winner("score_name", "Haneman") end
-        if end_points >= 8 do payment = 6000; dealer_payment = 10000; modify_winner("score_name", "Baiman") end
-        if end_points >= 11 do payment = 8000; dealer_payment = 16000; modify_winner("score_name", "Sanbaiman") end
-        if end_points >= 13 do payment = 12000; dealer_payment = 20000; modify_winner("score_name", "Kazoe Yakuman") end
-      else
-        # ron/chankan
-        if end_points == 1 do payment = 1000 end
-        if end_points == 2 do payment = 2000 end
-        if end_points == 3 do payment = 4000 end
-        if end_points >= 4 do payment = 8000; modify_winner("score_name", "Mangan") end
-        if end_points >= 6 do payment = 12000; modify_winner("score_name", "Haneman") end
-        if end_points >= 8 do payment = 16000; modify_winner("score_name", "Baiman") end
-        if end_points >= 11 do payment = 24000; modify_winner("score_name", "Sanbaiman") end
-        if end_points >= 13 do payment = 32000; modify_winner("score_name", "Kazoe Yakuman") end
-        dealer_payment = 0
-      end
+      total *= 1.5 :: "Dealer"
     end
-    modify_winner("score", "payment", "add")
-    modify_winner("score", "dealer_payment", "add")
+  end
+  if honba > 0 do
+    total += honba * 1000 :: "Honba"
   end
 end
 
-on after_scoring do
-  if end_points2 == 0 do
-    # manual scoring if not yakuman
-    if won_by_draw do
-      if seat_is("east") do
-        modify_payout("others", "payment", "subtract")
-        modify_payout("self", "payment", "add")
-        modify_payout("self", "payment", "add")
+define_scoring zan_tsumo do
+  total = 0
+  if seat_is("east", as: "winner") do
+    winner_dealer = 1
+    dealer = 1
+  end
+  if seat_is("east") do
+    dealer = 1
+  end
+  if total == 0 and points2 > 0 do
+    if dealer == 1 do
+      if winner_dealer == 1 do
+        total = points2 * 24000 :: "Yakuman dealer tsumo"
       else
-        modify_payout("others", "payment", "subtract")
-        modify_payout("east", "payment", "add")
-        modify_payout("east", "dealer_payment", "subtract")
-        modify_payout("self", "payment", "add")
-        modify_payout("self", "dealer_payment", "add")
+        total = points2 * 20000 :: "Yakuman tsumo"
       end
     else
-      if won_by_call do
-        modify_payout("caller", "payment", "subtract")
-      else
-        modify_payout("last_discarder", "payment", "subtract")
-      end
-      modify_payout("self", "payment", "add")
+      total = points2 * 12000 :: "Yakuman tsumo"
     end
+    modify_winner("score_name", "Yakuman")
+  else
+    han = points :: "Han"
+  end
+  if total == 0 and points >= 13 do
+    if dealer == 1 do
+      if winner_dealer == 1 do
+        total = 24000 :: "Yakuman dealer tsumo"
+      else
+        total = 20000 :: "Yakuman tsumo"
+      end
+    else
+      total = 12000 :: "Yakuman tsumo"
+    end
+    modify_winner("score_name", "Kazoe Yakuman")
+  end
+  if total == 0 and points >= 11 do
+    if dealer == 1 do
+      if winner_dealer == 1 do
+        total = 18000 :: "Sanbaiman dealer tsumo"
+      else
+        total = 16000 :: "Sanbaiman tsumo"
+      end
+    else
+      total = 8000 :: "Sanbaiman tsumo"
+    end
+    modify_winner("score_name", "Sanbaiman")
+  end
+  if total == 0 and points >= 8 do
+    if dealer == 1 do
+      if winner_dealer == 1 do
+        total = 12000 :: "Baiman dealer tsumo"
+      else
+        total = 10000 :: "Baiman tsumo"
+      end
+    else
+      total = 6000 :: "Baiman tsumo"
+    end
+    modify_winner("score_name", "Baiman")
+  end
+  if total == 0 and points >= 6 do
+    if dealer == 1 do
+      if winner_dealer == 1 do
+        total = 9000 :: "Haneman dealer tsumo"
+      else
+        total = 8000 :: "Haneman tsumo"
+      end
+    else
+      total = 4000 :: "Haneman tsumo"
+    end
+    modify_winner("score_name", "Haneman")
+  end
+  if total == 0 and points >= 4 do
+    if dealer == 1 do
+      if winner_dealer == 1 do
+        total = 6000 :: "Mangan dealer tsumo"
+      else
+        total = 5000 :: "Mangan tsumo"
+      end
+    else
+      total = 3000 :: "Mangan tsumo"
+    end
+    modify_winner("score_name", "Mangan")
+  end
+  if total == 0 and points >= 3 do
+    if dealer == 1 do
+      total = 3000 :: "3 han dealer tsumo"
+    else
+      total = 1000 :: "3 han tsumo"
+    end
+  end
+  if total == 0 and points >= 2 do
+    if winner_dealer == 1 do
+      total = 2000 :: "2 han dealer tsumo"
+    else
+      total = 1000 :: "2 han tsumo"
+    end
+  end
+  if total == 0 do
+    total = 1000 :: "1 han tsumo"
+  end
+  if honba > 0 do
+    total += honba * 1000 :: "Honba"
   end
 end

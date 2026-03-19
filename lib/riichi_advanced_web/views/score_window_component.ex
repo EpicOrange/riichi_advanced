@@ -72,7 +72,7 @@ defmodule RiichiAdvancedWeb.ScoreWindowComponent do
         </div>
         </div>
       <div class="timer" phx-cancellable-click="ready_for_next_round">
-        <%= if @timer == 0 do %>
+        <%= if @timer == -1 do %>
           <%= dt(@lang, "Dismiss") %>
         <% else %>
           <%= dt(@lang, "Skip") %> (<%= @timer %>)

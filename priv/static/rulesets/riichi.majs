@@ -72,7 +72,7 @@ define_yaku yaku, "Houtei", [1, "Han"], no_tiles_remaining and not_won_by_draw
 define_yaku yaku, "Pinfu", [1, "Han"], @closed_hand
   and match(["hand", "calls", "winning_tile"], ["standard_win"])
   and ((won_by_draw and minipoints_equals(20)) or (not_won_by_draw and minipoints_equals(30)))
-define_yaku yaku, "Tanyao", [1, "Han"], winning_hand_consists_of("2m","3m","4m","5m","6m","7m","8m","2p","3p","4p","5p","6p","7p","8p","2s","3s","4s","5s","6s","7s","8s")
+define_yaku yaku, "Tanyao", [1, "Han"], not_match(["hand", "calls", "winning_tile"], ~m"(any@yaochuu):1")
 define_yaku yaku, "Iipeikou", [1, "Han"], @closed_hand and match(["hand", "calls", "winning_tile"], ~m"exhaustive, iipeikou:1, mentsu:2, pair:1")
 define_yaku yaku, "Haku", [1, "Han"], match(["hand", "calls", "winning_tile"], ~m"exhaustive, haku:1, mentsu:3, pair:1")
 define_yaku yaku, "Hatsu", [1, "Han"], match(["hand", "calls", "winning_tile"], ~m"exhaustive, hatsu:1, mentsu:3, pair:1")
@@ -172,101 +172,6 @@ define_yaku_precedence "Junsei Chuurenpoutou", ["Chuurenpoutou"]
 define_yaku_precedence "Kokushi Musou Juusan Menmachi", ["Kokushi Musou"]
 define_yaku_precedence "Daisuushii", ["Shousuushii"]
 define_yaku_precedence "yakuman", ["yaku", "meta_yaku", "extra_yaku"]
-
-def check_limit do
-  if total == 0 and points2 > 0 do
-    total = points2 :: "★"
-    total *= 8000 :: "Yakuman base"
-    modify_winner("score_name", "Yakuman")
-  end
-  if total == 0 and points >= 13 do
-    total = points :: "Han"
-    total = 8000 :: "Yakuman base"
-    modify_winner("score_name", "Yakuman")
-  end
-  if total == 0 and points >= 11 do
-    total = points :: "Han"
-    total = 6000 :: "Sanbaiman base"
-    modify_winner("score_name", "Sanbaiman")
-  end
-  if total == 0 and points >= 8 do
-    total = points :: "Han"
-    total = 4000 :: "Baiman base"
-    modify_winner("score_name", "Baiman")
-  end
-  if total == 0 and points >= 6 do
-    total = points :: "Han"
-    total = 3000 :: "Haneman base"
-    modify_winner("score_name", "Haneman")
-  end
-  if total == 0 and points >= 5 do
-    total = points :: "Han"
-    total = 2000 :: "Mangan base"
-    modify_winner("score_name", "Mangan")
-  end
-  if total == 0 and points >= 4 and fu >= 40 do
-    total = points :: "Han"
-    total = fu :: "Fu"
-    total = 2000 :: "Mangan base"
-    modify_winner("score_name", "Mangan")
-  end
-  if total == 0 and points >= 3 and fu >= 70 do
-    total = points :: "Han"
-    total = fu :: "Fu"
-    total = 2000 :: "Mangan base"
-    modify_winner("score_name", "Mangan")
-  end
-end
-
-define_scoring ron do
-  total = 0
-  check_limit
-  if total == 0 do
-    total = points :: "Han"
-    han_mult = 2 ** (total + 2) :: "Han mult."
-    total = fu :: "Fu"
-    total *= han_mult :: "Base"
-  end
-  if seat_is("east", as: "winner") do
-    total *= 6 :: "Dealer ron"
-    if total < 12000 do
-      total = round_up(total, 100) :: "Round up"
-    end
-  else
-    total *= 4 :: "Nondealer ron"
-    if total < 8000 do
-      total = round_up(total, 100) :: "Round up"
-    end
-  end
-  if honba > 0 do
-    total += honba * 300 :: "Honba"
-  end
-end
-
-define_scoring tsumo do
-  total = 0
-  check_limit
-  if total == 0 do
-    total = points :: "Han"
-    han_mult = 2 ** (total + 2) :: "Han mult."
-    total = fu :: "Fu"
-    total *= han_mult :: "Base"
-  end
-  if seat_is("east", as: "winner") or seat_is("east") do
-    total *= 2 :: "Dealer tsumo"
-    if total < 4000 do
-      total = round_up(total, 100) :: "Round up"
-    end
-  else
-    total *= 1 :: "Nondealer tsumo"
-    if total < 2000 do
-      total = round_up(total, 100) :: "Round up"
-    end
-  end
-  if honba > 0 do
-    total += honba * 100 :: "Honba"
-  end
-end
 
 def calculate_fu do
   if fu == 0 do

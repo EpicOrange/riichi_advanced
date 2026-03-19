@@ -47,7 +47,7 @@ defmodule RiichiAdvanced.ModLoader do
     orig_mods = mods
     mods = Enum.uniq(mods)
     if length(mods) < length(orig_mods) do
-      IO.puts("Warning, the following mods were included twice: #{inspect(orig_mods -- mods)}")
+      IO.puts("Warning, the following mods (for ruleset #{ruleset}) were included twice: #{inspect(orig_mods -- mods)}")
     end
     case RiichiAdvanced.ETSCache.get({ruleset, mods}, [], :cache_mods) do
       [modded_json] ->
@@ -158,19 +158,22 @@ defmodule RiichiAdvanced.ModLoader do
         modpack = modpacks[ruleset]
         mods = Map.get(modpack, :mods, [])
         post_mods = Map.get(modpack, :post_mods, [])
-        all_mod_names = Enum.map(mods ++ post_mods, fn
-          %{name: name} -> name
-          name          -> name
+        all_mod_ids = Enum.map(mods ++ post_mods, fn
+          %{name: id} -> id
+          id          -> id
         end)
-        default_mods = Map.get(modpack, :default_mods, []) |> Enum.reject(& &1 in all_mod_names)
+        default_mods = Map.get(modpack, :default_mods, []) |> Enum.reject(fn
+          id when is_binary(id) -> id in all_mod_ids
+          mod -> mod.name in all_mod_ids
+        end)
         display_name = Map.get(modpack, :display_name, ruleset)
         # set default mods and display name
         query = ".default_mods += #{Jason.encode!(default_mods)} | .display_name = \"#{display_name}\""
         # set or remove tutorial link
         query = query <> " | " <> if Map.has_key?(modpack, :tutorial_link) do ".tutorial_link = \"#{modpack.tutorial_link}\"" else "del(.tutorial_link)" end
         # remove already applied mods
-        query = query <> " | " <> ".default_mods = (.default_mods // []) - #{Jason.encode!(all_mod_names)}"
-        query = query <> " | " <> ".available_mods = ((.available_mods // []) | map(select(if type == \"object\" then .id else .  end | IN(#{Enum.map_join(all_mod_names, ", ", &Jason.encode!/1)}) | not)))"
+        query = query <> " | " <> ".default_mods = (.default_mods // []) - #{Jason.encode!(all_mod_ids)}"
+        query = query <> " | " <> ".available_mods = ((.available_mods // []) | map(select(if type == \"object\" then .id else .  end | IN(#{Enum.map_join(all_mod_ids, ", ", &Jason.encode!/1)}) | not)))"
         # we're traversing down, so "new" query/mods/globals should be run before "old" ones
         query = query <> "\n|\n" <> prev_query
         mods = mods ++ prev_mods
@@ -183,7 +186,7 @@ defmodule RiichiAdvanced.ModLoader do
           mods = Enum.uniq(prev_mods)
           duplicates = prev_mods -- mods
           if not Enum.empty?(duplicates) do
-            IO.puts("WARNING: these mods were included twice: #{inspect(duplicates)}")
+            IO.puts("WARNING: these mods (for ruleset #{ruleset}) were included twice: #{inspect(duplicates)}")
           end
           ruleset_json
           |> strip_comments()

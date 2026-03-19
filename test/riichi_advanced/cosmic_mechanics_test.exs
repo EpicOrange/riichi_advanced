@@ -60,7 +60,7 @@ defmodule RiichiAdvanced.CosmicMechanicsTest do
       %{"type" => "buttons_pressed", "buttons" => [%{"button" => "ron"}, nil, nil, nil]}
     ], %{
       east: %{
-        yaku: [{"Chun", 1}],
+        yaku: [{"Chun", [1, "Han"]}],
         yaku2: [],
         minipoints: 40
       }

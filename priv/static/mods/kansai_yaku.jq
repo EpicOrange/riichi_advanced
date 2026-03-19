@@ -1,3 +1,5 @@
+# TODO: add to rules sidebar
+
 .["一色三連刻_definition"] = [
   [ "exhaustive", [[[[0,0,0],[1,1,1],[2,2,2]]], 1], [["shuntsu", "koutsu"], 1], [["pair"], 1] ]
 ]

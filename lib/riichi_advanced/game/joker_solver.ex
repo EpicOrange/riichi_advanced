@@ -84,7 +84,10 @@ defmodule RiichiAdvanced.GameState.JokerSolver do
 
   # append a winning tile to hand before calling this
   def apply_joker_assignment(hand, calls, joker_assignment) do
-    {flower_calls, non_flower_calls} = Enum.split_with(calls, fn {call_name, _call} -> call_name in Riichi.flower_names() end)
+    {flower_calls, non_flower_calls} = Enum.split_with(calls, fn
+      {call_name, _call} -> call_name in Riichi.flower_names()
+      _                  -> false
+    end)
     assigned_hand = hand |> Enum.with_index() |> Enum.map(fn {tile, ix} -> Map.get(joker_assignment, ix, tile) end)
     assigned_non_flower_calls = non_flower_calls
     |> Enum.with_index()
@@ -106,7 +109,6 @@ defmodule RiichiAdvanced.GameState.JokerSolver do
     %{
       seat: seat,
       smt_hand: smt_hand,
-      smt_calls: smt_calls, 
       win_source: win_source,
       winning_tile: winning_tile,
     } = cxt
@@ -119,11 +121,16 @@ defmodule RiichiAdvanced.GameState.JokerSolver do
     #   Map.new(joker_assignment, fn {ix, tile} -> {ix, if tile == :"5z" do :"0z" else tile end} end)
     # else joker_assignment end
 
-    # use the joker assignment to obtain winner's {hand, calls} with jokers replaced by their assignments
-    {assigned_hand, assigned_calls, assigned_winning_hand, assigned_winning_tile} = apply_joker_assignment(smt_hand, smt_calls, joker_assignment)
-    # replace the winner's hand/calls temporarily (for yaku evaluation)
+    # save original hand and calls
     %{hand: orig_hand, calls: orig_calls} = state.players[seat]
+
+    # use the joker assignment to obtain winner's {hand, calls} with jokers replaced by their assignments
+    # must use orig calls, that's what the function expects
+    {assigned_hand, assigned_calls, assigned_winning_hand, assigned_winning_tile} = apply_joker_assignment(smt_hand, orig_calls, joker_assignment)
+
+    # replace the winner's hand/calls temporarily (for yaku evaluation)
     update_player(state, seat, &%{ &1 | hand: assigned_hand, calls: assigned_calls, cache: %{ &1.cache | winning_hand: assigned_winning_hand } })
+
     # also replace the actual winning tile within state, using joker assignment
     state = if assigned_winning_tile != nil do
       update_winning_tile(state, seat, win_source, fn _ -> assigned_winning_tile end)

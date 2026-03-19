@@ -174,6 +174,13 @@ defmodule RiichiAdvanced.Compiler do
       {:ok, [if is_atom(op) do Atom.to_string(op) else op end, [expr1, expr2]]}
     end
   end
+  defp compile_expr({prefix, _, _} = arg, _line, _column) when prefix == :+ or prefix == :@ or prefix == :! do
+    # splat, constant, or variable
+    with {:ok, var} <- Validator.validate_json(arg),
+         {:ok, var} <- Jason.encode(var) do
+      {:ok, "#{var}"}
+    end
+  end
   defp compile_expr({name, _, nil}, line, column) when is_binary(name), do: compile_identifier(name, line, column)
   defp compile_expr(name, line, column) when is_binary(name), do: compile_identifier(name, line, column)
   defp compile_expr(num, _line, _column) when is_number(num), do: {:ok, num}
@@ -485,7 +492,7 @@ defmodule RiichiAdvanced.Compiler do
     match_specs = case args do
       # single args
       [{prefix, _, _} = arg] when prefix == :+ or prefix == :@ or prefix == :! ->
-        # constant or variable
+        # splat, constant, or variable
         with {:ok, match_spec} <- Validator.validate_json(arg),
              {:ok, match_spec} <- Jason.encode(match_spec) do
           {:ok, "#{match_spec}"}
