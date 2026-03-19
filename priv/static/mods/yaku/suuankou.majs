@@ -18,6 +18,6 @@ end
 define_match suuankou_tsumo, ~m"(pon daiminkan kakan):-1, koutsu:4, pair:1"
 define_match suuankou_ron, ~m"exhaustive, (pon daiminkan kakan):-1, koutsu:4, (any@winning_tile):0, pair:1"
  
-define_yaku !list, !name, !value,
+define_yaku !list, !name, [!value, !han],
      (won_by_draw and match(["hand", "calls", "winning_tile"], ["suuankou_tsumo"]))
   or (not_won_by_draw and match(["hand", "calls", "winning_tile"], ["suuankou_ron"]))

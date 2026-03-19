@@ -18,6 +18,6 @@ end
 define_set tanyaohai, ~s"any@tanyao"
 define_set jihai, ~s"any@jihai"
 
-define_yaku !hon_list, !hon_name, !hon_value, not_match(["hand", "calls", "winning_tile"], ~m"tanyaohai:1")
-define_yaku !chin_list, !chin_name, !chin_value, not_match(["hand", "calls", "winning_tile"], ~m"(tanyaohai jihai):1")
+define_yaku !hon_list, !hon_name, [!hon_value, !han], not_match(["hand", "calls", "winning_tile"], ~m"tanyaohai:1")
+define_yaku !chin_list, !chin_name, [!chin_value, !han], not_match(["hand", "calls", "winning_tile"], ~m"(tanyaohai jihai):1")
 define_yaku_precedence !chin_name, [!hon_name]

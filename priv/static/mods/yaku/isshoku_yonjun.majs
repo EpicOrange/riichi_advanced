@@ -6,7 +6,7 @@ end
 
 define_set iishoku_yonjun, ~s"0 1 2, 0 1 2, 0 1 2, 0 1 2"
 
-define_yaku yakuman, "Isshoku Yonjun", 1, match(["hand", "calls", "winning_tile"], ~m"exhaustive, iishoku_yonjun:1, pair:1")
+define_yaku yakuman, "Isshoku Yonjun", [1, "★"], match(["hand", "calls", "winning_tile"], ~m"exhaustive, iishoku_yonjun:1, pair:1")
 
 define_yaku_precedence "Isshoku Yonjun", ["Isshoku Sanjun", "Ryanpeikou"]
 

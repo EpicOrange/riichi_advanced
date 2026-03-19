@@ -8,7 +8,7 @@
 .yaku_kinkei_dokuritsu += [
   {
     "display_name": "Kinkei Dokuritsu",
-    "value": 5,
+    "value": [5, "Han"],
     "when": [
       {"name": "not_has_points", "opts": [5]},
       {"name": "match", "opts": [["calls"], [[[$all_calls, 4]]]]},

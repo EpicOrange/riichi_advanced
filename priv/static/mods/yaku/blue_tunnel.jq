@@ -6,7 +6,7 @@
 .yakuman += [
   {
     "display_name": "Blue Tunnel",
-    "value": 1,
+    "value": [1, "★"],
     "when": [[
       {"name": "winning_hand_consists_of", "opts": ["2p","4p","8p","6z","1z"]},
       {"name": "winning_hand_consists_of", "opts": ["2p","4p","8p","6z","2z"]},

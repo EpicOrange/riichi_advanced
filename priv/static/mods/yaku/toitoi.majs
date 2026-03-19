@@ -6,4 +6,4 @@ end
 define_set pair, ~s"0 0"
 define_set koutsu, ~s"0 0 0"
 
-define_yaku !list, !name, !value, match(["hand", "calls", "winning_tile"], ~m"koutsu:4, pair:1")
+define_yaku !list, !name, [!value, !han], match(["hand", "calls", "winning_tile"], ~m"koutsu:4, pair:1")

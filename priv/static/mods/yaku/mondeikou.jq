@@ -6,7 +6,7 @@
 .yaku += [
   {
     "display_name": "Mondeikou",
-    "value": 2,
+    "value": [2, "Han"],
     "when": [{"name": "counter_at_least", "opts": ["aka", 4]}]
   }
 ]

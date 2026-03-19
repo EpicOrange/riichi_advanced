@@ -8,4 +8,4 @@ on after_initialization do
   end
 end
 
-define_yaku !list, !name, [!value, "★"], match(["calls"], ~m"(daiminkan ankan kakan):4")
+define_yaku !list, !name, [!value, !han], match(["calls"], ~m"(daiminkan ankan kakan):4")

@@ -7,7 +7,7 @@
 .chiishin_uushii += [
   {
     "display_name": "Chiishin Uushii",
-    "value": 5,
+    "value": [5, "Han"],
     "when": [
       {"name": "not_has_points", "opts": [5]},
       {"name": "match", "opts": [["hand", "calls", "winning_tile"], ["chiishin_uushii"]]}

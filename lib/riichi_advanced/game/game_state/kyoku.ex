@@ -456,10 +456,6 @@ defmodule RiichiAdvanced.GameState.Kyoku do
     notify_text = if winning_tile == nil do "Running tenhou solver..." else "Running joker solver..." end
     notify_task = Task.async(fn -> :timer.sleep(500); push_message(state, [%{text: notify_text}]) end)
 
-    # save orig hand
-    orig_hand = state.players[seat].hand
-    orig_calls = state.players[seat].calls
-
     # place an empty winner object first, so that modify_winner works as intended later on
     state = Map.update!(state, :winners, &Map.put(&1, seat, %{}))
     state = Map.update!(state, :winner_seats, & &1 ++ [seat])
@@ -473,7 +469,17 @@ defmodule RiichiAdvanced.GameState.Kyoku do
       winning_hand = smt_hand ++ smt_calls
       state = update_player(state, seat, &%{ &1 | cache: %{ &1.cache | winning_hand: winning_hand } })
 
-      # run before_scoring
+      # now calculate joker assignments
+      # and find the maximum score obtainable across all joker assignments
+
+      # this is a stream of joker assignments
+      joker_assignments = JokerSolver.solve_for_jokers(smt_hand, smt_calls, state.smt_solver, state.rules_ref, state.players[seat].tile_behavior)
+
+      # evaluate every joker assignment
+      # this turns jokers into normal tiles (via the assignment) and returns the best scoring one
+      # returns cxt, which will contain `joker_assignment`, `yaku`, `yaku2`, and `minipoints`
+      # note this captures (read: copies) `state` and returns it (read: copies again)
+      # TODO avoid this by only capturing and returning the important information
       cxt = %{
         seat: seat,
         winner_seat: seat,
@@ -486,19 +492,6 @@ defmodule RiichiAdvanced.GameState.Kyoku do
         scoring_key: scoring_key,
         rules_ref: state.rules_ref,
       }
-      state = Actions.trigger_event(state, "before_scoring", cxt)
-
-      # now calculate joker assignments
-      # and find the maximum score obtainable across all joker assignments
-
-      # this is a stream of joker assignments
-      joker_assignments = JokerSolver.solve_for_jokers(smt_hand, smt_calls, state.smt_solver, state.rules_ref, state.players[seat].tile_behavior)
-
-      # evaluate every joker assignment
-      # this turns jokers into normal tiles (via the assignment) and returns the best scoring one
-      # returns cxt, which will contain `joker_assignment`, `yaku`, `yaku2`, and `minipoints`
-      # note this captures (read: copies) `state` and returns it (read: copies again)
-      # TODO avoid this by only capturing and returning the important information
       Task.async_stream(joker_assignments, fn joker_assignment ->
         cxt = try do
           JokerSolver.evaluate_joker_assignment(state, cxt, joker_assignment)
@@ -534,8 +527,8 @@ defmodule RiichiAdvanced.GameState.Kyoku do
       calls: arranged_calls
     } = rearrange_winner_hand(state, seat, cxt.joker_assignment, winning_tile)
 
-    # restore original hand/calls
-    state = update_player(state, seat, &%{ &1 | hand: orig_hand, calls: orig_calls })
+    # # restore original hand/calls
+    # state = update_player(state, seat, &%{ &1 | hand: orig_hand, calls: orig_calls })
 
     # create a winner object
     score_rules = Rules.get(state.rules_ref, "score_calculation", %{})

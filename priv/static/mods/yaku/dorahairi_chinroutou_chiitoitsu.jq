@@ -8,7 +8,7 @@
     "display_name": "Dorahairi Chinroutou Chiitoitsu",
     "value": [5, "Han"],
     "when": [
-      {"name": "not_has_points", "opts": [6]},
+      {"name": "not_has_points", "opts": [5]},
       {"name": "winning_hand_consists_of", "opts": ["1m","9m","1p","9p","1s","9s",{"tile": "any", "attrs": ["dorahairi_dora"]}]}
     ]
   }

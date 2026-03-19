@@ -131,6 +131,7 @@ defmodule RiichiAdvanced.GameState.Payment do
             IO.puts("[WARNING] scoring_logic[#{inspect(cxt.scoring_key)}] is empty!")
             state
           end
+          state
         else state end
         state
     end

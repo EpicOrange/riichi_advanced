@@ -40,7 +40,7 @@ def ryanhan_shibari($check; $check_yakuman):
 .yakuman += [
   {
     "display_name": "Paarenchan",
-    "value": 1,
+    "value": [1, "★"],
     "when": [{"name": "seat_is", "opts": ["east"]}, {"name": "counter_at_least", "opts": ["paarenchan", 8]}]
   }
 ]

@@ -348,10 +348,10 @@ define_yaku_precedence "Kokushi Musou", ["Mixed Winds", "Mini-Sangen"]
 define_yaku_precedence "Kokushi Musou Juusan Menmachi", ["Mixed Winds", "Mini-Sangen"]
 
 # now forbid certain yaku based on max_triplets and max_kontsu
-define_yaku meta_yaku, "_no_triplets", 0, max_triplets == 0
-define_yaku meta_yaku, "_one_triplet", 0, max_triplets <= 1
-define_yaku meta_yaku, "_no_kontsu", 0, max_kontsu == 0
-define_yaku meta_yaku, "_one_kontsu", 0, max_kontsu <= 1
+define_yaku meta_yaku, "_no_triplets", [0, "Han"], max_triplets == 0
+define_yaku meta_yaku, "_one_triplet", [0, "Han"], max_triplets <= 1
+define_yaku meta_yaku, "_no_kontsu", [0, "Han"], max_kontsu == 0
+define_yaku meta_yaku, "_one_kontsu", [0, "Han"], max_kontsu <= 1
 
 define_yaku_precedence "_no_triplets", ["_no_triplets", "Haku", "Hatsu", "Chun", "Round Wind", "Seat Wind"]
 define_yaku_precedence "_one_triplet", ["_one_triplet", "Toitoi", "Sanshoku Doukou", "Sanankou", "Suuankou", "Suuankou Tanki", "Shousuushii", "Daisuushii", "Daisangen"]

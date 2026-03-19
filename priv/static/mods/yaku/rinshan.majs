@@ -13,8 +13,8 @@ on after_initialization do
   end
 end
 
-define_yaku !list, !rinshan_name, !value, status("kan")
-define_yaku !list, !flower_name, !value, status("flower")
-define_yaku !double_list, !double_name, !double_value, status("double_kan")
+define_yaku !list, !rinshan_name, [!value, !han], status("kan")
+define_yaku !list, !flower_name, [!value, !han], status("flower")
+define_yaku !double_list, !double_name, [!double_value, !han], status("double_kan")
 
 define_yaku_precedence !double_name, [!rinshan_name, !flower_name]

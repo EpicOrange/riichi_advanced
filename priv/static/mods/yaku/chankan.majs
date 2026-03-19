@@ -18,4 +18,4 @@ define_button chankan,
 
 apply set_append, "interruptible_actions", ["upgrade_call"]
 
-define_yaku !list, !name, !value, won_by_call and status("kan", as: "caller")
+define_yaku !list, !name, [!value, !han], won_by_call and status("kan", as: "caller")

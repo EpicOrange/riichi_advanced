@@ -1,4 +1,5 @@
 defmodule RiichiAdvanced.GameState.JokerSolver do
+  alias RiichiAdvanced.GameState.Actions, as: Actions
   alias RiichiAdvanced.GameState.Debug, as: Debug
   alias RiichiAdvanced.GameState.Rules, as: Rules
   alias RiichiAdvanced.GameState.Scoring, as: Scoring
@@ -136,6 +137,9 @@ defmodule RiichiAdvanced.GameState.JokerSolver do
       IO.puts("WARNING: no assigned_winning_tile for a win! hand: #{inspect(smt_hand)}, joker_assignment: #{inspect(joker_assignment)}")
       state
     end
+
+    # run before_scoring only after replacing those tiles
+    state = Actions.trigger_event(state, "before_scoring", cxt)
 
     # obtain yaku and minipoints from this state
     {yaku, minipoints} = Scoring.get_yaku_from_lists(state, Map.get(score_rules, "yaku_lists", []), seat, assigned_winning_tile, win_source)

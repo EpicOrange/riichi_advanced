@@ -6,7 +6,7 @@
 .yakuman += [
   {
     "display_name": "Kachoufuugetsu",
-    "value": 1,
+    "value": [1, "★"],
     "when": [
       {"name": "match", "opts": [["hand", "calls", "winning_tile"], ["kachoufuugetsu"]]},
       [
