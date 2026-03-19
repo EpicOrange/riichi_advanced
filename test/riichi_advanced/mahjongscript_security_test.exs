@@ -21,7 +21,7 @@ defmodule RiichiAdvanced.MahjongScriptSecurityTest do
     set("key\\\" | env", "key\\\" | env")
     """
     assert {:ok, parsed} = Parser.parse(script)
-    assert {:ok, compiled} = Compiler.compile_jq_nodefs(parsed)
+    assert {:ok, compiled} = Compiler.compile_jq(parsed)
     refute is_unsafe_jq?(compiled)
   end
 
@@ -32,7 +32,7 @@ defmodule RiichiAdvanced.MahjongScriptSecurityTest do
     end
     """
     assert {:ok, parsed} = Parser.parse(script)
-    assert {:ok, compiled} = Compiler.compile_jq_nodefs(parsed)
+    assert {:ok, compiled} = Compiler.compile_jq(parsed)
     refute is_unsafe_jq?(compiled)
   end
 
@@ -43,7 +43,7 @@ defmodule RiichiAdvanced.MahjongScriptSecurityTest do
     end
     """
     assert {:ok, parsed} = Parser.parse(script)
-    assert {:ok, compiled} = Compiler.compile_jq_nodefs(parsed)
+    assert {:ok, compiled} = Compiler.compile_jq(parsed)
     refute is_unsafe_jq?(compiled)
   end
 
@@ -54,7 +54,7 @@ defmodule RiichiAdvanced.MahjongScriptSecurityTest do
     end
     """
     assert {:ok, parsed} = Parser.parse(script)
-    assert {:ok, compiled} = Compiler.compile_jq_nodefs(parsed)
+    assert {:ok, compiled} = Compiler.compile_jq(parsed)
     refute is_unsafe_jq?(compiled)
   end
 
@@ -66,7 +66,7 @@ defmodule RiichiAdvanced.MahjongScriptSecurityTest do
     end
     """
     assert {:ok, parsed} = Parser.parse(script)
-    assert {:ok, compiled} = Compiler.compile_jq_nodefs(parsed)
+    assert {:ok, compiled} = Compiler.compile_jq(parsed)
     refute is_unsafe_jq?(compiled)
   end
 
@@ -79,7 +79,7 @@ defmodule RiichiAdvanced.MahjongScriptSecurityTest do
     end
     """
     assert {:ok, parsed} = Parser.parse(script)
-    assert {:ok, compiled} = Compiler.compile_jq_nodefs(parsed)
+    assert {:ok, compiled} = Compiler.compile_jq(parsed)
     refute is_unsafe_jq?(compiled)
   end
 
@@ -90,7 +90,7 @@ defmodule RiichiAdvanced.MahjongScriptSecurityTest do
     end
     """
     assert {:ok, parsed} = Parser.parse(script)
-    assert {:error, _msg} = Compiler.compile_jq_nodefs(parsed)
+    assert {:error, _msg} = Compiler.compile_jq(parsed)
   end
 
   test "mahjongscript - parse rejects scripts larger than 4MB" do

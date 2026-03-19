@@ -63,7 +63,7 @@ defmodule RiichiAdvanced.YakuTest.HKOSYaku do
       %{"type" => "buttons_pressed", "buttons" => [%{"button" => "ron"}, nil, nil, nil]}
     ], %{
       east: %{
-        yaku: [{"Seat Flower", 1}]
+        yaku: [{"Seat Flower", [1, "Fan"]}]
       }
     })
   end
@@ -96,7 +96,7 @@ defmodule RiichiAdvanced.YakuTest.HKOSYaku do
       %{"type" => "buttons_pressed", "buttons" => [%{"button" => "ron"}, nil, nil, nil]}
     ], %{
       east: %{
-        yaku: [{"Seat Season", 1}]
+        yaku: [{"Seat Season", [1, "Fan"]}]
       }
     })
   end
@@ -133,7 +133,7 @@ defmodule RiichiAdvanced.YakuTest.HKOSYaku do
       %{"type" => "buttons_pressed", "buttons" => [%{"button" => "ron"}, nil, nil, nil]}
     ], %{
       east: %{
-        yaku: [{"Seat Flower", 1}, {"All Flowers", 2}]
+        yaku: [{"Seat Flower", [1, "Fan"]}, {"All Flowers", [2, "Fan"]}]
       }
     })
   end
@@ -171,7 +171,7 @@ defmodule RiichiAdvanced.YakuTest.HKOSYaku do
       %{"type" => "buttons_pressed", "buttons" => [%{"button" => "ron"}, nil, nil, nil]}
     ], %{
       east: %{
-        yaku: [{"Seat Season", 1}, {"All Seasons", 2}]
+        yaku: [{"Seat Season", [1, "Fan"]}, {"All Seasons", [2, "Fan"]}]
       }
     })
   end
@@ -209,7 +209,7 @@ defmodule RiichiAdvanced.YakuTest.HKOSYaku do
       %{"type" => "buttons_pressed", "buttons" => [%{"button" => "flower_win"}, nil, nil, nil]}
     ], %{
       east: %{
-        yaku: [{"After a Flower", 1}, {"All Seasons", 2}, {"Seat Flower", 1}, {"Seat Season", 1}, {"Seven Flowers", 3}, {"Self Draw", 1}]
+        yaku: [{"After a Flower", [1, "Fan"]}, {"All Seasons", [2, "Fan"]}, {"Seat Flower", [1, "Fan"]}, {"Seat Season", [1, "Fan"]}, {"Seven Flowers", [3, "Fan"]}, {"Self Draw", [1, "Fan"]}]
       }
     })
   end
@@ -248,7 +248,7 @@ defmodule RiichiAdvanced.YakuTest.HKOSYaku do
       %{"type" => "buttons_pressed", "buttons" => [%{"button" => "flower_win"}, nil, nil, nil]}
     ], %{
       east: %{
-        yaku: [{"After a Flower", 1}, {"All Seasons", 2}, {"Seat Flower", 1}, {"Seat Season", 1}, {"Eight Flowers", 8}, {"Self Draw", 1}]
+        yaku: [{"After a Flower", [1, "Fan"]}, {"All Seasons", [2, "Fan"]}, {"Seat Flower", [1, "Fan"]}, {"Seat Season", [1, "Fan"]}, {"Eight Flowers", [8, "Fan"]}, {"Self Draw", [1, "Fan"]}]
       }
     })
   end
@@ -341,7 +341,7 @@ defmodule RiichiAdvanced.YakuTest.HKOSYaku do
       %{"type" => "buttons_pressed", "buttons" => [%{"button" => "tsumo"}, nil, nil, nil]}
     ], %{
       east: %{
-        yaku: [{"Concealed Hand", 1}, {"No Flowers", 1}, {"Half Flush", 3}, {"After a Kong", 1}, {"Self Draw", 1}]
+        yaku: [{"Concealed Hand", [1, "Fan"]}, {"No Flowers", [1, "Fan"]}, {"Half Flush", [3, "Fan"]}, {"After a Kong", [1, "Fan"]}, {"Self Draw", [1, "Fan"]}]
       }
     })
   end
@@ -368,7 +368,7 @@ defmodule RiichiAdvanced.YakuTest.HKOSYaku do
       %{"type" => "buttons_pressed", "buttons" => [%{"button" => "tsumo"}, nil, nil, nil]}
     ], %{
       east: %{
-        yaku: [{"After Multiple Kongs", 8}, {"Concealed Hand", 1}, {"No Flowers", 1}, {"Self Draw", 1}]
+        yaku: [{"After Multiple Kongs", [8, "Fan"]}, {"Concealed Hand", [1, "Fan"]}, {"No Flowers", [1, "Fan"]}, {"Self Draw", [1, "Fan"]}]
       }
     })
   end
@@ -398,7 +398,7 @@ defmodule RiichiAdvanced.YakuTest.HKOSYaku do
       %{"type" => "buttons_pressed", "buttons" => [%{"button" => "chankan"}, nil, nil, nil]}
     ], %{
       east: %{
-        yaku: [{"No Flowers", 1}, {"Robbing a Kong", 1}]
+        yaku: [{"No Flowers", [1, "Fan"]}, {"Robbing a Kong", [1, "Fan"]}]
       }
     })
   end
@@ -425,7 +425,7 @@ defmodule RiichiAdvanced.YakuTest.HKOSYaku do
       %{"type" => "buttons_pressed", "buttons" => [nil, %{"button" => "ron"}, nil, nil]}
     ], %{
       south: %{
-        yaku: [{"All Sequences", 1}, {"Concealed Hand", 1}, {"No Flowers", 1}, {"Full Flush", 7}]
+        yaku: [{"All Sequences", [1, "Fan"]}, {"Concealed Hand", [1, "Fan"]}, {"No Flowers", [1, "Fan"]}, {"Full Flush", [7, "Fan"]}]
       }
     })
   end
@@ -451,7 +451,7 @@ defmodule RiichiAdvanced.YakuTest.HKOSYaku do
       %{"type" => "buttons_pressed", "buttons" => [%{"button" => "ron"}, nil, nil, nil]}
     ], %{
       east: %{
-        yaku: [{"Concealed Hand", 1}, {"No Flowers", 1}, {"White Dragon", 1}]
+        yaku: [{"Concealed Hand", [1, "Fan"]}, {"No Flowers", [1, "Fan"]}, {"White Dragon", [1, "Fan"]}]
       }
     })
   end
@@ -477,7 +477,7 @@ defmodule RiichiAdvanced.YakuTest.HKOSYaku do
       %{"type" => "buttons_pressed", "buttons" => [%{"button" => "ron"}, nil, nil, nil]}
     ], %{
       east: %{
-        yaku: [{"Concealed Hand", 1}, {"No Flowers", 1}, {"Green Dragon", 1}]
+        yaku: [{"Concealed Hand", [1, "Fan"]}, {"No Flowers", [1, "Fan"]}, {"Green Dragon", [1, "Fan"]}]
       }
     })
   end
@@ -503,7 +503,7 @@ defmodule RiichiAdvanced.YakuTest.HKOSYaku do
       %{"type" => "buttons_pressed", "buttons" => [%{"button" => "ron"}, nil, nil, nil]}
     ], %{
       east: %{
-        yaku: [{"Concealed Hand", 1}, {"No Flowers", 1}, {"Red Dragon", 1}]
+        yaku: [{"Concealed Hand", [1, "Fan"]}, {"No Flowers", [1, "Fan"]}, {"Red Dragon", [1, "Fan"]}]
       }
     })
   end
@@ -529,7 +529,7 @@ defmodule RiichiAdvanced.YakuTest.HKOSYaku do
       %{"type" => "buttons_pressed", "buttons" => [%{"button" => "ron"}, nil, nil, nil]}
     ], %{
       east: %{
-        yaku: [{"Concealed Hand", 1}, {"No Flowers", 1}, {"Prevalent Wind", 1}, {"Seat Wind", 1}]
+        yaku: [{"Concealed Hand", [1, "Fan"]}, {"No Flowers", [1, "Fan"]}, {"Prevalent Wind", [1, "Fan"]}, {"Seat Wind", [1, "Fan"]}]
       }
     })
   end
@@ -555,7 +555,7 @@ defmodule RiichiAdvanced.YakuTest.HKOSYaku do
       %{"type" => "buttons_pressed", "buttons" => [%{"button" => "ron"}, nil, nil, nil]}
     ], %{
       east: %{
-        yaku: [{"Concealed Hand", 1}, {"No Flowers", 1}]
+        yaku: [{"Concealed Hand", [1, "Fan"]}, {"No Flowers", [1, "Fan"]}]
       }
     })
   end
@@ -581,7 +581,7 @@ defmodule RiichiAdvanced.YakuTest.HKOSYaku do
       %{"type" => "buttons_pressed", "buttons" => [%{"button" => "ron"}, nil, nil, nil]}
     ], %{
       east: %{
-        yaku: [{"Concealed Hand", 1}, {"No Flowers", 1}, {"No Flowers", 1}, {"Little Three Dragons", 5}, {"Concealed Hand", 1}, {"Green Dragon", 1}, {"White Dragon", 1}]
+        yaku: [{"Concealed Hand", [1, "Fan"]}, {"No Flowers", [1, "Fan"]}, {"No Flowers", [1, "Fan"]}, {"Little Three Dragons", [5, "Fan"]}, {"Concealed Hand", [1, "Fan"]}, {"Green Dragon", [1, "Fan"]}, {"White Dragon", [1, "Fan"]}]
       }
     })
   end
@@ -607,7 +607,7 @@ defmodule RiichiAdvanced.YakuTest.HKOSYaku do
       %{"type" => "buttons_pressed", "buttons" => [%{"button" => "tsumo"}, nil, nil, nil]}
     ], %{
       east: %{
-        yaku: [{"After a Kong", 1}, {"All Honours", 10}, {"Big Three Dragons", 8}, {"Concealed Hand", 1}, {"Four Concealed Triplets", 8}, {"No Flowers", 1}, {"Self Draw", 1}]
+        yaku: [{"After a Kong", [1, "Fan"]}, {"All Honours", [10, "Fan"]}, {"Big Three Dragons", [8, "Fan"]}, {"Concealed Hand", [1, "Fan"]}, {"Four Concealed Triplets", [8, "Fan"]}, {"No Flowers", [1, "Fan"]}, {"Self Draw", [1, "Fan"]}]
       }
     })
   end
@@ -647,7 +647,7 @@ defmodule RiichiAdvanced.YakuTest.HKOSYaku do
       %{"type" => "buttons_pressed", "buttons" => [%{"button" => "tsumo"}, nil, nil, nil]}
     ], %{
       east: %{
-        yaku: [{"After a Kong", 1}, {"Big Four Winds", 13}, {"Four Kongs", 13}, {"Half Flush", 3}, {"Mixed Terminals", 4}, {"No Flowers", 1}, {"Self Draw", 1}]
+        yaku: [{"After a Kong", [1, "Fan"]}, {"Big Four Winds", [13, "Fan"]}, {"Four Kongs", [13, "Fan"]}, {"Half Flush", [3, "Fan"]}, {"Mixed Terminals", [4, "Fan"]}, {"No Flowers", [1, "Fan"]}, {"Self Draw", [1, "Fan"]}]
       }
     })
   end
@@ -673,7 +673,7 @@ defmodule RiichiAdvanced.YakuTest.HKOSYaku do
       %{"type" => "buttons_pressed", "buttons" => [%{"button" => "ron"}, nil, nil, nil]}
     ], %{
       east: %{
-        yaku: [{"Concealed Hand", 1}, {"No Flowers", 1}, {"All Triplets", 3}]
+        yaku: [{"Concealed Hand", [1, "Fan"]}, {"No Flowers", [1, "Fan"]}, {"All Triplets", [3, "Fan"]}]
       }
     })
   end
@@ -699,7 +699,7 @@ defmodule RiichiAdvanced.YakuTest.HKOSYaku do
       %{"type" => "buttons_pressed", "buttons" => [%{"button" => "ron"}, nil, nil, nil]}
     ], %{
       east: %{
-        yaku: [{"Concealed Hand", 1}, {"No Flowers", 1}, {"All Triplets", 3}, {"Mixed Terminals", 4}]
+        yaku: [{"Concealed Hand", [1, "Fan"]}, {"No Flowers", [1, "Fan"]}, {"All Triplets", [3, "Fan"]}, {"Mixed Terminals", [4, "Fan"]}]
       }
     })
   end
@@ -728,7 +728,7 @@ defmodule RiichiAdvanced.YakuTest.HKOSYaku do
       %{"type" => "buttons_pressed", "buttons" => [%{"button" => "ron"}, nil, nil, nil]}
     ], %{
       east: %{
-        yaku: [{"No Flowers", 1}, {"All Terminals", 13}]
+        yaku: [{"No Flowers", [1, "Fan"]}, {"All Terminals", [13, "Fan"]}]
       }
     })
   end 
@@ -754,7 +754,7 @@ defmodule RiichiAdvanced.YakuTest.HKOSYaku do
       %{"type" => "buttons_pressed", "buttons" => [%{"button" => "tsumo"}, nil, nil, nil]}
     ], %{
       east: %{
-        yaku: [{"Blessing of Heaven", 13}, {"Thirteen Orphans", 13}]
+        yaku: [{"Blessing of Heaven", [13, "Fan"]}, {"Thirteen Orphans", [13, "Fan"]}]
       }
     })
   end
@@ -781,7 +781,7 @@ defmodule RiichiAdvanced.YakuTest.HKOSYaku do
       %{"type" => "buttons_pressed", "buttons" => [nil, %{"button" => "tsumo"}, nil, nil]}
     ], %{
       south: %{
-        yaku: [{"Self Draw", 1}, {"Nine Gates", 13}]
+        yaku: [{"Self Draw", [1, "Fan"]}, {"Nine Gates", [13, "Fan"]}]
       }
     })
   end
@@ -805,7 +805,7 @@ defmodule RiichiAdvanced.YakuTest.HKOSYaku do
       %{"type" => "buttons_pressed", "buttons" => [%{"button" => "tsumo"}, nil, nil, nil]}
     ], %{
       east: %{
-        yaku: [{"No Flowers", 1}, {"Blessing of Heaven", 13}, {"Thirteen Orphans", 13}]
+        yaku: [{"No Flowers", [1, "Fan"]}, {"Blessing of Heaven", [13, "Fan"]}, {"Thirteen Orphans", [13, "Fan"]}]
       }
     })
   end
@@ -830,7 +830,7 @@ defmodule RiichiAdvanced.YakuTest.HKOSYaku do
       %{"type" => "buttons_pressed", "buttons" => [nil, %{"button" => "ron"}, nil, nil]}
     ], %{
       south: %{
-        yaku: [{"No Flowers", 1}, {"Blessing of Earth", 13}, {"Nine Gates", 13}]
+        yaku: [{"No Flowers", [1, "Fan"]}, {"Blessing of Earth", [13, "Fan"]}, {"Nine Gates", [13, "Fan"]}]
       }
     })
   end
@@ -856,7 +856,7 @@ defmodule RiichiAdvanced.YakuTest.HKOSYaku do
       %{"type" => "buttons_pressed", "buttons" => [nil, nil, %{"button" => "ron"}, nil]}
     ], %{
       west: %{
-        yaku: [{"No Flowers", 1}, {"Blessing of Man", 13}, {"Little Four Winds", 6}, {"Prevalent Wind", 1}, {"Half Flush", 3}]
+        yaku: [{"No Flowers", [1, "Fan"]}, {"Blessing of Man", [13, "Fan"]}, {"Little Four Winds", [6, "Fan"]}, {"Prevalent Wind", [1, "Fan"]}, {"Half Flush", [3, "Fan"]}]
       }
     })
   end
@@ -974,7 +974,7 @@ defmodule RiichiAdvanced.YakuTest.HKOSYaku do
       %{"buttons" => [nil, nil, nil, %{"button" => "tsumo"}], "type" => "buttons_pressed"},
     ], %{
       north: %{
-        yaku: [{"Concealed Hand", 1}, {"Self Draw", 1}, {"All Sequences", 1}, {"Final Tile", 1}]
+        yaku: [{"Concealed Hand", [1, "Fan"]}, {"Self Draw", [1, "Fan"]}, {"All Sequences", [1, "Fan"]}, {"Final Tile", [1, "Fan"]}]
       }
     })
   end
@@ -1093,7 +1093,7 @@ defmodule RiichiAdvanced.YakuTest.HKOSYaku do
       %{"buttons" => [%{"button" => "ron"}, nil, nil, nil], "type" => "buttons_pressed"}
     ], %{
       east: %{
-        yaku: [{"Concealed Hand", 1}, {"Final Tile", 1}, {"Seat Season", 1}]
+        yaku: [{"Concealed Hand", [1, "Fan"]}, {"Final Tile", [1, "Fan"]}, {"Seat Season", [1, "Fan"]}]
       }
     })
   end

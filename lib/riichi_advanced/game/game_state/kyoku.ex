@@ -45,6 +45,7 @@ defmodule RiichiAdvanced.GameState.Kyoku do
         # since seeing this screen means we're done with all the winners so far, calculate the delta scores
         {state, delta_scores, delta_scores_reason, next_dealer} = Scoring.adjudicate_win_scoring(state)
         state = Map.put(state, :delta_scores, delta_scores)
+
         state = Map.put(state, :delta_scores_reason, delta_scores_reason)
         # only populate next_dealer the first time we call Scoring.adjudicate_win_scoring
         state = if state.next_dealer == nil do Map.put(state, :next_dealer, next_dealer) else state end
@@ -194,10 +195,6 @@ defmodule RiichiAdvanced.GameState.Kyoku do
   def win(state, seat, win_source, scoring_key) do
     state = Map.put(state, :round_result, :win)
 
-    # run before_win actions
-    winning_tile = get_winning_tile(state, seat, win_source)
-    state = Actions.trigger_event(state, "before_win", %{seat: seat, winner_seat: seat, win_source: win_source, winning_tile: winning_tile})
-
     # reset animation (and allow discarding again, in bloody end rules)
     state = update_all_players(state, fn _seat, player -> %{ player | last_discard: nil } end)
 
@@ -228,7 +225,7 @@ defmodule RiichiAdvanced.GameState.Kyoku do
 
     # run after_win actions, using the winner as the context
     winner = state.winners[seat]
-    state = Actions.trigger_event(state, "after_win", winner)
+    state = Actions.trigger_event(state, "after_win", %{winner | seat: winner.winner_seat})
 
     # Push message about yaku and score
     push_message(state, player_prefix(state, seat) ++ [
@@ -429,7 +426,7 @@ defmodule RiichiAdvanced.GameState.Kyoku do
 
   @spec calculate_winner_details_v2(any(), seat(), :call | :discard | :draw | :second_discard | :worst_discard, binary() | nil) :: any()
   def calculate_winner_details_v2(state, seat, win_source, scoring_key) do
-    # 5 step plan:
+    # 3 step plan:
     # - calculate all possible joker assignments. for each assignment:
     #   - calculate yaku
     #   - score the yaku (according to scoring_logic)
@@ -464,6 +461,12 @@ defmodule RiichiAdvanced.GameState.Kyoku do
       # pop off the winning tile
       # {hand, [winning_tile]} = Enum.split(smt_hand, -1)
       winning_tile = Enum.at(smt_hand, -1)
+      # because tenhou can choose any tile, we need to let later functions know
+      #   the identity of the tile we chose this time, so we store it in state.winners
+      state = Map.update!(state, :winners, &Map.put(&1, seat, %{winning_tile: winning_tile}))
+
+      # run before_win actions
+      state = Actions.trigger_event(state, "before_win", %{seat: seat, winner_seat: seat, win_source: win_source, winning_tile: winning_tile})
 
       # save this hand for the win screen
       winning_hand = smt_hand ++ smt_calls
@@ -473,7 +476,7 @@ defmodule RiichiAdvanced.GameState.Kyoku do
       # and find the maximum score obtainable across all joker assignments
 
       # this is a stream of joker assignments
-      joker_assignments = JokerSolver.solve_for_jokers(smt_hand, smt_calls, state.smt_solver, state.rules_ref, state.players[seat].tile_behavior)
+      joker_assignments = JokerSolver.solve_for_jokers(state.mutex, smt_hand, smt_calls, state.smt_solver, state.rules_ref, state.players[seat].tile_behavior)
 
       # evaluate every joker assignment
       # this turns jokers into normal tiles (via the assignment) and returns the best scoring one
@@ -498,7 +501,7 @@ defmodule RiichiAdvanced.GameState.Kyoku do
         rescue
           err -> 
             Logger.error(Exception.format(:error, err, __STACKTRACE__))
-            nil
+            nil # should crash
         end
         # make a new txn in state.txns by running scoring_logic
         # this might run the modify_winner action, which is why we place a fake winner object first
@@ -536,7 +539,7 @@ defmodule RiichiAdvanced.GameState.Kyoku do
 
     # create a winner object
     score_rules = Rules.get(state.rules_ref, "score_calculation", %{})
-    score = if Map.get(cxt, :scoring_key) != nil do
+    score = if Rules.get(state.rules_ref, "scoring_logic", nil) != nil do
       state.txns |> Enum.filter(& &1.to == seat) |> Payment.consolidate_txns(true) |> Map.get(seat, %Transaction{}) |> Payment.get_txn_result()
     else
       {score, _points, _points2, _score_name} = ScoringOld.score_yaku(state, seat, cxt.yaku, cxt.yaku2, is_dealer, win_source == :draw, cxt.minipoints)

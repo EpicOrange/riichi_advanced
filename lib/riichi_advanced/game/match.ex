@@ -515,10 +515,12 @@ defmodule RiichiAdvanced.Match do
                 if Enum.empty?(new_hand_calls) do
                   []
                 else
+                  if debug do IO.puts("Reverting due to last group being a successful forward lookahead (num=0): #{inspect(groups)}") end
                   hand_calls # revert
                 end
               num < 0  -> # negative lookahead
                 if Enum.empty?(new_hand_calls) do
+                  if debug do IO.puts("Reverting due to last group being a successful negative lookahead (num=#{num}): #{inspect(groups)}") end
                   hand_calls # revert
                 else
                   [] # if we matched anything, no we didn't

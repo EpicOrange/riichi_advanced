@@ -98,12 +98,12 @@
     [ "exhaustive", [[[[0,1,2],[0,1,2],[0,1,2],[0,1,2]],[[0,1,2],[0,1,2],[0,1,2],[1,2,3]],[[0,1,2],[0,1,2],[0,1,2],[2,3,4]],[[0,1,2],[0,1,2],[1,2,3],[1,2,3]],[[0,1,2],[0,1,2],[1,2,3],[2,3,4]],[[0,1,2],[0,1,2],[2,3,4],[2,3,4]],[[0,1,2],[1,2,3],[1,2,3],[1,2,3]],[[0,1,2],[1,2,3],[1,2,3],[2,3,4]],[[0,1,2],[1,2,3],[2,3,4],[2,3,4]],[[0,1,2],[2,3,4],[2,3,4],[2,3,4]]], 1], [["pair"], 1] ]
   ],
   "yaku": [
-    { "display_name": "Suit Bonus", "value": "suit_bonus", "when": [{"name": "counter_at_least", "opts": ["suit_bonus", 1]}] },
-    { "display_name": "Single Wait", "value": 1, "when": [{"name": "wait_count_at_most", "opts": [1, ["win"]]}] },
-    { "display_name": "Same Number Bonus", "value": "same_number_bonus", "when": [{"name": "counter_at_least", "opts": ["same_number_bonus", 1]}] },
+    { "display_name": "Suit Bonus", "value": ["suit_bonus", "嘴"], "when": [{"name": "counter_at_least", "opts": ["suit_bonus", 1]}] },
+    { "display_name": "Single Wait", "value": [1, "嘴"], "when": [{"name": "wait_count_at_most", "opts": [1, ["win"]]}] },
+    { "display_name": "Same Number Bonus", "value": ["same_number_bonus", "嘴"], "when": [{"name": "counter_at_least", "opts": ["same_number_bonus", 1]}] },
     {
       "display_name": "Concealed Pung", // x1
-      "value": 1,
+      "value": [1, "嘴"],
       "when": [[
         ["won_by_draw", {"name": "match", "opts": [["hand", "calls", "winning_tile"], ["iiankou_tsumo"]]}],
         ["not_won_by_draw", {"name": "match", "opts": [["hand", "calls", "winning_tile"], ["iiankou_ron"]]}]
@@ -111,7 +111,7 @@
     },
     {
       "display_name": "Concealed Pungs", // x2
-      "value": 2,
+      "value": [2, "嘴"],
       "when": [[
         ["won_by_draw", {"name": "match", "opts": [["hand", "calls", "winning_tile"], ["ryanankou_tsumo"]]}],
         ["not_won_by_draw", {"name": "match", "opts": [["hand", "calls", "winning_tile"], ["ryanankou_ron"]]}]
@@ -119,7 +119,7 @@
     },
     {
       "display_name": "Concealed Pungs", // x3
-      "value": 1,
+      "value": [1, "嘴"],
       "when": [[
         ["won_by_draw", {"name": "match", "opts": [["hand", "calls", "winning_tile"], ["sanankou_tsumo"]]}],
         ["not_won_by_draw", {"name": "match", "opts": [["hand", "calls", "winning_tile"], ["sanankou_ron"]]}]
@@ -127,48 +127,48 @@
     },
     // 4x concealed pungs is a special hand overriding the above, so no need to check it here
     // no need to check for twice double sequences, that's always scored as seven pairs instead
-    { "display_name": "Double Sequences", "value": 2, "when": [{"name": "match", "opts": [["hand", "calls", "winning_tile"], [[ "exhaustive", [["open_iipeikou"], 1], [["shuntsu", "koutsu"], 2], [["pair"], 1] ]]]}] },
+    { "display_name": "Double Sequences", "value": [2, "嘴"], "when": [{"name": "match", "opts": [["hand", "calls", "winning_tile"], [[ "exhaustive", [["open_iipeikou"], 1], [["shuntsu", "koutsu"], 2], [["pair"], 1] ]]]}] },
     {
       "display_name": "Two Suits Only",
-      "value": 2,
+      "value": [2, "嘴"],
       "when": [[
         {"name": "winning_hand_consists_of", "opts": ["2m","3m","4m","5m","6m","7m","8m","2p","3p","4p","5p","6p","7p","8p"]},
         {"name": "winning_hand_consists_of", "opts": ["2m","3m","4m","5m","6m","7m","8m","2s","3s","4s","5s","6s","7s","8s"]},
         {"name": "winning_hand_consists_of", "opts": ["2p","3p","4p","5p","6p","7p","8p","2s","3s","4s","5s","6s","7s","8s"]}
       ]]
     },
-    { "display_name": "Concealed Double Sequences", "value": 4, "when": [[
+    { "display_name": "Concealed Double Sequences", "value": [4, "嘴"], "when": [[
       {"name": "match", "opts": [["hand", "calls", "winning_tile"], [[ "exhaustive", [["iipeikou"], 1], [[{"tile": "any", "attrs": ["winning_tile"]}], 0], [["shuntsu", "koutsu"], 2], [["pair"], 1] ]]]},
       [
         "won_by_draw",
         {"name": "match", "opts": [["hand", "calls", "winning_tile"], [[ "exhaustive", [["iipeikou"], 1], [["shuntsu", "koutsu"], 2], [["pair"], 1] ]]]}
       ]
     ]] },
-    { "display_name": "Concealed Kong", "value": 4, "when": [{"name": "match", "opts": [["calls"], [[[["ankan"], 1]]]]}] },
-    { "display_name": "Concealed Kongs", "value": 8, "when": [{"name": "match", "opts": [["calls"], [[[["ankan"], 2]]]]}] },
-    { "display_name": "Concealed Kongs", "value": 4, "when": [{"name": "match", "opts": [["calls"], [[[["ankan"], 3]]]]}] },
-    { "display_name": "Concealed Kongs", "value": 4, "when": [{"name": "match", "opts": [["calls"], [[[["ankan"], 4]]]]}] },
-    { "display_name": "Four of a Kind", "value": 4, "when": [{"name": "match", "opts": [["hand", "calls", "winning_tile"], ["tile_hog"]]}] },
-    { "display_name": "Dealer Repeat", "value": "dealer_repeat_bonus", "when": [{"name": "counter_equals", "opts": ["dealer_repeat_bonus", 4]}] },
-    { "display_name": "Dealer Repeats", "value": "dealer_repeat_bonus", "when": [{"name": "counter_at_least", "opts": ["dealer_repeat_bonus", 8]}] }
+    { "display_name": "Concealed Kong", "value": [4, "嘴"], "when": [{"name": "match", "opts": [["calls"], [[[["ankan"], 1]]]]}] },
+    { "display_name": "Concealed Kongs", "value": [8, "嘴"], "when": [{"name": "match", "opts": [["calls"], [[[["ankan"], 2]]]]}] },
+    { "display_name": "Concealed Kongs", "value": [4, "嘴"], "when": [{"name": "match", "opts": [["calls"], [[[["ankan"], 3]]]]}] },
+    { "display_name": "Concealed Kongs", "value": [4, "嘴"], "when": [{"name": "match", "opts": [["calls"], [[[["ankan"], 4]]]]}] },
+    { "display_name": "Four of a Kind", "value": [4, "嘴"], "when": [{"name": "match", "opts": [["hand", "calls", "winning_tile"], ["tile_hog"]]}] },
+    { "display_name": "Dealer Repeat", "value": ["dealer_repeat_bonus", "嘴"], "when": [{"name": "counter_equals", "opts": ["dealer_repeat_bonus", 4]}] },
+    { "display_name": "Dealer Repeats", "value": ["dealer_repeat_bonus", "嘴"], "when": [{"name": "counter_at_least", "opts": ["dealer_repeat_bonus", 8]}] }
   ],
     // separating off the "Special Hands" for now because I don't know whether these override the above or not
     // looks like they don't
   "special_yaku": [
-    { "display_name": "Seven Pairs", "value": 10, "when": [{"name": "match", "opts": [["hand", "winning_tile"], [[[["pair"], 7]]]]}] },
-    { "display_name": "Luxury Seven Pairs", "value": 50, "when": [{"name": "match", "opts": [["hand", "winning_tile"], [[[["quad"], 1], [["pair"], 5]]]]}] },
-    { "display_name": "Double Luxury Seven Pairs", "value": 100, "when": [{"name": "match", "opts": [["hand", "winning_tile"], [[[["quad"], 2], [["pair"], 3]]]]}] },
-    { "display_name": "Sea Floor", "value": 15, "when": [{"name": "status", "opts": ["sea_floor"]}] },
+    { "display_name": "Seven Pairs", "value": [10, "×"], "when": [{"name": "match", "opts": [["hand", "winning_tile"], [[[["pair"], 7]]]]}] },
+    { "display_name": "Luxury Seven Pairs", "value": [50, "×"], "when": [{"name": "match", "opts": [["hand", "winning_tile"], [[[["quad"], 1], [["pair"], 5]]]]}] },
+    { "display_name": "Double Luxury Seven Pairs", "value": [100, "×"], "when": [{"name": "match", "opts": [["hand", "winning_tile"], [[[["quad"], 2], [["pair"], 3]]]]}] },
+    { "display_name": "Sea Floor", "value": [15, "×"], "when": [{"name": "status", "opts": ["sea_floor"]}] },
     {
       "display_name": "Pure Suit",
-      "value": 100,
+      "value": [100, "×"],
       "when": [[
         {"name": "winning_hand_consists_of", "opts": ["2m","3m","4m","5m","6m","7m","8m"]},
         {"name": "winning_hand_consists_of", "opts": ["2p","3p","4p","5p","6p","7p","8p"]},
         {"name": "winning_hand_consists_of", "opts": ["2s","3s","4s","5s","6s","7s","8s"]}
       ]]
     },
-    { "display_name": "Three Consecutive Pungs", "value": 100, "when": [[
+    { "display_name": "Three Consecutive Pungs", "value": [100, "×"], "when": [[
       {"name": "match", "opts": [["hand", "calls", "winning_tile"], [[ "exhaustive", [[[[0,0,0,1,1,1,2,2,2]]], 1], [[{"tile": "any", "attrs": ["winning_tile"]}], 0], [["shuntsu", "koutsu"], 1], [["pair"], 1] ]]]},
       [
         "won_by_draw",
@@ -177,13 +177,13 @@
     ]] },
     {
       "display_name": "Four Concealed Pungs",
-      "value": 100,
+      "value": [100, "×"],
       "when": [[
         ["won_by_draw", {"name": "match", "opts": [["hand", "calls", "winning_tile"], ["suuankou_tsumo"]]}],
         ["not_won_by_draw", {"name": "match", "opts": [["hand", "calls", "winning_tile"], ["suuankou_ron"]]}]
       ]]
     },
-    { "display_name": "Ten Identical Tiles", "value": 100, "when": [[
+    { "display_name": "Ten Identical Tiles", "value": [100, "×"], "when": [[
       {"name": "counter_at_least", "opts": ["two_count", 10]},
       {"name": "counter_at_least", "opts": ["three_count", 10]},
       {"name": "counter_at_least", "opts": ["four_count", 10]},
@@ -192,21 +192,21 @@
       {"name": "counter_at_least", "opts": ["seven_count", 10]},
       {"name": "counter_at_least", "opts": ["eight_count", 10]}
     ]] },
-    { "display_name": "Double Concealed Double Sequences", "value": 100, "when": [[
+    { "display_name": "Double Concealed Double Sequences", "value": [100, "×"], "when": [[
       {"name": "match", "opts": [["hand", "calls", "winning_tile"], [[ "exhaustive", [["iipeikou"], 2], [[{"tile": "any", "attrs": ["winning_tile"]}], 0], [["pair"], 1] ]]]},
       [
         "won_by_draw",
         {"name": "match", "opts": [["hand", "calls", "winning_tile"], [[ "exhaustive", [["iipeikou"], 2], [["pair"], 1] ]]]}
       ]
     ]] },
-    { "display_name": "Heavenly Win", "value": 200, "when": [{"name": "status", "opts": ["first_turn"]}, "won_by_draw", {"name": "seat_is", "opts": ["east"]}] },
-    { "display_name": "Earthly Win", "value": 150, "when": [{"name": "anyone_status", "opts": ["first_turn"]}, {"name": "not_seat_is", "opts": ["east"]}] }
+    { "display_name": "Heavenly Win", "value": [200, "×"], "when": [{"name": "status", "opts": ["first_turn"]}, "won_by_draw", {"name": "seat_is", "opts": ["east"]}] },
+    { "display_name": "Earthly Win", "value": [150, "×"], "when": [{"name": "anyone_status", "opts": ["first_turn"]}, {"name": "not_seat_is", "opts": ["east"]}] }
   ],
   // since `"yaku2_overrides_yaku1": true` is set,
   // we need to move dealer repeats to yaku2 but only if the hand scores any yaku2
   "special_dealer_repeat": [
-    { "display_name": "Dealer Repeat", "value": "dealer_repeat_bonus", "when": [{"name": "has_points", "opts": [1]}, {"name": "counter_equals", "opts": ["dealer_repeat_bonus", 4]}] },
-    { "display_name": "Dealer Repeats", "value": "dealer_repeat_bonus", "when": [{"name": "has_points", "opts": [1]}, {"name": "counter_at_least", "opts": ["dealer_repeat_bonus", 8]}] }
+    { "display_name": "Dealer Repeat", "value": ["dealer_repeat_bonus", "×"], "when": [{"name": "has_points", "opts": [1]}, {"name": "counter_equals", "opts": ["dealer_repeat_bonus", 4]}] },
+    { "display_name": "Dealer Repeats", "value": ["dealer_repeat_bonus", "×"], "when": [{"name": "has_points", "opts": [1]}, {"name": "counter_at_least", "opts": ["dealer_repeat_bonus", 8]}] }
   ],
   "yaku_precedence": {
     "Concealed Kongs": ["Concealed Kong"],
@@ -230,6 +230,7 @@
     "yaku2_overrides_yaku1": true,
     "agarirenchan": true,
     "point_name": "嘴",
+    "point2_name": "×",
     "win_by_discard_label": "Hu",
     "win_by_draw_label": "Zimo",
     "win_by_discard_name": "Hu",

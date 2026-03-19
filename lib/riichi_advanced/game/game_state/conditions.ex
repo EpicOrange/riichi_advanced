@@ -33,7 +33,7 @@ defmodule RiichiAdvanced.GameState.Conditions do
           "assigned_hand" -> [{hand ++ state.players[context.seat].cache.arranged_hand, calls}]
           "assigned_calls" -> [{hand, calls ++ state.players[context.seat].cache.arranged_calls}]
           "winning_hand" -> [{hand ++ state.players[context.seat].cache.winning_hand, calls}]
-          "winning_tile" -> [{hand ++ [Utils.add_attr(context.winning_tile, ["winning_tile"])], calls}]
+          "winning_tile" -> [{hand ++ [get_winning_tile(state, context.seat, context.win_source) |> Utils.add_attr(["winning_tile"])], calls}]
           "last_call" -> if last_call_action != nil do [{hand, calls ++ [get_last_call(state)]}] else [{hand, calls}] end
           "last_called_tile" -> if last_call_action != nil do [{hand ++ [last_call_action.called_tile], calls}] else [{hand, calls}] end
           "last_discard" -> if last_discard_action != nil do [{hand ++ [last_discard_action.tile], calls}] else [{hand, calls}] end
@@ -381,10 +381,13 @@ defmodule RiichiAdvanced.GameState.Conditions do
         end end)
       "has_no_yaku"             -> Enum.empty?(context.existing_yaku)
       "has_points"              ->
-        [points, _rest] = context.existing_yaku
+        context.existing_yaku
         |> Enum.map(fn {_name, value} -> value end)
         |> Enum.reduce([], &Scoring.add_yaku_values/2)
-        points >= Enum.at(opts, 0, 1)
+        |> case do
+          [] -> 0
+          [points | _rest] -> points
+        end >= Enum.at(opts, 0, 1)
       "placement"               ->
         placements = get_placements(state)
         Enum.any?(opts, &Enum.at(placements, &1 - 1) == context.seat)

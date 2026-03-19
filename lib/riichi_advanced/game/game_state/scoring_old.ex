@@ -120,8 +120,10 @@ defmodule RiichiAdvanced.GameState.ScoringOld do
 
     {score, points, points2, name} = case scoring_method do
       "multiplier" ->
-        points = yaku |> Enum.map(fn {_name, value} -> value end) |> Enum.reduce([], &Scoring.add_yaku_values/2) |> Enum.at(0, 0)
-        points2 = yaku2 |> Enum.map(fn {_name, value} -> value end) |> Enum.reduce([], &Scoring.add_yaku_values/2) |> Enum.at(0, 0)
+        points_all = yaku |> Enum.map(fn {_name, value} -> value end) |> Enum.reduce([], &Scoring.add_yaku_values/2)
+        points = Utils.get_from_points_list(points_all, score_rules["point_name"])
+        points2 = Utils.get_from_points_list(points_all, score_rules["point2_name"])
+        points = if yaku2_overrides do points2 else points end
         score_multiplier = case Map.get(score_rules, "score_multiplier", 1) do
           "points2"        -> points2
           score_multiplier -> score_multiplier

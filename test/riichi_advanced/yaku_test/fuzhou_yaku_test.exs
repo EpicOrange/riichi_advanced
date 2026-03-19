@@ -24,7 +24,7 @@ defmodule RiichiAdvanced.YakuTest.FuzhouYaku do
       %{"type" => "buttons_pressed", "buttons" => [%{"button" => "ron"}, nil, nil, nil]}
     ], %{
       east: %{
-        yaku: [{"Base Points", 10}]
+        yaku: [{"Base Points", [10, ""]}]
       }
     })
   end
@@ -52,7 +52,7 @@ defmodule RiichiAdvanced.YakuTest.FuzhouYaku do
       %{"type" => "buttons_pressed", "buttons" => [%{"button" => "ron"}, nil, nil, nil]}
     ], %{
       east: %{
-        yaku: [{"Base Points", 10}, {"Flowers", 2}, {"Only One Flower", 15}]
+        yaku: [{"Base Points", [10, ""]}, {"Flowers", [2, ""]}, {"Only One Flower", [15, ""]}]
       }
     })
   end
@@ -79,7 +79,7 @@ defmodule RiichiAdvanced.YakuTest.FuzhouYaku do
       %{"type" => "buttons_pressed", "buttons" => [%{"button" => "ron"}, nil, nil, nil]}
     ], %{
       east: %{
-        yaku: [{"Base Points", 10}, {"Gold", 2}]
+        yaku: [{"Base Points", [10, ""]}, {"Gold", [2, ""]}]
       }
     })
   end
@@ -107,7 +107,7 @@ defmodule RiichiAdvanced.YakuTest.FuzhouYaku do
       %{"type" => "buttons_pressed", "buttons" => [%{"button" => "ron"}, nil, nil, nil]}
     ], %{
       east: %{
-        yaku: [{"Base Points", 10}, {"Flowers", 2}, {"Gold", 2}, {"Only One Flower", 15}]
+        yaku: [{"Base Points", [10, ""]}, {"Flowers", [2, ""]}, {"Gold", [2, ""]}, {"Only One Flower", [15, ""]}]
       }
     })
   end
@@ -135,7 +135,7 @@ defmodule RiichiAdvanced.YakuTest.FuzhouYaku do
       %{"type" => "buttons_pressed", "buttons" => [%{"button" => "ron"}, nil, nil, nil]}
     ], %{
       east: %{
-        yaku: [{"Base Points", 10}, {"Dealer Continuation", 2}]
+        yaku: [{"Base Points", [10, ""]}, {"Dealer Continuation", [2, ""]}]
       }
     })
   end
@@ -163,7 +163,7 @@ defmodule RiichiAdvanced.YakuTest.FuzhouYaku do
       %{"type" => "buttons_pressed", "buttons" => [%{"button" => "ron"}, nil, nil, nil]}
     ], %{
       east: %{
-        yaku: [{"Base Points", 10}, {"Concealed Kong", 2}]
+        yaku: [{"Base Points", [10, ""]}, {"Concealed Kong", [2, ""]}]
       }
     })
   end
@@ -193,7 +193,7 @@ defmodule RiichiAdvanced.YakuTest.FuzhouYaku do
       %{"type" => "buttons_pressed", "buttons" => [%{"button" => "ron"}, nil, nil, nil]}
     ], %{
       east: %{
-        yaku: [{"Base Points", 10}, {"Open Kong", 2}]
+        yaku: [{"Base Points", [10, ""]}, {"Open Kong", [2, ""]}]
       }
     })
   end
@@ -224,7 +224,7 @@ defmodule RiichiAdvanced.YakuTest.FuzhouYaku do
       %{"type" => "buttons_pressed", "buttons" => [%{"button" => "ron"}, nil, nil, nil]}
     ], %{
       east: %{
-        yaku: [{"Base Points", 10}, {"Concealed Kong", 2}, {"Open Kong", 2}]
+        yaku: [{"Base Points", [10, ""]}, {"Concealed Kong", [2, ""]}, {"Open Kong", [2, ""]}]
       }
     })
   end
@@ -255,7 +255,7 @@ defmodule RiichiAdvanced.YakuTest.FuzhouYaku do
       %{"type" => "buttons_pressed", "buttons" => [%{"button" => "ron"}, nil, nil, nil]}
     ], %{
       east: %{
-        yaku: [{"Base Points", 10}, {"Flowers", 8}, {"Full Bloom (Flowers)", 12}]
+        yaku: [{"Base Points", [10, ""]}, {"Flowers", [8, ""]}, {"Full Bloom (Flowers)", [12, ""]}]
       }
     })
   end
@@ -286,7 +286,7 @@ defmodule RiichiAdvanced.YakuTest.FuzhouYaku do
       %{"type" => "buttons_pressed", "buttons" => [%{"button" => "ron"}, nil, nil, nil]}
     ], %{
       east: %{
-        yaku: [{"Base Points", 10}, {"Flowers", 8}, {"Full Bloom (East)", 12}]
+        yaku: [{"Base Points", [10, ""]}, {"Flowers", [8, ""]}, {"Full Bloom (East)", [12, ""]}]
       }
     })
   end
@@ -313,7 +313,7 @@ defmodule RiichiAdvanced.YakuTest.FuzhouYaku do
       %{"type" => "buttons_pressed", "buttons" => [%{"button" => "ron"}, nil, nil, nil]}
     ], %{
       east: %{
-        yaku: [{"Base Points", 10}, {"All Sequences", 10}]
+        yaku: [{"Base Points", [10, ""]}, {"All Sequences", [10, ""]}]
       }
     })
   end
@@ -340,7 +340,7 @@ defmodule RiichiAdvanced.YakuTest.FuzhouYaku do
       %{"type" => "buttons_pressed", "buttons" => [%{"button" => "ron"}, nil, nil, nil]}
     ], %{
       east: %{
-        yaku: [{"Base Points", 10}, {"Golden Pair", 20}]
+        yaku: [{"Base Points", [10, ""]}, {"Golden Pair", [20, ""]}]
       }
     })
   end
@@ -367,8 +367,8 @@ defmodule RiichiAdvanced.YakuTest.FuzhouYaku do
       %{"type" => "buttons_pressed", "buttons" => [%{"button" => "ron"}, nil, nil, nil]}
     ], %{
       east: [
-        %{yaku: [{"Base Points", 10}, {"Golden Dragon", 40}]},
-        %{yaku: [{"All Sequences", 10}, {"Base Points", 10}, {"Three Gold Knockdown", 30}]},
+        %{yaku: [{"Base Points", [10, ""]}, {"Golden Dragon", [40, ""]}]},
+        %{yaku: [{"All Sequences", [10, ""]}, {"Base Points", [10, ""]}, {"Three Gold Knockdown", [30, ""]}]},
       ]
     })
   end
@@ -397,7 +397,7 @@ defmodule RiichiAdvanced.YakuTest.FuzhouYaku do
       %{"type" => "buttons_pressed", "buttons" => [%{"button" => "tsumo"}, nil, nil, nil]}
     ], %{
       east: %{
-        yaku: [{"Base Points", 10}, {"Golden Pair", 20}]
+        yaku: [{"Base Points", [10, ""]}, {"Golden Pair", [20, ""]}]
       }
     })
   end
@@ -426,8 +426,8 @@ defmodule RiichiAdvanced.YakuTest.FuzhouYaku do
       %{"type" => "buttons_pressed", "buttons" => [%{"button" => "tsumo"}, nil, nil, nil]}
     ], %{
       east: [
-        %{yaku: [{"Base Points", 10}, {"Golden Dragon", 40}]},
-        %{yaku: [{"All Sequences", 10}, {"Base Points", 10}, {"Three Gold Knockdown", 30}]},
+        %{yaku: [{"Base Points", [10, ""]}, {"Golden Dragon", [40, ""]}]},
+        %{yaku: [{"All Sequences", [10, ""]}, {"Base Points", [10, ""]}, {"Three Gold Knockdown", [30, ""]}]},
       ]
     })
   end
@@ -454,7 +454,7 @@ defmodule RiichiAdvanced.YakuTest.FuzhouYaku do
       %{"type" => "buttons_pressed", "buttons" => [%{"button" => "ron"}, nil, nil, nil]}
     ], %{
       east: %{
-        yaku: [{"Base Points", 10}, {"Three Gold Knockdown", 30}]
+        yaku: [{"Base Points", [10, ""]}, {"Three Gold Knockdown", [30, ""]}]
       }
     })
   end
@@ -479,7 +479,7 @@ defmodule RiichiAdvanced.YakuTest.FuzhouYaku do
       %{"type" => "buttons_pressed", "buttons" => [%{"button" => "tsumo"}, nil, nil, nil]}
     ], %{
       east: %{
-        yaku: [{"Base Points", 10}, {"Blessing of Heaven", 50}]
+        yaku: [{"Base Points", [10, ""]}, {"Blessing of Heaven", [50, ""]}]
       }
     })
   end
@@ -505,7 +505,7 @@ defmodule RiichiAdvanced.YakuTest.FuzhouYaku do
       %{"type" => "buttons_pressed", "buttons" => [nil, %{"button" => "tsumo"}, nil, nil]}
     ], %{
       south: %{
-        yaku: [{"Base Points", 10}, {"Blessing of Earth", 40}]
+        yaku: [{"Base Points", [10, ""]}, {"Blessing of Earth", [40, ""]}]
       }
     })
   end
@@ -525,7 +525,7 @@ defmodule RiichiAdvanced.YakuTest.FuzhouYaku do
       %{"type" => "buttons_pressed", "buttons" => [%{"button" => "qiangjin"}, nil, nil, nil]}
     ], %{
       east: %{
-        yaku: [{"Base Points", 10}, {"Robbing the Gold", 50}]
+        yaku: [{"Base Points", [10, ""]}, {"Robbing the Gold", [50, ""]}]
       }
     })
   end
@@ -545,7 +545,7 @@ defmodule RiichiAdvanced.YakuTest.FuzhouYaku do
       %{"type" => "buttons_pressed", "buttons" => [nil, nil, nil, %{"button" => "qiangjin"}]}
     ], %{
       north: %{
-        yaku: [{"Base Points", 10}, {"Robbing the Gold", 50}]
+        yaku: [{"Base Points", [10, ""]}, {"Robbing the Gold", [50, ""]}]
       }
     })
   end

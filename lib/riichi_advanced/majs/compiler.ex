@@ -962,7 +962,7 @@ defmodule RiichiAdvanced.Compiler do
         end
     end
   end
-  defp compile_jq_toplevel(ast, line, column, defs \\ MapSet.new()) do
+  defp compile_jq_toplevel(ast, line, column, defs) do
     case ast do
       {"if", [line: line, column: column], [condition, [do: then_cmds, else: else_cmds]]} ->
         with {:ok, condition} <- compile_toplevel_condition(condition, line, column, defs),
@@ -1041,7 +1041,7 @@ defmodule RiichiAdvanced.Compiler do
 
   def compile_jq(ast) do
     case compile_jq_defs(ast) do
-      {:ok, {jq, _defs}} -> jq
+      {:ok, {jq, _defs}} -> {:ok, jq}
       {:error, error} -> {:error, error}
     end
   end

@@ -96,6 +96,7 @@ defmodule RiichiAdvanced.GameState.Scoring do
   def seat_scores_points(state, yaku_list_names, min_points, min_minipoints, seat, winning_tile, win_source) do
     for {smt_hand, smt_calls} <- JokerSolver.get_smt_hand_calls(state, seat, winning_tile) do
       JokerSolver.solve_for_jokers(
+        state.mutex,
         smt_hand, smt_calls,
         state.smt_solver,
         state.rules_ref,
@@ -113,7 +114,11 @@ defmodule RiichiAdvanced.GameState.Scoring do
         state = Actions.trigger_event(state, "before_scoring", %{seat: seat, win_source: win_source, winning_tile: assigned_winning_tile, silent: true})
         
         # get winning tile, ensure this happens after running before_scoring above
-        {yaku, minipoints} = get_yaku_from_lists(state, yaku_list_names, seat, winning_tile, win_source)
+        if assigned_winning_tile == nil do
+          IO.puts("WARNING: tried to get yaku without a winning tile")
+          IO.inspect(Process.info(self(), :current_stacktrace))
+        end
+        {yaku, minipoints} = get_yaku_from_lists(state, yaku_list_names, seat, assigned_winning_tile, win_source)
         minipoints >= min_minipoints && case min_points do
           :declared ->
             names = Enum.map(yaku, fn {name, _value} -> name end)
@@ -226,12 +231,6 @@ defmodule RiichiAdvanced.GameState.Scoring do
 
     # handle hanada kirame's scoring quirk
     {state, delta_scores} = hanada_kirame_score_protection(state, delta_scores)
-
-    # multiply by delta_score_multiplier counter, if it exists
-    delta_scores = Map.new(delta_scores, fn {seat, delta} -> {seat, delta * Map.get(state.players[seat].counters, "delta_score_multiplier", 1)} end)
-
-    # add delta_score counter, if it exists
-    delta_scores = Map.new(delta_scores, fn {seat, delta} -> {seat, delta + Map.get(state.players[seat].counters, "delta_score", 0)} end)
 
     # get delta scores reason
     is_draw = state.round_result in [:exhaustive_draw, :abortive_draw]

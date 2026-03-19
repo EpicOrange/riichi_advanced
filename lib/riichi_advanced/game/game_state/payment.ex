@@ -148,9 +148,11 @@ defmodule RiichiAdvanced.GameState.Payment do
 
   def get_highest_scoring_txn(state_cxts, get_worst_instead \\ false) do
     Enum.max_by(state_cxts, fn {state, cxt} ->
+        # note: this score is zero if we're not using the new scoring system
         score = state.txns |> Enum.filter(& &1.to == cxt.seat) |> sum_txns() |> Payment.get_txn_result()
         num_yaku = length(cxt.yaku)
-        {score, -num_yaku} # tiebreak in favor of less yaku
+        {score, cxt.points, cxt.points2, cxt.minipoints, -num_yaku}
+        # |> IO.inspect(label: inspect(cxt.yaku))
       end,
       if get_worst_instead do &<=/2 else &>=/2 end,
       fn -> nil end # empty stream

@@ -1,12 +1,12 @@
-define_yaku yakuman, "Gathering the Plum Blossom from the Roof", 1, status("kan") and match(["winning_tile"], ~m"5p:1")
-define_yaku yakuman, "Scratching a Carrying-Pole", 1, won_by_call and match(["winning_tile"], ~m"2s:1")
-define_yaku yakuman, "Plucking the Moon from the Bottom of the Sea", 1, no_tiles_remaining and won_by_draw and match(["winning_tile"], ~m"1p:1")
+define_yaku yakuman, "Gathering the Plum Blossom from the Roof", [1, "Limit"], status("kan") and match(["winning_tile"], ~m"5p:1")
+define_yaku yakuman, "Scratching a Carrying-Pole", [1, "Limit"], won_by_call and match(["winning_tile"], ~m"2s:1")
+define_yaku yakuman, "Plucking the Moon from the Bottom of the Sea", [1, "Limit"], no_tiles_remaining and won_by_draw and match(["winning_tile"], ~m"1p:1")
 define_yaku_precedence "All Honours", ["Round Wind", "Seat Wind", "All Triplets", "Half Flush", "All Terminals and Honors"]
 
 on before_scoring do
   set_counter("dealer_repeats", "honba")
 end
-define_yaku yakuman, "Dealer's 13 Consecutive Win", 1, seat_is("east") and counter_at_least("dealer_repeats", 12)
+define_yaku yakuman, "Dealer's 13 Consecutive Win", [1, "Limit"], seat_is("east") and counter_at_least("dealer_repeats", 12)
 
 set score_calculation, %{
   scoring_method: ["han_fu_formula", "multiplier"],

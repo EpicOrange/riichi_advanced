@@ -67,7 +67,7 @@ defmodule RiichiAdvanced.GameState.JokerSolver do
       end
       {smt_hand, smt_calls}
   end
-  def solve_for_jokers(smt_hand, smt_calls, smt_solver, rules_ref, tile_behavior) do
+  def solve_for_jokers(mutex, smt_hand, smt_calls, smt_solver, rules_ref, tile_behavior) do
     # first grab the obvious jokers (the ones that map only to one value, basically red fives)
     obvious_joker_assignment = get_obvious_joker_assignment(tile_behavior, smt_hand, smt_calls)
     {smt_hand, smt_calls} = replace_obvious_jokers({smt_hand, smt_calls}, obvious_joker_assignment)
@@ -75,7 +75,7 @@ defmodule RiichiAdvanced.GameState.JokerSolver do
     use_smt = Rules.get(rules_ref, "score_calculation", %{}) |> Map.get("use_smt", true)
     ret = if use_smt and Enum.any?(Enum.uniq(smt_hand ++ Enum.concat(smt_calls)), &TileBehavior.is_joker?(&1, tile_behavior)) do
       # obtain all joker assignments (as a stream)
-      RiichiAdvanced.SMT.match_hand_smt_v3(smt_solver, smt_hand, smt_calls, Rules.translate_match_definitions(rules_ref, ["win"]), tile_behavior)
+      RiichiAdvanced.SMT.match_hand_smt_v4(mutex, smt_solver, smt_hand, smt_calls, Rules.translate_match_definitions(rules_ref, ["win"]), tile_behavior)
     else Stream.concat([[%{}]]) end
     # re-add the obvious jokers back into each assignment
     |> Stream.map(&Map.merge(obvious_joker_assignment, &1))
@@ -145,13 +145,16 @@ defmodule RiichiAdvanced.GameState.JokerSolver do
     # fetch the new hand, calls, and winning tile
     %{hand: assigned_hand, calls: assigned_calls} = state.players[seat]
     assigned_winning_tile = get_winning_tile(state, seat, win_source)
-    assigned_winning_hand = assigned_hand ++ Enum.flat_map(assigned_calls, &Utils.call_to_tiles/1) ++ if assigned_winning_tile != nil do [assigned_winning_tile] else [] end
+    if assigned_winning_tile == nil do
+      IO.puts("[WARNING] evaluate_joker_assignment: the winning tile must exist, but got nil")
+    end
+    assigned_winning_hand = assigned_hand ++ Enum.flat_map(assigned_calls, &Utils.call_to_tiles/1) ++ [assigned_winning_tile]
 
     # obtain yaku and minipoints from this state
     {yaku, minipoints} = Scoring.get_yaku_from_lists(state, Map.get(score_rules, "yaku_lists", []), seat, assigned_winning_tile, win_source)
     {yaku2, _minipoints} = if Map.has_key?(score_rules, "yaku2_lists") do
       Scoring.get_yaku_from_lists(state, Map.get(score_rules, "yaku2_lists", []), seat, assigned_winning_tile, win_source)
-    else {[], minipoints} end
+    else {[], 0} end
     if Debug.print_wins() do
       assigned_winning_hand = state.players[seat].cache.winning_hand
       IO.puts("checking assignment, hand: #{inspect(assigned_winning_hand)}, tile: #{inspect(winning_tile)}, yaku: #{inspect(yaku)}, yaku2: #{inspect(yaku2)}")
@@ -163,6 +166,10 @@ defmodule RiichiAdvanced.GameState.JokerSolver do
     yaku2 = Enum.map(yaku2, fn {name, value} -> {translate(state, name), value} end)
     points = Enum.map(yaku ++ yaku2, fn {_name, value} -> value end) |> Enum.reduce([], &Scoring.add_yaku_values/2)
 
+    # this bit is to support old scoring system, TODO remove
+    yaku2_overrides = not Enum.empty?(yaku2) and Map.get(score_rules, "yaku2_overrides_yaku1", false)
+    yaku = if yaku2_overrides do yaku2 else yaku end
+
     {state, Map.merge(cxt, %{
       yaku: yaku,
       yaku2: yaku2,
@@ -171,11 +178,10 @@ defmodule RiichiAdvanced.GameState.JokerSolver do
       points2: Utils.get_from_points_list(points, score_rules["point2_name"]),
       total_points: points,
       joker_assignment: joker_assignment,
-      winning_tile: if cxt.winning_tile == nil do assigned_winning_tile else cxt.winning_tile end,
+      winning_tile: assigned_winning_tile,
       assigned_hand: assigned_hand,
       assigned_calls: assigned_calls,
       assigned_winning_hand: assigned_winning_hand,
-      assigned_winning_tile: assigned_winning_tile,
     })}
   end
   
@@ -183,6 +189,7 @@ defmodule RiichiAdvanced.GameState.JokerSolver do
     Enum.max_by(evaluations,
       fn %{score: score, points: points, points2: points2, minipoints: minipoints, yaku: yaku, yaku2: yaku2} ->
         {score, points, points2, minipoints, -length(yaku), -length(yaku2)}
+        # |> IO.inspect(label: inspect(yaku))
       end,
       if get_worst_instead do &<=/2 else &>=/2 end,
       fn -> nil end # empty stream

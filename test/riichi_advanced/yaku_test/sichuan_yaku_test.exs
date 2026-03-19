@@ -54,7 +54,7 @@ defmodule RiichiAdvanced.YakuTest.SichuanYaku do
       %{"type" => "buttons_pressed", "buttons" => [%{"button" => "ron"}, nil, nil, nil]}
     ], %{
       east: %{
-        yaku: [{"Root", 1}],
+        yaku: [{"Root", [1, "Fan"]}],
         yaku2: []
       }
     })
@@ -83,7 +83,7 @@ defmodule RiichiAdvanced.YakuTest.SichuanYaku do
       %{"type" => "buttons_pressed", "buttons" => [%{"button" => "ron"}, nil, nil, nil]}
     ], %{
       east: %{
-        yaku: [{"Root", 2}],
+        yaku: [{"Root", [2, "Fan"]}],
         yaku2: []
       }
     })
@@ -124,7 +124,7 @@ defmodule RiichiAdvanced.YakuTest.SichuanYaku do
       %{"type" => "buttons_pressed", "buttons" => [%{"button" => "ron"}, nil, nil, nil]}
     ], %{
       east: %{
-        yaku: [{"Golden Single Wait", 2}, {"Root", 4}],
+        yaku: [{"Golden Single Wait", [2, "Fan"]}, {"Root", [4, "Fan"]}],
         yaku2: []
       }
     })
@@ -153,7 +153,7 @@ defmodule RiichiAdvanced.YakuTest.SichuanYaku do
       %{"type" => "buttons_pressed", "buttons" => [%{"button" => "ron"}, nil, nil, nil]}
     ], %{
       east: %{
-        yaku: [{"All Triplets", 1}],
+        yaku: [{"All Triplets", [1, "Fan"]}],
         yaku2: []
       }
     })
@@ -182,7 +182,7 @@ defmodule RiichiAdvanced.YakuTest.SichuanYaku do
       %{"type" => "buttons_pressed", "buttons" => [%{"button" => "ron"}, nil, nil, nil]}
     ], %{
       east: %{
-        yaku: [{"Full Flush", 2}],
+        yaku: [{"Full Flush", [2, "Fan"]}],
         yaku2: []
       }
     })
@@ -211,7 +211,7 @@ defmodule RiichiAdvanced.YakuTest.SichuanYaku do
       %{"type" => "buttons_pressed", "buttons" => [%{"button" => "ron"}, nil, nil, nil]}
     ], %{
       east: %{
-        yaku: [{"Root", 1}, {"Seven Pairs", 2}],
+        yaku: [{"Root", [1, "Fan"]}, {"Seven Pairs", [2, "Fan"]}],
         yaku2: []
       }
     })
@@ -250,7 +250,7 @@ defmodule RiichiAdvanced.YakuTest.SichuanYaku do
       %{"type" => "buttons_pressed", "buttons" => [%{"button" => "ron"}, nil, nil, nil]}
     ], %{
       east: %{
-        yaku: [{"Golden Single Wait", 2}, {"Root", 1}],
+        yaku: [{"Golden Single Wait", [2, "Fan"]}, {"Root", [1, "Fan"]}],
         yaku2: []
       }
     })
@@ -278,7 +278,7 @@ defmodule RiichiAdvanced.YakuTest.SichuanYaku do
       %{"type" => "buttons_pressed", "buttons" => [%{"button" => "tsumo"}, nil, nil, nil]}
     ], %{
       east: %{
-        yaku: [{"Root", 1}, {"Win After Kong", 1}],
+        yaku: [{"Root", [1, "Fan"]}, {"Win After Kong", [1, "Fan"]}],
         yaku2: []
       }
     })
@@ -311,7 +311,7 @@ defmodule RiichiAdvanced.YakuTest.SichuanYaku do
       %{"type" => "buttons_pressed", "buttons" => [%{"button" => "chankan"}, nil, nil, nil]}
     ], %{
       east: %{
-        yaku: [{"Robbing The Kong", 1}],
+        yaku: [{"Robbing The Kong", [1, "Fan"]}],
         yaku2: []
       }
     })
@@ -341,7 +341,7 @@ defmodule RiichiAdvanced.YakuTest.SichuanYaku do
       %{"type" => "buttons_pressed", "buttons" => [%{"button" => "ron"}, nil, nil, nil]}
     ], %{
       east: %{
-        yaku: [{"Shoot After Kong", 1}],
+        yaku: [{"Shoot After Kong", [1, "Fan"]}],
         yaku2: []
       }
     })
@@ -418,7 +418,7 @@ defmodule RiichiAdvanced.YakuTest.SichuanYaku do
       %{"buttons" => [nil, nil, nil, %{"button" => "tsumo"}], "type" => "buttons_pressed"}
     ], %{
       north: %{
-        yaku: [{"Under The Sea", 1}]
+        yaku: [{"Under The Sea", [1, "Fan"]}]
       }
     })
   end

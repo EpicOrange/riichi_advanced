@@ -852,7 +852,9 @@ defmodule RiichiAdvanced.GameState do
   end
 
   def get_winning_tile(state, seat, :draw) do
-    if get_last_discard_action(state) == nil and Enum.empty?(state.players[seat].calls) do
+    if get_last_discard_action(state) == nil
+        and Enum.empty?(state.players[seat].calls)
+        and get_in(state.winners[seat].winning_tile) == nil do
       # it's tenhou, or we moved draw into hand, either way return nil
       nil
     else
@@ -893,9 +895,12 @@ defmodule RiichiAdvanced.GameState do
   end
 
   def update_winning_tile(state, seat, :draw, fun) do
+    # replace the first drawn tile
+    # if no drawn tiles, just place a new one
     update_in(state.players[seat].draw, fn
+      [] -> [fun.(nil)]
       [draw] -> [fun.(draw)]
-      draw -> draw # no op if 0 or 2+ draws
+      [draw | rest] -> [fun.(draw) | rest]
     end)
   end
   def update_winning_tile(state, _seat, :call, fun) do

@@ -24,8 +24,8 @@ define_set nan_pair, ~s"2z 2z"
 define_set shaa_pair, ~s"3z 3z"
 define_set pei_pair, ~s"4z 4z"
 if equals(!shou_list, "yakuman") do
-  define_yaku !shou_list, !shou_name, [!shou_value, "★"], match(["hand", "calls", "winning_tile"], ~m"unique, (ton nan shaa pei):3, (ton_pair nan_pair shaa_pair pei_pair):1")
-  define_yaku !dai_list, !dai_name, [!dai_value, "★"], match(["hand", "calls", "winning_tile"], ~m"unique, (ton nan shaa pei):4")
+  define_yaku !shou_list, !shou_name, [!shou_value, !limit], match(["hand", "calls", "winning_tile"], ~m"unique, (ton nan shaa pei):3, (ton_pair nan_pair shaa_pair pei_pair):1")
+  define_yaku !dai_list, !dai_name, [!dai_value, !limit], match(["hand", "calls", "winning_tile"], ~m"unique, (ton nan shaa pei):4")
 else
   define_yaku !shou_list, !shou_name, [!shou_value, !han], match(["hand", "calls", "winning_tile"], ~m"unique, (ton nan shaa pei):3, (ton_pair nan_pair shaa_pair pei_pair):1")
   define_yaku !dai_list, !dai_name, [!dai_value, !han], match(["hand", "calls", "winning_tile"], ~m"unique, (ton nan shaa pei):4")
