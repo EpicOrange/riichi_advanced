@@ -93,7 +93,7 @@ defmodule RiichiAdvanced.GameState.Scoring do
 
   # TODO replace inner loop with JokerSolver.evaluate_joker_assignment?
   # this is only here bc of shortcutting
-  def seat_scores_points(state, yaku_list_names, min_points, min_minipoints, seat, winning_tile, win_source) do
+  def seat_scores_points(state, yaku_list_names, point_name, min_points, min_minipoints, seat, winning_tile, win_source) do
     for {smt_hand, smt_calls} <- JokerSolver.get_smt_hand_calls(state, seat, winning_tile) do
       JokerSolver.solve_for_jokers(
         state.mutex,
@@ -125,12 +125,14 @@ defmodule RiichiAdvanced.GameState.Scoring do
             Enum.all?(state.players[seat].declared_yaku, fn yaku -> yaku in names end)
           _ ->
             points = Enum.map(yaku, fn {_name, value} -> value end) |> Enum.reduce([], &Scoring.add_yaku_values/2)
+            |> Utils.get_from_points_list(point_name)
+            # |> IO.inspect(label: inspect(yaku))
             points >= min_points
         end
       end, timeout: :infinity, ordered: false)
     end
     |> Enum.concat()
-    |> Enum.any?(fn {:ok, result} -> result end)
+    |> Enum.any?(fn {:ok, result} -> result  end)
   end
   
   def hanada_kirame_score_protection(state, delta_scores) do

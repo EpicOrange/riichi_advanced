@@ -12,6 +12,8 @@ defmodule RiichiAdvanced.GameState.JokerSolver do
   def is_dealer?(seat, kyoku, available_seats) do
     Riichi.get_east_player_seat(kyoku, available_seats) == seat
   end
+  # smt hand = hand with winning tile appended to the end
+  # smt calls = flattened calls that aren't flowers
   def get_smt_hand_calls(state, seat, nil) do
     # e.g. in the case we're tenhou, any of our hand+draw tiles could be the winning tile
     hand = state.players[seat].hand ++ state.players[seat].draw
@@ -29,7 +31,7 @@ defmodule RiichiAdvanced.GameState.JokerSolver do
     []
   end
   def get_smt_hand_calls(state, seat, winning_tile) do
-    smt_hand = state.players[seat].hand ++ if winning_tile != nil do [winning_tile] else [] end
+    smt_hand = state.players[seat].hand ++ [winning_tile]
     smt_calls = state.players[seat].calls
     |> Enum.reject(fn {call_name, _call} -> call_name in Riichi.flower_names() end)
     |> Enum.map(&Utils.call_to_tiles/1)
@@ -101,8 +103,9 @@ defmodule RiichiAdvanced.GameState.JokerSolver do
     end)
     assigned_calls = flower_calls ++ assigned_non_flower_calls
     # length(hand)-1 is where the solver puts the winning tile
-    # if the winning tile is a joker, the following gets its assignment
-    assigned_winning_tile = Map.get(joker_assignment, length(hand)-1, Enum.at(hand, -1))
+    # if the winning tile is a joker, the following gets its assignment,
+    # otherwise it just takes the hand's last tile
+    assigned_winning_tile = Map.get(joker_assignment, length(hand) - 1, Enum.at(hand, -1))
     assigned_winning_hand = assigned_hand ++ Enum.flat_map(assigned_calls, &Utils.call_to_tiles/1) ++ if assigned_winning_tile != nil do [assigned_winning_tile] else [] end
     {assigned_hand, assigned_calls, assigned_winning_hand, assigned_winning_tile}
   end

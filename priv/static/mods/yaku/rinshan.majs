@@ -16,6 +16,10 @@ end
 
 define_yaku !list, !rinshan_name, [!value, !han], status("kan")
 define_yaku !list, !flower_name, [!value, !han], status("flower")
-define_yaku !double_list, !double_name, [!double_value, !limit], status("double_kan")
+if equals(!double_list, "yakuman") do
+  define_yaku !double_list, !double_name, [!double_value, !limit], status("double_kan")
+else
+  define_yaku !double_list, !double_name, [!double_value, !han], status("double_kan")
+end
 
 define_yaku_precedence !double_name, [!rinshan_name, !flower_name]

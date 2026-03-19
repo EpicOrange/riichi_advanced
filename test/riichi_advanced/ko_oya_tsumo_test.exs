@@ -1,8 +1,7 @@
 defmodule RiichiAdvanced.KoOyaTsumoTest do
   use ExUnit.Case, async: true
-  alias RiichiAdvanced.GameState, as: GameState
   alias RiichiAdvanced.GameState.Scoring, as: Scoring
-  alias RiichiAdvanced.Kyoku, as: Kyoku
+  alias RiichiAdvanced.GameState.Kyoku, as: Kyoku
   alias RiichiAdvanced.Riichi, as: Riichi
   alias RiichiAdvanced.TestUtils, as: TestUtils
 
@@ -118,7 +117,7 @@ defmodule RiichiAdvanced.KoOyaTsumoTest do
     state = put_in(state.players[seat].draw, draw)
     state = put_in(state.players[seat].calls, calls)
     state = update_in(state.players[seat].status, &MapSet.put(&1, "discards_empty")) # trigger tenhou
-    state = Kyoku.win(state, seat, :draw)
+    state = Kyoku.win(state, seat, :draw, "tsumo")
     {_state, delta_scores, _delta_scores_reason, _next_dealer} = Scoring.adjudicate_win_scoring(state)
     score = state.winners[seat].score
     assert score == expected_score

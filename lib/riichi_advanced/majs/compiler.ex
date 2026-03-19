@@ -421,16 +421,20 @@ defmodule RiichiAdvanced.Compiler do
         _ -> {:error, "Compiler.compile: at line #{line}:#{column}, `apply` got invalid method #{name}"}
       end
       with {:ok, operation} <- operation do
-        if op == "set" do
-          {:ok, operation}
-        else
-          # only perform operation if the parent path exists
-          otherwise = if default_to_set do "#{path} = #{value}" else "." end
-          with {:ok, parent_path} <- Validator.get_parent_path(path) do
-            ret = "if (#{parent_path}? != null) then (#{operation}) else #{otherwise} end"
-            # IO.puts(ret)
+        case op do
+          "set"    -> {:ok, operation}
+          "delete" ->
+            # only perform operation if the path exists
+            ret = "if (#{path}? != null) then (#{operation}) end"
             {:ok, ret}
-          end
+          _        ->
+            # only perform operation if the parent path exists
+            otherwise = if default_to_set do "#{path} = #{value}" else "." end
+            with {:ok, parent_path} <- Validator.get_parent_path(path) do
+              ret = "if (#{parent_path}? != null) then (#{operation}) else #{otherwise} end"
+              # IO.puts(ret)
+              {:ok, ret}
+            end
         end
       end
     end

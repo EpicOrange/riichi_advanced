@@ -457,7 +457,7 @@ defmodule RiichiAdvanced.GameState.Kyoku do
     state = Map.update!(state, :winners, &Map.put(&1, seat, %{}))
     state = Map.update!(state, :winner_seats, & &1 ++ [seat])
 
-    {state, cxt} = for {smt_hand, smt_calls} <- JokerSolver.get_smt_hand_calls(state, seat, winning_tile) do
+    {state, cxt} = for {smt_hand, _smt_calls} <- JokerSolver.get_smt_hand_calls(state, seat, winning_tile) do
       # pop off the winning tile
       # {hand, [winning_tile]} = Enum.split(smt_hand, -1)
       winning_tile = Enum.at(smt_hand, -1)
@@ -465,8 +465,20 @@ defmodule RiichiAdvanced.GameState.Kyoku do
       #   the identity of the tile we chose this time, so we store it in state.winners
       state = Map.update!(state, :winners, &Map.put(&1, seat, %{winning_tile: winning_tile}))
 
-      # run before_win actions
       state = Actions.trigger_event(state, "before_win", %{seat: seat, winner_seat: seat, win_source: win_source, winning_tile: winning_tile})
+
+      # re-obtain smt_hand and smt_calls, since before_win might have modified them
+      # (e.g. by adding attributes to tiles in hand)
+      smt_hand = 
+        if win_source == :draw and Enum.empty?(state.players[seat].draw) do
+          # tenhou with no draw = 14 tiles in hand, remove the winning tile first
+          List.delete(state.players[seat].hand, winning_tile) ++ [winning_tile]
+        else
+          state.players[seat].hand ++ [winning_tile]
+        end
+      smt_calls = state.players[seat].calls
+      |> Enum.reject(fn {call_name, _call} -> call_name in Riichi.flower_names() end)
+      |> Enum.map(&Utils.call_to_tiles/1)
 
       # save this hand for the win screen
       winning_hand = smt_hand ++ smt_calls

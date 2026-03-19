@@ -378,7 +378,8 @@ defmodule RiichiAdvanced.Constants do
         pon_name: "Pong",
         kan_name: "Kong",
         ankan_name: "Concealed Kong",
-        han: "Fan"
+        han: "Fan",
+        limit: "Limit"
       },
       mods: [
         "base",
@@ -441,7 +442,8 @@ defmodule RiichiAdvanced.Constants do
         ankan_name: "Concealed Kong",
         ron_name: "Hu",
         tsumo_name: "Zimo",
-        han: "Fan"
+        han: "Fan",
+        limit: "Limit"
       },
       mods: [
         "base",

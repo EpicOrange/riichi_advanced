@@ -11,8 +11,8 @@ defmodule RiichiAdvanced.RulesetsTest do
     if config == nil do
       mod_name
     else
-      config = for %{"name" => name, "values" => [value | _]} <- config do
-        {name, value}
+      config = for %{"name" => name, "values" => values} = config_item <- config, into: %{} do
+        {name, if Map.has_key?(config_item, "default") do config_item["default"] else Enum.at(values, 0) end}
       end
       %{name: mod_name, config: config}
     end
@@ -21,7 +21,6 @@ defmodule RiichiAdvanced.RulesetsTest do
   def test_ruleset_mods_individually(ruleset) do
     %{game_state_pid: game_state_pid} = TestUtils.initialize_test_state(ruleset, [], "")
     rules_ref = GenServer.call(game_state_pid, :get_state).rules_ref
-    monitor_ref = Process.monitor(game_state_pid)
     Rules.get(rules_ref, "available_mods", %{})
     |> Enum.filter(&is_map/1)
     |> Enum.map(&add_default_mod_config/1)
@@ -69,7 +68,7 @@ defmodule RiichiAdvanced.RulesetsTest do
       TestUtils.initialize_test_state("riichi", mods, "")
     rescue
       err ->
-        Logger.error("Failed to load #{inspect(ruleset)} with mods #{inspect(mods)}")
+        Logger.error("Failed to apply mods to ruleset #{inspect(ruleset)}: #{inspect(mods)}")
         raise err
     end
     # make sure it's terminated before starting the next one

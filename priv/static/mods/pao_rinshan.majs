@@ -66,8 +66,7 @@ unless defined("pao_stuff") do
     if status("pao") do
       points2 = points2 - pao_yakuman
     end
-    modify_winner("score_name", "Yakuman")
-    if points > 0 do
+    if points > 0 and status("rinshan_pao_eligible") do
       check_limit
       if total == 0 do
         total = points :: "Han"
@@ -88,6 +87,7 @@ unless defined("pao_stuff") do
       end
     end
     if points2 > 0 do
+      modify_winner("score_name", "Yakuman")
       total = points2 :: "★"
       total *= 8000 :: "Yakuman base"
       if seat_is("east", as: "winner") do
@@ -115,21 +115,21 @@ unless defined("pao_stuff") do
     apply_scoring_modifiers
   end
   replace all, "buttons.tsumo.actions", ["win_by_draw", "tsumo"] do
-    if anyone_status("pao") and pao_yakuman > 0 do
+    if anyone_status("pao") and (pao_yakuman > 0 or anyone_status("rinshan_pao_eligible")) do
       win_by_draw("pao_tsumo")
     else
       win_by_draw("tsumo")
     end
   end
   replace all, "buttons.ron.actions", ["win_by_discard", "ron"] do
-    if anyone_status("pao") and pao_yakuman > 0 do
+    if anyone_status("pao") and (pao_yakuman > 0 or anyone_status("rinshan_pao_eligible")) do
       win_by_discard("pao_ron")
     else
       win_by_discard("ron")
     end
   end
   replace all, "buttons.chankan.actions", ["win_by_call", "chankan"] do
-    if anyone_status("pao") and pao_yakuman > 0 do
+    if anyone_status("pao") and (pao_yakuman > 0 or anyone_status("rinshan_pao_eligible")) do
       win_by_call("pao_ron")
     else
       win_by_call("ron")
@@ -137,7 +137,7 @@ unless defined("pao_stuff") do
   end
 
   on before_win do
-    if anyone_status("pao") and pao_yakuman > 0 do
+    if anyone_status("pao") do
       set_counter_all("pao_yakuman", "pao_yakuman", as: "winner")
       # don't make anyone responsible for pao yaku, by setting the winner as 'responsible'
       # (this is because the yaku has to be someone's responsibility so that "all" doesn't match it)
