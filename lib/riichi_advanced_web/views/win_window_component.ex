@@ -64,8 +64,8 @@ defmodule RiichiAdvancedWeb.WinWindowComponent do
               <% end %>
             <% else %>
               <div class="total-points-display"><%= Utils.try_integer(@winner.points) %> <%= dt(@lang, @winner.point_name) %></div>
-              <div class="total-points-display" :if={@winner.right_display != nil}><%= @winner.right_display %> <%= dt(@lang, @winner.right_display_name) %></div>
             <% end %>
+            <div class="total-points-display" :if={@winner.right_display != nil}><%= @winner.right_display %> <%= dt(@lang, @winner.right_display_name) %></div>
             <div class={["total-score-display", String.length("#{@winner.score} #{@winner.score_denomination}") >= 12 && "small"]}><%= @winner.displayed_score %> <%= dt(@lang, @winner.score_denomination) %></div>
             <div class={["total-score-name-display", String.length("#{@winner.score_name}") >= 12 && "small"]} :if={Map.has_key?(@winner, :score_name) and @winner.score_name != nil}><%= dt(@lang, @winner.score_name) %></div>
           </div>
