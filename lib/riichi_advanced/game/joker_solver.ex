@@ -38,7 +38,7 @@ defmodule RiichiAdvanced.GameState.JokerSolver do
   def get_obvious_joker_assignment(tile_behavior, smt_hand, smt_calls) do
     # first get a map [single-value joker => the tile it maps to]
     obvious_joker_map = TileBehavior.tile_mappings(tile_behavior)
-    |> Enum.flat_map(fn {joker, [assign]} -> [{joker, assign}]; _ -> [] end)
+    |> Enum.flat_map(fn {joker, [assign]} when assign != :any -> [{joker, assign}]; _ -> [] end)
     |> Map.new()
     # return a map %{index => tile}
     # do this by iterating over the whole hand and replacing with the first joker match
@@ -72,7 +72,7 @@ defmodule RiichiAdvanced.GameState.JokerSolver do
     {smt_hand, smt_calls} = replace_obvious_jokers({smt_hand, smt_calls}, obvious_joker_assignment)
 
     use_smt = Rules.get(rules_ref, "score_calculation", %{}) |> Map.get("use_smt", true)
-    ret = if use_smt and Enum.any?(smt_hand ++ Enum.concat(smt_calls), &TileBehavior.is_joker?(&1, tile_behavior)) do
+    ret = if use_smt and Enum.any?(Enum.uniq(smt_hand ++ Enum.concat(smt_calls)), &TileBehavior.is_joker?(&1, tile_behavior)) do
       # obtain all joker assignments (as a stream)
       RiichiAdvanced.SMT.match_hand_smt_v3(smt_solver, smt_hand, smt_calls, Rules.translate_match_definitions(rules_ref, ["win"]), tile_behavior)
     else Stream.concat([[%{}]]) end

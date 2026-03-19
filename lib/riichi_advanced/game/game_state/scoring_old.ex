@@ -272,7 +272,6 @@ defmodule RiichiAdvanced.GameState.ScoringOld do
     self_draw_penalty = Map.get(score_rules, "self_draw_penalty", 0)
     payer = case winner.win_source do
       :draw           -> nil
-      :best_draw      -> nil
       :second_discard -> get_last_discard_action(state).seat
       :worst_discard  -> get_last_discard_action(state).seat
       :discard        -> get_last_discard_action(state).seat

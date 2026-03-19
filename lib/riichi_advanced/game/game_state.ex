@@ -898,7 +898,6 @@ defmodule RiichiAdvanced.GameState do
       draw -> draw # no op if 0 or 2+ draws
     end)
   end
-  def update_winning_tile(state, seat, :best_draw, fun), do: update_winning_tile(state, seat, :draw, fun)
   def update_winning_tile(state, _seat, :call, fun) do
     last_call_action = get_last_call_action(state)
     if last_call_action != nil do

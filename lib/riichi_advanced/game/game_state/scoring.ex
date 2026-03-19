@@ -255,7 +255,7 @@ defmodule RiichiAdvanced.GameState.Scoring do
         new_dealer_seat = cond do
           is_draw                -> dealer_seat # if there is no first winner, dealer stays the same
           map_size(winners) == 1 -> winner.seat # otherwise, the first winner becomes the next dealer
-          true                   -> winner.payer # if there are multiple first winners, the payer becomes the next dealer instead
+          true                   -> get_last_discard_action(state).seat # if there are multiple first winners, the loser becomes the next dealer instead
         end
         Utils.get_relative_seat(dealer_seat, new_dealer_seat)
       agarirenchan and Riichi.get_east_player_seat(state.kyoku, state.available_seats) in state.winner_seats -> :self
@@ -277,36 +277,6 @@ defmodule RiichiAdvanced.GameState.Scoring do
     score_rules = Rules.get(state.rules_ref, "score_calculation", %{})
     tenpai = Map.new(state.players, fn {seat, player} -> {seat, "tenpai" in player.status} end)
     delta_scores = Map.new(state.players, fn {seat, _player} -> {seat, 0} end)
-
-    # handle sichuan style scoring best hands at draw (if there are 2+ non-winners and anyone is tenpai)
-    score_best_hand_at_draw = Map.get(score_rules, "score_best_hand_at_draw", false)
-      and map_size(state.winners) < 3
-      and Enum.any?(tenpai, fn {seat, tenpai?} -> tenpai? and seat not in state.winner_seats end)
-    {state, delta_scores} = if score_best_hand_at_draw do
-      # declare tenpai players as winners, as if they won from non-tenpai people (opponents)
-      opponents = Enum.reject(state.available_seats, &tenpai[&1])
-      # for each tenpai player who hasn't won, find the highest point hand they could get
-      winners_before = state.winner_seats
-      state = for {seat, tenpai?} <- tenpai, tenpai?, seat not in winners_before, reduce: state do
-        state ->
-          # calculate new winner object
-          state2 = Map.put(state, :wall_index, 0) # use this so haitei isn't scored
-          winner = Kyoku.calculate_winner_details_v2(state2, seat, :best_draw, "tsumo")
-          |> Map.put(:opponents, opponents)
-
-          # add winner to state
-          state
-          |> Map.update!(:winners, &Map.put(&1, seat, winner))
-          |> Map.update!(:winner_seats, & &1 ++ [seat])
-      end
-
-      next_screen = if Enum.any?(state.winners, fn {_seat, winner} -> not Map.has_key?(winner, :processed) end) do :winner else :scores end
-      state = state
-      |> Map.put(:visible_screen, next_screen)
-      |> Map.put(:round_result, :draw)
-      |> update_all_players(fn _seat, player -> %{ player | hand_revealed: true } end)
-      {state, delta_scores}
-    else {state, delta_scores} end
 
     # handle hanada kirame's scoring quirk
     {state, delta_scores} = hanada_kirame_score_protection(state, delta_scores)

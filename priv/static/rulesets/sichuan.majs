@@ -59,7 +59,7 @@ define_yaku yaku, "Golden Single Wait", 2, match(["calls"], ~m"(pon daiminkan an
 define_yaku yaku, "Win After Kong", 1, status("kan")
 define_yaku yaku, "Robbing The Kong", 1, won_by_call
 define_yaku yaku, "Shoot After Kong", 1, discarder_status("kan")
-define_yaku yaku, "Under The Sea", 1, no_tiles_remaining
+define_yaku yaku, "Under The Sea", 1, no_tiles_remaining and status_missing("tenpai_at_draw")
 define_yaku_precedence "Golden Single Wait", ["All Triplets"]
 
 set score_calculation, %{
@@ -124,6 +124,41 @@ end
 
 on before_exhaustive_draw do
   set_status_all("ended_by_draw")
+  # for every non-winner, mark them as tenpai or noten at draw
+  as everyone do
+    if status_missing("won") do
+      if match(["hand", "calls"], ["tenpai"]) do
+        set_status("tenpai_at_draw")
+      else
+        set_status("noten_at_draw")
+      end
+    end
+  end
+
+  # make noten players responsible for tenpai players winning
+  as everyone do
+    if status("noten_at_draw") do
+      as everyone do
+        if status("tenpai_at_draw") do
+          make_responsible_for("prev_seat", "all")
+        end
+      end
+    end
+  end
+  # now actually declare wins for tenpai players
+  # `win_by_draw("win")` will retrigger this event, so add a reentry check
+  if status_missing("do_noten_payments") do
+    set_status_all("do_noten_payments")
+    set_tile_alias_all(["4x"], ["any"])
+    as everyone do
+      if status("tenpai_at_draw") do
+        # have them draw an invisible joker and win
+        change_turn("self")
+        draw(1, "4x")
+        win_by_draw("win")
+      end
+    end
+  end
 end
 
 on after_scoring do
@@ -141,10 +176,43 @@ on after_scoring do
   end
 end
 
+on before_win do
+  unless status("do_noten_payments") do
+    if won_by_draw do
+      as others do
+        as prev_seat do
+          make_responsible_for("prev_seat", "all")
+        end
+      end
+    else
+      if won_by_discard do
+        make_responsible_for("last_discarder", "all")
+      else 
+        make_responsible_for("last_caller", "all")
+      end
+    end
+  end
+end
+
+define_scoring win do
+  total = points :: "Fan"
+  total = 0
+  if total == 0 and points >= 3 do total = 8 :: "3+ Fan → 8" end
+  if total == 0 and points >= 2 do total = 4 :: "2 Fan → 4" end
+  if total == 0 and points >= 1 do total = 2 :: "1 Fan → 2" end
+  if total == 0                 do total = 1 :: "0 Fan → 1" end
+  if status("do_noten_payments") do
+    modify_winner("score_name", "Draw")
+  else
+    if won_by_draw do total += 1 :: "Self-draw bonus" end
+  end
+  modify_winner("score", total)
+end
+
 def before_bloody_end do
   if status("ended_by_draw") do
     as winners do
-      # upon exhaustive draw every tenpai player scores takame
+      # upon exhaustive draw, every tenpai player scores takame
       # so label the takame wait as "Best"
       modify_winner("winning_tile_text", "Best")
     end
@@ -430,7 +498,7 @@ define_button ron,
     pause(1000)
     set_status("won")
     reveal_hand
-    win_by_discard
+    win_by_discard("win")
   end
 
 define_button chankan,
@@ -450,7 +518,7 @@ define_button chankan,
     pause(1000)
     set_status("won")
     reveal_hand
-    win_by_call
+    win_by_call("win")
   end
 
 define_button tsumo,
@@ -467,7 +535,7 @@ define_button tsumo,
     pause(1000)
     set_status("won")
     reveal_hand
-    win_by_draw
+    win_by_draw("win")
   end
 
 define_auto_button _1_auto_sort,

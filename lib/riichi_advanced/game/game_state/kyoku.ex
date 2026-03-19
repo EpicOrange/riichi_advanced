@@ -173,6 +173,7 @@ defmodule RiichiAdvanced.GameState.Kyoku do
         else 
           state = Map.put(state, :visible_screen, nil)
           state = Map.put(state, :game_active, true)
+          state = Map.put(state, :txns, [])
 
           # trigger before_continue actions
           state = Actions.trigger_event(state, "before_continue", %{seat: state.turn})
@@ -424,7 +425,7 @@ defmodule RiichiAdvanced.GameState.Kyoku do
     end
   end
 
-  @spec calculate_winner_details_v2(any(), seat(), :best_draw | :call | :discard | :draw | :second_discard | :worst_discard, binary() | nil) :: any()
+  @spec calculate_winner_details_v2(any(), seat(), :call | :discard | :draw | :second_discard | :worst_discard, binary() | nil) :: any()
   def calculate_winner_details_v2(state, seat, win_source, scoring_key) do
     # 5 step plan:
     # - calculate all possible joker assignments. for each assignment:
@@ -513,7 +514,7 @@ defmodule RiichiAdvanced.GameState.Kyoku do
       |> Payment.get_highest_scoring_txn(win_source == :worst_discard)
       |> case do
         # no joker assignments returned by smt (this should not happen)
-        nil -> Logger.error("[ERROR] no joker assignments returned by smt for hand #{smt_hand} #{smt_calls}")
+        nil -> Logger.error("[ERROR] no joker assignments returned by smt for hand #{inspect(smt_hand)} #{inspect(smt_calls)}")
         r -> r
       end
     end
@@ -536,14 +537,6 @@ defmodule RiichiAdvanced.GameState.Kyoku do
 
     # create a winner object since the liveview requires it
     score_rules = Rules.get(state.rules_ref, "score_calculation", %{})
-    # payer = case win_source do
-    #   :draw           -> nil
-    #   :best_draw      -> nil
-    #   :second_discard -> get_last_discard_action(state).seat
-    #   :worst_discard  -> get_last_discard_action(state).seat
-    #   :discard        -> get_last_discard_action(state).seat
-    #   :call           -> get_last_call_action(state).seat
-    # end
     score = if Map.get(cxt, :scoring_key) != nil do
       state.txns |> Enum.filter(& &1.to == seat) |> Payment.consolidate_txns(true) |> Map.get(seat) |> Payment.get_txn_result()
     else
@@ -576,7 +569,6 @@ defmodule RiichiAdvanced.GameState.Kyoku do
         end,
         winning_tile_text: case win_source do
           :draw           -> Map.get(score_rules, "win_by_draw_label", "")
-          :best_draw      -> Map.get(score_rules, "win_by_draw_label", "")
           :second_discard -> Map.get(score_rules, "win_by_discard_label", "")
           :worst_discard  -> Map.get(score_rules, "win_by_discard_label", "")
           :discard        -> Map.get(score_rules, "win_by_discard_label", "")
