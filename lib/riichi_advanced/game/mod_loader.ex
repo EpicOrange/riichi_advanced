@@ -92,7 +92,7 @@ defmodule RiichiAdvanced.ModLoader do
   def convert_to_jq_defs(majs, defs \\ MapSet.new()) do
     # first check that it's not actually json
     case Jason.decode(majs) do
-      {:ok, json}    -> ". * " <> Jason.encode!(json) # just merge the json (reencoding to ensure it's safe)
+      {:ok, json}    -> {". * " <> Jason.encode!(json), defs} # just merge the json (reencoding to ensure it's safe)
       {:error, _} -> 
         # now try to parse it as majs
         with {:ok, ast} <- Parser.parse(majs),
@@ -139,13 +139,13 @@ defmodule RiichiAdvanced.ModLoader do
     case File.read(Application.app_dir(:riichi_advanced, "/priv/static/mods/#{name}.jq")) do
       {:ok, mod_jq} ->
         verify_jq(name, mod_jq)
-        mod_jq
+        {mod_jq, defs}
       {:error, _err}      ->
         case File.read(Application.app_dir(:riichi_advanced, "/priv/static/mods/#{name}.majs")) do
           {:ok, mod_majs} -> convert_to_jq_defs(mod_majs, defs)
           {:error, _err}  ->
             IO.puts("WARNING: Could not find mod #{name}!")
-            "."
+            {".", defs}
         end
     end
   end

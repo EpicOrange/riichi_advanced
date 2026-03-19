@@ -10,6 +10,21 @@ on after_call do
   if last_call_is("daiminkan") do
     as callee do
       set_status("rinshan_pao_eligible")
+      if status("pao") do
+        set_status("double_pao")
+      end
+      set_status("pao")
+    end
+  end
+end
+
+on before_turn_change do
+  if status("rinshan_pao_eligible") do
+    unset_status("rinshan_pao_eligible")
+    if status("double_pao") do
+      unset_status("double_pao")
+    else
+      unset_status("pao")
     end
   end
 end
@@ -18,12 +33,99 @@ on before_win do
   as others do
     if status("rinshan_pao_eligible") do
       make_responsible_for("prev_seat", "all")
+      clear_responsibilities(as: "others")
     end
   end
 end
 
-on after_turn_change do
-  #unset_status_all("rinshan_pao_eligible")
+# pao stuff
+unless defined("pao_stuff") do
+  define "pao_stuff"
+  apply set, "score_calculation.win_with_pao_name", "Sekinin Barai"
+
+  def pao_text do
+    if status_missing("shown_pao_text") do
+      set_status("shown_pao_text")
+      as others do
+        if is_responsible_for("prev_seat") do
+          big_text("Pao")
+        end
+      end
+    end
+  end
+
+  apply prepend, "buttons.ron.actions" do pao_text end
+  apply prepend, "buttons.chankan.actions" do pao_text end
+  apply prepend, "buttons.tsumo.actions" do pao_text end
+  replace all, "buttons.tsumo.actions", ["win_by_draw", "tsumo"] do
+    if anyone_status("pao") do
+      win_by_draw("pao_tsumo")
+    else
+      win_by_draw("tsumo")
+    end
+  end
+
+  define_scoring pao_tsumo do
+    total = 0
+    check_limit
+    if total == 0 do
+      total = points :: "Han"
+      han_mult = 2 ** (total + 2) :: "Han mult."
+      total = fu :: "Fu"
+      total *= han_mult :: "Base"
+    end
+    if seat_is("east", as: "winner") do
+      total *= 6 :: "Dealer pao tsumo"
+      if total < 12000 do
+        total = round_up(total, 100) :: "Round up"
+      end
+    else
+      total *= 4 :: "Nondealer pao tsumo"
+      if total < 8000 do
+        total = round_up(total, 100) :: "Round up"
+      end
+    end
+    apply_scoring_modifiers
+    if @honba_condition do
+      total += honba * 300 :: "Honba"
+    end
+  end
+
+  define_const pao_yaku, ["Daisangen", "Daisuushii"]
+
+
+  on after_turn_change do
+    push_message("pao")
+  end
+  on before_win do
+    if anyone_status("pao") do
+      if won_by_draw do
+        as everyone do
+          if status_missing("pao") do
+            clear_responsibilities("prev_seat", @pao_yaku, as: "winner")
+          end
+        end
+      else
+        set_status("pao_halve_payment", as: "everyone")
+        if won_by_discard do
+          make_responsible_for("last_discarder", @pao_yaku)
+        else
+          make_responsible_for("last_caller", @pao_yaku)
+        end
+      end
+    end
+  end
+
+  apply append, "functions.apply_scoring_modifiers" do
+    if not_won_by_draw and anyone_status("pao") do
+      total /= 2 :: "Pao ron split"
+      if status_missing("pao") do
+        set_status("no_honba")
+      end
+    end
+  end
+
+  apply append, "constants.honba_condition", status_missing("no_honba")
 end
 
-apply set, "score_calculation.win_with_pao_name", "Sekinin Barai"
+apply append, "constants.pao_yaku", ["Suukantsu"]

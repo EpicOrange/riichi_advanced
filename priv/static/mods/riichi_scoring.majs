@@ -60,6 +60,10 @@ def check_limit do
   end
 end
 
+# these two are meant to be modifiable by pao mod
+def apply_scoring_modifiers do end
+define_const honba_condition, honba > 0
+
 define_scoring ron do
   total = 0
   check_limit
@@ -80,7 +84,8 @@ define_scoring ron do
       total = round_up(total, 100) :: "Round up"
     end
   end
-  if honba > 0 do
+  apply_scoring_modifiers
+  if @honba_condition do
     total += honba * 300 :: "Honba"
   end
 end
@@ -105,7 +110,8 @@ define_scoring tsumo do
       total = round_up(total, 100) :: "Round up"
     end
   end
-  if honba > 0 do
+  apply_scoring_modifiers
+  if @honba_condition do
     total += honba * 100 :: "Honba"
   end
 end

@@ -446,6 +446,8 @@ defmodule RiichiAdvanced.Compiler do
          {:ok, value1_val} <- compile_constant(value1, line, column),
          {:ok, value1} <- Jason.encode(value1_val),
          {:ok, value2_val} <- compile_constant(value2, line, column),
+         # make sure single actions are treated as one action, not an action list
+         value2_val <- (with [action] <- value2_val do action end),
          {:ok, value2} <- Jason.encode(value2_val) do
       operation = case Jason.decode(name) do
         {:ok, "all"} -> {:ok, "walk(if . == #{value1} then #{value2} else . end)"}
@@ -872,9 +874,6 @@ defmodule RiichiAdvanced.Compiler do
       """}
     end
   end
-
-  # TODO remove `define`
-
 
   defp compile_command("define_scoring", name, args, line, column) do
     body = case args do

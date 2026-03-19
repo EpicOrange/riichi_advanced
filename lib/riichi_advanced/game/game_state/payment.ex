@@ -2,6 +2,7 @@ defmodule RiichiAdvanced.GameState.Payment do
   alias RiichiAdvanced.GameState.Actions, as: Actions
   alias RiichiAdvanced.GameState.Payment, as: Payment
   alias RiichiAdvanced.GameState.Rules, as: Rules
+  alias RiichiAdvanced.GameState.Scoring, as: Scoring
   alias RiichiAdvanced.Utils, as: Utils
   alias RiichiAdvanced.Types, as: Types
   alias RiichiAdvanced.Types.Transaction, as: Transaction
@@ -56,30 +57,77 @@ defmodule RiichiAdvanced.GameState.Payment do
   
   # populates a new entry in state.txns using scoring_logic
   def run_scoring_logic(state, cxt) when is_map_key(cxt, :scoring_key) and cxt.scoring_key != nil do
-    # for each entry in responsibilities, make a txn, and populate it by running scoring_logic
-    state = for {payer, player} <- state.players,
-        {seat, _yaku_spec} <- player.responsibilities,
+    # sort players into atamahane order
+    players = Enum.sort_by(state.players, fn
+      {nil, _} -> 5
+      {seat, _} -> case Utils.get_relative_seat(cxt.seat, seat) do
+        :shimocha -> 1
+        :toimen -> 2
+        :kamicha -> 3
+        _ -> 4
+      end
+    end)
+
+    score_rules = Rules.get(state.rules_ref, "score_calculation", %{})
+
+    # for each player responsible for a yaku that is in cxt.yaku,
+    # make an empty txn, and populate it by running scoring_logic
+    all_mentioned_yaku =
+      for {_seat, player} <- state.players,
+          {_seat2, yakus} <- player.responsibilities,
+          yaku <- yakus do yaku end |> Enum.uniq()
+    unmentioned_yaku = Enum.reject(cxt.yaku, fn {name, _value} -> name in all_mentioned_yaku end)
+    # IO.inspect(cxt.yaku, label: "cxt.yaku")
+    # IO.inspect(all_mentioned_yaku, label: "all_mentioned_yaku")
+    # IO.inspect(unmentioned_yaku, label: "unmentioned_yaku")
+    state = for {payer, player} <- players,
+        {seat, yakus} <- player.responsibilities,
         seat == cxt.seat,
         reduce: state do
       state ->
-        # create an empty txn
-        txn_name = case Utils.get_relative_seat(seat, payer) do
-          :self     -> "From self"
-          :shimocha -> "From right"
-          :toimen   -> "From across"
-          :kamicha  -> "From left"
-        end
-        txn = %Transaction{name: txn_name, from: payer, to: seat, line_items: []}
-        state = update_in(state.txns, &[txn | &1])
+        # modify the points and yaku to only be for the ones payer is responsible for
+        new_yaku = Enum.flat_map(yakus, &
+          if &1 == "all" do
+            unmentioned_yaku
+          else
+            Enum.find(cxt.yaku, fn {name, _value} -> name == &1 end)
+            |> case do
+              nil -> []
+              yaku -> [yaku]
+            end
+          end)
+        |> Enum.uniq()
+        # |> IO.inspect(label: inspect(payer))
+        # only make a txn if we have yaku
+        state = if not Enum.empty?(new_yaku) do
+          new_points = new_yaku
+          |> Enum.map(fn {_name, value} -> value end)
+          |> Enum.reduce([], &Scoring.add_yaku_values/2)
 
-        # run scoring_logic to populate this new txn with line items
-        scoring_logic_actions = Rules.get(state.rules_ref, "scoring_logic", %{}) |> Map.get(cxt.scoring_key, nil)
-        state = if scoring_logic_actions != nil do
-          Actions.run_actions(state, scoring_logic_actions, %{cxt | seat: payer})
-        else
-          IO.puts("[WARNING] scoring_logic[#{inspect(cxt.scoring_key)}] is empty!")
-          state
-        end
+          # create an empty txn
+          txn_name = case Utils.get_relative_seat(seat, payer) do
+            :self     -> "From self"
+            :shimocha -> "From right"
+            :toimen   -> "From across"
+            :kamicha  -> "From left"
+          end
+          txn = %Transaction{name: txn_name, from: payer, to: seat, line_items: []}
+          state = update_in(state.txns, &[txn | &1])
+
+          # run scoring_logic to populate this new txn with line items
+          scoring_logic_actions = Rules.get(state.rules_ref, "scoring_logic", %{}) |> Map.get(cxt.scoring_key, nil)
+          state = if scoring_logic_actions != nil do
+            Actions.run_actions(state, scoring_logic_actions, %{cxt |
+              seat: payer,
+              yaku: new_yaku,
+              points: Utils.get_from_points_list(new_points, score_rules["point_name"]),
+              points2: Utils.get_from_points_list(new_points, score_rules["point2_name"]),
+            })
+          else
+            IO.puts("[WARNING] scoring_logic[#{inspect(cxt.scoring_key)}] is empty!")
+            state
+          end
+        else state end
         state
     end
     # then give pot to winner
