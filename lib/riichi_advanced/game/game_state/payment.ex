@@ -53,7 +53,7 @@ defmodule RiichiAdvanced.GameState.Payment do
   end
   
   # populates a new entry in state.txns using scoring_logic
-  def run_scoring_logic(state, cxt) do
+  def run_scoring_logic(state, cxt) when is_map_key(cxt, :scoring_key) and cxt.scoring_key != nil do
     # for each entry in responsibilities, make a txn, and populate it by running scoring_logic
     for {payer, player} <- state.players,
         {seat, _yaku_spec} <- player.responsibilities,
@@ -77,6 +77,7 @@ defmodule RiichiAdvanced.GameState.Payment do
         state
     end
   end
+  def run_scoring_logic(state, _cxt), do: state # do nothing if no scoring key
 
   def get_highest_scoring_txn(state_cxts, get_worst_instead \\ false) do
     Enum.max_by(state_cxts, fn {state, cxt} -> state.txns |> Enum.filter(& &1.to == cxt.seat) |> sum_txns() |> Payment.get_txn_result() end,

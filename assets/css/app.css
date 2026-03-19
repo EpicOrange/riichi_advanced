@@ -2592,6 +2592,7 @@ div.game-modal > div.delta-score-reason {
   right: 0;
   width: 35%;
   user-select: none;
+  pointer-events: none;
   z-index: 3;
 }
 div.game-modal > div.delta-score-reason::before {

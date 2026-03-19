@@ -7,12 +7,16 @@ defmodule RiichiAdvanced.GameState.Kyoku do
   alias RiichiAdvanced.GameState.Payment, as: Payment
   alias RiichiAdvanced.GameState.Rules, as: Rules
   alias RiichiAdvanced.GameState.Scoring, as: Scoring
+  alias RiichiAdvanced.GameState.ScoringOld, as: ScoringOld
   alias RiichiAdvanced.GameState.TileBehavior, as: TileBehavior
   alias RiichiAdvanced.GameState.JokerSolver, as: JokerSolver
   alias RiichiAdvanced.Riichi, as: Riichi
   alias RiichiAdvanced.Utils, as: Utils
+  alias RiichiAdvanced.Types, as: Types
   import RiichiAdvanced.GameState
   require Logger
+
+  @type seat() :: Types.seat()
 
   defp start_timer(state) do
     state = Map.put(state, :timer, Rules.get(state.rules_ref, "win_timer", 30))
@@ -184,7 +188,7 @@ defmodule RiichiAdvanced.GameState.Kyoku do
     end
   end
 
-  @spec win(any(), :east | :south | :west | :north, :discard | :draw | :call | :second_discard, binary()) :: any()
+  @spec win(any(), :east | :south | :west | :north, :discard | :draw | :call | :second_discard, binary() | nil) :: any()
   def win(state, seat, win_source, scoring_key) do
     state = Map.put(state, :round_result, :win)
 
@@ -420,6 +424,7 @@ defmodule RiichiAdvanced.GameState.Kyoku do
     end
   end
 
+  @spec calculate_winner_details_v2(any(), seat(), :best_draw | :call | :discard | :draw | :second_discard | :worst_discard, binary() | nil) :: any()
   def calculate_winner_details_v2(state, seat, win_source, scoring_key) do
     # push a message if it takes more than 0.5 seconds to return
     notify_task = Task.async(fn -> :timer.sleep(500); push_message(state, [%{text: "Running joker solver..."}]) end)
@@ -448,6 +453,10 @@ defmodule RiichiAdvanced.GameState.Kyoku do
     # save orig hand
     orig_hand = state.players[seat].hand
     orig_calls = state.players[seat].calls
+
+    # place an empty winner object first, so that modify_winner works as intended later on
+    state = Map.update!(state, :winners, &Map.put(&1, seat, %{}))
+    state = Map.update!(state, :winner_seats, & &1 ++ [seat])
 
     {state, cxt} = for {smt_hand, smt_calls} <- JokerSolver.get_smt_hand_calls(state, seat, winning_tile) do
       # temporarily replace hand with given smt hand and calls
@@ -491,6 +500,7 @@ defmodule RiichiAdvanced.GameState.Kyoku do
             cxt
         end
         # make a new txn in state.txns by running scoring_logic
+        # this might run the modify_winner action, which is why we place a fake winner object first
         state = Payment.run_scoring_logic(state, cxt)
         {state, cxt}
       end, timeout: :infinity, ordered: false)
@@ -529,19 +539,22 @@ defmodule RiichiAdvanced.GameState.Kyoku do
     #   :discard        -> get_last_discard_action(state).seat
     #   :call           -> get_last_call_action(state).seat
     # end
-    score = state.txns |> Enum.filter(& &1.to == seat) |> Payment.consolidate_txns() |> Map.get(seat) |> Payment.get_txn_result()
-    winner = Map.merge(cxt, 
+    score = if Map.get(cxt, :scoring_key) != nil do
+      state.txns |> Enum.filter(& &1.to == seat) |> Payment.consolidate_txns() |> Map.get(seat) |> Payment.get_txn_result()
+    else
+      {score, _points, _points2, _score_name} = ScoringOld.score_yaku(state, seat, cxt.yaku, cxt.yaku2, is_dealer, win_source == :draw, cxt.minipoints)
+      score
+    end
+    winner = Map.merge(cxt,
       %{
         player: %{ state.players[seat] | hand: arranged_hand, calls: arranged_calls },
         existing_yaku: cxt.yaku ++ cxt.yaku2,
         score: score,
         displayed_score: score,
-        # score_name: score_name,
         score_denomination: Map.get(score_rules, "score_denomination", ""),
         point_name: Map.get(score_rules, "point_name", ""),
         point2_name: Map.get(score_rules, "point2_name", ""),
         minipoint_name: Map.get(score_rules, "minipoint_name", ""),
-        # payer: payer,
         right_display: cond do
           not Map.has_key?(score_rules, "right_display") -> nil
           score_rules["right_display"] == "points"       -> cxt.points
@@ -569,9 +582,7 @@ defmodule RiichiAdvanced.GameState.Kyoku do
         arranged_hand: arranged_hand,
         arranged_calls: arranged_calls,
       })
-
-    state = Map.update!(state, :winners, &Map.put(&1, seat, winner))
-    state = Map.update!(state, :winner_seats, & &1 ++ [seat])
+    state = Map.update!(state, :winners, &Map.put(&1, seat, Map.merge(winner, &1[seat])))
 
     state
   end

@@ -148,7 +148,7 @@ defmodule RiichiAdvancedWeb.ScoreWindowComponent do
         if result == 0 do
           ret
         else
-          line_items = [%{op: nil, amount: nil, result: result, reason: "Total"} | txn.line_items]
+          line_items = [%{op: :+, amount: nil, result: result, reason: "Total"} | txn.line_items]
           [{Utils.get_relative_seat(seat, seat2) |> Atom.to_string(), result, Enum.reverse(line_items)} | ret]
         end
     end

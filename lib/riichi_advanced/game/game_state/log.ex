@@ -219,7 +219,12 @@ defmodule RiichiAdvanced.GameState.Log do
   # output functions
 
   defp format_event({event, ix}) do
-    Map.merge(%{index: ix, player: event.seat, type: event.event_type}, event.params)
+    ret = if Map.has_key?(event, :seat) do
+      %{index: ix, player: event.seat, type: event.event_type}
+    else
+      %{index: ix, type: event.event_type}
+    end
+    Map.merge(ret, event.params)
   end
 
   def output(state) do

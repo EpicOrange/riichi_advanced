@@ -44,7 +44,8 @@ defmodule RiichiAdvanced.GameState.Scoring do
           value = Actions.interpret_amount(state, context, value)
           # default to point_name for the units
           score_rules = Rules.get(state.rules_ref, "score_calculation", %{})
-          unit = score_rules["point_name"]
+          # TODO temporary for rulesets that don't specify units of points for yakuman lists
+          unit = if yaku_list_name == "yakuman" or yaku_list_name == "meta_yakuman" do score_rules["point2_name"] else score_rules["point_name"] end
           {name, [value, unit]}
         end
       end)

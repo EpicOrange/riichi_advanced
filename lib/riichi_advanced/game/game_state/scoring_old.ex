@@ -1,6 +1,7 @@
 
 defmodule RiichiAdvanced.GameState.ScoringOld do
   alias RiichiAdvanced.GameState.Kyoku, as: Kyoku
+  alias RiichiAdvanced.GameState.Scoring, as: Scoring
   alias RiichiAdvanced.GameState.Rules, as: Rules
   alias RiichiAdvanced.Riichi, as: Riichi
   alias RiichiAdvanced.Utils, as: Utils
@@ -119,8 +120,8 @@ defmodule RiichiAdvanced.GameState.ScoringOld do
 
     {score, points, points2, name} = case scoring_method do
       "multiplier" ->
-        points = Enum.reduce(yaku, 0, fn {_name, value}, acc -> acc + value end)
-        points2 = Enum.reduce(yaku2, 1, fn {_name, value}, acc -> acc * value end)
+        points = yaku |> Enum.map(fn {_name, value} -> value end) |> Enum.reduce([], &Scoring.add_yaku_values/2) |> Enum.at(0, 0)
+        points2 = yaku2 |> Enum.map(fn {_name, value} -> value end) |> Enum.reduce([], &Scoring.add_yaku_values/2) |> Enum.at(0, 0)
         score_multiplier = case Map.get(score_rules, "score_multiplier", 1) do
           "points2"        -> points2
           score_multiplier -> score_multiplier
@@ -130,20 +131,23 @@ defmodule RiichiAdvanced.GameState.ScoringOld do
         score_name = Map.get(score_rules, "score_name", "")
         {score, points, points2, score_name}
       "score_table" ->
-        points = Enum.reduce(yaku, 0, fn {_name, value}, acc -> acc + value end)
+        points = yaku |> Enum.map(fn {_name, value} -> value end) |> Enum.reduce([], &Scoring.add_yaku_values/2) |> Enum.at(0, 0)
         score = Map.get(score_rules["score_table"], Integer.to_string(points), score_rules["score_table"]["max"])
         score_name = Map.get(score_rules, "score_name", "")
         {score, points, 0, score_name}
       "vietnamese" ->
-        phan = Enum.reduce(yaku, 0, fn {_name, value}, acc -> acc + value end)
-        mun = Enum.reduce(yaku2, 0, fn {_name, value}, acc -> acc + value end)
+        phan = yaku |> Enum.map(fn {_name, value} -> value end) |> Enum.reduce([], &Scoring.add_yaku_values/2) |> Enum.at(0, 0)
+        mun = yaku2
+        |> Enum.map(fn {_name, value} -> if is_list(value) do value else [value, "Mủn"] end end)
+        |> Enum.reduce([], &Scoring.add_yaku_values/2)
+        |> Enum.at(0, 0)
         mun = mun + Integer.floor_div(phan, 6)
         phan = rem(phan, 6)
         score = if mun == 0 do score_rules["score_table"][Integer.to_string(phan)] else mun * score_rules["score_table"]["max"] end
         score_name = Map.get(score_rules, "score_name", "")
         {score, phan, mun, score_name}
       "han_fu_formula" ->
-        points = Enum.reduce(yaku, 0, fn {_name, value}, acc -> acc + value end)
+        points = yaku |> Enum.map(fn {_name, value} -> value end) |> Enum.reduce([], &Scoring.add_yaku_values/2) |> Enum.at(0, 0)
         minipoints = Map.get(score_rules, "fixed_fu", minipoints)
         han_fu_multiplier = Map.get(score_rules, "han_fu_multiplier", 4)
         han_fu_starting_han = Map.get(score_rules, "han_fu_starting_han", 2)
@@ -266,22 +270,30 @@ defmodule RiichiAdvanced.GameState.ScoringOld do
     non_discarder_penalty = Map.get(score_rules, "non_discarder_penalty", 0)
     self_draw_multiplier = Map.get(score_rules, "self_draw_multiplier", 1)
     self_draw_penalty = Map.get(score_rules, "self_draw_penalty", 0)
-    payer_liability = if winner.payer == nil do
-      {winner.payer, {winner.yaku, winner.yaku2, 0, self_draw_multiplier, self_draw_penalty}}
-    else
-      {winner.payer, {winner.yaku, winner.yaku2, 1, discarder_multiplier, discarder_penalty}}
+    payer = case winner.win_source do
+      :draw           -> nil
+      :best_draw      -> nil
+      :second_discard -> get_last_discard_action(state).seat
+      :worst_discard  -> get_last_discard_action(state).seat
+      :discard        -> get_last_discard_action(state).seat
+      :call           -> get_last_call_action(state).seat
     end
-    nonpayer_liabilities_ron = for seat <- winner.opponents -- [winner.payer] do
+    payer_liability = if payer == nil do
+      {payer, {winner.yaku, winner.yaku2, 0, self_draw_multiplier, self_draw_penalty}}
+    else
+      {payer, {winner.yaku, winner.yaku2, 1, discarder_multiplier, discarder_penalty}}
+    end
+    nonpayer_liabilities_ron = for seat <- winner.opponents -- [payer] do
       {seat, {winner.yaku, winner.yaku2, 1, non_discarder_multiplier, non_discarder_penalty}}
     end
-    # nonpayer_liabilities_tsumo = for seat <- winner.opponents -- [winner.payer] do
+    # nonpayer_liabilities_tsumo = for seat <- winner.opponents -- [payer] do
     #   {seat, {winner.yaku, winner.yaku2, self_draw_multiplier, 1, self_draw_penalty}}
     # end
 
     # split into several more payments if pao
     # liabilities is a list of {payer, {yaku, yaku2, shares, mult, penalty}}
     # first element of liabilities is always the original payer (from winner map)
-    liabilities = for seat <- winner.opponents -- [winner.payer], reduce: [payer_liability] do
+    liabilities = for seat <- winner.opponents -- [payer], reduce: [payer_liability] do
       [{payer, {yaku, yaku2, shares, mult, penalty}} | liabilities] ->
         case Map.get(state.players[winner.seat].responsibilities, seat) do
           nil -> [{payer, {yaku, yaku2, shares, mult, penalty}} | liabilities]
@@ -308,7 +320,7 @@ defmodule RiichiAdvanced.GameState.ScoringOld do
     |> Enum.sort_by(fn
       {nil, _} -> 4
       {seat, _} -> case Utils.get_relative_seat(winner.seat, seat) do
-        _ when seat == winner.payer -> 4
+        _ when seat == payer -> 4
         :shimocha -> 1
         :toimen -> 2
         :kamicha -> 3
@@ -423,7 +435,7 @@ defmodule RiichiAdvanced.GameState.ScoringOld do
     delta_scores_map = Map.new(winners, fn {seat, winner} -> {seat, calculate_delta_scores_for_single_winner(state, winner, seat == closest_winner)} end)
 
     # handle ezaki hitomi's scoring quirk
-    is_tsumo = Enum.any?(winners, fn {_seat, winner} -> winner.payer == nil end)
+    is_tsumo = Enum.any?(winners, fn {_seat, winner} -> winner.win_source == :draw end)
     delta_scores_map = if not is_tsumo do
       for {winner_seat, delta_scores} <- delta_scores_map, into: %{} do
         delta_scores = for {seat, player} <- state.players, reduce: delta_scores do

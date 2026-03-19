@@ -356,8 +356,6 @@ defmodule RiichiAdvancedWeb.ScoringTestLive do
       |> Map.put(:config, socket.assigns.config)
       |> Map.put(:room_code, "scoringtest_" <> String.slice(socket.assigns.session_id, 0..7))
       |> Map.put(:rules_ref, socket.assigns.rules_ref)
-      # TODO left off here
-      #   somehow scoring_logic is not present in rules_ref
       selected_yaku = get_selected_yaku(socket.assigns.yaku)
       socket = socket
       |> start_async(:put_state, fn -> score_yaku(state, selected_yaku, minipoints) end)
