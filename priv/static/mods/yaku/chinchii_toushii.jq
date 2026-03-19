@@ -6,7 +6,7 @@
 .meta_yaku += [
   {
     "display_name": "Chinchii Toushii",
-    "value": 4,
+    "value": [4, "Han"],
     "when": [{"name": "has_existing_yaku", "opts": ["Chankan", "Ketsupaihou"]}]
   }
 ]

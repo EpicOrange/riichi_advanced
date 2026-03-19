@@ -474,10 +474,6 @@ defmodule RiichiAdvanced.GameState.Kyoku do
       state = update_player(state, seat, &%{ &1 | cache: %{ &1.cache | winning_hand: winning_hand } })
 
       # run before_scoring
-      state = Actions.trigger_event(state, "before_scoring", %{seat: seat, win_source: win_source})
-
-      # now calculate joker assignments
-      # and find the maximum score obtainable across all joker assignments
       cxt = %{
         seat: seat,
         winner_seat: seat,
@@ -490,6 +486,10 @@ defmodule RiichiAdvanced.GameState.Kyoku do
         scoring_key: scoring_key,
         rules_ref: state.rules_ref,
       }
+      state = Actions.trigger_event(state, "before_scoring", cxt)
+
+      # now calculate joker assignments
+      # and find the maximum score obtainable across all joker assignments
 
       # this is a stream of joker assignments
       joker_assignments = JokerSolver.solve_for_jokers(smt_hand, smt_calls, state.smt_solver, state.rules_ref, state.players[seat].tile_behavior)
@@ -505,7 +505,7 @@ defmodule RiichiAdvanced.GameState.Kyoku do
         rescue
           err -> 
             Logger.error(Exception.format(:error, err, __STACKTRACE__))
-            cxt
+            nil
         end
         # make a new txn in state.txns by running scoring_logic
         # this might run the modify_winner action, which is why we place a fake winner object first

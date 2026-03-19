@@ -23,7 +23,7 @@ defmodule RiichiAdvanced.YakuTest.RiichiLocalYaku do
       %{"type" => "buttons_pressed", "buttons" => [%{"button" => "ron"}, nil, nil, nil]}
     ], %{
       east: %{
-        yaku: [{"Sanankou", 2}, {"Tanyao", 1}, {"Ketsupaihou", 1}],
+        yaku: [{"Sanankou", [2, "Han"]}, {"Tanyao", [1, "Han"]}, {"Ketsupaihou", [1, "Han"]}],
         yaku2: [],
         minipoints: 50,
         score: 12000
@@ -54,7 +54,7 @@ defmodule RiichiAdvanced.YakuTest.RiichiLocalYaku do
       %{"type" => "buttons_pressed", "buttons" => [%{"button" => "chankan"}, nil, nil, nil]}
     ], %{
       east: %{
-        yaku: [{"Sanankou", 2}, {"Tanyao", 1}, {"Chinchii Toushii", 4}],
+        yaku: [{"Sanankou", [2, "Han"]}, {"Tanyao", [1, "Han"]}, {"Chinchii Toushii", [4, "Han"]}],
         yaku2: [],
         minipoints: 50,
         score: 18000
@@ -79,7 +79,7 @@ defmodule RiichiAdvanced.YakuTest.RiichiLocalYaku do
       %{"type" => "buttons_pressed", "buttons" => [%{"button" => "ron"}, nil, nil, nil]}
     ], %{
       east: %{
-        yaku: [{"Rentsuu Honitsu", 5}],
+        yaku: [{"Rentsuu Honitsu", [5, "Han"]}],
         yaku2: [],
         minipoints: 50,
         score: 12000
@@ -105,7 +105,7 @@ defmodule RiichiAdvanced.YakuTest.RiichiLocalYaku do
       %{"type" => "buttons_pressed", "buttons" => [%{"button" => "ron"}, nil, nil, nil]}
     ], %{
       east: %{
-        yaku: [{"Dorahairi Chinroutou Chiitoitsu", 5}],
+        yaku: [{"Dorahairi Chinroutou Chiitoitsu", [5, "Han"]}],
         yaku2: [],
         minipoints: 25,
         score: 12000

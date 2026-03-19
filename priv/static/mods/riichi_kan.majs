@@ -117,7 +117,7 @@ define_button chankan,
     big_text("Ron")
     pause(1000)
     reveal_hand
-    win_by_call
+    win_by_call("ron")
   end
 
 apply merge, "constants.calls_fu", %{
