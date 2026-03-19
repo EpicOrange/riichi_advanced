@@ -295,8 +295,8 @@ defmodule RiichiAdvanced.Constants do
         "global_mods",
         "standard_wall",
         "default_auto_buttons",
-        "riichi_kan",
-        "riichi_scoring"
+        "riichi_kan", # also adds chankan and yaku like suukantsu
+        "riichi_scoring",
       ],
       default_mods: []
     },

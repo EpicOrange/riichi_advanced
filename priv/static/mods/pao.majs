@@ -4,13 +4,17 @@ end
 
 on after_call do
   if last_call_is("pon", "daiminkan") do
-    if match(["last_call"], ~m"(haku hatsu chun):1") and match(["calls"], ~m"haku:1, hatsu:1, chun:1") do
-      make_responsible_for("callee", "Daisangen", as: "caller")
-      set_status("pao", as: "callee")
-    end
-    if match(["last_call"], ~m"(ton nan shaa pei):1") and match(["calls"], ~m"ton:1, nan:1, shaa:1, pei:1") do
-      make_responsible_for("callee", "Daisuushii", as: "caller")
-      set_status("pao", as: "callee")
+    as caller do
+      if match(["last_call"], ~m"(haku hatsu chun):1") and match(["calls"], ~m"haku:1, hatsu:1, chun:1") do
+        make_responsible_for("callee", "Daisangen")
+        set_status("pao", as: "callee")
+        pao_yakuman += 1
+      end
+      if match(["last_call"], ~m"(ton nan shaa pei):1") and match(["calls"], ~m"ton:1, nan:1, shaa:1, pei:1") do
+        make_responsible_for("callee", "Daisuushii")
+        set_status("pao", as: "callee")
+        pao_yakuman += 2
+      end
     end
   end
 end
@@ -34,74 +38,187 @@ unless defined("pao_stuff") do
   apply prepend, "buttons.ron.actions" do pao_text end
   apply prepend, "buttons.chankan.actions" do pao_text end
   apply prepend, "buttons.tsumo.actions" do pao_text end
+
+  define_const pao_yaku, ["Daisangen", "Daisuushii"]
+
+  define_scoring pao_tsumo do
+    total = 0
+    if status("pao") do
+      points2 = points2 - pao_yakuman
+    end
+    modify_winner("score_name", "Yakuman")
+    if points > 0 do
+      check_limit
+      if total == 0 do
+        total = points :: "Han"
+        han_mult = 2 ** (total + 2) :: "Han mult."
+        total = fu :: "Fu"
+        total *= han_mult :: "Base"
+      end
+      if seat_is("east", as: "winner") do
+        total *= 6 :: "Pao dealer tsumo"
+        if total < 12000 do
+          total = round_up(total, 100) :: "Round up"
+        end
+      else
+        total *= 4 :: "Pao nondealer tsumo"
+        if total < 8000 do
+          total = round_up(total, 100) :: "Round up"
+        end
+      end
+    end
+    if points2 > 0 do
+      total = points2 :: "★"
+      total *= 8000 :: "Yakuman base"
+      if seat_is("east", as: "winner") do
+        total *= 2 :: "Dealer tsumo"
+      else
+        total *= 1 :: "Nondealer tsumo"
+      end
+    end
+    apply_scoring_modifiers
+  end
+
+  define_scoring pao_ron do
+    total = 0
+    points2 = points2 - pao_yakuman
+    if points2 > 0 do
+      modify_winner("score_name", "Yakuman")
+      total = points2 :: "★"
+      total *= 8000 :: "Yakuman base"
+      if seat_is("east", as: "winner") do
+        total *= 6 :: "Dealer ron"
+      else
+        total *= 4 :: "Nondealer ron"
+      end
+    end
+    apply_scoring_modifiers
+  end
   replace all, "buttons.tsumo.actions", ["win_by_draw", "tsumo"] do
-    if anyone_status("pao") do
+    if anyone_status("pao") and pao_yakuman > 0 do
       win_by_draw("pao_tsumo")
     else
       win_by_draw("tsumo")
     end
   end
-
-  define_scoring pao_tsumo do
-    total = 0
-    check_limit
-    if total == 0 do
-      total = points :: "Han"
-      han_mult = 2 ** (total + 2) :: "Han mult."
-      total = fu :: "Fu"
-      total *= han_mult :: "Base"
-    end
-    if seat_is("east", as: "winner") do
-      total *= 6 :: "Dealer pao tsumo"
-      if total < 12000 do
-        total = round_up(total, 100) :: "Round up"
-      end
+  replace all, "buttons.ron.actions", ["win_by_discard", "ron"] do
+    if anyone_status("pao") and pao_yakuman > 0 do
+      win_by_discard("pao_ron")
     else
-      total *= 4 :: "Nondealer pao tsumo"
-      if total < 8000 do
-        total = round_up(total, 100) :: "Round up"
-      end
+      win_by_discard("ron")
     end
-    apply_scoring_modifiers
-    if @honba_condition do
-      total += honba * 300 :: "Honba"
+  end
+  replace all, "buttons.chankan.actions", ["win_by_call", "chankan"] do
+    if anyone_status("pao") and pao_yakuman > 0 do
+      win_by_call("pao_ron")
+    else
+      win_by_call("ron")
     end
   end
 
-  define_const pao_yaku, ["Daisangen", "Daisuushii"]
-
-
-  on after_turn_change do
-    push_message("pao")
-  end
   on before_win do
-    if anyone_status("pao") do
+    if anyone_status("pao") and pao_yakuman > 0 do
+      set_counter_all("pao_yakuman", "pao_yakuman", as: "winner")
+      # don't make anyone responsible for pao yaku, by setting the winner as 'responsible'
+      # (this is because the yaku has to be someone's responsibility so that "all" doesn't match it)
+      make_responsible_for("winner", @pao_yaku)
+      # instead, add pao payments as an extra payment in apply_scoring_modifiers
       if won_by_draw do
-        as everyone do
-          if status_missing("pao") do
-            clear_responsibilities("prev_seat", @pao_yaku, as: "winner")
+        # all honba x 300 is paid by the pao player, instead of x 100 all
+        # we'll handle this in apply_scoring_modifiers
+      else
+        # the deal-in player (if not the pao player) pays no honba, but is responsible for pao yaku
+        if won_by_discard do
+          as last_discarder do
+            if status_missing("pao") do
+              make_responsible_for("prev_seat", @pao_yaku, as: "winner")
+            end
           end
         end
-      else
-        set_status("pao_halve_payment", as: "everyone")
-        if won_by_discard do
-          make_responsible_for("last_discarder", @pao_yaku)
-        else
-          make_responsible_for("last_caller", @pao_yaku)
+        if won_by_call do
+          as last_caller do
+            if status_missing("pao") do
+              make_responsible_for("winner", @pao_yaku)
+            end
+          end
         end
+      end
+    end
+  end
+
+  def pay_half_ron do
+    total2 = pao_yakuman :: "★ (pao)"
+    if seat_is("east", as: "winner") do
+      total2 *= 24000 :: "Pao dealer ron"
+    else
+      total2 *= 16000 :: "Pao nondealer ron"
+    end
+  end
+
+  def pay_full_tsumo do
+    if points > 0 do
+      total = 0
+      check_limit
+      if total == 0 do
+        total = points :: "Han"
+        han_mult = 2 ** (total + 2) :: "Han mult."
+        total = fu :: "Fu"
+        total *= han_mult :: "Base"
+      end
+      if seat_is("east", as: "winner") do
+        total *= 6 :: "Pao dealer tsumo"
+        if total < 12000 do
+          total = round_up(total, 100) :: "Round up"
+        end
+      else
+        total *= 4 :: "Pao nondealer tsumo"
+        if total < 8000 do
+          total = round_up(total, 100) :: "Round up"
+        end
+      end
+    end
+    if pao_yakuman > 0 do
+      total2 = pao_yakuman :: "Pao yakuman count"
+      if seat_is("east", as: "winner") do
+        total2 *= 48000 :: "Pao dealer tsumo"
+      else
+        total2 *= 32000 :: "Pao nondealer tsumo"
       end
     end
   end
 
   apply append, "functions.apply_scoring_modifiers" do
-    if not_won_by_draw and anyone_status("pao") do
-      total /= 2 :: "Pao ron split"
-      if status_missing("pao") do
-        set_status("no_honba")
+    if anyone_status("pao") do
+      if status("pao") do
+        as winner do
+          modify_winner("points2", "pao_yakuman", "subtract")
+        end
+        if won_by_draw do
+          # pao players pay the full amount for pao tsumo
+          pay_full_tsumo
+        else
+          # pao players pay half for pao yakuman, plus honba
+          pay_half_ron
+        end
+        # re-add for next payer
+        as winner do
+          modify_winner("points2", "pao_yakuman", "add")
+        end
+      else
+        if (won_by_discard and seat_is("last_discarder")) or (won_by_call and seat_is("last_caller")) do
+          pay_half_ron
+        end
+      end
+      if status("pao") and honba > 0 do
+        total2 += honba * 300 :: "Honba"
+      end
+      if total > 0 and total2 > 0 do
+        total += total2 :: "Sum"
+      else
+        total = total2
       end
     end
   end
 
-  apply append, "constants.honba_condition", status_missing("no_honba")
+  apply append, "constants.honba_condition", not_anyone_status("pao")
 end
-

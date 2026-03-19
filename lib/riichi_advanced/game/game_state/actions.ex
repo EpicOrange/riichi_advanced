@@ -761,7 +761,7 @@ defmodule RiichiAdvanced.GameState.Actions do
 
   defp warn_counter(counter_name) do
     if counter_name in @amt_specs do
-      IO.puts("WARNING: do not set a counter to an amount name like \"#{counter_name}\", since it makes the amount name unusable")
+      # IO.puts("WARNING: do not set a counter to an amount name like \"#{counter_name}\", since it makes the amount name unusable")
     end
   end
 
@@ -1852,12 +1852,16 @@ defmodule RiichiAdvanced.GameState.Actions do
         end
       "set_scoring_header" -> Map.put(state, :delta_scores_reason, interpolate_string(state, context, Enum.at(opts, 0, ""), Enum.at(opts, 1, %{})))
       "make_responsible_for" ->
+        # make_responsible_for(seats, yaku)
+        # = make `seats` responsible for `yaku` if we win
+
         # player.responsibilities: an entry %{seat => [yaku]} means if this player wins, `seat` must pay for `yaku`
         # alternatively %{seat => ["all"]} means paying for all yaku,
         # and %{seat1 => ["all"], seat2 => ["Daisangen"]} means seat1 pays for all except Daisangen
+        seats_spec = Enum.at(opts, 0, "self")
         yaku = List.wrap(Enum.at(opts, 1, "all"))
-        for seat <- Conditions.from_seats_spec(state, context, Enum.at(opts, 0, "self")), reduce: state do
-          state -> update_player(state, seat, &%{ &1 | responsibilities: Map.update(&1.responsibilities, context.seat, yaku, fn yakus -> Enum.uniq(yakus ++ yaku) end) })
+        for seat <- Conditions.from_seats_spec(state, context, seats_spec), reduce: state do
+          state -> update_in(state.players[seat].responsibilities, &Map.update(&1, context.seat, yaku, fn yakus -> Enum.uniq(yakus ++ yaku) end))
         end
       "clear_responsibilities" ->
         # can pass "all" or an array like ["Daisangen"] or ["all"] to remove that entry only

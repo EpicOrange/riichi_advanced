@@ -196,7 +196,7 @@ defmodule RiichiAdvanced.GameState.Kyoku do
 
     # run before_win actions
     winning_tile = get_winning_tile(state, seat, win_source)
-    state = Actions.trigger_event(state, "before_win", %{seat: seat, win_source: win_source, winning_tile: winning_tile})
+    state = Actions.trigger_event(state, "before_win", %{seat: seat, winner_seat: seat, win_source: win_source, winning_tile: winning_tile})
 
     # reset animation (and allow discarding again, in bloody end rules)
     state = update_all_players(state, fn _seat, player -> %{ player | last_discard: nil } end)
@@ -480,7 +480,7 @@ defmodule RiichiAdvanced.GameState.Kyoku do
       # and find the maximum score obtainable across all joker assignments
       cxt = %{
         seat: seat,
-        winner: seat,
+        winner_seat: seat,
         win_source: win_source,
         smt_hand: smt_hand,
         smt_calls: smt_calls,
@@ -537,7 +537,7 @@ defmodule RiichiAdvanced.GameState.Kyoku do
     # restore original hand/calls
     state = update_player(state, seat, &%{ &1 | hand: orig_hand, calls: orig_calls })
 
-    # create a winner object since the liveview requires it
+    # create a winner object
     score_rules = Rules.get(state.rules_ref, "score_calculation", %{})
     score = if Map.get(cxt, :scoring_key) != nil do
       state.txns |> Enum.filter(& &1.to == seat) |> Payment.consolidate_txns(true) |> Map.get(seat, %Transaction{}) |> Payment.get_txn_result()

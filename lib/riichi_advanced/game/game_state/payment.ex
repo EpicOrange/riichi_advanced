@@ -81,6 +81,7 @@ defmodule RiichiAdvanced.GameState.Payment do
     # IO.inspect(all_mentioned_yaku, label: "all_mentioned_yaku")
     # IO.inspect(unmentioned_yaku, label: "unmentioned_yaku")
     state = for {payer, player} <- players,
+        payer != cxt.seat,
         {seat, yakus} <- player.responsibilities,
         seat == cxt.seat,
         reduce: state do
@@ -117,12 +118,15 @@ defmodule RiichiAdvanced.GameState.Payment do
           # run scoring_logic to populate this new txn with line items
           scoring_logic_actions = Rules.get(state.rules_ref, "scoring_logic", %{}) |> Map.get(cxt.scoring_key, nil)
           state = if scoring_logic_actions != nil do
-            Actions.run_actions(state, scoring_logic_actions, %{cxt |
+            cxt = %{cxt |
               seat: payer,
               yaku: new_yaku,
               points: Utils.get_from_points_list(new_points, score_rules["point_name"]),
               points2: Utils.get_from_points_list(new_points, score_rules["point2_name"]),
-            })
+            }
+            # set winner object to cxt, for the purposes of evaluating scoring_logic
+            state = Map.update!(state, :winners, &Map.put(&1, seat, Map.merge(cxt, &1[seat])))
+            Actions.run_actions(state, scoring_logic_actions, cxt)
           else
             IO.puts("[WARNING] scoring_logic[#{inspect(cxt.scoring_key)}] is empty!")
             state
