@@ -2,8 +2,6 @@ defmodule RiichiAdvanced.GameState.Payment do
   alias RiichiAdvanced.GameState.Actions, as: Actions
   alias RiichiAdvanced.GameState.Payment, as: Payment
   alias RiichiAdvanced.GameState.Rules, as: Rules
-  alias RiichiAdvanced.GameState.TileBehavior, as: TileBehavior
-  alias RiichiAdvanced.Riichi, as: Riichi
   alias RiichiAdvanced.Utils, as: Utils
   alias RiichiAdvanced.Types, as: Types
   alias RiichiAdvanced.Types.Transaction, as: Transaction
@@ -55,7 +53,7 @@ defmodule RiichiAdvanced.GameState.Payment do
   end
   
   # populates a new entry in state.txns using scoring_logic
-  def run_scoring_logic(state, cxt, payers) do
+  def run_scoring_logic(state, cxt) do
     # for each entry in responsibilities, make a txn, and populate it by running scoring_logic
     for {payer, player} <- state.players,
         {seat, _yaku_spec} <- player.responsibilities,

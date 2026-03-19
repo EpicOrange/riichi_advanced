@@ -4,7 +4,6 @@ defmodule RiichiAdvanced.GameState.Buttons do
   alias RiichiAdvanced.GameState.Choice, as: Choice
   alias RiichiAdvanced.GameState.Conditions, as: Conditions
   alias RiichiAdvanced.GameState.Debug, as: Debug
-  alias RiichiAdvanced.GameState.Player, as: Player
   alias RiichiAdvanced.GameState.Rules, as: Rules
   alias RiichiAdvanced.GameState.Saki, as: Saki
   alias RiichiAdvanced.GameState.Log, as: Log
@@ -177,7 +176,7 @@ defmodule RiichiAdvanced.GameState.Buttons do
       all_buttons = Map.new(new_button_choices, fn {seat, button_choices} -> {seat, to_buttons(state, button_choices)} end)
       state = update_all_players(state, fn seat, player ->
         if Map.has_key?(all_buttons, seat) do
-          %Player{ player | buttons: all_buttons[seat], button_choices: new_button_choices[seat] }
+          %{ player | buttons: all_buttons[seat], button_choices: new_button_choices[seat] }
         else player end
       end)
 
@@ -201,7 +200,7 @@ defmodule RiichiAdvanced.GameState.Buttons do
     if Enum.member?(state.players[seat].buttons, button_name) do
       # IO.puts("#{seat} pressed button #{button_name}")
       # hide all buttons, but keep button choices in case they undo
-      state = update_player(state, seat, fn player -> %Player{ player | buttons: [] } end)
+      state = update_player(state, seat, fn player -> %{ player | buttons: [] } end)
       actions = if button_name == "skip" do [] else Rules.get(state.rules_ref, "buttons", %{})[button_name]["actions"] end
       state = Actions.submit_actions(state, seat, button_name, actions)
       state = broadcast_state_change(state) # show possible call buttons
@@ -217,7 +216,7 @@ defmodule RiichiAdvanced.GameState.Buttons do
       button_name = state.players[seat].choice.name
       if Map.has_key?(state.players[seat].button_choices, button_name) do
         # IO.puts("#{seat} pressed call button for button #{button_name}")
-        state = update_player(state, seat, fn player -> %Player{ player | call_buttons: %{} } end)
+        state = update_player(state, seat, fn player -> %{ player | call_buttons: %{} } end)
         actions = Rules.get(state.rules_ref, "buttons", %{})[button_name]["actions"]
         state = Actions.submit_actions(state, seat, button_name, actions, call_choice, called_tile, saki_card)
         state = broadcast_state_change(state)

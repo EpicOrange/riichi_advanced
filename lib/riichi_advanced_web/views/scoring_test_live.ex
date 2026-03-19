@@ -2,7 +2,6 @@ defmodule RiichiAdvancedWeb.ScoringTestLive do
   alias RiichiAdvanced.Constants, as: Constants
   alias RiichiAdvanced.GameState, as: GameState
   alias RiichiAdvanced.GameState.Actions, as: Actions
-  alias RiichiAdvanced.GameState.Kyoku, as: Kyoku
   alias RiichiAdvanced.GameState.Payment, as: Payment
   alias RiichiAdvanced.GameState.Player, as: Player
   alias RiichiAdvanced.GameState.Rules, as: Rules
@@ -255,7 +254,7 @@ defmodule RiichiAdvancedWeb.ScoringTestLive do
       |> Actions.register_discard(:south, :"3s", true, true)
       |> Actions.trigger_event("before_win", cxt)
       |> Actions.trigger_event("before_scoring", cxt)
-      |> Payment.run_scoring_logic(cxt, [:south])
+      |> Payment.run_scoring_logic(cxt)
       mock_gamestate.txns
       |> IO.inspect(label: "txns")
       value = mock_gamestate.txns |> Enum.filter(& &1.to == :east) |> Payment.consolidate_txns() |> Map.get(:east) |> Payment.get_txn_result()
@@ -327,7 +326,7 @@ defmodule RiichiAdvancedWeb.ScoringTestLive do
     ix = String.to_integer(index)
     value = String.to_integer(value)
     yaku = socket.assigns.yaku
-    socket = assign(socket, :yaku, List.update_at(socket.assigns.yaku, ix, &Map.put(&1, :value, value)))
+    socket = assign(socket, :yaku, List.update_at(yaku, ix, &Map.put(&1, :value, value)))
     {:noreply, socket}
   end
   def handle_event("clear_yaku", _assigns, socket) do

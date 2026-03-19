@@ -1,23 +1,12 @@
 
 defmodule RiichiAdvanced.GameState.ScoringOld do
-  alias RiichiAdvanced.GameState.American, as: American
-  alias RiichiAdvanced.GameState.Actions, as: Actions
-  alias RiichiAdvanced.GameState.Conditions, as: Conditions
-  alias RiichiAdvanced.GameState.Debug, as: Debug
   alias RiichiAdvanced.GameState.Kyoku, as: Kyoku
-  alias RiichiAdvanced.GameState.Player, as: Player
-  alias RiichiAdvanced.GameState.PlayerCache, as: PlayerCache
   alias RiichiAdvanced.GameState.Rules, as: Rules
-  alias RiichiAdvanced.GameState.Scoring, as: Scoring
-  alias RiichiAdvanced.GameState.TileBehavior, as: TileBehavior
-  alias RiichiAdvanced.Match, as: Match
-  alias RiichiAdvanced.GameState.JokerSolver, as: JokerSolver
-  alias RiichiAdvanced.GameState.Payment, as: Payment
   alias RiichiAdvanced.Riichi, as: Riichi
   alias RiichiAdvanced.Utils, as: Utils
   import RiichiAdvanced.GameState
 
-  defp calculate_delta_scores_tsumo(state, winner, basic_score, is_dealer) do
+  def calculate_delta_scores_tsumo(state, winner, basic_score, is_dealer) do
     score_rules = Rules.get(state.rules_ref, "score_calculation", %{})
     basic_score = if "wareme" in state.players[winner.seat].status do
       push_message(state, player_prefix(state, winner.seat) ++ [%{text: "gains double points for wareme"}])
@@ -226,7 +215,7 @@ defmodule RiichiAdvanced.GameState.ScoringOld do
     {score, points, points2, name}
   end
 
-  defp apply_ron_score_modifiers(state, winner, payer, basic_score) do
+  def apply_ron_score_modifiers(state, winner, payer, basic_score) do
     payment = basic_score
     payment = if "wareme" in state.players[winner.seat].status do
       push_message(state, player_prefix(state, winner.seat) ++ [%{text: "gains double points for wareme"}])
@@ -259,7 +248,7 @@ defmodule RiichiAdvanced.GameState.ScoringOld do
     payment
   end
 
-  defp calculate_delta_scores_for_single_winner(state, winner, collect_sticks) do
+  def calculate_delta_scores_for_single_winner(state, winner, collect_sticks) do
     score_rules = Rules.get(state.rules_ref, "score_calculation", %{})
     delta_scores = Map.new(state.players, fn {seat, _player} -> {seat, 0} end)
 
@@ -423,7 +412,7 @@ defmodule RiichiAdvanced.GameState.ScoringOld do
     delta_scores
   end
 
-  defp calculate_delta_scores_per_player(state, winners) do
+  def calculate_delta_scores_per_player(state, winners) do
     score_rules = Rules.get(state.rules_ref, "score_calculation", %{})
 
     # determine the closest winner (the one who receives riichi sticks and honba)
@@ -445,7 +434,7 @@ defmodule RiichiAdvanced.GameState.ScoringOld do
               waits = Riichi.get_waits(player.hand, player.calls, win_definitions, player.tile_behavior)
               if not Enum.empty?(waits) do
                 # calculate the worst yaku we can get
-                winner = Kyoku.calculate_winner_details(state, seat, :worst_discard)
+                winner = Kyoku.calculate_winner_details_v2(state, seat, :worst_discard, "ron")
                 worst_yaku = if Enum.empty?(winner.yaku2) do winner.yaku else winner.yaku2 end
 
                 # add honba

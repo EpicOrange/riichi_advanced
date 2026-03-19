@@ -1,5 +1,4 @@
 defmodule RiichiAdvancedWeb.ScoreBadgeComponent do
-  alias RiichiAdvanced.Utils, as: Utils
   use RiichiAdvancedWeb, :live_component
   import RiichiAdvancedWeb.Translations
 

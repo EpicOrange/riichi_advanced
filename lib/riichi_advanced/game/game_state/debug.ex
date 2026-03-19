@@ -18,20 +18,6 @@ defmodule RiichiAdvanced.GameState.Debug do
   @print_mods false
   @print_smt false
   @skip_ruleset_caching false
-
-  def debug, do: @debug
-  def debug_status, do: @debug_status
-  def debug_fast_ai, do: @debug_fast_ai
-  def debug_saki_card_ours, do: @debug_saki_card_ours
-  def debug_saki_card_opponent, do: @debug_saki_card_opponent
-  def debug_am_match_definitions, do: @debug_am_match_definitions
-  def debug_actions, do: @debug_actions
-  def debug_buttons, do: @debug_buttons
-  def debug_conditions, do: @debug_conditions
-  def debug_ai, do: @debug_ai
-  def debug_log, do: @debug_log
-  def print_smt, do: @print_smt
-  def skip_ruleset_caching, do: @skip_ruleset_caching
   @print_wins false
   def debug, do: Process.get(:ignore_type_error, @debug)
   def debug_status, do: Process.get(:ignore_type_error, @debug_status)
@@ -113,10 +99,10 @@ defmodule RiichiAdvanced.GameState.Debug do
     wall
   end
   def set_starting_hand(wall) do
-    hands = %{:east  => Enum.slice(wall, 0..12),
-              :south => Enum.slice(wall, 13..25),
-              :west  => Enum.slice(wall, 26..38),
-              :north => Enum.slice(wall, 39..51)}
+    hands = %{:east  => Utils.sort_tiles(Enum.slice(wall, 0..12)),
+              :south => Utils.sort_tiles(Enum.slice(wall, 13..25)),
+              :west  => Utils.sort_tiles(Enum.slice(wall, 26..38)),
+              :north => Utils.sort_tiles(Enum.slice(wall, 39..51))}
 
     # # random hand
     # hands = %{:east  => Utils.sort_tiles([:"3m", :"4m", :"5m", :"2p", :"2p", :"4p", :"4p", :"4p", :"5p", :"6p", :"7p", :"3s", :"3s"]),

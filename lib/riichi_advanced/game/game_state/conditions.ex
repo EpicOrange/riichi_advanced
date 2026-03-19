@@ -4,7 +4,6 @@ defmodule RiichiAdvanced.GameState.Conditions do
   alias RiichiAdvanced.GameState.American, as: American
   alias RiichiAdvanced.GameState.Debug, as: Debug
   alias RiichiAdvanced.GameState.Log, as: Log
-  alias RiichiAdvanced.GameState.Player, as: Player
   alias RiichiAdvanced.GameState.Rules, as: Rules
   alias RiichiAdvanced.GameState.Saki, as: Saki
   alias RiichiAdvanced.GameState.Scoring, as: Scoring
@@ -35,7 +34,7 @@ defmodule RiichiAdvanced.GameState.Conditions do
           "assigned_calls" -> [{hand, calls ++ state.players[context.seat].cache.arranged_calls}]
           "winning_hand" -> [{hand ++ state.players[context.seat].cache.winning_hand, calls}]
           "winning_tile" ->
-            for winning_tile <- get_winning_tiles(state, context.seat, context.win_source) do
+            for winning_tile <- [get_winning_tile(state, context.seat, context.win_source)] do
               {hand ++ [Utils.add_attr(winning_tile, ["winning_tile"])], calls}
             end
           "last_call" -> if last_call_action != nil do [{hand, calls ++ [get_last_call(state)]}] else [{hand, calls}] end
@@ -364,10 +363,8 @@ defmodule RiichiAdvanced.GameState.Conditions do
         tiles = Enum.map(opts, &Utils.to_tile/1)
         non_flower_calls = Enum.reject(cxt_player.calls, fn {call_name, _call} -> call_name in Riichi.flower_names() end)
         winning_hand = cxt_player.hand ++ Enum.flat_map(non_flower_calls, &Utils.call_to_tiles/1)
-        winning_tiles = get_winning_tiles(state, context.seat, context.win_source)
-        Enum.any?(winning_tiles, fn winning_tile ->
-          Enum.all?(winning_hand ++ [winning_tile], &Utils.has_matching_tile?([&1] ++ Map.get(tile_mappings, &1, []), tiles))
-        end)
+        winning_tile = get_winning_tile(state, context.seat, context.win_source)
+        Enum.all?(winning_hand ++ [winning_tile], &Utils.has_matching_tile?([&1] ++ Map.get(tile_mappings, &1, []), tiles))
       "winning_hand_not_tile_consists_of" ->
         tile_mappings = TileBehavior.tile_mappings(cxt_player.tile_behavior)
         tiles = Enum.map(opts, &Utils.to_tile/1)
@@ -579,7 +576,7 @@ defmodule RiichiAdvanced.GameState.Conditions do
             call = {call_name, Utils.strip_attrs([called_tile | call_choice])}
             # since get_viable_am_match_definitions only uses length of hand,
             # we can just drop the first length(call_choice) tiles instead of removing those from hand
-            update_player(state, context.seat, &%Player{ &1 | hand: Enum.drop(&1.hand, length(call_choice)), calls: &1.calls ++ [call] })
+            update_player(state, context.seat, &%{ &1 | hand: Enum.drop(&1.hand, length(call_choice)), calls: &1.calls ++ [call] })
             |> American.get_viable_am_match_definitions(context.seat, am_match_definitions)
             |> Enum.empty?()
         end

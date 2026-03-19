@@ -1,8 +1,5 @@
 defmodule RiichiAdvanced.GameState.JokerSolver do
-  alias RiichiAdvanced.GameState.Actions, as: Actions
   alias RiichiAdvanced.GameState.Debug, as: Debug
-  alias RiichiAdvanced.GameState.Player, as: Player
-  alias RiichiAdvanced.GameState.PlayerCache, as: PlayerCache
   alias RiichiAdvanced.GameState.Rules, as: Rules
   alias RiichiAdvanced.GameState.Scoring, as: Scoring
   alias RiichiAdvanced.GameState.TileBehavior, as: TileBehavior
@@ -26,7 +23,7 @@ defmodule RiichiAdvanced.GameState.JokerSolver do
       {smt_hand, smt_calls}
     end
   end
-  def get_smt_hand_calls(state, seat, :any) do
+  def get_smt_hand_calls(_state, _seat, :any) do
     # TODO in case we're tenpai, we need to return every tile that makes us win
     []
   end

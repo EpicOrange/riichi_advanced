@@ -61,9 +61,9 @@ defmodule RiichiAdvanced.GameState.Log do
 
   def log(state, seat, event_type, params) do
     if seat != nil do
-      update_in(state.log_state.log, &[%GameEvent{ seat: to_seat(seat), event_type: event_type, params: params } | &1])
+      update_in(state.log_state.log, &[%{ seat: to_seat(seat), event_type: event_type, params: params } | &1])
     else
-      update_in(state.log_state.log, &[%GameEvent{ event_type: event_type, params: params } | &1])
+      update_in(state.log_state.log, &[%{ event_type: event_type, params: params } | &1])
     end
   end
 
@@ -96,7 +96,7 @@ defmodule RiichiAdvanced.GameState.Log do
         end
       end
     end |> Enum.concat() |> Enum.uniq()
-    modify_last_draw_discard(state, fn event -> %GameEvent{ event | params: Map.update(event.params, :possible_calls, possible_calls, &Enum.uniq(&1 ++ possible_calls)) } end)
+    modify_last_draw_discard(state, fn event -> %{ event | params: Map.update(event.params, :possible_calls, possible_calls, &Enum.uniq(&1 ++ possible_calls)) } end)
   end
 
   # def add_possible_calls(state) do
@@ -107,25 +107,25 @@ defmodule RiichiAdvanced.GameState.Log do
   #       end
   #     end |> Enum.concat()
   #   end |> Enum.concat()
-  #   modify_last_draw_discard(state, fn event -> %GameEvent{ event | params: Map.put(event.params, :possible_calls, possible_calls) } end)
+  #   modify_last_draw_discard(state, fn event -> %{ event | params: Map.put(event.params, :possible_calls, possible_calls) } end)
   # end
 
   def add_call(state, seat, call_name, call_choice, called_tile) do
     tiles = call_choice ++ if called_tile != nil do [called_tile] else [] end
     call = %{player: to_seat(seat), type: call_name, tiles: tiles}
-    modify_last_draw_discard(state, fn event -> %GameEvent{ event | params: Map.put(event.params, :call, call) } end)
+    modify_last_draw_discard(state, fn event -> %{ event | params: Map.put(event.params, :call, call) } end)
   end
 
   def add_button_press(state, seat, button_name, data \\ %{}) do
-    modify_last_button_press(state, fn event -> %GameEvent{ event | params: Map.update!(event.params, :buttons, &List.replace_at(&1, to_seat(seat), Map.merge(%{button: button_name}, data))) } end, seat)
+    modify_last_button_press(state, fn event -> %{ event | params: Map.update!(event.params, :buttons, &List.replace_at(&1, to_seat(seat), Map.merge(%{button: button_name}, data))) } end, seat)
   end
 
   # def add_button_data(state, seat, data) do
-  #   modify_last_button_press(state, fn event -> %GameEvent{ event | params: Map.update!(event.params, :buttons, &List.update_at(&1, to_seat(seat), fn m -> Map.merge(m, data) end)) } end, nil)
+  #   modify_last_button_press(state, fn event -> %{ event | params: Map.update!(event.params, :buttons, &List.update_at(&1, to_seat(seat), fn m -> Map.merge(m, data) end)) } end, nil)
   # end
 
   # def remove_button_press(state, seat) do
-  #   modify_last_button_press(state, fn event -> %GameEvent{ event | params: Map.update!(event.params, :buttons, &List.replace_at(&1, to_seat(seat), nil)) } end, nil)
+  #   modify_last_button_press(state, fn event -> %{ event | params: Map.update!(event.params, :buttons, &List.replace_at(&1, to_seat(seat), nil)) } end, nil)
   # end
 
   def encode_marking(marking) do

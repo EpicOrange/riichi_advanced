@@ -1,19 +1,13 @@
 
 defmodule RiichiAdvanced.GameState.Scoring do
   alias RiichiAdvanced.GameState.Actions, as: Actions
-  alias RiichiAdvanced.GameState.American, as: American
   alias RiichiAdvanced.GameState.Conditions, as: Conditions
-  alias RiichiAdvanced.GameState.Debug, as: Debug
   alias RiichiAdvanced.GameState.JokerSolver, as: JokerSolver
   alias RiichiAdvanced.GameState.Kyoku, as: Kyoku
   alias RiichiAdvanced.GameState.Payment, as: Payment
-  alias RiichiAdvanced.GameState.Player, as: Player
-  alias RiichiAdvanced.GameState.PlayerCache, as: PlayerCache
   alias RiichiAdvanced.GameState.Rules, as: Rules
   alias RiichiAdvanced.GameState.Scoring, as: Scoring
   alias RiichiAdvanced.GameState.ScoringOld, as: ScoringOld
-  alias RiichiAdvanced.GameState.TileBehavior, as: TileBehavior
-  alias RiichiAdvanced.Match, as: Match
   alias RiichiAdvanced.Riichi, as: Riichi
   alias RiichiAdvanced.Utils, as: Utils
   import RiichiAdvanced.GameState
@@ -135,7 +129,7 @@ defmodule RiichiAdvanced.GameState.Scoring do
           push_message(state, player_prefix(state, hanada_kirame_seat) ++ [%{text: "stays at zero points, and receives 8000 points from first place (Hanada Kirame)"}])
           scores = Enum.map(state.players, fn {seat, player} -> {seat, player.score + delta_scores[seat]} end)
           {first_seat, _} = Enum.max_by(scores, fn {_seat, score} -> score end)
-          state = update_player(state, hanada_kirame_seat, fn player -> %Player{ player | status: player.status ++ ["hanada-kirame_exhausted"] } end)
+          state = update_player(state, hanada_kirame_seat, fn player -> %{ player | status: player.status ++ ["hanada-kirame_exhausted"] } end)
           delta_scores = delta_scores
           |> Map.put(hanada_kirame_seat, 8000 - hanada_kirame.score)
           |> Map.update!(first_seat, & &1 - 8000)
@@ -179,7 +173,7 @@ defmodule RiichiAdvanced.GameState.Scoring do
       if not Enum.empty?(state.txns) do
         # obtain delta scores through state.txns
         totals_by_seat = Payment.consolidate_txns(state.txns) |> Map.new(fn {seat, txn} -> {seat, Payment.get_txn_result(txn)} end)
-        delta_scores = for seat <- state.available_seats, into: %{} do
+        for seat <- state.available_seats, into: %{} do
           {seat, Map.get(totals_by_seat, seat, 0)}
         end
       else
@@ -291,7 +285,7 @@ defmodule RiichiAdvanced.GameState.Scoring do
         state ->
           # calculate new winner object
           state2 = Map.put(state, :wall_index, 0) # use this so haitei isn't scored
-          winner = Kyoku.calculate_winner_details(state2, seat, :best_draw)
+          winner = Kyoku.calculate_winner_details_v2(state2, seat, :best_draw, "tsumo")
           |> Map.put(:opponents, opponents)
 
           # add winner to state
@@ -304,7 +298,7 @@ defmodule RiichiAdvanced.GameState.Scoring do
       state = state
       |> Map.put(:visible_screen, next_screen)
       |> Map.put(:round_result, :draw)
-      |> update_all_players(fn _seat, player -> %Player{ player | hand_revealed: true } end)
+      |> update_all_players(fn _seat, player -> %{ player | hand_revealed: true } end)
       {state, delta_scores}
     else {state, delta_scores} end
 

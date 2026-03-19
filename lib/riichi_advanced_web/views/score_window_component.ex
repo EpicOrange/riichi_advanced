@@ -44,7 +44,7 @@ defmodule RiichiAdvancedWeb.ScoreWindowComponent do
           <% end %>
         <% end %>
         <div class={["score-ledger-container"] ++ [@hovered]} :if={@txns != nil and @players != nil}>
-          <%= for {key, total, line_items} <- format_txns(@txns, @seat, @players) do %>
+          <%= for {key, _total, line_items} <- format_txns(@txns, @seat, @players) do %>
             <table class={["score-ledger", key]}>
               <thead><tr>
                 <th colspan="5"><%= key_title(@players, @seat, key) %>

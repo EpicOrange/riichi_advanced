@@ -13,7 +13,7 @@ defmodule RiichiAdvanced.ModLoader do
 
   defp is_jq_var?(key) when is_binary(key), do: Regex.match?(~r/^[a-zA-Z_][a-zA-Z0-9_]*$/, key)
   defp is_jq_var?(key) when is_atom(key), do: Regex.match?(~r/^[a-zA-Z_][a-zA-Z0-9_]*$/, Atom.to_string(key))
-  defp is_jq_var?(key), do: false
+  defp is_jq_var?(_key), do: false
 
   def read_mod(mod) do
     case mod do

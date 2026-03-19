@@ -265,7 +265,7 @@ defmodule RiichiAdvanced.Compiler do
             end
           _ -> {:error, "Compiler.compile_action: at line #{line}:#{column}, expected an expression, got #{opts}"}
         end
-      {"_set_counter", pos, opts} ->
+      {"_set_counter", _pos, opts} ->
         case opts do
           [{name, [line: line, column: column], _}, expr] ->
             with {:ok, name} <- Validator.validate_json(name),
@@ -863,7 +863,7 @@ defmodule RiichiAdvanced.Compiler do
   defp compile_command("define_scoring", name, args, line, column) do
     body = case args do
       {:__block__, [], _nodes} -> compile_action_list(args, line, column)
-      action -> case compile_action(args, line, column) do
+      _ -> case compile_action(args, line, column) do
         {:ok, action} -> {:ok, [action]}
         _ -> {:error, "Compiler.compile: at line #{line}:#{column}, `define_scoring` command expects a do block or an action, got #{inspect(args)}"}
       end

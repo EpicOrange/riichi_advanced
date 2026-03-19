@@ -1,25 +1,22 @@
 
 defmodule RiichiAdvanced.GameState.Kyoku do
   alias RiichiAdvanced.GameState.Actions, as: Actions
+  alias RiichiAdvanced.GameState.American, as: American
+  alias RiichiAdvanced.GameState.Buttons, as: Buttons
   alias RiichiAdvanced.GameState.Log, as: Log
   alias RiichiAdvanced.GameState.Payment, as: Payment
-  alias RiichiAdvanced.GameState.Player, as: Player
-  alias RiichiAdvanced.GameState.PlayerCache, as: PlayerCache
   alias RiichiAdvanced.GameState.Rules, as: Rules
   alias RiichiAdvanced.GameState.Scoring, as: Scoring
   alias RiichiAdvanced.GameState.TileBehavior, as: TileBehavior
   alias RiichiAdvanced.GameState.JokerSolver, as: JokerSolver
   alias RiichiAdvanced.Riichi, as: Riichi
-  alias RiichiAdvanced.Types, as: Types
-  alias RiichiAdvanced.Types.Transaction, as: Transaction
   alias RiichiAdvanced.Utils, as: Utils
   import RiichiAdvanced.GameState
-  import RiichiAdvanced.GameState.Payment
   require Logger
 
   defp start_timer(state) do
     state = Map.put(state, :timer, Rules.get(state.rules_ref, "win_timer", 30))
-    state = update_all_players(state, fn seat, player -> %Player{ player | ready: is_pid(Map.get(state, seat)) } end)
+    state = update_all_players(state, fn seat, player -> %{ player | ready: is_pid(Map.get(state, seat)) } end)
     
     if state.log_loading_mode do
       GenServer.cast(self(), :tick_timer)
@@ -54,7 +51,7 @@ defmodule RiichiAdvanced.GameState.Kyoku do
           state = Actions.trigger_event(state, "before_exhaustive_draw", %{seat: state.turn})
 
           # reset animation
-          state = update_all_players(state, fn _seat, player -> %Player{ player | last_discard: nil } end)
+          state = update_all_players(state, fn _seat, player -> %{ player | last_discard: nil } end)
 
           state = Map.put(state, :game_active, false)
 
@@ -88,7 +85,7 @@ defmodule RiichiAdvanced.GameState.Kyoku do
         else state end
 
         # apply delta scores
-        state = update_all_players(state, fn seat, player -> %Player{ player | score: player.score + state.delta_scores[seat] } end)
+        state = update_all_players(state, fn seat, player -> %{ player | score: player.score + state.delta_scores[seat] } end)
 
         # run before_start actions
         # we need to run it here instead of in initialize_new_round
@@ -124,7 +121,7 @@ defmodule RiichiAdvanced.GameState.Kyoku do
           else
             if not state.log_seeking_mode do
               # update starting score for the round
-              state = update_all_players(state, fn _seat, player -> %Player{ player | start_score: player.score } end)
+              state = update_all_players(state, fn _seat, player -> %{ player | start_score: player.score } end)
               # clear delta scores (TODO is :delta_scores really a control variable then?)
               state = Map.put(state, :delta_scores, %{})
               # update kyoku and honba
@@ -249,7 +246,7 @@ defmodule RiichiAdvanced.GameState.Kyoku do
     state = Actions.trigger_event(state, "before_exhaustive_draw", %{seat: state.turn})
 
     # reset animation
-    state = update_all_players(state, fn _seat, player -> %Player{ player | last_discard: nil } end)
+    state = update_all_players(state, fn _seat, player -> %{ player | last_discard: nil } end)
 
     state = Map.put(state, :game_active, false)
 
@@ -282,7 +279,7 @@ defmodule RiichiAdvanced.GameState.Kyoku do
     state = Actions.trigger_event(state, "before_abortive_draw", %{seat: state.turn})
 
     # reset animation
-    state = update_all_players(state, fn _seat, player -> %Player{ player | last_discard: nil } end)
+    state = update_all_players(state, fn _seat, player -> %{ player | last_discard: nil } end)
 
     state = Map.put(state, :game_active, false)
 
@@ -458,15 +455,10 @@ defmodule RiichiAdvanced.GameState.Kyoku do
 
       # save this hand for the win screen
       winning_hand = smt_hand ++ smt_calls
-      state = update_player(state, seat, &%{ &1 | cache: %PlayerCache{ &1.cache | winning_hand: winning_hand } })
+      state = update_player(state, seat, &%{ &1 | cache: %{ &1.cache | winning_hand: winning_hand } })
 
       # run before_scoring
       state = Actions.trigger_event(state, "before_scoring", %{seat: seat, win_source: win_source})
-
-      # figure out who's paying
-      payers = for {seat2, player} <- state.players, Map.has_key?(player.responsibilities, seat) do
-        seat2
-      end
 
       # now calculate joker assignments
       # and find the maximum score obtainable across all joker assignments
@@ -499,7 +491,7 @@ defmodule RiichiAdvanced.GameState.Kyoku do
             cxt
         end
         # make a new txn in state.txns by running scoring_logic
-        state = Payment.run_scoring_logic(state, cxt, payers)
+        state = Payment.run_scoring_logic(state, cxt)
         {state, cxt}
       end, timeout: :infinity, ordered: false)
       |> Stream.map(fn {:ok, state_cxt} -> state_cxt end)
