@@ -15,19 +15,24 @@ defmodule RiichiAdvanced.ModLoader do
   defp is_jq_var?(key) when is_atom(key), do: Regex.match?(~r/^[a-zA-Z_][a-zA-Z0-9_]*$/, Atom.to_string(key))
   defp is_jq_var?(_key), do: false
 
-  def read_mod(mod) do
+  defp read_mod(mod, defs) do
     case mod do
       %{name: name, config: config} -> 
-        mod_contents = read_mod_jq(name)
+        {mod_contents, defs} = read_mod_jq_defs(name, defs)
         config_queries = for {key, val} <- config, is_integer(val) or is_boolean(val) or is_binary(val), is_jq_var?(key), do: "(#{inspect(val)}) as $#{key}\n|\n"
-        Enum.join(config_queries) <> "(" <> mod_contents <> ")"
-      name -> read_mod_jq(name)
+        {Enum.join(config_queries) <> "(" <> mod_contents <> ")", defs}
+      name -> read_mod_jq_defs(name, defs)
     end
   end
 
   def apply_multiple_mods(ruleset_json, mods, globals \\ %{}) do
-    mod_contents = mods
-    |> Enum.map(&read_mod/1)
+    mod_contents = for mod <- mods, reduce: {[], MapSet.new()} do
+      {acc, defs} ->
+        {jq, defs} = read_mod(mod, defs)
+        {[jq | acc], defs}
+    end
+    |> elem(0)
+    |> Enum.reverse()
     |> Enum.map(&String.trim/1)
     |> Enum.map(&String.replace(&1, Compiler.header(), ""))
     |> Enum.map(&"(#{&1}\n) as $_result\n|\n$_result")
@@ -84,24 +89,28 @@ defmodule RiichiAdvanced.ModLoader do
     else ruleset_json end
   end
 
-  def convert_to_jq(majs) do
+  def convert_to_jq_defs(majs, defs \\ MapSet.new()) do
     # first check that it's not actually json
     case Jason.decode(majs) do
       {:ok, json}    -> ". * " <> Jason.encode!(json) # just merge the json (reencoding to ensure it's safe)
       {:error, _} -> 
         # now try to parse it as majs
         with {:ok, ast} <- Parser.parse(majs),
-             {:ok, jq} <- Compiler.compile_jq(ast) do
-          jq
+             {:ok, {jq, defs}} <- Compiler.compile_jq_defs(ast, defs) do
+          {jq, defs}
         else
           {:error, msg} ->
             IO.puts("Error in convert_to_jq:")
             if is_binary(msg) do IO.puts(msg) else IO.inspect(msg) end
             IO.puts("Input majs was:")
             IO.puts(majs)
-            "." # no-op
+            {".", defs} # no-op
         end
     end
+  end
+  def convert_to_jq(majs) do
+    {jq, _defs} = convert_to_jq_defs(majs)
+    jq
   end
 
   defp read_ruleset_json(ruleset) do
@@ -126,14 +135,14 @@ defmodule RiichiAdvanced.ModLoader do
       IO.puts("\nWARNING: file #{name}.jq looks kind of like .majs!\n")
     end
   end
-  def read_mod_jq(name) do
+  defp read_mod_jq_defs(name, defs) do
     case File.read(Application.app_dir(:riichi_advanced, "/priv/static/mods/#{name}.jq")) do
       {:ok, mod_jq} ->
         verify_jq(name, mod_jq)
         mod_jq
       {:error, _err}      ->
         case File.read(Application.app_dir(:riichi_advanced, "/priv/static/mods/#{name}.majs")) do
-          {:ok, mod_majs} -> convert_to_jq(mod_majs)
+          {:ok, mod_majs} -> convert_to_jq_defs(mod_majs, defs)
           {:error, _err}  ->
             IO.puts("WARNING: Could not find mod #{name}!")
             "."

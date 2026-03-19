@@ -923,10 +923,11 @@ defmodule RiichiAdvanced.Compiler do
     end
   end
 
-  defp compile_toplevel_condition(condition, line, column) do
+  defp compile_toplevel_condition(condition, line, column, defs) do
     case condition do
       {"true", _, _} -> {:ok, "true"}
       {"false", _, _} -> {:ok, "false"}
+      {"defined", _, [name | _]} -> {:ok, if MapSet.member?(defs, name) do "true" else "false" end}
       {"equals", [line: line, column: column], [l, r]} ->
         with {:ok, l} <- compile_toplevel_constant(l, line, column),
              {:ok, r} <- compile_toplevel_constant(r, line, column),
@@ -948,15 +949,15 @@ defmodule RiichiAdvanced.Compiler do
           {:ok, "(#{r} | any(. == #{l}))"}
         end
       {:not, [line: line, column: column], [arg]} ->
-        with {:ok, compiled_arg} <- compile_toplevel_condition(arg, line, column) do
+        with {:ok, compiled_arg} <- compile_toplevel_condition(arg, line, column, defs) do
           {:ok, "(#{compiled_arg} | not)"}
         end
       {:or, [line: line, column: column], args} ->
-        with {:ok, compiled_args} <- Utils.sequence(Enum.map(args, &compile_toplevel_condition(&1, line, column))) do
+        with {:ok, compiled_args} <- Utils.sequence(Enum.map(args, &compile_toplevel_condition(&1, line, column, defs))) do
           {:ok, "(#{Enum.join(compiled_args, " or ")})"}
         end
       {:and, [line: line, column: column], args} ->
-        with {:ok, compiled_args} <- Utils.sequence(Enum.map(args, &compile_toplevel_condition(&1, line, column))) do
+        with {:ok, compiled_args} <- Utils.sequence(Enum.map(args, &compile_toplevel_condition(&1, line, column, defs))) do
           {:ok, "(#{Enum.join(compiled_args, " and ")})"}
         end
       _ ->
@@ -966,30 +967,25 @@ defmodule RiichiAdvanced.Compiler do
         end
     end
   end
-  # def compile_jq_toplevel!(ast) do
-  #   case compile_jq_toplevel(ast) do
-  #     {:ok, jq} -> jq
-  #     {:error, error} -> raise error
-  #   end
-  # end
-  defp compile_jq_toplevel(ast, line, column) do
+  defp compile_jq_toplevel(ast, line, column, defs \\ MapSet.new()) do
     case ast do
       {"if", [line: line, column: column], [condition, [do: then_cmds, else: else_cmds]]} ->
-        with {:ok, condition} <- compile_toplevel_condition(condition, line, column),
-             {:ok, then_cmds} <- compile_jq_toplevel(then_cmds, line, column),
-             {:ok, else_cmds} <- compile_jq_toplevel(else_cmds, line, column) do
-          {:ok, "if #{condition} then\n#{then_cmds}\nelse\n#{else_cmds}\nend"}
+        with {:ok, condition} <- compile_toplevel_condition(condition, line, column, defs),
+             {:ok, {then_cmds, defs}} <- compile_jq_toplevel(then_cmds, line, column, defs),
+             {:ok, {else_cmds, defs}} <- compile_jq_toplevel(else_cmds, line, column, defs) do
+          {:ok, {"if #{condition} then\n#{then_cmds}\nelse\n#{else_cmds}\nend", defs}}
         end
       {"if", [line: line, column: column], [condition, [do: then_cmds]]} ->
-        with {:ok, condition} <- compile_toplevel_condition(condition, line, column),
-             {:ok, then_cmds} <- compile_jq_toplevel(then_cmds, line, column) do
-          {:ok, "if #{condition} then\n#{then_cmds}\nelse . end"}
+        with {:ok, condition} <- compile_toplevel_condition(condition, line, column, defs),
+             {:ok, {then_cmds, defs}} <- compile_jq_toplevel(then_cmds, line, column, defs) do
+          {:ok, {"if #{condition} then\n#{then_cmds}\nelse . end", defs}}
         end
       {"unless", [line: line, column: column], [condition, [do: else_cmds]]} ->
-        with {:ok, condition} <- compile_toplevel_condition(condition, line, column),
-             {:ok, else_cmds} <- compile_jq_toplevel(else_cmds, line, column) do
-          {:ok, "if #{condition} then . else\n#{else_cmds}\nend"}
+        with {:ok, condition} <- compile_toplevel_condition(condition, line, column, defs),
+             {:ok, {else_cmds, defs}} <- compile_jq_toplevel(else_cmds, line, column, defs) do
+          {:ok, {"if #{condition} then . else\n#{else_cmds}\nend", defs}}
         end
+      {"define", _pos, [name | _]} -> {:ok, {".", MapSet.put(defs, name)}}
       {cmd, [line: line, column: column], [name | args]} when is_binary(cmd) ->
         name = case name do
           name when is_binary(name) or is_integer(name) -> Validator.validate_json(name)
@@ -999,7 +995,7 @@ defmodule RiichiAdvanced.Compiler do
           {:!, _pos, _params} -> Validator.validate_json(name)
           _ -> {:error, "Compiler.compile: at line #{line}:#{column}, `#{cmd}` command got invalid name #{inspect(name)}"}
         end
-        with {:ok, name} <- name,
+        ret = with {:ok, name} <- name,
              {:ok, name} <- Jason.encode(name) do
           compile_command(cmd, name, args, line, column)
           case args do
@@ -1009,23 +1005,32 @@ defmodule RiichiAdvanced.Compiler do
             _ -> {:error, "Compiler.compile: at line #{line}:#{column}, `#{cmd}` command got invalid arguments #{inspect(args)}"}
           end
         end
+        with {:ok, ret} <- ret do
+          {:ok, {ret, defs}}
+        end
       {cmd, [line: line, column: column], args} when is_binary(cmd) ->
         {:error, "Compiler.compile: at line #{line}:#{column}, `#{cmd}` command expects arguments, got #{inspect(args)}"}
-      {:__block__, _pos, []} -> {:ok, "."}
+      {:__block__, _pos, []} -> {:ok, {".", defs}}
       {:__block__, pos, nodes} ->
         {line, column} = case pos do
           [line: line, column: column] -> {line, column}
           _ -> {0, 0}
         end
-        compile_jq_toplevel(nodes, line, column)
+        compile_jq_toplevel(nodes, line, column, defs)
       _ when is_list(ast) ->
-        ast
-        |> Enum.map(&compile_jq_toplevel(&1, line, column))
-        |> Utils.sequence()
+        # TODO pass thru defs
+        # TODO handle 'define'
+        for node <- ast, reduce: {:ok, {[], defs}} do
+          {:ok, {rets, defs}} ->
+            with {:ok, {ret, defs}} <- compile_jq_toplevel(node, line, column, defs) do
+              {:ok, {[ret | rets], defs}}
+            end
+          {:error, msg} -> {:error, msg}
+        end
         |> case do
-          {:ok, val}    ->
-            ret = Enum.map_join(val, "\n|", &"(" <> &1 <> ")")
-            {:ok, ret}
+          {:ok, {rets, defs}}    ->
+            ret = rets |> Enum.reverse() |> Enum.map_join("\n|", &"(" <> &1 <> ")")
+            {:ok, {ret, defs}}
           {:error, msg} -> {:error, msg}
         end
       _ -> {:error, "Compiler.compile: expected toplevel command, got #{inspect(ast)}"}
@@ -1034,8 +1039,15 @@ defmodule RiichiAdvanced.Compiler do
 
   def compile_jq!(ast) do
     case compile_jq(ast) do
-      {:ok, jq} -> jq
+      {:ok, ret} -> ret
       {:error, error} -> raise error
+    end
+  end
+
+  def compile_jq(ast) do
+    case compile_jq_defs(ast) do
+      {:ok, {jq, _defs}} -> jq
+      {:error, error} -> {:error, error}
     end
   end
 
@@ -1051,21 +1063,27 @@ defmodule RiichiAdvanced.Compiler do
   """
   def header(), do: @header
 
-  def compile_jq(ast) do
+  def compile_jq_defs(ast, defs \\ MapSet.new()) do
     case ast do
-      {:__block__, _pos, []} -> {:ok, "."}
+      {:__block__, _pos, []} -> {:ok, {".", defs}}
       {:__block__, pos, nodes} ->
         # IO.inspect(nodes, label: "AST", limit: :infinity)
         {line, column} = case pos do
           [line: line, column: column] -> {line, column}
           _ -> {0, 0}
         end
-        case compile_jq_toplevel(nodes, line, column) do
-          {:ok, val}    -> {:ok, @header <> val}
-          {:error, msg} -> {:error, msg}
+        case compile_jq_toplevel(nodes, line, column, defs) do
+          {:ok, {ret, defs}} -> {:ok, {@header <> ret, defs}}
+          {:error, msg}      -> {:error, msg}
         end
-      {_name, _pos, _actions} -> compile_jq({:__block__, [], [ast]})
+      {_name, _pos, _actions} -> compile_jq_defs({:__block__, [], [ast]}, defs)
       _ -> {:error, "Compiler.compile: got invalid root node #{inspect(ast)}"}
+    end
+  end
+  def convert_to_jq(ast) do
+    case compile_jq_defs(ast) do
+      {:ok, {jq, _defs}} -> jq
+      {:error, error} -> raise error
     end
   end
 
