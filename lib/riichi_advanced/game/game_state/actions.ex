@@ -593,6 +593,7 @@ defmodule RiichiAdvanced.GameState.Actions do
       ["points" | _opts] when is_map_key(context, :points) -> context.points
       ["points2" | _opts] when is_map_key(context, :points2) -> context.points2
       ["score" | _opts] when is_map_key(context, :score) -> context.score
+      ["eval_expr" | opts] -> eval_expression(state, context, Enum.at(opts, 0, 0))
       ["minipoints" | _opts] when is_map_key(context, :minipoints) -> context.minipoints
       ["minipoints" | opts] ->
         score_actions = Enum.at(opts, 0)
