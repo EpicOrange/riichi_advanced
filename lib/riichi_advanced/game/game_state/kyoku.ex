@@ -223,11 +223,11 @@ defmodule RiichiAdvanced.GameState.Kyoku do
       Map.put(state, :round_result, if map_size(state.winners) == 3 do :win else :continue end)
     else state end
 
-    # run after_win actions
-    state = Actions.trigger_event(state, "after_win", %{seat: seat, win_source: win_source})
+    # run after_win actions, using the winner as the context
+    winner = state.winners[seat]
+    state = Actions.trigger_event(state, "after_win", winner)
 
     # Push message about yaku and score
-    winner = state.winners[seat]
     push_message(state, player_prefix(state, seat) ++ [
       %{text: "scored a %{score}-point hand", vars: %{score: winner.displayed_score}},
     ] ++ if not Enum.empty?(winner.yaku) or not Enum.empty?(winner.yaku2) do

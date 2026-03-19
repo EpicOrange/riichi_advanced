@@ -98,7 +98,7 @@ on before_scoring do
     four_triplet_points = four_triplet_points + 26
   end
   # daisangen
-  if match(["hand", "calls", "winning_tile"], ["daisangen"]) do
+  if match(["hand", "calls", "winning_tile"], ~m"haku:1, hatsu:1, chun:1") do
     four_triplet_points = four_triplet_points + 13
     three_triplet_points = three_triplet_points + 13
   end
