@@ -890,23 +890,19 @@ defmodule RiichiAdvanced.Compiler do
     end
   end
 
-  # TODO remove `define`
-  defp compile_command("define", name, args, line, column) do
-    case Jason.decode!(name) do
-      "play_restriction" -> 
-        args = case args do
-          [targets, condition] -> {:ok, {List.wrap(targets), condition}}
-          _ -> {:error, "Compiler.compile: at line #{line}:#{column}, `define play_restriction` command expects a target (or list of targets) and a condition, got #{inspect(args)}"}
-        end
+  defp compile_command("define_play_restriction", name, args, line, column) do
+    args = [Jason.decode!(name) | args]
+    args = case args do
+      [targets, condition] -> {:ok, {List.wrap(targets), condition}}
+      _ -> {:error, "Compiler.compile: at line #{line}:#{column}, `define_play_restriction` command expects a target (or list of targets) and a condition, got #{inspect(args)}"}
+    end
 
-        with {:ok, {targets, condition}} <- args,
-             {:ok, targets} <- Validator.validate_json(targets),
-             {:ok, targets} <- Jason.encode(targets),
-             {:ok, condition} <- compile_condition_list(condition, line, column),
-             {:ok, condition} <- Jason.encode(condition) do
-          {:ok, ".play_restrictions += [[#{targets}, #{condition}]]"}
-        end
-      _ -> {:error, "Compiler.compile: at line #{line}:#{column}, `define` got invalid type #{name}"}
+    with {:ok, {targets, condition}} <- args,
+         {:ok, targets} <- Validator.validate_json(targets),
+         {:ok, targets} <- Jason.encode(targets),
+         {:ok, condition} <- compile_condition_list(condition, line, column),
+         {:ok, condition} <- Jason.encode(condition) do
+      {:ok, ".play_restrictions += [[#{targets}, #{condition}]]"}
     end
   end
 

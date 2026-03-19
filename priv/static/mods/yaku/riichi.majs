@@ -71,5 +71,5 @@ def place_riichi_stick do
   end
 end
 
-define play_restriction, "any", status("riichi") and status_missing("just_reached") and not_is_drawn_tile
-define play_restriction, "any", status("riichi", "just_reached") and needed_for_hand("tenpai")
+define_play_restriction "any", status("riichi") and status_missing("just_reached") and not_is_drawn_tile
+define_play_restriction "any", status("riichi", "just_reached") and needed_for_hand("tenpai")

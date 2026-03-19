@@ -673,6 +673,27 @@ remove_mod id
 remove_mod id1, id2, id2
 ```
 
+### `define_play_restriction`: Add a restriction on playing tiles
+
+Here's how it's used for kuikae:
+
+```elixir
+define_play_restriction "any", just_called and last_called_tile_matches("kuikae")
+```
+
+After just declaring riichi, this prevents playing any tile that gets you out of tenpai:
+
+```elixir
+define_play_restriction "any", status("riichi") and status_missing("just_reached") and not_is_drawn_tile
+define_play_restriction "any", status("riichi", "just_reached") and needed_for_hand("tenpai")
+```
+
+This example forbids discarding flowers when you have the status `"cannot_discard_flowers"`:
+
+```elixir
+define_play_restriction "flower", status("cannot_discard_flowers")
+```
+
 ### (advanced) `apply`: Modify any path
 
 ```elixir
