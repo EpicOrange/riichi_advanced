@@ -197,10 +197,10 @@ end
 define_scoring win do
   total = points :: "Fan"
   total = 0
-  if total == 0 and points >= 3 do total = 8 :: "3+ Fan → 8" end
-  if total == 0 and points >= 2 do total = 4 :: "2 Fan → 4" end
-  if total == 0 and points >= 1 do total = 2 :: "1 Fan → 2" end
-  if total == 0                 do total = 1 :: "0 Fan → 1" end
+  if total == 0 and points >= 3 do total = 8 :: "3+ Fan → 8 pts" end
+  if total == 0 and points >= 2 do total = 4 :: "2 Fan → 4 pts" end
+  if total == 0 and points >= 1 do total = 2 :: "1 Fan → 2 pts" end
+  if total == 0                 do total = 1 :: "0 Fan → 1 pts" end
   if status("do_noten_payments") do
     modify_winner("score_name", "Draw")
   else

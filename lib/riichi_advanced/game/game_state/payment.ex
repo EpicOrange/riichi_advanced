@@ -63,7 +63,12 @@ defmodule RiichiAdvanced.GameState.Payment do
         reduce: state do
       state ->
         # create an empty txn
-        txn_name = "#{seat_to_str(payer)} → #{seat_to_str(seat)}"
+        txn_name = case Utils.get_relative_seat(seat, payer) do
+          :self     -> "From self"
+          :shimocha -> "From right"
+          :toimen   -> "From across"
+          :kamicha  -> "From left"
+        end
         txn = %Transaction{name: txn_name, from: payer, to: seat, line_items: []}
         state = update_in(state.txns, &[txn | &1])
 

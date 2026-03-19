@@ -2586,14 +2586,15 @@ div.game-modal > div.delta-score-reason {
   position: absolute;
   font-size: calc(0.8 * var(--tile-size));
   text-align: center;
-  top: calc(50% - 2 * var(--tile-size));
+  top: calc(50% - 3 * var(--tile-size));
   margin: 0 auto;
   left: 0;
   right: 0;
-  width: 35%;
+  --width: 10;
+  width: calc(var(--width) * 0.75em + 1em);
   user-select: none;
   pointer-events: none;
-  z-index: 3;
+  z-index: 2;
 }
 div.game-modal > div.delta-score-reason::before {
   position: absolute;
@@ -2607,6 +2608,7 @@ div.game-modal > div.delta-score-reason::before {
   left: 0;
   bottom: calc(-0.25 * var(--tile-size));
   z-index: -1;
+  transform: translateX(calc(-0.1 * var(--tile-size)));
 }
 div.game-modal > div.score-badge {
   background: black;
@@ -2619,7 +2621,7 @@ div.game-modal > div.score-badge {
   font-size: calc(0.5 * var(--tile-size));
   text-align: center;
   user-select: none;
-  z-index: 2;
+  z-index: 3;
   color: white;
   &:hover > div {
     &.initial-score, &.player-name, &.hline::before {
