@@ -765,6 +765,7 @@ defmodule RiichiAdvanced.GameState.Actions do
     put_in(state.players[context.seat].counters[counter_name], amount)
   end
 
+  defp eval_expression(state, context, ["=", [_l, r]]), do: eval_expression(state, context, r)
   defp eval_expression(state, context, ["+", [l, r]]), do: eval_expression(state, context, l) + eval_expression(state, context, r)
   defp eval_expression(state, context, ["-", [l, r]]), do: eval_expression(state, context, l) - eval_expression(state, context, r)
   defp eval_expression(state, context, ["*", [l, r]]), do: eval_expression(state, context, l) * eval_expression(state, context, r)
@@ -792,6 +793,7 @@ defmodule RiichiAdvanced.GameState.Actions do
       _    -> {op, rhs}
     end
     amount = eval_expression(state, context, rhs)
+    # IO.inspect({rhs, amount})
     new_ctr = eval_expression(state, context, [op, [counter_name, amount]])
     state = put_in(state.players[context.seat].counters[counter_name], new_ctr)
     # add as a line item to the most recent transaction
@@ -1284,8 +1286,8 @@ defmodule RiichiAdvanced.GameState.Actions do
       "win_by_call"           -> Kyoku.win(state, context.seat, :call, Enum.at(opts, 0, "win"))
       "win_by_draw"           -> Kyoku.win(state, context.seat, :draw, Enum.at(opts, 0, "win"))
       "win_by_second_visible_discard" -> Kyoku.win(state, context.seat, :second_discard, Enum.at(opts, 0, "win"))
-      "ryuukyoku"             -> Kyoku.exhaustive_draw(state, Enum.at(opts, 0, "win"))
-      "abortive_draw"         -> Kyoku.abortive_draw(state, Enum.at(opts, 0, "win"))
+      "ryuukyoku"             -> Kyoku.exhaustive_draw(state, Enum.at(opts, 0, ""))
+      "abortive_draw"         -> Kyoku.abortive_draw(state, Enum.at(opts, 0, ""))
       "set_status"            -> update_player(state, context.seat, fn player -> %{ player | status: MapSet.union(player.status, MapSet.new(opts)) } end)
       "unset_status"          -> update_player(state, context.seat, fn player -> %{ player | status: MapSet.difference(player.status, MapSet.new(opts)) } end)
       "set_status_all"        -> update_all_players(state, fn _seat, player -> %{ player | status: MapSet.union(player.status, MapSet.new(opts)) } end)

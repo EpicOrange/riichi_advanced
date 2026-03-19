@@ -671,7 +671,6 @@ defmodule RiichiAdvanced.GameState do
 
       {state, hands, scores}
     end
-    IO.inspect(Map.values(state.players) |> Enum.map(&Map.has_key?(&1, :playable_indices)), label: "B")
 
     # initialize other constants
     persistent_statuses = Rules.get(state.rules_ref, "persistent_statuses", [])
@@ -682,7 +681,6 @@ defmodule RiichiAdvanced.GameState do
     end
 
     # reset player state
-    IO.inspect(Map.values(state.players) |> Enum.map(&Map.has_key?(&1, :playable_indices)), label: "A")
     tile_freqs = Enum.frequencies(state.wall ++ state.dead_wall)
     state = state
     |> update_all_players(&%Player{

@@ -216,7 +216,7 @@ defmodule RiichiAdvancedWeb.ScoreWindowComponent do
     s = Utils.get_seat(seat, :shimocha)
     t = Utils.get_seat(seat, :toimen)
     k = Utils.get_seat(seat, :kamicha)
-    dirs = Map.new(%{u: u, s: s, t: t, j: k}, fn {key, seat2} ->
+    dirs = Map.new(%{u: u, s: s, t: t, k: k}, fn {key, seat2} ->
       name = get_name(seat2, players)
       {key, if name == "" do Utils.get_seat(seat2, :self) |> Atom.to_string() |> String.capitalize() else name end}
     end)
