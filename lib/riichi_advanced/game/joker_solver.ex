@@ -12,7 +12,7 @@ defmodule RiichiAdvanced.GameState.JokerSolver do
     Riichi.get_east_player_seat(kyoku, available_seats) == seat
   end
   def get_smt_hand_calls(state, seat, nil) do
-    # e.g. in the case we're tenhou, any of our hand tiles could be the winning tile
+    # e.g. in the case we're tenhou, any of our hand+draw tiles could be the winning tile
     hand = state.players[seat].hand ++ state.players[seat].draw
     smt_calls = state.players[seat].calls
     |> Enum.reject(fn {call_name, _call} -> call_name in Riichi.flower_names() end)

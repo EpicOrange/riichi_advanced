@@ -426,9 +426,6 @@ defmodule RiichiAdvanced.GameState.Kyoku do
 
   @spec calculate_winner_details_v2(any(), seat(), :best_draw | :call | :discard | :draw | :second_discard | :worst_discard, binary() | nil) :: any()
   def calculate_winner_details_v2(state, seat, win_source, scoring_key) do
-    # push a message if it takes more than 0.5 seconds to return
-    notify_task = Task.async(fn -> :timer.sleep(500); push_message(state, [%{text: "Running joker solver..."}]) end)
-
     # 5 step plan:
     # - calculate all possible joker assignments. for each assignment:
     #   - calculate yaku
@@ -450,6 +447,12 @@ defmodule RiichiAdvanced.GameState.Kyoku do
 
     winning_tile = get_winning_tile(state, seat, win_source)
 
+    # push a message if it takes more than 0.5 seconds to return
+    # (tenhou solver and joker solver are the same thing)
+    # (but it wouldn't do to say "joker solver" when solving tenhou, and vice versa)
+    notify_text = if winning_tile == nil do "Running tenhou solver..." else "Running joker solver..." end
+    notify_task = Task.async(fn -> :timer.sleep(500); push_message(state, [%{text: notify_text}]) end)
+
     # save orig hand
     orig_hand = state.players[seat].hand
     orig_calls = state.players[seat].calls
@@ -459,8 +462,8 @@ defmodule RiichiAdvanced.GameState.Kyoku do
     state = Map.update!(state, :winner_seats, & &1 ++ [seat])
 
     {state, cxt} = for {smt_hand, smt_calls} <- JokerSolver.get_smt_hand_calls(state, seat, winning_tile) do
-      # temporarily replace hand with given smt hand and calls
-      state = update_player(state, seat, &%{ &1 | hand: Enum.drop(smt_hand, -1), calls: smt_calls })
+      # pop off the winning tile
+      {hand, [winning_tile]} = Enum.split(smt_hand, -1)
 
       # save this hand for the win screen
       winning_hand = smt_hand ++ smt_calls

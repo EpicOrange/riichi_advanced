@@ -142,13 +142,13 @@ defmodule RiichiAdvancedWeb.ScoreWindowComponent do
     end
     # then make ledgers for individual players
     ret = for {seat2, txn} <- Payment.consolidate_txns(txns), reduce: ret do
-      ret when seat2 == nil -> ret
+      ret when seat2 == nil -> ret # don't display transactions with the pot
       ret ->
         result = Payment.get_txn_result(txn)
         if result == 0 do
           ret
         else
-          line_items = [%{op: :+, amount: nil, result: result, reason: "Total"} | txn.line_items]
+          line_items = [%{op: nil, amount: nil, result: result, reason: "Total"} | txn.line_items]
           [{Utils.get_relative_seat(seat, seat2) |> Atom.to_string(), result, Enum.reverse(line_items)} | ret]
         end
     end

@@ -35,7 +35,8 @@ defmodule RiichiAdvanced.GameState.Payment do
         acc = get_txn_result(ret)
         amount = get_txn_result(txn)
         result = acc + amount
-        %{ret | line_items: [%{op: :+, amount: amount, result: result, reason: txn.name} | ret.line_items]}
+        op = if Enum.empty?(ret.line_items) do "=" else "+" end # omit the first +
+        %{ret | line_items: [%{op: op, amount: amount, result: result, reason: txn.name} | ret.line_items]}
     end
   end
 
@@ -86,79 +87,6 @@ defmodule RiichiAdvanced.GameState.Payment do
     )
   end
 end
-
-# more fleshed out implementation notes
-# 
-# each win has some easy things to calculate, and some hard things. easy things:
-# - seat that won (the one with the winning hand)
-# - won_by: :discard, :draw, or :call
-# - responsibilities
-# - available_seats
-# - dealer_seat
-# - pot, honba
-# - score_rules
-# hard things:
-# - yaku and yaku2 (requires evaluating jokers)
-# - minipoints (is its own thing)
-
-# these are currently handled by Scoring.calculate_winner_details.
-# this function is extremely stateful, and does:
-# - [OK] using passed in win_source, determines which tile was used to win (winning tile)
-# - [NO] sets global winning_hand variable to (hand + calls + winning tile)
-# - [OK] check if we're dealer (also handle ryuumonbuchi touka "i score as if i'm dealer" power)
-# - [OK] for bloody end, save all opponents, to know from whom payments are coming from
-# - [OK] launch smt solver async to get all possible joker assignments. if none was found, then just leave in the jokers
-# - [OK] otherwise, replace jokers with their assigned identities, and score the hand
-# - [NO] run before_scoring (also very stateful), saving hand and calls before doing so
-# - [OK] output all the information ever into a huge object, the winner object, and return it
-
-# the [NO] lines cannot be copypasted over, since they are stateful, but most things can be done here
-# in particular, we can make a function that does all the stuff between the two NO lines
-# 
-# this means we need to make a function that:
-# - is passed in %WinSpec{winning_seat, win_source, winning_tile, the hand and calls, dealer seat, bloody end opponents
-# - launches smt solver if needed
-# - does a joker replacement
-# - scores the hand
-# - returns the {score, etc} of the ideal joker assignment
-
-
-
-# temp implementation notes
-#
-#   structure for payments:
-#   - each payment is from one player to another (multiple payments possible)
-#   - the list of payments is determined after yaku processing (pao needs yaku knowledge)
-#   - there may be multiple payments from A to B (e.g. daisangen pao + non-daisangen ron)
-#   - some sakicards reverse payments, so negative payments are possible
-#   - when displayed, payments should always be positive
-#   - when displayed, payments should have some history attached to it
-#   - the base score is calculated based on (payment relationship, minipoints, yaku)
-#   - ... * some multiplier (passed in, e.g. tsumo 2x/1x vs ron 6x/4x)
-#   - ... + some penalty (passed in, e.g. MCR 8 points, honba value)
-#   
-#   so it's a 2 phase process
-#   - first phase figures out all the arrows (who pays whom) with no score attached
-#     - to do this, we need to know:
-#     - win_source (ron, tsumo, chankan)
-#     - who dealt the last tile (last_discarder)
-#     - who drew the last tile (winner)
-#     - sakicards stuff (e.g. ezaki doesn't pay tsumos)
-#     - the pot is also a valid target (to/from)
-#     - (this calculates the multiplier + penalty, using game state and hand)
-#     - payment situations once you have base score down:
-#       - ron OR chankan OR tsumo pao (W <- L) = 4x base score, 6x if dealer
-#       - tsumo OR hu OR nagashi (W <- LLL) = 2x base score if dealer, 1x base score if nondealer
-#       - double ron/chankan (WW <- L) = 4x base score each, 6x if dealer
-#       - triple ron/chankan (WWW <- L) = 4x base score each, 6x if dealer
-#       - ron pao (W <- LL) = 2x base score each
-#       - ryuukyoku (W <- LLL, WW <- LL, WWW <- L) = 3000/#Ls each?
-
-#   - second phase takes in first phase DAG + yaku + minipoints, and outputs:
-#     - score_yaku => delta_scores
-#     - calculation history for each arrow
-#       - only insert entries into this via some display_payment_step action?
-#       - combine multiedge arrows into one, to be separated by <hr>
 
 
 

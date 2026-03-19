@@ -606,8 +606,13 @@ defmodule RiichiAdvanced.GameState.Actions do
         # IO.inspect(Enum.map(actions_with_lookahead, fn {[a|_],[b|_]} -> {a, b} end))
         player = state.players[context.seat]
         tile_behavior = player.tile_behavior
-        initial_hand_calls_fus = [get_winning_tile(state, context.seat, context.win_source)]
-        |> Enum.map(&{[&1 | player.hand], player.calls, [0]})
+        winning_tile = get_winning_tile(state, context.seat, context.win_source)
+        initial_hand_calls_fus = if winning_tile == nil do
+          # it's tenhou, so just take the existing hand
+          [{player.hand ++ player.draw, player.calls, [0]}]
+        else
+          [{[winning_tile | player.hand], player.calls, [0]}]
+        end
         for {[action | opts], [next_action | next_opts]} <- actions_with_lookahead, reduce: initial_hand_calls_fus do
           hand_calls_fus -> 
             conditions = Enum.at(opts, 1, [])
