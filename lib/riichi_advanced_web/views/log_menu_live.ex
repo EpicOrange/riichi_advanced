@@ -23,22 +23,24 @@ defmodule RiichiAdvancedWeb.LogMenuLive do
     {:ok, socket}
   end
 
+
+### Log viewer is currently non-functional, so replace this entire code with a message telling players that it's nonfunctional. This next code block is temporary.
   def render(assigns) do
     ~H"""
-    <div id="container">
+    <div id="container" phx-hook="ClickListener">
       <div class="title">
         <div class="title-riichi">Riichi</div>
         <div class="title-advanced">Advanced</div>
         <div class="tile 8m"></div>
         <div class="tile 7z"></div>
       </div>
-      <form class="log-selection-form" phx-submit="redirect">
-        <input type="text" name="log_id" placeholder={t(@lang, "Log ID:")} value={@log_id}/>
+      <form class="log-selection-form" phx-submit="back">
+        <input type="text" name="log_id" placeholder={t(@lang, "The log viewer is currently non-functional. Check back later!")} value={@log_id}/>
         <br/>
         <%= if @error_message != nil do %>
-          <div class="form-error"><%= @error_message %></div>
+          <div class="form-error">The log viewer is currently non-functional. Check back later!</div>
         <% end %>
-        <button type="submit" class="enter-button"><%= t(@lang, "View log") %></button>
+        <button type="submit" class="enter-button"><%= t(@lang, "The log viewer is currently non-functional. Check back later!") %></button>
       </form>
       <div class="index-version"><%= @version %></div>
       <div class="index-bottom-buttons">
@@ -54,6 +56,37 @@ defmodule RiichiAdvancedWeb.LogMenuLive do
     </div>
     """
   end
+#  def render(assigns) do
+#    ~H"""
+#    <div id="container" phx-hook="ClickListener">
+#      <div class="title">
+#        <div class="title-riichi">Riichi</div>
+#        <div class="title-advanced">Advanced</div>
+#        <div class="tile 8m"></div>
+#        <div class="tile 7z"></div>
+#      </div>
+#      <form class="log-selection-form" phx-submit="redirect">
+#        <input type="text" name="log_id" placeholder={t(@lang, "Log ID:")} value={@log_id}/>
+#        <br/>
+#        <%= if @error_message != nil do %>
+#          <div class="form-error"><%= @error_message %></div>
+#        <% end %>
+#        <button type="submit" class="enter-button"><%= t(@lang, "View log") %></button>
+#      </form>
+#      <div class="index-version"><%= @version %></div>
+#      <div class="index-bottom-buttons">
+#        <button phx-click="goto_about"><%= t(@lang, "About") %></button>
+#        <button><a href="https://github.com/EpicOrange/riichi_advanced"><%= t(@lang, "Source") %></a></button>
+#        <button><a href="https://discord.gg/5QQHmZQavP"><%= t(@lang, "Discord") %></a></button>
+#        <button phx-click="goto_index"><%= t(@lang, "Back") %></button>
+#      </div>
+#      <div class="top-right-container">
+#        <.live_component module={RiichiAdvancedWeb.MenuButtonsComponent} id="menu-buttons" lang={@lang} />
+#      </div>
+#      <.live_component module={RiichiAdvancedWeb.MessagesComponent} id="messages" messages={@messages} lang={@lang} />
+#    </div>
+#    """
+#  end
 
   def handle_event("back", _assigns, socket) do
     socket = push_navigate(socket, to: ~p"/?nickname=#{socket.assigns.nickname}&lang=#{socket.assigns.lang}")
