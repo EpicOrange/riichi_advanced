@@ -12,3 +12,7 @@ if any(.wall[]; . == "1t") then
   |
   .dora_indicators["19j"] += ["2t", "1t"]
 end
+|
+.after_initialization.actions += [
+  ["add_rule", "Tiles", "Jokers", "- One %{19j} joker is added to the wall. This joker acts as any tile numbered 1 or 9.", {"19j": ["19j"]}, -99]
+]

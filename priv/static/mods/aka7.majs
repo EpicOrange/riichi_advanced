@@ -1,5 +1,5 @@
 on after_initialization do
-  add_rule("Rules", "Wall", "(Aka) %{man}x 7m, %{pin}x 7p, and %{sou}x 7s are replaced with red \"aka dora\" sevens that are worth one extra han each.", %{man: !man, pin: !pin, sou: !sou}, -99)
+  add_rule("Tiles", "Aka", "%{man}x %{7m}, %{pin}x %{7p}, and %{sou}x %{7s} are replaced with red \"aka dora\" sevens %{akadora_sevens} that are worth one extra han each.", %{man: !man, pin: !pin, sou: !sou, "7m": ["7m"], "7p": ["7p"], "7s": ["7s"], akadora_sevens: ["07m", "07p", "07s"]}, -99)
   update_rule("Rules", "Shuugi", "(Aka) If your hand is closed, each aka dora is worth 1 shuugi chip.")
 end
 

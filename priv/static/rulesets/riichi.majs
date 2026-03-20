@@ -384,6 +384,7 @@ def calculate_fu do
 end
 
 on after_initialization do
+  add_rule_tab("Tiles")
   add_rule_tab("Rules")
   add_rule_tab("0.5 Han")
   add_rule_tab("1 Han")
@@ -402,6 +403,12 @@ on after_initialization do
   add_rule_tab("Limit")
   add_rule_tab("Mangan")
   add_rule_tab("Yakuman")
+  add_rule("Tiles", "Base Tiles", "By default, Riichi uses the following 136 tiles:", -100)
+  add_rule("Tiles", "Base Tiles", "- Four each of the 1 to 9 of Dots %{pinzu}", %{"pinzu": ["1p", "2p", "3p", "4p", "5p", "6p", "7p", "8p", "9p"]})
+  add_rule("Tiles", "Base Tiles", "- Four each of the 1 to 9 of Bams %{souzu}", %{"souzu": ["1s", "2s", "3s", "4s", "5s", "6s", "7s", "8s", "9s"]})
+  add_rule("Tiles", "Base Tiles", "- Four each of the 1 to 9 of Craks %{manzu}", %{"manzu": ["1m", "2m", "3m", "4m", "5m", "6m", "7m", "8m", "9m"]})
+  add_rule("Tiles", "Base Tiles", "- Four each of the four Winds (East, South, West, North) %{winds}", %{"winds": ["1z", "2z", "3z", "4z"]})
+  add_rule("Tiles", "Base Tiles", "- Four each of the three Dragons (White, Green, Red) %{dragons}", %{"dragons": ["5z", "6z", "7z"]})
   add_rule("Rules", "Tenpai Payments", "In event of an exhaustive draw, players not in tenpai pay players in tenpai. 3000 points total are paid, with the payment split among the non-tenpai players. If all or no players are tenpai, no payment occurs.")
   delete_rule("Rules", "Win Condition")
   add_rule("Rules", "Win Condition", "You may win with one of the following:", -100)

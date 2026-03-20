@@ -7,3 +7,7 @@
     ["swap_out_fly_joker", "2y"]
   ]
 }
+|
+.after_initialization.actions += [
+  ["add_rule", "Tiles", "Fei Joker", "If you have called Pong with a Fei Joker substituting some tile, and you later draw that tile, you may swap that tile out for the Fei Joker."]
+]

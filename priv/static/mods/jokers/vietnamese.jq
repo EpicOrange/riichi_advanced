@@ -55,4 +55,16 @@ end
   "7j": "Souzu",
   "8j": "Manzu"
 }
+|
+.after_initialization.actions += [
+  ["add_rule", "Tiles", "Jokers", "- One %{0j} joker is added to the wall. This joker acts as any tile.", {"0j": ["0j"]}, -99],
+  ["add_rule", "Tiles", "Jokers", "- One %{2j} joker is added to the wall. This joker acts as any numbered tile.", {"2j": ["2j"]}, -99],
+  ["add_rule", "Tiles", "Jokers", "- One %{3j} joker is added to the wall. This joker acts as any honour tile.", {"3j": ["3j"]}, -99],
+  ["add_rule", "Tiles", "Jokers", "- One %{4j} joker is added to the wall. This joker acts as any dragon tile.", {"4j": ["4j"]}, -99],
+  ["add_rule", "Tiles", "Jokers", "- One %{5j} joker is added to the wall. This joker acts as any wind tile.", {"5j": ["5j"]}, -99],
+  ["add_rule", "Tiles", "Jokers", "- One %{6j} joker is added to the wall. This joker acts as any pinzu tile.", {"6j": ["6j"]}, -99],
+  ["add_rule", "Tiles", "Jokers", "- One %{7j} joker is added to the wall. This joker acts as any souzu tile.", {"7j": ["7j"]}, -99],
+  ["add_rule", "Tiles", "Jokers", "- One %{8j} joker is added to the wall. This joker acts as any manzu tile.", {"8j": ["8j"]}, -99]
+]
+
 

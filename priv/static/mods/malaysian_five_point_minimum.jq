@@ -6,3 +6,7 @@ def add_5_condition($check):
 .buttons.chankan.show_when += [add_5_condition("has_yaku_with_call")]
 |
 .buttons.tsumo.show_when += [add_5_condition("has_yaku_with_hand")]
+|
+.after_initialization.actions += [
+  ["add_rule", "Rules", "5 Fan Minimum", "You need at least 5 Fan to declare a win.", -101]
+]

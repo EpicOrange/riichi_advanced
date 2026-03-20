@@ -1,5 +1,5 @@
 .after_initialization.actions += [
-  ["add_rule", "Rules", "Wall", "(Shiro Pocchi) One of the white dragons is replaced with shiro pocchi, which looks like a compass. Shiro pocchi acts a joker tile when drawn while in riichi.", -99],
+  ["add_rule", "Tiles", "Shiro Pocchi", "One of the white dragons is replaced with a shiro pocchi %{shiro-pocchi}. Shiro pocchi acts a joker tile when drawn while in riichi.", {"shiro-pocchi": ["9z"]}, -99],
   ["update_rule", "Rules", "Shuugi", "(Shiro Pocchi) Winning in riichi via shiro pocchi is worth 1 shuugi."]
 ]
 |
