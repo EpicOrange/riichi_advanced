@@ -1,5 +1,5 @@
 on after_initialization do
-  add_rule("Rules", "Wall", "(Ao) %{man}x 5m, %{pin}x 5p, and %{sou}x 5s are replaced with blue \"ao dora\" fives that are worth two extra han each.", %{man: !man, pin: !pin, sou: !sou}, -99)
+  add_rule("Tiles", "Ao", "%{man}x %{5m}, %{pin}x %{5p}, and %{sou}x %{5s} are replaced with blue \"ao dora\" fives %{aodora_fives} that are worth two extra han each.", %{man: !man, pin: !pin, sou: !sou, "5m": ["5m"], "5p": ["5p"], "5s": ["5s"], aodora_fives: ["25m", "25p", "25s"]}, -99)
   update_rule("Rules", "Shuugi", "(Ao) If your hand is closed, each ao dora is worth two shuugi chips.")
 end
 

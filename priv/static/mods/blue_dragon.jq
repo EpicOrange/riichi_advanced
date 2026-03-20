@@ -1,5 +1,5 @@
 .after_initialization.actions += [
-  ["add_rule", "Rules", "Wall", "(Blue Dragon) Four blue dragons (framed tiles) are added to the wall.", -99],
+  ["add_rule", "Tiles", "Blue Dragon", "Four blue dragons %{blue-dragon} are added to the wall.", {"blue-dragon": ["0z"]}, -99],
   # should the Blue Dragon yaku be integrated into the Yakuhai yaku?
   ["add_rule", "1 Han", "Blue Dragon", "A triplet of blue dragons is yakuhai."],
   ["update_rule", "1 Han", "Blue Dragon", "%{example_hand}", {"example_hand": ["2m", "3m", "4m", "3p", "3p", "7p", "7p", "7p", "4s", "5s", "0z", "0z", "0z", "3x", "6s"]}],

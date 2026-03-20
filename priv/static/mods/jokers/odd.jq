@@ -7,3 +7,7 @@
 if any(.wall[]; . == "1t") then
   .after_start.actions += [["set_tile_alias_all", ["11j"], ["1t", "3t", "5t", "7t", "9t"]]]
 end
+|
+.after_initialization.actions += [
+  ["add_rule", "Tiles", "Jokers", "- One %{11j} joker is added to the wall. This joker acts as any odd-numbered tile.", {"11j": ["11j"]}, -99]
+]

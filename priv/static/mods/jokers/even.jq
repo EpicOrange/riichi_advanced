@@ -15,3 +15,7 @@ end
 if any(.wall[]; . == "10t") then
   .after_start.actions += [["set_tile_alias_all", ["22j"], ["10t"]]]
 end
+|
+.after_initialization.actions += [
+  ["add_rule", "Tiles", "Jokers", "- One %{22j} joker is added to the wall. This joker acts as any even-numbered tile.", {"22j": ["22j"]}, -99]
+]

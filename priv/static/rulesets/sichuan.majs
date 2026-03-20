@@ -79,6 +79,53 @@ set score_calculation, %{
     exhaustive_draw_name: "Draw"
   }
 
+on after_initialization do
+  add_rule_tab("Tiles")
+  add_rule_tab("Rules")
+  add_rule_tab("Instant")
+  add_rule_tab("1 Fan")
+  add_rule_tab("2 Fan")
+  add_rule("Tiles", "Tiles", "Sichuan Bloody Rules uses only the 108 suited tiles:", -100)
+  add_rule("Tiles", "Tiles", "- Four each of the 1 to 9 of Dots %{pinzu}", %{"pinzu": ["1p", "2p", "3p", "4p", "5p", "6p", "7p", "8p", "9p"]})
+  add_rule("Tiles", "Tiles", "- Four each of the 1 to 9 of Bams %{souzu}", %{"souzu": ["1s", "2s", "3s", "4s", "5s", "6s", "7s", "8s", "9s"]})
+  add_rule("Tiles", "Tiles", "- Four each of the 1 to 9 of Craks %{manzu}", %{"manzu": ["1m", "2m", "3m", "4m", "5m", "6m", "7m", "8m", "9m"]})
+  add_rule("Rules", "Win Condition", "You may win with one of the following:", -100)
+  add_rule("Rules", "Win Condition", "- Four sets (sequences or triplets) and a pair.", -100)
+  add_rule("Rules", "Win Condition", "- (Seven Pairs) Seven distinct pairs.", -100)
+  add_rule("Rules", "Charleston", "At the start of the game, before declaring your voided suit, you must select three tiles to pass to another player (determined by the dice).")
+  add_rule("Rules", "Voided Suit", "At the start of the game, you must declare a voided suit (one of Bams, Craks, Dots).")
+  add_rule("Rules", "Voided Suit", "You may not win if any tiles of the voided suit are in your hand.")
+  add_rule("Rules", "Voided Suit", "You must pay a 16 point penalty to everyone if you have any tiles of the voided suit in hand, and at least one tile of a different suit in your discards.")
+  add_rule("Rules", "Voided Suit", "Voided suits for each player are shown at the top left of the screen.")
+  add_rule("Rules", "Bloody End", "After a player wins, the remaining players at the table continue to play. The game ends either when three players have won, or there are no more tiles in the wall.")
+  add_rule("Rules", "Bloody End", "Players only receive payments from opponents who haven't yet won.")
+  add_rule("Rules", "Bloody End", "If the game ends due to there being no more tiles in the wall, players in tenpai gain score based off their best wait.")
+  add_rule("Rules", "No Chow", "Calling Chow to complete a sequence of three is forbidden.")
+  add_rule("Rules", "Pong", "When any player discards a tile you can use to complete a triplet, you may call Pong to take that tile. Then it becomes your turn to discard.")
+  add_rule("Rules", "Kong", """
+  You may declare Kong to set aside four tiles in three situations:
+  - (open) If you have three of a kind, you can claim the fourth if someone discarded it.
+  - (added) If you previously called Pong, you can add the fourth tile to it but only if you draw the tile yourself.
+  - (concealed) If you have four of a kind, you can declare them as Concealed Kong.
+  - In each case, you must then draw a replacement tile from the back of the wall.
+  """)
+    # Instant payments
+  add_rule("Instant", "Concealed Kong", "You are paid 2 points by each other player for declaring a concealed kong.")
+  add_rule("Instant", "Open Kong", "You are paid 2 points by the discarder for declaring an open kong.")
+  add_rule("Instant", "Added Kong", "You are paid 1 points by each other player for declaring an added kong with the tile you just drew.")
+    # 1 Fan
+  add_rule("1 Fan", "Root", "You get one Fan for using all four copies of any given tile. Repeatable.")
+  add_rule("1 Fan", "All Triplets", "You get 1 Fan if your hand comprises four triplets and a pair.")
+  add_rule("1 Fan", "Win After Kong", "You get 1 Fan for winning off the replacement draw from declaring a Kong.")
+  add_rule("1 Fan", "Robbing The Kong", "You get 1 Fan for Robbing a Kong.")
+  add_rule("1 Fan", "Shoot After Kong", "You get 1 Fan if you win off another player's discard immediately after they declare a Kong.")
+  add_rule("1 Fan", "Under The Sea", "You get 1 Fan by winning by drawing the last tile in the wall.")
+    # 2 Fan
+  add_rule("2 Fan", "Full Flush", "You get 2 Fan if your hand comprises only tiles of one suit.")
+  add_rule("2 Fan", "Seven Pairs", "You get 1 Fan if your hand comprises seven pairs. Pairs may be repeated.")
+  add_rule("2 Fan", "Golden Single Wait", "You get 2 Fan if you have called four times, and are waiting on a single tile.")
+end  
+
 on after_start do
   if dice_equals(3, 6, 9, 12) do
     set_status_all("charleston_left")
@@ -215,6 +262,7 @@ define_button charleston_right,
     charleston_right
   end
 
+# TODO: rewrite these void buttons so that the void suits appear in standard order, rather than in order of who pressed the buttons first
 define_button void_manzu,
   display_name: "No Craks",
   show_when: status("round_start"),
@@ -307,9 +355,16 @@ def do_kong_payment_single do
     end
     # scuffed string comparison technique
     set_status("$seat")
-    if status("shimocha") do owes_shimocha = owes_shimocha + "$score" end
-    if status("toimen") do owes_toimen = owes_toimen + "$score" end
-    if status("kamicha") do owes_kamicha = owes_kamicha + "$score" end
+      # TODO: modify these to add chat messages explaining instant kong payments
+    if status("shimocha") do
+      owes_shimocha = owes_shimocha + "$score"
+      end
+    if status("toimen") do
+      owes_toimen = owes_toimen + "$score"
+    end
+    if status("kamicha") do
+      owes_kamicha = owes_kamicha + "$score"
+    end
     unset_status("$seat")
   end
 end

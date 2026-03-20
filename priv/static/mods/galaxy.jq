@@ -12,7 +12,7 @@ def add_star_suit($enabled; $arr):
     else . end;
 
 .after_initialization.actions += [
-  ["add_rule", "Rules", "Wall", "(Galaxy Mahjong) One of each tile is replaced with a blue 'galaxy' tile that acts as a wildcard of its number. For example, galaxy 3s can be used as 3m, 3p, or 3s. Galaxy winds are wind wildcards, and galaxy dragons are dragon wildcards.", -99],
+  ["add_rule", "Tiles", "Galaxy Mahjong", "One of each tile is replaced with a blue 'galaxy' tile that acts as a wildcard of its number. For example, %{galaxy_3s} can be used as any of %{threes}. Galaxy winds are wind wildcards, and galaxy dragons are dragon wildcards.", {"galaxy_3s": ["13s"], "threes": ["3s", "3p", "3m"]}, -99],
   ["add_rule", "Rules", "Win Condition", "- (Galaxy Mahjong) You have 14 galaxy tiles.", -100],
   ["add_rule", "Yakuman", "Milky Way", "(Galaxy Mahjong) Having any 14 galaxy tiles awards the Milky Way yakuman."],
   ["update_rule", "Yakuman", "Milky Way", "%{example_hand}", {"example_hand": ["11m", "15m", "16m", "19m", "12p", "14p", "17p", "11s", "13s", "17s", "12z", "14z", "3x", "17z"]}],

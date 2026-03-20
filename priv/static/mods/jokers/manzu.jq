@@ -7,3 +7,7 @@
 if any(.wall[]; . == "10m") then
   .after_start.actions += [["set_tile_alias_all", ["18j"], ["10m"]]]
 end
+|
+.after_initialization.actions += [
+  ["add_rule", "Tiles", "Jokers", "- One %{18j} joker is added to the wall. This joker acts as any manzu tile.", {"18j": ["18j"]}, -99]
+]

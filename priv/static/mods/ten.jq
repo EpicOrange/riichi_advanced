@@ -11,8 +11,6 @@ def nine_to_ten:
     .
   end;
 
-.after_initialization.actions += [["add_rule", "Rules", "Wall", "(Ten) Every suit runs from 1 to 10.", -99]]
-|
 .wall |= nine_to_ten
 |
 # re-add the same number of nine tiles as there are two tiles
@@ -55,6 +53,17 @@ else
     ["set_tile_ordering_all", ["9m", "10m"]],
     ["set_tile_ordering_all", ["9p", "10p"]],
     ["set_tile_ordering_all", ["9s", "10s"]]
+  ]
+end
+|
+# add rules text
+if $star then
+  .after_initialization.actions += [
+    ["add_rule", "Tiles", "Ten", "There are four copies of the 10 of each suit: %{tens}", {"tens": ["10p", "10s", "10m", "10t"]}]
+  ]
+else 
+  .after_initialization.actions += [
+    ["add_rule", "Tiles", "Ten", "There are four copies of the 10 of each suit: %{tens}", {"tens": ["10p", "10s", "10m"]}]
   ]
 end
 |
