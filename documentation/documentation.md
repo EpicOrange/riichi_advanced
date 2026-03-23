@@ -2,16 +2,16 @@ Note: this file is for the `majs` documentation. The `json` documentation is [he
 
 # Table of contents
 
-- [`ruleset.json` basic concepts](#rulesetjson-basic-concepts)
+- [`ruleset.majs` basic concepts](#rulesetmajs-basic-concepts)
   + [The `set` command](#the-set-command)
   + [The `apply` command](#the-apply-command)
   + [The `on` command](#the-on-command)
   + [Conditions](#conditions)
-  + [The `define_auto_button` command](#the-define-auto-button-command)
-  + [The `define_button` command](#the-define-button-command)
+  + [The `define_auto_button` command](#the-define_auto_button-command)
+  + [The `define_button` command](#the-define_button-command)
   + [Interrupts](#interrupts)
   + [Conditions with arguments and complex conditions](#conditions-with-arguments-and-complex-conditions)
-  + [The `define_yaku` command](#the-define-yaku-command)
+  + [The `define_yaku` command](#the-define_yaku-command)
   + [The `match` condition and match specifications](#the-match-condition-and-match-specifications)
   + [American hand match specifications](#american-hand-match-specifications)
   + [Marking](#marking)
@@ -19,7 +19,7 @@ Note: this file is for the `majs` documentation. The `json` documentation is [he
     * [Visual effects via attributes](#visual-effects-via-attributes)
   + [Tile aliasing, i.e. defining jokers](#tile-aliasing-ie-defining-jokers)
     * [Attributes and tile aliasing](#attributes-and-tile-aliasing)
-- [`ruleset.json` full documentation](#rulesetjson-full-documentation)
+- [`ruleset.majs` full documentation](#rulesetmajs-full-documentation)
   + [Actions](#actions)
   + [Conditions](#conditions-1)
   + [Tile specs](#tile-specs)
@@ -37,7 +37,7 @@ Note: this file is for the `majs` documentation. The `json` documentation is [he
   + [Calculating fu](#calculating-fu)
   + [Setting up next-round logic](#setting-up-next-round-logic)
 
-# `ruleset.json` basic concepts
+# `ruleset.majs` basic concepts
 
 A ruleset is a `.majs` file consisting of a list of commands. Let's start with an empty file.
 This creates the following game:
@@ -90,7 +90,7 @@ https://github.com/user-attachments/assets/523253a2-ca78-40f0-b677-f4ad54530aa8
 
 Because every player has drawn 13 tiles, that leaves 56 tiles in the wall. Note that there is no drawing from the wall quite yet.
 
-Every key like `wall` and `starting_tiles` are called `top-level keys`, and these are the only keys you can set with `set`. These keys define the main moving parts of Riichi Advanced rulesets. A [full documentation](#rulesetjson-full-documentation) of the keys is below this concepts guide.
+Every key like `wall` and `starting_tiles` are called `top-level keys`, and these are the only keys you can set with `set`. These keys define the main moving parts of Riichi Advanced rulesets. A [full documentation](#rulesetmajs-full-documentation) of the keys is below this concepts guide.
 
 ## The `apply` command
 
@@ -288,7 +288,7 @@ This concludes the overview of basic concepts in Riichi Advanced rulesets. Note 
 - to check which yaku to award
 - and to check for the existence of tiles in any zone in general.
 
-It is also the most complex condition by far, so it gets its own explainer section below. It is not a basic concept so feel free to skip it and proceed to the [full documentation](#rulesetjson-full-documentation).
+It is also the most complex condition by far, so it gets its own explainer section below. It is not a basic concept so feel free to skip it and proceed to the [full documentation](#rulesetmajs-full-documentation).
 
 ## The `match` condition and match specifications
 
@@ -522,7 +522,7 @@ The problem with adding an attribute merely for scoring purposes is that attribu
 
 ---
 
-# `ruleset.json` full documentation
+# `ruleset.majs` full documentation
 
 Here are all the toplevel keys. Every key is optional.
 
