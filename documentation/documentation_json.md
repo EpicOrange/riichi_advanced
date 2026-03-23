@@ -19,7 +19,7 @@ Note: this file is for the `json` documentation. The `majs` documentation is [he
   + [Interrupt levels](#interrupt-levels)
 - [`ruleset.json` full documentation](#rulesetjson-full-documentation)
   + [Actions](#actions)
-  + [Conditions](#conditions)
+  + [Conditions](#conditions-1)
   + [Tile specs](#tile-specs)
   + [Match targets](#match-targets)
   + [Scoring methods](#scoring-methods)
@@ -334,7 +334,7 @@ This does the same thing as above, except it just takes four `shuntsu` or `kouts
 
       [ [["quad"], -1], [["koutsu"], -2], [["pair"], 6] ],
 
-This is the seven pairs check. Although you can check for six pairs via the simpler match definition `[ [["pair"], 6] ]`, we need to filter out the two cases where you have six pairs but are not tenpai for seven pairs. We do this with **negative counts**, which specifies a negative match for a group. Basically, if we're able to take out a `quad` from the hand (indicating two identical pairs), then the match fails. Also if the hand includes two `koutsu`, there's no way to discard one of the two unpaired tiles and wait on a unique pair, so that also fails to match. Otherwise, it proceeds to take six pairs out of the hand, and if it can, then the match succeeds and you are tenpai for seven pairs.
+This is the seven pairs check. Although you can check for six pairs via the simpler match definition `[ [["pair"], 6] ]`, we need to filter out the two cases where you have six pairs but are not tenpai for seven pairs (i.e. you have a duplicate pair, or two triplets). We do this with **negative counts**, which specifies a negative match for a group. Basically, if we're able to take out a `quad` from the hand (indicating two identical pairs), then the match fails. Also if the hand includes two `koutsu`, there's no way to discard one of the two unpaired tiles and wait on a unique pair, so that also fails to match. Otherwise, it proceeds to take six pairs out of the hand, and if it can, then the match succeeds and you are tenpai for seven pairs.
 
       [ "unique",
         [["1m","9m","1p","9p","1s","9s","1z","2z","3z","4z","5z","6z","7z"], 12],
@@ -377,7 +377,7 @@ An American match specification is a string instead of an array. An example is `
 
 - `F`: any flower
 - `D`: any dragon
-- `W`: any wind
+- `Z`: any wind
 - `N`,`E`,`W`,`S`: north/east/west/south wind
 - `R`,`G`,`0`: red/green/white dragon
 - `1` to `9`: a number tile
@@ -386,6 +386,8 @@ An American match specification is a string instead of an array. An example is `
 `X` groups must be suffixed with a number. For instance, `"XXXXX0a XX1a XXXXX2a"` matches a quint of some number, a pair of that number + 1, and a quint of that number + 2.
 
 The `a` at the end is a suit specifier, required for groups consisting of `1` to `9`, `D`, and/or `X`. The three suit specifiers are `a`, `b`, `c`. For example, `"2024a 2222b 2222c"` matches 2024 of one suit (0 is white dragon), 2222 or another suit, and 2222 of a third suit.
+
+In addition, you may specify a group with alternatives (OR) using `|`. For example, `RR|GG` matches a pair of red dragons OR a pair of green dragons. Since spaces are used to separate groups, make sure not to put spaces around the `|`.
 
 See `rulesets/american.json` for more examples.
 
@@ -403,11 +405,12 @@ Examples:
 - `["mark", [["hand", 1, ["terminal_honor"]], ["discard", 1, ["last_discard"]]]]`: Mark a terminal/honor in hand and the last discard.
 - `["mark", [["hand", 1, ["match_suit", "not_riichi"]], ["discard", 1, ["match_suit"]]]]`: Mark one tile in your own hand, then mark one tile in your discards. Once you mark one tile, the other tile must match the suit of the marked tile. In addition, the tile in hand can only be your drawn tile, if you are in riichi.
 
-The mark action only prompts the user to mark tiles -- it doesn't do anything with them. Once all tiles are marked, the remaining actions are triggered, and there are certain actions that interact with the marked tiles. These three are the most important:
+The mark action only prompts the user to mark tiles -- it doesn't do anything with them. Once all tiles are marked, the remaining actions are triggered, and there are certain actions that interact with the marked tiles. These five are the most important:
 
 - `["move_tiles", src, dst]`: Move tiles from `src` to `dst`.
 - `["swap_tiles", src, dst]`: Swap tiles between `src` and `dst`.
 - `["copy_tiles", src, dst]`: Copy tiles from `src` to `dst`.
+- `["delete_tiles", tile1, tile2, ...]`: Delete every instance of the given tiles from the current player's hand/draw. Currently, the only example for this is in american.json: `["delete_tiles", {"hand": ["1x"], "draw": ["1x"]}]`
 - `["clear_marking"]`: Exit marking mode. This is required after you're done with moving around marked tiles, since marking mode essentially pauses the game.
 
 There are a number of ad-hoc actions that also interact with the marked tiles, but they are not meant to be used beyond Sakicards (since they are very specific actions, and the plan is to replace them in the future). For example:
@@ -614,7 +617,7 @@ Here is the basic event lifecycle for each round:
   + `after_win`
   + `after_scoring`
   + `before_continue` (if bloody end rules are enabled)
-- On a draw:
+- On a draw (or after 3 players win in bloody end rules):
   + `before_exhaustive_draw`/`before_abortive_draw`
   + `after_scoring`
 - Then one of these is run:
@@ -692,6 +695,7 @@ Colors are specified as CSS color strings like `"#808080"` or `"lightblue"`. Exa
 - `["add_rule", tab, title, text, sort_order]`: Adds the string `text` to the rules tab on the left. Keep it brief! `title` is a required string identifier that is also used for deleting this rule later -- you can also specify an existing identifier to append a `text` to that rule (on its own line). `sort_order` is an optional integer argument that defaults to `0` -- the rules on the rules list are sorted from lowest `sort_order` to highest. Rules with negative `sort_order` are displayed full-width while other rules are half-width.
 - `["update_rule", tab, title, text, sort_order]`: Same as `"add_rule"`, but only appends `text` (does nothing if the rule `title` does not exist).
 - `["delete_rule", tab, title]`: Deletes the rule text identified by `title`.
+- `["add_rule_tab", tab, vars]`: Adds an empty rule tab. Useful if you want to predefine the order of rule tabs, since rule tabs are ordered by when they are generated. Rule tabs without any rules are not shown.
 - `["run", fn_name, {"arg1": "value1", ...}]`: Call the given function with the given arguments. A function is essentially a named list of actions. Functions are defined in the toplevel `"functions"` key -- see `riichi.json` for examples. Within a function you may write variables preceded with a dollar sign -- like `$arg1` -- and the value will be replaced with the corresponding `value1` in the (optional) given object. Functions can be called recursively, but this is rarely done, and therefore there is an arbitrary call stack limit of 10 calls.
 - `["draw", num, tile]`: Draw `num` tiles. If `tile` is specified, it draws that tile instead of from the wall. Instead of a tile for `tile` you may instead write `"opposite_end"` to draw from the opposite end of the wall (i.e. the dead wall, if one exists)
 - `["call"]`: For call buttons only, like pon. Triggers the call.
@@ -797,6 +801,7 @@ Colors are specified as CSS color strings like `"#808080"` or `"lightblue"`. Exa
 - `["add_attr_tagged", tag, [attr1, ...]]`: Add the given attributes to all instances of the tagged tiles. (includes wall)
 - `["remove_attr_hand", attr1, attr2, ...]`: Remove the given attributes from all tiles in the current player's hand.
 - `["remove_attr_all", attr1, attr2, ...]`: Remove the given attributes from all tiles owned by the current player (hand, draw, aside, but not calls)
+- `["remove_attr_tagged", tag, [attr1, ...]]`: Remove the given attributes from all instances of the tagged tiles. (includes wall)
 - `["tag_tiles", tag_name, tiles]`: Globally tag the given tile(s) with the given tag name.
 - `["tag_drawn_tile", tag_name]`: Globally tag the current player's drawn tile with the given tag name.
 - `["tag_last_discard", tag_name]`: Globally tag the current player's last discard with the given tag name.
@@ -820,7 +825,6 @@ Colors are specified as CSS color strings like `"#808080"` or `"lightblue"`. Exa
 - `["save_revealed_tiles"]`: Save the current state of the revealed tiles (e.g. dora indicators).
 - `["load_revealed_tiles"]`: Load the previously saved state of the revealed tiles (e.g. dora indicators).
 - `["merge_draw"]`: Move the draw into the hand. This action will be removed in the future in favor of `"move_tiles"`.
-- `["delete_tiles", tile1, tile2, ...]`: Delete every instance of the given tiles from the current player's hand/draw.
 - `["pass_draws", seat_spec, num]`: Move up to `num` tiles from the current player's draw to the given seat's draw. This action will be removed in the future in favor of `"move_tiles"`.
 - `["saki_start"]`: Prints some messages about what cards each player chose, and triggers the `after_saki_start` event.
 - `["modify_winner", key, value, method]`: Only available in `"after_win"`, which runs on every win. Replaces the one of the following possible properties of the current winner after their points have been calculated. Example: `["modify_winner", "score_name", "Mangan"]`. This will only affect the win screen; to modify the final payouts, see the next action `"modify_payout"`.
@@ -892,6 +896,7 @@ Prepend `"not_"` to any of the condition names to negate it.
 - `"won_by_call"`: The winner won by stealing a called tile.
 - `"won_by_draw"`: The winner won by drawing the winning tile.
 - `"won_by_discard"`: The winner won by stealing the discard tile.
+- `{"name": "minipoints_equals", "opts": [fu]}`: The winning player has the given amount of minipoints.
 - `{"name": "has_yaku_with_hand", "opts": [han]}`: Using the current player's draw as the winning tile, the current player's hand scores at least `han` points using the yaku in `.score_calculation.yaku_lists`. Example: `{"name": "has_yaku_with_hand", "opts": [1]}`
 - `{"name": "has_yaku_with_discard", "opts": [han]}`: Using the last discard as the winning tile, the current player's hand scores at least `han` points using the yaku in `.score_calculation.yaku_lists`. Example: `{"name": "has_yaku_with_discard", "opts": [1]}`
 - `{"name": "has_yaku_with_call", "opts": [han]}`: Using the last called tile as the winning tile, the current player's hand scores at least `han` points using the yaku in `.score_calculation.yaku_lists`. Example: `{"name": "has_yaku_with_call", "opts": [1]}`
@@ -1029,7 +1034,7 @@ In addition, a couple selectors allow you to select _multiple_ targets. For exam
 
 - `"aside_unique"`: selects each player's aside tile individually.
 - `"all_last_discards"`: selects the last discard for each player.
-- `"any_discard"`: selects each player's discarded tile individually (includes called discards).
+- `"any_discard"`: selects each of the current player's discarded tiles individually (includes called discards).
 - `"others_discards"`: selects each player's discarded tile individually (includes called discards), excluding the current player's pond.
 - `"any_visible_tile"`: selects each tile visible to the current player individually.
 - `"hand_any"`: selects each tile in hand individually. Does not include the draw.
