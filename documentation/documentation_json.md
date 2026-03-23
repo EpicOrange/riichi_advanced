@@ -927,8 +927,8 @@ Prepend `"not_"` to any of the condition names to negate it.
 - `{"name": "seat_is", "opts": [direction]}`: The current player's seat wind is the specified direction, one of `"east"`, `"south"`, `"west"`, `"north"`.
 - `{"name": "winning_dora_count", "opts": [dora_indicator, num]}`: The current player has `num` dora tiles of the given dora indicator.
 - `{"name": "match", "opts": [to_match, [match_spec1, match_spec2, ...]]}`: See the [section on match specifications](#the-match-condition-and-match-specifications) to see how this condition works.
-- `{"name": "winning_hand_consists_of", "opts": [tile1, tile2, ...]}`: The winning hand (excluding winning tile) contains only the given tiles (jokers allowed).
-- `{"name": "winning_hand_and_tile_consists_of", "opts": [tile1, tile2, ...]}`: The winning hand (including winning tile) contains only the given tiles (jokers allowed).
+- `{"name": "winning_hand_consists_of", "opts": [tile1, tile2, ...]}`: The winning hand (including winning tile) contains only the given tiles (jokers allowed).
+- `{"name": "winning_hand_not_tile_consists_of", "opts": [tile1, tile2, ...]}`: The winning hand (excluding winning tile) contains only the given tiles (jokers allowed).
 - `"all_saki_cards_drafted"`: Everyone has at least one saki card.
 - `{"name": "has_existing_yaku", "opts": [yaku1, yaku2, ...]}`: Used in `meta_yaku` only. The winner has scored all of the given yaku.
 - `"has_no_yaku"`: Used in `meta_yaku` only. The winner has scored no yaku.
