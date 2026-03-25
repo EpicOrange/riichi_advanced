@@ -58,8 +58,8 @@ define_set haku_pair, ~s"5z 5z"
 define_set hatsu_pair, ~s"6z 6z"
 define_set chun_pair, ~s"7z 7z"
 define_set chuurenpoutou, ~s"0 0 0 1 2 3 4 5 6 7 8 8 8"
-define_set fly, ~s"2y:1"
-define_set four_fly, ~s"2y:4"
+define_set fei, ~s"2y:1"
+define_set four_fei, ~s"2y:4"
 
 define_match standard_tenpai, ~m"exhaustive, pair:1, mentsu:3, taatsu:1 | exhaustive, mentsu:4, any:1"
 define_match chiitoitsu_tenpai, ~m"(nojoker koutsu):-1, pair:6"
@@ -92,8 +92,8 @@ define_yaku yaku, "North Wind", [1, "Fan"], match(["hand", "calls", "winning_til
 define_yaku yaku, "Seat Wind", [1, "Fan"], seat_is("east") and match(["flowers"], ~m"ton:1")
 define_yaku yaku, "Seat Wind", [1, "Fan"], seat_is("south") and match(["flowers"], ~m"nan:1")
 define_yaku yaku, "Seat Wind", [1, "Fan"], seat_is("west") and match(["flowers"], ~m"shaa:1")
-define_yaku yaku, "Fly", ["declared_fly", "Fan"], declared_fly >= 1
-define_yaku yaku, "Four Fly", [10, "Fan"], fly >= 4
+define_yaku yaku, "Fei", ["declared_fei", "Fan"], declared_fei >= 1
+define_yaku yaku, "Four Fei", [10, "Fan"], fei >= 4
 define_yaku yaku, "No Flowers", [10, "Fan"], not_match(["flowers"], ~m"unique, nojoker, (1f 2f 3f 4f 1g 2g 3g 4g 1a 2a 3a 4a 1y):1")
 
 define_yaku yaku, "White Dragon", [1, "Fan"], match(["hand", "calls", "winning_tile"], ~m"haku:1")
@@ -221,54 +221,61 @@ on after_start do
   set_tile_alias_all(["2y"], ["any"])
 end
 
-def count_fly do
+def count_fei do
   as everyone do
-    if fly == 0 do
+    if fei == 0 do
       add_attr_first_tile("2y", ["revealed"])
       add_attr_first_tile("2y", ["revealed"])
       add_attr_first_tile("2y", ["revealed"])
       add_attr_first_tile("2y", ["revealed"])
-      set_counter("fly", "count_matches", ["hand", "calls"], ~m"nojoker, 2y:1")
+      set_counter("fei", "count_matches", ["hand", "calls"], ~m"nojoker, 2y:1")
     end
   end
 end
 
-def pay_for_fly do
+def pay_for_fei do
   if shimocha_exists do add_score("$amt"); subtract_score("$amt", "shimocha") end
   if toimen_exists do add_score("$amt"); subtract_score("$amt", "shimocha") end
   if kamicha_exists do add_score("$amt"); subtract_score("$amt", "shimocha") end
-  if fly >= 2 and shimocha_exists do add_score("$amt"); subtract_score("$amt", "shimocha") end
-  if fly >= 2 and toimen_exists do add_score("$amt"); subtract_score("$amt", "toimen") end
-  if fly >= 2 and kamicha_exists do add_score("$amt"); subtract_score("$amt", "kamicha") end
-  if fly >= 3 and shimocha_exists do add_score("$amt"); subtract_score("$amt", "shimocha") end
-  if fly >= 3 and toimen_exists do add_score("$amt"); subtract_score("$amt", "toimen") end
-  if fly >= 3 and kamicha_exists do add_score("$amt"); subtract_score("$amt", "kamicha") end
-  if fly >= 4 and shimocha_exists do add_score("$amt"); subtract_score("$amt", "shimocha") end
-  if fly >= 4 and toimen_exists do add_score("$amt"); subtract_score("$amt", "toimen") end
-  if fly >= 4 and kamicha_exists do add_score("$amt"); subtract_score("$amt", "kamicha") end
+  if fei >= 2 and shimocha_exists do add_score("$amt"); subtract_score("$amt", "shimocha") end
+  if fei >= 2 and toimen_exists do add_score("$amt"); subtract_score("$amt", "toimen") end
+  if fei >= 2 and kamicha_exists do add_score("$amt"); subtract_score("$amt", "kamicha") end
+  if fei >= 3 and shimocha_exists do add_score("$amt"); subtract_score("$amt", "shimocha") end
+  if fei >= 3 and toimen_exists do add_score("$amt"); subtract_score("$amt", "toimen") end
+  if fei >= 3 and kamicha_exists do add_score("$amt"); subtract_score("$amt", "kamicha") end
+  if fei >= 4 and shimocha_exists do add_score("$amt"); subtract_score("$amt", "shimocha") end
+  if fei >= 4 and toimen_exists do add_score("$amt"); subtract_score("$amt", "toimen") end
+  if fei >= 4 and kamicha_exists do add_score("$amt"); subtract_score("$amt", "kamicha") end
 end
 
 on before_win do
   set_counter("faces", "count_matches", ["flowers"], ~m"nojoker, 1y:1")
   set_counter("animals", "count_matches", ["flowers"], ~m"nojoker, (1a 2a 3a 4a):1")
-  count_fly
+  count_fei
   as everyone do
-    if fly >= 1 do
-      pay_for_fly(%{amt: 50})
-      if fly == 1 do push_message("is paid 50 from all players for having 1 fly tile") end
-      if fly == 2 do push_message("is paid 100 from all players for having 2 fly tiles") end
-      if fly == 3 do push_message("is paid 150 from all players for having 3 fly tiles") end
-      if fly == 4 do push_message("is paid 200 from all players for having 4 fly tiles") end
+    if fei >= 1 do
+      pay_for_fei(%{amt: 50})
+      cond do
+        fei == 1 -> push_message("is paid 50 from all players for having 1 fei joker")
+        fei == 2 -> push_message("is paid 100 from all players for having 2 fei jokers")
+        fei == 3 -> push_message("is paid 150 from all players for having 3 fei jokers")
+        fei == 4 -> push_message("is paid 200 from all players for having 4 fei jokers")
+      end
     end
   end
 end
 
 on before_exhaustive_draw do
-  count_fly
+  count_fei
   as everyone do
-    if fly >= 1 do
-      pay_for_fly(%{amt: 50})
-      push_message("is paid 50 from all players for each of their fly tiles")
+    if fei >= 1 do
+      pay_for_fei(%{amt: 50})
+      cond do
+        fei == 1 -> push_message("is paid 50 from all players for having 1 fei joker")
+        fei == 2 -> push_message("is paid 100 from all players for having 2 fei jokers")
+        fei == 3 -> push_message("is paid 150 from all players for having 3 fei jokers")
+        fei == 4 -> push_message("is paid 200 from all players for having 4 fei jokers")
+      end
     end
   end
 end
@@ -293,7 +300,7 @@ define_button start_flower,
   end
 
 define_button start_joker,
-  display_name: "Reveal fly",
+  display_name: "Reveal fei",
   show_when: status("match_start") and our_turn and match(["hand", "draw"], ~m"nojoker, 2y:1"),
   unskippable: true
   do
@@ -427,8 +434,8 @@ define_button ron,
     big_text("Wu")
     pause(1000)
     reveal_hand
-    # WARNING!: this double-counts the number of fly jokers used by the winner, since this same counter is used in before_win.
-    add_counter("fly", "count_matches", ["hand", "calls", "last_discard"], ~m"nojoker, 2y:1")
+    # WARNING!: this double-counts the number of fei jokers used by the winner, since this same counter is used in before_win.
+    add_counter("fei", "count_matches", ["hand", "calls", "last_discard"], ~m"nojoker, 2y:1")
     win_by_discard("win")
   end
 
@@ -443,8 +450,8 @@ define_button chankan,
     big_text("Wu")
     pause(1000)
     reveal_hand
-    # WARNING!: this double-counts the number of fly jokers used by the winner, since this same counter is used in before_win.
-    add_counter("fly", "count_matches", ["hand", "calls", "last_called_tile"], ~m"nojoker, 2y:1")
+    # WARNING!: this double-counts the number of fei jokers used by the winner, since this same counter is used in before_win.
+    add_counter("fei", "count_matches", ["hand", "calls", "last_called_tile"], ~m"nojoker, 2y:1")
     win_by_call("win")
   end
 
@@ -459,23 +466,23 @@ define_button tsumo,
     big_text("Wu")
     pause(1000)
     reveal_hand
-    # WARNING!: this double-counts the number of fly jokers used by the winner, since this same counter is used in before_win.
-    add_counter("fly", "count_matches", ["hand", "calls", "draw"], ~m"nojoker, 2y:1")
+    # WARNING!: this double-counts the number of fei jokers used by the winner, since this same counter is used in before_win.
+    add_counter("fei", "count_matches", ["hand", "calls", "draw"], ~m"nojoker, 2y:1")
     win_by_draw("win")
   end
 
-define_button four_fly,
-  display_name: "Four Fly Win",
+define_button four_fei,
+  display_name: "Four Fei Win",
   precedence_over: ["chii", "pon", "kan", "daiminkan", "ankan", "kakan"],
   show_when: our_turn
     and status("match_start")
     and match(["hand", "calls", "draw"], ~m"nojoker, 2y:4")
   do
-    big_text("Four Fly")
+    big_text("Four Fei")
     pause(1000)
     reveal_hand
-    # WARNING!: this double-counts the number of fly jokers used by the winner, since this same counter is used in before_win.
-    add_counter("fly", 4)
+    # WARNING!: this double-counts the number of fei jokers used by the winner, since this same counter is used in before_win.
+    add_counter("fei", 4)
     win_by_draw("win")
   end
 
@@ -492,7 +499,7 @@ define_button flower,
       or (match(["call_choice"], ~m"nojoker, (1g 2g 3g 4g):1") and match(["call_choice"], ~m"nojoker, (1g 2g 3g 4g):4"))
       or (match(["call_choice"], ~m"nojoker, (1a 2a 3a 4a):1") and match(["call_choice"], ~m"nojoker, (1a 2a 3a 4a):4"))
       or (match(["call_choice"], ~m"nojoker, 1y:1") and match(["call_choice"], ~m"nojoker, 1y:4")) do
-      push_message("is paid 50 from all players for completing a set of flowers before the first turn")
+      push_message("is paid 50 from all players for completing a set of flowers")
       if shimocha_exists do add_score(50); subtract_score(50, "shimocha"); big_text("  -50  ", as: "shimocha") end
       if toimen_exists do add_score(50); subtract_score(50, "toimen"); big_text("  -50  ", as: "toimen") end
       if kamicha_exists do add_score(50); subtract_score(50, "kamicha"); big_text("  -50  ", as: "kamicha") end
@@ -506,17 +513,17 @@ define_button flower,
   end
 
 define_button joker,
-  display_name: "Fly",
+  display_name: "Fei",
   show_when: our_turn
     and status_missing("match_start")
     and not_just_discarded
     and has_draw
     and match(["hand", "draw"], ~m"nojoker, 2y:1")
   do
-    big_text("Fly")
+    big_text("Fei")
     flower("2y")
     set_status("flower")
-    declared_fly += 1
+    declared_fei += 1
     if no_tiles_remaining do
       advance_turn
     else
@@ -580,77 +587,92 @@ set four_rows_discards, true
 set max_rounds, 16
 
 # mods
-set default_mods, ["malaysian_five_point_minimum", "malaysian_replaceable_fly_joker", "show_waits"]
+set default_mods, ["malaysian_five_point_minimum", "malaysian_replaceable_fei_joker", "show_waits"]
 define_mod_category "Malaysian"
 define_mod malaysian_five_point_minimum, name: "Five Fan Minimum", desc: "Only allow wins worth 5+ fan."
-define_mod malaysian_replaceable_fly_joker, name: "Replaceable Fly Joker", desc: "Allow swapping out fly jokers from your own pungs using the same tile."
+define_mod malaysian_replaceable_fei_joker, name: "Replaceable Fei Joker", desc: "Allow swapping out fei jokers from your own pungs using the same tile."
 
 on after_initialization do
   add_rule("Tiles", "Tiles", "Malaysian uses the following 84 tiles:", -100)
   add_rule("Tiles", "Tiles", "- Four each of the 1 to 9 of Dots %{pinzu}", %{pinzu: ["1p", "2p", "3p", "4p", "5p", "6p", "7p", "8p", "9p"]})
-  add_rule("Tiles", "Tiles", "- Four each of the four Winds (East, South, West, North) %{winds}", %{winds: ["1z", "2z", "3z", "4z"]})
-  add_rule("Tiles", "Tiles", "- Four each of the three Dragons (White, Green, Red) %{dragons}", %{dragons: ["8z", "6z", "7z"]})
-  add_rule("Tiles", "Tiles", "- Four Face tiles %{faces}", %{faces: ["1y", "1y", "1y", "1y"]})
-  add_rule("Tiles", "Tiles", "- Four Animal tiles %{animals}", %{animals: ["1a", "2a", "3a", "4a"]})
-  add_rule("Tiles", "Tiles", "- Four Flower tiles, numbered from 1 to 4 %{flowers}", %{flowers: ["1f", "2f", "3f", "4f"]})
-  add_rule("Tiles", "Tiles", "- Four Season tiles, numbered from 1 to 4 %{seasons}", %{seasons: ["1g", "2g", "3g", "4g"]})
-  add_rule("Tiles", "Tiles", "- Four Fei Jokers %{feis}", %{feis: ["2y", "2y", "2y", "2y"]})
-  add_rule("Tiles", "Flowers", "The Face, Animal, Flower, and Season tiles are all considered flower tiles.")
-  add_rule("Tiles", "Flowers", "When a player draws any of these tiles, they expose it to the table, set it aside, and draw a replacement tile from the back end of the wall.")
-  add_rule("Tiles", "Fei Joker", "The Fei Joker can stand for any tile.")
-  add_rule("Tiles", "Fei Joker", "You can use two Fei Jokers in a called Pong, and one Fei joker in a called Chow. Fei jokers cannot be used in a Gong.")
-  add_rule("Tiles", "Fei Joker", "Fei Jokers may also be declared as flowers.")
+  add_rule("Tiles", "Tiles", "- Four each of the four Winds (East, South, West, North) %{winds}", %{winds: ~t"1234z"})
+  add_rule("Tiles", "Tiles", "- Four each of the three Dragons (White, Green, Red) %{dragons}", %{dragons: ~t"867z"})
+  add_rule("Tiles", "Tiles", "- Four Face tiles %{faces}", %{faces: ~t"1111y"})
+  add_rule("Tiles", "Tiles", "- Four Animal tiles %{animals}", %{animals: ~t"1234a"})
+  add_rule("Tiles", "Tiles", "- Four Flower tiles, numbered from 1 to 4 %{flowers}", %{flowers: ~t"1234f"})
+  add_rule("Tiles", "Tiles", "- Four Season tiles, numbered from 1 to 4 %{seasons}", %{seasons: ~t"1234g"})
+  add_rule("Tiles", "Tiles", "- Four Fei Jokers %{feis}", %{feis: ~t"2222y"})
+  add_rule("Tiles", "Flowers", "The Face, Animal, Flower, and Season tiles %{flowers} are all considered flower tiles. Their scoring is detailed in the Flowers tab. You also receive a bonus if you declare a set of 4 flowers, see the Rules tab for more details.", %{flowers: ~t"1234f1234g1234a1111y"})
+  add_rule("Tiles", "Fei Joker", "The Fei Joker %{fei} is a wildcard that can stand for any tile. They may also be declared as flowers by pressing the Fei button.", %{fei: ~t"2y"})
+  add_rule("Tiles", "Fei Joker", "You can use up to two Fei Jokers in a called Pong, and one Fei joker in a called Chow. Fei jokers cannot be used in a Gong.")
+  add_rule("Tiles", "Fei Joker", "At the end of each round, each player counts the number of Fei jokers in each hand, and recieves a side payment of 50 from each player for each Fei joker they have.")
 
   add_rule("Rules", "Win Condition", "You may win with one of the following:", -102)
   add_rule("Rules", "Win Condition", "- Four sets (sequences or triplets) and a pair.")
   add_rule("Rules", "Win Condition", "- (Seven Pairs) Seven distinct pairs.")
-  add_rule("Rules", "Win Condition", "- (Four Fly) Your starting hand contains four Fei Jokers")
+  add_rule("Rules", "Win Condition", "- (Four Fei) Your starting hand contains four Fei Jokers.")
+  add_rule("Rules", "Flowers", "Before each round, each player reveals all their flowers, replaces each with a tile from the wall, and repeats this until they have no flower tiles left.", -101)
+  add_rule("Rules", "Flowers", "If you reveal a set of four flowers (%{t1}, %{t2}, %{t3}, or %{t4}) at this stage, then you are immediately paid 100 from each player.", %{t1: ~t"1234f", t2: ~t"1234g", t3: ~t"1234a", t4: ~t"1111y"})
+  add_rule("Rules", "Flowers", "During a round, if a player draws a flower they may replace it with a tile from the wall in the same manner. This is done automatically, but you can turn off this behavior by pressing the F button at the bottom.")
+  add_rule("Rules", "Flowers", "If you complete a set of four flowers (%{t1}, %{t2}, %{t3}, or %{t4}) after the initial flower declaration round, then you are immediately paid 50 from each player.", %{t1: ~t"1234f", t2: ~t"1234g", t3: ~t"1234a", t4: ~t"1111y"})
   add_rule("Rules", "Chow", "When the player to your left discards a tile you can use to complete a 3 tile sequence, you may call Chow to take that tile instead of drawing.")
   add_rule("Rules", "Pong", "When any player discards a tile you can use to complete a triplet, you may call Pong to take that tile. Then it becomes your turn to discard.")
-  add_rule("Rules", "Gong", "You may declare Gong to set aside four tiles in three situations:")
-  add_rule("Rules", "Gong", "- (open) If you have three of a kind, you can claim the fourth if someone discarded it.")
-  add_rule("Rules", "Gong", "- (added) If you previously called Pong, you can add the fourth tile to it but only if you draw the tile yourself.")
-  add_rule("Rules", "Gong", "- (concealed) If you have four of a kind, you can declare them as a Concealed Gong.")
-  add_rule("Rules", "Gong", "- In each case, you must then draw a replacement tile from the back of the wall.")
+  add_rule("Rules", "Gong", "You may declare Gong to set aside four tiles in three situations:", -100)
+  add_rule("Rules", "Gong", "- (Open) If you have three of a kind, you can claim the fourth if someone discarded it. This awards you an instant payment of 100 from the discarder.")
+  add_rule("Rules", "Gong", "- (Added) If you previously called Pong, you can add the fourth tile to it but only if you draw the tile yourself. This awards you an instant payment of 50 from each player.")
+  add_rule("Rules", "Gong", "- (Concealed) If you have four of a kind, you can declare them as a Concealed Gong. This awards you an instant payment of 100 from each player.")
+  add_rule("Rules", "Gong", "In each case, you must then draw a replacement tile from the back of the wall.")
+  add_rule("Rules", "Gong", "Note that Fei jokers cannot be used in Gongs.")
+  add_rule("Rules", "Fei Joker as Flower", "Fei Jokers may also be declared as flowers by pressing the Fei button.")
+  cond do
+    seat_is("east")  -> add_rule("Flowers", "Flower tiles", "You get 1 Fan for having the flower tile whose number matches your seat %{tile}, and 1 bonus Fan for having all four %{tiles}.", %{tile: ~t"1f", tiles: ~t"1234f"}, -10)
+    seat_is("south") -> add_rule("Flowers", "Flower tiles", "You get 1 Fan for having the flower tile whose number matches your seat %{tile}, and 1 bonus Fan for having all four %{tiles}.", %{tile: ~t"2f", tiles: ~t"1234f"}, -10)
+    seat_is("west")  -> add_rule("Flowers", "Flower tiles", "You get 1 Fan for having the flower tile whose number matches your seat %{tile}, and 1 bonus Fan for having all four %{tiles}.", %{tile: ~t"3f", tiles: ~t"1234f"}, -10)
+  end
+  cond do
+    seat_is("east")  -> add_rule("Flowers", "Season tiles", "You get 1 Fan for having the season tile whose number matches your seat %{tile}, and 1 bonus Fan for having all four %{tiles}.", %{tile: ~t"1g", tiles: ~t"1234g"}, -9)
+    seat_is("south") -> add_rule("Flowers", "Season tiles", "You get 1 Fan for having the season tile whose number matches your seat %{tile}, and 1 bonus Fan for having all four %{tiles}.", %{tile: ~t"2g", tiles: ~t"1234g"}, -9)
+    seat_is("west")  -> add_rule("Flowers", "Season tiles", "You get 1 Fan for having the season tile whose number matches your seat %{tile}, and 1 bonus Fan for having all four %{tiles}.", %{tile: ~t"3g", tiles: ~t"1234g"}, -9)
+  end
+  add_rule("Flowers", "Flower tiles", "You also get 1 Fan for having the number 4 flower tile %{four}, and 1 Fan for having the the number 1 flower tile %{tile}. If you are East, this stacks with the seat flower's 1 Fan.", %{four: ~t"4f", tile: ~t"1f"})
+  add_rule("Flowers", "Season tiles", "You also get 1 Fan for having the number 4 season tile %{four}, and 1 Fan for having the number 1 season tile %{tile}. If you are East, this stacks with the seat season's 1 Fan.", %{four: ~t"4g", tile: ~t"1g"})
+  add_rule("Flowers", "Animal tiles", "You get 1 Fan per animal tile %{tile}, and 1 bonus Fan for having all four %{tiles}. Unlike flower and season tiles, all four animal tiles are treated the same.", %{tile: ~t"1a", tiles: ~t"1234a"})
+  add_rule("Flowers", "Face tiles", "You get 1 Fan per face tile %{tile}, and 1 bonus Fan for having all four %{tiles}.", %{tile: ~t"1y", tiles: ~t"1111y"})
+  add_rule("Flowers", "Fei Jokers", "You get 1 Fan per Fei Joker you've declared as a flower %{tile}. If you declare all four %{tiles}, you instantly win with 10 Fan (!)", %{tile: ~t"2y", tiles: ~t"2222y"})
+  add_rule("Flowers", "After a Flower", "You get 1 Fan for winning off the replacement draw after you declare a flower.")
+  add_rule("Flowers", "No Flowers", "You get 10 Fan (!) if you have no flowers at all.")
+  add_rule("Flowers", "All Sixteen Flowers", "You get 10 Fan (!) if you have all sixteen flowers (all four flowers, all four seasons, all four animals, and all four faces).")
+  add_rule("Flowers", "All Sixteen Flowers", "%{tiles}", %{tiles: ~t"1234f1234g1234a1111y"})
 
-  add_rule("1 Fan (Flowers)", "Face", "You get 1 Fan per Face tile.")
-  add_rule("1 Fan (Flowers)", "All Faces", "You get 1 additional Fan if you have all four Face tiles.")
-  add_rule("1 Fan (Flowers)", "Animal", "You get 1 Fan per Animal tile.")
-  add_rule("1 Fan (Flowers)", "All Animals", "You get 1 additional Fan if you have all four Animal tiles.")
-  add_rule("1 Fan (Flowers)", "Seat Flower", "You get 1 Fan for having a flower whose number matches your seat (1=east, 2=south, 3=west)")
-  add_rule("1 Fan (Flowers)", "Four Flower", "You get 1 Fan for having the flower whose number is 4.")
-  add_rule("1 Fan (Flowers)", "All Flowers", "You get 1 additional Fan if you have all four Flower tiles.")
-  add_rule("1 Fan (Flowers)", "Seat Season", "You get 1 Fan for having a season whose number matches your seat (1=east, 2=south, 3=west)")
-  add_rule("1 Fan (Flowers)", "Four Season", "You get 1 Fan for having the season whose number is 4.")
-  add_rule("1 Fan (Flowers)", "All Seasons", "You get 1 additional Fan if you have all four Season tiles.")
-  add_rule("1 Fan (Flowers)", "Fly", "You get 1 Fan for each Fei Joker you've declared as a flower.")
+  add_rule("Fan", "Value Triplets", "You get 1 Fan for each of the following triplets in your hand:")
+  add_rule("Fan", "Value Triplets", "- A triplet of dragon tiles %{dragons}", %{dragons: ~t"777z"})
+  add_rule("Fan", "Value Triplets", "- A triplet of East Winds %{east_wind_triplet}", %{east_wind_triplet: ~t"111z"})
+  add_rule("Fan", "Value Triplets", "- A triplet of North Winds %{north_wind_triplet}", %{north_wind_triplet: ~t"444z"})
+  cond do
+    seat_is("east")  -> add_rule("Fan", "Value Triplets", "- A triplet of winds matching your seat %{seat_winds}", %{seat_winds: ~t"111z"})
+    seat_is("south") -> add_rule("Fan", "Value Triplets", "- A triplet of winds matching your seat %{seat_winds}", %{seat_winds: ~t"222z"})
+    seat_is("west")  -> add_rule("Fan", "Value Triplets", "- A triplet of winds matching your seat %{seat_winds}", %{seat_winds: ~t"333z"})
+  end
+  add_rule("Fan", "Value Triplets", "Note that if you are in East seat, East Winds are counted twice.")
+  add_rule("Fan", "Small Three Dragons", "You get 3 Fan for having two triplets of dragons and a pair of the third.")
 
-  add_rule("1 Fan", "Value Triplets", "You get 1 Fan for each of the following triplets in your hand:")
-  add_rule("1 Fan", "Value Triplets", "- A triplet of dragon tiles %{dragons}", %{dragons: ["7z", "7z", "7z"]})
-  add_rule("1 Fan", "Value Triplets", "- A triplet of East Winds %{east_wind_triplet}", %{east_wind_triplet: ["1z", "1z", "1z"]})
-  add_rule("1 Fan", "Value Triplets", "- A triplet of North Winds %{north_wind_triplet}", %{north_wind_triplet: ["4z", "4z", "4z"]})
-  add_rule("1 Fan", "Value Triplets", "- A triplet of winds matching your seat %{seat_wind_triplet}")
-  add_rule("1 Fan", "Value Triplets", "Note that if you are in East seat, East Winds are counted twice.")
-  add_rule("1 Fan", "Half Flush", "You get 1 Fan if your hand comprises only tiles of one suit, plus honours. (This is always awarded.)")
-  add_rule("1 Fan", "All Sequences With Dot Eye", "You get 1 Fan if your hand comprises four sequences and a pair of dots.")
-  add_rule("1 Fan", "After a Flower", "You get 1 Fan for winning off the replacement draw from declaring a flower.")
-  add_rule("1 Fan", "After a Gong", "You get 1 Fan for winning off the replacement draw from declaring a Gong.")
-  add_rule("1 Fan", "Seven Pairs", "You get 1 Fan if your hand comprises seven different pairs.")
-  add_rule("1 Fan", "Robbing a Gong", "You get 1 Fan for Robbing a Gong.")
-
-  add_rule("2-3 Fan", "Small Three Dragons", "You get 3 Fan for having two triplets of dragons and a pair of the third.")
-  add_rule("2-3 Fan", "Full Flush", "You get 3 Fan if your hand comprises only tiles of one suit, without honours.")
-  add_rule("2-3 Fan", "All Triplets", "You get 2 Fan if your hand comprises four triplets and a pair.")
+  add_rule("Fan", "Half Flush", "You get 1 Fan if your hand has only tiles of one suit, plus honours. This is always awarded.", -10)
+  add_rule("Fan", "Full Flush", "You get 3 Fan if your hand has only tiles of one suit (i.e. you have no honour tiles.)", -9)
+  add_rule("Fan", "All Sequences With Dot Eye", "You get 1 more Fan if you have four sequences and a pair of dots. In practice, this is always a Full Flush hand with no triplets/Gongs.", -8)
+  add_rule("Fan", "All Triplets", "You get 2 Fan if your hand has four triplets and a pair.")
+  add_rule("Fan", "Seven Pairs", "You get 1 Fan if you win by having seven different pairs.")
+  add_rule("Fan", "After a Gong", "You get 1 Fan for winning off the replacement draw after you declare a Gong.")
+  add_rule("Fan", "Robbing a Gong", "You get 1 Fan for robbing a Gong. That is, an opponent tried to add your winning tile to an existing Pong to make a Gong, but you interrupted them by calling that tile to win.")
 
   add_rule("10 Fan", "Nine Gates", "You have no calls; your winning hand is the pattern 1112345678999 in one suit, plus one additional tile; and you won by self-draw.")
   add_rule("10 Fan", "Small Four Winds", "Your hand contains triplets or gongs of three winds, plus a pair of the fourth wind.")
   add_rule("10 Fan", "Big Four Winds", "Your hand contains triplets or kans of all four winds.")
-  add_rule("10 Fan", "No Flowers", "You have no flowers.")
+  add_rule("10 Fan", "No Flowers", "You have no flowers. (Since the wall is 24% flowers, this is extremely rare.)")
   add_rule("10 Fan", "Four Gongs", "You hand contains four Gongs.")
-  add_rule("10 Fan", "Big Three Dragons", "Your hand contains triplets or gongs of all three dragons.")
-  add_rule("10 Fan", "After Multiple Gongs", "You won off the replacement draw after multiple consecutive Gongs.")
+  add_rule("10 Fan", "Big Three Dragons", "Your hand contains triplets or Gongs of all three dragons.")
+  add_rule("10 Fan", "After Multiple Gongs", "You won off the replacement draw after two or more consecutive Gongs.")
   add_rule("10 Fan", "Four Concealed Triplets", "Your hand has four closed triplets in hand, and you won by self-draw.")
-  add_rule("10 Fan", "Four Fly", "You declared four Fei Jokers as flowers.")
+  add_rule("10 Fan", "Four Fei", "You declared four Fei Jokers as flowers. This is also a win condition.")
   add_rule("10 Fan", "Blessing of Heaven", "You won with your initial hand as dealer.")
   add_rule("10 Fan", "Blessing of Earth", "You won with your first draw as non-dealer.")
   add_rule("10 Fan", "Final Tile", "You won by drawing the last tile in the wall.")
