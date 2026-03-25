@@ -3841,19 +3841,11 @@ div#container > input.expand-checkbox + label {
 }
 div#container > input.expand-checkbox.for-rulesets + label {
   right: calc(0.5 * var(--tile-size));
-  top: calc(5.875 * var(--tile-size));
+  top: calc(6 * var(--tile-size));
 }
 div#container > input.expand-checkbox.for-rulesets:checked + label {
-  top: calc(0.375 * var(--tile-size));
+  top: calc(0.5 * var(--tile-size));
 }
-div#container > input.expand-checkbox.for-mods + label {
-  right: calc(0.5 * var(--tile-size));
-  top: calc(4.625 * var(--tile-size));
-}
-div#container > input.expand-checkbox.for-mods:checked + label {
-  right: calc(-0.5 * var(--tile-size));
-  top: calc(0.375 * var(--tile-size));
-} 
 div#container > input.expand-checkbox + label::before { content: "+"; }
 div#container > input.expand-checkbox:checked + label::before { content: "–"; }
 div#container > form,
