@@ -20,13 +20,13 @@ defmodule RiichiAdvanced.GameState.Payment do
   def invert_txn(txn) do
     new_name = case txn.name do
       "From self"   -> "To self"
-      "From right"  -> "To right"
+      "From right"  -> "To left"
       "From across" -> "To across"
-      "From left"   -> "To left"
+      "From left"   -> "To right"
       "To self"     -> "From self"
-      "To right"    -> "From right"
+      "To right"    -> "From left"
       "To across"   -> "From across"
-      "To left"     -> "From left"
+      "To left"     -> "From right"
       name          -> name
     end
     %{txn | name: new_name, line_items: [%{op: :*, amount: -1, result: -get_txn_result(txn), reason: ""} | txn.line_items]}
