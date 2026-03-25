@@ -1,0 +1,5 @@
+# remove the pei button
+apply delete_key, "buttons", "flower"
+
+# remove the pei yaku
+remove_yaku extra_yaku, "Pei"
