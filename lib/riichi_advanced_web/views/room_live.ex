@@ -1,5 +1,6 @@
 defmodule RiichiAdvancedWeb.RoomLive do
   alias RiichiAdvanced.RoomState.Room, as: Room
+  alias RiichiAdvanced.GameState.Rules, as: Rules
   alias RiichiAdvanced.Utils, as: Utils
   use RiichiAdvancedWeb, :live_view
   import RiichiAdvancedWeb.Translations
@@ -219,7 +220,7 @@ defmodule RiichiAdvancedWeb.RoomLive do
       <.live_component module={RiichiAdvancedWeb.MessagesComponent} id="messages" messages={@messages} lang={@lang} />
       <div class="ruleset">
         <div class="ruleset-text"><%= t(@lang, "Ruleset:") %></div>
-        <textarea readonly><%= @state.ruleset_json %></textarea>
+        <textarea readonly><%= Rules.get(@state.rules_ref, :ruleset_json) %></textarea>
       </div>
     </div>
     """

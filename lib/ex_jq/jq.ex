@@ -10,13 +10,13 @@ defmodule JQ do
       args = ["-cf", query_path, file_path]
       case System.cmd("jq", args, stderr_to_stdout: true) do
         {_, code} = error when is_integer(code) and code != 0 ->
-          # IO.puts("Erroring jq code: #{payload}", charlists: :as_lists)
+          # IO.puts("Erroring jq code:")
+          # IO.inspect(payload, limit: :infinity, charlists: :as_lists)
           raise(SystemCmdException, result: error, command: "jq", args: args)
 
-        {value, code} when is_integer(code) and code == 0 ->
-          result = value
+        {result, code} when is_integer(code) and code == 0 ->
           unless result, do: raise(NoResultException)
-          RiichiAdvanced.Formatter.format(Jason.decode!(result), 80)
+          result
         error ->
           raise(UnknownException, error)
       end

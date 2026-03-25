@@ -1,4 +1,5 @@
 defmodule RiichiAdvancedWeb.TutorialMenuLive do
+  alias RiichiAdvanced.GameState.Rules, as: Rules
   alias RiichiAdvanced.LobbyState, as: LobbyState
   alias RiichiAdvanced.LobbyState.Lobby, as: Lobby
   alias RiichiAdvanced.Constants, as: Constants
@@ -19,25 +20,20 @@ defmodule RiichiAdvancedWeb.TutorialMenuLive do
     |> assign(:available_tutorials, Map.get(Constants.tutorials(), params["ruleset"], []))
     |> assign(:clicked_index, nil)
 
-    ruleset_json = ModLoader.get_ruleset_json(socket.assigns.ruleset)
-    socket = assign(socket, :ruleset_json, ruleset_json)
-
-    # parse the ruleset to get its display name
-    rules = try do
-      case Jason.decode(RiichiAdvanced.ModLoader.strip_comments(ruleset_json)) do
-        {:ok, rules} -> rules
-        {:error, err} ->
+    ruleset_json = ModLoader.get_ruleset_json(socket.assigns.ruleset, nil, true)
+    rules_ref =
+      case Rules.load_rules(ruleset_json, socket.assigns.ruleset) do
+        {:ok, rules_ref} -> rules_ref
+        {:error, msg}    ->
           IO.puts("Erroring json:")
           IO.inspect(ruleset_json)
-          IO.puts("WARNING: Failed to read ruleset file at character position #{err.position}!\nRemember that trailing commas are invalid!")
-          %{}
+          IO.puts(msg)
+          nil
       end
-    rescue
-      ArgumentError -> 
-        IO.puts("WARNING: Ruleset \"#{socket.assigns.ruleset_json}\" doesn't exist!")
-        %{}
-    end
-    socket = assign(socket, :display_name, Map.get(rules, "display_name", socket.assigns.display_name))
+    socket = assign(socket, :rules_ref, rules_ref)
+
+    # parse the ruleset to get its display name
+    socket = assign(socket, :display_name, Rules.get(rules_ref, "display_name", socket.assigns.display_name))
 
     messages_init = RiichiAdvanced.MessagesState.link_player_socket(socket.root_pid, socket.assigns.session_id)
     socket = if Map.has_key?(messages_init, :messages_state) do
@@ -90,7 +86,7 @@ defmodule RiichiAdvancedWeb.TutorialMenuLive do
       <.live_component module={RiichiAdvancedWeb.MessagesComponent} id="messages" messages={@messages} lang={@lang} />
       <div class="ruleset">
         <div class="ruleset-text"><%= t(@lang, "Ruleset:") %></div>
-        <textarea readonly><%= @ruleset_json %></textarea>
+        <textarea readonly><%= Rules.get(@rules_ref, :ruleset_json) %></textarea>
       </div>
     </div>
     """

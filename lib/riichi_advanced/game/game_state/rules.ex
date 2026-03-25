@@ -47,7 +47,7 @@ defmodule RiichiAdvanced.GameState.Rules do
     {:ok, rules}
   end
 
-  def load_rules(ruleset_json, ruleset) do
+  def load_rules(ruleset_json, ruleset \\ "unknown") do
     with {:ok, rules} <- decode_ruleset_json(ruleset_json, ruleset),
          {:ok, rules} <- replace_constants(rules),
          {:ok, rules} <- check_rules(rules) do
@@ -59,7 +59,7 @@ defmodule RiichiAdvanced.GameState.Rules do
       end
 
       # add the json
-      :ets.insert(rules_ref, {:ruleset_json, ruleset_json})
+      :ets.insert(rules_ref, {:ruleset_json_unformatted, ruleset_json})
 
       # yaku list names in yaku_precedence add all yaku of specified yaku lists
       yaku_precedence = get(rules_ref, "yaku_precedence")
@@ -108,6 +108,18 @@ defmodule RiichiAdvanced.GameState.Rules do
 
   def get(rules_ref, key, default \\ nil)
   def get(nil, _key, default), do: default
+  def get(rules_ref, :ruleset_json, _default) do
+    # lazily format the ruleset json, only if requested
+    # (this way we don't waste time formatting json during tests)
+    case :ets.lookup(rules_ref, :ruleset_json) do
+      [{:ruleset_json, ruleset_json}] -> ruleset_json
+      _ ->
+        [{_, ruleset_json_unformatted}] = :ets.lookup(rules_ref, :ruleset_json_unformatted)
+        ruleset_json = RiichiAdvanced.Formatter.format(Jason.decode!(ruleset_json_unformatted), 80)
+        :ets.insert(rules_ref, {:ruleset_json, ruleset_json})
+        ruleset_json
+    end
+  end
   def get(rules_ref, key, default) do
     try do
       case :ets.lookup(rules_ref, key) do

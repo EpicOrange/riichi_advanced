@@ -50,7 +50,7 @@ defmodule RiichiAdvanced.Formatter do
     |> Enum.map(&Enum.join(Enum.reverse(&1), ", "))
   end
 
-  @spec format(any()) :: binary()
+  @spec format(binary(), integer()) :: binary()
   def format(str, line_width \\ 10) do
     _format(%{spaces: 0, line_width: line_width}, str)
   end
