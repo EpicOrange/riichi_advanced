@@ -353,11 +353,9 @@ defmodule RiichiAdvanced.GameState.ScoringOld do
         {basic_score, _, _, _} = score_yaku(state, winner.seat, yaku, yaku2, is_dealer, true, winner.minipoints)
         tsumo_delta_scores = calculate_delta_scores_tsumo(state, winner, basic_score, is_dealer)
         # apply mult and penalty to tsumo_delta_scores
-        IO.inspect(winner.seat)
         tsumo_delta_scores = for seat <- [winner.seat], reduce: tsumo_delta_scores do
           delta_scores -> Map.update!(delta_scores, winner.seat, & (&1 * mult)) |> IO.inspect()
         end
-        IO.inspect(tsumo_delta_scores)
         tsumo_delta_scores = for seat <- winner.opponents, reduce: tsumo_delta_scores do
           delta_scores -> delta_scores |> Map.update!(seat, & (&1 * mult) - penalty) |> Map.update!(winner.seat, & (&1) + penalty) 
         end

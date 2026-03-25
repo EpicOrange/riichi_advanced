@@ -437,7 +437,7 @@ defmodule RiichiAdvancedWeb.GameLive do
     end
   end
 
-  defp get_button_name(rules_ref, "skip"), do: "Skip"
+  defp get_button_name(_rules_ref, "skip"), do: "Skip"
   defp get_button_name(rules_ref, name) do
     buttons = Rules.get(rules_ref, "buttons", %{})
     get_in(buttons[name]["display_name"]) || "Button"
