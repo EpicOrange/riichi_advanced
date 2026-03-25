@@ -617,7 +617,7 @@ defmodule RiichiAdvanced.GameState.Kyoku do
         end,
         opponents: opponents,
         # hand to show in the yaku screen
-        arranged_hand: Utils.sort_tiles(cxt.smt_hand -- [cxt.winning_tile], cxt.joker_assignment),
+        arranged_hand: Utils.sort_tiles(orig_hand -- [cxt.winning_tile], cxt.joker_assignment),
         arranged_calls: orig_calls,
         # hand to show on hover in the yaku screen
         separated_hand: separate_standard_winner_hand(
