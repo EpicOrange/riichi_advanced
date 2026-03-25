@@ -14,7 +14,7 @@ defmodule RiichiAdvanced.YakuTest.KansaiYaku do
     "double_wind_4_fu",
     "pao",
     "kokushi_ankan_chankan",
-    "sanma_no_tsumo_loss",
+    %{name: "sanma_no_tsumo_loss", config: %{"method" => "half"}},
     "suukaikan",
     "kyuushu_kyuuhai",
     # %{name: "dora", config: %{start_indicators: 1}},

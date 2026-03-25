@@ -15,7 +15,7 @@ defmodule RiichiAdvanced.YakuTest.KansaiZanYaku do
     "double_wind_4_fu",
     "kokushi_ankan_chankan",
     "first_gets_riichi_sticks",
-    "sanma_no_tsumo_loss",
+    %{name: "sanma_no_tsumo_loss", config: %{"method" => "half"}},
     "suufon_renda",
     "suucha_riichi",
     "sanchahou",

@@ -58,9 +58,10 @@ defmodule RiichiAdvanced.RulesetsTest do
       mod_id when is_binary(mod_id) ->
         ret = Enum.find(available_mods, & &1["id"] == mod_id)
         |> add_default_mod_config()
-        if ret == nil do
+        ret = if ret == nil do
           Logger.error("Tried to load mod id #{inspect(mod_id)}, which doesn't exist as an available mod in ruleset #{inspect(ruleset)}")
-        end
+          %{name: mod_id, config: %{}}
+        else ret end
         ret
       %{"name" => id, "config" => config} -> %{name: id, config: config}
     end)
