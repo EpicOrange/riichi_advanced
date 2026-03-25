@@ -121,7 +121,9 @@ defmodule RiichiAdvancedWeb.ScoringTestLive do
           timer={@state.timer}
           visible_screen={@state.visible_screen}
           available_seats={@state.available_seats}
-          txns={@state.txns}/>
+          txns={@state.txns}
+          round_result={:win}
+          />
       </div>
       <div class="top-right-container">
         <.live_component module={RiichiAdvancedWeb.MenuButtonsComponent} id="menu-buttons" lang={@lang} />
@@ -143,7 +145,7 @@ defmodule RiichiAdvancedWeb.ScoringTestLive do
     yaku_assign
     |> Enum.filter(& &1.selected)
     |> Enum.group_by(& &1.list_name)
-    |> Map.new(fn {list_name, yaku} -> {list_name, Enum.map(yaku, &{&1.name, &1.value})} end)
+    |> Enum.flat_map(fn {_list_name, yaku} -> Enum.map(yaku, &{&1.name, &1.value}) end)
   end
   
   def switch_to_ruleset(socket, ruleset) when ruleset != socket.assigns.ruleset do
@@ -227,7 +229,7 @@ defmodule RiichiAdvancedWeb.ScoringTestLive do
   def score_yaku(state, selected_yaku, minipoints) do
     if not Enum.empty?(selected_yaku) do
       score_rules = Rules.get(state.rules_ref, "score_calculation", %{})
-      points = Enum.flat_map(Map.values(selected_yaku), &Enum.map(&1, fn {_name, value} -> value end)) |> Enum.reduce([], &Scoring.add_yaku_values/2)
+      points = Enum.map(selected_yaku, fn {_name, value} -> value end) |> Enum.reduce([], &Scoring.add_yaku_values/2)
       mock_gamestate = %GameState.Game{
         log_loading_mode: true,
         rules_ref: state.rules_ref,
@@ -267,7 +269,7 @@ defmodule RiichiAdvancedWeb.ScoringTestLive do
       |> Map.put(:visible_screen, :scores)
       |> Map.put(:delta_scores, %{east: value, south: -value, west: 0, north: 0})
       |> Map.put(:txns, mock_gamestate.txns)
-    end
+    else state end
   end
 
   def handle_event("back", _assigns, socket) do

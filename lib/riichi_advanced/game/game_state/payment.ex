@@ -125,7 +125,7 @@ defmodule RiichiAdvanced.GameState.Payment do
               points2: Utils.get_from_points_list(new_points, score_rules["point2_name"]),
             }
             # set winner object to cxt, for the purposes of evaluating scoring_logic
-            state = Map.update!(state, :winners, &Map.put(&1, seat, Map.merge(cxt, &1[seat])))
+            state = update_in(state, [Access.key(:winners, %{}), Access.key(seat, %{})], &Map.merge(cxt, &1))
             Actions.run_actions(state, scoring_logic_actions, cxt)
           else
             IO.puts("[WARNING] scoring_logic[#{inspect(cxt.scoring_key)}] is empty!")
