@@ -201,7 +201,9 @@ defmodule RiichiAdvanced.GameState.Buttons do
 
   def press_button(state, seat, button_name) do
     if Enum.member?(state.players[seat].buttons, button_name) do
-      # IO.puts("#{seat} pressed button #{button_name}")
+      if Debug.debug_buttons() do
+        IO.puts("#{seat} pressed button #{button_name}")
+      end
       # hide all buttons, but keep button choices in case they undo
       state = update_player(state, seat, fn player -> %{ player | buttons: [] } end)
       actions = if button_name == "skip" do [] else Rules.get(state.rules_ref, "buttons", %{})[button_name]["actions"] end

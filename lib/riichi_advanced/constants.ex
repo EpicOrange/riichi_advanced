@@ -526,6 +526,9 @@ defmodule RiichiAdvanced.Constants do
     "galaxy" => [
       {"galaxy_basics", "Intro to galaxy mahjong", :west},
       {"galaxy_milky_way", "Milky Way", :south}
+    ],
+    "tianjin" => [
+      {"tianjin_basics", "Intro to Tianjin Mahjong", :south},
     ]
   }
 

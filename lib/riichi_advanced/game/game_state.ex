@@ -613,10 +613,14 @@ defmodule RiichiAdvanced.GameState do
       num_dice = Rules.get(state.rules_ref, "num_dice", 2)
       num_dice = max(2, num_dice)
       num_dice = min(10, num_dice)
-      dice = [
-        Rules.get(state.rules_ref, "die1", :rand.uniform(6)),
-        Rules.get(state.rules_ref, "die2", :rand.uniform(6))
-      ] ++ Enum.map(2..(num_dice - 2)//1, fn _ -> :rand.uniform(6) end)
+      # "starting_dice" debug key
+      dice = case Rules.get(state.rules_ref, "starting_dice") do
+        [die | _] = dice when is_number(die) -> dice
+        _ -> [
+          Rules.get(state.rules_ref, "die1", :rand.uniform(6)),
+          Rules.get(state.rules_ref, "die2", :rand.uniform(6))
+        ] ++ Enum.map(2..(num_dice - 2)//1, fn _ -> :rand.uniform(6) end)
+      end
 
       state = Map.put(state, :dice, dice)
 
@@ -1458,17 +1462,15 @@ defmodule RiichiAdvanced.GameState do
     if not state.block_events or state.forced_events == nil or event in state.forced_events do
       state = Buttons.press_button(state, seat, button_name)
       state = if state.forced_events != nil and event in state.forced_events do
+        if Debug.debug_tutorial() do
+          IO.inspect("Allowed #{inspect(event)}; waiting for #{inspect(state.forced_events)}")
+        end
         state
         |> Map.put(:block_events, true)
         |> Map.put(:forced_events, [])
         |> Map.put(:last_event, event)
         |> broadcast_state_change()
-      else
-        if Debug.debug_tutorial() do
-          IO.inspect("Allowed #{inspect(event)}; waiting for #{inspect(state.forced_events)}")
-        end
-        state
-      end
+      else state end
       {:noreply, state}
     else
       if Debug.debug_tutorial() do
@@ -1588,24 +1590,38 @@ defmodule RiichiAdvanced.GameState do
             send(Map.get(state, state.turn), {:your_turn, params})
           end
         else
-          Enum.each(state.available_seats, fn seat ->
-            has_buttons = not Enum.empty?(state.players[seat].buttons)
-            has_call_buttons = not Enum.empty?(state.players[seat].call_buttons)
-            has_marking_ui = not Enum.empty?(state.marking[seat])
-            last_discard_action = get_last_discard_action(state)
-            last_discard = if last_discard_action != nil do Map.get(last_discard_action, :tile, nil) else nil end
-            if is_pid(Map.get(state, seat)) and has_buttons and not has_call_buttons and not has_marking_ui do
-              # IO.puts("Notifying #{seat} AI about their buttons: #{inspect(state.players[seat].buttons)}")
-              params = %{
-                player: state.players[seat],
-                turn: state.turn,
-                last_discard: last_discard,
-                closest_american_hands: state.players[state.turn].cache.closest_american_hands,
-                open_am_match_definitions: Rules.get(state.rules_ref, "open_win_definition", []),
-              }
-              send(Map.get(state, seat), {:buttons, params})
+          for seat <- state.available_seats, is_pid(Map.get(state, seat)) do
+            # if a button is being forced for this ai, press it (no need to notify ai)
+            seat_str = Atom.to_string(seat)
+            forced_button = if state.forced_events != nil do
+              Enum.find(state.forced_events, fn ["press_button", ^seat_str, _] -> true; _ -> false end)
+            else nil end
+            if forced_button != nil do
+              button_name = Enum.at(forced_button, 2)
+              :timer.apply_after(300, GenServer, :cast, [self(), {:press_button, seat, button_name}])
+              if Debug.debug_tutorial() do
+                IO.puts("Seat #{seat} forced to press #{button_name}")
+              end
+            else
+              # otherwise, tell ai to press a button of their choice
+              has_buttons = not Enum.empty?(state.players[seat].buttons)
+              has_call_buttons = not Enum.empty?(state.players[seat].call_buttons)
+              has_marking_ui = not Enum.empty?(state.marking[seat])
+              last_discard_action = get_last_discard_action(state)
+              last_discard = if last_discard_action != nil do Map.get(last_discard_action, :tile, nil) else nil end
+              if is_pid(Map.get(state, seat)) and has_buttons and not has_call_buttons and not has_marking_ui do
+                # IO.puts("Notifying #{seat} AI about their buttons: #{inspect(state.players[seat].buttons)}")
+                params = %{
+                  player: state.players[seat],
+                  turn: state.turn,
+                  last_discard: last_discard,
+                  closest_american_hands: state.players[state.turn].cache.closest_american_hands,
+                  open_am_match_definitions: Rules.get(state.rules_ref, "open_win_definition", []),
+                }
+                send(Map.get(state, seat), {:buttons, params})
+              end
             end
-          end)
+          end
         end
       else
         :timer.apply_after(1000, GenServer, :cast, [self(), :notify_ai])
