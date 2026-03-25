@@ -1,0 +1,49 @@
+
+replace all, "buttons", ["win_by_draw"], ["win_by_draw", "win"]
+replace all, "buttons", ["win_by_call"], ["win_by_call", "win"]
+
+define_scoring win do
+  total = points :: "Points"
+  total *= points2 :: "Multiplier"
+  set_counter_all("hand_score", "total")
+  # x2 if dealer doubles down
+  # x2 if challenging the dealer
+  # x4 instead if challenging x2
+
+  if seat_is("east", as: "winner") do
+    # dealer won
+    if status("dealer_double_down") do
+      total *= 2 :: "Double Down"
+    end
+    if status("dealer_challenge") do
+      total *= 2 :: "Dealer Challenge"
+    end
+    if status("dealer_challenge_2") do
+      total *= 4 :: "Dealer Challenge x2"
+    end
+  end
+  if seat_is("east") do
+    # dealer is paying
+    if status("dealer_double_down") do
+      total *= 2 :: "Double Down"
+    end
+    if status("dealer_challenge", as: "winner") do
+      total *= 2 :: "Dealer Challenge"
+    end
+    if status("dealer_challenge_2", as: "winner") do
+      total *= 4 :: "Dealer Challenge x2"
+    end
+  end
+end
+
+on after_win do
+  modify_winner("score", "hand_score")
+end
+
+on before_win do
+  as others do
+    as prev_seat do
+      make_responsible_for("prev_seat", "all")
+    end
+  end
+end

@@ -113,7 +113,7 @@ on before_scoring do
     four_triplet_points = four_triplet_points + 26
   end
   # daisangen
-  if match(["hand", "calls", "winning_tile"], ~m"unique, (haku hatsu chun):3") do
+  if match(["hand", "calls", "winning_tile"], ~m"haku:1, hatsu:1, chun:1") do
     four_triplet_points = four_triplet_points + 13
     three_triplet_points = three_triplet_points + 13
   end
@@ -208,7 +208,7 @@ on before_scoring do
   add_counter("mini_sangen", "count_matches", ["hand", "calls", "winning_tile"], ~m"kontsu_567:1")
   multiply_counter("mini_sangen", 0.5)
 end
-define_yaku yaku, "Mini-Sangen", "mini_sangen", counter_at_least("mini_sangen", 0.5)
+define_yaku yaku, "Mini-Sangen", ["mini_sangen", "Han"], counter_at_least("mini_sangen", 0.5)
 
 # handle mixed winds counting
 define_const mixed_winds_groups, [
@@ -281,7 +281,7 @@ on before_scoring do
   mixed_winds = mixed_winds * 0.5
   remove_attr_all("wind", "prevalent", "seat")
 end
-define_yaku yaku, "Mixed Winds", "mixed_winds", counter_at_least("mixed_winds", 0.5)
+define_yaku yaku, "Mixed Winds", ["mixed_winds", "Han"], counter_at_least("mixed_winds", 0.5)
 define_const triplets_fu, [
   %{groups: ~s"0@tanyao 0@tanyao 0@tanyao", value: 4},
   %{groups: ~s"0@yaochuu 0@yaochuu 0@yaochuu", value: 8},
@@ -342,20 +342,21 @@ end
 define_const closed_hand, has_no_call_named("ton", "chii", "chon", "chon_honors", "daiminfuun", "pon", "daiminkan", "kapon", "kakakan", "kafuun", "kakan")
 
 # make sure sequence-based yaku don't take honors kontsu
-replace_yaku yaku, "Ittsuu", 1, match(["hand", "calls", "winning_tile"], ~m"exhaustive, mentsu:1, pair:1, kontsu:-1, ittsuu:1")
-replace_yaku yaku, "Iipeikou", 1, @closed_hand and match(["hand", "calls", "winning_tile"], ~m"exhaustive, mentsu:2, pair:1, kontsu:-1, iipeikou:1")
-replace_yaku yaku, "Isshoku Sanjun", 2, match(["hand", "calls", "winning_tile"], ~m"exhaustive, mentsu:1, pair:1, kontsu:-1, iishoku_sanjun:1")
-replace_yaku yakuman, "Isshoku Yonjun", 1, match(["hand", "calls", "winning_tile"], ~m"exhaustive, kontsu:-1, iishoku_yonjun:1, pair:1")
-replace_yaku yaku, "Ryanpeikou", 1, match(["hand", "calls", "winning_tile"], ~m"exhaustive, pair:1, kontsu:-1, iipeikou:2")
-# rinshan also works with fuun
-replace_yaku yaku, "Rinshan", 1, status("kan") or status("fuun")
+replace_yaku yaku, "Ittsuu", [1, "Han"], match(["hand", "calls", "winning_tile"], ~m"exhaustive, mentsu:1, pair:1, kontsu:-1, ittsuu:1")
+replace_yaku yaku, "Iipeikou", [1, "Han"], @closed_hand and match(["hand", "calls", "winning_tile"], ~m"exhaustive, mentsu:2, pair:1, kontsu:-1, iipeikou:1")
+replace_yaku yaku, "Isshoku Sanjun", [2, "Han"], match(["hand", "calls", "winning_tile"], ~m"exhaustive, mentsu:1, pair:1, kontsu:-1, iishoku_sanjun:1")
+replace_yaku yakuman, "Isshoku Yonjun", [1, "Han"], match(["hand", "calls", "winning_tile"], ~m"exhaustive, kontsu:-1, iishoku_yonjun:1, pair:1")
+replace_yaku yaku, "Ryanpeikou", [1, "Han"], match(["hand", "calls", "winning_tile"], ~m"exhaustive, pair:1, kontsu:-1, iipeikou:2")
 
-define_yaku yaku, "Toikon", 1, match(["hand", "calls", "winning_tile"], ~m"exhaustive, kontsu:4, pair:1")
-define_yaku yaku, "Ryandoukon", 1, @closed_hand and match(["hand", "calls", "winning_tile"], ~m"exhaustive, ryandoukon:1, mentsu:2, pair:1")
-define_yaku yaku, "Sandoukon", 2, match(["hand", "calls", "winning_tile"], ~m"exhaustive, sandoukon:1, mentsu:1, pair:1")
-define_yaku yakuman, "Yondoukon", 1, match(["hand", "calls", "winning_tile"], ~m"exhaustive, yondoukon:1, pair:1")
-define_yaku meta_yaku, "Toikon", 1, @closed_hand and has_existing_yaku("Toikon")
-define_yaku meta_yaku, "Sandoukon", 1, @closed_hand and has_existing_yaku("Sandoukon")
+# rinshan also works with fuun
+replace_yaku yaku, "Rinshan", [1, "Han"], status("kan") or status("fuun")
+
+define_yaku yaku, "Toikon", [1, "Han"], match(["hand", "calls", "winning_tile"], ~m"exhaustive, kontsu:4, pair:1")
+define_yaku yaku, "Ryandoukon", [1, "Han"], @closed_hand and match(["hand", "calls", "winning_tile"], ~m"exhaustive, ryandoukon:1, mentsu:2, pair:1")
+define_yaku yaku, "Sandoukon", [2, "Han"], match(["hand", "calls", "winning_tile"], ~m"exhaustive, sandoukon:1, mentsu:1, pair:1")
+define_yaku yakuman, "Yondoukon", [1, "Han"], match(["hand", "calls", "winning_tile"], ~m"exhaustive, yondoukon:1, pair:1")
+define_yaku meta_yaku, "Toikon", [1, "Han"], @closed_hand and has_existing_yaku("Toikon")
+define_yaku meta_yaku, "Sandoukon", [1, "Han"], @closed_hand and has_existing_yaku("Sandoukon")
 
 define_yaku_precedence "Yondoukon", ["Sandoukon", "Round Wind", "Seat Wind", "Toitoi", "Sanankou", "Sanshoku Doukou"]
 define_yaku_precedence "Sandoukon", ["Ryandoukon"]
@@ -363,10 +364,10 @@ define_yaku_precedence "Kokushi Musou", ["Mixed Winds", "Mini-Sangen"]
 define_yaku_precedence "Kokushi Musou Juusan Menmachi", ["Mixed Winds", "Mini-Sangen"]
 
 # now forbid certain yaku based on max_triplets and max_kontsu
-define_yaku meta_yaku, "_no_triplets", 1, max_triplets == 0
-define_yaku meta_yaku, "_one_triplet", 1, max_triplets <= 1
-define_yaku meta_yaku, "_no_kontsu", 1, max_kontsu == 0
-define_yaku meta_yaku, "_one_kontsu", 1, max_kontsu <= 1
+define_yaku meta_yaku, "_no_triplets", [0, "Han"], max_triplets == 0
+define_yaku meta_yaku, "_one_triplet", [0, "Han"], max_triplets <= 1
+define_yaku meta_yaku, "_no_kontsu", [0, "Han"], max_kontsu == 0
+define_yaku meta_yaku, "_one_kontsu", [0, "Han"], max_kontsu <= 1
 
 define_yaku_precedence "_no_triplets", ["_no_triplets", "Haku", "Hatsu", "Chun", "Round Wind", "Seat Wind"]
 define_yaku_precedence "_one_triplet", ["_one_triplet", "Toitoi", "Sanshoku Doukou", "Sanankou", "Suuankou", "Suuankou Tanki", "Shousuushii", "Daisuushii", "Daisangen"]

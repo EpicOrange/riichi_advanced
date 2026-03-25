@@ -22,6 +22,6 @@ define_match sanankou_ron,
   | exhaustive, (pon daiminkan kakan):-2, koutsu:4, (any@winning_tile):0, pair:1
   """
 
-define_yaku !list, !name, !value,
+define_yaku !list, !name, [!value, !han],
      (won_by_draw and match(["hand", "calls", "winning_tile"], ["sanankou_tsumo"]))
   or (not_won_by_draw and match(["hand", "calls", "winning_tile"], ["sanankou_ron"]))

@@ -11,7 +11,7 @@
 .yaku_rentsuu_honitsu += [
   {
     "display_name": "Rentsuu Honitsu",
-    "value": 5,
+    "value": [5, "Han"],
     "when": [
       {"name": "not_has_points", "opts": [5]},
       {"name": "has_existing_yaku", "opts": ["Honitsu"]},

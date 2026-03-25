@@ -47,27 +47,43 @@ defmodule RiichiAdvancedWeb.WinWindowComponent do
             <%= for {name, points} <- @winner.yaku do %>
               <div class="yaku">
                 <div class={["yaku-text", String.length(name) >= 12 && "small", String.length(name) >= 20 && "tiny"]}><%= dt(@lang, name) %></div>
-                <div class="han-counter"><%= Utils.try_integer(points) %> <%= dt(@lang, @winner.point_name) %></div>
+                <div class="han-counter"><%= display_points(@lang, points) %></div>
               </div>
             <% end %>
             <%= for {name, points} <- @winner.yaku2 do %>
               <div class="yaku">
                 <div class={["yaku-text", String.length(name) >= 12 && "small", String.length(name) >= 20 && "tiny"]}><%= dt(@lang, name) %></div>
-                <div class="han-counter"><%= Utils.try_integer(points) %> <%= dt(@lang, @winner.point2_name) %></div>
+                <div class="han-counter"><%= display_points(@lang, points) %></div>
               </div>
             <% end %>
           </div>
           <div class="score-display">
-            <div class="total-han-display"><%= Utils.try_integer(@winner.points) %> <%= dt(@lang, @winner.point_name) %></div>
-            <div class="total-fu-display" :if={@winner.right_display != nil}><%= @winner.right_display %> <%= dt(@lang, @winner.right_display_name) %></div>
+            <%= if Map.has_key?(@winner, :total_points) do %>
+              <%= for [amt, type] <- Enum.chunk_every(Enum.take(@winner.total_points, 4), 2) do %>
+                <div class="total-points-display"><%= Utils.try_integer(amt) %> <%= dt(@lang, type) %></div>
+              <% end %>
+            <% else %>
+              <div class="total-points-display"><%= Utils.try_integer(@winner.points) %> <%= dt(@lang, @winner.point_name) %></div>
+            <% end %>
+            <div class="total-points-display" :if={@winner.right_display != nil}><%= @winner.right_display %> <%= dt(@lang, @winner.right_display_name) %></div>
             <div class={["total-score-display", String.length("#{@winner.score} #{@winner.score_denomination}") >= 12 && "small"]}><%= @winner.displayed_score %> <%= dt(@lang, @winner.score_denomination) %></div>
             <div class={["total-score-name-display", String.length("#{@winner.score_name}") >= 12 && "small"]} :if={Map.has_key?(@winner, :score_name) and @winner.score_name != nil}><%= dt(@lang, @winner.score_name) %></div>
           </div>
         <% end %>
       </div>
-      <div class="timer" phx-cancellable-click="ready_for_next_round">Skip (<%= @timer %>)</div>
+      <div class="timer" phx-cancellable-click="ready_for_next_round">
+        <%= if @timer == -1 do %>
+          <%= dt(@lang, "Dismiss") %>
+        <% else %>
+          <%= dt(@lang, "Skip") %> (<%= @timer %>)
+        <% end %>
+      </div>
     </div>
     """
+  end
+
+  def display_points(lang, points) do
+    if is_list(points) do Enum.map_join(points, " ", &"#{if is_number(&1) do &1 else dt(lang, &1) end}") else points end
   end
 
   def process_calls(calls) do

@@ -6,7 +6,7 @@
 .shanron_chonchu += [
   {
     "display_name": "Shanron Chonchu",
-    "value": 5,
+    "value": [5, "Han"],
     "when": [
       {"name": "not_has_points", "opts": [5]},
       {"name": "match", "opts": [["hand", "calls", "winning_tile"], ["shanron_chonchu"]]}

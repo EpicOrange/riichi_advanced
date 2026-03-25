@@ -8,7 +8,7 @@
 .yaku += [
   {
     "display_name": "Sanpuukou",
-    "value": 2,
+    "value": [2, "Han"],
     "when": [{"name": "match", "opts": [["hand", "calls", "winning_tile"], [[ [["ton", "nan", "shaa", "pei"], 3], [$others, 1], [["pair"], 1] ]]]}]
   }
 ]

@@ -2,7 +2,6 @@ defmodule RiichiAdvanced.GameState.Saki do
   alias RiichiAdvanced.GameState.Actions, as: Actions
   alias RiichiAdvanced.GameState.Buttons, as: Buttons
   alias RiichiAdvanced.GameState.Debug, as: Debug
-  alias RiichiAdvanced.GameState.Player, as: Player
   alias RiichiAdvanced.GameState.Rules, as: Rules
   import RiichiAdvanced.GameState
 
@@ -140,7 +139,7 @@ defmodule RiichiAdvanced.GameState.Saki do
   end
 
   def draft_saki_card(state, seat, choice) do
-    update_player(state, seat, &%Player{ &1 | status: MapSet.put(&1.status, choice), call_buttons: %{} })
+    update_player(state, seat, &%{ &1 | status: MapSet.put(&1.status, choice), call_buttons: %{} })
   end
 
   def check_if_all_drafted(state) do

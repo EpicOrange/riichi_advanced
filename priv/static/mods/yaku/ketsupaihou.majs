@@ -8,4 +8,4 @@ define_set penchan, ~s"0@terminal 1 | 0 1@terminal"
 
 define_match ketsupaihou, ~m"exhaustive, (penchan kanchan):1, mentsu:3, pair:1"
 
-define_yaku yaku, "Ketsupaihou", 1, match(["hand", "calls"], ["ketsupaihou"]) and has_hell_wait("win")
+define_yaku yaku, "Ketsupaihou", [1, "Han"], match(["hand", "calls"], ["ketsupaihou"]) and has_hell_wait("win")

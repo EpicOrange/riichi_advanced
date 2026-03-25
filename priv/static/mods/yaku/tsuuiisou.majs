@@ -16,4 +16,8 @@ end
 define_set tanyaohai, ~s"any@tanyao"
 define_set terminal, ~s"any@terminal"
 
-define_yaku !list, !name, !value, not_match(["hand", "calls", "winning_tile"], ~m"(tanyaohai terminal):1")
+if equals(!list, "yakuman") do
+  define_yaku !list, !name, [!value, !limit], not_match(["hand", "calls", "winning_tile"], ~m"(tanyaohai terminal):1")
+else
+  define_yaku !list, !name, [!value, !han], not_match(["hand", "calls", "winning_tile"], ~m"(tanyaohai terminal):1")
+end

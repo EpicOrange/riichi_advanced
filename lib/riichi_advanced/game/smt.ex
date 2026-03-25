@@ -80,8 +80,8 @@ defmodule RiichiAdvanced.SMT do
     end
   end
 
-  def obtain_all_solutions(_solver_pid, _encoding, _encoding_r, [], _smt_hand, _tile_behavior, _start_time), do: Stream.concat([[%{}]])
-  def obtain_all_solutions(solver_pid, encoding, encoding_r, joker_ixs, smt_hand, tile_behavior, start_time) do
+  def obtain_all_solutions(_smt, _mutex, _solver_pid, _encoding, _encoding_r, [], _smt_hand, _tile_behavior, _start_time), do: Stream.concat([[%{}]])
+  def obtain_all_solutions(smt, mutex, solver_pid, encoding, encoding_r, joker_ixs, smt_hand, tile_behavior, start_time) do
     {precomputed_mappings, precomputed_mappings_r} = precompute_joker_mappings(smt_hand, joker_ixs, tile_behavior)
     # |> IO.inspect(label: "precomputed", charlists: :as_lists)
     get_attr_tiles = fn {ix, tile} ->
@@ -99,10 +99,15 @@ defmodule RiichiAdvanced.SMT do
     end
     # return a lazy stream of solutions
     Stream.resource(
-      fn -> [] end, # state = last assignments
-      fn last_assignments ->
+      fn ->
+        {Mutex.await(mutex, __MODULE__), [], false} # state = {lock, previous assignments, sent initial query?}
+      end, 
+      fn {lock, last_assignments, sent_query?} ->
+        if not sent_query? do
+          GenServer.cast(solver_pid, {:query, smt, true})
+        end
         cond do
-          System.system_time(:millisecond) - start_time >= 30000 -> {:halt, nil}
+          System.system_time(:millisecond) - start_time >= 30000 -> {:halt, {lock, last_assignments, true}}
           true ->
             # contradict the last assignments
             contra = for assignment <- last_assignments, do: contradict_assignment(assignment, joker_ixs, encoding)
@@ -114,6 +119,9 @@ defmodule RiichiAdvanced.SMT do
             end
             {:ok, response} = GenServer.call(solver_pid, {:query, smt, false}, 60000)
             case ExSMT.Solver.ResponseParser.parse(response) do
+              [:sat | [[:error, err]]] ->
+                IO.puts("Error in SMT solver: #{err}\n  Hand was #{inspect(smt_hand)}\n  Joker indices were #{inspect(joker_ixs, charlists: :as_lists)}")
+                {:halt, {lock, last_assignments, true}}
               [:sat | assigns] ->
                 # IO.puts("===")
                 new_assignment = Map.new(Enum.zip(joker_ixs, Enum.flat_map(assigns, &Enum.map(&1, fn [_, val] -> encoding_r[val] end))))
@@ -164,12 +172,14 @@ defmodule RiichiAdvanced.SMT do
                     map_size(pairing) < length(l)
                   end
                 end) end))
-                {ret, final_assignments}
-              [:unsat | _] -> {:halt, nil}
+                {ret, {lock, final_assignments, true}}
+              [:unsat | _] -> {:halt, {lock, last_assignments, true}}
             end
         end
       end,
-      fn _ -> nil end
+      fn {lock, _assignments, _sent_query?} ->
+        Mutex.release(mutex, lock)
+      end
     )
   end
 
@@ -412,7 +422,7 @@ defmodule RiichiAdvanced.SMT do
   #   end
   # end
 
-  def _match_hand_smt_v3(solver_pid, hand, calls, match_definitions, tile_behavior) do
+  def _match_hand_smt_v4(mutex, solver_pid, hand, calls, match_definitions, tile_behavior) do
     ordering = tile_behavior.ordering
     tile_mappings = TileBehavior.tile_mappings(tile_behavior)
 
@@ -779,20 +789,19 @@ defmodule RiichiAdvanced.SMT do
       IO.puts(smt)
       # IO.inspect(encoding)
     end
-    GenServer.cast(solver_pid, {:query, smt, true})
 
     # stream responses
-    obtain_all_solutions(solver_pid, encoding, encoding_r, joker_ixs, hand ++ call_tiles, tile_behavior, System.system_time(:millisecond))
+    obtain_all_solutions(smt, mutex, solver_pid, encoding, encoding_r, joker_ixs, hand ++ call_tiles, tile_behavior, System.system_time(:millisecond))
   end
 
-  # now with streaming without losing memoization!
-  def match_hand_smt_v3(solver_pid, hand, calls, match_definitions, tile_behavior) do
-    cache_key = {:match_hand_smt_v3, hand, calls, match_definitions, TileBehavior.hash(tile_behavior)}
+  # now with streaming, without losing memoization, and without sending multiple queries at once to the single z3 process
+  def match_hand_smt_v4(mutex, solver_pid, hand, calls, match_definitions, tile_behavior) do
+    cache_key = {:match_hand_smt_v4, hand, calls, match_definitions, TileBehavior.hash(tile_behavior)}
     if value = RiichiAdvanced.Cache.get(cache_key) do
       Stream.concat([value])
     else
       {:ok, solutions_agent} = Agent.start_link(fn -> [] end)
-      _match_hand_smt_v3(solver_pid, hand, calls, match_definitions, tile_behavior)
+      _match_hand_smt_v4(mutex, solver_pid, hand, calls, match_definitions, tile_behavior)
       |> Stream.concat([:end_stream])
       |> Stream.flat_map(fn
         :end_stream ->

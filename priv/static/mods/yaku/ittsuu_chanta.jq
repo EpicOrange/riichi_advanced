@@ -10,14 +10,14 @@
 .yaku += [
   {
     "display_name": "Ittsuu Chanta",
-    "value": 2,
+    "value": [2, "Han"],
     "when": [
       {"name": "match", "opts": [["hand", "calls", "winning_tile"], [[ "exhaustive", [["ittsuu"], 1], [["junchan_1", "junchan_2", "junchan_3", "junchan_4", "junchan_5", "junchan_6", "junchan_7", "junchan_8", "junchan_9", "junchan_10", "junchan_11", "junchan_12", "ton", "nan", "shaa", "pei", "haku", "hatsu", "chun"], 1], [["junchan_pair_1", "junchan_pair_2", "junchan_pair_3", "junchan_pair_4", "junchan_pair_5", "junchan_pair_6", "ton_pair", "nan_pair", "shaa_pair", "pei_pair", "haku_pair", "hatsu_pair", "chun_pair"], 1] ]]]}
     ]
   },
   {
     "display_name": "Ittsuu Junchan",
-    "value": 3,
+    "value": [3, "Han"],
     "when": [
       {"name": "match", "opts": [["hand", "calls", "winning_tile"], [[ "exhaustive", [["ittsuu"], 1], [["junchan_1", "junchan_2", "junchan_3", "junchan_4", "junchan_5", "junchan_6", "junchan_7", "junchan_8", "junchan_9", "junchan_10", "junchan_11", "junchan_12"], 1], [["junchan_pair_1", "junchan_pair_2", "junchan_pair_3", "junchan_pair_4", "junchan_pair_5", "junchan_pair_6"], 1] ]]]}
     ]
@@ -25,8 +25,8 @@
 ]
 |
 .meta_yaku += [
-  { "display_name": "Ittsuu Chanta", "value": 1, "when": [{"name": "has_no_call_named", "opts": $open_calls}, {"name": "has_existing_yaku", "opts": ["Ittsuu Chanta"]}] },
-  { "display_name": "Ittsuu Junchan", "value": 1, "when": [{"name": "has_no_call_named", "opts": $open_calls}, {"name": "has_existing_yaku", "opts": ["Ittsuu Junchan"]}] }
+  { "display_name": "Ittsuu Chanta", "value": [1, "Han"], "when": [{"name": "has_no_call_named", "opts": $open_calls}, {"name": "has_existing_yaku", "opts": ["Ittsuu Chanta"]}] },
+  { "display_name": "Ittsuu Junchan", "value": [1, "Han"], "when": [{"name": "has_no_call_named", "opts": $open_calls}, {"name": "has_existing_yaku", "opts": ["Ittsuu Junchan"]}] }
 ]
 |
 .yaku_precedence += {

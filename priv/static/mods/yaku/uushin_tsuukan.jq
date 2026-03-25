@@ -8,7 +8,7 @@
 .yaku += [
   {
     "display_name": "Uushin Tsuukan",
-    "value": 1,
+    "value": [1, "Han"],
     "when": [
       # TODO how do you know the 46 is part of that ittsuu, what if it's another 46?
       {"name": "match", "opts": [["hand", "calls"], [[ "exhaustive", [["ittsuu"], 1], [$others, 1], [["pair"], 1] ]]]},

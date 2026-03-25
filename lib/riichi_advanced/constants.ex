@@ -295,7 +295,8 @@ defmodule RiichiAdvanced.Constants do
         "global_mods",
         "standard_wall",
         "default_auto_buttons",
-        "riichi_kan"
+        "riichi_kan", # also adds chankan and yaku like suukantsu
+        "riichi_scoring",
       ],
       default_mods: []
     },
@@ -340,7 +341,7 @@ defmodule RiichiAdvanced.Constants do
       tutorial_link: "https://github.com/EpicOrange/riichi_advanced/blob/main/documentation/chinitsu_challenge.md",
       ruleset: "riichi",
       mods: [%{name: "yaku/riichi", config: %{bet: 1000, drawless: false}}, "chinitsu_challenge"],
-      default_mods: ["chombo", "tobi", "yaku/renhou_yakuman", "no_honors"],
+      default_mods: ["chombo", "tobi", %{name: "yaku/riichi_renhou", config: %{is: "Yakuman"}}, "no_honors"],
     },
     "minefield" => %{
       display_name: "Minefield",
@@ -353,7 +354,7 @@ defmodule RiichiAdvanced.Constants do
       display_name: "Kansai Sanma",
       tutorial_link: "https://github.com/EpicOrange/riichi_advanced/blob/main/documentation/kansai.md",
       ruleset: "riichi",
-      mods: ["sanma", "sanma_presets", "kansai", "kansai_chiitoitsu"],
+      mods: ["sanma", "sanma_presets", "kansai", "kansai_yaku", "kansai_chiitoitsu"],
       default_mods: ["tobi"],
     },
     "aka_test" => %{
@@ -377,7 +378,8 @@ defmodule RiichiAdvanced.Constants do
         pon_name: "Pong",
         kan_name: "Kong",
         ankan_name: "Concealed Kong",
-        han: "Fan"
+        han: "Fan",
+        limit: "Limit"
       },
       mods: [
         "base",
@@ -440,7 +442,8 @@ defmodule RiichiAdvanced.Constants do
         ankan_name: "Concealed Kong",
         ron_name: "Hu",
         tsumo_name: "Zimo",
-        han: "Fan"
+        han: "Fan",
+        limit: "Limit"
       },
       mods: [
         "base",
@@ -494,7 +497,14 @@ defmodule RiichiAdvanced.Constants do
         }},
         "classical_fu",
       ]
-    }
+    },
+    # currently in the process of translating these to majs
+    # this is done by using the json ruleset as a base, and applying a majs mod
+    # which will later become the ruleset
+    "tianjin" => %{
+      ruleset: "tianjin",
+      mods: ["tianjin"],
+    },
   }
 
   def modpacks, do: @modpacks

@@ -60,7 +60,7 @@ apply prepend, "buttons.ron.show_when", status_missing("initial_flowers")
 apply prepend, "buttons.chankan.show_when", status_missing("initial_flowers")
 apply prepend, "buttons.tsumo.show_when", status_missing("initial_flowers")
 
-define play_restriction, "flower", !unskippable
+define_play_restriction "flower", !unskippable
 
 define_button flower,
   display_name: "Flower",

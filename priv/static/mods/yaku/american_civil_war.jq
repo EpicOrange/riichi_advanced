@@ -16,7 +16,7 @@ def replace_tenpai_check($source):
 .yakuman += [
   {
     "display_name": "American Civil War",
-    "value": 1,
+    "value": [1, "★"],
     "when": [
       {"name": "has_no_call_named", "opts": $all_calls},
       {"name": "match", "opts": [["hand", "winning_tile"], ["1861a 1865b NNN SSS"]]}

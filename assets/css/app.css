@@ -172,6 +172,8 @@ main div.messages-container > div.messages {
 
 /* global styles */
 
+/* standardize padding */
+select, button, input { padding: 0 calc(0.125 * var(--tile-size)); }
 /* toggle buttons */
 input[type="radio"], input[type="checkbox"] { display: none; }
 label {
@@ -229,6 +231,14 @@ button:active::before {
   height: calc(0.125 * var(--tile-size));
   top: calc(-0.125 * var(--tile-size));
   left: 0;
+}
+/* numeric input */
+input[type="number"] { -moz-appearance: textfield; }    input[type=number]::-webkit-inner-spin-button,
+input[type="number"]::-webkit-outer-spin-button {
+  appearance: none;
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  margin: 0;
 }
 
 /* hands */
@@ -946,7 +956,7 @@ div.tile.flat {
   0% { transform: translate(-100%, -100%) rotate(135deg); }
   100% { transform: translate(50%, 50%) rotate(135deg); }
 }
-div.tile.dora:not(.\31 x):not(.selected) { overflow: hidden; position: relative; }
+div.tile.dora:not(.\31 x):not(.selected) { position: relative; overflow: hidden; }
 div.tile.dora:not(.\31 x):not(.selected)::before {
   content: "";
   position: absolute;
@@ -2492,15 +2502,14 @@ div.yaku > div.han-counter {
   margin-left: calc(0.5 * var(--tile-size));
 }
 div.yaku > div.han-counter::before,
-div.total-han-display::before,
-div.total-fu-display::before,
+div.total-points-display::before,
 div.total-score-display::before,
 div.total-score-name-display::before {
   background-image: url(/images/brush-bg.svg);
   background-size: 100% 100%;
   background-repeat: no-repeat;
 }
-div.total-fu-display::before,
+div.total-points-display:not(:first-of-type)::before,
 div.total-score-display::before {
   background-image: url(/images/brush-bg2.svg);
 }
@@ -2525,20 +2534,18 @@ div.score-display {
   bottom: 0;
 }
 div.score-display::before { content: ""; width: 100%; order: 1; }
-div.total-han-display,
-div.total-fu-display,
+div.total-points-display,
 div.total-score-display {
   position: relative;
   white-space: nowrap;
   z-index: 1;
 }
-div.total-han-display, div.total-fu-display { font-size: calc(1.25 * var(--tile-size)); }
+div.total-points-display { font-size: calc(1.25 * var(--tile-size)); }
 div.total-score-display { font-size: calc(2 * var(--tile-size)); order: 1; }
 div.total-score-display.small { font-size: calc(1.25 * var(--tile-size)); }
 div.total-score-name-display { font-size: calc(1.2 * var(--tile-size)); order: 1; }
 div.total-score-name-display.small { font-size: calc(1 * var(--tile-size)); }
-div.total-han-display::before,
-div.total-fu-display::before,
+div.total-points-display::before,
 div.total-score-display::before,
 div.total-score-name-display::before {
   position: absolute;
@@ -2549,7 +2556,7 @@ div.total-score-name-display::before {
   bottom: -7.5%;
   z-index: -1;
 }
-div.total-fu-display::before {
+div.total-points-display:not(:first-of-type)::before {
   transform: rotate(180deg);
   width: 160%;
   left: -35%;
@@ -2578,12 +2585,17 @@ div.total-score-name-display::before {
 /* delta score window */
 div.game-modal > div.delta-score-reason {
   position: absolute;
-  font-size: calc(1.25 * var(--tile-size));
+  font-size: calc(0.8 * var(--tile-size));
   text-align: center;
-  top: 0;
-  width: 100%;
+  top: calc(50% - 3 * var(--tile-size));
+  margin: 0 auto;
+  left: 0;
+  right: 0;
+  --width: 10;
+  width: calc(var(--width) * 0.75em + 1em);
   user-select: none;
-  z-index: 3;
+  pointer-events: none;
+  z-index: 2;
 }
 div.game-modal > div.delta-score-reason::before {
   position: absolute;
@@ -2593,31 +2605,215 @@ div.game-modal > div.delta-score-reason::before {
   background-repeat: no-repeat;
   transform-origin: 50% calc(50% + var(--tile-size));
   width: 100%;
-  height: calc(3 * var(--tile-size));
+  height: calc(2 * var(--tile-size));
   left: 0;
-  bottom: calc(-0.5 * var(--tile-size));
+  bottom: calc(-0.25 * var(--tile-size));
   z-index: -1;
+  transform: translateX(calc(-0.1 * var(--tile-size)));
 }
-div.game-modal > div.delta-score {
+div.game-modal > div.score-badge {
+  background: black;
+  border-radius: calc(0.5 * var(--tile-size));
+  padding: calc(0.5 * var(--tile-size)) calc(0.25 * var(--tile-size));
   line-height: 1;
+  height: 2.5em;
+  width: 12ex;
   position: absolute;
-  font-size: calc(1 * var(--tile-size));
-  text-align: right;
+  font-size: calc(0.5 * var(--tile-size));
+  text-align: center;
   user-select: none;
-  z-index: 2;
+  z-index: 3;
+  color: white;
+  &:hover > div {
+    &.initial-score, &.player-name, &.hline::before {
+      width: 100%;
+      filter: brightness(75%) sepia(100%) saturate(800%) hue-rotate(-45deg);
+    }
+  }
 }
-div.game-modal > div.delta-score.self { bottom: calc(0.25 * var(--tile-size)); left: calc(-50% + 11 * var(--tile-size));}
-div.game-modal > div.delta-score.kamicha { left: calc(1.25 * var(--tile-size)); top: calc(-50% + 12 * var(--tile-size)); }
-div.game-modal > div.delta-score.toimen { top: calc(2.25 * var(--tile-size)); left: calc(-50% + 11 * var(--tile-size));}
-div.game-modal > div.delta-score.shimocha { right: calc(1.25 * var(--tile-size)); top: calc(-50% + 12 * var(--tile-size)); }
-div.game-modal > div.delta-score > div.hline::before {
+div.game-modal > div.score-badge.self { inset: 0; top: auto; margin: 0 auto; }
+div.game-modal > div.score-badge.shimocha { inset: 0; left: auto; margin: auto 0; }
+div.game-modal > div.score-badge.toimen { inset: 0; bottom: auto; right: 0; margin: 0 auto; }
+div.game-modal > div.score-badge.kamicha { inset: 0; right: auto; margin: auto 0; }
+div.game-modal > div.score-badge > div.hline::before {
   position: absolute;
   content: "";
-  background: black;
+  background: white;
   width: 100%;
   right: 0;
   height: calc(0.0625 * var(--tile-size));
+  margin-top: calc(0.0625 * var(--tile-size));
 }
+div.game-modal > div.score-badge > div.initial-score {
+  font-size: 150%;
+  font-weight: bold;
+}
+div.game-modal > div.score-badge > div.delta-score {
+  font-weight: bold;
+  position: absolute;
+  top: -0.3em;
+  right: 0;
+  text-align: right;
+  white-space: nowrap;
+}
+div.game-modal > div.score-badge > div.player-name {
+  margin-top: calc(0.125 * var(--tile-size));
+  white-space: nowrap;
+}
+div.game-modal > div.score-badge > div.placement {
+  position: absolute;
+  top: calc(-50% + 0.5 * var(--tile-size));
+  left: calc(-25%);
+  transform: scale(75%);
+}
+div.game-modal > div.score-ledger-container > table.score-ledger {
+  position: absolute;
+  z-index: 3;
+  opacity: 0.9;
+  background: #0f6f2f;
+  color: white;
+  border: calc(0.0625 * var(--tile-size)) solid white;
+  border-radius: calc(0.5 * var(--tile-size));
+  border-spacing: 0;
+  pointer-events: none;
+  &.kamicha, &.k2u, &.k2t, &.u2k, &.t2k { top: 0; right: 0; }
+  &.toimen { bottom: 0; left: 0; }
+  &:has(tbody > tr) > thead > tr > th {
+    border-bottom: calc(0.0625 * var(--tile-size)) solid white;
+  }
+  --ledger-scale: 85%;
+  &.self, &.shimocha, &.toimen, &.kamicha { --ledger-scale: 125%; }
+  & > thead > tr > th {
+    font-size: var(--ledger-scale);
+    padding-left: calc(0.25 * var(--tile-size));
+    text-align: left;
+    height: calc(1.25 * var(--tile-size));
+    min-width: calc(8 * var(--tile-size));
+    & > div.score-ledger-mini {
+      display: inline-block;
+      position: absolute;
+      top: calc(0.125 * var(--tile-size));
+      right: calc(0.125 * var(--tile-size));
+      width: calc(2 * var(--tile-size));
+      height: calc(1 * var(--tile-size));
+      & > span {
+        display: block;
+        position: absolute;
+        width: calc(0.7 * var(--tile-size));
+        height: calc(0.4 * var(--tile-size));
+        border-radius: calc(0.125 * var(--tile-size));
+        background: black;
+        &.mini-self { left: 0; right: 0; margin-inline: auto; bottom: 0; }
+        &.mini-shimocha { top: 0; bottom: 0; margin-block: auto; right: 0; }
+        &.mini-toimen { left: 0; right: 0; margin-inline: auto; top: 0; }
+        &.mini-kamicha { top: 0; bottom: 0; margin-block: auto; left: 0; }
+        &.selected { background: white; }
+      }
+    }
+  }
+  & > tbody > tr {
+    & > td {
+      line-height: 1.2;
+      padding: 0 calc(0.125 * var(--tile-size));
+      &:first-child { padding-left:  calc(0.5 * var(--tile-size)); }
+      &:last-child  { padding-right: calc(0.5 * var(--tile-size)); }
+    }
+    &:first-child td, &.score-ledger-total td { padding-top: calc(0.25 * var(--tile-size)); }
+    &:last-child  td, &:has(+ tr.score-ledger-total) td { padding-bottom: calc(0.25 * var(--tile-size)); }
+  }
+
+  & td.score-ledger-reason, & td.score-ledger-op {
+    font-weight: bold;
+  }
+  & td.score-ledger-op {
+      padding: 0 calc(0.25 * var(--tile-size));
+  }
+  & td.score-ledger-amount,
+  & td.score-ledger-result {
+    font-weight: normal;
+  }
+  & tr.score-ledger-total {
+    & td {
+      border-top: calc(0.0625 * var(--tile-size)) solid white;
+      padding: calc(0.125 * var(--tile-size));
+      font-weight: bold;
+      font-size: 125%;
+    }
+  }
+}
+div.game-modal > div.score-ledger-container > table.score-ledger { display: none; }
+div.game-modal > div.score-ledger-container.self > table.score-ledger.self { display: block; }
+div.game-modal > div.score-ledger-container.shimocha > table.score-ledger.shimocha { display: block; }
+div.game-modal > div.score-ledger-container.toimen > table.score-ledger.toimen { display: block; }
+div.game-modal > div.score-ledger-container.kamicha > table.score-ledger.kamicha { display: block; }
+div.game-modal > div.score-ledger-container.t2u > table.score-ledger.t2u { display: block; }
+div.game-modal > div.score-ledger-container.u2t > table.score-ledger.u2t { display: block; }
+div.game-modal > div.score-ledger-container.k2s > table.score-ledger.k2s { display: block; }
+div.game-modal > div.score-ledger-container.s2k > table.score-ledger.s2k { display: block; }
+div.game-modal > div.score-ledger-container.k2u > table.score-ledger.k2u { display: block; }
+div.game-modal > div.score-ledger-container.s2u > table.score-ledger.s2u { display: block; }
+div.game-modal > div.score-ledger-container.s2t > table.score-ledger.s2t { display: block; }
+div.game-modal > div.score-ledger-container.k2t > table.score-ledger.k2t { display: block; }
+div.game-modal > div.score-ledger-container.u2k > table.score-ledger.u2k { display: block; }
+div.game-modal > div.score-ledger-container.u2s > table.score-ledger.u2s { display: block; }
+div.game-modal > div.score-ledger-container.t2s > table.score-ledger.t2s { display: block; }
+div.game-modal > div.score-ledger-container.t2k > table.score-ledger.t2k { display: block; }
+
+@property --tile-size {
+  /* required for making it unitless below */
+  syntax: '<length>';
+  inherits: true;
+  initial-value: 0;
+}
+svg.arrow, svg.curve {
+  position: absolute;
+  fill: white;
+  /* first scale based on unitless tile-size, then move the tail, then rotate about the tail */
+  zoom: calc(tan(atan2(var(--tile-size), 200px)));
+  overflow: visible;
+  &:hover { filter: brightness(75%) sepia(100%) saturate(800%) hue-rotate(-45deg); }
+}
+svg.arrow {
+  --xpos: 0;
+  --ypos: 0;
+  --rotate: 0;
+  --length: 0;
+  width: calc(var(--length) * 200px);
+  height: 200px;
+  transform-origin: 0% 50%;
+  transform:
+    translate( calc(var(--xpos) * 200px - 100px)
+             , calc(var(--ypos) * 200px - 200px) )
+    rotate(calc(var(--rotate) * 1deg));
+}
+svg.curve {
+  --xpos: 0;
+  --ypos: 0;
+  --xscale: 1;
+  --yscale: 1;
+  width: 550px;
+  height: 800px;
+  transform:
+    translate( calc(var(--xpos) * 200px - 100px)
+             , calc(var(--ypos) * 200px - 100px) )
+    scale(var(--xscale), var(--yscale));
+}
+div.game-modal:not(.t2u) > svg.t2u,
+div.game-modal:not(.u2t) > svg.u2t,
+div.game-modal:not(.k2s) > svg.k2s,
+div.game-modal:not(.s2k) > svg.s2k,
+div.game-modal:not(.k2u) > svg.k2u,
+div.game-modal:not(.s2u) > svg.s2u,
+div.game-modal:not(.s2t) > svg.s2t,
+div.game-modal:not(.k2t) > svg.k2t,
+div.game-modal:not(.u2k) > svg.u2k,
+div.game-modal:not(.u2s) > svg.u2s,
+div.game-modal:not(.t2s) > svg.t2s,
+div.game-modal:not(.t2k) > svg.t2k {
+  display: none;
+}
+
+/*
 div.game-modal > div.delta-score::before {
   position: absolute;
   content: "";
@@ -2649,10 +2845,10 @@ div.game-modal > div.delta-score.shimocha::before {
   left: calc(50% - 2.5 * var(--tile-size));
   bottom: calc(50% - 1.5 * var(--tile-size));
 }
-div.game-modal > div.delta-score > div.initial { color: gray; }
-div.game-modal > div.delta-score > div.change.positive { color: green; }
-div.game-modal > div.delta-score > div.change.negative { color: red; }
-div.game-modal > div.delta-score > div.result { transform: translateY(calc(0.125 * var(--tile-size))); }
+*/
+
+div.game-modal > div.score-badge > div.delta-score.positive { color: lightgreen; }
+div.game-modal > div.score-badge > div.delta-score.negative { color: pink; }
 
 /* game end timer */
 
@@ -2699,6 +2895,7 @@ div.scoreboard {
 }
 div.placement > div.placement-place,
 div.placement > div.placement-name {
+  color: black;
   font-size: calc(0.6 * var(--tile-size));
   white-space: nowrap;
   height: 1.2em;
@@ -3560,7 +3757,7 @@ div.config {
   height: 100%;
   font-size: calc(0.25 * var(--tile-size));
 }
-/* individal mod config */
+/* individual mod config */
 label.mod {
   flex-shrink: 1;
   display: flex;
@@ -3973,14 +4170,155 @@ div.majstest-container > div.mods-container {
   height: calc(100% - 0.75 * var(--tile-size));
   border-radius: calc(0.25 * var(--tile-size));
   padding: calc(0.5 * var(--tile-size));
-
   top: calc(0.75 * var(--tile-size));
   left: 0;
   background: #609060;
   box-sizing: border-box;
   overflow-y: scroll;
   z-index: 2;
+  scrollbar-width: none; /* Firefox */
+  &::-webkit-scrollbar { display: none; } /* Safari/Chrome */
 }
-div.majstest-container > input.show-mods-checkbox:checked ~ div.mods-container {
+div.majstest-container > input#show-mods:checked ~ div.mods-container { display: block; }
+
+
+
+/* scoringtest */
+div.scoringtest-container {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  height: 100%;
+  row-gap: calc(0.25 * var(--tile-size));
+}
+div.scoringtest-container > header {
+  display: flex;
+  flex-direction: row;
+  column-gap: calc(0.25 * var(--tile-size));
+}
+div.scoringtest-container > header > select {
+  flex-grow: 1;
+}
+div.scoringtest-container > header > label {
+  width: calc(1.5 * var(--tile-size));
+  height: calc(0.75 * var(--tile-size));
+}
+div.scoringtest-container label[for="show-mods"] { order: 1; }
+div.scoringtest-container label[for="show-config"] { order: 2; }
+div.scoringtest-container label[for="show-none"] {
+  display: none;
+  opacity: 0;
+  position: absolute;
+}
+div.scoringtest-container input#show-mods:checked ~ header > label[for="show-mods"],
+div.scoringtest-container input#show-config:checked ~ header > label[for="show-config"] {
+  background: var(--tile-back);
+}
+div.scoringtest-container input#show-mods:checked ~ header > label[for="show-none"] {
   display: block;
+  right: calc(2 * var(--tile-size));
+}
+div.scoringtest-container input#show-config:checked ~ header > label[for="show-none"] {
+  display: block;
+  right: 0;
+}
+div.scoringtest-container > header > form {
+  order: 0;
+  flex-grow: 1;
+}
+div.scoringtest-container > header > form > select {
+  width: 100%;
+  font-size: calc(0.6 * var(--tile-size));
+  background-color: var(--tile-front);
+  border: none;
+  border-radius: calc(0.25 * var(--tile-size));
+}
+div.scoringtest-container textarea {
+  height: calc(14.25 * var(--tile-size));
+  font-size: calc(0.25 * var(--tile-size));
+  border-width: calc(0.05 * var(--tile-size));
+}
+div.scoringtest-container div.mods-container,
+div.scoringtest-container div.config-container,
+div.scoringtest-container div.yaku-outer-container {
+  width: 100%;
+  height: calc(100% - 0.5 * var(--tile-size));
+  border-radius: calc(0.25 * var(--tile-size));
+  padding: calc(0.5 * var(--tile-size));
+  background: #609060;
+  box-sizing: border-box;
+  overflow-y: scroll;
+  scrollbar-width: none; /* Firefox */
+  &::-webkit-scrollbar { display: none; } /* Safari/Chrome */
+}
+div.scoringtest-container div.mods-container,
+div.scoringtest-container div.config-container {
+  display: none;
+  position: absolute;
+  top: calc(0.75 * var(--tile-size));
+  left: 0;
+  z-index: 2;
+}
+div.scoringtest-container input#show-mods:checked ~ div.mods-container { display: block; }
+div.scoringtest-container input#show-config:checked ~ div.config-container { display: block; }
+
+/* bottom buttons */
+div.scoringtest-container div.yaku-bottom-buttons {
+  display: flex;
+  order: 2;
+  flex-flow: row wrap;
+  width: 100%;
+  text-align: right;
+  justify-content: center;
+  column-gap: calc(0.25 * var(--tile-size));
+  & > input {
+    --width: 8;
+    text-align: right;
+    font-family: monospace;
+    width: calc(var(--width) * 0.6em);
+    background: lightgray;
+    border: none;
+  }
+  & > span.yaku-bottom-minipoint-name {text-align: right; font-size: 150%;}
+  & > button:first-of-type { font-size: 90%; }
+  & > button:last-of-type { flex-grow: 1; font-size: 150%; }
+  /*& > input[type="number"] { */
+}
+
+/* individual yaku inside yaku-container */
+div.scoringtest-container div.yaku-container > div.yaku-inner-container {
+  display: flex;
+  flex-flow: row wrap;
+  row-gap: calc(0.0625 * var(--tile-size));
+  column-gap: calc(0.125 * var(--tile-size));
+  justify-content: flex-start;
+  align-items: flex-start;
+  & > div.yaku-list,
+  & > div.yaku-list-spacer {
+    width: 100%;
+    min-height: 0.5em;
+    margin-left: -0.5em;
+    margin-bottom: -0.5em;
+  }
+  & div.yaku-list-name {
+    font-weight: bold;
+  }
+  & label.yaku-button {
+    flex-shrink: 1;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+  }
+  & label.yaku-button input[type="number"] {
+    --width: 1;
+    font-family: monospace;
+    font-size: 100%;
+    width: calc(var(--width) * 0.6em);
+    margin: 0 calc(0.0625 * var(--tile-size));
+    background: transparent;
+    border: none;
+    text-align: center;
+    color: white;
+    padding: 0;
+  }
 }

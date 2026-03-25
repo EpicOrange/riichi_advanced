@@ -9,7 +9,7 @@ end
 define_match uumensai_win, ~m"exhaustive, (shuntsu koutsu kontsu_123 kontsu_124 kontsu_134 kontsu_234):4, pair:1"
 
 # remove existing uumensai
-replace_yaku yaku, "Uumensai", 2,
+replace_yaku yaku, "Uumensai", [2, "Han"],
       match(["hand", "calls", "winning_tile"], ["uumensai_win"])
   and match(["hand", "calls", "winning_tile"], ~m"""
     (1m 2m 3m 4m 5m 6m 7m 8m 9m):1,
@@ -18,7 +18,7 @@ replace_yaku yaku, "Uumensai", 2,
     (1z 2z 3z 4z):1, (5z 6z 7z):1
     """)
 
-define_yaku yaku, "Uumensai", 2,
+define_yaku yaku, "Uumensai", [2, "Han"],
       match(["hand", "calls", "winning_tile"], ["standard_win"])
   and match(["hand", "calls", "winning_tile"], ~m"""
       exhaustive, pair:1, koutsu:1, kontsu:1, quad:1, fuun:1

@@ -1,5 +1,5 @@
 if has("yakuman") then
-  .yakuman |= map(.value *= 13)
+  .yakuman |= map(if .value | type == "number" then .value *= 13 else .value = [.value[0] * 13, "Han"] end)
   |
   .yaku += .yakuman
   |
@@ -7,9 +7,12 @@ if has("yakuman") then
 else . end
 |
 if has("meta_yakuman") then
-  .meta_yakuman |= map(.value *= 13)
+  .meta_yakuman |= map(if .value | type == "number" then .value *= 13 else .value = [.value[0] * 13, "Han"] end)
   |
   .meta_yaku += .meta_yakuman
   |
   .meta_yakuman = []
 else . end
+|
+# remove existing yaku precedence that yakuman has on regular yaku
+.yaku_precedence |= del(.yakuman)

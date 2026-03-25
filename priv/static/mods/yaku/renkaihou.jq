@@ -3,7 +3,7 @@
 .yaku += [
   {
     "display_name": "Renkaihou",
-    "value": 2,
+    "value": [2, "Han"],
     "when": [{"name": "status", "opts": ["double_kan"]}]
   }
 ]

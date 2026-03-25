@@ -131,11 +131,9 @@ defmodule RiichiAdvanced.Utils do
   end
   def ph(tiles), do: Enum.map(tiles, &pt/1)
 
-  def print_yaku(yaku) do
-    Enum.flat_map(yaku, fn {name, value} ->
-      [%{text: name}, %{bold: true, text: "(#{value})"}]
-    end)
-  end
+  def print_yaku_value(value) when is_list(value), do: Enum.chunk_every(value, 2) |> Enum.map_join(", ", fn [num, unit] -> "#{num} #{unit}" end)
+  def print_yaku_value(value), do: "#{value}"
+  def print_yaku(yaku), do: Enum.flat_map(yaku, fn {name, value} -> [%{text: name}, %{bold: true, text: "(#{print_yaku_value(value)})"}] end)
 
   def sort_tiles(tiles, joker_assignment \\ %{}) do
     tiles
@@ -250,6 +248,10 @@ defmodule RiichiAdvanced.Utils do
     if iterations <= 0 do seat else prev_turn(prev, iterations - 1) end
   end
   
+  @spec get_seat(
+          :east | :kamicha | :north | :self | :shimocha | :south | :toimen | :west,
+          :kamicha | :self | :shimocha | :toimen
+        ) :: :east | :kamicha | :north | :self | :shimocha | :south | :toimen | :west
   def get_seat(seat, direction) do
     case direction do
       :shimocha -> next_turn(seat)
@@ -266,6 +268,10 @@ defmodule RiichiAdvanced.Utils do
       seat2 == next_turn(seat, 3) -> :kamicha
       seat2 == next_turn(seat, 4) -> :self
     end
+  rescue
+    err ->
+      IO.puts("Invalid seats passed to get_relative_seat: #{seat} and #{seat2}")
+      raise err
   end
 
   def get_wind_name(wind) do
@@ -514,16 +520,21 @@ defmodule RiichiAdvanced.Utils do
   def _split_on([x | xs], delim, acc, ret), do: _split_on(xs, delim, [x | acc], ret)
   def split_on(xs, delim), do: _split_on(Enum.reverse(xs), delim, [], [])
 
+  def map_over_values(map, f) do
+    for {k, v} <- map, into: %{}, do: {k, f.(v)}
+  end
+
   def sequence(xs) do
     xs
     |> Enum.with_index()
     |> Enum.find(fn {{tag, _}, _i} -> tag == :error end)
     |> case do
       nil                -> {:ok, Enum.map(xs, fn {:ok, x} -> x end)}
-      {{:error, msg}, i} -> {:error, "index #{i}: " <> msg}
+      {{:error, msg}, i} -> {:error, "index #{i}: #{if is_binary(msg) do msg else inspect(msg) end}"}
     end
   end
 
+  @spec insert_at(binary(), binary(), integer()) :: binary()
   def insert_at(s1, s2, ix) do
     {l, r} = String.split_at(s1, if ix < 0 do String.length(s1) + ix + 1 else ix end)
     l <> s2 <> r
@@ -560,5 +571,11 @@ defmodule RiichiAdvanced.Utils do
       [json] when is_map(json) -> [Map.new(json, fn {k, v} -> {k, splat_json(v, fun)} end)]
       jsons -> jsons # branch b
     end
+  end
+
+  # get_from_points_list([2, "Han", 1, "Shuugi"], "Han") == 2
+  def get_from_points_list(points_list, point_name) do
+    ix = Enum.find_index(points_list, & &1 == point_name)
+    if ix != nil do Enum.at(points_list, ix - 1) else 0 end
   end
 end

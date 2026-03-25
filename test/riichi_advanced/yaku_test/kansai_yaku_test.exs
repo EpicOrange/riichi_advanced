@@ -54,8 +54,7 @@ defmodule RiichiAdvanced.YakuTest.KansaiYaku do
       %{"type" => "buttons_pressed", "buttons" => [%{"button" => "ron"}, nil, nil]}
     ], %{
       east: %{
-        yaku: [{"Ao", 2}, {"Double Riichi", 2}, {"Honitsu", 3}, {"Ippatsu", 1}, {"North Wind", 1}],
-        yaku2: [],
+        yaku: [{"Ao", [2, "Han"]}, {"Double Riichi", [2, "Han"]}, {"Honitsu", [3, "Han"]}, {"Ippatsu", [1, "Han"]}, {"North Wind", [1, "Han"]}],
         minipoints: 50
       }
     })
@@ -78,8 +77,7 @@ defmodule RiichiAdvanced.YakuTest.KansaiYaku do
       %{"type" => "buttons_pressed", "buttons" => [%{"button" => "ron"}, nil, nil]}
     ], %{
       east: %{
-        yaku: [{"Double Riichi", 2}, {"Ippatsu", 1}, {"Tanyao", 1}],
-        yaku2: [],
+        yaku: [{"Double Riichi", [2, "Han"]}, {"Ippatsu", [1, "Han"]}, {"Tanyao", [1, "Han"]}],
         minipoints: 40
       }
     })
@@ -102,8 +100,7 @@ defmodule RiichiAdvanced.YakuTest.KansaiYaku do
       %{"type" => "buttons_pressed", "buttons" => [%{"button" => "ron"}, nil, nil]}
     ], %{
       east: %{
-        yaku: [{"Double Riichi", 2}, {"Honitsu", 3}, {"Ippatsu", 1}, {"North Wind", 1}],
-        yaku2: [],
+        yaku: [{"Double Riichi", [2, "Han"]}, {"Honitsu", [3, "Han"]}, {"Ippatsu", [1, "Han"]}, {"North Wind", [1, "Han"]}],
         minipoints: 50
       }
     })
@@ -148,8 +145,7 @@ defmodule RiichiAdvanced.YakuTest.KansaiYaku do
       %{"type" => "buttons_pressed", "buttons" => [%{"button" => "ron"}, nil, nil]}
     ], %{
       east: %{
-        yaku: [{"Seat Wind", 1}, {"Flower", 1}],
-        yaku2: [],
+        yaku: [{"Seat Wind", [1, "Han"]}, {"Flower", [1, "Han"]}],
         minipoints: 50
       }
     })

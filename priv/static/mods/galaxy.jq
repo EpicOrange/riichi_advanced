@@ -87,7 +87,7 @@ any(.wall[]; . == "0z") as $blue_dragon
 |
 .yakuman += [{
   "display_name": "Milky Way",
-  "value": 1,
+  "value": [1, "★"],
   "when": [{"name": "counter_at_most", "opts": ["non_galaxy_jokers", 0]}]
 }]
 |
