@@ -123,22 +123,24 @@ defmodule RiichiAdvanced.Match do
     else nil end
   end
 
-  defp remove_tile(hand, tile, ignore_suit, acc \\ [])
-  defp remove_tile([], _tile, _ignore_suit, _acc), do: []
-  defp remove_tile([t | hand], tile, ignore_suit, acc) do
-    do_remove = if ignore_suit do Utils.same_number(t, tile) else Utils.same_tile(t, tile) end
-    if do_remove do
-      ret = [Enum.reduce(acc, hand, &[&1 | &2])]
-      # try not to remove :any if possible (important for american hands)
-      if t == :any do
-        case remove_tile(hand, tile, ignore_suit, [t | acc]) do
-          []  -> ret
-          ret -> ret
-        end
-      else ret end
-    else
-      remove_tile(hand, tile, ignore_suit, [t | acc])
+  # we want to try not to remove :any if possible (important for american hands)
+  # the return value is acc, it tries not to remove :any
+  # acc2 is the case where we do remove :any for the first time
+  # return immediately if we remove a non-:any tile
+  # otherwise if we reach [] we return acc2 (i.e. we removed :any)
+  defp _remove_tile(hand, check, acc \\ [], acc2 \\ nil)
+  defp _remove_tile([], _check, _acc, nil), do: []
+  defp _remove_tile([], _check, _acc, {acc, rest}), do: [Enum.reverse(acc, rest)]
+  defp _remove_tile([t | rest], check, acc, acc2) do
+    do_remove = check.(t)
+    cond do
+      do_remove and t != :any -> [Enum.reverse(acc, rest)]
+      do_remove and acc2 == nil -> _remove_tile(rest, check, [t | acc], {acc, rest})
+      true -> _remove_tile(rest, check, [t | acc], acc2)
     end
+  end
+  defp remove_tile(hand, tile, ignore_suit) do
+    _remove_tile(hand, if ignore_suit do &Utils.same_number(&1, tile) else &Utils.same_tile(&1, tile) end)
   end
 
   defp _try_remove_all_tiles(hand, [], _tile_behavior), do: [hand]
