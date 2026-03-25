@@ -12,9 +12,21 @@ apply subtract, "default_mods", ["suufon_renda", "suucha_riichi"]
 define_mod_category "Sanma", prepend: true
 # tsumo loss is not working right now
 # define_mod "sanma_no_tsumo_loss", name: "No Tsumo Loss", category: "Sanma", desc: "When you tsumo, you get the same total points as if it was a ron payment. (Nondealer tsumo mangan splits north's payment, giving you 5000+3000 instead of 4000+2000.)"
-define_mod "sanma_chii", order: 1, name: "Enable Chii", category: "Sanma", desc: "Allow chii during sanma."
-define_mod "sanma_pei_yakuhai", order: 1, name: "North Is Yakuhai", category: "Sanma", desc: "North wind is now yakuhai. (1 han for a triplet, 2 fu for a pair)"
-define_mod "sanma_disable_pei", order: 1, name: "Disable Pei", category: "Sanma", desc: "You can no longer call north winds as nukidora."
+define_mod sanma_chii, order: 1, name: "Enable Chii", category: "Sanma", desc: "Allow chii during sanma."
+define_mod sanma_pei_yakuhai, order: 1, name: "North Is Yakuhai", category: "Sanma", desc: "North wind is now yakuhai. (1 han for a triplet, 2 fu for a pair)"
+define_mod sanma_disable_pei, order: 1, name: "Disable Pei", category: "Sanma", desc: "You can no longer call north winds as nukidora."
+define_mod sanma_no_tsumo_loss, order: 1, name: "No Tsumo Loss", category: "Sanma", desc: """
+Disable tsumo loss due to not having a fourth player. Available methods are:
+- half: Both players pay half of the missing payment.
+- full: Both players pay the missing payment in full (which doubles the missing payment).
+- equalize: The missing payment is split so that both players pay the same amount.
+- proportional: The missing payment is split so that the dealer still pays roughly 2x the nondealer.
+- oya_pays: The missing payment is paid in full by the dealer.
+- ko_pays: The missing payment is paid in full by the nondealer.
+- add_1000: Add a flat +1000 to each player's payment.
+- ron_loss: Tsumo loss is on, but ron payment is decreased to be the same as tsumo.
+"""
+config_mod sanma_no_tsumo_loss, name: "method", values: ["half", "full", "equalize", "proportional", "oya_pays", "ko_pays", "add_1000", "ron_loss"]
 
 # remove manzu from wall
 apply subtract, "wall", [

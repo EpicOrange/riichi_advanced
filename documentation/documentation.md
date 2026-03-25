@@ -1205,28 +1205,6 @@ After score is calculated, there are two keys that can cap the score to a minimu
       "max_score": 500
     }
 
-**Tsumo loss**
-
-**Note: this setting has been taken out of the game due to a scoring rewrite, but will be re-added if needed**
-
-For three-player variants, a win by self-draw typically pays less than a win by discard. For example, a dealer mangan tsumo in riichi is worth 12000 (4000 per player), but is worth only 8000 in three player due to tsumo loss. You can disable tsumo loss by setting the following:
-
-    apply append, score_calculation, {
-      "tsumo_loss": false
-    }
-
-This will take the 'lost' portion of the payment and split it equally between the two paying players.
-
-Other allowed values for `"tsumo_loss"` beyond `true` and `false` are:
-
-- `"add_1000"`: A flat 1000 is added to each player's payment.
-- `"unequal_split"`: When a nondealer wins, the missing payment is split so that the dealer still pays roughly double the payment for the other nondealer.
-- `"north_split"`: This is the same behavior as `false`.
-- `"equal_split"`: The missing payment is split so that both players pay the same amount.
-- `"north_to_oya"`: The missing payment is paid by the dealer.
-- `"double_collection"`: Both players pay the full amount including the missing payment, which effectively doubles the payment.
-- `"ron_loss"`: Tsumo loss is on, but the loss is also applied to ron as well.
-
 **Triple ron draw**
 
 If triple ron should be treated as an abortive draw, set:

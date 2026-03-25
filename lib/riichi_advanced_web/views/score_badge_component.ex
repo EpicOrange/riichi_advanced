@@ -1,4 +1,5 @@
 defmodule RiichiAdvancedWeb.ScoreBadgeComponent do
+  alias RiichiAdvanced.Utils, as: Utils
   use RiichiAdvancedWeb, :live_component
   import RiichiAdvancedWeb.Translations
 
@@ -13,7 +14,7 @@ defmodule RiichiAdvancedWeb.ScoreBadgeComponent do
       <%= if @delta_score != 0 do %>
         <div class={["delta-score", if @delta_score >= 0 do "positive" else "negative" end]}>
           <%= if @delta_score >= 0 do "+" else "−" end %>
-          <%= abs(@delta_score) %>
+          <%= Utils.try_integer(round(abs(@delta_score) * 100) / 100) %>
         </div>
       <% end %>
       <div class="hline"></div>

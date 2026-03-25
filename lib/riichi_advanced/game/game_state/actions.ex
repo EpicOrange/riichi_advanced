@@ -778,6 +778,12 @@ defmodule RiichiAdvanced.GameState.Actions do
   defp eval_expression(state, context, ["*", [l, r]]), do: eval_expression(state, context, l) * eval_expression(state, context, r)
   defp eval_expression(state, context, ["/", [l, r]]), do: eval_expression(state, context, l) / eval_expression(state, context, r)
   defp eval_expression(state, context, ["**", [l, r]]), do: eval_expression(state, context, l) ** eval_expression(state, context, r)
+  defp eval_expression(state, context, ["round", [l, r]]) do
+    l = eval_expression(state, context, l)
+    r = eval_expression(state, context, r)
+    to = if r == 0 do 10 else r end
+    Utils.try_integer(round(l / to) * to)
+  end
   defp eval_expression(state, context, ["round_up", [l, r]]) do
     l = eval_expression(state, context, l) |> trunc()
     r = eval_expression(state, context, r)

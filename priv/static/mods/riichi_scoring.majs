@@ -73,6 +73,7 @@ define_scoring ron do
     total = minipoints :: "Fu"
     total *= han_mult :: "Base"
   end
+  base_score = total # save base_score for mods to use
   if seat_is("east", as: "winner") do
     total *= 6 :: "Dealer ron"
     if total < 12000 do
@@ -99,6 +100,7 @@ define_scoring tsumo do
     total = minipoints :: "Fu"
     total *= han_mult :: "Base"
   end
+  base_score = total # save base_score for mods to use
   if seat_is("east", as: "winner") or seat_is("east") do
     total *= 2 :: "Dealer tsumo"
     if total < 4000 do

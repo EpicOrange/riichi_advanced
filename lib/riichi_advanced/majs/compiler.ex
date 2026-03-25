@@ -49,8 +49,8 @@ defmodule RiichiAdvanced.Compiler do
   alias RiichiAdvanced.Utils
   alias RiichiAdvanced.Validator
 
-  @unops [:-, "round_up"]
-  @binops [:+, :-, :*, :/, :**, :=, "round_up"]
+  @unops [:-, "round_up", "round_down", "round"]
+  @binops [:+, :-, :*, :/, :**, :=, "round_up", "round_down", "round"]
   # "atan2", "copysign", "drem", "fdim", "fmax", "fmin", "fmod", "frexp", "hypot", "jn", "ldexp",
   # "modf", "nextafter", "nexttoward", "pow", "remainder", "scalb", "scalbln", "yn"
 

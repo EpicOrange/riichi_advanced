@@ -149,7 +149,7 @@ defmodule RiichiAdvanced.GameState.Conditions do
         if last_call_action != nil do last_call_action.from else context.seat end
       "prev_seat" -> Map.get(context, :prev_seat, context.seat)
       "last_seat" -> Map.get(context, :prev_seat, context.seat)
-      "winner"    -> Map.get(context, :winner, context.winner_seat)
+      "winner"    -> Map.get(context, :winner, Map.get(context, :winner_seat, nil))
       _ ->
         IO.puts("Invalid seat spec #{inspect(seat_spec)}!")
         context.seat

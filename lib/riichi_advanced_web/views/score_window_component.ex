@@ -183,6 +183,7 @@ defmodule RiichiAdvancedWeb.ScoreWindowComponent do
       "-" -> "-"
       "*" -> "×"
       "/" -> "÷"
+      "round" -> "↕"
       "round_up" -> "↑"
       "round_down" -> "↓"
       _  -> ""
