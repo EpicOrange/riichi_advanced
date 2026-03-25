@@ -75,7 +75,7 @@ defmodule RiichiAdvanced.Compiler do
       {:>, pos, [{l, _, nil}, r]} -> compile_condition({"amount_more_than", pos, [l, r]}, line, column)
       {:>, pos, [l, r]} -> compile_condition({"amount_more_than", pos, [l, r]}, line, column)
       {:not, _, [condition]} ->
-        with {:ok, result} <- compile_cnf_condition(condition, line, column) do
+        with {:ok, result} <- compile_condition_list(condition, line, column) do
           {:ok, %{"name" => "not", "opts" => [result]}}
         end
       {:+, _, _} -> Validator.validate_json(condition)
@@ -120,36 +120,42 @@ defmodule RiichiAdvanced.Compiler do
     end
   end
 
-  defp compile_cnf_condition(condition, line, column) do
+  defp _compile_condition_list(condition, line, column, conj) do
     case condition do
+      {"at_least", [line: line, column: column], args} ->
+        case args do
+          [n | conds] when is_number(n) ->
+            with {:ok, compiled_args} <- Utils.sequence(Enum.map(conds, &_compile_condition_list(&1, line, column, true))) do
+              ret = compiled_args |> Enum.map(&List.wrap/1) |> Enum.concat()
+              {:ok, if conj do [n | ret] else [[n | ret]] end}
+            end
+          _ -> {:error, "at_least(n, conditions) expects a number as the first argument, got #{inspect(Enum.at(args, 0))}"}
+        end
+      {"at_most", [line: line, column: column], args} ->
+        case args do
+          [n | conds] when is_number(n) ->
+            with {:ok, compiled_args} <- Utils.sequence(Enum.map(conds, &_compile_condition_list(&1, line, column, true))) do
+              ret = compiled_args |> Enum.map(&List.wrap/1) |> Enum.concat()
+              {:ok, if conj do [[n | ret]] else [n | ret] end}
+            end
+          _ -> {:error, "at_least(n, conditions) expects a number as the first argument, got #{inspect(Enum.at(args, 0))}"}
+        end
       {:and, [line: line, column: column], args} ->
-        with {:ok, compiled_args} <- Utils.sequence(Enum.map(args, &compile_cnf_condition(&1, line, column))) do
-          {:ok, compiled_args |> Enum.map(&List.wrap/1) |> Enum.concat()}
+        with {:ok, compiled_args} <- Utils.sequence(Enum.map(args, &_compile_condition_list(&1, line, column, true))) do
+          ret = compiled_args |> Enum.map(&List.wrap/1) |> Enum.concat()
+          {:ok, if conj do ret else [ret] end}
         end
       {:or, [line: line, column: column], args} ->
-        with {:ok, compiled_args} <- Utils.sequence(Enum.map(args, &compile_dnf_condition(&1, line, column))) do
-          {:ok, [compiled_args |> Enum.map(&List.wrap/1) |> Enum.concat()]}
-        end
-      _ -> compile_condition(condition, line, column)
-    end
-  end
-
-  defp compile_dnf_condition(condition, line, column) do
-    case condition do
-      {:or, [line: line, column: column], args} ->
-        with {:ok, compiled_args} <- Utils.sequence(Enum.map(args, &compile_dnf_condition(&1, line, column))) do
-          {:ok, compiled_args |> Enum.map(&List.wrap/1) |> Enum.concat()}
-        end
-      {:and, [line: line, column: column], args} ->
-        with {:ok, compiled_args} <- Utils.sequence(Enum.map(args, &compile_cnf_condition(&1, line, column))) do
-          {:ok, [compiled_args |> Enum.map(&List.wrap/1) |> Enum.concat()]}
+        with {:ok, compiled_args} <- Utils.sequence(Enum.map(args, &_compile_condition_list(&1, line, column, false))) do
+          ret = compiled_args |> Enum.map(&List.wrap/1) |> Enum.concat()
+          {:ok, if conj do [ret] else ret end}
         end
       _ -> compile_condition(condition, line, column)
     end
   end
 
   defp compile_condition_list(condition, line, column) do
-    with {:ok, condition} <- compile_cnf_condition(condition, line, column) do
+    with {:ok, condition} <- _compile_condition_list(condition, line, column, true) do
       case condition do
         %Constant{} -> {:ok, condition}
         %Variable{} -> {:ok, condition}
@@ -369,7 +375,7 @@ defmodule RiichiAdvanced.Compiler do
     with {:ok, value} <- Parser.parse_sigils(value),
          {:error, _} <- Validator.validate_expression(value),
          {:error, _} <- Validator.validate_json(value),
-         {:error, _} <- compile_cnf_condition(value, line, column),
+         {:error, _} <- compile_condition_list(value, line, column),
          {:error, _} <- compile_action(value, line, column) do
       {:error, "Compiler.compile_constant: at line #{line}:#{column}, expected JSON, condition, action, or do block, got #{inspect(value)}"}
     end
@@ -510,6 +516,27 @@ defmodule RiichiAdvanced.Compiler do
         {:ok, ".[#{name}].actions |= #{body} + ."}
       else
         {:ok, ".[#{name}].actions += #{body}"}
+      end
+    end
+  end
+
+  defp compile_command("define_play_effect", tile_spec, args, line, column) do
+    {prepend, args} = case args do
+      [[{"prepend", prepend}], args] -> {prepend, args}
+      [[{"prepend", prepend}] | args] -> {prepend, args}
+      _ -> {false, args}
+    end
+    body = case args do
+      [fn_name] when is_binary(fn_name) -> {:ok, [["run", Validator.sanitize_string(fn_name)]]}
+      [{fn_name, _pos, nil}] when is_binary(fn_name) -> {:ok, [["run", Validator.sanitize_string(fn_name)]]}
+      _ -> compile_action_list(args, line, column)
+    end
+    with {:ok, body} <- body,
+         {:ok, body} <- Jason.encode(body) do
+      if prepend do
+        {:ok, ".play_effects |= [[#{tile_spec}, #{body}]] + ."}
+      else
+        {:ok, ".play_effects += [[#{tile_spec}, #{body}]]"}
       end
     end
   end
@@ -1113,6 +1140,7 @@ defmodule RiichiAdvanced.Compiler do
 
   def add_error_cxt({:ok, data}, _msg), do: {:ok, data}
   def add_error_cxt({:error, data}, msg), do: {:error, data <> "\n" <> msg}
+  def add_error_cxt(data, msg), do: {:error, "got something not :ok or :error (#{inspect(data)})\n" <> msg}
 
   # WIP simple decompiler: json -> majs
 
