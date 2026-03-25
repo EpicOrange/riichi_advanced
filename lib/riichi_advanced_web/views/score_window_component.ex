@@ -78,7 +78,7 @@ defmodule RiichiAdvancedWeb.ScoreWindowComponent do
           <%= dt(@lang, "Skip") %> (<%= @timer %>)
         <% end %>
       </div>
-      <svg style="display: none">
+      <svg>
         <symbol id="arrow">
           <defs>
             <linearGradient id="fade" x2="1">
