@@ -12,7 +12,11 @@ defmodule RiichiAdvanced.TestUtils do
   @suppress_io true
   # @suppress_io false
 
-  def initialize_test_state(ruleset, mods, config \\ nil) do
+  def initialize_test_state(ruleset, mods, config \\ nil)
+  def initialize_test_state(_ruleset, nil, _config) do
+    IO.puts("initialize_test_state: You passed in `nil` instead of a mod list! Check if you are using an undefined module attribute like @zan_mods.")
+  end
+  def initialize_test_state(ruleset, mods, config) do
     room_code = Ecto.UUID.generate()
     args = [room_code: room_code, ruleset: ruleset, mods: mods, config: config, name: Utils.via_registry("game", ruleset, room_code)]
     game_spec = Supervisor.child_spec(%{

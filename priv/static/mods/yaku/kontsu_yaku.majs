@@ -345,7 +345,7 @@ define_const closed_hand, has_no_call_named("ton", "chii", "chon", "chon_honors"
 replace_yaku yaku, "Ittsuu", [1, "Han"], match(["hand", "calls", "winning_tile"], ~m"exhaustive, mentsu:1, pair:1, kontsu:-1, ittsuu:1")
 replace_yaku yaku, "Iipeikou", [1, "Han"], @closed_hand and match(["hand", "calls", "winning_tile"], ~m"exhaustive, mentsu:2, pair:1, kontsu:-1, iipeikou:1")
 replace_yaku yaku, "Isshoku Sanjun", [2, "Han"], match(["hand", "calls", "winning_tile"], ~m"exhaustive, mentsu:1, pair:1, kontsu:-1, iishoku_sanjun:1")
-replace_yaku yakuman, "Isshoku Yonjun", [1, "Han"], match(["hand", "calls", "winning_tile"], ~m"exhaustive, kontsu:-1, iishoku_yonjun:1, pair:1")
+replace_yaku yakuman, "Isshoku Yonjun", [1, "★"], match(["hand", "calls", "winning_tile"], ~m"exhaustive, kontsu:-1, iishoku_yonjun:1, pair:1")
 replace_yaku yaku, "Ryanpeikou", [1, "Han"], match(["hand", "calls", "winning_tile"], ~m"exhaustive, pair:1, kontsu:-1, iipeikou:2")
 
 # rinshan also works with fuun
@@ -354,7 +354,7 @@ replace_yaku yaku, "Rinshan", [1, "Han"], status("kan") or status("fuun")
 define_yaku yaku, "Toikon", [1, "Han"], match(["hand", "calls", "winning_tile"], ~m"exhaustive, kontsu:4, pair:1")
 define_yaku yaku, "Ryandoukon", [1, "Han"], @closed_hand and match(["hand", "calls", "winning_tile"], ~m"exhaustive, ryandoukon:1, mentsu:2, pair:1")
 define_yaku yaku, "Sandoukon", [2, "Han"], match(["hand", "calls", "winning_tile"], ~m"exhaustive, sandoukon:1, mentsu:1, pair:1")
-define_yaku yakuman, "Yondoukon", [1, "Han"], match(["hand", "calls", "winning_tile"], ~m"exhaustive, yondoukon:1, pair:1")
+define_yaku yakuman, "Yondoukon", [1, "★"], match(["hand", "calls", "winning_tile"], ~m"exhaustive, yondoukon:1, pair:1")
 define_yaku meta_yaku, "Toikon", [1, "Han"], @closed_hand and has_existing_yaku("Toikon")
 define_yaku meta_yaku, "Sandoukon", [1, "Han"], @closed_hand and has_existing_yaku("Sandoukon")
 

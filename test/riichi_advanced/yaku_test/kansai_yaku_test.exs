@@ -22,6 +22,7 @@ defmodule RiichiAdvanced.YakuTest.KansaiYaku do
     # "kandora",
     %{name: "yaku/riichi_renhou", config: %{is: "Yakuman"}},
     "show_waits",
+    "sanma_pei_yakuhai",
     %{name: "min_han", config: %{min: 1}},
     # "cancellable_riichi",
     "yaku/ippatsu",
