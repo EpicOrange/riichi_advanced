@@ -415,8 +415,6 @@ define_button charleston_right,
       if status("blind_pass_right") do draw(3, "1x") end
     end
     charleston_right
-
-    charleston_left
     if status("first_charleston") do set_status("charleston_across") end
     if status("second_charleston") do unset_status("second_charleston"); set_status("final_charleston") end
   end
