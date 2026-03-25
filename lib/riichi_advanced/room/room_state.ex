@@ -326,7 +326,7 @@ defmodule RiichiAdvanced.RoomState do
             state = put_in(state.mods[mod_name].enabled, false)
             state = update_in(state.mods[mod_name].config, &Map.new(&1, fn {config_name, config} -> {config_name, Map.put(config, :value, Map.get(config, "default", Enum.at(config["values"], 0)))} end))
             state
-          %{name: name, config: default_config} ->
+          %{name: _name, config: default_config} ->
             state = put_in(state.mods[mod_name].enabled, true)
             state = update_in(state.mods[mod_name].config, &Map.new(&1, fn {config_name, config} -> {config_name, Map.put(config, :value, Map.get(default_config, config_name, Enum.at(config["values"], 0)))} end))
             state
