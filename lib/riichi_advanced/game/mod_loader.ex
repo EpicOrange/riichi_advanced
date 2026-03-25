@@ -208,11 +208,19 @@ defmodule RiichiAdvanced.ModLoader do
           id when is_binary(id) -> id in all_mod_ids
           mod -> mod.name in all_mod_ids
         end)
-        display_name = Map.get(modpack, :display_name, ruleset)
-        # set default mods and display name
-        query = ".default_mods += #{Jason.encode!(default_mods)} | .display_name = \"#{display_name}\""
-        # set or remove tutorial link
-        query = query <> " | " <> if Map.has_key?(modpack, :tutorial_link) do ".tutorial_link = \"#{modpack.tutorial_link}\"" else "del(.tutorial_link)" end
+        # set default mods
+        query = ".default_mods += #{Jason.encode!(default_mods)}"
+        # set or remove display name and/or tutorial link
+        query = query <> case Map.get(modpack, :display_name, nil) do
+          nil          -> ""
+          :delete      -> "| del(.tutorial_link)"
+          display_name -> " | .display_name = \"#{display_name}\""
+        end
+        query = query <> case Map.get(modpack, :tutorial_link, nil) do
+          nil           -> ""
+          :delete       -> "| del(.tutorial_link)"
+          tutorial_link -> "| .tutorial_link = \"#{tutorial_link}\""
+        end
         # remove already applied mods
         query = query <> " | " <> ".default_mods = (.default_mods // []) - #{Jason.encode!(all_mod_ids)}"
         query = query <> " | " <> ".available_mods = ((.available_mods // []) | map(select(if type == \"object\" then .id else .  end | IN(#{Enum.map_join(all_mod_ids, ", ", &Jason.encode!/1)}) | not)))"
