@@ -391,12 +391,6 @@ defmodule RiichiAdvancedWeb.GameLive do
           <div class="rules-popover-container" phx-click="noop">
             <div class="rules-popover">
               <%= for {title, {text, vars, priority}} <- Enum.sort_by(@state.rules_text[rules_text_name], fn {_title, {text, _vars, priority}} -> {priority, text |> Enum.join("\n") |> String.length()} end) do %>
-                <%
-                  vars = Map.merge(vars, %{
-                    "round_wind_triplet" => get_wind_triplet(Riichi.get_round_wind(@state.kyoku, length(@state.available_seats))),
-                    "seat_wind_triplet" => get_wind_triplet(@seat),
-                  })
-                %>
                 <div class={["rules-popover-rule", priority < 0 && "full-width"]}>
                   <div class="rules-popover-title"><%= dt(@lang, title, vars) %></div>
                   <div class="rules-popover-text"><%= raw Enum.map_join(text, "\n", &dt(@lang, &1, vars)) %></div>

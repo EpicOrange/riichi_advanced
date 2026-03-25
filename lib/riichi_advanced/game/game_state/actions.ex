@@ -1220,8 +1220,8 @@ defmodule RiichiAdvanced.GameState.Actions do
         text = Enum.at(opts, 2, "")
         {tab, id, text, vars, priority} = if is_map(Enum.at(opts, 3)) do
           vars = Enum.at(opts, 3, %{})
-          tab = interpolate_string(state, context, tab, vars)
-          id = interpolate_string(state, context, id, vars)
+          tab = String.trim(interpolate_string(state, context, tab, vars))
+          id = String.trim(interpolate_string(state, context, id, vars))
           text = interpolate_string(state, context, text, vars)
           priority = Enum.at(opts, 4, nil)
           {tab, id, text, vars, priority}

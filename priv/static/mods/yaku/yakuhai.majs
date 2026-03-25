@@ -1,10 +1,18 @@
 on after_initialization do
-  add_rule("1 $han", "Value Triplets", """
-  1 %{han} for each of the following triplets in your hand:
-  - A triplet of dragon tiles %{dragons}
-  - A triplet of winds matching the round marker %{round_wind_triplet}
-  - A triplet of winds matching your seat %{seat_wind_triplet}
-  """, %{han: !han, dragons: ~t"777z"})
+  add_rule("1 $han", "Value Triplets", "1 %{han} for each of the following triplets in your hand:", %{han: !han})
+  add_rule("1 $han", "Value Triplets", "- A triplet of dragon tiles %{dragons}", %{han: !han, dragons: ~t"777z"})
+  cond do
+    round_wind_is("east")  -> add_rule("1 $han", "Value Triplets", "- A triplet of winds matching the round marker %{round_winds}", %{han: !han, round_winds: ~t"111z"})
+    round_wind_is("south") -> add_rule("1 $han", "Value Triplets", "- A triplet of winds matching the round marker %{round_winds}", %{han: !han, round_winds: ~t"222z"})
+    round_wind_is("west")  -> add_rule("1 $han", "Value Triplets", "- A triplet of winds matching the round marker %{round_winds}", %{han: !han, round_winds: ~t"333z"})
+    round_wind_is("north") -> add_rule("1 $han", "Value Triplets", "- A triplet of winds matching the round marker %{round_winds}", %{han: !han, round_winds: ~t"444z"})
+  end
+  cond do
+    seat_is("east")  -> add_rule("1 $han", "Value Triplets", "- A triplet of winds matching your seat %{seat_winds}", %{han: !han, seat_winds: ~t"111z"})
+    seat_is("south") -> add_rule("1 $han", "Value Triplets", "- A triplet of winds matching your seat %{seat_winds}", %{han: !han, seat_winds: ~t"222z"})
+    seat_is("west")  -> add_rule("1 $han", "Value Triplets", "- A triplet of winds matching your seat %{seat_winds}", %{han: !han, seat_winds: ~t"333z"})
+    seat_is("north") -> add_rule("1 $han", "Value Triplets", "- A triplet of winds matching your seat %{seat_winds}", %{han: !han, seat_winds: ~t"444z"})
+  end
 end
 
 # dragons

@@ -431,12 +431,20 @@ on after_initialization do
   update_rule("1 Han", "Tanyao", "%{example_hand}", %{example_hand: ~t"234m33777p45678s 6s"})
   add_rule("1 Han", "Iipeikou", "Your closed hand has a double sequence: two copies of the exact same sequence in one suit, like 123 123.")
   update_rule("1 Han", "Iipeikou", "%{example_hand}", %{example_hand: ~t"33445m33777p678s 5m"})
-  add_rule("1 Han", "Yakuhai", """
-  1 %{han} for each of the following triplets in your hand:
-  - A triplet of dragon tiles %{dragons}
-  - A triplet of winds matching the round marker %{round_wind_triplet}
-  - A triplet of winds matching your seat %{seat_wind_triplet}
-  """, %{han: "Han", dragons: ~t"777z"})
+  add_rule("1 Han", "Yakuhai", "1 %{han} for each of the following triplets in your hand:")
+  add_rule("1 Han", "Yakuhai", "- A triplet of dragon tiles %{dragons}", %{dragons: ~t"777z"})
+  cond do
+    round_wind_is("east")  -> add_rule("1 Han", "Yakuhai", "- A triplet of winds matching the round marker %{round_winds}", %{round_winds: ~t"111z"})
+    round_wind_is("south") -> add_rule("1 Han", "Yakuhai", "- A triplet of winds matching the round marker %{round_winds}", %{round_winds: ~t"222z"})
+    round_wind_is("west")  -> add_rule("1 Han", "Yakuhai", "- A triplet of winds matching the round marker %{round_winds}", %{round_winds: ~t"333z"})
+    round_wind_is("north") -> add_rule("1 Han", "Yakuhai", "- A triplet of winds matching the round marker %{round_winds}", %{round_winds: ~t"444z"})
+  end
+  cond do
+    seat_is("east")  -> add_rule("1 Han", "Yakuhai", "- A triplet of winds matching your seat %{seat_winds}", %{seat_winds: ~t"111z"})
+    seat_is("south") -> add_rule("1 Han", "Yakuhai", "- A triplet of winds matching your seat %{seat_winds}", %{seat_winds: ~t"222z"})
+    seat_is("west")  -> add_rule("1 Han", "Yakuhai", "- A triplet of winds matching your seat %{seat_winds}", %{seat_winds: ~t"333z"})
+    seat_is("north") -> add_rule("1 Han", "Yakuhai", "- A triplet of winds matching your seat %{seat_winds}", %{seat_winds: ~t"444z"})
+  end
   add_rule("2 Han", "Chiitoitsu", "Your hand consists of seven non-repeating pairs.")
   update_rule("2 Han", "Chiitoitsu", "%{example_hand}", %{example_hand: ~t"2266m99p24477s33z 2s"})
   add_rule("1 Han", "Chanta", "1 han if each of the 5 blocks in your hand contains a terminal or honor. 2 han if closed.")
