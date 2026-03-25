@@ -427,6 +427,7 @@ define_button kakan,
   display_name: "Gong",
   call: [[0, 0, 0]],
   call_conditions: not_call_contains(["2y"], 1),
+  upgrades: "pon",
   show_when: status_missing("match_start")
     and our_turn
     and not_no_tiles_remaining
