@@ -84,9 +84,9 @@ defmodule RiichiAdvancedWeb.LobbyLive do
             <%= for mod <- room.mods do %>
               <div class="room-mod">
                 <%= case mod do %>
-                <%= %{name: name} -> %>
+                <% %{name: name} -> %>
                   <%= dt(@lang, name) %>
-                <%= name when is_binary(name) -> %>
+                <% name when is_binary(name) -> %>
                   <%= dt(@lang, name) %>
                 <% _ -> %>
                 <% end %>

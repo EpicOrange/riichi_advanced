@@ -14,28 +14,12 @@ defmodule RiichiAdvanced.GameState.JokerSolver do
   end
   # smt hand = hand with winning tile appended to the end
   # smt calls = flattened calls that aren't flowers
-  def get_smt_hand_calls(state, seat, nil) do
-    # e.g. in the case we're tenhou, any of our hand+draw tiles could be the winning tile
-    hand = state.players[seat].hand ++ state.players[seat].draw
-    smt_calls = state.players[seat].calls
-    |> Enum.reject(fn {call_name, _call} -> call_name in Riichi.flower_names() end)
-    |> Enum.map(&Utils.call_to_tiles/1)
-    # try each tile, starting from the rightmost
-    for winning_tile <- Enum.reverse(Enum.uniq(hand)) do
-      smt_hand = List.delete(hand, winning_tile) ++ [winning_tile]
-      {smt_hand, smt_calls}
-    end
-  end
-  def get_smt_hand_calls(_state, _seat, :any) do
-    # TODO in case we're tenpai, we need to return every tile that makes us win
-    []
-  end
   def get_smt_hand_calls(state, seat, winning_tile) do
     smt_hand = state.players[seat].hand ++ [winning_tile]
     smt_calls = state.players[seat].calls
     |> Enum.reject(fn {call_name, _call} -> call_name in Riichi.flower_names() end)
     |> Enum.map(&Utils.call_to_tiles/1)
-    [{smt_hand, smt_calls}]
+    {smt_hand, smt_calls}
   end
   # get an assignment for the obvious jokers (the ones with only one assignable value)
   def get_obvious_joker_assignment(tile_behavior, smt_hand, smt_calls) do
@@ -85,13 +69,16 @@ defmodule RiichiAdvanced.GameState.JokerSolver do
     # TODO can we somehow check if the stream is empty, and return Stream.new([[obvious_joker_assignment]]) if so?
   end
 
-  # append a winning tile to hand before calling this
-  def apply_joker_assignment(hand, calls, joker_assignment) do
+  # input is original hand and calls, and original winning tile
+  # in the case of tenhou, pass in the smt hand instead
+  def apply_joker_assignment(hand, calls, winning_tile, joker_assignment) do
     {flower_calls, non_flower_calls} = Enum.split_with(calls, fn
       {call_name, _call} -> call_name in Riichi.flower_names()
       _                  -> false
     end)
-    assigned_hand = hand |> Enum.drop(-1) |> Enum.with_index() |> Enum.map(fn {tile, ix} -> Map.get(joker_assignment, ix, tile) end)
+    assigned_hand = hand
+    |> Enum.with_index()
+    |> Enum.map(fn {tile, ix} -> Map.get(joker_assignment, ix, tile) end)
 
     assigned_non_flower_calls = non_flower_calls
     |> Enum.with_index()
@@ -102,10 +89,10 @@ defmodule RiichiAdvanced.GameState.JokerSolver do
       {call_name, call}
     end)
     assigned_calls = flower_calls ++ assigned_non_flower_calls
-    # length(hand)-1 is where the solver puts the winning tile
+    # length(hand) is where the solver puts the winning tile
     # if the winning tile is a joker, the following gets its assignment,
     # otherwise it just takes the hand's last tile
-    assigned_winning_tile = Map.get(joker_assignment, length(hand) - 1, Enum.at(hand, -1))
+    assigned_winning_tile = Map.get(joker_assignment, length(hand), winning_tile)
     assigned_winning_hand = assigned_hand ++ Enum.flat_map(assigned_calls, &Utils.call_to_tiles/1) ++ if assigned_winning_tile != nil do [assigned_winning_tile] else [] end
     {assigned_hand, assigned_calls, assigned_winning_hand, assigned_winning_tile}
   end
@@ -127,8 +114,7 @@ defmodule RiichiAdvanced.GameState.JokerSolver do
     # else joker_assignment end
 
     # use the joker assignment to obtain winner's {hand, calls} with jokers replaced by their assignments
-    # must use smt hand and orig calls, that's what the function expects
-    {assigned_hand, assigned_calls, assigned_winning_hand, assigned_winning_tile} = apply_joker_assignment(smt_hand, state.players[seat].calls, joker_assignment)
+    {assigned_hand, assigned_calls, assigned_winning_hand, assigned_winning_tile} = apply_joker_assignment(state.players[seat].hand, state.players[seat].calls, winning_tile, joker_assignment)
 
     # replace the winner's hand/calls temporarily (for yaku evaluation)
     state = update_player(state, seat, &%{ &1 | hand: assigned_hand, calls: assigned_calls, cache: %{ &1.cache | winning_hand: assigned_winning_hand } })
@@ -143,6 +129,7 @@ defmodule RiichiAdvanced.GameState.JokerSolver do
 
     # run before_scoring only after replacing those tiles
     # this is because before_scoring might add attributes to hand, which will be used for yaku calculation
+    # also you need non-joker tiles in order to calculate fu and such here
     state = Actions.trigger_event(state, "before_scoring", cxt)
 
     # fetch the new hand, calls, and winning tile

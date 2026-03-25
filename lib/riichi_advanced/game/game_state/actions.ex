@@ -610,7 +610,7 @@ defmodule RiichiAdvanced.GameState.Actions do
         winning_tile = get_winning_tile(state, context.seat, context.win_source)
         initial_hand_calls_fus = if winning_tile == nil do
           # it's tenhou, so just take the existing hand
-          [{player.hand ++ player.draw, player.calls, [0]}]
+          [{player.draw ++ player.hand, player.calls, [0]}]
         else
           [{[winning_tile | player.hand], player.calls, [0]}]
         end

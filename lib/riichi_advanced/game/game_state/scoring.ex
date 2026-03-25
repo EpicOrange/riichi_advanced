@@ -91,48 +91,75 @@ defmodule RiichiAdvanced.GameState.Scoring do
     end
   end
 
-  # TODO replace inner loop with JokerSolver.evaluate_joker_assignment?
-  # this is only here bc of shortcutting
+  # this is basically a clone of Kyoku.calculate_winner_details_v2 and Joker.evaluate_joker_assignment
+  # doesn't calculate a whole winner object, just finds yaku and dips
+  # TODO DRY
   def seat_scores_points(state, yaku_list_names, point_name, min_points, min_minipoints, seat, winning_tile, win_source) do
-    for {smt_hand, smt_calls} <- JokerSolver.get_smt_hand_calls(state, seat, winning_tile) do
-      JokerSolver.solve_for_jokers(
-        state.mutex,
-        smt_hand, smt_calls,
-        state.smt_solver,
-        state.rules_ref,
-        state.players[seat].tile_behavior)
-      |> Task.async_stream(fn joker_assignment ->
-        # apply joker assignments
-        {assigned_hand, assigned_calls, assigned_winning_hand, assigned_winning_tile} = JokerSolver.apply_joker_assignment(smt_hand, state.players[seat].calls, joker_assignment)
-        state = update_player(state, seat, &%{ &1 | hand: assigned_hand, calls: assigned_calls, cache: %{ &1.cache | winning_hand: assigned_winning_hand } })
-        state = if assigned_winning_tile != nil do
-          update_winning_tile(state, seat, win_source, fn _ -> assigned_winning_tile end)
-        else state end
-        # run before_win actions
-        state = Actions.trigger_event(state, "before_win", %{seat: seat, win_source: win_source, winning_tile: assigned_winning_tile, silent: true})
-        # run before_scoring actions
-        state = Actions.trigger_event(state, "before_scoring", %{seat: seat, win_source: win_source, winning_tile: assigned_winning_tile, silent: true})
-        
-        # get winning tile, ensure this happens after running before_scoring above
-        if assigned_winning_tile == nil do
-          IO.puts("WARNING: tried to get yaku without a winning tile")
-          IO.inspect(Process.info(self(), :current_stacktrace))
-        end
-        {yaku, minipoints} = get_yaku_from_lists(state, yaku_list_names, seat, assigned_winning_tile, win_source)
-        minipoints >= min_minipoints && case min_points do
-          :declared ->
-            names = Enum.map(yaku, fn {name, _value} -> name end)
-            Enum.all?(state.players[seat].declared_yaku, fn yaku -> yaku in names end)
-          _ ->
-            points = Enum.map(yaku, fn {_name, value} -> value end) |> Enum.reduce([], &Scoring.add_yaku_values/2)
-            |> Utils.get_from_points_list(point_name)
-            # |> IO.inspect(label: inspect(yaku))
-            points >= min_points
-        end
-      end, timeout: :infinity, ordered: false)
-    end
-    |> Enum.concat()
-    |> Enum.any?(fn {:ok, result} -> result  end)
+    %{hand: hand, calls: calls} = state.players[seat]
+
+    # we need to let before_win actions know about the winning tile
+    #   so we store it in state.winners
+    state = Map.update!(state, :winners, &Map.put(&1, seat, %{winning_tile: winning_tile}))
+
+    # save winning_hand (TODO does anyone actually use this?)
+    winning_hand = hand ++ calls ++ [winning_tile]
+    state = update_player(state, seat, &%{ &1 | cache: %{ &1.cache | winning_hand: winning_hand } })
+
+    # trigger before_win before solving for jokers
+    state = Actions.trigger_event(state, "before_win", %{seat: seat, win_source: win_source, winning_tile: winning_tile, silent: true})
+
+    # obtain smt_hand and smt_calls after before_win runs
+    #   because we may have run actions to modify the hand (e.g. by adding attributes)
+    {smt_hand, smt_calls} = JokerSolver.get_smt_hand_calls(state, seat, winning_tile)
+
+    # now calculate joker assignments
+    # and see if any of them result in a score at least min_points and min_minipoints
+    JokerSolver.solve_for_jokers(
+      state.mutex,
+      smt_hand, smt_calls,
+      state.smt_solver,
+      state.rules_ref,
+      state.players[seat].tile_behavior)
+    |> Task.async_stream(fn joker_assignment ->
+      # apply joker assignments
+      {assigned_hand, assigned_calls, assigned_winning_hand, assigned_winning_tile} = JokerSolver.apply_joker_assignment(state.players[seat].hand, state.players[seat].calls, winning_tile, joker_assignment)
+
+      # replace the winner's hand/calls temporarily (for yaku evaluation)
+      state = update_player(state, seat, &%{ &1 | hand: assigned_hand, calls: assigned_calls, cache: %{ &1.cache | winning_hand: assigned_winning_hand } })
+
+      # also replace the actual winning tile within state
+      state = if assigned_winning_tile != nil do
+        update_winning_tile(state, seat, win_source, fn _ -> assigned_winning_tile end)
+      else
+        IO.puts("WARNING: no assigned_winning_tile for a win! hand: #{inspect(smt_hand)}, joker_assignment: #{inspect(joker_assignment)}")
+        state
+      end
+
+      # run before_scoring only after replacing those tiles
+      # this is because before_scoring might add attributes to hand, which will be used for yaku calculation
+      # also you need non-joker tiles in order to calculate fu and such here
+      state = Actions.trigger_event(state, "before_scoring", %{seat: seat, win_source: win_source, winning_tile: assigned_winning_tile, silent: true})
+      
+      # fetch the new winning tile
+      assigned_winning_tile = get_winning_tile(state, seat, win_source)
+      if assigned_winning_tile == nil do
+        IO.puts("[WARNING] seat_scores_points: the winning tile must exist, but got nil")
+      end
+
+      # obtain yaku and minipoints from this state
+      {yaku, minipoints} = get_yaku_from_lists(state, yaku_list_names, seat, assigned_winning_tile, win_source)
+      minipoints >= min_minipoints && case min_points do
+        :declared ->
+          names = Enum.map(yaku, fn {name, _value} -> name end)
+          Enum.all?(state.players[seat].declared_yaku, fn yaku -> yaku in names end)
+        _ ->
+          points = Enum.map(yaku, fn {_name, value} -> value end) |> Enum.reduce([], &Scoring.add_yaku_values/2)
+          |> Utils.get_from_points_list(point_name)
+          # |> IO.inspect(label: inspect(yaku))
+          points >= min_points
+      end
+    end, timeout: :infinity, ordered: false)
+    |> Enum.any?(fn {:ok, result} -> result end)
   end
   
   def hanada_kirame_score_protection(state, delta_scores) do

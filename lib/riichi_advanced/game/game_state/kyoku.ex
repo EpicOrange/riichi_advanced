@@ -446,47 +446,51 @@ defmodule RiichiAdvanced.GameState.Kyoku do
     else state.available_seats -- [seat] end
 
     winning_tile = get_winning_tile(state, seat, win_source)
+    is_tenhou? = winning_tile == nil
 
     # push a message if it takes more than 0.5 seconds to return
     # (tenhou solver and joker solver are the same thing)
     # (but it wouldn't do to say "joker solver" when solving tenhou, and vice versa)
-    notify_text = if winning_tile == nil do "Running tenhou solver..." else "Running joker solver..." end
+    notify_text = if is_tenhou? do "Running tenhou solver..." else "Running joker solver..." end
     notify_task = Task.async(fn -> :timer.sleep(500); push_message(state, [%{text: notify_text}]) end)
 
     # save original hand to restore later
     %{hand: orig_hand, draw: orig_draw, calls: orig_calls} = state.players[seat]
 
-    # place an empty winner object first, so that modify_winner works as intended later on
+    # if this is tenhou, we instead create a bunch of possibilities for the winning tile
+    hand_calls_tile = if is_tenhou? do
+      hand = orig_hand ++ orig_draw
+      calls = state.players[seat].calls
+      # try each tile, starting from the rightmost
+      for winning_tile <- Enum.reverse(Enum.uniq(hand)) do
+        {List.delete(hand, winning_tile), calls, winning_tile}
+      end
+    else [{orig_hand, orig_calls, winning_tile}] end
+
+    # place an empty winner object first, so that modify_winner actions work as intended later on
     state = Map.update!(state, :winners, &Map.put(&1, seat, %{}))
     state = Map.update!(state, :winner_seats, & &1 ++ [seat])
 
-    {state, cxt} = for {smt_hand, smt_calls} <- JokerSolver.get_smt_hand_calls(state, seat, winning_tile) do
-      # pop off the winning tile
-      # {hand, [winning_tile]} = Enum.split(smt_hand, -1)
-      winning_tile = Enum.at(smt_hand, -1)
-      # because tenhou can choose any tile, we need to let later functions know
-      #   the identity of the tile we chose this time, so we store it in state.winners
+    {state, cxt} = for {hand, calls, winning_tile} <- hand_calls_tile do
+      state = if is_tenhou? do
+        # replace hand and draw
+        update_player(state, seat, &%{ &1 | hand: hand, draw: [winning_tile] })
+      else state end
+
+      # we need to let before_win actions know about the winning tile
+      #   so we store it in state.winners
       state = Map.update!(state, :winners, &Map.put(&1, seat, %{winning_tile: winning_tile}))
 
-      # save this hand for the win screen
-      winning_hand = smt_hand ++ smt_calls
+      # save winning_hand (TODO does anyone actually use this?)
+      winning_hand = hand ++ calls ++ [winning_tile]
       state = update_player(state, seat, &%{ &1 | cache: %{ &1.cache | winning_hand: winning_hand } })
 
       # trigger before_win before solving for jokers
       state = Actions.trigger_event(state, "before_win", %{seat: seat, winner_seat: seat, win_source: win_source, winning_tile: winning_tile})
 
-      # re-obtain smt_hand and smt_calls, since before_win might have modified them
-      # (e.g. by adding attributes to tiles in hand)
-      smt_hand = 
-        if win_source == :draw and Enum.empty?(orig_draw) do
-          # tenhou with no draw = 14 tiles in hand, remove the winning tile first
-          List.delete(orig_hand, winning_tile) ++ [winning_tile]
-        else
-          orig_hand ++ [winning_tile]
-        end
-      smt_calls = state.players[seat].calls
-      |> Enum.reject(fn {call_name, _call} -> call_name in Riichi.flower_names() end)
-      |> Enum.map(&Utils.call_to_tiles/1)
+      # obtain smt_hand and smt_calls after before_win runs
+      #   because we may have run actions to modify the hand (e.g. by adding attributes)
+      {smt_hand, smt_calls} = JokerSolver.get_smt_hand_calls(state, seat, winning_tile)
 
       # now calculate joker assignments
       # and find the maximum score obtainable across all joker assignments
@@ -543,8 +547,8 @@ defmodule RiichiAdvanced.GameState.Kyoku do
       Task.shutdown(notify_task, :brutal_kill)
     end
 
-    # restore original hand/calls before rearranging hand
-    state = update_player(state, seat, &%{ &1 | hand: orig_hand, draw: orig_draw, calls: orig_calls })
+    # restore original hand/calls before rearranging hand (do not restore draw)
+    state = update_player(state, seat, &%{ &1 | hand: orig_hand, calls: orig_calls })
 
     # rearrange the winner's hand for display purposes
     %{
