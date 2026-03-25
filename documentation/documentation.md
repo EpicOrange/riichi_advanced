@@ -454,7 +454,7 @@ This adds all of the given `attr`s to all the given `target`s. You can further f
 - `"aside"`: the current player's tiles set aside.
 - `"last_discard"`: the last discard.
 
-As for available `tile_spec`s, [see the relevant section](#tilespecs).
+As for available `tile_spec`s, [see the relevant section](#tile-specs).
 
 There are a couple more actions that add and remove attributes in a specific way, but the goal is to eventually turn them all into `"add_attr"` and `"remove_attr"` targets. (`"remove_attr"` does not yet exist, but for now there is `"remove_attr_hand"` and `"remove_attr_all"`.)
 
@@ -858,12 +858,9 @@ Prepend `"not_"` to any of the condition names to negate it.
 - `won_by_draw`: The winner won by drawing the winning tile.
 - `won_by_discard`: The winner won by stealing the discard tile.
 - `minipoints_equals(fu)`: The winning player has the given amount of minipoints.
-- `has_yaku_with_hand(han)`: Using the current player's draw as the winning tile, the current player's hand scores at least `han` points using the yaku in `.score_calculation.yaku_lists`. Example: `has_yaku_with_hand(1)`
-- `has_yaku_with_discard(han)`: Using the last discard as the winning tile, the current player's hand scores at least `han` points using the yaku in `.score_calculation.yaku_lists`. Example: `has_yaku_with_discard(1)`
-- `has_yaku_with_call(han)`: Using the last called tile as the winning tile, the current player's hand scores at least `han` points using the yaku in `.score_calculation.yaku_lists`. Example: `has_yaku_with_call(1)`
-- `has_yaku2_with_hand(han)`: Using the current player's draw as the winning tile, the current player's hand scores at least `han` points using the yaku in `.score_calculation.yaku2_lists`. Example: `has_yaku_with_hand(1)`
-- `has_yaku2_with_discard(han)`: Using the last discard as the winning tile, the current player's hand scores at least `han` points using the yaku in `.score_calculation.yaku2_lists`. Example: `has_yaku_with_discard(1)`
-- `has_yaku2_with_call(han)`: Using the last called tile as the winning tile, the current player's hand scores at least `han` points using the yaku in `.score_calculation.yaku2_lists`. Example: `has_yaku_with_call(1)`
+- `has_yaku_with_hand(points, point_name, minipoints)`: Using the current player's draw as the winning tile, the current player's hand scores at least `points` `point_name` using the yaku in `.score_calculation.yaku_lists`. You may optionally also test for at least `minipoints` minipoints. Example: `has_yaku_with_hand(4, "Han", 30)`
+- `has_yaku_with_discard(points, point_name, minipoints)`: Using the last discard as the winning tile, the current player's hand scores at least `points` `point_name` using the yaku in `.score_calculation.yaku_lists`. You may optionally also test for at least `minipoints` minipoints. Example: `has_yaku_with_discard(4, "Han", 30)`
+- `has_yaku_with_call(points, point_name, minipoints)`: Using the last called tile as the winning tile, the current player's hand scores at least `points` `point_name` using the yaku in `.score_calculation.yaku_lists`. You may optionally also test for at least `minipoints` minipoints. Example: `has_yaku_with_call(4, "Han", 30)`
 - `tiles_match([tile1, tile2, ...], [tile_spec1, tile_spec2, ...])`: The provided tiles all match any of the given tile specs. See the [tile specs section](#tile-specs) for details.
 - `last_discard_matches(tile_spec1, tile_spec2, ...)`: The last discard matches one of the given tile specs. See the [tile specs section](#tile-specs) for details.
 - `last_called_tile_matches(tile_spec1, tile_spec2, ...)`: The last called tile matches one of the given tile specs. See the [tile specs section](#tile-specs) for details.
