@@ -30,8 +30,6 @@ defmodule RiichiAdvanced.GameState.Conditions do
           "jokers" -> [{hand, calls ++ Enum.filter(state.players[context.seat].calls, fn {call_name, _call} -> call_name in ["joker", "start_joker"] end)}]
           "start_jokers" -> [{hand, calls ++ Enum.filter(state.players[context.seat].calls, fn {call_name, _call} -> call_name == "start_joker" end)}]
           "call_tiles" -> [{hand ++ Enum.flat_map(state.players[context.seat].calls, &Utils.call_to_tiles(&1, true)), calls}]
-          "assigned_hand" -> [{hand ++ state.players[context.seat].cache.arranged_hand, calls}]
-          "assigned_calls" -> [{hand, calls ++ state.players[context.seat].cache.arranged_calls}]
           "winning_hand" -> [{hand ++ state.players[context.seat].cache.winning_hand, calls}]
           "winning_tile" -> [{hand ++ [get_winning_tile(state, context.seat, context.win_source) |> Utils.add_attr(["winning_tile"])], calls}]
           "last_call" -> if last_call_action != nil do [{hand, calls ++ [get_last_call(state)]}] else [{hand, calls}] end

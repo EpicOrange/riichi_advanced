@@ -621,7 +621,7 @@ defmodule RiichiAdvanced.Riichi do
     end)
   end
 
-  def prepend_group(hand, calls, winning_tiles, group, win_definitions, tile_behavior) do
+  def prepend_group(hand, calls, group, win_definitions, tile_behavior) do
     # return hand, but reordered so that all `group` are at the front (after existing prepended groups)
     # if no `group`s exist, return hand unchanged
     # hand is expected to be tenpai for N sets and a pair
@@ -639,51 +639,45 @@ defmodule RiichiAdvanced.Riichi do
     # add "dismantle_calls" in case `group` contains multiple sets
     win_definitions = Enum.map(win_definitions, &["dismantle_calls" | &1])
 
-    Enum.flat_map(winning_tiles, fn winning_tile ->
-      hand_groups = Match.extract_groups([winning_tile | hand], group, tile_behavior)
+    hand_groups = Match.extract_groups(hand, group, tile_behavior)
 
-      # `hand_groups` is sorted starting with greatest number of groups
-      # if we have {hand, [group1, group2, group3]} and it matches,
-      # then {hand ++ group1, [group2, group3]} also obviously matches
-      # use this to reduce the number of calls to `match_hand`
+    # `hand_groups` is sorted starting with greatest number of groups
+    # if we have {hand, [group1, group2, group3]} and it matches,
+    # then {hand ++ group1, [group2, group3]} also obviously matches
+    # use this to reduce the number of calls to `match_hand`
 
-      # also, we want to remove a maximal number of groups that matches
-      # so if we ever find a matching solution with e.g. 3 groups,
-      # drop all `hand_groups` with less than 3 groups
+    # also, we want to remove a maximal number of groups that matches
+    # so if we ever find a matching solution with e.g. 3 groups,
+    # drop all `hand_groups` with less than 3 groups
 
-      {hand_groups, _cache, _max_groups} = for {hand, groups} <- hand_groups, reduce: {[], [], 0} do
-        # {return value, groups that match, the largest number of groups in cache}
-        {acc, cache, max_groups} ->
-          groups_set = MapSet.new(groups)
-          num_groups = MapSet.size(groups_set)
-          cond do
-            # ignore if num of groups is less than highest seen so far
-            num_groups < max_groups -> {acc, cache, max_groups}
-            # check cache to see if a larger set of groups matched; if so, this obviously matches
-            Enum.any?(cache, &MapSet.subset?(groups_set, &1)) -> {[{hand, groups} | acc], cache, max_groups}
-            # otherwise call the match function to see if these groups match
-            Match.match_hand(hand, calls ++ Enum.map(groups, &{"", &1}), win_definitions, tile_behavior) ->
-              {[{hand, groups} | acc], [groups_set | cache], max(num_groups, max_groups)}
-            true -> {acc, cache, max_groups}
-          end
-      end
-      Enum.map(hand_groups, fn {hand, groups} -> {winning_tile, hand, groups} end)
-    end)
-    |> Enum.map(fn {winning_tile, hand, groups} ->
-      groups = groups
+    {hand_groups, _cache, _max_groups} = for {hand, groups} <- hand_groups, reduce: {[], [], 0} do
+      # {return value, groups that match, the largest number of groups in cache}
+      {acc, cache, max_groups} ->
+        groups_set = MapSet.new(groups)
+        num_groups = MapSet.size(groups_set)
+        cond do
+          # ignore if num of groups is less than highest seen so far
+          num_groups < max_groups -> {acc, cache, max_groups}
+          # check cache to see if a larger set of groups matched; if so, this obviously matches
+          Enum.any?(cache, &MapSet.subset?(groups_set, &1)) -> {[{hand, groups} | acc], cache, max_groups}
+          # otherwise call the match function to see if these groups match
+          Match.match_hand(hand, calls ++ Enum.map(groups, &{"", &1}), win_definitions, tile_behavior) ->
+            {[{hand, groups} | acc], [groups_set | cache], max(num_groups, max_groups)}
+          true -> {acc, cache, max_groups}
+        end
+    end
+    hand_groups
+    |> Enum.map(fn {hand, groups} ->
+      new_groups = groups
       |> Enum.sort_by(fn [t | _] -> Constants.sort_value(t) end)
       |> Enum.map(& &1 ++ [:separator]) # add a spacing marker after each group
       |> Enum.concat()
-      # delete last instance of winning tile
-      prearranged ++ groups ++ hand
-      |> Enum.reverse()
-      |> List.delete(winning_tile)
-      |> Enum.reverse()
+      prearranged ++ new_groups ++ hand
     end)
-    |> then(& &1 ++ [prearranged ++ hand]) # append original handm
+    |> then(& &1 ++ [prearranged ++ hand]) # append original hand
   end
-  def prepend_group_all(hands, calls, winning_tiles, group, win_definitions, tile_behavior) do
-    hands = Enum.flat_map(hands, &prepend_group(&1, calls, winning_tiles, group, win_definitions, tile_behavior))
+  def prepend_group_all(hands, calls, group, win_definitions, tile_behavior) do
+    hands = Enum.flat_map(hands, &prepend_group(&1, calls, group, win_definitions, tile_behavior))
     if Enum.empty?(hands) do [] else
       num_ungrouped_tiles = Enum.map(hands, &Utils.split_on(&1, :separator) |> Enum.at(-1) |> length())
       min_ungrouped_tiles = Enum.min(num_ungrouped_tiles)

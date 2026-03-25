@@ -14,9 +14,9 @@ defmodule RiichiAdvanced.GameState.JokerSolver do
   end
   # smt hand = hand with winning tile appended to the end
   # smt calls = flattened calls that aren't flowers
-  def get_smt_hand_calls(state, seat, winning_tile) do
-    smt_hand = state.players[seat].hand ++ [winning_tile]
-    smt_calls = state.players[seat].calls
+  def get_smt_hand_calls(hand, calls, winning_tile) do
+    smt_hand = hand ++ [winning_tile]
+    smt_calls = calls
     |> Enum.reject(fn {call_name, _call} -> call_name in Riichi.flower_names() end)
     |> Enum.map(&Utils.call_to_tiles/1)
     {smt_hand, smt_calls}
@@ -25,7 +25,7 @@ defmodule RiichiAdvanced.GameState.JokerSolver do
   def get_obvious_joker_assignment(tile_behavior, smt_hand, smt_calls) do
     # first get a map [single-value joker => the tile it maps to]
     obvious_joker_map = TileBehavior.tile_mappings(tile_behavior)
-    |> Enum.flat_map(fn {joker, [assign]} when assign != :any -> [{joker, assign}]; _ -> [] end)
+    |> Enum.flat_map(fn {joker, [assign]} -> if Utils.strip_attrs(assign) != :any do [{joker, assign}] else [] end; _ -> [] end)
     |> Map.new()
     # return a map %{index => tile}
     # do this by iterating over the whole hand and replacing with the first joker match

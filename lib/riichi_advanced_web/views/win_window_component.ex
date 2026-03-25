@@ -17,8 +17,8 @@ defmodule RiichiAdvancedWeb.WinWindowComponent do
         <%= if @winner != nil and Map.has_key?(@winner, :yaku) and @winner.yaku != nil do %>
           <div class="winning-hand-container">
             <div class="hand winning-hand">
-              <div class={Utils.get_tile_class(tile, i, assigns)} :for={{tile, i} <- Enum.with_index(@winner.player.hand)}></div>
-              <%= for {{name, call}, i} <- Enum.with_index(process_calls(@winner.player.calls)) do %>
+              <div class={Utils.get_tile_class(tile, i, assigns)} :for={{tile, i} <- Enum.with_index(@winner.arranged_hand)}></div>
+              <%= for {{name, call}, i} <- Enum.with_index(process_calls(@winner.arranged_calls)) do %>
                 <div class={["call", (name == "_flowers" and length(call) > 3) && "winning-flowers"]}>
                   <div class="flower-count" :if={name == "_flowers" and length(call) > 3}>&#215;<%= length(call) %></div>
                   <div class={Utils.get_tile_class(tile, i, assigns)} :for={tile <- call}></div>
@@ -31,7 +31,7 @@ defmodule RiichiAdvancedWeb.WinWindowComponent do
             </div>
             <div class="hand winning-hand separated-hand">
               <div class={Utils.get_tile_class(tile, i, assigns)} :for={{tile, i} <- Enum.with_index(@winner.separated_hand)}></div>
-              <%= for {{name, call}, i} <- Enum.with_index(process_calls(@winner.player.calls)) do %>
+              <%= for {{name, call}, i} <- Enum.with_index(process_calls(@winner.arranged_calls)) do %>
                 <div class={["call", (name == "_flowers" and length(call) > 3) && "winning-flowers"]}>
                   <div class="flower-count" :if={name == "_flowers" and length(call) > 3}>&#215;<%= length(call) %></div>
                   <div class={Utils.get_tile_class(tile, i, assigns)} :for={tile <- call}></div>

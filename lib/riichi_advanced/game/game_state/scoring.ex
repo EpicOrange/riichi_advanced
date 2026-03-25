@@ -110,7 +110,7 @@ defmodule RiichiAdvanced.GameState.Scoring do
 
     # obtain smt_hand and smt_calls after before_win runs
     #   because we may have run actions to modify the hand (e.g. by adding attributes)
-    {smt_hand, smt_calls} = JokerSolver.get_smt_hand_calls(state, seat, winning_tile)
+    {smt_hand, smt_calls} = JokerSolver.get_smt_hand_calls(state.players[seat].hand, state.players[seat].calls, winning_tile)
 
     # now calculate joker assignments
     # and see if any of them result in a score at least min_points and min_minipoints

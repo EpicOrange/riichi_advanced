@@ -38,8 +38,6 @@ defmodule RiichiAdvanced.GameState do
       playable_indices: [],
       closest_american_hands: [],
       winning_hand: [],
-      arranged_hand: [],
-      arranged_calls: [],
     ]
   end
 
@@ -788,9 +786,11 @@ defmodule RiichiAdvanced.GameState do
     cond do
       is_binary(tile_name) and tile_name in state.reserved_tiles ->
         case Enum.find_index(state.reserved_tiles, fn name -> name == tile_name end) do
-          nil -> Map.get(state.tags, tile_name, MapSet.new()) |> Enum.at(0) # check tags
+          nil -> nil # not possible...
           ix  -> Enum.at(state.dead_wall, -ix-1)
         end
+      is_binary(tile_name) and Map.has_key?(state.tags, tile_name) ->
+        Map.get(state.tags, tile_name, MapSet.new()) |> Enum.at(0)
       Utils.is_tile(tile_name) -> Utils.to_tile(tile_name)
       is_binary(tile_name)
           and Map.has_key?(context, :seat)
