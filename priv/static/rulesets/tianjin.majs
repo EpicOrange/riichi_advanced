@@ -49,7 +49,6 @@ define_set mentsu, ~s"0 0 0 | 0 1 2"
 define_set quad, ~s"0 0 0 0"
 define_set ryanmen, ~s"0 1"
 define_set kanchan, ~s"0 2"
-define_set middle_kanchan_manzu, ~s"4m 6m"
 define_set ittsuu, ~s"0 1 2, 3 4 5, 6 7 8"
 
 define_match tenpai, ~m"exhaustive, pair:1, (ryanmen kanchan pair):1, (shuntsu koutsu):3"
@@ -60,7 +59,9 @@ replace all, "buttons", ["win_by_call"], ["win_by_call", "win"]
 
 define_scoring win do
   total = points :: "Points"
-  total *= points2 :: "Multiplier"
+  if points2 > 0 do
+    total *= points2 :: "Multiplier"
+  end
   set_counter_all("hand_score", "total")
   # x2 if dealer doubles down
   # x2 if challenging the dealer
@@ -97,49 +98,50 @@ on after_win do
 end
 
 on before_win do
-  as others do
-    as prev_seat do
-      make_responsible_for("prev_seat", "all")
-    end
-  end
+  make_responsible_for("others")
 end
 
+define_set ittsuu_m, ~s"1m 2m 3m 4m 5m 6m 7m 8m 9m"
+define_set ittsuu_p, ~s"1p 2p 3p 4p 5p 6p 7p 8p 9p"
+define_set ittsuu_s, ~s"1s 2s 3s 4s 5s 6s 7s 8s 9s"
+define_set middle_kanchan_manzu, ~s"4m 5m@winning_tile 6m"
+define_set wild1, ~s"0@winning_tile 0@is_wild"
+define_set wild2_0, ~s"0@winning_tile 0@is_wild 0@is_wild"
+define_set wild2_1, ~s"0@winning_tile 1@is_wild 2@is_wild"
+define_set wild2_2, ~s"0@is_wild 1@winning_tile 2@is_wild"
+define_set wild2_3, ~s"0@is_wild 1@is_wild 2@winning_tile"
 define_yaku yaku, "Pure Hand", [2, "Fan"], not_match(["hand", "calls", "winning_tile"], ~m"any@is_wild:1")
-define_yaku yaku, "Wild Card Single Wait", [2, "Fan"], match(["hand", "calls"], ~m"exhaustive, (shuntsu koutsu):4, any@is_wild:1")
-define_yaku yaku, "Double Wild Card Set Wait", [2, "Fan"], match(["hand", "calls"], ~m"exhaustive, (shuntsu koutsu):3, pair:1, any@is_wild:2")
-define_yaku yaku, "Capturing the Five", [3, "Fan"], match(["hand", "calls"], ~m"exhaustive, middle_kanchan_manzu:1, (shuntsu koutsu):3, pair:1") and match(["winning_tile"], ~m"5m:1")
+define_yaku yaku, "Wild Card Wait", [2, "Fan"], match(["hand", "calls", "winning_tile"], ~m"exhaustive, (shuntsu koutsu):4, wild1:1")
+define_yaku yaku, "Double Wild Card Wait", [2, "Fan"], match(["hand", "calls", "winning_tile"], ~m"exhaustive, (shuntsu koutsu):3, pair:1, (wild2_0 wild2_1 wild2_2 wild2_3):1")
+define_yaku yaku, "Capturing the Five", [3, "Fan"], match(["hand", "calls", "winning_tile"], ~m"exhaustive, middle_kanchan_manzu:1, (shuntsu koutsu):3, pair:1") and match(["winning_tile"], ~m"5m:1")
 define_yaku yaku, "Dragon", [4, "Fan"], match(["hand", "calls", "winning_tile"], ~m"exhaustive, ittsuu:1, (shuntsu koutsu):1, pair:1")
-define_yaku yaku, "Kong Blossom", [1, "Fan"], status("kan")
-define_yaku yaku, "Heavenly Hand", [1, "Fan"], status("first_turn") and seat_is("east")
-define_yaku yaku, "Earthly Hand", [1, "Fan"], status("first_turn") and not_seat_is("east")
+define_yaku yaku, "Kong Blossom", [1, "Fan", 2, "×"], status("kan")
+define_yaku yaku, "Heavenly Hand", [1, "Fan", 6, "×"], status("first_turn") and seat_is("east")
+define_yaku yaku, "Earthly Hand", [1, "Fan", 4, "×"], status("first_turn") and not_seat_is("east")
 
-define_yaku bonus_yaku, "Kong Blossom", [1, "Fan"], status("ankan")
-define_yaku bonus_yaku, "Different Patterns", [1, "Fan"], at_least(1, has_existing_yaku("Pure Hand"), has_existing_yaku("Wild Card Single Wait"), has_existing_yaku("Double Wild Card Set Wait"), has_existing_yaku("Capturing the Five"), has_existing_yaku("Dragon"), has_existing_yaku("Kong Blossom"))
-define_yaku bonus_yaku, "Different Patterns", [1, "Fan"], at_least(2, has_existing_yaku("Pure Hand"), has_existing_yaku("Wild Card Single Wait"), has_existing_yaku("Double Wild Card Set Wait"), has_existing_yaku("Capturing the Five"), has_existing_yaku("Dragon"), has_existing_yaku("Kong Blossom"))
-define_yaku bonus_yaku, "Different Patterns", [1, "Fan"], at_least(3, has_existing_yaku("Pure Hand"), has_existing_yaku("Wild Card Single Wait"), has_existing_yaku("Double Wild Card Set Wait"), has_existing_yaku("Capturing the Five"), has_existing_yaku("Dragon"), has_existing_yaku("Kong Blossom"))
-define_yaku bonus_yaku, "Different Patterns", [1, "Fan"], at_least(4, has_existing_yaku("Pure Hand"), has_existing_yaku("Wild Card Single Wait"), has_existing_yaku("Double Wild Card Set Wait"), has_existing_yaku("Capturing the Five"), has_existing_yaku("Dragon"), has_existing_yaku("Kong Blossom"))
-define_yaku bonus_yaku, "Different Patterns", [1, "Fan"], at_least(5, has_existing_yaku("Pure Hand"), has_existing_yaku("Wild Card Single Wait"), has_existing_yaku("Double Wild Card Set Wait"), has_existing_yaku("Capturing the Five"), has_existing_yaku("Dragon"), has_existing_yaku("Kong Blossom"))
-define_yaku bonus_yaku, "Different Patterns", [1, "Fan"], at_least(6, has_existing_yaku("Pure Hand"), has_existing_yaku("Wild Card Single Wait"), has_existing_yaku("Double Wild Card Set Wait"), has_existing_yaku("Capturing the Five"), has_existing_yaku("Dragon"), has_existing_yaku("Kong Blossom"))
+define_yaku bonus_yaku, "Concealed Kong", [1, "Fan"], match(["calls"], ~m"ankan:1")
+define_yaku bonus_yaku, "Concealed Kong", [1, "Fan"], match(["calls"], ~m"ankan:2")
+define_yaku bonus_yaku, "Concealed Kong", [1, "Fan"], match(["calls"], ~m"ankan:3")
+define_yaku bonus_yaku, "Concealed Kong", [1, "Fan"], match(["calls"], ~m"ankan:4")
+define_yaku bonus_yaku, "Multiple Patterns", [2, "Fan"], at_least(2, has_existing_yaku("Pure Hand"), has_existing_yaku("Wild Card Wait"), has_existing_yaku("Double Wild Card Wait"), has_existing_yaku("Capturing the Five"), has_existing_yaku("Dragon"), has_existing_yaku("Kong Blossom"))
+define_yaku bonus_yaku, "Multiple Patterns", [1, "Fan"], at_least(3, has_existing_yaku("Pure Hand"), has_existing_yaku("Wild Card Wait"), has_existing_yaku("Double Wild Card Wait"), has_existing_yaku("Capturing the Five"), has_existing_yaku("Dragon"), has_existing_yaku("Kong Blossom"))
+define_yaku bonus_yaku, "Multiple Patterns", [1, "Fan"], at_least(4, has_existing_yaku("Pure Hand"), has_existing_yaku("Wild Card Wait"), has_existing_yaku("Double Wild Card Wait"), has_existing_yaku("Capturing the Five"), has_existing_yaku("Dragon"), has_existing_yaku("Kong Blossom"))
+define_yaku bonus_yaku, "Multiple Patterns", [1, "Fan"], at_least(5, has_existing_yaku("Pure Hand"), has_existing_yaku("Wild Card Wait"), has_existing_yaku("Double Wild Card Wait"), has_existing_yaku("Capturing the Five"), has_existing_yaku("Dragon"), has_existing_yaku("Kong Blossom"))
+define_yaku bonus_yaku, "Multiple Patterns", [1, "Fan"], at_least(6, has_existing_yaku("Pure Hand"), has_existing_yaku("Wild Card Wait"), has_existing_yaku("Double Wild Card Wait"), has_existing_yaku("Capturing the Five"), has_existing_yaku("Dragon"), has_existing_yaku("Kong Blossom"))
 
-define_yaku yaku_multiplier, "Kong Blossom", [2, "×"], status("kan")
-define_yaku yaku_multiplier, "Heavenly Hand", [6, "×"], status("first_turn") and seat_is("east")
-define_yaku yaku_multiplier, "Earthly Hand", [4, "×"],  status("first_turn") and not_seat_is("east")
+define_yaku yaku, "Wildcard Dragon", [2, "×"], tiles_match(["wild"], ["manzu"]) and match(["hand", "calls", "winning_tile"], ~m"exhaustive, ittsuu_m:1, (shuntsu koutsu):1, pair:1")
+define_yaku yaku, "Wildcard Dragon", [2, "×"], tiles_match(["wild"], ["pinzu"]) and match(["hand", "calls", "winning_tile"], ~m"exhaustive, ittsuu_p:1, (shuntsu koutsu):1, pair:1")
+define_yaku yaku, "Wildcard Dragon", [2, "×"], tiles_match(["wild"], ["souzu"]) and match(["hand", "calls", "winning_tile"], ~m"exhaustive, ittsuu_s:1, (shuntsu koutsu):1, pair:1")
 
-define_yaku_precedence "Double Wild Card Set Wait", ["Wild Card Single Wait"]
+define_yaku_precedence "Double Wild Card Wait", ["Wild Card Wait"]
 define_yaku_precedence "Heavenly Hand", ["Earthly Hand", "Kong Blossom"]
 define_yaku_precedence "Earthly Hand", ["Kong Blossom"]
 
 set score_calculation, %{
-  scoring_method: "multiplier",
-  score_multiplier: "points2",
-  yaku_lists: ["yaku", "bonus_yaku", "yaku_multiplier"],
+  yaku_lists: ["yaku", "bonus_yaku"],
   extra_yaku_lists: ["bonus_yaku"],
   point_name: "Fan",
   point2_name: "×",
-  score_denomination: "",
-  discarder_multiplier: 1,
-  non_discarder_multiplier: 1,
-  self_draw_multiplier: 1,
   agarirenchan: true,
   win_by_draw_label: "Zimo",
   win_by_draw_name: "Zimo",
@@ -160,11 +162,13 @@ end
 
 def pay_for_kong do
   as "$recipient" do
-    set_counter("kong_payment", "$base")
-    multiply_counter("kong_payment", "kong_mult")
+    kong_payment = "$base" * kong_mult
     add_score("kong_payment")
-    subtract_score("kong_payment", "prev_seat")
-    big_text("  -$amt  ", %{amt: "kong_payment"})
+    set_counter_all("kong_payment", "kong_payment")
+    as last_seat do
+      subtract_score("kong_payment")
+      big_text("  -$amt  ", %{amt: "kong_payment"})
+    end
   end
 end
 
@@ -229,7 +233,7 @@ define_button start_double_down,
   end
 
 define_button start_challenge_dealer,
-  display_name: "Challenge Dealer",
+  display_name: "Challenge",
   show_when: status("match_start") and our_turn and not_seat_is("east") and challenge_tokens >= 1,
   unskippable: true
   do
@@ -242,7 +246,7 @@ define_button start_challenge_dealer,
   end
 
 define_button start_challenge_dealer_twice,
-  display_name: "Challenge Dealer x2",
+  display_name: "Challenge x2",
   show_when: status("match_start") and our_turn and not_seat_is("east") and challenge_tokens >= 2,
   unskippable: true
   do
@@ -350,22 +354,6 @@ define_button kakan,
     draw
   end
 
-define_button chankan,
-  display_name: "Hu",
-  show_when: not_our_turn
-    and status_missing("match_start")
-    and match(["hand", "calls"], ["tenpai"])
-    and last_call_is("kakan")
-    and match(["hand", "calls", "last_called_tile"], ["win"])
-    and (has_yaku_with_call(2, "Fan") or has_yaku_with_call(2, "×")),
-  precedence_over: ["chii", "pon", "daiminkan"]
-  do
-    big_text("Hu")
-    pause(1000)
-    reveal_hand
-    win_by_call("win")
-  end
-
 define_button tsumo,
   display_name: "Zimo",
   show_when: our_turn
@@ -387,4 +375,59 @@ set shown_statuses_public, ["challenge_tokens"]
 set initial_score, 50
 set starting_tiles, 13
 set max_rounds, 16
+set agarirenchan, true
+set ryuukyokurenchan, true
 set display_wall, true
+
+on after_initialization do
+  add_rule_tab("Rules")
+  add_rule_tab("Win Patterns")
+  add_rule("Rules", "Wall", "The wall consists of:", -101)
+  add_rule("Rules", "Wall", "- 4x of each character tile (1 to 9): %{manzu}", %{manzu: ~t"123456789m"})
+  add_rule("Rules", "Wall", "- 4x of each circle tile (1 to 9): %{pinzu}", %{pinzu: ~t"123456789p"})
+  add_rule("Rules", "Wall", "- 4x of each bamboo tile (1 to 9): %{souzu}", %{souzu: ~t"123456789s"})
+  add_rule("Rules", "Wall", "- 4x of each of the four Winds (East, South, West, North) %{winds}", %{winds: ~t"1234z"})
+  add_rule("Rules", "Wall", "- 4x of each of the three Dragons (White, Green, Red) %{dragons}", %{dragons: ~t"067z"})
+  add_rule("Rules", "Win Condition", "You may win if:", -100)
+  add_rule("Rules", "Win Condition", "- You have four sets (sequences or triplets) and a pair.", -100)
+  add_rule("Rules", "Win Condition", "- You have at least 2 fan from win patterns.", -100)
+  add_rule("Rules", "Win Condition", "- You draw the winning tile.", -100)
+  add_rule("Rules", "Win Condition", "Note that you cannot win on an opponent's discard or Kong.", -100)
+  add_rule("Rules", "Scoring", "Upon winning, every player pays an amount equal to the winning hand's fan value.", -99)
+  add_rule("Rules", "Scoring", "If you have multiple win patterns, you add their fan values and receive a bonus fan for each.", -99)
+  add_rule("Rules", "Scoring", "Each payment between the dealer and another player is multiplied by 2 for every dealer challenge issued this round.", -99)
+  add_rule("Rules", "Dealer Challenge", "At the beginning of each round, each player in turn may decide to challenge the dealer. This doubles the payment from the dealer if the challenger wins, but it also doubles the payment from the challenger if the dealer wins.", -98)
+  add_rule("Rules", "Dealer Challenge", "Issuing a challenge costs one of the two starting challenge tokens.", -98)
+  add_rule("Rules", "Dealer Challenge", "The dealer (who goes first) may also double down, essentially challenging all three players at once. This does not consume challenge tokens.", -98)
+  add_rule("Rules", "Dealer Challenge", "All challenges are issued before the player sees their own hand.", -98)
+  add_rule("Rules", "Hun'er", "At the beginning of the game, two dice are rolled to get a value N, and the Nth tile from the back of the wall is flipped to reveal the Hun'er, i.e. the wildcards.", -97)
+  add_rule("Rules", "Hun'er", "The seven Hun'er are the three copies of the revealed tile, as well as the four copies of the next tile in sequence.", -97)
+  add_rule("Rules", "Hun'er", "- If the flipped tile is a 9, then the next tile is the 1 of the same suit.", -97)
+  add_rule("Rules", "Hun'er", "- If the flipped tile is a wind, it goes in the order %{winds}.", %{winds: ~t"12341z"}, -97)
+  add_rule("Rules", "Hun'er", "- If the flipped tile is a dragon, it goes in the order %{dragons}.", %{dragons: ~t"0670z"}, -97)
+  add_rule("Rules", "Calls", "- You may not call a tile to complete a sequence.", -90)
+  add_rule("Rules", "Calls", "- You may Pung a discard if you have two of the same tile in hand, forming a triplet.", -90)
+  add_rule("Rules", "Calls", "- You may Kong a discard if you have three of the same tile in hand, forming a quad. The discarder immediately pays you 1 point.", -90)
+  add_rule("Rules", "Calls", "- You may Kong a tile by adding it to an existing Pung. All players immediately pay you 1 point.", -90)
+  add_rule("Rules", "Calls", "- You may Kong four identical tiles in hand. All players immediately pay you 2 points. If the tile is a wildcard (Hun'er), all players instead immediately pay you 8 points.", -90)
+  add_rule("Rules", "Discard Chasing", "If the first discard for every non-dealer is the same as the dealer's first discard, the dealer must immediately pay 1 point to each player times challenge multipliers.", -89)
+
+  add_rule("Win Patterns", "Pure Hand", "2 fan if your winning hand contains no wildcards (Hun'er).")
+  update_rule("Win Patterns", "Pure Hand", "%{example_hand}", %{example_hand: ~t"22m67899p234s 111z 9p"})
+  add_rule("Win Patterns", "Wild Card Wait", "2 fan if your final wait completes a pair with the wildcard (Hun'er).")
+  update_rule("Win Patterns", "Wild Card Wait", "%{example_hand}", %{example_hand: ~t"34588m123p456s7s@_dora 1z"})
+  add_rule("Win Patterns", "Double Wild Card Wait", "2 fan if your final wait consists of a pair of wildcards (Hun'er).")
+  update_rule("Win Patterns", "Double Wild Card Wait", "%{example_hand}", %{example_hand: ~t"555m34p@_dora23477s 000z 1m"})
+  add_rule("Win Patterns", "Capturing the Five", "3 fan if your final wait is exactly %{kanchan} and you won by drawing %{five}. Wildcards can be used for any part of this.", %{kanchan: ~t"46m", five: ~t"5m"})
+  update_rule("Win Patterns", "Capturing the Five", "%{example_hand}", %{example_hand: ~t"555m34p@_dora23477s 000z 1m"})
+  add_rule("Win Patterns", "Dragon", "4 fan if your winning hand contains the sequences 123 456 789 of any suit.")
+  update_rule("Win Patterns", "Dragon", "%{example_hand}", %{example_hand: ~t"12345789p5s6s@_dora 444z 6p"})
+  add_rule("Win Patterns", "Wildcard Dragon", "x2 fan multiplier if your winning hand contains the sequences 123 456 789 of the same suit as the wildcard. Stacks with Dragon.")
+  update_rule("Win Patterns", "Wildcard Dragon", "%{example_hand}", %{example_hand: ~t"555m34p@_dora23477s 000z 1m"})
+  add_rule("Win Patterns", "Kong Blossom", "+1 fan and ×2 fan multiplier if you won with the replacement tile drawn after a Kong.")
+  add_rule("Win Patterns", "Concealed Kong", "+1 fan for each concealed Kong. Does not contribute towards the 2 fan minimum or Multiple Patterns. Stacks with Kong Blossom.")
+  add_rule("Win Patterns", "Heavenly Hand", "+1 fan and ×6 fan multiplier if you are the dealer and you won with the tiles initially drawn. Does not contribute towards Multiple Patterns.")
+  add_rule("Win Patterns", "Earthly Hand", "+1 fan and ×4 fan multiplier if you are not the dealer and you won with the tiles initially drawn. Does not contribute towards Multiple Patterns.")
+  add_rule("Win Patterns", "Multiple Patterns", "+1 fan for each pattern if you won with 2 or more win patterns. Does not contribute towards the 2 fan minimum.")
+  update_rule("Win Patterns", "Multiple Patterns", "%{example_hand}", %{example_hand: ~t"1234m6m@_dora789m234p88s 5m@dora"})
+end
