@@ -294,6 +294,12 @@ defmodule RiichiAdvanced.Compiler do
           [seats_spec, actions] ->
             seats_spec = case seats_spec do
               seats_spec when is_binary(seats_spec) -> {:ok, seats_spec}
+              seats_spec when is_list(seats_spec) ->
+                not_binary = Enum.find(seats_spec, &not is_binary(&1))
+                case not_binary do
+                  nil  -> {:ok, seats_spec}
+                  item -> {:error, "Compiler.compile_action: at line #{line}:#{column}, `as` expects a seat spec, got #{inspect(seats_spec)} (item #{inspect(item)} is not a string)"}
+                end
               {seats_spec, _pos, nil} when is_binary(seats_spec) -> {:ok, seats_spec}
               _ -> {:error, "Compiler.compile_action: at line #{line}:#{column}, `as` expects a seat spec, got #{inspect(seats_spec)}"}
             end

@@ -641,9 +641,12 @@ defmodule RiichiAdvanced.GameState.Kyoku do
           :call           -> Map.get(score_rules, "win_by_discard_label", "")
         end,
         opponents: opponents,
-        arranged_hand: arranged_hand, # hand to show in the yaku screen
+        # hand to show in the yaku screen
+        arranged_hand: arranged_hand,
         arranged_calls: orig_calls,
-        separated_hand: separated_hand, # hand to show on hover in the yaku screen
+        # hand to show on hover in the yaku screen
+        separated_hand: separated_hand,
+        separated_calls: if state.ruleset == "american" do [] else orig_calls end
       })
     state = Map.update!(state, :winners, &Map.put(&1, seat, Map.merge(winner, &1[seat])))
 

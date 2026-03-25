@@ -1,0 +1,838 @@
+set display_name, "American"
+set tutorial_link, "https://github.com/EpicOrange/riichi_advanced/blob/main/documentation/american.md"
+set wall, ["1m", "1m", "1m", "1m",
+           "2m", "2m", "2m", "2m",
+           "3m", "3m", "3m", "3m",
+           "4m", "4m", "4m", "4m",
+           "5m", "5m", "5m", "5m",
+           "6m", "6m", "6m", "6m",
+           "7m", "7m", "7m", "7m",
+           "8m", "8m", "8m", "8m",
+           "9m", "9m", "9m", "9m",
+           "1p", "1p", "1p", "1p",
+           "2p", "2p", "2p", "2p",
+           "3p", "3p", "3p", "3p",
+           "4p", "4p", "4p", "4p",
+           "5p", "5p", "5p", "5p",
+           "6p", "6p", "6p", "6p",
+           "7p", "7p", "7p", "7p",
+           "8p", "8p", "8p", "8p",
+           "9p", "9p", "9p", "9p",
+           "1s", "1s", "1s", "1s",
+           "2s", "2s", "2s", "2s",
+           "3s", "3s", "3s", "3s",
+           "4s", "4s", "4s", "4s",
+           "5s", "5s", "5s", "5s",
+           "6s", "6s", "6s", "6s",
+           "7s", "7s", "7s", "7s",
+           "8s", "8s", "8s", "8s",
+           "9s", "9s", "9s", "9s",
+           "1z", "1z", "1z", "1z",
+           "2z", "2z", "2z", "2z",
+           "3z", "3z", "3z", "3z",
+           "4z", "4z", "4z", "4z",
+           "0z", "0z", "0z", "0z",
+           "6z", "6z", "6z", "6z",
+           "7z", "7z", "7z", "7z",
+           "1f", "2f", "3f", "4f",
+           "1g", "2g", "3g", "4g",
+           "1j", "1j", "1j", "1j",
+           "1j", "1j", "1j", "1j"]
+
+set custom_style, %{
+  tile_indices: %{"5z": "", "0z": "0", "1f": "F", "2f": "F", "3f": "F", "4f": "F", "1g": "F", "2g": "F", "3g": "F", "4g": "F", "1j": "J"}
+}
+
+set default_mods, ["american/am_num_jokers_flowers", "american/am_card_nmjl_2026", "american/show_nearest_american_hand", "show_waits"]
+
+define_mod_category "Table Rules"
+define_mod cosmic, name: "Cosmic", category: "Cosmic", order: 4, deps: ["space", "kontsu", "cosmic_calls"], desc: "Base mod for Cosmic Riichi. Adds most relevant yaku and sets up the score table for things like haneyakuman."
+define_mod "american/zombie_blanks", name: "Zombie Blanks", desc: "Adds some \"Zombie Blanks\" to the wall, which may be swapped out for already-discarded tiles."
+config_mod "american/zombie_blanks", name: "count", values: [2,4,6,8,10], default: 4
+define_mod "american/am_num_jokers_flowers", name: "Joker/Flower Count", desc: "Change the numbers of jokers and flowers. Note that this doesn't allow you to play by pre-1971 rules, where flowers are treated as jokers."
+config_mod "american/am_num_jokers_flowers", name: "jokers", values: [0,2,4,6,8,10,12,14,16], default: 8
+config_mod "american/am_num_jokers_flowers", name: "flowers", values: [0,2,4,6,8,10,12,14,16,18,20,22,24], default: 8
+define_mod "american/am_PIE", name: "PIE", desc: "Each player starts with a set amount of points. Players' point totals can't go negative. If a player runs out of points, they need not pay."
+config_mod "american/am_PIE", name: "PIE", values: [200,400,600,800,1000,1200], default: 600
+define_mod "american/no_charleston", name: "No Charleston", desc: "Disables the initial Charleston pass."
+define_mod_category "Card"
+define_mod "american/am_card_nmjl_2013", name: "NMJL 2013 Card", desc: "Play with the NMJL 2013 Card.", conflicts: ["Card"]
+define_mod "american/am_card_nmjl_2014", name: "NMJL 2014 Card", desc: "Play with the NMJL 2014 Card.", conflicts: ["Card"]
+define_mod "american/am_card_nmjl_2015", name: "NMJL 2015 Card", desc: "Play with the NMJL 2015 Card.", conflicts: ["Card"]
+define_mod "american/am_card_nmjl_2016", name: "NMJL 2016 Card", desc: "Play with the NMJL 2016 Card.", conflicts: ["Card"]
+define_mod "american/am_card_nmjl_2017", name: "NMJL 2017 Card", desc: "Play with the NMJL 2017 Card.", conflicts: ["Card"]
+define_mod "american/am_card_nmjl_2018", name: "NMJL 2018 Card", desc: "Play with the NMJL 2018 Card.", conflicts: ["Card"]
+define_mod "american/am_card_nmjl_2019", name: "NMJL 2019 Card", desc: "Play with the NMJL 2019 Card.", conflicts: ["Card"]
+define_mod "american/am_card_nmjl_2020", name: "NMJL 2020 Card", desc: "Play with the NMJL 2020 Card.", conflicts: ["Card"]
+define_mod "american/am_card_nmjl_2021", name: "NMJL 2021 Card", desc: "Play with the NMJL 2021 Card.", conflicts: ["Card"]
+define_mod "american/am_card_nmjl_2022", name: "NMJL 2022 Card", desc: "Play with the NMJL 2022 Card.", conflicts: ["Card"]
+define_mod "american/am_card_nmjl_2023", name: "NMJL 2023 Card", desc: "Play with the NMJL 2023 Card.", conflicts: ["Card"]
+define_mod "american/am_card_nmjl_2024", name: "NMJL 2024 Card", desc: "Play with the NMJL 2024 Card.", conflicts: ["Card"]
+define_mod "american/am_card_nmjl_2025", name: "NMJL 2025 Card", desc: "Play with the NMJL 2025 Card.", conflicts: ["Card"]
+define_mod "american/am_card_nmjl_2026", name: "NMJL 2026 Card", desc: "Play with the NMJL 2026 Card.", conflicts: ["Card"]
+# define_mod "american/WIP_am_card_network_2025", name: "Network 2025 Card (WIP)", desc: "Play with the Mah Jongg Network 2025 Card. Not fully implemented yet.", conflicts: ["Card"]
+# define_mod "american/WIP_am_card_network_jr_2025", name: "Network Jr 2025 Card (WIP)", desc: "Play with the Mah Jongg Network Jr 2025 Card. Not fully implemented yet.", conflicts: ["Card"]
+define_mod "american/am_card_press_2026", name: "Press 2026 Card", desc: "Play with the Mahjong Press 2026 Card.", conflicts: ["Card"]
+define_mod "american/BETA_am_card_TML_Big_2026", name: "TML 2026 Big Card (beta)", desc: "Play with The Mahjong Line's 2026 Big Card.", conflicts: ["Card"]
+define_mod "american/am_card_OMM_International_2026", name: "OMM International 2026 Card", desc: "Play with the OMM International 2026 Card.", conflicts: ["Card"]
+define_mod "american/am_card_AMJS_2026", name: "AMJS 2026 Card", desc: "Play with the AMJS 2026 Card.", conflicts: ["Card"]
+define_mod "american/BETA_am_card_Shari_Vegas", name: "ShariUniqueCreations Vegas Card (beta)", desc: "Play with the ShariUniqueCreations Vegas Card. May contain bugs.", conflicts: ["Card"]
+define_mod "american/am_card_ILoveMahj", name: "ILM Card", desc: "Play with the free ILoveMahj Card.", conflicts: ["Card"]
+define_mod "american/am_card_ATeacherFirst", name: "ATF Card", desc: "Play with the free ATeacherFirst Card.", conflicts: ["Card"]
+define_mod "american/am_card_MahjLife", name: "MahjLife Card", desc: "Play with the free MahjLife Card.", conflicts: ["Card"]
+# define_mod "american/WIP_am_card_MahjForAll_Evergreen", name: "MahjForAll Evergreen Card (beta)", desc: "Play with the free MahjForAll Evergreen Card. Six hands are not yet implemented.", conflicts: ["Card"]
+define_mod "american/BETA_am_card_AMJForEveryone", name: "AMJFE Card (beta)", desc: "Play with the free American Mah Jongg for Everyone Card. The 75-point hand is not yet implemented.", conflicts: ["Card"]
+define_mod "american/am_card_free", name: "Card-Free (beta)", desc: "Play with card-free rules: your hand must consist of two types of melds only, and these melds must match one of the following patterns: Any Like Numbers, NEWS, NS, EW, 369, 2468, 135, 357, 579, or Consecutive Run.", conflicts: ["Card"]
+define_mod_category "Miscellaneous"
+define_mod "show_waits", name: "Show Waits", desc: "Add some UI that shows waits."
+define_mod "american/show_nearest_american_hand", name: "Show Nearest Hands", desc: "Add some UI that shows nearest hands."
+define_mod "open_hands", name: "Open Hands", desc: "Everyone plays with tiles shown."
+
+define_set pair, ~s"0 0"
+define_match open_win,
+  # 2024
+  ~a"222a 000 2222b 4444b",
+  ~a"FFFF 2222a 0000 24b",
+  ~a"FF 2024a 2222b 2222c", ~a"FF 2024a 4444b 4444c",
+  # 2468
+  ~a"222a 444a 6666a 8888a", ~a"222a 444a 6666b 8888b",
+  ~a"22a 444a 44b 666b 8888c",
+  ~a"22a 44a 666a 888a DDDDa",
+  ~a"FFFF 4444a 6666b 24c", ~a"FFFF 6666a 8888b 48c",
+  ~a"FF 2222a 44a 66a 8888a", ~a"FF 2222a 44b 66b 8888a",
+  # Any Like Numbers
+  ~a"FFFF XXX0a XXXX0b XXX0c",
+  ~a"XX0a DDDa XX0b DDDb XXXX0c",
+  ~a"FF XXXX0a NEWS XXXX0b",
+  # Lucky Sevens
+  ~a"FF 1111a 6666a 7777a",
+  ~a"FF 2222a 5555a 7777a",
+  ~a"FF 3333a 4444a 7777a",
+  # Winds and Dragons
+  ~a"NNNN EEE WWW SSSS", ~a"NNN EEEE WWWW SSS",
+  ~a"FFFF DDDa DDDDb DDDc",
+  ~a"NNN SSS XXXX0a XXXX1b", ~a"EEE WWW XXXX0a XXXX1b",
+  ~a"FF NN EEE WWW SSSS",
+  ~a"NNNN XX0a XX1a XX2a SSSS", ~a"EEEE XX0a XX1a XX2a WWWW",
+  ~a"FF DDDDa NEWS DDDDb",
+  # 369
+  ~a"333a 666a 6666b 9999b", ~a"333a 666a 6666b 9999c",
+  ~a"FF 3a 66a 999a 333b 333c", ~a"FF 3a 66a 999a 666b 666c", ~a"FF 3a 66a 999a 999b 999c",
+  ~a"FF 3333a 6666a 9999a", ~a"FF 3333a 6666b 9999c",
+  ~a"333a DDDDa 333b DDDDb", ~a"666a DDDDa 666b DDDDb", ~a"999a DDDDa 999b DDDDb",
+  ~a"3333a 66a 66b 66c 9999a",
+  ~a"FFFF 33a 66a 999a DDDb",
+  # Quints
+  ~a"FF XXXXX0a XX1a XXXXX2a",
+  ~a"XXXXX0a ZZZZ XXXXX1b|XXXXX2b|XXXXX3b|XXXXX4b|XXXXX5b|XXXXX6b|XXXXX7b|XXXXX8b",
+  ~a"XX0a XXXXX1a XX0b XXXXX1b",
+  ~a"FFFFF DDDDa XXXXX0b",
+  # Consecutive Run
+  ~a"111a 22a 3333a 44a 555a", ~a"555a 66a 7777a 88a 999a",
+  ~a"XX0a XXX1a DDDDb XXX2a XX3a",
+  ~a"FF XXXX0a XXXX1a XXXX2a", ~a"FF XXXX0a XXXX1b XXXX2c",
+  ~a"X0a XX1a XXXX2a X0b XX1b XXXX2b",
+  ~a"XX0a XX1a XXX2a XXX3a DDDDa",
+  ~a"FFFFF X0a X1a X2a XXX3b XXX3c",
+  ~a"XXX0a XXX1a XXXX2a XXXX3a", ~a"XXX0a XXX1a XXXX2b XXXX3b",
+  # 13579
+  ~a"111a 33a 5555a 77a 999a", ~a"111a 33a 5555b 77c 999c",
+  ~a"111a 333a 3333b 5555b", ~a"555a 777a 7777b 9999b",
+  ~a"FF 11a 333a 5555a DDDa", ~a"FF 55a 777a 9999a DDDa",
+  ~a"11a 33a 55a 7777b 9999c",
+  ~a"FFFF 3333a 5555b 15c", ~a"FFFF 5555a 7777b 35c",
+  ~a"11a 33a 333b 555b DDDDc", ~a"55a 77a 777b 999b DDDDc"
+
+define_match concealed_win,
+  # 2024
+  ~a"NN EEE 2024a WWW SS",
+  # 2468
+  ~a"FF 222a 44a 666a 88b 88c",
+  # Winds and Dragons
+  ~a"NNN EW SSS XXX0a XXX0b",
+  # 369
+  ~a"333a 666a 333b 666b 99c",
+  # Singles and Pairs
+  ~a"FF 22a 46a 88a 22b 46b 88b",
+  ~a"FF 11a 33a 55a 55b 77b 99b",
+  ~a"112a 11223b 112233c", ~a"998a 99887b 998877c",
+  ~a"FF 33a 66a 99a 369b 369c",
+  ~a"XX0a XX1a XX2a XX3a XX4a DDb DDc",
+  ~a"2024a NN EW SS 2024b",
+  # Consecutive Run
+  ~a"XXX0a XXX1a XXX0b XXX1b XX2c",
+  # 13579
+  ~a"111a 33a 555a 333b 333c", ~a"555a 77a 999a 777b 777c"
+
+define_match singles_win,
+  ~a"FF 22a 46a 88a 22b 46b 88b",
+  ~a"FF 11a 33a 55a 55b 77b 99b",
+  ~a"112a 11223b 112233c", ~a"998a 99887b 998877c",
+  ~a"FF 33a 66a 99a 369b 369c",
+  ~a"XX0a XX1a XX2a XX3a XX4a DDb DDc",
+  ~a"2024a NN EW SS 2024b"
+
+define_match win, "open_win", "concealed_win", "singles_win"
+define_const concealed, has_no_call_named("am_pung", "am_kong", "am_quint")
+
+define_yaku yaku, "2024", [25, "Pts"], match(["hand", "call_tiles", "winning_tile"], ~a"222a 000 2222b 4444b")
+define_yaku yaku, "2024", [25, "Pts"], match(["hand", "call_tiles", "winning_tile"], ~a"FFFF 2222a 0000 24b")
+define_yaku yaku, "2024", [25, "Pts"], match(["hand", "call_tiles", "winning_tile"], [~a"FF 2024a 2222b 2222c", ~a"FF 2024a 4444b 4444c"])
+define_yaku yaku, "2024", [30, "Pts"], @concealed and match(["hand", "call_tiles", "winning_tile"], ~a"NN EEE 2024a WWW SS")
+define_yaku yaku, "2468", [25, "Pts"], match(["hand", "call_tiles", "winning_tile"], [~a"222a 444a 6666a 8888a", ~a"222a 444a 6666b 8888b"])
+define_yaku yaku, "2468", [25, "Pts"], match(["hand", "call_tiles", "winning_tile"], ~a"22a 444a 44b 666b 8888c")
+define_yaku yaku, "2468", [25, "Pts"], match(["hand", "call_tiles", "winning_tile"], ~a"22a 44a 666a 888a DDDDa")
+define_yaku yaku, "2468", [25, "Pts"], match(["hand", "call_tiles", "winning_tile"], [~a"FFFF 4444a 6666b 24c", ~a"FFFF 6666a 8888b 48c"])
+define_yaku yaku, "2468", [25, "Pts"], match(["hand", "call_tiles", "winning_tile"], [~a"FF 2222a 44a 66a 8888a", ~a"FF 2222a 44b 66b 8888a"])
+define_yaku yaku, "2468", [35, "Pts"], @concealed and match(["hand", "call_tiles", "winning_tile"], ~a"FF 222a 44a 666a 88b 88c")
+define_yaku yaku, "Any Like Numbers", [25, "Pts"], match(["hand", "call_tiles", "winning_tile"], ~a"FFFF XXX0a XXXX0b XXX0c")
+define_yaku yaku, "Any Like Numbers", [25, "Pts"], match(["hand", "call_tiles", "winning_tile"], ~a"XX0a DDDa XX0b DDDb XXXX0c")
+define_yaku yaku, "Any Like Numbers", [25, "Pts"], match(["hand", "call_tiles", "winning_tile"], ~a"FF XXXX0a NEWS XXXX0b")
+define_yaku yaku, "Lucky Sevens", [25, "Pts"], match(["hand", "call_tiles", "winning_tile"], ~a"FF 1111a 6666a 7777a")
+define_yaku yaku, "Lucky Sevens", [25, "Pts"], match(["hand", "call_tiles", "winning_tile"], ~a"FF 2222a 5555a 7777a")
+define_yaku yaku, "Lucky Sevens", [25, "Pts"], match(["hand", "call_tiles", "winning_tile"], ~a"FF 3333a 4444a 7777a")
+define_yaku yaku, "Winds and Dragons", [25, "Pts"], match(["hand", "call_tiles", "winning_tile"], [~a"NNNN EEE WWW SSSS", ~a"NNN EEEE WWWW SSS"])
+define_yaku yaku, "Winds and Dragons", [25, "Pts"], match(["hand", "call_tiles", "winning_tile"], ~a"FFFF DDDa DDDDb DDDc")
+define_yaku yaku, "Winds and Dragons", [25, "Pts"], match(["hand", "call_tiles", "winning_tile"], [~a"NNN SSS XXXX0a XXXX1b", ~a"EEE WWW XXXX0a XXXX1b"])
+define_yaku yaku, "Winds and Dragons", [25, "Pts"], match(["hand", "call_tiles", "winning_tile"], ~a"FF NN EEE WWW SSSS")
+define_yaku yaku, "Winds and Dragons", [30, "Pts"], match(["hand", "call_tiles", "winning_tile"], [~a"NNNN XX0a XX1a XX2a SSSS", ~a"EEEE XX0a XX1a XX2a WWWW"])
+define_yaku yaku, "Winds and Dragons", [25, "Pts"], match(["hand", "call_tiles", "winning_tile"], ~a"FF DDDDa NEWS DDDDb")
+define_yaku yaku, "Winds and Dragons", [30, "Pts"], @concealed and match(["hand", "call_tiles", "winning_tile"], ~a"NNN EW SSS XXX0a XXX0b")
+define_yaku yaku, "369", [25, "Pts"], match(["hand", "call_tiles", "winning_tile"], [~a"333a 666a 6666b 9999b", ~a"333a 666a 6666b 9999c"])
+define_yaku yaku, "369", [25, "Pts"], match(["hand", "call_tiles", "winning_tile"], [~a"FF 3a 66a 999a 333b 333c", ~a"FF 3a 66a 999a 666b 666c", ~a"FF 3a 66a 999a 999b 999c"])
+define_yaku yaku, "369", [25, "Pts"], match(["hand", "call_tiles", "winning_tile"], [~a"FF 3333a 6666a 9999a", ~a"FF 3333a 6666b 9999c"])
+define_yaku yaku, "369", [25, "Pts"], match(["hand", "call_tiles", "winning_tile"], [~a"333a DDDDa 333b DDDDb", ~a"666a DDDDa 666b DDDDb", ~a"999a DDDDa 999b DDDDb"])
+define_yaku yaku, "369", [30, "Pts"], match(["hand", "call_tiles", "winning_tile"], ~a"3333a 66a 66b 66c 9999a")
+define_yaku yaku, "369", [25, "Pts"], match(["hand", "call_tiles", "winning_tile"], ~a"FFFF 33a 66a 999a DDDb")
+define_yaku yaku, "369", [30, "Pts"], @concealed and match(["hand", "call_tiles", "winning_tile"], ~a"333a 666a 333b 666b 99c")
+define_yaku yaku, "Singles and Pairs", [50, "Pts"], @concealed and match(["hand", "call_tiles", "winning_tile"], ~a"FF 22a 46a 88a 22b 46b 88b")
+define_yaku yaku, "Singles and Pairs", [50, "Pts"], @concealed and match(["hand", "call_tiles", "winning_tile"], ~a"FF 11a 33a 55a 55b 77b 99b")
+define_yaku yaku, "Singles and Pairs", [50, "Pts"], @concealed and match(["hand", "call_tiles", "winning_tile"], [~a"112a 11223b 112233c", ~a"998a 99887b 998877c"])
+define_yaku yaku, "Singles and Pairs", [50, "Pts"], @concealed and match(["hand", "call_tiles", "winning_tile"], ~a"FF 33a 66a 99a 369b 369c")
+define_yaku yaku, "Singles and Pairs", [50, "Pts"], @concealed and match(["hand", "call_tiles", "winning_tile"], ~a"XX0a XX1a XX2a XX3a XX4a DDb DDc")
+define_yaku yaku, "Singles and Pairs", [75, "Pts"], @concealed and match(["hand", "call_tiles", "winning_tile"], ~a"2024a NN EW SS 2024b")
+define_yaku yaku, "Quints", [40, "Pts"], match(["hand", "call_tiles", "winning_tile"], ~a"FF XXXXX0a XX1a XXXXX2a")
+define_yaku yaku, "Quints", [40, "Pts"], match(["hand", "call_tiles", "winning_tile"], ~a"XXXXX0a ZZZZ XXXXX1b|XXXXX2b|XXXXX3b|XXXXX4b|XXXXX5b|XXXXX6b|XXXXX7b|XXXXX8b")
+define_yaku yaku, "Quints", [45, "Pts"], match(["hand", "call_tiles", "winning_tile"], ~a"XX0a XXXXX1a XX0b XXXXX1b")
+define_yaku yaku, "Quints", [40, "Pts"], match(["hand", "call_tiles", "winning_tile"], ~a"FFFFF DDDDa XXXXX0b")
+define_yaku yaku, "Consecutive Run", [25, "Pts"], match(["hand", "call_tiles", "winning_tile"], [~a"111a 22a 3333a 44a 555a", ~a"555a 66a 7777a 88a 999a"])
+define_yaku yaku, "Consecutive Run", [25, "Pts"], match(["hand", "call_tiles", "winning_tile"], ~a"XX0a XXX1a DDDDb XXX2a XX3a")
+define_yaku yaku, "Consecutive Run", [25, "Pts"], match(["hand", "call_tiles", "winning_tile"], [~a"FF XXXX0a XXXX1a XXXX2a", ~a"FF XXXX0a XXXX1b XXXX2c"])
+define_yaku yaku, "Consecutive Run", [30, "Pts"], match(["hand", "call_tiles", "winning_tile"], ~a"X0a XX1a XXXX2a X0b XX1b XXXX2b")
+define_yaku yaku, "Consecutive Run", [25, "Pts"], match(["hand", "call_tiles", "winning_tile"], ~a"XX0a XX1a XXX2a XXX3a DDDDa")
+define_yaku yaku, "Consecutive Run", [30, "Pts"], match(["hand", "call_tiles", "winning_tile"], ~a"FFFFF X0a X1a X2a XXX3b XXX3c")
+define_yaku yaku, "Consecutive Run", [25, "Pts"], match(["hand", "call_tiles", "winning_tile"], [~a"XXX0a XXX1a XXXX2a XXXX3a", ~a"XXX0a XXX1a XXXX2b XXXX3b"])
+define_yaku yaku, "Consecutive Run", [30, "Pts"], @concealed and match(["hand", "call_tiles", "winning_tile"], ~a"XXX0a XXX1a XXX0b XXX1b XX2c")
+define_yaku yaku, "13579", [25, "Pts"], match(["hand", "call_tiles", "winning_tile"], [~a"111a 33a 5555a 77a 999a", ~a"111a 33a 5555b 77c 999c"])
+define_yaku yaku, "13579", [25, "Pts"], match(["hand", "call_tiles", "winning_tile"], [~a"111a 333a 3333b 5555b", ~a"555a 777a 7777b 9999b"])
+define_yaku yaku, "13579", [25, "Pts"], match(["hand", "call_tiles", "winning_tile"], [~a"FF 11a 333a 5555a DDDa", ~a"FF 55a 777a 9999a DDDa"])
+define_yaku yaku, "13579", [30, "Pts"], match(["hand", "call_tiles", "winning_tile"], ~a"11a 33a 55a 7777b 9999c")
+define_yaku yaku, "13579", [25, "Pts"], match(["hand", "call_tiles", "winning_tile"], [~a"FFFF 3333a 5555b 15c", ~a"FFFF 5555a 7777b 35c"])
+define_yaku yaku, "13579", [25, "Pts"], match(["hand", "call_tiles", "winning_tile"], [~a"11a 33a 333b 555b DDDDc", ~a"55a 77a 777b 999b DDDDc"])
+define_yaku yaku, "13579", [35, "Pts"], @concealed and match(["hand", "call_tiles", "winning_tile"], [~a"111a 33a 555a 333b 333c", ~a"555a 77a 999a 777b 777c"])
+
+set score_calculation, %{
+  yaku_lists: ["yaku"],
+  use_smt: false,
+  highest_scoring_yaku_only: true,
+  arrange_american_yaku: true,
+  point_name: "Pts",
+  win_by_discard_label: "Discard",
+  win_by_draw_label: "Draw",
+  win_by_discard_name: "Mah Jongg",
+  win_by_draw_name: "Mah Jongg",
+  exhaustive_draw_name: "Draw"
+}
+
+define_scoring win do
+  total = points :: "Pts"
+  set_counter_all("hand_score", "total")
+  if won_by_draw do
+    total *= 2 :: "Self Draw"
+  else
+    if seat_is("last_discarder") do
+      total *= 2 :: "Discarder penalty"
+    end
+  end
+  # jokerless hand bonus
+  if not_match(["hand", "call_tiles", "winning_tile"], ~m"nojoker, 1j:1", as: "winner")
+      and not_match(["hand", "call_tiles", "winning_tile"], "singles_win", as: "winner") do
+    total *= 2 :: "Jokerless hand"
+  end
+end
+
+on after_win do
+  modify_winner("score", "hand_score")
+end
+
+on before_win do
+  make_responsible_for("others")
+end
+
+define_play_restriction "any", anyone_status("declare_shimocha_dead") or anyone_status("declare_toimen_dead") or anyone_status("declare_kamicha_dead")
+define_play_restriction "any", status("dead_hand")
+
+def blind_pass_left do
+  as ["east", "north", "west", "south"] do
+    if to_pass >= 1 do set_status("pass_1") end
+    if to_pass >= 2 do set_status("pass_2") end
+    if to_pass >= 3 do set_status("pass_3") end
+    subtract_counter("to_pass", "count_draws", "self")
+    if status("pass_1") do pass_draws("kamicha", 1) end
+    if status("pass_2") do pass_draws("kamicha", 2) end
+    if status("pass_3") do pass_draws("kamicha", 3) end
+    unset_status("pass_1", "pass_2", "pass_3")
+  end
+end
+
+def blind_pass_right do
+  as ["east", "south", "west", "north"] do
+    if to_pass >= 1 do set_status("pass_1") end
+    if to_pass >= 2 do set_status("pass_2") end
+    if to_pass >= 3 do set_status("pass_3") end
+    subtract_counter("to_pass", "count_draws", "self")
+    if status("pass_1") do pass_draws("shimocha", 1) end
+    if status("pass_2") do pass_draws("shimocha", 2) end
+    if status("pass_3") do pass_draws("shimocha", 3) end
+    unset_status("pass_1", "pass_2", "pass_3")
+  end
+end
+
+on before_turn_change do
+  if status_missing("match_start") do
+    unset_status("first_turn")
+  end
+end
+
+on after_turn_change do
+  if no_tiles_remaining do
+    pause(1000)
+    ryuukyoku
+  end
+  if status("dead_hand") do
+    advance_turn
+  else
+    unless no_tiles_remaining do
+      draw
+    end
+  end
+end
+
+on after_start do
+  set_status_all("match_start", "first_charleston", "charleston_right", "heavenly_available")
+  set_tile_alias_all(["1j"], [["1j", "_unpassable"], "any"])
+  set_tile_alias_all(["2f", "3f", "4f", "1g", "2g", "3g", "4g"], ["1f"])
+  # compute how many tiles in each player's hand are passable
+  as everyone do
+    set_counter("passables", "count_matches", ["hand", "draw"], ~m"any:1")
+    subtract_counter("passables", "count_matches", ["hand", "draw"], ~m"(any@unpassable):1")
+  end
+end
+
+on after_charleston do
+  if status("blind_pass_left") do
+    unset_status_all("blind_pass_left")
+    as everyone do delete_tiles(%{hand: ["1x"], draw: ["1x"]}) end
+    as everyone do
+      set_counter("to_pass", 3)
+      subtract_counter("to_pass", "count_draws", "kamicha")
+    end
+    blind_pass_left
+    blind_pass_left
+    blind_pass_left
+    blind_pass_left
+  end
+  if status("blind_pass_right") do
+    unset_status_all("blind_pass_right")
+    as everyone do delete_tiles(%{hand: ["1x"], draw: ["1x"]}) end
+    as everyone do
+      set_counter("to_pass", 3)
+      subtract_counter("to_pass", "count_draws", "shimocha")
+    end
+    blind_pass_right
+    blind_pass_right
+    blind_pass_right
+    blind_pass_right
+  end
+  if anyone_status("start_blind_pass", "charleston_left") do
+    unset_status_all("start_blind_pass")
+    push_system_message("Select any number of the upside-down tiles to blind-pass that many tiles")
+    set_status_all("blind_pass_left")
+  end
+  if anyone_status("start_blind_pass", "charleston_right") do
+    unset_status_all("start_blind_pass")
+    push_system_message("Select any number of the upside-down tiles to blind-pass that many tiles")
+    set_status_all("blind_pass_right")
+  end
+end
+
+
+
+define_button charleston_left,
+  display_name: "Select three tiles to pass left",
+  show_when: passables >= 3 and status("charleston_left"),
+  unskippable: true,
+  cancellable: false
+  do
+    mark [["hand", 3, ["self", "not_joker"]]] do
+      unset_status("charleston_left", "heavenly_available")
+      merge_draw
+      sort_hand
+      if status("blind_pass_left") do draw(3, "1x") end
+    end
+    charleston_left
+    if status("first_charleston") do unset_status("first_charleston"); set_status("decide_charleston") end
+    if status("second_charleston") do set_status("charleston_across") end
+  end
+
+define_button charleston_across,
+  display_name: "Select three tiles to pass across",
+  show_when: passables >= 3 and status("charleston_across"),
+  unskippable: true,
+  cancellable: false
+  do
+    mark [["hand", 3, ["self", "not_joker"]]] do
+      unset_status("charleston_across", "heavenly_available")
+      merge_draw
+      sort_hand
+    end
+    charleston_across
+    if status("first_charleston") do set_status("charleston_left") end
+    if status("second_charleston") do set_status("charleston_right") end
+    set_status("start_blind_pass")
+  end
+
+define_button charleston_right,
+  display_name: "Select three tiles to pass right",
+  show_when: passables >= 3 and status("charleston_right"),
+  unskippable: true,
+  cancellable: false
+  do
+    mark [["hand", 3, ["self", "not_joker"]]] do
+      unset_status("charleston_right", "heavenly_available")
+      merge_draw
+      sort_hand
+      if status("blind_pass_right") do draw(3, "1x") end
+    end
+    charleston_right
+
+    charleston_left
+    if status("first_charleston") do set_status("charleston_across") end
+    if status("second_charleston") do unset_status("second_charleston"); set_status("final_charleston") end
+  end
+
+define_button continue_charleston,
+  display_name: "Continue Charleston",
+  show_when: passables >= 3 and status("decide_charleston") and not_anyone_status("first_charleston"),
+  unskippable: true
+  do
+    unset_status("decide_charleston")
+    set_status("second_charleston", "charleston_left")
+    if not_anyone_status("decide_charleston") and not_anyone_status("final_charleston") do
+      set_status_all("second_charleston", "charleston_left")
+      recalculate_buttons
+    end
+  end
+
+define_button skip_charleston,
+  display_name: "Skip Charleston",
+  show_when: passables >= 3 and status("decide_charleston"),
+  precedence_over: ["continue_charleston"],
+  unskippable: true
+  do
+    big_text("Skip")
+    unset_status_all("decide_charleston")
+    set_status_all("final_charleston")
+    recalculate_buttons
+  end
+
+define_button final_charleston_offer_0,
+  display_name: "Offer 0",
+  show_when: status("final_charleston") and status_missing("charleston_across_0", "charleston_across_1", "charleston_across_2", "charleston_across_3"),
+  unskippable: true
+  do
+    big_text("Offer 0")
+    set_status("final_charleston", "charleston_across_0")
+    as toimen do
+      if status("charleston_across_1") do unset_status("charleston_across_1"); set_status("charleston_across_0") end
+      if status("charleston_across_2") do unset_status("charleston_across_2"); set_status("charleston_across_0") end
+      if status("charleston_across_3") do unset_status("charleston_across_3"); set_status("charleston_across_0") end
+    end
+    recalculate_buttons
+  end
+
+define_button final_charleston_offer_1,
+  display_name: "Offer 1",
+  show_when: passables >= 1 and status("final_charleston") and status_missing("charleston_across_0", "charleston_across_1", "charleston_across_2", "charleston_across_3"),
+  unskippable: true
+  do
+    big_text("Offer 1")
+    set_status("final_charleston", "charleston_across_1")
+    as toimen do
+      if status("charleston_across_0") do unset_status("charleston_across_1", as: "prev_seat"); set_status("charleston_across_0", as: "prev_seat") end
+      if status("charleston_across_2") do unset_status("charleston_across_2"); set_status("charleston_across_1") end
+      if status("charleston_across_3") do unset_status("charleston_across_3"); set_status("charleston_across_1") end
+    end
+    recalculate_buttons
+  end
+
+define_button final_charleston_offer_2,
+  display_name: "Offer 2",
+  show_when: passables >= 2 and status("final_charleston") and status_missing("charleston_across_0", "charleston_across_1", "charleston_across_2", "charleston_across_3"),
+  unskippable: true
+  do
+    big_text("Offer 2")
+    set_status("final_charleston", "charleston_across_2")
+    as toimen do
+      if status("charleston_across_0") do unset_status("charleston_across_1", as: "prev_seat"); set_status("charleston_across_0", as: "prev_seat") end
+      if status("charleston_across_1") do unset_status("charleston_across_2", as: "prev_seat"); set_status("charleston_across_1", as: "prev_seat") end
+      if status("charleston_across_3") do unset_status("charleston_across_3"); set_status("charleston_across_2") end
+    end
+    recalculate_buttons
+  end
+
+define_button final_charleston_offer_3,
+  display_name: "Offer 3",
+  show_when: passables >= 3 and status("final_charleston") and status_missing("charleston_across_0", "charleston_across_1", "charleston_across_2", "charleston_across_3"),
+  unskippable: true
+  do
+    big_text("Offer 3")
+    set_status("final_charleston", "charleston_across_3")
+    as toimen do
+      if status("charleston_across_0") do unset_status("charleston_across_1", as: "prev_seat"); set_status("charleston_across_0", as: "prev_seat") end
+      if status("charleston_across_1") do unset_status("charleston_across_2", as: "prev_seat"); set_status("charleston_across_1", as: "prev_seat") end
+      if status("charleston_across_2") do unset_status("charleston_across_3", as: "prev_seat"); set_status("charleston_across_2", as: "prev_seat") end
+    end
+    recalculate_buttons
+  end
+
+define_button charleston_across_0,
+  display_name: "Pass no tiles across",
+  show_when: status("final_charleston", "charleston_across_0") and toimen_status("final_charleston", "charleston_across_0"),
+  unskippable: true,
+  cancellable: false
+  do
+    unset_status("final_charleston", "charleston_across_0")
+    if not_anyone_status("final_charleston") do
+      unset_status_all("match_start")
+    end
+    recalculate_buttons
+  end
+
+define_button charleston_across_1,
+  display_name: "Select a tile to pass across",
+  show_when: passables >= 1 and status("final_charleston", "charleston_across_1") and toimen_status("final_charleston", "charleston_across_1"),
+  unskippable: true,
+  cancellable: false
+  do
+    mark [["hand", 1, ["self", "not_joker"]]] do
+      unset_status("charleston_across_1")
+    end
+    charleston_across
+    unset_status("final_charleston")
+    if not_anyone_status("final_charleston") do unset_status_all("match_start") end
+  end
+
+define_button charleston_across_2,
+  display_name: "Select two tiles to pass across",
+  show_when: passables >= 2 and status("final_charleston", "charleston_across_2") and toimen_status("final_charleston", "charleston_across_2"),
+  unskippable: true,
+  cancellable: false
+  do
+    mark [["hand", 2, ["self", "not_joker"]]] do
+      unset_status("charleston_across_2")
+    end
+    charleston_across
+    unset_status("final_charleston")
+    if not_anyone_status("final_charleston") do unset_status_all("match_start") end
+  end
+
+define_button charleston_across_3,
+  display_name: "Select three tiles to pass across",
+  show_when: passables >= 3 and status("final_charleston", "charleston_across_3") and toimen_status("final_charleston", "charleston_across_3"),
+  unskippable: true,
+  cancellable: false
+  do
+    mark [["hand", 3, ["self", "not_joker"]]] do
+      unset_status("charleston_across_3")
+    end
+    charleston_across
+    unset_status("final_charleston")
+    if not_anyone_status("final_charleston") do unset_status_all("match_start") end
+  end
+
+# TODO: check that this button behaves the way it should. this button is here for any variants where a player has so many unpassable tiles (e.g. jokers, blanks, flowers in older NMJL rules) that they are unable to pass three tiles during the Charleston.
+# TODO: need some kind of test scenario to check if this button works correctly
+define_button abort_during_charleston,
+  display_name: "Can't pass three tiles",
+  show_when: status("match_start") and passables < 3,
+  precedence_over: ["charleston_left", "charleston_across", "charleston_right", "continue_charleston", "skip_charleston"],
+  unskippable: true,
+  cancellable: false
+  do
+    big_text("Can't pass three tiles")
+    pause(1500)
+    abortive_draw("Throw in all tiles and start again")
+  end
+
+# the prefixes 1_, 2_, 3_ are just to put the buttons in the correct order when shown
+# but otherwise you refer to them as am_pung, etc. due to the call_name field
+define_button "1_am_pung",
+  display_name: "Pung",
+  show_when: status_missing("match_start", "dead_hand") and not_our_turn and not_no_tiles_remaining and someone_else_just_discarded and call_available,
+  precedence_over: ["am_pung", "am_kong", "am_quint"],
+  call: [[0, 0]],
+  call_name: "am_pung",
+  call_conditions: hand_length_at_least(3)
+    and not_called_tile_contains(["1j"], 1)
+    # forgot what this last check is for
+    and call_contains(["1m","2m","3m","4m","5m","6m","7m","8m","9m","1p","2p","3p","4p","5p","6p","7p","8p","9p","1s","2s","3s","4s","5s","6s","7s","8s","9s","1z","2z","3z","4z","0z","6z","7z","1f","2f","3f","4f","1g","2g","3g","4g"], 1)
+  do
+    big_text("Pung")
+    call
+    change_turn("self")
+  end
+
+define_button "2_am_kong",
+  display_name: "Kong",
+  show_when: status_missing("match_start", "dead_hand") and not_our_turn and not_no_tiles_remaining and someone_else_just_discarded and call_available,
+  precedence_over: ["am_pung", "am_kong", "am_quint"],
+  call: [[0, 0, 0]],
+  call_name: "am_kong",
+  call_conditions: hand_length_at_least(4)
+    and not_called_tile_contains(["1j"], 1)
+    and call_contains(["1m","2m","3m","4m","5m","6m","7m","8m","9m","1p","2p","3p","4p","5p","6p","7p","8p","9p","1s","2s","3s","4s","5s","6s","7s","8s","9s","1z","2z","3z","4z","0z","6z","7z","1f","2f","3f","4f","1g","2g","3g","4g"], 1)
+  do
+    big_text("Kong")
+    call
+    change_turn("self")
+  end
+
+define_button "3_am_quint",
+  display_name: "Quint",
+  show_when: status_missing("match_start", "dead_hand") and not_our_turn and not_no_tiles_remaining and someone_else_just_discarded and call_available,
+  precedence_over: ["am_pung", "am_kong", "am_quint"],
+  call: [[0, 0, 0, 0]],
+  call_name: "am_quint",
+  call_conditions: hand_length_at_least(5)
+    and not_called_tile_contains(["1j"], 1)
+    and call_contains(["1m","2m","3m","4m","5m","6m","7m","8m","9m","1p","2p","3p","4p","5p","6p","7p","8p","9p","1s","2s","3s","4s","5s","6s","7s","8s","9s","1z","2z","3z","4z","0z","6z","7z","1f","2f","3f","4f","1g","2g","3g","4g"], 1)
+  do
+    big_text("Quint")
+    call
+    change_turn("self")
+  end
+
+define_button am_joker_swap,
+  display_name: "Swap for exposed joker",
+  show_when: status_missing("match_start", "dead_hand") and our_turn and not_just_discarded and match(["hand_draw_nonjoker_any", "anyone_joker_meld_tiles"], ~m"pair:1")
+  do
+    big_text("Swap")
+    mark [["call", 1, ["call_has_joker", "match_call_to_marked_hand"]],
+          ["hand", 1, ["self", "not_joker", "match_hand_to_marked_call"]]] do
+      swap_out_joker("1j")
+    end
+  end
+
+define_button mahjong_heavenly,
+  display_name: "Mah Jongg",
+  show_when: status("heavenly_available", "charleston_left") and our_turn and is_tenpai_american and match(["hand", "call_tiles", "draw"], ["win"]),
+  precedence_over: ["am_pung", "am_kong", "am_quint", "abort_during_charleston"]
+  do
+    big_text("Mah Jongg")
+    pause(1000)
+    reveal_hand
+    win_by_draw("win")
+  end
+
+define_button mahjong_draw,
+  display_name: "Mah Jongg",
+  show_when: status_missing("match_start", "dead_hand") and our_turn and has_draw and is_tenpai_american
+      and (match(["hand", "call_tiles", "draw"], ["open_win"]) or (has_no_call_named("am_pung", "am_kong", "am_quint") and match(["hand", "call_tiles", "draw"], ["win"]))),
+  precedence_over: ["am_pung", "am_kong", "am_quint"]
+  do
+    big_text("Mah Jongg")
+    pause(1000)
+    reveal_hand
+    win_by_draw("win")
+  end
+
+define_button mahjong_discard,
+  display_name: "Mah Jongg",
+  show_when: status_missing("match_start", "dead_hand") and not_our_turn and not_just_discarded and someone_else_just_discarded and is_tenpai_american
+      and not_match(["last_discard"], ~m"1j:1")
+      and (match(["hand", "call_tiles", "last_discard"], ["open_win"]) or (has_no_call_named("am_pung", "am_kong", "am_quint") and match(["hand", "call_tiles", "last_discard"], ["win"]))),
+  precedence_over: ["am_pung", "am_kong", "am_quint", "mahjong_discard"]
+  do
+    big_text("Mah Jongg")
+    pause(1000)
+    reveal_hand
+    win_by_discard("win")
+  end
+
+# again, the 0_ and 1_ are to order the buttons
+# TODO: Change push messages to mention player's names instead of just saying the player directions.
+define_button declare_dead_0_shimocha,
+  display_name: "Declare hand on right dead",
+  show_when: status("declare_shimocha_dead") and status_missing("dead_hand") and our_turn,
+  unskippable: true
+  do
+    unset_status("declare_shimocha_dead")
+    if hand_is_dead("shimocha") do
+      big_text("Dead hand", as: "shimocha")
+      push_message("correctly declared player on right's hand dead")
+      push_message("is now disqualified", as: "shimocha")
+      set_status("dead_hand", as: "shimocha")
+    else
+      big_text("Not dead", as: "shimocha")
+      big_text("Dead hand")
+      push_message("incorrectly declared player on right's hand dead")
+      push_message("is now disqualified")
+      set_status("dead_hand")
+      advance_turn
+    end
+    if toimen_status("dead_hand") and kamicha_status("dead_hand") do
+      pause(1000)
+      ryuukyoku("Three Dead Hands")
+    end
+  end
+
+define_button declare_dead_0_toimen,
+  display_name: "Declare hand across dead",
+  show_when: status("declare_toimen_dead") and status_missing("dead_hand") and our_turn,
+  unskippable: true
+  do
+    unset_status("declare_toimen_dead")
+    if hand_is_dead("toimen") do
+      big_text("Dead hand", as: "toimen")
+      push_message("correctly declared opposite player's hand dead")
+      push_message("is now disqualified", as: "toimen")
+      set_status("dead_hand", as: "toimen")
+    else
+      big_text("Not dead", as: "toimen")
+      big_text("Dead hand")
+      push_message("incorrectly declared opposite player's hand dead")
+      push_message("is now disqualified")
+      set_status("dead_hand")
+      advance_turn
+    end
+    if shimocha_status("dead_hand") and kamicha_status("dead_hand") do
+      pause(1000)
+      ryuukyoku("Three Dead Hands")
+    end
+  end
+
+define_button declare_dead_0_kamicha,
+  display_name: "Declare hand on left dead",
+  show_when: status("declare_kamicha_dead") and status_missing("dead_hand") and our_turn,
+  unskippable: true
+  do
+    unset_status("declare_kamicha_dead")
+    if hand_is_dead("kamicha") do
+      big_text("Dead hand", as: "kamicha")
+      push_message("correctly declared player on left's hand dead")
+      push_message("is now disqualified", as: "kamicha")
+      set_status("dead_hand", as: "kamicha")
+    else
+      big_text("Not dead", as: "kamicha")
+      big_text("Dead hand")
+      push_message("incorrectly declared player on left's hand dead")
+      push_message("is now disqualified")
+      set_status("dead_hand")
+      advance_turn
+    end
+    if shimocha_status("dead_hand") and toimen_status("dead_hand") do
+      pause(1000)
+      ryuukyoku("Three Dead Hands")
+    end
+  end
+
+define_button declare_dead_1_cancel,
+  display_name: "Cancel",
+  show_when: not_status_missing("declare_shimocha_dead", "declare_toimen_dead", "declare_kamicha_dead"),
+  unskippable: true
+  do
+    push_message("cancelled their challenge")
+    unset_status("declare_shimocha_dead", "declare_toimen_dead", "declare_kamicha_dead")
+  end
+
+
+
+
+
+define_auto_button _1_auto_sort,
+  display_name: "A",
+  desc: "Automatically sort your hand.",
+  enabled_at_start: true
+  do
+    sort_hand
+  end
+
+define_auto_button _2_auto_ron,
+  display_name: "M",
+  desc: "Automatically declare Mah Jongg."
+  do
+    if buttons_include("mahjong_discard") do press_button("mahjong_discard") end
+    if buttons_include("mahjong_draw") do press_button("mahjong_draw") end
+    if buttons_include("mahjong_heavenly") do press_button("mahjong_heavenly") end
+  end
+
+define_auto_button _3_auto_no_call,
+  display_name: "C",
+  desc: "Skip all calls except Mah Jongg."
+  do
+    if not_our_turn and buttons_include("skip") and buttons_exclude("mahjong_discard", "mahjong_heavenly", "am_joker_swap") do
+      press_button("skip")
+    end
+  end
+
+define_auto_button _4_auto_no_call,
+  display_name: "JC",
+  desc: "Skip calls that only use your jokers."
+  do
+    if not_our_turn and buttons_include("skip") and buttons_exclude("mahjong_discard", "mahjong_heavenly", "am_joker_swap")
+        and (not_match(["hand"], ~m"nojoker, (1f 2f 3f 4f 1g 2g 3g 4g):1") or not_match(["last_discard"], ~m"nojoker, (1f 2f 3f 4f 1g 2g 3g 4g):1"))
+        and not_match(["last_discard", "hand_any"], ~m"nojoker, pair:1") do
+      press_button("skip")
+    end
+  end
+
+define_auto_button _5_auto_no_dead_call,
+  display_name: "DC",
+  desc: "Skip calls that deaden your hand.",
+  enabled_at_start: true
+  do
+    if not_our_turn and buttons_include("skip") and buttons_exclude("mahjong_discard", "mahjong_heavenly", "am_joker_swap") and all_calls_deaden_hand do
+      press_button("skip")
+    end
+  end
+
+define_auto_button _6_auto_discard,
+  display_name: "D",
+  desc: "Automatically discard your drawn tile."
+  do
+    if our_turn and has_draw and buttons_exclude("am_joker_swap", "mahjong_draw", "mahjong_heavenly") do
+      discard_draw
+    end
+  end
+
+define_auto_button _6_auto_discard,
+  display_name: "DD",
+  desc: "Automatically discard your drawn tile if it doesn't match any of your hand tiles."
+  do
+    if has_draw
+        and buttons_exclude("am_joker_swap", "mahjong_draw", "mahjong_heavenly")
+        and (not_match(["hand"], ~m"nojoker, (1f 2f 3f 4f 1g 2g 3g 4g):1") or not_match(["draw"], ~m"nojoker, (1f 2f 3f 4f 1g 2g 3g 4g):1"))
+        and not_match(["draw"], ~m"nojoker, 1j:1")
+        and not_match(["draw", "hand_any"], ~m"nojoker, pair:1") do
+      discard_draw
+    end
+  end
+
+set interruptible_actions, ["play_tile", "draw"]
+set initial_score, 0
+set starting_tiles, 13
+set initial_dead_wall_length, 0
+set four_rows_discards, true
+set dead_hand_buttons, true
+set max_rounds, 8

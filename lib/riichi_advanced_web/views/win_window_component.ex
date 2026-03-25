@@ -32,7 +32,7 @@ defmodule RiichiAdvancedWeb.WinWindowComponent do
             </div>
             <div class="hand winning-hand separated-hand">
               <div class={Utils.get_tile_class(tile, i, assigns)} :for={{tile, i} <- Enum.with_index(@winner.separated_hand)}></div>
-              <%= for {{name, call}, i} <- Enum.with_index(process_calls(@winner.arranged_calls)) do %>
+              <%= for {{name, call}, i} <- Enum.with_index(process_calls(@winner.separated_calls)) do %>
                 <div class={["call", (name == "_flowers" and length(call) > 3) && "winning-flowers"]}>
                   <div class="flower-count" :if={name == "_flowers" and length(call) > 3}>&#215;<%= length(call) %></div>
                   <div class={Utils.get_tile_class(tile, i, assigns)} :for={tile <- call}></div>
