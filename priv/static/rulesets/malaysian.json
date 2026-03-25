@@ -84,87 +84,87 @@
   "yaku": [
     {
       "display_name": "Face",
-      "value": ["count_matches", ["flowers"], [["nojoker", [["1y"], 1] ]]],
+      "value": ["faces", "Fan"],
       "when": [{"name": "match", "opts": [["flowers"], [[ "nojoker", [["1y"], 1] ]]]}]
     },
     {
       "display_name": "All Faces",
-      "value": 1,
+      "value": [1, "Fan"],
       "when": [{"name": "match", "opts": [["flowers"], [[ "nojoker", [["1y"], 4] ]]]}]
     },
     {
       "display_name": "Animal",
-      "value": ["count_matches", ["flowers"], [[ "nojoker", [["1a","2a","3a","4a"], 1] ]]],
+      "value": ["animals", "Fan"],
       "when": [{"name": "match", "opts": [["flowers"], [[ "nojoker", [["1a","2a","3a","4a"], 1] ]]]}]
     },
     {
       "display_name": "All Animals",
-      "value": 1,
+      "value": [1, "Fan"],
       "when": [{"name": "match", "opts": [["flowers"], [[ "unique", "nojoker", [["1a","2a","3a","4a"], 4] ]]]}]
     },
     {
       "display_name": "All Flowers",
-      "value": 1,
+      "value": [1, "Fan"],
       "when": [{"name": "match", "opts": [["flowers"], [[ "unique", "nojoker", [["1f","2f","3f","4f"], 4] ]]]}]
     },
     {
       "display_name": "All Seasons",
-      "value": 1,
+      "value": [1, "Fan"],
       "when": [{"name": "match", "opts": [["flowers"], [[ "unique", "nojoker", [["1g","2g","3g","4g"], 4] ]]]}]
     },
     {
       "display_name": "Seat Flower",
-      "value": 1,
+      "value": [1, "Fan"],
       "when": [{"name": "seat_is", "opts": ["east"]}, {"name": "match", "opts": [["flowers"], [[ "nojoker", [["1f"], 1]] ]]}]
     },
     {
       "display_name": "Seat Flower",
-      "value": 1,
+      "value": [1, "Fan"],
       "when": [{"name": "seat_is", "opts": ["south"]}, {"name": "match", "opts": [["flowers"], [[ "nojoker", [["2f"], 1]] ]]}]
     },
     {
       "display_name": "Seat Flower",
-      "value": 1,
+      "value": [1, "Fan"],
       "when": [{"name": "seat_is", "opts": ["west"]}, {"name": "match", "opts": [["flowers"], [[ "nojoker", [["3f"], 1]] ]]}]
     },
     {
       "display_name": "Four Flower",
-      "value": 1,
+      "value": [1, "Fan"],
       "when": [{"name": "match", "opts": [["flowers"], [[[["4f"], 1]]]]}]
     },
     {
       "display_name": "Seat Season",
-      "value": 1,
+      "value": [1, "Fan"],
       "when": [{"name": "seat_is", "opts": ["east"]}, {"name": "match", "opts": [["flowers"], [[ "nojoker", [["1g"], 1] ]]]}]
     },
     {
       "display_name": "Seat Season",
-      "value": 1,
+      "value": [1, "Fan"],
       "when": [{"name": "seat_is", "opts": ["south"]}, {"name": "match", "opts": [["flowers"], [[ "nojoker", [["2g"], 1] ]]]}]
     },
     {
       "display_name": "Seat Season",
-      "value": 1,
+      "value": [1, "Fan"],
       "when": [{"name": "seat_is", "opts": ["west"]}, {"name": "match", "opts": [["flowers"], [[ "nojoker", [["3g"], 1] ]]]}]
     },
     {
       "display_name": "Four Season",
-      "value": 1,
+      "value": [1, "Fan"],
       "when": [{"name": "match", "opts": [["flowers"], [[[["4g"], 1]]]]}]
     },
     {
       "display_name": "East Wind",
-      "value": 1,
+      "value": [1, "Fan"],
       "when": [{"name": "match", "opts": [["hand", "calls", "winning_tile"], [[[["ton"], 1]]]]}]
     },
     {
       "display_name": "North Wind",
-      "value": 1,
+      "value": [1, "Fan"],
       "when": [{"name": "match", "opts": [["hand", "calls", "winning_tile"], [[[["pei"], 1]]]]}]
     },
     {
       "display_name": "Seat Wind",
-      "value": 1,
+      "value": [1, "Fan"],
       "when": [[
         [{"name": "seat_is", "opts": ["east"]}, {"name": "match", "opts": [["hand", "calls", "winning_tile"], [[[["ton"], 1]]]]}],
         [{"name": "seat_is", "opts": ["south"]}, {"name": "match", "opts": [["hand", "calls", "winning_tile"], [[[["nan"], 1]]]]}],
@@ -173,134 +173,134 @@
     },
     {
       "display_name": "White Dragon",
-      "value": 1,
+      "value": [1, "Fan"],
       "when": [{"name": "match", "opts": [["hand", "calls", "winning_tile"], [[[["haku"], 1]]]]}]
     },
     {
       "display_name": "Green Dragon",
-      "value": 1,
+      "value": [1, "Fan"],
       "when": [{"name": "match", "opts": [["hand", "calls", "winning_tile"], [[[["hatsu"], 1]]]]}]
     },
     {
       "display_name": "Red Dragon",
-      "value": 1,
+      "value": [1, "Fan"],
       "when": [{"name": "match", "opts": [["hand", "calls", "winning_tile"], [[[["chun"], 1]]]]}]
     },
     {
       "display_name": "Small Three Dragons",
-      "value": 3,
+      "value": [3, "Fan"],
       "when": [{"name": "match", "opts": [["hand", "calls", "winning_tile"], ["little_three_dragons"]]}]
     },
     {
       "display_name": "Half Flush",
-      "value": 1,
+      "value": [1, "Fan"],
       "when": [{"name": "winning_hand_consists_of", "opts": ["1p","2p","3p","4p","5p","6p","7p","8p","9p","1z","2z","3z","4z","8z","6z","7z"]}]
     },
     {
       "display_name": "Full Flush",
-      "value": 3,
+      "value": [3, "Fan"],
       "when": [{"name": "winning_hand_consists_of", "opts": ["1p","2p","3p","4p","5p","6p","7p","8p","9p"]}]
     },
     {
       "display_name": "All Sequences with Dot Eye",
-      "value": 1,
+      "value": [1, "Fan"],
       "when": [{"name": "match", "opts": [["hand", "calls", "winning_tile"], [
         ["exhaustive", [[["1p","1p"],["2p","2p"],["3p","3p"],["4p","4p"],["5p","5p"],["6p","6p"],["7p","7p"],["8p","8p"],["9p","9p"]], 1], [["shuntsu"], 4]]
       ]]}]
     },
     {
       "display_name": "All Triplets",
-      "value": 2,
+      "value": [2, "Fan"],
       "when": [{"name": "match", "opts": [["hand", "calls", "winning_tile"], [[[["koutsu"], 4], [["pair"], 1]]]]}]
     },
     {
       "display_name": "After a Flower",
-      "value": 1,
+      "value": [1, "Fan"],
       "when": [{"name": "status", "opts": ["flower"]}]
     },
     {
       "display_name": "After a Gong",
-      "value": 1,
+      "value": [1, "Fan"],
       "when": [{"name": "status", "opts": ["kan"]}]
     },
     {
       "display_name": "Seven Pairs",
-      "value": 1,
+      "value": [1, "Fan"],
       "when": [{"name": "match", "opts": [["hand", "winning_tile"], [[[["quad"], -1], [["pair"], 7]]]]}]
     },
     {
       "display_name": "Robbing a Gong",
-      "value": 1,
+      "value": [1, "Fan"],
       "when": ["won_by_call"]
     },
     {
       "display_name": "Nine Gates",
-      "value": 10,
+      "value": [10, "Fan"],
       "when": ["won_by_draw", {"name": "match", "opts": [["hand", "winning_tile"], [[[["chuurenpoutou"], 1]]]]}]
     },
     {
       "display_name": "Small Four Winds",
-      "value": 10,
+      "value": [10, "Fan"],
       "when": [{"name": "match", "opts": [["hand", "calls", "winning_tile"], ["little_four_winds"]]}]
     },
     {
       "display_name": "Big Four Winds",
-      "value": 10,
+      "value": [10, "Fan"],
       "when": [{"name": "match", "opts": [["hand", "calls", "winning_tile"], ["big_four_winds"]]}]
     },
     {
       "display_name": "No Flowers",
-      "value": 10,
+      "value": [10, "Fan"],
       "when": [{"name": "not_match", "opts": [["flowers"], [[ "unique", "nojoker", [["1f","2f","3f","4f","1g","2g","3g","4g","1a","2a","3a","4a","1y"], 1] ]]]}]
     },
     {
       "display_name": "Four Gongs",
-      "value": 10,
+      "value": [10, "Fan"],
       "when": [{"name": "match", "opts": [["calls"], [[[["daiminkan", "ankan", "kakan"], 4]]]]}]
     },
     {
       "display_name": "Big Three Dragons",
-      "value": 10,
+      "value": [10, "Fan"],
       "when": [{"name": "match", "opts": [["hand", "calls", "winning_tile"], ["big_three_dragons"]]}]
     },
     {
       "display_name": "After Multiple Gongs",
-      "value": 10,
+      "value": [10, "Fan"],
       "when": [{"name": "status", "opts": ["double_kan"]}]
     },
     {
       "display_name": "Four Concealed Triplets",
-      "value": 10,
+      "value": [10, "Fan"],
       "when": ["won_by_draw", {"name": "match", "opts": [["hand", "calls", "winning_tile"], [[[["pon", "daiminkan", "kakan"], -1], [["koutsu"], 4], [["pair"], 1]]]]}]
     },
     {
       "display_name": "Four Fly",
-      "value": 10,
+      "value": [10, "Fan"],
       "when": [{"name": "counter_at_least", "opts": ["fly", 4]}]
     },
     {
       "display_name": "Blessing of Heaven",
-      "value": 10,
+      "value": [10, "Fan"],
       "when": [{"name": "status", "opts": ["first_turn"]}, "won_by_draw"]
     },
     {
       "display_name": "Blessing of Earth",
-      "value": 10,
+      "value": [10, "Fan"],
       "when": [{"name": "everyone_status", "opts": ["first_turn"]}, "won_by_discard"]
     },
     {
       "display_name": "Final Tile",
-      "value": 10,
+      "value": [10, "Fan"],
       "when": ["no_tiles_remaining"]
     },
     {
       "display_name": "All Honours",
-      "value": 10,
+      "value": [10, "Fan"],
       "when": [{"name": "winning_hand_consists_of", "opts": ["1z","2z","3z","4z","8z","6z","7z"]}]
     },
     {
       "display_name": "All Sixteen Flowers",
-      "value": 10,
+      "value": [10, "Fan"],
       "when": [
         {"name": "match", "opts": [["calls"], [[ "unique", "nojoker", [["1f","2f","3f","4f","1g","2g","3g","4g","1a","2a","3a","4a"], 12] ]]]},
         {"name": "match", "opts": [["calls"], [[ "nojoker", [["1y"], 4] ]]]}
@@ -443,12 +443,14 @@
   },
   "before_win": {
     "actions": [
+      ["set_counter", "faces", "count_matches", ["flowers"], [["nojoker", [["1y"], 1] ]]],
+      ["set_counter", "animals", "count_matches", ["flowers"], [[ "nojoker", [["1a","2a","3a","4a"], 1] ]]],
       ["when_anyone", [{"name": "counter_equals", "opts": ["fly", 0]}], [
         ["add_attr_first_tile", "2y", ["revealed"]],
         ["add_attr_first_tile", "2y", ["revealed"]],
         ["add_attr_first_tile", "2y", ["revealed"]],
         ["add_attr_first_tile", "2y", ["revealed"]],
-        ["add_counter", "fly", "count_matches", ["hand", "calls"], ["fly"]]
+        ["set_counter", "fly", "count_matches", ["hand", "calls"], [["nojoker", [["2y"], 1] ]]]
       ]],
       ["when_anyone", [{"name": "counter_at_least", "opts": ["fly", 1]}], [
         ["when", ["shimocha_exists"], [["add_score", 50], ["subtract_score", 50, "shimocha"]]],
@@ -477,7 +479,7 @@
         ["add_attr_first_tile", "2y", ["revealed"]],
         ["add_attr_first_tile", "2y", ["revealed"]],
         ["add_attr_first_tile", "2y", ["revealed"]],
-        ["add_counter", "fly", "count_matches", ["hand", "calls"], ["fly"]]
+        ["set_counter", "fly", "count_matches", ["hand", "calls"], [["nojoker", [["2y"], 1] ]]]
       ]],
       ["when_anyone", [{"name": "counter_at_least", "opts": ["fly", 1]}], [
         ["push_message", "is paid 50 from all players for each of their fly tiles"],
@@ -615,7 +617,7 @@
         "someone_else_just_discarded",
         {"name": "match", "opts": [["hand", "calls", "last_discard"], ["win"]]}
       ],
-      "actions": [["big_text", "Wu"], ["pause", 1000], ["reveal_hand"], ["add_counter", "fly", "count_matches", ["hand", "calls", "last_discard"], ["fly"]], ["win_by_discard"]],
+      "actions": [["big_text", "Wu"], ["pause", 1000], ["reveal_hand"], ["add_counter", "fly", "count_matches", ["hand", "calls", "last_discard"], [["nojoker", [["2y"], 1] ]]], ["win_by_discard"]],
       "precedence_over": ["chii", "pon", "kan", "riichi", "daiminkan", "ankan", "kakan"]
     },
     "chankan": {
@@ -626,7 +628,7 @@
         {"name": "last_call_is", "opts": ["kakan"]},
         {"name": "match", "opts": [["hand", "calls", "last_called_tile"], ["win"]]}
       ],
-      "actions": [["big_text", "Wu"], ["pause", 1000], ["reveal_hand"], ["add_counter", "fly", "count_matches", ["hand", "calls", "last_called_tile"], ["fly"]], ["win_by_call"]],
+      "actions": [["big_text", "Wu"], ["pause", 1000], ["reveal_hand"], ["add_counter", "fly", "count_matches", ["hand", "calls", "last_called_tile"], [["nojoker", [["2y"], 1] ]]], ["win_by_call"]],
       "precedence_over": ["chii", "pon", "kan", "riichi", "daiminkan", "ankan", "kakan"]
     },
     "tsumo": {
@@ -637,7 +639,7 @@
         {"name": "match", "opts": [["hand", "calls", "draw"], ["tenpai"]]},
         {"name": "match", "opts": [["hand", "calls", "draw"], ["win"]]}
       ],
-      "actions": [["big_text", "Wu"], ["pause", 1000], ["reveal_hand"], ["add_counter", "fly", "count_matches", ["hand", "calls", "draw"], ["fly"]], ["win_by_draw"]],
+      "actions": [["big_text", "Wu"], ["pause", 1000], ["reveal_hand"], ["add_counter", "fly", "count_matches", ["hand", "calls", "draw"], [["nojoker", [["2y"], 1] ]]], ["win_by_draw"]],
       "precedence_over": ["chii", "pon", "kan", "riichi", "daiminkan", "ankan", "kakan"]
     },
     "four_fly": {
@@ -645,7 +647,7 @@
       "show_when": [
         "our_turn",
         {"name": "status", "opts": ["match_start"]},
-        {"name": "match", "opts": [["hand", "calls", "draw"], ["four_fly"]]}
+        {"name": "match", "opts": [["hand", "calls", "draw"], [["nojoker", [["2y"], 4] ]]]}
       ],
       "actions": [["big_text", "Four Fly"], ["pause", 1000], ["reveal_hand"], ["add_counter", "fly", 4], ["win_by_draw"]]
     },
@@ -726,6 +728,5 @@
   "starting_tiles": 13,
   "num_players": 3,
   "four_rows_discards": true,
-  "max_rounds": 16,
-  "win_timer": 20
+  "max_rounds": 16
 }
