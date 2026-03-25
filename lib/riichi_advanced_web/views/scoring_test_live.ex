@@ -160,7 +160,7 @@ defmodule RiichiAdvancedWeb.ScoringTestLive do
     socket = assign(socket, :rules_ref, rules_ref)
 
     default_mods = Rules.get(rules_ref, "default_mods", [])
-    {mods, categories} = RoomState.parse_available_mods(Rules.get(rules_ref, "available_mods", []), default_mods)
+    {mods, categories} = Rules.parse_available_mods(Rules.get(rules_ref, "available_mods", []), default_mods)
     # mock room state
     socket = assign(socket, :room_state, %{
       mods: mods,

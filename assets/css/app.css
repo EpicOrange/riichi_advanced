@@ -2831,41 +2831,6 @@ div.game-modal:not(.t2s) > svg.t2s,
 div.game-modal:not(.t2k) > svg.t2k {
   display: none;
 }
-
-/*
-div.game-modal > div.delta-score::before {
-  position: absolute;
-  content: "";
-  background-image: url(/images/brush-bg2.svg);
-  background-size: 100% 100%;
-  background-repeat: no-repeat;
-  transform-origin: 50% calc(50% + var(--tile-size));
-  width: calc(6 * var(--tile-size));
-  height: calc(6 * var(--tile-size));
-  z-index: -1;
-}
-div.game-modal > div.delta-score.self::before {
-  transform: rotate(0deg);
-  left: calc(50% - 2.5 * var(--tile-size));
-  bottom: calc(50% - 2.25 * var(--tile-size));
-}
-div.game-modal > div.delta-score.kamicha::before {
-  transform: rotate(90deg);
-  left: calc(50% - 3.5 * var(--tile-size));
-  bottom: calc(50% - 2.5 * var(--tile-size));
-}
-div.game-modal > div.delta-score.toimen::before {
-  transform: rotate(180deg);
-  left: calc(50% - 3 * var(--tile-size));
-  bottom: calc(50% - 1.5 * var(--tile-size));
-}
-div.game-modal > div.delta-score.shimocha::before {
-  transform: rotate(270deg);
-  left: calc(50% - 2.5 * var(--tile-size));
-  bottom: calc(50% - 1.5 * var(--tile-size));
-}
-*/
-
 div.game-modal > div.score-badge > div.delta-score.positive { color: lightgreen; }
 div.game-modal > div.score-badge > div.delta-score.negative { color: pink; }
 
@@ -2998,7 +2963,6 @@ div.ruleset > div.ruleset-text {
 
 
 /* saki cards */
-/* TODO check why hovering corner info leads to flickering drop-shadow */
 div.saki-card {
   position: relative;
   width: var(--card-width);
@@ -3383,6 +3347,9 @@ div#container > form.log-selection-form {
 div#container > form.log-selection-form > input,
 div#container > form.log-selection-form > button {
   width: 100%;
+}
+div#container > form.log-selection-form > input {
+  font-size: 150%;
 }
 /* about page */
 div#container > form.about-page {

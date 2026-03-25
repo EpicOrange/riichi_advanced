@@ -87,7 +87,7 @@ defmodule RiichiAdvancedWeb.MajsTestLive do
       {:error, _msg}   -> nil
     end
 
-    {mods, categories} = RoomState.parse_available_mods(Rules.get(rules_ref, "available_mods", []), Rules.get(rules_ref, "default_mods", []))
+    {mods, categories} = Rules.parse_available_mods(Rules.get(rules_ref, "available_mods", []), Rules.get(rules_ref, "default_mods", []))
     # mock room state
     socket = assign(socket, :room_state, %{
       mods: mods,

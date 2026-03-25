@@ -1,13 +1,23 @@
 defmodule RiichiAdvanced.ModLoader do
   alias RiichiAdvanced.Constants, as: Constants
   alias RiichiAdvanced.GameState.Debug, as: Debug
+  alias RiichiAdvanced.GameState.Rules, as: Rules
   alias RiichiAdvanced.Compiler, as: Compiler
   alias RiichiAdvanced.Parser, as: Parser
 
   def get_mod_name(mod) do
     case mod do
-      %{name: name} -> name
-      name -> name
+      %{"name" => name}         -> name
+      %{name: name}             -> name
+      name when is_binary(name) -> name
+    end
+  end
+
+  def get_mod_name_config(mod) do
+    case mod do
+      %{"name" => name, "config" => config} -> {name, config}
+      %{name: name, config: config}         -> {name, config}
+      name when is_binary(name)             -> {name, %{}}
     end
   end
 
@@ -16,13 +26,10 @@ defmodule RiichiAdvanced.ModLoader do
   defp is_jq_var?(_key), do: false
 
   defp read_mod(mod, defs) do
-    case mod do
-      %{name: name, config: config} -> 
-        {mod_contents, defs} = read_mod_jq_defs(name, defs)
-        config_queries = for {key, val} <- config, is_integer(val) or is_boolean(val) or is_binary(val), is_jq_var?(key), do: "(#{inspect(val)}) as $#{key}\n|\n"
-        {Enum.join(config_queries) <> "(" <> mod_contents <> ")", defs}
-      name -> read_mod_jq_defs(name, defs)
-    end
+    {name, config} = get_mod_name_config(mod)
+    {mod_contents, defs} = read_mod_jq_defs(name, defs)
+    config_queries = for {key, val} <- config, is_integer(val) or is_boolean(val) or is_binary(val), is_jq_var?(key), do: "(#{inspect(val)}) as $#{key}\n|\n"
+    {Enum.join(config_queries) <> "(" <> mod_contents <> ")", defs}
   end
 
   def apply_multiple_mods(ruleset_json, mods, globals \\ %{}) do
@@ -44,6 +51,32 @@ defmodule RiichiAdvanced.ModLoader do
       IO.puts("Applying mods [#{Enum.map_join(mods, ", ", &inspect/1)}]")
     end
     JQ.query_string_with_string!(ruleset_json, mod_jq)
+  end
+
+  def check_and_apply_mods(ruleset_json, input_mods, ruleset) do
+    # check the ruleset to see and set missing default configs
+    # note this only checks for mods mentioned in ruleset_json
+    # so mods added by other mods will not be checked
+    input_mods =
+      with {:ok, decoded} <- Rules.decode_ruleset_json(ruleset_json, ruleset),
+           {mods, _categories} <- Rules.parse_available_mods(Map.get(decoded, "available_mods", []), Map.get(decoded, "default_mods", [])) do
+        # normalize to {name, config} just for this part
+        input_mods = Enum.map(input_mods, &get_mod_name_config/1)
+        for {name, config} <- input_mods do
+          config = if Map.has_key?(mods, name) do
+            # check if there is more config we haven't mentioned
+            missing_config = Map.keys(mods[name].config) -- Map.keys(config)
+            for config_name <- missing_config, reduce: config do
+              config ->
+                config_obj = mods[name].config[config_name]
+                default = Map.get(config_obj, "default", Enum.at(config_obj["values"], 0))
+                Map.put(config, config_name, default)
+            end
+          else config end
+          if Enum.empty?(config) do name else %{name: name, config: config} end
+        end
+      end
+    apply_mods(ruleset_json, input_mods, ruleset)
   end
 
   def apply_mods(ruleset_json, mods, ruleset, globals \\ %{})

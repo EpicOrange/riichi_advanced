@@ -5,7 +5,7 @@ defmodule RiichiAdvanced.GameState.Rules do
   alias RiichiAdvanced.ModLoader, as: ModLoader
   alias RiichiAdvanced.Utils, as: Utils
 
-  defp decode_rules(ruleset, ruleset_json) do
+  def decode_ruleset_json(ruleset_json, ruleset \\ "unknown") do
     # decode the rules json
     try do
       case Jason.decode(ModLoader.strip_comments(ruleset_json)) do
@@ -20,6 +20,8 @@ defmodule RiichiAdvanced.GameState.Rules do
     end
   end
 
+  # catch-all verification
+  # we should probably add more verification than just this, but only if needed
   defp check_rules(rules) do
     if get_in(rules["buttons"]["skip"]) != nil do
       {:error, "Error: \"skip\" is an invalid button name."}
@@ -46,7 +48,7 @@ defmodule RiichiAdvanced.GameState.Rules do
   end
 
   def load_rules(ruleset_json, ruleset) do
-    with {:ok, rules} <- decode_rules(ruleset, ruleset_json),
+    with {:ok, rules} <- decode_ruleset_json(ruleset_json, ruleset),
          {:ok, rules} <- replace_constants(rules),
          {:ok, rules} <- check_rules(rules) do
       # store rules in an anonymous ETS table
@@ -204,6 +206,65 @@ defmodule RiichiAdvanced.GameState.Rules do
         end
         [translated | acc]
     end |> Enum.reverse() |> Enum.concat()
+  end
+
+  # input is rules["available_mods"] and rules["default_mods"]
+  # returns {mods, categories}
+  # categories are just a list of strings
+  # mods are are maps %{modname => modobj} where modobj has keys:
+  # - enabled: whether it is in starting_mods (passed in)
+  # - index: index of mod in available_mods
+  # - name: display name
+  # - desc: displayed description
+  # - category: declared category
+  # - config: map %{config_name => %{"default" => default value, "values" => list of values, :value => selected value depending on default}}
+  # - order: integer that decides which pass mod is loaded in (4 loads after 3, etc). negative allowed
+  # - class: string that is appended to CSS classes on the button representing this mod
+  # - deps: list of mod ids this mod is dependent on
+  # - conflicts: list of mod ids this mod conflicts with
+  def parse_available_mods(available_mods, starting_mods) do
+    {mods, categories} = for {item, i} <- available_mods |> Enum.with_index(), reduce: {[], []} do
+      {result, categories} -> cond do
+        is_map(item) -> {[item |> Map.put("index", i) |> Map.put("category", Enum.at(categories, 0, nil)) | result], categories}
+        is_binary(item) -> {result, [item | categories]}
+      end
+    end
+
+    available_mods = Enum.map(mods, & &1["id"])
+    starting_mods = starting_mods
+    |> Enum.map(&case &1 do
+      %{"name" => mod_name, "config" => config} -> {mod_name, config}
+      %{name: mod_name, config: config}         -> {mod_name, config}
+      mod_name when is_binary(mod_name)         -> {mod_name, nil}
+    end)
+    |> Enum.filter(fn {mod_name, _config} -> mod_name in available_mods end)
+    |> Map.new()
+
+    mods = Map.new(mods, fn mod -> {mod["id"], %{
+      enabled: Map.has_key?(starting_mods, mod["id"]),
+      index: mod["index"],
+      name: mod["name"],
+      desc: mod["desc"],
+      category: mod["category"],
+      config: Map.get(mod, "config", [])
+           |> Map.new(&Map.pop(&1, "name"))
+           |> Map.new(fn {config_name, config} ->
+                default = if starting_mods[mod["id"]] != nil do
+                  # load the previous config's value as the default
+                  old_config = starting_mods[mod["id"]]
+                  old_config[config_name]
+                else
+                  Map.get(config, "default", Enum.at(config["values"], 0))
+                end
+                config = Map.put(config, :value, default)
+                {config_name, config}
+              end),
+      order: Map.get(mod, "order", 0), # TODO replace this with "load_after" array, and do toposort on the result
+      class: mod["class"],
+      deps: Map.get(mod, "deps", []),
+      conflicts: Map.get(mod, "conflicts", [])
+    }} end)
+    {mods, Enum.reverse(categories)}
   end
 
 end

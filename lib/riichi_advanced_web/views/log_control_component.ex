@@ -183,6 +183,7 @@ defmodule RiichiAdvancedWeb.LogControlComponent do
   end
 
   def handle_event("play", _assigns, socket) do
+    # TODO
     {:noreply, socket}
   end
 
