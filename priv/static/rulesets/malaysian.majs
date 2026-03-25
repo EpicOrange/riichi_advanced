@@ -305,10 +305,10 @@ define_button start_flower,
   do
     big_text("Flower")
     flower("1f", "2f", "3f", "4f", "1g", "2g", "3g", "4g", "1a", "2a", "3a", "4a", "1y")
-    if   (match(["call_choice"], ~m"nojoker, (1f 2f 3f 4f):1") and match(["call_choice"], ~m"nojoker, (1f 2f 3f 4f):4"))
-      or (match(["call_choice"], ~m"nojoker, (1g 2g 3g 4g):1") and match(["call_choice"], ~m"nojoker, (1g 2g 3g 4g):4"))
-      or (match(["call_choice"], ~m"nojoker, (1a 2a 3a 4a):1") and match(["call_choice"], ~m"nojoker, (1a 2a 3a 4a):4"))
-      or (match(["call_choice"], ~m"nojoker, 1y:1") and match(["call_choice"], ~m"nojoker, 1y:4")) do
+    if   (match(["call_choice"], ~m"nojoker, (1f 2f 3f 4f):1") and match(["flowers"], ~m"nojoker, (1f 2f 3f 4f):4"))
+      or (match(["call_choice"], ~m"nojoker, (1g 2g 3g 4g):1") and match(["flowers"], ~m"nojoker, (1g 2g 3g 4g):4"))
+      or (match(["call_choice"], ~m"nojoker, (1a 2a 3a 4a):1") and match(["flowers"], ~m"nojoker, (1a 2a 3a 4a):4"))
+      or (match(["call_choice"], ~m"nojoker, 1y:1") and match(["flowers"], ~m"nojoker, 1y:4")) do
       push_message("is paid 100 from all players for completing a set of flowers before the first turn")
       if shimocha_exists do add_score(100); subtract_score(100, "shimocha"); big_text("  -100  ", as: "shimocha") end
       if toimen_exists do add_score(100); subtract_score(100, "toimen"); big_text("  -100  ", as: "toimen") end
@@ -517,10 +517,10 @@ define_button flower,
   do
     big_text("Flower")
     flower("1f", "2f", "3f", "4f", "1g", "2g", "3g", "4g", "1a", "2a", "3a", "4a", "1y")
-    if   (match(["call_choice"], ~m"nojoker, (1f 2f 3f 4f):1") and match(["call_choice"], ~m"nojoker, (1f 2f 3f 4f):4"))
-      or (match(["call_choice"], ~m"nojoker, (1g 2g 3g 4g):1") and match(["call_choice"], ~m"nojoker, (1g 2g 3g 4g):4"))
-      or (match(["call_choice"], ~m"nojoker, (1a 2a 3a 4a):1") and match(["call_choice"], ~m"nojoker, (1a 2a 3a 4a):4"))
-      or (match(["call_choice"], ~m"nojoker, 1y:1") and match(["call_choice"], ~m"nojoker, 1y:4")) do
+    if   (match(["call_choice"], ~m"nojoker, (1f 2f 3f 4f):1") and match(["flowers"], ~m"nojoker, (1f 2f 3f 4f):4"))
+      or (match(["call_choice"], ~m"nojoker, (1g 2g 3g 4g):1") and match(["flowers"], ~m"nojoker, (1g 2g 3g 4g):4"))
+      or (match(["call_choice"], ~m"nojoker, (1a 2a 3a 4a):1") and match(["flowers"], ~m"nojoker, (1a 2a 3a 4a):4"))
+      or (match(["call_choice"], ~m"nojoker, 1y:1") and match(["flowers"], ~m"nojoker, 1y:4")) do
       push_message("is paid 50 from all players for completing a set of flowers")
       if shimocha_exists do add_score(50); subtract_score(50, "shimocha"); big_text("  -50  ", as: "shimocha") end
       if toimen_exists do add_score(50); subtract_score(50, "toimen"); big_text("  -50  ", as: "toimen") end
