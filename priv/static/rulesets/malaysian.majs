@@ -73,6 +73,12 @@ replace all, "buttons", ["win_by_discard"], ["win_by_discard", "win"]
 replace all, "buttons", ["win_by_draw"], ["win_by_draw", "win"]
 replace all, "buttons", ["win_by_call"], ["win_by_call", "win"]
 
+define_yaku yaku, "Half Flush", [1, "Fan"], true # winning_hand_consists_of("1p","2p","3p","4p","5p","6p","7p","8p","9p","1z","2z","3z","4z","8z","6z","7z")
+define_yaku yaku, "Full Flush", [3, "Fan"], winning_hand_consists_of("1p","2p","3p","4p","5p","6p","7p","8p","9p")
+
+define_set dot_eye, ~s"1p 1p | 2p 2p | 3p 3p | 4p 4p | 5p 5p | 6p 6p | 7p 7p | 8p 8p | 9p 9p"
+define_yaku yaku, "All Sequences with Dot Eye", [1, "Fan"], match(["hand", "calls", "winning_tile"], ~m"exhaustive, dot_eye:1, shuntsu:4")
+
 define_yaku yaku, "Face Tiles", ["faces", "Fan"], faces >= 1
 define_yaku yaku, "All Faces", [1, "Fan"], faces >= 4
 define_yaku yaku, "Animal Tiles", ["animals", "Fan"], animals >= 1
@@ -87,18 +93,27 @@ define_yaku yaku, "Seat Season", [1, "Fan"], seat_is("east") and match(["flowers
 define_yaku yaku, "Seat Season", [1, "Fan"], seat_is("south") and match(["flowers"], ~m"nojoker, 2g:1")
 define_yaku yaku, "Seat Season", [1, "Fan"], seat_is("west") and match(["flowers"], ~m"nojoker, 3g:1")
 define_yaku yaku, "Fourth Season", [1, "Fan"], match(["flowers"], ~m"nojoker, 4g:1")
-define_yaku yaku, "East Wind", [1, "Fan"], match(["hand", "calls", "winning_tile"], ~m"ton:1")
-define_yaku yaku, "North Wind", [1, "Fan"], match(["hand", "calls", "winning_tile"], ~m"pei:1")
-define_yaku yaku, "Seat Wind", [1, "Fan"], seat_is("east") and match(["flowers"], ~m"ton:1")
-define_yaku yaku, "Seat Wind", [1, "Fan"], seat_is("south") and match(["flowers"], ~m"nan:1")
-define_yaku yaku, "Seat Wind", [1, "Fan"], seat_is("west") and match(["flowers"], ~m"shaa:1")
+
 define_yaku yaku, "Fei", ["declared_fei", "Fan"], declared_fei >= 1
 define_yaku limit, "Four Fei", [10, "Fan"], fei >= 4
 define_yaku limit, "No Flowers", [10, "Fan"], not_match(["flowers"], ~m"unique, nojoker, (1f 2f 3f 4f 1g 2g 3g 4g 1a 2a 3a 4a 1y):1")
 
+define_yaku yaku, "East Wind", [1, "Fan"], match(["hand", "calls", "winning_tile"], ~m"ton:1")
+define_yaku yaku, "East Wind", [1, "Fan"], match(["hand", "calls", "winning_tile"], ~m"ton:2")
+define_yaku yaku, "North Wind", [1, "Fan"], match(["hand", "calls", "winning_tile"], ~m"pei:1")
+define_yaku yaku, "North Wind", [1, "Fan"], match(["hand", "calls", "winning_tile"], ~m"pei:2")
+define_yaku yaku, "Seat Wind", [1, "Fan"], seat_is("east") and match(["hand", "calls", "winning_tile"], ~m"ton:1")
+define_yaku yaku, "Seat Wind", [1, "Fan"], seat_is("east") and match(["hand", "calls", "winning_tile"], ~m"ton:2")
+define_yaku yaku, "Seat Wind", [1, "Fan"], seat_is("south") and match(["hand", "calls", "winning_tile"], ~m"nan:1")
+define_yaku yaku, "Seat Wind", [1, "Fan"], seat_is("south") and match(["hand", "calls", "winning_tile"], ~m"nan:2")
+define_yaku yaku, "Seat Wind", [1, "Fan"], seat_is("west") and match(["hand", "calls", "winning_tile"], ~m"shaa:1")
+define_yaku yaku, "Seat Wind", [1, "Fan"], seat_is("west") and match(["hand", "calls", "winning_tile"], ~m"shaa:2")
 define_yaku yaku, "White Dragon", [1, "Fan"], match(["hand", "calls", "winning_tile"], ~m"haku:1")
+define_yaku yaku, "White Dragon", [1, "Fan"], match(["hand", "calls", "winning_tile"], ~m"haku:2")
 define_yaku yaku, "Green Dragon", [1, "Fan"], match(["hand", "calls", "winning_tile"], ~m"hatsu:1")
+define_yaku yaku, "Green Dragon", [1, "Fan"], match(["hand", "calls", "winning_tile"], ~m"hatsu:2")
 define_yaku yaku, "Red Dragon", [1, "Fan"], match(["hand", "calls", "winning_tile"], ~m"chun:1")
+define_yaku yaku, "Red Dragon", [1, "Fan"], match(["hand", "calls", "winning_tile"], ~m"chun:2")
 
 define_match small_three_dragons, ~m"unique, (haku hatsu chun):2, (haku_pair hatsu_pair chun_pair):1"
 define_match big_three_dragons, ~m"unique, (haku hatsu chun):3"
@@ -108,13 +123,6 @@ define_yaku yaku, "Small Three Dragons", [3, "Fan"], match(["hand", "calls", "wi
 define_yaku limit, "Big Three Dragons", [10, "Fan"], match(["hand", "calls", "winning_tile"], ["big_three_dragons"])
 define_yaku limit, "Small Four Winds", [10, "Fan"], match(["hand", "calls", "winning_tile"], ["small_four_winds"])
 define_yaku limit, "Big Four Winds", [10, "Fan"], match(["hand", "calls", "winning_tile"], ["big_four_winds"])
-
-# TODO is half flush a real yaku if there is only one suit?
-define_yaku yaku, "Half Flush", [1, "Fan"], true # winning_hand_consists_of("1p","2p","3p","4p","5p","6p","7p","8p","9p","1z","2z","3z","4z","8z","6z","7z")
-define_yaku yaku, "Full Flush", [3, "Fan"], winning_hand_consists_of("1p","2p","3p","4p","5p","6p","7p","8p","9p")
-
-define_set dot_eye, ~s"1p 1p | 2p 2p | 3p 3p | 4p 4p | 5p 5p | 6p 6p | 7p 7p | 8p 8p | 9p 9p"
-define_yaku yaku, "All Sequences with Dot Eye", [1, "Fan"], match(["hand", "calls", "winning_tile"], ~m"exhaustive, dot_eye:1, shuntsu:4")
 
 define_yaku yaku, "All Triplets", [2, "Fan"], match(["hand", "calls", "winning_tile"], ~m"koutsu:4, pair:1")
 define_yaku yaku, "After a Flower", [1, "Fan"], status("flower")
