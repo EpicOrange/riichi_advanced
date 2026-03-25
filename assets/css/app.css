@@ -4187,16 +4187,22 @@ div.scoringtest-container > header > label {
   width: calc(1.5 * var(--tile-size));
   height: calc(0.75 * var(--tile-size));
 }
-div.scoringtest-container label[for="show-mods"] { order: 1; }
-div.scoringtest-container label[for="show-config"] { order: 2; }
+div.scoringtest-container label[for="show-yaku"] { order: 1; }
+div.scoringtest-container label[for="show-mods"] { order: 2; }
+div.scoringtest-container label[for="show-config"] { order: 3; }
 div.scoringtest-container label[for="show-none"] {
   display: none;
   opacity: 0;
   position: absolute;
 }
+div.scoringtest-container input#show-yaku:checked ~ header > label[for="show-yaku"],
 div.scoringtest-container input#show-mods:checked ~ header > label[for="show-mods"],
 div.scoringtest-container input#show-config:checked ~ header > label[for="show-config"] {
   background: var(--tile-back);
+}
+div.scoringtest-container input#show-yaku:checked ~ header > label[for="show-none"] {
+  display: block;
+  right: calc(4 * var(--tile-size));
 }
 div.scoringtest-container input#show-mods:checked ~ header > label[for="show-none"] {
   display: block;
@@ -4222,11 +4228,12 @@ div.scoringtest-container textarea {
   font-size: calc(0.25 * var(--tile-size));
   border-width: calc(0.05 * var(--tile-size));
 }
+div.scoringtest-container div.hand-outer-container,
+div.scoringtest-container div.yaku-outer-container,
 div.scoringtest-container div.mods-container,
-div.scoringtest-container div.config-container,
-div.scoringtest-container div.yaku-outer-container {
+div.scoringtest-container div.config-container {
   width: 100%;
-  height: calc(100% - 0.5 * var(--tile-size));
+  height: calc(100% - 0.875 * var(--tile-size));
   border-radius: calc(0.25 * var(--tile-size));
   padding: calc(0.5 * var(--tile-size));
   background: #609060;
@@ -4235,19 +4242,21 @@ div.scoringtest-container div.yaku-outer-container {
   scrollbar-width: none; /* Firefox */
   &::-webkit-scrollbar { display: none; } /* Safari/Chrome */
 }
+div.scoringtest-container div.yaku-outer-container,
 div.scoringtest-container div.mods-container,
 div.scoringtest-container div.config-container {
   display: none;
   position: absolute;
-  top: calc(0.75 * var(--tile-size));
+  top: calc(1 * var(--tile-size));
   left: 0;
   z-index: 2;
 }
+div.scoringtest-container input#show-yaku:checked ~ div.yaku-outer-container { display: block; }
 div.scoringtest-container input#show-mods:checked ~ div.mods-container { display: block; }
 div.scoringtest-container input#show-config:checked ~ div.config-container { display: block; }
 
 /* bottom buttons */
-div.scoringtest-container div.yaku-bottom-buttons {
+div.scoringtest-container > div.scoring-test-bottom-buttons {
   display: flex;
   order: 2;
   flex-flow: row wrap;
@@ -4255,7 +4264,16 @@ div.scoringtest-container div.yaku-bottom-buttons {
   text-align: right;
   justify-content: center;
   column-gap: calc(0.25 * var(--tile-size));
-  & > input {
+  & > form { flex-grow: 1; display: flex; column-gap: calc(0.25 * var(--tile-size)); }
+  & button { font-size: 150%; flex-grow: 0; }
+  & button[type="submit"] { flex-grow: 1; }
+}
+div.scoringtest-container div.yaku-outer-container {
+  & span.yaku-bottom-minipoint-name {
+    text-align: right;
+    font-size: 150%;
+  }
+  & input {
     --width: 8;
     text-align: right;
     font-family: monospace;
@@ -4263,10 +4281,46 @@ div.scoringtest-container div.yaku-bottom-buttons {
     background: lightgray;
     border: none;
   }
-  & > span.yaku-bottom-minipoint-name {text-align: right; font-size: 150%;}
-  & > button:first-of-type { font-size: 90%; }
-  & > button:last-of-type { flex-grow: 1; font-size: 150%; }
-  /*& > input[type="number"] { */
+}
+
+
+/* hand-selection-container */
+div.hand-selection-inner-container button {
+  background: none;
+  border: none;
+  padding: 0;
+  margin: 0;
+}
+div.hand-selection-inner-container > div.hand-selection-hand,
+div.hand-selection-inner-container > div.hand-selection-buttons {
+  display: flex;
+  flex-flow: row wrap;
+  row-gap: calc(0.25 * var(--tile-size));
+}
+div.hand-selection-inner-container > div.hand-selection-hand {
+  padding: calc(0.5 * var(--tile-size));
+  justify-content: center;
+}
+div.hand-selection-inner-container > div.hand-selection-hand > :last-child {
+  margin-left: calc(0.25 * var(--tile-size));
+}
+div.hand-selection-inner-container > div.hand-selection-buttons {
+  column-gap: calc(0.125 * var(--tile-size));
+}
+div.hand-selection-inner-container > div.hand-selection-buttons > button.clear {
+  filter: drop-shadow(0 calc(var(--tile-size) / 8) 0 var(--tile-front-side))
+          drop-shadow(0 calc(var(--tile-size) / 8) 0 var(--tile-back-side))
+          contrast(60%);
+  margin-left: calc(0.875 * var(--tile-size));
+}
+div.hand-selection-inner-container > div.hand-selection-buttons > button.clear > div.tile {
+  font-size: calc(0.35 * var(--tile-size));
+  font-weight: bold;
+  writing-mode: vertical-rl;
+  text-orientation: upright;
+  line-height: 0.5;
+  letter-spacing: -0.5ex;
+  padding: 0 calc(0.275 * var(--tile-size));
 }
 
 /* individual yaku inside yaku-container */

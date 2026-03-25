@@ -2,10 +2,12 @@ defmodule RiichiAdvancedWeb.ScoringTestLive do
   alias RiichiAdvanced.Constants, as: Constants
   alias RiichiAdvanced.GameState, as: GameState
   alias RiichiAdvanced.GameState.Actions, as: Actions
+  alias RiichiAdvanced.GameState.Kyoku, as: Kyoku
   alias RiichiAdvanced.GameState.Payment, as: Payment
   alias RiichiAdvanced.GameState.Player, as: Player
   alias RiichiAdvanced.GameState.Rules, as: Rules
   alias RiichiAdvanced.GameState.Scoring, as: Scoring
+  alias RiichiAdvanced.GameState.TileBehavior, as: TileBehavior
   alias RiichiAdvanced.ModLoader, as: ModLoader
   alias RiichiAdvanced.RoomState, as: RoomState
   alias RiichiAdvanced.Utils, as: Utils
@@ -28,10 +30,7 @@ defmodule RiichiAdvancedWeb.ScoringTestLive do
       winner_index: 0,
       timer: -1,
       visible_screen: nil,
-      players: Map.new([:east, :south, :west, :north], fn seat -> {seat, %Player{
-        score: 25000,
-        nickname: Atom.to_string(seat) |> String.capitalize()
-      }} end),
+      players: Map.new([:east, :south, :west, :north], fn seat -> {seat, %Player{}} end),
       delta_scores: %{},
       delta_scores_reason: nil,
       available_seats: [:east, :south, :west, :north],
@@ -45,7 +44,10 @@ defmodule RiichiAdvancedWeb.ScoringTestLive do
     |> assign(:yaku2_lists, [])
     |> assign(:extra_yaku_lists, [])
     |> assign(:minipoint_name, "Fu")
-    |> assign(:minipoints, 30)
+    |> assign(:minipoints, 0)
+    |> assign(:tiles, [])
+    |> assign(:hand, [])
+    # |> assign(:hand, [:"4m", :"2m", :"3m", :"4p", :"4p", :"4p", :"5p", :"6p", :"7p", :"3s", :"4s", :"2s", :"2s", :"2s"])
 
     socket = switch_to_ruleset(socket, "riichi")
     |> reload_ruleset()
@@ -65,6 +67,7 @@ defmodule RiichiAdvancedWeb.ScoringTestLive do
     ~H"""
     <div id="container" phx-hook="ClickListener">
       <div class="scoringtest-container">
+        <input id="show-yaku" name="scoringtest-header" type="radio" phx-update="ignore">
         <input id="show-mods" name="scoringtest-header" type="radio" phx-update="ignore">
         <input id="show-config" name="scoringtest-header" type="radio" phx-update="ignore">
         <input id="show-none" name="scoringtest-header" type="radio" phx-update="ignore" phx-click="save_mods">
@@ -81,35 +84,43 @@ defmodule RiichiAdvancedWeb.ScoringTestLive do
               <% end %>
             </select>
           </form>
+          <label for="show-yaku" class="shuffle-seats"><%= t(@lang, "Yaku") %></label>
           <label for="show-mods" class="shuffle-seats"><%= t(@lang, "Mods") %></label>
           <label for="show-config" class="shuffle-seats"><%= t(@lang, "Config") %></label>
           <label for="show-none" class="shuffle-seats"><%= t(@lang, "None") %></label>
-        </header> 
-        <div class="mods-container">
-          <.live_component module={RiichiAdvancedWeb.ModSelectionComponent} id="scoringtest-mods" lang={@lang} ruleset={@ruleset} mods={@room_state.mods} categories={@room_state.categories} />
+        </header>
+        <div class="hand-outer-container">
+          <.live_component module={RiichiAdvancedWeb.HandSelectionComponent} id="scoringtest-hand" lang={@lang} ruleset={@ruleset} hand={@hand} tiles={@tiles}/>
         </div>
         <div class="yaku-outer-container">
-          <.live_component module={RiichiAdvancedWeb.YakuSelectionComponent} id="scoringtest-yaku" lang={@lang} ruleset={@ruleset} yaku={@yaku} yaku_list_names={@yaku_list_names} />
+          <.live_component module={RiichiAdvancedWeb.YakuSelectionComponent} id="scoringtest-yaku" lang={@lang} ruleset={@ruleset} yaku={@yaku} yaku_list_names={@yaku_list_names} minipoints={@minipoints} minipoint_name={@minipoint_name} />
+        </div>
+        <div class="mods-container">
+          <.live_component module={RiichiAdvancedWeb.ModSelectionComponent} id="scoringtest-mods" lang={@lang} ruleset={@ruleset} mods={@room_state.mods} categories={@room_state.categories} />
         </div>
         <div class="config-container">
           <textarea name="config" phx-blur="save_config"><%= @config %></textarea>
         </div>
-        <form phx-submit="score_yaku">
-          <div class="yaku-bottom-buttons">
-            <%= if @minipoint_name != nil do %>
-              <span class="yaku-bottom-minipoint-name"><%= dt(@lang, @minipoint_name) %></span>
-              <input phx-blur="change_minipoints_value" name="minipoints-value" type="number" value={@minipoints} onclick="this.select();">
-            <% else %>
-              <input name="minipoints-value" type="hidden" value={@minipoints}>
-            <% end %>
-            <button phx-cancellable-click="clear_yaku"><%= t(@lang, "Unselect all") %></button>
+        <div class="scoring-test-bottom-buttons">
+          <button phx-cancellable-click="clear_hand" class="clear">Clear</button>
+          <form phx-submit="score_hand">
             <%= if @loading do %>
               <button><%= t(@lang, "Scoring...") %></button>
             <% else %>
-              <button type="submit"><%= t(@lang, "Score") %></button>
+              <button name="ron" type="submit"><%= t(@lang, "Ron") %></button>
+              <button name="tsumo" type="submit"><%= t(@lang, "Tsumo") %></button>
             <% end %>
-          </div>
-        </form>
+          </form>
+        </div>
+        <.live_component module={RiichiAdvancedWeb.WinWindowComponent}
+          id="win-window"
+          game_state={@state}
+          seat={@seat}
+          lang={@lang}
+          winner={Map.get(@state.winners, Enum.at(@state.winner_seats, @state.winner_index), nil)}
+          timer={@state.timer}
+          visible_screen={@state.visible_screen}
+          />
         <.live_component module={RiichiAdvancedWeb.ScoreWindowComponent}
           id="score-window"
           seat={@seat}
@@ -177,7 +188,7 @@ defmodule RiichiAdvancedWeb.ScoringTestLive do
     config = socket.assigns.config
     start_async(socket, :reload_ruleset, fn ->
       # apply all default mods + config to base ruleset
-      ModLoader.get_ruleset_json(ruleset)
+      ModLoader.get_ruleset_json(ruleset, nil, true)
       |> ModLoader.apply_multiple_mods(mods)
       |> JQ.query_string_with_string!(ModLoader.convert_to_jq(config))
     end)
@@ -226,50 +237,54 @@ defmodule RiichiAdvancedWeb.ScoringTestLive do
     socket
   end
 
-  def score_yaku(state, selected_yaku, minipoints) do
-    if not Enum.empty?(selected_yaku) do
-      score_rules = Rules.get(state.rules_ref, "score_calculation", %{})
-      points = Enum.map(selected_yaku, fn {_name, value} -> value end) |> Enum.reduce([], &Scoring.add_yaku_values/2)
-      mock_gamestate = %GameState.Game{
-        log_loading_mode: true,
-        rules_ref: state.rules_ref,
-        players: state.players,
-        log_state: %{log: []},
-      }
-      mock_gamestate = put_in(mock_gamestate.players.south.responsibilities, %{east: ["all"]})
-      cxt = %{
-        seat: :east,
-        win_source: :discard,
-        smt_hand: [],
-        smt_calls: [],
-        winning_tile: :"3s",
-        winning_hand: [:"3s"],
-        is_dealer: true,
-        scoring_key: "ron",
-        rules_ref: state.rules_ref,
-        yaku: selected_yaku,
-        minipoints: minipoints,
-        points: Utils.get_from_points_list(points, score_rules["point_name"]),
-        points2: Utils.get_from_points_list(points, score_rules["point2_name"]),
-      }
-      mock_gamestate = mock_gamestate
-      |> Actions.register_discard(:south, :"3s", true, true)
-      |> Actions.trigger_event("before_win", cxt)
-      |> Actions.trigger_event("before_scoring", cxt)
-      |> Payment.run_scoring_logic(cxt)
-      mock_gamestate.txns
-      |> IO.inspect(label: "txns")
-      value = mock_gamestate.txns |> Enum.filter(& &1.to == :east) |> Payment.consolidate_txns() |> Map.get(:east) |> Payment.get_txn_result()
-      |> IO.inspect(label: "value")
-
+  def score_hand(state, hand, is_ron?, selected_yaku, minipoints) do
+    wall = Enum.map(Rules.get(state.rules_ref, "wall", []), &Utils.to_tile(&1))
+    dead_wall_length = Rules.get(state.rules_ref, "initial_dead_wall_length", 0)
+    {wall, dead_wall} = if dead_wall_length > 0 do
+      Enum.split(wall, -dead_wall_length)
+    else {wall, []} end
+    state = %GameState.Game{
+      wall: wall,
+      dead_wall: dead_wall,
+      log_loading_mode: true,
+      rules_ref: state.rules_ref,
+      players: state.players,
+      log_state: %{log: []},
+      timer: -1,
+    }
+    initial_score = Rules.get(state.rules_ref, "initial_score", 0)
+    tile_freqs = Enum.frequencies(state.wall ++ state.dead_wall)
+    state = GameState.update_all_players(state, fn seat, _player -> %Player{
+      nickname: Atom.to_string(seat) |> String.capitalize(),
+      score: initial_score,
+      start_score: initial_score,
+      tile_behavior: %TileBehavior{ tile_freqs: tile_freqs }
+    } end)
+    {winning_tile, hand} = List.pop_at(hand, -1)
+    state = if is_ron? do
+      payer = :west
       state
-      |> Map.put(:winners, %{east: %{}})
-      |> Map.put(:winner_seats, [:east])
-      |> Map.put(:winner_index, 0)
-      |> Map.put(:visible_screen, :scores)
-      |> Map.put(:delta_scores, %{east: value, south: -value, west: 0, north: 0})
-      |> Map.put(:txns, mock_gamestate.txns)
-    else state end
+      |> GameState.update_player(:east, &%{ &1 | hand: hand })
+      |> GameState.update_player(payer, &%{ &1 | discards: [winning_tile] })
+      |> Actions.register_discard(payer, winning_tile, true, true)
+    else
+      state
+      |> GameState.update_player(:east, &%{ &1 | hand: hand, draw: [Utils.add_attr(winning_tile, ["_draw"])] })
+    end
+    win_source = if is_ron? do :discard else :draw end
+    scoring_key = case Rules.get(state.rules_ref, "scoring_logic", %{}) do
+      %{"ron" => _} -> if is_ron? do "ron" else "tsumo" end
+      logic when is_map(logic) -> Enum.at(logic, 0) |> elem(0)
+      _ -> if is_ron? do "ron" else "tsumo" end
+    end
+    state = Kyoku.calculate_winner_details_v2(state, :east, win_source, scoring_key)
+    state = update_in(state.winners.east.yaku, & &1 ++ selected_yaku)
+    state = if minipoints > 0 do update_in(state.winners.east.minipoints, fn _ -> minipoints end) else state end
+    {state, delta_scores, delta_scores_reason, _next_dealer} = Scoring.adjudicate_win_scoring(state)
+    state
+    |> Map.put(:delta_scores, delta_scores)
+    |> Map.put(:delta_scores_reason, delta_scores_reason)
+    |> Map.put(:visible_screen, :winner)
   end
 
   def handle_event("back", _assigns, socket) do
@@ -317,6 +332,21 @@ defmodule RiichiAdvancedWeb.ScoringTestLive do
     {:noreply, socket}
   end
 
+  # for hand selection component
+  def handle_event("add_hand_tile", %{"tile" => tile}, socket) do
+    socket = assign(socket, :hand, socket.assigns.hand ++ [tile])
+    {:noreply, socket}
+  end
+  def handle_event("remove_hand_tile", %{"index" => index}, socket) do
+    {ix, _} = Integer.parse(index)
+    socket = assign(socket, :hand, List.delete_at(socket.assigns.hand, ix))
+    {:noreply, socket}
+  end
+  def handle_event("clear_hand", _assigns, socket) do
+    socket = assign(socket, :hand, [])
+    {:noreply, socket}
+  end
+
   # for yaku_selection_component
   def handle_event("toggle_yaku", %{"index" => index, "selected" => selected}, socket) do
     selected = selected == "true"
@@ -342,25 +372,28 @@ defmodule RiichiAdvancedWeb.ScoringTestLive do
     {:noreply, socket}
   end
   def handle_event("ready_for_next_round", _assigns, socket) do
-    socket = assign(socket, :state, %{socket.assigns.state | visible_screen: nil})
+    socket = if socket.assigns.state.visible_screen == :winner do
+      assign(socket, :state, %{socket.assigns.state | visible_screen: :scores})
+    else
+      assign(socket, :state, %{socket.assigns.state | visible_screen: nil})
+    end
     {:noreply, socket}
   end
 
-  def handle_event("score_yaku", _assigns, socket) do
+  def handle_event("score_hand", params, socket) do
     # silent 4MB limit
     if byte_size(socket.assigns.config) <= 4 * 1024 * 1024 do
-      # yaku_lists = socket.assigns.yaku_lists ++ socket.assigns.extra_yaku_lists
-      # yaku2_lists = socket.assigns.yaku2_lists
-      minipoints = socket.assigns.minipoints
-      # score_rules = Rules.get(socket.assigns.rules_ref, "score_calculation", %{})
       state = socket.assigns.state
       |> Map.put(:ruleset, socket.assigns.ruleset)
       |> Map.put(:config, socket.assigns.config)
       |> Map.put(:room_code, "scoringtest_" <> String.slice(socket.assigns.session_id, 0..7))
       |> Map.put(:rules_ref, socket.assigns.rules_ref)
+      is_ron? = Map.has_key?(params, "ron")    
+      hand = Enum.map(socket.assigns.hand, &Utils.to_tile(&1))
       selected_yaku = get_selected_yaku(socket.assigns.yaku)
+      minipoints = socket.assigns.minipoints
       socket = socket
-      |> start_async(:put_state, fn -> score_yaku(state, selected_yaku, minipoints) end)
+      |> start_async(:put_state, fn -> score_hand(state, hand, is_ron?, selected_yaku, minipoints) end)
       |> assign(:loading, true)
       {:noreply, socket}
     else
@@ -381,6 +414,10 @@ defmodule RiichiAdvancedWeb.ScoringTestLive do
         {:error, _msg}   -> nil
       end
       socket = assign(socket, :rules_ref, rules_ref)
+
+      wall = Rules.get(rules_ref, "wall", [])
+      socket = assign(socket, :tiles, Enum.uniq(wall))
+
       {:noreply, retrieve_yaku_lists(socket)}
     else {:noreply, socket} end
   end

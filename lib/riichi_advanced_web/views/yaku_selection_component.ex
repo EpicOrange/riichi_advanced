@@ -28,6 +28,13 @@ defmodule RiichiAdvancedWeb.YakuSelectionComponent do
           <div class="yaku-list-spacer"></div>
         <% end %>
       </div>
+      <br>
+      <%= if @minipoint_name != nil do %>
+        <span class="yaku-bottom-minipoint-name"><%= dt(@lang, @minipoint_name) %></span>
+        <input phx-blur="change_minipoints_value" name="minipoints-value" type="number" value={@minipoints} onclick="this.select();">
+      <% else %>
+        <input name="minipoints-value" type="hidden" value={@minipoints}>
+      <% end %>
     </div>
     """
   end
@@ -35,7 +42,11 @@ defmodule RiichiAdvancedWeb.YakuSelectionComponent do
   def print_value(value) do
     cond do
       is_number(value) -> Integer.to_string(value)
-      is_list(value) -> Enum.at(value, 0) |> Integer.to_string()
+      is_list(value) ->
+        case Enum.at(value, 0) do
+          v when is_number(v) -> Integer.to_string(v)
+          _ -> "0"
+        end
       is_binary(value) -> "0"
       true -> value
     end

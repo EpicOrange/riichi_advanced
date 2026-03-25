@@ -538,7 +538,6 @@ defmodule RiichiAdvanced.GameState.Kyoku do
           # nil = no joker assignments returned by smt
           # (this happens for hands the solver doesn't support, like milky way)
           {state, cxt} = JokerSolver.evaluate_joker_assignment(state, cxt, %{})
-          IO.inspect(cxt, limit: :infinity, label: "asdf")
           state = Payment.run_scoring_logic(state, cxt)
           {state, cxt}
         r   -> r
