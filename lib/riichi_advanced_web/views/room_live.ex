@@ -225,7 +225,7 @@ defmodule RiichiAdvancedWeb.RoomLive do
     socket = case socket.assigns.from do
       "lobby" -> push_navigate(socket, to: ~p"/lobby/#{socket.assigns.ruleset}?nickname=#{socket.assigns.nickname}&lang=#{socket.assigns.lang}")
       "learn" -> push_navigate(socket, to: ~p"/tutorial/#{socket.assigns.ruleset}?nickname=#{socket.assigns.nickname}&lang=#{socket.assigns.lang}")
-      _       -> push_navigate(socket, to: ~p"/?nickname=#{socket.assigns.nickname}&lang=#{socket.assigns.lang}")
+      _       -> push_navigate(socket, to: ~p"/?nickname=#{socket.assigns.nickname}&lang=#{socket.assigns.lang}&ruleset=#{socket.assigns.ruleset}")
     end
     {:noreply, socket}
   end
