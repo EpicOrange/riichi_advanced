@@ -47,6 +47,8 @@ defmodule RiichiAdvanced.GameState do
       # %{"3m": %{["example"] => MapSet.new([{:any, ["joker"]}])}}
       # this says that any tile with the "joker" attr can be treated as "3m" with the "example" attr
       aliases: %{},
+      # mappings is kind of the reverse, %{joker tile with attributes => MapSet of tiles it can be used as}
+      mappings: %{},
       ordering: %{:"1m"=>:"2m", :"2m"=>:"3m", :"3m"=>:"4m", :"4m"=>:"5m", :"5m"=>:"6m", :"6m"=>:"7m", :"7m"=>:"8m", :"8m"=>:"9m",
                   :"1p"=>:"2p", :"2p"=>:"3p", :"3p"=>:"4p", :"4p"=>:"5p", :"5p"=>:"6p", :"6p"=>:"7p", :"7p"=>:"8p", :"8p"=>:"9p",
                   :"1s"=>:"2s", :"2s"=>:"3s", :"3s"=>:"4s", :"4s"=>:"5s", :"5s"=>:"6s", :"6s"=>:"7s", :"7s"=>:"8s", :"8s"=>:"9s"},
@@ -59,11 +61,6 @@ defmodule RiichiAdvanced.GameState do
     ]
     def get_all_tiles(tile_behavior) do
       Map.keys(tile_behavior.tile_freqs) ++ Map.keys(tile_behavior.aliases)
-    end
-    def tile_mappings(tile_behavior) do
-      for {tile1, attrs_aliases} <- tile_behavior.aliases, {attrs, aliases} <- attrs_aliases, tile2 <- aliases do
-        %{tile2 => [Utils.add_attr(tile1, attrs)]}
-      end |> Enum.reduce(%{}, &Map.merge(&1, &2, fn _k, l, r -> l ++ r end))
     end
     def is_any_joker?(tile, tile_behavior) do
       Enum.any?(Map.get(tile_behavior.aliases, :any, %{}), fn {_attrs, aliases} ->
@@ -80,24 +77,13 @@ defmodule RiichiAdvanced.GameState do
     def hash(tile_behavior) do
       :erlang.phash2({tile_behavior.aliases, tile_behavior.ordering, tile_behavior.tile_freqs, tile_behavior.dismantle_calls, tile_behavior.ignore_suit})
     end
-    def joker_power(tile, tile_behavior) do
-      is_any_joker = case Map.get(tile_behavior.aliases, :any) do
-        nil -> false
-        attrs_aliases ->
-          Map.values(attrs_aliases)
-          |> Enum.concat()
-          |> Utils.has_matching_tile?([tile])
-      end
-      if is_any_joker do 1000000 else
-        aliases = Utils.apply_tile_aliases(tile, tile_behavior)
-        MapSet.size(aliases)
-      end
-    end
-    # the idea is to move the most powerful jokers to the back
-    # power is just number of aliases
-    # then we sort by number of attrs (more attrs should be in the back)
+    # the idea is to move the most powerful jokers to the back so that remove_tile removes them last
+    # power is just "is any-joker?", then size of its mapping, then number of attrs (more attrs = more specific jokers = should be in the back)
     def sort_by_joker_power(tiles, tile_behavior) do
-      Enum.sort_by(tiles, &{joker_power(&1, tile_behavior), length(Utils.get_attrs(&1))})
+      Enum.sort_by(tiles, fn to ->
+        entry = Map.get(tile_behavior.mappings, to, MapSet.new())
+        {MapSet.member?(entry, :any), MapSet.size(entry), length(Utils.get_attrs(to))}
+      end)
     end
     # replace aliases with the assignment given by the joker solver
     def from_joker_assignment(tile_behavior, smt_hand, joker_assignment) do
@@ -114,7 +100,29 @@ defmodule RiichiAdvanced.GameState do
             Map.update(aliases, to, %{attrs => from_tiles}, fn from -> Map.update(from, attrs, from_tiles, &MapSet.union(&1, from_tiles)) end)
         end
       end)
-      %{ tile_behavior | aliases: new_aliases }
+      new_mappings = for {tile1, attrs_aliases} <- new_aliases, {attrs, aliases} <- attrs_aliases, tile2 <- aliases, reduce: %{} do
+        ret ->
+          new_tiles = MapSet.new([Utils.add_attr(tile1, attrs)])
+          Map.update(ret, tile2, new_tiles, &MapSet.union(&1, new_tiles))
+      end
+      %{ tile_behavior | aliases: new_aliases, mappings: new_mappings }
+    end
+
+    def set_tile_alias(tile_behavior, from_tiles, to_tiles) do
+      %{aliases: aliases, mappings: mappings} = tile_behavior
+      from_tiles = MapSet.new(from_tiles)
+      to_tiles = MapSet.new(to_tiles)
+      mappings = for from <- from_tiles, reduce: mappings do
+        mappings -> Map.update(mappings, from, to_tiles, &MapSet.union(&1, to_tiles))
+      end
+      aliases = for to <- to_tiles, reduce: aliases do
+        aliases ->
+          {to, attrs} = Utils.to_attr_tile(to)
+          Map.update(aliases, to, %{attrs => from_tiles}, fn from ->
+            Map.update(from, attrs, from_tiles, &MapSet.union(&1, from_tiles))
+          end)
+      end
+      %{tile_behavior | aliases: aliases, mappings: mappings}
     end
   end
 

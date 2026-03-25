@@ -24,7 +24,7 @@ defmodule RiichiAdvanced.GameState.JokerSolver do
   # get an assignment for the obvious jokers (the ones with only one assignable value)
   def get_obvious_joker_assignment(tile_behavior, smt_hand, smt_calls) do
     # first get a map [single-value joker => the tile it maps to]
-    obvious_joker_map = TileBehavior.tile_mappings(tile_behavior)
+    obvious_joker_map = tile_behavior.mappings
     |> Enum.flat_map(fn {joker, [assign]} -> if Utils.strip_attrs(assign) != :any do [{joker, assign}] else [] end; _ -> [] end)
     |> Map.new()
     # return a map %{index => tile}

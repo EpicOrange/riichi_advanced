@@ -925,14 +925,7 @@ defmodule RiichiAdvanced.GameState.Actions do
   end
 
   def set_tile_alias(state, seat, from_tiles, to_tiles) do
-    from_tiles = MapSet.new(from_tiles)
-    update_player(state, seat, fn player -> %{ player | tile_behavior: Map.update!(player.tile_behavior, :aliases, fn aliases ->
-      for to <- to_tiles, reduce: aliases do
-        aliases ->
-          {to, attrs} = Utils.to_attr_tile(to)
-          Map.update(aliases, to, %{attrs => from_tiles}, fn from -> Map.update(from, attrs, from_tiles, &MapSet.union(&1, from_tiles)) end)
-      end
-    end) } end)
+    update_in(state.players[seat].tile_behavior, &TileBehavior.set_tile_alias(&1, from_tiles, to_tiles))
   end
 
   def add_attr_matching(tiles, attrs, tile_specs, tile_behavior) do
@@ -1564,7 +1557,7 @@ defmodule RiichiAdvanced.GameState.Actions do
         for seat <- state.available_seats, reduce: state do
           state -> put_in(state.players[seat].tile_behavior, Map.get(state.players[seat].cache.saved_tile_behavior, label, state.players[seat].tile_behavior))
         end
-      "clear_tile_aliases"    -> update_player(state, context.seat, &%{ &1 | tile_behavior: %{ &1.tile_behavior | aliases: %{} } })
+      "clear_tile_aliases"    -> update_player(state, context.seat, &%{ &1 | tile_behavior: %{ &1.tile_behavior | aliases: %{}, mappings: %{} } })
       "set_tile_ordering"     ->
         tiles = Enum.map(Enum.at(opts, 0, []), &Utils.to_tile/1)
         ordering = Enum.zip(Enum.drop(tiles, -1), Enum.drop(tiles, 1)) |> Map.new()

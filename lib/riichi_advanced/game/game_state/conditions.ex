@@ -349,7 +349,7 @@ defmodule RiichiAdvanced.GameState.Conditions do
         Enum.any?(hand_calls, fn {hand, calls} -> Match.match_hand(hand, calls, match_definitions, tile_behavior) end)
       "winning_hand_consists_of" ->
         # TODO do we really need tile_mapping here if winning_hand is actually the assigned hand in yaku checks?
-        tile_mappings = TileBehavior.tile_mappings(cxt_player.tile_behavior)
+        tile_mappings = cxt_player.tile_behavior.mappings
         tiles = Enum.map(opts, &Utils.to_tile/1)
         non_flower_calls = Enum.reject(cxt_player.calls, fn {call_name, _call} -> call_name in Riichi.flower_names() end)
         winning_hand = cxt_player.hand ++ Enum.flat_map(non_flower_calls, &Utils.call_to_tiles/1)
@@ -359,7 +359,7 @@ defmodule RiichiAdvanced.GameState.Conditions do
         # IO.inspect({winning_hand ++ winning_tile, tiles}, label: "winning_hand_consists_of")
         Enum.all?(winning_hand ++ winning_tile, &Utils.has_matching_tile?([&1] ++ Map.get(tile_mappings, &1, []), tiles))
       "winning_hand_not_tile_consists_of" ->
-        tile_mappings = TileBehavior.tile_mappings(cxt_player.tile_behavior)
+        tile_mappings = cxt_player.tile_behavior.mappings
         tiles = Enum.map(opts, &Utils.to_tile/1)
         non_flower_calls = Enum.reject(cxt_player.calls, fn {call_name, _call} -> call_name in Riichi.flower_names() end)
         winning_hand = cxt_player.hand ++ Enum.flat_map(non_flower_calls, &Utils.call_to_tiles/1)

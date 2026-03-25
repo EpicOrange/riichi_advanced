@@ -423,8 +423,7 @@ defmodule RiichiAdvanced.SMT do
   # end
 
   def _match_hand_smt_v4(mutex, solver_pid, hand, calls, match_definitions, tile_behavior) do
-    ordering = tile_behavior.ordering
-    tile_mappings = TileBehavior.tile_mappings(tile_behavior)
+    %{ordering: ordering, mappings: tile_mappings} = tile_behavior
 
     calls = calls
     |> Enum.map(&Enum.take(&1, 3)) # ignore kans
