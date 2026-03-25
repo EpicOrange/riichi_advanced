@@ -15,6 +15,10 @@ on before_scoring do
   end
 end
 
+# for kiriage mod to modify
+define_const mangan_4_han_fu, 40
+define_const mangan_3_han_fu, 70
+
 def check_limit do
   if total == 0 and points2 > 0 do
     total = points2 :: "★"
@@ -46,13 +50,13 @@ def check_limit do
     total = 2000 :: "Mangan base"
     modify_winner("score_name", "Mangan")
   end
-  if total == 0 and points >= 4 and minipoints >= 40 do
+  if total == 0 and points >= 4 and minipoints >= @mangan_4_han_fu do
     total = points :: "Han"
     total = minipoints :: "Fu"
     total = 2000 :: "Mangan base"
     modify_winner("score_name", "Mangan")
   end
-  if total == 0 and points >= 3 and minipoints >= 70 do
+  if total == 0 and points >= 3 and minipoints >= @mangan_3_han_fu do
     total = points :: "Han"
     total = minipoints :: "Fu"
     total = 2000 :: "Mangan base"

@@ -18,28 +18,14 @@ on after_initialization do
 end
 
 if !min == "Mangan" do
-  # check for kiriage
-  if [3, 60] in "score_calculation.limit_thresholds" do
-    define_const min_han_check_discard,
-         has_yaku_with_discard(3, "Han", 60)
-      or has_yaku_with_discard(4, "Han", 30)
-      or has_yaku_with_discard(5, "Han")
-      or has_yaku_with_discard(1, "★")
-  else
-    define_const min_han_check_discard,
-         has_yaku_with_discard(3, "Han", 70)
-      or has_yaku_with_discard(4, "Han", 40)
-      or has_yaku_with_discard(5, "Han")
-      or has_yaku_with_discard(1, "★")
-  end
+  define_const min_han_check_discard,
+       has_yaku_with_discard(3, "Han", @mangan_3_han_fu)
+    or has_yaku_with_discard(4, "Han", @mangan_4_han_fu)
+    or has_yaku_with_discard(5, "Han")
+    or has_yaku_with_discard(1, "★")
 else
   if !min == "Yakuman" do
-    # check for existence of kazoe
-    if [13, 0] in "score_calculation.limit_thresholds" do
-      define_const min_han_check_discard, has_yaku_with_discard(13, "Han") or has_yaku_with_discard(1, "★")
-    else
-      define_const min_han_check_discard, has_yaku_with_discard(1, "★")
-    end
+    define_const min_han_check_discard, (@kazoe_yakuman_ari and has_yaku_with_discard(13, "Han")) or has_yaku_with_discard(1, "★")
   else
     define_const min_han_check_discard, has_yaku_with_discard(!min, "Han") or has_yaku_with_discard(1, "★")
   end

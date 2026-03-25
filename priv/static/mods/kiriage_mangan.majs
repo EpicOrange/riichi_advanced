@@ -1,0 +1,6 @@
+on after_initialization do
+  add_rule("Rules", "Kiriage Mangan", "3 han 60 fu and 4 han 30 fu are worth mangan.")
+end
+
+define_const mangan_4_han_fu, 30
+define_const mangan_3_han_fu, 60
