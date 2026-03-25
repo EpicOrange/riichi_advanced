@@ -1051,6 +1051,7 @@ defmodule RiichiAdvanced.GameState.Actions do
         {"scry", true} -> Marking.get_marked(marked_objects, :scry)
         {"dead_wall", true} -> [] # unimplemented
         {"atop_wall", true} -> [] # unimplemented
+        {"delete", false}   -> []
         _ -> 
           IO.puts("Unknown move_tiles target #{inspect(source)}")
           []
@@ -1419,7 +1420,7 @@ defmodule RiichiAdvanced.GameState.Actions do
       "move_tiles" -> move_tiles(state, context.seat, Enum.at(opts, 0, %{}), Enum.at(opts, 1, nil), :move)
       "swap_tiles" -> move_tiles(state, context.seat, Enum.at(opts, 0, %{}), Enum.at(opts, 1, nil), :swap)
       "copy_tiles" -> move_tiles(state, context.seat, Enum.at(opts, 0, %{}), Enum.at(opts, 1, nil), :copy)
-      "delete_tiles" -> move_tiles(state, context.seat, Enum.at(opts, 0, %{}), nil, :delete)
+      "delete_tiles" -> move_tiles(state, context.seat, Enum.at(opts, 0, %{}), "delete", :delete)
       "swap_marked_calls" ->
         marked_call = Marking.get_marked(marked_objects, :calls)
         {call1, call_seat1, call_index1} = Enum.at(marked_call, 0)
