@@ -333,7 +333,7 @@ defmodule RiichiAdvancedWeb.ScoringTestLive do
 
   # for hand selection component
   def handle_event("add_hand_tile", %{"tile" => tile}, socket) do
-    socket = assign(socket, :hand, socket.assigns.hand ++ [tile])
+    socket = assign(socket, :hand, Enum.take(socket.assigns.hand ++ [tile], 17))
     {:noreply, socket}
   end
   def handle_event("remove_hand_tile", %{"index" => index}, socket) do
