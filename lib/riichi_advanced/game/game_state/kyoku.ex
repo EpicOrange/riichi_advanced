@@ -374,7 +374,7 @@ defmodule RiichiAdvanced.GameState.Kyoku do
     {winning_tile, input_hand} = List.pop_at(assigned_hand, -1)
     separated_hands = [input_hand ++ [winning_tile]]
     |> Riichi.prepend_group_all(calls, [0, 0, 0, 1, 1, 1, 2, 2, 2], win_definitions, tile_behavior)
-    |> Riichi.prepend_group_all(calls, [0, 0, 1, 1, 2, 2], win_definitions, tile_behavior)
+    |> Riichi.prepend_group_all(calls, [0, 0, 1, 1, 2, 2], win_definitions, tile_behavior) # TODO not correct for 7 pair hands
     |> Riichi.prepend_group_all(calls, [0, 1, 2], win_definitions, tile_behavior)
     |> Riichi.prepend_group_all(calls, [0, 0, 0], win_definitions, tile_behavior)
     separated_hands = if use_kontsu_knitted do
@@ -398,7 +398,8 @@ defmodule RiichiAdvanced.GameState.Kyoku do
     groups = Utils.split_on(separated_hand, :separator)
     |> Enum.map(&Utils.sort_tiles/1)
     {groups, [ungrouped]} = Enum.split(groups, -1)
-    {separated_hand, _, leftover_tiles} = for _ <- groups, reduce: {[], groups, assigned_hand -- ungrouped} do
+    num_sets = length(groups) + length(calls)
+    {separated_hand, _leftover_groups, leftover_tiles} = for _ <- 1..num_sets, reduce: {[], groups, assigned_hand -- ungrouped} do
       {result, groups, [tile | hand]} ->
         case Enum.find_index(groups, &Enum.at(&1, 0) == tile) do
           nil -> {result, groups, hand}
