@@ -73,7 +73,8 @@ defmodule RiichiAdvancedWeb.RoomLive do
       # check if we're not already in a seat
       if not Enum.any?(state.available_seats, fn seat -> get_in(state.seats[seat].session_id) == socket.assigns.session_id end) do
         # try to sit in seat given by url param, if available, otherwise first available seat
-        starting_seat = Map.get(socket.assigns, :starting_seat, Enum.find(state.available_seats, fn seat -> state.seats[seat] == nil end))
+        starting_seat = Map.get(socket.assigns, :starting_seat)
+        starting_seat = if starting_seat == nil do Enum.find(state.available_seats, fn seat -> state.seats[seat] == nil end) else starting_seat end
         if starting_seat in state.available_seats and state.seats[starting_seat] == nil do
           GenServer.cast(socket.assigns.room_state, {:sit, socket.assigns.session_id, socket.assigns.session_id, starting_seat})
         end
