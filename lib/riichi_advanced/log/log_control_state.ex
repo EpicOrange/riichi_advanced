@@ -130,31 +130,24 @@ defmodule RiichiAdvanced.LogControlState do
     hand = state.game_state.players[seat].hand
     draw = state.game_state.players[seat].draw
     tile = discard_event["tile"] |> Utils.to_tile()
-    get_discard_index = fn hand, draw ->
-        if not discard_event["tsumogiri"] do
-        Enum.find_index(hand, &Utils.same_tile(&1, tile))
-      else
-        ix = Enum.find_index(draw, &Utils.same_tile(&1, tile))
-        if ix != nil do length(hand) + Enum.find_index(draw, &Utils.same_tile(&1, tile)) else nil end
-      end
+    ix = if discard_event["tsumogiri"] do
+      ret = Enum.find_index(draw, &Utils.same_tile(&1, tile))
+      if ret != nil do length(hand) + ret else nil end
+    else
+      Enum.find_index(hand, &Utils.same_tile(&1, tile))
     end
-    # figure out what index was discarded
-    ix = get_discard_index.(hand, draw)
-
-    # ensure the tile at this index matches the tile
-    # if not, send button press skip events to all players with buttons and try again
-    hand_or_draw = if discard_event["tsumogiri"] do draw else hand end
-    matches = ix != nil and Utils.same_tile(Enum.at(hand_or_draw, ix), tile)
-    playable = ix in state.game_state.players[seat].cache.playable_indices
-    our_turn = state.game_state.turn == seat
-    ix = if not (matches and playable and our_turn) do
+    # check that this tile is playable
+    is_playable = ix in state.game_state.players[seat].cache.playable_indices
+    {state, ix} = if not is_playable or state.game_state.turn != seat do
+      # send button press "skip" events to all players with buttons and try again
       skip_buttons(state)
       state = Map.put(state, :game_state, GenServer.call(state.game_state_pid, :get_state, 300000))
       hand = state.game_state.players[seat].hand
       draw = state.game_state.players[seat].draw
-      get_discard_index.(hand, draw)
-    else ix end
-
+      hand_draw = hand ++ draw
+      ix = Enum.find_index(hand_draw, &Utils.same_tile(&1, tile))
+      {state, ix}
+    else {state, ix} end
     if ix == nil do
       if Debug.debug_log() do
         IO.puts("At event index = #{discard_event["index"]}; couldn't find tile #{inspect(tile)} in #{seat}'s #{if discard_event["tsumogiri"] do "draw" else "hand" end}!")

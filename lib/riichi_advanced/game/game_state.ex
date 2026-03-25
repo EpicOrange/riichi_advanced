@@ -763,7 +763,8 @@ defmodule RiichiAdvanced.GameState do
       Enum.all?(Rules.get(state.rules_ref, "play_restrictions"), fn [tile_spec, cond_spec] ->
         not Riichi.tile_matches(tile_spec, %{seat: seat, tile: tile, players: state.players})
         or not Conditions.check_cnf_condition(state, cond_spec, %{seat: seat, tile: tile})
-        # or not (Conditions.check_cnf_condition(state, cond_spec, %{seat: seat, tile: tile}) |> IO.inspect(label: inspect({seat, tile, cond_spec})))
+        # not (Riichi.tile_matches(tile_spec, %{seat: seat, tile: tile, players: state.players}) |> IO.inspect(label: inspect({1, seat, tile, cond_spec})))
+        # or (not Conditions.check_cnf_condition(state, cond_spec, %{seat: seat, tile: tile}) |> IO.inspect(label: inspect({2, seat, tile, cond_spec})))
       end)
     else true end
   end

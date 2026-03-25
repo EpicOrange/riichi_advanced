@@ -80,6 +80,7 @@ defmodule RiichiAdvanced.GameState.Actions do
       tile = if facedown do Utils.add_attr(tile, ["_facedown"]) else tile end
       tile = Utils.add_attr(tile, ["_discard"])
 
+      tsumogiri = index >= length(state.players[seat].hand)
       state = update_player(state, seat, &%{ &1 |
         hand: List.delete_at(&1.hand ++ Utils.remove_attr(&1.draw, ["_draw"]), index),
         pond: &1.pond ++ [tile],
@@ -87,7 +88,6 @@ defmodule RiichiAdvanced.GameState.Actions do
         draw: [],
         last_discard: {tile, index}
       })
-      tsumogiri = index >= length(state.players[seat].hand)
       state = register_discard(state, seat, if facedown do :"1x" else tile end, tsumogiri)
 
       # trigger play effects
