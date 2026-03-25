@@ -2,7 +2,7 @@
   "custom_style": {
     "tile_indices": {"5z": "", "0z": "0", "1f": "F", "2f": "F", "3f": "F", "4f": "F", "1g": "F", "2g": "F", "3g": "F", "4g": "F", "1j": "J"}
   },
-  "default_mods": ["american/am_card_nmjl_2025", "show_waits"],
+  "default_mods": ["american/am_card_nmjl_2025", "american/show_nearest_american_hand", "show_waits"],
       // Reminder: Each year, add the next year's Card, and then switch the default mod over.
   "available_mods": [
     "Table Rules",
