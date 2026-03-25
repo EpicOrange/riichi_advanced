@@ -895,7 +895,7 @@ Prepend `"not_"` to any of the condition names to negate it.
 - `all_saki_cards_drafted`: Everyone has at least one saki card.
 - `has_existing_yaku(yaku1, yaku2, ...)`: Used in `meta_yaku` only. The winner has scored all of the given yaku.
 - `has_no_yaku`: Used in `meta_yaku` only. The winner has scored no yaku.
-- `placement`: The current player has the given placement (1-4).
+- `placement(num)`: The current player has the given placement (`num` = 1-4).
 - `last_discard_matches_existing`: The last discarded tile matches one of the current player's existing discards (includes called discards) (uses jokers).
 - `called_tile_matches_any_discard`: The last called tile matches one of anybody's existing discards (excludes called discards) (uses jokers).
 - `last_discard_exists`: The last discarded tile was not taken by another player.
@@ -923,6 +923,8 @@ Prepend `"not_"` to any of the condition names to negate it.
 - `genbutsu_toimen`: The last discard was genbutsu against toimen.
 - `genbutsu_shimocha`: The last discard was genbutsu against shimocha.
 - `can_discard_after_call`: Used in `"call_conditions"`, checks if you are able to discard a tile immediately after calling. Right now this only works for regular calls (i.e. not upgrade calls).
+
+For examples of how these are used, just search the ruleset/mods.
 
 ## Tile specs
 
@@ -952,7 +954,7 @@ You can also prepend `"not_"` to any of these to get the inverse specification.
 
 There's quite a few possible match targets that can be passed as the first argument to `"match"`, and here they are.
 
-- `"hand"`: selects the player's hand (not draw).
+- `"hand"`: selects the player's hand (not draw). If you have jokers, then jokers are replaced with the tile they represent, but only during `before_scoring`.
 - `"draw"`: selects the player's draw.
 - `"pond"`: selects the player's visible pond (not called tiles).
 - `"discards"`: selects the player's discards, including called discards.
@@ -963,8 +965,6 @@ There's quite a few possible match targets that can be passed as the first argum
 - `"jokers"`: selects the player's jokers set aside (including starting jokers). 
 - `"start_jokers"`: selects the player's starting jokers set aside only.
 - `"call_tiles"`: selects the player's calls as if their tiles were part of the hand (therefore their tiles can be combined with tiles in hand).
-- `"assigned_hand"`: selects the player's hand + draw, but with jokers replaced with their actual value. Only usable after or during the `after_win` event. Does not include the winning tile.
-- `"assigned_calls"`: selects the player's calls but with jokers replaced with their actual value. Only usable after or during the `after_win` event. 
 - `"winning_hand"`: selects the winning hand + call tiles + winning tile. Only usable during or after `"before_win"`. If used in `"before_win"`, you get the winning hand with jokers, but if used during or after `"before_scoring"`, then those jokers get replaced by actual values.
 - `"winning_tile"`: selects the winning tile. Only usable during or after `"before_win"`. Note that if the winning tile is a joker tile, it will remain a joker tile when checked in `"before_win"`, but will be replaced by its actual value during `"before_scoring"` and after.
 - `"last_call"`: selects the last call made by any player.
