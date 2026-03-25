@@ -58,16 +58,22 @@ defmodule RiichiAdvanced.Compiler do
     case condition do
       {:==, pos, [{l, _, nil}, {r, _, nil}]} -> compile_condition({"amount_equals", pos, [l, r]}, line, column)
       {:==, pos, [{l, _, nil}, r]} -> compile_condition({"amount_equals", pos, [l, r]}, line, column)
+      {:==, pos, [l, r]} -> compile_condition({"amount_equals", pos, [l, r]}, line, column)
       {:!=, pos, [{l, _, nil}, {r, _, nil}]} -> compile_condition({"not_counter_equals", pos, [l, r]}, line, column)
       {:!=, pos, [{l, _, nil}, r]} -> compile_condition({"not_counter_equals", pos, [l, r]}, line, column)
+      {:!=, pos, [l, r]} -> compile_condition({"not_counter_equals", pos, [l, r]}, line, column)
       {:<=, pos, [{l, _, nil}, {r, _, nil}]} -> compile_condition({"amount_at_most", pos, [l, r]}, line, column)
       {:<=, pos, [{l, _, nil}, r]} -> compile_condition({"amount_at_most", pos, [l, r]}, line, column)
+      {:<=, pos, [l, r]} -> compile_condition({"amount_at_most", pos, [l, r]}, line, column)
       {:>=, pos, [{l, _, nil}, {r, _, nil}]} -> compile_condition({"amount_at_least", pos, [l, r]}, line, column)
       {:>=, pos, [{l, _, nil}, r]} -> compile_condition({"amount_at_least", pos, [l, r]}, line, column)
+      {:>=, pos, [l, r]} -> compile_condition({"amount_at_least", pos, [l, r]}, line, column)
       {:<, pos, [{l, _, nil}, {r, _, nil}]} -> compile_condition({"amount_less_than", pos, [l, r]}, line, column)
       {:<, pos, [{l, _, nil}, r]} -> compile_condition({"amount_less_than", pos, [l, r]}, line, column)
+      {:<, pos, [l, r]} -> compile_condition({"amount_less_than", pos, [l, r]}, line, column)
       {:>, pos, [{l, _, nil}, {r, _, nil}]} -> compile_condition({"amount_more_than", pos, [l, r]}, line, column)
       {:>, pos, [{l, _, nil}, r]} -> compile_condition({"amount_more_than", pos, [l, r]}, line, column)
+      {:>, pos, [l, r]} -> compile_condition({"amount_more_than", pos, [l, r]}, line, column)
       {:not, _, [condition]} ->
         with {:ok, result} <- compile_cnf_condition(condition, line, column) do
           {:ok, %{"name" => "not", "opts" => [result]}}
@@ -240,7 +246,7 @@ defmodule RiichiAdvanced.Compiler do
                   end
               end
             end
-          _ -> {:error, "\"if\" got invalid parameters: #{inspect(opts)}"}
+          _ -> {:error, "Compiler.compile_action: at line #{line}:#{column}, \"if\" got invalid parameters: #{inspect(opts)}"}
         end
       {"unless", [line: line, column: column], opts} ->
         case opts do
@@ -256,7 +262,26 @@ defmodule RiichiAdvanced.Compiler do
                 end
               end
             end
-          _ -> {:error, "\"unless\" got invalid parameters: #{inspect(opts)}"}
+          _ -> {:error, "Compiler.compile_action: at line #{line}:#{column}, \"unless\" got invalid parameters: #{inspect(opts)}"}
+        end
+      {"cond", [line: line, column: column], opts} ->
+        case opts do
+          [[do: clauses]] ->
+            rets = for {:->, [line: line, column: column], [[condition], body]} <- clauses, reduce: {:ok, []} do
+              {:ok, ret} ->
+                with {:ok, condition} <- compile_condition_list(condition, line, column),
+                     {:ok, body} <- compile_action_list(body, line, column) do
+                  {:ok, [{condition, body} | ret]}
+                end
+              err -> err
+            end
+            with {:ok, cond_bodys} <- rets do
+              for {cond, body} <- cond_bodys, reduce: {:ok, []} do
+                {:ok, else_branch} -> {:ok, ["ite", cond, body, else_branch]}
+                err -> err
+              end
+            end
+          _ -> {:error, "Compiler.compile_action: at line #{line}:#{column}, \"cond\" got invalid parameters: #{inspect(opts)}"}
         end
       {"as", [line: line, column: column], opts} ->
         case opts do
@@ -270,7 +295,7 @@ defmodule RiichiAdvanced.Compiler do
                  {:ok, actions} <- compile_action_list(Keyword.get(actions, :do), line, column) do
               {:ok, ["as", seats_spec, actions]}
             end
-          _ -> {:error, "\"as\" got invalid parameters: #{inspect(opts)}"}
+          _ -> {:error, "Compiler.compile_action: at line #{line}:#{column}, \"as\" got invalid parameters: #{inspect(opts)}"}
         end
       {"_counter_assignment", [line: line, column: column], opts} ->
         case opts do
