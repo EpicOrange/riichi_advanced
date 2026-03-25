@@ -60,9 +60,9 @@ defmodule RiichiAdvancedWeb.ScoreWindowComponent do
                 <%= for %{op: op, amount: amount, result: result, reason: reason} <- line_items do %>
                   <tr class={if reason == "Total" do "score-ledger-total" else nil end}>
                     <td class="score-ledger-op"><%= display_op(op) %></td>
-                    <td class="score-ledger-amount"><%= amount %></td>
+                    <td class="score-ledger-amount"><%= if amount != nil do Utils.try_integer(round(amount * 100) / 100) else "" end %></td>
                     <td><%= if op != nil do "=" else "" end %></td>
-                    <td class="score-ledger-result"><%= result %></td>
+                    <td class="score-ledger-result"><%= if result != nil do Utils.try_integer(round(result * 100) / 100) else "" end %></td>
                     <td class="score-ledger-reason"><%= reason %></td>
                   </tr>
                 <% end %>

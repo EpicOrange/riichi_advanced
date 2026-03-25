@@ -83,7 +83,11 @@ defmodule RiichiAdvancedWeb.WinWindowComponent do
   end
 
   def display_points(lang, points) do
-    if is_list(points) do Enum.map_join(points, " ", &"#{if is_number(&1) do &1 else dt(lang, &1) end}") else points end
+    if is_list(points) do
+      Enum.map_join(points, " ", &"#{if is_number(&1) do &1 else dt(lang, &1) end}")
+    else
+      Utils.try_integer(round(points * 100) / 100)
+    end
   end
 
   def process_calls(calls) do
