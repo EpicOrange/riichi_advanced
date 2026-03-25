@@ -86,8 +86,8 @@ defmodule RiichiAdvancedWeb.ScoreWindowComponent do
               <stop offset="100%" stop-color="white" stop-opacity="1"/>
             </linearGradient>
             <mask id="tailMask" maskContentUnits="userSpaceOnUse">
-              <rect x="70" y="-50%" width="45" height="100%" fill="url(#fade)" stroke-width="0px"/>
-              <rect x="115" y="-50%" width="100%" height="100%" fill="white" stroke-width="0px"/>
+              <rect x="70" y="-50%" width="45" height="max(99999px, 100%)" fill="url(#fade)" stroke-width="0px"/>
+              <rect x="115" y="-50%" width="max(99999px, 100%)" height="max(99999px, 100%)" fill="white" stroke-width="0px"/>
             </mask>
           </defs>
           <rect mask="url(#tailMask)" x="0" y="0" width="100%" height="50" style="transform:translate(-70px,calc(50% - 25px))"/>
