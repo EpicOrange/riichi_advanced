@@ -255,8 +255,7 @@ define_scoring win do
     end
   end
   # jokerless hand bonus
-  if not_match(["hand", "call_tiles", "winning_tile"], ~m"nojoker, 1j:1", as: "winner")
-      and not_match(["hand", "call_tiles", "winning_tile"], "singles_win", as: "winner") do
+  if jokers == 0 and not_match(["hand", "call_tiles", "winning_tile"], "singles_win", as: "winner") do
     total *= 2 :: "Jokerless hand"
   end
 end
@@ -267,6 +266,8 @@ end
 
 on before_win do
   make_responsible_for("others")
+  set_counter("jokers", "count_matches", ["hand", "calls", "winning_tile"], ~m"nojoker, dismantle_calls, 1j:1")
+  set_counter_all("jokers", "jokers")
 end
 
 define_play_restriction "any", anyone_status("declare_shimocha_dead") or anyone_status("declare_toimen_dead") or anyone_status("declare_kamicha_dead")
