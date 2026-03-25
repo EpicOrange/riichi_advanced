@@ -96,7 +96,7 @@ defmodule RiichiAdvanced.GameState.Scoring do
   # TODO DRY
   def seat_scores_points(state, yaku_list_names, point_name, min_points, min_minipoints, seat, winning_tile, win_source) do
     %{hand: hand, calls: calls} = state.players[seat]
-
+    {winning_tile, hand} = if winning_tile == nil do List.pop_at(hand, -1) else {winning_tile, hand} end
     # we need to let before_win actions know about the winning tile
     #   so we store it in state.winners
     state = Map.update!(state, :winners, &Map.put(&1, seat, %{winning_tile: winning_tile}))

@@ -819,6 +819,10 @@ defmodule RiichiAdvanced.SMT do
     if value = RiichiAdvanced.Cache.get(cache_key) do
       Stream.concat([value])
     else
+      if nil in hand do
+        IO.puts("[WARNING] match_hand_smt_v4 was passed a hand with a nil tile. Stack trace:")
+        IO.inspect(Process.info(self(), :current_stacktrace))
+      end
       {:ok, solutions_agent} = Agent.start_link(fn -> [] end)
       _match_hand_smt_v4(mutex, solver_pid, hand, calls, match_definitions, tile_behavior)
       |> Stream.concat([:end_stream])
