@@ -567,7 +567,7 @@ define_auto_button _3_auto_flower,
   enabled_at_start: true
   do
     if buttons_include("start_flower") do press_button("start_flower"); press_first_call_button("start_flower") end
-    if buttons_include("start_no_flower") do press_button("start_no_flower") end
+    if buttons_include("start_no_flower") and buttons_exclude("start_joker") do press_button("start_no_flower") end
     if buttons_include("flower") do press_button("flower"); press_first_call_button("flower") end
   end
 
