@@ -1592,18 +1592,18 @@ defmodule RiichiAdvanced.GameState do
           end
         else
           for seat <- state.available_seats, is_pid(Map.get(state, seat)) do
-            # if a button is being forced for this ai, press it (no need to notify ai)
-            seat_str = Atom.to_string(seat)
-            forced_button = if state.forced_events != nil do
-              Enum.find(state.forced_events, fn ["press_button", ^seat_str, _] -> true; _ -> false end)
-            else nil end
-            if forced_button != nil do
-              button_name = Enum.at(forced_button, 2)
-              :timer.apply_after(300, GenServer, :cast, [self(), {:press_button, seat, button_name}])
-              if Debug.debug_tutorial() do
-                IO.puts("Seat #{seat} forced to press #{button_name}")
-              end
-            else
+            # # if a button is being forced for this ai, press it (no need to notify ai)
+            # seat_str = Atom.to_string(seat)
+            # forced_button = if state.forced_events != nil do
+            #   Enum.find(state.forced_events, fn ["press_button", ^seat_str, _] -> true; _ -> false end)
+            # else nil end
+            # if forced_button != nil do
+            #   button_name = Enum.at(forced_button, 2)
+            #   :timer.apply_after(300, GenServer, :cast, [self(), {:press_button, seat, button_name}])
+            #   if Debug.debug_tutorial() do
+            #     IO.puts("Seat #{seat} forced to press #{button_name}")
+            #   end
+            # else
               # otherwise, tell ai to press a button of their choice
               has_buttons = not Enum.empty?(state.players[seat].buttons)
               has_call_buttons = not Enum.empty?(state.players[seat].call_buttons)
@@ -1621,7 +1621,7 @@ defmodule RiichiAdvanced.GameState do
                 }
                 send(Map.get(state, seat), {:buttons, params})
               end
-            end
+            # end
           end
         end
       else
