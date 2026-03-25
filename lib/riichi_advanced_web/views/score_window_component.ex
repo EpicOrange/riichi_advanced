@@ -15,18 +15,18 @@ defmodule RiichiAdvancedWeb.ScoreWindowComponent do
     ~H"""
     <div class={["game-modal-container", @visible_screen != :scores && "inactive"]}>
       <div class={["game-modal", "game-modal-hide"] ++ get_arrow_classes(@seat, @delta_scores, @round_result)}>
-        <svg class="arrow t2u" phx-hover="hover" phx-hover-off="hover_off" phx-target={@myself} phx-value-key="t2u" style="--xpos: 6.875; --ypos: 3; --rotate: 90; --length: 7.5;"><use href="#arrow"/></svg>
-        <svg class="arrow u2t" phx-hover="hover" phx-hover-off="hover_off" phx-target={@myself} phx-value-key="u2t" style="--xpos: 6.875; --ypos: 10.5; --rotate: -90; --length: 7.5;"><use href="#arrow"/></svg>
-        <svg class="arrow k2s" phx-hover="hover" phx-hover-off="hover_off" phx-target={@myself} phx-value-key="k2s" style="--xpos: 4.5; --ypos: 6.625; --rotate: 0; --length: 5;"><use href="#arrow"/></svg>
-        <svg class="arrow s2k" phx-hover="hover" phx-hover-off="hover_off" phx-target={@myself} phx-value-key="s2k" style="--xpos: 9.25; --ypos: 6.625; --rotate: 180; --length: 5;"><use href="#arrow"/></svg>
-        <svg class="curve k2u" phx-hover="hover" phx-hover-off="hover_off" phx-target={@myself} phx-value-key="k2u" style="--xscale: 1; --yscale: 1; --xpos: 2.25; --ypos: 8;"><use href="#curve"/></svg>
-        <svg class="curve s2u" phx-hover="hover" phx-hover-off="hover_off" phx-target={@myself} phx-value-key="s2u" style="--xscale: -1; --yscale: 1; --xpos: 8.75; --ypos: 8;"><use href="#curve"/></svg>
-        <svg class="curve s2t" phx-hover="hover" phx-hover-off="hover_off" phx-target={@myself} phx-value-key="s2t" style="--xscale: -1; --yscale: -1; --xpos: 8.75; --ypos: 1.5;"><use href="#curve"/></svg>
-        <svg class="curve k2t" phx-hover="hover" phx-hover-off="hover_off" phx-target={@myself} phx-value-key="k2t" style="--xscale: 1; --yscale: -1; --xpos: 2.25; --ypos: 1.5;"><use href="#curve"/></svg>
-        <svg class="curve u2k" phx-hover="hover" phx-hover-off="hover_off" phx-target={@myself} phx-value-key="u2k" style="--xscale: 1; --yscale: 1; --xpos: 2.25; --ypos: 8;"><use href="#curve2"/></svg>
-        <svg class="curve u2s" phx-hover="hover" phx-hover-off="hover_off" phx-target={@myself} phx-value-key="u2s" style="--xscale: -1; --yscale: 1; --xpos: 8.75; --ypos: 8;"><use href="#curve2"/></svg>
-        <svg class="curve t2s" phx-hover="hover" phx-hover-off="hover_off" phx-target={@myself} phx-value-key="t2s" style="--xscale: -1; --yscale: -1; --xpos: 8.75; --ypos: 1.5;"><use href="#curve2"/></svg>
-        <svg class="curve t2k" phx-hover="hover" phx-hover-off="hover_off" phx-target={@myself} phx-value-key="t2k" style="--xscale: 1; --yscale: -1; --xpos: 2.25; --ypos: 1.5;"><use href="#curve2"/></svg>
+        <svg class="arrow t2u" phx-hover="hover" phx-focus="hover" phx-hover-off="hover_off" phx-blur="hover_off" phx-target={@myself} phx-value-key="t2u" style="--xpos: 6.875; --ypos: 3; --rotate: 90; --length: 7.5;"><use href="#arrow"/></svg>
+        <svg class="arrow u2t" phx-hover="hover" phx-focus="hover" phx-hover-off="hover_off" phx-blur="hover_off" phx-target={@myself} phx-value-key="u2t" style="--xpos: 6.875; --ypos: 10.5; --rotate: -90; --length: 7.5;"><use href="#arrow"/></svg>
+        <svg class="arrow k2s" phx-hover="hover" phx-focus="hover" phx-hover-off="hover_off" phx-blur="hover_off" phx-target={@myself} phx-value-key="k2s" style="--xpos: 4.5; --ypos: 6.625; --rotate: 0; --length: 5;"><use href="#arrow"/></svg>
+        <svg class="arrow s2k" phx-hover="hover" phx-focus="hover" phx-hover-off="hover_off" phx-blur="hover_off" phx-target={@myself} phx-value-key="s2k" style="--xpos: 9.25; --ypos: 6.625; --rotate: 180; --length: 5;"><use href="#arrow"/></svg>
+        <svg class="curve k2u" phx-hover="hover" phx-focus="hover" phx-hover-off="hover_off" phx-blur="hover_off" phx-target={@myself} phx-value-key="k2u" style="--xscale: 1; --yscale: 1; --xpos: 2.25; --ypos: 8;"><use href="#curve"/></svg>
+        <svg class="curve s2u" phx-hover="hover" phx-focus="hover" phx-hover-off="hover_off" phx-blur="hover_off" phx-target={@myself} phx-value-key="s2u" style="--xscale: -1; --yscale: 1; --xpos: 8.75; --ypos: 8;"><use href="#curve"/></svg>
+        <svg class="curve s2t" phx-hover="hover" phx-focus="hover" phx-hover-off="hover_off" phx-blur="hover_off" phx-target={@myself} phx-value-key="s2t" style="--xscale: -1; --yscale: -1; --xpos: 8.75; --ypos: 1.5;"><use href="#curve"/></svg>
+        <svg class="curve k2t" phx-hover="hover" phx-focus="hover" phx-hover-off="hover_off" phx-blur="hover_off" phx-target={@myself} phx-value-key="k2t" style="--xscale: 1; --yscale: -1; --xpos: 2.25; --ypos: 1.5;"><use href="#curve"/></svg>
+        <svg class="curve u2k" phx-hover="hover" phx-focus="hover" phx-hover-off="hover_off" phx-blur="hover_off" phx-target={@myself} phx-value-key="u2k" style="--xscale: 1; --yscale: 1; --xpos: 2.25; --ypos: 8;"><use href="#curve2"/></svg>
+        <svg class="curve u2s" phx-hover="hover" phx-focus="hover" phx-hover-off="hover_off" phx-blur="hover_off" phx-target={@myself} phx-value-key="u2s" style="--xscale: -1; --yscale: 1; --xpos: 8.75; --ypos: 8;"><use href="#curve2"/></svg>
+        <svg class="curve t2s" phx-hover="hover" phx-focus="hover" phx-hover-off="hover_off" phx-blur="hover_off" phx-target={@myself} phx-value-key="t2s" style="--xscale: -1; --yscale: -1; --xpos: 8.75; --ypos: 1.5;"><use href="#curve2"/></svg>
+        <svg class="curve t2k" phx-hover="hover" phx-focus="hover" phx-hover-off="hover_off" phx-blur="hover_off" phx-target={@myself} phx-value-key="t2k" style="--xscale: 1; --yscale: -1; --xpos: 2.25; --ypos: 1.5;"><use href="#curve2"/></svg>
         <%= if not Enum.empty?(@delta_scores) do %>
           <div class="delta-score-reason" style={"--width: #{String.length(@delta_scores_reason)}"} :if={@delta_scores_reason}><%= dt(@lang, @delta_scores_reason) %></div>
           <%= for dir <- [:self, :shimocha, :toimen, :kamicha] do %>
