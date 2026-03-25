@@ -2136,7 +2136,7 @@ div.rules-popover-text > div.tile {
   margin-top: calc(0.25 * var(--tile-scale-factor) * var(--tile-size));
 }
 div.rules-popover-text > div.tile:hover {
-  transform: translateY(-100%) scale(3);
+  transform: translateY(-75%) scale(2.5);
   z-index: 10;
 }
 
