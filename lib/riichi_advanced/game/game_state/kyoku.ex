@@ -453,11 +453,14 @@ defmodule RiichiAdvanced.GameState.Kyoku do
     notify_text = if winning_tile == nil do "Running tenhou solver..." else "Running joker solver..." end
     notify_task = Task.async(fn -> :timer.sleep(500); push_message(state, [%{text: notify_text}]) end)
 
+    # save original hand to restore later
+    %{hand: orig_hand, draw: orig_draw, calls: orig_calls} = state.players[seat]
+
     # place an empty winner object first, so that modify_winner works as intended later on
     state = Map.update!(state, :winners, &Map.put(&1, seat, %{}))
     state = Map.update!(state, :winner_seats, & &1 ++ [seat])
 
-    {state, cxt} = for {smt_hand, _smt_calls} <- JokerSolver.get_smt_hand_calls(state, seat, winning_tile) do
+    {state, cxt} = for {smt_hand, smt_calls} <- JokerSolver.get_smt_hand_calls(state, seat, winning_tile) do
       # pop off the winning tile
       # {hand, [winning_tile]} = Enum.split(smt_hand, -1)
       winning_tile = Enum.at(smt_hand, -1)
@@ -465,24 +468,25 @@ defmodule RiichiAdvanced.GameState.Kyoku do
       #   the identity of the tile we chose this time, so we store it in state.winners
       state = Map.update!(state, :winners, &Map.put(&1, seat, %{winning_tile: winning_tile}))
 
+      # save this hand for the win screen
+      winning_hand = smt_hand ++ smt_calls
+      state = update_player(state, seat, &%{ &1 | cache: %{ &1.cache | winning_hand: winning_hand } })
+
+      # trigger before_win before solving for jokers
       state = Actions.trigger_event(state, "before_win", %{seat: seat, winner_seat: seat, win_source: win_source, winning_tile: winning_tile})
 
       # re-obtain smt_hand and smt_calls, since before_win might have modified them
       # (e.g. by adding attributes to tiles in hand)
       smt_hand = 
-        if win_source == :draw and Enum.empty?(state.players[seat].draw) do
+        if win_source == :draw and Enum.empty?(orig_draw) do
           # tenhou with no draw = 14 tiles in hand, remove the winning tile first
-          List.delete(state.players[seat].hand, winning_tile) ++ [winning_tile]
+          List.delete(orig_hand, winning_tile) ++ [winning_tile]
         else
-          state.players[seat].hand ++ [winning_tile]
+          orig_hand ++ [winning_tile]
         end
       smt_calls = state.players[seat].calls
       |> Enum.reject(fn {call_name, _call} -> call_name in Riichi.flower_names() end)
       |> Enum.map(&Utils.call_to_tiles/1)
-
-      # save this hand for the win screen
-      winning_hand = smt_hand ++ smt_calls
-      state = update_player(state, seat, &%{ &1 | cache: %{ &1.cache | winning_hand: winning_hand } })
 
       # now calculate joker assignments
       # and find the maximum score obtainable across all joker assignments
@@ -539,15 +543,15 @@ defmodule RiichiAdvanced.GameState.Kyoku do
       Task.shutdown(notify_task, :brutal_kill)
     end
 
+    # restore original hand/calls before rearranging hand
+    state = update_player(state, seat, &%{ &1 | hand: orig_hand, draw: orig_draw, calls: orig_calls })
+
     # rearrange the winner's hand for display purposes
     %{
       hand: arranged_hand,
       separated_hand: separated_hand,
       calls: arranged_calls
     } = rearrange_winner_hand(state, seat, cxt.joker_assignment, winning_tile)
-
-    # # restore original hand/calls
-    # state = update_player(state, seat, &%{ &1 | hand: orig_hand, calls: orig_calls })
 
     # create a winner object
     score_rules = Rules.get(state.rules_ref, "score_calculation", %{})
