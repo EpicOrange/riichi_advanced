@@ -12,4 +12,4 @@ define_const chiitoitsu_win, ~m"pair:7"
 apply set_append, "tenpai_definition", +@chiitoitsu_tenpai
 apply set_append, "win_definition", +@chiitoitsu_win
 
-define_yaku yaku, "Seven Pairs", 4, match(["hand", "winning_tile"], @chiitoitsu_win)
+define_yaku yaku, "Seven Pairs", [1, "Fan"], match(["hand", "winning_tile"], ["chiitoitsu_win"])

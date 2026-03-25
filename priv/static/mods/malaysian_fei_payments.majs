@@ -4,24 +4,24 @@ end
 
 unless defined("count_fei") do
   define "count_fei"
-  def count_fei do
-    as everyone do
-      if fei == 0 do
-        add_attr_first_tile("2y", ["revealed"])
-        add_attr_first_tile("2y", ["revealed"])
-        add_attr_first_tile("2y", ["revealed"])
-        add_attr_first_tile("2y", ["revealed"])
-        set_counter("fei", "count_matches", ["hand", "calls"], ~m"nojoker, 2y:1")
-      end
-    end
+  on before_win do
+    set_counter("fei", "count_matches", ["hand", "jokers", "winning_tile"], ~m"nojoker, 2y:1")
   end
-  on before_win do count_fei end
-  on before_exhaustive_draw do count_fei end
+  on before_exhaustive_draw do
+    set_counter("fei", "count_matches", ["hand", "jokers"], ~m"nojoker, 2y:1")
+  end
 end
 
 def do_fei_payments do
   as everyone do
+    if fei == 0 do
+      add_attr_first_tile("2y", ["revealed"])
+      add_attr_first_tile("2y", ["revealed"])
+      add_attr_first_tile("2y", ["revealed"])
+      add_attr_first_tile("2y", ["revealed"])
+    end
     if fei >= 1 do
+      set_counter("fei", "count_matches", ["hand", "calls"], ~m"nojoker, 2y:1")
       pay_other_players_silent(%{amt: !fei_value})
       cond do
         fei == 1 -> push_message("is paid 50 from all players for having 1 fei joker")

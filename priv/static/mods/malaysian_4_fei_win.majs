@@ -1,30 +1,40 @@
 on after_initialization do
   add_rule("Rules", "Win Condition", "- (Four Fei Win) Your starting hand contains four Fei Jokers.")
-  add_rule("Rules", "Fan", "- (Four Fei Win) Your starting hand contains four Fei Jokers.")
+  add_rule("Rules", "Fan", "- (Four Fei Win) Your starting hand contains four Fei Jokers, which counts as an immediate win.")
+end
+
+define_const four_fei_win, ~m"nojoker, 2y:4"
+apply set_append, "win_definition", +@four_fei_win
+apply set_append, "score_calculation.yaku_lists", ["four_fei"]
+define_yaku four_fei, "Four Fei", [1, "Limit"], status("match_start") and fei >= 4
+define_yaku_precedence "four_fei", ["yaku", "limit"]
+
+define_scoring four_fei do
+  total = 10 :: "Fan (Four Fei)"
+  total *= 20 :: "Score"
+  total *= 2 :: "Self Draw"
+  set_counter_all("hand_score", "total")
 end
 
 unless defined("count_fei") do
   define "count_fei"
-  def count_fei do
-    as everyone do
-      if fei == 0 do
-        add_attr_first_tile("2y", ["revealed"])
-        add_attr_first_tile("2y", ["revealed"])
-        add_attr_first_tile("2y", ["revealed"])
-        add_attr_first_tile("2y", ["revealed"])
-        set_counter("fei", "count_matches", ["hand", "calls"], ~m"nojoker, 2y:1")
-      end
-    end
-  end
   on before_win do
-    count_fei
+    set_counter("fei", "count_matches", ["hand", "jokers", "winning_tile"], ~m"nojoker, 2y:1")
   end
   on before_exhaustive_draw do
-    count_fei
+    set_counter("fei", "count_matches", ["hand", "jokers"], ~m"nojoker, 2y:1")
   end
 end
 
-define_set fei, ~s"2y"
-define_const four_fei_win, ~m"fei:4"
-apply set_append, "win_definition", +@four_fei_win
-define_yaku limit, "Four Fei", [10, "Fan"], fei >= 4
+define_button four_fei,
+  display_name: "Four Fei Win",
+  show_when: our_turn
+    and status("match_start")
+    and match(["hand", "jokers", "draw"], @four_fei_win),
+  unskippable: true
+  do
+    big_text("Four Fei")
+    pause(1000)
+    reveal_hand
+    win_by_draw("four_fei")
+  end

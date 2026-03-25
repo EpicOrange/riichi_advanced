@@ -58,8 +58,8 @@ define_set pei_pair, ~s"4z 4z"
 define_set haku_pair, ~s"8z 8z"
 define_set hatsu_pair, ~s"6z 6z"
 define_set chun_pair, ~s"7z 7z"
-define_set orphans_all, ~s"1m 9m 1p 9p 1s 9s 1z 2z 3z 4z 5z 6z 7z"
-define_set orphans_any, ~s"1m|9m|1p|9p|1s|9s|1z|2z|3z|4z|5z|6z|7z"
+define_set orphans_all, ~s"1m 9m 1p 9p 1s 9s 1z 2z 3z 4z 8z 6z 7z"
+define_set orphans_any, ~s"1m|9m|1p|9p|1s|9s|1z|2z|3z|4z|8z|6z|7z"
 define_set chuurenpoutou, ~s"0 0 0 1 2 3 4 5 6 7 8 8 8"
 define_set fei, ~s"2y"
 define_set four_fei, ~s"2y 2y 2y 2y"
@@ -84,23 +84,23 @@ define_yaku yaku, "Full Flush", [3, "Fan"], winning_hand_consists_of("1p","2p","
 define_set dot_eye, ~s"1p 1p | 2p 2p | 3p 3p | 4p 4p | 5p 5p | 6p 6p | 7p 7p | 8p 8p | 9p 9p"
 define_yaku yaku, "All Sequences with Dot Eye", [1, "Fan"], match(["hand", "calls", "winning_tile"], ~m"exhaustive, dot_eye:1, shuntsu:4")
 
-define_yaku yaku, "Face Tiles", ["faces", "Fan"], faces >= 1
-define_yaku yaku, "All Faces", [5, "Fan"], faces >= 4, ["Face Tiles"]
-define_yaku yaku, "Animal Tiles", ["animals", "Fan"], animals >= 1
-define_yaku yaku, "All Animals", [5, "Fan"], animals >= 4, ["Animal Tiles"]
-define_yaku yaku, "All Flowers", [1, "Fan"], match(["flowers"], ~m"unique, nojoker, (1f 2f 3f 4f):4")
-define_yaku yaku, "All Seasons", [1, "Fan"], match(["flowers"], ~m"unique, nojoker, (1g 2g 3g 4g):4")
 define_yaku yaku, "Seat Flower", [1, "Fan"], seat_is("east") and match(["flowers"], ~m"nojoker, 1f:1")
 define_yaku yaku, "Seat Flower", [1, "Fan"], seat_is("south") and match(["flowers"], ~m"nojoker, 2f:1")
 define_yaku yaku, "Seat Flower", [1, "Fan"], seat_is("west") and match(["flowers"], ~m"nojoker, 3f:1")
 define_yaku yaku, "Fourth Flower", [1, "Fan"], match(["flowers"], ~m"nojoker, 4f:1")
+define_yaku yaku, "All Flowers", [4, "Fan"], match(["flowers"], ~m"unique, nojoker, (1f 2f 3f 4f):4"), ["Seat Flower", "Fourth Flower"]
 define_yaku yaku, "Seat Season", [1, "Fan"], seat_is("east") and match(["flowers"], ~m"nojoker, 1g:1")
 define_yaku yaku, "Seat Season", [1, "Fan"], seat_is("south") and match(["flowers"], ~m"nojoker, 2g:1")
 define_yaku yaku, "Seat Season", [1, "Fan"], seat_is("west") and match(["flowers"], ~m"nojoker, 3g:1")
 define_yaku yaku, "Fourth Season", [1, "Fan"], match(["flowers"], ~m"nojoker, 4g:1")
+define_yaku yaku, "All Seasons", [4, "Fan"], match(["flowers"], ~m"unique, nojoker, (1g 2g 3g 4g):4"), ["Seat Season", "Fourth Season"]
+define_yaku yaku, "Animal Tiles", ["animals", "Fan"], animals >= 1
+define_yaku yaku, "All Animals", [5, "Fan"], animals >= 4, ["Animal Tiles"]
+define_yaku yaku, "Face Tiles", ["faces", "Fan"], faces >= 1
+define_yaku yaku, "All Faces", [5, "Fan"], faces >= 4, ["Face Tiles"]
 
 define_yaku yaku, "Fei", ["declared_fei", "Fan"], declared_fei >= 1
-define_yaku limit, "No Flowers", [10, "Fan"], not_match(["flowers"], ~m"unique, nojoker, any_flower:1")
+define_yaku limit, "No Flowers", [1, "Limit"], not_match(["flowers"], ~m"unique, nojoker, any_flower:1")
 
 define_yaku yaku, "East Wind", [1, "Fan"], match(["hand", "calls", "winning_tile"], ~m"ton:1")
 define_yaku yaku, "East Wind", [1, "Fan"], match(["hand", "calls", "winning_tile"], ~m"ton:2")
@@ -124,24 +124,23 @@ define_match big_three_dragons, ~m"unique, (haku hatsu chun):3"
 define_match small_four_winds, ~m"unique, (ton nan shaa pei):3, (ton_pair nan_pair shaa_pair pei_pair):1"
 define_match big_four_winds, ~m"unique, (ton nan shaa pei):4"
 define_yaku yaku, "Small Three Dragons", [3, "Fan"], match(["hand", "calls", "winning_tile"], ["small_three_dragons"])
-define_yaku limit, "Big Three Dragons", [10, "Fan"], match(["hand", "calls", "winning_tile"], ["big_three_dragons"])
-define_yaku limit, "Small Four Winds", [10, "Fan"], match(["hand", "calls", "winning_tile"], ["small_four_winds"])
-define_yaku limit, "Big Four Winds", [10, "Fan"], match(["hand", "calls", "winning_tile"], ["big_four_winds"])
+define_yaku limit, "Big Three Dragons", [1, "Limit"], match(["hand", "calls", "winning_tile"], ["big_three_dragons"])
+define_yaku limit, "Small Four Winds", [1, "Limit"], match(["hand", "calls", "winning_tile"], ["small_four_winds"])
+define_yaku limit, "Big Four Winds", [1, "Limit"], match(["hand", "calls", "winning_tile"], ["big_four_winds"])
 
 define_yaku yaku, "All Triplets", [2, "Fan"], match(["hand", "calls", "winning_tile"], ~m"koutsu:4, pair:1")
 define_yaku yaku, "After a Flower", [1, "Fan"], status("flower")
 define_yaku yaku, "After a Gong", [1, "Fan"], status("kan")
-define_yaku limit, "After Multiple Gongs", [10, "Fan"], status("double_kan")
+define_yaku limit, "After Multiple Gongs", [1, "Limit"], status("double_kan")
 define_yaku yaku, "Robbing a Gong", [1, "Fan"], won_by_call
-define_yaku yaku, "Seven Pairs", [1, "Fan"], match(["hand", "winning_tile"], ["chiitoitsu_win"])
-define_yaku limit, "Nine Gates", [10, "Fan"], match(["hand", "winning_tile"], ~m"chuurenpoutou:1")
-define_yaku limit, "Four Gongs", [10, "Fan"], match(["calls"], ~m"(daiminkan ankan kakan):4")
-define_yaku limit, "Four Concealed Triplets", [10, "Fan"], won_by_draw and match(["hand", "calls", "winning_tile"], ~m"(pon daiminkan kakan):-1, koutsu:4, pair:1")
-define_yaku limit, "Blessing of Heaven", [10, "Fan"], won_by_draw and status("first_turn")
-define_yaku limit, "Blessing of Earth", [10, "Fan"], won_by_discard and everyone_status("first_turn")
-define_yaku limit, "Final Tile", [10, "Fan"], no_tiles_remaining
-define_yaku limit, "All Honours", [10, "Fan"], winning_hand_consists_of("1z","2z","3z","4z","8z","6z","7z")
-define_yaku limit, "13 Orphans", [10, "Fan"], match(["hand", "winning_tile"], ~m"orphans_all:1")
+define_yaku limit, "Nine Gates", [1, "Limit"], match(["hand", "winning_tile"], ~m"chuurenpoutou:1")
+define_yaku limit, "Four Gongs", [1, "Limit"], match(["calls"], ~m"(daiminkan ankan kakan):4")
+define_yaku limit, "Four Concealed Triplets", [1, "Limit"], won_by_draw and match(["hand", "calls", "winning_tile"], ~m"(pon daiminkan kakan):-1, koutsu:4, pair:1")
+define_yaku limit, "Blessing of Heaven", [1, "Limit"], won_by_draw and status("first_turn")
+define_yaku limit, "Blessing of Earth", [1, "Limit"], won_by_discard and everyone_status("first_turn")
+define_yaku limit, "Final Tile", [1, "Limit"], no_tiles_remaining
+define_yaku limit, "All Honours", [1, "Limit"], winning_hand_consists_of("1z","2z","3z","4z","8z","6z","7z")
+define_yaku limit, "Thirteen Orphans", [1, "Limit"], match(["hand", "winning_tile"], ~m"orphans_all:1")
 
 define_yaku_precedence "All Sixteen Flowers", ["Face", "Four Faces", "Animal", "All Animals", "Seat Flower", "Seat Season", "All Flowers", "All Seasons"]
 define_yaku_precedence "After Multiple Gongs", ["After a Gong"]
@@ -236,7 +235,7 @@ end
 
 on after_start do
   set_status_all("first_turn", "match_start")
-  set_tile_alias_all(["2y"], ["any"])
+  set_tile_alias_all(["2y"], ["any", "1m", "9m", "1s", "9s"])
 end
 
 def pay_other_players do
@@ -281,7 +280,7 @@ define_button start_joker,
     flower("2y")
     set_status("flower")
     declared_fei += 1
-    draw
+    draw(1, "opposite_end")
   end
 
 define_button start_no_flower,
@@ -437,19 +436,6 @@ define_button tsumo,
     win_by_draw("win")
   end
 
-define_button four_fei,
-  display_name: "Four Fei Win",
-  precedence_over: ["chii", "pon", "kan", "daiminkan", "ankan", "kakan"],
-  show_when: our_turn
-    and status("match_start")
-    and match(["hand", "calls", "draw"], ~m"nojoker, 2y:4")
-  do
-    big_text("Four Fei")
-    pause(1000)
-    reveal_hand
-    win_by_draw("win")
-  end
-
 define_button flower,
   display_name: "Flower",
   show_when: our_turn
@@ -490,7 +476,7 @@ define_button joker,
     if no_tiles_remaining do
       advance_turn
     else
-      draw
+      draw(1, "opposite_end")
     end
   end
 
@@ -555,7 +541,7 @@ define_mod_category "Malaysian"
 define_mod malaysian_five_point_minimum, name: "Five Fan Minimum", desc: "Only allow wins worth 5+ fan."
 define_mod malaysian_replaceable_fei_joker, name: "Replaceable Fei Joker", desc: "Allow swapping out fei jokers from your own pungs using the same tile."
 define_mod malaysian_stackable_limit, name: "Stackable Limit", desc: "If you achieve multiple limit scores, they stack instead of being capped at 10 Fan."
-define_mod malaysian_half_flush, name: "Half Flush", desc: "Always award 1 Fan for having a hand consisting of only one suit plus honors. The only time this isn't awarded is when you use four Fei to form 13 Orphans."
+define_mod malaysian_half_flush, name: "Half Flush", desc: "Always award 1 Fan for having a hand consisting of only one suit plus honors. This is always awarded (unless you have one of the Limit hands)."
 define_mod malaysian_seven_pairs, name: "Seven Pairs", desc: "Add seven pairs as a win condition, worth 1 Fan."
 define_mod malaysian_4_fei_win, name: "Four Fei Win", desc: "Add a win condition: start with all four Fei jokers."
 define_mod malaysian_fei_payments, name: "Fei Payments", desc: "Upon an exhaustive draw (the wall runs out of tiles), players reveal their hands and each player pays each player some amount of points for each Fei Joker in the recipient's hand."
@@ -602,13 +588,13 @@ on after_initialization do
     seat_is("south") -> add_rule("Flowers", "Season tiles", "You get 1 Fan for having the season tile whose number matches your seat %{tile}, and 1 bonus Fan for having all four %{tiles}.", %{tile: ~t"2g", tiles: ~t"1234g"}, -9)
     seat_is("west")  -> add_rule("Flowers", "Season tiles", "You get 1 Fan for having the season tile whose number matches your seat %{tile}, and 1 bonus Fan for having all four %{tiles}.", %{tile: ~t"3g", tiles: ~t"1234g"}, -9)
   end
-  add_rule("Flowers", "Flower Tiles", "You also get 1 Fan for having the number 4 flower tile %{four}, and 1 Fan for having the the number 1 flower tile %{tile}. If you are East, this stacks with the seat flower's 1 Fan.", %{four: ~t"4f", tile: ~t"1f"})
-  add_rule("Flowers", "Season Tiles", "You also get 1 Fan for having the number 4 season tile %{four}, and 1 Fan for having the number 1 season tile %{tile}. If you are East, this stacks with the seat season's 1 Fan.", %{four: ~t"4g", tile: ~t"1g"})
+  add_rule("Flowers", "Flower Tiles", "You get 1 Fan for having the number 4 flower tile %{four}, and 1 Fan for having the the number 1 flower tile %{tile}. If you are East, this stacks with the seat flower's 1 Fan. Getting all four flowers %{tiles} instead awards 4 fan total.", %{four: ~t"4f", tile: ~t"1f", tiles: ~t"1234f"})
+  add_rule("Flowers", "Season Tiles", "You get 1 Fan for having the number 4 season tile %{four}, and 1 Fan for having the number 1 season tile %{tile}. If you are East, this stacks with the seat season's 1 Fan. Getting all four seasons %{tiles} instead awards 4 fan total.", %{four: ~t"4g", tile: ~t"1g", tiles: ~t"1234g"})
   add_rule("Flowers", "Animal Tiles", "You get 1 Fan per animal tile %{tile}, plus 1 bonus Fan (5 total) for having all four %{tiles}. Unlike flower and season tiles, all four animal tiles are treated the same.", %{tile: ~t"1a", tiles: ~t"1234a"})
   add_rule("Flowers", "Face Tiles", "You get 1 Fan per face tile %{tile}, and 1 bonus Fan for having all four %{tiles}.", %{tile: ~t"1y", tiles: ~t"1111y"})
   add_rule("Flowers", "Fei Jokers", "You get 1 Fan per Fei Joker you've declared as a flower %{tile}. If you declare all four %{tiles}, you instantly win with 10 Fan (!)", %{tile: ~t"2y", tiles: ~t"2222y"})
   add_rule("Flowers", "After a Flower", "You get 1 Fan for winning off the replacement draw after you declare a flower.")
-  add_rule("Flowers", "No Flowers", "You get 10 Fan (!) if you have no flowers at all.")
+  add_rule("Flowers", "No Flowers", "You get 10 Fan (!) if you have no flowers at all. Declared Fei do not count.")
   add_rule("Flowers", "All Sixteen Flowers", "You get 10 Fan (!) if you have all sixteen flowers (all four flowers, all four seasons, all four animals, and all four faces).")
   add_rule("Flowers", "All Sixteen Flowers", "%{tiles}", %{tiles: ~t"1234f1234g1234a1111y"})
 
@@ -635,7 +621,7 @@ on after_initialization do
   add_rule("Limit", "Nine Gates", "You have no calls; your winning hand is the pattern 1112345678999 in one suit, plus one additional tile; and you won by self-draw.")
   add_rule("Limit", "Small Four Winds", "Your hand contains triplets or gongs of three winds, plus a pair of the fourth wind.")
   add_rule("Limit", "Big Four Winds", "Your hand contains triplets or kans of all four winds.")
-  add_rule("Limit", "No Flowers", "You have no flowers. (Since the wall is 24% flowers, this is extremely rare.)")
+  add_rule("Limit", "No Flowers", "You have no flowers. Declared Fei do not count. (Since the wall is 24% flowers, this is extremely rare.)")
   add_rule("Limit", "Four Gongs", "You hand contains four Gongs.")
   add_rule("Limit", "Big Three Dragons", "Your hand contains triplets or Gongs of all three dragons.")
   add_rule("Limit", "After Multiple Gongs", "You won off the replacement draw after two or more consecutive Gongs.")
