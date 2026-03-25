@@ -1047,14 +1047,7 @@ defmodule RiichiAdvanced.GameState do
       end
       
       # async populate closest_american_hands for all players
-      if state.ruleset == "american" do
-        win_definition = Rules.get(state.rules_ref, "win_definition", [])
-        # the am_card_free mod sets win_definition to the empty one, because it uses an alternate wincon
-        # in which case we don't calculate closest hands
-        if win_definition != [[]] do
-          GenServer.cast(self(), :calculate_closest_american_hands)
-        end
-      end
+      if state.ruleset == "american" do GenServer.cast(self(), :calculate_closest_american_hands) end
     end
     # IO.puts("broadcast_state_change called")
     RiichiAdvancedWeb.Endpoint.broadcast(state.ruleset <> ":" <> state.room_code, "state_updated", %{"state" => state})
@@ -1882,23 +1875,28 @@ defmodule RiichiAdvanced.GameState do
   end
 
   def handle_cast(:calculate_closest_american_hands, state) do
-    if state.calculate_closest_american_hands_pid do
-      Process.exit(state.calculate_closest_american_hands_pid, :kill)
-    end
-    self = self()
-    {:ok, pid} = Task.start(fn ->
-      closed_win_definition = Rules.get(state.rules_ref, "win_definition", [])
-      open_win_definition = Rules.get(state.rules_ref, "open_win_definition", [])
-      for seat <- state.available_seats do
-        win_definition = if Enum.empty?(state.players[seat].calls) do closed_win_definition else open_win_definition end
-        closest_american_hands = American.compute_closest_american_hands(state, seat, win_definition, 5)
-        GenServer.cast(self, {:set_closest_american_hands, seat, closest_american_hands})
+    win_definition = Rules.get(state.rules_ref, "win_definition", [])
+    # the am_card_free mod sets win_definition to the empty one, because it uses an alternate wincon
+    # in which case we don't calculate closest hands
+    if win_definition != [[]] do
+      if state.calculate_closest_american_hands_pid do
+        Process.exit(state.calculate_closest_american_hands_pid, :kill)
       end
-    end)
-    state = state
-    |> Map.put(:calculate_closest_american_hands_pid, pid)
-    # IO.puts("done calculating closest american hands")
-    {:noreply, state}
+      self = self()
+      {:ok, pid} = Task.start(fn ->
+        closed_win_definition = Rules.get(state.rules_ref, "win_definition", [])
+        open_win_definition = Rules.get(state.rules_ref, "open_win_definition", [])
+        for seat <- state.available_seats do
+          win_definition = if Enum.empty?(state.players[seat].calls) do closed_win_definition else open_win_definition end
+          closest_american_hands = American.compute_closest_american_hands(state, seat, win_definition, 5)
+          GenServer.cast(self, {:set_closest_american_hands, seat, closest_american_hands})
+          # IO.puts("done calculating closest american hands")
+        end
+      end)
+      state = state
+      |> Map.put(:calculate_closest_american_hands_pid, pid)
+      {:noreply, state}
+    else {:noreply, state} end
   end
 
   def handle_cast({:set_playable_indices, seat, playable_indices}, state) do

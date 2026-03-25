@@ -220,6 +220,9 @@ defmodule RiichiAdvanced.GameState.Actions do
         # update playable_indices
         GenServer.cast(self(), :calculate_playable_indices)
 
+        # update closest american hands
+        if state.ruleset == "american" do GenServer.cast(self(), :calculate_closest_american_hands) end
+        
         state
       end
     end
