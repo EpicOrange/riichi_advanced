@@ -1,6 +1,5 @@
 defmodule RiichiAdvanced.GameState.Kyoku do
   alias RiichiAdvanced.GameState.Actions, as: Actions
-  alias RiichiAdvanced.GameState.American, as: American
   alias RiichiAdvanced.GameState.Buttons, as: Buttons
   alias RiichiAdvanced.GameState.JokerSolver, as: JokerSolver
   alias RiichiAdvanced.GameState.Log, as: Log
@@ -341,7 +340,7 @@ defmodule RiichiAdvanced.GameState.Kyoku do
   #   else orig_hand end
   # end
 
-  defp separate_standard_winner_hand(smt_hand, smt_calls, tile_behavior, joker_assignment, win_definitions) do
+  defp separate_standard_winner_hand(smt_hand, smt_calls, calls, tile_behavior, joker_assignment, win_definitions) do
     # replace all hand jokers with their assigned values
     assigned_hand = smt_hand
     |> Enum.with_index()
@@ -374,17 +373,17 @@ defmodule RiichiAdvanced.GameState.Kyoku do
     # separate sets in this hand
     {winning_tile, input_hand} = List.pop_at(assigned_hand, -1)
     separated_hands = [input_hand ++ [winning_tile]]
-    |> Riichi.prepend_group_all(smt_calls, [0, 0, 0, 1, 1, 1, 2, 2, 2], win_definitions, tile_behavior)
-    |> Riichi.prepend_group_all(smt_calls, [0, 0, 1, 1, 2, 2], win_definitions, tile_behavior)
-    |> Riichi.prepend_group_all(smt_calls, [0, 1, 2], win_definitions, tile_behavior)
-    |> Riichi.prepend_group_all(smt_calls, [0, 0, 0], win_definitions, tile_behavior)
+    |> Riichi.prepend_group_all(calls, [0, 0, 0, 1, 1, 1, 2, 2, 2], win_definitions, tile_behavior)
+    |> Riichi.prepend_group_all(calls, [0, 0, 1, 1, 2, 2], win_definitions, tile_behavior)
+    |> Riichi.prepend_group_all(calls, [0, 1, 2], win_definitions, tile_behavior)
+    |> Riichi.prepend_group_all(calls, [0, 0, 0], win_definitions, tile_behavior)
     separated_hands = if use_kontsu_knitted do
       separated_hands
-      |> Riichi.prepend_group_all(smt_calls, [0, 10, 20], win_definitions, tile_behavior)
-      |> Riichi.prepend_group_all(smt_calls, [0, 11, 21], win_definitions, tile_behavior)
+      |> Riichi.prepend_group_all(calls, [0, 10, 20], win_definitions, tile_behavior)
+      |> Riichi.prepend_group_all(calls, [0, 11, 21], win_definitions, tile_behavior)
     else
       separated_hands
-      |> Riichi.prepend_group_all(smt_calls, [0, 0], win_definitions, tile_behavior)
+      |> Riichi.prepend_group_all(calls, [0, 0], win_definitions, tile_behavior)
     end
     # result should look like [shuntsu, koutsu, kontsu, toitsu, ungrouped] with each set separated by :separator
     # we could return that, but here we rearrange the order of those groups
@@ -399,8 +398,7 @@ defmodule RiichiAdvanced.GameState.Kyoku do
     groups = Utils.split_on(separated_hand, :separator)
     |> Enum.map(&Utils.sort_tiles/1)
     {groups, [ungrouped]} = Enum.split(groups, -1)
-    all_tiles = assigned_hand ++ Enum.concat(smt_calls)
-    {separated_hand, _, leftover_tiles} = for _ <- groups, reduce: {[], groups, all_tiles -- ungrouped} do
+    {separated_hand, _, leftover_tiles} = for _ <- groups, reduce: {[], groups, assigned_hand -- ungrouped} do
       {result, groups, [tile | hand]} ->
         case Enum.find_index(groups, &Enum.at(&1, 0) == tile) do
           nil -> {result, groups, hand}
@@ -622,7 +620,7 @@ defmodule RiichiAdvanced.GameState.Kyoku do
         arranged_calls: orig_calls,
         # hand to show on hover in the yaku screen
         separated_hand: separate_standard_winner_hand(
-          cxt.smt_hand, cxt.smt_calls, tile_behavior, cxt.joker_assignment,
+          cxt.smt_hand, cxt.smt_calls, orig_calls, tile_behavior, cxt.joker_assignment,
           Rules.translate_match_definitions(state.rules_ref, ["win"])),
       })
     state = Map.update!(state, :winners, &Map.put(&1, seat, Map.merge(winner, &1[seat])))
