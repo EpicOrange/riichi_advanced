@@ -505,6 +505,13 @@ defmodule RiichiAdvanced.Constants do
         "default_auto_buttons",
       ],
     },
+    "malaysian" => %{
+      ruleset: "malaysian",
+      mods: [
+        "global_mods",
+        "malaysian",
+      ],
+    },
   }
 
   def modpacks, do: @modpacks
