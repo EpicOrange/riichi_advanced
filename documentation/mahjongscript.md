@@ -122,6 +122,16 @@ def myfun2 do
     draw(1, "opposite_end")
   end
 
+  # cond-blocks compile down to a string of "ite" actions
+  cond do
+    "x" == 1 -> push_message("case 1, checked first")
+    "x" == 2 -> push_message("case 2, checked second")
+    "x" == 3 ->
+      push_message("case 3")
+      push_message("still case 3")
+    true     -> push_message("fallback case")
+  end
+
   # as-blocks compile to "as" actions
   as everyone do
     push_message("says hi")
