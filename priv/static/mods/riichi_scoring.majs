@@ -76,16 +76,13 @@ define_scoring ron do
   base_score = total # save base_score for mods to use
   if seat_is("east", as: "winner") do
     total *= 6 :: "Dealer ron"
-    if total < 12000 do
-      total = round_up(total, 100) :: "Round up"
-    end
   else
     total *= 4 :: "Nondealer ron"
-    if total < 8000 do
-      total = round_up(total, 100) :: "Round up"
-    end
   end
   apply_scoring_modifiers
+  if total < 12000 or (total < 8000 and not_seat_is("east", as: "winner")) do
+    total = round_up(total, 100) :: "Round up"
+  end
   if @honba_condition do
     total += honba * 300 :: "Honba"
   end
@@ -103,16 +100,13 @@ define_scoring tsumo do
   base_score = total # save base_score for mods to use
   if seat_is("east", as: "winner") or seat_is("east") do
     total *= 2 :: "Dealer tsumo"
-    if total < 4000 do
-      total = round_up(total, 100) :: "Round up"
-    end
   else
     total *= 1 :: "Nondealer tsumo"
-    if total < 2000 do
-      total = round_up(total, 100) :: "Round up"
-    end
   end
   apply_scoring_modifiers
+  if total < 4000 or (total < 2000 and not (seat_is("east", as: "winner") or seat_is("east"))) do
+    total = round_up(total, 100) :: "Round up"
+  end
   if @honba_condition do
     total += honba * 100 :: "Honba"
   end
