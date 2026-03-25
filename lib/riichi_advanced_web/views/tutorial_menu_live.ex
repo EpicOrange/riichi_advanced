@@ -55,7 +55,7 @@ defmodule RiichiAdvancedWeb.TutorialMenuLive do
     ~H"""
     <div id="container" phx-hook="ClickListener">
       <header class="tutorial-menu-header">
-        <h3><%= t(@lang, "Tutorials for ruleset:") %><b><%= dt(@lang, @display_name) %></b></h3>
+        <h3><%= t(@lang, "Tutorials for ruleset: ") %><b><%= dt(@lang, @display_name) %></b></h3>
       </header>
       <div class="tutorial-menu-container">
         <%= if Enum.empty?(@available_tutorials) do %>

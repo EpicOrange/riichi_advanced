@@ -417,6 +417,7 @@ defmodule RiichiAdvanced.GameState.Kyoku do
       | separated_hand
     ]
     |> Enum.reverse()
+    |> Enum.reject(&Enum.empty?/1)
     |> Enum.intersperse([:"7x"])
     |> Enum.concat()
     # then use the reverse joker mapping, to get the original jokers in this rearrangement
