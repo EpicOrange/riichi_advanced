@@ -1,0 +1,37 @@
+on after_initialization do
+  add_rule("Rules", "Fei Payments", "(Fei Payments) Upon an exhaustive draw (the wall runs out of tiles), players reveal their hands and each player pays each player some amount of points for each Fei Joker in the recipient's hand.")
+end
+
+unless defined("count_fei") do
+  define "count_fei"
+  def count_fei do
+    as everyone do
+      if fei == 0 do
+        add_attr_first_tile("2y", ["revealed"])
+        add_attr_first_tile("2y", ["revealed"])
+        add_attr_first_tile("2y", ["revealed"])
+        add_attr_first_tile("2y", ["revealed"])
+        set_counter("fei", "count_matches", ["hand", "calls"], ~m"nojoker, 2y:1")
+      end
+    end
+  end
+  on before_win do count_fei end
+  on before_exhaustive_draw do count_fei end
+end
+
+def do_fei_payments do
+  as everyone do
+    if fei >= 1 do
+      pay_other_players_silent(%{amt: !fei_value})
+      cond do
+        fei == 1 -> push_message("is paid 50 from all players for having 1 fei joker")
+        fei == 2 -> push_message("is paid 100 from all players for having 2 fei jokers")
+        fei == 3 -> push_message("is paid 150 from all players for having 3 fei jokers")
+        fei == 4 -> push_message("is paid 200 from all players for having 4 fei jokers")
+      end
+    end
+  end
+end
+
+on after_win do do_fei_payments end
+on before_exhaustive_draw do do_fei_payments end

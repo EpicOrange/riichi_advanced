@@ -1,0 +1,30 @@
+on after_initialization do
+  add_rule("Rules", "Win Condition", "- (Four Fei Win) Your starting hand contains four Fei Jokers.")
+  add_rule("Rules", "Fan", "- (Four Fei Win) Your starting hand contains four Fei Jokers.")
+end
+
+unless defined("count_fei") do
+  define "count_fei"
+  def count_fei do
+    as everyone do
+      if fei == 0 do
+        add_attr_first_tile("2y", ["revealed"])
+        add_attr_first_tile("2y", ["revealed"])
+        add_attr_first_tile("2y", ["revealed"])
+        add_attr_first_tile("2y", ["revealed"])
+        set_counter("fei", "count_matches", ["hand", "calls"], ~m"nojoker, 2y:1")
+      end
+    end
+  end
+  on before_win do
+    count_fei
+  end
+  on before_exhaustive_draw do
+    count_fei
+  end
+end
+
+define_set fei, ~s"2y"
+define_const four_fei_win, ~m"fei:4"
+apply set_append, "win_definition", +@four_fei_win
+define_yaku limit, "Four Fei", [10, "Fan"], fei >= 4

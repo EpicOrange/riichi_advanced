@@ -1,0 +1,34 @@
+on after_initialization do
+  add_rule("Tiles", "Tiles", "- Four blank tiles %{tiles}", %{tiles: ~t"5555z"})
+  add_rule("Tiles", "Flowers", "(Add Blank Flowers) Blank tiles %{tile} also count as flowers, worth 1 Fan each, plus 1 bonus Fan (5 total) if you have all four. %{tiles}", %{tile: ~t"5z", tiles: ~t"5555z"})
+end
+
+apply append, "wall", ["5z", "5z", "5z", "5z"]
+apply append, "constants.all_flowers", "5z"
+define_set any_flower, ~s"1f|2f|3f|4f|1g|2g|3g|4g|1a|2a|3a|4a|5z|1y"
+
+replace_yaku limit, "No Flowers", [10, "Fan"], not_match(["flowers"], ~m"unique, nojoker, (1f 2f 3f 4f 1g 2g 3g 4g 1a 2a 3a 4a 5z 1y):1")
+
+on before_win do
+  set_counter("blanks", "count_matches", ["flowers"], ~m"nojoker, 5z:1")
+end
+
+apply append, "buttons.start_flower.actions" do
+    if (match(["call_choice"], ~m"nojoker, 5z:1") and match(["flowers"], ~m"nojoker, 5z:4")) do
+      push_message("is paid 100 from all players for completing a set of flowers before the first turn")
+      if shimocha_exists do add_score(100); subtract_score(100, "shimocha"); big_text("  -100  ", as: "shimocha") end
+      if toimen_exists do add_score(100); subtract_score(100, "toimen"); big_text("  -100  ", as: "toimen") end
+      if kamicha_exists do add_score(100); subtract_score(100, "kamicha"); big_text("  -100  ", as: "kamicha") end
+    end
+end
+apply append, "buttons.flower.actions" do
+    if (match(["call_choice"], ~m"nojoker, 5z:1") and match(["flowers"], ~m"nojoker, 5z:4")) do
+      push_message("is paid 100 from all players for completing a set of flowers before the first turn")
+      if shimocha_exists do add_score(50); subtract_score(50, "shimocha"); big_text("  -50  ", as: "shimocha") end
+      if toimen_exists do add_score(50); subtract_score(50, "toimen"); big_text("  -50  ", as: "toimen") end
+      if kamicha_exists do add_score(50); subtract_score(50, "kamicha"); big_text("  -50  ", as: "kamicha") end
+    end
+end
+
+define_yaku yaku, "Blank Tiles", ["blanks", "Fan"], blanks >= 1
+define_yaku yaku, "All Blanks", [5, "Fan"], blanks >= 4, ["Blank Tiles"]

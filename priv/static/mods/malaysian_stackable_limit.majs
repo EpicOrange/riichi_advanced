@@ -4,16 +4,18 @@ end
 
 replace all, "limit", [10, "Fan"], [1, "Limit"]
 
-apply delete_key, "scoring_logic", "win" # remove the old define_scoring win
+apply delete_key, "functions", "calculate_base_score" # remove the old calculate_base_score
 
-define_scoring win do
+def calculate_base_score do
   if points2 > 0 do
     total = points2 :: "Limit"
     total *= 10 :: "Fan"
     total *= 20 :: "Score"
   else
-    calculate_base_score
+    total = points :: "Fan"
+    total *= 20 :: "Score"
+    if total > 200 do
+      total = 200 :: "Cap at 200"
+    end
   end
-  set_counter_all("hand_score", "total")
-  apply_score_modifiers
 end
