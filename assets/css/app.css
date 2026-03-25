@@ -106,6 +106,7 @@ main div.messages-container {
   display: flex;
   flex-direction: column-reverse;
   overflow-y: auto;
+  scrollbar-color: white transparent;
 }
 main div.messages-container > div.messages {
   display: flex;
@@ -3315,12 +3316,14 @@ div#container > form.ruleset-selection-form > input.nickname-input {
   margin-bottom: 0;
 }
 div#container > form.ruleset-selection-form > div.ruleset-selection {
-  overflow-y: auto;
   line-height: 1;
   text-align: center;
   flex-grow: 1;
   color: white;
   font-size: calc(0.55 * var(--tile-size));
+  overflow-y: auto;
+  scrollbar-color: var(--bg-color) transparent;
+  scrollbar-gutter: stable;
 }
 div#container > form.ruleset-selection-form > div.ruleset-selection > label {
   font-size: calc(0.55 * var(--tile-size));
@@ -3606,11 +3609,13 @@ div.room > input#room-settings-toggle:checked + div.room-settings {
   display: block;
   position: absolute;
   width: calc(100% - 1 * var(--tile-size));
-  height: calc(100% - 4.25 * var(--tile-size));
+  height: calc(100% - 4.75 * var(--tile-size));
   left: 0;
-  top: calc(3.25 * var(--tile-size));
+  top: calc(3.75 * var(--tile-size));
   z-index: 2;
   overflow-y: auto;
+  scrollbar-color: var(--bg-color) transparent;
+  scrollbar-gutter: stable;
 }
 div.room > div.seats {
   position: relative;
@@ -3680,6 +3685,7 @@ div.room label.room-tab-title {
 }
 div.room div.presets {
   margin-top: calc(0.5 * var(--tile-size));
+  margin-bottom: calc(-0.5 * var(--tile-size));
   font-size: calc(0.75 * var(--tile-size));
 }
 div.mods > div.mods-inner-container {
@@ -3692,7 +3698,7 @@ div.mods > div.mods-inner-container {
 }
 div.mods {
   padding-top: calc(0.25 * var(--tile-size));
-  padding-bottom: calc(0.25 * var(--tile-size));
+  padding-bottom: calc(-0.25 * var(--tile-size));
 }
 div.mods.mods-saki > div.mods-inner-container {
   /* saki needs room for hoverable cards */
