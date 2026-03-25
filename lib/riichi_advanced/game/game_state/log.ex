@@ -253,9 +253,15 @@ defmodule RiichiAdvanced.GameState.Log do
 
   def output_to_file(state) do
     output_json = output(state)
-    priv_dir = Application.get_env(:riichi_advanced, :priv_dir, Application.app_dir(:riichi_advanced, "priv"))
-    filepath = Path.join(priv_dir, "static/logs/#{state.ref}.json")
-    File.write!(filepath, output_json)
+    priv_path = Application.get_env(:riichi_advanced, :priv_dir, Application.app_dir(:riichi_advanced, "priv"))
+    |> Path.join("static/logs/#{state.ref}.json")
+    File.write!(priv_path, output_json)
+
+    # also write to the _build priv dir
+    build_priv_path = Application.app_dir(:riichi_advanced, "/priv/static/logs/#{state.ref}.json")
+    if build_priv_path != priv_path do
+      File.write!(build_priv_path, output_json)
+    end
   end
 
 end

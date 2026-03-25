@@ -62,13 +62,19 @@ defmodule RiichiAdvancedWeb.LogMenuLive do
 
   def handle_event("redirect", %{"log_id" => log_id}, socket) do
     log_id = String.trim(log_id)
-    # check if this log exists
-    if File.exists?(Application.app_dir(:riichi_advanced, "/priv/static/logs/#{log_id <> ".json"}")) do
-      socket = push_navigate(socket, to: ~p"/log/#{log_id}?nickname=#{socket.assigns.nickname}&lang=#{socket.assigns.lang}")
-      {:noreply, socket}
+    # sanitize
+    if Regex.match?(~r/^[0-9a-z\-]+$/, log_id) do
+      # check if this log exists
+      if File.exists?(Application.app_dir(:riichi_advanced, "/priv/static/logs/#{log_id}.json")) do
+        socket = push_navigate(socket, to: ~p"/log/#{log_id}?nickname=#{socket.assigns.nickname}&lang=#{socket.assigns.lang}")
+        {:noreply, socket}
+      else
+        socket = assign(socket, :error_message, "Log #{log_id} does not exist!")
+        socket = assign(socket, :log_id, log_id)
+        {:noreply, socket}
+      end
     else
-      socket = assign(socket, :error_message, "Log #{log_id} does not exist!")
-      socket = assign(socket, :log_id, log_id)
+      socket = assign(socket, :error_message, "Invalid log id!")
       {:noreply, socket}
     end
   end
