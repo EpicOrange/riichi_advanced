@@ -509,7 +509,6 @@ defmodule RiichiAdvanced.Constants do
       ruleset: "malaysian",
       mods: [
         "global_mods",
-        "malaysian",
       ],
     },
   }
