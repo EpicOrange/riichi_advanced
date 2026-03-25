@@ -388,9 +388,9 @@
         {"name": "match", "opts": [["hand", "calls", "last_discard"], ["tenpai"]]},
         {"name": "match", "opts": [["hand", "calls", "last_discard"], ["win"]]},
         [
-          {"name": "has_yaku_with_discard", "opts": [4]},
-          [{"name": "has_yaku_with_discard", "opts": [2]}, {"name": "has_yaku2_with_discard", "opts": [2]}],
-          [{"name": "has_yaku_with_discard", "opts": [1]}, {"name": "has_yaku2_with_discard", "opts": [4]}]
+          {"name": "has_yaku_with_discard", "opts": [4, "Tai"]},
+          [{"name": "has_yaku_with_discard", "opts": [2, "Tai"]}, {"name": "has_yaku_with_discard", "opts": [2, "×"]}],
+          [{"name": "has_yaku_with_discard", "opts": [1, "Tai"]}, {"name": "has_yaku_with_discard", "opts": [4, "×"]}]
         ]
       ],
       "actions": [["big_text", "Hu"], ["pause", 1000], ["reveal_hand"], ["win_by_discard"]],
@@ -404,9 +404,9 @@
         {"name": "last_call_is", "opts": ["kakan"]},
         {"name": "match", "opts": [["hand", "calls", "last_called_tile"], ["win"]]},
         [
-          {"name": "has_yaku_with_call", "opts": [4]},
-          [{"name": "has_yaku_with_call", "opts": [2]}, {"name": "has_yaku2_with_call", "opts": [2]}],
-          [{"name": "has_yaku_with_call", "opts": [1]}, {"name": "has_yaku2_with_call", "opts": [4]}]
+          {"name": "has_yaku_with_call", "opts": [4, "Tai"]},
+          [{"name": "has_yaku_with_call", "opts": [2, "Tai"]}, {"name": "has_yaku_with_call", "opts": [2, "×"]}],
+          [{"name": "has_yaku_with_call", "opts": [1, "Tai"]}, {"name": "has_yaku_with_call", "opts": [4, "×"]}]
         ]
       ],
       "actions": [["big_text", "Hu"], ["pause", 1000], ["reveal_hand"], ["win_by_call"]],
@@ -421,9 +421,9 @@
         {"name": "match", "opts": [["hand", "calls", "draw"], ["tenpai"]]},
         {"name": "match", "opts": [["hand", "calls", "draw"], ["win"]]},
         [
-          {"name": "has_yaku_with_hand", "opts": [4]},
-          [{"name": "has_yaku_with_hand", "opts": [2]}, {"name": "has_yaku2_with_hand", "opts": [2]}],
-          [{"name": "has_yaku_with_hand", "opts": [1]}, {"name": "has_yaku2_with_hand", "opts": [4]}]
+          {"name": "has_yaku_with_hand", "opts": [4, "Tai"]},
+          [{"name": "has_yaku_with_hand", "opts": [2, "Tai"]}, {"name": "has_yaku_with_hand", "opts": [2, "×"]}],
+          [{"name": "has_yaku_with_hand", "opts": [1, "Tai"]}, {"name": "has_yaku_with_hand", "opts": [4, "×"]}]
         ]
       ],
       "actions": [["big_text", "Zimo"], ["pause", 1000], ["reveal_hand"], ["win_by_draw"]]

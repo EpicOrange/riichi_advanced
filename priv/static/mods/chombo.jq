@@ -1,8 +1,8 @@
-def make_chombo_button($text; $win_action; $winning_tile; $yaku_check; $yaku2_check; $check):
+def make_chombo_button($text; $win_action; $winning_tile; $yaku_check; $check):
   .show_when = [{"name": "not_status", "opts": ["just_reached"]}] + $check
   |
   .actions = [
-    ["ite", [{"name": "match", "opts": [["hand", "calls", $winning_tile], ["win"]]}, [{"name": $yaku_check, "opts": [1]}, {"name": $yaku2_check, "opts": [1]}]], [
+    ["ite", [{"name": "match", "opts": [["hand", "calls", $winning_tile], ["win"]]}, [{"name": $yaku_check, "opts": [1, "Han"]}]], [
       ["big_text", $text], ["pause", 1000], ["reveal_hand"], [$win_action]
     ], [["run", "chombo", {"text": $text}]]]
   ];
@@ -15,15 +15,15 @@ def disable_when_dead:
 ]
 |
 if (.buttons | has("ron")) then
-  .buttons.ron |= make_chombo_button("Ron"; "win_by_discard"; "last_discard"; "has_yaku_with_discard"; "has_yaku2_with_discard"; ["not_our_turn", "someone_else_just_discarded"])
+  .buttons.ron |= make_chombo_button("Ron"; "win_by_discard"; "last_discard"; "has_yaku_with_discard"; ["not_our_turn", "someone_else_just_discarded"])
 else . end
 |
 if (.buttons | has("chankan")) then
-  .buttons.chankan |= make_chombo_button("Ron"; "win_by_call"; "last_called_tile"; "has_yaku_with_call"; "has_yaku2_with_call"; ["not_our_turn", "someone_else_just_called", {"name": "last_call_is", "opts": ["kakan", "ankan"]}])
+  .buttons.chankan |= make_chombo_button("Ron"; "win_by_call"; "last_called_tile"; "has_yaku_with_call"; ["not_our_turn", "someone_else_just_called", {"name": "last_call_is", "opts": ["kakan", "ankan"]}])
 else . end
 |
 if (.buttons | has("tsumo")) then
-  .buttons.tsumo |= make_chombo_button("Tsumo"; "win_by_draw"; "draw"; "has_yaku_with_hand"; "has_yaku2_with_hand"; ["our_turn", "has_draw"])
+  .buttons.tsumo |= make_chombo_button("Tsumo"; "win_by_draw"; "draw"; "has_yaku_with_hand"; ["our_turn", "has_draw"])
 else . end
 |
 .functions.chombo = [

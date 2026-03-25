@@ -357,7 +357,7 @@ define_button chankan,
     and match(["hand", "calls"], ["tenpai"])
     and last_call_is("kakan")
     and match(["hand", "calls", "last_called_tile"], ["win"])
-    and has_yaku_with_call(2),
+    and (has_yaku_with_call(2, "Fan") or has_yaku_with_call(2, "×")),
   precedence_over: ["chii", "pon", "daiminkan"]
   do
     big_text("Hu")
@@ -372,7 +372,7 @@ define_button tsumo,
     and status_missing("match_start")
     and match(["hand", "calls"], ["tenpai"])
     and match(["hand", "calls", "draw"], ["win"])
-    and has_yaku_with_hand(2)
+    and (has_yaku_with_hand(2, "Fan") or has_yaku_with_hand(2, "×"))
   do
     big_text("Zimo")
     pause(1000)
