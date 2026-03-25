@@ -224,7 +224,7 @@ defmodule RiichiAdvanced.GameState.American do
     # arrange the given hand (which may contain jokers) to match any of the match definitions
     # permutations = [["A", "B", "C"], ["A", "C", "B"], ["B", "A", "C"], ["B", "C", "A"], ["C", "A", "B"], ["C", "B", "A"]]
     permutations = [["A", "B", "C"], ["A", "C", "B"]]
-    for am_match_definition <- am_match_definitions, [a, b, c] <- permutations, reduce: nil do
+    for am_match_definition <- List.wrap(am_match_definitions), [a, b, c] <- permutations, reduce: nil do
       nil ->
         # remove each group in the definition separately
         # e.g. "FF 2024a 4444b 4444c"

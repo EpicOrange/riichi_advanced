@@ -1,5 +1,6 @@
 defmodule RiichiAdvanced.GameState.Kyoku do
   alias RiichiAdvanced.GameState.Actions, as: Actions
+  alias RiichiAdvanced.GameState.American, as: American
   alias RiichiAdvanced.GameState.Buttons, as: Buttons
   alias RiichiAdvanced.GameState.JokerSolver, as: JokerSolver
   alias RiichiAdvanced.GameState.Log, as: Log
@@ -322,23 +323,28 @@ defmodule RiichiAdvanced.GameState.Kyoku do
     state
   end
 
-  # defp separate_american_winner_hand(orig_hand, orig_calls, tile_behavior, winning_tile, american_yaku, all_am_yakus) do
-  #   {yaku_name, _value} = Enum.at(american_yaku, 0)
-  #   # look for this yaku in the yaku list, and get arrangement from the match condition
-  #   am_yaku_match_conds = Enum.find(all_am_yakus, & &1["display_name"] == yaku_name)["when"]
-  #   |> Enum.filter(fn condition -> is_map(condition) and condition["name"] == "match" end)
-  #   am_match_definitions = Enum.at(Enum.at(am_yaku_match_conds, 0)["opts"], 1)
-  #   winning_tile = Utils.strip_attrs(winning_tile, :salient)
-  #   arranged_hand = American.arrange_american_hand(am_match_definitions, Utils.strip_attrs(orig_hand, :salient) ++ [winning_tile], orig_calls, tile_behavior)
-  #   if arranged_hand != nil do
-  #     arranged_hand
-  #     |> Enum.intersperse([:"3x"])
-  #     |> Enum.concat()
-  #     |> Enum.reverse()
-  #     |> then(& &1 -- [winning_tile])
-  #     |> Enum.reverse()
-  #   else orig_hand end
-  # end
+  defp separate_american_winner_hand(orig_hand, orig_calls, tile_behavior, winning_tile, american_yaku, all_am_yakus) do
+    {yaku_name, _value} = Enum.at(american_yaku, 0)
+    # look for this yaku in the yaku list, and get arrangement from the match condition
+    am_match_definitions = for yaku <- Enum.filter(all_am_yakus, & &1["display_name"] == yaku_name) do
+      yaku["when"]
+      |> Enum.filter(fn condition -> is_map(condition) and condition["name"] == "match" end)
+      |> Enum.at(0)
+      |> Map.get("opts")
+      |> Enum.at(1)
+      |> List.wrap()
+    end |> Enum.concat()
+    winning_tile = Utils.strip_attrs(winning_tile, :salient)
+    arranged_hand = American.arrange_american_hand(am_match_definitions, Utils.strip_attrs(orig_hand, :salient) ++ [winning_tile], orig_calls, tile_behavior)
+    if arranged_hand != nil do
+      arranged_hand
+      |> Enum.intersperse([:"3x"])
+      |> Enum.concat()
+      |> Enum.reverse()
+      |> then(& &1 -- [winning_tile])
+      |> Enum.reverse()
+    else orig_hand end
+  end
 
   defp separate_standard_winner_hand(smt_hand, smt_calls, calls, tile_behavior, joker_assignment, win_definitions) do
     # replace all hand jokers with their assigned values
@@ -584,6 +590,23 @@ defmodule RiichiAdvanced.GameState.Kyoku do
     # # still need to pass orig_calls in order to filter out flowers
     # {assigned_hand, assigned_calls, _, _} = JokerSolver.apply_joker_assignment(cxt.smt_hand, orig_calls, cxt.winning_tile, cxt.joker_assignment)
 
+    # arrange the hand for display on yaku screen
+    arranged_hand = Utils.sort_tiles(orig_hand -- [cxt.winning_tile], cxt.joker_assignment)
+
+    # arrange the hand more nicely when you hover over it
+    separated_hand = if state.ruleset == "american" do
+      arrange_american_yaku = Map.get(score_rules, "arrange_american_yaku", false)
+      if arrange_american_yaku do
+        separate_american_winner_hand(
+          orig_hand, orig_calls, tile_behavior, cxt.winning_tile,
+          cxt.yaku, Rules.get(state.rules_ref, "yaku", []))
+      else arranged_hand end
+    else
+      separate_standard_winner_hand(
+        cxt.smt_hand, cxt.smt_calls, orig_calls, tile_behavior, cxt.joker_assignment,
+        Rules.translate_match_definitions(state.rules_ref, ["win"]))
+    end
+
     # player = state.players[seatt]
     winner = Map.merge(cxt,
       %{
@@ -618,13 +641,9 @@ defmodule RiichiAdvanced.GameState.Kyoku do
           :call           -> Map.get(score_rules, "win_by_discard_label", "")
         end,
         opponents: opponents,
-        # hand to show in the yaku screen
-        arranged_hand: Utils.sort_tiles(orig_hand -- [cxt.winning_tile], cxt.joker_assignment),
+        arranged_hand: arranged_hand, # hand to show in the yaku screen
         arranged_calls: orig_calls,
-        # hand to show on hover in the yaku screen
-        separated_hand: separate_standard_winner_hand(
-          cxt.smt_hand, cxt.smt_calls, orig_calls, tile_behavior, cxt.joker_assignment,
-          Rules.translate_match_definitions(state.rules_ref, ["win"])),
+        separated_hand: separated_hand, # hand to show on hover in the yaku screen
       })
     state = Map.update!(state, :winners, &Map.put(&1, seat, Map.merge(winner, &1[seat])))
 
