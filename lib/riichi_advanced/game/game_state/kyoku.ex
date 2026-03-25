@@ -407,7 +407,7 @@ defmodule RiichiAdvanced.GameState.Kyoku do
     num_sets = length(groups) + length(calls)
     ordered_hand = Utils.sort_tiles(assigned_hand -- ungrouped, joker_assignment)
     {separated_hand, _leftover_groups, leftover_tiles} =
-      for _ <- 1..num_sets, reduce: {[], groups, ordered_hand} do
+      for _ <- 1..num_sets//1, reduce: {[], groups, ordered_hand} do
         {result, groups, [tile | hand]} ->
           case Enum.find_index(groups, &Enum.at(&1, 0) == tile) do
             nil -> {result, groups, hand}

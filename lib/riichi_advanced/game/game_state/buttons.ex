@@ -119,7 +119,7 @@ defmodule RiichiAdvanced.GameState.Buttons do
               upgrades = Map.get(button, "upgrades", nil)
               show_when = Map.get(button, "show_when", [])
               if show_when == [] do
-                IO.puts("Warning: button #{name} has an empty show_when key")
+                IO.puts("Warning: button #{name} has an empty show_when key (button definition: #{inspect(button)})")
               end
 
               if Debug.debug_buttons() do

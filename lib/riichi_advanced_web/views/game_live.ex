@@ -4,7 +4,6 @@ defmodule RiichiAdvancedWeb.GameLive do
   alias RiichiAdvanced.GameState.Game, as: Game
   alias RiichiAdvanced.GameState.Rules, as: Rules
   alias RiichiAdvanced.ModLoader, as: ModLoader
-  alias RiichiAdvanced.Riichi, as: Riichi
   alias RiichiAdvanced.Utils, as: Utils
   use Gettext, backend: RiichiAdvancedWeb.Gettext
   use RiichiAdvancedWeb, :live_view
@@ -442,12 +441,6 @@ defmodule RiichiAdvancedWeb.GameLive do
     auto_buttons = Rules.get(rules_ref, "auto_buttons", %{})
     get_in(auto_buttons[name]["display_name"]) || ""
   end
-
-  defp get_wind_triplet(:east), do: ["1z", "1z", "1z"]
-  defp get_wind_triplet(:south), do: ["2z", "2z", "2z"]
-  defp get_wind_triplet(:west), do: ["3z", "3z", "3z"]
-  defp get_wind_triplet(:north), do: ["4z", "4z", "4z"]
-  defp get_wind_triplet(_), do: []
 
   defp get_visible_waits(socket, index) do
     hand = socket.assigns.state.players[socket.assigns.seat].hand

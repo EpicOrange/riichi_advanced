@@ -230,37 +230,9 @@ def calculate_fu do
   end
 end
 
-
 set score_calculation, %{
-    scoring_method: ["han_fu_formula", "multiplier"],
-    score_multiplier: 8000, # this is for yakuman
-    dealer_multiplier: 1.5,
-    score_name: "Yakuman",
-    limit_thresholds: [
-      [13, 0],
-      [11, 0],
-      [8, 0],
-      [6, 0],
-      [5, 0], [4, 40], [3, 70]
-    ],
-    limit_scores: [
-      8000,
-      6000,
-      4000,
-      3000,
-      2000, 2000, 2000
-    ],
-    limit_names: [
-      "Kazoe Yakuman",
-      "Sanbaiman",
-      "Baiman",
-      "Haneman",
-      "Mangan", "Mangan", "Mangan"
-    ],
-    han_fu_multiplier: 4,
     yaku_lists: ["yaku", "meta_yaku", "extra_yaku", "yakuman", "meta_yakuman"],
     extra_yaku_lists: ["extra_yaku"],
-    split_oya_ko_payment: true,
     right_display: "minipoints",
     point_name: "Han",
     point2_name: "★",
