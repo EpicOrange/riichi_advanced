@@ -399,16 +399,18 @@ defmodule RiichiAdvanced.GameState.Kyoku do
     |> Enum.map(&Utils.sort_tiles/1)
     {groups, [ungrouped]} = Enum.split(groups, -1)
     num_sets = length(groups) + length(calls)
-    {separated_hand, _leftover_groups, leftover_tiles} = for _ <- 1..num_sets, reduce: {[], groups, assigned_hand -- ungrouped} do
-      {result, groups, [tile | hand]} ->
-        case Enum.find_index(groups, &Enum.at(&1, 0) == tile) do
-          nil -> {result, groups, hand}
-          ix  ->
-            {group, groups} = List.pop_at(groups, ix)
-            {[group | result], groups, [tile | hand] -- group}
-        end
-      acc -> acc
-    end
+    ordered_hand = Utils.sort_tiles(assigned_hand -- ungrouped, joker_assignment)
+    {separated_hand, _leftover_groups, leftover_tiles} =
+      for _ <- 1..num_sets, reduce: {[], groups, ordered_hand} do
+        {result, groups, [tile | hand]} ->
+          case Enum.find_index(groups, &Enum.at(&1, 0) == tile) do
+            nil -> {result, groups, hand}
+            ix  ->
+              {group, groups} = List.pop_at(groups, ix)
+              {[group | result], groups, [tile | hand] -- group}
+          end
+        acc -> acc
+      end
     # append the ungrouped part
     # then replace the resulting spacing markers with actual spaces
     separated_hand = [
