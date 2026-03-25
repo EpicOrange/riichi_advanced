@@ -158,7 +158,7 @@ defmodule RiichiAdvanced.GameState.American do
 
   @decorate cacheable(cache: RiichiAdvanced.Cache, key: {:translate_american_match_definitions, am_match_definitions})
   def translate_american_match_definitions(am_match_definitions) do
-    for am_match_definition <- am_match_definitions do
+    for am_match_definition <- List.wrap(am_match_definitions) do
       # e.g. "FF 2024a 2222b 2222c" becomes
       # %{
       #   unsuited: [[["1f", "2f", "3f", "4f", "1g", "2g", "3g", "4g"], 2]],

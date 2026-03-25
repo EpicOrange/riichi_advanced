@@ -181,7 +181,7 @@ defmodule RiichiAdvanced.GameState.Rules do
   # ]
   def translate_match_definitions(rules_ref, match_definitions) do
     set_definitions = get(rules_ref, "set_definitions", %{})
-    for match_definition <- match_definitions, reduce: [] do
+    for match_definition <- List.wrap(match_definitions), reduce: [] do
       acc ->
         translated = cond do
           is_binary(match_definition) ->

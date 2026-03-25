@@ -87,3 +87,150 @@ define_mod_category "Miscellaneous"
 define_mod "show_waits", name: "Show Waits", desc: "Add some UI that shows waits."
 define_mod "american/show_nearest_american_hand", name: "Show Nearest Hands", desc: "Add some UI that shows nearest hands."
 define_mod "open_hands", name: "Open Hands", desc: "Everyone plays with tiles shown."
+
+define_set pair, ~s"0 0"
+define_match open_win,
+  # 2024
+  ~a"222a 000 2222b 4444b",
+  ~a"FFFF 2222a 0000 24b",
+  ~a"FF 2024a 2222b 2222c", ~a"FF 2024a 4444b 4444c",
+  # 2468
+  ~a"222a 444a 6666a 8888a", ~a"222a 444a 6666b 8888b",
+  ~a"22a 444a 44b 666b 8888c",
+  ~a"22a 44a 666a 888a DDDDa",
+  ~a"FFFF 4444a 6666b 24c", ~a"FFFF 6666a 8888b 48c",
+  ~a"FF 2222a 44a 66a 8888a", ~a"FF 2222a 44b 66b 8888a",
+  # Any Like Numbers
+  ~a"FFFF XXX0a XXXX0b XXX0c",
+  ~a"XX0a DDDa XX0b DDDb XXXX0c",
+  ~a"FF XXXX0a NEWS XXXX0b",
+  # Lucky Sevens
+  ~a"FF 1111a 6666a 7777a",
+  ~a"FF 2222a 5555a 7777a",
+  ~a"FF 3333a 4444a 7777a",
+  # Winds and Dragons
+  ~a"NNNN EEE WWW SSSS", ~a"NNN EEEE WWWW SSS",
+  ~a"FFFF DDDa DDDDb DDDc",
+  ~a"NNN SSS XXXX0a XXXX1b", ~a"EEE WWW XXXX0a XXXX1b",
+  ~a"FF NN EEE WWW SSSS",
+  ~a"NNNN XX0a XX1a XX2a SSSS", ~a"EEEE XX0a XX1a XX2a WWWW",
+  ~a"FF DDDDa NEWS DDDDb",
+  # 369
+  ~a"333a 666a 6666b 9999b", ~a"333a 666a 6666b 9999c",
+  ~a"FF 3a 66a 999a 333b 333c", ~a"FF 3a 66a 999a 666b 666c", ~a"FF 3a 66a 999a 999b 999c",
+  ~a"FF 3333a 6666a 9999a", ~a"FF 3333a 6666b 9999c",
+  ~a"333a DDDDa 333b DDDDb", ~a"666a DDDDa 666b DDDDb", ~a"999a DDDDa 999b DDDDb",
+  ~a"3333a 66a 66b 66c 9999a",
+  ~a"FFFF 33a 66a 999a DDDb",
+  # Quints
+  ~a"FF XXXXX0a XX1a XXXXX2a",
+  ~a"XXXXX0a ZZZZ XXXXX1b|XXXXX2b|XXXXX3b|XXXXX4b|XXXXX5b|XXXXX6b|XXXXX7b|XXXXX8b",
+  ~a"XX0a XXXXX1a XX0b XXXXX1b",
+  ~a"FFFFF DDDDa XXXXX0b",
+  # Consecutive Run
+  ~a"111a 22a 3333a 44a 555a", ~a"555a 66a 7777a 88a 999a",
+  ~a"XX0a XXX1a DDDDb XXX2a XX3a",
+  ~a"FF XXXX0a XXXX1a XXXX2a", ~a"FF XXXX0a XXXX1b XXXX2c",
+  ~a"X0a XX1a XXXX2a X0b XX1b XXXX2b",
+  ~a"XX0a XX1a XXX2a XXX3a DDDDa",
+  ~a"FFFFF X0a X1a X2a XXX3b XXX3c",
+  ~a"XXX0a XXX1a XXXX2a XXXX3a", ~a"XXX0a XXX1a XXXX2b XXXX3b",
+  # 13579
+  ~a"111a 33a 5555a 77a 999a", ~a"111a 33a 5555b 77c 999c",
+  ~a"111a 333a 3333b 5555b", ~a"555a 777a 7777b 9999b",
+  ~a"FF 11a 333a 5555a DDDa", ~a"FF 55a 777a 9999a DDDa",
+  ~a"11a 33a 55a 7777b 9999c",
+  ~a"FFFF 3333a 5555b 15c", ~a"FFFF 5555a 7777b 35c",
+  ~a"11a 33a 333b 555b DDDDc", ~a"55a 77a 777b 999b DDDDc"
+
+define_match concealed_win,
+  # 2024
+  ~a"NN EEE 2024a WWW SS",
+  # 2468
+  ~a"FF 222a 44a 666a 88b 88c",
+  # Winds and Dragons
+  ~a"NNN EW SSS XXX0a XXX0b",
+  # 369
+  ~a"333a 666a 333b 666b 99c",
+  # Singles and Pairs
+  ~a"FF 22a 46a 88a 22b 46b 88b",
+  ~a"FF 11a 33a 55a 55b 77b 99b",
+  ~a"112a 11223b 112233c", ~a"998a 99887b 998877c",
+  ~a"FF 33a 66a 99a 369b 369c",
+  ~a"XX0a XX1a XX2a XX3a XX4a DDb DDc",
+  ~a"2024a NN EW SS 2024b",
+  # Consecutive Run
+  ~a"XXX0a XXX1a XXX0b XXX1b XX2c",
+  # 13579
+  ~a"111a 33a 555a 333b 333c", ~a"555a 77a 999a 777b 777c"
+
+define_match singles_win,
+  ~a"FF 22a 46a 88a 22b 46b 88b",
+  ~a"FF 11a 33a 55a 55b 77b 99b",
+  ~a"112a 11223b 112233c", ~a"998a 99887b 998877c",
+  ~a"FF 33a 66a 99a 369b 369c",
+  ~a"XX0a XX1a XX2a XX3a XX4a DDb DDc",
+  ~a"2024a NN EW SS 2024b"
+
+define_match win, "open_win", "concealed_win", "singles_win"
+define_const concealed, has_no_call_named("am_pung", "am_kong", "am_quint")
+
+define_yaku yaku, "2024", [25, "Pts"], match(["hand", "call_tiles", "winning_tile"], ~a"222a 000 2222b 4444b")
+define_yaku yaku, "2024", [25, "Pts"], match(["hand", "call_tiles", "winning_tile"], ~a"FFFF 2222a 0000 24b")
+define_yaku yaku, "2024", [25, "Pts"], match(["hand", "call_tiles", "winning_tile"], [~a"FF 2024a 2222b 2222c", ~a"FF 2024a 4444b 4444c"])
+define_yaku yaku, "2024", [30, "Pts"], @concealed and match(["hand", "call_tiles", "winning_tile"], ~a"NN EEE 2024a WWW SS")
+define_yaku yaku, "2468", [25, "Pts"], match(["hand", "call_tiles", "winning_tile"], [~a"222a 444a 6666a 8888a", ~a"222a 444a 6666b 8888b"])
+define_yaku yaku, "2468", [25, "Pts"], match(["hand", "call_tiles", "winning_tile"], ~a"22a 444a 44b 666b 8888c")
+define_yaku yaku, "2468", [25, "Pts"], match(["hand", "call_tiles", "winning_tile"], ~a"22a 44a 666a 888a DDDDa")
+define_yaku yaku, "2468", [25, "Pts"], match(["hand", "call_tiles", "winning_tile"], [~a"FFFF 4444a 6666b 24c", ~a"FFFF 6666a 8888b 48c"])
+define_yaku yaku, "2468", [25, "Pts"], match(["hand", "call_tiles", "winning_tile"], [~a"FF 2222a 44a 66a 8888a", ~a"FF 2222a 44b 66b 8888a"])
+define_yaku yaku, "2468", [35, "Pts"], @concealed and match(["hand", "call_tiles", "winning_tile"], ~a"FF 222a 44a 666a 88b 88c")
+define_yaku yaku, "Any Like Numbers", [25, "Pts"], match(["hand", "call_tiles", "winning_tile"], ~a"FFFF XXX0a XXXX0b XXX0c")
+define_yaku yaku, "Any Like Numbers", [25, "Pts"], match(["hand", "call_tiles", "winning_tile"], ~a"XX0a DDDa XX0b DDDb XXXX0c")
+define_yaku yaku, "Any Like Numbers", [25, "Pts"], match(["hand", "call_tiles", "winning_tile"], ~a"FF XXXX0a NEWS XXXX0b")
+define_yaku yaku, "Lucky Sevens", [25, "Pts"], match(["hand", "call_tiles", "winning_tile"], ~a"FF 1111a 6666a 7777a")
+define_yaku yaku, "Lucky Sevens", [25, "Pts"], match(["hand", "call_tiles", "winning_tile"], ~a"FF 2222a 5555a 7777a")
+define_yaku yaku, "Lucky Sevens", [25, "Pts"], match(["hand", "call_tiles", "winning_tile"], ~a"FF 3333a 4444a 7777a")
+define_yaku yaku, "Winds and Dragons", [25, "Pts"], match(["hand", "call_tiles", "winning_tile"], [~a"NNNN EEE WWW SSSS", ~a"NNN EEEE WWWW SSS"])
+define_yaku yaku, "Winds and Dragons", [25, "Pts"], match(["hand", "call_tiles", "winning_tile"], ~a"FFFF DDDa DDDDb DDDc")
+define_yaku yaku, "Winds and Dragons", [25, "Pts"], match(["hand", "call_tiles", "winning_tile"], [~a"NNN SSS XXXX0a XXXX1b", ~a"EEE WWW XXXX0a XXXX1b"])
+define_yaku yaku, "Winds and Dragons", [25, "Pts"], match(["hand", "call_tiles", "winning_tile"], ~a"FF NN EEE WWW SSSS")
+define_yaku yaku, "Winds and Dragons", [30, "Pts"], match(["hand", "call_tiles", "winning_tile"], [~a"NNNN XX0a XX1a XX2a SSSS", ~a"EEEE XX0a XX1a XX2a WWWW"])
+define_yaku yaku, "Winds and Dragons", [25, "Pts"], match(["hand", "call_tiles", "winning_tile"], ~a"FF DDDDa NEWS DDDDb")
+define_yaku yaku, "Winds and Dragons", [30, "Pts"], @concealed and match(["hand", "call_tiles", "winning_tile"], ~a"NNN EW SSS XXX0a XXX0b")
+define_yaku yaku, "369", [25, "Pts"], match(["hand", "call_tiles", "winning_tile"], [~a"333a 666a 6666b 9999b", ~a"333a 666a 6666b 9999c"])
+define_yaku yaku, "369", [25, "Pts"], match(["hand", "call_tiles", "winning_tile"], [~a"FF 3a 66a 999a 333b 333c", ~a"FF 3a 66a 999a 666b 666c", ~a"FF 3a 66a 999a 999b 999c"])
+define_yaku yaku, "369", [25, "Pts"], match(["hand", "call_tiles", "winning_tile"], [~a"FF 3333a 6666a 9999a", ~a"FF 3333a 6666b 9999c"])
+define_yaku yaku, "369", [25, "Pts"], match(["hand", "call_tiles", "winning_tile"], [~a"333a DDDDa 333b DDDDb", ~a"666a DDDDa 666b DDDDb", ~a"999a DDDDa 999b DDDDb"])
+define_yaku yaku, "369", [30, "Pts"], match(["hand", "call_tiles", "winning_tile"], ~a"3333a 66a 66b 66c 9999a")
+define_yaku yaku, "369", [25, "Pts"], match(["hand", "call_tiles", "winning_tile"], ~a"FFFF 33a 66a 999a DDDb")
+define_yaku yaku, "369", [30, "Pts"], @concealed and match(["hand", "call_tiles", "winning_tile"], ~a"333a 666a 333b 666b 99c")
+define_yaku yaku, "Singles and Pairs", [50, "Pts"], @concealed and match(["hand", "call_tiles", "winning_tile"], ~a"FF 22a 46a 88a 22b 46b 88b")
+define_yaku yaku, "Singles and Pairs", [50, "Pts"], @concealed and match(["hand", "call_tiles", "winning_tile"], ~a"FF 11a 33a 55a 55b 77b 99b")
+define_yaku yaku, "Singles and Pairs", [50, "Pts"], @concealed and match(["hand", "call_tiles", "winning_tile"], [~a"112a 11223b 112233c", ~a"998a 99887b 998877c"])
+define_yaku yaku, "Singles and Pairs", [50, "Pts"], @concealed and match(["hand", "call_tiles", "winning_tile"], ~a"FF 33a 66a 99a 369b 369c")
+define_yaku yaku, "Singles and Pairs", [50, "Pts"], @concealed and match(["hand", "call_tiles", "winning_tile"], ~a"XX0a XX1a XX2a XX3a XX4a DDb DDc")
+define_yaku yaku, "Singles and Pairs", [75, "Pts"], @concealed and match(["hand", "call_tiles", "winning_tile"], ~a"2024a NN EW SS 2024b")
+define_yaku yaku, "Quints", [40, "Pts"], match(["hand", "call_tiles", "winning_tile"], ~a"FF XXXXX0a XX1a XXXXX2a")
+define_yaku yaku, "Quints", [40, "Pts"], match(["hand", "call_tiles", "winning_tile"], ~a"XXXXX0a ZZZZ XXXXX1b|XXXXX2b|XXXXX3b|XXXXX4b|XXXXX5b|XXXXX6b|XXXXX7b|XXXXX8b")
+define_yaku yaku, "Quints", [45, "Pts"], match(["hand", "call_tiles", "winning_tile"], ~a"XX0a XXXXX1a XX0b XXXXX1b")
+define_yaku yaku, "Quints", [40, "Pts"], match(["hand", "call_tiles", "winning_tile"], ~a"FFFFF DDDDa XXXXX0b")
+define_yaku yaku, "Consecutive Run", [25, "Pts"], match(["hand", "call_tiles", "winning_tile"], [~a"111a 22a 3333a 44a 555a", ~a"555a 66a 7777a 88a 999a"])
+define_yaku yaku, "Consecutive Run", [25, "Pts"], match(["hand", "call_tiles", "winning_tile"], ~a"XX0a XXX1a DDDDb XXX2a XX3a")
+define_yaku yaku, "Consecutive Run", [25, "Pts"], match(["hand", "call_tiles", "winning_tile"], [~a"FF XXXX0a XXXX1a XXXX2a", ~a"FF XXXX0a XXXX1b XXXX2c"])
+define_yaku yaku, "Consecutive Run", [30, "Pts"], match(["hand", "call_tiles", "winning_tile"], ~a"X0a XX1a XXXX2a X0b XX1b XXXX2b")
+define_yaku yaku, "Consecutive Run", [25, "Pts"], match(["hand", "call_tiles", "winning_tile"], ~a"XX0a XX1a XXX2a XXX3a DDDDa")
+define_yaku yaku, "Consecutive Run", [30, "Pts"], match(["hand", "call_tiles", "winning_tile"], ~a"FFFFF X0a X1a X2a XXX3b XXX3c")
+define_yaku yaku, "Consecutive Run", [25, "Pts"], match(["hand", "call_tiles", "winning_tile"], [~a"XXX0a XXX1a XXXX2a XXXX3a", ~a"XXX0a XXX1a XXXX2b XXXX3b"])
+define_yaku yaku, "Consecutive Run", [30, "Pts"], @concealed and match(["hand", "call_tiles", "winning_tile"], ~a"XXX0a XXX1a XXX0b XXX1b XX2c")
+define_yaku yaku, "13579", [25, "Pts"], match(["hand", "call_tiles", "winning_tile"], [~a"111a 33a 5555a 77a 999a", ~a"111a 33a 5555b 77c 999c"])
+define_yaku yaku, "13579", [25, "Pts"], match(["hand", "call_tiles", "winning_tile"], [~a"111a 333a 3333b 5555b", ~a"555a 777a 7777b 9999b"])
+define_yaku yaku, "13579", [25, "Pts"], match(["hand", "call_tiles", "winning_tile"], [~a"FF 11a 333a 5555a DDDa", ~a"FF 55a 777a 9999a DDDa"])
+define_yaku yaku, "13579", [30, "Pts"], match(["hand", "call_tiles", "winning_tile"], ~a"11a 33a 55a 7777b 9999c")
+define_yaku yaku, "13579", [25, "Pts"], match(["hand", "call_tiles", "winning_tile"], [~a"FFFF 3333a 5555b 15c", ~a"FFFF 5555a 7777b 35c"])
+define_yaku yaku, "13579", [25, "Pts"], match(["hand", "call_tiles", "winning_tile"], [~a"11a 33a 333b 555b DDDDc", ~a"55a 77a 777b 999b DDDDc"])
+define_yaku yaku, "13579", [35, "Pts"], @concealed and match(["hand", "call_tiles", "winning_tile"], [~a"111a 33a 555a 333b 333c", ~a"555a 77a 999a 777b 777c"])
+
+
+
+

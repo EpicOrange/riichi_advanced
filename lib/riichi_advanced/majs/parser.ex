@@ -138,6 +138,7 @@ defmodule RiichiAdvanced.Parser do
   def parse_sigils({:sigil_T, _, [{:<<>>, _, [tiles_spec]}, _args]}), do: parse_tiles(tiles_spec)
   def parse_sigils({:sigil_s, _, [{:<<>>, _, [set_spec]}, _args]}), do: parse_set(set_spec)
   def parse_sigils({:sigil_m, _, [{:<<>>, _, [match_spec]}, _args]}), do: parse_match(match_spec)
+  def parse_sigils({:sigil_a, _, [{:<<>>, _, [match_spec]}, _args]}), do: {:ok, match_spec}
   def parse_sigils([do: expr]), do: parse_sigils(expr)
   def parse_sigils(ast) when is_list(ast) do
     # check if keyword list (except the keys are binaries, not atoms)
