@@ -3,7 +3,6 @@ defmodule RiichiAdvancedWeb.ScoringTestLive do
   alias RiichiAdvanced.GameState, as: GameState
   alias RiichiAdvanced.GameState.Actions, as: Actions
   alias RiichiAdvanced.GameState.Kyoku, as: Kyoku
-  alias RiichiAdvanced.GameState.Payment, as: Payment
   alias RiichiAdvanced.GameState.Player, as: Player
   alias RiichiAdvanced.GameState.Rules, as: Rules
   alias RiichiAdvanced.GameState.Scoring, as: Scoring

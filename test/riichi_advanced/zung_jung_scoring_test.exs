@@ -163,7 +163,7 @@ defmodule RiichiAdvanced.ZungJungScoringTest do
       "starting_hand": {
         "east": ["1m", "4m", "7m", "2p", "5p", "8p", "3s", "6s", "9s", "3p", "3p", "3p", "4z"],
         "south": ["1m", "9m", "1p", "9p", "1s", "9s", "1z", "2z", "3z", "4z", "0z", "6z", "7z"],
-        "west": ["1m", "4m", "7m", "2p", "5p", "8p", "3s", "6s", "9s", "4z", "3z", "3z", "7z"],
+        "west": ["1m", "4m", "7m", "2p", "5p", "8p", "3s", "6s", "9s", "4z", "5z", "5z", "7z"],
         "north": ["1m", "4m", "7m", "2p", "5p", "8p", "3s", "6s", "9s", "4z", "0z", "6z", "7z"]
       },
       "starting_draws": ["3p", "3z", "2m", "1z", "3z", "0z", "3z"]

@@ -9,7 +9,7 @@ defmodule RiichiAdvanced.YakuTest.GalaxyYaku do
         "east": ["2m", "3m", "14m", "14p", "5m", "6m", "7p", "7p", "17m", "5z", "16z", "1z", "14z"],
         "south": ["1m", "4m", "7m", "2p", "5p", "8p", "3s", "6s", "9s", "5z", "2z", "3z", "4z"],
         "west": ["1m", "4m", "7m", "2p", "5p", "8p", "3s", "6s", "9s", "5z", "2z", "3z", "4z"],
-        "north": ["1m", "3m", "7m", "2p", "5p", "8p", "3s", "6s", "9s", "5z", "2z", "3z", "4z"]
+        "north": ["1m", "3m", "7m", "2p", "5p", "8p", "3s", "6s", "9s", "1z", "2z", "3z", "4z"]
       },
       "starting_draws": ["3p", "1z"]
     }

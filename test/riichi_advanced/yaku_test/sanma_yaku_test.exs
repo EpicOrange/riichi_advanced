@@ -76,8 +76,8 @@ defmodule RiichiAdvanced.YakuTest.SanmaYaku do
     {
       "starting_hand": {
         "east": ["1m", "1m", "1m", "3p", "5p", "9p", "9p", "1s", "2s", "3s", "7s", "8s", "9s"],
-        "south": ["2m", "2p", "3p", "4p", "5p", "8p", "3s", "6s", "9s", "1z", "2z", "3z", "4z"],
-        "west": ["2m", "2p", "3p", "4p", "5p", "8p", "3s", "6s", "9s", "1z", "2z", "3z", "4z"]
+        "south": ["9m", "2p", "3p", "4p", "5p", "8p", "3s", "6s", "9s", "1z", "2z", "3z", "4z"],
+        "west": ["9m", "2p", "3p", "4p", "5p", "8p", "3s", "6s", "9s", "1z", "2z", "3z", "4z"]
       },
       "starting_draws": ["4z", "4p"]
     }

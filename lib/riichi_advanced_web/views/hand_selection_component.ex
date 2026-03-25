@@ -1,6 +1,5 @@
 defmodule RiichiAdvancedWeb.HandSelectionComponent do
   use RiichiAdvancedWeb, :live_component
-  import RiichiAdvancedWeb.Translations
 
   def mount(socket) do
     socket = assign(socket, :hand, [])
@@ -17,7 +16,7 @@ defmodule RiichiAdvancedWeb.HandSelectionComponent do
             <button type="button" phx-cancellable-click="remove_hand_tile" phx-value-index={i}><div class={"tile flat #{tile}"}></div></button>
           <% end %>
           <%= if length(@hand) < 14 do %>
-            <%= for i <- length(@hand)..13 do %>
+            <%= for _i <- length(@hand)..13 do %>
               <button type="button"><div class={"tile flat 1x"}></div></button>
             <% end %>
           <% end %>

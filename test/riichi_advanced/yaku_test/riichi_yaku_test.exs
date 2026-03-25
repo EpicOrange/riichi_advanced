@@ -1387,7 +1387,7 @@ defmodule RiichiAdvanced.YakuTest.RiichiYaku do
         "east": ["1m", "4m", "7m", "2p", "5p", "8p", "3s", "4s", "5s", "6s", "7s", "8s", "9s"],
         "south": ["1m", "4m", "7m", "2p", "5p", "8p", "3s", "4s", "5s", "6s", "7s", "8s", "9s"],
         "west": ["1m", "4m", "7m", "2p", "5p", "8p", "3s", "4s", "5s", "6s", "7s", "8s", "9s"],
-        "north": ["3z", "3z", "3z", "1z", "1z", "1z", "5m", "5m", "7m", "8m", "2p", "3p", "1z"]
+        "north": ["3z", "3z", "3z", "1z", "1z", "1z", "5m", "5m", "7m", "8m", "2p", "3p", "2z"]
       },
       "starting_draws": ["1z", "2z", "4p", "6m"],
       "starting_round": 4
@@ -1397,7 +1397,7 @@ defmodule RiichiAdvanced.YakuTest.RiichiYaku do
       %{"type" => "discard", "tile" => "2z", "player" => 1, "tsumogiri" => true},
       %{"type" => "discard", "tile" => "4p", "player" => 2, "tsumogiri" => true},
       %{"type" => "buttons_pressed", "buttons" => [nil, nil, nil, %{"button" => "chii"}]},
-      %{"type" => "discard", "tile" => "1z", "player" => 3, "tsumogiri" => false},
+      %{"type" => "discard", "tile" => "2z", "player" => 3, "tsumogiri" => false},
       %{"type" => "discard", "tile" => "6m", "player" => 0, "tsumogiri" => true},
       %{"type" => "buttons_pressed", "buttons" => [nil, nil, nil, %{"button" => "ron"}]}
     ], %{

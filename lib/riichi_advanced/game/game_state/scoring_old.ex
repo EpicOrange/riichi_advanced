@@ -341,7 +341,7 @@ defmodule RiichiAdvanced.GameState.ScoringOld do
         tsumo_delta_scores = calculate_delta_scores_tsumo(state, winner, basic_score, is_dealer)
         # apply mult and penalty to tsumo_delta_scores
         tsumo_delta_scores = for _seat <- [winner.seat], reduce: tsumo_delta_scores do
-          delta_scores -> Map.update!(delta_scores, winner.seat, & (&1 * mult)) |> IO.inspect()
+          delta_scores -> Map.update!(delta_scores, winner.seat, & (&1 * mult))
         end
         tsumo_delta_scores = for seat <- winner.opponents, reduce: tsumo_delta_scores do
           delta_scores -> delta_scores |> Map.update!(seat, & (&1 * mult) - penalty) |> Map.update!(winner.seat, & (&1) + penalty) 
