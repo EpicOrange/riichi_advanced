@@ -985,11 +985,11 @@ defmodule RiichiAdvanced.GameState do
       state = Actions.trigger_event(state, "before_win", %{seat: seat, win_source: :discard, silent: true})
       # run before_scoring actions
       state = Actions.trigger_event(state, "before_scoring", %{seat: seat, win_source: :discard, silent: true})
-      {yaku, minipoints} = Scoring.get_yaku_from_lists(state, score_rules["yaku_lists"], seat, :any, :discard)
-      {yaku2, _minipoints} = Scoring.get_yaku_from_lists(state, score_rules["yaku2_lists"], seat, :any, :discard)
+      {yaku, minipoints} = Scoring.get_yaku_from_lists(state, Map.get(score_rules, "yaku_lists", []), seat, :any, :discard)
+      {yaku2, _minipoints} = Scoring.get_yaku_from_lists(state, Map.get(score_rules, "yaku2_lists", []), seat, :any, :discard)
       # IO.inspect({yaku, yaku2, hand})
-      han = Enum.map(yaku, fn {_name, value} -> value end) |> Enum.sum()
-      yakuman = Enum.map(yaku2, fn {_name, value} -> value end) |> Enum.sum()
+      han = Enum.map(yaku, fn {_name, value} -> value end) |> Enum.reduce([], &Scoring.add_yaku_values/2)
+      yakuman = Enum.map(yaku2, fn {_name, value} -> value end) |> Enum.reduce([], &Scoring.add_yaku_values/2)
       {yakuman, han, minipoints, hand}
     end)
     |> Enum.max(&>=/2, fn ->
