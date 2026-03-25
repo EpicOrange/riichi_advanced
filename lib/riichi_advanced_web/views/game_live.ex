@@ -46,6 +46,8 @@ defmodule RiichiAdvancedWeb.GameLive do
     |> assign(:next_tutorial_scenes, nil)
     |> assign(:waiting_for_click, false)
     |> assign(:return_to_editor, false)
+    |> assign(:waiting_on_timer, false)
+    |> assign(:prev_timer, 0)
 
     socket = if socket.assigns.tutorial_sequence_name != nil do
       assign(socket, :room_code, Ecto.UUID.generate())
@@ -210,8 +212,8 @@ defmodule RiichiAdvancedWeb.GameLive do
         available_seats={@state.available_seats}
         is_bot={Map.new([:east, :south, :west, :north], fn seat -> {seat, is_pid(Map.get(@state, seat))} end)} />
       <%= if @state.visible_screen != nil do %>
-        <.live_component module={RiichiAdvancedWeb.WinWindowComponent} id="win-window" game_state={@game_state} seat={@seat} lang={@lang} winner={Map.get(@state.winners, Enum.at(@state.winner_seats, @state.winner_index), nil)} timer={@state.timer} visible_screen={@state.visible_screen}/>
-        <.live_component module={RiichiAdvancedWeb.ScoreWindowComponent} id="score-window" game_state={@game_state} seat={@seat} lang={@lang} players={@state.players} winners={@state.winners} delta_scores={@state.delta_scores} delta_scores_reason={@state.delta_scores_reason} timer={@state.timer} visible_screen={@state.visible_screen} available_seats={@state.available_seats} txns={@state.txns} round_result={@state.round_result}/>
+        <.live_component module={RiichiAdvancedWeb.WinWindowComponent} id="win-window" game_state={@game_state} seat={@seat} lang={@lang} winner={Map.get(@state.winners, Enum.at(@state.winner_seats, @state.winner_index), nil)} timer={@state.timer} waiting_on_timer={@waiting_on_timer} visible_screen={@state.visible_screen}/>
+        <.live_component module={RiichiAdvancedWeb.ScoreWindowComponent} id="score-window" game_state={@game_state} seat={@seat} lang={@lang} players={@state.players} winners={@state.winners} delta_scores={@state.delta_scores} delta_scores_reason={@state.delta_scores_reason} timer={@state.timer} waiting_on_timer={@waiting_on_timer} visible_screen={@state.visible_screen} available_seats={@state.available_seats} txns={@state.txns} round_result={@state.round_result}/>
         <.live_component module={RiichiAdvancedWeb.EndWindowComponent} id="end-window" game_state={@game_state} seat={@seat} lang={@lang} players={@state.players} visible_screen={@state.visible_screen}/>
       <% end %>
       <%= if @state.error != nil do %>
@@ -612,7 +614,8 @@ defmodule RiichiAdvancedWeb.GameLive do
     if socket.assigns.seat != :spectator do
       GenServer.cast(socket.assigns.game_state, {:ready_for_next_round, socket.assigns.seat})
     end
-    socket = assign(socket, :timer, 0)
+    socket = assign(socket, :waiting_on_timer, true)
+    socket = assign(socket, :prev_timer, socket.assigns.state.timer)
     {:noreply, socket}
   end
 
@@ -831,6 +834,11 @@ defmodule RiichiAdvancedWeb.GameLive do
           i = Enum.find_index(socket.assigns.last_forced_events, & &1 == state.last_event)
           trigger_next_tutorial_scene(socket, i)
         else socket end
+      else socket end
+
+      # reset waiting_on_timer to false if timer hits 0 or is higher than last timer
+      socket = if state.timer == 0 or state.timer >= socket.assigns.prev_timer do
+        assign(socket, :waiting_on_timer, false)
       else socket end
 
       socket = socket

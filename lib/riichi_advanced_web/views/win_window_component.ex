@@ -7,6 +7,7 @@ defmodule RiichiAdvancedWeb.WinWindowComponent do
   def mount(socket) do
     socket = assign(socket, :winner, nil)
     socket = assign(socket, :timer, 0)
+    socket = assign(socket, :waiting_on_timer, false)
     {:ok, socket}
   end
 
@@ -72,10 +73,10 @@ defmodule RiichiAdvancedWeb.WinWindowComponent do
         <% end %>
       </div>
       <div class="timer" phx-cancellable-click="ready_for_next_round">
-        <%= if @timer == -1 do %>
-          <%= dt(@lang, "Dismiss") %>
-        <% else %>
-          <%= dt(@lang, "Skip") %> (<%= @timer %>)
+        <%= cond do %>
+          <% @timer == -1 -> %> <%= dt(@lang, "Dismiss") %>
+          <% @waiting_on_timer -> %> <%= dt(@lang, "Waiting... ") %> (<%= @timer %>)
+          <% true -> %> <%= dt(@lang, "Skip") %> (<%= @timer %>)
         <% end %>
       </div>
     </div>
