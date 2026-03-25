@@ -16,7 +16,10 @@ defmodule RiichiAdvanced.Admin do
     # world class discovery mechanism right here
     case [blue, green] -- [node()] do
       [dst] ->
+        # pull games from dst to us
         GenServer.cast({RiichiAdvanced.Admin, dst}, {:migrate, node()})
+        # flush our own caches
+        GenServer.cast(RiichiAdvanced.ETSCache, :flush_caches)
       _     -> :ok
     end
     {:ok, %{}}
