@@ -47,14 +47,14 @@ define_set ton, ~s"1z 1z 1z"
 define_set nan, ~s"2z 2z 2z"
 define_set shaa, ~s"3z 3z 3z"
 define_set pei, ~s"4z 4z 4z"
-define_set haku, ~s"5z 5z 5z"
+define_set haku, ~s"8z 8z 8z"
 define_set hatsu, ~s"6z 6z 6z"
 define_set chun, ~s"7z 7z 7z"
 define_set ton_pair, ~s"1z 1z"
 define_set nan_pair, ~s"2z 2z"
 define_set shaa_pair, ~s"3z 3z"
 define_set pei_pair, ~s"4z 4z"
-define_set haku_pair, ~s"5z 5z"
+define_set haku_pair, ~s"8z 8z"
 define_set hatsu_pair, ~s"6z 6z"
 define_set chun_pair, ~s"7z 7z"
 define_set chuurenpoutou, ~s"0 0 0 1 2 3 4 5 6 7 8 8 8"
@@ -143,9 +143,9 @@ define_yaku limit, "All Sixteen Flowers", [10, "Fan"], match(["flowers"], ~m"noj
 define_yaku_precedence "All Sixteen Flowers", ["Face", "Four Faces", "Animal", "All Animals", "Seat Flower", "Seat Season", "All Flowers", "All Seasons"]
 define_yaku_precedence "After Multiple Gongs", ["After a Gong"]
 define_yaku_precedence "Full Flush", ["Half Flush"]
-define_yaku_precedence "Big Four Winds", ["Small Four Winds", "East Wind", "North Wind", "Seat Wind"]
+define_yaku_precedence "Big Four Winds", ["East Wind", "North Wind", "Seat Wind"]
 define_yaku_precedence "Small Four Winds", ["East Wind", "North Wind", "Seat Wind"]
-define_yaku_precedence "Big Three Dragons", ["Small Three Dragons", "White Dragon", "Green Dragon", "Red Dragon"]
+define_yaku_precedence "Big Three Dragons", ["White Dragon", "Green Dragon", "Red Dragon"]
 define_yaku_precedence "Small Three Dragons", ["White Dragon", "Green Dragon", "Red Dragon"]
 define_yaku_precedence "Four Concealed Triplets", ["All Triplets"]
 define_yaku_precedence "All Honors", ["All Triplets", "Half Flush"]
@@ -336,6 +336,8 @@ define_button start_no_flower,
   do
     big_text("No Flowers")
     set_status("no_flowers")
+    # don't leave a tile in draw
+    move_tiles("draw", "hand")
     advance_turn
     recalculate_buttons
   end
@@ -624,7 +626,7 @@ on after_initialization do
   add_rule("Tiles", "Tiles", "- Four Season tiles, numbered from 1 to 4 %{seasons}", %{seasons: ~t"1234g"})
   add_rule("Tiles", "Tiles", "- Four Fei Jokers %{feis}", %{feis: ~t"2222y"})
   add_rule("Tiles", "Flowers", "The Face, Animal, Flower, and Season tiles %{flowers} are all considered flower tiles. Their scoring is detailed in the Flowers tab. You also receive a bonus if you declare a set of 4 flowers, see the Rules tab for more details.", %{flowers: ~t"1234f1234g1234a1111y"})
-  add_rule("Tiles", "Fei Joker", "The Fei Joker %{fei} is a wildcard that can stand for any tile. They may also be declared as flowers by pressing the Reveal Fei button.", %{fei: ~t"2y"})
+  add_rule("Tiles", "Fei Joker", "The Fei Joker %{fei} is a wildcard that can stand for any tile. They may also be declared as flowers for 1 Fei each by pressing the Reveal Fei button.", %{fei: ~t"2y"})
   add_rule("Tiles", "Fei Joker", "You can use up to two Fei Jokers in a called Pong, and one Fei joker in a called Chow. Fei jokers cannot be used in a Gong.")
   add_rule("Tiles", "Fei Joker", "At the end of each round, each player counts the number of Fei jokers in each hand, and recieves a side payment of 50 from each player for each Fei joker they have.")
 
