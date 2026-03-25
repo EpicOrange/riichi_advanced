@@ -16,7 +16,7 @@ defmodule RiichiAdvancedWeb.MajsTestLive do
     |> assign(:result, "")
     |> assign(:loading, false)
 
-    socket = switch_mods_to_ruleset(socket, "riichi")
+    socket = switch_mods_to_ruleset(socket, "custom")
 
     messages_init = RiichiAdvanced.MessagesState.link_player_socket(socket.root_pid, socket.assigns.session_id)
     socket = if Map.has_key?(messages_init, :messages_state) do

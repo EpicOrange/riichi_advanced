@@ -116,10 +116,12 @@ defmodule RiichiAdvanced.RoomState do
     config_majs = ModLoader.get_config_majs(state.ruleset, state.room_code)
 
     # parse the ruleset now, in order to get the list of eligible mods
-    state = case Rules.load_rules(ruleset_json, state.ruleset) do
-      {:ok, rules_ref} -> Map.put(state, :rules_ref, rules_ref)
-      {:error, msg}    -> show_error(state, msg)
-    end
+    state = if state.ruleset != "custom" do
+      case Rules.load_rules(ruleset_json, state.ruleset) do
+        {:ok, rules_ref} -> Map.put(state, :rules_ref, rules_ref)
+        {:error, msg}    -> show_error(state, msg)
+      end
+    else state end
     rules_ref = state.rules_ref
 
     # we start with default_mods, but if we're coming back to this screen, load the last mod setup instead
