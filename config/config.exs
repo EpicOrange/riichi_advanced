@@ -70,4 +70,5 @@ config :logger, LoggerFileBackend,
 # cache
 config :riichi_advanced, RiichiAdvanced.Cache,
   limit: 1_000_000,
-  stats: true
+  stats: true,
+  telemetry: false
