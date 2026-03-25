@@ -1,0 +1,19 @@
+on after_initialization do
+  update_rule("Limit", "Limit", "(Stackable Limit) You may stack multiple instances of 10 Fan by achieving more than one of these. This is the only way to exceed the 10 Fan limit.")
+end
+
+replace all, "limit", [10, "Fan"], [1, "Limit"]
+
+apply delete_key, "scoring_logic", "win" # remove the old define_scoring win
+
+define_scoring win do
+  if points2 > 0 do
+    total = points2 :: "Limit"
+    total *= 10 :: "Fan"
+    total *= 20 :: "Score"
+  else
+    calculate_base_score
+  end
+  set_counter_all("hand_score", "total")
+  apply_score_modifiers
+end

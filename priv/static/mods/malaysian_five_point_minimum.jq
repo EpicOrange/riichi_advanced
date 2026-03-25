@@ -1,5 +1,5 @@
 def add_5_condition($check):
-  {"name": $check, "opts": [5]};
+  [{"name": $check, "opts": [5, "Fan"]}, {"name": $check, "opts": [1, "Limit"]}];
 
 .buttons.ron.show_when += [add_5_condition("has_yaku_with_discard")]
 |
