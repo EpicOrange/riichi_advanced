@@ -208,8 +208,9 @@ defmodule RiichiAdvanced.RoomState do
     available_mods = Enum.map(mods, & &1["id"])
     starting_mods = starting_mods
     |> Enum.map(&case &1 do
-      %{name: mod_name, config: config} -> {mod_name, config}
-      mod_name when is_binary(mod_name) -> {mod_name, nil}
+      %{"name" => mod_name, "config" => config} -> {mod_name, config}
+      %{name: mod_name, config: config}         -> {mod_name, config}
+      mod_name when is_binary(mod_name)         -> {mod_name, nil}
     end)
     |> Enum.filter(fn {mod_name, _config} -> mod_name in available_mods end)
     |> Map.new()
