@@ -1,0 +1,9 @@
+set shiny_dora, true
+
+on after_start do
+  add_attr_tagged("dora", "_dora")
+end
+
+apply append, "functions.flip_dora" do
+  add_attr_tagged("dora", "_dora")
+end
