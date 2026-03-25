@@ -1,12 +1,17 @@
 defmodule RiichiAdvancedWeb.Translations do
   alias RiichiAdvanced.Utils, as: Utils
   use Gettext, backend: RiichiAdvancedWeb.Gettext
+  require Logger
 
   # static
   def t(lang, ident) do
     Gettext.with_locale(RiichiAdvancedWeb.Gettext, lang, fn ->
       Gettext.gettext(RiichiAdvancedWeb.Gettext, ident)
     end)
+  rescue
+    err ->
+      Logger.error("gettext error on translating #{inspect(ident)} to lang #{inspect(lang)}: #{inspect(err)}")
+      ident
   end
   def t(lang, ident, bindings) when is_map(bindings) do
     Gettext.with_locale(RiichiAdvancedWeb.Gettext, lang, fn ->
@@ -25,6 +30,10 @@ defmodule RiichiAdvancedWeb.Translations do
         ret -> String.replace(ret, "%{#{from}}", to)
       end
     end)
+  rescue
+    err ->
+      Logger.error("gettext error on translating #{inspect(ident)} to lang #{inspect(lang)}: #{inspect(err)}")
+      ident
   end
 
   # dynamic
@@ -61,6 +70,10 @@ defmodule RiichiAdvancedWeb.Translations do
         ret -> String.replace(ret, "%{#{from}}", to)
       end
     end)
+  rescue
+    err ->
+      Logger.error("gettext error on translating #{inspect(ident)} to lang #{inspect(lang)} with bindings #{inspect(bindings)}: #{inspect(err)}")
+      ident
   end
 
   def tile_to_div(tile) do

@@ -155,19 +155,22 @@ defmodule RiichiAdvanced.Admin do
     try do
       if Node.connect(dst) == true do
         IO.puts("Pushing running games to #{inspect(dst)}")
+        :persistent_term.put(:drain, true) # prevent new game states from spinning up
         DynamicSupervisor.which_children(RiichiAdvanced.GameSessionSupervisor)
         |> Enum.flat_map(fn {_, pid, _, _} -> Registry.keys(:game_registry, pid) end)
         |> Enum.map(&String.replace(&1, "game", "game_state"))
         |> Enum.map(&Registry.lookup(:game_registry, &1))
-        |> Enum.map(fn [{pid, _}] -> pid end)
-        |> Enum.each(&GenServer.cast(&1, {:respawn_on, dst}))
+        |> Enum.map(fn [{pid, _}] ->
+            GenServer.cast(pid, :pause)
+            GenServer.cast(pid, {:respawn_on, dst})
+          end)
         GenServer.cast(self(), :close_server)
       else
         IO.puts("Failed to connect to #{inspect(dst)}!")
       end
     rescue
-      _ ->
-        IO.puts("Not migrating")
+      err ->
+        IO.puts("Not migrating due to error: #{inspect(err)}")
         :ok
     end
     {:noreply, state}

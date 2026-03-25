@@ -435,7 +435,7 @@ defmodule RiichiAdvanced.GameState do
           log_loading_mode = Enum.at(opts, 0, false)
           Map.put(state, :log_loading_mode, log_loading_mode)
         ["put_state", new_state] ->
-          IO.puts("Restoring state for " <> Utils.to_registry_name("game_state", state.ruleset, state.room_code))
+          IO.puts("Restoring state for " <> Utils.to_registry_name("game_state", state.ruleset, state.room_code) <> " with #{Conditions.num_remaining_draws(state)} tiles left")
           :timer.apply_after(5000, GenServer, :cast, [self(), {:fill_empty_seats_with_ai, true}])
           merge_state(state, new_state)
         _ ->
