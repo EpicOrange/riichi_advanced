@@ -2134,6 +2134,10 @@ div.rules-popover-text > div.tile {
   --tile-scale-factor: 0.65; /* enough for 14 tiles to be in a row */
   margin-top: calc(0.25 * var(--tile-scale-factor) * var(--tile-size));
 }
+div.rules-popover-text > div.tile:hover {
+  transform: translateY(-100%) scale(3);
+  z-index: 10;
+}
 
 /* tile numbers */
 input.tile-numbers-checkbox + label {
