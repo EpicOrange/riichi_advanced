@@ -324,6 +324,8 @@ define_button start_joker,
   do
     big_text("Flower")
     flower("2y")
+    set_status("flower")
+    declared_fei += 1
     draw
   end
 
@@ -531,7 +533,7 @@ define_button flower,
   end
 
 define_button joker,
-  display_name: "Fei",
+  display_name: "Reveal fei",
   show_when: our_turn
     and status_missing("match_start")
     and not_just_discarded
@@ -622,7 +624,7 @@ on after_initialization do
   add_rule("Tiles", "Tiles", "- Four Season tiles, numbered from 1 to 4 %{seasons}", %{seasons: ~t"1234g"})
   add_rule("Tiles", "Tiles", "- Four Fei Jokers %{feis}", %{feis: ~t"2222y"})
   add_rule("Tiles", "Flowers", "The Face, Animal, Flower, and Season tiles %{flowers} are all considered flower tiles. Their scoring is detailed in the Flowers tab. You also receive a bonus if you declare a set of 4 flowers, see the Rules tab for more details.", %{flowers: ~t"1234f1234g1234a1111y"})
-  add_rule("Tiles", "Fei Joker", "The Fei Joker %{fei} is a wildcard that can stand for any tile. They may also be declared as flowers by pressing the Fei button.", %{fei: ~t"2y"})
+  add_rule("Tiles", "Fei Joker", "The Fei Joker %{fei} is a wildcard that can stand for any tile. They may also be declared as flowers by pressing the Reveal Fei button.", %{fei: ~t"2y"})
   add_rule("Tiles", "Fei Joker", "You can use up to two Fei Jokers in a called Pong, and one Fei joker in a called Chow. Fei jokers cannot be used in a Gong.")
   add_rule("Tiles", "Fei Joker", "At the end of each round, each player counts the number of Fei jokers in each hand, and recieves a side payment of 50 from each player for each Fei joker they have.")
 
