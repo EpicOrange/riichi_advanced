@@ -511,6 +511,12 @@ defmodule RiichiAdvanced.Constants do
         "global_mods",
       ],
     },
+    "american" => %{
+      ruleset: "american",
+      mods: [
+        "american",
+      ],
+    },
   }
 
   def modpacks, do: @modpacks

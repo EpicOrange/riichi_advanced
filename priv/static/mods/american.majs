@@ -1,0 +1,89 @@
+set display_name, "American"
+set tutorial_link, "https://github.com/EpicOrange/riichi_advanced/blob/main/documentation/american.md"
+set wall, ["1m", "1m", "1m", "1m",
+           "2m", "2m", "2m", "2m",
+           "3m", "3m", "3m", "3m",
+           "4m", "4m", "4m", "4m",
+           "5m", "5m", "5m", "5m",
+           "6m", "6m", "6m", "6m",
+           "7m", "7m", "7m", "7m",
+           "8m", "8m", "8m", "8m",
+           "9m", "9m", "9m", "9m",
+           "1p", "1p", "1p", "1p",
+           "2p", "2p", "2p", "2p",
+           "3p", "3p", "3p", "3p",
+           "4p", "4p", "4p", "4p",
+           "5p", "5p", "5p", "5p",
+           "6p", "6p", "6p", "6p",
+           "7p", "7p", "7p", "7p",
+           "8p", "8p", "8p", "8p",
+           "9p", "9p", "9p", "9p",
+           "1s", "1s", "1s", "1s",
+           "2s", "2s", "2s", "2s",
+           "3s", "3s", "3s", "3s",
+           "4s", "4s", "4s", "4s",
+           "5s", "5s", "5s", "5s",
+           "6s", "6s", "6s", "6s",
+           "7s", "7s", "7s", "7s",
+           "8s", "8s", "8s", "8s",
+           "9s", "9s", "9s", "9s",
+           "1z", "1z", "1z", "1z",
+           "2z", "2z", "2z", "2z",
+           "3z", "3z", "3z", "3z",
+           "4z", "4z", "4z", "4z",
+           "0z", "0z", "0z", "0z",
+           "6z", "6z", "6z", "6z",
+           "7z", "7z", "7z", "7z",
+           "1f", "2f", "3f", "4f",
+           "1g", "2g", "3g", "4g",
+           "1j", "1j", "1j", "1j",
+           "1j", "1j", "1j", "1j"]
+
+set custom_style, %{
+  tile_indices: %{"5z": "", "0z": "0", "1f": "F", "2f": "F", "3f": "F", "4f": "F", "1g": "F", "2g": "F", "3g": "F", "4g": "F", "1j": "J"}
+}
+
+set default_mods, ["american/am_num_jokers_flowers", "american/am_card_nmjl_2025", "american/show_nearest_american_hand", "show_waits"]
+
+define_mod_category "Table Rules"
+define_mod cosmic, name: "Cosmic", category: "Cosmic", order: 4, deps: ["space", "kontsu", "cosmic_calls"], desc: "Base mod for Cosmic Riichi. Adds most relevant yaku and sets up the score table for things like haneyakuman."
+define_mod "american/zombie_blanks", name: "Zombie Blanks", desc: "Adds some \"Zombie Blanks\" to the wall, which may be swapped out for already-discarded tiles."
+config_mod "american/zombie_blanks", name: "count", values: [2,4,6,8,10], default: 4
+define_mod "american/am_num_jokers_flowers", name: "Joker/Flower Count", desc: "Change the numbers of jokers and flowers. Note that this doesn't allow you to play by pre-1971 rules, where flowers are treated as jokers."
+config_mod "american/am_num_jokers_flowers", name: "jokers", values: [0,2,4,6,8,10,12,14,16], default: 8
+config_mod "american/am_num_jokers_flowers", name: "flowers", values: [0,2,4,6,8,10,12,14,16,18,20,22,24], default: 8
+define_mod "american/am_PIE", name: "PIE", desc: "Each player starts with a set amount of points. Players' point totals can't go negative. If a player runs out of points, they need not pay."
+config_mod "american/am_PIE", name: "PIE", values: [200,400,600,800,1000,1200], default: 600
+define_mod "american/no_charleston", name: "No Charleston", desc: "Disables the initial Charleston pass."
+define_mod_category "Card"
+define_mod "american/am_card_nmjl_2013", name: "NMJL 2013 Card", desc: "Play with the NMJL 2013 Card.", conflicts: ["Card"]
+define_mod "american/am_card_nmjl_2014", name: "NMJL 2014 Card", desc: "Play with the NMJL 2014 Card.", conflicts: ["Card"]
+define_mod "american/am_card_nmjl_2015", name: "NMJL 2015 Card", desc: "Play with the NMJL 2015 Card.", conflicts: ["Card"]
+define_mod "american/am_card_nmjl_2016", name: "NMJL 2016 Card", desc: "Play with the NMJL 2016 Card.", conflicts: ["Card"]
+define_mod "american/am_card_nmjl_2017", name: "NMJL 2017 Card", desc: "Play with the NMJL 2017 Card.", conflicts: ["Card"]
+define_mod "american/am_card_nmjl_2018", name: "NMJL 2018 Card", desc: "Play with the NMJL 2018 Card.", conflicts: ["Card"]
+define_mod "american/am_card_nmjl_2019", name: "NMJL 2019 Card", desc: "Play with the NMJL 2019 Card.", conflicts: ["Card"]
+define_mod "american/am_card_nmjl_2020", name: "NMJL 2020 Card", desc: "Play with the NMJL 2020 Card.", conflicts: ["Card"]
+define_mod "american/am_card_nmjl_2021", name: "NMJL 2021 Card", desc: "Play with the NMJL 2021 Card.", conflicts: ["Card"]
+define_mod "american/am_card_nmjl_2022", name: "NMJL 2022 Card", desc: "Play with the NMJL 2022 Card.", conflicts: ["Card"]
+define_mod "american/am_card_nmjl_2023", name: "NMJL 2023 Card", desc: "Play with the NMJL 2023 Card.", conflicts: ["Card"]
+define_mod "american/am_card_nmjl_2024", name: "NMJL 2024 Card", desc: "Play with the NMJL 2024 Card.", conflicts: ["Card"]
+define_mod "american/am_card_nmjl_2025", name: "NMJL 2025 Card", desc: "Play with the NMJL 2025 Card.", conflicts: ["Card"]
+define_mod "american/am_card_nmjl_2026", name: "NMJL 2026 Card", desc: "Play with the NMJL 2026 Card.", conflicts: ["Card"]
+# define_mod "american/WIP_am_card_network_2025", name: "Network 2025 Card (WIP)", desc: "Play with the Mah Jongg Network 2025 Card. Not fully implemented yet.", conflicts: ["Card"]
+# define_mod "american/WIP_am_card_network_jr_2025", name: "Network Jr 2025 Card (WIP)", desc: "Play with the Mah Jongg Network Jr 2025 Card. Not fully implemented yet.", conflicts: ["Card"]
+define_mod "american/am_card_press_2026", name: "Press 2026 Card", desc: "Play with the Mahjong Press 2026 Card.", conflicts: ["Card"]
+define_mod "american/BETA_am_card_TML_Big_2026", name: "TML 2026 Big Card (beta)", desc: "Play with The Mahjong Line's 2026 Big Card.", conflicts: ["Card"]
+define_mod "american/am_card_OMM_International_2026", name: "OMM International 2026 Card", desc: "Play with the OMM International 2026 Card.", conflicts: ["Card"]
+define_mod "american/am_card_AMJS_2026", name: "AMJS 2026 Card", desc: "Play with the AMJS 2026 Card.", conflicts: ["Card"]
+define_mod "american/BETA_am_card_Shari_Vegas", name: "ShariUniqueCreations Vegas Card (beta)", desc: "Play with the ShariUniqueCreations Vegas Card. May contain bugs.", conflicts: ["Card"]
+define_mod "american/am_card_ILoveMahj", name: "ILM Card", desc: "Play with the free ILoveMahj Card.", conflicts: ["Card"]
+define_mod "american/am_card_ATeacherFirst", name: "ATF Card", desc: "Play with the free ATeacherFirst Card.", conflicts: ["Card"]
+define_mod "american/am_card_MahjLife", name: "MahjLife Card", desc: "Play with the free MahjLife Card.", conflicts: ["Card"]
+# define_mod "american/WIP_am_card_MahjForAll_Evergreen", name: "MahjForAll Evergreen Card (beta)", desc: "Play with the free MahjForAll Evergreen Card. Six hands are not yet implemented.", conflicts: ["Card"]
+define_mod "american/BETA_am_card_AMJForEveryone", name: "AMJFE Card (beta)", desc: "Play with the free American Mah Jongg for Everyone Card. The 75-point hand is not yet implemented.", conflicts: ["Card"]
+define_mod "american/am_card_free", name: "Card-Free (beta)", desc: "Play with card-free rules: your hand must consist of two types of melds only, and these melds must match one of the following patterns: Any Like Numbers, NEWS, NS, EW, 369, 2468, 135, 357, 579, or Consecutive Run.", conflicts: ["Card"]
+define_mod_category "Miscellaneous"
+define_mod "show_waits", name: "Show Waits", desc: "Add some UI that shows waits."
+define_mod "american/show_nearest_american_hand", name: "Show Nearest Hands", desc: "Add some UI that shows nearest hands."
+define_mod "open_hands", name: "Open Hands", desc: "Everyone plays with tiles shown."
