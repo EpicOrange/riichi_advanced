@@ -14,7 +14,7 @@ defmodule RiichiAdvancedWeb.ScoreWindowComponent do
   def render(assigns) do
     ~H"""
     <div class={["game-modal-container", @visible_screen != :scores && "inactive"]}>
-      <div class={["game-modal", "game-modal-hide"] ++ get_arrow_classes(@seat, @delta_scores)}>
+      <div class={["game-modal", "game-modal-hide"] ++ get_arrow_classes(@seat, @delta_scores, @round_result)}>
         <svg class="arrow t2u" phx-hover="hover" phx-hover-off="hover_off" phx-target={@myself} phx-value-key="t2u" style="--xpos: 6.875; --ypos: 3; --rotate: 90; --length: 7.5;"><use href="#arrow"/></svg>
         <svg class="arrow u2t" phx-hover="hover" phx-hover-off="hover_off" phx-target={@myself} phx-value-key="u2t" style="--xpos: 6.875; --ypos: 10.5; --rotate: -90; --length: 7.5;"><use href="#arrow"/></svg>
         <svg class="arrow k2s" phx-hover="hover" phx-hover-off="hover_off" phx-target={@myself} phx-value-key="k2s" style="--xpos: 4.5; --ypos: 6.625; --rotate: 0; --length: 5;"><use href="#arrow"/></svg>
@@ -155,7 +155,7 @@ defmodule RiichiAdvancedWeb.ScoreWindowComponent do
     ret
   end
 
-  def get_arrow_classes(our_seat, delta_scores) do
+  def get_arrow_classes(our_seat, delta_scores, round_result) do
     # TODO: just because someone lost pts, doesn't necessarily mean they paid everyone who got points
     # we'll change this once we find an example situation (double ron pao is one of them)
     {winners, losers} = delta_scores
@@ -169,14 +169,12 @@ defmodule RiichiAdvancedWeb.ScoreWindowComponent do
     |> Enum.split_with(fn {_seat, delta} -> delta > 0 end)
     for {w, _delta} <- winners, {l, _delta} <- losers, do: "#{l}2#{w}"
 
-    # this was meant for riichi noten payments
-    #   but doesn't work for double ron (or sichuan noten payments)
-    #   so we'll just have riichi noten payments look strange for now TODO
-    # if length(winners) == 2 and length(losers) == 2 do
-    #   for {{w, _delta}, {l, _delta2}} <- Enum.zip(winners, losers), do: "#{l}2#{w}"
-    # else
-    #   for {w, _delta} <- winners, {l, _delta} <- losers, do: "#{l}2#{w}"
-    # end
+    if length(winners) == 2 and length(losers) == 2 and round_result == :exhaustive_draw do
+      # 2 arrows for riichi noten payments
+      for {{w, _delta}, {l, _delta2}} <- Enum.zip(winners, losers), do: "#{l}2#{w}"
+    else
+      for {w, _delta} <- winners, {l, _delta} <- losers, do: "#{l}2#{w}"
+    end
   end
 
   def display_op(op) do
@@ -242,6 +240,7 @@ defmodule RiichiAdvancedWeb.ScoreWindowComponent do
       "u2s"      -> dirs.u <> " → " <> dirs.s
       "t2s"      -> dirs.t <> " → " <> dirs.s
       "t2k"      -> dirs.t <> " → " <> dirs.k
+      "pot"      -> "pot"
       _ ->
         IO.puts("score_window_component.ex: key_title/3 got unknown key #{key}")
         "TODO"
