@@ -313,9 +313,11 @@ defmodule RiichiAdvanced.GameState.Scoring do
 
     tenpairenchan = Map.get(score_rules, "tenpairenchan", false)
     notenrenchan_south = Map.get(score_rules, "notenrenchan_south", false)
+    ryuukyokurenchan = Map.get(score_rules, "ryuukyokurenchan", false)
     next_dealer = cond do
       tenpairenchan and tenpai[Riichi.get_east_player_seat(state.kyoku, state.available_seats)] -> :self
       notenrenchan_south and Riichi.get_round_wind(state.kyoku, length(state.available_seats)) == :south -> :self
+      ryuukyokurenchan -> :self
       true -> :shimocha
     end
 
