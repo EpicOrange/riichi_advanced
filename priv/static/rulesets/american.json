@@ -391,11 +391,6 @@
       ], [
         ["push_message", "gets double score for a jokerless hand"],
         ["modify_payout", "all", 2, "multiply"]
-      ]],
-      // on wins by dicard, engine splits score evenly across all 3 players,
-      // this undoes that
-      ["when", ["won_by_discard"], [
-        ["modify_payout", "everyone", 3, "multiply"]
       ]]
     ]
   },
