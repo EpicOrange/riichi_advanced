@@ -41,10 +41,10 @@ defmodule RiichiAdvanced.GameState.Debug do
   def skip_ruleset_caching, do: Process.get(:ignore_type_error, @skip_ruleset_caching)
 
   def set_wall(wall) do
-    wall = List.replace_at(wall, 39, :"6z") # first draw (sanma
-    wall = List.replace_at(wall, 40, :"6z")
-    wall = List.replace_at(wall, 41, :"7z")
-    wall = List.replace_at(wall, 42, :"8s")
+    # wall = List.replace_at(wall, 39, :"6z") # first draw (sanma
+    # wall = List.replace_at(wall, 40, :"6z")
+    # wall = List.replace_at(wall, 41, :"7z")
+    # wall = List.replace_at(wall, 42, :"8s")
     # wall = List.replace_at(wall, 52, :"6z") # first draw
     # wall = List.replace_at(wall, 53, :"6z")
     # wall = List.replace_at(wall, 54, :"7z")
