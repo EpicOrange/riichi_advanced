@@ -4,7 +4,7 @@
 ]
 |
 if $transparents == 1 then
-  .wall |= (to_entries | map(if (.key % 4 == 0) then .value = [.value, "_revealed", "_transparent"] else . end) | map(.value))
+  .wall |= (to_entries | map(if (.key % 4 == 1) then .value = [.value, "_revealed", "_transparent"] else . end) | map(.value))
 elif $transparents == 2 then
   .wall |= (to_entries | map(if (.key % 2 != 0) then .value = [.value, "_revealed", "_transparent"] else . end) | map(.value))
 elif $transparents == 3 then
