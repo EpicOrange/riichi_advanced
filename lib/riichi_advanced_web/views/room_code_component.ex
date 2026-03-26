@@ -15,6 +15,8 @@ defmodule RiichiAdvancedWeb.RoomCodeComponent do
         <div class={["tile", Enum.at(@room_code, 0) || "1x"]}></div>
         <div class={["tile", Enum.at(@room_code, 1) || "1x"]}></div>
         <div class={["tile", Enum.at(@room_code, 2) || "1x"]}></div>
+        <%= t(@lang, "for ruleset:") %>
+        <%= t(@lang, @ruleset) %>
       </div>
       <br>
       <div class="room-code-buttons">

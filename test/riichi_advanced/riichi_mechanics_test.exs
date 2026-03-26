@@ -1,4 +1,4 @@
-defmodule RiichiAdvanced.RiichiMechanics do
+defmodule RiichiAdvanced.RiichiMechanicsTest do
   use ExUnit.Case, async: true
   alias RiichiAdvanced.TestUtils, as: TestUtils
 
@@ -32,7 +32,7 @@ defmodule RiichiAdvanced.RiichiMechanics do
       %{"type" => "buttons_pressed", "buttons" => [nil, %{"button" => "ron"}, nil, nil]},
     ], %{
       south: %{
-        yaku: [{"Sanankou", 2}, {"Toitoi", 2}],
+        yaku: [{"Sanankou", [2, "Han"]}, {"Toitoi", [2, "Han"]}],
         yaku2: [],
         minipoints: 50
       }
@@ -75,7 +75,7 @@ defmodule RiichiAdvanced.RiichiMechanics do
     TestUtils.test_yaku_advanced("riichi", ["kuikae_nashi"], """
     {
       "starting_hand": {
-        "east": ["2m", "2m", "5z", "5m", "5m", "5z", "6m", "6m", "5z", "5s", "6s", "7s", "8s"],
+        "east": ["2m", "2m", "5z", "5m", "5m", "5z", "6m", "6m", "5z", "5s", "6s", "7s", "8p"],
         "south": ["4m", "4m", "4m", "2p", "2p", "2p", "3s", "3s", "3s", "7z", "7z", "7s", "7s"],
         "west": ["1m", "4m", "7m", "3p", "5p", "8p", "4s", "5s", "8s", "1z", "2z", "3z", "4z"],
         "north": ["1m", "3m", "7m", "3p", "5p", "8p", "4s", "5s", "8s", "1z", "2z", "3z", "4z"]
@@ -198,8 +198,7 @@ defmodule RiichiAdvanced.RiichiMechanics do
       %{"type" => "buttons_pressed", "buttons" => [%{"button" => "ron"}, nil, nil, nil]}
     ], %{
       east: %{
-        yaku: [{"Double Riichi", 2}, {"Ippatsu", 1}, {"Pinfu", 1}, {"Tanyao", 1}, {"Ryanpeikou", 3}, {"Chinitsu", 6}],
-        yaku2: [],
+        yaku: [{"Double Riichi", [2, "Han"]}, {"Ippatsu", [1, "Han"]}, {"Pinfu", [1, "Han"]}, {"Tanyao", [1, "Han"]}, {"Ryanpeikou", [3, "Han"]}, {"Chinitsu", [6, "Han"]}],
         minipoints: 30,
         score: 48000
       }
@@ -224,8 +223,7 @@ defmodule RiichiAdvanced.RiichiMechanics do
       %{"type" => "buttons_pressed", "buttons" => [%{"button" => "ron"}, nil, nil, nil]}
     ], %{
       east: %{
-        yaku: [{"Double Riichi", 2}, {"Ippatsu", 1}, {"Pinfu", 1}, {"Tanyao", 1}, {"Ryanpeikou", 3}, {"Chinitsu", 6}],
-        yaku2: [],
+        yaku: [{"Double Riichi", [2, "Han"]}, {"Ippatsu", [1, "Han"]}, {"Pinfu", [1, "Han"]}, {"Tanyao", [1, "Han"]}, {"Ryanpeikou", [3, "Han"]}, {"Chinitsu", [6, "Han"]}],
         minipoints: 30,
         score: 36000
       }
@@ -248,6 +246,136 @@ defmodule RiichiAdvanced.RiichiMechanics do
       %{"type" => "discard", "tile" => "3z", "player" => 0, "tsumogiri" => true},
       %{"type" => "discard", "tile" => "8p", "player" => 1, "tsumogiri" => true}
     ], :no_winners)
+  end
+
+  test "riichi - noten payments with no tenpai" do
+    draws = List.duplicate("5p", 70) |> List.replace_at(1, "4s")
+    TestUtils.test_yaku_advanced("riichi", [], """
+    {
+      "starting_hand": {
+        "east": ["4m", "4m", "4m", "6m", "7m", "8m", "1p", "1p", "3z", "4z", "4s", "4s", "1z"],
+        "south": ["1m", "4m", "7m", "2p", "5p", "8p", "3s", "6s", "9s", "1z", "2z", "3z", "4z"],
+        "west": ["1m", "4m", "7m", "2p", "5p", "8p", "3s", "6s", "9s", "1z", "2z", "3z", "4z"],
+        "north": ["1m", "4m", "7m", "2p", "5p", "8p", "3s", "6s", "9s", "1z", "2z", "3z", "4z"]
+      },
+      "starting_draws": [#{draws |> Enum.map(&"\"" <> &1 <> "\"") |> Enum.intersperse(", ") |> Enum.join()}]
+    }
+    """, [
+      %{"type" => "discard", "tile" => "5p", "player" => 0, "tsumogiri" => true},
+      %{"type" => "discard", "tile" => "4s", "player" => 1, "tsumogiri" => true},
+      %{"type" => "buttons_pressed", "buttons" => [%{"button" => "pon"}, nil, nil, nil]},
+      %{"type" => "discard", "tile" => "1z", "player" => 0, "tsumogiri" => false},
+      %{"type" => "discard", "tile" => "5p", "player" => 1, "tsumogiri" => false},
+    ] ++ Enum.take(Stream.cycle([
+      %{"type" => "discard", "tile" => "5p", "player" => 2, "tsumogiri" => true},
+      %{"type" => "discard", "tile" => "5p", "player" => 3, "tsumogiri" => true},
+      %{"type" => "discard", "tile" => "5p", "player" => 0, "tsumogiri" => true},
+      %{"type" => "discard", "tile" => "5p", "player" => 1, "tsumogiri" => true},
+    ]), 67), :no_winners, %{delta_scores: [0, 0, 0, 0]})
+  end
+
+  test "riichi - noten payments with 1 tenpai" do
+    draws = List.duplicate("5p", 70) |> List.replace_at(1, "4s")
+    TestUtils.test_yaku_advanced("riichi", [], """
+    {
+      "starting_hand": {
+        "east": ["4m", "4m", "4m", "6m", "7m", "8m", "1p", "1p", "3z", "3z", "4s", "4s", "1z"],
+        "south": ["1m", "4m", "7m", "2p", "5p", "8p", "3s", "6s", "9s", "1z", "2z", "3z", "4z"],
+        "west": ["1m", "4m", "7m", "2p", "5p", "8p", "3s", "6s", "9s", "1z", "2z", "3z", "4z"],
+        "north": ["1m", "4m", "7m", "2p", "5p", "8p", "3s", "6s", "9s", "1z", "2z", "3z", "4z"]
+      },
+      "starting_draws": [#{draws |> Enum.map(&"\"" <> &1 <> "\"") |> Enum.intersperse(", ") |> Enum.join()}]
+    }
+    """, [
+      %{"type" => "discard", "tile" => "5p", "player" => 0, "tsumogiri" => true},
+      %{"type" => "discard", "tile" => "4s", "player" => 1, "tsumogiri" => true},
+      %{"type" => "buttons_pressed", "buttons" => [%{"button" => "pon"}, nil, nil, nil]},
+      %{"type" => "discard", "tile" => "1z", "player" => 0, "tsumogiri" => false},
+      %{"type" => "discard", "tile" => "5p", "player" => 1, "tsumogiri" => false},
+    ] ++ Enum.take(Stream.cycle([
+      %{"type" => "discard", "tile" => "5p", "player" => 2, "tsumogiri" => true},
+      %{"type" => "discard", "tile" => "5p", "player" => 3, "tsumogiri" => true},
+      %{"type" => "discard", "tile" => "5p", "player" => 0, "tsumogiri" => true},
+      %{"type" => "discard", "tile" => "5p", "player" => 1, "tsumogiri" => true},
+    ]), 67), :no_winners, %{delta_scores: [3000, -1000, -1000, -1000]})
+  end
+
+  test "riichi - noten payments with 2 tenpai" do
+    draws = List.duplicate("5p", 70) |> List.replace_at(1, "4s")
+    TestUtils.test_yaku_advanced("riichi", [], """
+    {
+      "starting_hand": {
+        "east": ["4m", "4m", "4m", "6m", "7m", "8m", "1p", "1p", "3z", "3z", "4s", "4s", "1z"],
+        "south": ["1m", "4m", "7m", "2p", "5p", "8p", "3s", "6s", "9s", "1z", "2z", "3z", "4z"],
+        "west": ["4m", "4m", "4m", "6m", "7m", "8m", "1p", "1p", "3z", "3z", "4s", "4s", "4s"],
+        "north": ["1m", "4m", "7m", "2p", "5p", "8p", "3s", "6s", "9s", "1z", "2z", "3z", "4z"]
+      },
+      "starting_draws": [#{draws |> Enum.map(&"\"" <> &1 <> "\"") |> Enum.intersperse(", ") |> Enum.join()}]
+    }
+    """, [
+      %{"type" => "discard", "tile" => "5p", "player" => 0, "tsumogiri" => true},
+      %{"type" => "discard", "tile" => "4s", "player" => 1, "tsumogiri" => true},
+      %{"type" => "buttons_pressed", "buttons" => [%{"button" => "pon"}, nil, nil, nil]},
+      %{"type" => "discard", "tile" => "1z", "player" => 0, "tsumogiri" => false},
+      %{"type" => "discard", "tile" => "5p", "player" => 1, "tsumogiri" => false},
+    ] ++ Enum.take(Stream.cycle([
+      %{"type" => "discard", "tile" => "5p", "player" => 2, "tsumogiri" => true},
+      %{"type" => "discard", "tile" => "5p", "player" => 3, "tsumogiri" => true},
+      %{"type" => "discard", "tile" => "5p", "player" => 0, "tsumogiri" => true},
+      %{"type" => "discard", "tile" => "5p", "player" => 1, "tsumogiri" => true},
+    ]), 67), :no_winners, %{delta_scores: [1500, -1500, 1500, -1500]})
+  end
+
+  test "riichi - noten payments with 3 tenpai" do
+    draws = List.duplicate("5p", 70) |> List.replace_at(1, "4s")
+    TestUtils.test_yaku_advanced("riichi", [], """
+    {
+      "starting_hand": {
+        "east": ["4m", "4m", "4m", "6m", "7m", "8m", "1p", "1p", "3z", "3z", "4s", "4s", "1z"],
+        "south": ["1m", "4m", "7m", "2p", "5p", "8p", "3s", "6s", "9s", "1z", "2z", "3z", "4z"],
+        "west": ["4m", "4m", "4m", "6m", "7m", "8m", "1p", "1p", "3z", "3z", "4s", "4s", "4s"],
+        "north": ["4m", "4m", "4m", "6m", "7m", "8m", "1p", "1p", "3z", "3z", "4s", "4s", "4s"]
+      },
+      "starting_draws": [#{draws |> Enum.map(&"\"" <> &1 <> "\"") |> Enum.intersperse(", ") |> Enum.join()}]
+    }
+    """, [
+      %{"type" => "discard", "tile" => "5p", "player" => 0, "tsumogiri" => true},
+      %{"type" => "discard", "tile" => "4s", "player" => 1, "tsumogiri" => true},
+      %{"type" => "buttons_pressed", "buttons" => [%{"button" => "pon"}, nil, nil, nil]},
+      %{"type" => "discard", "tile" => "1z", "player" => 0, "tsumogiri" => false},
+      %{"type" => "discard", "tile" => "5p", "player" => 1, "tsumogiri" => false},
+    ] ++ Enum.take(Stream.cycle([
+      %{"type" => "discard", "tile" => "5p", "player" => 2, "tsumogiri" => true},
+      %{"type" => "discard", "tile" => "5p", "player" => 3, "tsumogiri" => true},
+      %{"type" => "discard", "tile" => "5p", "player" => 0, "tsumogiri" => true},
+      %{"type" => "discard", "tile" => "5p", "player" => 1, "tsumogiri" => true},
+    ]), 67), :no_winners, %{delta_scores: [1000, -3000, 1000, 1000]})
+  end
+
+  test "riichi - noten payments with 4 tenpai" do
+    draws = List.duplicate("5p", 70) |> List.replace_at(1, "4s")
+    TestUtils.test_yaku_advanced("riichi", [], """
+    {
+      "starting_hand": {
+        "east": ["4m", "4m", "4m", "6m", "7m", "8m", "1p", "1p", "3z", "3z", "4s", "4s", "1z"],
+        "south": ["4m", "4m", "4m", "6m", "7m", "8m", "1p", "1p", "3z", "3z", "4s", "4s", "4s"],
+        "west": ["4m", "4m", "4m", "6m", "7m", "8m", "1p", "1p", "3z", "3z", "4s", "4s", "4s"],
+        "north": ["4m", "4m", "4m", "6m", "7m", "8m", "1p", "1p", "3z", "3z", "4s", "4s", "4s"]
+      },
+      "starting_draws": [#{draws |> Enum.map(&"\"" <> &1 <> "\"") |> Enum.intersperse(", ") |> Enum.join()}]
+    }
+    """, [
+      %{"type" => "discard", "tile" => "5p", "player" => 0, "tsumogiri" => true},
+      %{"type" => "discard", "tile" => "4s", "player" => 1, "tsumogiri" => true},
+      %{"type" => "buttons_pressed", "buttons" => [%{"button" => "pon"}, nil, nil, nil]},
+      %{"type" => "discard", "tile" => "1z", "player" => 0, "tsumogiri" => false},
+      %{"type" => "discard", "tile" => "5p", "player" => 1, "tsumogiri" => false},
+    ] ++ Enum.take(Stream.cycle([
+      %{"type" => "discard", "tile" => "5p", "player" => 2, "tsumogiri" => true},
+      %{"type" => "discard", "tile" => "5p", "player" => 3, "tsumogiri" => true},
+      %{"type" => "discard", "tile" => "5p", "player" => 0, "tsumogiri" => true},
+      %{"type" => "discard", "tile" => "5p", "player" => 1, "tsumogiri" => true},
+    ]), 67), :no_winners, %{delta_scores: [0, 0, 0, 0]})
   end
 
 end

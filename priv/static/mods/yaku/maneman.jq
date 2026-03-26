@@ -3,7 +3,7 @@
 .maneman += [
   {
     "display_name": "Maneman",
-    "value": 5,
+    "value": [5, "Han"],
     "when": [
       {"name": "not_has_points", "opts": [5]},
       {"name": "not_status_missing", "opts": ["maneman_kamicha", "maneman_toimen", "maneman_shimocha"]}

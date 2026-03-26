@@ -21,8 +21,16 @@ define_set chun, ~s"7z 7z 7z"
 define_set haku_pair, ~s"5z 5z"
 define_set hatsu_pair, ~s"6z 6z"
 define_set chun_pair, ~s"7z 7z"
-define_yaku !shou_list, !shou_name, !shou_value, match(["hand", "calls", "winning_tile"], ~m"unique, (haku hatsu chun):2, (haku_pair hatsu_pair chun_pair):1")
-define_yaku !dai_list, !dai_name, !dai_value, match(["hand", "calls", "winning_tile"], ~m"unique, (haku hatsu chun):3")
+if equals(!shou_list, "yakuman") do
+  define_yaku !shou_list, !shou_name, [!shou_value, !limit], match(["hand", "calls", "winning_tile"], ~m"unique, (haku hatsu chun):2, (haku_pair hatsu_pair chun_pair):1")
+else
+  define_yaku !shou_list, !shou_name, [!shou_value, !han], match(["hand", "calls", "winning_tile"], ~m"unique, (haku hatsu chun):2, (haku_pair hatsu_pair chun_pair):1")
+end
+if equals(!dai_list, "yakuman") do
+  define_yaku !dai_list, !dai_name, [!dai_value, !limit], match(["hand", "calls", "winning_tile"], ~m"unique, (haku hatsu chun):3")
+else
+  define_yaku !dai_list, !dai_name, [!dai_value, !han], match(["hand", "calls", "winning_tile"], ~m"unique, (haku hatsu chun):3")
+end
 define_yaku_precedence !dai_name, [!shou_name]
 
 on after_call do

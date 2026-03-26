@@ -3,9 +3,10 @@ on after_initialization do
 end
 
 apply set_prepend, "score_calculation.yaku_lists", "riichi_yaku"
+define_yaku_precedence "yakuman", ["riichi_yaku"]
 
-define_yaku riichi_yaku, "Riichi", 1, status("riichi")
-define_yaku riichi_yaku, "Double Riichi", 2, status("double_riichi")
+define_yaku riichi_yaku, "Riichi", [1, "Han"], status("riichi")
+define_yaku riichi_yaku, "Double Riichi", [2, "Han"], status("double_riichi")
 define_yaku_precedence "Double Riichi", ["Riichi"]
 
 define_match chiitoitsu_tenpai_14, ~m"(nojoker quad):-1, (nojoker koutsu):-2, pair:6"
@@ -71,5 +72,5 @@ def place_riichi_stick do
   end
 end
 
-define play_restriction, "any", status("riichi") and status_missing("just_reached") and not_is_drawn_tile
-define play_restriction, "any", status("riichi", "just_reached") and needed_for_hand("tenpai")
+define_play_restriction "any", status("riichi") and status_missing("just_reached") and not_is_drawn_tile
+define_play_restriction "any", status("riichi", "just_reached") and needed_for_hand("tenpai")

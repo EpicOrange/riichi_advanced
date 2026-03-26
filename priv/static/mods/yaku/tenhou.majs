@@ -40,10 +40,24 @@ on after_call do
   end
 end
 
-define_yaku !tenhou_list, !tenhou_name, !tenhou_value, status("first_turn") and won_by_draw and seat_is("east")
-define_yaku !chiihou_list, !chiihou_name, !chiihou_value, status("first_turn") and won_by_draw and not_seat_is("east")
-define_yaku !chiihou_list, !chiihou_name, !chiihou_value, everyone_status("first_turn") and won_by_discard
-define_yaku !renhou_list, !renhou_name, !renhou_value, not_everyone_status("first_turn") and status("first_turn") and won_by_discard
+
+if equals(!tenhou_list, "yakuman") do
+  define_yaku !tenhou_list, !tenhou_name, [!tenhou_value, !limit], status("first_turn") and won_by_draw and seat_is("east")
+else
+  define_yaku !tenhou_list, !tenhou_name, [!tenhou_value, !han], status("first_turn") and won_by_draw and seat_is("east")
+end
+if equals(!chiihou_list, "yakuman") do
+  define_yaku !chiihou_list, !chiihou_name, [!chiihou_value, !limit], status("first_turn") and won_by_draw and not_seat_is("east")
+  define_yaku !chiihou_list, !chiihou_name, [!chiihou_value, !limit], everyone_status("first_turn") and won_by_discard
+else
+  define_yaku !chiihou_list, !chiihou_name, [!chiihou_value, !han], status("first_turn") and won_by_draw and not_seat_is("east")
+  define_yaku !chiihou_list, !chiihou_name, [!chiihou_value, !han], everyone_status("first_turn") and won_by_discard
+end
+if equals(!renhou_list, "yakuman") do
+  define_yaku !renhou_list, !renhou_name, [!renhou_value, !limit], not_everyone_status("first_turn") and status("first_turn") and won_by_discard
+else
+  define_yaku !renhou_list, !renhou_name, [!renhou_value, !han], not_everyone_status("first_turn") and status("first_turn") and won_by_discard
+end
 define_yaku_precedence !chiihou_name, [!renhou_name]
 
 # invalidate certain wins

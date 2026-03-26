@@ -6,7 +6,7 @@
 .yakuman += [
   {
     "display_name": "Tohoku Shinkansen",
-    "value": 1,
-    "when": [{"name": "match", "opts": [["hand", "calls", "winning_tile"], [[ "exhaustive", [["ittsuu"], 1], [["ton","pei"], 1], [["ton_pair","pei_pair"], 1] ]]]}]
+    "value": [1, "★"],
+    "when": [{"name": "match", "opts": [["hand", "calls", "winning_tile"], [[ "exhaustive", [["ittsuu"], 1], [["ton", "pei"], 1], [["ton_pair", "pei_pair"], 1] ]]]}]
   }
 ]

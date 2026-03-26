@@ -190,7 +190,7 @@ defmodule RiichiAdvanced.Riichi do
     # IO.puts("#{inspect(calls_spec)} / #{inspect(hand)} / #{inspect(called_tiles)}")
     from_hand = Enum.empty?(called_tiles)
     {calls_spec, tile_behavior} = if Enum.at(calls_spec, 0) == "nojoker" do
-      {Enum.drop(calls_spec, 1), %TileBehavior{ tile_behavior | aliases: %{} }}
+      {Enum.drop(calls_spec, 1), %{ tile_behavior | aliases: %{} }}
     else {calls_spec, tile_behavior} end
     ret = for tile <- (if from_hand do hand else called_tiles end) do
       {tile, Enum.flat_map(calls_spec, fn call_spec ->
@@ -523,6 +523,9 @@ defmodule RiichiAdvanced.Riichi do
 
   def get_east_player_seat(kyoku, available_seats) do
     Enum.at(available_seats, rem(kyoku, length(available_seats)))
+  end
+  def is_dealer?(seat, kyoku, available_seats) do
+    get_east_player_seat(kyoku, available_seats) == seat
   end
 
   def get_seat_scoring_offset(kyoku, seat, available_seats) do

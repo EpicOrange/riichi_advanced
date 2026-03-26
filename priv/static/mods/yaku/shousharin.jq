@@ -12,17 +12,17 @@
 .yakuman += [
   {
     "display_name": "Shousharin",
-    "value": 1,
+    "value": [1, "★"],
     "when": [{"name": "has_no_call_named", "opts": $open_calls}, {"name": "match", "opts": [["hand", "calls", "winning_tile"], ["shousharin"]]}]
   },
   {
     "display_name": "Shouchikurin",
-    "value": 1,
+    "value": [1, "★"],
     "when": [{"name": "has_no_call_named", "opts": $open_calls}, {"name": "match", "opts": [["hand", "calls", "winning_tile"], ["shouchikurin"]]}]
   },
   {
     "display_name": "Shousuurin",
-    "value": 1,
+    "value": [1, "★"],
     "when": [{"name": "has_no_call_named", "opts": $open_calls}, {"name": "match", "opts": [["hand", "calls", "winning_tile"], ["shousuurin"]]}]
   }
 ]

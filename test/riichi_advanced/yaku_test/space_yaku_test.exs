@@ -19,8 +19,7 @@ defmodule RiichiAdvanced.YakuTest.SpaceYaku do
       %{"type" => "buttons_pressed", "buttons" => [%{"button" => "ron"}, nil, nil, nil]}
     ], %{
       east: %{
-        yaku: [{"Chun", 1}],
-        yaku2: [],
+        yaku: [{"Chun", [1, "Han"]}],
         minipoints: 40
       }
     })
@@ -43,8 +42,7 @@ defmodule RiichiAdvanced.YakuTest.SpaceYaku do
       %{"type" => "buttons_pressed", "buttons" => [%{"button" => "ron"}, nil, nil, nil]}
     ], %{
       east: %{
-        yaku: [{"Honitsu", 3}],
-        yaku2: [],
+        yaku: [{"Honitsu", [3, "Han"]}],
         minipoints: 40
       }
     })
@@ -67,8 +65,7 @@ defmodule RiichiAdvanced.YakuTest.SpaceYaku do
       %{"type" => "buttons_pressed", "buttons" => [%{"button" => "ron"}, nil, nil, nil]}
     ], %{
       east: %{
-        yaku: [{"Honitsu", 3}],
-        yaku2: [],
+        yaku: [{"Honitsu", [3, "Han"]}],
         minipoints: 40
       }
     })
@@ -109,8 +106,7 @@ defmodule RiichiAdvanced.YakuTest.SpaceYaku do
       %{"type" => "buttons_pressed", "buttons" => [%{"button" => "ron"}, nil, nil, nil]}
     ], %{
       east: %{
-        yaku: [{"Honitsu", 3}],
-        yaku2: [],
+        yaku: [{"Honitsu", [3, "Han"]}],
         minipoints: 40
       }
     })
@@ -134,8 +130,7 @@ defmodule RiichiAdvanced.YakuTest.SpaceYaku do
       %{"type" => "buttons_pressed", "buttons" => [%{"button" => "ron"}, nil, nil, nil]}
     ], %{
       east: %{
-        yaku: [{"Honitsu", 3}],
-        yaku2: [],
+        yaku: [{"Honitsu", [3, "Han"]}],
         minipoints: 40
       }
     })
@@ -164,8 +159,7 @@ defmodule RiichiAdvanced.YakuTest.SpaceYaku do
       %{"type" => "buttons_pressed", "buttons" => [%{"button" => "ron"}, nil, nil, nil]}
     ], %{
       east: %{
-        yaku: [{"Honroutou", 2}, {"Open Kokushi Musou", 3}],
-        yaku2: [],
+        yaku: [{"Honroutou", [2, "Han"]}, {"Open Kokushi Musou", [3, "Han"]}],
         minipoints: 30
       }
     })
@@ -188,8 +182,7 @@ defmodule RiichiAdvanced.YakuTest.SpaceYaku do
       %{"type" => "buttons_pressed", "buttons" => [%{"button" => "ron"}, nil, nil, nil]}
     ], %{
       east: %{
-        yaku: [{"Chanta", 2}],
-        yaku2: [],
+        yaku: [{"Chanta", [2, "Han"]}],
         minipoints: 40
       }
     })
@@ -212,8 +205,7 @@ defmodule RiichiAdvanced.YakuTest.SpaceYaku do
       %{"type" => "buttons_pressed", "buttons" => [%{"button" => "ron"}, nil, nil, nil]}
     ], %{
       east: %{
-        yaku: [{"Junchan", 3}],
-        yaku2: [],
+        yaku: [{"Junchan", [3, "Han"]}],
         minipoints: 40
       }
     })
@@ -236,8 +228,7 @@ defmodule RiichiAdvanced.YakuTest.SpaceYaku do
       %{"type" => "buttons_pressed", "buttons" => [%{"button" => "ron"}, nil, nil, nil]}
     ], %{
       east: %{
-        yaku: [{"Chanta", 2}],
-        yaku2: [],
+        yaku: [{"Chanta", [2, "Han"]}],
         minipoints: 40
       }
     })
@@ -260,8 +251,7 @@ defmodule RiichiAdvanced.YakuTest.SpaceYaku do
       %{"type" => "buttons_pressed", "buttons" => [%{"button" => "ron"}, nil, nil, nil]}
     ], %{
       east: %{
-        yaku: [],
-        yaku2: [{"Junsei Chuurenpoutou", 2}],
+        yaku: [{"Junsei Chuurenpoutou", [2, "★"]}],
         minipoints: 40
       }
     })

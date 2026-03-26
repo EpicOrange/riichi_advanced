@@ -15,24 +15,11 @@ defmodule RiichiAdvanced.GameState.Debug do
   @debug_ai false
   @debug_log true
   @debug_tutorial false
+  @debug_yaku_precedence false
   @print_mods false
   @print_smt false
   @skip_ruleset_caching false
   @print_wins false
-
-  # def debug, do: @debug
-  # def debug_status, do: @debug_status
-  # def debug_fast_ai, do: @debug_fast_ai
-  # def debug_saki_card_ours, do: @debug_saki_card_ours
-  # def debug_saki_card_opponent, do: @debug_saki_card_opponent
-  # def debug_am_match_definitions, do: @debug_am_match_definitions
-  # def debug_actions, do: @debug_actions
-  # def debug_buttons, do: @debug_buttons
-  # def debug_conditions, do: @debug_conditions
-  # def debug_ai, do: @debug_ai
-  # def debug_log, do: @debug_log
-  # def print_smt, do: @print_smt
-  # def skip_ruleset_caching, do: @skip_ruleset_caching
 
   def debug, do: Process.get(:ignore_type_error, @debug)
   def debug_status, do: Process.get(:ignore_type_error, @debug_status)
@@ -47,17 +34,22 @@ defmodule RiichiAdvanced.GameState.Debug do
   def debug_ai, do: Process.get(:ignore_type_error, @debug_ai)
   def debug_log, do: Process.get(:ignore_type_error, @debug_log)
   def debug_tutorial, do: Process.get(:ignore_type_error, @debug_tutorial)
+  def debug_yaku_precedence, do: Process.get(:ignore_type_error, @debug_yaku_precedence)
   def print_mods, do: Process.get(:ignore_type_error, @print_mods)
   def print_smt, do: Process.get(:ignore_type_error, @print_smt)
   def print_wins, do: Process.get(:ignore_type_error, @print_wins)
   def skip_ruleset_caching, do: Process.get(:ignore_type_error, @skip_ruleset_caching)
 
   def set_wall(wall) do
-    # wall = List.replace_at(wall, 52, :"2s") # first draw
-    # wall = List.replace_at(wall, 53, :"2p")
-    # wall = List.replace_at(wall, 54, :"5m")
-    # wall = List.replace_at(wall, 55, :"7m")
-    # wall = List.replace_at(wall, 56, :"1z") # second draw
+    wall = List.replace_at(wall, 39, :"6z") # first draw (sanma
+    wall = List.replace_at(wall, 40, :"6z")
+    wall = List.replace_at(wall, 41, :"7z")
+    wall = List.replace_at(wall, 42, :"8s")
+    # wall = List.replace_at(wall, 52, :"6z") # first draw
+    # wall = List.replace_at(wall, 53, :"6z")
+    # wall = List.replace_at(wall, 54, :"7z")
+    # wall = List.replace_at(wall, 55, :"8s")
+    # wall = List.replace_at(wall, 56, :"3s") # second draw
     # wall = List.replace_at(wall, 57, :"1m")
     # wall = List.replace_at(wall, 58, :"1m")
     # wall = List.replace_at(wall, 59, :"1m")
@@ -118,12 +110,16 @@ defmodule RiichiAdvanced.GameState.Debug do
     wall
   end
   def set_starting_hand(wall) do
+    hands = %{:east  => Utils.sort_tiles(Enum.slice(wall, 0..12)),
+              :south => Utils.sort_tiles(Enum.slice(wall, 13..25)),
+              :west  => Utils.sort_tiles(Enum.slice(wall, 26..38)),
+              :north => Utils.sort_tiles(Enum.slice(wall, 39..51))}
 
-    # 13-tile starting hand
-    hands = %{:east  => Enum.slice(wall, 0..12),
-              :south => Enum.slice(wall, 13..25),
-              :west  => Enum.slice(wall, 26..38),
-              :north => Enum.slice(wall, 39..51)}
+    # # testing hand
+    # hands = %{:east  => Utils.sort_tiles([:"2p", :"3p", :"4p", :"7p", :"8p", :"9p", :"1s", :"2s", :"3s", :"4z", :"4z", :"6s", :"7s"]),
+    #           :south => Enum.slice(wall, 13..25),
+    #           :west  => Enum.slice(wall, 26..38),
+    #           :north => Enum.slice(wall, 39..51)}
 
     # # 12-tile starting hand
     # hands = %{:east  => Enum.slice(wall, 0..11),

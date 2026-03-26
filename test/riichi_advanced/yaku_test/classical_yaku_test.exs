@@ -24,7 +24,6 @@ defmodule RiichiAdvanced.YakuTest.ClassicalYaku do
     ], %{
       east: %{
         yaku: [],
-        yaku2: [],
         minipoints: 40, # 30 closed ron + 2 tanki wait + 2x4 closed triplet = 40
         score: 80 # dealer x2
       }
@@ -52,8 +51,7 @@ defmodule RiichiAdvanced.YakuTest.ClassicalYaku do
       %{"type" => "buttons_pressed", "buttons" => [%{"button" => "ron"}, nil, nil, nil]}
     ], %{
       east: %{
-        yaku: [{"Pure Straight", 1}],
-        yaku2: [],
+        yaku: [{"Pure Straight", [1, "Fan"]}],
         minipoints: 36, # 30 closed ron + 2 tanki wait + 4 closed triplet = 36
         score: 144 # 1 doubling, dealer x2
       }
@@ -81,8 +79,7 @@ defmodule RiichiAdvanced.YakuTest.ClassicalYaku do
       %{"type" => "buttons_pressed", "buttons" => [%{"button" => "ron"}, nil, nil, nil]}
     ], %{
       east: %{
-        yaku: [{"All Triplets", 1}, {"Three Concealed Triplets", 1}],
-        yaku2: [],
+        yaku: [{"All Triplets", [1, "Fan"]}, {"Three Concealed Triplets", [1, "Fan"]}],
         minipoints: 48, # 30 closed ron + 2x4 closed triplet + 8 closed terminal triplet + 2 open triplet = 48
         score: 384 # 2 doublings, dealer x2
       }
@@ -110,8 +107,7 @@ defmodule RiichiAdvanced.YakuTest.ClassicalYaku do
       %{"type" => "buttons_pressed", "buttons" => [%{"button" => "ron"}, nil, nil, nil]}
     ], %{
       east: %{
-        yaku: [],
-        yaku2: [{"Four Concealed Triplets", 1}],
+        yaku: [{"Four Concealed Triplets", [1, "Limit"]}],
         minipoints: 48, # 30 closed ron + 2 tanki wait + 4x4 closed triplet = 48
         score: 500 # limit
       }
@@ -139,8 +135,7 @@ defmodule RiichiAdvanced.YakuTest.ClassicalYaku do
       %{"type" => "buttons_pressed", "buttons" => [%{"button" => "ron"}, nil, nil, nil]}
     ], %{
       east: %{
-        yaku: [{"White Dragon", 1}],
-        yaku2: [],
+        yaku: [{"White Dragon", [1, "Fan"]}],
         minipoints: 44, # 30 closed ron + 2 tanki wait + 4 closed triplet + 8 closed honor triplet = 44
         score: 176 # 1 doubling, dealer x2
       }
@@ -168,8 +163,7 @@ defmodule RiichiAdvanced.YakuTest.ClassicalYaku do
       %{"type" => "buttons_pressed", "buttons" => [%{"button" => "ron"}, nil, nil, nil]}
     ], %{
       east: %{
-        yaku: [{"Green Dragon", 1}],
-        yaku2: [],
+        yaku: [{"Green Dragon", [1, "Fan"]}],
         minipoints: 44, # 30 closed ron + 2 tanki wait + 4 closed triplet + 8 closed honor triplet = 44
         score: 176 # 1 doubling, dealer x2
       }
@@ -197,8 +191,7 @@ defmodule RiichiAdvanced.YakuTest.ClassicalYaku do
       %{"type" => "buttons_pressed", "buttons" => [%{"button" => "ron"}, nil, nil, nil]}
     ], %{
       east: %{
-        yaku: [{"Red Dragon", 1}],
-        yaku2: [],
+        yaku: [{"Red Dragon", [1, "Fan"]}],
         minipoints: 44, # 30 closed ron + 2 tanki wait + 4 closed triplet + 8 closed honor triplet = 44
         score: 176 # 1 doubling, dealer x2
       }
@@ -226,8 +219,7 @@ defmodule RiichiAdvanced.YakuTest.ClassicalYaku do
       %{"type" => "buttons_pressed", "buttons" => [%{"button" => "ron"}, nil, nil, nil]}
     ], %{
       east: %{
-        yaku: [{"White Dragon", 1}, {"Green Dragon", 1}, {"Little Three Dragons", 3}],
-        yaku2: [],
+        yaku: [{"White Dragon", [1, "Fan"]}, {"Green Dragon", [1, "Fan"]}, {"Little Three Dragons", [3, "Fan"]}],
         minipoints: 48, # 30 closed ron + 2 yakuhai pair + 8 closed honor triplet + 4 closed triplet + 4 open honor triplet = 48
         score: 500 # 5 doublings, dealer x2
       }
@@ -255,8 +247,7 @@ defmodule RiichiAdvanced.YakuTest.ClassicalYaku do
       %{"type" => "buttons_pressed", "buttons" => [%{"button" => "ron"}, nil, nil, nil]}
     ], %{
       east: %{
-        yaku: [{"All Simples", 1}],
-        yaku2: [],
+        yaku: [{"All Simples", [1, "Fan"]}],
         minipoints: 36, # 30 closed ron + 2 tanki wait + 4 closed triplet = 36
         score: 144 # 1 doubling, dealer x2
       }
@@ -284,8 +275,7 @@ defmodule RiichiAdvanced.YakuTest.ClassicalYaku do
       %{"type" => "buttons_pressed", "buttons" => [%{"button" => "ron"}, nil, nil, nil]}
     ], %{
       east: %{
-        yaku: [{"Prevalent Wind", 1}, {"Seat Wind", 1}],
-        yaku2: [],
+        yaku: [{"Prevalent Wind", [1, "Fan"]}, {"Seat Wind", [1, "Fan"]}],
         minipoints: 44, # 30 closed ron + 2 tanki wait + 4 closed triplet + 8 closed honor triplet = 44
         score: 352 # 2 doublings, dealer x2
       }
@@ -314,7 +304,6 @@ defmodule RiichiAdvanced.YakuTest.ClassicalYaku do
     ], %{
       east: %{
         yaku: [],
-        yaku2: [],
         minipoints: 50, # 30 closed ron + 2x8 closed honor triplet + 4 open honor triplet = 50
         score: 100 # dealer x2
       }
@@ -342,8 +331,7 @@ defmodule RiichiAdvanced.YakuTest.ClassicalYaku do
       %{"type" => "buttons_pressed", "buttons" => [%{"button" => "ron"}, nil, nil, nil]}
     ], %{
       east: %{
-        yaku: [{"Outside Hand", 1}],
-        yaku2: [],
+        yaku: [{"Outside Hand", [1, "Fan"]}],
         minipoints: 44, # 30 closed ron + 8 closed honor triplet + 4 open honor triplet + 2 yakuhai pair = 44
         score: 176 # 1 doubling, dealer x2
       }
@@ -371,8 +359,7 @@ defmodule RiichiAdvanced.YakuTest.ClassicalYaku do
       %{"type" => "buttons_pressed", "buttons" => [%{"button" => "ron"}, nil, nil, nil]}
     ], %{
       east: %{
-        yaku: [{"Outside Hand", 1}, {"All Triplets", 1}, {"All Terminals and Honors", 1}, {"Three Concealed Triplets", 1}],
-        yaku2: [],
+        yaku: [{"Outside Hand", [1, "Fan"]}, {"All Triplets", [1, "Fan"]}, {"All Terminals and Honors", [1, "Fan"]}, {"Three Concealed Triplets", [1, "Fan"]}],
         minipoints: 62, # 30 closed ron + 3x8 closed honor/terminal triplet + 4 open honor triplet + 4 double yakuhai pair = 62
         score: 500 # 4 doublings, dealer x2
       }
@@ -400,8 +387,7 @@ defmodule RiichiAdvanced.YakuTest.ClassicalYaku do
       %{"type" => "buttons_pressed", "buttons" => [%{"button" => "ron"}, nil, nil, nil]}
     ], %{
       east: %{
-        yaku: [{"Half Flush", 1}],
-        yaku2: [],
+        yaku: [{"Half Flush", [1, "Fan"]}],
         minipoints: 46, # 30 closed ron + 8 closed honor triplet + 4 open honor triplet + 4 double yakuhai pair = 46
         score: 184 # 1 doubling, dealer x2
       }
@@ -428,8 +414,7 @@ defmodule RiichiAdvanced.YakuTest.ClassicalYaku do
       %{"type" => "buttons_pressed", "buttons" => [nil, %{"button" => "ron"}, nil, nil]}
     ], %{
       south: %{
-        yaku: [{"Full Flush", 4}],
-        yaku2: [],
+        yaku: [{"Full Flush", [4, "Fan"]}],
         minipoints: 30, # 30 closed ron = 30
         score: 480 # 4 doublings
       }
@@ -457,8 +442,7 @@ defmodule RiichiAdvanced.YakuTest.ClassicalYaku do
       %{"type" => "buttons_pressed", "buttons" => [%{"button" => "tsumo"}, nil, nil, nil]}
     ], %{
       east: %{
-        yaku: [{"Concealed Hand", 1}, {"Half Flush", 1}, {"Out on a Replacement", 1}, {"Three Concealed Triplets", 1}],
-        yaku2: [],
+        yaku: [{"Concealed Hand", [1, "Fan"]}, {"Half Flush", [1, "Fan"]}, {"Out on a Replacement", [1, "Fan"]}, {"Three Concealed Triplets", [1, "Fan"]}],
         minipoints: 84, # 32 closed tsumo + 32 closed honor kan + 2x8 closed honor triplet + 4 double yakuhai pair = 84
         score: 500 # 4 doublings, dealer x2
       }
@@ -490,8 +474,7 @@ defmodule RiichiAdvanced.YakuTest.ClassicalYaku do
       %{"type" => "buttons_pressed", "buttons" => [%{"button" => "chankan"}, nil, nil, nil]}
     ], %{
       east: %{
-        yaku: [{"Robbing the Kong", 1}],
-        yaku2: [],
+        yaku: [{"Robbing the Kong", [1, "Fan"]}],
         minipoints: 26, # 20 open ron + 2 open triplet + 4 closed triplet = 26
         score: 104 # 1 doubling, dealer x2
       }
@@ -524,8 +507,7 @@ defmodule RiichiAdvanced.YakuTest.ClassicalYaku do
       %{"type" => "buttons_pressed", "buttons" => [%{"button" => "ron"}, nil, nil, nil]}
     ], %{
       east: %{
-        yaku: [{"Seat Flower", 1}, {"Seat Season", 1}],
-        yaku2: [],
+        yaku: [{"Seat Flower", [1, "Fan"]}, {"Seat Season", [1, "Fan"]}],
         minipoints: 56, # 30 closed ron + 2 tanki wait + 2x4 closed triplet + 4x4 flowers = 56
         score: 448 # 2 doublings, dealer x2
       }
@@ -559,8 +541,7 @@ defmodule RiichiAdvanced.YakuTest.ClassicalYaku do
       %{"type" => "buttons_pressed", "buttons" => [nil, %{"button" => "ron"}, nil, nil]}
     ], %{
       south: %{
-        yaku: [{"All Flowers", 4}, {"Seat Flower", 1}],
-        yaku2: [],
+        yaku: [{"All Flowers", [4, "Fan"]}, {"Seat Flower", [1, "Fan"]}],
         minipoints: 56, # 30 closed ron + 2 tanki wait + 2x4 closed triplet + 4x4 flowers = 56
         score: 500 # 6 doublings
       }
@@ -594,8 +575,7 @@ defmodule RiichiAdvanced.YakuTest.ClassicalYaku do
       %{"type" => "buttons_pressed", "buttons" => [nil, %{"button" => "ron"}, nil, nil]}
     ], %{
       south: %{
-        yaku: [{"All Seasons", 4}, {"Seat Season", 1}],
-        yaku2: [],
+        yaku: [{"All Seasons", [4, "Fan"]}, {"Seat Season", [1, "Fan"]}],
         minipoints: 56, # 30 closed ron + 2 tanki wait + 2x4 closed triplet + 4x4 flowers = 56
         score: 500 # 6 doublings
       }
@@ -621,8 +601,7 @@ defmodule RiichiAdvanced.YakuTest.ClassicalYaku do
       %{"type" => "buttons_pressed", "buttons" => [%{"button" => "tsumo"}, nil, nil, nil]}
     ], %{
       east: %{
-        yaku: [],
-        yaku2: [{"Blessing of Heaven", 1}],
+        yaku: [{"Blessing of Heaven", [1, "Limit"]}],
         minipoints: 42, # 32 closed tsumo + 2 tanki wait + 2x4 closed triplet = 42
         score: 500 # limit
       }
@@ -649,8 +628,7 @@ defmodule RiichiAdvanced.YakuTest.ClassicalYaku do
       %{"type" => "buttons_pressed", "buttons" => [nil, %{"button" => "tsumo"}, nil, nil]}
     ], %{
       south: %{
-        yaku: [],
-        yaku2: [{"Blessing of Earth", 1}],
+        yaku: [{"Blessing of Earth", [1, "Limit"]}],
         minipoints: 42, # 32 closed tsumo + 2 tanki wait + 2x4 closed triplet = 42
         score: 500 # limit
       }
@@ -692,8 +670,7 @@ defmodule RiichiAdvanced.YakuTest.ClassicalYaku do
       %{"type" => "buttons_pressed", "buttons" => [%{"button" => "tsumo"}, nil, nil, nil]}
     ], %{
       east: %{
-        yaku: [],
-        yaku2: [{"Big Four Winds", 1}, {"Four Kongs", 1}],
+        yaku: [{"Big Four Winds", [1, "Limit"]}, {"Four Kongs", [1, "Limit"]}],
         minipoints: 104, # 22 open tsumo + 2 tanki wait + 3x16 open honors kan + 32 closed honors kan = 104
         score: 500 # limit
       }
@@ -724,8 +701,7 @@ defmodule RiichiAdvanced.YakuTest.ClassicalYaku do
       %{"type" => "buttons_pressed", "buttons" => [%{"button" => "ron"}, nil, nil, nil]}
     ], %{
       east: %{
-        yaku: [],
-        yaku2: [{"All Terminals", 1}],
+        yaku: [{"All Terminals", [1, "Limit"]}],
         minipoints: 44, # 20 open ron + 2x8 closed terminal triplet + 2x4 open triplet = 44
         score: 500 # limit
       }
@@ -753,8 +729,7 @@ defmodule RiichiAdvanced.YakuTest.ClassicalYaku do
       %{"type" => "buttons_pressed", "buttons" => [%{"button" => "tsumo"}, nil, nil, nil]}
     ], %{
       east: %{
-        yaku: [],
-        yaku2: [{"All Honors", 1}, {"Big Three Dragons", 1}, {"Four Concealed Triplets", 1}],
+        yaku: [{"All Honors", [1, "Limit"]}, {"Big Three Dragons", [1, "Limit"]}, {"Four Concealed Triplets", [1, "Limit"]}],
         minipoints: 88, # 32 closed tsumo + 32 closed honor kan + 3x8 closed honor triplet = 88
         score: 500 # limit
       }
@@ -782,8 +757,7 @@ defmodule RiichiAdvanced.YakuTest.ClassicalYaku do
       %{"type" => "buttons_pressed", "buttons" => [%{"button" => "tsumo"}, nil, nil, nil]}
     ], %{
       east: %{
-        yaku: [],
-        yaku2: [{"Blessing of Heaven", 1}, {"Thirteen Orphans", 1}],
+        yaku: [{"Blessing of Heaven", [1, "Limit"]}, {"Thirteen Orphans", [1, "Limit"]}],
         minipoints: 0, # we don't calculate fu for kokushi
         score: 500 # limit
       }
@@ -812,8 +786,7 @@ defmodule RiichiAdvanced.YakuTest.ClassicalYaku do
       %{"type" => "buttons_pressed", "buttons" => [nil, %{"button" => "tsumo"}, nil, nil]}
     ], %{
       south: %{
-        yaku: [],
-        yaku2: [{"Blessing of Earth", 1}, {"Nine Gates", 1}],
+        yaku: [{"Blessing of Earth", [1, "Limit"]}, {"Nine Gates", [1, "Limit"]}],
         minipoints: 46, # 32 closed tsumo + 2 closed wait + 8 closed terminal triplet + 4 flower = 46
         score: 500 # limit
       }
@@ -842,8 +815,7 @@ defmodule RiichiAdvanced.YakuTest.ClassicalYaku do
       %{"type" => "buttons_pressed", "buttons" => [%{"button" => "tsumo"}, nil, nil, nil]}
     ], %{
       east: %{
-        yaku: [],
-        yaku2: [{"Two-Fold Fortune", 1}],
+        yaku: [{"Two-Fold Fortune", [1, "Limit"]}],
         minipoints: 66, # 32 closed tsumo + 2 edge wait + 2x16 closed kan = 66
         score: 500 # limit
       }
@@ -871,8 +843,7 @@ defmodule RiichiAdvanced.YakuTest.ClassicalYaku do
       %{"type" => "buttons_pressed", "buttons" => [%{"button" => "tsumo"}, nil, nil, nil]}
     ], %{
       east: %{
-        yaku: [],
-        yaku2: [{"Gathering the Plum Blossom from the Roof", 1}],
+        yaku: [{"Gathering the Plum Blossom from the Roof", [1, "Limit"]}],
         minipoints: 50, # 32 closed tsumo + 2 middle wait + 16 closed kan = 50
         score: 500 # limit
       }
@@ -904,8 +875,7 @@ defmodule RiichiAdvanced.YakuTest.ClassicalYaku do
       %{"type" => "buttons_pressed", "buttons" => [%{"button" => "chankan"}, nil, nil, nil]}
     ], %{
       east: %{
-        yaku: [],
-        yaku2: [{"Scratching a Carrying-Pole", 1}],
+        yaku: [{"Scratching a Carrying-Pole", [1, "Limit"]}],
         minipoints: 26, # 20 open ron + 2 open triplet + 4 closed triplet = 26
         score: 500 # 1 doubling, dealer x2
       }
@@ -934,8 +904,7 @@ defmodule RiichiAdvanced.YakuTest.ClassicalYaku do
       %{"type" => "buttons_pressed", "buttons" => [%{"button" => "ron"}, nil, nil, nil]}
     ], %{
       east: %{
-        yaku: [],
-        yaku2: [{"Dealer's 13 Consecutive Win", 1}],
+        yaku: [{"Dealer's 13 Consecutive Win", [1, "Limit"]}],
         minipoints: 40, # 30 closed ron + 2 tanki wait + 2x4 closed triplet = 40
         score: 500 # dealer x2
       }
@@ -965,7 +934,6 @@ defmodule RiichiAdvanced.YakuTest.ClassicalYaku do
     ], %{
       east: %{
         yaku: [],
-        yaku2: [],
         minipoints: 40, # 30 closed ron + 2 tanki wait + 2x4 closed triplet = 40
         score: 80 # dealer x2
       }
@@ -1085,8 +1053,7 @@ defmodule RiichiAdvanced.YakuTest.ClassicalYaku do
       %{"buttons" => [nil, nil, nil, %{"button" => "tsumo"}], "type" => "buttons_pressed"},
     ], %{
       north: %{
-        yaku: [{"Concealed Hand", 1},{"Last Tile Draw", 1}],
-        yaku2: [],
+        yaku: [{"Concealed Hand", [1, "Fan"]},{"Last Tile Draw", [1, "Fan"]}],
         minipoints: 38, # 32 closed ron + 2 tanki wait + 4 flower
         score: 152 # 2 doublings
       }
@@ -1207,8 +1174,7 @@ defmodule RiichiAdvanced.YakuTest.ClassicalYaku do
       %{"buttons" => [%{"button" => "ron"}, nil, nil, nil], "type" => "buttons_pressed"}
     ], %{
       east: %{
-        yaku: [{"All Simples", 1}, {"Last Tile Discard", 1}, {"Seat Season", 1}],
-        yaku2: [],
+        yaku: [{"All Simples", [1, "Fan"]}, {"Last Tile Discard", [1, "Fan"]}, {"Seat Season", [1, "Fan"]}],
         minipoints: 42, # 30 closed ron + 4 closed triplet + 2x4 flower
         score: 500 # 3 doublings, dealer x2
       }
@@ -1328,8 +1294,7 @@ defmodule RiichiAdvanced.YakuTest.ClassicalYaku do
       %{"buttons" => [nil, nil, nil, %{"button" => "tsumo"}], "type" => "buttons_pressed"},
     ], %{
       north: %{
-        yaku: [],
-        yaku2: [{"Plucking the Moon from the Bottom of the Sea", 1}],
+        yaku: [{"Plucking the Moon from the Bottom of the Sea", [1, "Limit"]}],
         minipoints: 64, # 32 closed tsumo + 2x8 closed terminal triplet + 4x4 flowers
         score: 500
       }

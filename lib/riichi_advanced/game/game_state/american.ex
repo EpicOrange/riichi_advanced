@@ -1,9 +1,7 @@
 defmodule RiichiAdvanced.GameState.American do
   alias RiichiAdvanced.GameState.Buttons, as: Buttons
   alias RiichiAdvanced.GameState.Debug, as: Debug
-  alias RiichiAdvanced.GameState.Player, as: Player
   alias RiichiAdvanced.GameState.Rules, as: Rules
-  alias RiichiAdvanced.GameState.TileBehavior, as: TileBehavior
   alias RiichiAdvanced.Match, as: Match
   alias RiichiAdvanced.Utils, as: Utils
   import RiichiAdvanced.GameState
@@ -293,7 +291,7 @@ defmodule RiichiAdvanced.GameState.American do
                       # first phase: remove a nonjoker
                       new_hand = Enum.find_value(groups, fn group ->
                         # calls were taken care of above, so we can just focus on hand
-                        case Match._remove_group(hand, [], group, base_tile, %TileBehavior{ tile_behavior | aliases: Map.delete(tile_behavior.aliases, :any) }) do
+                        case Match._remove_group(hand, [], group, base_tile, %{ tile_behavior | aliases: Map.delete(tile_behavior.aliases, :any) }) do
                           [{hand, _} | _] -> hand
                           []              ->
                             # if am_match_definition == "NN EEE 2024a WWW SS" do
@@ -351,7 +349,7 @@ defmodule RiichiAdvanced.GameState.American do
         :toimen -> "declare_toimen_dead"
         :kamicha -> "declare_kamicha_dead"
       end
-      state = update_player(state, seat, &%Player{ &1 | status: MapSet.put(&1.status, declare_dead_status) })
+      state = update_player(state, seat, &%{ &1 | status: MapSet.put(&1.status, declare_dead_status) })
       state = Buttons.recalculate_buttons(state)
       state = broadcast_state_change(state, true)
       state
@@ -505,7 +503,7 @@ defmodule RiichiAdvanced.GameState.American do
                 edge_cache -> Map.put(edge_cache, {tile2, tile, true}, Utils.same_tile(tile2, tile, tile_behavior))
               end
               edge_cache = for tile <- Enum.uniq(matching_hand_nojoker), tile2 <- Enum.uniq(hand), not Map.has_key?(edge_cache, {tile2, tile, false}), reduce: edge_cache do
-                edge_cache -> Map.put(edge_cache, {tile2, tile, false}, Utils.same_tile(tile2, tile, %TileBehavior{ tile_behavior | aliases: Map.delete(tile_behavior.aliases, :any) }))
+                edge_cache -> Map.put(edge_cache, {tile2, tile, false}, Utils.same_tile(tile2, tile, %{ tile_behavior | aliases: Map.delete(tile_behavior.aliases, :any) }))
               end
 
               # build adj graph from these cached edges

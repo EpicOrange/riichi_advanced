@@ -9,4 +9,4 @@ end
 
 define_set yaochuuhai, ~s"any@yaochuu"
 
-define_yaku !list, !name, !value, not_match(["hand", "calls", "winning_tile"], ~m"yaochuuhai:1")
+define_yaku !list, !name, [!value, !han], not_match(["hand", "calls", "winning_tile"], ~m"yaochuuhai:1")

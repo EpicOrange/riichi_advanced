@@ -3,7 +3,7 @@ on after_initialization do
   update_rule("Rules", "Shuugi", "(Ippatsu) Ippatsu is worth 1 shuugi.")
 end
 
-define_yaku riichi_yaku, "Ippatsu", 1, status("ippatsu")
+define_yaku riichi_yaku, "Ippatsu", [1, "Han"], status("ippatsu")
 
 # set ippatsu status on riichi
 apply prepend, "buttons.riichi.actions" do set_status("ippatsu") end

@@ -6,7 +6,7 @@
 .yakuman += [
   {
     "display_name": "Hyakuman Goku",
-    "value": 1,
+    "value": [1, "★"],
     "when": [{"name": "winning_hand_consists_of", "opts": ["1m","2m","3m","4m","5m","6m","7m","8m","9m"]}, {"name": "counter_at_least", "opts": ["hyakuman_goku", 100]}]
   }
 ]

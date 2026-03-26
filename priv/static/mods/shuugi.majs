@@ -14,8 +14,9 @@ on after_win do
     shuugi_payment += kin
   end
   shuugi_payment += ura
-  if status("ippatsu") and status_missing("call_made") do shuugi_payment = shuugi_payment + 1 end
-  if has_yaku2(1) do
+  if status("ippatsu") and status_missing("call_made") do shuugi_payment += 1 end
+
+  if points2 > 0 do
     set_status("yakuman")
     yakuman_payment += 5 # for display purposes
     shuugi_payment += 5
@@ -65,6 +66,7 @@ end
 
 on before_conclusion do
   push_system_message("Converted each shuugi to %{worth} points.", %{worth: !worth})
+  # convert to points
   as everyone do
     shuugi_payout = shuugi
     shuugi_payout = shuugi_payout * !worth

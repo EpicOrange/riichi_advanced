@@ -6,7 +6,7 @@
 .chuupin_raoyui += [
   {
     "display_name": "Chuupin Raoyui",
-    "value": 5,
+    "value": [5, "Han"],
     "when": [
       {"name": "not_has_points", "opts": [5]},
       "no_tiles_remaining",

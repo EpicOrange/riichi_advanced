@@ -115,6 +115,35 @@ defmodule RiichiAdvanced.YakuTest.RiichiPaoTest do
   end
 
   test "riichi - daisuushii suukantsu pao tsumo" do
+    TestUtils.test_yaku_advanced("riichi", [%{name: "honba", config: %{"value" => 100}}, "pao", "pao_suukantsu"], """
+    {
+      "starting_hand": {
+        "east": ["2p", "3p", "1z", "1z", "2z", "2z", "2z", "3z", "3z", "3z", "4z", "4z", "4z"],
+        "south": ["1m", "2m", "4m", "7m", "2p", "5p", "8p", "3s", "6s", "8s", "9s", "6z", "7z"],
+        "west": ["1m", "4m", "7m", "2p", "5p", "8p", "3s", "6s", "8s", "9s", "5z", "6z", "7z"],
+        "north": ["1m", "4m", "7m", "2p", "5p", "8p", "3s", "6s", "8s", "9s", "5z", "6z", "7z"]
+      },
+      "starting_draws": ["5z", "1z", "2z", "4z"],
+      "starting_dead_wall": ["1z", "3z", "5z", "3p"],
+      "starting_honba": 1
+    }
+    """, [
+      %{"type" => "discard", "tile" => "5z", "player" => 0, "tsumogiri" => true},
+      %{"type" => "discard", "tile" => "1z", "player" => 1, "tsumogiri" => true},
+      %{"type" => "buttons_pressed", "buttons" => [%{"button" => "pon"}, nil, nil, nil]},
+      %{"type" => "discard", "tile" => "2p", "player" => 0, "tsumogiri" => false},
+      %{"type" => "discard", "tile" => "2z", "player" => 1, "tsumogiri" => true},
+      %{"type" => "buttons_pressed", "buttons" => [%{"button" => "daiminkan"}, nil, nil, nil]},
+      %{"type" => "buttons_pressed", "buttons" => [%{"button" => "kakan"}, nil, nil, nil]},
+      %{"type" => "buttons_pressed", "buttons" => [%{"button" => "ankan"}, nil, nil, nil]},
+      %{"type" => "discard", "tile" => "5z", "player" => 0, "tsumogiri" => true},
+      %{"type" => "discard", "tile" => "4z", "player" => 1, "tsumogiri" => true},
+      %{"type" => "buttons_pressed", "buttons" => [%{"button" => "daiminkan"}, nil, nil, nil]},
+      %{"type" => "buttons_pressed", "buttons" => [%{"button" => "tsumo"}, nil, nil, nil]}
+    ], %{}, %{delta_scores: [144300, -144300, 0, 0]})
+  end
+
+  test "riichi - daisuushii suukantsu pao tsumo but suukantsu is not pao" do
     TestUtils.test_yaku_advanced("riichi", [%{name: "honba", config: %{"value" => 100}}, "pao"], """
     {
       "starting_hand": {
@@ -190,11 +219,11 @@ defmodule RiichiAdvanced.YakuTest.RiichiPaoTest do
       %{"type" => "discard", "tile" => "5z", "player" => 1, "tsumogiri" => true},
       %{"type" => "buttons_pressed", "buttons" => [%{"button" => "daiminkan"}, nil, nil, nil]},
       %{"type" => "buttons_pressed", "buttons" => [%{"button" => "tsumo"}, nil, nil, nil]}
-    ], %{east: %{yaku: [{"Chun", 1}, {"Haku", 1}, {"Honitsu", 2}, {"Rinshan", 1}]}}, %{delta_scores: [12300, -4100, -4100, -4100]})
+    ], %{east: %{yaku: [{"Chun", [1, "Han"]}, {"Haku", [1, "Han"]}, {"Honitsu", [2, "Han"]}, {"Rinshan", [1, "Han"]}]}}, %{delta_scores: [12300, -4100, -4100, -4100]})
   end
 
   test "riichi - rinshan pao" do
-    TestUtils.test_yaku_advanced("riichi", [%{name: "honba", config: %{"value" => 100}}, "pao_rinshan"], """
+    TestUtils.test_yaku_advanced("riichi", [%{name: "honba", config: %{"value" => 100}}, "pao", "pao_rinshan"], """
     {
       "starting_hand": {
         "east": ["2m", "3m", "4m", "4m", "5m", "6m", "7m", "5z", "5z", "5z", "7z", "7z", "7z"],
@@ -211,7 +240,7 @@ defmodule RiichiAdvanced.YakuTest.RiichiPaoTest do
       %{"type" => "discard", "tile" => "5z", "player" => 1, "tsumogiri" => true},
       %{"type" => "buttons_pressed", "buttons" => [%{"button" => "daiminkan"}, nil, nil, nil]},
       %{"type" => "buttons_pressed", "buttons" => [%{"button" => "tsumo"}, nil, nil, nil]}
-    ], %{east: %{yaku: [{"Chun", 1}, {"Haku", 1}, {"Honitsu", 2}, {"Rinshan", 1}]}}, %{delta_scores: [12300, -12300, 0, 0]})
+    ], %{east: %{yaku: [{"Chun", [1, "Han"]}, {"Haku", [1, "Han"]}, {"Honitsu", [2, "Han"]}, {"Rinshan", [1, "Han"]}]}}, %{delta_scores: [12300, -12300, 0, 0]})
   end
 
   test "riichi - suukantsu no pao" do

@@ -24,9 +24,9 @@ defmodule RiichiAdvanced.YakuTest.AmericanYaku do
 
   test "american - does card-free work?" do
     TestUtils.test_win("american", @card_free, hand: "22m2222p2222s7777z",
-      win_button: "mahjong_discard", yaku: [{"Base Value", 25}, {"Concealed", 10}])
+      win_button: "mahjong_discard", yaku: [{"Base Value", [25, "Pts"]}, {"Concealed", [10, "Pts"]}])
     TestUtils.test_win("american", @card_free, hand: "555p666m77p88s66z1j7p",
-      win_button: "mahjong_draw", yaku: [{"Base Value", 25}, {"Concealed", 10}])
+      win_button: "mahjong_draw", yaku: [{"Base Value", [25, "Pts"]}, {"Concealed", [10, "Pts"]}])
   end
 
   test "american - card-free - any like numbers", %{card_free: rules_ref} do

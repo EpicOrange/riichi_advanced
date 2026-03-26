@@ -53,6 +53,7 @@ defmodule RiichiAdvancedWeb.Router do
       live "/log/:log_id", LogLive
       live "/about", AboutLive
       live "/majstest", MajsTestLive
+      live "/scoringtest", ScoringTestLive
     end
     # import Phoenix.LiveDashboard.Router
     # live_dashboard "/dev/dashboard", metrics: RiichiAdvancedWeb.Telemetry

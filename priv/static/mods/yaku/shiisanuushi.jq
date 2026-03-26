@@ -7,7 +7,7 @@
 .yakuman += [
   {
     "display_name": "Shiisanuushi",
-    "value": 1,
+    "value": [1, "★"],
     "when": [{"name": "status", "opts": ["discards_empty"]}, {"name": "match", "opts": [["hand", "draw"], ["shiisanuushi"]]}]
   }
 ]

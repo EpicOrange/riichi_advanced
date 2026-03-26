@@ -8,7 +8,7 @@
 .yaku += [
   {
     "display_name": "Shiiaru Raotai",
-    "value": 1,
+    "value": [1, "Han"],
     "when": [{"name": "match", "opts": [["calls"], [[[$all_calls, 4]]]]}]
   }
 ]

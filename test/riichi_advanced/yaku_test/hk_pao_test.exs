@@ -30,7 +30,7 @@ defmodule RiichiAdvanced.YakuTest.HKOSPaoTest do
       %{"type" => "buttons_pressed", "buttons" => [%{"button" => "ron"}, nil, nil, nil]}
     ], %{
       east: %{
-        yaku: [{"Big Three Dragons", 8}, {"Half Flush", 3}]
+        yaku: [{"Big Three Dragons", [8, "Fan"]}, {"Half Flush", [3, "Fan"]}]
       }
     }, %{delta_scores: [384, -384, 0, 0]})
   end
@@ -68,7 +68,7 @@ defmodule RiichiAdvanced.YakuTest.HKOSPaoTest do
       %{"type" => "buttons_pressed", "buttons" => [%{"button" => "tsumo"}, nil, nil, nil]}
     ], %{
       east: %{
-        yaku: [{"All Triplets", 3}, {"Big Three Dragons", 8}, {"Half Flush", 3}, {"Self Draw", 1}]
+        yaku: [{"All Triplets", [3, "Fan"]}, {"Big Three Dragons", [8, "Fan"]}, {"Half Flush", [3, "Fan"]}, {"Self Draw", [1, "Fan"]}]
       }
     }, %{delta_scores: [768, -384, -384, 0]})
   end

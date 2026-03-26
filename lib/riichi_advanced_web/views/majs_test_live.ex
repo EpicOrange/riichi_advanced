@@ -32,17 +32,21 @@ defmodule RiichiAdvancedWeb.MajsTestLive do
   def render(assigns) do
     ~H"""
     <div id="container" phx-hook="ClickListener">
-      <div class="majstest-container" phx-submit="convert_majs">
+      <div class="majstest-container">
         <div><%= t(@lang, "Base ruleset") %></div>
-        <input id="show-mods" type="checkbox" class="show-mods-checkbox" phx-update="ignore">
-        <label for="show-mods" class="shuffle-seats"><%= t(@lang, "Mods") %></label>
+        <input id="show-mods" type="checkbox" phx-update="ignore">
+        <label for="show-mods"><%= t(@lang, "Mods") %></label>
         <div class="mods-container">
-          <.live_component module={RiichiAdvancedWeb.ModSelectionComponent} id="room-mods" lang={@lang} ruleset={@ruleset} mods={@room_state.mods} categories={@room_state.categories} />
+          <.live_component module={RiichiAdvancedWeb.ModSelectionComponent} id="majstest-mods" lang={@lang} ruleset={@ruleset} mods={@room_state.mods} categories={@room_state.categories} />
         </div>
         <form phx-submit="convert_majs">
           <select name="ruleset" class="ruleset-dropdown" phx-change="switch_ruleset">
             <%= for {ruleset, name, _desc} <- Constants.available_rulesets() do %>
-              <option value={ruleset}><%= name %></option>
+              <%= if ruleset == @ruleset do %>
+                <option value={ruleset} selected><%= name %></option>
+              <% else %>
+                <option value={ruleset}><%= name %></option>
+              <% end %>
             <% end %>
           </select>
           <br/>
@@ -86,10 +90,10 @@ defmodule RiichiAdvancedWeb.MajsTestLive do
     {mods, categories} = RoomState.parse_available_mods(Rules.get(rules_ref, "available_mods", []), Rules.get(rules_ref, "default_mods", []))
     # mock room state
     socket = assign(socket, :room_state, %{
-        mods: mods,
-        categories: categories,
-        rules_ref: rules_ref,
-      })
+      mods: mods,
+      categories: categories,
+      rules_ref: rules_ref,
+    })
     socket
   end
 
@@ -148,7 +152,6 @@ defmodule RiichiAdvancedWeb.MajsTestLive do
         ruleset_json = ModLoader.get_ruleset_json(ruleset)
         config_query = ModLoader.convert_to_jq(config)
         mods = get_enabled_mods(socket)
-        IO.inspect(mods)
         ruleset_json = ModLoader.apply_multiple_mods(ruleset_json, mods)
         ruleset_json = JQ.query_string_with_string!(ruleset_json, config_query)
         send(self, {:converted_majs, config, ruleset_json})
@@ -180,9 +183,6 @@ defmodule RiichiAdvancedWeb.MajsTestLive do
     end
   end
 
-  def handle_info({:set_room_code, room_code}, socket) do
-    socket = assign(socket, :room_code, room_code)
-    {:noreply, socket}
-  end
+  def handle_info(_info, socket), do: {:noreply, socket}
 
 end

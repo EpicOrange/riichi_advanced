@@ -57,6 +57,16 @@ defmodule RiichiAdvanced.AIPlayer do
       shanten = min(state.shanten, 6)
       shanten_definitions = Enum.drop(shanten_definitions, max(0, shanten))
       {ret, shanten} = for {i, shanten_definition} <- shanten_definitions, reduce: {nil, shanten} do
+        {nil, _} when shanten >= 4 ->
+          # discard disconnected tiles instead
+          ret =
+            Riichi.get_disconnected_tiles(hand, tile_behavior)
+            |> choose_playable_tile(playables)
+          ret = if ret == nil do
+            Riichi.get_unneeded_tiles(hand, calls, shanten_definition, tile_behavior)
+            |> choose_playable_tile(playables)
+          else ret end
+          {ret, i}
         {nil, _} ->
           ret = Riichi.get_unneeded_tiles(hand, calls, shanten_definition, tile_behavior)
           |> choose_playable_tile(playables)

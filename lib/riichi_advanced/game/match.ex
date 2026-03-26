@@ -228,7 +228,7 @@ defmodule RiichiAdvanced.Match do
         {joker, nojoker} = Enum.split(group, if no_joker_index != nil do no_joker_index else length(group) end)
         # handle nojoker subgroups first
         hand_calls = for subgroup <- group_to_subgroups(nojoker, base_tile, tile_behavior), reduce: [{hand, calls}] do
-          hand_calls -> Enum.flat_map(hand_calls, fn {hand, calls} -> remove_from_hand_calls(hand, calls, subgroup, %TileBehavior{ tile_behavior | aliases: %{} }) end)
+          hand_calls -> Enum.flat_map(hand_calls, fn {hand, calls} -> remove_from_hand_calls(hand, calls, subgroup, %{ tile_behavior | aliases: %{} }) end)
         end
         # handle joker subgroups next
         hand_calls = for subgroup <- group_to_subgroups(joker, base_tile, tile_behavior), reduce: hand_calls do
@@ -272,7 +272,7 @@ defmodule RiichiAdvanced.Match do
 
   def filter_irrelevant_tile_aliases(tile_behavior, relevant_tiles) do
     # filter out irrelevant tile aliases
-    %TileBehavior{ tile_behavior | aliases:
+    %{ tile_behavior | aliases:
       for {tile, attrs_aliases} <- tile_behavior.aliases do
         new_attrs_aliases = for {attrs, aliases} <- attrs_aliases do
           {attrs, Enum.filter(aliases, fn t -> Enum.any?(relevant_tiles, &Utils.same_tile(&1, t)) end) |> MapSet.new()}
@@ -384,7 +384,7 @@ defmodule RiichiAdvanced.Match do
       hand_calls ->
         exhaustive = exhaustive_ix != nil and i > exhaustive_ix
         unique = unique_ix != nil and i > unique_ix
-        tile_behavior = %TileBehavior{ tile_behavior |
+        tile_behavior = %{ tile_behavior |
           dismantle_calls: dismantle_calls_ix != nil and i > dismantle_calls_ix,
           ignore_suit: ignore_suit_ix != nil and i > ignore_suit_ix
         }
@@ -393,7 +393,7 @@ defmodule RiichiAdvanced.Match do
           [groups, num] ->
             unique = unique or "unique" in groups
             nojoker = no_joker_index != nil and i > no_joker_index
-            tile_behavior = if nojoker do %TileBehavior{ tile_behavior | aliases: %{} } else tile_behavior end
+            tile_behavior = if nojoker do %{ tile_behavior | aliases: %{} } else tile_behavior end
             new_hand_calls = if unique and num >= 1 and not exhaustive and Enum.all?(groups, &not is_list(&1) and (Utils.is_tile(&1) or &1 in @group_keywords)) do
               # optimized routine for unique non-exhaustive tile-only groups
               # since we know the exact tiles required and each can only be used once,
@@ -419,7 +419,7 @@ defmodule RiichiAdvanced.Match do
                     tiles = if is_hand do call else Utils.call_to_tiles(call) end
                     num_tiles = length(tiles)
                     adj_joker   = Map.new(Enum.with_index(joker),   fn {tile, i} -> {i,                 for {tile2, j}  <- Enum.with_index(tiles), Utils.same_tile(tile2, tile, tile_behavior) do j end} end)
-                    adj_nojoker = Map.new(Enum.with_index(nojoker), fn {tile, i} -> {length(joker) + i, for {tile2, j}  <- Enum.with_index(tiles), Utils.same_tile(tile2, tile, %TileBehavior{ tile_behavior | aliases: %{} }) do j end} end)
+                    adj_nojoker = Map.new(Enum.with_index(nojoker), fn {tile, i} -> {length(joker) + i, for {tile2, j}  <- Enum.with_index(tiles), Utils.same_tile(tile2, tile, %{ tile_behavior | aliases: %{} }) do j end} end)
                     adj = Map.merge(adj_joker, adj_nojoker)
                     {pairing, pairing_r} = Utils.maximum_bipartite_matching(adj)
                     consumes_call = map_size(pairing) == num_tiles or tile_behavior.dismantle_calls
@@ -445,7 +445,7 @@ defmodule RiichiAdvanced.Match do
               end)
               |> Enum.uniq()
             else
-              tile_behavior = if no_joker_index != nil and i > no_joker_index do %TileBehavior{ tile_behavior | aliases: %{} } else tile_behavior end
+              tile_behavior = if no_joker_index != nil and i > no_joker_index do %{ tile_behavior | aliases: %{} } else tile_behavior end
               # unique makes it so all groups must be offset by the same tile
               # (no such restriction for non-unique groups)
               base_tiles = collect_base_tiles(hand, calls, List.flatten(groups), tile_behavior)
@@ -465,7 +465,7 @@ defmodule RiichiAdvanced.Match do
                         for {hand, calls, remaining_groups} <- hand_calls_groups, {group, i} <- Enum.with_index(remaining_groups), group not in @group_keywords do
                           no_joker_index = Enum.find_index(remaining_groups, fn elem -> elem == "nojoker" end)
                           nojoker = no_joker_index != nil and i > no_joker_index
-                          tile_behavior = if nojoker do %TileBehavior{ tile_behavior | aliases: %{} } else tile_behavior end
+                          tile_behavior = if nojoker do %{ tile_behavior | aliases: %{} } else tile_behavior end
                           Task.async(fn ->
                             if unique do
                               _remove_group(hand, calls, group, base_tile, tile_behavior)
@@ -483,7 +483,7 @@ defmodule RiichiAdvanced.Match do
                           [] ->
                             no_joker_index = Enum.find_index(remaining_groups, fn elem -> elem == "nojoker" end)
                             nojoker = no_joker_index != nil and i > no_joker_index
-                            tile_behavior = if nojoker do %TileBehavior{ tile_behavior | aliases: %{} } else tile_behavior end
+                            tile_behavior = if nojoker do %{ tile_behavior | aliases: %{} } else tile_behavior end
                             if unique do
                               _remove_group(hand, calls, group, base_tile, tile_behavior)
                             else
@@ -515,10 +515,12 @@ defmodule RiichiAdvanced.Match do
                 if Enum.empty?(new_hand_calls) do
                   []
                 else
+                  if debug do IO.puts("Reverting due to last group being a successful forward lookahead (num=0): #{inspect(groups)}") end
                   hand_calls # revert
                 end
               num < 0  -> # negative lookahead
                 if Enum.empty?(new_hand_calls) do
+                  if debug do IO.puts("Reverting due to last group being a successful negative lookahead (num=#{num}): #{inspect(groups)}") end
                   hand_calls # revert
                 else
                   [] # if we matched anything, no we didn't

@@ -30,7 +30,7 @@ defmodule RiichiAdvancedWeb.TipsComponent do
     <div class="tips-component" phx-cancellable-click="tips_clicked" phx-target={@myself}>
       <%= if @root_pid != nil do %>
         <%= dt(@lang, "Tip") %> <%= dt(@lang, Integer.to_string(@index + 1)) %>: <%= dt(@lang, Enum.at(@tips, @index)) %>
-      <%= end %>
+      <% end %>
     </div>
     """
   end

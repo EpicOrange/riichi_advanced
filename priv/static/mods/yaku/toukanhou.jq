@@ -3,7 +3,7 @@
 .yakuman += [
   {
     "display_name": "Toukanhou",
-    "value": 1,
+    "value": [1, "★"],
     "when": [{"name": "status", "opts": ["toukanhou"]}]
   }
 ]
