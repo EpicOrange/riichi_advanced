@@ -11,11 +11,11 @@ define_yaku_precedence "Blessing of Earth", ["Self Draw", "Concealed Hand"]
 define_yaku_precedence "Blessing of Man", ["Concealed Hand"]
 
 set score_calculation, %{
-  scoring_method: "score_table",
-  score_table: %{"0": 1, "1": 2, "2": 4, "3": 8, "4": 16, "5": 24, "6": 32, "7": 48, "8": 64, "9": 96, "10": 128, "11": 192, "12": 256, max: 384},
-  discarder_multiplier: 2,
-  non_discarder_multiplier: 0,
-  self_draw_multiplier: 1,
+  # scoring_method: "score_table",
+  # score_table: %{"0": 1, "1": 2, "2": 4, "3": 8, "4": 16, "5": 24, "6": 32, "7": 48, "8": 64, "9": 96, "10": 128, "11": 192, "12": 256, max: 384},
+  # discarder_multiplier: 2,
+  # non_discarder_multiplier: 0,
+  # self_draw_multiplier: 1,
   yaku_lists: ["yaku"],
   agarirenchan: true,
   split_pao_ron: false,
@@ -30,6 +30,76 @@ set score_calculation, %{
   win_with_pao_name: "Bao"
 }
 
+on before_win do
+  if won_by_draw do
+    # make non-winners responsible for all yaku
+    make_responsible_for("others")
+  else
+    if won_by_discard do
+      make_responsible_for("last_discarder")
+    else 
+      make_responsible_for("last_caller")
+    end
+  end
+end
+
+define_scoring win do
+  fan_count = points :: "Fan"
+  if counter_equals("fan_count", 0) do
+    total = 1 :: "0 Fan"
+  end
+  if counter_equals("fan_count", 1) do
+    total = 2 :: "1 Fan"
+  end
+  if counter_equals("fan_count", 2) do
+    total = 4 :: "2 Fan"
+  end
+  if counter_equals("fan_count", 3) do
+    total = 8 :: "3 Fan"
+  end
+  if counter_equals("fan_count", 4) do
+    total = 16 :: "4 Fan"
+  end
+  if counter_equals("fan_count", 5) do
+    total = 24 :: "5 Fan"
+  end
+  if counter_equals("fan_count", 6) do
+    total = 32 :: "6 Fan"
+  end
+  if counter_equals("fan_count", 7) do
+    total = 48 :: "7 Fan"
+  end
+  if counter_equals("fan_count", 8) do
+    total = 64 :: "8 Fan"
+  end
+  if counter_equals("fan_count", 9) do
+    total = 96 :: "9 Fan"
+  end
+  if counter_equals("fan_count", 10) do
+    total = 128 :: "10 Fan"
+  end
+  if counter_equals("fan_count", 11) do
+    total = 192 :: "11 Fan"
+  end
+  if counter_equals("fan_count", 12) do
+    total = 256 :: "12 Fan"
+  end
+  if counter_at_least("fan_count", 13) do
+    total = 384 :: "13+ Fan"
+  end
+    points = total
+  if won_by_discard do
+    total *= 2 :: "Win by discard"
+  else
+    if won_by_call do
+      total *= 2 :: "Win by Robbing Kong"
+    else
+      total *= 1 :: "Win by self-draw"
+    end
+  end
+  modify_winner("score", "points")
+end
+
 define_button ron,
   display_name: "Hu", 
   show_when: not_our_turn
@@ -41,7 +111,7 @@ define_button ron,
     big_text("Hu")
     pause(1000)
     reveal_hand
-    win_by_discard
+    win_by_discard("win")
   end
 
 define_button tsumo,
@@ -53,7 +123,7 @@ define_button tsumo,
     big_text("Zimo")
     pause(1000)
     reveal_hand
-    win_by_draw
+    win_by_draw("win")
   end
 
 apply set_append, "interruptible_actions", ["play_tile", "draw"]
