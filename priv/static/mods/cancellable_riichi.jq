@@ -19,6 +19,10 @@ if (.buttons | has("riichi")) then
     ["push_message", "declared riichi"],
     ["when", [{"name": "status", "opts": ["discards_empty"]}, "no_calls_yet"], [["set_status", "double_riichi"]]],
     ["enable_auto_button", "_4_auto_discard"],
+    ["register_last_discard"],
+    ["unset_status", "discards_empty"],
+    ["recalculate_buttons"],
+    ["run", "discard_passed"],
     ["advance_turn"]
   ]
 else . end
@@ -44,6 +48,10 @@ if (.buttons | has("open_riichi")) then
     ["push_message", "declared open riichi"],
     ["when", [{"name": "status", "opts": ["discards_empty"]}, "no_calls_yet"], [["set_status", "double_riichi"]]],
     ["enable_auto_button", "_4_auto_discard"],
+    ["register_last_discard"],
+    ["unset_status", "discards_empty"],
+    ["recalculate_buttons"],
+    ["run", "discard_passed"],
     ["advance_turn"]
   ]
 else . end

@@ -11,12 +11,12 @@
   {
     "display_name": "Tanfonhou",
     "value": [2, "Han"],
-    "when": [{"name": "winning_hand_and_tile_consists_of", "opts": ["2p","4p","8p","2s","3s","4s","6s","8s","1z","2z","3z","4z","5z","6z"]}]
+    "when": [{"name": "winning_hand_consists_of", "opts": ["2p","4p","8p","2s","3s","4s","6s","8s","1z","2z","3z","4z","5z","6z"]}]
   },
   {
     "display_name": "Chintanfon",
     "value": [5, "Han"],
-    "when": [{"name": "winning_hand_and_tile_consists_of", "opts": ["2p","4p","8p","2s","3s","4s","6s","8s"]}]
+    "when": [{"name": "winning_hand_consists_of", "opts": ["2p","4p","8p","2s","3s","4s","6s","8s"]}]
   }
 ]
 |
