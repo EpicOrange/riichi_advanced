@@ -391,10 +391,11 @@ defmodule RiichiAdvanced.GameState.Kyoku do
       # rearrange those groups to be as close to the original hand as possible
       separated_hand = Enum.at(separated_hands, 0, arranged_hand)
       groups = Utils.split_on(separated_hand, :separator)
+      |> Enum.map(&Utils.sort_tiles/1)
       {groups, [ungrouped]} = Enum.split(groups, -1)
       {separated_hand, _, _} = for _ <- groups, reduce: {[], groups, arranged_hand -- ungrouped} do
         {result, groups, [tile | hand]} ->
-          case Enum.find_index(groups, & Enum.at(&1, 0) == tile) do
+          case Enum.find_index(groups, &Enum.at(&1, 0) == tile) do
             nil -> {result, groups, hand}
             ix  ->
               {group, groups} = List.pop_at(groups, ix)

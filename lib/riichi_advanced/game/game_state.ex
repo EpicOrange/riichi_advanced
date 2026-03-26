@@ -1182,7 +1182,7 @@ defmodule RiichiAdvanced.GameState do
   # called by exit monitor
   def handle_call({:delete_player, session_id}, _from, state) do
     seat = Map.take(state, [:east, :south, :west, :north])
-    |> Enum.reject(fn {_seat, value} -> is_pid(value) end) # ignore AIs
+    |> Enum.filter(fn {_seat, value} -> is_list(value) end)
     |> Enum.find(fn {_seat, session_ids} -> session_id in session_ids end)
     |> case do
       nil -> nil

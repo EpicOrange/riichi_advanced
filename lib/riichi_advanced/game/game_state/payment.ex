@@ -18,7 +18,18 @@ defmodule RiichiAdvanced.GameState.Payment do
   # just adds a blank line item that flips the sign of the result
   @spec invert_txn(txn: Transaction.t()) :: Transaction.t()
   def invert_txn(txn) do
-    %{txn | line_items: [%{op: :*, amount: -1, result: -get_txn_result(txn), reason: ""} | txn.line_items]}
+    new_name = case txn.name do
+      "From self"   -> "To self"
+      "From right"  -> "To right"
+      "From across" -> "To across"
+      "From left"   -> "To left"
+      "To self"     -> "From self"
+      "To right"    -> "From right"
+      "To across"   -> "From across"
+      "To left"     -> "From left"
+      name          -> name
+    end
+    %{txn | name: new_name, line_items: [%{op: :*, amount: -1, result: -get_txn_result(txn), reason: ""} | txn.line_items]}
   end
 
   # result of a transaction is just the value of its final (index 0) line item
