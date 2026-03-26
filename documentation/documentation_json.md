@@ -1285,15 +1285,14 @@ After a win there are a few decisions to be made:
 - Who is the next dealer?
 - Do you increase the repeat counter?
 
-In general, 
-
-These are all controlled by the following keys in the `"score_calculation"` object, which all default to false or unset:
+In general, these are all controlled by the following keys in the `"score_calculation"` object, which all default to false or unset:
 
     "score_calculation": {
       "tobi": (unset),
       "next_dealer_is_first_winner": false,
       "agarirenchan": false,
       "tenpairenchan": false,
+      "ryuukyokurenchan": false,
       "notenrenchan_south": false,
     }
 
@@ -1303,6 +1302,7 @@ Here's how they work:
 - `"next_dealer_is_first_winner"`: if true, then the (first) winner becomes the next round's dealer.
 - `"agarirenchan"`: if true, the round repeats if the dealer wins.
 - `"tenpairenchan"`: if true, the round repeats if the dealer is tenpai at exhaustive draw.
+- `"ryuukyokurenchan"`: if true, the round repeats at exhaustive draw.
 - `"notenrenchan_south"` if true, the round repeats if it's South round and no one is tenpai at exhaustive draw.
 
 Regardless of the above settings, the honba (repeat) counter is incremented when the dealer wins or an exhaustive draw happens, and is reset when a nondealer wins.
