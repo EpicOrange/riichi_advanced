@@ -30,10 +30,10 @@ else . end
 if (.buttons | has("open_riichi")) then
   .buttons.open_riichi.actions = [
     ["mark", [["hand", 1, ["self", "can_discard"]]], [
-      ["set_status", "riichi", "just_reached"],
+      ["set_status", "riichi", "just_reached", "open_riichi"],
       ["recalculate_playables"]
     ], [], [
-      ["unset_status", "riichi", "just_reached"],
+      ["unset_status", "riichi", "just_reached", "open_riichi"],
       ["recalculate_playables"]
     ]],
     ["move_tiles", {"hand": ["marked"]}, "discard"],
