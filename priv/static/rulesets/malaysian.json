@@ -153,6 +153,11 @@
       "when": [{"name": "match", "opts": [["flowers"], [[[["4g"], 1]]]]}]
     },
     {
+      "display_name": "Fly",
+      "value": ["declared_fly", "Fan"],
+      "when": [{"name": "counter_at_least", "opts": ["declared_fly", 1]}]
+    },
+    {
       "display_name": "East Wind",
       "value": [1, "Fan"],
       "when": [{"name": "match", "opts": [["hand", "calls", "winning_tile"], [[[["ton"], 1]]]]}]
@@ -276,6 +281,7 @@
     {
       "display_name": "Four Fly",
       "value": [10, "Fan"],
+        // TODO: check whether this should count the number of declared fly, or the number of fly in hand.
       "when": [{"name": "counter_at_least", "opts": ["fly", 4]}]
     },
     {
@@ -617,7 +623,9 @@
         "someone_else_just_discarded",
         {"name": "match", "opts": [["hand", "calls", "last_discard"], ["win"]]}
       ],
-      "actions": [["big_text", "Wu"], ["pause", 1000], ["reveal_hand"], ["add_counter", "fly", "count_matches", ["hand", "calls", "last_discard"], [["nojoker", [["2y"], 1] ]]], ["win_by_discard"]],
+      "actions": [["big_text", "Wu"], ["pause", 1000], ["reveal_hand"], 
+        // WARNING!: this double-counts the number of fly jokers used by the winner, since this same counter is used in before_win.
+        ["add_counter", "fly", "count_matches", ["hand", "calls", "last_discard"], [["nojoker", [["2y"], 1] ]]], ["win_by_discard"]],
       "precedence_over": ["chii", "pon", "kan", "riichi", "daiminkan", "ankan", "kakan"]
     },
     "chankan": {
@@ -628,7 +636,9 @@
         {"name": "last_call_is", "opts": ["kakan"]},
         {"name": "match", "opts": [["hand", "calls", "last_called_tile"], ["win"]]}
       ],
-      "actions": [["big_text", "Wu"], ["pause", 1000], ["reveal_hand"], ["add_counter", "fly", "count_matches", ["hand", "calls", "last_called_tile"], [["nojoker", [["2y"], 1] ]]], ["win_by_call"]],
+      "actions": [["big_text", "Wu"], ["pause", 1000], ["reveal_hand"],
+        // WARNING!: this double-counts the number of fly jokers used by the winner, since this same counter is used in before_win.
+        ["add_counter", "fly", "count_matches", ["hand", "calls", "last_called_tile"], [["nojoker", [["2y"], 1] ]]], ["win_by_call"]],
       "precedence_over": ["chii", "pon", "kan", "riichi", "daiminkan", "ankan", "kakan"]
     },
     "tsumo": {
@@ -639,7 +649,9 @@
         {"name": "match", "opts": [["hand", "calls", "draw"], ["tenpai"]]},
         {"name": "match", "opts": [["hand", "calls", "draw"], ["win"]]}
       ],
-      "actions": [["big_text", "Wu"], ["pause", 1000], ["reveal_hand"], ["add_counter", "fly", "count_matches", ["hand", "calls", "draw"], [["nojoker", [["2y"], 1] ]]], ["win_by_draw"]],
+      "actions": [["big_text", "Wu"], ["pause", 1000], ["reveal_hand"],
+        // WARNING!: this double-counts the number of fly jokers used by the winner, since this same counter is used in before_win.
+        ["add_counter", "fly", "count_matches", ["hand", "calls", "draw"], [["nojoker", [["2y"], 1] ]]], ["win_by_draw"]],
       "precedence_over": ["chii", "pon", "kan", "riichi", "daiminkan", "ankan", "kakan"]
     },
     "four_fly": {
@@ -649,7 +661,10 @@
         {"name": "status", "opts": ["match_start"]},
         {"name": "match", "opts": [["hand", "calls", "draw"], [["nojoker", [["2y"], 4] ]]]}
       ],
-      "actions": [["big_text", "Four Fly"], ["pause", 1000], ["reveal_hand"], ["add_counter", "fly", 4], ["win_by_draw"]]
+      "actions": [["big_text", "Four Fly"], ["pause", 1000], ["reveal_hand"],
+        // WARNING!: this double-counts the number of fly jokers used by the winner, since this same counter is used in before_win.
+        ["add_counter", "fly", 4],
+      ["win_by_draw"]]
     },
     "flower": {
       "display_name": "Flower",
@@ -675,7 +690,7 @@
     "joker": {
       "display_name": "Fly",
       "show_when": ["our_turn", {"name": "status_missing", "opts": ["match_start"]}, "not_just_discarded", "has_draw", {"name": "match", "opts": [["hand", "draw"], [[[["2y"], 1]]]]}],
-      "actions": [["big_text", "Fly"], ["flower", "2y"], ["set_status", "flower"], ["ite", ["no_tiles_remaining"], [["advance_turn"]], [["draw"]]]]
+      "actions": [["big_text", "Fly"], ["flower", "2y"], ["set_status", "flower"], ["add_counter", "declared_fly", 1], ["ite", ["no_tiles_remaining"], [["advance_turn"]], [["draw"]]]]
     }
   },
   "auto_buttons": {
