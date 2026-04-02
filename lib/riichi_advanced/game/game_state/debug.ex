@@ -41,7 +41,7 @@ defmodule RiichiAdvanced.GameState.Debug do
   def skip_ruleset_caching, do: Process.get(:ignore_type_error, @skip_ruleset_caching)
 
   def set_wall(wall) do
-    # wall = List.replace_at(wall, 39, :"6z") # first draw (sanma
+    # wall = List.replace_at(wall, 39, :"6z") # first draw (sanma)
     # wall = List.replace_at(wall, 40, :"6z")
     # wall = List.replace_at(wall, 41, :"7z")
     # wall = List.replace_at(wall, 42, :"8s")
@@ -132,6 +132,12 @@ defmodule RiichiAdvanced.GameState.Debug do
     #           :south => Enum.slice(wall, 16..31),
     #           :west  => Enum.slice(wall, 32..47),
     #           :north => Enum.slice(wall, 48..63)}
+              
+    # # chuuren test
+    # hands = %{:east  => Utils.sort_tiles([:"1p", :"1p", :"1p", :"2p", :"3p", :"4p", :"5p", :"6p", :"7p", :"8p", :"9p", :"9p", :"9p"]),
+    #           :south => Enum.slice(wall, 13..25),
+    #           :west  => Enum.slice(wall, 26..38),
+    #           :north => Enum.slice(wall, 39..51)}
               
     # # random hand 112233577889p with two fly jokers
     # hands = %{:east  => Utils.sort_tiles([:"2y", :"1p", :"1p", :"2p", :"2p", :"3p", :"3p", :"5p", :"7p", :"7p", :"8p", :"2y", :"9p"]),
