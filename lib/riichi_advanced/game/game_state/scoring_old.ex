@@ -190,19 +190,6 @@ defmodule RiichiAdvanced.GameState.ScoringOld do
     score = score * if is_dealer do dealer_multiplier else 1 end |> Utils.try_integer()
     score = score + if is_self_draw do self_draw_bonus else 0 end
 
-    # apply tsumo loss (sanma only)
-    tsumo_loss = Map.get(score_rules, "tsumo_loss", true)
-    score = cond do
-      length(state.available_seats) != 3 -> score
-      (is_self_draw and tsumo_loss == true) or tsumo_loss == "ron_loss" ->
-        han_fu_rounding_factor = Map.get(score_rules, "han_fu_rounding_factor", 100)
-        {ko_payment, oya_payment} = Riichi.calc_ko_oya_points(score, is_dealer, 4, han_fu_rounding_factor)
-        if is_dealer do ko_payment * 2 else oya_payment + ko_payment end
-      tsumo_loss == "add_1000" -> score + 2000
-      tsumo_loss == "double_collection" -> score * 2
-      true -> score
-    end
-
     score = if scoring_method == "han_fu_formula" do
       # round up (to nearest 100, by default)
       han_fu_rounding_factor = Map.get(score_rules, "han_fu_rounding_factor", 100)
