@@ -271,9 +271,8 @@
       "actions": [["big_text", "Tódas"], ["pause", 1000], ["reveal_hand"], ["win_by_discard"]],
       "precedence_over": ["chii", "pon", "daiminkan", "ron"]
     },
-      // TODO: check if chankan is legal
     "chankan": {
-      "display_name": "Tódas",
+      "display_name": "Rob the Snag",
       "show_when": [
         "not_our_turn",
         {"name": "match", "opts": [["hand", "calls", "draw"], ["tenpai", "kokushi_tenpai"]]},
