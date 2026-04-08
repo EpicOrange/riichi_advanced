@@ -168,6 +168,12 @@ defmodule RiichiAdvanced.GameState.Debug do
     #           :south => Enum.slice(wall, 12..23),
     #           :west  => Enum.slice(wall, 24..35),
     #           :north => Enum.slice(wall, 36..47)}
+
+    # # Fuzhou Robbing Gold
+    # hands = %{:east  => Utils.sort_tiles([:"1s", :"2s", :"3s", :"3p", :"3p", :"3p", :"5p", :"5p", :"5p", :"6p", :"7p", :"7p", :"7p", :"2m", :"2m", :"2m"]),
+    #           :south => Enum.slice(wall, 16..31),
+    #           :west  => Enum.slice(wall, 32..47),
+    #           :north => Enum.slice(wall, 48..63)}
     
     # # naked tanki setup
     # hands = %{:east  => Utils.sort_tiles([:"1m", :"1m", :"3m", :"3m", :"5m", :"5m", :"7m", :"7m", :"9m", :"1z", :"1z", :"1z", :"1z"]),
