@@ -52,7 +52,7 @@ defmodule ExSMT.Solver do
   def poll_z3(z3, acc) do
     case ExCmd.Process.read(z3) do
       {:ok, output} ->
-        acc = String.trim_trailing(acc <> "\n" <> output) # support \r\n and \n
+        acc = acc <> "\n" <> String.replace(String.trim_trailing(output), "\r", "") # support \r\n and \n
         if String.ends_with?(acc, @eot) do
           {:ok, String.slice(acc, 0, byte_size(acc) - byte_size(@eot))}
         else
