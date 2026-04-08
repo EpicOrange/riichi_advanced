@@ -6,7 +6,7 @@ def insert_after_kan_draw($arr):
   if $ix then (.[:$ix+1] + $arr + .[$ix+1:]) else . end;
 
 .after_initialization.actions += [
-  ["delete_rule", "Kandora"],
+  ["delete_rule", "Rules", "Kandora"],
   ["add_rule", "Rules", "Kandora", "Every kan reveals another dora indicator immediately."]
 ]
 |

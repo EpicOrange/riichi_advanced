@@ -15,16 +15,16 @@ define_button open_riichi,
     big_text("Open Riichi")
     set_status("riichi", "open_riichi", "just_reached")
     push_message("declared open riichi")
-    enable_auto_button("_4_auto_discard")
     if status("discards_empty") and no_calls_yet do
       set_status("double_riichi")
     end
   end
 
-define_yaku riichi_yaku, "Open Riichi", 2, status("open_riichi")
-define_yaku riichi_yaku, "Open Double Riichi", 3, status("open_riichi", "double_riichi")
+define_yaku riichi_yaku, "Open Riichi", [2, "Han"], status("open_riichi")
+define_yaku riichi_yaku, "Open Double Riichi", [3, "Han"], status("open_riichi", "double_riichi")
 define_yaku_precedence "Open Riichi", ["Riichi"]
 define_yaku_precedence "Open Double Riichi", ["Open Riichi", "Double Riichi"]
 
 # dealing into open riichi while not in riichi is worth yakuman
-define_yaku yakuman, "Open Riichi", 1, status("open_riichi") and not_discarder_status("riichi")
+# added a space in the name so it doesn't override itself via define_yaku_precedence
+define_yaku yakuman, "Open Riichi ", [1, "★"], status("open_riichi") and won_by_discard and not_discarder_status("riichi")

@@ -1,9 +1,13 @@
 .buttons.joker_swap = {
-  "display_name": "Swap fly joker",
+  "display_name": "Swap fei joker",
   "show_when": ["our_turn", "not_just_discarded", {"name": "match", "opts": [["hand_draw_nonjoker_any", "self_joker_meld_tiles"], [[[["pair"], 1]]]]}],
   "actions": [
     ["big_text", "Swap"],
     ["mark", [["call", 1, ["call_has_joker", "match_call_to_marked_hand"]], ["hand", 1, ["self", "not_joker", "match_hand_to_marked_call"]]]],
-    ["swap_out_fly_joker", "2y"]
+    ["swap_out_joker", "2y"]
   ]
 }
+|
+.after_initialization.actions += [
+  ["add_rule", "Tiles", "Fei Joker", "If you have called Pong with a Fei Joker substituting some tile, and you later draw that tile, you may swap that tile out for the Fei Joker."]
+]

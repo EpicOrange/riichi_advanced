@@ -3,10 +3,9 @@ on after_initialization do
   update_rule("Rules", "Shuugi", "(Kansai) At the end of the game, chips are exchanged based on placement and points.")
 end
 
-
 on after_win, prepend: true do
   # (non-kazoe) yakuman ron is worth 10, not 5
-  if has_yaku2 and not_won_by_draw do
+  if points2 > 0 and not_won_by_draw do
     yakuman_payment += 5
     shuugi_payment += 5
   end
@@ -19,5 +18,51 @@ on after_win, prepend: true do
       push_message("gets a bonus of 10 chips for having all four flowers (kansai)")
       shuugi_payment += 10
     end
+  end
+end
+
+# end-of-game shuugi payment
+on before_conclusion, prepend: true do
+  as everyone do
+    curr_score = current_score
+    if placement(2) do
+      shuugi_payout = -12
+      if curr_score >= 0 do shuugi_payout = -10 end
+      if curr_score >= 10000 do shuugi_payout = -8 end
+      if curr_score >= 20000 do shuugi_payout = -6 end
+      if curr_score >= 30000 do shuugi_payout = -4 end
+      if curr_score >= 40000 do shuugi_payout = -2 end
+      if curr_score >= 50000 do shuugi_payout = 0 end
+      if curr_score >= 60000 do shuugi_payout = 2 end
+      if curr_score >= 70000 do shuugi_payout = 4 end
+      if curr_score >= 80000 do shuugi_payout = 6 end
+      if curr_score >= 90000 do shuugi_payout = 8 end
+      first_shuugi_payout = first_shuugi_payout - shuugi_payout
+      set_counter_all("first_shuugi_payout", "first_shuugi_payout")
+    end
+    if placement(3) do
+      shuugi_payout = -18
+      if curr_score >= 0 do shuugi_payout = -16 end
+      if curr_score >= 10000 do shuugi_payout = -14 end
+      if curr_score >= 20000 do shuugi_payout = -12 end
+      if curr_score >= 30000 do shuugi_payout = -10 end
+      if curr_score >= 40000 do shuugi_payout = -8 end
+      if curr_score >= 50000 do shuugi_payout = -6 end
+      first_shuugi_payout = first_shuugi_payout - shuugi_payout
+      set_counter_all("first_shuugi_payout", "first_shuugi_payout")
+    end
+  end
+  as everyone do
+    if placement(1) do
+      shuugi_payout = first_shuugi_payout
+      push_message("was awarded %{payout} chips for placing first", %{payout: "shuugi_payout"})
+    end
+    if placement(2) do
+      push_message("was awarded %{payout} chips for placing second with %{points} points", %{payout: "shuugi_payout", points: "curr_score"})
+    end
+    if placement(3) do
+      push_message("was awarded %{payout} chips for placing third with %{points} points", %{payout: "shuugi_payout", points: "curr_score"})
+    end
+    shuugi += shuugi_payout
   end
 end

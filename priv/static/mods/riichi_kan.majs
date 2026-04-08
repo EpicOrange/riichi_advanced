@@ -3,12 +3,14 @@ on after_initialization do
   add_rule("1 Han", "Chankan", "If someone calls kan to upgrade an open triplet, you may call ron on the added tile. Doing so awards chankan (1 han).)")
   add_rule("2 Han", "Sankantsu", "Your hand contains three kans.")
   add_rule("Yakuman", "Suukantsu", "Your hand contains four kans.")
+  update_rule("2 Han", "Sankantsu", "%{example_hand}", %{example_hand: ~t"123s3z 55p5P5p 8p88P8p 1x99m1x 3z"})
+  update_rule("Yakuman", "Suukantsu", "%{example_hand}", %{example_hand: ~t"3z 55p5P5p 1x88p1x 22Z22z 1x99m1x 3z"})
 end
 
-define_yaku yaku, "Chankan", 1, won_by_call and status("kan", as: "caller")
-define_yaku yaku, "Rinshan", 1, status("kan")
-define_yaku yaku, "Sankantsu", 2, match(["calls"], ~m"(daiminkan ankan kakan):3")
-define_yaku yakuman, "Suukantsu", 1, match(["calls"], ~m"(daiminkan ankan kakan):4")
+define_yaku yaku, "Chankan", [1, "Han"], won_by_call and status("kan", as: "caller")
+define_yaku yaku, "Rinshan", [1, "Han"], status("kan")
+define_yaku yaku, "Sankantsu", [2, "Han"], match(["calls"], ~m"(daiminkan ankan kakan):3")
+define_yaku yakuman, "Suukantsu", [1, "★"], match(["calls"], ~m"(daiminkan ankan kakan):4")
 
 def do_kan_draw do
   shift_tile_to_dead_wall(1)
@@ -115,7 +117,7 @@ define_button chankan,
     big_text("Ron")
     pause(1000)
     reveal_hand
-    win_by_call
+    win_by_call("ron")
   end
 
 apply merge, "constants.calls_fu", %{

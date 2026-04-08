@@ -4,7 +4,6 @@ defmodule RiichiAdvanced.GameState.Conditions do
   alias RiichiAdvanced.GameState.American, as: American
   alias RiichiAdvanced.GameState.Debug, as: Debug
   alias RiichiAdvanced.GameState.Log, as: Log
-  alias RiichiAdvanced.GameState.Player, as: Player
   alias RiichiAdvanced.GameState.Rules, as: Rules
   alias RiichiAdvanced.GameState.Saki, as: Saki
   alias RiichiAdvanced.GameState.Scoring, as: Scoring
@@ -31,13 +30,8 @@ defmodule RiichiAdvanced.GameState.Conditions do
           "jokers" -> [{hand, calls ++ Enum.filter(state.players[context.seat].calls, fn {call_name, _call} -> call_name in ["joker", "start_joker"] end)}]
           "start_jokers" -> [{hand, calls ++ Enum.filter(state.players[context.seat].calls, fn {call_name, _call} -> call_name == "start_joker" end)}]
           "call_tiles" -> [{hand ++ Enum.flat_map(state.players[context.seat].calls, &Utils.call_to_tiles(&1, true)), calls}]
-          "assigned_hand" -> [{hand ++ state.players[context.seat].cache.arranged_hand, calls}]
-          "assigned_calls" -> [{hand, calls ++ state.players[context.seat].cache.arranged_calls}]
           "winning_hand" -> [{hand ++ state.players[context.seat].cache.winning_hand, calls}]
-          "winning_tile" ->
-            for winning_tile <- get_winning_tiles(state, context.seat, context.win_source) do
-              {hand ++ [Utils.add_attr(winning_tile, ["winning_tile"])], calls}
-            end
+          "winning_tile" -> [{hand ++ [get_winning_tile(state, context.seat, context.win_source) |> Utils.add_attr(["winning_tile"])], calls}]
           "last_call" -> if last_call_action != nil do [{hand, calls ++ [get_last_call(state)]}] else [{hand, calls}] end
           "last_called_tile" -> if last_call_action != nil do [{hand ++ [last_call_action.called_tile], calls}] else [{hand, calls}] end
           "last_discard" -> if last_discard_action != nil do [{hand ++ [last_discard_action.tile], calls}] else [{hand, calls}] end
@@ -131,6 +125,7 @@ defmodule RiichiAdvanced.GameState.Conditions do
       "south" -> Riichi.get_player_from_seat_wind(state.kyoku, :south, state.available_seats)
       "west" -> Riichi.get_player_from_seat_wind(state.kyoku, :west, state.available_seats)
       "north" -> Riichi.get_player_from_seat_wind(state.kyoku, :north, state.available_seats)
+      "self" -> context.seat
       "shimocha" -> Utils.get_seat(context.seat, :shimocha)
       "toimen" -> Utils.get_seat(context.seat, :toimen)
       "kamicha" -> Utils.get_seat(context.seat, :kamicha)
@@ -152,7 +147,10 @@ defmodule RiichiAdvanced.GameState.Conditions do
         if last_call_action != nil do last_call_action.from else context.seat end
       "prev_seat" -> Map.get(context, :prev_seat, context.seat)
       "last_seat" -> Map.get(context, :prev_seat, context.seat)
-      _ -> context.seat
+      "winner"    -> Map.get(context, :winner, Map.get(context, :winner_seat, nil))
+      _ ->
+        IO.puts("Invalid seat spec #{inspect(seat_spec)}!")
+        context.seat
     end
   end
 
@@ -195,11 +193,6 @@ defmodule RiichiAdvanced.GameState.Conditions do
   def get_yaku_lists(state) do
     score_rules = Rules.get(state.rules_ref, "score_calculation", %{})
     (get_in(score_rules["yaku_lists"]) || []) -- (get_in(score_rules["extra_yaku_lists"]) || [])
-  end
-
-  def get_yaku2_lists(state) do
-    score_rules = Rules.get(state.rules_ref, "score_calculation", %{})
-    (get_in(score_rules["yaku2_lists"]) || []) -- (get_in(score_rules["extra_yaku_lists"]) || [])
   end
 
   def check_condition(state, cond_spec, context \\ %{}, opts \\ []) do
@@ -263,17 +256,13 @@ defmodule RiichiAdvanced.GameState.Conditions do
       "won_by_discard"           -> Map.get(context, :win_source, nil) == :discard
       "ended_by_exhaustive_draw" -> state.round_result == :exhaustive_draw
       "ended_by_abortive_draw"   -> state.round_result == :abortive_draw
-      "has_yaku"                 -> context.seat in state.winner_seats and Scoring.seat_scores_points(state, get_yaku_lists(state), Enum.at(opts, 0, 1), Enum.at(opts, 1, 0), context.seat, state.winners[context.seat].winning_tile, state.winners[context.seat].win_source)
-      "has_yaku2"                -> context.seat in state.winner_seats and Scoring.seat_scores_points(state, get_yaku2_lists(state), Enum.at(opts, 0, 1), Enum.at(opts, 1, 0), context.seat, state.winners[context.seat].winning_tile, state.winners[context.seat].win_source)
-      "has_yaku_with_hand"       -> Scoring.seat_scores_points(state, get_yaku_lists(state), Enum.at(opts, 0, 1), Enum.at(opts, 1, 0), context.seat, Enum.at(cxt_player.draw, 0, nil), :draw)
-      "has_yaku_with_discard"    -> last_action != nil and last_action.action == :discard and Scoring.seat_scores_points(state, get_yaku_lists(state), Enum.at(opts, 0, 1), Enum.at(opts, 1, 0), context.seat, last_action.tile, :discard)
-      "has_yaku_with_call"       -> last_action != nil and last_action.action == :call and Scoring.seat_scores_points(state, get_yaku_lists(state), Enum.at(opts, 0, 1), Enum.at(opts, 1, 0), context.seat, last_call_action.called_tile, :call)
-      "has_yaku2_with_hand"      -> Scoring.seat_scores_points(state, get_yaku2_lists(state), Enum.at(opts, 0, 1), Enum.at(opts, 1, 0), context.seat, Enum.at(cxt_player.draw, 0, nil), :draw)
-      "has_yaku2_with_discard"   -> last_action != nil and last_action.action == :discard and Scoring.seat_scores_points(state, get_yaku2_lists(state), Enum.at(opts, 0, 1), Enum.at(opts, 1, 0), context.seat, last_action.tile, :discard)
-      "has_yaku2_with_call"      -> last_action != nil and last_action.action == :call and Scoring.seat_scores_points(state, get_yaku2_lists(state), Enum.at(opts, 0, 1), Enum.at(opts, 1, 0), context.seat, last_call_action.called_tile, :call)
-      "has_declared_yaku_with_hand"    -> Scoring.seat_scores_points(state, opts, :declared, 0, context.seat, Enum.at(cxt_player.draw, 0, nil), :draw)
-      "has_declared_yaku_with_discard" -> last_action != nil and last_action.action == :discard and Scoring.seat_scores_points(state, opts, :declared, 0, context.seat, last_action.tile, :discard)
-      "has_declared_yaku_with_call"    -> last_action != nil and last_action.action == :call and Scoring.seat_scores_points(state, opts, :declared, 0, context.seat, last_call_action.called_tile, :call)
+      "has_yaku"                 -> context.seat in state.winner_seats and Scoring.seat_scores_points(state, get_yaku_lists(state), Enum.at(opts, 1, Rules.get(state.rules_ref, "score_calculation")["point_name"]), Enum.at(opts, 0, 1), Enum.at(opts, 2, 0), context.seat, state.winners[context.seat].winning_tile, state.winners[context.seat].win_source)
+      "has_yaku_with_hand"       -> Scoring.seat_scores_points(state, get_yaku_lists(state), Enum.at(opts, 1, Rules.get(state.rules_ref, "score_calculation")["point_name"]), Enum.at(opts, 0, 1), Enum.at(opts, 2, 0), context.seat, Enum.at(cxt_player.draw, 0, nil), :draw)
+      "has_yaku_with_discard"    -> last_action != nil and last_action.action == :discard and Scoring.seat_scores_points(state, get_yaku_lists(state), Enum.at(opts, 1, Rules.get(state.rules_ref, "score_calculation")["point_name"]), Enum.at(opts, 0, 1), Enum.at(opts, 2, 0), context.seat, last_action.tile, :discard)
+      "has_yaku_with_call"       -> last_action != nil and last_action.action == :call and Scoring.seat_scores_points(state, get_yaku_lists(state), Enum.at(opts, 1, Rules.get(state.rules_ref, "score_calculation")["point_name"]), Enum.at(opts, 0, 1), Enum.at(opts, 2, 0), context.seat, last_call_action.called_tile, :call)
+      "has_declared_yaku_with_hand"    -> Scoring.seat_scores_points(state, opts, Enum.at(opts, 1, Rules.get(state.rules_ref, "score_calculation")["point_name"]), :declared, 0, context.seat, Enum.at(cxt_player.draw, 0, nil), :draw)
+      "has_declared_yaku_with_discard" -> last_action != nil and last_action.action == :discard and Scoring.seat_scores_points(state, opts, Enum.at(opts, 1, Rules.get(state.rules_ref, "score_calculation")["point_name"]), :declared, 0, context.seat, last_action.tile, :discard)
+      "has_declared_yaku_with_call"    -> last_action != nil and last_action.action == :call and Scoring.seat_scores_points(state, opts, Enum.at(opts, 1, Rules.get(state.rules_ref, "score_calculation")["point_name"]), :declared, 0, context.seat, last_call_action.called_tile, :call)
       "tiles_match"              -> Enum.at(opts, 0, :"1m") |> Enum.all?(&Riichi.tile_matches(Enum.at(opts, 1, []), %{tile: from_named_tile(state, context, &1), players: state.players, seat: context.seat}))
       "last_discard_matches"     -> last_discard_action != nil and Riichi.tile_matches(opts, %{tile: last_discard_action.tile, tile2: Map.get(context, :tile, nil), players: state.players, seat: context.seat})
       "last_called_tile_matches" -> last_action != nil and last_action.action == :call and Riichi.tile_matches(opts, %{tile: last_action.called_tile, tile2: Map.get(context, :tile, nil), call: last_call_action, players: state.players, seat: context.seat})
@@ -364,10 +353,11 @@ defmodule RiichiAdvanced.GameState.Conditions do
         tiles = Enum.map(opts, &Utils.to_tile/1)
         non_flower_calls = Enum.reject(cxt_player.calls, fn {call_name, _call} -> call_name in Riichi.flower_names() end)
         winning_hand = cxt_player.hand ++ Enum.flat_map(non_flower_calls, &Utils.call_to_tiles/1)
-        winning_tiles = get_winning_tiles(state, context.seat, context.win_source)
-        Enum.any?(winning_tiles, fn winning_tile ->
-          Enum.all?(winning_hand ++ [winning_tile], &Utils.has_matching_tile?([&1] ++ Map.get(tile_mappings, &1, []), tiles))
-        end)
+        winning_tile = get_winning_tile(state, context.seat, context.win_source)
+        winning_tile = if winning_tile == nil do context.winning_tile else winning_tile end
+        winning_tile = if winning_tile == nil do [] else [winning_tile] end
+        # IO.inspect({winning_hand ++ winning_tile, tiles}, label: "winning_hand_consists_of")
+        Enum.all?(winning_hand ++ winning_tile, &Utils.has_matching_tile?([&1] ++ Map.get(tile_mappings, &1, []), tiles))
       "winning_hand_not_tile_consists_of" ->
         tile_mappings = TileBehavior.tile_mappings(cxt_player.tile_behavior)
         tiles = Enum.map(opts, &Utils.to_tile/1)
@@ -380,7 +370,14 @@ defmodule RiichiAdvanced.GameState.Conditions do
           name          -> Enum.any?(context.existing_yaku, fn {name2, _value} -> name == name2 end)
         end end)
       "has_no_yaku"             -> Enum.empty?(context.existing_yaku)
-      "has_points"              -> Enum.sum(Enum.map(context.existing_yaku, fn {_name, value} -> value end)) >= Enum.at(opts, 0, 1)
+      "has_points"              ->
+        context.existing_yaku
+        |> Enum.map(fn {_name, value} -> value end)
+        |> Enum.reduce([], &Scoring.add_yaku_values/2)
+        |> case do
+          [] -> 0
+          [points | _rest] -> points
+        end >= Enum.at(opts, 0, 1)
       "placement"               ->
         placements = get_placements(state)
         Enum.any?(opts, &Enum.at(placements, &1 - 1) == context.seat)
@@ -509,6 +506,11 @@ defmodule RiichiAdvanced.GameState.Conditions do
       "counter_at_most"     -> Map.get(cxt_player.counters, Enum.at(opts, 0, "counter"), 0) <= Actions.interpret_amount(state, context, Enum.at(opts, 1, 0))
       "counter_more_than"   -> Map.get(cxt_player.counters, Enum.at(opts, 0, "counter"), 0) > Actions.interpret_amount(state, context, Enum.at(opts, 1, 0))
       "counter_less_than"   -> Map.get(cxt_player.counters, Enum.at(opts, 0, "counter"), 0) < Actions.interpret_amount(state, context, Enum.at(opts, 1, 0))
+      "amount_equals"       -> Actions.interpret_amount(state, context, Enum.at(opts, 0, 0)) in Enum.map(Enum.drop(opts, 1), &Actions.interpret_amount(state, context, &1))
+      "amount_at_least"     -> Actions.interpret_amount(state, context, Enum.at(opts, 0, 0)) >= Actions.interpret_amount(state, context, Enum.at(opts, 1, 0))
+      "amount_at_most"      -> Actions.interpret_amount(state, context, Enum.at(opts, 0, 0)) <= Actions.interpret_amount(state, context, Enum.at(opts, 1, 0))
+      "amount_more_than"    -> Actions.interpret_amount(state, context, Enum.at(opts, 0, 0)) > Actions.interpret_amount(state, context, Enum.at(opts, 1, 0))
+      "amount_less_than"    -> Actions.interpret_amount(state, context, Enum.at(opts, 0, 0)) < Actions.interpret_amount(state, context, Enum.at(opts, 1, 0))
       "genbutsu_shimocha"   ->
         tiles = (Utils.get_seat(context.seat, :shimocha) |> Riichi.get_safe_tiles_against(state.players, state.turn))
         last_discard_action != nil and Utils.has_matching_tile?(tiles, [Utils.strip_attrs(last_discard_action.tile)])
@@ -574,7 +576,7 @@ defmodule RiichiAdvanced.GameState.Conditions do
             call = {call_name, Utils.strip_attrs([called_tile | call_choice])}
             # since get_viable_am_match_definitions only uses length of hand,
             # we can just drop the first length(call_choice) tiles instead of removing those from hand
-            update_player(state, context.seat, &%Player{ &1 | hand: Enum.drop(&1.hand, length(call_choice)), calls: &1.calls ++ [call] })
+            update_player(state, context.seat, &%{ &1 | hand: Enum.drop(&1.hand, length(call_choice)), calls: &1.calls ++ [call] })
             |> American.get_viable_am_match_definitions(context.seat, am_match_definitions)
             |> Enum.empty?()
         end
@@ -609,7 +611,7 @@ defmodule RiichiAdvanced.GameState.Conditions do
         Map.has_key?(state.rules_text, tab) and Map.has_key?(state.rules_text[tab], id)
       "is_responsible_for"  ->
         seat = from_seat_spec(state, context, Enum.at(opts, 0, "self"))
-        Map.has_key?(state.players[seat].pao_map, context.seat)
+        Map.has_key?(state.players[seat].responsibilities, context.seat)
       "yaku_exists"         ->
         list = Enum.at(opts, 0, "yaku")
         name = Enum.at(opts, 1, "Riichi")

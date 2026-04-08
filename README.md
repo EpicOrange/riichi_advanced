@@ -27,6 +27,7 @@ Infinitely extensible mahjong web client featuring the following:
 - Support for 3-player modes like Sanma, and 2-player modes like Minefield!
 - Multiplayer lobby system with public/private rooms! Invite your friends, or play against AI!
 - Infinitely customizable ruleset! Beyond mods, you can change the rules by writing [MahjongScript](documentation/mahjongscript.md) to make minute changes to a game!
+- Localization support! 中文支持！ 日本語対応！
 
 Join the [Discord](https://discord.gg/5QQHmZQavP) for development updates and bug reporting! (There are a lot of funny bugs, don't miss out!)
 
@@ -38,12 +39,63 @@ If interested in contributing, check out the [contributing doc](CONTRIBUTING.md)
 - [Supported rulesets](#supported-rulesets)
 - [Custom rulesets](#custom-rulesets)
 - [How can I contribute?](#how-can-i-contribute)
-- [Developer information](#developer-information)
+- [Repository breakdown](#repository-breakdown)
 - [Running the server locally](#running-the-server-locally)
 - [Acknowledgments](#acknowledgments)
 
 ## Changelog
 
+- __10 Feb 2026__: v1.3.3:
+  + Added a 白 variant of the white dragon, used in Galaxy Mahjong (thanks Sophie)
+  + Added an 'abort pass' button to American Mahjong (thanks Sophie)
+  + Added an experimental .majs to .json translator at /majstest
+  + Added documentation for how mods work: `documentation/mods.md`
+  + Added instructions for running Riichi Advanced on Windows (thanks Sophie)
+  + Added methods for running Riichi Advanced as a Nix flake on Docker (thanks Will)
+  + Added numerous Cards for American Mah-jongg (thanks Sophie)
+  + Fixed 20 copies of the same message playing when calculating scores in Malaysian
+  + Fixed a crash bug involving the joker solver
+  + Fixed all sequences yaku not being awarded sometimes (thanks Sophie)
+  + Fixed auto-discard button not working in Riichi (thanks Sophie)
+  + Fixed auto-flower button not working in Kansai (thanks Sophie)
+  + Fixed flowers not being scored correctly in MCR (thanks Sophie)
+  + Fixed fly jokers not being replaceable in Malaysian (thanks Sophie)
+  + Fixed many American tests (thanks Sophie)
+  + Fixed many bugs with winning hands in American (thanks Sophie)
+  + Fixed many chinese localizations (thanks Sophie)
+  + Fixed rules text for Sanshoku Doujun showing a Doukou hand as an example
+  + Fixed some documentation errors about `any_discard`
+  + Fixed some sources of HKOS/Classical crashes (thanks Sophie)
+  + Fixed the white text on white (thanks Sophie)
+  + Fixed tile sides visually flickering in some browsers (thanks Will)
+  + Fixed documentation for tile sprites (thanks Sophie)
+- __8 Apr 2025__: v1.3.2:
+  + Added `~t`, and `~T` sigils in MahjongScript for specifying lists of tiles
+  + Added 5th tile tenpai mod to riichi
+  + Added 12 tile pao mod to HKOS
+  + Added aka 1,3,7,9 mods (thanks jake)
+  + Added animated rainbow tiles
+  + Added as-conditions to MahjongScript
+  + Added `replace n` command to MahjongScript
+  + Added better graphics for mobile zoom
+  + Added Card-Free, NMJL 2025, and PIE rules to american mahjong (thanks Sophie)
+  + Added dora shine animation
+  + Added `make_responsible_for` action for deciding pao
+  + Added MahjongScript tutorial to `documentation/`
+  + Added WIP localization support for Chinese and Japanese
+  + Added unsuited numbers and dragons to american match grammar
+  + Added randomize mods button
+  + Added `set_scoring_header` action
+  + Added some symmetry/combinatorics nonsense to joker solver making it 2x faster
+  + Added test coverage for sichuan bloody
+  + Changed fu calculations to be based on tile attributes rather than hardcoded tile identities
+  + Changed nagashi and tenpai payments to be action-based rather than hardcoded
+  + Fixed AI crashing randomly due to slow server response
+  + Fixed log viewer somewhat
+  + Fixed minefield not really working
+  + Fixed sichuan bloody not really following the ruleset
+  + Fixed some joker bugs related to having tile attributes on both the joker and the target tile
+  + Fixed some UI issues, especially in Safari
 - __20 Mar 2025__: v1.3.1:
   + Added ability to unselect marked tiles in hand
   + Added `counter_more_than`, `counter_less_than` conditions
@@ -257,7 +309,7 @@ Also if you know of any English-based mahjong rulesets available online, do tell
 
 Monetary contributions are not accepted at this time.
 
-## Developer information
+## Repository breakdown
 
 This project is written in Elixir with the Phoenix framework, making heavy use of the LiveView library. Like all Phoenix projects, it has two moving parts:
 
@@ -277,12 +329,13 @@ Here is a breakdown of all the directories:
     │   │   ├── game (everything related to the game screen)
     │   │   ├── lobby (everything related to the lobby screen)
     │   │   ├── log (everything related to the log viewing screen)
-    │   │   ├── majs (everything related to the mahjongscript interpreter)
+    │   │   ├── majs (everything related to the MahjongScript interpreter)
     │   │   ├── messages (everything related to the messages panel)
     │   │   ├── room (everything related to the room screen)
+    │   │   ├── admin.ex (server administration functions meant to be used in the REPL)
     │   │   ├── application.ex (main thing! OTP root application/supervisor)
     │   │   ├── cache.ex (Nebulex cache for function caching)
-    │   │   ├── ets-cache.ex (general-purpose ETS cache)
+    │   │   ├── ets_cache.ex (general-purpose ETS cache)
     │   │   ├── exit_monitor.ex (general-purpose disconnection monitor process)
     │   │   ├── mailer.ex (unused)
     │   │   ├── repo.ex (unused)
@@ -292,11 +345,14 @@ Here is a breakdown of all the directories:
     │       ├── controllers (stock Phoenix)
     │       ├── views (all LiveViews and live components)
     │       ├── endpoint.ex (main thing! serves all the other files as plugs)
-    │       ├── gettext.ex (unused)
+    │       ├── gettext.ex (stock Phoenix)
+    │       ├── gettext_hints.ex (explicitly sets some strings to be used in gettext translations)
     │       ├── router.ex (LiveView routes)
-    │       └── telemetry.ex (unused)
+    │       ├── telemetry.ex (unused)
+    │       └── translations.ex (helper functions to mark strings for gettext translations)
     ├── priv
-    │   ├── gettext (unused)
+    │   ├── cert (this is generated when you run `mix phx.gen.cert`)
+    │   ├── gettext (stores all gettext translation .po files)
     │   ├── repo (unused)
     │   └── static
     │       ├── audio (all audio)
@@ -304,6 +360,7 @@ Here is a breakdown of all the directories:
     │       ├── logs (save location for all logs)
     │       ├── mods (all mods)
     │       ├── rulesets (all rulesets)
+    │       ├── oldl_rulesets (stores the original .json versions of rulesets rewritten in .majs)
     │       ├── favicon.ico
     │       └── robots.txt
     └── test
@@ -315,7 +372,7 @@ Here is a breakdown of all the directories:
         │   └── test_utils.exs (util functions called by tests)
         └── test_helper.exs (boilerplate)
 
-## Running the server locally
+## Running the server locally (MacOS, Linux)
 
 First, install Elixir (≥ 1.14), `npm`, `z3`, and `jq`.
 
@@ -340,9 +397,15 @@ This should start the server up at `https://localhost:4000`. (Make sure to use `
 
 If it complains about a daemon not running, open a separate terminal and run `epmd` (Erlang Port Mapper Daemon), and try again.
 
+## Running the server locally
+
+If you want to run your own instance of Riichi Advanced, see [INSTALL.md](/INSTALL.md) for instructions and troubleshooting.
+
 ## Acknowledgments
 
 The basic [tileset](documentation/tiles.md) used in this game is taken [from this repository](https://github.com/FluffyStuff/riichi-mahjong-tiles). Thank you to @FluffyStuff!
+
+Many of the more unique tiles in the game (read: joker tiles) were created using the [Hanyi Senty Tang](https://sentyfont.com/sentytang.htm) font.
 
 In addition, special thanks to the following sites for offering English-based rulesets:
 

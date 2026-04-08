@@ -2,6 +2,8 @@
 |
 .after_start.actions += [["set_tile_alias_all", ["19j"], ["1m", "9m", "1p", "9p", "1s", "9s"]]]
 |
+.custom_style.tile_indices += {"19j": "19"}
+|
 # TODO support ten mod
 .dora_indicators["19j"] += ["2m", "1m", "2p", "1p", "2s", "1s"]
 |
@@ -10,3 +12,7 @@ if any(.wall[]; . == "1t") then
   |
   .dora_indicators["19j"] += ["2t", "1t"]
 end
+|
+.after_initialization.actions += [
+  ["add_rule", "Tiles", "Jokers", "- One %{19j} joker is added to the wall. This joker acts as any tile numbered 1 or 9.", {"19j": ["19j"]}, -99]
+]

@@ -21,7 +21,7 @@ defmodule RiichiAdvanced.YakuTest.RiichiDoraTest do
       %{"type" => "buttons_pressed", "buttons" => [%{"button" => "ron"}, nil, nil, nil]}
     ], %{
       east: %{
-        yaku: [{"Double Riichi", 2}, {"Tanyao", 1}, {"Dora", 3}],
+        yaku: [{"Double Riichi", [2, "Han"]}, {"Tanyao", [1, "Han"]}, {"Dora", [3, "Han"]}],
         yaku2: [],
         minipoints: 40
       }
@@ -47,7 +47,7 @@ defmodule RiichiAdvanced.YakuTest.RiichiDoraTest do
       %{"type" => "buttons_pressed", "buttons" => [%{"button" => "ron"}, nil, nil, nil]}
     ], %{
       east: %{
-        yaku: [{"Double Riichi", 2}, {"Tanyao", 1}, {"Dora", 3}],
+        yaku: [{"Double Riichi", [2, "Han"]}, {"Tanyao", [1, "Han"]}, {"Dora", [3, "Han"]}],
         yaku2: [],
         minipoints: 40
       }
@@ -73,7 +73,7 @@ defmodule RiichiAdvanced.YakuTest.RiichiDoraTest do
       %{"type" => "buttons_pressed", "buttons" => [%{"button" => "ron"}, nil, nil, nil]}
     ], %{
       east: %{
-        yaku: [{"Double Riichi", 2}, {"Tanyao", 1}, {"Aka", 2}],
+        yaku: [{"Double Riichi", [2, "Han"]}, {"Tanyao", [1, "Han"]}, {"Aka", [2, "Han"]}],
         yaku2: [],
         minipoints: 40
       }
@@ -99,7 +99,7 @@ defmodule RiichiAdvanced.YakuTest.RiichiDoraTest do
       %{"type" => "buttons_pressed", "buttons" => [%{"button" => "ron"}, nil, nil, nil]}
     ], %{
       east: %{
-        yaku: [{"Double Riichi", 2}, {"Tanyao", 1}, {"Dora", 1}, {"Aka", 14}],
+        yaku: [{"Double Riichi", [2, "Han"]}, {"Tanyao", [1, "Han"]}, {"Dora", [1, "Han"]}, {"Aka", [14, "Han"]}],
         yaku2: [],
         minipoints: 40
       }
@@ -125,7 +125,7 @@ defmodule RiichiAdvanced.YakuTest.RiichiDoraTest do
       %{"type" => "buttons_pressed", "buttons" => [%{"button" => "ron"}, nil, nil, nil]}
     ], %{
       east: %{
-        yaku: [{"Double Riichi", 2}, {"Tanyao", 1}, {"Aka", 2}, {"Ura", 2}],
+        yaku: [{"Double Riichi", [2, "Han"]}, {"Tanyao", [1, "Han"]}, {"Aka", [2, "Han"]}, {"Ura", [2, "Han"]}],
         yaku2: [],
         minipoints: 40
       }
@@ -151,7 +151,7 @@ defmodule RiichiAdvanced.YakuTest.RiichiDoraTest do
       %{"type" => "buttons_pressed", "buttons" => [%{"button" => "ron"}, nil, nil, nil]}
     ], %{
       east: %{
-        yaku: [{"Double Riichi", 2}, {"Tanyao", 1}, {"Dora", 1}, {"Aka", 2}],
+        yaku: [{"Double Riichi", [2, "Han"]}, {"Tanyao", [1, "Han"]}, {"Dora", [1, "Han"]}, {"Aka", [2, "Han"]}],
         yaku2: [],
         minipoints: 40
       }
@@ -165,10 +165,10 @@ defmodule RiichiAdvanced.YakuTest.RiichiDoraTest do
         "east": ["3p", "4p", "4p", "4p", "5p", "16p", "6s", "17p", "7s", "8s", "13p", "11z", "2z"],
         "south": ["1m", "4m", "7m", "2p", "6p", "8p", "3s", "6s", "9s", "1z", "2z", "6z", "7z"],
         "west": ["1m", "4m", "7m", "2p", "6p", "8p", "3s", "6s", "9s", "1z", "3z", "6z", "7z"],
-        "north": ["1m", "4m", "7m", "3p", "6p", "8p", "3s", "7s", "9s", "3z", "4z", "6z", "7z"]
+        "north": ["4m", "7m", "1p", "3p", "6p", "8p", "3s", "7s", "9s", "3z", "4z", "6z", "7z"]
       },
       "starting_draws": ["1p", "2p", "5p", "7p", "13z"],
-      "starting_dead_wall": ["2z", "1z", "4z", "3z", "4z", "5z"]
+      "starting_dead_wall": ["2z", "1z", "4z", "3z", "1m", "5z"]
     }
     """, [
       %{"type" => "discard", "tile" => "1p", "player" => 0, "tsumogiri" => true},
@@ -179,7 +179,7 @@ defmodule RiichiAdvanced.YakuTest.RiichiDoraTest do
       %{"type" => "buttons_pressed", "buttons" => [%{"button" => "tsumo"}, nil, nil, nil]}
     ], %{
       east: %{
-        yaku: [{"Tsumo", 1}],
+        yaku: [{"Tsumo", [1, "Han"]}],
         yaku2: [],
         minipoints: 40
       }

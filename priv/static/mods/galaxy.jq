@@ -1,9 +1,7 @@
 def make_galaxy:
   if type == "array" then
     .[0] |= make_galaxy
-  elif . == "0z" then
-    "15z"
-  elif IN("1m","2m","3m","4m","5m","6m","7m","8m","9m","10m","1p","2p","3p","4p","5p","6p","7p","8p","9p","10p","1s","2s","3s","4s","5s","6s","7s","8s","9s","10s","1t","2t","3t","4t","5t","6t","7t","8t","9t","10t","1z","2z","3z","4z","5z","6z","7z") then
+  elif IN("1m","2m","3m","4m","5m","6m","7m","8m","9m","10m","1p","2p","3p","4p","5p","6p","7p","8p","9p","10p","1s","2s","3s","4s","5s","6s","7s","8s","9s","10s","1t","2t","3t","4t","5t","6t","7t","8t","9t","10t","0z","1z","2z","3z","4z","5z","6z","7z") then
     "1" + .
   else . end;
 
@@ -14,15 +12,32 @@ def add_star_suit($enabled; $arr):
     else . end;
 
 .after_initialization.actions += [
-  ["add_rule", "Rules", "Wall", "(Galaxy Mahjong) One of each tile is replaced with a blue 'galaxy' tile that acts as a wildcard of its number. For example, galaxy 3s can be used as 3m, 3p, or 3s. Galaxy winds are wind wildcards, and galaxy dragons are dragon wildcards.", -99],
+  ["add_rule", "Tiles", "Galaxy Mahjong", "One of each tile is replaced with a blue 'galaxy' tile that acts as a wildcard of its number. For example, %{galaxy_3s} can be used as any of %{threes}. Galaxy winds are wind wildcards, and galaxy dragons are dragon wildcards.", {"galaxy_3s": ["13s"], "threes": ["3s", "3p", "3m"]}, -99],
   ["add_rule", "Rules", "Win Condition", "- (Galaxy Mahjong) You have 14 galaxy tiles.", -100],
-  ["add_rule", "Yakuman", "Milky Way", "(Galaxy Mahjong) Having 14 galaxy tiles awards the Milky Way yakuman."],
+  ["add_rule", "Yakuman", "Milky Way", "(Galaxy Mahjong) Having any 14 galaxy tiles awards the Milky Way yakuman."],
+  ["update_rule", "Yakuman", "Milky Way", "%{example_hand}", {"example_hand": ["11m", "15m", "16m", "19m", "12p", "14p", "17p", "11s", "13s", "17s", "12z", "14z", "3x", "17z"]}],
   ["update_rule", "Rules", "Shuugi", "(Galaxy Mahjong) Every galaxy tile used as its original tile awards one shuugi."]
 ]
 |
 any(.wall[]; . == "1t") as $star
 |
+any(.wall[]; . == "0z") as $blue_dragon
+|
 .wall |= (to_entries | map(if (.key % 4 == 3) then .value |= make_galaxy else . end) | map(.value))
+|
+.custom_style.tile_indices += {
+  "10z": "B",
+  "11t": "1",
+  "12t": "2",
+  "13t": "3",
+  "14t": "4",
+  "15t": "5",
+  "16t": "6",
+  "17t": "7",
+  "18t": "8",
+  "19t": "9",
+  "110t": "10"
+  }
 |
 # add tenpai defs + win def + yakuman def for Milky Way yakuman
 .tenpai_definition += [
@@ -52,6 +67,15 @@ any(.wall[]; . == "1t") as $star
   ]), 14] ]
 ]
 |
+.galaxy_joker_definition += [
+  [ "nojoker", [add_star_suit($star; [
+    "11m", "12m", "13m", "14m", "15m", "16m", "17m", "18m", "19m", "110m",
+    "11p", "12p", "13p", "14p", "15p", "16p", "17p", "18p", "19p", "110p",
+    "11s", "12s", "13s", "14s", "15s", "16s", "17s", "18s", "19s", "110s",
+    "11z", "12z", "13z", "14z", "15z", "16z", "17z"
+  ]), 1] ]
+]
+|
 .any_joker_definition += [
   [ "nojoker", [add_star_suit($star; [
     "11m", "12m", "13m", "14m", "15m", "16m", "17m", "18m", "19m", "110m",
@@ -63,21 +87,21 @@ any(.wall[]; . == "1t") as $star
 |
 .yakuman += [{
   "display_name": "Milky Way",
-  "value": 1,
-  "when": [{"name": "counter_equals", "opts": ["non_galaxy_jokers", 0]}]
+  "value": [1, "★"],
+  "when": [{"name": "counter_at_most", "opts": ["non_galaxy_jokers", 0]}]
 }]
 |
 # add joker rules
 .after_start.actions += [
-  ["set_tile_alias_all", ["11m"], add_star_suit($star; [["1m","_original"],"1p","1s"])],
-  ["set_tile_alias_all", ["12m"], add_star_suit($star; [["2m","_original"],"2p","2s"])],
-  ["set_tile_alias_all", ["13m"], add_star_suit($star; [["3m","_original"],"3p","3s"])],
-  ["set_tile_alias_all", ["14m"], add_star_suit($star; [["4m","_original"],"4p","4s"])],
-  ["set_tile_alias_all", ["15m"], add_star_suit($star; [["5m","_original"],"5p","5s"])],
-  ["set_tile_alias_all", ["16m"], add_star_suit($star; [["6m","_original"],"6p","6s"])],
-  ["set_tile_alias_all", ["17m"], add_star_suit($star; [["7m","_original"],"7p","7s"])],
-  ["set_tile_alias_all", ["18m"], add_star_suit($star; [["8m","_original"],"8p","8s"])],
-  ["set_tile_alias_all", ["19m"], add_star_suit($star; [["9m","_original"],"9p","9s"])],
+  ["set_tile_alias_all", ["11m"], add_star_suit($star; [["1m","_original"],"1p","1s","1t"])],
+  ["set_tile_alias_all", ["12m"], add_star_suit($star; [["2m","_original"],"2p","2s","2t"])],
+  ["set_tile_alias_all", ["13m"], add_star_suit($star; [["3m","_original"],"3p","3s","3t"])],
+  ["set_tile_alias_all", ["14m"], add_star_suit($star; [["4m","_original"],"4p","4s","4t"])],
+  ["set_tile_alias_all", ["15m"], add_star_suit($star; [["5m","_original"],"5p","5s","5t"])],
+  ["set_tile_alias_all", ["16m"], add_star_suit($star; [["6m","_original"],"6p","6s","6t"])],
+  ["set_tile_alias_all", ["17m"], add_star_suit($star; [["7m","_original"],"7p","7s","7t"])],
+  ["set_tile_alias_all", ["18m"], add_star_suit($star; [["8m","_original"],"8p","8s","8t"])],
+  ["set_tile_alias_all", ["19m"], add_star_suit($star; [["9m","_original"],"9p","9s","9t"])],
   ["set_tile_alias_all", ["11p"], add_star_suit($star; ["1m",["1p","_original"],"1s"])],
   ["set_tile_alias_all", ["12p"], add_star_suit($star; ["2m",["2p","_original"],"2s"])],
   ["set_tile_alias_all", ["13p"], add_star_suit($star; ["3m",["3p","_original"],"3s"])],
@@ -100,22 +124,28 @@ any(.wall[]; . == "1t") as $star
   ["set_tile_alias_all", ["12z"], ["1z",["2z","_original"],"3z","4z"]],
   ["set_tile_alias_all", ["13z"], ["1z","2z",["3z","_original"],"4z"]],
   ["set_tile_alias_all", ["14z"], ["1z","2z","3z",["4z","_original"]]],
-  ["set_tile_alias_all", ["15z"], [["5z","_original"],"6z","7z",["0z","_original"]]],
+  ["set_tile_alias_all", ["15z"], [["5z","_original"],"6z","7z","0z"]],
   ["set_tile_alias_all", ["16z"], ["5z",["6z","_original"],"7z","0z"]],
   ["set_tile_alias_all", ["17z"], ["5z","6z",["7z","_original"],"0z"]]
 ]
 |
 if $star then
   .after_start.actions += [
-    ["set_tile_alias_all", ["11t"], ["1m","1s","1p","1t"]],
-    ["set_tile_alias_all", ["12t"], ["2m","2s","2p","2t"]],
-    ["set_tile_alias_all", ["13t"], ["3m","3s","3p","3t"]],
-    ["set_tile_alias_all", ["14t"], ["4m","4s","4p","4t"]],
-    ["set_tile_alias_all", ["15t"], ["5m","5s","5p","5t"]],
-    ["set_tile_alias_all", ["16t"], ["6m","6s","6p","6t"]],
-    ["set_tile_alias_all", ["17t"], ["7m","7s","7p","7t"]],
-    ["set_tile_alias_all", ["18t"], ["8m","8s","8p","8t"]],
-    ["set_tile_alias_all", ["19t"], ["9m","9s","9p","9t"]]
+    ["set_tile_alias_all", ["11t"], ["1m","1s","1p",["1t","_original"]]],
+    ["set_tile_alias_all", ["12t"], ["2m","2s","2p",["2t","_original"]]],
+    ["set_tile_alias_all", ["13t"], ["3m","3s","3p",["3t","_original"]]],
+    ["set_tile_alias_all", ["14t"], ["4m","4s","4p",["4t","_original"]]],
+    ["set_tile_alias_all", ["15t"], ["5m","5s","5p",["5t","_original"]]],
+    ["set_tile_alias_all", ["16t"], ["6m","6s","6p",["6t","_original"]]],
+    ["set_tile_alias_all", ["17t"], ["7m","7s","7p",["7t","_original"]]],
+    ["set_tile_alias_all", ["18t"], ["8m","8s","8p",["8t","_original"]]],
+    ["set_tile_alias_all", ["19t"], ["9m","9s","9p",["9t","_original"]]]
+  ]
+else . end
+|
+if $blue_dragon then
+  .after_start.actions += [
+    ["set_tile_alias_all", ["10z"], ["5z","6z","7z",["0z","_original"]]]
   ]
 else . end
 |
@@ -171,6 +201,12 @@ if .dora_indicators then
       "19t": ["1m", "1p", "1s", "1t"]
     }
   else . end
+  |
+  if $blue_dragon then
+    .dora_indicators += {
+    "10z": ["5z", "6z", "7z", "0z"]
+    }
+  else . end
 else . end
 |
 # support for ten mod
@@ -212,11 +248,12 @@ if (.buttons | has("ankan")) then
 else . end
 |
 .before_win.actions |= [
-  ["add_counter", "galaxy_jokers", "count_matches", ["hand", "calls", "winning_tile"], ["any_joker"]],
-  ["set_counter", "non_galaxy_jokers", "count_tiles"],
+  ["add_counter", "galaxy_jokers", "count_matches", ["hand", "calls", "winning_tile"], ["galaxy_joker"]],
+  ["set_counter", "non_galaxy_jokers", "count_matches", ["hand", "calls", "winning_tile"], [[[["any"], 1]]]],
   ["subtract_counter", "non_galaxy_jokers", "galaxy_jokers"],
+    # special treatment for Milky Way hands. note that it's possible that a Milky Way hand also satisfies some other yakuman, though. so this code is actually inaccurate.
   ["when", [{"name": "counter_at_most", "opts": ["non_galaxy_jokers", 0]}], [
-    ["set_counter", "fu", 30], # don't try to calculate fu
+    ["set_counter", "fu", 30], # Milky Way defaults to 30 fu. unclear if this allows fu calculation afterwards though
     # reset jokers to not have _original (optimization)
     ["clear_tile_aliases"],
     ["set_tile_alias_all", ["11m"], add_star_suit($star; ["1m","1p","1s"])],
@@ -256,12 +293,13 @@ else . end
   ]]
 ] + .
 |
-.after_win.actions |= [
-  ["add_counter", "galaxy_shuugi", "count_matches", ["assigned_hand"], [[[[{"tile": "any", "attrs": ["_original"]}], 1]]]]
-] + .
-|
+  # this bit is commented out because galaxy shuugi currently isn't working
+# .before_scoring.actions |= [
+#   ["set_counter", "galaxy_shuugi", "count_matches", ["hand", "calls", "winning_tile"], [[[[{"tile": "any", "attrs": ["original"]}], 1]]]]
+# ] + .
+# |
 .win_timer = 20
 
 # there is a rule that you gain shuugi equal to the number of galaxy tiles used as their own value,
 # but our current joker solver does not try to maximize galaxy tiles used as their own value
-# so this is not possible to implement
+# so this is not currently possible to implement

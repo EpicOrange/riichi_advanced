@@ -3,9 +3,10 @@ on after_initialization do
 end
 
 apply set_prepend, "score_calculation.yaku_lists", "riichi_yaku"
+define_yaku_precedence "yakuman", ["riichi_yaku"]
 
-define_yaku riichi_yaku, "Riichi", 1, status("riichi")
-define_yaku riichi_yaku, "Double Riichi", 2, status("double_riichi")
+define_yaku riichi_yaku, "Riichi", [1, "Han"], status("riichi")
+define_yaku riichi_yaku, "Double Riichi", [2, "Han"], status("double_riichi")
 define_yaku_precedence "Double Riichi", ["Riichi"]
 
 define_match chiitoitsu_tenpai_14, ~m"(nojoker quad):-1, (nojoker koutsu):-2, pair:6"
@@ -28,7 +29,6 @@ define_button riichi,
     big_text("Riichi")
     set_status("riichi", "just_reached")
     push_message("declared riichi")
-    enable_auto_button("_4_auto_discard")
     if status("discards_empty") and no_calls_yet do
       set_status("double_riichi")
     end
@@ -50,12 +50,17 @@ apply prepend, "functions.discard_passed" do
   as others do
     if status("just_reached") do
       place_riichi_stick
+      enable_auto_button("_4_auto_discard")
     end
     unset_status("just_reached")
   end
 end
 
 on before_call, prepend: true do
+  if status("just_reached") do
+    place_riichi_stick
+    enable_auto_button("_4_auto_discard")
+  end
   unset_status("just_reached")
 end
 
@@ -67,5 +72,5 @@ def place_riichi_stick do
   end
 end
 
-define play_restriction, "any", status("riichi") and status_missing("just_reached") and not_is_drawn_tile
-define play_restriction, "any", status("riichi", "just_reached") and needed_for_hand("tenpai")
+define_play_restriction "any", status("riichi") and status_missing("just_reached") and not_is_drawn_tile
+define_play_restriction "any", status("riichi", "just_reached") and needed_for_hand("tenpai")

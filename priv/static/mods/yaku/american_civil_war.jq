@@ -7,6 +7,7 @@ def replace_tenpai_check($source):
 
 .after_initialization.actions += [
   ["add_rule", "Yakuman", "American Civil War", "You have no calls (not even concealed kan) and your hand consists of the tiles 1861 in one suit, 1865 in another suit, and triplets of north and south winds.", 113],
+  ["update_rule", "Yakuman", "American Civil War", "%{example_hand}", {"example_hand": ["1m", "8m", "6m", "1m", "1p", "8p", "6p", "5p", "4z", "4z", "4z", "2z", "2z", "3x", "2z"]}],
   ["add_rule", "Rules", "Win Condition", "- (American Civil War) Have 1861 in one suit, 1865 in another suit, and triplets of north and south winds. Must have no calls (not even concealed kan).", -100]
 ]
 |
@@ -15,7 +16,7 @@ def replace_tenpai_check($source):
 .yakuman += [
   {
     "display_name": "American Civil War",
-    "value": 1,
+    "value": [1, "★"],
     "when": [
       {"name": "has_no_call_named", "opts": $all_calls},
       {"name": "match", "opts": [["hand", "winning_tile"], ["1861a 1865b NNN SSS"]]}

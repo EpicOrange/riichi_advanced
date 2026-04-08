@@ -10,4 +10,9 @@ end
 
 define_set chuurenpoutou, ~s"0 0 0 1 2 3 4 5 6 7 8 8 8"
 
-define_yaku !list, !name, !value, match(["hand", "winning_tile"], ~m"chuurenpoutou:1")
+if equals(!list, "yakuman") do
+  define_yaku !list, !name, [!value, !limit], match(["hand", "winning_tile"], ~m"chuurenpoutou:1")
+else
+  define_yaku !list, !name, [!value, !han], match(["hand", "winning_tile"], ~m"chuurenpoutou:1")
+end
+

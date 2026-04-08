@@ -1,0 +1,5 @@
+on after_initialization do
+  add_rule("Rules", "No Kazoe Yakuman", "13+ han is worth sanbaiman, not yakuman.")
+end
+
+define_const kazoe_yakuman_ari, false

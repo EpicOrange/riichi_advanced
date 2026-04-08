@@ -1,11 +1,14 @@
-.after_initialization.actions += [["add_rule", "2 Han", "Shoutate", "\"Little Mixed Triplets\". 2 han for having sanshoku doukou, except one of the triplets is a pair. Stacks with doukou.", 102]]
+.after_initialization.actions += [
+  ["add_rule", "2 Han", "Shoutate", "\"Little Mixed Triplets\". 2 han for having sanshoku doukou, except one of the triplets is a pair. Stacks with doukou.", 102],
+  ["update_rule", "2 Han", "Shoutate", "%{example_hand}", {"example_hand": ["4m", "4m", "8m", "8m", "8m", "4p", "4p", "4s", "4s", "4s", "7s", "8s", "9s", "3x", "4m"]}]
+]
 |
 (if .set_definitions | has("kontsu") then ["shuntsu", "kontsu", "koutsu"] else ["shuntsu", "koutsu"] end) as $others
 |
 .yaku += [
   {
     "display_name": "Shoutate",
-    "value": 2,
+    "value": [2, "Han"],
     "when": [{"name": "match", "opts": [["hand", "calls", "winning_tile"], [[ "exhaustive", [[[[0,0,0],[10,10,10],[20,20]], [[0,0,0],[20,20,20],[10,10]], [[0,0,0],[10,10],[20,20,20]], [[0,0,0],[20,20],[10,10,10]], [[0,0],[10,10,10],[20,20,20]], [[0,0],[20,20,20],[10,10,10]]], 1], [$others, 2] ]]]}]
   }
 ]

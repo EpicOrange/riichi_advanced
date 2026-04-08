@@ -1,34 +1,50 @@
 defmodule RiichiAdvanced.ModLoader do
   alias RiichiAdvanced.Constants, as: Constants
   alias RiichiAdvanced.GameState.Debug, as: Debug
+  alias RiichiAdvanced.GameState.Rules, as: Rules
   alias RiichiAdvanced.Compiler, as: Compiler
   alias RiichiAdvanced.Parser, as: Parser
 
   def get_mod_name(mod) do
     case mod do
-      %{name: name} -> name
-      name -> name
+      %{"name" => name}         -> name
+      %{name: name}             -> name
+      name when is_binary(name) -> name
     end
   end
 
-  def read_mod(mod) do
+  def get_mod_name_config(mod) do
     case mod do
-      %{name: name, config: config} -> 
-        mod_contents = read_mod_jq(name)
-        config_queries = for {key, val} <- config, is_integer(val) or is_boolean(val) or is_binary(val), do: "(#{inspect(val)}) as $#{key}\n|\n"
-        Enum.join(config_queries) <> "(" <> mod_contents <> ")"
-      name -> read_mod_jq(name)
+      %{"name" => name, "config" => config} -> {name, config}
+      %{name: name, config: config}         -> {name, config}
+      name when is_binary(name)             -> {name, %{}}
     end
+  end
+
+  defp is_jq_var?(key) when is_binary(key), do: Regex.match?(~r/^[a-zA-Z_][a-zA-Z0-9_]*$/, key)
+  defp is_jq_var?(key) when is_atom(key), do: Regex.match?(~r/^[a-zA-Z_][a-zA-Z0-9_]*$/, Atom.to_string(key))
+  defp is_jq_var?(_key), do: false
+
+  defp read_mod(mod, defs) do
+    {name, config} = get_mod_name_config(mod)
+    {mod_contents, defs} = read_mod_jq_defs(name, defs)
+    config_queries = for {key, val} <- config, is_integer(val) or is_boolean(val) or is_binary(val), is_jq_var?(key), do: "(#{inspect(val)}) as $#{key}\n|\n"
+    {Enum.join(config_queries) <> "(" <> mod_contents <> ")", defs}
   end
 
   def apply_multiple_mods(ruleset_json, mods, globals \\ %{}) do
-    mod_contents = mods
-    |> Enum.map(&read_mod/1)
+    mod_contents = for mod <- mods, reduce: {[], MapSet.new()} do
+      {acc, defs} ->
+        {jq, defs} = read_mod(mod, defs)
+        {[jq | acc], defs}
+    end
+    |> elem(0)
+    |> Enum.reverse()
     |> Enum.map(&String.trim/1)
     |> Enum.map(&String.replace(&1, Compiler.header(), ""))
     |> Enum.map(&"(#{&1}\n) as $_result\n|\n$_result")
-    global_jq = Enum.map(globals, fn {name, val} -> "(#{Jason.encode!(val)}) as $#{name}" end)
-    boilerplate = [Compiler.header() <> "\n.enabled_mods += #{Jason.encode!(mods)}"]
+    global_jq = for {name, val} <- globals, is_jq_var?(name), do: "(#{Jason.encode!(val)}) as $#{name}"
+    boilerplate = [Compiler.header() <> if Enum.empty?(mods) do "." else "\n.enabled_mods += #{Jason.encode!(mods)}" end]
     mod_jq = Enum.join(boilerplate ++ global_jq ++ mod_contents, "\n|")
     # IO.puts(mod_jq)
     if Debug.print_mods() do
@@ -37,13 +53,39 @@ defmodule RiichiAdvanced.ModLoader do
     JQ.query_string_with_string!(ruleset_json, mod_jq)
   end
 
+  def check_and_apply_mods(ruleset_json, input_mods, ruleset) do
+    # check the ruleset to see and set missing default configs
+    # note this only checks for mods mentioned in ruleset_json
+    # so mods added by other mods will not be checked
+    input_mods =
+      with {:ok, decoded} <- Rules.decode_ruleset_json(ruleset_json, ruleset),
+           {mods, _categories} <- Rules.parse_available_mods(Map.get(decoded, "available_mods", []), Map.get(decoded, "default_mods", [])) do
+        # normalize to {name, config} just for this part
+        input_mods = Enum.map(input_mods, &get_mod_name_config/1)
+        for {name, config} <- input_mods do
+          config = if Map.has_key?(mods, name) do
+            # check if there is more config we haven't mentioned
+            missing_config = Map.keys(mods[name].config) -- Map.keys(config)
+            for config_name <- missing_config, reduce: config do
+              config ->
+                config_obj = mods[name].config[config_name]
+                default = Map.get(config_obj, "default", Enum.at(config_obj["values"], 0))
+                Map.put(config, config_name, default)
+            end
+          else config end
+          if Enum.empty?(config) do name else %{name: name, config: config} end
+        end
+      end
+    apply_mods(ruleset_json, input_mods, ruleset)
+  end
+
   def apply_mods(ruleset_json, mods, ruleset, globals \\ %{})
   def apply_mods(ruleset_json, [], _ruleset, _globals), do: ruleset_json
   def apply_mods(ruleset_json, mods, ruleset, globals) do
     orig_mods = mods
     mods = Enum.uniq(mods)
     if length(mods) < length(orig_mods) do
-      IO.puts("Warning, the following mods were included twice: #{inspect(orig_mods -- mods)}")
+      IO.puts("Warning, the following mods (for ruleset #{ruleset}) were included twice: #{inspect(orig_mods -- mods)}")
     end
     case RiichiAdvanced.ETSCache.get({ruleset, mods}, [], :cache_mods) do
       [modded_json] ->
@@ -80,24 +122,28 @@ defmodule RiichiAdvanced.ModLoader do
     else ruleset_json end
   end
 
-  def convert_to_jq(majs) do
+  def convert_to_jq_defs(majs, defs \\ MapSet.new()) do
     # first check that it's not actually json
     case Jason.decode(majs) do
-      {:ok, json}    -> ". * " <> Jason.encode!(json) # just merge the json (reencoding to ensure it's safe)
+      {:ok, json}    -> {". * " <> Jason.encode!(json), defs} # just merge the json (reencoding to ensure it's safe)
       {:error, _} -> 
         # now try to parse it as majs
         with {:ok, ast} <- Parser.parse(majs),
-             {:ok, jq} <- Compiler.compile_jq(ast) do
-          jq
+             {:ok, {jq, defs}} <- Compiler.compile_jq_defs(ast, defs) do
+          {jq, defs}
         else
           {:error, msg} ->
             IO.puts("Error in convert_to_jq:")
             if is_binary(msg) do IO.puts(msg) else IO.inspect(msg) end
             IO.puts("Input majs was:")
             IO.puts(majs)
-            "." # no-op
+            {".", defs} # no-op
         end
     end
+  end
+  def convert_to_jq(majs) do
+    {jq, _defs} = convert_to_jq_defs(majs)
+    jq
   end
 
   defp read_ruleset_json(ruleset) do
@@ -122,17 +168,17 @@ defmodule RiichiAdvanced.ModLoader do
       IO.puts("\nWARNING: file #{name}.jq looks kind of like .majs!\n")
     end
   end
-  def read_mod_jq(name) do
+  defp read_mod_jq_defs(name, defs) do
     case File.read(Application.app_dir(:riichi_advanced, "/priv/static/mods/#{name}.jq")) do
       {:ok, mod_jq} ->
         verify_jq(name, mod_jq)
-        mod_jq
+        {mod_jq, defs}
       {:error, _err}      ->
         case File.read(Application.app_dir(:riichi_advanced, "/priv/static/mods/#{name}.majs")) do
-          {:ok, mod_majs} -> convert_to_jq(mod_majs)
+          {:ok, mod_majs} -> convert_to_jq_defs(mod_majs, defs)
           {:error, _err}  ->
             IO.puts("WARNING: Could not find mod #{name}!")
-            "."
+            {".", defs}
         end
     end
   end
@@ -154,19 +200,30 @@ defmodule RiichiAdvanced.ModLoader do
         modpack = modpacks[ruleset]
         mods = Map.get(modpack, :mods, [])
         post_mods = Map.get(modpack, :post_mods, [])
-        all_mod_names = Enum.map(mods ++ post_mods, fn
-          %{name: name} -> name
-          name          -> name
+        all_mod_ids = Enum.map(mods ++ post_mods, fn
+          %{name: id} -> id
+          id          -> id
         end)
-        default_mods = Map.get(modpack, :default_mods, []) |> Enum.reject(& &1 in all_mod_names)
-        display_name = Map.get(modpack, :display_name, ruleset)
-        # set default mods and display name
-        query = ".default_mods += #{Jason.encode!(default_mods)} | .display_name = \"#{display_name}\""
-        # set or remove tutorial link
-        query = query <> " | " <> if Map.has_key?(modpack, :tutorial_link) do ".tutorial_link = \"#{modpack.tutorial_link}\"" else "del(.tutorial_link)" end
+        default_mods = Map.get(modpack, :default_mods, []) |> Enum.reject(fn
+          id when is_binary(id) -> id in all_mod_ids
+          mod -> mod.name in all_mod_ids
+        end)
+        # set default mods
+        query = ".default_mods += #{Jason.encode!(default_mods)}"
+        # set or remove display name and/or tutorial link
+        query = query <> case Map.get(modpack, :display_name, nil) do
+          nil          -> ""
+          :delete      -> "| del(.tutorial_link)"
+          display_name -> " | .display_name = \"#{display_name}\""
+        end
+        query = query <> case Map.get(modpack, :tutorial_link, nil) do
+          nil           -> ""
+          :delete       -> "| del(.tutorial_link)"
+          tutorial_link -> "| .tutorial_link = \"#{tutorial_link}\""
+        end
         # remove already applied mods
-        query = query <> " | " <> ".default_mods = (.default_mods // []) - #{Jason.encode!(all_mod_names)}"
-        query = query <> " | " <> ".available_mods = ((.available_mods // []) | map(select(if type == \"object\" then .id else .  end | IN(#{Enum.map_join(all_mod_names, ", ", &Jason.encode!/1)}) | not)))"
+        query = query <> " | " <> ".default_mods = (.default_mods // []) - #{Jason.encode!(all_mod_ids)}"
+        query = query <> " | " <> ".available_mods = ((.available_mods // []) | map(select(if type == \"object\" then .id else .  end | IN(#{Enum.map_join(all_mod_ids, ", ", &Jason.encode!/1)}) | not)))"
         # we're traversing down, so "new" query/mods/globals should be run before "old" ones
         query = query <> "\n|\n" <> prev_query
         mods = mods ++ prev_mods
@@ -179,12 +236,13 @@ defmodule RiichiAdvanced.ModLoader do
           mods = Enum.uniq(prev_mods)
           duplicates = prev_mods -- mods
           if not Enum.empty?(duplicates) do
-            IO.puts("WARNING: these mods were included twice: #{inspect(duplicates)}")
+            IO.puts("WARNING: these mods (for ruleset #{ruleset}) were included twice: #{inspect(duplicates)}")
           end
           ruleset_json
           |> strip_comments()
           |> apply_mods(mods, ruleset, globals)
           |> JQ.query_string_with_string!(prev_query)
+          # |> IO.inspect(limit: :infinity)
         else ruleset_json end
     end
   end
@@ -196,15 +254,20 @@ defmodule RiichiAdvanced.ModLoader do
   # see documentation here: https://github.com/EpicOrange/riichi_advanced/blob/main/documentation/documentation.md
   # feel free to submit your mod to the repository by opening an issue or pull request!
 
-  # the examples below are helpful to test out yaku and stuff
+  # here are some useful toggles
 
+  # set win_timer, 30 # how many seconds before win screen goes "next"
+  # set tsumogiri_bots, true # make bots only discard their draws (if possible)
+
+  # these are are helpful to test out yaku and stuff
+
+  # set debug_status, true # show statuses, counters, and buttons
   # set starting_hand, %{
   #   "east": ["1m", "9m", "1p", "9p", "1s", "9s", "1z", "2z", "3z", "4z", "5z", "6z", "7z"]
   # }
   # set starting_draws, ["1z", "2z", "3z", "4z", "1z", "2z", "3z", "4z", "1z", "2z", "3z", "4z"]
   # set starting_dead_wall, ["5m", "4m"] # so the first kan draw is 5m. this goes backwards
-  # set starting_round, 4 # start in south round
-  # set debug_status, true # show statuses, counters, and buttons
+  # set starting_round, 4 # start in south 1
   """
 
   def default_config, do: @default_config

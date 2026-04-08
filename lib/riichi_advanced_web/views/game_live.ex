@@ -46,6 +46,8 @@ defmodule RiichiAdvancedWeb.GameLive do
     |> assign(:next_tutorial_scenes, nil)
     |> assign(:waiting_for_click, false)
     |> assign(:return_to_editor, false)
+    |> assign(:waiting_on_timer, false)
+    |> assign(:prev_timer, 0)
 
     socket = if socket.assigns.tutorial_sequence_name != nil do
       assign(socket, :room_code, Ecto.UUID.generate())
@@ -61,7 +63,8 @@ defmodule RiichiAdvancedWeb.GameLive do
     end
 
     # liveviews mount twice; we only want to init a new player on the second mount
-    if socket.root_pid != nil do
+    # also do not init anything if the node is currently draining for cutover
+    if socket.root_pid != nil and not :persistent_term.get(:drain, false) do
       # check if we're a tutorial; if so, load its config instead
       socket = setup_tutorial(socket)
       mods = if Map.has_key?(socket.assigns, :tutorial_sequence) do
@@ -209,8 +212,8 @@ defmodule RiichiAdvancedWeb.GameLive do
         available_seats={@state.available_seats}
         is_bot={Map.new([:east, :south, :west, :north], fn seat -> {seat, is_pid(Map.get(@state, seat))} end)} />
       <%= if @state.visible_screen != nil do %>
-        <.live_component module={RiichiAdvancedWeb.WinWindowComponent} id="win-window" game_state={@game_state} seat={@seat} lang={@lang} winner={Map.get(@state.winners, Enum.at(@state.winner_seats, @state.winner_index), nil)} timer={@state.timer} visible_screen={@state.visible_screen}/>
-        <.live_component module={RiichiAdvancedWeb.ScoreWindowComponent} id="score-window" game_state={@game_state} seat={@seat} lang={@lang} players={@state.players} winners={@state.winners} delta_scores={@state.delta_scores} delta_scores_reason={@state.delta_scores_reason} timer={@state.timer} visible_screen={@state.visible_screen} available_seats={@state.available_seats}/>
+        <.live_component module={RiichiAdvancedWeb.WinWindowComponent} id="win-window" game_state={@game_state} seat={@seat} lang={@lang} winner={Map.get(@state.winners, Enum.at(@state.winner_seats, @state.winner_index), nil)} timer={@state.timer} waiting_on_timer={@waiting_on_timer} visible_screen={@state.visible_screen}/>
+        <.live_component module={RiichiAdvancedWeb.ScoreWindowComponent} id="score-window" game_state={@game_state} seat={@seat} lang={@lang} players={@state.players} winners={@state.winners} delta_scores={@state.delta_scores} delta_scores_reason={@state.delta_scores_reason} timer={@state.timer} waiting_on_timer={@waiting_on_timer} visible_screen={@state.visible_screen} available_seats={@state.available_seats} txns={@state.txns} round_result={@state.round_result}/>
         <.live_component module={RiichiAdvancedWeb.EndWindowComponent} id="end-window" game_state={@game_state} seat={@seat} lang={@lang} players={@state.players} visible_screen={@state.visible_screen}/>
       <% end %>
       <%= if @state.error != nil do %>
@@ -227,8 +230,8 @@ defmodule RiichiAdvancedWeb.GameLive do
                 <button class="button" phx-cancellable-click="cancel_call_buttons"><%= t(@lang, "Cancel") %></button>
               <% end %>
             <% else %>
-              <%= for {button, button_display_name} <- Enum.map(@state.players[@seat].buttons, fn button -> {button, if button == "skip" do t(@lang, "Skip") else Map.get(Rules.get(@state.rules_ref, "buttons")[button], "display_name", t(@lang, "Button")) end} end) do %>
-                <button class={["button", String.length(button_display_name) >= 40 && "small-text"]} phx-cancellable-click="button_clicked" phx-hover="hover_button" phx-hover-off="hover_off" phx-value-name={button}><%= dt(@lang, button_display_name) %></button>
+              <%= for button <- @state.players[@seat].buttons, button_display_name <- [dt(@lang, get_button_name(@state.rules_ref, button))] do %>
+                <button class={["button", String.length(button_display_name) >= 40 && "small-text"]} phx-cancellable-click="button_clicked" phx-hover="hover_button" phx-hover-off="hover_off" phx-value-name={button}><%= button_display_name %></button>
               <% end %>
             <% end %>
           <% end %>
@@ -236,7 +239,7 @@ defmodule RiichiAdvancedWeb.GameLive do
         <div class="auto-buttons">
           <%= for {{name, desc, checked}, i} <- Enum.with_index(@state.players[@seat].auto_buttons) do %>
             <input id={"auto-button-" <> name} type="checkbox" class="auto-button" phx-click="auto_button_toggled" phx-value-name={name} phx-value-enabled={if checked do "true" else "false" end} checked={checked}>
-            <label for={"auto-button-" <> name} title={desc} data-name={t(@lang, Rules.get(@state.rules_ref, "auto_buttons", %{})[name]["display_name"])} tabindex={i}><%= Rules.get(@state.rules_ref, "auto_buttons", %{})[name]["display_name"] %></label>
+            <label for={"auto-button-" <> name} title={desc} data-name={t(@lang, get_auto_button_name(@state.rules_ref, name))} tabindex={i}><%= Rules.get(@state.rules_ref, "auto_buttons", %{})[name]["display_name"] %></label>
           <% end %>
         </div>
         <div class="call-buttons-container">
@@ -388,12 +391,6 @@ defmodule RiichiAdvancedWeb.GameLive do
           <div class="rules-popover-container" phx-click="noop">
             <div class="rules-popover">
               <%= for {title, {text, vars, priority}} <- Enum.sort_by(@state.rules_text[rules_text_name], fn {_title, {text, _vars, priority}} -> {priority, text |> Enum.join("\n") |> String.length()} end) do %>
-                <%
-                  vars = Map.merge(vars, %{
-                    "round_wind_triplet" => get_wind_triplet(Riichi.get_round_wind(@state.kyoku, length(@state.available_seats))),
-                    "seat_wind_triplet" => get_wind_triplet(@seat),
-                  })
-                %>
                 <div class={["rules-popover-rule", priority < 0 && "full-width"]}>
                   <div class="rules-popover-title"><%= dt(@lang, title, vars) %></div>
                   <div class="rules-popover-text"><%= raw Enum.map_join(text, "\n", &dt(@lang, &1, vars)) %></div>
@@ -436,13 +433,23 @@ defmodule RiichiAdvancedWeb.GameLive do
     end
   end
 
-  def get_wind_triplet(:east), do: ["1z", "1z", "1z"]
-  def get_wind_triplet(:south), do: ["2z", "2z", "2z"]
-  def get_wind_triplet(:west), do: ["3z", "3z", "3z"]
-  def get_wind_triplet(:north), do: ["4z", "4z", "4z"]
-  def get_wind_triplet(_), do: []
+  defp get_button_name(_rules_ref, "skip"), do: "Skip"
+  defp get_button_name(rules_ref, name) do
+    buttons = Rules.get(rules_ref, "buttons", %{})
+    get_in(buttons[name]["display_name"]) || "Button"
+  end
+  defp get_auto_button_name(rules_ref, name) do
+    auto_buttons = Rules.get(rules_ref, "auto_buttons", %{})
+    get_in(auto_buttons[name]["display_name"]) || ""
+  end
 
-  def get_visible_waits(socket, index) do
+  defp get_wind_triplet(:east), do: ["1z", "1z", "1z"]
+  defp get_wind_triplet(:south), do: ["2z", "2z", "2z"]
+  defp get_wind_triplet(:west), do: ["3z", "3z", "3z"]
+  defp get_wind_triplet(:north), do: ["4z", "4z", "4z"]
+  defp get_wind_triplet(_), do: []
+
+  defp get_visible_waits(socket, index) do
     hand = socket.assigns.state.players[socket.assigns.seat].hand
     socket = if hand != socket.assigns.visible_waits_hand do
       socket
@@ -518,7 +525,7 @@ defmodule RiichiAdvancedWeb.GameLive do
         push_navigate(socket, to: ~p"/tutorial/#{socket.assigns.ruleset}?nickname=#{socket.assigns.nickname}&lang=#{socket.assigns.lang}")
       end
     else
-      push_navigate(socket, to: ~p"/room/#{socket.assigns.ruleset}/#{socket.assigns.room_code}?nickname=#{socket.assigns.nickname}&lang=#{socket.assigns.lang}")
+      push_navigate(socket, to: ~p"/room/#{socket.assigns.ruleset}/#{socket.assigns.room_code}?nickname=#{socket.assigns.nickname}&lang=#{socket.assigns.lang}&seat=#{socket.assigns.seat}")
     end
   end
 
@@ -601,7 +608,8 @@ defmodule RiichiAdvancedWeb.GameLive do
     if socket.assigns.seat != :spectator do
       GenServer.cast(socket.assigns.game_state, {:ready_for_next_round, socket.assigns.seat})
     end
-    socket = assign(socket, :timer, 0)
+    socket = assign(socket, :waiting_on_timer, true)
+    socket = assign(socket, :prev_timer, socket.assigns.state.timer)
     {:noreply, socket}
   end
 
@@ -820,6 +828,11 @@ defmodule RiichiAdvancedWeb.GameLive do
           i = Enum.find_index(socket.assigns.last_forced_events, & &1 == state.last_event)
           trigger_next_tutorial_scene(socket, i)
         else socket end
+      else socket end
+
+      # reset waiting_on_timer to false if timer hits 0 or is higher than last timer
+      socket = if state.timer == 0 or state.timer >= socket.assigns.prev_timer do
+        assign(socket, :waiting_on_timer, false)
       else socket end
 
       socket = socket

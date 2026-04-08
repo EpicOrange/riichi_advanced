@@ -80,14 +80,15 @@ defmodule RiichiAdvanced.SMT do
     end
   end
 
-  def obtain_all_solutions(_solver_pid, _encoding, _encoding_r, [], _smt_hand, _tile_behavior, _start_time), do: Stream.concat([[%{}]])
-  def obtain_all_solutions(solver_pid, encoding, encoding_r, joker_ixs, smt_hand, tile_behavior, start_time) do
+  def obtain_all_solutions(_smt, _mutex, _solver_pid, _encoding, _encoding_r, [], _smt_hand, _tile_behavior, _start_time), do: Stream.concat([[%{}]])
+  def obtain_all_solutions(smt, mutex, solver_pid, encoding, encoding_r, joker_ixs, smt_hand, tile_behavior, start_time) do
     {precomputed_mappings, precomputed_mappings_r} = precompute_joker_mappings(smt_hand, joker_ixs, tile_behavior)
     # |> IO.inspect(label: "precomputed", charlists: :as_lists)
     get_attr_tiles = fn {ix, tile} ->
       tile = Utils.strip_attrs(tile)
       tiles = Map.get(precomputed_mappings, {ix, tile}, [])
       any_tiles = Map.get(precomputed_mappings, {ix, :any}, [])
+      |> Enum.map(&Utils.to_attr_tile/1)
       |> Enum.map(fn {:any, attrs} -> {tile, attrs} end)
       Enum.uniq(tiles ++ any_tiles)
     end
@@ -98,10 +99,15 @@ defmodule RiichiAdvanced.SMT do
     end
     # return a lazy stream of solutions
     Stream.resource(
-      fn -> [] end, # state = last assignments
-      fn last_assignments ->
+      fn ->
+        {Mutex.await(mutex, __MODULE__), [], false} # state = {lock, previous assignments, sent initial query?}
+      end, 
+      fn {lock, last_assignments, sent_query?} ->
+        if not sent_query? do
+          GenServer.cast(solver_pid, {:query, smt, true})
+        end
         cond do
-          System.system_time(:millisecond) - start_time >= 30000 -> {:halt, nil}
+          System.monotonic_time(:millisecond) - start_time >= 30000 -> {:halt, {lock, last_assignments, true}}
           true ->
             # contradict the last assignments
             contra = for assignment <- last_assignments, do: contradict_assignment(assignment, joker_ixs, encoding)
@@ -113,6 +119,9 @@ defmodule RiichiAdvanced.SMT do
             end
             {:ok, response} = GenServer.call(solver_pid, {:query, smt, false}, 60000)
             case ExSMT.Solver.ResponseParser.parse(response) do
+              [:sat | [[:error, err]]] ->
+                IO.puts("Error in SMT solver: #{err}\n  Hand was #{inspect(smt_hand)}\n  Joker indices were #{inspect(joker_ixs, charlists: :as_lists)}")
+                {:halt, {lock, last_assignments, true}}
               [:sat | assigns] ->
                 # IO.puts("===")
                 new_assignment = Map.new(Enum.zip(joker_ixs, Enum.flat_map(assigns, &Enum.map(&1, fn [_, val] -> encoding_r[val] end))))
@@ -163,12 +172,14 @@ defmodule RiichiAdvanced.SMT do
                     map_size(pairing) < length(l)
                   end
                 end) end))
-                {ret, final_assignments}
-              [:unsat | _] -> {:halt, nil}
+                {ret, {lock, final_assignments, true}}
+              [:unsat | _] -> {:halt, {lock, last_assignments, true}}
             end
         end
       end,
-      fn _ -> nil end
+      fn {lock, _assignments, _sent_query?} ->
+        Mutex.release(mutex, lock)
+      end
     )
   end
 
@@ -376,7 +387,7 @@ defmodule RiichiAdvanced.SMT do
 
   defp precompute_joker_mappings(smt_hand, joker_ixs, tile_behavior) do
     # return two maps:
-    # 1. %{{ix, tile} => list of potential tiles (with attributes)}
+    # 1. %{{ix, tile} => list of potential tiles (perhaps with attributes)}
     # 2. %{potential tiles => list of ixs that can map to that tile}
     # attributes are sorted by Enum.sort
     for ix <- joker_ixs,
@@ -411,7 +422,7 @@ defmodule RiichiAdvanced.SMT do
   #   end
   # end
 
-  def _match_hand_smt_v3(solver_pid, hand, calls, match_definitions, tile_behavior) do
+  def _match_hand_smt_v4(mutex, solver_pid, hand, calls, match_definitions, tile_behavior) do
     ordering = tile_behavior.ordering
     tile_mappings = TileBehavior.tile_mappings(tile_behavior)
 
@@ -760,12 +771,31 @@ defmodule RiichiAdvanced.SMT do
     # max_tiles_used_usages = tiles_used_usages |> Enum.map(fn {_ixs, assertions} -> length(assertions) end) |> Enum.max(&>=/2, fn -> 0 end)
     # optimization4 = if Enum.empty?(all_tile_groups) do [] else ["(assert ((_ at-most #{max_tiles_used_usages})\n  #{Enum.map(tile_group_indices, fn i -> "tiles#{i}_used" end) |> Enum.join(" ")}))\n"] end
 
+    # we can trivially solve for the identity of a joker in a triplet/quad/etc
     optimization_call_jokers = for {call, i} <- calls, {_tile, ix} <- Enum.with_index(call), length(hand)+i*3+ix in joker_ixs do
       tile = Utils.get_joker_meld_tile({"", call}, jokers, tile_behavior)
-      "(assert (= joker#{length(hand)+i*3+ix} #{to_smt_tile(tile, encoding)}))\n"
+      if tile != nil do
+        "(assert (= joker#{length(hand)+i*3+ix} #{to_smt_tile(tile, encoding)}))\n"
+      else "" end
     end |> Enum.join()
 
-    optimizations = [optimization_call_jokers] #optimization1 ++ optimization2 #++ optimization3
+    # if your hand has 2+ identical jokers {a, b, c...} that all map to the exact same values,
+    # only allow the permutation satisfying the symmetry-breaking constraint a <= b <= c <= ...
+    optimization_symmetry_breaking = for ix <- joker_ixs, ix < length(hand) do
+      tile = Enum.at(hand, ix)
+      {joker, joker_choices} = Enum.find(tile_mappings, fn {joker, _choices} -> Utils.same_tile(tile, joker) end)
+      {[joker | joker_choices], ix}
+    end
+    |> Enum.group_by(fn {k, _} -> k end, fn {_, v} -> v end)
+    |> Enum.map(fn {_, ixs} ->
+      constraint = for {r, l} <- Enum.zip(Enum.drop(ixs, 1), Enum.drop(ixs, -1)), reduce: nil do
+        nil -> "(bvule joker#{l} joker#{r})"
+        acc -> "(and (bvule joker#{l} joker#{r}) #{acc})"
+      end
+      if constraint != nil do "(assert #{constraint})" else "" end
+    end)
+
+    optimizations = [optimization_call_jokers] ++ optimization_symmetry_breaking #optimization1 ++ optimization2 #++ optimization3
 
     match_assertions = "(assert (or#{Enum.reverse(match_assertions)}))\n"
 
@@ -778,20 +808,19 @@ defmodule RiichiAdvanced.SMT do
       IO.puts(smt)
       # IO.inspect(encoding)
     end
-    {:ok, _response} = GenServer.call(solver_pid, {:query, smt, true}, 60000)
 
     # stream responses
-    obtain_all_solutions(solver_pid, encoding, encoding_r, joker_ixs, hand ++ call_tiles, tile_behavior, System.system_time(:millisecond))
+    obtain_all_solutions(smt, mutex, solver_pid, encoding, encoding_r, joker_ixs, hand ++ call_tiles, tile_behavior, System.monotonic_time(:millisecond))
   end
 
-  # now with streaming without losing memoization!
-  def match_hand_smt_v3(solver_pid, hand, calls, match_definitions, tile_behavior) do
-    cache_key = {:match_hand_smt_v3, hand, calls, match_definitions, TileBehavior.hash(tile_behavior)}
+  # now with streaming, without losing memoization, and without sending multiple queries at once to the single z3 process
+  def match_hand_smt_v4(mutex, solver_pid, hand, calls, match_definitions, tile_behavior) do
+    cache_key = {:match_hand_smt_v4, hand, calls, match_definitions, TileBehavior.hash(tile_behavior)}
     if value = RiichiAdvanced.Cache.get(cache_key) do
       Stream.concat([value])
     else
       {:ok, solutions_agent} = Agent.start_link(fn -> [] end)
-      _match_hand_smt_v3(solver_pid, hand, calls, match_definitions, tile_behavior)
+      _match_hand_smt_v4(mutex, solver_pid, hand, calls, match_definitions, tile_behavior)
       |> Stream.concat([:end_stream])
       |> Stream.flat_map(fn
         :end_stream ->

@@ -92,7 +92,7 @@
     "FF XXXX0a XXXX1b XXXX2c",
     "XX0a XX1a XXX0b XXX1b XXXX2c",
     "FFFF XXXX0a XXXX1a DDa",
-    "XXXX0a XX1b XX1a XX1c XXXX2
+    "XXXX0a XX1b XX1a XX1c XXXX2",
     # 13579
     "11a 333a 5555a 777a 99a",
     "111a 3333a 333b 5555b", "555a 7777a 777b 9999b",

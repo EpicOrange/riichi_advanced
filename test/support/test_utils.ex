@@ -1,5 +1,6 @@
 defmodule RiichiAdvanced.TestUtils do
   alias RiichiAdvanced.GameState.American, as: American
+  alias RiichiAdvanced.GameState.Debug, as: Debug
   alias RiichiAdvanced.GameState.Rules, as: Rules
   alias RiichiAdvanced.GameState.TileBehavior, as: TileBehavior
   alias RiichiAdvanced.Match, as: Match
@@ -11,7 +12,11 @@ defmodule RiichiAdvanced.TestUtils do
   @suppress_io true
   # @suppress_io false
 
-  def initialize_test_state(ruleset, mods, config \\ nil) do
+  def initialize_test_state(ruleset, mods, config \\ nil)
+  def initialize_test_state(_ruleset, nil, _config) do
+    IO.puts("initialize_test_state: You passed in `nil` instead of a mod list! Check if you are using an undefined module attribute like @zan_mods.")
+  end
+  def initialize_test_state(ruleset, mods, config) do
     room_code = Ecto.UUID.generate()
     args = [room_code: room_code, ruleset: ruleset, mods: mods, config: config, name: Utils.via_registry("game", ruleset, room_code)]
     game_spec = Supervisor.child_spec(%{
@@ -51,6 +56,9 @@ defmodule RiichiAdvanced.TestUtils do
   end
 
   def test_yaku_advanced(ruleset, mods, config, events, expected_winners \\ %{}, expected_state \\ %{}) do
+    if Debug.debug() == true do
+      assert false, "Debug.debug is on!"
+    end
     test_state = initialize_test_state(ruleset, mods, config)
     GenServer.cast(test_state.game_state_pid, :sort_hands)
 
@@ -104,6 +112,8 @@ defmodule RiichiAdvanced.TestUtils do
           assert seat in state.winner_seats
           errs = Enum.map(List.wrap(expected_winner), &check_winner.(seat, &1))
           if [] not in errs do
+            IO.inspect(state.txns, label: "txns")
+            IO.puts("")
             for tuples <- errs, {k, actual, expected} <- tuples do
               IO.puts("#{k}:\n\n    #{inspect(actual)}\n\nexpected #{k}:\n\n    #{inspect(expected)}")
             end
@@ -117,13 +127,6 @@ defmodule RiichiAdvanced.TestUtils do
         Map.get(state.delta_scores, seat, 0)
       end
       assert_list(delta_scores, expected_state.delta_scores)
-    end
-
-    if Map.has_key?(expected_state, :shuugi) do
-      shuugi = for seat <- [:east, :south, :west, :north], seat in state.available_seats do
-        Map.get(state.players[seat].counters, "shuugi", 0)
-      end
-      assert_list(shuugi, expected_state.shuugi)
     end
 
     if Map.has_key?(expected_state, :scores) do
@@ -143,6 +146,13 @@ defmodule RiichiAdvanced.TestUtils do
         true ->
           IO.inspect("Invalid score spec #{inspect(expected_state.scores)}")
       end
+    end
+
+    if Map.has_key?(expected_state, :shuugi) do
+      shuugi = for seat <- [:east, :south, :west, :north], seat in state.available_seats do
+        Map.get(state.players[seat].counters, "shuugi", 0)
+      end
+      assert_list(shuugi, expected_state.shuugi)
     end
   end
 

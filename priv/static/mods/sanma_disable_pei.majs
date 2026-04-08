@@ -1,0 +1,8 @@
+# remove the pei button
+apply delete_key, "buttons", "flower"
+
+# remove the auto-kita button
+apply delete_key, "auto_buttons", "_5_auto_pei"
+
+# remove the pei yaku
+remove_yaku extra_yaku, "Pei"

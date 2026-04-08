@@ -7,5 +7,5 @@ on after_initialization do
   end
 end
 
-define_yaku !haitei_list, !haitei_name, !haitei_value, no_tiles_remaining and won_by_draw
-define_yaku !houtei_list, !houtei_name, !houtei_value, no_tiles_remaining and not_won_by_draw
+define_yaku !haitei_list, !haitei_name, [!haitei_value, !han], no_tiles_remaining and won_by_draw
+define_yaku !houtei_list, !houtei_name, [!houtei_value, !han], no_tiles_remaining and not_won_by_draw

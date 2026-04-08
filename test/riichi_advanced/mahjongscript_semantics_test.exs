@@ -31,6 +31,38 @@ defmodule RiichiAdvanced.MahjongScriptSemanticsTest do
     assert {:ok, _compiled} = Compiler.compile_jq(parsed)
   end
 
+  test "mahjongscript - cond statement" do
+    script = """
+    def foo do
+      cond do
+        "x" == 1 -> push_message("case 1, checked first")
+        "x" == 2 -> push_message("case 2, checked second")
+        seat_is("east") ->
+          push_message("case 3")
+          push_message("still case 3")
+        true     -> push_message("fallback case")
+      end
+    end
+    """
+    assert {:ok, parsed} = Parser.parse(script)
+    assert {:ok, _compiled} = Compiler.compile_jq(parsed)
+  end
+
+  test "mahjongscript - at_least and at_most conditions" do
+    script = """
+    def foo do
+      if at_least(2, true, true, false) do
+        push_message("Two are true")
+      end
+      if at_most(2, false, false, false, false) do
+        push_message("At most two (but at least one) are true")
+      end
+    end
+    """
+    assert {:ok, parsed} = Parser.parse(script)
+    assert {:ok, _compiled} = Compiler.compile_jq(parsed)
+  end
+
   test "mahjongscript - not condition" do
     script = """
     def foo do
@@ -191,11 +223,29 @@ defmodule RiichiAdvanced.MahjongScriptSemanticsTest do
     assert String.contains?(msg, "not a valid toplevel command")
   end
 
-  test "mahjongscript - invalid condition" do
+  test "mahjongscript - invalid condition in if" do
     script = """
     def foo do
       if invalid_condition() do
         print("test")
+      end
+    end
+    """
+    assert {:ok, parsed} = Parser.parse(script)
+    assert {:error, msg} = Compiler.compile_jq(parsed)
+    assert String.contains?(msg, "not a valid condition")
+  end
+
+  test "mahjongscript - invalid condition in cond" do
+    script = """
+    def foo do
+      cond do
+        "x" == 1 -> push_message("case 1, checked first")
+        "x" == 2 -> push_message("case 2, checked second")
+        nonexistent_condition("east") ->
+          push_message("case 3")
+          push_message("still case 3")
+        true     -> push_message("fallback case")
       end
     end
     """

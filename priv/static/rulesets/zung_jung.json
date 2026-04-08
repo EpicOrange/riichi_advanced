@@ -4,7 +4,8 @@
     {"id": "zungjung/zj_five_point_minimum", "name": "5 Point Minimum", "desc": "Adds a requirement of having 5 points in hand in order to win."}
   ],
   "display_name": "Zung Jung",
-  "tutorial_link": "https://www.zj-mahjong.info/zj33_rules_eng.html",
+  // "tutorial_link": "https://web.archive.org/web/20230505170402/http://www.zj-mahjong.info/zj33_rules_eng.html",
+  "tutorial_link": "https://github.com/EpicOrange/riichi_advanced/blob/main/documentation/zung_jung.md",
   "wall": ["1m", "1m", "1m", "1m",
            "2m", "2m", "2m", "2m",
            "3m", "3m", "3m", "3m",
@@ -175,23 +176,23 @@
     // 1.0 Trivial Patterns
     {
       "display_name": "All Sequences",
-      "value": 5,
+      "value": [5, "points"],
       "when": [{"name": "match", "opts": [["hand", "calls", "winning_tile"], [["exhaustive", [["shuntsu"], 4], [["pair"], 1]]]]}]
     },
     {
       "display_name": "Concealed Hand",
-      "value": 5,
+      "value": [5, "points"],
       "when": [{"name": "has_no_call_named", "opts": ["chii", "pon", "daiminkan", "kakan"]}]
     },
     {
       "display_name": "No Terminals",
-      "value": 5,
+      "value": [5, "points"],
       "when": [{"name": "winning_hand_consists_of", "opts": ["2m","3m","4m","5m","6m","7m","8m","2p","3p","4p","5p","6p","7p","8p","2s","3s","4s","5s","6s","7s","8s"]}]
     },
     // 2.0 One-Suit patterns
     {
       "display_name": "Mixed One-Suit",
-      "value": 40,
+      "value": [40, "points"],
       "when": [[
         {"name": "winning_hand_consists_of", "opts": ["1m","2m","3m","4m","5m","6m","7m","8m","9m","1z","2z","3z","4z","0z","6z","7z"]},
         {"name": "winning_hand_consists_of", "opts": ["1p","2p","3p","4p","5p","6p","7p","8p","9p","1z","2z","3z","4z","0z","6z","7z"]},
@@ -200,7 +201,7 @@
     },
     {
       "display_name": "Pure One-Suit",
-      "value": 80,
+      "value": [80, "points"],
       "when": [[
         {"name": "winning_hand_consists_of", "opts": ["1m","2m","3m","4m","5m","6m","7m","8m","9m"]},
         {"name": "winning_hand_consists_of", "opts": ["1p","2p","3p","4p","5p","6p","7p","8p","9p"]},
@@ -210,22 +211,22 @@
       // 3.0 Honor Tiles
     {
       "display_name": "Value Honor",
-      "value": 10,
+      "value": [10, "points"],
       "when": [{"name": "match", "opts": [["hand", "calls", "winning_tile"], [[[["haku"], 1]]]]}]
     },
     {
       "display_name": "Value Honor",
-      "value": 10,
+      "value": [10, "points"],
       "when": [{"name": "match", "opts": [["hand", "calls", "winning_tile"], [[[["hatsu"], 1]]]]}]
     },
     {
       "display_name": "Value Honor",
-      "value": 10,
+      "value": [10, "points"],
       "when": [{"name": "match", "opts": [["hand", "calls", "winning_tile"], [[[["chun"], 1]]]]}]
     },
     {
       "display_name": "Value Honor",
-      "value": 10,
+      "value": [10, "points"],
       "when": [[
         [{"name": "seat_is", "opts": ["east"]}, {"name": "match", "opts": [["hand", "calls", "winning_tile"], [[[["ton"], 1]]]]}],
         [{"name": "seat_is", "opts": ["south"]}, {"name": "match", "opts": [["hand", "calls", "winning_tile"], [[[["nan"], 1]]]]}],
@@ -235,33 +236,33 @@
     },
     {
       "display_name": "Small Three Dragons",
-      "value": 40,
+      "value": [40, "points"],
       "when": [{"name": "match", "opts": [["hand", "calls", "winning_tile"], ["little_three_dragons"]]}]
     },
     {
       "display_name": "Big Three Dragons",
-      "value": 130,
+      "value": [130, "points"],
       "when": [{"name": "match", "opts": [["hand", "calls", "winning_tile"], ["big_three_dragons"]]}]
     },
     { 
       "display_name": "Small Three Winds",
-      "value": 30,
+      "value": [30, "points"],
       "when": [{"name": "match", "opts": [["hand", "calls", "winning_tile"], ["little_three_winds"]]}]
     },
     { 
       "display_name": "Big Three Winds",
-      "value": 120,
+      "value": [120, "points"],
       "when": [{"name": "match", "opts": [["hand", "calls", "winning_tile"], ["big_three_winds"]]}]
     },
     // 4.0 Triplets and Kong
     {
       "display_name": "All Triplets",
-      "value": 30,
+      "value": [30, "points"],
       "when": [{"name": "match", "opts": [["hand", "calls", "winning_tile"], [[[["koutsu"], 4], [["pair"], 1]]]]}]
     },
     {
       "display_name": "Two Concealed Triplets",
-      "value": 5,
+      "value": [5, "points"],
       "when": [[
         ["won_by_draw", {"name": "match", "opts": [["hand", "calls", "winning_tile"], ["ryanankou_tsumo"]]}],
         ["not_won_by_draw", {"name": "match", "opts": [["hand", "calls", "winning_tile"], ["ryanankou_ron"]]}]
@@ -269,7 +270,7 @@
     },
     {
       "display_name": "Three Concealed Triplets",
-      "value": 30,
+      "value": [30, "points"],
       "when": [[
         ["won_by_draw", {"name": "match", "opts": [["hand", "calls", "winning_tile"], ["sanankou_tsumo"]]}],
         ["not_won_by_draw", {"name": "match", "opts": [["hand", "calls", "winning_tile"], ["sanankou_ron"]]}]
@@ -277,7 +278,7 @@
     },
     {
       "display_name": "Four Concealed Triplets",
-      "value": 125,
+      "value": [125, "points"],
       "when": [[
         ["won_by_draw", {"name": "match", "opts": [["hand", "calls", "winning_tile"], ["suuankou_tsumo"]]}],
         ["not_won_by_draw", {"name": "match", "opts": [["hand", "calls", "winning_tile"], ["suuankou_ron"]]}]
@@ -285,71 +286,71 @@
     },
     {
       "display_name": "One Kong",
-      "value": 5,
+      "value": [5, "points"],
       "when": [{"name": "match", "opts": [["calls"], [[[["daiminkan", "kakan", "ankan"], 1]]]]}]
     },
       {
       "display_name": "Two Kong",
-      "value": 20,
+      "value": [20, "points"],
       "when": [{"name": "match", "opts": [["calls"], [[[["daiminkan", "kakan", "ankan"], 2]]]]}]
     },
       {
       "display_name": "Three Kong",
-      "value": 120,
+      "value": [120, "points"],
       "when": [{"name": "match", "opts": [["calls"], [[[["daiminkan", "kakan", "ankan"], 3]]]]}]
     },
     // 5.0 Identical Sets
     {
       "display_name": "Two Identical Sequences",
-      "value": 10,
+      "value": [10, "points"],
       "when": [{"name": "match", "opts": [["hand", "calls", "winning_tile"], ["一般高"]]}]
     },
     {
       "display_name": "Two Identical Sequences Twice",
-      "value": 60,
+      "value": [60, "points"],
       "when": [{"name": "match", "opts": [["hand", "calls", "winning_tile"], ["雙般高"]]}]
     },
     {
       "display_name": "Three Identical Sequences",
-      "value": 120,
+      "value": [120, "points"],
       "when": [{"name": "match", "opts": [["hand", "calls", "winning_tile"], ["一色三同順"]]}]
     },
     // 6.0 Similar Sets
     {
       "display_name": "Three Similar Sequences",
-      "value": 35,
+      "value": [35, "points"],
       "when": [{"name": "match", "opts": [["hand", "calls", "winning_tile"], ["三相逢"]]}]
     },
     {
       "display_name": "Small Three Similar Triplets",
-      "value": 30,
+      "value": [30, "points"],
       "when": [{"name": "match", "opts": [["hand", "calls", "winning_tile"], ["小三同刻"]]}]
     },
     {
       "display_name": "Three Similar Triplets",
-      "value": 120,
+      "value": [120, "points"],
       "when": [{"name": "match", "opts": [["hand", "calls", "winning_tile"], ["三色同刻"]]}]
     },
     // 7.0 Consecutive Sets
     {
       "display_name": "Nine-Tile Straight",
-      "value": 40,
+      "value": [40, "points"],
       "when": [{"name": "match", "opts": [["hand", "calls", "winning_tile"], ["清龍"]]}]
     },
     {
       "display_name": "Three Consecutive Triplets",
-      "value": 100,
+      "value": [100, "points"],
       "when": [{"name": "match", "opts": [["hand", "calls", "winning_tile"], ["一色三連刻"]]}]
     },
     {
       "display_name": "Four Consecutive Triplets",
-      "value": 200,
+      "value": [200, "points"],
       "when": [{"name": "match", "opts": [["hand", "calls", "winning_tile"], ["一色四連刻"]]}]
     },
     // 8.0 Terminals
     {
       "display_name": "Mixed Lesser Terminals",
-      "value": 40,
+      "value": [40, "points"],
       "when": [
         {"name": "match", "opts": [["hand", "calls", "winning_tile"], [[
           "exhaustive",
@@ -360,7 +361,7 @@
     },
     {
       "display_name": "Pure Lesser Terminals",
-      "value": 50,
+      "value": [50, "points"],
       "when": [
         {"name": "match", "opts": [["hand", "calls", "winning_tile"], [[
           "exhaustive",
@@ -371,86 +372,86 @@
     },
     {
       "display_name": "Mixed Greater Terminals",
-      "value": 100,
+      "value": [100, "points"],
       "when": [{"name": "winning_hand_consists_of", "opts": ["1m","9m","1p","9p","1s","9s","1z","2z","3z","4z","0z","6z","7z"]}]
     },
     // 9.0 Incidental Bonuses
     {
       "display_name": "Final Draw",
-      "value": 10,
+      "value": [10, "points"],
       "when": ["no_tiles_remaining", "won_by_draw"]
     },
     {
       "display_name": "Final Discard",
-      "value": 10,
+      "value": [10, "points"],
       "when": ["no_tiles_remaining", "not_won_by_draw"]
     },
     {
       "display_name": "Win on Kong",
-      "value": 10,
+      "value": [10, "points"],
       "when": [{"name": "status", "opts": ["kan"]}]
     },
     {
       "display_name": "Robbing a Kong",
-      "value": 10,
+      "value": [10, "points"],
       "when": ["won_by_call"]
     },
     {
       "display_name": "Blessing of Heaven",
-      "value": 155,
+      "value": [155, "points"],
       "when": [{"name": "status", "opts": ["first_turn"]}, "won_by_draw", {"name": "seat_is", "opts": ["east"]}]
     },
     {
       "display_name": "Blessing of Earth",
-      "value": 155,
+      "value": [155, "points"],
       "when": [{"name": "status", "opts": ["first_turn"]}, "won_by_discard", {"name": "not_seat_is", "opts": ["east"]}]
     },
     // 10.0 Irregular Hands
     {
       "display_name": "Thirteen Terminals",
-      "value": 160,
+      "value": [160, "points"],
       "when": [{"name": "match", "opts": [["hand", "winning_tile"], [[[["orphans_all"], 1]]]]}]
     },
     {
     "display_name": "Seven Pairs",
-    "value": 30,
+    "value": [30, "points"],
     "when": [{"name": "match", "opts": [["hand", "winning_tile"], [[[["pair"], 7]]]]}]
     }
   ],
   "listed_limit_hand": [
     {
       "display_name": "Small Four Winds",
-      "value": 320,
+      "value": [320, "points"],
       "when": [{"name": "match", "opts": [["hand", "calls", "winning_tile"], ["little_four_winds"]]}]
     },
     {
       "display_name": "Big Four Winds",
-      "value": 400,
+      "value": [400, "points"],
       "when": [{"name": "match", "opts": [["hand", "calls", "winning_tile"], ["big_four_winds"]]}]
     },
     {
       "display_name": "All Honours",
-      "value": 320,
+      "value": [320, "points"],
       "when": [{"name": "winning_hand_consists_of", "opts": ["1z","2z","3z","4z","0z","6z","7z"]}]
     },
     {
       "display_name": "Four Kong",
-      "value": 480,
+      "value": [480, "points"],
       "when": [{"name": "match", "opts": [["calls"], [[[["daiminkan", "kakan", "ankan"], 4]]]]}]
     },
     {
       "display_name": "Four Identical Sequences",
-      "value": 480,
+      "value": [480, "points"],
       "when": [{"name": "match", "opts": [["hand", "calls", "winning_tile"], ["一色四同順"]]}]
     },
     {
       "display_name": "Pure Greater Terminals",
-      "value": 400,
+      "value": [400, "points"],
       "when": [{"name": "winning_hand_consists_of", "opts": ["1m","9m","1p","9p","1s","9s"]}]
     },
     {
       "display_name": "Nine Gates",
-      "value": 480,
+      "value": [480, "points"],
       "when": [{"name": "match", "opts": [["hand"], [[[["chuurenpoutou"], 1]]]]}]
     }
   ],
@@ -482,7 +483,6 @@
     "Four Consecutive Triplets": ["Three Consecutive Triplets", "Seven Pairs", "Three Identical Sequences"],
     "Three Consecutive Triplets": ["Seven Pairs"],
   
-    "Pure Greater Terminals": ["Mixed Greater Terminals", "Pure Lesser Terminals", "Mixed Lesser Terminals"],
     "Mixed Greater Terminals": ["Pure Lesser Terminals", "Mixed Lesser Terminals"],
     "Pure Lesser Terminals": ["Mixed Lesser Terminals"],
 
@@ -491,11 +491,21 @@
     "Seven Pairs": ["Concealed Hand", "Thirteen Terminals", "Two Identical Sequences", "All Sequences"],
   
     "Thirteen Terminals": ["Concealed Hand", "Mixed Greater Terminals"],
-    "Nine Gates": ["Concealed Hand", "Pure One-Suit"],
-    "Four Kong": ["Four Identical Sequences", "Big Four Winds", "All Honours", "Small Four Winds", "Pure Greater Terminals", "Three Kong", "Two Kong", "One Kong", "Seven Pairs"],
-    "Four Identical Sequences": ["Big Four Winds", "All Honours", "Small Four Winds", "Pure Greater Terminals", "Three Identical Sequences", "Two Identical Sequences Twice", "Two Identical Sequences", "Seven Pairs"],
-    "Big Four Winds": ["All Honours", "Small Four Winds", "Small Four Winds", "Big Three Winds", "Small Three Winds"],
-    "All Honours": ["Small Four Winds"]
+
+    // listed limit hands are exclusive (can only score one of them, i.e. the highest one)
+    // we have
+    // "All Honours" < "Small Four Winds" (value 320)
+    // <
+    // "Big Four Winds" = "Pure Greater Terminals" (value 400)
+    // <
+    // "Four Identical Sequences" = "Nine Gates" = "Four Kong" (value 480)
+    "Small Four Winds": ["All Honours"],
+    "Big Four Winds": ["All Honours", "Small Four Winds"],
+    "Pure Greater Terminals": ["All Honours", "Small Four Winds"],
+    "Four Kong": ["All Honours", "Small Four Winds", "Big Four Winds", "Pure Greater Terminals"],
+    "Four Identical Sequences": ["All Honours", "Small Four Winds", "Big Four Winds", "Pure Greater Terminals"],
+    "Nine Gates": ["All Honours", "Small Four Winds", "Big Four Winds", "Pure Greater Terminals"],
+    "listed_limit_hand": ["yaku", "meta_yaku"] // they override all non-listed limit hands
   },
   "score_calculation": {
     "scoring_method": "multiplier",
@@ -503,11 +513,8 @@
     "discarder_multiplier": 1,
     "non_discarder_multiplier": 1,
     "self_draw_multiplier": 1,
-    "yaku_lists": ["yaku", "meta_yaku"],
-    "yaku2_lists": ["listed_limit_hand"],
-    "yaku2_overrides_yaku1": true,
+    "yaku_lists": ["yaku", "meta_yaku", "listed_limit_hand"],
     "point_name": "points",
-    "point2_name": "points",
     "win_by_discard_label": "Hu",
     "win_by_draw_label": "Zimo",
     "win_by_discard_name": "Hu",
@@ -585,27 +592,23 @@
   "after_start": {
     "actions": [["set_status_all", "first_turn"]]
   },
-  "after_win": {
-    "actions": [
-      ["set_counter", "displayed_score", "score"],
-      ["unless", ["not_has_yaku2", {"name": "counter_at_most", "opts": ["displayed_score", 320]}], [
-        ["push_message", "has their score capped at 320"],
-        ["modify_winner", "score", 320, "set"]
-      ]]
-    ]
-  },
   "after_scoring": {
     "actions": [
-      ["set_counter", "displayed_score", "score"],
-      ["ite", ["not_has_yaku2", {"name": "counter_at_least", "opts": ["displayed_score", 320]}], [
+      ["set_counter", "pts", "points"],
+      ["ite", [
+        {"name": "counter_at_least", "opts": ["pts", 321]},
+        {"name": "not_match", "opts": [["hand", "calls", "winning_tile"], ["little_four_winds"]]}, // Small Four Winds
+        {"name": "not_match", "opts": [["hand", "calls", "winning_tile"], ["big_four_winds"]]}, // Big Four Winds
+        {"name": "not_winning_hand_consists_of", "opts": ["1z","2z","3z","4z","0z","6z","7z"]}, // All Honours
+        {"name": "not_match", "opts": [["calls"], [[[["daiminkan", "kakan", "ankan"], 4]]]]}, // Four Kong
+        {"name": "not_match", "opts": [["hand", "calls", "winning_tile"], ["一色四同順"]]}, // Four Identical Sequences
+        {"name": "not_winning_hand_consists_of", "opts": ["1m","9m","1p","9p","1s","9s"]}, // Pure Greater Terminals
+        {"name": "not_match", "opts": [["hand"], [[[["chuurenpoutou"], 1]]]]} // Nine Gates
+      ], [
+        ["push_message", "has their score capped at 320"],
+        ["modify_winner", "score", 320, "set"],
         ["modify_payout", "self", 960, "set"],
         ["modify_payout", "others", -320, "set"]
-      ], [
-        // on ron, engine splits score evenly across all players,
-        // but we want to pay a total of 3x score
-        ["unless", ["won_by_draw"], [
-          ["modify_payout", "everyone", 3, "multiply"]
-        ]]
       ]],
 
       // calculate extra payout

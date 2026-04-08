@@ -8,6 +8,13 @@ html, body {
   height: 100%;
   scrollbar-width: none; /* Firefox */
 }
+body::after {
+  /* required since chrome fails to overflow html/body
+     to accommodate absolutely positioned elements */
+  content: "";
+  display: block;
+  height: calc(100vh + (6 * var(--tile-size)));
+}
 /* landscape */
 @media (min-aspect-ratio: 6/5) {
   html, body {
@@ -99,6 +106,7 @@ main div.messages-container {
   display: flex;
   flex-direction: column-reverse;
   overflow-y: auto;
+  scrollbar-color: white transparent;
 }
 main div.messages-container > div.messages {
   display: flex;
@@ -165,6 +173,8 @@ main div.messages-container > div.messages {
 
 /* global styles */
 
+/* standardize padding */
+select, button, input { padding: 0 calc(0.125 * var(--tile-size)); }
 /* toggle buttons */
 input[type="radio"], input[type="checkbox"] { display: none; }
 label {
@@ -222,6 +232,14 @@ button:active::before {
   height: calc(0.125 * var(--tile-size));
   top: calc(-0.125 * var(--tile-size));
   left: 0;
+}
+/* numeric input */
+input[type="number"] { -moz-appearance: textfield; }    input[type=number]::-webkit-inner-spin-button,
+input[type="number"]::-webkit-outer-spin-button {
+  appearance: none;
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  margin: 0;
 }
 
 /* hands */
@@ -900,29 +918,46 @@ div.tile {
   --tile-height: calc(var(--tile-scale-factor) * 1 * var(--tile-size));
   --tile-color: transparent;
   --number-color: black;
-  --aka-color: #c14938;
+  --aka-color: #d71e1e;
   --galaxy-color: #67b5ef;
   --ao-color: #2f5298;
   --kin-color: #c9a146;
   --border-width: calc(0 * var(--tile-size));
   --border-color: transparent;
   --num-tiles: 214;
+  position: relative;
   width: var(--tile-width);
   height: var(--tile-height);
-  background: url("/images/tiles.png") no-repeat, conic-gradient(var(--tile-color) 0 0);
+  background-image: 
+    url("/images/tiles.png"), 
+    conic-gradient(var(--tile-color) 0 0),
+    /* fill gap between tile face and top of tile */
+    repeating-linear-gradient(
+      0deg,
+      transparent calc(0 * var(--tile-size)),
+      transparent calc(5.75 * var(--tile-size)),
+      var(--tile-front-side) calc(5.75 * var(--tile-size)),
+      var(--tile-front-side) calc(6 * var(--tile-size))
+    );
+  background-repeat: no-repeat, initial, initial;
   background-size: auto calc(var(--tile-scale-factor) * var(--num-tiles) * var(--tile-size));
   background-position: 0 0;
   border: var(--border-width) solid var(--border-color);
-  border-radius: calc(0.10 * var(--tile-size));
+  border-radius: calc(0.10 * var(--tile-size) * var(--tile-scale-factor));
   flex-shrink: 0;
   box-sizing: border-box;
+}
+div.tile.flat {
+  background-image:
+    url("/images/tiles.png"),
+    conic-gradient(var(--tile-color) 0 0);
 }
 /* dora shine */
 @keyframes doraShine {
   0% { transform: translate(-100%, -100%) rotate(135deg); }
   100% { transform: translate(50%, 50%) rotate(135deg); }
 }
-div.tile.dora:not(.\31 x):not(.selected) { overflow: hidden; }
+div.tile.dora:not(.\31 x):not(.selected) { position: relative; overflow: hidden; }
 div.tile.dora:not(.\31 x):not(.selected)::before {
   content: "";
   position: absolute;
@@ -1118,55 +1153,56 @@ div.tile.\30 \36 z { --tile-color: var(--aka-color); --number-color: var(--aka-c
 div.tile.\30 \37 z { --tile-color: var(--aka-color); --number-color: var(--aka-color); --tile-index: 211; }
 div.tile.\30 \38 z { --tile-color: var(--aka-color); --number-color: var(--aka-color); --tile-index: 212; }
 div.tile.\30 \30 \30 s { --tile-color: var(--aka-color); --number-color: var(--aka-color); --tile-index: 213; }
-div.tile.\31 \31 m { --tile-color: var(--galaxy-color); --tile-index: 114; }
-div.tile.\31 \32 m { --tile-color: var(--galaxy-color); --tile-index: 115; }
-div.tile.\31 \33 m { --tile-color: var(--galaxy-color); --tile-index: 116; }
-div.tile.\31 \34 m { --tile-color: var(--galaxy-color); --tile-index: 117; }
-div.tile.\31 \35 m { --tile-color: var(--galaxy-color); --tile-index: 118; }
-div.tile.\31 \36 m { --tile-color: var(--galaxy-color); --tile-index: 119; }
-div.tile.\31 \37 m { --tile-color: var(--galaxy-color); --tile-index: 120; }
-div.tile.\31 \38 m { --tile-color: var(--galaxy-color); --tile-index: 121; }
-div.tile.\31 \39 m { --tile-color: var(--galaxy-color); --tile-index: 122; }
-div.tile.\31 \31 \30 m { --tile-color: var(--galaxy-color); --tile-index: 123; }
-div.tile.\31 \31 p { --tile-color: var(--galaxy-color); --tile-index: 124; }
-div.tile.\31 \32 p { --tile-color: var(--galaxy-color); --tile-index: 125; }
-div.tile.\31 \33 p { --tile-color: var(--galaxy-color); --tile-index: 126; }
-div.tile.\31 \34 p { --tile-color: var(--galaxy-color); --tile-index: 127; }
-div.tile.\31 \35 p { --tile-color: var(--galaxy-color); --tile-index: 128; }
-div.tile.\31 \36 p { --tile-color: var(--galaxy-color); --tile-index: 129; }
-div.tile.\31 \37 p { --tile-color: var(--galaxy-color); --tile-index: 130; }
-div.tile.\31 \38 p { --tile-color: var(--galaxy-color); --tile-index: 131; }
-div.tile.\31 \39 p { --tile-color: var(--galaxy-color); --tile-index: 132; }
-div.tile.\31 \31 \30 p { --tile-color: var(--galaxy-color); --tile-index: 133; }
-div.tile.\31 \31 s { --tile-color: var(--galaxy-color); --tile-index: 134; }
-div.tile.\31 \32 s { --tile-color: var(--galaxy-color); --tile-index: 135; }
-div.tile.\31 \33 s { --tile-color: var(--galaxy-color); --tile-index: 136; }
-div.tile.\31 \34 s { --tile-color: var(--galaxy-color); --tile-index: 137; }
-div.tile.\31 \35 s { --tile-color: var(--galaxy-color); --tile-index: 138; }
-div.tile.\31 \36 s { --tile-color: var(--galaxy-color); --tile-index: 139; }
-div.tile.\31 \37 s { --tile-color: var(--galaxy-color); --tile-index: 140; }
-div.tile.\31 \38 s { --tile-color: var(--galaxy-color); --tile-index: 141; }
-div.tile.\31 \39 s { --tile-color: var(--galaxy-color); --tile-index: 142; }
-div.tile.\31 \31 \30 s { --tile-color: var(--galaxy-color); --tile-index: 143; }
-div.tile.\31 \31 t { --tile-color: var(--galaxy-color); --tile-index: 144; }
-div.tile.\31 \32 t { --tile-color: var(--galaxy-color); --tile-index: 145; }
-div.tile.\31 \33 t { --tile-color: var(--galaxy-color); --tile-index: 146; }
-div.tile.\31 \34 t { --tile-color: var(--galaxy-color); --tile-index: 147; }
-div.tile.\31 \35 t { --tile-color: var(--galaxy-color); --tile-index: 148; }
-div.tile.\31 \36 t { --tile-color: var(--galaxy-color); --tile-index: 149; }
-div.tile.\31 \37 t { --tile-color: var(--galaxy-color); --tile-index: 150; }
-div.tile.\31 \38 t { --tile-color: var(--galaxy-color); --tile-index: 151; }
-div.tile.\31 \39 t { --tile-color: var(--galaxy-color); --tile-index: 152; }
-div.tile.\31 \31 \30 t { --tile-color: var(--galaxy-color); --tile-index: 153; }
-div.tile.\31 \31 z { --tile-color: var(--galaxy-color); --tile-index: 155; }
-div.tile.\31 \32 z { --tile-color: var(--galaxy-color); --tile-index: 156; }
-div.tile.\31 \33 z { --tile-color: var(--galaxy-color); --tile-index: 157; }
-div.tile.\31 \34 z { --tile-color: var(--galaxy-color); --tile-index: 158; }
-div.tile.\31 \35 z { --tile-color: var(--galaxy-color); --tile-index: 159; }
-div.tile.\31 \36 z { --tile-color: var(--galaxy-color); --tile-index: 160; }
-div.tile.\31 \37 z { --tile-color: var(--galaxy-color); --tile-index: 161; }
-div.tile.\31 \38 z { --tile-color: var(--galaxy-color); --tile-index: 162; }
-div.tile.\31 \30 \30 s { --tile-color: var(--galaxy-color); --tile-index: 163; }
+div.tile.\31 \31 m { --tile-color: var(--galaxy-color); --number-color: var(--galaxy-color); --tile-index: 114; }
+div.tile.\31 \32 m { --tile-color: var(--galaxy-color); --number-color: var(--galaxy-color); --tile-index: 115; }
+div.tile.\31 \33 m { --tile-color: var(--galaxy-color); --number-color: var(--galaxy-color); --tile-index: 116; }
+div.tile.\31 \34 m { --tile-color: var(--galaxy-color); --number-color: var(--galaxy-color); --tile-index: 117; }
+div.tile.\31 \35 m { --tile-color: var(--galaxy-color); --number-color: var(--galaxy-color); --tile-index: 118; }
+div.tile.\31 \36 m { --tile-color: var(--galaxy-color); --number-color: var(--galaxy-color); --tile-index: 119; }
+div.tile.\31 \37 m { --tile-color: var(--galaxy-color); --number-color: var(--galaxy-color); --tile-index: 120; }
+div.tile.\31 \38 m { --tile-color: var(--galaxy-color); --number-color: var(--galaxy-color); --tile-index: 121; }
+div.tile.\31 \39 m { --tile-color: var(--galaxy-color); --number-color: var(--galaxy-color); --tile-index: 122; }
+div.tile.\31 \31 \30 m { --tile-color: var(--galaxy-color); --number-color: var(--galaxy-color); --tile-index: 123; }
+div.tile.\31 \31 p { --tile-color: var(--galaxy-color); --number-color: var(--galaxy-color); --tile-index: 124; }
+div.tile.\31 \32 p { --tile-color: var(--galaxy-color); --number-color: var(--galaxy-color); --tile-index: 125; }
+div.tile.\31 \33 p { --tile-color: var(--galaxy-color); --number-color: var(--galaxy-color); --tile-index: 126; }
+div.tile.\31 \34 p { --tile-color: var(--galaxy-color); --number-color: var(--galaxy-color); --tile-index: 127; }
+div.tile.\31 \35 p { --tile-color: var(--galaxy-color); --number-color: var(--galaxy-color); --tile-index: 128; }
+div.tile.\31 \36 p { --tile-color: var(--galaxy-color); --number-color: var(--galaxy-color); --tile-index: 129; }
+div.tile.\31 \37 p { --tile-color: var(--galaxy-color); --number-color: var(--galaxy-color); --tile-index: 130; }
+div.tile.\31 \38 p { --tile-color: var(--galaxy-color); --number-color: var(--galaxy-color); --tile-index: 131; }
+div.tile.\31 \39 p { --tile-color: var(--galaxy-color); --number-color: var(--galaxy-color); --tile-index: 132; }
+div.tile.\31 \31 \30 p { --tile-color: var(--galaxy-color); --number-color: var(--galaxy-color); --tile-index: 133; }
+div.tile.\31 \31 s { --tile-color: var(--galaxy-color); --number-color: var(--galaxy-color); --tile-index: 134; }
+div.tile.\31 \32 s { --tile-color: var(--galaxy-color); --number-color: var(--galaxy-color); --tile-index: 135; }
+div.tile.\31 \33 s { --tile-color: var(--galaxy-color); --number-color: var(--galaxy-color); --tile-index: 136; }
+div.tile.\31 \34 s { --tile-color: var(--galaxy-color); --number-color: var(--galaxy-color); --tile-index: 137; }
+div.tile.\31 \35 s { --tile-color: var(--galaxy-color); --number-color: var(--galaxy-color); --tile-index: 138; }
+div.tile.\31 \36 s { --tile-color: var(--galaxy-color); --number-color: var(--galaxy-color); --tile-index: 139; }
+div.tile.\31 \37 s { --tile-color: var(--galaxy-color); --number-color: var(--galaxy-color); --tile-index: 140; }
+div.tile.\31 \38 s { --tile-color: var(--galaxy-color); --number-color: var(--galaxy-color); --tile-index: 141; }
+div.tile.\31 \39 s { --tile-color: var(--galaxy-color); --number-color: var(--galaxy-color); --tile-index: 142; }
+div.tile.\31 \31 \30 s { --tile-color: var(--galaxy-color); --number-color: var(--galaxy-color); --tile-index: 143; }
+div.tile.\31 \31 t { --tile-color: var(--galaxy-color); --number-color: var(--galaxy-color); --tile-index: 144; }
+div.tile.\31 \32 t { --tile-color: var(--galaxy-color); --number-color: var(--galaxy-color); --tile-index: 145; }
+div.tile.\31 \33 t { --tile-color: var(--galaxy-color); --number-color: var(--galaxy-color); --tile-index: 146; }
+div.tile.\31 \34 t { --tile-color: var(--galaxy-color); --number-color: var(--galaxy-color); --tile-index: 147; }
+div.tile.\31 \35 t { --tile-color: var(--galaxy-color); --number-color: var(--galaxy-color); --tile-index: 148; }
+div.tile.\31 \36 t { --tile-color: var(--galaxy-color); --number-color: var(--galaxy-color); --tile-index: 149; }
+div.tile.\31 \37 t { --tile-color: var(--galaxy-color); --number-color: var(--galaxy-color); --tile-index: 150; }
+div.tile.\31 \38 t { --tile-color: var(--galaxy-color); --number-color: var(--galaxy-color); --tile-index: 151; }
+div.tile.\31 \39 t { --tile-color: var(--galaxy-color); --number-color: var(--galaxy-color); --tile-index: 152; }
+div.tile.\31 \31 \30 t { --tile-color: var(--galaxy-color); --number-color: var(--galaxy-color); --tile-index: 153; }
+div.tile.\31 \30 z { --tile-color: var(--galaxy-color); --number-color: var(--galaxy-color); --tile-index: 154; }
+div.tile.\31 \31 z { --tile-color: var(--galaxy-color); --number-color: var(--galaxy-color); --tile-index: 155; }
+div.tile.\31 \32 z { --tile-color: var(--galaxy-color); --number-color: var(--galaxy-color); --tile-index: 156; }
+div.tile.\31 \33 z { --tile-color: var(--galaxy-color); --number-color: var(--galaxy-color); --tile-index: 157; }
+div.tile.\31 \34 z { --tile-color: var(--galaxy-color); --number-color: var(--galaxy-color); --tile-index: 158; }
+div.tile.\31 \35 z { --tile-color: var(--galaxy-color); --number-color: var(--galaxy-color); --tile-index: 159; }
+div.tile.\31 \36 z { --tile-color: var(--galaxy-color); --number-color: var(--galaxy-color); --tile-index: 160; }
+div.tile.\31 \37 z { --tile-color: var(--galaxy-color); --number-color: var(--galaxy-color); --tile-index: 161; }
+div.tile.\31 \38 z { --tile-color: var(--galaxy-color); --number-color: var(--galaxy-color); --tile-index: 162; }
+div.tile.\31 \30 \30 s { --tile-color: var(--galaxy-color); --number-color: var(--galaxy-color); --tile-index: 163; }
 div.tile.\32 \31 m { --tile-color: var(--ao-color); --number-color: var(--ao-color); --tile-index: 164; }
 div.tile.\32 \32 m { --tile-color: var(--ao-color); --number-color: var(--ao-color); --tile-index: 165; }
 div.tile.\32 \33 m { --tile-color: var(--ao-color); --number-color: var(--ao-color); --tile-index: 166; }
@@ -1217,56 +1253,56 @@ div.tile.\32 \36 z { --tile-color: var(--ao-color); --number-color: var(--ao-col
 div.tile.\32 \37 z { --tile-color: var(--ao-color); --number-color: var(--ao-color); --tile-index: 211; }
 div.tile.\32 \38 z { --tile-color: var(--ao-color); --number-color: var(--ao-color); --tile-index: 212; }
 div.tile.\32 \30 \30 s { --tile-color: var(--ao-color); --number-color: var(--ao-color); --tile-index: 213; }
-div.tile.\33 \31 m { --tile-color: var(--kin-color); --tile-index: 164; }
-div.tile.\33 \32 m { --tile-color: var(--kin-color); --tile-index: 165; }
-div.tile.\33 \33 m { --tile-color: var(--kin-color); --tile-index: 166; }
-div.tile.\33 \34 m { --tile-color: var(--kin-color); --tile-index: 167; }
-div.tile.\33 \35 m { --tile-color: var(--kin-color); --tile-index: 168; }
-div.tile.\33 \36 m { --tile-color: var(--kin-color); --tile-index: 169; }
-div.tile.\33 \37 m { --tile-color: var(--kin-color); --tile-index: 170; }
-div.tile.\33 \38 m { --tile-color: var(--kin-color); --tile-index: 171; }
-div.tile.\33 \39 m { --tile-color: var(--kin-color); --tile-index: 172; }
-div.tile.\33 \31 \30 m { --tile-color: var(--kin-color); --tile-index: 173; }
-div.tile.\33 \31 p { --tile-color: var(--kin-color); --tile-index: 174; }
-div.tile.\33 \32 p { --tile-color: var(--kin-color); --tile-index: 175; }
-div.tile.\33 \33 p { --tile-color: var(--kin-color); --tile-index: 176; }
-div.tile.\33 \34 p { --tile-color: var(--kin-color); --tile-index: 177; }
-div.tile.\33 \35 p { --tile-color: var(--kin-color); --tile-index: 178; }
-div.tile.\33 \36 p { --tile-color: var(--kin-color); --tile-index: 179; }
-div.tile.\33 \37 p { --tile-color: var(--kin-color); --tile-index: 180; }
-div.tile.\33 \38 p { --tile-color: var(--kin-color); --tile-index: 181; }
-div.tile.\33 \39 p { --tile-color: var(--kin-color); --tile-index: 182; }
-div.tile.\33 \31 \30 p { --tile-color: var(--kin-color); --tile-index: 183; }
-div.tile.\33 \31 s { --tile-color: var(--kin-color); --tile-index: 184; }
-div.tile.\33 \32 s { --tile-color: var(--kin-color); --tile-index: 185; }
-div.tile.\33 \33 s { --tile-color: var(--kin-color); --tile-index: 186; }
-div.tile.\33 \34 s { --tile-color: var(--kin-color); --tile-index: 187; }
-div.tile.\33 \35 s { --tile-color: var(--kin-color); --tile-index: 188; }
-div.tile.\33 \36 s { --tile-color: var(--kin-color); --tile-index: 189; }
-div.tile.\33 \37 s { --tile-color: var(--kin-color); --tile-index: 190; }
-div.tile.\33 \38 s { --tile-color: var(--kin-color); --tile-index: 191; }
-div.tile.\33 \39 s { --tile-color: var(--kin-color); --tile-index: 192; }
-div.tile.\33 \31 \30 s { --tile-color: var(--kin-color); --tile-index: 193; }
-div.tile.\33 \31 t { --tile-color: var(--kin-color); --tile-index: 194; }
-div.tile.\33 \32 t { --tile-color: var(--kin-color); --tile-index: 195; }
-div.tile.\33 \33 t { --tile-color: var(--kin-color); --tile-index: 196; }
-div.tile.\33 \34 t { --tile-color: var(--kin-color); --tile-index: 197; }
-div.tile.\33 \35 t { --tile-color: var(--kin-color); --tile-index: 198; }
-div.tile.\33 \36 t { --tile-color: var(--kin-color); --tile-index: 199; }
-div.tile.\33 \37 t { --tile-color: var(--kin-color); --tile-index: 200; }
-div.tile.\33 \38 t { --tile-color: var(--kin-color); --tile-index: 201; }
-div.tile.\33 \39 t { --tile-color: var(--kin-color); --tile-index: 202; }
-div.tile.\33 \31 \30 t { --tile-color: var(--kin-color); --tile-index: 203; }
-div.tile.\33 \30 z { --tile-color: var(--kin-color); --tile-index: 204; }
-div.tile.\33 \31 z { --tile-color: var(--kin-color); --tile-index: 205; }
-div.tile.\33 \32 z { --tile-color: var(--kin-color); --tile-index: 206; }
-div.tile.\33 \33 z { --tile-color: var(--kin-color); --tile-index: 207; }
-div.tile.\33 \34 z { --tile-color: var(--kin-color); --tile-index: 208; }
-div.tile.\33 \35 z { --tile-color: var(--kin-color); --tile-index: 209; }
-div.tile.\33 \36 z { --tile-color: var(--kin-color); --tile-index: 210; }
-div.tile.\33 \37 z { --tile-color: var(--kin-color); --tile-index: 211; }
-div.tile.\33 \38 z { --tile-color: var(--kin-color); --tile-index: 212; }
-div.tile.\33 \30 \30 s { --tile-color: var(--kin-color); --tile-index: 213; }
+div.tile.\33 \31 m { --tile-color: var(--kin-color); --number-color: var(--kin-color); --tile-index: 164; }
+div.tile.\33 \32 m { --tile-color: var(--kin-color); --number-color: var(--kin-color); --tile-index: 165; }
+div.tile.\33 \33 m { --tile-color: var(--kin-color); --number-color: var(--kin-color); --tile-index: 166; }
+div.tile.\33 \34 m { --tile-color: var(--kin-color); --number-color: var(--kin-color); --tile-index: 167; }
+div.tile.\33 \35 m { --tile-color: var(--kin-color); --number-color: var(--kin-color); --tile-index: 168; }
+div.tile.\33 \36 m { --tile-color: var(--kin-color); --number-color: var(--kin-color); --tile-index: 169; }
+div.tile.\33 \37 m { --tile-color: var(--kin-color); --number-color: var(--kin-color); --tile-index: 170; }
+div.tile.\33 \38 m { --tile-color: var(--kin-color); --number-color: var(--kin-color); --tile-index: 171; }
+div.tile.\33 \39 m { --tile-color: var(--kin-color); --number-color: var(--kin-color); --tile-index: 172; }
+div.tile.\33 \31 \30 m { --tile-color: var(--kin-color); --number-color: var(--kin-color); --tile-index: 173; }
+div.tile.\33 \31 p { --tile-color: var(--kin-color); --number-color: var(--kin-color); --tile-index: 174; }
+div.tile.\33 \32 p { --tile-color: var(--kin-color); --number-color: var(--kin-color); --tile-index: 175; }
+div.tile.\33 \33 p { --tile-color: var(--kin-color); --number-color: var(--kin-color); --tile-index: 176; }
+div.tile.\33 \34 p { --tile-color: var(--kin-color); --number-color: var(--kin-color); --tile-index: 177; }
+div.tile.\33 \35 p { --tile-color: var(--kin-color); --number-color: var(--kin-color); --tile-index: 178; }
+div.tile.\33 \36 p { --tile-color: var(--kin-color); --number-color: var(--kin-color); --tile-index: 179; }
+div.tile.\33 \37 p { --tile-color: var(--kin-color); --number-color: var(--kin-color); --tile-index: 180; }
+div.tile.\33 \38 p { --tile-color: var(--kin-color); --number-color: var(--kin-color); --tile-index: 181; }
+div.tile.\33 \39 p { --tile-color: var(--kin-color); --number-color: var(--kin-color); --tile-index: 182; }
+div.tile.\33 \31 \30 p { --tile-color: var(--kin-color); --number-color: var(--kin-color); --tile-index: 183; }
+div.tile.\33 \31 s { --tile-color: var(--kin-color); --number-color: var(--kin-color); --tile-index: 184; }
+div.tile.\33 \32 s { --tile-color: var(--kin-color); --number-color: var(--kin-color); --tile-index: 185; }
+div.tile.\33 \33 s { --tile-color: var(--kin-color); --number-color: var(--kin-color); --tile-index: 186; }
+div.tile.\33 \34 s { --tile-color: var(--kin-color); --number-color: var(--kin-color); --tile-index: 187; }
+div.tile.\33 \35 s { --tile-color: var(--kin-color); --number-color: var(--kin-color); --tile-index: 188; }
+div.tile.\33 \36 s { --tile-color: var(--kin-color); --number-color: var(--kin-color); --tile-index: 189; }
+div.tile.\33 \37 s { --tile-color: var(--kin-color); --number-color: var(--kin-color); --tile-index: 190; }
+div.tile.\33 \38 s { --tile-color: var(--kin-color); --number-color: var(--kin-color); --tile-index: 191; }
+div.tile.\33 \39 s { --tile-color: var(--kin-color); --number-color: var(--kin-color); --tile-index: 192; }
+div.tile.\33 \31 \30 s { --tile-color: var(--kin-color); --number-color: var(--kin-color); --tile-index: 193; }
+div.tile.\33 \31 t { --tile-color: var(--kin-color); --number-color: var(--kin-color); --tile-index: 194; }
+div.tile.\33 \32 t { --tile-color: var(--kin-color); --number-color: var(--kin-color); --tile-index: 195; }
+div.tile.\33 \33 t { --tile-color: var(--kin-color); --number-color: var(--kin-color); --tile-index: 196; }
+div.tile.\33 \34 t { --tile-color: var(--kin-color); --number-color: var(--kin-color); --tile-index: 197; }
+div.tile.\33 \35 t { --tile-color: var(--kin-color); --number-color: var(--kin-color); --tile-index: 198; }
+div.tile.\33 \36 t { --tile-color: var(--kin-color); --number-color: var(--kin-color); --tile-index: 199; }
+div.tile.\33 \37 t { --tile-color: var(--kin-color); --number-color: var(--kin-color); --tile-index: 200; }
+div.tile.\33 \38 t { --tile-color: var(--kin-color); --number-color: var(--kin-color); --tile-index: 201; }
+div.tile.\33 \39 t { --tile-color: var(--kin-color); --number-color: var(--kin-color); --tile-index: 202; }
+div.tile.\33 \31 \30 t { --tile-color: var(--kin-color); --number-color: var(--kin-color); --tile-index: 203; }
+div.tile.\33 \30 z { --tile-color: var(--kin-color); --number-color: var(--kin-color); --tile-index: 204; }
+div.tile.\33 \31 z { --tile-color: var(--kin-color); --number-color: var(--kin-color); --tile-index: 205; }
+div.tile.\33 \32 z { --tile-color: var(--kin-color); --number-color: var(--kin-color); --tile-index: 206; }
+div.tile.\33 \33 z { --tile-color: var(--kin-color); --number-color: var(--kin-color); --tile-index: 207; }
+div.tile.\33 \34 z { --tile-color: var(--kin-color); --number-color: var(--kin-color); --tile-index: 208; }
+div.tile.\33 \35 z { --tile-color: var(--kin-color); --number-color: var(--kin-color); --tile-index: 209; }
+div.tile.\33 \36 z { --tile-color: var(--kin-color); --number-color: var(--kin-color); --tile-index: 210; }
+div.tile.\33 \37 z { --tile-color: var(--kin-color); --number-color: var(--kin-color); --tile-index: 211; }
+div.tile.\33 \38 z { --tile-color: var(--kin-color); --number-color: var(--kin-color); --tile-index: 212; }
+div.tile.\33 \30 \30 s { --tile-color: var(--kin-color); --number-color: var(--kin-color); --tile-index: 213; }
 div.tile.\34 \31 m { --tile-index: 114; }
 div.tile.\34 \32 m { --tile-index: 115; }
 div.tile.\34 \33 m { --tile-index: 116; }
@@ -1380,20 +1416,20 @@ div.tile.\31 \27 s { --tile-index: 40; }
 div.tile.\30 \31 \27 s { --tile-color: var(--aka-color); --number-color: var(--aka-color); --tile-index: 184; }
 div.tile.\31 \31 \27 s { --tile-index: 212; }
 div.tile.\32 \31 \27 s { --tile-color: var(--ao-color); --number-color: var(--ao-color); --tile-index: 184; }
-div.tile.\33 \31 \27 s { --tile-color: var(--kin-color); --tile-index: 184; }
+div.tile.\33 \31 \27 s { --tile-color: var(--kin-color); --number-color: var(--kin-color); --tile-index: 184; }
 div.tile.\34 \31 \27 s { --tile-index: 184; }
 /* alternate 0z: 5'z */
 div.tile.\35 \27 z { --tile-index: 37; }
 div.tile.\30 \35 \27 z { --tile-color: var(--aka-color); --number-color: var(--aka-color); --tile-index: 209; }
 div.tile.\32 \35 \27 z { --tile-color: var(--ao-color); --number-color: var(--ao-color); --tile-index: 209; }
-div.tile.\33 \35 \27 z { --tile-color: var(--kin-color); --tile-index: 209; }
+div.tile.\33 \35 \27 z { --tile-color: var(--kin-color); --number-color: var(--kin-color); --tile-index: 209; }
 div.tile.\34 \35 \27 z { --tile-index: 209; }
 /* malaysian 0z: 5`z */
 div.tile.\35 \60 z { --tile-index: 38; }
 div.tile.\30 \35 \60 z { --tile-color: var(--aka-color); --number-color: var(--aka-color); --tile-index: 212; }
 div.tile.\31 \35 \60 z { --tile-index: 162; }
 div.tile.\32 \35 \60 z { --tile-color: var(--ao-color); --number-color: var(--ao-color); --tile-index: 212; }
-div.tile.\33 \35 \60 z { --tile-color: var(--kin-color); --tile-index: 212; }
+div.tile.\33 \35 \60 z { --tile-color: var(--kin-color); --number-color: var(--kin-color); --tile-index: 212; }
 div.tile.\34 \35 \60 z { --tile-index: 212; }
 /* shiro pocchi: 5^z */
 div.tile.\35 \5e z { --tile-index: 39; }
@@ -1404,8 +1440,8 @@ div.tile.facedown { --tile-index: 44; }
 /* custom coloring */
 div.tile.red { --tile-color: var(--aka-color); --number-color: var(--aka-color); }
 div.tile.blue { --tile-color: var(--ao-color); --number-color: var(--ao-color); }
-div.tile.cyan { --tile-color: var(--galaxy-color); }
-div.tile.gold { --tile-color: var(--kin-color); }
+div.tile.cyan { --tile-color: var(--galaxy-color); --number-color: var(--galaxy-color); }
+div.tile.gold { --tile-color: var(--kin-color); --number-color: var(--kin-color); }
 div.tile.orange { --tile-color: orange; }
 div.tile.yellow { --tile-color: yellow; }
 div.tile.green { --tile-color: green; --number-color: green; }
@@ -1455,9 +1491,8 @@ div.tile {
 }
 div.tile:not(.flat) {
   padding-top: calc(0.25 * var(--tile-size));
-  filter: drop-shadow(0 calc(var(--tile-height) / -8) 0 var(--tile-front-side))
-          drop-shadow(0 calc(var(--tile-height) / -8) 0 var(--tile-back-side))
-          brightness(var(--tile-brightness)) saturate(var(--tile-saturate));
+  box-shadow: 0 calc(var(--tile-height) / -8) 0 0 var(--tile-front-side),
+              0 calc(var(--tile-height) / -4) 0 0 var(--tile-back-side);
 }
 div.hand.self div.tiles > div.tile.selected,
 div.hand.self div.draws > div.tile.selected {
@@ -1476,31 +1511,26 @@ div.hand.self div.draws > div.tile.selected::before {
   bottom: calc(-0.25 * var(--tile-size));
 }
 div.tile.sideways:not(.flat) {
-  filter: drop-shadow(0 calc(var(--tile-height) / -16) 0 var(--tile-front-side))
-          drop-shadow(0 calc(var(--tile-height) / -8) 0 var(--tile-back-side))
-          brightness(var(--tile-brightness)) saturate(var(--tile-saturate));
+  box-shadow: 0 calc(var(--tile-height) / -16) 0 0 var(--tile-front-side),
+              0 calc(var(--tile-height) / -8) 0 0 var(--tile-back-side);
 }
 div.pond.self div.tile:not(.flat),
 div.self div.flowers div.tile:not(.flat) {
-  filter: drop-shadow(0 calc(var(--tile-height) / 8) 0 var(--tile-front-side))
-          drop-shadow(0 calc(var(--tile-height) / 8) 0 var(--tile-back-side))
-          brightness(var(--tile-brightness)) saturate(var(--tile-saturate));
+  box-shadow: 0 calc(var(--tile-height) / 8) 0 0 var(--tile-front-side),
+              0 calc(var(--tile-height) / 4) 0 0 var(--tile-back-side);
 }
 div.shimocha div.tile:not(.flat) {
-  filter: drop-shadow(calc(var(--tile-height) / -8) 0 0 var(--tile-front-side))
-          drop-shadow(calc(var(--tile-height) / -8) 0 0 var(--tile-back-side))
-          brightness(var(--tile-brightness)) saturate(var(--tile-saturate));
+  box-shadow: calc(var(--tile-height) / -8) 0 0 0 var(--tile-front-side),
+              calc(var(--tile-height) / -4) 0 0 0 var(--tile-back-side);
 }
 div.kamicha div.tile:not(.flat) {
-  filter: drop-shadow(calc(var(--tile-height) / 8) 0 0 var(--tile-front-side))
-          drop-shadow(calc(var(--tile-height) / 8) 0 0 var(--tile-back-side))
-          brightness(var(--tile-brightness)) saturate(var(--tile-saturate));
+  box-shadow: calc(var(--tile-height) / 8) 0 0 0 var(--tile-front-side),
+              calc(var(--tile-height) / 4) 0 0 0 var(--tile-back-side);
 }
 div.tile.reversed:not(.flat) {
   transform: scaleX(-100%) translateY(calc(var(--tile-height) / -4)) translateZ(0);
-  filter: drop-shadow(0 calc(var(--tile-height) / 8) 0 var(--tile-front-side))
-          drop-shadow(0 calc(var(--tile-height) / 8) 0 var(--tile-back-side))
-          brightness(var(--tile-brightness)) saturate(var(--tile-saturate));
+  box-shadow: 0 calc(var(--tile-height) / 8) 0 0 var(--tile-front-side),
+              0 calc(var(--tile-height) / 4) 0 0 var(--tile-back-side);
 }
 div.pond.self div.tile.reversed:not(.flat) {
   transform: scaleX(-100%) translateY(calc(var(--tile-height) / -4)) translateZ(0);
@@ -1575,35 +1605,29 @@ div.self div.tile:nth-child(30) { z-index: 29; }
 
 /* all 3d effects should have reversed color for upside down tiles */
 div.tile.\31 x:not(.flat) {
-  filter: drop-shadow(0 calc(var(--tile-height) / -8) 0 var(--tile-back-side))
-          drop-shadow(0 calc(var(--tile-height) / -8) 0 var(--tile-front-side))
-          brightness(var(--tile-brightness)) saturate(var(--tile-saturate));
+  box-shadow: 0 calc(var(--tile-height) / -8) 0 0 var(--tile-back-side),
+              0 calc(var(--tile-height) / -4) 0 0 var(--tile-front-side);
 }
 div.tile.\31 x.sideways:not(.flat) {
-  filter: drop-shadow(0 calc(var(--tile-height) / -16) 0 var(--tile-back-side))
-          drop-shadow(0 calc(var(--tile-height) / -8) 0 var(--tile-front-side))
-          brightness(var(--tile-brightness)) saturate(var(--tile-saturate));
+  box-shadow: 0 calc(var(--tile-height) / -16) 0 0 var(--tile-back-side),
+              0 calc(var(--tile-height) / -8) 0 0 var(--tile-front-side);
 }
 div.pond.self div.tile.\31 x:not(.flat) {
-  filter: drop-shadow(0 calc(var(--tile-height) / 8) 0 var(--tile-back-side))
-          drop-shadow(0 calc(var(--tile-height) / 8) 0 var(--tile-front-side))
-          brightness(var(--tile-brightness)) saturate(var(--tile-saturate));
+  box-shadow: 0 calc(var(--tile-height) / 8) 0 0 var(--tile-back-side),
+              0 calc(var(--tile-height) / 4) 0 0 var(--tile-front-side);
 }
 div.shimocha div.tile.\31 x:not(.flat) {
-  filter: drop-shadow(calc(var(--tile-height) / -8) 0 0 var(--tile-back-side))
-          drop-shadow(calc(var(--tile-height) / -8) 0 0 var(--tile-front-side))
-          brightness(var(--tile-brightness)) saturate(var(--tile-saturate));
+  box-shadow: calc(var(--tile-height) / -8) 0 0 0 var(--tile-back-side),
+              calc(var(--tile-height) / -4) 0 0 0 var(--tile-front-side);
 }
 div.kamicha div.tile.\31 x:not(.flat) {
-  filter: drop-shadow(calc(var(--tile-height) / 8) 0 0 var(--tile-back-side))
-          drop-shadow(calc(var(--tile-height) / 8) 0 0 var(--tile-front-side))
-          brightness(var(--tile-brightness)) saturate(var(--tile-saturate));
+  box-shadow: calc(var(--tile-height) / 8) 0 0 0 var(--tile-back-side),
+              calc(var(--tile-height) / 4) 0 0 0 var(--tile-front-side);
 }
 /* facedown tiles in hand should look facedown */
 div.tiles div.tile.facedown:not(.flat) {
-  filter: drop-shadow(0 calc(var(--tile-height) / 8) 0 var(--tile-back-side))
-          drop-shadow(0 calc(var(--tile-height) / 8) 0 var(--tile-front-side))
-          brightness(var(--tile-brightness)) saturate(var(--tile-saturate));
+  box-shadow: 0 calc(var(--tile-height) / 8) 0 0 var(--tile-back-side),
+              0 calc(var(--tile-height) / 4) 0 0 var(--tile-front-side);
 }
 
 
@@ -1619,7 +1643,7 @@ div.tiles div.tile.facedown:not(.flat) {
 }
 div.tile.removed {
   background: transparent;
-  filter: none;
+  box-shadow: none;
   animation: tilePlayed 0.75s ease forwards;
 }
 div.tile.removed ~ div.tile.draw {
@@ -2111,6 +2135,10 @@ div.rules-popover-text > div.tile {
   --tile-scale-factor: 0.65; /* enough for 14 tiles to be in a row */
   margin-top: calc(0.25 * var(--tile-scale-factor) * var(--tile-size));
 }
+div.rules-popover-text > div.tile:hover {
+  transform: translateY(-75%) scale(2.5);
+  z-index: 10;
+}
 
 /* tile numbers */
 input.tile-numbers-checkbox + label {
@@ -2338,13 +2366,28 @@ div.game-modal-container {
   transition: opacity 0.5s ease;
   color: black;
 }
-div.game-modal-container.inactive,
-div.game-modal-hide:active,
-div.game-modal-hide:active + div.timer {
-  opacity: 0;
-  pointer-events: none;
-  user-select: none;
-  color: black;
+/* landscape */
+@media (min-aspect-ratio: 6/5) {
+  div.game-modal-container.inactive,
+  div.game-modal-hide:active,
+  div.game-modal-hide:active + div.timer {
+    opacity: 0;
+    pointer-events: none;
+    user-select: none;
+    color: black;
+  }
+}
+/* portrait */
+@media (max-aspect-ratio: 6/5) {
+  div.game-modal-container.inactive,
+  div.game-modal-hide:active:not(:has(:is(div.score-badge:active, svg.arrow:active, svg.curve:active))) {
+    &, & + div.timer {
+      opacity: 0;
+      pointer-events: none;
+      user-select: none;
+      color: black;
+    }
+  }
 }
 div.game-modal {
   position: absolute;
@@ -2479,15 +2522,14 @@ div.yaku > div.han-counter {
   margin-left: calc(0.5 * var(--tile-size));
 }
 div.yaku > div.han-counter::before,
-div.total-han-display::before,
-div.total-fu-display::before,
+div.total-points-display::before,
 div.total-score-display::before,
 div.total-score-name-display::before {
   background-image: url(/images/brush-bg.svg);
   background-size: 100% 100%;
   background-repeat: no-repeat;
 }
-div.total-fu-display::before,
+div.total-points-display:not(:first-of-type)::before,
 div.total-score-display::before {
   background-image: url(/images/brush-bg2.svg);
 }
@@ -2512,20 +2554,18 @@ div.score-display {
   bottom: 0;
 }
 div.score-display::before { content: ""; width: 100%; order: 1; }
-div.total-han-display,
-div.total-fu-display,
+div.total-points-display,
 div.total-score-display {
   position: relative;
   white-space: nowrap;
   z-index: 1;
 }
-div.total-han-display, div.total-fu-display { font-size: calc(1.25 * var(--tile-size)); }
+div.total-points-display { font-size: calc(1.25 * var(--tile-size)); }
 div.total-score-display { font-size: calc(2 * var(--tile-size)); order: 1; }
 div.total-score-display.small { font-size: calc(1.25 * var(--tile-size)); }
 div.total-score-name-display { font-size: calc(1.2 * var(--tile-size)); order: 1; }
 div.total-score-name-display.small { font-size: calc(1 * var(--tile-size)); }
-div.total-han-display::before,
-div.total-fu-display::before,
+div.total-points-display::before,
 div.total-score-display::before,
 div.total-score-name-display::before {
   position: absolute;
@@ -2536,7 +2576,7 @@ div.total-score-name-display::before {
   bottom: -7.5%;
   z-index: -1;
 }
-div.total-fu-display::before {
+div.total-points-display:not(:first-of-type)::before {
   transform: rotate(180deg);
   width: 160%;
   left: -35%;
@@ -2565,12 +2605,17 @@ div.total-score-name-display::before {
 /* delta score window */
 div.game-modal > div.delta-score-reason {
   position: absolute;
-  font-size: calc(1.25 * var(--tile-size));
+  font-size: calc(0.8 * var(--tile-size));
   text-align: center;
-  top: 0;
-  width: 100%;
+  top: calc(50% - 3 * var(--tile-size));
+  margin: 0 auto;
+  left: 0;
+  right: 0;
+  --width: 10;
+  width: calc(var(--width) * 0.75em + 1em);
   user-select: none;
-  z-index: 3;
+  pointer-events: none;
+  z-index: 2;
 }
 div.game-modal > div.delta-score-reason::before {
   position: absolute;
@@ -2580,66 +2625,215 @@ div.game-modal > div.delta-score-reason::before {
   background-repeat: no-repeat;
   transform-origin: 50% calc(50% + var(--tile-size));
   width: 100%;
-  height: calc(3 * var(--tile-size));
+  height: calc(2 * var(--tile-size));
   left: 0;
-  bottom: calc(-0.5 * var(--tile-size));
+  bottom: calc(-0.25 * var(--tile-size));
   z-index: -1;
+  transform: translateX(calc(-0.1 * var(--tile-size)));
 }
-div.game-modal > div.delta-score {
+div.game-modal > div.score-badge {
+  background: black;
+  border-radius: calc(0.5 * var(--tile-size));
+  padding: calc(0.5 * var(--tile-size)) calc(0.25 * var(--tile-size));
   line-height: 1;
+  height: 2.5em;
+  width: 12ex;
   position: absolute;
-  font-size: calc(1 * var(--tile-size));
-  text-align: right;
+  font-size: calc(0.5 * var(--tile-size));
+  text-align: center;
   user-select: none;
-  z-index: 2;
+  z-index: 3;
+  color: white;
+  &:hover > div {
+    &.initial-score, &.player-name, &.hline::before {
+      width: 100%;
+      filter: brightness(75%) sepia(100%) saturate(800%) hue-rotate(-45deg);
+    }
+  }
 }
-div.game-modal > div.delta-score.self { bottom: calc(0.25 * var(--tile-size)); left: calc(-50% + 11 * var(--tile-size));}
-div.game-modal > div.delta-score.kamicha { left: calc(1.25 * var(--tile-size)); top: calc(-50% + 12 * var(--tile-size)); }
-div.game-modal > div.delta-score.toimen { top: calc(2.25 * var(--tile-size)); left: calc(-50% + 11 * var(--tile-size));}
-div.game-modal > div.delta-score.shimocha { right: calc(1.25 * var(--tile-size)); top: calc(-50% + 12 * var(--tile-size)); }
-div.game-modal > div.delta-score > div.hline::before {
+div.game-modal > div.score-badge.self { inset: 0; top: auto; margin: 0 auto; }
+div.game-modal > div.score-badge.shimocha { inset: 0; left: auto; margin: auto 0; }
+div.game-modal > div.score-badge.toimen { inset: 0; bottom: auto; right: 0; margin: 0 auto; }
+div.game-modal > div.score-badge.kamicha { inset: 0; right: auto; margin: auto 0; }
+div.game-modal > div.score-badge > div.hline::before {
   position: absolute;
   content: "";
-  background: black;
+  background: white;
   width: 100%;
   right: 0;
   height: calc(0.0625 * var(--tile-size));
+  margin-top: calc(0.0625 * var(--tile-size));
 }
-div.game-modal > div.delta-score::before {
+div.game-modal > div.score-badge > div.initial-score {
+  font-size: 150%;
+  font-weight: bold;
+}
+div.game-modal > div.score-badge > div.delta-score {
+  font-weight: bold;
   position: absolute;
-  content: "";
-  background-image: url(/images/brush-bg2.svg);
-  background-size: 100% 100%;
-  background-repeat: no-repeat;
-  transform-origin: 50% calc(50% + var(--tile-size));
-  width: calc(6 * var(--tile-size));
-  height: calc(6 * var(--tile-size));
-  z-index: -1;
+  top: -0.3em;
+  right: 0;
+  text-align: right;
+  white-space: nowrap;
 }
-div.game-modal > div.delta-score.self::before {
-  transform: rotate(0deg);
-  left: calc(50% - 2.5 * var(--tile-size));
-  bottom: calc(50% - 2.25 * var(--tile-size));
+div.game-modal > div.score-badge > div.player-name {
+  margin-top: calc(0.125 * var(--tile-size));
+  white-space: nowrap;
 }
-div.game-modal > div.delta-score.kamicha::before {
-  transform: rotate(90deg);
-  left: calc(50% - 3.5 * var(--tile-size));
-  bottom: calc(50% - 2.5 * var(--tile-size));
+div.game-modal > div.score-badge > div.placement {
+  position: absolute;
+  top: calc(-50% + 0.5 * var(--tile-size));
+  left: calc(-25%);
+  transform: scale(75%);
 }
-div.game-modal > div.delta-score.toimen::before {
-  transform: rotate(180deg);
-  left: calc(50% - 3 * var(--tile-size));
-  bottom: calc(50% - 1.5 * var(--tile-size));
+div.game-modal > div.score-ledger-container > table.score-ledger {
+  position: absolute;
+  z-index: 3;
+  opacity: 0.9;
+  background: #0f6f2f;
+  color: white;
+  border: calc(0.0625 * var(--tile-size)) solid white;
+  border-radius: calc(0.5 * var(--tile-size));
+  border-spacing: 0;
+  pointer-events: none;
+  &.kamicha, &.k2u, &.k2t, &.u2k, &.t2k { top: 0; right: 0; }
+  &.toimen { bottom: 0; left: 0; }
+  &:has(tbody > tr) > thead > tr > th {
+    border-bottom: calc(0.0625 * var(--tile-size)) solid white;
+  }
+  --ledger-scale: 85%;
+  &.self, &.shimocha, &.toimen, &.kamicha { --ledger-scale: 125%; }
+  & > thead > tr > th {
+    font-size: var(--ledger-scale);
+    padding-left: calc(0.25 * var(--tile-size));
+    text-align: left;
+    height: calc(1.25 * var(--tile-size));
+    min-width: calc(8 * var(--tile-size));
+    & > div.score-ledger-mini {
+      display: inline-block;
+      position: absolute;
+      top: calc(0.125 * var(--tile-size));
+      right: calc(0.125 * var(--tile-size));
+      width: calc(2 * var(--tile-size));
+      height: calc(1 * var(--tile-size));
+      & > span {
+        display: block;
+        position: absolute;
+        width: calc(0.7 * var(--tile-size));
+        height: calc(0.4 * var(--tile-size));
+        border-radius: calc(0.125 * var(--tile-size));
+        background: black;
+        &.mini-self { left: 0; right: 0; margin-inline: auto; bottom: 0; }
+        &.mini-shimocha { top: 0; bottom: 0; margin-block: auto; right: 0; }
+        &.mini-toimen { left: 0; right: 0; margin-inline: auto; top: 0; }
+        &.mini-kamicha { top: 0; bottom: 0; margin-block: auto; left: 0; }
+        &.selected { background: white; }
+      }
+    }
+  }
+  & > tbody > tr {
+    & > td {
+      line-height: 1.2;
+      padding: 0 calc(0.125 * var(--tile-size));
+      &:first-child { padding-left:  calc(0.5 * var(--tile-size)); }
+      &:last-child  { padding-right: calc(0.5 * var(--tile-size)); }
+    }
+    &:first-child td, &.score-ledger-total td { padding-top: calc(0.25 * var(--tile-size)); }
+    &:last-child  td, &:has(+ tr.score-ledger-total) td { padding-bottom: calc(0.25 * var(--tile-size)); }
+  }
+
+  & td.score-ledger-reason, & td.score-ledger-op {
+    font-weight: bold;
+  }
+  & td.score-ledger-op {
+      padding: 0 calc(0.25 * var(--tile-size));
+  }
+  & td.score-ledger-amount,
+  & td.score-ledger-result {
+    font-weight: normal;
+  }
+  & tr.score-ledger-total {
+    & td {
+      border-top: calc(0.0625 * var(--tile-size)) solid white;
+      padding: calc(0.125 * var(--tile-size));
+      font-weight: bold;
+      font-size: 125%;
+    }
+  }
 }
-div.game-modal > div.delta-score.shimocha::before {
-  transform: rotate(270deg);
-  left: calc(50% - 2.5 * var(--tile-size));
-  bottom: calc(50% - 1.5 * var(--tile-size));
+div.game-modal > div.score-ledger-container > table.score-ledger { display: none; }
+div.game-modal > div.score-ledger-container.self > table.score-ledger.self { display: block; }
+div.game-modal > div.score-ledger-container.shimocha > table.score-ledger.shimocha { display: block; }
+div.game-modal > div.score-ledger-container.toimen > table.score-ledger.toimen { display: block; }
+div.game-modal > div.score-ledger-container.kamicha > table.score-ledger.kamicha { display: block; }
+div.game-modal > div.score-ledger-container.t2u > table.score-ledger.t2u { display: block; }
+div.game-modal > div.score-ledger-container.u2t > table.score-ledger.u2t { display: block; }
+div.game-modal > div.score-ledger-container.k2s > table.score-ledger.k2s { display: block; }
+div.game-modal > div.score-ledger-container.s2k > table.score-ledger.s2k { display: block; }
+div.game-modal > div.score-ledger-container.k2u > table.score-ledger.k2u { display: block; }
+div.game-modal > div.score-ledger-container.s2u > table.score-ledger.s2u { display: block; }
+div.game-modal > div.score-ledger-container.s2t > table.score-ledger.s2t { display: block; }
+div.game-modal > div.score-ledger-container.k2t > table.score-ledger.k2t { display: block; }
+div.game-modal > div.score-ledger-container.u2k > table.score-ledger.u2k { display: block; }
+div.game-modal > div.score-ledger-container.u2s > table.score-ledger.u2s { display: block; }
+div.game-modal > div.score-ledger-container.t2s > table.score-ledger.t2s { display: block; }
+div.game-modal > div.score-ledger-container.t2k > table.score-ledger.t2k { display: block; }
+
+@property --tile-size {
+  /* required for making it unitless below */
+  syntax: '<length>';
+  inherits: true;
+  initial-value: 0;
 }
-div.game-modal > div.delta-score > div.initial { color: gray; }
-div.game-modal > div.delta-score > div.change.positive { color: green; }
-div.game-modal > div.delta-score > div.change.negative { color: red; }
-div.game-modal > div.delta-score > div.result { transform: translateY(calc(0.125 * var(--tile-size))); }
+svg.arrow, svg.curve {
+  position: absolute;
+  fill: white;
+  /* first scale based on unitless tile-size, then move the tail, then rotate about the tail */
+  zoom: calc(tan(atan2(var(--tile-size), 200px)));
+  overflow: visible;
+  &:hover { filter: brightness(75%) sepia(100%) saturate(800%) hue-rotate(-45deg); }
+}
+svg.arrow {
+  --xpos: 0;
+  --ypos: 0;
+  --rotate: 0;
+  --length: 0;
+  width: calc(var(--length) * 200px);
+  height: 200px;
+  transform-origin: 0% 50%;
+  transform:
+    translate( calc(var(--xpos) * 200px - 100px)
+             , calc(var(--ypos) * 200px - 200px) )
+    rotate(calc(var(--rotate) * 1deg));
+}
+svg.curve {
+  --xpos: 0;
+  --ypos: 0;
+  --xscale: 1;
+  --yscale: 1;
+  width: 550px;
+  height: 800px;
+  transform:
+    translate( calc(var(--xpos) * 200px - 100px)
+             , calc(var(--ypos) * 200px - 100px) )
+    scale(var(--xscale), var(--yscale));
+}
+div.game-modal:not(.t2u) > svg.t2u,
+div.game-modal:not(.u2t) > svg.u2t,
+div.game-modal:not(.k2s) > svg.k2s,
+div.game-modal:not(.s2k) > svg.s2k,
+div.game-modal:not(.k2u) > svg.k2u,
+div.game-modal:not(.s2u) > svg.s2u,
+div.game-modal:not(.s2t) > svg.s2t,
+div.game-modal:not(.k2t) > svg.k2t,
+div.game-modal:not(.u2k) > svg.u2k,
+div.game-modal:not(.u2s) > svg.u2s,
+div.game-modal:not(.t2s) > svg.t2s,
+div.game-modal:not(.t2k) > svg.t2k {
+  display: none;
+}
+div.game-modal > div.score-badge > div.delta-score.positive { color: lightgreen; }
+div.game-modal > div.score-badge > div.delta-score.negative { color: pink; }
 
 /* game end timer */
 
@@ -2686,6 +2880,7 @@ div.scoreboard {
 }
 div.placement > div.placement-place,
 div.placement > div.placement-name {
+  color: black;
   font-size: calc(0.6 * var(--tile-size));
   white-space: nowrap;
   height: 1.2em;
@@ -2749,7 +2944,7 @@ div.ruleset {
   top: calc(100vh + (2 * var(--tile-size)) + 1.2em);
   left: calc(50% - min(90vw, 80vh) / 2);
   width: min(90vw, 80vh);
-  height: 90vh;
+  height: calc(20 * var(--tile-size));
   user-select: text;
 }
 div.ruleset > div.ruleset-text {
@@ -2769,7 +2964,6 @@ div.ruleset > div.ruleset-text {
 
 
 /* saki cards */
-/* TODO check why hovering corner info leads to flickering drop-shadow */
 div.saki-card {
   position: relative;
   width: var(--card-width);
@@ -3092,10 +3286,10 @@ div#container > div.index-bottom-buttons {
 div#container > div.index-bottom-buttons > button {
   font-size: calc(0.5 * var(--tile-size));
 }
-div#container > form.ruleset-selection-form {
+div#container > form {
   position: absolute;
   width: calc(100% - 3 * var(--tile-size));
-  height: calc(7 * var(--tile-size));
+  height: calc(7.5 * var(--tile-size));
   top: calc(50% - 1.5 * var(--tile-size));
   left: calc(1 * var(--tile-size));
   padding: calc(0.5 * var(--tile-size));
@@ -3122,12 +3316,14 @@ div#container > form.ruleset-selection-form > input.nickname-input {
   margin-bottom: 0;
 }
 div#container > form.ruleset-selection-form > div.ruleset-selection {
-  overflow-y: auto;
   line-height: 1;
   text-align: center;
   flex-grow: 1;
   color: white;
   font-size: calc(0.55 * var(--tile-size));
+  overflow-y: auto;
+  scrollbar-color: var(--bg-color) transparent;
+  scrollbar-gutter: stable;
 }
 div#container > form.ruleset-selection-form > div.ruleset-selection > label {
   font-size: calc(0.55 * var(--tile-size));
@@ -3140,6 +3336,23 @@ div#container > form.ruleset-selection-form > div.ruleset-selection > label > a 
 }
 div#container > form.ruleset-selection-form > div.ruleset-selection > input[disabled] + label {
   opacity: 0.4;
+}
+div#container > form.ruleset-selection-form > div.ruleset-selection > input[disabled] + label {
+  opacity: 0.4;
+}
+div#container > form.log-selection-form {
+  display: flex;
+  flex-flow: column nowrap;
+  justify-content: center;
+  align-items: center;
+  row-gap: calc(0.25 * var(--tile-size));
+}
+div#container > form.log-selection-form > input,
+div#container > form.log-selection-form > button {
+  width: 100%;
+}
+div#container > form.log-selection-form > input {
+  font-size: 150%;
 }
 /* about page */
 div#container > form.about-page {
@@ -3293,7 +3506,6 @@ div.lobby > div.rooms > div.lobby-room > div.room-players > div.room-started {
 
 /* room screen */
 div.room {
-  display: flex;
   position: relative;
   row-gap: calc(0.25 * var(--tile-size));
   font-size: calc(1 * var(--tile-size));
@@ -3301,47 +3513,84 @@ div.room {
 }
 div.room > header {
   display: flex;
-  flex-flow: row wrap;
-  justify-content: flex-start;
-  align-items: flex-start;
+  flex-flow: column nowrap;
+  align-items: flex-end;
   column-gap: calc(0.5 * var(--tile-size));
   position: absolute;
-  top: calc(0 * var(--tile-size));
+  top: 0;
+  width: 100%;
+  height: calc(3 * var(--tile-size));
+  font-size: calc(1 * var(--tile-size));
 }
-div.room > header > h3 {
+div.room > header > div.room-header-title {
   width: 100%;
   margin: 0;
-}
-div.room > header > div.session,
-div.room > header > label.private-toggle-label {
-  display: flex;
-  flex-direction: row;
-  align-items: center;
-  font-size: calc(0.9 * var(--tile-size));
-}
-div.room > header > div.session {
-  border: calc(0.05 * var(--tile-size)) solid white;
-  padding: calc(0.25 * var(--tile-size));
-  border-radius: calc(0.5 * var(--tile-size));
-}
-div.room > header > div.session > div.tile,
-div.room > div.sidebar > a > svg {
-  transform: translateY(calc(0.125 * var(--tile-size)));
-}
-div.room > div.sidebar {
-  font-size: calc(1 * var(--tile-size));
-  position: absolute;
-  right: 0;
-}
-div.room > div.sidebar > a {
   white-space: nowrap;
-  position: absolute;
-  color: white;
-  right: 0;
+  font-size: calc(0.75 * var(--tile-size));
+  font-weight: bold;
 }
-div.room > div.sidebar > label.room-settings-toggle {
-  background: none;
-  text-decoration: underline;
+div.room > header > div.room-header-bottom {
+  display: flex;
+  flex-flow: row nowrap;
+  justify-content: space-between;
+  align-items: flex-end;
+  width: 100%;
+  height: 100%;
+  column-gap: calc(0.5 * var(--tile-size));
+  font-size: calc(1 * var(--tile-size));
+  margin-top: calc(-1 * var(--tile-size));
+  & > div.session {
+    display: flex;
+    flex-flow: row nowrap;
+    align-items: center;
+    border: calc(0.05 * var(--tile-size)) solid white;
+    padding: calc(0.25 * var(--tile-size));
+    border-radius: calc(0.5 * var(--tile-size));
+    position: relative;
+    & > div.room-code-text {
+      position: absolute;
+      white-space: nowrap;
+      font-size: calc(0.5 * var(--tile-size));
+      inset: calc(1.5 * var(--tile-size)) 0 0 0;
+      text-align: center;
+    }
+    & > div.tile {
+      transform: translateY(calc(0.125 * var(--tile-size)));
+    }
+  }
+  & > label.private-toggle-label {
+    font-size: calc(0.875 * var(--tile-size));
+    line-height: 1;
+    margin-bottom: calc(-0.5 * var(--tile-size));
+    padding: calc(0.25 * var(--tile-size));
+    width: 8ex;
+  }
+  & svg {
+    vertical-align: sub;
+  }
+  & > div.room-header-right {
+    height: 100%;
+    display: flex;
+    flex-flow: column nowrap;
+    justify-content: space-between;
+    align-items: flex-end;
+    & > a {
+      white-space: nowrap;
+      color: white;
+      right: 0;
+    }
+    & > label.room-settings-toggle {
+      background: none;
+      text-decoration: underline;
+      padding: 0;
+    }
+  }
+}
+div.room div.tips-component {
+  position: absolute;
+  width: 100%;
+  bottom: 0;
+  cursor: pointer;
 }
 div.room div.room-settings {
   position: relative;
@@ -3360,11 +3609,13 @@ div.room > input#room-settings-toggle:checked + div.room-settings {
   display: block;
   position: absolute;
   width: calc(100% - 1 * var(--tile-size));
-  height: calc(100% - 4.25 * var(--tile-size));
+  height: calc(100% - 4.75 * var(--tile-size));
   left: 0;
-  top: calc(3.25 * var(--tile-size));
+  top: calc(3.75 * var(--tile-size));
   z-index: 2;
   overflow-y: auto;
+  scrollbar-color: var(--bg-color) transparent;
+  scrollbar-gutter: stable;
 }
 div.room > div.seats {
   position: relative;
@@ -3434,6 +3685,7 @@ div.room label.room-tab-title {
 }
 div.room div.presets {
   margin-top: calc(0.5 * var(--tile-size));
+  margin-bottom: calc(-0.5 * var(--tile-size));
   font-size: calc(0.75 * var(--tile-size));
 }
 div.mods > div.mods-inner-container {
@@ -3446,7 +3698,7 @@ div.mods > div.mods-inner-container {
 }
 div.mods {
   padding-top: calc(0.25 * var(--tile-size));
-  padding-bottom: calc(0.25 * var(--tile-size));
+  padding-bottom: calc(-0.25 * var(--tile-size));
 }
 div.mods.mods-saki > div.mods-inner-container {
   /* saki needs room for hoverable cards */
@@ -3497,7 +3749,7 @@ div.config {
   height: 100%;
   font-size: calc(0.25 * var(--tile-size));
 }
-/* individal mod config */
+/* individual mod config */
 label.mod {
   flex-shrink: 1;
   display: flex;
@@ -3589,19 +3841,11 @@ div#container > input.expand-checkbox + label {
 }
 div#container > input.expand-checkbox.for-rulesets + label {
   right: calc(0.5 * var(--tile-size));
-  top: calc(5.875 * var(--tile-size));
+  top: calc(6 * var(--tile-size));
 }
 div#container > input.expand-checkbox.for-rulesets:checked + label {
-  top: calc(0.375 * var(--tile-size));
+  top: calc(0.5 * var(--tile-size));
 }
-div#container > input.expand-checkbox.for-mods + label {
-  right: calc(0.5 * var(--tile-size));
-  top: calc(4.625 * var(--tile-size));
-}
-div#container > input.expand-checkbox.for-mods:checked + label {
-  right: calc(-0.5 * var(--tile-size));
-  top: calc(0.375 * var(--tile-size));
-} 
 div#container > input.expand-checkbox + label::before { content: "+"; }
 div#container > input.expand-checkbox:checked + label::before { content: "–"; }
 div#container > form,
@@ -3648,7 +3892,7 @@ div.menu-buttons > button.language-dropdown-container form.language-dropdown > s
   border: none;
   color: transparent;
   width: 100%;
-  height: 150%; /* so you can click the drop shadow part */
+  height: 100%;
   cursor: pointer;
 }
 div.menu-buttons > button.language-dropdown-container form.language-dropdown {
@@ -3661,8 +3905,11 @@ div.menu-buttons > button.language-dropdown-container form.language-dropdown {
   background: none;
   border: none;
   color: transparent;
-  height: 150%; /* so you can click the drop shadow part */
+  height: 120%; /* so you can click the drop shadow part */
   cursor: pointer;
+}
+div.menu-buttons > button.language-dropdown-container form.language-dropdown select#language-dropdown option {
+  color: black;
 }
 div.menu-buttons > button.language-dropdown-container form.language-dropdown + div {
   pointer-events: none;
@@ -3907,14 +4154,209 @@ div.majstest-container > div.mods-container {
   height: calc(100% - 0.75 * var(--tile-size));
   border-radius: calc(0.25 * var(--tile-size));
   padding: calc(0.5 * var(--tile-size));
-
   top: calc(0.75 * var(--tile-size));
   left: 0;
   background: #609060;
   box-sizing: border-box;
   overflow-y: scroll;
   z-index: 2;
+  scrollbar-width: none; /* Firefox */
+  &::-webkit-scrollbar { display: none; } /* Safari/Chrome */
 }
-div.majstest-container > input.show-mods-checkbox:checked ~ div.mods-container {
+div.majstest-container > input#show-mods:checked ~ div.mods-container { display: block; }
+
+
+
+/* scoringtest */
+div.scoringtest-container {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  height: 100%;
+  row-gap: calc(0.25 * var(--tile-size));
+}
+div.scoringtest-container > header {
+  display: flex;
+  flex-direction: row;
+  column-gap: calc(0.25 * var(--tile-size));
+}
+div.scoringtest-container > header > select {
+  flex-grow: 1;
+}
+div.scoringtest-container > header > label {
+  width: calc(1.5 * var(--tile-size));
+  height: calc(0.75 * var(--tile-size));
+}
+div.scoringtest-container label[for="show-yaku"] { order: 1; }
+div.scoringtest-container label[for="show-mods"] { order: 2; }
+div.scoringtest-container label[for="show-config"] { order: 3; }
+div.scoringtest-container label[for="show-none"] {
+  display: none;
+  opacity: 0;
+  position: absolute;
+}
+div.scoringtest-container input#show-yaku:checked ~ header > label[for="show-yaku"],
+div.scoringtest-container input#show-mods:checked ~ header > label[for="show-mods"],
+div.scoringtest-container input#show-config:checked ~ header > label[for="show-config"] {
+  background: var(--tile-back);
+}
+div.scoringtest-container input#show-yaku:checked ~ header > label[for="show-none"] {
   display: block;
+  right: calc(4 * var(--tile-size));
+}
+div.scoringtest-container input#show-mods:checked ~ header > label[for="show-none"] {
+  display: block;
+  right: calc(2 * var(--tile-size));
+}
+div.scoringtest-container input#show-config:checked ~ header > label[for="show-none"] {
+  display: block;
+  right: 0;
+}
+div.scoringtest-container > header > form {
+  order: 0;
+  flex-grow: 1;
+}
+div.scoringtest-container > header > form > select {
+  width: 100%;
+  font-size: calc(0.6 * var(--tile-size));
+  background-color: var(--tile-front);
+  border: none;
+  border-radius: calc(0.25 * var(--tile-size));
+}
+div.scoringtest-container textarea {
+  height: calc(14.25 * var(--tile-size));
+  font-size: calc(0.25 * var(--tile-size));
+  border-width: calc(0.05 * var(--tile-size));
+}
+div.scoringtest-container div.hand-outer-container,
+div.scoringtest-container div.yaku-outer-container,
+div.scoringtest-container div.mods-container,
+div.scoringtest-container div.config-container {
+  width: 100%;
+  height: calc(100% - 0.875 * var(--tile-size));
+  border-radius: calc(0.25 * var(--tile-size));
+  padding: calc(0.5 * var(--tile-size));
+  background: #609060;
+  box-sizing: border-box;
+  overflow-y: scroll;
+  scrollbar-width: none; /* Firefox */
+  &::-webkit-scrollbar { display: none; } /* Safari/Chrome */
+}
+div.scoringtest-container div.yaku-outer-container,
+div.scoringtest-container div.mods-container,
+div.scoringtest-container div.config-container {
+  display: none;
+  position: absolute;
+  top: calc(1 * var(--tile-size));
+  left: 0;
+  z-index: 2;
+}
+div.scoringtest-container input#show-yaku:checked ~ div.yaku-outer-container { display: block; }
+div.scoringtest-container input#show-mods:checked ~ div.mods-container { display: block; }
+div.scoringtest-container input#show-config:checked ~ div.config-container { display: block; }
+
+/* bottom buttons */
+div.scoringtest-container > div.scoring-test-bottom-buttons {
+  display: flex;
+  order: 2;
+  flex-flow: row wrap;
+  width: 100%;
+  text-align: right;
+  justify-content: center;
+  column-gap: calc(0.25 * var(--tile-size));
+  & > form { flex-grow: 1; display: flex; column-gap: calc(0.25 * var(--tile-size)); }
+  & button { font-size: 150%; flex-grow: 0; }
+  & button[type="submit"] { flex-grow: 1; }
+}
+div.scoringtest-container div.yaku-outer-container {
+  & span.yaku-bottom-minipoint-name {
+    text-align: right;
+    font-size: 150%;
+  }
+  & input {
+    --width: 8;
+    text-align: right;
+    font-family: monospace;
+    width: calc(var(--width) * 0.6em);
+    background: lightgray;
+    border: none;
+  }
+}
+
+
+/* hand-selection-container */
+div.hand-selection-inner-container button {
+  background: none;
+  border: none;
+  padding: 0;
+  margin: 0;
+}
+div.hand-selection-inner-container > div.hand-selection-hand,
+div.hand-selection-inner-container > div.hand-selection-buttons {
+  display: flex;
+  flex-flow: row wrap;
+  row-gap: calc(0.25 * var(--tile-size));
+}
+div.hand-selection-inner-container > div.hand-selection-hand {
+  padding: calc(0.5 * var(--tile-size));
+  justify-content: center;
+}
+div.hand-selection-inner-container > div.hand-selection-hand > :last-child {
+  margin-left: calc(0.25 * var(--tile-size));
+}
+div.hand-selection-inner-container > div.hand-selection-buttons {
+  column-gap: calc(0.125 * var(--tile-size));
+}
+div.hand-selection-inner-container > div.hand-selection-buttons > button.clear {
+  filter: drop-shadow(0 calc(var(--tile-size) / 8) 0 var(--tile-front-side))
+          drop-shadow(0 calc(var(--tile-size) / 8) 0 var(--tile-back-side))
+          contrast(60%);
+  margin-left: calc(0.875 * var(--tile-size));
+}
+div.hand-selection-inner-container > div.hand-selection-buttons > button.clear > div.tile {
+  font-size: calc(0.35 * var(--tile-size));
+  font-weight: bold;
+  writing-mode: vertical-rl;
+  text-orientation: upright;
+  line-height: 0.5;
+  letter-spacing: -0.5ex;
+  padding: 0 calc(0.275 * var(--tile-size));
+}
+
+/* individual yaku inside yaku-container */
+div.scoringtest-container div.yaku-container > div.yaku-inner-container {
+  display: flex;
+  flex-flow: row wrap;
+  row-gap: calc(0.0625 * var(--tile-size));
+  column-gap: calc(0.125 * var(--tile-size));
+  justify-content: flex-start;
+  align-items: flex-start;
+  & > div.yaku-list,
+  & > div.yaku-list-spacer {
+    width: 100%;
+    min-height: 0.5em;
+    margin-left: -0.5em;
+    margin-bottom: -0.5em;
+  }
+  & div.yaku-list-name {
+    font-weight: bold;
+  }
+  & label.yaku-button {
+    flex-shrink: 1;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+  }
+  & label.yaku-button input[type="number"] {
+    --width: 1;
+    font-family: monospace;
+    font-size: 100%;
+    width: calc(var(--width) * 0.6em);
+    margin: 0 calc(0.0625 * var(--tile-size));
+    background: transparent;
+    border: none;
+    text-align: center;
+    color: white;
+    padding: 0;
+  }
 }

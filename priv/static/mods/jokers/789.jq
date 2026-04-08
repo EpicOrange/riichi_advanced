@@ -2,6 +2,8 @@
 |
 .after_start.actions += [["set_tile_alias_all", ["789j"], ["7m", "8m", "9m", "7p", "8p", "9p", "7s", "8s", "9s"]]]
 |
+.custom_style.tile_indices += {"789j": "789"}
+|
 # TODO support ten mod
 .dora_indicators["789j"] += ["8m", "9m", "1m", "8p", "9p", "1p", "8s", "9s", "1s"]
 |
@@ -10,3 +12,7 @@ if any(.wall[]; . == "7t") then
   |
   .dora_indicators["789j"] += ["8t", "9t", "1t"]
 end
+|
+.after_initialization.actions += [
+  ["add_rule", "Tiles", "Jokers", "- One %{789j} joker is added to the wall. This joker acts as any tile numbered 7, 8, or 9.", {"789j": ["789j"]}, -99]
+]

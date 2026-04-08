@@ -4,7 +4,8 @@
     "starting_hand": {
       "east": ["5z", "2m", "9m", "1p", "3p", "9p", "1s", "2s", "3s", "5s", "1z", "2z", "4z"],
       "south": ["1m", "1m", "2p", "3p", "4p", "2s", "2s", "2s", "3s", "4s", "5s", "6s", "7p"],
-      "west": ["1m", "2m", "3m", "2p", "3p", "8p", "8p", "1s", "2s", "3s", "7s", "8s", "8s"]
+      "west": ["1m", "2m", "3m", "2p", "3p", "8p", "8p", "1s", "1s", "3s", "7s", "8s", "8s"],
+      "north": ["2m", "2m", "3m", "4m", "5m", "6m", "9p", "1s", "4s", "4s", "7s", "8s", "8s"]
     },
     "starting_draws": ["1m", "2p", "7s", "4m", "9p", "9s", "7z", "6z", "3s"],
     "tsumogiri_bots": true
@@ -54,7 +55,7 @@
       ["force_event", ["play_tile", "east", 7]],
       ["clear_objects"],
       ["await_event", ["play_tile", "north", 13]],
-      ["sleep", 1500],
+      ["sleep", 1000],
       ["add_object", "text", {"size": 0.4, "width": 5, "x": 9.125, "y": 8.5,
         "text": "Congrats, you have a chance at 912 sanshoku! Now go ahead and play the 3 of circles so you can wait on 39 bamboo. A 3 bamboo will give us sanshoku."
       }],
@@ -62,8 +63,14 @@
       ["force_event", ["play_tile", "east", 3]],
       ["clear_objects"],
       ["await_event", ["play_tile", "north", 13]],
-      ["await_event", ["press_button", "west", "skip"]],
+      ["sleep", 1500],
+      ["add_object", "text", {"size": 0.4, "width": 5, "x": 9.125, "y": 8.5,
+        "text": "You can win on this 3 bamboo, because you have three sets of 912 after making a pair of 3 bamboo. That's sanshoku!"
+      }],
+      ["add_object", "focus", {"width": 0.75, "hand_index": 5}],
+      ["add_object", "focus", {"width": 1.25, "x": 12.25, "y": "buttons"}],
       ["force_event", ["press_button", "east", "ron"]],
+      ["clear_objects"],
       ["sleep", 2000],
       ["add_object", "focus", {"width": 0, "x": 0, "y": 0}],
       ["add_object", "text", {"size": 0.4, "width": 5, "x": 10, "y": 6,

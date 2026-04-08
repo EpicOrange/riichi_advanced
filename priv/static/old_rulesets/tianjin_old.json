@@ -54,7 +54,7 @@
     "quad": [[0, 0, 0, 0]],
     "ryanmen/penchan": [[0, 1]],
     "kanchan": [[0, 2]],
-    "ittsu": [[[0,1,2],[3,4,5],[6,7,8]]],
+    "ittsuu": [[[0,1,2],[3,4,5],[6,7,8]]],
     "middle_kanchan_manzu": [["4m", "6m"]]
   },
   "tenpai_definition": [
@@ -65,28 +65,28 @@
     [ "exhaustive", [["pair"], 1], [["shuntsu", "koutsu"], 4] ]
   ],
   "yaku": [
-    { "display_name": "Pure Hand", "value": 2, "when": [{"name": "not_match", "opts": [["hand", "calls", "winning_tile"], [[[[{"tile": "any", "attrs": ["is_wild"]}], 1]]]]}] },
-    { "display_name": "Wild Card Single Wait", "value": 2, "when": [{"name": "match", "opts": [["hand", "calls"], [[ "exhaustive", [["shuntsu", "koutsu"], 4], [[{"tile": "any", "attrs": ["is_wild"]}], 1] ]]]}] },
-    { "display_name": "Double Wild Card Set Wait", "value": 2, "when": [{"name": "match", "opts": [["hand", "calls"], [[ "exhaustive", [["shuntsu", "koutsu"], 3], [["pair"], 1], [[{"tile": "any", "attrs": ["is_wild"]}], 2] ]]]}] },
-    { "display_name": "Capturing the Five", "value": 3, "when": [{"name": "match", "opts": [["hand", "calls"], [["exhaustive", [["middle_kanchan_manzu"], 1], [["shuntsu", "koutsu"], 3], [["pair"], 1] ]]]}, {"name": "match", "opts": [["winning_tile"], [["5m"], 1]]}] },
-    { "display_name": "Dragon", "value": 4, "when": [{"name": "match", "opts": [["hand", "calls", "winning_tile"], [["exhaustive", [["ittsu"], 1], [["shuntsu", "koutsu"], 1], [["pair"], 1] ]]]}] },
-    { "display_name": "Kong Blossom", "value": 1, "when": [{"name": "status", "opts": ["kan"]}] },
-    { "display_name": "Heavenly Hand", "value": 1, "when": [{"name": "status", "opts": ["first_turn"]}, {"name": "seat_is", "opts": ["east"]}] },
-    { "display_name": "Earthly Hand", "value": 1, "when": [{"name": "status", "opts": ["first_turn"]}, {"name": "not_seat_is", "opts": ["east"]}] }
+    { "display_name": "Pure Hand", "value": [2, "Fan"], "when": [{"name": "not_match", "opts": [["hand", "calls", "winning_tile"], [[[[{"tile": "any", "attrs": ["is_wild"]}], 1]]]]}] },
+    { "display_name": "Wild Card Single Wait", "value": [2, "Fan"], "when": [{"name": "match", "opts": [["hand", "calls"], [[ "exhaustive", [["shuntsu", "koutsu"], 4], [[{"tile": "any", "attrs": ["is_wild"]}], 1] ]]]}] },
+    { "display_name": "Double Wild Card Set Wait", "value": [2, "Fan"], "when": [{"name": "match", "opts": [["hand", "calls"], [[ "exhaustive", [["shuntsu", "koutsu"], 3], [["pair"], 1], [[{"tile": "any", "attrs": ["is_wild"]}], 2] ]]]}] },
+    { "display_name": "Capturing the Five", "value": [3, "Fan"], "when": [{"name": "match", "opts": [["hand", "calls"], [["exhaustive", [["middle_kanchan_manzu"], 1], [["shuntsu", "koutsu"], 3], [["pair"], 1] ]]]}, {"name": "match", "opts": [["winning_tile"], [["5m"], 1]]}] },
+    { "display_name": "Dragon", "value": [4, "Fan"], "when": [{"name": "match", "opts": [["hand", "calls", "winning_tile"], [["exhaustive", [["ittsuu"], 1], [["shuntsu", "koutsu"], 1], [["pair"], 1] ]]]}] },
+    { "display_name": "Kong Blossom", "value": [1, "Fan"], "when": [{"name": "status", "opts": ["kan"]}] },
+    { "display_name": "Heavenly Hand", "value": [1, "Fan"], "when": [{"name": "status", "opts": ["first_turn"]}, {"name": "seat_is", "opts": ["east"]}] },
+    { "display_name": "Earthly Hand", "value": [1, "Fan"], "when": [{"name": "status", "opts": ["first_turn"]}, {"name": "not_seat_is", "opts": ["east"]}] }
   ],
   "bonus_yaku": [
-    { "display_name": "Kong Blossom", "value": 1, "when": [{"name": "status", "opts": ["ankan"]}] },
-    { "display_name": "Different Patterns", "value": 1, "when": [1, {"name": "has_existing_yaku", "opts": ["Pure Hand"]}, {"name": "has_existing_yaku", "opts": ["Wild Card Single Wait"]}, {"name": "has_existing_yaku", "opts": ["Double Wild Card Set Wait"]}, {"name": "has_existing_yaku", "opts": ["Capturing the Five"]}, {"name": "has_existing_yaku", "opts": ["Dragon"]}, {"name": "has_existing_yaku", "opts": ["Kong Blossom"]}] },
-    { "display_name": "Different Patterns", "value": 1, "when": [2, {"name": "has_existing_yaku", "opts": ["Pure Hand"]}, {"name": "has_existing_yaku", "opts": ["Wild Card Single Wait"]}, {"name": "has_existing_yaku", "opts": ["Double Wild Card Set Wait"]}, {"name": "has_existing_yaku", "opts": ["Capturing the Five"]}, {"name": "has_existing_yaku", "opts": ["Dragon"]}, {"name": "has_existing_yaku", "opts": ["Kong Blossom"]}] },
-    { "display_name": "Different Patterns", "value": 1, "when": [3, {"name": "has_existing_yaku", "opts": ["Pure Hand"]}, {"name": "has_existing_yaku", "opts": ["Wild Card Single Wait"]}, {"name": "has_existing_yaku", "opts": ["Double Wild Card Set Wait"]}, {"name": "has_existing_yaku", "opts": ["Capturing the Five"]}, {"name": "has_existing_yaku", "opts": ["Dragon"]}, {"name": "has_existing_yaku", "opts": ["Kong Blossom"]}] },
-    { "display_name": "Different Patterns", "value": 1, "when": [4, {"name": "has_existing_yaku", "opts": ["Pure Hand"]}, {"name": "has_existing_yaku", "opts": ["Wild Card Single Wait"]}, {"name": "has_existing_yaku", "opts": ["Double Wild Card Set Wait"]}, {"name": "has_existing_yaku", "opts": ["Capturing the Five"]}, {"name": "has_existing_yaku", "opts": ["Dragon"]}, {"name": "has_existing_yaku", "opts": ["Kong Blossom"]}] },
-    { "display_name": "Different Patterns", "value": 1, "when": [5, {"name": "has_existing_yaku", "opts": ["Pure Hand"]}, {"name": "has_existing_yaku", "opts": ["Wild Card Single Wait"]}, {"name": "has_existing_yaku", "opts": ["Double Wild Card Set Wait"]}, {"name": "has_existing_yaku", "opts": ["Capturing the Five"]}, {"name": "has_existing_yaku", "opts": ["Dragon"]}, {"name": "has_existing_yaku", "opts": ["Kong Blossom"]}] },
-    { "display_name": "Different Patterns", "value": 1, "when": [6, {"name": "has_existing_yaku", "opts": ["Pure Hand"]}, {"name": "has_existing_yaku", "opts": ["Wild Card Single Wait"]}, {"name": "has_existing_yaku", "opts": ["Double Wild Card Set Wait"]}, {"name": "has_existing_yaku", "opts": ["Capturing the Five"]}, {"name": "has_existing_yaku", "opts": ["Dragon"]}, {"name": "has_existing_yaku", "opts": ["Kong Blossom"]}] }
+    { "display_name": "Kong Blossom", "value": [1, "Fan"], "when": [{"name": "status", "opts": ["ankan"]}] },
+    { "display_name": "Different Patterns", "value": [1, "Fan"], "when": [1, {"name": "has_existing_yaku", "opts": ["Pure Hand"]}, {"name": "has_existing_yaku", "opts": ["Wild Card Single Wait"]}, {"name": "has_existing_yaku", "opts": ["Double Wild Card Set Wait"]}, {"name": "has_existing_yaku", "opts": ["Capturing the Five"]}, {"name": "has_existing_yaku", "opts": ["Dragon"]}, {"name": "has_existing_yaku", "opts": ["Kong Blossom"]}] },
+    { "display_name": "Different Patterns", "value": [1, "Fan"], "when": [2, {"name": "has_existing_yaku", "opts": ["Pure Hand"]}, {"name": "has_existing_yaku", "opts": ["Wild Card Single Wait"]}, {"name": "has_existing_yaku", "opts": ["Double Wild Card Set Wait"]}, {"name": "has_existing_yaku", "opts": ["Capturing the Five"]}, {"name": "has_existing_yaku", "opts": ["Dragon"]}, {"name": "has_existing_yaku", "opts": ["Kong Blossom"]}] },
+    { "display_name": "Different Patterns", "value": [1, "Fan"], "when": [3, {"name": "has_existing_yaku", "opts": ["Pure Hand"]}, {"name": "has_existing_yaku", "opts": ["Wild Card Single Wait"]}, {"name": "has_existing_yaku", "opts": ["Double Wild Card Set Wait"]}, {"name": "has_existing_yaku", "opts": ["Capturing the Five"]}, {"name": "has_existing_yaku", "opts": ["Dragon"]}, {"name": "has_existing_yaku", "opts": ["Kong Blossom"]}] },
+    { "display_name": "Different Patterns", "value": [1, "Fan"], "when": [4, {"name": "has_existing_yaku", "opts": ["Pure Hand"]}, {"name": "has_existing_yaku", "opts": ["Wild Card Single Wait"]}, {"name": "has_existing_yaku", "opts": ["Double Wild Card Set Wait"]}, {"name": "has_existing_yaku", "opts": ["Capturing the Five"]}, {"name": "has_existing_yaku", "opts": ["Dragon"]}, {"name": "has_existing_yaku", "opts": ["Kong Blossom"]}] },
+    { "display_name": "Different Patterns", "value": [1, "Fan"], "when": [5, {"name": "has_existing_yaku", "opts": ["Pure Hand"]}, {"name": "has_existing_yaku", "opts": ["Wild Card Single Wait"]}, {"name": "has_existing_yaku", "opts": ["Double Wild Card Set Wait"]}, {"name": "has_existing_yaku", "opts": ["Capturing the Five"]}, {"name": "has_existing_yaku", "opts": ["Dragon"]}, {"name": "has_existing_yaku", "opts": ["Kong Blossom"]}] },
+    { "display_name": "Different Patterns", "value": [1, "Fan"], "when": [6, {"name": "has_existing_yaku", "opts": ["Pure Hand"]}, {"name": "has_existing_yaku", "opts": ["Wild Card Single Wait"]}, {"name": "has_existing_yaku", "opts": ["Double Wild Card Set Wait"]}, {"name": "has_existing_yaku", "opts": ["Capturing the Five"]}, {"name": "has_existing_yaku", "opts": ["Dragon"]}, {"name": "has_existing_yaku", "opts": ["Kong Blossom"]}] }
   ],
   "yaku_multiplier": [
-    { "display_name": "Kong Blossom", "value": 2, "when": [{"name": "status", "opts": ["kan"]}] },
-    { "display_name": "Heavenly Hand", "value": 6, "when": [{"name": "status", "opts": ["first_turn"]}, {"name": "seat_is", "opts": ["east"]}] },
-    { "display_name": "Earthly Hand", "value": 4, "when": [{"name": "status", "opts": ["first_turn"]}, {"name": "not_seat_is", "opts": ["east"]}] }
+    { "display_name": "Kong Blossom", "value": [2, "×"], "when": [{"name": "status", "opts": ["kan"]}] },
+    { "display_name": "Heavenly Hand", "value": [6, "×"], "when": [{"name": "status", "opts": ["first_turn"]}, {"name": "seat_is", "opts": ["east"]}] },
+    { "display_name": "Earthly Hand", "value": [4, "×"], "when": [{"name": "status", "opts": ["first_turn"]}, {"name": "not_seat_is", "opts": ["east"]}] }
   ],
   "yaku_precedence": {
     "Double Wild Card Set Wait": ["Wild Card Single Wait"], // i think?
@@ -96,11 +96,9 @@
   "score_calculation": {
     "scoring_method": "multiplier",
     "score_multiplier": "points2",
-    "yaku_lists": ["yaku", "bonus_yaku"],
-    "yaku2_lists": ["yaku_multiplier"],
+    "yaku_lists": ["yaku", "bonus_yaku", "yaku_multiplier"],
     "point_name": "Fan",
     "point2_name": "×",
-    "right_display": "points2",
     "score_denomination": "",
     "discarder_multiplier": 1,
     "non_discarder_multiplier": 1,
@@ -164,7 +162,6 @@
       ["as", "everyone", [["add_attr", ["hand"], ["_concealed"]]]],
       ["set_status_all", "first_turn"],
       ["run", "flip_wild"],
-      ["set_counter_all", "dealer_mult", 1],
       ["set_counter_all", "kong_mult", 1]
     ]
   },
@@ -179,40 +176,13 @@
       ["unset_status", "first_turn"]
     ]]
   ],
-  "after_scoring": {
-    "actions": [
-      ["when", ["won"], [
-        // if a nondealer won, set dealer's multiplier to the winner's multiplier
-        // and set all other nondealers' multiplier to 1
-        // if dealer won, no change is needed
-        ["when", [{"name": "not_seat_is", "opts": ["east"]}], [
-          ["set_counter_all", "nondealer_mult", "dealer_mult"],
-          ["as", "others", [
-            ["ite", [{"name": "seat_is", "opts": ["east"]}], [
-              ["set_counter", "dealer_mult", "nondealer_mult"]
-            ], [
-              ["set_counter", "dealer_mult", 1]
-            ]]
-          ]]
-        ]],
-        // everyone pays the winner score * multiplier
-        ["modify_payout", "all", 0, "set"],
-        ["as", "others", [
-          ["set_counter", "basic_score", "score"],
-          ["multiply_counter", "basic_score", "dealer_mult"],
-          ["modify_payout", "self", "basic_score", "subtract"],
-          ["modify_payout", "prev_seat", "basic_score", "add"]
-        ]]
-      ]]
-    ]
-  },
   "buttons": {
     "start_double_down": {
       "display_name": "Double Down",
       "show_when": [{"name": "status", "opts": ["match_start"]}, "our_turn", {"name": "seat_is", "opts": ["east"]}],
       "actions": [
         ["big_text", "Double Down"],
-        ["set_counter_all", "dealer_mult", 2],
+        ["set_status_all", "dealer_double_down"],
         ["set_counter_all", "kong_mult", 2],
         ["remove_attr_hand", "_concealed"],
         ["unset_status", "match_start"],
@@ -224,8 +194,8 @@
       "display_name": "Challenge Dealer",
       "show_when": [{"name": "status", "opts": ["match_start"]}, "our_turn", {"name": "not_seat_is", "opts": ["east"]}, {"name": "counter_at_least", "opts": ["challenge_tokens", 1]}],
       "actions": [
-        ["big_text", "Challenge Dealer"],
-        ["multiply_counter", "dealer_mult", 2],
+        ["big_text", "Challenge"],
+        ["set_status", "dealer_challenge"],
         ["subtract_counter", "challenge_tokens", 1],
         ["remove_attr_hand", "_concealed"],
         ["unset_status", "match_start"],
@@ -237,8 +207,8 @@
       "display_name": "Challenge Dealer x2",
       "show_when": [{"name": "status", "opts": ["match_start"]}, "our_turn", {"name": "not_seat_is", "opts": ["east"]}, {"name": "counter_at_least", "opts": ["challenge_tokens", 2]}],
       "actions": [
-        ["big_text", "Challenge Dealer"],
-        ["multiply_counter", "dealer_mult", 4],
+        ["big_text", "Challenge x2"],
+        ["set_status", "dealer_challenge_2"],
         ["subtract_counter", "challenge_tokens", 2],
         ["remove_attr_hand", "_concealed"],
         ["unset_status", "match_start"],
@@ -324,7 +294,7 @@
         {"name": "match", "opts": [["hand", "calls", "draw"], ["tenpai"]]},
         {"name": "last_call_is", "opts": ["kakan"]},
         {"name": "match", "opts": [["hand", "calls", "last_called_tile"], ["win"]]},
-        [{"name": "has_yaku_with_call", "opts": [2]}, {"name": "has_yaku2_with_call", "opts": [2]}]
+        [{"name": "has_yaku_with_call", "opts": [2, "Fan"]}, {"name": "has_yaku_with_call", "opts": [2, "×"]}]
       ],
       "actions": [["big_text", "Hu"], ["pause", 1000], ["reveal_hand"], ["win_by_call"]],
       "precedence_over": ["chii", "pon", "daiminkan"]
@@ -336,7 +306,7 @@
         {"name": "status_missing", "opts": ["match_start"]},
         {"name": "match", "opts": [["hand", "calls", "draw"], ["tenpai"]]},
         {"name": "match", "opts": [["hand", "calls", "draw"], ["win"]]},
-        [{"name": "has_yaku_with_hand", "opts": [2]}, {"name": "has_yaku2_with_hand", "opts": [2]}]
+        [{"name": "has_yaku_with_hand", "opts": [2, "Fan"]}, {"name": "has_yaku_with_hand", "opts": [2, "×"]}]
       ],
       "actions": [["big_text", "Zimo"], ["pause", 1000], ["reveal_hand"], ["win_by_draw"]]
     }

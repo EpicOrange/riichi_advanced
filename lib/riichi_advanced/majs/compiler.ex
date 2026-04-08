@@ -49,24 +49,33 @@ defmodule RiichiAdvanced.Compiler do
   alias RiichiAdvanced.Utils
   alias RiichiAdvanced.Validator
 
-  @binops ["atan2", "copysign", "drem", "fdim", "fmax", "fmin", "fmod", "frexp", "hypot", "jn", "ldexp", "modf", "nextafter", "nexttoward", "pow", "remainder", "scalb", "scalbln", "yn"]
+  @unops [:-, "round_up", "round_down", "round"]
+  @binops [:+, :-, :*, :/, :**, :=, "round_up", "round_down", "round"]
+  # "atan2", "copysign", "drem", "fdim", "fmax", "fmin", "fmod", "frexp", "hypot", "jn", "ldexp",
+  # "modf", "nextafter", "nexttoward", "pow", "remainder", "scalb", "scalbln", "yn"
 
   defp compile_condition(condition, line, column) do
     case condition do
-      {:==, pos, [{l, _, nil}, {r, _, nil}]} -> compile_condition({"counter_equals", pos, [l, r]}, line, column)
-      {:==, pos, [{l, _, nil}, r]} -> compile_condition({"counter_equals", pos, [l, r]}, line, column)
+      {:==, pos, [{l, _, nil}, {r, _, nil}]} -> compile_condition({"amount_equals", pos, [l, r]}, line, column)
+      {:==, pos, [{l, _, nil}, r]} -> compile_condition({"amount_equals", pos, [l, r]}, line, column)
+      {:==, pos, [l, r]} -> compile_condition({"amount_equals", pos, [l, r]}, line, column)
       {:!=, pos, [{l, _, nil}, {r, _, nil}]} -> compile_condition({"not_counter_equals", pos, [l, r]}, line, column)
       {:!=, pos, [{l, _, nil}, r]} -> compile_condition({"not_counter_equals", pos, [l, r]}, line, column)
-      {:<=, pos, [{l, _, nil}, {r, _, nil}]} -> compile_condition({"counter_at_most", pos, [l, r]}, line, column)
-      {:<=, pos, [{l, _, nil}, r]} -> compile_condition({"counter_at_most", pos, [l, r]}, line, column)
-      {:>=, pos, [{l, _, nil}, {r, _, nil}]} -> compile_condition({"counter_at_least", pos, [l, r]}, line, column)
-      {:>=, pos, [{l, _, nil}, r]} -> compile_condition({"counter_at_least", pos, [l, r]}, line, column)
-      {:<, pos, [{l, _, nil}, {r, _, nil}]} -> compile_condition({"counter_less_than", pos, [l, r]}, line, column)
-      {:<, pos, [{l, _, nil}, r]} -> compile_condition({"counter_less_than", pos, [l, r]}, line, column)
-      {:>, pos, [{l, _, nil}, {r, _, nil}]} -> compile_condition({"counter_more_than", pos, [l, r]}, line, column)
-      {:>, pos, [{l, _, nil}, r]} -> compile_condition({"counter_more_than", pos, [l, r]}, line, column)
+      {:!=, pos, [l, r]} -> compile_condition({"not_counter_equals", pos, [l, r]}, line, column)
+      {:<=, pos, [{l, _, nil}, {r, _, nil}]} -> compile_condition({"amount_at_most", pos, [l, r]}, line, column)
+      {:<=, pos, [{l, _, nil}, r]} -> compile_condition({"amount_at_most", pos, [l, r]}, line, column)
+      {:<=, pos, [l, r]} -> compile_condition({"amount_at_most", pos, [l, r]}, line, column)
+      {:>=, pos, [{l, _, nil}, {r, _, nil}]} -> compile_condition({"amount_at_least", pos, [l, r]}, line, column)
+      {:>=, pos, [{l, _, nil}, r]} -> compile_condition({"amount_at_least", pos, [l, r]}, line, column)
+      {:>=, pos, [l, r]} -> compile_condition({"amount_at_least", pos, [l, r]}, line, column)
+      {:<, pos, [{l, _, nil}, {r, _, nil}]} -> compile_condition({"amount_less_than", pos, [l, r]}, line, column)
+      {:<, pos, [{l, _, nil}, r]} -> compile_condition({"amount_less_than", pos, [l, r]}, line, column)
+      {:<, pos, [l, r]} -> compile_condition({"amount_less_than", pos, [l, r]}, line, column)
+      {:>, pos, [{l, _, nil}, {r, _, nil}]} -> compile_condition({"amount_more_than", pos, [l, r]}, line, column)
+      {:>, pos, [{l, _, nil}, r]} -> compile_condition({"amount_more_than", pos, [l, r]}, line, column)
+      {:>, pos, [l, r]} -> compile_condition({"amount_more_than", pos, [l, r]}, line, column)
       {:not, _, [condition]} ->
-        with {:ok, result} <- compile_cnf_condition(condition, line, column) do
+        with {:ok, result} <- compile_condition_list(condition, line, column) do
           {:ok, %{"name" => "not", "opts" => [result]}}
         end
       {:+, _, _} -> Validator.validate_json(condition)
@@ -111,42 +120,84 @@ defmodule RiichiAdvanced.Compiler do
     end
   end
 
-  defp compile_cnf_condition(condition, line, column) do
+  defp _compile_condition_list(condition, line, column, conj) do
     case condition do
+      {"at_least", [line: line, column: column], args} ->
+        case args do
+          [n | conds] when is_number(n) ->
+            with {:ok, compiled_args} <- Utils.sequence(Enum.map(conds, &_compile_condition_list(&1, line, column, true))) do
+              ret = compiled_args |> Enum.map(&List.wrap/1) |> Enum.concat()
+              {:ok, if conj do [n | ret] else [[n | ret]] end}
+            end
+          _ -> {:error, "at_least(n, conditions) expects a number as the first argument, got #{inspect(Enum.at(args, 0))}"}
+        end
+      {"at_most", [line: line, column: column], args} ->
+        case args do
+          [n | conds] when is_number(n) ->
+            with {:ok, compiled_args} <- Utils.sequence(Enum.map(conds, &_compile_condition_list(&1, line, column, true))) do
+              ret = compiled_args |> Enum.map(&List.wrap/1) |> Enum.concat()
+              {:ok, if conj do [[n | ret]] else [n | ret] end}
+            end
+          _ -> {:error, "at_least(n, conditions) expects a number as the first argument, got #{inspect(Enum.at(args, 0))}"}
+        end
       {:and, [line: line, column: column], args} ->
-        with {:ok, compiled_args} <- Utils.sequence(Enum.map(args, &compile_cnf_condition(&1, line, column))) do
-          {:ok, compiled_args |> Enum.map(&List.wrap/1) |> Enum.concat()}
+        with {:ok, compiled_args} <- Utils.sequence(Enum.map(args, &_compile_condition_list(&1, line, column, true))) do
+          ret = compiled_args |> Enum.map(&List.wrap/1) |> Enum.concat()
+          {:ok, if conj do ret else [ret] end}
         end
       {:or, [line: line, column: column], args} ->
-        with {:ok, compiled_args} <- Utils.sequence(Enum.map(args, &compile_dnf_condition(&1, line, column))) do
-          {:ok, [compiled_args |> Enum.map(&List.wrap/1) |> Enum.concat()]}
-        end
-      _ -> compile_condition(condition, line, column)
-    end
-  end
-
-  defp compile_dnf_condition(condition, line, column) do
-    case condition do
-      {:or, [line: line, column: column], args} ->
-        with {:ok, compiled_args} <- Utils.sequence(Enum.map(args, &compile_dnf_condition(&1, line, column))) do
-          {:ok, compiled_args |> Enum.map(&List.wrap/1) |> Enum.concat()}
-        end
-      {:and, [line: line, column: column], args} ->
-        with {:ok, compiled_args} <- Utils.sequence(Enum.map(args, &compile_cnf_condition(&1, line, column))) do
-          {:ok, [compiled_args |> Enum.map(&List.wrap/1) |> Enum.concat()]}
+        with {:ok, compiled_args} <- Utils.sequence(Enum.map(args, &_compile_condition_list(&1, line, column, false))) do
+          ret = compiled_args |> Enum.map(&List.wrap/1) |> Enum.concat()
+          {:ok, if conj do [ret] else ret end}
         end
       _ -> compile_condition(condition, line, column)
     end
   end
 
   defp compile_condition_list(condition, line, column) do
-    with {:ok, condition} <- compile_cnf_condition(condition, line, column) do
+    with {:ok, condition} <- _compile_condition_list(condition, line, column, true) do
       case condition do
         %Constant{} -> {:ok, condition}
         %Variable{} -> {:ok, condition}
         _           -> {:ok, List.wrap(condition)}
       end
     end
+  end
+
+  defp compile_identifier(id, line, column) when is_binary(id) do
+    if Regex.match?(~r/^\$?[a-z_][a-z0-9_]*$/, id) do
+      {:ok, id}
+    else
+      {:error, "Compiler.compile_identifier: at line #{line}:#{column}, invalid identifier #{inspect(id)}"}
+    end
+  end
+  defp compile_identifier(id, line, column) do
+    {:error, "Compiler.compile_identifier: at line #{line}:#{column}, invalid identifier #{inspect(id)}"}
+  end
+
+  defp compile_expr({op, [line: line, column: column], [expr1]}, _line, _column) when op in @unops do
+    with {:ok, expr1} <- compile_expr(expr1, line, column) do
+      {:ok, [if is_atom(op) do Atom.to_string(op) else op end, [expr1]]}
+    end
+  end
+  defp compile_expr({op, [line: line, column: column], [expr1, expr2]}, _line, _column) when op in @binops do
+    with {:ok, expr1} <- compile_expr(expr1, line, column),
+         {:ok, expr2} <- compile_expr(expr2, line, column) do
+      {:ok, [if is_atom(op) do Atom.to_string(op) else op end, [expr1, expr2]]}
+    end
+  end
+  defp compile_expr({prefix, _, _} = arg, _line, _column) when prefix == :+ or prefix == :@ or prefix == :! do
+    # splat, constant, or variable
+    with {:ok, var} <- Validator.validate_json(arg),
+         {:ok, var} <- Jason.encode(var) do
+      {:ok, "#{var}"}
+    end
+  end
+  defp compile_expr({name, _, nil}, line, column) when is_binary(name), do: compile_identifier(name, line, column)
+  defp compile_expr(name, line, column) when is_binary(name), do: compile_identifier(name, line, column)
+  defp compile_expr(num, _line, _column) when is_number(num), do: {:ok, num}
+  defp compile_expr(expr, line, column) do
+    {:error, "Compiler.compile_expr: at line #{line}:#{column}, invalid expr #{inspect(expr)}"}
   end
 
   # defp compile_action!(action, line, column) do
@@ -156,17 +207,38 @@ defmodule RiichiAdvanced.Compiler do
   #   end
   # end
   defp compile_action(action, line, column) do
+    # check for "as:"
+    action = with {action_name, pos, opts} <- action do
+      if opts != nil do
+        case Enum.at(opts, -1) do
+          [{"as", seats_spec}] -> {"as", pos, [seats_spec, [do: [{action_name, pos, List.delete_at(opts, -1)}]]]}
+          _ -> action
+        end
+      else action end
+    end
     case action do
-      {:=, pos, [{l, _, nil}, {:+, _, [{l, _, nil}, {r, _, nil}]}]} -> compile_action({"add_counter", pos, [l, r]}, line, column)
-      {:=, pos, [{l, _, nil}, {:-, _, [{l, _, nil}, {r, _, nil}]}]} -> compile_action({"subtract_counter", pos, [l, r]}, line, column)
-      {:=, pos, [{l, _, nil}, {:*, _, [{l, _, nil}, {r, _, nil}]}]} -> compile_action({"multiply_counter", pos, [l, r]}, line, column)
-      {:=, pos, [{l, _, nil}, {:/, _, [{l, _, nil}, {r, _, nil}]}]} -> compile_action({"divide_counter", pos, [l, r]}, line, column)
-      {:=, pos, [{l, _, nil}, {:+, _, [{l, _, nil}, r]}]} -> compile_action({"add_counter", pos, [l, r]}, line, column)
-      {:=, pos, [{l, _, nil}, {:-, _, [{l, _, nil}, r]}]} -> compile_action({"subtract_counter", pos, [l, r]}, line, column)
-      {:=, pos, [{l, _, nil}, {:*, _, [{l, _, nil}, r]}]} -> compile_action({"multiply_counter", pos, [l, r]}, line, column)
-      {:=, pos, [{l, _, nil}, {:/, _, [{l, _, nil}, r]}]} -> compile_action({"divide_counter", pos, [l, r]}, line, column)
-      {:=, pos, [{l, _, nil}, {r, _, nil}]} -> compile_action({"set_counter", pos, [l, r]}, line, column)
-      {:=, pos, [{l, _, nil}, r]} -> compile_action({"set_counter", pos, [l, r]}, line, column)
+      {:"::", [line: line, column: column], [assignment, display_name]} ->
+        case assignment do
+          {:=,    pos, [{l, _, nil}, r]} -> compile_action({"_counter_assignment", pos, [l, "=", r, display_name]}, line, column)
+          {:"+=", pos, [{l, _, nil}, r]} -> compile_action({"_counter_assignment", pos, [l, "+", r, display_name]}, line, column)
+          {:"-=", pos, [{l, _, nil}, r]} -> compile_action({"_counter_assignment", pos, [l, "-", r, display_name]}, line, column)
+          {:"*=", pos, [{l, _, nil}, r]} -> compile_action({"_counter_assignment", pos, [l, "*", r, display_name]}, line, column)
+          {:"/=", pos, [{l, _, nil}, r]} -> compile_action({"_counter_assignment", pos, [l, "/", r, display_name]}, line, column)
+          {:"^=", pos, [{l, _, nil}, r]} -> compile_action({"_counter_assignment", pos, [l, "^", r, display_name]}, line, column)
+          _                              -> {:error, "Compiler.compile_action: at line #{line}:#{column}, expected an assignment, got #{assignment}"}
+        end
+      # {:=, pos, [{l, _, nil}, {:+, _, [{l, _, nil}, {r, _, nil}]}]} -> compile_action({"add_counter", pos, [l, r]}, line, column)
+      # {:=, pos, [{l, _, nil}, {:-, _, [{l, _, nil}, {r, _, nil}]}]} -> compile_action({"subtract_counter", pos, [l, r]}, line, column)
+      # {:=, pos, [{l, _, nil}, {:*, _, [{l, _, nil}, {r, _, nil}]}]} -> compile_action({"multiply_counter", pos, [l, r]}, line, column)
+      # {:=, pos, [{l, _, nil}, {:/, _, [{l, _, nil}, {r, _, nil}]}]} -> compile_action({"divide_counter", pos, [l, r]}, line, column)
+      # {:=, pos, [{l, _, nil}, {:**, _, [{l, _, nil}, {r, _, nil}]}]} -> compile_action({"exponentiate_counter", pos, [l, r]}, line, column)
+      # {:=, pos, [{l, _, nil}, {:+, _, [{l, _, nil}, r]}]} -> compile_action({"add_counter", pos, [l, r]}, line, column)
+      # {:=, pos, [{l, _, nil}, {:-, _, [{l, _, nil}, r]}]} -> compile_action({"subtract_counter", pos, [l, r]}, line, column)
+      # {:=, pos, [{l, _, nil}, {:*, _, [{l, _, nil}, r]}]} -> compile_action({"multiply_counter", pos, [l, r]}, line, column)
+      # {:=, pos, [{l, _, nil}, {:/, _, [{l, _, nil}, r]}]} -> compile_action({"divide_counter", pos, [l, r]}, line, column)
+      # {:=, pos, [{l, _, nil}, {:**, _, [{l, _, nil}, r]}]} -> compile_action({"exponentiate_counter", pos, [l, r]}, line, column)
+      # {:=, pos, [{l, _, nil}, {r, _, nil}]} -> compile_action({"set_counter", pos, [l, r]}, line, column)
+      {:=, pos, [l, r]} -> compile_action({"_set_counter", pos, [l, r]}, line, column)
       {"if", [line: line, column: column], opts} ->
         case opts do
           [condition, actions] ->
@@ -180,7 +252,7 @@ defmodule RiichiAdvanced.Compiler do
                   end
               end
             end
-          _ -> {:error, "\"if\" got invalid parameters: #{inspect(opts)}"}
+          _ -> {:error, "Compiler.compile_action: at line #{line}:#{column}, \"if\" got invalid parameters: #{inspect(opts)}"}
         end
       {"unless", [line: line, column: column], opts} ->
         case opts do
@@ -196,7 +268,26 @@ defmodule RiichiAdvanced.Compiler do
                 end
               end
             end
-          _ -> {:error, "\"unless\" got invalid parameters: #{inspect(opts)}"}
+          _ -> {:error, "Compiler.compile_action: at line #{line}:#{column}, \"unless\" got invalid parameters: #{inspect(opts)}"}
+        end
+      {"cond", [line: line, column: column], opts} ->
+        case opts do
+          [[do: clauses]] ->
+            rets = for {:->, [line: line, column: column], [[condition], body]} <- clauses, reduce: {:ok, []} do
+              {:ok, ret} ->
+                with {:ok, condition} <- compile_condition_list(condition, line, column),
+                     {:ok, body} <- compile_action_list(body, line, column) do
+                  {:ok, [{condition, body} | ret]}
+                end
+              err -> err
+            end
+            with {:ok, cond_bodys} <- rets do
+              for {cond, body} <- cond_bodys, reduce: {:ok, ["noop"]} do
+                {:ok, else_branch} -> {:ok, ["ite", cond, body, [else_branch]]}
+                err -> err
+              end
+            end
+          _ -> {:error, "Compiler.compile_action: at line #{line}:#{column}, \"cond\" got invalid parameters: #{inspect(opts)}"}
         end
       {"as", [line: line, column: column], opts} ->
         case opts do
@@ -210,7 +301,25 @@ defmodule RiichiAdvanced.Compiler do
                  {:ok, actions} <- compile_action_list(Keyword.get(actions, :do), line, column) do
               {:ok, ["as", seats_spec, actions]}
             end
-          _ -> {:error, "\"as\" got invalid parameters: #{inspect(opts)}"}
+          _ -> {:error, "Compiler.compile_action: at line #{line}:#{column}, \"as\" got invalid parameters: #{inspect(opts)}"}
+        end
+      {"_counter_assignment", [line: line, column: column], opts} ->
+        case opts do
+          [l, op, r, display_name] ->
+            with {:ok, name} <- Validator.validate_json(l),
+                 {:ok, expr} <- compile_expr(r, line, column) do
+              {:ok, ["_counter_assignment", display_name, name, op, expr]}
+            end
+          _ -> {:error, "Compiler.compile_action: at line #{line}:#{column}, expected an expression, got #{opts}"}
+        end
+      {"_set_counter", _pos, opts} ->
+        case opts do
+          [{name, [line: line, column: column], _}, expr] ->
+            with {:ok, name} <- Validator.validate_json(name),
+                 {:ok, expr} <- compile_expr(expr, line, column) do
+              {:ok, ["set_counter", name, "eval_expr", expr]}
+            end
+          _ -> {:error, "\"set_counter\" got invalid parameters: #{inspect(opts)}"}
         end
       {name, [line: line, column: column], args} when is_binary(name) ->
         if name in Validator.allowed_actions() do
@@ -266,7 +375,7 @@ defmodule RiichiAdvanced.Compiler do
     with {:ok, value} <- Parser.parse_sigils(value),
          {:error, _} <- Validator.validate_expression(value),
          {:error, _} <- Validator.validate_json(value),
-         {:error, _} <- compile_cnf_condition(value, line, column),
+         {:error, _} <- compile_condition_list(value, line, column),
          {:error, _} <- compile_action(value, line, column) do
       {:error, "Compiler.compile_constant: at line #{line}:#{column}, expected JSON, condition, action, or do block, got #{inspect(value)}"}
     end
@@ -343,16 +452,20 @@ defmodule RiichiAdvanced.Compiler do
         _ -> {:error, "Compiler.compile: at line #{line}:#{column}, `apply` got invalid method #{name}"}
       end
       with {:ok, operation} <- operation do
-        if op == "set" do
-          {:ok, operation}
-        else
-          # only perform operation if the parent path exists
-          otherwise = if default_to_set do "#{path} = #{value}" else "." end
-          with {:ok, parent_path} <- Validator.get_parent_path(path) do
-            ret = "if (#{parent_path}? != null) then (#{operation}) else #{otherwise} end"
-            # IO.puts(ret)
+        case op do
+          "set"    -> {:ok, operation}
+          "delete" ->
+            # only perform operation if the path exists
+            ret = "if (#{path}? != null) then (#{operation}) end"
             {:ok, ret}
-          end
+          _        ->
+            # only perform operation if the parent path exists
+            otherwise = if default_to_set do "#{path} = #{value}" else "." end
+            with {:ok, parent_path} <- Validator.get_parent_path(path) do
+              ret = "if (#{parent_path}? != null) then (#{operation}) else #{otherwise} end"
+              # IO.puts(ret)
+              {:ok, ret}
+            end
         end
       end
     end
@@ -368,6 +481,8 @@ defmodule RiichiAdvanced.Compiler do
          {:ok, value1_val} <- compile_constant(value1, line, column),
          {:ok, value1} <- Jason.encode(value1_val),
          {:ok, value2_val} <- compile_constant(value2, line, column),
+         # make sure single actions are treated as one action, not an action list
+         value2_val <- (with [action] <- value2_val do action end),
          {:ok, value2} <- Jason.encode(value2_val) do
       operation = case Jason.decode(name) do
         {:ok, "all"} -> {:ok, "walk(if . == #{value1} then #{value2} else . end)"}
@@ -405,6 +520,27 @@ defmodule RiichiAdvanced.Compiler do
     end
   end
 
+  defp compile_command("define_play_effect", tile_spec, args, line, column) do
+    {prepend, args} = case args do
+      [[{"prepend", prepend}], args] -> {prepend, args}
+      [[{"prepend", prepend}] | args] -> {prepend, args}
+      _ -> {false, args}
+    end
+    body = case args do
+      [fn_name] when is_binary(fn_name) -> {:ok, [["run", Validator.sanitize_string(fn_name)]]}
+      [{fn_name, _pos, nil}] when is_binary(fn_name) -> {:ok, [["run", Validator.sanitize_string(fn_name)]]}
+      _ -> compile_action_list(args, line, column)
+    end
+    with {:ok, body} <- body,
+         {:ok, body} <- Jason.encode(body) do
+      if prepend do
+        {:ok, ".play_effects |= [[#{tile_spec}, #{body}]] + ."}
+      else
+        {:ok, ".play_effects += [[#{tile_spec}, #{body}]]"}
+      end
+    end
+  end
+
   defp compile_command("define_set", name, args, line, column) do
     set_spec = case args do
       [{:sigil_s, _, [{:<<>>, _, [set_spec]}, _args]}] when is_binary(set_spec) -> {:ok, set_spec}
@@ -423,7 +559,7 @@ defmodule RiichiAdvanced.Compiler do
     match_specs = case args do
       # single args
       [{prefix, _, _} = arg] when prefix == :+ or prefix == :@ or prefix == :! ->
-        # constant or variable
+        # splat, constant, or variable
         with {:ok, match_spec} <- Validator.validate_json(arg),
              {:ok, match_spec} <- Jason.encode(match_spec) do
           {:ok, "#{match_spec}"}
@@ -540,15 +676,15 @@ defmodule RiichiAdvanced.Compiler do
          {:ok, names} <- Validator.validate_json(names),
          {:ok, names} <- Enum.map(names, &Jason.encode/1) |> Utils.sequence() do
       {:ok, ~s"""
-      .[#{name}] |= map(select(.display_name | IN(#{Enum.join(names, ",")}) | not))
+      if has(#{name}) then .[#{name}] |= map(select(.display_name | IN(#{Enum.join(names, ",")}) | not)) else . end
       """}
     end
   end
 
   defp compile_command("replace_yaku", name, args, line, column) do
     yaku_spec = case args do
-      [display_name, value, condition] when is_binary(display_name) and (is_number(value) or is_binary(value)) -> {:ok, {display_name, value, condition, []}}
-      [display_name, value, condition, supercedes] when is_binary(display_name) and (is_number(value) or is_binary(value)) and is_list(supercedes) -> {:ok, {display_name, value, condition, supercedes}}
+      [display_name, value, condition] when is_binary(display_name) and (is_number(value) or is_binary(value) or is_list(value)) -> {:ok, {display_name, value, condition, []}}
+      [display_name, value, condition, supercedes] when is_binary(display_name) and (is_number(value) or is_binary(value) or is_list(value)) and is_list(supercedes) -> {:ok, {display_name, value, condition, supercedes}}
       _ -> {:error, "Compiler.compile: at line #{line}:#{column}, `replace_yaku` command expects a yaku list name, a display name, a value, and a condition, got #{inspect(args)}"}
     end
 
@@ -560,7 +696,7 @@ defmodule RiichiAdvanced.Compiler do
          {:ok, condition} <- compile_condition_list(condition, line, column),
          {:ok, condition} <- Jason.encode(condition) do
       add_yaku = """
-        if .[#{name}] | any(.display_name == #{display_name}) then
+        if has(#{name}) and (.[#{name}] | any(.display_name == #{display_name})) then
           .[#{name}] |= map(select(.display_name != #{display_name})) + [{\"display_name\": #{display_name}, \"value\": #{value}, \"when\": #{condition}}]
         else . end
       """
@@ -795,23 +931,33 @@ defmodule RiichiAdvanced.Compiler do
     end
   end
 
-  # TODO deprecate
-  defp compile_command("define", name, args, line, column) do
-    case Jason.decode!(name) do
-      "play_restriction" -> 
-        args = case args do
-          [targets, condition] -> {:ok, {List.wrap(targets), condition}}
-          _ -> {:error, "Compiler.compile: at line #{line}:#{column}, `define play_restriction` command expects a target (or list of targets) and a condition, got #{inspect(args)}"}
-        end
+  defp compile_command("define_scoring", name, args, line, column) do
+    body = case args do
+      {:__block__, [], _nodes} -> compile_action_list(args, line, column)
+      _ -> case compile_action(args, line, column) do
+        {:ok, action} -> {:ok, [action]}
+        _ -> {:error, "Compiler.compile: at line #{line}:#{column}, `define_scoring` command expects a do block or an action, got #{inspect(args)}"}
+      end
+    end
+    with {:ok, body} <- body,
+         {:ok, body} <- Jason.encode(body) do
+      {:ok, ".scoring_logic[#{name}] += #{body}"}
+    end
+  end
 
-        with {:ok, {targets, condition}} <- args,
-             {:ok, targets} <- Validator.validate_json(targets),
-             {:ok, targets} <- Jason.encode(targets),
-             {:ok, condition} <- compile_condition_list(condition, line, column),
-             {:ok, condition} <- Jason.encode(condition) do
-          {:ok, ".play_restrictions += [[#{targets}, #{condition}]]"}
-        end
-      _ -> {:error, "Compiler.compile: at line #{line}:#{column}, `define` got invalid type #{name}"}
+  defp compile_command("define_play_restriction", name, args, line, column) do
+    args = [Jason.decode!(name) | args]
+    args = case args do
+      [targets, condition] -> {:ok, {List.wrap(targets), condition}}
+      _ -> {:error, "Compiler.compile: at line #{line}:#{column}, `define_play_restriction` command expects a target (or list of targets) and a condition, got #{inspect(args)}"}
+    end
+
+    with {:ok, {targets, condition}} <- args,
+         {:ok, targets} <- Validator.validate_json(targets),
+         {:ok, targets} <- Jason.encode(targets),
+         {:ok, condition} <- compile_condition_list(condition, line, column),
+         {:ok, condition} <- Jason.encode(condition) do
+      {:ok, ".play_restrictions += [[#{targets}, #{condition}]]"}
     end
   end
 
@@ -828,10 +974,11 @@ defmodule RiichiAdvanced.Compiler do
     end
   end
 
-  defp compile_toplevel_condition(condition, line, column) do
+  defp compile_toplevel_condition(condition, line, column, defs) do
     case condition do
       {"true", _, _} -> {:ok, "true"}
       {"false", _, _} -> {:ok, "false"}
+      {"defined", _, [name | _]} -> {:ok, if MapSet.member?(defs, name) do "true" else "false" end}
       {"equals", [line: line, column: column], [l, r]} ->
         with {:ok, l} <- compile_toplevel_constant(l, line, column),
              {:ok, r} <- compile_toplevel_constant(r, line, column),
@@ -853,15 +1000,15 @@ defmodule RiichiAdvanced.Compiler do
           {:ok, "(#{r} | any(. == #{l}))"}
         end
       {:not, [line: line, column: column], [arg]} ->
-        with {:ok, compiled_arg} <- compile_toplevel_condition(arg, line, column) do
+        with {:ok, compiled_arg} <- compile_toplevel_condition(arg, line, column, defs) do
           {:ok, "(#{compiled_arg} | not)"}
         end
       {:or, [line: line, column: column], args} ->
-        with {:ok, compiled_args} <- Utils.sequence(Enum.map(args, &compile_toplevel_condition(&1, line, column))) do
+        with {:ok, compiled_args} <- Utils.sequence(Enum.map(args, &compile_toplevel_condition(&1, line, column, defs))) do
           {:ok, "(#{Enum.join(compiled_args, " or ")})"}
         end
       {:and, [line: line, column: column], args} ->
-        with {:ok, compiled_args} <- Utils.sequence(Enum.map(args, &compile_toplevel_condition(&1, line, column))) do
+        with {:ok, compiled_args} <- Utils.sequence(Enum.map(args, &compile_toplevel_condition(&1, line, column, defs))) do
           {:ok, "(#{Enum.join(compiled_args, " and ")})"}
         end
       _ ->
@@ -871,30 +1018,25 @@ defmodule RiichiAdvanced.Compiler do
         end
     end
   end
-  # def compile_jq_toplevel!(ast) do
-  #   case compile_jq_toplevel(ast) do
-  #     {:ok, jq} -> jq
-  #     {:error, error} -> raise error
-  #   end
-  # end
-  defp compile_jq_toplevel(ast, line, column) do
+  defp compile_jq_toplevel(ast, line, column, defs) do
     case ast do
       {"if", [line: line, column: column], [condition, [do: then_cmds, else: else_cmds]]} ->
-        with {:ok, condition} <- compile_toplevel_condition(condition, line, column),
-             {:ok, then_cmds} <- compile_jq_toplevel(then_cmds, line, column),
-             {:ok, else_cmds} <- compile_jq_toplevel(else_cmds, line, column) do
-          {:ok, "if #{condition} then\n#{then_cmds}\nelse\n#{else_cmds}\nend"}
+        with {:ok, condition} <- compile_toplevel_condition(condition, line, column, defs),
+             {:ok, {then_cmds, defs}} <- compile_jq_toplevel(then_cmds, line, column, defs),
+             {:ok, {else_cmds, defs}} <- compile_jq_toplevel(else_cmds, line, column, defs) do
+          {:ok, {"if #{condition} then\n#{then_cmds}\nelse\n#{else_cmds}\nend", defs}}
         end
       {"if", [line: line, column: column], [condition, [do: then_cmds]]} ->
-        with {:ok, condition} <- compile_toplevel_condition(condition, line, column),
-             {:ok, then_cmds} <- compile_jq_toplevel(then_cmds, line, column) do
-          {:ok, "if #{condition} then\n#{then_cmds}\nelse . end"}
+        with {:ok, condition} <- compile_toplevel_condition(condition, line, column, defs),
+             {:ok, {then_cmds, defs}} <- compile_jq_toplevel(then_cmds, line, column, defs) do
+          {:ok, {"if #{condition} then\n#{then_cmds}\nelse . end", defs}}
         end
       {"unless", [line: line, column: column], [condition, [do: else_cmds]]} ->
-        with {:ok, condition} <- compile_toplevel_condition(condition, line, column),
-             {:ok, else_cmds} <- compile_jq_toplevel(else_cmds, line, column) do
-          {:ok, "if #{condition} then . else\n#{else_cmds}\nend"}
+        with {:ok, condition} <- compile_toplevel_condition(condition, line, column, defs),
+             {:ok, {else_cmds, defs}} <- compile_jq_toplevel(else_cmds, line, column, defs) do
+          {:ok, {"if #{condition} then . else\n#{else_cmds}\nend", defs}}
         end
+      {"define", _pos, [name | _]} -> {:ok, {".", MapSet.put(defs, name)}}
       {cmd, [line: line, column: column], [name | args]} when is_binary(cmd) ->
         name = case name do
           name when is_binary(name) or is_integer(name) -> Validator.validate_json(name)
@@ -904,7 +1046,7 @@ defmodule RiichiAdvanced.Compiler do
           {:!, _pos, _params} -> Validator.validate_json(name)
           _ -> {:error, "Compiler.compile: at line #{line}:#{column}, `#{cmd}` command got invalid name #{inspect(name)}"}
         end
-        with {:ok, name} <- name,
+        ret = with {:ok, name} <- name,
              {:ok, name} <- Jason.encode(name) do
           compile_command(cmd, name, args, line, column)
           case args do
@@ -914,23 +1056,32 @@ defmodule RiichiAdvanced.Compiler do
             _ -> {:error, "Compiler.compile: at line #{line}:#{column}, `#{cmd}` command got invalid arguments #{inspect(args)}"}
           end
         end
+        with {:ok, ret} <- ret do
+          {:ok, {ret, defs}}
+        end
       {cmd, [line: line, column: column], args} when is_binary(cmd) ->
         {:error, "Compiler.compile: at line #{line}:#{column}, `#{cmd}` command expects arguments, got #{inspect(args)}"}
-      {:__block__, _pos, []} -> {:ok, "."}
+      {:__block__, _pos, []} -> {:ok, {".", defs}}
       {:__block__, pos, nodes} ->
         {line, column} = case pos do
           [line: line, column: column] -> {line, column}
           _ -> {0, 0}
         end
-        compile_jq_toplevel(nodes, line, column)
+        compile_jq_toplevel(nodes, line, column, defs)
       _ when is_list(ast) ->
-        ast
-        |> Enum.map(&compile_jq_toplevel(&1, line, column))
-        |> Utils.sequence()
+        # TODO pass thru defs
+        # TODO handle 'define'
+        for node <- ast, reduce: {:ok, {[], defs}} do
+          {:ok, {rets, defs}} ->
+            with {:ok, {ret, defs}} <- compile_jq_toplevel(node, line, column, defs) do
+              {:ok, {[ret | rets], defs}}
+            end
+          {:error, msg} -> {:error, msg}
+        end
         |> case do
-          {:ok, val}    ->
-            ret = Enum.map_join(val, "\n|", &"(" <> &1 <> ")")
-            {:ok, ret}
+          {:ok, {rets, defs}}    ->
+            ret = rets |> Enum.reverse() |> Enum.map_join("\n|", &"(" <> &1 <> ")")
+            {:ok, {ret, defs}}
           {:error, msg} -> {:error, msg}
         end
       _ -> {:error, "Compiler.compile: expected toplevel command, got #{inspect(ast)}"}
@@ -939,8 +1090,15 @@ defmodule RiichiAdvanced.Compiler do
 
   def compile_jq!(ast) do
     case compile_jq(ast) do
-      {:ok, jq} -> jq
+      {:ok, ret} -> ret
       {:error, error} -> raise error
+    end
+  end
+
+  def compile_jq(ast) do
+    case compile_jq_defs(ast) do
+      {:ok, {jq, _defs}} -> {:ok, jq}
+      {:error, error} -> {:error, error}
     end
   end
 
@@ -956,26 +1114,33 @@ defmodule RiichiAdvanced.Compiler do
   """
   def header(), do: @header
 
-  def compile_jq(ast) do
+  def compile_jq_defs(ast, defs \\ MapSet.new()) do
     case ast do
-      {:__block__, _pos, []} -> {:ok, "."}
+      {:__block__, _pos, []} -> {:ok, {".", defs}}
       {:__block__, pos, nodes} ->
         # IO.inspect(nodes, label: "AST", limit: :infinity)
         {line, column} = case pos do
           [line: line, column: column] -> {line, column}
           _ -> {0, 0}
         end
-        case compile_jq_toplevel(nodes, line, column) do
-          {:ok, val}    -> {:ok, @header <> val}
-          {:error, msg} -> {:error, msg}
+        case compile_jq_toplevel(nodes, line, column, defs) do
+          {:ok, {ret, defs}} -> {:ok, {@header <> ret, defs}}
+          {:error, msg}      -> {:error, msg}
         end
-      {_name, _pos, _actions} -> compile_jq({:__block__, [], [ast]})
+      {_name, _pos, _actions} -> compile_jq_defs({:__block__, [], [ast]}, defs)
       _ -> {:error, "Compiler.compile: got invalid root node #{inspect(ast)}"}
+    end
+  end
+  def convert_to_jq(ast) do
+    case compile_jq_defs(ast) do
+      {:ok, {jq, _defs}} -> jq
+      {:error, error} -> raise error
     end
   end
 
   def add_error_cxt({:ok, data}, _msg), do: {:ok, data}
   def add_error_cxt({:error, data}, msg), do: {:error, data <> "\n" <> msg}
+  def add_error_cxt(data, msg), do: {:error, "got something not :ok or :error (#{inspect(data)})\n" <> msg}
 
   # WIP simple decompiler: json -> majs
 

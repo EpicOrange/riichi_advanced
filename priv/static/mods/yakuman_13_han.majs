@@ -1,0 +1,11 @@
+# convert yakuman to 13 han
+replace all, "yakuman", [1, "★"], [13, "Han"]
+replace all, "yakuman", [2, "★"], [26, "Han"]
+replace all, "yakuman", [3, "★"], [39, "Han"]
+replace all, "yakuman", [4, "★"], [52, "Han"]
+replace all, "meta_yakuman", [1, "★"], [13, "Han"]
+replace all, "meta_yakuman", [2, "★"], [26, "Han"]
+replace all, "meta_yakuman", [3, "★"], [39, "Han"]
+replace all, "meta_yakuman", [4, "★"], [52, "Han"]
+# remove existing yaku precedence that yakuman has on regular yaku
+apply delete_key, "yaku_precedence", "yakuman"

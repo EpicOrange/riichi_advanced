@@ -1,4 +1,4 @@
-defmodule RiichiAdvanced.CosmicScoring do
+defmodule RiichiAdvanced.CosmicScoringTest do
   use ExUnit.Case, async: true
   alias RiichiAdvanced.TestUtils, as: TestUtils
 
@@ -60,7 +60,7 @@ defmodule RiichiAdvanced.CosmicScoring do
       %{"type" => "buttons_pressed", "buttons" => [%{"button" => "tsumo"}, nil, nil, nil]}
     ], %{
       east: %{
-        yaku: [{"Hatsu", 1}, {"Rinshan", 1}, {"Round Wind", 1}, {"Seat Wind", 1}, {"Suuankou", 13}, {"Tsumo", 1}],
+        yaku: [{"Hatsu", [1, "Han"]}, {"Rinshan", [1, "Han"]}, {"Round Wind", [1, "Han"]}, {"Seat Wind", [1, "Han"]}, {"Suuankou", [13, "Han"]}, {"Tsumo", [1, "Han"]}],
         yaku2: [],
         minipoints: 70,
         score: 72000
@@ -85,7 +85,7 @@ defmodule RiichiAdvanced.CosmicScoring do
       %{"type" => "buttons_pressed", "buttons" => [%{"button" => "tsumo"}, nil, nil, nil]}
     ], %{
       east: %{
-        yaku: [{"Rinshan", 1}, {"Round Wind", 1}, {"Seat Wind", 1}, {"Suuankou", 13}, {"Tsumo", 1}],
+        yaku: [{"Rinshan", [1, "Han"]}, {"Round Wind", [1, "Han"]}, {"Seat Wind", [1, "Han"]}, {"Suuankou", [13, "Han"]}, {"Tsumo", [1, "Han"]}],
         yaku2: [],
         minipoints: 70,
         score: 48000

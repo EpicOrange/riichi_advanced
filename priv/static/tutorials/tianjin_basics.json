@@ -1,0 +1,161 @@
+{
+  "mods": [],
+  "config": {
+    "starting_hand": {
+      "east": ["1m", "2s", "2s", "1p", "5p", "7p", "2s", "3s", "7s", "1z", "2z", "4z", "5z"],
+      "south": ["3p", "3m", "4m", "5m", "9m", "2s", "4s", "4s", "5s", "5s", "3z", "3z", "3z"],
+      "west": ["2m", "3m", "8m", "8m", "1p", "1p", "1p", "1s", "2s", "3s", "7s", "8s", "8s"],
+      "north": ["1m", "1m", "1m", "2m", "3m", "8m", "8m", "1s", "2s", "3s", "7s", "8s", "8s"]
+    },
+    "starting_draws": ["3s", "4s", "3z", "6m", "7s", "9p", "3m", "5m"],
+    "starting_dice": [1, 1],
+    "starting_dead_wall": ["7z", "7z", "2p"],
+    "tsumogiri_bots": true,
+    "win_timer": 300
+  },
+  // Synopsis
+  // - Challenge tokens
+  // - First go-around, can't chii kami
+  // - Our draw puts us tenpai
+  // - Kami drops our tile, can't ron
+  // - You draw your tile, tsumo
+  "scenes": {
+    "start": [
+      ["add_object", "text", {"size": 0.4, "width": 5, "x": 9.125, "y": 8.5,
+        "text": "Welcome to Tianjin Mahjong! This variant features wildcard tiles called Hun'er, of which there are 7 per game: 3 copies of what would be the dora indicator in Riichi (shown on upper left), and 4 copies of the 'dora' it indicates. All 7 tiles are considered Hun'er, and can be used as any tile.\n(Click to continue)"
+      }],
+      ["await_click"],
+      ["clear_objects"],
+      ["add_object", "text", {"size": 0.4, "width": 5, "x": 9.125, "y": 7.5,
+        "text": "The very first thing you do (before seeing your hand!) is to up the ante by issuing challenges against the dealer (East player). The dealer may do the same.\nIssuing a challenge against the dealer means the dealer pays 2x when you win, but you pay them 2x if they win. This only affects wins that involve the dealer.\n(Click to continue)"
+      }],
+      ["force_event", ["press_button", "east", "start_pass"]],
+      ["await_click"],
+      ["clear_objects"],
+      ["add_object", "text", {"size": 0.4, "width": 5, "x": 9.125, "y": 7.5,
+        "text": "Now that it's your turn, try issuing a challenge now with the leftmost button."
+      }],
+      ["add_object", "focus", {"width": 2.5, "x": 6.25, "y": "buttons"}],
+      ["force_event", ["press_button", "south", "start_challenge_dealer"]],
+      ["clear_objects"],
+      ["add_object", "text", {"size": 0.4, "width": 5, "x": 9.125, "y": 7.5,
+        "text": "Note that issuing a challenge costs one challenge token. You only get two per game.\nYou've also seen the 2x challenge button, which uses both challenge tokens at once, resulting in a 4x multiplier.\n(Click to continue)"
+      }],
+      ["add_object", "focus", {"width": 1.5, "x": 1.625, "y": 16.5}],
+      ["await_click"],
+      ["clear_objects"],
+      ["sleep", 1000],
+      ["add_object", "text", {"size": 0.4, "width": 5, "x": 9.125, "y": 7.5,
+        "text": "After issuing a challenge (or passing), you can see your hand and the game begins.\n(Click to continue)"
+      }],
+      ["force_event", ["press_button", "west", "start_pass"]],
+      ["force_event", ["press_button", "north", "start_pass"]],
+      ["await_click"],
+      ["clear_objects"],
+      ["add_object", "text", {"size": 0.4, "width": 5, "x": 9.125, "y": 7.5,
+        "text": "Your initial draw includes a wildcard (Hun'er)! The wildcards for this round are the 2 and 3 of circles, indicated on the upper left.\n(Click to continue)"
+      }],
+      ["add_object", "focus", {"width": 0.75, "hand_index": 4}],
+      ["add_object", "focus", {"width": 2.5, "x": 1, "y": -0.5}],
+      ["await_click"],
+      ["clear_objects"],
+      ["add_object", "text", {"size": 0.4, "width": 5, "x": 9.125, "y": 7.5,
+        "text": "Since we also started with a sequence, a triplet, and two pairs, we only need two more sets.\n(Click to continue)"
+      }],
+      ["add_object", "focus", {"width": 1.5, "hand_index": 1}],
+      ["add_object", "focus", {"width": 1, "hand_index": 6.5}],
+      ["add_object", "focus", {"width": 1, "hand_index": 8.5}],
+      ["add_object", "focus", {"width": 1.5, "hand_index": 11}],
+      ["await_click"],
+      ["clear_objects"],
+      ["add_object", "text", {"size": 0.4, "width": 5, "x": 9.125, "y": 7.5,
+        "text": "The wildcard could be used to make another set, either filling the 24 of bamboo, or making a triplet out of one of the pairs.\n(Click to continue)"
+      }],
+      ["add_object", "focus", {"width": 1, "hand_index": 5.5}],
+      ["add_object", "focus", {"width": 1, "hand_index": 6.5}],
+      ["add_object", "focus", {"width": 1, "hand_index": 8.5}],
+      ["await_click"],
+      ["clear_objects"],
+      ["await_event", ["play_tile", "east", 13]],
+      ["sleep", 1000],
+      ["add_object", "text", {"size": 0.4, "width": 5, "x": 9.125, "y": 5.5,
+        "text": "Although the player to our left discarded a 3 of bamboo, it cannot be called to complete our 234, because in Tianjin Mahjong you can only call triplets (Pung) or quads (Kong), not sequences.\nThis kind of makes sense because it is very easy to make sequences by using wildcards, so calling for sequences would make games go too quickly.\n(Click to continue)"
+      }],
+      ["add_object", "focus", {"width": 0.75, "x": 5.625, "y": 6.375}],
+      ["add_object", "focus", {"width": 1, "hand_index": 5.5}],
+      ["await_click"],
+      ["clear_objects"],
+      ["add_object", "text", {"size": 0.4, "width": 5, "x": 9.125, "y": 7.5,
+        "text": "Let's get closer to a winning hand by discarding this 9 of characters."
+      }],
+      ["add_object", "focus", {"width": 0.75, "hand_index": 3}],
+      ["force_event", ["play_tile", "south", 3]],
+      ["clear_objects"],
+      ["await_event", ["play_tile", "west", 13]],
+      ["sleep", 1000],
+      ["add_object", "text", {"size": 0.4, "width": 5, "x": 4.125, "y": 7.5,
+        "text": "You can Kong this tile! As usual, calling kong gives you a replacement tile draw, and then it becomes your turn to discard. In Tianjin it is almost always beneficial to call Kong."
+      }],
+      ["add_object", "focus", {"width": 1, "x": 11.375, "y": 10.25}],
+      ["add_object", "focus", {"width": 1.5, "hand_index": 11}],
+      ["add_object", "focus", {"width": 1.25, "x": 9.75, "y": "buttons"}],
+      ["force_event", ["press_button", "south", "daiminkan"]],
+      ["clear_objects"],
+      ["sleep", 1000],
+      ["add_object", "text", {"size": 0.4, "width": 5, "x": 4.125, "y": 7.5,
+        "text": "This is because calling Kong in Tianjin gives an immediate payout of 1 point.\nIn this case, it's 1 point from the discarder, but if you were to Kong with tiles in your own hand, it's 1 point from all for adding to an existing Pung, and if you declare a concealed Kong with 4 tiles in hand, it's 2 points from all.\n(Click to continue)"
+      }],
+      ["await_click"],
+      ["clear_objects"],
+      ["add_object", "text", {"size": 0.4, "width": 5, "x": 4.125, "y": 7.5,
+        "text": "Our Kong replacement tile is a 6 of characters. Since we have a wildcard in hand, we can either discard it and wait on 1, 2, 3, 4, or 5 bamboo, or we could discard 2 bamboo to wait on any character tile except 9.\n(Click to continue)"
+      }],
+      ["await_click"],
+      ["clear_objects"],
+      ["add_object", "text", {"size": 0.4, "width": 5, "x": 4.125, "y": 7.5,
+        "text": "Try discarding the 2 of bamboo.\n(Click to continue)"
+      }],
+      ["add_object", "focus", {"width": 0.75, "hand_index": 4}],
+      ["force_event", ["play_tile", "south", 4]],
+      ["clear_objects"],
+      ["await_event", ["play_tile", "east", 13]],
+      ["sleep", 1000],
+      ["add_object", "text", {"size": 0.4, "width": 5, "x": 9.125, "y": 7.5,
+        "text": "Note that the dealer just discarded a 3 of characters, which would have completed our hand!\nHowever, in Tianjin Mahjong, you may only win by drawing the tile yourself, so we cannot call that tile to win.\n(Click to continue)"
+      }],
+      ["add_object", "focus", {"width": 0.75, "x": 5.625, "y": 7.125}],
+      ["await_click"],
+      ["clear_objects"],
+      ["add_object", "text", {"size": 0.4, "width": 5, "x": 4.125, "y": 7.5,
+        "text": "Press Skip to decline calling a Pung using your wildcard, since that just makes our hand worse."
+      }],
+      ["add_object", "focus", {"width": 1.5, "x": 14.125, "y": "buttons"}],
+      ["force_event", ["press_button", "south", "skip"]],
+      ["clear_objects"],
+      ["sleep", 1000],
+      ["add_object", "text", {"size": 0.4, "width": 5, "x": 4.125, "y": 7.5,
+        "text": "Instead, we have drawn the winning tile ourselves! Declare Zimo to win!"
+      }],
+      ["add_object", "focus", {"width": 0.75, "hand_index": 10.5}],
+      ["add_object", "focus", {"width": 1.5, "x": 12, "y": "buttons"}],
+      ["force_event", ["press_button", "south", "tsumo"]],
+      ["clear_objects"],
+      ["sleep", 2000],
+      ["add_object", "text", {"size": 0.4, "width": 5, "x": 4.125, "y": 7.5,
+        "text": "We scored one pattern, Capturing the Five, which essentially means completing a 456 of characters by drawing the 5 of characters (which could also be a wildcard).\n(Click to continue)"
+      }],
+      ["await_click"],
+      ["clear_objects"],
+      ["add_object", "text", {"size": 0.4, "width": 5, "x": 4.125, "y": 7.5,
+        "text": "A pattern is required to win; you cannot win without a pattern. You can browse these patterns in-game by clicking the tabs on the left.\n(Click to continue)"
+      }],
+      ["await_click"],
+      ["clear_objects"],
+      ["add_object", "text", {"size": 0.4, "width": 5, "x": 4.125, "y": 7.5,
+        "text": "That's pretty much it for the basics, press Back on the upper right to return to the list of tutorials!\n(Click to continue)"
+      }],
+      ["await_click"],
+      ["clear_objects"]
+    ]
+  }
+}

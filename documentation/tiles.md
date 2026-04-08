@@ -1,6 +1,6 @@
 # Tile reference
 
-This document is a reference for all of the tiles currently supported in the tileset. See [`guide_to_tiles.md`](guide_to_tiles.md) for how these tiles (particularly the jokers) are used in various rulesets.
+This document is a reference for all of the tiles currently supported in the tileset. See [`guide_to_tiles.md`](guide_to_tiles.md) for how these tiles (particularly the jokers) are used in various rulesets. These tiles are based off of @FluffyStuff's [riichi-mahjong-tiles](https://github.com/FluffyStuff/riichi-mahjong-tiles). The various jokers use the [Hanyi Senty Tang](https://sentyfont.com/sentytang.htm) font.
 
 ## Standard tiles
 
@@ -57,7 +57,7 @@ This document is a reference for all of the tiles currently supported in the til
 - `11p`, `12p`, `13p`, `14p`, `15p`, `16p`, `17p`, `18p`, `19p`, `110p`
 - `11s`, `12s`, `13s`, `14s`, `15s`, `16s`, `17s`, `18s`, `19s`, `110s`
 - `11t`, `12t`, `13t`, `14t`, `15t`, `16t`, `17t`, `18t`, `19t`, `110t`
-- (n/a), `11z`, `12z`, `13z`, `14z`, `15z`, `16z`, `17z`, `18z`, `100s`
+- `10z`, `11z`, `12z`, `13z`, `14z`, `15z`, `16z`, `17z`, `18z`, `100s`
 
 ## Aka/Ao/Kin/Transparent
 
@@ -67,19 +67,24 @@ This document is a reference for all of the tiles currently supported in the til
 - `01p`, `02p`, `03p`, `04p`, `05m`, `06p`, `07p`, `08p`, `09p`, `010p`
 - `01s`, `02s`, `03s`, `04s`, `05m`, `06s`, `07s`, `08s`, `09s`, `010s`
 - `01t`, `02t`, `03t`, `04t`, `05t`, `06t`, `07t`, `08t`, `09t`, `010t`
-- `01z`, `02z`, `03z`, `04z`, `05z`, `06z`, `07z`, `00z`, `08z`, `000s`
+- `00z`, `01z`, `02z`, `03z`, `04z`, `05z`, `06z`, `07z`, `08z`, `000s`
 - `21m`, `22m`, `23m`, `24m`, `25m`, `26m`, `27m`, `28m`, `29m`, `210m`
 - `21p`, `22p`, `23p`, `24p`, `25p`, `26p`, `27p`, `28p`, `29p`, `210p`
 - `21s`, `22s`, `23s`, `24s`, `25s`, `26s`, `27s`, `28s`, `29s`, `210s`
 - `21t`, `22t`, `23t`, `24t`, `25t`, `26t`, `27t`, `28t`, `29t`, `210t`
-- `21z`, `22z`, `23z`, `24z`, `25z`, `26z`, `27z`, `20z`, `28z`, `200s`
+- `20z`, `21z`, `22z`, `23z`, `24z`, `25z`, `26z`, `27z`, `28z`, `200s`
 - `31m`, `32m`, `33m`, `34m`, `35m`, `36m`, `37m`, `38m`, `39m`, `310m`
 - `31p`, `32p`, `33p`, `34p`, `35p`, `36p`, `37p`, `38p`, `39p`, `310p`
 - `31s`, `32s`, `33s`, `34s`, `35s`, `36s`, `37s`, `38s`, `39s`, `310s`
 - `31t`, `32t`, `33t`, `34t`, `35t`, `36t`, `37t`, `38t`, `39t`, `310t`
-- `31z`, `32z`, `33z`, `34z`, `35z`, `36z`, `37z`, `30z`, `38z`, `300s`
+- `30z`, `31z`, `32z`, `33z`, `34z`, `35z`, `36z`, `37z`, `38z`, `300s`
 - `41m`, `42m`, `43m`, `44m`, `45m`, `46m`, `47m`, `48m`, `49m`, `410m`
 - `41p`, `42p`, `43p`, `44p`, `45p`, `46p`, `47p`, `48p`, `49p`, `410p`
 - `41s`, `42s`, `43s`, `44s`, `45s`, `46s`, `47s`, `48s`, `49s`, `410s`
 - `41t`, `42t`, `43t`, `44t`, `45t`, `46t`, `47t`, `48t`, `49t`, `410t`
-- `41z`, `42z`, `43z`, `44z`, `45z`, `46z`, `47z`, `40z`, `48z`, `400s`
+- `40z`, `41z`, `42z`, `43z`, `44z`, `45z`, `46z`, `47z`, `48z`, `400s`
+- `51m`, `52m`, `53m`, `54m`, `55m`, `56m`, `57m`, `58m`, `59m`, `510m`
+- `51p`, `52p`, `53p`, `54p`, `55p`, `56p`, `57p`, `58p`, `59p`, `510p`
+- `51s`, `52s`, `53s`, `54s`, `55s`, `56s`, `57s`, `58s`, `59s`, `510s`
+- `51t`, `52t`, `53t`, `54t`, `55t`, `56t`, `57t`, `58t`, `59t`, `510t`
+- `50z`, `51z`, `52z`, `53z`, `54z`, `55z`, `56z`, `57z`, `58z`, `500s`

@@ -2,6 +2,7 @@ on after_initialization do
   add_rule("Rules", "Space Mahjong", "Sequences can wrap (891, 912). Winds and dragons can make sequences. You can chii from any direction.")
   add_rule("Rules", "Win Condition", "- (Space Mahjong) Seven Pairs is no longer a winning hand.", -100)
   add_rule("3 Han", "Open Kokushi Musou", "(Space Mahjong) Open kokushi musou is worth 3 han.")
+  update_rule("3 Han", "Open Kokushi Musou", "%{example_hand}", %{example_hand: ~t"19m99p19s2z 1z3Z4z 5Z67z 1p"})
 end
 
 define_yaku yaku, "Open Kokushi Musou", 3, match(["hand", "call_tiles", "winning_tile"], ~m"orphans_all:1")

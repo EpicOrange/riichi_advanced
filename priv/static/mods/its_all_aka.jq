@@ -9,7 +9,7 @@ def make_aka:
   elif . == "0t" then "05t"
   else . end;
 
-.after_initialization.actions += [["add_rule", "Rules", "Wall", "(It's All Aka?) Every standard tile is replaced with a red \"aka dora\" version worth 1 extra han each.", -99]]
+.after_initialization.actions += [["add_rule", "Tiles", "Aka", "Every standard tile is replaced with a red \"aka dora\" version worth 1 extra han each.", -99]]
 |
 # it's all aka now
 .wall |= map(make_aka)
@@ -109,3 +109,18 @@ def make_aka:
   "06z": ["7z"],
   "07z": ["5z"]
 }
+|
+.custom_style.tile_indices += {
+  "01t": "1",
+  "02t": "2",
+  "03t": "3",
+  "04t": "4",
+  "05t": "5",
+  "06t": "6",
+  "07t": "7",
+  "08t": "8",
+  "09t": "9",
+  "010t": "10",
+  "0t": "5",
+  "00z": "B"
+  }

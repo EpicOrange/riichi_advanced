@@ -62,10 +62,7 @@ import_config "#{config_env()}.exs"
 config :porcelain, goon_warn_if_missing: false
 config :porcelain, driver: Porcelain.Driver.Basic
 
-config :logger,
-  backends: [:console, {LoggerFileBackend, :error_log}]
-
-config :logger, :error_log,
+config :logger, LoggerFileBackend,
   path: "log/error.log",
   level: :error,
   truncate: :infinity # don't set this in prod

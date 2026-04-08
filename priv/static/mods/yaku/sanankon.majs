@@ -1,7 +1,10 @@
 on after_initialization do
   add_rule("1 Han", "Sanankon", "1 han if your hand has three closed kontsu (mixed triplets). A kontsu (mixed triplet) formed by a self-draw win counts as closed.")
+  update_rule("1 Han", "Sanankon", "%{example_hand}", %{example_hand: ~t"136m136p1368s 5Z67z 8s"})
   add_rule("3 Han", "Suuankon", "3 han if your hand has three closed kontsu (mixed triplets) in hand, and you won by self-drawing the fourth.")
+  update_rule("3 Han", "Suuankon", "%{example_hand}", %{example_hand: ~t"136m136p13688s67z 5z"})
   add_rule("6 Han", "Suuankon Tanki", "6 han if your hand has four closed kontsu (mixed triplets) in hand, and you won by completing your pair.")
+  update_rule("6 Han", "Suuankon Tanki", "%{example_hand}", %{example_hand: ~t"136m136p1368s567z 8s"})
 end
 
 define_match sanankon_tsumo,
@@ -26,9 +29,9 @@ define_match suuankon_ron,
   exhaustive, (chon chon_honors daiminfuun kafuun):-1, (kontsu kontsu_123 kontsu_124 kontsu_134 kontsu_234 kontsu_567):4, (any@winning_tile):0, pair:1
   """
 
-define_yaku yaku, "Sanankon", 2,
+define_yaku yaku, "Sanankon", [2, "Han"],
      (won_by_draw and match(["hand", "calls", "winning_tile"], ["sanankon_tsumo"]))
   or (not_won_by_draw and match(["hand", "calls", "winning_tile"], ["sanankon_ron"]))
 
-define_yaku yaku, "Suuankon", 3, won_by_draw and match(["hand", "calls", "winning_tile"], ["suuankon_tsumo"])
-define_yaku yaku, "Suuankon Tanki", 6, not_won_by_draw and match(["hand", "calls", "winning_tile"], ["suuankon_ron"])
+define_yaku yaku, "Suuankon", [3, "Han"], won_by_draw and match(["hand", "calls", "winning_tile"], ["suuankon_tsumo"])
+define_yaku yaku, "Suuankon Tanki", [6, "Han"], not_won_by_draw and match(["hand", "calls", "winning_tile"], ["suuankon_ron"])

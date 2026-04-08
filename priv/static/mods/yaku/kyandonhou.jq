@@ -1,11 +1,14 @@
-.after_initialization.actions += [["add_rule", "2 Han", "Kyandonhou", "\"Twice Mixed Double Sequence\". Your hand has two mixed double sequences, like 11678m345678p345s. A mixed double sequence is two sequences of the same number but in different suits, like 345m 345p.", 102]]
+.after_initialization.actions += [
+  ["add_rule", "2 Han", "Kyandonhou", "\"Twice Mixed Double Sequence\". Your hand has two mixed double sequences, like 11678m345678p345s. A mixed double sequence is two sequences of the same number but in different suits, like 345m 345p.", 102],
+  ["update_rule", "2 Han", "Kyandonhou", "%{example_hand}", {"example_hand": ["1m", "1m", "6m", "7m", "8m", "3p", "4p", "5p", "6p", "7p", "8p", "3s", "4s", "3x", "5s"]}]
+]
 |
 (if .buttons | has("ton") then ["ton", "chii", "chon", "chon_honors", "daiminfuun", "pon", "daiminkan", "kapon", "kakakan", "kafuun", "kakan"] else ["chii", "pon", "daiminkan", "kakan"] end) as $open_calls
 |
 .yaku += [
   {
     "display_name": "Kyandonhou",
-    "value": 2,
+    "value": [2, "Han"],
     "when": [
       {"name": "has_no_call_named", "opts": $open_calls},
       {"name": "match", "opts": [["hand", "calls", "winning_tile"], [[ "exhaustive", [[[[0,1,2],[10,11,12]]], 2], [["pair"], 1] ]]]}

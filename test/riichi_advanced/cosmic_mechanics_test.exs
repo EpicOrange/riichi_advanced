@@ -1,4 +1,4 @@
-defmodule RiichiAdvanced.CosmicMechanics do
+defmodule RiichiAdvanced.CosmicMechanicsTest do
   use ExUnit.Case, async: true
   alias RiichiAdvanced.TestUtils, as: TestUtils
 
@@ -60,7 +60,7 @@ defmodule RiichiAdvanced.CosmicMechanics do
       %{"type" => "buttons_pressed", "buttons" => [%{"button" => "ron"}, nil, nil, nil]}
     ], %{
       east: %{
-        yaku: [{"Chun", 1}],
+        yaku: [{"Chun", [1, "Han"]}],
         yaku2: [],
         minipoints: 40
       }

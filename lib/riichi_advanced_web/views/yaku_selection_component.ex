@@ -1,0 +1,55 @@
+defmodule RiichiAdvancedWeb.YakuSelectionComponent do
+  use RiichiAdvancedWeb, :live_component
+  import RiichiAdvancedWeb.Translations
+
+  def mount(socket) do
+    {:ok, socket}
+  end
+
+  def render(assigns) do
+    ~H"""
+    <div class={["yaku-container", "yaku-#{@ruleset}"]}>
+      <div class="yaku-inner-container">
+        <%= for {list_name, yakus} <- @yaku |> Enum.group_by(& &1.list_name) |> Enum.sort_by(fn {list_name, _yaku} -> Enum.find_index(@yaku_list_names, & &1 == list_name) end) do %>
+          <div class="yaku-list-name" :if={list_name}><%= list_name %></div>
+          <div class="yaku-list-spacer"></div>
+          <%= for %{name: yaku_name, desc: desc, value: value, value_name: value_name, selected: selected, index: index} <- yakus do %>
+            <input id={"#{@ruleset}-#{yaku_name}-#{index}"} name={"#{@ruleset}-#{yaku_name}-#{index}"} type="checkbox" phx-click="toggle_yaku" phx-value-index={index} phx-value-selected={if selected do "true" else "false" end} checked={selected}>
+            <label for={"#{@ruleset}-#{yaku_name}-#{index}"} title={dt(@lang, desc)} data-name={dt(@lang, yaku_name)} tabindex={index} class="yaku-button">
+              <%= dt(@lang, yaku_name) %>
+              (
+              <form phx-change="change_yaku_value" phx-value-index={index}>
+                <input name="yaku-value" type="number" value={print_value(value)} onclick="this.select();" style={"--width: #{print_value(value) |> String.length()};"}>
+              </form>
+              <%= dt(@lang, value_name) %>
+              )
+            </label>
+          <% end %>
+          <div class="yaku-list-spacer"></div>
+        <% end %>
+      </div>
+      <br>
+      <%= if @minipoint_name != nil do %>
+        <span class="yaku-bottom-minipoint-name"><%= dt(@lang, @minipoint_name) %></span>
+        <input phx-blur="change_minipoints_value" name="minipoints-value" type="number" value={@minipoints} onclick="this.select();">
+      <% else %>
+        <input name="minipoints-value" type="hidden" value={@minipoints}>
+      <% end %>
+    </div>
+    """
+  end
+
+  def print_value(value) do
+    cond do
+      is_number(value) -> Integer.to_string(value)
+      is_list(value) ->
+        case Enum.at(value, 0) do
+          v when is_number(v) -> Integer.to_string(v)
+          _ -> "0"
+        end
+      is_binary(value) -> "0"
+      true -> value
+    end
+  end
+
+end

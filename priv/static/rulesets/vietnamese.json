@@ -46,6 +46,26 @@
            "5j", "6j", "7j", "8j",
            "1k", "2k", "3k", "4k",
            "1q", "2q", "3q", "4q"],
+  "custom_style": {
+    "tile_indices": {
+      "0j": "Any",
+      "2j": "Number",
+      "9j": "Flower",
+      "4j": "Dragon",
+      "5j": "Wind",
+      "6j": "Pinzu",
+      "7j": "Souzu",
+      "8j": "Manzu",
+      "1k": "1K",
+      "2k": "2K",
+      "3k": "3K",
+      "4k": "4K",
+      "1q": "1Q",
+      "2q": "2Q",
+      "3q": "3Q",
+      "4q": "1Q"
+    }
+  },
   "set_definitions": {
     "pair": [[0, 0]],
     "shuntsu": [[0, 1, 2]],
@@ -53,7 +73,7 @@
     "quad": [[0, 0, 0, 0]],
     "ryanmen/penchan": [[0, 1]],
     "kanchan": [[0, 2]],
-    "ittsu": [[[0,1,2],[3,4,5],[6,7,8]]],
+    "ittsuu": [[[0,1,2],[3,4,5],[6,7,8]]],
     "ton": [["1z", "1z", "1z"]],
     "nan": [["2z", "2z", "2z"]],
     "shaa": [["3z", "3z", "3z"]],
@@ -392,7 +412,7 @@
       "display_name": "No Flowers, Honors, or Triplets",
       "value": 2,
       "when": [
-        {"name": "match", "opts": [["hand", "calls", "winning_tile"], [[[["shuntsu"], 4], [["pair"], 1]]]]},
+        {"name": "match", "opts": [["hand", "calls", "winning_tile"], [["exhaustive", [["shuntsu"], 4], [["pair"], 1]]]]},
         {"name": "not_match", "opts": [["hand", "calls", "winning_tile"], [[[["1z", "2z", "3z", "4z", "0z", "6z", "7z", "1f", "2f", "3f", "4f", "1g", "2g", "3g", "4g", "1k", "2k", "3k", "4k", "1q", "2q", "3q", "4q", "9j"], 1]]]]}
       ]
     },
@@ -413,7 +433,7 @@
       "when": [
         {"name": "match", "opts": [["hand", "calls", "winning_tile"], [[
           "exhaustive",
-          [["ittsu"], 1],
+          [["ittsuu"], 1],
           [["shuntsu", "koutsu", "chii", "pon", "daiminkan", "ankan", "kakan"], 1],
           [["pair"], 1]
         ]]]}

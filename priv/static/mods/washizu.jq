@@ -1,9 +1,17 @@
 .after_initialization.actions += [
-  ["add_rule", "Rules", "Wall", "(Washizu) Each tile in the wall is transparent and visible to all, except for one copy. Unflipped dora indicators are not visible."],
+  ["add_rule", "Tiles", "Washizu", "Each tile in the wall is transparent and visible to all (e.g. %{transparent_8m}), except for one copy. Unflipped dora indicators are not visible.", {"transparent_8m": [{"attrs": ["_transparent"], "tile": "8s"}]}],
   ["add_rule", "Rules", "Washizu", "Points are replaced with blood. So 1000 points are now 100 ccs of blood."]
 ]
 |
-.wall |= (to_entries | map(if (.key % 4 != 0) then .value = [.value, "_revealed", "_transparent"] else . end) | map(.value))
+if $transparents == 1 then
+  .wall |= (to_entries | map(if (.key % 4 == 1) then .value = [.value, "_revealed", "_transparent"] else . end) | map(.value))
+elif $transparents == 2 then
+  .wall |= (to_entries | map(if (.key % 2 != 0) then .value = [.value, "_revealed", "_transparent"] else . end) | map(.value))
+elif $transparents == 3 then
+  .wall |= (to_entries | map(if (.key % 4 != 0) then .value = [.value, "_revealed", "_transparent"] else . end) | map(.value))
+elif $transparents == 4 then
+  .wall |= (to_entries | map(.value = [.value, "_revealed", "_transparent"]) | map(.value))
+end
 |
 # divide all scores by 10 (1000 pts -> 100 ccs)
 .score_calculation += {

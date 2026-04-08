@@ -4,4 +4,4 @@ end
 
 define_const closed_hand, has_no_call_named("chii", "pon", "daiminkan", "kakan")
 
-define_yaku !list, !name, !value, won_by_draw and @closed_hand
+define_yaku !list, !name, [!value, !han], won_by_draw and @closed_hand

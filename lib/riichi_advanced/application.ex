@@ -7,6 +7,7 @@ defmodule RiichiAdvanced.Application do
 
   @impl true
   def start(_type, _args) do
+    LoggerBackends.add(LoggerFileBackend)
     children = [
       RiichiAdvancedWeb.Telemetry,
       # RiichiAdvanced.Repo,

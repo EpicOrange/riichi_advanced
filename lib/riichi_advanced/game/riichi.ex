@@ -27,6 +27,13 @@ defmodule RiichiAdvanced.Riichi do
                :"31s", :"32s", :"33s", :"34s", :"35s", :"36s", :"37s", :"38s", :"39s", :"310s", :"300s",
                :"41s", :"42s", :"44s", :"44s", :"45s", :"46s", :"47s", :"48s", :"49s", :"410s", :"400s",
                :"1's", :"01's", :"11's", :"21's", :"31's", :"41's"]
+  @star       [:"1t", :"2t", :"3t", :"4t", :"5t", :"6t", :"7t", :"8t", :"9t", :"10t", :"0t", :"00t",
+               :"01t", :"02t", :"03t", :"04t", :"05t", :"06t", :"07t", :"08t", :"09t", :"010t", :"000t",
+               :"11t", :"12t", :"13t", :"14t", :"15t", :"16t", :"17t", :"18t", :"19t", :"110t", :"100t",
+               :"21t", :"22t", :"23t", :"24t", :"25t", :"26t", :"27t", :"28t", :"29t", :"210t", :"200t",
+               :"31t", :"32t", :"33t", :"34t", :"35t", :"36t", :"37t", :"38t", :"39t", :"310t", :"300t",
+               :"41t", :"42t", :"44t", :"44t", :"45t", :"46t", :"47t", :"48t", :"49t", :"410t", :"400t",
+               :"1't", :"01't", :"11't", :"21't", :"31't", :"41't"]
   @jihai      [:"1z", :"2z", :"3z", :"4z", :"5z", :"6z", :"7z", :"8z", :"0z",
                :"01z", :"02z", :"03z", :"04z", :"05z", :"06z", :"07z", :"08z", :"00z",
                :"11z", :"12z", :"13z", :"14z", :"15z", :"16z", :"17z", :"18z",
@@ -52,9 +59,11 @@ defmodule RiichiAdvanced.Riichi do
   @terminal   [:"1m", :"01m", :"11m", :"21m", :"31m", :"41m",
                :"1p", :"01p", :"11p", :"21p", :"31p", :"41p",
                :"1s", :"01s", :"11s", :"21s", :"31s", :"41s",
+               :"1t", :"01t", :"11t", :"21t", :"31t", :"41t",
                :"9m", :"09m", :"19m", :"29m", :"39m", :"49m",
                :"9p", :"09p", :"19p", :"29p", :"39p", :"49p",
                :"9s", :"09s", :"19s", :"29s", :"39s", :"49s",
+               :"9t", :"09t", :"19t", :"29t", :"39t", :"49t",
                :"10m", :"010m", :"110m", :"210m", :"310m", :"410m",
                :"10p", :"010p", :"110p", :"210p", :"310p", :"410p",
                :"10s", :"010s", :"110s", :"210s", :"310s", :"410s",
@@ -66,13 +75,15 @@ defmodule RiichiAdvanced.Riichi do
                :"01m", :"02m", :"03m", :"04m", :"05m", :"25m", :"35m", :"06m", :"07m", :"08m", :"09m", :"010m",
                :"01p", :"02p", :"03p", :"04p", :"05p", :"25p", :"35p", :"06p", :"07p", :"08p", :"09p", :"010p",
                :"01s", :"02s", :"03s", :"04s", :"05s", :"25s", :"35s", :"06s", :"07s", :"08s", :"09s", :"010s",
+               :"01t", :"02t", :"03t", :"04t", :"05t", :"25t", :"35t", :"06t", :"07t", :"08t", :"09t", :"010t",
                :"01's", :"05's", :"05`s"]
 
   def is_manzu?(tile), do: Enum.any?(@manzu, &Utils.same_tile(tile, &1))
   def is_pinzu?(tile), do: Enum.any?(@pinzu, &Utils.same_tile(tile, &1))
   def is_souzu?(tile), do: Enum.any?(@souzu, &Utils.same_tile(tile, &1))
+  def is_star?(tile), do: Enum.any?(@star, &Utils.same_tile(tile, &1))
   def is_jihai?(tile), do: Enum.any?(@jihai, &Utils.same_tile(tile, &1))
-  def is_suited?(tile), do: is_manzu?(tile) or is_pinzu?(tile) or is_souzu?(tile)
+  def is_suited?(tile), do: is_manzu?(tile) or is_pinzu?(tile) or is_souzu?(tile) or is_star?(tile)
   def is_wind?(tile), do: Enum.any?(@wind, &Utils.same_tile(tile, &1))
   def is_dragon?(tile), do: Enum.any?(@dragon, &Utils.same_tile(tile, &1))
   def is_terminal?(tile), do: Enum.any?(@terminal, &Utils.same_tile(tile, &1))
@@ -82,16 +93,16 @@ defmodule RiichiAdvanced.Riichi do
   def is_joker?(tile), do: Enum.any?(@joker, &Utils.same_tile(tile, &1))
   def is_aka?(tile), do: Enum.any?(@aka, &Utils.same_tile(tile, &1))
 
-  @one [:"1m", :"1p", :"1s", :"01m", :"01p", :"01s", :"11m", :"11p", :"11s", :"21m", :"21p", :"21s", :"31m", :"31p", :"31s", :"41m", :"41p", :"41s"]
-  @two [:"2m", :"2p", :"2s", :"02m", :"02p", :"02s", :"12m", :"12p", :"12s", :"22m", :"22p", :"22s", :"32m", :"32p", :"32s", :"42m", :"42p", :"42s"]
-  @three [:"3m", :"3p", :"3s", :"03m", :"03p", :"03s", :"13m", :"13p", :"13s", :"23m", :"23p", :"23s", :"33m", :"33p", :"33s", :"43m", :"43p", :"43s"]
-  @four [:"4m", :"4p", :"4s", :"04m", :"04p", :"04s", :"14m", :"14p", :"14s", :"24m", :"24p", :"24s", :"34m", :"34p", :"34s", :"44m", :"44p", :"44s"]
-  @five [:"0m", :"0p", :"0s", :"5m", :"5p", :"5s", :"05m", :"05p", :"05s", :"15m", :"15p", :"15s", :"25m", :"25p", :"25s", :"35m", :"35p", :"35s", :"45m", :"45p", :"45s"]
-  @six [:"6m", :"6p", :"6s", :"06m", :"06p", :"06s", :"16m", :"16p", :"16s", :"26m", :"26p", :"26s", :"36m", :"36p", :"36s", :"46m", :"46p", :"46s"]
-  @seven [:"7m", :"7p", :"7s", :"07m", :"07p", :"07s", :"17m", :"17p", :"17s", :"27m", :"27p", :"27s", :"37m", :"37p", :"37s", :"47m", :"47p", :"47s"]
-  @eight [:"8m", :"8p", :"8s", :"08m", :"08p", :"08s", :"18m", :"18p", :"18s", :"28m", :"28p", :"28s", :"38m", :"38p", :"38s", :"48m", :"48p", :"48s"]
-  @nine [:"9m", :"9p", :"9s", :"09m", :"09p", :"09s", :"19m", :"19p", :"19s", :"29m", :"29p", :"29s", :"39m", :"39p", :"39s", :"49m", :"49p", :"49s"]
-  @ten [:"10m", :"10p", :"10s", :"010m", :"010p", :"010s", :"110m", :"110p", :"110s", :"210m", :"210p", :"210s", :"310m", :"310p", :"310s", :"410m", :"410p", :"410s"]
+  @one [:"1m", :"1p", :"1s", :"1t", :"01m", :"01p", :"01s", :"01t", :"11m", :"11p", :"11s", :"11t", :"21m", :"21p", :"21s", :"21t", :"31m", :"31p", :"31s", :"31t", :"41m", :"41p", :"41s", :"41t"]
+  @two [:"2m", :"2p", :"2s", :"2t", :"02m", :"02p", :"02s", :"02t", :"12m", :"12p", :"12s", :"12t", :"22m", :"22p", :"22s", :"22t", :"32m", :"32p", :"32s", :"32t", :"42m", :"42p", :"42s", :"42t"]
+  @three [:"3m", :"3p", :"3s", :"3t", :"03m", :"03p", :"03s", :"03t", :"13m", :"13p", :"13s", :"13t", :"23m", :"23p", :"23s", :"23t", :"33m", :"33p", :"33s", :"33t", :"43m", :"43p", :"43s", :"43t"]
+  @four [:"4m", :"4p", :"4s", :"4t", :"04m", :"04p", :"04s", :"04t", :"14m", :"14p", :"14s", :"14t", :"24m", :"24p", :"24s", :"24t", :"34m", :"34p", :"34s", :"34t", :"44m", :"44p", :"44s", :"44t"]
+  @five [:"0m", :"0p", :"0s", :"0t", :"5m", :"5p", :"5s", :"5t", :"05m", :"05p", :"05s", :"05t", :"15m", :"15p", :"15s", :"15t", :"25m", :"25p", :"25s", :"25t", :"35m", :"35p", :"35s", :"35t", :"45m", :"45p", :"45s", :"45t"]
+  @six [:"6m", :"6p", :"6s", :"6t", :"06m", :"06p", :"06s", :"06t", :"16m", :"16p", :"16s", :"16t", :"26m", :"26p", :"26s", :"26t", :"36m", :"36p", :"36s", :"36t", :"46m", :"46p", :"46s", :"46t"]
+  @seven [:"7m", :"7p", :"7s", :"7t", :"07m", :"07p", :"07s", :"07t", :"17m", :"17p", :"17s", :"17t", :"27m", :"27p", :"27s", :"27t", :"37m", :"37p", :"37s", :"37t", :"47m", :"47p", :"47s", :"47t"]
+  @eight [:"8m", :"8p", :"8s", :"8t", :"08m", :"08p", :"08s", :"08t", :"18m", :"18p", :"18s", :"18t", :"28m", :"28p", :"28s", :"28t", :"38m", :"38p", :"38s", :"38t", :"48m", :"48p", :"48s", :"48t"]
+  @nine [:"9m", :"9p", :"9s", :"9t", :"09m", :"09p", :"09s", :"09t", :"19m", :"19p", :"19s", :"19t", :"29m", :"29p", :"29s", :"29t", :"39m", :"39p", :"39s", :"39t", :"49m", :"49p", :"49s", :"49t"]
+  @ten [:"10m", :"10p", :"10s", :"10t", :"010m", :"010p", :"010s", :"010t", :"110m", :"110p", :"110s", :"110t", :"210m", :"210p", :"210s", :"210t", :"310m", :"310p", :"310s", :"310t", :"410m", :"410p", :"410s", :"410t"]
   def is_num?(tile, num) do
     Enum.any?(case num do
       1 -> @one
@@ -126,7 +137,7 @@ defmodule RiichiAdvanced.Riichi do
   @south [:"2z", :"02z", :"12z", :"22z", :"32z", :"42z"]
   @west [:"3z", :"03z", :"13z", :"23z", :"33z", :"43z"]
   @north [:"4z", :"04z", :"14z", :"24z", :"34z", :"44z"]
-  @white [:"5z", :"05z", :"15z", :"25z", :"35z", :"45z", :"9z", :"5'z", :"05'z", :"25'z", :"35'z", :"45'z", :"5`z", :"05`z", :"15`z", :"25`z", :"35`z", :"45`z"]
+  @white [:"5z", :"05z", :"15z", :"25z", :"35z", :"45z", :"0z", :"8z", :"9z", :"5'z", :"05'z", :"25'z", :"35'z", :"45'z", :"5`z", :"05`z", :"15`z", :"25`z", :"35`z", :"45`z"]
   @green [:"6z", :"06z", :"16z", :"26z", :"36z", :"46z"]
   @red [:"7z", :"07z", :"17z", :"27z", :"37z", :"47z"]
   def to_letter(tile) do
@@ -148,6 +159,7 @@ defmodule RiichiAdvanced.Riichi do
       is_manzu?(tile) -> is_manzu?(tile2)
       is_pinzu?(tile) -> is_pinzu?(tile2)
       is_souzu?(tile) -> is_souzu?(tile2)
+      is_star?(tile)  -> is_star?(tile2)
       is_jihai?(tile) -> is_jihai?(tile2)
       true            -> false
     end
@@ -163,6 +175,7 @@ defmodule RiichiAdvanced.Riichi do
       is_num?(tile, 7) -> is_num?(tile2, 7) 
       is_num?(tile, 8) -> is_num?(tile2, 8) 
       is_num?(tile, 9) -> is_num?(tile2, 9) 
+      is_num?(tile, 10) -> is_num?(tile2, 10) 
       true            -> false
     end
   end
@@ -177,7 +190,7 @@ defmodule RiichiAdvanced.Riichi do
     # IO.puts("#{inspect(calls_spec)} / #{inspect(hand)} / #{inspect(called_tiles)}")
     from_hand = Enum.empty?(called_tiles)
     {calls_spec, tile_behavior} = if Enum.at(calls_spec, 0) == "nojoker" do
-      {Enum.drop(calls_spec, 1), %TileBehavior{ tile_behavior | aliases: %{} }}
+      {Enum.drop(calls_spec, 1), %{ tile_behavior | aliases: %{} }}
     else {calls_spec, tile_behavior} end
     ret = for tile <- (if from_hand do hand else called_tiles end) do
       {tile, Enum.flat_map(calls_spec, fn call_spec ->
@@ -322,6 +335,7 @@ defmodule RiichiAdvanced.Riichi do
         "manzu" -> is_manzu?(context.tile)
         "pinzu" -> is_pinzu?(context.tile)
         "souzu" -> is_souzu?(context.tile)
+        "star" -> is_star?(context.tile)
         "jihai" -> is_jihai?(context.tile)
         "dragon" -> is_dragon?(context.tile)
         "wind" -> is_wind?(context.tile)
@@ -339,6 +353,7 @@ defmodule RiichiAdvanced.Riichi do
         "7" -> is_num?(context.tile, 7)
         "8" -> is_num?(context.tile, 8)
         "9" -> is_num?(context.tile, 9)
+        "10" -> is_num?(context.tile, 10)
         "tedashi" -> not Utils.has_attr?(context.tile, ["_draw"])
         "tsumogiri" -> Utils.has_attr?(context.tile, ["_draw"])
         "dora" -> Utils.has_matching_tile?([context.tile], context.doras)
@@ -509,6 +524,9 @@ defmodule RiichiAdvanced.Riichi do
   def get_east_player_seat(kyoku, available_seats) do
     Enum.at(available_seats, rem(kyoku, length(available_seats)))
   end
+  def is_dealer?(seat, kyoku, available_seats) do
+    get_east_player_seat(kyoku, available_seats) == seat
+  end
 
   def get_seat_scoring_offset(kyoku, seat, available_seats) do
     case get_seat_wind(kyoku, seat, available_seats) do
@@ -595,6 +613,7 @@ defmodule RiichiAdvanced.Riichi do
 
   def genbutsu_to_suji(genbutsu, tile_behavior) do
     Enum.flat_map(genbutsu, &cond do
+      # TODO: modify this to take Ten tiles into account when Ten tiles exist
       Enum.any?([1,2,3], fn k -> is_num?(&1, k) end) -> if Match.offset_tile(&1, 6, tile_behavior) in genbutsu do [Match.offset_tile(&1, 3, tile_behavior)] else [] end
       Enum.any?([4,5,6], fn k -> is_num?(&1, k) end) -> [Match.offset_tile(&1, -3, tile_behavior), Match.offset_tile(&1, 3, tile_behavior)]
       Enum.any?([7,8,9], fn k -> is_num?(&1, k) end) -> if Match.offset_tile(&1, -6, tile_behavior) in genbutsu do [Match.offset_tile(&1, -3, tile_behavior)] else [] end
@@ -602,7 +621,7 @@ defmodule RiichiAdvanced.Riichi do
     end)
   end
 
-  def prepend_group(hand, calls, winning_tiles, group, win_definitions, tile_behavior) do
+  def prepend_group(hand, calls, group, win_definitions, tile_behavior) do
     # return hand, but reordered so that all `group` are at the front (after existing prepended groups)
     # if no `group`s exist, return hand unchanged
     # hand is expected to be tenpai for N sets and a pair
@@ -620,51 +639,45 @@ defmodule RiichiAdvanced.Riichi do
     # add "dismantle_calls" in case `group` contains multiple sets
     win_definitions = Enum.map(win_definitions, &["dismantle_calls" | &1])
 
-    Enum.flat_map(winning_tiles, fn winning_tile ->
-      hand_groups = Match.extract_groups([winning_tile | hand], group, tile_behavior)
+    hand_groups = Match.extract_groups(hand, group, tile_behavior)
 
-      # `hand_groups` is sorted starting with greatest number of groups
-      # if we have {hand, [group1, group2, group3]} and it matches,
-      # then {hand ++ group1, [group2, group3]} also obviously matches
-      # use this to reduce the number of calls to `match_hand`
+    # `hand_groups` is sorted starting with greatest number of groups
+    # if we have {hand, [group1, group2, group3]} and it matches,
+    # then {hand ++ group1, [group2, group3]} also obviously matches
+    # use this to reduce the number of calls to `match_hand`
 
-      # also, we want to remove a maximal number of groups that matches
-      # so if we ever find a matching solution with e.g. 3 groups,
-      # drop all `hand_groups` with less than 3 groups
+    # also, we want to remove a maximal number of groups that matches
+    # so if we ever find a matching solution with e.g. 3 groups,
+    # drop all `hand_groups` with less than 3 groups
 
-      {hand_groups, _cache, _max_groups} = for {hand, groups} <- hand_groups, reduce: {[], [], 0} do
-        # {return value, groups that match, the largest number of groups in cache}
-        {acc, cache, max_groups} ->
-          groups_set = MapSet.new(groups)
-          num_groups = MapSet.size(groups_set)
-          cond do
-            # ignore if num of groups is less than highest seen so far
-            num_groups < max_groups -> {acc, cache, max_groups}
-            # check cache to see if a larger set of groups matched; if so, this obviously matches
-            Enum.any?(cache, &MapSet.subset?(groups_set, &1)) -> {[{hand, groups} | acc], cache, max_groups}
-            # otherwise call the match function to see if these groups match
-            Match.match_hand(hand, calls ++ Enum.map(groups, &{"", &1}), win_definitions, tile_behavior) ->
-              {[{hand, groups} | acc], [groups_set | cache], max(num_groups, max_groups)}
-            true -> {acc, cache, max_groups}
-          end
-      end
-      Enum.map(hand_groups, fn {hand, groups} -> {winning_tile, hand, groups} end)
-    end)
-    |> Enum.map(fn {winning_tile, hand, groups} ->
-      groups = groups
+    {hand_groups, _cache, _max_groups} = for {hand, groups} <- hand_groups, reduce: {[], [], 0} do
+      # {return value, groups that match, the largest number of groups in cache}
+      {acc, cache, max_groups} ->
+        groups_set = MapSet.new(groups)
+        num_groups = MapSet.size(groups_set)
+        cond do
+          # ignore if num of groups is less than highest seen so far
+          num_groups < max_groups -> {acc, cache, max_groups}
+          # check cache to see if a larger set of groups matched; if so, this obviously matches
+          Enum.any?(cache, &MapSet.subset?(groups_set, &1)) -> {[{hand, groups} | acc], cache, max_groups}
+          # otherwise call the match function to see if these groups match
+          Match.match_hand(hand, calls ++ Enum.map(groups, &{"", &1}), win_definitions, tile_behavior) ->
+            {[{hand, groups} | acc], [groups_set | cache], max(num_groups, max_groups)}
+          true -> {acc, cache, max_groups}
+        end
+    end
+    hand_groups
+    |> Enum.map(fn {hand, groups} ->
+      new_groups = groups
       |> Enum.sort_by(fn [t | _] -> Constants.sort_value(t) end)
       |> Enum.map(& &1 ++ [:separator]) # add a spacing marker after each group
       |> Enum.concat()
-      # delete last instance of winning tile
-      prearranged ++ groups ++ hand
-      |> Enum.reverse()
-      |> List.delete(winning_tile)
-      |> Enum.reverse()
+      prearranged ++ new_groups ++ hand
     end)
-    |> then(& &1 ++ [prearranged ++ hand]) # append original handm
+    |> then(& &1 ++ [prearranged ++ hand]) # append original hand
   end
-  def prepend_group_all(hands, calls, winning_tiles, group, win_definitions, tile_behavior) do
-    hands = Enum.flat_map(hands, &prepend_group(&1, calls, winning_tiles, group, win_definitions, tile_behavior))
+  def prepend_group_all(hands, calls, group, win_definitions, tile_behavior) do
+    hands = Enum.flat_map(hands, &prepend_group(&1, calls, group, win_definitions, tile_behavior))
     if Enum.empty?(hands) do [] else
       num_ungrouped_tiles = Enum.map(hands, &Utils.split_on(&1, :separator) |> Enum.at(-1) |> length())
       min_ungrouped_tiles = Enum.min(num_ungrouped_tiles)

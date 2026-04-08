@@ -1,6 +1,6 @@
 # MahjongScript tutorial
 
-Writing a ruleset requires knowing the JSON specification, which involves a lot of balancing brackets and not forgetting commas. MahjongScript was created for the purpose of avoiding these errors. Based on Elixir syntax, MahjongScript (.majs) is essentially a list of commands which compile down to jq. This jq is then applied to the empty object in order to create a JSON ruleset, or it can be applied to an existing JSON ruleset to mod it.
+Originally, writing a ruleset required knowing the JSON specification for rulesets, and involved a lot of balancing brackets and not forgetting commas. Writing mods requires jq on top of that. MahjongScript was created for the purpose of unifying these tasks in some composable manner, while also avoiding these errors. Based on Elixir syntax, MahjongScript (.majs) is essentially a list of commands which compile down to jq. This jq is then applied to the empty object in order to create a JSON ruleset, or it can be applied to an existing JSON ruleset to mod it.
 
 There are four types of data in MahjongScript:
 
@@ -9,7 +9,7 @@ There are four types of data in MahjongScript:
 - [**Actions**](#actions): function calls or `do`-blocks containing actions
 - [**Sigils**](#sigils): set specifications, match specifications
 
-The entirety of a MahjongScript file is a list of commands that use these data in some way. [A list of commands is provided at the bottom](#commands).
+The entirety of a MahjongScript file is a list of top-level commands that use these data in some way. [A list of commands is provided at the bottom](#all-commands).
 
 ## JSON
 
@@ -73,6 +73,16 @@ compiles to `{"name": "counter_at_least", "opts": ["my_score", 100]}`.
 
 Supported comparisons are `==`, `!=`, `<`, `>`, `<=`, `>=`.
 
+### `at_least` and `at_most` conditions
+
+There are special forms `at_least` and `at_most` which can be used like this:
+
+    at_least(2, has_existing_yaku("Riichi"), has_existing_yaku("Tanyao"), has_existing_yaku("Pinfu"))
+
+This is true when at least 2 of the given conditions are true. In general, `at_least(n, cond1, cond2, ...)` is true when at least `n` of the given conditions are true.
+
+There is also `at_most(n, cond1, cond2, ...)` which is similar: it is true when no more than `n` of the given conditions are true, AND at least one of the conditions is true. You can bypass the second check by specifying `true` as one of the conditions, since then one of the conditions is trivially true.
+
 ## Actions
 
 Actions are always seen in `do`-blocks. For example you can define a function with a `do`-block:
@@ -122,10 +132,22 @@ def myfun2 do
     draw(1, "opposite_end")
   end
 
+  # cond-blocks compile down to a string of "ite" actions
+  cond do
+    "x" == 1 -> push_message("case 1, checked first")
+    "x" == 2 -> push_message("case 2, checked second")
+    "x" == 3 ->
+      push_message("case 3")
+      push_message("still case 3")
+    true     -> push_message("fallback case")
+  end
+
   # as-blocks compile to "as" actions
   as everyone do
     push_message("says hi")
   end
+  # you can also use as: (like in conditions)
+  push_message("says hi", as: "everyone")
 
   # this becomes ["set_counter", "counter_name", "score"]
   counter_name = "score"
@@ -381,7 +403,51 @@ apply set, "score_calculation.tobi", !below
 
 For security reasons, variables cannot contain uppercase letters.
 
+## Toplevel `if` (Conditional compilation)
+
+You can also write conditionals at the top-level, for example:
+
+```elixir
+if !min == "Mangan" do
+  ...
+end
+```
+
+This runs the commands inside the if the variable `min` is set to `"Mangan"`. You can also do `if`-`else`-`end` and `unless`-`end`, but not `cond`. The allowable operators within the condition itself are as follows:
+
+- Any variable `!variable`
+- `l == r` or `equals(l, r)`: Check equality
+- `l in r`: Check if `l` is an element of array `r`
+- `not cond`: Logical NOT (negates `cond`)
+- `l and r`: Logical AND (true if `l`,`r` are both true)
+- `l or r`: Logical OR (true if one of `l`,`r` is true)
+- `true`: Always true
+- `false`: Always false
+- `defined("foo")`: See below
+
+## `define` (C `#ifdef`-like functionality)
+
+This is meant to be used when multiple mods define the same things, but you only want it to be defined once. Here's the basic example:
+
+```elixir
+unless defined("pao") do
+  define "pao"
+
+  on before_win do
+    ...
+  end
+  ...
+
+end
+```
+
+Essentially this means that only the first mod that hits this top-level conditional will evaluate the commands inside of it, since `"pao"` will be set thereafter.
+
+These `define`s only work for MahjongScript mods, so if you put `define`s in a `majs` ruleset, they will not transfer to mods. If you want to condition mod evaluation based on stuff in a ruleset, you will probably want to define a variable instead.
+
 # Command Reference
+
+A reference cheatsheet for all of the following commands appears at the [bottom of this page.](#all-commands)
 
 ### `def`: Function definition
 
@@ -592,6 +658,8 @@ define_mod_category "Rules", prepend: true
 
 You can have multiple instances of a category, but this is largely useless since `define_mod` below only adds to the first instance.
 
+See [mods.md](./mods.md) to see how this all works.
+
 ### `define_mod`: Add a new mod
 
 ```elixir
@@ -607,6 +675,8 @@ define_mod id,
 
 Note that if `category` is not specified, the mod is simply appended to the end of the mod list.
 
+See [mods.md](./mods.md) to see how this all works.
+
 ### `config_mod`: Add a new config option to a given mod
 
 ```elixir
@@ -616,12 +686,47 @@ config_mod id,
   default: "Yakuman"
 ```
 
+See [mods.md](./mods.md) to see how this all works.
+
 ### `remove_mod`: Delete mods by id
 
 ```elixir
 remove_mod id
 remove_mod id1, id2, id2
 ```
+
+### `define_play_restriction`: Add a restriction on playing tiles
+
+Here's how it's used for kuikae:
+
+```elixir
+define_play_restriction "any", just_called and last_called_tile_matches("kuikae")
+```
+
+After just declaring riichi, this prevents playing any tile that gets you out of tenpai:
+
+```elixir
+define_play_restriction "any", status("riichi") and status_missing("just_reached") and not_is_drawn_tile
+define_play_restriction "any", status("riichi", "just_reached") and needed_for_hand("tenpai")
+```
+
+This example forbids discarding flowers when you have the status `"cannot_discard_flowers"`:
+
+```elixir
+define_play_restriction "flower", status("cannot_discard_flowers")
+```
+
+### `define_play_effect`: Run actions after a tile is played
+
+`define_play_effect` works similarly to an event handler. It looks like
+
+```
+define_play_effect flower do
+  push_message("played a flower")
+end
+```
+
+The argument `flower` is a tile spec that restricts which kinds of tiles to run on, in this case flower tiles. If you want this to run on every tile, specify `any`. See [the documentation on tile specs](./documentation.md#tile-specs) for all other options.
 
 ### (advanced) `apply`: Modify any path
 
@@ -685,5 +790,96 @@ define_preset "Mahjong Soul", [
   %{name: "uma", config: %{_1st: 10, _2nd: 5, _3rd: -5, _4th: -10}},
   "agarirenchan",
   ...
-}
+]
 ```
+
+# All commands
+
+Here is a cheatsheet for all the commands that exist.
+
+**Defining actions**
+
+- `def fn_name do <actions> end`: Defines a new callable function `fn_name` with actions `<actions>`, or overwrites an existing one. You may then use `fn_name` as an action to call it. Later mods can extend this function via `apply append, "functions.fn_name" do <actions> end`.
+- `on before_win do <actions> end`: Defines a new handler for the event `before_win`. This means `<actions>` will run after all existing event handlers.
+  + `on before_win, prepend: true do <actions> end`: Same, but `<actions>` run _before_ all existing event handlers.
+- `define_play_effect <tile_spec> do <actions> end`: Defines `<actions>` to run immediately after playing a tile matching the tile spec `<tile_spec`>. [List of all tile specs.](./documentation.md#tile-specs)
+
+**Setting variables**
+
+- `set win_timer, 30`: Sets the top-level JSON key `win_timer` to a specific value (`30`).
+- `define_set shuntsu, ~s"0 1 2"`: Defines `shuntsu` to refer to the set `0 1 2`. This allows any match specification to mention `shuntsu`, e.g. `~m"shuntsu:4"`
+- `define_match win, ~m"(shuntsu koutsu):4 pair:1"`: Defines `win` as the match specification given by `<match>`. Note that AI bots will use the match definition named `win` when making decisions.
+- `define_const always_yakuhai, ["5z", "6z", "7z"]`: Define the constant `@always_yakuhai`. At load time, all instances of `@always_yakuhai` will be replaced with `["5z", "6z", "7z"]`, and all instances of `+@always_yakuhai` in an array will insert the elements `"5z", "6z", "7z"` at that spot in the containing array. Later mods can change the final value of a constant via `apply append, "constants.always_yakuhai", "4z"`.
+- `replace all, ".wall", "5z", "0z"`: Replace all instances of `"5z"` with `"0z"` under the given path `"wall"`.
+
+**Yaku**
+
+- `define_yaku_precedence "Honroutou", ["Chanta", "Junchan"]`: Makes it so having the yaku `"Honroutou"` makes you ineligible for `"Chanta"` and `"Junchan"`. You can also supply point values in the array (e.g. `1` to invalidate all 1-point yaku) or a yaku list like `"yaku"` (to invalidate all yaku in the yaku list `yaku`).
+- `define_yaku yaku, "Houtei", [1, "Han"], no_tiles_remaining, ["Haitei"]`: Define a yaku named `"Houtei"` to be inserted into the yaku list named `yaku`. This awards value `[1, "Han"]` if the winning hand fulfills the condition `no_tiles_remaining`. Other allowed values include `1` and `[1, "Han", 1, "⛁"]`. The final argument `["Haitei"]` is optional and defines a list of yaku this yaku supercedes. It is basically shorthand for `define_yaku_precedence "Houtei", ["Haitei"]`. You may `define_yaku` multiple instances of a given yaku name: if more than one yaku of the same name are awarded, their values are added together. On the winning screen, yaku are displayed in the order they are defined.
+- `remove_yaku "yaku", ["Chanta", "Junchan"]`: Remove the yaku `"Chanta"` and `"Junchan"` from the yaku list named `yaku`. You can also supply a single string to remove one yaku.
+- `replace_yaku yaku, "Haitei", [1, "Han"], no_tiles_remaining and won_by_draw, ["Houtei"]`: This replaces every existing instance of the yaku `"Haitei"` in the yaku list `yaku` with a single new definition. The syntax is identical to `define_yaku`.
+
+**Buttons**
+
+- ```elixir
+  define_button chii,
+    display_name: "Chii",
+    show_when: not_our_turn and not_no_tiles_remaining and kamicha_discarded and call_available,
+    precedence_over: ["chii"],
+    call: [[-2, -1], [-1, 1], [1, 2]],
+    call_style: %{
+      kamicha: ["call_sideways", 0, 1],
+      toimen: [0, "call_sideways", 1],
+      shimocha: [0, 1, "call_sideways"]
+    }
+    do
+      big_text("Chii")
+      call
+      change_turn("self")
+    end
+  ```
+  This defines a new button with id `chii` and display name `"Chii"`. The only necessary fields are `display_name` and `show_when` as well as the final `do`-block of actions. See the [relevant documentation](./documentation.md#the-define-button-command) for more information about the other fields.
+
+- ```elixir
+  define_auto_button _1_auto_sort,
+  display_name: "A",
+  desc: "Automatically sort your hand.",
+  enabled_at_start: true
+  do
+    sort_hand
+  end
+  ```
+  This defines a new auto button (bottom left toggles). See the [relevant documentation](./documentation.md#the-define-auto-button-command) for more information.
+
+**Mod management**
+
+- ```elixir
+define_mod shiro_pocchi,
+  name: "Shiro Pocchi",
+  desc: "One of the white dragons is shiro pocchi. Shiro pocchi acts a joker tile when drawn while in riichi."
+  default: false,
+  order: 2,
+  deps: ["yaku/riichi"],
+  conflicts: ["no_honors", "chinitsu"],
+  category: "Other"
+  ```
+  Mods are contained in the directory `priv/static/mods`, and the id you supply (here `shiro_pocchi`) should be one of those. The only required fields are `name` and `desc`. See [mods.md](./mods.md) for more info.
+- `define_mod_category "Other"`: This simply adds a new header to the mods list. If any mods defined thereafter don't define a `category` field, it will default to the last-added category.
+- `config_mod honba, name: "value", values: [100, 500, 1000]`: This adds a dropdown to the `honba` mod when enabled, with name `value` and allowable dropdown options `100`, `500`, and `1000`. The resulting value is accessible in the mod itself (a MahjongScript file) as the variable `!value`.
+- `remove_mod honba`: Removes the `honba` mod from the mod list.
+- ```elixir
+  define_preset "Mahjong Soul", [
+    %{name: "honba", config: %{value: 100}},
+    %{name: "yaku/riichi", config: %{bet: 1000, drawless: false}},
+    ...
+    "first_gets_riichi_sticks"
+  ]
+  ```
+  This defines a set of mods (a modpack) which can be seen in the game settings menu. See the Riichi ruleset for examples. A mod is either just its id, or the structure `%{name: id, config: %{config_value: "value"}}` if the mod has config values.
+
+**Other**
+
+For these two, please see the relevant section.
+
+- `define_play_restriction`: Prevent certain tiles from being played depending on conditions. Example: `define_play_restriction "flower", !unskippable`
+- `apply`: Directly modify the underlying JSON in some way. Example: `apply append, "constants.always_yakuhai", "4z"`

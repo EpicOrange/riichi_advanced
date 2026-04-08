@@ -1,12 +1,13 @@
 .after_initialization.actions += [
-  ["add_rule", "Mangan", "Chiishin Uushii", "\"Seven Stars Disconnected\". Mangan if you have one of every honor tile, plus 7 of 9 tiles in different suji (e.g. 14m25p369s).", 105],
-  ["add_rule", "Rules", "Win Condition", "- (Chiishin Uushii) All seven honor tiles plus 7 of 9 tiles in different suji (e.g. 14m25p369s).", -100]
+  ["add_rule", "Mangan", "Chiishin Uushii", "\"Seven Stars Disconnected\". Mangan if you have one of every honor tile, plus 7 of 9 tiles in three different suits with a different suji per suit.", 105],
+  ["update_rule", "Mangan", "Chiishin Uushii", "%{example_hand}", {"example_hand": ["1m", "4m", "2p", "5p", "3s", "6s", "9s", "1z", "2z", "3z", "4z", "5z", "6z", "3x", "7z"]}],
+  ["add_rule", "Rules", "Win Condition", "- (Chiishin Uushii) All seven honor tiles plus 7 of 9 tiles in in three different suits with a different suji per suit (e.g. 14m25p369s).", -100]
 ]
 |
 .chiishin_uushii += [
   {
     "display_name": "Chiishin Uushii",
-    "value": 5,
+    "value": [5, "Han"],
     "when": [
       {"name": "not_has_points", "opts": [5]},
       {"name": "match", "opts": [["hand", "calls", "winning_tile"], ["chiishin_uushii"]]}

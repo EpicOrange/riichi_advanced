@@ -1,7 +1,7 @@
 defmodule RiichiAdvanced.Constants do
   alias RiichiAdvanced.Utils, as: Utils
 
-  @version "v1.3.1." <> (System.cmd("git", ["rev-parse", "--short", "HEAD"]) |> elem(0) |> String.trim())
+  @version "v1.3.3." <> (System.cmd("git", ["rev-parse", "--short", "HEAD"]) |> elem(0) |> String.trim())
 
   def version, do: @version
 
@@ -26,7 +26,7 @@ defmodule RiichiAdvanced.Constants do
              "11p"=>:"11p", "12p"=>:"12p", "13p"=>:"13p", "14p"=>:"14p", "15p"=>:"15p", "16p"=>:"16p", "17p"=>:"17p", "18p"=>:"18p", "19p"=>:"19p", "110p"=>:"110p",
              "11s"=>:"11s", "12s"=>:"12s", "13s"=>:"13s", "14s"=>:"14s", "15s"=>:"15s", "16s"=>:"16s", "17s"=>:"17s", "18s"=>:"18s", "19s"=>:"19s", "110s"=>:"110s", "100s"=>:"100s",
              "11t"=>:"11t", "12t"=>:"12t", "13t"=>:"13t", "14t"=>:"14t", "15t"=>:"15t", "16t"=>:"16t", "17t"=>:"17t", "18t"=>:"18t", "19t"=>:"19t", "110t"=>:"110t",
-             "11z"=>:"11z", "12z"=>:"12z", "13z"=>:"13z", "14z"=>:"14z", "15z"=>:"15z", "16z"=>:"16z", "17z"=>:"17z", "18z"=>:"18z",
+             "10z"=>:"10z", "11z"=>:"11z", "12z"=>:"12z", "13z"=>:"13z", "14z"=>:"14z", "15z"=>:"15z", "16z"=>:"16z", "17z"=>:"17z", "18z"=>:"18z",
              "01m"=>:"01m", "02m"=>:"02m", "03m"=>:"03m", "04m"=>:"04m", "05m"=>:"05m", "06m"=>:"06m", "07m"=>:"07m", "08m"=>:"08m", "09m"=>:"09m", "010m"=>:"010m",
              "01p"=>:"01p", "02p"=>:"02p", "03p"=>:"03p", "04p"=>:"04p", "05p"=>:"05p", "06p"=>:"06p", "07p"=>:"07p", "08p"=>:"08p", "09p"=>:"09p", "010p"=>:"010p",
              "01s"=>:"01s", "02s"=>:"02s", "03s"=>:"03s", "04s"=>:"04s", "05s"=>:"05s", "06s"=>:"06s", "07s"=>:"07s", "08s"=>:"08s", "09s"=>:"09s", "010s"=>:"010s", "000s"=>:"000s",
@@ -76,7 +76,7 @@ defmodule RiichiAdvanced.Constants do
              :"11p"=>:"11p", :"12p"=>:"12p", :"13p"=>:"13p", :"14p"=>:"14p", :"15p"=>:"15p", :"16p"=>:"16p", :"17p"=>:"17p", :"18p"=>:"18p", :"19p"=>:"19p", :"110p"=>:"110p",
              :"11s"=>:"11s", :"12s"=>:"12s", :"13s"=>:"13s", :"14s"=>:"14s", :"15s"=>:"15s", :"16s"=>:"16s", :"17s"=>:"17s", :"18s"=>:"18s", :"19s"=>:"19s", :"110s"=>:"110s", :"100s"=>:"100s",
              :"11t"=>:"11t", :"12t"=>:"12t", :"13t"=>:"13t", :"14t"=>:"14t", :"15t"=>:"15t", :"16t"=>:"16t", :"17t"=>:"17t", :"18t"=>:"18t", :"19t"=>:"19t", :"110t"=>:"110t",
-             :"11z"=>:"11z", :"12z"=>:"12z", :"13z"=>:"13z", :"14z"=>:"14z", :"15z"=>:"15z", :"16z"=>:"16z", :"17z"=>:"17z", :"18z"=>:"18z",
+             :"10z"=>:"10z", :"11z"=>:"11z", :"12z"=>:"12z", :"13z"=>:"13z", :"14z"=>:"14z", :"15z"=>:"15z", :"16z"=>:"16z", :"17z"=>:"17z", :"18z"=>:"18z",
              :"01m"=>:"01m", :"02m"=>:"02m", :"03m"=>:"03m", :"04m"=>:"04m", :"05m"=>:"05m", :"06m"=>:"06m", :"07m"=>:"07m", :"08m"=>:"08m", :"09m"=>:"09m", :"010m"=>:"010m",
              :"01p"=>:"01p", :"02p"=>:"02p", :"03p"=>:"03p", :"04p"=>:"04p", :"05p"=>:"05p", :"06p"=>:"06p", :"07p"=>:"07p", :"08p"=>:"08p", :"09p"=>:"09p", :"010p"=>:"010p",
              :"01s"=>:"01s", :"02s"=>:"02s", :"03s"=>:"03s", :"04s"=>:"04s", :"05s"=>:"05s", :"06s"=>:"06s", :"07s"=>:"07s", :"08s"=>:"08s", :"09s"=>:"09s", :"010s"=>:"010s", :"000s"=>:"000s",
@@ -121,7 +121,7 @@ defmodule RiichiAdvanced.Constants do
                 :"11p"=>"cyan", :"12p"=>"cyan", :"13p"=>"cyan", :"14p"=>"cyan", :"15p"=>"cyan", :"16p"=>"cyan", :"17p"=>"cyan", :"18p"=>"cyan", :"19p"=>"cyan", :"110p"=>"cyan",
                 :"11s"=>"cyan", :"12s"=>"cyan", :"13s"=>"cyan", :"14s"=>"cyan", :"15s"=>"cyan", :"16s"=>"cyan", :"17s"=>"cyan", :"18s"=>"cyan", :"19s"=>"cyan", :"110s"=>"cyan", :"100s"=>"cyan",
                 :"11t"=>"cyan", :"12t"=>"cyan", :"13t"=>"cyan", :"14t"=>"cyan", :"15t"=>"cyan", :"16t"=>"cyan", :"17t"=>"cyan", :"18t"=>"cyan", :"19t"=>"cyan", :"110t"=>"cyan",
-                :"11z"=>"cyan", :"12z"=>"cyan", :"13z"=>"cyan", :"14z"=>"cyan", :"15z"=>"cyan", :"16z"=>"cyan", :"17z"=>"cyan",
+                :"10z"=>"cyan", :"11z"=>"cyan", :"12z"=>"cyan", :"13z"=>"cyan", :"14z"=>"cyan", :"15z"=>"cyan", :"16z"=>"cyan", :"17z"=>"cyan",
                 :"21m"=>"blue", :"22m"=>"blue", :"23m"=>"blue", :"24m"=>"blue", :"25m"=>"blue", :"26m"=>"blue", :"27m"=>"blue", :"28m"=>"blue", :"29m"=>"blue", :"210m"=>"blue",
                 :"21p"=>"blue", :"22p"=>"blue", :"23p"=>"blue", :"24p"=>"blue", :"25p"=>"blue", :"26p"=>"blue", :"27p"=>"blue", :"28p"=>"blue", :"29p"=>"blue", :"210p"=>"blue",
                 :"21s"=>"blue", :"22s"=>"blue", :"23s"=>"blue", :"24s"=>"blue", :"25s"=>"blue", :"26s"=>"blue", :"27s"=>"blue", :"28s"=>"blue", :"29s"=>"blue", :"210s"=>"blue", :"200s"=>"blue",
@@ -160,7 +160,7 @@ defmodule RiichiAdvanced.Constants do
       :"11p" -> 112; :"12p" -> 122; :"13p" -> 132; :"14p" -> 142; :"15p" -> 152; :"16p" -> 162; :"17p" -> 172; :"18p" -> 182; :"19p" -> 192; :"110p" -> 196;
       :"11s" -> 212; :"12s" -> 222; :"13s" -> 232; :"14s" -> 242; :"15s" -> 252; :"16s" -> 262; :"17s" -> 272; :"18s" -> 282; :"19s" -> 292; :"110s" -> 296;
       :"11t" -> 312; :"12t" -> 322; :"13t" -> 332; :"14t" -> 342; :"15t" -> 352; :"16t" -> 362; :"17t" -> 372; :"18t" -> 382; :"19t" -> 392; :"110t" -> 396;
-      :"11z" -> 1312; :"12z" -> 1322; :"13z" -> 1332; :"14z" -> 1342; :"15z" -> 1353; :"16z" -> 1362; :"17z" -> 1372; :"18z" -> 1382;
+      :"11z" -> 1312; :"12z" -> 1322; :"13z" -> 1332; :"14z" -> 1342; :"10z" -> 1352; :"15z" -> 1353; :"16z" -> 1362; :"17z" -> 1372; :"18z" -> 1382;
 
       :"21m" ->  14; :"22m" ->  24; :"23m" ->  34; :"24m" ->  44; :"25m" ->  54; :"26m" ->  64; :"27m" ->  74; :"28m" ->  84; :"29m" ->  94; :"210m" ->  96;
       :"21p" -> 114; :"22p" -> 124; :"23p" -> 134; :"24p" -> 144; :"25p" -> 154; :"26p" -> 164; :"27p" -> 174; :"28p" -> 184; :"29p" -> 194; :"210p" -> 196;
@@ -292,11 +292,11 @@ defmodule RiichiAdvanced.Constants do
         han: "Han"
       },
       mods: [
-        "base",
         "global_mods",
         "standard_wall",
         "default_auto_buttons",
-        "riichi_kan"
+        "riichi_kan", # also adds chankan and yaku like suukantsu
+        "riichi_scoring",
       ],
       default_mods: []
     },
@@ -341,7 +341,7 @@ defmodule RiichiAdvanced.Constants do
       tutorial_link: "https://github.com/EpicOrange/riichi_advanced/blob/main/documentation/chinitsu_challenge.md",
       ruleset: "riichi",
       mods: [%{name: "yaku/riichi", config: %{bet: 1000, drawless: false}}, "chinitsu_challenge"],
-      default_mods: ["chombo", "tobi", "yaku/renhou_yakuman", "no_honors"],
+      default_mods: ["chombo", "tobi", %{name: "yaku/riichi_renhou", config: %{is: "Yakuman"}}, "no_honors"],
     },
     "minefield" => %{
       display_name: "Minefield",
@@ -354,8 +354,8 @@ defmodule RiichiAdvanced.Constants do
       display_name: "Kansai Sanma",
       tutorial_link: "https://github.com/EpicOrange/riichi_advanced/blob/main/documentation/kansai.md",
       ruleset: "riichi",
-      mods: ["sanma", "sanma_presets", "kansai", "kansai_chiitoitsu"],
-      default_mods: ["tobi"],
+      mods: ["sanma", "sanma_presets", "kansai", "kansai_yaku", "kansai_chiitoitsu"],
+      default_mods: ["tobi", "sanma_pei_yakuhai"],
     },
     "aka_test" => %{
       display_name: "Kansai Sanma",
@@ -378,7 +378,8 @@ defmodule RiichiAdvanced.Constants do
         pon_name: "Pong",
         kan_name: "Kong",
         ankan_name: "Concealed Kong",
-        han: "Fan"
+        han: "Fan",
+        limit: "Limit"
       },
       mods: [
         "base",
@@ -441,7 +442,8 @@ defmodule RiichiAdvanced.Constants do
         ankan_name: "Concealed Kong",
         ron_name: "Hu",
         tsumo_name: "Zimo",
-        han: "Fan"
+        han: "Fan",
+        limit: "Limit"
       },
       mods: [
         "base",
@@ -461,7 +463,7 @@ defmodule RiichiAdvanced.Constants do
           hon_list: "yaku", hon_name: "Half Flush", hon_value: 1,
           chin_list: "yaku", chin_name: "Full Flush", chin_value: 4
         }},
-        %{name: "yaku/ittsu", config: %{list: "yaku", name: "Pure Straight", value: 1}},
+        %{name: "yaku/ittsuu", config: %{list: "yaku", name: "Pure Straight", value: 1}},
         %{name: "yaku/tanyao", config: %{list: "yaku", name: "All Simples", value: 1}},
         %{name: "yaku/honroutou", config: %{
           hon_list: "yaku", hon_name: "All Terminals and Honors", hon_value: 1,
@@ -495,7 +497,20 @@ defmodule RiichiAdvanced.Constants do
         }},
         "classical_fu",
       ]
-    }
+    },
+    "tianjin" => %{
+      ruleset: "tianjin",
+      mods: [
+        "global_mods",
+        "default_auto_buttons",
+      ],
+    },
+    "malaysian" => %{
+      ruleset: "malaysian",
+      mods: [
+        "global_mods",
+      ],
+    },
   }
 
   def modpacks, do: @modpacks
@@ -517,6 +532,9 @@ defmodule RiichiAdvanced.Constants do
     "galaxy" => [
       {"galaxy_basics", "Intro to galaxy mahjong", :west},
       {"galaxy_milky_way", "Milky Way", :south}
+    ],
+    "tianjin" => [
+      {"tianjin_basics", "Intro to Tianjin Mahjong", :south},
     ]
   }
 

@@ -1,5 +1,5 @@
 on after_initialization do
-  add_rule("Rules", "Wall", "(Aka) %{man}x 5m, %{pin}x 5p, and %{sou}x 5s are replaced with red \"aka dora\" fives that are worth one extra han each.", %{man: !man, pin: !pin, sou: !sou}, -99)
+  add_rule("Tiles", "Aka", "%{man}x %{5m}, %{pin}x %{5p}, and %{sou}x %{5s} are replaced with red \"aka dora\" fives %{akadora_fives} that are worth one extra han each.", %{man: !man, pin: !pin, sou: !sou, "5m": ["5m"], "5p": ["5p"], "5s": ["5s"], akadora_fives: ["0m", "0p", "0s"]}, -99)
   update_rule("Rules", "Shuugi", "(Aka) If your hand is closed, each aka dora is worth 1 shuugi chip.")
 end
 
@@ -18,10 +18,12 @@ end
 
 # count aka
 on before_win do
-  # use set_counter to be compatible with other aka mods
-  set_counter("aka", "count_matches", ["hand", "calls", "winning_tile"], ~m"nojoker, (0m 0p 0s 0t):1")
+  # use add_counter to be compatible with other aka mods
+  add_counter("aka", "count_matches", ["hand", "calls", "winning_tile"], ~m"nojoker, (0m 0p 0s 0t):1")
 end
 
+# remove extra_yaku "Aka" if it already exists beforehand, so there should only ever be one copy of "Aka" extra_yaku
+remove_yaku extra_yaku, "Aka"
 define_yaku extra_yaku, "Aka", "aka", counter_at_least("aka", 1)
 
 apply set_merge, "dora_indicators", %{
@@ -29,4 +31,9 @@ apply set_merge, "dora_indicators", %{
   "0p": ["6p"],
   "0s": ["6s"],
   "0t": ["6t"]
+}
+
+# add tile indices for stars, tens, and so on
+apply set_merge, "custom_style.tile_indices", %{
+    "0t": "5"
 }

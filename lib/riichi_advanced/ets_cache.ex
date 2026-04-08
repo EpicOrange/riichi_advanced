@@ -40,4 +40,12 @@ defmodule RiichiAdvanced.ETSCache do
   defp remove_last_entry(table) do
     :ets.delete(table, :ets.last(table))
   end
+
+  def handle_cast(:flush_caches, state) do
+    :ets.delete_all_objects(:cache_rulesets)
+    :ets.delete_all_objects(:cache_mods)
+    :ets.delete_all_objects(:cache_configs)
+    :ets.delete_all_objects(:cache_sequences)
+    {:noreply, state}
+  end
 end

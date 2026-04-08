@@ -60,8 +60,7 @@ defmodule RiichiAdvanced.YakuTest.CosmicYaku do
       %{"type" => "buttons_pressed", "buttons" => [%{"button" => "ron"}, nil, nil, nil]}
     ], %{
       east: %{
-        yaku: [{"Mini-Sangen", 1}, {"Ryandoukon", 1}],
-        yaku2: [],
+        yaku: [{"Mini-Sangen", [1, "Han"]}, {"Ryandoukon", [1, "Han"]}],
         minipoints: 40 # 30 closed ron + 2 tanki wait + 2x4 closed honor kontsu = 40
       }
     })
@@ -84,8 +83,7 @@ defmodule RiichiAdvanced.YakuTest.CosmicYaku do
       %{"type" => "buttons_pressed", "buttons" => [%{"button" => "ron"}, nil, nil, nil]}
     ], %{
       east: %{
-        yaku: [{"Chun", 1}, {"Mixed Winds", 0.5}],
-        yaku2: [],
+        yaku: [{"Chun", [1, "Han"]}, {"Mixed Winds", [0.5, "Han"]}],
         minipoints: 50 # 30 closed ron + 2 tanki wait + 8 closed honor triplet + 4 closed honor kontsu = 44
       }
     })
@@ -108,8 +106,7 @@ defmodule RiichiAdvanced.YakuTest.CosmicYaku do
       %{"type" => "buttons_pressed", "buttons" => [%{"button" => "ron"}, nil, nil, nil]}
     ], %{
       east: %{
-        yaku: [{"Chun", 1}, {"Mixed Winds", 0.5}],
-        yaku2: [],
+        yaku: [{"Chun", [1, "Han"]}, {"Mixed Winds", [0.5, "Han"]}],
         minipoints: 50 # 30 closed ron + 2 tanki wait + 8 closed honor triplet + 4 closed honor kontsu = 44
       }
     })
@@ -132,8 +129,7 @@ defmodule RiichiAdvanced.YakuTest.CosmicYaku do
       %{"type" => "buttons_pressed", "buttons" => [%{"button" => "ron"}, nil, nil, nil]}
     ], %{
       east: %{
-        yaku: [{"Chun", 1}, {"Mixed Winds", 0.5}],
-        yaku2: [],
+        yaku: [{"Chun", [1, "Han"]}, {"Mixed Winds", [0.5, "Han"]}],
         minipoints: 50 # 30 closed ron + 2 tanki wait + 8 closed honor triplet + 4 closed honor kontsu = 44
       }
     })
@@ -156,8 +152,7 @@ defmodule RiichiAdvanced.YakuTest.CosmicYaku do
       %{"type" => "buttons_pressed", "buttons" => [%{"button" => "ron"}, nil, nil, nil]}
     ], %{
       east: %{
-        yaku: [{"Chun", 1}],
-        yaku2: [],
+        yaku: [{"Chun", [1, "Han"]}],
         minipoints: 50 # 30 closed ron + 2 tanki wait + 8 closed honor triplet + 4 closed honor kontsu = 44
       }
     })
@@ -183,8 +178,7 @@ defmodule RiichiAdvanced.YakuTest.CosmicYaku do
       %{"type" => "buttons_pressed", "buttons" => [nil, nil, nil, %{"button" => "ron"}]}
     ], %{
       north: %{
-        yaku: [{"Chun", 1}],
-        yaku2: [],
+        yaku: [{"Chun", [1, "Han"]}],
         minipoints: 50 # 30 closed ron + 2 tanki wait + 8 closed honor triplet + 4 closed honor kontsu = 44
       }
     })
@@ -210,8 +204,7 @@ defmodule RiichiAdvanced.YakuTest.CosmicYaku do
       %{"type" => "buttons_pressed", "buttons" => [nil, nil, nil, %{"button" => "ron"}]}
     ], %{
       north: %{
-        yaku: [{"Chun", 1}, {"Mixed Winds", 0.5}],
-        yaku2: [],
+        yaku: [{"Chun", [1, "Han"]}, {"Mixed Winds", [0.5, "Han"]}],
         minipoints: 50 # 30 closed ron + 2 tanki wait + 8 closed honor triplet + 4 closed honor kontsu = 44
       }
     })
@@ -237,8 +230,7 @@ defmodule RiichiAdvanced.YakuTest.CosmicYaku do
       %{"type" => "buttons_pressed", "buttons" => [nil, nil, nil, %{"button" => "ron"}]}
     ], %{
       north: %{
-        yaku: [{"Chun", 1}, {"Mixed Winds", 0.5}],
-        yaku2: [],
+        yaku: [{"Chun", [1, "Han"]}, {"Mixed Winds", [0.5, "Han"]}],
         minipoints: 50 # 30 closed ron + 2 tanki wait + 8 closed honor triplet + 4 closed honor kontsu = 44
       }
     })
@@ -264,8 +256,7 @@ defmodule RiichiAdvanced.YakuTest.CosmicYaku do
       %{"type" => "buttons_pressed", "buttons" => [nil, nil, nil, %{"button" => "ron"}]}
     ], %{
       north: %{
-        yaku: [{"Chun", 1}],
-        yaku2: [],
+        yaku: [{"Chun", [1, "Han"]}],
         minipoints: 50 # 30 closed ron + 2 tanki wait + 8 closed honor triplet + 4 closed honor kontsu = 44
       }
     })
@@ -292,8 +283,7 @@ defmodule RiichiAdvanced.YakuTest.CosmicYaku do
       %{"type" => "buttons_pressed", "buttons" => [nil, nil, nil, %{"button" => "ron"}]}
     ], %{
       north: %{
-        yaku: [{"Mixed Winds", 1}, {"Ryandoukon", 1}],
-        yaku2: [],
+        yaku: [{"Mixed Winds", [1, "Han"]}, {"Ryandoukon", [1, "Han"]}],
         minipoints: 60 # 30 closed ron + 2 tanki wait + 4 closed honor kontsu + 16 anfuun = 52
       }
     })
@@ -317,8 +307,7 @@ defmodule RiichiAdvanced.YakuTest.CosmicYaku do
       %{"type" => "buttons_pressed", "buttons" => [%{"button" => "ron"}, nil, nil, nil]}
     ], %{
       east: %{
-        yaku: [{"Chun", 1}, {"Tsubame Gaeshi", 1}],
-        yaku2: [],
+        yaku: [{"Chun", [1, "Han"]}, {"Tsubame Gaeshi", [1, "Han"]}],
         minipoints: 40 # 30 closed ron + 8 closed honor triplet = 38
       }
     }, %{delta_scores: [4900, -3900, 0, 0]})
@@ -340,8 +329,7 @@ defmodule RiichiAdvanced.YakuTest.CosmicYaku do
       %{"type" => "buttons_pressed", "buttons" => [%{"button" => "tsumo"}, nil, nil, nil]}
     ], %{
       east: %{
-        yaku: [{"Mixed Winds", 0.5}, {"Rinshan", 1}, {"Tsumo", 1}],
-        yaku2: [],
+        yaku: [{"Mixed Winds", [0.5, "Han"]}, {"Rinshan", [1, "Han"]}, {"Tsumo", [1, "Han"]}],
         minipoints: 40 # 22 tsumo + 16 closed fuun + 2 tanki wait = 40
       }
     })
@@ -367,8 +355,7 @@ defmodule RiichiAdvanced.YakuTest.CosmicYaku do
       %{"type" => "buttons_pressed", "buttons" => [%{"button" => "ron"}, nil, nil, nil]}
     ], %{
       east: %{
-        yaku: [{"Chiitoitsu", 1}],
-        yaku2: [],
+        yaku: [{"Chiitoitsu", [1, "Han"]}],
         minipoints: 25 # 25 chiitoitsu
       }
     })
@@ -391,8 +378,7 @@ defmodule RiichiAdvanced.YakuTest.CosmicYaku do
       %{"type" => "buttons_pressed", "buttons" => [%{"button" => "ron"}, nil, nil, nil]}
     ], %{
       east: %{
-        yaku: [{"Chiitoitsu", 2}],
-        yaku2: [],
+        yaku: [{"Chiitoitsu", [2, "Han"]}],
         minipoints: 25 # 25 chiitoitsu
       }
     })
@@ -418,8 +404,7 @@ defmodule RiichiAdvanced.YakuTest.CosmicYaku do
       %{"type" => "buttons_pressed", "buttons" => [%{"button" => "ron"}, nil, nil, nil]}
     ], %{
       east: %{
-        yaku: [{"Ryanpeikou", 1}],
-        yaku2: [],
+        yaku: [{"Ryanpeikou", [1, "Han"]}],
         minipoints: 30 # 30 open pinfu
       }
     })
@@ -442,8 +427,7 @@ defmodule RiichiAdvanced.YakuTest.CosmicYaku do
       %{"type" => "buttons_pressed", "buttons" => [%{"button" => "ron"}, nil, nil, nil]}
     ], %{
       east: %{
-        yaku: [{"Pinfu", 1}, {"Ryanpeikou", 3}],
-        yaku2: [],
+        yaku: [{"Pinfu", [1, "Han"]}, {"Ryanpeikou", [3, "Han"]}],
         minipoints: 30 # 30 closed ron = 30
       }
     })
@@ -483,8 +467,7 @@ defmodule RiichiAdvanced.YakuTest.CosmicYaku do
       %{"type" => "buttons_pressed", "buttons" => [%{"button" => "chankan"}, nil, nil, nil]}
     ], %{
       east: %{
-        yaku: [{"Chankan", 1}, {"Honitsu", 2}, {"Mini-Sangen", 0.5}, {"Round Wind", 1}, {"Seat Wind", 1}],
-        yaku2: [],
+        yaku: [{"Chankan", [1, "Han"]}, {"Honitsu", [2, "Han"]}, {"Mini-Sangen", [0.5, "Han"]}, {"Round Wind", [1, "Han"]}, {"Seat Wind", [1, "Han"]}],
         minipoints: 30 # 20 open ron + 2x4 open honor triplet + 2 tanki wait = 30
       }
     })
@@ -507,8 +490,7 @@ defmodule RiichiAdvanced.YakuTest.CosmicYaku do
       %{"type" => "buttons_pressed", "buttons" => [%{"button" => "ron"}, nil, nil, nil]}
     ], %{
       east: %{
-        yaku: [{"Toikon", 2}, {"Mini-Sangen", 0.5}],
-        yaku2: [],
+        yaku: [{"Toikon", [2, "Han"]}, {"Mini-Sangen", [0.5, "Han"]}],
         minipoints: 50 # 30 closed ron + 2 concealed kontsu + 4 concealed terminal kontsu + 2x4 concealed honor kontsu + 2 tanki wait = 46
       }
     })
@@ -534,8 +516,7 @@ defmodule RiichiAdvanced.YakuTest.CosmicYaku do
       %{"type" => "buttons_pressed", "buttons" => [%{"button" => "ron"}, nil, nil, nil]}
     ], %{
       east: %{
-        yaku: [{"Toikon", 1}, {"Mini-Sangen", 0.5}],
-        yaku2: [],
+        yaku: [{"Toikon", [1, "Han"]}, {"Mini-Sangen", [0.5, "Han"]}],
         minipoints: 40 # 20 closed ron + 2 concealed kontsu + 4 concealed terminal kontsu + 2 open honor kontsu + 4 concealed honor kontsu + 2 tanki wait = 34
       }
     })
@@ -558,8 +539,7 @@ defmodule RiichiAdvanced.YakuTest.CosmicYaku do
       %{"type" => "buttons_pressed", "buttons" => [%{"button" => "ron"}, nil, nil, nil]}
     ], %{
       east: %{
-        yaku: [{"Ryandoukon", 1}, {"Mixed Winds", 0.5}, {"Chun", 1}],
-        yaku2: [],
+        yaku: [{"Ryandoukon", [1, "Han"]}, {"Mixed Winds", [0.5, "Han"]}, {"Chun", [1, "Han"]}],
         minipoints: 60 # 30 closed ron + 8 concealed honor triplet + 2x4 concealed terminal kontsu + 4 concealed honor kontsu + 2 tanki wait = 52
       }
     })
@@ -585,8 +565,7 @@ defmodule RiichiAdvanced.YakuTest.CosmicYaku do
       %{"type" => "buttons_pressed", "buttons" => [%{"button" => "ron"}, nil, nil, nil]}
     ], %{
       east: %{
-        yaku: [{"Mixed Winds", 0.5}, {"Chun", 1}],
-        yaku2: [],
+        yaku: [{"Mixed Winds", [0.5, "Han"]}, {"Chun", [1, "Han"]}],
         minipoints: 40 # 20 open ron + 4 open honor triplet + 2x4 concealed terminal kontsu + 4 concealed honor kontsu + 2 tanki wait = 38
       }
     })
@@ -609,8 +588,7 @@ defmodule RiichiAdvanced.YakuTest.CosmicYaku do
       %{"type" => "buttons_pressed", "buttons" => [%{"button" => "ron"}, nil, nil, nil]}
     ], %{
       east: %{
-        yaku: [{"Ryandoukon", 1}, {"Mixed Winds", 1.5}],
-        yaku2: [],
+        yaku: [{"Ryandoukon", [1, "Han"]}, {"Mixed Winds", [1.5, "Han"]}],
         minipoints: 50 # 30 closed ron + 4 closed triplet + 3x4 concealed honor kontsu + 2 tanki wait = 48
       }
     })
@@ -636,8 +614,7 @@ defmodule RiichiAdvanced.YakuTest.CosmicYaku do
       %{"type" => "buttons_pressed", "buttons" => [%{"button" => "ron"}, nil, nil, nil]}
     ], %{
       east: %{
-        yaku: [{"Mixed Winds", 1.5}],
-        yaku2: [],
+        yaku: [{"Mixed Winds", [1.5, "Han"]}],
         minipoints: 40 # 20 open ron + 2 open triplet + 3x4 concealed honor kontsu + 2 tanki wait = 36
       }
     })
@@ -660,8 +637,7 @@ defmodule RiichiAdvanced.YakuTest.CosmicYaku do
       %{"type" => "buttons_pressed", "buttons" => [%{"button" => "ron"}, nil, nil, nil]}
     ], %{
       east: %{
-        yaku: [{"Sanshoku Doukou", 2}, {"Sanankou", 2}],
-        yaku2: [],
+        yaku: [{"Sanshoku Doukou", [2, "Han"]}, {"Sanankou", [2, "Han"]}],
         minipoints: 60 # 30 closed ron + 3x8 concealed terminal/honor triplet + 2 yakuhai pair + 2 closed wait = 58
       }
     })
@@ -687,8 +663,7 @@ defmodule RiichiAdvanced.YakuTest.CosmicYaku do
       %{"type" => "buttons_pressed", "buttons" => [%{"button" => "ron"}, nil, nil, nil]}
     ], %{
       east: %{
-        yaku: [{"Sandoukon", 2}, {"Chun", 1}],
-        yaku2: [],
+        yaku: [{"Sandoukon", [2, "Han"]}, {"Chun", [1, "Han"]}],
         minipoints: 40 # 20 open ron + 2 open terminal kontsu + 2x4 concealed terminal kontsu + 8 concealed honor triplet + 2 tanki wait = 40
       }
     })
@@ -712,8 +687,7 @@ defmodule RiichiAdvanced.YakuTest.CosmicYaku do
       %{"type" => "buttons_pressed", "buttons" => [%{"button" => "ron"}, nil, nil, nil]}
     ], %{
       east: %{
-        yaku: [{"Mixed Winds", 1.5}, {"Sandoukon", 3}],
-        yaku2: [],
+        yaku: [{"Mixed Winds", [1.5, "Han"]}, {"Sandoukon", [3, "Han"]}],
         minipoints: 60 # 30 closed ron + 4 concealed triplet + 16 anfuun + 2x4 concealed honor kontsu + 2 tanki wait = 60
       }
     })
@@ -735,8 +709,7 @@ defmodule RiichiAdvanced.YakuTest.CosmicYaku do
       %{"type" => "buttons_pressed", "buttons" => [%{"button" => "tsumo"}, nil, nil, nil]}
     ], %{
       east: %{
-        yaku: [{"Rinshan", 1}, {"Tsumo", 1}, {"Mixed Winds", 1.5}, {"Sandoukon", 3}],
-        yaku2: [],
+        yaku: [{"Rinshan", [1, "Han"]}, {"Tsumo", [1, "Han"]}, {"Mixed Winds", [1.5, "Han"]}, {"Sandoukon", [3, "Han"]}],
         minipoints: 60 # 22 tsumo + 4 concealed triplet + 16 anfuun + 3x4 concealed honor kontsu + 2 tanki wait = 56
       }
     })
@@ -764,8 +737,7 @@ defmodule RiichiAdvanced.YakuTest.CosmicYaku do
         # - triplet: {"Honitsu", 3}, {"Mixed Winds", 0.5}, {"Round Wind", 1}, {"Sanankou", 2}, {"Seat Wind", 1}
         # since we have yondoukon, thus must be a kontsu hand
         # so this actually just tests if we score kontsu hands correctly
-        yaku: [{"Yondoukon", 13}, {"Toikon", 2}, {"Mixed Winds", 2}, {"Honitsu", 3}],
-        yaku2: [],
+        yaku: [{"Yondoukon", [13, "Han"]}, {"Toikon", [2, "Han"]}, {"Mixed Winds", [2, "Han"]}, {"Honitsu", [3, "Han"]}],
         minipoints: 50 # 30 closed ron + 4x4 concealed honor kontsu + 2 tanki wait = 48
       }
     })
@@ -790,8 +762,7 @@ defmodule RiichiAdvanced.YakuTest.CosmicYaku do
       %{"type" => "buttons_pressed", "buttons" => [%{"button" => "tsumo"}, nil, nil, nil]}
     ], %{
       east: %{
-        yaku: [{"Yondoukon", 13}, {"Tsumo", 1}, {"Toikon", 2}, {"Mixed Winds", 2}, {"Honitsu", 3}],
-        yaku2: [],
+        yaku: [{"Yondoukon", [13, "Han"]}, {"Tsumo", [1, "Han"]}, {"Toikon", [2, "Han"]}, {"Mixed Winds", [2, "Han"]}, {"Honitsu", [3, "Han"]}],
         minipoints: 40 # 22 tsumo + 4x4 concealed honor kontsu + 2 tanki wait = 40
       }
     })
@@ -814,8 +785,7 @@ defmodule RiichiAdvanced.YakuTest.CosmicYaku do
       %{"type" => "buttons_pressed", "buttons" => [%{"button" => "ron"}, nil, nil, nil]}
     ], %{
       east: %{
-        yaku: [{"Yondoukon", 13}, {"Toikon", 2}],
-        yaku2: [],
+        yaku: [{"Yondoukon", [13, "Han"]}, {"Toikon", [2, "Han"]}],
         minipoints: 40 # 30 closed ron + 4x2 concealed kontsu + 2 tanki wait = 40
       }
     })
@@ -840,8 +810,7 @@ defmodule RiichiAdvanced.YakuTest.CosmicYaku do
       %{"type" => "buttons_pressed", "buttons" => [%{"button" => "tsumo"}, nil, nil, nil]}
     ], %{
       east: %{
-        yaku: [{"Yondoukon", 13}, {"Tsumo", 1}, {"Toikon", 2}],
-        yaku2: [],
+        yaku: [{"Yondoukon", [13, "Han"]}, {"Tsumo", [1, "Han"]}, {"Toikon", [2, "Han"]}],
         minipoints: 40 # 22 tsumo + 4x2 concealed kontsu + 2 tanki wait = 32
       }
     })
@@ -867,8 +836,7 @@ defmodule RiichiAdvanced.YakuTest.CosmicYaku do
       %{"type" => "buttons_pressed", "buttons" => [%{"button" => "ron"}, nil, nil, nil]}
     ], %{
       east: %{
-        yaku: [{"Yondoukon", 13}, {"Toikon", 1}],
-        yaku2: [],
+        yaku: [{"Yondoukon", [13, "Han"]}, {"Toikon", [1, "Han"]}],
         minipoints: 30 # 20 open ron + 1 open kontsu + 3x2 concealed kontsu + 2 tanki wait = 29
       }
     })
@@ -891,8 +859,7 @@ defmodule RiichiAdvanced.YakuTest.CosmicYaku do
       %{"type" => "buttons_pressed", "buttons" => [%{"button" => "ron"}, nil, nil, nil]}
     ], %{
       east: %{
-        yaku: [{"Sandoukon", 3}, {"Toikon", 2}],
-        yaku2: [],
+        yaku: [{"Sandoukon", [3, "Han"]}, {"Toikon", [2, "Han"]}],
         minipoints: 40 # 30 closed ron + 4x2 concealed kontsu + 2 tanki wait = 40
       }
     })
@@ -918,8 +885,7 @@ defmodule RiichiAdvanced.YakuTest.CosmicYaku do
       %{"type" => "buttons_pressed", "buttons" => [%{"button" => "ron"}, nil, nil, nil]}
     ], %{
       east: %{
-        yaku: [{"Sanshoku Doukou", 2}, {"Sanankou", 2}],
-        yaku2: [],
+        yaku: [{"Sanshoku Doukou", [2, "Han"]}, {"Sanankou", [2, "Han"]}],
         minipoints: 40 # 20 open ron + 1 open kontsu + 3x4 concealed triplets + 2 tanki wait = 35
       }
     })
@@ -945,8 +911,7 @@ defmodule RiichiAdvanced.YakuTest.CosmicYaku do
       %{"type" => "buttons_pressed", "buttons" => [%{"button" => "ron"}, nil, nil, nil]}
     ], %{
       east: %{
-        yaku: [{"Sanshoku Doukou", 2}, {"Toitoi", 2}, {"Sanankou", 2}],
-        yaku2: [],
+        yaku: [{"Sanshoku Doukou", [2, "Han"]}, {"Toitoi", [2, "Han"]}, {"Sanankou", [2, "Han"]}],
         minipoints: 40 # 20 open ron + 2 open triplet + 3x4 concealed triplets + 2 tanki wait = 36
       }
     })
@@ -972,8 +937,7 @@ defmodule RiichiAdvanced.YakuTest.CosmicYaku do
       %{"type" => "buttons_pressed", "buttons" => [%{"button" => "ron"}, nil, nil, nil]}
     ], %{
       east: %{
-        yaku: [{"Uumensai", 2}],
-        yaku2: [],
+        yaku: [{"Uumensai", [2, "Han"]}],
         minipoints: 40 # 20 open ron + 2 open triplet + 2x4 concealed triplets + 4 tanki yakuhai wait = 34
       }
     })
@@ -999,8 +963,7 @@ defmodule RiichiAdvanced.YakuTest.CosmicYaku do
       %{"type" => "buttons_pressed", "buttons" => [%{"button" => "ron"}, nil, nil, nil]}
     ], %{
       east: %{
-        yaku: [{"Chun", 1}],
-        yaku2: [],
+        yaku: [{"Chun", [1, "Han"]}],
         minipoints: 40 # 20 open ron + 1 open kontsu + 4 open honors triplet + 2x4 concealed triplets + 2 tanki wait = 35
       }
     })
@@ -1027,8 +990,7 @@ defmodule RiichiAdvanced.YakuTest.CosmicYaku do
       %{"type" => "buttons_pressed", "buttons" => [%{"button" => "ron"}, nil, nil, nil]}
     ], %{
       east: %{
-        yaku: [{"Uumensai", 2}, {"Mixed Winds", 0.5}],
-        yaku2: [],
+        yaku: [{"Uumensai", [2, "Han"]}, {"Mixed Winds", [0.5, "Han"]}],
         minipoints: 50 # 20 open ron + 1 open kontsu + 16 anfuun + 4 concealed triplets + 2 yakuhai pair = 43
       }
     })

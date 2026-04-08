@@ -25,6 +25,8 @@
 |
 .buttons.flower |= walk(if type == "array" and index("4z") then . - ["4z"] + ["1f", "2f", "3f", "4f"] else . end)
 |
+.buttons.flower |= walk(if . == "Pei" then "Flower" else . end)
+|
 .auto_buttons._5_auto_flower.display_name = "F"
 |
 .auto_buttons._5_auto_flower.desc = "Automatically declare all flowers."

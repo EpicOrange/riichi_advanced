@@ -72,8 +72,7 @@ defmodule RiichiAdvanced.YakuTest.NingboYaku do
       %{"type" => "buttons_pressed", "buttons" => [%{"button" => "tsumo"}, nil, nil, nil]}
     ], %{
       east: %{
-        yaku: [{"All Triplets", 2}, {"No Baida", 1}, {"Self Draw", 1}],
-        yaku2: []
+        yaku: [{"All Triplets", [2, "Tai"]}, {"No Baida", [1, "Tai"]}, {"Self Draw", [1, "Tai"]}]
       }
     })
   end
@@ -100,8 +99,7 @@ defmodule RiichiAdvanced.YakuTest.NingboYaku do
       %{"type" => "buttons_pressed", "buttons" => [%{"button" => "ron"}, nil, nil, nil]}
     ], %{
       east: %{
-        yaku: [{"All Triplets", 2}, {"No Baida", 1}, {"Single Wait", 1}],
-        yaku2: []
+        yaku: [{"All Triplets", [2, "Tai"]}, {"No Baida", [1, "Tai"]}, {"Single Wait", [1, "Tai"]}]
       }
     })
   end
@@ -128,8 +126,7 @@ defmodule RiichiAdvanced.YakuTest.NingboYaku do
       %{"type" => "buttons_pressed", "buttons" => [%{"button" => "ron"}, nil, nil, nil]}
     ], %{
       east: %{
-        yaku: [{"Half Flush", 2}, {"No Baida", 1}, {"Closed Wait", 1}],
-        yaku2: []
+        yaku: [{"Half Flush", [2, "Tai"]}, {"No Baida", [1, "Tai"]}, {"Closed Wait", [1, "Tai"]}]
       }
     })
   end
@@ -156,8 +153,7 @@ defmodule RiichiAdvanced.YakuTest.NingboYaku do
       %{"type" => "buttons_pressed", "buttons" => [%{"button" => "ron"}, nil, nil, nil]}
     ], %{
       east: %{
-        yaku: [{"Half Flush", 2}, {"No Baida", 1}, {"Edge Wait", 1}],
-        yaku2: []
+        yaku: [{"Half Flush", [2, "Tai"]}, {"No Baida", [1, "Tai"]}, {"Edge Wait", [1, "Tai"]}]
       }
     })
   end
@@ -184,8 +180,7 @@ defmodule RiichiAdvanced.YakuTest.NingboYaku do
       %{"type" => "buttons_pressed", "buttons" => [%{"button" => "ron"}, nil, nil, nil]}
     ], %{
       east: %{
-        yaku: [{"All Triplets", 2}, {"Win On Baida", 1}, {"Single Wait", 1}],
-        yaku2: []
+        yaku: [{"All Triplets", [2, "Tai"]}, {"Win On Baida", [1, "Tai"]}, {"Single Wait", [1, "Tai"]}]
       }
     })
   end
@@ -212,8 +207,7 @@ defmodule RiichiAdvanced.YakuTest.NingboYaku do
       %{"type" => "buttons_pressed", "buttons" => [%{"button" => "ron"}, nil, nil, nil]}
     ], %{
       east: %{
-        yaku: [{"Half Flush", 2}, {"Win On Baida", 1}, {"Closed Wait", 1}],
-        yaku2: []
+        yaku: [{"Half Flush", [2, "Tai"]}, {"Win On Baida", [1, "Tai"]}, {"Closed Wait", [1, "Tai"]}]
       }
     })
   end
@@ -240,8 +234,7 @@ defmodule RiichiAdvanced.YakuTest.NingboYaku do
       %{"type" => "buttons_pressed", "buttons" => [%{"button" => "ron"}, nil, nil, nil]}
     ], %{
       east: %{
-        yaku: [{"Half Flush", 2}, {"Win On Baida", 1}, {"Edge Wait", 1}],
-        yaku2: []
+        yaku: [{"Half Flush", [2, "Tai"]}, {"Win On Baida", [1, "Tai"]}, {"Edge Wait", [1, "Tai"]}]
       }
     })
   end
@@ -268,8 +261,7 @@ defmodule RiichiAdvanced.YakuTest.NingboYaku do
       %{"type" => "buttons_pressed", "buttons" => [%{"button" => "ron"}, nil, nil, nil]}
     ], %{
       east: %{
-        yaku: [{"Half Flush", 2}, {"Win On Baida", 1}, {"Round Wind", 1}, {"Seat Wind", 1}],
-        yaku2: []
+        yaku: [{"Half Flush", [2, "Tai"]}, {"Win On Baida", [1, "Tai"]}, {"Round Wind", [1, "Tai"]}, {"Seat Wind", [1, "Tai"]}]
       }
     })
   end
@@ -296,8 +288,7 @@ defmodule RiichiAdvanced.YakuTest.NingboYaku do
       %{"type" => "buttons_pressed", "buttons" => [%{"button" => "ron"}, nil, nil, nil]}
     ], %{
       east: %{
-        yaku: [{"All Triplets", 2}, {"No Baida", 1}, {"White Dragon", 1}],
-        yaku2: []
+        yaku: [{"All Triplets", [2, "Tai"]}, {"No Baida", [1, "Tai"]}, {"White Dragon", [1, "Tai"]}]
       }
     })
   end
@@ -324,8 +315,7 @@ defmodule RiichiAdvanced.YakuTest.NingboYaku do
       %{"type" => "buttons_pressed", "buttons" => [%{"button" => "ron"}, nil, nil, nil]}
     ], %{
       east: %{
-        yaku: [{"All Triplets", 2}, {"No Baida", 1}, {"Half Flush", 2}],
-        yaku2: []
+        yaku: [{"All Triplets", [2, "Tai"]}, {"No Baida", [1, "Tai"]}, {"Half Flush", [2, "Tai"]}]
       }
     })
   end
@@ -352,8 +342,7 @@ defmodule RiichiAdvanced.YakuTest.NingboYaku do
       %{"type" => "buttons_pressed", "buttons" => [%{"button" => "ron"}, nil, nil, nil]}
     ], %{
       east: %{
-        yaku: [{"All Triplets", 2}, {"No Baida", 1}, {"Pure Flush", 4}],
-        yaku2: []
+        yaku: [{"All Triplets", [2, "Tai"]}, {"No Baida", [1, "Tai"]}, {"Pure Flush", [4, "Tai"]}]
       }
     })
   end
@@ -381,8 +370,7 @@ defmodule RiichiAdvanced.YakuTest.NingboYaku do
       %{"type" => "buttons_pressed", "buttons" => [%{"button" => "tsumo"}, nil, nil, nil]}
     ], %{
       east: %{
-        yaku: [{"After a Kong", 1}, {"Edge Wait", 1}, {"No Baida", 1}, {"Self Draw", 1}],
-        yaku2: [{"After a Kong", 2}]
+        yaku: [{"After a Kong", [1, "Tai", 2, "×"]}, {"Edge Wait", [1, "Tai"]}, {"No Baida", [1, "Tai"]}, {"Self Draw", [1, "Tai"]}]
       }
     })
   end
@@ -410,8 +398,7 @@ defmodule RiichiAdvanced.YakuTest.NingboYaku do
       %{"type" => "buttons_pressed", "buttons" => [%{"button" => "tsumo"}, nil, nil, nil]}
     ], %{
       east: %{
-        yaku: [{"After a Kong", 1}, {"Edge Wait", 1}, {"Self Draw", 1}, {"Win On Baida", 1}, {"Baida Reuse", 1}],
-        yaku2: [{"After a Kong", 2}]
+        yaku: [{"After a Kong", [1, "Tai", 2, "×"]}, {"Edge Wait", [1, "Tai"]}, {"Self Draw", [1, "Tai"]}, {"Win On Baida", [1, "Tai"]}, {"Baida Reuse", [1, "Tai"]}]
       }
     })
   end
@@ -440,8 +427,7 @@ defmodule RiichiAdvanced.YakuTest.NingboYaku do
       %{"type" => "buttons_pressed", "buttons" => [%{"button" => "tsumo"}, nil, nil, nil]}
     ], %{
       east: %{
-        yaku: [{"Single Wait", 1}, {"Self Draw", 1}, {"Win On Baida", 1}, {"Baida Reuse", 1}, {"Baida Pair Win", 1}],
-        yaku2: []
+        yaku: [{"Single Wait", [1, "Tai"]}, {"Self Draw", [1, "Tai"]}, {"Win On Baida", [1, "Tai"]}, {"Baida Reuse", [1, "Tai"]}, {"Baida Pair Win", [1, "Tai"]}]
       }
     })
   end
@@ -470,8 +456,7 @@ defmodule RiichiAdvanced.YakuTest.NingboYaku do
       %{"type" => "buttons_pressed", "buttons" => [%{"button" => "tsumo"}, nil, nil, nil]}
     ], %{
       east: %{
-        yaku: [{"Closed Wait", 1}, {"Self Draw", 1}, {"Baida Reuse", 2}],
-        yaku2: []
+        yaku: [{"Closed Wait", [1, "Tai"]}, {"Self Draw", [1, "Tai"]}, {"Baida Reuse", [2, "Tai"]}]
       }
     })
   end
@@ -498,8 +483,7 @@ defmodule RiichiAdvanced.YakuTest.NingboYaku do
       %{"type" => "buttons_pressed", "buttons" => [%{"button" => "ron"}, nil, nil, nil]}
     ], %{
       east: %{
-        yaku: [{"No Baida", 1}, {"All Honours", 10}, {"Round Wind", 1}, {"Seat Wind", 1}, {"White Dragon", 1}, {"Green Dragon", 1}, {"Red Dragon", 1}],
-        yaku2: []
+        yaku: [{"No Baida", [1, "Tai"]}, {"All Honours", [10, "Tai"]}, {"Round Wind", [1, "Tai"]}, {"Seat Wind", [1, "Tai"]}, {"White Dragon", [1, "Tai"]}, {"Green Dragon", [1, "Tai"]}, {"Red Dragon", [1, "Tai"]}]
       }
     })
   end
@@ -524,8 +508,8 @@ defmodule RiichiAdvanced.YakuTest.NingboYaku do
       %{"type" => "buttons_pressed", "buttons" => [%{"button" => "tsumo"}, nil, nil, nil]}
     ], %{
       east: %{
-        yaku: [{"Blessing of Heaven", 10}, {"Closed Wait", 1}, {"No Baida", 1}],
-        yaku2: []
+        # closed wait, because for tenhou any tile can be considered the drawn tile (here, 6m or 5p or 4s)
+        yaku: [{"Blessing of Heaven", [10, "Tai"]}, {"Closed Wait", [1, "Tai"]}, {"No Baida", [1, "Tai"]}]
       }
     })
   end
@@ -551,8 +535,7 @@ defmodule RiichiAdvanced.YakuTest.NingboYaku do
       %{"type" => "buttons_pressed", "buttons" => [nil, %{"button" => "ron"}, nil, nil]}
     ], %{
       south: %{
-        yaku: [{"Blessing of Earth", 10}, {"No Baida", 1}],
-        yaku2: []
+        yaku: [{"Blessing of Earth", [10, "Tai"]}, {"No Baida", [1, "Tai"]}]
       }
     })
   end
@@ -583,8 +566,7 @@ defmodule RiichiAdvanced.YakuTest.NingboYaku do
       %{"type" => "buttons_pressed", "buttons" => [%{"button" => "chankan"}, nil, nil, nil]}
     ], %{
       east: %{
-        yaku: [{"No Baida", 1}, {"Robbing a Kong", 0}],
-        yaku2: [{"Robbing a Kong", 5}]
+        yaku: [{"No Baida", [1, "Tai"]}, {"Robbing a Kong", [0, "Tai", 5, "×"]}]
       }
     })
   end
@@ -621,8 +603,7 @@ defmodule RiichiAdvanced.YakuTest.NingboYaku do
       %{"type" => "buttons_pressed", "buttons" => [%{"button" => "ron"}, nil, nil, nil]}
     ], %{
       east: %{
-        yaku: [{"All Triplets", 2}, {"No Baida", 1}, {"Single Wait", 1}],
-        yaku2: [{"Three Meld Penalty", 5}]
+        yaku: [{"All Triplets", [2, "Tai"]}, {"No Baida", [1, "Tai"]}, {"Single Wait", [1, "Tai"]}, {"Three Meld Penalty", [5, "×"]}]
       }
     }, %{delta_scores: [20, -20, 0, 0]})
   end
@@ -657,8 +638,7 @@ defmodule RiichiAdvanced.YakuTest.NingboYaku do
       %{"type" => "buttons_pressed", "buttons" => [%{"button" => "ron"}, nil, nil, nil]}
     ], %{
       east: %{
-        yaku: [{"Eight Flowers", 10}, {"No Baida", 1}],
-        yaku2: []
+        yaku: [{"Eight Flowers", [10, "Tai"]}, {"No Baida", [1, "Tai"]}]
       }
     })
   end
@@ -765,8 +745,7 @@ defmodule RiichiAdvanced.YakuTest.NingboYaku do
       %{"buttons" => [nil, %{"button" => "tsumo"}, nil, nil], "type" => "buttons_pressed"}
     ], %{
       south: %{
-        yaku: [{"Win On Baida", 1}, {"Last Tile", 1}, {"Self Draw", 1}, {"Red Dragon", 1}],
-        yaku2: []
+        yaku: [{"Win On Baida", [1, "Tai"]}, {"Last Tile", [1, "Tai"]}, {"Self Draw", [1, "Tai"]}, {"Red Dragon", [1, "Tai"]}]
       }
     })
   end

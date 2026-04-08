@@ -1,6 +1,7 @@
 {
   // TODOs:
-    //⚠️ allow East to qiangjin, by only drawing East's 17th tile after everyone has declared flowers
+      // qiangjin needs to pause the game, rather than continuing to display after East has drawn their first tile
+      // need to have a "win_by_qiangjin" that shows the gold tile as the winning tile, in the win screen
   // mods/rule-variants
     // reddit post says only red dragon is a flower, not all 3 dragons
     // reddit post says if you have 3 gold you win immediately, but here it is just a valuable yaku
@@ -17,7 +18,7 @@
     {"id": "open_hands", "name": "Open Hands", "desc": "Everyone plays with tiles shown."}
   ],
   "display_name": "Fuzhou",
-  "tutorial_link": "https://mahjongpros.com/blogs/how-to-play/beginners-guide-to-fuzhou-mahjong",
+  "tutorial_link": "https://github.com/EpicOrange/riichi_advanced/blob/main/documentation/fuzhou.md",
   "wall": ["1m", "1m", "1m", "1m",
            "2m", "2m", "2m", "2m",
            "3m", "3m", "3m", "3m",
@@ -106,8 +107,6 @@
   "all_flowers_definition": [[ "nojoker", "unique", [["1f","2f","3f","4f"], 4] ]],
   "all_seasons_definition": [[ "nojoker", "unique", [["1g","2g","3g","4g"], 4] ]],
   "any_flower_definition": [[ "nojoker", [["1f","2f","3f","4f","1g","2g","3g","4g","1z","2z","3z","4z","0z","6z","7z"], 1] ]],
-  "7_flowers_definition": [[ "nojoker", "unique", [["1f","2f","3f","4f","1g","2g","3g","4g"], 7] ]],
-  "8_flowers_definition": [[ "nojoker", "unique", [["1f","2f","3f","4f","1g","2g","3g","4g"], 8] ]],
   "closed_wait_definition": [
     [ "exhaustive", [["shuntsu", "koutsu"], 4], [["kanchan"], 1], [["pair"], 1] ]
   ],
@@ -121,49 +120,49 @@
     [ "exhaustive", [["nojoker", "gold_koutsu"], 1], [["shuntsu", "koutsu"], 4], [["pair"], 1] ]
   ],
   "yaku": [
-    { "display_name": "Base Points", "value": 10, "when": [] },
+    { "display_name": "Base Points", "value": [10, ""], "when": [] },
       // apparently the scoring for these "1 per" yaku is doubled, so these are actually "2 per" yaku. "Gold" being duplicated here is intentional. ditto for "Dealer Continuation".
-    { "display_name": "Flowers", "value": "flower_count", "when": [{"name": "counter_at_least", "opts": ["flower_count", 1]}]},
-    { "display_name": "Flowers", "value": "flower_count", "when": [{"name": "counter_at_least", "opts": ["flower_count", 1]}]},
-    { "display_name": "Gold", "value": "gold_count", "when": [{"name": "counter_at_least", "opts": ["gold_count", 1]}]},
-    { "display_name": "Gold", "value": "gold_count", "when": [{"name": "counter_at_least", "opts": ["gold_count", 1]}]},
-    { "display_name": "Dealer Continuation", "value": "dealer_continuation", "when": [{"name": "seat_is", "opts": ["east"]}, {"name": "counter_at_least", "opts": ["dealer_continuation", 1]}] },
-    { "display_name": "Dealer Continuation", "value": "dealer_continuation", "when": [{"name": "seat_is", "opts": ["east"]}, {"name": "counter_at_least", "opts": ["dealer_continuation", 1]}] },
-    { "display_name": "Open Kong", "value": 2, "when": [{"name": "match", "opts": [["calls"], [[[["daiminkan", "kakan"], 1]]]]}] },
-    { "display_name": "Open Kong", "value": 2, "when": [{"name": "match", "opts": [["calls"], [[[["daiminkan", "kakan"], 2]]]]}] },
-    { "display_name": "Open Kong", "value": 2, "when": [{"name": "match", "opts": [["calls"], [[[["daiminkan", "kakan"], 3]]]]}] },
-    { "display_name": "Open Kong", "value": 2, "when": [{"name": "match", "opts": [["calls"], [[[["daiminkan", "kakan"], 4]]]]}] },
-    { "display_name": "Concealed Kong", "value": 2, "when": [{"name": "match", "opts": [["calls"], [[[["ankan"], 1]]]]}] },
-    { "display_name": "Concealed Kong", "value": 2, "when": [{"name": "match", "opts": [["calls"], [[[["ankan"], 2]]]]}] },
-    { "display_name": "Concealed Kong", "value": 2, "when": [{"name": "match", "opts": [["calls"], [[[["ankan"], 3]]]]}] },
-    { "display_name": "Concealed Kong", "value": 2, "when": [{"name": "match", "opts": [["calls"], [[[["ankan"], 4]]]]}] },
-    { "display_name": "Full Bloom (Flowers)", "value": 12, "when": [{"name": "match", "opts": [["flowers"], ["all_flowers"]]}] },
-    { "display_name": "Full Bloom (Seasons)", "value": 12, "when": [{"name": "match", "opts": [["flowers"], ["all_seasons"]]}] },
-    { "display_name": "Full Bloom (East)", "value": 12, "when": [{"name": "match", "opts": [["flowers"], [[[["1z"], 4]]]]}] },
-    { "display_name": "Full Bloom (South)", "value": 12, "when": [{"name": "match", "opts": [["flowers"], [[[["2z"], 4]]]]}] },
-    { "display_name": "Full Bloom (West)", "value": 12, "when": [{"name": "match", "opts": [["flowers"], [[[["3z"], 4]]]]}] },
-    { "display_name": "Full Bloom (North)", "value": 12, "when": [{"name": "match", "opts": [["flowers"], [[[["4z"], 4]]]]}] },
-    { "display_name": "Full Bloom (White)", "value": 12, "when": [{"name": "match", "opts": [["flowers"], [[[["0z"], 4]]]]}] },
-    { "display_name": "Full Bloom (Green)", "value": 12, "when": [{"name": "match", "opts": [["flowers"], [[[["6z"], 4]]]]}] },
-    { "display_name": "Full Bloom (Red)", "value": 12, "when": [{"name": "match", "opts": [["flowers"], [[[["7z"], 4]]]]}] },
+    { "display_name": "Flowers", "value": ["flower_count", ""], "when": [{"name": "counter_at_least", "opts": ["flower_count", 1]}]},
+    { "display_name": "Flowers", "value": ["flower_count", ""], "when": [{"name": "counter_at_least", "opts": ["flower_count", 1]}]},
+    { "display_name": "Gold", "value": ["gold_count", ""], "when": [{"name": "counter_at_least", "opts": ["gold_count", 1]}]},
+    { "display_name": "Gold", "value": ["gold_count", ""], "when": [{"name": "counter_at_least", "opts": ["gold_count", 1]}]},
+    { "display_name": "Dealer Continuation", "value": ["dealer_continuation", ""], "when": [{"name": "seat_is", "opts": ["east"]}, {"name": "counter_at_least", "opts": ["dealer_continuation", 1]}] },
+    { "display_name": "Dealer Continuation", "value": ["dealer_continuation", ""], "when": [{"name": "seat_is", "opts": ["east"]}, {"name": "counter_at_least", "opts": ["dealer_continuation", 1]}] },
+    { "display_name": "Open Kong", "value": [2, ""], "when": [{"name": "match", "opts": [["calls"], [[[["daiminkan", "kakan"], 1]]]]}] },
+    { "display_name": "Open Kong", "value": [2, ""], "when": [{"name": "match", "opts": [["calls"], [[[["daiminkan", "kakan"], 2]]]]}] },
+    { "display_name": "Open Kong", "value": [2, ""], "when": [{"name": "match", "opts": [["calls"], [[[["daiminkan", "kakan"], 3]]]]}] },
+    { "display_name": "Open Kong", "value": [2, ""], "when": [{"name": "match", "opts": [["calls"], [[[["daiminkan", "kakan"], 4]]]]}] },
+    { "display_name": "Concealed Kong", "value": [2, ""], "when": [{"name": "match", "opts": [["calls"], [[[["ankan"], 1]]]]}] },
+    { "display_name": "Concealed Kong", "value": [2, ""], "when": [{"name": "match", "opts": [["calls"], [[[["ankan"], 2]]]]}] },
+    { "display_name": "Concealed Kong", "value": [2, ""], "when": [{"name": "match", "opts": [["calls"], [[[["ankan"], 3]]]]}] },
+    { "display_name": "Concealed Kong", "value": [2, ""], "when": [{"name": "match", "opts": [["calls"], [[[["ankan"], 4]]]]}] },
+    { "display_name": "Full Bloom (Flowers)", "value": [12, ""], "when": [{"name": "match", "opts": [["flowers"], ["all_flowers"]]}] },
+    { "display_name": "Full Bloom (Seasons)", "value": [12, ""], "when": [{"name": "match", "opts": [["flowers"], ["all_seasons"]]}] },
+    { "display_name": "Full Bloom (East)", "value": [12, ""], "when": [{"name": "match", "opts": [["flowers"], [[[["1z"], 4]]]]}] },
+    { "display_name": "Full Bloom (South)", "value": [12, ""], "when": [{"name": "match", "opts": [["flowers"], [[[["2z"], 4]]]]}] },
+    { "display_name": "Full Bloom (West)", "value": [12, ""], "when": [{"name": "match", "opts": [["flowers"], [[[["3z"], 4]]]]}] },
+    { "display_name": "Full Bloom (North)", "value": [12, ""], "when": [{"name": "match", "opts": [["flowers"], [[[["4z"], 4]]]]}] },
+    { "display_name": "Full Bloom (White)", "value": [12, ""], "when": [{"name": "match", "opts": [["flowers"], [[[["0z"], 4]]]]}] },
+    { "display_name": "Full Bloom (Green)", "value": [12, ""], "when": [{"name": "match", "opts": [["flowers"], [[[["6z"], 4]]]]}] },
+    { "display_name": "Full Bloom (Red)", "value": [12, ""], "when": [{"name": "match", "opts": [["flowers"], [[[["7z"], 4]]]]}] },
     {
       "display_name": "All Sequences",
-      "value": 10,
+      "value": [10, ""],
       // note: this is probably the slowest yaku to check
       "when": [{"name": "match", "opts": [["hand", "calls", "winning_tile"], [["exhaustive", [["shuntsu"], 5], [["pair"], 1]]]]}]
     },
-    { "display_name": "Only One Flower", "value": 15,
+    { "display_name": "Only One Flower", "value": [15, ""],
       "when": [
         {"name": "match", "opts": [["flowers"], [[[["1f", "2f", "3f", "4f", "1g", "2g", "3g", "4g", "1z", "2z", "3z", "4z", "0z", "6z", "7z"], 1]]]]},
         {"name": "not_match", "opts": [["flowers"], [[[["1f", "2f", "3f", "4f", "1g", "2g", "3g", "4g", "1z", "2z", "3z", "4z", "0z", "6z", "7z"], 2]]]]}
       ]
     },
-    { "display_name": "Golden Pair", "value": 20, "when": [{"name": "match", "opts": [["hand", "calls", "winning_tile"], ["golden_pair"]]}] },
-    { "display_name": "Three Gold Knockdown", "value": 30, "when": [{"name": "counter_at_least", "opts": ["gold_count", 3]}] },
-    { "display_name": "Golden Dragon", "value": 40, "when": [{"name": "match", "opts": [["hand", "calls", "winning_tile"], ["golden_dragon"]]}] },
-    { "display_name": "Robbing the Gold", "value": 50, "when": [{"name": "status", "opts": ["qiangjin"]}] },
-    { "display_name": "Blessing of Heaven", "value": 50, "when": [{"name": "seat_is", "opts": ["east"]}, {"name": "status", "opts": ["first_turn"]}, "won_by_draw"] },
-    { "display_name": "Blessing of Earth", "value": 40, "when": [{"name": "not_seat_is", "opts": ["east"]}, {"name": "status", "opts": ["first_turn"]}, "won_by_draw"] }
+    { "display_name": "Golden Pair", "value": [20, ""], "when": [{"name": "match", "opts": [["hand", "calls", "winning_tile"], ["golden_pair"]]}] },
+    { "display_name": "Three Gold Knockdown", "value": [30, ""], "when": [{"name": "counter_at_least", "opts": ["gold_count", 3]}] },
+    { "display_name": "Golden Dragon", "value": [40, ""], "when": [{"name": "match", "opts": [["hand", "calls", "winning_tile"], ["golden_dragon"]]}] },
+    { "display_name": "Robbing the Gold", "value": [50, ""], "when": [{"name": "status", "opts": ["qiangjin"]}] },
+    { "display_name": "Blessing of Heaven", "value": [50, ""], "when": [{"name": "seat_is", "opts": ["east"]}, {"name": "status", "opts": ["first_turn"]}, "won_by_draw"] },
+    { "display_name": "Blessing of Earth", "value": [40, ""], "when": [{"name": "not_seat_is", "opts": ["east"]}, {"name": "status", "opts": ["first_turn"]}, "won_by_draw"] }
   ],
   "yaku_precedence": {
     "Golden Pair": ["Gold"],
@@ -185,6 +184,41 @@
     "win_by_discard_name": "Hu",
     "win_by_draw_name": "Zimo",
     "exhaustive_draw_name": "Draw"
+  },
+  "after_initialization": {
+    "actions": [
+      // giant add-rules section, go!
+      ["add_rule", "Rules", "Win Condition", "You may win with one of the following:", -100],
+      ["add_rule", "Rules", "Win Condition", "- Five sets (sequences or triplets) and a pair.", -100],
+      ["add_rule", "Rules", "Gold", "After all flowers have been declared, the \"gold tile\" is revealed (top left)."],
+      ["add_rule", "Rules", "Gold", "When the gold tile is revealed, if it is your winning tile, you may instantly declare a win off it (Qiangjin)."],
+      ["add_rule", "Rules", "Gold", "Otherwise, the gold tile is a joker for any tile, but it cannot be used in calls."],
+      ["add_rule", "Rules", "Gold", "If you discard a gold tile, you may only win by self-draw."],
+      ["add_rule", "Rules", "Flowers", "All honour tiles are flowers."],
+      // 2 Point
+      ["add_rule", "2 Points", "Flower Points", "You get 2 points per flower tile."],
+      ["add_rule", "2 Points", "Gold Points", "You get 2 points per gold tile."],
+      ["add_rule", "2 Points", "Dealer Continuation", "The dealer gets 2 points for each dealer continuation."],
+      ["add_rule", "2 Points", "Open Kong", "You get 2 points per open kong."],
+      ["add_rule", "2 Points", "Concealed Kong", "You get 2 points per concealed kong."],
+      // 10 Points
+      ["add_rule", "10 Points", "Base", "You get 10 points for winning."],
+      ["add_rule", "10 Points", "All Sequences", "You have five sequences and a pair."],
+      // 12 Points
+      ["add_rule", "12 Points", "Full Bloom", "Declaring all four of a given type of flower gives 12 points per set."],
+      // 15 Points
+      ["add_rule", "15+ Points", "One Flower (15 Points)", "Your hand has exactly one flower."],
+      // 20 Points
+      ["add_rule", "15+ Points", "Golden Pair (20 Points)", "Your pair is made of two gold tiles."],
+      // 30 Points
+      ["add_rule", "15+ Points", "Three Gold Knockdown (30 Points)", "Your hand contains exactly three gold tiles."],
+      // 40 Points
+      ["add_rule", "15+ Points", "Golden Dragon (40 Points)", "Your hand contains three gold tiles as a triplet."],
+      ["add_rule", "15+ Points", "Blessing of Earth (40 Points)", "A non-dealer player won on their first draw."],
+      // 50 Points
+      ["add_rule", "15+ Points", "Robbing the Gold (50 Points)", "You declared a win off the gold tile when it was revealed."],
+      ["add_rule", "15+ Points", "Blessing of Heaven (50 Points)", "The dealer won on their first draw."]
+    ]
   },
   "functions": {
     "flip_gold_tile": [
@@ -356,20 +390,10 @@
       "show_when": [
         "not_our_turn",
         {"name": "match", "opts": [["hand", "calls", "draw"], ["tenpai"]]},
-        [
-          [
-            {"name": "status_missing", "opts": ["match_start", "tsumo_only"]},
-            {"name": "last_call_is", "opts": ["kakan", "start_flower", "flower"]},
-            [{"name": "caller_status", "opts": ["kan"]}, {"name": "caller_status", "opts": ["flower"]}],
-            {"name": "match", "opts": [["hand", "calls", "last_called_tile"], ["win"]]}
-          ],
-          [
-            {"name": "status", "opts": ["match_start"]},
-            {"name": "last_call_is", "opts": ["start_flower"]},
-            {"name": "caller_status", "opts": ["flower"]},
-            {"name": "match", "opts": [["hand", "flowers", "last_called_tile"], ["8_flowers"]]}
-          ]
-        ],
+        {"name": "status_missing", "opts": ["match_start", "tsumo_only"]},
+        {"name": "last_call_is", "opts": ["kakan", "start_flower", "flower"]},
+        [{"name": "caller_status", "opts": ["kan"]}, {"name": "caller_status", "opts": ["flower"]}],
+        {"name": "match", "opts": [["hand", "calls", "last_called_tile"], ["win"]]},
         {"name": "not_match", "opts": [["hand", "calls", "last_called_tile"], ["false_win"]]}
       ],
       "actions": [["big_text", "Hu"], ["pause", 1000], ["reveal_hand"], ["win_by_call"]],

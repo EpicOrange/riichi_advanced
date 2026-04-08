@@ -11,6 +11,7 @@ defmodule RiichiAdvancedWeb.IndexLive do
     |> assign(:session_id, session["session_id"])
     |> assign(:nickname, Map.get(params, "nickname", ""))
     |> assign(:lang, Map.get(params, "lang", "en"))
+    |> assign(:ruleset, Map.get(params, "ruleset", "riichi"))
     |> assign(:messages, [])
     |> assign(:show_room_code_buttons, false)
     |> assign(:room_code, [])
@@ -42,7 +43,7 @@ defmodule RiichiAdvancedWeb.IndexLive do
       <form class="ruleset-selection-form" phx-submit="redirect">
         <div class="ruleset-selection">
           <%= for {{ruleset, name, desc}, i} <- Enum.with_index(@rulesets) do %>
-            <input type="radio" id={ruleset} name="ruleset" value={ruleset} checked={i==0} phx-update="ignore">
+            <input type="radio" id={ruleset} name="ruleset" value={ruleset} checked={ruleset == @ruleset} phx-change="change_ruleset">
             <label for={ruleset} title={dt(@lang, desc)} data-name={dt(@lang, name)} tabindex={i}><%= dt(@lang, name) %></label>
           <% end %>
           <br/>
@@ -66,7 +67,7 @@ defmodule RiichiAdvancedWeb.IndexLive do
         </div>
       </form>
       <%= if @show_room_code_buttons do %>
-        <.live_component module={RiichiAdvancedWeb.RoomCodeComponent} id="room-code" lang={@lang} set_room_code={&send(self(), {:set_room_code, &1})} />
+        <.live_component module={RiichiAdvancedWeb.RoomCodeComponent} id="room-code" lang={@lang} ruleset={@ruleset} set_room_code={&send(self(), {:set_room_code, &1})} />
       <% end %>
       <div class="index-version"><%= @version %></div>
       <div class="index-bottom-buttons">
@@ -91,6 +92,11 @@ defmodule RiichiAdvancedWeb.IndexLive do
   def handle_event("double_clicked", _assigns, socket), do: {:noreply, socket}
   def handle_event("right_clicked", _assigns, socket), do: {:noreply, socket}
   def handle_event("change_language", %{"lang" => lang}, socket), do: {:noreply, assign(socket, :lang, lang)}
+
+  def handle_event("change_ruleset", %{"ruleset" => ruleset}, socket) do
+    socket = assign(socket, :ruleset, ruleset)
+    {:noreply, socket}
+  end
 
   def handle_event("toggle_show_room_code", _assigns, socket) do
     socket = assign(socket, :show_room_code_buttons, not socket.assigns.show_room_code_buttons)

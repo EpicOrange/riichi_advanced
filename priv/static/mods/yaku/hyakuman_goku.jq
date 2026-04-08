@@ -1,9 +1,12 @@
-.after_initialization.actions += [["add_rule", "Yakuman", "Hyakuman Goku", "\"One Million Stones\". Your hand is purely character tiles whose numbers sum up to at least 100.", 113]]
+.after_initialization.actions += [
+  ["add_rule", "Yakuman", "Hyakuman Goku", "\"One Million Stones\". Your hand is purely character tiles whose numbers sum up to at least 100.", 113],
+  ["update_rule", "Yakuman", "Hyakuman Goku", "%{example_hand}", {"example_hand": ["2m", "3m", "6m", "6m", "6m", "7m", "7m", "3x", "1x", "8m", "8m", "1x", "3x", "9m", "9m", "9m", {"attrs": ["_sideways"], "tile": "9m"}, "3x", "1m"]}]
+]
 |
 .yakuman += [
   {
     "display_name": "Hyakuman Goku",
-    "value": 1,
+    "value": [1, "★"],
     "when": [{"name": "winning_hand_consists_of", "opts": ["1m","2m","3m","4m","5m","6m","7m","8m","9m"]}, {"name": "counter_at_least", "opts": ["hyakuman_goku", 100]}]
   }
 ]

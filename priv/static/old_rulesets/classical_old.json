@@ -50,7 +50,7 @@
     "quad": [[0, 0, 0, 0]],
     "ryanmen/penchan": [[0, 1]],
     "kanchan": [[0, 2]],
-    "ittsu": [[[0,1,2],[3,4,5],[6,7,8]]],
+    "ittsuu": [[[0,1,2],[3,4,5],[6,7,8]]],
     "ton": [["1z", "1z", "1z"]],
     "nan": [["2z", "2z", "2z"]],
     "shaa": [["3z", "3z", "3z"]],
@@ -138,7 +138,7 @@
   "little_four_winds_definition": [[ "unique", [["ton", "nan", "shaa", "pei"], 3], [["ton_pair", "nan_pair", "shaa_pair", "pei_pair"], 1] ]],
   "big_four_winds_definition": [[ "unique", [["ton", "nan", "shaa", "pei"], 4] ]],
   "yaku": [
-    { "display_name": "Pure Straight", "value": 1, "when": [{"name": "match", "opts": [["hand", "calls", "winning_tile"], [["exhaustive", [["ittsu"], 1], [["shuntsu", "koutsu"], 1], [["pair"], 1] ]]]}] },
+    { "display_name": "Pure Straight", "value": 1, "when": [{"name": "match", "opts": [["hand", "calls", "winning_tile"], [["exhaustive", [["ittsuu"], 1], [["shuntsu", "koutsu"], 1], [["pair"], 1] ]]]}] },
     { "display_name": "All Triplets", "value": 1, "when": [{"name": "match", "opts": [["hand", "calls", "winning_tile"], [[[["koutsu"], 4], [["pair"], 1]]]]}] },
     {
       "display_name": "Three Concealed Triplets",

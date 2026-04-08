@@ -1,9 +1,12 @@
-.after_initialization.actions += [["add_rule", "Yakuman", "Kachoufuugetsu", "\"Flower, Bird, Wind, Moon\". Your hand is 555p (5 circles) + 111s (birds) + triplet of round or seat wind + 111p (1 circles).", 113]]
+.after_initialization.actions += [
+  ["add_rule", "Yakuman", "Kachoufuugetsu", "\"Flower, Bird, Wind, Moon\". Your hand is 555p (5 circles) + 111s (birds) + triplet of round or seat wind + 111p (1 circles).", 113],
+  ["update_rule", "Yakuman", "Kachoufuugetsu", "%{example_hand}", {"example_hand": ["5p", "5p", "5p", "1s", "1s", "1s", "1z", "1z", "1z", "1p", "1p", "1p", "2m", "3x", "2m"]}]
+]
 |
 .yakuman += [
   {
     "display_name": "Kachoufuugetsu",
-    "value": 1,
+    "value": [1, "★"],
     "when": [
       {"name": "match", "opts": [["hand", "calls", "winning_tile"], ["kachoufuugetsu"]]},
       [

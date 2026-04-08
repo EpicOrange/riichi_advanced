@@ -6,10 +6,10 @@ defmodule RiichiAdvanced.YakuTest.GalaxyYaku do
     TestUtils.test_yaku_advanced("galaxy", [], """
     {
       "starting_hand": {
-        "east": ["2m", "3m", "14s", "14p", "5m", "6m", "7p", "7p", "17m", "5z", "16z", "1z", "14z"],
+        "east": ["2m", "3m", "14m", "14p", "5m", "6m", "7p", "7p", "17m", "5z", "16z", "1z", "14z"],
         "south": ["1m", "4m", "7m", "2p", "5p", "8p", "3s", "6s", "9s", "5z", "2z", "3z", "4z"],
         "west": ["1m", "4m", "7m", "2p", "5p", "8p", "3s", "6s", "9s", "5z", "2z", "3z", "4z"],
-        "north": ["1m", "3m", "7m", "2p", "5p", "8p", "3s", "6s", "9s", "5z", "2z", "3z", "4z"]
+        "north": ["1m", "3m", "7m", "2p", "5p", "8p", "3s", "6s", "9s", "1z", "2z", "3z", "4z"]
       },
       "starting_draws": ["3p", "1z"]
     }
@@ -19,8 +19,7 @@ defmodule RiichiAdvanced.YakuTest.GalaxyYaku do
       %{"type" => "buttons_pressed", "buttons" => [%{"button" => "ron"}, nil, nil, nil]}
     ], %{
       east: %{
-        yaku: [{"Round Wind", 1}, {"Seat Wind", 1}],
-        yaku2: [],
+        yaku: [{"Round Wind", [1, "Han"]}, {"Seat Wind", [1, "Han"]}],
         minipoints: 40
       }
     })
@@ -43,16 +42,13 @@ defmodule RiichiAdvanced.YakuTest.GalaxyYaku do
       %{"type" => "buttons_pressed", "buttons" => [%{"button" => "ron"}, nil, nil, nil]}
     ], %{
       east: [%{
-        yaku: [{"Haku", 1}],
-        yaku2: [],
+        yaku: [{"Haku", [1, "Han"]}],
         minipoints: 40
       }, %{
-        yaku: [{"Hatsu", 1}],
-        yaku2: [],
+        yaku: [{"Hatsu", [1, "Han"]}],
         minipoints: 40
       }, %{
-        yaku: [{"Chun", 1}],
-        yaku2: [],
+        yaku: [{"Chun", [1, "Han"]}],
         minipoints: 40
       }]
     })
@@ -75,8 +71,7 @@ defmodule RiichiAdvanced.YakuTest.GalaxyYaku do
       %{"type" => "buttons_pressed", "buttons" => [%{"button" => "ron"}, nil, nil, nil]}
     ], %{
       east: [%{
-        yaku: [{"Round Wind", 1}, {"Seat Wind", 1}],
-        yaku2: [],
+        yaku: [{"Round Wind", [1, "Han"]}, {"Seat Wind", [1, "Han"]}],
         minipoints: 40
       }]
     })
@@ -103,19 +98,19 @@ defmodule RiichiAdvanced.YakuTest.GalaxyYaku do
     TestUtils.test_yaku_advanced("galaxy", [], """
     {
       "starting_hand": {
-        "east": ["13m", "14m", "18m", "19m", "12p", "15p", "16p", "17p", "11s", "18s", "14s", "15z", "16z"],
-        "south": ["1m", "4m", "7m", "2p", "5p", "8p", "3s", "6s", "9s", "1z", "2z", "3z", "4z"],
+        "east": ["1m", "4m", "7m", "2p", "5p", "8p", "3s", "6s", "9s", "1z", "2z", "3z", "4z"],
+        "south": ["13m", "14m", "18m", "19m", "12p", "15p", "16p", "17p", "11s", "18s", "14s", "15z", "16z"],
         "west": ["1m", "4m", "7m", "2p", "5p", "8p", "3s", "6s", "9s", "1z", "2z", "3z", "4z"],
         "north": ["1m", "3m", "7m", "2p", "5p", "8p", "3s", "6s", "9s", "1z", "2z", "3z", "4z"]
       },
-      "starting_draws": ["19p"]
+      "starting_draws": ["9p", "19p"]
     }
     """, [
-      %{"type" => "buttons_pressed", "buttons" => [%{"button" => "tsumo"}, nil, nil, nil]}
+      %{"type" => "discard", "tile" => "9p", "player" => 0, "tsumogiri" => true},
+      %{"type" => "buttons_pressed", "buttons" => [nil, %{"button" => "tsumo"}, nil, nil]}
     ], %{
-      east: [%{
-        yaku: [],
-        yaku2: [{"Tenhou", 1}, {"Milky Way", 1}],
+      south: [%{
+        yaku: [{"Chiihou", [1, "★"]}, {"Milky Way", [1, "★"]}],
         minipoints: 30
       }]
     })

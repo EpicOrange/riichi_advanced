@@ -1,4 +1,4 @@
-defmodule RiichiAdvanced.YakuTest.SichuanMechanics do
+defmodule RiichiAdvanced.SichuanMechanicsTest do
   use ExUnit.Case, async: true
   alias RiichiAdvanced.TestUtils, as: TestUtils
 
@@ -306,7 +306,7 @@ defmodule RiichiAdvanced.YakuTest.SichuanMechanics do
       %{"type" => "buttons_pressed", "buttons" => [nil, nil, nil, %{"button" => "chankan"}]}
     ], %{
       north: %{
-        yaku: [{"Robbing The Kong", 1}],
+        yaku: [{"Robbing The Kong", [1, "Fan"]}],
         yaku2: []
       }
     }, %{scores: [-2, 0, 0, 2]})
@@ -341,7 +341,7 @@ defmodule RiichiAdvanced.YakuTest.SichuanMechanics do
       %{"type" => "buttons_pressed", "buttons" => [nil, nil, nil, %{"button" => "ron"}]}
     ], %{
       north: %{
-        yaku: [{"Shoot After Kong", 1}],
+        yaku: [{"Shoot After Kong", [1, "Fan"]}],
         yaku2: []
       }
     }, %{scores: [-2, 0, 0, 2]})
@@ -555,7 +555,7 @@ defmodule RiichiAdvanced.YakuTest.SichuanMechanics do
       %{"player" => 3, "tile" => "7m", "tsumogiri" => true, "type" => "discard"},
       %{"player" => 0, "tile" => "3p", "tsumogiri" => true, "type" => "discard"}
     ], %{
-      east: %{yaku: [{"Full Flush", 2}]},
+      east: %{yaku: [{"Full Flush", [2, "Fan"]}]},
       south: %{yaku: []}
     })
   end
@@ -631,7 +631,7 @@ defmodule RiichiAdvanced.YakuTest.SichuanMechanics do
       %{"player" => 3, "tile" => "7m", "tsumogiri" => true, "type" => "discard"},
       %{"player" => 0, "tile" => "3p", "tsumogiri" => true, "type" => "discard"}
     ], %{
-      east: %{yaku: [{"All Triplets", 1}]},
+      east: %{yaku: [{"All Triplets", [1, "Fan"]}]},
       south: %{yaku: []}
     })
   end

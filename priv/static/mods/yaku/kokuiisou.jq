@@ -1,9 +1,12 @@
-.after_initialization.actions += [["add_rule", "Yakuman", "Kokuiisou", "\"All Black\". Like ryuuiisou but black: you can only have 248p and winds.", 113]]
+.after_initialization.actions += [
+  ["add_rule", "Yakuman", "Kokuiisou", "\"All Black\". Like ryuuiisou but black: you can only have 248p and winds.", 113],
+  ["update_rule", "Yakuman", "Kokuiisou", "%{example_hand}", {"example_hand": ["2p", "2p", "2p", "4p", "4p", "4p", "8p", "8p", "1z", "1z", "1z", "3z", "3z", "3x", "3z"]}]
+]
 |
 .yakuman += [
   {
     "display_name": "Kokuiisou",
-    "value": 1,
+    "value": [1, "★"],
     "when": [{"name": "winning_hand_consists_of", "opts": ["2p","4p","8p","1z","2z","3z","4z"]}]
   }
 ]

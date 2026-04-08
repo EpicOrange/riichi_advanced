@@ -1,5 +1,5 @@
 on after_initialization do
-  add_rule("Rules", "Wall", "(Kin) %{man}x 5m, %{pin}x 5p, and %{sou}x 5s are replaced with gold \"kin dora\" fives that are worth three extra han each.", %{man: !man, pin: !pin, sou: !sou}, -99)
+  add_rule("Tiles", "Kin", "%{man}x %{5m}, %{pin}x %{5p}, and %{sou}x %{5s} are replaced with gold \"kin dora\" fives %{kindora_fives} that are worth three extra han each.", %{man: !man, pin: !pin, sou: !sou, "5m": ["5m"], "5p": ["5p"], "5s": ["5s"], kindora_fives: ["35m", "35p", "35s"]}, -99)
   update_rule("Rules", "Shuugi", "(Kin) If your hand is closed, each kin dora is worth three shuugi chips.")
 end
 
@@ -30,4 +30,9 @@ apply set_merge, "dora_indicators", %{
   "35p": ["6p"],
   "35s": ["6s"],
   "35t": ["6t"]
+}
+
+# add tile indices for stars, tens, and so on
+apply set_merge, "custom_style.tile_indices", %{
+    "35t": "5"
 }

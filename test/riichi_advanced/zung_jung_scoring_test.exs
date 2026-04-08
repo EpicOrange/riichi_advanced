@@ -21,7 +21,7 @@ defmodule RiichiAdvanced.ZungJungScoringTest do
       %{"type" => "buttons_pressed", "buttons" => [nil, %{"button" => "ron"}, nil, nil]}
     ], %{
       south: %{
-        yaku: [{"Thirteen Terminals", 160}]
+        yaku: [{"Thirteen Terminals", [160, "points"]}]
       }
     }, %{delta_scores: [-430, 480, -25, -25]})
   end
@@ -46,7 +46,7 @@ defmodule RiichiAdvanced.ZungJungScoringTest do
       %{"type" => "buttons_pressed", "buttons" => [nil, %{"button" => "ron"}, nil, nil]}
     ], %{
       south: %{
-        yaku: [{"Thirteen Terminals", 160}]
+        yaku: [{"Thirteen Terminals", [160, "points"]}]
       }
     }, %{delta_scores: [-25, 480, -430, -25]})
   end
@@ -72,7 +72,7 @@ defmodule RiichiAdvanced.ZungJungScoringTest do
       %{"type" => "buttons_pressed", "buttons" => [nil, %{"button" => "ron"}, nil, nil]}
     ], %{
       south: %{
-        yaku: [{"Thirteen Terminals", 160}]
+        yaku: [{"Thirteen Terminals", [160, "points"]}]
       }
     }, %{delta_scores: [-25, 480, -430, -25]})
   end
@@ -98,7 +98,7 @@ defmodule RiichiAdvanced.ZungJungScoringTest do
       %{"type" => "buttons_pressed", "buttons" => [nil, %{"button" => "ron"}, nil, nil]}
     ], %{
       south: %{
-        yaku: [{"Thirteen Terminals", 160}]
+        yaku: [{"Thirteen Terminals", [160, "points"]}]
       }
     }, %{delta_scores: [-25, 480, -25, -430]})
   end
@@ -124,7 +124,7 @@ defmodule RiichiAdvanced.ZungJungScoringTest do
       %{"type" => "buttons_pressed", "buttons" => [nil, %{"button" => "ron"}, nil, nil]}
     ], %{
       south: %{
-        yaku: [{"Thirteen Terminals", 160}]
+        yaku: [{"Thirteen Terminals", [160, "points"]}]
       }
     }, %{delta_scores: [-160, 480, -160, -160]})
   end
@@ -145,12 +145,12 @@ defmodule RiichiAdvanced.ZungJungScoringTest do
     ], %{
       east: %{
         yaku: [
-          {"All Triplets", 30},
-          {"Blessing of Heaven", 155},
-          {"Concealed Hand", 5},
-          {"Four Concealed Triplets", 125},
-          {"Four Consecutive Triplets", 200},
-          {"Pure One-Suit", 80}
+          {"All Triplets", [30, "points"]},
+          {"Blessing of Heaven", [155, "points"]},
+          {"Concealed Hand", [5, "points"]},
+          {"Four Concealed Triplets", [125, "points"]},
+          {"Four Consecutive Triplets", [200, "points"]},
+          {"Pure One-Suit", [80, "points"]}
         ],
         displayed_score: 320
       }
@@ -163,10 +163,10 @@ defmodule RiichiAdvanced.ZungJungScoringTest do
       "starting_hand": {
         "east": ["1m", "4m", "7m", "2p", "5p", "8p", "3s", "6s", "9s", "3p", "3p", "3p", "4z"],
         "south": ["1m", "9m", "1p", "9p", "1s", "9s", "1z", "2z", "3z", "4z", "0z", "6z", "7z"],
-        "west": ["1m", "4m", "7m", "2p", "5p", "8p", "3s", "6s", "9s", "4z", "3z", "3z", "7z"],
+        "west": ["1m", "2m", "2m", "4m", "7m", "2p", "5p", "8p", "3s", "6s", "9s", "4z", "7z"],
         "north": ["1m", "4m", "7m", "2p", "5p", "8p", "3s", "6s", "9s", "4z", "0z", "6z", "7z"]
       },
-      "starting_draws": ["3p", "3z", "2m", "1z", "3z", "0z", "3z"]
+      "starting_draws": ["3p", "3z", "2m", "1z", "3z", "2m", "0z", "3z"]
     }
     """, [
       %{"type" => "buttons_pressed", "buttons" => [%{"button" => "ankan"}, nil, nil, nil]},
@@ -174,6 +174,7 @@ defmodule RiichiAdvanced.ZungJungScoringTest do
       %{"type" => "discard", "tile" => "2m", "player" => 1, "tsumogiri" => true}, # east no longer responsible for 3z
       %{"type" => "discard", "tile" => "1z", "player" => 2, "tsumogiri" => true}, # west responsible for 1z!
       %{"type" => "discard", "tile" => "3z", "player" => 3, "tsumogiri" => true}, # north responsible for 3z!
+      %{"type" => "discard", "tile" => "2m", "player" => 0, "tsumogiri" => true},
       %{"type" => "buttons_pressed", "buttons" => [nil, nil, %{"button" => "pon"}, nil]},
       %{"type" => "discard", "tile" => "7z", "player" => 2, "tsumogiri" => false}, # west responsible for 1z,7z!
       %{"type" => "discard", "tile" => "0z", "player" => 3, "tsumogiri" => true}, # north responsible for 3z,0z!
@@ -181,7 +182,7 @@ defmodule RiichiAdvanced.ZungJungScoringTest do
       %{"type" => "buttons_pressed", "buttons" => [nil, %{"button" => "ron"}, nil, nil]} # east deals in, north responsible
     ], %{
       south: %{
-        yaku: [{"Thirteen Terminals", 160}]
+        yaku: [{"Thirteen Terminals", [160, "points"]}]
       }
     }, %{delta_scores: [-25, 480, -25, -430]})
   end

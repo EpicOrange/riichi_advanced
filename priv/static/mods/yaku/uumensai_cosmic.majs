@@ -1,13 +1,15 @@
 on after_initialization do
   delete_rule("2 Han", "Uumensai")
   add_rule("2 Han", "Uumensai", "\"Five Suits Collected\". Your standard hand (4 sets and a pair) includes all five suits (character, circle, bamboo, wind, dragon). Mixed triplets (kontsu) of winds and dragons can be used, but not mixed triplets of suited tiles.")
+  update_rule("2 Han", "Uumensai", "%{example_hand}", %{example_hand: ~t"99s66z 1z4Z2z 2m2M2m 6P45p 9s"})
   add_rule("2 Han", "Uumensai (Cosmic)", "Your standard hand (4 sets and a pair) includes five different kinds of groups. That is, you have five out of: pair, sequence, triplet, kontsu, kan, fuun.")
+  update_rule("2 Han", "Uumensai (Cosmic)", "%{example_hand}", %{example_hand: ~t"78s66z 1z4Z2z 2m2M2m 1x23z1x 9s"})
 end
 
 define_match uumensai_win, ~m"exhaustive, (shuntsu koutsu kontsu_123 kontsu_124 kontsu_134 kontsu_234):4, pair:1"
 
 # remove existing uumensai
-replace_yaku yaku, "Uumensai", 2,
+replace_yaku yaku, "Uumensai", [2, "Han"],
       match(["hand", "calls", "winning_tile"], ["uumensai_win"])
   and match(["hand", "calls", "winning_tile"], ~m"""
     (1m 2m 3m 4m 5m 6m 7m 8m 9m):1,
@@ -16,7 +18,7 @@ replace_yaku yaku, "Uumensai", 2,
     (1z 2z 3z 4z):1, (5z 6z 7z):1
     """)
 
-define_yaku yaku, "Uumensai", 2,
+define_yaku yaku, "Uumensai", [2, "Han"],
       match(["hand", "calls", "winning_tile"], ["standard_win"])
   and match(["hand", "calls", "winning_tile"], ~m"""
       exhaustive, pair:1, koutsu:1, kontsu:1, quad:1, fuun:1

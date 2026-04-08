@@ -134,10 +134,12 @@ defmodule RiichiAdvanced.GameState.Marking do
           |> Enum.map(fn {_src, mark_info} -> mark_info.marked end)
           |> Enum.concat()
           |> Enum.all?(fn {call, _, _} ->
-            call_tile = Utils.get_joker_meld_tile(call, [:"1j"], state.players[marking_player].tile_behavior)
+              # NOTE: this line is hardcoded to only allow swapping out tiles 1j and 2y. If you need to swap out other jokers, edit this. No, `:"joker"` doesn't work.
+            call_tile = Utils.get_joker_meld_tile(call, [:"1j", :"2y"], state.players[marking_player].tile_behavior)
             Utils.same_tile(tile, Utils.strip_attrs(call_tile), state.players[marking_player].tile_behavior) end)
         "match_call_to_marked_hand" ->
-          call_tile = Utils.get_joker_meld_tile(tile, [:"1j"], state.players[marking_player].tile_behavior)
+              # NOTE: this line is hardcoded to only allow swapping out tiles 1j and 2y. If you need to swap out other jokers, edit this. No, `:"joker"` doesn't work.
+          call_tile = Utils.get_joker_meld_tile(tile, [:"1j", :"2y"], state.players[marking_player].tile_behavior)
           state.marking[marking_player]
           |> Enum.filter(fn {src, _mark_info} -> src == :hand end)
           |> Enum.map(fn {_src, mark_info} -> mark_info.marked end)

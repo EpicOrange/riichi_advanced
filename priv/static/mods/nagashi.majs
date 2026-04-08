@@ -37,23 +37,36 @@ on after_scoring do
     end
     as everyone do
       if status("nagashi") do
+        if seat_is("east") do
         # do payout for each other player
-        as others do
-          if equals(!is, "Mangan") do
-            if seat_is("east") do
+          as others do
+            if equals(!is, "Mangan") do
               modify_payout("self", 4000, "subtract")
               modify_payout("prev_seat", 4000, "add")
             else
-              modify_payout("self", 2000, "subtract")
-              modify_payout("prev_seat", 2000, "add")
-            end
-          else
-            if seat_is("east") do
               modify_payout("self", 16000, "subtract")
               modify_payout("prev_seat", 16000, "add")
+            end
+          end
+        else
+        # do payout for each other player
+          as others do
+            if equals(!is, "Mangan") do
+              if seat_is("east") do
+                modify_payout("self", 4000, "subtract")
+                modify_payout("prev_seat", 4000, "add")
+              else
+                modify_payout("self", 2000, "subtract")
+                modify_payout("prev_seat", 2000, "add")
+              end
             else
-              modify_payout("self", 8000, "subtract")
-              modify_payout("prev_seat", 8000, "add")
+              if seat_is("east") do
+                modify_payout("self", 16000, "subtract")
+                modify_payout("prev_seat", 16000, "add")
+              else
+                modify_payout("self", 8000, "subtract")
+                modify_payout("prev_seat", 8000, "add")
+              end
             end
           end
         end

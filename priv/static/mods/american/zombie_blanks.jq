@@ -21,13 +21,16 @@ def add_n_tiles($tile; $num):
 |
 
 # make the blank unpassable
-.after_start.actions += [ ["set_tile_alias_all", ["5z"], [["5z", "_unpassable"]]],
+.after_start.actions += [
+    # make 5z unpassable
+  ["add_attr", ["hand", "draw"], ["_unpassable"], ["5z"]],
+    # this code should work, but it doesn't, so it's commented out
+  # ["set_tile_alias_all", ["5z"], [["5z", "_unpassable"]]],
     # recalculate number of unpassable tiles
   ["as", "all", [
-      ["set_counter", "passables", "count_matches", ["hand", "draw"], [[[["any"], 1]]]],
-      ["subtract_counter", "passables", "count_matches", ["hand", "draw"], [[[[["_unpassable"]], 1]]]]
-    ]
-  ]
+      ["set_counter", "passables", "count_matches", ["hand", "draw"], [[[[["any"]], 1]]]],
+      ["subtract_counter", "passables", "count_matches", ["hand", "draw"], [[[[{"tile": "any", "attrs": ["unpassable"]}], 1]]]]
+  ]]
 ]
 |
 

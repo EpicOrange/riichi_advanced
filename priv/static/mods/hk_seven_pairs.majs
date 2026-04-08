@@ -1,7 +1,7 @@
 on after_initialization do
   add_rule("Rules", "Win Condition", "- Seven pairs (allows repeats).", -100)
   add_rule("4 Fan", "Seven Pairs", "Your hand consists of seven pairs (repeats allowed).")
-  update_rule("4 Fan", "Seven Pairs", "%{example_hand}", %{example_hand: ~t"2266m99p24477s33z 2s"})
+  update_rule("4 Fan", "Seven Pairs", "%{example_hand}", %{example_hand: ~t"2266m999p4477s33z 9p"})
 end
 
 define_set pair, ~s"0 0"

@@ -1,0 +1,113 @@
+# flag that mods can use to turn off this behavior
+define_const kazoe_yakuman_ari, true
+
+on before_scoring do
+  add_scoring_attrs
+  calculate_fu
+  if won_by_draw do
+    make_responsible_for("others")
+  else
+    if won_by_discard do
+      make_responsible_for("last_discarder")
+    else 
+      make_responsible_for("last_caller")
+    end
+  end
+end
+
+def check_limit do
+  if total == 0 and points2 > 0 do
+    total = points2 :: "★"
+    total *= 8000 :: "Yakuman base"
+    modify_winner("score_name", "Yakuman")
+  end
+  if @kazoe_yakuman_ari and total == 0 and points >= 13 do
+    total = points :: "Han"
+    total = 8000 :: "Yakuman base"
+    modify_winner("score_name", "Kazoe Yakuman")
+  end
+  if total == 0 and points >= 11 do
+    total = points :: "Han"
+    total = 6000 :: "Sanbaiman base"
+    modify_winner("score_name", "Sanbaiman")
+  end
+  if total == 0 and points >= 8 do
+    total = points :: "Han"
+    total = 4000 :: "Baiman base"
+    modify_winner("score_name", "Baiman")
+  end
+  if total == 0 and points >= 6 do
+    total = points :: "Han"
+    total = 3000 :: "Haneman base"
+    modify_winner("score_name", "Haneman")
+  end
+  if total == 0 and points >= 5 do
+    total = points :: "Han"
+    total = 2000 :: "Mangan base"
+    modify_winner("score_name", "Mangan")
+  end
+  if total == 0 and points >= 4 and minipoints >= 40 do
+    total = points :: "Han"
+    total = minipoints :: "Fu"
+    total = 2000 :: "Mangan base"
+    modify_winner("score_name", "Mangan")
+  end
+  if total == 0 and points >= 3 and minipoints >= 70 do
+    total = points :: "Han"
+    total = minipoints :: "Fu"
+    total = 2000 :: "Mangan base"
+    modify_winner("score_name", "Mangan")
+  end
+end
+
+# these two are meant to be modifiable by pao mod
+def apply_scoring_modifiers do end
+define_const honba_condition, honba > 0
+
+define_scoring ron do
+  total = 0
+  check_limit
+  if total == 0 do
+    total = points :: "Han"
+    han_mult = 2 ** (total + 2) :: "Han mult."
+    total = minipoints :: "Fu"
+    total *= han_mult :: "Base"
+  end
+  base_score = total # save base_score for mods to use
+  if seat_is("east", as: "winner") do
+    total *= 6 :: "Dealer ron"
+  else
+    total *= 4 :: "Nondealer ron"
+  end
+  apply_scoring_modifiers
+  if total < 12000 or (total < 8000 and not_seat_is("east", as: "winner")) do
+    total = round_up(total, 100) :: "Round up"
+  end
+  if @honba_condition do
+    total += honba * 300 :: "Honba"
+  end
+end
+
+define_scoring tsumo do
+  total = 0
+  check_limit
+  if total == 0 do
+    total = points :: "Han"
+    han_mult = 2 ** (total + 2) :: "Han mult."
+    total = minipoints :: "Fu"
+    total *= han_mult :: "Base"
+  end
+  base_score = total # save base_score for mods to use
+  if seat_is("east", as: "winner") or seat_is("east") do
+    total *= 2 :: "Dealer tsumo"
+  else
+    total *= 1 :: "Nondealer tsumo"
+  end
+  apply_scoring_modifiers
+  if total < 4000 or (total < 2000 and not (seat_is("east", as: "winner") or seat_is("east"))) do
+    total = round_up(total, 100) :: "Round up"
+  end
+  if @honba_condition do
+    total += honba * 100 :: "Honba"
+  end
+end

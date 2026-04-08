@@ -2,16 +2,16 @@ Note: this file is for the `majs` documentation. The `json` documentation is [he
 
 # Table of contents
 
-- [`ruleset.json` basic concepts](#rulesetjson-basic-concepts)
+- [`ruleset.majs` basic concepts](#rulesetmajs-basic-concepts)
   + [The `set` command](#the-set-command)
   + [The `apply` command](#the-apply-command)
   + [The `on` command](#the-on-command)
   + [Conditions](#conditions)
-  + [The `define_auto_button` command](#the-define-auto-button-command)
-  + [The `define_button` command](#the-define-button-command)
+  + [The `define_auto_button` command](#the-define_auto_button-command)
+  + [The `define_button` command](#the-define_button-command)
   + [Interrupts](#interrupts)
   + [Conditions with arguments and complex conditions](#conditions-with-arguments-and-complex-conditions)
-  + [The `define_yaku` command](#the-define-yaku-command)
+  + [The `define_yaku` command](#the-define_yaku-command)
   + [The `match` condition and match specifications](#the-match-condition-and-match-specifications)
   + [American hand match specifications](#american-hand-match-specifications)
   + [Marking](#marking)
@@ -19,12 +19,13 @@ Note: this file is for the `majs` documentation. The `json` documentation is [he
     * [Visual effects via attributes](#visual-effects-via-attributes)
   + [Tile aliasing, i.e. defining jokers](#tile-aliasing-ie-defining-jokers)
     * [Attributes and tile aliasing](#attributes-and-tile-aliasing)
-- [`ruleset.json` full documentation](#rulesetjson-full-documentation)
+- [`ruleset.majs` full documentation](#rulesetmajs-full-documentation)
   + [Actions](#actions)
   + [Conditions](#conditions-1)
   + [Tile specs](#tile-specs)
   + [Match targets](#match-targets)
-  + [Scoring methods](#scoring-methods)
+  + [Scoring methods (new)](#scoring-methods-new)
+  + [Scoring methods (old)](#scoring-methods-old)
     * [`"scoring_method": "multiplier"`](#scoring_method-multiplier)
     * [`"scoring_method": "score_table"`](#scoring_method-score_table)
     * [`"scoring_method": "vietnamese"`](#scoring_method-vietnamese)
@@ -37,7 +38,7 @@ Note: this file is for the `majs` documentation. The `json` documentation is [he
   + [Calculating fu](#calculating-fu)
   + [Setting up next-round logic](#setting-up-next-round-logic)
 
-# `ruleset.json` basic concepts
+# `ruleset.majs` basic concepts
 
 A ruleset is a `.majs` file consisting of a list of commands. Let's start with an empty file.
 This creates the following game:
@@ -90,7 +91,7 @@ https://github.com/user-attachments/assets/523253a2-ca78-40f0-b677-f4ad54530aa8
 
 Because every player has drawn 13 tiles, that leaves 56 tiles in the wall. Note that there is no drawing from the wall quite yet.
 
-Every key like `wall` and `starting_tiles` are called `top-level keys`, and these are the only keys you can set with `set`. These keys define the main moving parts of Riichi Advanced rulesets. A [full documentation](#rulesetjson-full-documentation) of the keys is below this concepts guide.
+Every key like `wall` and `starting_tiles` are called `top-level keys`, and these are the only keys you can set with `set`. These keys define the main moving parts of Riichi Advanced rulesets. A [full documentation](#rulesetmajs-full-documentation) of the keys is below this concepts guide.
 
 ## The `apply` command
 
@@ -177,7 +178,9 @@ In other words, `define_yaku` is a command that takes the following:
 
 - the name of the **yaku list** to add the yaku to
 - the name of the yaku (if you are awarded two yaku of the same name, their values are added together)
-- the value of the yaku
+- the value of the yaku. Typically this is just a number, but you might see one of the following formats:
+  + `[1, "Han"]`: Specifies the unit of points, if it differs from the default.
+  + `counter_name`: When evaluating the yaku, use the value of this counter (numeric variable) as the value.
 - a condition: the game awards the yaku if the condition is satisfied for the winning player.
   + Here the condition is `no_tiles_remaining and won_by_draw`, which is a combination of two conditions.
 
@@ -288,7 +291,7 @@ This concludes the overview of basic concepts in Riichi Advanced rulesets. Note 
 - to check which yaku to award
 - and to check for the existence of tiles in any zone in general.
 
-It is also the most complex condition by far, so it gets its own explainer section below. It is not a basic concept so feel free to skip it and proceed to the [full documentation](#rulesetjson-full-documentation).
+It is also the most complex condition by far, so it gets its own explainer section below. It is not a basic concept so feel free to skip it and proceed to the [full documentation](#rulesetmajs-full-documentation).
 
 ## The `match` condition and match specifications
 
@@ -451,7 +454,7 @@ This adds all of the given `attr`s to all the given `target`s. You can further f
 - `"aside"`: the current player's tiles set aside.
 - `"last_discard"`: the last discard.
 
-As for available `tile_spec`s, [see the relevant section](#tilespecs).
+As for available `tile_spec`s, [see the relevant section](#tile-specs).
 
 There are a couple more actions that add and remove attributes in a specific way, but the goal is to eventually turn them all into `"add_attr"` and `"remove_attr"` targets. (`"remove_attr"` does not yet exist, but for now there is `"remove_attr_hand"` and `"remove_attr_all"`.)
 
@@ -478,7 +481,7 @@ There are a couple of visual effects you can give to a tile by giving it attribu
 - `"sideways"`: Flips the tile sideways.
 - `"transparent"`: Makes the tile look transparent. This transparency is visible to other players, but the identity of the tile is still hidden (it will just look like a transparent blank tile). Combine this with `"revealed"` to get Washizu tiles.
 
-For custom akadora (transparent tiles whose names are prefixed with `4`, see [tiles.md](tiles.md#akaaokintransparent)) the following attributes define the color of the tile:
+For custom akadora (transparent tiles whose names are prefixed with `4` or `5`, see [tiles.md](tiles.md#akaaokintransparent)) the following attributes define the color of the tile:
 
 - `"_red"`: same as akadora
 - `"_blue"`: same as aodora
@@ -510,6 +513,10 @@ tells the matching engine "whenever you look for a seven, you may take any three
 
 There is also `set_tile_alias([from], [to])`, which only sets the aliasing/joker relationship for the current player, meaning only the current player can use the specified `from` tiles as the specified jokers.
 
+Note that `"any"` is simply shorthand for "any tile in the `wall`", which might pose an issue if you are playing with tiles that aren't in the `wall`. In that case you might want to explicitly add such tiles alongside `"any"`:
+
+- `set_tile_alias_all(["3s"], ["any", "3t"])`
+
 ### Attributes and tile aliasing
 
 You may also use tiles with attributes in either `from` or `to` when setting tile aliases. Here's an example from the galaxy ruleset.
@@ -520,9 +527,15 @@ A galaxy east wind `"11z"` can be used as any wind `"1z","2z","3z","4z"`, but th
 
 The problem with adding an attribute merely for scoring purposes is that attributes are tied to the match engine, and so we have the unfortunate situation where `"11z"` doesn't map to `"1z"`, making `["1z", "11z"]` not a valid pair to the matching engine. You can avoid this by prefixing your attribute with `"_"`, which renders the attribute invisible to tile comparisons. Note that `"_original"` and `"original"` are considered the same attribute otherwise -- the attribute is still there and match specifications can check for that attribute, it's just ignored when comparing two tiles.
 
+### The joker solver
+
+At scoring time, the engine solves for all possible joker assignments (up to some unspecified limit) and scores the hand according to each possible assignment. The underlying mechanism involves encoding the hand and feeding it into a SMT solver (z3) to solve for the identity of each joker.
+
+The only significant ruleset-writing "gotcha" that arises from this method, is that `"any"` jokers are shorthandthe joker solver uses the tiles in the wall to determine what jokers can be
+
 ---
 
-# `ruleset.json` full documentation
+# `ruleset.majs` full documentation
 
 Here are all the toplevel keys. Every key is optional.
 
@@ -536,7 +549,7 @@ Events:
 - `after_saki_start`: Triggers after all players have drafted their saki cards in the sakicards gamemode. This is only here because I hardcoded this interaction and may remove it in the future. Context: `seat` is the current seat (so, east).
 - `after_scoring`: Triggers after payouts are calculated but before they are shown and applied, which happens once per winner or exhaustive/abortive draw.
 - `after_start`: Triggers at the start of each round, which is after the initial turn change to east. (i.e. runs after`after_turn_change`). Context: `seat` is the current seat (so, east). Note that for new games, player messages might not have loaded yet, so running `push_message` actions here will have no effect.
-- `after_turn_change`: Triggers at the end of each turn change. Context: `seat` is the seat whose turn it is after the turn change.
+- `after_turn_change`: Triggers at the end of each turn change. Calls don't trigger this. Context: `seat` is the seat whose turn it is after the turn change.
 - `after_win`: Triggers at the end of a win, after yaku is calculated, but before the yaku screen is shown.
 - `before_abortive_draw`: Triggers before an abortive draw is called. Context: `seat` is the seat whose turn it is at the time of the abortive draw.
 - `before_call`: Triggers at the start of any call. Context: `seat` is the caller's seat, `caller` is the caller's seat, `callee` is the seat called from, and `call` contains call information.
@@ -545,7 +558,7 @@ Events:
 - `before_exhaustive_draw`: Triggers before an exhaustive draw is called. Context: `seat` is the seat whose turn it is at the time of the exhaustive draw.
 - `before_scoring`: Triggers right before a win is called, before yaku is calculated. Same as `before_win`, but happens after the joker solver is run (if applicable).
 - `before_start`: Triggers before a new round begins. This is useful to influence whether the game should continue or not (e.g. for tobi calculations).
-- `before_turn_change`: Triggers at the start of each turn change. Context: `seat` is the seat whose turn it is before the turn change.
+- `before_turn_change`: Triggers at the start of each turn change. Calls don't trigger this. Context: `seat` is the seat whose turn it is before the turn change.
 - `before_win`: Triggers right before a win is called, before yaku is calculated. Context: `seat` is the seat who called the win.
 - `on_no_valid_tiles`: Triggers on someone's turn (after `after_turn_change`) if they cannot discard any tiles.
 - `play_effects`: This is not actually an event like the others. Instead it is a list of action lists triggered on discards, where each action list is conditioned on the identity of the tile being discarded. Context: `seat` is the seat who played a tile, and `tile` is the played tile.
@@ -580,8 +593,8 @@ Buttons:
 
 Mods:
 
-- `available_mods`: List of available mods
-- `default_mods`: List of mods enabled by default
+- `available_mods`: List of available mods. See the [mods documentation]](./mods.md)
+- `default_mods`: List of ids of mods that are enabled by default
 
 Rules:
 
@@ -621,7 +634,7 @@ Saki:
 Other:
 
 - `custom_style`: an object containing any or all of the following keys:
-  + `tile_indices`: Small number or letter displayed for a given tile when tile indices are enabled (123 button at bottom).
+  + `tile_indices`: Small number or letter displayed for a given tile when tile indices are enabled (123 button at bottom). Slashes (`/`) and some other special characters are not allowed in tile indices. (TODO: document which ones)
   + `tile_back_color`: Color of tile back.
   + `tile_side_back_color`: Color of tile back on the side of tiles.
   + `tablecloth_color`: Color of the tablecloth.
@@ -775,7 +788,7 @@ Colors are specified as CSS color strings like `"#808080"` or `"lightblue"`. Exa
 - `merge_draw`: Move the draw into the hand. This action will be removed in the future in favor of `"move_tiles"`.
 - `pass_draws(seat_spec, num)`: Move up to `num` tiles from the current player's draw to the given seat's draw. This action will be removed in the future in favor of `"move_tiles"`.
 - `saki_start`: Prints some messages about what cards each player chose, and triggers the `after_saki_start` event.
-- `modify_winner(key, value, method)`: Only available in `"after_win"`, which runs on every win. Replaces the one of the following possible properties of the current winner after their points have been calculated. Example: `modify_winner("score_name", "Mangan")`. This will only affect the win screen; to modify the final payouts, see the next action `"modify_payout"`.
+- `modify_winner(key, value, method)`: Only available in win-related events, namely `"before_win"`, `"before_scoring"`, `"after_scoring"`, and `"after_win"`, which all run once per winner. (Note: if using the old scoring system, this is only available in `"after_win".`) Replaces the one of the following possible properties of the current winner. Example: `modify_winner("score_name", "Mangan")`. This will only affect text on the win screen; to modify the final payouts, see the next action `"modify_payout"`, or consult the section [Scoring methods (new)](#scoring-methods-new).
   + Allowed values for `key` are:
     * `key = "score"`: Final score, displayed at the bottom of the win screen.
     * `key = "points"`: Points (e.g. han)
@@ -801,7 +814,7 @@ Colors are specified as CSS color strings like `"#808080"` or `"lightblue"`. Exa
   + For string values (everything else):
     * `method = "prepend"`
     * `method = "append"`
-- `modify_payout(seat, amount, method)`: Only available in `"after_scoring"`, which runs once per winner, or one time after an exhaustive or abortive draw. This action directly modifies the payouts incurred in the scoring phase by adding `amount` to `seat`'s final payout. For example, to have dealer pay everyone 1000, you might do `modify_payout("east", -3000); modify_payout("not_east", 1000)]`.
+- `modify_payout(seat, amount, method)`: **Note that this action is basically completely superceded by the [new scoring system](#scoring-methods-new).** Only available in `"after_scoring"`, which runs once per winner, or one time after an exhaustive or abortive draw. This action directly modifies the payouts incurred in the scoring phase by adding `amount` to `seat`'s final payout. For example, to have dealer pay everyone 1000, you might do `modify_payout("east", -3000); modify_payout("not_east", 1000)]`.
   + Available values for `seat`: everything usable by the `"as"` action is usable here. In particular, you might want to use `"others"` when `"won_by_draw"` is true, and `"last_discarder"` otherwise.
   + Available values for `amount`: every amount usable by the `"set_counter"` action is usable here.
   + Available values for `method`: See the above action, `"modify_winner"`. Defaults to `"add"`.
@@ -845,12 +858,9 @@ Prepend `"not_"` to any of the condition names to negate it.
 - `won_by_draw`: The winner won by drawing the winning tile.
 - `won_by_discard`: The winner won by stealing the discard tile.
 - `minipoints_equals(fu)`: The winning player has the given amount of minipoints.
-- `has_yaku_with_hand(han)`: Using the current player's draw as the winning tile, the current player's hand scores at least `han` points using the yaku in `.score_calculation.yaku_lists`. Example: `has_yaku_with_hand(1)`
-- `has_yaku_with_discard(han)`: Using the last discard as the winning tile, the current player's hand scores at least `han` points using the yaku in `.score_calculation.yaku_lists`. Example: `has_yaku_with_discard(1)`
-- `has_yaku_with_call(han)`: Using the last called tile as the winning tile, the current player's hand scores at least `han` points using the yaku in `.score_calculation.yaku_lists`. Example: `has_yaku_with_call(1)`
-- `has_yaku2_with_hand(han)`: Using the current player's draw as the winning tile, the current player's hand scores at least `han` points using the yaku in `.score_calculation.yaku2_lists`. Example: `has_yaku_with_hand(1)`
-- `has_yaku2_with_discard(han)`: Using the last discard as the winning tile, the current player's hand scores at least `han` points using the yaku in `.score_calculation.yaku2_lists`. Example: `has_yaku_with_discard(1)`
-- `has_yaku2_with_call(han)`: Using the last called tile as the winning tile, the current player's hand scores at least `han` points using the yaku in `.score_calculation.yaku2_lists`. Example: `has_yaku_with_call(1)`
+- `has_yaku_with_hand(points, point_name, minipoints)`: Using the current player's draw as the winning tile, the current player's hand scores at least `points` `point_name` using the yaku in `.score_calculation.yaku_lists`. You may optionally also test for at least `minipoints` minipoints. Example: `has_yaku_with_hand(4, "Han", 30)`
+- `has_yaku_with_discard(points, point_name, minipoints)`: Using the last discard as the winning tile, the current player's hand scores at least `points` `point_name` using the yaku in `.score_calculation.yaku_lists`. You may optionally also test for at least `minipoints` minipoints. Example: `has_yaku_with_discard(4, "Han", 30)`
+- `has_yaku_with_call(points, point_name, minipoints)`: Using the last called tile as the winning tile, the current player's hand scores at least `points` `point_name` using the yaku in `.score_calculation.yaku_lists`. You may optionally also test for at least `minipoints` minipoints. Example: `has_yaku_with_call(4, "Han", 30)`
 - `tiles_match([tile1, tile2, ...], [tile_spec1, tile_spec2, ...])`: The provided tiles all match any of the given tile specs. See the [tile specs section](#tile-specs) for details.
 - `last_discard_matches(tile_spec1, tile_spec2, ...)`: The last discard matches one of the given tile specs. See the [tile specs section](#tile-specs) for details.
 - `last_called_tile_matches(tile_spec1, tile_spec2, ...)`: The last called tile matches one of the given tile specs. See the [tile specs section](#tile-specs) for details.
@@ -885,7 +895,7 @@ Prepend `"not_"` to any of the condition names to negate it.
 - `all_saki_cards_drafted`: Everyone has at least one saki card.
 - `has_existing_yaku(yaku1, yaku2, ...)`: Used in `meta_yaku` only. The winner has scored all of the given yaku.
 - `has_no_yaku`: Used in `meta_yaku` only. The winner has scored no yaku.
-- `placement`: The current player has the given placement (1-4).
+- `placement(num)`: The current player has the given placement (`num` = 1-4).
 - `last_discard_matches_existing`: The last discarded tile matches one of the current player's existing discards (includes called discards) (uses jokers).
 - `called_tile_matches_any_discard`: The last called tile matches one of anybody's existing discards (excludes called discards) (uses jokers).
 - `last_discard_exists`: The last discarded tile was not taken by another player.
@@ -913,6 +923,8 @@ Prepend `"not_"` to any of the condition names to negate it.
 - `genbutsu_toimen`: The last discard was genbutsu against toimen.
 - `genbutsu_shimocha`: The last discard was genbutsu against shimocha.
 - `can_discard_after_call`: Used in `"call_conditions"`, checks if you are able to discard a tile immediately after calling. Right now this only works for regular calls (i.e. not upgrade calls).
+
+For examples of how these are used, just search the ruleset/mods.
 
 ## Tile specs
 
@@ -942,7 +954,7 @@ You can also prepend `"not_"` to any of these to get the inverse specification.
 
 There's quite a few possible match targets that can be passed as the first argument to `"match"`, and here they are.
 
-- `"hand"`: selects the player's hand (not draw).
+- `"hand"`: selects the player's hand (not draw). If you have jokers, then jokers are replaced with the tile they represent, but only during `before_scoring`.
 - `"draw"`: selects the player's draw.
 - `"pond"`: selects the player's visible pond (not called tiles).
 - `"discards"`: selects the player's discards, including called discards.
@@ -953,8 +965,6 @@ There's quite a few possible match targets that can be passed as the first argum
 - `"jokers"`: selects the player's jokers set aside (including starting jokers). 
 - `"start_jokers"`: selects the player's starting jokers set aside only.
 - `"call_tiles"`: selects the player's calls as if their tiles were part of the hand (therefore their tiles can be combined with tiles in hand).
-- `"assigned_hand"`: selects the player's hand + draw, but with jokers replaced with their actual value. Only usable after or during the `after_win` event. Does not include the winning tile.
-- `"assigned_calls"`: selects the player's calls but with jokers replaced with their actual value. Only usable after or during the `after_win` event. 
 - `"winning_hand"`: selects the winning hand + call tiles + winning tile. Only usable during or after `"before_win"`. If used in `"before_win"`, you get the winning hand with jokers, but if used during or after `"before_scoring"`, then those jokers get replaced by actual values.
 - `"winning_tile"`: selects the winning tile. Only usable during or after `"before_win"`. Note that if the winning tile is a joker tile, it will remain a joker tile when checked in `"before_win"`, but will be replaced by its actual value during `"before_scoring"` and after.
 - `"last_call"`: selects the last call made by any player.
@@ -990,7 +1000,58 @@ In addition, a couple selectors allow you to select _multiple_ targets. For exam
 - `"self_joker_meld_tiles"`: selects one nonjoker tile from own exposed calls containing a joker. (Used in malaysian mahjong)
 - `"anyone_joker_meld_tiles"`: selects one nonjoker tile from each exposed call containing a joker. (Used in american mahjong)
 
-## Scoring methods
+## Scoring methods (new)
+
+There now exists a more customizable way to do scoring. The old scoring system still works, though, and the documentation for that comes [right after this section](#scoring-methods-old).
+
+There are two steps for scoring:
+
+- Run the action `make_responsible_for(seats)` at some point prior to scoring (e.g. `before_win` event). This makes `seats` responsible for paying all the current player's yaku.
+- Run `win_by_discard(key)`, `win_by_draw(key)`, or `win_by_call(key)`. This can occur before or after the `make_responsible_for` call
+- Write scoring logic using the `define_scoring(key)` command, which is called by the above. Counter assignments can be suffixed with `:: "Message"` to display that assignment as a message in the scoring screen ledger box (which appears when hovering over arrows).
+
+Here's an example:
+
+    on before_win do
+      if won_by_draw do
+        # make non-winners responsible for all yaku
+        make_responsible_for("others")
+      else
+        if won_by_discard do
+          make_responsible_for("last_discarder")
+        else 
+          make_responsible_for("last_caller")
+        end
+      end
+    end
+
+    define_scoring ron do
+      total = points :: "Han"
+      han_mult = 2 ** (total + 2) :: "Han mult."
+      total = fu :: "Fu"
+      total *= han_mult :: "Base"
+      if seat_is("east", as: "winner") do
+        total *= 6 :: "Dealer ron"
+      else
+        total *= 4 :: "Nondealer ron"
+      end
+      total = round_up(total, 100) :: "Round up"
+    end
+
+    # (somewhere)
+    win_by_discard("ron")
+
+This leads to something like:
+
+![](example_score_exchange.png)
+
+In summary, within `define_scoring` you can optionally label assignments by annotating them with `::`. Each usage of `::` will show up on the score exchange screen as shown above. The result of the final assignment using `::` is taken as the actual final score to be paid by the current player to the winner. (So there's nothing special about the name "total".)
+
+The game switches to this scoring system if _any_ `define_scoring` command exists. At the moment it doesn't handle everything (in particular, names of things), so you still need to set `score_calculation` using the old system for things like point names.
+
+Although the above handles all scoring, it doesn't handle any text, which is where `modify_winner` comes in. Please refer to the `modify_winner` action in the actions list above.
+
+## Scoring methods (old)
 
 Scoring refers to the exchange of points after a win or a draw. To enable scoring, the `"score_calculation"` key must exist and must contain an array under a `"yaku_lists"` key:
   
@@ -1132,30 +1193,16 @@ Riichi also specifies the key `"yaku2_overrides_yaku1": true`, which means if an
 
 All of the keys described below are optional.
 
-After score is calculated, there are two keys that can cap the score to a minimum and maximum: `max_score` and `min_score`. For example:
+**Min and max score**
+
+After score is calculated, there are two keys that can cap the score to a minimum and maximum: `min_score` and `max_score`. For example:
 
     apply append, score_calculation, {
       "min_score": 1,
       "max_score": 500
     }
 
-For three-player variants, a win by self-draw typically pays less than a win by discard. For example, a dealer mangan tsumo in riichi is worth 12000 (4000 per player), but is worth only 8000 in three player due to tsumo loss. You can disable tsumo loss by setting the following:
-
-    apply append, score_calculation, {
-      "tsumo_loss": false
-    }
-
-This will take the 'lost' portion of the payment and split it equally between the two paying players.
-
-Other allowed values for `"tsumo_loss"` beyond `true` and `false` are:
-
-- `"add_1000"`: A flat 1000 is added to each player's payment.
-- `"unequal_split"`: When a nondealer wins, the missing payment is split so that the dealer still pays roughly double the payment for the other nondealer.
-- `"north_split"`: This is the same behavior as `false`.
-- `"equal_split"`: The missing payment is split so that both players pay the same amount.
-- `"north_to_oya"`: The missing payment is paid by the dealer.
-- `"double_collection"`: Both players pay the full amount including the missing payment, which effectively doubles the payment.
-- `"ron_loss"`: Tsumo loss is on, but the loss is also applied to ron as well.
+**Triple ron draw**
 
 If triple ron should be treated as an abortive draw, set:
 
@@ -1163,7 +1210,9 @@ If triple ron should be treated as an abortive draw, set:
       "triple_ron_draw": true
     }
 
-In American mahjong, the hands are typically arranged using the definition of the hand on the card. To enable this, set:
+**Amerijong options**
+
+In American mahjong, winning hands are typically arranged using the definition of the hand on the card. To enable this, set:
 
     apply append, score_calculation, {
       "arrange_american_yaku": true
@@ -1351,11 +1400,11 @@ The above manipulations will leave you with multiple possibilities for (hand, ca
 - `put_calls_in_hand([call_name, call_name2, ...])`: Moves all of the specified calls into the hand. If no argument is given, all calls are moved.
 - `put_winning_tile_in_hand`: Adds all possible winning tiles to the hand. (This adds one tile to each possibility.)
 
-The list of actions should end with `take_maximum"` in order to reduce the list of possible (hand, calls, fu) tuples to the maximum possible. The calculated fu will be the fu for the first possibility in the list.
+The list of actions should end with `take_maximum"` in order to reduce the list of possible (hand, calls, fu) tuples to the single tuple with maximum fu. You can end with multiple resulting possibilities, in which case the first one is taken as the calculated fu amount.
 
-Note that every one of these actions can take a second `condition` parameter, just like `add`, but for efficiency reasons, only `add` can test for minipoints.
+Note that every one of these actions can take a second `condition` parameter, just like `add`, but for efficiency reasons, only `add` conditions can test for minipoints like with `minipoints_equals` (see above list).
 
-Also note that the above doesn't handle yakuhai pair fu and terminal/honor triplet fu. These are addressed in a somewhat convoluted way by adding attributes to certain tiles prior to fu calculation -- to see what's up, check out [the ruleset file](/priv/static/rulesets/riichi.majs).
+Also note that the above example doesn't handle yakuhai pair fu and terminal/honor triplet fu. These are addressed in a somewhat convoluted way by adding attributes to certain tiles prior to fu calculation -- to see what's up, check out [the ruleset file](/priv/static/rulesets/riichi.majs).
 
 ## Setting up next-round logic
 
@@ -1365,15 +1414,14 @@ After a win there are a few decisions to be made:
 - Who is the next dealer?
 - Do you increase the repeat counter?
 
-In general, 
+In general, these are all controlled by the following keys in the `"score_calculation"` object, which all default to false or unset:
 
-These are all controlled by the following keys in the `"score_calculation"` object, which all default to false or unset:
-
-    apply append, score_calculation, {
+    "score_calculation": {
       "tobi": (unset),
       "next_dealer_is_first_winner": false,
       "agarirenchan": false,
       "tenpairenchan": false,
+      "ryuukyokurenchan": false,
       "notenrenchan_south": false,
     }
 
@@ -1383,6 +1431,7 @@ Here's how they work:
 - `"next_dealer_is_first_winner"`: if true, then the (first) winner becomes the next round's dealer.
 - `"agarirenchan"`: if true, the round repeats if the dealer wins.
 - `"tenpairenchan"`: if true, the round repeats if the dealer is tenpai at exhaustive draw.
+- `"ryuukyokurenchan"`: if true, the round repeats at exhaustive draw.
 - `"notenrenchan_south"` if true, the round repeats if it's South round and no one is tenpai at exhaustive draw.
 
 Regardless of the above settings, the honba (repeat) counter is incremented when the dealer wins or an exhaustive draw happens, and is reset when a nondealer wins.
