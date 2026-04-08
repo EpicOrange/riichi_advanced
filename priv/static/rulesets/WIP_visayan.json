@@ -1,15 +1,19 @@
 // TODOS:
-// * change Filipino rules to Visayan rules
-  // * add call "Beauty": this is a chow of 067z, and can only be formed in the first round.
-    // * check to see whether it has to be revealed in the first round, if one intends to use it in this way.
-  // * add call "NEWS": this is a kong of 1234z, and can only be formed in the first round.
-    // * ibid.
-    // * check whether one can call for NEWS or if it has to be concealed-only
-  // * add constraints that only allow you to call these during the first round.
-  // * check precedences of "Beauty" and "NEWS" calls over standard chii/pon/kan.
+// * check what "a first-round discard called in turn" means on the MahjongPros ruleset
 
-// * add rule tabs (is this possible in .json?)
+// * allow player to win with undeclared Beauty in hand on first turn
+// * allow player to win with a discard that completes Beauty on first turn
+// * disallow player from winning with undeclared Beauty (???)
+
+// * add rule tabs
 // * implement headbump based on Paningit headbumping Single headbumping Back to Back, and seat order otherwise
+  // * see the following code for b30fj's call priority as an example
+    // "call_priority_list": [
+    //   [{"name": "not_call_choice_contains", "opts": [["10j", "12j", "3j", "14j", "15j", "16j", "17j", "18j"], 1]}],
+    //   [{"name": "call_choice_contains", "opts": [["14j", "15j", "16j", "17j", "18j"], 1]}],
+    //   [{"name": "call_choice_contains", "opts": [["12j", "3j"], 1]}],
+    //   [{"name": "call_choice_contains", "opts": [["10j"], 1]}]
+    // ],
 // * fix any other misc bugs
 // * implement mods
 
@@ -181,7 +185,11 @@
     ]
   },
   "after_start": {
-    "actions": [["set_status_all", "first_turn", "match_start", "no_initial_flowers"]]]
+    "actions": [
+      ["set_status_all", "first_turn", "match_start", "no_initial_flowers"],
+      ["set_tile_ordering_all", ["1z", "2z", "3z", "4z", "1z"]],
+      ["set_tile_ordering_all", ["0z", "6z", "7z", "0z"]]
+    ]
   },
   "buttons": {
     "start_flower": {
@@ -209,32 +217,69 @@
     "chii": {
       "display_name": "Chow",
       "call": [[-2, -1], [-1, 1], [1, 2]],
+      "call_conditions": [
+        {"name": "match", "opts": [["called_tile"], [[[["1z","2z","3z","4z","0z","6z","7z"], -1]]]]}
+      ],
       "show_when": [{"name": "status_missing", "opts": ["match_start"]}, "not_our_turn", "not_no_tiles_remaining", "kamicha_discarded", "call_available"],
       "actions": [["big_text", "Chow"], ["call"], ["change_turn", "self"]]
     },
-      // TODO: implement these calls
     "chii_beauty": {
       "display_name": "Beauty",
-        // TODO: fix this call definition
       "call": [[-2, -1], [-1, 1], [1, 2]],
-        // TODO: add a check for whether this is still the first go-around of the game.
-      "show_when": [{"name": "status_missing", "opts": ["match_start"]}, "not_our_turn", "not_no_tiles_remaining", "kamicha_discarded", "call_available"],
-      "actions": [["big_text", "Beauty"], ["call"], ["change_turn", "self"]]
+      "call_conditions": [
+        {"name": "match", "opts": [["called_tile"], [[[["0z","6z","7z"], 1]]]]}
+      ],
+      "show_when": [{"name": "status_missing", "opts": ["match_start"]}, {"name": "status", "opts": ["first_turn"]}, "not_our_turn", "not_no_tiles_remaining", "kamicha_discarded", "call_available"],
+      "actions": [["big_text", "Beauty"], ["call"], ["change_turn", "self"]],
+      "precedence_over": ["chii"]
     },
     "concealed_beauty": {
       "display_name": "Beauty",
-        // TODO: fix this call definition
       "call": [[-2, -1], [-1, 1], [1, 2]],
-        // TODO: add a check for whether this is still the first go-around of the game.
-      "show_when": [{"name": "status_missing", "opts": ["match_start"]}, "our_turn", "not_no_tiles_remaining", "has_draw", "self_call_available"],
+      "call_conditions": [
+        {"name": "match", "opts": [["called_tile"], [[[["0z","6z","7z"], 1]]]]}
+      ],
+      "show_when": [{"name": "status_missing", "opts": ["match_start"]}, {"name": "status", "opts": ["first_turn"]}, "our_turn", "not_no_tiles_remaining", "has_draw", "self_call_available"],
       "actions": [["big_text", "Beauty"], ["call"], ["change_turn", "self"]]
+    },
+    "news": {
+      "display_name": "NEWS",
+      "call": [[1, 2, 3]],
+      "call_conditions": [
+        {"name": "match", "opts": [["called_tile"], [[[["1z","2z","3z","4z"], 1]]]]}
+      ],
+      "show_when": [{"name": "status_missing", "opts": ["match_start"]}, {"name": "status", "opts": ["first_turn"]}, "not_our_turn", "not_no_tiles_remaining", "kamicha_discarded", "call_available"],
+      "actions": [
+        ["big_text", "NEWS"], ["call"],
+        ["add_score", 1], ["subtract_score", 1, "last_discarder"], ["as", "last_discarder", [["big_text", "  -1  "]]],
+        ["change_turn", "self"],
+        ["set_status", "kan"],
+        ["draw", 1, "opposite_end"]
+      ],
+      "precedence_over": ["chii"]
+    },
+    "concealed_news": {
+      "display_name": "NEWS",
+      "call": [[1, 2, 3]],
+      "call_conditions": [
+        {"name": "match", "opts": [["called_tile"], [[[["1z","2z","3z","4z"], 1]]]]}
+      ],
+      "show_when": [{"name": "status_missing", "opts": ["match_start"]}, {"name": "status", "opts": ["first_turn"]}, "our_turn", "not_no_tiles_remaining", "has_draw", "self_call_available"],
+      "actions": [
+        ["big_text", "NEWS"], ["self_call"],
+        ["set_status", "kan"],
+        ["when", [{"name": "not_shimocha_status", "opts": ["won"]}], [["add_score", 1], ["subtract_score", 1, "shimocha"], ["as", "shimocha", [["big_text", "  -1  "]]]]],
+        ["when", [{"name": "not_toimen_status", "opts": ["won"]}], [["add_score", 1], ["subtract_score", 1, "toimen"], ["as", "toimen", [["big_text", "  -1  "]]]]],
+        ["when", [{"name": "not_kamicha_status", "opts": ["won"]}], [["add_score", 1], ["subtract_score", 1, "kamicha"], ["as", "kamicha", [["big_text", "  -1  "]]]]],
+        ["draw", 1, "opposite_end"]
+      ]
     },
     "pon": {
       "display_name": "Pung",
       "call": [[0, 0]],
       "show_when": [{"name": "status_missing", "opts": ["match_start"]}, "not_our_turn", "not_no_tiles_remaining", "someone_else_just_discarded", "call_available"],
       "actions": [["big_text", "Pung"], ["call"], ["change_turn", "self"]],
-      "precedence_over": ["chii"]
+      "precedence_over": ["chii", "chii_beauty", "news"]
     },
     "daiminkan": {
       "display_name": "Kang",
@@ -247,12 +292,12 @@
         ["set_status", "kan"],
         ["draw", 1, "opposite_end"]
       ],
-      "precedence_over": ["chii", "pon"]
+      "precedence_over": ["chii", "pon", "chii_beauty", "news"]
     },
     "ankan": {
       "display_name": "Secret",
       "call": [[0, 0, 0]],
-      "show_when": [{"name": "status_missing", "opts": ["match_start"]}, "our_turn", "not_no_tiles_remaining", "has_draw", "self_call_available", {"name": "status_missing", "opts": ["just_reached"]}],
+      "show_when": [{"name": "status_missing", "opts": ["match_start"]}, "our_turn", "not_no_tiles_remaining", "has_draw", "self_call_available"],
       "actions": [
         ["big_text", "Secret"], ["self_call"],
         ["set_status", "kan"],
@@ -266,39 +311,9 @@
       "display_name": "Sagása",
       "call": [[0, 0, 0]],
       "upgrades": "pon",
-      "show_when": [{"name": "status_missing", "opts": ["match_start"]}, "our_turn", "not_no_tiles_remaining", "has_draw", "can_upgrade_call", {"name": "status_missing", "opts": ["just_reached"]}],
+      "show_when": [{"name": "status_missing", "opts": ["match_start"]}, "our_turn", "not_no_tiles_remaining", "has_draw", "can_upgrade_call"],
       "actions": [
         ["big_text", "Sagása"], ["upgrade_call"],
-        ["set_status", "kan"],
-        ["when", [{"name": "not_shimocha_status", "opts": ["won"]}], [["add_score", 1], ["subtract_score", 1, "shimocha"], ["as", "shimocha", [["big_text", "  -1  "]]]]],
-        ["when", [{"name": "not_toimen_status", "opts": ["won"]}], [["add_score", 1], ["subtract_score", 1, "toimen"], ["as", "toimen", [["big_text", "  -1  "]]]]],
-        ["when", [{"name": "not_kamicha_status", "opts": ["won"]}], [["add_score", 1], ["subtract_score", 1, "kamicha"], ["as", "kamicha", [["big_text", "  -1  "]]]]],
-        ["draw", 1, "opposite_end"]
-      ]
-    },
-    "news": {
-      "display_name": "NEWS",
-        // TODO: fix this call definition
-      "call": [[0, 0, 0]],
-        // TODO: add a check for whether this is still the first go-around of the game.
-      "show_when": [{"name": "status_missing", "opts": ["match_start"]}, "not_our_turn", "not_no_tiles_remaining", "someone_else_just_discarded", "call_available"],
-      "actions": [
-        ["big_text", "NEWS"], ["call"],
-        ["add_score", 1], ["subtract_score", 1, "last_discarder"], ["as", "last_discarder", [["big_text", "  -1  "]]],
-        ["change_turn", "self"],
-        ["set_status", "kan"],
-        ["draw", 1, "opposite_end"]
-      ],
-      "precedence_over": ["chii", "pon"]
-    },
-    "concealed_news": {
-      "display_name": "NEWS",
-        // TODO: fix this call definition
-      "call": [[0, 0, 0]],
-        // TODO: add a check for whether this is still the first go-around of the game.
-      "show_when": [{"name": "status_missing", "opts": ["match_start"]}, "our_turn", "not_no_tiles_remaining", "has_draw", "self_call_available", {"name": "status_missing", "opts": ["just_reached"]}],
-      "actions": [
-        ["big_text", "NEWS"], ["self_call"],
         ["set_status", "kan"],
         ["when", [{"name": "not_shimocha_status", "opts": ["won"]}], [["add_score", 1], ["subtract_score", 1, "shimocha"], ["as", "shimocha", [["big_text", "  -1  "]]]]],
         ["when", [{"name": "not_toimen_status", "opts": ["won"]}], [["add_score", 1], ["subtract_score", 1, "toimen"], ["as", "toimen", [["big_text", "  -1  "]]]]],
@@ -310,40 +325,45 @@
       "display_name": "Tódas",
       "show_when": [
         "not_our_turn",
-        {"name": "match", "opts": [["hand", "calls", "draw"], ["tenpai", "kokushi_tenpai"]]},
+        {"name": "match", "opts": [["hand", "calls", "draw"], ["tenpai"]]},
         "someone_else_just_discarded",
         {"name": "match", "opts": [["hand", "calls", "last_discard"], ["win"]]}
       ],
       "actions": [["big_text", "Tódas"], ["pause", 1000], ["reveal_hand"], ["win_by_discard"]],
-      "precedence_over": ["chii", "pon", "daiminkan", "ron"]
+      "precedence_over": ["chii", "pon", "daiminkan", "ron", "chii_beauty", "news"]
     },
-      // TODO: check if chankan is legal
-    "chankan": {
+    "beauty_ron": {
       "display_name": "Tódas",
       "show_when": [
         "not_our_turn",
-        {"name": "match", "opts": [["hand", "calls", "draw"], ["tenpai", "kokushi_tenpai"]]},
+        {"name": "match", "opts": [["hand", "calls", "draw"], ["tenpai"]]},
+        "someone_else_just_discarded",
+        {"name": "match", "opts": [["hand", "calls", "last_discard"], ["win"]]}
+      ],
+      "actions": [["big_text", "Tódas"], ["pause", 1000], ["reveal_hand"], ["win_by_discard"]],
+      "precedence_over": ["chii", "pon", "daiminkan", "ron", "chii_beauty", "news"]
+    },
+    "chankan": {
+      "display_name": "Rob the Kang",
+      "show_when": [
+        "not_our_turn",
+        {"name": "match", "opts": [["hand", "calls", "draw"], ["tenpai"]]},
         [
           [
             {"name": "last_call_is", "opts": ["kakan"]},
-            {"name": "match", "opts": [["hand", "calls", "last_called_tile"], ["win"]]}
-          ],
-          [
-            {"name": "last_call_is", "opts": ["ankan"]},
-            {"name": "match", "opts": [["hand", "calls", "draw"], ["kokushi_tenpai"]]},
             {"name": "match", "opts": [["hand", "calls", "last_called_tile"], ["win"]]}
           ]
         ]
       ],
       "actions": [["big_text", "Tódas"], ["pause", 1000], ["reveal_hand"], ["win_by_call"]],
-      "precedence_over": ["chii", "pon", "daiminkan", "chankan"]
+      "precedence_over": ["chii", "pon", "daiminkan", "chankan", "chii_beauty", "news"]
     },
     "tsumo": {
       "display_name": "Búnot",
       "show_when": [
         "our_turn",
         {"name": "status_missing", "opts": ["match_start"]},
-        {"name": "match", "opts": [["hand", "calls", "draw"], ["tenpai", "kokushi_tenpai"]]},
+        {"name": "match", "opts": [["hand", "calls", "draw"], ["tenpai"]]},
         {"name": "match", "opts": [["hand", "calls", "draw"], ["win"]]}
       ],
       "actions": [["big_text", "Búnot"], ["pause", 1000], ["reveal_hand"], ["win_by_draw"]]
