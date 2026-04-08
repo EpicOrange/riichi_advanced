@@ -3,7 +3,7 @@
 
 // * allow player to win with undeclared Beauty in hand on first turn
 // * allow player to win with a discard that completes Beauty on first turn
-// * disallow player from winning with undeclared Beauty (???)
+// * disallow player from winning with undeclared Beauty after first turn (???)
 
 // * add rule tabs
 // * implement headbump based on Paningit headbumping Single headbumping Back to Back, and seat order otherwise
