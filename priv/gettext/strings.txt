@@ -1119,14 +1119,14 @@ Four Gongs
 Big Three Dragons
 After Multiple Gongs
 Four Concealed Triplets
-Four Fly
+Four Fei
 Blessing of Heaven
 Blessing of Earth
 Final Tile
 All Honours
 All Sixteen Flowers
 Reveal flower
-Reveal fly
+Reveal fei
 No flowers
 Chow
 Pong
@@ -1136,9 +1136,9 @@ Gong
 Wu
 Wu
 Wu
-Four Fly Win
+Four Fei Win
 Flower
-Fly
+Fei
 A
 R
 F
@@ -2520,7 +2520,7 @@ R
 C
 D
 Five Fan Minimum
-Replaceable Fly Joker
+Replaceable Fei Joker
 Show Waits
 Open Hands
 Malaysian
@@ -2561,7 +2561,7 @@ Four Gongs
 Big Three Dragons
 After Multiple Gongs
 Four Concealed Triplets
-Four Fly
+Four Fei
 Blessing of Heaven
 Blessing of Earth
 Final Tile
@@ -2572,7 +2572,7 @@ Wu
 Wu
 Draw
 Reveal flower
-Reveal fly
+Reveal fei
 No flowers
 Chow
 Pong
@@ -2582,9 +2582,9 @@ Gong
 Wu
 Wu
 Wu
-Four Fly Win
+Four Fei Win
 Flower
-Fly
+Fei
 A
 R
 F

@@ -1,8 +1,8 @@
 {
-  "default_mods": ["malaysian_five_point_minimum", "malaysian_replaceable_fly_joker", "show_waits"],
+  "default_mods": ["malaysian_five_point_minimum", "malaysian_replaceable_fei_joker", "show_waits"],
   "available_mods": [
     {"id": "malaysian_five_point_minimum", "name": "Five Fan Minimum", "desc": "Only allow wins worth 5+ fan."},
-    {"id": "malaysian_replaceable_fly_joker", "name": "Replaceable Fly Joker", "desc": "Allow swapping out fly jokers from your own pungs using the same tile."},
+    {"id": "malaysian_replaceable_fei_joker", "name": "Replaceable Fly Joker", "desc": "Allow swapping out fei jokers from your own pungs using the same tile."},
     {"id": "show_waits", "name": "Show Waits", "desc": "Add some UI that shows waits."},
     {"id": "open_hands", "name": "Open Hands", "desc": "Everyone plays with tiles shown."}
   ],
@@ -79,8 +79,8 @@
     },
     {
       "display_name": "Fly",
-      "value": ["declared_fly", "Fan"],
-      "when": [{"name": "counter_at_least", "opts": ["declared_fly", 1]}]
+      "value": ["declared_fei", "Fan"],
+      "when": [{"name": "counter_at_least", "opts": ["declared_fei", 1]}]
     },
     {
       "display_name": "East Wind",
@@ -206,8 +206,8 @@
     {
       "display_name": "Four Fly",
       "value": [10, "Fan"],
-        // TODO: check whether this should count the number of declared fly, or the number of fly in hand.
-      "when": [{"name": "counter_at_least", "opts": ["fly", 4]}]
+        // TODO: check whether this should count the number of declared fei, or the number of fei in hand.
+      "when": [{"name": "counter_at_least", "opts": ["fei", 4]}]
     },
     {
       "display_name": "Blessing of Heaven",
@@ -376,56 +376,56 @@
     "actions": [
       ["set_counter", "faces", "count_matches", ["flowers"], [["nojoker", [["1y"], 1] ]]],
       ["set_counter", "animals", "count_matches", ["flowers"], [[ "nojoker", [["1a","2a","3a","4a"], 1] ]]],
-      ["when_anyone", [{"name": "counter_equals", "opts": ["fly", 0]}], [
+      ["when_anyone", [{"name": "counter_equals", "opts": ["fei", 0]}], [
         ["add_attr_first_tile", "2y", ["revealed"]],
         ["add_attr_first_tile", "2y", ["revealed"]],
         ["add_attr_first_tile", "2y", ["revealed"]],
         ["add_attr_first_tile", "2y", ["revealed"]],
-        ["set_counter", "fly", "count_matches", ["hand", "calls"], [["nojoker", [["2y"], 1] ]]]
+        ["set_counter", "fei", "count_matches", ["hand", "calls"], [["nojoker", [["2y"], 1] ]]]
       ]],
-      ["when_anyone", [{"name": "counter_at_least", "opts": ["fly", 1]}], [
+      ["when_anyone", [{"name": "counter_at_least", "opts": ["fei", 1]}], [
         ["when", ["shimocha_exists"], [["add_score", 50], ["subtract_score", 50, "shimocha"]]],
         ["when", ["toimen_exists"], [["add_score", 50], ["subtract_score", 50, "toimen"]]],
         ["when", ["kamicha_exists"], [["add_score", 50], ["subtract_score", 50, "kamicha"]]],
-        ["when", [{"name": "counter_at_least", "opts": ["fly", 2]}, "shimocha_exists"], [["add_score", 50], ["subtract_score", 50, "shimocha"]]],
-        ["when", [{"name": "counter_at_least", "opts": ["fly", 2]}, "toimen_exists"], [["add_score", 50], ["subtract_score", 50, "toimen"]]],
-        ["when", [{"name": "counter_at_least", "opts": ["fly", 2]}, "kamicha_exists"], [["add_score", 50], ["subtract_score", 50, "kamicha"]]],
-        ["when", [{"name": "counter_at_least", "opts": ["fly", 3]}, "shimocha_exists"], [["add_score", 50], ["subtract_score", 50, "shimocha"]]],
-        ["when", [{"name": "counter_at_least", "opts": ["fly", 3]}, "toimen_exists"], [["add_score", 50], ["subtract_score", 50, "toimen"]]],
-        ["when", [{"name": "counter_at_least", "opts": ["fly", 3]}, "kamicha_exists"], [["add_score", 50], ["subtract_score", 50, "kamicha"]]],
-        ["when", [{"name": "counter_at_least", "opts": ["fly", 4]}, "shimocha_exists"], [["add_score", 50], ["subtract_score", 50, "shimocha"]]],
-        ["when", [{"name": "counter_at_least", "opts": ["fly", 4]}, "toimen_exists"], [["add_score", 50], ["subtract_score", 50, "toimen"]]],
-        ["when", [{"name": "counter_at_least", "opts": ["fly", 4]}, "kamicha_exists"], [["add_score", 50], ["subtract_score", 50, "kamicha"]]],
-        ["when", [{"name": "counter_equals", "opts": ["fly", 1]}], [["push_message", "is paid 50 from all players for having 1 fly tile"]]],
-        ["when", [{"name": "counter_equals", "opts": ["fly", 2]}], [["push_message", "is paid 100 from all players for having 2 fly tiles"]]],
-        ["when", [{"name": "counter_equals", "opts": ["fly", 3]}], [["push_message", "is paid 150 from all players for having 3 fly tiles"]]],
-        ["when", [{"name": "counter_equals", "opts": ["fly", 4]}], [["push_message", "is paid 200 from all players for having 4 fly tiles"]]]
+        ["when", [{"name": "counter_at_least", "opts": ["fei", 2]}, "shimocha_exists"], [["add_score", 50], ["subtract_score", 50, "shimocha"]]],
+        ["when", [{"name": "counter_at_least", "opts": ["fei", 2]}, "toimen_exists"], [["add_score", 50], ["subtract_score", 50, "toimen"]]],
+        ["when", [{"name": "counter_at_least", "opts": ["fei", 2]}, "kamicha_exists"], [["add_score", 50], ["subtract_score", 50, "kamicha"]]],
+        ["when", [{"name": "counter_at_least", "opts": ["fei", 3]}, "shimocha_exists"], [["add_score", 50], ["subtract_score", 50, "shimocha"]]],
+        ["when", [{"name": "counter_at_least", "opts": ["fei", 3]}, "toimen_exists"], [["add_score", 50], ["subtract_score", 50, "toimen"]]],
+        ["when", [{"name": "counter_at_least", "opts": ["fei", 3]}, "kamicha_exists"], [["add_score", 50], ["subtract_score", 50, "kamicha"]]],
+        ["when", [{"name": "counter_at_least", "opts": ["fei", 4]}, "shimocha_exists"], [["add_score", 50], ["subtract_score", 50, "shimocha"]]],
+        ["when", [{"name": "counter_at_least", "opts": ["fei", 4]}, "toimen_exists"], [["add_score", 50], ["subtract_score", 50, "toimen"]]],
+        ["when", [{"name": "counter_at_least", "opts": ["fei", 4]}, "kamicha_exists"], [["add_score", 50], ["subtract_score", 50, "kamicha"]]],
+        ["when", [{"name": "counter_equals", "opts": ["fei", 1]}], [["push_message", "is paid 50 from all players for having 1 fei tile"]]],
+        ["when", [{"name": "counter_equals", "opts": ["fei", 2]}], [["push_message", "is paid 100 from all players for having 2 fei tiles"]]],
+        ["when", [{"name": "counter_equals", "opts": ["fei", 3]}], [["push_message", "is paid 150 from all players for having 3 fei tiles"]]],
+        ["when", [{"name": "counter_equals", "opts": ["fei", 4]}], [["push_message", "is paid 200 from all players for having 4 fei tiles"]]]
       ]]
     ]
   },
   "before_exhaustive_draw": {
     "actions": [
-      ["when_anyone", [{"name": "counter_equals", "opts": ["fly", 0]}], [
+      ["when_anyone", [{"name": "counter_equals", "opts": ["fei", 0]}], [
         ["add_attr_first_tile", "2y", ["revealed"]],
         ["add_attr_first_tile", "2y", ["revealed"]],
         ["add_attr_first_tile", "2y", ["revealed"]],
         ["add_attr_first_tile", "2y", ["revealed"]],
-        ["set_counter", "fly", "count_matches", ["hand", "calls"], [["nojoker", [["2y"], 1] ]]]
+        ["set_counter", "fei", "count_matches", ["hand", "calls"], [["nojoker", [["2y"], 1] ]]]
       ]],
-      ["when_anyone", [{"name": "counter_at_least", "opts": ["fly", 1]}], [
-        ["push_message", "is paid 50 from all players for each of their fly tiles"],
+      ["when_anyone", [{"name": "counter_at_least", "opts": ["fei", 1]}], [
+        ["push_message", "is paid 50 from all players for each of their fei tiles"],
         ["when", ["shimocha_exists"], [["add_score", 50], ["subtract_score", 50, "shimocha"]]],
         ["when", ["toimen_exists"], [["add_score", 50], ["subtract_score", 50, "toimen"]]],
         ["when", ["kamicha_exists"], [["add_score", 50], ["subtract_score", 50, "kamicha"]]],
-        ["when", [{"name": "counter_at_least", "opts": ["fly", 2]}, "shimocha_exists"], [["add_score", 50], ["subtract_score", 50, "shimocha"]]],
-        ["when", [{"name": "counter_at_least", "opts": ["fly", 2]}, "toimen_exists"], [["add_score", 50], ["subtract_score", 50, "toimen"]]],
-        ["when", [{"name": "counter_at_least", "opts": ["fly", 2]}, "kamicha_exists"], [["add_score", 50], ["subtract_score", 50, "kamicha"]]],
-        ["when", [{"name": "counter_at_least", "opts": ["fly", 3]}, "shimocha_exists"], [["add_score", 50], ["subtract_score", 50, "shimocha"]]],
-        ["when", [{"name": "counter_at_least", "opts": ["fly", 3]}, "toimen_exists"], [["add_score", 50], ["subtract_score", 50, "toimen"]]],
-        ["when", [{"name": "counter_at_least", "opts": ["fly", 3]}, "kamicha_exists"], [["add_score", 50], ["subtract_score", 50, "kamicha"]]],
-        ["when", [{"name": "counter_at_least", "opts": ["fly", 4]}, "shimocha_exists"], [["add_score", 50], ["subtract_score", 50, "shimocha"]]],
-        ["when", [{"name": "counter_at_least", "opts": ["fly", 4]}, "toimen_exists"], [["add_score", 50], ["subtract_score", 50, "toimen"]]],
-        ["when", [{"name": "counter_at_least", "opts": ["fly", 4]}, "kamicha_exists"], [["add_score", 50], ["subtract_score", 50, "kamicha"]]]
+        ["when", [{"name": "counter_at_least", "opts": ["fei", 2]}, "shimocha_exists"], [["add_score", 50], ["subtract_score", 50, "shimocha"]]],
+        ["when", [{"name": "counter_at_least", "opts": ["fei", 2]}, "toimen_exists"], [["add_score", 50], ["subtract_score", 50, "toimen"]]],
+        ["when", [{"name": "counter_at_least", "opts": ["fei", 2]}, "kamicha_exists"], [["add_score", 50], ["subtract_score", 50, "kamicha"]]],
+        ["when", [{"name": "counter_at_least", "opts": ["fei", 3]}, "shimocha_exists"], [["add_score", 50], ["subtract_score", 50, "shimocha"]]],
+        ["when", [{"name": "counter_at_least", "opts": ["fei", 3]}, "toimen_exists"], [["add_score", 50], ["subtract_score", 50, "toimen"]]],
+        ["when", [{"name": "counter_at_least", "opts": ["fei", 3]}, "kamicha_exists"], [["add_score", 50], ["subtract_score", 50, "kamicha"]]],
+        ["when", [{"name": "counter_at_least", "opts": ["fei", 4]}, "shimocha_exists"], [["add_score", 50], ["subtract_score", 50, "shimocha"]]],
+        ["when", [{"name": "counter_at_least", "opts": ["fei", 4]}, "toimen_exists"], [["add_score", 50], ["subtract_score", 50, "toimen"]]],
+        ["when", [{"name": "counter_at_least", "opts": ["fei", 4]}, "kamicha_exists"], [["add_score", 50], ["subtract_score", 50, "kamicha"]]]
       ]]
     ]
   },
@@ -452,7 +452,7 @@
       "unskippable": true
     },
     "start_joker": {
-      "display_name": "Reveal fly",
+      "display_name": "Reveal fei",
       "show_when": [{"name": "status", "opts": ["match_start"]}, "our_turn", {"name": "match", "opts": [["hand", "draw"], [[[["2y"], 1]]]]}],
       "actions": [["big_text", "Flower"], ["flower", "2y"], ["draw"]],
       "unskippable": true
@@ -549,8 +549,8 @@
         {"name": "match", "opts": [["hand", "calls", "last_discard"], ["win"]]}
       ],
       "actions": [["big_text", "Wu"], ["pause", 1000], ["reveal_hand"], 
-        // WARNING!: this double-counts the number of fly jokers used by the winner, since this same counter is used in before_win.
-        ["add_counter", "fly", "count_matches", ["hand", "calls", "last_discard"], [["nojoker", [["2y"], 1] ]]], ["win_by_discard"]],
+        // WARNING!: this double-counts the number of fei jokers used by the winner, since this same counter is used in before_win.
+        ["add_counter", "fei", "count_matches", ["hand", "calls", "last_discard"], [["nojoker", [["2y"], 1] ]]], ["win_by_discard"]],
       "precedence_over": ["chii", "pon", "kan", "riichi", "daiminkan", "ankan", "kakan"]
     },
     "chankan": {
@@ -562,8 +562,8 @@
         {"name": "match", "opts": [["hand", "calls", "last_called_tile"], ["win"]]}
       ],
       "actions": [["big_text", "Wu"], ["pause", 1000], ["reveal_hand"],
-        // WARNING!: this double-counts the number of fly jokers used by the winner, since this same counter is used in before_win.
-        ["add_counter", "fly", "count_matches", ["hand", "calls", "last_called_tile"], [["nojoker", [["2y"], 1] ]]], ["win_by_call"]],
+        // WARNING!: this double-counts the number of fei jokers used by the winner, since this same counter is used in before_win.
+        ["add_counter", "fei", "count_matches", ["hand", "calls", "last_called_tile"], [["nojoker", [["2y"], 1] ]]], ["win_by_call"]],
       "precedence_over": ["chii", "pon", "kan", "riichi", "daiminkan", "ankan", "kakan"]
     },
     "tsumo": {
@@ -575,11 +575,11 @@
         {"name": "match", "opts": [["hand", "calls", "draw"], ["win"]]}
       ],
       "actions": [["big_text", "Wu"], ["pause", 1000], ["reveal_hand"],
-        // WARNING!: this double-counts the number of fly jokers used by the winner, since this same counter is used in before_win.
-        ["add_counter", "fly", "count_matches", ["hand", "calls", "draw"], [["nojoker", [["2y"], 1] ]]], ["win_by_draw"]],
+        // WARNING!: this double-counts the number of fei jokers used by the winner, since this same counter is used in before_win.
+        ["add_counter", "fei", "count_matches", ["hand", "calls", "draw"], [["nojoker", [["2y"], 1] ]]], ["win_by_draw"]],
       "precedence_over": ["chii", "pon", "kan", "riichi", "daiminkan", "ankan", "kakan"]
     },
-    "four_fly": {
+    "four_fei": {
       "display_name": "Four Fly Win",
       "show_when": [
         "our_turn",
@@ -587,8 +587,8 @@
         {"name": "match", "opts": [["hand", "calls", "draw"], [["nojoker", [["2y"], 4] ]]]}
       ],
       "actions": [["big_text", "Four Fly"], ["pause", 1000], ["reveal_hand"],
-        // WARNING!: this double-counts the number of fly jokers used by the winner, since this same counter is used in before_win.
-        ["add_counter", "fly", 4],
+        // WARNING!: this double-counts the number of fei jokers used by the winner, since this same counter is used in before_win.
+        ["add_counter", "fei", 4],
       ["win_by_draw"]]
     },
     "flower": {
@@ -615,7 +615,7 @@
     "joker": {
       "display_name": "Fly",
       "show_when": ["our_turn", {"name": "status_missing", "opts": ["match_start"]}, "not_just_discarded", "has_draw", {"name": "match", "opts": [["hand", "draw"], [[[["2y"], 1]]]]}],
-      "actions": [["big_text", "Fly"], ["flower", "2y"], ["set_status", "flower"], ["add_counter", "declared_fly", 1], ["ite", ["no_tiles_remaining"], [["advance_turn"]], [["draw"]]]]
+      "actions": [["big_text", "Fly"], ["flower", "2y"], ["set_status", "flower"], ["add_counter", "declared_fei", 1], ["ite", ["no_tiles_remaining"], [["advance_turn"]], [["draw"]]]]
     }
   },
   "auto_buttons": {

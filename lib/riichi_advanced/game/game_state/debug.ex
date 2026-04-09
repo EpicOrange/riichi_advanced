@@ -139,7 +139,7 @@ defmodule RiichiAdvanced.GameState.Debug do
     #           :west  => Enum.slice(wall, 26..38),
     #           :north => Enum.slice(wall, 39..51)}
               
-    # # random hand 112233577889p with two fly jokers
+    # # random hand 112233577889p with two fei jokers
     # hands = %{:east  => Utils.sort_tiles([:"2y", :"1p", :"1p", :"2p", :"2p", :"3p", :"3p", :"5p", :"7p", :"7p", :"8p", :"2y", :"9p"]),
     #           :south => Enum.slice(wall, 13..25),
     #           :west  => Enum.slice(wall, 26..38),
@@ -488,7 +488,7 @@ defmodule RiichiAdvanced.GameState.Debug do
     #           :west  => Utils.sort_tiles([:"1p", :"1p", :"1p", :"2p", :"2p", :"2p", :"5p", :"6p", :"6p", :"8p", :"9p", :"12j", :"13j"]),
     #           :north => Utils.sort_tiles([:"1p", :"1p", :"1p", :"2p", :"2p", :"2p", :"5p", :"6p", :"6p", :"8p", :"9p", :"12j", :"13j"])}
 
-    # # fly joker test (malaysian)
+    # # fei joker test (malaysian)
     # hands = %{:east  => Utils.sort_tiles([:"1p", :"1p", :"1p", :"2p", :"2p", :"2p", :"5p", :"6p", :"6p", :"8p", :"9p", :"2y", :"2y"]),
     #           :south => Utils.sort_tiles([:"1p", :"1p", :"1p", :"2p", :"2p", :"2p", :"5p", :"6p", :"6p", :"8p", :"9p", :"12j", :"13j"]),
     #           :west  => Utils.sort_tiles([:"1p", :"1p", :"1p", :"2p", :"2p", :"2p", :"5p", :"6p", :"6p", :"8p", :"9p", :"12j", :"13j"]),

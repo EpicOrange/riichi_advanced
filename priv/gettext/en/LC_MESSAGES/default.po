@@ -1510,7 +1510,7 @@ msgstr ""
 msgid "Flowers Open Hand"
 msgstr ""
 
-msgid "Fly"
+msgid "Fei"
 msgstr ""
 
 msgid "For more information, drop a message in our Discord!"
@@ -1537,10 +1537,10 @@ msgstr ""
 msgid "Four Flower"
 msgstr ""
 
-msgid "Four Fly"
+msgid "Four Fei"
 msgstr ""
 
-msgid "Four Fly Win"
+msgid "Four Fei Win"
 msgstr ""
 
 msgid "Four Gongs"
@@ -3124,7 +3124,7 @@ msgstr ""
 msgid "Replace the wall with 16 copies of each bamboo tile. Includes 10s if Ten is enabled."
 msgstr ""
 
-msgid "Replaceable Fly Joker"
+msgid "Replaceable Fei Joker"
 msgstr ""
 
 msgid "Replaces one of each tile with a blue 'galaxy' tile that acts as a wildcard of its number. For example, galaxy 3s can be used as 3m, 3p, or 3s. Galaxy winds are wind wildcards, and galaxy dragons are dragon wildcards."
@@ -3139,7 +3139,7 @@ msgstr ""
 msgid "Reveal flower"
 msgstr ""
 
-msgid "Reveal fly"
+msgid "Reveal fei"
 msgstr ""
 
 msgid "Reveal joker"

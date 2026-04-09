@@ -1444,7 +1444,7 @@ msgstr "花牌"
 msgid "Flowers Open Hand"
 msgstr "花牌鸣牌手"
 
-msgid "Fly"
+msgid "Fei"
 msgstr "飞牌"
 
 msgid "For more information, drop a message in our Discord!"
@@ -1471,10 +1471,10 @@ msgstr "四面子"
 msgid "Four Flower"
 msgstr "四花"
 
-msgid "Four Fly"
+msgid "Four Fei"
 msgstr "四飞"
 
-msgid "Four Fly Win"
+msgid "Four Fei Win"
 msgstr "四飞和牌"
 
 msgid "Four Gongs"
@@ -3034,7 +3034,7 @@ msgstr "连字混一色"
 msgid "Replace the wall with 16 copies of each bamboo tile. Includes 10s if Ten is enabled."
 msgstr "将所有牌替换为１６张索子(若启用'十'规则则包含１０索)。"
 
-msgid "Replaceable Fly Joker"
+msgid "Replaceable Fei Joker"
 msgstr "可替换百搭牌"
 
 msgid "Replaces one of each tile with a blue 'galaxy' tile that acts as a wildcard of its number. For example, galaxy 3s can be used as 3m, 3p, or 3s. Galaxy winds are wind wildcards, and galaxy dragons are dragon wildcards."
@@ -3049,7 +3049,7 @@ msgstr "展示并置于一旁３张牌"
 msgid "Reveal flower"
 msgstr "展示花牌"
 
-msgid "Reveal fly"
+msgid "Reveal fei"
 msgstr "展示百搭牌"
 
 msgid "Reveal joker"
