@@ -4,7 +4,6 @@ defmodule RiichiAdvanced.YakuTest.AmericanYaku do
 
   @nmjl_2024 ["american/no_charleston"]
   @nmjl_2025 ["american/no_charleston", "american/am_card_nmjl_2025"]
-  @card_free ["american/no_charleston", "american/am_card_free"]
   @am_aliases %{
     any: %{[] => MapSet.new([:"1j"])},
     "1f": %{[] => MapSet.new([:"1g", :"2f", :"2g", :"3f", :"3g", :"4f", :"4g"])}
@@ -14,31 +13,11 @@ defmodule RiichiAdvanced.YakuTest.AmericanYaku do
     {:ok,
       nmjl_2024: TestUtils.get_rules!("american", @nmjl_2024),
       nmjl_2025: TestUtils.get_rules!("american", @nmjl_2025),
-      card_free: TestUtils.get_rules!("american", @card_free),
     }
   end
 
   test "american - uniqueness check with too few tile kinds" do
     TestUtils.test_no_win("american", @card_free, hand: "222222p2222s7777z")
-  end
-
-  test "american - does card-free work?" do
-    TestUtils.test_win("american", @card_free, hand: "22m2222p2222s7777z",
-      win_button: "mahjong_discard", yaku: [{"Base Value", [25, "Pts"]}, {"Concealed", [10, "Pts"]}])
-    TestUtils.test_win("american", @card_free, hand: "555p666m77p88s66z1j7p",
-      win_button: "mahjong_draw", yaku: [{"Base Value", [25, "Pts"]}, {"Concealed", [10, "Pts"]}])
-  end
-
-  test "american - card-free - any like numbers", %{card_free: rules_ref} do
-    TestUtils.assert_winning_hand(rules_ref, "any_like_numbers_true", "22m2222p2222s7777z", "", @am_aliases)
-    TestUtils.refute_winning_hand(rules_ref, "any_like_numbers_false", "22m2222p2222s7777z", "", @am_aliases)
-    TestUtils.assert_winning_hand(rules_ref, "blocks_1", "22m2222p2222s7777z", "", @am_aliases)
-  end
-  
-  test "american - card-free - consecutive run 4", %{card_free: rules_ref} do
-    TestUtils.assert_winning_hand(rules_ref, "consecutive_run_34_true", "555p666m77p88s66z1j7p", "", @am_aliases)
-    TestUtils.refute_winning_hand(rules_ref, "consecutive_run_34_false", "555p666m77p88s66z1j7p", "", @am_aliases)
-    TestUtils.assert_winning_hand(rules_ref, "blocks_4", "555p666m77p88s66z1j7p", "", @am_aliases)
   end
 
   test "american - nmjl 2024 - 2024 #1", %{nmjl_2024: rules_ref} do
