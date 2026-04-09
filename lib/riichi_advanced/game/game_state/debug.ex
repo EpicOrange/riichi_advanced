@@ -165,9 +165,9 @@ defmodule RiichiAdvanced.GameState.Debug do
 
     # # MCR bugtesting
     # hands = %{:east  => Utils.sort_tiles([:"1s", :"2s", :"3s", :"0z", :"0z", :"0z", :"2z", :"2z", :"2z", :"3z", :"3z", :"3z", :"6z"]),
-    #           :south => Enum.slice(wall, 12..23),
-    #           :west  => Enum.slice(wall, 24..35),
-    #           :north => Enum.slice(wall, 36..47)}
+    #           :south => Enum.slice(wall, 13..25),
+    #           :west  => Enum.slice(wall, 26..38),
+    #           :north => Enum.slice(wall, 39..51)}
 
     # # Fuzhou Robbing Gold
     # hands = %{:east  => Utils.sort_tiles([:"1s", :"2s", :"3s", :"3p", :"3p", :"3p", :"5p", :"5p", :"5p", :"6p", :"7p", :"7p", :"7p", :"2m", :"2m", :"2m"]),
