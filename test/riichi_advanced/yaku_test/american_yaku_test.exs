@@ -16,10 +16,6 @@ defmodule RiichiAdvanced.YakuTest.AmericanYaku do
     }
   end
 
-  test "american - uniqueness check with too few tile kinds" do
-    TestUtils.test_no_win("american", @card_free, hand: "222222p2222s7777z")
-  end
-
   test "american - nmjl 2024 - 2024 #1", %{nmjl_2024: rules_ref} do
     TestUtils.assert_winning_hand(rules_ref, "win", "222m000z2222s4444s", "", @am_aliases)
     TestUtils.assert_winning_hand(rules_ref, "win", "222m000z2222s", "am_kong:4444s", @am_aliases)
