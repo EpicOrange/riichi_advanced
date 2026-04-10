@@ -79,13 +79,19 @@ defmodule RiichiAdvanced.Match do
     end
   end
 
+  defp _offset_tile_basic(tile, n, tile_behavior) do
+    cond do
+      n <= -1 -> _offset_tile(tile_behavior.ordering_r[tile], n+1, tile_behavior)
+      n >= 1 -> _offset_tile(tile_behavior.ordering[tile], n-1, tile_behavior)
+      true -> tile
+    end
+  end
   defp _offset_tile(tile, n, tile_behavior, shift_dragons \\ false) do
     if tile != nil do
       cond do
         Map.has_key?(@fixed_offsets, n) -> _offset_tile(@fixed_offsets[n], suit_to_offset(tile), tile_behavior, true)
         Utils.is_tile(n) -> Utils.to_tile(n)
-        (n < 1 and n > -1) or n < -30 or n >= 30 ->
-          tile
+        (n < 1 and n > -1) or n < -30 or n >= 30 -> tile
         n >= 10 ->
           cond do
             shift_dragons and tile == :"7z" -> _offset_tile(:"0z", n-10, tile_behavior, true)
@@ -100,10 +106,7 @@ defmodule RiichiAdvanced.Match do
             shift_dragons and tile == :"6z" -> _offset_tile(:"0z", n+10, tile_behavior, true)
             true -> _offset_tile(shift_suit(shift_suit(tile)), n+10, tile_behavior)
           end
-        n <= -1 ->
-          _offset_tile(tile_behavior.ordering_r[tile], n+1, tile_behavior)
-        true -> # n >= 1
-          _offset_tile(tile_behavior.ordering[tile], n-1, tile_behavior)
+        true -> _offset_tile_basic(tile, n, tile_behavior)
       end
     else nil end
   end
@@ -210,7 +213,6 @@ defmodule RiichiAdvanced.Match do
   defp group_to_subgroups([], _base_tile, _tile_behavior), do: []
   defp group_to_subgroups(group, base_tile, tile_behavior) do
     {subgroups, tiles} = group
-    |> Enum.reject(& &1 in @group_keywords)
     |> Enum.split_with(&is_list/1)
     if Enum.empty?(subgroups) do
       # treat the whole group as its own subgroup
@@ -219,7 +221,7 @@ defmodule RiichiAdvanced.Match do
       # treat each tile as an individual subgroup
       subgroups ++ Enum.map(tiles, &[&1])
     end
-    |> Enum.map(&Enum.map(&1, fn tile -> if Utils.is_tile(tile) do Utils.to_tile(tile) else offset_tile(base_tile, tile, tile_behavior) end end))
+    |> Enum.map(&Enum.map(&1, fn elem -> if Utils.is_tile(elem) do Utils.to_tile(elem) else offset_tile(base_tile, elem, tile_behavior) end end))
   end
 
   def _remove_group(hand, calls, group, base_tile, tile_behavior) do
@@ -227,23 +229,16 @@ defmodule RiichiAdvanced.Match do
     cond do
       is_list(group) ->
         no_joker_index = Enum.find_index(group, fn elem -> elem == "nojoker" end)
-        {joker, nojoker} = Enum.split(group, if no_joker_index != nil do no_joker_index else length(group) end)
+        {joker, nojoker} = group
+        |> Enum.reject(& &1 in @group_keywords) # we no longer want any keywords in the group
+        |> Enum.split(if no_joker_index != nil do no_joker_index else length(group) end)
         # handle nojoker subgroups first
         hand_calls = for subgroup <- group_to_subgroups(nojoker, base_tile, tile_behavior), reduce: [{hand, calls}] do
           hand_calls -> Enum.flat_map(hand_calls, fn {hand, calls} -> remove_from_hand_calls(hand, calls, subgroup, %{ tile_behavior | aliases: %{}, mappings: %{} }) end)
         end
         # handle joker subgroups next
         hand_calls = for subgroup <- group_to_subgroups(joker, base_tile, tile_behavior), reduce: hand_calls do
-          hand_calls ->
-            ret = Enum.flat_map(hand_calls, fn {hand, calls} -> remove_from_hand_calls(hand, calls, subgroup, tile_behavior) end)
-            # if {:ok, [group]} == RiichiAdvanced.Parser.parse_set("0@yaochuu 0@yaochuu 0@winning_tile&tsumo") do
-            #   if ret != [] do
-            #     IO.inspect({subgroup, hand_calls, ret})
-            #     IO.inspect(tile_behavior.aliases)
-            #     IO.puts("")
-            #   end
-            # end
-            ret
+          hand_calls -> Enum.flat_map(hand_calls, fn {hand, calls} -> remove_from_hand_calls(hand, calls, subgroup, tile_behavior) end)
         end
         hand_calls
       is_offset(group) -> remove_from_hand_calls(hand, calls, [offset_tile(base_tile, group, tile_behavior)], tile_behavior)
