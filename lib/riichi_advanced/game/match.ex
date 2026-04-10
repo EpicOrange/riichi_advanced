@@ -126,53 +126,50 @@ defmodule RiichiAdvanced.Match do
     else nil end
   end
 
-  # we want to try not to remove :any if possible (important for american hands)
-  # the return value is acc, it tries not to remove :any
-  # acc2 is the case where we do remove :any for the first time
-  # return immediately if we remove a non-:any tile
-  # otherwise if we reach [] we return acc2 (i.e. we removed :any)
-  defp _remove_tile(hand, check, acc \\ [], acc2 \\ nil)
-  defp _remove_tile([], _check, _acc, nil), do: []
-  defp _remove_tile([], _check, _acc, {acc, rest}), do: [Enum.reverse(acc, rest)]
-  defp _remove_tile([t | rest], check, acc, acc2) do
-    do_remove = check.(t)
-    cond do
-      do_remove and t != :any -> [Enum.reverse(acc, rest)]
-      do_remove and acc2 == nil -> _remove_tile(rest, check, [t | acc], {acc, rest})
-      true -> _remove_tile(rest, check, [t | acc], acc2)
-    end
-  end
-  defp remove_tile(hand, tile, ignore_suit) do
-    _remove_tile(hand, if ignore_suit do &Utils.same_number(&1, tile) else &Utils.same_tile(&1, tile) end)
-  end
+  # # we want to try not to remove :any if possible (important for american hands)
+  # # the return value is acc, it tries not to remove :any
+  # # acc2 is the case where we do remove :any for the first time
+  # # return immediately if we remove a non-:any tile
+  # # otherwise if we reach [] we return acc2 (i.e. we removed :any)
+  # defp _remove_tile(hand, check, acc \\ [], acc2 \\ nil)
+  # defp _remove_tile([], _check, _acc, nil), do: []
+  # defp _remove_tile([], _check, _acc, {acc, rest}), do: [Enum.reverse(acc, rest)]
+  # defp _remove_tile([t | rest], check, acc, acc2) do
+  #   do_remove = check.(t)
+  #   cond do
+  #     do_remove and t != :any -> [Enum.reverse(acc, rest)]
+  #     do_remove and acc2 == nil -> _remove_tile(rest, check, [t | acc], {acc, rest})
+  #     true -> _remove_tile(rest, check, [t | acc], acc2)
+  #   end
+  # end
+  # defp remove_tile(hand, tile, ignore_suit) do
+  #   _remove_tile(hand, if ignore_suit do &Utils.same_number(&1, tile) else &Utils.same_tile(&1, tile) end)
+  # end
 
-  defp _try_remove_all_tiles(hand, [], _tile_behavior), do: [hand]
-  defp _try_remove_all_tiles(hand, [tile | tiles], tile_behavior) when tile_behavior.aliases == %{} do
-    [tile]
-    |> Enum.flat_map(&remove_tile(hand, &1, tile_behavior.ignore_suit))
-    |> Enum.flat_map(&_try_remove_all_tiles(&1, tiles, tile_behavior))
-    |> Enum.uniq()
-  end
-  defp _try_remove_all_tiles(hand, [tile | tiles], tile_behavior) do
-    # remove all tiles, with the first result removing non-jokers over jokers or :any
-    tile
-    |> Utils.apply_tile_aliases(tile_behavior)
-    |> MapSet.to_list()
-    |> TileBehavior.sort_by_joker_power(tile_behavior)
-    |> Enum.flat_map(&remove_tile(hand, &1, tile_behavior.ignore_suit))
-    |> Enum.flat_map(&_try_remove_all_tiles(&1, tiles, tile_behavior))
-    |> Enum.uniq()
-  end
+  # defp _try_remove_all_tiles(hand, [], _tile_behavior), do: [hand]
+  # defp _try_remove_all_tiles(hand, [tile | tiles], tile_behavior) when tile_behavior.aliases == %{} do
+  #   [tile]
+  #   |> Enum.flat_map(&remove_tile(hand, &1, tile_behavior.ignore_suit))
+  #   |> Enum.flat_map(&_try_remove_all_tiles(&1, tiles, tile_behavior))
+  #   |> Enum.uniq()
+  # end
+  # defp _try_remove_all_tiles(hand, [tile | tiles], tile_behavior) do
+  #   # remove all tiles, with the first result removing non-jokers over jokers or :any
+  #   tile
+  #   |> Utils.apply_tile_aliases(tile_behavior)
+  #   |> MapSet.to_list()
+  #   |> TileBehavior.sort_by_joker_power(tile_behavior)
+  #   |> Enum.flat_map(&remove_tile(hand, &1, tile_behavior.ignore_suit))
+  #   |> Enum.flat_map(&_try_remove_all_tiles(&1, tiles, tile_behavior))
+  #   |> Enum.uniq()
+  # end
 
   def try_remove_all_tiles(hand, tiles, tile_behavior \\ %TileBehavior{}) do
     if length(hand) >= length(tiles) do
       # even if there are no jokers,
       # we want to sort by attr length so tiles with more attrs get removed last
       hand = TileBehavior.sort_by_joker_power(hand, tile_behavior)
-      if nil in tiles do
-        IO.puts("WARNING: try_remove_all_tiles was passed a nil tile!")
-      end
-      _try_remove_all_tiles(hand, tiles, tile_behavior)
+      RiichiAdvanced.Match.Temp.try_remove_all_tiles(hand, tiles, tile_behavior)
     else [] end
   end
 
