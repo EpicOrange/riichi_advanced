@@ -37,85 +37,49 @@ defmodule RiichiAdvanced.Utils do
     |> Enum.join()
   end
 
-  def to_attr_tile(tile) do
-    case tile do
-      {tile, attrs} -> {tile, attrs}
-      tile          -> {tile, []}
-    end
-  end
+  def construct_tile(tile, []), do: tile
+  def construct_tile(tile, attrs), do: {tile, attrs}
 
-  def get_attrs(tile) do
-    case tile do
-      {_tile, attrs} -> attrs
-      _tile          -> []
-    end
-  end
+  def to_attr_tile({tile, attrs}), do: {tile, attrs}
+  def to_attr_tile(tile), do: {tile, []}
+
+  def get_attrs({_tile, attrs}), do: attrs
+  def get_attrs(_tile), do: []
 
   def add_attr(tile, []), do: tile
-  def add_attr(tile, attrs) do
-    case tile do
-      {tile, existing_attrs} -> {tile, Enum.uniq(existing_attrs ++ attrs)}
-      _ when is_list(tile) -> Enum.map(tile, &add_attr(&1, attrs))
-      _ when is_struct(tile, MapSet) -> MapSet.new(tile, &add_attr(&1, attrs))
-      tile -> {tile, attrs}
-    end
-  end
+  def add_attr({tile, existing_attrs}, attrs), do: {tile, Enum.uniq(existing_attrs ++ attrs)}
+  def add_attr(tiles, attrs) when is_list(tiles), do: Enum.map(tiles, &add_attr(&1, attrs))
+  def add_attr(tiles, attrs) when is_struct(tiles, MapSet), do: MapSet.new(tiles, &add_attr(&1, attrs))
+  def add_attr(tile, attrs), do: {tile, attrs}
 
   def remove_attr(tile, []), do: tile
-  def remove_attr(tile, attrs) do
-    case tile do
-      {tile, existing_attrs} ->
-        case Enum.uniq(existing_attrs -- attrs) do
-          []              -> tile
-          remaining_attrs -> {tile, remaining_attrs}
-        end
-      _ when is_list(tile) -> Enum.map(tile, &remove_attr(&1, attrs))
-      _ when is_struct(tile, MapSet) -> MapSet.new(tile, &remove_attr(&1, attrs))
-      tile -> tile
-    end
-  end
+  def remove_attr({tile, existing_attrs}, attrs), do: construct_tile(tile, Enum.uniq(existing_attrs -- attrs))
+  def remove_attr(tiles, attrs) when is_list(tiles), do: Enum.map(tiles, &remove_attr(&1, attrs))
+  def remove_attr(tiles, attrs) when is_struct(tiles, MapSet), do: MapSet.new(tiles, &remove_attr(&1, attrs))
+  def remove_attr(tile, _attrs), do: tile
 
-  def has_attr?(tile, attrs) do
-    attrs = Enum.map(attrs, &String.replace_prefix(&1, "_", ""))
-    case tile do
-      {_tile, existing_attrs} ->
-        existing_attrs = Enum.map(existing_attrs, &String.replace_prefix(&1, "_", ""))
-        Enum.all?(attrs, & &1 in existing_attrs)
-      _ when is_list(tile) -> Enum.any?(tile, &has_attr?(&1, attrs))
-      _ when is_struct(tile, MapSet) -> MapSet.new(tile, &has_attr?(&1, attrs))
-      _ -> Enum.empty?(attrs)
-    end
+  def has_attr?({_tile, existing_attrs}, attrs) do
+    {invisible, salient} = Enum.split_with(existing_attrs, &String.starts_with?(&1, "_"))
+    salient_hashes = MapSet.new(salient, &:erlang.phash2(&1))
+    invisible_hashes = MapSet.new(invisible, &:erlang.phash2(&1))
+    Enum.all?(attrs, &:erlang.phash2(&1) in salient_hashes or :erlang.phash2("_" <> &1) in invisible_hashes)
   end
+  def has_attr?(tiles, attrs) when is_list(tiles), do: Enum.any?(tiles, &has_attr?(&1, attrs))
+  def has_attr?(tiles, attrs) when is_struct(tiles, MapSet), do: MapSet.new(tiles, &has_attr?(&1, attrs))
+  def has_attr?(_, attrs), do: Enum.empty?(attrs)
 
-  def strip_attrs(tile, mode \\ nil) do
-    case tile do
-      {tile, existing_attrs} -> case mode do
-          nil -> tile
-          :salient -> 
-            case Enum.filter(existing_attrs, &String.starts_with?(&1, "_")) do
-              []              -> tile
-              remaining_attrs -> {tile, remaining_attrs}
-            end
-          :invisible -> 
-            case Enum.reject(existing_attrs, &String.starts_with?(&1, "_")) do
-              []              -> tile
-              remaining_attrs -> {tile, remaining_attrs}
-            end
-        end
-      _ when is_list(tile) -> Enum.map(tile, &strip_attrs(&1, mode))
-      _ when is_struct(tile, MapSet) -> MapSet.new(tile, &strip_attrs(&1, mode))
-      tile -> tile
-    end
-  end
+  def strip_attrs(tile, mode \\ nil)
+  def strip_attrs({tile, _attrs}, nil), do: tile
+  def strip_attrs({tile, attrs}, :salient), do: construct_tile(tile, Enum.filter(attrs, &String.starts_with?(&1, "_")))
+  def strip_attrs({tile, attrs}, :invisible), do: construct_tile(tile, Enum.reject(attrs, &String.starts_with?(&1, "_")))
+  def strip_attrs(tiles, mode) when is_list(tiles), do: Enum.map(tiles, &strip_attrs(&1, mode))
+  def strip_attrs(tiles, mode) when is_struct(tiles, MapSet), do: MapSet.new(tiles, &strip_attrs(&1, mode))
+  def strip_attrs(tile, _mode), do: tile
 
-  def to_salient_attrs(tile) do
-    case tile do
-      {tile, attrs} -> {tile, Enum.map(attrs, &String.replace_leading(&1, "_", "")) |> Enum.sort()}
-      _ when is_list(tile) -> Enum.map(tile, &to_salient_attrs(&1))
-      _ when is_struct(tile, MapSet) -> MapSet.new(tile, &to_salient_attrs(&1))
-      tile -> tile
-    end
-  end
+  def to_salient_attrs({tile, attrs}), do: {tile, Enum.map(attrs, &String.replace_leading(&1, "_", "")) |> Enum.sort()}
+  def to_salient_attrs(tiles) when is_list(tiles), do: Enum.map(tiles, &to_salient_attrs(&1))
+  def to_salient_attrs(tiles) when is_struct(tiles, MapSet), do: MapSet.new(tiles, &to_salient_attrs(&1))
+  def to_salient_attrs(tile), do: tile
 
   def tile_color(tile), do: Map.get(Constants.tile_color(), tile, "white")
 
@@ -172,11 +136,10 @@ defmodule RiichiAdvanced.Utils do
   def same_tile(tile1, tile2) do
     t1 = strip_attrs(tile1)
     {t2, attrs2} = to_attr_tile(tile2)
-    same_id = t1 == t2
+    same_id = t1 == t2 or t1 == :any or t2 == :any
            or (t2 == :faceup and t1 not in [:"1x", :"2x", :"3x", :"4x"])
-           or :any in [t1, t2]
-    attrs_match = has_attr?(tile1, Enum.reject(attrs2, &String.starts_with?(&1, "_")))
-    same_id and attrs_match
+    # if same id, check if (non-invisible) attrs match
+    same_id and has_attr?(tile1, Enum.reject(attrs2, &String.starts_with?(&1, "_")))
   end
   def same_tile(tile1, tile2, tile_behavior) when tile_behavior.aliases == %{}, do: same_tile(tile1, tile2)
   def same_tile(tile1, tile2, tile_behavior) do
@@ -184,11 +147,10 @@ defmodule RiichiAdvanced.Utils do
     {t2, attrs2} = to_attr_tile(tile2)
     l1 = strip_attrs(apply_tile_aliases(tile1, tile_behavior))
     l2 = strip_attrs(apply_tile_aliases(tile2, tile_behavior))
-    same_id = t1 in l2 or t2 in l1
+    same_id = t1 in l2 or t2 in l1 or :any in l1 or :any in l2
       or (:faceup in l2 and Enum.any?(l1, fn tile -> tile not in [:"1x", :"2x", :"3x", :"4x"] end))
-      or :any in l1 or :any in l2
-    attrs_match = has_attr?(tile1, Enum.reject(attrs2, &String.starts_with?(&1, "_")))
-    same_id and attrs_match
+    # if same id, check if (non-invisible) attrs match
+    same_id and has_attr?(tile1, Enum.reject(attrs2, &String.starts_with?(&1, "_")))
   end
 
   def to_manzu(tile) do
