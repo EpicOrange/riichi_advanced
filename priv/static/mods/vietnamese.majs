@@ -1,0 +1,189 @@
+set display_name, "Vietnamese"
+set tutorial_link, "https://drive.google.com/file/d/1ETjCEPo-fVDKkcQwZ_mK3qCsop5fhagD/view"
+
+set wall, ["1m", "1m", "1m", "1m",
+           "2m", "2m", "2m", "2m",
+           "3m", "3m", "3m", "3m",
+           "4m", "4m", "4m", "4m",
+           "5m", "5m", "5m", "5m",
+           "6m", "6m", "6m", "6m",
+           "7m", "7m", "7m", "7m",
+           "8m", "8m", "8m", "8m",
+           "9m", "9m", "9m", "9m",
+           "1p", "1p", "1p", "1p",
+           "2p", "2p", "2p", "2p",
+           "3p", "3p", "3p", "3p",
+           "4p", "4p", "4p", "4p",
+           "5p", "5p", "5p", "5p",
+           "6p", "6p", "6p", "6p",
+           "7p", "7p", "7p", "7p",
+           "8p", "8p", "8p", "8p",
+           "9p", "9p", "9p", "9p",
+           "1s", "1s", "1s", "1s",
+           "2s", "2s", "2s", "2s",
+           "3s", "3s", "3s", "3s",
+           "4s", "4s", "4s", "4s",
+           "5s", "5s", "5s", "5s",
+           "6s", "6s", "6s", "6s",
+           "7s", "7s", "7s", "7s",
+           "8s", "8s", "8s", "8s",
+           "9s", "9s", "9s", "9s",
+           "1z", "1z", "1z", "1z",
+           "2z", "2z", "2z", "2z",
+           "3z", "3z", "3z", "3z",
+           "4z", "4z", "4z", "4z",
+           "0z", "0z", "0z", "0z",
+           "6z", "6z", "6z", "6z",
+           "7z", "7z", "7z", "7z",
+           "1f", "2f", "3f", "4f",
+           "1g", "2g", "3g", "4g",
+           "0j", "2j", "9j", "4j",
+           "5j", "6j", "7j", "8j",
+           "1k", "2k", "3k", "4k",
+           "1q", "2q", "3q", "4q"]
+
+set custom_style, %{
+  tile_indices: %{
+    "0j": "Any",
+    "2j": "Number",
+    "9j": "Flower",
+    "4j": "Dragon",
+    "5j": "Wind",
+    "6j": "Pinzu",
+    "7j": "Souzu",
+    "8j": "Manzu",
+    "1k": "1K",
+    "2k": "2K",
+    "3k": "3K",
+    "4k": "4K",
+    "1q": "1Q",
+    "2q": "2Q",
+    "3q": "3Q",
+    "4q": "1Q"
+  }
+}
+
+define_set pair, ~s"0 0"
+define_set shuntsu, ~s"0 1 2"
+define_set koutsu, ~s"0 0 0"
+define_set quad, ~s"0 0 0 0"
+define_set ryanmen, ~s"0 1"
+define_set kanchan, ~s"0 2"
+define_set taatsu, ~s"0 0 | 0 1 | 0 2"
+define_set mentsu, ~s"0 0 0 | 0 1 2"
+define_set ittsuu, ~s"0 1 2, 3 4 5, 6 7 8"
+define_set ton, ~s"1z 1z 1z"
+define_set nan, ~s"2z 2z 2z"
+define_set shaa, ~s"3z 3z 3z"
+define_set pei, ~s"4z 4z 4z"
+define_set haku, ~s"8z 8z 8z"
+define_set hatsu, ~s"6z 6z 6z"
+define_set chun, ~s"7z 7z 7z"
+define_set ton_pair, ~s"1z 1z"
+define_set nan_pair, ~s"2z 2z"
+define_set shaa_pair, ~s"3z 3z"
+define_set pei_pair, ~s"4z 4z"
+define_set haku_pair, ~s"8z 8z"
+define_set hatsu_pair, ~s"6z 6z"
+define_set chun_pair, ~s"7z 7z"
+define_set orphans_all, ~s"1m 9m 1p 9p 1s 9s 1z 2z 3z 4z 8z 6z 7z"
+define_set orphans_any, ~s"1m|9m|1p|9p|1s|9s|1z|2z|3z|4z|8z|6z|7z"
+define_set any_flower, ~s"1f|2f|3f|4f|1g|2g|3g|4g|1k|2k|3k|4k|1q|2q|3q|4q"
+define_set any_joker, ~s"0j|2j|9j|4j|5j|6j|7j|8j"
+define_set nfnl_any, ~s"1m|2m|3m|4m|5m|6m|7m|8m|9m|1p|2p|3p|4p|5p|6p|7p|8p|9p|1s|2s|3s|4s|5s|6s|7s|8s|9s"
+
+define_match standard_tenpai, ~m"exhaustive, pair:1, mentsu:3, taatsu:1 | exhaustive, mentsu:4, any:1"
+define_match kokushi_tenpai, ~m"unique, orphans_any:12, orphans_any:1"
+define_match nfnl_tenpai, ~m"nojoker, (any_flower any_joker):-1, nfnl_any:13"
+define_match tenpai, "standard_tenpai", "kokushi_tenpai", "nfnl_tenpai"
+
+define_match standard_win, ~m"exhaustive, mentsu:4, pair:1"
+define_match kokushi_win, ~m"unique, dismantle_calls, orphans_any:13, orphans_any:1"
+define_match nfnl_win, ~m"nojoker, (any_flower any_joker):-1, nfnl_any:14"
+define_match win, "standard_win", "kokushi_win", "nfnl_win"
+
+define_match shousuushii,
+  ~m"""
+  ton:1, nan:1, shaa:1, pei_pair:1
+  | ton:1, nan:1, shaa_pair:1, pei:1
+  | ton:1, nan_pair:1, shaa:1, pei:1
+  | ton_pair:1, nan:1, shaa:1, pei:1
+  """
+define_match daisuushii, ~m"ton:1, nan:1, shaa:1, pei:1"
+
+define_match any_flower, ~m"nojoker, any_flower:1"
+define_match any_joker, ~m"nojoker, any_joker:1"
+
+# basic yaku
+define_yaku yaku, "All Sequences", [1, "Phán"],
+  match(["hand", "calls", "winning_tile"], ~m"exhaustive, shuntsu:4, pair:1")
+
+define_yaku yaku, "All Triplets", [3, "Phán"],
+  match(["hand", "calls", "winning_tile"], ~m"koutsu:4, pair:1")
+  and not_match(["calls"], ~m"koutsu:4")
+  and not_match(["hand", "calls", "winning_tile"], ~m"(1z 2z 3z 4z 0z 6z 7z):1")
+
+define_yaku yaku, "All Sequences With Honors", [3, "Phán"],
+  match(["hand", "calls", "winning_tile"], ~m"exhaustive, shuntsu:4, pair:1")
+  and match(["hand", "calls", "winning_tile"], ~m"(1z 2z 3z 4z 0z 6z 7z):1"),
+  ["All Sequences"]
+
+# flowers
+define_yaku yaku, "Seat Flower", [1, "Phán"],
+  (seat_is("east") and match(["flowers"], ~m"1f:1"))
+  or (seat_is("south") and match(["flowers"], ~m"2f:1"))
+  or (seat_is("west") and match(["flowers"], ~m"3f:1"))
+  or (seat_is("north") and match(["flowers"], ~m"4f:1"))
+
+define_yaku yaku, "Seat Season", [1, "Phán"],
+  (seat_is("east") and match(["flowers"], ~m"1g:1"))
+  or (seat_is("south") and match(["flowers"], ~m"2g:1"))
+  or (seat_is("west") and match(["flowers"], ~m"3g:1"))
+  or (seat_is("north") and match(["flowers"], ~m"4g:1"))
+
+define_yaku yaku, "Seat King", [1, "Phán"],
+  (seat_is("east") and match(["flowers"], ~m"1k:1"))
+  or (seat_is("south") and match(["flowers"], ~m"2k:1"))
+  or (seat_is("west") and match(["flowers"], ~m"3k:1"))
+  or (seat_is("north") and match(["flowers"], ~m"4k:1"))
+
+define_yaku yaku, "Seat Queen", [1, "Phán"],
+  (seat_is("east") and match(["flowers"], ~m"1q:1"))
+  or (seat_is("south") and match(["flowers"], ~m"2q:1"))
+  or (seat_is("west") and match(["flowers"], ~m"3q:1"))
+  or (seat_is("north") and match(["flowers"], ~m"4q:1"))
+
+# flower sets
+define_yaku yaku, "Bouquet", [1, "Mủn"], match(["flowers"], ~m"1f:1, 2f:1, 3f:1, 4f:1"), ["Seat Flower"]
+define_yaku yaku, "Bouquet", [1, "Mủn"], match(["flowers"], ~m"1g:1, 2g:1, 3g:1, 4g:1"), ["Seat Season"]
+define_yaku yaku, "Bouquet", [1, "Mủn"], match(["flowers"], ~m"1k:1, 2k:1, 3k:1, 4k:1"), ["Seat King"]
+define_yaku yaku, "Bouquet", [1, "Mủn"], match(["flowers"], ~m"1q:1, 2q:1, 3q:1, 4q:1"), ["Seat Queen"]
+define_yaku yaku, "Matched Royalty", [1, "Phán"], match(["flowers"], ~m"1k:1, 1q:1")
+define_yaku yaku, "Matched Royalty", [1, "Phán"], match(["flowers"], ~m"2k:1, 2q:1")
+define_yaku yaku, "Matched Royalty", [1, "Phán"], match(["flowers"], ~m"3k:1, 3q:1")
+define_yaku yaku, "Matched Royalty", [1, "Phán"], match(["flowers"], ~m"4k:1, 4q:1")
+
+# blue jokers
+define_yaku yaku, "Tổng (縂)", [2, "Phán"], match(["jokers"], ~m"0j:1")
+define_yaku yaku, "Tổng (縂)", [1, "Phán"], (seat_is("east") and match(["jokers"], ~m"0j:1")) or match(["start_jokers"], ~m"0j:1")
+define_yaku yaku, "Thùng (筒)", [1, "Phán"], match(["jokers"], ~m"6j:1")
+define_yaku yaku, "Thùng (筒)", [1, "Phán"], seat_is("south") and match(["jokers"], ~m"6j:1")
+define_yaku yaku, "Soọc (索)", [1, "Phán"], match(["jokers"], ~m"7j:1")
+define_yaku yaku, "Soọc (索)", [1, "Phán"], seat_is("west") and match(["jokers"], ~m"7j:1")
+define_yaku yaku, "Thay (萬)", [1, "Phán"], match(["jokers"], ~m"8j:1")
+define_yaku yaku, "Thay (萬)", [1, "Phán"], seat_is("north") and match(["jokers"], ~m"8j:1")
+
+# red jokers
+define_yaku yaku, "Hoa (花)", [2, "Phán"], match(["flowers"], ~m"9j:1")
+define_yaku yaku, "Hỷ (喜)", [1, "Phán"], match(["jokers"], ~m"5j:1")
+define_yaku yaku, "Hỷ (喜)", [1, "Phán"], seat_is("south")
+define_yaku yaku, "Nguyên (元)", [1, "Phán"], match(["jokers"], ~m"4j:1")
+define_yaku yaku, "Nguyên (元)", [1, "Phán"], seat_is("west")
+define_yaku yaku, "Hợp (合)", [2, "Phán"], match(["jokers"], ~m"2j:1")
+define_yaku yaku, "Hợp (合)", [1, "Phán"], (seat_is("north") and match(["jokers"], ~m"2j:1")) or match(["start_jokers"], ~m"2j:1")
+
+# joker set usage
+define_yaku yaku, "Blue Joker Set", [1, "Mủn"], match(["hand", "calls", "flowers", "jokers", "winning_tile"], ~m"nojoker, 0j:1, 6j:1, 7j:1, 8j:1")
+define_yaku yaku, "Blue Joker Set", [1, "Mủn"], match(["flowers", "jokers"], ~m"nojoker, 0j:1, 6j:1, 7j:1, 8j:1")
+define_yaku yaku, "Red Joker Set", [1, "Mủn"], match(["hand", "calls", "flowers", "jokers", "winning_tile"], ~m"nojoker, 2j:1, 3j:1, 4j:1, 5j:1")
+define_yaku yaku, "Red Joker Set", [1, "Mủn"], match(["flowers", "jokers"], ~m"nojoker, 2j:1, 3j:1, 4j:1, 5j:1")
