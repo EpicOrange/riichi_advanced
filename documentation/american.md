@@ -100,7 +100,7 @@ The following Cards are supported by Riichi Advanced:
 - [Mahjong Press 2026](https://themahjongpress.com/) (cost: 11USD)
 - [The Big Card 2026](https://thebigcard.com/) (cost: 10USD)
 - [OMM 2026 International Mahjong Card](https://ohmymahjong.com/products/international-mahjong-card) (cost: 12USD)
-- [AMJS 2026 Card](https://amjsociety.com/products/2026-mahjong-card-digital-download) (free)
+- [AMJS 2026 Card](https://amjsociety.com/products/2026-mahjong-card-digital-download) (cost: 29USD for four copies)
 - [ShariUniqueCreations Vegas Card](https://www.etsy.com/listing/690122975) (cost: 8.45~9.45CAD)
 - [ILoveMahj Card](https://ilovemahj.com/ilmCard) (free)
 - [ATeacherFirst Mah Jongg Fake Card](https://www.ateacherfirst.com/bridge/mah-jongg/) (free)
