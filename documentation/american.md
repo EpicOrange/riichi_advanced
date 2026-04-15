@@ -174,8 +174,7 @@ To read the Card:
   - C: Skip Calls. This skips all calls, except for Mah Jongg.
   - JC: Skip Joker Calls. Like Skip Calls, but this skips all calls that use only your jokers; i.e. that do not match a natural already in your hand. Useful for if you have two or more jokers in your hand and don't want to keep clicking "Cancel" on every discard.
   - DC: Skip Deadening Calls. Like Skip Calls, but this skips all calls that would result in your hand becoming dead. Enabled by default.
-  - D: Auto Discard. Discards the tile you draw, unless you have the ability to swap a joker or declare Mah Jongg.
-  - DD: Auto Discard Different. Like Auto Discard, but it only discards tiles that you don't already have in your hand.
+  - DD: Auto Discard Different. Discards the tile you draw, unless it matches a tile that's already in your hand, or you have the ability to swap a joker or declare Mah Jongg.
 
 ---
 ## Mod list
@@ -190,7 +189,7 @@ The following mods are currently available for American:
 - Mahjong Press [Year] Card: Play with the [Mahjong Press Card](https://themahjongpress.com/) from the year of your choice (2026 only).
 - TML [Year] Big Card (beta): Play with the The Mahjong Line's [The Big Card](https://thebigcard.com/) from the year of your choice (2026 only). (May contain bugs.)
 - OMM International [Year] Card: Play with the [OMM International Mahjong Card](https://ohmymahjong.com/products/international-mahjong-card) from the year of your choice (2026 only).
-- AMJS [Year] Card: Play with the [AMJS 2026 Card](https://amjsociety.com/products/2026-mahjong-card-digital-download) from the year of your choice (2026 only).
+- AMJS [Year] Card: Play with the [AMJS Card](https://amjsociety.com/products/2026-mahjong-card-digital-download) from the year of your choice (2026 only).
 - ShariUniqueCreations Vegas Card (beta): Play with the [ShariUniqueCreations Vegas Card](https://www.etsy.com/listing/690122975). (May contain bugs.)
 - ILM Card: Play with the free [ILoveMahj Card](https://ilovemahj.com/ilmCard).
 - ATF Card: Play with the free [ATeacherFirst Mah Jongg Fake Card](https://www.ateacherfirst.com/bridge/mah-jongg/).
