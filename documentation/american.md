@@ -30,7 +30,6 @@ Here are differences between Riichi Advanced and real life/other mahjong clients
 
 - Implement the various Marvelous Cards. Currently waiting on them to send us copies of their Cards.
 - Implement the Mah Jongg Network and Mah Jongg Network Junior Cards. Currently waiting on them to clarify certain rules differences.
-- Implement The Mahjong Line's The Big Card. Currently waiting on them to clarify rules.
 - Implement the 75-point hand on the AMJfE Card. Currently it's unimplemented because it would require us to write down 98 different hands.
 - Implement the six missing hands on the MahjForAll Evergreen Card. Currently we need:
   - Some way for players to specify a year before drawing a Card;
