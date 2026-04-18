@@ -547,7 +547,16 @@ defmodule RiichiAdvanced.Match do
   def match_hand(hand, calls, match_definitions, tile_behavior) do
     # t = System.os_time(:millisecond)
     tile_behavior = filter_irrelevant_tile_aliases(tile_behavior, hand ++ Enum.flat_map(calls, &Utils.call_to_tiles/1))
-    ret = Enum.any?(match_definitions, fn match_definition -> not Enum.empty?(remove_match_definition(hand, calls, match_definition, tile_behavior)) end)
+
+    # ret = Enum.any?(match_definitions, fn match_definition -> not Enum.empty?(remove_match_definition(hand, calls, match_definition, tile_behavior)) end)
+
+    num_tiles = length(hand) + length(Enum.flat_map(calls, &Utils.call_to_tiles/1))
+    ret = if num_tiles <= 26 do
+      RiichiAdvanced.Match.Temp.match_hand_v2(hand, calls, match_definitions, tile_behavior)
+    else
+      Enum.any?(match_definitions, fn match_definition -> not Enum.empty?(remove_match_definition(hand, calls, match_definition, tile_behavior)) end)
+    end
+
     # elapsed_time = System.os_time(:millisecond) - t
     # if elapsed_time > 10 do
     #   IO.puts("match_hand: #{inspect(elapsed_time)} ms")

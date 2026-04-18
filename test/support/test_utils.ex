@@ -9,8 +9,8 @@ defmodule RiichiAdvanced.TestUtils do
   alias RiichiAdvanced.Utils, as: Utils
   import ExUnit.Assertions
 
-  @suppress_io true
-  # @suppress_io false
+  # @suppress_io true
+  @suppress_io false
 
   def initialize_test_state(ruleset, mods, config \\ nil)
   def initialize_test_state(_ruleset, nil, _config) do

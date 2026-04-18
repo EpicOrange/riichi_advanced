@@ -1,4 +1,5 @@
 defmodule RiichiAdvanced.Match.Temp do
+  alias RiichiAdvanced.Match, as: Match
   alias RiichiAdvanced.GameState.TileBehavior, as: TileBehavior
   alias RiichiAdvanced.Utils, as: Utils
   import Bitwise
@@ -112,5 +113,181 @@ defmodule RiichiAdvanced.Match.Temp do
       else [] end # otherwise we're asking for more attributes than we have altogether
     else [] end # otherwise we'd be trying to remove more tiles than we have altogether
   end
+
+  def collect_base_tiles_v2(tiles, groups, tile_behavior) do
+    tiles = Enum.uniq(tiles)
+    for group <- groups do
+      cond do
+        is_list(group) ->
+          {lowest, highest} = List.flatten(group)
+          |> Enum.filter(&is_number/1)
+          |> Enum.min_max(fn -> {0, 0} end)
+          Enum.filter(tiles, fn tile ->
+            Match.offset_tile(tile, lowest, tile_behavior) != nil and
+            Match.offset_tile(tile, highest, tile_behavior) != nil
+          end)
+        Match.is_offset(group) -> Enum.filter(tiles, fn tile -> Match.offset_tile(tile, group, tile_behavior) != nil end)
+        group == "any" -> tiles
+        Utils.is_tile(group) -> []
+        is_binary(group) -> []
+        true ->
+          IO.puts("Unknown group spec #{inspect(group)}")
+          []
+      end
+    end
+    |> Enum.concat()
+    |> Enum.uniq()
+  end
+
+  def elim_group([phand | pcalls], pgroup) do
+    from_calls = for {pcall, i} <- Enum.with_index(pcalls), rem(pcall, pgroup) == 0, do: [phand | List.delete_at(pcalls, i)]
+    case rem(phand, pgroup) do
+      0 -> [[Integer.floor_div(phand, pgroup) | pcalls] | from_calls]
+      _ -> from_calls
+    end
+  end
+  def elim_group_once([phand | pcalls], pgroup) do
+    case Enum.find_index(pcalls, &rem(&1, pgroup) == 0) do
+      nil -> case rem(phand, pgroup) do
+        0 -> [[Integer.floor_div(phand, pgroup) | pcalls]]
+        _ -> []
+      end
+      i   -> [[phand | List.delete_at(pcalls, i)]]
+    end
+  end
+
+  # first 26 primes, to be zipped with unique tiles in hand
+  # 26, because the product of the first 26 primes fits in a 128-bit unsigned int
+  @primes [2,3,5,7,11,13,17,19,23,29,31,37,41,43,47,53,59,61,67,71,73,79,83,89,97,101]
+
+  def encode(hand, encoding) do
+    Enum.reduce(hand, 1, fn tile, acc -> acc * Map.get(encoding, tile, 1) end)
+  end
+  def decode(phand, encoding, primes \\ @primes, acc \\ [])
+  def decode(1, _encoding, _primes, acc), do: Enum.reverse(acc)
+  def decode(_phand, _encoding, [], acc), do: Enum.reverse(acc)
+  def decode(phand, encoding, [p | _] = primes, acc) when rem(phand, p) == 0 do
+    {tile, _prime} = Enum.find(encoding, fn {_tile, prime} -> prime == p end)
+    decode(Integer.floor_div(phand, p), encoding, primes, [tile | acc])
+  end
+  def decode(phand, encoding, [_p | primes], acc), do: decode(phand, encoding, primes, acc)
+
+  def apply_offsets(base_tile, offsets, tile_behavior, n \\ 0, acc \\ [])
+  def apply_offsets(_base_tile, [], _tile_behavior, _n, acc), do: Enum.reverse(acc)
+  def apply_offsets(nil, _offsets, _tile_behavior, _n, _acc), do: nil
+  def apply_offsets(base_tile, [o | offsets], tile_behavior, n, acc) when is_number(o) and n == o, do: apply_offsets(base_tile, offsets, tile_behavior, n, [base_tile | acc])
+  def apply_offsets(base_tile, [o | offsets], tile_behavior, n, acc) when is_number(o) and n < o, do: apply_offsets(tile_behavior.ordering[base_tile], [o | offsets], tile_behavior, n+1, acc)
+  def apply_offsets(base_tile, [o | offsets], tile_behavior, n, acc) when is_number(o), do: apply_offsets(base_tile, offsets, tile_behavior, n, acc)
+  def apply_offsets(base_tile, [o | offsets], tile_behavior, n, acc), do: apply_offsets(base_tile, offsets, tile_behavior, n, [o | acc])
+
+  # TODO e.g. {:"1m", ["_foo"]} should be removable by {:"1m", ["attr1"]}, {:"1m", ["attr2"]}, {:"1m", ["attr1", "attr2"]}
+  # this shouldn't generate the cartesian product of all possible tiles, what to do?
+  #   wait, what if tiles with attrs = composite of tile and attr?
+  #   so :"1m" = 3, "attr1" = 5, {:"1m", ["attr1"]} = 15
+  # oh, but then attr could belong to any tile
+  #   wait we solved this already
+  #   make each tile a pair {tileprime, attrprime}
+  # but then you can't multiply them all together...
+  # rn we have e.g. :"1m" = 3, {:"1m", ["attr1"]} = 5
+  # is there a way to say "when you wanna remove 3x, also try removing 5x since that also matches?
+  #   we could store 5/3, when we wanna remove a group x, try removing 5x/3, 25x/9, etc
+  # if we do that our primes method might be slower than lists
+  #   that's true, we kinda wanna minimize the number of pgroups we can divide by
+  #   actually, it's rare to have many versions of the same tile. the list of 5/3, 25/9, etc should be small
+  #   since they come from tiles actually in hand
+  #   let's try this?
+  # right, we'll just encode attrs as a bitmask and check the lattice using each tile with the same id
+  #   
+  # so what encode_group actually should do, is give a list of factors like [[3,5,7],[3,5,7],[3,5,7]]
+  # the idea being that removing the group is to pick one factor from each sublist
+  # other way to say it is, take the cartesian product, that's the pgroup
+  # problem: if every tile in hand has an attribute, we can't remove the base tile
+  # solution: we separate the problems.
+  # - we use the prime multiset to see if we can remove the group at all assuming base tiles
+  # - we use an actual tile list to check attributes
+  # this seems slower
+  # 
+
+  def encode_group(group, all_tiles, encoding, tile_behavior) do
+    cond do
+      is_list(group) -> Enum.map(all_tiles, &apply_offsets(&1, group, tile_behavior))
+      Match.is_offset(group) -> Enum.map(all_tiles, &apply_offsets(&1, [group], tile_behavior))
+      group == "any" -> Enum.map(all_tiles, &List.wrap(&1))
+      Utils.is_tile(group) -> [group]
+      is_binary(group) -> if group in Match.group_keywords() do nil else [group] end # could be a call name
+      true ->
+        IO.puts("Unknown group spec #{inspect(group)}")
+        []
+    end
+    |> Enum.filter(& &1 != nil)
+    |> Enum.uniq()
+    |> Enum.map(&encode(&1, encoding))
+    # |> IO.inspect(label: inspect({base_tiles, group}))
+  end
+
+  def match_hand_v2(hand, calls, match_definitions, tile_behavior) do
+    # precondition: hand+calls is <= 26 tiles long
+    # TODO can expand to each hand + call being <= 26 tiles long, just limit the number of unique tiles (primes) to like 100
+    # first encode hand tiles and call tiles as primes, with most frequent as lower primes
+    all_tiles = hand ++ Enum.flat_map(calls, &Utils.call_to_tiles/1)
+    encoding = Enum.frequencies(all_tiles)
+    |> Enum.sort_by(fn {_tile, freq} -> -freq end)
+    |> Enum.zip(@primes)
+    |> Map.new(fn {{tile, _freq}, prime} -> {tile, prime} end) 
+    phands = [encode(hand, encoding) | Enum.map(calls, fn {_name, call} -> encode(call, encoding) end)]
+
+    # try each match definition in turn
+    Enum.any?(match_definitions, fn match_definition ->
+      exhaustive_ix = Enum.find_index(match_definition, & &1 == "exhaustive")
+      unique_ix = Enum.find_index(match_definition, & &1 == "unique")
+      debug = "debug" in match_definition
+      for {[groups, num], i} <- Enum.with_index(match_definition), reduce: [phands] do
+        []  -> []
+        acc ->
+          exhaustive = exhaustive_ix != nil and i > exhaustive_ix
+          unique = (unique_ix != nil and i > unique_ix) or "unique" in groups
+          # use offsets in match definition to determine which tiles can be considered offset 0 (base tiles)
+          # base_tiles = collect_base_tiles_v2(all_tiles, groups, tile_behavior)
+          # preprocess groups with base tiles
+          pgroups = for group <- groups, group not in Match.group_keywords() do
+            {encode_group(group, all_tiles, encoding, tile_behavior), group}
+          end
+          # then try to remove (num) groups
+          for j <- (if num == 0 do [1] else 1..abs(num) end), reduce: Enum.map(acc, fn phands -> {phands, pgroups} end) do
+            [] -> []
+            phands_pgroups ->
+              report = if debug do
+                line1 = "Acc (before removal #{j}/#{num}): (base tiles #{inspect(base_tiles)})"
+                lines = for {[phand | pcalls], remaining_pgroups} <- phands_pgroups do
+                  groups = Enum.map(remaining_pgroups, fn {_pgroups, orig_group} -> orig_group end)
+                  "- #{inspect(Utils.sort_tiles(decode(phand, encoding)))} / #{inspect(Enum.map(pcalls, &Utils.sort_tiles(decode(&1, encoding))))} \\\\ #{inspect(groups, charlists: :as_lists)}#{if unique do " unique" else "" end}#{if exhaustive do " exhaustive" else "" end}"
+                end
+                [line1 | lines]
+              else "" end
+              phands_pgroups =
+                for {phands, remaining_pgroups} <- phands_pgroups,
+                    {{pgroups, _orig_group}, i} <- Enum.with_index(remaining_pgroups),
+                    pgroup <- pgroups,
+                    phands <- (if exhaustive do elim_group(phands, pgroup) else elim_group_once(phands, pgroup) end),
+                    uniq: true do
+                  {phands, if unique do List.delete_at(remaining_pgroups, i) else remaining_pgroups end}
+                end
+              if debug do
+                line1 = "Acc (after removal #{j}/#{num}):"
+                lines = for {[phand | pcalls], _remaining_groups} <- phands_pgroups do
+                  "- #{inspect(Utils.sort_tiles(decode(phand, encoding)))} / #{inspect(Enum.map(pcalls, &Utils.sort_tiles(decode(&1, encoding))))}"
+                end
+                IO.puts(Enum.join(report ++ [line1 | lines] ++ [""], "\n"))
+              end
+              phands_pgroups
+          end
+          |> Enum.map(fn {phands, _} -> phands end)
+          |> Enum.uniq()
+      end
+      |> Enum.empty?()
+      |> Kernel.not()
+    end)
+  end
+
 
 end
