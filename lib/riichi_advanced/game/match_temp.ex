@@ -12,6 +12,9 @@ defmodule RiichiAdvanced.Match.Temp do
                   # may also include jokers in the form of {:joker, list of possible {prime, attr bitset} which that joker can be}
                   # note that jokers are not included in hash
     ]
+    # first 256 primes should be enough
+    @primes [2,3,5,7,11,13,17,19,23,29,31,37,41,43,47,53,59,61,67,71,73,79,83,89,97,101,103,107,109,113,127,131,137,139,149,151,157,163,167,173,179,181,191,193,197,199,211,223,227,229,233,239,241,251,257,263,269,271,277,281,283,293,307,311,313,317,331,337,347,349,353,359,367,373,379,383,389,397,401,409,419,421,431,433,439,443,449,457,461,463,467,479,487,491,499,503,509,521,523,541,547,557,563,569,571,577,587,593,599,601,607,613,617,619,631,641,643,647,653,659,661,673,677,683,691,701,709,719,727,733,739,743,751,757,761,769,773,787,797,809,811,821,823,827,829,839,853,857,859,863,877,881,883,887,907,911,919,929,937,941,947,953,967,971,977,983,991,997,1009,1013,1019,1021,1031,1033,1039,1049,1051,1061,1063,1069,1087,1091,1093,1097,1103,1109,1117,1123,1129,1151,1153,1163,1171,1181,1187,1193,1201,1213,1217,1223,1229,1231,1237,1249,1259,1277,1279,1283,1289,1291,1297,1301,1303,1307,1319,1321,1327,1361,1367,1373,1381,1399,1409,1423,1427,1429,1433,1439,1447,1451,1453,1459,1471,1481,1483,1487,1489,1493,1499,1511,1523,1531,1543,1549,1553,1559,1567,1571,1579,1583,1597,1601,1607,1609,1613,1619]
+    def primes, do: @primes
 
     # solve n rooks, returning a list of column indices, one for each row
     def solve_n_rooks(masks, n_cols), do: _solve_n_rooks(Enum.with_index(masks), (1 <<< n_cols) - 1, length(masks), [])
@@ -42,7 +45,6 @@ defmodule RiichiAdvanced.Match.Temp do
     def is_subset?(l, r), do: subtract(r, l) != nil
 
     # uses attrs as a source of primes to check
-    @primes [2,3,5,7,11,13,17,19,23,29,31,37,41,43,47,53,59,61,67,71,73,79,83,89,97,101]
     def prime_decompose(n, primes \\ @primes, acc \\ [])
     def prime_decompose(1, _primes, acc), do: acc
     def prime_decompose(n, [p | primes], acc) when rem(n, p) == 0, do: prime_decompose(Integer.floor_div(n, p), [p | primes], [p | acc])
@@ -97,16 +99,16 @@ defmodule RiichiAdvanced.Match.Temp do
     # encode first argument A into a number, using second argument B as a dictionary
     # (first item of B = 1, second = 2, third = 4, etc)
     # assumes both inputs are sorted
-    def encode_attrs(tile_attrs, all_attrs, acc \\ 0, inc \\ 1)
-    def encode_attrs(_tile_attrs, [], acc, _inc), do: acc
-    def encode_attrs([], _all_attrs, acc, _inc), do: acc
-    def encode_attrs([l_attr | attrs], [r_attr | all_attrs], acc, inc) do
+    def encode_attrs(tile_attrs, all_attrs), do: _encode_attrs(Enum.sort(tile_attrs), all_attrs, 0, 1)
+    def _encode_attrs(_tile_attrs, [], acc, _inc), do: acc
+    def _encode_attrs([], _all_attrs, acc, _inc), do: acc
+    def _encode_attrs([l_attr | attrs], [r_attr | all_attrs], acc, inc) do
       cond do
         # match
-        l_attr == r_attr -> encode_attrs(attrs, all_attrs, acc + inc, inc * 2)
+        l_attr == r_attr -> _encode_attrs(attrs, all_attrs, acc + inc, inc * 2)
         # no match
-        l_attr < r_attr  -> encode_attrs(attrs, [r_attr | all_attrs], acc, inc)
-        true             -> encode_attrs([l_attr | attrs], all_attrs, acc, inc * 2)
+        l_attr < r_attr  -> _encode_attrs(attrs, [r_attr | all_attrs], acc, inc)
+        true             -> _encode_attrs([l_attr | attrs], all_attrs, acc, inc * 2)
       end
     end
 
@@ -154,11 +156,8 @@ defmodule RiichiAdvanced.Match.Temp do
 
     def decode(hand, encoding, []), do: decode_primes(hand, encoding)
     def decode(%{attrs: attrs}, encoding, all_attrs) do
-      for item <- attrs do
-        {p, attrs} = case item do
-          {:joker, [joker | _]} -> joker
-          _ -> item
-        end
+      for {p, attrs} <- attrs, p != :name do
+        attrs = if p == :joker do Enum.at(attrs, 0) else attrs end
         {tile, _prime} = Enum.find(encoding, {nil, 1}, fn {_tile, prime} -> prime == p end)
         # bitset to attr
         {_, attrs} = for attr <- all_attrs, reduce: {attrs, []} do
@@ -352,10 +351,6 @@ defmodule RiichiAdvanced.Match.Temp do
     end
   end
 
-  # first 26 primes, to be zipped with unique tiles in hand
-  # 26, because the product of the first 26 primes fits in a 128-bit unsigned int
-  @primes [2,3,5,7,11,13,17,19,23,29,31,37,41,43,47,53,59,61,67,71,73,79,83,89,97,101]
-
   @shift_suit %{:"1m"=>:"1p", :"2m"=>:"2p", :"3m"=>:"3p", :"4m"=>:"4p", :"5m"=>:"5p", :"6m"=>:"6p", :"7m"=>:"7p", :"8m"=>:"8p", :"9m"=>:"9p", :"10m"=>:"10p",
                 :"1p"=>:"1s", :"2p"=>:"2s", :"3p"=>:"3s", :"4p"=>:"4s", :"5p"=>:"5s", :"6p"=>:"6s", :"7p"=>:"7s", :"8p"=>:"8s", :"9p"=>:"9s", :"10p"=>:"10s",
                 :"1s"=>:"1m", :"2s"=>:"2m", :"3s"=>:"3m", :"4s"=>:"4m", :"5s"=>:"5m", :"6s"=>:"6m", :"7s"=>:"7m", :"8s"=>:"8m", :"9s"=>:"9m", :"10s"=>:"10m",
@@ -449,9 +444,9 @@ defmodule RiichiAdvanced.Match.Temp do
     else "" end
 
     primes_attrs = match_elem
-    |> Enum.map(fn [tile] -> Utils.to_tile(tile) end)
-    |> Enum.filter(&Map.has_key?(encoding, &1))
-    |> Enum.map(&TileSet.encode([&1], encoding, all_attrs))
+    |> Enum.map(&Enum.map(&1, fn tile -> Utils.to_tile(tile) end))
+    |> Enum.filter(&Enum.all?(&1, fn tile -> Map.has_key?(encoding, tile) end))
+    |> Enum.map(&TileSet.encode(&1, encoding, all_attrs))
 
     num_targets = length(primes_attrs)
     cond do
@@ -507,12 +502,16 @@ defmodule RiichiAdvanced.Match.Temp do
       num: num,
       exhaustive: exhaustive,
       unique: unique,
+      nojoker: nojoker,
       debug: debug,
     } = data
+    encoding = if nojoker do Map.delete(encoding, :mappings) else encoding end
+
     groups = for group <- match_elem, group not in Match.group_keywords() do
       # reifies a group spec into multiple possible groups
       {encode_group(group, all_tiles, encoding, all_attrs, tile_behavior), group}
     end
+
     for j <- (if num == 0 do [1] else 1..abs(num) end), reduce: Enum.map(acc, fn hands -> {hands, groups} end) do
       [] -> []
       hands_groups ->
@@ -520,7 +519,9 @@ defmodule RiichiAdvanced.Match.Temp do
           line1 = "Acc (before removal #{j}/#{num}):"
           lines = for {[hand | calls], remaining_groups} <- hands_groups do
             groups = Enum.map(remaining_groups, fn {_groups, orig_group} -> orig_group end)
-            "- #{inspect(Utils.sort_tiles(TileSet.decode(hand, encoding, all_attrs)))} / #{inspect(Enum.map(calls, &Utils.sort_tiles(TileSet.decode(&1, encoding, all_attrs))))} \\\\ #{inspect(groups, charlists: :as_lists)}#{if unique do " unique" else "" end}#{if exhaustive do " exhaustive" else "" end}"
+            "- #{inspect(hand)} #{inspect(calls)}\n"
+            <> "#{inspect(encoding)}\n"
+            <> "- #{inspect(Utils.sort_tiles(TileSet.decode(hand, encoding, all_attrs)))} / #{inspect(Enum.map(calls, &Utils.sort_tiles(TileSet.decode(&1, encoding, all_attrs))))} \\\\ #{inspect(groups, charlists: :as_lists)}#{if unique do " unique" else "" end}#{if exhaustive do " exhaustive" else "" end}"
           end
           [line1 | lines]
         else "" end
@@ -562,7 +563,7 @@ defmodule RiichiAdvanced.Match.Temp do
     |> Enum.sort()
     encoding = Enum.frequencies(all_tile_ids)
     |> Enum.sort_by(fn {_tile, freq} -> -freq end)
-    |> Enum.zip(@primes)
+    |> Enum.zip(TileSet.primes())
     |> Map.new(fn {{tile, _freq}, prime} -> {tile, prime} end)
     # add aliases to encoding
     if not Enum.empty?(mappings) do
@@ -585,65 +586,79 @@ defmodule RiichiAdvanced.Match.Temp do
       |> Enum.sort()
     end
 
-    encoding = create_encoding(all_tiles, tile_behavior.mappings)
+    never_jokers = Enum.all?(match_definitions, fn match_definition -> "nojoker" in match_definition end)
+    encoding = create_encoding(all_tiles, if never_jokers do %{} else tile_behavior.mappings end)
 
     hands = [TileSet.encode(hand, encoding, all_attrs) | Enum.map(calls, fn {name, call} ->
       ret = TileSet.encode(call, encoding, all_attrs)
       %{ret | attrs: [{:name, name} | ret.attrs]}
     end)]
-
     # try each match definition in turn
     Enum.any?(match_definitions, fn match_definition ->
-      exhaustive_ix = Enum.find_index(match_definition, & &1 == "exhaustive")
-      unique_ix = Enum.find_index(match_definition, & &1 == "unique")
+      # early exit if we have more groups than tiles!
+      # this is mostly to prevent 14 tile hands, like kokushi, from matching when we have 13 tiles
       debug = "debug" in match_definition
-      for {[match_elem, num], i} <- Enum.with_index(match_definition), reduce: [hands] do
-        []  -> []
-        acc ->
-          data = %{
-            tile_behavior: tile_behavior,
-            encoding: encoding,
-            all_tiles: all_tiles,
-            all_attrs: all_attrs,
-            acc: acc,
-            match_elem: match_elem,
-            num: num,
-            exhaustive: exhaustive_ix != nil and i > exhaustive_ix,
-            unique: (unique_ix != nil and i > unique_ix) or "unique" in match_elem,
-            debug: debug,
-          }
-          new_acc = cond do
-            Enum.empty?(all_attrs) and data.unique and not data.exhaustive and Enum.all?(match_elem, &Utils.is_tile(&1) or &1 in Match.group_keywords()) -> perform_unique_match(data)
-            true -> perform_standard_match(data)
-          end
-          cond do
-            num == 0 -> # forward lookahead
-              if Enum.empty?(new_acc) do
-                []
-              else
-                if debug do IO.puts("Reverting due to last group being a successful forward lookahead (num=0)") end
-                acc # revert
-              end
-            num < 0  -> # negative lookahead
-              if Enum.empty?(new_acc) do
-                if debug do IO.puts("Reverting due to last group being a successful negative lookahead (num=#{num})") end
-                acc # revert
-              else
-                [] # if we matched anything, no we didn't
-              end
-            true     ->
-              if debug do
-                IO.puts("Final result:")
-                for {hand, calls} <- new_acc do
-                  "- #{inspect(Utils.sort_tiles(TileSet.decode(hand, encoding, all_attrs)))} / #{inspect(Enum.map(calls, &Utils.sort_tiles(TileSet.decode(&1, encoding, all_attrs))))}"
+      min_match_length = Enum.reduce(match_definition, 0, fn
+        [_match_elem, num], acc -> acc + num
+        _, acc -> acc
+      end)
+      hand_length = length(all_tiles)
+      if min_match_length > hand_length and "restart" not in match_definition do
+        if debug do IO.puts("Since we only have #{hand_length} tiles, refusing to match length-#{min_match_length} match #{inspect(match_definition)}") end
+        false
+      else
+        exhaustive_ix = Enum.find_index(match_definition, & &1 == "exhaustive")
+        unique_ix = Enum.find_index(match_definition, & &1 == "unique")
+        nojoker_ix = Enum.find_index(match_definition, & &1 == "nojoker")
+        for {[match_elem, num], i} <- Enum.with_index(match_definition), reduce: [hands] do
+          []  -> []
+          acc ->
+            data = %{
+              tile_behavior: tile_behavior,
+              encoding: encoding,
+              all_tiles: all_tiles,
+              all_attrs: all_attrs,
+              acc: acc,
+              match_elem: match_elem,
+              num: num,
+              exhaustive: exhaustive_ix != nil and i > exhaustive_ix,
+              unique: (unique_ix != nil and i > unique_ix) or "unique" in match_elem,
+              nojoker: (nojoker_ix != nil and i > nojoker_ix) or "nojoker" in match_elem,
+              debug: debug,
+            }
+            new_acc = cond do
+              Enum.empty?(all_attrs) and data.unique and not data.exhaustive and Enum.all?(match_elem, &Utils.is_tile(&1) or &1 in Match.group_keywords()) -> perform_unique_match(data)
+              true -> perform_standard_match(data)
+            end
+            cond do
+              num == 0 -> # forward lookahead
+                if Enum.empty?(new_acc) do
+                  []
+                else
+                  if debug do IO.puts("Reverting due to last group being a successful forward lookahead (num=0)") end
+                  acc # revert
                 end
-                IO.puts("")
-              end
-              new_acc
-          end
+              num < 0  -> # negative lookahead
+                if Enum.empty?(new_acc) do
+                  if debug do IO.puts("Reverting due to last group being a successful negative lookahead (num=#{num})") end
+                  acc # revert
+                else
+                  [] # if we matched anything, no we didn't
+                end
+              true     ->
+                if debug do
+                  IO.puts("Final result:")
+                  for {hand, calls} <- new_acc do
+                    "- #{inspect(Utils.sort_tiles(TileSet.decode(hand, encoding, all_attrs)))} / #{inspect(Enum.map(calls, &Utils.sort_tiles(TileSet.decode(&1, encoding, all_attrs))))}"
+                  end
+                  IO.puts("")
+                end
+                new_acc
+            end
+        end
+        |> Enum.empty?()
+        |> Kernel.not()
       end
-      |> Enum.empty?()
-      |> Kernel.not()
     end)
   end
 
