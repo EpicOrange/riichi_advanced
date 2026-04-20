@@ -42,6 +42,7 @@ defmodule RiichiAdvanced.Match.Temp do
     # remove 2nd set from 1st set to get a resulting set, or nil if not removable
     def subtract(%{hash: hash2, attrs: attrs2} = hand, %{hash: hash1, attrs: attrs1}) do
       case rem(hash2, hash1) do
+        0 when attrs2 == [] -> %{hand | hash: Integer.floor_div(hash2, hash1)}
         0 ->
           # solve for every exact cover with ahand2 covering ahand1
           # compute masks where the ith bitmask has jth bit set iff attrs2[i] covers attrs1[j]}
@@ -85,16 +86,23 @@ defmodule RiichiAdvanced.Match.Temp do
     #   _decode_attrs(encoded_attrs >>> 1, all_attrs, acc)
     # end
 
+    def encode(hand, encoding, []) do
+      %TileSet{
+        hash: Enum.reduce(hand, 1, fn tile, acc -> acc * Map.get(encoding, Utils.strip_attrs(tile), 1) end),
+        attrs: []
+      }
+    end
     def encode(hand, encoding, all_attrs) do
       %TileSet{
         hash: Enum.reduce(hand, 1, fn tile, acc -> acc * Map.get(encoding, Utils.strip_attrs(tile), 1) end),
         attrs: for {tile, attrs} <- Enum.map(hand, &Utils.to_attr_tile/1) do
           attrs = Enum.map(attrs, &String.trim_leading(&1, "_"))
           {Map.get(encoding, tile, 1), encode_attrs(attrs, all_attrs)}
-        end,
+        end
       }
     end
 
+    def decode(hand, encoding, []), do: decode_primes(hand, encoding)
     def decode(%{attrs: attrs}, encoding, all_attrs) do
       for {p, attrs} <- attrs do
         {tile, _prime} = Enum.find(encoding, {nil, 1}, fn {_tile, prime} -> prime == p end)
@@ -107,20 +115,19 @@ defmodule RiichiAdvanced.Match.Temp do
               1 -> {attrs >>> 1, [attr | acc]}
             end
         end
-        {tile, attrs}
+        if Enum.empty?(attrs) do tile else {tile, attrs} end
       end
     end
 
-    # # old
-    # @primes [2,3,5,7,11,13,17,19,23,29,31,37,41,43,47,53,59,61,67,71,73,79,83,89,97,101]
-    # def decode(hand, encoding, primes \\ @primes, acc \\ [])
-    # def decode(%{hash: 1}, _encoding, _primes, acc), do: Enum.reverse(acc)
-    # def decode(_hand, _encoding, [], acc), do: Enum.reverse(acc)
-    # def decode(%{hash: hash}, encoding, [p | _] = primes, acc) when rem(hash, p) == 0 do
-    #   {tile, _prime} = Enum.find(encoding, fn {_tile, prime} -> prime == p end)
-    #   decode(Integer.floor_div(hash, p), encoding, primes, [tile | acc])
-    # end
-    # def decode(hand, encoding, [_p | primes], acc), do: decode(hand, encoding, primes, acc)
+    @primes [2,3,5,7,11,13,17,19,23,29,31,37,41,43,47,53,59,61,67,71,73,79,83,89,97,101]
+    def decode_primes(hand, encoding, primes \\ @primes, acc \\ [])
+    def decode_primes(%{hash: 1}, _encoding, _primes, acc), do: Enum.reverse(acc)
+    def decode_primes(_hand, _encoding, [], acc), do: Enum.reverse(acc)
+    def decode_primes(%{hash: hash}, encoding, [p | _] = primes, acc) when rem(hash, p) == 0 do
+      {tile, _prime} = Enum.find(encoding, fn {_tile, prime} -> prime == p end)
+      decode_primes(Integer.floor_div(hash, p), encoding, primes, [tile | acc])
+    end
+    def decode_primes(hand, encoding, [_p | primes], acc), do: decode_primes(hand, encoding, primes, acc)
 
   end
 
@@ -377,18 +384,19 @@ defmodule RiichiAdvanced.Match.Temp do
     # TODO can expand to each hand + call being <= 26 tiles long, just limit the number of unique tiles (primes) to like 100
     # first encode hand tiles and call tiles as primes, with most frequent as lower primes
     all_tiles = hand ++ Enum.flat_map(calls, &Utils.call_to_tiles/1)
-    hand_attrs = Enum.flat_map(all_tiles, fn {_tile, attrs} -> Enum.map(attrs, &String.trim_leading(&1, "_")); _tile -> [] end)
     match_attrs = match_definitions
     |> List.flatten()
     |> Enum.flat_map(fn
       %{"attrs" => attrs} -> attrs
       _ -> []
     end)
-    all_attrs = (hand_attrs ++ match_attrs)
-    |> Enum.uniq()
-    |> Enum.sort()
-
-    # TODO make a faster path if all_attrs is empty
+    all_attrs = if Enum.empty?(match_attrs) do
+      []
+    else
+      hand_attrs = Enum.flat_map(all_tiles, fn {_tile, attrs} -> Enum.map(attrs, &String.trim_leading(&1, "_")); _tile -> [] end)
+      Enum.uniq(hand_attrs ++ match_attrs)
+      |> Enum.sort()
+    end
 
     all_tile_ids = all_tiles
     |> Utils.strip_attrs()
@@ -411,24 +419,12 @@ defmodule RiichiAdvanced.Match.Temp do
         acc ->
           exhaustive = exhaustive_ix != nil and i > exhaustive_ix
           unique = (unique_ix != nil and i > unique_ix) or "unique" in match_elem
-          # use offsets in match definition to determine which tiles can be considered offset 0 (base tiles)
-          # preprocess groups with all_tiles as base tiles
 
-          # debug_defn = [[%{"attrs" => ["terminal"], "offset" => 0}, 1, 2], [0, 1, %{"attrs" => ["terminal"], "offset" => 2}], [%{"attrs" => ["terminal"], "offset" => 0}, %{"attrs" => ["terminal"], "offset" => 0}, %{"attrs" => ["terminal"], "offset" => 0}]]
-          # if match_elem == debug_defn do
-          #   IO.inspect(all_tiles, label: "asdf1")
-          # end
-
+          # standard algorithm: try to remove (num) groups
           groups = for group <- match_elem, group not in Match.group_keywords() do
             # reifies a group spec into multiple possible groups
             {encode_group(group, all_tiles, encoding, all_attrs, tile_behavior), group}
           end
-
-          # if match_elem == debug_defn do
-          #   IO.inspect(groups, label: "asdf2")
-          # end
-
-          # then try to remove (num) groups
           new_acc = for j <- (if num == 0 do [1] else 1..abs(num) end), reduce: Enum.map(acc, fn hands -> {hands, groups} end) do
             [] -> []
             hands_groups ->
@@ -469,12 +465,12 @@ defmodule RiichiAdvanced.Match.Temp do
               if Enum.empty?(new_acc) do
                 []
               else
-                if debug do IO.puts("Reverting due to last group being a successful forward lookahead (num=0): #{inspect(groups)}") end
+                if debug do IO.puts("Reverting due to last group being a successful forward lookahead (num=0)") end
                 acc # revert
               end
             num < 0  -> # negative lookahead
               if Enum.empty?(new_acc) do
-                if debug do IO.puts("Reverting due to last group being a successful negative lookahead (num=#{num}): #{inspect(groups)}") end
+                if debug do IO.puts("Reverting due to last group being a successful negative lookahead (num=#{num})") end
                 acc # revert
               else
                 [] # if we matched anything, no we didn't
