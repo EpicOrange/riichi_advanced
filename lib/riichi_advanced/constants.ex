@@ -521,6 +521,12 @@ defmodule RiichiAdvanced.Constants do
         "vietnamese",
       ],
     },
+    "mcr" => %{
+      ruleset: "mcr",
+      mods: [
+        "global_mods",
+      ],
+    },
   }
 
   def modpacks, do: @modpacks
