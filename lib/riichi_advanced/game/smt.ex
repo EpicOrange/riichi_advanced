@@ -1,7 +1,7 @@
 defmodule RiichiAdvanced.SMT do
   alias RiichiAdvanced.GameState.Debug, as: Debug
   alias RiichiAdvanced.GameState.TileBehavior, as: TileBehavior
-  alias RiichiAdvanced.Match, as: Match
+  alias RiichiAdvanced.MatchOld, as: MatchOld
   alias RiichiAdvanced.Utils, as: Utils
   use Nebulex.Caching
   
@@ -357,7 +357,7 @@ defmodule RiichiAdvanced.SMT do
   end
 
   def remove_group_keywords(group) do
-    if is_list(group) do Enum.reject(group, & &1 in Match.group_keywords()) |> Enum.sort() else group end
+    if is_list(group) do Enum.reject(group, & &1 in MatchOld.group_keywords()) |> Enum.sort() else group end
   end
 
   def strip_restart(match_definition) do

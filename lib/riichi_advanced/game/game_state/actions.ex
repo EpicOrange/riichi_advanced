@@ -12,6 +12,7 @@ defmodule RiichiAdvanced.GameState.Actions do
   alias RiichiAdvanced.GameState.TileBehavior, as: TileBehavior
   alias RiichiAdvanced.GameState.Log, as: Log
   alias RiichiAdvanced.Match, as: Match
+  alias RiichiAdvanced.MatchOld, as: MatchOld
   alias RiichiAdvanced.Riichi, as: Riichi
   alias RiichiAdvanced.Utils, as: Utils
   require Logger
@@ -508,7 +509,7 @@ defmodule RiichiAdvanced.GameState.Actions do
         hand_calls = Conditions.get_hand_calls_spec(state, context, Enum.at(opts, 0, []))
         match_definitions = Rules.translate_match_definitions(state.rules_ref, Enum.at(opts, 1, []))
         tile_behavior = state.players[context.seat].tile_behavior
-        Match.binary_search_count_matches(hand_calls, match_definitions, tile_behavior)
+        MatchOld.binary_search_count_matches(hand_calls, match_definitions, tile_behavior)
       ["count_matching_ways" | opts] ->
         # count how many given hand-calls combinations matches the given match definition
         hand_calls = Conditions.get_hand_calls_spec(state, context, Enum.at(opts, 0, []))
@@ -680,8 +681,8 @@ defmodule RiichiAdvanced.GameState.Actions do
                 result = Enum.flat_map(hand_calls_fus, fn {hand, calls, fus} ->
                   group_value = for %{"groups" => groups} = group_spec <- group_specs, group <- groups do
                     value = Map.get(group_spec, "value", 0)
-                    tiles = Match.collect_base_tiles(hand, [], group, tile_behavior)
-                    {hands, _} = Match.remove_group(hand, [], group, tiles, tile_behavior)
+                    tiles = MatchOld.collect_base_tiles(hand, [], group, tile_behavior)
+                    {hands, _} = MatchOld.remove_group(hand, [], group, tiles, tile_behavior)
                     |> Enum.unzip()
                     hands
                     |> Enum.uniq()

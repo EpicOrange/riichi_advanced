@@ -2,6 +2,7 @@ defmodule RiichiAdvanced.Riichi do
   alias RiichiAdvanced.Constants, as: Constants
   alias RiichiAdvanced.GameState.TileBehavior, as: TileBehavior
   alias RiichiAdvanced.Match, as: Match
+  alias RiichiAdvanced.MatchOld, as: MatchOld
   alias RiichiAdvanced.Utils, as: Utils
   use Nebulex.Caching
 
@@ -203,7 +204,7 @@ defmodule RiichiAdvanced.Riichi do
         |> Enum.reject(&TileBehavior.is_joker?(&1, tile_behavior))
         |> Utils.strip_attrs()
         |> Enum.flat_map(fn instance ->
-          target_tiles = Enum.map(call_spec, &Match.offset_tile(instance, &1, tile_behavior))
+          target_tiles = Enum.map(call_spec, &MatchOld.offset_tile(instance, &1, tile_behavior))
           if nil in target_tiles do
             []
           else
@@ -359,10 +360,10 @@ defmodule RiichiAdvanced.Riichi do
         "dora" -> Utils.has_matching_tile?([context.tile], context.doras)
         "kuikae" ->
           player = context.players[context.seat]
-          base_tiles = Match.collect_base_tiles(player.hand, player.calls, [0,1,2], player.tile_behavior)
+          base_tiles = MatchOld.collect_base_tiles(player.hand, player.calls, [0,1,2], player.tile_behavior)
           potential_set = Utils.add_attr(Enum.take(context.call.other_tiles, 2) ++ [context.tile2], ["_hand"])
-          triplet = Match.remove_group(potential_set, [], [0,0,0], base_tiles, player.tile_behavior)
-          sequence = Match.remove_group(potential_set, [], [0,1,2], base_tiles, player.tile_behavior)
+          triplet = MatchOld.remove_group(potential_set, [], [0,0,0], base_tiles, player.tile_behavior)
+          sequence = MatchOld.remove_group(potential_set, [], [0,1,2], base_tiles, player.tile_behavior)
           not Enum.empty?(triplet ++ sequence)
         tile_spec ->
           tile_behavior = Map.get(context, :tile_behavior, %TileBehavior{})
@@ -385,7 +386,7 @@ defmodule RiichiAdvanced.Riichi do
   @decorate cacheable(cache: RiichiAdvanced.Cache, key: {:get_unneeded_tiles, hand, calls, match_definitions, TileBehavior.hash(tile_behavior)})
   def get_unneeded_tiles(hand, calls, match_definitions, tile_behavior) do
     t = System.os_time(:millisecond)
-    tile_behavior = Match.filter_irrelevant_tile_aliases(tile_behavior, hand ++ Enum.flat_map(calls, &Utils.call_to_tiles/1))
+    tile_behavior = MatchOld.filter_irrelevant_tile_aliases(tile_behavior, hand ++ Enum.flat_map(calls, &Utils.call_to_tiles/1))
     ret = if not Enum.empty?(match_definitions) do
       # # method 1: keep tiles in hand that are not needed to match the given match definitions
       # ret = hand
@@ -547,14 +548,14 @@ defmodule RiichiAdvanced.Riichi do
         Utils.count_tiles(hand, [Utils.strip_attrs(tile)], tile_behavior) >= 2 -> false
         is_jihai?(tile) -> true
         true ->
-          past_suji_left = test_tiles(hand, [Match.offset_tile(tile, -4, tile_behavior), tile], tile_behavior)
-          suji_left = test_tiles(hand, [Match.offset_tile(tile, -3, tile_behavior), tile], tile_behavior)
-          jump_left = test_tiles(hand, [Match.offset_tile(tile, -2, tile_behavior), tile], tile_behavior)
-          adjacent_left = test_tiles(hand, [Match.offset_tile(tile, -1, tile_behavior), tile], tile_behavior)
-          adjacent_right = test_tiles(hand, [Match.offset_tile(tile, 1, tile_behavior), tile], tile_behavior)
-          jump_right = test_tiles(hand, [Match.offset_tile(tile, 2, tile_behavior), tile], tile_behavior)
-          suji_right = test_tiles(hand, [Match.offset_tile(tile, 3, tile_behavior), tile], tile_behavior)
-          past_suji_right = test_tiles(hand, [Match.offset_tile(tile, 4, tile_behavior), tile], tile_behavior)
+          past_suji_left = test_tiles(hand, [MatchOld.offset_tile(tile, -4, tile_behavior), tile], tile_behavior)
+          suji_left = test_tiles(hand, [MatchOld.offset_tile(tile, -3, tile_behavior), tile], tile_behavior)
+          jump_left = test_tiles(hand, [MatchOld.offset_tile(tile, -2, tile_behavior), tile], tile_behavior)
+          adjacent_left = test_tiles(hand, [MatchOld.offset_tile(tile, -1, tile_behavior), tile], tile_behavior)
+          adjacent_right = test_tiles(hand, [MatchOld.offset_tile(tile, 1, tile_behavior), tile], tile_behavior)
+          jump_right = test_tiles(hand, [MatchOld.offset_tile(tile, 2, tile_behavior), tile], tile_behavior)
+          suji_right = test_tiles(hand, [MatchOld.offset_tile(tile, 3, tile_behavior), tile], tile_behavior)
+          past_suji_right = test_tiles(hand, [MatchOld.offset_tile(tile, 4, tile_behavior), tile], tile_behavior)
           arr = [past_suji_left, suji_left, jump_left, adjacent_left, true, adjacent_right, jump_right, suji_right, past_suji_right]
           # IO.inspect({tile, arr})
           case arr do
@@ -588,9 +589,9 @@ defmodule RiichiAdvanced.Riichi do
   def genbutsu_to_suji(genbutsu, tile_behavior) do
     Enum.flat_map(genbutsu, &cond do
       # TODO: modify this to take Ten tiles into account when Ten tiles exist
-      Enum.any?([1,2,3], fn k -> is_num?(&1, k) end) -> if Match.offset_tile(&1, 6, tile_behavior) in genbutsu do [Match.offset_tile(&1, 3, tile_behavior)] else [] end
-      Enum.any?([4,5,6], fn k -> is_num?(&1, k) end) -> [Match.offset_tile(&1, -3, tile_behavior), Match.offset_tile(&1, 3, tile_behavior)]
-      Enum.any?([7,8,9], fn k -> is_num?(&1, k) end) -> if Match.offset_tile(&1, -6, tile_behavior) in genbutsu do [Match.offset_tile(&1, -3, tile_behavior)] else [] end
+      Enum.any?([1,2,3], fn k -> is_num?(&1, k) end) -> if MatchOld.offset_tile(&1, 6, tile_behavior) in genbutsu do [MatchOld.offset_tile(&1, 3, tile_behavior)] else [] end
+      Enum.any?([4,5,6], fn k -> is_num?(&1, k) end) -> [MatchOld.offset_tile(&1, -3, tile_behavior), MatchOld.offset_tile(&1, 3, tile_behavior)]
+      Enum.any?([7,8,9], fn k -> is_num?(&1, k) end) -> if MatchOld.offset_tile(&1, -6, tile_behavior) in genbutsu do [MatchOld.offset_tile(&1, -3, tile_behavior)] else [] end
       true -> []
     end)
   end
@@ -613,7 +614,7 @@ defmodule RiichiAdvanced.Riichi do
     # add "dismantle_calls" in case `group` contains multiple sets
     win_definitions = Enum.map(win_definitions, &["dismantle_calls" | &1])
 
-    hand_groups = Match.extract_groups(hand, group, tile_behavior)
+    hand_groups = MatchOld.extract_groups(hand, group, tile_behavior)
 
     # `hand_groups` is sorted starting with greatest number of groups
     # if we have {hand, [group1, group2, group3]} and it matches,

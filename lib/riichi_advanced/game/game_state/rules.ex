@@ -1,7 +1,7 @@
 defmodule RiichiAdvanced.GameState.Rules do
   alias RiichiAdvanced.GameState.American, as: American
   alias RiichiAdvanced.GameState.Debug, as: Debug
-  alias RiichiAdvanced.Match, as: Match
+  alias RiichiAdvanced.MatchOld, as: MatchOld
   alias RiichiAdvanced.ModLoader, as: ModLoader
   alias RiichiAdvanced.Utils, as: Utils
 
@@ -93,7 +93,7 @@ defmodule RiichiAdvanced.GameState.Rules do
         shanten_definitions ->
           # IO.puts("Generating #{to} definitions")
           if length(shanten_definitions[from]) < 100 do
-            Map.put(shanten_definitions, to, Match.compute_almost_match_definitions(shanten_definitions[from]))
+            Map.put(shanten_definitions, to, MatchOld.compute_almost_match_definitions(shanten_definitions[from]))
           else
             Map.put(shanten_definitions, to, [])
           end
