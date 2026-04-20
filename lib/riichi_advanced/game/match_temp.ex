@@ -123,9 +123,9 @@ defmodule RiichiAdvanced.Match.Temp do
     def decode_primes(hand, encoding, primes \\ @primes, acc \\ [])
     def decode_primes(%{hash: 1}, _encoding, _primes, acc), do: Enum.reverse(acc)
     def decode_primes(_hand, _encoding, [], acc), do: Enum.reverse(acc)
-    def decode_primes(%{hash: hash}, encoding, [p | _] = primes, acc) when rem(hash, p) == 0 do
+    def decode_primes(%{hash: hash} = set, encoding, [p | _] = primes, acc) when rem(hash, p) == 0 do
       {tile, _prime} = Enum.find(encoding, fn {_tile, prime} -> prime == p end)
-      decode_primes(Integer.floor_div(hash, p), encoding, primes, [tile | acc])
+      decode_primes(%{set | hash: Integer.floor_div(hash, p)}, encoding, primes, [tile | acc])
     end
     def decode_primes(hand, encoding, [_p | primes], acc), do: decode_primes(hand, encoding, primes, acc)
 
@@ -379,17 +379,121 @@ defmodule RiichiAdvanced.Match.Temp do
     end)
   end
 
+  def perform_unique_match(data) do
+    %{
+      encoding: encoding,
+      all_attrs: all_attrs,
+      acc: acc,
+      match_elem: match_elem,
+      num: num,
+      exhaustive: exhaustive,
+      unique: unique,
+      debug: debug,
+    } = data
+    report = if debug do
+      line1 = "Acc (before removing #{num} tile#{if num == 1 do "" else "s" end} #{inspect(match_elem, charlists: :as_lists)}):"
+      lines = for [hand | calls] <- acc do
+        "- #{inspect(Utils.sort_tiles(TileSet.decode(hand, encoding, all_attrs)))} / #{inspect(Enum.map(calls, &Utils.sort_tiles(TileSet.decode(&1, encoding, all_attrs))))} \\\\#{if unique do " unique" else "" end}#{if exhaustive do " exhaustive" else "" end}"
+      end
+      [line1 | lines]
+    else "" end
+
+    primes_attrs = match_elem
+    |> Enum.map(fn [tile] -> Utils.to_tile(tile) end)
+    |> Enum.filter(&Map.has_key?(encoding, &1))
+    |> Enum.map(&TileSet.encode([&1], encoding, all_attrs))
+
+    if length(primes_attrs) < num do
+      if debug do
+        line1 = "Acc (failed to find #{num} matching tile#{if num == 1 do "" else "s" end}):"
+        IO.puts(Enum.join(report ++ [line1] ++ [""], "\n"))
+      end
+
+      []
+    else
+      new_acc = for [%{hash: hand_prime} = hand | calls] <- acc do
+        {new_hand_prime, count} = for %{hash: prime} <- primes_attrs, reduce: {hand_prime, 0} do
+          {hand_prime, count} when count == num -> {hand_prime, count}
+          {hand_prime, count} when rem(hand_prime, prime) == 0 -> {Integer.floor_div(hand_prime, prime), count + 1}
+          {hand_prime, count} -> {hand_prime, count}
+        end
+        if count == num do [[%{hand | hash: new_hand_prime} | calls]] else [] end
+      end
+      |> Enum.concat()
+
+      if debug do
+        line1 = "Acc (after removing #{num} tile#{if num == 1 do "" else "s" end}):"
+        lines = for [hand | calls] <- new_acc do
+          "- #{inspect(Utils.sort_tiles(TileSet.decode(hand, encoding, all_attrs)))} / #{inspect(Enum.map(calls, &Utils.sort_tiles(TileSet.decode(&1, encoding, all_attrs))))}"
+        end
+        IO.puts(Enum.join(report ++ [line1 | lines] ++ [""], "\n"))
+      end
+
+      new_acc
+    end
+  end
+
+  def perform_standard_match(data) do
+    %{
+      tile_behavior: tile_behavior,
+      encoding: encoding,
+      all_tiles: all_tiles,
+      all_attrs: all_attrs,
+      acc: acc,
+      match_elem: match_elem,
+      num: num,
+      exhaustive: exhaustive,
+      unique: unique,
+      debug: debug,
+    } = data
+    groups = for group <- match_elem, group not in Match.group_keywords() do
+      # reifies a group spec into multiple possible groups
+      {encode_group(group, all_tiles, encoding, all_attrs, tile_behavior), group}
+    end
+    for j <- (if num == 0 do [1] else 1..abs(num) end), reduce: Enum.map(acc, fn hands -> {hands, groups} end) do
+      [] -> []
+      hands_groups ->
+        report = if debug do
+          line1 = "Acc (before removal #{j}/#{num}):"
+          lines = for {[hand | calls], remaining_groups} <- hands_groups do
+            groups = Enum.map(remaining_groups, fn {_groups, orig_group} -> orig_group end)
+            "- #{inspect(Utils.sort_tiles(TileSet.decode(hand, encoding, all_attrs)))} / #{inspect(Enum.map(calls, &Utils.sort_tiles(TileSet.decode(&1, encoding, all_attrs))))} \\\\ #{inspect(groups, charlists: :as_lists)}#{if unique do " unique" else "" end}#{if exhaustive do " exhaustive" else "" end}"
+          end
+          [line1 | lines]
+        else "" end
+
+        hands_groups =
+          for {hands, remaining_groups} <- hands_groups,
+              {{groups, _orig_group}, i} <- Enum.with_index(remaining_groups),
+              group <- groups,
+              hands <- (if exhaustive do elim_group(hands, group) else elim_group_once(hands, group) end) do
+            {hands, if unique do List.delete_at(remaining_groups, i) else remaining_groups end}
+          end
+          |> Enum.uniq_by(fn {hands, _remaining_groups} ->
+            Enum.map(hands, fn %{hash: hash, attrs: attrs} -> {hash, attrs} end)
+          end)
+
+        if debug do
+          line1 = "Acc (after removal #{j}/#{num}):"
+          lines = for {[hand | calls], _remaining_groups} <- hands_groups do
+            "- #{inspect(Utils.sort_tiles(TileSet.decode(hand, encoding, all_attrs)))} / #{inspect(Enum.map(calls, &Utils.sort_tiles(TileSet.decode(&1, encoding, all_attrs))))}"
+          end
+          IO.puts(Enum.join(report ++ [line1 | lines] ++ [""], "\n"))
+        end
+
+        hands_groups
+    end
+    |> Enum.map(fn {hands, _} -> hands end)
+    |> Enum.uniq()
+  end
+
   def match_hand_v2(hand, calls, match_definitions, tile_behavior) do
     # precondition: hand+calls is <= 26 tiles long
     # TODO can expand to each hand + call being <= 26 tiles long, just limit the number of unique tiles (primes) to like 100
+
     # first encode hand tiles and call tiles as primes, with most frequent as lower primes
     all_tiles = hand ++ Enum.flat_map(calls, &Utils.call_to_tiles/1)
-    match_attrs = match_definitions
-    |> List.flatten()
-    |> Enum.flat_map(fn
-      %{"attrs" => attrs} -> attrs
-      _ -> []
-    end)
+    match_attrs = List.flatten(match_definitions) |> Enum.flat_map(fn %{"attrs" => attrs} -> attrs; _ -> [] end)
     all_attrs = if Enum.empty?(match_attrs) do
       []
     else
@@ -417,49 +521,22 @@ defmodule RiichiAdvanced.Match.Temp do
       for {[match_elem, num], i} <- Enum.with_index(match_definition), reduce: [hands] do
         []  -> []
         acc ->
-          exhaustive = exhaustive_ix != nil and i > exhaustive_ix
-          unique = (unique_ix != nil and i > unique_ix) or "unique" in match_elem
-
-          # standard algorithm: try to remove (num) groups
-          groups = for group <- match_elem, group not in Match.group_keywords() do
-            # reifies a group spec into multiple possible groups
-            {encode_group(group, all_tiles, encoding, all_attrs, tile_behavior), group}
+          data = %{
+            tile_behavior: tile_behavior,
+            encoding: encoding,
+            all_tiles: all_tiles,
+            all_attrs: all_attrs,
+            acc: acc,
+            match_elem: match_elem,
+            num: num,
+            exhaustive: exhaustive_ix != nil and i > exhaustive_ix,
+            unique: (unique_ix != nil and i > unique_ix) or "unique" in match_elem,
+            debug: debug,
+          }
+          new_acc = cond do
+            data.unique and not data.exhaustive and Enum.all?(match_elem, &Utils.is_tile(&1) or &1 in Match.group_keywords()) -> perform_unique_match(data)
+            true -> perform_standard_match(data)
           end
-          new_acc = for j <- (if num == 0 do [1] else 1..abs(num) end), reduce: Enum.map(acc, fn hands -> {hands, groups} end) do
-            [] -> []
-            hands_groups ->
-              report = if debug do
-                line1 = "Acc (before removal #{j}/#{num}):"
-                lines = for {[hand | calls], remaining_groups} <- hands_groups do
-                  groups = Enum.map(remaining_groups, fn {_groups, orig_group} -> orig_group end)
-                  "- #{inspect(Utils.sort_tiles(TileSet.decode(hand, encoding, all_attrs)))} / #{inspect(Enum.map(calls, &Utils.sort_tiles(TileSet.decode(&1, encoding, all_attrs))))} \\\\ #{inspect(groups, charlists: :as_lists)}#{if unique do " unique" else "" end}#{if exhaustive do " exhaustive" else "" end}"
-                end
-                [line1 | lines]
-              else "" end
-
-              hands_groups =
-                for {hands, remaining_groups} <- hands_groups,
-                    {{groups, _orig_group}, i} <- Enum.with_index(remaining_groups),
-                    group <- groups,
-                    hands <- (if exhaustive do elim_group(hands, group) else elim_group_once(hands, group) end) do
-                  {hands, if unique do List.delete_at(remaining_groups, i) else remaining_groups end}
-                end
-                |> Enum.uniq_by(fn {hands, _remaining_groups} ->
-                  Enum.map(hands, fn %{hash: hash, attrs: attrs} -> {hash, attrs} end)
-                end)
-
-              if debug do
-                line1 = "Acc (after removal #{j}/#{num}):"
-                lines = for {[hand | calls], _remaining_groups} <- hands_groups do
-                  "- #{inspect(Utils.sort_tiles(TileSet.decode(hand, encoding, all_attrs)))} / #{inspect(Enum.map(calls, &Utils.sort_tiles(TileSet.decode(&1, encoding, all_attrs))))}"
-                end
-                IO.puts(Enum.join(report ++ [line1 | lines] ++ [""], "\n"))
-              end
-              hands_groups
-          end
-          |> Enum.map(fn {hands, _} -> hands end)
-          |> Enum.uniq()
-
           cond do
             num == 0 -> # forward lookahead
               if Enum.empty?(new_acc) do
