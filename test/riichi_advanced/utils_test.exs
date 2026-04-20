@@ -1,7 +1,7 @@
 defmodule RiichiAdvanced.UtilsTest do
   use ExUnit.Case, async: true
   alias RiichiAdvanced.Utils, as: Utils
-  alias RiichiAdvanced.GameState.TileBehavior, as: TileBehavior
+  # alias RiichiAdvanced.GameState.TileBehavior, as: TileBehavior
 
   # @galaxy_tile_behavior %TileBehavior{ aliases: %{
   #   "1m": %{[] => MapSet.new([:"11p", :"11s"]), ["original"] => MapSet.new([:"11m"]) },

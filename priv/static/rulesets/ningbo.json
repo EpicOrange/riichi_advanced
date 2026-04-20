@@ -128,20 +128,20 @@
       "display_name": "Round Wind",
       "value": [1, "Tai"],
       "when": [[
-        [{"name": "round_wind_is", "opts": ["east"]}, {"name": "match", "opts": [["hand", "calls", "winning_tile"], [[ [["ton"], 1], [["shuntsu", "koutsu"], 3], [["pair"], 1] ]]]}],
-        [{"name": "round_wind_is", "opts": ["south"]}, {"name": "match", "opts": [["hand", "calls", "winning_tile"], [[ [["nan"], 1], [["shuntsu", "koutsu"], 3], [["pair"], 1] ]]]}],
-        [{"name": "round_wind_is", "opts": ["west"]}, {"name": "match", "opts": [["hand", "calls", "winning_tile"], [[ [["shaa"], 1], [["shuntsu", "koutsu"], 3], [["pair"], 1] ]]]}],
-        [{"name": "round_wind_is", "opts": ["north"]}, {"name": "match", "opts": [["hand", "calls", "winning_tile"], [[ [["pei"], 1], [["shuntsu", "koutsu"], 3], [["pair"], 1] ]]]}]
+        [{"name": "round_wind_is", "opts": ["east"]}, {"name": "match", "opts": [["hand", "calls", "winning_tile"], [[ "exhaustive", [["ton"], 1], [["shuntsu", "koutsu"], 3], [["pair"], 1] ]]]}],
+        [{"name": "round_wind_is", "opts": ["south"]}, {"name": "match", "opts": [["hand", "calls", "winning_tile"], [[ "exhaustive", [["nan"], 1], [["shuntsu", "koutsu"], 3], [["pair"], 1] ]]]}],
+        [{"name": "round_wind_is", "opts": ["west"]}, {"name": "match", "opts": [["hand", "calls", "winning_tile"], [[ "exhaustive", [["shaa"], 1], [["shuntsu", "koutsu"], 3], [["pair"], 1] ]]]}],
+        [{"name": "round_wind_is", "opts": ["north"]}, {"name": "match", "opts": [["hand", "calls", "winning_tile"], [[ "exhaustive", [["pei"], 1], [["shuntsu", "koutsu"], 3], [["pair"], 1] ]]]}]
       ]]
     },
     {
       "display_name": "Seat Wind",
       "value": [1, "Tai"],
       "when": [[
-        [{"name": "seat_is", "opts": ["east"]}, {"name": "match", "opts": [["hand", "calls", "winning_tile"], [[ [["ton"], 1], [["shuntsu", "koutsu"], 3], [["pair"], 1] ]]]}],
-        [{"name": "seat_is", "opts": ["south"]}, {"name": "match", "opts": [["hand", "calls", "winning_tile"], [[ [["nan"], 1], [["shuntsu", "koutsu"], 3], [["pair"], 1] ]]]}],
-        [{"name": "seat_is", "opts": ["west"]}, {"name": "match", "opts": [["hand", "calls", "winning_tile"], [[ [["shaa"], 1], [["shuntsu", "koutsu"], 3], [["pair"], 1] ]]]}],
-        [{"name": "seat_is", "opts": ["north"]}, {"name": "match", "opts": [["hand", "calls", "winning_tile"], [[ [["pei"], 1], [["shuntsu", "koutsu"], 3], [["pair"], 1] ]]]}]
+        [{"name": "seat_is", "opts": ["east"]}, {"name": "match", "opts": [["hand", "calls", "winning_tile"], [[ "exhaustive", [["ton"], 1], [["shuntsu", "koutsu"], 3], [["pair"], 1] ]]]}],
+        [{"name": "seat_is", "opts": ["south"]}, {"name": "match", "opts": [["hand", "calls", "winning_tile"], [[ "exhaustive", [["nan"], 1], [["shuntsu", "koutsu"], 3], [["pair"], 1] ]]]}],
+        [{"name": "seat_is", "opts": ["west"]}, {"name": "match", "opts": [["hand", "calls", "winning_tile"], [[ "exhaustive", [["shaa"], 1], [["shuntsu", "koutsu"], 3], [["pair"], 1] ]]]}],
+        [{"name": "seat_is", "opts": ["north"]}, {"name": "match", "opts": [["hand", "calls", "winning_tile"], [[ "exhaustive", [["pei"], 1], [["shuntsu", "koutsu"], 3], [["pair"], 1] ]]]}]
       ]]
     },
     { "display_name": "Eight Flowers", "value": [10, "Tai"], "when": [{"name": "match", "opts": [["hand", "flowers"], ["8_flowers"]]}] },

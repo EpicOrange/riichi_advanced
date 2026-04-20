@@ -101,8 +101,8 @@
     [ "exhaustive", [["shuntsu", "koutsu"], 5], [["pair"], 1] ]
   ],
   "false_win_definition": [
-    [ [["ton", "nan", "shaa", "pei", "haku", "hatsu", "chun"], 1], "exhaustive", [["shuntsu", "koutsu"], 4], [["pair"], 1] ],
-    [ [["ton_pair", "nan_pair", "shaa_pair", "pei_pair", "haku_pair", "hatsu_pair", "chun_pair"], 1], "exhaustive", [["shuntsu", "koutsu"], 5] ]
+    [ "nojoker", [["ton", "nan", "shaa", "pei", "haku", "hatsu", "chun"], 1], "exhaustive", [["shuntsu", "koutsu"], 4], [["pair"], 1] ],
+    [ "nojoker", [["ton_pair", "nan_pair", "shaa_pair", "pei_pair", "haku_pair", "hatsu_pair", "chun_pair"], 1], "exhaustive", [["shuntsu", "koutsu"], 5] ]
   ],
   "all_flowers_definition": [[ "nojoker", "unique", [["1f","2f","3f","4f"], 4] ]],
   "all_seasons_definition": [[ "nojoker", "unique", [["1g","2g","3g","4g"], 4] ]],

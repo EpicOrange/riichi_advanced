@@ -79,7 +79,7 @@ defmodule RiichiAdvanced.Match.Temp do
     def factor(n, [p | primes], acc) when rem(n, p) == 0, do: factor(Integer.floor_div(n, p), [p | primes], [p | acc])
     def factor(n, [_ | primes], acc), do: factor(n, primes, acc)
 
-    def find_ixs_helper(attrs2, attrs1, goal_hash, use_jokers, debug \\ false) do
+    def find_ixs_helper(attrs2, attrs1, goal_hash, use_jokers) do
       attrs2_indexed = if use_jokers do
         {joker, nonjoker} = attrs2
         |> Enum.with_index()
@@ -104,15 +104,19 @@ defmodule RiichiAdvanced.Match.Temp do
           _ -> 0
         end
       end
-      col_mask = Enum.reduce(masks, &Bitwise.|||/2)
-      masks = masks
-      |> Enum.with_index()
-      |> Enum.reject(fn {mask, _i} -> mask == 0 end)
-      
-      # then it's n-rooks on this bit matrix
-      with {:ok, ixs} <- solve_n_rooks(masks, col_mask, length(factor(goal_hash))) do
-        # convert mask indices to the original hand indices
-        {:ok, Enum.map(ixs, &Enum.at(attrs2_indexed, &1) |> elem(1))}
+      if Enum.empty?(masks) do
+        nil
+      else
+        col_mask = Enum.reduce(masks, &Bitwise.|||/2)
+        masks = masks
+        |> Enum.with_index()
+        |> Enum.reject(fn {mask, _i} -> mask == 0 end)
+        
+        # then it's n-rooks on this bit matrix
+        with {:ok, ixs} <- solve_n_rooks(masks, col_mask, length(factor(goal_hash))) do
+          # convert mask indices to the original hand indices
+          {:ok, Enum.map(ixs, &Enum.at(attrs2_indexed, &1) |> elem(1))}
+        end
       end
     end
       
@@ -128,7 +132,7 @@ defmodule RiichiAdvanced.Match.Temp do
         precheck && Enum.empty?(attrs2) -> %{hand | hash: Integer.floor_div(hash2, hash1)}
         # otherwise, we need to craft a new attrs list
         precheck && Keyword.has_key?(attrs1, :nojoker) ->
-          with {:ok, ixs} <- find_ixs_helper(attrs2, attrs1, hash1, false, true) do
+          with {:ok, ixs} <- find_ixs_helper(attrs2, attrs1, hash1, false) do
             cond do
               return_indices -> ixs
               # TODO does gcd give us any info we can check here for optimizations?
@@ -465,6 +469,8 @@ defmodule RiichiAdvanced.Match.Temp do
         # IO.inspect({base_tile, o, tile})
         _apply_offsets(base_tile, offsets, tile_behavior, n, [tile | acc])
       Utils.is_tile(o) -> _apply_offsets(base_tile, offsets, tile_behavior, n, [Utils.to_tile(o) | acc])
+      # otherwise, probably a group keyword; ignore
+      true -> _apply_offsets(base_tile, offsets, tile_behavior, n, acc)
     end
   end
   # standard case: when offset is a map (so it can specify attrs)
@@ -644,14 +650,12 @@ defmodule RiichiAdvanced.Match.Temp do
         # reifies a group spec into multiple possible groups
         cond do
           group in Match.group_keywords() -> {nojoker or group == "nojoker", acc}
-          Map.has_key?(@fixed_offsets, group) ->
+          Map.has_key?(@fixed_offsets, group) || is_number(group) ->
             encoding = if nojoker do encoding_nojoker else encoding end
-            # return 3 versions (one for each suit)
-            ret = {%{
-              "1m": encode_group(group, [:"1m"], encoding, all_attrs, tile_behavior),
-              "1p": encode_group(group, [:"1p"], encoding, all_attrs, tile_behavior),
-              "1s": encode_group(group, [:"1s"], encoding, all_attrs, tile_behavior),
-            }, group}
+            # return a version for each possible base tile
+            ret = {for base_tile <- [:"1m", :"1p", :"1s" | all_tiles], into: %{} do
+              {base_tile, encode_group(group, [base_tile], encoding, all_attrs, tile_behavior)}
+            end, group}
             {nojoker, [ret | acc]}
           true ->
             all_tiles = if nojoker do all_tiles else all_tiles_jokers end
@@ -679,7 +683,7 @@ defmodule RiichiAdvanced.Match.Temp do
         hands_groups =
           for {hands, remaining_groups, base_suit} <- hands_groups,
               {{groups, _orig_group}, i} <- Enum.with_index(remaining_groups),
-              base_suit <- (if base_suit == nil and is_map(groups) do [:"1m", :"1p", :"1s"] else [base_suit] end),
+              base_suit <- (if base_suit == nil and is_map(groups) do [:"1m", :"1p", :"1s" | all_tiles] else [base_suit] end),
               groups = (if is_map(groups) do Map.get(groups, base_suit) else groups end),
               group <- groups,
               new_hands <- (if exhaustive do elim_group(hands, group) else elim_group_once(hands, group) end) do
