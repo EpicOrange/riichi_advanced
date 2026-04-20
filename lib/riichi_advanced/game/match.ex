@@ -661,14 +661,12 @@ defmodule RiichiAdvanced.Match do
       exhaustive: exhaustive,
       unique: unique,
       nojoker: nojoker,
-      ignore_suit: ignore_suit,
       debug: debug,
     } = data
     unique = unique or "unique" in groups
     # take all groups and reify them into actual tiles
     # this reverses the order of groups, which is desirable since nojoker tiles will be first
 
-    encoding = if ignore_suit do Map.update(encoding, :mappings, @ignore_suit_mappings, &add_ignore_suit_mappings/1) else encoding end
     {_, groups} = for group <- groups, reduce: {nojoker, []} do
       {nojoker, acc} ->
         # reify each group spec into multiple possible groups
@@ -747,7 +745,8 @@ defmodule RiichiAdvanced.Match do
   def match_hand_v2(hand, calls, match_definitions, tile_behavior) do
     # first encode hand tiles and call tiles as primes, with most frequent as lower primes
     # if there are :any jokers, though, add every tile in the wall
-    any_tile_jokers_exist = Enum.any?(hand, fn tile ->
+    has_almost = Enum.any?(match_definitions, fn match_definition -> "almost" in match_definition end)
+    any_tile_jokers_exist = has_almost or Enum.any?(hand, fn tile ->
       case Enum.find(tile_behavior.mappings, fn {key, _} -> Utils.same_tile(tile, key) end) do
         nil -> false
         {_, mappings} -> Enum.any?(mappings, fn 
@@ -827,8 +826,6 @@ defmodule RiichiAdvanced.Match do
             exhaustive: false,
             unique: false,
             nojoker: false,
-            ignore_suit: false,
-            almost: "almost" in match_definition,
             debug: "debug" in match_definition,
           }
 
@@ -845,8 +842,14 @@ defmodule RiichiAdvanced.Match do
               encoding = create_encoding(all_tiles, mappings)
               acc = Enum.map(acc, &Enum.map(&1, fn hand -> TileSet.encode(hand, encoding, all_attrs) end))
               all_tiles = Enum.flat_map(all_tiles, &apply_offsets(&1, [0, 10, 20], tile_behavior)) |> Enum.uniq()
-              %{state | ignore_suit: true, encoding: encoding, acc: acc, all_tiles: all_tiles}
-            state when match_elem == "almost" -> state
+              %{state | encoding: encoding, acc: acc, all_tiles: all_tiles}
+            state when match_elem == "almost" ->
+              # simply add an :any joker to hand
+              encoding = Map.put_new_lazy(encoding, :any, fn -> Enum.at(TileSet.primes(), map_size(encoding)) end)
+              prime = Map.get(encoding, :any)
+              joker = {:joker, [{prime, 0} | encoding |> Map.drop([:mappings]) |> Map.values() |> Enum.map(&{&1, 0})]}
+              acc = Enum.map(state.acc, fn [hand | calls] -> [%{hand | hash: hand.hash * prime, attrs: [joker | hand.attrs]} | calls] end)
+              %{state | encoding: encoding, acc: acc, all_tiles: all_wall_tiles}
             state when match_elem == "debug" -> state
             state when match_elem == "restart" -> %{state | acc: [initial_hands]}
             state when match_elem == "dismantle_calls" -> %{state | acc: Enum.map(state.acc, fn hands ->
