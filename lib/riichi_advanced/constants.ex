@@ -377,6 +377,8 @@ defmodule RiichiAdvanced.Constants do
         chii_name: "Chow",
         pon_name: "Pong",
         kan_name: "Kong",
+        ron_name: "Hu",
+        tsumo_name: "Zimo",
         ankan_name: "Concealed Kong",
         han: "Fan",
         limit: "Limit"
@@ -386,7 +388,7 @@ defmodule RiichiAdvanced.Constants do
         "global_mods", "default_auto_buttons",
         "standard_wall", "framed_5z",
         "standard_win", "yaku/yakuhai",
-        "chii", "pon", "kan",
+        "chii", "pon", "kan", "ron", "tsumo",
         %{name: "default_flowers", config: %{unskippable: true, four_flowers_value: 2}},
         %{name: "yaku/no_flowers", config: %{list: "yaku", name: "No Flowers", value: 1}},
         %{name: "yaku/tsumo", config: %{list: "yaku", name: "Self Draw", value: 1}},
@@ -450,7 +452,7 @@ defmodule RiichiAdvanced.Constants do
         "global_mods", "default_auto_buttons",
         "standard_wall", "framed_5z",
         "standard_win", "yaku/yakuhai",
-        "chii", "pon", "kan",
+        "chii", "pon", "kan", "ron", "tsumo",
         "head_bump",
         %{name: "default_flowers", config: %{unskippable: true, four_flowers_value: 4}}, # should go after chii/pon/kan/ron/chankan/tsumo
         %{name: "yaku/menzentsumo", config: %{list: "yaku", name: "Concealed Hand", value: 1}},

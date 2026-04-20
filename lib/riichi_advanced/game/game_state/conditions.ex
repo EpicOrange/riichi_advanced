@@ -216,10 +216,15 @@ defmodule RiichiAdvanced.GameState.Conditions do
         IO.inspect({context.seat, state.players[context.seat].status})
         state
       "print_counters"              ->
-        IO.inspect({context.seat, Map.get(state.players[context.seat].counters, Enum.at(opts, 0), 0)})
+        IO.inspect({context.seat, Map.get(state.players[context.seat].counters, Enum.at(opts, 0, "all"), 0)})
         state
       "print_context"               ->
         IO.inspect(context)
+        true
+      "print_hand"                  ->
+        for seat <- from_seats_spec(state, context, Enum.at(opts, 0, "self")) do
+          IO.inspect({seat, state.players[seat].hand, state.players[seat].draw, state.players[seat].calls}, charlists: :as_lists)
+        end
         true
       "our_turn"                    -> state.turn == context.seat
       "our_turn_is_next"            -> state.turn == if state.reversed_turn_order do Utils.next_turn(context.seat) else Utils.prev_turn(context.seat) end

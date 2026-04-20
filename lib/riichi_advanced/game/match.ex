@@ -168,7 +168,7 @@ defmodule RiichiAdvanced.Match do
     if length(hand) >= length(tiles) do
       # even if there are no jokers,
       # we want to sort by attr length so tiles with more attrs get removed last
-      hand = TileBehavior.sort_by_joker_power(hand, tile_behavior)
+      # hand = TileBehavior.sort_by_joker_power(hand, tile_behavior)
       RiichiAdvanced.Match.Temp.try_remove_all_tiles(hand, tiles, tile_behavior)
     else [] end
   end
