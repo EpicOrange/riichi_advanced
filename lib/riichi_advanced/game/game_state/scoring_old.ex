@@ -3,6 +3,7 @@ defmodule RiichiAdvanced.GameState.ScoringOld do
   alias RiichiAdvanced.GameState.Kyoku, as: Kyoku
   alias RiichiAdvanced.GameState.Scoring, as: Scoring
   alias RiichiAdvanced.GameState.Rules, as: Rules
+  alias RiichiAdvanced.Match, as: Match
   alias RiichiAdvanced.Riichi, as: Riichi
   alias RiichiAdvanced.Utils, as: Utils
   import RiichiAdvanced.GameState
@@ -386,7 +387,7 @@ defmodule RiichiAdvanced.GameState.ScoringOld do
     delta_scores = if "use_arakawa_kei_scoring" in winner.player.status do
       win_definitions = Rules.translate_match_definitions(state.rules_ref, ["win"])
       visible_tiles = get_visible_tiles(state, winner.seat)
-      waits = Riichi.get_waits_and_ukeire(winner.player.hand, winner.player.calls, win_definitions, state.wall ++ state.dead_wall, visible_tiles, winner.tile_behavior)
+      waits = Match.get_waits_and_ukeire_v2(winner.player.hand, winner.player.calls, win_definitions, visible_tiles, winner.tile_behavior)
       if "arakawa-kei" in winner.player.status do
         # everyone pays winner 100 points per live out
         ukeire = waits |> Map.values() |> Enum.sum()
@@ -434,7 +435,7 @@ defmodule RiichiAdvanced.GameState.ScoringOld do
             if delta_scores[seat] < 0 and "ezaki_hitomi_reflect" in player.status do
               # calculate possible waits
               win_definitions = Rules.translate_match_definitions(state.rules_ref, ["win"])
-              waits = Riichi.get_waits(player.hand, player.calls, win_definitions, player.tile_behavior)
+              waits = Match.get_waits_v2(player.hand, player.calls, win_definitions, player.tile_behavior)
               if not Enum.empty?(waits) do
                 # calculate the worst yaku we can get
                 winner = Kyoku.calculate_winner_details_v2(state, seat, :worst_discard, "ron")

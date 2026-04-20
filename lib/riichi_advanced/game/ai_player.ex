@@ -177,7 +177,7 @@ defmodule RiichiAdvanced.AIPlayer do
         # if anyone is open riichi, don't deal into them
         playables = if not Enum.empty?(open_riichis) do
           danger_tiles = for {hand, calls, tile_behavior} <- open_riichis, into: MapSet.new() do
-            Riichi.get_waits(hand, calls, state.shanten_definitions.win, tile_behavior)
+            Match.get_waits_v2(hand, calls, state.shanten_definitions.win, tile_behavior)
           end
           |> Enum.reduce(MapSet.new(), &MapSet.union/2)
           safe_playables = Enum.reject(playables, fn {tile, _i} -> Utils.has_matching_tile?([tile], danger_tiles) end)
@@ -408,7 +408,7 @@ defmodule RiichiAdvanced.AIPlayer do
   end
 
   def handle_info({:set_best_minefield_hand, minefield_tiles, minefield_hand}, state) do
-    minefield_waits = Riichi.get_waits(minefield_hand, [], state.shanten_definitions.win,state.player.tile_behavior, true)
+    minefield_waits = Match.get_waits_v2(minefield_hand, [], state.shanten_definitions.win,state.player.tile_behavior)
     state = state
     |> Map.put(:minefield_tiles, minefield_tiles)
     |> Map.put(:minefield_hand, minefield_hand)

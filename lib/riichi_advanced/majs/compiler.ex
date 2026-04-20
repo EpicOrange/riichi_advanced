@@ -48,6 +48,7 @@ defmodule RiichiAdvanced.Compiler do
   alias RiichiAdvanced.Parser
   alias RiichiAdvanced.Utils
   alias RiichiAdvanced.Validator
+  use RiichiAdvanced.ValidatorStrings
 
   @unops [:-, "round_up", "round_down", "round"]
   @binops [:+, :-, :*, :/, :**, :=, "round_up", "round_down", "round"]
@@ -328,7 +329,7 @@ defmodule RiichiAdvanced.Compiler do
           _ -> {:error, "\"set_counter\" got invalid parameters: #{inspect(opts)}"}
         end
       {name, [line: line, column: column], args} when is_binary(name) ->
-        if name in Validator.allowed_actions() do
+        if name in @allowed_actions do
           if args != nil do
             with {:ok, args} <- Enum.map(args, &compile_constant(&1, line, column)) |> Utils.sequence() do
               {:ok, [name | args]}

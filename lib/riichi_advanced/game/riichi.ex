@@ -223,95 +223,95 @@ defmodule RiichiAdvanced.Riichi do
   end
   def can_call?(calls_spec, hand, tile_behavior, called_tiles \\ []), do: Enum.any?(make_calls(calls_spec, hand, tile_behavior, called_tiles), fn {_tile, choices} -> not Enum.empty?(choices) end)
 
-  # get all unique waits for a given 14-tile match definition, like win
-  # will not remove a wait if you have four of the tile in hand or calls
-  @decorate cacheable(cache: RiichiAdvanced.Cache, key: {:get_waits, hand, calls, match_definitions, TileBehavior.hash(tile_behavior)})
-  def get_waits(hand, calls, match_definitions, tile_behavior, skip_tenpai_check \\ false) do
-    # only check for waits if we're tenpai
-    if skip_tenpai_check or Match.match_hand(hand, calls, Enum.map(match_definitions, &["almost" | &1]), tile_behavior) do
-      # go through each match definition and see what tiles can be added for it to match
-      # as soon as something doesn't match, get all tiles that help make it match
-      # take the union of helpful tiles across all match definitions
-      for match_definition <- match_definitions do
-        # make it exhaustive, unless it's unique
-        match_definition = if "unique" not in match_definition and "exhaustive" not in match_definition do ["exhaustive" | match_definition] else match_definition end
-        # IO.puts("\n" <> inspect(match_definition))
-        {_keywords, waits_complement, waits_complement_across_restarts} = for {last_match_definition_elem, i} <- Enum.with_index(match_definition), reduce: {[], tile_behavior.tile_freqs, %{}} do
-          {keywords, waits_complement, waits_complement_across_restarts} -> case last_match_definition_elem do
-            "restart" -> {keywords ++ ["restart"], tile_behavior.tile_freqs, Map.merge(waits_complement, waits_complement_across_restarts, fn _k, l, r -> max(l, r) end) }
-            keyword when is_binary(keyword) -> {keywords ++ [keyword], waits_complement, waits_complement_across_restarts}
-            [_groups, num] when num <= 0 -> {keywords, waits_complement, waits_complement_across_restarts} # ignore lookaheads
-            [groups, num] ->
-              # get all other groups in the current restart of our match definition
-              remaining_match_definition = List.delete_at(match_definition, i)
-              |> Utils.split_on("restart")
-              |> Enum.at(Enum.count(keywords, & &1 == "restart"))
+  # # get all unique waits for a given 14-tile match definition, like win
+  # # will not remove a wait if you have four of the tile in hand or calls
+  # @decorate cacheable(cache: RiichiAdvanced.Cache, key: {:get_waits, hand, calls, match_definitions, TileBehavior.hash(tile_behavior)})
+  # def get_waits(hand, calls, match_definitions, tile_behavior, skip_tenpai_check \\ false) do
+  #   # only check for waits if we're tenpai
+  #   if skip_tenpai_check or Match.match_hand(hand, calls, Enum.map(match_definitions, &["almost" | &1]), tile_behavior) do
+  #     # go through each match definition and see what tiles can be added for it to match
+  #     # as soon as something doesn't match, get all tiles that help make it match
+  #     # take the union of helpful tiles across all match definitions
+  #     for match_definition <- match_definitions do
+  #       # make it exhaustive, unless it's unique
+  #       match_definition = if "unique" not in match_definition and "exhaustive" not in match_definition do ["exhaustive" | match_definition] else match_definition end
+  #       # IO.puts("\n" <> inspect(match_definition))
+  #       {_keywords, waits_complement, waits_complement_across_restarts} = for {last_match_definition_elem, i} <- Enum.with_index(match_definition), reduce: {[], tile_behavior.tile_freqs, %{}} do
+  #         {keywords, waits_complement, waits_complement_across_restarts} -> case last_match_definition_elem do
+  #           "restart" -> {keywords ++ ["restart"], tile_behavior.tile_freqs, Map.merge(waits_complement, waits_complement_across_restarts, fn _k, l, r -> max(l, r) end) }
+  #           keyword when is_binary(keyword) -> {keywords ++ [keyword], waits_complement, waits_complement_across_restarts}
+  #           [_groups, num] when num <= 0 -> {keywords, waits_complement, waits_complement_across_restarts} # ignore lookaheads
+  #           [groups, num] ->
+  #             # get all other groups in the current restart of our match definition
+  #             remaining_match_definition = List.delete_at(match_definition, i)
+  #             |> Utils.split_on("restart")
+  #             |> Enum.at(Enum.count(keywords, & &1 == "restart"))
 
-              # first remove all other groups
-              hand_calls = [{hand, calls}]
-              hand_calls = Enum.flat_map(hand_calls, fn {hand, calls} ->
-                Match.remove_match_definition(hand, calls, remaining_match_definition, tile_behavior)
-              end)
-              |> Enum.uniq()
+  #             # first remove all other groups
+  #             hand_calls = [{hand, calls}]
+  #             hand_calls = Enum.flat_map(hand_calls, fn {hand, calls} ->
+  #               Match.remove_match_definition(hand, calls, remaining_match_definition, tile_behavior)
+  #             end)
+  #             |> Enum.uniq()
 
-              # then remove groups num-1 times no matter what
-              # num_hand_calls = length(hand_calls)
-              hand_calls = if num > 1 do
-                Enum.flat_map(hand_calls, fn {hand, calls} ->
-                  Match.remove_match_definition(hand, calls, keywords ++ [[groups, num - 1]], tile_behavior)
-                end)
-                |> Enum.uniq()
-              else hand_calls end
+  #             # then remove groups num-1 times no matter what
+  #             # num_hand_calls = length(hand_calls)
+  #             hand_calls = if num > 1 do
+  #               Enum.flat_map(hand_calls, fn {hand, calls} ->
+  #                 Match.remove_match_definition(hand, calls, keywords ++ [[groups, num - 1]], tile_behavior)
+  #               end)
+  #               |> Enum.uniq()
+  #             else hand_calls end
 
-              # try to remove the last one
-              final_match_definition = keywords ++ [[groups, 1]]
-              {hand_calls_success, hand_calls_failure} = Enum.map(hand_calls, fn {hand, calls} ->
-                case Match.remove_match_definition(hand, calls, final_match_definition, tile_behavior) do
-                  []         -> {[], [{hand, calls}]} # failure
-                  hand_calls -> {hand_calls, []} # success (new hand_calls)
-                end
-              end)
-              |> Enum.unzip()
-              hand_calls_success = Enum.concat(hand_calls_success)
-              hand_calls_failure = Enum.concat(hand_calls_failure)
-              # IO.puts("#{inspect(keywords)} #{inspect(last_match_definition_elem)}: #{num_hand_calls} tries (#{length(hand_calls)} after filtering), #{length(hand_calls_success)} successes, #{length(hand_calls_failure)} failures")
-              # IO.inspect(hand_calls_success, label: "hand_calls_success")
-              # IO.inspect(hand_calls_failure, label: "hand_calls_failure")
+  #             # try to remove the last one
+  #             final_match_definition = keywords ++ [[groups, 1]]
+  #             {hand_calls_success, hand_calls_failure} = Enum.map(hand_calls, fn {hand, calls} ->
+  #               case Match.remove_match_definition(hand, calls, final_match_definition, tile_behavior) do
+  #                 []         -> {[], [{hand, calls}]} # failure
+  #                 hand_calls -> {hand_calls, []} # success (new hand_calls)
+  #               end
+  #             end)
+  #             |> Enum.unzip()
+  #             hand_calls_success = Enum.concat(hand_calls_success)
+  #             hand_calls_failure = Enum.concat(hand_calls_failure)
+  #             # IO.puts("#{inspect(keywords)} #{inspect(last_match_definition_elem)}: #{num_hand_calls} tries (#{length(hand_calls)} after filtering), #{length(hand_calls_success)} successes, #{length(hand_calls_failure)} failures")
+  #             # IO.inspect(hand_calls_success, label: "hand_calls_success")
+  #             # IO.inspect(hand_calls_failure, label: "hand_calls_failure")
 
-              # waits_complement = all waits that don't help
-              # remove waits that do help
-              waits_complement = if Enum.empty?(hand_calls_success) do
-                Enum.reject(waits_complement, fn {wait, _freq} ->
-                  Enum.any?(hand_calls_failure, fn {hand, calls} ->
-                    Match.match_hand([wait | hand], calls, [final_match_definition], tile_behavior)
-                  end)
-                end) |> Map.new()
-              else %{} end # the match definition succeeding without having to add a tile implies all tiles are a wait
+  #             # waits_complement = all waits that don't help
+  #             # remove waits that do help
+  #             waits_complement = if Enum.empty?(hand_calls_success) do
+  #               Enum.reject(waits_complement, fn {wait, _freq} ->
+  #                 Enum.any?(hand_calls_failure, fn {hand, calls} ->
+  #                   Match.match_hand([wait | hand], calls, [final_match_definition], tile_behavior)
+  #                 end)
+  #               end) |> Map.new()
+  #             else %{} end # the match definition succeeding without having to add a tile implies all tiles are a wait
 
-              {keywords, waits_complement, waits_complement_across_restarts}
-            _ -> {keywords, waits_complement, waits_complement_across_restarts}
-          end
-        end
-        # IO.inspect({match_definition, Utils.inverse_frequencies(waits_complement, tile_behavior), Utils.inverse_frequencies(waits_complement_across_restarts, tile_behavior)})
-        waits_complement_across_restarts = Map.merge(waits_complement, waits_complement_across_restarts, fn _k, l, r -> max(l, r) end)
-        waits = Utils.inverse_frequencies(waits_complement_across_restarts, tile_behavior)
-        |> Map.keys()
-        |> MapSet.new()
-        # IO.inspect(hand, label: "===\nhand")
-        # IO.inspect(match_definition, label: "match_definition")
-        # IO.inspect(waits, label: "waits")
-        waits
-      end
-      |> Enum.reduce(MapSet.new(), &MapSet.union/2)
-    else MapSet.new() end
-  end
+  #             {keywords, waits_complement, waits_complement_across_restarts}
+  #           _ -> {keywords, waits_complement, waits_complement_across_restarts}
+  #         end
+  #       end
+  #       # IO.inspect({match_definition, Utils.inverse_frequencies(waits_complement, tile_behavior), Utils.inverse_frequencies(waits_complement_across_restarts, tile_behavior)})
+  #       waits_complement_across_restarts = Map.merge(waits_complement, waits_complement_across_restarts, fn _k, l, r -> max(l, r) end)
+  #       waits = Utils.inverse_frequencies(waits_complement_across_restarts, tile_behavior)
+  #       |> Map.keys()
+  #       |> MapSet.new()
+  #       # IO.inspect(hand, label: "===\nhand")
+  #       # IO.inspect(match_definition, label: "match_definition")
+  #       # IO.inspect(waits, label: "waits")
+  #       waits
+  #     end
+  #     |> Enum.reduce(MapSet.new(), &MapSet.union/2)
+  #   else MapSet.new() end
+  # end
 
-  @decorate cacheable(cache: RiichiAdvanced.Cache, key: {:get_waits_and_ukeire, hand, calls, match_definitions, visible_tiles, TileBehavior.hash(tile_behavior)})
-  def get_waits_and_ukeire(hand, calls, match_definitions, visible_tiles, tile_behavior, skip_tenpai_check \\ false) do
-    waits = get_waits(hand, calls, match_definitions, tile_behavior, skip_tenpai_check)
-    freqs = Utils.inverse_frequencies(visible_tiles, tile_behavior)
-    Map.new(waits, &{&1, Map.get(freqs, &1, 0)})
-  end
+  # @decorate cacheable(cache: RiichiAdvanced.Cache, key: {:get_waits_and_ukeire, hand, calls, match_definitions, visible_tiles, TileBehavior.hash(tile_behavior)})
+  # def get_waits_and_ukeire(hand, calls, match_definitions, visible_tiles, tile_behavior, skip_tenpai_check \\ false) do
+  #   waits = get_waits(hand, calls, match_definitions, tile_behavior, skip_tenpai_check)
+  #   freqs = Utils.inverse_frequencies(visible_tiles, tile_behavior)
+  #   Map.new(waits, &{&1, Map.get(freqs, &1, 0)})
+  # end
 
   def get_safe_tiles_against(seat, players, turn \\ nil) do
     riichi_safe = if players[seat].cache.riichi_discard_indices != nil do
@@ -386,31 +386,6 @@ defmodule RiichiAdvanced.Riichi do
   def get_unneeded_tiles(hand, calls, match_definitions, tile_behavior) do
     t = System.os_time(:millisecond)
     tile_behavior = Match.filter_irrelevant_tile_aliases(tile_behavior, hand ++ Enum.flat_map(calls, &Utils.call_to_tiles/1))
-
-    {match_definitions, hand_calls} = for match_definition <- match_definitions do
-      # initial guess comes from just removing each match definition and seeing what's left
-      hand_calls = Match.remove_match_definition(hand, calls, match_definition, tile_behavior)
-      # filter out lookaheads from match definition
-      match_definition = Enum.filter(match_definition, fn match_definition_elem -> is_binary(match_definition_elem) or with [_groups, num] <- match_definition_elem do num > 0 end end)
-      # add exhaustive unless unique
-      match_definition = if "unique" not in match_definition and "exhaustive" not in match_definition do ["exhaustive" | match_definition] else match_definition end
-      {match_definition, hand_calls}
-    end
-    # filter out match definitions that don't match at all
-    |> Enum.reject(fn {_match_definition, hand_calls} -> Enum.empty?(hand_calls) end)
-    |> Enum.unzip()
-
-    # get union of unneeded tiles found this way
-    unneeded = hand_calls
-    |> Enum.concat()
-    |> Enum.flat_map(fn {hand, _calls} -> hand end)
-    |> Enum.uniq()
-
-    elapsed_time = System.os_time(:millisecond) - t
-    if elapsed_time > 250 do
-      IO.puts("get_unneeded_tiles: #{inspect(elapsed_time)} ms to get initial tiles")
-    end
-
     ret = if not Enum.empty?(match_definitions) do
       # # method 1: keep tiles in hand that are not needed to match the given match definitions
       # ret = hand
@@ -453,16 +428,15 @@ defmodule RiichiAdvanced.Riichi do
       # ret
 
       # method 5: same as method 4 but parallel
-      remaining = Enum.uniq(hand) -- unneeded
+      remaining = Enum.uniq(hand)
       # IO.puts("get_unneeded_tiles: now checking each of #{inspect(remaining)} individually")
       ret = for tile <- remaining do
         Task.async(fn -> if Match.match_hand(hand -- [tile], calls, match_definitions, tile_behavior) do [tile] else [] end end)
       end
       |> Task.yield_many(timeout: :infinity)
       |> Enum.flat_map(fn {_task, {:ok, res}} -> res end)
-      ret = Enum.uniq(ret ++ unneeded)
+      |> Enum.uniq()
       ret
-
       # i think a good method 6 is to use prepend_group_all on individual groups in a match definition
       # like take all the groups appearing in match definitions
       # then take each group, say [groups, n]

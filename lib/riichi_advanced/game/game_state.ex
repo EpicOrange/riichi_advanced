@@ -965,7 +965,7 @@ defmodule RiichiAdvanced.GameState do
     win_definitions = Rules.translate_match_definitions(state.rules_ref, Rules.get(state.rules_ref, "show_waits", %{}) |> Map.get("win_definitions", []))
     tile_behavior = state.players[seat].tile_behavior
     visible_tiles = get_visible_tiles(state, seat)
-    Riichi.get_waits_and_ukeire(hand, calls, win_definitions, visible_tiles, tile_behavior)
+    Match.get_waits_and_ukeire_v2(hand, calls, win_definitions, visible_tiles, tile_behavior)
   end
 
   def get_open_riichi_hands(state) do

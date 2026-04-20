@@ -546,16 +546,18 @@ defmodule RiichiAdvanced.Match do
   @decorate cacheable(cache: RiichiAdvanced.Cache, key: {:match_hand, hand, calls, match_definitions, TileBehavior.hash(tile_behavior)})
   def match_hand(hand, calls, match_definitions, tile_behavior) do
     # t = System.os_time(:millisecond)
-    tile_behavior = filter_irrelevant_tile_aliases(tile_behavior, hand ++ Enum.flat_map(calls, &Utils.call_to_tiles/1))
+    # tile_behavior = filter_irrelevant_tile_aliases(tile_behavior, hand ++ Enum.flat_map(calls, &Utils.call_to_tiles/1))
 
     # ret = Enum.any?(match_definitions, fn match_definition -> not Enum.empty?(remove_match_definition(hand, calls, match_definition, tile_behavior)) end)
 
-    num_tiles = length(hand) + length(Enum.flat_map(calls, &Utils.call_to_tiles/1))
-    ret = if num_tiles <= 26 do
-      RiichiAdvanced.Match.Temp.match_hand_v2(hand, calls, match_definitions, tile_behavior)
-    else
-      Enum.any?(match_definitions, fn match_definition -> not Enum.empty?(remove_match_definition(hand, calls, match_definition, tile_behavior)) end)
-    end
+    ret = RiichiAdvanced.Match.Temp.match_hand_v2(hand, calls, match_definitions, tile_behavior)
+
+    # num_tiles = length(hand) + length(Enum.flat_map(calls, &Utils.call_to_tiles/1))
+    # ret = if num_tiles <= 26 do
+    #   RiichiAdvanced.Match.Temp.match_hand_v2(hand, calls, match_definitions, tile_behavior)
+    # else
+    #   Enum.any?(match_definitions, fn match_definition -> not Enum.empty?(remove_match_definition(hand, calls, match_definition, tile_behavior)) end)
+    # end
 
     # elapsed_time = System.os_time(:millisecond) - t
     # if elapsed_time > 10 do
@@ -779,6 +781,14 @@ defmodule RiichiAdvanced.Match do
     #   IO.inspect(length(result), label: "result")
     #   result
     # end)
+  end
+
+  def get_waits_v2(hand, calls, match_definitions, tile_behavior) do
+    RiichiAdvanced.Match.Temp.get_waits_v2(hand, calls, match_definitions, tile_behavior)
+  end
+
+  def get_waits_and_ukeire_v2(hand, calls, match_definitions, visible_tiles, tile_behavior) do
+    RiichiAdvanced.Match.Temp.get_waits_and_ukeire_v2(hand, calls, match_definitions, visible_tiles, tile_behavior)
   end
 
 end
