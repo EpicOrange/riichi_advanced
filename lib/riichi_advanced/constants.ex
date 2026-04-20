@@ -203,6 +203,7 @@ defmodule RiichiAdvanced.Constants do
       :"31's" -> 216; :"35'z" -> 1356; :"35`z" -> 1356;
       :"41's" -> 218; :"45'z" -> 1358; :"45`z" -> 1358;
 
+      :any -> 1000000
       _ ->
         IO.puts("Unrecognized tile #{inspect(tile)}, cannot sort!")
         # IO.inspect(Process.info(self(), :current_stacktrace))
@@ -542,9 +543,12 @@ defmodule RiichiAdvanced.Constants do
       {"galaxy_basics", "Intro to galaxy mahjong", :west},
       {"galaxy_milky_way", "Milky Way", :south}
     ],
+    "mcr" => [
+      {"mcr_basics", "Intro to MCR", :west},
+    ],
     "tianjin" => [
       {"tianjin_basics", "Intro to Tianjin Mahjong", :south},
-    ]
+    ],
   }
 
   def tutorials, do: @tutorials

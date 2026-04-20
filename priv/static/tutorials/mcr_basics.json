@@ -1,0 +1,154 @@
+{
+  "mods": [],
+  "config": {
+    "starting_hand": {
+      "east": ["3p", "3m", "4m", "5m", "9m", "2s", "4s", "4s", "5s", "5s", "3z", "3z", "2g"],
+      "south": ["2m", "3m", "8m", "8m", "1p", "1p", "1p", "1s", "2s", "3s", "7s", "8s", "3g"],
+      "west": ["1m", "2m", "3m", "4m", "2p", "3p", "5p", "7p", "8p", "9p", "4s", "5s", "4g"],
+      "north": ["1m", "1m", "1m", "2m", "3m", "8m", "8m", "1s", "2s", "3s", "7s", "8s", "8s"]
+    },
+    "starting_draws": ["2z", "6s", "2m", "5z", "2z", "2f", "4m"],
+    "starting_dead_wall": ["1z", "4z", "3z", "4p", "4z"],
+    "tsumogiri_bots": true,
+    "win_timer": 300
+  },
+  // Synopsis
+  // - Flower declaration round
+  // - Main Fan vs Small Fan terminology
+  // - Hand is 1234 235789 45E which is close to Three Shifted Sequences + Tanyao which is 6+2
+  // - Chii into 1234 235789 (456) E, discard E
+  // - We draw a flower next turn, we can declare or discard it. Declare it
+  // - Replacement tile gets us to 1234 2345789 (456), drop to 1234 345789 (456) (4 => mixed straight, 1 => mixed shifted)
+  // - Explain that this change of goal happens a lot, in general there are like 8 main paths to get 8 points
+  // - Ron on shimo
+  // - Explain that everyone pays an extra 8 points, so a 8 Fan hand is worth at least 32 (24+8) points
+  // - Explain tsumo
+  "scenes": {
+    "start": [
+      ["add_object", "text", {"size": 0.4, "width": 5, "x": 9.125, "y": 7.5,
+        "text": "Welcome to MCR (Mahjong Competition Rules)! The main challenge of this variant is finding a way to score 8 Fan before everyone else.\n(Click to continue)"
+      }],
+      ["await_click"],
+      ["clear_objects"],
+      ["force_event", ["press_button", "east", "start_flower"]],
+      ["force_event", ["press_button", "east", "start_no_flower"]],
+      ["force_event", ["press_button", "south", "start_flower"]],
+      ["force_event", ["press_button", "south", "start_no_flower"]],
+      ["add_object", "text", {"size": 0.4, "width": 5, "x": 9.125, "y": 7.5,
+        "text": "Each round always starts with a flower declaration round. Starting from the East seat, each player replaces flowers in hand, or declares \"No Flowers\".\n(Click to continue)"
+      }],
+      ["await_click"],
+      ["clear_objects"],
+      ["add_object", "text", {"size": 0.4, "width": 5, "x": 9.125, "y": 7.5,
+        "text": "Declared flowers are worth 1 Fan, but do not count towards the required 8 Fan. Try declaring a flower now.\n(Click to continue)"
+      }],
+      ["add_object", "focus", {"width": 1.5, "x": 12.125, "y": "buttons"}],
+      ["force_event", ["press_button", "west", "start_flower"]],
+      ["clear_objects"],
+      ["sleep", 500],
+      ["add_object", "text", {"size": 0.4, "width": 5, "x": 9.125, "y": 7.5,
+        "text": "Now that you are out of flowers, press Pass to pass the turn."
+      }],
+      ["add_object", "focus", {"width": 1.5, "x": 14, "y": "buttons"}],
+      ["force_event", ["press_button", "west", "start_no_flower"]],
+      ["await_event", ["press_button", "north", "start_no_flower"]],
+      ["clear_objects"],
+      ["sleep", 500],
+      ["add_object", "text", {"size": 0.4, "width": 5, "x": 9.125, "y": 7.5,
+        "text": "In MCR, the goal is to obtain 8 Fan, and this is usually done by going for a high-scoring \"main\" Fan (6+ Fan) and adding some minor Fan (1-2 Fan) to make up the difference.\n(Click to continue)"
+      }],
+      ["await_click"],
+      ["clear_objects"],
+      ["add_object", "text", {"size": 0.4, "width": 5, "x": 9.125, "y": 7.5,
+        "text": "In this case, our hand is a really good mix of sequences in 3 suits. In this situation, it is common to go for Mixed Shifted Sequences (6 Fan if you have 123, 234, 345 in three suits) as our main Fan.\n(Click to continue)"
+      }],
+      ["add_object", "focus", {"width": 1.25, "hand_index": 2}],
+      ["add_object", "focus", {"width": 0.8, "hand_index": 5.5}],
+      ["add_object", "focus", {"width": 0.8, "hand_index": 10.5}],
+      ["await_click"],
+      ["clear_objects"],
+      ["await_event", ["play_tile", "south", 13]],
+      ["sleep", 500],
+      ["add_object", "text", {"size": 0.4, "width": 5, "x": 9.125, "y": 7.5,
+        "text": "The player to our left has discarded a 6 of bamboo, which we'll need for Mixed Shifted, so go ahead and call it! In MCR, there is very little downside to calling tiles."
+      }],
+      ["add_object", "focus", {"width": 1.25, "x": 12.25, "y": "buttons"}],
+      ["force_event", ["press_button", "west", "chii"]],
+      ["clear_objects"],
+      ["sleep", 500],
+      ["add_object", "text", {"size": 0.4, "width": 5, "x": 9.125, "y": 7.5,
+        "text": "We'd also like to get All Sequences (2 Fan if all sequences, and no honor tiles), which would bring the total to the required 8 Fan. For this, we'll discard the wind tile."
+      }],
+      ["add_object", "focus", {"width": 0.75, "hand_index": 10}],
+      ["force_event", ["play_tile", "west", 10]],
+      ["clear_objects"],
+      ["await_event", ["play_tile", "south", 13]],
+      ["sleep", 500],
+      ["add_object", "text", {"size": 0.4, "width": 5, "x": 9.125, "y": 7.5,
+        "text": "You drew a flower! When you draw a flower in the middle of a game, you can either declare them (like at the start of the round) or discard them (to avoid dealing a dangerous tile).\n(Click to continue)"
+      }],
+      ["add_object", "focus", {"width": 0.75, "hand_index": 10.5}],
+      ["await_click"],
+      ["clear_objects"],
+      ["add_object", "text", {"size": 0.4, "width": 5, "x": 9.125, "y": 7.5,
+        "text": "It doesn't make sense to defend this early in MCR, so early flowers are always declared for a replacement tile. Do so now."
+      }],
+      ["add_object", "focus", {"width": 1.5, "x": 12.125, "y": "buttons"}],
+      ["force_event", ["press_button", "west", "flower"]],
+      ["clear_objects"],
+      ["sleep", 1000],
+      ["add_object", "text", {"size": 0.4, "width": 5, "x": 9.125, "y": 7.5,
+        "text": "This draw (4 of circles) is ideal, not only because it lets us win on the 1 of characters (for Mixed Shifted 234 345 456)...\n(Click to continue)"
+      }],
+      ["add_object", "focus", {"width": 1.5, "hand_index": 16.5}],
+      ["add_object", "focus", {"width": 1.25, "hand_index": 2}],
+      ["add_object", "focus", {"width": 0.8, "hand_index": 5.5}],
+      ["add_object", "focus", {"width": 0.75, "hand_index": 10.5}],
+      ["await_click"],
+      ["clear_objects"],
+      ["add_object", "text", {"size": 0.4, "width": 5, "x": 9.125, "y": 7.5,
+        "text": "...but also on the 4 of characters (for Mixed Straight 123 456 789, worth 8 Fan by itself)! Switching tracks like this is quite common in MCR, since there are so many Fan patterns.\n(Click to continue)"
+      }],
+      ["add_object", "focus", {"width": 1.5, "hand_index": 16.5}],
+      ["add_object", "focus", {"width": 1.25, "hand_index": 1}],
+      ["add_object", "focus", {"width": 1.25, "hand_index": 8}],
+      ["await_click"],
+      ["clear_objects"],
+      ["add_object", "text", {"size": 0.4, "width": 5, "x": 9.125, "y": 7.5,
+        "text": "For this you'll need to discard the 2 of circles. Try it!"
+      }],
+      ["add_object", "focus", {"width": 0.75, "hand_index": 4}],
+      ["force_event", ["play_tile", "west", 4]],
+      ["clear_objects"],
+      ["force_event", ["play_tile", "north", 13]],
+      ["sleep", 1000],
+      ["add_object", "text", {"size": 0.4, "width": 5, "x": 9.125, "y": 7.5,
+        "text": "Obviously (since this is a tutorial) we get the 4 of characters immediately. Press Hu to see how this hand scores!"
+      }],
+      ["add_object", "focus", {"width": 1, "x": 12.25, "y": "buttons"}],
+      ["force_event", ["press_button", "west", "ron"]],
+      ["clear_objects"],
+      ["sleep", 2000],
+      ["add_object", "text", {"size": 0.4, "width": 3, "x": 4.125, "y": 7.5,
+        "text": "On top of our mixed straight, we get our two flower tiles, plus All Chows (all sequences plus non-honor pair), totalling 12 points.\n(Click to continue)"
+      }],
+      ["await_click"],
+      ["clear_objects"],
+      ["add_object", "text", {"size": 0.4, "width": 3, "x": 4.125, "y": 7.5,
+        "text": "If you win on a discard (like we just did) the discarder pays the 12 points, and on top of that, every player pays 8 points. This means an 8 Fan hand is worth 32 points at minimum.\n(Click to continue)"
+      }],
+      ["await_click"],
+      ["clear_objects"],
+      ["add_object", "text", {"size": 0.4, "width": 3, "x": 4.125, "y": 7.5,
+        "text": "If you had won by self-draw, everyone would pay you 12+8 points (plus one for 1 Fan Self-Drawn), totalling 63. It's worth a lot to self-draw!\n(Click to continue)"
+      }],
+      ["await_click"],
+      ["clear_objects"],
+      ["add_object", "text", {"size": 0.4, "width": 3, "x": 4.125, "y": 7.5,
+        "text": "Click the tabs on the left to see more patterns, or press Back on the upper right to return to the list of tutorials.\n(Click to continue)"
+      }],
+      ["await_click"],
+      ["clear_objects"]
+    ]
+  }
+}

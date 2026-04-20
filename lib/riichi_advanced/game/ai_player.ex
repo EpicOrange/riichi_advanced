@@ -290,7 +290,15 @@ defmodule RiichiAdvanced.AIPlayer do
       # TODO clear thinking upon pressing a button
       # GenServer.cast(state.game_state, {:ai_thinking, state.seat})
       button_name = cond do
-        state.tsumogiri_bot -> if "skip" in player.buttons do "skip" else Enum.random(player.buttons) end
+        state.tsumogiri_bot -> cond do
+          "skip" in player.buttons -> "skip"
+          "anfuun" in player.buttons -> "anfuun"
+          "flower" in player.buttons -> "flower"
+          "start_flower" in player.buttons -> "start_flower"
+          "start_no_flower" in player.buttons -> "start_no_flower"
+          "extra_turn" in player.buttons -> "extra_turn"
+          true -> Enum.random(player.buttons)
+        end
         "void_manzu" in player.buttons ->
           # count suits, pick the minimum suit
           hand = player.hand ++ player.draw
