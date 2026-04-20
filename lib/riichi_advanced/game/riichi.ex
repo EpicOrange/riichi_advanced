@@ -4,7 +4,6 @@ defmodule RiichiAdvanced.Riichi do
   alias RiichiAdvanced.Match, as: Match
   alias RiichiAdvanced.MatchOld, as: MatchOld
   alias RiichiAdvanced.Utils, as: Utils
-  use Nebulex.Caching
 
   @flower_names ["start_flower", "start_joker", "flower", "joker"]
   def flower_names(), do: @flower_names
@@ -383,7 +382,7 @@ defmodule RiichiAdvanced.Riichi do
 
   # given a 14-tile hand, and match definitions for 13-tile hands,
   # return all the (unique) tiles that are not needed to match the definitions
-  @decorate cacheable(cache: RiichiAdvanced.Cache, key: {:get_unneeded_tiles, hand, calls, match_definitions, TileBehavior.hash(tile_behavior)})
+  # @decorate cacheable(cache: RiichiAdvanced.Cache, key: {:get_unneeded_tiles, hand, calls, match_definitions, TileBehavior.hash(tile_behavior)})
   def get_unneeded_tiles(hand, calls, match_definitions, tile_behavior) do
     t = System.os_time(:millisecond)
     tile_behavior = MatchOld.filter_irrelevant_tile_aliases(tile_behavior, hand ++ Enum.flat_map(calls, &Utils.call_to_tiles/1))

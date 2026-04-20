@@ -7,8 +7,6 @@ defmodule RiichiAdvanced.Match do
   use Nebulex.Caching
 
   defmodule TileSet do
-    use Nebulex.Caching
-
     @type t :: %__MODULE__{
       hash: integer(),
       attrs: list({integer(), integer()} | {:name, binary()} | {:nojoker, boolean()} | {:joker, list({integer(), integer()})}),
@@ -121,7 +119,7 @@ defmodule RiichiAdvanced.Match do
     end
       
     # remove 2nd set from 1st set to get a resulting set, or nil if not removable
-    @decorate cacheable(cache: RiichiAdvanced.Cache, key: {:tileset_subtract, hash1, hash2, attrs1, attrs2, return_indices})
+    # @decorate cacheable(cache: RiichiAdvanced.Cache, key: {:tileset_subtract, hash1, hash2, attrs1, attrs2, return_indices})
     def subtract(%{hash: hash2, attrs: attrs2} = hand,
                  %{hash: hash1, attrs: attrs1} = group, return_indices \\ false) do
       if hash2 == 0 do raise("TileSet.subtract: somehow obtained a hash of zero in hand") end
@@ -916,10 +914,7 @@ defmodule RiichiAdvanced.Match do
     end
   end
 
-
-
-
-  @decorate cacheable(cache: RiichiAdvanced.Cache, key: {:get_waits_v2, hand, calls, match_definitions, TileBehavior.hash(tile_behavior)})
+  # @decorate cacheable(cache: RiichiAdvanced.Cache, key: {:get_waits_v2, hand, calls, match_definitions, TileBehavior.hash(tile_behavior)})
   def get_waits_v2(hand, calls, match_definitions, tile_behavior) do
     # basic strategy is to add a custom joker 1x
     # it will start as "all tiles" and progressively split its aliases in half,
@@ -947,7 +942,7 @@ defmodule RiichiAdvanced.Match do
     else assignables end
   end
 
-  @decorate cacheable(cache: RiichiAdvanced.Cache, key: {:get_waits_and_ukeire_v2, hand, calls, match_definitions, visible_tiles, TileBehavior.hash(tile_behavior)})
+  # @decorate cacheable(cache: RiichiAdvanced.Cache, key: {:get_waits_and_ukeire_v2, hand, calls, match_definitions, visible_tiles, TileBehavior.hash(tile_behavior)})
   def get_waits_and_ukeire_v2(hand, calls, match_definitions, visible_tiles, tile_behavior) do
     waits = get_waits_v2(hand, calls, match_definitions, tile_behavior)
     freqs = Utils.inverse_frequencies(visible_tiles, tile_behavior)

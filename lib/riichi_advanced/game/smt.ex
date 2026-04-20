@@ -3,7 +3,6 @@ defmodule RiichiAdvanced.SMT do
   alias RiichiAdvanced.GameState.TileBehavior, as: TileBehavior
   alias RiichiAdvanced.MatchOld, as: MatchOld
   alias RiichiAdvanced.Utils, as: Utils
-  use Nebulex.Caching
   
   @boilerplate """
                (set-logic QF_FD)

@@ -2,7 +2,6 @@ defmodule RiichiAdvanced.MatchOld do
   alias RiichiAdvanced.GameState.TileBehavior, as: TileBehavior
   alias RiichiAdvanced.Riichi, as: Riichi
   alias RiichiAdvanced.Utils, as: Utils
-  use Nebulex.Caching
 
   @shift_suit %{:"1m"=>:"1p", :"2m"=>:"2p", :"3m"=>:"3p", :"4m"=>:"4p", :"5m"=>:"5p", :"6m"=>:"6p", :"7m"=>:"7p", :"8m"=>:"8p", :"9m"=>:"9p", :"10m"=>:"10p",
                 :"1p"=>:"1s", :"2p"=>:"2s", :"3p"=>:"3s", :"4p"=>:"4s", :"5p"=>:"5s", :"6p"=>:"6s", :"7p"=>:"7s", :"8p"=>:"8s", :"9p"=>:"9s", :"10p"=>:"10s",
@@ -339,7 +338,7 @@ defmodule RiichiAdvanced.MatchOld do
     if Enum.empty?(base_tiles) do [:"1m"] else base_tiles end
   end
 
-  @decorate cacheable(cache: RiichiAdvanced.Cache, key: {:remove_match_definition, hand, calls, match_definition, TileBehavior.hash(tile_behavior)})
+  # @decorate cacheable(cache: RiichiAdvanced.Cache, key: {:remove_match_definition, hand, calls, match_definition, TileBehavior.hash(tile_behavior)})
   def remove_match_definition(hand, calls, match_definition, tile_behavior) do
     # t = System.os_time(:millisecond)
     almost = "almost" in match_definition
