@@ -543,7 +543,7 @@ defmodule RiichiAdvanced.Match do
   end
 
   # check if hand contains all groups in each definition in match_definitions
-  @decorate cacheable(cache: RiichiAdvanced.Cache, key: {:match_hand, hand, calls, match_definitions, TileBehavior.hash(tile_behavior)})
+  # @decorate cacheable(cache: RiichiAdvanced.Cache, key: {:match_hand, hand, calls, match_definitions, TileBehavior.hash(tile_behavior)})
   def match_hand(hand, calls, match_definitions, tile_behavior) do
     # t = System.os_time(:millisecond)
     # tile_behavior = filter_irrelevant_tile_aliases(tile_behavior, hand ++ Enum.flat_map(calls, &Utils.call_to_tiles/1))

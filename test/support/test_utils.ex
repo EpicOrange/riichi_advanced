@@ -250,7 +250,16 @@ defmodule RiichiAdvanced.TestUtils do
     translated_win_definitions = Rules.translate_sets_in_match_definitions(win_definitions, Rules.get(rules_ref, "set_definitions"))
     translated_am_win_definitions = American.translate_american_match_definitions(am_win_definitions)
     win_definitions = translated_win_definitions ++ translated_am_win_definitions
-    tile_behavior = %TileBehavior{ aliases: tile_aliases, tile_freqs: Enum.frequencies(Rules.get(rules_ref, "wall")) }
+    tile_mappings = for {tile1, attrs_aliases} <- tile_aliases, {attrs, aliases} <- attrs_aliases, tile2 <- aliases, reduce: %{} do
+      ret ->
+        new_tiles = MapSet.new([Utils.add_attr(tile1, attrs)])
+        Map.update(ret, tile2, new_tiles, &MapSet.union(&1, new_tiles))
+    end
+    tile_behavior = %TileBehavior{ aliases: tile_aliases, mappings: tile_mappings, tile_freqs: Enum.frequencies(Rules.get(rules_ref, "wall")) }
+    # show defns that have the "debug" keyword in them
+    for definition <- translated_am_win_definitions, "debug" in definition do
+      IO.inspect(definition)
+    end
     Match.match_hand(hand, calls, win_definitions, tile_behavior)
   end
   def assert_winning_hand(rules_ref, match_definition_name, hand, calls \\ [], tile_aliases \\ %{}) do
