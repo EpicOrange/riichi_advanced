@@ -252,12 +252,30 @@ defmodule RiichiAdvanced.Match.Temp do
     for {call, i} <- Enum.with_index(calls), call.name == group, do: [hand | List.delete_at(calls, i)]
   end
   def elim_group([hand | calls], group) do
-    from_calls = for {call, i} <- Enum.with_index(calls), TileSet.is_subset?(group, call), do: [hand | List.delete_at(calls, i)]
-    case TileSet.subtract(hand, group) do
-      nil -> from_calls
-      ret -> [[ret | calls] | from_calls]
+    cond do
+      is_list(group) ->
+        for subgroup <- group, reduce: [[hand | calls]] do
+          acc -> Enum.flat_map(acc, &elim_group(&1, subgroup))
+        end
+        # for subgroup <- group, reduce: [[hand | calls]] do
+        #   acc ->
+        #     IO.inspect(Enum.map(acc, fn x -> Enum.map(x, &TileSet.decode/1) end), label: inspect(TileSet.decode(subgroup)))
+        #     Enum.flat_map(acc, &elim_group(&1, subgroup))
+        # end |> IO.inspect(label: inspect(Enum.map(group, &TileSet.decode/1)))
+      true ->
+        from_calls = for {call, i} <- Enum.with_index(calls), TileSet.is_subset?(group, call), do: [hand | List.delete_at(calls, i)]
+        # if Enum.any?(calls, & &1.name == "pon" and Enum.at(group.attrs, 0) |> elem(0) == 29) do
+        #   IO.inspect({calls, group, from_calls})
+        # end
+        # if group.hash == 1001 and "terminal" in group.all_attrs and TileSet.subtract(hand, group) != nil do
+        #   IO.inspect({hand, group, TileSet.subtract(hand, group)}, limit: :infinity, label: "asdf")
+        # end
+        case TileSet.subtract(hand, group) do
+          nil -> from_calls
+          ret -> [[ret | calls] | from_calls]
+        end
+        # |> IO.inspect(label: inspect({TileSet.decode(hand), TileSet.decode(group)}))
     end
-    # |> IO.inspect(label: inspect({TileSet.decode(hand), TileSet.decode(group)}))
   end
   def elim_group_once([hand | calls], group) when is_binary(group) do
     # group is a call name, remove one corresponding call
@@ -267,12 +285,21 @@ defmodule RiichiAdvanced.Match.Temp do
     end
   end
   def elim_group_once([hand | calls], group) do
-    case Enum.find_index(calls, &TileSet.is_subset?(group, &1)) do
-      nil -> case TileSet.subtract(hand, group) do
-        nil -> []
-        ret -> [[ret | calls]]
-      end
-      i   -> [[hand | List.delete_at(calls, i)]]
+    cond do
+      is_list(group) ->
+        ret = for subgroup <- group, reduce: [hand | calls] do
+          nil -> nil
+          acc -> elim_group_once(acc, subgroup)
+        end
+        if ret == [] do [] else [ret] end
+      true ->
+        case Enum.find_index(calls, &TileSet.is_subset?(group, &1)) do
+          nil -> case TileSet.subtract(hand, group) do
+            nil -> []
+            ret -> [[ret | calls]]
+          end
+          i   -> [[hand | List.delete_at(calls, i)]]
+        end
     end
   end
 
@@ -280,34 +307,50 @@ defmodule RiichiAdvanced.Match.Temp do
   # 26, because the product of the first 26 primes fits in a 128-bit unsigned int
   @primes [2,3,5,7,11,13,17,19,23,29,31,37,41,43,47,53,59,61,67,71,73,79,83,89,97,101]
 
+  @shift_suit %{:"1m"=>:"1p", :"2m"=>:"2p", :"3m"=>:"3p", :"4m"=>:"4p", :"5m"=>:"5p", :"6m"=>:"6p", :"7m"=>:"7p", :"8m"=>:"8p", :"9m"=>:"9p", :"10m"=>:"10p",
+                :"1p"=>:"1s", :"2p"=>:"2s", :"3p"=>:"3s", :"4p"=>:"4s", :"5p"=>:"5s", :"6p"=>:"6s", :"7p"=>:"7s", :"8p"=>:"8s", :"9p"=>:"9s", :"10p"=>:"10s",
+                :"1s"=>:"1m", :"2s"=>:"2m", :"3s"=>:"3m", :"4s"=>:"4m", :"5s"=>:"5m", :"6s"=>:"6m", :"7s"=>:"7m", :"8s"=>:"8m", :"9s"=>:"9m", :"10s"=>:"10m",
+                :"0z"=>nil, :"1z"=>nil, :"2z"=>nil, :"3z"=>nil, :"4z"=>nil, :"5z"=>nil, :"6z"=>nil, :"7z"=>nil, :"8z"=>nil}
   def apply_ordering(tile, ordering, attrs \\ []) do
     case tile do
-      {tile, _attrs} -> if Enum.empty?(attrs) do {ordering[tile], attrs} else ordering[tile] end
+      {tile, _attrs} -> if Enum.empty?(attrs) do ordering[tile] else {ordering[tile], attrs} end
       tile -> ordering[tile]
     end
   end
+  # def apply_offsets(base_tile, offsets, tile_behavior, n \\ 0, acc \\ [], test \\ true)
+  # def apply_offsets(base_tile, offsets, tile_behavior, n, acc, true) do
+  #   IO.inspect(%{base_tile: base_tile, offsets: offsets, n: n, acc: acc})
+  #   apply_offsets(base_tile, offsets, tile_behavior, n, acc, false)
+  # end
   def apply_offsets(base_tile, offsets, tile_behavior, n \\ 0, acc \\ [])
   def apply_offsets(_base_tile, [], _tile_behavior, _n, acc), do: Enum.reverse(acc)
   def apply_offsets(nil, _offsets, _tile_behavior, _n, _acc), do: nil
-  def apply_offsets(base_tile, [o | offsets], tile_behavior, n, acc) when is_number(o) and n == o, do: apply_offsets(base_tile, offsets, tile_behavior, n, [base_tile | acc])
-  def apply_offsets(base_tile, [o | offsets], tile_behavior, n, acc) when is_number(o) and n < o and o >= 0, do: apply_offsets(apply_ordering(base_tile, tile_behavior.ordering), [o | offsets], tile_behavior, n+1, acc)
-  def apply_offsets(base_tile, [o | offsets], tile_behavior, n, acc) when is_number(o) and n > o and o <= 0, do: apply_offsets(apply_ordering(base_tile, tile_behavior.ordering_r), [o | offsets], tile_behavior, n-1, acc)
-  def apply_offsets(base_tile, [o | offsets], tile_behavior, n, acc) when is_number(o), do: apply_offsets(base_tile, offsets, tile_behavior, n, acc)
-  def apply_offsets(base_tile, [%{offset: o} | offsets], tile_behavior, n, acc) when is_number(o) and n == o, do: apply_offsets(base_tile, offsets, tile_behavior, n, [base_tile | acc])
-  def apply_offsets(base_tile, [%{offset: o, attrs: attrs} | offsets], tile_behavior, n, acc) when is_number(o) and n < o and o >= 0, do: apply_offsets(apply_ordering(base_tile, tile_behavior.ordering, attrs), [o | offsets], tile_behavior, n+1, acc)
-  def apply_offsets(base_tile, [%{offset: o, attrs: attrs} | offsets], tile_behavior, n, acc) when is_number(o) and n > o and o <= 0, do: apply_offsets(apply_ordering(base_tile, tile_behavior.ordering_r, attrs), [o | offsets], tile_behavior, n-1, acc)
-  def apply_offsets(base_tile, [%{offset: o} | offsets], tile_behavior, n, acc) when is_number(o) and n < o and o >= 0, do: apply_offsets(apply_ordering(base_tile, tile_behavior.ordering), [o | offsets], tile_behavior, n+1, acc)
-  def apply_offsets(base_tile, [%{offset: o} | offsets], tile_behavior, n, acc) when is_number(o) and n > o and o <= 0, do: apply_offsets(apply_ordering(base_tile, tile_behavior.ordering_r), [o | offsets], tile_behavior, n-1, acc)
+  # for when offset is a number
+  def apply_offsets(base_tile, [o | offsets], tile_behavior, n, acc) when is_number(o), do: apply_offsets(base_tile, [%{"offset" => o} | offsets], tile_behavior, n, acc)
+  # for when offset is a map (so it can specify attrs)
+  def apply_offsets(base_tile, [%{"offset" => o} | _] = os, tile_behavior, n, acc) when is_number(o) and n < o and o >= 10 and (o-n) >= 10, do: apply_offsets(base_tile |> apply_ordering(@shift_suit), os, tile_behavior, n+10, acc)
+  def apply_offsets(base_tile, [%{"offset" => o} | _] = os, tile_behavior, n, acc) when is_number(o) and n > o and o <= -10 and (o-n) <= -10, do: apply_offsets(base_tile |> apply_ordering(@shift_suit) |> apply_ordering(@shift_suit), os, tile_behavior, n-10, acc)
+  def apply_offsets(base_tile, [%{"offset" => o} | _] = os, tile_behavior, n, acc) when is_number(o) and n < o and o >= 0, do: apply_offsets(base_tile |> apply_ordering(tile_behavior.ordering), os, tile_behavior, n+1, acc)
+  def apply_offsets(base_tile, [%{"offset" => o} | _] = os, tile_behavior, n, acc) when is_number(o) and n > o and o <= 0, do: apply_offsets(base_tile |> apply_ordering(tile_behavior.ordering_r), os, tile_behavior, n-1, acc)
+  # base cases
+  def apply_offsets(base_tile, [%{"offset" => o, "attrs" => attrs} | offsets], tile_behavior, n, acc) when is_number(o) and n == o, do: apply_offsets(base_tile, offsets, tile_behavior, n, [base_tile |> Utils.strip_attrs() |> Utils.add_attr(attrs) | acc])
+  def apply_offsets(base_tile, [%{"offset" => o} | offsets], tile_behavior, n, acc) when is_number(o) and n == o, do: apply_offsets(base_tile, offsets, tile_behavior, n, [base_tile |> Utils.strip_attrs() | acc])
   # for when offset is a tile (non-numeric)
-  def apply_offsets(base_tile, [o | offsets], tile_behavior, n, acc), do: apply_offsets(base_tile, offsets, tile_behavior, n, [o | acc])
+  def apply_offsets(base_tile, [o | offsets], tile_behavior, n, acc), do: apply_offsets(base_tile, offsets, tile_behavior, n, [Utils.to_tile(o) | acc])
 
+  def is_bad_group(nil, _encoding), do: true
+  def is_bad_group({nil, _}, _encoding), do: true
+  def is_bad_group(s, _encoding) when is_binary(s), do: false # it's a call name
+  def is_bad_group(l, encoding) when is_list(l), do: Enum.any?(l, &is_bad_group(&1, encoding))
+  def is_bad_group({t, _}, encoding), do: not Map.has_key?(encoding, t)
+  def is_bad_group(t, encoding), do: not Map.has_key?(encoding, t)
+
+  # reifies a group spec into multiple possible groups
   def encode_group(group, all_tiles, encoding, all_attrs, tile_behavior) do
+    nested = is_list(group) and is_list(Enum.at(group, 0))
     cond do
-      is_list(group) -> if is_list(Enum.at(group, 0)) do
-        Enum.map(all_tiles, &Enum.map(group, fn subgroup -> apply_offsets(&1, subgroup, tile_behavior) end))
-      else
-        Enum.map(all_tiles, &apply_offsets(&1, group, tile_behavior))
-      end
+      nested -> Enum.map(all_tiles, &Enum.map(group, fn subgroup -> apply_offsets(&1, subgroup, tile_behavior) end) |> Enum.sort())
+      is_list(group) -> Enum.map(all_tiles, &apply_offsets(&1, group, tile_behavior))
       Match.is_offset(group) -> Enum.map(all_tiles, &apply_offsets(&1, [group], tile_behavior))
       group == "any" -> Enum.map(all_tiles, &List.wrap(&1))
       Utils.is_tile(group) -> case Utils.to_tile(group) do
@@ -319,9 +362,18 @@ defmodule RiichiAdvanced.Match.Temp do
         IO.puts("Unknown group spec #{inspect(group)}")
         []
     end
-    |> Enum.filter(& &1 != nil)
+    |> Enum.reject(&is_bad_group(&1, encoding))
+    # |> Enum.reject(fn x -> 
+    #   ret = is_bad_group(x, encoding)
+    #   if ret do IO.inspect({x, encoding}, label: "bad group #{inspect(group)}") end
+    #   ret
+    # end)
     |> Enum.uniq()
-    |> Enum.map(&if is_binary(&1) do &1 else TileSet.encode(&1, encoding, all_attrs) end) # pass through call names
+    |> Enum.map(&cond do
+      is_binary(&1) -> &1 # pass through call names
+      nested        -> [[Enum.map(&1, fn subgroup -> TileSet.encode(subgroup, encoding, all_attrs) end)]]
+      true          -> TileSet.encode(&1, encoding, all_attrs)
+    end)
   end
 
   def match_hand_v2(hand, calls, match_definitions, tile_behavior) do
@@ -329,10 +381,17 @@ defmodule RiichiAdvanced.Match.Temp do
     # TODO can expand to each hand + call being <= 26 tiles long, just limit the number of unique tiles (primes) to like 100
     # first encode hand tiles and call tiles as primes, with most frequent as lower primes
     all_tiles = hand ++ Enum.flat_map(calls, &Utils.call_to_tiles/1)
-    all_attrs = all_tiles
-    |> Enum.flat_map(fn {_tile, attrs} -> Enum.map(attrs, &String.trim_leading(&1, "_")); _tile -> [] end)
+    hand_attrs = Enum.flat_map(all_tiles, fn {_tile, attrs} -> Enum.map(attrs, &String.trim_leading(&1, "_")); _tile -> [] end)
+    match_attrs = match_definitions
+    |> List.flatten()
+    |> Enum.flat_map(fn
+      %{"attrs" => attrs} -> attrs
+      _ -> []
+    end)
+    all_attrs = (hand_attrs ++ match_attrs)
     |> Enum.uniq()
     |> Enum.sort()
+
     # TODO make a faster path if all_attrs is empty
 
     all_tile_ids = all_tiles
@@ -358,9 +417,20 @@ defmodule RiichiAdvanced.Match.Temp do
           unique = (unique_ix != nil and i > unique_ix) or "unique" in match_elem
           # use offsets in match definition to determine which tiles can be considered offset 0 (base tiles)
           # preprocess groups with all_tiles as base tiles
+
+          # debug_defn = [[%{"attrs" => ["terminal"], "offset" => 0}, 1, 2], [0, 1, %{"attrs" => ["terminal"], "offset" => 2}], [%{"attrs" => ["terminal"], "offset" => 0}, %{"attrs" => ["terminal"], "offset" => 0}, %{"attrs" => ["terminal"], "offset" => 0}]]
+          # if match_elem == debug_defn do
+          #   IO.inspect(all_tiles, label: "asdf1")
+          # end
+
           groups = for group <- match_elem, group not in Match.group_keywords() do
+            # reifies a group spec into multiple possible groups
             {encode_group(group, all_tiles, encoding, all_attrs, tile_behavior), group}
           end
+
+          # if match_elem == debug_defn do
+          #   IO.inspect(groups, label: "asdf2")
+          # end
 
           # then try to remove (num) groups
           new_acc = for j <- (if num == 0 do [1] else 1..abs(num) end), reduce: Enum.map(acc, fn hands -> {hands, groups} end) do
