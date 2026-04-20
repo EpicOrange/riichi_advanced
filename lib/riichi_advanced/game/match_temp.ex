@@ -7,8 +7,7 @@ defmodule RiichiAdvanced.Match.Temp do
   defmodule TileSet do
     defstruct [
       hash: 1,       # product of primes
-      attrs: [],     # list of {prime, attr bitset}
-      name: "",      # for calls, this is the call name
+      attrs: [],     # list of {prime, attr bitset}, may also include {:name, call name}
     ]
 
     # solve n rooks, returning a list of column indices, one for each row
@@ -252,7 +251,7 @@ defmodule RiichiAdvanced.Match.Temp do
 
   def elim_group([hand | calls], group) when is_binary(group) do
     # group is a call name, remove every corresponding call
-    for {call, i} <- Enum.with_index(calls), call.name == group, do: [hand | List.delete_at(calls, i)]
+    for {call, i} <- Enum.with_index(calls), Keyword.get(call.attrs, :name) == group, do: [hand | List.delete_at(calls, i)]
   end
   def elim_group([hand | calls], group) do
     cond do
@@ -267,22 +266,15 @@ defmodule RiichiAdvanced.Match.Temp do
         # end |> IO.inspect(label: inspect(Enum.map(group, &TileSet.decode/1)))
       true ->
         from_calls = for {call, i} <- Enum.with_index(calls), TileSet.is_subset?(group, call), do: [hand | List.delete_at(calls, i)]
-        # if Enum.any?(calls, & &1.name == "pon" and Enum.at(group.attrs, 0) |> elem(0) == 29) do
-        #   IO.inspect({calls, group, from_calls})
-        # end
-        # if group.hash == 1001 and "terminal" in group.all_attrs and TileSet.subtract(hand, group) != nil do
-        #   IO.inspect({hand, group, TileSet.subtract(hand, group)}, limit: :infinity, label: "asdf")
-        # end
         case TileSet.subtract(hand, group) do
           nil -> from_calls
           ret -> [[ret | calls] | from_calls]
         end
-        # |> IO.inspect(label: inspect({TileSet.decode(hand), TileSet.decode(group)}))
     end
   end
   def elim_group_once([hand | calls], group) when is_binary(group) do
     # group is a call name, remove one corresponding call
-    case Enum.find_index(calls, & &1.name == group) do
+    case Enum.find_index(calls, &Keyword.get(&1.attrs, :name) == group) do
       nil -> []
       i   -> [[hand | List.delete_at(calls, i)]]
     end
@@ -511,7 +503,10 @@ defmodule RiichiAdvanced.Match.Temp do
     |> Enum.zip(@primes)
     |> Map.new(fn {{tile, _freq}, prime} -> {tile, prime} end) 
 
-    hands = [TileSet.encode(hand, encoding, all_attrs) | Enum.map(calls, fn {name, call} -> %{TileSet.encode(call, encoding, all_attrs) | name: name} end)]
+    hands = [TileSet.encode(hand, encoding, all_attrs) | Enum.map(calls, fn {name, call} ->
+      ret = TileSet.encode(call, encoding, all_attrs)
+      %{ret | attrs: [{:name, name} | ret.attrs]}
+    end)]
 
     # try each match definition in turn
     Enum.any?(match_definitions, fn match_definition ->
