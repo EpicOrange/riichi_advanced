@@ -8,8 +8,6 @@ defmodule RiichiAdvanced.Match.Temp do
     defstruct [
       hash: 1,       # product of primes
       attrs: [],     # list of {prime, attr bitset}
-      encoding: %{}, # %{tile => corresponding prime}
-      all_attrs: [], # list of attrs (strings), such that 0th attr = LSB of bitset
       name: "",      # for calls, this is the call name
     ]
 
@@ -94,12 +92,10 @@ defmodule RiichiAdvanced.Match.Temp do
           attrs = Enum.map(attrs, &String.trim_leading(&1, "_"))
           {Map.get(encoding, tile, 1), encode_attrs(attrs, all_attrs)}
         end,
-        encoding: encoding,
-        all_attrs: all_attrs,
       }
     end
 
-    def decode(%{attrs: attrs, encoding: encoding, all_attrs: all_attrs}) do
+    def decode(%{attrs: attrs}, encoding, all_attrs) do
       for {p, attrs} <- attrs do
         {tile, _prime} = Enum.find(encoding, {nil, 1}, fn {_tile, prime} -> prime == p end)
         # bitset to attr
@@ -440,7 +436,7 @@ defmodule RiichiAdvanced.Match.Temp do
                 line1 = "Acc (before removal #{j}/#{num}):"
                 lines = for {[hand | calls], remaining_groups} <- hands_groups do
                   groups = Enum.map(remaining_groups, fn {_groups, orig_group} -> orig_group end)
-                  "- #{inspect(Utils.sort_tiles(TileSet.decode(hand)))} / #{inspect(Enum.map(calls, &Utils.sort_tiles(TileSet.decode(&1))))} \\\\ #{inspect(groups, charlists: :as_lists)}#{if unique do " unique" else "" end}#{if exhaustive do " exhaustive" else "" end}"
+                  "- #{inspect(Utils.sort_tiles(TileSet.decode(hand, encoding, all_attrs)))} / #{inspect(Enum.map(calls, &Utils.sort_tiles(TileSet.decode(&1, encoding, all_attrs))))} \\\\ #{inspect(groups, charlists: :as_lists)}#{if unique do " unique" else "" end}#{if exhaustive do " exhaustive" else "" end}"
                 end
                 [line1 | lines]
               else "" end
@@ -459,7 +455,7 @@ defmodule RiichiAdvanced.Match.Temp do
               if debug do
                 line1 = "Acc (after removal #{j}/#{num}):"
                 lines = for {[hand | calls], _remaining_groups} <- hands_groups do
-                  "- #{inspect(Utils.sort_tiles(TileSet.decode(hand)))} / #{inspect(Enum.map(calls, &Utils.sort_tiles(TileSet.decode(&1))))}"
+                  "- #{inspect(Utils.sort_tiles(TileSet.decode(hand, encoding, all_attrs)))} / #{inspect(Enum.map(calls, &Utils.sort_tiles(TileSet.decode(&1, encoding, all_attrs))))}"
                 end
                 IO.puts(Enum.join(report ++ [line1 | lines] ++ [""], "\n"))
               end
@@ -487,7 +483,7 @@ defmodule RiichiAdvanced.Match.Temp do
               if debug do
                 IO.puts("Final result:")
                 for {hand, calls} <- new_acc do
-                  "- #{inspect(Utils.sort_tiles(TileSet.decode(hand)))} / #{inspect(Enum.map(calls, &Utils.sort_tiles(TileSet.decode(&1))))}"
+                  "- #{inspect(Utils.sort_tiles(TileSet.decode(hand, encoding, all_attrs)))} / #{inspect(Enum.map(calls, &Utils.sort_tiles(TileSet.decode(&1, encoding, all_attrs))))}"
                 end
                 IO.puts("")
               end
