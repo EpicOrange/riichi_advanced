@@ -158,13 +158,6 @@ defmodule RiichiAdvanced.GameState.Buttons do
           end
       end
 
-      if Debug.debug_buttons() do
-        elapsed_time = System.os_time(:millisecond) - t
-        if elapsed_time > 10 do
-          IO.puts("recalculate_buttons: #{inspect(elapsed_time)} ms")
-        end
-      end
-      
       # keep existing buttons whose interrupt level is strictly below our interrupt level
       new_button_choices = for {seat, button_choices} <- new_button_choices, into: %{} do
         button_choices = state.players[seat].button_choices
@@ -192,6 +185,17 @@ defmodule RiichiAdvanced.GameState.Buttons do
         end
       end
 
+      if Debug.debug_buttons() do
+        elapsed_time = System.os_time(:millisecond) - t
+        if elapsed_time > 10 do
+          IO.puts("recalculate_buttons: #{inspect(elapsed_time)} ms")
+        end
+        IO.puts("Buttons:")
+        for {seat, button_choices} <- new_button_choices do
+          IO.inspect(button_choices, label: inspect(seat))
+        end
+      end
+      
       # run auto buttons every time we recalculate buttons
       state = trigger_auto_buttons(state)
 

@@ -7,6 +7,11 @@ defmodule RiichiAdvanced.Match.Temp do
 
   defmodule TileSet do
     use Nebulex.Caching
+
+    @type t :: %__MODULE__{
+      hash: integer(),
+      attrs: list({integer(), integer()} | {:name, binary()} | {:joker, list({integer(), integer()})}),
+    }
     defstruct [
       hash: 1,    # product of primes
       attrs: [],  # list of {prime, attr bitset}
@@ -18,24 +23,32 @@ defmodule RiichiAdvanced.Match.Temp do
     @primes [2,3,5,7,11,13,17,19,23,29,31,37,41,43,47,53,59,61,67,71,73,79,83,89,97,101,103,107,109,113,127,131,137,139,149,151,157,163,167,173,179,181,191,193,197,199,211,223,227,229,233,239,241,251,257,263,269,271,277,281,283,293,307,311,313,317,331,337,347,349,353,359,367,373,379,383,389,397,401,409,419,421,431,433,439,443,449,457,461,463,467,479,487,491,499,503,509,521,523,541,547,557,563,569,571,577,587,593,599,601,607,613,617,619,631,641,643,647,653,659,661,673,677,683,691,701,709,719,727,733,739,743,751,757,761,769,773,787,797,809,811,821,823,827,829,839,853,857,859,863,877,881,883,887,907,911,919,929,937,941,947,953,967,971,977,983,991,997,1009,1013,1019,1021,1031,1033,1039,1049,1051,1061,1063,1069,1087,1091,1093,1097,1103,1109,1117,1123,1129,1151,1153,1163,1171,1181,1187,1193,1201,1213,1217,1223,1229,1231,1237,1249,1259,1277,1279,1283,1289,1291,1297,1301,1303,1307,1319,1321,1327,1361,1367,1373,1381,1399,1409,1423,1427,1429,1433,1439,1447,1451,1453,1459,1471,1481,1483,1487,1489,1493,1499,1511,1523,1531,1543,1549,1553,1559,1567,1571,1579,1583,1597,1601,1607,1609,1613,1619]
     def primes, do: @primes
 
-    # solve n rooks, returning a list of column indices, one for each row (in ascending order)
-    def solve_n_rooks(masks, n_cols), do: _solve_n_rooks(Enum.with_index(masks), (1 <<< n_cols) - 1, length(masks), [])
-    # masks = list of bitmasks corresponding to rows, where 1 means you can place a rook there
-    # cols_left = bitmask, initially all 1s, corresponding to uncovered cols
-    # gas = number of remaining masks
-    # acc = list of row indices used
-    def _solve_n_rooks(_masks, 0, _gas, acc), do: Enum.reverse(acc)
-    def _solve_n_rooks(_masks, _cols_left, 0, acc), do: Enum.reverse(acc)
-    def _solve_n_rooks(masks, cols_left, gas, acc) do
+    # solve n rooks, returning a list of column indices in ascending order
+    # the idea is that each column is an element of the match group,
+    # and we want to cover as many as needed (given by num_rooks)
+    # each mask tells you which columns are covered by that tile in hand
+    #   masks     = list of {bitmask, i} corresponding to row i, where 1 in the bitmask means you can place a rook there
+    #   col_mask  = bitmask, initially all 1s, corresponding to uncovered cols
+    #   num_rooks = number of remaining masks
+    #   acc       = list of row indices used
+    def solve_n_rooks(_masks, col_mask, num_rooks, acc \\ [])
+    def solve_n_rooks(_masks, _col_mask, 0, acc), do: {:ok, Enum.reverse(acc)}
+    def solve_n_rooks(_masks, 0, _num_rooks, _acc), do: nil
+    def solve_n_rooks(masks, col_mask, num_rooks, acc) do
       # basic naive backtracking lol
+
       # isolate last set bit in cols_left (which is nonzero)
-      col = cols_left &&& (-cols_left)
+      col = col_mask &&& (-col_mask)
+
       # for every mask that covers this col, use it, and recurse to see if there is a soln
-      # TODO acc is sorted so 'i not in acc' could be faster
-      for {mask, i} <- masks, (mask &&& col) != 0, i not in acc, reduce: nil do
-        nil  -> _solve_n_rooks(masks, Bitwise.bxor(cols_left, col), gas - 1, [i | acc])
-        soln -> soln
-      end
+      masks
+      |> Enum.filter(fn {mask, i} -> (mask &&& col_mask &&& col) != 0 and i not in acc end)
+      |> Enum.reduce_while(nil, fn {_mask, i}, _ ->
+        case solve_n_rooks(masks, Bitwise.bxor(col_mask, col), num_rooks - 1, [i | acc]) do
+          nil         -> {:cont, nil}
+          {:ok, soln} -> {:halt, {:ok, soln}}
+        end
+      end)
     end
 
     def remove_indices(xs, is), do: _remove_indices(xs, Enum.sort(is), [], 0)
@@ -51,63 +64,81 @@ defmodule RiichiAdvanced.Match.Temp do
     def prime_decompose(n, primes \\ @primes, acc \\ [])
     def prime_decompose(1, _primes, acc), do: acc
     def prime_decompose(_n, [], acc), do: acc
+    def prime_decompose(0, _primes, acc) do
+      IO.puts("prime_decompose: somehow tried to get the prime decomposition of 0")
+      IO.inspect(Process.info(self(), :current_stacktrace))
+      acc
+    end
+    def prime_decompose(_n, [0 | _primes], acc) do
+      IO.puts("prime_decompose: somehow tried to divide by 0")
+      IO.inspect(Process.info(self(), :current_stacktrace))
+      acc
+    end
     def prime_decompose(n, [p | primes], acc) when rem(n, p) == 0, do: prime_decompose(Integer.floor_div(n, p), [p | primes], [p | acc])
     def prime_decompose(n, [_ | primes], acc), do: prime_decompose(n, primes, acc)
 
+    def find_ixs_helper(attrs2, attrs1, goal_hash, reorder_jokers \\ false) do
+      attrs2_indexed = if reorder_jokers do
+        {joker, nonjoker} = attrs2
+        |> Enum.with_index()
+        |> Enum.split_with(fn {{p, _}, _} -> p == :joker end)
+        nonjoker ++ joker
+      else Enum.with_index(attrs2) end
+
+      # compute bitmasks where the ith bitmask has jth bit set iff attrs2[i] covers attrs1[j]}
+      masks = for {{p2, battrs2}, _i} <- attrs2_indexed do
+        case p2 do
+          :name -> 0
+          :joker -> for {{p1, battrs1}, j} <- Enum.with_index(attrs1), Enum.any?(battrs2, fn {p2, battrs2} -> p1 == p2 and (battrs1 &&& battrs2) == battrs1 end), reduce: 0 do
+            acc -> acc ||| (1 <<< j)
+          end
+          _ -> for {{p1, battrs1}, j} <- Enum.with_index(attrs1), p1 == p2, (battrs1 &&& battrs2) == battrs1, reduce: 0 do
+            acc -> acc ||| (1 <<< j)
+          end
+        end
+      end
+
+      # then it's n-rooks on this bit matrix
+      with {:ok, ixs} <- solve_n_rooks(Enum.with_index(masks), (1 <<< length(attrs1)) - 1, length(prime_decompose(goal_hash))) do
+        # convert mask indices to the original hand indices
+        {:ok, Enum.map(ixs, &Enum.at(attrs2_indexed, &1) |> elem(1))}
+      end
+    end
+      
     # remove 2nd set from 1st set to get a resulting set, or nil if not removable
     @decorate cacheable(cache: RiichiAdvanced.Cache, key: {:tileset_subtract, hash1, hash2, attrs1, attrs2, return_indices})
     def subtract(%{hash: hash2, attrs: attrs2} = hand,
-                 %{hash: hash1, attrs: attrs1},
-                 return_indices \\ false) do
+                 %{hash: hash1, attrs: attrs1} = group, return_indices \\ false) do
       if hash2 == 0 do raise("TileSet.subtract: somehow obtained a hash of zero in hand") end
       if hash1 == 0 do raise("TileSet.subtract: somehow obtained a hash of zero in group") end
       jokers = Enum.filter(attrs2, fn {p2, _} -> p2 === :joker end)
       gcd = Integer.gcd(hash2, hash1)
-      # if there are no jokers or attrs, succeed early
-      if Enum.empty?(jokers) and Enum.empty?(attrs2) and gcd == hash1 do
-        %{hand | hash: Integer.floor_div(hash2, hash1)}
-      else
-        # if we don't have enough jokers in hand to match all unmatched tiles, fail early
-        early_fail = gcd < hash1 and length(jokers) < length(Integer.floor_div(hash1, gcd) |> prime_decompose())
-        if early_fail do
-          nil
-        else
-          # solve exact cover for attributes, where ahand2 covers ahand1
-          # first, compute bitmasks where the ith bitmask has jth bit set iff attrs2[i] covers attrs1[j]}
-          masks = for {p2, battrs2} <- attrs2, p2 != :name do
-            case p2 do
-              :joker ->
-                for {{p1, battrs1}, j} <- Enum.with_index(attrs1), Enum.any?(battrs2, fn {p2, battrs2} -> p1 == p2 and (battrs1 &&& battrs2) == battrs1 end), reduce: 0 do
-                  acc -> acc ||| (1 <<< j)
-                end
-              _ ->
-                for {{p1, battrs1}, j} <- Enum.with_index(attrs1), p1 == p2, (battrs1 &&& battrs2) == battrs1, reduce: 0 do
-                  acc -> acc ||| (1 <<< j)
-                end
-            end
-          end
-          # then it's n-rooks on this bit matrix
-          case solve_n_rooks(masks, length(attrs1)) do
-            nil -> nil
-            ret ->
-              if return_indices do
-                ret
-              else
-                divisor = for i <- ret, reduce: gcd do
+      cond do
+        # if there are no jokers or attrs, succeed early
+        gcd == hash1 && Enum.empty?(jokers) and Enum.empty?(attrs2) -> %{hand | hash: Integer.floor_div(hash2, hash1)}
+        true ->
+          # otherwise, just solve for attrs in one pass
+          with {:ok, ixs} <- find_ixs_helper(attrs2, attrs1, hash1, not Enum.empty?(jokers)) do
+            # IO.inspect({attrs2, attrs1, hash1, not Enum.empty?(jokers), ixs})
+            cond do
+              return_indices -> ixs
+              gcd == hash1 -> %{hand | hash: Integer.floor_div(hash2, hash1), attrs: remove_indices(attrs2, ixs)}
+              true ->
+                # if gcd < hash1 then we use jokers
+                # then we need to divide hash by each joker's prime, not the goal prime
+                divisor = for i <- ixs, reduce: 1 do
                   acc -> case Enum.at(attrs2, i) do
-                    {:joker, [{p, _} | _]} when rem(hash2, acc * p) == 0 -> acc * p
+                    {:joker, [{p, _} | _]} -> acc * p
+                    {p, _} when is_number(p) -> acc * p
                     _ -> acc
                   end
                 end
-                ret_hash = Integer.floor_div(hash2, divisor)
-                ret_attrs = case Keyword.pop(attrs2, :name) do
-                  {nil, attrs}  -> remove_indices(attrs, ret)
-                  {name, attrs} -> [{:name, name} | remove_indices(attrs, ret)]
+                if rem(hash2, divisor) != 0 do
+                  raise "tried to divide #{hash2} by #{divisor}, hand was #{inspect(hand)}, group was #{inspect(group)}"
                 end
-                %{hand | hash: ret_hash, attrs: ret_attrs}
-              end
+                %{hand | hash: Integer.floor_div(hash2, divisor), attrs: remove_indices(attrs2, ixs)}
+            end
           end
-        end
       end
     end
 
@@ -155,7 +186,7 @@ defmodule RiichiAdvanced.Match.Temp do
           case Enum.find(tile_mappings, fn {key, _} -> Utils.same_tile(orig_tile, key) end) do
             nil -> encoded
             {_, mappings} ->
-              aliases = for {tile2, attrs2} <- Enum.map(mappings, &Utils.to_attr_tile/1), Map.has_key?(encoding, tile2) do
+              aliases = for {tile2, attrs2} <- Enum.map(mappings, &Utils.to_attr_tile/1), tile2 == :any or Map.has_key?(encoding, tile2) do
                 attrs = Enum.map(attrs2, &String.trim_leading(&1, "_"))
                 |> encode_attrs(all_attrs)
                 if tile2 == :any do
@@ -173,13 +204,16 @@ defmodule RiichiAdvanced.Match.Temp do
               end
           end
         end
-        # put all jokers at the end
-        |> Enum.split_with(fn {tag, _} -> tag == :joker end)
-        |> then(fn {jokers, nonjokers} -> nonjokers ++ jokers end)
+        # # put all jokers at the end
+        # # note; this messes up subtract, which returns the unsorted indices
+        # |> Enum.split_with(fn {tag, _} -> tag == :joker end)
+        # |> then(fn {jokers, nonjokers} -> nonjokers ++ jokers end)
       }
     end
 
+    # use hash to decode
     def decode(hand, encoding, []), do: decode_primes(hand, encoding)
+    # use attrs to decode
     def decode(%{attrs: attrs}, encoding, all_attrs) do
       for {p, attrs} <- attrs, p != :name do
         {p, attrs} = if p == :joker do Enum.at(attrs, 0) else {p, attrs} end
@@ -216,7 +250,7 @@ defmodule RiichiAdvanced.Match.Temp do
       |> Enum.map(&Utils.to_attr_tile/1)
       |> Enum.flat_map(fn {_tile, attrs} -> attrs end)
       |> Enum.uniq()
-      |> Enum.sort()
+      |> Enum.sort() # sorting is required for TileSet.encode_attrs
 
       # encode every tile into a TileSet
       encoding = create_encoding(all_tiles, tile_behavior.mappings)
@@ -254,7 +288,7 @@ defmodule RiichiAdvanced.Match.Temp do
         # end |> IO.inspect(label: inspect(Enum.map(group, &TileSet.decode/1)))
       true ->
         from_calls = for {call, i} <- Enum.with_index(calls), TileSet.is_subset?(group, call), do: [hand | List.delete_at(calls, i)]
-        # if length(group.attrs) == 2 do IO.puts("#{inspect(hand)}\n- #{inspect(group)}\n= #{inspect(TileSet.subtract(hand, group))}") end
+        # if length(group.attrs) == 3 do IO.puts("#{inspect(hand)}\n- #{inspect(group)}\n= #{inspect(TileSet.subtract(hand, group))}") end
 
         case TileSet.subtract(hand, group) do
           nil -> from_calls
@@ -342,6 +376,8 @@ defmodule RiichiAdvanced.Match.Temp do
   def _apply_offsets(base_tile, [%{"offset" => o, "attrs" => attrs} | offsets], tile_behavior, n, acc) when is_number(o) and n == o, do: _apply_offsets(base_tile, offsets, tile_behavior, n, [base_tile |> Utils.strip_attrs() |> Utils.add_attr(attrs) | acc])
   def _apply_offsets(base_tile, [%{"offset" => o} | offsets], tile_behavior, n, acc) when is_number(o) and n == o, do: _apply_offsets(base_tile, offsets, tile_behavior, n, [base_tile |> Utils.strip_attrs() | acc])
   # for when offset is a tile (non-numeric)
+  def _apply_offsets(base_tile, [%{"offset" => o, "attrs" => attrs} | offsets], tile_behavior, n, acc), do: _apply_offsets(base_tile, offsets, tile_behavior, n, [Utils.to_tile(o) |> Utils.add_attr(attrs)| acc])
+  def _apply_offsets(base_tile, [%{"offset" => o} | offsets], tile_behavior, n, acc), do: _apply_offsets(base_tile, offsets, tile_behavior, n, [Utils.to_tile(o) | acc])
   def _apply_offsets(base_tile, [o | offsets], tile_behavior, n, acc), do: _apply_offsets(base_tile, offsets, tile_behavior, n, [Utils.to_tile(o) | acc])
 
   def is_bad_group(nil, _encoding), do: true
@@ -355,6 +391,7 @@ defmodule RiichiAdvanced.Match.Temp do
   def encode_group(group, all_tiles, encoding, all_attrs, tile_behavior) do
     encoding = Map.delete(encoding, :mappings)
     all_wall_tiles = Map.keys(tile_behavior.tile_freqs)
+    # TODO the following doesn't depend on group, should precalculate this
     all_tiles = Enum.flat_map(all_tiles, fn tile ->
       case Enum.find(tile_behavior.mappings, fn {key, _} -> Utils.same_tile(tile, key) end) do
         nil           -> [tile]
@@ -370,12 +407,12 @@ defmodule RiichiAdvanced.Match.Temp do
       end
     end)
     |> Enum.uniq()
-    
+
     nested = is_list(group) and is_list(Enum.at(group, 0))
     cond do
       nested -> Enum.map(all_tiles, &Enum.map(group, fn
         subgroup -> apply_offsets(&1, subgroup, tile_behavior)
-      end) |> Enum.sort())
+      end))
       is_list(group) -> Enum.map(all_tiles, &apply_offsets(&1, group, tile_behavior))
       Match.is_offset(group) -> Enum.map(all_tiles, &apply_offsets(&1, [group], tile_behavior))
       group == "any" -> Enum.map(all_tiles, &List.wrap(&1))
@@ -404,6 +441,7 @@ defmodule RiichiAdvanced.Match.Temp do
 
   # faster match algorithm for when we're checking against an exact set of tiles
   # basically makes kokushi faster to check, also daisangen etc
+  @spec perform_unique_match(data: map()) :: list(list(TileSet.t()))
   def perform_unique_match(data) do
     %{
       encoding: encoding,
@@ -480,6 +518,7 @@ defmodule RiichiAdvanced.Match.Temp do
     end
   end
 
+  @spec perform_standard_match(data: map()) :: list(list(TileSet.t()))
   def perform_standard_match(data) do
     %{
       tile_behavior: tile_behavior,
@@ -507,9 +546,11 @@ defmodule RiichiAdvanced.Match.Temp do
       hands_groups ->
         report = if debug do
           line1 = "Acc (before removal #{j}/#{num}):"
+          mappings = Map.get(encoding, :mappings, %{})
+          line1 = if j == 1 and not Enum.empty?(mappings) do "Joker mapping: #{inspect(mappings)}\n" <> line1 else line1 end
           lines = for {[hand | calls], remaining_groups} <- hands_groups do
             groups = Enum.map(remaining_groups, fn {_groups, orig_group} -> orig_group end)
-            "- (#{TileSet.prime_decompose(hand.hash) |> length()}) #{inspect(Utils.sort_tiles(TileSet.decode(hand, encoding, all_attrs)))} / #{inspect(Enum.map(calls, &Utils.sort_tiles(TileSet.decode(&1, encoding, all_attrs))))} \\\\ #{inspect(groups, charlists: :as_lists)}#{if unique do " unique" else "" end}#{if exhaustive do " exhaustive" else "" end}"
+            "- (#{TileSet.prime_decompose(hand.hash) |> length()}) #{inspect(hand)} #{inspect(Utils.sort_tiles(TileSet.decode(hand, encoding, all_attrs)))} / #{inspect(Enum.map(calls, &Utils.sort_tiles(TileSet.decode(&1, encoding, all_attrs))))} \\\\ #{inspect(groups, charlists: :as_lists)}#{if unique do " unique" else "" end}#{if exhaustive do " exhaustive" else "" end}"
           end
           [line1 | lines]
         else "" end
@@ -522,17 +563,12 @@ defmodule RiichiAdvanced.Match.Temp do
             {new_hands, if unique do List.delete_at(remaining_groups, i) else remaining_groups end}
           end
 
-        hands_groups = if exhaustive do
-          hands_groups
-          |> Enum.uniq_by(fn {hands, _remaining_groups} ->
-            Enum.map(hands, fn %{hash: hash, attrs: attrs} -> {hash, attrs} end)
-          end)
-        else Enum.take(hands_groups, 1) end
+        hands_groups = if exhaustive do Enum.uniq(hands_groups) else Enum.take(hands_groups, 1) end
 
         if debug do
           line1 = "Acc (after removal #{j}/#{num}):"
           lines = for {[hand | calls], _remaining_groups} <- hands_groups do
-            "- (#{TileSet.prime_decompose(hand.hash) |> length()}) #{inspect(Utils.sort_tiles(TileSet.decode(hand, encoding, all_attrs)))} / #{inspect(Enum.map(calls, &Utils.sort_tiles(TileSet.decode(&1, encoding, all_attrs))))}"
+            "- (#{TileSet.prime_decompose(hand.hash) |> length()}) #{inspect(hand)} #{inspect(Utils.sort_tiles(TileSet.decode(hand, encoding, all_attrs)))} / #{inspect(Enum.map(calls, &Utils.sort_tiles(TileSet.decode(&1, encoding, all_attrs))))}"
           end
           IO.puts(Enum.join(report ++ [line1 | lines] ++ [""], "\n"))
         end
@@ -548,7 +584,6 @@ defmodule RiichiAdvanced.Match.Temp do
     all_joker_ids = for {tile, mappings} <- mappings, Utils.strip_attrs(tile) in all_tile_ids, mapping <- mappings, do: Utils.strip_attrs(mapping)
     all_tile_ids = all_tile_ids ++ all_joker_ids
     |> Enum.uniq()
-    |> Enum.sort()
     encoding = Enum.frequencies(all_tile_ids)
     |> Enum.sort_by(fn {_tile, freq} -> -freq end)
     |> Enum.zip(TileSet.primes())
@@ -585,13 +620,12 @@ defmodule RiichiAdvanced.Match.Temp do
     else
       hand_attrs = Enum.flat_map(all_tiles, fn {_tile, attrs} -> Enum.map(attrs, &String.trim_leading(&1, "_")); _tile -> [] end)
       Enum.uniq(hand_attrs ++ match_attrs)
-      |> Enum.sort()
     end
+    |> Enum.sort() # sorting is required for TileSet.encode_attrs
+    # |> IO.inspect(label: "all_attrs", char_lists: :as_lists, limit: :infinity)
 
     encoding = create_encoding(all_tiles, if never_jokers do %{} else tile_behavior.mappings end)
-
-    sometimes_dismantle = Enum.any?(match_definitions, fn match_definition -> "dismantle_calls" in match_definition end)
-    dismantled = if sometimes_dismantle do [TileSet.encode(all_tiles, encoding, all_attrs)] else nil end
+    # |> IO.inspect(label: "encoding", char_lists: :as_lists, limit: :infinity)
 
     initial_hands = [TileSet.encode(hand, encoding, all_attrs) | Enum.map(calls, fn {name, call} ->
       ret = TileSet.encode(call, encoding, all_attrs)
@@ -615,11 +649,15 @@ defmodule RiichiAdvanced.Match.Temp do
         unique_ix = Enum.find_index(match_definition, & &1 == "unique")
         # ignore_suit_ix = Enum.find_index(match_definition, & &1 == "ignore_suit") # unused rn!
         nojoker_ix = Enum.find_index(match_definition, & &1 == "nojoker")
-        dismantle_calls = "dismantle_calls" in match_definition
-        hands = if dismantle_calls do dismantled else initial_hands end
-        for {match_elem, i} <- Enum.with_index(match_definition), reduce: [hands] do
+        for {match_elem, i} <- Enum.with_index(match_definition), reduce: [initial_hands] do
           []  -> []
-          _acc when match_elem == "restart" -> [hands]
+          _acc when match_elem == "restart" -> [initial_hands]
+          acc when match_elem == "dismantle_calls" ->
+            for hands <- acc do
+              [Enum.reduce(hands, fn call, acc ->
+                %{acc | hash: acc.hash * call.hash, attrs: Enum.reject(call.attrs, fn {p, _} -> p == :name end) ++ acc.attrs}
+              end)]
+            end
           acc when is_binary(match_elem) -> acc
           acc ->
             [groups, num] = match_elem
@@ -657,9 +695,13 @@ defmodule RiichiAdvanced.Match.Temp do
                 end
               true     ->
                 if debug do
-                  IO.puts("Final result:")
-                  for {hand, calls} <- new_acc do
-                    "- #{inspect(Utils.sort_tiles(TileSet.decode(hand, encoding, all_attrs)))} / #{inspect(Enum.map(calls, &Utils.sort_tiles(TileSet.decode(&1, encoding, all_attrs))))}"
+                  if not Enum.empty?(new_acc) do
+                    IO.puts("Final result:")
+                    for [hand | calls] <- new_acc do
+                      IO.puts("- #{inspect(Utils.sort_tiles(TileSet.decode(hand, encoding, all_attrs)))} / #{inspect(Enum.map(calls, &Utils.sort_tiles(TileSet.decode(&1, encoding, all_attrs))))}")
+                    end
+                  else
+                    IO.puts("Final result: (empty)")
                   end
                   IO.puts("")
                 end
@@ -677,7 +719,7 @@ defmodule RiichiAdvanced.Match.Temp do
 
   @decorate cacheable(cache: RiichiAdvanced.Cache, key: {:get_waits_v2, hand, calls, match_definitions, TileBehavior.hash(tile_behavior)})
   def get_waits_v2(hand, calls, match_definitions, tile_behavior) do
-    # basic strategy is to add a custom joker
+    # basic strategy is to add a custom joker 1x
     # it will start as "all tiles" and progressively split its aliases in half,
     # until it encompasses "all tiles that don't work"
     # then we just take the complement
@@ -692,15 +734,15 @@ defmodule RiichiAdvanced.Match.Temp do
       [x]
     end
   end
-  def _get_waits_v2(hand, calls, match_definitions, tile_behavior, joker_tiles) do
-    tile_behavior_temp = TileBehavior.set_tile_alias(tile_behavior, [:"1x"], joker_tiles)
-    if Match.match_hand([:"1x" | hand], calls, match_definitions, tile_behavior_temp) do
+  def _get_waits_v2(hand, calls, match_definitions, tile_behavior, assignables) do
+    tile_behavior_temp = TileBehavior.set_tile_alias(tile_behavior, [:"1x"], assignables)
+    if match_hand_v2([:"1x" | hand], calls, match_definitions, tile_behavior_temp) do
       # bisect
-      {left, right} = Enum.split(joker_tiles, Integer.floor_div(length(joker_tiles), 2))
+      {left, right} = Enum.split(assignables, Integer.floor_div(length(assignables), 2))
       left2 = _get_waits_v2(hand, calls, match_definitions, tile_behavior, left)
       right2 = _get_waits_v2(hand, calls, match_definitions, tile_behavior, right)
       left2 ++ right2
-    else joker_tiles end
+    else assignables end
   end
 
   @decorate cacheable(cache: RiichiAdvanced.Cache, key: {:get_waits_and_ukeire_v2, hand, calls, match_definitions, visible_tiles, TileBehavior.hash(tile_behavior)})
