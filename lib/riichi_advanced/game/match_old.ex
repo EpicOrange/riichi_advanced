@@ -166,7 +166,8 @@ defmodule RiichiAdvanced.MatchOld do
 
   def remove_from_hand_calls(hand, calls, [], _tile_behavior), do: [{hand, calls}]
   def remove_from_hand_calls(hand, calls, tiles, tile_behavior) do
-    if nil in tiles do
+    if nil in Utils.strip_attrs(tiles) do
+      # IO.inspect(Process.info(self(), :current_stacktrace))
       []
     else
       from_hand = RiichiAdvanced.Match.try_remove_all_tiles(hand, tiles, tile_behavior) |> Enum.map(fn hand -> {hand, calls} end)
@@ -229,7 +230,10 @@ defmodule RiichiAdvanced.MatchOld do
           hand_calls -> Enum.flat_map(hand_calls, fn {hand, calls} -> remove_from_hand_calls(hand, calls, subgroup, tile_behavior) end)
         end
         hand_calls
-      is_offset(group) -> remove_from_hand_calls(hand, calls, [offset_tile(base_tile, group, tile_behavior)], tile_behavior)
+      is_offset(group) -> case offset_tile(base_tile, group, tile_behavior) do
+        nil  -> []
+        tile -> remove_from_hand_calls(hand, calls, [tile], tile_behavior)
+      end
       Utils.is_tile(group) -> remove_from_hand_calls(hand, calls, [Utils.to_tile(group)], tile_behavior)
       is_binary(group) -> try_remove_call(hand, calls, group)
       true ->
@@ -273,11 +277,12 @@ defmodule RiichiAdvanced.MatchOld do
 
   def arrange_by_base_tile(tiles, base_tile, group, tile_behavior) do
     # this only handles groups that are a sequence of offsets like [0, 1, 2]
-    if is_list(group) && Enum.all?(group, &is_offset/1) do
+    if is_list(group) && Enum.all?(group, &is_offset/1) && length(group) <= length(tiles) do
       base_tile = Utils.strip_attrs(base_tile)
       tiles_i = Enum.with_index(tiles)
       {pairing, _pairing_r} = group
       |> Enum.map(&offset_tile(base_tile, &1, tile_behavior))
+      |> Enum.reject(&RiichiAdvanced.Match.is_bad_group(&1, tile_behavior))
       |> Enum.with_index()
       |> Map.new(fn {tile, i} -> {i, for {tile2, j} <- tiles_i, Utils.same_tile(tile2, tile, tile_behavior) do j end} end)
       |> Utils.maximum_bipartite_matching()
@@ -765,12 +770,12 @@ defmodule RiichiAdvanced.MatchOld do
     # end)
   end
 
-  def get_waits_v2(hand, calls, match_definitions, tile_behavior) do
-    RiichiAdvanced.Match.get_waits_v2(hand, calls, match_definitions, tile_behavior)
+  def get_waits(hand, calls, match_definitions, tile_behavior) do
+    RiichiAdvanced.Match.get_waits(hand, calls, match_definitions, tile_behavior)
   end
 
-  def get_waits_and_ukeire_v2(hand, calls, match_definitions, visible_tiles, tile_behavior) do
-    RiichiAdvanced.Match.get_waits_and_ukeire_v2(hand, calls, match_definitions, visible_tiles, tile_behavior)
+  def get_waits_and_ukeire(hand, calls, match_definitions, visible_tiles, tile_behavior) do
+    RiichiAdvanced.Match.get_waits_and_ukeire(hand, calls, match_definitions, visible_tiles, tile_behavior)
   end
 
 end

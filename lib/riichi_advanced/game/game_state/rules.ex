@@ -102,6 +102,14 @@ defmodule RiichiAdvanced.GameState.Rules do
       # IO.inspect(shanten_definitions)
       # IO.inspect(Map.new(shanten_definitions, fn {shanten, definition} -> {shanten, length(definition)} end))
 
+      # get all attributes used in the entire ruleset
+      all_attrs = rules
+      |> Enum.map(fn {_k, v} -> v end)
+      |> List.flatten()
+      |> Utils.reduce_json(fn %{"attrs" => attrs}, acc -> attrs ++ acc; _, acc -> acc end)
+      |> MapSet.new()
+      :ets.insert(rules_ref, {:all_attrs, all_attrs})
+
       {:ok, rules_ref}
     end
   end

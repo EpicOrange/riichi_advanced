@@ -507,6 +507,16 @@ defmodule RiichiAdvanced.Utils do
     end
   end
 
+  def reduce_json(json, fun, acc \\ []) do
+    # preorder walks every node, accumulating an accumulator
+    # fun should look like `fn elem, acc -> new_acc end`
+    case fun.(json, acc) do
+      acc when is_list(json) -> Enum.reduce(json, acc, &reduce_json(&1, fun, &2))
+      acc when is_map(json)  -> Enum.reduce(json, acc, fn {_k, v}, acc -> reduce_json(v, fun, acc) end)
+      acc -> acc
+    end
+  end
+
   # walks the json, calling fun on every node,
   # where fun returns a list that should get merged into any containing list
   def splat_json(json, fun), do: splat_json_rec(json, fun) |> Enum.at(0)

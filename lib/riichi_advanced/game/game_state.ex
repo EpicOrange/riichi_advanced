@@ -1,4 +1,3 @@
-  
 defmodule RiichiAdvanced.GameState do
   alias RiichiAdvanced.GameState.Actions, as: Actions
   alias RiichiAdvanced.GameState.American, as: American
@@ -57,11 +56,16 @@ defmodule RiichiAdvanced.GameState do
                     :"2p"=>:"1p", :"3p"=>:"2p", :"4p"=>:"3p", :"5p"=>:"4p", :"6p"=>:"5p", :"7p"=>:"6p", :"8p"=>:"7p", :"9p"=>:"8p",
                     :"2s"=>:"1s", :"3s"=>:"2s", :"4s"=>:"3s", :"5s"=>:"4s", :"6s"=>:"5s", :"7s"=>:"6s", :"8s"=>:"7s", :"9s"=>:"8s"},
       tile_freqs: %{},
+      # we populate attrs in match definitions at initialization
+      # and whenever we set tile aliases, we add the attrs in from_tiles
+      # only these attrs are relevant for matching, which is what this field is used for
+      attrs: MapSet.new(),
+      all_tiles: MapSet.new(),
       dismantle_calls: false,
       ignore_suit: false
     ]
     def get_all_tiles(tile_behavior) do
-      Map.keys(tile_behavior.tile_freqs) ++ Map.keys(tile_behavior.aliases)
+      tile_behavior.all_tiles
     end
     def is_any_joker?(tile, tile_behavior) do
       Enum.any?(Map.get(tile_behavior.aliases, :any, %{}), fn {_attrs, aliases} ->
@@ -123,7 +127,8 @@ defmodule RiichiAdvanced.GameState do
             Map.update(from, attrs, from_tiles, &MapSet.union(&1, from_tiles))
           end)
       end
-      %{tile_behavior | aliases: aliases, mappings: mappings}
+      attrs = Enum.flat_map(from_tiles, fn {_tile, attrs} -> attrs; _ -> [] end)
+      %{tile_behavior | aliases: aliases, mappings: mappings, attrs: MapSet.union(tile_behavior.attrs, MapSet.new(attrs))}
     end
   end
 
@@ -695,15 +700,19 @@ defmodule RiichiAdvanced.GameState do
     tile_freqs = Enum.frequencies(state.wall ++ state.dead_wall)
     state = state
     |> update_all_players(&%Player{
-         score: scores[&1],
-         start_score: scores[&1],
-         nickname: &2.nickname,
-         hand: hands[&1],
-         auto_buttons: initial_auto_buttons,
-         status: MapSet.filter(&2.status, fn status -> status in persistent_statuses end),
-         counters: Enum.filter(&2.counters, fn {counter, _amt} -> counter in persistent_counters end) |> Map.new(),
-         tile_behavior: %TileBehavior{ tile_freqs: tile_freqs }
-       })
+        score: scores[&1],
+        start_score: scores[&1],
+        nickname: &2.nickname,
+        hand: hands[&1],
+        auto_buttons: initial_auto_buttons,
+        status: MapSet.filter(&2.status, fn status -> status in persistent_statuses end),
+        counters: Enum.filter(&2.counters, fn {counter, _amt} -> counter in persistent_counters end) |> Map.new(),
+        tile_behavior: %TileBehavior{
+          tile_freqs: tile_freqs,
+          all_tiles: MapSet.new(Map.keys(tile_freqs)),
+          attrs: Rules.get(state.rules_ref, :all_attrs, []),
+        }
+      })
     |> Map.put(:atop_wall, %{})
     |> Map.put(:actions, [])
     |> Map.put(:reversed_turn_order, false)
@@ -966,7 +975,7 @@ defmodule RiichiAdvanced.GameState do
     win_definitions = Rules.translate_match_definitions(state.rules_ref, Rules.get(state.rules_ref, "show_waits", %{}) |> Map.get("win_definitions", []))
     tile_behavior = state.players[seat].tile_behavior
     visible_tiles = get_visible_tiles(state, seat)
-    Match.get_waits_and_ukeire_v2(hand, calls, win_definitions, visible_tiles, tile_behavior)
+    Match.get_waits_and_ukeire(hand, calls, win_definitions, visible_tiles, tile_behavior)
   end
 
   def get_open_riichi_hands(state) do
