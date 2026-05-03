@@ -64,8 +64,13 @@ defmodule RiichiAdvanced.GameState do
       dismantle_calls: false,
       ignore_suit: false
     ]
-    def get_all_tiles(tile_behavior) do
-      tile_behavior.all_tiles
+    def get_base_tiles(tile_behavior) do
+      MapSet.union(MapSet.new([:"1m", :"1p", :"1s"]), tile_behavior.all_tiles)
+    end
+    def remove_aliases(tile_behavior) do
+      tile_behavior
+      |> Map.put(:aliases, %{})
+      |> Map.put(:mappings, %{})
     end
     def is_any_joker?(tile, tile_behavior) do
       Enum.any?(Map.get(tile_behavior.aliases, :any, %{}), fn {_attrs, aliases} ->
@@ -996,7 +1001,6 @@ defmodule RiichiAdvanced.GameState do
   def get_best_minefield_hand(state, seat, tenpai_definitions, tiles, max_results \\ 100) do
     # returns {yakuman, han, minipoints, hand}
     tile_behavior = state.players[seat].tile_behavior
-    # all_tiles = TileBehavior.get_all_tiles(tile_behavior)
     score_rules = Rules.get(state.rules_ref, "score_calculation", %{})
     Enum.flat_map(tenpai_definitions, &MatchOld.remove_match_definition(tiles, [], &1, tile_behavior))
     |> Enum.take(max_results)
