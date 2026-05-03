@@ -6,6 +6,13 @@ defmodule RiichiAdvanced.Match do
   import Bitwise
   use Nebulex.Caching
 
+  @have_cargo System.find_executable("cargo")
+  def have_cargo, do: @have_cargo
+
+  if @have_cargo do
+    use Rustler, otp_app: :riichi_advanced, crate: "riichiadvanced_match"
+  end
+
   defmodule TileSet do
     @type t :: %__MODULE__{
       hash: integer(),
@@ -119,11 +126,20 @@ defmodule RiichiAdvanced.Match do
     end
       
     # remove 2nd set from 1st set to get a resulting set, or nil if not removable
-    # @decorate cacheable(cache: RiichiAdvanced.Cache, key: {:tileset_subtract, hash1, hash2, attrs1, attrs2, return_indices})
-    def subtract(%{hash: hash2, attrs: attrs2} = hand,
-                 %{hash: hash1, attrs: attrs1} = group, return_indices \\ false) do
-      if hash2 == 0 do raise("TileSet.subtract: somehow obtained a hash of zero in hand") end
-      if hash1 == 0 do raise("TileSet.subtract: somehow obtained a hash of zero in group") end
+    def subtract(%{hash: hash2, attrs: _attrs2} = hand,
+                 %{hash: hash1, attrs: _attrs1} = group, return_indices \\ false) do
+      if hash2 == 0, do: raise("TileSet.subtract: somehow obtained a hash of zero in hand")
+      if hash1 == 0, do: raise("TileSet.subtract: somehow obtained a hash of zero in group")
+      # if RiichiAdvanced.Match.have_cargo() do
+      #   indices = subtract_rust(hash2, hash1, attrs2, attrs1)
+      # else
+        _subtract(hand, group, return_indices)
+      # end
+    end
+    # def subtract_rust(_hash2, _hash1, _attrs2, _attrs1), do: :erlang.nif_error(:nif_not_loaded)
+    defp _subtract(%{hash: hash2, attrs: attrs2} = hand,
+                   %{hash: hash1, attrs: attrs1} = group,
+                   return_indices) do
       precheck = rem(hash2, hash1) == 0
       cond do
         # if there are no attrs, succeed early since we don't need to make a new attrs

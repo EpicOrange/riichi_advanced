@@ -70,6 +70,7 @@ defmodule RiichiAdvanced.MixProject do
       {:sobelow, "~> 0.13", only: [:dev, :test], runtime: false},
       {:mix_audit, "~> 2.1", only: [:dev, :test], runtime: false},
       {:ex_cmd, "~> 0.18.0"},
+      {:rustler, "~> 0.37.3", runtime: false},
     ]
   end
 
