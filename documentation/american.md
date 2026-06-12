@@ -138,6 +138,10 @@ To read the Card:
 - To the right of each hand, an `x` indicates that the hand may contain exposures, while a `c` indicates that a hand MUST be concealed (except for the winning tile).
 - To the right of each hand, the base score of each hand is shown.
 
+Note that some Cards may have additional rules:
+- Some Cards (e.g. the NMJL 2026 Card) may features Sextets. These are groupings of six or more identical tiles, and, like Pungs/Kongs/Quints, can generally be called for exposure.
+- Some Cards may feature additional scoring rules. For instance, The Big Card 2026 adds a 10-point bonus for a concealed hand that isn't marked as concealed on the Card; this 10-point bonus is applied before the jokerless and self-draw bonuses.
+
 ## Scoring
 
 - A hand scores for only the highest-scoring hand on the Card that it satisfies.
