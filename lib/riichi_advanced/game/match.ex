@@ -603,6 +603,7 @@ defmodule RiichiAdvanced.Match do
   # "kakan": ["kakan"]
 
   # reifies a group spec into multiple possible groups
+  # TODO memoize
   def encode_group(group, tile_behavior) do
     nojoker = Map.get(tile_behavior, :mappings, %{}) |> Enum.empty?()
     # groups can have a {:nojoker, true} tag if no jokers, but should not have {:joker, ...} tags
@@ -817,7 +818,7 @@ defmodule RiichiAdvanced.Match do
 
         if debug do
           line1 = "Acc (after removal #{j}/#{num}):"
-          lines = for {[hand | calls], _remaining_groups, _base_suit} <- hands_groups do
+          lines = for {[hand | calls], remaining_groups, _base_suit} <- hands_groups do
             "- (#{TileSet.factor(hand.hash) |> length()}) #{inspect(Utils.sort_tiles(TileSet.decode(hand, tile_behavior)))} / #{inspect(Enum.map(calls, &Utils.sort_tiles(TileSet.decode(&1, tile_behavior))))}"
           end
           IO.puts(Enum.join(report ++ [line1 | lines] ++ [""], "\n"))
@@ -837,7 +838,7 @@ defmodule RiichiAdvanced.Match do
     # mappable_tiles = Map.keys(tile_behavior.aliases)
     # restrict all_tiles to tiles in hand as well as all relevant joker aliases
     all_tiles = MapSet.new(Enum.map(tiles_in_hand, &Utils.strip_attrs/1))
-    |> MapSet.union(MapSet.new(Enum.flat_map(tiles_in_hand, &Map.get(tile_behavior.mappings, &1, []))))
+    |> MapSet.union(MapSet.new(Enum.flat_map(Utils.strip_attrs(tiles_in_hand), &Map.get(tile_behavior.mappings, &1, []))))
     tile_behavior = %{tile_behavior | all_tiles: all_tiles }
     # encode hand/calls as initial accumulator
     initial_hands = [TileSet.encode(hand, tile_behavior) | Enum.map(calls, fn {name, call} ->
