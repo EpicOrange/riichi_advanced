@@ -61,12 +61,10 @@ defmodule RiichiAdvanced.GameState do
       # only these attrs are relevant for matching, which is what this field is used for
       attrs: MapSet.new(),
       all_tiles: MapSet.new(),
+      base_tiles: MapSet.new(),
       dismantle_calls: false,
       ignore_suit: false
     ]
-    def get_base_tiles(tile_behavior) do
-      MapSet.union(MapSet.new([:"1m", :"1p", :"1s"]), tile_behavior.all_tiles)
-    end
     def remove_aliases(tile_behavior) do
       tile_behavior
       |> Map.put(:aliases, %{})
