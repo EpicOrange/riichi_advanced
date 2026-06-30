@@ -115,6 +115,7 @@ defmodule RiichiAdvanced.Match do
         true -> false
       end
     end
+
     def check_equivalence({p2, _battrs2}, {_p1, _battrs1}, _encoded_aliases) when not is_number(p2), do: false
     def check_equivalence({_p2, _battrs2}, {p1, _battrs1}, _encoded_aliases) when not is_number(p1), do: false
     def check_equivalence({p2, battrs2}, {p1, battrs1}, encoded_aliases) do
@@ -264,7 +265,8 @@ defmodule RiichiAdvanced.Match do
       cond do
         divides ->
           # if divides, check attrs
-          with {:ok, indices} <- subtract_check_attrs(attrs2, attrs1, encoded_aliases, exhaustive) do
+          # (don't remove jokers until the end)
+          with {:ok, indices} <- subtract_check_attrs(attrs2, attrs1, %{}, exhaustive) do
             indices = if exhaustive do Enum.uniq_by(indices, &Enum.sort/1) else indices end
             # remove indices from hand
             # if we end up removing jokers, reduce the max number of holes accordingly
@@ -370,29 +372,34 @@ defmodule RiichiAdvanced.Match do
     #   _decode_attrs(encoded_attrs >>> 1, all_attrs, acc)
     # end
     
-    def verify(%{hash: hash, attrs: attrs} = hand) do
-      prod = for {p, v} <- attrs, reduce: 1 do
-        acc -> acc * case p do
-          :joker -> elem(hd(v), 0)
-          p when is_number(p) -> p
-          _ -> 1
-        end
-      end
-      if prod != hash do
-        raise "Hand with hash #{hash} has actual product #{prod}: #{inspect(attrs)}"
-      end
-      hand
-    end
+    # def verify(%{hash: hash, attrs: attrs} = hand) do
+    #   prod = for {p, v} <- attrs, reduce: 1 do
+    #     acc -> acc * case p do
+    #       :joker -> elem(hd(v), 0)
+    #       p when is_number(p) -> p
+    #       _ -> 1
+    #     end
+    #   end
+    #   if prod != hash do
+    #     raise "Hand with hash #{hash} has actual product #{prod}: #{inspect(attrs)}"
+    #   end
+    #   hand
+    # end
 
     # use tile_behavior.attrs to encode
     def encode(hand, tile_behavior) do
+      attrs = for orig_tile <- hand do
+        {tile, attrs} = Utils.to_attr_tile(orig_tile)
+        attrs = Enum.map(attrs, &String.trim_leading(&1, "_"))
+        encoded_attrs = encode_attrs(attrs, tile_behavior.attrs)
+        {Constants.to_prime(tile), encoded_attrs}
+      end
+      hash = Enum.reduce(attrs, 1, fn {p, _} = tile, acc ->
+        if tile in tile_behavior.encoded_joker_tiles do 1 else acc * p end
+      end)
       %TileSet{
-        hash: Enum.reduce(hand, 1, fn tile, acc -> acc * Constants.to_prime(tile) end),
-        attrs: for orig_tile <- hand do
-          {tile, attrs} = Utils.to_attr_tile(orig_tile)
-          attrs = Enum.map(attrs, &String.trim_leading(&1, "_"))
-          {Constants.to_prime(tile), encode_attrs(attrs, tile_behavior.attrs)}
-        end,
+        hash: hash,
+        attrs: attrs,
         holes: [],
       }
       # |> verify()
@@ -592,6 +599,7 @@ defmodule RiichiAdvanced.Match do
     end
   end
 
+  @decorate cacheable(cache: RiichiAdvanced.Cache, key: {:apply_offsets, base_tile, offsets, tile_behavior.uuid})
   def apply_offsets(base_tile, offsets, tile_behavior), do: _apply_offsets(base_tile, offsets, tile_behavior, 0, [])
   def _apply_offsets(_base_tile, [], _tile_behavior, n, []) when abs(n) > 100 do
     IO.puts("Infinite loop detected")
@@ -760,7 +768,7 @@ defmodule RiichiAdvanced.Match do
 
   # faster match algorithm for when we're checking against an exact set of tiles
   # basically makes kokushi faster to check, also daisangen etc
-  @spec perform_unique_match(data: map()) :: [[TileSet.t()]]
+  @spec perform_unique_match(data: map()) :: list(list(TileSet.t()))
   def perform_unique_match(data) do
     %{
       tile_behavior: tile_behavior,
@@ -869,7 +877,7 @@ defmodule RiichiAdvanced.Match do
     Map.merge(mappings, @ignore_suit_mappings, fn _k, l, r -> MapSet.union(l, r) end)
   end
 
-  @spec perform_standard_match(data: map()) :: [[TileSet.t()]]
+  @spec perform_standard_match(data: map()) :: list(list(TileSet.t()))
   def perform_standard_match(data) do
     %{
       tile_behavior: tile_behavior,
@@ -881,6 +889,9 @@ defmodule RiichiAdvanced.Match do
       nojoker: nojoker,
       debug: debug,
     } = data
+
+    # t = System.os_time(:millisecond)
+
     unique = unique or "unique" in groups
     # take all groups and reify them into actual tiles
     # this reverses the order of groups, which is desirable since nojoker tiles will be first
@@ -900,7 +911,8 @@ defmodule RiichiAdvanced.Match do
             {nojoker, [ret | acc]}
           true ->
             reified_groups = encode_group(group, tile_behavior)
-            # if length(reified_groups) == 12 do
+            # if length(reified_groups) > 10 do
+            #   IO.inspect(tile_behavior.base_tiles, label: "base_tiles")
             #   IO.inspect(reified_groups |> Enum.map(&TileSet.decode(&1, tile_behavior)), label: inspect(group), limit: :infinity)
             # end
             ret = {reified_groups, group}
@@ -910,7 +922,7 @@ defmodule RiichiAdvanced.Match do
     # if debug do IO.inspect(groups, label: inspect(data.groups), limit: :infinity) end
     # if debug do IO.inspect(tile_behavior.attrs) end
     # IO.inspect(acc, limit: :infinity)
-    for j <- (if num == 0 do [1] else 1..abs(num) end), reduce: Enum.map(acc, fn hands -> {hands, groups, nil} end) do
+    ret = for j <- (if num == 0 do [1] else 1..abs(num) end), reduce: Enum.map(acc, fn hands -> {hands, groups, nil} end) do
       [] -> []
       hands_groups ->
         report = if debug do
@@ -939,20 +951,25 @@ defmodule RiichiAdvanced.Match do
           end
 
         hands_groups = if exhaustive do
-          Enum.uniq(hands_groups)
+          hands_groups = Enum.uniq(hands_groups)
+          if length(hands_groups) > 50 do
+            hands_groups
+            |> Enum.map(fn {hands, groups, base_suit} ->
+              with [hand | calls] <- eval_holes(hands, tile_behavior) do
+                {[hand | calls], groups, base_suit}
+              end
+            end)
+            |> Enum.reject(&is_nil/1)
+          else hands_groups end
         else
-          # must evaluate holes immediately, taking the first result
+          # evaluate holes immediately, taking the first result
           Enum.reduce_while(hands_groups, [], fn {[hand | calls], groups, base_suit}, [] ->
             if Enum.empty?(hand.holes) do
               {:halt, [{[hand | calls], groups, base_suit}]}
             else
-              case TileSet.subtract_check_attrs(hand.attrs, hand.holes, tile_behavior.encoded_aliases, false) do
-                nil            -> {:cont, []}
-                {:ok, indices} ->
-                  hand = hand
-                  |> Map.put(:holes, [])
-                  |> TileSet.remove_tileset_indices(indices)
-                  {:halt, [{[hand | calls], groups, base_suit}]}
+              case eval_holes([hand | calls], tile_behavior) do
+                nil       -> {:cont, []}
+                new_hands -> {:halt, [{new_hands, groups, base_suit}]}
               end
             end
           end)
@@ -969,6 +986,8 @@ defmodule RiichiAdvanced.Match do
         hands_groups
     end
     |> Enum.map(fn {hands, _, _} -> hands end)
+
+    ret
     |> Enum.uniq()
   end
 
@@ -987,65 +1006,75 @@ defmodule RiichiAdvanced.Match do
     end
   end
 
+  def encode_hand([hand | calls], tile_behavior) do
+    [TileSet.encode(hand, tile_behavior) | Enum.map(calls, fn {name, call} ->
+      ret = TileSet.encode(call, tile_behavior)
+      %{ret | attrs: [{:name, name} | ret.attrs]}
+    end)]
+  end
+
+  def is_any_tile({:any, _}), do: true
+  def is_any_tile(_), do: false
+
+  def identify_jokers(initial_hands, encoded_aliases) do
+    # scan thru aliases to identify jokers in hand
+    for attrs_aliases <- Map.values(encoded_aliases),
+        aliases <- Map.values(attrs_aliases),
+        hand <- initial_hands,
+        b <- hand.attrs,
+        Enum.any?(aliases, fn a -> TileSet.check_equivalence(b, a, encoded_aliases) end),
+        uniq: true do b end
+  end
+
   def prepare_tiles([hand | calls], match_definitions, tile_behavior) do
+    t = System.os_time(:millisecond)
+
+    # let all_tiles = tiles in hand + all joker aliases
     tiles_in_hand = hand ++ Enum.flat_map(calls, &Utils.call_to_tiles/1)
     encodable_tiles = Map.keys(tile_behavior.aliases) |> MapSet.new()
 
     # first pass
-    # restrict all_tiles to tiles in hand as well as all relevant joker aliases
-    all_tiles = MapSet.new(Enum.map(tiles_in_hand, &Utils.strip_attrs/1))
+
+    # all tiles = strip_attrs(tiles_in_hand) ++ encodable_tiles
+    all_tiles = tiles_in_hand
+    |> Enum.map(&Utils.strip_attrs/1)
+    |> MapSet.new()
     |> MapSet.union(encodable_tiles)
-    tile_behavior = %{tile_behavior | all_tiles: all_tiles }
+    |> MapSet.reject(&is_any_tile/1)
 
-    # encode hand/calls as initial accumulator
-    initial_hands = [TileSet.encode(hand, tile_behavior) | Enum.map(calls, fn {name, call} ->
-      ret = TileSet.encode(call, tile_behavior)
-      %{ret | attrs: [{:name, name} | ret.attrs]}
-    end)]
-
-    # encode aliases
+    # encode hands and attrs_aliases
+    tile_behavior = %{tile_behavior | all_tiles: all_tiles, uuid: Ecto.UUID.generate() }
+    initial_hands = encode_hand([hand | calls], tile_behavior)
     encoded_aliases = TileSet.encode_aliases(tile_behavior)
-    tile_behavior = %{tile_behavior | encoded_aliases: encoded_aliases }
+    tile_behavior = %{tile_behavior | encoded_aliases: encoded_aliases, uuid: Ecto.UUID.generate() }
 
-    # do a one time scan thru tile_behavior.aliases to identify jokers in hand
-    # (number of jokers determines what algorithm to run)
-    encoded_joker_tiles =
-      for attrs_aliases <- Map.values(encoded_aliases),
-          aliases <- Map.values(attrs_aliases),
-          a <- aliases,
-          hand <- initial_hands,
-          b <- hand.attrs,
-          TileSet.check_equivalence(b, a, encoded_aliases),
-          uniq: true do b end
+    # TODO number of jokers determines what algorithm to run
+    encoded_joker_tiles = identify_jokers(initial_hands, encoded_aliases)
     joker_tiles = encoded_joker_tiles
-      |> TileSet.decode_attrs(tile_behavior)
-      |> MapSet.new()
+    |> TileSet.decode_attrs(tile_behavior)
+    |> MapSet.new()
     base_tiles = MapSet.difference(all_tiles, joker_tiles)
-    |> MapSet.reject(&Utils.strip_attrs(&1) == :any)
+    |> MapSet.delete(:any)
 
     # also add all offsets of existing tiles
-    # we need to do this because :any could reify into a tile
+    # we need to do this because jokers/offsets could reify into a tile
     #   that we can't otherwise encode, since it's not in hand
     offset_tiles =
       for base_tile <- base_tiles,
           group = apply_offsets(base_tile, gather_offsets(match_definitions), tile_behavior),
           not is_bad_group(group, tile_behavior),
           offset_tile <- group,
+          not is_any_tile(offset_tile),
           into: MapSet.new() do offset_tile end
     all_tiles = all_tiles
-    |> MapSet.reject(&Utils.strip_attrs(&1) == :any)
     |> MapSet.union(offset_tiles)
     base_tiles = MapSet.difference(all_tiles, joker_tiles)
+    |> MapSet.delete(:any)
     tile_behavior = %{tile_behavior | all_tiles: all_tiles, base_tiles: base_tiles, encoded_joker_tiles: encoded_joker_tiles }
 
-    # encode aliases again
+    # encode aliases again, using new all_tiles that includes offset tiles
     encoded_aliases = TileSet.encode_aliases(tile_behavior)
-    tile_behavior = %{tile_behavior | encoded_aliases: encoded_aliases }
-
-    # uuid for distinguishing this tile behavior
-    uuid = Ecto.UUID.generate()
-    tile_behavior = %{tile_behavior | uuid: uuid }
-
+    tile_behavior = %{tile_behavior | encoded_aliases: encoded_aliases, uuid: Ecto.UUID.generate() }
     # if dbg do
     #   # IO.inspect(gather_offsets(match_definitions))
     #   IO.inspect({"aaa", "aliases", tile_behavior.aliases})
@@ -1060,6 +1089,19 @@ defmodule RiichiAdvanced.Match do
     # IO.inspect({"asdf", tile_behavior.aliases}, limit: :infinity)
 
     {tiles_in_hand, initial_hands, tile_behavior}
+  end
+
+  def eval_holes([hand | calls], tile_behavior) do
+    if Enum.empty?(hand.holes) do
+      [hand | calls]
+    else
+      with {:ok, indices} <- TileSet.subtract_check_attrs(hand.attrs, hand.holes, tile_behavior.encoded_aliases, false) do
+        hand = hand
+        |> Map.put(:holes, [])
+        |> TileSet.remove_tileset_indices(indices)
+        [hand | calls]
+      end
+    end
   end
 
   defp match_hand_v2(hand, calls, match_definitions, tile_behavior) do
@@ -1121,8 +1163,15 @@ defmodule RiichiAdvanced.Match do
             IO.puts("Unknown match keyword #{match_elem}")
             state
           state ->
+            # if we have too many inputs, try to collapse them by evaluating holes if any
+            acc = if length(state.acc) > 50 do
+              state.acc
+              |> Enum.map(&eval_holes(&1, tile_behavior))
+              |> Enum.reject(&is_nil/1)
+            else state.acc end
+
             [groups, num] = match_elem
-            data = Map.merge(state, %{groups: groups, num: num})
+            data = Map.merge(state, %{groups: groups, num: num, acc: acc})
             new_acc = cond do
               skip_attrs and data.unique and not data.exhaustive and Enum.all?(groups, &Utils.is_tile(&1) or &1 in MatchOld.group_keywords()) -> perform_unique_match(data)
               true -> perform_standard_match(data)
@@ -1131,18 +1180,7 @@ defmodule RiichiAdvanced.Match do
               num <= 0 -> # is a lookahead
                 # must evaluate all holes after evaluating lookaheads
                 new_acc
-                |> Enum.map(fn [hand | calls] ->
-                  if Enum.empty?(hand.holes) do
-                    [hand | calls]
-                  else
-                    with {:ok, indices} <- TileSet.subtract_check_attrs(hand.attrs, hand.holes, tile_behavior.encoded_aliases, false) do
-                      hand = hand
-                      |> Map.put(:holes, [])
-                      |> TileSet.remove_tileset_indices(indices)
-                      [hand | calls]
-                    end
-                  end
-                end)
+                |> Enum.map(&eval_holes(&1, tile_behavior))
                 |> Enum.reject(&is_nil/1)
               true -> new_acc
             end
@@ -1197,6 +1235,7 @@ defmodule RiichiAdvanced.Match do
                   # IO.puts("Mappings were: #{inspect(tile_behavior.mappings)}")
                 end
                 false
+              # we don't care about the final result, the returned removal indices don't matter
               _ -> true
             end
           end
