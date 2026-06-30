@@ -56,12 +56,17 @@ defmodule RiichiAdvanced.GameState do
                     :"2p"=>:"1p", :"3p"=>:"2p", :"4p"=>:"3p", :"5p"=>:"4p", :"6p"=>:"5p", :"7p"=>:"6p", :"8p"=>:"7p", :"9p"=>:"8p",
                     :"2s"=>:"1s", :"3s"=>:"2s", :"4s"=>:"3s", :"5s"=>:"4s", :"6s"=>:"5s", :"7s"=>:"6s", :"8s"=>:"7s", :"9s"=>:"8s"},
       tile_freqs: %{},
+
+      # below is used by match
+
       # we populate attrs in match definitions at initialization
       # and whenever we set tile aliases, we add the attrs in from_tiles
       # only these attrs are relevant for matching, which is what this field is used for
       attrs: MapSet.new(),
       all_tiles: MapSet.new(),
       base_tiles: MapSet.new(),
+      encoded_joker_tiles: MapSet.new(),
+      encoded_aliases: %{},
       dismantle_calls: false,
       ignore_suit: false
     ]
