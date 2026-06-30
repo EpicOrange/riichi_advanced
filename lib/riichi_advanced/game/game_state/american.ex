@@ -290,16 +290,10 @@ defmodule RiichiAdvanced.GameState.American do
                     # if not, we remove groups one at time from hand, prioritizing nonjokers
                     new_hand = Enum.reduce_while(1..num, hand, fn n, hand ->
                       # first phase: remove a nonjoker
+                      anyless_tile_behavior = %{ tile_behavior | aliases: Map.delete(tile_behavior.aliases, :any), uuid: Ecto.UUID.generate() }
                       new_hand = Enum.find_value(groups, fn group ->
                         # calls were taken care of above, so we can just focus on hand
-                        case MatchOld._remove_group(hand, [], group, base_tile, %{ tile_behavior | aliases: Map.delete(tile_behavior.aliases, :any) }) do
-                          [{hand, _} | _] -> hand
-                          []              ->
-                            # if am_match_definition == "NN EEE 2024a WWW SS" do
-                            #   IO.puts("Failed to remove #{inspect(group)} from #{inspect(hand)} / #{inspect(calls)}")
-                            # end
-                            nil
-                        end
+                        Match.remove_group(hand, group, anyless_tile_behavior, false, [base_tile])
                       end)
                       if new_hand != nil do
                         {:cont, new_hand}
@@ -412,7 +406,7 @@ defmodule RiichiAdvanced.GameState.American do
         [groups, num] when num >= 1 ->
           unique = unique or "unique" in groups
           nojoker_ix = if nojoker_ix != nil and i > nojoker_ix do 0 else Enum.find_index(groups, & &1 == "nojoker") end
-          instance = case Enum.find(calls, &Enum.any?(groups, fn group -> MatchOld._remove_group(&1, [], group, base_tile, tile_behavior) == [[]] end)) do
+          instance = case Enum.find(calls, &Enum.any?(groups, fn group -> Match.remove_group(&1, group, tile_behavior, false, [base_tile]) == [[]] end)) do
             # if this group doesn't match a call, instantiate using base tile
             nil  ->
               hand = if unique do
@@ -467,7 +461,7 @@ defmodule RiichiAdvanced.GameState.American do
       joker ->
         stripped_call = Utils.replace_jokers(call, [:"1j"], tile_behavior) |> Utils.strip_attrs()
         # here we use remove_group instead of match_hand to ensure the length of the call is matched too
-        case Enum.find_index(joker, &MatchOld._remove_group(&1, [], stripped_call, base_tile, tile_behavior) == [{[], []}]) do
+        case Enum.find_index(joker, &Match.remove_group(&1, stripped_call, tile_behavior, false, [base_tile]) == [{[], []}]) do
           nil -> [] # call not found, abort
           i   -> List.delete_at(joker, i)
         end

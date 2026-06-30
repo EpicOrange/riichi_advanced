@@ -13,7 +13,6 @@ defmodule RiichiAdvanced.GameState do
   alias RiichiAdvanced.Constants, as: Constants
   alias RiichiAdvanced.LobbyState.LobbyRoom, as: LobbyRoom
   alias RiichiAdvanced.Match, as: Match
-  alias RiichiAdvanced.MatchOld, as: MatchOld
   alias RiichiAdvanced.ModLoader, as: ModLoader
   alias RiichiAdvanced.Riichi, as: Riichi
   alias RiichiAdvanced.RoomState.RoomPlayer, as: RoomPlayer
@@ -1011,9 +1010,10 @@ defmodule RiichiAdvanced.GameState do
     # returns {yakuman, han, minipoints, hand}
     tile_behavior = state.players[seat].tile_behavior
     score_rules = Rules.get(state.rules_ref, "score_calculation", %{})
-    Enum.flat_map(tenpai_definitions, &MatchOld.remove_match_definition(tiles, [], &1, tile_behavior))
+    {tiles_in_hand, initial_hands, tile_behavior} = Match.prepare_tiles([tiles], tenpai_definitions, tile_behavior)
+    Enum.flat_map(tenpai_definitions, &Match._remove_match_definition({tiles_in_hand, initial_hands, tile_behavior}, &1, true))
     |> Enum.take(max_results)
-    |> Enum.map(fn {hand, _calls} -> tiles -- hand end)
+    |> Enum.map(fn [hand | _calls] -> tiles -- hand end)
     |> Enum.uniq()
     |> Enum.map(fn hand ->
       state = update_player(state, seat, &%{ &1 | hand: hand, status: MapSet.new(["riichi"]) }) # avoid renhou

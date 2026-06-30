@@ -203,12 +203,11 @@ defmodule RiichiAdvanced.Riichi do
         |> Enum.reject(&TileBehavior.is_joker?(&1, tile_behavior))
         |> Utils.strip_attrs()
         |> Enum.flat_map(fn instance ->
-          target_tiles = Enum.map(call_spec, &MatchOld.offset_tile(instance, &1, tile_behavior))
-          if nil in target_tiles do
-            []
-          else
-            possible_removals = Match.try_remove_all_tiles(hand, target_tiles, tile_behavior)
-            Enum.map(possible_removals, fn remaining -> Utils.sort_tiles(hand -- remaining) end)
+          case Match.apply_offsets(instance, call_spec, tile_behavior) do
+            nil -> []
+            target_tiles ->
+              possible_removals = Match.try_remove_all_tiles(hand, target_tiles, tile_behavior)
+              Enum.map(possible_removals, fn remaining -> Utils.sort_tiles(hand -- remaining) end)
           end
         end)
       end) |> Enum.uniq()}
@@ -359,11 +358,8 @@ defmodule RiichiAdvanced.Riichi do
         "dora" -> Utils.has_matching_tile?([context.tile], context.doras)
         "kuikae" ->
           player = context.players[context.seat]
-          base_tiles = MatchOld.collect_base_tiles(player.hand, player.calls, [0,1,2], player.tile_behavior)
           potential_set = Utils.add_attr(Enum.take(context.call.other_tiles, 2) ++ [context.tile2], ["_hand"])
-          triplet = MatchOld.remove_group(potential_set, [], [0,0,0], base_tiles, player.tile_behavior)
-          sequence = MatchOld.remove_group(potential_set, [], [0,1,2], base_tiles, player.tile_behavior)
-          not Enum.empty?(triplet ++ sequence)
+          Enum.any?([[0,1,2],[0,0,0]], &Match.remove_group(potential_set, &1, player.tile_behavior) != nil)
         tile_spec ->
           tile_behavior = Map.get(context, :tile_behavior, %TileBehavior{})
           # "1m", "2z" are also specs
@@ -547,16 +543,8 @@ defmodule RiichiAdvanced.Riichi do
         Utils.count_tiles(hand, [Utils.strip_attrs(tile)], tile_behavior) >= 2 -> false
         is_jihai?(tile) -> true
         true ->
-          past_suji_left = test_tiles(hand, [MatchOld.offset_tile(tile, -4, tile_behavior), tile], tile_behavior)
-          suji_left = test_tiles(hand, [MatchOld.offset_tile(tile, -3, tile_behavior), tile], tile_behavior)
-          jump_left = test_tiles(hand, [MatchOld.offset_tile(tile, -2, tile_behavior), tile], tile_behavior)
-          adjacent_left = test_tiles(hand, [MatchOld.offset_tile(tile, -1, tile_behavior), tile], tile_behavior)
-          adjacent_right = test_tiles(hand, [MatchOld.offset_tile(tile, 1, tile_behavior), tile], tile_behavior)
-          jump_right = test_tiles(hand, [MatchOld.offset_tile(tile, 2, tile_behavior), tile], tile_behavior)
-          suji_right = test_tiles(hand, [MatchOld.offset_tile(tile, 3, tile_behavior), tile], tile_behavior)
-          past_suji_right = test_tiles(hand, [MatchOld.offset_tile(tile, 4, tile_behavior), tile], tile_behavior)
-          arr = [past_suji_left, suji_left, jump_left, adjacent_left, true, adjacent_right, jump_right, suji_right, past_suji_right]
-          # IO.inspect({tile, arr})
+          arr = [-4, -3, -2, -1, 0, 1, 2, 3, 4]
+          |> Enum.map(&test_tiles(hand, [tile | Match.apply_offsets(tile, [&1], tile_behavior)], tile_behavior))
           case arr do
             [_, _, false, false, _t, false, false, _, _] -> true
             [_, _, false, false, _t, _, _, true, false] -> true # 14 or 134 or 124 -> toss 1
@@ -586,12 +574,13 @@ defmodule RiichiAdvanced.Riichi do
   end
 
   def genbutsu_to_suji(genbutsu, tile_behavior) do
-    Enum.flat_map(genbutsu, &cond do
-      # TODO: modify this to take Ten tiles into account when Ten tiles exist
-      Enum.any?([1,2,3], fn k -> is_num?(&1, k) end) -> if MatchOld.offset_tile(&1, 6, tile_behavior) in genbutsu do [MatchOld.offset_tile(&1, 3, tile_behavior)] else [] end
-      Enum.any?([4,5,6], fn k -> is_num?(&1, k) end) -> [MatchOld.offset_tile(&1, -3, tile_behavior), MatchOld.offset_tile(&1, 3, tile_behavior)]
-      Enum.any?([7,8,9], fn k -> is_num?(&1, k) end) -> if MatchOld.offset_tile(&1, -6, tile_behavior) in genbutsu do [MatchOld.offset_tile(&1, -3, tile_behavior)] else [] end
-      true -> []
+    check = [nil | genbutsu]
+    Enum.flat_map(genbutsu, fn tile ->
+      ll = Match.apply_offset(tile, -6, tile_behavior)
+      l = Match.apply_offset(tile, -3, tile_behavior)
+      r = Match.apply_offset(tile, 3, tile_behavior)
+      rr = Match.apply_offset(tile, 6, tile_behavior)
+      (if ll in check do [l] else [] end) ++ (if rr in check do [r] else [] end)
     end)
   end
 
