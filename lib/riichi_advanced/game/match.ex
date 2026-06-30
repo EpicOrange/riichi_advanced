@@ -107,29 +107,45 @@ defmodule RiichiAdvanced.Match do
     def factor(n, [p | primes], acc) when rem(n, p) == 0, do: factor(Integer.floor_div(n, p), [p | primes], [p | acc])
     def factor(n, [_ | primes], acc), do: factor(n, primes, acc)
 
-    def get_mappings(tile, mappings) do
-      for {k, v} <- mappings, Utils.same_tile(tile, k), reduce: [tile] do
-        ret -> Enum.to_list(v) ++ ret
+    # check if first arg is has at least the attributes of second arg
+    def check_tile_match({p2, battrs2}, {p1, battrs1}) do
+      cond do
+        p1 != p2 and p1 != @any_prime and p2 != @any_prime -> false
+        (battrs1 &&& battrs2) == battrs1 -> true # battrs1 includes battrs2
+        true -> false
+      end
+    end
+    def check_equivalence({p2, battrs2}, {p1, battrs1}, encoded_aliases) do
+      # joker lookup is basically term rewriting: {tile, attrs} -> {tile, attrs}
+      # so just check if an alias for {p2, battrs2} exists that matches {p1, battrs1}
+      if check_tile_match({p2, battrs2}, {p1, battrs1}) do
+        true
+      else
+        case Map.get(encoded_aliases, p1) do
+          nil -> false
+          battrs_aliases -> Enum.any?(battrs_aliases, fn {battrs, aliases} ->
+            (battrs1 &&& battrs) == battrs1 and Enum.any?(aliases, fn {p3, battrs3} -> check_tile_match({p2, battrs2}, {p3, battrs3}) end)
+          end)
+        end
       end
     end
 
-    # check that taking `goal_hash` out of `attrs2` given `attrs1` is possible
+    # check that taking `attrs1` out of `attrs2` is possible with attributes
     # returns a list of indices (if exhaustive, a list of list of indices)
     # or nil if no solution
-    def subtract_check_attrs(_attrs2, _attrs1, 1, _mappings, exhaustive) do
+    def subtract_check_attrs(_attrs2, [], _encoded_aliases, exhaustive) do
         {:ok, if exhaustive do [[]] else [] end}
     end
-    def subtract_check_attrs(attrs2, attrs1, goal_hash, mappings, exhaustive) do
-      attrs1_indexed = Enum.with_index(attrs1)
-
+    def subtract_check_attrs(attrs2, attrs1, encoded_aliases, exhaustive) do
+      attrs1_indexed = attrs1
+      |> Enum.filter(fn {p, _} -> is_number(p) end)
+      |> Enum.with_index()
       # compute bitmasks where the ith bitmask has jth bit set iff attrs2[i] covers attrs1[j]}
-      masks = for tile <- attrs2 do
-        case tile do
+      masks = for tile2 <- attrs2 do
+        case tile2 do
           {p, _} when is_number(p) ->
-            for {p2, battrs2} <- get_mappings(tile, mappings),
-                {{p1, battrs1}, j} <- attrs1_indexed,
-                (p1 == p2 or p1 == @any_prime or p2 == @any_prime),
-                (battrs1 &&& battrs2) == battrs1,
+            for {tile1, j} <- attrs1_indexed,
+                check_equivalence(tile2, tile1, encoded_aliases),
                 reduce: 0 do
               acc -> acc ||| (1 <<< j)
             end
@@ -137,7 +153,6 @@ defmodule RiichiAdvanced.Match do
         end
       end
       |> Enum.with_index()
-      |> Enum.reject(fn {mask, _i} -> mask == 0 end)
 
       if Enum.empty?(masks) do
         nil
@@ -145,7 +160,8 @@ defmodule RiichiAdvanced.Match do
         col_mask = Enum.reduce(masks, 0, fn {mask, _i}, acc -> mask ||| acc end)
         # then it's n-rooks on this bit matrix
         # if Enum.any?(attrs1, fn {p, _battrs} -> p == 2671 end) do IO.inspect({attrs2, attrs1, masks, goal_hash, factor(goal_hash)}, limit: :infinity) end
-        with {:ok, indices} <- solve_n_rooks(masks, col_mask, length(factor(goal_hash)), exhaustive) do
+        # returns indices into attrs2
+        with {:ok, indices} <- solve_n_rooks(masks, col_mask, length(attrs1_indexed), exhaustive) do
           ret = cond do
             Enum.empty?(indices) -> nil
             true -> {:ok, indices}
@@ -154,7 +170,27 @@ defmodule RiichiAdvanced.Match do
         end
       end
     end
-      
+    
+    # separates attrs into {[primes in hash], [primes not in hash]}
+    # if exhaustive is true, returns a list of possible partitions
+    # otherwise it's just a greedy scan returning a singleton list
+    def partition_attrs(hash, attrs, exhaustive \\ false, acc \\ {[], []})
+    def partition_attrs(1, attrs, _exhaustive, {l, r}), do: [{l, Enum.reverse(r, attrs)}]
+    def partition_attrs(_hash, [], _exhaustive, _acc), do: []
+    def partition_attrs(hash, [{p, _} = attr | attrs], exhaustive, {l, r}) when rem(hash, p) == 0 do
+      take = partition_attrs(Integer.floor_div(hash, p), attrs, exhaustive, {[attr | l], r})
+      cond do
+        exhaustive ->
+          skip = partition_attrs(hash, attrs, exhaustive, {l, [attr | r]})
+          take ++ skip
+        take == [] ->
+          skip = partition_attrs(hash, attrs, exhaustive, {l, [attr | r]})
+          skip
+        true -> take
+      end
+    end
+    def partition_attrs(hash, [attr | attrs], exhaustive, {l, r}), do: partition_attrs(hash, attrs, exhaustive, {l, [attr | r]})
+
     # remove 2nd set (group) from 1st set (hand) to get resulting set, or nil if not removable
     # if exhaustive is true, returns many possible resulting sets instead of just one
     # if return_indices is true, returns indices to remove from 1st set
@@ -194,18 +230,22 @@ defmodule RiichiAdvanced.Match do
     defp _subtract(%{hash: hash2, attrs: attrs2, holes: holes} = hand,
                    %{hash: hash1, attrs: attrs1} = _group,
                    opts) do
+      # debug = Keyword.get(opts, :debug, false)
       return_indices = Keyword.get(opts, :return_indices, false)
       exhaustive = Keyword.get(opts, :exhaustive, false)
       max_holes = Keyword.get(opts, :max_holes, length(attrs2))
       nojoker = Enum.at(attrs1, 0) == {:nojoker, true}
-      mappings = if nojoker do %{} else Keyword.get(opts, :mappings, %{}) end
+      attrs1 = if nojoker do tl(attrs1) else attrs1 end
+      encoded_aliases = if nojoker do %{} else Keyword.get(opts, :encoded_aliases, %{}) end
 
       gcd = Integer.gcd(hash2, hash1)
       divides = gcd == hash1
+
+      # dbg = nojoker and {2, 0} not in attrs2 and {2, 2} not in attrs2 and length(attrs2) == 14
       cond do
         divides ->
           # if divides, check attrs
-          with {:ok, indices} <- subtract_check_attrs(attrs2, attrs1, hash1, mappings, exhaustive) do
+          with {:ok, indices} <- subtract_check_attrs(attrs2, attrs1, encoded_aliases, exhaustive) do
             indices = if exhaustive do Enum.uniq_by(indices, &Enum.sort/1) else indices end
             cond do
               return_indices -> indices
@@ -215,51 +255,52 @@ defmodule RiichiAdvanced.Match do
               true -> remove_tileset_indices(hand, indices)
             end
           end
-        not nojoker and not return_indices ->
+        not return_indices ->
           # add holes for unmatched tiles
           # use gcd to find which tiles to remove and which to add as holes
           # if exhaustive, return all possibilities
 
-          # remove unmatched attrs1 from itself
-          with {:ok, resulting_ixs} <- subtract_check_attrs(attrs1, attrs1, Integer.floor_div(hash1, gcd), mappings, exhaustive) do
-            ret = for removed_ixs <- (if exhaustive do resulting_ixs else [resulting_ixs] end), reduce: [] do
-              nil -> nil
-              [ret | _] when not exhaustive -> [ret]
-              ret ->
-                # save the unmatched attrs as holes and make attrs1 now represent the matched attrs
-                {new_holes, attrs1} = split_indices(attrs1, removed_ixs)
-
-                all_holes = new_holes ++ holes
-                num_any_tiles = Enum.count(all_holes, fn {p, _} -> p == @any_prime end)
-                cond do
-                  max_holes - (length(all_holes) - num_any_tiles) < 0 ->
-                    # failed to match because non-any holes exceed max_holes
-                    nil
-                  length(all_holes) > length(attrs2) ->
-                    # failed to match because holes exceed tiles in hand
-                    nil
-                  gcd == 1 ->
-                    # just add holes to hand, as there is no partial match at all
-                    [%{hand | holes: all_holes} | ret]
-                  true ->
-                    # remove the partial match attrs1 from attrs2
-                    with {:ok, indices} <- subtract_check_attrs(attrs2, attrs1, gcd, mappings, exhaustive) do
-                      indices = if exhaustive do Enum.uniq_by(indices, &Enum.sort/1) else indices end
-                      hand = %{hand | holes: all_holes}
-                      cond do
-                        exhaustive -> (for ixs <- indices do remove_tileset_indices(hand, ixs) end) ++ ret
-                        true       -> [remove_tileset_indices(hand, indices) | ret]
-                      end
-                      |> Enum.uniq_by(& &1.hash)
+          # remove unmatched tiles from attrs1
+          # dbg = length(attrs2) == 14 and attrs1 == [{7, 0}, {13, 0}, {17, 0}]
+          # if dbg do
+          #   IO.inspect({"asdf", partition_attrs(gcd, attrs1, exhaustive), gcd, attrs1, exhaustive})
+          # end
+          # save the unmatched attrs as new_holes and make attrs1 now represent the matched attrs
+          for {attrs1, new_holes} <- partition_attrs(gcd, attrs1, exhaustive), reduce: [] do
+            nil -> nil
+            [ret | _] when not exhaustive -> [ret]
+            ret ->
+              all_holes = new_holes ++ holes
+              num_any_tiles = Enum.count(all_holes, fn {p, _} -> p == @any_prime end)
+              cond do
+                max_holes - (length(all_holes) - num_any_tiles) < 0 ->
+                  # failed to match because non-any holes exceed max_holes
+                  nil
+                length(all_holes) > length(attrs2) ->
+                  # failed to match because holes exceed tiles in hand
+                  nil
+                not nojoker and gcd == 1 ->
+                  # just add holes to hand, as there is no partial match at all
+                  [%{hand | holes: all_holes} | ret]
+                not nojoker ->
+                  # remove the partial match attrs1 from attrs2
+                  with {:ok, indices} <- subtract_check_attrs(attrs2, attrs1, encoded_aliases, exhaustive) do
+                    indices = if exhaustive do Enum.uniq_by(indices, &Enum.sort/1) else indices end
+                    hand = %{hand | holes: all_holes}
+                    cond do
+                      exhaustive -> (for ixs <- indices do remove_tileset_indices(hand, ixs) end) ++ ret
+                      true       -> [remove_tileset_indices(hand, indices) | ret]
                     end
-                end
-            end
-            case ret do
-              nil -> nil
-              ret when exhaustive -> ret
-              [] -> nil
-              [ret | _] -> ret
-            end
+                    |> Enum.uniq_by(& &1.hash)
+                  end
+                true -> nil
+              end
+          end
+          |> case do
+            nil -> nil
+            ret when exhaustive -> ret
+            [] -> nil
+            [ret | _] -> ret
           end
         true ->
           nil
@@ -332,6 +373,19 @@ defmodule RiichiAdvanced.Match do
       # |> verify()
     end
 
+    def encode_aliases(tile_behavior) do
+      for {tile, attrs_aliases} <- tile_behavior.aliases, reduce: %{} do
+        acc ->
+          entry = for {attrs, aliases} <- attrs_aliases, reduce: %{} do
+            acc2 ->
+              encoded_attrs = encode_attrs(attrs, tile_behavior.attrs)
+              encoded_aliases = encode(aliases, tile_behavior).attrs
+              Map.put(acc2, encoded_attrs, encoded_aliases)
+          end
+          Map.put(acc, Constants.to_prime(tile), entry)
+      end
+    end
+
     def decode_attrs(attrs, tile_behavior) do
       for {p, attrs} <- attrs, is_number(p) do
         tile = Constants.from_prime(p)
@@ -372,7 +426,8 @@ defmodule RiichiAdvanced.Match do
         # encode every tile into a TileSet
         hand_set = TileSet.encode(hand, tile_behavior)
         tiles_set = TileSet.encode(tiles, TileBehavior.remove_aliases(tile_behavior))
-        case TileSet.subtract_check_attrs(hand_set.attrs, tiles_set.attrs, tiles_set.hash, tile_behavior.mappings, true) do
+        encoded_aliases = TileSet.encode_aliases(tile_behavior)
+        case TileSet.subtract_check_attrs(hand_set.attrs, tiles_set.attrs, encoded_aliases, true) do
           {:ok, ret} ->
             Enum.map(ret, fn is ->
               # IO.puts("Removing #{inspect(tiles)} from #{inspect(hand)} result is #{inspect(is, charlists: :as_lists)} becomes #{inspect(TileSet.remove_indices(hand, is) |> Utils.remove_attr(["_hand", "_draw"]))}")
@@ -383,11 +438,11 @@ defmodule RiichiAdvanced.Match do
     end
   end
 
-  def elim_group([hand | calls], group, _tile_behavior) when is_binary(group) do
+  def elim_group([hand | calls], group, _tile_behavior, _encoded_aliases) when is_binary(group) do
     # group is a call name, remove every corresponding call
     for {call, i} <- Enum.with_index(calls), Keyword.get(call.attrs, :name) == group, do: [hand | List.delete_at(calls, i)]
   end
-  def elim_group([hand | calls], group, tile_behavior) do
+  def elim_group([hand | calls], group, tile_behavior, encoded_aliases) do
     cond do
       is_list(group) ->
         for subgroup <- group, reduce: [[hand | calls]] do
@@ -395,9 +450,9 @@ defmodule RiichiAdvanced.Match do
             # subgroup contains multiple parts that can be removed independently
             for part <- subgroup, reduce: acc do
               nil -> []
-              acc -> Enum.flat_map(acc, &elim_group(&1, part, tile_behavior))
+              acc -> Enum.flat_map(acc, &elim_group(&1, part, tile_behavior, encoded_aliases))
             end
-          acc -> Enum.flat_map(acc, &elim_group(&1, subgroup, tile_behavior))
+          acc -> Enum.flat_map(acc, &elim_group(&1, subgroup, tile_behavior, encoded_aliases))
         end
 
         # for subgroup <- group, reduce: [[hand | calls]] do
@@ -408,7 +463,7 @@ defmodule RiichiAdvanced.Match do
       true ->
         from_calls = for {call, i} <- Enum.with_index(calls), TileSet.is_subset?(group, call), do: [hand | List.delete_at(calls, i)]
         # if length(group.attrs) == 3 do IO.puts("#{inspect(hand)}\n- #{inspect(group)}\n= #{inspect(TileSet.subtract(hand, group))}") end
-        case TileSet.subtract(hand, group, exhaustive: true, max_holes: TileSet.count_jokers(hand.attrs, tile_behavior), mappings: tile_behavior.mappings) do
+        case TileSet.subtract(hand, group, exhaustive: true, max_holes: TileSet.count_jokers(hand.attrs, tile_behavior), encoded_aliases: encoded_aliases) do
           nil -> from_calls
           ret ->
             for new_hand <- ret do
@@ -419,18 +474,18 @@ defmodule RiichiAdvanced.Match do
         end
     end
   end
-  def elim_group_once(_hands, [], _tile_behavior) do
+  def elim_group_once(_hands, [], _tile_behavior, _encoded_aliases) do
     IO.puts("Tried to remove an empty group []")
     []
   end
-  def elim_group_once([hand | calls], group, _tile_behavior) when is_binary(group) do
+  def elim_group_once([hand | calls], group, _tile_behavior, _encoded_aliases) when is_binary(group) do
     # group is a call name, remove one corresponding call
     case Enum.find_index(calls, &Keyword.get(&1.attrs, :name) == group) do
       nil -> []
       i   -> [[hand | List.delete_at(calls, i)]]
     end
   end
-  def elim_group_once([hand | calls], group, tile_behavior) when is_list(group) do
+  def elim_group_once([hand | calls], group, tile_behavior, encoded_aliases) when is_list(group) do
     for subgroup <- group, reduce: [hand | calls] do
       nil -> []
       acc ->
@@ -438,17 +493,17 @@ defmodule RiichiAdvanced.Match do
           # subgroup contains multiple parts that can be removed independently
           for part <- subgroup, reduce: acc do
             nil -> []
-            acc -> elim_group_once(acc, part, tile_behavior)
+            acc -> elim_group_once(acc, part, tile_behavior, encoded_aliases)
           end
         else
-          elim_group_once(acc, subgroup, tile_behavior)
+          elim_group_once(acc, subgroup, tile_behavior, encoded_aliases)
         end
     end
   end
-  def elim_group_once([hand | calls], group, tile_behavior) do
+  def elim_group_once([hand | calls], group, tile_behavior, encoded_aliases) do
     # we prefer removing from calls over from hand
     case Enum.find_index(calls, &TileSet.is_subset?(group, &1)) do
-      nil -> case TileSet.subtract(hand, group, max_holes: TileSet.count_jokers(hand.attrs, tile_behavior), mappings: tile_behavior.mappings) do
+      nil -> case TileSet.subtract(hand, group, max_holes: TileSet.count_jokers(hand.attrs, tile_behavior), encoded_aliases: encoded_aliases) do
         nil ->[]
         ret -> [[ret | calls]]
       end
@@ -679,6 +734,7 @@ defmodule RiichiAdvanced.Match do
   def perform_unique_match(data) do
     %{
       tile_behavior: tile_behavior,
+      encoded_aliases: encoded_aliases,
       acc: acc,
       groups: groups,
       num: num,
@@ -723,7 +779,7 @@ defmodule RiichiAdvanced.Match do
               case Enum.find_index(calls, &TileSet.is_subset?(group, &1)) do
                 nil ->
                   # remove from hand instead
-                  case TileSet.subtract(hand, group, max_holes: TileSet.count_jokers(hand.attrs, tile_behavior), mappings: tile_behavior.mappings) do
+                  case TileSet.subtract(hand, group, max_holes: TileSet.count_jokers(hand.attrs, tile_behavior), encoded_aliases: encoded_aliases) do
                     nil -> {[hand | calls], remaining, groups_left - 1}    # didn't match
                     ret -> {[ret | calls], remaining - 1, groups_left - 1} # matched and updated
                   end
@@ -788,6 +844,7 @@ defmodule RiichiAdvanced.Match do
   def perform_standard_match(data) do
     %{
       tile_behavior: tile_behavior,
+      encoded_aliases: encoded_aliases,
       acc: acc,
       groups: groups,
       num: num,
@@ -842,7 +899,7 @@ defmodule RiichiAdvanced.Match do
               base_suit <- (if base_suit == nil and is_map(groups) do TileBehavior.get_base_tiles(tile_behavior) else [base_suit] end),
               groups = (if is_map(groups) do Map.get(groups, base_suit) else groups end),
               group <- groups,
-              [hand | calls] <- (if exhaustive do elim_group(hands, group, tile_behavior) else elim_group_once(hands, group, tile_behavior) end) do
+              [hand | calls] <- (if exhaustive do elim_group(hands, group, tile_behavior, encoded_aliases) else elim_group_once(hands, group, tile_behavior, encoded_aliases) end) do
             # if not exhaustive and group.hash == 2671 do
             #   IO.inspect({hands, hand, group})
             # end
@@ -875,6 +932,7 @@ defmodule RiichiAdvanced.Match do
     all_tiles = MapSet.new(Enum.map(tiles_in_hand, &Utils.strip_attrs/1))
     |> MapSet.union(MapSet.new(Enum.flat_map(Utils.strip_attrs(tiles_in_hand), &Map.get(tile_behavior.mappings, &1, []))))
     tile_behavior = %{tile_behavior | all_tiles: all_tiles }
+    encoded_aliases = TileSet.encode_aliases(tile_behavior)
     # encode hand/calls as initial accumulator
     initial_hands = [TileSet.encode(hand, tile_behavior) | Enum.map(calls, fn {name, call} ->
       ret = TileSet.encode(call, tile_behavior)
@@ -896,6 +954,7 @@ defmodule RiichiAdvanced.Match do
       else
         initial_state = %{
           tile_behavior: tile_behavior,
+          encoded_aliases: encoded_aliases,
           acc: [initial_hands],
           exhaustive: false,
           unique: false,
@@ -909,14 +968,15 @@ defmodule RiichiAdvanced.Match do
           state when match_elem == "unique" -> %{state | unique: true}
           state when match_elem == "nojoker" ->
             tile_behavior = TileBehavior.remove_aliases(tile_behavior)
-            %{state | nojoker: true, tile_behavior: tile_behavior}
+            %{state | nojoker: true, tile_behavior: tile_behavior, encoded_aliases: %{}}
           state when match_elem == "ignore_suit" ->
             # reencode hands as numeric jokers
             acc = state.acc
             acc = Enum.map(acc, &Enum.map(&1, fn hand -> TileSet.decode(hand, tile_behavior) end))
             tile_behavior = Map.update!(tile_behavior, :mappings, &add_ignore_suit_mappings/1)
+            encoded_aliases = TileSet.encode_aliases(tile_behavior)
             acc = Enum.map(acc, &Enum.map(&1, fn hand -> TileSet.encode(hand, tile_behavior) end))
-            %{state | tile_behavior: tile_behavior, acc: acc}
+            %{state | tile_behavior: tile_behavior, encoded_aliases: encoded_aliases, acc: acc}
           state when match_elem == "almost" ->
             # simply add an :any joker to hand
             acc = Enum.map(state.acc, fn [hand | calls] -> [%{hand | hash: @any_prime * hand.hash, attrs: [{@any_prime, 0} | hand.attrs]} | calls] end)
@@ -977,14 +1037,16 @@ defmodule RiichiAdvanced.Match do
           else
             # final removal of holes from hand
             # (note that only hand can have holes; calls do not have holes ever)
-            hole_hash = Enum.reduce(hand.holes, 1, fn {p, _}, acc -> acc * p end)
-            # if hole_hash == 2671 do
-            #   IO.inspect(TileSet.subtract_check_attrs(hand.attrs, hand.holes, hand.hash, tile_behavior.mappings, false), label: inspect({"asdf", hand}))
+            # if Enum.reduce(hand.holes, 1, fn {p, _}, acc -> acc * p end) == 2671 do
+            #   IO.inspect(TileSet.subtract_check_attrs(hand.attrs, hand.holes, hand.hash, tile_behavior, false), label: inspect({"asdf", hand}))
             # end
-            case TileSet.subtract_check_attrs(hand.attrs, hand.holes, hole_hash, tile_behavior.mappings, false) do
+            case TileSet.subtract_check_attrs(hand.attrs, hand.holes, encoded_aliases, false) do
               nil ->
                 if debug do
                   IO.puts("Final result cannot fill holes: #{inspect(Utils.sort_tiles(TileSet.decode(hand, tile_behavior)))}--#{inspect(Utils.sort_tiles(TileSet.decode_attrs(hand.holes, tile_behavior)))}")
+                  IO.puts("Hand: #{inspect(hand.attrs)}")
+                  IO.puts("Group: #{inspect(hand.holes)}")
+                  IO.puts("Mappings were: #{inspect(tile_behavior.mappings)}")
                 end
                 false
               _ -> true
