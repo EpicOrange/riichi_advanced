@@ -118,15 +118,15 @@ defmodule RiichiAdvanced.Match do
     def check_equivalence({p2, battrs2}, {p1, battrs1}, encoded_aliases) do
       # joker lookup is basically term rewriting: {tile, attrs} -> {tile, attrs}
       # so just check if an alias for {p2, battrs2} exists that matches {p1, battrs1}
-      if check_tile_match({p2, battrs2}, {p1, battrs1}) do
-        true
-      else
-        case Map.get(encoded_aliases, p1) do
-          nil -> false
-          battrs_aliases -> Enum.any?(battrs_aliases, fn {battrs, aliases} ->
+      cond do
+        check_tile_match({p2, battrs2}, {p1, battrs1}) -> true
+        Enum.any?(Map.get(encoded_aliases, p1, []), fn {battrs, aliases} ->
             (battrs1 &&& battrs) == battrs1 and Enum.any?(aliases, fn {p3, battrs3} -> check_tile_match({p2, battrs2}, {p3, battrs3}) end)
-          end)
-        end
+          end) -> true
+        Enum.any?(Map.get(encoded_aliases, @any_prime, []), fn {battrs, aliases} ->
+            (battrs1 &&& battrs) == battrs1 and Enum.any?(aliases, fn {p3, battrs3} -> check_tile_match({p2, battrs2}, {p3, battrs3}) end)
+          end) -> true
+        true -> false
       end
     end
 
@@ -273,7 +273,7 @@ defmodule RiichiAdvanced.Match do
               all_holes = new_holes ++ holes
               num_any_tiles = Enum.count(all_holes, fn {p, _} -> p == @any_prime end)
               cond do
-                max_holes - (length(all_holes) - num_any_tiles) < 0 ->
+                length(all_holes) - num_any_tiles > max_holes ->
                   # failed to match because non-any holes exceed max_holes
                   nil
                 length(all_holes) > length(attrs2) ->
@@ -308,13 +308,9 @@ defmodule RiichiAdvanced.Match do
     end
 
     def count_jokers(attrs, tile_behavior) do
-      mappings = Map.get(tile_behavior, :mappings, %{})
-      for tile <- decode_attrs(attrs, tile_behavior), reduce: 0 do
-        acc ->
-          if Enum.any?(mappings, fn {key, _} -> Utils.same_tile(tile, key) end) do
-            # it's a joker
-            acc + 1
-          else acc end
+      # any tile not in tile_behavior.all_tiles is a joker
+      for {p, _} <- attrs, reduce: 0 do
+        acc -> if Constants.from_prime(p) in tile_behavior.all_tiles do acc else acc + 1 end
       end
     end
 
@@ -380,9 +376,9 @@ defmodule RiichiAdvanced.Match do
             acc2 ->
               encoded_attrs = encode_attrs(attrs, tile_behavior.attrs)
               encoded_aliases = encode(aliases, tile_behavior).attrs
-              Map.put(acc2, encoded_attrs, encoded_aliases)
+              Map.update(acc2, encoded_attrs, encoded_aliases, &encoded_aliases ++ &1)
           end
-          Map.put(acc, Constants.to_prime(tile), entry)
+          Map.update(acc, Constants.to_prime(tile), entry, &Map.merge(entry, &1))
       end
     end
 
@@ -931,8 +927,12 @@ defmodule RiichiAdvanced.Match do
     # restrict all_tiles to tiles in hand as well as all relevant joker aliases
     all_tiles = MapSet.new(Enum.map(tiles_in_hand, &Utils.strip_attrs/1))
     |> MapSet.union(MapSet.new(Enum.flat_map(Utils.strip_attrs(tiles_in_hand), &Map.get(tile_behavior.mappings, &1, []))))
+    # |> MapSet.union(MapSet.new(Map.keys(tile_behavior.aliases)))
+    |> MapSet.delete(:any) # never let :any serve as a base tile for groups
+    |> MapSet.reject(fn tile -> Map.has_key?(tile_behavior.mappings, tile) end) # no jokers either
     tile_behavior = %{tile_behavior | all_tiles: all_tiles }
     encoded_aliases = TileSet.encode_aliases(tile_behavior)
+    # IO.inspect({"asdf", tile_behavior.aliases}, limit: :infinity)
     # encode hand/calls as initial accumulator
     initial_hands = [TileSet.encode(hand, tile_behavior) | Enum.map(calls, fn {name, call} ->
       ret = TileSet.encode(call, tile_behavior)
@@ -1044,9 +1044,9 @@ defmodule RiichiAdvanced.Match do
               nil ->
                 if debug do
                   IO.puts("Final result cannot fill holes: #{inspect(Utils.sort_tiles(TileSet.decode(hand, tile_behavior)))}--#{inspect(Utils.sort_tiles(TileSet.decode_attrs(hand.holes, tile_behavior)))}")
-                  IO.puts("Hand: #{inspect(hand.attrs)}")
-                  IO.puts("Group: #{inspect(hand.holes)}")
-                  IO.puts("Mappings were: #{inspect(tile_behavior.mappings)}")
+                  # IO.puts("Hand: #{inspect(hand.attrs)}")
+                  # IO.puts("Group: #{inspect(hand.holes)}")
+                  # IO.puts("Mappings were: #{inspect(tile_behavior.mappings)}")
                 end
                 false
               _ -> true
