@@ -71,9 +71,7 @@ defmodule RiichiAdvanced.GameState do
       ignore_suit: false
     ]
     def remove_aliases(tile_behavior) do
-      tile_behavior
-      |> Map.put(:aliases, %{})
-      |> Map.put(:mappings, %{})
+      %{tile_behavior | aliases: %{}, mappings: %{}, encoded_aliases: %{}}
     end
     def is_any_joker?(tile, tile_behavior) do
       Enum.any?(Map.get(tile_behavior.aliases, :any, %{}), fn {_attrs, aliases} ->
