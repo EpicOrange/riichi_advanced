@@ -136,7 +136,13 @@ defmodule RiichiAdvanced.GameState do
           end)
       end
       attrs = Enum.flat_map(from_tiles, fn {_tile, attrs} -> attrs; _ -> [] end)
-      %{tile_behavior | aliases: aliases, mappings: mappings, attrs: MapSet.union(tile_behavior.attrs, MapSet.new(attrs))}
+      all_tiles = MapSet.union(tile_behavior.all_tiles, to_tiles)
+      %{tile_behavior |
+        aliases: aliases,
+        mappings: mappings,
+        all_tiles: all_tiles,
+        attrs: MapSet.union(tile_behavior.attrs, MapSet.new(attrs)),
+      }
     end
   end
 
