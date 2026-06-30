@@ -231,7 +231,7 @@ defmodule RiichiAdvanced.Match do
 
     # def subtract_rust(_hash2, _hash1, _attrs2, _attrs1), do: :erlang.nif_error(:nif_not_loaded)
     defp _subtract(%{hash: hash2, attrs: attrs2} = hand,
-                   %{hash: hash1, attrs: attrs1} = group,
+                   %{hash: hash1, attrs: attrs1} = _group,
                    tile_behavior,
                    opts) do
       # debug = Keyword.get(opts, :debug, false)
@@ -246,7 +246,10 @@ defmodule RiichiAdvanced.Match do
       encoded_aliases = if nojoker do %{} else Map.get(tile_behavior, :encoded_aliases, %{}) end
       encoded_joker_tiles = if nojoker do %{} else Map.get(tile_behavior, :encoded_joker_tiles, %{}) end
 
-      jokers = Enum.filter(attrs2, & &1 in encoded_joker_tiles)
+      # put all jokers at the end, so for non-exhaustive searches we guarantee choosing jokers last
+      {jokers, nonjokers} = Enum.split_with(attrs2, & &1 in encoded_joker_tiles)
+      attrs2 = nonjokers ++ jokers
+      hand = %{hand | attrs: attrs2}
 
       gcd = Integer.gcd(hash2, hash1)
 
@@ -269,19 +272,36 @@ defmodule RiichiAdvanced.Match do
             remainder = Integer.floor_div(hash1, gcd)
             hash3 = Enum.reduce(jokers, 1, fn {p, _}, acc -> p * acc end)
             gcd * Integer.gcd(hash3, remainder)
-          else gcd end
+          else gcd end 
           divides = gcd == hash1
 
           # if divides, no need to use jokers
-          # otherwise, use jokers
+          # otherwise, use jokers, but if not exhaustive, prioritize nonjokers-only if possible
           encoded_aliases = if divides do %{} else encoded_aliases end
-          with {:ok, indices} <- subtract_check_attrs(attrs2, attrs1, encoded_aliases, exhaustive) do
-            cond do
-              return_indices -> indices
-              exhaustive ->
-                for ixs <- indices do remove_tileset_indices(hand, ixs) end
-                |> Enum.uniq()
-              true -> remove_tileset_indices(hand, indices)
+
+          ret = if not exhaustive do
+            with {:ok, indices} <- subtract_check_attrs(nonjokers, attrs1, %{}, exhaustive) do
+              cond do
+                return_indices -> indices
+                exhaustive ->
+                  for ixs <- indices do remove_tileset_indices(hand, ixs) end
+                  |> Enum.uniq()
+                true -> remove_tileset_indices(hand, indices)
+              end
+            end
+          else nil end
+
+          if ret != nil do
+            ret
+          else
+            with {:ok, indices} <- subtract_check_attrs(attrs2, attrs1, encoded_aliases, exhaustive) do
+              cond do
+                return_indices -> indices
+                exhaustive ->
+                  for ixs <- indices do remove_tileset_indices(hand, ixs) end
+                  |> Enum.uniq()
+                true -> remove_tileset_indices(hand, indices)
+              end
             end
           end
       end
@@ -545,11 +565,11 @@ defmodule RiichiAdvanced.Match do
       Riichi.is_manzu?(tile) -> 0
       Riichi.is_pinzu?(tile) -> 10
       Riichi.is_souzu?(tile) -> 20
-      true -> 0
+      true -> nil
     end
   end
 
-  @decorate cacheable(cache: RiichiAdvanced.Cache, key: {:apply_offsets, base_tile, offsets, tile_behavior.uuid})
+  # @decorate cacheable(cache: RiichiAdvanced.Cache, key: {:apply_offsets, base_tile, offsets, tile_behavior.uuid})
   def apply_offsets(base_tile, offsets, tile_behavior), do: _apply_offsets(base_tile, offsets, tile_behavior, 0, [])
   def _apply_offsets(_base_tile, [], _tile_behavior, n, []) when abs(n) > 100 do
     IO.puts("Infinite loop detected")
@@ -568,20 +588,25 @@ defmodule RiichiAdvanced.Match do
         tile = Map.get(@fixed_offsets, o)
         # then shift it based on the base_tile
         suit_offset = suit_to_offset(base_tile)
-        tile = cond do
-          tile == :"7z" and suit_offset ==  0 -> :"7z"
-          tile == :"7z" and suit_offset == 10 -> :"0z"
-          tile == :"7z" and suit_offset == 20 -> :"6z"
-          tile == :"0z" and suit_offset ==  0 -> :"0z"
-          tile == :"0z" and suit_offset == 10 -> :"6z"
-          tile == :"0z" and suit_offset == 20 -> :"7z"
-          tile == :"6z" and suit_offset ==  0 -> :"6z"
-          tile == :"6z" and suit_offset == 10 -> :"7z"
-          tile == :"6z" and suit_offset == 20 -> :"0z"
-          true          -> _apply_offsets(tile, [suit_offset], tile_behavior, 0, []) |> Enum.at(0)
+        if suit_offset == nil do
+          # invalid, abort
+         nil
+        else
+          tile = cond do
+            tile == :"7z" and suit_offset ==  0 -> :"7z"
+            tile == :"7z" and suit_offset == 10 -> :"0z"
+            tile == :"7z" and suit_offset == 20 -> :"6z"
+            tile == :"0z" and suit_offset ==  0 -> :"0z"
+            tile == :"0z" and suit_offset == 10 -> :"6z"
+            tile == :"0z" and suit_offset == 20 -> :"7z"
+            tile == :"6z" and suit_offset ==  0 -> :"6z"
+            tile == :"6z" and suit_offset == 10 -> :"7z"
+            tile == :"6z" and suit_offset == 20 -> :"0z"
+            true          -> _apply_offsets(tile, [suit_offset], tile_behavior, 0, []) |> Enum.at(0)
+          end
+          # IO.inspect({base_tile, o, tile})
+          _apply_offsets(base_tile, offsets, tile_behavior, n, [tile | acc])
         end
-        # IO.inspect({base_tile, o, tile})
-        _apply_offsets(base_tile, offsets, tile_behavior, n, [tile | acc])
       Utils.is_tile(o) -> _apply_offsets(base_tile, offsets, tile_behavior, n, [Utils.to_tile(o) | acc]) # also handles "any"
       # otherwise, probably a group keyword; ignore
       true -> _apply_offsets(base_tile, offsets, tile_behavior, n, acc)
@@ -678,9 +703,10 @@ defmodule RiichiAdvanced.Match do
   @decorate cacheable(cache: RiichiAdvanced.Cache, key: {:encode_group, group, tile_behavior.uuid})
   def encode_group(group, tile_behavior) do
     nojoker = Map.get(tile_behavior, :mappings, %{}) |> Enum.empty?()
-    # groups can have a {:nojoker, true} tag if no jokers, but should not have {:joker, ...} tags
-    # only hand has {:joker, ...} tags
+
+    # when applying offsets to make groups, don't care about jokers
     tile_behavior = TileBehavior.remove_aliases(tile_behavior)
+
     case group do
       [[_ | _] | _] -> Enum.map(tile_behavior.base_tiles, &Enum.map(group, fn subgroup -> apply_offsets(&1, subgroup, tile_behavior) end))
       [_ | _] -> Enum.map(tile_behavior.base_tiles, &apply_offsets(&1, group, tile_behavior))
@@ -710,7 +736,7 @@ defmodule RiichiAdvanced.Match do
       is_list(&1) -> TileSet.encode(&1, tile_behavior)
       true -> TileSet.encode([&1], tile_behavior)
     end)
-    |> Enum.map(fn group -> if nojoker and is_map(group) and not Enum.any?(group.attrs, fn {k, _v} -> k == :joker or k == Constants.to_prime(:any) end) do
+    |> Enum.map(fn group -> if nojoker and is_map(group) do
         %{group | attrs: [{:nojoker, true} | group.attrs]}
       else group end
     end)
@@ -843,24 +869,31 @@ defmodule RiichiAdvanced.Match do
     # t = System.os_time(:millisecond)
 
     unique = unique or "unique" in groups
+    nojoker_tile_behavior = TileBehavior.remove_aliases(tile_behavior)
     # take all groups and reify them into actual tiles
     # this reverses the order of groups, which is desirable since nojoker tiles will be first
-
+    # embed nojoker into groups, so we don't need to pass a nojoker flag later on
     {_, groups} = for group <- groups, reduce: {nojoker, []} do
       {nojoker, acc} ->
         # reify each group spec into multiple possible groups
         cond do
-          group in MatchOld.group_keywords() -> {nojoker or group == "nojoker", acc}
+          group in MatchOld.group_keywords() ->
+            # we only care about the group keyword "nojoker" for now
+            # this flags all later groups with {:nojoker, true}
+            {nojoker or group == "nojoker", acc}
           Map.has_key?(@fixed_offsets, group) || is_number(group) ->
             # amerijong offsets
             # return a version of each group for each possible base tile
-            ret = {for base_tile <- tile_behavior.base_tiles, into: %{} do
-              uuid = Ecto.UUID.generate()
-              {base_tile, encode_group(group, %{tile_behavior | all_tiles: [base_tile], uuid: uuid})}
+            base_tiles = MapSet.union(tile_behavior.base_tiles, MapSet.new([:"1m", :"1p", :"1s"]))
+            ret = {for base_tile <- base_tiles, into: %{} do
+              {base_tile, encode_group(group, %{tile_behavior |
+                mappings: if nojoker do %{} else tile_behavior.mappings end,
+                base_tiles: [base_tile],
+                uuid: Ecto.UUID.generate()})}
             end, group}
             {nojoker, [ret | acc]}
           true ->
-            reified_groups = encode_group(group, tile_behavior)
+            reified_groups = encode_group(group, if nojoker do nojoker_tile_behavior else tile_behavior end)
             # if length(reified_groups) > 10 do
             #   IO.inspect(tile_behavior.base_tiles, label: "base_tiles")
             #   IO.inspect(reified_groups |> Enum.map(&TileSet.decode(&1, tile_behavior)), label: inspect(group), limit: :infinity)
@@ -869,9 +902,12 @@ defmodule RiichiAdvanced.Match do
             {nojoker, [ret | acc]}
         end
     end
+
     # if debug do IO.inspect(groups, label: inspect(data.groups), limit: :infinity) end
     # if debug do IO.inspect(tile_behavior.attrs) end
-    # IO.inspect(acc, limit: :infinity)
+    if debug do IO.inspect(groups, limit: :infinity, label: "groups") end
+
+    # each acc element is {[hand | calls], remaining_groups, base_suit}
     ret = for j <- (if num == 0 do [1] else 1..abs(num) end), reduce: Enum.map(acc, fn hands -> {hands, groups, nil} end) do
       [] -> []
       hands_groups ->
@@ -881,6 +917,7 @@ defmodule RiichiAdvanced.Match do
           lines = for {[hand | calls], remaining_groups, base_suit} <- hands_groups do
             # groups = Enum.map(remaining_groups, fn {groups, _orig_group} -> Enum.map(groups, &TileSet.decode(&1, tile_behavior)) end)
             # groups = remaining_groups
+            IO.inspect(remaining_groups, limit: :infinity)
             groups = Enum.map(remaining_groups, fn {_groups, orig_group} -> orig_group end)
             "- (#{length(TileSet.factor(hand.hash))}) #{inspect(Utils.sort_tiles(TileSet.decode(hand, tile_behavior)))} / #{inspect(Enum.map(calls, &Utils.sort_tiles(TileSet.decode(&1, tile_behavior))))} \\\\ #{inspect(groups, charlists: :as_lists)}#{if unique do " unique" else "" end}#{if exhaustive do " exhaustive" else "" end}#{if nojoker do " nojoker" else "" end}#{if base_suit != nil do " #{base_suit}" else "" end}"
           end
@@ -890,24 +927,27 @@ defmodule RiichiAdvanced.Match do
         hands_groups = if exhaustive do
           for {hands, remaining_groups, base_suit} <- hands_groups,
               {{groups, _orig_group}, i} <- Enum.with_index(remaining_groups),
-              base_suit <- (if base_suit == nil and is_map(groups) do tile_behavior.base_tiles else [base_suit] end),
+              base_suit <- (if base_suit == nil and is_map(groups) do Map.keys(groups) else [base_suit] end),
               groups = (if is_map(groups) do Map.get(groups, base_suit) else groups end),
               group <- groups,
-              [hand | calls] <- (if exhaustive do elim_group(hands, group, tile_behavior) else elim_group_once(hands, group, tile_behavior) end),
+              hands <- (if exhaustive do elim_group(hands, group, tile_behavior) else elim_group_once(hands, group, tile_behavior) end),
               uniq: true do
-            {[hand | calls], if unique do List.delete_at(remaining_groups, i) else remaining_groups end, base_suit}
+            {hands, if unique do List.delete_at(remaining_groups, i) else remaining_groups end, base_suit}
           end
         else
+          # only keep one result per base suit
           for {hands, remaining_groups, base_suit} <- hands_groups,
               {{groups, _orig_group}, i} <- Enum.with_index(remaining_groups),
-              base_suit <- (if base_suit == nil and is_map(groups) do tile_behavior.base_tiles else [base_suit] end),
+              base_suit <- (if base_suit == nil and is_map(groups) do Map.keys(groups) else [base_suit] end),
               groups = (if is_map(groups) do Map.get(groups, base_suit) else groups end),
               group <- groups,
-              [hand | calls] <- (if exhaustive do elim_group(hands, group, tile_behavior) else elim_group_once(hands, group, tile_behavior) end),
-              reduce: [] do
-            []  -> [{[hand | calls], if unique do List.delete_at(remaining_groups, i) else remaining_groups end, base_suit}]
-            ret -> ret
+              hands <- (if exhaustive do elim_group(hands, group, tile_behavior) else elim_group_once(hands, group, tile_behavior) end),
+              reduce: %{} do
+            acc when is_map_key(acc, base_suit) -> acc
+            acc -> Map.put(acc, base_suit, {hands, if unique do List.delete_at(remaining_groups, i) else remaining_groups end, base_suit})
           end
+          |> Map.values()
+          # |> Enum.take(1) # TODO see if correctness holds with this line uncommented
         end
 
         if debug do
@@ -962,8 +1002,6 @@ defmodule RiichiAdvanced.Match do
   end
 
   def prepare_tiles([hand | calls], match_definitions, tile_behavior) do
-    t = System.os_time(:millisecond)
-
     # let all_tiles = tiles in hand + all joker aliases
     tiles_in_hand = hand ++ Enum.flat_map(calls, &Utils.call_to_tiles/1)
     encodable_tiles = Map.keys(tile_behavior.aliases) |> MapSet.new()
@@ -1005,6 +1043,7 @@ defmodule RiichiAdvanced.Match do
     |> MapSet.union(offset_tiles)
     base_tiles = MapSet.difference(all_tiles, joker_tiles)
     |> MapSet.delete(:any)
+    |> MapSet.union(MapSet.new([:"1m", :"1p", :"1s"])) # for amerijong
     tile_behavior = %{tile_behavior | all_tiles: all_tiles, base_tiles: base_tiles, encoded_joker_tiles: encoded_joker_tiles }
 
     # encode aliases again, using new all_tiles that includes offset tiles
@@ -1058,9 +1097,7 @@ defmodule RiichiAdvanced.Match do
           state when state.acc == [] -> state
           state when match_elem == "exhaustive" -> %{state | exhaustive: true}
           state when match_elem == "unique" -> %{state | unique: true}
-          state when match_elem == "nojoker" ->
-            tile_behavior = TileBehavior.remove_aliases(tile_behavior)
-            %{state | nojoker: true, tile_behavior: TileBehavior.remove_aliases(tile_behavior)}
+          state when match_elem == "nojoker" -> %{state | nojoker: true, tile_behavior: TileBehavior.remove_aliases(tile_behavior)}
           state when match_elem == "ignore_suit" ->
             # reencode hands as numeric jokers
             acc = state.acc
