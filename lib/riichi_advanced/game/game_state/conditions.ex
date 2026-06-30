@@ -633,14 +633,16 @@ defmodule RiichiAdvanced.GameState.Conditions do
     # end
     # IO.puts("#{inspect(context)}, #{if negated do "not" else "" end} #{inspect(cond_spec)} => #{result}")
 
+    ret = if negated do not result else result end
+
     if Debug.debug_conditions() do
       elapsed_time = System.os_time(:millisecond) - t
       if elapsed_time > 100 do
-        IO.puts("check_condition: #{inspect(elapsed_time)} ms to check #{inspect([cond_spec | opts])} with context #{inspect(context)}")
+        IO.puts("check_condition: #{inspect(elapsed_time)} ms to check #{inspect([cond_spec | opts])} with context #{inspect(context)} = #{inspect(result)}")
       end
     end
 
-    if negated do not result else result end
+    ret
   end
 
   def check_dnf_condition(state, cond_spec, context \\ %{}) do

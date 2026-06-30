@@ -273,7 +273,7 @@ defmodule RiichiAdvanced.Match do
               return_indices -> indices
               exhaustive ->
                 for ixs <- indices, not too_many_holes?.(hand, ixs) do remove_tileset_indices(hand, ixs) end
-                |> Enum.uniq_by(& &1.hash)
+                |> Enum.uniq()
               not too_many_holes?.(hand, indices) -> remove_tileset_indices(hand, indices)
               true -> nil
             end
@@ -318,7 +318,7 @@ defmodule RiichiAdvanced.Match do
                       not too_many_holes?.(indices) -> [remove_tileset_indices(hand, indices) | ret]
                       true -> ret
                     end
-                    |> Enum.uniq_by(& &1.hash)
+                    |> Enum.uniq()
                   end
                 true -> nil
               end
@@ -632,8 +632,8 @@ defmodule RiichiAdvanced.Match do
   # standard case: when offset is a map (so it can specify attrs)
   def _apply_offsets(base_tile, [%{"offset" => o} | _] = os, tile_behavior, n, acc) when is_number(o) and n < o and o >= 10 and (o-n) >= 10, do: _apply_offsets(base_tile |> apply_ordering(@shift_suit), os, tile_behavior, n+10, acc)
   def _apply_offsets(base_tile, [%{"offset" => o} | _] = os, tile_behavior, n, acc) when is_number(o) and n > o and o <= -10 and (o-n) <= -10, do: _apply_offsets(base_tile |> apply_ordering(@shift_suit) |> apply_ordering(@shift_suit), os, tile_behavior, n-10, acc)
-  def _apply_offsets(base_tile, [%{"offset" => o} | _] = os, tile_behavior, n, acc) when is_number(o) and n < o and o > 0, do: _apply_offsets(base_tile |> apply_ordering(tile_behavior.ordering), os, tile_behavior, n+1, acc)
-  def _apply_offsets(base_tile, [%{"offset" => o} | _] = os, tile_behavior, n, acc) when is_number(o) and n > o and o < 0, do: _apply_offsets(base_tile |> apply_ordering(tile_behavior.ordering_r), os, tile_behavior, n-1, acc)
+  def _apply_offsets(base_tile, [%{"offset" => o} | _] = os, tile_behavior, n, acc) when is_number(o) and n < o, do: _apply_offsets(base_tile |> apply_ordering(tile_behavior.ordering), os, tile_behavior, n+1, acc)
+  def _apply_offsets(base_tile, [%{"offset" => o} | _] = os, tile_behavior, n, acc) when is_number(o) and n > o, do: _apply_offsets(base_tile |> apply_ordering(tile_behavior.ordering_r), os, tile_behavior, n-1, acc)
   # base cases
   def _apply_offsets(base_tile, [%{"offset" => o, "attrs" => attrs} | offsets], tile_behavior, n, acc) when is_number(o) and n == o, do: _apply_offsets(base_tile, offsets, tile_behavior, n, [{base_tile |> Utils.strip_attrs(), attrs} | acc])
   def _apply_offsets(base_tile, [%{"offset" => o} | offsets], tile_behavior, n, acc) when is_number(o) and n == o, do: _apply_offsets(base_tile, offsets, tile_behavior, n, [base_tile |> Utils.strip_attrs() | acc])
@@ -717,7 +717,7 @@ defmodule RiichiAdvanced.Match do
   # "kakan": ["kakan"]
 
   # reifies a group spec into multiple possible groups
-  @decorate cacheable(cache: RiichiAdvanced.Cache, key: {:encode_group, group, tile_behavior.base_tiles, tile_behavior.ordering, tile_behavior.mappings})
+  @decorate cacheable(cache: RiichiAdvanced.Cache, key: {:encode_group, group, tile_behavior.uuid})
   def encode_group(group, tile_behavior) do
     nojoker = Map.get(tile_behavior, :mappings, %{}) |> Enum.empty?()
     # groups can have a {:nojoker, true} tag if no jokers, but should not have {:joker, ...} tags
@@ -894,7 +894,8 @@ defmodule RiichiAdvanced.Match do
             # amerijong offsets
             # return a version of each group for each possible base tile
             ret = {for base_tile <- tile_behavior.base_tiles, into: %{} do
-              {base_tile, encode_group(group, %{tile_behavior | all_tiles: [base_tile]})}
+              uuid = Ecto.UUID.generate()
+              {base_tile, encode_group(group, %{tile_behavior | all_tiles: [base_tile], uuid: uuid})}
             end, group}
             {nojoker, [ret | acc]}
           true ->
@@ -986,9 +987,7 @@ defmodule RiichiAdvanced.Match do
     end
   end
 
-  defp match_hand_v2(hand, calls, match_definitions, tile_behavior) do
-    # dbg = Enum.count(hand, & &1 == :"9m") == 1
-    # restrict all_tiles to be tiles that exist in hand/calls
+  def prepare_tiles([hand | calls], match_definitions, tile_behavior) do
     tiles_in_hand = hand ++ Enum.flat_map(calls, &Utils.call_to_tiles/1)
     encodable_tiles = Map.keys(tile_behavior.aliases) |> MapSet.new()
 
@@ -1043,6 +1042,10 @@ defmodule RiichiAdvanced.Match do
     encoded_aliases = TileSet.encode_aliases(tile_behavior)
     tile_behavior = %{tile_behavior | encoded_aliases: encoded_aliases }
 
+    # uuid for distinguishing this tile behavior
+    uuid = Ecto.UUID.generate()
+    tile_behavior = %{tile_behavior | uuid: uuid }
+
     # if dbg do
     #   # IO.inspect(gather_offsets(match_definitions))
     #   IO.inspect({"aaa", "aliases", tile_behavior.aliases})
@@ -1055,6 +1058,14 @@ defmodule RiichiAdvanced.Match do
     #   # IO.inspect(Process.info(self(), :current_stacktrace))
     # end
     # IO.inspect({"asdf", tile_behavior.aliases}, limit: :infinity)
+
+    {tiles_in_hand, initial_hands, tile_behavior}
+  end
+
+  defp match_hand_v2(hand, calls, match_definitions, tile_behavior) do
+    # dbg = Enum.count(hand, & &1 == :"9m") == 1
+    # restrict all_tiles to be tiles that exist in hand/calls
+    {tiles_in_hand, initial_hands, tile_behavior} = prepare_tiles([hand | calls], match_definitions, tile_behavior)
 
     # try each match definition in turn
     num_tiles_in_hand = length(tiles_in_hand)
@@ -1085,7 +1096,7 @@ defmodule RiichiAdvanced.Match do
           state when match_elem == "unique" -> %{state | unique: true}
           state when match_elem == "nojoker" ->
             tile_behavior = TileBehavior.remove_aliases(tile_behavior)
-            %{state | nojoker: true, tile_behavior: %{tile_behavior | encoded_aliases: %{}}}
+            %{state | nojoker: true, tile_behavior: TileBehavior.remove_aliases(tile_behavior)}
           state when match_elem == "ignore_suit" ->
             # reencode hands as numeric jokers
             acc = state.acc
@@ -1093,7 +1104,8 @@ defmodule RiichiAdvanced.Match do
             tile_behavior = Map.update!(tile_behavior, :mappings, &add_ignore_suit_mappings/1)
             encoded_aliases = TileSet.encode_aliases(tile_behavior)
             acc = Enum.map(acc, &Enum.map(&1, fn hand -> TileSet.encode(hand, tile_behavior) end))
-            %{state | tile_behavior: %{tile_behavior | encoded_aliases: encoded_aliases}, acc: acc}
+            uuid = Ecto.UUID.generate()
+            %{state | tile_behavior: %{tile_behavior | encoded_aliases: encoded_aliases, uuid: uuid}, acc: acc}
           state when match_elem == "almost" ->
             # simply add an :any joker to hand
             acc = Enum.map(state.acc, fn [hand | calls] -> [%{hand | hash: @any_prime * hand.hash, attrs: [{@any_prime, 0} | hand.attrs]} | calls] end)
@@ -1123,7 +1135,7 @@ defmodule RiichiAdvanced.Match do
                   if Enum.empty?(hand.holes) do
                     [hand | calls]
                   else
-                    with {:ok, indices} <- TileSet.subtract_check_attrs(hand.attrs, hand.holes, encoded_aliases, false) do
+                    with {:ok, indices} <- TileSet.subtract_check_attrs(hand.attrs, hand.holes, tile_behavior.encoded_aliases, false) do
                       hand = hand
                       |> Map.put(:holes, [])
                       |> TileSet.remove_tileset_indices(indices)
@@ -1176,7 +1188,7 @@ defmodule RiichiAdvanced.Match do
             # if Enum.reduce(hand.holes, 1, fn {p, _}, acc -> acc * p end) == 2671 do
             #   IO.inspect(TileSet.subtract_check_attrs(hand.attrs, hand.holes, hand.hash, tile_behavior, false), label: inspect({"asdf", hand}))
             # end
-            case TileSet.subtract_check_attrs(hand.attrs, hand.holes, encoded_aliases, true) do
+            case TileSet.subtract_check_attrs(hand.attrs, hand.holes, tile_behavior.encoded_aliases, true) do
               nil ->
                 if debug do
                   IO.puts("Final result cannot fill holes: #{inspect(Utils.sort_tiles(TileSet.decode(hand, tile_behavior)))}--#{inspect(Utils.sort_tiles(TileSet.decode_attrs(hand.holes, tile_behavior)))}")
@@ -1200,6 +1212,34 @@ defmodule RiichiAdvanced.Match do
       # {:error, :out_of_primes} ->
       #   IO.puts("Falling back to old match engine for hand #{inspect(hand)}")
       #   MatchOld.match_hand(hand, calls, match_definitions, tile_behavior)
+    end
+  end
+
+  def remove_group(hand, [], _tile_behavior, false), do: hand
+  def remove_group(hand, [], _tile_behavior, true), do: [hand]
+  def remove_group(hand, group, tile_behavior, exhaustive) do
+    {_tiles_in_hand, [initial_hand], tile_behavior} = prepare_tiles([hand], [[[group, 1]]], tile_behavior)
+
+    # debug = group == [-1, %{"attrs" => ["winning_tile"], "offset" => 0}, 1]
+    # if debug do
+    #   IO.inspect(tile_behavior, charlists: :as_lists, limit: :infinity)
+    # end
+
+    group
+    |> encode_group(tile_behavior)
+    |> Enum.reduce_while([], fn reified_group, acc ->
+      TileSet.subtract(initial_hand, reified_group, tile_behavior, exhaustive: exhaustive)
+      |> case do
+        nil when exhaustive -> {:cont, acc}
+        ret when exhaustive -> {:cont, ret ++ acc}
+        [ret | _] -> {:halt, [ret]}
+        _ -> {:cont, []}
+      end
+    end)
+    |> case do
+      ret when exhaustive -> Enum.map(ret, &TileSet.decode(&1, tile_behavior))
+      [] -> nil
+      [ret | _] -> TileSet.decode(ret, tile_behavior)
     end
   end
 

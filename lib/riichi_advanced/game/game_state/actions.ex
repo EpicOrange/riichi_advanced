@@ -603,6 +603,7 @@ defmodule RiichiAdvanced.GameState.Actions do
       ["minipoints" | _opts] when is_map_key(context, :minipoints) -> context.minipoints
       ["minipoints" | opts] ->
         score_actions = Enum.at(opts, 0)
+        # TODO we don't use this lookahead anymore
         actions_with_lookahead = for action <- Enum.reverse(score_actions), reduce: [] do
           [] -> [{action, [nil]}]
           [{["print" | _], next_action} | _] = acc -> [{action, next_action} | acc]
@@ -620,7 +621,7 @@ defmodule RiichiAdvanced.GameState.Actions do
         else
           [{[winning_tile | player.hand], player.calls, [0]}]
         end
-        for {[action | opts], [next_action | next_opts]} <- actions_with_lookahead, reduce: initial_hand_calls_fus do
+        for {[action | opts], [_next_action | _next_opts]} <- actions_with_lookahead, reduce: initial_hand_calls_fus do
           hand_calls_fus -> 
             conditions = Enum.at(opts, 1, [])
             passes_conditions = Conditions.check_cnf_condition(state, conditions, context)
@@ -671,45 +672,14 @@ defmodule RiichiAdvanced.GameState.Actions do
                   {hand, Enum.reject(calls, fn {_name, call} -> Enum.any?(call, &Riichi.tile_matches_all(tile_specs, %{tile: &1})) end), fus}
                 end
               "remove_groups" ->
-                # if the next action is also remove_groups,
-                # during removals, if two non-overlapping groups are removal candidates
-                # only remove one of the groups (since the other groups can be removed later)
-                # this enforces a kind of ordering on group removal, reducing redundancy
                 group_specs = Enum.at(opts, 0)
-                next_group_specs = if next_action == "remove_groups" do
-                  Enum.at(next_opts, 0, [])
-                else [] end
-                may_remove_later = group_specs == next_group_specs
-                result = Enum.flat_map(hand_calls_fus, fn {hand, calls, fus} ->
-                  group_value = for %{"groups" => groups} = group_spec <- group_specs, group <- groups do
-                    value = Map.get(group_spec, "value", 0)
-                    tiles = MatchOld.collect_base_tiles(hand, [], group, tile_behavior)
-                    {hands, _} = MatchOld.remove_group(hand, [], group, tiles, tile_behavior)
-                    |> Enum.unzip()
-                    hands
-                    |> Enum.uniq()
-                    |> Enum.map(&{hand -- &1, value})
-                  end
-                  |> Enum.concat()
-                  |> Enum.uniq()
-                  if may_remove_later do
-                    # IO.inspect(Enum.map(group_value, fn {group, _value} -> Utils.hand_to_string(group) end), label: "Choices for #{Utils.hand_to_string(hand)}")
-                    ret = for {group, _value} <- group_value do
-                      Enum.filter(group_value, fn {group2, _} -> Enum.any?(group2, & &1 in group) end)
-                    end
-                    |> Enum.reject(&Enum.empty?/1)
-                    |> Enum.min_by(&length/1, &<=/2, fn -> [] end)
-                    # if there's a choice to take nothing, always include it as an option
-                    ret = case Enum.find(group_value, fn {group, _value} -> group == [] end) do
-                      nil -> ret
-                      empty_group -> [empty_group | ret]
-                    end
-                    # IO.inspect(Enum.map(ret, fn {group, _value} -> Utils.hand_to_string(group) end), label: "Removing from #{Utils.hand_to_string(hand)}")
-                    # IO.inspect(Enum.map(group_value -- ret, fn {group, _value} -> Utils.hand_to_string(group) end), label: "Not removing from #{Utils.hand_to_string(hand)}")
-                    ret
-                  else group_value end
-                  |> Enum.map(fn {group, value} -> {hand -- group, calls, Enum.map(fus, & &1 + value)} end)
-                end)
+                result =
+                  for {hand, calls, fus} <- hand_calls_fus,
+                      %{"groups" => groups} = group_spec <- group_specs,
+                      value = Map.get(group_spec, "value", 0),
+                      group <- groups,
+                      hand <- Match.remove_group(hand, group, tile_behavior, true),
+                      uniq: true do {hand, calls, Enum.map(fus, & &1 + value)} end
                 # roll back if no matches
                 if Enum.empty?(result) do hand_calls_fus else result end
               "retain_empty_hands" ->

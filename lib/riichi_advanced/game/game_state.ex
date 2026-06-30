@@ -66,12 +66,14 @@ defmodule RiichiAdvanced.GameState do
       all_tiles: MapSet.new(),
       base_tiles: MapSet.new(),
       encoded_joker_tiles: MapSet.new(),
+      uuid: "",
       encoded_aliases: %{},
       dismantle_calls: false,
       ignore_suit: false
     ]
     def remove_aliases(tile_behavior) do
-      %{tile_behavior | aliases: %{}, mappings: %{}, encoded_aliases: %{}}
+      uuid = Ecto.UUID.generate()
+      %{tile_behavior | aliases: %{}, mappings: %{}, encoded_aliases: %{}, uuid: uuid}
     end
     def is_any_joker?(tile, tile_behavior) do
       Enum.any?(Map.get(tile_behavior.aliases, :any, %{}), fn {_attrs, aliases} ->
