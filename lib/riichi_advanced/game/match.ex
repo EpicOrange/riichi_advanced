@@ -482,17 +482,17 @@ defmodule RiichiAdvanced.Match do
     end
   end
   def elim_group_once([hand | calls], group, tile_behavior, encoded_aliases) when is_list(group) do
-    for subgroup <- group, reduce: [hand | calls] do
-      nil -> []
+    for subgroup <- group, reduce: [[hand | calls]] do
+      [] -> []
       acc ->
         if is_list(subgroup) and is_list(Enum.at(subgroup, 0)) do
           # subgroup contains multiple parts that can be removed independently
           for part <- subgroup, reduce: acc do
-            nil -> []
-            acc -> elim_group_once(acc, part, tile_behavior, encoded_aliases)
+            [] -> []
+            acc -> elim_group_once(acc |> Enum.at(0), part, tile_behavior, encoded_aliases)
           end
         else
-          elim_group_once(acc, subgroup, tile_behavior, encoded_aliases)
+          elim_group_once(acc |> Enum.at(0), subgroup, tile_behavior, encoded_aliases)
         end
     end
   end
@@ -500,7 +500,7 @@ defmodule RiichiAdvanced.Match do
     # we prefer removing from calls over from hand
     case Enum.find_index(calls, &TileSet.is_subset?(group, &1)) do
       nil -> case TileSet.subtract(hand, group, max_holes: TileSet.count_jokers(hand.attrs, tile_behavior), encoded_aliases: encoded_aliases) do
-        nil ->[]
+        nil -> []
         ret -> [[ret | calls]]
       end
       i -> [[hand | List.delete_at(calls, i)]]
@@ -874,6 +874,7 @@ defmodule RiichiAdvanced.Match do
     end
     # if debug do IO.inspect(groups, label: inspect(data.groups), limit: :infinity) end
     # if debug do IO.inspect(tile_behavior.attrs) end
+    # IO.inspect(acc, limit: :infinity)
     for j <- (if num == 0 do [1] else 1..abs(num) end), reduce: Enum.map(acc, fn hands -> {hands, groups, nil} end) do
       [] -> []
       hands_groups ->
