@@ -371,7 +371,6 @@ defmodule RiichiAdvanced.Match do
       hash: hash,
       attrs: attrs,
     }
-    # |> verify()
   end
 
   def encode_aliases(tile_behavior) do
