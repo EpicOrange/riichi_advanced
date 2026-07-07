@@ -170,12 +170,12 @@ defmodule RiichiAdvanced.MatchOld do
       # IO.inspect(Process.info(self(), :current_stacktrace))
       []
     else
-      from_hand = RiichiAdvanced.Match.try_remove_all_tiles(hand, tiles, tile_behavior) |> Enum.map(fn hand -> {hand, calls} end)
+      from_hand = RiichiAdvanced.Match.try_remove_all_tiles(hand, tiles, tile_behavior.aliases, tile_behavior.attrs) |> Enum.map(fn hand -> {hand, calls} end)
       from_calls = calls
       |> Enum.map(&Utils.call_to_tiles/1)
       |> Enum.with_index()
       |> Enum.flat_map(fn {call, i} ->
-        removed = RiichiAdvanced.Match.try_remove_all_tiles(call, tiles, tile_behavior)
+        removed = RiichiAdvanced.Match.try_remove_all_tiles(call, tiles, tile_behavior.aliases, tile_behavior.attrs)
         if Enum.empty?(removed) do [] else
           if tile_behavior.dismantle_calls do
             for new_call <- removed do

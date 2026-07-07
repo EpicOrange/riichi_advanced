@@ -1,8 +1,9 @@
 use std::collections::{HashMap, HashSet};
 use num::integer;
 use rustler::{Encoder, Env, Term};
+use crate::encode::{encode, encode_aliases};
 use crate::n_rooks;
-use crate::types::{Hash, Tile, Aliases, Mask, RowIndex, TileSet};
+use crate::types::{Aliases, ElixirAliases, ElixirHand, Hash, Mask, RowIndex, Tile, TileSet};
 
 rustler::atoms! { ok }
 
@@ -12,7 +13,7 @@ rustler::atoms! { ok }
 //   _remove_indices(&mut xs, &is);
 //   xs
 // }
-fn _remove_indices<T>(xs: &mut Vec<T>, is: &Vec<RowIndex>) -> () {
+pub fn _remove_indices<T>(xs: &mut Vec<T>, is: &Vec<RowIndex>) -> () {
   let mut is = is.clone();
   is.sort_unstable();
 
@@ -30,7 +31,7 @@ fn _remove_indices<T>(xs: &mut Vec<T>, is: &Vec<RowIndex>) -> () {
 fn count_factors_fast(n: Hash, primes: Vec<Hash>) -> usize {
   _count_factors_fast(n, &primes, 0)
 }
-fn _count_factors_fast(mut n: Hash, primes: &[Hash], mut acc: usize) -> usize {
+pub fn _count_factors_fast(mut n: Hash, primes: &[Hash], mut acc: usize) -> usize {
   if n == 1 { return acc; }
   if n == 0 {
     eprintln!("count_factors_fast: somehow tried to get the prime decomposition of 0");
@@ -64,13 +65,31 @@ pub fn check_equivalence(l: Tile, r: Tile, aliases: Aliases) -> bool {
   _check_equivalence(&l, &r, &aliases)
 }
 pub fn _check_equivalence(l: &Tile, r: &Tile, aliases: &Aliases) -> bool {
-  if check_tile_match(&l, &r) { true }
-  else if let Some(entry) = aliases.get(&r.0).or_else(|| aliases.get(&ANY_PRIME)) {
-    entry.iter().any(|(battrs, aliases)| {
+  if check_tile_match(&l, &r) { return true; }
+  if let Some(entries) = aliases.get(&r.0) {
+    if entries.iter().any(|(battrs, aliases)| {
         (r.1 & *battrs == r.1) && aliases.iter().any(|t| check_tile_match(&l, t))
-    })
-  } else { false }
+    }) { return true; }}
+  if let Some(entries) = aliases.get(&ANY_PRIME) {
+    if entries.iter().any(|(battrs, aliases)| {
+        (r.1 & *battrs == r.1) && aliases.iter().any(|t| check_tile_match(&l, t))
+    }) { return true; }}
+  false
 }
+  // def check_equivalence({p2, battrs2}, {p1, battrs1}, encoded_aliases) do
+  //   # joker lookup is basically term rewriting: {tile, attrs} -> {tile, attrs}
+  //   # so just check if an alias for {p2, battrs2} exists that matches {p1, battrs1}
+  //   cond do
+  //     check_tile_match({p2, battrs2}, {p1, battrs1}) -> true
+  //     Enum.any?(Map.get(encoded_aliases, p1, []), fn {battrs, aliases} ->
+  //       (battrs1 &&& battrs) == battrs1 and Enum.any?(aliases, fn {p3, battrs3} -> check_tile_match({p2, battrs2}, {p3, battrs3}) end)
+  //     end) -> true
+  //     Enum.any?(Map.get(encoded_aliases, @any_prime, []), fn {battrs, aliases} ->
+  //       (battrs1 &&& battrs) == battrs1 and Enum.any?(aliases, fn {p3, battrs3} -> check_tile_match({p2, battrs2}, {p3, battrs3}) end)
+  //     end) -> true
+  //     true -> false
+  //   end
+  // end
 
 pub fn compute_attr_masks(l: &[Tile], r: &[Tile], aliases: &Aliases) -> (Vec<(Mask, RowIndex)>, Mask) {
   let mut masks: Vec<(Mask, RowIndex)> = vec![(0,0); l.len()];
@@ -96,7 +115,8 @@ pub fn subtract_check_attrs<'a>(env: Env<'a>, l: Vec<Tile>, r: Vec<Tile>, aliase
   }
 }
 pub fn _subtract_check_attrs(l: &[Tile], r: &[Tile], aliases: &Aliases) -> Option<Vec<RowIndex>> {
-  if r.is_empty() { return None; }
+  if l.is_empty() { return None; }
+  if r.is_empty() { return Some(vec!()); }
   let (masks, col_mask) = compute_attr_masks(l, r, aliases);
   n_rooks::_solve_n_rooks(&masks, col_mask, r.len() as u8)
 }
@@ -109,12 +129,32 @@ pub fn subtract_check_attrs_exhaustive<'a>(env: Env<'a>, l: Vec<Tile>, r: Vec<Ti
   }
 }
 pub fn _subtract_check_attrs_exhaustive(l: &Vec<Tile>, r: &Vec<Tile>, aliases: &Aliases) -> Option<Vec<Vec<RowIndex>>> {
-  if r.is_empty() { return None; }
+  if l.is_empty() { return None; }
+  if r.is_empty() { return Some(vec!()); }
   let (masks, col_mask) = compute_attr_masks(l, r, aliases);
   let ret = n_rooks::_solve_n_rooks_exhaustive(&masks, col_mask, r.len() as u8);
   if ret.is_empty() { None }
   else { Some(ret) }
 }
+
+
+  // def subtract_check_attrs_exhaustive([], _attrs1, _encoded_aliases), do: nil
+  // def subtract_check_attrs_exhaustive(_attrs2, [], _encoded_aliases), do: {:ok, [[]]}
+  // def subtract_check_attrs_exhaustive(attrs2, attrs1, encoded_aliases) do
+  //   # compute bitmasks where the ith bitmask has jth bit set iff attrs2[i] covers attrs1[j]}
+  //   masks = compute_masks(attrs2, attrs1, encoded_aliases)
+  //   |> Enum.with_index()
+  //   col_mask = Enum.reduce(masks, 0, fn {mask, _i}, acc -> mask ||| acc end)
+  //   # then it's n-rooks on this bit matrix
+  //   # returns indices into attrs2
+  //   with {:ok, indices} <- solve_n_rooks_exhaustive(masks, col_mask, length(attrs1)) do
+  //     cond do
+  //       Enum.empty?(indices) -> nil
+  //       true -> {:ok, indices}
+  //     end
+  //   end
+  // end
+
 
 pub fn remove_tileset_indices(
   hand: &mut TileSet, ixs: &[RowIndex], joker_tiles: &HashSet<&Tile>
@@ -164,13 +204,13 @@ pub fn move_jokers_to_end(attrs: &mut Vec<Tile>, joker_tiles: &HashSet<&Tile>) -
 }
 
 #[rustler::nif]
-pub fn subtract(
+pub fn _subtract(
   hand: TileSet, group: TileSet,
   aliases: Aliases, joker_tiles: Vec<Tile>
 ) -> Option<TileSet> {
-  _subtract(&hand, &group, &aliases, &joker_tiles.iter().collect())
+  __subtract(&hand, &group, &aliases, &joker_tiles.iter().collect())
 }
-pub fn _subtract(
+pub fn __subtract(
   hand: &TileSet, group: &TileSet,
   aliases: &Aliases, joker_tiles: &HashSet<&Tile>
 ) -> Option<TileSet> {
@@ -248,13 +288,13 @@ pub fn _subtract(
 }
 
 #[rustler::nif]
-pub fn subtract_exhaustive(
+pub fn _subtract_exhaustive(
   hand: TileSet, group: TileSet,
   aliases: Aliases, joker_tiles: Vec<Tile>
 ) -> Option<Vec<TileSet>> {
-  _subtract_exhaustive(&hand, &group, &aliases, &joker_tiles.iter().collect())
+  __subtract_exhaustive(&hand, &group, &aliases, &joker_tiles.iter().collect())
 }
-pub fn _subtract_exhaustive(
+pub fn __subtract_exhaustive(
   hand: &TileSet, group: &TileSet,
   aliases: &Aliases, joker_tiles: &HashSet<&Tile>
 ) -> Option<Vec<TileSet>> {

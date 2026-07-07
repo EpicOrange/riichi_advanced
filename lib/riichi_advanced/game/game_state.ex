@@ -143,6 +143,24 @@ defmodule RiichiAdvanced.GameState do
         attrs: MapSet.union(tile_behavior.attrs, MapSet.new(attrs)),
       }
     end
+
+    # convert the MapSets in the aliases definition into lists,
+    # since MapSets cannot cross rustler's NIF boundary
+    def remove_alias_mapsets(aliases) do
+      Map.new(aliases, fn {tile, attrs_aliases} ->
+        {tile, Map.new(attrs_aliases, fn {attrs, aliases} ->
+          {attrs, Enum.to_list(aliases)}
+        end)}
+      end)
+    end
+    # undoes the above
+    def restore_alias_mapsets(aliases) do
+      Map.new(aliases, fn {tile, attrs_aliases} ->
+        {tile, Map.new(attrs_aliases, fn {attrs, aliases} ->
+          {attrs, MapSet.new(aliases)}
+        end)}
+      end)
+    end
   end
 
   defmodule Player do

@@ -10,4 +10,5 @@ crate-type = ["cdylib"]
 [dependencies]
 rustler = "0.37.4"
 num = "0.4.3"
+phf = { version = "0.14.0", features = ["macros"] }
 

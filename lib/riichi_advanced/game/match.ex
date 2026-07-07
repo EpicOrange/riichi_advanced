@@ -100,14 +100,16 @@ defmodule RiichiAdvanced.Match do
 
   # check if arg1 is a subset of arg2
   def is_subset?(l, r, tile_behavior) do
-    case subtract(r, l, tile_behavior.encoded_aliases, tile_behavior.encoded_joker_tiles |> Enum.to_list()) do
+    case subtract(r, l, tile_behavior.encoded_aliases, tile_behavior.encoded_joker_tiles) do
       nil -> false
       _ -> true
     end
   end
 
+  @u128_max 340282366920938463463374607431768211455
+
   def count_factors(n, primes) do
-    if n > 340282366920938463463374607431768211455 do
+    if n > @u128_max do
       _count_factors(n, primes, 0)
     else
       count_factors_fast(n, primes)
@@ -211,7 +213,11 @@ defmodule RiichiAdvanced.Match do
                encoded_aliases, encoded_joker_tiles) do
     if hash2 == 0, do: raise("subtract: somehow obtained a hash of zero in hand")
     if hash1 == 0, do: raise("subtract: somehow obtained a hash of zero in group")
-    _subtract(hand, group, encoded_aliases, encoded_joker_tiles |> MapSet.new())
+    if hash2 > @u128_max or hash1 > @u128_max do
+      __subtract(hand, group, encoded_aliases, encoded_joker_tiles)
+    else
+      _subtract(hand, group, encoded_aliases, encoded_joker_tiles |> Enum.to_list())
+    end
   end
   # returns many possible resulting sets instead of just one
   def subtract_exhaustive(%{hash: hash2, attrs: _attrs2} = hand,
@@ -219,7 +225,11 @@ defmodule RiichiAdvanced.Match do
                           encoded_aliases, encoded_joker_tiles) do
     if hash2 == 0, do: raise("subtract: somehow obtained a hash of zero in hand")
     if hash1 == 0, do: raise("subtract: somehow obtained a hash of zero in group")
-    _subtract_exhaustive(hand, group, encoded_aliases, encoded_joker_tiles |> MapSet.new())
+    if hash2 > @u128_max or hash1 > @u128_max do
+      __subtract_exhaustive(hand, group, encoded_aliases, encoded_joker_tiles)
+    else
+      _subtract_exhaustive(hand, group, encoded_aliases, encoded_joker_tiles |> Enum.to_list())
+    end
   end
 
 
@@ -239,9 +249,12 @@ defmodule RiichiAdvanced.Match do
     %{hand | hash: Integer.floor_div(hash, divisor), attrs: remove_indices(attrs, ixs)}
   end
 
-  defp _subtract(%{hash: hash2, attrs: attrs2} = hand,
-                 %{hash: hash1, attrs: attrs1, nojoker: nojoker} = _group,
-                 encoded_aliases, encoded_joker_tiles) do
+  defp _subtract(hand, group, encoded_aliases, encoded_joker_tiles) do
+    __subtract(hand, group, encoded_aliases, encoded_joker_tiles |> MapSet.new())
+  end
+  defp __subtract(%{hash: hash2, attrs: attrs2} = hand,
+                  %{hash: hash1, attrs: attrs1, nojoker: nojoker} = _group,
+                  encoded_aliases, encoded_joker_tiles) do
     hash1 = if nojoker do
       Enum.reduce(attrs1, 1, fn {p, _}, acc -> p * acc end)
     else hash1 end
@@ -291,9 +304,12 @@ defmodule RiichiAdvanced.Match do
     end
   end
 
-  defp _subtract_exhaustive(%{hash: hash2, attrs: attrs2} = hand,
-                            %{hash: hash1, attrs: attrs1, nojoker: nojoker} = _group,
-                            encoded_aliases, encoded_joker_tiles) do
+  defp _subtract_exhaustive(hand, group, encoded_aliases, encoded_joker_tiles) do
+    __subtract_exhaustive(hand, group, encoded_aliases, encoded_joker_tiles |> MapSet.new())
+  end
+  defp __subtract_exhaustive(%{hash: hash2, attrs: attrs2} = hand,
+                             %{hash: hash1, attrs: attrs1, nojoker: nojoker} = _group,
+                             encoded_aliases, encoded_joker_tiles) do
     hash1 = if nojoker do
       Enum.reduce(attrs1, 1, fn {p, _}, acc -> p * acc end)
     else hash1 end
@@ -343,7 +359,7 @@ defmodule RiichiAdvanced.Match do
   # encode first argument A into a number, using second argument B as a dictionary
   # (first item of B = 1, second = 2, third = 4, etc)
   # assumes both inputs are sorted
-  def encode_attrs(tile_attrs, all_attrs), do: _encode_attrs(Enum.sort(tile_attrs), MapSet.to_list(all_attrs), 0, 1)
+  def encode_attrs(tile_attrs, all_attrs), do: _encode_attrs(Enum.sort(tile_attrs), Enum.to_list(all_attrs), 0, 1)
   def _encode_attrs(_tile_attrs, [], acc, _inc), do: acc
   def _encode_attrs([], _all_attrs, acc, _inc), do: acc
   def _encode_attrs([l_attr | attrs], [r_attr | all_attrs], acc, inc) do
@@ -358,14 +374,17 @@ defmodule RiichiAdvanced.Match do
 
   # use tile_behavior.attrs to encode
   def encode(hand, tile_behavior) do
+    _encode(hand, tile_behavior.attrs, tile_behavior.encoded_joker_tiles)
+  end
+  def _encode(hand, all_attrs, encoded_joker_tiles) do
     attrs = for orig_tile <- hand do
       {tile, attrs} = Utils.to_attr_tile(orig_tile)
       attrs = Enum.map(attrs, &String.trim_leading(&1, "_"))
-      encoded_attrs = encode_attrs(attrs, tile_behavior.attrs)
+      encoded_attrs = encode_attrs(attrs, all_attrs)
       {Constants.to_prime(tile), encoded_attrs}
     end
     hash = Enum.reduce(attrs, 1, fn {p, _} = tile, acc ->
-      if p == @any_prime or tile in tile_behavior.encoded_joker_tiles do acc else acc * p end
+      if p == @any_prime or tile in encoded_joker_tiles do acc else acc * p end
     end)
     %TileSet{
       hash: hash,
@@ -374,12 +393,15 @@ defmodule RiichiAdvanced.Match do
   end
 
   def encode_aliases(tile_behavior) do
-    for {tile, attrs_aliases} <- tile_behavior.aliases, reduce: %{} do
+    _encode_aliases(tile_behavior.aliases, tile_behavior.attrs, tile_behavior.encoded_joker_tiles)
+  end
+  def _encode_aliases(aliases, all_attrs, encoded_joker_tiles) do
+    for {tile, attrs_aliases} <- aliases, reduce: %{} do
       acc ->
         entry = for {attrs, aliases} <- attrs_aliases, reduce: %{} do
           acc2 ->
-            encoded_attrs = encode_attrs(attrs, tile_behavior.attrs)
-            encoded_aliases = encode(aliases, tile_behavior).attrs
+            encoded_attrs = encode_attrs(attrs, all_attrs)
+            encoded_aliases = _encode(aliases, all_attrs, encoded_joker_tiles).attrs
             Map.update(acc2, encoded_attrs, encoded_aliases, &encoded_aliases ++ &1)
         end
         Map.update(acc, Constants.to_prime(tile), entry, &Map.merge(entry, &1))
@@ -408,7 +430,13 @@ defmodule RiichiAdvanced.Match do
   end
 
   # this is used a lot, especially for determining and processing calls
-  def try_remove_all_tiles(hand, tiles, tile_behavior) do
+  def try_remove_all_tiles(hand, tiles, aliases, all_attrs) do
+    _try_remove_all_tiles(hand, tiles, aliases, all_attrs)
+  end
+  def _try_remove_all_tiles(hand, tiles, aliases, all_attrs) do
+    __try_remove_all_tiles(hand, tiles, aliases, all_attrs)
+  end
+  def __try_remove_all_tiles(hand, tiles, aliases, all_attrs) do
     hand_length = length(hand)
     tiles_length = length(tiles)
     cond do
@@ -424,9 +452,9 @@ defmodule RiichiAdvanced.Match do
         end) do [[]] else [] end
       true ->
         # encode every tile into a TileSet
-        hand_set = encode(hand, tile_behavior)
-        tiles_set = encode(tiles, TileBehavior.remove_aliases(tile_behavior))
-        encoded_aliases = encode_aliases(tile_behavior)
+        hand_set = _encode(hand, all_attrs, MapSet.new())
+        tiles_set = _encode(tiles, all_attrs, MapSet.new())
+        encoded_aliases = _encode_aliases(aliases, all_attrs, MapSet.new())
         case subtract_check_attrs_exhaustive(hand_set.attrs, tiles_set.attrs, encoded_aliases) do
           {:ok, ret} ->
             Enum.map(ret, fn is ->
@@ -463,7 +491,7 @@ defmodule RiichiAdvanced.Match do
       true ->
         from_calls = for {call, i} <- Enum.with_index(calls), is_subset?(group, call, tile_behavior), do: [hand | List.delete_at(calls, i)]
         # if length(group.attrs) == 3 do IO.puts("#{inspect(hand)}\n- #{inspect(group)}\n= #{inspect(subtract(hand, group))}") end
-        case subtract_exhaustive(hand, group, tile_behavior.encoded_aliases, tile_behavior.encoded_joker_tiles |> Enum.to_list()) do
+        case subtract_exhaustive(hand, group, tile_behavior.encoded_aliases, tile_behavior.encoded_joker_tiles) do
           nil -> from_calls
           ret ->
             for new_hand <- ret do
@@ -503,7 +531,7 @@ defmodule RiichiAdvanced.Match do
   def elim_group_once([hand | calls], group, tile_behavior) do
     # we prefer removing from calls over from hand
     case Enum.find_index(calls, &is_subset?(group, &1, tile_behavior)) do
-      nil -> case subtract(hand, group, tile_behavior.encoded_aliases, tile_behavior.encoded_joker_tiles |> Enum.to_list()) do
+      nil -> case subtract(hand, group, tile_behavior.encoded_aliases, tile_behavior.encoded_joker_tiles) do
         nil -> []
         ret -> [[ret | calls]]
       end
@@ -760,7 +788,7 @@ defmodule RiichiAdvanced.Match do
               case Enum.find_index(calls, &is_subset?(group, &1, tile_behavior)) do
                 nil ->
                   # remove from hand instead
-                  case subtract(hand, group, tile_behavior.encoded_aliases, tile_behavior.encoded_joker_tiles |> Enum.to_list()) do
+                  case subtract(hand, group, tile_behavior.encoded_aliases, tile_behavior.encoded_joker_tiles) do
                     nil -> {[hand | calls], remaining, groups_left - 1}    # didn't match
                     ret -> {[ret | calls], remaining - 1, groups_left - 1} # matched and updated
                   end
@@ -873,7 +901,7 @@ defmodule RiichiAdvanced.Match do
 
     # if debug do IO.inspect(groups, label: inspect(data.groups), limit: :infinity) end
     # if debug do IO.inspect(tile_behavior.attrs) end
-    if debug do IO.inspect(groups, limit: :infinity, label: "groups") end
+    # if debug do IO.inspect(groups, limit: :infinity, label: "groups") end
 
     # each acc element is {[hand | calls], remaining_groups, base_suit}
     ret = for j <- (if num == 0 do [1] else 1..abs(num) end), reduce: Enum.map(acc, fn hands -> {hands, groups, nil} end) do
@@ -885,7 +913,7 @@ defmodule RiichiAdvanced.Match do
           lines = for {[hand | calls], remaining_groups, base_suit} <- hands_groups do
             # groups = Enum.map(remaining_groups, fn {groups, _orig_group} -> Enum.map(groups, &decode(&1, tile_behavior)) end)
             # groups = remaining_groups
-            IO.inspect(remaining_groups, limit: :infinity)
+            # IO.inspect(remaining_groups, limit: :infinity)
             groups = Enum.map(remaining_groups, fn {_groups, orig_group} -> orig_group end)
             "- (#{count_factors(hand.hash, Enum.map(hand.attrs, fn {p, _} -> p end))}) #{inspect(Utils.sort_tiles(decode(hand, tile_behavior)))} / #{inspect(Enum.map(calls, &Utils.sort_tiles(decode(&1, tile_behavior))))} \\\\ #{inspect(groups, charlists: :as_lists)}#{if unique do " unique" else "" end}#{if exhaustive do " exhaustive" else "" end}#{if nojoker do " nojoker" else "" end}#{if base_suit != nil do " #{base_suit}" else "" end}"
           end
@@ -1177,7 +1205,7 @@ defmodule RiichiAdvanced.Match do
     group
     |> encode_group(tile_behavior)
     |> Enum.reduce_while([], fn reified_group, acc ->
-      subtract_exhaustive(initial_hand, reified_group, tile_behavior.encoded_aliases, tile_behavior.encoded_joker_tiles |> Enum.to_list())
+      subtract_exhaustive(initial_hand, reified_group, tile_behavior.encoded_aliases, tile_behavior.encoded_joker_tiles)
       |> case do
         nil when exhaustive -> {:cont, acc}
         ret when exhaustive -> {:cont, ret ++ acc}

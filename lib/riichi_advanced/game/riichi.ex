@@ -206,7 +206,7 @@ defmodule RiichiAdvanced.Riichi do
           case Match.apply_offsets(instance, call_spec, tile_behavior) do
             nil -> []
             target_tiles ->
-              possible_removals = Match.try_remove_all_tiles(hand, target_tiles, tile_behavior)
+              possible_removals = Match.try_remove_all_tiles(hand, target_tiles, tile_behavior.aliases, tile_behavior.attrs)
               Enum.map(possible_removals, fn remaining -> Utils.sort_tiles(hand -- remaining) end)
           end
         end)
@@ -531,7 +531,7 @@ defmodule RiichiAdvanced.Riichi do
   end
 
   def test_tiles(hand, tiles, tile_behavior) do
-    not Enum.empty?(Match.try_remove_all_tiles(hand, tiles, tile_behavior))
+    not Enum.empty?(Match.try_remove_all_tiles(hand, tiles, tile_behavior.aliases, tile_behavior.attrs))
   end
 
   def get_disconnected_tiles(hand, tile_behavior) do

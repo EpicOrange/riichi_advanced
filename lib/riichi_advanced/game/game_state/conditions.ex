@@ -435,7 +435,8 @@ defmodule RiichiAdvanced.GameState.Conditions do
         call_tiles = [context.choice.chosen_called_tile | context.choice.chosen_call_choice]
         call = {context.choice.name, call_tiles}
         waits_before = Match.get_waits(hand, calls, win_definitions, cxt_player.tile_behavior)
-        [call_removed | _] = Match.try_remove_all_tiles(hand ++ draw, Utils.strip_attrs(call_tiles), cxt_player.tile_behavior)
+        tile_behavior = cxt_player.tile_behavior
+        [call_removed | _] = Match.try_remove_all_tiles(hand ++ draw, Utils.strip_attrs(call_tiles), tile_behavior.aliases, tile_behavior.attrs)
         waits_after = Match.get_waits(call_removed, calls ++ [call], win_definitions, cxt_player.tile_behavior)
         waits_before != waits_after
       "wait_count_at_least" ->
