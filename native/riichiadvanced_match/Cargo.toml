@@ -9,3 +9,5 @@ crate-type = ["cdylib"]
 
 [dependencies]
 rustler = "0.37.4"
+num = "0.4.3"
+
