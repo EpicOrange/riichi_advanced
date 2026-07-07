@@ -1,37 +1,38 @@
 mod n_rooks;
 mod types;
+use std::collections::HashSet;
+
 use rustler::{Encoder, Env, Term};
-use types::{Prime, Tile, Aliases};
+use types::{Prime, Tile, Aliases, Mask, RowIndex, TileSet};
 rustler::atoms! { ok }
 
 #[rustler::nif]
-fn solve_n_rooks<'a>(env: Env<'a>, masks: Vec<(u64, u8)>, col_mask: u64, num_rooks: u32) -> Term<'a> {
+fn solve_n_rooks<'a>(env: Env<'a>, masks: Vec<(Mask, RowIndex)>, col_mask: Mask, num_rooks: RowIndex) -> Term<'a> {
   match n_rooks::solve_n_rooks(&masks, col_mask, num_rooks) {
-    Some(rows) => (ok(), rows).encode(env),
+    Some(ret) => (ok(), ret).encode(env),
     None => rustler::types::atom::nil().encode(env),
   }
 }
 
 #[rustler::nif]
-fn solve_n_rooks_exhaustive<'a>(env: Env<'a>, masks: Vec<(u64, u8)>, col_mask: u64, num_rooks: u32) -> Term<'a> {
+fn solve_n_rooks_exhaustive<'a>(env: Env<'a>, masks: Vec<(Mask, RowIndex)>, col_mask: Mask, num_rooks: RowIndex) -> Term<'a> {
   let solutions = n_rooks::solve_n_rooks_exhaustive(&masks, col_mask, num_rooks);
   (ok(), solutions).encode(env)
 }
 
-#[rustler::nif]
-fn remove_indices<'a>(xs: Vec<Term<'a>>, is: Vec<usize>) -> Vec<Term<'a>> {
-  _remove_indices(xs, is)
-}
-fn _remove_indices<'a>(xs: Vec<Term<'a>>, mut is: Vec<usize>) -> Vec<Term<'a>> {
+// #[rustler::nif]
+// fn remove_indices<'a>(xs: Vec<Term<'a>>, is: Vec<usize>) -> Vec<Term<'a>> {
+//   _remove_indices(xs, &is)
+// }
+fn _remove_indices<T>(mut xs: Vec<T>, is: &Vec<usize>) -> Vec<T> {
+  let mut is = is.clone();
   is.sort_unstable();
 
-  let mut is_iter = is.into_iter().peekable();
+  let mut it = is.into_iter().peekable();
   let mut i: usize = 0;
-  let mut xs = xs;
-
   xs.retain(|_| {
-    let keep = is_iter.peek() != Some(&i);
-    if !keep { is_iter.next(); }
+    let keep = it.peek() != Some(&i);
+    if !keep { it.next(); }
     i += 1;
     keep
   });
@@ -74,6 +75,9 @@ pub fn check_tile_match((p2, battrs2): &Tile, (p1, battrs1): &Tile) -> bool {
 
 // #[rustler::nif]
 pub fn check_equivalence(l: Tile, r: Tile, encoded_aliases: Aliases) -> bool {
+  _check_equivalence(&l, &r, &encoded_aliases)
+}
+pub fn _check_equivalence(l: &Tile, r: &Tile, encoded_aliases: &Aliases) -> bool {
   if check_tile_match(&l, &r) { true }
   else if let Some(entry) = encoded_aliases.get(&r.0).or_else(|| encoded_aliases.get(&ANY_PRIME)) {
     entry.iter().any(|(battrs, aliases)| {
@@ -82,73 +86,141 @@ pub fn check_equivalence(l: Tile, r: Tile, encoded_aliases: Aliases) -> bool {
   } else { false }
 }
 
-  // # check that taking `attrs1` out of `attrs2` is possible with attributes
-  // # returns a list of indices (if exhaustive, a list of list of indices)
-  // # or nil if no solution
-  // def subtract_check_attrs(_attrs2, [], _encoded_aliases, exhaustive) do
-  //     {:ok, if exhaustive do [[]] else [] end}
-  // end
-  // def subtract_check_attrs(attrs2, attrs1, encoded_aliases, exhaustive) do
-  //   attrs1_indexed = attrs1
-  //   |> Enum.filter(fn {p, _} -> is_number(p) end)
-  //   |> Enum.with_index()
-  //   # compute bitmasks where the ith bitmask has jth bit set iff attrs2[i] covers attrs1[j]}
-  //   masks = for tile2 <- attrs2 do
-  //     case tile2 do
-  //       {p, _} when is_number(p) ->
-  //         for {tile1, j} <- attrs1_indexed,
-  //             check_equivalence(tile2, tile1, encoded_aliases),
-  //             reduce: 0 do
-  //           acc -> acc ||| (1 <<< j)
+pub fn compute_attr_masks(l: &Vec<Tile>, r: &Vec<Tile>, encoded_aliases: &Aliases) -> (Vec<(Mask, RowIndex)>, Mask) {
+  let mut masks: Vec<(Mask, RowIndex)> = vec![(0,0); l.len()];
+  let mut col_mask: Mask = 0;
+  for j in 0..l.len() {
+    let t = l[j];
+    masks[j].1 = j as u8;
+    for i in 0..r.len() {
+      if _check_equivalence(&t, &r[i], &encoded_aliases) {
+        masks[j].0 |= 1 << i;
+      }
+    }
+    col_mask |= masks[j].0;
+  }
+  (masks, col_mask)
+}
+
+#[rustler::nif]
+pub fn subtract_check_attrs<'a>(env: Env<'a>, l: Vec<Tile>, r: Vec<Tile>, encoded_aliases: Aliases) -> Term<'a> {
+  match _subtract_check_attrs(&l, &r, &encoded_aliases) {
+    Some(ret) => (ok(), ret).encode(env),
+    None => rustler::types::atom::nil().encode(env),
+  }
+}
+pub fn _subtract_check_attrs(l: &Vec<Tile>, r: &Vec<Tile>, encoded_aliases: &Aliases) -> Option<Vec<RowIndex>> {
+  if r.is_empty() { return None; }
+  let (masks, col_mask) = compute_attr_masks(l, r, encoded_aliases);
+  n_rooks::solve_n_rooks(&masks, col_mask, r.len() as u8)
+}
+
+#[rustler::nif]
+pub fn subtract_check_attrs_exhaustive<'a>(env: Env<'a>, l: Vec<Tile>, r: Vec<Tile>, encoded_aliases: Aliases) -> Term<'a> {
+  match _subtract_check_attrs_exhaustive(&l, &r, &encoded_aliases) {
+    Some(ret) => (ok(), ret).encode(env),
+    None => rustler::types::atom::nil().encode(env),
+  }
+}
+pub fn _subtract_check_attrs_exhaustive(l: &Vec<Tile>, r: &Vec<Tile>, encoded_aliases: &Aliases) -> Option<Vec<Vec<RowIndex>>> {
+  if r.is_empty() { return None; }
+  let (masks, col_mask) = compute_attr_masks(l, r, encoded_aliases);
+  let ret = n_rooks::solve_n_rooks_exhaustive(&masks, col_mask, r.len() as u8);
+  if ret.is_empty() { None }
+  else { Some(ret) }
+}
+
+pub fn remove_tileset_indices(
+  mut hand: TileSet, ixs: &Vec<usize>, encoded_joker_tiles: HashSet<Tile>
+) -> () {
+  let mut divisor = 1;
+  for i in ixs {
+    let tile = hand.attrs[*i];
+    if !encoded_joker_tiles.contains(&tile) && tile.0 != ANY_PRIME {
+      divisor *= tile.0
+    }
+  }
+  let (q, r) = (hand.hash / divisor, hand.hash % divisor);
+  if r != 0 {
+    eprintln!("remove_tileset_indices: tried to divide {0} by {divisor}, hand was {hand:?}", hand.hash);
+  }
+  hand.hash = q;
+  hand.attrs = _remove_indices(hand.attrs, &ixs);
+}
+
+
+  // # def subtract_rust(_hash2, _hash1, _attrs2, _attrs1), do: :erlang.nif_error(:nif_not_loaded)
+  // defp _subtract(%{hash: hash2, attrs: attrs2} = hand,
+  //                %{hash: hash1, attrs: attrs1, nojoker: nojoker} = _group,
+  //                tile_behavior,
+  //                opts) do
+  //   # debug = Keyword.get(opts, :debug, false)
+  //   return_indices = Keyword.get(opts, :return_indices, false)
+  //   exhaustive = Keyword.get(opts, :exhaustive, false)
+  //   hash1 = if nojoker do
+  //     Enum.reduce(attrs1, 1, fn {p, _}, acc -> p * acc end)
+  //   else hash1 end
+  //   encoded_aliases = if nojoker do %{} else Map.get(tile_behavior, :encoded_aliases, %{}) end
+  //   encoded_joker_tiles = if nojoker do %{} else Map.get(tile_behavior, :encoded_joker_tiles, %{}) end
+
+  //   # put all jokers at the end, so for non-exhaustive searches we guarantee choosing jokers last
+  //   {jokers, nonjokers} = Enum.split_with(attrs2, & &1 in encoded_joker_tiles)
+  //   attrs2 = nonjokers ++ jokers
+  //   hand = %{hand | attrs: attrs2}
+
+  //   gcd = Integer.gcd(hash2, hash1)
+
+  //   # dbg = decode(group, tile_behavior) == [:any]
+  //   # if dbg do
+  //   #   IO.inspect({"asdf", hand, group, jokers, gcd, exhaustive})
+  //   #   IO.inspect({"asdf", decode(hand, tile_behavior), decode(group, tile_behavior), exhaustive})
+  //   #   IO.inspect({"asdfs", length(jokers), length(attrs1), count_factors(gcd, Enum.map(attrs1, fn {p, _} -> p end))})
+  //   # end
+  //   cond do
+  //     length(attrs1) > length(attrs2) ->
+  //       # can't remove more tiles than we have
+  //       nil
+  //     length(jokers) < Enum.count(attrs1, fn {p, _} -> p != @any_prime end) - count_factors(gcd, Enum.map(attrs1, fn {p, _} -> p end)) ->
+  //       # not enough jokers to match unmatched tiles
+  //       nil
+  //     true ->
+  //       # if nojoker, try to divide the jokers' primes with the unmatched remainder
+  //       gcd = if nojoker do
+  //         remainder = Integer.floor_div(hash1, gcd)
+  //         hash3 = Enum.reduce(jokers, 1, fn {p, _}, acc -> p * acc end)
+  //         gcd * Integer.gcd(hash3, remainder)
+  //       else gcd end 
+  //       divides = gcd == hash1
+
+  //       # if divides, no need to use jokers
+  //       # otherwise, use jokers, but if not exhaustive, prioritize nonjokers-only if possible
+  //       encoded_aliases = if divides do %{} else encoded_aliases end
+
+  //       ret = if not exhaustive do
+  //         with {:ok, indices} <- subtract_check_attrs(nonjokers, attrs1, %{}) do
+  //           if return_indices do indices else
+  //             remove_tileset_indices(hand, indices, encoded_joker_tiles)
+  //           end
   //         end
-  //       _ -> 0
-  //     end
-  //   end
-  //   |> Enum.with_index()
+  //       else nil end
 
-  //   if Enum.empty?(masks) do
-  //     nil
-  //   else
-  //     col_mask = Enum.reduce(masks, 0, fn {mask, _i}, acc -> mask ||| acc end)
-  //     # then it's n-rooks on this bit matrix
-  //     # returns indices into attrs2
-  //     result = if exhaustive do
-  //       solve_n_rooks_exhaustive(masks, col_mask, length(attrs1_indexed))
-  //     else
-  //       solve_n_rooks(masks, col_mask, length(attrs1_indexed))
-  //     end
-  //     with {:ok, indices} <- result do
   //       cond do
-  //         Enum.empty?(indices) -> nil
-  //         true -> {:ok, indices}
+  //         ret != nil -> ret
+  //         exhaustive ->
+  //           with {:ok, indices} <- subtract_check_attrs_exhaustive(attrs2, attrs1, encoded_aliases) do
+  //             if return_indices do indices else
+  //               for ixs <- indices do remove_tileset_indices(hand, ixs, encoded_joker_tiles) end
+  //               |> Enum.uniq()
+  //             end
+  //           end
+  //         true ->
+  //           with {:ok, indices} <- subtract_check_attrs_exhaustive(attrs2, attrs1, encoded_aliases) do
+  //             if return_indices do indices else
+  //               remove_tileset_indices(hand, indices, encoded_joker_tiles)
+  //             end
+  //           end
   //       end
-  //     end
   //   end
   // end
-  // def subtract_check_attrs(attrs2, attrs1, encoded_aliases, exhaustive) do
-  
-
-    // attrs1_indexed = attrs1
-    // |> Enum.filter(fn {p, _} -> is_number(p) end)
-    // |> Enum.with_index()
-    // # compute bitmasks where the ith bitmask has jth bit set iff attrs2[i] covers attrs1[j]}
-    // masks = for tile2 <- attrs2 do
-    //   case tile2 do
-    //     {p, _} when is_number(p) ->
-    //       for {tile1, j} <- attrs1_indexed,
-    //           check_equivalence(tile2, tile1, encoded_aliases),
-    //           reduce: 0 do
-    //         acc -> acc ||| (1 <<< j)
-    //       end
-    //     _ -> 0
-    //   end
-    // end
-    // |> Enum.with_index()
-
-// // #[rustler::nif]
-// pub fn subtract_check_attrs(l: Tile, r: Tile, encoded_aliases: Aliases) -> Vec<usize> {
-  
-// }
-
 
 rustler::init!("Elixir.RiichiAdvanced.Match");

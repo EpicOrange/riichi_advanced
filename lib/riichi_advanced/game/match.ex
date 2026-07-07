@@ -161,38 +161,46 @@ defmodule RiichiAdvanced.Match do
   # check that taking `attrs1` out of `attrs2` is possible with attributes
   # returns a list of indices (if exhaustive, a list of list of indices)
   # or nil if no solution
-  def subtract_check_attrs(_attrs2, [], _encoded_aliases, exhaustive) do
-      {:ok, if exhaustive do [[]] else [] end}
-  end
-  def subtract_check_attrs(attrs2, attrs1, encoded_aliases, exhaustive) do
-    attrs1_indexed = attrs1
-    |> Enum.with_index()
-    # compute bitmasks where the ith bitmask has jth bit set iff attrs2[i] covers attrs1[j]}
-    masks = for {p, _} = tile2 <- attrs2 do
-      for {tile1, j} <- attrs1_indexed,
+  # 
+
+  def compute_masks(attrs2, attrs1, encoded_aliases) do
+    for tile2 <- attrs2 do
+      for {tile1, j} <- Enum.with_index(attrs1),
           check_equivalence(tile2, tile1, encoded_aliases),
           reduce: 0 do
         acc -> acc ||| (1 <<< j)
       end
     end
+  end
+  def subtract_check_attrs([], _attrs1, _encoded_aliases), do: nil
+  def subtract_check_attrs(_attrs2, [], _encoded_aliases), do: {:ok, []}
+  def subtract_check_attrs(attrs2, attrs1, encoded_aliases) do
+    # compute bitmasks where the ith bitmask has jth bit set iff attrs2[i] covers attrs1[j]}
+    masks = compute_masks(attrs2, attrs1, encoded_aliases)
     |> Enum.with_index()
-
-    if Enum.empty?(masks) do
-      nil
-    else
-      col_mask = Enum.reduce(masks, 0, fn {mask, _i}, acc -> mask ||| acc end)
-      # then it's n-rooks on this bit matrix
-      # returns indices into attrs2
-      result = if exhaustive do
-        solve_n_rooks_exhaustive(masks, col_mask, length(attrs1_indexed))
-      else
-        solve_n_rooks(masks, col_mask, length(attrs1_indexed))
+    col_mask = Enum.reduce(masks, 0, fn {mask, _i}, acc -> mask ||| acc end)
+    # then it's n-rooks on this bit matrix
+    # returns indices into attrs2
+    with {:ok, indices} <- solve_n_rooks(masks, col_mask, length(attrs1)) do
+      cond do
+        Enum.empty?(indices) -> nil
+        true -> {:ok, indices}
       end
-      with {:ok, indices} <- result do
-        cond do
-          Enum.empty?(indices) -> nil
-          true -> {:ok, indices}
-        end
+    end
+  end
+  def subtract_check_attrs_exhaustive([], _attrs1, _encoded_aliases), do: nil
+  def subtract_check_attrs_exhaustive(_attrs2, [], _encoded_aliases), do: {:ok, [[]]}
+  def subtract_check_attrs_exhaustive(attrs2, attrs1, encoded_aliases) do
+    # compute bitmasks where the ith bitmask has jth bit set iff attrs2[i] covers attrs1[j]}
+    masks = compute_masks(attrs2, attrs1, encoded_aliases)
+    |> Enum.with_index()
+    col_mask = Enum.reduce(masks, 0, fn {mask, _i}, acc -> mask ||| acc end)
+    # then it's n-rooks on this bit matrix
+    # returns indices into attrs2
+    with {:ok, indices} <- solve_n_rooks_exhaustive(masks, col_mask, length(attrs1)) do
+      cond do
+        Enum.empty?(indices) -> nil
+        true -> {:ok, indices}
       end
     end
   end
@@ -278,29 +286,28 @@ defmodule RiichiAdvanced.Match do
         encoded_aliases = if divides do %{} else encoded_aliases end
 
         ret = if not exhaustive do
-          with {:ok, indices} <- subtract_check_attrs(nonjokers, attrs1, %{}, exhaustive) do
-            cond do
-              return_indices -> indices
-              exhaustive ->
-                for ixs <- indices do remove_tileset_indices(hand, ixs, encoded_joker_tiles) end
-                |> Enum.uniq()
-              true -> remove_tileset_indices(hand, indices, encoded_joker_tiles)
+          with {:ok, indices} <- subtract_check_attrs(nonjokers, attrs1, %{}) do
+            if return_indices do indices else
+              remove_tileset_indices(hand, indices, encoded_joker_tiles)
             end
           end
         else nil end
 
-        if ret != nil do
-          ret
-        else
-          with {:ok, indices} <- subtract_check_attrs(attrs2, attrs1, encoded_aliases, exhaustive) do
-            cond do
-              return_indices -> indices
-              exhaustive ->
+        cond do
+          ret != nil -> ret
+          exhaustive ->
+            with {:ok, indices} <- subtract_check_attrs_exhaustive(attrs2, attrs1, encoded_aliases) do
+              if return_indices do indices else
                 for ixs <- indices do remove_tileset_indices(hand, ixs, encoded_joker_tiles) end
                 |> Enum.uniq()
-              true -> remove_tileset_indices(hand, indices, encoded_joker_tiles)
+              end
             end
-          end
+          true ->
+            with {:ok, indices} <- subtract_check_attrs_exhaustive(attrs2, attrs1, encoded_aliases) do
+              if return_indices do indices else
+                remove_tileset_indices(hand, indices, encoded_joker_tiles)
+              end
+            end
         end
     end
   end
@@ -393,7 +400,7 @@ defmodule RiichiAdvanced.Match do
         hand_set = encode(hand, tile_behavior)
         tiles_set = encode(tiles, TileBehavior.remove_aliases(tile_behavior))
         encoded_aliases = encode_aliases(tile_behavior)
-        case subtract_check_attrs(hand_set.attrs, tiles_set.attrs, encoded_aliases, true) do
+        case subtract_check_attrs_exhaustive(hand_set.attrs, tiles_set.attrs, encoded_aliases) do
           {:ok, ret} ->
             Enum.map(ret, fn is ->
               # IO.puts("Removing #{inspect(tiles)} from #{inspect(hand)} result is #{inspect(is, charlists: :as_lists)} becomes #{inspect(remove_indices(hand, is) |> Utils.remove_attr(["_hand", "_draw"]))}")

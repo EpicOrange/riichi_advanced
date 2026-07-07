@@ -5,7 +5,7 @@ pub type Prime = u128;
 pub type BitAttrs = u64;
 pub type Tile = (Prime, BitAttrs);
 
-#[derive(NifStruct)]
+#[derive(NifStruct, Debug)]
 #[module = "Elixir.RiichiAdvanced.Match.TileSet"]
 pub struct TileSet {
   pub hash: Prime,
@@ -15,3 +15,6 @@ pub struct TileSet {
 }
 pub type AliasEntry = HashMap<BitAttrs, Vec<Tile>>;
 pub type Aliases = HashMap<Prime, AliasEntry>;
+
+pub type Mask = u64;
+pub type RowIndex = u8; // index into Mask
