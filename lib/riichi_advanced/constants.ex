@@ -271,7 +271,7 @@ defmodule RiichiAdvanced.Constants do
       :"31's" -> 2621; :"35'z" -> 2633; :"35`z" -> 2647;
       :"41's" -> 2657; :"45'z" -> 2659; :"45`z" -> 2663;
 
-      :any -> 2671
+      :any -> 1
       _ ->
         IO.puts("Unrecognized tile #{inspect(tile)}, cannot convert into prime!")
         # IO.inspect(Process.info(self(), :current_stacktrace))
@@ -339,7 +339,7 @@ defmodule RiichiAdvanced.Constants do
       2621 -> :"31's"; 2633 -> :"35'z"; 2647 -> :"35`z";
       2657 -> :"41's"; 2659 -> :"45'z"; 2663 -> :"45`z";
 
-      2671 -> :any
+      1 -> :any
       _ ->
         IO.puts("Unrecognized prime #{inspect(prime)}, cannot convert to tile!")
         # IO.inspect(Process.info(self(), :current_stacktrace))
