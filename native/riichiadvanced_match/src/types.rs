@@ -100,8 +100,60 @@ pub type MatchDefinition = Vec<MatchDefinitionElem>;
 pub type MatchDefinitions = Vec<MatchDefinition>;
 
 #[derive(Clone, Debug)]
-pub enum RemovableGroup {
+pub enum RemovableGroup<'a> {
   CallName(String),
   Group(TileSet),
-  Subgroup(Vec<RemovableGroup>),
+  GroupRef(&'a TileSet),
+  Multigroup(Vec<RemovableSubgroup>),
+}
+#[derive(Clone, Debug)]
+pub enum RemovableSubgroup {
+  Subgroup(TileSet),
+  SubgroupSet(Vec<TileSet>),
+}
+
+
+impl<'a> Encoder for RemovableGroup<'a> {
+  fn encode<'b>(&self, env: Env<'b>) -> Term<'b> {
+    match self {
+      RemovableGroup::CallName(name) => name.encode(env),
+      RemovableGroup::Group(group) => group.encode(env),
+      RemovableGroup::GroupRef(group) => group.encode(env),
+      RemovableGroup::Multigroup(subgroups) => subgroups.encode(env),
+    }
+  }
+}
+impl Encoder for RemovableSubgroup {
+  fn encode<'b>(&self, env: Env<'b>) -> Term<'b> {
+    match self {
+      RemovableSubgroup::Subgroup(subgroup) => subgroup.encode(env),
+      RemovableSubgroup::SubgroupSet(subgroups) => subgroups.encode(env),
+    }
+  }
+}
+
+impl<'a> Decoder<'a> for RemovableGroup<'a> {
+  fn decode(term: Term<'a>) -> NifResult<Self> {
+    if let Ok(name) = term.decode::<String>() {
+      Ok(RemovableGroup::CallName(name))
+    } else if let Ok(group) = term.decode::<TileSet>() {
+      Ok(RemovableGroup::Group(group))
+    } else if let Ok(subgroups) = term.decode::<Vec<RemovableSubgroup>>() {
+      Ok(RemovableGroup::Multigroup(subgroups))
+    } else {
+      Err(Error::BadArg)
+    }
+  }
+}
+
+impl<'a> Decoder<'a> for RemovableSubgroup {
+  fn decode(term: Term<'a>) -> NifResult<Self> {
+    if let Ok(subgroup) = term.decode::<TileSet>() {
+      Ok(RemovableSubgroup::Subgroup(subgroup))
+    } else if let Ok(subgroups) = term.decode::<Vec<TileSet>>() {
+      Ok(RemovableSubgroup::SubgroupSet(subgroups))
+    } else {
+      Err(Error::BadArg)
+    }
+  }
 }

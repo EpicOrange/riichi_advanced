@@ -99,8 +99,8 @@ defmodule RiichiAdvanced.Match do
   defp _remove_indices([x | xs], is, acc, j), do: _remove_indices(xs, is, [x | acc], j + 1)
 
   # check if arg1 is a subset of arg2
-  def is_subset?(l, r, tile_behavior) do
-    case subtract(r, l, tile_behavior.encoded_aliases, tile_behavior.encoded_joker_tiles) do
+  def is_subset?(l, r, encoded_aliases, encoded_joker_tiles) do
+    case subtract(r, l, encoded_aliases, encoded_joker_tiles) do
       nil -> false
       _ -> true
     end
@@ -466,76 +466,57 @@ defmodule RiichiAdvanced.Match do
     end
   end
 
-  def elim_group([hand | calls], group, _tile_behavior) when is_binary(group) do
-    # group is a call name, remove every corresponding call
-    for {call, i} <- Enum.with_index(calls), call.name == group, do: [hand | List.delete_at(calls, i)]
-  end
-  def elim_group([hand | calls], group, tile_behavior) do
-    cond do
-      is_list(group) ->
-        for subgroup <- group, reduce: [[hand | calls]] do
-          acc when is_list(subgroup) ->
-            # subgroup contains multiple parts that can be removed independently
-            for part <- subgroup, reduce: acc do
-              nil -> []
-              acc -> Enum.flat_map(acc, &elim_group(&1, part, tile_behavior))
-            end
-          acc -> Enum.flat_map(acc, &elim_group(&1, subgroup, tile_behavior))
-        end
-
-        # for subgroup <- group, reduce: [[hand | calls]] do
-        #   acc ->
-        #     IO.inspect(Enum.map(acc, fn x -> Enum.map(x, &decode/1) end), label: inspect(decode(subgroup)))
-        #     Enum.flat_map(acc, &elim_group(&1, subgroup))
-        # end |> IO.inspect(label: inspect(Enum.map(group, &decode/1)))
-      true ->
-        from_calls = for {call, i} <- Enum.with_index(calls), is_subset?(group, call, tile_behavior), do: [hand | List.delete_at(calls, i)]
-        # if length(group.attrs) == 3 do IO.puts("#{inspect(hand)}\n- #{inspect(group)}\n= #{inspect(subtract(hand, group))}") end
-        case subtract_exhaustive(hand, group, tile_behavior.encoded_aliases, tile_behavior.encoded_joker_tiles) do
-          nil -> from_calls
-          ret ->
-            for new_hand <- ret do
-              # IO.inspect({hand.attrs, "-", group.attrs, "=", new_hand.attrs}, label: "Subtracting", limit: :infinity)
-              # IO.inspect({length(hand.attrs), "-", length(group.attrs), "=", length(new_hand.attrs)}, label: "Subtracting")
-              [new_hand | calls]
-            end ++ from_calls
-        end
-    end
-  end
-  def elim_group_once(_hands, [], _tile_behavior) do
+  def elim_group(_hands, [], _encoded_aliases, _encoded_joker_tiles, _exhaustive) do
     IO.puts("Tried to remove an empty group []")
     []
   end
-  def elim_group_once([hand | calls], group, _tile_behavior) when is_binary(group) do
+  def elim_group([hand | calls], group, _encoded_aliases, _encoded_joker_tiles, exhaustive) when is_binary(group) do
     # group is a call name, remove one corresponding call
-    case Enum.find_index(calls, & &1.name == group) do
-      nil -> []
-      i   -> [[hand | List.delete_at(calls, i)]]
-    end
-  end
-  def elim_group_once([hand | calls], group, tile_behavior) when is_list(group) do
-    for subgroup <- group, reduce: [[hand | calls]] do
-      [] -> []
-      acc ->
-        if is_list(subgroup) and is_list(Enum.at(subgroup, 0)) do
-          # subgroup contains multiple parts that can be removed independently
-          for part <- subgroup, reduce: acc do
-            [] -> []
-            acc -> elim_group_once(acc |> Enum.at(0), part, tile_behavior)
-          end
-        else
-          elim_group_once(acc |> Enum.at(0), subgroup, tile_behavior)
-        end
-    end
-  end
-  def elim_group_once([hand | calls], group, tile_behavior) do
-    # we prefer removing from calls over from hand
-    case Enum.find_index(calls, &is_subset?(group, &1, tile_behavior)) do
-      nil -> case subtract(hand, group, tile_behavior.encoded_aliases, tile_behavior.encoded_joker_tiles) do
+    if exhaustive do
+      for {call, i} <- Enum.with_index(calls), call.name == group, do: [hand | List.delete_at(calls, i)]
+    else
+      case Enum.find_index(calls, & &1.name == group) do
         nil -> []
-        ret -> [[ret | calls]]
+        i   -> [[hand | List.delete_at(calls, i)]]
       end
-      i -> [[hand | List.delete_at(calls, i)]]
+    end
+  end
+  def elim_group([hand | calls], group, encoded_aliases, encoded_joker_tiles, exhaustive) when is_list(group) do
+    for subgroup <- group, reduce: [[hand | calls]] do
+      [] when not exhaustive -> []
+      acc when is_list(subgroup) ->
+        # subgroup contains multiple parts that can be removed independently
+        for part <- subgroup, reduce: acc do
+          [] -> []
+          acc when exhaustive -> Enum.flat_map(acc, &elim_group(&1, part, encoded_aliases, encoded_joker_tiles, exhaustive))
+          acc -> elim_group(acc |> Enum.at(0), part, encoded_aliases, encoded_joker_tiles, exhaustive)
+        end
+      acc when exhaustive -> Enum.flat_map(acc, &elim_group(&1, subgroup, encoded_aliases, encoded_joker_tiles, exhaustive))
+      acc -> elim_group(acc |> Enum.at(0), subgroup, encoded_aliases, encoded_joker_tiles, exhaustive)
+    end
+  end
+  def elim_group([hand | calls], group, encoded_aliases, encoded_joker_tiles, exhaustive) do
+    if exhaustive do
+      from_calls = for {call, i} <- Enum.with_index(calls), is_subset?(group, call, encoded_aliases, encoded_joker_tiles), do: [hand | List.delete_at(calls, i)]
+      # if length(group.attrs) == 3 do IO.puts("#{inspect(hand)}\n- #{inspect(group)}\n= #{inspect(subtract(hand, group))}") end
+      case subtract_exhaustive(hand, group, encoded_aliases, encoded_joker_tiles) do
+        nil -> from_calls
+        ret ->
+          for new_hand <- ret do
+            # IO.inspect({hand.attrs, "-", group.attrs, "=", new_hand.attrs}, label: "Subtracting", limit: :infinity)
+            # IO.inspect({length(hand.attrs), "-", length(group.attrs), "=", length(new_hand.attrs)}, label: "Subtracting")
+            [new_hand | calls]
+          end ++ from_calls
+      end
+    else
+      # we prefer removing from calls over from hand
+      case Enum.find_index(calls, &is_subset?(group, &1, encoded_aliases, encoded_joker_tiles)) do
+        nil -> case subtract(hand, group, encoded_aliases, encoded_joker_tiles) do
+          nil -> []
+          ret -> [[ret | calls]]
+        end
+        i -> [[hand | List.delete_at(calls, i)]]
+      end
     end
   end
 
@@ -785,7 +766,7 @@ defmodule RiichiAdvanced.Match do
               # try removing from calls first
               # IO.inspect([hand | calls], label: "hands")
               # IO.inspect(group, label: "group")
-              case Enum.find_index(calls, &is_subset?(group, &1, tile_behavior)) do
+              case Enum.find_index(calls, &is_subset?(group, &1, tile_behavior.encoded_aliases, tile_behavior.encoded_joker_tiles)) do
                 nil ->
                   # remove from hand instead
                   case subtract(hand, group, tile_behavior.encoded_aliases, tile_behavior.encoded_joker_tiles) do
@@ -926,7 +907,7 @@ defmodule RiichiAdvanced.Match do
               base_suit <- (if base_suit == nil and is_map(groups) do Map.keys(groups) else [base_suit] end),
               groups = (if is_map(groups) do Map.get(groups, base_suit) else groups end),
               group <- groups,
-              hands <- (if exhaustive do elim_group(hands, group, tile_behavior) else elim_group_once(hands, group, tile_behavior) end),
+              hands <- elim_group(hands, group, tile_behavior.encoded_aliases, tile_behavior.encoded_joker_tiles, exhaustive),
               uniq: true do
             {hands, if unique do List.delete_at(remaining_groups, i) else remaining_groups end, base_suit}
           end
@@ -937,7 +918,7 @@ defmodule RiichiAdvanced.Match do
               base_suit <- (if base_suit == nil and is_map(groups) do Map.keys(groups) else [base_suit] end),
               groups = (if is_map(groups) do Map.get(groups, base_suit) else groups end),
               group <- groups,
-              hands <- (if exhaustive do elim_group(hands, group, tile_behavior) else elim_group_once(hands, group, tile_behavior) end),
+              hands <- elim_group(hands, group, tile_behavior.encoded_aliases, tile_behavior.encoded_joker_tiles, exhaustive),
               reduce: %{} do
             acc when is_map_key(acc, base_suit) -> acc
             acc -> Map.put(acc, base_suit, {hands, if unique do List.delete_at(remaining_groups, i) else remaining_groups end, base_suit})

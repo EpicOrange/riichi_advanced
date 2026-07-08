@@ -1,7 +1,7 @@
 use std::collections::{HashSet};
 use crate::encode::{encode, encode_aliases};
-use crate::tileset::{_remove_indices, _subtract_check_attrs_exhaustive};
-use crate::types::{Aliases, ElixirAliases, ElixirHand, Hands, MatchGroup, Tile};
+use crate::tileset::{_remove_indices, __subtract, __subtract_exhaustive, _subtract_check_attrs_exhaustive};
+use crate::types::{Aliases, ElixirAliases, ElixirHand, Hands, MatchGroup, RemovableGroup, RemovableSubgroup, Tile, TileSet};
 
 // this is used a lot, especially for determining and processing calls
 // #[rustler::nif]
@@ -51,65 +51,104 @@ fn _try_remove_all_tiles(
   }
 }
 
-// fn elim_group(
-//     hands: &Hands, group: &MatchGroup,
-//     all_attrs: &[String],
-//     encoded_aliases: &Aliases,
-//     encoded_joker_tiles: &HashSet<&Tile>
-// ) -> Vec<Hands> {
-//   match group {
-//     MatchGroup::CallName(name) => {
-//       // group is a call name, remove every corresponding call with that name
-//       let mut ret = vec!();
-//       for i in 0..hands.len() {
-//         if let Some(call_name) = &hands[i].name {
-//           if call_name == name {
-//             let mut hands = hands.clone();
-//             hands.remove(i);
-//             ret.push(hands);
-//           }
-//         }
-//       }
-//       ret
-//     }
-//     MatchGroup::Offsets(match_offsets) => {
+fn elim_call_name(hands: &Hands, name: &String, exhaustive: bool) -> Vec<Hands> {
+  // group is a call name, remove every corresponding call with that name
+  let mut ret = vec!();
+  for i in 0..hands.len() {
+    if let Some(call_name) = &hands[i].name {
+      if call_name == name {
+        let mut hands = hands.clone();
+        hands.remove(i);
+        ret.push(hands);
+        if !exhaustive { break; }
+      }
+    }
+  }
+  ret
+}
+fn elim_tileset(
+  hands: &Hands, tileset: &TileSet,
+  encoded_aliases: &Aliases,
+  encoded_joker_tiles: &HashSet<&Tile>,
+  exhaustive: bool,
+) -> Vec<Hands> {
+  let mut ret = vec!();
+  // check calls first
+  for i in 1..hands.len() {
+    if let Some(_) = __subtract_exhaustive(&hands[i], tileset, encoded_aliases, encoded_joker_tiles) {
+      let mut hands = hands.clone();
+      hands.remove(i);
+      ret.push(hands);
+      if !exhaustive { break; }
+    }
+  }
+  if exhaustive {
+    // then check hand, for each one make copies of hands, placing results into each one
+    if let Some(results) = __subtract_exhaustive(&hands[0], tileset, encoded_aliases, encoded_joker_tiles) {
+      for result in results {
+        let mut hands = hands.clone();
+        hands[0] = result;
+        ret.push(hands);
+      }
+    }
+  } else {
+    // then check hand
+    if let Some(result) = __subtract(&hands[0], tileset, encoded_aliases, encoded_joker_tiles) {
+      let mut hands = hands.clone();
+      hands[0] = result;
+      ret.push(hands);
+    }
+  }
+  ret
+}
 
-//     }
-//     MatchGroup::Subgroups(items) => todo!(),
-//   }
-// }
-
-  // def elim_group([hand | calls], group, tile_behavior) do
-  //   cond do
-  //     is_list(group) ->
-  //       for subgroup <- group, reduce: [[hand | calls]] do
-  //         acc when is_list(subgroup) ->
-  //           # subgroup contains multiple parts that can be removed independently
-  //           for part <- subgroup, reduce: acc do
-  //             nil -> []
-  //             acc -> Enum.flat_map(acc, &elim_group(&1, part, tile_behavior))
-  //           end
-  //         acc -> Enum.flat_map(acc, &elim_group(&1, subgroup, tile_behavior))
-  //       end
-  //     true ->
-  //        
-  // end
-
-  //       # for subgroup <- group, reduce: [[hand | calls]] do
-  //       #   acc ->
-  //       #     IO.inspect(Enum.map(acc, fn x -> Enum.map(x, &decode/1) end), label: inspect(decode(subgroup)))
-  //       #     Enum.flat_map(acc, &elim_group(&1, subgroup))
-  //       # end |> IO.inspect(label: inspect(Enum.map(group, &decode/1)))
-  //     true ->
-  //       from_calls = for {call, i} <- Enum.with_index(calls), is_subset?(group, call, tile_behavior), do: [hand | List.delete_at(calls, i)]
-  //       # if length(group.attrs) == 3 do IO.puts("#{inspect(hand)}\n- #{inspect(group)}\n= #{inspect(subtract(hand, group))}") end
-  //       case subtract_exhaustive(hand, group, tile_behavior.encoded_aliases, tile_behavior.encoded_joker_tiles |> Enum.to_list()) do
-  //         nil -> from_calls
-  //         ret ->
-  //           for new_hand <- ret do
-  //             # IO.inspect({hand.attrs, "-", group.attrs, "=", new_hand.attrs}, label: "Subtracting", limit: :infinity)
-  //             # IO.inspect({length(hand.attrs), "-", length(group.attrs), "=", length(new_hand.attrs)}, label: "Subtracting")
-  //             [new_hand | calls]
-  //           end ++ from_calls
-  //       end
-  //   end
+// #[rustler::nif]
+fn elim_group(
+    hands: Hands, group: RemovableGroup,
+    encoded_aliases: Aliases,
+    encoded_joker_tiles: Vec<Tile>,
+    exhaustive: bool,
+) -> Vec<Hands> {
+  _elim_group(&hands, &group, &encoded_aliases, &encoded_joker_tiles.iter().collect(), exhaustive)
+}
+fn _elim_group(
+    hands: &Hands, group_arg: &RemovableGroup,
+    encoded_aliases: &Aliases,
+    encoded_joker_tiles: &HashSet<&Tile>,
+    exhaustive: bool,
+) -> Vec<Hands> {
+  match group_arg {
+    RemovableGroup::CallName(name) => elim_call_name(hands, name, exhaustive),
+    RemovableGroup::Group(group) => elim_tileset(hands, &group, encoded_aliases, encoded_joker_tiles, exhaustive),
+    RemovableGroup::GroupRef(group) => elim_tileset(hands, group, encoded_aliases, encoded_joker_tiles, exhaustive),
+    RemovableGroup::Multigroup(subgroups) => {
+      // multigroup can only be removed from hand (= hands[0])
+      let mut ret = vec!(hands.clone());
+      for subgroup in subgroups {
+        let subgroup = subgroup.clone();
+        match subgroup {
+          RemovableSubgroup::Subgroup(subgroup) => {
+            let results = ret.iter().flat_map(move |hands| {
+              _elim_group(hands, &RemovableGroup::GroupRef(&subgroup), encoded_aliases, encoded_joker_tiles, exhaustive)
+            });
+            // only retain one result if not exhaustive
+            if exhaustive { ret = results.collect(); }
+            else { ret = results.take(1).collect(); }
+          }
+          RemovableSubgroup::SubgroupSet(subgroups) => {
+            // subgroup contains multiple parts that can be removed independently
+            for subgroup in subgroups {
+              let results = ret.iter().flat_map(|hands| {
+                _elim_group(hands, &RemovableGroup::GroupRef(&subgroup), encoded_aliases, encoded_joker_tiles, exhaustive)
+              });
+              // only retain one result if not exhaustive
+              if exhaustive { ret = results.collect(); }
+              else { ret = results.take(1).collect(); }
+            }
+          }
+        }
+      }
+      ret
+    }
+  }
+}
