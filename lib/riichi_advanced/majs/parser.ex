@@ -58,14 +58,16 @@ defmodule RiichiAdvanced.Parser do
             _ -> {:error, "expected no more than one @ in set item"}
           end
           with {:ok, {item, attrs}} <- item_attrs do
-            offset = case Integer.parse(item) do
-              {offset, ""} -> offset
-              _ -> item
-            end
             if Enum.empty?(attrs) do
-              {:ok, offset}
+              case Integer.parse(item) do
+                {offset, ""} -> {:ok, offset}
+                _ -> {:ok, item}
+              end
             else
-              {:ok, {:%{}, [], [{"offset", offset}, {"attrs", attrs}]}}
+              case Integer.parse(item) do
+                {offset, ""} -> {:ok, {:%{}, [], [{"offset", offset}, {"attrs", attrs}]}}
+                _ -> {:ok, {:%{}, [], [{"tile", item}, {"attrs", attrs}]}}
+              end
             end
           end
         end |> Utils.sequence()

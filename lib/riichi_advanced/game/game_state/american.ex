@@ -293,6 +293,11 @@ defmodule RiichiAdvanced.GameState.American do
                       anyless_tile_behavior = %{ tile_behavior | aliases: Map.delete(tile_behavior.aliases, :any), uuid: Ecto.UUID.generate() }
                       new_hand = Enum.find_value(groups, fn group ->
                         # calls were taken care of above, so we can just focus on hand
+                        group = if is_atom(group) do
+                          Atom.to_string(group)
+                        else
+                          Enum.map(group, &Atom.to_string/1)
+                        end
                         Match.remove_group(hand, group, anyless_tile_behavior, false, [base_tile])
                       end)
                       if new_hand != nil do

@@ -4,6 +4,7 @@ use rustler::{Atom, Decoder, Encoder, Env, Error, NifResult, NifStruct, Term};
 pub type Hash = u128;
 pub type BitAttrs = u64;
 pub type Tile = (Hash, BitAttrs);
+pub const ANY_PRIME: Hash = 1;
 
 pub type AliasEntry = HashMap<BitAttrs, Vec<Tile>>;
 pub type Aliases = HashMap<Hash, AliasEntry>;
@@ -11,7 +12,7 @@ pub type Aliases = HashMap<Hash, AliasEntry>;
 pub type Mask = u64;
 pub type RowIndex = u8; // index into Mask
 
-#[derive(NifStruct, Clone, Debug)]
+#[derive(NifStruct, PartialEq, Eq, Clone, Debug, Hash)]
 #[module = "RiichiAdvanced.Match.TileSet"]
 pub struct TileSet {
   pub hash: Hash,
@@ -21,7 +22,7 @@ pub struct TileSet {
 }
 pub type Hands = Vec<TileSet>;
 
-#[derive(PartialEq, Eq, Clone, Debug)]
+#[derive(PartialEq, Eq, Clone, Debug, Hash)]
 pub enum ElixirTile {
   AtomTile(Atom),
   AttrTile(Atom, Vec<String>),
@@ -76,16 +77,61 @@ pub type ElixirAliases = HashMap<Atom, HashMap<Vec<String>, ElixirHand>>;
 // match definition spec
 
 #[derive(Clone, Debug)]
+pub struct AttrOffsetMap {
+  pub offset: isize,
+  pub attrs: Vec<String>,
+}
+#[derive(Clone, Debug)]
+pub struct AttrTileMap {
+  pub tile: String,
+  pub attrs: Vec<String>,
+}
+// since NifMap deriving only works if the keys are atoms, we gotta roll our own
+impl<'a> Decoder<'a> for AttrOffsetMap {
+  fn decode(term: Term<'a>) -> NifResult<Self> {
+    let env = term.get_env();
+    let offset: isize = term.map_get("offset".encode(env))?.decode()?;
+    let attrs: Vec<String> = term.map_get("attrs".encode(env))?.decode()?;
+    Ok(AttrOffsetMap{ offset, attrs })
+  }
+}
+impl Encoder for AttrOffsetMap {
+  fn encode<'a>(&self, env: Env<'a>) -> Term<'a> {
+    Term::map_from_pairs(env, &[
+      ("offset".encode(env), self.offset.encode(env)),
+      ("attrs".encode(env), self.attrs.encode(env))
+    ]).unwrap()
+  }
+}
+impl<'a> Decoder<'a> for AttrTileMap {
+  fn decode(term: Term<'a>) -> NifResult<Self> {
+    let env = term.get_env();
+    let tile: String = term.map_get("tile".encode(env))?.decode()?;
+    let attrs: Vec<String> = term.map_get("attrs".encode(env))?.decode()?;
+    Ok(AttrTileMap{ tile, attrs })
+  }
+}
+impl Encoder for AttrTileMap {
+  fn encode<'a>(&self, env: Env<'a>) -> Term<'a> {
+    Term::map_from_pairs(env, &[
+      ("tile".encode(env), self.tile.encode(env)),
+      ("attrs".encode(env), self.attrs.encode(env))
+    ]).unwrap()
+  }
+}
+
+
+#[derive(Clone, Debug)]
 pub enum MatchOffset {
-  Numeric(u64),
-  Tile(ElixirTile),
-  Fixed(Atom), // for amerijong
-  Keyword(String),
+  Offset(isize),
+  AttrsTile(AttrTileMap),
+  AttrsOffset(AttrOffsetMap),
+  TileOrKeyword(String), // group keywords, includes amerijong fixed offsets
 }
 
 #[derive(Clone, Debug)]
 pub enum MatchGroup {
-  CallName(String),
+  Offset(MatchOffset),
   Offsets(Vec<MatchOffset>),
   Subgroups(Vec<Vec<MatchOffset>>),
 }
@@ -99,19 +145,53 @@ pub enum MatchDefinitionElem {
 pub type MatchDefinition = Vec<MatchDefinitionElem>;
 pub type MatchDefinitions = Vec<MatchDefinition>;
 
-#[derive(Clone, Debug)]
+#[derive(PartialEq, Eq, Clone, Debug, Hash)]
 pub enum RemovableGroup<'a> {
   CallName(String),
   Group(TileSet),
-  GroupRef(&'a TileSet),
-  Multigroup(Vec<RemovableSubgroup>),
-}
-#[derive(Clone, Debug)]
-pub enum RemovableSubgroup {
-  Subgroup(TileSet),
-  SubgroupSet(Vec<TileSet>),
+  GroupRef(&'a TileSet), // only used internally
+  Multigroup(Vec<TileSet>),
 }
 
+impl Encoder for MatchOffset {
+  fn encode<'a>(&self, env: Env<'a>) -> Term<'a> {
+    match self {
+      MatchOffset::Offset(o) => o.encode(env),
+      MatchOffset::AttrsTile(map) => map.encode(env),
+      MatchOffset::AttrsOffset(map) => map.encode(env),
+      MatchOffset::TileOrKeyword(s) => s.encode(env),
+    }
+  }
+}
+
+impl<'a> Decoder<'a> for MatchOffset {
+  fn decode(term: Term<'a>) -> NifResult<Self> {
+    if let Ok(o) = term.decode::<isize>() { Ok(MatchOffset::Offset(o)) }
+    else if let Ok(map) = term.decode::<AttrTileMap>() { Ok(MatchOffset::AttrsTile(map)) }
+    else if let Ok(map) = term.decode::<AttrOffsetMap>() { Ok(MatchOffset::AttrsOffset(map)) }
+    else if let Ok(s) = term.decode::<String>() { Ok(MatchOffset::TileOrKeyword(s)) }
+    else { Err(Error::BadArg) }
+  }
+}
+
+impl Encoder for MatchGroup {
+  fn encode<'a>(&self, env: Env<'a>) -> Term<'a> {
+    match self {
+      MatchGroup::Offset(offset) => offset.encode(env),
+      MatchGroup::Offsets(offsets) => offsets.encode(env),
+      MatchGroup::Subgroups(subgroupings) => subgroupings.encode(env),
+    }
+  }
+}
+
+impl<'a> Decoder<'a> for MatchGroup {
+  fn decode(term: Term<'a>) -> NifResult<Self> {
+    if let Ok(offset) = term.decode::<MatchOffset>() { Ok(MatchGroup::Offset(offset)) }
+    else if let Ok(offsets) = term.decode::<Vec<MatchOffset>>() { Ok(MatchGroup::Offsets(offsets)) }
+    else if let Ok(subgroupings) = term.decode::<Vec<Vec<MatchOffset>>>() { Ok(MatchGroup::Subgroups(subgroupings)) }
+    else { Err(Error::BadArg) }
+  }
+}
 
 impl<'a> Encoder for RemovableGroup<'a> {
   fn encode<'b>(&self, env: Env<'b>) -> Term<'b> {
@@ -123,37 +203,12 @@ impl<'a> Encoder for RemovableGroup<'a> {
     }
   }
 }
-impl Encoder for RemovableSubgroup {
-  fn encode<'b>(&self, env: Env<'b>) -> Term<'b> {
-    match self {
-      RemovableSubgroup::Subgroup(subgroup) => subgroup.encode(env),
-      RemovableSubgroup::SubgroupSet(subgroups) => subgroups.encode(env),
-    }
-  }
-}
 
 impl<'a> Decoder<'a> for RemovableGroup<'a> {
   fn decode(term: Term<'a>) -> NifResult<Self> {
-    if let Ok(name) = term.decode::<String>() {
-      Ok(RemovableGroup::CallName(name))
-    } else if let Ok(group) = term.decode::<TileSet>() {
-      Ok(RemovableGroup::Group(group))
-    } else if let Ok(subgroups) = term.decode::<Vec<RemovableSubgroup>>() {
-      Ok(RemovableGroup::Multigroup(subgroups))
-    } else {
-      Err(Error::BadArg)
-    }
-  }
-}
-
-impl<'a> Decoder<'a> for RemovableSubgroup {
-  fn decode(term: Term<'a>) -> NifResult<Self> {
-    if let Ok(subgroup) = term.decode::<TileSet>() {
-      Ok(RemovableSubgroup::Subgroup(subgroup))
-    } else if let Ok(subgroups) = term.decode::<Vec<TileSet>>() {
-      Ok(RemovableSubgroup::SubgroupSet(subgroups))
-    } else {
-      Err(Error::BadArg)
-    }
+    if let Ok(name) = term.decode::<String>() { Ok(RemovableGroup::CallName(name)) }
+    else if let Ok(group) = term.decode::<TileSet>() { Ok(RemovableGroup::Group(group)) }
+    else if let Ok(subgroups) = term.decode::<Vec<TileSet>>() { Ok(RemovableGroup::Multigroup(subgroups)) }
+    else { Err(Error::BadArg) }
   }
 }

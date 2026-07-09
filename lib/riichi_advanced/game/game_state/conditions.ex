@@ -503,7 +503,11 @@ defmodule RiichiAdvanced.GameState.Conditions do
         wait_definitions = Rules.translate_match_definitions(state.rules_ref, opts)
         waits = Match.get_waits(cxt_player.hand, cxt_player.calls, wait_definitions, cxt_player.tile_behavior)
         Enum.all?(waits, fn wait ->
-          Match.match_hand(cxt_player.hand, cxt_player.calls, [[[[wait], 4]]], cxt_player.tile_behavior)
+          match_group = case wait do
+            {tile, attrs} -> %{"tile" => Atom.to_string(tile), "attrs" => attrs}
+            _ -> Atom.to_string(wait)
+          end
+          Match.match_hand(cxt_player.hand, cxt_player.calls, [[[[match_group], 4]]], cxt_player.tile_behavior)
         end)
       "third_row_discard"   -> length(cxt_player.pond) >= 12
       "tiles_in_hand"       -> length(cxt_player.hand ++ cxt_player.draw) in opts

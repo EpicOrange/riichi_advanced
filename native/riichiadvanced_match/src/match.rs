@@ -1,7 +1,7 @@
 use std::collections::{HashSet};
 use crate::encode::{encode, encode_aliases};
 use crate::tileset::{_remove_indices, __subtract, __subtract_exhaustive, _subtract_check_attrs_exhaustive};
-use crate::types::{Aliases, ElixirAliases, ElixirHand, Hands, MatchGroup, RemovableGroup, RemovableSubgroup, Tile, TileSet};
+use crate::types::{Aliases, ElixirAliases, ElixirHand, Hands, RemovableGroup, Tile, TileSet};
 
 // this is used a lot, especially for determining and processing calls
 // #[rustler::nif]
@@ -125,28 +125,12 @@ fn _elim_group(
       // multigroup can only be removed from hand (= hands[0])
       let mut ret = vec!(hands.clone());
       for subgroup in subgroups {
-        let subgroup = subgroup.clone();
-        match subgroup {
-          RemovableSubgroup::Subgroup(subgroup) => {
-            let results = ret.iter().flat_map(move |hands| {
-              _elim_group(hands, &RemovableGroup::GroupRef(&subgroup), encoded_aliases, encoded_joker_tiles, exhaustive)
-            });
-            // only retain one result if not exhaustive
-            if exhaustive { ret = results.collect(); }
-            else { ret = results.take(1).collect(); }
-          }
-          RemovableSubgroup::SubgroupSet(subgroups) => {
-            // subgroup contains multiple parts that can be removed independently
-            for subgroup in subgroups {
-              let results = ret.iter().flat_map(|hands| {
-                _elim_group(hands, &RemovableGroup::GroupRef(&subgroup), encoded_aliases, encoded_joker_tiles, exhaustive)
-              });
-              // only retain one result if not exhaustive
-              if exhaustive { ret = results.collect(); }
-              else { ret = results.take(1).collect(); }
-            }
-          }
-        }
+        let results = ret.iter().flat_map(move |hands| {
+          _elim_group(hands, &RemovableGroup::GroupRef(&subgroup), encoded_aliases, encoded_joker_tiles, exhaustive)
+        });
+        // only retain one result if not exhaustive
+        if exhaustive { ret = results.collect(); }
+        else { ret = results.take(1).collect(); }
       }
       ret
     }

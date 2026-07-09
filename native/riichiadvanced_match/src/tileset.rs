@@ -1,9 +1,8 @@
 use std::collections::{HashMap, HashSet};
 use num::integer;
 use rustler::{Encoder, Env, Term};
-use crate::encode::{encode, encode_aliases};
 use crate::n_rooks;
-use crate::types::{Aliases, ElixirAliases, ElixirHand, Hash, Mask, RowIndex, Tile, TileSet};
+use crate::types::{ANY_PRIME, Aliases, Hash, Mask, RowIndex, Tile, TileSet};
 
 rustler::atoms! { ok }
 
@@ -52,8 +51,6 @@ pub fn _count_factors_fast(mut n: Hash, primes: &[Hash], mut acc: usize) -> usiz
   }
   acc + 1
 }
-
-const ANY_PRIME: Hash = 1;
 
 #[inline]
 pub fn check_tile_match((p2, battrs2): &Tile, (p1, battrs1): &Tile) -> bool {
