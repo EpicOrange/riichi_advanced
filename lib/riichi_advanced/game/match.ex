@@ -673,13 +673,30 @@ defmodule RiichiAdvanced.Match do
   # "kakan": ["kakan"]
 
   @decorate cacheable(cache: RiichiAdvanced.Cache, key: {:generate_groups, group, tile_behavior.uuid})
-  def generate_groups(group, tile_behavior) do
-    _generate_groups(group, tile_behavior.base_tiles |> Enum.to_list(), tile_behavior.all_tiles |> Enum.to_list(), tile_behavior.attrs |> Enum.to_list(), tile_behavior.encoded_joker_tiles |> Enum.to_list(), tile_behavior.ordering, tile_behavior.ordering_r)
+  def generate_groups(group, tile_behavior, nojoker) do
+    _generate_groups(
+      group,
+      tile_behavior.base_tiles |> Enum.to_list(),
+      tile_behavior.all_tiles |> Enum.to_list(),
+      tile_behavior.attrs |> Enum.to_list(),
+      tile_behavior.encoded_joker_tiles |> Enum.to_list(),
+      tile_behavior.ordering,
+      tile_behavior.ordering_r,
+      nojoker
+    )
   end
-  def _generate_groups(group, base_tiles, all_tiles, all_attrs, encoded_joker_tiles, ordering, ordering_r) do
-    __generate_groups(group, base_tiles |> MapSet.new(), all_tiles |> MapSet.new(), all_attrs |> MapSet.new(), encoded_joker_tiles |> MapSet.new(), ordering, ordering_r)
+  def _generate_groups(group, base_tiles, all_tiles, all_attrs, encoded_joker_tiles, ordering, ordering_r, nojoker) do
+    __generate_groups(group,
+      base_tiles |> MapSet.new(),
+      all_tiles |> MapSet.new(),
+      all_attrs |> MapSet.new(),
+      encoded_joker_tiles |> MapSet.new(),
+      ordering,
+      ordering_r,
+      nojoker
+    )
   end
-  def __generate_groups(group, base_tiles, all_tiles, all_attrs, encoded_joker_tiles, ordering, ordering_r) do
+  def __generate_groups(group, base_tiles, all_tiles, all_attrs, encoded_joker_tiles, ordering, ordering_r, nojoker) do
     case group do
       [[_ | _] | _] -> Enum.map(base_tiles, &Enum.map(group, fn subgroup -> apply_offsets(&1, subgroup, ordering, ordering_r) end))
       [_ | _] -> Enum.map(base_tiles, &apply_offsets(&1, group, ordering, ordering_r))
@@ -708,6 +725,7 @@ defmodule RiichiAdvanced.Match do
       is_list(&1) -> _encode(&1, all_attrs, encoded_joker_tiles)
       true -> _encode([&1], all_attrs, encoded_joker_tiles)
     end)
+    |> Enum.map(&if is_map(&1) and nojoker do %{&1 | nojoker: true} else &1 end)
   end
 
   # faster match algorithm for when we're checking against an exact set of tiles
@@ -731,27 +749,26 @@ defmodule RiichiAdvanced.Match do
       [line1 | lines]
     else "" end
 
-    primes_attrs = groups
+    group_tiles = groups
     |> Enum.map(fn
       group when is_list(group) -> Enum.map(group, &Utils.to_tile/1)
       group -> Utils.to_tile(group)
     end)
     |> Enum.map(&encode(List.wrap(&1), tile_behavior))
 
-    num_targets = length(primes_attrs)
+    num_targets = length(group_tiles)
     cond do
       num_targets < num ->
         if debug do
-          line1 = "Acc (failed to find #{num} matching group#{if num == 1 do "" else "s" end}):"
+          line1 = "Failed to find #{num} matching group#{if num == 1 do "" else "s" end})"
           IO.puts(Enum.join(report ++ [line1] ++ [""], "\n"))
         end
         []
       num_targets >= num ->
         new_acc = for hands <- acc do
-          # try to remove exactly num of the given groups (in primes_attrs) from hand/calls
-          {new_hands, remaining, _} = for group <- primes_attrs, reduce: {hands, num, length(primes_attrs)} do
-            {hands, remaining, groups_left} when remaining == 0 -> {hands, remaining, groups_left} # skip
-            {hands, remaining, groups_left} when groups_left < remaining -> {hands, remaining, groups_left - 1} # give up
+          # try to remove exactly num of the given groups (in group_tiles) from hand/calls
+          {new_hands, remaining, _} = for group <- group_tiles, reduce: {hands, num, num_targets} do
+            {hands, 0, groups_left} -> {hands, 0, groups_left} # done, skip the remaining group tiles
             {[hand | calls], remaining, groups_left} ->
               # we need to use subtract in order to handle jokers
               # try removing from calls first
@@ -764,7 +781,7 @@ defmodule RiichiAdvanced.Match do
                     ret -> {[ret | calls], remaining - 1, groups_left - 1} # matched and updated
                   end
                 ix ->
-                  # remove this call and we're done
+                  # remove this call
                   {[hand | List.delete_at(calls, ix)], remaining - 1, groups_left - 1}
               end
               
@@ -855,17 +872,15 @@ defmodule RiichiAdvanced.Match do
               encoded_groups = generate_groups(group, %{tile_behavior |
                 base_tiles: [base_tile],
                 uuid: Ecto.UUID.generate()
-              })
-              |> Enum.map(&if is_map(&1) do %{&1 | nojoker: nojoker} else &1 end)
+              }, nojoker)
               {base_tile, encoded_groups}
             end, group}
             {nojoker, [ret | acc]}
           true ->
-            if is_atom(group) do
-              IO.inspect(Process.info(self(), :current_stacktrace))
-            end
-            reified_groups = generate_groups(group, tile_behavior)
-            |> Enum.map(&if is_map(&1) do %{&1 | nojoker: nojoker} else &1 end)
+            # if is_atom(group) do
+            #   IO.inspect(Process.info(self(), :current_stacktrace))
+            # end
+            reified_groups = generate_groups(group, tile_behavior, nojoker)
             # IO.inspect(tile_behavior.all_tiles, label: inspect(group, charlists: :as_lists), charlists: :as_lists, limit: :infinity)
             # IO.inspect(reified_groups, label: inspect(group, charlists: :as_lists), charlists: :as_lists, limit: :infinity)
             # IO.inspect(length(reified_groups), label: inspect(group, charlists: :as_lists), charlists: :as_lists, limit: :infinity)
@@ -974,8 +989,7 @@ defmodule RiichiAdvanced.Match do
         uniq: true do b end
   end
 
-  def prepare_tiles(hands, match_definitions, tile_behavior, base_tiles \\ nil)
-  def prepare_tiles([hand | calls], match_definitions, tile_behavior, base_tiles) do
+  def prepare_tiles([hand | calls], match_definitions, tile_behavior) do
     # let all_tiles = tiles in hand + all joker aliases
     tiles_in_hand = hand ++ Enum.flat_map(calls, &Utils.call_to_tiles/1)
     encodable_tiles = Map.keys(tile_behavior.aliases) |> MapSet.new()
@@ -1002,11 +1016,8 @@ defmodule RiichiAdvanced.Match do
     |> MapSet.new()
 
     # use the passed-in base_tiles, otherwise it's all_tiles minus joker_tiles
-    base_tiles = if base_tiles == nil do
-      base_tiles = MapSet.difference(all_tiles, joker_tiles)
-      |> MapSet.delete(:any)
-      base_tiles
-    else MapSet.new(base_tiles) end
+    base_tiles = MapSet.difference(all_tiles, joker_tiles)
+    |> MapSet.delete(:any)
 
     # also add all offsets of existing tiles
     # we need to do this because jokers/offsets could reify into a tile
@@ -1147,7 +1158,28 @@ defmodule RiichiAdvanced.Match do
     end
   end
 
-  defp match_hand_v2(hand, calls, match_definitions, tile_behavior) do
+  defp match_hand_v3(hand, calls, match_definitions, tile_behavior) do
+    if Enum.any?(match_definitions, fn match_definition -> "dismantle_calls" in match_definition end) do
+      __match_hand_v3(hand, calls, match_definitions, tile_behavior)
+    else
+      # make rust engine handle it
+      _match_hand_v3({hand, calls}, match_definitions,
+        tile_behavior.all_tiles |> Enum.to_list(), tile_behavior.attrs |> Enum.to_list() |> Enum.sort(),
+        tile_behavior.aliases |> TileBehavior.remove_alias_mapsets(),
+        tile_behavior.ordering, tile_behavior.ordering_r
+      )
+    end
+  end
+  defp _match_hand_v3({hand, calls}, match_definitions, all_tiles, all_attrs, elixir_aliases, ordering, ordering_r) do
+    __match_hand_v3(hand, calls, match_definitions, %TileBehavior{
+      all_tiles: all_tiles |> MapSet.new(),
+      attrs: all_attrs |> MapSet.new(),
+      aliases: elixir_aliases |> TileBehavior.restore_alias_mapsets(),
+      ordering: ordering,
+      ordering_r: ordering_r,
+    })
+  end
+  defp __match_hand_v3(hand, calls, match_definitions, tile_behavior) do
     # dbg = Enum.count(hand, & &1 == :"9m") == 1
     # restrict all_tiles to be tiles that exist in hand/calls
     {tiles_in_hand, initial_hands, tile_behavior} = prepare_tiles([hand | calls], match_definitions, tile_behavior)
@@ -1163,7 +1195,7 @@ defmodule RiichiAdvanced.Match do
   end
 
   def match_hand(hand, calls, match_definitions, tile_behavior) do
-    case match_hand_v2(hand, calls, match_definitions, tile_behavior) do
+    case match_hand_v3(hand, calls, match_definitions, tile_behavior) do
       {:ok, ret} -> ret
       _ ->
         IO.puts("Falling back to old match engine for hand #{inspect(hand)}")
@@ -1175,7 +1207,10 @@ defmodule RiichiAdvanced.Match do
   def remove_group(hand, [], _tile_behavior, false, _base_tiles), do: hand
   def remove_group(hand, [], _tile_behavior, true, _base_tiles), do: [hand]
   def remove_group(hand, group, tile_behavior, exhaustive, base_tiles) do
-    {_tiles_in_hand, [initial_hand], tile_behavior} = prepare_tiles([hand], [[[group, 1]]], tile_behavior, base_tiles)
+    {_tiles_in_hand, [initial_hand], tile_behavior} = prepare_tiles([hand], [[[group, 1]]], tile_behavior)
+    tile_behavior = if base_tiles != nil do
+      %{tile_behavior | base_tiles: base_tiles}
+    else tile_behavior end
 
     # debug = group == [-1, %{"attrs" => ["winning_tile"], "offset" => 0}, 1]
     # if debug do
@@ -1183,8 +1218,7 @@ defmodule RiichiAdvanced.Match do
     # end
     nojoker = Enum.empty?(tile_behavior.mappings)
     group
-    |> generate_groups(tile_behavior)
-    |> Enum.map(&if is_map(&1) do %{&1 | nojoker: nojoker} else &1 end)
+    |> generate_groups(tile_behavior, nojoker)
     |> Enum.reduce_while([], fn reified_group, acc ->
       subtract_exhaustive(initial_hand, reified_group, tile_behavior.encoded_aliases, tile_behavior.encoded_joker_tiles)
       |> case do

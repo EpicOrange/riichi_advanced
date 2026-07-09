@@ -1,4 +1,5 @@
-use std::collections::{HashMap};
+use crate::tile_table::*;
+use std::collections::{HashMap, HashSet};
 use rustler::{Atom, Decoder, Encoder, Env, Error, NifResult, NifStruct, Term};
 
 pub type Hash = u128;
@@ -12,7 +13,7 @@ pub type Aliases = HashMap<Hash, AliasEntry>;
 pub type Mask = u64;
 pub type RowIndex = u8; // index into Mask
 
-#[derive(NifStruct, PartialEq, Eq, Clone, Debug, Hash)]
+#[derive(NifStruct, PartialEq, Eq, PartialOrd, Ord, Clone, Debug, Hash)]
 #[module = "RiichiAdvanced.Match.TileSet"]
 pub struct TileSet {
   pub hash: Hash,
@@ -21,6 +22,13 @@ pub struct TileSet {
   pub nojoker: bool, // for groups only
 }
 pub type Hands = Vec<TileSet>;
+
+impl TileSet {
+  pub fn set_nojoker(mut self, nojoker: bool) -> Self {
+    self.nojoker = nojoker;
+    self
+  }
+}
 
 #[derive(PartialEq, Eq, Clone, Debug, Hash)]
 pub enum ElixirTile {
@@ -71,17 +79,17 @@ impl<'a> Decoder<'a> for ElixirTile {
 }
 
 pub type ElixirHand = Vec<ElixirTile>;
-
-pub type ElixirAliases = HashMap<Atom, HashMap<Vec<String>, ElixirHand>>;
+pub type ElixirHandCalls = (ElixirHand, Vec<(String, ElixirHand)>);
+pub type ElixirAliases = HashMap<ElixirTile, HashMap<Vec<String>, ElixirHand>>;
 
 // match definition spec
 
-#[derive(Clone, Debug)]
+#[derive(PartialEq, Eq, PartialOrd, Ord, Clone, Debug)]
 pub struct AttrOffsetMap {
   pub offset: isize,
   pub attrs: Vec<String>,
 }
-#[derive(Clone, Debug)]
+#[derive(PartialEq, Eq, PartialOrd, Ord, Clone, Debug)]
 pub struct AttrTileMap {
   pub tile: String,
   pub attrs: Vec<String>,
@@ -120,8 +128,7 @@ impl Encoder for AttrTileMap {
   }
 }
 
-
-#[derive(Clone, Debug)]
+#[derive(PartialEq, Eq, PartialOrd, Ord, Clone, Debug)]
 pub enum MatchOffset {
   Offset(isize),
   AttrsTile(AttrTileMap),
@@ -129,23 +136,40 @@ pub enum MatchOffset {
   TileOrKeyword(String), // group keywords, includes amerijong fixed offsets
 }
 
-#[derive(Clone, Debug)]
+#[derive(PartialEq, Eq, Clone, Debug)]
 pub enum MatchGroup {
   Offset(MatchOffset),
   Offsets(Vec<MatchOffset>),
   Subgroups(Vec<Vec<MatchOffset>>),
 }
 
-#[derive(Clone, Debug)]
+impl MatchGroup {
+  pub fn flatten_move(self) -> Vec<MatchOffset> {
+    match self {
+      MatchGroup::Offset(o) => vec!(o),
+      MatchGroup::Offsets(os) => os,
+      MatchGroup::Subgroups(oss) => oss.into_iter().flatten().collect(),
+    }
+  }
+  pub fn flatten(&self) -> Vec<MatchOffset> {
+    match self {
+      MatchGroup::Offset(o) => vec!(o.clone()),
+      MatchGroup::Offsets(os) => os.clone(),
+      MatchGroup::Subgroups(oss) => oss.iter().flat_map(|os| os.iter().cloned()).collect(),
+    }
+  }
+}
+
+#[derive(PartialEq, Eq, Clone, Debug)]
 pub enum MatchDefinitionElem {
   Keyword(String),
-  Group(MatchGroup, i8),
+  Group(Vec<MatchGroup>, i8),
 }
 
 pub type MatchDefinition = Vec<MatchDefinitionElem>;
 pub type MatchDefinitions = Vec<MatchDefinition>;
 
-#[derive(PartialEq, Eq, Clone, Debug, Hash)]
+#[derive(PartialEq, Eq, PartialOrd, Ord, Clone, Debug, Hash)]
 pub enum RemovableGroup<'a> {
   CallName(String),
   Group(TileSet),
@@ -193,6 +217,28 @@ impl<'a> Decoder<'a> for MatchGroup {
   }
 }
 
+impl Encoder for MatchDefinitionElem {
+  fn encode<'a>(&self, env: Env<'a>) -> Term<'a> {
+    match self {
+      MatchDefinitionElem::Keyword(s) => s.encode(env),
+      MatchDefinitionElem::Group(groups, num) => vec!(groups.encode(env), num.encode(env)).encode(env),
+    }
+  }
+}
+
+impl<'a> Decoder<'a> for MatchDefinitionElem {
+  fn decode(term: Term<'a>) -> NifResult<Self> {
+    if let Ok(s) = term.decode::<String>() { Ok(MatchDefinitionElem::Keyword(s)) }
+    else if let Ok(groups_num) = term.decode::<Vec<Term<'a>>>() {
+      if groups_num.len() != 2 { return Err(Error::BadArg); }
+      let groups = groups_num[0].decode()?;
+      let num = groups_num[1].decode()?;
+      Ok(MatchDefinitionElem::Group(groups, num))
+    }
+    else { Err(Error::BadArg) }
+  }
+}
+
 impl<'a> Encoder for RemovableGroup<'a> {
   fn encode<'b>(&self, env: Env<'b>) -> Term<'b> {
     match self {
@@ -211,4 +257,58 @@ impl<'a> Decoder<'a> for RemovableGroup<'a> {
     else if let Ok(subgroups) = term.decode::<Vec<TileSet>>() { Ok(RemovableGroup::Multigroup(subgroups)) }
     else { Err(Error::BadArg) }
   }
+}
+
+// fixed offsets, for amerijong
+pub static FIXED_OFFSETS: phf::Map<&'static str, fn() -> Atom> = phf::phf_map! {
+  "1A"  => tile1m,
+  "2A"  => tile2m,
+  "3A"  => tile3m,
+  "4A"  => tile4m,
+  "5A"  => tile5m,
+  "6A"  => tile6m,
+  "7A"  => tile7m,
+  "8A"  => tile8m,
+  "9A"  => tile9m,
+  "10A" => tile10m,
+  "DA"  => tile7z,
+  "1B"  => tile1p,
+  "2B"  => tile2p,
+  "3B"  => tile3p,
+  "4B"  => tile4p,
+  "5B"  => tile5p,
+  "6B"  => tile6p,
+  "7B"  => tile7p,
+  "8B"  => tile8p,
+  "9B"  => tile9p,
+  "10B" => tile10p,
+  "DB"  => tile0z,
+  "1C"  => tile1s,
+  "2C"  => tile2s,
+  "3C"  => tile3s,
+  "4C"  => tile4s,
+  "5C"  => tile5s,
+  "6C"  => tile6s,
+  "7C"  => tile7s,
+  "8C"  => tile8s,
+  "9C"  => tile9s,
+  "10C" => tile10s,
+  "DC"  => tile6z,
+};
+
+#[derive(Debug)]
+pub struct MatchInfo<'a> {
+  // pub orig_hands: Vec<(&'a ElixirHand, String)>,
+  pub tiles_in_hand: Vec<&'a ElixirTile>,
+  pub initial_hands: Vec<TileSet>,
+  pub all_tiles: &'a HashSet<ElixirTile>,
+  pub all_attrs: &'a Vec<String>,
+  pub aliases: Aliases,
+  pub elixir_joker_tiles: HashSet<ElixirTile>,
+  pub elixir_nonjoker_tiles: HashSet<ElixirTile>,
+  pub joker_tiles: HashSet<Tile>,
+  // pub encoding: HashMap<&'a ElixirTile, Tile>,
+  pub ordering: &'a HashMap<Atom, Atom>,
+  pub ordering_r: &'a HashMap<Atom, Atom>,
+  pub no_attrs: bool, // true if no tiles in hand have attributes
 }

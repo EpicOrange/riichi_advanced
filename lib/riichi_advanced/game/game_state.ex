@@ -134,7 +134,8 @@ defmodule RiichiAdvanced.GameState do
             Map.update(from, attrs, from_tiles, &MapSet.union(&1, from_tiles))
           end)
       end
-      attrs = Enum.flat_map(from_tiles, fn {_tile, attrs} -> attrs; _ -> [] end)
+      attrs = Enum.flat_map(MapSet.union(from_tiles, to_tiles), fn {_tile, attrs} -> attrs; _ -> [] end)
+      |> Enum.map(&String.replace_leading(&1, "_", ""))
       all_tiles = MapSet.union(tile_behavior.all_tiles, to_tiles)
       %{tile_behavior |
         aliases: aliases,

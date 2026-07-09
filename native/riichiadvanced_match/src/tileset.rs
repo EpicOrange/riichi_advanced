@@ -30,7 +30,7 @@ pub fn _remove_indices<T>(xs: &mut Vec<T>, is: &Vec<RowIndex>) -> () {
 fn count_factors_fast(n: Hash, primes: Vec<Hash>) -> usize {
   _count_factors_fast(n, &primes, 0)
 }
-pub fn _count_factors_fast(mut n: Hash, primes: &[Hash], mut acc: usize) -> usize {
+pub fn _count_factors_fast<'a>(mut n: Hash, primes: impl IntoIterator<Item = &'a Hash>, mut acc: usize) -> usize {
   if n == 1 { return acc; }
   if n == 0 {
     eprintln!("count_factors_fast: somehow tried to get the prime decomposition of 0");
@@ -154,7 +154,7 @@ pub fn _subtract_check_attrs_exhaustive(l: &Vec<Tile>, r: &Vec<Tile>, aliases: &
 
 
 pub fn remove_tileset_indices(
-  hand: &mut TileSet, ixs: &[RowIndex], joker_tiles: &HashSet<&Tile>
+  hand: &mut TileSet, ixs: &[RowIndex], joker_tiles: &HashSet<Tile>
 ) -> () {
   let mut divisor = 1;
   for i in ixs {
@@ -174,7 +174,7 @@ pub fn remove_tileset_indices(
 // modifies attrs to put joker tiles at the end
 // returns index of first joker, which is equal to the number of nonjokers
 // also returns product of all jokers' primes
-pub fn move_jokers_to_end(attrs: &mut Vec<Tile>, joker_tiles: &HashSet<&Tile>) -> (usize, Hash) {
+pub fn move_jokers_to_end(attrs: &mut Vec<Tile>, joker_tiles: &HashSet<Tile>) -> (usize, Hash) {
   let hand_len = attrs.len();
   let mut i = 0;
   let mut j = hand_len - 1;
@@ -205,11 +205,11 @@ pub fn _subtract(
   hand: TileSet, group: TileSet,
   aliases: Aliases, joker_tiles: Vec<Tile>
 ) -> Option<TileSet> {
-  __subtract(&hand, &group, &aliases, &joker_tiles.iter().collect())
+  __subtract(&hand, &group, &aliases, &joker_tiles.into_iter().collect())
 }
 pub fn __subtract(
   hand: &TileSet, group: &TileSet,
-  aliases: &Aliases, joker_tiles: &HashSet<&Tile>
+  aliases: &Aliases, joker_tiles: &HashSet<Tile>
 ) -> Option<TileSet> {
   if group.attrs.len() > hand.attrs.len() {
     return None;
@@ -228,7 +228,7 @@ pub fn __subtract(
   let group_attrs = &group.attrs;
 
   let empty_aliases: Aliases = HashMap::new();
-  let empty_joker_tiles: HashSet<&Tile> = HashSet::new();
+  let empty_joker_tiles: HashSet<Tile> = HashSet::new();
   let aliases = if *nojoker { &empty_aliases } else { aliases }; 
   let joker_tiles = if *nojoker { &empty_joker_tiles } else { joker_tiles }; 
 
@@ -289,11 +289,11 @@ pub fn _subtract_exhaustive(
   hand: TileSet, group: TileSet,
   aliases: Aliases, joker_tiles: Vec<Tile>
 ) -> Option<Vec<TileSet>> {
-  __subtract_exhaustive(&hand, &group, &aliases, &joker_tiles.iter().collect())
+  __subtract_exhaustive(&hand, &group, &aliases, &joker_tiles.into_iter().collect())
 }
 pub fn __subtract_exhaustive(
   hand: &TileSet, group: &TileSet,
-  aliases: &Aliases, joker_tiles: &HashSet<&Tile>
+  aliases: &Aliases, joker_tiles: &HashSet<Tile>
 ) -> Option<Vec<TileSet>> {
   if group.attrs.len() > hand.attrs.len() {
     return None;
@@ -312,7 +312,7 @@ pub fn __subtract_exhaustive(
   let group_attrs = &group.attrs;
 
   let empty_aliases: Aliases = HashMap::new();
-  let empty_joker_tiles: HashSet<&Tile> = HashSet::new();
+  let empty_joker_tiles: HashSet<Tile> = HashSet::new();
   let aliases = if *nojoker { &empty_aliases } else { aliases }; 
   let joker_tiles = if *nojoker { &empty_joker_tiles } else { joker_tiles }; 
 
