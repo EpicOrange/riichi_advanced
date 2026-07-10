@@ -250,7 +250,7 @@ defmodule RiichiAdvanced.YakuTest.ZungJungYaku do
     TestUtils.test_yaku_advanced("zung_jung", [], """
     {
       "starting_hand": {
-        "east": ["3m", "3m", "3m", "5m", "6m", "7m", "8m", "9m", "5s", "5s", "0z", "0z", "0z"],
+        "east": ["1m", "2m", "3m", "5m", "6m", "7m", "8m", "9m", "5s", "5s", "0z", "0z", "0z"],
         "south": ["2m", "4m", "7m", "2p", "3p", "4p", "6p", "7p", "8p", "9p", "2s", "4s", "7s"],
         "west": ["2m", "4m", "7m", "2p", "3p", "4p", "6p", "7p", "8p", "9p", "2s", "4s", "7s"],
         "north": ["2m", "4m", "7m", "2p", "3p", "4p", "6p", "7p", "8p", "9p", "2s", "4s", "7s"]
@@ -275,7 +275,7 @@ defmodule RiichiAdvanced.YakuTest.ZungJungYaku do
     TestUtils.test_yaku_advanced("zung_jung", [], """
     {
       "starting_hand": {
-        "east": ["3m", "3m", "3m", "5m", "6m", "7m", "8m", "9m", "5s", "5s", "6z", "6z", "6z"],
+        "east": ["1m", "2m", "3m", "5m", "6m", "7m", "8m", "9m", "5s", "5s", "6z", "6z", "6z"],
         "south": ["2m", "4m", "7m", "2p", "3p", "4p", "6p", "7p", "8p", "9p", "2s", "4s", "7s"],
         "west": ["2m", "4m", "7m", "2p", "3p", "4p", "6p", "7p", "8p", "9p", "2s", "4s", "7s"],
         "north": ["2m", "4m", "7m", "2p", "3p", "4p", "6p", "7p", "8p", "9p", "2s", "4s", "7s"]
@@ -300,7 +300,7 @@ defmodule RiichiAdvanced.YakuTest.ZungJungYaku do
     TestUtils.test_yaku_advanced("zung_jung", [], """
     {
       "starting_hand": {
-        "east": ["3m", "3m", "3m", "5m", "6m", "7m", "8m", "9m", "5s", "5s", "7z", "7z", "7z"],
+        "east": ["1m", "2m", "3m", "5m", "6m", "7m", "8m", "9m", "5s", "5s", "7z", "7z", "7z"],
         "south": ["2m", "4m", "7m", "2p", "3p", "4p", "6p", "7p", "8p", "9p", "2s", "4s", "7s"],
         "west": ["2m", "4m", "7m", "2p", "3p", "4p", "6p", "7p", "8p", "9p", "2s", "4s", "7s"],
         "north": ["2m", "4m", "7m", "2p", "3p", "4p", "6p", "7p", "8p", "9p", "2s", "4s", "7s"]
@@ -325,7 +325,7 @@ defmodule RiichiAdvanced.YakuTest.ZungJungYaku do
     TestUtils.test_yaku_advanced("zung_jung", [], """
     {
       "starting_hand": {
-        "east": ["3m", "3m", "3m", "5m", "6m", "7m", "8m", "9m", "5s", "5s", "1z", "1z", "1z"],
+        "east": ["1m", "2m", "3m", "5m", "6m", "7m", "8m", "9m", "5s", "5s", "1z", "1z", "1z"],
         "south": ["2m", "4m", "7m", "2p", "3p", "4p", "6p", "7p", "8p", "9p", "2s", "4s", "7s"],
         "west": ["2m", "4m", "7m", "2p", "3p", "4p", "6p", "7p", "8p", "9p", "2s", "4s", "7s"],
         "north": ["2m", "4m", "7m", "2p", "3p", "4p", "6p", "7p", "8p", "9p", "2s", "4s", "7s"]
@@ -366,9 +366,9 @@ defmodule RiichiAdvanced.YakuTest.ZungJungYaku do
       %{"type" => "buttons_pressed", "buttons" => [%{"button" => "ron"}, nil, nil, nil]}
     ], %{
       east: %{
-        yaku: [{"Value Honor", [20, "points"]}]
+        yaku: [{"Value Honor", [20, "points"]}, {"Two Concealed Triplets", [5, "points"]}]
       }
-    }, %{delta_scores: [60, -20, -20, -20]})
+    }, %{delta_scores: [75, -25, -25, -25]})
   end
 
   test "zung jung - small three dragons" do

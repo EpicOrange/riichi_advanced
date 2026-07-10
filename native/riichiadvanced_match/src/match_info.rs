@@ -29,13 +29,6 @@ pub fn prepare_tiles<'a>(
   let mut tiles_in_hand: Vec<&ElixirTile> = vec!();
   for (hand, _) in &orig_hands { tiles_in_hand.append(&mut hand.iter().collect()); }
   // println!("  tiles_in_hand: {0:?}", tiles_in_hand);
-  let no_attrs = tiles_in_hand.iter().all(|tile| {
-    match &tile {
-      ElixirTile::AtomTile(_) => true,
-      ElixirTile::AttrTile(_, _) => false,
-    }
-  });
-  // println!("  no_attrs: {0:?}", no_attrs);
 
   // first make a mapping {encoding <=> tile in hand}
   let mut encoding: HashMap<&ElixirTile, Tile> = HashMap::new();
@@ -45,7 +38,7 @@ pub fn prepare_tiles<'a>(
     }
   }
   // the jokers are the tiles in hand whose corresponding encoding is an alias for some tile
-  // first, collect all such mapped-to tiles
+  // first, collect all such tiles
   let mut encoded_alias_tiles: Vec<Tile> = vec!();
   for attrs_aliases in elixir_aliases.values() {
     for elixir_aliases in attrs_aliases.values() {
@@ -107,6 +100,5 @@ pub fn prepare_tiles<'a>(
     // encoding,
     ordering,
     ordering_r,
-    no_attrs,
   }
 }

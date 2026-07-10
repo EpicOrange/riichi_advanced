@@ -11,8 +11,7 @@ use crate::tile_table::tile1x;
 use crate::types::{ElixirAliases, ElixirHandCalls, ElixirTile, MatchDefinitionElem, MatchDefinitions, MatchInfo, PROFILE_GET_WAITS, PROFILE_UNNEEDED_TILES, Tile};
 use crate::utils::{add_joker_to_aliases, remove_joker_from_aliases};
 
-// #[rustler::nif(schedule = "DirtyCpu")]
-// TODO do the match def removal tactic as in the elixir version
+#[rustler::nif(schedule = "DirtyCpu")]
 fn _get_waits_v3(
     hand_calls: ElixirHandCalls,
     match_definitions: MatchDefinitions,
@@ -120,7 +119,7 @@ pub fn __get_waits_v3(
       
       // then check against match definitions
       match_definitions.iter().all(|match_definition| {
-        remove_match_definition(&match_info, match_definition).is_empty()
+        remove_match_definition(&match_info, match_definition).next().is_none()
       })
     })
     .cloned()
@@ -148,12 +147,12 @@ pub fn ___get_waits_v3<'a>(
     // println!("Empty, so we're done");
     return;
   }
-  println!("tiles: {:?}", current_tiles);
+  // println!("tiles: {:?}", current_tiles);
 
   // test with current aliases (only need to match 1 to succeed)
   match_info.aliases = encode_aliases(aliases, &match_info.all_attrs, &match_info.joker_tiles, None);
   let all_nonwaits = match_definitions.iter().all(|match_definition| {
-    remove_match_definition(&match_info, match_definition).is_empty()
+    remove_match_definition(&match_info, match_definition).next().is_none()
   });
 
   // if all nonwaits, mark current_tiles and return, as we're done
@@ -267,7 +266,7 @@ pub fn __get_unneeded_tiles_v2(
 
     // check against defns
     if all_defns.iter().any(|match_definition| {
-        remove_match_definition(&match_info, match_definition).is_empty()
+        remove_match_definition(&match_info, match_definition).next().is_none()
       }) {
       // add tile to solution set, since hand still matches without tile
       ret.insert(tile);

@@ -183,10 +183,9 @@ pub type MatchDefinition = Vec<MatchDefinitionElem>;
 pub type MatchDefinitions = Vec<MatchDefinition>;
 
 #[derive(PartialEq, Eq, PartialOrd, Ord, Clone, Debug, Hash)]
-pub enum RemovableGroup<'a> {
+pub enum RemovableGroup {
   CallName(String),
   Group(TileSet),
-  GroupRef(&'a TileSet), // only used internally
   Multigroup(Vec<TileSet>),
 }
 
@@ -273,18 +272,17 @@ impl<'a> Decoder<'a> for MatchDefinitionElem {
   }
 }
 
-impl<'a> Encoder for RemovableGroup<'a> {
-  fn encode<'b>(&self, env: Env<'b>) -> Term<'b> {
+impl Encoder for RemovableGroup {
+  fn encode<'a>(&self, env: Env<'a>) -> Term<'a> {
     match self {
       RemovableGroup::CallName(name) => name.encode(env),
       RemovableGroup::Group(group) => group.encode(env),
-      RemovableGroup::GroupRef(group) => group.encode(env),
       RemovableGroup::Multigroup(subgroups) => subgroups.encode(env),
     }
   }
 }
 
-impl<'a> Decoder<'a> for RemovableGroup<'a> {
+impl<'a> Decoder<'a> for RemovableGroup {
   fn decode(term: Term<'a>) -> NifResult<Self> {
     if let Ok(name) = term.decode::<String>() { Ok(RemovableGroup::CallName(name)) }
     else if let Ok(group) = term.decode::<TileSet>() { Ok(RemovableGroup::Group(group)) }
@@ -344,5 +342,4 @@ pub struct MatchInfo<'a> {
   // pub encoding: HashMap<&'a ElixirTile, Tile>,
   pub ordering: &'a HashMap<Atom, Atom>,
   pub ordering_r: &'a HashMap<Atom, Atom>,
-  pub no_attrs: bool, // true if no tiles in hand have attributes
 }
