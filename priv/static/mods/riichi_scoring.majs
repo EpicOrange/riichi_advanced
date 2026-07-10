@@ -83,7 +83,6 @@ define_scoring ron do
   else
     total *= 4 :: "Nondealer ron"
   end
-  displayed_score = total
   apply_scoring_modifiers
   if total < 12000 or (total < 8000 and not_seat_is("east", as: "winner")) do
     total = round_up(total, 100) :: "Round up"
@@ -115,8 +114,4 @@ define_scoring tsumo do
   if @honba_condition do
     total += honba * 100 :: "Honba"
   end
-end
-
-on after_win do
- modify_winner("score", "displayed_score")
 end
