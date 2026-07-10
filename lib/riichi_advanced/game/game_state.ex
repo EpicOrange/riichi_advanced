@@ -1840,14 +1840,16 @@ defmodule RiichiAdvanced.GameState do
 
   def handle_cast({:get_visible_waits, from, seat, index}, state) do
     if Rules.has_key?(state.rules_ref, "show_waits") do
-      hand = state.players[seat].hand
-      draw = state.players[seat].draw
-      waits = cond do
-        index == nil -> get_visible_waits(state, seat, nil)
-        is_playable?(state, seat, Enum.at(hand ++ draw, index)) -> get_visible_waits(state, seat, index)
-        true -> %{}
-      end
-      send(from, {:set_visible_waits, hand, index, waits})
+      Task.start(fn ->
+        hand = state.players[seat].hand
+        draw = state.players[seat].draw
+        waits = cond do
+          index == nil -> get_visible_waits(state, seat, nil)
+          is_playable?(state, seat, Enum.at(hand ++ draw, index)) -> get_visible_waits(state, seat, index)
+          true -> %{}
+        end
+        send(from, {:set_visible_waits, hand, index, waits})
+      end)
     end
     {:noreply, state}
   end
