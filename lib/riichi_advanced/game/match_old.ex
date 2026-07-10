@@ -348,7 +348,6 @@ defmodule RiichiAdvanced.MatchOld do
     # t = System.os_time(:millisecond)
     almost = "almost" in match_definition
     exhaustive_ix = Enum.find_index(match_definition, & &1 == "exhaustive")
-    ignore_suit_ix = Enum.find_index(match_definition, & &1 == "ignore_suit")
     dismantle_calls_ix = Enum.find_index(match_definition, & &1 == "dismantle_calls")
     no_joker_index = Enum.find_index(match_definition, & &1 == "nojoker")
     unique_ix = Enum.find_index(match_definition, & &1 == "unique")
@@ -376,7 +375,6 @@ defmodule RiichiAdvanced.MatchOld do
         unique = unique_ix != nil and i > unique_ix
         tile_behavior = %{ tile_behavior |
           dismantle_calls: dismantle_calls_ix != nil and i > dismantle_calls_ix,
-          ignore_suit: ignore_suit_ix != nil and i > ignore_suit_ix
         }
         case match_definition_elem do
           "restart" -> [{hand, calls}]

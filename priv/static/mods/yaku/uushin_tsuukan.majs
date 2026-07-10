@@ -1,0 +1,9 @@
+on after_initialization do
+  add_rule("1 Han", "Uushin Tsuukan", "\"Five-Heart Straight\". 1 han on top of ittsuu if the winning tile is the five needed for ittsuu.", 101)
+  update_rule("1 Han", "Uushin Tsuukan", "%{example_hand}", %{example_hand: ~t"123m 46m 789m 22p 333z 3x 5m"})
+end
+
+define_set uushin_tsuukan, ~s"0 1 2 3 4@winning_tile 5 6 7 8"
+
+define_yaku yaku, "Uushin Tsuukan", [1, "Han"],
+  match(["hand", "calls", "winning_tile"], ~m"uushin_tsuukan:1, mentsu:1, pair:1")

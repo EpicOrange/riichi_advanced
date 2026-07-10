@@ -801,42 +801,6 @@ defmodule RiichiAdvanced.Match do
     end
   end
 
-  @ignore_suit_mappings %{
-    "1m": MapSet.new([:"1p", :"1s"]),
-    "2m": MapSet.new([:"2p", :"2s"]),
-    "3m": MapSet.new([:"3p", :"3s"]),
-    "4m": MapSet.new([:"4p", :"4s"]),
-    "5m": MapSet.new([:"5p", :"5s"]),
-    "6m": MapSet.new([:"6p", :"6s"]),
-    "7m": MapSet.new([:"7p", :"7s"]),
-    "8m": MapSet.new([:"8p", :"8s"]),
-    "9m": MapSet.new([:"9p", :"9s"]),
-    "10m": MapSet.new([:"10p", :"10s"]),
-    "1p": MapSet.new([:"1m", :"1s"]),
-    "2p": MapSet.new([:"2m", :"2s"]),
-    "3p": MapSet.new([:"3m", :"3s"]),
-    "4p": MapSet.new([:"4m", :"4s"]),
-    "5p": MapSet.new([:"5m", :"5s"]),
-    "6p": MapSet.new([:"6m", :"6s"]),
-    "7p": MapSet.new([:"7m", :"7s"]),
-    "8p": MapSet.new([:"8m", :"8s"]),
-    "9p": MapSet.new([:"9m", :"9s"]),
-    "10p": MapSet.new([:"10m", :"10s"]),
-    "1s": MapSet.new([:"1m", :"1p"]),
-    "2s": MapSet.new([:"2m", :"2p"]),
-    "3s": MapSet.new([:"3m", :"3p"]),
-    "4s": MapSet.new([:"4m", :"4p"]),
-    "5s": MapSet.new([:"5m", :"5p"]),
-    "6s": MapSet.new([:"6m", :"6p"]),
-    "7s": MapSet.new([:"7m", :"7p"]),
-    "8s": MapSet.new([:"8m", :"8p"]),
-    "9s": MapSet.new([:"9m", :"9p"]),
-    "10s": MapSet.new([:"10m", :"10p"]),
-  }
-  def add_ignore_suit_mappings(mappings) do
-    Map.merge(mappings, @ignore_suit_mappings, fn _k, l, r -> MapSet.union(l, r) end)
-  end
-
   @spec perform_standard_match(data: map()) :: list(list(TileSet.t()))
   def perform_standard_match(data) do
     %{
@@ -1090,15 +1054,6 @@ defmodule RiichiAdvanced.Match do
         state when match_elem == "exhaustive" -> %{state | exhaustive: true}
         state when match_elem == "unique" -> %{state | unique: true}
         state when match_elem == "nojoker" -> %{state | nojoker: true, tile_behavior: TileBehavior.remove_aliases(tile_behavior)}
-        state when match_elem == "ignore_suit" ->
-          # reencode hands as numeric jokers
-          acc = state.acc
-          acc = Enum.map(acc, &Enum.map(&1, fn hand -> decode(hand, tile_behavior) end))
-          tile_behavior = Map.update!(tile_behavior, :mappings, &add_ignore_suit_mappings/1)
-          encoded_aliases = encode_aliases(tile_behavior)
-          acc = Enum.map(acc, &Enum.map(&1, fn hand -> encode(hand, tile_behavior) end))
-          uuid = Ecto.UUID.generate()
-          %{state | tile_behavior: %{tile_behavior | encoded_aliases: encoded_aliases, uuid: uuid}, acc: acc}
         state when match_elem == "almost" ->
           # simply add an :any joker to hand
           acc = Enum.map(state.acc, fn [hand | calls] -> [%{hand | hash: @any_prime * hand.hash, attrs: [{@any_prime, 0} | hand.attrs]} | calls] end)

@@ -68,7 +68,6 @@ defmodule RiichiAdvanced.GameState do
       uuid: "",
       encoded_aliases: %{},
       dismantle_calls: false,
-      ignore_suit: false
     ]
     def remove_aliases(tile_behavior) do
       uuid = Ecto.UUID.generate()
@@ -87,7 +86,7 @@ defmodule RiichiAdvanced.GameState do
       end)
     end
     def hash(tile_behavior) do
-      :erlang.phash2({tile_behavior.aliases, tile_behavior.ordering, tile_behavior.tile_freqs, tile_behavior.dismantle_calls, tile_behavior.ignore_suit})
+      :erlang.phash2({tile_behavior.aliases, tile_behavior.ordering, tile_behavior.tile_freqs, tile_behavior.dismantle_calls})
     end
     # the idea is to move the most powerful jokers to the back so that remove_tile removes them last
     # power is just "is any-joker?", then size of its mapping, then number of attrs (more attrs = more specific jokers = should be in the back)
