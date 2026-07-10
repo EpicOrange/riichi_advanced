@@ -140,17 +140,15 @@ defmodule RiichiAdvanced.GameState.American do
             if num >= 3 do {groups, []} else {[], groups} end
           else
             {jokers, nojokers} = Enum.split_with(Enum.frequencies(groups), fn {_tile, freq} -> freq >= 3 end)
-            jokers = Enum.flat_map(jokers, fn {tile, freq} -> List.duplicate(tile, freq) end)
-            nojokers = if Enum.empty?(nojokers) do [] else ["nojoker"] ++ Enum.flat_map(nojokers, fn {tile, freq} -> List.duplicate(tile, freq) end) end
+            jokers = Enum.flat_map(Enum.sort(jokers), fn {tile, freq} -> List.duplicate(tile, freq) end)
+            nojokers = if Enum.empty?(nojokers) do [] else ["nojoker"] ++ Enum.flat_map(Enum.sort(nojokers), fn {tile, freq} -> List.duplicate(tile, freq) end) end
             {jokers, nojokers}
           end
           [keywords ++ jokers ++ nojokers, num]
         true -> [groups, num]
       end
     end)
-    
     # note: do NOT add "exhaustive" (game will refuse to start)
-
     ret = ["dismantle_calls"] ++ use_jokers ++ nojokers
     if am_match_definition in Debug.debug_am_match_definitions() do
       ["debug"] ++ ret
@@ -190,6 +188,7 @@ defmodule RiichiAdvanced.GameState.American do
     end
     |> Enum.concat()
     |> Enum.map(&translate_american_match_definitions_postprocess/1)
+    |> Enum.uniq()
   end
   defp translate_letter_to_tile_spec(letter, suit) do
     offsets = %{"A" => 0, "B" => 10, "C" => 20}

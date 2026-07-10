@@ -1,7 +1,7 @@
 use std::collections::{HashMap, HashSet, VecDeque};
 use rustler::Atom;
 
-use crate::encode::{encode};
+use crate::encode::{encode, print_group};
 use crate::tile_table::*;
 use crate::types::{ElixirTile, FIXED_OFFSETS, MatchDefinition, MatchDefinitionElem, MatchGroup, MatchInfo, MatchOffset, RemovableGroup, Tile, TileSet};
 use crate::primes::{is_any, is_jihai, is_manzu, is_pinzu, is_souzu, shift_suit_mut, to_prime};
@@ -249,7 +249,7 @@ pub fn __generate_groups<'a>(
     MatchGroup::Offset(offset) => generate_groups_from_offsets(&vec!(offset.clone()), base_tiles, all_attrs, joker_tiles, ordering, ordering_r, &mut nojoker),
     MatchGroup::Offsets(offsets) => generate_groups_from_offsets(offsets, base_tiles, all_attrs, joker_tiles, ordering, ordering_r, &mut nojoker),
     MatchGroup::Subgroups(subgroupings) => {
-      base_tiles.map(|base_tile| {
+      base_tiles.flat_map(|base_tile| {
         // make a subgroup from this base tile
         // it should be a Some(vec of tilesets),
         subgroupings.iter().map(|subgroup| {
@@ -260,19 +260,21 @@ pub fn __generate_groups<'a>(
             .map(|tiles| encode(&tiles, all_attrs, joker_tiles))
         }).collect::<Option<Vec<TileSet>>>()
       })
-      // should be an iterator of Option<Vec<TileSet>>
-      // discard all the Nones, wrap with Multigroup, and collect into a Vec
-      .flatten()
       .map(|subgroups| RemovableGroup::Multigroup(
         subgroups.into_iter().map(|subgroup| subgroup.set_nojoker(*nojoker)).collect()
       ))
       .collect::<Vec<RemovableGroup>>()
     }
   };
-  // TODO this might be slow
-  ret.dedup();
+  // TODO this might be slow, we should stop them from being generated in the first place
+  // (e.g. if it's all constant tiles that don't depend on base tile, only pass in one base tile)
+  // let len = ret.len();
   ret.sort();
   ret.dedup();
+  // let len2 = ret.len();
+  // if len2 < len {
+  //   println!("Went from {} -> {} groups: {}", len, len2, ret.iter().map(|group| print_group(&group, &all_attrs, false)).collect::<Vec<_>>().join(", "));
+  // }
   ret
 }
 
