@@ -115,10 +115,10 @@ pub fn print_group(group: &RemovableGroup, all_attrs: &[String], mut nojoker: bo
         if nojoker { " nojoker" } else { "" })
     }
     RemovableGroup::Multigroup(subgroups) => {
-      format!("[{}]{}", subgroups.iter().map(|tileset| {
+      format!("[[{}]]{}", subgroups.iter().map(|tileset| {
         if tileset.nojoker { nojoker = true; }
         decode(tileset, all_attrs).iter().map(|d| format!("{:?}", d)).collect::<Vec<_>>().join(", ")
-      }).collect::<Vec<_>>().join(", "), if nojoker { " nojoker" } else { "" })
+      }).collect::<Vec<_>>().join("], ["), if nojoker { " nojoker" } else { "" })
     }
   }
 }

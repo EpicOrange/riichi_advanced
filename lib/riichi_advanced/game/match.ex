@@ -1129,6 +1129,7 @@ defmodule RiichiAdvanced.Match do
       # profile()
       ret
     else
+      # IO.puts("Warning: falling back to elixir match_hand_v3 for hand #{inspect(hand)} / #{inspect(calls)}")
       # t = System.os_time(:millisecond)
       ret = __match_hand_v3(hand, calls, match_definitions, tile_behavior)
       # delta = System.os_time(:millisecond) - t

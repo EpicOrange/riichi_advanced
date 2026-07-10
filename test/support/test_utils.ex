@@ -74,9 +74,6 @@ defmodule RiichiAdvanced.TestUtils do
     state = GenServer.call(test_state.game_state_pid, :get_state)
     GenServer.cast(test_state.game_state_pid, :terminate_game)
 
-    # debug
-    # IO.inspect(state.players.east.hand)
-
     check_winner = fn seat, expected_winner ->
       winner = state.winners[seat]
       expected_winner
@@ -258,7 +255,7 @@ defmodule RiichiAdvanced.TestUtils do
     tile_behavior = %TileBehavior{ aliases: tile_aliases, mappings: tile_mappings, tile_freqs: Enum.frequencies(Rules.get(rules_ref, "wall")) }
     # show defns that have the "debug" keyword in them
     for definition <- translated_am_win_definitions, "debug" in definition do
-      IO.inspect(definition)
+      IO.inspect(definition, label: "debug_am_match_definitions")
     end
     Match.match_hand(hand, calls, win_definitions, tile_behavior)
   end

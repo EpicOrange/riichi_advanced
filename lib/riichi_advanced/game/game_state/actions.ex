@@ -936,7 +936,7 @@ defmodule RiichiAdvanced.GameState.Actions do
       if actions != nil do
         actions = Utils.walk_json(actions, &Map.get(args, &1, &1))
         if Debug.debug_actions() do
-          IO.puts("Running function: #{inspect(actions)}")
+          IO.puts("Running function #{fn_name}: #{inspect(actions)}")
         end
         state = run_actions(state, actions, context)
         state = Map.update!(state, :call_stack, &Enum.drop(&1, 1))

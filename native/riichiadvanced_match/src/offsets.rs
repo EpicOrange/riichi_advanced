@@ -1,7 +1,7 @@
 use std::collections::{HashMap, HashSet, VecDeque};
 use rustler::Atom;
 
-use crate::encode::{encode, print_group};
+use crate::encode::encode;
 use crate::tile_table::*;
 use crate::types::{ElixirTile, FIXED_OFFSETS, MatchDefinition, MatchDefinitionElem, MatchGroup, MatchInfo, MatchOffset, RemovableGroup, Tile, TileSet};
 use crate::primes::{is_any, is_jihai, is_manzu, is_pinzu, is_souzu, shift_suit_mut, to_prime};
