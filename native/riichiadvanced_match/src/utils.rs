@@ -1,9 +1,15 @@
 use std::collections::HashMap;
 
 use rustler::Atom;
-use crate::types::{ElixirAliases, ElixirTile};
+use crate::{primes::is_any, types::{ElixirAliases, ElixirTile}};
 
 pub fn get_tile_atom(tile: &ElixirTile) -> &Atom {
+  match tile {
+    ElixirTile::AtomTile(atom) => atom,
+    ElixirTile::AttrTile(atom, _attrs) => atom,
+  }
+}
+pub fn get_tile_atom_mut(tile: &mut ElixirTile) -> &mut Atom {
   match tile {
     ElixirTile::AtomTile(atom) => atom,
     ElixirTile::AttrTile(atom, _attrs) => atom,
@@ -16,10 +22,10 @@ pub fn get_tile_atom_attrs(tile: &ElixirTile) -> (&Atom, Vec<String>) {
     ElixirTile::AttrTile(atom, attrs) => (atom, attrs.clone()),
   }
 }
-pub fn get_tile_atom_mut(tile: &mut ElixirTile) -> &mut Atom {
+pub fn get_tile_atom_attrs_mut(tile: &mut ElixirTile) -> (&mut Atom, Option<&mut Vec<String>>) {
   match tile {
-    ElixirTile::AtomTile(atom) => atom,
-    ElixirTile::AttrTile(atom, _attrs) => atom,
+    ElixirTile::AtomTile(atom) => (atom, None),
+    ElixirTile::AttrTile(atom, attrs) => (atom, Some(attrs)),
   }
 }
 pub fn strip_attrs(tile: &ElixirTile) -> ElixirTile {
@@ -35,6 +41,7 @@ pub fn add_joker_to_aliases<'a>(
     tiles: impl IntoIterator<Item = &'a ElixirTile>
 ) -> () {
   for to in tiles {
+    if is_any(to) { continue; }
     let (tile, attrs) = &mut get_tile_atom_attrs(&to);
     for attr in attrs.iter_mut() {
       *attr = attr.trim_start_matches('_').to_owned();
@@ -70,4 +77,27 @@ pub fn remove_joker_from_aliases<'a>(
       }
     }
   }
+}
+
+// for debugging
+pub fn print_tile_aliases<'a>(
+    elixir_aliases: &mut ElixirAliases,
+    joker: &ElixirTile,
+) -> Vec<ElixirTile> {
+  let mut out = vec!();
+  for (tile, attrs_aliases) in elixir_aliases.iter() {
+    if let ElixirTile::AtomTile(tile) = tile {
+      for (attrs, aliases) in attrs_aliases.iter() {
+        if aliases.contains(joker) {
+          if attrs.is_empty() {
+            out.push(ElixirTile::AtomTile(tile.clone()));
+          } else {
+            out.push(ElixirTile::AttrTile(tile.clone(), attrs.clone()));
+          }
+        }
+      }
+    }
+  }
+  println!("Aliases: {:?}", out);
+  out
 }

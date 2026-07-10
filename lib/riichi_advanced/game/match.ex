@@ -1236,7 +1236,8 @@ defmodule RiichiAdvanced.Match do
       ret = _get_waits_v3({hand, calls}, match_definitions,
         tile_behavior.all_tiles |> Enum.to_list(), tile_behavior.attrs |> Enum.to_list() |> Enum.sort(),
         tile_behavior.aliases |> TileBehavior.remove_alias_mapsets(),
-        tile_behavior.ordering, tile_behavior.ordering_r
+        tile_behavior.ordering, tile_behavior.ordering_r,
+        Map.keys(tile_behavior.tile_freqs)
       )
       # profile()
       ret
@@ -1250,13 +1251,14 @@ defmodule RiichiAdvanced.Match do
       ret
     end
   end
-  defp _get_waits_v3({hand, calls}, match_definitions, all_tiles, all_attrs, elixir_aliases, ordering, ordering_r) do
+  defp _get_waits_v3({hand, calls}, match_definitions, all_tiles, all_attrs, elixir_aliases, ordering, ordering_r, game_tiles) do
     __get_waits_v3(hand, calls, match_definitions, %TileBehavior{
       all_tiles: all_tiles |> MapSet.new(),
       attrs: all_attrs |> MapSet.new(),
       aliases: elixir_aliases |> TileBehavior.restore_alias_mapsets(),
       ordering: ordering,
       ordering_r: ordering_r,
+      tile_freqs: Map.new(game_tiles, &{&1, 4}),
     })
   end
   # @decorate cacheable(cache: RiichiAdvanced.Cache, key: {:get_waits_v3, hand, calls, match_definitions, TileBehavior.hash(tile_behavior)})

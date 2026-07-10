@@ -7,19 +7,19 @@ use rustler::{Atom};
 use crate::encode::{decode, encode, encode_aliases};
 use crate::match_info::{prepare_tiles};
 use crate::offsets::{__generate_groups, get_base_tiles};
-use crate::profile::{CALL_COUNT, TOTAL_NANOS};
+use crate::profile::{CALL_COUNT, MAX_NANOS, TOTAL_NANOS};
 use crate::tile_table::ATOM_TABLE;
 use crate::tileset::{__subtract, __subtract_exhaustive, _count_factors_fast, _remove_indices, _subtract_check_attrs_exhaustive};
 use crate::types::{ANY_PRIME, Aliases, ElixirAliases, ElixirHand, ElixirHandCalls, ElixirTile, Hands, MatchDefinition, MatchDefinitionElem, MatchDefinitions, MatchGroup, MatchInfo, MatchOffset, PROFILE_MATCH, RemovableGroup, Tile, TileSet};
 
 // this is used a lot, especially for determining and processing calls
 // #[rustler::nif]
-fn try_remove_all_tiles(
-    hand: ElixirHand, tiles: ElixirHand,
-    elixir_aliases: ElixirAliases, all_attrs: Vec<String>
-) -> Vec<ElixirHand> {
-  _try_remove_all_tiles(hand, tiles, &elixir_aliases, &all_attrs)
-}
+// fn try_remove_all_tiles(
+//     hand: ElixirHand, tiles: ElixirHand,
+//     elixir_aliases: ElixirAliases, all_attrs: Vec<String>
+// ) -> Vec<ElixirHand> {
+//   _try_remove_all_tiles(hand, tiles, &elixir_aliases, &all_attrs)
+// }
 fn _try_remove_all_tiles(
     hand: ElixirHand, tiles: ElixirHand,
     elixir_aliases: &ElixirAliases, all_attrs: &[String]
@@ -511,7 +511,8 @@ pub fn _match_hand_v3(
   if PROFILE_MATCH {
     let elapsed = start.elapsed();
     TOTAL_NANOS.fetch_add(elapsed.as_nanos() as u64, Ordering::Relaxed);
-    CALL_COUNT.fetch_add(1, Ordering::Relaxed);
+    MAX_NANOS.fetch_max(elapsed.as_nanos() as u64, Ordering::Relaxed);
+    CALL_COUNT.fetch_add(1, Ordering::Relaxed); 
   }
   ret
 }

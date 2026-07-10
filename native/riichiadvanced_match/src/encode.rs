@@ -87,7 +87,11 @@ pub fn decode_attrs<'a>(attrs: impl IntoIterator<Item = &'a Tile>, all_attrs: &[
         battrs >>= 1;
         if battrs == 0 { break; }
       }
-      ret.push(ElixirTile::AttrTile(*tile, ret_attrs))
+      if ret_attrs.is_empty() {
+        ret.push(ElixirTile::AtomTile(*tile))
+      } else {
+        ret.push(ElixirTile::AttrTile(*tile, ret_attrs))
+      }
     }
   }
   ret
