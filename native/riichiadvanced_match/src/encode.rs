@@ -1,5 +1,5 @@
 use std::collections::{HashMap, HashSet};
-use crate::types::{AliasEntry, Aliases, BitAttrs, ElixirAliases, ElixirHand, ElixirTile, Tile, TileSet};
+use crate::types::{AliasEntry, Aliases, BitAttrs, ElixirAliases, ElixirHand, ElixirTile, RemovableGroup, Tile, TileSet};
 use crate::primes::{from_prime, to_prime};
 use crate::utils::get_tile_atom;
 
@@ -103,4 +103,22 @@ pub fn decode_attrs<'a>(attrs: impl IntoIterator<Item = &'a Tile>, all_attrs: &[
 
 pub fn decode(tileset: &TileSet, all_attrs: &[String]) -> ElixirHand {
   decode_attrs(&tileset.attrs, all_attrs)
+}
+
+pub fn print_group(group: &RemovableGroup, all_attrs: &[String], mut nojoker: bool) -> String {
+  match group {
+    RemovableGroup::CallName(name) => format!("{:?}", name),
+    RemovableGroup::Group(tileset) => {
+      if tileset.nojoker { nojoker = true; }
+      format!("[{}]{}",
+        decode(tileset, all_attrs).iter().map(|d| format!("{:?}", d)).collect::<Vec<_>>().join(", "),
+        if nojoker { " nojoker" } else { "" })
+    }
+    RemovableGroup::Multigroup(subgroups) => {
+      format!("[{}]{}", subgroups.iter().map(|tileset| {
+        if tileset.nojoker { nojoker = true; }
+        decode(tileset, all_attrs).iter().map(|d| format!("{:?}", d)).collect::<Vec<_>>().join(", ")
+      }).collect::<Vec<_>>().join(", "), if nojoker { " nojoker" } else { "" })
+    }
+  }
 }
