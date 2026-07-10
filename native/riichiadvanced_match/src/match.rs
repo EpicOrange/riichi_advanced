@@ -6,7 +6,7 @@ use rustler::{Atom};
 
 use crate::encode::{decode, encode, encode_aliases};
 use crate::match_info::{prepare_tiles};
-use crate::offsets::{__generate_groups, apply_offsets, get_base_tiles};
+use crate::offsets::{__generate_groups, generate_groups_from_offsets, get_base_tiles};
 use crate::profile::{CALL_COUNT, MAX_NANOS, TOTAL_NANOS};
 use crate::tileset::{__subtract, __subtract_exhaustive, _remove_indices, _subtract_check_attrs_exhaustive};
 use crate::types::{ANY_PRIME, Aliases, ElixirAliases, ElixirHand, ElixirHandCalls, ElixirTile, Hands, MatchDefinition, MatchDefinitionElem, MatchDefinitions, MatchGroup, MatchInfo, MatchOffset, PROFILE_MATCH, RemovableGroup, Tile, TileSet};
@@ -99,7 +99,7 @@ fn elim_tileset(
         ret.push(hands);
       }
     }
-  } else {
+  } else if ret.is_empty() {
     // then check hand
     if let Some(result) = __subtract(&hands[0], tileset, aliases, joker_tiles) {
       let mut hands = hands.clone();
@@ -145,15 +145,16 @@ fn _elim_group(
   }
 }
 
-
 fn perform_simple_match(
     acc: &mut Vec<Hands>, match_info: &MatchInfo,
     base_tile: &ElixirTile,
     offsets: &mut Vec<MatchOffset>, num: i8,
-    debug: bool, unique: &mut bool, nojoker: bool,
+    debug: bool, unique: &mut bool, mut nojoker: bool,
 ) -> () {
-  // this strategy takes advantage of the fact that you can early exit
-  // if you find yourself with not enough tiles to remove
+  // all groups are single tiles, and exhaustive is false
+  // this strategy takes advantage of these facts:
+  // - you can early exit if you find yourself with not enough tiles to remove
+  // - order of removal doesn't matter
 
   if offsets.contains(&MatchOffset::TileOrKeyword("unique".to_string())) {
     *unique = true;
@@ -179,19 +180,19 @@ fn perform_simple_match(
     acc.clear();
     return;
   }
-
-  let groups: Vec<TileSet> = apply_offsets(base_tile, &offsets, &match_info.ordering, &match_info.ordering_r, &mut nojoker.clone())
-    .into_iter()
-    .flatten()
-    .map(|tile| encode(&vec!(tile.clone()), match_info.all_attrs, &match_info.joker_tiles))
-    .collect();
-
-  let nojoker_ix = if nojoker { 0 } else {
-    offsets.iter().position(|o| match o {
-      MatchOffset::TileOrKeyword(s) => s == "nojoker",
-      _ => false
-    }).unwrap_or(groups.len())
-  };
+  let mut base_tile_wrapped: HashSet<ElixirTile> = HashSet::new();
+  base_tile_wrapped.insert(base_tile.clone());
+  let mut groups: Vec<RemovableGroup> = vec!();
+  for offset in offsets.iter() {
+    if let MatchOffset::TileOrKeyword(s) = offset {
+      if s == "nojoker" { nojoker = true; continue; }
+    }
+    groups.append(&mut generate_groups_from_offsets(&vec!(offset.clone()), &base_tile_wrapped, &match_info.all_attrs, &match_info.joker_tiles, match_info.ordering, &match_info.ordering_r, nojoker));
+  }
+  if debug {
+    println!("groups: {:?}",
+      groups.iter().map(|g| if let RemovableGroup::Group(g) = g { Some(decode(&g, match_info.all_attrs)) } else { None }).flatten().collect::<Vec<_>>());
+  }
   acc.retain_mut(|hands| {
     // try to remove exactly `num` of the given groups (in primes_attrs) from hand/calls
     let mut remaining = num;
@@ -199,50 +200,43 @@ fn perform_simple_match(
     // use offsets to remove `num` groups
     // if we fail to do so, throw out `hands`
     let mut groups = groups.clone();
-    let mut i = 0;
-    let mut nojoker = nojoker;
-    groups.retain_mut(|group| {
-      if remaining == 0 { return true; } 
-      if *unique && (available - i) < remaining as usize {
-        if debug {
-          println!("Stopping early because there are only {available} groups left (unique)");
+    while !groups.is_empty() {
+      let mut i = 0;
+      groups.retain_mut(|group| {
+        if remaining == 0 { return false; } 
+        if *unique && (available - i) < remaining as usize {
+          if debug {
+            println!("Stopping early because there are only {available} groups left (unique)");
+          }
+          return false;
         }
-        return true;
-      }
-      i += 1;
-      if i == nojoker_ix { nojoker = true; };
-      if nojoker { group.nojoker = true; };
-      // if debug {
-      //   println!("Removing group {0} of {1} ({2:?}) from hands {3:?} / {4:?}{5}{6} ({available} available, {7} remaining)",
-      //     num - remaining + 1,
-      //     num,
-      //     decode(&group, match_info.all_attrs),
-      //     decode(&hands[0], match_info.all_attrs),
-      //     hands[1..].iter().map(|call| decode(&call, match_info.all_attrs)).collect::<Vec<_>>(),
-      //     if *unique { " unique" } else { "" },
-      //     if nojoker { " nojoker" } else { "" },
-      //     remaining as usize - i
-      //   );
-      //   // let (masks, col_mask) = crate::tileset::compute_attr_masks(&hands[0].attrs, &group.attrs, &match_info.aliases);
-      //   // println!("asdf {:?} {:?} {:?}", &masks, col_mask, crate::n_rooks::_solve_n_rooks(&masks, col_mask, 1u8));
-      // }
-      // then try to remove from calls before removing from hand
-      if hands.len() > 1 {
-        if let Some(i) = hands[1..].iter().position(|call| __subtract(call, &group, &match_info.aliases, &match_info.joker_tiles).is_some()) {
-          // remove this call
-          hands.remove(i);
+        i += 1;
+        // if debug {
+        //   println!("Removing group {0} of {1} ({2:?}) from hands {3:?} / {4:?}{5}{6} ({available} available, {7} remaining)",
+        //     num - remaining + 1,
+        //     num,
+        //     decode(&group, match_info.all_attrs),
+        //     decode(&hands[0], match_info.all_attrs),
+        //     hands[1..].iter().map(|call| decode(&call, match_info.all_attrs)).collect::<Vec<_>>(),
+        //     if *unique { " unique" } else { "" },
+        //     if nojoker { " nojoker" } else { "" },
+        //     remaining as usize - i
+        //   );
+        //   // let (masks, col_mask) = crate::tileset::compute_attr_masks(&hands[0].attrs, &group.attrs, &match_info.aliases);
+        //   // println!("asdf {:?} {:?} {:?}", &masks, col_mask, crate::n_rooks::_solve_n_rooks(&masks, col_mask, 1u8));
+        // }
+
+        let result = _elim_group(hands, &group, &match_info.aliases, &match_info.joker_tiles, false)
+          .into_iter().next();
+        if let Some(new_hands) = result {
+          *hands = new_hands;
           remaining -= 1;
-          return !*unique; // offset was used
+          return !*unique; // remove if unique; keep otherwise
         }
-      }
-      // we didn't match a call, so now remove from hand
-      if let Some(result) = __subtract(&hands[0], &group, &match_info.aliases, &match_info.joker_tiles) {
-        hands[0] = result;
-        remaining -= 1;
-        return !*unique; // offset was used
-      }
-      true // offset not used
-    });
+        false // group not used
+      });
+      if *unique { break; }
+    }
     // if removed enough, keep this hand/calls
     remaining == 0
   });
@@ -331,7 +325,6 @@ fn perform_standard_match(
 
     if exhaustive {
       let mut acc3: Acc = vec!();
-      let mut failed = true;
       for (groups, k) in &mut *reified_groups {
         // if a group _doesn't_ match any hand in acc,
         // it will never match (within this group set)
@@ -342,7 +335,6 @@ fn perform_standard_match(
             if groups_used.contains(&k) { continue; }
             for hands in _elim_group(hands, &group, &match_info.aliases, &match_info.joker_tiles, true) {
               matched = true;
-              failed = false;
               // probably highly inefficient to clone a vec of indices for every Hands
               // not sure how to do it better though
               let mut groups_used = groups_used.clone();
@@ -353,12 +345,8 @@ fn perform_standard_match(
           matched
         });
       }
-      if failed {
-        acc2.clear();
-      } else {
-        acc2 = acc3;
-        acc2.dedup();
-      }
+      acc2 = acc3;
+      acc2.dedup();
     } else if let Some((hands, mut groups_used)) = acc2.pop() {
       let mut result: Option<Hands> = None;
       for (groups, k) in &mut *reified_groups {
@@ -462,7 +450,6 @@ pub fn remove_match_definition(match_info: &MatchInfo, match_definition: &MatchD
         }
         else if s == "dismantle_calls" {
           for hands in &mut acc {
-            // TODO make this more efficient
             let mut hand = hands.remove(0);
             for call in hands.iter_mut() {
               hand.hash *= call.hash;
@@ -534,7 +521,8 @@ pub fn remove_match_definition(match_info: &MatchInfo, match_definition: &MatchD
             return vec!();
           }
         } else { // it was a normal match
-          // only need to print debug messages
+          acc.sort();
+          acc.dedup();
           if debug {
             if !acc.is_empty() {
               println!("\nFinal result after {0:?}:", &match_elem);
@@ -558,7 +546,7 @@ pub fn remove_match_definition(match_info: &MatchInfo, match_definition: &MatchD
   acc
 }
 
-#[rustler::nif]
+#[rustler::nif(schedule = "DirtyCpu")]
 pub fn _match_hand_v3(
     hand_calls: ElixirHandCalls,
     match_definitions: MatchDefinitions,
@@ -608,7 +596,7 @@ pub fn __match_hand_v3<'a>(
   false
 }
 
-#[rustler::nif]
+#[rustler::nif(schedule = "DirtyCpu")]
 pub fn _remove_group(
     hand: ElixirHand, group: MatchGroup, 
     all_tiles: Vec<ElixirTile>, all_attrs: Vec<String>,
@@ -638,6 +626,14 @@ pub fn __remove_group<'a>(
     exhaustive: bool, nojoker: bool,
     base_tiles: &'a Option<HashSet<ElixirTile>>,
 ) -> Vec<ElixirHand> {
+  // special case: if we are trying to remove the empty group,
+  // simply return hand in a singleton vec
+  if let MatchGroup::Offsets(os) = &group {
+    if os.is_empty() {
+      return vec!(hand);
+    }
+  }
+  // otherwise do all the prep work
   let hand_calls = (hand, vec!());
   let match_info = prepare_tiles(
     &hand_calls,

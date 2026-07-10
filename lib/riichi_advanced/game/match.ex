@@ -1242,12 +1242,12 @@ defmodule RiichiAdvanced.Match do
       # profile()
       ret
     else
-      # t = System.os_time(:millisecond)
+      t = System.os_time(:millisecond)
       ret = __get_waits_v3(hand, calls, match_definitions, tile_behavior)
-      # delta = System.os_time(:millisecond) - t
-      # if delta > 10 do
-      #   IO.puts("get_waits_v3: #{inspect(delta)} ms")
-      # end
+      delta = System.os_time(:millisecond) - t
+      if delta > 10 do
+        IO.puts("get_waits_v3: #{inspect(delta)} ms")
+      end
       ret
     end
   end

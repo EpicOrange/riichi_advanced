@@ -284,6 +284,7 @@ pub fn __subtract_exhaustive(
   if group.attrs.len() > hand.attrs.len() {
     return None;
   }
+
   // assume return_indices and exhaustive are both false here
   let nojoker = group.nojoker;
   let hand_hash: Hash = hand.hash;
@@ -326,8 +327,10 @@ pub fn __subtract_exhaustive(
   let aliases = if divides { &empty_aliases } else { aliases };
 
   match _subtract_check_attrs_exhaustive(&hand_attrs, &group_attrs, aliases) {
-    Some(indicess) => {
-      let mut hands = vec!();
+    Some(mut indicess) => {
+      indicess.sort();
+      indicess.dedup();
+      let mut hands = HashSet::new();
       for indices in indicess {
         let mut hand = TileSet{
           hash: hand.hash,
@@ -336,10 +339,9 @@ pub fn __subtract_exhaustive(
           nojoker: false
         };
         remove_tileset_indices(&mut hand, &indices, joker_tiles);
-        hands.push(hand);
+        hands.insert(hand);
       }
-      // |> Enum.uniq()
-      Some(hands)
+      Some(hands.into_iter().collect())
     },
     None => None,
   }

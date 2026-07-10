@@ -816,6 +816,29 @@ defmodule RiichiAdvanced.GameState do
         # or (not Conditions.check_cnf_condition(state, cond_spec, %{seat: seat, tile: tile}) |> IO.inspect(label: inspect({2, seat, tile, cond_spec})))
       end)
     else true end
+
+    # # debug version
+    # if tile == nil do
+    #   IO.puts("#{seat} cannot play tile #{tile} because it is nil")
+    #   false
+    # else if has_unskippable_button?(state, seat) do
+    #   IO.puts("#{seat} cannot play tile #{tile} because someone has an unskippable button")
+    #   false
+    # else if Utils.has_attr?(tile, ["no_discard"]) do
+    #   IO.puts("#{seat} cannot play tile #{tile} because it is no_discard")
+    #   false
+    # else if Rules.has_key?(state.rules_ref, "play_restrictions") do
+    #   ret = Enum.find(Rules.get(state.rules_ref, "play_restrictions"), fn [tile_spec, cond_spec] ->
+    #     Riichi.tile_matches(tile_spec, %{seat: seat, tile: tile, players: state.players})
+    #     and Conditions.check_cnf_condition(state, cond_spec, %{seat: seat, tile: tile})
+    #     # not (Riichi.tile_matches(tile_spec, %{seat: seat, tile: tile, players: state.players}) |> IO.inspect(label: inspect({1, seat, tile, cond_spec})))
+    #     # or (not Conditions.check_cnf_condition(state, cond_spec, %{seat: seat, tile: tile}) |> IO.inspect(label: inspect({2, seat, tile, cond_spec})))
+    #   end)
+    #   if ret != nil do
+    #     IO.puts("#{seat} cannot play tile #{tile} because it matches the condition #{inspect(ret)}")
+    #     false
+    #   else true end
+    # else true end end end end
   end
 
   defp _reindex_hand(hand, from, to) do

@@ -299,6 +299,7 @@ defmodule RiichiAdvanced.GameState.American do
                           Enum.map(group, &Atom.to_string/1)
                         end
                         Match.remove_group(hand, group, anyless_tile_behavior, false, [base_tile])
+                        |> Enum.at(0)
                       end)
                       if new_hand != nil do
                         {:cont, new_hand}

@@ -11,7 +11,8 @@ use crate::tile_table::tile1x;
 use crate::types::{ElixirAliases, ElixirHandCalls, ElixirTile, MatchDefinitionElem, MatchDefinitions, MatchInfo, PROFILE_GET_WAITS, PROFILE_UNNEEDED_TILES, Tile};
 use crate::utils::{add_joker_to_aliases, remove_joker_from_aliases};
 
-#[rustler::nif]
+// #[rustler::nif(schedule = "DirtyCpu")]
+// TODO do the match def removal tactic as in the elixir version
 fn _get_waits_v3(
     hand_calls: ElixirHandCalls,
     match_definitions: MatchDefinitions,
@@ -20,6 +21,13 @@ fn _get_waits_v3(
     ordering: HashMap<Atom, Atom>, ordering_r: HashMap<Atom, Atom>,
     game_tiles: Vec<ElixirTile>,
 ) -> Vec<ElixirTile> {
+
+  // // add debug
+  // let mut match_definitions = match_definitions.clone();
+  // for defn in match_definitions.iter_mut() {
+  //   defn.push(MatchDefinitionElem::Keyword("debug".to_owned()));
+  // }
+
   let start = Instant::now();
   let ret = __get_waits_v3(
     hand_calls,
@@ -140,6 +148,7 @@ pub fn ___get_waits_v3<'a>(
     // println!("Empty, so we're done");
     return;
   }
+  println!("tiles: {:?}", current_tiles);
 
   // test with current aliases (only need to match 1 to succeed)
   match_info.aliases = encode_aliases(aliases, &match_info.all_attrs, &match_info.joker_tiles, None);
@@ -179,7 +188,7 @@ pub fn ___get_waits_v3<'a>(
   ___get_waits_v3(&mut match_info, &match_definitions, &mut aliases, &mut not_waits, &right, &joker);
 }
 
-#[rustler::nif]
+#[rustler::nif(schedule = "DirtyCpu")]
 fn _get_unneeded_tiles_v2(
     hand_calls: ElixirHandCalls,
     match_definitions: MatchDefinitions,

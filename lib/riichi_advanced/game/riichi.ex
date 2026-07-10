@@ -359,7 +359,7 @@ defmodule RiichiAdvanced.Riichi do
         "kuikae" ->
           player = context.players[context.seat]
           potential_set = Utils.add_attr(Enum.take(context.call.other_tiles, 2) ++ [context.tile2], ["_hand"])
-          Enum.any?([[0,1,2],[0,0,0]], &Match.remove_group(potential_set, &1, player.tile_behavior) != nil)
+          Enum.any?([[0,1,2],[0,0,0]], &not Enum.empty?(Match.remove_group(potential_set, &1, player.tile_behavior)))
         tile_spec ->
           tile_behavior = Map.get(context, :tile_behavior, %TileBehavior{})
           # "1m", "2z" are also specs
