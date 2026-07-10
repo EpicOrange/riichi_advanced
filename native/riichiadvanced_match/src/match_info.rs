@@ -6,6 +6,7 @@ use crate::tile_table::*;
 use crate::tileset::check_tile_match;
 use crate::types::{ElixirAliases, ElixirHand, ElixirHandCalls, ElixirTile, MatchInfo, Tile};
 use crate::primes::is_any;
+use crate::utils::{fetch_tile_aliases};
 
 // move all tiles from (hand, calls) into two structures:
 // - orig_hands, basically a copy of what was passed in minus call names
@@ -44,6 +45,7 @@ pub fn prepare_tiles<'a>(
     }
   }
   // the jokers are the tiles in hand whose corresponding encoding is an alias for some tile
+  // first, collect all such mapped-to tiles
   let mut encoded_alias_tiles: Vec<Tile> = vec!();
   for attrs_aliases in elixir_aliases.values() {
     for elixir_aliases in attrs_aliases.values() {
@@ -54,20 +56,27 @@ pub fn prepare_tiles<'a>(
       }
     }
   }
+  // then, populate joker tiles
   let mut elixir_joker_tiles: HashSet<ElixirTile> = HashSet::new();
-  let mut elixir_nonjoker_tiles: HashSet<ElixirTile> = HashSet::new();
   let mut joker_tiles: HashSet<Tile> = HashSet::new();
+  let mut matchable_tiles: HashSet<ElixirTile> = HashSet::new();
   for (&orig_tile, encoded) in encoding.iter() {
-    let mut is_joker = false;
+    matchable_tiles.insert(orig_tile.clone());
     for encoded_alias in encoded_alias_tiles.iter() {
       if check_tile_match(&encoded, encoded_alias) {
         elixir_joker_tiles.insert(orig_tile.clone());
         joker_tiles.insert(encoded.clone());
-        is_joker = true;
         break;
       }
     }
-    if !is_joker { elixir_nonjoker_tiles.insert(orig_tile.clone()); }
+  }
+  // for every joker, add its mappings set to matchable tiles
+  // so matchable tiles = tiles in hand + tiles mapped to by jokers in hand
+  // (we use this to calculate base tiles)
+  for tile in elixir_joker_tiles.iter() {
+    for alias in fetch_tile_aliases(elixir_aliases, tile) {
+      matchable_tiles.insert(alias.clone());
+    }
   }
 
   // generate new TileSets from the above
@@ -93,7 +102,7 @@ pub fn prepare_tiles<'a>(
     all_attrs,
     aliases,
     elixir_joker_tiles,
-    elixir_nonjoker_tiles,
+    matchable_tiles,
     joker_tiles,
     // encoding,
     ordering,

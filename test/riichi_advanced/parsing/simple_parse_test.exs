@@ -29,7 +29,13 @@ defmodule RiichiAdvanced.SimpleParseTest do
   test "parse all mods" do
     for ruleset_path <- Path.wildcard(Application.app_dir(:riichi_advanced, "/priv/static/rulesets/**.json")) do
       ruleset = Path.basename(ruleset_path, ".json")
-      ruleset_json = ModLoader.get_ruleset_json(ruleset, nil, true)
+      ruleset_json = try do
+        ModLoader.get_ruleset_json(ruleset, nil, true)
+      rescue
+        e ->
+          IO.inspect("failed to parse ruleset #{ruleset} from path #{ruleset}")
+          raise e
+      end
       assert ruleset_json != nil
       rules = Jason.decode!(ModLoader.strip_comments(ruleset_json))
       mod_list = Map.get(rules, "available_mods", [])

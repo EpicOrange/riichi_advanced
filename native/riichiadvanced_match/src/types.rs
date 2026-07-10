@@ -1,5 +1,5 @@
 use crate::tile_table::*;
-use std::collections::{HashMap, HashSet};
+use std::{collections::{HashMap, HashSet}, fmt};
 use rustler::{Atom, Decoder, Encoder, Env, Error, NifResult, NifStruct, Term};
 
 pub const PROFILE_MATCH: bool = false;
@@ -34,7 +34,7 @@ impl TileSet {
   }
 }
 
-#[derive(PartialEq, Eq, Clone, Debug, Hash)]
+#[derive(PartialEq, Eq, Clone, Hash)]
 pub enum ElixirTile {
   AtomTile(Atom),
   AttrTile(Atom, Vec<String>),
@@ -66,6 +66,15 @@ impl Encoder for ElixirTile {
     match self {
       ElixirTile::AtomTile(tile) => tile.encode(env),
       ElixirTile::AttrTile(tile, attrs) => (tile, attrs).encode(env)
+    }
+  }
+}
+
+impl fmt::Debug for ElixirTile {
+  fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+    match self {
+      ElixirTile::AtomTile(tile) => write!(f, ":{:?}", tile),
+      ElixirTile::AttrTile(tile, attrs) => write!(f, ":{:?}{:?}", tile, attrs),
     }
   }
 }
@@ -132,7 +141,7 @@ impl Encoder for AttrTileMap {
   }
 }
 
-#[derive(PartialEq, Eq, PartialOrd, Ord, Clone, Debug)]
+#[derive(PartialEq, Eq, PartialOrd, Ord, Clone)]
 pub enum MatchOffset {
   Offset(isize),
   AttrsTile(AttrTileMap),
@@ -140,7 +149,7 @@ pub enum MatchOffset {
   TileOrKeyword(String), // group keywords, includes amerijong fixed offsets
 }
 
-#[derive(PartialEq, Eq, Clone, Debug)]
+#[derive(PartialEq, Eq, Clone)]
 pub enum MatchGroup {
   Offset(MatchOffset),
   Offsets(Vec<MatchOffset>),
@@ -202,6 +211,17 @@ impl<'a> Decoder<'a> for MatchOffset {
   }
 }
 
+impl fmt::Debug for MatchOffset {
+  fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+    match self {
+      MatchOffset::Offset(o) => write!(f, "{o}"),
+      MatchOffset::AttrsTile(map) => write!(f, "{:?}{:?}", map.tile, map.attrs),
+      MatchOffset::AttrsOffset(map) => write!(f, "{:?}{:?}", map.offset, map.attrs),
+      MatchOffset::TileOrKeyword(s) => write!(f, "{s:?}"),
+    }
+  }
+}
+
 impl Encoder for MatchGroup {
   fn encode<'a>(&self, env: Env<'a>) -> Term<'a> {
     match self {
@@ -218,6 +238,16 @@ impl<'a> Decoder<'a> for MatchGroup {
     else if let Ok(offsets) = term.decode::<Vec<MatchOffset>>() { Ok(MatchGroup::Offsets(offsets)) }
     else if let Ok(subgroupings) = term.decode::<Vec<Vec<MatchOffset>>>() { Ok(MatchGroup::Subgroups(subgroupings)) }
     else { Err(Error::BadArg) }
+  }
+}
+
+impl fmt::Debug for MatchGroup {
+  fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+    match self {
+      MatchGroup::Offset(o) => write!(f, "{:?}", o),
+      MatchGroup::Offsets(os) => write!(f, "{:?}", os),
+      MatchGroup::Subgroups(oss) => write!(f, "{:?}", oss),
+    }
   }
 }
 
@@ -309,7 +339,7 @@ pub struct MatchInfo<'a> {
   pub all_attrs: &'a Vec<String>,
   pub aliases: Aliases,
   pub elixir_joker_tiles: HashSet<ElixirTile>,
-  pub elixir_nonjoker_tiles: HashSet<ElixirTile>,
+  pub matchable_tiles: HashSet<ElixirTile>,
   pub joker_tiles: HashSet<Tile>,
   // pub encoding: HashMap<&'a ElixirTile, Tile>,
   pub ordering: &'a HashMap<Atom, Atom>,

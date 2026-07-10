@@ -92,6 +92,19 @@ fn fetch_offset(
   }
 }
 
+// fn add_attrs(tile: &ElixirTile, attrs: &Vec<String>) -> ElixirTile {
+//   match tile {
+//     ElixirTile::AtomTile(atom) => {
+//       ElixirTile::AttrTile(*atom, attrs.clone())
+//     }
+//     ElixirTile::AttrTile(atom, attrs2) => {
+//       let mut attrs = attrs.clone();
+//       attrs.append(&mut attrs2.clone());
+//       ElixirTile::AttrTile(*atom, attrs)
+//     }
+//   }
+// }
+
 fn add_attrs_mut(tile: &mut ElixirTile, mut attrs: &mut Vec<String>) -> () {
   match tile {
     ElixirTile::AtomTile(atom) => {
@@ -103,7 +116,7 @@ fn add_attrs_mut(tile: &mut ElixirTile, mut attrs: &mut Vec<String>) -> () {
   }
 }
 
-fn apply_fixed_offset(base_tile: &ElixirTile, fixed_offset: &String) -> Option<ElixirTile> {
+pub fn apply_fixed_offset(base_tile: &ElixirTile, fixed_offset: &String) -> Option<ElixirTile> {
   FIXED_OFFSETS.get(fixed_offset).and_then(|atom| {
     let mut ret = ElixirTile::AtomTile(atom());
     if is_jihai(&ret) {
@@ -133,15 +146,14 @@ fn apply_fixed_offset(base_tile: &ElixirTile, fixed_offset: &String) -> Option<E
 }
 
 pub fn apply_offsets(
-    base_tile: &ElixirTile, offsets: &Vec<MatchOffset>,
+    base_tile: &ElixirTile, offsets: &[MatchOffset],
     ordering: &HashMap<Atom, Atom>, ordering_r: &HashMap<Atom, Atom>,
     nojoker: &mut bool,
 ) -> Vec<Option<ElixirTile>> {
   let mut q = VecDeque::from([base_tile.clone()]); // get offset o via q.get(o-l as usize)
   let mut l = 0;
   let mut r = 0;
-  let mut offsets = offsets.clone();
-  offsets.iter_mut().map(|offset| {
+  offsets.iter().map(|offset| {
     match offset {
       MatchOffset::Offset(o) => fetch_offset(&mut q, &mut l, &mut r, *o, ordering, ordering_r),
       MatchOffset::AttrsTile(map) => {
@@ -152,7 +164,7 @@ pub fn apply_offsets(
       }
       MatchOffset::AttrsOffset(map) => {
         fetch_offset(&mut q, &mut l, &mut r, map.offset, ordering, ordering_r)
-          .map(|mut tile| { add_attrs_mut(&mut tile, &mut map.attrs); tile })
+          .map(|mut tile| { add_attrs_mut(&mut tile, &mut map.attrs.clone()); tile })
       }
       MatchOffset::TileOrKeyword(s) => {
         match ATOM_TABLE.get(s) {
@@ -275,10 +287,10 @@ pub fn get_base_tiles<'a>(
     match_info: &'a MatchInfo<'a>,
     match_definition: &'a MatchDefinition,
 ) -> HashSet<ElixirTile> {
-  // get all offsets of existing tiles
+  // get all offsets of matchable tiles
   // we need to do this because jokers/offsets could reify into a tile
   //   that we can't otherwise encode, since it's not in hand
-  let mut offset_tiles: Vec<ElixirTile> = match_info.elixir_nonjoker_tiles
+  let mut offset_tiles: Vec<ElixirTile> = match_info.matchable_tiles
     .iter()
     .flat_map(|base_tile| apply_offsets(&base_tile, &gather_rev_offsets(&match_definition), match_info.ordering, match_info.ordering_r, &mut false))
     .flatten()

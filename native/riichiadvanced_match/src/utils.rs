@@ -79,29 +79,28 @@ pub fn remove_joker_from_aliases<'a>(
   }
 }
 
-// // for debugging
-// // can't return references to ElixirTile
-// // since they technically don't exist in aliases
-// pub fn fetch_tile_aliases<'a>(
-//     elixir_aliases: &mut ElixirAliases,
-//     tile: &ElixirTile,
-// ) -> Vec<ElixirTile> {
-//   let mut out = vec!();
-//   for (t, attrs_aliases) in elixir_aliases.iter() {
-//     if let ElixirTile::AtomTile(t) = t {
-//       for (attrs, aliases) in attrs_aliases.iter() {
-//         if aliases.contains(tile) {
-//           if attrs.is_empty() {
-//             out.push(ElixirTile::AtomTile(*t));
-//           } else {
-//             out.push(ElixirTile::AttrTile(*t, attrs.clone()));
-//           }
-//         }
-//       }
-//     }
-//   }
-//   out
-// }
+// can't return references to ElixirTile
+// since they technically don't exist in aliases
+pub fn fetch_tile_aliases<'a>(
+    elixir_aliases: &ElixirAliases,
+    tile: &ElixirTile,
+) -> Vec<ElixirTile> {
+  let mut out = vec!();
+  for (t, attrs_aliases) in elixir_aliases.iter() {
+    if let ElixirTile::AtomTile(t) = t {
+      for (attrs, aliases) in attrs_aliases.iter() {
+        if aliases.contains(tile) {
+          if attrs.is_empty() {
+            out.push(ElixirTile::AtomTile(*t));
+          } else {
+            out.push(ElixirTile::AttrTile(*t, attrs.clone()));
+          }
+        }
+      }
+    }
+  }
+  out
+}
 
 // // for debugging
 // pub fn print_tile_aliases<'a>(
