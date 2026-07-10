@@ -2,7 +2,8 @@ use crate::tile_table::*;
 use std::collections::{HashMap, HashSet};
 use rustler::{Atom, Decoder, Encoder, Env, Error, NifResult, NifStruct, Term};
 
-pub const PROFILE: bool = true;
+pub const PROFILE_MATCH: bool = false;
+pub const PROFILE_GET_WAITS: bool = true;
 
 pub type Hash = u128;
 pub type BitAttrs = u64;
@@ -146,13 +147,13 @@ pub enum MatchGroup {
 }
 
 impl MatchGroup {
-  pub fn flatten_move(self) -> Vec<MatchOffset> {
-    match self {
-      MatchGroup::Offset(o) => vec!(o),
-      MatchGroup::Offsets(os) => os,
-      MatchGroup::Subgroups(oss) => oss.into_iter().flatten().collect(),
-    }
-  }
+  // pub fn flatten_move(self) -> Vec<MatchOffset> {
+  //   match self {
+  //     MatchGroup::Offset(o) => vec!(o),
+  //     MatchGroup::Offsets(os) => os,
+  //     MatchGroup::Subgroups(oss) => oss.into_iter().flatten().collect(),
+  //   }
+  // }
   pub fn flatten(&self) -> Vec<MatchOffset> {
     match self {
       MatchGroup::Offset(o) => vec!(o.clone()),

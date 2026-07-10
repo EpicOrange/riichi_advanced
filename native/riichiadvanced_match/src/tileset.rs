@@ -55,10 +55,10 @@ pub fn check_tile_match((p2, battrs2): &Tile, (p1, battrs1): &Tile) -> bool {
   (*p1 == *p2 || *p1 == ANY_PRIME || *p2 == ANY_PRIME) && (*battrs1 & *battrs2 == *battrs1)
 }
 
-// #[rustler::nif]
-pub fn check_equivalence(l: Tile, r: Tile, aliases: Aliases) -> bool {
-  _check_equivalence(&l, &r, &aliases)
-}
+// // #[rustler::nif]
+// pub fn check_equivalence(l: Tile, r: Tile, aliases: Aliases) -> bool {
+//   _check_equivalence(&l, &r, &aliases)
+// }
 pub fn _check_equivalence(l: &Tile, r: &Tile, aliases: &Aliases) -> bool {
   if check_tile_match(&l, &r) { return true; }
   if let Some(entries) = aliases.get(&r.0) {
@@ -71,20 +71,6 @@ pub fn _check_equivalence(l: &Tile, r: &Tile, aliases: &Aliases) -> bool {
     }) { return true; }}
   false
 }
-  // def check_equivalence({p2, battrs2}, {p1, battrs1}, encoded_aliases) do
-  //   # joker lookup is basically term rewriting: {tile, attrs} -> {tile, attrs}
-  //   # so just check if an alias for {p2, battrs2} exists that matches {p1, battrs1}
-  //   cond do
-  //     check_tile_match({p2, battrs2}, {p1, battrs1}) -> true
-  //     Enum.any?(Map.get(encoded_aliases, p1, []), fn {battrs, aliases} ->
-  //       (battrs1 &&& battrs) == battrs1 and Enum.any?(aliases, fn {p3, battrs3} -> check_tile_match({p2, battrs2}, {p3, battrs3}) end)
-  //     end) -> true
-  //     Enum.any?(Map.get(encoded_aliases, @any_prime, []), fn {battrs, aliases} ->
-  //       (battrs1 &&& battrs) == battrs1 and Enum.any?(aliases, fn {p3, battrs3} -> check_tile_match({p2, battrs2}, {p3, battrs3}) end)
-  //     end) -> true
-  //     true -> false
-  //   end
-  // end
 
 pub fn compute_attr_masks(l: &[Tile], r: &[Tile], aliases: &Aliases) -> (Vec<(Mask, RowIndex)>, Mask) {
   let mut masks: Vec<(Mask, RowIndex)> = vec![(0,0); l.len()];

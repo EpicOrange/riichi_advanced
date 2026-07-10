@@ -86,38 +86,38 @@ pub fn is_any(tile: &ElixirTile) -> bool {
   }
 }
 
-pub fn shift_suit(tile: &ElixirTile) -> Option<ElixirTile> {
-  let shift_suit_table = SHIFT_SUIT.get_or_init(|| {
-    ATOM_TABLE.entries()
-      .map(|(&s, &atom)| {
-        let mut s2 = s.to_string();
-        match s2.pop() {
-          Some('m') => s2.push('p'),
-          Some('p') => s2.push('s'),
-          Some('s') => s2.push('m'),
-          _         => ()
-        }
-        match ATOM_TABLE.get(s2.as_str()) {
-          Some(atom2) => Some((atom(), atom2())),
-          None => None
-        }
-      }).flatten().collect()
-  });
-  match tile {
-    ElixirTile::AtomTile(_) => {
-      match shift_suit_table.get(get_tile_atom(tile)) {
-        Some(t) => Some(ElixirTile::AtomTile(*t)),
-        None    => None,
-      }
-    },
-    ElixirTile::AttrTile(_, attrs) => {
-      match shift_suit_table.get(get_tile_atom(tile)) {
-        Some(t) => Some(ElixirTile::AttrTile(*t, attrs.clone())),
-        None    => None,
-      }
-    }
-  }
-}
+// pub fn shift_suit(tile: &ElixirTile) -> Option<ElixirTile> {
+//   let shift_suit_table = SHIFT_SUIT.get_or_init(|| {
+//     ATOM_TABLE.entries()
+//       .map(|(&s, &atom)| {
+//         let mut s2 = s.to_string();
+//         match s2.pop() {
+//           Some('m') => s2.push('p'),
+//           Some('p') => s2.push('s'),
+//           Some('s') => s2.push('m'),
+//           _         => ()
+//         }
+//         match ATOM_TABLE.get(s2.as_str()) {
+//           Some(atom2) => Some((atom(), atom2())),
+//           None => None
+//         }
+//       }).flatten().collect()
+//   });
+//   match tile {
+//     ElixirTile::AtomTile(_) => {
+//       match shift_suit_table.get(get_tile_atom(tile)) {
+//         Some(t) => Some(ElixirTile::AtomTile(*t)),
+//         None    => None,
+//       }
+//     },
+//     ElixirTile::AttrTile(_, attrs) => {
+//       match shift_suit_table.get(get_tile_atom(tile)) {
+//         Some(t) => Some(ElixirTile::AttrTile(*t, attrs.clone())),
+//         None    => None,
+//       }
+//     }
+//   }
+// }
 
 // returns false if failed to shift
 pub fn shift_suit_mut(tile: &mut ElixirTile) -> bool {

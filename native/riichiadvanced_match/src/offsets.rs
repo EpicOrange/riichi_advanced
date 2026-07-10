@@ -215,8 +215,7 @@ pub fn __generate_groups<'a>(
         // in which case we do the same as for MatchGroup::Offset
         Some(_) => generate_groups_from_offsets(&vec!(MatchOffset::TileOrKeyword(s.clone())), base_tiles, all_attrs, joker_tiles, ordering, ordering_r, &mut nojoker),
         None => {
-          if s == "nojoker" {
-            nojoker = true;
+          if s == "nojoker" || s == "unique" {
             vec!()
           } else {
             // otherwise, return as call name

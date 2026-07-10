@@ -2,7 +2,7 @@ use std::collections::{HashMap, HashSet};
 use std::sync::atomic::Ordering;
 use std::time::Instant;
 use num::abs;
-use rustler::{Atom, Encoder, Env, Term};
+use rustler::{Atom};
 
 use crate::encode::{decode, encode, encode_aliases};
 use crate::match_info::{prepare_tiles};
@@ -10,7 +10,7 @@ use crate::offsets::{__generate_groups, get_base_tiles};
 use crate::profile::{CALL_COUNT, TOTAL_NANOS};
 use crate::tile_table::ATOM_TABLE;
 use crate::tileset::{__subtract, __subtract_exhaustive, _count_factors_fast, _remove_indices, _subtract_check_attrs_exhaustive};
-use crate::types::{ANY_PRIME, Aliases, ElixirAliases, ElixirHand, ElixirHandCalls, ElixirTile, Hands, MatchDefinition, MatchDefinitionElem, MatchDefinitions, MatchGroup, MatchInfo, MatchOffset, PROFILE, RemovableGroup, Tile, TileSet};
+use crate::types::{ANY_PRIME, Aliases, ElixirAliases, ElixirHand, ElixirHandCalls, ElixirTile, Hands, MatchDefinition, MatchDefinitionElem, MatchDefinitions, MatchGroup, MatchInfo, MatchOffset, PROFILE_MATCH, RemovableGroup, Tile, TileSet};
 
 // this is used a lot, especially for determining and processing calls
 // #[rustler::nif]
@@ -112,14 +112,14 @@ fn elim_tileset(
 }
 
 // #[rustler::nif]
-fn elim_group(
-    hands: Hands, group: RemovableGroup,
-    aliases: Aliases,
-    joker_tiles: Vec<Tile>,
-    exhaustive: bool,
-) -> Vec<Hands> {
-  _elim_group(&hands, &group, &aliases, &joker_tiles.into_iter().collect(), exhaustive)
-}
+// fn elim_group(
+//     hands: Hands, group: RemovableGroup,
+//     aliases: Aliases,
+//     joker_tiles: Vec<Tile>,
+//     exhaustive: bool,
+// ) -> Vec<Hands> {
+//   _elim_group(&hands, &group, &aliases, &joker_tiles.into_iter().collect(), exhaustive)
+// }
 fn _elim_group(
     hands: &Hands, group_arg: &RemovableGroup,
     aliases: &Aliases,
@@ -361,13 +361,13 @@ fn perform_standard_match(
   *acc = acc2.into_iter().map(|(hands, _)| hands).collect();
 }
 
-pub fn remove_match_definition(match_info: &MatchInfo, match_definition: MatchDefinition) -> Vec<Hands> {
+pub fn remove_match_definition(match_info: &MatchInfo, match_definition: &MatchDefinition) -> Vec<Hands> {
   // first walk the definition to check for keywords and sum of group counts
   let mut min_match_length = 0;
   let mut debug = false;
   let mut has_restart = false;
   let mut has_almost = false;
-  for elem in &match_definition {
+  for elem in match_definition {
     match elem {
       MatchDefinitionElem::Keyword(s) => {
         if s == "debug" { debug = true; }
@@ -397,7 +397,7 @@ pub fn remove_match_definition(match_info: &MatchInfo, match_definition: MatchDe
   let mut unique = false;
   let mut nojoker = false;
   let mut acc = vec!(match_info.initial_hands.clone());
-  for match_elem in &match_definition {
+  for match_elem in match_definition {
     if acc.is_empty() { return acc; }
     match match_elem {
       MatchDefinitionElem::Keyword(s) => {
@@ -508,7 +508,7 @@ pub fn _match_hand_v3(
     &ordering,
     &ordering_r,
   );
-  if PROFILE {
+  if PROFILE_MATCH {
     let elapsed = start.elapsed();
     TOTAL_NANOS.fetch_add(elapsed.as_nanos() as u64, Ordering::Relaxed);
     CALL_COUNT.fetch_add(1, Ordering::Relaxed);
@@ -531,7 +531,7 @@ pub fn __match_hand_v3<'a>(
     ordering_r,
   );
   for match_definition in match_definitions {
-    let result = remove_match_definition(&match_info, match_definition);
+    let result = remove_match_definition(&match_info, &match_definition);
     if !result.is_empty() {
       return true;
     }
@@ -539,6 +539,90 @@ pub fn __match_hand_v3<'a>(
   false
 }
 
+#[rustler::nif]
+pub fn _remove_group(
+    hand: ElixirHand, group: MatchGroup, 
+    all_tiles: Vec<ElixirTile>, all_attrs: Vec<String>,
+    elixir_aliases: ElixirAliases,
+    ordering: HashMap<Atom, Atom>, ordering_r: HashMap<Atom, Atom>,
+    exhaustive: bool, nojoker: bool,
+    base_tiles: Option<Vec<ElixirTile>>,
+) -> Vec<ElixirHand> {
+  __remove_group(
+    hand, group,
+    &mut all_tiles.into_iter().collect(),
+    &all_attrs,
+    &elixir_aliases,
+    &ordering,
+    &ordering_r,
+    exhaustive,
+    nojoker,
+    &base_tiles.map(|v| v.into_iter().collect()),
+  )
+} 
 
+pub fn __remove_group<'a>(
+    hand: ElixirHand, group: MatchGroup, 
+    all_tiles: &'a mut HashSet<ElixirTile>, all_attrs: &'a Vec<String>,
+    elixir_aliases: &'a ElixirAliases,
+    ordering: &'a HashMap<Atom, Atom>, ordering_r: &'a HashMap<Atom, Atom>,
+    exhaustive: bool, nojoker: bool,
+    base_tiles: &'a Option<HashSet<ElixirTile>>,
+) -> Vec<ElixirHand> {
+  let hand_calls = (hand, vec!());
+  let match_info = prepare_tiles(
+    &hand_calls,
+    all_tiles,
+    all_attrs,
+    elixir_aliases,
+    ordering,
+    ordering_r,
+  );
+  let base_tiles = if let Some(base_tiles) = base_tiles {
+    base_tiles
+  } else {
+    let match_definition = vec!(MatchDefinitionElem::Group(vec!(group.clone()), 1));
+    &get_base_tiles(&match_info, &match_definition)
+  };
 
+  // reify all groups into removable groups
+  let reified_groups: Vec<RemovableGroup> = __generate_groups(
+    &group,
+    base_tiles,
+    &match_info.all_tiles.iter().collect(), &match_info.all_attrs,
+    &match_info.joker_tiles,
+    &match_info.ordering, &match_info.ordering_r,
+    nojoker,
+  );
+
+  // println!("Hand tiles: {0:?}", match_info.tiles_in_hand.iter().collect::<Vec<_>>());
+  // println!("Base tiles: {0:?}", base_tiles.iter().collect::<Vec<_>>());
+  // println!("All tiles: {0:?}", match_info.all_tiles.iter().collect::<Vec<_>>());
+  // for (reified, i) in &reified_groups {
+  //   println!("Reified group {i}:");
+  //   println!("  {0:?}", &group);
+  //   println!("Into the groups:");
+  //   for group in reified {
+  //     match group {
+  //       RemovableGroup::CallName(name) => println!("- \"{0:?}\"", name),
+  //       RemovableGroup::Group(group) => println!("- {0:?}", decode(group, match_info.all_attrs)),
+  //       RemovableGroup::GroupRef(group) => println!("- {0:?}", decode(group, match_info.all_attrs)),
+  //       RemovableGroup::Multigroup(subgroups) => println!("- {0:?}", subgroups.iter().map(|subgroup| decode(subgroup, match_info.all_attrs)).collect::<Vec<_>>()),
+  //     }
+  //   }
+  // }
+  let mut ret: Vec<ElixirHand> = vec!();
+  for group in reified_groups {
+    let result = _elim_group(&match_info.initial_hands, &group, &match_info.aliases, &match_info.joker_tiles, exhaustive);
+    if !result.is_empty() {
+      if exhaustive {
+        ret.push(decode(&result[0][0], &match_info.all_attrs));
+        return ret;
+      } else {
+        ret.append(&mut result.into_iter().map(|hands| decode(&hands[0], &match_info.all_attrs)).collect());
+      }
+    }
+  }
+  ret
+}
 

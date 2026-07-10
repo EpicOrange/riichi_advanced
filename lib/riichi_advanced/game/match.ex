@@ -1171,10 +1171,33 @@ defmodule RiichiAdvanced.Match do
     end
   end
 
-  def remove_group(hand, group, tile_behavior, exhaustive \\ false, base_tiles \\ nil)
-  def remove_group(hand, [], _tile_behavior, false, _base_tiles), do: hand
-  def remove_group(hand, [], _tile_behavior, true, _base_tiles), do: [hand]
-  def remove_group(hand, group, tile_behavior, exhaustive, base_tiles) do
+  def remove_group(hand, group, tile_behavior, exhaustive \\ false, base_tiles \\ nil) do
+    _remove_group(
+      hand, group,
+      tile_behavior.all_tiles |> Enum.to_list(), tile_behavior.attrs |> Enum.to_list(),
+      tile_behavior.aliases |> TileBehavior.remove_alias_mapsets(), tile_behavior.ordering, tile_behavior.ordering_r,
+      exhaustive, Enum.empty?(tile_behavior.mappings),
+      base_tiles
+    )
+  end
+  def _remove_group(
+    hand, group,
+    all_tiles, all_attrs,
+    elixir_aliases, ordering, ordering_r,
+    exhaustive, nojoker,
+    base_tiles
+  ) do
+    __remove_group(hand, group, %TileBehavior{
+      all_tiles: all_tiles |> MapSet.new(),
+      attrs: all_attrs |> MapSet.new(),
+      aliases: elixir_aliases |> TileBehavior.restore_alias_mapsets(),
+      ordering: ordering,
+      ordering_r: ordering_r
+      }, exhaustive, nojoker, base_tiles)
+  end
+  def __remove_group(hand, [], _tile_behavior, false, _nojoker, _base_tiles), do: hand
+  def __remove_group(hand, [], _tile_behavior, true, _nojoker, _base_tiles), do: [hand]
+  def __remove_group(hand, group, tile_behavior, exhaustive, nojoker, base_tiles) do
     {_tiles_in_hand, [initial_hand], tile_behavior} = prepare_tiles([hand], [[[group, 1]]], tile_behavior)
     tile_behavior = if base_tiles != nil do
       %{tile_behavior | base_tiles: base_tiles}
@@ -1184,7 +1207,6 @@ defmodule RiichiAdvanced.Match do
     # if debug do
     #   IO.inspect(tile_behavior, charlists: :as_lists, limit: :infinity)
     # end
-    nojoker = Enum.empty?(tile_behavior.mappings)
     group
     |> generate_groups(tile_behavior, nojoker)
     |> Enum.reduce_while([], fn reified_group, acc ->
@@ -1204,41 +1226,74 @@ defmodule RiichiAdvanced.Match do
     end
   end
 
-  # @decorate cacheable(cache: RiichiAdvanced.Cache, key: {:get_waits_v2, hand, calls, match_definitions, TileBehavior.hash(tile_behavior)})
-  defp get_waits_v2(hand, calls, match_definitions, tile_behavior) do
+
+  defp get_waits_v3(hand, calls, match_definitions, tile_behavior) do
+    # check if rust should handle things
+    tiles_in_hand = Utils.strip_attrs(hand ++ Enum.flat_map(calls, &Utils.call_to_tiles/1))
+    hash = tiles_in_hand |> Enum.map(&Constants.to_prime/1) |> Enum.product
+    use_rust = hash <= @u128_max
+    if use_rust do
+      ret = _get_waits_v3({hand, calls}, match_definitions,
+        tile_behavior.all_tiles |> Enum.to_list(), tile_behavior.attrs |> Enum.to_list() |> Enum.sort(),
+        tile_behavior.aliases |> TileBehavior.remove_alias_mapsets(),
+        tile_behavior.ordering, tile_behavior.ordering_r
+      )
+      # profile()
+      ret
+    else
+      t = System.os_time(:millisecond)
+      ret = __get_waits_v3(hand, calls, match_definitions, tile_behavior)
+      delta = System.os_time(:millisecond) - t
+      if delta > 10 do
+        IO.puts("get_waits_v3: #{inspect(delta)} ms")
+      end
+      ret
+    end
+  end
+  defp _get_waits_v3({hand, calls}, match_definitions, all_tiles, all_attrs, elixir_aliases, ordering, ordering_r) do
+    __get_waits_v3(hand, calls, match_definitions, %TileBehavior{
+      all_tiles: all_tiles |> MapSet.new(),
+      attrs: all_attrs |> MapSet.new(),
+      aliases: elixir_aliases |> TileBehavior.restore_alias_mapsets(),
+      ordering: ordering,
+      ordering_r: ordering_r,
+    })
+  end
+  # @decorate cacheable(cache: RiichiAdvanced.Cache, key: {:get_waits_v3, hand, calls, match_definitions, TileBehavior.hash(tile_behavior)})
+  defp __get_waits_v3(hand, calls, match_definitions, tile_behavior) do
     # basic strategy is to add a custom joker 1x
     # it will start as "all tiles" and progressively split its aliases in half,
     # until it encompasses "all tiles that don't work"
     # then we just take the complement
     all_tiles = Map.keys(tile_behavior.tile_freqs)
-    all_tiles -- _get_waits_v2(hand, calls, match_definitions, tile_behavior, all_tiles)
+    all_tiles -- ___get_waits_v3(hand, calls, match_definitions, tile_behavior, all_tiles)
   end
-  defp _get_waits_v2(_hand, _calls, _match_definitions, _tile_behavior, []), do: []
-  defp _get_waits_v2(hand, calls, match_definitions, tile_behavior, [x]) do
+  defp ___get_waits_v3(_hand, _calls, _match_definitions, _tile_behavior, []), do: []
+  defp ___get_waits_v3(hand, calls, match_definitions, tile_behavior, [x]) do
     if match_hand([x | hand], calls, match_definitions, tile_behavior) do
       []
     else
       [x]
     end
   end
-  defp _get_waits_v2(hand, calls, match_definitions, tile_behavior, assignables) do
+  defp ___get_waits_v3(hand, calls, match_definitions, tile_behavior, assignables) do
     tile_behavior_temp = TileBehavior.set_tile_alias(tile_behavior, [:"1x"], assignables)
     if match_hand([:"1x" | hand], calls, match_definitions, tile_behavior_temp) do
       # bisect
       {left, right} = Enum.split(assignables, Integer.floor_div(length(assignables), 2))
-      left2 = _get_waits_v2(hand, calls, match_definitions, tile_behavior, left)
-      right2 = _get_waits_v2(hand, calls, match_definitions, tile_behavior, right)
+      left2 = ___get_waits_v3(hand, calls, match_definitions, tile_behavior, left)
+      right2 = ___get_waits_v3(hand, calls, match_definitions, tile_behavior, right)
       left2 ++ right2
     else assignables end
   end
 
   def get_waits(hand, calls, match_definitions, tile_behavior) do
-    get_waits_v2(hand, calls, match_definitions, tile_behavior)
+    get_waits_v3(hand, calls, match_definitions, tile_behavior)
   end
 
   # @decorate cacheable(cache: RiichiAdvanced.Cache, key: {:get_waits_and_ukeire_v2, hand, calls, match_definitions, visible_tiles, TileBehavior.hash(tile_behavior)})
   defp get_waits_and_ukeire_v2(hand, calls, match_definitions, visible_tiles, tile_behavior) do
-    waits = get_waits_v2(hand, calls, match_definitions, tile_behavior)
+    waits = get_waits_v3(hand, calls, match_definitions, tile_behavior)
     freqs = Utils.inverse_frequencies(visible_tiles, tile_behavior)
     Map.new(waits, &{&1, Map.get(freqs, &1, 0)})
   end
