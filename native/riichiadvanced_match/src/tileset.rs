@@ -4,8 +4,6 @@ use rustler::{Encoder, Env, Term};
 use crate::n_rooks;
 use crate::types::{ANY_PRIME, Aliases, Hash, Mask, RowIndex, Tile, TileSet};
 
-rustler::atoms! { ok }
-
 // #[rustler::nif]
 // fn remove_indices<'a>(xs: Vec<Term<'a>>, is: Vec<RowIndex>) -> Vec<Term<'a>> {
 //   let mut xs = xs;
@@ -107,7 +105,7 @@ pub fn compute_attr_masks(l: &[Tile], r: &[Tile], aliases: &Aliases) -> (Vec<(Ma
 #[rustler::nif]
 pub fn subtract_check_attrs<'a>(env: Env<'a>, l: Vec<Tile>, r: Vec<Tile>, aliases: Aliases) -> Term<'a> {
   match _subtract_check_attrs(&l, &r, &aliases) {
-    Some(ret) => (ok(), ret).encode(env),
+    Some(ret) => (rustler::types::atom::ok(), ret).encode(env),
     None => rustler::types::atom::nil().encode(env),
   }
 }
@@ -121,7 +119,7 @@ pub fn _subtract_check_attrs(l: &[Tile], r: &[Tile], aliases: &Aliases) -> Optio
 #[rustler::nif]
 pub fn subtract_check_attrs_exhaustive<'a>(env: Env<'a>, l: Vec<Tile>, r: Vec<Tile>, aliases: Aliases) -> Term<'a> {
   match _subtract_check_attrs_exhaustive(&l, &r, &aliases) {
-    Some(ret) => (ok(), ret).encode(env),
+    Some(ret) => (rustler::types::atom::ok(), ret).encode(env),
     None => rustler::types::atom::nil().encode(env),
   }
 }
@@ -165,7 +163,7 @@ pub fn remove_tileset_indices(
   }
   let (q, r) = (hand.hash / divisor, hand.hash % divisor);
   if r != 0 {
-    eprintln!("remove_tileset_indices: tried to divide {0} by {divisor}, hand was {hand:?}", hand.hash);
+    eprintln!("remove_tileset_indices: tried to divide {0} by {divisor}, hand was {hand:?} with jokers {1:?}", hand.hash, joker_tiles.iter().collect::<Vec<_>>());
   }
   hand.hash = q;
   _remove_indices(&mut hand.attrs, &ixs.to_vec());
@@ -228,9 +226,7 @@ pub fn __subtract(
   let group_attrs = &group.attrs;
 
   let empty_aliases: Aliases = HashMap::new();
-  let empty_joker_tiles: HashSet<Tile> = HashSet::new();
   let aliases = if *nojoker { &empty_aliases } else { aliases }; 
-  let joker_tiles = if *nojoker { &empty_joker_tiles } else { joker_tiles }; 
 
   // put all jokers at the end, so for non-exhaustive searches we guarantee choosing jokers last
   
@@ -312,9 +308,7 @@ pub fn __subtract_exhaustive(
   let group_attrs = &group.attrs;
 
   let empty_aliases: Aliases = HashMap::new();
-  let empty_joker_tiles: HashSet<Tile> = HashSet::new();
   let aliases = if *nojoker { &empty_aliases } else { aliases }; 
-  let joker_tiles = if *nojoker { &empty_joker_tiles } else { joker_tiles }; 
 
   // put all jokers at the end, so for non-exhaustive searches we guarantee choosing jokers last
   

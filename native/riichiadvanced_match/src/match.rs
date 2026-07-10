@@ -1,15 +1,16 @@
 use std::collections::{HashMap, HashSet};
+use std::sync::atomic::Ordering;
+use std::time::Instant;
 use num::abs;
 use rustler::{Atom, Encoder, Env, Term};
 
 use crate::encode::{decode, encode, encode_aliases};
 use crate::match_info::{prepare_tiles};
 use crate::offsets::{__generate_groups, get_base_tiles};
+use crate::profile::{CALL_COUNT, TOTAL_NANOS};
 use crate::tile_table::ATOM_TABLE;
 use crate::tileset::{__subtract, __subtract_exhaustive, _count_factors_fast, _remove_indices, _subtract_check_attrs_exhaustive};
-use crate::types::{ANY_PRIME, Aliases, ElixirAliases, ElixirHand, ElixirHandCalls, ElixirTile, Hands, MatchDefinition, MatchDefinitionElem, MatchDefinitions, MatchGroup, MatchInfo, MatchOffset, RemovableGroup, Tile, TileSet};
-
-rustler::atoms! { ok }
+use crate::types::{ANY_PRIME, Aliases, ElixirAliases, ElixirHand, ElixirHandCalls, ElixirTile, Hands, MatchDefinition, MatchDefinitionElem, MatchDefinitions, MatchGroup, MatchInfo, MatchOffset, PROFILE, RemovableGroup, Tile, TileSet};
 
 // this is used a lot, especially for determining and processing calls
 // #[rustler::nif]
@@ -76,14 +77,14 @@ fn elim_call_name(hands: &Hands, name: &String, exhaustive: bool) -> Vec<Hands> 
 }
 fn elim_tileset(
   hands: &Hands, tileset: &TileSet,
-  encoded_aliases: &Aliases,
-  encoded_joker_tiles: &HashSet<Tile>,
+  aliases: &Aliases,
+  joker_tiles: &HashSet<Tile>,
   exhaustive: bool,
 ) -> Vec<Hands> {
   let mut ret = vec!();
   // check calls first
   for i in 1..hands.len() {
-    if let Some(_) = __subtract_exhaustive(&hands[i], tileset, encoded_aliases, encoded_joker_tiles) {
+    if let Some(_) = __subtract_exhaustive(&hands[i], tileset, aliases, joker_tiles) {
       let mut hands = hands.clone();
       hands.remove(i);
       ret.push(hands);
@@ -92,7 +93,7 @@ fn elim_tileset(
   }
   if exhaustive {
     // then check hand, for each one make copies of hands, placing results into each one
-    if let Some(results) = __subtract_exhaustive(&hands[0], tileset, encoded_aliases, encoded_joker_tiles) {
+    if let Some(results) = __subtract_exhaustive(&hands[0], tileset, aliases, joker_tiles) {
       for result in results {
         let mut hands = hands.clone();
         hands[0] = result;
@@ -101,7 +102,7 @@ fn elim_tileset(
     }
   } else {
     // then check hand
-    if let Some(result) = __subtract(&hands[0], tileset, encoded_aliases, encoded_joker_tiles) {
+    if let Some(result) = __subtract(&hands[0], tileset, aliases, joker_tiles) {
       let mut hands = hands.clone();
       hands[0] = result;
       ret.push(hands);
@@ -113,28 +114,28 @@ fn elim_tileset(
 // #[rustler::nif]
 fn elim_group(
     hands: Hands, group: RemovableGroup,
-    encoded_aliases: Aliases,
-    encoded_joker_tiles: Vec<Tile>,
+    aliases: Aliases,
+    joker_tiles: Vec<Tile>,
     exhaustive: bool,
 ) -> Vec<Hands> {
-  _elim_group(&hands, &group, &encoded_aliases, &encoded_joker_tiles.into_iter().collect(), exhaustive)
+  _elim_group(&hands, &group, &aliases, &joker_tiles.into_iter().collect(), exhaustive)
 }
 fn _elim_group(
     hands: &Hands, group_arg: &RemovableGroup,
-    encoded_aliases: &Aliases,
-    encoded_joker_tiles: &HashSet<Tile>,
+    aliases: &Aliases,
+    joker_tiles: &HashSet<Tile>,
     exhaustive: bool,
 ) -> Vec<Hands> {
   match group_arg {
     RemovableGroup::CallName(name) => elim_call_name(hands, name, exhaustive),
-    RemovableGroup::Group(group) => elim_tileset(hands, &group, encoded_aliases, encoded_joker_tiles, exhaustive),
-    RemovableGroup::GroupRef(group) => elim_tileset(hands, group, encoded_aliases, encoded_joker_tiles, exhaustive),
+    RemovableGroup::Group(group) => elim_tileset(hands, &group, aliases, joker_tiles, exhaustive),
+    RemovableGroup::GroupRef(group) => elim_tileset(hands, group, aliases, joker_tiles, exhaustive),
     RemovableGroup::Multigroup(subgroups) => {
       // multigroup can only be removed from hand (= hands[0])
       let mut ret = vec!(hands.clone());
       for subgroup in subgroups {
         let results = ret.iter().flat_map(move |hands| {
-          _elim_group(hands, &RemovableGroup::GroupRef(&subgroup), encoded_aliases, encoded_joker_tiles, exhaustive)
+          _elim_group(hands, &RemovableGroup::GroupRef(&subgroup), aliases, joker_tiles, exhaustive)
         });
         // only retain one result if not exhaustive
         if exhaustive { ret = results.collect(); }
@@ -292,39 +293,45 @@ fn perform_standard_match(
         );
       }
     }
-    // TODO: if a group _doens't_ match, it never can
-    //       so add it to groups_used to effectively delete it
     if exhaustive {
       let mut acc3: Acc = vec!();
-      for (hands, groups_used) in acc2 {
-        for (groups, k) in &*reified_groups {
-          if !groups_used.contains(&k) {
-            for i in 0..groups.len() {
-              for hands in _elim_group(&hands, &groups[i], &match_info.aliases, &match_info.joker_tiles, true) {
-                // probably highly inefficient to clone a vec of indices for every Hands
-                // not sure how to do it better though
-                let mut groups_used = groups_used.clone();
-                if *unique { groups_used.insert(*k); }
-                acc3.push((hands, groups_used));
-              }
+      for (groups, k) in &mut *reified_groups {
+        // if a group _doesn't_ match any hand in acc,
+        // it will never match (within this group set)
+        // so delete it
+        groups.retain(|group| {
+          let mut matched = false;
+          for (hands, groups_used) in &acc2 {
+            if groups_used.contains(&k) { continue; }
+            for hands in _elim_group(hands, &group, &match_info.aliases, &match_info.joker_tiles, true) {
+              matched = true;
+              // probably highly inefficient to clone a vec of indices for every Hands
+              // not sure how to do it better though
+              let mut groups_used = groups_used.clone();
+              if *unique { groups_used.insert(*k); }
+              acc3.push((hands, groups_used));
             }
           }
-        }
+          matched
+        });
       }
       acc2 = acc3;
       acc2.dedup();
     } else if let Some((hands, mut groups_used)) = acc2.pop() {
       let mut result: Option<Hands> = None;
-      for (groups, k) in &*reified_groups {
+      for (groups, k) in &mut *reified_groups {
         if !groups_used.contains(&k) {
-          for i in 0..groups.len() {
-            for hands in _elim_group(&hands, &groups[i], &match_info.aliases, &match_info.joker_tiles, true) {
+          let mut matched = false;
+          groups.retain(|group| {
+            if matched { return true; }
+            for hands in _elim_group(&hands, &group, &match_info.aliases, &match_info.joker_tiles, true) {
+              matched = true;
               result = Some(hands);
               if *unique { groups_used.insert(*k); }
               break;
             }
-            if result.is_some() { break; }
-          }
+            matched
+          });
         }
         if result.is_some() { break; }
       }
@@ -389,7 +396,6 @@ pub fn remove_match_definition(match_info: &MatchInfo, match_definition: MatchDe
   let mut exhaustive = false;
   let mut unique = false;
   let mut nojoker = false;
-  let mut ignore_suit = false;
   let mut acc = vec!(match_info.initial_hands.clone());
   for match_elem in &match_definition {
     if acc.is_empty() { return acc; }
@@ -398,7 +404,6 @@ pub fn remove_match_definition(match_info: &MatchInfo, match_definition: MatchDe
         if s == "exhaustive" { exhaustive = true; }
         else if s == "unique" { unique = true; }
         else if s == "nojoker" { nojoker = true; }
-        else if s == "ignore_suit" { ignore_suit = true; } // this differs from the elixir version
         else if s == "almost" {
           // simply add an any-joker to hand
           for hands in &mut acc {
@@ -411,7 +416,16 @@ pub fn remove_match_definition(match_info: &MatchInfo, match_definition: MatchDe
           acc = vec!(match_info.initial_hands.clone());
         }
         else if s == "dismantle_calls" {
-          todo!("dismantle_calls: need to solve the u128 problem first")
+          for hands in &mut acc {
+            // TODO make this more efficient
+            let mut hand = hands.remove(0);
+            for call in hands.iter_mut() {
+              hand.hash *= call.hash;
+              hand.attrs.append(&mut call.attrs);
+            }
+            hands.clear();
+            hands.push(hand);
+          }
         } else {
           println!("Unknown match keyword \"{s}\"");
         }
@@ -477,14 +491,14 @@ pub fn remove_match_definition(match_info: &MatchInfo, match_definition: MatchDe
 }
 
 #[rustler::nif]
-pub fn _match_hand_v3<'a>(
-    env: Env<'a>,
+pub fn _match_hand_v3(
     hand_calls: ElixirHandCalls,
     match_definitions: MatchDefinitions,
     all_tiles: Vec<ElixirTile>, all_attrs: Vec<String>,
     elixir_aliases: ElixirAliases,
     ordering: HashMap<Atom, Atom>, ordering_r: HashMap<Atom, Atom>,
-) -> Term<'a> {
+) -> bool {
+  let start = Instant::now();
   let ret = __match_hand_v3(
     &hand_calls,
     match_definitions,
@@ -494,7 +508,12 @@ pub fn _match_hand_v3<'a>(
     &ordering,
     &ordering_r,
   );
-  (ok(), ret).encode(env)
+  if PROFILE {
+    let elapsed = start.elapsed();
+    TOTAL_NANOS.fetch_add(elapsed.as_nanos() as u64, Ordering::Relaxed);
+    CALL_COUNT.fetch_add(1, Ordering::Relaxed);
+  }
+  ret
 }
 pub fn __match_hand_v3<'a>(
     hand_calls: &'a ElixirHandCalls,

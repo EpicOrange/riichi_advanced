@@ -8,5 +8,6 @@ mod r#match;
 mod offsets;
 mod utils;
 mod match_info;
+mod profile;
 
 rustler::init!("Elixir.RiichiAdvanced.Match");

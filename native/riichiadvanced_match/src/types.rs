@@ -2,6 +2,8 @@ use crate::tile_table::*;
 use std::collections::{HashMap, HashSet};
 use rustler::{Atom, Decoder, Encoder, Env, Error, NifResult, NifStruct, Term};
 
+pub const PROFILE: bool = true;
+
 pub type Hash = u128;
 pub type BitAttrs = u64;
 pub type Tile = (Hash, BitAttrs);

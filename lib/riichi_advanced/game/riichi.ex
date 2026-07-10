@@ -544,7 +544,12 @@ defmodule RiichiAdvanced.Riichi do
         is_jihai?(tile) -> true
         true ->
           arr = [-4, -3, -2, -1, 0, 1, 2, 3, 4]
-          |> Enum.map(&test_tiles(hand, [tile | Match.apply_offsets(tile, [&1], tile_behavior.ordering, tile_behavior.ordering_r)], tile_behavior))
+          |> Enum.map(fn offset -> 
+            tiles = Match.apply_offsets(tile, [offset], tile_behavior.ordering, tile_behavior.ordering_r)
+            if tiles != nil do
+              test_tiles(hand, [tile | tiles], tile_behavior)
+            else false end
+          end)
           case arr do
             [_, _, false, false, _t, false, false, _, _] -> true
             [_, _, false, false, _t, _, _, true, false] -> true # 14 or 134 or 124 -> toss 1

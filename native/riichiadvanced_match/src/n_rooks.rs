@@ -1,8 +1,6 @@
 use rustler::{Encoder, Env, Term};
 use crate::types::{Mask, RowIndex};
 
-rustler::atoms! { ok }
-
 #[inline]
 fn get_lowest_bit(x: Mask) -> Mask {
   x & x.wrapping_neg()
@@ -11,7 +9,7 @@ fn get_lowest_bit(x: Mask) -> Mask {
 #[rustler::nif]
 fn solve_n_rooks<'a>(env: Env<'a>, masks: Vec<(Mask, RowIndex)>, col_mask: Mask, num_rooks: RowIndex) -> Term<'a> {
   match _solve_n_rooks(&masks, col_mask, num_rooks) {
-    Some(ret) => (ok(), ret).encode(env),
+    Some(ret) => (rustler::types::atom::ok(), ret).encode(env),
     None => rustler::types::atom::nil().encode(env),
   }
 }
@@ -50,7 +48,7 @@ fn _solve_n_rooks_rec(
 #[rustler::nif]
 fn solve_n_rooks_exhaustive<'a>(env: Env<'a>, masks: Vec<(Mask, RowIndex)>, col_mask: Mask, num_rooks: RowIndex) -> Term<'a> {
   let solutions = _solve_n_rooks_exhaustive(&masks, col_mask, num_rooks);
-  (ok(), solutions).encode(env)
+  (rustler::types::atom::ok(), solutions).encode(env)
 }
 pub fn _solve_n_rooks_exhaustive(masks: &[(Mask, RowIndex)], col_mask: Mask, num_rooks: RowIndex) -> Vec<Vec<RowIndex>> {
   let mut mask_arr: Vec<Mask> = masks.iter().map(|(m, _)| *m).collect();

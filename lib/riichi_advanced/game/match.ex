@@ -1113,16 +1113,29 @@ defmodule RiichiAdvanced.Match do
     end
   end
 
+  def profile() do end
+
   defp match_hand_v3(hand, calls, match_definitions, tile_behavior) do
-    if Enum.any?(match_definitions, fn match_definition -> "dismantle_calls" in match_definition end) do
-      __match_hand_v3(hand, calls, match_definitions, tile_behavior)
-    else
-      # make rust engine handle it
-      _match_hand_v3({hand, calls}, match_definitions,
+    # check if rust should handle things
+    tiles_in_hand = Utils.strip_attrs(hand ++ Enum.flat_map(calls, &Utils.call_to_tiles/1))
+    hash = tiles_in_hand |> Enum.map(&Constants.to_prime/1) |> Enum.product
+    use_rust = hash <= @u128_max
+    if use_rust do
+      ret = _match_hand_v3({hand, calls}, match_definitions,
         tile_behavior.all_tiles |> Enum.to_list(), tile_behavior.attrs |> Enum.to_list() |> Enum.sort(),
         tile_behavior.aliases |> TileBehavior.remove_alias_mapsets(),
         tile_behavior.ordering, tile_behavior.ordering_r
       )
+      # profile()
+      ret
+    else
+      t = System.os_time(:millisecond)
+      ret = __match_hand_v3(hand, calls, match_definitions, tile_behavior)
+      delta = System.os_time(:millisecond) - t
+      if delta > 10 do
+        IO.puts("match_hand_v3: #{inspect(delta)} ms")
+      end
+      ret
     end
   end
   defp _match_hand_v3({hand, calls}, match_definitions, all_tiles, all_attrs, elixir_aliases, ordering, ordering_r) do
@@ -1140,20 +1153,20 @@ defmodule RiichiAdvanced.Match do
     {tiles_in_hand, initial_hands, tile_behavior} = prepare_tiles([hand | calls], match_definitions, tile_behavior)
 
     # try each match definition in turn
-    ret = Enum.any?(match_definitions, fn match_definition ->
+    Enum.any?(match_definitions, fn match_definition ->
       _remove_match_definition({tiles_in_hand, initial_hands, tile_behavior}, match_definition)
       # return if any results exist
       |> Enum.empty?()
       |> Kernel.not()
     end)
-    {:ok, ret}
   end
 
   def match_hand(hand, calls, match_definitions, tile_behavior) do
     case match_hand_v3(hand, calls, match_definitions, tile_behavior) do
-      {:ok, ret} -> ret
-      _ ->
-        IO.puts("Falling back to old match engine for hand #{inspect(hand)}")
+      true -> true
+      false -> false
+      out ->
+        IO.puts("Falling back to old match engine for hand #{inspect(hand)}: got #{out}")
         MatchOld.match_hand(hand, calls, match_definitions, tile_behavior)
     end
   end

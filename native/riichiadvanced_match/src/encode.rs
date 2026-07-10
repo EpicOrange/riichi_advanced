@@ -3,8 +3,6 @@ use crate::types::{AliasEntry, Aliases, BitAttrs, ElixirAliases, ElixirHand, Eli
 use crate::primes::{from_prime, to_prime};
 use crate::utils::get_tile_atom;
 
-rustler::atoms! { ok }
-
 // assumes all_attrs is sorted!
 pub fn encode_attrs(attrs: &mut [String], all_attrs: &[String]) -> BitAttrs {
   // removes leading _
