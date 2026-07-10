@@ -63,12 +63,12 @@ defmodule RiichiAdvanced.AIPlayer do
             Riichi.get_disconnected_tiles(hand, tile_behavior)
             |> choose_playable_tile(playables)
           ret = if ret == nil do
-            Riichi.get_unneeded_tiles(hand, calls, shanten_definition, tile_behavior)
+            Match.get_unneeded_tiles_v2(hand, calls, shanten_definition, tile_behavior)
             |> choose_playable_tile(playables)
           else ret end
           {ret, i}
         {nil, _} ->
-          ret = Riichi.get_unneeded_tiles(hand, calls, shanten_definition, tile_behavior)
+          ret = Match.get_unneeded_tiles_v2(hand, calls, shanten_definition, tile_behavior)
           |> choose_playable_tile(playables)
           if Debug.debug_ai() and ret != nil do
             IO.puts(" >> #{state.seat}: I'm currently #{i}-shanten!")

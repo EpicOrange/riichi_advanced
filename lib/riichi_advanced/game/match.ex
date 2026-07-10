@@ -1129,12 +1129,12 @@ defmodule RiichiAdvanced.Match do
       # profile()
       ret
     else
-      t = System.os_time(:millisecond)
+      # t = System.os_time(:millisecond)
       ret = __match_hand_v3(hand, calls, match_definitions, tile_behavior)
-      delta = System.os_time(:millisecond) - t
-      if delta > 10 do
-        IO.puts("match_hand_v3: #{inspect(delta)} ms")
-      end
+      # delta = System.os_time(:millisecond) - t
+      # if delta > 10 do
+      #   IO.puts("match_hand_v3: #{inspect(delta)} ms")
+      # end
       ret
     end
   end
@@ -1242,12 +1242,12 @@ defmodule RiichiAdvanced.Match do
       # profile()
       ret
     else
-      t = System.os_time(:millisecond)
+      # t = System.os_time(:millisecond)
       ret = __get_waits_v3(hand, calls, match_definitions, tile_behavior)
-      delta = System.os_time(:millisecond) - t
-      if delta > 10 do
-        IO.puts("get_waits_v3: #{inspect(delta)} ms")
-      end
+      # delta = System.os_time(:millisecond) - t
+      # if delta > 10 do
+      #   IO.puts("get_waits_v3: #{inspect(delta)} ms")
+      # end
       ret
     end
   end
@@ -1302,6 +1302,119 @@ defmodule RiichiAdvanced.Match do
 
   def get_waits_and_ukeire(hand, calls, match_definitions, visible_tiles, tile_behavior) do
     get_waits_and_ukeire_v2(hand, calls, match_definitions, visible_tiles, tile_behavior)
+  end
+
+
+  # given a 14-tile hand, and match definitions for 13-tile hands,
+  # return all the (unique) tiles that are not needed to match the definitions
+  @u128_max 340282366920938463463374607431768211455
+  def get_unneeded_tiles_v2(hand, calls, match_definitions, tile_behavior) do
+    # check if rust should handle things
+    tiles_in_hand = Utils.strip_attrs(hand ++ Enum.flat_map(calls, &Utils.call_to_tiles/1))
+    hash = tiles_in_hand |> Enum.map(&Constants.to_prime/1) |> Enum.product
+    use_rust = hash <= @u128_max
+    if use_rust do
+      ret = _get_unneeded_tiles_v2({hand, calls}, match_definitions,
+        tile_behavior.all_tiles |> Enum.to_list(), tile_behavior.attrs |> Enum.to_list() |> Enum.sort(),
+        tile_behavior.aliases |> TileBehavior.remove_alias_mapsets(),
+        tile_behavior.ordering, tile_behavior.ordering_r
+      )
+      # profile()
+      ret
+    else
+      # t = System.ordering_rs_time(:millisecond)
+      ret = get_unneeded_tiles(hand, calls, match_definitions, tile_behavior)
+      # delta = System.os_time(:millisecond) - t
+      # if delta > 10 do
+      #   IO.puts("get_unneeded_tiles_v2: #{inspect(delta)} ms")
+      # end
+      ret
+    end
+  end
+  defp _get_unneeded_tiles_v2({hand, calls}, match_definitions, all_tiles, all_attrs, elixir_aliases, ordering, ordering_r) do
+    get_unneeded_tiles(hand, calls, match_definitions, %TileBehavior{
+      all_tiles: all_tiles |> MapSet.new(),
+      attrs: all_attrs |> MapSet.new(),
+      aliases: elixir_aliases |> TileBehavior.restore_alias_mapsets(),
+      ordering: ordering,
+      ordering_r: ordering_r,
+    })
+  end
+
+  # given a 14-tile hand, and match definitions for 13-tile hands,
+  # return all the (unique) tiles that are not needed to match the definitions
+  # @decorate cacheable(cache: RiichiAdvanced.Cache, key: {:get_unneeded_tiles, hand, calls, match_definitions, TileBehavior.hash(tile_behavior)})
+  def get_unneeded_tiles(hand, calls, match_definitions, tile_behavior) do
+    # t = System.os_time(:millisecond)
+    tile_behavior = MatchOld.filter_irrelevant_tile_aliases(tile_behavior, hand ++ Enum.flat_map(calls, &Utils.call_to_tiles/1))
+    ret = if not Enum.empty?(match_definitions) do
+      # # method 1: keep tiles in hand that are not needed to match the given match definitions
+      # ret = hand
+      # |> Enum.uniq()
+      # |> Enum.filter(&match_hand(hand -- [&1], calls, match_definitions, tile_behavior))
+
+      # # method 2: remove each match definition individually and take union of all leftover tiles
+      # note: doesn't work if you have 2+ extra tiles
+      # {leftover_tiles, _} = Enum.map(match_definitions, fn match_definition ->
+      #   Task.async(fn -> Match.remove_match_definition(hand, calls, match_definition, tile_behavior) end)
+      # end)
+      # |> Task.yield_many(timeout: :infinity)
+      # |> Enum.flat_map(fn {_task, {:ok, res}} -> res end)
+      # |> Enum.unzip()
+      # ret = leftover_tiles
+      # |> Enum.concat()
+      # |> Enum.uniq()
+      # |> IO.inspect()
+
+      # # method 3: method 2, but make each match definition non-exhaustive to get an initial set,
+      # #           then use method 1 on the remaining tiles
+      # {leftover_tiles, _} = Enum.map(match_definitions, fn match_definition ->
+      #   match_definition = Enum.reject(match_definition, & &1 == "exhaustive")
+      #   Task.async(fn -> Match.remove_match_definition(hand, calls, match_definition, tile_behavior) end)
+      # end)
+      # |> Task.yield_many(timeout: :infinity)
+      # |> Enum.flat_map(fn {_task, {:ok, res}} -> res end)
+      # |> Enum.unzip()
+      # leftover_tiles = Enum.concat(leftover_tiles) |> IO.inspect(label: "a")
+      # remaining = Enum.uniq(hand -- leftover_tiles)
+      # ret = Enum.filter(remaining, &match_hand(hand -- [&1], calls, match_definitions, tile_behavior)) |> IO.inspect(label: "b")
+      # ret = Enum.uniq(ret ++ leftover_tiles)
+      # ret |> IO.inspect(label: "c")
+
+      # # method 4: same as method 3 but we already have an initial set from above
+      # remaining = Enum.uniq(hand) -- unneeded
+      # IO.puts("get_unneeded_tiles: now checking each of #{inspect(remaining)} individually")
+      # ret = Enum.filter(remaining, &match_hand(hand -- [&1], calls, match_definitions, tile_behavior))
+      # ret = Enum.uniq(ret ++ unneeded)
+      # ret
+
+      # method 5: same as method 4 but parallel
+      remaining = Enum.uniq(hand)
+      # IO.puts("get_unneeded_tiles: now checking each of #{inspect(remaining)} individually")
+      ret = for tile <- remaining do
+        Task.async(fn -> if match_hand(hand -- [tile], calls, match_definitions, tile_behavior) do [tile] else [] end end)
+      end
+      |> Task.yield_many(timeout: :infinity)
+      |> Enum.flat_map(fn {_task, {:ok, res}} -> res end)
+      |> Enum.uniq()
+      ret
+      # i think a good method 6 is to use prepend_group_all on individual groups in a match definition
+      # like take all the groups appearing in match definitions
+      # then take each group, say [groups, n]
+      # use prepend_group_all to get all instances of removing n of those groups
+      # oh, but what if groups is multiple groups?
+
+    else [] end
+
+    # elapsed_time = System.os_time(:millisecond) - t
+    # if elapsed_time > 250 do
+    #   IO.puts("get_unneeded_tiles: #{inspect(elapsed_time)} ms")
+    # end
+    ret
+  end
+
+  def needed_for_hand(hand, calls, tile, match_definitions, tile_behavior) do
+    tile not in get_unneeded_tiles(hand, calls, match_definitions, tile_behavior)
   end
 
 end

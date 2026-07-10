@@ -3,7 +3,8 @@ use std::collections::{HashMap, HashSet};
 use rustler::{Atom, Decoder, Encoder, Env, Error, NifResult, NifStruct, Term};
 
 pub const PROFILE_MATCH: bool = false;
-pub const PROFILE_GET_WAITS: bool = true;
+pub const PROFILE_GET_WAITS: bool = false;
+pub const PROFILE_UNNEEDED_TILES: bool = false;
 
 pub type Hash = u128;
 pub type BitAttrs = u64;

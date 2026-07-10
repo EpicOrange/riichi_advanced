@@ -3,12 +3,12 @@ use std::sync::atomic::Ordering;
 use std::time::Instant;
 use rustler::Atom;
 
-use crate::encode::{encode_aliases, encode_tile};
+use crate::encode::{decode_attrs, encode_aliases, encode_tile};
 use crate::r#match::remove_match_definition;
 use crate::match_info::{prepare_tiles};
 use crate::profile::{CALL_COUNT, MAX_NANOS, TOTAL_NANOS};
 use crate::tile_table::tile1x;
-use crate::types::{ElixirAliases, ElixirHandCalls, ElixirTile, MatchDefinitions, MatchInfo, PROFILE_GET_WAITS};
+use crate::types::{ElixirAliases, ElixirHandCalls, ElixirTile, MatchDefinitionElem, MatchDefinitions, MatchInfo, PROFILE_GET_WAITS, PROFILE_UNNEEDED_TILES, Tile};
 use crate::utils::{add_joker_to_aliases, remove_joker_from_aliases};
 
 #[rustler::nif]
@@ -179,5 +179,95 @@ pub fn ___get_waits_v3<'a>(
   ___get_waits_v3(&mut match_info, &match_definitions, &mut aliases, &mut not_waits, &right, &joker);
 }
 
+#[rustler::nif]
+fn _get_unneeded_tiles_v2(
+    hand_calls: ElixirHandCalls,
+    match_definitions: MatchDefinitions,
+    all_tiles: Vec<ElixirTile>, all_attrs: Vec<String>,
+    elixir_aliases: ElixirAliases,
+    ordering: HashMap<Atom, Atom>, ordering_r: HashMap<Atom, Atom>,
+) -> Vec<ElixirTile> {
+  let start = Instant::now();
+  let ret = __get_unneeded_tiles_v2(
+    hand_calls,
+    &mut match_definitions.clone(),
+    &mut all_tiles.into_iter().collect(),
+    &all_attrs,
+    &elixir_aliases,
+    &ordering,
+    &ordering_r,
+  );
+  if PROFILE_UNNEEDED_TILES {
+    let elapsed = start.elapsed();
+    TOTAL_NANOS.fetch_add(elapsed.as_nanos() as u64, Ordering::Relaxed);
+    MAX_NANOS.fetch_max(elapsed.as_nanos() as u64, Ordering::Relaxed);
+    CALL_COUNT.fetch_add(1, Ordering::Relaxed);
+  }
+  ret
+}
 
+// given a 14-tile hand, and match definitions for 13-tile hands,
+// return all the (unique) tiles that are not needed to match the definitions
+pub fn __get_unneeded_tiles_v2(
+    hand_calls: ElixirHandCalls,
+    mut match_definitions: &mut MatchDefinitions,
+    mut all_tiles: &mut HashSet<ElixirTile>, all_attrs: &Vec<String>,
+    elixir_aliases: &ElixirAliases,
+    ordering: &HashMap<Atom, Atom>, ordering_r: &HashMap<Atom, Atom>,
+) -> Vec<ElixirTile> {
+  // just try removing each tile in turn and seeing the resulting match fails
 
+  let mut match_info = prepare_tiles(
+    &hand_calls,
+    &mut all_tiles,
+    all_attrs,
+    &elixir_aliases,
+    ordering,
+    ordering_r,
+  );
+
+  // first use a non-exhaustive version of match_definitions
+  // if it still matches after removing a tile, then that tile is definitely not needed
+  let mut all_defns = vec!();
+  for match_definition in match_definitions.iter() {
+    for match_elem in match_definition {
+      match match_elem {
+        MatchDefinitionElem::Keyword(s) => {
+          if s == "exhaustive" { 
+            all_defns.push(match_definition.clone());
+            all_defns.last_mut().map(|defn| defn.retain(|elem| {
+              *elem != MatchDefinitionElem::Keyword("exhaustive".to_owned())
+            }));
+            break;
+          }
+        }
+        _ => ()
+      }
+    }
+  }
+  all_defns.append(&mut match_definitions);
+
+  // remove each tile in turn
+  let mut ret: HashSet<Tile> = HashSet::new();
+  for _ in 0..match_info.initial_hands[0].attrs.len() {
+    if ret.contains(match_info.initial_hands[0].attrs.first().unwrap()) { continue; }
+
+    // remove the first element
+    // (can't use swap-remove since this is basically a queue)
+    let tile = match_info.initial_hands[0].attrs.remove(0);
+
+    // check against defns
+    if all_defns.iter().any(|match_definition| {
+        remove_match_definition(&match_info, match_definition).is_empty()
+      }) {
+      // add tile to solution set, since hand still matches without tile
+      ret.insert(tile);
+    }
+
+    // push the first element back in
+    match_info.initial_hands[0].attrs.push(tile);
+  }
+  // need to convert to vector to pass NIF boundary
+  // also need to convert from encoded tile to elixir tile
+  decode_attrs(ret.iter().collect::<Vec<_>>(), &match_info.all_attrs)
+}

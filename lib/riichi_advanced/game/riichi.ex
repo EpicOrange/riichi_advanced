@@ -378,6 +378,42 @@ defmodule RiichiAdvanced.Riichi do
 
   # given a 14-tile hand, and match definitions for 13-tile hands,
   # return all the (unique) tiles that are not needed to match the definitions
+  @u128_max 340282366920938463463374607431768211455
+  def get_unneeded_tiles_v2(hand, calls, match_definitions, tile_behavior) do
+    # check if rust should handle things
+    tiles_in_hand = Utils.strip_attrs(hand ++ Enum.flat_map(calls, &Utils.call_to_tiles/1))
+    hash = tiles_in_hand |> Enum.map(&Constants.to_prime/1) |> Enum.product
+    use_rust = hash <= @u128_max
+    if use_rust do
+      ret = _get_unneeded_tiles_v2({hand, calls}, match_definitions,
+        tile_behavior.all_tiles |> Enum.to_list(), tile_behavior.attrs |> Enum.to_list() |> Enum.sort(),
+        tile_behavior.aliases |> TileBehavior.remove_alias_mapsets(),
+        tile_behavior.ordering, tile_behavior.ordering_r
+      )
+      # profile()
+      ret
+    else
+      # t = System.ordering_rs_time(:millisecond)
+      ret = get_unneeded_tiles(hand, calls, match_definitions, tile_behavior)
+      # delta = System.os_time(:millisecond) - t
+      # if delta > 10 do
+      #   IO.puts("get_unneeded_tiles_v2: #{inspect(delta)} ms")
+      # end
+      ret
+    end
+  end
+  defp _get_unneeded_tiles_v2({hand, calls}, match_definitions, all_tiles, all_attrs, elixir_aliases, ordering, ordering_r) do
+    get_unneeded_tiles(hand, calls, match_definitions, %TileBehavior{
+      all_tiles: all_tiles |> MapSet.new(),
+      attrs: all_attrs |> MapSet.new(),
+      aliases: elixir_aliases |> TileBehavior.restore_alias_mapsets(),
+      ordering: ordering,
+      ordering_r: ordering_r,
+    })
+  end
+
+  # given a 14-tile hand, and match definitions for 13-tile hands,
+  # return all the (unique) tiles that are not needed to match the definitions
   # @decorate cacheable(cache: RiichiAdvanced.Cache, key: {:get_unneeded_tiles, hand, calls, match_definitions, TileBehavior.hash(tile_behavior)})
   def get_unneeded_tiles(hand, calls, match_definitions, tile_behavior) do
     t = System.os_time(:millisecond)
