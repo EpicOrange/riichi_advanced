@@ -3,18 +3,18 @@ use std::sync::OnceLock;
 use rustler::Atom;
 
 use crate::tile_table::{TILE_TABLE, ATOM_TABLE};
-use crate::types::{ANY_PRIME, ElixirTile, Hash};
+use crate::types::{ANY_PRIME, ElixirTile, Prime};
 use crate::utils::{get_tile_atom, get_tile_atom_mut};
 
-static TO_PRIME: OnceLock<HashMap<Atom, Hash>> = OnceLock::new();
-static FROM_PRIME: OnceLock<HashMap<Hash, Atom>> = OnceLock::new();
-static MANZU_PRIMES: OnceLock<HashSet<Hash>> = OnceLock::new();
-static SOUZU_PRIMES: OnceLock<HashSet<Hash>> = OnceLock::new();
-static PINZU_PRIMES: OnceLock<HashSet<Hash>> = OnceLock::new();
-static JIHAI_PRIMES: OnceLock<HashSet<Hash>> = OnceLock::new();
+static TO_PRIME: OnceLock<HashMap<Atom, Prime>> = OnceLock::new();
+static FROM_PRIME: OnceLock<HashMap<Prime, Atom>> = OnceLock::new();
+static MANZU_PRIMES: OnceLock<HashSet<Prime>> = OnceLock::new();
+static SOUZU_PRIMES: OnceLock<HashSet<Prime>> = OnceLock::new();
+static PINZU_PRIMES: OnceLock<HashSet<Prime>> = OnceLock::new();
+static JIHAI_PRIMES: OnceLock<HashSet<Prime>> = OnceLock::new();
 static SHIFT_SUIT: OnceLock<HashMap<Atom, Atom>> = OnceLock::new();
 
-pub fn to_prime(atom: &Atom) -> Option<&'static Hash> {
+pub fn to_prime(atom: &Atom) -> Option<&'static Prime> {
   let to_prime_table = TO_PRIME.get_or_init(|| {
     TILE_TABLE.entries().map(|(&s, &value)| {
       (ATOM_TABLE.get(s).unwrap()(), value)
@@ -22,7 +22,7 @@ pub fn to_prime(atom: &Atom) -> Option<&'static Hash> {
   });
   to_prime_table.get(atom)
 }
-pub fn from_prime(prime: &Hash) -> Option<&'static Atom> {
+pub fn from_prime(prime: &Prime) -> Option<&'static Atom> {
   let from_prime_table = FROM_PRIME.get_or_init(|| {
     TILE_TABLE.entries().map(|(&s, &value)| {
       (value, ATOM_TABLE.get(s).unwrap()())

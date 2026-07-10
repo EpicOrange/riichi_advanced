@@ -1,5 +1,7 @@
 use std::collections::{HashMap, HashSet};
-use crate::types::{AliasEntry, Aliases, BitAttrs, ElixirAliases, ElixirHand, ElixirTile, RemovableGroup, Tile, TileSet};
+use ruint::aliases::U256;
+
+use crate::types::{AliasEntry, Aliases, BitAttrs, ElixirAliases, ElixirHand, ElixirTile, Hash, RemovableGroup, Tile, TileSet};
 use crate::primes::{from_prime, to_prime};
 use crate::utils::get_tile_atom;
 
@@ -43,16 +45,16 @@ pub fn encode_tile(tile: &ElixirTile, all_attrs: &[String]) -> Option<Tile> {
 
 pub fn encode(hand: &ElixirHand, all_attrs: &[String], joker_tiles: &HashSet<Tile>) -> TileSet {
   let mut attrs = vec!();
-  let mut hash = 1;
+  let mut hash = U256::ONE;
   for tile in hand {
     if let Some(encoded) = encode_tile(tile, all_attrs) {
-      if !joker_tiles.contains(&encoded) { hash *= encoded.0; }
+      if !joker_tiles.contains(&encoded) { hash *= U256::from(encoded.0); }
       attrs.push(encoded);
     } else {
       eprintln!("Unrecognized Elixir tile {tile:?}");
     }
   }
-  TileSet{ hash, attrs, name: None, nojoker: false }
+  TileSet{ hash: Hash(hash), attrs, name: None, nojoker: false }
 }
 
 pub fn encode_aliases(

@@ -106,10 +106,10 @@ defmodule RiichiAdvanced.Match do
     end
   end
 
-  @u128_max 340282366920938463463374607431768211455
+  @u256_max 115792089237316195423570985008687907853269984665640564039457584007913129639935
 
   def count_factors(n, primes) do
-    if n > @u128_max do
+    if n > @u256_max do
       _count_factors(n, primes, 0)
     else
       count_factors_fast(n, primes)
@@ -213,7 +213,7 @@ defmodule RiichiAdvanced.Match do
                encoded_aliases, encoded_joker_tiles) do
     if hash2 == 0, do: raise("subtract: somehow obtained a hash of zero in hand")
     if hash1 == 0, do: raise("subtract: somehow obtained a hash of zero in group")
-    if hash2 > @u128_max or hash1 > @u128_max do
+    if hash2 > @u256_max or hash1 > @u256_max do
       __subtract(hand, group, encoded_aliases, encoded_joker_tiles)
     else
       _subtract(hand, group, encoded_aliases, encoded_joker_tiles |> Enum.to_list())
@@ -225,7 +225,7 @@ defmodule RiichiAdvanced.Match do
                           encoded_aliases, encoded_joker_tiles) do
     if hash2 == 0, do: raise("subtract: somehow obtained a hash of zero in hand")
     if hash1 == 0, do: raise("subtract: somehow obtained a hash of zero in group")
-    if hash2 > @u128_max or hash1 > @u128_max do
+    if hash2 > @u256_max or hash1 > @u256_max do
       __subtract_exhaustive(hand, group, encoded_aliases, encoded_joker_tiles)
     else
       _subtract_exhaustive(hand, group, encoded_aliases, encoded_joker_tiles |> Enum.to_list())
@@ -1118,8 +1118,8 @@ defmodule RiichiAdvanced.Match do
   defp match_hand_v3(hand, calls, match_definitions, tile_behavior) do
     # check if rust should handle things
     tiles_in_hand = Utils.strip_attrs(hand ++ Enum.flat_map(calls, &Utils.call_to_tiles/1))
-    hash = tiles_in_hand |> Enum.map(&Constants.to_prime/1) |> Enum.product
-    use_rust = hash <= @u128_max
+    hash = tiles_in_hand |> Enum.map(&Constants.to_prime/1) |> Enum.product()
+    use_rust = hash <= @u256_max
     if use_rust do
       ret = _match_hand_v3({hand, calls}, match_definitions,
         tile_behavior.all_tiles |> Enum.to_list(), tile_behavior.attrs |> Enum.to_list() |> Enum.sort(),
@@ -1129,13 +1129,13 @@ defmodule RiichiAdvanced.Match do
       # profile()
       ret
     else
-      # IO.puts("Warning: falling back to elixir match_hand_v3 for hand #{inspect(hand)} / #{inspect(calls)}")
-      # t = System.os_time(:millisecond)
+      IO.puts("Warning: falling back to elixir match_hand_v3 for hand #{inspect(hand)} / #{inspect(calls)} with hash #{hash}")
+      t = System.os_time(:millisecond)
       ret = __match_hand_v3(hand, calls, match_definitions, tile_behavior)
-      # delta = System.os_time(:millisecond) - t
-      # if delta > 10 do
-      #   IO.puts("match_hand_v3: #{inspect(delta)} ms")
-      # end
+      delta = System.os_time(:millisecond) - t
+      if delta > 10 do
+        IO.puts("match_hand_v3: #{inspect(delta)} ms")
+      end
       ret
     end
   end
@@ -1163,11 +1163,14 @@ defmodule RiichiAdvanced.Match do
   end
 
   def match_hand(hand, calls, match_definitions, tile_behavior) do
-    case match_hand_v3(hand, calls, match_definitions, tile_behavior) do
-      true -> true
-      false -> false
-      out ->
-        IO.puts("Falling back to old match engine for hand #{inspect(hand)}: got #{out}")
+    try do
+      case match_hand_v3(hand, calls, match_definitions, tile_behavior) do
+        true -> true
+        false -> false
+      end
+    rescue
+      err ->
+        IO.puts("Falling back to old match engine for hand #{inspect(hand)}: got error #{inspect(err)}")
         MatchOld.match_hand(hand, calls, match_definitions, tile_behavior)
     end
   end
@@ -1232,7 +1235,7 @@ defmodule RiichiAdvanced.Match do
     # check if rust should handle things
     tiles_in_hand = Utils.strip_attrs(hand ++ Enum.flat_map(calls, &Utils.call_to_tiles/1))
     hash = tiles_in_hand |> Enum.map(&Constants.to_prime/1) |> Enum.product
-    use_rust = hash <= @u128_max
+    use_rust = hash <= @u256_max
     if use_rust do
       ret = _get_waits_v3({hand, calls}, match_definitions,
         tile_behavior.all_tiles |> Enum.to_list(), tile_behavior.attrs |> Enum.to_list() |> Enum.sort(),
@@ -1308,12 +1311,12 @@ defmodule RiichiAdvanced.Match do
 
   # given a 14-tile hand, and match definitions for 13-tile hands,
   # return all the (unique) tiles that are not needed to match the definitions
-  @u128_max 340282366920938463463374607431768211455
+  @u256_max 115792089237316195423570985008687907853269984665640564039457584007913129639935
   def get_unneeded_tiles_v2(hand, calls, match_definitions, tile_behavior) do
     # check if rust should handle things
     tiles_in_hand = Utils.strip_attrs(hand ++ Enum.flat_map(calls, &Utils.call_to_tiles/1))
     hash = tiles_in_hand |> Enum.map(&Constants.to_prime/1) |> Enum.product
-    use_rust = hash <= @u128_max
+    use_rust = hash <= @u256_max
     if use_rust do
       ret = _get_unneeded_tiles_v2({hand, calls}, match_definitions,
         tile_behavior.all_tiles |> Enum.to_list(), tile_behavior.attrs |> Enum.to_list() |> Enum.sort(),

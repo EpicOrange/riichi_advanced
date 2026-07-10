@@ -1,8 +1,8 @@
 use std::collections::{HashMap, HashSet};
-use num::integer;
+use ruint::aliases::U256;
 use rustler::{Encoder, Env, Term};
 use crate::n_rooks;
-use crate::types::{ANY_PRIME, Aliases, Hash, Mask, RowIndex, Tile, TileSet};
+use crate::types::{ANY_PRIME, Aliases, Hash, Mask, Prime, RowIndex, Tile, TileSet};
 
 // #[rustler::nif]
 // fn remove_indices<'a>(xs: Vec<Term<'a>>, is: Vec<RowIndex>) -> Vec<Term<'a>> {
@@ -25,29 +25,31 @@ pub fn _remove_indices<T>(xs: &mut Vec<T>, is: &Vec<RowIndex>) -> () where T: Cl
 }
 
 #[rustler::nif]
-fn count_factors_fast(n: Hash, primes: Vec<Hash>) -> usize {
-  _count_factors_fast(n, &primes, 0)
+fn count_factors_fast(n: Hash, primes: Vec<Prime>) -> usize {
+  _count_factors_fast(n, &primes)
 }
-pub fn _count_factors_fast<'a>(mut n: Hash, primes: impl IntoIterator<Item = &'a Hash>, mut acc: usize) -> usize {
-  if n == 1 { return acc; }
-  if n == 0 {
+pub fn _count_factors_fast<'a>(mut n: Hash, primes: impl IntoIterator<Item = &'a Prime>) -> usize {
+  let mut ret = 0;
+  if n == Hash(U256::ONE) {
+    return ret;
+  } else if n == Hash(U256::ZERO) {
     eprintln!("count_factors_fast: somehow tried to get the prime decomposition of 0");
-    return acc;
+    return ret;
   }
   for &p in primes {
     if p == 0 {
       eprintln!("count_factors_fast: somehow tried to divide by 0");
-      return acc;
+      return ret;
     }
     loop {
       let (q, r) = (n / p, n % p);
       if r != 0 { break; }
       n = q;
-      acc += 1;
-      if n == 1 { return acc; }
+      ret += 1;
+      if n == Hash(U256::ONE) { return ret; }
     }
   }
-  acc + 1
+  ret
 }
 
 #[inline]
@@ -139,7 +141,7 @@ pub fn _subtract_check_attrs_exhaustive(l: &Vec<Tile>, r: &Vec<Tile>, aliases: &
 pub fn remove_tileset_indices(
   hand: &mut TileSet, ixs: &[RowIndex], joker_tiles: &HashSet<Tile>
 ) -> () {
-  let mut divisor = 1;
+  let mut divisor = Hash(U256::ONE);
   for i in ixs {
     let tile = hand.attrs[*i as usize];
     if !joker_tiles.contains(&tile) && tile.0 != ANY_PRIME {
@@ -147,8 +149,8 @@ pub fn remove_tileset_indices(
     }
   }
   let (q, r) = (hand.hash / divisor, hand.hash % divisor);
-  if r != 0 {
-    eprintln!("remove_tileset_indices: tried to divide {0} by {divisor}, hand was {hand:?} with jokers {1:?}", hand.hash, joker_tiles.iter().collect::<Vec<_>>());
+  if r != Hash(U256::ZERO) {
+    eprintln!("remove_tileset_indices: tried to divide {0} by {1}, hand was {hand:?} with jokers {2:?}", hand.hash.0, divisor.0, joker_tiles.iter().collect::<Vec<_>>());
   }
   hand.hash = q;
   _remove_indices(&mut hand.attrs, &ixs.to_vec());
@@ -159,15 +161,15 @@ pub fn remove_tileset_indices(
 // also returns product of all jokers' primes
 pub fn move_jokers_to_end(attrs: &mut Vec<Tile>, joker_tiles: &HashSet<Tile>) -> (usize, Hash) {
   let hand_len = attrs.len();
-  if hand_len == 0 { return (0, 1); }
+  if hand_len == 0 { return (0, Hash(U256::ONE)); }
   let mut i = 0;
   let mut j = hand_len - 1;
-  let mut joker_hash = 1;
+  let mut joker_hash = U256::ONE;
   while i < j {
     let i_is_joker = joker_tiles.contains(&attrs[i]);
     let j_is_nonjoker = !joker_tiles.contains(&attrs[j]);
-    if i_is_joker { joker_hash *= &attrs[i].0; }
-    if !j_is_nonjoker { joker_hash *= &attrs[j].0; }
+    if i_is_joker { joker_hash *= U256::from(attrs[i].0); }
+    if !j_is_nonjoker { joker_hash *= U256::from(attrs[j].0); }
     if i_is_joker && j_is_nonjoker {
       attrs.swap(i, j);
       i += 1;
@@ -179,9 +181,9 @@ pub fn move_jokers_to_end(attrs: &mut Vec<Tile>, joker_tiles: &HashSet<Tile>) ->
     }
   }
   if i == j && joker_tiles.contains(&attrs[i]) {
-    joker_hash *= &attrs[i].0;
+    joker_hash *= U256::from(attrs[i].0);
   }
-  (i, joker_hash)
+  (i, Hash(joker_hash))
 }
 
 #[rustler::nif]
@@ -201,11 +203,11 @@ pub fn __subtract(
   // assume return_indices and exhaustive are both false here
   let nojoker = group.nojoker;
   let hand_hash: Hash = hand.hash;
-  let mut group_hash: Hash = group.hash.clone();
+  let mut group_hash: Hash = group.hash;
   if nojoker {
-    group_hash = 1;
+    group_hash = Hash(U256::ONE);
     for (p, _) in &group.attrs {
-      group_hash *= p;
+      group_hash *= *p;
     }
   }
   let mut hand_attrs = hand.attrs.clone();
@@ -214,9 +216,9 @@ pub fn __subtract(
   let empty_aliases: Aliases = HashMap::new();
   let aliases = if nojoker { &empty_aliases } else { aliases }; 
 
-  let mut gcd = integer::gcd(hand_hash, group_hash);
+  let mut gcd = Hash::gcd(hand_hash, group_hash);
   let num_group_tiles = group_attrs.iter().filter(|(p, _)| *p != ANY_PRIME).count();
-  let group_primes: Vec<Hash> = group_attrs.iter().map(|(p, _)| *p).collect();
+  let group_primes: Vec<Prime> = group_attrs.iter().map(|(p, _)| *p).collect();
   // need to get the product of joker primes
   // put all jokers at the end, so we guarantee choosing jokers last
   let (mut num_nonjokers, joker_hash) = move_jokers_to_end(&mut hand_attrs, joker_tiles);
@@ -227,10 +229,10 @@ pub fn __subtract(
     // this is because we don't do a second joker processing step
     num_nonjokers = hand_attrs.len();
     let unmatched = group_hash / gcd;
-    gcd *= integer::gcd(joker_hash, unmatched)
+    gcd *= Hash::gcd(joker_hash, unmatched)
   } else {
     let num_jokers = hand_attrs.len() - num_nonjokers;
-    let num_matching_tiles = _count_factors_fast(gcd, &group_primes, 0);
+    let num_matching_tiles = _count_factors_fast(gcd, &group_primes);
     if num_jokers < num_group_tiles - num_matching_tiles {
       // not enough jokers to match remaining unmatched tiles
       return None;
@@ -288,11 +290,11 @@ pub fn __subtract_exhaustive(
   // assume return_indices and exhaustive are both false here
   let nojoker = group.nojoker;
   let hand_hash: Hash = hand.hash;
-  let mut group_hash: Hash = group.hash.clone();
+  let mut group_hash: Hash = group.hash;
   if nojoker {
-    group_hash = 1;
+    group_hash = Hash(U256::ONE);
     for (p, _) in &group.attrs {
-      group_hash *= p;
+      group_hash *= *p;
     }
   }
   let mut hand_attrs = hand.attrs.clone();
@@ -307,15 +309,15 @@ pub fn __subtract_exhaustive(
   let (num_nonjokers, joker_hash) = move_jokers_to_end(&mut hand_attrs, joker_tiles);
   let num_jokers = hand_attrs.len() - num_nonjokers;
 
-  let mut gcd = integer::gcd(hand_hash, group_hash);
+  let mut gcd = Hash::gcd(hand_hash, group_hash);
   let num_group_tiles = group_attrs.iter().filter(|(p, _)| *p != ANY_PRIME).count();
-  let group_primes: Vec<Hash> = group_attrs.iter().map(|(p, _)| *p).collect();
-  let num_matching_tiles = _count_factors_fast(gcd, &group_primes, 0);
+  let group_primes: Vec<Prime> = group_attrs.iter().map(|(p, _)| *p).collect();
+  let num_matching_tiles = _count_factors_fast(gcd, &group_primes);
 
   // if nojoker, try to divide the jokers' primes with the unmatched remainder
   if nojoker {
     let unmatched = group_hash / gcd;
-    gcd *= integer::gcd(joker_hash, unmatched)
+    gcd *= Hash::gcd(joker_hash, unmatched)
   } else if num_jokers < num_group_tiles - num_matching_tiles {
     // not enough jokers to match remaining unmatched tiles
     return None;
@@ -333,7 +335,7 @@ pub fn __subtract_exhaustive(
       let mut hands = HashSet::new();
       for indices in indicess {
         let mut hand = TileSet{
-          hash: hand.hash,
+          hash: hand.hash.clone(),
           attrs: hand_attrs.clone(),
           name: None,
           nojoker: false

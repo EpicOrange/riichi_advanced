@@ -1,21 +1,83 @@
 use crate::tile_table::*;
-use std::{collections::{HashMap, HashSet}, fmt};
-use rustler::{Atom, Decoder, Encoder, Env, Error, NifResult, NifStruct, Term};
+use std::{collections::{HashMap, HashSet}, fmt, ops::{Div, MulAssign, Rem}};
+use num_bigint::{BigUint, Sign};
+use ruint::aliases::U256;
+use rustler::{Atom, BigInt, Decoder, Encoder, Env, Error, NifResult, NifStruct, Term};
 
 pub const PROFILE_MATCH: bool = false;
 pub const PROFILE_GET_WAITS: bool = false;
 pub const PROFILE_UNNEEDED_TILES: bool = false;
 
-pub type Hash = u128;
 pub type BitAttrs = u64;
-pub type Tile = (Hash, BitAttrs);
-pub const ANY_PRIME: Hash = 1;
+pub type Prime = u32;
+pub type Tile = (Prime, BitAttrs);
+pub const ANY_PRIME: Prime = 1;
 
 pub type AliasEntry = HashMap<BitAttrs, Vec<Tile>>;
-pub type Aliases = HashMap<Hash, AliasEntry>;
+pub type Aliases = HashMap<Prime, AliasEntry>;
 
 pub type Mask = u64;
 pub type RowIndex = u8; // index into Mask
+
+#[derive(PartialEq, Eq, PartialOrd, Ord, Clone, Copy, Debug, Hash)]
+#[repr(transparent)]
+pub struct Hash(pub U256);
+
+impl MulAssign<Prime> for Hash {
+  fn mul_assign(&mut self, rhs: Prime) {
+    self.0 *= U256::from(rhs);
+  }
+}
+impl MulAssign<Hash> for Hash {
+  fn mul_assign(&mut self, rhs: Hash) {
+    self.0 *= rhs.0;
+  }
+}
+impl Div<Prime> for Hash {
+  type Output = Hash;
+  fn div(self, rhs: Prime) -> Hash {
+    Hash(self.0 / U256::from(rhs))
+  }
+}
+impl Div<Hash> for Hash {
+  type Output = Hash;
+  fn div(self, rhs: Hash) -> Hash {
+    Hash(self.0 / rhs.0)
+  }
+}
+impl Rem<Prime> for Hash {
+  type Output = Prime;
+  fn rem(self, rhs: Prime) -> Prime {
+    (self.0 % U256::from(rhs)).to()
+  }
+}
+impl Rem<Hash> for Hash {
+  type Output = Hash;
+  fn rem(self, rhs: Hash) -> Hash {
+    Hash(self.0 % rhs.0)
+  }
+}
+impl Hash {
+  pub fn gcd(l: Hash, r: Hash) -> Hash {
+    Hash(U256::gcd(l.0, r.0))
+  }
+}
+
+impl<'a> Decoder<'a> for Hash {
+  fn decode(term: Term<'a>) -> NifResult<Self> {
+    let big: BigInt = term.decode()?;
+    let (sign, uint): (Sign, BigUint) = big.into_parts();
+    if sign == Sign::Minus { return Err(Error::Term(Box::new("got nonnegative elixir integer"))); }
+    U256::try_from(uint).map(Hash).map_err(|_| Error::Term(Box::new("got elixir integer larger than U256")))
+  }
+}
+impl Encoder for Hash {
+  fn encode<'a>(&self, env: Env<'a>) -> Term<'a> {
+    let uint: BigUint = self.0.into();
+    let big = BigInt::from_biguint(Sign::Plus, uint);
+    big.encode(env)
+  }
+}
 
 #[derive(NifStruct, PartialEq, Eq, PartialOrd, Ord, Clone, Debug, Hash)]
 #[module = "RiichiAdvanced.Match.TileSet"]
@@ -69,17 +131,6 @@ impl Encoder for ElixirTile {
     }
   }
 }
-
-impl fmt::Debug for ElixirTile {
-  fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
-    match self {
-      ElixirTile::AtomTile(tile) => write!(f, ":{:?}", tile),
-      ElixirTile::AttrTile(tile, _attrs) => write!(f, ":{:?}", tile),
-      // ElixirTile::AttrTile(tile, attrs) => write!(f, ":{:?}{:?}", tile, attrs),
-    }
-  }
-}
-
 impl<'a> Decoder<'a> for ElixirTile {
   fn decode(term: Term<'a>) -> NifResult<Self> {
     if let Ok(tile) = term.decode::<Atom>() {
@@ -88,6 +139,16 @@ impl<'a> Decoder<'a> for ElixirTile {
       Ok(ElixirTile::AttrTile(tile, attrs))
     } else {
       Err(Error::BadArg)
+    }
+  }
+}
+
+impl fmt::Debug for ElixirTile {
+  fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+    match self {
+      ElixirTile::AtomTile(tile) => write!(f, ":{:?}", tile),
+      ElixirTile::AttrTile(tile, _attrs) => write!(f, ":{:?}", tile),
+      // ElixirTile::AttrTile(tile, attrs) => write!(f, ":{:?}{:?}", tile, attrs),
     }
   }
 }
