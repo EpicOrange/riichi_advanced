@@ -56,7 +56,8 @@ pub fn encode(hand: &ElixirHand, all_attrs: &[String], joker_tiles: &HashSet<Til
 }
 
 pub fn encode_aliases(
-    aliases: &ElixirAliases, all_attrs: &[String], joker_tiles: &HashSet<Tile>
+    aliases: &ElixirAliases, all_attrs: &[String],
+    joker_tiles: &HashSet<Tile>, encoding: Option<&HashMap<&ElixirTile, Tile>>,
 ) -> Aliases {
   let mut ret: Aliases = HashMap::new();
   for (tile, attrs_aliases) in aliases {
@@ -64,7 +65,10 @@ pub fn encode_aliases(
       let mut entry: AliasEntry = HashMap::new();
       for (attrs, aliases) in attrs_aliases {
         let encoded_attrs = encode_attrs(&mut attrs.clone(), all_attrs);
-        let mut encoded_aliases = encode(&aliases, all_attrs, joker_tiles).attrs;
+        // either fetch it from encoding, or encode it anew
+        let mut encoded_aliases: Vec<Tile> = encoding.and_then(|encoding| {
+          aliases.into_iter().map(|alias| encoding.get(alias).copied()).collect()
+        }).unwrap_or_else(|| encode(&aliases, all_attrs, joker_tiles).attrs);
         match entry.get_mut(&encoded_attrs) {
           Some(existing_aliases) => { existing_aliases.append(&mut encoded_aliases); }
           None => { entry.insert(encoded_attrs, encoded_aliases); }

@@ -22,12 +22,12 @@ pub fn get_tile_atom_attrs(tile: &ElixirTile) -> (&Atom, Vec<String>) {
     ElixirTile::AttrTile(atom, attrs) => (atom, attrs.clone()),
   }
 }
-pub fn get_tile_atom_attrs_mut(tile: &mut ElixirTile) -> (&mut Atom, Option<&mut Vec<String>>) {
-  match tile {
-    ElixirTile::AtomTile(atom) => (atom, None),
-    ElixirTile::AttrTile(atom, attrs) => (atom, Some(attrs)),
-  }
-}
+// pub fn get_tile_atom_attrs_mut(tile: &mut ElixirTile) -> (&mut Atom, Option<&mut Vec<String>>) {
+//   match tile {
+//     ElixirTile::AtomTile(atom) => (atom, None),
+//     ElixirTile::AttrTile(atom, attrs) => (atom, Some(attrs)),
+//   }
+// }
 pub fn strip_attrs(tile: &ElixirTile) -> ElixirTile {
   match tile {
     ElixirTile::AtomTile(_atom) => tile.clone(),
@@ -79,25 +79,34 @@ pub fn remove_joker_from_aliases<'a>(
   }
 }
 
-// for debugging
-pub fn print_tile_aliases<'a>(
-    elixir_aliases: &mut ElixirAliases,
-    joker: &ElixirTile,
-) -> Vec<ElixirTile> {
-  let mut out = vec!();
-  for (tile, attrs_aliases) in elixir_aliases.iter() {
-    if let ElixirTile::AtomTile(tile) = tile {
-      for (attrs, aliases) in attrs_aliases.iter() {
-        if aliases.contains(joker) {
-          if attrs.is_empty() {
-            out.push(ElixirTile::AtomTile(tile.clone()));
-          } else {
-            out.push(ElixirTile::AttrTile(tile.clone(), attrs.clone()));
-          }
-        }
-      }
-    }
-  }
-  println!("Aliases: {:?}", out);
-  out
-}
+// // for debugging
+// // can't return references to ElixirTile
+// // since they technically don't exist in aliases
+// pub fn fetch_tile_aliases<'a>(
+//     elixir_aliases: &mut ElixirAliases,
+//     tile: &ElixirTile,
+// ) -> Vec<ElixirTile> {
+//   let mut out = vec!();
+//   for (t, attrs_aliases) in elixir_aliases.iter() {
+//     if let ElixirTile::AtomTile(t) = t {
+//       for (attrs, aliases) in attrs_aliases.iter() {
+//         if aliases.contains(tile) {
+//           if attrs.is_empty() {
+//             out.push(ElixirTile::AtomTile(*t));
+//           } else {
+//             out.push(ElixirTile::AttrTile(*t, attrs.clone()));
+//           }
+//         }
+//       }
+//     }
+//   }
+//   out
+// }
+
+// // for debugging
+// pub fn print_tile_aliases<'a>(
+//     elixir_aliases: &mut ElixirAliases,
+//     joker: &ElixirTile,
+// ) -> () {
+//   println!("Aliases: {:?}", fetch_tile_aliases(elixir_aliases, joker));
+// }

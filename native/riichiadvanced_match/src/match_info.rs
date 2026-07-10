@@ -36,7 +36,6 @@ pub fn prepare_tiles<'a>(
   });
   // println!("  no_attrs: {0:?}", no_attrs);
 
-  // figure out which elixir tiles are jokers
   // first make a mapping {encoding <=> tile in hand}
   let mut encoding: HashMap<&ElixirTile, Tile> = HashMap::new();
   for tile in tiles_in_hand.iter().copied() {
@@ -44,8 +43,7 @@ pub fn prepare_tiles<'a>(
       encoding.insert(tile, encoded);
     }
   }
-  // then the jokers are the tiles in hand
-  // whose corresponding encoding is an alias for some tile
+  // the jokers are the tiles in hand whose corresponding encoding is an alias for some tile
   let mut encoded_alias_tiles: Vec<Tile> = vec!();
   for attrs_aliases in elixir_aliases.values() {
     for elixir_aliases in attrs_aliases.values() {
@@ -79,7 +77,7 @@ pub fn prepare_tiles<'a>(
     if name != "" { ret.name = Some(name.to_owned()); }
     initial_hands.push(ret);
   }
-  let aliases = encode_aliases(&elixir_aliases, &all_attrs, &joker_tiles);
+  let aliases = encode_aliases(&elixir_aliases, &all_attrs, &joker_tiles, Some(&encoding));
 
   // get all hand tiles + aliasable tiles
   for tile in tiles_in_hand.iter().copied().chain(elixir_aliases.keys()).filter(|t| !is_any(t)) {

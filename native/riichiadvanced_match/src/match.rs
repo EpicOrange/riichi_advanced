@@ -44,7 +44,7 @@ fn _try_remove_all_tiles(
     let empty_hashset = HashSet::new();
     let hand_set = encode(&hand, all_attrs, &empty_hashset);
     let tiles_set = encode(&tiles, all_attrs, &empty_hashset);
-    let aliases = encode_aliases(elixir_aliases, all_attrs, &empty_hashset);
+    let aliases = encode_aliases(elixir_aliases, all_attrs, &empty_hashset, None);
     match _subtract_check_attrs_exhaustive(&hand_set.attrs, &tiles_set.attrs, &aliases) {
       Some(iss) => {
         let mut ret = vec!();
