@@ -735,7 +735,7 @@
           {"name": "match", "opts": [["hand", "calls", "winning_tile"], [[ [["3p", "6p", "9p"], 1] ]]]},
           {"name": "match", "opts": [["hand", "calls", "winning_tile"], [[ [["1s", "4s", "7s"], 1] ]]]},
           {"name": "match", "opts": [["hand", "calls", "winning_tile"], [[ [["2s", "5s", "8s"], 1] ]]]},
-          {"name": "match", "opts": [["hand", "calls", "winning_tile"], [[ [["3s", "6s", "9s"], 1] ]]]},
+          {"name": "match", "opts": [["hand", "calls", "winning_tile"], [[ [["3s", "6s", "9s"], 1] ]]]}
         ]
       ]
     },
