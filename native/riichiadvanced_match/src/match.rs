@@ -173,15 +173,25 @@ fn elim_tileset_iter<'a>(
   tileset: TileSet,
   aliases: &'a Aliases,
   joker_tiles: &'a HashSet<Tile>,
+  exhaustive: bool,
 ) -> HandsIterator<'a> {
   // go backwards so we remove calls first
   let ret = hands.clone().into_iter().enumerate().rev().flat_map(move |(i, hand)| -> HandsIterator<'a> {
     let is_call = i > 0;
     if is_call {
-      if let Some(_) = __subtract_exhaustive(&hand, &tileset, aliases, joker_tiles) {
+      if let Some(_) = __subtract(&hand, &tileset, aliases, joker_tiles) {
         let mut hands = hands.clone();
         hands.remove(i);
         return Box::new(once(hands));
+      }
+    } else if exhaustive {
+      if let Some(results) = __subtract_exhaustive(&hands[0], &tileset, aliases, joker_tiles) {
+        let hands = hands.clone();
+        return Box::new(results.into_iter().map(move |result| {
+          let mut hands = hands.clone();
+          hands[0] = result;
+          hands
+        }));
       }
     } else {
       if let Some(result) = __subtract(&hands[0], &tileset, aliases, joker_tiles) {
@@ -199,15 +209,16 @@ fn elim_group_iter<'a>(
     hands: Hands, group_arg: RemovableGroup,
     aliases: &'a Aliases,
     joker_tiles: &'a HashSet<Tile>,
+    exhaustive: bool,
 ) -> HandsIterator<'a> {
   match group_arg {
     RemovableGroup::CallName(name) => elim_call_name_iter(hands, name.clone()),
-    RemovableGroup::Group(group) => elim_tileset_iter(hands, group, aliases, joker_tiles),
+    RemovableGroup::Group(group) => elim_tileset_iter(hands, group, aliases, joker_tiles, exhaustive),
     RemovableGroup::Multigroup(subgroups) => {
       // multigroup can only be removed from hand (= hands[0])
       subgroups.clone().into_iter().fold(Box::new(once(hands)) as HandsIterator, move |acc: HandsIterator, subgroup| -> HandsIterator {
         Box::new(acc.flat_map(move |hands| -> HandsIterator<'a> {
-          elim_tileset_iter(hands, subgroup.clone(), aliases, joker_tiles)
+          elim_tileset_iter(hands, subgroup.clone(), aliases, joker_tiles, exhaustive)
         }))
       })
     }
@@ -253,39 +264,39 @@ fn _perform_dfs_match<'a>(
       if unique { " unique" } else { "" },
       if nojoker { " nojoker" } else { "" },
     );
-    for (reified, i) in reified_groups_by_group.iter() {
-      if groups_used.contains(&i) { continue; }
-      // for group in reified {
-      //   match group {
-      //     RemovableGroup::CallName(name) => println!("- \"{0:?}\"", name),
-      //     RemovableGroup::Group(group) => println!("- {0:?}{1}", decode(group, match_info.all_attrs), if group.nojoker { " nojoker" } else { "" }),
-      //     RemovableGroup::Multigroup(subgroups) => println!("- {0:?}", subgroups.iter().map(|subgroup| decode(subgroup, match_info.all_attrs)).collect::<Vec<_>>()),
-      //   }
-      // }
-      let mut nojoker = nojoker;
-      let mut alternatives: Vec<String> = vec!();
-      for group in reified {
-        match group {
-          RemovableGroup::CallName(name) => {
-            alternatives.push(name.to_owned());
-          }
-          RemovableGroup::Group(group) => {
-            if group.nojoker { nojoker = true; }
-            alternatives.push(format!("{:?}", decode(group, match_info.all_attrs)));
-          }
-          RemovableGroup::Multigroup(subgroups) => {
-            for subgroup in subgroups {
-              alternatives.push(format!("{:?}", decode(subgroup, match_info.all_attrs)));
-            }
-          }
-        }
-      }
-      if !alternatives.is_empty() {
-        println!("- {0}{1}", alternatives.join(", "), if nojoker { " nojoker" } else { "" });
-      }
-    }
+    // for (reified, i) in reified_groups_by_group.iter() {
+    //   if groups_used.contains(&i) { continue; }
+    //   // for group in reified {
+    //   //   match group {
+    //   //     RemovableGroup::CallName(name) => println!("- \"{0:?}\"", name),
+    //   //     RemovableGroup::Group(group) => println!("- {0:?}{1}", decode(group, match_info.all_attrs), if group.nojoker { " nojoker" } else { "" }),
+    //   //     RemovableGroup::Multigroup(subgroups) => println!("- {0:?}", subgroups.iter().map(|subgroup| decode(subgroup, match_info.all_attrs)).collect::<Vec<_>>()),
+    //   //   }
+    //   // }
+    //   let mut nojoker = nojoker;
+    //   let mut alternatives: Vec<String> = vec!();
+    //   for group in reified {
+    //     match group {
+    //       RemovableGroup::CallName(name) => {
+    //         alternatives.push(name.to_owned());
+    //       }
+    //       RemovableGroup::Group(group) => {
+    //         if group.nojoker { nojoker = true; }
+    //         alternatives.push(format!("{:?}", decode(group, match_info.all_attrs)));
+    //       }
+    //       RemovableGroup::Multigroup(subgroups) => {
+    //         for subgroup in subgroups {
+    //           alternatives.push(format!("{:?}", decode(subgroup, match_info.all_attrs)));
+    //         }
+    //       }
+    //     }
+    //   }
+    //   if !alternatives.is_empty() {
+    //     println!("- {0}{1}", alternatives.join(", "), if nojoker { " nojoker" } else { "" });
+    //   }
+    // }
   }
-  // TODO not sure if Rc<_> can be used to make the clones below cheaper
+  // TODO not sure if Cow<_> can be used to make the clones below cheaper
   Box::new(reified_groups_by_group.clone().into_iter().flat_map(move |(groups, i)| -> AccIterator<'a> {
     let hands = hands.clone();
     let mut groups_used = groups_used.clone(); // clone #1
@@ -295,7 +306,7 @@ fn _perform_dfs_match<'a>(
     // skip its copies in `groups` (requires some cache + lookahead)
     Box::new(groups.into_iter().flat_map(move |group| {
       let groups_used = groups_used.clone(); // clone #2
-      elim_group_iter(hands.clone(), group, &match_info.aliases, &match_info.joker_tiles)
+      elim_group_iter(hands.clone(), group, &match_info.aliases, &match_info.joker_tiles, exhaustive)
         .map(move |hands| (hands, groups_used.clone())) // clone #3
     }))
   }))
@@ -473,12 +484,6 @@ pub fn remove_match_definition<'a>(
             }
           }
         }
-        if debug {
-          println!("For groups {:?}", groups);
-          println!("have_fixed_offsets: {:?}", have_fixed_offsets);
-          println!("have_numeric_offsets: {:?}", have_numeric_offsets);
-          println!("have_suit_offsets: {:?}", have_suit_offsets);
-        }
         let base_tile_sets = if have_suit_offsets {
           // we need to try each suit
           if have_numeric_offsets {
@@ -491,7 +496,7 @@ pub fn remove_match_definition<'a>(
               base_p.push(ElixirTile::AtomTile(tile1p()));
               base_s.push(ElixirTile::AtomTile(tile1s()));
             }
-            vec!(Rc::new(base_m), Rc::new(base_p), Rc::new(base_s))
+            vec!(Rc::new(base_m), Rc::new(base_p), Rc::new(base_s), base_tiles.clone())
           } else {
             vec!(
               Rc::new(vec!(ElixirTile::AtomTile(tile1m()))),
@@ -505,6 +510,13 @@ pub fn remove_match_definition<'a>(
           vec!(Rc::new(vec!(ElixirTile::AtomTile(tile1m()))))
         };
 
+        if debug {
+          println!("For groups {:?}", groups);
+          println!("have_fixed_offsets: {:?}", have_fixed_offsets);
+          println!("have_numeric_offsets: {:?}", have_numeric_offsets);
+          println!("have_suit_offsets: {:?}", have_suit_offsets);
+          println!("Resulting base_tile_sets: {:?}", base_tile_sets);
+        }
         let reified_groups_by_group_by_base_tile_sets: Rc<Vec<_>> = Rc::new(
           base_tile_sets
             .into_iter()
