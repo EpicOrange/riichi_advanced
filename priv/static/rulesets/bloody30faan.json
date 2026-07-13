@@ -474,13 +474,13 @@
     [ "exhaustive", [[["9m","9m"],["9p","9p"],["9s","9s"]], 1], [[["9m","9m","9m"],["9p","9p","9p"],["9s","9s","9s"],["7m","8m","9m"],["7p","8p","9p"],["7s","8s","9s"]], 4] ]
   ],
   "三連對_definition": [
-    [ "ignore_suit", [[[0,0,1,1,2,2]], 1], [["pair"], 4] ]
+    [ [[[0,0,1,1,2,2]], 1], [["pair"], 4] ]
   ],
   "五連對_definition": [
-    [ "ignore_suit", [[[0,0,1,1,2,2,3,3,4,4]], 1], [["pair"], 2] ]
+    [ [[[0,0,1,1,2,2,3,3,4,4]], 1], [["pair"], 2] ]
   ],
   "七連對_definition": [
-    [ "ignore_suit", [[[0,0,1,1,2,2,3,3,4,4,5,5,6,6]], 1] ]
+    [ [[[0,0,1,1,2,2,3,3,4,4,5,5,6,6]], 1] ]
   ],
   "三同對_definition": [
     [ [[[[0,0],[10,10],[20,20]]], 1], [["pair"], 4] ]
@@ -727,9 +727,15 @@
         {"name": "winning_hand_consists_of", "opts": ["1m","2m","3m","4m","5m","6m","7m","8m","9m","1p","2p","3p","4p","5p","6p","7p","8p","9p","1s","2s","3s","4s","5s","6s","7s","8s","9s"]},
         [
           1,
-          {"name": "match", "opts": [["hand", "calls", "winning_tile"], [[ "ignore_suit", [["1m", "4m", "7m"], 1] ]]]},
-          {"name": "match", "opts": [["hand", "calls", "winning_tile"], [[ "ignore_suit", [["2m", "5m", "8m"], 1] ]]]},
-          {"name": "match", "opts": [["hand", "calls", "winning_tile"], [[ "ignore_suit", [["3m", "6m", "9m"], 1] ]]]}
+          {"name": "match", "opts": [["hand", "calls", "winning_tile"], [[ [["1m", "4m", "7m"], 1] ]]]},
+          {"name": "match", "opts": [["hand", "calls", "winning_tile"], [[ [["2m", "5m", "8m"], 1] ]]]},
+          {"name": "match", "opts": [["hand", "calls", "winning_tile"], [[ [["3m", "6m", "9m"], 1] ]]]},
+          {"name": "match", "opts": [["hand", "calls", "winning_tile"], [[ [["1p", "4p", "7p"], 1] ]]]},
+          {"name": "match", "opts": [["hand", "calls", "winning_tile"], [[ [["2p", "5p", "8p"], 1] ]]]},
+          {"name": "match", "opts": [["hand", "calls", "winning_tile"], [[ [["3p", "6p", "9p"], 1] ]]]},
+          {"name": "match", "opts": [["hand", "calls", "winning_tile"], [[ [["1s", "4s", "7s"], 1] ]]]},
+          {"name": "match", "opts": [["hand", "calls", "winning_tile"], [[ [["2s", "5s", "8s"], 1] ]]]},
+          {"name": "match", "opts": [["hand", "calls", "winning_tile"], [[ [["3s", "6s", "9s"], 1] ]]]}
         ]
       ]
     },

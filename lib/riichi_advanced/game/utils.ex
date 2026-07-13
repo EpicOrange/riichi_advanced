@@ -2,7 +2,6 @@ defmodule RiichiAdvanced.Utils do
   alias RiichiAdvanced.Constants, as: Constants
   alias RiichiAdvanced.GameState.TileBehavior, as: TileBehavior
   alias RiichiAdvanced.Riichi, as: Riichi
-  use Nebulex.Caching
 
   def to_tile(tile_spec) do
     case tile_spec do
@@ -108,28 +107,15 @@ defmodule RiichiAdvanced.Utils do
 
   # find all jokers that map to the same tile(s) as the given one
   # together with the tile(s) they are connected by
-  @decorate cacheable(cache: RiichiAdvanced.Cache, key: {:apply_tile_aliases, tile, TileBehavior.hash(tile_behavior)})
+  def apply_tile_aliases(tiles, tile_behavior) when is_list(tiles) or is_struct(tiles, MapSet) do
+    Enum.map(tiles, &apply_tile_aliases(&1, tile_behavior))
+    |> Enum.reduce(MapSet.new(), &MapSet.union/2)
+  end
   def apply_tile_aliases(tile, tile_behavior) do
-    if is_list(tile) or is_struct(tile, MapSet) do
-      Enum.map(tile, &apply_tile_aliases(&1, tile_behavior))
-      |> Enum.reduce(MapSet.new(), &MapSet.union/2)
-    else
-      # every joker is connected to any-tile jokers
-      any_tiles = Map.get(tile_behavior.aliases, :any, %{}) |> Map.values() |> Enum.concat()
-      any_tiles = MapSet.new([tile | any_tiles])
-      for {tile2, attrs_aliases} <- tile_behavior.aliases, {attrs2, aliases} <- attrs_aliases do
-        # aliases = MapSet of all possible {tile, attrs} that map to {tile2, attrs2}
-        t2 = add_attr(tile2, attrs2)
-        {results, extra_attrs} = case Enum.find(aliases, &same_tile(tile, &1)) do
-          nil -> if same_tile(tile, t2) do {aliases, get_attrs(tile) -- attrs2} else {[], []} end
-          t1  -> {MapSet.put(aliases, t2), get_attrs(tile) -- get_attrs(t1)}
-        end
-        results
-        |> Enum.reject(&strip_attrs(&1) == :any)
-        |> add_attr(extra_attrs)
-        |> MapSet.new()
-      end |> Enum.reduce(any_tiles, &MapSet.union/2)
-    end
+    Map.get(tile_behavior.mappings, tile, MapSet.new())
+    |> MapSet.put(tile)
+    # every joker is connected to any-tile jokers
+    |> MapSet.union(MapSet.new(Map.get(tile_behavior.aliases, :any, %{}) |> Map.values() |> Enum.concat()))
   end
 
   # tile1 must have at least the attributes of tile2 (or any of its aliases)
@@ -449,7 +435,7 @@ defmodule RiichiAdvanced.Utils do
     end)
   end
 
-  @decorate cacheable(cache: RiichiAdvanced.Cache, key: {:inverse_frequencies, visible_tiles, TileBehavior.hash(tile_behavior)})
+  # @decorate cacheable(cache: RiichiAdvanced.Cache, key: {:inverse_frequencies, visible_tiles, TileBehavior.hash(tile_behavior)})
   def inverse_frequencies(visible_tiles, tile_behavior) do
     freqs = if is_map(visible_tiles) do visible_tiles else
       # keep only attrs that appear in the original wall before taking frequencies
@@ -518,6 +504,16 @@ defmodule RiichiAdvanced.Utils do
       json when is_list(json) -> Enum.map(json, &walk_json(&1, fun))
       json when is_map(json) -> Map.new(json, fn {k, v} -> {k, walk_json(v, fun)} end)
       json -> json
+    end
+  end
+
+  def reduce_json(json, fun, acc \\ []) do
+    # preorder walks every node, accumulating an accumulator
+    # fun should look like `fn elem, acc -> new_acc end`
+    case fun.(json, acc) do
+      acc when is_list(json) -> Enum.reduce(json, acc, &reduce_json(&1, fun, &2))
+      acc when is_map(json)  -> Enum.reduce(json, acc, fn {_k, v}, acc -> reduce_json(v, fun, acc) end)
+      acc -> acc
     end
   end
 

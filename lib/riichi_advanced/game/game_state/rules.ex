@@ -1,7 +1,7 @@
 defmodule RiichiAdvanced.GameState.Rules do
   alias RiichiAdvanced.GameState.American, as: American
   alias RiichiAdvanced.GameState.Debug, as: Debug
-  alias RiichiAdvanced.Match, as: Match
+  alias RiichiAdvanced.MatchOld, as: MatchOld
   alias RiichiAdvanced.ModLoader, as: ModLoader
   alias RiichiAdvanced.Utils, as: Utils
 
@@ -93,7 +93,7 @@ defmodule RiichiAdvanced.GameState.Rules do
         shanten_definitions ->
           # IO.puts("Generating #{to} definitions")
           if length(shanten_definitions[from]) < 100 do
-            Map.put(shanten_definitions, to, Match.compute_almost_match_definitions(shanten_definitions[from]))
+            Map.put(shanten_definitions, to, MatchOld.compute_almost_match_definitions(shanten_definitions[from]))
           else
             Map.put(shanten_definitions, to, [])
           end
@@ -101,6 +101,14 @@ defmodule RiichiAdvanced.GameState.Rules do
       :ets.insert(rules_ref, {:shanten_definitions, shanten_definitions})
       # IO.inspect(shanten_definitions)
       # IO.inspect(Map.new(shanten_definitions, fn {shanten, definition} -> {shanten, length(definition)} end))
+
+      # get all attributes used in the entire ruleset
+      all_attrs = rules
+      |> Enum.map(fn {_k, v} -> v end)
+      |> List.flatten()
+      |> Utils.reduce_json(fn %{"attrs" => attrs}, acc -> attrs ++ acc; _, acc -> acc end)
+      |> MapSet.new()
+      :ets.insert(rules_ref, {:all_attrs, all_attrs})
 
       {:ok, rules_ref}
     end

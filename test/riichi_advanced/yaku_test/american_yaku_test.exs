@@ -39,7 +39,7 @@ defmodule RiichiAdvanced.YakuTest.AmericanYaku do
 
   test "american - nmjl 2024 - 2024 #4", %{nmjl_2024: rules_ref} do
     TestUtils.assert_winning_hand(rules_ref, "win", "11122333440z224p", "", @am_aliases)
-    TestUtils.refute_winning_hand(rules_ref, "open_win", "22333446z224p", "am_pung:111z", @am_aliases)
+    TestUtils.refute_winning_hand(rules_ref, "open_win", "22333440z224p", "am_pung:111z", @am_aliases)
   end
 
   test "american - nmjl 2024 - all hands", %{nmjl_2024: rules_ref} do

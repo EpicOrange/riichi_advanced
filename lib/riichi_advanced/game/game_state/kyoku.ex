@@ -356,8 +356,11 @@ defmodule RiichiAdvanced.GameState.Kyoku do
     end end)
     # make a reverse joker_assignment so we can recover the orig tiles
     # guaranteed to be injective due to the joker#{i} attr we just added
-    undo_joker_map = Map.new(joker_assignment, fn {i, _tile} when i < length(smt_hand) ->
-      {Enum.at(assigned_hand, i), Enum.at(smt_hand, i)}
+    undo_joker_map = Map.new(joker_assignment, fn
+      {i, _tile} when i <= length(smt_hand) -> {Enum.at(assigned_hand, i), Enum.at(smt_hand, i)}
+      {i, _tile} ->
+        IO.puts("Error in separate_standard_winner_hand: joker assignment #{inspect(joker_assignment)} has index #{i} > hand length #{length(smt_hand)}")
+        {nil, nil}
     end)
     # restrict aliases to be exactly the joker assignment
     tile_behavior = TileBehavior.from_joker_assignment(tile_behavior, smt_hand ++ Enum.concat(smt_calls), joker_assignment)
@@ -649,7 +652,6 @@ defmodule RiichiAdvanced.GameState.Kyoku do
         separated_calls: if state.ruleset == "american" do [] else orig_calls end
       })
     state = Map.update!(state, :winners, &Map.put(&1, seat, Map.merge(winner, &1[seat])))
-
     state
   end
 end

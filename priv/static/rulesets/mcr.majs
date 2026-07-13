@@ -1,0 +1,842 @@
+set display_name, "MCR"
+set tutorial_link, "https://ooyamaneko.net/download/mahjong/mcr/MCR_2014_en.pdf"
+set wall, ["1m", "1m", "1m", "1m",
+           "2m", "2m", "2m", "2m",
+           "3m", "3m", "3m", "3m",
+           "4m", "4m", "4m", "4m",
+           "5m", "5m", "5m", "5m",
+           "6m", "6m", "6m", "6m",
+           "7m", "7m", "7m", "7m",
+           "8m", "8m", "8m", "8m",
+           "9m", "9m", "9m", "9m",
+           "1p", "1p", "1p", "1p",
+           "2p", "2p", "2p", "2p",
+           "3p", "3p", "3p", "3p",
+           "4p", "4p", "4p", "4p",
+           "5p", "5p", "5p", "5p",
+           "6p", "6p", "6p", "6p",
+           "7p", "7p", "7p", "7p",
+           "8p", "8p", "8p", "8p",
+           "9p", "9p", "9p", "9p",
+           "1s", "1s", "1s", "1s",
+           "2s", "2s", "2s", "2s",
+           "3s", "3s", "3s", "3s",
+           "4s", "4s", "4s", "4s",
+           "5s", "5s", "5s", "5s",
+           "6s", "6s", "6s", "6s",
+           "7s", "7s", "7s", "7s",
+           "8s", "8s", "8s", "8s",
+           "9s", "9s", "9s", "9s",
+           "1z", "1z", "1z", "1z",
+           "2z", "2z", "2z", "2z",
+           "3z", "3z", "3z", "3z",
+           "4z", "4z", "4z", "4z",
+           "0z", "0z", "0z", "0z",
+           "6z", "6z", "6z", "6z",
+           "7z", "7z", "7z", "7z",
+           "1f", "2f", "3f", "4f",
+           "1g", "2g", "3g", "4g"]
+
+set custom_style, %{
+  tile_indices: %{
+    "1f": "F",
+    "2f": "F",
+    "3f": "F",
+    "4f": "F",
+    "1g": "F",
+    "2g": "F",
+    "3g": "F",
+    "4g": "F"
+  }
+}
+
+define_set pair, ~s"0 0"
+define_set shuntsu, ~s"0 1 2"
+define_set koutsu, ~s"0 0 0"
+define_set quad, ~s"0 0 0 0"
+define_set ryanmen, ~s"0 1"
+define_set kanchan, ~s"0 2"
+define_set penchan, ~s"1m 2m|1p 2p|1s 2s|8m 9m|8p 9p|8s 9s"
+define_set mentsu, ~s"0 0 0 | 0 1 2"
+define_set taatsu, ~s"0 0 | 0 1 | 0 2"
+define_set ton, ~s"1z 1z 1z"
+define_set nan, ~s"2z 2z 2z"
+define_set shaa, ~s"3z 3z 3z"
+define_set pei, ~s"4z 4z 4z"
+define_set haku, ~s"0z 0z 0z"
+define_set hatsu, ~s"6z 6z 6z"
+define_set chun, ~s"7z 7z 7z"
+define_set ton_pair, ~s"1z 1z"
+define_set nan_pair, ~s"2z 2z"
+define_set shaa_pair, ~s"3z 3z"
+define_set pei_pair, ~s"4z 4z"
+define_set haku_pair, ~s"0z 0z"
+define_set hatsu_pair, ~s"6z 6z"
+define_set chun_pair, ~s"7z 7z"
+define_set knit_shuntsu, ~s"0 11 22|0 12 21"
+define_set knit_koutsu, ~s"0 10 20"
+define_set knit_straight, ~s"0 3 6, 11 14 17, 22 25 28|0 3 6, 12 15 18, 21 24 27"
+define_set terminal_sequences, ~s"0 1 2, 6 7 8"
+define_set orphans_all, ~s"1m 9m 1p 9p 1s 9s 1z 2z 3z 4z 0z 6z 7z"
+define_set orphans_any, ~s"1m|9m|1p|9p|1s|9s|1z|2z|3z|4z|0z|6z|7z"
+define_set chuurenpoutou, ~s"0 0 0 1 2 3 4 5 6 7 8 8 8"
+
+define_match standard_tenpai, ~m"exhaustive, pair:1, mentsu:3, taatsu:1 | exhaustive, mentsu:4"
+define_match knitted_straight_tenpai, ~m"exhaustive, almost, pair:1, mentsu:1, knit_straight:1, exhaustive, mentsu:1, knit_straight:1"
+define_match chiitoitsu_tenpai, ~m"pair:6"
+define_match kokushi_tenpai, ~m"unique, dismantle_calls, orphans_any:12, orphans_any:1"
+define_match knitted_hand_tenpai, ~m"""
+  unique, (1m 4m 7m 2p 5p 8p 3s 6s 9s 1z 2z 3z 4z 0z 6z 7z):13 |
+  unique, (1m 4m 7m 3p 6p 9p 2s 5s 8s 1z 2z 3z 4z 0z 6z 7z):13 |
+  unique, (2m 5m 8m 1p 4p 7p 3s 6s 9s 1z 2z 3z 4z 0z 6z 7z):13 |
+  unique, (2m 5m 8m 3p 6p 9p 1s 4s 7s 1z 2z 3z 4z 0z 6z 7z):13 |
+  unique, (3m 6m 9m 1p 4p 7p 2s 5s 8s 1z 2z 3z 4z 0z 6z 7z):13 |
+  unique, (3m 6m 9m 2p 5p 8p 1s 4s 7s 1z 2z 3z 4z 0z 6z 7z):13
+  """
+
+define_match tenpai, "standard_tenpai", "knitted_straight_tenpai", "chiitoitsu_tenpai", "kokushi_tenpai", "knitted_hand_tenpai"
+
+define_match standard_win, ~m"exhaustive, mentsu:4, pair:1"
+define_match knitted_straight_win, ~m"exhaustive, pair:1, mentsu:1, knit_straight:1"
+define_match chiitoitsu_win, ~m"pair:7"
+define_match kokushi_win, ~m"unique, dismantle_calls, orphans_any:13, orphans_any:1"
+define_match knitted_hand_win, ~m"""
+  unique, (1m 4m 7m 2p 5p 8p 3s 6s 9s 1z 2z 3z 4z 0z 6z 7z):14 |
+  unique, (1m 4m 7m 3p 6p 9p 2s 5s 8s 1z 2z 3z 4z 0z 6z 7z):14 |
+  unique, (2m 5m 8m 1p 4p 7p 3s 6s 9s 1z 2z 3z 4z 0z 6z 7z):14 |
+  unique, (2m 5m 8m 3p 6p 9p 1s 4s 7s 1z 2z 3z 4z 0z 6z 7z):14 |
+  unique, (3m 6m 9m 1p 4p 7p 2s 5s 8s 1z 2z 3z 4z 0z 6z 7z):14 |
+  unique, (3m 6m 9m 2p 5p 8p 1s 4s 7s 1z 2z 3z 4z 0z 6z 7z):14
+  """
+define_match win, "standard_win", "knitted_straight_win", "chiitoitsu_win", "kokushi_win", "knitted_hand_win"
+
+define_match ryanankou_tsumo, ~m"""
+  (pon daiminkan kakan):-1, koutsu:2, mentsu:2, pair:1 |
+  (pon daiminkan kakan):-2, koutsu:3, mentsu:1, pair:1 |
+  (pon daiminkan kakan):-3, koutsu:4, pair:1
+  """
+define_match ryanankou_ron, ~m"""
+  (pon daiminkan kakan):-1, koutsu:2, (any@winning_tile):0, mentsu:2, pair:1 |
+  (pon daiminkan kakan):-2, koutsu:3, (any@winning_tile):0, mentsu:1, pair:1 |
+  (pon daiminkan kakan):-3, koutsu:4, (any@winning_tile):0, pair:1
+  """
+define_match sanankou_tsumo, ~m"""
+  (pon daiminkan kakan):-1, koutsu:3, mentsu:1, pair:1 |
+  (pon daiminkan kakan):-2, koutsu:4, pair:1
+  """
+define_match sanankou_ron, ~m"""
+  (pon daiminkan kakan):-1, koutsu:3, (any@winning_tile):0, mentsu:1, pair:1 |
+  (pon daiminkan kakan):-2, koutsu:4, (any@winning_tile):0, pair:1
+  """
+define_match suuankou_tsumo, ~m"(pon daiminkan kakan):-1, koutsu:4, pair:1"
+define_match suuankou_ron, ~m"(pon daiminkan kakan):-1, koutsu:4, (any@winning_tile):0, pair:1"
+
+# 88
+define_yaku yaku, "Big Four Winds", [88, "Fan"], match(["hand", "calls", "winning_tile"], ~m"unique, (ton nan shaa pei):4")
+define_yaku yaku, "Big Three Dragons", [88, "Fan"], match(["hand", "calls", "winning_tile"], ~m"unique, (haku hatsu chun):3")
+define_yaku yaku, "All Green", [88, "Fan"], winning_hand_consists_of("2s","3s","4s","6s","8s","6z")
+define_yaku yaku, "Nine Gates", [88, "Fan"], match(["hand", "winning_tile"], ~m"chuurenpoutou:1")
+define_yaku yaku, "Four Kongs", [88, "Fan"], match(["calls"], ~m"(daiminkan ankan kakan):4"), ["Three Kongs"]
+define_set seven_shifted_pairs, ~s"0 0 1 1 2 2 3 3 4 4 5 5 6 6"
+define_yaku yaku, "Seven Shifted Pairs", [88, "Fan"], match(["hand", "winning_tile"], ~m"seven_shifted_pairs:1")
+define_yaku yaku, "Thirteen Orphans", [88, "Fan"], match(["hand", "winning_tile"], ~m"orphans_all:1")
+
+# 64
+define_yaku yaku, "All Terminals", [64, "Fan"], winning_hand_consists_of("1m","9m","1p","9p","1s","9s")
+define_yaku yaku, "Little Four Winds", [64, "Fan"], match(["hand", "calls", "winning_tile"], ~m"unique, (ton nan shaa pei):3, (ton_pair nan_pair shaa_pair pei_pair):1")
+define_yaku yaku, "Little Three Dragons", [64, "Fan"], match(["hand", "calls", "winning_tile"], ~m"unique, (haku hatsu chun):2, (haku_pair hatsu_pair chun_pair):1")
+define_yaku yaku, "All Honors", [64, "Fan"], winning_hand_consists_of("1z","2z","3z","4z","0z","6z","7z")
+define_yaku yaku, "Four Concealed Pungs", [64, "Fan"], (won_by_draw and match(["hand", "calls", "winning_tile"], ["suuankou_tsumo"])) or (not_won_by_draw and match(["hand", "calls", "winning_tile"], ["suuankou_ron"]))
+define_set pure_terminal_sequences, ~s"0 0 1 1 2 2 6 6 7 7 8 8"
+define_yaku yaku, "Pure Terminal Chows", [64, "Fan"], match(["hand", "calls", "winning_tile"], ~m"exhaustive, pure_terminal_sequences:1, pair:1")
+
+# 48
+define_set quadruple_chow, ~s"0 1 2, 0 1 2, 0 1 2, 0 1 2"
+define_yaku yaku, "Quadruple Chow", [48, "Fan"], match(["hand", "calls", "winning_tile"], ~m"exhaustive, quadruple_chow:1, pair:1")
+define_set four_pure_shifted_pungs, ~s"0 0 0, 1 1 1, 2 2 2, 3 3 3"
+define_yaku yaku, "Four Pure Shifted Pungs", [48, "Fan"], match(["hand", "calls", "winning_tile"], ~m"exhaustive, four_pure_shifted_pungs:1, pair:1")
+
+# 32
+define_set four_shifted_chows, ~s"0 1 2, 1 2 3, 2 3 4, 3 4 5|0 1 2, 2 3 4, 4 5 6, 6 7 8"
+define_yaku yaku, "Four Pure Shifted Chows", [32, "Fan"], match(["hand", "calls", "winning_tile"], ~m"exhaustive, four_shifted_chows:1, pair:1")
+define_yaku yaku, "Three Kongs", [32, "Fan"], match(["calls"], ~m"(daiminkan ankan kakan):3"), ["Two Kongs"]
+define_yaku yaku, "All Terminals and Honors", [32, "Fan"], winning_hand_consists_of("1m","9m","1p","9p","1s","9s","1z","2z","3z","4z","0z","6z","7z")
+
+# 24
+define_yaku yaku, "Seven Pairs", [24, "Fan"], match(["hand", "winning_tile"], ["chiitoitsu_win"])
+define_match greater_knitted, ~m"""
+  unique, (1m 4m 7m 2p 5p 8p 3s 6s 9s):7, (1z 2z 3z 4z 0z 6z 7z):7 |
+  unique, (1m 4m 7m 3p 6p 9p 2s 5s 8s):7, (1z 2z 3z 4z 0z 6z 7z):7 |
+  unique, (2m 5m 8m 1p 4p 7p 3s 6s 9s):7, (1z 2z 3z 4z 0z 6z 7z):7 |
+  unique, (2m 5m 8m 3p 6p 9p 1s 4s 7s):7, (1z 2z 3z 4z 0z 6z 7z):7 |
+  unique, (3m 6m 9m 1p 4p 7p 2s 5s 8s):7, (1z 2z 3z 4z 0z 6z 7z):7 |
+  unique, (3m 6m 9m 2p 5p 8p 1s 4s 7s):7, (1z 2z 3z 4z 0z 6z 7z):7
+  """
+define_yaku yaku, "Greater Honors and Knitted Tiles", [24, "Fan"], match(["hand", "winning_tile"], ["greater_knitted"])
+define_yaku yaku, "Full Flush", [24, "Fan"],
+     winning_hand_consists_of("1m","2m","3m","4m","5m","6m","7m","8m","9m")
+  or winning_hand_consists_of("1p","2p","3p","4p","5p","6p","7p","8p","9p")
+  or winning_hand_consists_of("1s","2s","3s","4s","5s","6s","7s","8s","9s")
+define_set pure_triple_chow, ~s"0 1 2, 0 1 2, 0 1 2"
+define_yaku yaku, "Pure Triple Chow", [24, "Fan"], match(["hand", "calls", "winning_tile"], ~m"exhaustive, pure_triple_chow:1, mentsu:1, pair:1")
+define_set pure_shifted_pungs, ~s"0 0 0, 1 1 1, 2 2 2"
+define_yaku yaku, "Pure Shifted Pungs", [24, "Fan"], match(["hand", "calls", "winning_tile"], ~m"exhaustive, pure_shifted_pungs:1, mentsu:1, pair:1")
+define_yaku yaku, "Upper Tiles", [24, "Fan"], winning_hand_consists_of("7m","8m","9m","7p","8p","9p","7s","8s","9s")
+define_yaku yaku, "Middle Tiles", [24, "Fan"], winning_hand_consists_of("4m","5m","6m","4p","5p","6p","4s","5s","6s")
+define_yaku yaku, "Lower Tiles", [24, "Fan"], winning_hand_consists_of("1m","2m","3m","1p","2p","3p","1s","2s","3s")
+
+# 16
+define_set pure_straight, ~s"0 1 2, 3 4 5, 6 7 8"
+define_yaku yaku, "Pure Straight", [16, "Fan"], match(["hand", "calls", "winning_tile"], ~m"exhaustive, pure_straight:1, mentsu:1, pair:1")
+define_set three_suited_terminal_chows, ~s"0 1 2, 6 7 8, 10 11 12, 16 17 18, 24 24|0 1 2, 6 7 8, 14 14, 20 21 22, 26 27 28"
+define_yaku yaku, "Three-Suited Terminal Chows", [16, "Fan"], match(["hand", "calls", "winning_tile"], ~m"three_suited_terminal_chows:1")
+define_set pure_shifted_chows, ~s"0 1 2, 1 2 3, 2 3 4"
+define_yaku yaku, "Pure Shifted Chows", [16, "Fan"], match(["hand", "calls", "winning_tile"], ~m"exhaustive, pure_shifted_chows:1, mentsu:1, pair:1")
+define_set all_fives_pair, ~s"5m 5m|5p 5p|5s 5s"
+define_set all_fives_mentsu, ~s"5m 5m 5m|5p 5p 5p|5s 5s 5s|3m 4m 5m|3p 4p 5p|3s 4s 5s|4m 5m 6m|4p 5p 6p|4s 5s 6s|5m 6m 7m|5p 6p 7p|5s 6s 7s"
+define_yaku yaku, "All Fives", [16, "Fan"], match(["hand", "calls", "winning_tile"], ~m"exhaustive, all_fives_pair:1, all_fives_mentsu:4")
+define_set triple_pung, ~s"0 0 0, 10 10 10, 20 20 20"
+define_yaku yaku, "Triple Pung", [16, "Fan"], match(["hand", "calls", "winning_tile"], ~m"exhaustive, triple_pung:1, mentsu:1, pair:1")
+define_yaku yaku, "Three Concealed Pungs", [16, "Fan"], (won_by_draw and match(["hand", "calls", "winning_tile"], ["sanankou_tsumo"])) or (not_won_by_draw and match(["hand", "calls", "winning_tile"], ["sanankou_ron"]))
+
+# 12
+define_yaku yaku, "Lesser Honors and Knitted Tiles", [12, "Fan"], match(["hand", "winning_tile"], ["knitted_hand_win"])
+define_yaku yaku, "Knitted Straight", [12, "Fan"], match(["hand", "calls", "winning_tile"], ~m"knit_straight:1")
+define_yaku yaku, "Upper Four", [12, "Fan"], winning_hand_consists_of("6m","7m","8m","9m","6p","7p","8p","9p","6s","7s","8s","9s")
+define_yaku yaku, "Lower Four", [12, "Fan"], winning_hand_consists_of("1m","2m","3m","4m","1p","2p","3p","4p","1s","2s","3s","4s")
+define_yaku yaku, "Big Three Winds", [12, "Fan"], match(["hand", "calls", "winning_tile"], ~m"unique, (ton nan shaa pei):3")
+define_yaku meta_yaku, "Chicken Hand", [12, "Fan"], has_no_yaku
+
+# 8
+define_set mixed_straight, ~s"0 1 2, 13 14 15, 26 27 28|0 1 2, 16 17 18, 23 24 25"
+define_yaku yaku, "Mixed Straight", [8, "Fan"], match(["hand", "calls", "winning_tile"], ~m"exhaustive, mixed_straight:1, mentsu:1, pair:1")
+define_yaku yaku, "Reversible Tiles", [8, "Fan"], winning_hand_consists_of("1p","2p","3p","4p","5p","8p","9p","2s","4s","5s","6s","8s","9s","0z")
+define_set mixed_triple_chow, ~s"0 1 2, 10 11 12, 20 21 22"
+define_yaku yaku, "Mixed Triple Chow", [8, "Fan"], match(["hand", "calls", "winning_tile"], ~m"exhaustive, mixed_triple_chow:1, mentsu:1, pair:1")
+define_set mixed_shifted_pungs, ~s"0 0 0, 11 11 11, 22 22 22|0 0 0, 12 12 12, 21 21 21"
+define_yaku yaku, "Mixed Shifted Pungs", [8, "Fan"], match(["hand", "calls", "winning_tile"], ~m"exhaustive, mixed_shifted_pungs:1, mentsu:1, pair:1")
+define_yaku yaku, "Last Tile Draw", [8, "Fan"], won_by_draw and no_tiles_remaining
+define_yaku yaku, "Last Tile Claim", [8, "Fan"], not_won_by_draw and no_tiles_remaining
+define_yaku yaku, "Out with Replacement Tile", [8, "Fan"], not_status_missing("kan")
+define_yaku yaku, "Robbing The Kong", [8, "Fan"], won_by_call
+define_yaku yaku, "Two Concealed Kongs", [8, "Fan"], match(["calls"], ~m"ankan:2")
+
+# 6
+define_yaku yaku, "All Pungs", [6, "Fan"], match(["hand", "calls", "winning_tile"], ~m"koutsu:4, pair:1")
+define_yaku yaku, "Half Flush", [6, "Fan"],
+    winning_hand_consists_of("1m","2m","3m","4m","5m","6m","7m","8m","9m","1z","2z","3z","4z","0z","6z","7z")
+ or winning_hand_consists_of("1p","2p","3p","4p","5p","6p","7p","8p","9p","1z","2z","3z","4z","0z","6z","7z")
+ or winning_hand_consists_of("1s","2s","3s","4s","5s","6s","7s","8s","9s","1z","2z","3z","4z","0z","6z","7z")
+define_set mixed_shifted_chows, ~s"0 1 2, 11 12 13, 22 23 24|0 1 2, 12 13 14, 21 22 23"
+define_yaku yaku, "Mixed Shifted Chows", [6, "Fan"], match(["hand", "calls", "winning_tile"], ~m"exhaustive, mixed_shifted_chows:1, mentsu:1, pair:1")
+define_yaku yaku, "All Types", [6, "Fan"], match(["hand", "calls", "winning_tile"], ~m"""
+  (1m 2m 3m 4m 5m 6m 7m 8m 9m):1,
+  (1p 2p 3p 4p 5p 6p 7p 8p 9p):1,
+  (1s 2s 3s 4s 5s 6s 7s 8s 9s):1,
+  (1z 2z 3z 4z):1,
+  (0z 6z 7z):1
+  """)
+define_yaku yaku, "Melded Hand", [6, "Fan"], not_won_by_draw and match(["calls"], ~m"(chii pon daiminkan kakan):4")
+define_yaku yaku, "Two Dragon Pungs", [6, "Fan"], match(["hand", "calls", "winning_tile"], ~m"unique, (haku hatsu chun):2")
+define_yaku yaku, "Two Kongs", [6, "Fan"], match(["calls"], ~m"ankan:1, (daiminkan kakan):1")
+
+# welcome to the yaochuuhai zone
+on before_scoring do
+  if round_wind_is("east") do add_attr(["hand", "calls", "winning_tile"], ["_prevalent"], ["1z"]) end
+  if round_wind_is("south") do add_attr(["hand", "calls", "winning_tile"], ["_prevalent"], ["2z"]) end
+  if round_wind_is("west") do add_attr(["hand", "calls", "winning_tile"], ["_prevalent"], ["3z"]) end
+  if round_wind_is("north") do add_attr(["hand", "calls", "winning_tile"], ["_prevalent"], ["4z"]) end
+  if seat_is("east") do add_attr(["hand", "calls", "winning_tile"], ["_seat"], ["1z"]) end
+  if seat_is("south") do add_attr(["hand", "calls", "winning_tile"], ["_seat"], ["2z"]) end
+  if seat_is("west") do add_attr(["hand", "calls", "winning_tile"], ["_seat"], ["3z"]) end
+  if seat_is("north") do add_attr(["hand", "calls", "winning_tile"], ["_seat"], ["4z"]) end
+  if not_round_wind_is("east") and not_seat_is("east") do add_attr(["hand", "calls", "winning_tile"], ["_guest"], ["1z"]) end
+  if not_round_wind_is("south") and not_seat_is("south") do add_attr(["hand", "calls", "winning_tile"], ["_guest"], ["2z"]) end
+  if not_round_wind_is("west") and not_seat_is("west") do add_attr(["hand", "calls", "winning_tile"], ["_guest"], ["3z"]) end
+  if not_round_wind_is("north") and not_seat_is("north") do add_attr(["hand", "calls", "winning_tile"], ["_guest"], ["4z"]) end
+  add_attr(["hand", "calls", "winning_tile"], ["_terminal"], ["terminal"])
+  add_attr(["hand", "calls", "winning_tile"], ["_tanyao"], ["tanyaohai"])
+  add_attr(["hand", "calls", "winning_tile"], ["_yaochuu"], ["yaochuuhai"])
+end
+define_set prevalent_wind, ~s"0@prevalent 0@prevalent 0@prevalent"
+define_set seat_wind, ~s"0@seat 0@seat 0@seat"
+define_set guest_wind, ~s"0@guest 0@guest 0@guest"
+define_set terminal_t, ~s"0@terminal 0@terminal 0@terminal"
+define_set yaochuu_l, ~s"0@yaochuu 1 2"
+define_set yaochuu_r, ~s"0 1 2@yaochuu"
+define_set yaochuu_t, ~s"0@yaochuu 0@yaochuu 0@yaochuu"
+define_set yaochuu_pair, ~s"0@yaochuu 0@yaochuu"
+# now leaving the yaochuuhai zone
+
+# 4
+define_yaku yaku, "Outside Hand", [4, "Fan"], match(["hand", "calls", "winning_tile"], ~m"exhaustive, (yaochuu_l yaochuu_r yaochuu_t):4, yaochuu_pair:1")
+define_yaku yaku, "Fully Concealed Hand", [4, "Fan"], won_by_draw and has_no_call_named("chii", "pon", "daiminkan", "kakan")
+define_yaku yaku, "Two Melded Kongs", [4, "Fan"], match(["calls"], ~m"(daiminkan kakan):2")
+define_set last_tile_3, ~s"0@winning_tile 0 0"
+define_set last_tile_4, ~s"0@winning_tile 0 0 0"
+define_yaku yaku, "Last Tile", [4, "Fan"],
+         (won_by_draw and match(["all_ponds", "all_call_tiles"], ~m"last_tile_3:1"))
+  or (not_won_by_draw and match(["all_ponds", "all_call_tiles"], ~m"last_tile_4:1"))
+
+# 2
+define_yaku yaku, "White Dragon", [2, "Fan"], match(["hand", "calls", "winning_tile"], ~m"haku:1")
+define_yaku yaku, "Green Dragon", [2, "Fan"], match(["hand", "calls", "winning_tile"], ~m"hatsu:1")
+define_yaku yaku, "Red Dragon", [2, "Fan"], match(["hand", "calls", "winning_tile"], ~m"chun:1")
+define_yaku yaku, "Prevalent Wind", [2, "Fan"], match(["hand", "calls", "winning_tile"], ~m"prevalent_wind:1")
+define_yaku yaku, "Seat Wind", [2, "Fan"], match(["hand", "calls", "winning_tile"], ~m"seat_wind:1")
+define_yaku yaku, "Concealed Hand", [2, "Fan"], won_by_discard and has_no_call_named("chii", "pon", "daiminkan", "kakan")
+define_yaku yaku, "All Chows", [2, "Fan"], match(["hand", "calls", "winning_tile"], ~m"exhaustive, (1z 2z 3z 4z 0z 6z 7z):-1, shuntsu:4, pair:1")
+# tile hog is basically number of quads minus number of kans
+define_yaku yaku, "Tile Hog", [2, "Fan"], match(["calls"], ~m"(daiminkan ankan kakan):-1") and match(["hand", "call_tiles", "winning_tile"], ~m"(daiminkan ankan kakan):-1, quad:1")
+define_yaku yaku, "Tile Hog", [2, "Fan"], match(["calls"], ~m"(daiminkan ankan kakan):-2") and match(["hand", "call_tiles", "winning_tile"], ~m"(daiminkan ankan kakan):-2, quad:2")
+define_yaku yaku, "Tile Hog", [2, "Fan"], match(["calls"], ~m"(daiminkan ankan kakan):-3") and match(["hand", "call_tiles", "winning_tile"], ~m"(daiminkan ankan kakan):-3, quad:3")
+define_yaku yaku, "Tile Hog", [2, "Fan"], match(["calls"], ~m"(daiminkan ankan kakan):-4") and match(["hand", "call_tiles", "winning_tile"], ~m"(daiminkan ankan kakan):-4, quad:4")
+define_set double_pung, ~s"0 0 0, 10 10 10"
+define_yaku yaku, "Double Pung", [2, "Fan"], match(["hand", "calls", "winning_tile"], ~m"exhaustive, double_pung:1, mentsu:2, pair:1")
+define_yaku yaku, "Two Concealed Pungs", [2, "Fan"], (won_by_draw and match(["hand", "calls", "winning_tile"], ["ryanankou_tsumo"])) or (not_won_by_draw and match(["hand", "calls", "winning_tile"], ["ryanankou_ron"]))
+define_yaku yaku, "Concealed Kong", [2, "Fan"], match(["calls"], ~m"ankan:1")
+define_yaku yaku, "All Simples", [2, "Fan"], winning_hand_consists_of("2m","3m","4m","5m","6m","7m","8m","2p","3p","4p","5p","6p","7p","8p","2s","3s","4s","5s","6s","7s","8s")
+
+# 1
+define_set double_sequences, ~s"0 1 2, 0 1 2"
+define_yaku yaku, "Pure Double Chow", [1, "Fan"], match(["hand", "calls", "winning_tile"], ~m"exhaustive, double_sequences:1, mentsu:2, pair:1")
+define_yaku yaku, "Pure Double Chow", [1, "Fan"], match(["hand", "calls", "winning_tile"], ~m"exhaustive, double_sequences:2, pair:1")
+define_set mixed_double_chow, ~s"0 1 2, 10 11 12|0 1 2, 20 21 22"
+define_yaku yaku, "Mixed Double Chow", [1, "Fan"], match(["hand", "calls", "winning_tile"], ~m"exhaustive, mixed_double_chow:1, mentsu:2, pair:1")
+define_yaku yaku, "Mixed Double Chow", [1, "Fan"], match(["hand", "calls", "winning_tile"], ~m"exhaustive, mixed_double_chow:2, pair:1")
+define_set short_straight, ~s"0 1 2, 3 4 5"
+define_yaku yaku, "Short Straight", [1, "Fan"], match(["hand", "calls", "winning_tile"], ~m"exhaustive, short_straight:1, mentsu:2, pair:1")
+define_yaku yaku, "Short Straight", [1, "Fan"], match(["hand", "calls", "winning_tile"], ~m"exhaustive, short_straight:2, pair:1")
+define_yaku yaku, "Two Terminal Chows", [1, "Fan"], match(["hand", "calls", "winning_tile"], ~m"exhaustive, terminal_sequences:1, mentsu:2, pair:1")
+define_yaku yaku, "Two Terminal Chows", [1, "Fan"], match(["hand", "calls", "winning_tile"], ~m"exhaustive, terminal_sequences:2, pair:1")
+define_yaku yaku, "Pung of Terminals", [1, "Fan"], match(["hand", "calls", "winning_tile"], ~m"terminal_t:1")
+define_yaku yaku, "Pung of Terminals", [1, "Fan"], match(["hand", "calls", "winning_tile"], ~m"terminal_t:2")
+define_yaku yaku, "Pung of Terminals", [1, "Fan"], match(["hand", "calls", "winning_tile"], ~m"terminal_t:3")
+define_yaku yaku, "Pung of Terminals", [1, "Fan"], match(["hand", "calls", "winning_tile"], ~m"terminal_t:4")
+# pung of honors is just guest winds
+define_yaku yaku, "Pung of Honors", [1, "Fan"], match(["hand", "calls", "winning_tile"], ~m"(ton nan shaa pei):-3, guest_wind:1")
+define_yaku yaku, "Pung of Honors", [1, "Fan"], match(["hand", "calls", "winning_tile"], ~m"(ton nan shaa pei):-3, guest_wind:2")
+define_yaku yaku, "Melded Kong", [1, "Fan"], match(["calls"], ~m"(daiminkan kakan):1")
+define_yaku yaku, "One Voided Suit", [1, "Fan"],
+     winning_hand_consists_of("1m","2m","3m","4m","5m","6m","7m","8m","9m","1p","2p","3p","4p","5p","6p","7p","8p","9p","1z","2z","3z","4z","0z","6z","7z")
+  or winning_hand_consists_of("1m","2m","3m","4m","5m","6m","7m","8m","9m","1s","2s","3s","4s","5s","6s","7s","8s","9s","1z","2z","3z","4z","0z","6z","7z")
+  or winning_hand_consists_of("1p","2p","3p","4p","5p","6p","7p","8p","9p","1s","2s","3s","4s","5s","6s","7s","8s","9s","1z","2z","3z","4z","0z","6z","7z")
+define_yaku yaku, "No Honors", [1, "Fan"], not_match(["hand", "calls", "winning_tile"], ~m"(1z 2z 3z 4z 0z 6z 7z):1")
+define_yaku yaku, "Self-Drawn", [1, "Fan"], won_by_draw
+define_match edge_wait, ~m"exhaustive, pair:1, mentsu:3, penchan:1 | exhaustive, pair:1, knit_straight:1, penchan:1"
+define_match closed_wait, ~m"exhaustive, pair:1, mentsu:3, kanchan:1 | exhaustive, pair:1, knit_straight:1, kanchan:1"
+define_match single_wait, ~m"exhaustive, mentsu:4 | exhaustive, knit_straight:1, mentsu:1"
+define_yaku yaku, "Edge Wait", [1, "Fan"], match(["hand", "calls"], ["edge_wait"]) and wait_count_at_most(1, "win")
+define_yaku yaku, "Closed Wait", [1, "Fan"], match(["hand", "calls"], ["closed_wait"]) and wait_count_at_most(1, "win")
+define_yaku yaku, "Single Wait", [1, "Fan"], match(["hand", "calls"], ["single_wait"]) and wait_count_at_most(1, "win")
+
+# ad-hoc implementation of Exclusionary Rule; just subtract the value of the offending yaku
+define_yaku meta_yaku, "Mixed Double Chow", [-1, "Fan"], has_existing_yaku(["Mixed Double Chow", 2], ["Two Terminal Chows", 2])
+define_yaku meta_yaku, "Short Straight", [-1, "Fan"], has_existing_yaku("Mixed Straight", "Mixed Double Chow", "Short Straight")
+define_yaku meta_yaku, "Short Straight", [-1, "Fan"], has_existing_yaku("Pure Straight", "Pure Double Chow", "Short Straight")
+# ad-hoc implementation of pluralising "Pung of Terminals/Honors" yaku
+define_yaku meta_yaku, "Pungs of Terminals", [2, "Fan"], has_existing_yaku(["Pung of Terminals", 2]), ["Pung of Terminals"]
+define_yaku meta_yaku, "Pungs of Terminals", [1, "Fan"], has_existing_yaku(["Pung of Terminals", 3]), ["Pung of Terminals"]
+define_yaku meta_yaku, "Pungs of Terminals", [1, "Fan"], has_existing_yaku(["Pung of Terminals", 4]), ["Pung of Terminals"]
+# ad-hoc implementation of pluralising "Pung of Honors" yaku
+define_yaku meta_yaku, "Pungs of Honors", [2, "Fan"], has_existing_yaku(["Pung of Honors", 2]), ["Pung of Honors"]
+
+define_yaku extra_yaku, "Flower Tiles", ["flower_count", "Fan"], flower_count >= 1
+
+# 88
+define_yaku_precedence "Big Four Winds", ["Little Four Winds", "Half Flush", "Prevalent Wind", "Seat Wind"]
+define_yaku_precedence "Big Three Dragons", ["Little Three Dragons"]
+define_yaku_precedence "All Green", ["One Voided Suit"]
+define_yaku_precedence "Nine Gates", ["Full Flush", "Concealed Hand", "Pungs of Terminals", "Pung of Terminals"]
+define_yaku_precedence "Four Kongs", ["Three Kongs", "All Pungs", "Single Wait"]
+define_yaku_precedence "Seven Shifted Pairs", ["Seven Pairs", "Full Flush"]
+define_yaku_precedence "Thirteen Orphans", ["All Types", "All Terminals and Honors", "Concealed Hand", "Single Wait"]
+# 64
+define_yaku_precedence "All Terminals", ["All Terminals and Honors", "Pungs of Terminals", "Pung of Terminals", "Pungs of Honors", "Pung of Honors", "Outside Hand", "No Honors", "All Pungs"]
+define_yaku_precedence "Little Four Winds", ["Big Three Winds", "All Pungs", "Pungs of Terminals", "Pung of Terminals", "Pungs of Honors", "Pung of Honors"]
+define_yaku_precedence "Little Three Dragons", ["Two Dragons Pungs", "White Dragon", "Green Dragon", "Red Dragon"]
+define_yaku_precedence "All Honors", ["All Terminals and Honors", "Half Flush", "Pungs of Terminals", "Pung of Terminals", "Pungs of Honors", "Pung of Honors", "One Voided Suit", "All Pungs"]
+define_yaku_precedence "Four Concealed Pungs", ["Three Concealed Pungs", "Two Concealed Pungs", "All Pungs", "Concealed Hand"]
+define_yaku_precedence "Pure Terminal Chows", ["All Chows", "Pure Double Chow", "Two Terminal Chows", "Full Flush", "One Voided Suit", "No Honors"]
+# 48
+define_yaku_precedence "Quadruple Chow", ["Pure Triple Chow", "Tile Hog"]
+define_yaku_precedence "Four Pure Shifted Pungs", ["Pure Shifted Pungs", "All Pungs"]
+# 32
+define_yaku_precedence "Four Pure Shifted Chows", ["Pure Shifted Chows", "Short Straight", "Two Terminal Chows"]
+define_yaku_precedence "Three Kongs", ["Two Kongs", "Two Melded Kongs", "Melded Kong"] # Apparently Three Kongs can combine with Concealed Kong and Two Concealed Kongs.
+define_yaku_precedence "All Terminals and Honors", ["Pungs of Terminals", "Pung of Terminals", "Pungs of Honors", "Pung of Honors", "Outside Hand", "All Pungs"]
+# 24
+define_yaku_precedence "Seven Pairs", ["Concealed Hand", "Single Wait", "All Even Pungs"]
+define_yaku_precedence "Greater Honors and Knitted Tiles", ["Lesser Honors and Knitted Tiles"]
+define_yaku_precedence "All Even Pungs", ["All Pungs", "No Honors", "All Simples"]
+define_yaku_precedence "Full Flush", ["Half Flush", "No Honors"]
+define_yaku_precedence "Pure Triple Chow", ["Pure Double Chow"]
+define_yaku_precedence "Pure Shifted Pungs", []
+define_yaku_precedence "Upper Tiles", ["Upper Four", "No Honors"]
+define_yaku_precedence "Middle Tiles", ["All Simples", "No Honors"]
+define_yaku_precedence "Lower Tiles", ["Lower Four", "No Honors"]
+# 16
+define_yaku_precedence "Pure Straight", ["Short Straight", "Two Terminal Chows"]
+define_yaku_precedence "Three-Suited Terminal Chows", ["Two Terminal Chows", "All Chows", "Mixed Double Chow", "No Honors"]
+define_yaku_precedence "Pure Shifted Chows", []
+define_yaku_precedence "All Fives", ["No Honors", "All Simples"]
+define_yaku_precedence "Triple Pung", ["Double Pung"]
+define_yaku_precedence "Three Concealed Pungs", ["Two Concealed Pungs"]
+# 12
+define_yaku_precedence "Lesser Honors and Knitted Tiles", ["All Types", "Concealed Hand"]
+define_yaku_precedence "Knitted Straight", []
+define_yaku_precedence "Upper Four", ["No Honors"]
+define_yaku_precedence "Lower Four", ["No Honors"]
+define_yaku_precedence "Big Three Winds", [] # Pung of Honors is defined above so that wind pungs don't count if you have 3-4 wind pungs
+# 8
+define_yaku_precedence "Mixed Straight", []
+define_yaku_precedence "Reversible Tiles", ["One Voided Suit"]
+define_yaku_precedence "Mixed Triple Chow", ["Mixed Double Chow"]
+define_yaku_precedence "Mixed Shifted Pungs", []
+define_yaku_precedence "Last Tile Draw", ["Self-Drawn"]
+define_yaku_precedence "Last Tile Claim", []
+define_yaku_precedence "Out with Replacement Tile", ["Self-Drawn"]
+define_yaku_precedence "Robbing The Kong", ["Last Tile"]
+define_yaku_precedence "Two Concealed Kongs", ["Concealed Kong", "Two Concealed Pungs"]
+# 6
+define_yaku_precedence "All Pungs", []
+define_yaku_precedence "Half Flush", ["One Voided Suit"]
+define_yaku_precedence "Mixed Shifted Chows", []
+define_yaku_precedence "All Types", []
+define_yaku_precedence "Melded Hand", ["Single Wait"]
+define_yaku_precedence "Two Dragon Pungs", ["White Dragon", "Green Dragon", "Red Dragon"]
+define_yaku_precedence "Two Kongs", ["Melded Kong", "Concealed Kong"]
+# 4
+define_yaku_precedence "Outside Hand", []
+define_yaku_precedence "Fully Concealed Hand", ["Self-Drawn", "Concealed Hand"]
+define_yaku_precedence "Two Melded Kongs", ["Melded Kong"]
+define_yaku_precedence "Last Tile", []
+# 2
+define_yaku_precedence "White Dragon", []
+define_yaku_precedence "Green Dragon", []
+define_yaku_precedence "Red Dragon", []
+define_yaku_precedence "Prevalent Wind", []
+define_yaku_precedence "Seat Wind", []
+define_yaku_precedence "Concealed Hand", []
+define_yaku_precedence "All Chows", ["No Honors"]
+define_yaku_precedence "Tile Hog", []
+define_yaku_precedence "Double Pung", []
+define_yaku_precedence "Two Concealed Pungs", []
+define_yaku_precedence "Concealed Kong", []
+define_yaku_precedence "All Simples", ["No Honors"]
+# 1
+define_yaku_precedence "Pure Double Chow", []
+define_yaku_precedence "Mixed Double Chow", []
+define_yaku_precedence "Short Straight", []
+define_yaku_precedence "Two Terminal Chows", []
+define_yaku_precedence "Pungs of Terminals", ["Pung of Terminals"]
+define_yaku_precedence "Pung of Terminals", []
+define_yaku_precedence "Pungs of Honors", ["Pung of Honors"]
+define_yaku_precedence "Pung of Honors", []
+define_yaku_precedence "Melded Kong", []
+define_yaku_precedence "One Voided Suit", []
+define_yaku_precedence "No Honors", []
+define_yaku_precedence "Self-Drawn", []
+define_yaku_precedence "Edge Wait", ["Closed Wait", "Single Wait"]
+define_yaku_precedence "Closed Wait", ["Single Wait"]
+define_yaku_precedence "Single Wait", []
+
+set score_calculation, %{
+  yaku_lists: ["yaku", "meta_yaku", "extra_yaku"],
+  extra_yaku_lists: ["extra_yaku"],
+  point_name: "Fan",
+  win_by_discard_label: "Hu",
+  win_by_draw_label: "Zimo",
+  win_by_discard_name: "Hu",
+  win_by_discard_name_2: "Double Hu",
+  win_by_discard_name_3: "Triple Hu",
+  win_by_draw_name: "Zimo",
+  exhaustive_draw_name: "Draw"
+}
+
+on before_turn_change do
+  unset_status("kan", "flower")
+  unset_status_all("call_made")
+  if status_missing("match_start") do unset_status("first_turn") end
+end
+on after_turn_change do
+  if no_tiles_remaining do
+    pause(1000)
+    ryuukyoku
+  end
+  if not_no_tiles_remaining and status_missing("match_start", "won") do draw end
+  if status("won") do advance_turn end
+  if everyone_status("no_flowers") do
+    unset_status_all("no_flowers", "match_start")
+    change_turn("east")
+    as others do move_tiles("draw", "hand") end
+  end
+end
+define_play_effect any do unset_status("discards_empty") end
+on after_start do set_status_all("first_turn", "discards_empty", "match_start") end
+on after_call do set_status("call_made") end
+on after_win do flip_all_calls_faceup end
+on before_exhaustive_draw do flip_all_calls_faceup end
+on before_continue do advance_turn end
+on before_win do add_counter("flower_count", "count_matches", ["flowers"], ~m"(1f 2f 3f 4f 1g 2g 3g 4g):1") end
+
+on before_scoring do
+  make_responsible_for("others")
+end
+
+define_scoring ron do
+  total += 8 :: "Base payment"
+  if seat_is("last_discarder") do
+    total += points :: "Discarder payment"
+  end
+end
+
+define_scoring tsumo do
+  total += 8 :: "Base payment"
+  total += points :: "Self-drawn payment"
+end
+
+# giant add-rules section, go!
+# TODO: prettify all the rules (in particular, we don't want rule section titles that span three lines)
+# TODO: add examples for all the yaku
+# TODO: add any other basic rules I've missed
+on after_initialization do
+  add_rule("Rules", "Win Condition", "You may win with one of the following:", -100)
+  add_rule("Rules", "Win Condition", "- Four sets (sequences or triplets) and a pair.", -100)
+  add_rule("Rules", "Win Condition", "- (Seven Pairs) Seven distinct pairs.", -100)
+  add_rule("Rules", "Win Condition", "- (Thirteen Orphans) All thirteen terminal/honor tiles plus one forming a pair.", -100)
+  add_rule("Rules", "Win Condition", "- (Knitted Straight) A knitted straight plus one set and a pair. A knitted straight consists of 147 of one suit, 258 of a second suit, and 369 of a third suit.", -100)
+  add_rule("Rules", "Win Condition", "- (Knitted Hand) 14 unique tiles from the following set: 147 of one suit, 258 of a second suit, 369 of a third suit, all winds, and all dragons.", -100)
+  add_rule("Rules", "8 Fan Minimum", "Your hand must score at least 8 Fan to win. (Flowers don't count.)", -10)
+  # 1 Fan
+  add_rule("1 Fan", "Pung of Terminals or Honors", "You have a triplet of terminals or honors. This triplet can be either called or concealed. Having a pung of dragons, prevalent winds, or seat winds instead awards the 2-fan yaku Dragon Pung, Prevalent Wind, or Seat Wind respectively. Repeatable.")
+  add_rule("1 Fan", "Self-Drawn", "You drew the winning tile yourself.")
+  add_rule("1 Fan", "Closed Wait", "You are only waiting for one kind of tile, and the wait is a 'middle' wait (like 35 waiting for 4).")
+  add_rule("1 Fan", "Mixed Double Chow", "You have two of the same sequence in different suits.")
+  add_rule("1 Fan", "One Voided Suit", "You lack any tiles from one of the three suits. (Honors and flowers are suitless, so your hand can still contain these.)")
+  add_rule("1 Fan", "Short Straight", "You have 123 456, 234 567, 345 678, or 456 789 of one suit.")
+  add_rule("1 Fan", "Single Wait", "You are only waiting for one kind of tile, and the wait is a pair wait like 3 waiting for another 3.")
+  add_rule("1 Fan", "No Honors", "You have no honor tiles.")
+  add_rule("1 Fan", "Edge Wait", "You are only waiting for one kind of tile, and the wait is 12 waiting for 3, or 90 waiting for 7.")
+  add_rule("1 Fan", "Melded Kong", "You have called a kong or added a tile to a called triplet to make a kong.")
+  add_rule("1 Fan", "Two Terminal Chows", "You have 123 and 789 of the same suit.")
+  add_rule("1 Fan", "Pure Double Chow", "Two identical chows in the same suit.")
+  add_rule("1 Fan", "Flower Tiles", "You get 1 fan per flower tile, but this does not contribute to the minimum requirement of 8 fan.")
+  # 2 Fan
+  add_rule("2 Fan", "All Chows", "All of your sets are sequences. In addition, you may not have any honor tiles.")
+  add_rule("2 Fan", "Dragon Pung", "You have a triplet of dragons. Having two dragon triplets instead awards the 6-fan yaku Two Dragon Pungs.")
+  add_rule("2 Fan", "Concealed Hand", "You have never called a tile (except flowers and concealed kongs, or except as the winning tile).")
+  # TODO: rewrite "Ignores flowers"
+  add_rule("2 Fan", "All Simples", "Your hand consists of only number tiles 2-8. (Ignores flowers.)")
+  add_rule("2 Fan", "Seat Wind", "You have a triplet of the wind matching your seat.")
+  add_rule("2 Fan", "Prevalent Wind", "You have a triplet of the prevalent (round) wind.")
+  # TODO: clarify this one
+  add_rule("2 Fan", "Double Pung", "You have two triplets of the same number (in different suits). Repeatable.")
+  add_rule("2 Fan", "Tile Hog", "Your hand contains all four of a tile (not in a kong). Repeatable.")
+  add_rule("2 Fan", "Two Concealed Pungs", "You have two triplets in hand (not called). Either one may be a Concealed Kong. Having two Concealed Kongs instead awards the 8-fan yaku Two Concealed Kongs. Having three or four Concealed Pungs instead awards the 16-fan yaku Three Concealed Pungs or the 64-fan yaku Four Concealed Pungs respectively.")
+  add_rule("2 Fan", "Concealed Kong", "You have exactly one concealed kong.")
+  # 4 Fan
+  add_rule("4 Fan", "Fully Concealed Hand", "Have no calls except concealed kongs, and win off a self draw.")
+  add_rule("4 Fan", "Last Tile", "Win on the fourth copy of a tile. The other three copies must be visible to all players (so cannot be in your hand).")
+  add_rule("4 Fan", "Outside Hand", "Each of your sets and pair contains a terminal or honor tile.")
+  add_rule("4 Fan", "Two Melded Kongs", "You have two kongs, both formed by calling the fourth tile or by adding the fourth tile to a called triplet.")
+  # 6 Fan
+  add_rule("6 Fan", "Mixed Shifted Chows", "You have something like 123 234 345, with each sequence being in a different suit.")
+  add_rule("6 Fan", "All Types", "Your hand has each of the five kinds of tiles: characters, circles, bamboo, winds, and dragons. (Ignores flowers.)")
+  add_rule("6 Fan", "Half Flush", "Your hand consists of one suit plus honors. (Ignores flowers.)")
+  add_rule("6 Fan", "All Pungs", "All of your sets are triplets (or kongs).")
+  add_rule("6 Fan", "Melded Hand", "Have four calls and win off a discard or by robbing a kong.")
+  add_rule("6 Fan", "Two Dragon Pungs", "You have two dragon triplets.")
+  add_rule("6 Fan", "Two Kongs", "You have two kongs, one melded (formed by calling the fourth tile or by adding the fourth tile to a called triplet) and one concealed.")
+  # 8 Fan
+  add_rule("8 Fan", "Mixed Triple Chow", "You have three of the same sequence in different suits.")
+  add_rule("8 Fan", "Mixed Straight", "You have 123 456 789, all of different suits.")
+  add_rule("8 Fan", "Chicken Hand", "None of the other fan apply to your hand.")
+  add_rule("8 Fan", "Reversible Tiles", "Your hand is composed of tiles from the following set: 1234589 of circles, 245689 of bamboo, and white dragon. (Ignores flowers.)")
+  add_rule("8 Fan", "Mixed Shifted Pungs", "You have consecutive triplets in the pattern 111 222 333 in different suits.")
+  add_rule("8 Fan", "Out with Replacement Tile", "Win off the replacement tile after calling a flower of a kong.")
+  add_rule("8 Fan", "Robbing The Kong", "Win off the tile someone tried to add to a pung.")
+  add_rule("8 Fan", "Last Tile Claim", "Win off the last discard.")
+  add_rule("8 Fan", "Last Tile Draw", "Win off the last draw.")
+  add_rule("8 Fan", "Two Concealed Kongs", "You have two concealed kongs.")
+  # 12 Fan
+  add_rule("12 Fan", "Upper Four", "Your hand consists only of the numbers 6789. (Ignores flowers.)")
+  add_rule("12 Fan", "Lower Four", "Your hand consists only of the numbers 1234. (Ignores flowers.)")
+  add_rule("12 Fan", "Lesser Honors and Knitted Tiles", "You win from having 14 unique tiles from the following set: 147 of one suit, 258 of a second suit, 369 of a third suit, all winds, and all dragons.")
+  add_rule("12 Fan", "Knitted Straight", "You win with hand containing a knitted straight: 147 of one suit, 258 of a second suit, 369 of a third suit.")
+  add_rule("12 Fan", "Big Three Winds", "You have three wind triplets.")
+  # 16 Fan
+  add_rule("16 Fan", "Pure Straight", "You have 123 456 789 in the same suit.")
+  add_rule("16 Fan", "Pure Shifted Chows", "You have something like 123 234 345 in the same suit, or 123 345 567 in the same suit.")
+  add_rule("16 Fan", "Three Concealed Pungs", "You have three concealed triplets. Triplets obtained via win by self-draw count as concealed, but triplets obtained via win by discard/robbing a kong are not concealed.")
+  add_rule("16 Fan", "All Fives", "All of your sets and your pair contain a five.")
+  add_rule("16 Fan", "Triple Pung", "You have three triplets of the same number.")
+  add_rule("16 Fan", "Three-Suited Terminal Chows", "You have Two Terminal Chows (123 789) twice in different suits, plus a pair of fives.")
+  # 24 Fan
+  add_rule("24+ Fan", "Full Flush (24 Fan)", "Your hand consists of one suit only, no honors. (ignores flowers)")
+  add_rule("24+ Fan", "Seven Pairs (24 Fan)", "You won with a seven-pair hand. Repeated pairs are allowed (and award the 2-Fan yaku Tile Hog).")
+  add_rule("24+ Fan", "Greater Honors and Knitted Tiles (24 Fan)", "You have one of each wind and dragon, plus 7 unique tiles from the following set: 147 of one suit, 258 of a second suit, and 369 of a third suit.")
+  add_rule("24+ Fan", "Pure Shifted Pungs (24 Fan)", "You have consecutive triplets in the pattern 111222333, of the same suit.")
+  add_rule("24+ Fan", "Upper Tiles (24 Fan)", "Your hand consists only of the numbers 789. (Ignores flowers.)")
+  add_rule("24+ Fan", "Lower Tiles (24 Fan)", "Your hand consists only of the numbers 123. (Ignores flowers.)")
+  add_rule("24+ Fan", "Middle Tiles (24 Fan)", "Your hand consists only of the numbers 456. (Ignores flowers.)")
+  add_rule("24+ Fan", "All Even Pungs (24 Fan)", "Your hand consists of triplets and pairs of even numbers (2468) only.")
+  add_rule("24+ Fan", "Pure Triple Chow (24 Fan)", "You have three of the same sequence in the same suit.")
+  # 32 Fan
+  add_rule("24+ Fan", "All Terminals and Honors (32 Fan)", "Your hand consists of 1, 9, and honor tiles only. (Ignores flowers.)")
+  add_rule("24+ Fan", "Four Pure Shifted Chows (32 Fan)", "You have something like 123 234 345 456 in the same suit.")
+  add_rule("24+ Fan", "Three Kongs (32 Fan)", "You have three kongs.")
+  # 48 Fan
+  add_rule("24+ Fan", "Four Pure Shifted Pungs (48 Fan)", "You have consecutive triplets in the pattern 111222333444, of the same suit.")
+  add_rule("24+ Fan", "Quadruple Chow (48 Fan)", "You have four of the same sequence in the same suit.")
+  # 64 Fan
+  add_rule("24+ Fan", "Little Three Dragons (64 Fan)", "You have two dragon triplets and a dragon pair.")
+  add_rule("24+ Fan", "Four Concealed Pungs (64 Fan)", "You have four concealed triplets. Triplets obtained via win by self-draw count as concealed, but triplets obtained via win by discard/robbing a kong are not concealed.")
+  add_rule("24+ Fan", "Little Four Winds (64 Fan)", "You have three wind triplets and a wind pair.")
+  add_rule("24+ Fan", "All Honors (64 Fan)", "Your hand is all honor tiles.")
+  add_rule("24+ Fan", "All Terminals (64 Fan)", "Your hand consists of 1 and 9 tiles only. (Ignores flowers.)")
+  add_rule("24+ Fan", "Pure Terminal Chows (64 Fan)", "You have exactly 123 123 55 789 789 in the same suit.")
+  # 88 Fan
+  add_rule("24+ Fan", "Big Three Dragons (88 Fan)", "You have three dragon triplets.")
+  add_rule("24+ Fan", "Thirteen Orphans (88 Fan)", "You have one of each terminal and honor tile, one of them forming a pair.")
+  add_rule("24+ Fan", "All Green (88 Fan)", "Your hand consists of tiles from the set 23468 of bamboo and green dragon. (Ignores flowers.)")
+  add_rule("24+ Fan", "Big Four Winds (88 Fan)", "You have four wind triplets.")
+  add_rule("24+ Fan", "Four Kongs (88 Fan)", "You have four kongs.")
+  add_rule("24+ Fan", "Seven Shifted Pairs (88 Fan)", "You have 11 22 33 44 55 66 77 in one suit. It does not have to start at 1.")
+  add_rule("24+ Fan", "Nine Gates (88 Fan)", "Your hand is concealed and is all one suit in the nine gates shape (1112345678999 + one extra tile).")
+end
+
+define_button start_flower,
+  display_name: "Hua",
+  show_when: our_turn and status("match_start") and match(["hand", "draw"], ~m"nojoker, (1f 2f 3f 4f 1g 2g 3g 4g):1"),
+  unskippable: true
+  do
+    big_text("Hua")
+    flower("1f", "2f", "3f", "4f", "1g", "2g", "3g", "4g")
+    set_status("flower")
+    draw(1, "opposite_end")
+  end
+
+define_button start_no_flower,
+  display_name: "Pass",
+  show_when: our_turn and status("match_start"),
+  unskippable: true
+  do
+    big_text("No Flowers")
+    set_status("no_flowers")
+    advance_turn
+    recalculate_buttons
+  end
+
+define_button chii,
+  display_name: "Chi",
+  show_when: not_our_turn and not_no_tiles_remaining and status_missing("match_start") and kamicha_discarded and call_available,
+  call: [[-2, -1], [-1, 1], [1, 2]],
+  call_style: %{
+    kamicha: ["call_sideways", 0, 1],
+    toimen: [0, "call_sideways", 1],
+    shimocha: [0, 1, "call_sideways"]
+  }
+  do
+    big_text("Chi")
+    call
+    change_turn("self")
+  end
+
+define_button pon,
+  display_name: "Pung",
+  show_when: not_our_turn and not_no_tiles_remaining and status_missing("match_start") and someone_else_just_discarded and call_available,
+  call: [[0, 0]],
+  call_style: %{
+    kamicha: ["call_sideways", 0, 1],
+    toimen: [0, "call_sideways", 1],
+    shimocha: [0, 1, "call_sideways"]
+  },
+  precedence_over: ["chii"]
+  do
+    big_text("Pung")
+    call
+    change_turn("self")
+  end
+
+define_button daiminkan,
+  display_name: "Kong",
+  show_when: not_our_turn and not_no_tiles_remaining and status_missing("match_start") and someone_else_just_discarded and call_available,
+  call: [[0, 0, 0]],
+  call_style: %{
+    kamicha: ["call_sideways", 0, 1, 2],
+    toimen: [0, "call_sideways", 1, 2],
+    shimocha: [0, 1, 2, "call_sideways"]
+  },
+  precedence_over: ["chii", "pon"]
+  do
+    big_text("Kong")
+    call
+    change_turn("self")
+    set_status("kan")
+    draw(1, "opposite_end")
+  end
+
+define_button ankan,
+  display_name: "Self Kong", 
+  show_when: our_turn and not_no_tiles_remaining and status_missing("match_start") and not_just_discarded and not_just_called and self_call_available,
+  call: [[0, 0, 0]],
+  call_style: %{
+    self: [["1x", 0], ["1x", 1], ["1x", 2], ["1x", 3]]
+  },
+  call_hidden: true
+  do
+    big_text("Kong")
+    self_call
+    set_status("kan")
+    draw(1, "opposite_end")
+  end
+
+define_button kakan,
+  display_name: "Kong", 
+  show_when: our_turn and not_no_tiles_remaining and status_missing("match_start") and not_just_discarded and not_just_called and can_upgrade_call,
+  call: [[0, 0, 0]],
+  call_style: %{
+    kamicha: [["sideways", 0], "call_sideways", 1, 2],
+    toimen: [0, ["sideways", 1], "call_sideways", 2],
+    shimocha: [0, 1, ["sideways", 2], "call_sideways"]
+  },
+  upgrades: "pon"
+  do
+    big_text("Kong")
+    set_status("kan", "can_chankan")
+    upgrade_call
+    unset_status("can_chankan")
+    draw(1, "opposite_end")
+  end
+
+define_button ron,
+  display_name: "Hu",
+  show_when: not_our_turn
+    and status_missing("match_start", "won")
+    and someone_else_just_discarded
+    and match(["hand", "calls"], ["tenpai"])
+    and match(["hand", "calls", "last_discard"], ["win"])
+    and has_yaku_with_discard(8),
+  precedence_over: ["chii", "pon", "daiminkan", "ankan", "kakan", "ron", "chankan"]
+  do
+    big_text("Hu")
+    pause(1000)
+    reveal_hand
+    set_status("won")
+    win_by_discard("ron")
+  end
+
+define_button chankan,
+  display_name: "Hu", 
+  show_when: not_our_turn
+    and status_missing("match_start", "won")
+    and status("can_chankan", as: "caller")
+    and match(["hand", "calls"], ["tenpai"])
+    and match(["hand", "calls", "last_called_tile"], ["win"])
+    and has_yaku_with_call(8),
+  precedence_over: ["chii", "pon", "daiminkan", "ankan", "kakan", "ron", "chankan"]
+  do
+    big_text("Hu")
+    pause(1000)
+    reveal_hand
+    set_status("won")
+    win_by_call("ron")
+  end
+
+define_button tsumo,
+  display_name: "Hu",
+  show_when: our_turn
+    and has_draw
+    and not_others_status("call_made")
+    and status_missing("match_start", "won")
+    and match(["hand", "calls"], ["tenpai"])
+    and match(["hand", "calls", "draw"], ["win"])
+    and has_yaku_with_hand(8),
+  precedence_over: ["chii", "pon", "daiminkan", "ankan", "kakan", "ron", "chankan"]
+  do
+    big_text("Hu")
+    pause(1000)
+    reveal_hand
+    set_status("won")
+    win_by_draw("tsumo")
+  end
+
+define_button flower,
+  display_name: "Hua",
+  show_when: our_turn
+    and status_missing("match_start")
+    and has_draw
+    and not_just_discarded
+    and not_others_status("call_made")
+    and match(["hand", "draw"], ~m"nojoker, (1f 2f 3f 4f 1g 2g 3g 4g):1"),
+  unskippable: true
+  do
+    big_text("Hua")
+    flower("1f", "2f", "3f", "4f", "1g", "2g", "3g", "4g")
+    set_status("flower")
+    if no_tiles_remaining do
+      advance_turn
+    else
+      draw(1, "opposite_end")
+    end
+  end
+
+define_auto_button _1_auto_sort,
+  display_name: "A",
+  desc: "Automatically sort your hand.",
+  enabled_at_start: true
+  do
+    sort_hand
+  end
+
+define_auto_button _2_auto_ron,
+  display_name: "R",
+  desc: "Automatically declare wins."
+  do
+    if buttons_include("ron") do
+      press_button("ron")
+    end
+    if buttons_include("tsumo") do
+      press_button("tsumo")
+    end
+  end
+
+define_auto_button _3_auto_flower,
+  display_name: "F",
+  desc: "Automatically declare all flowers.",
+  enabled_at_start: true
+  do
+    if buttons_include("start_flower") do press_button("start_flower"); press_first_call_button("start_flower") end
+    if buttons_include("start_no_flower") and buttons_exclude("start_joker") do press_button("start_no_flower") end
+    if buttons_include("flower") do press_button("flower"); press_first_call_button("flower") end
+  end
+
+define_auto_button _4_auto_no_call,
+  display_name: "C",
+  desc: "Skip all calls except wins."
+  do
+    if not_our_turn and buttons_include("skip") and buttons_exclude("ron", "chankan") do
+      press_button("skip")
+    end
+  end
+
+define_auto_button _5_auto_discard,
+  display_name: "D",
+  desc: "Automatically discard your drawn tile."
+  do
+    if our_turn and buttons_exclude("tsumo", "ankan") and has_draw do
+      discard_draw
+    end
+  end
+
+set interruptible_actions, ["play_tile", "draw", "self_call", "upgrade_call"]
+set initial_score, 0
+set starting_tiles, 13
+set four_rows_discards, true
+set max_rounds, 16
+
+# mods
+
+define_mod_category "Other"
+define_mod tonpuu, name: "East Round Only", desc: "Play only the East Round (4 hands), instead of all four rounds (16 hands)", category: "Other"

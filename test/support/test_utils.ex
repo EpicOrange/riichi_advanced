@@ -9,8 +9,8 @@ defmodule RiichiAdvanced.TestUtils do
   alias RiichiAdvanced.Utils, as: Utils
   import ExUnit.Assertions
 
-  @suppress_io true
-  # @suppress_io false
+  # @suppress_io true
+  @suppress_io false
 
   def initialize_test_state(ruleset, mods, config \\ nil)
   def initialize_test_state(_ruleset, nil, _config) do
@@ -73,9 +73,6 @@ defmodule RiichiAdvanced.TestUtils do
 
     state = GenServer.call(test_state.game_state_pid, :get_state)
     GenServer.cast(test_state.game_state_pid, :terminate_game)
-
-    # debug
-    # IO.inspect(state.players.east.hand)
 
     check_winner = fn seat, expected_winner ->
       winner = state.winners[seat]
@@ -250,7 +247,16 @@ defmodule RiichiAdvanced.TestUtils do
     translated_win_definitions = Rules.translate_sets_in_match_definitions(win_definitions, Rules.get(rules_ref, "set_definitions"))
     translated_am_win_definitions = American.translate_american_match_definitions(am_win_definitions)
     win_definitions = translated_win_definitions ++ translated_am_win_definitions
-    tile_behavior = %TileBehavior{ aliases: tile_aliases, tile_freqs: Enum.frequencies(Rules.get(rules_ref, "wall")) }
+    tile_mappings = for {tile1, attrs_aliases} <- tile_aliases, {attrs, aliases} <- attrs_aliases, tile2 <- aliases, reduce: %{} do
+      ret ->
+        new_tiles = MapSet.new([Utils.add_attr(tile1, attrs)])
+        Map.update(ret, tile2, new_tiles, &MapSet.union(&1, new_tiles))
+    end
+    tile_behavior = %TileBehavior{ aliases: tile_aliases, mappings: tile_mappings, tile_freqs: Enum.frequencies(Rules.get(rules_ref, "wall")) }
+    # show defns that have the "debug" keyword in them
+    for definition <- translated_am_win_definitions, "debug" in definition do
+      IO.inspect(definition, label: "debug_am_match_definitions")
+    end
     Match.match_hand(hand, calls, win_definitions, tile_behavior)
   end
   def assert_winning_hand(rules_ref, match_definition_name, hand, calls \\ [], tile_aliases \\ %{}) do

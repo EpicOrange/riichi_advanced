@@ -189,10 +189,10 @@ defmodule RiichiAdvanced.YakuTest.NingboYaku do
     TestUtils.test_yaku_advanced("ningbo", [], """
     {
       "starting_hand": {
-        "east": ["3m", "3m", "3m", "5m", "5m", "5m", "8m", "8m", "8m", "1z", "1z", "4m", "6m"],
-        "south": ["2m", "4m", "7m", "2p", "3p", "4p", "6p", "7p", "8p", "9p", "2s", "4s", "6s"],
-        "west": ["2m", "4m", "7m", "2p", "3p", "4p", "6p", "7p", "8p", "9p", "2s", "4s", "6s"],
-        "north": ["2m", "4m", "7m", "2p", "3p", "4p", "6p", "7p", "8p", "9p", "2s", "4s", "6s"]
+        "east": ["3m", "3m", "3m", "4m", "4m", "4m", "8m", "8m", "8m", "1z", "1z", "4m", "6m"],
+        "south": ["2m", "5m", "7m", "2p", "3p", "4p", "6p", "7p", "8p", "9p", "2s", "4s", "6s"],
+        "west": ["2m", "5m", "7m", "2p", "3p", "4p", "6p", "7p", "8p", "9p", "2s", "4s", "6s"],
+        "north": ["2m", "5m", "7m", "2p", "3p", "4p", "6p", "7p", "8p", "9p", "2s", "4s", "6s"]
       },
       "starting_draws": ["6m", "8s"],
       "starting_dead_wall": ["7s"]

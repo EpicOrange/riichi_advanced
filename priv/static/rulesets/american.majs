@@ -839,7 +839,7 @@ define_auto_button _6_auto_discard,
     end
   end
 
-define_auto_button _6_auto_discard,
+define_auto_button _7_auto_discard_nonmatching,
   display_name: "DD",
   desc: "Automatically discard your drawn tile if it doesn't match any of your hand tiles."
   do

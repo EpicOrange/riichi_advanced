@@ -1,4 +1,3 @@
-  
 defmodule RiichiAdvanced.GameState do
   alias RiichiAdvanced.GameState.Actions, as: Actions
   alias RiichiAdvanced.GameState.American, as: American
@@ -56,11 +55,23 @@ defmodule RiichiAdvanced.GameState do
                     :"2p"=>:"1p", :"3p"=>:"2p", :"4p"=>:"3p", :"5p"=>:"4p", :"6p"=>:"5p", :"7p"=>:"6p", :"8p"=>:"7p", :"9p"=>:"8p",
                     :"2s"=>:"1s", :"3s"=>:"2s", :"4s"=>:"3s", :"5s"=>:"4s", :"6s"=>:"5s", :"7s"=>:"6s", :"8s"=>:"7s", :"9s"=>:"8s"},
       tile_freqs: %{},
+
+      # below is used by match
+
+      # we populate attrs in match definitions at initialization
+      # and whenever we set tile aliases, we add the attrs in from_tiles
+      # only these attrs are relevant for matching, which is what this field is used for
+      attrs: MapSet.new(),
+      all_tiles: MapSet.new(),
+      base_tiles: MapSet.new(),
+      encoded_joker_tiles: MapSet.new(),
+      uuid: "",
+      encoded_aliases: %{},
       dismantle_calls: false,
-      ignore_suit: false
     ]
-    def get_all_tiles(tile_behavior) do
-      Map.keys(tile_behavior.tile_freqs) ++ Map.keys(tile_behavior.aliases)
+    def remove_aliases(tile_behavior) do
+      uuid = Ecto.UUID.generate()
+      %{tile_behavior | aliases: %{}, mappings: %{}, encoded_aliases: %{}, uuid: uuid}
     end
     def is_any_joker?(tile, tile_behavior) do
       Enum.any?(Map.get(tile_behavior.aliases, :any, %{}), fn {_attrs, aliases} ->
@@ -75,7 +86,7 @@ defmodule RiichiAdvanced.GameState do
       end)
     end
     def hash(tile_behavior) do
-      :erlang.phash2({tile_behavior.aliases, tile_behavior.ordering, tile_behavior.tile_freqs, tile_behavior.dismantle_calls, tile_behavior.ignore_suit})
+      :erlang.phash2({tile_behavior.aliases, tile_behavior.ordering, tile_behavior.tile_freqs, tile_behavior.dismantle_calls})
     end
     # the idea is to move the most powerful jokers to the back so that remove_tile removes them last
     # power is just "is any-joker?", then size of its mapping, then number of attrs (more attrs = more specific jokers = should be in the back)
@@ -122,7 +133,33 @@ defmodule RiichiAdvanced.GameState do
             Map.update(from, attrs, from_tiles, &MapSet.union(&1, from_tiles))
           end)
       end
-      %{tile_behavior | aliases: aliases, mappings: mappings}
+      attrs = Enum.flat_map(MapSet.union(from_tiles, to_tiles), fn {_tile, attrs} -> attrs; _ -> [] end)
+      |> Enum.map(&String.replace_leading(&1, "_", ""))
+      all_tiles = MapSet.union(tile_behavior.all_tiles, to_tiles)
+      %{tile_behavior |
+        aliases: aliases,
+        mappings: mappings,
+        all_tiles: all_tiles,
+        attrs: MapSet.union(tile_behavior.attrs, MapSet.new(attrs)),
+      }
+    end
+
+    # convert the MapSets in the aliases definition into lists,
+    # since MapSets cannot cross rustler's NIF boundary
+    def remove_alias_mapsets(aliases) do
+      Map.new(aliases, fn {tile, attrs_aliases} ->
+        {tile, Map.new(attrs_aliases, fn {attrs, aliases} ->
+          {attrs, Enum.to_list(aliases)}
+        end)}
+      end)
+    end
+    # undoes the above
+    def restore_alias_mapsets(aliases) do
+      Map.new(aliases, fn {tile, attrs_aliases} ->
+        {tile, Map.new(attrs_aliases, fn {attrs, aliases} ->
+          {attrs, MapSet.new(aliases)}
+        end)}
+      end)
     end
   end
 
@@ -694,15 +731,19 @@ defmodule RiichiAdvanced.GameState do
     tile_freqs = Enum.frequencies(state.wall ++ state.dead_wall)
     state = state
     |> update_all_players(&%Player{
-         score: scores[&1],
-         start_score: scores[&1],
-         nickname: &2.nickname,
-         hand: hands[&1],
-         auto_buttons: initial_auto_buttons,
-         status: MapSet.filter(&2.status, fn status -> status in persistent_statuses end),
-         counters: Enum.filter(&2.counters, fn {counter, _amt} -> counter in persistent_counters end) |> Map.new(),
-         tile_behavior: %TileBehavior{ tile_freqs: tile_freqs }
-       })
+        score: scores[&1],
+        start_score: scores[&1],
+        nickname: &2.nickname,
+        hand: hands[&1],
+        auto_buttons: initial_auto_buttons,
+        status: MapSet.filter(&2.status, fn status -> status in persistent_statuses end),
+        counters: Enum.filter(&2.counters, fn {counter, _amt} -> counter in persistent_counters end) |> Map.new(),
+        tile_behavior: %TileBehavior{
+          tile_freqs: tile_freqs,
+          all_tiles: MapSet.new(Map.keys(tile_freqs)),
+          attrs: Rules.get(state.rules_ref, :all_attrs, []),
+        }
+      })
     |> Map.put(:atop_wall, %{})
     |> Map.put(:actions, [])
     |> Map.put(:reversed_turn_order, false)
@@ -775,6 +816,29 @@ defmodule RiichiAdvanced.GameState do
         # or (not Conditions.check_cnf_condition(state, cond_spec, %{seat: seat, tile: tile}) |> IO.inspect(label: inspect({2, seat, tile, cond_spec})))
       end)
     else true end
+
+    # # debug version
+    # if tile == nil do
+    #   IO.puts("#{seat} cannot play tile #{tile} because it is nil")
+    #   false
+    # else if has_unskippable_button?(state, seat) do
+    #   IO.puts("#{seat} cannot play tile #{tile} because someone has an unskippable button")
+    #   false
+    # else if Utils.has_attr?(tile, ["no_discard"]) do
+    #   IO.puts("#{seat} cannot play tile #{tile} because it is no_discard")
+    #   false
+    # else if Rules.has_key?(state.rules_ref, "play_restrictions") do
+    #   ret = Enum.find(Rules.get(state.rules_ref, "play_restrictions"), fn [tile_spec, cond_spec] ->
+    #     Riichi.tile_matches(tile_spec, %{seat: seat, tile: tile, players: state.players})
+    #     and Conditions.check_cnf_condition(state, cond_spec, %{seat: seat, tile: tile})
+    #     # not (Riichi.tile_matches(tile_spec, %{seat: seat, tile: tile, players: state.players}) |> IO.inspect(label: inspect({1, seat, tile, cond_spec})))
+    #     # or (not Conditions.check_cnf_condition(state, cond_spec, %{seat: seat, tile: tile}) |> IO.inspect(label: inspect({2, seat, tile, cond_spec})))
+    #   end)
+    #   if ret != nil do
+    #     IO.puts("#{seat} cannot play tile #{tile} because it matches the condition #{inspect(ret)}")
+    #     false
+    #   else true end
+    # else true end end end end
   end
 
   defp _reindex_hand(hand, from, to) do
@@ -965,7 +1029,7 @@ defmodule RiichiAdvanced.GameState do
     win_definitions = Rules.translate_match_definitions(state.rules_ref, Rules.get(state.rules_ref, "show_waits", %{}) |> Map.get("win_definitions", []))
     tile_behavior = state.players[seat].tile_behavior
     visible_tiles = get_visible_tiles(state, seat)
-    Riichi.get_waits_and_ukeire(hand, calls, win_definitions, visible_tiles, tile_behavior)
+    Match.get_waits_and_ukeire(hand, calls, win_definitions, visible_tiles, tile_behavior)
   end
 
   def get_open_riichi_hands(state) do
@@ -986,11 +1050,11 @@ defmodule RiichiAdvanced.GameState do
   def get_best_minefield_hand(state, seat, tenpai_definitions, tiles, max_results \\ 100) do
     # returns {yakuman, han, minipoints, hand}
     tile_behavior = state.players[seat].tile_behavior
-    # all_tiles = TileBehavior.get_all_tiles(tile_behavior)
     score_rules = Rules.get(state.rules_ref, "score_calculation", %{})
-    Enum.flat_map(tenpai_definitions, &Match.remove_match_definition(tiles, [], &1, tile_behavior))
+    {tiles_in_hand, initial_hands, tile_behavior} = Match.prepare_tiles([tiles], tenpai_definitions, tile_behavior)
+    Enum.flat_map(tenpai_definitions, &Match._remove_match_definition({tiles_in_hand, initial_hands, tile_behavior}, &1, true))
     |> Enum.take(max_results)
-    |> Enum.map(fn {hand, _calls} -> tiles -- hand end)
+    |> Enum.map(fn [hand | _calls] -> tiles -- hand end)
     |> Enum.uniq()
     |> Enum.map(fn hand ->
       state = update_player(state, seat, &%{ &1 | hand: hand, status: MapSet.new(["riichi"]) }) # avoid renhou
@@ -1776,14 +1840,16 @@ defmodule RiichiAdvanced.GameState do
 
   def handle_cast({:get_visible_waits, from, seat, index}, state) do
     if Rules.has_key?(state.rules_ref, "show_waits") do
-      hand = state.players[seat].hand
-      draw = state.players[seat].draw
-      waits = cond do
-        index == nil -> get_visible_waits(state, seat, nil)
-        is_playable?(state, seat, Enum.at(hand ++ draw, index)) -> get_visible_waits(state, seat, index)
-        true -> %{}
-      end
-      send(from, {:set_visible_waits, hand, index, waits})
+      Task.start(fn ->
+        hand = state.players[seat].hand
+        draw = state.players[seat].draw
+        waits = cond do
+          index == nil -> get_visible_waits(state, seat, nil)
+          is_playable?(state, seat, Enum.at(hand ++ draw, index)) -> get_visible_waits(state, seat, index)
+          true -> %{}
+        end
+        send(from, {:set_visible_waits, hand, index, waits})
+      end)
     end
     {:noreply, state}
   end

@@ -1,0 +1,15 @@
+[package]
+name = "riichiadvanced_match"
+version = "0.1.0"
+authors = []
+edition = "2021"
+
+[lib]
+crate-type = ["cdylib"]
+
+[dependencies]
+rustler = { version = "0.37.4", features = ["big_integer"] }
+num = "0.4.3"
+phf = { version = "0.14.0", features = ["macros"] }
+ruint = { version = "1.19.0", features = ["num-bigint"] }
+num-bigint = "0.4.4"

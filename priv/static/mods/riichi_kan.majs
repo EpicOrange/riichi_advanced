@@ -67,7 +67,6 @@ define_button ankan,
     and not_just_called
     and tile_not_drawn(-4)
     and self_call_available,
-  precedence_over: ["chii", "pon", "daiminkan"],
   call: [[0, 0, 0]],
   call_style: %{self: [["1x", 2], 0, 1, ["1x", 3]]}
   do

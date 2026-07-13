@@ -63,12 +63,12 @@ defmodule RiichiAdvanced.AIPlayer do
             Riichi.get_disconnected_tiles(hand, tile_behavior)
             |> choose_playable_tile(playables)
           ret = if ret == nil do
-            Riichi.get_unneeded_tiles(hand, calls, shanten_definition, tile_behavior)
+            Match.get_unneeded_tiles_v2(hand, calls, shanten_definition, tile_behavior)
             |> choose_playable_tile(playables)
           else ret end
           {ret, i}
         {nil, _} ->
-          ret = Riichi.get_unneeded_tiles(hand, calls, shanten_definition, tile_behavior)
+          ret = Match.get_unneeded_tiles_v2(hand, calls, shanten_definition, tile_behavior)
           |> choose_playable_tile(playables)
           if Debug.debug_ai() and ret != nil do
             IO.puts(" >> #{state.seat}: I'm currently #{i}-shanten!")
@@ -177,7 +177,7 @@ defmodule RiichiAdvanced.AIPlayer do
         # if anyone is open riichi, don't deal into them
         playables = if not Enum.empty?(open_riichis) do
           danger_tiles = for {hand, calls, tile_behavior} <- open_riichis, into: MapSet.new() do
-            Riichi.get_waits(hand, calls, state.shanten_definitions.win, tile_behavior)
+            Match.get_waits(hand, calls, state.shanten_definitions.win, tile_behavior)
           end
           |> Enum.reduce(MapSet.new(), &MapSet.union/2)
           safe_playables = Enum.reject(playables, fn {tile, _i} -> Utils.has_matching_tile?([tile], danger_tiles) end)
@@ -290,7 +290,15 @@ defmodule RiichiAdvanced.AIPlayer do
       # TODO clear thinking upon pressing a button
       # GenServer.cast(state.game_state, {:ai_thinking, state.seat})
       button_name = cond do
-        state.tsumogiri_bot -> if "skip" in player.buttons do "skip" else Enum.random(player.buttons) end
+        state.tsumogiri_bot -> cond do
+          "skip" in player.buttons -> "skip"
+          "anfuun" in player.buttons -> "anfuun"
+          "flower" in player.buttons -> "flower"
+          "start_flower" in player.buttons -> "start_flower"
+          "start_no_flower" in player.buttons -> "start_no_flower"
+          "extra_turn" in player.buttons -> "extra_turn"
+          true -> Enum.random(player.buttons)
+        end
         "void_manzu" in player.buttons ->
           # count suits, pick the minimum suit
           hand = player.hand ++ player.draw
@@ -408,7 +416,7 @@ defmodule RiichiAdvanced.AIPlayer do
   end
 
   def handle_info({:set_best_minefield_hand, minefield_tiles, minefield_hand}, state) do
-    minefield_waits = Riichi.get_waits(minefield_hand, [], state.shanten_definitions.win,state.player.tile_behavior, true)
+    minefield_waits = Match.get_waits(minefield_hand, [], state.shanten_definitions.win, state.player.tile_behavior)
     state = state
     |> Map.put(:minefield_tiles, minefield_tiles)
     |> Map.put(:minefield_hand, minefield_hand)

@@ -358,8 +358,8 @@ define_yaku yakuman, "Yondoukon", [1, "★"], match(["hand", "calls", "winning_t
 define_yaku meta_yaku, "Toikon", [1, "Han"], @closed_hand and has_existing_yaku("Toikon")
 define_yaku meta_yaku, "Sandoukon", [1, "Han"], @closed_hand and has_existing_yaku("Sandoukon")
 
-define_yaku_precedence "Yondoukon", ["Sandoukon", "Round Wind", "Seat Wind", "Toitoi", "Sanankou", "Sanshoku Doukou"]
-define_yaku_precedence "Sandoukon", ["Ryandoukon"]
+define_yaku_precedence "Yondoukon", ["Sandoukon", "Round Wind", "Seat Wind", "Toitoi", "Sanankou", "Sanshoku Doukou", "Isshoku Yonjun"]
+define_yaku_precedence "Sandoukon", ["Ryandoukon", "Isshoku Sanjun"]
 define_yaku_precedence "Kokushi Musou", ["Mixed Winds", "Mini-Sangen"]
 define_yaku_precedence "Kokushi Musou Juusan Menmachi", ["Mixed Winds", "Mini-Sangen"]
 

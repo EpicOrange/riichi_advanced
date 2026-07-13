@@ -12,7 +12,7 @@ on after_initialization do
 end
 
 define_button flower_win,
-  display_name: @tsumo_name, 
+  display_name: "Zimo", 
   show_when: our_turn
     and has_draw
     and match(["draw"], ~m"unique, (1f 2f 3f 4f 1g 2g 3g 4g):1")
@@ -21,7 +21,7 @@ define_button flower_win,
      or (equals(!win_on, "8 flowers") and match(["flowers"], ~m"unique, (1f 2f 3f 4f 1g 2g 3g 4g):7"))
     )
   do
-    big_text(@tsumo_name)
+    big_text("Zimo")
     pause(1000)
     reveal_hand
     win_by_draw
