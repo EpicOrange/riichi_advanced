@@ -69,8 +69,8 @@ defmodule RiichiAdvanced.Riichi do
                :"10s", :"010s", :"110s", :"210s", :"310s", :"410s",
                :"1's", :"01's", :"11's", :"21's", :"31's", :"41's"]
   # TODO somehow change these when ten mod is active
-  @flower     [:"1f", :"2f", :"3f", :"4f", :"1g", :"2g", :"3g", :"4g", :"1k", :"2k", :"3k", :"4k", :"1q", :"2q", :"3q", :"4q", :"1a", :"2a", :"3a", :"4a", :"1y"]
-  @joker      [:"0j", :"1j", :"2j", :"3j", :"4j", :"5j", :"6j", :"7j", :"8j", :"9j", :"10j", :"12j", :"13j", :"14j", :"15j", :"16j", :"17j", :"18j", :"19j", :"37j", :"46j", :"147j", :"258j", :"369j", :"123j", :"456j", :"789j", :"91j", :"73j", :"64j", :"852j", :"20j", :"11j", :"22j", :"30j", :"31j", :"32j", :"33j", :"34j", :"2y"]
+  @flower     [:"1f", :"2f", :"3f", :"4f", :"1g", :"2g", :"3g", :"4g", :"1k", :"2k", :"3k", :"4k", :"1q", :"2q", :"3q", :"4q", :"1a", :"2a", :"3a", :"4a", :"1y", :"9j"]
+  @joker      [:"0j", :"1j", :"2j", :"3j", :"4j", :"5j", :"6j", :"7j", :"8j", :"10j", :"12j", :"13j", :"14j", :"15j", :"16j", :"17j", :"18j", :"19j", :"37j", :"46j", :"147j", :"258j", :"369j", :"123j", :"456j", :"789j", :"91j", :"73j", :"64j", :"852j", :"20j", :"11j", :"22j", :"30j", :"31j", :"32j", :"33j", :"34j", :"2y"]
   @aka        [:"0m", :"0p", :"0s",
                :"01m", :"02m", :"03m", :"04m", :"05m", :"25m", :"35m", :"06m", :"07m", :"08m", :"09m", :"010m",
                :"01p", :"02p", :"03p", :"04p", :"05p", :"25p", :"35p", :"06p", :"07p", :"08p", :"09p", :"010p",
@@ -362,10 +362,12 @@ defmodule RiichiAdvanced.Riichi do
           potential_set = Utils.add_attr(Enum.take(context.call.other_tiles, 2) ++ [context.tile2], ["_hand"])
           Enum.any?([[0,1,2],[0,0,0]], &not Enum.empty?(Match.remove_group(potential_set, &1, player.tile_behavior)))
         tile_spec ->
-          tile_behavior = Map.get(context, :tile_behavior, %TileBehavior{})
           # "1m", "2z" are also specs
           if Utils.is_tile(tile_spec) do
-            Utils.same_tile(context.tile, Utils.to_tile(tile_spec), tile_behavior)
+            tile_behavior = Map.get(context, :tile_behavior, %TileBehavior{})
+            ret = Utils.same_tile(context.tile, Utils.to_tile(tile_spec), tile_behavior)
+            # IO.puts("#{inspect(context.tile)} == #{inspect(Utils.to_tile(tile_spec))} is #{ret}")
+            ret
           else
             IO.puts("Unhandled tile spec #{inspect(tile_spec)}")
             true

@@ -133,7 +133,7 @@ defmodule RiichiAdvanced.YakuTest.HKOSYaku do
       %{"type" => "buttons_pressed", "buttons" => [%{"button" => "ron"}, nil, nil, nil]}
     ], %{
       east: %{
-        yaku: [{"Seat Flower", [1, "Fan"]}, {"All Flowers", [2, "Fan"]}]
+        yaku: [{"All Flowers", [2, "Fan"]}]
       }
     })
   end
@@ -171,7 +171,7 @@ defmodule RiichiAdvanced.YakuTest.HKOSYaku do
       %{"type" => "buttons_pressed", "buttons" => [%{"button" => "ron"}, nil, nil, nil]}
     ], %{
       east: %{
-        yaku: [{"Seat Season", [1, "Fan"]}, {"All Seasons", [2, "Fan"]}]
+        yaku: [{"All Seasons", [2, "Fan"]}]
       }
     })
   end
@@ -209,7 +209,7 @@ defmodule RiichiAdvanced.YakuTest.HKOSYaku do
       %{"type" => "buttons_pressed", "buttons" => [%{"button" => "flower_win"}, nil, nil, nil]}
     ], %{
       east: %{
-        yaku: [{"After a Flower", [1, "Fan"]}, {"All Seasons", [2, "Fan"]}, {"Seat Flower", [1, "Fan"]}, {"Seat Season", [1, "Fan"]}, {"Seven Flowers", [3, "Fan"]}, {"Self Draw", [1, "Fan"]}]
+        yaku: [{"After a Flower", [1, "Fan"]}, {"Seven Flowers", [3, "Fan"]}, {"Self Draw", [1, "Fan"]}]
       }
     })
   end
@@ -248,7 +248,7 @@ defmodule RiichiAdvanced.YakuTest.HKOSYaku do
       %{"type" => "buttons_pressed", "buttons" => [%{"button" => "flower_win"}, nil, nil, nil]}
     ], %{
       east: %{
-        yaku: [{"After a Flower", [1, "Fan"]}, {"All Seasons", [2, "Fan"]}, {"Seat Flower", [1, "Fan"]}, {"Seat Season", [1, "Fan"]}, {"Eight Flowers", [8, "Fan"]}, {"Self Draw", [1, "Fan"]}]
+        yaku: [{"After a Flower", [1, "Fan"]}, {"Eight Flowers", [8, "Fan"]}, {"Self Draw", [1, "Fan"]}]
       }
     })
   end
@@ -998,8 +998,8 @@ defmodule RiichiAdvanced.YakuTest.HKOSYaku do
       %{"buttons" => [%{"button" => "start_no_flower"}, nil, nil, nil], "type" => "buttons_pressed"},
       %{"buttons" => [nil, %{"button" => "start_no_flower"}, nil, nil], "type" => "buttons_pressed"},
       %{"buttons" => [nil, nil, %{"button" => "start_flower", "call_choice" => ["4g"], "called_tile" => nil}, nil], "type" => "buttons_pressed"},
-      %{"buttons" => [nil, nil, %{"button" => "flower", "call_choice" => ["2g"], "called_tile" => nil}, nil], "type" => "buttons_pressed"},
-      %{"buttons" => [nil, nil, %{"button" => "flower", "call_choice" => ["3g"], "called_tile" => nil}, nil], "type" => "buttons_pressed"},
+      %{"buttons" => [nil, nil, %{"button" => "start_flower", "call_choice" => ["2g"], "called_tile" => nil}, nil], "type" => "buttons_pressed"},
+      %{"buttons" => [nil, nil, %{"button" => "start_flower", "call_choice" => ["3g"], "called_tile" => nil}, nil], "type" => "buttons_pressed"},
       %{"buttons" => [nil, nil, %{"button" => "start_no_flower"}, nil], "type" => "buttons_pressed"},
       %{"buttons" => [nil, nil, nil, %{"button" => "start_no_flower"}], "type" => "buttons_pressed"},
       %{"player" => 0, "tile" => "0z", "tsumogiri" => false, "type" => "discard"},

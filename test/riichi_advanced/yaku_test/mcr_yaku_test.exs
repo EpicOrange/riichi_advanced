@@ -18,7 +18,6 @@ defmodule RiichiAdvanced.YakuTest.MCRYaku do
       %{"type" => "buttons_pressed", "buttons" => [nil, %{"button" => "start_no_flower"}, nil, nil]},
       %{"type" => "buttons_pressed", "buttons" => [nil, nil, %{"button" => "start_no_flower"}, nil]},
       %{"type" => "buttons_pressed", "buttons" => [nil, nil, nil, %{"button" => "start_no_flower"}]},
-      %{"type" => "buttons_pressed", "buttons" => [%{"button" => "riichi"}, nil, nil, nil]},
       %{"type" => "discard", "tile" => "1z", "player" => 0, "tsumogiri" => true},
       %{"type" => "discard", "tile" => "7m", "player" => 1, "tsumogiri" => true},
       %{"type" => "buttons_pressed", "buttons" => [%{"button" => "ron"}, nil, nil, nil]}

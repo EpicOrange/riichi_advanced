@@ -115,7 +115,7 @@ defmodule RiichiAdvanced.Utils do
     Map.get(tile_behavior.mappings, tile, MapSet.new())
     |> MapSet.put(tile)
     # every joker is connected to any-tile jokers
-    |> MapSet.union(MapSet.new(Map.get(tile_behavior.aliases, :any, %{}) |> Map.values() |> Enum.concat()))
+    # |> MapSet.union(MapSet.new(Map.get(tile_behavior.mappings, :any, %{}) |> Map.values() |> Enum.concat()))
   end
 
   # tile1 must have at least the attributes of tile2 (or any of its aliases)

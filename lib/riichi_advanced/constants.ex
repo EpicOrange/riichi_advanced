@@ -538,11 +538,11 @@ defmodule RiichiAdvanced.Constants do
           four_flowers_points_name: "Fan"
         }}, 
         %{name: "yaku/no_flowers", config: %{list: "yaku", name: "No Flowers", value: 1}},
-        %{name: "yaku/menzentsumo", config: %{list: "yaku", name: "Self Draw", value: 1}},
         %{name: "yaku/rinshan", config: %{
           list: "yaku", rinshan_name: "After a Kong", flower_name: "After a Flower", value: 1,
           double_list: "yaku", double_name: "After Multiple Kongs", double_value: 8
         }},
+        %{name: "yaku/tsumo", config: %{list: "yaku", name: "Self Draw", value: 1}},
         %{name: "yaku/menzenchin", config: %{list: "yaku", name: "Concealed Hand", value: 1}},
         %{name: "yaku/honitsu", config: %{
           hon_list: "yaku", hon_name: "Half Flush", hon_value: 3,
@@ -691,14 +691,24 @@ defmodule RiichiAdvanced.Constants do
           auto_flower_by_default: false,
           draw_after_flowers: false,
           matching_flower_value: 1,
-          matching_flower_points_name: 1,
+          matching_flower_points_name: "Phán",
           four_flowers_value: 1,
           four_flowers_points_name: "Mủn"
         }}, 
-        %{name: "yaku/chiitoitsu", config: %{rules_tab: "1 Phán", list: "yaku", name: "Seven Pairs", value: 1, kansai: true}},
-        %{name: "yaku/kokushi", config: %{list: "yakuman", name: "Thirteen Orphans", value: 2}},
         "standard_win",
+        "yaku/yakuhai",
+        %{name: "yaku/menzentsumo", config: %{list: "yaku", name: "Fully Closed Hand", value: 1}},
+        %{name: "yaku/chiitoitsu", config: %{rules_tab: "1 Phán", list: "yaku", name: "Seven Pairs", value: 1, kansai: true}},
+        %{name: "yaku/kokushi", config: %{list: "yaku", name: "Thirteen Orphans", value: 13}},
         %{name: "yaku/chankan", config: %{list: "yaku", name: "Robbing a Quad", value: 1}},
+        %{name: "yaku/rinshan", config: %{
+          list: "yaku", rinshan_name: "Win on Replacement Tile", flower_name: "Win on Replacement Tile", value: 1,
+          double_list: "yaku", double_name: "Win on Replacement Tile", double_value: 0
+        }},
+        %{name: "yaku/haitei", config: %{
+          haitei_list: "yaku", haitei_name: "Win on Last Tile", haitei_value: 1,
+          houtei_list: "yaku", houtei_name: "Win on Last Tile", houtei_value: 1
+        }},
         %{name: "yaku/tenhou", config: %{
           tenhou_list: "yakuman", tenhou_name: "Blessing of Heaven", tenhou_value: 2,
           chiihou_list: "yakuman", chiihou_name: "Blessing of Earth", chiihou_value: 2,

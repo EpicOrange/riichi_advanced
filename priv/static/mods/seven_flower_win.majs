@@ -31,4 +31,5 @@ define_button flower_win,
 # you just can't insta-win on 7 flowers if win_on is 8
 define_yaku yaku, "Seven Flowers", 3, match(["draw", "flowers"], ~m"unique, (1f 2f 3f 4f 1g 2g 3g 4g):7")
 define_yaku yaku, "Eight Flowers", 8, match(["draw", "flowers"], ~m"unique, (1f 2f 3f 4f 1g 2g 3g 4g):8")
+define_yaku_precedence "Seven Flowers", ["Seat Flower", "Seat Season", "All Flowers", "All Seasons"]
 define_yaku_precedence "Eight Flowers", ["Seven Flowers"]

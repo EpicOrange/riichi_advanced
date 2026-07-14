@@ -248,7 +248,8 @@ defmodule RiichiAdvanced.YakuTest.HefeiYaku do
       %{"type" => "buttons_pressed", "buttons" => [%{"button" => "tsumo"}, nil, nil, nil]}
     ], %{
       east: %{
-        yaku: [{"Four Concealed Pungs", [100, "×"]}],
+        yaku: [],
+        yaku2: [{"Four Concealed Pungs", [100, "×"]}],
         score: 2000
       }
     })
@@ -315,7 +316,8 @@ defmodule RiichiAdvanced.YakuTest.HefeiYaku do
       %{"type" => "buttons_pressed", "buttons" => [%{"button" => "ron"}, nil, nil, nil]}
     ], %{
       east: %{
-        yaku: [{"Seven Pairs", [10, "×"]}]
+        yaku: [],
+        yaku2: [{"Seven Pairs", [10, "×"]}]
       }
     })
   end
@@ -337,7 +339,8 @@ defmodule RiichiAdvanced.YakuTest.HefeiYaku do
       %{"type" => "buttons_pressed", "buttons" => [%{"button" => "ron"}, nil, nil, nil]}
     ], %{
       east: %{
-        yaku: [{"Seven Pairs", [10, "×"]}]
+        yaku: [],
+        yaku2: [{"Seven Pairs", [10, "×"]}]
       }
     })
   end
@@ -385,7 +388,8 @@ defmodule RiichiAdvanced.YakuTest.HefeiYaku do
       %{"type" => "buttons_pressed", "buttons" => [%{"button" => "tsumo"}, nil, nil, nil]}
     ], %{
       east: %{
-        yaku: [{"Double Concealed Double Sequences", [100, "×"]}]
+        yaku: [],
+        yaku2: [{"Double Concealed Double Sequences", [100, "×"]}]
       }
     })
   end
@@ -407,7 +411,8 @@ defmodule RiichiAdvanced.YakuTest.HefeiYaku do
       %{"type" => "buttons_pressed", "buttons" => [%{"button" => "ron"}, nil, nil, nil]}
     ], %{
       east: %{
-        yaku: [{"Double Concealed Double Sequences", [100, "×"]}]
+        yaku: [],
+        yaku2: [{"Double Concealed Double Sequences", [100, "×"]}]
       }
     })
   end
@@ -570,7 +575,8 @@ defmodule RiichiAdvanced.YakuTest.HefeiYaku do
       %{"type" => "buttons_pressed", "buttons" => [%{"button" => "ron"}, nil, nil, nil]}
     ], %{
       east: %{
-        yaku: [{"Seven Pairs", [10, "×"]}]
+        yaku: [],
+        yaku2: [{"Seven Pairs", [10, "×"]}]
       }
     })
   end
@@ -592,7 +598,8 @@ defmodule RiichiAdvanced.YakuTest.HefeiYaku do
       %{"type" => "buttons_pressed", "buttons" => [%{"button" => "ron"}, nil, nil, nil]}
     ], %{
       east: %{
-        yaku: [{"Luxury Seven Pairs", [50, "×"]}]
+        yaku: [],
+        yaku2: [{"Luxury Seven Pairs", [50, "×"]}]
       }
     })
   end
@@ -614,7 +621,8 @@ defmodule RiichiAdvanced.YakuTest.HefeiYaku do
       %{"type" => "buttons_pressed", "buttons" => [%{"button" => "ron"}, nil, nil, nil]}
     ], %{
       east: %{
-        yaku: [{"Double Luxury Seven Pairs", [100, "×"]}]
+        yaku: [],
+        yaku2: [{"Double Luxury Seven Pairs", [100, "×"]}]
       }
     })
   end
@@ -636,7 +644,8 @@ defmodule RiichiAdvanced.YakuTest.HefeiYaku do
       %{"type" => "buttons_pressed", "buttons" => [%{"button" => "ron"}, nil, nil, nil]}
     ], %{
       east: %{
-        yaku: [{"Pure Suit", [100, "×"]}]
+        yaku: [],
+        yaku2: [{"Pure Suit", [100, "×"]}]
       }
     })
   end
@@ -658,7 +667,8 @@ defmodule RiichiAdvanced.YakuTest.HefeiYaku do
       %{"type" => "buttons_pressed", "buttons" => [%{"button" => "ron"}, nil, nil, nil]}
     ], %{
       east: %{
-        yaku: [{"Three Consecutive Pungs", [100, "×"]}]
+        yaku: [],
+        yaku2: [{"Three Consecutive Pungs", [100, "×"]}]
       }
     })
   end
@@ -704,7 +714,8 @@ defmodule RiichiAdvanced.YakuTest.HefeiYaku do
       %{"type" => "buttons_pressed", "buttons" => [%{"button" => "tsumo"}, nil, nil, nil]}
     ], %{
       east: %{
-        yaku: [{"Three Consecutive Pungs", [100, "×"]}]
+        yaku: [],
+        yaku2: [{"Three Consecutive Pungs", [100, "×"]}]
       }
     })
   end
@@ -728,7 +739,8 @@ defmodule RiichiAdvanced.YakuTest.HefeiYaku do
       %{"type" => "buttons_pressed", "buttons" => [%{"button" => "tsumo"}, nil, nil, nil]}
     ], %{
       east: %{
-        yaku: [{"Ten Identical Tiles", [100, "×"]}]
+        yaku: [],
+        yaku2: [{"Ten Identical Tiles", [100, "×"]}]
       }
     })
   end
@@ -754,7 +766,8 @@ defmodule RiichiAdvanced.YakuTest.HefeiYaku do
       %{"type" => "buttons_pressed", "buttons" => [%{"button" => "tsumo"}, nil, nil, nil]}
     ], %{
       east: %{
-        yaku: [{"Ten Identical Tiles", [100, "×"]}]
+        yaku: [],
+        yaku2: [{"Ten Identical Tiles", [100, "×"]}]
       }
     })
   end
@@ -798,7 +811,8 @@ defmodule RiichiAdvanced.YakuTest.HefeiYaku do
       %{"type" => "buttons_pressed", "buttons" => [%{"button" => "tsumo"}, nil, nil, nil]}
     ], %{
       east: %{
-        yaku: [{"Heavenly Win", [200, "×"]}]
+        yaku: [],
+        yaku2: [{"Heavenly Win", [200, "×"]}]
       }
     })
   end
@@ -819,7 +833,8 @@ defmodule RiichiAdvanced.YakuTest.HefeiYaku do
       %{"type" => "buttons_pressed", "buttons" => [nil, %{"button" => "tsumo"}, nil, nil]}
     ], %{
       south: %{
-        yaku: [{"Earthly Win", [150, "×"]}]
+        yaku: [],
+        yaku2: [{"Earthly Win", [150, "×"]}]
       }
     })
   end
@@ -864,7 +879,8 @@ defmodule RiichiAdvanced.YakuTest.HefeiYaku do
       %{"type" => "buttons_pressed", "buttons" => [nil, %{"button" => "tsumo"}, nil, nil]}
     ], %{
       south: %{
-        yaku: [{"Earthly Win", [150, "×"]}]
+        yaku: [],
+        yaku2: [{"Earthly Win", [150, "×"]}]
       }
     })
   end
@@ -890,7 +906,8 @@ defmodule RiichiAdvanced.YakuTest.HefeiYaku do
       %{"type" => "buttons_pressed", "buttons" => [nil, %{"button" => "ron"}, nil, nil]}
     ], %{
       south: %{
-        yaku: [{"Earthly Win", [150, "×"]}]
+        yaku: [],
+        yaku2: [{"Earthly Win", [150, "×"]}]
       }
     })
   end
@@ -967,7 +984,8 @@ defmodule RiichiAdvanced.YakuTest.HefeiYaku do
       %{"buttons" => [%{"button" => "tsumo"}, nil, nil, nil], "type" => "buttons_pressed"}
     ], %{
       east: %{
-        yaku: [{"Sea Floor", [15, "×"]}]
+        yaku: [],
+        yaku2: [{"Sea Floor", [15, "×"]}]
       }
     })
   end
@@ -1022,7 +1040,8 @@ defmodule RiichiAdvanced.YakuTest.HefeiYaku do
       %{"buttons" => [%{"button" => "tsumo"}, nil, nil, nil], "type" => "buttons_pressed"}
     ], %{
       east: %{
-        yaku: [{"Sea Floor", [15, "×"]}]
+        yaku: [],
+        yaku2: [{"Sea Floor", [15, "×"]}]
       }
     })
   end
@@ -1077,7 +1096,8 @@ defmodule RiichiAdvanced.YakuTest.HefeiYaku do
       %{"buttons" => [%{"button" => "tsumo"}, nil, nil, nil], "type" => "buttons_pressed"}
     ], %{
       east: %{
-        yaku: [{"Sea Floor", [15, "×"]}]
+        yaku: [],
+        yaku2: [{"Sea Floor", [15, "×"]}]
       }
     })
   end
@@ -1200,7 +1220,8 @@ defmodule RiichiAdvanced.YakuTest.HefeiYaku do
       %{"type" => "buttons_pressed", "buttons" => [%{"button" => "ron"}, nil, nil, nil]}
     ], %{
       east: %{
-        yaku: [{"Seven Pairs", [10, "×"]}, {"Dealer Repeats", [12, "×"]}]
+        yaku: [],
+        yaku2: [{"Seven Pairs", [10, "×"]}, {"Dealer Repeats", [12, "×"]}]
       }
     })
   end
