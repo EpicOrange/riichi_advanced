@@ -407,3 +407,12 @@ pub struct MatchInfo<'a> {
   pub ordering: &'a HashMap<Atom, Atom>,
   pub ordering_r: &'a HashMap<Atom, Atom>,
 }
+
+
+// dfs match
+pub type PathItem = RemovableGroup;
+pub type AccItem = (Hands, usize, Vec<PathItem>);
+pub type AccIterator<'a> = Box<dyn Iterator<Item = AccItem> + 'a>;
+
+// elim match
+pub type HandsIterator<'a> = Box<dyn Iterator<Item = Hands> + 'a>;
