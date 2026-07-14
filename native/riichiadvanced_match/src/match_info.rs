@@ -24,7 +24,7 @@ pub fn prepare_tiles<'a>(
   let mut hand_tiles: Vec<ElixirTile> = vec!();
   for (&ref hand, _) in orig_hands.iter() { hand_tiles.append(&mut hand.clone().into_iter().collect()); }
   let num_tiles_in_hand = hand_tiles.len();
-  hand_tiles.sort();
+  hand_tiles.sort_unstable();
   hand_tiles.dedup();
 
   // relevant_tiles = nonjoker tiles in hand + tiles mapped to by jokers in hand
@@ -40,7 +40,7 @@ pub fn prepare_tiles<'a>(
     }
     relevant_tiles.push(tile.clone());
   }
-  relevant_tiles.sort();
+  relevant_tiles.sort_unstable();
   relevant_tiles.dedup();
 
   let joker_tiles: HashSet<Tile> = elixir_joker_tiles

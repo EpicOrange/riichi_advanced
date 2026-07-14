@@ -330,7 +330,7 @@ pub fn __subtract_exhaustive(
 
   match _subtract_check_attrs_exhaustive(&hand_attrs, &group_attrs, aliases) {
     Some(mut indicess) => {
-      indicess.sort();
+      indicess.sort_unstable();
       indicess.dedup();
       let mut hands = HashSet::new();
       for indices in indicess {

@@ -261,7 +261,7 @@ pub fn __generate_groups<'a>(
       }).collect::<Vec<RemovableGroup>>()
     }
   };
-  ret.sort();
+  ret.sort_unstable();
   ret.dedup();
   ret
 }
@@ -276,8 +276,7 @@ pub fn gather_rev_offsets(match_definition: &MatchDefinition) -> Vec<MatchOffset
       }
     }
   }
-  ret.dedup();
-  ret.sort();
+  ret.sort_unstable();
   ret.dedup();
   for offset in ret.iter_mut() {
     // negate all numeric offsets

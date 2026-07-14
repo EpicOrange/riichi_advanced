@@ -360,7 +360,7 @@ fn is_visited(path: &Vec<PathItem>, last_item: &PathItem, visited: Rc<RefCell<Ha
     false
   } else {
     let mut key = path.clone();
-    key.sort();
+    key.sort_unstable();
     key.push(last_item.clone());
     visited.borrow().contains(&key)
   }
