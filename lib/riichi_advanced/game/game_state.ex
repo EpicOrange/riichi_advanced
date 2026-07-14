@@ -776,7 +776,7 @@ defmodule RiichiAdvanced.GameState do
 
     # initialize interruptible actions
     # we only do this after running change_turn and after_start, so that their actions can't be interrupted
-    interruptible_actions = Map.new(Rules.get(state.rules_ref, "interruptible_actions", []), fn action -> {action, 100} end)
+    interruptible_actions = Map.new(Rules.get(state.rules_ref, "interruptible_actions", []) |> Enum.uniq(), fn action -> {action, 100} end)
     |> Map.merge(Rules.get(state.rules_ref, "interrupt_levels", %{}))
     state = Map.put(state, :interruptible_actions, interruptible_actions)
 
