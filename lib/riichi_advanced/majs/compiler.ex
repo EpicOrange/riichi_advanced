@@ -329,7 +329,7 @@ defmodule RiichiAdvanced.Compiler do
           _ -> {:error, "\"set_counter\" got invalid parameters: #{inspect(opts)}"}
         end
       {name, [line: line, column: column], args} when is_binary(name) ->
-        if name in @allowed_actions do
+        if Validator.validate_action_name(name) do
           if args != nil do
             with {:ok, args} <- Enum.map(args, &compile_constant(&1, line, column)) |> Utils.sequence() do
               {:ok, [name | args]}
@@ -519,15 +519,21 @@ defmodule RiichiAdvanced.Compiler do
     end
     with {:ok, body} <- body,
          {:ok, body} <- Jason.encode(body) do
-      if prepend do
-        {:ok, ".[#{name}].actions |= #{body} + ."}
+      if Validator.validate_event_name(Jason.decode!(name)) do
+        # `name` is already escaped
+        if prepend do
+          {:ok, ".[#{name}].actions |= #{body} + ."}
+        else
+          {:ok, ".[#{name}].actions += #{body}"}
+        end
       else
-        {:ok, ".[#{name}].actions += #{body}"}
+        # IO.puts("Tried to compile invalid condition #{inspect(condition)}")
+        {:error, "Compiler.compile_command: at line #{line}:#{column}, #{inspect(name)} is not a valid event name"}
       end
     end
   end
 
-  defp compile_command("define_play_effect", tile_spec, args, line, column) do
+  defp compile_command("define_play_effect", name, args, line, column) do
     {prepend, args} = case args do
       [[{"prepend", prepend}], args] -> {prepend, args}
       [[{"prepend", prepend}] | args] -> {prepend, args}
@@ -541,9 +547,10 @@ defmodule RiichiAdvanced.Compiler do
     with {:ok, body} <- body,
          {:ok, body} <- Jason.encode(body) do
       if prepend do
-        {:ok, ".play_effects |= [[#{tile_spec}, #{body}]] + ."}
+        # TODO verify name is a tile spec
+        {:ok, ".play_effects |= [[#{name}, #{body}]] + ."}
       else
-        {:ok, ".play_effects += [[#{tile_spec}, #{body}]]"}
+        {:ok, ".play_effects += [[#{name}, #{body}]]"}
       end
     end
   end
@@ -973,7 +980,7 @@ defmodule RiichiAdvanced.Compiler do
   end
 
   def compile_toplevel_constant(constant, line, column) do
-    # basically compile_constant but disallowing actual constants
+    # basically compile_constant but disallowing actual constants (@)
     case constant do
       {:+, _, _} -> {:error, "cannot use constants in toplevel conditions"}
       {:@, _, _} -> {:error, "cannot use constants in toplevel conditions"}
