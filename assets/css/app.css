@@ -924,7 +924,7 @@ div.tile {
   --kin-color: #c9a146;
   --border-width: calc(0 * var(--tile-size));
   --border-color: transparent;
-  --num-tiles: 214;
+  --num-tiles: 241;
   position: relative;
   width: var(--tile-width);
   height: var(--tile-height);
@@ -1065,344 +1065,372 @@ div.tile.\37 t { --tile-index: 72; }
 div.tile.\38 t { --tile-index: 73; }
 div.tile.\39 t { --tile-index: 74; }
 div.tile.\31 \30 t { --tile-index: 75; }
-div.tile.\31 j { --tile-index: 76; }
-div.tile.\30 j { --tile-index: 77; }
-div.tile.\32 j { --tile-index: 78; }
-div.tile.\39 j { --tile-index: 79; }
-div.tile.\34 j { --tile-index: 80; }
-div.tile.\35 j { --tile-index: 81; }
-div.tile.\36 j, div.tile.\31 \36 j { --tile-index: 82; }
-div.tile.\37 j { --tile-index: 83; }
-div.tile.\38 j { --tile-index: 84; }
-div.tile.\31 \30 j { --tile-index: 85; }
-div.tile.\31 \32 j { --tile-index: 86; }
-div.tile.\33 j, div.tile.\31 \33 j { --tile-index: 87; }
-div.tile.\31 \34 j { --tile-index: 88; }
-div.tile.\31 \35 j { --tile-index: 89; }
-div.tile.\31 \37 j { --tile-index: 90; }
-div.tile.\31 \38 j { --tile-index: 91; }
-div.tile.\31 \39 j { --tile-index: 92; }
-div.tile.\33 \37 j { --tile-index: 93; }
-div.tile.\34 \36 j { --tile-index: 94; }
-div.tile.\31 \34 \37 j { --tile-index: 95; }
-div.tile.\32 \35 \38 j { --tile-index: 96; }
-div.tile.\33 \36 \39 j { --tile-index: 97; }
-div.tile.\37 \38 \39 j { --tile-index: 98; }
-div.tile.\34 \35 \36 j { --tile-index: 99; }
-div.tile.\31 \32 \33 j { --tile-index: 100; }
-div.tile.\31 \31 j { --tile-index: 101; }
-div.tile.\32 \32 j { --tile-index: 102; }
-div.tile.\32 \30 j { --tile-index: 103; }
-div.tile.\39 \31 j { --tile-index: 104; }
-div.tile.\36 \34 j { --tile-index: 105; }
-div.tile.\37 \33 j { --tile-index: 106; }
-div.tile.\38 \35 \32 j { --tile-index: 107; }
-div.tile.\33 \30 j { --tile-index: 108; }
-div.tile.\33 \31 j { --tile-index: 109; }
-div.tile.\33 \32 j { --tile-index: 110; }
-div.tile.\33 \33 j { --tile-index: 111; }
-div.tile.\33 \34 j { --tile-index: 112; }
-div.tile.\32 y { --tile-index: 113; }
-div.tile.\30 \31 m { --tile-color: var(--aka-color); --number-color: var(--aka-color); --tile-index: 164; }
-div.tile.\30 \32 m { --tile-color: var(--aka-color); --number-color: var(--aka-color); --tile-index: 165; }
-div.tile.\30 \33 m { --tile-color: var(--aka-color); --number-color: var(--aka-color); --tile-index: 166; }
-div.tile.\30 \34 m { --tile-color: var(--aka-color); --number-color: var(--aka-color); --tile-index: 167; }
-div.tile.\30 \35 m { --tile-color: var(--aka-color); --number-color: var(--aka-color); --tile-index: 168; }
-div.tile.\30 \36 m { --tile-color: var(--aka-color); --number-color: var(--aka-color); --tile-index: 169; }
-div.tile.\30 \37 m { --tile-color: var(--aka-color); --number-color: var(--aka-color); --tile-index: 170; }
-div.tile.\30 \38 m { --tile-color: var(--aka-color); --number-color: var(--aka-color); --tile-index: 171; }
-div.tile.\30 \39 m { --tile-color: var(--aka-color); --number-color: var(--aka-color); --tile-index: 172; }
-div.tile.\30 \31 \30 m { --tile-color: var(--aka-color); --number-color: var(--aka-color); --tile-index: 173; }
-div.tile.\30 \31 p { --tile-color: var(--aka-color); --number-color: var(--aka-color); --tile-index: 174; }
-div.tile.\30 \32 p { --tile-color: var(--aka-color); --number-color: var(--aka-color); --tile-index: 175; }
-div.tile.\30 \33 p { --tile-color: var(--aka-color); --number-color: var(--aka-color); --tile-index: 176; }
-div.tile.\30 \34 p { --tile-color: var(--aka-color); --number-color: var(--aka-color); --tile-index: 177; }
-div.tile.\30 \35 p { --tile-color: var(--aka-color); --number-color: var(--aka-color); --tile-index: 178; }
-div.tile.\30 \36 p { --tile-color: var(--aka-color); --number-color: var(--aka-color); --tile-index: 179; }
-div.tile.\30 \37 p { --tile-color: var(--aka-color); --number-color: var(--aka-color); --tile-index: 180; }
-div.tile.\30 \38 p { --tile-color: var(--aka-color); --number-color: var(--aka-color); --tile-index: 181; }
-div.tile.\30 \39 p { --tile-color: var(--aka-color); --number-color: var(--aka-color); --tile-index: 182; }
-div.tile.\30 \31 \30 p { --tile-color: var(--aka-color); --number-color: var(--aka-color); --tile-index: 183; }
-div.tile.\30 \31 s { --tile-color: var(--aka-color); --number-color: var(--aka-color); --tile-index: 184; }
-div.tile.\30 \32 s { --tile-color: var(--aka-color); --number-color: var(--aka-color); --tile-index: 185; }
-div.tile.\30 \33 s { --tile-color: var(--aka-color); --number-color: var(--aka-color); --tile-index: 186; }
-div.tile.\30 \34 s { --tile-color: var(--aka-color); --number-color: var(--aka-color); --tile-index: 187; }
-div.tile.\30 \35 s { --tile-color: var(--aka-color); --number-color: var(--aka-color); --tile-index: 188; }
-div.tile.\30 \36 s { --tile-color: var(--aka-color); --number-color: var(--aka-color); --tile-index: 189; }
-div.tile.\30 \37 s { --tile-color: var(--aka-color); --number-color: var(--aka-color); --tile-index: 190; }
-div.tile.\30 \38 s { --tile-color: var(--aka-color); --number-color: var(--aka-color); --tile-index: 191; }
-div.tile.\30 \39 s { --tile-color: var(--aka-color); --number-color: var(--aka-color); --tile-index: 192; }
-div.tile.\30 \31 \30 s { --tile-color: var(--aka-color); --number-color: var(--aka-color); --tile-index: 193; }
-div.tile.\30 \31 t { --tile-color: var(--aka-color); --number-color: var(--aka-color); --tile-index: 194; }
-div.tile.\30 \32 t { --tile-color: var(--aka-color); --number-color: var(--aka-color); --tile-index: 195; }
-div.tile.\30 \33 t { --tile-color: var(--aka-color); --number-color: var(--aka-color); --tile-index: 196; }
-div.tile.\30 \34 t { --tile-color: var(--aka-color); --number-color: var(--aka-color); --tile-index: 197; }
-div.tile.\30 \35 t, div.tile.\30 t { --tile-color: var(--aka-color); --number-color: var(--aka-color); --tile-index: 198; }
-div.tile.\30 \36 t { --tile-color: var(--aka-color); --number-color: var(--aka-color); --tile-index: 199; }
-div.tile.\30 \37 t { --tile-color: var(--aka-color); --number-color: var(--aka-color); --tile-index: 200; }
-div.tile.\30 \38 t { --tile-color: var(--aka-color); --number-color: var(--aka-color); --tile-index: 201; }
-div.tile.\30 \39 t { --tile-color: var(--aka-color); --number-color: var(--aka-color); --tile-index: 202; }
-div.tile.\30 \31 \30 t { --tile-color: var(--aka-color); --number-color: var(--aka-color); --tile-index: 203; }
-div.tile.\30 \30 z { --tile-color: var(--aka-color); --number-color: var(--aka-color); --tile-index: 204; }
-div.tile.\30 \31 z { --tile-color: var(--aka-color); --number-color: var(--aka-color); --tile-index: 205; }
-div.tile.\30 \32 z { --tile-color: var(--aka-color); --number-color: var(--aka-color); --tile-index: 206; }
-div.tile.\30 \33 z { --tile-color: var(--aka-color); --number-color: var(--aka-color); --tile-index: 207; }
-div.tile.\30 \34 z { --tile-color: var(--aka-color); --number-color: var(--aka-color); --tile-index: 208; }
-div.tile.\30 \35 z { --tile-color: var(--aka-color); --number-color: var(--aka-color); --tile-index: 209; }
-div.tile.\30 \36 z { --tile-color: var(--aka-color); --number-color: var(--aka-color); --tile-index: 210; }
-div.tile.\30 \37 z { --tile-color: var(--aka-color); --number-color: var(--aka-color); --tile-index: 211; }
-div.tile.\30 \38 z { --tile-color: var(--aka-color); --number-color: var(--aka-color); --tile-index: 212; }
-div.tile.\30 \30 \30 s { --tile-color: var(--aka-color); --number-color: var(--aka-color); --tile-index: 213; }
-div.tile.\31 \31 m { --tile-color: var(--galaxy-color); --number-color: var(--galaxy-color); --tile-index: 114; }
-div.tile.\31 \32 m { --tile-color: var(--galaxy-color); --number-color: var(--galaxy-color); --tile-index: 115; }
-div.tile.\31 \33 m { --tile-color: var(--galaxy-color); --number-color: var(--galaxy-color); --tile-index: 116; }
-div.tile.\31 \34 m { --tile-color: var(--galaxy-color); --number-color: var(--galaxy-color); --tile-index: 117; }
-div.tile.\31 \35 m { --tile-color: var(--galaxy-color); --number-color: var(--galaxy-color); --tile-index: 118; }
-div.tile.\31 \36 m { --tile-color: var(--galaxy-color); --number-color: var(--galaxy-color); --tile-index: 119; }
-div.tile.\31 \37 m { --tile-color: var(--galaxy-color); --number-color: var(--galaxy-color); --tile-index: 120; }
-div.tile.\31 \38 m { --tile-color: var(--galaxy-color); --number-color: var(--galaxy-color); --tile-index: 121; }
-div.tile.\31 \39 m { --tile-color: var(--galaxy-color); --number-color: var(--galaxy-color); --tile-index: 122; }
-div.tile.\31 \31 \30 m { --tile-color: var(--galaxy-color); --number-color: var(--galaxy-color); --tile-index: 123; }
-div.tile.\31 \31 p { --tile-color: var(--galaxy-color); --number-color: var(--galaxy-color); --tile-index: 124; }
-div.tile.\31 \32 p { --tile-color: var(--galaxy-color); --number-color: var(--galaxy-color); --tile-index: 125; }
-div.tile.\31 \33 p { --tile-color: var(--galaxy-color); --number-color: var(--galaxy-color); --tile-index: 126; }
-div.tile.\31 \34 p { --tile-color: var(--galaxy-color); --number-color: var(--galaxy-color); --tile-index: 127; }
-div.tile.\31 \35 p { --tile-color: var(--galaxy-color); --number-color: var(--galaxy-color); --tile-index: 128; }
-div.tile.\31 \36 p { --tile-color: var(--galaxy-color); --number-color: var(--galaxy-color); --tile-index: 129; }
-div.tile.\31 \37 p { --tile-color: var(--galaxy-color); --number-color: var(--galaxy-color); --tile-index: 130; }
-div.tile.\31 \38 p { --tile-color: var(--galaxy-color); --number-color: var(--galaxy-color); --tile-index: 131; }
-div.tile.\31 \39 p { --tile-color: var(--galaxy-color); --number-color: var(--galaxy-color); --tile-index: 132; }
-div.tile.\31 \31 \30 p { --tile-color: var(--galaxy-color); --number-color: var(--galaxy-color); --tile-index: 133; }
-div.tile.\31 \31 s { --tile-color: var(--galaxy-color); --number-color: var(--galaxy-color); --tile-index: 134; }
-div.tile.\31 \32 s { --tile-color: var(--galaxy-color); --number-color: var(--galaxy-color); --tile-index: 135; }
-div.tile.\31 \33 s { --tile-color: var(--galaxy-color); --number-color: var(--galaxy-color); --tile-index: 136; }
-div.tile.\31 \34 s { --tile-color: var(--galaxy-color); --number-color: var(--galaxy-color); --tile-index: 137; }
-div.tile.\31 \35 s { --tile-color: var(--galaxy-color); --number-color: var(--galaxy-color); --tile-index: 138; }
-div.tile.\31 \36 s { --tile-color: var(--galaxy-color); --number-color: var(--galaxy-color); --tile-index: 139; }
-div.tile.\31 \37 s { --tile-color: var(--galaxy-color); --number-color: var(--galaxy-color); --tile-index: 140; }
-div.tile.\31 \38 s { --tile-color: var(--galaxy-color); --number-color: var(--galaxy-color); --tile-index: 141; }
-div.tile.\31 \39 s { --tile-color: var(--galaxy-color); --number-color: var(--galaxy-color); --tile-index: 142; }
-div.tile.\31 \31 \30 s { --tile-color: var(--galaxy-color); --number-color: var(--galaxy-color); --tile-index: 143; }
-div.tile.\31 \31 t { --tile-color: var(--galaxy-color); --number-color: var(--galaxy-color); --tile-index: 144; }
-div.tile.\31 \32 t { --tile-color: var(--galaxy-color); --number-color: var(--galaxy-color); --tile-index: 145; }
-div.tile.\31 \33 t { --tile-color: var(--galaxy-color); --number-color: var(--galaxy-color); --tile-index: 146; }
-div.tile.\31 \34 t { --tile-color: var(--galaxy-color); --number-color: var(--galaxy-color); --tile-index: 147; }
-div.tile.\31 \35 t { --tile-color: var(--galaxy-color); --number-color: var(--galaxy-color); --tile-index: 148; }
-div.tile.\31 \36 t { --tile-color: var(--galaxy-color); --number-color: var(--galaxy-color); --tile-index: 149; }
-div.tile.\31 \37 t { --tile-color: var(--galaxy-color); --number-color: var(--galaxy-color); --tile-index: 150; }
-div.tile.\31 \38 t { --tile-color: var(--galaxy-color); --number-color: var(--galaxy-color); --tile-index: 151; }
-div.tile.\31 \39 t { --tile-color: var(--galaxy-color); --number-color: var(--galaxy-color); --tile-index: 152; }
-div.tile.\31 \31 \30 t { --tile-color: var(--galaxy-color); --number-color: var(--galaxy-color); --tile-index: 153; }
-div.tile.\31 \30 z { --tile-color: var(--galaxy-color); --number-color: var(--galaxy-color); --tile-index: 154; }
-div.tile.\31 \31 z { --tile-color: var(--galaxy-color); --number-color: var(--galaxy-color); --tile-index: 155; }
-div.tile.\31 \32 z { --tile-color: var(--galaxy-color); --number-color: var(--galaxy-color); --tile-index: 156; }
-div.tile.\31 \33 z { --tile-color: var(--galaxy-color); --number-color: var(--galaxy-color); --tile-index: 157; }
-div.tile.\31 \34 z { --tile-color: var(--galaxy-color); --number-color: var(--galaxy-color); --tile-index: 158; }
-div.tile.\31 \35 z { --tile-color: var(--galaxy-color); --number-color: var(--galaxy-color); --tile-index: 159; }
-div.tile.\31 \36 z { --tile-color: var(--galaxy-color); --number-color: var(--galaxy-color); --tile-index: 160; }
-div.tile.\31 \37 z { --tile-color: var(--galaxy-color); --number-color: var(--galaxy-color); --tile-index: 161; }
-div.tile.\31 \38 z { --tile-color: var(--galaxy-color); --number-color: var(--galaxy-color); --tile-index: 162; }
-div.tile.\31 \30 \30 s { --tile-color: var(--galaxy-color); --number-color: var(--galaxy-color); --tile-index: 163; }
-div.tile.\32 \31 m { --tile-color: var(--ao-color); --number-color: var(--ao-color); --tile-index: 164; }
-div.tile.\32 \32 m { --tile-color: var(--ao-color); --number-color: var(--ao-color); --tile-index: 165; }
-div.tile.\32 \33 m { --tile-color: var(--ao-color); --number-color: var(--ao-color); --tile-index: 166; }
-div.tile.\32 \34 m { --tile-color: var(--ao-color); --number-color: var(--ao-color); --tile-index: 167; }
-div.tile.\32 \35 m { --tile-color: var(--ao-color); --number-color: var(--ao-color); --tile-index: 168; }
-div.tile.\32 \36 m { --tile-color: var(--ao-color); --number-color: var(--ao-color); --tile-index: 169; }
-div.tile.\32 \37 m { --tile-color: var(--ao-color); --number-color: var(--ao-color); --tile-index: 170; }
-div.tile.\32 \38 m { --tile-color: var(--ao-color); --number-color: var(--ao-color); --tile-index: 171; }
-div.tile.\32 \39 m { --tile-color: var(--ao-color); --number-color: var(--ao-color); --tile-index: 172; }
-div.tile.\32 \31 \30 m { --tile-color: var(--ao-color); --number-color: var(--ao-color); --tile-index: 173; }
-div.tile.\32 \31 p { --tile-color: var(--ao-color); --number-color: var(--ao-color); --tile-index: 174; }
-div.tile.\32 \32 p { --tile-color: var(--ao-color); --number-color: var(--ao-color); --tile-index: 175; }
-div.tile.\32 \33 p { --tile-color: var(--ao-color); --number-color: var(--ao-color); --tile-index: 176; }
-div.tile.\32 \34 p { --tile-color: var(--ao-color); --number-color: var(--ao-color); --tile-index: 177; }
-div.tile.\32 \35 p { --tile-color: var(--ao-color); --number-color: var(--ao-color); --tile-index: 178; }
-div.tile.\32 \36 p { --tile-color: var(--ao-color); --number-color: var(--ao-color); --tile-index: 179; }
-div.tile.\32 \37 p { --tile-color: var(--ao-color); --number-color: var(--ao-color); --tile-index: 180; }
-div.tile.\32 \38 p { --tile-color: var(--ao-color); --number-color: var(--ao-color); --tile-index: 181; }
-div.tile.\32 \39 p { --tile-color: var(--ao-color); --number-color: var(--ao-color); --tile-index: 182; }
-div.tile.\32 \31 \30 p { --tile-color: var(--ao-color); --number-color: var(--ao-color); --tile-index: 183; }
-div.tile.\32 \31 s { --tile-color: var(--ao-color); --number-color: var(--ao-color); --tile-index: 184; }
-div.tile.\32 \32 s { --tile-color: var(--ao-color); --number-color: var(--ao-color); --tile-index: 185; }
-div.tile.\32 \33 s { --tile-color: var(--ao-color); --number-color: var(--ao-color); --tile-index: 186; }
-div.tile.\32 \34 s { --tile-color: var(--ao-color); --number-color: var(--ao-color); --tile-index: 187; }
-div.tile.\32 \35 s { --tile-color: var(--ao-color); --number-color: var(--ao-color); --tile-index: 188; }
-div.tile.\32 \36 s { --tile-color: var(--ao-color); --number-color: var(--ao-color); --tile-index: 189; }
-div.tile.\32 \37 s { --tile-color: var(--ao-color); --number-color: var(--ao-color); --tile-index: 190; }
-div.tile.\32 \38 s { --tile-color: var(--ao-color); --number-color: var(--ao-color); --tile-index: 191; }
-div.tile.\32 \39 s { --tile-color: var(--ao-color); --number-color: var(--ao-color); --tile-index: 192; }
-div.tile.\32 \31 \30 s { --tile-color: var(--ao-color); --number-color: var(--ao-color); --tile-index: 193; }
-div.tile.\32 \31 t { --tile-color: var(--ao-color); --number-color: var(--ao-color); --tile-index: 194; }
-div.tile.\32 \32 t { --tile-color: var(--ao-color); --number-color: var(--ao-color); --tile-index: 195; }
-div.tile.\32 \33 t { --tile-color: var(--ao-color); --number-color: var(--ao-color); --tile-index: 196; }
-div.tile.\32 \34 t { --tile-color: var(--ao-color); --number-color: var(--ao-color); --tile-index: 197; }
-div.tile.\32 \35 t { --tile-color: var(--ao-color); --number-color: var(--ao-color); --tile-index: 198; }
-div.tile.\32 \36 t { --tile-color: var(--ao-color); --number-color: var(--ao-color); --tile-index: 199; }
-div.tile.\32 \37 t { --tile-color: var(--ao-color); --number-color: var(--ao-color); --tile-index: 200; }
-div.tile.\32 \38 t { --tile-color: var(--ao-color); --number-color: var(--ao-color); --tile-index: 201; }
-div.tile.\32 \39 t { --tile-color: var(--ao-color); --number-color: var(--ao-color); --tile-index: 202; }
-div.tile.\32 \31 \30 t { --tile-color: var(--ao-color); --number-color: var(--ao-color); --tile-index: 203; }
-div.tile.\32 \30 z { --tile-color: var(--ao-color); --number-color: var(--ao-color); --tile-index: 204; }
-div.tile.\32 \31 z { --tile-color: var(--ao-color); --number-color: var(--ao-color); --tile-index: 205; }
-div.tile.\32 \32 z { --tile-color: var(--ao-color); --number-color: var(--ao-color); --tile-index: 206; }
-div.tile.\32 \33 z { --tile-color: var(--ao-color); --number-color: var(--ao-color); --tile-index: 207; }
-div.tile.\32 \34 z { --tile-color: var(--ao-color); --number-color: var(--ao-color); --tile-index: 208; }
-div.tile.\32 \35 z { --tile-color: var(--ao-color); --number-color: var(--ao-color); --tile-index: 209; }
-div.tile.\32 \36 z { --tile-color: var(--ao-color); --number-color: var(--ao-color); --tile-index: 210; }
-div.tile.\32 \37 z { --tile-color: var(--ao-color); --number-color: var(--ao-color); --tile-index: 211; }
-div.tile.\32 \38 z { --tile-color: var(--ao-color); --number-color: var(--ao-color); --tile-index: 212; }
-div.tile.\32 \30 \30 s { --tile-color: var(--ao-color); --number-color: var(--ao-color); --tile-index: 213; }
-div.tile.\33 \31 m { --tile-color: var(--kin-color); --number-color: var(--kin-color); --tile-index: 164; }
-div.tile.\33 \32 m { --tile-color: var(--kin-color); --number-color: var(--kin-color); --tile-index: 165; }
-div.tile.\33 \33 m { --tile-color: var(--kin-color); --number-color: var(--kin-color); --tile-index: 166; }
-div.tile.\33 \34 m { --tile-color: var(--kin-color); --number-color: var(--kin-color); --tile-index: 167; }
-div.tile.\33 \35 m { --tile-color: var(--kin-color); --number-color: var(--kin-color); --tile-index: 168; }
-div.tile.\33 \36 m { --tile-color: var(--kin-color); --number-color: var(--kin-color); --tile-index: 169; }
-div.tile.\33 \37 m { --tile-color: var(--kin-color); --number-color: var(--kin-color); --tile-index: 170; }
-div.tile.\33 \38 m { --tile-color: var(--kin-color); --number-color: var(--kin-color); --tile-index: 171; }
-div.tile.\33 \39 m { --tile-color: var(--kin-color); --number-color: var(--kin-color); --tile-index: 172; }
-div.tile.\33 \31 \30 m { --tile-color: var(--kin-color); --number-color: var(--kin-color); --tile-index: 173; }
-div.tile.\33 \31 p { --tile-color: var(--kin-color); --number-color: var(--kin-color); --tile-index: 174; }
-div.tile.\33 \32 p { --tile-color: var(--kin-color); --number-color: var(--kin-color); --tile-index: 175; }
-div.tile.\33 \33 p { --tile-color: var(--kin-color); --number-color: var(--kin-color); --tile-index: 176; }
-div.tile.\33 \34 p { --tile-color: var(--kin-color); --number-color: var(--kin-color); --tile-index: 177; }
-div.tile.\33 \35 p { --tile-color: var(--kin-color); --number-color: var(--kin-color); --tile-index: 178; }
-div.tile.\33 \36 p { --tile-color: var(--kin-color); --number-color: var(--kin-color); --tile-index: 179; }
-div.tile.\33 \37 p { --tile-color: var(--kin-color); --number-color: var(--kin-color); --tile-index: 180; }
-div.tile.\33 \38 p { --tile-color: var(--kin-color); --number-color: var(--kin-color); --tile-index: 181; }
-div.tile.\33 \39 p { --tile-color: var(--kin-color); --number-color: var(--kin-color); --tile-index: 182; }
-div.tile.\33 \31 \30 p { --tile-color: var(--kin-color); --number-color: var(--kin-color); --tile-index: 183; }
-div.tile.\33 \31 s { --tile-color: var(--kin-color); --number-color: var(--kin-color); --tile-index: 184; }
-div.tile.\33 \32 s { --tile-color: var(--kin-color); --number-color: var(--kin-color); --tile-index: 185; }
-div.tile.\33 \33 s { --tile-color: var(--kin-color); --number-color: var(--kin-color); --tile-index: 186; }
-div.tile.\33 \34 s { --tile-color: var(--kin-color); --number-color: var(--kin-color); --tile-index: 187; }
-div.tile.\33 \35 s { --tile-color: var(--kin-color); --number-color: var(--kin-color); --tile-index: 188; }
-div.tile.\33 \36 s { --tile-color: var(--kin-color); --number-color: var(--kin-color); --tile-index: 189; }
-div.tile.\33 \37 s { --tile-color: var(--kin-color); --number-color: var(--kin-color); --tile-index: 190; }
-div.tile.\33 \38 s { --tile-color: var(--kin-color); --number-color: var(--kin-color); --tile-index: 191; }
-div.tile.\33 \39 s { --tile-color: var(--kin-color); --number-color: var(--kin-color); --tile-index: 192; }
-div.tile.\33 \31 \30 s { --tile-color: var(--kin-color); --number-color: var(--kin-color); --tile-index: 193; }
-div.tile.\33 \31 t { --tile-color: var(--kin-color); --number-color: var(--kin-color); --tile-index: 194; }
-div.tile.\33 \32 t { --tile-color: var(--kin-color); --number-color: var(--kin-color); --tile-index: 195; }
-div.tile.\33 \33 t { --tile-color: var(--kin-color); --number-color: var(--kin-color); --tile-index: 196; }
-div.tile.\33 \34 t { --tile-color: var(--kin-color); --number-color: var(--kin-color); --tile-index: 197; }
-div.tile.\33 \35 t { --tile-color: var(--kin-color); --number-color: var(--kin-color); --tile-index: 198; }
-div.tile.\33 \36 t { --tile-color: var(--kin-color); --number-color: var(--kin-color); --tile-index: 199; }
-div.tile.\33 \37 t { --tile-color: var(--kin-color); --number-color: var(--kin-color); --tile-index: 200; }
-div.tile.\33 \38 t { --tile-color: var(--kin-color); --number-color: var(--kin-color); --tile-index: 201; }
-div.tile.\33 \39 t { --tile-color: var(--kin-color); --number-color: var(--kin-color); --tile-index: 202; }
-div.tile.\33 \31 \30 t { --tile-color: var(--kin-color); --number-color: var(--kin-color); --tile-index: 203; }
-div.tile.\33 \30 z { --tile-color: var(--kin-color); --number-color: var(--kin-color); --tile-index: 204; }
-div.tile.\33 \31 z { --tile-color: var(--kin-color); --number-color: var(--kin-color); --tile-index: 205; }
-div.tile.\33 \32 z { --tile-color: var(--kin-color); --number-color: var(--kin-color); --tile-index: 206; }
-div.tile.\33 \33 z { --tile-color: var(--kin-color); --number-color: var(--kin-color); --tile-index: 207; }
-div.tile.\33 \34 z { --tile-color: var(--kin-color); --number-color: var(--kin-color); --tile-index: 208; }
-div.tile.\33 \35 z { --tile-color: var(--kin-color); --number-color: var(--kin-color); --tile-index: 209; }
-div.tile.\33 \36 z { --tile-color: var(--kin-color); --number-color: var(--kin-color); --tile-index: 210; }
-div.tile.\33 \37 z { --tile-color: var(--kin-color); --number-color: var(--kin-color); --tile-index: 211; }
-div.tile.\33 \38 z { --tile-color: var(--kin-color); --number-color: var(--kin-color); --tile-index: 212; }
-div.tile.\33 \30 \30 s { --tile-color: var(--kin-color); --number-color: var(--kin-color); --tile-index: 213; }
-div.tile.\34 \31 m { --tile-index: 114; }
-div.tile.\34 \32 m { --tile-index: 115; }
-div.tile.\34 \33 m { --tile-index: 116; }
-div.tile.\34 \34 m { --tile-index: 117; }
-div.tile.\34 \35 m { --tile-index: 118; }
-div.tile.\34 \36 m { --tile-index: 119; }
-div.tile.\34 \37 m { --tile-index: 120; }
-div.tile.\34 \38 m { --tile-index: 121; }
-div.tile.\34 \39 m { --tile-index: 122; }
-div.tile.\34 \31 \30 m { --tile-index: 123; }
-div.tile.\34 \31 p { --tile-index: 124; }
-div.tile.\34 \32 p { --tile-index: 125; }
-div.tile.\34 \33 p { --tile-index: 126; }
-div.tile.\34 \34 p { --tile-index: 127; }
-div.tile.\34 \35 p { --tile-index: 128; }
-div.tile.\34 \36 p { --tile-index: 129; }
-div.tile.\34 \37 p { --tile-index: 130; }
-div.tile.\34 \38 p { --tile-index: 131; }
-div.tile.\34 \39 p { --tile-index: 132; }
-div.tile.\34 \31 \30 p { --tile-index: 133; }
-div.tile.\34 \31 s { --tile-index: 134; }
-div.tile.\34 \32 s { --tile-index: 135; }
-div.tile.\34 \33 s { --tile-index: 136; }
-div.tile.\34 \34 s { --tile-index: 137; }
-div.tile.\34 \35 s { --tile-index: 138; }
-div.tile.\34 \36 s { --tile-index: 139; }
-div.tile.\34 \37 s { --tile-index: 140; }
-div.tile.\34 \38 s { --tile-index: 141; }
-div.tile.\34 \39 s { --tile-index: 142; }
-div.tile.\34 \31 \30 s { --tile-index: 143; }
-div.tile.\34 \31 t { --tile-index: 144; }
-div.tile.\34 \32 t { --tile-index: 145; }
-div.tile.\34 \33 t { --tile-index: 146; }
-div.tile.\34 \34 t { --tile-index: 147; }
-div.tile.\34 \35 t { --tile-index: 148; }
-div.tile.\34 \36 t { --tile-index: 149; }
-div.tile.\34 \37 t { --tile-index: 150; }
-div.tile.\34 \38 t { --tile-index: 151; }
-div.tile.\34 \39 t { --tile-index: 152; }
-div.tile.\34 \31 \30 t { --tile-index: 153; }
-div.tile.\34 \30 z { --tile-index: 154; }
-div.tile.\34 \31 z { --tile-index: 155; }
-div.tile.\34 \32 z { --tile-index: 156; }
-div.tile.\34 \33 z { --tile-index: 157; }
-div.tile.\34 \34 z { --tile-index: 158; }
-div.tile.\34 \35 z { --tile-index: 159; }
-div.tile.\34 \36 z { --tile-index: 160; }
-div.tile.\34 \37 z { --tile-index: 161; }
-div.tile.\34 \38 z { --tile-index: 162; }
-div.tile.\34 \30 \30 s { --tile-index: 163; }
-div.tile.\35 \31 m { --tile-index: 164; }
-div.tile.\35 \32 m { --tile-index: 165; }
-div.tile.\35 \33 m { --tile-index: 166; }
-div.tile.\35 \34 m { --tile-index: 167; }
-div.tile.\35 \35 m { --tile-index: 168; }
-div.tile.\35 \36 m { --tile-index: 169; }
-div.tile.\35 \37 m { --tile-index: 170; }
-div.tile.\35 \38 m { --tile-index: 171; }
-div.tile.\35 \39 m { --tile-index: 172; }
-div.tile.\35 \31 \30 m { --tile-index: 173; }
-div.tile.\35 \31 p { --tile-index: 174; }
-div.tile.\35 \32 p { --tile-index: 175; }
-div.tile.\35 \33 p { --tile-index: 176; }
-div.tile.\35 \34 p { --tile-index: 177; }
-div.tile.\35 \35 p { --tile-index: 178; }
-div.tile.\35 \36 p { --tile-index: 179; }
-div.tile.\35 \37 p { --tile-index: 180; }
-div.tile.\35 \38 p { --tile-index: 181; }
-div.tile.\35 \39 p { --tile-index: 182; }
-div.tile.\35 \31 \30 p { --tile-index: 183; }
-div.tile.\35 \31 s { --tile-index: 184; }
-div.tile.\35 \32 s { --tile-index: 185; }
-div.tile.\35 \33 s { --tile-index: 186; }
-div.tile.\35 \34 s { --tile-index: 187; }
-div.tile.\35 \35 s { --tile-index: 188; }
-div.tile.\35 \36 s { --tile-index: 189; }
-div.tile.\35 \37 s { --tile-index: 190; }
-div.tile.\35 \38 s { --tile-index: 191; }
-div.tile.\35 \39 s { --tile-index: 192; }
-div.tile.\35 \31 \30 s { --tile-index: 193; }
-div.tile.\35 \31 t { --tile-index: 194; }
-div.tile.\35 \32 t { --tile-index: 195; }
-div.tile.\35 \33 t { --tile-index: 196; }
-div.tile.\35 \34 t { --tile-index: 197; }
-div.tile.\35 \35 t { --tile-index: 198; }
-div.tile.\35 \36 t { --tile-index: 199; }
-div.tile.\35 \37 t { --tile-index: 200; }
-div.tile.\35 \38 t { --tile-index: 201; }
-div.tile.\35 \39 t { --tile-index: 202; }
-div.tile.\35 \31 \30 t { --tile-index: 203; }
-div.tile.\35 \30 z { --tile-index: 204; }
-div.tile.\35 \31 z { --tile-index: 205; }
-div.tile.\35 \32 z { --tile-index: 206; }
-div.tile.\35 \33 z { --tile-index: 207; }
-div.tile.\35 \34 z { --tile-index: 208; }
-div.tile.\35 \35 z { --tile-index: 209; }
-div.tile.\35 \36 z { --tile-index: 210; }
-div.tile.\35 \37 z { --tile-index: 211; }
-div.tile.\35 \38 z { --tile-index: 212; }
-div.tile.\35 \30 \30 s { --tile-index: 213; }
+
+div.tile.\30 j { --tile-index: 76; }
+div.tile.\32 j { --tile-index: 77; }
+div.tile.\39 j { --tile-index: 78; }
+div.tile.\34 j { --tile-index: 79; }
+div.tile.\35 j { --tile-index: 80; }
+div.tile.\36 j, div.tile.\31 \36 j { --tile-index: 81; }
+div.tile.\37 j { --tile-index: 82; }
+div.tile.\38 j { --tile-index: 83; }
+div.tile.\33 j, div.tile.\31 \33 j { --tile-index: 84; }
+div.tile.\30 \30 j { --tile-index: 85; }
+div.tile.\30 \32 j { --tile-index: 86; }
+div.tile.\30 \39 j { --tile-index: 87; }
+div.tile.\30 \34 j { --tile-index: 88; }
+div.tile.\30 \35 j { --tile-index: 89; }
+div.tile.\30 \36 j { --tile-index: 90; }
+div.tile.\30 \37 j { --tile-index: 91; }
+div.tile.\30 \38 j { --tile-index: 92; }
+div.tile.\30 \33 j { --tile-index: 93; }
+div.tile.\35 \30 j { --tile-index: 94; }
+div.tile.\35 \32 j { --tile-index: 95; }
+div.tile.\35 \39 j { --tile-index: 96; }
+div.tile.\35 \34 j { --tile-index: 97; }
+div.tile.\35 \35 j { --tile-index: 98; }
+div.tile.\35 \36 j { --tile-index: 99; }
+div.tile.\35 \37 j { --tile-index: 100; }
+div.tile.\35 \38 j { --tile-index: 101; }
+div.tile.\35 \33 j { --tile-index: 102; }
+div.tile.\38 \30 j { --tile-index: 103; }
+div.tile.\38 \32 j { --tile-index: 104; }
+div.tile.\38 \39 j { --tile-index: 105; }
+div.tile.\38 \34 j { --tile-index: 106; }
+div.tile.\38 \35 j { --tile-index: 107; }
+div.tile.\38 \36 j { --tile-index: 108; }
+div.tile.\38 \37 j { --tile-index: 109; }
+div.tile.\38 \38 j { --tile-index: 110; }
+div.tile.\38 \33 j { --tile-index: 111; }
+div.tile.\31 j { --tile-index: 112; }
+div.tile.\31 \30 j { --tile-index: 113; }
+div.tile.\31 \32 j { --tile-index: 114; }
+div.tile.\31 \34 j { --tile-index: 115; }
+div.tile.\31 \35 j { --tile-index: 116; }
+div.tile.\31 \37 j { --tile-index: 117; }
+div.tile.\31 \38 j { --tile-index: 118; }
+div.tile.\31 \39 j { --tile-index: 119; }
+div.tile.\33 \37 j { --tile-index: 120; }
+div.tile.\34 \36 j { --tile-index: 121; }
+div.tile.\31 \34 \37 j { --tile-index: 122; }
+div.tile.\32 \35 \38 j { --tile-index: 123; }
+div.tile.\33 \36 \39 j { --tile-index: 124; }
+div.tile.\37 \38 \39 j { --tile-index: 125; }
+div.tile.\34 \35 \36 j { --tile-index: 126; }
+div.tile.\31 \32 \33 j { --tile-index: 127; }
+div.tile.\31 \31 j { --tile-index: 128; }
+div.tile.\32 \32 j { --tile-index: 129; }
+div.tile.\32 \30 j { --tile-index: 130; }
+div.tile.\39 \31 j { --tile-index: 131; }
+div.tile.\36 \34 j { --tile-index: 132; }
+div.tile.\37 \33 j { --tile-index: 133; }
+div.tile.\38 \35 \32 j { --tile-index: 134; }
+div.tile.\33 \30 j { --tile-index: 135; }
+div.tile.\33 \31 j { --tile-index: 136; }
+div.tile.\33 \32 j { --tile-index: 137; }
+div.tile.\33 \33 j { --tile-index: 138; }
+div.tile.\33 \34 j { --tile-index: 139; }
+div.tile.\32 y { --tile-index: 140; }
+div.tile.\34 \31 m { --tile-index: 141; }
+div.tile.\34 \32 m { --tile-index: 142; }
+div.tile.\34 \33 m { --tile-index: 143; }
+div.tile.\34 \34 m { --tile-index: 144; }
+div.tile.\34 \35 m { --tile-index: 145; }
+div.tile.\34 \36 m { --tile-index: 146; }
+div.tile.\34 \37 m { --tile-index: 147; }
+div.tile.\34 \38 m { --tile-index: 148; }
+div.tile.\34 \39 m { --tile-index: 149; }
+div.tile.\34 \31 \30 m { --tile-index: 150; }
+div.tile.\34 \31 p { --tile-index: 151; }
+div.tile.\34 \32 p { --tile-index: 152; }
+div.tile.\34 \33 p { --tile-index: 153; }
+div.tile.\34 \34 p { --tile-index: 154; }
+div.tile.\34 \35 p { --tile-index: 155; }
+div.tile.\34 \36 p { --tile-index: 156; }
+div.tile.\34 \37 p { --tile-index: 157; }
+div.tile.\34 \38 p { --tile-index: 158; }
+div.tile.\34 \39 p { --tile-index: 159; }
+div.tile.\34 \31 \30 p { --tile-index: 160; }
+div.tile.\34 \31 s { --tile-index: 161; }
+div.tile.\34 \32 s { --tile-index: 162; }
+div.tile.\34 \33 s { --tile-index: 163; }
+div.tile.\34 \34 s { --tile-index: 164; }
+div.tile.\34 \35 s { --tile-index: 165; }
+div.tile.\34 \36 s { --tile-index: 166; }
+div.tile.\34 \37 s { --tile-index: 167; }
+div.tile.\34 \38 s { --tile-index: 168; }
+div.tile.\34 \39 s { --tile-index: 169; }
+div.tile.\34 \31 \30 s { --tile-index: 170; }
+div.tile.\34 \31 t { --tile-index: 171; }
+div.tile.\34 \32 t { --tile-index: 172; }
+div.tile.\34 \33 t { --tile-index: 173; }
+div.tile.\34 \34 t { --tile-index: 174; }
+div.tile.\34 \35 t { --tile-index: 175; }
+div.tile.\34 \36 t { --tile-index: 176; }
+div.tile.\34 \37 t { --tile-index: 177; }
+div.tile.\34 \38 t { --tile-index: 178; }
+div.tile.\34 \39 t { --tile-index: 179; }
+div.tile.\34 \31 \30 t { --tile-index: 180; }
+div.tile.\34 \30 z { --tile-index: 181; }
+div.tile.\34 \31 z { --tile-index: 182; }
+div.tile.\34 \32 z { --tile-index: 183; }
+div.tile.\34 \33 z { --tile-index: 184; }
+div.tile.\34 \34 z { --tile-index: 185; }
+div.tile.\34 \35 z { --tile-index: 186; }
+div.tile.\34 \36 z { --tile-index: 187; }
+div.tile.\34 \37 z { --tile-index: 188; }
+div.tile.\34 \38 z { --tile-index: 189; }
+div.tile.\34 \30 \30 s { --tile-index: 190; }
+div.tile.\35 \31 m { --tile-index: 191; }
+div.tile.\35 \32 m { --tile-index: 192; }
+div.tile.\35 \33 m { --tile-index: 193; }
+div.tile.\35 \34 m { --tile-index: 194; }
+div.tile.\35 \35 m { --tile-index: 195; }
+div.tile.\35 \36 m { --tile-index: 196; }
+div.tile.\35 \37 m { --tile-index: 197; }
+div.tile.\35 \38 m { --tile-index: 198; }
+div.tile.\35 \39 m { --tile-index: 199; }
+div.tile.\35 \31 \30 m { --tile-index: 200; }
+div.tile.\35 \31 p { --tile-index: 201; }
+div.tile.\35 \32 p { --tile-index: 202; }
+div.tile.\35 \33 p { --tile-index: 203; }
+div.tile.\35 \34 p { --tile-index: 204; }
+div.tile.\35 \35 p { --tile-index: 205; }
+div.tile.\35 \36 p { --tile-index: 206; }
+div.tile.\35 \37 p { --tile-index: 207; }
+div.tile.\35 \38 p { --tile-index: 208; }
+div.tile.\35 \39 p { --tile-index: 209; }
+div.tile.\35 \31 \30 p { --tile-index: 210; }
+div.tile.\35 \31 s { --tile-index: 211; }
+div.tile.\35 \32 s { --tile-index: 212; }
+div.tile.\35 \33 s { --tile-index: 213; }
+div.tile.\35 \34 s { --tile-index: 214; }
+div.tile.\35 \35 s { --tile-index: 215; }
+div.tile.\35 \36 s { --tile-index: 216; }
+div.tile.\35 \37 s { --tile-index: 217; }
+div.tile.\35 \38 s { --tile-index: 218; }
+div.tile.\35 \39 s { --tile-index: 219; }
+div.tile.\35 \31 \30 s { --tile-index: 220; }
+div.tile.\35 \31 t { --tile-index: 221; }
+div.tile.\35 \32 t { --tile-index: 222; }
+div.tile.\35 \33 t { --tile-index: 223; }
+div.tile.\35 \34 t { --tile-index: 224; }
+div.tile.\35 \35 t { --tile-index: 225; }
+div.tile.\35 \36 t { --tile-index: 226; }
+div.tile.\35 \37 t { --tile-index: 227; }
+div.tile.\35 \38 t { --tile-index: 228; }
+div.tile.\35 \39 t { --tile-index: 229; }
+div.tile.\35 \31 \30 t { --tile-index: 230; }
+div.tile.\35 \30 z { --tile-index: 231; }
+div.tile.\35 \31 z { --tile-index: 232; }
+div.tile.\35 \32 z { --tile-index: 233; }
+div.tile.\35 \33 z { --tile-index: 234; }
+div.tile.\35 \34 z { --tile-index: 235; }
+div.tile.\35 \35 z { --tile-index: 236; }
+div.tile.\35 \36 z { --tile-index: 237; }
+div.tile.\35 \37 z { --tile-index: 238; }
+div.tile.\35 \38 z { --tile-index: 239; }
+div.tile.\35 \30 \30 s { --tile-index: 240; }
+div.tile.\30 \31 m { --tile-color: var(--aka-color); --number-color: var(--aka-color); --tile-index: 191; }
+div.tile.\30 \32 m { --tile-color: var(--aka-color); --number-color: var(--aka-color); --tile-index: 192; }
+div.tile.\30 \33 m { --tile-color: var(--aka-color); --number-color: var(--aka-color); --tile-index: 193; }
+div.tile.\30 \34 m { --tile-color: var(--aka-color); --number-color: var(--aka-color); --tile-index: 194; }
+div.tile.\30 \35 m { --tile-color: var(--aka-color); --number-color: var(--aka-color); --tile-index: 195; }
+div.tile.\30 \36 m { --tile-color: var(--aka-color); --number-color: var(--aka-color); --tile-index: 196; }
+div.tile.\30 \37 m { --tile-color: var(--aka-color); --number-color: var(--aka-color); --tile-index: 197; }
+div.tile.\30 \38 m { --tile-color: var(--aka-color); --number-color: var(--aka-color); --tile-index: 198; }
+div.tile.\30 \39 m { --tile-color: var(--aka-color); --number-color: var(--aka-color); --tile-index: 199; }
+div.tile.\30 \31 \30 m { --tile-color: var(--aka-color); --number-color: var(--aka-color); --tile-index: 200; }
+div.tile.\30 \31 p { --tile-color: var(--aka-color); --number-color: var(--aka-color); --tile-index: 201; }
+div.tile.\30 \32 p { --tile-color: var(--aka-color); --number-color: var(--aka-color); --tile-index: 202; }
+div.tile.\30 \33 p { --tile-color: var(--aka-color); --number-color: var(--aka-color); --tile-index: 203; }
+div.tile.\30 \34 p { --tile-color: var(--aka-color); --number-color: var(--aka-color); --tile-index: 204; }
+div.tile.\30 \35 p { --tile-color: var(--aka-color); --number-color: var(--aka-color); --tile-index: 205; }
+div.tile.\30 \36 p { --tile-color: var(--aka-color); --number-color: var(--aka-color); --tile-index: 206; }
+div.tile.\30 \37 p { --tile-color: var(--aka-color); --number-color: var(--aka-color); --tile-index: 207; }
+div.tile.\30 \38 p { --tile-color: var(--aka-color); --number-color: var(--aka-color); --tile-index: 208; }
+div.tile.\30 \39 p { --tile-color: var(--aka-color); --number-color: var(--aka-color); --tile-index: 209; }
+div.tile.\30 \31 \30 p { --tile-color: var(--aka-color); --number-color: var(--aka-color); --tile-index: 210; }
+div.tile.\30 \31 s { --tile-color: var(--aka-color); --number-color: var(--aka-color); --tile-index: 211; }
+div.tile.\30 \32 s { --tile-color: var(--aka-color); --number-color: var(--aka-color); --tile-index: 212; }
+div.tile.\30 \33 s { --tile-color: var(--aka-color); --number-color: var(--aka-color); --tile-index: 213; }
+div.tile.\30 \34 s { --tile-color: var(--aka-color); --number-color: var(--aka-color); --tile-index: 214; }
+div.tile.\30 \35 s { --tile-color: var(--aka-color); --number-color: var(--aka-color); --tile-index: 215; }
+div.tile.\30 \36 s { --tile-color: var(--aka-color); --number-color: var(--aka-color); --tile-index: 216; }
+div.tile.\30 \37 s { --tile-color: var(--aka-color); --number-color: var(--aka-color); --tile-index: 217; }
+div.tile.\30 \38 s { --tile-color: var(--aka-color); --number-color: var(--aka-color); --tile-index: 218; }
+div.tile.\30 \39 s { --tile-color: var(--aka-color); --number-color: var(--aka-color); --tile-index: 219; }
+div.tile.\30 \31 \30 s { --tile-color: var(--aka-color); --number-color: var(--aka-color); --tile-index: 220; }
+div.tile.\30 \31 t { --tile-color: var(--aka-color); --number-color: var(--aka-color); --tile-index: 221; }
+div.tile.\30 \32 t { --tile-color: var(--aka-color); --number-color: var(--aka-color); --tile-index: 222; }
+div.tile.\30 \33 t { --tile-color: var(--aka-color); --number-color: var(--aka-color); --tile-index: 223; }
+div.tile.\30 \34 t { --tile-color: var(--aka-color); --number-color: var(--aka-color); --tile-index: 224; }
+div.tile.\30 \35 t, div.tile.\30 t { --tile-color: var(--aka-color); --number-color: var(--aka-color); --tile-index: 225; }
+div.tile.\30 \36 t { --tile-color: var(--aka-color); --number-color: var(--aka-color); --tile-index: 226; }
+div.tile.\30 \37 t { --tile-color: var(--aka-color); --number-color: var(--aka-color); --tile-index: 227; }
+div.tile.\30 \38 t { --tile-color: var(--aka-color); --number-color: var(--aka-color); --tile-index: 228; }
+div.tile.\30 \39 t { --tile-color: var(--aka-color); --number-color: var(--aka-color); --tile-index: 229; }
+div.tile.\30 \31 \30 t { --tile-color: var(--aka-color); --number-color: var(--aka-color); --tile-index: 230; }
+div.tile.\30 \30 z { --tile-color: var(--aka-color); --number-color: var(--aka-color); --tile-index: 231; }
+div.tile.\30 \31 z { --tile-color: var(--aka-color); --number-color: var(--aka-color); --tile-index: 232; }
+div.tile.\30 \32 z { --tile-color: var(--aka-color); --number-color: var(--aka-color); --tile-index: 233; }
+div.tile.\30 \33 z { --tile-color: var(--aka-color); --number-color: var(--aka-color); --tile-index: 234; }
+div.tile.\30 \34 z { --tile-color: var(--aka-color); --number-color: var(--aka-color); --tile-index: 235; }
+div.tile.\30 \35 z { --tile-color: var(--aka-color); --number-color: var(--aka-color); --tile-index: 236; }
+div.tile.\30 \36 z { --tile-color: var(--aka-color); --number-color: var(--aka-color); --tile-index: 237; }
+div.tile.\30 \37 z { --tile-color: var(--aka-color); --number-color: var(--aka-color); --tile-index: 238; }
+div.tile.\30 \38 z { --tile-color: var(--aka-color); --number-color: var(--aka-color); --tile-index: 239; }
+div.tile.\30 \30 \30 s { --tile-color: var(--aka-color); --number-color: var(--aka-color); --tile-index: 240; }
+div.tile.\31 \31 m { --tile-color: var(--galaxy-color); --number-color: var(--galaxy-color); --tile-index: 191; }
+div.tile.\31 \32 m { --tile-color: var(--galaxy-color); --number-color: var(--galaxy-color); --tile-index: 192; }
+div.tile.\31 \33 m { --tile-color: var(--galaxy-color); --number-color: var(--galaxy-color); --tile-index: 193; }
+div.tile.\31 \34 m { --tile-color: var(--galaxy-color); --number-color: var(--galaxy-color); --tile-index: 194; }
+div.tile.\31 \35 m { --tile-color: var(--galaxy-color); --number-color: var(--galaxy-color); --tile-index: 195; }
+div.tile.\31 \36 m { --tile-color: var(--galaxy-color); --number-color: var(--galaxy-color); --tile-index: 196; }
+div.tile.\31 \37 m { --tile-color: var(--galaxy-color); --number-color: var(--galaxy-color); --tile-index: 197; }
+div.tile.\31 \38 m { --tile-color: var(--galaxy-color); --number-color: var(--galaxy-color); --tile-index: 198; }
+div.tile.\31 \39 m { --tile-color: var(--galaxy-color); --number-color: var(--galaxy-color); --tile-index: 199; }
+div.tile.\31 \31 \30 m { --tile-color: var(--galaxy-color); --number-color: var(--galaxy-color); --tile-index: 200; }
+div.tile.\31 \31 p { --tile-color: var(--galaxy-color); --number-color: var(--galaxy-color); --tile-index: 201; }
+div.tile.\31 \32 p { --tile-color: var(--galaxy-color); --number-color: var(--galaxy-color); --tile-index: 202; }
+div.tile.\31 \33 p { --tile-color: var(--galaxy-color); --number-color: var(--galaxy-color); --tile-index: 203; }
+div.tile.\31 \34 p { --tile-color: var(--galaxy-color); --number-color: var(--galaxy-color); --tile-index: 204; }
+div.tile.\31 \35 p { --tile-color: var(--galaxy-color); --number-color: var(--galaxy-color); --tile-index: 205; }
+div.tile.\31 \36 p { --tile-color: var(--galaxy-color); --number-color: var(--galaxy-color); --tile-index: 206; }
+div.tile.\31 \37 p { --tile-color: var(--galaxy-color); --number-color: var(--galaxy-color); --tile-index: 207; }
+div.tile.\31 \38 p { --tile-color: var(--galaxy-color); --number-color: var(--galaxy-color); --tile-index: 208; }
+div.tile.\31 \39 p { --tile-color: var(--galaxy-color); --number-color: var(--galaxy-color); --tile-index: 209; }
+div.tile.\31 \31 \30 p { --tile-color: var(--galaxy-color); --number-color: var(--galaxy-color); --tile-index: 210; }
+div.tile.\31 \31 s { --tile-color: var(--galaxy-color); --number-color: var(--galaxy-color); --tile-index: 211; }
+div.tile.\31 \32 s { --tile-color: var(--galaxy-color); --number-color: var(--galaxy-color); --tile-index: 212; }
+div.tile.\31 \33 s { --tile-color: var(--galaxy-color); --number-color: var(--galaxy-color); --tile-index: 213; }
+div.tile.\31 \34 s { --tile-color: var(--galaxy-color); --number-color: var(--galaxy-color); --tile-index: 214; }
+div.tile.\31 \35 s { --tile-color: var(--galaxy-color); --number-color: var(--galaxy-color); --tile-index: 215; }
+div.tile.\31 \36 s { --tile-color: var(--galaxy-color); --number-color: var(--galaxy-color); --tile-index: 216; }
+div.tile.\31 \37 s { --tile-color: var(--galaxy-color); --number-color: var(--galaxy-color); --tile-index: 217; }
+div.tile.\31 \38 s { --tile-color: var(--galaxy-color); --number-color: var(--galaxy-color); --tile-index: 218; }
+div.tile.\31 \39 s { --tile-color: var(--galaxy-color); --number-color: var(--galaxy-color); --tile-index: 219; }
+div.tile.\31 \31 \30 s { --tile-color: var(--galaxy-color); --number-color: var(--galaxy-color); --tile-index: 220; }
+div.tile.\31 \31 t { --tile-color: var(--galaxy-color); --number-color: var(--galaxy-color); --tile-index: 221; }
+div.tile.\31 \32 t { --tile-color: var(--galaxy-color); --number-color: var(--galaxy-color); --tile-index: 222; }
+div.tile.\31 \33 t { --tile-color: var(--galaxy-color); --number-color: var(--galaxy-color); --tile-index: 223; }
+div.tile.\31 \34 t { --tile-color: var(--galaxy-color); --number-color: var(--galaxy-color); --tile-index: 224; }
+div.tile.\31 \35 t { --tile-color: var(--galaxy-color); --number-color: var(--galaxy-color); --tile-index: 225; }
+div.tile.\31 \36 t { --tile-color: var(--galaxy-color); --number-color: var(--galaxy-color); --tile-index: 226; }
+div.tile.\31 \37 t { --tile-color: var(--galaxy-color); --number-color: var(--galaxy-color); --tile-index: 227; }
+div.tile.\31 \38 t { --tile-color: var(--galaxy-color); --number-color: var(--galaxy-color); --tile-index: 228; }
+div.tile.\31 \39 t { --tile-color: var(--galaxy-color); --number-color: var(--galaxy-color); --tile-index: 229; }
+div.tile.\31 \31 \30 t { --tile-color: var(--galaxy-color); --number-color: var(--galaxy-color); --tile-index: 230; }
+div.tile.\31 \30 z { --tile-color: var(--galaxy-color); --number-color: var(--galaxy-color); --tile-index: 231; }
+div.tile.\31 \31 z { --tile-color: var(--galaxy-color); --number-color: var(--galaxy-color); --tile-index: 232; }
+div.tile.\31 \32 z { --tile-color: var(--galaxy-color); --number-color: var(--galaxy-color); --tile-index: 233; }
+div.tile.\31 \33 z { --tile-color: var(--galaxy-color); --number-color: var(--galaxy-color); --tile-index: 234; }
+div.tile.\31 \34 z { --tile-color: var(--galaxy-color); --number-color: var(--galaxy-color); --tile-index: 235; }
+div.tile.\31 \35 z { --tile-color: var(--galaxy-color); --number-color: var(--galaxy-color); --tile-index: 236; }
+div.tile.\31 \36 z { --tile-color: var(--galaxy-color); --number-color: var(--galaxy-color); --tile-index: 237; }
+div.tile.\31 \37 z { --tile-color: var(--galaxy-color); --number-color: var(--galaxy-color); --tile-index: 238; }
+div.tile.\31 \38 z { --tile-color: var(--galaxy-color); --number-color: var(--galaxy-color); --tile-index: 239; }
+div.tile.\31 \30 \30 s { --tile-color: var(--galaxy-color); --number-color: var(--galaxy-color); --tile-index: 240; }
+div.tile.\32 \31 m { --tile-color: var(--ao-color); --number-color: var(--ao-color); --tile-index: 191; }
+div.tile.\32 \32 m { --tile-color: var(--ao-color); --number-color: var(--ao-color); --tile-index: 192; }
+div.tile.\32 \33 m { --tile-color: var(--ao-color); --number-color: var(--ao-color); --tile-index: 193; }
+div.tile.\32 \34 m { --tile-color: var(--ao-color); --number-color: var(--ao-color); --tile-index: 194; }
+div.tile.\32 \35 m { --tile-color: var(--ao-color); --number-color: var(--ao-color); --tile-index: 195; }
+div.tile.\32 \36 m { --tile-color: var(--ao-color); --number-color: var(--ao-color); --tile-index: 196; }
+div.tile.\32 \37 m { --tile-color: var(--ao-color); --number-color: var(--ao-color); --tile-index: 197; }
+div.tile.\32 \38 m { --tile-color: var(--ao-color); --number-color: var(--ao-color); --tile-index: 198; }
+div.tile.\32 \39 m { --tile-color: var(--ao-color); --number-color: var(--ao-color); --tile-index: 199; }
+div.tile.\32 \31 \30 m { --tile-color: var(--ao-color); --number-color: var(--ao-color); --tile-index: 200; }
+div.tile.\32 \31 p { --tile-color: var(--ao-color); --number-color: var(--ao-color); --tile-index: 201; }
+div.tile.\32 \32 p { --tile-color: var(--ao-color); --number-color: var(--ao-color); --tile-index: 202; }
+div.tile.\32 \33 p { --tile-color: var(--ao-color); --number-color: var(--ao-color); --tile-index: 203; }
+div.tile.\32 \34 p { --tile-color: var(--ao-color); --number-color: var(--ao-color); --tile-index: 204; }
+div.tile.\32 \35 p { --tile-color: var(--ao-color); --number-color: var(--ao-color); --tile-index: 205; }
+div.tile.\32 \36 p { --tile-color: var(--ao-color); --number-color: var(--ao-color); --tile-index: 206; }
+div.tile.\32 \37 p { --tile-color: var(--ao-color); --number-color: var(--ao-color); --tile-index: 207; }
+div.tile.\32 \38 p { --tile-color: var(--ao-color); --number-color: var(--ao-color); --tile-index: 208; }
+div.tile.\32 \39 p { --tile-color: var(--ao-color); --number-color: var(--ao-color); --tile-index: 209; }
+div.tile.\32 \31 \30 p { --tile-color: var(--ao-color); --number-color: var(--ao-color); --tile-index: 210; }
+div.tile.\32 \31 s { --tile-color: var(--ao-color); --number-color: var(--ao-color); --tile-index: 211; }
+div.tile.\32 \32 s { --tile-color: var(--ao-color); --number-color: var(--ao-color); --tile-index: 212; }
+div.tile.\32 \33 s { --tile-color: var(--ao-color); --number-color: var(--ao-color); --tile-index: 213; }
+div.tile.\32 \34 s { --tile-color: var(--ao-color); --number-color: var(--ao-color); --tile-index: 214; }
+div.tile.\32 \35 s { --tile-color: var(--ao-color); --number-color: var(--ao-color); --tile-index: 215; }
+div.tile.\32 \36 s { --tile-color: var(--ao-color); --number-color: var(--ao-color); --tile-index: 216; }
+div.tile.\32 \37 s { --tile-color: var(--ao-color); --number-color: var(--ao-color); --tile-index: 217; }
+div.tile.\32 \38 s { --tile-color: var(--ao-color); --number-color: var(--ao-color); --tile-index: 218; }
+div.tile.\32 \39 s { --tile-color: var(--ao-color); --number-color: var(--ao-color); --tile-index: 219; }
+div.tile.\32 \31 \30 s { --tile-color: var(--ao-color); --number-color: var(--ao-color); --tile-index: 220; }
+div.tile.\32 \31 t { --tile-color: var(--ao-color); --number-color: var(--ao-color); --tile-index: 221; }
+div.tile.\32 \32 t { --tile-color: var(--ao-color); --number-color: var(--ao-color); --tile-index: 222; }
+div.tile.\32 \33 t { --tile-color: var(--ao-color); --number-color: var(--ao-color); --tile-index: 223; }
+div.tile.\32 \34 t { --tile-color: var(--ao-color); --number-color: var(--ao-color); --tile-index: 224; }
+div.tile.\32 \35 t { --tile-color: var(--ao-color); --number-color: var(--ao-color); --tile-index: 225; }
+div.tile.\32 \36 t { --tile-color: var(--ao-color); --number-color: var(--ao-color); --tile-index: 226; }
+div.tile.\32 \37 t { --tile-color: var(--ao-color); --number-color: var(--ao-color); --tile-index: 227; }
+div.tile.\32 \38 t { --tile-color: var(--ao-color); --number-color: var(--ao-color); --tile-index: 228; }
+div.tile.\32 \39 t { --tile-color: var(--ao-color); --number-color: var(--ao-color); --tile-index: 229; }
+div.tile.\32 \31 \30 t { --tile-color: var(--ao-color); --number-color: var(--ao-color); --tile-index: 230; }
+div.tile.\32 \30 z { --tile-color: var(--ao-color); --number-color: var(--ao-color); --tile-index: 231; }
+div.tile.\32 \31 z { --tile-color: var(--ao-color); --number-color: var(--ao-color); --tile-index: 232; }
+div.tile.\32 \32 z { --tile-color: var(--ao-color); --number-color: var(--ao-color); --tile-index: 233; }
+div.tile.\32 \33 z { --tile-color: var(--ao-color); --number-color: var(--ao-color); --tile-index: 234; }
+div.tile.\32 \34 z { --tile-color: var(--ao-color); --number-color: var(--ao-color); --tile-index: 235; }
+div.tile.\32 \35 z { --tile-color: var(--ao-color); --number-color: var(--ao-color); --tile-index: 236; }
+div.tile.\32 \36 z { --tile-color: var(--ao-color); --number-color: var(--ao-color); --tile-index: 237; }
+div.tile.\32 \37 z { --tile-color: var(--ao-color); --number-color: var(--ao-color); --tile-index: 238; }
+div.tile.\32 \38 z { --tile-color: var(--ao-color); --number-color: var(--ao-color); --tile-index: 239; }
+div.tile.\32 \30 \30 s { --tile-color: var(--ao-color); --number-color: var(--ao-color); --tile-index: 240; }
+div.tile.\33 \31 m { --tile-color: var(--kin-color); --number-color: var(--kin-color); --tile-index: 191; }
+div.tile.\33 \32 m { --tile-color: var(--kin-color); --number-color: var(--kin-color); --tile-index: 192; }
+div.tile.\33 \33 m { --tile-color: var(--kin-color); --number-color: var(--kin-color); --tile-index: 193; }
+div.tile.\33 \34 m { --tile-color: var(--kin-color); --number-color: var(--kin-color); --tile-index: 194; }
+div.tile.\33 \35 m { --tile-color: var(--kin-color); --number-color: var(--kin-color); --tile-index: 195; }
+div.tile.\33 \36 m { --tile-color: var(--kin-color); --number-color: var(--kin-color); --tile-index: 196; }
+div.tile.\33 \37 m { --tile-color: var(--kin-color); --number-color: var(--kin-color); --tile-index: 197; }
+div.tile.\33 \38 m { --tile-color: var(--kin-color); --number-color: var(--kin-color); --tile-index: 198; }
+div.tile.\33 \39 m { --tile-color: var(--kin-color); --number-color: var(--kin-color); --tile-index: 199; }
+div.tile.\33 \31 \30 m { --tile-color: var(--kin-color); --number-color: var(--kin-color); --tile-index: 200; }
+div.tile.\33 \31 p { --tile-color: var(--kin-color); --number-color: var(--kin-color); --tile-index: 201; }
+div.tile.\33 \32 p { --tile-color: var(--kin-color); --number-color: var(--kin-color); --tile-index: 202; }
+div.tile.\33 \33 p { --tile-color: var(--kin-color); --number-color: var(--kin-color); --tile-index: 203; }
+div.tile.\33 \34 p { --tile-color: var(--kin-color); --number-color: var(--kin-color); --tile-index: 204; }
+div.tile.\33 \35 p { --tile-color: var(--kin-color); --number-color: var(--kin-color); --tile-index: 205; }
+div.tile.\33 \36 p { --tile-color: var(--kin-color); --number-color: var(--kin-color); --tile-index: 206; }
+div.tile.\33 \37 p { --tile-color: var(--kin-color); --number-color: var(--kin-color); --tile-index: 207; }
+div.tile.\33 \38 p { --tile-color: var(--kin-color); --number-color: var(--kin-color); --tile-index: 208; }
+div.tile.\33 \39 p { --tile-color: var(--kin-color); --number-color: var(--kin-color); --tile-index: 209; }
+div.tile.\33 \31 \30 p { --tile-color: var(--kin-color); --number-color: var(--kin-color); --tile-index: 210; }
+div.tile.\33 \31 s { --tile-color: var(--kin-color); --number-color: var(--kin-color); --tile-index: 211; }
+div.tile.\33 \32 s { --tile-color: var(--kin-color); --number-color: var(--kin-color); --tile-index: 212; }
+div.tile.\33 \33 s { --tile-color: var(--kin-color); --number-color: var(--kin-color); --tile-index: 213; }
+div.tile.\33 \34 s { --tile-color: var(--kin-color); --number-color: var(--kin-color); --tile-index: 214; }
+div.tile.\33 \35 s { --tile-color: var(--kin-color); --number-color: var(--kin-color); --tile-index: 215; }
+div.tile.\33 \36 s { --tile-color: var(--kin-color); --number-color: var(--kin-color); --tile-index: 216; }
+div.tile.\33 \37 s { --tile-color: var(--kin-color); --number-color: var(--kin-color); --tile-index: 217; }
+div.tile.\33 \38 s { --tile-color: var(--kin-color); --number-color: var(--kin-color); --tile-index: 218; }
+div.tile.\33 \39 s { --tile-color: var(--kin-color); --number-color: var(--kin-color); --tile-index: 219; }
+div.tile.\33 \31 \30 s { --tile-color: var(--kin-color); --number-color: var(--kin-color); --tile-index: 220; }
+div.tile.\33 \31 t { --tile-color: var(--kin-color); --number-color: var(--kin-color); --tile-index: 221; }
+div.tile.\33 \32 t { --tile-color: var(--kin-color); --number-color: var(--kin-color); --tile-index: 222; }
+div.tile.\33 \33 t { --tile-color: var(--kin-color); --number-color: var(--kin-color); --tile-index: 223; }
+div.tile.\33 \34 t { --tile-color: var(--kin-color); --number-color: var(--kin-color); --tile-index: 224; }
+div.tile.\33 \35 t { --tile-color: var(--kin-color); --number-color: var(--kin-color); --tile-index: 225; }
+div.tile.\33 \36 t { --tile-color: var(--kin-color); --number-color: var(--kin-color); --tile-index: 226; }
+div.tile.\33 \37 t { --tile-color: var(--kin-color); --number-color: var(--kin-color); --tile-index: 227; }
+div.tile.\33 \38 t { --tile-color: var(--kin-color); --number-color: var(--kin-color); --tile-index: 228; }
+div.tile.\33 \39 t { --tile-color: var(--kin-color); --number-color: var(--kin-color); --tile-index: 229; }
+div.tile.\33 \31 \30 t { --tile-color: var(--kin-color); --number-color: var(--kin-color); --tile-index: 230; }
+div.tile.\33 \30 z { --tile-color: var(--kin-color); --number-color: var(--kin-color); --tile-index: 231; }
+div.tile.\33 \31 z { --tile-color: var(--kin-color); --number-color: var(--kin-color); --tile-index: 232; }
+div.tile.\33 \32 z { --tile-color: var(--kin-color); --number-color: var(--kin-color); --tile-index: 233; }
+div.tile.\33 \33 z { --tile-color: var(--kin-color); --number-color: var(--kin-color); --tile-index: 234; }
+div.tile.\33 \34 z { --tile-color: var(--kin-color); --number-color: var(--kin-color); --tile-index: 235; }
+div.tile.\33 \35 z { --tile-color: var(--kin-color); --number-color: var(--kin-color); --tile-index: 236; }
+div.tile.\33 \36 z { --tile-color: var(--kin-color); --number-color: var(--kin-color); --tile-index: 237; }
+div.tile.\33 \37 z { --tile-color: var(--kin-color); --number-color: var(--kin-color); --tile-index: 238; }
+div.tile.\33 \38 z { --tile-color: var(--kin-color); --number-color: var(--kin-color); --tile-index: 239; }
+div.tile.\33 \30 \30 s { --tile-color: var(--kin-color); --number-color: var(--kin-color); --tile-index: 240; }
 div.tile.\32 x { visibility: hidden; } /* blank space */
 div.tile.\33 x { visibility: hidden; width: calc(0.5 * var(--tile-width)); } /* half blank space */
 div.tile.\34 x { display: none; } /* fully invisible tile */
