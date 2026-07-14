@@ -85,6 +85,7 @@ defmodule RiichiAdvanced.RulesetsTest do
   test "load each ruleset" do
     for {ruleset, _, _} <- Constants.available_rulesets do
       try do
+        # IO.inspect(ruleset, label: "ruleset")
         TestUtils.initialize_test_state(ruleset, [], "")
       rescue
         err ->
@@ -96,6 +97,7 @@ defmodule RiichiAdvanced.RulesetsTest do
 
   test "load each ruleset with default mods" do
     for {ruleset, _, _} <- Constants.available_rulesets do
+      # IO.inspect(ruleset, label: "ruleset")
       test_ruleset_default_mods(ruleset)
     end
   end
