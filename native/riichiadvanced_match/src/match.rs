@@ -496,13 +496,12 @@ pub fn remove_match_definition<'a>(
   }
   // early exit if we have more groups than tiles/calls!
   // this is mostly to prevent 14 tile hands, like kokushi, from matching when we have 13 tiles
-  if min_match_length as usize > match_info.tiles_in_hand.len() && !has_restart && !has_almost {
+  if min_match_length as usize > match_info.num_tiles_in_hand && !has_restart && !has_almost {
     if debug {
-      println!("match_info.tiles_in_hand: {0:?}", match_info.tiles_in_hand);
       println!("match_info.initial_hands: {0:?}", match_info.initial_hands);
       println!("match_definition: {match_definition:?}");
       println!("Since we only have {0} tiles, refusing to match length-{1} match {2:?}",
-        match_info.tiles_in_hand.len(),
+        match_info.num_tiles_in_hand,
         min_match_length,
         match_definition,
       );

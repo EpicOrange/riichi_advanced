@@ -401,16 +401,13 @@ pub static FIXED_OFFSETS: phf::Map<&'static str, fn() -> Atom> = phf::phf_map! {
 
 #[derive(Debug)]
 pub struct MatchInfo<'a> {
-  // pub orig_hands: Vec<(&'a ElixirHand, String)>,
-  pub tiles_in_hand: Vec<&'a ElixirTile>,
   pub initial_hands: Vec<TileSet>,
   pub num_tiles_in_hand: usize,
-  pub all_attrs: &'a Vec<String>,
   pub aliases: Aliases,
   pub elixir_joker_tiles: HashSet<ElixirTile>,
   pub relevant_tiles: Vec<ElixirTile>,
   pub joker_tiles: HashSet<Tile>,
-  // pub encoding: HashMap<&'a ElixirTile, Tile>,
+  pub all_attrs: &'a Vec<String>,
   pub ordering: &'a HashMap<Atom, Atom>,
   pub ordering_r: &'a HashMap<Atom, Atom>,
 }
