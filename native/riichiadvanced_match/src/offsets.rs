@@ -1,7 +1,7 @@
 use std::collections::{HashMap, HashSet, VecDeque};
 use rustler::Atom;
 
-use crate::encode::encode;
+use crate::encode::{decode_attrs, encode};
 use crate::tile_table::*;
 use crate::types::{ElixirTile, FIXED_OFFSETS, MatchDefinition, MatchDefinitionElem, MatchGroup, MatchInfo, MatchOffset, RemovableGroup, Tile, TileSet};
 use crate::primes::{is_any, is_jihai, is_manzu, is_pinzu, is_souzu, shift_suit_mut};
@@ -360,7 +360,7 @@ pub fn get_base_tiles<'a>(
     .filter(|tile| !is_any(tile))
     .collect();
 
-  for tile in &match_info.elixir_joker_tiles { base_tiles.remove(tile); }
+  for tile in &decode_attrs(&match_info.joker_tiles, match_info.all_attrs) { base_tiles.remove(&strip_attrs(&tile)); }
 
   base_tiles
 }

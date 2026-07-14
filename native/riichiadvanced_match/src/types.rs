@@ -400,7 +400,6 @@ pub struct MatchInfo<'a> {
   pub initial_hands: Vec<TileSet>,
   pub num_tiles_in_hand: usize,
   pub aliases: Aliases,
-  pub elixir_joker_tiles: HashSet<ElixirTile>,
   pub relevant_tiles: Vec<ElixirTile>,
   pub joker_tiles: HashSet<Tile>,
   pub all_attrs: &'a Vec<String>,

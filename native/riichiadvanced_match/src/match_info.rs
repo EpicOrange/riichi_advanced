@@ -59,7 +59,6 @@ pub fn prepare_tiles<'a>(
     initial_hands,
     num_tiles_in_hand,
     aliases: encode_aliases(&elixir_aliases, &all_attrs, &joker_tiles, None),
-    elixir_joker_tiles,
     relevant_tiles,
     joker_tiles,
     all_attrs,
