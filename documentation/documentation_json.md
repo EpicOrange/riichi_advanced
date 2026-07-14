@@ -978,6 +978,7 @@ Prepend `"not_"` to any of the condition names to negate it.
 - `"yaochuuhai"`: Matches a terminal/honor tile (hardcoded).
 - `"flower"`: Matches a flower tile (hardcoded).
 - `"joker"`: Matches a joker tile (hardcoded).
+- `"flower_or_joker"`: Matches a flower or joker tile (hardcoded).
 - `"1"` to `"9"`: Matches that number tile (hardcoded).
 - `"tedashi"`: Matches a discard that was tedashi (discarded from hand).
 - `"tsumogiri"`: Matches a discard that was tsumogiri (discarded from draw).

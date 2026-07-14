@@ -343,6 +343,7 @@ defmodule RiichiAdvanced.Riichi do
         "tanyaohai" -> is_tanyaohai?(context.tile)
         "flower" -> is_flower?(context.tile)
         "joker" -> is_joker?(context.tile)
+        "flower_or_joker" -> is_flower?(context.tile) or is_joker?(context.tile)
         "1" -> is_num?(context.tile, 1)
         "2" -> is_num?(context.tile, 2)
         "3" -> is_num?(context.tile, 3)
