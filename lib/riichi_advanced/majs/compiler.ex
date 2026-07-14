@@ -977,6 +977,7 @@ defmodule RiichiAdvanced.Compiler do
     case constant do
       {:+, _, _} -> {:error, "cannot use constants in toplevel conditions"}
       {:@, _, _} -> {:error, "cannot use constants in toplevel conditions"}
+      {:!, _, _} -> Validator.validate_json(constant)
       _          -> compile_constant(constant, line, column)
     end
   end

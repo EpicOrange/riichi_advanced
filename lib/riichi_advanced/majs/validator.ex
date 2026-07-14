@@ -29,14 +29,14 @@ defmodule RiichiAdvanced.Validator do
   def validate_json({:-, _pos, [value]}) when is_integer(value), do: {:ok, -value} # negative literals
   def validate_json(ast) when is_binary(ast), do: {:ok, sanitize_string(ast)}
   def validate_json(ast) when is_list(ast), do: ast |> Enum.map(&validate_json(&1)) |> Utils.sequence()
-  def validate_json({:+, _, [{:@, _, [{name, _, nil}]}]}) when is_binary(name), do: validate_constant(name, true)
-  def validate_json({:@, _, [{name, _, nil}]}) when is_binary(name), do: validate_constant(name)
-  def validate_json({:!, _, [{name, _, nil}]}) when is_binary(name), do: validate_variable(name)
+  def validate_json({:+, _, [{:@, _, [{name, _, nil}]}]}) when is_binary(name), do: validate_constant(sanitize_string(name), true)
+  def validate_json({:@, _, [{name, _, nil}]}) when is_binary(name), do: validate_constant(sanitize_string(name))
+  def validate_json({:!, _, [{name, _, nil}]}) when is_binary(name), do: validate_variable(sanitize_string(name))
   def validate_json({:+, _, _} = ast), do: validate_expression(ast)
   def validate_json({:-, _, _} = ast), do: validate_expression(ast)
   def validate_json({:*, _, _} = ast), do: validate_expression(ast)
-  # def validate_json(%RiichiAdvanced.Compiler.Constant{name: name}), do: validate_constant(name)
-  # def validate_json(%RiichiAdvanced.Compiler.Variable{name: name}), do: validate_variable(name)
+  # def validate_json(%RiichiAdvanced.Compiler.Constant{name: name}), do: validate_constant(sanitize_string(name))
+  # def validate_json(%RiichiAdvanced.Compiler.Variable{name: name}), do: validate_variable(sanitize_string(name))
   # def validate_json(ast) when is_map(ast), do: validate_map(ast) # this matches structs...
   def validate_json({:%{}, _pos, contents}), do: validate_map(contents)
   def validate_json(not_json) do
