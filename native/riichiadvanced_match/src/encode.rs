@@ -54,6 +54,7 @@ pub fn encode(hand: &ElixirHand, all_attrs: &[String], joker_tiles: &HashSet<Til
       eprintln!("Unrecognized Elixir tile {tile:?}");
     }
   }
+  attrs.sort_unstable(); // important for dedup
   TileSet{ hash: Hash(hash), attrs, name: None, nojoker: false }
 }
 
