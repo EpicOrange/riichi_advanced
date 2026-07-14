@@ -143,8 +143,8 @@ impl fmt::Debug for ElixirTile {
   fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
     match self {
       ElixirTile::AtomTile(tile) => write!(f, ":{:?}", tile),
-      ElixirTile::AttrTile(tile, _attrs) => write!(f, ":{:?}", tile),
-      // ElixirTile::AttrTile(tile, attrs) => write!(f, ":{:?}{:?}", tile, attrs),
+      // ElixirTile::AttrTile(tile, _attrs) => write!(f, ":{:?}", tile),
+      ElixirTile::AttrTile(tile, attrs) => write!(f, ":{:?}{:?}", tile, attrs),
     }
   }
 }

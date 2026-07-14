@@ -260,8 +260,8 @@ defmodule RiichiAdvanced.GameState.American do
           end)
         end)
 
+        # calculate which base tiles will make the offsets in match_definition match the hand
         arrangements = Enum.flat_map(match_definitions, fn match_definition ->
-          # calculate which base tiles will make the offsets in match_definition match the hand
           all_offsets = for [groups, _num] <- Enum.filter(match_definition, &is_list/1),
                             group <- Enum.reject(groups, & &1 in MatchOld.group_keywords()),
                             offset <- (if is_list(group) do group else [group] end),
@@ -270,13 +270,14 @@ defmodule RiichiAdvanced.GameState.American do
             for [groups, num] <- match_definition, reduce: {hand, call_tiles, []} do
               {hand, calls, nil} -> {hand, calls, nil}
               {hand, calls, ret} ->
-                # apply offsets
+                # apply offsets to the group using the base tile
                 groups = groups
                 |> Enum.map(&MatchOld.apply_base_tile_to_group(&1, base_tile, tile_behavior))
                 |> Utils.strip_attrs()
                 # continue if this is a valid group
+                # we're going to attempt to match the hand (parameter to this fn)
                 if nil not in groups do
-                  # check if this matches a call exactly
+                  # first, check if this matches a call exactly
                   i = Enum.find_index(calls, fn call ->
                     jokerless = Utils.replace_jokers(call, [:"1j"], tile_behavior)
                     Utils.count_tiles(jokerless, groups) == num
@@ -286,7 +287,9 @@ defmodule RiichiAdvanced.GameState.American do
                     {call, calls} = List.pop_at(calls, i)
                     {hand, calls, [call | ret]}
                   else
-                    # if not, we remove groups one at time from hand, prioritizing nonjokers
+                    # if not, we remove groups one at time from hand
+                    # first we remove tiles from hand ignoring jokers
+                    # then we're left with the remaining tiles, so we remove that number of jokers
                     new_hand = Enum.reduce_while(1..num, hand, fn n, hand ->
                       # first phase: remove a nonjoker
                       anyless_tile_behavior = %{ tile_behavior | attrs: MapSet.put(tile_behavior.attrs, "inactive"), aliases: Map.delete(tile_behavior.aliases, :any), uuid: Ecto.UUID.generate() }
@@ -297,8 +300,12 @@ defmodule RiichiAdvanced.GameState.American do
                         else
                           Enum.map(group, &Atom.to_string/1)
                         end
+                        # we just need the first result of removal
+                        # this is amerijong so any given removal
+                        #   can't really preclude other removal possibilities
                         Match.remove_group(hand, group, anyless_tile_behavior, false, [base_tile])
-                        |> Enum.at(0)
+                        |> Enum.at(0) # remove_group gives a singleton list, so we extract
+                        # |> IO.inspect(label: "hand after removing #{inspect(group)} from #{inspect(hand)}")
                       end)
                       if new_hand != nil do
                         {:cont, new_hand}
@@ -309,11 +316,13 @@ defmodule RiichiAdvanced.GameState.American do
                       end
                     end)
                     if new_hand != nil do
-                      # sort 2024, NEWS etc according to the corresponding match_definition
+                      # take (hand -- new_hand) to be the removed part, which we store as new_group
+                      # arrange_american_group/3 will sort 2024, NEWS etc according to the corresponding match_definition
                       new_group = case {groups, num} do
                         {[group], 1} -> arrange_american_group(if is_list(group) do group else [group] end, hand -- new_hand, tile_behavior)
                         _            -> Utils.sort_tiles(hand -- new_hand)
                       end
+                      # |> IO.inspect(label: "new_group after removing #{num} groups #{inspect(groups)} from #{inspect(hand)} to get #{inspect(new_hand)}")
                       {new_hand, calls, [new_group | ret]}
                     else
                       # if am_match_definition == "NN EEE 2024a WWW SS" do

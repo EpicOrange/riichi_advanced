@@ -704,7 +704,7 @@ pub fn __match_hand_v3<'a>(
 
 #[rustler::nif(schedule = "DirtyCpu")]
 pub fn _remove_group(
-    hand: ElixirHand, group: MatchGroup, 
+    hand: ElixirHand, group: MatchGroup,
     all_attrs: Vec<String>,
     elixir_aliases: ElixirAliases,
     ordering: HashMap<Atom, Atom>, ordering_r: HashMap<Atom, Atom>,
