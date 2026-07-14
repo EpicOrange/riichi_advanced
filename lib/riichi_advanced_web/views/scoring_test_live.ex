@@ -176,13 +176,19 @@ defmodule RiichiAdvancedWeb.ScoringTestLive do
 
     default_mods = Rules.get(rules_ref, "default_mods", [])
     {mods, categories} = Rules.parse_available_mods(Rules.get(rules_ref, "available_mods", []), default_mods)
+    hand_length = min(17, Rules.get(rules_ref, "starting_tiles", 13))
     # mock room state
     socket = assign(socket, :room_state, %{
       mods: mods,
       categories: categories,
       rules_ref: rules_ref,
     })
-    |> assign(:hand_length, min(17, Rules.get(rules_ref, "starting_tiles", 13)))
+    |> assign(:hand_length, hand_length)
+    |> assign(:hand, socket.assigns.hand |> Enum.take(hand_length))
+    |> assign(:calls, [])
+    |> assign(:call_selection_ixs, [])
+    |> assign(:call_buttons, %{})
+    |> assign(:selected_call_button, nil)
     socket
   end
   def switch_to_ruleset(socket, _ruleset), do: socket
