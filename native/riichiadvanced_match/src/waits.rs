@@ -30,7 +30,7 @@ fn _get_waits_v3(
   let start = Instant::now();
   let ret = __get_waits_v3(
     hand_calls,
-    &match_definitions,
+    match_definitions,
     &all_attrs,
     &mut elixir_aliases.clone(),
     &ordering,
@@ -48,7 +48,7 @@ fn _get_waits_v3(
 
 pub fn __get_waits_v3(
     mut hand_calls: ElixirHandCalls,
-    match_definitions: &MatchDefinitions,
+    match_definitions: MatchDefinitions,
     all_attrs: &Vec<String>,
     mut elixir_aliases: &mut ElixirAliases,
     ordering: &HashMap<Atom, Atom>, ordering_r: &HashMap<Atom, Atom>,
@@ -103,7 +103,7 @@ pub fn __get_waits_v3(
   // replacing the final 1x in match_info.initial_hands by each in turn
   let not_waits2: Vec<&ElixirTile> = all_joker_tiles
     .iter()
-    .filter(|&joker| {
+    .filter(|joker| {
       // first do the replacement
       let hand = &mut match_info.initial_hands[0];
       if let Some(last_tile) = hand.attrs.last_mut() {

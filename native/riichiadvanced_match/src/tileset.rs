@@ -61,8 +61,12 @@ pub fn check_tile_match((p2, battrs2): &Tile, (p1, battrs1): &Tile) -> bool {
 // pub fn check_equivalence(l: Tile, r: Tile, aliases: Aliases) -> bool {
 //   _check_equivalence(&l, &r, &aliases)
 // }
+// check whether l and r are the same tile and that l has all of r's aliases
+// more importantly, checks that for all aliases as well
+// you can think of this as checking l > r
 pub fn _check_equivalence(l: &Tile, r: &Tile, aliases: &Aliases) -> bool {
-  if check_tile_match(&l, &r) { return true; }
+  if l == r { return true; }
+  else if check_tile_match(&l, &r) { return true; }
   if let Some(entries) = aliases.get(&r.0) {
     if entries.iter().any(|(battrs, aliases)| {
         (r.1 & *battrs == r.1) && aliases.iter().any(|t| check_tile_match(&l, t))

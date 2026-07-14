@@ -4,8 +4,8 @@ use rustler::Atom;
 use crate::encode::encode;
 use crate::tile_table::*;
 use crate::types::{ElixirTile, FIXED_OFFSETS, MatchDefinition, MatchDefinitionElem, MatchGroup, MatchInfo, MatchOffset, RemovableGroup, Tile, TileSet};
-use crate::primes::{is_any, is_jihai, is_manzu, is_pinzu, is_souzu, shift_suit_mut, to_prime};
-use crate::utils::{get_tile_atom_mut, strip_attrs};
+use crate::primes::{is_any, is_jihai, is_manzu, is_pinzu, is_souzu, shift_suit_mut};
+use crate::utils::{get_tile_atom, get_tile_atom_mut, strip_attrs};
 
 // return true if changed
 fn apply_ordering_mut(
@@ -117,23 +117,26 @@ fn add_attrs_mut(tile: &mut ElixirTile, mut attrs: &mut Vec<String>) -> () {
   }
 }
 
+
 pub fn apply_fixed_offset(base_tile: &ElixirTile, fixed_offset: &String) -> Option<ElixirTile> {
   FIXED_OFFSETS.get(fixed_offset).and_then(|atom| {
     let mut ret = ElixirTile::AtomTile(atom());
     if is_jihai(&ret) {
       // modify the return tile based on base tile's suit
-      let atom = get_tile_atom_mut(&mut ret);
-      if let Some(prime) = to_prime(atom) {
-        if TILE_TABLE["0z"] == *prime { 
-          if is_pinzu(&base_tile) { *atom = ATOM_TABLE.get("6z").unwrap()(); }
-          else if is_souzu(&base_tile) { *atom = ATOM_TABLE.get("7z").unwrap()(); }
-        } else if TILE_TABLE["6z"] == *prime { 
-          if is_pinzu(&base_tile) { *atom = ATOM_TABLE.get("7z").unwrap()(); }
-          else if is_souzu(&base_tile) { *atom = ATOM_TABLE.get("0z").unwrap()(); }
-        } else if TILE_TABLE["7z"] == *prime { 
-          if is_pinzu(&base_tile) { *atom = ATOM_TABLE.get("0z").unwrap()(); }
-          else if is_souzu(&base_tile) { *atom = ATOM_TABLE.get("6z").unwrap()(); }
-        } else { return None; }
+      let ret_atom = get_tile_atom_mut(&mut ret);
+      let base_tile_atom = get_tile_atom(&base_tile);
+      let white = tile0z();
+      let green = tile6z();
+      let red = tile7z();
+      if *ret_atom == white { 
+        if is_pinzu(&base_tile) || *base_tile_atom == white { *ret_atom = green; }
+        else if is_souzu(&base_tile) || *base_tile_atom == green { *ret_atom = red; }
+      } else if *ret_atom == green { 
+        if is_pinzu(&base_tile) || *base_tile_atom == white { *ret_atom = red; }
+        else if is_souzu(&base_tile) || *base_tile_atom == green { *ret_atom = white; }
+      } else if *ret_atom == red { 
+        if is_pinzu(&base_tile) || *base_tile_atom == white { *ret_atom = white; }
+        else if is_souzu(&base_tile) || *base_tile_atom == green { *ret_atom = green; }
       } else { return None; }
     } else {
       // use shift_suit_mut to shift
@@ -150,11 +153,11 @@ pub fn apply_fixed_offset(base_tile: &ElixirTile, fixed_offset: &String) -> Opti
 pub fn apply_offsets(
     base_tile: &ElixirTile, offsets: &[MatchOffset],
     ordering: &HashMap<Atom, Atom>, ordering_r: &HashMap<Atom, Atom>,
-) -> (Vec<Option<ElixirTile>>, Option<usize>) {
+) -> (Vec<Option<ElixirTile>>, usize) {
   let mut q = VecDeque::from([base_tile.clone()]); // get offset o via q.get(o-l as usize)
   let mut l = 0;
   let mut r = 0;
-  let mut nojoker_ix = None;
+  let mut nojoker_ix = offsets.len();
   let mut ret = vec!();
   for (i, offset) in offsets.iter().enumerate() {
     ret.push(match offset {
@@ -174,7 +177,7 @@ pub fn apply_offsets(
           Some(atom_fn) => Some(ElixirTile::AtomTile(atom_fn())), // it's a tile
           None => {
             if s == "nojoker" {
-              if nojoker_ix.is_none() { nojoker_ix = Some(i); }
+              if nojoker_ix == offsets.len() { nojoker_ix = i; }
               None
             } else {
               // it's either a keyword or a a fixed offset
@@ -190,6 +193,61 @@ pub fn apply_offsets(
   (ret, nojoker_ix)
 }
 
+// same as above but, ignoring keywords, returns None if any offset fails to reify
+// the returned nojoker_ix points to where it should be after removing all keywords
+pub fn apply_offsets_early_exit(
+    base_tile: &ElixirTile, offsets: &[MatchOffset],
+    ordering: &HashMap<Atom, Atom>, ordering_r: &HashMap<Atom, Atom>,
+    mut num_ignorable: usize,
+) -> Option<(Vec<ElixirTile>, usize)> {
+  let mut q = VecDeque::from([base_tile.clone()]); // get offset o via q.get(o-l as usize)
+  let mut l = 0;
+  let mut r = 0;
+  let mut nojoker_ix = offsets.len();
+  let mut keywords_before_nojoker = 0;
+  let mut ret = vec!();
+  for (i, offset) in offsets.iter().enumerate() {
+    match offset {
+      MatchOffset::Offset(o) => {
+        let Some(tile) = fetch_offset(&mut q, &mut l, &mut r, *o, ordering, ordering_r)
+        else { if num_ignorable == 0 { return None; } else { num_ignorable -= 1; continue; } };
+        ret.push(tile);
+      }
+      MatchOffset::AttrsTile(map) => {
+        let Some(atom_fn) = ATOM_TABLE.get(&map.tile)
+        else { if num_ignorable == 0 { return None; } else { num_ignorable -= 1; continue; } };
+        ret.push(ElixirTile::AttrTile(atom_fn(), map.attrs.clone()))
+      }
+      MatchOffset::AttrsOffset(map) => {
+        let Some(mut tile) = fetch_offset(&mut q, &mut l, &mut r, map.offset, ordering, ordering_r)
+        else { if num_ignorable == 0 { return None; } else { num_ignorable -= 1; continue; } };
+        add_attrs_mut(&mut tile, &mut map.attrs.clone());
+        ret.push(tile);
+      }
+      MatchOffset::TileOrKeyword(s) => {
+        match ATOM_TABLE.get(s) {
+          Some(atom_fn) => { ret.push(ElixirTile::AtomTile(atom_fn())); }, // it's a tile
+          None => {
+            if s == "nojoker" {
+              if nojoker_ix == offsets.len() { nojoker_ix = i; }
+            } else if s == "unique" { // any other keyword
+              if nojoker_ix == offsets.len() { keywords_before_nojoker += 1; }
+            } else {
+              // it's either a keyword or a a fixed offset
+              // if it's actually a keyword other than nojoker, we ignore it
+              // (the other group keyword is unique, which is processed toplevel)
+              let Some(tile) = apply_fixed_offset(q.get(-l as usize).unwrap(), s)
+              else { if num_ignorable == 0 { return None; } else { num_ignorable -= 1; continue; } };
+              ret.push(tile);
+            }
+          }
+        }
+      }
+    }
+  }
+  Some((ret, nojoker_ix - keywords_before_nojoker))
+}
+
 // reifies offsets into a TileSet for each base tile
 // wraps each in a RemovableGroup::Group
 pub fn generate_groups_from_offsets<'a>(
@@ -201,7 +259,7 @@ pub fn generate_groups_from_offsets<'a>(
 ) -> Vec<RemovableGroup> {
   base_tiles.map(|base_tile| {
     let (tiles, nojoker_ix) = apply_offsets(&base_tile, offsets, ordering, ordering_r);
-    if nojoker_ix.is_some() { *nojoker = true; }
+    if nojoker_ix < offsets.len() { *nojoker = true; }
     tiles
       .into_iter().collect::<Option<Vec<_>>>()
       .map(|tiles| RemovableGroup::Group(encode(&tiles, all_attrs, joker_tiles).set_nojoker(*nojoker)))
@@ -250,16 +308,16 @@ pub fn __generate_groups<'a>(
     MatchGroup::Offset(offset) => generate_groups_from_offsets(&vec!(offset.clone()), base_tiles, all_attrs, joker_tiles, ordering, ordering_r, &mut nojoker),
     MatchGroup::Offsets(offsets) => generate_groups_from_offsets(offsets, base_tiles, all_attrs, joker_tiles, ordering, ordering_r, &mut nojoker),
     MatchGroup::Subgroups(subgroupings) => {
-      base_tiles.flat_map(|base_tile| {
-        subgroupings
-          .iter()
-          .map(|subgroup| apply_offsets(base_tile, subgroup, ordering, ordering_r)
-            .0.into_iter()
-            .collect::<Option<Vec<ElixirTile>>>()
-            .map(|tiles| encode(&tiles, all_attrs, joker_tiles).set_nojoker(*nojoker)))
+      base_tiles.filter_map(|base_tile|
+        subgroupings.iter()
+          .map(|subgroup| 
+            apply_offsets(base_tile, subgroup, ordering, ordering_r)
+              .0.into_iter()
+              .collect::<Option<Vec<ElixirTile>>>()
+              .map(|tiles| encode(&tiles, all_attrs, joker_tiles).set_nojoker(*nojoker)))
           .collect::<Option<Vec<TileSet>>>()
-          .map(|subgroup| RemovableGroup::Multigroup(subgroup))
-      }).collect::<Vec<RemovableGroup>>()
+          .map(RemovableGroup::Multigroup)
+      ).collect::<Vec<RemovableGroup>>()
     }
   };
   ret.sort_unstable();
