@@ -69,7 +69,7 @@ defmodule RiichiAdvancedWeb.IndexLive do
       <%= if @show_room_code_buttons do %>
         <.live_component module={RiichiAdvancedWeb.RoomCodeComponent} id="room-code" lang={@lang} ruleset={@ruleset} set_room_code={&send(self(), {:set_room_code, &1})} />
       <% end %>
-      <div class="index-version"><%= @version %></div>
+      <div class="index-version"><a href="https://github.com/EpicOrange/riichi_advanced/blob/main/CHANGELOG.md"><%= @version %></a></div>
       <div class="index-bottom-buttons">
         <button phx-click="goto_about"><%= t(@lang, "About") %></button>
         <button><a href="https://github.com/EpicOrange/riichi_advanced" target="_blank"><%= t(@lang, "Source") %></a></button>

@@ -3271,12 +3271,14 @@ div.title > div.title-advanced::before {
   background-repeat: no-repeat;
   z-index: -1;
 }
-div#container > div.index-version {
+div#container > div.index-version,
+div#container > div.index-version a {
   position: absolute;
   font-size: calc(0.5 * var(--tile-size));
   color: white;
   left: 0;
   bottom: 0;
+  text-decoration: none;
 }
 div#container > div.index-bottom-buttons {
   position: absolute;
