@@ -154,7 +154,7 @@ defmodule RiichiAdvanced.MahjongScriptSemanticsTest do
 
   test "mahjongscript - on handlers can have spaces" do
     script = """
-    on foo, "has spaces"
+    on after_win, "has spaces"
     """
     assert {:ok, parsed} = Parser.parse(script)
     assert {:ok, _compiled} = Compiler.compile_jq(parsed)

@@ -102,6 +102,12 @@ defmodule RiichiAdvanced.GameState.Actions do
           end
       end
 
+      # it's possible the last discard has changed (e.g. with add_attr) so we register the new discard
+      tile = Enum.at(state.players[seat].discards, -1)
+      state = update_in(state.players[seat].discards, &List.update_at(&1, -1, fn _ -> tile end))
+      state = update_in(state.players[seat].pond, &List.update_at(&1, -1, fn _ -> tile end))
+      state = register_discard(state, seat, if facedown do :"1x" else tile end, tsumogiri)
+
       state = Map.put(state, :awaiting_discard, false)
 
       state

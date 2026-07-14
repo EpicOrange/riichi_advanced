@@ -10,7 +10,9 @@ on after_initialization do
   if equals(!double_list, "yakuman") do
     add_rule("Limit", "$name", "You called %{kan} multiple times and won off a replacement tile.", %{name: !double_name, kan: !kan_name})
   else
-    add_rule("$value $han", "$name", "You called %{kan} multiple times and won off a replacement tile.", %{value: !double_value, han: !han, name: !double_name, kan: !kan_name})
+    if !double_value > 0 do
+      add_rule("$value $han", "$name", "You called %{kan} multiple times and won off a replacement tile.", %{value: !double_value, han: !han, name: !double_name, kan: !kan_name})
+    end
   end
 end
 
@@ -19,7 +21,9 @@ define_yaku !list, !flower_name, [!value, !han], status("flower")
 if equals(!double_list, "yakuman") do
   define_yaku !double_list, !double_name, [!double_value, !limit], status("double_kan")
 else
-  define_yaku !double_list, !double_name, [!double_value, !han], status("double_kan")
+  if !double_value > 0 do
+    define_yaku !double_list, !double_name, [!double_value, !han], status("double_kan")
+  end
 end
 
 define_yaku_precedence !double_name, [!rinshan_name, !flower_name]

@@ -28,6 +28,8 @@ set custom_style, %{
   }
 }
 
+apply set, "buttons.ankan.call_style", %{self: [0, ["1x", 1], 2, 3]}
+
 define_set pair, ~s"0 0"
 define_set shuntsu, ~s"0 1 2"
 define_set koutsu, ~s"0 0 0"
@@ -70,60 +72,64 @@ define_match any_flower, ~m"nojoker, any_flower:1"
 define_match any_joker, ~m"nojoker, any_joker:1"
 
 # basic yaku
-define_yaku yaku, "All Sequences", [1, "Phán"],
-  match(["hand", "calls", "winning_tile"], ~m"exhaustive, shuntsu:4, pair:1")
+define_yaku meta_yaku, "Mosquito Hand", [0, "Phán"], has_no_yaku
+define_yaku yaku, "Single Wait", [1, "Phán"], wait_count_at_most(1, "win")
+define_yaku yaku, "All Runs", [1, "Phán"], match(["hand", "calls", "winning_tile"], ~m"exhaustive, shuntsu:4, pair:1")
 
-define_yaku yaku, "All Triplets", [3, "Phán"],
+define_yaku yaku, "Quad", [1, "Phán"], match(["calls"], ~m"(daiminkan ankan kakan):1")
+define_yaku yaku, "Quad", [1, "Phán"], match(["calls"], ~m"(daiminkan ankan kakan):2")
+define_yaku yaku, "Quad", [1, "Phán"], match(["calls"], ~m"(daiminkan ankan kakan):3")
+define_yaku yaku, "Quad", [1, "Phán"], match(["calls"], ~m"(daiminkan ankan kakan):4")
+
+define_yaku yaku, "All Sets", [3, "Phán"],
   match(["hand", "calls", "winning_tile"], ~m"koutsu:4, pair:1")
-  and not_match(["calls"], ~m"koutsu:4")
-  and not_match(["hand", "calls", "winning_tile"], ~m"(1z 2z 3z 4z 0z 6z 7z):1")
+define_yaku meta_yaku, "All Sets", [1, "Phán"], has_existing_yaku("All Sets") and status_missing("has_joker")
+define_yaku yaku, "All Called", [3, "Phán"], not_won_by_draw and match(["calls"], ~m"(chii pon daiminkan ankan kakan):4")
+define_yaku meta_yaku, "All Called", [1, "Phán"], has_existing_yaku("All Called") and status_missing("has_joker")
 
-define_yaku yaku, "All Sequences With Honors", [3, "Phán"],
-  match(["hand", "calls", "winning_tile"], ~m"exhaustive, shuntsu:4, pair:1")
-  and match(["hand", "calls", "winning_tile"], ~m"(1z 2z 3z 4z 0z 6z 7z):1"),
-  ["All Sequences"]
-
-# yakuman
-define_yaku yakuman, "All Triplets With Honors", [1, "Mủn"],
-  match(["hand", "calls", "winning_tile"], ~m"koutsu:4, pair:1")
-  and not_match(["calls"], ~m"koutsu:4")
-  and match(["hand", "calls", "winning_tile"], ~m"(1z 2z 3z 4z 0z 6z 7z):1")
-define_yaku yakuman, "All Called Triplets", [1, "Mủn"], match(["calls"], ~m"koutsu:4")
-define_yaku yakuman, "All Called Triplets With Honors", [2, "Mủn"], match(["calls"], ~m"koutsu:4") and match(["hand", "calls", "winning_tile"], ~m"(1z 2z 3z 4z 0z 6z 7z):1"), ["All Called Triplets"]
-define_set terminal1, ~s"1m 1m 1m | 1p 1p 1p | 1s 1s 1s"
-define_set terminal9, ~s"9m 9m 9m | 9p 9p 9p | 9s 9s 9s"
-define_yaku yakuman, "All Triplets with 1 and 9", [1, "Mủn"], match(["hand", "calls", "winning_tile"], ~m"terminal1:1, terminal9:1, koutsu:2")
-define_yaku yakuman, "No Flowers or Honors", [1, "Mủn"], not_match(["hand", "calls", "winning_tile"], ~m"(any_flower any_honor):1")
-define_yaku yakuman, "No Flowers, Honors, or Triplets", [2, "Mủn"],
-  match(["hand", "calls", "winning_tile"], ~m"exhaustive, shuntsu:4, pair:1")
-  and not_match(["hand", "calls", "winning_tile"], ~m"any_flower any_honor:1"),
-  ["No Flowers or Honors"]
-define_yaku yakuman, "Full Flush", [1, "Mủn"],
+define_yaku yaku, "Half Flush", [1, "Mủn"],
+     winning_hand_consists_of("1m","2m","3m","4m","5m","6m","7m","8m","9m","1z","2z","3z","4z","0z","6z","7z")
+  or winning_hand_consists_of("1p","2p","3p","4p","5p","6p","7p","8p","9p","1z","2z","3z","4z","0z","6z","7z")
+  or winning_hand_consists_of("1s","2s","3s","4s","5s","6s","7s","8s","9s","1z","2z","3z","4z","0z","6z","7z")
+define_yaku yaku, "Full Flush", [1, "Mủn"],
      winning_hand_consists_of("1m","2m","3m","4m","5m","6m","7m","8m","9m")
   or winning_hand_consists_of("1p","2p","3p","4p","5p","6p","7p","8p","9p")
   or winning_hand_consists_of("1s","2s","3s","4s","5s","6s","7s","8s","9s")
-define_yaku yakuman, "Pure Straight", [3, "Mủn"], match(["hand", "calls", "winning_tile"], ~m"exhaustive, ittsuu:1, mentsu:1, pair:1")
-define_yaku yakuman, "All Honors", [1, "Mủn"], winning_hand_consists_of("1z","2z","3z","4z","5z","6z","7z")
-define_yaku yakuman, "Small Three Dragons", [1, "Mủn"], match(["hand", "calls", "winning_tile"], ~m"(haku hatsu chun):2, (haku_pair hatsu_pair chun_pair):1")
-define_yaku yakuman, "Big Three Dragons", [2, "Mủn"], match(["hand", "calls", "winning_tile"], ~m"haku:1, hatsu:1, chun:1"), ["Small Three Dragons"]
-define_yaku yakuman, "Four Concealed Triplets", [3, "Mủn"],
+
+define_yaku meta_yaku, "No Jokers Mosquito Hand", [1, "Mủn"], has_no_yaku and status_missing("has_joker")
+
+define_yaku yaku, "All Terminals and Honors", [1, "Mủn"], winning_hand_consists_of("1m","9m","1p","9p","1s","9s","1z","2z","3z","4z","0z","6z","7z"), ["All Sets"]
+define_yaku yaku, "All Terminals", [4, "Mủn"], winning_hand_consists_of("1m","9m","1p","9p","1s","9s","1z","2z","3z","4z","0z","6z","7z"), ["All Sets", "All Terminals and Honors"]
+define_yaku meta_yaku, "All Terminals", [1, "Mủn"], has_existing_yaku("All Terminals") and status_missing("has_joker")
+define_yaku meta_yaku, "All Terminals", [1, "Mủn"], has_existing_yaku("All Terminals", "Single Wait", "Fully Closed Hand")
+define_yaku yaku, "Little Three Dragons", [1, "Mủn"], match(["hand", "calls", "winning_tile"], ~m"(haku hatsu chun):2, (haku_pair hatsu_pair chun_pair):1"), ["White Dragon", "Green Dragon", "Red Dragon"]
+define_yaku yaku, "Big Three Dragons", [9, "Phán"], match(["hand", "calls", "winning_tile"], ~m"haku:1, hatsu:1, chun:1"), ["Little Three Dragons", "White Dragon", "Green Dragon", "Red Dragon"]
+define_yaku meta_yaku, "Big Three Dragons", [1, "Mủn"], has_existing_yaku("Big Three Dragons") and status_missing("has_joker")
+define_yaku meta_yaku, "Thirteen Orphans", [1, "Mủn"], has_existing_yaku("Thirteen Orphans") and status_missing("has_joker")
+define_yaku meta_yaku, "Thirteen Orphans", [1, "Mủn"], has_existing_yaku("Thirteen Orphans") and match(["hand"], ~m"orphans_all:1")
+define_yaku yaku, "Nine Gates", [3, "Mủn"], match(["hand", "winning_tile"], ~m"chuurenpoutou:1"), ["Full Flush"]
+define_yaku meta_yaku, "Nine Gates", [1, "Mủn"], has_existing_yaku("Nine Gates") and status_missing("has_joker")
+define_yaku meta_yaku, "Nine Gates", [1, "Mủn"], has_existing_yaku("Nine Gates", "Single Wait", "Fully Closed Hand")
+define_yaku yaku, "Four Closed Sets", [3, "Mủn"],
   won_by_draw
   and has_no_call_named("chii", "pon", "daiminkan", "kakan")
   and match(["hand", "calls"], ~m"koutsu:3, pair:2")
   and match(["hand", "calls", "winning_tile"], ~m"koutsu:4, pair:1")
-define_yaku meta_yakuman, "Four Concealed Triplets", [1, "Mủn"], has_existing_yaku("Four Concealed Triplets") and not_match(["calls"], "any_flower")
-define_yaku yakuman, "Four Quads", [4, "Mủn"], match(["calls"], ~m"(daiminkan ankan kakan):4"), ["Four Concealed Triplets"]
-define_yaku meta_yakuman, "Four Quads", [1, "Mủn"], has_existing_yaku("Four Quads") and not_match(["calls"], "any_flower")
-define_yaku yakuman, "Small Four Winds", [5, "Mủn"], match(["hand", "calls", "winning_tile"], ["shousuushii"])
-define_yaku meta_yakuman, "Small Four Winds", [1, "Mủn"], has_existing_yaku("Small Four Winds") and not_match(["calls"], "any_flower")
-define_yaku yakuman, "Big Four Winds", [8, "Mủn"], match(["hand", "calls", "winning_tile"], ["daisuushii"]), ["Small Four Winds"]
-define_yaku meta_yakuman, "Big Four Winds", [1, "Mủn"], has_existing_yaku("Big Four Winds") and not_match(["calls"], "any_flower")
-define_yaku yakuman, "Blessing of Heaven", [2, "Mủn"], status("first_turn") and won_by_draw
-define_yaku yakuman, "Blessing of Earth", [2, "Mủn"], status("first_turn") and won_by_discard
-define_yaku yakuman, "Blessing of Man", [2, "Mủn"], status("discards_empty") and status_missing("call_made") and won_by_discard
+define_yaku meta_yaku, "Four Closed Sets", [1, "Mủn"], has_existing_yaku("Four Closed Sets", "Single Wait", "Fully Closed Hand")
+define_yaku yaku, "Four Quads", [4, "Mủn"], match(["calls"], ~m"(daiminkan ankan kakan):4"), ["Four Concealed Triplets"]
+define_yaku meta_yaku, "Four Quads", [1, "Mủn"], has_existing_yaku("Four Quads") and match(["calls"], ~m"ankan:4")
+define_yaku yaku, "All Honors", [4, "Mủn"], winning_hand_consists_of("1z","2z","3z","4z","5z","6z","7z")
+define_yaku meta_yaku, "All Honors", [1, "Mủn"], has_existing_yaku("All Honors") and status_missing("has_joker")
+define_yaku meta_yaku, "All Honors", [1, "Mủn"], has_existing_yaku("All Honors", "Single Wait", "Fully Closed Hand")
+define_yaku yaku, "Little Four Winds", [4, "Mủn"], match(["hand", "calls", "winning_tile"], ["shousuushii"]), ["Round Wind", "Seat Wind"]
+define_yaku meta_yaku, "Little Four Winds", [1, "Mủn"], has_existing_yaku("Little Four Winds") and status_missing("has_joker")
+define_yaku meta_yaku, "Little Four Winds", [1, "Mủn"], has_existing_yaku("Little Four Winds", "Single Wait", "Fully Closed Hand")
+define_yaku yaku, "Big Four Winds", [8, "Mủn"], match(["hand", "calls", "winning_tile"], ["daisuushii"]), ["Little Four Winds"]
+define_yaku meta_yaku, "Big Four Winds", [1, "Mủn"], has_existing_yaku("Big Four Winds") and status_missing("has_joker")
+define_yaku meta_yaku, "Big Four Winds", [1, "Mủn"], has_existing_yaku("Big Four Winds", "Single Wait", "Fully Closed Hand")
 
 set score_calculation, %{ 
-  yaku_lists: ["yaku", "nfnl", "yakuman", "meta_nfnl", "meta_yakuman"],
+  yaku_lists: ["yaku", "nfnl", "meta_yaku", "meta_nfnl", "true_nfnl"],
   point_name: "Phán",
   point2_name: "Mủn",
   win_by_discard_name: "Ù",
@@ -134,3 +140,43 @@ set score_calculation, %{
   win_by_draw_name: "Chỉ Mó",
   exhaustive_draw_name: "Draw"
 }
+
+on after_initialization do
+  add_rule("Rules", "Mosquito Hand", "Winning with no scoring hand patterns gives you Mosquito Hand (0 Phán), which is always worth 1 point.")
+end
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+# the below are not a thing it seems
+# 
+# define_yaku yaku, "All Sequences With Honors", [3, "Phán"],
+#   match(["hand", "calls", "winning_tile"], ~m"exhaustive, shuntsu:4, pair:1")
+#   and match(["hand", "calls", "winning_tile"], ~m"(1z 2z 3z 4z 0z 6z 7z):1"),
+#   ["All Sequences"]
+# define_yaku yaku, "All Triplets With Honors", [1, "Mủn"],
+#   match(["hand", "calls", "winning_tile"], ~m"koutsu:4, pair:1")
+#   and not_match(["calls"], ~m"koutsu:4")
+#   and match(["hand", "calls", "winning_tile"], ~m"(1z 2z 3z 4z 0z 6z 7z):1")
+# define_yaku yaku, "All Called Triplets", [1, "Mủn"], match(["calls"], ~m"koutsu:4")
+# define_yaku yaku, "All Called Triplets With Honors", [2, "Mủn"], match(["calls"], ~m"koutsu:4") and match(["hand", "calls", "winning_tile"], ~m"(1z 2z 3z 4z 0z 6z 7z):1"), ["All Called Triplets"]
+# define_set terminal1, ~s"1m 1m 1m | 1p 1p 1p | 1s 1s 1s"
+# define_set terminal9, ~s"9m 9m 9m | 9p 9p 9p | 9s 9s 9s"
+# define_yaku yaku, "All Triplets with 1 and 9", [1, "Mủn"], match(["hand", "calls", "winning_tile"], ~m"terminal1:1, terminal9:1, koutsu:2")
+# define_yaku yaku, "No Flowers or Honors", [1, "Mủn"], not_match(["hand", "calls", "winning_tile"], ~m"(any_flower any_honor):1")
+# define_yaku yaku, "No Flowers, Honors, or Triplets", [2, "Mủn"],
+#   match(["hand", "calls", "winning_tile"], ~m"exhaustive, shuntsu:4, pair:1")
+#   and not_match(["hand", "calls", "winning_tile"], ~m"any_flower any_honor:1"),
+#   ["No Flowers or Honors"]
+# define_yaku nfnl, "From NFNL Player", [2, "Mủn"], won_by_discard and status("from_nfnl", as: "last_discarder")

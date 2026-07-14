@@ -31,20 +31,14 @@ def get_base_score do
   cond do
     mun > 0 -> total = mun * 32 :: "Single"
     phan <= 0 -> total = 0 :: "Single (0 Phán)"
-    true ->
-      total = 2 ** (phan - 1) :: "Single"
+    true -> total = 2 ** (phan - 1) :: "Single"
   end
-  print_counters
 end
 
 define_scoring ron do
   get_base_score
-  cond do
-    seat_is("last_discarder") -> total *= 2 :: "Double (deal-in)"
-    true -> total *= 1 :: "Single"
-  end
-  if seat_is("last_discarder") or seat_is("winner") do
-    total *= 2 :: "Double"
+  if seat_is("last_discarder") do
+    total *= 2 :: "Double (deal-in)"
   end
   if mun > 0 and phan > 0 do
     total += phan * 6 :: "Leftover Phán"

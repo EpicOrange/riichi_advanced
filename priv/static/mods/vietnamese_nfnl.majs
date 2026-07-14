@@ -1,19 +1,14 @@
-
-# TODO rules text
-
-define_set nfnl_any, ~s"1m|2m|3m|4m|5m|6m|7m|8m|9m|1p|2p|3p|4p|5p|6p|7p|8p|9p|1s|2s|3s|4s|5s|6s|7s|8s|9s"
-
-define_match nfnl_tenpai, ~m"nojoker, (any_flower any_joker):-1, nfnl_any:13"
-define_match nfnl_win, ~m"nojoker, (any_flower any_joker):-1, nfnl_any:14"
-
+define_match has_non_nfnl_tile, ~m"(any_flower any_joker 1z 2z 3z 4z 0z 6z 7z):1"
 define_button nfnl,
   display_name: "No Flowers, No Leaves", 
-  show_when: not_our_turn
-    and someone_else_just_discarded
-    and status_missing("initial_flowers")
-    and not_match(["flowers", "jokers"], ["any_joker"])
-    and match(["hand", "calls"], ["nfnl_tenpai"])
-    and match(["hand", "calls", "last_discard"], ["nfnl_win"]),
+  show_when: status_missing("initial_flowers")
+    and not_match(["hand", "calls", "flowers", "jokers"], ["has_non_nfnl_tile"])
+    # must have one of the four hands
+    and not_status_missing("throwing_flowers_jokers_eligible", "throwing_flowers_eligible", "throwing_blue_jokers_eligible")
+    # must match draw, kakan, or discard for a winning hand
+    and ((someone_else_just_discarded and match(["hand", "calls", "last_discard"], ["win"]))
+      or (someone_else_just_called and status("can_chankan", as: "caller") and match(["hand", "calls", "last_called_tile"], ["win"]))
+      or (our_turn and match(["hand", "calls", "draw"], ["win"]))),
   precedence_over: ["chii", "pon", "daiminkan", "ron", "chankan", "nfnl"]
   do
     big_text(!ron_name)
@@ -21,18 +16,6 @@ define_button nfnl,
     reveal_hand
     win_by_discard
   end
-
-define_yaku nfnl, "No Flowers, No Leaves", [1, "Mủn"],
-  status_missing("has_joker")
-  and winning_hand_consists_of("1m","2m","3m","4m","5m","6m","7m","8m","9m","1p","2p","3p","4p","5p","6p","7p","8p","9p","1s","2s","3s","4s","5s","6s","7s","8s","9s"),
-  ["No Flowers or Honors", "No Flowers, Honors, or Triplets"]
-define_yaku meta_nfnl, "No Flowers, No Leaves", [2, "Mủn"], has_existing_yaku("No Flowers, No Leaves") and not_match(["pond"], ~m"0j:1")
-define_yaku nfnl, "From NFNL Player", [2, "Mủn"], won_by_discard and status("from_nfnl", as: "last_discarder")
-
-on after_start do
-  set_status_all("nfnl_eligible")
-  set_status("nfnl_start_dealer", as: "east") # east may discard one flower and still be eligible
-end
 
 apply append, "buttons.ron.actions" do
   if status("nfnl_eligible", as: "last_discarder") and match(["last_discard"], ["any_flower", "any_joker"]) do
@@ -45,13 +28,21 @@ apply append, "buttons.chankan.actions" do
   end
 end
 
+on after_call do
+  if match(["last_call"], ["any_joker"]) do
+    unset_status("nfnl_eligible")
+  end
+end
+on after_start do
+  set_status_all("nfnl_eligible")
+end
 define_play_effect not_flower_or_joker do
-  if status("nfnl_eligible") and match(["hand"], ~m"(any_flower any_joker):1") do
-    if status("nfnl_start_dealer") do
+  if match(["hand"], ~m"(any_flower any_joker):1") do
+    # on the first discard, dealer is permitted to discard a flower/joker from hand
+    unless seat_is("east") and status("first_turn") do
       unset_status("nfnl_eligible")
     end
   end
-  unset_status("nfnl_start_dealer")
 end
 
 # declaring any flowers/jokers disqualifies you
@@ -61,10 +52,81 @@ apply prepend, "buttons.start_joker.actions" do unset_status("nfnl_eligible") en
 apply prepend, "buttons.flower.actions" do unset_status("nfnl_eligible") end
 apply prepend, "buttons.joker.actions" do unset_status("nfnl_eligible") end
 
+# the actual nfnl yaku: worth nothing on its own
+define_yaku nfnl, "No Flowers, No Leaves", [0, "Mủn"],
+  status("nfnl_eligible")
+  and status_missing("has_joker")
+  and winning_hand_consists_of("1m","2m","3m","4m","5m","6m","7m","8m","9m","1p","2p","3p","4p","5p","6p","7p","8p","9p","1s","2s","3s","4s","5s","6s","7s","8s","9s"),
+  ["No Flowers or Honors", "No Flowers, Honors, or Triplets"]
+# throwing flowers variations
+on after_start do
+  set_status_all("throwing_flowers_jokers_eligible")
+  set_status_all("throwing_flowers_eligible")
+  set_status_all("throwing_blue_jokers_eligible")
+end
+on before_turn_change do
+  if status_missing("nfnl_eligible") do
+    unset_status("throwing_flowers_jokers_eligible")
+    unset_status("throwing_flowers_eligible")
+    unset_status("throwing_blue_jokers_eligible")
+  end
+end
+define_play_effect not_flower_or_joker do unset_status("throwing_flowers_jokers_eligible") end
+define_play_effect not_flower do unset_status("throwing_flowers_eligible") end
+define_play_effect not_joker do unset_status("throwing_blue_jokers_eligible") end
+define_play_effect manzu do if match(["hand", "draw"], ["has_non_nfnl_tile"]) do unset_status("nfnl_eligible") end end
+define_play_effect pinzu do if match(["hand", "draw"], ["has_non_nfnl_tile"]) do unset_status("nfnl_eligible") end end
+define_play_effect souzu do if match(["hand", "draw"], ["has_non_nfnl_tile"]) do unset_status("nfnl_eligible") end end
+# define_play_effect jihai do if match(["hand", "draw"], ~m"(any_flower any_joker):1") do unset_status("nfnl_eligible") end end
+define_play_effect flower do flowers_discarded += 1 end
+define_play_effect joker do jokers_discarded += 1 end
+define_play_effect "0j" do if jokers_discarded <= 2 do set_status("discarded_0j") end; blue_jokers_discarded += 1 end
+define_play_effect "6j" do if jokers_discarded <= 2 do set_status("discarded_6j") end; blue_jokers_discarded += 1 end
+define_play_effect "7j" do if jokers_discarded <= 2 do set_status("discarded_7j") end; blue_jokers_discarded += 1 end
+define_play_effect "8j" do if jokers_discarded <= 2 do set_status("discarded_8j") end; blue_jokers_discarded += 1 end
+define_play_effect "2j" do if jokers_discarded <= 2 do set_status("discarded_2j") end; blue_jokers_discarded += 1 end # is blue for nfnl purposes
+define_play_effect "3j" do if jokers_discarded <= 2 do set_status("discarded_3j") end; unset_status("throwing_blue_jokers_eligible") end
+define_play_effect "4j" do if jokers_discarded <= 2 do set_status("discarded_4j") end; unset_status("throwing_blue_jokers_eligible") end
+define_play_effect "5j" do if jokers_discarded <= 2 do set_status("discarded_5j") end; unset_status("throwing_blue_jokers_eligible") end
 
+on before_scoring do
+  flowers_jokers_discarded = flowers_discarded + jokers_discarded
+  if status("throwing_flowers_jokers_eligible") and flowers_jokers_discarded >= 3 do
+    throwing_flowers_jokers_value = 1
+    if flowers_jokers_discarded >= 5 do
+      throwing_flowers_jokers_value = flowers_jokers_discarded - 3
+    end
+  end
+  if status("throwing_flowers_eligible") and flowers_discarded >= 3 do
+    throwing_flowers_value = flowers_discarded - 2
+  end
+  if status("throwing_blue_jokers_eligible") and blue_jokers_discarded >= 3 and red_jokers_discarded == 0 do
+    throwing_blue_jokers_value = blue_jokers_discarded - 2
+  end
+end
 
-
-
-
-
-
+define_yaku meta_nfnl, "Throwing Flowers/Jokers", ["throwing_flowers_jokers_value", "Mủn"],
+  has_existing_yaku("No Flowers, No Leaves")
+  and status("throwing_flowers_jokers_eligible"),
+  ["No Flowers, No Leaves"]
+define_yaku meta_nfnl, "Throwing Flowers", ["throwing_flowers_value", "Mủn"],
+  has_existing_yaku("No Flowers, No Leaves")
+  and status("throwing_flowers_eligible"),
+  ["No Flowers, No Leaves"]
+define_yaku meta_nfnl, "Throwing Blue Jokers", ["throwing_blue_jokers_value", "Mủn"],
+  has_existing_yaku("No Flowers, No Leaves")
+  and status("throwing_blue_jokers_eligible"),
+  ["No Flowers, No Leaves"]
+define_yaku meta_nfnl, "True No Flowers, No Leaves", [1, "Mủn"],
+  has_existing_yaku("No Flowers, No Leaves")
+  and match(["hand", "calls", "winning_tile"], ["win"]),
+  ["No Flowers, No Leaves"]
+# winning true NFNL while having discarded only 1-2 jokers gives you their value
+define_yaku true_nfnl, "Tổng (縂)", ["tong_value", "Phán"], has_existing_yaku("True No Flowers, No Leaves") and match(["discards"], ~m"nojoker, 0j:1")
+define_yaku true_nfnl, "Thùng (筒)", ["thung_value", "Phán"], has_existing_yaku("True No Flowers, No Leaves") and match(["discards"], ~m"nojoker, 6j:1")
+define_yaku true_nfnl, "Soọc (索)", ["sooc_value", "Phán"], has_existing_yaku("True No Flowers, No Leaves") and match(["discards"], ~m"nojoker, 7j:1")
+define_yaku true_nfnl, "Màn (萬)", ["man_value", "Phán"], has_existing_yaku("True No Flowers, No Leaves") and match(["discards"], ~m"nojoker, 8j:1")
+define_yaku true_nfnl, "Đại Hoa (花)", ["hoa_value", "Phán"], has_existing_yaku("True No Flowers, No Leaves") and match(["flowers"], ~m"nojoker, 9j:1")
+define_yaku true_nfnl, "Hỉ (喜)", ["hi_value", "Phán"], has_existing_yaku("True No Flowers, No Leaves") and match(["discards"], ~m"nojoker, 5j:1")
+define_yaku true_nfnl, "Nguyên (元)", ["nguyen_value", "Phán"], has_existing_yaku("True No Flowers, No Leaves") and match(["discards"], ~m"nojoker, 4j:1")
+define_yaku true_nfnl, "Hợp (合)", ["hop_value", "Phán"], has_existing_yaku("True No Flowers, No Leaves") and match(["discards"], ~m"nojoker, 2j:1")

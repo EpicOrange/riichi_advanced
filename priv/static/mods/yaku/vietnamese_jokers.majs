@@ -7,15 +7,23 @@ on after_start do
   set_tile_alias_all(["6j"], ["1p","2p","3p","4p","5p","6p","7p","8p","9p"])
   set_tile_alias_all(["7j"], ["1s","2s","3s","4s","5s","6s","7s","8s","9s"])
   set_tile_alias_all(["8j"], ["1m","2m","3m","4m","5m","6m","7m","8m","9m"])
+  set_tile_alias_all([%{tile: "any", attrs: ["dora"]}], ["any"])
+
 end
 
-# funny animation. might remove it if it's annoying
-apply set_append, "interruptible_actions", ["convert_last_discard"]
+# # funny animation. might remove it if it's annoying
+# apply set_append, "interruptible_actions", ["convert_last_discard"]
+# def make_joker_discard do
+#   if not_match(["last_discard"], ~m"0j:1") do
+#     pause(200)
+#     convert_last_discard("5z")
+#     pause(200)
+#     convert_last_discard("0j")
+#   end
+# end
 def make_joker_discard do
-  pause(500)
-  convert_last_discard("5z")
-  pause(500)
-  convert_last_discard("0j")
+  add_attr(["last_discard"], ["dora"]) # add dora shine instead
+  recalculate_buttons # see if anyone wins
 end
 
 define_play_effect flower do
@@ -28,8 +36,10 @@ define_play_effect joker do
 end
 
 # jokers
-apply append, "wall", ["0j", "2j", "9j", "4j", "5j", "6j", "7j", "8j"]
-define_set any_joker, ~s"0j|2j|9j|4j|5j|6j|7j|8j"
+# 9j (flower joker) is already added by vietnamese_flowers mod
+define_const all_jokers, ["0j", "2j", "4j", "5j", "6j", "7j", "8j"]
+apply append, "wall", @all_jokers
+define_set any_joker, ~s"0j|2j|4j|5j|6j|7j|8j"
 define_match any_joker, ~m"nojoker, any_joker:1"
 
 define_button start_joker,
@@ -39,9 +49,10 @@ define_button start_joker,
     and match(["hand", "draw"], "any_joker")
   do
     big_text("Joker")
-    flower("0j", "2j", "9j", "4j", "5j", "6j", "7j", "8j")
+    flower("0j", "2j", "4j", "5j", "6j", "7j", "8j")
     set_status("has_joker")
     draw(1, "opposite_end")
+    recalculate_buttons
   end
 
 define_button joker,
@@ -53,7 +64,7 @@ define_button joker,
     and match(["hand", "draw"], "any_joker")
   do
     big_text("Joker")
-    flower("0j", "2j", "9j", "4j", "5j", "6j", "7j", "8j")
+    flower("0j", "2j", "4j", "5j", "6j", "7j", "8j")
     set_status("flower")
     unset_status("kan")
     if no_tiles_remaining do
@@ -63,18 +74,60 @@ define_button joker,
     end
   end
 
-apply append, "buttons.ron.actions" do
+apply prepend, "buttons.ron.actions" do
   if match(["hand", "calls", "last_discard"], "any_joker") do
     set_status("has_joker")
   end
 end
-apply append, "buttons.chankan.actions" do
+apply prepend, "buttons.chankan.actions" do
   if match(["hand", "calls", "last_called_tile"], "any_joker") do
     set_status("has_joker")
   end
 end
-apply append, "buttons.tsumo.actions" do
+apply prepend, "buttons.tsumo.actions" do
   if match(["hand", "calls", "draw"], "any_joker") do
     set_status("has_joker")
   end
 end
+
+on after_call do
+  if match(["last_call"], ["any_joker"]) do
+    set_status("has_joker")
+  end
+end
+
+on before_win do
+  tong_value = 2
+  thung_value = 1
+  sooc_value = 1
+  man_value = 1
+  hoa_value = 2
+  hi_value = 1
+  nguyen_value = 1
+  hop_value = 1
+  if seat_is("east") or match(["start_jokers"], ~m"0j:1") do tong_value = 3 end
+  if seat_is("south") do thung_value = 2 end
+  if seat_is("west") do sooc_value = 2 end
+  if seat_is("north") do man_value = 2 end
+  if seat_is("south") do hi_value = 2 end
+  if seat_is("west") do nguyen_value = 2 end
+  if seat_is("north") or match(["start_jokers"], ~m"2j:1") do hop_value = 2 end
+end
+
+# TODO need to be consistent abt what's in English and what's in Vietnamese
+# set-aside blue jokers
+define_yaku yaku, "Tổng (縂)", ["tong_value", "Phán"], match(["jokers"], ~m"0j:1")
+define_yaku yaku, "Thùng (筒)", ["thung_value", "Phán"], match(["jokers"], ~m"6j:1")
+define_yaku yaku, "Soọc (索)", ["sooc_value", "Phán"], match(["jokers"], ~m"7j:1")
+define_yaku yaku, "Màn (萬)", ["man_value", "Phán"], match(["jokers"], ~m"8j:1")
+# set-aside red jokers
+define_yaku yaku, "Đại Hoa (花)", ["hoa_value", "Phán"], match(["flowers"], ~m"9j:1")
+define_yaku yaku, "Hỉ (喜)", ["hi_value", "Phán"], match(["jokers"], ~m"5j:1")
+define_yaku yaku, "Nguyên (元)", ["nguyen_value", "Phán"], match(["jokers"], ~m"4j:1")
+define_yaku yaku, "Hợp (合)", ["hop_value", "Phán"], match(["jokers"], ~m"2j:1")
+
+# joker set usage
+define_yaku yaku, "Blue Joker Set", [1, "Mủn"], match(["hand", "calls", "flowers", "jokers", "winning_tile"], ~m"nojoker, 0j:1, 6j:1, 7j:1, 8j:1")
+define_yaku yaku, "Blue Joker Set", [1, "Mủn"], match(["flowers", "jokers"], ~m"nojoker, 0j:1, 6j:1, 7j:1, 8j:1")
+define_yaku yaku, "Red Joker Set", [1, "Mủn"], match(["hand", "calls", "flowers", "jokers", "winning_tile"], ~m"nojoker, 2j:1, 3j:1, 4j:1, 5j:1")
+define_yaku yaku, "Red Joker Set", [1, "Mủn"], match(["flowers", "jokers"], ~m"nojoker, 2j:1, 3j:1, 4j:1, 5j:1")
