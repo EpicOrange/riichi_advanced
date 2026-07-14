@@ -1,0 +1,55 @@
+# override existing default_flowers mod with more flowers
+define_const all_flowers, ["1f", "2f", "3f", "4f", "1g", "2g", "3g", "4g", "1k", "2k", "3k", "4k", "1q", "2q", "3q", "4q", "9j"]
+
+# expand flowers to include 1-4k, 1-4q, 9j
+define_set any_flower, ~s"1f|2f|3f|4f|1g|2g|3g|4g|1k|2k|3k|4k|1q|2q|3q|4q|9j"
+apply append, "wall", ["1k", "2k", "3k", "4k", "1q", "2q", "3q", "4q"]
+replace all, "buttons",
+  ["flower", "1f", "2f", "3f", "4f", "1g", "2g", "3g", "4g"],
+  ["flower", "1f", "2f", "3f", "4f", "1g", "2g", "3g", "4g", "1k", "2k", "3k", "4k", "1q", "2q", "3q", "4q", "9j"]
+
+# flower yaku (seat flowers and seat season already defined by default_flowers mod)
+define_yaku yaku, "Seat King", [1, "Phán"], seat_is("east") and match(["flowers"], ~m"1k:1")
+define_yaku yaku, "Seat King", [1, "Phán"], seat_is("south") and match(["flowers"], ~m"2k:1")
+define_yaku yaku, "Seat King", [1, "Phán"], seat_is("west") and match(["flowers"], ~m"3k:1")
+define_yaku yaku, "Seat King", [1, "Phán"], seat_is("north") and match(["flowers"], ~m"4k:1")
+define_yaku yaku, "Seat Queen", [1, "Phán"], seat_is("east") and match(["flowers"], ~m"1q:1")
+define_yaku yaku, "Seat Queen", [1, "Phán"], seat_is("south") and match(["flowers"], ~m"2q:1")
+define_yaku yaku, "Seat Queen", [1, "Phán"], seat_is("west") and match(["flowers"], ~m"3q:1")
+define_yaku yaku, "Seat Queen", [1, "Phán"], seat_is("north") and match(["flowers"], ~m"4q:1")
+
+# flower sets (override default_flowers mod)
+define_yaku yaku, "Bouquet", [1, "Mủn"], match(["flowers"], ~m"1f:1, 2f:1, 3f:1, 4f:1"), ["All Flowers", "Seat Flower"]
+define_yaku yaku, "Bouquet", [1, "Mủn"], match(["flowers"], ~m"1g:1, 2g:1, 3g:1, 4g:1"), ["All Seasons", "Seat Season"]
+define_yaku yaku, "Bouquet", [1, "Mủn"], match(["flowers"], ~m"1k:1, 2k:1, 3k:1, 4k:1"), ["Seat King"]
+define_yaku yaku, "Bouquet", [1, "Mủn"], match(["flowers"], ~m"1q:1, 2q:1, 3q:1, 4q:1"), ["Seat Queen"]
+# define_yaku yaku, "Matched Royalty", [1, "Phán"], match(["flowers"], ~m"1k:1, 1q:1")
+# define_yaku yaku, "Matched Royalty", [1, "Phán"], match(["flowers"], ~m"2k:1, 2q:1")
+# define_yaku yaku, "Matched Royalty", [1, "Phán"], match(["flowers"], ~m"3k:1, 3q:1")
+# define_yaku yaku, "Matched Royalty", [1, "Phán"], match(["flowers"], ~m"4k:1, 4q:1")
+
+# set-aside blue jokers
+# TODO need to be consistent abt what's in English and what's in Vietnamese
+define_yaku yaku, "Tổng (縂)", [2, "Phán"], match(["jokers"], ~m"0j:1")
+define_yaku yaku, "Tổng (縂)", [1, "Phán"], (seat_is("east") and match(["jokers"], ~m"0j:1")) or match(["start_jokers"], ~m"0j:1")
+define_yaku yaku, "Thùng (筒)", [1, "Phán"], match(["jokers"], ~m"6j:1")
+define_yaku yaku, "Thùng (筒)", [1, "Phán"], seat_is("south") and match(["jokers"], ~m"6j:1")
+define_yaku yaku, "Soọc (索)", [1, "Phán"], match(["jokers"], ~m"7j:1")
+define_yaku yaku, "Soọc (索)", [1, "Phán"], seat_is("west") and match(["jokers"], ~m"7j:1")
+define_yaku yaku, "Thay (萬)", [1, "Phán"], match(["jokers"], ~m"8j:1")
+define_yaku yaku, "Thay (萬)", [1, "Phán"], seat_is("north") and match(["jokers"], ~m"8j:1")
+
+# set-aside red jokers
+define_yaku yaku, "Hoa (花)", [2, "Phán"], match(["flowers"], ~m"9j:1")
+define_yaku yaku, "Hỷ (喜)", [1, "Phán"], match(["jokers"], ~m"5j:1")
+define_yaku yaku, "Hỷ (喜)", [1, "Phán"], seat_is("south")
+define_yaku yaku, "Nguyên (元)", [1, "Phán"], match(["jokers"], ~m"4j:1")
+define_yaku yaku, "Nguyên (元)", [1, "Phán"], seat_is("west")
+define_yaku yaku, "Hợp (合)", [2, "Phán"], match(["jokers"], ~m"2j:1")
+define_yaku yaku, "Hợp (合)", [1, "Phán"], (seat_is("north") and match(["jokers"], ~m"2j:1")) or match(["start_jokers"], ~m"2j:1")
+
+# joker set usage
+define_yaku yaku, "Blue Joker Set", [1, "Mủn"], match(["hand", "calls", "flowers", "jokers", "winning_tile"], ~m"nojoker, 0j:1, 6j:1, 7j:1, 8j:1")
+define_yaku yaku, "Blue Joker Set", [1, "Mủn"], match(["flowers", "jokers"], ~m"nojoker, 0j:1, 6j:1, 7j:1, 8j:1")
+define_yaku yaku, "Red Joker Set", [1, "Mủn"], match(["hand", "calls", "flowers", "jokers", "winning_tile"], ~m"nojoker, 2j:1, 3j:1, 4j:1, 5j:1")
+define_yaku yaku, "Red Joker Set", [1, "Mủn"], match(["flowers", "jokers"], ~m"nojoker, 2j:1, 3j:1, 4j:1, 5j:1")

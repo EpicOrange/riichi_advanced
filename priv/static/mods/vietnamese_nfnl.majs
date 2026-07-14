@@ -1,0 +1,70 @@
+
+# TODO rules text
+
+define_set nfnl_any, ~s"1m|2m|3m|4m|5m|6m|7m|8m|9m|1p|2p|3p|4p|5p|6p|7p|8p|9p|1s|2s|3s|4s|5s|6s|7s|8s|9s"
+
+define_match nfnl_tenpai, ~m"nojoker, (any_flower any_joker):-1, nfnl_any:13"
+define_match nfnl_win, ~m"nojoker, (any_flower any_joker):-1, nfnl_any:14"
+
+define_button nfnl,
+  display_name: "No Flowers, No Leaves", 
+  show_when: not_our_turn
+    and someone_else_just_discarded
+    and status_missing("initial_flowers")
+    and not_match(["flowers", "jokers"], ["any_joker"])
+    and match(["hand", "calls"], ["nfnl_tenpai"])
+    and match(["hand", "calls", "last_discard"], ["nfnl_win"]),
+  precedence_over: ["chii", "pon", "daiminkan", "ron", "chankan", "nfnl"]
+  do
+    big_text(!ron_name)
+    pause(1000)
+    reveal_hand
+    win_by_discard
+  end
+
+define_yaku nfnl, "No Flowers, No Leaves", [1, "Mủn"],
+  status_missing("has_joker")
+  and winning_hand_consists_of("1m","2m","3m","4m","5m","6m","7m","8m","9m","1p","2p","3p","4p","5p","6p","7p","8p","9p","1s","2s","3s","4s","5s","6s","7s","8s","9s"),
+  ["No Flowers or Honors", "No Flowers, Honors, or Triplets"]
+define_yaku meta_nfnl, "No Flowers, No Leaves", [2, "Mủn"], has_existing_yaku("No Flowers, No Leaves") and not_match(["pond"], ~m"0j:1")
+define_yaku nfnl, "From NFNL Player", [2, "Mủn"], won_by_discard and status("from_nfnl", as: "last_discarder")
+
+on after_start do
+  set_status_all("nfnl_eligible")
+  set_status("nfnl_start_dealer", as: "east") # east may discard one flower and still be eligible
+end
+
+apply append, "buttons.ron.actions" do
+  if status("nfnl_eligible", as: "last_discarder") and match(["last_discard"], ["any_flower", "any_joker"]) do
+    unset_status("from_nfnl")
+  end
+end
+apply append, "buttons.chankan.actions" do
+  if status("nfnl_eligible", as: "last_caller") and match(["last_called_tile"], ["any_flower", "any_joker"]) do
+    unset_status("from_nfnl")
+  end
+end
+
+define_play_effect not_flower_or_joker do
+  if status("nfnl_eligible") and match(["hand"], ~m"(any_flower any_joker):1") do
+    if status("nfnl_start_dealer") do
+      unset_status("nfnl_eligible")
+    end
+  end
+  unset_status("nfnl_start_dealer")
+end
+
+# declaring any flowers/jokers disqualifies you
+# (prepend to avoid interrupts)
+apply prepend, "buttons.start_flower.actions" do unset_status("nfnl_eligible") end
+apply prepend, "buttons.start_joker.actions" do unset_status("nfnl_eligible") end
+apply prepend, "buttons.flower.actions" do unset_status("nfnl_eligible") end
+apply prepend, "buttons.joker.actions" do unset_status("nfnl_eligible") end
+
+
+
+
+
+
+
+

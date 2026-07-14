@@ -1,0 +1,80 @@
+
+on after_start do
+  set_tile_alias_all(["0j"], ["any"])
+  set_tile_alias_all(["2j"], ["1m","2m","3m","4m","5m","6m","7m","8m","9m","1p","2p","3p","4p","5p","6p","7p","8p","9p","1s","2s","3s","4s","5s","6s","7s","8s","9s"])
+  set_tile_alias_all(["4j"], ["0z","6z","7z"])
+  set_tile_alias_all(["5j"], ["1z","2z","3z","4z"])
+  set_tile_alias_all(["6j"], ["1p","2p","3p","4p","5p","6p","7p","8p","9p"])
+  set_tile_alias_all(["7j"], ["1s","2s","3s","4s","5s","6s","7s","8s","9s"])
+  set_tile_alias_all(["8j"], ["1m","2m","3m","4m","5m","6m","7m","8m","9m"])
+end
+
+# funny animation. might remove it if it's annoying
+apply set_append, "interruptible_actions", ["convert_last_discard"]
+def make_joker_discard do
+  pause(500)
+  convert_last_discard("5z")
+  pause(500)
+  convert_last_discard("0j")
+end
+
+define_play_effect flower do
+  make_joker_discard
+end
+
+define_play_effect joker do
+  set_status("discarded_joker")
+  make_joker_discard
+end
+
+# jokers
+apply append, "wall", ["0j", "2j", "9j", "4j", "5j", "6j", "7j", "8j"]
+define_set any_joker, ~s"0j|2j|9j|4j|5j|6j|7j|8j"
+define_match any_joker, ~m"nojoker, any_joker:1"
+
+define_button start_joker,
+  display_name: "Reveal joker",
+  show_when: status("initial_flowers")
+    and our_turn
+    and match(["hand", "draw"], "any_joker")
+  do
+    big_text("Joker")
+    flower("0j", "2j", "9j", "4j", "5j", "6j", "7j", "8j")
+    set_status("has_joker")
+    draw(1, "opposite_end")
+  end
+
+define_button joker,
+  display_name: "Joker",
+  show_when: our_turn
+    and has_draw
+    and not_just_discarded
+    and status_missing("initial_flowers", "just_called")
+    and match(["hand", "draw"], "any_joker")
+  do
+    big_text("Joker")
+    flower("0j", "2j", "9j", "4j", "5j", "6j", "7j", "8j")
+    set_status("flower")
+    unset_status("kan")
+    if no_tiles_remaining do
+      advance_turn
+    else
+      draw(1, "opposite_end")
+    end
+  end
+
+apply append, "buttons.ron.actions" do
+  if match(["hand", "calls", "last_discard"], "any_joker") do
+    set_status("has_joker")
+  end
+end
+apply append, "buttons.chankan.actions" do
+  if match(["hand", "calls", "last_called_tile"], "any_joker") do
+    set_status("has_joker")
+  end
+end
+apply append, "buttons.tsumo.actions" do
+  if match(["hand", "calls", "draw"], "any_joker") do
+    set_status("has_joker")
+  end
+end

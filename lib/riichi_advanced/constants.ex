@@ -670,15 +670,51 @@ defmodule RiichiAdvanced.Constants do
     },
     "vietnamese" => %{
       ruleset: "vietnamese",
+      globals: %{
+        chii_name: "Ăn",
+        pon_name: "Phỗng",
+        kan_name: "Coong",
+        ankan_name: "Self Coong",
+        ron_name: "Ù",
+        chankan_name: "Bắt Coong",
+        tsumo_name: "Chỉ Mó",
+        han: "Phán",
+        limit: "Mủn"
+      },
       mods: [
-        "global_mods",
-        "vietnamese",
+        "base",
+        "standard_wall", "framed_5z",
+        "global_mods", "default_auto_buttons",
+        "chii", "pon", "kan", "ron", "tsumo",
+        %{name: "default_flowers", config: %{
+          undiscardable: false,
+          auto_flower_by_default: false,
+          draw_after_flowers: false,
+          matching_flower_value: 1,
+          matching_flower_points_name: 1,
+          four_flowers_value: 1,
+          four_flowers_points_name: "Mủn"
+        }}, 
+        %{name: "yaku/chiitoitsu", config: %{rules_tab: "1 Phán", list: "yaku", name: "Seven Pairs", value: 1, kansai: true}},
+        %{name: "yaku/kokushi", config: %{list: "yakuman", name: "Thirteen Orphans", value: 2}},
+        "standard_win",
+        %{name: "yaku/chankan", config: %{list: "yaku", name: "Robbing a Quad", value: 1}},
+        %{name: "yaku/tenhou", config: %{
+          tenhou_list: "yakuman", tenhou_name: "Blessing of Heaven", tenhou_value: 2,
+          chiihou_list: "yakuman", chiihou_name: "Blessing of Earth", chiihou_value: 2,
+          renhou_list: "yakuman", renhou_name: "Blessing of Man", renhou_value: 2,
+          chiihou_is_tsumo: false, renhou_disabled: false
+        }},
+        "yaku/vietnamese_flowers",
+        "yaku/vietnamese_jokers",
+        "vietnamese_nfnl",
+        "vietnamese_scoring",
       ],
     },
     "mcr" => %{
       ruleset: "mcr",
       mods: [
-        "global_mods",
+        "global_mods", "default_auto_buttons",
       ],
     },
   }

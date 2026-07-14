@@ -1,0 +1,64 @@
+
+on before_scoring do
+  make_responsible_for("others")
+end
+
+replace all, "buttons", win_by_discard, win_by_discard("ron")
+replace all, "buttons", win_by_call, win_by_call("ron")
+replace all, "buttons", win_by_draw, win_by_draw("tsumo")
+
+def get_base_score do
+  cond do
+    points < 6 and points2 <= 0 -> phan = points :: "Phán"
+    points <= 0 and points2 > 0 -> mun = points2 :: "Mủn"
+    points >= 6 and points2 <= 0 ->
+      phan = points :: "Phán"
+      if phan >= 6 do
+        mun = floor_div(phan, 6) :: "Mủn equiv."
+        phan -= mun * 6
+      end
+      if phan > 0 do phan = phan :: "Phán rem." end
+    true ->
+      phan = points :: "Phán"
+      if phan >= 6 do
+        mun = floor_div(phan, 6) :: "Mủn equiv."
+        phan -= mun * 6
+        mun += points2 :: "Mủn total"
+      else
+        mun = points2 :: "Mủn"
+      end
+  end
+  cond do
+    mun > 0 -> total = mun * 32 :: "Single"
+    phan <= 0 -> total = 0 :: "Single (0 Phán)"
+    true ->
+      total = 2 ** (phan - 1) :: "Single"
+  end
+  print_counters
+end
+
+define_scoring ron do
+  get_base_score
+  cond do
+    seat_is("last_discarder") -> total *= 2 :: "Double (deal-in)"
+    true -> total *= 1 :: "Single"
+  end
+  if seat_is("last_discarder") or seat_is("winner") do
+    total *= 2 :: "Double"
+  end
+  if mun > 0 and phan > 0 do
+    total += phan * 6 :: "Leftover Phán"
+  else
+    if total == 0 do total = 1 :: "Total" end
+  end
+end
+
+define_scoring tsumo do
+  get_base_score
+  total = total * 2 :: "Double (self-draw)"
+  if mun > 0 and phan > 0 do
+    total += phan * 6 :: "Leftover Phán"
+  else
+    if total == 0 do total = 1 :: "Total" end
+  end
+end
