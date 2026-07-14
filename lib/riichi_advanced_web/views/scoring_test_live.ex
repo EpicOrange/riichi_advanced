@@ -361,9 +361,8 @@ defmodule RiichiAdvancedWeb.ScoringTestLive do
     if length(new_selections) == call_length do
       call_tiles = Enum.map(new_selections, &Enum.at(socket.assigns.hand, &1))
       [called_tile | call_choice] = Enum.map(call_tiles, &Utils.to_tile/1)
-      style = button
-      |> Map.get("call_style", %{"kamicha" => [0, 0]})
-      |> Map.get("kamicha", [0, 0])
+      style = Map.get(button, "call_style", %{"kamicha" => [0, 0]})
+      style = Map.get(style, "kamicha", Map.get(style, "self", [0, 0]))
       new_call_tiles = Actions.style_call(style, call_choice, called_tile)
       new_call = {socket.assigns.selected_call_button, new_call_tiles}
       socket = assign(socket, :hand, socket.assigns.hand -- call_tiles)
