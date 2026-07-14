@@ -379,13 +379,22 @@ defmodule RiichiAdvanced.GameState.Conditions do
         end end)
       "has_no_yaku"             -> Enum.empty?(context.existing_yaku)
       "has_points"              ->
-        context.existing_yaku
+        totals = context.existing_yaku
         |> Enum.map(fn {_name, value} -> value end)
         |> Enum.reduce([], &Scoring.add_yaku_values/2)
-        |> case do
-          [] -> 0
-          [points | _rest] -> points
-        end >= Enum.at(opts, 0, 1)
+        denomination = Enum.at(opts, 1, nil)
+        if denomination == nil do
+          # just take the first denomination
+          case totals do
+            [] -> 0
+            [points | _rest] -> points
+          end >= Enum.at(opts, 0, 1)
+        else
+          case Enum.find_index(totals, & &1 = denomination) do
+            nil -> 0
+            ix  -> Enum.at(totals, ix - 1)
+          end >= Enum.at(opts, 0, 1)
+        end
       "placement"               ->
         placements = get_placements(state)
         Enum.any?(opts, &Enum.at(placements, &1 - 1) == context.seat)

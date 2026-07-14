@@ -147,6 +147,7 @@ define_yaku meta_yaku, "No Jokers Mosquito Hand", [1, "Mủn"], has_no_yaku and 
 define_yaku meta_yaku, "All Terminals", [1, "Mủn"], has_existing_yaku("All Terminals") and status_missing("has_joker")
 define_yaku meta_yaku, "All Terminals", [1, "Mủn"], has_existing_yaku("All Terminals", "Single Wait", "Fully Closed Hand")
 define_yaku meta_yaku, "Big Three Dragons", [1, "Mủn"], has_existing_yaku("Big Three Dragons") and status_missing("has_joker")
+define_yaku_precedence "Big Three Dragons", ["White Dragon", "Green Dragon", "Red Dragon"]
 define_yaku meta_yaku, "Thirteen Orphans", [1, "Mủn"], has_existing_yaku("Thirteen Orphans") and status_missing("has_joker")
 define_yaku meta_yaku, "Thirteen Orphans", [1, "Mủn"], has_existing_yaku("Thirteen Orphans") and match(["hand"], ~m"orphans_all:1")
 define_yaku_precedence "Nine Gates", ["Full Flush"]
@@ -161,10 +162,12 @@ define_yaku meta_yaku, "All Honors", [1, "Mủn"], has_existing_yaku("All Honors
 define_yaku meta_yaku, "Little Four Winds", [1, "Mủn"], has_existing_yaku("Little Four Winds") and status_missing("has_joker")
 define_yaku meta_yaku, "Little Four Winds", [1, "Mủn"], has_existing_yaku("Little Four Winds", "Single Wait", "Fully Closed Hand")
 define_yaku meta_yaku, "Big Four Winds", [1, "Mủn"], has_existing_yaku("Big Four Winds") and status_missing("has_joker")
+define_yaku_precedence "Little Four Winds", ["Round Wind", "Seat Wind"]
 define_yaku meta_yaku, "Big Four Winds", [1, "Mủn"], has_existing_yaku("Big Four Winds", "Single Wait", "Fully Closed Hand")
+define_yaku_precedence "Big Four Winds", ["Little Four Winds"]
 
 set score_calculation, %{ 
-  yaku_lists: ["yaku", "nfnl", "meta_yaku"],
+  yaku_lists: ["yaku", "progressive", "meta_yaku"],
   point_name: "Phán",
   point2_name: "Mủn",
   win_by_discard_name: "Ù",

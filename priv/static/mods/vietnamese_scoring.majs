@@ -3,9 +3,140 @@ on before_scoring do
   make_responsible_for("others")
 end
 
-replace all, "buttons", win_by_discard, win_by_discard("ron")
-replace all, "buttons", win_by_call, win_by_call("ron")
-replace all, "buttons", win_by_draw, win_by_draw("tsumo")
+
+
+# pao / liabilities
+
+define_set manzu, ~s"1m|2m|3m|4m|5m|6m|7m|8m|9m"
+define_set pinzu, ~s"1p|2p|3p|4p|5p|6p|7p|8p|9p"
+define_set souzu, ~s"1s|2s|3s|4s|5s|6s|7s|8s|9s"
+define_set terminal, ~s"1m|1p|1s|9m|9p|9s"
+define_set terminal_set, ~s"1m 1m 1m|1p 1p 1p|1s 1s 1s|9m 9m 9m|9p 9p 9p|9s 9s 9s"
+define_set jihai, ~s"1z|2z|3z|4z|0z|6z|7z"
+on after_call do
+  as caller do
+    # in theory you could use the danger_* statuses to determine exemption from liability
+    # unfortunately for all, i am too lazy to do this
+
+    # nine-tile liability is actually 3 different liabilities
+    # 1. full flush (deal 4th set of single suit tiles)
+    # 2. all terminals (deal 4th set of terminals)
+    # 3. all honors (deal 4th set of honors)
+    if status("danger_manzu") do
+      if match(["last_called_tile"], ~m"manzu:1") do set_status("pao", "chinitsu_pao", as: "callee") end
+    else
+      if match(["call_tiles"], ~m"manzu:9") do set_status("danger_manzu") end
+    end
+    if status("danger_pinzu") do
+      if match(["last_called_tile"], ~m"pinzu:1") do set_status("pao", "chinitsu_pao", as: "callee") end
+    else
+      if match(["call_tiles"], ~m"pinzu:9") do set_status("danger_pinzu") end
+    end
+    if status("danger_souzu") do
+      if match(["last_called_tile"], ~m"souzu:1") do set_status("pao", "chinitsu_pao", as: "callee") end
+    else
+      if match(["call_tiles"], ~m"souzu:9") do set_status("danger_souzu") end
+    end
+    if status("danger_tsuuiisou") do
+      if match(["last_called_tile"], ~m"jihai:1") do set_status("pao", "tsuuiisou_pao", as: "callee") end
+    else
+      if match(["calls"], ~m"jihai:3") do set_status("danger_tsuuiisou") end
+    end
+    if status("danger_chinroutou") do
+      if match(["last_call"], ~m"terminal_set:1") do set_status("pao", "chinroutou_pao", as: "callee") end
+    else
+      if match(["calls"], ~m"terminal_set:3") do set_status("danger_chinroutou") end
+    end
+    if status("danger_daisangen") do
+      if match(["last_call"], ~m"(haku hatsu chun):1") do set_status("pao", "daisangen_pao", as: "callee") end
+    else
+      if match(["calls"], ~m"haku:1, hatsu:1, chun:1") do set_status("danger_daisangen") end
+    end
+    if status("danger_daisuushii") do
+      if match(["last_call"], ~m"(ton nan shaa pei):1") do set_status("daisuushii_pao", as: "callee") end
+    else
+      if match(["calls"], ~m"ton:1, nan:1, shaa:1, pei:1") do set_status("danger_daisuushii") end
+    end
+  end
+end
+
+on before_win do
+  as others do
+    # currently only designates one pao player since we assume only one pao is active
+    # obviously it's possible to have more, we should handle it, but i'm too lazy to write this
+    if not_status_missing("chinitsu_pao", "tsuuiisou_pao", "chinroutou_pao", "daisangen_pao", "daisuushii_pao") do
+      make_responsible_for("prev_seat", "all")
+      clear_responsibilities(as: "others")
+    end
+  end
+end
+
+def pao_text do
+  if status_missing("shown_pao_text") do
+    set_status("shown_pao_text")
+    as others do
+      if is_responsible_for("prev_seat") do
+        big_text("Pao")
+      end
+    end
+  end
+end
+apply prepend, "buttons.ron.actions" do pao_text end
+apply prepend, "buttons.chankan.actions" do pao_text end
+apply prepend, "buttons.tsumo.actions" do pao_text end
+
+# progressive scoring: you have at least 1 mun
+#   we deprioritize upgrading all sets and all called
+#   because they come with a bonus that would be erased if it were upgraded
+
+define_yaku progressive, "_has_Mủn", [0, "Mủn"], has_existing_yaku([1, "Mủn"])
+define_yaku meta_yaku, "_has_Mủn", [0, "Mủn"], true, ["_has_Mủn"] # clear itself after next stage
+define_yaku meta_yaku, "All Sets+", [1, "Mủn"],
+  has_existing_yaku("_has_Mủn", "All Sets"),
+  ["All Sets"]
+define_yaku meta_yaku, "All Called+", [1, "Mủn"],
+  has_existing_yaku("_has_Mủn", "All Called"),
+  ["All Called"]
+define_yaku meta_yaku, "Half Flush+", [1, "Mủn"],
+  has_existing_yaku("_has_Mủn", "Half Flush")
+  or has_existing_yaku("Half Flush", "All Sets", "All Called"),
+  ["Half Flush"]
+define_yaku meta_yaku, "Closed Single Wait All Runs+", [1, "Mủn"],
+  has_existing_yaku("_has_Mủn", "Single Wait", "All Runs", "Fully Closed Hand")
+  or (has_existing_yaku("Single Wait", "All Runs", "Fully Closed Hand")
+  and at_least(2,
+    has_existing_yaku("Half Flush"),
+    has_existing_yaku("All Sets"),
+    has_existing_yaku("All Called"))),
+  ["Single Wait", "All Runs", "Fully Closed Hand"]
+
+# progressive scoring: big three dragons
+define_yaku progressive, "Big Three Dragons+", [3, "Mủn"],
+  has_existing_yaku("Big Three Dragons") and
+  (has_existing_yaku("All Terminals and Honors") or at_least(2,
+    has_existing_yaku("Half Flush"),
+    has_existing_yaku("All Sets"),
+    has_existing_yaku("All Called"),
+    has_existing_yaku("Single Wait", "All Runs", "Fully Closed Hand"))),
+  ["Big Three Dragons"]
+define_yaku meta_yaku, "All Sets++", [1, "Mủn", 3, "Phán"],
+  has_existing_yaku("Big Three Dragons+", "All Terminals and Honors", "All Sets"),
+  ["All Sets", "All Sets+", "All Terminals and Honors"]
+define_yaku meta_yaku, "All Called++", [1, "Mủn", 3, "Phán"],
+  has_existing_yaku("Big Three Dragons+", "All Terminals and Honors", "All Called"),
+  ["All Called", "All Called+", "All Terminals and Honors"]
+define_yaku meta_yaku, "Half Flush++", [1, "Mủn", 3, "Phán"],
+  has_existing_yaku("Big Three Dragons+", "All Terminals and Honors", "Half Flush")
+  or has_existing_yaku("Big Three Dragons+", "Half Flush", "All Sets", "All Called"),
+  ["Half Flush", "Half Flush+", "All Terminals and Honors"]
+define_yaku meta_yaku, "Closed Single Wait All Runs++", [1, "Mủn", 3, "Phán"],
+  has_existing_yaku("Big Three Dragons+", "All Terminals and Honors", "Single Wait", "All Runs", "Fully Closed Hand")
+  or (has_existing_yaku("Big Three Dragons+", "Single Wait", "All Runs", "Fully Closed Hand")
+  and at_least(2,
+    has_existing_yaku("Half Flush"),
+    has_existing_yaku("All Sets"),
+    has_existing_yaku("All Called"))),
+  ["Single Wait", "All Runs", "Fully Closed Hand", "Closed Single Wait All Runs+", "All Terminals and Honors"]
 
 def get_base_score do
   cond do
@@ -35,24 +166,36 @@ def get_base_score do
   end
 end
 
-define_scoring ron do
-  get_base_score
-  if seat_is("last_discarder") do
-    total *= 2 :: "Double (deal-in)"
-  end
+def add_leftover_phan do
   if mun > 0 and phan > 0 do
-    total += phan * 6 :: "Leftover Phán"
+    total += phan * "$mult" :: "Leftover Phán"
   else
     if total == 0 do total = 1 :: "Total" end
   end
 end
 
+define_scoring ron do
+  get_base_score
+  if seat_is("last_discarder") do total *= 2 :: "Double (deal-in)" end
+  add_leftover_phan(%{mult: 6})
+end
+
 define_scoring tsumo do
   get_base_score
-  total = total * 2 :: "Double (self-draw)"
-  if mun > 0 and phan > 0 do
-    total += phan * 6 :: "Leftover Phán"
-  else
-    if total == 0 do total = 1 :: "Total" end
-  end
+  total *= 2 :: "Double (self-draw)"
+  add_leftover_phan(%{mult: 6})
 end
+
+define_scoring pay_liability do
+  get_base_score
+  if won_by_draw do
+    total *= 6 :: "Liability (self-draw)"
+  else
+    total *= 4 :: "Liability (self-draw)"
+  end
+  add_leftover_phan(%{mult: 18})
+end
+
+replace all, "buttons", win_by_discard do if anyone_status("pao") do win_by_discard("pay_liability") else win_by_discard("ron") end end
+replace all, "buttons", win_by_call do if anyone_status("pao") do win_by_call("pay_liability") else win_by_call("ron") end end
+replace all, "buttons", win_by_draw do if anyone_status("pao") do win_by_draw("pay_liability") else win_by_draw("tsumo") end end

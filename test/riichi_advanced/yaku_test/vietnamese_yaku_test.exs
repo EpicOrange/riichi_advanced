@@ -540,6 +540,84 @@ defmodule RiichiAdvanced.YakuTest.VietnameseYaku do
     })
   end
 
+  test "vietnamese - progressive counting with three 3-phán hands" do
+    TestUtils.test_yaku_advanced("vietnamese", [], """
+    {
+      "starting_hand": {
+        "east": ["2m", "2m", "4m", "4m", "6m", "6m", "8m", "8m", "1z", "2z", "3z", "4z", "6z"],
+        "south": ["1m", "3m", "7m", "2p", "5p", "8p", "3s", "7s", "9s", "1z", "2z", "3z", "4z"],
+        "west": ["1m", "3m", "7m", "2p", "5p", "8p", "3s", "7s", "9s", "0z", "2z", "3z", "4z"],
+        "north": ["1m", "3m", "7m", "2p", "5p", "8p", "3s", "7s", "9s", "0z", "2z", "4s", "4s"]
+      },
+      "starting_draws": ["2f", "2m", "4m", "6m", "8m", "6z"],
+      "starting_dead_wall": ["1p"]
+    }
+    """, [
+      %{"type" => "buttons_pressed", "buttons" => [%{"button" => "start_flower"}, nil, nil, nil]},
+      %{"type" => "buttons_pressed", "buttons" => [%{"button" => "start_no_flower"}, nil, nil, nil]},
+      %{"type" => "buttons_pressed", "buttons" => [nil, %{"button" => "start_no_flower"}, nil, nil]},
+      %{"type" => "buttons_pressed", "buttons" => [nil, nil, %{"button" => "start_no_flower"}, nil]},
+      %{"type" => "buttons_pressed", "buttons" => [nil, nil, nil, %{"button" => "start_no_flower"}]},
+      %{"type" => "discard", "tile" => "1p", "player" => 0, "tsumogiri" => true},
+      %{"type" => "discard", "tile" => "2m", "player" => 1, "tsumogiri" => true},
+      %{"type" => "buttons_pressed", "buttons" => [%{"button" => "pon"}, nil, nil, nil]},
+      %{"type" => "discard", "tile" => "1z", "player" => 0, "tsumogiri" => false},
+      %{"type" => "discard", "tile" => "4m", "player" => 1, "tsumogiri" => true},
+      %{"type" => "buttons_pressed", "buttons" => [%{"button" => "pon"}, nil, nil, nil]},
+      %{"type" => "discard", "tile" => "2z", "player" => 0, "tsumogiri" => false},
+      %{"type" => "discard", "tile" => "6m", "player" => 1, "tsumogiri" => true},
+      %{"type" => "buttons_pressed", "buttons" => [%{"button" => "pon"}, nil, nil, nil]},
+      %{"type" => "discard", "tile" => "3z", "player" => 0, "tsumogiri" => false},
+      %{"type" => "discard", "tile" => "8m", "player" => 1, "tsumogiri" => true},
+      %{"type" => "buttons_pressed", "buttons" => [%{"button" => "pon"}, nil, nil, nil]},
+      %{"type" => "discard", "tile" => "4z", "player" => 0, "tsumogiri" => false},
+      %{"type" => "discard", "tile" => "6z", "player" => 1, "tsumogiri" => true},
+      %{"type" => "buttons_pressed", "buttons" => [%{"button" => "ron"}, nil, nil, nil]},
+    ], %{
+      east: %{
+        yaku: [
+          {"All Called", [4, "Phán"]},
+          {"All Sets", [4, "Phán"]},
+          {"Half Flush+", [1, "Mủn"]}
+        ],
+      }
+    })
+  end
+
+  # test "vietnamese - progressive counting with big three dragons" do
+  #   TestUtils.test_yaku_advanced("vietnamese", [], """
+  #   {
+  #     "starting_hand": {
+  #       "east": ["0z", "0z", "0j", "6z", "6z", "6z", "7z", "7z", "7z", "1p", "1p", "2z", "2z"],
+  #       "south": ["1m", "4m", "7m", "2p", "5p", "8p", "3s", "7s", "9s", "1z", "2z", "3z", "4z"],
+  #       "west": ["1m", "4m", "7m", "2p", "5p", "8p", "3s", "7s", "9s", "0z", "2z", "3z", "4z"],
+  #       "north": ["1m", "3m", "7m", "2p", "5p", "8p", "3s", "7s", "9s", "0z", "2z", "4s", "5s"]
+  #     },
+  #     "starting_draws": ["2f", "1p"],
+  #     "starting_dead_wall": ["5s"]
+  #   }
+  #   """, [
+  #     %{"type" => "buttons_pressed", "buttons" => [%{"button" => "start_flower"}, nil, nil, nil]},
+  #     %{"type" => "buttons_pressed", "buttons" => [%{"button" => "start_no_flower"}, nil, nil, nil]},
+  #     %{"type" => "buttons_pressed", "buttons" => [nil, %{"button" => "start_no_flower"}, nil, nil]},
+  #     %{"type" => "buttons_pressed", "buttons" => [nil, nil, %{"button" => "start_no_flower"}, nil]},
+  #     %{"type" => "buttons_pressed", "buttons" => [nil, nil, nil, %{"button" => "start_no_flower"}]},
+  #     %{"type" => "buttons_pressed", "buttons" => [%{"button" => "start_flower"}, nil, nil, nil]},
+  #     %{"type" => "discard", "tile" => "5s", "player" => 0, "tsumogiri" => true},
+  #     %{"type" => "discard", "tile" => "1p", "player" => 1, "tsumogiri" => true},
+  #     %{"type" => "buttons_pressed", "buttons" => [%{"button" => "ron"}, nil, nil, nil]}
+  #   ], %{
+  #     east: %{
+  #       yaku: [
+  #         {"Big Three Dragons+", [3, "Mủn"]},
+  #         {"All Sets++", [1, "Mủn", 3, "Phán"]},
+  #         {"Half Flush++", [1, "Mủn", 3, "Phán"]},
+  #       ],
+  #     }
+  #   })
+  # end
+  
   # desired tests:
+  # - progressive counting: 
   # - all the liabilities (pao)
 end

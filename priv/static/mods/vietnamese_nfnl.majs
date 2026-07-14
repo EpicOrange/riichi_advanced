@@ -171,26 +171,26 @@ on before_win do
   end
 end
 
-define_yaku nfnl, "Throwing Flowers/Jokers", ["throwing_flowers_jokers_value", "Mủn"],
+define_yaku yaku, "Throwing Flowers/Jokers", ["throwing_flowers_jokers_value", "Mủn"],
   status("nfnl_eligible", "throwing_flowers_jokers_eligible")
   and status_missing("has_joker")
   and not just_discarded
   and winning_hand_consists_of("1m","2m","3m","4m","5m","6m","7m","8m","9m","1p","2p","3p","4p","5p","6p","7p","8p","9p","1s","2s","3s","4s","5s","6s","7s","8s","9s")
   and throwing_flowers_jokers_value > 0,
   ["No Flowers, No Leaves", "Single Wait"]
-define_yaku nfnl, "Throwing Flowers", ["throwing_flowers_value", "Mủn"],
+define_yaku yaku, "Throwing Flowers", ["throwing_flowers_value", "Mủn"],
   status("nfnl_eligible", "throwing_flowers_eligible")
   and our_turn and just_discarded
   and not_match(["hand", "calls", "flowers", "jokers"], ~m"(any_flower any_joker):1")
   and throwing_flowers_value > 0,
   ["No Flowers, No Leaves", "Single Wait"]
-define_yaku nfnl, "Throwing Blue Jokers", ["throwing_blue_jokers_value", "Mủn"],
+define_yaku yaku, "Throwing Blue Jokers", ["throwing_blue_jokers_value", "Mủn"],
   status("nfnl_eligible", "throwing_blue_jokers_eligible")
   and our_turn and just_discarded
   and not_match(["hand", "calls", "flowers", "jokers"], ~m"(any_flower any_joker):1")
   and throwing_blue_jokers_value > 0,
   ["No Flowers, No Leaves", "Single Wait"]
-define_yaku nfnl, "True No Flowers, No Leaves", [2, "Mủn"],
+define_yaku yaku, "True No Flowers, No Leaves", [2, "Mủn"],
   status("nfnl_eligible")
   and winning_hand_consists_of("1m","2m","3m","4m","5m","6m","7m","8m","9m","1p","2p","3p","4p","5p","6p","7p","8p","9p","1s","2s","3s","4s","5s","6s","7s","8s","9s")
   and match(["hand", "calls", "winning_tile"], ["win"]),
