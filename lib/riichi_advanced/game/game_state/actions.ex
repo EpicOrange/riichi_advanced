@@ -1267,6 +1267,24 @@ defmodule RiichiAdvanced.GameState.Actions do
           state = update_in(state.rules_text_order, & &1 ++ [tab])
           state
         else state end
+      "rename_rule_tab"          ->
+        from = String.trim(interpolate_string(state, context, Enum.at(opts, 0, "Rules"), Enum.at(opts, 2, %{})))
+        to = String.trim(interpolate_string(state, context, Enum.at(opts, 1, "Rules"), Enum.at(opts, 2, %{})))
+        if Map.has_key?(state.rules_text, from) do
+          {contents, state} = pop_in(state.rules_text[from])
+          contents = Map.merge(contents, Map.get(state.rules_text, to, %{}))
+          state = update_in(state.rules_text, &Map.put(&1, to, contents))
+          state = if to not in state.rules_text_order do
+            # try to have `to` substitute `from`, otherwise append
+            ix = Enum.find_index(state.rules_text_order, & &1 == from)
+            if ix != nil do
+              update_in(state.rules_text_order, &List.replace_at(&1 -- [to], ix, to))
+            else
+              update_in(state.rules_text_order, & &1 ++ [to])
+            end
+          else update_in(state.rules_text_order, & &1 -- [from]) end
+          state
+        else state end
       "run"                   -> call_function(state, context, Enum.at(opts, 0, "noop"), Enum.at(opts, 1, %{}))
       "play_tile"             -> play_tile(state, context.seat, Enum.at(opts, 0, :"1m"), Enum.at(opts, 1, 0))
       "draw"                  -> draw_tile(state, context.seat, Enum.at(opts, 0, 1), Enum.at(opts, 1, nil), false)

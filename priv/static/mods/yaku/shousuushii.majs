@@ -1,7 +1,7 @@
 on after_initialization do
-  add_rule("$value $han", "$name", "You have triplets of three different winds, and a pair of the fourth.", %{value: !shou_value, han: !shou_han, name: !shou_name})
+  add_rule("$value $han", "$name", "%{value} %{han} if you have triplets of three different winds, and a pair of the fourth.", %{value: !shou_value, han: !shou_han, name: !shou_name})
   update_rule("$value $han", "$name", "%{example_hand}", %{value: !shou_value, han: !shou_han, name: !shou_name, example_hand: ~t"23s22233444z 111z 4s"})
-  add_rule("$value $han", "$name", "You have triplets of all four winds.", %{value: !dai_value, han: !dai_han, name: !dai_name})
+  add_rule("$value $han", "$name", "%{value} %{han} if you have triplets of all four winds.", %{value: !dai_value, han: !dai_han, name: !dai_name})
   update_rule("$value $han", "$name", "%{example_hand}", %{value: !dai_value, han: !dai_han, name: !dai_name, example_hand: ~t"22s22233444z 111z 3z"})
 end
 

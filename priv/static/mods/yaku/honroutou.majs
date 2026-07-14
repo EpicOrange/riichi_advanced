@@ -1,7 +1,7 @@
 on after_initialization do
-  add_rule("$value $han", "$name", "Your hand consists only of 1, 9, and honor tiles.", %{value: !hon_value, han: !hon_han, name: !hon_name})
+  add_rule("$value $han", "$name", "%{value} %{han} if your hand consists only of 1, 9, and honor tiles.", %{value: !hon_value, han: !hon_han, name: !hon_name})
   update_rule("$value $han", "$name", "%{example_hand}", %{value: !hon_value, han: !hon_han, name: !hon_name, example_hand: ~t"111m2223344z 999p 4z"})
-  add_rule("$value $han", "$name", "Your hand consists only of 1 and 9 tiles.", %{value: !chin_value, han: !chin_han, name: !chin_name})
+  add_rule("$value $han", "$name", "%{value} %{han} if your hand consists only of 1 and 9 tiles.", %{value: !chin_value, han: !chin_han, name: !chin_name})
   update_rule("$value $han", "$name", "%{example_hand}", %{value: !chin_value, han: !chin_han, name: !chin_name, example_hand: ~t"111m999p1199s 999m 9s"})
 end
 

@@ -1,12 +1,12 @@
 on after_initialization do
-  add_rule("$value $han", "$name", "As dealer, you won with your initial draw.", %{value: !tenhou_value, han: !tenhou_han, name: !tenhou_name})
+  add_rule("$value $han", "$name", "%{value} %{han} if as dealer, you win with your initial draw.", %{value: !tenhou_value, han: !tenhou_han, name: !tenhou_name})
   if !chiihou_is_tsumo do
-    add_rule("$value $han", "$name", "As a non-dealer, you won with your initial draw.", %{value: !chiihou_value, han: !chiihou_han, name: !chiihou_name})
+    add_rule("$value $han", "$name", "%{value} %{han} if as a non-dealer, you win with your initial draw.", %{value: !chiihou_value, han: !chiihou_han, name: !chiihou_name})
   else
-    add_rule("$value $han", "$name", "You won on the dealer's first discard. Calls invalidate.", %{value: !chiihou_value, han: !chiihou_han, name: !chiihou_name})
+    add_rule("$value $han", "$name", "%{value} %{han} if you win on the dealer's first discard. Calls invalidate.", %{value: !chiihou_value, han: !chiihou_han, name: !chiihou_name})
   end
   if !renhou_value > 0 do
-    add_rule("$value $han", "$name", "You won on someone's discard, before your first draw. Calls invalidate.", %{value: !renhou_value, han: !renhou_han, name: !renhou_name})
+    add_rule("$value $han", "$name", "%{value} %{han} if you win on someone's discard, before your first draw. Calls invalidate.", %{value: !renhou_value, han: !renhou_han, name: !renhou_name})
   end
 end
 

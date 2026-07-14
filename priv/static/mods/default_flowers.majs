@@ -14,10 +14,10 @@ on after_initialization do
     """, %{four_flowers_value: !four_flowers_value, four_flowers_han: !four_flowers_han})
   end
   cond do
-  seat_is("east") -> add_rule("$value $han", "Flowers", "Each flower tile whose number matches your seat is worth %{value} %{han}. Since your current seat is East, that would be the following flowers: %{flowers}", %{all_flowers: @all_flowers, value: !matching_flower_value, han: !matching_flower_han, flowers: @east_flowers})
-  seat_is("south") -> add_rule("$value $han", "Flowers", "Each flower tile whose number matches your seat is worth %{value} %{han}. Since your current seat is South, that would be the following flowers: %{flowers}", %{all_flowers: @all_flowers, value: !matching_flower_value, han: !matching_flower_han, flowers: @south_flowers})
-  seat_is("west") -> add_rule("$value $han", "Flowers", "Each flower tile whose number matches your seat is worth %{value} %{han}. Since your current seat is West, that would be the following flowers: %{flowers}", %{all_flowers: @all_flowers, value: !matching_flower_value, han: !matching_flower_han, flowers: @west_flowers})
-  seat_is("north") -> add_rule("$value $han", "Flowers", "Each flower tile whose number matches your seat is worth %{value} %{han}. Since your current seat is North, that would be the following flowers: %{flowers}", %{all_flowers: @all_flowers, value: !matching_flower_value, han: !matching_flower_han, flowers: @north_flowers})
+  seat_is("east") -> add_rule("$value $han", "Flowers", "%{value} %{han} for each flower tile whose number matches your seat. Since your current seat is East, that would be the following flowers: %{flowers}", %{all_flowers: @all_flowers, value: !matching_flower_value, han: !matching_flower_han, flowers: @east_flowers})
+  seat_is("south") -> add_rule("$value $han", "Flowers", "%{value} %{han} for each flower tile whose number matches your seat. Since your current seat is South, that would be the following flowers: %{flowers}", %{all_flowers: @all_flowers, value: !matching_flower_value, han: !matching_flower_han, flowers: @south_flowers})
+  seat_is("west") -> add_rule("$value $han", "Flowers", "%{value} %{han} for each flower tile whose number matches your seat. Since your current seat is West, that would be the following flowers: %{flowers}", %{all_flowers: @all_flowers, value: !matching_flower_value, han: !matching_flower_han, flowers: @west_flowers})
+  seat_is("north") -> add_rule("$value $han", "Flowers", "%{value} %{han} for each flower tile whose number matches your seat. Since your current seat is North, that would be the following flowers: %{flowers}", %{all_flowers: @all_flowers, value: !matching_flower_value, han: !matching_flower_han, flowers: @north_flowers})
   end
 end
 

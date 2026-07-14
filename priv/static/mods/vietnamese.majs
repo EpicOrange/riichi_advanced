@@ -1,3 +1,20 @@
+on after_initialization, prepend: true do
+  add_rule_tab("Rules")
+  add_rule_tab("Tiles")
+  add_rule_tab("1 Phán")
+  add_rule_tab("2 Phán")
+  add_rule_tab("3 Phán")
+  add_rule_tab("4 Phán")
+  add_rule_tab("5 Phán")
+  add_rule_tab("1 Mủn")
+  add_rule_tab("2 Mủn")
+  add_rule_tab("3 Mủn")
+  add_rule_tab("4 Mủn")
+  add_rule_tab("5 Mủn")
+  add_rule_tab("6 Mủn")
+  add_rule_tab("7 Mủn")
+  add_rule_tab("8 Mủn")
+end
 on after_initialization do
   add_rule("Tiles", "Base Tiles", "Vietnamese Mahjong uses the following 136 tiles:", -100)
   add_rule("Tiles", "Base Tiles", "- Four each of the 1 to 9 of Dots %{pinzu}", %{pinzu: ~t"123456789p"})
@@ -20,11 +37,11 @@ on after_initialization do
     """, -50)
 
   # yaku that are mostly unique to this variant
-  add_rule("1 Phán", "Mosquito Hand (0 Phán)", "Winning with no scoring hand patterns gives you Mosquito Hand (0 Phán).")
-  add_rule("1 Phán", "Single Wait", "You won with a hand that relied on one tile only to complete. Because of jokers, this tends to be rarer than in other Mahjong variants.")
+  add_rule("1 Phán", "Mosquito Hand", "Winning with no scoring hand patterns gives Mosquito Hand (0 Phán).")
+  add_rule("1 Phán", "Single Wait", "1 Phán if you win with a hand that relied on one tile only to complete. Because of jokers, this tends to be rarer than in other Mahjong variants.")
   add_rule("1 Phán", "Quad", "Each quad (Coong) of any type awards you 1 Phán each. If you have four Quads, you are instead awarded Four Quads (4 Mủn!).")
-  add_rule("3 Phán", "All Called", "You won on a discarded tile with four called groups, leaving a single tile in your hand waiting to complete a pair. +1 Phán if no jokers.")
-  add_rule("1 Mủn", "No Jokers Mosquito Hand", "You won with a hand containing no jokers but also somehow scores no other hand patterns.")
+  add_rule("3 Phán", "All Called", "3 Phán if you win on a discarded tile with four called groups, leaving a single tile in your hand waiting to complete a pair. +1 Phán if no jokers.")
+  add_rule("1 Mủn", "No Jokers Mosquito Hand", "1 Mủn if you win with a hand containing no jokers but also somehow scores no other hand patterns.")
   # add_rule("1 Mủn", "No Jokers Mosquito Hand", "%{example_hand}", %{example_hand: ~t"todo"})
 
   # add upgrades to existing yaku (from preapplied mods in constants.ex)
@@ -46,6 +63,13 @@ on after_initialization do
   add_rule("3 Phán", "All Sets", "You won with a hand containing 4 triplets and a pair.")
   update_rule("3 Phán", "All Sets", "%{example_hand}", %{example_hand: ~t"888m22p6j3s2j22z 1z1Z1z 3s"})
   update_rule("3 Phán", "All Sets", "+1 Phán if no jokers.")
+
+  # consolidate some rule tabs
+  rename_rule_tab("1 Phán", "Phán")
+  rename_rule_tab("2 Phán", "Phán")
+  rename_rule_tab("3 Phán", "Phán")
+  rename_rule_tab("9 Phán", "1 Mủn")
+  rename_rule_tab("13 Phán", "2 Mủn")
 end
 
 
