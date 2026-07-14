@@ -106,6 +106,7 @@ fn fetch_offset(
 // }
 
 fn add_attrs_mut(tile: &mut ElixirTile, mut attrs: &mut Vec<String>) -> () {
+  if attrs.is_empty() { return; }
   match tile {
     ElixirTile::AtomTile(atom) => {
       *tile = ElixirTile::AttrTile(*atom, attrs.clone());
