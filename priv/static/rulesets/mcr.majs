@@ -712,7 +712,7 @@ on after_initialization do
   add_rule("24+ Fan", "Pure Terminal Chows (64 Fan)", "%{example_hand}", %{example_hand: ~t"1235577899m 1M23M 8m"})
   # 88 Fan
   add_rule("24+ Fan", "Big Three Dragons (88 Fan)", "You have three dragon triplets.")
-  add_rule("24+ Fan", "Big Three Dragons (88 Fan)", "%{example_hand}", %{example_hand: ~t"11m00066z 7z7Z7z 6z"})
+  add_rule("24+ Fan", "Big Three Dragons (88 Fan)", "%{example_hand}", %{example_hand: ~t"11m345s00066z 7z7Z7z 6z"})
   add_rule("24+ Fan", "Thirteen Orphans (88 Fan)", "You have one of each terminal and honor tile, one of them forming a pair.")
   add_rule("24+ Fan", "Thirteen Orphans (88 Fan)", "%{example_hand}", %{example_hand: ~t"19m19p19s1234457z 6z"})
   add_rule("24+ Fan", "All Green (88 Fan)", "Your hand is composed of tiles from the following (ignore flowers):")
