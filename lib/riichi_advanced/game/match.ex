@@ -440,6 +440,7 @@ defmodule RiichiAdvanced.Match do
     hand_length = length(hand)
     tiles_length = length(tiles)
     cond do
+      tiles_length == 0 -> [hand]
       hand_length < tiles_length -> [] # otherwise we'd be trying to remove more tiles than we have altogether
       hand_length == tiles_length ->
         # we can simply sort and compare pairwise
@@ -1173,6 +1174,13 @@ defmodule RiichiAdvanced.Match do
   end
 
   def remove_group(hand, group, tile_behavior, exhaustive \\ false, base_tiles \\ nil) do
+    # IO.inspect({
+    #   hand, group,
+    #   tile_behavior.attrs |> Enum.to_list(),
+    #   tile_behavior.aliases |> TileBehavior.remove_alias_mapsets(), tile_behavior.ordering, tile_behavior.ordering_r,
+    #   exhaustive, Enum.empty?(tile_behavior.mappings),
+    #   base_tiles
+    # })
     _remove_group(
       hand, group,
       tile_behavior.attrs |> Enum.to_list(),

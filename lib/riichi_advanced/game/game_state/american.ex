@@ -318,11 +318,16 @@ defmodule RiichiAdvanced.GameState.American do
                     if new_hand != nil do
                       # take (hand -- new_hand) to be the removed part, which we store as new_group
                       # arrange_american_group/3 will sort 2024, NEWS etc according to the corresponding match_definition
+                      new_group = Match.try_remove_all_tiles(hand, new_hand, %{}, tile_behavior.attrs) |> Enum.at(0)
+                      # if new_group == nil or length(new_group) >= 6 do
+                      #   IO.inspect(hand, label: "after removing #{num} groups #{inspect(groups)} from hand")
+                      #   IO.inspect(new_hand, label: "got new_hand")
+                      #   IO.inspect(new_group, label: "therefore new_group is")
+                      # end
                       new_group = case {groups, num} do
-                        {[group], 1} -> arrange_american_group(if is_list(group) do group else [group] end, hand -- new_hand, tile_behavior)
-                        _            -> Utils.sort_tiles(hand -- new_hand)
+                        {[group], 1} -> arrange_american_group(if is_list(group) do group else [group] end, new_group, tile_behavior)
+                        _            -> Utils.sort_tiles(new_group)
                       end
-                      # |> IO.inspect(label: "new_group after removing #{num} groups #{inspect(groups)} from #{inspect(hand)} to get #{inspect(new_hand)}")
                       {new_hand, calls, [new_group | ret]}
                     else
                       # if am_match_definition == "NN EEE 2024a WWW SS" do
@@ -473,9 +478,11 @@ defmodule RiichiAdvanced.GameState.American do
     joker = for call <- calls, reduce: joker do
       [] -> []
       joker ->
-        stripped_call = Utils.replace_jokers(call, [:"1j"], tile_behavior) |> Utils.strip_attrs()
+        stripped_call = Utils.replace_jokers(call, [:"1j"], tile_behavior)
+        |> Utils.strip_attrs()
+        |> Enum.map(&Atom.to_string/1)
         # here we use remove_group instead of match_hand to ensure the length of the call is matched too
-        case Enum.find_index(joker, &Match.remove_group(&1, stripped_call, tile_behavior, false, [base_tile]) == [{[], []}]) do
+          case Enum.find_index(joker, &Match.remove_group(&1, stripped_call, tile_behavior, false, [base_tile]) == [{[], []}]) do
           nil -> [] # call not found, abort
           i   -> List.delete_at(joker, i)
         end

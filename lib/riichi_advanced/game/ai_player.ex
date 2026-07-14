@@ -325,7 +325,6 @@ defmodule RiichiAdvanced.AIPlayer do
               |> Enum.min(&<=/2, fn -> :infinity end)
               # take only the best closest hands
               _closest_american_hands = Enum.filter(closest_american_hands, fn {_am_match_definition, pairing_r, _arranged_hand} -> shanten == (13 - map_size(pairing_r)) end)
-              |> IO.inspect()
               # and then what? idk
               # |> Enum.flat_map(fn {am_match_definition, pairing_r, _arranged_hand} ->
               # end)
