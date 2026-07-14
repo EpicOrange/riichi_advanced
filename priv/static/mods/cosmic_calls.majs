@@ -221,18 +221,7 @@ define_button chanfuun,
     and status_missing("just_reached")
     and last_call_is("kafuun")
     and match(["hand", "calls", "last_called_tile"], ["win"]),
-  call_conditions:
-        can_discard_after_call
-    and match(["called_tile"], ~m"(1z 2z 3z 4z):1")
-    and (status_missing("riichi") or not_call_changes_waits("win")),
-  call: [[1, 2, 3]],
-  upgrades: "chon_honors",
-  precedence_over: ["ton", "chii", "chon", "chon_honors", "daiminfuun", "pon", "daiminkan"],
-  call_style: %{
-    kamicha: [["sideways", 0], "call_sideways", 1, 2],
-    toimen: [0, ["sideways", 1], "call_sideways", 2],
-    shimocha: [0, 1, ["sideways", 2], "call_sideways"]
-  }
+  precedence_over: ["ton", "chii", "chon", "chon_honors", "daiminfuun", "pon", "daiminkan"]
   do
     big_text("Ron")
     pause(1000)
