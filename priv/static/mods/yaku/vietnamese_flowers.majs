@@ -1,5 +1,5 @@
 # expand all_flowers to include 1-4k, 1-4q, 9j
-define_const all_flowers, ["1f", "2f", "3f", "4f", "1g", "2g", "3g", "4g", "1k", "2k", "3k", "4k", "1q", "2q", "3q", "4q", "9j"]
+apply append, "constants.all_flowers", ["1k", "2k", "3k", "4k", "1q", "2q", "3q", "4q", "9j"]
 
 # dealer can declare no_flower at 0-1 flowers
 define_set any_flower, ~s"1f|2f|3f|4f|1g|2g|3g|4g|1k|2k|3k|4k|1q|2q|3q|4q|9j"
@@ -7,11 +7,11 @@ define_match any_flower, ~m"nojoker, any_flower:1"
 apply set, "buttons.start_no_flower.show_when",
   status("initial_flowers")
   and our_turn
-  and (not_match(["hand", "draw"], ["any_flower"])
+  and (not_match(["hand", "draw"], ~m"nojoker, any_flower:1")
     or (seat_is("east") and not_match(["hand", "draw", "flowers"], ~m"nojoker, any_flower:2")))
 
 # but then they have to discard it immediately
-define_play_restriction not_flower, status("first_turn") and match(["hand", "draw"], "any_flower")
+define_play_restriction not_flower, status("first_turn") and match(["hand", "draw"], ~m"nojoker, any_flower:1")
 apply prepend, "buttons.flower.show_when", status_missing("first_turn")
 
 # flower yaku (seat flowers and seat season already defined by default_flowers mod)

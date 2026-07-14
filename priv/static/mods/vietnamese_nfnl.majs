@@ -78,16 +78,28 @@ define_play_effect manzu do if match(["hand", "draw"], ["has_non_nfnl_tile"]) do
 define_play_effect pinzu do if match(["hand", "draw"], ["has_non_nfnl_tile"]) do unset_status("nfnl_eligible") end end
 define_play_effect souzu do if match(["hand", "draw"], ["has_non_nfnl_tile"]) do unset_status("nfnl_eligible") end end
 # define_play_effect jihai do if match(["hand", "draw"], ~m"(any_flower any_joker):1") do unset_status("nfnl_eligible") end end
-define_play_effect flower do flowers_discarded += 1 end
-define_play_effect joker do jokers_discarded += 1 end
-define_play_effect "0j" do if jokers_discarded <= 2 do set_status("discarded_0j") end; blue_jokers_discarded += 1 end
-define_play_effect "6j" do if jokers_discarded <= 2 do set_status("discarded_6j") end; blue_jokers_discarded += 1 end
-define_play_effect "7j" do if jokers_discarded <= 2 do set_status("discarded_7j") end; blue_jokers_discarded += 1 end
-define_play_effect "8j" do if jokers_discarded <= 2 do set_status("discarded_8j") end; blue_jokers_discarded += 1 end
-define_play_effect "2j" do if jokers_discarded <= 2 do set_status("discarded_2j") end; blue_jokers_discarded += 1 end # is blue for nfnl purposes
-define_play_effect "3j" do if jokers_discarded <= 2 do set_status("discarded_3j") end; unset_status("throwing_blue_jokers_eligible") end
-define_play_effect "4j" do if jokers_discarded <= 2 do set_status("discarded_4j") end; unset_status("throwing_blue_jokers_eligible") end
-define_play_effect "5j" do if jokers_discarded <= 2 do set_status("discarded_5j") end; unset_status("throwing_blue_jokers_eligible") end
+define_play_effect "flower" do flowers_discarded += 1 end
+
+def joker_discard do
+  if jokers_discarded < 2 do
+    set_status("$status")
+  end
+  jokers_discarded += 1
+  if "$is_blue" == 1 do
+    blue_jokers_discarded += 1
+  else
+    unset_status("throwing_blue_jokers_eligible")
+  end
+end
+
+define_play_effect "0j" do joker_discard(status: "discarded_0j", is_blue: 1) end
+define_play_effect "6j" do joker_discard(status: "discarded_6j", is_blue: 1) end
+define_play_effect "7j" do joker_discard(status: "discarded_7j", is_blue: 1) end
+define_play_effect "8j" do joker_discard(status: "discarded_8j", is_blue: 1) end
+define_play_effect "9j" do joker_discard(status: "discarded_9j", is_blue: 0) end
+define_play_effect "2j" do joker_discard(status: "discarded_2j", is_blue: 1) end
+define_play_effect "3j" do joker_discard(status: "discarded_3j", is_blue: 0) end
+define_play_effect "5j" do joker_discard(status: "discarded_5j", is_blue: 0) end
 
 on before_scoring do
   flowers_jokers_discarded = flowers_discarded + jokers_discarded
@@ -121,12 +133,18 @@ define_yaku meta_nfnl, "True No Flowers, No Leaves", [1, "Mủn"],
   has_existing_yaku("No Flowers, No Leaves")
   and match(["hand", "calls", "winning_tile"], ["win"]),
   ["No Flowers, No Leaves"]
-# winning true NFNL while having discarded only 1-2 jokers gives you their value
-define_yaku true_nfnl, "Tổng (縂)", ["tong_value", "Phán"], has_existing_yaku("True No Flowers, No Leaves") and match(["discards"], ~m"nojoker, 0j:1")
-define_yaku true_nfnl, "Thùng (筒)", ["thung_value", "Phán"], has_existing_yaku("True No Flowers, No Leaves") and match(["discards"], ~m"nojoker, 6j:1")
-define_yaku true_nfnl, "Soọc (索)", ["sooc_value", "Phán"], has_existing_yaku("True No Flowers, No Leaves") and match(["discards"], ~m"nojoker, 7j:1")
-define_yaku true_nfnl, "Màn (萬)", ["man_value", "Phán"], has_existing_yaku("True No Flowers, No Leaves") and match(["discards"], ~m"nojoker, 8j:1")
-define_yaku true_nfnl, "Đại Hoa (花)", ["hoa_value", "Phán"], has_existing_yaku("True No Flowers, No Leaves") and match(["flowers"], ~m"nojoker, 9j:1")
-define_yaku true_nfnl, "Hỉ (喜)", ["hi_value", "Phán"], has_existing_yaku("True No Flowers, No Leaves") and match(["discards"], ~m"nojoker, 5j:1")
-define_yaku true_nfnl, "Nguyên (元)", ["nguyen_value", "Phán"], has_existing_yaku("True No Flowers, No Leaves") and match(["discards"], ~m"nojoker, 4j:1")
-define_yaku true_nfnl, "Hợp (合)", ["hop_value", "Phán"], has_existing_yaku("True No Flowers, No Leaves") and match(["discards"], ~m"nojoker, 2j:1")
+
+on before_win do
+  if status("nfnl_eligible") and match(["hand", "calls", "winning_tile"], ["win"]) do
+    # winning true NFNL while having discarded only 1-2 jokers gives you their value
+    calculate_joker_values
+    if status_missing("discarded_0j") do tong_value = 0 end
+    if status_missing("discarded_6j") do thung_value = 0 end
+    if status_missing("discarded_7j") do sooc_value = 0 end
+    if status_missing("discarded_8j") do man_value = 0 end
+    if status_missing("discarded_9j") do hoa_value = 0 end
+    if status_missing("discarded_5j") do hi_value = 0 end
+    if status_missing("discarded_4j") do nguyen_value = 0 end
+    if status_missing("discarded_2j") do hop_value = 0 end
+  end
+end

@@ -1,0 +1,79 @@
+
+on after_start do
+  set_tile_alias_all(["00j", "50j", "80j"], ["any"])
+  set_tile_alias_all(["02j", "52j", "82j"], ["1m","2m","3m","4m","5m","6m","7m","8m","9m","1p","2p","3p","4p","5p","6p","7p","8p","9p","1s","2s","3s","4s","5s","6s","7s","8s","9s"])
+  set_tile_alias_all(["04j", "54j", "84j"], ["0z","6z","7z"])
+  set_tile_alias_all(["05j", "55j", "85j"], ["1z","2z","3z","4z"])
+  set_tile_alias_all(["06j", "56j", "86j"], ["1p","2p","3p","4p","5p","6p","7p","8p","9p"])
+  set_tile_alias_all(["07j", "57j", "87j"], ["1s","2s","3s","4s","5s","6s","7s","8s","9s"])
+  set_tile_alias_all(["08j", "58j", "88j"], ["1m","2m","3m","4m","5m","6m","7m","8m","9m"])
+end
+
+if !sets >= 16 do apply append, "constants.all_flowers", ["09j"] end
+if !sets >= 24 do apply append, "constants.all_flowers", ["59j"] end
+if !sets >= 32 do apply append, "constants.all_flowers", ["89j"] end
+if !sets >= 16 do apply append, "constants.all_jokers", ["00j", "02j", "04j", "05j", "06j", "07j", "08j"] end
+if !sets >= 24 do apply append, "constants.all_jokers", ["50j", "52j", "54j", "55j", "56j", "57j", "58j"] end
+if !sets >= 32 do apply append, "constants.all_jokers", ["80j", "82j", "84j", "85j", "86j", "87j", "88j"] end
+define_set any_flower, ~s"1f|2f|3f|4f|1g|2g|3g|4g|1k|2k|3k|4k|1q|2q|3q|4q|0j|09j|59j|89j"
+define_set any_joker, ~s"0j|2j|4j|5j|6j|7j|8j|00j|02j|04j|05j|06j|07j|08j|50j|52j|54j|55j|56j|57j|58j|80j|82j|84j|85j|86j|87j|88j"
+define_match any_joker, ~m"nojoker, any_joker:1"
+
+
+define_play_effect "00j" do joker_discard(status: "discarded_0j", is_blue: 1) end
+define_play_effect "06j" do joker_discard(status: "discarded_6j", is_blue: 1) end
+define_play_effect "07j" do joker_discard(status: "discarded_7j", is_blue: 1) end
+define_play_effect "08j" do joker_discard(status: "discarded_8j", is_blue: 1) end
+define_play_effect "09j" do joker_discard(status: "discarded_9j", is_blue: 0) end
+define_play_effect "02j" do joker_discard(status: "discarded_2j", is_blue: 1) end
+define_play_effect "03j" do joker_discard(status: "discarded_3j", is_blue: 0) end
+define_play_effect "05j" do joker_discard(status: "discarded_5j", is_blue: 0) end
+define_play_effect "50j" do joker_discard(status: "discarded_0j", is_blue: 1) end
+define_play_effect "56j" do joker_discard(status: "discarded_6j", is_blue: 1) end
+define_play_effect "57j" do joker_discard(status: "discarded_7j", is_blue: 1) end
+define_play_effect "58j" do joker_discard(status: "discarded_8j", is_blue: 1) end
+define_play_effect "59j" do joker_discard(status: "discarded_9j", is_blue: 0) end
+define_play_effect "52j" do joker_discard(status: "discarded_2j", is_blue: 1) end
+define_play_effect "53j" do joker_discard(status: "discarded_3j", is_blue: 0) end
+define_play_effect "55j" do joker_discard(status: "discarded_5j", is_blue: 0) end
+define_play_effect "80j" do joker_discard(status: "discarded_0j", is_blue: 1) end
+define_play_effect "86j" do joker_discard(status: "discarded_6j", is_blue: 1) end
+define_play_effect "87j" do joker_discard(status: "discarded_7j", is_blue: 1) end
+define_play_effect "88j" do joker_discard(status: "discarded_8j", is_blue: 1) end
+define_play_effect "89j" do joker_discard(status: "discarded_9j", is_blue: 0) end
+define_play_effect "82j" do joker_discard(status: "discarded_2j", is_blue: 1) end
+define_play_effect "83j" do joker_discard(status: "discarded_3j", is_blue: 0) end
+define_play_effect "85j" do joker_discard(status: "discarded_5j", is_blue: 0) end
+
+# circle set
+define_yaku yaku, "Blue Joker Set", [1, "Mủn"], match(["hand", "calls", "flowers", "jokers", "winning_tile"], ~m"nojoker, 00j:1, 06j:1, 07j:1, 08j:1")
+define_yaku yaku, "Blue Joker Set", [1, "Mủn"], match(["flowers", "jokers"], ~m"nojoker, 00j:1, 06j:1, 07j:1, 08j:1")
+define_yaku yaku, "Red Joker Set", [1, "Mủn"], match(["hand", "calls", "flowers", "jokers", "winning_tile"], ~m"nojoker, 02j:1, 03j:1, 04j:1, 05j:1")
+define_yaku yaku, "Red Joker Set", [1, "Mủn"], match(["flowers", "jokers"], ~m"nojoker, 02j:1, 03j:1, 04j:1, 05j:1")
+# diamond set
+define_yaku yaku, "Blue Joker Set", [1, "Mủn"], match(["hand", "calls", "flowers", "jokers", "winning_tile"], ~m"nojoker, 50j:1, 56j:1, 57j:1, 58j:1")
+define_yaku yaku, "Blue Joker Set", [1, "Mủn"], match(["flowers", "jokers"], ~m"nojoker, 50j:1, 56j:1, 57j:1, 58j:1")
+define_yaku yaku, "Red Joker Set", [1, "Mủn"], match(["hand", "calls", "flowers", "jokers", "winning_tile"], ~m"nojoker, 52j:1, 53j:1, 54j:1, 55j:1")
+define_yaku yaku, "Red Joker Set", [1, "Mủn"], match(["flowers", "jokers"], ~m"nojoker, 52j:1, 53j:1, 54j:1, 55j:1")
+# hexagon set
+define_yaku yaku, "Blue Joker Set", [1, "Mủn"], match(["hand", "calls", "flowers", "jokers", "winning_tile"], ~m"nojoker, 80j:1, 86j:1, 87j:1, 88j:1")
+define_yaku yaku, "Blue Joker Set", [1, "Mủn"], match(["flowers", "jokers"], ~m"nojoker, 80j:1, 86j:1, 87j:1, 88j:1")
+define_yaku yaku, "Red Joker Set", [1, "Mủn"], match(["hand", "calls", "flowers", "jokers", "winning_tile"], ~m"nojoker, 82j:1, 83j:1, 84j:1, 85j:1")
+define_yaku yaku, "Red Joker Set", [1, "Mủn"], match(["flowers", "jokers"], ~m"nojoker, 82j:1, 83j:1, 84j:1, 85j:1")
+# combos
+define_yaku yaku, "Two Any Jokers", [1, "Mủn"], match(["hand", "calls", "flowers", "jokers", "winning_tile"], ~m"nojoker, (0j 00j 50j 80j):2")
+define_yaku yaku, "Two Any Jokers", [3, "Phán"], match(["flowers", "jokers"], ~m"nojoker, (0j 00j 50j 80j):2")
+define_yaku yaku, "Two Any Jokers", [1, "Mủn"], match(["hand", "calls", "flowers", "jokers", "winning_tile"], ~m"nojoker, (0j 00j 50j 80j):4")
+define_yaku yaku, "Two Any Jokers", [3, "Phán"], match(["flowers", "jokers"], ~m"nojoker, (0j 00j 50j 80j):4")
+define_yaku yaku, "Two Number Jokers", [1, "Mủn"], match(["hand", "calls", "flowers", "jokers", "winning_tile"], ~m"nojoker, (2j 02j 52j 82j):2")
+define_yaku yaku, "Two Number Jokers", [3, "Phán"], match(["flowers", "jokers"], ~m"nojoker, (2j 02j 52j 82j):2")
+define_yaku yaku, "Two Number Jokers", [1, "Mủn"], match(["hand", "calls", "flowers", "jokers", "winning_tile"], ~m"nojoker, (2j 02j 52j 82j):4")
+define_yaku yaku, "Two Number Jokers", [3, "Phán"], match(["flowers", "jokers"], ~m"nojoker, (2j 02j 52j 82j):4")
+define_yaku yaku, "Any and Number Jokers", [9, "Phán"], match(["start_jokers"], ~m"nojoker, (0j 00j 50j 80j):1, (2j 02j 52j 82j):1")
+define_set matching_jokers, ~s"0j 2j | 00j 02j | 50j 52j | 80j 82j"
+define_yaku meta_yaku, "Matching Any and Number Jokers", [2, "Mủn"],
+  has_existing_yaku("Any and Number Jokers") and match(["start_jokers"], ~m"nojoker, matching_jokers:1"),
+  ["Any and Number Jokers"]
+
+
+

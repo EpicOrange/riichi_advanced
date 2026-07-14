@@ -28,6 +28,9 @@ set custom_style, %{
   }
 }
 
+apply set, "buttons.daiminkan.call_conditions", not_call_contains([+@all_jokers], 1)
+apply set, "buttons.kakan.call_conditions", not_call_contains([+@all_jokers], 1)
+apply set, "buttons.ankan.call_conditions", not_call_contains([+@all_jokers], 1)
 apply set, "buttons.ankan.call_style", %{self: [0, ["1x", 1], 2, 3]}
 
 define_set pair, ~s"0 0"
@@ -67,9 +70,6 @@ define_match shousuushii,
   | ton_pair:1, nan:1, shaa:1, pei:1
   """
 define_match daisuushii, ~m"ton:1, nan:1, shaa:1, pei:1"
-
-define_match any_flower, ~m"nojoker, any_flower:1"
-define_match any_joker, ~m"nojoker, any_joker:1"
 
 # basic yaku
 define_yaku meta_yaku, "Mosquito Hand", [0, "Phán"], has_no_yaku
@@ -145,38 +145,14 @@ on after_initialization do
   add_rule("Rules", "Mosquito Hand", "Winning with no scoring hand patterns gives you Mosquito Hand (0 Phán), which is always worth 1 point.")
 end
 
+# mods
+# define_mod_category "Rules"
+define_mod viet_more_jokers, name: "More Jokers (beta)", desc: "Add more sets of jokers to the wall on top of the existing 8. This is in beta since right now it makes the game run really slowly."
+config_mod viet_more_jokers, name: "sets", values: [16, 24, 32]
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-# the below are not a thing it seems
-# 
-# define_yaku yaku, "All Sequences With Honors", [3, "Phán"],
-#   match(["hand", "calls", "winning_tile"], ~m"exhaustive, shuntsu:4, pair:1")
-#   and match(["hand", "calls", "winning_tile"], ~m"(1z 2z 3z 4z 0z 6z 7z):1"),
-#   ["All Sequences"]
-# define_yaku yaku, "All Triplets With Honors", [1, "Mủn"],
-#   match(["hand", "calls", "winning_tile"], ~m"koutsu:4, pair:1")
-#   and not_match(["calls"], ~m"koutsu:4")
-#   and match(["hand", "calls", "winning_tile"], ~m"(1z 2z 3z 4z 0z 6z 7z):1")
-# define_yaku yaku, "All Called Triplets", [1, "Mủn"], match(["calls"], ~m"koutsu:4")
-# define_yaku yaku, "All Called Triplets With Honors", [2, "Mủn"], match(["calls"], ~m"koutsu:4") and match(["hand", "calls", "winning_tile"], ~m"(1z 2z 3z 4z 0z 6z 7z):1"), ["All Called Triplets"]
-# define_set terminal1, ~s"1m 1m 1m | 1p 1p 1p | 1s 1s 1s"
-# define_set terminal9, ~s"9m 9m 9m | 9p 9p 9p | 9s 9s 9s"
-# define_yaku yaku, "All Triplets with 1 and 9", [1, "Mủn"], match(["hand", "calls", "winning_tile"], ~m"terminal1:1, terminal9:1, koutsu:2")
-# define_yaku yaku, "No Flowers or Honors", [1, "Mủn"], not_match(["hand", "calls", "winning_tile"], ~m"(any_flower any_honor):1")
-# define_yaku yaku, "No Flowers, Honors, or Triplets", [2, "Mủn"],
-#   match(["hand", "calls", "winning_tile"], ~m"exhaustive, shuntsu:4, pair:1")
-#   and not_match(["hand", "calls", "winning_tile"], ~m"any_flower any_honor:1"),
-#   ["No Flowers or Honors"]
-# define_yaku nfnl, "From NFNL Player", [2, "Mủn"], won_by_discard and status("from_nfnl", as: "last_discarder")
+# TODO
+# - rules text for everything
+# - bouncing jokers
+# - pao rule
+# - vietnamese yaku names
+# - exhaustive draw mods

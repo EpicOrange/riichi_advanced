@@ -104,7 +104,6 @@ defmodule RiichiAdvancedWeb.IndexLive do
   end
 
   def handle_event("redirect", %{"ruleset" => ruleset, "nickname" => nickname} = params, socket) do
-    params
     if Map.has_key?(params, "play") do
       if socket.assigns.show_room_code_buttons do
         socket = if length(socket.assigns.room_code) == 3 do

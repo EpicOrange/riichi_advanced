@@ -8,7 +8,6 @@ on after_start do
   set_tile_alias_all(["7j"], ["1s","2s","3s","4s","5s","6s","7s","8s","9s"])
   set_tile_alias_all(["8j"], ["1m","2m","3m","4m","5m","6m","7m","8m","9m"])
   set_tile_alias_all([%{tile: "any", attrs: ["dora"]}], ["any"])
-
 end
 
 # # funny animation. might remove it if it's annoying
@@ -38,7 +37,7 @@ end
 # jokers
 # 9j (flower joker) is already added by vietnamese_flowers mod
 define_const all_jokers, ["0j", "2j", "4j", "5j", "6j", "7j", "8j"]
-apply append, "wall", @all_jokers
+apply append, "wall", +@all_jokers
 define_set any_joker, ~s"0j|2j|4j|5j|6j|7j|8j"
 define_match any_joker, ~m"nojoker, any_joker:1"
 
@@ -49,7 +48,7 @@ define_button start_joker,
     and match(["hand", "draw"], "any_joker")
   do
     big_text("Joker")
-    flower("0j", "2j", "4j", "5j", "6j", "7j", "8j")
+    flower(+@all_jokers)
     set_status("has_joker")
     draw(1, "opposite_end")
     recalculate_buttons
@@ -64,7 +63,7 @@ define_button joker,
     and match(["hand", "draw"], "any_joker")
   do
     big_text("Joker")
-    flower("0j", "2j", "4j", "5j", "6j", "7j", "8j")
+    flower(+@all_jokers)
     set_status("flower")
     unset_status("kan")
     if no_tiles_remaining do
@@ -96,7 +95,7 @@ on after_call do
   end
 end
 
-on before_win do
+def calculate_joker_values do
   tong_value = 2
   thung_value = 1
   sooc_value = 1
@@ -113,20 +112,31 @@ on before_win do
   if seat_is("west") do nguyen_value = 2 end
   if seat_is("north") or match(["start_jokers"], ~m"2j:1") do hop_value = 2 end
 end
+on before_win do
+  calculate_joker_values
+  multiply_counter("tong_value", "count_matches", ["jokers"], ~m"nojoker, (0j 00j 50j 80j):1")
+  multiply_counter("thung_value", "count_matches", ["jokers"], ~m"nojoker, (6j 06j 56j 86j):1")
+  multiply_counter("sooc_value", "count_matches", ["jokers"], ~m"nojoker, (7j 07j 57j 87j):1")
+  multiply_counter("man_value", "count_matches", ["jokers"], ~m"nojoker, (8j 08j 58j 88j):1")
+  multiply_counter("hoa_value", "count_matches", ["flowers"], ~m"nojoker, (9j 09j 59j 89j):1")
+  multiply_counter("hi_value", "count_matches", ["jokers"], ~m"nojoker, (5j 05j 55j 85j):1")
+  multiply_counter("nguyen_value", "count_matches", ["jokers"], ~m"nojoker, (4j 04j 54j 84j):1")
+  multiply_counter("hop_value", "count_matches", ["jokers"], ~m"nojoker, (2j 02j 52j 82j):1")
+end
 
 # TODO need to be consistent abt what's in English and what's in Vietnamese
 # set-aside blue jokers
-define_yaku yaku, "Tổng (縂)", ["tong_value", "Phán"], match(["jokers"], ~m"0j:1")
-define_yaku yaku, "Thùng (筒)", ["thung_value", "Phán"], match(["jokers"], ~m"6j:1")
-define_yaku yaku, "Soọc (索)", ["sooc_value", "Phán"], match(["jokers"], ~m"7j:1")
-define_yaku yaku, "Màn (萬)", ["man_value", "Phán"], match(["jokers"], ~m"8j:1")
+define_yaku yaku, "Tổng (縂)", ["tong_value", "Phán"], tong_value > 0
+define_yaku yaku, "Thùng (筒)", ["thung_value", "Phán"], thung_value > 0
+define_yaku yaku, "Soọc (索)", ["sooc_value", "Phán"], sooc_value > 0
+define_yaku yaku, "Màn (萬)", ["man_value", "Phán"], man_value > 0
 # set-aside red jokers
-define_yaku yaku, "Đại Hoa (花)", ["hoa_value", "Phán"], match(["flowers"], ~m"9j:1")
-define_yaku yaku, "Hỉ (喜)", ["hi_value", "Phán"], match(["jokers"], ~m"5j:1")
-define_yaku yaku, "Nguyên (元)", ["nguyen_value", "Phán"], match(["jokers"], ~m"4j:1")
-define_yaku yaku, "Hợp (合)", ["hop_value", "Phán"], match(["jokers"], ~m"2j:1")
+define_yaku yaku, "Đại Hoa (花)", ["hoa_value", "Phán"], hoa_value > 0
+define_yaku yaku, "Hỉ (喜)", ["hi_value", "Phán"], hi_value > 0
+define_yaku yaku, "Nguyên (元)", ["nguyen_value", "Phán"], nguyen_value > 0
+define_yaku yaku, "Hợp (合)", ["hop_value", "Phán"], hop_value > 0
 
-# joker set usage
+# joker set usage (add viet_more_jokers mod for more combos)
 define_yaku yaku, "Blue Joker Set", [1, "Mủn"], match(["hand", "calls", "flowers", "jokers", "winning_tile"], ~m"nojoker, 0j:1, 6j:1, 7j:1, 8j:1")
 define_yaku yaku, "Blue Joker Set", [1, "Mủn"], match(["flowers", "jokers"], ~m"nojoker, 0j:1, 6j:1, 7j:1, 8j:1")
 define_yaku yaku, "Red Joker Set", [1, "Mủn"], match(["hand", "calls", "flowers", "jokers", "winning_tile"], ~m"nojoker, 2j:1, 3j:1, 4j:1, 5j:1")
