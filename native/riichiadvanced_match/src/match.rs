@@ -378,9 +378,8 @@ fn reify_groups<'a>(
   let mut ret: HashMap<Rc<Vec<ElixirTile>>, Rc<BTreeMap<usize, Rc<Vec<RemovableGroup>>>>> = HashMap::new();
   if debug {
     // println!("\nHand tiles: {0:?}", match_info.tiles_in_hand.iter().collect::<Vec<_>>());
-    // println!("Matchable tiles: {0:?}", match_info.matchable_tiles.iter().collect::<Vec<_>>());
     // println!("Base tiles: {0:?}", base_tiles.iter().collect::<Vec<_>>());
-    // println!("All tiles: {0:?}", match_info.all_tiles.iter().collect::<Vec<_>>());
+    // println!("Relevant tiles: {0:?}", match_info.relevant_tiles.iter().collect::<Vec<_>>());
   }
   let mut separate_suits = false;
   for (_i, group) in groups.iter().enumerate() {
@@ -444,7 +443,7 @@ fn reify_groups<'a>(
       let reified = __generate_groups(
         group,
         &mut base_tiles.iter(),
-        &match_info.all_tiles.iter().collect(), &match_info.all_attrs,
+        &match_info.all_attrs,
         &match_info.joker_tiles,
         &match_info.ordering, &match_info.ordering_r,
         &mut nojoker);
@@ -651,7 +650,7 @@ fn _remove_match_definition<'a>(
 pub fn _match_hand_v3(
     hand_calls: ElixirHandCalls,
     match_definitions: MatchDefinitions,
-    all_tiles: Vec<ElixirTile>, all_attrs: Vec<String>,
+    all_attrs: Vec<String>,
     elixir_aliases: ElixirAliases,
     ordering: HashMap<Atom, Atom>, ordering_r: HashMap<Atom, Atom>,
 ) -> bool {
@@ -659,7 +658,6 @@ pub fn _match_hand_v3(
   let ret = __match_hand_v3(
     &hand_calls,
     match_definitions,
-    &mut all_tiles.into_iter().collect(),
     &all_attrs,
     &elixir_aliases,
     &ordering,
@@ -676,13 +674,12 @@ pub fn _match_hand_v3(
 pub fn __match_hand_v3<'a>(
     hand_calls: &'a ElixirHandCalls,
     match_definitions: MatchDefinitions,
-    all_tiles: &'a mut HashSet<ElixirTile>, all_attrs: &'a Vec<String>,
+    all_attrs: &'a Vec<String>,
     elixir_aliases: &'a ElixirAliases,
     ordering: &'a HashMap<Atom, Atom>, ordering_r: &'a HashMap<Atom, Atom>,
 ) -> bool {
   let match_info = prepare_tiles(
     hand_calls,
-    all_tiles,
     all_attrs,
     elixir_aliases,
     ordering,
@@ -709,7 +706,7 @@ pub fn __match_hand_v3<'a>(
 #[rustler::nif(schedule = "DirtyCpu")]
 pub fn _remove_group(
     hand: ElixirHand, group: MatchGroup, 
-    all_tiles: Vec<ElixirTile>, all_attrs: Vec<String>,
+    all_attrs: Vec<String>,
     elixir_aliases: ElixirAliases,
     ordering: HashMap<Atom, Atom>, ordering_r: HashMap<Atom, Atom>,
     exhaustive: bool, nojoker: bool,
@@ -717,7 +714,6 @@ pub fn _remove_group(
 ) -> Vec<ElixirHand> {
   __remove_group(
     hand, group,
-    &mut all_tiles.into_iter().collect(),
     &all_attrs,
     &elixir_aliases,
     &ordering,
@@ -730,7 +726,7 @@ pub fn _remove_group(
 
 pub fn __remove_group<'a>(
     hand: ElixirHand, group: MatchGroup, 
-    all_tiles: &'a mut HashSet<ElixirTile>, all_attrs: &'a Vec<String>,
+    all_attrs: &'a Vec<String>,
     elixir_aliases: &'a ElixirAliases,
     ordering: &'a HashMap<Atom, Atom>, ordering_r: &'a HashMap<Atom, Atom>,
     exhaustive: bool, mut nojoker: bool,
@@ -747,7 +743,6 @@ pub fn __remove_group<'a>(
   let hand_calls = (hand, vec!());
   let match_info = prepare_tiles(
     &hand_calls,
-    all_tiles,
     all_attrs,
     elixir_aliases,
     ordering,
@@ -764,7 +759,7 @@ pub fn __remove_group<'a>(
   let reified_groups: Vec<RemovableGroup> = __generate_groups(
     &group,
     &mut base_tiles.iter(),
-    &match_info.all_tiles.iter().collect(), &match_info.all_attrs,
+    &match_info.all_attrs,
     &match_info.joker_tiles,
     &match_info.ordering, &match_info.ordering_r,
     &mut nojoker,
@@ -772,7 +767,7 @@ pub fn __remove_group<'a>(
 
   // println!("Hand tiles: {0:?}", match_info.tiles_in_hand.iter().collect::<Vec<_>>());
   // println!("Base tiles: {0:?}", base_tiles.iter().collect::<Vec<_>>());
-  // println!("All tiles: {0:?}", match_info.all_tiles.iter().collect::<Vec<_>>());
+  // println!("Relevant tiles: {0:?}", match_info.relevant_tiles.iter().collect::<Vec<_>>());
   // for group in &reified_groups {
   //   println!("Reified group:");
   //   println!("  {0:?}", &group);

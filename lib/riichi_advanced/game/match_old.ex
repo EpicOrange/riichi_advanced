@@ -282,7 +282,7 @@ defmodule RiichiAdvanced.MatchOld do
       tiles_i = Enum.with_index(tiles)
       {pairing, _pairing_r} = group
       |> Enum.map(&offset_tile(base_tile, &1, tile_behavior))
-      |> Enum.reject(&RiichiAdvanced.Match.is_bad_group(&1, tile_behavior))
+      |> Enum.reject(&RiichiAdvanced.Match.is_bad_group(&1))
       |> Enum.with_index()
       |> Map.new(fn {tile, i} -> {i, for {tile2, j} <- tiles_i, Utils.same_tile(tile2, tile, tile_behavior) do j end} end)
       |> Utils.maximum_bipartite_matching()

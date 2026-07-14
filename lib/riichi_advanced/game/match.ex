@@ -634,12 +634,12 @@ defmodule RiichiAdvanced.Match do
   def _apply_offsets(base_tile, [%{"offset" => o} | offsets], ordering, ordering_r, n, acc), do: _apply_offsets(base_tile, offsets, ordering, ordering_r, n, [Utils.to_tile(o) | acc])
   def _apply_offsets(base_tile, [o | offsets], ordering, ordering_r, n, acc), do: _apply_offsets(base_tile, offsets, ordering, ordering_r, n, [Utils.to_tile(o) | acc])
 
-  def is_bad_group(nil, _all_tiles), do: true
-  def is_bad_group({nil, _}, _all_tiles), do: true
-  def is_bad_group(s, _all_tiles) when is_binary(s), do: false # it's a call name
-  def is_bad_group(l, all_tiles) when is_list(l), do: Enum.any?(l, &is_bad_group(&1, all_tiles))
-  def is_bad_group({t, _attrs}, all_tiles), do: t != :any and t not in all_tiles
-  def is_bad_group(_t, _all_tiles), do: false # t != :any and t not in all_tiles
+  def is_bad_group(nil), do: true
+  def is_bad_group({nil, _}), do: true
+  def is_bad_group(s) when is_binary(s), do: false # it's a call name
+  def is_bad_group(l) when is_list(l), do: Enum.any?(l, &is_bad_group(&1))
+  def is_bad_group({t, _attrs}), do: t != :any
+  def is_bad_group(_t), do: false # t != :any and t not in all_tiles
 
   # reifies a group spec into multiple possible groups, including joker usage
 
@@ -677,7 +677,6 @@ defmodule RiichiAdvanced.Match do
     _generate_groups(
       group,
       tile_behavior.base_tiles |> Enum.to_list(),
-      tile_behavior.all_tiles |> Enum.to_list(),
       tile_behavior.attrs |> Enum.to_list(),
       tile_behavior.encoded_joker_tiles |> Enum.to_list(),
       tile_behavior.ordering,
@@ -685,10 +684,9 @@ defmodule RiichiAdvanced.Match do
       nojoker
     )
   end
-  def _generate_groups(group, base_tiles, all_tiles, all_attrs, encoded_joker_tiles, ordering, ordering_r, nojoker) do
+  def _generate_groups(group, base_tiles, all_attrs, encoded_joker_tiles, ordering, ordering_r, nojoker) do
     __generate_groups(group,
       base_tiles |> MapSet.new(),
-      all_tiles |> MapSet.new(),
       all_attrs |> MapSet.new(),
       encoded_joker_tiles |> MapSet.new(),
       ordering,
@@ -696,7 +694,7 @@ defmodule RiichiAdvanced.Match do
       nojoker
     )
   end
-  def __generate_groups(group, base_tiles, all_tiles, all_attrs, encoded_joker_tiles, ordering, ordering_r, nojoker) do
+  def __generate_groups(group, base_tiles, all_attrs, encoded_joker_tiles, ordering, ordering_r, nojoker) do
     case group do
       [[_ | _] | _] -> Enum.map(base_tiles, &Enum.map(group, fn subgroup -> apply_offsets(&1, subgroup, ordering, ordering_r) end))
       [_ | _] -> Enum.map(base_tiles, &apply_offsets(&1, group, ordering, ordering_r))
@@ -711,7 +709,7 @@ defmodule RiichiAdvanced.Match do
         end
     end
     # |> IO.inspect(label: inspect(group))
-    |> Enum.reject(&is_bad_group(&1, all_tiles))
+    |> Enum.reject(&is_bad_group(&1))
     # |> Enum.reject(fn x -> 
     #   ret = is_bad_group(x, tile_behavior)
     #   if ret do IO.inspect(x, label: "bad group #{inspect(group)}") end
@@ -989,7 +987,7 @@ defmodule RiichiAdvanced.Match do
     offset_tiles =
       for base_tile <- base_tiles,
           group = apply_offsets(base_tile, gather_offsets(match_definitions), tile_behavior.ordering, tile_behavior.ordering_r),
-          not is_bad_group(group, all_tiles),
+          not is_bad_group(group),
           offset_tile <- group,
           not is_any_tile(offset_tile),
           into: MapSet.new() do offset_tile end
@@ -1122,7 +1120,7 @@ defmodule RiichiAdvanced.Match do
     use_rust = hash <= @u256_max
     if use_rust do
       ret = _match_hand_v3({hand, calls}, match_definitions,
-        tile_behavior.all_tiles |> Enum.to_list(), tile_behavior.attrs |> Enum.to_list() |> Enum.sort(),
+        tile_behavior.attrs |> Enum.to_list() |> Enum.sort(),
         tile_behavior.aliases |> TileBehavior.remove_alias_mapsets(),
         tile_behavior.ordering, tile_behavior.ordering_r
       )
@@ -1139,9 +1137,8 @@ defmodule RiichiAdvanced.Match do
       ret
     end
   end
-  defp _match_hand_v3({hand, calls}, match_definitions, all_tiles, all_attrs, elixir_aliases, ordering, ordering_r) do
+  defp _match_hand_v3({hand, calls}, match_definitions, all_attrs, elixir_aliases, ordering, ordering_r) do
     __match_hand_v3(hand, calls, match_definitions, %TileBehavior{
-      all_tiles: all_tiles |> MapSet.new(),
       attrs: all_attrs |> MapSet.new(),
       aliases: elixir_aliases |> TileBehavior.restore_alias_mapsets(),
       ordering: ordering,
@@ -1178,7 +1175,7 @@ defmodule RiichiAdvanced.Match do
   def remove_group(hand, group, tile_behavior, exhaustive \\ false, base_tiles \\ nil) do
     _remove_group(
       hand, group,
-      tile_behavior.all_tiles |> Enum.to_list(), tile_behavior.attrs |> Enum.to_list(),
+      tile_behavior.attrs |> Enum.to_list(),
       tile_behavior.aliases |> TileBehavior.remove_alias_mapsets(), tile_behavior.ordering, tile_behavior.ordering_r,
       exhaustive, Enum.empty?(tile_behavior.mappings),
       base_tiles
@@ -1186,13 +1183,12 @@ defmodule RiichiAdvanced.Match do
   end
   def _remove_group(
     hand, group,
-    all_tiles, all_attrs,
+    all_attrs,
     elixir_aliases, ordering, ordering_r,
     exhaustive, nojoker,
     base_tiles
   ) do
     __remove_group(hand, group, %TileBehavior{
-      all_tiles: all_tiles |> MapSet.new(),
       attrs: all_attrs |> MapSet.new(),
       aliases: elixir_aliases |> TileBehavior.restore_alias_mapsets(),
       ordering: ordering,
@@ -1238,7 +1234,7 @@ defmodule RiichiAdvanced.Match do
     use_rust = hash <= @u256_max
     if use_rust do
       ret = _get_waits_v3({hand, calls}, match_definitions,
-        tile_behavior.all_tiles |> Enum.to_list(), tile_behavior.attrs |> Enum.to_list() |> Enum.sort(),
+        tile_behavior.attrs |> Enum.to_list() |> Enum.sort(),
         tile_behavior.aliases |> TileBehavior.remove_alias_mapsets(),
         tile_behavior.ordering, tile_behavior.ordering_r,
         Map.keys(tile_behavior.tile_freqs)
@@ -1255,9 +1251,8 @@ defmodule RiichiAdvanced.Match do
       ret
     end
   end
-  defp _get_waits_v3({hand, calls}, match_definitions, all_tiles, all_attrs, elixir_aliases, ordering, ordering_r, game_tiles) do
+  defp _get_waits_v3({hand, calls}, match_definitions, all_attrs, elixir_aliases, ordering, ordering_r, game_tiles) do
     __get_waits_v3(hand, calls, match_definitions, %TileBehavior{
-      all_tiles: all_tiles |> MapSet.new(),
       attrs: all_attrs |> MapSet.new(),
       aliases: elixir_aliases |> TileBehavior.restore_alias_mapsets(),
       ordering: ordering,
@@ -1319,7 +1314,7 @@ defmodule RiichiAdvanced.Match do
     use_rust = hash <= @u256_max
     if use_rust do
       ret = _get_unneeded_tiles_v2({hand, calls}, match_definitions,
-        tile_behavior.all_tiles |> Enum.to_list(), tile_behavior.attrs |> Enum.to_list() |> Enum.sort(),
+        tile_behavior.attrs |> Enum.to_list() |> Enum.sort(),
         tile_behavior.aliases |> TileBehavior.remove_alias_mapsets(),
         tile_behavior.ordering, tile_behavior.ordering_r
       )
@@ -1335,9 +1330,8 @@ defmodule RiichiAdvanced.Match do
       ret
     end
   end
-  defp _get_unneeded_tiles_v2({hand, calls}, match_definitions, all_tiles, all_attrs, elixir_aliases, ordering, ordering_r) do
+  defp _get_unneeded_tiles_v2({hand, calls}, match_definitions, all_attrs, elixir_aliases, ordering, ordering_r) do
     get_unneeded_tiles(hand, calls, match_definitions, %TileBehavior{
-      all_tiles: all_tiles |> MapSet.new(),
       attrs: all_attrs |> MapSet.new(),
       aliases: elixir_aliases |> TileBehavior.restore_alias_mapsets(),
       ordering: ordering,

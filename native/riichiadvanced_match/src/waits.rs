@@ -15,7 +15,7 @@ use crate::utils::{add_joker_to_aliases, remove_joker_from_aliases};
 fn _get_waits_v3(
     hand_calls: ElixirHandCalls,
     match_definitions: MatchDefinitions,
-    all_tiles: Vec<ElixirTile>, all_attrs: Vec<String>,
+    all_attrs: Vec<String>,
     elixir_aliases: ElixirAliases,
     ordering: HashMap<Atom, Atom>, ordering_r: HashMap<Atom, Atom>,
     game_tiles: Vec<ElixirTile>,
@@ -31,7 +31,6 @@ fn _get_waits_v3(
   let ret = __get_waits_v3(
     hand_calls,
     &match_definitions,
-    &mut all_tiles.into_iter().collect(),
     &all_attrs,
     &mut elixir_aliases.clone(),
     &ordering,
@@ -50,7 +49,7 @@ fn _get_waits_v3(
 pub fn __get_waits_v3(
     mut hand_calls: ElixirHandCalls,
     match_definitions: &MatchDefinitions,
-    mut all_tiles: &mut HashSet<ElixirTile>, all_attrs: &Vec<String>,
+    all_attrs: &Vec<String>,
     mut elixir_aliases: &mut ElixirAliases,
     ordering: &HashMap<Atom, Atom>, ordering_r: &HashMap<Atom, Atom>,
     game_tiles: Vec<ElixirTile>,
@@ -65,7 +64,6 @@ pub fn __get_waits_v3(
   // first let's make that joker
   let joker = ElixirTile::AtomTile(tile1x());
   hand_calls.0.push(joker.clone());
-  all_tiles.insert(joker.clone());
   add_joker_to_aliases(&mut elixir_aliases, &joker, game_tiles.iter());
   let all_joker_tiles: HashSet<&ElixirTile> = elixir_aliases
     .values()
@@ -75,7 +73,6 @@ pub fn __get_waits_v3(
   // then let's make match_info based on that joker
   let mut match_info = prepare_tiles(
     &hand_calls,
-    &mut all_tiles,
     all_attrs,
     &elixir_aliases,
     ordering,
@@ -191,7 +188,7 @@ pub fn ___get_waits_v3<'a>(
 fn _get_unneeded_tiles_v2(
     hand_calls: ElixirHandCalls,
     match_definitions: MatchDefinitions,
-    all_tiles: Vec<ElixirTile>, all_attrs: Vec<String>,
+    all_attrs: Vec<String>,
     elixir_aliases: ElixirAliases,
     ordering: HashMap<Atom, Atom>, ordering_r: HashMap<Atom, Atom>,
 ) -> Vec<ElixirTile> {
@@ -199,7 +196,6 @@ fn _get_unneeded_tiles_v2(
   let ret = __get_unneeded_tiles_v2(
     hand_calls,
     &mut match_definitions.clone(),
-    &mut all_tiles.into_iter().collect(),
     &all_attrs,
     &elixir_aliases,
     &ordering,
@@ -219,7 +215,7 @@ fn _get_unneeded_tiles_v2(
 pub fn __get_unneeded_tiles_v2(
     hand_calls: ElixirHandCalls,
     mut match_definitions: &mut MatchDefinitions,
-    mut all_tiles: &mut HashSet<ElixirTile>, all_attrs: &Vec<String>,
+    all_attrs: &Vec<String>,
     elixir_aliases: &ElixirAliases,
     ordering: &HashMap<Atom, Atom>, ordering_r: &HashMap<Atom, Atom>,
 ) -> Vec<ElixirTile> {
@@ -227,7 +223,6 @@ pub fn __get_unneeded_tiles_v2(
 
   let mut match_info = prepare_tiles(
     &hand_calls,
-    &mut all_tiles,
     all_attrs,
     &elixir_aliases,
     ordering,

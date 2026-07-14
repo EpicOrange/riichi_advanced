@@ -353,6 +353,15 @@ impl<'a> Decoder<'a> for RemovableGroup {
   }
 }
 
+// impl RemovableGroup {
+//   pub fn unwrap_group(self) -> Option<TileSet> {
+//     match self {
+//       RemovableGroup::Group(group) => Some(group),
+//       _ => None
+//     }
+//   }
+// }
+
 // fixed offsets, for amerijong
 pub static FIXED_OFFSETS: phf::Map<&'static str, fn() -> Atom> = phf::phf_map! {
   "1A"  => tile1m,
@@ -395,11 +404,11 @@ pub struct MatchInfo<'a> {
   // pub orig_hands: Vec<(&'a ElixirHand, String)>,
   pub tiles_in_hand: Vec<&'a ElixirTile>,
   pub initial_hands: Vec<TileSet>,
-  pub all_tiles: &'a HashSet<ElixirTile>,
+  pub num_tiles_in_hand: usize,
   pub all_attrs: &'a Vec<String>,
   pub aliases: Aliases,
   pub elixir_joker_tiles: HashSet<ElixirTile>,
-  pub matchable_tiles: HashSet<ElixirTile>,
+  pub relevant_tiles: Vec<ElixirTile>,
   pub joker_tiles: HashSet<Tile>,
   // pub encoding: HashMap<&'a ElixirTile, Tile>,
   pub ordering: &'a HashMap<Atom, Atom>,

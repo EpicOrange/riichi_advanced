@@ -211,17 +211,17 @@ pub fn generate_groups_from_offsets<'a>(
 fn _generate_groups(
     group: MatchGroup,
     base_tiles: Vec<ElixirTile>,
-    all_tiles: Vec<ElixirTile>, all_attrs: Vec<String>,
+    all_attrs: Vec<String>,
     joker_tiles: Vec<Tile>,
     ordering: HashMap<Atom, Atom>, ordering_r: HashMap<Atom, Atom>,
     nojoker: bool,
 ) -> Vec<RemovableGroup> {
-  __generate_groups(&group, &mut base_tiles.iter(), &all_tiles.iter().collect(), &all_attrs, &joker_tiles.into_iter().collect(), &ordering, &ordering_r, &mut nojoker.clone())
+  __generate_groups(&group, &mut base_tiles.iter(), &all_attrs, &joker_tiles.into_iter().collect(), &ordering, &ordering_r, &mut nojoker.clone())
 }
 pub fn __generate_groups<'a>(
     group: &MatchGroup,
     base_tiles: &mut impl Iterator<Item = &'a ElixirTile>,
-    all_tiles: &HashSet<&ElixirTile>, all_attrs: &[String],
+    all_attrs: &[String],
     joker_tiles: &HashSet<Tile>,
     ordering: &HashMap<Atom, Atom>, ordering_r: &HashMap<Atom, Atom>,
     mut nojoker: &mut bool,
@@ -250,31 +250,19 @@ pub fn __generate_groups<'a>(
     MatchGroup::Offsets(offsets) => generate_groups_from_offsets(offsets, base_tiles, all_attrs, joker_tiles, ordering, ordering_r, &mut nojoker),
     MatchGroup::Subgroups(subgroupings) => {
       base_tiles.flat_map(|base_tile| {
-        // make a subgroup from this base tile
-        // it should be a Some(vec of tilesets),
-        subgroupings.iter().map(|subgroup| {
-          apply_offsets(base_tile, subgroup, ordering, ordering_r)
-            .0
-            .into_iter().collect::<Option<Vec<_>>>()
-            .filter(|tiles| tiles.iter().all(|tile| all_tiles.contains(&strip_attrs(tile)) || is_any(tile)))
-            .map(|tiles| encode(&tiles, all_attrs, joker_tiles))
-        }).collect::<Option<Vec<TileSet>>>()
-      })
-      .map(|subgroups| RemovableGroup::Multigroup(
-        subgroups.into_iter().map(|subgroup| subgroup.set_nojoker(*nojoker)).collect()
-      ))
-      .collect::<Vec<RemovableGroup>>()
+        subgroupings
+          .iter()
+          .map(|subgroup| apply_offsets(base_tile, subgroup, ordering, ordering_r)
+            .0.into_iter()
+            .collect::<Option<Vec<ElixirTile>>>()
+            .map(|tiles| encode(&tiles, all_attrs, joker_tiles).set_nojoker(*nojoker)))
+          .collect::<Option<Vec<TileSet>>>()
+          .map(|subgroup| RemovableGroup::Multigroup(subgroup))
+      }).collect::<Vec<RemovableGroup>>()
     }
   };
-  // TODO this might be slow, we should stop them from being generated in the first place
-  // (e.g. if it's all constant tiles that don't depend on base tile, only pass in one base tile)
-  // let len = ret.len();
   ret.sort();
   ret.dedup();
-  // let len2 = ret.len();
-  // if len2 < len {
-  //   println!("Went from {} -> {} groups: {}", len, len2, ret.iter().map(|group| print_group(&group, &all_attrs, false)).collect::<Vec<_>>().join(", "));
-  // }
   ret
 }
 
@@ -306,7 +294,7 @@ pub fn get_base_tiles<'a>(
   // get all offsets of matchable tiles
   // we need to do this because jokers/offsets could reify into a tile
   //   that we can't otherwise encode, since it's not in hand
-  let mut base_tiles: HashSet<ElixirTile> = match_info.matchable_tiles
+  let mut base_tiles: HashSet<ElixirTile> = match_info.relevant_tiles
     .iter()
     .flat_map(|base_tile| apply_offsets(&base_tile, &gather_rev_offsets(&match_definition), match_info.ordering, match_info.ordering_r).0)
     .flatten()
