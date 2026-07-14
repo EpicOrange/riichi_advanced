@@ -1,0 +1,29 @@
+on after_initialization do
+  if !kansai do
+    add_rule("Rules", "Win Condition", "- Seven pairs (repeated pairs OK).", -100)
+    add_rule("$rules_tab", "Seven Pairs", "Your hand consists of seven pairs (repeated pairs OK).", %{rules_tab: !rules_tab})
+    update_rule("$rules_tab", "Seven Pairs", "%{example_hand}", %{example_hand: ~t"2266m999p4477s33z 9p"}, %{rules_tab: !rules_tab})
+  else
+    add_rule("Rules", "Win Condition", "- Seven pairs (no repeated pairs).", -100)
+    add_rule("$rules_tab", "Seven Pairs", "Your hand consists of seven pairs (no repeated pairs).", %{rules_tab: !rules_tab})
+    update_rule("$rules_tab", "Seven Pairs", "%{example_hand}", %{example_hand: ~t"2266m339p4477s33z 9p"}, %{rules_tab: !rules_tab})
+  end
+end
+
+define_set pair, ~s"0 0"
+if !kansai do
+  define_const chiitoitsu_tenpai, ~m"pair:6, any:1"
+  define_const chiitoitsu_win, ~m"pair:7"
+else
+  define_const chiitoitsu_tenpai, ~m"(nojoker koutsu):-1, pair:6, any:1"
+  define_const chiitoitsu_win, ~m"(nojoker quad):-1, pair:7"
+end
+
+apply set_append, "tenpai_definition", +@chiitoitsu_tenpai
+apply set_append, "win_definition", +@chiitoitsu_win
+
+if equals(!list, "yakuman") do
+  define_yaku !list, !name, [!value, !limit], match(["hand", "winning_tile"], ~m"pair:7")
+else
+  define_yaku !list, !name, [!value, !han], match(["hand", "winning_tile"], ~m"pair:7")
+end

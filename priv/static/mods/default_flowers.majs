@@ -1,35 +1,35 @@
+
 on after_initialization do
   add_rule("Rules", "Flowers", """
   - Flower tiles must be declared and replaced by a draw from the back of the wall.
-  - A flower tile is worth 1 if its number matches your seat (1=east, 2=south, 3=west, 4=north)
-  - Having all 4 flower tiles or all 4 season tiles is worth %{four_flowers_value}.
-  """, %{four_flowers_value: !four_flowers_value})
+  - A flower tile is worth %{matching_flower_value} %{matching_flower_points_name} if its number matches your seat (1=east, 2=south, 3=west, 4=north)
+  - Having all 4 flower tiles of the same set is worth %{four_flowers_value} %{four_flowers_points_name}.
+  """, %{
+    matching_flower_value: !matching_flower_value, matching_flower_points_name: !matching_flower_points_name,
+    four_flowers_value: !four_flowers_value, four_flowers_points_name: !four_flowers_points_name
+  })
 end
 
 apply append, "wall", ["1f", "2f", "3f", "4f", "1g", "2g", "3g", "4g"]
 
-define_yaku yaku, "Seat Flower", 1, seat_is("east") and match(["flowers"], ~m"1f:1")
-define_yaku yaku, "Seat Flower", 1, seat_is("south") and match(["flowers"], ~m"2f:1")
-define_yaku yaku, "Seat Flower", 1, seat_is("west") and match(["flowers"], ~m"3f:1")
-define_yaku yaku, "Seat Flower", 1, seat_is("north") and match(["flowers"], ~m"4f:1")
-define_yaku yaku, "Seat Season", 1, seat_is("east") and match(["flowers"], ~m"1g:1")
-define_yaku yaku, "Seat Season", 1, seat_is("south") and match(["flowers"], ~m"2g:1")
-define_yaku yaku, "Seat Season", 1, seat_is("west") and match(["flowers"], ~m"3g:1")
-define_yaku yaku, "Seat Season", 1, seat_is("north") and match(["flowers"], ~m"4g:1")
-define_yaku yaku, "All Flowers", !four_flowers_value, match(["flowers"], ~m"1f:1, 2f:1, 3f:1, 4f:1")
-define_yaku yaku, "All Seasons", !four_flowers_value, match(["flowers"], ~m"1g:1, 2g:1, 3g:1, 4g:1")
-# define_yaku_precedence "All Flowers", ["Seat Flower"]
-# define_yaku_precedence "All Seasons", ["Seat Season"]
-
-on after_start do
-  set_status_all("initial_flowers")
-end
+define_yaku yaku, "Seat Flower", [!matching_flower_value, !matching_flower_points_name], seat_is("east") and match(["flowers"], ~m"1f:1")
+define_yaku yaku, "Seat Flower", [!matching_flower_value, !matching_flower_points_name], seat_is("south") and match(["flowers"], ~m"2f:1")
+define_yaku yaku, "Seat Flower", [!matching_flower_value, !matching_flower_points_name], seat_is("west") and match(["flowers"], ~m"3f:1")
+define_yaku yaku, "Seat Flower", [!matching_flower_value, !matching_flower_points_name], seat_is("north") and match(["flowers"], ~m"4f:1")
+define_yaku yaku, "Seat Season", [!matching_flower_value, !matching_flower_points_name], seat_is("east") and match(["flowers"], ~m"1g:1")
+define_yaku yaku, "Seat Season", [!matching_flower_value, !matching_flower_points_name], seat_is("south") and match(["flowers"], ~m"2g:1")
+define_yaku yaku, "Seat Season", [!matching_flower_value, !matching_flower_points_name], seat_is("west") and match(["flowers"], ~m"3g:1")
+define_yaku yaku, "Seat Season", [!matching_flower_value, !matching_flower_points_name], seat_is("north") and match(["flowers"], ~m"4g:1")
+define_yaku yaku, "All Flowers", [!four_flowers_value, !four_flowers_points_name], match(["flowers"], ~m"1f:1, 2f:1, 3f:1, 4f:1")
+define_yaku yaku, "All Seasons", [!four_flowers_value, !four_flowers_points_name], match(["flowers"], ~m"1g:1, 2g:1, 3g:1, 4g:1")
+define_yaku_precedence "All Flowers", ["Seat Flower"]
+define_yaku_precedence "All Seasons", ["Seat Season"]
 
 define_button start_flower,
   display_name: "Reveal flower",
   show_when: status("initial_flowers")
     and our_turn
-    and match(["hand", "draw"], ~m"(1f 2f 3f 4f 1g 2g 3g 4g):1"),
+    and match(["hand", "draw"], "any_flower"),
   unskippable: true
   do
     big_text("Flower")
@@ -41,7 +41,7 @@ define_button start_no_flower,
   display_name: "No flowers",
   show_when: status("initial_flowers")
     and our_turn
-    and not_match(["hand", "draw"], ~m"(1f 2f 3f 4f 1g 2g 3g 4g):1"),
+    and not_match(["hand", "draw"], "any_flower"),
   unskippable: true
   do
     big_text("No Flowers")
@@ -51,29 +51,26 @@ define_button start_no_flower,
     recalculate_buttons
   end
 
-apply prepend, "buttons.chii.show_when", status_missing("initial_flowers")
-apply prepend, "buttons.pon.show_when", status_missing("initial_flowers")
-apply prepend, "buttons.daiminkan.show_when", status_missing("initial_flowers")
-apply prepend, "buttons.ankan.show_when", status_missing("initial_flowers")
-apply prepend, "buttons.kakan.show_when", status_missing("initial_flowers")
-apply prepend, "buttons.ron.show_when", status_missing("initial_flowers")
-apply prepend, "buttons.chankan.show_when", status_missing("initial_flowers")
-apply prepend, "buttons.tsumo.show_when", status_missing("initial_flowers")
+if !undiscardable do
+  define_play_restriction "flower", false
+end
+define_play_restriction "any", not_status_missing("initial_flowers")
 
-define_play_restriction "flower", !unskippable
-
+define_set any_flower, ~s"1f|2f|3f|4f|1g|2g|3g|4g|1k|2k|3k|4k|1q|2q|3q|4q|9j"
+define_match any_flower, ~m"nojoker, any_flower:1"
 define_button flower,
   display_name: "Flower",
   show_when: our_turn
     and has_draw
     and not_just_discarded
-    and match(["hand", "draw"], ~m"(1f 2f 3f 4f 1g 2g 3g 4g):1"),
-  unskippable: !unskippable
+    and status_missing("initial_flowers", "just_called")
+    and match(["hand", "draw"], "any_flower"),
+  unskippable: !undiscardable
   do
     big_text("Flower")
-    flower("1f", "2f", "3f", "4f", "1g", "2g", "3g", "4g")
     set_status("flower")
-    unset_status("kan")
+    unset_status("kan", "double_kan")
+    flower("1f", "2f", "3f", "4f", "1g", "2g", "3g", "4g")
     if no_tiles_remaining do
       advance_turn
     else
@@ -84,7 +81,7 @@ define_button flower,
 define_auto_button _5_auto_flower,
   display_name: "F",
   desc: "Automatically declare all flowers.",
-  enabled_at_start: true
+  enabled_at_start: !auto_flower_by_default
   do
     if buttons_include("start_flower") do
       press_button("start_flower")
@@ -99,16 +96,21 @@ define_auto_button _5_auto_flower,
     end
   end
 
+on after_start do
+  set_status_all("initial_flowers")
+end
+
 on before_turn_change do
   unset_status("flower")
 end
+
 on before_call do
   unset_status("flower")
 end
 
 on after_turn_change do
   # un-draw if we're still declaring flowers
-  if status("initial_flowers") do
+  if !draw_after_flowers and status("initial_flowers") do
     draw(-1)
   end
   # exit flower declaration stage
@@ -118,3 +120,4 @@ on after_turn_change do
     change_turn("east")
   end
 end
+

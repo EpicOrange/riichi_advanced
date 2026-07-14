@@ -13,17 +13,18 @@ define_button daiminkan,
   show_when: not_our_turn
     and not_no_tiles_remaining
     and someone_else_just_discarded
+    and status_missing("initial_flowers") # for default_flowers mod
     and call_available,
   precedence_over: ["chii", "pon"],
   call: [[0, 0, 0]]
   do
     big_text(!kan_name)
+    call
+    change_turn("self")
     if status("kan") do
       set_status("double_kan")
     end
     set_status("kan")
-    call
-    change_turn("self")
     draw(1, "opposite_end")
   end
 
@@ -33,24 +34,27 @@ define_button ankan,
     and not_no_tiles_remaining
     and not_just_discarded
     and not_just_called
+    and status_missing("initial_flowers") # for default_flowers mod
     and self_call_available,
   call: [[0, 0, 0]]
   do
     big_text(!kan_name)
+    self_call
     if status("kan") do
       set_status("double_kan")
     end
     set_status("kan")
-    self_call
     draw(1, "opposite_end")
   end
 
 define_button kakan,
   display_name: !kan_name, 
   show_when: our_turn
+    and has_draw
     and not_no_tiles_remaining
     and not_just_discarded
     and not_just_called
+    # and status_missing("initial_flowers") # can't have calls in initial flower phase anyways
     and can_upgrade_call,
   call: [[0, 0, 0]],
   upgrades: "pon"

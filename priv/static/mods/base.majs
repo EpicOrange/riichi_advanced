@@ -23,7 +23,7 @@ on after_turn_change do
     pause(1000)
     ryuukyoku
   else
-    draw
+    if status_missing("match_start", "initial_flowers") do draw end
   end
 end
 

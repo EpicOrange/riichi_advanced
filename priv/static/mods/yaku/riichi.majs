@@ -1,3 +1,5 @@
+# must apply this mod after chii/pon/kan/ron/chankan/tsumo mods, as this modifies those buttons
+
 on after_initialization do
   add_rule("1 Han", "Riichi", "If you can, you may discard into tenpai with riichi to lock your hand. If your discard passes, you bet 1000 points. If you win, you are awarded riichi (1 han). If you declared riichi on your very first discard, then you are instead awarded double riichi (2 han). Calls before the riichi declaration invalidate double riichi.")
 end

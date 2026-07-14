@@ -515,6 +515,7 @@ defmodule RiichiAdvanced.Constants do
         pon_name: "Pong",
         kan_name: "Kong",
         ron_name: "Hu",
+        chankan_name: "Hu",
         tsumo_name: "Zimo",
         ankan_name: "Concealed Kong",
         han: "Fan",
@@ -524,12 +525,20 @@ defmodule RiichiAdvanced.Constants do
         "base",
         "global_mods", "default_auto_buttons",
         "standard_wall", "framed_5z",
-        "standard_win", "yaku/yakuhai",
         "chii", "pon", "kan", "ron", "tsumo",
-        %{name: "default_flowers", config: %{unskippable: true, four_flowers_value: 2}},
-        %{name: "yaku/no_flowers", config: %{list: "yaku", name: "No Flowers", value: 1}},
-        %{name: "yaku/tsumo", config: %{list: "yaku", name: "Self Draw", value: 1}},
         %{name: "yaku/chankan", config: %{list: "yaku", name: "Robbing a Kong", value: 1}},
+        "standard_win", "yaku/yakuhai",
+        %{name: "default_flowers", config: %{
+          undiscardable: true,
+          auto_flower_by_default: true,
+          draw_after_flowers: true,
+          matching_flower_value: 1,
+          matching_flower_points_name: "Fan",
+          four_flowers_value: 2,
+          four_flowers_points_name: "Fan"
+        }}, 
+        %{name: "yaku/no_flowers", config: %{list: "yaku", name: "No Flowers", value: 1}},
+        %{name: "yaku/menzentsumo", config: %{list: "yaku", name: "Self Draw", value: 1}},
         %{name: "yaku/rinshan", config: %{
           list: "yaku", rinshan_name: "After a Kong", flower_name: "After a Flower", value: 1,
           double_list: "yaku", double_name: "After Multiple Kongs", double_value: 8
@@ -580,6 +589,7 @@ defmodule RiichiAdvanced.Constants do
         kan_name: "Kong",
         ankan_name: "Concealed Kong",
         ron_name: "Hu",
+        chankan_name: "Hu",
         tsumo_name: "Zimo",
         han: "Fan",
         limit: "Limit"
@@ -588,12 +598,21 @@ defmodule RiichiAdvanced.Constants do
         "base",
         "global_mods", "default_auto_buttons",
         "standard_wall", "framed_5z",
-        "standard_win", "yaku/yakuhai",
         "chii", "pon", "kan", "ron", "tsumo",
-        "head_bump",
-        %{name: "default_flowers", config: %{unskippable: true, four_flowers_value: 4}}, # should go after chii/pon/kan/ron/chankan/tsumo
-        %{name: "yaku/menzentsumo", config: %{list: "yaku", name: "Concealed Hand", value: 1}},
+        "standard_win", "yaku/yakuhai",
+        %{name: "yaku/chiitoitsu", config: %{rules_tab: "4 Fan", list: "yaku", name: "Seven Pairs", value: 1, kansai: true}},
         %{name: "yaku/chankan", config: %{list: "yaku", name: "Robbing the Kong", value: 1}},
+        "head_bump",
+        %{name: "default_flowers", config: %{
+          undiscardable: true,
+          auto_flower_by_default: true,
+          draw_after_flowers: true,
+          matching_flower_value: 1,
+          matching_flower_points_name: "Fan",
+          four_flowers_value: 4,
+          four_flowers_points_name: "Fan"
+        }}, 
+        %{name: "yaku/menzentsumo", config: %{list: "yaku", name: "Concealed Hand", value: 1}},
         %{name: "yaku/rinshan", config: %{
           list: "yaku", rinshan_name: "Out on a Replacement", flower_name: "Out on a Replacement", value: 1,
           double_list: "yakuman", double_name: "Two-Fold Fortune", double_value: 1
@@ -640,8 +659,7 @@ defmodule RiichiAdvanced.Constants do
     "tianjin" => %{
       ruleset: "tianjin",
       mods: [
-        "global_mods",
-        "default_auto_buttons",
+        "global_mods", "default_auto_buttons",
       ],
     },
     "malaysian" => %{

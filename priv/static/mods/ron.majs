@@ -2,6 +2,7 @@ define_button ron,
   display_name: !ron_name, 
   show_when: not_our_turn
     and someone_else_just_discarded
+    and status_missing("initial_flowers") # for default_flowers mod
     and match(["hand", "calls"], ["tenpai"])
     and match(["hand", "calls", "last_discard"], ["win"]),
   precedence_over: ["chii", "pon", "daiminkan"]

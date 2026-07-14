@@ -29,6 +29,6 @@ set wall, ["1m", "1m", "1m", "1m",
            "2z", "2z", "2z", "2z",
            "3z", "3z", "3z", "3z",
            "4z", "4z", "4z", "4z",
-           "5z", "5z", "5z", "5z",
+           "5z", "5z", "5z", "5z", # use framed_5z mod to make these into 0z => 5z jokers
            "6z", "6z", "6z", "6z",
            "7z", "7z", "7z", "7z"]

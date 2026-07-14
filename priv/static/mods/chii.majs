@@ -1,5 +1,5 @@
 on after_initialization do
-  add_rule("Rules", "Chii", "When the player to your left discards a tile you can use to complete a 3 tile sequence, you may call Chii to take that tile instead of drawing.")
+  add_rule("Rules", !chii_name, "When the player to your left discards a tile you can use to complete a 3 tile sequence, you may call %{chii_name} to take that tile instead of drawing.", %{chii_name: !chii_name})
 end
 
 define_button chii,
@@ -7,6 +7,7 @@ define_button chii,
   show_when: not_our_turn
     and not_no_tiles_remaining
     and kamicha_discarded
+    and status_missing("initial_flowers") # for default_flowers mod
     and call_available,
   call: [[-2, -1], [-1, 1], [1, 2]]
   do

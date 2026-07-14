@@ -158,7 +158,7 @@ defmodule RiichiAdvanced.GameState.JokerSolver do
 
     # this bit is to support old scoring system, TODO remove
     yaku2_overrides = not Enum.empty?(yaku2) and Map.get(score_rules, "yaku2_overrides_yaku1", false)
-    yaku = if yaku2_overrides do yaku2 else yaku end
+    {yaku, yaku2} = if yaku2_overrides do {yaku2, []} else {yaku, yaku2} end
 
     {state, Map.merge(cxt, %{
       yaku: yaku,
