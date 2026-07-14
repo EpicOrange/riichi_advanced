@@ -119,7 +119,7 @@ define_yaku yaku, "All Called", [3, "Phán"], not_won_by_draw and match(["calls"
 # upgrades to existing yaku
 define_yaku meta_yaku, "All Sets", [1, "Phán"], has_existing_yaku("All Sets") and status_missing("has_joker")
 define_yaku meta_yaku, "All Called", [1, "Phán"], has_existing_yaku("All Called") and status_missing("has_joker")
-define_yaku meta_yaku, "No Jokers Mosquito Hand", [1, "Mủn"], has_no_yaku and status_missing("has_joker")
+define_yaku meta_yaku, "No Jokers Mosquito Hand", [1, "Mủn"], has_no_yaku and status_missing("has_joker"), ["Mosquito Hand"]
 define_yaku meta_yaku, "All Terminals", [1, "Mủn"], has_existing_yaku("All Terminals") and status_missing("has_joker")
 define_yaku meta_yaku, "All Terminals", [1, "Mủn"], has_existing_yaku("All Terminals", "Single Wait", "Fully Closed Hand")
 define_yaku meta_yaku, "Big Three Dragons", [1, "Mủn"], has_existing_yaku("Big Three Dragons") and status_missing("has_joker")
@@ -140,7 +140,7 @@ define_yaku meta_yaku, "Big Four Winds", [1, "Mủn"], has_existing_yaku("Big Fo
 define_yaku meta_yaku, "Big Four Winds", [1, "Mủn"], has_existing_yaku("Big Four Winds", "Single Wait", "Fully Closed Hand")
 
 set score_calculation, %{ 
-  yaku_lists: ["yaku", "nfnl", "meta_yaku", "meta_nfnl", "true_nfnl"],
+  yaku_lists: ["yaku", "nfnl", "meta_yaku"],
   point_name: "Phán",
   point2_name: "Mủn",
   win_by_discard_name: "Ù",

@@ -93,12 +93,12 @@ defmodule RiichiAdvanced.TestUtils do
     end
 
     case expected_winners do
-      :no_winners -> 
+      :no_winners ->
         assert Enum.empty?(state.winner_seats)
-        win_buttons = Enum.all?(state.players, fn {seat, player} ->
-          {seat, Enum.filter(["ron", "chankan", "tsumo", "flower_win"], & &1 in player.buttons)}
+        win_buttons = Enum.map(state.players, fn {seat, player} ->
+          {seat, Enum.filter(["ron", "chankan", "tsumo", "flower_win", "nfnl0", "nfnl1", "nfnl2"], & &1 in player.buttons)}
         end)
-        expected_win_buttons = Enum.all?(state.players, fn {seat, _player} -> {seat, []} end)
+        expected_win_buttons = Enum.map(state.players, fn {seat, _player} -> {seat, []} end)
         assert win_buttons == expected_win_buttons
       :no_buttons ->
         buttons = Map.new(state.players, fn {seat, player} -> {seat, player.buttons} end)
