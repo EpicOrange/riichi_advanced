@@ -46,6 +46,11 @@ defmodule RiichiAdvancedWeb.ScoringTestLive do
     |> assign(:minipoints, 0)
     |> assign(:tiles, [])
     |> assign(:hand, [])
+    |> assign(:hand_length, 13) # excludes winning tile
+    |> assign(:calls, [])
+    |> assign(:call_selection_ixs, [])
+    |> assign(:call_buttons, %{})
+    |> assign(:selected_call_button, nil)
     # |> assign(:hand, [:"4m", :"2m", :"3m", :"4p", :"4p", :"4p", :"5p", :"6p", :"7p", :"3s", :"4s", :"2s", :"2s", :"2s"])
 
     socket = switch_to_ruleset(socket, "riichi")
@@ -89,7 +94,7 @@ defmodule RiichiAdvancedWeb.ScoringTestLive do
           <label for="show-none" class="shuffle-seats"><%= t(@lang, "None") %></label>
         </header>
         <div class="hand-outer-container">
-          <.live_component module={RiichiAdvancedWeb.HandSelectionComponent} id="scoringtest-hand" lang={@lang} ruleset={@ruleset} hand={@hand} tiles={@tiles}/>
+          <.live_component module={RiichiAdvancedWeb.HandSelectionComponent} id="scoringtest-hand" lang={@lang} ruleset={@ruleset} hand={@hand} hand_length={@hand_length} calls={@calls} call_selection_ixs={@call_selection_ixs} call_buttons={@call_buttons} selected_call_button={@selected_call_button} tiles={@tiles}/>
         </div>
         <div class="yaku-outer-container">
           <.live_component module={RiichiAdvancedWeb.YakuSelectionComponent} id="scoringtest-yaku" lang={@lang} ruleset={@ruleset} yaku={@yaku} yaku_list_names={@yaku_list_names} minipoints={@minipoints} minipoint_name={@minipoint_name} />
@@ -177,6 +182,7 @@ defmodule RiichiAdvancedWeb.ScoringTestLive do
       categories: categories,
       rules_ref: rules_ref,
     })
+    |> assign(:hand_length, min(17, Rules.get(rules_ref, "starting_tiles", 13)))
     socket
   end
   def switch_to_ruleset(socket, _ruleset), do: socket
@@ -236,7 +242,7 @@ defmodule RiichiAdvancedWeb.ScoringTestLive do
     socket
   end
 
-  def score_hand(state, hand, is_ron?, selected_yaku, minipoints) do
+  def score_hand(state, hand, calls, is_ron?, selected_yaku, minipoints) do
     wall = Enum.map(Rules.get(state.rules_ref, "wall", []), &Utils.to_tile(&1))
     dead_wall_length = Rules.get(state.rules_ref, "initial_dead_wall_length", 0)
     {wall, dead_wall} = if dead_wall_length > 0 do
@@ -263,12 +269,12 @@ defmodule RiichiAdvancedWeb.ScoringTestLive do
     state = if is_ron? do
       payer = :west
       state
-      |> GameState.update_player(:east, &%{ &1 | hand: hand })
+      |> GameState.update_player(:east, &%{ &1 | hand: hand, calls: calls })
       |> GameState.update_player(payer, &%{ &1 | discards: [winning_tile] })
       |> Actions.register_discard(payer, winning_tile, true, true)
     else
       state
-      |> GameState.update_player(:east, &%{ &1 | hand: hand, draw: [Utils.add_attr(winning_tile, ["_draw"])] })
+      |> GameState.update_player(:east, &%{ &1 | hand: hand, calls: calls, draw: [Utils.add_attr(winning_tile, ["_draw"])] })
     end
     win_source = if is_ron? do :discard else :draw end
     scoring_key = case Rules.get(state.rules_ref, "scoring_logic", %{}) do
@@ -333,12 +339,59 @@ defmodule RiichiAdvancedWeb.ScoringTestLive do
 
   # for hand selection component
   def handle_event("add_hand_tile", %{"tile" => tile}, socket) do
-    socket = assign(socket, :hand, Enum.take(socket.assigns.hand ++ [tile], 17))
+    socket = assign(socket, :hand, Enum.take(socket.assigns.hand ++ [tile], 1 + socket.assigns.hand_length))
     {:noreply, socket}
   end
   def handle_event("remove_hand_tile", %{"index" => index}, socket) do
     {ix, _} = Integer.parse(index)
     socket = assign(socket, :hand, List.delete_at(socket.assigns.hand, ix))
+    {:noreply, socket}
+  end
+  def handle_event("include_hand_tile", %{"index" => index}, socket) when socket.assigns.selected_call_button != nil do
+    {ix, _} = Integer.parse(index)
+    new_selections = [ix | socket.assigns.call_selection_ixs]
+    button = socket.assigns.call_buttons[socket.assigns.selected_call_button]
+    call_length = 1 + length(Map.get(button, "call", [nil, nil, nil]) |> Enum.at(0))
+    if length(new_selections) == call_length do
+      call_tiles = Enum.map(new_selections, &Enum.at(socket.assigns.hand, &1))
+      [called_tile | call_choice] = Enum.map(call_tiles, &Utils.to_tile/1)
+      style = button
+      |> Map.get("call_style", %{"kamicha" => [0, 0]})
+      |> Map.get("kamicha", [0, 0])
+      new_call_tiles = Actions.style_call(style, call_choice, called_tile)
+      new_call = {socket.assigns.selected_call_button, new_call_tiles}
+      socket = assign(socket, :hand, socket.assigns.hand -- call_tiles)
+      socket = assign(socket, :calls, [new_call | socket.assigns.calls])
+      socket = assign(socket, :selected_call_button, nil)
+      socket = assign(socket, :call_selection_ixs, [])
+      socket = assign(socket, :hand_length, socket.assigns.hand_length - min(3, call_length))
+      {:noreply, socket}
+    else
+      socket = assign(socket, :call_selection_ixs, new_selections)
+      {:noreply, socket}
+    end
+  end
+  def handle_event("include_hand_tile", _assigns, socket), do: {:noreply, socket}
+  def handle_event("exclude_hand_tile", %{"index" => index}, socket) do
+    {ix, _} = Integer.parse(index)
+    socket = assign(socket, :call_selection_ixs, List.delete(socket.assigns.call_selection_ixs, ix))
+    {:noreply, socket}
+  end
+  def handle_event("select_call_button", %{"name" => name}, socket) do
+    socket = assign(socket, :selected_call_button, name)
+    {:noreply, socket}
+  end
+  def handle_event("deselect_call_button", _assigns, socket) do
+    socket = assign(socket, :selected_call_button, nil)
+    socket = assign(socket, :call_selection_ixs, [])
+    {:noreply, socket}
+  end
+  def handle_event("remove_call", %{"index" => index}, socket) do
+    {ix, _} = Integer.parse(index)
+    {_name, call} = Enum.at(socket.assigns.calls, ix, [])
+    socket = socket
+    |> assign(:hand_length, socket.assigns.hand_length + min(3, length(call)))
+    |> assign(:calls, List.delete_at(socket.assigns.calls, ix))
     {:noreply, socket}
   end
   def handle_event("clear_hand", _assigns, socket) do
@@ -389,10 +442,11 @@ defmodule RiichiAdvancedWeb.ScoringTestLive do
       |> Map.put(:rules_ref, socket.assigns.rules_ref)
       is_ron? = Map.has_key?(params, "ron")    
       hand = Enum.map(socket.assigns.hand, &Utils.to_tile(&1))
+      calls = socket.assigns.calls
       selected_yaku = get_selected_yaku(socket.assigns.yaku)
       minipoints = socket.assigns.minipoints
       socket = socket
-      |> start_async(:put_state, fn -> score_hand(state, hand, is_ron?, selected_yaku, minipoints) end)
+      |> start_async(:put_state, fn -> score_hand(state, hand, calls, is_ron?, selected_yaku, minipoints) end)
       |> assign(:loading, true)
       {:noreply, socket}
     else
@@ -416,6 +470,20 @@ defmodule RiichiAdvancedWeb.ScoringTestLive do
 
       wall = Rules.get(rules_ref, "wall", [])
       socket = assign(socket, :tiles, Enum.uniq(wall))
+      call_buttons = Rules.get(rules_ref, "buttons", [])
+      |> Enum.filter(fn {_name, button} -> Map.has_key?(button, "call") end)
+      call_button_display_names = call_buttons
+      |> Enum.map(fn {_name, button} -> Map.get(button, "display_name", "") end)
+      |> Enum.frequencies()
+      call_buttons = call_buttons
+      |> Map.new(fn {name, button} ->
+        display_name = Map.get(button, "display_name", "")
+        display_name = if call_button_display_names[display_name] > 1 do
+          "#{display_name} (#{name})"
+        else display_name end
+        {name, Map.put(button, "display_name", display_name)}
+      end)
+      socket = assign(socket, :call_buttons, call_buttons)
 
       {:noreply, retrieve_yaku_lists(socket)}
     else {:noreply, socket} end

@@ -218,7 +218,7 @@ button {
   text-align: center;
   transform: translateY(calc(var(--tile-size) / -8));
 }
-button:active {
+button:active, button.pressed {
   filter: drop-shadow(0 calc(var(--tile-size) / 8) 0 var(--tile-front-side));
   transform: translateY(0);
 }
@@ -4285,14 +4285,21 @@ div.scoringtest-container div.yaku-outer-container {
 
 
 /* hand-selection-container */
-div.hand-selection-inner-container button {
+div.hand-selection-inner-container {
+  display: flex;
+  flex-direction: column;
+  row-gap: calc(0.25 * var(--tile-size));
+}
+div.hand-selection-inner-container div.hand-selection-hand button,
+div.hand-selection-inner-container div.hand-selection-buttons button {
   background: none;
   border: none;
   padding: 0;
   margin: 0;
 }
 div.hand-selection-inner-container > div.hand-selection-hand,
-div.hand-selection-inner-container > div.hand-selection-buttons {
+div.hand-selection-inner-container > div.hand-selection-buttons,
+div.hand-selection-inner-container > div.hand-selection-calls {
   display: flex;
   flex-flow: row wrap;
   row-gap: calc(0.25 * var(--tile-size));
@@ -4302,7 +4309,13 @@ div.hand-selection-inner-container > div.hand-selection-hand {
   justify-content: center;
 }
 div.hand-selection-inner-container > div.hand-selection-hand > :last-child {
+  margin-left: calc(0.25 * var(--tile-size)); /* gap to left of winning tile */
+}
+div.hand-selection-inner-container > div.hand-selection-hand > button.hand-selection-call {
   margin-left: calc(0.25 * var(--tile-size));
+  display: flex;
+  flex-flow: row nowrap;
+  align-items: flex-end;
 }
 div.hand-selection-inner-container > div.hand-selection-buttons {
   column-gap: calc(0.125 * var(--tile-size));
@@ -4321,6 +4334,9 @@ div.hand-selection-inner-container > div.hand-selection-buttons > button.clear >
   line-height: 0.5;
   letter-spacing: -0.5ex;
   padding: 0 calc(0.275 * var(--tile-size));
+}
+div.hand-selection-inner-container > div.hand-selection-calls {
+  gap: calc(0.25 * var(--tile-size));
 }
 
 /* individual yaku inside yaku-container */

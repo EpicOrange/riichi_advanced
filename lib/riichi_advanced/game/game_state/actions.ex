@@ -306,7 +306,7 @@ defmodule RiichiAdvanced.GameState.Actions do
     end
   end
 
-  defp style_call(style, call_choice, called_tile) do
+  def style_call(style, call_choice, called_tile) do
     if called_tile != nil do
       tiles = if "call" in style or "call_sideways" in style do call_choice else call_choice ++ [called_tile] end
       for style_spec <- style do
