@@ -51,7 +51,8 @@ pub fn encode(hand: &ElixirHand, all_attrs: &[String], joker_tiles: &HashSet<Til
       if !joker_tiles.contains(&encoded) { hash *= U256::from(encoded.0); }
       attrs.push(encoded);
     } else {
-      eprintln!("Unrecognized Elixir tile {tile:?}");
+      eprintln!("Unrecognized Elixir tile {tile:?} in hand {hand:?}");
+      // panic!();
     }
   }
   attrs.sort_unstable(); // important for dedup
