@@ -769,8 +769,7 @@ define_button flower,
     and has_draw
     and not_just_discarded
     and not_others_status("call_made")
-    and match(["hand", "draw"], ~m"nojoker, (1f 2f 3f 4f 1g 2g 3g 4g):1"),
-  unskippable: true
+    and match(["hand", "draw"], ~m"nojoker, (1f 2f 3f 4f 1g 2g 3g 4g):1")
   do
     big_text("Hua")
     flower("1f", "2f", "3f", "4f", "1g", "2g", "3g", "4g")

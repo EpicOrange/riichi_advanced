@@ -129,22 +129,22 @@
       ["force_event", ["press_button", "west", "ron"]],
       ["clear_objects"],
       ["sleep", 2000],
-      ["add_object", "text", {"size": 0.4, "width": 3, "x": 4.125, "y": 7.5,
+      ["add_object", "text", {"size": 0.4, "width": 5, "x": 4.125, "y": 7.5,
         "text": "On top of our mixed straight, we get our two flower tiles, plus All Chows (all sequences plus non-honor pair), totalling 12 points.\n(Click to continue)"
       }],
       ["await_click"],
       ["clear_objects"],
-      ["add_object", "text", {"size": 0.4, "width": 3, "x": 4.125, "y": 7.5,
+      ["add_object", "text", {"size": 0.4, "width": 5, "x": 4.125, "y": 7.5,
         "text": "If you win on a discard (like we just did) the discarder pays the 12 points, and on top of that, every player pays 8 points. This means an 8 Fan hand is worth 32 points at minimum.\n(Click to continue)"
       }],
       ["await_click"],
       ["clear_objects"],
-      ["add_object", "text", {"size": 0.4, "width": 3, "x": 4.125, "y": 7.5,
+      ["add_object", "text", {"size": 0.4, "width": 5, "x": 4.125, "y": 7.5,
         "text": "If you had won by self-draw, everyone would pay you 12+8 points (plus one for 1 Fan Self-Drawn), totalling 63. It's worth a lot to self-draw!\n(Click to continue)"
       }],
       ["await_click"],
       ["clear_objects"],
-      ["add_object", "text", {"size": 0.4, "width": 3, "x": 4.125, "y": 7.5,
+      ["add_object", "text", {"size": 0.4, "width": 5, "x": 4.125, "y": 7.5,
         "text": "Click the tabs on the left to see more patterns, or press Back on the upper right to return to the list of tutorials.\n(Click to continue)"
       }],
       ["await_click"],
