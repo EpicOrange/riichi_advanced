@@ -257,12 +257,17 @@ defmodule RiichiAdvanced.TestUtils do
     for definition <- translated_am_win_definitions, "debug" in definition do
       IO.inspect(definition, label: "debug_am_match_definitions")
     end
-    Match.match_hand(hand, calls, win_definitions, tile_behavior)
+    result = for defn <- win_definitions, reduce: nil do
+      nil -> if Match.match_hand(hand, calls, [defn], tile_behavior) do defn else nil end
+      defn -> defn
+    end
+    result
   end
   def assert_winning_hand(rules_ref, match_definition_name, hand, calls \\ [], tile_aliases \\ %{}) do
-    assert match_hand(rules_ref, match_definition_name, hand, calls, tile_aliases), "Not a winning hand: #{to_string(hand)} #{to_string(calls)}"
+    assert match_hand(rules_ref, match_definition_name, hand, calls, tile_aliases) != nil, "Not a winning hand: #{to_string(hand)} #{to_string(calls)}"
   end
   def refute_winning_hand(rules_ref, match_definition_name, hand, calls \\ [], tile_aliases \\ %{}) do
-    refute match_hand(rules_ref, match_definition_name, hand, calls, tile_aliases), "Shouldn't be a winning hand: #{to_string(hand)} #{to_string(calls)}"
+    result = match_hand(rules_ref, match_definition_name, hand, calls, tile_aliases)
+    assert result == nil, "Shouldn't be a winning hand: #{to_string(hand)} #{to_string(calls)}\nMatched with: #{inspect(result)}"
   end
 end

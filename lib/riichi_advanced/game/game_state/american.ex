@@ -153,6 +153,12 @@ defmodule RiichiAdvanced.GameState.American do
     if am_match_definition in Debug.debug_am_match_definitions() do
       ["debug"] ++ ret
     else ret end
+    # add "amerijong" to disable a rust optimization
+    # TODO need to find a better solution
+    |> Enum.map(fn
+      [groups, num] when is_list(groups) -> [["amerijong" | groups], num]
+      group -> group
+    end)
   end
 
   @decorate cacheable(cache: RiichiAdvanced.Cache, key: {:translate_american_match_definitions, am_match_definitions})
@@ -236,7 +242,6 @@ defmodule RiichiAdvanced.GameState.American do
         # ]
         # 
         # turn each of those items into a match definition that looks like [[groups, 1]]
-        
         match_definitions = am_match_definition
         |> preprocess_american_match_definition()
         |> Enum.map(fn groups ->

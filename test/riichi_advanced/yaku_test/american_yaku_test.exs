@@ -4,6 +4,7 @@ defmodule RiichiAdvanced.YakuTest.AmericanYaku do
 
   @nmjl_2024 ["american/no_charleston"]
   @nmjl_2025 ["american/no_charleston", "american/am_card_nmjl_2025"]
+  @nmjl_2026 ["american/no_charleston", "american/am_card_nmjl_2026"]
   @am_aliases %{
     any: %{[] => MapSet.new([:"1j"])},
     "1f": %{[] => MapSet.new([:"1g", :"2f", :"2g", :"3f", :"3g", :"4f", :"4g"])}
@@ -13,6 +14,7 @@ defmodule RiichiAdvanced.YakuTest.AmericanYaku do
     {:ok,
       nmjl_2024: TestUtils.get_rules!("american", @nmjl_2024),
       nmjl_2025: TestUtils.get_rules!("american", @nmjl_2025),
+      nmjl_2026: TestUtils.get_rules!("american", @nmjl_2026),
     }
   end
 
@@ -40,6 +42,11 @@ defmodule RiichiAdvanced.YakuTest.AmericanYaku do
   test "american - nmjl 2024 - 2024 #4", %{nmjl_2024: rules_ref} do
     TestUtils.assert_winning_hand(rules_ref, "win", "11122333440z224p", "", @am_aliases)
     TestUtils.refute_winning_hand(rules_ref, "open_win", "22333440z224p", "am_pung:111z", @am_aliases)
+  end
+
+  test "american - nmjl 2026 - sextet", %{nmjl_2026: rules_ref} do
+    TestUtils.assert_winning_hand(rules_ref, "win", "4444p4444s1234f12g", "", @am_aliases)
+    TestUtils.refute_winning_hand(rules_ref, "win", "4444p4445s1234f12g", "", @am_aliases)
   end
 
   test "american - nmjl 2024 - all hands", %{nmjl_2024: rules_ref} do

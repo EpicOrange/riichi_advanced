@@ -381,8 +381,10 @@ fn reify_groups<'a>(
     // println!("Base tiles: {0:?}", base_tiles.iter().collect::<Vec<_>>());
     // println!("Relevant tiles: {0:?}", match_info.relevant_tiles.iter().collect::<Vec<_>>());
   }
+  let mut amerijong = false;
   let mut separate_suits = false;
   for (_i, group) in groups.iter().enumerate() {
+    if amerijong { break; }
     for offset in group.flatten() {
       match offset {
         MatchOffset::Offset(o) => {
@@ -394,6 +396,7 @@ fn reify_groups<'a>(
         },
         MatchOffset::TileOrKeyword(s) => {
           if FIXED_OFFSETS.get(&s).is_some() { separate_suits = true; break; }
+          else if s == "amerijong" { amerijong = true; break; }
         }
       }
     }
@@ -402,48 +405,58 @@ fn reify_groups<'a>(
   let pin = ElixirTile::AtomTile(tile1p());
   let sou = ElixirTile::AtomTile(tile1s());
   let all = ElixirTile::AtomTile(tile1x());
-  let keys = if separate_suits {
-    vec!(Rc::new(vec!(man.clone())), Rc::new(vec!(pin.clone())), Rc::new(vec!(sou.clone())), Rc::new(vec!(all.clone())))
-  } else {
-    vec!(Rc::new(vec!(all.clone())))
-  };
+  let mut keys = vec!(
+    Rc::new(vec!(man.clone())),
+    Rc::new(vec!(pin.clone())),
+    Rc::new(vec!(sou.clone())),
+    Rc::new(vec!(all.clone()))
+  );
 
   for (i, group) in groups.iter().enumerate() {
     let mut have_fixed_offsets = false;
     let mut have_numeric_offsets = false;
     // if there is a single suit offset, we need to separate base_tiles into suits
-    for offset in group.flatten() {
-      match offset {
-        MatchOffset::Offset(_) => { have_numeric_offsets = true; }
-        MatchOffset::AttrsTile(_) => {}
-        MatchOffset::AttrsOffset(_) => { have_numeric_offsets = true; }
-        MatchOffset::TileOrKeyword(s) => {
-          if FIXED_OFFSETS.get(&s).is_some() { have_fixed_offsets = true; }
+    if !amerijong {
+      for offset in group.flatten() {
+        match offset {
+          MatchOffset::Offset(_) => { have_numeric_offsets = true; }
+          MatchOffset::AttrsTile(_) => {}
+          MatchOffset::AttrsOffset(_) => { have_numeric_offsets = true; }
+          MatchOffset::TileOrKeyword(s) => {
+            if FIXED_OFFSETS.get(&s).is_some() { have_fixed_offsets = true; }
+          }
         }
       }
     }
-    let base_tile_sets = if separate_suits {
+    let base_tile_sets = if amerijong {
+      // unoptimized route
+      let mut ret = vec!();
+      for tile in (*base_tiles).clone() { ret.push(Rc::new(vec!(tile))); }
+      // also add 1m, 1p, 1s
+      ret.push(Rc::new(vec!(man.clone())));
+      ret.push(Rc::new(vec!(pin.clone())));
+      ret.push(Rc::new(vec!(sou.clone())));
+      // let every base tile key to itself
+      keys = ret.clone();
+      ret
+    } else if separate_suits {
       // we need to try each suit
-      if have_numeric_offsets {
+      if have_fixed_offsets {
+        let base_m: Vec<ElixirTile> = vec!(man.clone());
+        let base_p: Vec<ElixirTile> = vec!(pin.clone());
+        let base_s: Vec<ElixirTile> = vec!(sou.clone());
+        vec!(Rc::new(base_m), Rc::new(base_p), Rc::new(base_s))
+      } else if have_numeric_offsets {
         // separate base tiles of the same suit
         let mut base_m: Vec<ElixirTile> = vec!();
         let mut base_p: Vec<ElixirTile> = vec!();
         let mut base_s: Vec<ElixirTile> = vec!();
-        let mut base_j: Vec<ElixirTile> = vec!();
         for tile in (*base_tiles).clone() {
           if is_manzu(&tile) { base_m.push(tile); }
           else if is_pinzu(&tile) { base_p.push(tile); }
           else if is_souzu(&tile) { base_s.push(tile); }
-          else { base_j.push(tile); }
         }
-        if have_fixed_offsets { // amerijong
-          if !base_m.contains(&man) { base_m.push(man.clone()); }
-          else if !base_p.contains(&pin) { base_p.push(pin.clone()); }
-          else if !base_s.contains(&sou) { base_s.push(sou.clone()); }
-          vec!(Rc::new(base_m), Rc::new(base_p), Rc::new(base_s), Rc::new(base_j))
-        } else {
-          vec!(Rc::new(base_m), Rc::new(base_p), Rc::new(base_s), base_tiles.clone())
-        }
+        vec!(Rc::new(base_m), Rc::new(base_p), Rc::new(base_s), base_tiles.clone())
       } else { keys.clone() }
     } else if have_numeric_offsets {
       vec!(base_tiles.clone())
@@ -456,8 +469,9 @@ fn reify_groups<'a>(
         &match_info.joker_tiles,
         &match_info.ordering, &match_info.ordering_r,
         &mut nojoker);
+      if reified.is_empty() { continue; }
 
-      if debug { println!("Reified group {0}/{1}: {2:?} using base tiles <{3:?}>{4} into the groups:", i + 1, groups.len(), &group, base_tiles, if nojoker { " (nojoker)" } else { "" }); }
+      if debug { println!("Reified group {0}/{1}: {2:?} using base tiles <{3:?}>{4} into the groups{5}{6}:", i + 1, groups.len(), &group, base_tiles, if nojoker { " (nojoker)" } else { "" }, if separate_suits { " (separate_suits)" } else { "" }, if amerijong { " (amerijong)" } else { "" }); }
       let mut stored_groups = vec!();
       for group in reified.iter() {
         if let Some(&ix) = reified_bank_r.get(&group) {
@@ -554,7 +568,8 @@ pub fn remove_match_definition<'a>(
             hands.push(hand);
             hands
           }))
-        } else {
+        }
+        else {
           println!("Unknown match keyword \"{s}\"");
           acc
         }
