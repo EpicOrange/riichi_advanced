@@ -109,7 +109,6 @@ defmodule RiichiAdvanced.AIPlayer do
 
   defp choose_american_call(params, max_len) do
     %{
-      player: player,
       last_discard: last_discard,
       closest_american_hands: closest_american_hands,
       open_am_match_definitions: open_am_match_definitions
@@ -316,8 +315,6 @@ defmodule RiichiAdvanced.AIPlayer do
       player: player,
       turn: turn,
       last_discard: last_discard,
-      closest_american_hands: closest_american_hands,
-      open_am_match_definitions: open_am_match_definitions
     } = params
     if state.initialized do
       state = Map.put(state, :player, player)
