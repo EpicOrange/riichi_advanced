@@ -103,8 +103,8 @@ defmodule RiichiAdvancedWeb.IndexLive do
     {:noreply, socket}
   end
 
-  def handle_event("redirect", params, socket) do
-    %{"ruleset" => ruleset, "nickname" => nickname} = params
+  def handle_event("redirect", %{"ruleset" => ruleset, "nickname" => nickname} = params, socket) do
+    params
     if Map.has_key?(params, "play") do
       if socket.assigns.show_room_code_buttons do
         socket = if length(socket.assigns.room_code) == 3 do
@@ -141,6 +141,10 @@ defmodule RiichiAdvancedWeb.IndexLive do
       else socket end
       {:noreply, socket}
     end
+  end
+  def handle_event("redirect", _assigns, socket) do
+    # no ruleset selected
+    {:noreply, socket}
   end
   
   def handle_event("goto_about", _assigns, socket) do
