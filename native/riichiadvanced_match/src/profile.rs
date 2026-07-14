@@ -1,5 +1,9 @@
 use std::sync::atomic::{AtomicU64, Ordering};
 
+pub const PROFILE_MATCH: bool = false;
+pub const PROFILE_GET_WAITS: bool = false;
+pub const PROFILE_UNNEEDED_TILES: bool = false;
+
 pub static TOTAL_NANOS: AtomicU64 = AtomicU64::new(0);
 pub static MAX_NANOS: AtomicU64 = AtomicU64::new(0);
 pub static CALL_COUNT: AtomicU64 = AtomicU64::new(0);

@@ -6,9 +6,9 @@ use rustler::Atom;
 use crate::encode::{decode_attrs, encode_aliases, encode_tile};
 use crate::r#match::remove_match_definition;
 use crate::match_info::{prepare_tiles};
-use crate::profile::{CALL_COUNT, MAX_NANOS, TOTAL_NANOS};
+use crate::profile::{PROFILE_GET_WAITS, PROFILE_UNNEEDED_TILES, CALL_COUNT, MAX_NANOS, TOTAL_NANOS};
 use crate::tile_table::tile1x;
-use crate::types::{ElixirAliases, ElixirHandCalls, ElixirTile, MatchDefinitionElem, MatchDefinitions, MatchInfo, PROFILE_GET_WAITS, PROFILE_UNNEEDED_TILES, Tile};
+use crate::types::{ElixirAliases, ElixirHandCalls, ElixirTile, MatchDefinitionElem, MatchDefinitions, MatchInfo, Tile};
 use crate::utils::{add_joker_to_aliases, remove_joker_from_aliases};
 
 #[rustler::nif(schedule = "DirtyCpu")]

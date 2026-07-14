@@ -11,10 +11,10 @@ use crate::encode::{decode, encode, encode_aliases, print_group};
 use crate::match_info::{prepare_tiles};
 use crate::offsets::{__generate_groups, get_base_tiles};
 use crate::primes::{is_manzu, is_pinzu, is_souzu};
-use crate::profile::{CALL_COUNT, MAX_NANOS, TOTAL_NANOS};
+use crate::profile::{PROFILE_MATCH, CALL_COUNT, MAX_NANOS, TOTAL_NANOS};
 use crate::tile_table::{tile1m, tile1p, tile1s, tile1x};
 use crate::tileset::{__subtract, __subtract_exhaustive, _remove_indices, _subtract_check_attrs_exhaustive};
-use crate::types::{ANY_PRIME, Aliases, ElixirAliases, ElixirHand, ElixirHandCalls, ElixirTile, FIXED_OFFSETS, Hands, MatchDefinition, MatchDefinitionElem, MatchDefinitions, MatchGroup, MatchInfo, MatchOffset, PROFILE_MATCH, RemovableGroup, Tile, TileSet};
+use crate::types::{ANY_PRIME, Aliases, ElixirAliases, ElixirHand, ElixirHandCalls, ElixirTile, FIXED_OFFSETS, Hands, MatchDefinition, MatchDefinitionElem, MatchDefinitions, MatchGroup, MatchInfo, MatchOffset, RemovableGroup, Tile, TileSet};
 
 // this is used a lot, especially for determining and processing calls
 // #[rustler::nif]

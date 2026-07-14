@@ -4,10 +4,6 @@ use num_bigint::{BigUint, Sign};
 use ruint::aliases::U256;
 use rustler::{Atom, BigInt, Decoder, Encoder, Env, Error, NifResult, NifStruct, Term};
 
-pub const PROFILE_MATCH: bool = false;
-pub const PROFILE_GET_WAITS: bool = false;
-pub const PROFILE_UNNEEDED_TILES: bool = false;
-
 pub type BitAttrs = u64;
 pub type Prime = u32;
 pub type Tile = (Prime, BitAttrs);
