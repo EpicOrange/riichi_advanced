@@ -34,24 +34,28 @@ Otherwise, to install elixir (instructions taken from [here](https://elixir-lang
 
 ---
 
-Besides Elixir, you'll also need `z3`, `jq`, and `npm`.
+Besides Elixir, you'll also need `z3`, `jq`, `npm`, and the Rust toolchain.
 
 - `z3` is used to solve for jokers in games with joker tiles.
 - `jq` is used for constructing all rulesets and applying mods.
 - `npm` is used only for a few Javascript packages (notably, a library used to let players swap tiles around in hand). However, it's a huge dependency for little benefit, so the plan is to Eventually™ replace it with something else, in order to remove `npm` as a dependency.
+- Rust is used to implement fast tile checking, which is used everywhere in the game.
 
 To install:
 
-- (Mac) `brew install z3 jq npm`
-- (Debian/Ubuntu) `sudo apt install z3 jq npm`
-- (Arch/Manjaro) `sudo pacman -S z3 jq npm`
-- (Red Hat/Fedora) `sudo dnf install z3 jq npm`
-- (Nix) Same as above with `elixir`, but with `z3 jq npm`
+- (Mac) `brew install z3 jq npm rustup`
+- (Debian/Ubuntu) `sudo apt install z3 jq npm rustup`
+- (Arch/Manjaro) `sudo pacman -S z3 jq npm rustup`
+- (Red Hat/Fedora) `sudo dnf install z3 jq npm rustup`
+- (Nix) Same as above with `elixir`, but with `z3 jq npm rustup`
 
 Then run:
 
     git clone "https://github.com/EpicOrange/riichi_advanced.git"
     cd riichi_advanced
+
+    # Install Rust toolchain
+    rustup default stable
 
     # Get Elixir dependencies
     mix deps.get
@@ -85,7 +89,7 @@ You will need to restart your system after every step, because this is how Windo
 
 Afterwards, open up Powershell and use Chocolatey to install all the dependencies. If it fails, you might need to run the terminal as administrator.
 
-    choco install git elixir z3 jq npm
+    choco install git elixir z3 jq npm rust
 
 Then clone this repository, if you haven't already:
 
