@@ -97,11 +97,51 @@ defmodule RiichiAdvanced.AIPlayer do
       usages -> Map.merge(usages, Map.keys(pairing_r) |> Enum.frequencies(), fn _k, v1, v2 -> v1 + v2 end)
     end
     ret = playables
+    # filter out jokers
+    |> Enum.reject(fn {tile, _i} -> tile == :"1j" end)
+    # take least-useful tile
     |> Enum.min_by(fn {_tile, i} -> usages[i] end, &<=/2, fn -> nil end)
     if Debug.debug_ai() and ret != nil do
       IO.puts(" >> #{state.seat}: I'm currently #{shanten}-shanten!")
     end
     {ret, shanten}
+  end
+
+  defp choose_american_call(params, max_len) do
+    %{
+      player: player,
+      last_discard: last_discard,
+      closest_american_hands: closest_american_hands,
+      open_am_match_definitions: open_am_match_definitions
+    } = params
+
+    last_discard_stripped = Utils.strip_attrs(last_discard)
+    last_discard_with_inactive = Utils.add_attr(last_discard_stripped, ["inactive"])
+
+    # get shanten towards all hands
+    shanten = closest_american_hands
+    |> Enum.map(fn {_am_match_definition, pairing_r, _arranged_hand} -> 13 - map_size(pairing_r) end)
+    |> Enum.min(&<=/2, fn -> :infinity end)
+    if shanten <= 3 do
+      closest_american_hands
+      # then get all hands of that shanten
+      |> Enum.filter(fn {_am_match_definition, pairing_r, _arranged_hand} -> shanten == (13 - map_size(pairing_r)) end)
+      # filter for open hands only (might be none if a concealed hand is closer)
+      |> Enum.filter(fn {am_match_definition, _pairing_r, _arranged_hand} -> am_match_definition in open_am_match_definitions end)
+      # out of those hands, see if there's any hands for which the last discard would be helpful
+      # we just look at arranged_hand and see which tiles have the "inactive" attribute
+      |> Enum.filter(fn {_am_match_definition, _pairing_r, arranged_hand} -> last_discard_with_inactive in arranged_hand end)
+      # check each hand to see if it's a pung, kong, quint, or sextet
+      |> Enum.map(fn {_am_match_definition, _pairing_r, arranged_hand} ->
+        arranged_hand
+        |> Utils.strip_attrs()
+        |> Enum.count(& &1 == last_discard_stripped)
+      end)
+      # filter for max_len
+      |> Enum.filter(fn len -> len <= max_len end)
+      # take max, or return 0 if empty
+      |> Enum.max(&>=/2, fn -> 0 end)
+    else 0 end
   end
 
   defp get_mark_choices(source, players, revealed_tiles, scryed_tiles) do
@@ -178,6 +218,7 @@ defmodule RiichiAdvanced.AIPlayer do
         playables = if not Enum.empty?(open_riichis) do
           danger_tiles = for {hand, calls, tile_behavior} <- open_riichis, into: MapSet.new() do
             Match.get_waits(hand, calls, state.shanten_definitions.win, tile_behavior)
+            |> MapSet.new()
           end
           |> Enum.reduce(MapSet.new(), &MapSet.union/2)
           safe_playables = Enum.reject(playables, fn {tile, _i} -> Utils.has_matching_tile?([tile], danger_tiles) end)
@@ -197,7 +238,6 @@ defmodule RiichiAdvanced.AIPlayer do
           end
           GenServer.cast(state.game_state, {:ai_thinking, state.seat})
           {{tile, index}, shanten} = cond do
-            state.tsumogiri_bot -> {Enum.at(playables, -1), :infinity} # tsumogiri
             state.ruleset == "american" ->
               case choose_american_discard(state, playables, closest_american_hands) do
                 {nil, _} ->
@@ -207,6 +247,7 @@ defmodule RiichiAdvanced.AIPlayer do
                   {Enum.at(playables, -1), :infinity} # tsumogiri, or last playable tile
                 t -> t
               end
+            state.tsumogiri_bot -> {Enum.at(playables, -1), :infinity} # tsumogiri
             true ->
               case choose_discard(state, playables, visible_tiles) do
                 {nil, _} ->
@@ -290,15 +331,6 @@ defmodule RiichiAdvanced.AIPlayer do
       # TODO clear thinking upon pressing a button
       # GenServer.cast(state.game_state, {:ai_thinking, state.seat})
       button_name = cond do
-        state.tsumogiri_bot -> cond do
-          "skip" in player.buttons -> "skip"
-          "anfuun" in player.buttons -> "anfuun"
-          "flower" in player.buttons -> "flower"
-          "start_flower" in player.buttons -> "start_flower"
-          "start_no_flower" in player.buttons -> "start_no_flower"
-          "extra_turn" in player.buttons -> "extra_turn"
-          true -> Enum.random(player.buttons)
-        end
         "void_manzu" in player.buttons ->
           # count suits, pick the minimum suit
           hand = player.hand ++ player.draw
@@ -317,25 +349,41 @@ defmodule RiichiAdvanced.AIPlayer do
             "mahjong_discard" in player.buttons and Match.match_hand(player.hand ++ [last_discard], player.calls, state.shanten_definitions.win, player.tile_behavior) -> "mahjong_discard"
             "mahjong_draw" in player.buttons and Match.match_hand(player.hand ++ player.draw, player.calls, state.shanten_definitions.win, player.tile_behavior) -> "mahjong_draw"
             "mahjong_heavenly" in player.buttons and Match.match_hand(player.hand ++ player.draw, player.calls, state.shanten_definitions.win, player.tile_behavior) -> "mahjong_draw"
-            "1_am_pung" in player.buttons ->
-              # get shanten towards open hands
-              shanten = closest_american_hands
-              |> Enum.filter(fn {am_match_definition, _pairing_r, _arranged_hand} -> am_match_definition in open_am_match_definitions end)
-              |> Enum.map(fn {_am_match_definition, pairing_r, _arranged_hand} -> 13 - map_size(pairing_r) end)
-              |> Enum.min(&<=/2, fn -> :infinity end)
-              # take only the best closest hands
-              _closest_american_hands = Enum.filter(closest_american_hands, fn {_am_match_definition, pairing_r, _arranged_hand} -> shanten == (13 - map_size(pairing_r)) end)
-              # and then what? idk
-              # |> Enum.flat_map(fn {am_match_definition, pairing_r, _arranged_hand} ->
-              # end)
-              "skip"
-            # "am_quint" in player.buttons -> "am_quint"
-            # "am_kong" in player.buttons -> "am_kong"
-            # "am_pung" in player.buttons -> "am_pung"
             "am_joker_swap" in player.buttons -> "am_joker_swap"
+            "4_am_sextet" in player.buttons -> case choose_american_call(params, 6) do
+              6 -> "4_am_sextet"
+              5 -> "3_am_quint"
+              4 -> "2_am_kong"
+              3 -> "1_am_pung"
+              _ -> "skip"
+            end
+            "3_am_quint" in player.buttons -> case choose_american_call(params, 5) do
+              5 -> "3_am_quint"
+              4 -> "2_am_kong"
+              3 -> "1_am_pung"
+              _ -> "skip"
+            end
+            "2_am_kong" in player.buttons -> case choose_american_call(params, 4) do
+              4 -> "2_am_kong"
+              3 -> "1_am_pung"
+              _ -> "skip"
+            end
+            "1_am_pung" in player.buttons -> case choose_american_call(params, 3) do
+              3 -> "1_am_pung"
+              _ -> "skip"
+            end
             "skip" in player.buttons -> "skip"
             true -> Enum.random(player.buttons)
           end
+        state.tsumogiri_bot -> cond do
+          "skip" in player.buttons -> "skip"
+          "anfuun" in player.buttons -> "anfuun"
+          "flower" in player.buttons -> "flower"
+          "start_flower" in player.buttons -> "start_flower"
+          "start_no_flower" in player.buttons -> "start_no_flower"
+          "extra_turn" in player.buttons -> "extra_turn"
+          true -> Enum.random(player.buttons)
+        end
         "ron" in player.buttons and Match.match_hand(player.hand ++ [last_discard], player.calls, state.shanten_definitions.win, player.tile_behavior) -> "ron"
         "tsumo" in player.buttons and Match.match_hand(player.hand ++ player.draw, player.calls, state.shanten_definitions.win, player.tile_behavior) -> "tsumo"
         "hu" in player.buttons and Match.match_hand(player.hand ++ [last_discard], player.calls, state.shanten_definitions.win, player.tile_behavior) -> "hu"

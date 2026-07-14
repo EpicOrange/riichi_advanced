@@ -591,7 +591,8 @@ defmodule RiichiAdvanced.GameState.American do
       missing_tiles = Enum.reject(missing_tiles, &Utils.has_attr?(&1, ["_call"]))
       fixed_hand = kept_tiles ++ Utils.add_attr(missing_tiles, ["inactive"])
       if length(fixed_hand) < length(hand) do
-        IO.puts("Warning: fixed hand #{inspect(fixed_hand)} generated with #{length(fixed_hand)} tiles and can never be arranged to match #{am_match_definition}")
+        # TODO prevent this from ever happening
+        # IO.puts("Warning: fixed hand #{inspect(fixed_hand)} generated with #{length(fixed_hand)} tiles and can never be arranged to match #{am_match_definition}")
       end
       arranged_hand = arrange_american_hand([am_match_definition], fixed_hand, calls, tile_behavior)
       if arranged_hand == nil do

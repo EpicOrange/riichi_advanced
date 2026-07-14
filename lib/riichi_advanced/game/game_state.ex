@@ -1033,8 +1033,17 @@ defmodule RiichiAdvanced.GameState do
   end
 
   def get_open_riichi_hands(state) do
-    state.players
-    |> Enum.filter(fn {_seat, player} -> player.hand_revealed end)
+    if state.ruleset == "american" do
+      # avoid helping anyone 3-shanten or better
+      state.players
+      |> Enum.filter(fn {_seat, player} ->
+        player.cache.closest_american_hands
+        |> Enum.any?(fn {_am_match_definition, pairing_r, _arranged_hand} -> (13 - map_size(pairing_r)) <= 3 end)
+      end)
+    else
+      state.players
+      |> Enum.filter(fn {_seat, player} -> player.hand_revealed end)
+    end
     |> Enum.map(fn {_seat, player} -> {player.hand, player.calls, player.tile_behavior} end)
   end
 
@@ -1677,14 +1686,34 @@ defmodule RiichiAdvanced.GameState do
               last_discard = if last_discard_action != nil do Map.get(last_discard_action, :tile, nil) else nil end
               if is_pid(Map.get(state, seat)) and has_buttons and not has_call_buttons and not has_marking_ui do
                 # IO.puts("Notifying #{seat} AI about their buttons: #{inspect(state.players[seat].buttons)}")
-                params = %{
-                  player: state.players[seat],
-                  turn: state.turn,
-                  last_discard: last_discard,
-                  closest_american_hands: state.players[state.turn].cache.closest_american_hands,
-                  open_am_match_definitions: Rules.get(state.rules_ref, "open_win_definition", []),
-                }
-                send(Map.get(state, seat), {:buttons, params})
+                if state.ruleset == "american" do
+                  # we want to delay so we can calculate closest american hands before continuing
+                  self = self()
+                  Task.start(fn ->
+                    closed_win_definition = Rules.get(state.rules_ref, "win_definition", [])
+                    open_win_definition = Rules.get(state.rules_ref, "open_win_definition", [])
+                    win_definition = if Enum.empty?(state.players[seat].calls) do closed_win_definition else open_win_definition end
+                    closest_american_hands = American.compute_closest_american_hands(state, seat, win_definition, 5)
+                    GenServer.cast(self, {:set_closest_american_hands, seat, closest_american_hands})
+                    params = %{
+                      player: state.players[seat],
+                      turn: state.turn,
+                      last_discard: last_discard,
+                      closest_american_hands: closest_american_hands,
+                      open_am_match_definitions: Rules.get(state.rules_ref, "open_win_definition", []),
+                    }
+                    send(Map.get(state, seat), {:buttons, params})
+                  end)
+                else # non-american game
+                  params = %{
+                    player: state.players[seat],
+                    turn: state.turn,
+                    last_discard: last_discard,
+                    closest_american_hands: [],
+                    open_am_match_definitions: [],
+                  }
+                  send(Map.get(state, seat), {:buttons, params})
+                end
               end
             # end
           end
