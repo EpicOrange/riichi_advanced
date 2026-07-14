@@ -5,7 +5,7 @@ on after_initialization do
   - (added) If you previously called %{pon}, you can add the fourth tile to it but only if you draw the tile yourself.
   - (concealed) If you have four of a kind, you can declare them as %{ankan}.
   - In each case, you must then draw a replacement tile from the back of the wall.
-  """, %{kan: !kan_name, ankan: !ankan_name, pon: !pon_name})
+  """, %{kan: !kan_name, ankan: !ankan_name, pon: !pon_name}, 22)
 end
 
 define_button daiminkan,

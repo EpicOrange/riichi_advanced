@@ -1,3 +1,45 @@
+on after_initialization do
+  add_rule("Rules", "Joker Tiles", """
+    Vietnamese Mahjong uses the following sets of 8 jokers.
+    %{all_jokers}
+    On your turn, you may replace any of these jokers by setting them aside like a flower tile, and then drawing a replacement tile. Every joker declared this way scores some amount: see the Phán tab to see their point values. If not replaced, they act like wildcard tiles in your hand. See the Tiles tab for info on what each different joker represents.
+    """, %{all_jokers: @all_jokers})
+  add_rule("Tiles", "Joker Tiles", """
+    Vietnamese Mahjong uses sets of 8 jokers, divided into blue and red jokers.
+    Blue jokers:
+    - Tổng (縂): can be used as any tile (except flowers or other jokers)
+    - Thùng (筒): can be used as any circle tile: %{pinzu}
+    - Soọc (索): can be used as any bamboo tile: %{souzu}
+    - Màn (萬): can be used as any character tile: %{manzu}
+    Red jokers:
+    - Đại Hoa (花): acts as a flower tile worth 2 Phán, not really a joker
+    - Hỉ (喜): can be used as any wind tile: %{winds}
+    - Nguyên (元): can be used as any dragon tile: %{dragons}
+    - Hợp (合): can be used as any number tile: %{pinzu}%{souzu}%{manzu}
+    These can be declared like flower tiles, in which case they cease to act as a wildcard and instead contribute a few Phán to your hand's value. See the Phán tab to see how they score.
+    """, %{
+      pinzu: ~t"123456789p",
+      souzu: ~t"123456789s",
+      manzu: ~t"123456789m",
+      winds: ~t"1234z",
+      dragons: ~t"067z",
+    }, -90)
+  add_rule("2 Phán", "Tổng (縂)", "The anything joker %{tong} can be replaced for 3 Phán if you are the East player or if you replace it at the start of the game, or 2 Phán otherwise.", %{tong: ~t"0j"})
+  add_rule("1 Phán", "Thùng (筒)", "The circle joker %{thung} can be replaced for 2 Phán if you are the South player, or 1 Phán otherwise.", %{tong: ~t"6j"})
+  add_rule("1 Phán", "Soọc (索)", "The bamboo joker %{sooc} can be replaced for 2 Phán if you are the West player, or 1 Phán otherwise.", %{sooc: ~t"7j"})
+  add_rule("1 Phán", "Màn (萬)", "The character joker %{man} can be replaced for 2 Phán if you are the North player, or 1 Phán otherwise.", %{tong: ~t"8j"})
+  add_rule("2 Phán", "Đại Hoa (花)", "The flower joker %{hoa} can be replaced for 2 Phán regardless of seat.", %{hoa: ~t"9j"})
+  add_rule("1 Phán", "Hỉ (喜)", "The wind joker %{hi} can be replaced for 2 Phán if you are the South player, or 1 Phán otherwise.", %{ho: ~t"4j"})
+  add_rule("1 Phán", "Nguyên (元)", "The dragon joker %{nguyen} can be replaced for 2 Phán if you are the West player, or 1 Phán otherwise.", %{nguyen: ~t"5j"})
+  add_rule("2 Phán", "Hợp (合)", "The number joker %{hop} can be replaced for 3 Phán if you are the North player or if you replace it at the start of the game, or 2 Phán otherwise.", %{hop: ~t"2j"})
+end
+
+# jokers
+# 9j (flower joker) is handled by vietnamese_flowers mod
+define_const all_jokers, ["0j", "2j", "4j", "5j", "6j", "7j", "8j"]
+apply append, "wall", +@all_jokers
+define_set any_joker, ~s"0j|2j|4j|5j|6j|7j|8j"
+define_match any_joker, ~m"nojoker, any_joker:1"
 
 on after_start do
   set_tile_alias_all(["0j"], ["any"])
@@ -33,13 +75,6 @@ define_play_effect joker do
   set_status("discarded_joker")
   make_joker_discard
 end
-
-# jokers
-# 9j (flower joker) is already added by vietnamese_flowers mod
-define_const all_jokers, ["0j", "2j", "4j", "5j", "6j", "7j", "8j"]
-apply append, "wall", +@all_jokers
-define_set any_joker, ~s"0j|2j|4j|5j|6j|7j|8j"
-define_match any_joker, ~m"nojoker, any_joker:1"
 
 define_button start_joker,
   display_name: "Reveal joker",

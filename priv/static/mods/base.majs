@@ -1,5 +1,6 @@
 on after_initialization do
   add_rule_tab("Rules")
+  add_rule_tab("Tiles")
   add_rule_tab("1 $han", %{han: !han})
   add_rule_tab("2 $han", %{han: !han})
   add_rule_tab("3 $han", %{han: !han})

@@ -1,5 +1,5 @@
 on after_initialization do
-  add_rule("Rules", !chii_name, "When the player to your left discards a tile you can use to complete a 3 tile sequence, you may call %{chii_name} to take that tile instead of drawing.", %{chii_name: !chii_name})
+  add_rule("Rules", !chii_name, "When the player to your left discards a tile you can use to complete a 3 tile sequence, you may call %{chii_name} to take that tile instead of drawing.", %{chii_name: !chii_name}, 20)
 end
 
 define_button chii,

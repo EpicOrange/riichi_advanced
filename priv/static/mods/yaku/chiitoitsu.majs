@@ -22,8 +22,4 @@ end
 apply set_append, "tenpai_definition", +@chiitoitsu_tenpai
 apply set_append, "win_definition", +@chiitoitsu_win
 
-if equals(!list, "yakuman") do
-  define_yaku !list, !name, [!value, !limit], match(["hand", "winning_tile"], ~m"pair:7")
-else
-  define_yaku !list, !name, [!value, !han], match(["hand", "winning_tile"], ~m"pair:7")
-end
+define_yaku !list, !name, [!value, !han], match(["hand", "winning_tile"], ~m"pair:7")

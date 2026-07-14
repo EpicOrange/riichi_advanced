@@ -1,30 +1,43 @@
 
 on after_initialization do
   add_rule("Rules", "Flowers", """
+  %{all_flowers}
   - Flower tiles must be declared and replaced by a draw from the back of the wall.
-  - A flower tile is worth %{matching_flower_value} %{matching_flower_points_name} if its number matches your seat (1=east, 2=south, 3=west, 4=north)
-  - Having all 4 flower tiles of the same set is worth %{four_flowers_value} %{four_flowers_points_name}.
+  - A flower tile is worth %{value} %{han} if its number matches your seat (1=east, 2=south, 3=west, 4=north).
   """, %{
-    matching_flower_value: !matching_flower_value, matching_flower_points_name: !matching_flower_points_name,
-    four_flowers_value: !four_flowers_value, four_flowers_points_name: !four_flowers_points_name
+    all_flowers: @all_flowers,
+    value: !matching_flower_value, han: !matching_flower_han,
   })
+  if four_flowers_value > 0 do
+    add_rule("Rules", "Flowers", """
+    - Having all 4 flower tiles of the same set is instead worth %{four_flowers_value} %{four_flowers_han}.
+    """, %{four_flowers_value: !four_flowers_value, four_flowers_han: !four_flowers_han})
+  end
+  cond do
+  seat_is("east") -> add_rule("$value $han", "Flowers", "Each flower tile whose number matches your seat is worth %{value} %{han}. Since your current seat is East, that would be the following flowers: %{flowers}", %{all_flowers: @all_flowers, value: !matching_flower_value, han: !matching_flower_han, flowers: @east_flowers})
+  seat_is("south") -> add_rule("$value $han", "Flowers", "Each flower tile whose number matches your seat is worth %{value} %{han}. Since your current seat is South, that would be the following flowers: %{flowers}", %{all_flowers: @all_flowers, value: !matching_flower_value, han: !matching_flower_han, flowers: @south_flowers})
+  seat_is("west") -> add_rule("$value $han", "Flowers", "Each flower tile whose number matches your seat is worth %{value} %{han}. Since your current seat is West, that would be the following flowers: %{flowers}", %{all_flowers: @all_flowers, value: !matching_flower_value, han: !matching_flower_han, flowers: @west_flowers})
+  seat_is("north") -> add_rule("$value $han", "Flowers", "Each flower tile whose number matches your seat is worth %{value} %{han}. Since your current seat is North, that would be the following flowers: %{flowers}", %{all_flowers: @all_flowers, value: !matching_flower_value, han: !matching_flower_han, flowers: @north_flowers})
+  end
 end
 
 define_const all_flowers, ["1f", "2f", "3f", "4f", "1g", "2g", "3g", "4g"]
+define_const east_flowers, ["1f", "1g"]
+define_const south_flowers, ["2f", "2g"]
+define_const west_flowers, ["3f", "3g"]
+define_const north_flowers, ["4f", "4g"]
 apply append, "wall", +@all_flowers
 
-define_yaku yaku, "Seat Flower", [!matching_flower_value, !matching_flower_points_name], seat_is("east") and match(["flowers"], ~m"1f:1")
-define_yaku yaku, "Seat Flower", [!matching_flower_value, !matching_flower_points_name], seat_is("south") and match(["flowers"], ~m"2f:1")
-define_yaku yaku, "Seat Flower", [!matching_flower_value, !matching_flower_points_name], seat_is("west") and match(["flowers"], ~m"3f:1")
-define_yaku yaku, "Seat Flower", [!matching_flower_value, !matching_flower_points_name], seat_is("north") and match(["flowers"], ~m"4f:1")
-define_yaku yaku, "Seat Season", [!matching_flower_value, !matching_flower_points_name], seat_is("east") and match(["flowers"], ~m"1g:1")
-define_yaku yaku, "Seat Season", [!matching_flower_value, !matching_flower_points_name], seat_is("south") and match(["flowers"], ~m"2g:1")
-define_yaku yaku, "Seat Season", [!matching_flower_value, !matching_flower_points_name], seat_is("west") and match(["flowers"], ~m"3g:1")
-define_yaku yaku, "Seat Season", [!matching_flower_value, !matching_flower_points_name], seat_is("north") and match(["flowers"], ~m"4g:1")
-define_yaku yaku, "All Flowers", [!four_flowers_value, !four_flowers_points_name], match(["flowers"], ~m"1f:1, 2f:1, 3f:1, 4f:1")
-define_yaku yaku, "All Seasons", [!four_flowers_value, !four_flowers_points_name], match(["flowers"], ~m"1g:1, 2g:1, 3g:1, 4g:1")
-define_yaku_precedence "All Flowers", ["Seat Flower"]
-define_yaku_precedence "All Seasons", ["Seat Season"]
+define_yaku yaku, "Seat Flower", [!matching_flower_value, !matching_flower_han], seat_is("east") and match(["flowers"], ~m"1f:1")
+define_yaku yaku, "Seat Flower", [!matching_flower_value, !matching_flower_han], seat_is("south") and match(["flowers"], ~m"2f:1")
+define_yaku yaku, "Seat Flower", [!matching_flower_value, !matching_flower_han], seat_is("west") and match(["flowers"], ~m"3f:1")
+define_yaku yaku, "Seat Flower", [!matching_flower_value, !matching_flower_han], seat_is("north") and match(["flowers"], ~m"4f:1")
+define_yaku yaku, "Seat Season", [!matching_flower_value, !matching_flower_han], seat_is("east") and match(["flowers"], ~m"1g:1")
+define_yaku yaku, "Seat Season", [!matching_flower_value, !matching_flower_han], seat_is("south") and match(["flowers"], ~m"2g:1")
+define_yaku yaku, "Seat Season", [!matching_flower_value, !matching_flower_han], seat_is("west") and match(["flowers"], ~m"3g:1")
+define_yaku yaku, "Seat Season", [!matching_flower_value, !matching_flower_han], seat_is("north") and match(["flowers"], ~m"4g:1")
+define_yaku yaku, "All Flowers", [!four_flowers_value, !four_flowers_han], match(["flowers"], ~m"1f:1, 2f:1, 3f:1, 4f:1"), ["Seat Flower"]
+define_yaku yaku, "All Seasons", [!four_flowers_value, !four_flowers_han], match(["flowers"], ~m"1g:1, 2g:1, 3g:1, 4g:1"), ["Seat Season"]
 
 define_button start_flower,
   display_name: "Reveal flower",

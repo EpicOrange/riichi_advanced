@@ -1,8 +1,16 @@
+on after_initialization do
+  add_rule("Rules", "Flowers", "- Vietnamese mahjong additionally includes 4 kings %{kings}, 4 %{queens}, and the flower joker %{hoa} as additional flower tiles.", %{kings: ~t"1234k", queens: ~t"1234q"});
+end
+
 # expand all_flowers to include 1-4k, 1-4q, 9j
 apply append, "constants.all_flowers", ["1k", "2k", "3k", "4k", "1q", "2q", "3q", "4q", "9j"]
+apply append, "constants.east_flowers", ["1k", "1q"]
+apply append, "constants.south_flowers", ["2k", "2q"]
+apply append, "constants.westt_flowers", ["3k", "3q"]
+apply append, "constants.north_flowers", ["4k", "4q"]
 
 # dealer can declare no_flower at 0-1 flowers
-define_set any_flower, ~s"1f|2f|3f|4f|1g|2g|3g|4g|1k|2k|3k|4k|1q|2q|3q|4q|9j"
+apply append, "set_definitions.any_flower", ~s"1k|2k|3k|4k|1q|2q|3q|4q|9j"
 define_match any_flower, ~m"nojoker, any_flower:1"
 apply set, "buttons.start_no_flower.show_when",
   status("initial_flowers")
@@ -24,11 +32,12 @@ define_yaku yaku, "Seat Queen", [1, "Phán"], seat_is("south") and match(["flowe
 define_yaku yaku, "Seat Queen", [1, "Phán"], seat_is("west") and match(["flowers"], ~m"3q:1")
 define_yaku yaku, "Seat Queen", [1, "Phán"], seat_is("north") and match(["flowers"], ~m"4q:1")
 
-# flower sets (override default_flowers mod)
-define_yaku yaku, "Bouquet", [1, "Mủn"], match(["flowers"], ~m"1f:1, 2f:1, 3f:1, 4f:1"), ["All Flowers", "Seat Flower"]
-define_yaku yaku, "Bouquet", [1, "Mủn"], match(["flowers"], ~m"1g:1, 2g:1, 3g:1, 4g:1"), ["All Seasons", "Seat Season"]
-define_yaku yaku, "Bouquet", [1, "Mủn"], match(["flowers"], ~m"1k:1, 2k:1, 3k:1, 4k:1"), ["Seat King"]
-define_yaku yaku, "Bouquet", [1, "Mủn"], match(["flowers"], ~m"1q:1, 2q:1, 3q:1, 4q:1"), ["Seat Queen"]
+# flower sets
+# replace their names with Bouquet
+define_yaku yaku, "Bouquet", [1, "Mủn"], has_existing_yaku("All Flowers"), ["All Flowers"]
+define_yaku yaku, "Bouquet", [1, "Mủn"], has_existing_yaku("All Flowers"), ["All Seasons"]
+define_yaku yaku, "All Kings", [1, "Mủn"], match(["flowers"], ~m"1k:1, 2k:1, 3k:1, 4k:1"), ["Seat King"]
+define_yaku yaku, "All Queens", [1, "Mủn"], match(["flowers"], ~m"1q:1, 2q:1, 3q:1, 4q:1"), ["Seat Queen"]
 # define_yaku yaku, "Matched Royalty", [1, "Phán"], match(["flowers"], ~m"1k:1, 1q:1")
 # define_yaku yaku, "Matched Royalty", [1, "Phán"], match(["flowers"], ~m"2k:1, 2q:1")
 # define_yaku yaku, "Matched Royalty", [1, "Phán"], match(["flowers"], ~m"3k:1, 3q:1")

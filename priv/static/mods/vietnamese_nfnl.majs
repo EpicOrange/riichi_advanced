@@ -1,3 +1,24 @@
+on after_initialization do
+  add_rule("Rules", "Win Condition", "- (Vietnamese NFNL) Starting with no flowers in your hand, you complete one of the above hands while discarding every honor, flower, or joker tile as soon as possible. (Your final hand cannot have honors, flowers, or jokers.)", -100)
+  add_rule("Rules", "Win Condition", "- (Vietnamese NFNL) Starting with no flowers in your hand, you deal (as your first discards) three flowers or jokers, and proceed to discard until you have no honors, flowers or jokers, at which point you can win on the next discarded or drawn number tile.", -100)
+  add_rule("Rules", "Win Condition", "- (Vietnamese NFNL) Starting with no flowers in your hand, you deal (as your first discards) three flowers as your first discards.", -100)
+  add_rule("Rules", "Win Condition", "- (Vietnamese NFNL) Starting with no flowers in your hand, you deal (as your first discards) three tiles from the set %{blue_jokers} (blue jokers + number joker) as your first discards.", %{blue_jokers: ~t"06782j"}, -100)
+  add_rule("Rules", "No Flowers, No Leaves (NFNL)", """
+    (Vietnamese) NFNL describes one of four hands with the same preconditions:
+
+    1. You must immediately discard flowers and jokers as soon as you get them.
+    2. You cannot start with any flowers, including %{hoa}. That is, you declare No Flowers immediately.
+    3. (The dealer may declare No Flowers if they have exactly one flower tile, but they must discard it the following turn.)
+
+    If these conditions are satisfied, you can win with any of the following NFNL hands:
+
+    - True NFNL (2 Mủn): You complete a hand normally but without using any honors, flowers, or jokers. For True NFNL, if you discarded less than three jokers, the first two jokers you deal are scored as if you had set them aside.
+    - Throwing Flowers/Jokers (1 Mủn): Your first three discards are flowers or jokers. Afterwards, you win as soon as your hand is only composed of number tiles (no honors, flowers, or jokers), at which point you can call a win if any player discards a number tile (or if you draw one yourself). If your first discards are 5 or more joker/flower tiles in succession, you score an additional 1 Mủn per joker/flower tile starting with the 5th.
+    - Throwing Flowers (1 Mủn): Your first three discards are flowers or the flower joker %{hoa}. After that discard, you may choose to immediately declare a self-drawn win, even if you have honor tiles in hand. If you choose to forgo the win and go on to discard additional flower tiles, each scores an additional Mủn and again gives you the choice to win.
+    - Throwing Blue Jokers (1 Mủn): Your first three discards blue jokers %{blue_jokers}, or the number joker %{hop}. After that discard, you may choose to immediately declare a self-drawn win, even if you have honor tiles in hand. If you choose to forgo the win and go on to discard additional %{blue_jokers}%{hop}, each scores an additional Mủn and again gives you the choice to win.
+    Note that it is possible, though rare, to stack True NFNL with the others.
+    """, %{hoa: ~t"9j", blue_jokers: ~t"0678j", hop: ~t"2j"}, -90)
+end
 define_match has_non_nfnl_tile, ~m"(any_flower any_joker 1z 2z 3z 4z 0z 6z 7z):1"
 define_button nfnl,
   display_name: "No Flowers, No Leaves", 
@@ -119,17 +140,20 @@ end
 
 define_yaku meta_nfnl, "Throwing Flowers/Jokers", ["throwing_flowers_jokers_value", "Mủn"],
   has_existing_yaku("No Flowers, No Leaves")
-  and status("throwing_flowers_jokers_eligible"),
+  and status("throwing_flowers_jokers_eligible")
+  and throwing_flowers_jokers_value > 0,
   ["No Flowers, No Leaves"]
 define_yaku meta_nfnl, "Throwing Flowers", ["throwing_flowers_value", "Mủn"],
   has_existing_yaku("No Flowers, No Leaves")
-  and status("throwing_flowers_eligible"),
+  and status("throwing_flowers_eligible")
+  and throwing_flowers_value > 0,
   ["No Flowers, No Leaves"]
 define_yaku meta_nfnl, "Throwing Blue Jokers", ["throwing_blue_jokers_value", "Mủn"],
   has_existing_yaku("No Flowers, No Leaves")
-  and status("throwing_blue_jokers_eligible"),
+  and status("throwing_blue_jokers_eligible")
+  and throwing_blue_jokers_value > 0,
   ["No Flowers, No Leaves"]
-define_yaku meta_nfnl, "True No Flowers, No Leaves", [1, "Mủn"],
+define_yaku meta_nfnl, "True No Flowers, No Leaves", [2, "Mủn"],
   has_existing_yaku("No Flowers, No Leaves")
   and match(["hand", "calls", "winning_tile"], ["win"]),
   ["No Flowers, No Leaves"]
@@ -137,14 +161,17 @@ define_yaku meta_nfnl, "True No Flowers, No Leaves", [1, "Mủn"],
 on before_win do
   if status("nfnl_eligible") and match(["hand", "calls", "winning_tile"], ["win"]) do
     # winning true NFNL while having discarded only 1-2 jokers gives you their value
-    calculate_joker_values
-    if status_missing("discarded_0j") do tong_value = 0 end
-    if status_missing("discarded_6j") do thung_value = 0 end
-    if status_missing("discarded_7j") do sooc_value = 0 end
-    if status_missing("discarded_8j") do man_value = 0 end
-    if status_missing("discarded_9j") do hoa_value = 0 end
-    if status_missing("discarded_5j") do hi_value = 0 end
-    if status_missing("discarded_4j") do nguyen_value = 0 end
-    if status_missing("discarded_2j") do hop_value = 0 end
+    flowers_jokers_discarded = flowers_discarded + jokers_discarded
+    if flowers_jokers_discarded <= 2 do
+      calculate_joker_values
+      if status_missing("discarded_0j") do tong_value = 0 end
+      if status_missing("discarded_6j") do thung_value = 0 end
+      if status_missing("discarded_7j") do sooc_value = 0 end
+      if status_missing("discarded_8j") do man_value = 0 end
+      if status_missing("discarded_9j") do hoa_value = 0 end
+      if status_missing("discarded_5j") do hi_value = 0 end
+      if status_missing("discarded_4j") do nguyen_value = 0 end
+      if status_missing("discarded_2j") do hop_value = 0 end
+    end
   end
 end
