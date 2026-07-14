@@ -29,7 +29,7 @@ defmodule RiichiAdvanced.GameState.Payment do
       "To left"     -> "From right"
       name          -> name
     end
-    %{txn | name: new_name, line_items: [%{op: :*, amount: -1, result: -get_txn_result(txn), reason: ""} | txn.line_items]}
+    %{txn | name: new_name, line_items: [%{op: :*, prev: nil, amount: -1, result: -get_txn_result(txn), reason: ""} | txn.line_items]}
   end
 
   # result of a transaction is just the value of its final (index 0) line item
@@ -48,7 +48,7 @@ defmodule RiichiAdvanced.GameState.Payment do
         amount = get_txn_result(txn)
         result = Utils.try_integer(acc + amount)
         op = if Enum.empty?(ret.line_items) do "=" else "+" end # omit the first +
-        %{ret | line_items: [%{op: op, amount: amount, result: result, reason: txn.name} | ret.line_items]}
+        %{ret | line_items: [%{op: op, prev: nil, amount: amount, result: result, reason: txn.name} | ret.line_items]}
     end
   end
 
@@ -148,7 +148,7 @@ defmodule RiichiAdvanced.GameState.Payment do
     end
     # then give pot to winner
     state = if state.pot > 0 do
-      line_item = %{op: "+", amount: state.pot, result: state.pot, reason: "Riichi sticks"}
+      line_item = %{op: "+", prev: nil, amount: state.pot, result: state.pot, reason: "Riichi sticks"}
       pot_txn = %Transaction{name: "Riichi sticks", from: nil, to: cxt.seat, line_items: [line_item]}
       state = update_in(state.txns, &[pot_txn | &1])
       state

@@ -3,6 +3,7 @@ defmodule RiichiAdvanced.Types do
   @type win_source() :: :discard | :draw | :call
   @type line_item() :: %{
     op: binary() | nil,
+    prev: number() | binary() | nil,
     amount: number(),
     result: number(),
     reason: binary(),

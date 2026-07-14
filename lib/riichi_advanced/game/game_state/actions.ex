@@ -760,41 +760,50 @@ defmodule RiichiAdvanced.GameState.Actions do
   defp eval_expression(state, context, ["round", [l, r]]) do
     l = eval_expression(state, context, l)
     r = eval_expression(state, context, r)
-    to = if r == 0 do 10 else r end
+    to = if r == 0 do 1 else r end
     Utils.try_integer(round(l / to) * to)
   end
   defp eval_expression(state, context, ["round_up", [l, r]]) do
     l = eval_expression(state, context, l) |> trunc()
     r = eval_expression(state, context, r)
-    to = if r == 0 do 10 else r end
+    to = if r == 0 do 1 else r end
     remainder = rem(l, to)
     if remainder == 0 do l else l - remainder + to end
   end
   defp eval_expression(state, context, ["round_down", [l, r]]) do
     l = eval_expression(state, context, l)
     r = eval_expression(state, context, r)
-    to = if r == 0 do 10 else r end
+    to = if r == 0 do 1 else r end
     l - rem(l, to)
+  end
+  defp eval_expression(state, context, ["floor_div", [l, r]]) do
+    l = eval_expression(state, context, l)
+    r = eval_expression(state, context, r)
+    Integer.floor_div(l, r)
   end
   defp eval_expression(state, context, v), do: interpret_amount(state, context, v)
   defp counter_assignment(state, context, display_name, counter_name, op, rhs) do
     warn_counter(counter_name)
     # change displayed op
-    {op, rhs} = case {op, rhs} do
-      {"=", [new_op, [^counter_name, rhs2]]} -> {new_op, rhs2}
-      _    -> {op, rhs}
+    orig_rhs = rhs
+    {lhs, op, rhs} = case {op, rhs} do
+      {"=", [new_op, [lhs, rhs]]} when is_number(lhs) -> {lhs, new_op, rhs}
+      {"=", [new_op, [lhs, rhs]]} when is_binary(lhs) -> {nil, new_op, rhs}
+      _    -> {nil, op, rhs}
     end
-    amount = eval_expression(state, context, rhs)
-    |> Utils.try_integer()
-    new_ctr = eval_expression(state, context, [op, [counter_name, amount]])
-    |> Utils.try_integer()
-    # IO.inspect({op, rhs, amount, new_ctr})
-    state = put_in(state.players[context.seat].counters[counter_name], new_ctr)
+    lhs_value = if lhs != nil do
+      eval_expression(state, context, lhs) |> Utils.try_integer()
+    else nil end
+    rhs_value = eval_expression(state, context, rhs) |> Utils.try_integer()
+
+    result = eval_expression(state, context, orig_rhs) |> Utils.try_integer()
+    state = put_in(state.players[context.seat].counters[counter_name], result)
     # add as a line item to the most recent transaction
     line_item = %{
       op: if op == "=" do nil else op end,
-      amount: if op == "=" do nil else amount end,
-      result: new_ctr,
+      prev: if op == "=" do nil else lhs_value end,
+      amount: if op == "=" do nil else rhs_value end,
+      result: result,
       reason: display_name
     }
     state = update_in(state.txns, &List.update_at(&1, 0,

@@ -51,7 +51,7 @@ defmodule RiichiAdvanced.Compiler do
   use RiichiAdvanced.ValidatorStrings
 
   @unops [:-, "round_up", "round_down", "round"]
-  @binops [:+, :-, :*, :/, :**, :=, "round_up", "round_down", "round"]
+  @binops [:+, :-, :*, :/, :**, :=, "round_up", "round_down", "round", "floor_div"]
   # "atan2", "copysign", "drem", "fdim", "fmax", "fmin", "fmod", "frexp", "hypot", "jn", "ldexp",
   # "modf", "nextafter", "nexttoward", "pow", "remainder", "scalb", "scalbln", "yn"
 
@@ -225,7 +225,7 @@ defmodule RiichiAdvanced.Compiler do
           {:"-=", pos, [{l, _, nil}, r]} -> compile_action({"_counter_assignment", pos, [l, "-", r, display_name]}, line, column)
           {:"*=", pos, [{l, _, nil}, r]} -> compile_action({"_counter_assignment", pos, [l, "*", r, display_name]}, line, column)
           {:"/=", pos, [{l, _, nil}, r]} -> compile_action({"_counter_assignment", pos, [l, "/", r, display_name]}, line, column)
-          {:"^=", pos, [{l, _, nil}, r]} -> compile_action({"_counter_assignment", pos, [l, "^", r, display_name]}, line, column)
+          {:"**=", pos, [{l, _, nil}, r]} -> compile_action({"_counter_assignment", pos, [l, "**", r, display_name]}, line, column)
           _                              -> {:error, "Compiler.compile_action: at line #{line}:#{column}, expected an assignment, got #{assignment}"}
         end
       # {:=, pos, [{l, _, nil}, {:+, _, [{l, _, nil}, {r, _, nil}]}]} -> compile_action({"add_counter", pos, [l, r]}, line, column)

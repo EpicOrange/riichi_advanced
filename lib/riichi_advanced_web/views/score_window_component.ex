@@ -47,7 +47,7 @@ defmodule RiichiAdvancedWeb.ScoreWindowComponent do
           <%= for {key, _total, line_items} <- format_txns(@txns, @seat, @players) do %>
             <table class={["score-ledger", key]}>
               <thead><tr>
-                <th colspan="5"><%= key_title(@players, @seat, key) %>
+                <th colspan="6"><%= key_title(@players, @seat, key) %>
                   <div class="score-ledger-mini">
                     <span class={["mini-self" | if mini_highlight?(key, :self) do ["selected"] else [] end]}></span>
                     <span class={["mini-shimocha" | if mini_highlight?(key, :shimocha) do ["selected"] else [] end]}></span>
@@ -57,8 +57,9 @@ defmodule RiichiAdvancedWeb.ScoreWindowComponent do
                 </th>
               </tr></thead>
               <tbody>
-                <%= for %{op: op, amount: amount, result: result, reason: reason} <- line_items do %>
+                <%= for %{op: op, prev: prev, amount: amount, result: result, reason: reason} <- line_items do %>
                   <tr class={if reason == "Total" do "score-ledger-total" else nil end}>
+                    <td class=""><%= if is_number(prev) do prev else prev end %></td>
                     <td class="score-ledger-op"><%= display_op(op) %></td>
                     <td class="score-ledger-amount"><%= if amount != nil do Utils.try_integer(round(amount * 100) / 100) else "" end %></td>
                     <td><%= if op != nil do "=" else "" end %></td>
@@ -148,7 +149,7 @@ defmodule RiichiAdvancedWeb.ScoreWindowComponent do
         if result == 0 do
           ret
         else
-          line_items = [%{op: nil, amount: nil, result: result, reason: "Total"} | txn.line_items]
+          line_items = [%{op: nil, prev: nil, amount: nil, result: result, reason: "Total"} | txn.line_items]
           [{Utils.get_relative_seat(seat, seat2) |> Atom.to_string(), result, Enum.reverse(line_items)} | ret]
         end
     end
@@ -183,9 +184,11 @@ defmodule RiichiAdvancedWeb.ScoreWindowComponent do
       "-" -> "-"
       "*" -> "×"
       "/" -> "÷"
+      "**" -> "^"
       "round" -> "↕"
       "round_up" -> "↑"
       "round_down" -> "↓"
+      "floor_div" -> "÷"
       _  -> ""
     end
   end
