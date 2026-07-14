@@ -426,15 +426,24 @@ fn reify_groups<'a>(
       // we need to try each suit
       if have_numeric_offsets {
         // separate base tiles of the same suit
-        let mut base_m: Vec<ElixirTile> = (*base_tiles).clone().into_iter().filter(|t| is_manzu(t)).collect();
-        let mut base_p: Vec<ElixirTile> = (*base_tiles).clone().into_iter().filter(|t| is_pinzu(t)).collect();
-        let mut base_s: Vec<ElixirTile> = (*base_tiles).clone().into_iter().filter(|t| is_souzu(t)).collect();
-        if have_fixed_offsets {
-          if !base_m.contains(&man) { base_m.push(man.clone()); }
-          if !base_p.contains(&pin) { base_p.push(pin.clone()); }
-          if !base_s.contains(&sou) { base_s.push(sou.clone()); }
+        let mut base_m: Vec<ElixirTile> = vec!();
+        let mut base_p: Vec<ElixirTile> = vec!();
+        let mut base_s: Vec<ElixirTile> = vec!();
+        let mut base_j: Vec<ElixirTile> = vec!();
+        for tile in (*base_tiles).clone() {
+          if is_manzu(&tile) { base_m.push(tile); }
+          else if is_pinzu(&tile) { base_p.push(tile); }
+          else if is_souzu(&tile) { base_s.push(tile); }
+          else { base_j.push(tile); }
         }
-        vec!(Rc::new(base_m), Rc::new(base_p), Rc::new(base_s), base_tiles.clone())
+        if have_fixed_offsets { // amerijong
+          if !base_m.contains(&man) { base_m.push(man.clone()); }
+          else if !base_p.contains(&pin) { base_p.push(pin.clone()); }
+          else if !base_s.contains(&sou) { base_s.push(sou.clone()); }
+          vec!(Rc::new(base_m), Rc::new(base_p), Rc::new(base_s), Rc::new(base_j))
+        } else {
+          vec!(Rc::new(base_m), Rc::new(base_p), Rc::new(base_s), base_tiles.clone())
+        }
       } else { keys.clone() }
     } else if have_numeric_offsets {
       vec!(base_tiles.clone())

@@ -9,6 +9,7 @@ defmodule RiichiAdvanced.GameState.Kyoku do
   alias RiichiAdvanced.GameState.Scoring, as: Scoring
   alias RiichiAdvanced.GameState.ScoringOld, as: ScoringOld
   alias RiichiAdvanced.GameState.TileBehavior, as: TileBehavior
+  alias RiichiAdvanced.Match, as: Match
   alias RiichiAdvanced.Riichi, as: Riichi
   alias RiichiAdvanced.Utils, as: Utils
   alias RiichiAdvanced.Types, as: Types
@@ -334,14 +335,14 @@ defmodule RiichiAdvanced.GameState.Kyoku do
       |> Enum.at(1)
       |> List.wrap()
     end |> Enum.concat()
-    winning_tile = Utils.strip_attrs(winning_tile, :salient)
+    winning_tile = Utils.strip_attrs(winning_tile)
     arranged_hand = American.arrange_american_hand(am_match_definitions, Utils.strip_attrs(orig_hand, :salient) ++ [winning_tile], orig_calls, tile_behavior)
     if arranged_hand != nil do
       arranged_hand
       |> Enum.intersperse([:"3x"])
       |> Enum.concat()
       |> Enum.reverse()
-      |> then(& &1 -- [winning_tile])
+      |> then(&Match.try_remove_all_tiles(&1, [winning_tile], %{}, tile_behavior.attrs) |> Enum.at(0))
       |> Enum.reverse()
     else orig_hand end
   end
