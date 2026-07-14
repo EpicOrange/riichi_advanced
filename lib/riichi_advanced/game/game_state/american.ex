@@ -289,7 +289,7 @@ defmodule RiichiAdvanced.GameState.American do
                     # if not, we remove groups one at time from hand, prioritizing nonjokers
                     new_hand = Enum.reduce_while(1..num, hand, fn n, hand ->
                       # first phase: remove a nonjoker
-                      anyless_tile_behavior = %{ tile_behavior | aliases: Map.delete(tile_behavior.aliases, :any), uuid: Ecto.UUID.generate() }
+                      anyless_tile_behavior = %{ tile_behavior | attrs: MapSet.put(tile_behavior.attrs, "inactive"), aliases: Map.delete(tile_behavior.aliases, :any), uuid: Ecto.UUID.generate() }
                       new_hand = Enum.find_value(groups, fn group ->
                         # calls were taken care of above, so we can just focus on hand
                         group = if is_atom(group) do
@@ -537,7 +537,7 @@ defmodule RiichiAdvanced.GameState.American do
       # replace unmatched tiles in hand with missing tiles
       kept_tiles = Enum.map(Map.keys(pairing_r), fn i -> Enum.at(hand, i) end)
       missing_tiles = Enum.reject(missing_tiles, &Utils.has_attr?(&1, ["_call"]))
-      fixed_hand = kept_tiles ++ Utils.add_attr(missing_tiles, ["_inactive"])
+      fixed_hand = kept_tiles ++ Utils.add_attr(missing_tiles, ["inactive"])
       arranged_hand = arrange_american_hand([am_match_definition], fixed_hand, calls, tile_behavior)
       if arranged_hand == nil do
         if seat == :east do
