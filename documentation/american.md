@@ -103,7 +103,7 @@ The following Cards are supported by Riichi Advanced:
 - [ShariUniqueCreations Vegas Card](https://www.etsy.com/listing/690122975) (cost: 8.45~9.45CAD)
 - [ILoveMahj Card](https://ilovemahj.com/ilmCard) (free)
 - [ATeacherFirst Mah Jongg Fake Card](https://www.ateacherfirst.com/bridge/mah-jongg/) (free)
-- [MahjLife Mock Card](https://mahjlife.com/document/mahj-life-mock-card-print/) (free, used with permission from Michele Frizzell)
+- [MahjLife Mock Card](https://mahjlife.com/document/mahj-life-mock-card-digital/) (free, used with permission from Michele Frizzell)
 - [American Mah Jongg for Everyone Card](https://americanmahjonggforeveryone.com/our-card-and-tile-set/) (free)
 - [John Burton's Card Free American Mah Jongg](https://johnburtongames.com/cardfreemahj/) (free, technically not a Card)
 
