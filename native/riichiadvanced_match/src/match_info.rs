@@ -1,7 +1,7 @@
 use std::collections::{HashMap, HashSet};
 use rustler::Atom;
 
-use crate::encode::{encode, encode_aliases, encode_tile};
+use crate::encode::{encode, encode_aliases, encode_tiles};
 use crate::types::{ElixirAliases, ElixirHand, ElixirHandCalls, ElixirTile, MatchInfo, Tile};
 use crate::utils::{fetch_tile_aliases};
 
@@ -21,32 +21,29 @@ pub fn prepare_tiles<'a>(
     ordering: &'a HashMap<Atom, Atom>, ordering_r: &'a HashMap<Atom, Atom>,
 ) -> MatchInfo<'a> {
   let orig_hands = prepare_hand_calls(hand_calls);
-  let mut hand_tiles: Vec<ElixirTile> = vec!();
-  for (&ref hand, _) in orig_hands.iter() { hand_tiles.append(&mut hand.clone().into_iter().collect()); }
-  let num_tiles_in_hand = hand_tiles.len();
-  hand_tiles.sort_unstable();
-  hand_tiles.dedup();
+  let mut num_tiles_in_hand = 0;
+  let hand_tiles: HashSet<&ElixirTile> = orig_hands.iter().flat_map(|(&ref tiles, _)| {
+    num_tiles_in_hand += tiles.len();
+    tiles
+  }).collect();
+
+  let aliases = encode_aliases(&elixir_aliases, &all_attrs);
 
   // relevant_tiles = nonjoker tiles in hand + tiles mapped to by jokers in hand
   // elixir_joker_tiles = joker tiles in hand
   // (we use relevant_tiles to calculate base tiles)
-  let mut relevant_tiles: Vec<ElixirTile> = Vec::with_capacity(num_tiles_in_hand);
-  let mut elixir_joker_tiles: HashSet<ElixirTile> = HashSet::new();
-  for tile in hand_tiles {
-    let aliases = fetch_tile_aliases(elixir_aliases, &tile);
+  let mut relevant_tiles: Vec<Tile> = Vec::with_capacity(num_tiles_in_hand);
+  let mut joker_tiles: HashSet<Tile> = HashSet::new();
+  for tile in encode_tiles(hand_tiles, &all_attrs) {
+    let aliases = fetch_tile_aliases(&aliases, &tile);
     if !aliases.is_empty() {
-      elixir_joker_tiles.insert(tile.clone());
+      joker_tiles.insert(tile);
       relevant_tiles.extend(aliases);
     }
-    relevant_tiles.push(tile.clone());
+    relevant_tiles.push(tile);
   }
   relevant_tiles.sort_unstable();
   relevant_tiles.dedup();
-
-  let joker_tiles: HashSet<Tile> = elixir_joker_tiles
-    .iter()
-    .flat_map(|t| encode_tile(t, all_attrs))
-    .collect();
 
   let mut initial_hands = vec!();
   for (hand, name) in &orig_hands {
@@ -58,7 +55,7 @@ pub fn prepare_tiles<'a>(
   MatchInfo{
     initial_hands,
     num_tiles_in_hand,
-    aliases: encode_aliases(&elixir_aliases, &all_attrs, &joker_tiles, None),
+    aliases,
     relevant_tiles,
     joker_tiles,
     all_attrs,

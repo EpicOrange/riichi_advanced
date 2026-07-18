@@ -1,7 +1,7 @@
 use std::collections::{HashMap, HashSet, VecDeque};
 use rustler::Atom;
 
-use crate::encode::{decode_attrs, encode};
+use crate::encode::{decode_tile, decode_tiles, encode};
 use crate::tile_table::*;
 use crate::types::{ElixirTile, FIXED_OFFSETS, MatchDefinition, MatchDefinitionElem, MatchGroup, MatchInfo, MatchOffset, RemovableGroup, Tile, TileSet};
 use crate::primes::{is_any, is_jihai, is_manzu, is_pinzu, is_souzu, shift_suit_mut};
@@ -354,13 +354,14 @@ pub fn get_base_tiles<'a>(
   //   that we can't otherwise encode, since it's not in hand
   let mut base_tiles: HashSet<ElixirTile> = match_info.relevant_tiles
     .iter()
-    .flat_map(|base_tile| apply_offsets(&base_tile, &gather_rev_offsets(&match_definition), match_info.ordering, match_info.ordering_r).0)
+    .flat_map(|base_tile| decode_tile(*base_tile, match_info.all_attrs))
+    .flat_map(|decoded_tile| apply_offsets(&decoded_tile, &gather_rev_offsets(&match_definition), match_info.ordering, match_info.ordering_r).0)
     .flatten()
     .map(|tile| strip_attrs(&tile))
     .filter(|tile| !is_any(tile))
     .collect();
 
-  for tile in &decode_attrs(&match_info.joker_tiles, match_info.all_attrs) { base_tiles.remove(&strip_attrs(&tile)); }
+  for tile in &decode_tiles(&match_info.joker_tiles, match_info.all_attrs) { base_tiles.remove(&strip_attrs(&tile)); }
 
   base_tiles
 }

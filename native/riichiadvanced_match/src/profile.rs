@@ -1,6 +1,6 @@
 use std::sync::atomic::{AtomicU64, Ordering};
 
-pub const PROFILE_MATCH: bool = true;
+pub const PROFILE_MATCH: bool = false;
 pub const PROFILE_GET_WAITS: bool = false;
 pub const PROFILE_UNNEEDED_TILES: bool = false;
 

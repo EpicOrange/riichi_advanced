@@ -1,7 +1,7 @@
 use std::collections::HashMap;
 
 use rustler::Atom;
-use crate::{primes::is_any, types::{ElixirAliases, ElixirTile}};
+use crate::{primes::is_any, types::{Aliases, ElixirAliases, ElixirTile, Tile}};
 
 pub fn get_tile_atom(tile: &ElixirTile) -> &Atom {
   match tile {
@@ -79,27 +79,19 @@ pub fn remove_joker_from_aliases<'a>(
   }
 }
 
-// can't return references to ElixirTile
-// since they technically don't exist in aliases
 pub fn fetch_tile_aliases<'a>(
-    elixir_aliases: &ElixirAliases,
-    tile: &ElixirTile,
-) -> Vec<ElixirTile> {
-  let mut out = vec!();
+    elixir_aliases: &Aliases,
+    tile: &Tile,
+) -> Vec<Tile> {
+  let mut ret = vec!();
   for (t, attrs_aliases) in elixir_aliases.iter() {
-    if let ElixirTile::AtomTile(t) = t {
-      for (attrs, aliases) in attrs_aliases.iter() {
-        if aliases.contains(tile) {
-          if attrs.is_empty() {
-            out.push(ElixirTile::AtomTile(*t));
-          } else {
-            out.push(ElixirTile::AttrTile(*t, attrs.clone()));
-          }
-        }
+    for (attrs, aliases) in attrs_aliases.iter() {
+      if aliases.contains(tile) {
+        ret.push((*t, *attrs))
       }
     }
   }
-  out
+  ret
 }
 
 // // for debugging

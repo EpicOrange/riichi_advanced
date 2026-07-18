@@ -3,7 +3,7 @@ use std::sync::atomic::Ordering;
 use std::time::Instant;
 use rustler::Atom;
 
-use crate::encode::{decode_attrs, encode_aliases, encode_tile};
+use crate::encode::{decode_tiles, encode_aliases, encode_tile};
 use crate::r#match::remove_match_definition;
 use crate::match_info::{prepare_tiles};
 use crate::profile::{PROFILE_GET_WAITS, PROFILE_UNNEEDED_TILES, CALL_COUNT, MAX_NANOS, TOTAL_NANOS};
@@ -147,7 +147,7 @@ pub fn ___get_waits_v3<'a>(
   // println!("tiles: {:?}", current_tiles);
 
   // test with current aliases (only need to match 1 to succeed)
-  match_info.aliases = encode_aliases(aliases, &match_info.all_attrs, &match_info.joker_tiles, None);
+  match_info.aliases = encode_aliases(aliases, &match_info.all_attrs);
   let all_nonwaits = match_definitions.iter().all(|match_definition| {
     remove_match_definition(&match_info, match_definition).next().is_none()
   });
@@ -272,5 +272,5 @@ pub fn __get_unneeded_tiles_v2(
   }
   // need to convert to vector to pass NIF boundary
   // also need to convert from encoded tile to elixir tile
-  decode_attrs(ret.iter().collect::<Vec<_>>(), &match_info.all_attrs)
+  decode_tiles(ret.iter().collect::<Vec<_>>(), &match_info.all_attrs)
 }

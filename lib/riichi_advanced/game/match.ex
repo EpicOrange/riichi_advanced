@@ -1125,7 +1125,7 @@ defmodule RiichiAdvanced.Match do
         tile_behavior.aliases |> TileBehavior.remove_alias_mapsets(),
         tile_behavior.ordering, tile_behavior.ordering_r
       )
-      profile()
+      # profile()
       ret
     else
       IO.puts("Warning: falling back to elixir match_hand_v3 for hand #{inspect(hand)} / #{inspect(calls)} with hash #{hash}")
