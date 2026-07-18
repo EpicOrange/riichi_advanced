@@ -999,7 +999,7 @@ defmodule RiichiAdvanced.Match do
     base_tiles = all_tiles
     |> MapSet.difference(joker_tiles)
     |> MapSet.union(MapSet.new([:"1m", :"1p", :"1s"])) # for amerijong
-    tile_behavior = %{tile_behavior | all_tiles: all_tiles, base_tiles: base_tiles, encoded_joker_tiles: encoded_joker_tiles }
+    tile_behavior = %{tile_behavior | all_tiles: all_tiles, base_tiles: base_tiles, encoded_joker_tiles: encoded_joker_tiles, uuid: Ecto.UUID.generate() }
 
     # encode aliases again, using new all_tiles that includes offset tiles
     encoded_aliases = encode_aliases(tile_behavior)
@@ -1125,7 +1125,7 @@ defmodule RiichiAdvanced.Match do
         tile_behavior.aliases |> TileBehavior.remove_alias_mapsets(),
         tile_behavior.ordering, tile_behavior.ordering_r
       )
-      # profile()
+      profile()
       ret
     else
       IO.puts("Warning: falling back to elixir match_hand_v3 for hand #{inspect(hand)} / #{inspect(calls)} with hash #{hash}")
@@ -1208,7 +1208,7 @@ defmodule RiichiAdvanced.Match do
   def __remove_group(hand, group, tile_behavior, exhaustive, nojoker, base_tiles) do
     {_tiles_in_hand, [initial_hand], tile_behavior} = prepare_tiles([hand], [[[group, 1]]], tile_behavior)
     tile_behavior = if base_tiles != nil do
-      %{tile_behavior | base_tiles: base_tiles}
+      %{tile_behavior | base_tiles: base_tiles, uuid: Ecto.UUID.generate()}
     else tile_behavior end
 
     # debug = group == [-1, %{"attrs" => ["winning_tile"], "offset" => 0}, 1]

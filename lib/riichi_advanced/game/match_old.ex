@@ -223,7 +223,7 @@ defmodule RiichiAdvanced.MatchOld do
         |> Enum.split(if no_joker_index != nil do no_joker_index else length(group) end)
         # handle nojoker subgroups first
         hand_calls = for subgroup <- group_to_subgroups(nojoker, base_tile, tile_behavior), reduce: [{hand, calls}] do
-          hand_calls -> Enum.flat_map(hand_calls, fn {hand, calls} -> remove_from_hand_calls(hand, calls, subgroup, %{ tile_behavior | aliases: %{}, mappings: %{} }) end)
+          hand_calls -> Enum.flat_map(hand_calls, fn {hand, calls} -> remove_from_hand_calls(hand, calls, subgroup, %{ tile_behavior | aliases: %{}, mappings: %{}, uuid: Ecto.UUID.generate() }) end)
         end
         # handle joker subgroups next
         hand_calls = for subgroup <- group_to_subgroups(joker, base_tile, tile_behavior), reduce: hand_calls do
@@ -271,7 +271,8 @@ defmodule RiichiAdvanced.MatchOld do
         {tile, new_attrs_aliases}
       end
       |> Enum.reject(fn {_tile, attrs_aliases} -> Enum.empty?(attrs_aliases) end)
-      |> Map.new()
+      |> Map.new(),
+      uuid: Ecto.UUID.generate()
     }
   end
 
@@ -375,13 +376,14 @@ defmodule RiichiAdvanced.MatchOld do
         unique = unique_ix != nil and i > unique_ix
         tile_behavior = %{ tile_behavior |
           dismantle_calls: dismantle_calls_ix != nil and i > dismantle_calls_ix,
+          uuid: Ecto.UUID.generate(),
         }
         case match_definition_elem do
           "restart" -> [{hand, calls}]
           [groups, num] ->
             unique = unique or "unique" in groups
             nojoker = no_joker_index != nil and i > no_joker_index
-            tile_behavior = if nojoker do %{ tile_behavior | aliases: %{}, mappings: %{} } else tile_behavior end
+            tile_behavior = if nojoker do %{ tile_behavior | aliases: %{}, mappings: %{}, uuid: Ecto.UUID.generate() } else tile_behavior end
             new_hand_calls = if unique and num >= 1 and not exhaustive and Enum.all?(groups, &not is_list(&1) and (Utils.is_tile(&1) or &1 in @group_keywords)) do
               # optimized routine for unique non-exhaustive tile-only groups
               # since we know the exact tiles required and each can only be used once,
@@ -407,7 +409,7 @@ defmodule RiichiAdvanced.MatchOld do
                     tiles = if is_hand do call else Utils.call_to_tiles(call) end
                     num_tiles = length(tiles)
                     adj_joker   = Map.new(Enum.with_index(joker),   fn {tile, i} -> {i,                 for {tile2, j}  <- Enum.with_index(tiles), Utils.same_tile(tile2, tile, tile_behavior) do j end} end)
-                    adj_nojoker = Map.new(Enum.with_index(nojoker), fn {tile, i} -> {length(joker) + i, for {tile2, j}  <- Enum.with_index(tiles), Utils.same_tile(tile2, tile, %{ tile_behavior | aliases: %{}, mappings: %{} }) do j end} end)
+                    adj_nojoker = Map.new(Enum.with_index(nojoker), fn {tile, i} -> {length(joker) + i, for {tile2, j}  <- Enum.with_index(tiles), Utils.same_tile(tile2, tile, %{ tile_behavior | aliases: %{}, mappings: %{}, uuid: Ecto.UUID.generate() }) do j end} end)
                     adj = Map.merge(adj_joker, adj_nojoker)
                     {pairing, pairing_r} = Utils.maximum_bipartite_matching(adj)
                     consumes_call = map_size(pairing) == num_tiles or tile_behavior.dismantle_calls
@@ -433,7 +435,7 @@ defmodule RiichiAdvanced.MatchOld do
               end)
               |> Enum.uniq()
             else
-              tile_behavior = if no_joker_index != nil and i > no_joker_index do %{ tile_behavior | aliases: %{}, mappings: %{} } else tile_behavior end
+              tile_behavior = if no_joker_index != nil and i > no_joker_index do %{ tile_behavior | aliases: %{}, mappings: %{}, uuid: Ecto.UUID.generate() } else tile_behavior end
               # unique makes it so all groups must be offset by the same tile
               # (no such restriction for non-unique groups)
               base_tiles = collect_base_tiles(hand, calls, List.flatten(groups), tile_behavior)
@@ -453,7 +455,7 @@ defmodule RiichiAdvanced.MatchOld do
                         for {hand, calls, remaining_groups} <- hand_calls_groups, {group, i} <- Enum.with_index(remaining_groups), group not in @group_keywords do
                           no_joker_index = Enum.find_index(remaining_groups, fn elem -> elem == "nojoker" end)
                           nojoker = no_joker_index != nil and i > no_joker_index
-                          tile_behavior = if nojoker do %{ tile_behavior | aliases: %{}, mappings: %{} } else tile_behavior end
+                          tile_behavior = if nojoker do %{ tile_behavior | aliases: %{}, mappings: %{}, uuid: Ecto.UUID.generate() } else tile_behavior end
                           Task.async(fn ->
                             if unique do
                               _remove_group(hand, calls, group, base_tile, tile_behavior)
@@ -471,7 +473,7 @@ defmodule RiichiAdvanced.MatchOld do
                           [] ->
                             no_joker_index = Enum.find_index(remaining_groups, fn elem -> elem == "nojoker" end)
                             nojoker = no_joker_index != nil and i > no_joker_index
-                            tile_behavior = if nojoker do %{ tile_behavior | aliases: %{}, mappings: %{} } else tile_behavior end
+                            tile_behavior = if nojoker do %{ tile_behavior | aliases: %{}, mappings: %{}, uuid: Ecto.UUID.generate() } else tile_behavior end
                             if unique do
                               _remove_group(hand, calls, group, base_tile, tile_behavior)
                             else

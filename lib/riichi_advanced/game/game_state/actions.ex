@@ -1566,14 +1566,15 @@ defmodule RiichiAdvanced.GameState.Actions do
         for seat <- state.available_seats, reduce: state do
           state -> put_in(state.players[seat].tile_behavior, Map.get(state.players[seat].cache.saved_tile_behavior, label, state.players[seat].tile_behavior))
         end
-      "clear_tile_aliases"    -> update_player(state, context.seat, &%{ &1 | tile_behavior: %{ &1.tile_behavior | aliases: %{}, mappings: %{} } })
+      "clear_tile_aliases"    -> update_player(state, context.seat, &%{ &1 | tile_behavior: %{ &1.tile_behavior | aliases: %{}, mappings: %{}, uuid: Ecto.UUID.generate() } })
       "set_tile_ordering"     ->
         tiles = Enum.map(Enum.at(opts, 0, []), &Utils.to_tile/1)
         ordering = Enum.zip(Enum.drop(tiles, -1), Enum.drop(tiles, 1)) |> Map.new()
         ordering_r = Enum.zip(Enum.drop(tiles, 1), Enum.drop(tiles, -1)) |> Map.new()
         update_player(state, context.seat, &%{ &1 | tile_behavior: %{ &1.tile_behavior |
           ordering: Map.merge(&1.tile_behavior.ordering, ordering),
-          ordering_r: Map.merge(&1.tile_behavior.ordering_r, ordering_r)
+          ordering_r: Map.merge(&1.tile_behavior.ordering_r, ordering_r),
+          uuid: Ecto.UUID.generate()
         } })
       "set_tile_ordering_all" ->
         tiles = Enum.map(Enum.at(opts, 0, []), &Utils.to_tile/1)
@@ -1581,7 +1582,8 @@ defmodule RiichiAdvanced.GameState.Actions do
         ordering_r = Enum.zip(Enum.drop(tiles, 1), Enum.drop(tiles, -1)) |> Map.new()
         update_all_players(state, fn _seat, player -> %{ player | tile_behavior: %{ player.tile_behavior |
           ordering: Map.merge(player.tile_behavior.ordering, ordering),
-          ordering_r: Map.merge(player.tile_behavior.ordering_r, ordering_r)
+          ordering_r: Map.merge(player.tile_behavior.ordering_r, ordering_r),
+          uuid: Ecto.UUID.generate()
         } } end)
       "add_attr" ->
         targets = Enum.at(opts, 0, [])
