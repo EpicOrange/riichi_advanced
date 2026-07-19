@@ -48,7 +48,7 @@ fn _try_remove_all_tiles(
     let empty_hashset = HashSet::new();
     let hand_set = encode(&hand, all_attrs, &empty_hashset);
     let tiles_set = encode(&tiles, all_attrs, &empty_hashset);
-    let aliases = encode_aliases(elixir_aliases, all_attrs);
+    let aliases = encode_aliases(elixir_aliases, all_attrs).0;
     match _subtract_check_attrs_exhaustive(&hand_set.attrs, &tiles_set.attrs, &aliases) {
       Some(iss) => {
         let mut ret = vec!();
@@ -316,6 +316,7 @@ pub fn _remove_group(
   )
 } 
 
+#[inline]
 fn __remove_group<'a>(
   hand: ElixirHand, group: MatchGroup, 
   all_attrs: &'a Vec<String>,
@@ -358,8 +359,7 @@ fn __remove_group<'a>(
     &mut nojoker,
   );
 
-  // println!("Hand tiles: {0:?}", match_info.tiles_in_hand.iter().collect::<Vec<_>>());
-  // println!("Base tiles: {0:?}", base_tiles.iter().collect::<Vec<_>>());
+  // println!("Hand tiles: {0:?}", match_info.initial_hands.iter().collect::<Vec<_>>());
   // println!("Relevant tiles: {0:?}", match_info.relevant_tiles.iter().collect::<Vec<_>>());
   // for group in &reified_groups {
   //   println!("Reified group:");
@@ -368,22 +368,22 @@ fn __remove_group<'a>(
   //   match group {
   //     RemovableGroup::CallName(name) => println!("- \"{0:?}\"", name),
   //     RemovableGroup::Group(group) => println!("- {0:?}", decode(group, match_info.all_attrs)),
-  //     RemovableGroup::GroupRef(group) => println!("- {0:?}", decode(group, match_info.all_attrs)),
   //     RemovableGroup::Multigroup(subgroups) => println!("- {0:?}", subgroups.iter().map(|subgroup| decode(subgroup, match_info.all_attrs)).collect::<Vec<_>>()),
   //   }
   // }
   let mut ret: Vec<ElixirHand> = vec!();
   for group in reified_groups {
-    let result = _elim_group(&match_info.initial_hands, &group, &match_info.aliases, &match_info.joker_tiles, exhaustive);
-    if !result.is_empty() {
-      // println!("result, {:?}", result[0][0]);
-      // println!("result, {:?}", decode(&result[0][0], &match_info.all_attrs));
-      if exhaustive {
-        ret.push(decode(&result[0][0], &match_info.all_attrs));
-        return ret;
-      } else {
-        ret.append(&mut result.into_iter().map(|hands| decode(&hands[0], &match_info.all_attrs)).collect());
+    let mut result = _elim_group(match_info.initial_hands.clone(), &group, &match_info.aliases, &match_info.joker_tiles, exhaustive);
+    match result.next() {
+      Some(hands) => {
+        ret.push(decode(&hands[0], &match_info.all_attrs));
+        if !exhaustive {
+          return ret;
+        } else {
+          ret.append(&mut result.into_iter().map(|hands| decode(&hands[0], &match_info.all_attrs)).collect());
+        }
       }
+      None => {}
     }
   }
   ret

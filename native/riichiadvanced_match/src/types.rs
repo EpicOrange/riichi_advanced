@@ -12,6 +12,7 @@ pub const ANY_PRIME: Prime = 1;
 
 pub type AliasEntry = HashMap<BitAttrs, Vec<Tile>>;
 pub type Aliases = HashMap<Prime, AliasEntry>;
+pub type Mapping = HashMap<Tile, Vec<Tile>>;
 
 pub type Mask = u64;
 pub type RowIndex = u8; // index into Mask
@@ -85,7 +86,7 @@ pub struct TileSet {
   pub name: Option<String>, // call name
   pub nojoker: bool, // for groups only
 }
-pub type Hands = Vec<TileSet>;
+pub type Hands = SmallVec<[TileSet; 4]>;
 
 impl TileSet {
   pub fn set_nojoker(mut self, nojoker: bool) -> Self {
@@ -400,9 +401,10 @@ pub static FIXED_OFFSETS: phf::Map<&'static str, fn() -> Atom> = phf::phf_map! {
 pub type TileOrdering = HashMap<Prime, Prime>;
 #[derive(Debug)]
 pub struct MatchInfo<'a> {
-  pub initial_hands: Vec<TileSet>,
+  pub initial_hands: Hands,
   pub num_tiles_in_hand: usize,
   pub aliases: Aliases,
+  pub mapping: Mapping,
   pub relevant_tiles: Vec<Tile>,
   pub joker_tiles: HashSet<Tile>,
   pub all_attrs: &'a Vec<String>,

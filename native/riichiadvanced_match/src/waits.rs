@@ -147,7 +147,7 @@ pub fn ___get_waits_v3<'a>(
   // println!("tiles: {:?}", current_tiles);
 
   // test with current aliases (only need to match 1 to succeed)
-  match_info.aliases = encode_aliases(aliases, &match_info.all_attrs);
+  match_info.aliases = encode_aliases(aliases, &match_info.all_attrs).0;
   let all_nonwaits = match_definitions.iter().all(|match_definition| {
     remove_match_definition(&match_info, match_definition).next().is_none()
   });
@@ -212,6 +212,7 @@ fn _get_unneeded_tiles_v2(
 
 // given a 14-tile hand, and match definitions for 13-tile hands,
 // return all the (unique) tiles that are not needed to match the definitions
+#[inline]
 pub fn __get_unneeded_tiles_v2(
     hand_calls: ElixirHandCalls,
     mut match_definitions: &mut MatchDefinitions,

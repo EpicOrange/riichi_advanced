@@ -1,10 +1,10 @@
+use smallvec::smallvec;
 use std::collections::{HashMap, HashSet};
 use rustler::Atom;
 
 use crate::encode::{encode, encode_aliases, encode_tiles};
 use crate::primes::to_prime;
 use crate::types::{ElixirAliases, ElixirHand, ElixirHandCalls, ElixirTile, MatchInfo, Tile};
-use crate::utils::{fetch_tile_aliases};
 
 // move all tiles from (hand, calls) into two structures:
 // - orig_hands, basically a copy of what was passed in minus call names
@@ -28,7 +28,7 @@ pub fn prepare_tiles<'a>(
     tiles
   }).collect();
 
-  let aliases = encode_aliases(&elixir_aliases, &all_attrs);
+  let (aliases, mapping) = encode_aliases(&elixir_aliases, &all_attrs);
 
   // relevant_tiles = nonjoker tiles in hand + tiles mapped to by jokers in hand
   // elixir_joker_tiles = joker tiles in hand
@@ -36,8 +36,7 @@ pub fn prepare_tiles<'a>(
   let mut relevant_tiles: Vec<Tile> = Vec::with_capacity(num_tiles_in_hand);
   let mut joker_tiles: HashSet<Tile> = HashSet::new();
   for tile in encode_tiles(hand_tiles, &all_attrs) {
-    let aliases = fetch_tile_aliases(&aliases, &tile);
-    if !aliases.is_empty() {
+    if let Some(aliases) = mapping.get(&tile) {
       joker_tiles.insert(tile);
       relevant_tiles.extend(aliases);
     }
@@ -46,7 +45,7 @@ pub fn prepare_tiles<'a>(
   relevant_tiles.sort_unstable();
   relevant_tiles.dedup();
 
-  let mut initial_hands = vec!();
+  let mut initial_hands = smallvec!();
   for (hand, name) in &orig_hands {
     let mut ret = encode(hand, &all_attrs, &joker_tiles);
     if name != "" { ret.name = Some(name.to_owned()); }
@@ -66,6 +65,7 @@ pub fn prepare_tiles<'a>(
     initial_hands,
     num_tiles_in_hand,
     aliases,
+    mapping,
     relevant_tiles,
     joker_tiles,
     all_attrs,

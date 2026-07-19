@@ -1,7 +1,7 @@
 use std::collections::HashMap;
 
 use rustler::Atom;
-use crate::{primes::is_any, types::{Aliases, ElixirAliases, ElixirTile, IndexVec, Tile}};
+use crate::{primes::is_any, types::{ElixirAliases, ElixirTile, IndexVec}};
 
 // precondition: `is` sorted and deduped
 #[inline]
@@ -94,26 +94,3 @@ pub fn remove_joker_from_aliases<'a>(
     }
   }
 }
-
-pub fn fetch_tile_aliases<'a>(
-    elixir_aliases: &Aliases,
-    tile: &Tile,
-) -> Vec<Tile> {
-  let mut ret = vec!();
-  for (t, attrs_aliases) in elixir_aliases.iter() {
-    for (attrs, aliases) in attrs_aliases.iter() {
-      if aliases.contains(tile) {
-        ret.push((*t, *attrs))
-      }
-    }
-  }
-  ret
-}
-
-// // for debugging
-// pub fn print_tile_aliases<'a>(
-//     elixir_aliases: &mut ElixirAliases,
-//     joker: &ElixirTile,
-// ) -> () {
-//   println!("Aliases: {:?}", fetch_tile_aliases(elixir_aliases, joker));
-// }

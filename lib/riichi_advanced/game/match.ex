@@ -1229,8 +1229,8 @@ defmodule RiichiAdvanced.Match do
     end)
     |> case do
       ret when exhaustive -> Enum.map(ret, &decode(&1, tile_behavior))
-      [] -> nil
-      [ret | _] -> decode(ret, tile_behavior)
+      [] -> []
+      [ret | _] -> [decode(ret, tile_behavior)]
     end
   end
 

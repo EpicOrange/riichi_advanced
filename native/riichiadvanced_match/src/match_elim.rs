@@ -1,31 +1,30 @@
 use std::collections::HashSet;
 use std::iter::{empty, once};
+use std::rc::Rc;
 
 use crate::tileset::{__subtract, __subtract_exhaustive};
 use crate::types::{Aliases, Hands, HandsIterator, RemovableGroup, Tile, TileSet};
 
-fn elim_call_name(hands: &Hands, name: &String, exhaustive: bool) -> Vec<Hands> {
+fn elim_call_name<'a>(hands: Hands, name: &'a String, exhaustive: bool) -> HandsIterator<'a> {
   // group is a call name, remove every corresponding call with that name
-  let mut ret = vec!();
-  for i in 0..hands.len() {
-    if let Some(call_name) = &hands[i].name {
-      if call_name == name {
-        let mut hands = hands.clone();
+  let hands = Rc::new(hands);
+  let hands_check = Rc::clone(&hands); // just to check names
+  let ret = (0..hands.len()).into_iter()
+    .filter(move |i| hands_check[*i].name.as_ref() == Some(name))
+    .map(move |i| {
+        let mut hands = (*hands).clone();
         hands.swap_remove(i);
-        ret.push(hands);
-        if !exhaustive { break; }
-      }
-    }
-  }
-  ret
+        hands
+    });
+  if exhaustive { Box::new(ret) } else { Box::new(ret.take(1)) }
 }
 
-fn elim_tileset(
-  hands: &Hands, tileset: &TileSet,
+fn elim_tileset<'a>(
+  hands: Hands, tileset: &TileSet,
   aliases: &Aliases,
   joker_tiles: &HashSet<Tile>,
   exhaustive: bool,
-) -> Vec<Hands> {
+) -> HandsIterator<'a> {
   let mut ret = vec!();
   // check calls first
   for i in 1..hands.len() {
@@ -48,12 +47,12 @@ fn elim_tileset(
   } else if ret.is_empty() {
     // then check hand
     if let Some(result) = __subtract(&hands[0], tileset, aliases, joker_tiles) {
-      let mut hands = hands.clone();
+      let mut hands = hands;
       hands[0] = result;
       ret.push(hands);
     }
   }
-  ret
+  Box::new(ret.into_iter())
 }
 
 // #[rustler::nif]
@@ -65,27 +64,25 @@ fn elim_tileset(
 // ) -> Vec<Hands> {
 //   _elim_group(&hands, &group, &aliases, &joker_tiles.into_iter().collect(), exhaustive)
 // }
-pub fn _elim_group(
-    hands: &Hands, group_arg: &RemovableGroup,
-    aliases: &Aliases,
-    joker_tiles: &HashSet<Tile>,
+pub fn _elim_group<'a>(
+    hands: Hands, group_arg: &'a RemovableGroup,
+    aliases: &'a Aliases,
+    joker_tiles: &'a HashSet<Tile>,
     exhaustive: bool,
-) -> Vec<Hands> {
+) -> HandsIterator<'a> {
   match group_arg {
     RemovableGroup::CallName(name) => elim_call_name(hands, name, exhaustive),
     RemovableGroup::Group(group) => elim_tileset(hands, &group, aliases, joker_tiles, exhaustive),
     RemovableGroup::Multigroup(subgroups) => {
       // multigroup can only be removed from hand (= hands[0])
-      let mut ret = vec!(hands.clone());
-      for subgroup in subgroups {
-        let results = ret.iter().flat_map(move |hands| {
-          _elim_group(hands, &RemovableGroup::Group(subgroup.clone()), aliases, joker_tiles, exhaustive)
+      let initial: HandsIterator<'a> = Box::new(once(hands.clone()));
+      let ret = Box::new(subgroups.iter().fold(initial, move |acc, subgroup| {
+        let ret = acc.flat_map(move |hands| {
+          elim_tileset(hands, subgroup, aliases, joker_tiles, exhaustive)
         });
-        // only retain one result if not exhaustive
-        if exhaustive { ret = results.collect(); }
-        else { ret = results.take(1).collect(); }
-      }
-      ret
+        if exhaustive { Box::new(ret) } else { Box::new(ret.take(1)) }
+      }));
+      if exhaustive { Box::new(ret) } else { Box::new(ret.take(1)) }
     }
   }
 }

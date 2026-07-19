@@ -1,7 +1,7 @@
 use std::collections::{HashMap, HashSet};
 use ruint::aliases::U256;
 
-use crate::types::{AliasEntry, Aliases, BitAttrs, ElixirAliases, ElixirHand, ElixirTile, Hash, RemovableGroup, Tile, TileSet};
+use crate::types::{AliasEntry, Aliases, BitAttrs, ElixirAliases, ElixirHand, ElixirTile, Hash, Mapping, RemovableGroup, Tile, TileSet};
 use crate::primes::{from_prime, to_prime};
 use crate::utils::get_tile_atom;
 
@@ -76,8 +76,9 @@ pub fn to_tileset(hand: Vec<Tile>, joker_tiles: &HashSet<Tile>) -> TileSet {
   TileSet{ hash: Hash(hash), attrs: hand, name: None, nojoker: false }
 }
 
-pub fn encode_aliases(aliases: &ElixirAliases, all_attrs: &[String]) -> Aliases {
-  let mut ret: Aliases = HashMap::new();
+pub fn encode_aliases(aliases: &ElixirAliases, all_attrs: &[String]) -> (Aliases, Mapping) {
+  let mut ret_aliases: Aliases = HashMap::new();
+  let mut ret_mapping: Mapping = HashMap::new();
   for (tile, attrs_aliases) in aliases {
     if let Some(prime) = to_prime(get_tile_atom(tile)) {
       let mut entry: AliasEntry = HashMap::new();
@@ -85,15 +86,24 @@ pub fn encode_aliases(aliases: &ElixirAliases, all_attrs: &[String]) -> Aliases 
         let encoded_attrs = encode_attrs(&mut attrs.clone(), all_attrs);
         // either fetch it from encoding, or encode it anew
         let mut encoded_aliases: Vec<Tile> = encode_tiles(aliases, all_attrs).collect();
+        // populate reverse map (mapping)
+        let encoded_tile = (prime, encoded_attrs);
+        for t in &encoded_aliases {
+          match ret_mapping.get_mut(t) {
+            Some(v) => { v.push(encoded_tile); }
+            None => { ret_mapping.insert(*t, vec!(encoded_tile)); }
+          }
+        }
+        // populate forward map (entry)
         match entry.get_mut(&encoded_attrs) {
           Some(existing_aliases) => { existing_aliases.append(&mut encoded_aliases); }
           None => { entry.insert(encoded_attrs, encoded_aliases); }
         }
       }
-      ret.insert(prime, entry);
+      ret_aliases.insert(prime, entry);
     }
   }
-  ret
+  (ret_aliases, ret_mapping)
 }
 
 pub fn decode_tile<'a>((p, mut battrs): Tile, all_attrs: &[String]) -> Option<ElixirTile> {
