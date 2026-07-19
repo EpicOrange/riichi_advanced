@@ -7,7 +7,7 @@ use num::abs;
 use crate::encode::{decode, decode_tiles, encode_tile};
 use crate::offsets::{apply_offsets_early_exit};
 use crate::tileset::{_check_equivalence, move_jokers_to_end, remove_tileset_indices};
-use crate::types::{ElixirTile, Hands, HandsIterator, Hash, MatchInfo, MatchOffset, RowIndex, Tile};
+use crate::types::{ElixirTile, Hands, HandsIterator, Hash, IndexVec, MatchInfo, MatchOffset, RowIndex, Tile};
 
 // we only care about the hand, so calls will pass right through
 pub fn perform_bipartite_match<'a>(
@@ -106,11 +106,11 @@ fn bipartite_match<'a>(
     return Box::new(empty());
   } else if i == num + skipped {
     // done, remove matching from hand and emit the hand
-    let mut ixs: Vec<RowIndex> = matching.borrow().keys().map(|&n| n as RowIndex).collect();
+    let mut ixs: IndexVec = matching.borrow().keys().map(|&n| n as RowIndex).collect();
     ixs.sort_unstable();
-    remove_tileset_indices(&mut hands[0], &ixs, &match_info.joker_tiles);
+    remove_tileset_indices(&mut hands[0], ixs, &match_info.joker_tiles);
     if visited.borrow_mut().insert(hands[0].hash) {
-      if debug { println!("Matched {}/{} offset tiles at {:?} (total {}, skipping {}), returning {:?}", i, num, ixs, offset_tiles.len(), skipped, decode(&hands[0], match_info.all_attrs)); }
+      if debug { println!("Matched {}/{} offset tiles (total {}, skipping {}), returning {:?}", i, num, offset_tiles.len(), skipped, decode(&hands[0], match_info.all_attrs)); }
       let ret = Box::new(once(hands));
       if let Some(j) = last_j { matching.borrow_mut().remove(&j); };
       return ret;

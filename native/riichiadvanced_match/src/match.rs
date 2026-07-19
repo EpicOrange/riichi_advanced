@@ -12,8 +12,9 @@ use crate::match_elim::_elim_group;
 use crate::match_info::prepare_tiles;
 use crate::offsets::{__generate_groups, get_base_tiles};
 use crate::profile::{PROFILE_MATCH, CALL_COUNT, MAX_NANOS, TOTAL_NANOS};
-use crate::tileset::{_remove_indices, _subtract_check_attrs_exhaustive};
+use crate::tileset::_subtract_check_attrs_exhaustive;
 use crate::types::{ANY_PRIME, ElixirAliases, ElixirHand, ElixirHandCalls, ElixirTile, Hands, HandsIterator, MatchDefinition, MatchDefinitionElem, MatchDefinitions, MatchGroup, MatchInfo, MatchOffset, RemovableGroup};
+use crate::utils::remove_indices;
 
 // this is used a lot, especially for determining and processing calls
 // #[rustler::nif]
@@ -53,7 +54,7 @@ fn _try_remove_all_tiles(
         let mut ret = vec!();
         for is in iss {
           let mut hand = hand.clone();
-          _remove_indices(&mut hand, &is);
+          remove_indices(&mut hand, is);
           ret.push(hand);
         }
         ret

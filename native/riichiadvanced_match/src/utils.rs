@@ -1,7 +1,23 @@
 use std::collections::HashMap;
 
 use rustler::Atom;
-use crate::{primes::is_any, types::{Aliases, ElixirAliases, ElixirTile, Tile}};
+use crate::{primes::is_any, types::{Aliases, ElixirAliases, ElixirTile, IndexVec, Tile}};
+
+// precondition: `is` sorted and deduped
+#[inline]
+pub fn remove_indices<T>(xs: &mut Vec<T>, is: IndexVec) {
+  if !is.is_sorted() { panic!("remove_indices: ixs not sorted"); }
+  let mut i: u8 = 0;
+  let mut it = is.into_iter();
+  let mut j = it.next();
+  xs.retain(|_| {
+    if j == None { return true; }
+    let keep = j.unwrap_or(i) != i;
+    if !keep { j = it.next(); }
+    i += 1;
+    keep
+  });
+}
 
 pub fn get_tile_atom(tile: &ElixirTile) -> &Atom {
   match tile {

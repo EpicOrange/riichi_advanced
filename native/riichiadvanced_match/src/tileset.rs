@@ -1,28 +1,10 @@
+use smallvec::smallvec;
 use std::collections::{HashMap, HashSet};
 use ruint::aliases::U256;
 use rustler::{Encoder, Env, Term};
 use crate::n_rooks;
-use crate::types::{ANY_PRIME, Aliases, Hash, Mask, Prime, RowIndex, Tile, TileSet};
-
-// #[rustler::nif]
-// fn remove_indices<'a>(xs: Vec<Term<'a>>, is: Vec<RowIndex>) -> Vec<Term<'a>> {
-//   let mut xs = xs;
-//   _remove_indices(&mut xs, &is);
-//   xs
-// }
-pub fn _remove_indices<T>(xs: &mut Vec<T>, is: &Vec<RowIndex>) -> () where T: Clone + std::fmt::Debug {
-  let mut is = is.clone();
-  is.sort_unstable();
-
-  let mut it = is.into_iter().peekable();
-  let mut i: u8 = 0;
-  xs.retain(|_| {
-    let keep = it.peek() != Some(&i);
-    if !keep { it.next(); }
-    i += 1;
-    keep
-  });
-}
+use crate::types::{ANY_PRIME, Aliases, Hash, IndexVec, Mask, Prime, RowIndex, Tile, TileSet};
+use crate::utils::remove_indices;
 
 #[rustler::nif]
 fn count_factors_fast(n: Hash, primes: Vec<Prime>) -> usize {
@@ -96,13 +78,13 @@ pub fn compute_attr_masks(l: &[Tile], r: &[Tile], aliases: &Aliases) -> (Vec<(Ma
 #[rustler::nif]
 pub fn subtract_check_attrs<'a>(env: Env<'a>, l: Vec<Tile>, r: Vec<Tile>, aliases: Aliases) -> Term<'a> {
   match _subtract_check_attrs(&l, &r, &aliases) {
-    Some(ret) => (rustler::types::atom::ok(), ret).encode(env),
+    Some(ret) => (rustler::types::atom::ok(), ret.into_iter().collect::<Vec<_>>()).encode(env),
     None => rustler::types::atom::nil().encode(env),
   }
 }
-pub fn _subtract_check_attrs(l: &[Tile], r: &[Tile], aliases: &Aliases) -> Option<Vec<RowIndex>> {
+pub fn _subtract_check_attrs(l: &[Tile], r: &[Tile], aliases: &Aliases) -> Option<IndexVec> {
   if l.is_empty() { return None; }
-  if r.is_empty() { return Some(vec!()); }
+  if r.is_empty() { return Some(smallvec!()); }
   let (masks, col_mask) = compute_attr_masks(l, r, aliases);
   n_rooks::_solve_n_rooks(&masks, col_mask, r.len() as u8)
 }
@@ -110,11 +92,11 @@ pub fn _subtract_check_attrs(l: &[Tile], r: &[Tile], aliases: &Aliases) -> Optio
 #[rustler::nif]
 pub fn subtract_check_attrs_exhaustive<'a>(env: Env<'a>, l: Vec<Tile>, r: Vec<Tile>, aliases: Aliases) -> Term<'a> {
   match _subtract_check_attrs_exhaustive(&l, &r, &aliases) {
-    Some(ret) => (rustler::types::atom::ok(), ret).encode(env),
+    Some(ret) => (rustler::types::atom::ok(), ret.into_iter().map(|v| v.to_vec()).collect::<Vec<_>>()).encode(env),
     None => rustler::types::atom::nil().encode(env),
   }
 }
-pub fn _subtract_check_attrs_exhaustive(l: &Vec<Tile>, r: &Vec<Tile>, aliases: &Aliases) -> Option<Vec<Vec<RowIndex>>> {
+pub fn _subtract_check_attrs_exhaustive(l: &Vec<Tile>, r: &Vec<Tile>, aliases: &Aliases) -> Option<Vec<IndexVec>> {
   if l.is_empty() { return None; }
   if r.is_empty() { return Some(vec!()); }
   let (masks, col_mask) = compute_attr_masks(l, r, aliases);
@@ -141,12 +123,12 @@ pub fn _subtract_check_attrs_exhaustive(l: &Vec<Tile>, r: &Vec<Tile>, aliases: &
   //   end
   // end
 
-
+// precondition: `is` sorted and deduped
 pub fn remove_tileset_indices(
-  hand: &mut TileSet, ixs: &[RowIndex], joker_tiles: &HashSet<Tile>
+  hand: &mut TileSet, ixs: IndexVec, joker_tiles: &HashSet<Tile>
 ) -> () {
   let mut divisor = Hash(U256::ONE);
-  for i in ixs {
+  for i in &ixs {
     let tile = hand.attrs[*i as usize];
     if !joker_tiles.contains(&tile) && tile.0 != ANY_PRIME {
       divisor *= tile.0
@@ -157,7 +139,7 @@ pub fn remove_tileset_indices(
     eprintln!("remove_tileset_indices: tried to divide {0} by {1}, hand was {hand:?} with jokers {2:?}", hand.hash.0, divisor.0, joker_tiles.iter().collect::<Vec<_>>());
   }
   hand.hash = q;
-  _remove_indices(&mut hand.attrs, &ixs.to_vec());
+  remove_indices(&mut hand.attrs, ixs);
 }
 
 // modifies attrs to put joker tiles at the end
@@ -249,26 +231,30 @@ pub fn __subtract(
   let aliases = if divides { &empty_aliases } else { aliases };
 
   match _subtract_check_attrs(&hand_attrs[0..num_nonjokers], &group_attrs, &empty_aliases) {
-    Some(indices) => {
+    Some(mut indices) => {
       let mut hand = TileSet{
         hash: hand.hash,
         attrs: hand_attrs,
         name: None,
         nojoker: false
       };
-      remove_tileset_indices(&mut hand, &indices, joker_tiles);
+      indices.sort_unstable();
+      indices.dedup();
+      remove_tileset_indices(&mut hand, indices, joker_tiles);
       Some(hand)
     },
     None if nojoker => None,
     None => match _subtract_check_attrs(&hand_attrs, &group_attrs, aliases) {
-      Some(indices) => {
+      Some(mut indices) => {
         let mut hand = TileSet{
           hash: hand.hash,
           attrs: hand_attrs,
           name: None,
           nojoker: false
         };
-        remove_tileset_indices(&mut hand, &indices, joker_tiles);
+        indices.sort_unstable();
+        indices.dedup();
+        remove_tileset_indices(&mut hand, indices, joker_tiles);
         Some(hand)
       },
       None => None,
@@ -337,14 +323,16 @@ pub fn __subtract_exhaustive(
       indicess.sort_unstable();
       indicess.dedup();
       let mut hands = HashSet::new();
-      for indices in indicess {
+      for mut indices in indicess {
         let mut hand = TileSet{
           hash: hand.hash.clone(),
           attrs: hand_attrs.clone(),
           name: None,
           nojoker: false
         };
-        remove_tileset_indices(&mut hand, &indices, joker_tiles);
+        indices.sort_unstable();
+        indices.dedup();
+        remove_tileset_indices(&mut hand, indices, joker_tiles);
         hands.insert(hand);
       }
       Some(hands.into_iter().collect())

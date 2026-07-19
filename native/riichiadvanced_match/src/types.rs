@@ -3,6 +3,7 @@ use std::{collections::{HashMap, HashSet}, fmt, ops::{Div, MulAssign, Rem}};
 use num_bigint::{BigUint, Sign};
 use ruint::aliases::U256;
 use rustler::{Atom, BigInt, Decoder, Encoder, Env, Error, NifResult, NifStruct, Term};
+use smallvec::SmallVec;
 
 pub type BitAttrs = u64;
 pub type Prime = u32;
@@ -14,6 +15,7 @@ pub type Aliases = HashMap<Prime, AliasEntry>;
 
 pub type Mask = u64;
 pub type RowIndex = u8; // index into Mask
+pub type IndexVec = SmallVec<[RowIndex; 16]>;
 
 #[derive(PartialEq, Eq, PartialOrd, Ord, Clone, Copy, Debug, Hash)]
 #[repr(transparent)]
