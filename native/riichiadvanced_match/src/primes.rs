@@ -34,8 +34,7 @@ pub fn from_prime(prime: &Prime) -> Option<&'static Atom> {
 pub fn is_manzu(tile: &Tile) -> bool {
   let manzu_primes_table = MANZU_PRIMES.get_or_init(|| {
     TILE_TABLE.entries()
-      .filter(|(&s, _)| { s.ends_with('m') })
-      .map(|(_, &prime)| { prime })
+      .filter_map(|(&s, &prime)| if s.ends_with('m') { Some(prime) } else { None })
       .collect()
   });
   manzu_primes_table.contains(&tile.0)
@@ -43,8 +42,7 @@ pub fn is_manzu(tile: &Tile) -> bool {
 pub fn is_pinzu(tile: &Tile) -> bool {
   let pinzu_primes_table = PINZU_PRIMES.get_or_init(|| {
     TILE_TABLE.entries()
-      .filter(|(&s, _)| { s.ends_with('p') })
-      .map(|(_, &prime)| { prime })
+      .filter_map(|(&s, &prime)| if s.ends_with('p') { Some(prime) } else { None })
       .collect()
   });
   pinzu_primes_table.contains(&tile.0)
@@ -52,8 +50,7 @@ pub fn is_pinzu(tile: &Tile) -> bool {
 pub fn is_souzu(tile: &Tile) -> bool {
   let souzu_primes_table = SOUZU_PRIMES.get_or_init(|| {
     TILE_TABLE.entries()
-      .filter(|(&s, _)| { s.ends_with('s') })
-      .map(|(_, &prime)| { prime })
+      .filter_map(|(&s, &prime)| if s.ends_with('s') { Some(prime) } else { None })
       .collect()
   });
   souzu_primes_table.contains(&tile.0)
@@ -61,8 +58,7 @@ pub fn is_souzu(tile: &Tile) -> bool {
 pub fn is_jihai(tile: &Tile) -> bool {
   let jihau_primes_table = JIHAI_PRIMES.get_or_init(|| {
     TILE_TABLE.entries()
-      .filter(|(&s, _)| { s.ends_with('z') })
-      .map(|(_, &prime)| { prime })
+      .filter_map(|(&s, &prime)| if s.ends_with('z') { Some(prime) } else { None })
       .collect()
   });
   jihau_primes_table.contains(&tile.0)

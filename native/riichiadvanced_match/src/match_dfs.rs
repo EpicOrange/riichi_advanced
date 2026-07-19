@@ -268,8 +268,7 @@ fn is_visited(path: &Vec<PathItem>, last_item: &PathItem, visited: Rc<RefCell<Ha
     let vis = visited.borrow();
     for mask in 1..(1u32 << len) {
       let mut key: Vec<RemovableGroup> = (0..len)
-        .filter(|&i| mask & (1 << i) != 0)
-        .map(|i| path[i].clone())
+        .filter_map(|i| if mask & (1 << i) != 0 { Some(path[i].clone()) } else { None } )
         .collect();
       key.sort_unstable();
       key.push(last_item.clone());
