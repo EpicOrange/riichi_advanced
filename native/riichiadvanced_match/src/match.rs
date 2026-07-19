@@ -127,7 +127,7 @@ pub fn remove_match_definition<'a>(
         }
         else if s == "dismantle_calls" {
           Box::new(acc.map(|mut hands| {
-            let mut hand = hands.remove(0);
+            let mut hand = hands.swap_remove(0);
             for call in hands.iter_mut() {
               hand.hash *= call.hash;
               hand.attrs.append(&mut call.attrs);

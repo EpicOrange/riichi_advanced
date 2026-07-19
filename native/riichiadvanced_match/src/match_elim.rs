@@ -11,7 +11,7 @@ fn elim_call_name(hands: &Hands, name: &String, exhaustive: bool) -> Vec<Hands> 
     if let Some(call_name) = &hands[i].name {
       if call_name == name {
         let mut hands = hands.clone();
-        hands.remove(i);
+        hands.swap_remove(i);
         ret.push(hands);
         if !exhaustive { break; }
       }
@@ -31,7 +31,7 @@ fn elim_tileset(
   for i in 1..hands.len() {
     if let Some(_) = __subtract_exhaustive(&hands[i], tileset, aliases, joker_tiles) {
       let mut hands = hands.clone();
-      hands.remove(i);
+      hands.swap_remove(i);
       ret.push(hands);
       if !exhaustive { break; }
     }
@@ -100,7 +100,7 @@ fn elim_call_name_iter<'a>(
     if let Some(call_name) = &call.name {
       if *call_name == name {
         let mut hands = hands.clone();
-        hands.remove(i);
+        hands.swap_remove(i);
         return Box::new(once(hands));
       }
     }
@@ -122,7 +122,7 @@ fn elim_tileset_iter<'a>(
     if is_call {
       if let Some(_) = __subtract(&hand, &tileset, aliases, joker_tiles) {
         let mut hands = hands.clone();
-        hands.remove(i);
+        hands.swap_remove(i);
         return Box::new(once(hands));
       }
     } else if exhaustive {
