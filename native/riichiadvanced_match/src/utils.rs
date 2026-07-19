@@ -52,9 +52,9 @@ pub fn get_tile_atom_attrs(tile: &ElixirTile) -> (&Atom, Vec<String>) {
 // }
 
 pub fn add_joker_to_aliases<'a>(
-    elixir_aliases: &mut ElixirAliases,
-    joker: &ElixirTile,
-    tiles: impl IntoIterator<Item = &'a ElixirTile>
+  elixir_aliases: &mut ElixirAliases,
+  joker: &ElixirTile,
+  tiles: impl IntoIterator<Item = &'a ElixirTile>
 ) -> () {
   for to in tiles {
     if is_any(to) { continue; }
@@ -76,9 +76,9 @@ pub fn add_joker_to_aliases<'a>(
 }
 
 pub fn remove_joker_from_aliases<'a>(
-    elixir_aliases: &mut ElixirAliases,
-    joker: &ElixirTile,
-    tiles: impl IntoIterator<Item = &'a ElixirTile>
+  elixir_aliases: &mut ElixirAliases,
+  joker: &ElixirTile,
+  tiles: impl IntoIterator<Item = &'a ElixirTile>
 ) -> () {
   for to in tiles {
     let (tile, attrs) = &mut get_tile_atom_attrs(&to);

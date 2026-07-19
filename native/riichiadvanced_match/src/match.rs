@@ -13,7 +13,7 @@ use crate::match_info::prepare_tiles;
 use crate::offsets::{__generate_groups, get_base_tiles};
 use crate::profile::{PROFILE_MATCH, CALL_COUNT, MAX_NANOS, TOTAL_NANOS};
 use crate::tileset::_subtract_check_attrs_exhaustive;
-use crate::types::{ANY_PRIME, ElixirAliases, ElixirHand, ElixirHandCalls, ElixirTile, Hands, HandsIterator, MatchDefinition, MatchDefinitionElem, MatchDefinitions, MatchGroup, MatchInfo, MatchOffset, RemovableGroup, Tile};
+use crate::types::{ANY_PRIME, ElixirAliases, ElixirHand, ElixirHandCalls, ElixirTile, Hands, HandsIterator, MatchDefinition, MatchDefinitionElem, MatchDefinitions, MatchGroup, MatchInfo, MatchOffset, Tile};
 use crate::utils::remove_indices;
 
 // this is used a lot, especially for determining and processing calls
@@ -100,7 +100,10 @@ pub fn remove_match_definition<'a>(
     return Box::new(empty());
   }
 
-  let base_tiles = Rc::new(get_base_tiles(match_info, &match_definition).into_iter().collect::<Vec<_>>());
+  let mut base_tiles = get_base_tiles(match_info, &match_definition).into_iter().collect::<Vec<_>>();
+  base_tiles.sort_unstable();
+  base_tiles.dedup();
+  let base_tiles = Rc::new(base_tiles);
   let exhaustive = match_definition.contains(&MatchDefinitionElem::Keyword("exhaustive".to_string()));
   let mut unique = false;
   let mut nojoker = false;
@@ -192,7 +195,7 @@ fn remove_match_group<'a>(
     perform_bipartite_match(offsets, num, Box::new(once(hands)), base_tiles, match_info, debug, exhaustive, unique, nojoker)
   } else {
     if debug { println!("Starting dfs match for {num} groups from {:?}", groups); }
-    perform_dfs_match(&groups, num, Box::new(once(hands)), base_tiles, match_info, debug, exhaustive, unique, nojoker)
+    perform_dfs_match((*groups).clone(), num, Box::new(once(hands)), base_tiles, match_info, debug, exhaustive, unique, nojoker)
   };
 
   // process lookaheads
@@ -341,8 +344,8 @@ fn __remove_group<'a>(
     ordering,
     ordering_r,
   );
-  let base_tiles = match base_tiles {
-    Some(base_tiles) => encode_tiles(base_tiles, all_attrs).collect::<HashSet<_>>(),
+  let base_tiles: Vec<Tile> = match base_tiles {
+    Some(base_tiles) => encode_tiles(base_tiles, all_attrs).collect(),
     None => {
       let match_definition = vec!(MatchDefinitionElem::Group(vec!(group.clone()), 1));
       get_base_tiles(&match_info, &match_definition)
@@ -350,9 +353,10 @@ fn __remove_group<'a>(
   };
 
   // reify all groups into removable groups
-  let reified_groups: Vec<RemovableGroup> = __generate_groups(
-    &group,
-    &mut base_tiles.into_iter(),
+  let mut base_tiles_iter = base_tiles.into_iter();
+  let reified_groups = __generate_groups(
+    group,
+    &mut base_tiles_iter,
     &match_info.all_attrs,
     &match_info.joker_tiles,
     &match_info.ordering, &match_info.ordering_r,

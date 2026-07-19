@@ -12,7 +12,7 @@ use crate::tile_table::{tile1m, tile1p, tile1s, tile1x};
 use crate::types::{AccItem, AccIterator, FIXED_OFFSETS, HandsIterator, MatchGroup, MatchInfo, MatchOffset, PathItem, RemovableGroup, Tile};
 
 pub fn perform_dfs_match<'a>(
-  groups: &[MatchGroup], num: i8,
+  groups: Vec<MatchGroup>, num: i8,
   acc: HandsIterator<'a>,
   base_tiles: Rc<Vec<Tile>>,
   match_info: &'a MatchInfo,
@@ -42,7 +42,7 @@ pub fn perform_dfs_match<'a>(
 }
 
 fn reify_groups<'a>(
-  groups: &[MatchGroup],
+  groups: Vec<MatchGroup>,
   base_tiles: Rc<Vec<Tile>>,
   match_info: &'a MatchInfo,
   debug: bool, mut nojoker: bool,
@@ -84,7 +84,8 @@ fn reify_groups<'a>(
     Rc::new(vec!(all.clone()))
   );
 
-  for (i, group) in groups.iter().enumerate() {
+  let num_groups = groups.len();
+  for (i, group) in groups.into_iter().enumerate() {
     let mut have_fixed_offsets = false;
     let mut have_numeric_offsets = false;
     // if there is a single suit offset, we need to separate base_tiles into suits
@@ -121,18 +122,18 @@ fn reify_groups<'a>(
       vec!(base_tiles.clone())
     } else { keys.clone() };
     for (base_tiles, key) in base_tile_sets.into_iter().zip(keys.iter()) {
+      let mut base_tile_iter = base_tiles.iter().copied();
       let reified = __generate_groups(
-        group,
-        &mut base_tiles.iter().copied(),
+        group.clone(),
+        &mut base_tile_iter,
         &match_info.all_attrs,
         &match_info.joker_tiles,
         &match_info.ordering, &match_info.ordering_r,
         &mut nojoker);
-      if reified.is_empty() { continue; }
 
-      if debug { println!("Reified group {0}/{1}: {2:?} using base tiles <{3:?}>{4} into the groups{5}:", i + 1, groups.len(), &group, base_tiles, if nojoker { " (nojoker)" } else { "" }, if separate_suits { " (separate_suits)" } else { "" }); }
+      if debug { println!("Reified group {0}/{1}: {2:?} using base tiles <{3:?}> into the groups{4}:", i + 1, num_groups, &group, base_tiles, if separate_suits { " (separate_suits)" } else { "" }); }
       let mut stored_groups = vec!();
-      for group in reified.iter() {
+      for group in reified {
         if let Some(&ix) = reified_bank_r.get(&group) {
           stored_groups.push(reified_bank[ix].clone());
         } else {
@@ -198,14 +199,14 @@ fn _dfs_match<'a>(
     .flat_map(|(&j, v)| v.iter().cloned().map(|g| (j, g)).collect::<Vec<_>>())
     .collect::<Vec<_>>();
   if debug {
-    println!("Removal {0}/{1}{2} from ({3:?}) {4:?} / {5:?} \\ {6:?}{7} {8}{9}{10}",
+    println!("Removal {0}/{1}{2} from ({3:?}) {4:?} / {5:?} \\ {6:?} x{7} {8}{9}{10}",
       i + 1,
       actual_num,
       if num <= 0 { " (lookahead)" } else { "" },
       hands[0].attrs.len(),
       decode(&hands[0], match_info.all_attrs),
       hands[1..].iter().map(|call| decode(&call, match_info.all_attrs)).collect::<Vec<_>>(),
-      groups, num,
+      groups.iter().map(|g| print_group(&g.1, match_info.all_attrs, nojoker)).collect::<Vec<_>>().join(","), num,
       if exhaustive { " exhaustive" } else { "" },
       if unique { " unique" } else { "" },
       if nojoker { " nojoker" } else { "" },

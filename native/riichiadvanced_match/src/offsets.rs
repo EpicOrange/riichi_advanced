@@ -1,8 +1,9 @@
 use std::collections::{HashSet, VecDeque};
+use std::iter::{empty, once};
 
 use crate::encode::{encode_attrs, encode_tiles, to_tileset};
 use crate::tile_table::*;
-use crate::types::{ANY_PRIME, ElixirTile, FIXED_OFFSETS, MatchDefinition, MatchDefinitionElem, MatchGroup, MatchInfo, MatchOffset, RemovableGroup, Tile, TileOrdering, TileSet};
+use crate::types::{ANY_PRIME, ElixirTile, FIXED_OFFSETS, GroupIterator, MatchDefinition, MatchDefinitionElem, MatchGroup, MatchInfo, MatchOffset, RemovableGroup, Tile, TileOrdering, TileSet};
 use crate::primes::{is_jihai, is_manzu, is_pinzu, is_souzu, shift_suit_mut, to_prime};
 
 // return true if changed
@@ -234,19 +235,19 @@ pub fn apply_offsets_early_exit(
 // reifies offsets into a TileSet for each base tile
 // wraps each in a RemovableGroup::Group
 pub fn generate_groups_from_offsets<'a>(
-    offsets: &Vec<MatchOffset>,
-    base_tiles: &mut impl Iterator<Item = Tile>, all_attrs: &[String],
-    joker_tiles: &HashSet<Tile>,
-    ordering: &TileOrdering, ordering_r: &TileOrdering,
-    nojoker: &mut bool,
-) -> Vec<RemovableGroup> {
-  base_tiles.map(|base_tile| {
-    let (tiles, nojoker_ix) = apply_offsets(&base_tile, offsets, all_attrs, ordering, ordering_r);
+    offsets: Vec<MatchOffset>,
+    base_tiles: &'a mut impl Iterator<Item = Tile>, all_attrs: &'a [String],
+    joker_tiles: &'a HashSet<Tile>,
+    ordering: &'a TileOrdering, ordering_r: &'a TileOrdering,
+    nojoker: &'a mut bool,
+) -> GroupIterator<'a> {
+  Box::new(base_tiles.map(move |base_tile| {
+    let (tiles, nojoker_ix) = apply_offsets(&base_tile, &offsets, all_attrs, ordering, ordering_r);
     if nojoker_ix < offsets.len() { *nojoker = true; }
     tiles
       .into_iter().collect::<Option<Vec<_>>>()
       .map(|tiles| RemovableGroup::Group(to_tileset(tiles, joker_tiles).set_nojoker(*nojoker)))
-  }).flatten().collect::<Vec<_>>()
+  }).flatten())
 }
 
 // #[rustler::nif]
@@ -258,40 +259,40 @@ fn _generate_groups(
     ordering: TileOrdering, ordering_r: TileOrdering,
     nojoker: bool,
 ) -> Vec<RemovableGroup> {
-  __generate_groups(&group, &mut encode_tiles(&base_tiles, &all_attrs), &all_attrs, &joker_tiles.into_iter().collect(), &ordering, &ordering_r, &mut nojoker.clone())
+  __generate_groups(group, &mut encode_tiles(&base_tiles, &all_attrs), &all_attrs, &joker_tiles.into_iter().collect(), &ordering, &ordering_r, &mut nojoker.clone()).collect()
 }
 pub fn __generate_groups<'a>(
-    group: &MatchGroup,
-    base_tiles: &mut impl Iterator<Item = Tile>,
-    all_attrs: &[String],
-    joker_tiles: &HashSet<Tile>,
-    ordering: &TileOrdering, ordering_r: &TileOrdering,
-    mut nojoker: &mut bool,
-) -> Vec<RemovableGroup> {
-  let mut ret = match group {
+    group: MatchGroup,
+    base_tiles: &'a mut impl Iterator<Item = Tile>,
+    all_attrs: &'a [String],
+    joker_tiles: &'a HashSet<Tile>,
+    ordering: &'a TileOrdering, ordering_r: &'a TileOrdering,
+    nojoker: &'a mut bool,
+) -> GroupIterator<'a> {
+  match group {
     // special case group-level keywords, which could be call names
     MatchGroup::Offset(MatchOffset::TileOrKeyword(s)) => {
       // first check if it's a tile name or fixed offset,
-      match ATOM_TABLE.get(s).or_else(|| FIXED_OFFSETS.get(s)) {
+      match ATOM_TABLE.get(&s).or_else(|| FIXED_OFFSETS.get(&s)) {
         // in which case we do the same as for MatchGroup::Offset
-        Some(_) => generate_groups_from_offsets(&vec!(MatchOffset::TileOrKeyword(s.clone())), base_tiles, all_attrs, joker_tiles, ordering, ordering_r, &mut nojoker),
+        Some(_) => generate_groups_from_offsets(vec!(MatchOffset::TileOrKeyword(s)), base_tiles, all_attrs, joker_tiles, ordering, ordering_r, nojoker),
         None => {
           if s == "nojoker" {
             *nojoker = true;
-            vec!()
+            Box::new(empty()) as GroupIterator<'a>
           } else if s == "unique" {
-            vec!()
+            Box::new(empty()) as GroupIterator<'a>
           } else {
             // otherwise, return as call name
-            vec!(RemovableGroup::CallName(s.clone()))
+            Box::new(once(RemovableGroup::CallName(s.clone())))
           }
         }
       }
     }
-    MatchGroup::Offset(offset) => generate_groups_from_offsets(&vec!(offset.clone()), base_tiles, all_attrs, joker_tiles, ordering, ordering_r, &mut nojoker),
-    MatchGroup::Offsets(offsets) => generate_groups_from_offsets(offsets, base_tiles, all_attrs, joker_tiles, ordering, ordering_r, &mut nojoker),
+    MatchGroup::Offset(offset) => generate_groups_from_offsets(vec!(offset), base_tiles, all_attrs, joker_tiles, ordering, ordering_r, nojoker),
+    MatchGroup::Offsets(offsets) => generate_groups_from_offsets(offsets, base_tiles, all_attrs, joker_tiles, ordering, ordering_r, nojoker),
     MatchGroup::Subgroups(subgroupings) => {
-      base_tiles.filter_map(|base_tile|
+      Box::new(base_tiles.filter_map(move |base_tile|
         subgroupings.iter()
           .map(|subgroup| 
             apply_offsets(&base_tile, subgroup, all_attrs, ordering, ordering_r)
@@ -300,12 +301,9 @@ pub fn __generate_groups<'a>(
               .map(|tiles| to_tileset(tiles, joker_tiles).set_nojoker(*nojoker)))
           .collect::<Option<Vec<TileSet>>>()
           .map(RemovableGroup::Multigroup)
-      ).collect::<Vec<RemovableGroup>>()
+      ))
     }
-  };
-  ret.sort_unstable();
-  ret.dedup();
-  ret
+  }
 }
 
 // TODO maybe faster to return a HashSet?
@@ -328,10 +326,11 @@ pub fn gather_rev_offsets(match_definition: &MatchDefinition) -> Vec<MatchOffset
   ret
 }
 
+// returns a sorted vec of base tiles
 pub fn get_base_tiles<'a>( 
     match_info: &'a MatchInfo<'a>,
     match_definition: &'a MatchDefinition,
-) -> HashSet<Tile> {
+) -> Vec<Tile> {
   // get all offsets of matchable tiles
   // we need to do this because jokers/offsets could reify into a tile
   //   that we can't otherwise encode, since it's not in hand
@@ -344,5 +343,8 @@ pub fn get_base_tiles<'a>(
 
   for (p, _) in &match_info.joker_tiles { base_tiles.remove(&(*p, 0)); }
 
+  let mut base_tiles = base_tiles.into_iter().collect::<Vec<_>>();
+  base_tiles.sort_unstable();
+  base_tiles.dedup();
   base_tiles
 }

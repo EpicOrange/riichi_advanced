@@ -420,3 +420,4 @@ pub type AccIterator<'a> = Box<dyn Iterator<Item = AccItem> + 'a>;
 
 // elim match
 pub type HandsIterator<'a> = Box<dyn Iterator<Item = Hands> + 'a>;
+pub type GroupIterator<'a> = Box<dyn Iterator<Item = RemovableGroup> + 'a>;
