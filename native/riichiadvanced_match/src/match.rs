@@ -5,7 +5,7 @@ use std::sync::atomic::Ordering;
 use std::time::Instant;
 use rustler::Atom;
 
-use crate::encode::{decode, encode, encode_aliases};
+use crate::encode::{decode, encode, encode_aliases, encode_tiles};
 use crate::match_bipartite::perform_bipartite_match;
 use crate::match_dfs::perform_dfs_match;
 use crate::match_elim::_elim_group;
@@ -13,7 +13,7 @@ use crate::match_info::prepare_tiles;
 use crate::offsets::{__generate_groups, get_base_tiles};
 use crate::profile::{PROFILE_MATCH, CALL_COUNT, MAX_NANOS, TOTAL_NANOS};
 use crate::tileset::_subtract_check_attrs_exhaustive;
-use crate::types::{ANY_PRIME, ElixirAliases, ElixirHand, ElixirHandCalls, ElixirTile, Hands, HandsIterator, MatchDefinition, MatchDefinitionElem, MatchDefinitions, MatchGroup, MatchInfo, MatchOffset, RemovableGroup};
+use crate::types::{ANY_PRIME, ElixirAliases, ElixirHand, ElixirHandCalls, ElixirTile, Hands, HandsIterator, MatchDefinition, MatchDefinitionElem, MatchDefinitions, MatchGroup, MatchInfo, MatchOffset, RemovableGroup, Tile};
 use crate::utils::remove_indices;
 
 // this is used a lot, especially for determining and processing calls
@@ -156,7 +156,7 @@ pub fn remove_match_definition<'a>(
 fn remove_match_group<'a>(
   hands: Hands,
   groups: Rc<Vec<MatchGroup>>, num: i8,
-  base_tiles: Rc<Vec<ElixirTile>>,
+  base_tiles: Rc<Vec<Tile>>,
   match_info: &'a MatchInfo,
   debug: bool, exhaustive: bool, unique: bool, nojoker: bool,
 ) -> HandsIterator<'a> {
@@ -312,7 +312,7 @@ pub fn _remove_group(
     &ordering_r,
     exhaustive,
     nojoker,
-    &base_tiles.map(|v| v.into_iter().collect()),
+    &base_tiles,
   )
 } 
 
@@ -322,7 +322,7 @@ fn __remove_group<'a>(
   elixir_aliases: &'a ElixirAliases,
   ordering: &'a HashMap<Atom, Atom>, ordering_r: &'a HashMap<Atom, Atom>,
   exhaustive: bool, mut nojoker: bool,
-  base_tiles: &'a Option<HashSet<ElixirTile>>,
+  base_tiles: &'a Option<Vec<ElixirTile>>,
 ) -> Vec<ElixirHand> {
   // special case: if we are trying to remove the empty group,
   // simply return hand in a singleton vec
@@ -340,17 +340,18 @@ fn __remove_group<'a>(
     ordering,
     ordering_r,
   );
-  let base_tiles = if let Some(base_tiles) = base_tiles {
-    base_tiles
-  } else {
-    let match_definition = vec!(MatchDefinitionElem::Group(vec!(group.clone()), 1));
-    &get_base_tiles(&match_info, &match_definition)
+  let base_tiles = match base_tiles {
+    Some(base_tiles) => encode_tiles(base_tiles, all_attrs).collect::<HashSet<_>>(),
+    None => {
+      let match_definition = vec!(MatchDefinitionElem::Group(vec!(group.clone()), 1));
+      get_base_tiles(&match_info, &match_definition)
+    }
   };
 
   // reify all groups into removable groups
   let reified_groups: Vec<RemovableGroup> = __generate_groups(
     &group,
-    &mut base_tiles.iter(),
+    &mut base_tiles.into_iter(),
     &match_info.all_attrs,
     &match_info.joker_tiles,
     &match_info.ordering, &match_info.ordering_r,

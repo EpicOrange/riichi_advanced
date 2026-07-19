@@ -7,18 +7,18 @@ use num::abs;
 use crate::encode::{decode, print_group};
 use crate::match_elim::elim_group_iter;
 use crate::offsets::{__generate_groups};
-use crate::primes::{is_manzu, is_pinzu, is_souzu};
+use crate::primes::{is_manzu, is_pinzu, is_souzu, to_prime};
 use crate::tile_table::{tile1m, tile1p, tile1s, tile1x};
-use crate::types::{AccItem, AccIterator, ElixirTile, FIXED_OFFSETS, HandsIterator, MatchGroup, MatchInfo, MatchOffset, PathItem, RemovableGroup};
+use crate::types::{AccItem, AccIterator, FIXED_OFFSETS, HandsIterator, MatchGroup, MatchInfo, MatchOffset, PathItem, RemovableGroup, Tile};
 
 pub fn perform_dfs_match<'a>(
   groups: &[MatchGroup], num: i8,
   acc: HandsIterator<'a>,
-  base_tiles: Rc<Vec<ElixirTile>>,
+  base_tiles: Rc<Vec<Tile>>,
   match_info: &'a MatchInfo,
   debug: bool, exhaustive: bool, unique: bool, nojoker: bool,
 ) -> HandsIterator<'a> {
-  let reified_groups_by_base_tile_set: Rc<HashMap<Rc<Vec<ElixirTile>>, Rc<BTreeMap<usize, Rc<Vec<RemovableGroup>>>>>> =
+  let reified_groups_by_base_tile_set: Rc<HashMap<Rc<Vec<Tile>>, Rc<BTreeMap<usize, Rc<Vec<RemovableGroup>>>>>> =
     Rc::new(reify_groups(groups, base_tiles.clone(), match_info, debug, nojoker));
   let base_tile_sets = Rc::new(reified_groups_by_base_tile_set.keys().cloned().collect::<Vec<_>>());
   Box::new(acc.flat_map(move |hands| {
@@ -43,14 +43,14 @@ pub fn perform_dfs_match<'a>(
 
 fn reify_groups<'a>(
   groups: &[MatchGroup],
-  base_tiles: Rc<Vec<ElixirTile>>,
+  base_tiles: Rc<Vec<Tile>>,
   match_info: &'a MatchInfo,
   debug: bool, mut nojoker: bool,
   // base tile set => group index i => vec of groups
-) -> HashMap<Rc<Vec<ElixirTile>>, Rc<BTreeMap<usize, Rc<Vec<RemovableGroup>>>>> {
+) -> HashMap<Rc<Vec<Tile>>, Rc<BTreeMap<usize, Rc<Vec<RemovableGroup>>>>> {
   let mut reified_bank: Vec<RemovableGroup> = vec!();
   let mut reified_bank_r: HashMap<RemovableGroup, usize> = HashMap::new();
-  let mut ret: HashMap<Rc<Vec<ElixirTile>>, Rc<BTreeMap<usize, Rc<Vec<RemovableGroup>>>>> = HashMap::new();
+  let mut ret: HashMap<Rc<Vec<Tile>>, Rc<BTreeMap<usize, Rc<Vec<RemovableGroup>>>>> = HashMap::new();
   if debug {
     // println!("\nHand tiles: {0:?}", match_info.tiles_in_hand.iter().collect::<Vec<_>>());
     // println!("Base tiles: {0:?}", base_tiles.iter().collect::<Vec<_>>());
@@ -73,10 +73,10 @@ fn reify_groups<'a>(
       }
     }
   }
-  let man = ElixirTile::AtomTile(tile1m());
-  let pin = ElixirTile::AtomTile(tile1p());
-  let sou = ElixirTile::AtomTile(tile1s());
-  let all = ElixirTile::AtomTile(tile1x());
+  let man = (to_prime(&tile1m()).unwrap(), 0);
+  let pin = (to_prime(&tile1p()).unwrap(), 0);
+  let sou = (to_prime(&tile1s()).unwrap(), 0);
+  let all = (to_prime(&tile1x()).unwrap(), 0);
   let keys = vec!(
     Rc::new(vec!(man.clone())),
     Rc::new(vec!(pin.clone())),
@@ -101,15 +101,15 @@ fn reify_groups<'a>(
     let base_tile_sets = if separate_suits {
       // we need to try each suit
       if have_fixed_offsets {
-        let base_m: Vec<ElixirTile> = vec!(man.clone());
-        let base_p: Vec<ElixirTile> = vec!(pin.clone());
-        let base_s: Vec<ElixirTile> = vec!(sou.clone());
+        let base_m: Vec<Tile> = vec!(man.clone());
+        let base_p: Vec<Tile> = vec!(pin.clone());
+        let base_s: Vec<Tile> = vec!(sou.clone());
         vec!(Rc::new(base_m), Rc::new(base_p), Rc::new(base_s))
       } else if have_numeric_offsets {
         // separate base tiles of the same suit
-        let mut base_m: Vec<ElixirTile> = vec!();
-        let mut base_p: Vec<ElixirTile> = vec!();
-        let mut base_s: Vec<ElixirTile> = vec!();
+        let mut base_m: Vec<Tile> = vec!();
+        let mut base_p: Vec<Tile> = vec!();
+        let mut base_s: Vec<Tile> = vec!();
         for tile in (*base_tiles).clone() {
           if is_manzu(&tile) { base_m.push(tile); }
           else if is_pinzu(&tile) { base_p.push(tile); }
@@ -123,7 +123,7 @@ fn reify_groups<'a>(
     for (base_tiles, key) in base_tile_sets.into_iter().zip(keys.iter()) {
       let reified = __generate_groups(
         group,
-        &mut base_tiles.iter(),
+        &mut base_tiles.iter().copied(),
         &match_info.all_attrs,
         &match_info.joker_tiles,
         &match_info.ordering, &match_info.ordering_r,

@@ -397,6 +397,7 @@ pub static FIXED_OFFSETS: phf::Map<&'static str, fn() -> Atom> = phf::phf_map! {
   "DC"  => tile6z,
 };
 
+pub type TileOrdering = HashMap<Prime, Prime>;
 #[derive(Debug)]
 pub struct MatchInfo<'a> {
   pub initial_hands: Vec<TileSet>,
@@ -405,8 +406,8 @@ pub struct MatchInfo<'a> {
   pub relevant_tiles: Vec<Tile>,
   pub joker_tiles: HashSet<Tile>,
   pub all_attrs: &'a Vec<String>,
-  pub ordering: &'a HashMap<Atom, Atom>,
-  pub ordering_r: &'a HashMap<Atom, Atom>,
+  pub ordering: TileOrdering,
+  pub ordering_r: TileOrdering,
 }
 
 

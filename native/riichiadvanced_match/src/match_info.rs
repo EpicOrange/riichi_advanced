@@ -2,6 +2,7 @@ use std::collections::{HashMap, HashSet};
 use rustler::Atom;
 
 use crate::encode::{encode, encode_aliases, encode_tiles};
+use crate::primes::to_prime;
 use crate::types::{ElixirAliases, ElixirHand, ElixirHandCalls, ElixirTile, MatchInfo, Tile};
 use crate::utils::{fetch_tile_aliases};
 
@@ -15,10 +16,10 @@ fn prepare_hand_calls((hand, calls): &ElixirHandCalls) -> Vec<(&ElixirHand, Stri
 }
 
 pub fn prepare_tiles<'a>(
-    hand_calls: &'a ElixirHandCalls,
-    all_attrs: &'a Vec<String>,
-    elixir_aliases: &'a ElixirAliases,
-    ordering: &'a HashMap<Atom, Atom>, ordering_r: &'a HashMap<Atom, Atom>,
+  hand_calls: &'a ElixirHandCalls,
+  all_attrs: &'a Vec<String>,
+  elixir_aliases: &'a ElixirAliases,
+  ordering: &'a HashMap<Atom, Atom>, ordering_r: &'a HashMap<Atom, Atom>,
 ) -> MatchInfo<'a> {
   let orig_hands = prepare_hand_calls(hand_calls);
   let mut num_tiles_in_hand = 0;
@@ -51,6 +52,15 @@ pub fn prepare_tiles<'a>(
     if name != "" { ret.name = Some(name.to_owned()); }
     initial_hands.push(ret);
   }
+
+  // map ordering and ordering_r to primes
+  let map_to_prime = |(k, v)| {
+    let k = to_prime(k)?;
+    let v = to_prime(v)?;
+    Some((k, v))
+  };
+  let ordering = ordering.into_iter().filter_map(map_to_prime).collect();
+  let ordering_r = ordering_r.into_iter().filter_map(map_to_prime).collect();
 
   MatchInfo{
     initial_hands,

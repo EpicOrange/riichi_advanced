@@ -36,24 +36,17 @@ pub fn encode_attrs(attrs: &mut [String], all_attrs: &[String]) -> BitAttrs {
 
 pub fn encode_tile(tile: &ElixirTile, all_attrs: &[String]) -> Option<Tile> {
   match tile {
-    ElixirTile::AtomTile(atom) => { to_prime(atom).map(|prime| (*prime, 0)) }
+    ElixirTile::AtomTile(atom) => { to_prime(atom).map(|prime| (prime, 0)) }
     ElixirTile::AttrTile(atom, tile_attrs) => {
-      to_prime(atom).map(|prime| (*prime, encode_attrs(&mut tile_attrs.clone(), all_attrs)))
+      to_prime(atom).map(|prime| (prime, encode_attrs(&mut tile_attrs.clone(), all_attrs)))
     }
   }
 }
 
-pub fn encode_tiles<'a>(tiles: impl IntoIterator<Item = &'a ElixirTile>, all_attrs: &[String]) -> Vec<Tile> {
-  let mut ret = vec!();
-  for tile in tiles.into_iter() {
-    if let Some(encoded) = encode_tile(&tile, all_attrs) {
-      ret.push(encoded);
-    } else {
-      eprintln!("Unrecognized Elixir tile {tile:?}");
-      // panic!();
-    }
-  }
-  ret
+pub fn encode_tiles<'a>(
+  tiles: impl IntoIterator<Item = &'a ElixirTile> + 'a, all_attrs: &'a [String]
+) -> impl Iterator<Item = Tile> + 'a {
+  tiles.into_iter().filter_map(move |tile| encode_tile(&tile, all_attrs))
 }
 
 pub fn encode(hand: &ElixirHand, all_attrs: &[String], joker_tiles: &HashSet<Tile>) -> TileSet {
@@ -72,6 +65,17 @@ pub fn encode(hand: &ElixirHand, all_attrs: &[String], joker_tiles: &HashSet<Til
   TileSet{ hash: Hash(hash), attrs, name: None, nojoker: false }
 }
 
+pub fn to_tileset(hand: Vec<Tile>, joker_tiles: &HashSet<Tile>) -> TileSet {
+  let mut attrs = vec!();
+  let mut hash = U256::ONE;
+  for tile in hand.iter() {
+    if !joker_tiles.contains(&tile) { hash *= U256::from(tile.0); }
+    attrs.push(tile);
+  }
+  attrs.sort_unstable(); // important for dedup
+  TileSet{ hash: Hash(hash), attrs: hand, name: None, nojoker: false }
+}
+
 pub fn encode_aliases(aliases: &ElixirAliases, all_attrs: &[String]) -> Aliases {
   let mut ret: Aliases = HashMap::new();
   for (tile, attrs_aliases) in aliases {
@@ -80,13 +84,13 @@ pub fn encode_aliases(aliases: &ElixirAliases, all_attrs: &[String]) -> Aliases 
       for (attrs, aliases) in attrs_aliases {
         let encoded_attrs = encode_attrs(&mut attrs.clone(), all_attrs);
         // either fetch it from encoding, or encode it anew
-        let mut encoded_aliases: Vec<Tile> = encode_tiles(aliases, all_attrs);
+        let mut encoded_aliases: Vec<Tile> = encode_tiles(aliases, all_attrs).collect();
         match entry.get_mut(&encoded_attrs) {
           Some(existing_aliases) => { existing_aliases.append(&mut encoded_aliases); }
           None => { entry.insert(encoded_attrs, encoded_aliases); }
         }
       }
-      ret.insert(*prime, entry);
+      ret.insert(prime, entry);
     }
   }
   ret

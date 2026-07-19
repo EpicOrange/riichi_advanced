@@ -4,16 +4,16 @@ use std::iter::{empty, once};
 use std::rc::Rc;
 use num::abs;
 
-use crate::encode::{decode, decode_tiles, encode_tile};
+use crate::encode::{decode, decode_tiles};
 use crate::offsets::{apply_offsets_early_exit};
 use crate::tileset::{_check_equivalence, move_jokers_to_end, remove_tileset_indices};
-use crate::types::{ElixirTile, Hands, HandsIterator, Hash, IndexVec, MatchInfo, MatchOffset, RowIndex, Tile};
+use crate::types::{Hands, HandsIterator, Hash, IndexVec, MatchInfo, MatchOffset, RowIndex, Tile};
 
 // we only care about the hand, so calls will pass right through
 pub fn perform_bipartite_match<'a>(
   offsets: Rc<Vec<MatchOffset>>, num: i8,
   acc: HandsIterator<'a>,
-  base_tiles: Rc<Vec<ElixirTile>>,
+  base_tiles: Rc<Vec<Tile>>,
   match_info: &'a MatchInfo,
   debug: bool, _exhaustive: bool, _unique: bool, nojoker: bool,
 ) -> HandsIterator<'a> {
@@ -57,7 +57,7 @@ pub fn perform_bipartite_match<'a>(
     Box::new((0..base_tiles.len()).flat_map(move |ix| -> HandsIterator<'a> {
       let base_tile = base_tiles[ix].clone();
       let num_ignores = num_offsets - actual_num; // can skip reifying this many tiles
-      let Some((offset_elixir_tiles, mut nojoker_ix)) = apply_offsets_early_exit(&base_tile, &offsets, match_info.ordering, match_info.ordering_r, num_ignores)
+      let Some((offset_tiles, mut nojoker_ix)) = apply_offsets_early_exit(&base_tile, &offsets, match_info.all_attrs, &match_info.ordering, &match_info.ordering_r, num_ignores)
       else {
         // if debug { println!("Giving up since we cannot reify enough offsets ({}/{}) in {:?} with base tile <{:?}> (num_ignores={})", num, num_offsets, offsets, base_tile, num_ignores); }
         return Box::new(empty());
@@ -65,9 +65,7 @@ pub fn perform_bipartite_match<'a>(
 
       if nojoker { nojoker_ix = 0; } // match keyword overrides group keyword
 
-      if debug { println!("nojoker_ix for offsets {:?} is {nojoker_ix:?}", offset_elixir_tiles); }
-
-      let offset_tiles: Vec<Tile> = offset_elixir_tiles.iter().flat_map(|tile| encode_tile(tile, match_info.all_attrs)).collect();
+      if debug { println!("nojoker_ix for offsets {offset_tiles:?} is {nojoker_ix:?}"); }
 
       // enumerate all matchings for offset_tiles via backtracking search
       // once a matching is found, emit it as an iterator value by removing it from hand

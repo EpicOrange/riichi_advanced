@@ -25,12 +25,12 @@ pub fn get_tile_atom(tile: &ElixirTile) -> &Atom {
     ElixirTile::AttrTile(atom, _attrs) => atom,
   }
 }
-pub fn get_tile_atom_mut(tile: &mut ElixirTile) -> &mut Atom {
-  match tile {
-    ElixirTile::AtomTile(atom) => atom,
-    ElixirTile::AttrTile(atom, _attrs) => atom,
-  }
-}
+// pub fn get_tile_atom_mut(tile: &mut ElixirTile) -> &mut Atom {
+//   match tile {
+//     ElixirTile::AtomTile(atom) => atom,
+//     ElixirTile::AttrTile(atom, _attrs) => atom,
+//   }
+// }
 pub fn get_tile_atom_attrs(tile: &ElixirTile) -> (&Atom, Vec<String>) {
   // this makes a copy of attrs so we can return it owned
   match tile {
@@ -44,12 +44,12 @@ pub fn get_tile_atom_attrs(tile: &ElixirTile) -> (&Atom, Vec<String>) {
 //     ElixirTile::AttrTile(atom, attrs) => (atom, Some(attrs)),
 //   }
 // }
-pub fn strip_attrs(tile: &ElixirTile) -> ElixirTile {
-  match tile {
-    ElixirTile::AtomTile(_atom) => tile.clone(),
-    ElixirTile::AttrTile(atom, _attrs) => ElixirTile::AtomTile(*atom),
-  }
-}
+// pub fn strip_attrs(tile: &ElixirTile) -> ElixirTile {
+//   match tile {
+//     ElixirTile::AtomTile(_atom) => tile.clone(),
+//     ElixirTile::AttrTile(atom, _attrs) => ElixirTile::AtomTile(*atom),
+//   }
+// }
 
 pub fn add_joker_to_aliases<'a>(
     elixir_aliases: &mut ElixirAliases,
