@@ -53,7 +53,6 @@ on after_start do
   set_tile_alias_all(["6j"], ["1p","2p","3p","4p","5p","6p","7p","8p","9p"])
   set_tile_alias_all(["7j"], ["1s","2s","3s","4s","5s","6s","7s","8s","9s"])
   set_tile_alias_all(["8j"], ["1m","2m","3m","4m","5m","6m","7m","8m","9m"])
-  set_tile_alias_all([%{tile: "any", attrs: ["dora"]}], ["any"])
 end
 
 # # funny animation. might remove it if it's annoying
@@ -66,18 +65,9 @@ end
 #     convert_last_discard("0j")
 #   end
 # end
-def make_joker_discard do
-  add_attr(["last_discard"], ["dora"]) # add dora shine instead
-  recalculate_buttons # see if anyone wins
-end
-
-define_play_effect flower do
-  make_joker_discard
-end
 
 define_play_effect joker do
   set_status("discarded_joker")
-  make_joker_discard
 end
 
 define_button start_joker,
@@ -178,12 +168,15 @@ define_yaku yaku, "Hợp (合)", ["hop_value", "Phán"], hop_value > 0
 # joker set usage (add viet_more_jokers mod for more combos)
 define_yaku yaku, "Blue Joker Set", [1, "Mủn"], match(["hand", "calls", "flowers", "jokers", "winning_tile"], ~m"nojoker, 0j:1, 6j:1, 7j:1, 8j:1")
 define_yaku yaku, "Blue Joker Set", [1, "Mủn"], match(["flowers", "jokers"], ~m"nojoker, 0j:1, 6j:1, 7j:1, 8j:1")
-define_yaku yaku, "Red Joker Set", [1, "Mủn"], match(["hand", "calls", "flowers", "jokers", "winning_tile"], ~m"nojoker, 2j:1, 3j:1, 4j:1, 5j:1")
-define_yaku yaku, "Red Joker Set", [1, "Mủn"], match(["flowers", "jokers"], ~m"nojoker, 2j:1, 3j:1, 4j:1, 5j:1")
+define_yaku yaku, "Red Joker Set", [1, "Mủn"], match(["hand", "calls", "flowers", "jokers", "winning_tile"], ~m"nojoker, 2j:1, 4j:1, 5j:1, 9j:1")
+define_yaku yaku, "Red Joker Set", [1, "Mủn"], match(["flowers", "jokers"], ~m"nojoker, 2j:1, 4j:1, 5j:1, 9j:1")
+
+# win on discarded joker
+define_yaku yaku, "Win on Discarded Joker", [1, "Mủn"], won_by_discard and match(["last_discard"], "any_joker")
 
 # can't use too many jokers in calls
 apply set_append, "buttons.chii.call_conditions", not_call_contains([+@all_jokers], 2)
-# apply set_append, "buttons.pon.call_conditions", not_call_contains([+@all_jokers], 2)
+apply set_append, "buttons.pon.call_conditions", not_call_contains([+@all_jokers], 2)
 apply set_append, "buttons.daiminkan.call_conditions", not_call_contains([+@all_jokers], 1)
 apply set_append, "buttons.kakan.call_conditions", not_call_contains([+@all_jokers], 1)
 apply set_append, "buttons.ankan.call_conditions", not_call_contains([+@all_jokers], 1)

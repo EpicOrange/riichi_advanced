@@ -6,4 +6,9 @@ end
 define_set pair, ~s"0 0"
 define_set shuntsu, ~s"0 1 2"
 
-define_yaku !list, !name, [!value, !han], match(["hand", "calls", "winning_tile"], ~m"exhaustive, shuntsu:4, pair:1")
+if !no_value_pair do
+  require "value_honors"
+  define_yaku !list, !name, [!value, !han], match(["hand", "calls", "winning_tile"], ~m"exhaustive, shuntsu:4, value_pair:-1, pair:1")
+else
+  define_yaku !list, !name, [!value, !han], match(["hand", "calls", "winning_tile"], ~m"exhaustive, shuntsu:4, pair:1")
+end

@@ -15,11 +15,11 @@ define_match any_flower, ~m"nojoker, any_flower:1"
 apply set, "buttons.start_no_flower.show_when",
   status("initial_flowers")
   and our_turn
-  and (not_match(["hand", "draw"], ~m"nojoker, any_flower:1")
+  and (not_match(["hand", "draw"], "any_flower")
     or (seat_is("east") and not_match(["hand", "draw", "flowers"], ~m"nojoker, any_flower:2")))
 
 # but then they have to discard it immediately
-define_play_restriction not_flower, status("first_turn") and match(["hand", "draw"], ~m"nojoker, any_flower:1")
+define_play_restriction not_flower, status("first_turn") and match(["hand", "draw"], "any_flower")
 apply prepend, "buttons.flower.show_when", status_missing("first_turn")
 
 # flower yaku (seat flowers and seat season already defined by default_flowers mod)
@@ -42,3 +42,15 @@ define_yaku yaku, "All Queens", [1, "Mủn"], match(["flowers"], ~m"1q:1, 2q:1, 
 # define_yaku yaku, "Matched Royalty", [1, "Phán"], match(["flowers"], ~m"2k:1, 2q:1")
 # define_yaku yaku, "Matched Royalty", [1, "Phán"], match(["flowers"], ~m"3k:1, 3q:1")
 # define_yaku yaku, "Matched Royalty", [1, "Phán"], match(["flowers"], ~m"4k:1, 4q:1")
+
+# add an alias says any dora tiles is any-joker
+# then make all discarded flowers dora, so they can be called for a win
+on after_start do
+  set_tile_alias_all([%{tile: "any", attrs: ["dora"]}], ["any"])
+end
+define_play_effect flower do
+  add_attr(["last_discard"], ["dora"])
+  recalculate_buttons # see if anyone wins
+end
+
+define_yaku yaku, "Win on Discarded Flower", [1, "Mủn"], won_by_discard and match(["last_discard"], "any_flower")

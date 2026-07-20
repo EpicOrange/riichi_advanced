@@ -22,12 +22,12 @@ if !sets >= 16 do # circle set
   define_play_effect "08j" do joker_discard(status: "discarded_8j", is_blue: 1) end
   define_play_effect "09j" do joker_discard(status: "discarded_9j", is_blue: 0) end
   define_play_effect "02j" do joker_discard(status: "discarded_2j", is_blue: 1) end
-  define_play_effect "03j" do joker_discard(status: "discarded_3j", is_blue: 0) end
+  define_play_effect "04j" do joker_discard(status: "discarded_4j", is_blue: 0) end
   define_play_effect "05j" do joker_discard(status: "discarded_5j", is_blue: 0) end
   define_yaku yaku, "Blue Joker Set", [1, "Mủn"], match(["hand", "calls", "flowers", "jokers", "winning_tile"], ~m"nojoker, 00j:1, 06j:1, 07j:1, 08j:1")
   define_yaku yaku, "Blue Joker Set", [1, "Mủn"], match(["flowers", "jokers"], ~m"nojoker, 00j:1, 06j:1, 07j:1, 08j:1")
-  define_yaku yaku, "Red Joker Set", [1, "Mủn"], match(["hand", "calls", "flowers", "jokers", "winning_tile"], ~m"nojoker, 02j:1, 03j:1, 04j:1, 05j:1")
-  define_yaku yaku, "Red Joker Set", [1, "Mủn"], match(["flowers", "jokers"], ~m"nojoker, 02j:1, 03j:1, 04j:1, 05j:1")
+  define_yaku yaku, "Red Joker Set", [1, "Mủn"], match(["hand", "calls", "flowers", "jokers", "winning_tile"], ~m"nojoker, 02j:1, 04j:1, 05j:1, 09j:1")
+  define_yaku yaku, "Red Joker Set", [1, "Mủn"], match(["flowers", "jokers"], ~m"nojoker, 02j:1, 04j:1, 05j:1, 09j:1")
 end
 if !sets >= 24 do # diamond set
   apply append, "constants.all_flowers", ["59j"]
@@ -40,12 +40,12 @@ if !sets >= 24 do # diamond set
   define_play_effect "58j" do joker_discard(status: "discarded_8j", is_blue: 1) end
   define_play_effect "59j" do joker_discard(status: "discarded_9j", is_blue: 0) end
   define_play_effect "52j" do joker_discard(status: "discarded_2j", is_blue: 1) end
-  define_play_effect "53j" do joker_discard(status: "discarded_3j", is_blue: 0) end
+  define_play_effect "54j" do joker_discard(status: "discarded_4j", is_blue: 0) end
   define_play_effect "55j" do joker_discard(status: "discarded_5j", is_blue: 0) end
   define_yaku yaku, "Blue Joker Set", [1, "Mủn"], match(["hand", "calls", "flowers", "jokers", "winning_tile"], ~m"nojoker, 50j:1, 56j:1, 57j:1, 58j:1")
   define_yaku yaku, "Blue Joker Set", [1, "Mủn"], match(["flowers", "jokers"], ~m"nojoker, 50j:1, 56j:1, 57j:1, 58j:1")
-  define_yaku yaku, "Red Joker Set", [1, "Mủn"], match(["hand", "calls", "flowers", "jokers", "winning_tile"], ~m"nojoker, 52j:1, 53j:1, 54j:1, 55j:1")
-  define_yaku yaku, "Red Joker Set", [1, "Mủn"], match(["flowers", "jokers"], ~m"nojoker, 52j:1, 53j:1, 54j:1, 55j:1")
+  define_yaku yaku, "Red Joker Set", [1, "Mủn"], match(["hand", "calls", "flowers", "jokers", "winning_tile"], ~m"nojoker, 52j:1, 54j:1, 55j:1, 59j:1")
+  define_yaku yaku, "Red Joker Set", [1, "Mủn"], match(["flowers", "jokers"], ~m"nojoker, 52j:1, 54j:1, 55j:1, 59j:1")
 end
 if !sets >= 32 do # hexagon set
   apply append, "constants.all_flowers", ["89j"]
@@ -58,12 +58,12 @@ if !sets >= 32 do # hexagon set
   define_play_effect "88j" do joker_discard(status: "discarded_8j", is_blue: 1) end
   define_play_effect "89j" do joker_discard(status: "discarded_9j", is_blue: 0) end
   define_play_effect "82j" do joker_discard(status: "discarded_2j", is_blue: 1) end
-  define_play_effect "83j" do joker_discard(status: "discarded_3j", is_blue: 0) end
+  define_play_effect "84j" do joker_discard(status: "discarded_4j", is_blue: 0) end
   define_play_effect "85j" do joker_discard(status: "discarded_5j", is_blue: 0) end
   define_yaku yaku, "Blue Joker Set", [1, "Mủn"], match(["hand", "calls", "flowers", "jokers", "winning_tile"], ~m"nojoker, 80j:1, 86j:1, 87j:1, 88j:1")
   define_yaku yaku, "Blue Joker Set", [1, "Mủn"], match(["flowers", "jokers"], ~m"nojoker, 80j:1, 86j:1, 87j:1, 88j:1")
-  define_yaku yaku, "Red Joker Set", [1, "Mủn"], match(["hand", "calls", "flowers", "jokers", "winning_tile"], ~m"nojoker, 82j:1, 83j:1, 84j:1, 85j:1")
-  define_yaku yaku, "Red Joker Set", [1, "Mủn"], match(["flowers", "jokers"], ~m"nojoker, 82j:1, 83j:1, 84j:1, 85j:1")
+  define_yaku yaku, "Red Joker Set", [1, "Mủn"], match(["hand", "calls", "flowers", "jokers", "winning_tile"], ~m"nojoker, 82j:1, 84j:1, 85j:1, 89j:1")
+  define_yaku yaku, "Red Joker Set", [1, "Mủn"], match(["flowers", "jokers"], ~m"nojoker, 82j:1, 84j:1, 85j:1, 89j:1")
 end
 
 # combos

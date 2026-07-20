@@ -38,18 +38,20 @@ on after_initialization do
 
   # yaku that are mostly unique to this variant
   add_rule("1 Phán", "Mosquito Hand", "Winning with no scoring hand patterns gives Mosquito Hand (0 Phán).")
-  add_rule("1 Phán", "Single Wait", "1 Phán if you win with a hand that relied on one tile only to complete. Because of jokers, this tends to be rarer than in other Mahjong variants.")
+  add_rule("1 Phán", "Mosquito Hand", "%{example_hand}", %{example_hand: ~t"67m12567p555s22z6j 8m"})
+  add_rule("1 Phán", "Single Wait", "1 Phán if you win (by self-draw) with a hand that relied on exactly one tile to complete. Because of jokers, this tends to be rarer than in other Mahjong variants.")
   add_rule("1 Phán", "Quad", "Each quad (Coong) of any type awards you 1 Phán each. If you have four Quads, you are instead awarded Four Quads (4 Mủn!).")
   add_rule("3 Phán", "All Called", "3 Phán if you win on a discarded tile with four called groups, leaving a single tile in your hand waiting to complete a pair. +1 Phán if no jokers.")
-  add_rule("1 Mủn", "No Jokers Mosquito Hand", "1 Mủn if you win with a hand containing no jokers but also somehow scores no other hand patterns.")
-  # add_rule("1 Mủn", "No Jokers Mosquito Hand", "%{example_hand}", %{example_hand: ~t"todo"})
+  add_rule("1 Mủn", "No Jokers Mosquito Hand", "1 Mủn if you win with a hand containing no jokers but also scores no other hand patterns besides Mosquito Hand.")
+  add_rule("1 Mủn", "No Jokers Mosquito Hand", "%{example_hand}", %{example_hand: ~t"123678m444p34s66z 5s"})
+  add_rule("1 Mủn", "Win on Discarded Flower/Joker", "1 Mủn if you win a discarded flower or joker.")
 
   # add upgrades to existing yaku (from preapplied mods in constants.ex)
   update_rule("1 Mủn", "Full Flush", "+1 Mủn if no jokers.")
   update_rule("4 Mủn", "All Terminals", "+1 Mủn if no jokers. +1 Mủn if combined with Single Wait and Fully Closed Hand.")
   update_rule("1 Mủn", "Little Three Dragons", "+1 Mủn if no jokers.")
   update_rule("1 Mủn", "Big Three Dragons", "+1 Mủn if no jokers.")
-  update_rule("13 Phán", "Thirteen Orphans", "+1 Mủn if no jokers. For some reason, +1 Mủn if combined with Single Wait and Fully Closed Hand.")
+  update_rule("13 Phán", "Thirteen Orphans", "+1 Mủn if no jokers. +1 Mủn if combined with Single Wait and Fully Closed Hand.")
   update_rule("3 Mủn", "Nine Gates", "+1 Mủn if no jokers. +1 Mủn if combined with Single Wait and Fully Closed Hand.")
   update_rule("3 Mủn", "Four Closed Sets", "+1 Mủn if combined with Single Wait and Fully Closed Hand.")
   update_rule("4 Mủn", "Four Quads", "+1 Mủn if all four quads are concealed.")
@@ -134,36 +136,38 @@ apply set, "buttons.ankan.call_style", %{self: [0, ["1x", 1], 2, 3]}
 
 # all yaku not handled by yaku mods
 define_yaku meta_yaku, "Mosquito Hand", [0, "Phán"], has_no_yaku
-define_yaku yaku, "Single Wait", [1, "Phán"], wait_count_at_most(1, "win")
+define_yaku meta_yaku, "No Jokers Mosquito Hand", [1, "Mủn"], has_no_yaku and status_missing("has_joker"), ["Mosquito Hand"]
+define_yaku yaku, "Single Wait", [1, "Phán"], won_by_draw and wait_count_at_most(1, "win")
 define_yaku yaku, "Quad", [1, "Phán"], match(["calls"], ~m"(daiminkan ankan kakan):1")
 define_yaku yaku, "Quad", [1, "Phán"], match(["calls"], ~m"(daiminkan ankan kakan):2")
 define_yaku yaku, "Quad", [1, "Phán"], match(["calls"], ~m"(daiminkan ankan kakan):3")
 define_yaku yaku, "All Called", [3, "Phán"], not_won_by_draw and match(["calls"], ~m"(chii pon daiminkan ankan kakan):4")
 
 # upgrades to existing yaku
-define_yaku meta_yaku, "All Sets", [1, "Phán"], has_existing_yaku("All Sets") and status_missing("has_joker")
-define_yaku meta_yaku, "All Called", [1, "Phán"], has_existing_yaku("All Called") and status_missing("has_joker")
-define_yaku meta_yaku, "No Jokers Mosquito Hand", [1, "Mủn"], has_no_yaku and status_missing("has_joker"), ["Mosquito Hand"]
-define_yaku meta_yaku, "All Terminals", [1, "Mủn"], has_existing_yaku("All Terminals") and status_missing("has_joker")
+define_yaku meta_yaku, "No Jokers", [1, "Phán"], has_existing_yaku("All Sets") and status_missing("has_joker")
+define_yaku meta_yaku, "No Jokers", [1, "Phán"], has_existing_yaku("All Called") and status_missing("has_joker")
+define_yaku meta_yaku, "No Jokers", [1, "Mủn"], has_existing_yaku("All Terminals") and status_missing("has_joker")
+define_yaku meta_yaku, "No Jokers", [1, "Mủn"], has_existing_yaku("Big Three Dragons") and status_missing("has_joker")
+define_yaku meta_yaku, "No Jokers", [1, "Mủn"], has_existing_yaku("Thirteen Orphans") and status_missing("has_joker")
+define_yaku meta_yaku, "No Jokers", [1, "Mủn"], has_existing_yaku("Nine Gates") and status_missing("has_joker")
+define_yaku meta_yaku, "No Jokers", [1, "Mủn"], has_existing_yaku("Four Closed Sets") and status_missing("has_joker")
+define_yaku meta_yaku, "No Jokers", [1, "Mủn"], has_existing_yaku("All Honors") and status_missing("has_joker")
+define_yaku meta_yaku, "No Jokers", [1, "Mủn"], has_existing_yaku("Little Four Winds") and status_missing("has_joker")
+define_yaku meta_yaku, "No Jokers", [1, "Mủn"], has_existing_yaku("Big Four Winds") and status_missing("has_joker")
+
 define_yaku meta_yaku, "All Terminals", [1, "Mủn"], has_existing_yaku("All Terminals", "Single Wait", "Fully Closed Hand")
-define_yaku meta_yaku, "Big Three Dragons", [1, "Mủn"], has_existing_yaku("Big Three Dragons") and status_missing("has_joker")
-define_yaku_precedence "Big Three Dragons", ["White Dragon", "Green Dragon", "Red Dragon"]
-define_yaku meta_yaku, "Thirteen Orphans", [1, "Mủn"], has_existing_yaku("Thirteen Orphans") and status_missing("has_joker")
-define_yaku meta_yaku, "Thirteen Orphans", [1, "Mủn"], has_existing_yaku("Thirteen Orphans") and match(["hand"], ~m"orphans_all:1")
-define_yaku_precedence "Nine Gates", ["Full Flush"]
-define_yaku meta_yaku, "Nine Gates", [1, "Mủn"], has_existing_yaku("Nine Gates") and status_missing("has_joker")
+define_yaku meta_yaku, "Thirteen Orphans", [1, "Mủn"], has_existing_yaku("Thirteen Orphans") and not_has_existing_yaku("Single Wait")
 define_yaku meta_yaku, "Nine Gates", [1, "Mủn"], has_existing_yaku("Nine Gates", "Single Wait", "Fully Closed Hand")
-define_yaku meta_yaku, "Four Closed Sets", [1, "Mủn"], has_existing_yaku("Four Closed Sets") and status_missing("has_joker")
 define_yaku meta_yaku, "Four Closed Sets", [1, "Mủn"], has_existing_yaku("Four Closed Sets", "Single Wait", "Fully Closed Hand")
-define_yaku_precedence "Four Quads", ["Quad", "Four Concealed Triplets"]
 define_yaku meta_yaku, "Four Quads", [1, "Mủn"], has_existing_yaku("Four Quads") and match(["calls"], ~m"ankan:4")
-define_yaku meta_yaku, "All Honors", [1, "Mủn"], has_existing_yaku("All Honors") and status_missing("has_joker")
 define_yaku meta_yaku, "All Honors", [1, "Mủn"], has_existing_yaku("All Honors", "Single Wait", "Fully Closed Hand")
-define_yaku meta_yaku, "Little Four Winds", [1, "Mủn"], has_existing_yaku("Little Four Winds") and status_missing("has_joker")
 define_yaku meta_yaku, "Little Four Winds", [1, "Mủn"], has_existing_yaku("Little Four Winds", "Single Wait", "Fully Closed Hand")
-define_yaku meta_yaku, "Big Four Winds", [1, "Mủn"], has_existing_yaku("Big Four Winds") and status_missing("has_joker")
-define_yaku_precedence "Little Four Winds", ["Round Wind", "Seat Wind"]
 define_yaku meta_yaku, "Big Four Winds", [1, "Mủn"], has_existing_yaku("Big Four Winds", "Single Wait", "Fully Closed Hand")
+
+define_yaku_precedence "Big Three Dragons", ["White Dragon", "Green Dragon", "Red Dragon"]
+define_yaku_precedence "Nine Gates", ["Full Flush"]
+define_yaku_precedence "Four Quads", ["Quad", "Four Concealed Triplets"]
+define_yaku_precedence "Little Four Winds", ["Round Wind", "Seat Wind"]
 define_yaku_precedence "Big Four Winds", ["Little Four Winds"]
 
 set score_calculation, %{ 
@@ -194,7 +198,6 @@ config_mod viet_more_jokers, name: "sets", values: [16, 24, 32]
 
 
 # TODO
-# - bouncing jokers
 # - pao rule
 # - vietnamese yaku names
 # - weaker jokers have priority for calls

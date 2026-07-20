@@ -563,7 +563,7 @@ defmodule RiichiAdvanced.Constants do
           hon_list: "yaku", hon_name: "Mixed Terminals", hon_value: 4, hon_han: "Fan",
           chin_list: "yaku", chin_name: "All Terminals", chin_value: 13, chin_han: "Fan"
         }},
-        %{name: "yaku/pinghu", config: %{list: "yaku", name: "All Sequences", value: 1}},
+        %{name: "yaku/pinghu", config: %{list: "yaku", name: "All Sequences", value: 1, no_value_pair: false}},
         %{name: "yaku/toitoi", config: %{list: "yaku", name: "All Triplets", value: 3}},
         %{name: "yaku/haitei", config: %{
           haitei_list: "yaku", haitei_name: "Final Tile", haitei_value: 1,
@@ -717,7 +717,7 @@ defmodule RiichiAdvanced.Constants do
           haitei_list: "yaku", haitei_name: "Win on Last Tile", haitei_value: 1,
           houtei_list: "yaku", houtei_name: "Win on Last Tile", houtei_value: 1
         }},
-        %{name: "yaku/pinghu", config: %{list: "yaku", name: "All Runs", value: 1}},
+        %{name: "yaku/pinghu", config: %{list: "yaku", name: "All Runs", value: 1, no_value_pair: true}},
         %{name: "yaku/toitoi", config: %{list: "yaku", name: "All Sets", value: 3}},
         %{name: "yaku/honroutou", config: %{
           hon_list: "yaku", hon_name: "All Terminals and Honors", hon_value: 1, hon_han: "Mủn",
