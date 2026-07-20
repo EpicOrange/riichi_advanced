@@ -182,7 +182,7 @@ pub fn ___get_waits_v3<'a>(
   ___get_waits_v3(match_info, match_definitions, aliases, not_waits, right, joker);
 }
 
-#[rustler::nif(schedule = "DirtyCpu")]
+// #[rustler::nif(schedule = "DirtyCpu")]
 fn _get_unneeded_tiles_v2(
     hand_calls: ElixirHandCalls,
     match_definitions: MatchDefinitions,
