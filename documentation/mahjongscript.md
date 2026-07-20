@@ -411,6 +411,12 @@ You can also write conditionals at the top-level, for example:
 if !min == "Mangan" do
   ...
 end
+
+cond do
+  !value == 1 -> ...
+  !value == 2 -> ...
+  !value == 3 -> ...
+end
 ```
 
 This runs the commands inside the if the variable `min` is set to `"Mangan"`. You can also do `if`-`else`-`end` and `unless`-`end`, but not `cond`. The allowable operators within the condition itself are as follows:
@@ -754,7 +760,8 @@ The allowed methods for `apply <method>` are:
 - `"append"`: append an element or an array to an array, or create the array if it doesn't exist.
 - `"merge"`: merge an object to an existing object.
 - `"subtract"`: subtract a numeric value.
-- `"delete"`: remove an element or an array of elements from an array.
+- `"delete"`: remove an element from an array.
+- `"delete_all"`: remove any of the given array of elements from an array.
 - `"multiply"`: multiply a numeric value.
 - `"deep_merge"`: merge an object to an existing object, and merge shared keys recursively.
 - `"divide"`: divide a numeric value.
@@ -764,7 +771,7 @@ The allowed methods for `apply <method>` are:
 
 If the parent node for the given path doesn't exist, the command does nothing (with the exception of `apply initialize` or `apply set`, in which case the path is created). You can also make an exception for this by prepending `set_` to the method, such as `apply set_append` -- this will `append` but default to `set` if the path doesn't exist.
 
-The path syntax is simple: it's `.key` to access a key and `[0]` to access the first element of an array. e.g. `toplevel_key.some_key[1]`.
+The path syntax is simple: it's `.key` to access a key and `[0]` to access the first element of an array. e.g. `toplevel_key.some_key[1]`. Negative indices select from the back of the array. You can also specify multiple indices separated by commas, e.g. `foo.bar[0,1,2,3]` or `buttons["ron", "tsumo"]`. Note that you can only do this once per path.
 
 ### (advanced) `replace all`: Replace all nodes under a path
 
