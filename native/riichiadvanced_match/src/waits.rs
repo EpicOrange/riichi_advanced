@@ -182,7 +182,7 @@ pub fn ___get_waits_v3<'a>(
   ___get_waits_v3(match_info, match_definitions, aliases, not_waits, right, joker);
 }
 
-// #[rustler::nif(schedule = "DirtyCpu")]
+#[rustler::nif(schedule = "DirtyCpu")]
 fn _get_unneeded_tiles_v2(
     hand_calls: ElixirHandCalls,
     match_definitions: MatchDefinitions,
@@ -193,7 +193,7 @@ fn _get_unneeded_tiles_v2(
   let start = Instant::now();
   let ret = __get_unneeded_tiles_v2(
     hand_calls,
-    &mut match_definitions.clone(),
+    match_definitions,
     &all_attrs,
     &elixir_aliases,
     &ordering,
@@ -213,7 +213,7 @@ fn _get_unneeded_tiles_v2(
 #[inline]
 pub fn __get_unneeded_tiles_v2(
     hand_calls: ElixirHandCalls,
-    match_definitions: &mut MatchDefinitions,
+    match_definitions: MatchDefinitions,
     all_attrs: &Vec<String>,
     elixir_aliases: &ElixirAliases,
     ordering: &HashMap<Atom, Atom>, ordering_r: &HashMap<Atom, Atom>,
@@ -233,30 +233,40 @@ pub fn __get_unneeded_tiles_v2(
   for _ in 0..match_info.initial_hands[0].attrs.len() {
     if ret.contains(match_info.initial_hands[0].attrs.first().unwrap()) { continue; }
 
-    // remove the first element
+    // remove first element, we'll push it later to the back
     // (can't use swap-remove since this is basically a queue)
     let tile = match_info.initial_hands[0].attrs.remove(0);
 
     // check against defns
-    if match_definitions.iter().any(|match_definition| {
-        // first try a non-exhaustive version of the match definition, if any
-        let mut matched = true; // false if we succeeded any match
-        for match_elem in match_definition.iter() {
-          if let MatchDefinitionElem::Keyword(s) = match_elem {
-            if s == "exhaustive" { 
-              let mut non_exhaustive_defn = match_definition.clone();
-              non_exhaustive_defn.retain(|elem| {
-                *elem != MatchDefinitionElem::Keyword("exhaustive".to_owned())
-              });
-              matched = remove_match_definition(&match_info, match_definition).next().is_some();
+    for match_definition in &match_definitions {
+      // first try a non-exhaustive version of the match definition, if any
+      let mut non_exhaustive_successful = false;
+      for match_elem in match_definition.iter() {
+        if let MatchDefinitionElem::Keyword(s) = match_elem {
+          if s == "exhaustive" { 
+            let mut non_exhaustive_defn = match_definition.clone();
+            non_exhaustive_defn.retain(|elem| {
+              *elem != MatchDefinitionElem::Keyword("exhaustive".to_owned())
+            });
+            let results: Vec<Tile> = remove_match_definition(&match_info, &non_exhaustive_defn).flat_map(|r| r[0].attrs.clone()).collect();
+            if !results.is_empty() {
+              for r in results { ret.insert(r); }
+              ret.insert(tile);
+              non_exhaustive_successful = true;
               break;
             }
           }
         }
-        matched || remove_match_definition(&match_info, match_definition).next().is_some()
-      }) {
-      // add tile to solution set, since hand still matches without tile
-      ret.insert(tile);
+      }
+      if non_exhaustive_successful { break; }
+      // then try the given match definition
+      // if removal is successful, any remaining tiles are unneeded
+      // the tile we took out is also unneeded
+      let results: Vec<Tile> = remove_match_definition(&match_info, &match_definition).flat_map(|r| r[0].attrs.clone()).collect();
+      if !results.is_empty() {
+        for r in results { ret.insert(r); }
+        ret.insert(tile);
+      }
     }
 
     // push the first element back in
