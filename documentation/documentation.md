@@ -197,7 +197,8 @@ This is the main purpose of **auto buttons**, which are essentially action lists
     define_auto_button auto_sort,
       display_name: "A",
       desc: "Automatically sort your hand.",
-      enabled_at_start: true
+      enabled_at_start: true,
+      persistent: true
       do
         sort_hand
       end
@@ -206,7 +207,8 @@ Here we define an auto button internally named `auto_sort` by defining some opti
 
 - `display_name` (text on the button) defaults to `"A"`,
 - `desc` (hover text for the button) defaults to `""`,
-- `enabled_at_start` defaults to `false`.
+- `enabled_at_start` (what is its state on every new round?) defaults to `false`.
+- `persistent` (does setting persist across rounds?) defaults to `false`, and overrides `enabled_at_start` if `true` on every round after the first.
 
 ![](auto_buttons.png)
 

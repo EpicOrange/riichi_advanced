@@ -1,7 +1,8 @@
 define_auto_button _1_auto_sort,
   display_name: "A",
   desc: "Automatically sort your hand.",
-  enabled_at_start: true
+  enabled_at_start: true,
+  persistent: true
   do
     sort_hand
   end

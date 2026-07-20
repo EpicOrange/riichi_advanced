@@ -724,7 +724,9 @@ defmodule RiichiAdvanced.GameState do
     persistent_counters = Rules.get(state.rules_ref, "persistent_counters", [])
     persistent_tags = Rules.get(state.rules_ref, "persistent_tags", [])
     initial_auto_buttons = for {name, auto_button} <- Rules.get(state.rules_ref, "auto_buttons", []) do
-      {name, auto_button["desc"], Map.get(auto_button, "enabled_at_start", false) and not state.log_seeking_mode}
+      start = Map.get(auto_button, "enabled_at_start", false) and not state.log_seeking_mode
+      default = if Map.get(auto_button, "persistent", false) == true do nil else start end
+      {name, auto_button["desc"], start, default}
     end
 
     # reset player state
@@ -735,7 +737,12 @@ defmodule RiichiAdvanced.GameState do
         start_score: scores[&1],
         nickname: &2.nickname,
         hand: hands[&1],
-        auto_buttons: initial_auto_buttons,
+        auto_buttons: if length(&2.auto_buttons) > 0 do
+            Enum.map(&2.auto_buttons, fn
+              {name, desc, enabled, nil}      -> {name, desc, enabled, nil}
+              {name, desc, _enabled, default} -> {name, desc, default, default}
+            end)
+          else initial_auto_buttons end,
         status: MapSet.filter(&2.status, fn status -> status in persistent_statuses end),
         counters: Enum.filter(&2.counters, fn {counter, _amt} -> counter in persistent_counters end) |> Map.new(),
         tile_behavior: %TileBehavior{
@@ -1609,8 +1616,8 @@ defmodule RiichiAdvanced.GameState do
 
   def handle_cast({:toggle_auto_button, seat, auto_button_name, enabled}, state) do
     # Keyword.put screws up ordering, so we need to use Enum.map
-    state = update_player(state, seat, fn player -> %{ player | auto_buttons: Enum.map(player.auto_buttons, fn {name, desc, on} ->
-      if auto_button_name == name do {name, desc, enabled} else {name, desc, on} end
+    state = update_player(state, seat, fn player -> %{ player | auto_buttons: Enum.map(player.auto_buttons, fn {name, desc, on, default} ->
+      if auto_button_name == name do {name, desc, enabled, default} else {name, desc, on, default} end
     end) } end)
     # schedule a :trigger_auto_button message
     state = Buttons.trigger_auto_button(state, seat, auto_button_name, enabled)

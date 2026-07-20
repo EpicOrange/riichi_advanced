@@ -101,7 +101,8 @@ define_button flower,
 define_auto_button _5_auto_flower,
   display_name: "F",
   desc: "Automatically declare all flowers.",
-  enabled_at_start: !auto_flower_by_default
+  enabled_at_start: !auto_flower_by_default,
+  persistent: true
   do
     if buttons_include("start_flower") do
       press_button("start_flower")

@@ -784,7 +784,7 @@ defmodule RiichiAdvanced.Compiler do
       _ -> {:error, "Compiler.compile: at line #{line}:#{column}, `define_auto_button` command expects a keyword list followed by a do block of actions, got #{inspect(args)}"}
     end
 
-    field_names = ["display_name", "desc", "actions", "enabled_at_start"]
+    field_names = ["display_name", "desc", "actions", "enabled_at_start", "persistent"]
     with {:ok, args} <- args,
          {:ok, fields} <- Utils.sequence(for field_name <- field_names do
            field_json = Map.get(args, field_name, nil)

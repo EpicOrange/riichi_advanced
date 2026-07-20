@@ -187,11 +187,12 @@ This is the main purpose of **auto buttons**, which are essentially action lists
       "auto_sort": {
         "display_name": "A",
         "actions": [["sort_hand"]],
-        "enabled_at_start": true
+        "enabled_at_start": true,
+        "persistent": true
       }
     }
 
-All auto buttons are defined in the toplevel `auto_buttons` key and have an identifier, here `auto_sort`. Each auto button has a display name `display_name`, an action list `actions`, and whether they are enabled by default `enabled_at_start`. Here's what that looks like:
+All auto buttons are defined in the toplevel `auto_buttons` key and have an identifier, here `auto_sort`. Each auto button has a display name `display_name`, an action list `actions`, whether they are enabled by default `enabled_at_start`, and whether their setting persists across rounds `persistent`. Here's what that looks like:
 
 ![](auto_buttons.png)
 
