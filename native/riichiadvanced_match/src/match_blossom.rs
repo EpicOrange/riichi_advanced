@@ -3,6 +3,7 @@ use std::iter::{empty, once};
 use std::rc::Rc;
 
 use blossom::Graph;
+use num::abs;
 use smallvec::smallvec;
 
 use crate::encode::decode_tiles;
@@ -16,14 +17,15 @@ use crate::utils::remove_indices_smallvec;
 // 'blossom' refers to the use of edmond's blossom algorithm
 
 pub fn perform_blossom_match<'a>(
-  groups: Vec<MatchGroup>, mut num: i8,
+  groups: Vec<MatchGroup>, num: i8,
   acc: HandsIterator<'a>,
   match_info: &'a MatchInfo,
   debug: bool, _exhaustive: bool, _unique: bool, nojoker: bool,
 ) -> HandsIterator<'a> {
+  let mut actual_num = if num == 0 { 1 } else { abs(num) } as usize;
   Box::new(acc.flat_map(move |mut hands| -> HandsIterator<'a> {
     if debug {
-      println!("Running blossom with hands = {:?}, groups = {groups:?}, num = {num}",
+      println!("Running blossom with hands = {:?}, groups = {groups:?}, actual_num = {actual_num}",
         hands.iter().map(|h| decode_tiles(&h.attrs, match_info.all_attrs)).collect::<Vec<_>>(),
       );
     }
@@ -34,14 +36,14 @@ pub fn perform_blossom_match<'a>(
       .filter(|(_i, call)| !check_pair_match(call, &groups, match_info, nojoker, true).is_empty())
       .map(|(i, _call)| 1 + i as u8)
       .collect();
-    matching_call_ixs.truncate(num as usize);
-    num -= matching_call_ixs.len() as i8;
-    if debug { println!("Removing calls at indices {:?}; remaining num = {}", matching_call_ixs, num); }
+    matching_call_ixs.truncate(actual_num as usize);
+    actual_num -= matching_call_ixs.len();
+    if debug { println!("Removing calls at indices {:?}; remaining num = {}", matching_call_ixs, actual_num); }
     remove_indices_smallvec(&mut hands, matching_call_ixs);
-    if num == 0 {
+    if actual_num == 0 {
       Box::new(once(hands))
     } else {
-      if let Some(hand) = run_blossom(hands[0].clone(), &groups, num, match_info, debug, nojoker) {
+      if let Some(hand) = run_blossom(hands[0].clone(), &groups, actual_num as i8, match_info, debug, nojoker) {
         hands[0] = hand;
         Box::new(once(hands))
       } else { Box::new(empty()) }
