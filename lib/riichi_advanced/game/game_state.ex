@@ -67,6 +67,7 @@ defmodule RiichiAdvanced.GameState do
       encoded_joker_tiles: MapSet.new(),
       uuid: "",
       encoded_aliases: %{},
+      encoded_mapping: %{},
       dismantle_calls: false,
     ]
     def remove_aliases(tile_behavior) do
@@ -159,6 +160,17 @@ defmodule RiichiAdvanced.GameState do
         {tile, Map.new(attrs_aliases, fn {attrs, aliases} ->
           {attrs, MapSet.new(aliases)}
         end)}
+      end)
+    end
+    def remove_mapping_mapsets(mapping) do
+      Map.new(mapping, fn {tile, mappings} ->
+        {tile, Enum.to_list(mappings)}
+      end)
+    end
+    # undoes the above
+    def restore_mapping_mapsets(mapping) do
+      Map.new(mapping, fn {tile, mappings} ->
+        {tile, MapSet.new(mappings)}
       end)
     end
   end

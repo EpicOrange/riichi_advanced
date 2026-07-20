@@ -169,17 +169,17 @@ pub fn move_jokers_to_end(attrs: &mut [Tile], joker_tiles: &HashSet<Tile>) -> (u
 }
 
 fn sort_by_joker_power(attrs: &mut [Tile], mapping: &Mapping) {
-  attrs.sort_unstable_by_key(|k| mapping.get(k).map(|v| v.len()).unwrap_or(0));
+  attrs.sort_unstable_by_key(|k| mapping.get(k).map(|v| if k.0 == ANY_PRIME { 1000000 } else { v.len() }).unwrap_or(0));
 }
 
-// #[rustler::nif]
-// pub fn _subtract(
-//   hand: TileSet, group: TileSet,
-//   aliases: Aliases, mapping: Mapping,
-//   joker_tiles: Vec<Tile>
-// ) -> Option<TileSet> {
-//   __subtract(&hand, &group, &aliases, &mapping, &joker_tiles.into_iter().collect())
-// }
+#[rustler::nif]
+pub fn _subtract(
+  hand: TileSet, group: TileSet,
+  aliases: Aliases, mapping: Mapping,
+  joker_tiles: Vec<Tile>
+) -> Option<TileSet> {
+  __subtract(&hand, &group, &aliases, &mapping, &joker_tiles.into_iter().collect())
+}
 pub fn __subtract(
   hand: &TileSet, group: &TileSet,
   aliases: &Aliases, mapping: &Mapping,
