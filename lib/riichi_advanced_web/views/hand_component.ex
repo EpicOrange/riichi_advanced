@@ -217,7 +217,11 @@ defmodule RiichiAdvancedWeb.HandComponent do
 
   def hide_tiles(tiles, revealed?) do
     if revealed? do tiles else Enum.map(tiles, fn tile ->
-      if Utils.has_attr?(tile, ["revealed"]) do tile else :"1x" end
+      cond do
+        Utils.strip_attrs(tile) == :"4x" -> :"4x"
+        Utils.has_attr?(tile, ["revealed"]) -> tile
+        true -> :"1x"
+      end
     end) end
   end
 
