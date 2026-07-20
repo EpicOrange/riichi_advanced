@@ -13,5 +13,6 @@ mod waits;
 mod match_elim;
 mod match_dfs;
 mod match_bipartite;
+mod match_blossom;
 
 rustler::init!("Elixir.RiichiAdvanced.Match");

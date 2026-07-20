@@ -3,8 +3,9 @@ use std::iter::{empty, once};
 
 use smallvec::SmallVec;
 
-use crate::encode::{encode_attrs, encode_tiles, to_tileset};
+use crate::encode::{encode_attrs, encode_tiles, has_attrs, to_tileset};
 use crate::tile_table::*;
+use crate::tileset::_check_equivalence;
 use crate::types::{ANY_PRIME, BaseTileVec, ElixirTile, FIXED_OFFSETS, GroupIterator, MatchDefinition, MatchDefinitionElem, MatchGroup, MatchInfo, MatchOffset, RemovableGroup, Tile, TileOrdering, TileSet};
 use crate::primes::{is_jihai, is_manzu, is_pinzu, is_souzu, shift_suit_mut, to_prime};
 
@@ -102,7 +103,6 @@ fn add_attrs_mut((_p, attrs): &mut Tile, new_attrs: &mut [String], all_attrs: &[
   if new_attrs == 0 { return; }
   *attrs |= new_attrs;
 }
-
 
 pub fn apply_fixed_offset(base_tile: &Tile, fixed_offset: &str) -> Option<Tile> {
   FIXED_OFFSETS.get(fixed_offset).and_then(|atom| to_prime(&atom())).and_then(|p| {
@@ -234,6 +234,33 @@ pub fn apply_offsets_early_exit(
   Some((ret, nojoker_ix - keywords_before_nojoker))
 }
 
+// returns true if the given tile could possibly have been obtained from the given offset
+pub fn is_offset_dest(tile: Tile, offset: MatchOffset, match_info: &MatchInfo) -> bool {
+  match offset {
+    MatchOffset::Offset(o) => {
+      let offset = vec!(MatchOffset::Offset(-o));
+      apply_offsets_early_exit(&tile, &offset, match_info.all_attrs, &match_info.ordering, &match_info.ordering_r, 0).is_some()
+    }
+    MatchOffset::AttrsOffset(mut map) => {
+      if has_attrs(&tile, &mut map.attrs, match_info.all_attrs) {
+        let offset = vec!(MatchOffset::Offset(-map.offset));
+        apply_offsets_early_exit(&tile, &offset, match_info.all_attrs, &match_info.ordering, &match_info.ordering_r, 0).is_some()
+      } else { false }
+    }
+    MatchOffset::AttrsTile(mut map) => {
+      let Some(p2) = TILE_TABLE.get(&map.tile) else { return false; };
+      let tile2 = (*p2, encode_attrs(&mut map.attrs, match_info.all_attrs));
+      _check_equivalence(&tile, &tile2, &match_info.aliases)
+    }
+    MatchOffset::TileOrKeyword(s) => {
+      match TILE_TABLE.get(&s) {
+        Some(p2) => _check_equivalence(&tile, &(*p2, 0), &match_info.aliases),
+        None => false,
+      }
+    }
+  }
+}
+
 // reifies offsets into a TileSet for each base tile
 // wraps each in a RemovableGroup::Group
 pub fn generate_groups_from_offsets<'a>(
@@ -317,14 +344,17 @@ pub fn gather_rev_offsets(match_definition: &MatchDefinition) -> Vec<MatchOffset
       }
     }
   }
-  ret.sort_unstable();
-  ret.dedup();
-  for offset in ret.iter_mut() {
+  _gather_rev_offsets(ret)
+}
+pub fn _gather_rev_offsets(mut offsets: Vec<MatchOffset>) -> Vec<MatchOffset> {
+  offsets.sort_unstable();
+  offsets.dedup();
+  for offset in offsets.iter_mut() {
     // negate all numeric offsets
     if let MatchOffset::Offset(o) = offset { *o = -*o; }
     else if let MatchOffset::AttrsOffset(m) = offset { m.offset = -m.offset; }
   }
-  ret
+  offsets
 }
 
 // returns a sorted vec of base tiles
@@ -349,3 +379,4 @@ pub fn get_base_tiles<'a>(
   base_tiles.dedup();
   base_tiles
 }
+

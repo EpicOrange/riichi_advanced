@@ -1,11 +1,27 @@
 use std::collections::HashMap;
 
 use rustler::Atom;
-use crate::{primes::is_any, types::{ElixirAliases, ElixirTile, IndexVec}};
+use smallvec::{Array, SmallVec};
+use crate::primes::is_any;
+use crate::types::{ElixirAliases, ElixirTile, IndexVec};
 
 // precondition: `is` sorted and deduped
 #[inline]
 pub fn remove_indices<T>(xs: &mut Vec<T>, is: IndexVec) {
+  if !is.is_sorted() { panic!("remove_indices: ixs not sorted"); }
+  let mut i: u8 = 0;
+  let mut it = is.into_iter();
+  let mut j = it.next();
+  xs.retain(|_| {
+    if j.is_none() { return true; }
+    let keep = j.unwrap_or(i) != i;
+    if !keep { j = it.next(); }
+    i += 1;
+    keep
+  });
+}
+#[inline]
+pub fn remove_indices_smallvec<T: Array>(xs: &mut SmallVec<T>, is: IndexVec) {
   if !is.is_sorted() { panic!("remove_indices: ixs not sorted"); }
   let mut i: u8 = 0;
   let mut it = is.into_iter();

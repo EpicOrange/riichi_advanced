@@ -116,6 +116,29 @@ defmodule RiichiAdvanced.YakuTest.GalaxyYaku do
     })
   end
 
+  test "galaxy - chiitoitsu with galaxy tiles" do
+    TestUtils.test_yaku_advanced("galaxy", [], """
+    {
+      "starting_hand": {
+        "east": ["2m", "12m", "6p", "16m", "4s", "14m", "7p", "7p", "9p", "8s", "8s", "1z", "1z"],
+        "south": ["1m", "2m", "7m", "2p", "5p", "8p", "3s", "6s", "9s", "2z", "3z", "4z", "7z"],
+        "west": ["1m", "2m", "7m", "2p", "5p", "8p", "3s", "6s", "9s", "2z", "3z", "4z", "7z"],
+        "north": ["1m", "3m", "7m", "2p", "5p", "8p", "3s", "6s", "9s", "2z", "3z", "4z", "7z"]
+      },
+      "starting_draws": ["14z", "9p"]
+    }
+    """, [
+      %{"type" => "discard", "tile" => "14z", "player" => 0, "tsumogiri" => true},
+      %{"type" => "discard", "tile" => "9p", "player" => 1, "tsumogiri" => true},
+      %{"type" => "buttons_pressed", "buttons" => [%{"button" => "ron"}, nil, nil, nil]}
+    ], %{
+      east: [%{
+        yaku: [{"Chiitoitsu", [2, "Han"]}],
+        minipoints: 25
+      }]
+    })
+  end
+
   # # fails with [{"Tenhou", 1}, {"Milky Way", 1}] on github's servers for some reason
   # test "galaxy - milky way ryuuiisou" do
   #   TestUtils.test_yaku_advanced("galaxy", [], """

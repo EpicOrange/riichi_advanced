@@ -332,6 +332,12 @@ dependencies = [
 ]
 
 [[package]]
+name = "blossom"
+version = "0.4.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "3d2a9a3b589aea8a51b1cd3c07e9de3486a13f708ae99a3873863e0edbb1ba65"
+
+[[package]]
 name = "bs58"
 version = "0.5.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -1178,6 +1184,7 @@ checksum = "d6f6ff9a378485b298a5286656da665ba74413d36db0979633275d2e708145d4"
 name = "riichiadvanced_match"
 version = "0.1.0"
 dependencies = [
+ "blossom",
  "num",
  "num-bigint",
  "phf",

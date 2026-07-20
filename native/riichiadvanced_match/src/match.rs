@@ -7,6 +7,7 @@ use rustler::Atom;
 
 use crate::encode::{decode, encode, encode_aliases, encode_tiles};
 use crate::match_bipartite::perform_bipartite_match;
+use crate::match_blossom::perform_blossom_match;
 use crate::match_dfs::perform_dfs_match;
 use crate::match_elim::_elim_group;
 use crate::match_info::prepare_tiles;
@@ -171,30 +172,41 @@ fn remove_match_group<'a>(
   // - unique
   // - single-tile groups only
   // - no calls (not supported yet)
+  // blossom requires:
+  // - every group is length 2
   // anything else is dfs
   let mut unique = unique;
   let mut bipartite = true;
+  let mut blossom = !exhaustive;
   for elem in groups.iter() {
     match elem {
       MatchGroup::Offset(o) => {
+        blossom = false;
         if let MatchOffset::TileOrKeyword(s) = o {
-          if *s == "unique" { unique = true; }
+          if *s == "unique" { unique = true; blossom = false; }
           else if *s == "nojoker" {} // no-op
           else { bipartite = false; } // call name
         }
       }
-      _ => { bipartite = false; },
+      MatchGroup::Offsets(os) => {
+        bipartite = false;
+        if os.len() != 2 { blossom = false; }
+      }
+      MatchGroup::Subgroups(_) => { bipartite = false; blossom = false; }
     }
   }
   if !unique || hands.len() > 1 { bipartite = false; }
 
   // transform acc
-  let base_tiles = base_tiles.clone();
-  let mut acc = if bipartite {
+  let mut acc = if blossom {
+    perform_blossom_match((*groups).clone(), num, Box::new(once(hands)), match_info, debug, exhaustive, unique, nojoker)
+  } else if bipartite {
+    let base_tiles = base_tiles.clone();
     let offsets = Rc::new(groups.iter().flat_map(|g| g.flatten()).collect());
     if debug { println!("Starting bipartite match for {num} offsets from {:?}", offsets); }
     perform_bipartite_match(offsets, num, Box::new(once(hands)), base_tiles, match_info, debug, exhaustive, unique, nojoker)
   } else {
+    let base_tiles = base_tiles.clone();
     if debug { println!("Starting dfs match for {num} groups from {:?}", groups); }
     perform_dfs_match((*groups).clone(), num, Box::new(once(hands)), base_tiles, match_info, debug, exhaustive, unique, nojoker)
   };

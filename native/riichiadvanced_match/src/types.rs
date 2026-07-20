@@ -252,6 +252,17 @@ pub enum RemovableGroup {
   Multigroup(Vec<TileSet>),
 }
 
+// impl MatchOffset {
+//   pub fn is_numeric<'a>(&self) -> bool {
+//     match self {
+//       MatchOffset::Offset(_) => true,
+//       MatchOffset::AttrsTile(_) => false,
+//       MatchOffset::AttrsOffset(_) => true,
+//       MatchOffset::TileOrKeyword(_) => false,
+//     }
+//   }
+// }
+
 impl Encoder for MatchOffset {
   fn encode<'a>(&self, env: Env<'a>) -> Term<'a> {
     match self {

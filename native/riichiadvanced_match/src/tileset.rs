@@ -45,7 +45,7 @@ pub fn check_tile_match((p2, battrs2): &Tile, (p1, battrs1): &Tile) -> bool {
 // }
 // check whether l and r are the same tile and that l has all of r's aliases
 // more importantly, checks that for all aliases as well
-// you can think of this as checking l > r
+// you can think of this as checking l >= r
 pub fn _check_equivalence(l: &Tile, r: &Tile, aliases: &Aliases) -> bool {
   if l == r || check_tile_match(l, r) { return true; }
   if let Some(entries) = aliases.get(&r.0) {
@@ -168,7 +168,7 @@ pub fn move_jokers_to_end(attrs: &mut [Tile], joker_tiles: &HashSet<Tile>) -> (u
   (i, Hash(joker_hash))
 }
 
-fn sort_by_joker_power(attrs: &mut [Tile], mapping: &Mapping) {
+pub fn sort_by_joker_power(attrs: &mut [Tile], mapping: &Mapping) {
   attrs.sort_unstable_by_key(|k| mapping.get(k).map(|v| if k.0 == ANY_PRIME { 1000000 } else { v.len() }).unwrap_or(0));
 }
 

@@ -706,7 +706,7 @@ defmodule RiichiAdvanced.YakuTest.VietnameseYaku do
     {
       "starting_hand": {
         "east": ["1m", "2m", "3m", "5m", "6m", "7m", "3p", "4p", "5p", "1s", "2s", "3s", "5j"],
-        "south": ["3m", "6m", "3p", "4s", "7s", "7s", "3z", "3z", "50j", "06j", "02j", "4j", "84j"],
+        "south": ["3m", "6m", "3p", "4s", "7s", "7s", "3z", "3z", "50j", "06j", "02j", "5j", "85j"],
         "west": ["1m", "4m", "7m", "2p", "5p", "8p", "3s", "7s", "9s", "0z", "2z", "3z", "4z"],
         "north": ["1m", "3m", "7m", "2p", "5p", "8p", "3s", "7s", "9s", "0z", "2z", "4s", "5s"]
       },

@@ -265,7 +265,7 @@ defmodule RiichiAdvanced.Match do
     {jokers, nonjokers} = Enum.split_with(attrs2, & &1 in encoded_joker_tiles)
     jokers = Enum.sort_by(jokers, fn joker ->
       entry = Map.get(encoded_mapping, joker, MapSet.new())
-      if MapSet.member?(entry, :any) do 1000000 else MapSet.size(entry) end
+      {MapSet.member?(entry, :any), MapSet.size(entry), length(Utils.get_attrs(joker))}
     end)
     attrs2 = nonjokers ++ jokers
     hand = %{hand | attrs: attrs2}

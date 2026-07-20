@@ -203,7 +203,7 @@ fn _dfs_match<'a>(
     .flat_map(|(&j, v)| v.iter().cloned().map(|g| (j, g)).collect::<Vec<_>>())
     .collect::<Vec<_>>();
   if debug {
-    println!("Removal {0}/{1}{2} from ({3:?}) {4:?} / {5:?} \\ {6:?} x{7} {8}{9}{10}",
+    println!("Removal {0}/{1}{2} from ({3:?}) {4:?} / {5:?} \\ {6:?} {{{7}}} {8}{9}{10}",
       i + 1,
       actual_num,
       if num <= 0 { " (lookahead)" } else { "" },
