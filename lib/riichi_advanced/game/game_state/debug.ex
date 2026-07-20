@@ -14,6 +14,7 @@ defmodule RiichiAdvanced.GameState.Debug do
   @debug_specific_buttons %{east: []}
   @debug_conditions true
   @debug_ai false
+  @debug_tsumogiri_bots true
   @debug_log true
   @debug_tutorial false
   @debug_yaku_precedence false
@@ -34,6 +35,7 @@ defmodule RiichiAdvanced.GameState.Debug do
   def debug_specific_buttons, do: Process.get(:ignore_type_error, @debug_specific_buttons)
   def debug_conditions, do: Process.get(:ignore_type_error, @debug_conditions)
   def debug_ai, do: Process.get(:ignore_type_error, @debug_ai)
+  def debug_tsumogiri_bots, do: Process.get(:ignore_type_error, @debug_tsumogiri_bots)
   def debug_log, do: Process.get(:ignore_type_error, @debug_log)
   def debug_tutorial, do: Process.get(:ignore_type_error, @debug_tutorial)
   def debug_yaku_precedence, do: Process.get(:ignore_type_error, @debug_yaku_precedence)

@@ -1363,7 +1363,7 @@ defmodule RiichiAdvanced.GameState do
   end
 
   def handle_cast({:fill_empty_seats_with_ai, disconnected?}, state) do
-    tsumogiri_bot = Rules.get(state.rules_ref, "tsumogiri_bots", Debug.debug())
+    tsumogiri_bot = Rules.get(state.rules_ref, "tsumogiri_bots", Debug.debug_tsumogiri_bots())
     state = if not state.log_seeking_mode do
       state = for dir <- state.available_seats, Map.get(state, dir) == nil, disconnected? or not Map.has_key?(state.reserved_seats, dir), reduce: state do
         state ->
