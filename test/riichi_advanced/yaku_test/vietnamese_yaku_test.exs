@@ -700,5 +700,54 @@ defmodule RiichiAdvanced.YakuTest.VietnameseYaku do
       }
     })
   end
-  
+
+  test "vietnamese - many jokers seven pairs" do
+    TestUtils.test_yaku_advanced("vietnamese", [%{name: "viet_more_jokers", config: %{sets: 32}}], """
+    {
+      "starting_hand": {
+        "east": ["1m", "2m", "3m", "5m", "6m", "7m", "3p", "4p", "5p", "1s", "2s", "3s", "5j"],
+        "south": ["3m", "6m", "3p", "4s", "7s", "7s", "3z", "3z", "50j", "06j", "02j", "4j", "84j"],
+        "west": ["1m", "4m", "7m", "2p", "5p", "8p", "3s", "7s", "9s", "0z", "2z", "3z", "4z"],
+        "north": ["1m", "3m", "7m", "2p", "5p", "8p", "3s", "7s", "9s", "0z", "2z", "4s", "5s"]
+      },
+      "starting_draws": ["4s"]
+    }
+    """, [
+      %{"type" => "buttons_pressed", "buttons" => [%{"button" => "start_no_flower"}, nil, nil, nil]},
+      %{"type" => "buttons_pressed", "buttons" => [nil, %{"button" => "start_no_flower"}, nil, nil]},
+      %{"type" => "buttons_pressed", "buttons" => [nil, nil, %{"button" => "start_no_flower"}, nil]},
+      %{"type" => "buttons_pressed", "buttons" => [nil, nil, nil, %{"button" => "start_no_flower"}]},
+      %{"type" => "discard", "tile" => "4s", "player" => 0, "tsumogiri" => true},
+      %{"type" => "buttons_pressed", "buttons" => [nil, %{"button" => "ron"}, nil, nil]}
+    ], %{
+      south: %{
+        yaku: [{"Blessing of Earth", [2, "Mủn"]}, {"Seven Pairs", [1, "Phán"]}],
+      }
+    })
+  end
+
+  test "vietnamese - many jokers mosquito hand" do
+    TestUtils.test_yaku_advanced("vietnamese", [%{name: "viet_more_jokers", config: %{sets: 32}}], """
+    {
+      "starting_hand": {
+        "east": ["1m", "2m", "3m", "5m", "6m", "7m", "3p", "4p", "5p", "1s", "2s", "3s", "5j"],
+        "south": ["4m", "6m", "6p", "6p", "2s", "4s", "8s", "8s", "6z", "6z", "50j", "06j", "58j"],
+        "west": ["1m", "4m", "7m", "2p", "5p", "8p", "3s", "7s", "9s", "0z", "2z", "3z", "4z"],
+        "north": ["1m", "3m", "7m", "2p", "5p", "8p", "3s", "7s", "9s", "0z", "2z", "4s", "5s"]
+      },
+      "starting_draws": ["80j"]
+    }
+    """, [
+      %{"type" => "buttons_pressed", "buttons" => [%{"button" => "start_no_flower"}, nil, nil, nil]},
+      %{"type" => "buttons_pressed", "buttons" => [nil, %{"button" => "start_no_flower"}, nil, nil]},
+      %{"type" => "buttons_pressed", "buttons" => [nil, nil, %{"button" => "start_no_flower"}, nil]},
+      %{"type" => "buttons_pressed", "buttons" => [nil, nil, nil, %{"button" => "start_no_flower"}]},
+      %{"type" => "buttons_pressed", "buttons" => [%{"button" => "tsumo"}, nil, nil, nil]}
+    ], %{
+      east: %{
+        yaku: [{"All Runs", [1, "Phán"]}, {"Blessing of Heaven", [2, "Mủn"]}, {"Fully Closed Hand", [1, "Phán"]}],
+      }
+    })
+  end
+
 end

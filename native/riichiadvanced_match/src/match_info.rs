@@ -78,6 +78,7 @@ pub fn prepare_tiles<'a>(
     initial_hands,
     num_tiles_in_hand,
     aliases,
+    mapping,
     relevant_tiles,
     joker_tiles,
     all_attrs,

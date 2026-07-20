@@ -6,7 +6,7 @@ use num::abs;
 
 use crate::encode::{decode, decode_tiles};
 use crate::offsets::{apply_offsets_early_exit};
-use crate::tileset::{_check_equivalence, move_jokers_to_end, remove_tileset_indices};
+use crate::tileset::{_check_equivalence, move_jokers_to_end, remove_tileset_indices, sort_by_joker_power};
 use crate::types::{BaseTileVec, Hands, HandsIterator, Hash, IndexVec, MatchInfo, MatchOffset, RowIndex, Tile};
 
 // we only care about the hand, so calls will pass right through
@@ -44,8 +44,9 @@ pub fn perform_bipartite_match<'a>(
       return Box::new(empty());
     }
 
-    // we always want to choose jokers last, so put them at the end
-    move_jokers_to_end(&mut hands[0].attrs, &match_info.joker_tiles);
+    // we always want to choose jokers last, so put them at the end and sort them by power
+    let (num_nonjokers, _) = move_jokers_to_end(&mut hands[0].attrs, &match_info.joker_tiles);
+    sort_by_joker_power(&mut hands[0].attrs[num_nonjokers..], &match_info.mapping);
 
     if debug {
       println!("Attempting to match and remove {} offsets {:?} from hand {:?}; base tiles <{:?}>",

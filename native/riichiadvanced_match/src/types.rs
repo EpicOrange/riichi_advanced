@@ -406,13 +406,13 @@ pub struct MatchInfo<'a> {
   pub initial_hands: Hands,
   pub num_tiles_in_hand: usize,
   pub aliases: Aliases,
+  pub mapping: Mapping,
   pub relevant_tiles: Vec<Tile>,
   pub joker_tiles: HashSet<Tile>,
   pub all_attrs: &'a Vec<String>,
   pub ordering: TileOrdering,
   pub ordering_r: TileOrdering,
 }
-
 
 // dfs match
 pub type PathItem = RemovableGroup;

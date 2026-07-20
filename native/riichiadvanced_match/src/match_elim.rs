@@ -3,7 +3,7 @@ use std::iter::{empty, once};
 use std::rc::Rc;
 
 use crate::tileset::{__subtract, __subtract_exhaustive};
-use crate::types::{Aliases, Hands, HandsIterator, RemovableGroup, Tile, TileSet};
+use crate::types::{Aliases, Hands, HandsIterator, Mapping, RemovableGroup, Tile, TileSet};
 
 fn elim_call_name<'a>(hands: Hands, name: &'a String, exhaustive: bool) -> HandsIterator<'a> {
   // group is a call name, remove every corresponding call with that name
@@ -21,7 +21,7 @@ fn elim_call_name<'a>(hands: Hands, name: &'a String, exhaustive: bool) -> Hands
 
 fn elim_tileset<'a>(
   hands: Hands, tileset: &TileSet,
-  aliases: &Aliases,
+  aliases: &Aliases, mapping: &Mapping,
   joker_tiles: &HashSet<Tile>,
   exhaustive: bool,
 ) -> HandsIterator<'a> {
@@ -46,7 +46,7 @@ fn elim_tileset<'a>(
     }
   } else if ret.is_empty() {
     // then check hand
-    if let Some(result) = __subtract(&hands[0], tileset, aliases, joker_tiles) {
+    if let Some(result) = __subtract(&hands[0], tileset, aliases, mapping, joker_tiles) {
       let mut hands = hands;
       hands[0] = result;
       ret.push(hands);
@@ -66,19 +66,19 @@ fn elim_tileset<'a>(
 // }
 pub fn _elim_group<'a>(
     hands: Hands, group_arg: &'a RemovableGroup,
-    aliases: &'a Aliases,
+    aliases: &'a Aliases, mapping: &'a Mapping,
     joker_tiles: &'a HashSet<Tile>,
     exhaustive: bool,
 ) -> HandsIterator<'a> {
   match group_arg {
     RemovableGroup::CallName(name) => elim_call_name(hands, name, exhaustive),
-    RemovableGroup::Group(group) => elim_tileset(hands, group, aliases, joker_tiles, exhaustive),
+    RemovableGroup::Group(group) => elim_tileset(hands, group, aliases, mapping, joker_tiles, exhaustive),
     RemovableGroup::Multigroup(subgroups) => {
       // multigroup can only be removed from hand (= hands[0])
       let initial: HandsIterator<'a> = Box::new(once(hands.clone()));
       let ret = Box::new(subgroups.iter().fold(initial, move |acc, subgroup| {
         let ret = acc.flat_map(move |hands| {
-          elim_tileset(hands, subgroup, aliases, joker_tiles, exhaustive)
+          elim_tileset(hands, subgroup, aliases, mapping, joker_tiles, exhaustive)
         });
         if exhaustive { Box::new(ret) } else { Box::new(ret.take(1)) }
       }));
@@ -109,7 +109,7 @@ fn elim_call_name_iter<'a>(
 fn elim_tileset_iter<'a>(
   hands: Hands,
   tileset: TileSet,
-  aliases: &'a Aliases,
+  aliases: &'a Aliases, mapping: &'a Mapping,
   joker_tiles: &'a HashSet<Tile>,
   exhaustive: bool,
 ) -> HandsIterator<'a> {
@@ -117,7 +117,7 @@ fn elim_tileset_iter<'a>(
   let ret = hands.clone().into_iter().enumerate().rev().flat_map(move |(i, hand)| -> HandsIterator<'a> {
     let is_call = i > 0;
     if is_call {
-      if __subtract(&hand, &tileset, aliases, joker_tiles).is_some() {
+      if __subtract(&hand, &tileset, aliases, mapping, joker_tiles).is_some() {
         let mut hands = hands.clone();
         hands.swap_remove(i);
         return Box::new(once(hands));
@@ -132,7 +132,7 @@ fn elim_tileset_iter<'a>(
         }));
       }
     } else {
-      if let Some(result) = __subtract(&hands[0], &tileset, aliases, joker_tiles) {
+      if let Some(result) = __subtract(&hands[0], &tileset, aliases, mapping, joker_tiles) {
         let mut hands = hands.clone();
         hands[0] = result;
         return Box::new(once(hands));
@@ -145,13 +145,13 @@ fn elim_tileset_iter<'a>(
 
 pub fn elim_group_iter<'a>(
     hands: Hands, group_arg: RemovableGroup,
-    aliases: &'a Aliases,
+    aliases: &'a Aliases, mapping: &'a Mapping,
     joker_tiles: &'a HashSet<Tile>,
     debug: bool, exhaustive: bool,
 ) -> HandsIterator<'a> {
   match group_arg {
     RemovableGroup::CallName(name) => elim_call_name_iter(hands, name.clone()),
-    RemovableGroup::Group(group) => elim_tileset_iter(hands, group, aliases, joker_tiles, exhaustive),
+    RemovableGroup::Group(group) => elim_tileset_iter(hands, group, aliases, mapping, joker_tiles, exhaustive),
     RemovableGroup::Multigroup(subgroups) => {
       if debug {
         println!("Subgroups in elim_group_iter: {:?}", subgroups);
@@ -159,7 +159,7 @@ pub fn elim_group_iter<'a>(
       // multigroup can only be removed from hand (= hands[0])
       subgroups.clone().into_iter().fold(Box::new(once(hands)) as HandsIterator, move |acc: HandsIterator, subgroup| -> HandsIterator {
         Box::new(acc.flat_map(move |hands| -> HandsIterator<'a> {
-          elim_tileset_iter(hands, subgroup.clone(), aliases, joker_tiles, exhaustive)
+          elim_tileset_iter(hands, subgroup.clone(), aliases, mapping, joker_tiles, exhaustive)
         }))
       })
     }

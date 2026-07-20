@@ -3,7 +3,7 @@ use std::collections::{HashMap, HashSet};
 use ruint::aliases::U256;
 use rustler::{Encoder, Env, Term};
 use crate::n_rooks;
-use crate::types::{ANY_PRIME, Aliases, Hash, IndexVec, Mask, Prime, RowIndex, Tile, TileSet};
+use crate::types::{ANY_PRIME, Aliases, Hash, IndexVec, Mapping, Mask, Prime, RowIndex, Tile, TileSet};
 use crate::utils::remove_indices;
 
 #[rustler::nif]
@@ -168,16 +168,22 @@ pub fn move_jokers_to_end(attrs: &mut [Tile], joker_tiles: &HashSet<Tile>) -> (u
   (i, Hash(joker_hash))
 }
 
-#[rustler::nif]
-pub fn _subtract(
-  hand: TileSet, group: TileSet,
-  aliases: Aliases, joker_tiles: Vec<Tile>
-) -> Option<TileSet> {
-  __subtract(&hand, &group, &aliases, &joker_tiles.into_iter().collect())
+fn sort_by_joker_power(attrs: &mut [Tile], mapping: &Mapping) {
+  attrs.sort_unstable_by_key(|k| mapping.get(k).map(|v| v.len()).unwrap_or(0));
 }
+
+// #[rustler::nif]
+// pub fn _subtract(
+//   hand: TileSet, group: TileSet,
+//   aliases: Aliases, mapping: Mapping,
+//   joker_tiles: Vec<Tile>
+// ) -> Option<TileSet> {
+//   __subtract(&hand, &group, &aliases, &mapping, &joker_tiles.into_iter().collect())
+// }
 pub fn __subtract(
   hand: &TileSet, group: &TileSet,
-  aliases: &Aliases, joker_tiles: &HashSet<Tile>
+  aliases: &Aliases, mapping: &Mapping,
+  joker_tiles: &HashSet<Tile>
 ) -> Option<TileSet> {
   if group.attrs.len() > hand.attrs.len() {
     return None;
@@ -213,6 +219,9 @@ pub fn __subtract(
     let unmatched = group_hash / gcd;
     gcd *= Hash::gcd(joker_hash, unmatched)
   } else {
+    // if we care about jokers we additionally want to sort by joker power, so weaker jokers come first
+    sort_by_joker_power(&mut hand_attrs[num_nonjokers..], mapping);
+
     let num_jokers = hand_attrs.len() - num_nonjokers;
     let num_matching_tiles = _count_factors_fast(gcd, &group_primes);
     if num_jokers < num_group_tiles - num_matching_tiles {

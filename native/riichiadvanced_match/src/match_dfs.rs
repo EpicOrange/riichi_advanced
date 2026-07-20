@@ -241,7 +241,7 @@ fn _dfs_match<'a>(
     }
     path.push(group.clone());
     let new_path = path.clone();
-    let mut ret = Box::new(elim_group_iter(hands.clone(), group.clone(), &match_info.aliases, &match_info.joker_tiles, debug, exhaustive)
+    let mut ret = Box::new(elim_group_iter(hands.clone(), group.clone(), &match_info.aliases, &match_info.mapping, &match_info.joker_tiles, debug, exhaustive)
       .map(move |hands| (hands, if unique { j + 1 } else { j }, new_path.clone())));
     match ret.next() {
       Some(t) => {

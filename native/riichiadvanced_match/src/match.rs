@@ -378,7 +378,7 @@ fn __remove_group<'a>(
   // }
   let mut ret: Vec<ElixirHand> = vec!();
   for group in reified_groups {
-    let mut result = _elim_group(match_info.initial_hands.clone(), &group, &match_info.aliases, &match_info.joker_tiles, exhaustive);
+    let mut result = _elim_group(match_info.initial_hands.clone(), &group, &match_info.aliases, &match_info.mapping, &match_info.joker_tiles, exhaustive);
     if let Some(hands) = result.next() {
       ret.push(decode(&hands[0], match_info.all_attrs));
       if !exhaustive {
