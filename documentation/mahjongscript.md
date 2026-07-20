@@ -766,6 +766,9 @@ The allowed methods for `apply <method>` are:
 - `"deep_merge"`: merge an object to an existing object, and merge shared keys recursively.
 - `"divide"`: divide a numeric value.
 - `"modulo"`: modulo a numeric value.
+- `"round"`: round a numeric value.
+- `"round up"`: round up a numeric value.
+- `"round down"`: round down a numeric value.
 - `"delete_key"`: remove a key or an array of keys from an object. (specify keys as strings)
 - any of the following C binary numeric operations theoretically work too: `"atan2", "copysign", "drem", "fdim", "fmax", "fmin", "fmod", "frexp", "hypot", "jn", "ldexp", "modf", "nextafter", "nexttoward", "pow", "remainder", "scalb", "scalbln", "yn"`
 

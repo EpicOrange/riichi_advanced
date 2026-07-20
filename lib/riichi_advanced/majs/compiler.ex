@@ -424,6 +424,7 @@ defmodule RiichiAdvanced.Compiler do
   defp compile_command("apply", name, args, line, column) do
     path_value = case args do
       [path, value] when is_binary(path) -> {:ok, {path, value}}
+      [path] when is_binary(path) -> {:ok, {path, nil}}
       _ -> {:error, "Compiler.compile: at line #{line}:#{column}, `apply` command expects a jq path string and an optional string value, got #{inspect(args)}"}
     end
     with {:ok, {path, value}} <- path_value,
@@ -448,6 +449,9 @@ defmodule RiichiAdvanced.Compiler do
         "deep_merge"                           -> {:ok, "#{path} *= #{value}"}
         "divide"     when is_number(value_val) -> {:ok, "#{path} /= #{value}"}
         "modulo"     when is_number(value_val) -> {:ok, "#{path} %= #{value}"}
+        "round"                                -> {:ok, "#{path} |= round"}
+        "round_up"                             -> {:ok, "#{path} |= ceil"}
+        "round_down"                           -> {:ok, "#{path} |= floor"}
         "delete_key" when is_binary(value_val) -> {:ok, "#{path} |= del(.[#{value}])"}
         "delete_key" when is_list(value_val)   ->
           if Enum.all?(value_val, &is_binary/1) do
