@@ -530,9 +530,10 @@ defmodule RiichiAdvanced.Constants do
         ron_name: "Hu",
         chankan_name: "Hu",
         tsumo_name: "Zimo",
+        flower_name: "Flower",
         ankan_name: "Concealed Kong",
         han: "Fan",
-        limit: "Limit"
+        limit: "Limit" # TODO remove this
       },
       mods: [
         "base",
@@ -601,8 +602,9 @@ defmodule RiichiAdvanced.Constants do
         ron_name: "Hu",
         chankan_name: "Hu",
         tsumo_name: "Zimo",
+        flower_name: "Flower",
         han: "Fan",
-        limit: "Limit"
+        limit: "Limit" # TODO remove this
       },
       mods: [
         "base",
@@ -685,6 +687,7 @@ defmodule RiichiAdvanced.Constants do
         ron_name: "Ù",
         chankan_name: "Bắt Coong",
         tsumo_name: "Chỉ Mó",
+        flower_name: "Hoa",
         han: "Phán",
       },
       mods: [
@@ -747,9 +750,36 @@ defmodule RiichiAdvanced.Constants do
       ],
     },
     "mcr" => %{
-      ruleset: "mcr",
+      ruleset: "empty",
+      globals: %{
+        chii_name: "Chi",
+        pon_name: "Pung",
+        kan_name: "Kong",
+        ankan_name: "Self Kong",
+        ron_name: "Hu",
+        chankan_name: "Hu",
+        tsumo_name: "Hu",
+        flower_name: "Hua",
+        han: "Fan",
+      },
       mods: [
+        "base",
+        "standard_wall", "framed_5z",
         "global_mods", "default_auto_buttons",
+        "chii", "pon", "kan", "ron", "tsumo",
+        "standard_win",
+        %{name: "yaku/chiitoitsu", config: %{rules_tab: "", list: "yaku", name: "Seven Pairs", value: 0, kansai: true}},
+        %{name: "yaku/kokushi", config: %{list: "yakuman", name: "Thirteen Orphans", value: 0}},
+
+        "riichi_call_style", "hide_ankans",
+        "head_bump",
+        %{name: "default_flowers", config: %{
+          undiscardable: false, auto_flower_by_default: true, draw_after_flowers: true,
+          matching_flower_value: 0, matching_flower_han: "Fan",
+          four_flowers_value: 0, four_flowers_han: "Fan"
+        }},
+        %{name: "min_han", config: %{min: 8}},
+        "mcr"
       ],
     },
   }

@@ -23,7 +23,7 @@ defmodule RiichiAdvanced.YakuTest.KansaiYaku do
     %{name: "yaku/riichi_renhou", config: %{is: "Yakuman"}},
     "show_waits",
     "sanma_pei_yakuhai",
-    %{name: "min_han", config: %{min: 1}},
+    %{name: "min_han", config: %{min: 1, han: "Han"}},
     # "cancellable_riichi",
     "yaku/ippatsu",
     %{name: "aka", config: %{man: 1, pin: 1, sou: 1}},

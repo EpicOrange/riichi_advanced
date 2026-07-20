@@ -23,9 +23,14 @@ defmodule RiichiAdvancedWeb.ModSelectionComponent do
               <%= if mod.enabled and not Enum.empty?(mod.config) do %>
                 |
                 <%= for {config_name, config} <- mod.config do %>
-                  <span class="mod-config-name"><%= dt(@lang, String.replace_prefix(config_name, "_", "")) %>:</span>
+                  <% num_values = length(config["values"]) %>
                   <%= case config["type"] do %>
+                    <% _ when num_values == 0 -> %>
+                      <input type="hidden" name={config_name}>
+                    <% _ when num_values == 1 -> %>
+                      <input type="hidden" name={config_name} value={Enum.at(config["values"], 0)}>
                     <% "dropdown" -> %>
+                      <span class="mod-config-name"><%= dt(@lang, String.replace_prefix(config_name, "_", "")) %>:</span>
                       <form class="mod-config-dropdown" phx-change="change_mod_config" phx-value-mod={mod_id} phx-value-name={config_name}>
                         <select name={config_name}>
                           <%= for {value, i} <- Enum.with_index(config["values"]) do %>
@@ -38,6 +43,7 @@ defmodule RiichiAdvancedWeb.ModSelectionComponent do
                         </select>
                       </form>
                     <% "slider" -> %>
+                      <span class="mod-config-name"><%= dt(@lang, String.replace_prefix(config_name, "_", "")) %>:</span>
                       <form class="mod-config-slider" phx-change="change_mod_config" phx-value-mod={mod_id} phx-value-name={config_name}>
                         <input type="range" name={config_name} list={"#{mod_id}-#{config_name}-list"} min="0" max={length(config["values"])-1}>
                         <datalist id={"#{mod_id}-#{config_name}-list"}>

@@ -181,7 +181,7 @@ defmodule RiichiAdvanced.RiichiMechanicsTest do
   end
 
   test "riichi - kazoe" do
-    TestUtils.test_yaku_advanced("riichi", [%{name: "yaku/riichi", config: %{bet: 1000, drawless: false}}, "yaku/ippatsu", %{name: "min_han", config: %{min: 1}}], """
+    TestUtils.test_yaku_advanced("riichi", [%{name: "yaku/riichi", config: %{bet: 1000, drawless: false}}, "yaku/ippatsu", %{name: "min_han", config: %{min: 1, han: "Han"}}], """
     {
       "starting_hand": {
         "east": ["2p", "2p", "3p", "3p", "4p", "4p", "5p", "5p", "6p", "6p", "7p", "7p", "8p"],
@@ -206,7 +206,7 @@ defmodule RiichiAdvanced.RiichiMechanicsTest do
   end
 
   test "riichi - no kazoe" do
-    TestUtils.test_yaku_advanced("riichi", [%{name: "yaku/riichi", config: %{bet: 1000, drawless: false}}, "yaku/ippatsu", "no_kazoe_yakuman", %{name: "min_han", config: %{min: 1}}], """
+    TestUtils.test_yaku_advanced("riichi", [%{name: "yaku/riichi", config: %{bet: 1000, drawless: false}}, "yaku/ippatsu", "no_kazoe_yakuman", %{name: "min_han", config: %{min: 1, han: "Han"}}], """
     {
       "starting_hand": {
         "east": ["2p", "2p", "3p", "3p", "4p", "4p", "5p", "5p", "6p", "6p", "7p", "7p", "8p"],
@@ -231,7 +231,7 @@ defmodule RiichiAdvanced.RiichiMechanicsTest do
   end
 
   test "riichi - kazoe with yakuman only" do
-    TestUtils.test_yaku_advanced("riichi", [%{name: "yaku/riichi", config: %{bet: 1000, drawless: false}}, "yaku/ippatsu", "no_kazoe_yakuman", %{name: "min_han", config: %{min: "Yakuman"}}], """
+    TestUtils.test_yaku_advanced("riichi", [%{name: "yaku/riichi", config: %{bet: 1000, drawless: false}}, "yaku/ippatsu", "no_kazoe_yakuman", %{name: "min_han", config: %{min: "Yakuman", han: "Han"}}], """
     {
       "starting_hand": {
         "east": ["2p", "2p", "3p", "3p", "4p", "4p", "5p", "5p", "6p", "6p", "7p", "7p", "8p"],

@@ -976,7 +976,7 @@ defmodule RiichiAdvanced.Compiler do
   end
 
   defp compile_command(cmd, _name, _args, line, column) do
-    {:error, "Compiler.compile: at line #{line}:#{column}, #{inspect(cmd)} is not a valid toplevel command}"}
+    {:error, "Compiler.compile: at line #{line}:#{column}, #{inspect(cmd)} is not a valid toplevel command!"}
   end
 
   def compile_toplevel_constant(constant, line, column) do

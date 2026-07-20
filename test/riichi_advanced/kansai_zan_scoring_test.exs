@@ -31,7 +31,7 @@ defmodule RiichiAdvanced.KansaiZanScoringTest do
     "show_waits",
     "sanma_pei_yakuhai",
     %{name: "shuugi", config: %{worth: 1000}},
-    %{name: "min_han", config: %{min: 1}},
+    %{name: "min_han", config: %{min: 1, han: "Han"}},
     # "cancellable_riichi",
     "yaku/ippatsu",
     "shiro_pocchi",

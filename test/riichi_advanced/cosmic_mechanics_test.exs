@@ -28,7 +28,7 @@ defmodule RiichiAdvanced.CosmicMechanicsTest do
     %{name: "yaku/riichi_renhou", config: %{is: "Yakuman"}},
     "yaku/isshoku_yonjun",
     "show_waits",
-    %{name: "min_han", config: %{min: 1}},
+    %{name: "min_han", config: %{min: 1, han: "Han"}},
     # "cancellable_riichi",
     "cosmic_calls",
     "yaku/ippatsu",

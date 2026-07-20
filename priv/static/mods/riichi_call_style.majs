@@ -1,0 +1,23 @@
+apply set, "buttons.chii.call_style", %{
+  kamicha: ["call_sideways", 0, 1],
+  toimen: [0, "call_sideways", 1],
+  shimocha: [0, 1, "call_sideways"]
+}
+apply set, "buttons.pon.call_style", %{
+  kamicha: ["call_sideways", 0, 1],
+  toimen: [0, "call_sideways", 1],
+  shimocha: [0, 1, "call_sideways"]
+}
+apply set, "buttons.daiminkan.call_style", %{
+  kamicha: ["call_sideways", 0, 1, 2],
+  toimen: [0, "call_sideways", 1, 2],
+  shimocha: [0, 1, 2, "call_sideways"]
+}
+apply set, "buttons.kakan.call_style", %{
+  kamicha: [["sideways", 0], "call_sideways", 1, 2],
+  toimen: [0, ["sideways", 1], "call_sideways", 2],
+  shimocha: [0, 1, ["sideways", 2], "call_sideways"]
+}
+apply set, "buttons.ankan.call_style", %{
+  self: [["1x", 2], 0, 1, ["1x", 3]]
+}

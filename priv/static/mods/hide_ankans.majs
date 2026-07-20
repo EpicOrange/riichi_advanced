@@ -1,0 +1,5 @@
+apply set, "buttons.ankan.call_style", %{
+  self: [["1x", 0], ["1x", 1], ["1x", 2], ["1x", 3]]
+}
+on after_win do flip_all_calls_faceup end
+on before_exhaustive_draw do flip_all_calls_faceup end

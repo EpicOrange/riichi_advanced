@@ -19,6 +19,12 @@ on after_initialization do
   add_rule("Rules", "Win Condition", "You may win with one of the following:", -100)
 end
 
+on after_call do set_status("call_made") end
+on before_turn_change do unset_status_all("call_made") end
+
+on after_start do set_status_all("first_turn", "discards_empty") end
+define_play_effect any do unset_status("discards_empty") end
+
 on after_turn_change do
   if no_tiles_remaining do
     pause(1000)

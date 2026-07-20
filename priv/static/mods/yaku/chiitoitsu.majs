@@ -1,12 +1,16 @@
 on after_initialization do
   if !kansai do
     add_rule("Rules", "Win Condition", "- Seven pairs (repeated pairs OK).", -100)
-    add_rule("$rules_tab", "Seven Pairs", "%{value} %{han} if your hand consists of seven pairs (repeated pairs OK).", %{value: !value, han: !han, rules_tab: !rules_tab})
-    update_rule("$rules_tab", "Seven Pairs", "%{example_hand}", %{example_hand: ~t"2266m999p4477s33z 9p"}, %{rules_tab: !rules_tab})
+    if !value > 0 do
+      add_rule("$rules_tab", "Seven Pairs", "%{value} %{han} if your hand consists of seven pairs (repeated pairs OK).", %{value: !value, han: !han, rules_tab: !rules_tab})
+      update_rule("$rules_tab", "Seven Pairs", "%{example_hand}", %{example_hand: ~t"2266m999p4477s33z 9p"}, %{rules_tab: !rules_tab})
+    end
   else
     add_rule("Rules", "Win Condition", "- Seven pairs (no repeated pairs).", -100)
-    add_rule("$rules_tab", "Seven Pairs", "%{value} %{han} if your hand consists of seven pairs (no repeated pairs).", %{value: !value, han: !han, rules_tab: !rules_tab})
-    update_rule("$rules_tab", "Seven Pairs", "%{example_hand}", %{example_hand: ~t"2266m339p4477s33z 9p"}, %{rules_tab: !rules_tab})
+    if !value > 0 do
+      add_rule("$rules_tab", "Seven Pairs", "%{value} %{han} if your hand consists of seven pairs (no repeated pairs).", %{value: !value, han: !han, rules_tab: !rules_tab})
+      update_rule("$rules_tab", "Seven Pairs", "%{example_hand}", %{example_hand: ~t"2266m339p4477s33z 9p"}, %{rules_tab: !rules_tab})
+    end
   end
 end
 
@@ -22,4 +26,6 @@ end
 apply set_append, "tenpai_definition", +@chiitoitsu_tenpai
 apply set_append, "win_definition", +@chiitoitsu_win
 
-define_yaku !list, !name, [!value, !han], match(["hand", "winning_tile"], ~m"pair:7")
+if !value > 0 do
+  define_yaku !list, !name, [!value, !han], match(["hand", "winning_tile"], ~m"pair:7")
+end

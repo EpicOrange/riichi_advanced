@@ -585,6 +585,9 @@ set starting_tiles, 13
 set max_rounds, 8
 set four_rows_discards, false
 
+# globals
+define "limit" # for min_han mod
+
 # mods
 define_mod_category "Rules"
 define_mod honba, name: "Honba", order: -1, desc: "Enables honba."
@@ -629,6 +632,7 @@ define_mod toriuchi, deps: ["shuugi"], name: "Toriuchi", desc: "On ron, each 1s 
 define_mod kansai_chiitoitsu, name: "Kansai Chiitoitsu", desc: "Chiitoitsu now allows repeated pairs."
 define_mod min_han, order: 1, name: "Minimum Han", desc: "Minimum han required to win."
 config_mod min_han, name: "min", values: [1, 2, 3, 4, "Mangan", "Yakuman"], default: 1
+config_mod min_han, name: "han", values: ["Han"], default: "Han"
 define_mod no_riichi_ankan, deps: ["yaku/riichi"], name: "No Riichi Ankan", desc: "Disallow any concealed kan while in riichi, not just ones that change your waits."
 define_mod no_fifth_tile_tenpai, deps: ["yaku/riichi"], name: "No Fifth Tile Tenpai", desc: "At exhaustive draw, you are not considered tenpai if all four tiles of each wait is in hand: for example, 123456789m1111p. You may still declare riichi with such a hand, however."
 define_mod kokushi_ankan_chankan, name: "Kokushi Chankan", desc: "Allow robbing ankans if in tenpai for kokushi musou."
@@ -827,7 +831,7 @@ define_preset "Mahjong Soul", [
   "kandora",
   "yaku/ippatsu",
   "show_waits",
-  %{name: "min_han", config: %{min: 1}},
+  %{name: "min_han", config: %{min: 1, han: "Han"}},
   "cancellable_riichi",
   %{name: "aka", config: %{man: 1, pin: 1, sou: 1}},
   "shiny_dora",
@@ -859,7 +863,7 @@ define_preset "tenhou.net", [
   "kandora",
   "yaku/ippatsu",
   "show_waits",
-  %{name: "min_han", config: %{min: 1}},
+  %{name: "min_han", config: %{min: 1, han: "Han"}},
   %{name: "aka", config: %{man: 1, pin: 1, sou: 1}},
   "shiny_dora",
   "first_gets_riichi_sticks"
@@ -890,7 +894,7 @@ define_preset "Riichi City", [
   "kandora",
   "yaku/ippatsu",
   "show_waits",
-  %{name: "min_han", config: %{min: 1}},
+  %{name: "min_han", config: %{min: 1, han: "Han"}},
   "cancellable_riichi",
   %{name: "aka", config: %{man: 1, pin: 1, sou: 1}},
   "shiny_dora",
@@ -921,7 +925,7 @@ define_preset "Amatsuki Mahjong", [
   "kandora",
   "yaku/ippatsu",
   "show_waits",
-  %{name: "min_han", config: %{min: 1}},
+  %{name: "min_han", config: %{min: 1, han: "Han"}},
   "cancellable_riichi",
   %{name: "aka", config: %{man: 1, pin: 1, sou: 1}},
   "shiny_dora",
@@ -947,7 +951,7 @@ define_preset "WRC 2022", [
   "yaku/ippatsu",
   %{name: "yaku/riichi_renhou", config: %{is: "Mangan"}},
   "show_waits",
-  %{name: "min_han", config: %{min: 1}},
+  %{name: "min_han", config: %{min: 1, han: "Han"}},
   "cancellable_riichi",
   %{name: "starting_score", config: %{points: 30000}}
 ]
@@ -970,7 +974,7 @@ define_preset "WRC 2025", [
   "yaku/ippatsu",
   %{name: "yaku/riichi_renhou", config: %{is: "Mangan"}},
   "show_waits",
-  %{name: "min_han", config: %{min: 1}},
+  %{name: "min_han", config: %{min: 1, han: "Han"}},
   "cancellable_riichi",
   %{name: "starting_score", config: %{points: 30000}}
 ]
@@ -997,7 +1001,7 @@ define_preset "M.League", [
   "immediate_kan_dora",
   "yaku/ippatsu",
   "show_waits",
-  %{name: "min_han", config: %{min: 1}},
+  %{name: "min_han", config: %{min: 1, han: "Han"}},
   "cancellable_riichi",
   %{name: "aka", config: %{man: 1, pin: 1, sou: 1}}
 ]
@@ -1099,7 +1103,7 @@ define_preset "Just Like Modded Minecraft", [
   "golden_chun",
   "blue_dragon",
   "wareme",
-  %{name: "min_han", config: %{min: 1}},
+  %{name: "min_han", config: %{min: 1, han: "Han"}},
   "cancellable_riichi",
   "immediate_kan_dora",
   "yaku/ippatsu",

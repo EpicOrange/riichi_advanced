@@ -1,41 +1,5 @@
 set display_name, "MCR"
 set tutorial_link, "https://ooyamaneko.net/download/mahjong/mcr/MCR_2014_en.pdf"
-set wall, ["1m", "1m", "1m", "1m",
-           "2m", "2m", "2m", "2m",
-           "3m", "3m", "3m", "3m",
-           "4m", "4m", "4m", "4m",
-           "5m", "5m", "5m", "5m",
-           "6m", "6m", "6m", "6m",
-           "7m", "7m", "7m", "7m",
-           "8m", "8m", "8m", "8m",
-           "9m", "9m", "9m", "9m",
-           "1p", "1p", "1p", "1p",
-           "2p", "2p", "2p", "2p",
-           "3p", "3p", "3p", "3p",
-           "4p", "4p", "4p", "4p",
-           "5p", "5p", "5p", "5p",
-           "6p", "6p", "6p", "6p",
-           "7p", "7p", "7p", "7p",
-           "8p", "8p", "8p", "8p",
-           "9p", "9p", "9p", "9p",
-           "1s", "1s", "1s", "1s",
-           "2s", "2s", "2s", "2s",
-           "3s", "3s", "3s", "3s",
-           "4s", "4s", "4s", "4s",
-           "5s", "5s", "5s", "5s",
-           "6s", "6s", "6s", "6s",
-           "7s", "7s", "7s", "7s",
-           "8s", "8s", "8s", "8s",
-           "9s", "9s", "9s", "9s",
-           "1z", "1z", "1z", "1z",
-           "2z", "2z", "2z", "2z",
-           "3z", "3z", "3z", "3z",
-           "4z", "4z", "4z", "4z",
-           "0z", "0z", "0z", "0z",
-           "6z", "6z", "6z", "6z",
-           "7z", "7z", "7z", "7z",
-           "1f", "2f", "3f", "4f",
-           "1g", "2g", "3g", "4g"]
 
 set custom_style, %{
   tile_indices: %{
@@ -81,11 +45,8 @@ define_set orphans_all, ~s"1m 9m 1p 9p 1s 9s 1z 2z 3z 4z 0z 6z 7z"
 define_set orphans_any, ~s"1m|9m|1p|9p|1s|9s|1z|2z|3z|4z|0z|6z|7z"
 define_set chuurenpoutou, ~s"0 0 0 1 2 3 4 5 6 7 8 8 8"
 
-define_match standard_tenpai, ~m"exhaustive, pair:1, mentsu:3, taatsu:1 | exhaustive, mentsu:4"
-define_match knitted_straight_tenpai, ~m"exhaustive, almost, pair:1, mentsu:1, knit_straight:1, exhaustive, mentsu:1, knit_straight:1"
-define_match chiitoitsu_tenpai, ~m"pair:6"
-define_match kokushi_tenpai, ~m"unique, dismantle_calls, orphans_any:12, orphans_any:1"
-define_match knitted_hand_tenpai, ~m"""
+define_const knitted_straight_tenpai, ~m"exhaustive, almost, pair:1, mentsu:1, knit_straight:1, exhaustive, mentsu:1, knit_straight:1"
+define_const knitted_hand_tenpai, ~m"""
   unique, (1m 4m 7m 2p 5p 8p 3s 6s 9s 1z 2z 3z 4z 0z 6z 7z):13 |
   unique, (1m 4m 7m 3p 6p 9p 2s 5s 8s 1z 2z 3z 4z 0z 6z 7z):13 |
   unique, (2m 5m 8m 1p 4p 7p 3s 6s 9s 1z 2z 3z 4z 0z 6z 7z):13 |
@@ -93,14 +54,8 @@ define_match knitted_hand_tenpai, ~m"""
   unique, (3m 6m 9m 1p 4p 7p 2s 5s 8s 1z 2z 3z 4z 0z 6z 7z):13 |
   unique, (3m 6m 9m 2p 5p 8p 1s 4s 7s 1z 2z 3z 4z 0z 6z 7z):13
   """
-
-define_match tenpai, "standard_tenpai", "knitted_straight_tenpai", "chiitoitsu_tenpai", "kokushi_tenpai", "knitted_hand_tenpai"
-
-define_match standard_win, ~m"exhaustive, mentsu:4, pair:1"
-define_match knitted_straight_win, ~m"exhaustive, pair:1, mentsu:1, knit_straight:1"
-define_match chiitoitsu_win, ~m"pair:7"
-define_match kokushi_win, ~m"unique, dismantle_calls, orphans_any:13, orphans_any:1"
-define_match knitted_hand_win, ~m"""
+define_const knitted_straight_win, ~m"exhaustive, pair:1, mentsu:1, knit_straight:1"
+define_const knitted_hand_win, ~m"""
   unique, (1m 4m 7m 2p 5p 8p 3s 6s 9s 1z 2z 3z 4z 0z 6z 7z):14 |
   unique, (1m 4m 7m 3p 6p 9p 2s 5s 8s 1z 2z 3z 4z 0z 6z 7z):14 |
   unique, (2m 5m 8m 1p 4p 7p 3s 6s 9s 1z 2z 3z 4z 0z 6z 7z):14 |
@@ -108,7 +63,10 @@ define_match knitted_hand_win, ~m"""
   unique, (3m 6m 9m 1p 4p 7p 2s 5s 8s 1z 2z 3z 4z 0z 6z 7z):14 |
   unique, (3m 6m 9m 2p 5p 8p 1s 4s 7s 1z 2z 3z 4z 0z 6z 7z):14
   """
-define_match win, "standard_win", "knitted_straight_win", "chiitoitsu_win", "kokushi_win", "knitted_hand_win"
+apply set_append, "tenpai_definition", +@knitted_straight_tenpai
+apply set_append, "tenpai_definition", +@knitted_hand_tenpai
+apply set_append, "win_definition", +@knitted_straight_win
+apply set_append, "win_definition", +@knitted_hand_win
 
 define_match ryanankou_tsumo, ~m"""
   (pon daiminkan kakan):-1, koutsu:2, mentsu:2, pair:1 |
@@ -456,30 +414,6 @@ set score_calculation, %{
   exhaustive_draw_name: "Draw"
 }
 
-on before_turn_change do
-  unset_status("kan", "flower")
-  unset_status_all("call_made")
-  if status_missing("match_start") do unset_status("first_turn") end
-end
-on after_turn_change do
-  if no_tiles_remaining do
-    pause(1000)
-    ryuukyoku
-  end
-  if not_no_tiles_remaining and status_missing("match_start", "won") do draw end
-  if status("won") do advance_turn end
-  if everyone_status("no_flowers") do
-    unset_status_all("no_flowers", "match_start")
-    change_turn("east")
-    as others do move_tiles("draw", "hand") end
-  end
-end
-define_play_effect any do unset_status("discards_empty") end
-on after_start do set_status_all("first_turn", "discards_empty", "match_start") end
-on after_call do set_status("call_made") end
-on after_win do flip_all_calls_faceup end
-on before_exhaustive_draw do flip_all_calls_faceup end
-on before_continue do advance_turn end
 on before_win do add_counter("flower_count", "count_matches", ["flowers"], ~m"(1f 2f 3f 4f 1g 2g 3g 4g):1") end
 
 on before_scoring do
@@ -503,13 +437,8 @@ end
 # TODO: add examples for all the yaku
 # TODO: add any other basic rules I've missed
 on after_initialization do
-  add_rule("Rules", "Win Condition", "You may win with one of the following:", -100)
-  add_rule("Rules", "Win Condition", "- Four sets (sequences or triplets) and a pair.", -100)
-  add_rule("Rules", "Win Condition", "- (Seven Pairs) Seven distinct pairs.", -100)
-  add_rule("Rules", "Win Condition", "- (Thirteen Orphans) All thirteen terminal/honor tiles plus one forming a pair.", -100)
   add_rule("Rules", "Win Condition", "- (Knitted Straight) A knitted straight plus one set and a pair. A knitted straight consists of 147 of one suit, 258 of a second suit, and 369 of a third suit.", -100)
   add_rule("Rules", "Win Condition", "- (Knitted Hand) 14 unique tiles (no pair) from the following set of 16 tiles: 147 of one suit, 258 of a second suit, 369 of a third suit, all winds, and all dragons.", -100)
-  add_rule("Rules", "8 Fan Minimum", "Your hand must score at least 8 Fan to win. (Flowers don't count.)", -10)
   add_rule("Rules", "Non-Repeat Principle", "If one Fan always implies another Fan, only one of them can be scored.", -10)
   add_rule("Rules", "Exclusionary Rule", "%{example_hand}", %{example_hand: ~t"123m 123p 789p 789m 44p"}, -10)
   add_rule("Rules", "Exclusionary Rule", "This hand might score two instances of Two Terminal Chows (1+1 Fan) and two instances of Mixed Double Chow (1+1 Fan), but this creates a 'loop' connection with the four sets, and this is disallowed. You can only pick three of the four Fan to score, avoiding the loop.", -10)
@@ -729,229 +658,6 @@ on after_initialization do
   add_rule("24+ Fan", "Nine Gates (88 Fan)", "Your hand is concealed and is all one suit in the nine gates shape (1112345678999 + one extra tile).")
   add_rule("24+ Fan", "Nine Gates (88 Fan)", "%{example_hand}", %{example_hand: ~t"1123456789999s 1s"})
 end
-
-define_button start_flower,
-  display_name: "Hua",
-  show_when: our_turn and status("match_start") and match(["hand", "draw"], ~m"nojoker, (1f 2f 3f 4f 1g 2g 3g 4g):1"),
-  unskippable: true
-  do
-    big_text("Hua")
-    flower("1f", "2f", "3f", "4f", "1g", "2g", "3g", "4g")
-    set_status("flower")
-    draw(1, "opposite_end")
-  end
-
-define_button start_no_flower,
-  display_name: "Pass",
-  show_when: our_turn and status("match_start"),
-  unskippable: true
-  do
-    big_text("No Flowers")
-    set_status("no_flowers")
-    advance_turn
-    recalculate_buttons
-  end
-
-define_button chii,
-  display_name: "Chi",
-  show_when: not_our_turn and not_no_tiles_remaining and status_missing("match_start") and kamicha_discarded and call_available,
-  call: [[-2, -1], [-1, 1], [1, 2]],
-  call_style: %{
-    kamicha: ["call_sideways", 0, 1],
-    toimen: [0, "call_sideways", 1],
-    shimocha: [0, 1, "call_sideways"]
-  }
-  do
-    big_text("Chi")
-    call
-    change_turn("self")
-  end
-
-define_button pon,
-  display_name: "Pung",
-  show_when: not_our_turn and not_no_tiles_remaining and status_missing("match_start") and someone_else_just_discarded and call_available,
-  call: [[0, 0]],
-  call_style: %{
-    kamicha: ["call_sideways", 0, 1],
-    toimen: [0, "call_sideways", 1],
-    shimocha: [0, 1, "call_sideways"]
-  },
-  precedence_over: ["chii"]
-  do
-    big_text("Pung")
-    call
-    change_turn("self")
-  end
-
-define_button daiminkan,
-  display_name: "Kong",
-  show_when: not_our_turn and not_no_tiles_remaining and status_missing("match_start") and someone_else_just_discarded and call_available,
-  call: [[0, 0, 0]],
-  call_style: %{
-    kamicha: ["call_sideways", 0, 1, 2],
-    toimen: [0, "call_sideways", 1, 2],
-    shimocha: [0, 1, 2, "call_sideways"]
-  },
-  precedence_over: ["chii", "pon"]
-  do
-    big_text("Kong")
-    call
-    change_turn("self")
-    set_status("kan")
-    draw(1, "opposite_end")
-  end
-
-define_button ankan,
-  display_name: "Self Kong", 
-  show_when: our_turn and not_no_tiles_remaining and status_missing("match_start") and not_just_discarded and not_just_called and self_call_available,
-  call: [[0, 0, 0]],
-  call_style: %{
-    self: [["1x", 0], ["1x", 1], ["1x", 2], ["1x", 3]]
-  },
-  call_hidden: true
-  do
-    big_text("Kong")
-    self_call
-    set_status("kan")
-    draw(1, "opposite_end")
-  end
-
-define_button kakan,
-  display_name: "Kong", 
-  show_when: our_turn and not_no_tiles_remaining and status_missing("match_start") and not_just_discarded and not_just_called and can_upgrade_call,
-  call: [[0, 0, 0]],
-  call_style: %{
-    kamicha: [["sideways", 0], "call_sideways", 1, 2],
-    toimen: [0, ["sideways", 1], "call_sideways", 2],
-    shimocha: [0, 1, ["sideways", 2], "call_sideways"]
-  },
-  upgrades: "pon"
-  do
-    big_text("Kong")
-    set_status("kan", "can_chankan")
-    upgrade_call
-    unset_status("can_chankan")
-    draw(1, "opposite_end")
-  end
-
-define_button ron,
-  display_name: "Hu",
-  show_when: not_our_turn
-    and status_missing("match_start", "won")
-    and someone_else_just_discarded
-    and match(["hand", "calls"], ["tenpai"])
-    and match(["hand", "calls", "last_discard"], ["win"])
-    and has_yaku_with_discard(8),
-  precedence_over: ["chii", "pon", "daiminkan", "ankan", "kakan", "ron", "chankan"]
-  do
-    big_text("Hu")
-    pause(1000)
-    reveal_hand
-    set_status("won")
-    win_by_discard("ron")
-  end
-
-define_button chankan,
-  display_name: "Hu", 
-  show_when: not_our_turn
-    and status_missing("match_start", "won")
-    and status("can_chankan", as: "caller")
-    and match(["hand", "calls"], ["tenpai"])
-    and match(["hand", "calls", "last_called_tile"], ["win"])
-    and has_yaku_with_call(8),
-  precedence_over: ["chii", "pon", "daiminkan", "ankan", "kakan", "ron", "chankan"]
-  do
-    big_text("Hu")
-    pause(1000)
-    reveal_hand
-    set_status("won")
-    win_by_call("ron")
-  end
-
-define_button tsumo,
-  display_name: "Hu",
-  show_when: our_turn
-    and has_draw
-    and not_others_status("call_made")
-    and status_missing("match_start", "won")
-    and match(["hand", "calls"], ["tenpai"])
-    and match(["hand", "calls", "draw"], ["win"])
-    and has_yaku_with_hand(8),
-  precedence_over: ["chii", "pon", "daiminkan", "ankan", "kakan", "ron", "chankan"]
-  do
-    big_text("Hu")
-    pause(1000)
-    reveal_hand
-    set_status("won")
-    win_by_draw("tsumo")
-  end
-
-define_button flower,
-  display_name: "Hua",
-  show_when: our_turn
-    and status_missing("match_start")
-    and has_draw
-    and not_just_discarded
-    and not_others_status("call_made")
-    and match(["hand", "draw"], ~m"nojoker, (1f 2f 3f 4f 1g 2g 3g 4g):1")
-  do
-    big_text("Hua")
-    flower("1f", "2f", "3f", "4f", "1g", "2g", "3g", "4g")
-    set_status("flower")
-    if no_tiles_remaining do
-      advance_turn
-    else
-      draw(1, "opposite_end")
-    end
-  end
-
-define_auto_button _1_auto_sort,
-  display_name: "A",
-  desc: "Automatically sort your hand.",
-  enabled_at_start: true
-  do
-    sort_hand
-  end
-
-define_auto_button _2_auto_ron,
-  display_name: "R",
-  desc: "Automatically declare wins."
-  do
-    if buttons_include("ron") do
-      press_button("ron")
-    end
-    if buttons_include("tsumo") do
-      press_button("tsumo")
-    end
-  end
-
-define_auto_button _3_auto_flower,
-  display_name: "F",
-  desc: "Automatically declare all flowers.",
-  enabled_at_start: true
-  do
-    if buttons_include("start_flower") do press_button("start_flower"); press_first_call_button("start_flower") end
-    if buttons_include("start_no_flower") and buttons_exclude("start_joker") do press_button("start_no_flower") end
-    if buttons_include("flower") do press_button("flower"); press_first_call_button("flower") end
-  end
-
-define_auto_button _4_auto_no_call,
-  display_name: "C",
-  desc: "Skip all calls except wins."
-  do
-    if not_our_turn and buttons_include("skip") and buttons_exclude("ron", "chankan") do
-      press_button("skip")
-    end
-  end
-
-define_auto_button _5_auto_discard,
-  display_name: "D",
-  desc: "Automatically discard your drawn tile."
-  do
-    if our_turn and buttons_exclude("tsumo", "ankan") and has_draw do
-      discard_draw
-    end
-  end
 
 set interruptible_actions, ["play_tile", "draw", "self_call", "upgrade_call"]
 set initial_score, 0
