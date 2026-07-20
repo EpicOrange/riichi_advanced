@@ -158,6 +158,7 @@ defmodule RiichiAdvancedWeb.HandComponent do
   def handle_event("play_tile", %{"index" => index}, socket) do
     {ix, _} = Integer.parse(index)
     socket.assigns.play_tile.(ix)
+    socket = assign(socket, :selected_index, nil)
     {:noreply, socket}
   end
 

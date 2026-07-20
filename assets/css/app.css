@@ -983,20 +983,24 @@ div.tile.flat {
 div.tile.dora:not(.\31 x):not(.selected) {
   position: relative;
   --border-radius: calc(0.10 * var(--tile-size) * var(--tile-scale-factor));
-  clip-path: rect(0 100% 100% 0 round var(--border-radius));
+  overflow: hidden;
 }
-div.self div.tile.dora:not(.\31 x):not(.selected),
+div.hand.self div.tile.dora:not(.\31 x):not(.selected),
 div.revealed-tiles div.tile.dora:not(.\31 x):not(.selected) {
   clip-path: rect(calc(var(--tile-height) / -4) 100% 100% 0 round var(--border-radius));
+  overflow: visible;
 }
-div.kamicha div.tile.dora:not(.\31 x):not(.selected) {
+div.hand.kamicha div.tile.dora:not(.\31 x):not(.selected) {
   clip-path: rect(0 calc(var(--tile-width) / 0.75) 100% 0 round var(--border-radius));
+  overflow: visible;
 }
-div.toimen div.tile.dora:not(.\31 x):not(.selected) {
+div.hand.toimen div.tile.dora:not(.\31 x):not(.selected) {
   clip-path: rect(calc(var(--tile-height) / -4) 100% 100% 0 round var(--border-radius));
+  overflow: visible;
 }
-div.shimocha div.tile.dora:not(.\31 x):not(.selected) {
+div.hand.shimocha div.tile.dora:not(.\31 x):not(.selected) {
   clip-path: rect(0 100% 100% calc(var(--tile-width) / -4) round var(--border-radius));
+  overflow: visible;
 }
 div.tile.dora:not(.\31 x):not(.selected)::before {
   content: "";
