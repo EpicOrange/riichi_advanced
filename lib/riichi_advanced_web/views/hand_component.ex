@@ -307,11 +307,17 @@ defmodule RiichiAdvancedWeb.HandComponent do
     |> Enum.sort_by(&sort_value_by_visibility(&1, assigns))
   end
 
+  # may be untrusted input, so we must validate
+  @valid_tile_regex ~r/^[0-9]+[a-z]$/
+  @valid_attr_regex ~r/^[a-zA-Z0-9_]+$/
   def debug_tile(tile) do
     if Debug.debug_hands() do
-      attrs = Utils.get_attrs(tile) |> Enum.map_join(&"<span>#{&1}</span>")
+      attrs = Utils.get_attrs(tile)
       tile_id = Utils.strip_attrs(tile)
-      "<span class=\"tile-debug\">#{tile_id}#{attrs}</span>"
+      if Regex.match?(@valid_tile_regex, Atom.to_string(tile_id)) and Enum.all?(attrs, &Regex.match?(@valid_attr_regex, &1)) do
+        attr_string = Enum.map_join(attrs, &"<span>#{&1}</span>")
+        "<span class=\"tile-debug\">#{tile_id}#{attr_string}</span>"
+      else "" end
     else "" end
   end
   def update(assigns, socket) do
