@@ -312,7 +312,7 @@ pub fn gather_rev_offsets(match_definition: &MatchDefinition) -> Vec<MatchOffset
   for match_elem in match_definition {
     if let MatchDefinitionElem::Group(groups, _n) = match_elem {
       for group in groups {
-        ret.append(&mut group.flatten());
+        ret.extend(group.flatten());
       }
     }
   }

@@ -4,7 +4,7 @@ use rustler::Atom;
 
 use crate::encode::{encode, encode_aliases, encode_tiles};
 use crate::primes::to_prime;
-use crate::types::{ElixirAliases, ElixirHand, ElixirHandCalls, ElixirTile, MatchInfo, Tile};
+use crate::types::{ElixirAliases, ElixirHand, ElixirHandCalls, ElixirTile, Mapping, MatchInfo, Tile};
 
 // move all tiles from (hand, calls) into two structures:
 // - orig_hands, basically a copy of what was passed in minus call names
@@ -28,7 +28,20 @@ pub fn prepare_tiles<'a>(
     tiles
   }).collect();
 
-  let (aliases, mapping) = encode_aliases(&elixir_aliases, &all_attrs);
+  let aliases = encode_aliases(&elixir_aliases, &all_attrs);
+  // populate reverse alias map (mapping)
+  let mut mapping: Mapping = HashMap::new();
+  for (&prime, attrs_aliases) in aliases.iter() {
+    for (&attrs, aliases) in attrs_aliases {
+      let tile = (prime, attrs);
+      for t in aliases {
+        match mapping.get_mut(t) {
+          Some(v) => { v.push(tile); }
+          None => { mapping.insert(*t, vec!(tile)); }
+        }
+      }
+    }
+  }
 
   // relevant_tiles = nonjoker tiles in hand + tiles mapped to by jokers in hand
   // elixir_joker_tiles = joker tiles in hand
@@ -65,7 +78,6 @@ pub fn prepare_tiles<'a>(
     initial_hands,
     num_tiles_in_hand,
     aliases,
-    mapping,
     relevant_tiles,
     joker_tiles,
     all_attrs,

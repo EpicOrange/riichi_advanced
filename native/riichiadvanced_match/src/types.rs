@@ -1,5 +1,5 @@
 use crate::tile_table::*;
-use std::{collections::{HashMap, HashSet}, fmt, ops::{Div, MulAssign, Rem}};
+use std::{collections::{HashMap, HashSet}, fmt, iter::once, ops::{Div, MulAssign, Rem}};
 use num_bigint::{BigUint, Sign};
 use ruint::aliases::U256;
 use rustler::{Atom, BigInt, Decoder, Encoder, Env, Error, NifResult, NifStruct, Term};
@@ -225,11 +225,11 @@ impl MatchGroup {
   //     MatchGroup::Subgroups(oss) => oss.into_iter().flatten().collect(),
   //   }
   // }
-  pub fn flatten(&self) -> Vec<MatchOffset> {
+  pub fn flatten(&self) -> Box<dyn Iterator<Item = MatchOffset> + '_> {
     match self {
-      MatchGroup::Offset(o) => vec!(o.clone()),
-      MatchGroup::Offsets(os) => os.clone(),
-      MatchGroup::Subgroups(oss) => oss.iter().flat_map(|os| os.iter().cloned()).collect(),
+      MatchGroup::Offset(o) => Box::new(once(o.clone())),
+      MatchGroup::Offsets(os) => Box::new(os.clone().into_iter()),
+      MatchGroup::Subgroups(oss) => Box::new(oss.iter().flat_map(|os| os.iter().cloned())),
     }
   }
 }
@@ -404,7 +404,6 @@ pub struct MatchInfo<'a> {
   pub initial_hands: Hands,
   pub num_tiles_in_hand: usize,
   pub aliases: Aliases,
-  pub mapping: Mapping,
   pub relevant_tiles: Vec<Tile>,
   pub joker_tiles: HashSet<Tile>,
   pub all_attrs: &'a Vec<String>,

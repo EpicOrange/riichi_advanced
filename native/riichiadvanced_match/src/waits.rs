@@ -101,7 +101,7 @@ pub fn __get_waits_v3(
 
   // now deal with jokers,
   // replacing the final 1x in match_info.initial_hands by each in turn
-  let not_waits2: Vec<&ElixirTile> = all_joker_tiles
+  let not_waits2: HashSet<&ElixirTile> = all_joker_tiles
     .iter()
     .filter(|joker| {
       // first do the replacement
@@ -122,14 +122,12 @@ pub fn __get_waits_v3(
     .cloned()
     .collect();
 
-  let mut ret2: Vec<ElixirTile> = all_joker_tiles
-      .iter()
-      .copied()
-      .filter(|t| !not_waits2.contains(t))
-      .cloned()
-      .collect();
+  ret.extend(all_joker_tiles
+    .iter()
+    .copied()
+    .filter(|t| !not_waits2.contains(t))
+    .cloned());
 
-  ret.append(&mut ret2);
   ret
 }
 pub fn ___get_waits_v3<'a>(
@@ -147,7 +145,7 @@ pub fn ___get_waits_v3<'a>(
   // println!("tiles: {:?}", current_tiles);
 
   // test with current aliases (only need to match 1 to succeed)
-  match_info.aliases = encode_aliases(aliases, &match_info.all_attrs).0;
+  match_info.aliases = encode_aliases(aliases, &match_info.all_attrs);
   let all_nonwaits = match_definitions.iter().all(|match_definition| {
     remove_match_definition(&match_info, match_definition).next().is_none()
   });
@@ -215,7 +213,7 @@ fn _get_unneeded_tiles_v2(
 #[inline]
 pub fn __get_unneeded_tiles_v2(
     hand_calls: ElixirHandCalls,
-    mut match_definitions: &mut MatchDefinitions,
+    match_definitions: &mut MatchDefinitions,
     all_attrs: &Vec<String>,
     elixir_aliases: &ElixirAliases,
     ordering: &HashMap<Atom, Atom>, ordering_r: &HashMap<Atom, Atom>,
@@ -230,27 +228,6 @@ pub fn __get_unneeded_tiles_v2(
     ordering_r,
   );
 
-  // first use a non-exhaustive version of match_definitions
-  // if it still matches after removing a tile, then that tile is definitely not needed
-  let mut all_defns = vec!();
-  for match_definition in match_definitions.iter() {
-    for match_elem in match_definition {
-      match match_elem {
-        MatchDefinitionElem::Keyword(s) => {
-          if s == "exhaustive" { 
-            all_defns.push(match_definition.clone());
-            all_defns.last_mut().map(|defn| defn.retain(|elem| {
-              *elem != MatchDefinitionElem::Keyword("exhaustive".to_owned())
-            }));
-            break;
-          }
-        }
-        _ => ()
-      }
-    }
-  }
-  all_defns.append(&mut match_definitions);
-
   // remove each tile in turn
   let mut ret: HashSet<Tile> = HashSet::new();
   for _ in 0..match_info.initial_hands[0].attrs.len() {
@@ -261,8 +238,25 @@ pub fn __get_unneeded_tiles_v2(
     let tile = match_info.initial_hands[0].attrs.remove(0);
 
     // check against defns
-    if all_defns.iter().any(|match_definition| {
-        remove_match_definition(&match_info, match_definition).next().is_none()
+    if match_definitions.iter().any(|match_definition| {
+        // first try a non-exhaustive version of the match definition, if any
+        let mut matched = true; // false if we succeeded any match
+        for match_elem in match_definition.iter() {
+          match match_elem {
+            MatchDefinitionElem::Keyword(s) => {
+              if s == "exhaustive" { 
+                let mut non_exhaustive_defn = match_definition.clone();
+                non_exhaustive_defn.retain(|elem| {
+                  *elem != MatchDefinitionElem::Keyword("exhaustive".to_owned())
+                });
+                matched = remove_match_definition(&match_info, match_definition).next().is_some();
+                break;
+              }
+            }
+            _ => ()
+          }
+        }
+        matched || remove_match_definition(&match_info, match_definition).next().is_some()
       }) {
       // add tile to solution set, since hand still matches without tile
       ret.insert(tile);
