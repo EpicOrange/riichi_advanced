@@ -442,7 +442,7 @@ defmodule RiichiAdvanced.Compiler do
         "merge"      when is_map(value_val)    -> {:ok, "#{path} += #{value}"}
         "merge"                                -> {:error, "tried to merge a non-map value #{inspect(value_val)}"}
         "subtract"                             -> {:ok, "#{path} -= #{value}"}
-        "delete"     when is_list(value_val)   -> {:ok, "#{path} |= map(select(#{value} | index(.) | not))"}
+        "delete_all" when is_list(value_val)   -> {:ok, "#{path} |= map(select(#{value} | index(.) | not))"}
         "delete"                               -> {:ok, "#{path} |= map(select(. != #{value}))"}
         "multiply"                             -> {:ok, "#{path} *= #{value}"}
         "deep_merge"                           -> {:ok, "#{path} *= #{value}"}
