@@ -502,6 +502,29 @@ div#container > input.tile-numbers-checkbox:checked ~ * div.tile.sideways::after
   transform: rotate(-90deg);
 }
 
+/* tile debug */
+div.tile > span.tile-debug {
+  display: flex;
+  flex-flow: column wrap;
+  font-size: 50%;
+  filter:
+    drop-shadow(0 0 calc(0.025 * var(--tile-size)) black)
+    drop-shadow(0 0 calc(0.025 * var(--tile-size)) black)
+    drop-shadow(0 0 calc(0.025 * var(--tile-size)) black);
+  color: white;
+  position: absolute;
+  top: -1em;
+  right: 0;
+  text-align: right;
+  z-index: 1;
+  pointer-events: none;
+  & > span { font-size: 60%; }
+}
+div.kamicha div.tile > span.tile-debug,
+div.shimocha div.tile > span.tile-debug {
+  top: 0;
+}
+
 /* ponds */
 div.pond, div.secondary-pond {
   display: flex;
@@ -955,9 +978,26 @@ div.tile.flat {
 /* dora shine */
 @keyframes doraShine {
   0% { transform: translate(-100%, -100%) rotate(135deg); }
-  100% { transform: translate(50%, 50%) rotate(135deg); }
+  100% { transform: translate(0%, 0%) rotate(135deg); }
 }
-div.tile.dora:not(.\31 x):not(.selected) { position: relative; overflow: hidden; }
+div.tile.dora:not(.\31 x):not(.selected) {
+  position: relative;
+  --border-radius: calc(0.10 * var(--tile-size) * var(--tile-scale-factor));
+  clip-path: rect(0 100% 100% 0 round var(--border-radius));
+}
+div.self div.tile.dora:not(.\31 x):not(.selected),
+div.revealed-tiles div.tile.dora:not(.\31 x):not(.selected) {
+  clip-path: rect(calc(var(--tile-height) / -4) 100% 100% 0 round var(--border-radius));
+}
+div.kamicha div.tile.dora:not(.\31 x):not(.selected) {
+  clip-path: rect(0 calc(var(--tile-width) / 0.75) 100% 0 round var(--border-radius));
+}
+div.toimen div.tile.dora:not(.\31 x):not(.selected) {
+  clip-path: rect(calc(var(--tile-height) / -4) 100% 100% 0 round var(--border-radius));
+}
+div.shimocha div.tile.dora:not(.\31 x):not(.selected) {
+  clip-path: rect(0 100% 100% calc(var(--tile-width) / -4) round var(--border-radius));
+}
 div.tile.dora:not(.\31 x):not(.selected)::before {
   content: "";
   position: absolute;

@@ -4,6 +4,7 @@ defmodule RiichiAdvanced.GameState.Debug do
 
   @debug false
   @debug_status false
+  @debug_hands false
   @debug_fast_ai false
   @debug_saki_card_ours nil
   @debug_saki_card_opponent nil
@@ -23,6 +24,7 @@ defmodule RiichiAdvanced.GameState.Debug do
 
   def debug, do: Process.get(:ignore_type_error, @debug)
   def debug_status, do: Process.get(:ignore_type_error, @debug_status)
+  def debug_hands, do: Process.get(:ignore_type_error, @debug_hands)
   def debug_fast_ai, do: Process.get(:ignore_type_error, @debug_fast_ai)
   def debug_saki_card_ours, do: Process.get(:ignore_type_error, @debug_saki_card_ours)
   def debug_saki_card_opponent, do: Process.get(:ignore_type_error, @debug_saki_card_opponent)
