@@ -1079,6 +1079,22 @@ defmodule RiichiAdvanced.Compiler do
              {:ok, {else_cmds, defs}} <- compile_jq_toplevel(else_cmds, line, column, defs) do
           {:ok, {"if #{condition} then . else\n#{else_cmds}\nend", defs}}
         end
+      {"cond", _, [[do: clauses]]} ->
+        rets = for {:->, [line: line, column: column], [[condition], body]} <- clauses, reduce: {:ok, {[], defs}} do
+          {:ok, {ret, defs}} ->
+            with {:ok, condition} <- compile_toplevel_condition(condition, line, column, defs),
+                 {:ok, {body_cmds, defs}} <- compile_jq_toplevel(body, line, column, defs) do
+              {:ok, {[{condition, body_cmds} | ret], defs}}
+            end
+          err -> err
+        end
+        with {:ok, {cond_bodys, defs}} <- rets do
+          for {cond, body} <- cond_bodys, reduce: {:ok, ["."]} do
+            {:ok, else_branch} ->
+              {:ok, {"(if #{cond} then\n#{body}\nelse\n#{else_branch}\nend)", defs}}
+            err -> err
+          end
+        end
       {"define", _pos, [name | _]} -> {:ok, {".", MapSet.put(defs, name)}}
       {cmd, [line: line, column: column], [name | args]} when is_binary(cmd) ->
         name = case name do
