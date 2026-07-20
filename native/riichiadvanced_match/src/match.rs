@@ -13,7 +13,7 @@ use crate::match_info::prepare_tiles;
 use crate::offsets::{__generate_groups, get_base_tiles};
 use crate::profile::{PROFILE_MATCH, CALL_COUNT, MAX_NANOS, TOTAL_NANOS};
 use crate::tileset::_subtract_check_attrs_exhaustive;
-use crate::types::{ANY_PRIME, ElixirAliases, ElixirHand, ElixirHandCalls, ElixirTile, Hands, HandsIterator, MatchDefinition, MatchDefinitionElem, MatchDefinitions, MatchGroup, MatchInfo, MatchOffset, Tile};
+use crate::types::{ANY_PRIME, BaseTileVec, ElixirAliases, ElixirHand, ElixirHandCalls, ElixirTile, Hands, HandsIterator, MatchDefinition, MatchDefinitionElem, MatchDefinitions, MatchGroup, MatchInfo, MatchOffset};
 use crate::utils::remove_indices;
 
 // this is used a lot, especially for determining and processing calls
@@ -100,7 +100,7 @@ pub fn remove_match_definition<'a>(
     return Box::new(empty());
   }
 
-  let mut base_tiles = get_base_tiles(match_info, match_definition).into_iter().collect::<Vec<_>>();
+  let mut base_tiles = get_base_tiles(match_info, match_definition);
   base_tiles.sort_unstable();
   base_tiles.dedup();
   let base_tiles = Rc::new(base_tiles);
@@ -159,7 +159,7 @@ pub fn remove_match_definition<'a>(
 fn remove_match_group<'a>(
   hands: Hands,
   groups: Rc<Vec<MatchGroup>>, num: i8,
-  base_tiles: Rc<Vec<Tile>>,
+  base_tiles: Rc<BaseTileVec>,
   match_info: &'a MatchInfo,
   debug: bool, exhaustive: bool, unique: bool, nojoker: bool,
 ) -> HandsIterator<'a> {
@@ -344,7 +344,7 @@ fn __remove_group<'a>(
     ordering,
     ordering_r,
   );
-  let base_tiles: Vec<Tile> = match base_tiles {
+  let base_tiles: BaseTileVec = match base_tiles {
     Some(base_tiles) => encode_tiles(base_tiles, all_attrs).collect(),
     None => {
       let match_definition = vec!(MatchDefinitionElem::Group(vec!(group.clone()), 1));

@@ -5,10 +5,11 @@ use ruint::aliases::U256;
 use rustler::{Atom, BigInt, Decoder, Encoder, Env, Error, NifResult, NifStruct, Term};
 use smallvec::SmallVec;
 
-pub type BitAttrs = u64;
 pub type Prime = u32;
-pub type Tile = (Prime, BitAttrs);
 pub const ANY_PRIME: Prime = 1;
+pub type BitAttrs = u64;
+pub type Tile = (Prime, BitAttrs);
+pub type BaseTileVec = SmallVec<[Tile; 4]>;
 
 pub type AliasEntry = HashMap<BitAttrs, Vec<Tile>>;
 pub type Aliases = HashMap<Prime, AliasEntry>;
@@ -17,6 +18,7 @@ pub type Mapping = HashMap<Tile, Vec<Tile>>;
 pub type Mask = u64;
 pub type RowIndex = u8; // index into Mask
 pub type IndexVec = SmallVec<[RowIndex; 16]>;
+
 
 #[derive(PartialEq, Eq, PartialOrd, Ord, Clone, Copy, Debug, Hash)]
 #[repr(transparent)]

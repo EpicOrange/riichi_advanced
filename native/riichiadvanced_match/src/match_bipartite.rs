@@ -7,13 +7,13 @@ use num::abs;
 use crate::encode::{decode, decode_tiles};
 use crate::offsets::{apply_offsets_early_exit};
 use crate::tileset::{_check_equivalence, move_jokers_to_end, remove_tileset_indices};
-use crate::types::{Hands, HandsIterator, Hash, IndexVec, MatchInfo, MatchOffset, RowIndex, Tile};
+use crate::types::{BaseTileVec, Hands, HandsIterator, Hash, IndexVec, MatchInfo, MatchOffset, RowIndex, Tile};
 
 // we only care about the hand, so calls will pass right through
 pub fn perform_bipartite_match<'a>(
   offsets: Rc<Vec<MatchOffset>>, num: i8,
   acc: HandsIterator<'a>,
-  base_tiles: Rc<Vec<Tile>>,
+  base_tiles: Rc<BaseTileVec>,
   match_info: &'a MatchInfo,
   debug: bool, _exhaustive: bool, _unique: bool, nojoker: bool,
 ) -> HandsIterator<'a> {

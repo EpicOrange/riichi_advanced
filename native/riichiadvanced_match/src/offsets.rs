@@ -1,9 +1,11 @@
 use std::collections::{HashSet, VecDeque};
 use std::iter::{empty, once};
 
+use smallvec::SmallVec;
+
 use crate::encode::{encode_attrs, encode_tiles, to_tileset};
 use crate::tile_table::*;
-use crate::types::{ANY_PRIME, ElixirTile, FIXED_OFFSETS, GroupIterator, MatchDefinition, MatchDefinitionElem, MatchGroup, MatchInfo, MatchOffset, RemovableGroup, Tile, TileOrdering, TileSet};
+use crate::types::{ANY_PRIME, BaseTileVec, ElixirTile, FIXED_OFFSETS, GroupIterator, MatchDefinition, MatchDefinitionElem, MatchGroup, MatchInfo, MatchOffset, RemovableGroup, Tile, TileOrdering, TileSet};
 use crate::primes::{is_jihai, is_manzu, is_pinzu, is_souzu, shift_suit_mut, to_prime};
 
 // return true if changed
@@ -306,7 +308,6 @@ pub fn __generate_groups<'a>(
   }
 }
 
-// TODO maybe faster to return a HashSet?
 pub fn gather_rev_offsets(match_definition: &MatchDefinition) -> Vec<MatchOffset> {
   let mut ret = vec!(MatchOffset::Offset(0));
   for match_elem in match_definition {
@@ -330,7 +331,7 @@ pub fn gather_rev_offsets(match_definition: &MatchDefinition) -> Vec<MatchOffset
 pub fn get_base_tiles<'a>( 
     match_info: &'a MatchInfo<'a>,
     match_definition: &'a MatchDefinition,
-) -> Vec<Tile> {
+) -> BaseTileVec {
   // get all offsets of matchable tiles
   // we need to do this because jokers/offsets could reify into a tile
   //   that we can't otherwise encode, since it's not in hand
@@ -343,7 +344,7 @@ pub fn get_base_tiles<'a>(
 
   for (p, _) in &match_info.joker_tiles { base_tiles.remove(&(*p, 0)); }
 
-  let mut base_tiles = base_tiles.into_iter().collect::<Vec<_>>();
+  let mut base_tiles = base_tiles.into_iter().collect::<SmallVec<_>>();
   base_tiles.sort_unstable();
   base_tiles.dedup();
   base_tiles

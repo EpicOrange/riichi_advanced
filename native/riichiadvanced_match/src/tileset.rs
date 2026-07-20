@@ -150,18 +150,16 @@ pub fn move_jokers_to_end(attrs: &mut [Tile], joker_tiles: &HashSet<Tile>) -> (u
   let mut j = hand_len - 1;
   let mut joker_hash = U256::ONE;
   while i < j {
-    let i_is_joker = joker_tiles.contains(&attrs[i]);
-    let j_is_nonjoker = !joker_tiles.contains(&attrs[j]);
-    if i_is_joker { joker_hash *= U256::from(attrs[i].0); }
-    if !j_is_nonjoker { joker_hash *= U256::from(attrs[j].0); }
-    if i_is_joker && j_is_nonjoker {
+    while i < j && !joker_tiles.contains(&attrs[i]) { i += 1 }
+    while i < j && joker_tiles.contains(&attrs[j]) {
+      joker_hash *= U256::from(attrs[j].0);
+      j -= 1;
+    }
+    if i < j {
+      joker_hash *= U256::from(attrs[i].0);
       attrs.swap(i, j);
       i += 1;
       j -= 1;
-    } else {
-      // TODO use while instead, to avoid repeated contains calls above
-      if !i_is_joker { i += 1 }
-      if !j_is_nonjoker { j -= 1 }
     }
   }
   if i == j && joker_tiles.contains(&attrs[i]) {
@@ -291,9 +289,7 @@ pub fn __subtract_exhaustive(
   let empty_aliases: Aliases = HashMap::new();
   let aliases = if nojoker { &empty_aliases } else { aliases }; 
 
-  // put all jokers at the end, so for non-exhaustive searches we guarantee choosing jokers last
-  // TODO no need to do this, this is the exhaustive fn
-  
+  // this is mostly just to calculate num_nonjokers and joker_hash, not sorting jokers to the end
   let (num_nonjokers, joker_hash) = move_jokers_to_end(&mut hand_attrs, joker_tiles);
   let num_jokers = hand_attrs.len() - num_nonjokers;
 

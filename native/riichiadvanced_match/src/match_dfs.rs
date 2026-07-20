@@ -1,3 +1,4 @@
+use smallvec::{SmallVec, smallvec};
 use std::cell::RefCell;
 use std::collections::{HashMap, BTreeMap, HashSet};
 use std::iter::{empty, once};
@@ -9,16 +10,17 @@ use crate::match_elim::elim_group_iter;
 use crate::offsets::{__generate_groups};
 use crate::primes::{is_manzu, is_pinzu, is_souzu, to_prime};
 use crate::tile_table::{tile1m, tile1p, tile1s, tile1x};
-use crate::types::{AccItem, AccIterator, FIXED_OFFSETS, HandsIterator, MatchGroup, MatchInfo, MatchOffset, PathItem, RemovableGroup, Tile};
+use crate::types::{AccItem, AccIterator, BaseTileVec, FIXED_OFFSETS, HandsIterator, MatchGroup, MatchInfo, MatchOffset, PathItem, RemovableGroup};
 
+#[inline]
 pub fn perform_dfs_match<'a>(
   groups: Vec<MatchGroup>, num: i8,
   acc: HandsIterator<'a>,
-  base_tiles: Rc<Vec<Tile>>,
+  base_tiles: Rc<BaseTileVec>,
   match_info: &'a MatchInfo,
   debug: bool, exhaustive: bool, unique: bool, nojoker: bool,
 ) -> HandsIterator<'a> {
-  let reified_groups_by_base_tile_set: Rc<HashMap<Rc<Vec<Tile>>, Rc<BTreeMap<usize, Rc<Vec<RemovableGroup>>>>>> =
+  let reified_groups_by_base_tile_set: Rc<HashMap<Rc<BaseTileVec>, Rc<BTreeMap<usize, Rc<Vec<RemovableGroup>>>>>> =
     Rc::new(reify_groups(groups, base_tiles.clone(), match_info, debug, nojoker));
   let base_tile_sets = Rc::new(reified_groups_by_base_tile_set.keys().cloned().collect::<Vec<_>>());
   Box::new(acc.flat_map(move |hands| {
@@ -41,16 +43,17 @@ pub fn perform_dfs_match<'a>(
   }))
 }
 
+#[inline]
 fn reify_groups(
   groups: Vec<MatchGroup>,
-  base_tiles: Rc<Vec<Tile>>,
+  base_tiles: Rc<BaseTileVec>,
   match_info: &MatchInfo,
   debug: bool, mut nojoker: bool,
   // base tile set => group index i => vec of groups
-) -> HashMap<Rc<Vec<Tile>>, Rc<BTreeMap<usize, Rc<Vec<RemovableGroup>>>>> {
+) -> HashMap<Rc<BaseTileVec>, Rc<BTreeMap<usize, Rc<Vec<RemovableGroup>>>>> {
   let mut reified_bank: Vec<RemovableGroup> = vec!();
   let mut reified_bank_r: HashMap<RemovableGroup, usize> = HashMap::new();
-  let mut ret: HashMap<Rc<Vec<Tile>>, Rc<BTreeMap<usize, Rc<Vec<RemovableGroup>>>>> = HashMap::new();
+  let mut ret: HashMap<Rc<BaseTileVec>, Rc<BTreeMap<usize, Rc<Vec<RemovableGroup>>>>> = HashMap::new();
   if debug {
     // println!("\nHand tiles: {0:?}", match_info.tiles_in_hand.iter().collect::<Vec<_>>());
     // println!("Base tiles: {0:?}", base_tiles.iter().collect::<Vec<_>>());
@@ -77,12 +80,12 @@ fn reify_groups(
   let pin = (to_prime(&tile1p()).unwrap(), 0);
   let sou = (to_prime(&tile1s()).unwrap(), 0);
   let all = (to_prime(&tile1x()).unwrap(), 0);
-  // TODO some of these should be smallvecs i think
-  let keys = vec!(
-    Rc::new(vec!(man)),
-    Rc::new(vec!(pin)),
-    Rc::new(vec!(sou)),
-    Rc::new(vec!(all))
+  type KeysVec = SmallVec<[Rc<BaseTileVec>; 4]>;
+  let keys: KeysVec = smallvec!(
+    Rc::new(smallvec!(man)),
+    Rc::new(smallvec!(pin)),
+    Rc::new(smallvec!(sou)),
+    Rc::new(smallvec!(all))
   );
 
   let num_groups = groups.len();
@@ -103,24 +106,24 @@ fn reify_groups(
     let base_tile_sets = if separate_suits {
       // we need to try each suit
       if have_fixed_offsets {
-        let base_m: Vec<Tile> = vec!(man);
-        let base_p: Vec<Tile> = vec!(pin);
-        let base_s: Vec<Tile> = vec!(sou);
-        vec!(Rc::new(base_m), Rc::new(base_p), Rc::new(base_s))
+        let base_m: BaseTileVec = smallvec!(man);
+        let base_p: BaseTileVec = smallvec!(pin);
+        let base_s: BaseTileVec = smallvec!(sou);
+        smallvec!(Rc::new(base_m), Rc::new(base_p), Rc::new(base_s))
       } else if have_numeric_offsets {
         // separate base tiles of the same suit
-        let mut base_m: Vec<Tile> = vec!();
-        let mut base_p: Vec<Tile> = vec!();
-        let mut base_s: Vec<Tile> = vec!();
+        let mut base_m: BaseTileVec = smallvec!();
+        let mut base_p: BaseTileVec = smallvec!();
+        let mut base_s: BaseTileVec = smallvec!();
         for tile in (*base_tiles).clone() {
           if is_manzu(&tile) { base_m.push(tile); }
           else if is_pinzu(&tile) { base_p.push(tile); }
           else if is_souzu(&tile) { base_s.push(tile); }
         }
-        vec!(Rc::new(base_m), Rc::new(base_p), Rc::new(base_s), base_tiles.clone())
+        smallvec!(Rc::new(base_m), Rc::new(base_p), Rc::new(base_s), base_tiles.clone())
       } else { keys.clone() }
     } else if have_numeric_offsets {
-      vec!(base_tiles.clone())
+      smallvec!(base_tiles.clone())
     } else { keys.clone() };
     for (base_tiles, key) in base_tile_sets.into_iter().zip(keys.iter()) {
       let mut base_tile_iter = base_tiles.iter().copied();
