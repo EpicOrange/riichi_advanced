@@ -89,7 +89,8 @@ defmodule RiichiAdvanced.GameState.Actions do
         draw: [],
         last_discard: {tile, index}
       })
-      state = register_discard(state, seat, if facedown do :"1x" else tile end, tsumogiri)
+      # register the discard
+      state = register_discard(state, seat, if facedown do :"1x" else tile end, tsumogiri, true)
 
       # trigger play effects
       state = case Rules.get(state.rules_ref, "play_effects") do
