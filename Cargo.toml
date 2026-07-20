@@ -2,6 +2,3 @@
 resolver = "2"
 members = ["native/riichiadvanced_match"]
 
-[profile.release]
-lto = "fat"
-panic = "abort"
