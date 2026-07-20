@@ -30,12 +30,16 @@ defmodule RiichiAdvanced.YakuTest.KansaiZanYaku do
     "yaku/suurenkou",
     "show_waits",
     "sanma_pei_yakuhai",
-    %{name: "shuugi", config: %{worth: 1000}},
+    %{name: "shuugi", config: %{worth: 1000, starting_shuugi: 0}},
+    %{name: "shuugi/ippatsu", config: %{chips: 1}},
+    %{name: "shuugi/ura", config: %{chips: 1}},
+    %{name: "shuugi/yakuman", config: %{ron_chips: 5, tsumo_chips: 5, per_yakuman: false, allow_kazoe: false}},
     %{name: "min_han", config: %{min: 1, han: "Han"}},
     # "cancellable_riichi",
     "yaku/ippatsu",
     "shiro_pocchi",
     %{name: "aka", config: %{man: 4, pin: 4, sou: 4}},
+    %{name: "shuugi/aka", config: %{chips: 1, closed_only: false}},
     "shiny_dora",
     "kansai_flowers",
     "kansai_no_100_sticks",
@@ -64,7 +68,7 @@ defmodule RiichiAdvanced.YakuTest.KansaiZanYaku do
       %{"type" => "buttons_pressed", "buttons" => [%{"button" => "ron"}, nil, nil, nil]}
     ], %{
       east: %{
-        yaku: [{"Open Double Riichi", [3, "Han"]}, {"Ippatsu", [1, "Han"]}]
+        yaku: [{"Open Double Riichi", [3, "Han"]}, {"Ippatsu", [1, "Han", 1, "⛀"]}]
       }
     })
   end
@@ -107,7 +111,7 @@ defmodule RiichiAdvanced.YakuTest.KansaiZanYaku do
       %{"type" => "buttons_pressed", "buttons" => [%{"button" => "ron"}, nil, nil, nil]}
     ], %{
       east: %{
-        yaku: [{"Aka", [3, "Han"]}, {"Sanankou", [2, "Han"]}, {"Sanrenkou", [2, "Han"]}, {"Toitoi", [2, "Han"]}]
+        yaku: [{"Aka", [3, "Han", 3, "⛀"]}, {"Sanankou", [2, "Han"]}, {"Sanrenkou", [2, "Han"]}, {"Toitoi", [2, "Han"]}]
       }
     })
   end
@@ -149,7 +153,7 @@ defmodule RiichiAdvanced.YakuTest.KansaiZanYaku do
       %{"type" => "buttons_pressed", "buttons" => [%{"button" => "ron"}, nil, nil, nil]}
     ], %{
       east: %{
-        yaku: [{"Suurenkou", [1, "★"]}]
+        yaku: [{"Aka", [3, "⛀"]}, {"Suurenkou", [1, "★"]}]
       }
     })
   end
@@ -169,7 +173,7 @@ defmodule RiichiAdvanced.YakuTest.KansaiZanYaku do
       %{"type" => "buttons_pressed", "buttons" => [nil, %{"button" => "ron"}, nil, nil]}
     ], %{
       south: %{
-        yaku: [{"Renhou", [1, "★"]}, {"Suurenkou", [1, "★"]}]
+        yaku: [{"Aka", [3, "⛀"]}, {"Renhou", [1, "★"]}, {"Suurenkou", [1, "★"]}]
       }
     })
   end
@@ -191,7 +195,7 @@ defmodule RiichiAdvanced.YakuTest.KansaiZanYaku do
       %{"type" => "buttons_pressed", "buttons" => [%{"button" => "ron"}, nil, nil, nil]}
     ], %{
       east: %{
-        yaku: [{"Double Riichi", [2, "Han"]}, {"Ippatsu", [1, "Han"]}, {"Pinfu", [1, "Han"]}]
+        yaku: [{"Double Riichi", [2, "Han"]}, {"Ippatsu", [1, "Han", 1, "⛀"]}, {"Pinfu", [1, "Han"]}]
       }
     })
   end
@@ -213,7 +217,7 @@ defmodule RiichiAdvanced.YakuTest.KansaiZanYaku do
       %{"type" => "buttons_pressed", "buttons" => [%{"button" => "ron"}, nil, nil, nil]}
     ], %{
       east: %{
-        yaku: [{"Double Riichi", [2, "Han"]}, {"Ippatsu", [1, "Han"]}]
+        yaku: [{"Double Riichi", [2, "Han"]}, {"Ippatsu", [1, "Han", 1, "⛀"]}]
       }
     })
   end
@@ -234,7 +238,7 @@ defmodule RiichiAdvanced.YakuTest.KansaiZanYaku do
       %{"type" => "buttons_pressed", "buttons" => [%{"button" => "ron"}, nil, nil, nil]}
     ], %{
       east: %{
-        yaku: [{"Shousharin", [6, "Han"]}, {"Aka", [2, "Han"]}]
+        yaku: [{"Shousharin", [6, "Han"]}, {"Aka", [2, "Han", 2, "⛀"]}]
       }
     })
   end
@@ -255,7 +259,7 @@ defmodule RiichiAdvanced.YakuTest.KansaiZanYaku do
       %{"type" => "buttons_pressed", "buttons" => [%{"button" => "ron"}, nil, nil, nil]}
     ], %{
       east: %{
-        yaku: [{"Daisharin", [1, "★"]}]
+        yaku: [{"Aka", [2, "⛀"]}, {"Daisharin", [1, "★"]}]
       }
     })
   end

@@ -11,10 +11,10 @@ defmodule RiichiAdvanced.GameState.Buttons do
   alias RiichiAdvanced.Utils, as: Utils
   import RiichiAdvanced.GameState
 
-  def to_buttons(state, button_choices) do
+  def to_buttons(state, seat, button_choices) do
     buttons = Rules.get(state.rules_ref, "buttons", %{})
     button_names = Map.keys(button_choices) |> Enum.sort()
-    unskippable_button_exists = Enum.any?(button_names, &Map.get(buttons[&1], "unskippable", false))
+    unskippable_button_exists = Enum.any?(button_names, &Conditions.check_cnf_condition(state, Map.get(buttons[&1], "unskippable", false), %{seat: seat}))
     if not Enum.empty?(button_names) and not unskippable_button_exists do button_names ++ ["skip"] else button_names end
   end
 
@@ -169,7 +169,7 @@ defmodule RiichiAdvanced.GameState.Buttons do
       
       # IO.puts("Buttons after:")
       # IO.inspect(buttons)
-      all_buttons = Map.new(new_button_choices, fn {seat, button_choices} -> {seat, to_buttons(state, button_choices)} end)
+      all_buttons = Map.new(new_button_choices, fn {seat, button_choices} -> {seat, to_buttons(state, seat, button_choices)} end)
       state = update_all_players(state, fn seat, player ->
         if Map.has_key?(all_buttons, seat) do
           %{ player | buttons: all_buttons[seat], button_choices: new_button_choices[seat] }

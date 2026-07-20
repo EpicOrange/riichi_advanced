@@ -195,9 +195,8 @@ defmodule RiichiAdvanced.Compiler do
   end
   defp compile_expr({prefix, _, _} = arg, _line, _column) when prefix == :! do
     # variable
-    with {:ok, var} <- Validator.validate_json(arg),
-         {:ok, var} <- Jason.encode(var) do
-      {:ok, "#{var}"}
+    with {:ok, var} <- Validator.validate_json(arg) do
+      {:ok, var}
     end
   end
   defp compile_expr({name, _, nil}, line, column) when is_binary(name), do: compile_identifier(name, line, column)
@@ -766,7 +765,7 @@ defmodule RiichiAdvanced.Compiler do
              field_json ->
                with {:ok, field_val} <- (cond do
                       field_name == "actions" -> compile_action_list(field_json, line, column)
-                      field_name in ["show_when", "call_conditions"] -> compile_condition_list(field_json, line, column)
+                      field_name in ["show_when", "call_conditions", "unskippable"] -> compile_condition_list(field_json, line, column)
                       true -> Validator.validate_json(field_json)
                     end),
                     {:ok, field} <- (if field_val != nil do Jason.encode(field_val) else {:ok, nil} end) do

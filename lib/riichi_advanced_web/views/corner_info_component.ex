@@ -7,6 +7,7 @@ defmodule RiichiAdvancedWeb.CornerInfoComponent do
   def mount(socket) do
     socket = assign(socket, :display_round_marker, false)
     socket = assign(socket, :ai_thinking, false)
+    socket = assign(socket, :chips, %{})
     {:ok, socket}
   end
 
@@ -22,6 +23,15 @@ defmodule RiichiAdvancedWeb.CornerInfoComponent do
           <div class={["saki-card", @saki.version, to_card_class(card), Saki.is_disabled_saki_card?(card) && "disabled"]} :for={card <- Saki.filter_cards(@player.status)}></div>
         </div>
       <% end %>
+      <div class="shuugi-display" :if={@player.counters["shuugi"] > 0}>
+        <%= for {name, amt} <- @chips do %>
+          <div class={["chips", name]}>
+            <div class="chip" :for={_ <- List.duplicate(nil, max(0, amt))}>
+            </div>
+          </div>
+        <% end %>
+        <span><%= @player.counters["shuugi"] %></span>
+      </div>
       <div class="ai-thinking" :if={@ai_thinking}></div>
     </div>
     """
@@ -31,6 +41,31 @@ defmodule RiichiAdvancedWeb.CornerInfoComponent do
     if Saki.is_disabled_saki_card?(card) do
       String.slice(card, 0..-10//1)
     else card end
+  end
+
+  def calculate_chips(amt) do
+    {chip1, amt} = {Integer.floor_div(amt-100, 100), 100+rem(amt, 100)}
+    {chip2, amt} = {Integer.floor_div(amt-25, 25), 25+rem(amt, 25)}
+    {chip3, amt} = {Integer.floor_div(amt-5, 5), 5+rem(amt, 5)}
+    chip4 = amt
+    %{
+      chip1: chip1,
+      chip2: chip2,
+      chip3: chip3,
+      chip4: chip4,
+    }
+  end
+
+  def update(assigns, socket) do
+    socket = assigns
+             |> Map.drop([:flash])
+             |> Enum.reduce(socket, fn {key, value}, acc_socket -> assign(acc_socket, key, value) end)
+
+    shuugi = socket.assigns.player.counters["shuugi"]
+    socket = if is_number(shuugi) do
+      assign(socket, :chips, calculate_chips(shuugi))
+    else socket end
+    {:ok, socket}
   end
 
 end

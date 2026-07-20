@@ -107,16 +107,23 @@ defmodule RiichiAdvanced.GameState.Kyoku do
         end
         state = Log.finalize_kyoku(state)
 
-        # check for tobi
+        # check for tobi and called game
         state = case Rules.get(state.rules_ref, "score_calculation") do
           nil -> state
           score_calculation ->
-            if is_number(Map.get(score_calculation, "tobi")) do
+            state = if is_number(Map.get(score_calculation, "tobi")) do
               tobi = Map.get(score_calculation, "tobi", 0)
               if Enum.any?(state.players, fn {_seat, player} -> player.score < tobi end) do
                 Map.put(state, :round_result, :end_game)
               else state end
             else state end
+            state = if is_number(Map.get(score_calculation, "called_game")) do
+              called_game = Map.get(score_calculation, "called_game", 0)
+              if Enum.any?(state.players, fn {_seat, player} -> player.score > called_game end) do
+                Map.put(state, :round_result, :end_game)
+              else state end
+            else state end
+            state
         end
 
         # finish or initialize new round if needed, otherwise continue
@@ -628,11 +635,13 @@ defmodule RiichiAdvanced.GameState.Kyoku do
         score_denomination: Map.get(score_rules, "score_denomination", ""),
         point_name: Map.get(score_rules, "point_name", ""),
         point2_name: Map.get(score_rules, "point2_name", ""),
+        shuugi_name: Map.get(score_rules, "shuugi_name", ""),
         minipoint_name: Map.get(score_rules, "minipoint_name", ""),
         right_display: cond do
           not Map.has_key?(score_rules, "right_display") -> nil
           score_rules["right_display"] == "points"       -> cxt.points
           score_rules["right_display"] == "points2"      -> cxt.points2
+          score_rules["right_display"] == "shuugi"       -> cxt.shuugi
           score_rules["right_display"] == "minipoints"   -> cxt.minipoints
           true                                           -> nil
         end,
@@ -640,6 +649,7 @@ defmodule RiichiAdvanced.GameState.Kyoku do
           not Map.has_key?(score_rules, "right_display") -> nil
           score_rules["right_display"] == "points"       -> Map.get(score_rules, "point_name", "")
           score_rules["right_display"] == "points2"      -> Map.get(score_rules, "point2_name", "")
+          score_rules["right_display"] == "shuugi"       -> Map.get(score_rules, "shuugi_name", "")
           score_rules["right_display"] == "minipoints"   -> Map.get(score_rules, "minipoint_name", "")
           true                                           -> nil
         end,

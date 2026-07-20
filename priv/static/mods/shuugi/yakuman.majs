@@ -1,0 +1,61 @@
+on after_initialization do
+  if !per_yakuman do
+    add_rule("Rules", "Shuugi", "Each count of yakuman adds %{ron_chips} shuugi to the payment if ron or %{tsumo_chips} shuugi if tsumo.", %{ron_chips: !ron_chips, tsumo_chips: !tsumo_chips})
+  else
+    add_rule("Rules", "Shuugi", "A yakuman win adds %{ron_chips} shuugi to the payment if ron or %{tsumo_chips} shuugi if tsumo.", %{ron_chips: !ron_chips, tsumo_chips: !tsumo_chips})
+  end
+  if !allow_kazoe do
+    add_rule("Rules", "Shuugi", "Kazoe yakuman counts as yakuman for shuugi purposes.")
+  else
+    add_rule("Rules", "Shuugi", "Kazoe yakuman does not count as yakuman for shuugi purposes.")
+  end
+end
+
+on after_win, prepend: true do
+  if points2 > 0 or (!allow_kazoe and points >= 13) do
+    set_status("yakuman")
+    if won_by_draw do
+      yakuman_payment += !tsumo_chips
+    else
+      yakuman_payment += !ron_chips
+    end
+    if points2 > 0 and !per_yakuman do
+      yakuman_payment *= points2
+    end
+    shuugi_payment += yakuman_payment
+  end
+end
+
+apply append, "functions.announce_shuugi_payment" do
+  if points2 > 0 do
+    if !per_yakuman do
+      if won_by_draw do
+        if !tsumo_chips == 1 do
+          push_system_message("Everyone pays 1 chip for each yakuman count (shuugi)")
+        else
+          push_system_message("Everyone pays %{tsumo_chips} chips for each yakuman count (shuugi)", %{tsumo_chips: !tsumo_chips})
+        end
+      else
+        if !ron_chips == 1 do
+          push_system_message("Discarder pays 1 chip for each yakuman count (shuugi)")
+        else
+          push_system_message("Discarder pays %{ron_chips} chips for each yakuman count (shuugi)", %{ron_chips: !ron_chips})
+        end
+      end
+    else
+      if won_by_draw do
+        if !tsumo_chips == 1 do
+          push_system_message("Everyone pays 1 chip for a yakuman win (shuugi)")
+        else
+          push_system_message("Everyone pays %{tsumo_chips} chips for a yakuman win (shuugi)", %{tsumo_chips: !tsumo_chips})
+        end
+      else
+        if !ron_chips == 1 do
+          push_system_message("Discarder pays 1 chip for a yakuman win (shuugi)")
+        else
+          push_system_message("Discarder pays %{ron_chips} chips for a yakuman win (shuugi)", %{ron_chips: !ron_chips})
+        end
+      end
+    end
+  end
+end

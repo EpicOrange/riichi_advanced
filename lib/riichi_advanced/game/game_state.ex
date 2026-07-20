@@ -180,7 +180,7 @@ defmodule RiichiAdvanced.GameState do
     defstruct [
       # persistent
       score: 0,
-      start_score: 0, # for logging purposes
+      start_score: 0, # score at start of round, used in logs
       nickname: nil,
       # working (reset every round)
       hand: [],
@@ -817,9 +817,7 @@ defmodule RiichiAdvanced.GameState do
     not Enum.empty?(state.players[seat].call_buttons)
     or
     Enum.any?(state.players[seat].buttons, fn button_name ->
-      buttons[button_name] != nil
-      and Map.has_key?(buttons[button_name], "unskippable")
-      and buttons[button_name]["unskippable"]
+      buttons[button_name] != nil and Conditions.check_cnf_condition(state, Map.get(buttons[button_name], "unskippable", false), %{seat: seat})
     end)
   end
 
@@ -854,7 +852,7 @@ defmodule RiichiAdvanced.GameState do
     #     # or (not Conditions.check_cnf_condition(state, cond_spec, %{seat: seat, tile: tile}) |> IO.inspect(label: inspect({2, seat, tile, cond_spec})))
     #   end)
     #   if ret != nil do
-    #     IO.puts("#{seat} cannot play tile #{tile} because it matches the condition #{inspect(ret)}")
+    #     IO.puts("#{seat} cannot play tile #{inspect(tile)} because it matches the condition #{inspect(ret)}")
     #     false
     #   else true end
     # else true end end end end
@@ -1641,7 +1639,7 @@ defmodule RiichiAdvanced.GameState do
     event = ["press_call_button", Atom.to_string(seat), "cancel"]
     if state.forced_events == nil or event in state.forced_events do
       # go back to button clicking phase
-      state = update_player(state, seat, fn player -> %{ player | buttons: Buttons.to_buttons(state, player.button_choices), call_buttons: %{}, deferred_actions: [], deferred_context: %{}, choice: nil } end)
+      state = update_player(state, seat, fn player -> %{ player | buttons: Buttons.to_buttons(state, seat, player.button_choices), call_buttons: %{}, deferred_actions: [], deferred_context: %{}, choice: nil } end)
 
       # tutorial stuff
       state = if state.forced_events != nil and event in state.forced_events do

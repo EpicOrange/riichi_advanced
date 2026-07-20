@@ -4,11 +4,6 @@ on after_initialization do
 end
 
 on after_win, prepend: true do
-  # (non-kazoe) yakuman ron is worth 10, not 5
-  if points2 > 0 and not_won_by_draw do
-    yakuman_payment += 5
-    shuugi_payment += 5
-  end
   # having all four flowers is worth 10 ron / 5 tsumo
   if match(["flowers"], ~m"1f:1, 2f:1, 3f:1, 4f:1") do
     if won_by_draw do

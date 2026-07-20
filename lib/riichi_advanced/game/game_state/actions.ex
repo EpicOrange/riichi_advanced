@@ -499,6 +499,7 @@ defmodule RiichiAdvanced.GameState.Actions do
     "payout",
     "points",
     "points2",
+    "shuugi_gain",
     "score",
     "minipoints"
   ]
@@ -608,6 +609,7 @@ defmodule RiichiAdvanced.GameState.Actions do
       ["payout" | opts] -> state.delta_scores[Conditions.from_seat_spec(state, context, Enum.at(opts, 0, "self"))]
       ["points" | _opts] when is_map_key(context, :points) -> context.points
       ["points2" | _opts] when is_map_key(context, :points2) -> context.points2
+      ["shuugi_gain" | _opts] when is_map_key(context, :shuugi) -> context.shuugi
       ["score" | _opts] when is_map_key(context, :score) -> context.score
       ["eval_expr" | opts] -> eval_expression(state, context, Enum.at(opts, 0, 0))
       ["minipoints" | _opts] when is_map_key(context, :minipoints) -> context.minipoints
@@ -1817,6 +1819,7 @@ defmodule RiichiAdvanced.GameState.Actions do
           "score_name"         -> {:score_name, :string}
           "point_name"         -> {:point_name, :string}
           "point2_name"        -> {:point2_name, :string}
+          "shuugi_name"        -> {:shuugi_name, :string}
           "minipoint_name"     -> {:minipoint_name, :string}
           "minipoints"         -> {:minipoints, :number}
           "score_denomination" -> {:score_name, :string}

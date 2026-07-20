@@ -134,6 +134,7 @@ defmodule RiichiAdvanced.GameState.Payment do
               yaku: new_yaku,
               points: Utils.get_from_points_list(new_points, score_rules["point_name"]),
               points2: Utils.get_from_points_list(new_points, score_rules["point2_name"]),
+              shuugi: Utils.get_from_points_list(new_points, score_rules["shuugi_name"]),
             }
             # set winner object to cxt, for the purposes of evaluating scoring_logic
             state = update_in(state, [Access.key(:winners, %{}), Access.key(seat, %{})], &Map.merge(cxt, &1))

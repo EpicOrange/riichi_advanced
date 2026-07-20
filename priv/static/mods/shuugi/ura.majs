@@ -1,0 +1,23 @@
+on after_initialization do
+  add_rule("Rules", "Shuugi", "Each ura dora adds %{chips} shuugi to the payment.", %{chips: !chips})
+end
+
+define_yaku meta_yaku, "Ura", ["ura", "⛀"], ura > 0
+
+apply append, "functions.announce_shuugi_payment" do
+  if ura > 0 do
+    if won_by_draw do
+      if !chips == 1 do
+        push_system_message("Everyone pays 1 chip per ura dora")
+      else
+        push_system_message("Everyone pays %{chips} chips per ura dora", %{chips: !chips})
+      end
+    else
+      if !chips == 1 do
+        push_system_message("Discarder pays 1 chip per ura dora")
+      else
+        push_system_message("Discarder pays %{chips} chips per ura dora", %{chips: !chips})
+      end
+    end
+  end
+end

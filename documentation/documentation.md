@@ -795,18 +795,20 @@ Colors are specified as CSS color strings like `"#808080"` or `"lightblue"`. Exa
     * `key = "score"`: Final score, displayed at the bottom of the win screen.
     * `key = "points"`: Points (e.g. han)
     * `key = "points2"`: Secondary points (e.g. yakuman multiplier), see the [scoring methods](#scoring-methods) section
+    * `key = "shuugi_gain"`: Shuugi earned from yaku
     * `key = "minipoints"`: Minipoints (e.g. fu)
     * The following are also modifiable:
     * `key = "score_name"`: name for score (e.g. "Mangan")
     * `key = "point_name"`: name for points (e.g. "Han")
-    * `key = "point2_name"`: name for points (e.g. "★")
+    * `key = "point2_name"`: name for points2 (e.g. "★")
+    * `key = "shuugi_name"`: name for shuugi (e.g. "⛀")
     * `key = "minipoint_name"`: name for minipoints (e.g. "Fu")
     * `key = "score_denomination"`: name prepended to score
     * `key = "winning_tile_text"`: text shown above the winning tile
   The optional `method` argument specifies a modification other than replacing the value. Allowed methods are:
   + For all values (default):
     * `method = "set"`
-  + For numeric values (`"score"`, `"points"`, `"points2"`, `"minipoints"`):
+  + For numeric values (`"score"`, `"points"`, `"points2"`, `"shuugi_gain"`, `"minipoints"`):
     * `method = "add"`
     * `method = "subtract"`
     * `method = "multiply"`

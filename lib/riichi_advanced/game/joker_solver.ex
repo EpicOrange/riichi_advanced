@@ -166,6 +166,7 @@ defmodule RiichiAdvanced.GameState.JokerSolver do
       minipoints: minipoints,
       points: Utils.get_from_points_list(points, score_rules["point_name"]),
       points2: Utils.get_from_points_list(points, score_rules["point2_name"]),
+      shuugi: Utils.get_from_points_list(points, score_rules["shuugi_name"]),
       total_points: points,
       joker_assignment: joker_assignment,
       winning_tile: assigned_winning_tile,

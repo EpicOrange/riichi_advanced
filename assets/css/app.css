@@ -933,6 +933,58 @@ div.corner-info > div.ai-thinking::before {
 div.corner-info.self {
   z-index: 5; /* above pond */
 }
+div.corner-info > div.shuugi-display {
+  display: flex;
+  flex-flow: row nowrap;
+  position: absolute;
+  font-size: calc(0.9 * var(--tile-size));
+  color: var(--tile-front);
+  text-align: center;
+  width: 100%;
+  height: 50%;
+  bottom: 0;
+  justify-content: flex-start;
+  column-gap: 0.2em;
+}
+div.corner-info > div.shuugi-display > div.chips {
+  font-family: "Arial";
+  display: flex;
+  flex-flow: column-reverse nowrap;
+}
+div.corner-info > div.shuugi-display > div.chips.chip1 { color: #000000; }
+div.corner-info > div.shuugi-display > div.chips.chip2 { color: #0000af; }
+div.corner-info > div.shuugi-display > div.chips.chip3 { color: #af0000; }
+div.corner-info > div.shuugi-display > div.chips.chip4 { color: #afafaf; }
+div.corner-info > div.shuugi-display > div.chips > div.chip::before {
+  display: flex;
+  flex-flow: column-reverse nowrap;
+  justify-content: flex-start;
+  width: 0.8ex;
+  height: 0.135em;
+  content: "⛃";
+  clip-path: inset(calc(-0.4em - 100%) -1ex 0 0);
+}
+div.corner-info > div.shuugi-display > div.chips > div.chip:last-child::before {
+  content: "⛂";
+  height: 0.06em;
+  transform: translate(0.0075em, calc(0.1em - 100%));
+  clip-path: none;
+  z-index: 1;
+}
+
+div.corner-info > div.shuugi-display > span {
+  position: absolute;
+  display: block;
+  bottom: -0.75em;
+  font-size: calc(0.6 * var(--tile-size));
+  opacity: 0.5;
+  width: 100%;
+  text-align: center;
+}
+div.corner-info > div.shuugi-display:hover > span {
+  opacity: 1;
+  font-weight: bold;
+}
 
 /* tiles */
 div.tile {
