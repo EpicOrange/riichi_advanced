@@ -1,0 +1,26 @@
+on after_initialization do
+  add_rule("Tiles", "Shiro Pocchi", "One of the white dragons %{5z} is replaced with a shiro pocchi %{shiro_pocchi}. Shiro pocchi acts a joker tile when drawn while in riichi.", %{"5z": ~t"5z", shiro_pocchi: ~t"9z"}, -99)
+  update_rule("Rules", "Shuugi", "(Shiro Pocchi) Winning in riichi via shiro pocchi is worth 1 shuugi.")
+end
+
+replace 1, "wall", "5z", "9z"
+on after_start do
+  set_tile_alias_all(["9z"], ["5z"])
+end
+
+# when drawing shiro pocchi in riichi, it becomes a wildcard
+on after_turn_change do
+  if status("riichi") and match(["draw"], ~m"nojoker, 9z:1") do
+    set_status("shiro_pocchi")
+    set_tile_alias(["9z"], ["any"])
+  end
+end
+
+# remove shiro pocchi status on turn change
+on before_turn_change do
+  unset_status("shiro_pocchi")
+end
+
+apply set_merge, "dora_indicators", %{
+  "9z": ["6z"],
+}

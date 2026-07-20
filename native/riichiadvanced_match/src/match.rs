@@ -203,11 +203,11 @@ fn remove_match_group<'a>(
   } else if bipartite {
     let base_tiles = base_tiles.clone();
     let offsets = Rc::new(groups.iter().flat_map(|g| g.flatten()).collect());
-    if debug { println!("Starting bipartite match for {num} offsets from {:?}", offsets); }
+    if debug { println!("Starting bipartite match for {num} offsets: {:?} from hands: {:?}", offsets, hands); }
     perform_bipartite_match(offsets, num, Box::new(once(hands)), base_tiles, match_info, debug, exhaustive, unique, nojoker)
   } else {
     let base_tiles = base_tiles.clone();
-    if debug { println!("Starting dfs match for {num} groups from {:?}", groups); }
+    if debug { println!("Starting dfs match for {num} groups: {:?} from hands: {:?}", groups, hands); }
     perform_dfs_match((*groups).clone(), num, Box::new(once(hands)), base_tiles, match_info, debug, exhaustive, unique, nojoker)
   };
 

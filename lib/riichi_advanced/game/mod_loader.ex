@@ -222,8 +222,11 @@ defmodule RiichiAdvanced.ModLoader do
           tutorial_link -> "| .tutorial_link = \"#{tutorial_link}\""
         end
         # remove already applied mods
-        query = query <> " | " <> ".default_mods = (.default_mods // []) - #{Jason.encode!(all_mod_ids)}"
-        query = query <> " | " <> ".available_mods = ((.available_mods // []) | map(select(if type == \"object\" then .id else .  end | IN(#{Enum.map_join(all_mod_ids, ", ", &Jason.encode!/1)}) | not)))"
+        query = if not Enum.empty?(all_mod_ids) do
+          query = query <> " | " <> ".default_mods = (.default_mods // []) - #{Jason.encode!(all_mod_ids)}"
+          query = query <> " | " <> ".available_mods = ((.available_mods // []) | map(select(if type == \"object\" then .id else .  end | IN(#{Enum.map_join(all_mod_ids, ", ", &Jason.encode!/1)}) | not)))"
+          query
+        else query end
         # we're traversing down, so "new" query/mods/globals should be run before "old" ones
         query = query <> "\n|\n" <> prev_query
         mods = mods ++ prev_mods

@@ -1,6 +1,5 @@
 on after_initialization do
   update_rule("Rules", "Riichi", "(Ippatsu) If you win before or during your next draw after riichi, you are awarded ippatsu (1 han). Calls invalidate ippatsu.")
-  update_rule("Rules", "Shuugi", "(Ippatsu) Ippatsu is worth 1 shuugi.")
 end
 
 define_yaku riichi_yaku, "Ippatsu", [1, "Han"], status("ippatsu")

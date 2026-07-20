@@ -923,7 +923,7 @@ defmodule RiichiAdvanced.Compiler do
 
   defp compile_command("remove_mod", name, args, line, column) do
     names = if is_list(args) and Enum.all?(args, &is_binary/1) do
-      {:ok, [Jason.decode!(name) | List.wrap(args)]}
+      {:ok, [Jason.decode!(name) | args]}
     else
       {:error, "Compiler.compile: at line #{line}:#{column}, `remove_mod` command expects a mod id or a list of mod ids, got #{inspect(args)}"}
     end
@@ -931,7 +931,7 @@ defmodule RiichiAdvanced.Compiler do
          {:ok, names} <- Validator.validate_json(names),
          {:ok, names} <- Enum.map(names, &Jason.encode/1) |> Utils.sequence() do
       {:ok, ~s"""
-      .available_mods |= map(select(type != "object" or .id | IN(#{Enum.join(names, ",")}) | not))
+      .available_mods |= map(select(type != "object" or (.id | IN(#{Enum.join(names, ",")}) | not)))
       """}
     end
   end

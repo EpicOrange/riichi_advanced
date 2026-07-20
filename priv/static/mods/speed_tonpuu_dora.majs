@@ -1,0 +1,54 @@
+remove_mod "aka", "ao", "kin"
+
+on after_initialization do
+  add_rule("Tiles", "Aka", "(Speed Tonpuu) 1x %{5m}, 1x %{5p}, and 1x %{5s} are replaced with red \"aka dora\" fives %{aka} worth 1 han and one chip each.", %{"5m": ~t"5m", "5p": ~t"5p", "5s": ~t"5s", aka: ~T"05m05p05s"}, 10)
+  add_rule("Tiles", "Ao", "(Speed Tonpuu) 1x %{7m}, 1x %{7p}, and 1x %{7s} are replaced with blue \"ao dora\" sevens %{ao} worth 1 han and 2 chips each.", %{"7m": ~t"7m", "7p": ~t"7p", "7s": ~t"7s", ao: ~T"27m27p27s"}, 20)
+  add_rule("Tiles", "Kin", "(Speed Tonpuu) 1x %{5p} is replaced with a gold five %{kin} worth 1 han and one chip. This 1 han counts as yaku.", %{"5p": ~t"5p", kin: ~T"35p"}, 30)
+end
+
+replace 1, "wall", "5m", "05m"
+replace 1, "wall", "5p", "05p"
+replace 1, "wall", "5s", "05s"
+replace 1, "wall", "5t", "05t"
+replace 1, "wall", "7m", "27m"
+replace 1, "wall", "7p", "27p"
+replace 1, "wall", "7s", "27s"
+replace 1, "wall", "7t", "27t"
+replace 1, "wall", "5p", "35p"
+
+apply set_merge, "dora_indicators", %{
+  "05m": ["5m"],
+  "05p": ["5p"],
+  "05s": ["5s"],
+  "05t": ["5t"],
+  "27m": ["7m"],
+  "27p": ["7p"],
+  "27s": ["7s"],
+  "27t": ["7t"],
+  "35p": ["6p"],
+}
+
+on after_start do
+  set_tile_alias_all(["05m"], ["5m"])
+  set_tile_alias_all(["05p", "35p"], ["5p"])
+  set_tile_alias_all(["05s"], ["5s"])
+  set_tile_alias_all(["05t"], ["5t"])
+  set_tile_alias_all(["27m"], ["7m"])
+  set_tile_alias_all(["27p"], ["7p"])
+  set_tile_alias_all(["27s"], ["7s"])
+  set_tile_alias_all(["27t"], ["7t"])
+  tag_tiles("dora", ["05m", "05p", "05s", "05t", "27m", "27p", "27s", "27t", "35p"])
+end
+
+# count aka/ao/kin
+on before_win do
+  add_counter("aka", "count_matches", ["hand", "calls", "winning_tile"], ~m"nojoker, (05m 05p 05s 05t):1")
+  add_counter("ao", "count_matches", ["hand", "calls", "winning_tile"], ~m"nojoker, (27m 27p 27s 27t):1")
+  if match(["hand", "calls", "winning_tile"], ~m"nojoker, 35p:1") do kin = 1 end
+end
+
+define_yaku extra_yaku, "Aka", ["aka", "Han"], aka > 0
+define_yaku extra_yaku, "Ao", ["ao", "Han"], ao > 0
+define_yaku yaku, "Kin", ["kin", "Han"], kin > 0
+apply append, "score_calculation.yaku_lists", "all_stars" # goes after shuugi
+define_yaku all_stars, "Ultimate All-Stars", [1, "★"], aka == 3 and ao == 3 and kin == 1, ["Aka", "Ao", "Kin"]

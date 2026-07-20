@@ -748,17 +748,21 @@ config_mod shuugi, name: "starting_shuugi", values: [0,10,50,100], default: 0
 define_mod "shuugi/ippatsu", order: 1, name: "Ippatsu", deps: ["shuugi", "yaku/ippatsu"], desc: "Ippatsu is worth one shuugi."
 config_mod "shuugi/ippatsu", name: "chips", values: [1]
 define_mod "shuugi/ura", order: 1, name: "Ura", deps: ["shuugi", "ura"], desc: "Each ura dora scores shuugi."
-config_mod "shuugi/aka", name: "chips", values: [1, 2, 3, 4, 5]
+config_mod "shuugi/ura", name: "chips", values: [1, 2, 3, 4, 5]
 define_mod "shuugi/yakuman", order: 1, name: "Yakuman", deps: ["shuugi"], desc: "Yakuman is typically worth 10 shuugi on ron and 5 on tsumo."
 config_mod "shuugi/yakuman", name: "ron_chips", values: [5, 10], default: 10
 config_mod "shuugi/yakuman", name: "tsumo_chips", values: [5, 10], default: 5
 config_mod "shuugi/yakuman", name: "per_yakuman", values: [false, true], default: false
-define_mod "shuugi/aka", order: 1, name: "Aka", deps: ["shuugi", "aka"], desc: "Each aka dora scores shuugi."
+config_mod "shuugi/yakuman", name: "allow_kazoe", values: [false, true], default: false
+define_mod "shuugi/aka", order: 4, name: "Aka", deps: ["shuugi", "aka"], desc: "Each aka dora scores shuugi."
 config_mod "shuugi/aka", name: "chips", values: [1, 2, 3, 4, 5]
-define_mod "shuugi/ao", order: 1, name: "Ao", deps: ["shuugi", "ao"], desc: "Each ao dora scores shuugi."
+config_mod "shuugi/aka", name: "closed_only", values: [false, true], default: false
+define_mod "shuugi/ao", order: 4, name: "Ao", deps: ["shuugi", "ao"], desc: "Each ao dora scores shuugi."
 config_mod "shuugi/ao", name: "chips", values: [1, 2, 3, 4, 5]
-define_mod "shuugi/kin", order: 1, name: "Ao", deps: ["shuugi", "kin"], desc: "Each kin dora scores shuugi."
+config_mod "shuugi/ao", name: "closed_only", values: [false, true], default: false
+define_mod "shuugi/kin", order: 4, name: "Kin", deps: ["shuugi", "kin"], desc: "Each kin dora scores shuugi."
 config_mod "shuugi/kin", name: "chips", values: [1, 2, 3, 4, 5]
+config_mod "shuugi/kin", name: "closed_only", values: [false, true], default: false
 define_mod_category "Other"
 define_mod cancellable_riichi, order: 1, deps: ["yaku/riichi"], name: "Cancellable Riichi", desc: "Riichi declarations happen only after you confirm by discarding a tile."
 define_mod ten, order: 3, name: "Ten", desc: "Adds 10m, 10p, and 10s. Changes dora accordingly (if dora is enabled). Tanyao now allows nines, and chanta/junchan/honroutou require tens instead. 13 Orphans now requires the ten instead of the nine of each suit. Ittsuu allows 23456789T."

@@ -37,36 +37,30 @@ on after_scoring do
     end
     as everyone do
       if status("nagashi") do
+        cond do
+          equals(!is, "Mangan")    -> base_payment = 2000
+          equals(!is, "Haneman")   -> base_payment = 3000
+          equals(!is, "Baiman")    -> base_payment = 4000
+          equals(!is, "Sanbaiman") -> base_payment = 6000
+          true                     -> base_payment = 8000
+        end
         if seat_is("east") do
-        # do payout for each other player
+          # do payout for each other player
           as others do
-            if equals(!is, "Mangan") do
-              modify_payout("self", 4000, "subtract")
-              modify_payout("prev_seat", 4000, "add")
-            else
-              modify_payout("self", 16000, "subtract")
-              modify_payout("prev_seat", 16000, "add")
-            end
+            payment = base_payment * 2
+            modify_payout("self", "payment", "subtract")
+            modify_payout("prev_seat", "payment", "add")
           end
         else
-        # do payout for each other player
+          # do payout for each other player
           as others do
-            if equals(!is, "Mangan") do
-              if seat_is("east") do
-                modify_payout("self", 4000, "subtract")
-                modify_payout("prev_seat", 4000, "add")
-              else
-                modify_payout("self", 2000, "subtract")
-                modify_payout("prev_seat", 2000, "add")
-              end
+            if seat_is("east") do
+              payment = base_payment * 2
+              modify_payout("self", "payment", "subtract")
+              modify_payout("prev_seat", "payment", "add")
             else
-              if seat_is("east") do
-                modify_payout("self", 16000, "subtract")
-                modify_payout("prev_seat", 16000, "add")
-              else
-                modify_payout("self", 8000, "subtract")
-                modify_payout("prev_seat", 8000, "add")
-              end
+              modify_payout("self", "base_payment", "subtract")
+              modify_payout("prev_seat", "base_payment", "add")
             end
           end
         end

@@ -1,0 +1,19 @@
+on after_initialization do
+  add_rule("Yakuman", "Shiisanpuutaa", "\"Thirteen Unconnected\". Yakuman if you start with 13 disconnected tiles, plus one forming a pair. Calls invalidate.", 113)
+  update_rule("Yakuman", "Shiisanpuutaa", "%{example_hand}", %{example_hand: ~t"208m449p47s123456z"})
+  add_rule("Rules", "Win Condition", "- (Shiisanpuutaa) Start with 13 disconnected tiles, plus one forming a pair.", -100)
+end
+
+define_match shiisanpuutaa, ~m"pair:1, taatsu:-1"
+define_yaku yakuman, "Shiisanpuutaa", [1, "★"], status("discards_empty") and match(["hand", "draw"], ["shiisanpuutaa"]), ["Tenhou", "Chiihou"]
+
+define_button shiisanpuutaa,
+  display_name: "Tsumo (Shiisanpuutaa)",
+  show_when: our_turn and has_draw and status("discards_empty") and match(["hand", "draw"], ["shiisanpuutaa"])
+  do
+    set_counter("fu", 30)
+    big_text("Tsumo")
+    pause(1000)
+    reveal_hand
+    win_by_draw
+  end

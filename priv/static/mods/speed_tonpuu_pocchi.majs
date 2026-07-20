@@ -1,0 +1,60 @@
+remove_mod shiro_pocchi
+
+on after_initialization do
+  add_rule("Tiles", "Shiro Pocchi", "One of the white dragons %{5z} and one of the red dragons %{7z} are replaced with shiro pocchi %{shiro_pocchi}. Shiro pocchi acts a joker tile when drawn while in riichi.", %{"5z": ~t"5z", shiro_pocchi: ~t"9z"}, -99)
+  update_rule("Rules", "Shuugi", "(Shiro Pocchi) Winning in riichi via shiro pocchi is worth 1 shuugi.")
+end
+
+replace 1, "wall", "5z", "9z"
+replace 1, "wall", "6z", ["56z", "green"]
+replace 1, "wall", "7z", "07z"
+on after_start do
+  set_tile_alias_all(["9z"], ["5z"])
+  set_tile_alias_all([%{tile: "56z", attrs: ["green"]}], ["6z"])
+  set_tile_alias_all(["07z"], ["7z"])
+end
+
+# when drawing 5z or 7z pocchi in riichi, it becomes a wildcard
+on after_turn_change do
+  if status("riichi") do
+    cond do
+      match(["draw"], ~m"nojoker, 9z:1") ->
+        set_status("shiro_pocchi", "no_discard")
+        save_tile_behavior("before_shiro_pocchi")
+        set_tile_alias(["9z"], ["any"])
+      match(["draw"], ~m"nojoker, 07z:1") ->
+        set_status("shiro_pocchi", "no_discard")
+        save_tile_behavior("before_shiro_pocchi")
+        set_tile_alias(["07z"], ["any"])
+    end
+  else
+    # when drawing 6z pocchi with an open hand, it can be used as a wildcard
+    if has_calls and match(["draw"], ~m"nojoker, 56z@green:1") do
+      set_status("shiro_pocchi")
+      save_tile_behavior("before_shiro_pocchi")
+      set_tile_alias([[%{tile: "56z", attrs: ["green"]}]], ["any"])
+    end
+  end
+end
+
+# remove shiro pocchi wildcard status on turn change (to avoid furiten)
+on before_turn_change do
+  if status("shiro_pocchi") do
+    unset_status("shiro_pocchi")
+    load_tile_behavior("before_shiro_pocchi")
+  end
+end
+
+apply set_merge, "dora_indicators", %{
+  "9z": ["6z"],
+}
+
+# each pocchi gives 1 chip, regardless of whether it's used as a wildcard
+on before_win do
+  if match(["hand", "calls", "winning_tile"], ~m"nojoker, 9z:1") do pocchi += 1 end
+  if match(["hand", "calls", "winning_tile"], ~m"nojoker, 07z:1") do pocchi += 1 end
+  if match(["hand", "calls", "winning_tile"], ~m"nojoker, 56z@green:1") do pocchi += 1 end
+end
+define_yaku shuugi, "Shiro Pocchi", ["pocchi", "⛀"], pocchi > 0
+
+apply set_append, "buttons.tsumo.unskippable", status("riichi", "shiro_pocchi", "no_discard")

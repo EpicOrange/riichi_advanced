@@ -1,0 +1,19 @@
+on after_initialization do
+  add_rule("Yakuman", "Shiisanuushi", "\"Thirteen Independent\". Yakuman if you start with 14 disconnected tiles. Calls invalidate.", 113)
+  update_rule("Yakuman", "Shiisanuushi", "%{example_hand}", %{example_hand: ~t"208m149p47s123456z"})
+  add_rule("Rules", "Win Condition", "- (Shiisanuushi) Start with 14 disconnected tiles.", -100)
+end
+
+define_match shiisanuushi, ~m"taatsu:-1"
+define_yaku yakuman, "Shiisanuushi", [1, "★"], status("discards_empty") and match(["hand", "draw"], ["shiisanuushi"]), ["Tenhou", "Chiihou"]
+
+define_button shiisanuushi,
+  display_name: "Tsumo (Shiisanuushi)",
+  show_when: our_turn and has_draw and status("discards_empty") and match(["hand", "draw"], ["shiisanuushi"])
+  do
+    set_counter("fu", 30)
+    big_text("Tsumo")
+    pause(1000)
+    reveal_hand
+    win_by_draw
+  end
