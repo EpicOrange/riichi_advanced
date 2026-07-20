@@ -160,9 +160,10 @@ def get_base_score do
   end
 end
 
+define_const phan_value, 6
 def add_leftover_phan do
   if mun > 0 and phan > 0 do
-    total += phan * "$mult" :: "Leftover Phán"
+    total += phan * @phan_value * "$mult" :: "Leftover Phán"
   else
     if total == 0 do total = 1 :: "Mosquito Hand" end
   end
@@ -170,14 +171,15 @@ end
 
 define_scoring ron do
   get_base_score
-  if seat_is("last_discarder") do total *= 2 :: "Double (deal-in)" end
-  add_leftover_phan(%{mult: 6})
+  if won_by_discard and seat_is("last_discarder") do total *= 2 :: "Double (deal-in)" end
+  if won_by_call and seat_is("last_caller") do total *= 2 :: "Double (deal-in)" end
+  add_leftover_phan(%{mult: 1})
 end
 
 define_scoring tsumo do
   get_base_score
   total *= 2 :: "Double (self-draw)"
-  add_leftover_phan(%{mult: 6})
+  add_leftover_phan(%{mult: 1})
 end
 
 define_scoring pay_liability do
@@ -188,7 +190,7 @@ define_scoring pay_liability do
     else
       total *= 4 :: "Liability (deal-in)"
     end
-    add_leftover_phan(%{mult: 18})
+    add_leftover_phan(%{mult: 3})
   end
 end
 

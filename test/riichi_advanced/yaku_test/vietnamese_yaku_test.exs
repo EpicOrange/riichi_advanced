@@ -112,8 +112,8 @@ defmodule RiichiAdvanced.YakuTest.VietnameseYaku do
       east: %{
         yaku: [
           {"True No Flowers, No Leaves", [2, "Mủn"]},
-          {"Tổng (縂)", [3, "Phán"]},
-          {"Hợp (合)", [1, "Phán"]},
+          {"Anything Joker (縂)", [3, "Phán"]},
+          {"Number Joker (合)", [1, "Phán"]},
         ],
       }
     })
@@ -150,8 +150,8 @@ defmodule RiichiAdvanced.YakuTest.VietnameseYaku do
       east: %{
         yaku: [
           {"True No Flowers, No Leaves", [2, "Mủn"]},
-          {"Tổng (縂)", [3, "Phán"]},
-          {"Hợp (合)", [1, "Phán"]},
+          {"Anything Joker (縂)", [3, "Phán"]},
+          {"Number Joker (合)", [1, "Phán"]},
         ],
       }
     })
@@ -189,10 +189,10 @@ defmodule RiichiAdvanced.YakuTest.VietnameseYaku do
     ], %{
       east: %{
         yaku: [
-          {"Hợp (合)", [1, "Phán"]},
+          {"Number Joker (合)", [1, "Phán"]},
           {"Robbing a Quad", [1, "Phán"]},
           {"True No Flowers, No Leaves", [2, "Mủn"]},
-          {"Tổng (縂)", [3, "Phán"]}
+          {"Anything Joker (縂)", [3, "Phán"]}
         ],
       }
     })
@@ -224,7 +224,7 @@ defmodule RiichiAdvanced.YakuTest.VietnameseYaku do
         yaku: [
           {"Fully Closed Hand", [1, "Phán"]},
           {"True No Flowers, No Leaves", [2, "Mủn"]},
-          {"Tổng (縂)", [3, "Phán"]},
+          {"Anything Joker (縂)", [3, "Phán"]},
         ],
       }
     })

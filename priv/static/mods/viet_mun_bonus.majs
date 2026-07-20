@@ -1,0 +1,5 @@
+apply prepend, "functions.add_leftover_phan" do
+  if mun > 0 do
+    total += mun * !bonus :: "Mủn bonus"
+  end
+end

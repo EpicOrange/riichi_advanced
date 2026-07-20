@@ -20,7 +20,7 @@ defmodule RiichiAdvancedWeb.ModSelectionComponent do
             <input id={mod_id} type="checkbox" phx-click="toggle_mod" phx-value-mod={mod_id} phx-value-enabled={if @mods[mod_id].enabled do "true" else "false" end} checked={@mods[mod_id].enabled}>
             <label for={mod_id} title={dt(@lang, mod.desc)} data-name={dt(@lang, mod.name)} tabindex={mod.index} class={["mod", mod.class]}>
               <%= dt(@lang, mod.name) %>
-              <%= if mod.enabled and not Enum.empty?(mod.config) do %>
+              <%= if mod.enabled and Enum.any?(mod.config, fn {_, config} -> length(config["values"]) >= 2 end) do %>
                 |
                 <%= for {config_name, config} <- mod.config do %>
                   <% num_values = length(config["values"]) %>

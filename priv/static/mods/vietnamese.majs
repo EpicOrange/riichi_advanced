@@ -129,9 +129,6 @@ set custom_style, %{
   }
 }
 
-apply set, "buttons.daiminkan.call_conditions", not_call_contains([+@all_jokers], 1)
-apply set, "buttons.kakan.call_conditions", not_call_contains([+@all_jokers], 1)
-apply set, "buttons.ankan.call_conditions", not_call_contains([+@all_jokers], 1)
 apply set, "buttons.ankan.call_style", %{self: [0, ["1x", 1], 2, 3]}
 
 # all yaku not handled by yaku mods
@@ -184,21 +181,33 @@ set score_calculation, %{
 }
 
 # mods
-# define_mod_category "Rules"
+define_mod_category "Rules"
+define_mod viet_mun_bonus, name: "Mun Bonus", desc: "Adds a fixed undoubled bonus of 6 or 10 points for each mủn."
+config_mod viet_mun_bonus, name: "bonus", values: [6, 10], default: 10
+define_mod viet_quad_bonus, name: "Quad Bonus", desc: "Adds a fixed undoubled bonus of 5 or 6 points for each quad."
+config_mod viet_quad_bonus, name: "bonus", values: [5, 6], default: 6
+define_mod viet_phan_bonus, name: "Leftover Phán", desc: "Changes the undoubled amount added by extra phán, in hands scoring 1 mủn or more. It is normally 6."
+config_mod viet_phan_bonus, name: "bonus", values: [1, 2, 6], default: 6
 define_mod viet_more_jokers, name: "More Jokers (beta)", desc: "Add more sets of jokers to the wall on top of the existing 8. This is in beta since right now it makes the game run really slowly."
 config_mod viet_more_jokers, name: "sets", values: [16, 24, 32]
+define_mod suufon_renda, name: "Four Winds Draw", desc: "If the first discard for all four players is the same wind tile, the round ends in an abortive draw."
+config_mod suufon_renda, name: "name", values: ["Four Winds Draw"]
+define_mod kyuushu_kyuuhai, name: "Nine Terminals Draw", desc: "If any player starts with a hand of 9 or more terminal and honor tiles, they may end the round in an abortive draw."
+config_mod kyuushu_kyuuhai, name: "name", values: ["Nine Terminals Draw"]
 
+define_mod_category "Hand Patterns"
+define_mod "yaku/viet_rob_bounce", name: "Robbing a Bounce", desc: "1 phán if someone else uses a tile you're waiting for to bounce a joker."
+define_mod "yaku/viet_no_seven_pairs", name: "No Seven Pairs", conflicts: ["viet_tsumo_seven_pairs"], desc: "Removes seven pairs as a winning hand. (Useful when playing with more than 8 jokers.)"
+define_mod "yaku/viet_tsumo_seven_pairs", name: "Self-Draw Seven Pairs", conflicts: ["viet_no_seven_pairs"], desc: "Adds the requirement that Seven Pairs is completed by self-draw. (Useful when playing with more than 8 jokers.)"
+define_mod "yaku/shanpon", name: "Double Triplet Wait", desc: "1 phán if your winning hand has two pairs waiting for either one to become a triplet."
+config_mod "yaku/shanpon", name: "value", values: [1]
+config_mod "yaku/shanpon", name: "han", values: ["Phán"]
+config_mod "yaku/shanpon", name: "name", values: ["Double Triplet Wait"]
+config_mod "yaku/shanpon", name: "list", values: ["yaku"]
+define_mod "yaku/viet_eight_flowers", name: "Eight Flowers", desc: "1 mủn if you collect any 8 flowers, on top of points normally granted by flowers."
+define_mod "yaku/viet_ten_flowers", name: "Ten Flowers", desc: "1 mủn if you collect any 10 flowers, on top of points normally granted by flowers."
+define_mod "yaku/viet_renchan", name: "Six Consecutive Wins", desc: "1 mủn on your 6th win in a row, plus 1 mủn for each additional win."
+define_mod "yaku/viet_no_renhou", name: "No Blessing of Man", desc: "Blessing of Man (win on someone's first discard before your draw) no longer gives 2 mủn."
 
-
-
-
-
-
-
-
-
-# TODO
-# - pao rule
-# - vietnamese yaku names
-# - weaker jokers have priority for calls
-# - abortive draw mods: kyuushu
+define_mod_category "Other"
+define_mod vietnamese_vi, name: "Vietnamese Yaku Names", desc: "Display Vietnamese yaku names. (e.g. All Runs -> Phình)"

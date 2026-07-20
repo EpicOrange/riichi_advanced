@@ -1,0 +1,21 @@
+on after_initialization do
+  add_rule("1 Mủn", "Six Consecutive Wins", "1 mủn on your 6th win in a row, plus 1 mủn for each additional win.")
+end
+
+define_yaku yaku, "Six Consecutive Wins", ["renchans", "Mủn"], renchans >= 6
+define_yaku yaku, "Six Consecutive Wins", [-5, "Mủn"], renchans >= 6
+
+on before_win do
+  as others do
+    renchans = 0
+  end
+  renchans += 1
+end
+on before_exhaustive_draw do
+  as everyone do renchans = 0 end
+end
+on before_abortive_draw do
+  as everyone do renchans = 0 end
+end
+
+apply set_append, "persistent_counters", "renchans"

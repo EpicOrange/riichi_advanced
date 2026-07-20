@@ -1,0 +1,4 @@
+on after_initialization do
+  update_rule("Phán", "Seven Pairs", "(Self-Draw Seven Pairs) You must win by self-draw.")
+end
+define_yaku meta_yaku, "Remove Seven Pairs", [0, "Phán"], not_won_by_draw, ["Seven Pairs", "Remove Seven Pairs"]

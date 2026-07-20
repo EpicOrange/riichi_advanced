@@ -1,0 +1,9 @@
+on after_initialization do
+  add_rule("Rules", "Win Condition", "- (No Seven Pairs) Seven Pairs is no longer a winning hand.", -100)
+  delete_rule("Phán", "Seven Pairs")
+end
+
+remove_yaku yaku, "Chiitoitsu"
+# replace match definitions with failing matches
+define_const chiitoitsu_tenpai, ~m"fail"
+define_const chiitoitsu_win, ~m"fail"

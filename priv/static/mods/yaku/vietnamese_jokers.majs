@@ -24,14 +24,14 @@ on after_initialization do
       winds: ~t"1234z",
       dragons: ~t"067z",
     }, -90)
-  add_rule("2 Phán", "Tổng (縂)", "The anything joker %{tong} can be replaced for 3 Phán if you are the East player or if you replace it at the start of the game, or 2 Phán otherwise.", %{tong: ~t"0j"})
-  add_rule("1 Phán", "Thùng (筒)", "The circle joker %{thung} can be replaced for 2 Phán if you are the South player, or 1 Phán otherwise.", %{tong: ~t"6j"})
-  add_rule("1 Phán", "Soọc (索)", "The bamboo joker %{sooc} can be replaced for 2 Phán if you are the West player, or 1 Phán otherwise.", %{sooc: ~t"7j"})
-  add_rule("1 Phán", "Màn (萬)", "The character joker %{man} can be replaced for 2 Phán if you are the North player, or 1 Phán otherwise.", %{tong: ~t"8j"})
-  add_rule("2 Phán", "Đại Hoa (花)", "The flower joker %{hoa} can be replaced for 2 Phán regardless of seat.", %{hoa: ~t"9j"})
-  add_rule("1 Phán", "Hỉ (喜)", "The wind joker %{hi} can be replaced for 2 Phán if you are the South player, or 1 Phán otherwise.", %{ho: ~t"4j"})
-  add_rule("1 Phán", "Nguyên (元)", "The dragon joker %{nguyen} can be replaced for 2 Phán if you are the West player, or 1 Phán otherwise.", %{nguyen: ~t"5j"})
-  add_rule("2 Phán", "Hợp (合)", "The number joker %{hop} can be replaced for 3 Phán if you are the North player or if you replace it at the start of the game, or 2 Phán otherwise.", %{hop: ~t"2j"})
+  add_rule("2 Phán", "Anything Joker (縂)", "The anything joker %{tong} can be replaced for 3 Phán if you are the East player or if you replace it at the start of the game, or 2 Phán otherwise.", %{tong: ~t"0j"})
+  add_rule("1 Phán", "Dot Joker (筒)", "The dot joker %{thung} can be replaced for 2 Phán if you are the South player, or 1 Phán otherwise.", %{tong: ~t"6j"})
+  add_rule("1 Phán", "Bamboo Joker (索)", "The bamboo joker %{sooc} can be replaced for 2 Phán if you are the West player, or 1 Phán otherwise.", %{sooc: ~t"7j"})
+  add_rule("1 Phán", "Character Joker (萬)", "The character joker %{man} can be replaced for 2 Phán if you are the North player, or 1 Phán otherwise.", %{tong: ~t"8j"})
+  add_rule("2 Phán", "Flower Joker (花)", "The flower joker %{hoa} can be replaced for 2 Phán regardless of seat.", %{hoa: ~t"9j"})
+  add_rule("1 Phán", "Wind Joker (喜)", "The wind joker %{hi} can be replaced for 2 Phán if you are the South player, or 1 Phán otherwise.", %{ho: ~t"4j"})
+  add_rule("1 Phán", "Dragon Joker (元)", "The dragon joker %{nguyen} can be replaced for 2 Phán if you are the West player, or 1 Phán otherwise.", %{nguyen: ~t"5j"})
+  add_rule("2 Phán", "Number Joker (合)", "The number joker %{hop} can be replaced for 3 Phán if you are the North player or if you replace it at the start of the game, or 2 Phán otherwise.", %{hop: ~t"2j"})
 
   add_rule("Rules", "Ăn", "(Vietnamese) You cannot Ăn with more than one joker tile.")
   add_rule("Rules", "Phỗng", "(Vietnamese) You cannot Phỗng with more than one joker tile.")
@@ -41,6 +41,11 @@ end
 # jokers
 # 9j (flower joker) is handled by vietnamese_flowers mod
 define_const all_jokers, ["0j", "2j", "4j", "5j", "6j", "7j", "8j"]
+# the following are to establish a strata of jokers from weakest to strongest
+# this determines who wins when a simultaneous pon/daiminkan call is made
+define_const all_jokers_1, ["4j", "5j", "6j", "7j", "8j"]
+define_const all_jokers_2, ["2j"]
+define_const all_jokers_3, ["0j"]
 apply append, "wall", +@all_jokers
 define_set any_joker, ~s"0j|2j|4j|5j|6j|7j|8j"
 define_match any_joker, ~m"nojoker, any_joker:1"
@@ -155,15 +160,15 @@ end
 
 # TODO need to be consistent abt what's in English and what's in Vietnamese
 # set-aside blue jokers
-define_yaku yaku, "Tổng (縂)", ["tong_value", "Phán"], tong_value > 0
-define_yaku yaku, "Thùng (筒)", ["thung_value", "Phán"], thung_value > 0
-define_yaku yaku, "Soọc (索)", ["sooc_value", "Phán"], sooc_value > 0
-define_yaku yaku, "Màn (萬)", ["man_value", "Phán"], man_value > 0
+define_yaku yaku, "Anything Joker (縂)", ["tong_value", "Phán"], tong_value > 0
+define_yaku yaku, "Dot Joker (筒)", ["thung_value", "Phán"], thung_value > 0
+define_yaku yaku, "Bamboo Joker (索)", ["sooc_value", "Phán"], sooc_value > 0
+define_yaku yaku, "Character Joker (萬)", ["man_value", "Phán"], man_value > 0
 # set-aside red jokers
-define_yaku yaku, "Đại Hoa (花)", ["hoa_value", "Phán"], hoa_value > 0
-define_yaku yaku, "Hỉ (喜)", ["hi_value", "Phán"], hi_value > 0
-define_yaku yaku, "Nguyên (元)", ["nguyen_value", "Phán"], nguyen_value > 0
-define_yaku yaku, "Hợp (合)", ["hop_value", "Phán"], hop_value > 0
+define_yaku yaku, "Flower Joker (花)", ["hoa_value", "Phán"], hoa_value > 0
+define_yaku yaku, "Wind Joker (喜)", ["hi_value", "Phán"], hi_value > 0
+define_yaku yaku, "Dragon Joker (元)", ["nguyen_value", "Phán"], nguyen_value > 0
+define_yaku yaku, "Number Joker (合)", ["hop_value", "Phán"], hop_value > 0
 
 # joker set usage (add viet_more_jokers mod for more combos)
 define_yaku yaku, "Blue Joker Set", [1, "Mủn"], match(["hand", "calls", "flowers", "jokers", "winning_tile"], ~m"nojoker, 0j:1, 6j:1, 7j:1, 8j:1")
@@ -181,6 +186,16 @@ apply set_append, "buttons.daiminkan.call_conditions", not_call_contains([+@all_
 apply set_append, "buttons.kakan.call_conditions", not_call_contains([+@all_jokers], 1)
 apply set_append, "buttons.ankan.call_conditions", not_call_contains([+@all_jokers], 1)
 
+# for a simultaneous call, no jokers wins over weak jokers, weak jokers win over strong jokers
+apply set_append, "buttons.pon.call_priority_list", not_call_choice_contains([+@all_jokers], 1)
+apply set_append, "buttons.pon.call_priority_list", call_choice_contains([+@all_jokers_1], 1)
+apply set_append, "buttons.pon.call_priority_list", call_choice_contains([+@all_jokers_2], 1)
+apply set_append, "buttons.pon.call_priority_list", call_choice_contains([+@all_jokers_3], 1)
+apply set_append, "buttons.daiminkan.call_priority_list", not_call_choice_contains([+@all_jokers], 1)
+apply set_append, "buttons.daiminkan.call_priority_list", call_choice_contains([+@all_jokers_1], 1)
+apply set_append, "buttons.daiminkan.call_priority_list", call_choice_contains([+@all_jokers_2], 1)
+apply set_append, "buttons.daiminkan.call_priority_list", call_choice_contains([+@all_jokers_3], 1)
+
 # bouncing jokers
 on after_initialization do
   add_rule("Rules", "Bouncing Jokers", "If you have called Phỗng with a joker, and later you draw another copy of the same tile, you may 'bounce' the joker by substituting the joker for that drawn tile. The joker goes into your joker/flower pool as if replaced normally (scores points). You cannot bounce jokers when there are no more tiles remaining in the wall.")
@@ -190,11 +205,14 @@ define_button joker_swap,
   display_name: "Bounce joker",
   show_when: 
     our_turn and not_just_discarded
+    and not_status("can_rob_bounce")
     and match(["hand_draw_nonjoker_any", "self_joker_meld_tiles"], ~m"pair:1")
     and not_no_tiles_remaining
   do
     big_text("Bounce")
     mark([["call", 1, ["call_has_joker", "match_call_to_marked_hand"]], ["hand", 1, ["self", "not_joker", "match_hand_to_marked_call"]]])
+    set_status("can_rob_bounce")
     swap_out_joker(@all_jokers, "call")
+    unset_status("can_rob_bounce")
     draw(1, "opposite_end")
   end

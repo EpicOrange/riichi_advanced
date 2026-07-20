@@ -1452,6 +1452,8 @@ defmodule RiichiAdvanced.GameState.Actions do
 
         # replace call with new call
         state = update_player(state, call_seat, &%{ &1 | calls: List.replace_at(&1.calls, call_index, new_call) })
+        # allow for the tile-to-be-swapped-in to be robbed as a call
+        state = update_action(state, hand_seat, :call, %{from: hand_seat, called_tile: tile, other_tiles: [], call_name: "swap_out_joker"})
 
         state = case destination do
           "draw" ->

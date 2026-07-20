@@ -1,0 +1,22 @@
+on after_initialization do
+  add_rule("1 Phán", "Robbing a Bounce", "1 Phán if someone else uses a tile you're waiting for to bounce a joker")
+end
+
+define_button rob_bounce,
+  display_name: "Ù", 
+  show_when: not_our_turn
+    and status_missing("initial_flowers")
+    and someone_else_just_called
+    and status("can_rob_bounce", as: "caller")
+    and match(["hand", "calls", "last_called_tile"], ["win"]),
+  precedence_over: ["chii", "pon", "daiminkan"]
+  do
+    big_text("Ù")
+    pause(1000)
+    reveal_hand
+    win_by_call("ron")
+  end
+
+apply set_append, "interruptible_actions", ["swap_out_joker"]
+
+define_yaku yaku, "Robbing a Bounce", [1, "Phán"], won_by_call and status("can_rob_bounce", as: "caller")

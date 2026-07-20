@@ -162,7 +162,10 @@ defmodule RiichiAdvanced.GameState.Log do
         {String.to_existing_atom(kw), val}
       else
         val = Map.new(val, fn {k, v} -> {String.to_existing_atom(k), v} end)
-        val = Map.update!(val, :marked, &Enum.map(&1, fn [t, s, i] -> {Utils.to_tile(t), String.to_existing_atom(s), i} end))
+        val = case kw do
+          "hand" -> Map.update!(val, :marked, &Enum.map(&1, fn [t, s, i] -> {Utils.to_tile(t), String.to_existing_atom(s), i} end))
+          "calls" -> Map.update!(val, :marked, &Enum.map(&1, fn [[name, call], s, i] -> {{name, Enum.map(call, fn t -> Utils.to_tile(t) end)}, String.to_existing_atom(s), i} end))
+        end
         {String.to_existing_atom(kw), val}
       end
     end

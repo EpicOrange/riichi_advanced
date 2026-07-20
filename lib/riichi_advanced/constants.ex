@@ -693,7 +693,7 @@ defmodule RiichiAdvanced.Constants do
       mods: [
         "base",
         "standard_wall", "framed_5z",
-        "global_mods", "default_auto_buttons",
+        "default_auto_buttons",
         "chii", "pon", "kan", "ron", "tsumo",
         %{name: "default_flowers", config: %{
           undiscardable: false, auto_flower_by_default: false, draw_after_flowers: false,
@@ -747,6 +747,7 @@ defmodule RiichiAdvanced.Constants do
         "vietnamese_nfnl",
         "vietnamese_scoring",
         "vietnamese",
+        "global_mods",
       ],
     },
     "mcr" => %{

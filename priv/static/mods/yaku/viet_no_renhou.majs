@@ -1,0 +1,5 @@
+on after_initialization do
+  delete_rule("2 Mủn", "Blessing of Man")
+end
+
+remove_yaku yaku, "Blessing of Man"

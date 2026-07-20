@@ -187,8 +187,14 @@ defmodule RiichiAdvanced.Compiler do
       {:ok, [if is_atom(op) do Atom.to_string(op) else op end, [expr1, expr2]]}
     end
   end
-  defp compile_expr({prefix, _, _} = arg, _line, _column) when prefix == :+ or prefix == :@ or prefix == :! do
-    # splat, constant, or variable
+  defp compile_expr({prefix, _, _} = arg, _line, _column) when prefix == :+ or prefix == :@ do
+    # splat or constant
+    with {:ok, %Constant{name: const_name}} <- Validator.validate_json(arg) do
+      {:ok, "@#{const_name}"}
+    end
+  end
+  defp compile_expr({prefix, _, _} = arg, _line, _column) when prefix == :! do
+    # variable
     with {:ok, var} <- Validator.validate_json(arg),
          {:ok, var} <- Jason.encode(var) do
       {:ok, "#{var}"}

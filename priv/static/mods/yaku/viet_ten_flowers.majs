@@ -1,0 +1,5 @@
+on after_initialization do
+  add_rule("1 Mủn", "Ten Flowers", "You won having collected at least 10 of the 16 flowers. 1 mủn on top of regular flower scoring.")
+end
+
+define_yaku yaku, "Ten Flowers", [1, "Mủn"], match(["flowers"], ~m"unique, nojoker, any_flower:8")
