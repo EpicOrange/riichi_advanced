@@ -696,9 +696,13 @@ defmodule RiichiAdvancedWeb.GameLive do
   end
 
   def handle_info({:hover, index}, socket) do
-    socket = get_visible_waits(socket, index)
-    socket = assign(socket, :show_waits_index, index)
-    {:noreply, socket}
+    if index <= length(socket.assigns.state.players[socket.assigns.viewer].hand) do
+      socket = get_visible_waits(socket, index)
+      socket = assign(socket, :show_waits_index, index)
+      {:noreply, socket}
+    else
+      {:noreply, socket}
+    end
   end
 
   def handle_info(:hover_off, socket) do

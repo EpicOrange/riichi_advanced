@@ -6,7 +6,7 @@ defmodule RiichiAdvancedWeb.HandComponent do
   def mount(socket) do
     socket = assign(socket, :your_hand?, false)
     socket = assign(socket, :revealed?, false)
-    socket = assign(socket, :hover_index, nil)
+    socket = assign(socket, :hover_index, nil) # 0-99 = hand/draw, 100- = call
     socket = assign(socket, :played_tile, nil)
     socket = assign(socket, :played_tile_index, nil)
     socket = assign(socket, :animating_played_tile, false)
@@ -104,17 +104,17 @@ defmodule RiichiAdvancedWeb.HandComponent do
           <%= for {{_name, call}, i} <- prepare_calls(assigns) do %>
             <div class="dead-hand-button inactive" :if={@dead_hand_buttons and i == 0 and @seat != @viewer and @viewer != :spectator}></div>
             <%= if GenServer.call(@game_state, {:can_mark?, @viewer, @seat, i, :calls}) do %>
-              <div class="call" phx-cancellable-click="mark_call" phx-target={@myself} phx-value-index={i}>
-                <div class={Utils.get_tile_class(tile, i, assigns, ["markable"])} :for={tile <- call}></div>
+              <div class="call" phx-hover="hover_call" phx-hover-off="hover_off" phx-cancellable-click="mark_call" phx-target={@myself} phx-value-index={i}>
+                <div class={Utils.get_tile_class(tile, i+100, assigns, ["markable"])} :for={tile <- call}></div>
               </div>
             <% else %>
               <%= if GenServer.call(@game_state, {:is_marked?, @viewer, @seat, i, :calls}) do %>
-                <div class="call" phx-cancellable-click="unmark_call" phx-target={@myself} phx-value-index={i}>
-                  <div class={Utils.get_tile_class(tile, i, assigns, ["marked"])} :for={tile <- call}></div>
+                <div class="call" phx-hover="hover_call" phx-hover-off="hover_off" phx-cancellable-click="unmark_call" phx-target={@myself} phx-value-index={i}>
+                  <div class={Utils.get_tile_class(tile, i+100, assigns, ["marked"])} :for={tile <- call}></div>
                 </div>
               <% else %>
-                <div class="call">
-                  <div class={Utils.get_tile_class(tile, i, assigns)} :for={tile <- call}></div>
+                <div class="call" phx-hover="hover_call" phx-hover-off="hover_off" phx-target={@myself} phx-value-index={i}>
+                  <div class={Utils.get_tile_class(tile, i+100, assigns)} :for={tile <- call}></div>
                 </div>
               <% end %>
             <% end %>
@@ -122,8 +122,8 @@ defmodule RiichiAdvancedWeb.HandComponent do
         <% else %>
           <%= for {{_name, call}, i} <- prepare_calls(assigns) do %>
             <div class={["dead-hand-button", (not @your_turn? || @dead_hand?) && "inactive"]} phx-cancellable-click="declare_dead_hand" phx-value-seat={@seat} :if={@dead_hand_buttons and i == 0 and @seat != @viewer and @viewer != :spectator}></div>
-            <div class={["call", @just_called == i && "just-called", @just_upgraded == i && "just-upgraded"]}>
-              <div class={Utils.get_tile_class(tile, i, assigns)} :for={tile <- call}></div>
+            <div class={["call", @just_called == i && "just-called", @just_upgraded == i && "just-upgraded"]} phx-hover="hover_call" phx-hover-off="hover_off" phx-target={@myself} phx-value-index={i}>
+              <div class={Utils.get_tile_class(tile, i+100, assigns)} :for={tile <- call}></div>
             </div>
           <% end %>
         <% end %>
@@ -164,6 +164,13 @@ defmodule RiichiAdvancedWeb.HandComponent do
     {ix, _} = Integer.parse(index)
     socket = assign(socket, :hover_index, ix)
     socket.assigns.hover.(ix)
+    {:noreply, socket}
+  end
+
+  def handle_event("hover_call", %{"index" => index}, socket) do
+    {ix, _} = Integer.parse(index)
+    socket = assign(socket, :hover_index, ix+100)
+    socket.assigns.hover.(ix+100)
     {:noreply, socket}
   end
 
