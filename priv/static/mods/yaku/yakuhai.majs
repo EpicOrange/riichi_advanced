@@ -1,3 +1,5 @@
+require "value_honors"
+
 on after_initialization do
   add_rule("$value $han", "Value Triplets", "%{value} %{han} for each of the following triplets in your hand:", %{value: !value, han: !han})
   add_rule("$value $han", "Value Triplets", "- A triplet of dragon tiles %{dragons}", %{value: !value, han: !han, dragons: ~t"777z"})
@@ -16,25 +18,9 @@ on after_initialization do
 end
 
 # dragons
-define_set haku, ~s"0z 0z 0z|5z 5z 5z|8z 8z 8z"
-define_set hatsu, ~s"6z 6z 6z"
-define_set chun, ~s"7z 7z 7z"
 define_yaku !list, "White Dragon", [!value, !han], match(["hand", "calls", "winning_tile"], ~m"exhaustive, haku:1, mentsu:3, pair:1")
 define_yaku !list, "Green Dragon", [!value, !han], match(["hand", "calls", "winning_tile"], ~m"exhaustive, hatsu:1, mentsu:3, pair:1")
 define_yaku !list, "Red Dragon", [!value, !han], match(["hand", "calls", "winning_tile"], ~m"exhaustive, chun:1, mentsu:3, pair:1")
 
-# prevalent and seat winds
-on before_scoring do
-  if round_wind_is("east") do add_attr(["hand", "calls", "winning_tile"], ["_prevalent"], ["1z"]) end
-  if round_wind_is("south") do add_attr(["hand", "calls", "winning_tile"], ["_prevalent"], ["2z"]) end
-  if round_wind_is("west") do add_attr(["hand", "calls", "winning_tile"], ["_prevalent"], ["3z"]) end
-  if round_wind_is("north") do add_attr(["hand", "calls", "winning_tile"], ["_prevalent"], ["4z"]) end
-  if seat_is("east") do add_attr(["hand", "calls", "winning_tile"], ["_seat"], ["1z"]) end
-  if seat_is("south") do add_attr(["hand", "calls", "winning_tile"], ["_seat"], ["2z"]) end
-  if seat_is("west") do add_attr(["hand", "calls", "winning_tile"], ["_seat"], ["3z"]) end
-  if seat_is("north") do add_attr(["hand", "calls", "winning_tile"], ["_seat"], ["4z"]) end
-end
-define_set prevalent_wind, ~s"0@prevalent 0@prevalent 0@prevalent"
-define_set seat_wind, ~s"0@seat 0@seat 0@seat"
 define_yaku !list, "Prevalent Wind", [!value, !han], match(["hand", "calls", "winning_tile"], ~m"exhaustive, prevalent_wind:1, mentsu:3, pair:1")
 define_yaku !list, "Seat Wind", [!value, !han], match(["hand", "calls", "winning_tile"], ~m"exhaustive, seat_wind:1, mentsu:3, pair:1")

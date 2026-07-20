@@ -1065,29 +1065,29 @@ defmodule RiichiAdvanced.Compiler do
         end
     end
   end
-  defp compile_jq_toplevel(ast, line, column, defs) do
+  defp compile_jq_toplevel(ast, line, column, defs, depth) do
     case ast do
       {"if", [line: line, column: column], [condition, [do: then_cmds, else: else_cmds]]} ->
         with {:ok, condition} <- compile_toplevel_condition(condition, line, column, defs),
-             {:ok, {then_cmds, defs}} <- compile_jq_toplevel(then_cmds, line, column, defs),
-             {:ok, {else_cmds, defs}} <- compile_jq_toplevel(else_cmds, line, column, defs) do
+             {:ok, {then_cmds, defs}} <- compile_jq_toplevel(then_cmds, line, column, defs, depth),
+             {:ok, {else_cmds, defs}} <- compile_jq_toplevel(else_cmds, line, column, defs, depth) do
           {:ok, {"if #{condition} then\n#{then_cmds}\nelse\n#{else_cmds}\nend", defs}}
         end
       {"if", [line: line, column: column], [condition, [do: then_cmds]]} ->
         with {:ok, condition} <- compile_toplevel_condition(condition, line, column, defs),
-             {:ok, {then_cmds, defs}} <- compile_jq_toplevel(then_cmds, line, column, defs) do
+             {:ok, {then_cmds, defs}} <- compile_jq_toplevel(then_cmds, line, column, defs, depth) do
           {:ok, {"if #{condition} then\n#{then_cmds}\nelse . end", defs}}
         end
       {"unless", [line: line, column: column], [condition, [do: else_cmds]]} ->
         with {:ok, condition} <- compile_toplevel_condition(condition, line, column, defs),
-             {:ok, {else_cmds, defs}} <- compile_jq_toplevel(else_cmds, line, column, defs) do
+             {:ok, {else_cmds, defs}} <- compile_jq_toplevel(else_cmds, line, column, defs, depth) do
           {:ok, {"if #{condition} then . else\n#{else_cmds}\nend", defs}}
         end
       {"cond", _, [[do: clauses]]} ->
         rets = for {:->, [line: line, column: column], [[condition], body]} <- clauses, reduce: {:ok, {[], defs}} do
           {:ok, {ret, defs}} ->
             with {:ok, condition} <- compile_toplevel_condition(condition, line, column, defs),
-                 {:ok, {body_cmds, defs}} <- compile_jq_toplevel(body, line, column, defs) do
+                 {:ok, {body_cmds, defs}} <- compile_jq_toplevel(body, line, column, defs, depth) do
               {:ok, {[{condition, body_cmds} | ret], defs}}
             end
           err -> err
@@ -1100,6 +1100,21 @@ defmodule RiichiAdvanced.Compiler do
           end
         end
       {"define", _pos, [name | _]} -> {:ok, {".", MapSet.put(defs, name)}}
+      {"require", _pos, [name | _]} ->
+        with {:ok, name} <- Validator.validate_lib(name) do
+          if "lib_#{name}" not in defs do
+            defs = MapSet.put(defs, "lib_#{name}")
+            case File.read(Application.app_dir(:riichi_advanced, "/priv/static/mods/lib/#{name}.majs")) do
+              {:ok, majs} ->
+                with {:ok, ast} <- Parser.parse(majs) do
+                  compile_jq_defs(ast, defs, depth + 1)
+                end
+              {:error, _err}  ->
+                IO.puts("WARNING: Could not find mod #{name}!")
+                {:ok, {".", defs}}
+            end
+          else {:ok, {".", defs}} end
+        end
       {cmd, [line: line, column: column], [name | args]} when is_binary(cmd) ->
         name = case name do
           name when is_binary(name) or is_integer(name) -> Validator.validate_json(name)
@@ -1130,13 +1145,13 @@ defmodule RiichiAdvanced.Compiler do
           [line: line, column: column] -> {line, column}
           _ -> {0, 0}
         end
-        compile_jq_toplevel(nodes, line, column, defs)
+        compile_jq_toplevel(nodes, line, column, defs, depth)
       _ when is_list(ast) ->
         # TODO pass thru defs
         # TODO handle 'define'
         for node <- ast, reduce: {:ok, {[], defs}} do
           {:ok, {rets, defs}} ->
-            with {:ok, {ret, defs}} <- compile_jq_toplevel(node, line, column, defs) do
+            with {:ok, {ret, defs}} <- compile_jq_toplevel(node, line, column, defs, depth) do
               {:ok, {[ret | rets], defs}}
             end
           {:error, msg} -> {:error, msg}
@@ -1177,8 +1192,9 @@ defmodule RiichiAdvanced.Compiler do
   """
   def header(), do: @header
 
-  def compile_jq_defs(ast, defs \\ MapSet.new()) do
+  def compile_jq_defs(ast, defs \\ MapSet.new(), depth \\ 0) do
     case ast do
+      _ when depth > 1 -> {:error, "Compiler.compile: exceeded max require depth of 1}"}
       {:__block__, _pos, []} -> {:ok, {".", defs}}
       {:__block__, pos, nodes} ->
         # IO.inspect(nodes, label: "AST", limit: :infinity)
@@ -1186,7 +1202,7 @@ defmodule RiichiAdvanced.Compiler do
           [line: line, column: column] -> {line, column}
           _ -> {0, 0}
         end
-        case compile_jq_toplevel(nodes, line, column, defs) do
+        case compile_jq_toplevel(nodes, line, column, defs, depth) do
           {:ok, {ret, defs}} -> {:ok, {@header <> ret, defs}}
           {:error, msg}      -> {:error, msg}
         end

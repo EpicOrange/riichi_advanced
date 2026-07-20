@@ -803,6 +803,18 @@ define_preset "Mahjong Soul", [
 ]
 ```
 
+### (advanced) `require`: Include a library module
+
+A fixed library of MahjongScript files can be found in `/priv/static/mods/lib/*.majs`. Only these files can be referenced by `require`. You can do so with
+
+    require "value_honors"
+
+In the above example, the effect is identical to copying the contents of `value_honors.majs` onto that line. Because of this, all variables accessible there are technically accessible in the library script. Regardless of how many times a library is `require`d, each library file will only be used once, at the first `require` statement. Because of this, library scripts will avoid the use of variables, since their resolution would otherwise be dependent on mod loading order.
+
+For security, `require` only allows names composed of letters, numbers, and `_`, and cannot be used in library scripts.
+
+It is possible to use `define_mod` in a ruleset to declare a library script as a mod, but this is discouraged as library scripts are meant for use by mods themselves.
+
 # All commands
 
 Here is a cheatsheet for all the commands that exist.
@@ -886,6 +898,7 @@ define_mod shiro_pocchi,
   ]
   ```
   This defines a set of mods (a modpack) which can be seen in the game settings menu. See the Riichi ruleset for examples. A mod is either just its id, or the structure `%{name: id, config: %{config_value: "value"}}` if the mod has config values.
+- `require`: Imports a library script from `/priv/static/mods/lib/*.majs`.
 
 **Other**
 
