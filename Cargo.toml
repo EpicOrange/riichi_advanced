@@ -3,6 +3,5 @@ resolver = "2"
 members = ["native/riichiadvanced_match"]
 
 [profile.release]
-codegen-units = 1
 lto = "fat"
 panic = "abort"
