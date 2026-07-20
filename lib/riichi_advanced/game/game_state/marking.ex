@@ -158,8 +158,8 @@ defmodule RiichiAdvanced.GameState.Marking do
         "dragon"            -> Riichi.is_dragon?(tile)
         "terminal_honor"    -> Riichi.is_yaochuuhai?(tile)
         "visible"           -> not Utils.has_matching_tile?([tile], [:"1x", :"2x"])
-        "not_joker"         -> not TileBehavior.is_any_joker?(tile, state.players[marking_player].tile_behavior)
-        "call_has_joker"    -> Enum.any?(Utils.call_to_tiles(tile), &TileBehavior.is_any_joker?(&1, state.players[marking_player].tile_behavior))
+        "not_joker"         -> not TileBehavior.is_joker?(tile, state.players[marking_player].tile_behavior)
+        "call_has_joker"    -> Enum.any?(Utils.call_to_tiles(tile), &TileBehavior.is_joker?(&1, state.players[marking_player].tile_behavior))
         "not_riichi"        -> "riichi" not in state.players[marking_player].status or index >= length(state.players[marking_player].hand)
         "can_discard"       -> index in state.players[marking_player].cache.playable_indices
         "last_discard"      ->
