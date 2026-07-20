@@ -11,7 +11,7 @@ use crate::types::{ElixirAliases, ElixirHand, ElixirHandCalls, ElixirTile, Mappi
 // - tiles_in_hand, references to all tiles in orig_hands
 fn prepare_hand_calls((hand, calls): &ElixirHandCalls) -> Vec<(&ElixirHand, String)> {
   vec!((hand, "".to_owned())).into_iter().chain(
-    calls.into_iter().map(|(name, call)| (call, name.to_owned()))
+    calls.iter().map(|(name, call)| (call, name.to_owned()))
   ).collect::<Vec<_>>()
 }
 
@@ -28,7 +28,7 @@ pub fn prepare_tiles<'a>(
     tiles
   }).collect();
 
-  let aliases = encode_aliases(&elixir_aliases, &all_attrs);
+  let aliases = encode_aliases(elixir_aliases, all_attrs);
   // populate reverse alias map (mapping)
   let mut mapping: Mapping = HashMap::new();
   for (&prime, attrs_aliases) in aliases.iter() {
@@ -48,7 +48,7 @@ pub fn prepare_tiles<'a>(
   // (we use relevant_tiles to calculate base tiles)
   let mut relevant_tiles: Vec<Tile> = Vec::with_capacity(num_tiles_in_hand);
   let mut joker_tiles: HashSet<Tile> = HashSet::new();
-  for tile in encode_tiles(hand_tiles, &all_attrs) {
+  for tile in encode_tiles(hand_tiles, all_attrs) {
     if let Some(aliases) = mapping.get(&tile) {
       joker_tiles.insert(tile);
       relevant_tiles.extend(aliases);
@@ -60,8 +60,8 @@ pub fn prepare_tiles<'a>(
 
   let mut initial_hands = smallvec!();
   for (hand, name) in &orig_hands {
-    let mut ret = encode(hand, &all_attrs, &joker_tiles);
-    if name != "" { ret.name = Some(name.to_owned()); }
+    let mut ret = encode(hand, all_attrs, &joker_tiles);
+    if !name.is_empty() { ret.name = Some(name.to_owned()); }
     initial_hands.push(ret);
   }
 
@@ -71,8 +71,8 @@ pub fn prepare_tiles<'a>(
     let v = to_prime(v)?;
     Some((k, v))
   };
-  let ordering = ordering.into_iter().filter_map(map_to_prime).collect();
-  let ordering_r = ordering_r.into_iter().filter_map(map_to_prime).collect();
+  let ordering = ordering.iter().filter_map(map_to_prime).collect();
+  let ordering_r = ordering_r.iter().filter_map(map_to_prime).collect();
 
   MatchInfo{
     initial_hands,

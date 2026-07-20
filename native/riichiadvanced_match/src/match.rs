@@ -32,7 +32,7 @@ fn _try_remove_all_tiles(
   let tiles_length = tiles.len();
   if hand_length < tiles_length {
     vec!()
-  } else if hand_length < tiles_length {
+  } else if hand_length == tiles_length {
     // we can simply sort and compare pairwise
     let mut hand = hand.clone();
     let mut tiles = tiles.clone();
@@ -100,7 +100,7 @@ pub fn remove_match_definition<'a>(
     return Box::new(empty());
   }
 
-  let mut base_tiles = get_base_tiles(match_info, &match_definition).into_iter().collect::<Vec<_>>();
+  let mut base_tiles = get_base_tiles(match_info, match_definition).into_iter().collect::<Vec<_>>();
   base_tiles.sort_unstable();
   base_tiles.dedup();
   let base_tiles = Rc::new(base_tiles);
@@ -124,7 +124,7 @@ pub fn remove_match_definition<'a>(
         }
         else if s == "debug" { acc } // handled by caller (__match_hand_v3)
         else if s == "restart" {
-          if !acc.next().is_none() {
+          if acc.next().is_some() {
             Box::new(once(match_info.initial_hands.clone()))
           } else { Box::new(empty()) }
         }
@@ -223,9 +223,9 @@ fn remove_match_group<'a>(
             groups, num,
             hands[0].attrs.len(),
             decode(&hands[0], match_info.all_attrs),
-            hands[1..].iter().map(|call| decode(&call, match_info.all_attrs)).collect::<Vec<_>>(),
+            hands[1..].iter().map(|call| decode(call, match_info.all_attrs)).collect::<Vec<_>>(),
           );
-          println!("");
+          println!();
         }
         Box::new(once(hands).chain(acc))
       }
@@ -357,7 +357,7 @@ fn __remove_group<'a>(
   let reified_groups = __generate_groups(
     group,
     &mut base_tiles_iter,
-    &match_info.all_attrs,
+    match_info.all_attrs,
     &match_info.joker_tiles,
     &match_info.ordering, &match_info.ordering_r,
     &mut nojoker,
@@ -378,16 +378,13 @@ fn __remove_group<'a>(
   let mut ret: Vec<ElixirHand> = vec!();
   for group in reified_groups {
     let mut result = _elim_group(match_info.initial_hands.clone(), &group, &match_info.aliases, &match_info.joker_tiles, exhaustive);
-    match result.next() {
-      Some(hands) => {
-        ret.push(decode(&hands[0], &match_info.all_attrs));
-        if !exhaustive {
-          return ret;
-        } else {
-          ret.extend(result.into_iter().map(|hands| decode(&hands[0], &match_info.all_attrs)));
-        }
+    if let Some(hands) = result.next() {
+      ret.push(decode(&hands[0], match_info.all_attrs));
+      if !exhaustive {
+        return ret;
+      } else {
+        ret.extend(result.map(|hands| decode(&hands[0], match_info.all_attrs)));
       }
-      None => {}
     }
   }
   ret

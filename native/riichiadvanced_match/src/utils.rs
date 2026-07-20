@@ -11,7 +11,7 @@ pub fn remove_indices<T>(xs: &mut Vec<T>, is: IndexVec) {
   let mut it = is.into_iter();
   let mut j = it.next();
   xs.retain(|_| {
-    if j == None { return true; }
+    if j.is_none() { return true; }
     let keep = j.unwrap_or(i) != i;
     if !keep { j = it.next(); }
     i += 1;
@@ -55,10 +55,10 @@ pub fn add_joker_to_aliases<'a>(
   elixir_aliases: &mut ElixirAliases,
   joker: &ElixirTile,
   tiles: impl IntoIterator<Item = &'a ElixirTile>
-) -> () {
+) {
   for to in tiles {
     if is_any(to) { continue; }
-    let (tile, attrs) = &mut get_tile_atom_attrs(&to);
+    let (tile, attrs) = &mut get_tile_atom_attrs(to);
     for attr in attrs.iter_mut() {
       *attr = attr.trim_start_matches('_').to_owned();
     }
@@ -79,9 +79,9 @@ pub fn remove_joker_from_aliases<'a>(
   elixir_aliases: &mut ElixirAliases,
   joker: &ElixirTile,
   tiles: impl IntoIterator<Item = &'a ElixirTile>
-) -> () {
+) {
   for to in tiles {
-    let (tile, attrs) = &mut get_tile_atom_attrs(&to);
+    let (tile, attrs) = &mut get_tile_atom_attrs(to);
     for attr in attrs.iter_mut() {
       *attr = attr.trim_start_matches('_').to_owned();
     }

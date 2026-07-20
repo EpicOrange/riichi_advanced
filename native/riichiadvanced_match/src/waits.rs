@@ -50,7 +50,7 @@ pub fn __get_waits_v3(
     mut hand_calls: ElixirHandCalls,
     match_definitions: MatchDefinitions,
     all_attrs: &Vec<String>,
-    mut elixir_aliases: &mut ElixirAliases,
+    elixir_aliases: &mut ElixirAliases,
     ordering: &HashMap<Atom, Atom>, ordering_r: &HashMap<Atom, Atom>,
     game_tiles: Vec<ElixirTile>,
 ) -> Vec<ElixirTile> {
@@ -64,7 +64,7 @@ pub fn __get_waits_v3(
   // first let's make that joker
   let joker = ElixirTile::AtomTile(tile1x());
   hand_calls.0.push(joker.clone());
-  add_joker_to_aliases(&mut elixir_aliases, &joker, game_tiles.iter());
+  add_joker_to_aliases(elixir_aliases, &joker, game_tiles.iter());
   let all_joker_tiles: HashSet<&ElixirTile> = elixir_aliases
     .values()
     .flat_map(|attrs_aliases| attrs_aliases.values().flatten())
@@ -74,7 +74,7 @@ pub fn __get_waits_v3(
   let mut match_info = prepare_tiles(
     &hand_calls,
     all_attrs,
-    &elixir_aliases,
+    elixir_aliases,
     ordering,
     ordering_r,
   );
@@ -107,7 +107,7 @@ pub fn __get_waits_v3(
       // first do the replacement
       let hand = &mut match_info.initial_hands[0];
       if let Some(last_tile) = hand.attrs.last_mut() {
-        if let Some(encoded_joker) = encode_tile(joker, &match_info.all_attrs) {
+        if let Some(encoded_joker) = encode_tile(joker, match_info.all_attrs) {
           *last_tile = encoded_joker;
           match_info.joker_tiles.insert(encoded_joker);
         } else { return false; } // impossible (encode_tile only fails on unknown tiles)
@@ -131,13 +131,13 @@ pub fn __get_waits_v3(
   ret
 }
 pub fn ___get_waits_v3<'a>(
-    mut match_info: &mut MatchInfo,
-    match_definitions: &MatchDefinitions,
-    mut aliases: &mut ElixirAliases,
-    mut not_waits: &mut HashSet<&'a ElixirTile>,
-    current_tiles: &[&'a ElixirTile],
-    joker: &ElixirTile,
-) -> () {
+  match_info: &mut MatchInfo,
+  match_definitions: &MatchDefinitions,
+  aliases: &mut ElixirAliases,
+  not_waits: &mut HashSet<&'a ElixirTile>,
+  current_tiles: &[&'a ElixirTile],
+  joker: &ElixirTile,
+) {
   if current_tiles.is_empty() {
     // println!("Empty, so we're done");
     return;
@@ -145,9 +145,9 @@ pub fn ___get_waits_v3<'a>(
   // println!("tiles: {:?}", current_tiles);
 
   // test with current aliases (only need to match 1 to succeed)
-  match_info.aliases = encode_aliases(aliases, &match_info.all_attrs);
+  match_info.aliases = encode_aliases(aliases, match_info.all_attrs);
   let all_nonwaits = match_definitions.iter().all(|match_definition| {
-    remove_match_definition(&match_info, match_definition).next().is_none()
+    remove_match_definition(match_info, match_definition).next().is_none()
   });
 
   // if all nonwaits, mark current_tiles and return, as we're done
@@ -161,7 +161,7 @@ pub fn ___get_waits_v3<'a>(
 
   // if that was one tile, no more recursing
   if current_tiles.len() == 1 {
-    remove_joker_from_aliases(&mut aliases, joker, current_tiles.iter().copied());
+    remove_joker_from_aliases(aliases, joker, current_tiles.iter().copied());
     return;
   }
 
@@ -170,16 +170,16 @@ pub fn ___get_waits_v3<'a>(
   let left = &current_tiles[..m];
   let right = &current_tiles[m..];
   // remove the right half aliases
-  remove_joker_from_aliases(&mut aliases, joker, right.iter().copied());
+  remove_joker_from_aliases(aliases, joker, right.iter().copied());
   // recurse with left half
-  ___get_waits_v3(&mut match_info, &match_definitions, &mut aliases, &mut not_waits, &left, &joker);
+  ___get_waits_v3(match_info, match_definitions, aliases, not_waits, left, joker);
   // remove the left half aliases
   // (not strictly needed for correctness, but less powerful jokers are faster to solve for)
-  remove_joker_from_aliases(&mut aliases, joker, left.iter().copied());
+  remove_joker_from_aliases(aliases, joker, left.iter().copied());
   // re-add the right half aliases
-  add_joker_to_aliases(&mut aliases, joker, right.iter().copied());
+  add_joker_to_aliases(aliases, joker, right.iter().copied());
   // recurse with right half
-  ___get_waits_v3(&mut match_info, &match_definitions, &mut aliases, &mut not_waits, &right, &joker);
+  ___get_waits_v3(match_info, match_definitions, aliases, not_waits, right, joker);
 }
 
 #[rustler::nif(schedule = "DirtyCpu")]
@@ -223,7 +223,7 @@ pub fn __get_unneeded_tiles_v2(
   let mut match_info = prepare_tiles(
     &hand_calls,
     all_attrs,
-    &elixir_aliases,
+    elixir_aliases,
     ordering,
     ordering_r,
   );
@@ -242,18 +242,15 @@ pub fn __get_unneeded_tiles_v2(
         // first try a non-exhaustive version of the match definition, if any
         let mut matched = true; // false if we succeeded any match
         for match_elem in match_definition.iter() {
-          match match_elem {
-            MatchDefinitionElem::Keyword(s) => {
-              if s == "exhaustive" { 
-                let mut non_exhaustive_defn = match_definition.clone();
-                non_exhaustive_defn.retain(|elem| {
-                  *elem != MatchDefinitionElem::Keyword("exhaustive".to_owned())
-                });
-                matched = remove_match_definition(&match_info, match_definition).next().is_some();
-                break;
-              }
+          if let MatchDefinitionElem::Keyword(s) = match_elem {
+            if s == "exhaustive" { 
+              let mut non_exhaustive_defn = match_definition.clone();
+              non_exhaustive_defn.retain(|elem| {
+                *elem != MatchDefinitionElem::Keyword("exhaustive".to_owned())
+              });
+              matched = remove_match_definition(&match_info, match_definition).next().is_some();
+              break;
             }
-            _ => ()
           }
         }
         matched || remove_match_definition(&match_info, match_definition).next().is_some()
@@ -267,5 +264,5 @@ pub fn __get_unneeded_tiles_v2(
   }
   // need to convert to vector to pass NIF boundary
   // also need to convert from encoded tile to elixir tile
-  decode_tiles(ret.iter().collect::<Vec<_>>(), &match_info.all_attrs)
+  decode_tiles(ret.iter().collect::<Vec<_>>(), match_info.all_attrs)
 }

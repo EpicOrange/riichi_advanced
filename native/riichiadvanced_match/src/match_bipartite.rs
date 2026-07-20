@@ -35,7 +35,7 @@ pub fn perform_bipartite_match<'a>(
     return Box::new(empty());
   }
   Box::new(acc.flat_map(move |mut hands| -> HandsIterator<'a> {
-    if hands.len() == 0 {
+    if hands.is_empty() {
       // if debug { println!("Giving up early since hand is empty"); }
       return Box::new(empty());
     }
@@ -55,7 +55,7 @@ pub fn perform_bipartite_match<'a>(
     let base_tiles = base_tiles.clone();
     let offsets = offsets.clone();
     Box::new((0..base_tiles.len()).flat_map(move |ix| -> HandsIterator<'a> {
-      let base_tile = base_tiles[ix].clone();
+      let base_tile = base_tiles[ix];
       let num_ignores = num_offsets - actual_num; // can skip reifying this many tiles
       let Some((offset_tiles, mut nojoker_ix)) = apply_offsets_early_exit(&base_tile, &offsets, match_info.all_attrs, &match_info.ordering, &match_info.ordering_r, num_ignores)
       else {

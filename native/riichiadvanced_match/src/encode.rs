@@ -46,7 +46,7 @@ pub fn encode_tile(tile: &ElixirTile, all_attrs: &[String]) -> Option<Tile> {
 pub fn encode_tiles<'a>(
   tiles: impl IntoIterator<Item = &'a ElixirTile> + 'a, all_attrs: &'a [String]
 ) -> impl Iterator<Item = Tile> + 'a {
-  tiles.into_iter().filter_map(move |tile| encode_tile(&tile, all_attrs))
+  tiles.into_iter().filter_map(move |tile| encode_tile(tile, all_attrs))
 }
 
 pub fn encode(hand: &ElixirHand, all_attrs: &[String], joker_tiles: &HashSet<Tile>) -> TileSet {
@@ -69,7 +69,7 @@ pub fn to_tileset(hand: Vec<Tile>, joker_tiles: &HashSet<Tile>) -> TileSet {
   let mut attrs = vec!();
   let mut hash = U256::ONE;
   for tile in hand.iter() {
-    if !joker_tiles.contains(&tile) { hash *= U256::from(tile.0); }
+    if !joker_tiles.contains(tile) { hash *= U256::from(tile.0); }
     attrs.push(tile);
   }
   attrs.sort_unstable(); // important for dedup
@@ -97,7 +97,7 @@ pub fn encode_aliases(aliases: &ElixirAliases, all_attrs: &[String]) -> Aliases 
   ret
 }
 
-pub fn decode_tile<'a>((p, mut battrs): Tile, all_attrs: &[String]) -> Option<ElixirTile> {
+pub fn decode_tile((p, mut battrs): Tile, all_attrs: &[String]) -> Option<ElixirTile> {
   from_prime(&p).map(|tile| {
     if battrs == 0 {
       ElixirTile::AtomTile(*tile)

@@ -26,10 +26,10 @@ fn fetch_offset(
     q.get((target - *l) as usize).cloned()
   } else if *r < target && target < 10 {
     // look to the right
-    let mut tile = q.back().unwrap().clone();
+    let mut tile = *q.back().unwrap();
     loop {
       if apply_ordering_mut(&mut tile, ordering) {
-        q.push_back(tile.clone());
+        q.push_back(tile);
         *r += 1;
       } else {
         break;
@@ -39,10 +39,10 @@ fn fetch_offset(
     if *r == target { Some(tile) } else { None }
   } else if target < *l && -10 < target {
     // look to the left
-    let mut tile = q.front().unwrap().clone();
+    let mut tile = *q.front().unwrap();
     loop {
       if apply_ordering_mut(&mut tile, ordering_r) {
-        q.push_front(tile.clone());
+        q.push_front(tile);
         *l -= 1;
       } else {
         break;
@@ -58,7 +58,7 @@ fn fetch_offset(
         // get a new deque that takes original base tile shifted once
         // this is slightly inefficient since each >10 offset generates a new queue
         // TODO make it not have to do that (maintain 3 queues?)
-        let mut base_tile = q.get(-*l as usize).unwrap().clone();
+        let mut base_tile = *q.get(-*l as usize).unwrap();
         if shift_suit_mut(&mut base_tile) {
           let mut q2 = VecDeque::from([base_tile]);
           let mut l2 = 0;
@@ -68,7 +68,7 @@ fn fetch_offset(
       }
       2 => {
         // same deal, just shift suit twice
-        let mut base_tile = q.get(-*l as usize).unwrap().clone();
+        let mut base_tile = *q.get(-*l as usize).unwrap();
         if shift_suit_mut(&mut base_tile) && shift_suit_mut(&mut base_tile) {
           let mut q2 = VecDeque::from([base_tile]);
           let mut l2 = 0;
@@ -95,14 +95,14 @@ fn fetch_offset(
 // }
 
 #[inline]
-fn add_attrs_mut((_p, attrs): &mut Tile, new_attrs: &mut Vec<String>, all_attrs: &[String]) {
+fn add_attrs_mut((_p, attrs): &mut Tile, new_attrs: &mut [String], all_attrs: &[String]) {
   let new_attrs = encode_attrs(new_attrs, all_attrs);
   if new_attrs == 0 { return; }
-  *attrs = *attrs | new_attrs;
+  *attrs |= new_attrs;
 }
 
 
-pub fn apply_fixed_offset(base_tile: &Tile, fixed_offset: &String) -> Option<Tile> {
+pub fn apply_fixed_offset(base_tile: &Tile, fixed_offset: &str) -> Option<Tile> {
   FIXED_OFFSETS.get(fixed_offset).and_then(|atom| to_prime(&atom())).and_then(|p| {
     let mut ret: Tile = (p, 0);
     if is_jihai(&ret) {
@@ -111,20 +111,20 @@ pub fn apply_fixed_offset(base_tile: &Tile, fixed_offset: &String) -> Option<Til
       let green = to_prime(&tile6z())?;
       let red = to_prime(&tile7z())?;
       if ret.0 == white { 
-        if is_pinzu(&base_tile) || base_tile.0 == white { ret.0 = green; }
-        else if is_souzu(&base_tile) || base_tile.0 == green { ret.0 = red; }
+        if is_pinzu(base_tile) || base_tile.0 == white { ret.0 = green; }
+        else if is_souzu(base_tile) || base_tile.0 == green { ret.0 = red; }
       } else if ret.0 == green { 
-        if is_pinzu(&base_tile) || base_tile.0 == white { ret.0 = red; }
-        else if is_souzu(&base_tile) || base_tile.0 == green { ret.0 = white; }
+        if is_pinzu(base_tile) || base_tile.0 == white { ret.0 = red; }
+        else if is_souzu(base_tile) || base_tile.0 == green { ret.0 = white; }
       } else if ret.0 == red { 
-        if is_pinzu(&base_tile) || base_tile.0 == white { ret.0 = white; }
-        else if is_souzu(&base_tile) || base_tile.0 == green { ret.0 = green; }
+        if is_pinzu(base_tile) || base_tile.0 == white { ret.0 = white; }
+        else if is_souzu(base_tile) || base_tile.0 == green { ret.0 = green; }
       } else { return None; }
     } else {
       // use shift_suit_mut to shift
-      if is_manzu(&base_tile) { }
-      else if is_pinzu(&base_tile) { shift_suit_mut(&mut ret); }
-      else if is_souzu(&base_tile) { shift_suit_mut(&mut ret); shift_suit_mut(&mut ret); }
+      if is_manzu(base_tile) { }
+      else if is_pinzu(base_tile) { shift_suit_mut(&mut ret); }
+      else if is_souzu(base_tile) { shift_suit_mut(&mut ret); shift_suit_mut(&mut ret); }
       else { return None; }
     }
     Some(ret)
@@ -137,7 +137,7 @@ pub fn apply_offsets(
     all_attrs: &[String],
     ordering: &TileOrdering, ordering_r: &TileOrdering,
 ) -> (Vec<Option<Tile>>, usize) {
-  let mut q = VecDeque::from([base_tile.clone()]); // get offset o via q.get(o-l as usize)
+  let mut q = VecDeque::from([*base_tile]); // get offset o via q.get(o-l as usize)
   let mut l = 0;
   let mut r = 0;
   let mut nojoker_ix = offsets.len();
@@ -184,7 +184,7 @@ pub fn apply_offsets_early_exit(
     ordering: &TileOrdering, ordering_r: &TileOrdering,
     mut num_ignorable: usize,
 ) -> Option<(Vec<Tile>, usize)> {
-  let mut q = VecDeque::from([base_tile.clone()]); // get offset o via q.get(o-l as usize)
+  let mut q = VecDeque::from([*base_tile]); // get offset o via q.get(o-l as usize)
   let mut l = 0;
   let mut r = 0;
   let mut nojoker_ix = offsets.len();
@@ -241,13 +241,13 @@ pub fn generate_groups_from_offsets<'a>(
     ordering: &'a TileOrdering, ordering_r: &'a TileOrdering,
     nojoker: &'a mut bool,
 ) -> GroupIterator<'a> {
-  Box::new(base_tiles.map(move |base_tile| {
+  Box::new(base_tiles.filter_map(move |base_tile| {
     let (tiles, nojoker_ix) = apply_offsets(&base_tile, &offsets, all_attrs, ordering, ordering_r);
     if nojoker_ix < offsets.len() { *nojoker = true; }
     tiles
       .into_iter().collect::<Option<Vec<_>>>()
       .map(|tiles| RemovableGroup::Group(to_tileset(tiles, joker_tiles).set_nojoker(*nojoker)))
-  }).flatten())
+  }))
 }
 
 // #[rustler::nif]
@@ -336,7 +336,7 @@ pub fn get_base_tiles<'a>(
   //   that we can't otherwise encode, since it's not in hand
   let mut base_tiles: HashSet<Tile> = match_info.relevant_tiles
     .iter()
-    .flat_map(|tile| apply_offsets(&tile, &gather_rev_offsets(&match_definition), match_info.all_attrs, &match_info.ordering, &match_info.ordering_r).0)
+    .flat_map(|tile| apply_offsets(tile, &gather_rev_offsets(match_definition), match_info.all_attrs, &match_info.ordering, &match_info.ordering_r).0)
     .flatten()
     .filter_map(|(tile, _attrs)| if tile != ANY_PRIME { Some((tile, 0)) } else { None })
     .collect();

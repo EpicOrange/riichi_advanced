@@ -41,10 +41,10 @@ pub fn perform_dfs_match<'a>(
   }))
 }
 
-fn reify_groups<'a>(
+fn reify_groups(
   groups: Vec<MatchGroup>,
   base_tiles: Rc<Vec<Tile>>,
-  match_info: &'a MatchInfo,
+  match_info: &MatchInfo,
   debug: bool, mut nojoker: bool,
   // base tile set => group index i => vec of groups
 ) -> HashMap<Rc<Vec<Tile>>, Rc<BTreeMap<usize, Rc<Vec<RemovableGroup>>>>> {
@@ -57,7 +57,7 @@ fn reify_groups<'a>(
     // println!("Relevant tiles: {0:?}", match_info.relevant_tiles.iter().collect::<Vec<_>>());
   }
   let mut separate_suits = false;
-  for (_i, group) in groups.iter().enumerate() {
+  for group in groups.iter() {
     for offset in group.flatten() {
       match offset {
         MatchOffset::Offset(o) => {
@@ -77,11 +77,12 @@ fn reify_groups<'a>(
   let pin = (to_prime(&tile1p()).unwrap(), 0);
   let sou = (to_prime(&tile1s()).unwrap(), 0);
   let all = (to_prime(&tile1x()).unwrap(), 0);
+  // TODO some of these should be smallvecs i think
   let keys = vec!(
-    Rc::new(vec!(man.clone())),
-    Rc::new(vec!(pin.clone())),
-    Rc::new(vec!(sou.clone())),
-    Rc::new(vec!(all.clone()))
+    Rc::new(vec!(man)),
+    Rc::new(vec!(pin)),
+    Rc::new(vec!(sou)),
+    Rc::new(vec!(all))
   );
 
   let num_groups = groups.len();
@@ -102,9 +103,9 @@ fn reify_groups<'a>(
     let base_tile_sets = if separate_suits {
       // we need to try each suit
       if have_fixed_offsets {
-        let base_m: Vec<Tile> = vec!(man.clone());
-        let base_p: Vec<Tile> = vec!(pin.clone());
-        let base_s: Vec<Tile> = vec!(sou.clone());
+        let base_m: Vec<Tile> = vec!(man);
+        let base_p: Vec<Tile> = vec!(pin);
+        let base_s: Vec<Tile> = vec!(sou);
         vec!(Rc::new(base_m), Rc::new(base_p), Rc::new(base_s))
       } else if have_numeric_offsets {
         // separate base tiles of the same suit
@@ -126,7 +127,7 @@ fn reify_groups<'a>(
       let reified = __generate_groups(
         group.clone(),
         &mut base_tile_iter,
-        &match_info.all_attrs,
+        match_info.all_attrs,
         &match_info.joker_tiles,
         &match_info.ordering, &match_info.ordering_r,
         &mut nojoker);
@@ -143,7 +144,7 @@ fn reify_groups<'a>(
           stored_groups.push(reified_bank[ix].clone());
         }
       }
-      if debug { println!("- {}", stored_groups.iter().map(|group| print_group(&group, match_info.all_attrs, nojoker)).collect::<Vec<_>>().join(", ")); }
+      if debug { println!("- {}", stored_groups.iter().map(|group| print_group(group, match_info.all_attrs, nojoker)).collect::<Vec<_>>().join(", ")); }
       let map = ret.entry(key.clone()).or_insert_with(|| Rc::new(BTreeMap::new()));
       if let Some(m) = Rc::get_mut(map) {
         m.insert(i, Rc::new(stored_groups));
@@ -205,7 +206,7 @@ fn _dfs_match<'a>(
       if num <= 0 { " (lookahead)" } else { "" },
       hands[0].attrs.len(),
       decode(&hands[0], match_info.all_attrs),
-      hands[1..].iter().map(|call| decode(&call, match_info.all_attrs)).collect::<Vec<_>>(),
+      hands[1..].iter().map(|call| decode(call, match_info.all_attrs)).collect::<Vec<_>>(),
       groups.iter().map(|g| print_group(&g.1, match_info.all_attrs, nojoker)).collect::<Vec<_>>().join(","), num,
       if exhaustive { " exhaustive" } else { "" },
       if unique { " unique" } else { "" },
@@ -213,7 +214,7 @@ fn _dfs_match<'a>(
     );
     for (j, group) in groups.iter() {
       let mut alternatives: Vec<String> = vec!();
-      alternatives.push(print_group(group, &match_info.all_attrs, nojoker));
+      alternatives.push(print_group(group, match_info.all_attrs, nojoker));
       if !alternatives.is_empty() {
         println!("{0:4}. {1}{2}", j, alternatives.join(", "), if nojoker { " nojoker" } else { "" });
       }
@@ -262,9 +263,9 @@ fn _dfs_match<'a>(
 }
 
 // if len <= 4, tries to take the power set of path (containing item) and sees if any is in visited
-fn is_visited(path: &Vec<PathItem>, last_item: &PathItem, visited: Rc<RefCell<HashSet<Vec<PathItem>>>>) -> bool {
+fn is_visited(path: &[PathItem], last_item: &PathItem, visited: Rc<RefCell<HashSet<Vec<PathItem>>>>) -> bool {
   let len = path.len();
-  if len >= 30 { return false; }
+  if len >= 30 { false }
   else if len <= 4 {
     let vis = visited.borrow();
     for mask in 1..(1u32 << len) {
@@ -277,7 +278,7 @@ fn is_visited(path: &Vec<PathItem>, last_item: &PathItem, visited: Rc<RefCell<Ha
     }
     false
   } else {
-    let mut key = path.clone();
+    let mut key = path.to_vec();
     key.sort_unstable();
     key.push(last_item.clone());
     visited.borrow().contains(&key)

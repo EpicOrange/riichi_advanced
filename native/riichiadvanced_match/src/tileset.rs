@@ -47,26 +47,26 @@ pub fn check_tile_match((p2, battrs2): &Tile, (p1, battrs1): &Tile) -> bool {
 // more importantly, checks that for all aliases as well
 // you can think of this as checking l > r
 pub fn _check_equivalence(l: &Tile, r: &Tile, aliases: &Aliases) -> bool {
-  if l == r { return true; }
-  else if check_tile_match(&l, &r) { return true; }
+  if l == r || check_tile_match(l, r) { return true; }
   if let Some(entries) = aliases.get(&r.0) {
     if entries.iter().any(|(battrs, aliases)| {
-        (r.1 & *battrs == r.1) && aliases.iter().any(|t| check_tile_match(&l, t))
+        (r.1 & *battrs == r.1) && aliases.iter().any(|t| check_tile_match(l, t))
     }) { return true; }}
   if let Some(entries) = aliases.get(&ANY_PRIME) {
     if entries.iter().any(|(battrs, aliases)| {
-        (r.1 & *battrs == r.1) && aliases.iter().any(|t| check_tile_match(&l, t))
+        (r.1 & *battrs == r.1) && aliases.iter().any(|t| check_tile_match(l, t))
     }) { return true; }}
   false
 }
 
-pub fn compute_attr_masks(l: &[Tile], r: &[Tile], aliases: &Aliases) -> (Vec<(Mask, RowIndex)>, Mask) {
-  let mut masks: Vec<(Mask, RowIndex)> = vec![(0,0); l.len()];
+pub fn compute_attr_masks(ls: &[Tile], rs: &[Tile], aliases: &Aliases) -> (Vec<(Mask, RowIndex)>, Mask) {
+  assert!(rs.len() <= Mask::BITS as usize, "mask size too small for given tiles");
+  let mut masks: Vec<(Mask, RowIndex)> = vec![(0,0); ls.len()];
   let mut col_mask: Mask = 0;
-  for j in 0..l.len() {
+  for j in 0..ls.len() {
     masks[j].1 = j as u8;
-    for i in 0..r.len() {
-      if _check_equivalence(&l[j], &r[i], &aliases) {
+    for (i, r) in rs.iter().enumerate() {
+      if _check_equivalence(&ls[j], r, aliases) {
         masks[j].0 |= 1 << i;
       }
     }
@@ -96,11 +96,11 @@ pub fn subtract_check_attrs_exhaustive<'a>(env: Env<'a>, l: Vec<Tile>, r: Vec<Ti
     None => rustler::types::atom::nil().encode(env),
   }
 }
-pub fn _subtract_check_attrs_exhaustive(l: &Vec<Tile>, r: &Vec<Tile>, aliases: &Aliases) -> Option<Vec<IndexVec>> {
-  if l.is_empty() { return None; }
-  if r.is_empty() { return Some(vec!()); }
-  let (masks, col_mask) = compute_attr_masks(l, r, aliases);
-  let ret = n_rooks::_solve_n_rooks_exhaustive(&masks, col_mask, r.len() as u8);
+pub fn _subtract_check_attrs_exhaustive(ls: &[Tile], rs: &[Tile], aliases: &Aliases) -> Option<Vec<IndexVec>> {
+  if ls.is_empty() { return None; }
+  if rs.is_empty() { return Some(vec!()); }
+  let (masks, col_mask) = compute_attr_masks(ls, rs, aliases);
+  let ret = n_rooks::_solve_n_rooks_exhaustive(&masks, col_mask, rs.len() as u8);
   if ret.is_empty() { None }
   else { Some(ret) }
 }
@@ -124,9 +124,7 @@ pub fn _subtract_check_attrs_exhaustive(l: &Vec<Tile>, r: &Vec<Tile>, aliases: &
   // end
 
 // precondition: `is` sorted and deduped
-pub fn remove_tileset_indices(
-  hand: &mut TileSet, ixs: IndexVec, joker_tiles: &HashSet<Tile>
-) -> () {
+pub fn remove_tileset_indices(hand: &mut TileSet, ixs: IndexVec, joker_tiles: &HashSet<Tile>) {
   let mut divisor = Hash(U256::ONE);
   for i in &ixs {
     let tile = hand.attrs[*i as usize];
@@ -145,7 +143,7 @@ pub fn remove_tileset_indices(
 // modifies attrs to put joker tiles at the end
 // returns index of first joker, which is equal to the number of nonjokers
 // also returns product of all jokers' primes
-pub fn move_jokers_to_end(attrs: &mut Vec<Tile>, joker_tiles: &HashSet<Tile>) -> (usize, Hash) {
+pub fn move_jokers_to_end(attrs: &mut [Tile], joker_tiles: &HashSet<Tile>) -> (usize, Hash) {
   let hand_len = attrs.len();
   if hand_len == 0 { return (0, Hash(U256::ONE)); }
   let mut i = 0;
@@ -230,7 +228,7 @@ pub fn __subtract(
   // otherwise, use jokers, but if not exhaustive, prioritize nonjokers-only if possible
   let aliases = if divides { &empty_aliases } else { aliases };
 
-  match _subtract_check_attrs(&hand_attrs[0..num_nonjokers], &group_attrs, &empty_aliases) {
+  match _subtract_check_attrs(&hand_attrs[0..num_nonjokers], group_attrs, &empty_aliases) {
     Some(mut indices) => {
       let mut hand = TileSet{
         hash: hand.hash,
@@ -244,7 +242,7 @@ pub fn __subtract(
       Some(hand)
     },
     None if nojoker => None,
-    None => match _subtract_check_attrs(&hand_attrs, &group_attrs, aliases) {
+    None => match _subtract_check_attrs(&hand_attrs, group_attrs, aliases) {
       Some(mut indices) => {
         let mut hand = TileSet{
           hash: hand.hash,
@@ -318,14 +316,14 @@ pub fn __subtract_exhaustive(
   // otherwise, use jokers, but if not exhaustive, prioritize nonjokers-only if possible
   let aliases = if divides { &empty_aliases } else { aliases };
 
-  match _subtract_check_attrs_exhaustive(&hand_attrs, &group_attrs, aliases) {
+  match _subtract_check_attrs_exhaustive(&hand_attrs, group_attrs, aliases) {
     Some(mut indicess) => {
       indicess.sort_unstable();
       indicess.dedup();
       let mut hands = HashSet::new();
       for mut indices in indicess {
         let mut hand = TileSet{
-          hash: hand.hash.clone(),
+          hash: hand.hash,
           attrs: hand_attrs.clone(),
           name: None,
           nojoker: false

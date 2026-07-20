@@ -107,7 +107,7 @@ pub fn is_any(tile: &ElixirTile) -> bool {
 pub fn shift_suit_mut(tile: &mut Tile) -> bool {
   let shift_suit_table = SHIFT_SUIT.get_or_init(|| {
     ATOM_TABLE.entries()
-      .map(|(&s, &atom)| {
+      .filter_map(|(&s, &atom)| {
         let mut s2 = s.to_string();
         match s2.pop() {
           Some('m') => s2.push('p'),
@@ -119,7 +119,7 @@ pub fn shift_suit_mut(tile: &mut Tile) -> bool {
           Some(atom2) => to_prime(&atom()).zip(to_prime(&atom2())),
           None => None
         }
-      }).flatten().collect()
+      }).collect()
   });
   match shift_suit_table.get(&tile.0) {
     Some(t) => {tile.0 = *t; true},

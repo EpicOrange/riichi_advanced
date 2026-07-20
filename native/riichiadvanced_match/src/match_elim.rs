@@ -9,7 +9,7 @@ fn elim_call_name<'a>(hands: Hands, name: &'a String, exhaustive: bool) -> Hands
   // group is a call name, remove every corresponding call with that name
   let hands = Rc::new(hands);
   let hands_check = Rc::clone(&hands); // just to check names
-  let ret = (0..hands.len()).into_iter()
+  let ret = (0..hands.len())
     .filter(move |i| hands_check[*i].name.as_ref() == Some(name))
     .map(move |i| {
         let mut hands = (*hands).clone();
@@ -28,7 +28,7 @@ fn elim_tileset<'a>(
   let mut ret = vec!();
   // check calls first
   for i in 1..hands.len() {
-    if let Some(_) = __subtract_exhaustive(&hands[i], tileset, aliases, joker_tiles) {
+    if __subtract_exhaustive(&hands[i], tileset, aliases, joker_tiles).is_some() {
       let mut hands = hands.clone();
       hands.swap_remove(i);
       ret.push(hands);
@@ -72,7 +72,7 @@ pub fn _elim_group<'a>(
 ) -> HandsIterator<'a> {
   match group_arg {
     RemovableGroup::CallName(name) => elim_call_name(hands, name, exhaustive),
-    RemovableGroup::Group(group) => elim_tileset(hands, &group, aliases, joker_tiles, exhaustive),
+    RemovableGroup::Group(group) => elim_tileset(hands, group, aliases, joker_tiles, exhaustive),
     RemovableGroup::Multigroup(subgroups) => {
       // multigroup can only be removed from hand (= hands[0])
       let initial: HandsIterator<'a> = Box::new(once(hands.clone()));
@@ -117,7 +117,7 @@ fn elim_tileset_iter<'a>(
   let ret = hands.clone().into_iter().enumerate().rev().flat_map(move |(i, hand)| -> HandsIterator<'a> {
     let is_call = i > 0;
     if is_call {
-      if let Some(_) = __subtract(&hand, &tileset, aliases, joker_tiles) {
+      if __subtract(&hand, &tileset, aliases, joker_tiles).is_some() {
         let mut hands = hands.clone();
         hands.swap_remove(i);
         return Box::new(once(hands));
