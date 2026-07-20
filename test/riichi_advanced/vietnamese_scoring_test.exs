@@ -118,4 +118,41 @@ defmodule RiichiAdvanced.YakuTest.VietnameseScoring do
     }, %{delta_scores: [-384, 0, 0, 384]})
   end
 
+  test "vietnamese - robbing a bounce" do
+    TestUtils.test_yaku_advanced("vietnamese", ["yaku/viet_rob_bounce"], """
+    {
+      "starting_hand": {
+        "east": ["8j", "2m", "3m", "4p", "5p", "6p", "7p", "8p", "9p", "1z", "1z", "2p", "7m"],
+        "south": ["2m", "3m", "6m", "2p", "5p", "8p", "3s", "7s", "9s", "4s", "9p", "4s", "5s"],
+        "west": ["2m", "4m", "6m", "2p", "5p", "8p", "3s", "7s", "9s", "4s", "9p", "3z", "4z"],
+        "north": ["1s", "2s", "3s", "4s", "5s", "6s", "7s", "8s", "9s", "0j", "1p", "1s", "2s"]
+      },
+      "starting_draws": ["1p", "3p", "7m", "7m", "1p"],
+      "starting_dead_wall": ["5s"]
+    }
+    """, [
+      %{"type" => "buttons_pressed", "buttons" => [%{"button" => "start_no_flower"}, nil, nil, nil]},
+      %{"type" => "buttons_pressed", "buttons" => [nil, %{"button" => "start_no_flower"}, nil, nil]},
+      %{"type" => "buttons_pressed", "buttons" => [nil, nil, %{"button" => "start_no_flower"}, nil]},
+      %{"type" => "buttons_pressed", "buttons" => [nil, nil, nil, %{"button" => "start_no_flower"}]},
+      %{"type" => "discard", "tile" => "1p", "player" => 0, "tsumogiri" => false},
+      %{"type" => "buttons_pressed", "buttons" => [nil, nil, nil, %{"button" => "pon"}]},
+      %{"type" => "discard", "tile" => "1s", "player" => 3, "tsumogiri" => false},
+      %{"type" => "discard", "tile" => "7m", "player" => 0, "tsumogiri" => false},
+      %{"type" => "discard", "tile" => "7m", "player" => 1, "tsumogiri" => true},
+      %{"type" => "discard", "tile" => "7m", "player" => 2, "tsumogiri" => true},
+      %{"type" => "buttons_pressed", "buttons" => [nil, nil, nil, %{"button" => "joker_swap"}]},
+      %{"type" => "mark", "player" => 3, "marking" => [
+        ["done", true],
+        ["hand", %{"needed" => 1, "marked" => [["1p", "north", 10]], "restrictions" => []}],
+        ["calls", %{"needed" => 1, "marked" => [[["pon", [:"1p", :"0j", :"1p"]], "north", 0]], "restrictions" => []}],
+      ]},
+      %{"type" => "buttons_pressed", "buttons" => [%{"button" => "rob_bounce"}, nil, nil, nil]},
+    ], %{
+      east: %{
+        yaku: [{"Robbing a Bounce", [1, "Phán"]}]
+      }
+    }, %{delta_scores: [4, -1, -1, -2]})
+  end
+
 end

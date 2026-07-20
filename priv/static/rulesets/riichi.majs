@@ -610,10 +610,12 @@ define_mod starting_score, order: -2, name: "Starting Points", desc: "Number of 
 config_mod starting_score, name: "points", values: [0,5000,10000,15000,20000,25000,30000,35000,40000,45000,50000,100000], default: 25000
 define_mod_category "Abortive Draws"
 define_mod suufon_renda, name: "Suufon Renda", desc: "Enable 4 wind abortive draw."
+config_mod suufon_renda, name: "name", values: ["Suufon Renda"]
 define_mod suucha_riichi, name: "Suucha Riichi", deps: ["yaku/riichi"], desc: "Enable 4 riichi abortive draw."
 define_mod suukaikan, name: "Suukaikan", desc: "Enable 4 kan abortive draw."
 define_mod sanchahou, conflicts: ["head_bump"], name: "Sanchahou", desc: "Enable triple ron abortive draw."
 define_mod kyuushu_kyuuhai, name: "Kyuushu Kyuuhai", desc: "Enable 9 distinct terminal/honor abortive draw."
+config_mod kyuushu_kyuuhai, name: "name", values: ["Kyuushu Kyuuhai"]
 define_mod_category "Dora"
 define_mod dora, name: "Dora", desc: "Enables dora."
 config_mod dora, name: "start_indicators", values: [1,2,3,4,5]
@@ -756,7 +758,7 @@ define_mod washizu, order: 3.5, name: "Washizu", desc: "Each tile in the wall is
 config_mod washizu, name: "transparents", values: [1,2,3,4], default: 3
 define_mod calls_are_forced, conflicts: ["chombo"], name: "Calls Are Forced", desc: "Forces you to make all available calls, including riichi (if enabled). You still get to choose if multiple calls are available."
 define_mod chombo, conflicts: ["calls_are_forced"], name: "Chombo", desc: "The tsumo and ron buttons are enabled on every draw and discard. If you make an incorrect win call, your hand is dead and you cannot make a win call for the remainder of the round."
-define_mod riichi_en, name: "English Yaku Names", desc:  "Display English yaku names. (e.g. Tanyao -> All Simples)"
+define_mod riichi_en, name: "English Yaku Names", desc: "Display English yaku names. (e.g. Tanyao -> All Simples)"
 
 set default_mods, [
   "honba", "yaku/riichi", "dora", "ura", "kandora", "aka",
@@ -766,11 +768,11 @@ set default_mods, [
   "uma",
   "kuikae_nashi",
   "min_han",
-  "suufon_renda",
+  %{name: "suufon_renda", config: %{name: "Suufon Renda"}},
   "suucha_riichi",
   "suukaikan",
   "agarirenchan", "tenpairenchan",
-  "kyuushu_kyuuhai",
+  %{name: "kyuushu_kyuuhai", config: %{name: "Kyuushu Kyuuhai"}},
   "double_wind_4_fu",
   "yaku/riichi_renhou", "pao", "kokushi_ankan_chankan",
   "cancellable_riichi"
@@ -791,10 +793,10 @@ define_preset "Mahjong Soul", [
   "double_wind_4_fu",
   "pao",
   "kokushi_ankan_chankan",
-  "suufon_renda",
+  %{name: "suufon_renda", config: %{name: "Suufon Renda"}},
   "suucha_riichi",
   "suukaikan",
-  "kyuushu_kyuuhai",
+  %{name: "kyuushu_kyuuhai", config: %{name: "Kyuushu Kyuuhai"}},
   %{name: "dora", config: %{start_indicators: 1}},
   "ura",
   "kandora",
@@ -822,11 +824,11 @@ define_preset "tenhou.net", [
   "pao",
   "no_fifth_tile_tenpai",
   "kokushi_ankan_chankan",
-  "suufon_renda",
+  %{name: "suufon_renda", config: %{name: "Suufon Renda"}},
   "suucha_riichi",
   "suukaikan",
   "sanchahou",
-  "kyuushu_kyuuhai",
+  %{name: "kyuushu_kyuuhai", config: %{name: "Kyuushu Kyuuhai"}},
   %{name: "dora", config: %{start_indicators: 1}},
   "ura",
   "kandora",
@@ -853,11 +855,11 @@ define_preset "Riichi City", [
   "pao",
   "pao_rinshan",
   "kokushi_ankan_chankan",
-  "suufon_renda",
+  %{name: "suufon_renda", config: %{name: "Suufon Renda"}},
   "suucha_riichi",
   "suukaikan",
   "sanchahou",
-  "kyuushu_kyuuhai",
+  %{name: "kyuushu_kyuuhai", config: %{name: "Kyuushu Kyuuhai"}},
   %{name: "dora", config: %{start_indicators: 1}},
   "ura",
   "kandora",
@@ -885,10 +887,10 @@ define_preset "Amatsuki Mahjong", [
   "double_wind_4_fu",
   "pao",
   "kokushi_ankan_chankan",
-  "suufon_renda",
+  %{name: "suufon_renda", config: %{name: "Suufon Renda"}},
   "suucha_riichi",
   "suukaikan",
-  "kyuushu_kyuuhai",
+  %{name: "kyuushu_kyuuhai", config: %{name: "Kyuushu Kyuuhai"}},
   %{name: "dora", config: %{start_indicators: 1}},
   "ura",
   "kandora",
@@ -1001,10 +1003,10 @@ define_preset "Just Like Modded Minecraft", [
   "kansai_chiitoitsu",
   "kokushi_ankan_chankan",
   "first_gets_riichi_sticks",
-  "suufon_renda",
+  %{name: "suufon_renda", config: %{name: "Suufon Renda"}},
   "suukaikan",
   "sanchahou",
-  "kyuushu_kyuuhai",
+  %{name: "kyuushu_kyuuhai", config: %{name: "Kyuushu Kyuuhai"}},
   %{name: "dora", config: %{start_indicators: 3}},
   "ura",
   "kandora",

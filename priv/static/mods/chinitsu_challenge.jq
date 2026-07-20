@@ -36,8 +36,8 @@
 }
 |
 # remove some mods
-.default_mods |= map(select(IN("honba", "yaku/riichi", "dora", "ura", "aka", "kandora", "suufon_renda", "suucha_riichi", "kyuushu_kyuuhai", "show_waits") | not))
+.default_mods |= map(select(IN("honba", "yaku/riichi", "dora", "ura", "aka", "kandora", {"name": "suufon_renda", "config": {"name": "Suufon Renda"}}, "suucha_riichi", "kyuushu_kyuuhai", "show_waits") | not))
 |
-.available_mods |= map(select(type != "object" or (.id | IN("honba", "yaku/riichi", "kyuushu_kyuuhai", "star_suit", "shiro_pocchi", "chinitsu") | not)))
+.available_mods |= map(select(type != "object" or (.id | IN("honba", "yaku/riichi", {"name": "kyuushu_kyuuhai", "config": {"name": "Kyuushu Kyuuhai"}}, "star_suit", "shiro_pocchi", "chinitsu") | not)))
 |
 .win_timer = 20

@@ -1,4 +1,4 @@
-.default_mods |= map(select(IN("riichi_kan", "yaku/riichi", "kandora", "aka", "yaku/renhou_yakuman", "kyuushu_kyuuhai", "pao", "suufon_renda", "suucha_riichi", "suukaikan", "show_waits") | not))
+.default_mods |= map(select(IN("riichi_kan", "yaku/riichi", "kandora", "aka", "yaku/renhou_yakuman", {"name": "kyuushu_kyuuhai", "config": {"name": "Kyuushu Kyuuhai"}}, "pao", {"name": "suufon_renda", "config": {"name": "Suufon Renda"}}, "suucha_riichi", "suukaikan", "show_waits") | not))
 |
 .available_mods |= map(select(type != "object" or (.id | IN("riichi_kan", "yaku/riichi") | not)))
 |
