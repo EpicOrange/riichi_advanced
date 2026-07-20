@@ -14,13 +14,35 @@ on before_scoring do
   if not_round_wind_is("west") and not_seat_is("west") do add_attr(["hand", "calls", "winning_tile"], ["_guest"], ["3z"]) end
   if not_round_wind_is("north") and not_seat_is("north") do add_attr(["hand", "calls", "winning_tile"], ["_guest"], ["4z"]) end
   # terminals and honors
-  add_attr(["hand", "calls", "winning_tile"], ["_yaochuu"], ["yaochuuhai"])
   add_attr(["hand", "calls", "winning_tile"], ["_terminal"], ["terminal"])
+  add_attr(["hand", "calls", "winning_tile"], ["_yaochuu"], ["yaochuuhai"])
   add_attr(["hand", "calls", "winning_tile"], ["_tanyao"], ["tanyaohai"])
 end
+define_set yaochuuhai, ~s"any@yaochuu"
+define_set terminal, ~s"any@terminal"
+define_set tanyaohai, ~s"any@tanyao"
+
+define_set terminal_l, ~s"0@terminal 1 2"
+define_set terminal_r, ~s"0 1 2@terminal"
+define_set terminal_t, ~s"0@terminal 0@terminal 0@terminal"
+define_set terminal_pair, ~s"0@terminal 0@terminal"
+define_set yaochuu_l, ~s"0@yaochuu 1 2"
+define_set yaochuu_r, ~s"0 1 2@yaochuu"
+define_set yaochuu_t, ~s"0@yaochuu 0@yaochuu 0@yaochuu"
+define_set yaochuu_pair, ~s"0@yaochuu 0@yaochuu"
 
 define_set haku, ~s"0z 0z 0z|5z 5z 5z|8z 8z 8z"
 define_set hatsu, ~s"6z 6z 6z"
 define_set chun, ~s"7z 7z 7z"
+define_set haku_pair, ~s"0z 0z|5z 5z|8z 8z"
+define_set hatsu_pair, ~s"6z 6z"
+define_set chun_pair, ~s"7z 7z"
+
 define_set prevalent_wind, ~s"0@prevalent 0@prevalent 0@prevalent"
 define_set seat_wind, ~s"0@seat 0@seat 0@seat"
+define_set guest_wind, ~s"0@guest 0@guest 0@guest"
+define_set prevalent_pair, ~s"0@prevalent 0@prevalent"
+define_set seat_pair, ~s"0@seat 0@seat"
+define_set guest_pair, ~s"0@guest 0@guest"
+
+define_set value_pair, ~s"0z 0z|5z 5z|8z 8z|6z 6z|7z 7z|0@prevalent 0@prevalent|0@seat 0@seat"

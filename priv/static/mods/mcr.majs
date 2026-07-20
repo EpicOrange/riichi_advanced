@@ -1,3 +1,5 @@
+require "value_honors"
+
 set display_name, "MCR"
 set tutorial_link, "https://ooyamaneko.net/download/mahjong/mcr/MCR_2014_en.pdf"
 
@@ -197,34 +199,6 @@ define_yaku yaku, "All Types", [6, "Fan"], match(["hand", "calls", "winning_tile
 define_yaku yaku, "Melded Hand", [6, "Fan"], not_won_by_draw and match(["calls"], ~m"(chii pon daiminkan kakan):4")
 define_yaku yaku, "Two Dragon Pungs", [6, "Fan"], match(["hand", "calls", "winning_tile"], ~m"unique, (haku hatsu chun):2")
 define_yaku yaku, "Two Kongs", [6, "Fan"], match(["calls"], ~m"ankan:1, (daiminkan kakan):1")
-
-# welcome to the yaochuuhai zone
-on before_scoring do
-  if round_wind_is("east") do add_attr(["hand", "calls", "winning_tile"], ["_prevalent"], ["1z"]) end
-  if round_wind_is("south") do add_attr(["hand", "calls", "winning_tile"], ["_prevalent"], ["2z"]) end
-  if round_wind_is("west") do add_attr(["hand", "calls", "winning_tile"], ["_prevalent"], ["3z"]) end
-  if round_wind_is("north") do add_attr(["hand", "calls", "winning_tile"], ["_prevalent"], ["4z"]) end
-  if seat_is("east") do add_attr(["hand", "calls", "winning_tile"], ["_seat"], ["1z"]) end
-  if seat_is("south") do add_attr(["hand", "calls", "winning_tile"], ["_seat"], ["2z"]) end
-  if seat_is("west") do add_attr(["hand", "calls", "winning_tile"], ["_seat"], ["3z"]) end
-  if seat_is("north") do add_attr(["hand", "calls", "winning_tile"], ["_seat"], ["4z"]) end
-  if not_round_wind_is("east") and not_seat_is("east") do add_attr(["hand", "calls", "winning_tile"], ["_guest"], ["1z"]) end
-  if not_round_wind_is("south") and not_seat_is("south") do add_attr(["hand", "calls", "winning_tile"], ["_guest"], ["2z"]) end
-  if not_round_wind_is("west") and not_seat_is("west") do add_attr(["hand", "calls", "winning_tile"], ["_guest"], ["3z"]) end
-  if not_round_wind_is("north") and not_seat_is("north") do add_attr(["hand", "calls", "winning_tile"], ["_guest"], ["4z"]) end
-  add_attr(["hand", "calls", "winning_tile"], ["_terminal"], ["terminal"])
-  add_attr(["hand", "calls", "winning_tile"], ["_tanyao"], ["tanyaohai"])
-  add_attr(["hand", "calls", "winning_tile"], ["_yaochuu"], ["yaochuuhai"])
-end
-define_set prevalent_wind, ~s"0@prevalent 0@prevalent 0@prevalent"
-define_set seat_wind, ~s"0@seat 0@seat 0@seat"
-define_set guest_wind, ~s"0@guest 0@guest 0@guest"
-define_set terminal_t, ~s"0@terminal 0@terminal 0@terminal"
-define_set yaochuu_l, ~s"0@yaochuu 1 2"
-define_set yaochuu_r, ~s"0 1 2@yaochuu"
-define_set yaochuu_t, ~s"0@yaochuu 0@yaochuu 0@yaochuu"
-define_set yaochuu_pair, ~s"0@yaochuu 0@yaochuu"
-# now leaving the yaochuuhai zone
 
 # 4
 define_yaku yaku, "Outside Hand", [4, "Fan"], match(["hand", "calls", "winning_tile"], ~m"exhaustive, (yaochuu_l yaochuu_r yaochuu_t):4, yaochuu_pair:1")

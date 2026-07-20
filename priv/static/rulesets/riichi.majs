@@ -1,4 +1,4 @@
-
+require "value_honors"
 
 # TODO: Figure out how to fix the `cancellable_riichi` mod, then re-add it as default as well as in modpacks.
 
@@ -77,43 +77,12 @@ define_yaku yaku, "Iipeikou", [1, "Han"], @closed_hand and match(["hand", "calls
 define_yaku yaku, "Haku", [1, "Han"], match(["hand", "calls", "winning_tile"], ~m"exhaustive, haku:1, mentsu:3, pair:1")
 define_yaku yaku, "Hatsu", [1, "Han"], match(["hand", "calls", "winning_tile"], ~m"exhaustive, hatsu:1, mentsu:3, pair:1")
 define_yaku yaku, "Chun", [1, "Han"], match(["hand", "calls", "winning_tile"], ~m"exhaustive, chun:1, mentsu:3, pair:1")
-
-# round and seat winds
-def add_scoring_attrs do
-  if round_wind_is("east") do add_attr(["hand", "calls", "winning_tile"], ["_prevalent"], ["1z"]) end
-  if round_wind_is("south") do add_attr(["hand", "calls", "winning_tile"], ["_prevalent"], ["2z"]) end
-  if round_wind_is("west") do add_attr(["hand", "calls", "winning_tile"], ["_prevalent"], ["3z"]) end
-  if round_wind_is("north") do add_attr(["hand", "calls", "winning_tile"], ["_prevalent"], ["4z"]) end
-  if seat_is("east") do add_attr(["hand", "calls", "winning_tile"], ["_seat"], ["1z"]) end
-  if seat_is("south") do add_attr(["hand", "calls", "winning_tile"], ["_seat"], ["2z"]) end
-  if seat_is("west") do add_attr(["hand", "calls", "winning_tile"], ["_seat"], ["3z"]) end
-  if seat_is("north") do add_attr(["hand", "calls", "winning_tile"], ["_seat"], ["4z"]) end
-end
-define_set prevalent_wind, ~s"0@prevalent 0@prevalent 0@prevalent"
-define_set seat_wind, ~s"0@seat 0@seat 0@seat"
 define_yaku yaku, "Round Wind", [1, "Han"], match(["hand", "calls", "winning_tile"], ~m"exhaustive, prevalent_wind:1, mentsu:3, pair:1")
 define_yaku yaku, "Seat Wind", [1, "Han"], match(["hand", "calls", "winning_tile"], ~m"exhaustive, seat_wind:1, mentsu:3, pair:1")
-
-# welcome to the chanta zone
-apply append, "functions.add_scoring_attrs" do
-  add_attr(["hand", "calls", "winning_tile"], ["_terminal"], ["terminal"])
-  add_attr(["hand", "calls", "winning_tile"], ["_tanyao"], ["tanyaohai"])
-  add_attr(["hand", "calls", "winning_tile"], ["_yaochuu"], ["yaochuuhai"])
-end
-define_set terminal_l, ~s"0@terminal 1 2"
-define_set terminal_r, ~s"0 1 2@terminal"
-define_set terminal_t, ~s"0@terminal 0@terminal 0@terminal"
-define_set terminal_pair, ~s"0@terminal 0@terminal"
-define_set yaochuu_l, ~s"0@yaochuu 1 2"
-define_set yaochuu_r, ~s"0 1 2@yaochuu"
-define_set yaochuu_t, ~s"0@yaochuu 0@yaochuu 0@yaochuu"
-define_set yaochuu_pair, ~s"0@yaochuu 0@yaochuu"
 define_match chanta, ~m"exhaustive, (yaochuu_l yaochuu_r yaochuu_t):4, yaochuu_pair:1" 
 define_match junchan, ~m"exhaustive, (terminal_l terminal_r terminal_t):4, terminal_pair:1" 
 define_yaku yaku, "Chanta", [1, "Han"], match(["hand", "calls", "winning_tile"], ["chanta"])
 define_yaku yaku, "Junchan", [2, "Han"], match(["hand", "calls", "winning_tile"], ["junchan"])
-# now leaving the chanta zone
-
 define_yaku yaku, "Ittsuu", [1, "Han"], match(["hand", "calls", "winning_tile"], ~m"exhaustive, ittsuu:1, mentsu:1, pair:1")
 define_yaku yaku, "Sanshoku", [1, "Han"], match(["hand", "calls", "winning_tile"], ~m"exhaustive, sanshoku_doujun:1, mentsu:1, pair:1")
 define_yaku yaku, "Sanshoku Doukou", [2, "Han"], match(["hand", "calls", "winning_tile"], ~m"exhaustive, sanshoku_doukou:1, mentsu:1, pair:1")
