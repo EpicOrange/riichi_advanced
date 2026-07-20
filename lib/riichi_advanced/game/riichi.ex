@@ -208,7 +208,7 @@ defmodule RiichiAdvanced.Riichi do
         instances = Utils.apply_tile_aliases(tile, tile_behavior)
         if :any in instances do hand else instances end
         |> Enum.reject(fn tile -> with {tile, _attrs} <- Utils.to_attr_tile(tile) do tile == :any end end)
-        |> Enum.reject(&TileBehavior.is_joker?(&1, tile_behavior))
+        # |> Enum.reject(&TileBehavior.is_joker?(&1, tile_behavior))
         |> Utils.strip_attrs()
         |> Enum.flat_map(fn instance ->
           case Match.apply_offsets(instance, call_spec, tile_behavior.ordering, tile_behavior.ordering_r) do

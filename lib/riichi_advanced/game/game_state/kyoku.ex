@@ -355,16 +355,22 @@ defmodule RiichiAdvanced.GameState.Kyoku do
       nil -> tile
       ret -> ret |> Utils.add_attr(["joker#{i}"])
     end end)
+    assigned_calls = smt_calls
+    |> Enum.concat()
+    |> Enum.with_index()
+    |> Enum.map(fn {tile, i} -> case Map.get(joker_assignment, i - length(assigned_hand), nil) do
+      nil -> tile
+      ret -> ret |> Utils.add_attr(["joker#{i}"])
+    end end)
     # make a reverse joker_assignment so we can recover the orig tiles
     # guaranteed to be injective due to the joker#{i} attr we just added
+    smt_call_tiles = Enum.concat(smt_calls)
     undo_joker_map = Map.new(joker_assignment, fn
       {i, _tile} when i <= length(smt_hand) -> {Enum.at(assigned_hand, i), Enum.at(smt_hand, i)}
-      {i, _tile} ->
-        IO.puts("Error in separate_standard_winner_hand: joker assignment #{inspect(joker_assignment)} has index #{i} > hand length #{length(smt_hand)}")
-        {nil, nil}
+      {i, _tile} -> {Enum.at(assigned_calls, i), Enum.at(smt_call_tiles, i - length(smt_hand))}
     end)
     # restrict aliases to be exactly the joker assignment
-    tile_behavior = TileBehavior.from_joker_assignment(tile_behavior, smt_hand ++ Enum.concat(smt_calls), joker_assignment)
+    tile_behavior = TileBehavior.from_joker_assignment(tile_behavior, smt_hand ++ smt_call_tiles, joker_assignment)
 
     # check if the win definition ever mentions offsets of at least 10
     # e.g. [["exhaustive", [[[0, 0]], 1], [[[0, 10, 20], [0, 1, 2], [0, 0, 0]], 4]]]

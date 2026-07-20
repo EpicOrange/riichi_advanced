@@ -6,6 +6,7 @@ use rustler::Atom;
 use crate::encode::{decode_tiles, encode_aliases, encode_tile};
 use crate::r#match::remove_match_definition;
 use crate::match_info::{prepare_tiles};
+use crate::primes::is_any;
 use crate::profile::{PROFILE_GET_WAITS, PROFILE_UNNEEDED_TILES, CALL_COUNT, MAX_NANOS, TOTAL_NANOS};
 use crate::tile_table::tile1x;
 use crate::types::{ElixirAliases, ElixirHandCalls, ElixirTile, MatchDefinitionElem, MatchDefinitions, MatchInfo, Tile};
@@ -104,6 +105,7 @@ pub fn __get_waits_v3(
   let not_waits2: HashSet<&ElixirTile> = all_joker_tiles
     .iter()
     .filter(|joker| {
+      if is_any(joker) { return true; }
       // first do the replacement
       let hand = &mut match_info.initial_hands[0];
       if let Some(last_tile) = hand.attrs.last_mut() {

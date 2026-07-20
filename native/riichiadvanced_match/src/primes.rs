@@ -63,6 +63,7 @@ pub fn is_jihai(tile: &Tile) -> bool {
   });
   jihau_primes_table.contains(&tile.0)
 }
+#[inline]
 pub fn is_any(tile: &ElixirTile) -> bool {
   match to_prime(get_tile_atom(tile)) {
     Some(prime) => prime == ANY_PRIME,

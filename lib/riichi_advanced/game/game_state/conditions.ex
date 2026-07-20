@@ -390,7 +390,7 @@ defmodule RiichiAdvanced.GameState.Conditions do
             [points | _rest] -> points
           end >= Enum.at(opts, 0, 1)
         else
-          case Enum.find_index(totals, & &1 = denomination) do
+          case Enum.find_index(totals, & &1 == denomination) do
             nil -> 0
             ix  -> Enum.at(totals, ix - 1)
           end >= Enum.at(opts, 0, 1)
