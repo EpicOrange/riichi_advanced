@@ -128,6 +128,7 @@ pub fn remove_match_definition<'a>(
             Box::new(once(match_info.initial_hands.clone()))
           } else { Box::new(empty()) }
         }
+        else if s == "fail" { Box::new(empty()) }
         else if s == "dismantle_calls" {
           Box::new(acc.map(|mut hands| {
             let mut hand = hands.swap_remove(0);

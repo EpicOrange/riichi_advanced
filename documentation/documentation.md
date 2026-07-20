@@ -383,7 +383,8 @@ Finally, here is the list of all keywords (each match definition is a combinatio
 - `american`: defines an american match specification [(see below)](#american-hand-match-specifications).
 - `exhaustive`: by default groups are removed by taking away the first match, but any group after the `exhaustive` keyword will store all possible removals. This is rather expensive, so only use this if you need it.
 - `dismantle_calls`: by default when a group matches a call, even partially, the whole call is removed. This prevents two groups from matching one call, which is desirable in most situations. To disable this, any group after the `dismantle_calls` keyword will instead remove the matching tiles from the matching call. For instance, the match definition `[exhaustive, dismantle_calls, [[[0, 1]], 1]]` matching on the existing call `3m 4m 5m` will leave you with two versions of the call (`3m` and `5m`) after the `[[[0, 1]], 1]` group is matched.
-- `restart`: whenever the match definition encounters `restart` it resets its current state to the initial hand and calls.
+- `restart`: whenever the match definition encounters `restart`, it resets its current state to the initial hand and calls, as long as it has not already failed.
+- `fail`: fails the match immediately.
 - `nojoker`, `unique`: applies these keywords to all groups after the keyword.
 
 Note that `restart` is the only keyword that can be specified multiple times in a match definition.

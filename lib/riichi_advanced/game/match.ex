@@ -1059,6 +1059,7 @@ defmodule RiichiAdvanced.Match do
           %{state | acc: acc}
         state when match_elem == "debug" -> state
         state when match_elem == "restart" -> %{state | acc: [initial_hands]}
+        state when match_elem == "fail" -> %{state | acc: []}
         state when match_elem == "dismantle_calls" -> %{state | acc: Enum.map(state.acc, fn hands ->
           [Enum.reduce(hands, fn call, acc ->
             %{acc | hash: acc.hash * call.hash, attrs: call.attrs ++ acc.attrs}
@@ -1162,10 +1163,7 @@ defmodule RiichiAdvanced.Match do
 
   def match_hand(hand, calls, match_definitions, tile_behavior) do
     try do
-      case match_hand_v3(hand, calls, match_definitions, tile_behavior) do
-        true -> true
-        false -> false
-      end
+      match_hand_v3(hand, calls, match_definitions, tile_behavior)
     rescue
       err ->
         IO.puts("Falling back to old match engine for hand #{inspect(hand)}: got error #{inspect(err)}")

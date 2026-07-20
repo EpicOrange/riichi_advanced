@@ -84,7 +84,7 @@ defmodule RiichiAdvanced.Parser do
     end
   end
 
-  @match_keywords ["almost", "exhaustive", "restart", "dismantle_calls", "unique", "nojoker", "debug"]
+  @match_keywords ["almost", "exhaustive", "restart", "fail", "dismantle_calls", "unique", "nojoker", "debug"]
 
   defp parse_group(group_spec) do
     case String.split(group_spec, ":", trim: true) do
