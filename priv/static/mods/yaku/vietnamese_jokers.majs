@@ -32,6 +32,10 @@ on after_initialization do
   add_rule("1 Phán", "Hỉ (喜)", "The wind joker %{hi} can be replaced for 2 Phán if you are the South player, or 1 Phán otherwise.", %{ho: ~t"4j"})
   add_rule("1 Phán", "Nguyên (元)", "The dragon joker %{nguyen} can be replaced for 2 Phán if you are the West player, or 1 Phán otherwise.", %{nguyen: ~t"5j"})
   add_rule("2 Phán", "Hợp (合)", "The number joker %{hop} can be replaced for 3 Phán if you are the North player or if you replace it at the start of the game, or 2 Phán otherwise.", %{hop: ~t"2j"})
+
+  add_rule("Rules", "Ăn", "(Vietnamese) You cannot Ăn with more than one joker tile.")
+  add_rule("Rules", "Phỗng", "(Vietnamese) You cannot Phỗng with more than one joker tile.")
+  add_rule("Rules", "Coong", "(Vietnamese) You can only Coong with four non-joker tiles.")
 end
 
 # jokers
@@ -77,7 +81,7 @@ define_play_effect joker do
 end
 
 define_button start_joker,
-  display_name: "Reveal joker",
+  display_name: "Replace joker",
   show_when: status("initial_flowers")
     and our_turn
     and match(["hand", "draw"], "any_joker")
@@ -90,7 +94,7 @@ define_button start_joker,
   end
 
 define_button joker,
-  display_name: "Joker",
+  display_name: "Replace joker",
   show_when: our_turn
     and has_draw
     and not_just_discarded
@@ -176,3 +180,28 @@ define_yaku yaku, "Blue Joker Set", [1, "Mủn"], match(["hand", "calls", "flowe
 define_yaku yaku, "Blue Joker Set", [1, "Mủn"], match(["flowers", "jokers"], ~m"nojoker, 0j:1, 6j:1, 7j:1, 8j:1")
 define_yaku yaku, "Red Joker Set", [1, "Mủn"], match(["hand", "calls", "flowers", "jokers", "winning_tile"], ~m"nojoker, 2j:1, 3j:1, 4j:1, 5j:1")
 define_yaku yaku, "Red Joker Set", [1, "Mủn"], match(["flowers", "jokers"], ~m"nojoker, 2j:1, 3j:1, 4j:1, 5j:1")
+
+# can't use too many jokers in calls
+apply set_append, "buttons.chii.call_conditions", not_call_contains([+@all_jokers], 2)
+# apply set_append, "buttons.pon.call_conditions", not_call_contains([+@all_jokers], 2)
+apply set_append, "buttons.daiminkan.call_conditions", not_call_contains([+@all_jokers], 1)
+apply set_append, "buttons.kakan.call_conditions", not_call_contains([+@all_jokers], 1)
+apply set_append, "buttons.ankan.call_conditions", not_call_contains([+@all_jokers], 1)
+
+# bouncing jokers
+on after_initialization do
+  add_rule("Rules", "Bouncing Jokers", "If you have called Phỗng with a joker, and later you draw another copy of the same tile, you may 'bounce' the joker by substituting the joker for that drawn tile. The joker goes into your joker/flower pool as if replaced normally (scores points). You cannot bounce jokers when there are no more tiles remaining in the wall.")
+end
+
+define_button joker_swap,
+  display_name: "Bounce joker",
+  show_when: 
+    our_turn and not_just_discarded
+    and match(["hand_draw_nonjoker_any", "self_joker_meld_tiles"], ~m"pair:1")
+    and not_no_tiles_remaining
+  do
+    big_text("Bounce")
+    mark([["call", 1, ["call_has_joker", "match_call_to_marked_hand"]], ["hand", 1, ["self", "not_joker", "match_hand_to_marked_call"]]])
+    swap_out_joker(@all_jokers, "call")
+    draw(1, "opposite_end")
+  end

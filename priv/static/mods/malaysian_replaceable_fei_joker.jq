@@ -4,7 +4,7 @@
   "actions": [
     ["big_text", "Swap"],
     ["mark", [["call", 1, ["call_has_joker", "match_call_to_marked_hand"]], ["hand", 1, ["self", "not_joker", "match_hand_to_marked_call"]]]],
-    ["swap_out_joker", "2y"]
+    ["swap_out_joker", ["2y"]]
   ]
 }
 |

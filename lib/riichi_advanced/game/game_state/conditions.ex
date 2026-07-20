@@ -79,13 +79,13 @@ defmodule RiichiAdvanced.GameState.Conditions do
           "self_joker_meld_tiles" ->
             # used in malaysian, this selects one nonjoker tile from own exposed calls containing a joker
             state.players[context.seat].calls
-            |> Enum.map(&Utils.get_joker_meld_tile(&1, [:"2y"], state.players[context.seat].tile_behavior))
+            |> Enum.map(&Utils.get_joker_meld_tile(&1, state.players[context.seat].tile_behavior))
             |> Enum.reject(&is_nil/1)
             |> Enum.flat_map(fn tile -> [{hand ++ [tile], calls}] end)
           "anyone_joker_meld_tiles" ->
             # used in american, this selects one nonjoker tile from each exposed call containing a joker
             state.players
-            |> Enum.flat_map(fn {_seat, player} -> Enum.map(player.calls, &Utils.get_joker_meld_tile(&1, [:"1j"], player.tile_behavior)) end)
+            |> Enum.flat_map(fn {_seat, player} -> Enum.map(player.calls, &Utils.get_joker_meld_tile(&1, player.tile_behavior)) end)
             |> Enum.reject(&is_nil/1)
             |> Enum.flat_map(fn tile -> [{hand ++ [tile], calls}] end)
           _ ->

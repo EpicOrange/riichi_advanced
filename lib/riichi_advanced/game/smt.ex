@@ -771,7 +771,7 @@ defmodule RiichiAdvanced.SMT do
 
     # we can trivially solve for the identity of a joker in a triplet/quad/etc
     optimization_call_jokers = for {call, i} <- calls, {_tile, ix} <- Enum.with_index(call), length(hand)+i*3+ix in joker_ixs do
-      tile = Utils.get_joker_meld_tile({"", call}, jokers, tile_behavior)
+      tile = Utils.get_joker_meld_tile({"", call}, tile_behavior)
       if tile != nil do
         "(assert (= joker#{length(hand)+i*3+ix} #{to_smt_tile(tile, encoding)}))\n"
       else "" end

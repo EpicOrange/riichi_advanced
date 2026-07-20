@@ -350,8 +350,8 @@ defmodule RiichiAdvanced.Utils do
       if Enum.all?(rest, &same_tile(&1, tile, tile_behavior)) do tile else nil end
     else nil end
   end
-  def get_joker_meld_tile(call, joker_tiles, tile_behavior) do
-    _get_joker_meld_tile(call_to_tiles(call), joker_tiles, tile_behavior)
+  def get_joker_meld_tile(call, tile_behavior) do
+    _get_joker_meld_tile(call_to_tiles(call), Map.keys(tile_behavior.mappings), tile_behavior)
   end
 
   def replace_base_tile(tile, new_base_tile) do
@@ -371,7 +371,7 @@ defmodule RiichiAdvanced.Utils do
   def replace_jokers_in_calls(calls, joker_tiles, tile_behavior) do
     Enum.map(calls, fn {name, call} ->
       if name in @pon_like_calls and Enum.any?(call, &has_matching_tile?([&1], joker_tiles)) do
-        meld_tile = get_joker_meld_tile({name, call}, joker_tiles, tile_behavior)
+        meld_tile = get_joker_meld_tile({name, call}, tile_behavior)
         {name, Enum.map(call, &replace_base_tile(&1, meld_tile))}
       else {name, call} end
     end)

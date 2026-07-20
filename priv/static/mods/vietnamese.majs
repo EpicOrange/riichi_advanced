@@ -184,9 +184,18 @@ set score_calculation, %{
 define_mod viet_more_jokers, name: "More Jokers (beta)", desc: "Add more sets of jokers to the wall on top of the existing 8. This is in beta since right now it makes the game run really slowly."
 config_mod viet_more_jokers, name: "sets", values: [16, 24, 32]
 
+
+
+
+
+
+
+
+
+
 # TODO
-# - rules text for everything
 # - bouncing jokers
 # - pao rule
 # - vietnamese yaku names
+# - weaker jokers have priority for calls
 # - abortive draw mods: kyuushu

@@ -1436,10 +1436,12 @@ defmodule RiichiAdvanced.GameState.Actions do
       "swap_out_joker" ->
         {tile, hand_seat, hand_index} = Marking.get_marked(marked_objects, :hand) |> Enum.at(0)
         {call, call_seat, call_index} = Marking.get_marked(marked_objects, :calls) |> Enum.at(0)
-        fei_joker = Enum.at(opts, 0, "1j") |> Utils.to_tile()
+        joker_tiles = Enum.at(opts, 0, []) |> Enum.map(&Utils.to_tile(&1))
+        destination = Enum.at(opts, 1, "draw")
         call_tiles = Utils.call_to_tiles(call)
 
-        call_joker_index = Enum.find_index(call_tiles, &Utils.same_tile(&1, fei_joker))
+        call_joker_index = Enum.find_index(call_tiles, &Utils.has_matching_tile?([&1], joker_tiles))
+        actual_joker = Enum.at(call_tiles, call_joker_index)
         new_call = with {call_type, call_content} <- call do
           {call_type, List.update_at(call_content, call_joker_index, &Utils.replace_base_tile(&1, tile))}
         end
@@ -1447,16 +1449,28 @@ defmodule RiichiAdvanced.GameState.Actions do
           %{text: "swapped out a joker from the call %{call}", vars: %{call: {:hand, call_tiles}}}
         ])
 
-        # replace hand tile with joker
-        hand_length = length(state.players[hand_seat].hand)
-        state = if hand_index < hand_length do
-          update_player(state, hand_seat, &%{ &1 | hand: List.replace_at(&1.hand, hand_index, fei_joker) })
-        else
-          update_player(state, hand_seat, &%{ &1 | draw: List.replace_at(&1.draw, hand_index - hand_length, fei_joker) })
-        end
-
         # replace call with new call
         state = update_player(state, call_seat, &%{ &1 | calls: List.replace_at(&1.calls, call_index, new_call) })
+
+        state = case destination do
+          "draw" ->
+            # replace hand tile with joker (joker should end up as the drawn tile)
+            hand_length = length(state.players[hand_seat].hand)
+            if hand_index < hand_length do
+              update_player(state, hand_seat, &%{ &1 | hand: List.delete_at(&1.hand, hand_index) ++ &1.draw, draw: [actual_joker] })
+            else
+              update_player(state, hand_seat, &%{ &1 | hand: &1.hand ++ List.delete_at(&1.draw, hand_index - hand_length), draw: [actual_joker] })
+            end
+          "call" ->
+            # declare as a call named "joker"
+            new_call = {"joker", [actual_joker]}
+            hand_length = length(state.players[hand_seat].hand)
+            if hand_index < hand_length do
+              update_player(state, hand_seat, &%{ &1 | hand: List.delete_at(&1.hand, hand_index) ++ &1.draw, draw: [], calls: [new_call | &1.calls] })
+            else
+              update_player(state, hand_seat, &%{ &1 | hand: &1.hand ++ List.delete_at(&1.draw, hand_index - hand_length), draw: [], calls: [new_call | &1.calls] })
+            end
+        end
 
         state = Marking.mark_done(state, context.seat)
         state
