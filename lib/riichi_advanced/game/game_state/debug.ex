@@ -14,7 +14,7 @@ defmodule RiichiAdvanced.GameState.Debug do
   @debug_specific_buttons %{east: []}
   @debug_conditions true
   @debug_ai false
-  @debug_tsumogiri_bots true
+  @debug_tsumogiri_bots false
   @debug_log true
   @debug_tutorial false
   @debug_yaku_precedence false
