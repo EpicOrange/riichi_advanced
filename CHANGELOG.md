@@ -10,10 +10,8 @@
   + Added a better UI for score transfers as well as ways to customize it
   + Added a feature where hovering over a tile in the rules tab will zoom in on it
   + Added a ledger-type way for specifying scoring in MahjongScript (see documentation)
-  + Added beta Filipino and Visayan variants (thanks Sophie!)
   + Added Chii mod to Sanma (thanks Sophie!)
-  + Added documentation for more modes including Zung Jung, MCR, and Fuzhou
-  + Added documentation for Zung Jung (thanks Sophie!)
+  + Added documentation for more modes including Zung Jung (thanks Sophie!), MCR, and Fuzhou
   + Added empty untracked folders for logs, to make local instances smoother to set up (thanks Sophie!)
   + Added English Yaku Names mod for Riichi
   + Added finalized v1.3 Sakicard art (thanks Sakicards community!)
