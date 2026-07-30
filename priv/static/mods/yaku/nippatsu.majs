@@ -1,0 +1,27 @@
+on after_initialization do
+  update_rule("Rules", "Riichi", "(Nippatsu) If you win on the second go-around after riichi, you are awarded nippatsu (1 han). Any call starting from the riichi onward invalidates nippatsu.")
+end
+
+define_yaku riichi_yaku, "Nippatsu", [1, "Han"], status("nippatsu")
+
+apply set_prepend, "functions.discard_passed" do
+  # set nippatsu status if your own discard passes and you had ippatsu
+  as last_discarder do
+    if status_missing("just_reached") and status("ippatsu") do
+      set_status("nippatsu")
+    else
+      unset_status("nippatsu")
+    end
+  end
+  # unset everyone's nippatsu status after any call
+  if just_called do
+    unset_status_all("nippatsu")
+  end
+end
+
+# unset everyone's nippatsu status after any call (except for chankan-able calls)
+on after_call do
+  unless status("can_chankan") do
+    unset_status_all("nippatsu")
+  end
+end
