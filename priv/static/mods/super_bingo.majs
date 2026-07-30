@@ -1,0 +1,100 @@
+replace all, "wall", "1m", "7p"
+replace all, "wall", "9m", "7s"
+
+set initial_score, 30000
+
+# # can't skip wins
+# apply set, "buttons.ron.unskippable", true
+# apply set, "buttons.tsumo.unskippable", true
+# apply set, "buttons.chankan.unskippable", true
+
+# can't win with more than 4 sevens of a single suit
+apply append, "buttons.ron.show_when", match(["hand", "calls", "last_discard"], ~m"nojoker, 7p:5")
+apply append, "buttons.ron.show_when", match(["hand", "calls", "last_discard"], ~m"nojoker, 7s:5")
+apply append, "buttons.tsumo.show_when", match(["hand", "calls", "draw"], ~m"nojoker, 7p:5")
+apply append, "buttons.tsumo.show_when", match(["hand", "calls", "draw"], ~m"nojoker, 7s:5")
+apply append, "buttons.chankan.show_when", match(["hand", "calls", "last_called_tile"], ~m"nojoker, 7p:5")
+apply append, "buttons.chankan.show_when", match(["hand", "calls", "last_called_tile"], ~m"nojoker, 7s:5")
+
+# # must open riichi if furiten
+# if defined("open_riichi") do
+#   apply set, "buttons.open_riichi.unskippable", status("furiten")
+# end
+
+# chanta is 3/4 han, junchan is 4/6 han
+replace_yaku yaku, "Chanta", [3, "Han"], match(["hand", "calls", "winning_tile"], ["chanta"])
+replace_yaku yaku, "Junchan", [4, "Han"], match(["hand", "calls", "winning_tile"], ["junchan"])
+replace_yaku meta_yaku, "Chanta", [1, "Han"], @closed_hand and has_existing_yaku("Chanta")
+replace_yaku meta_yaku, "Junchan", [2, "Han"], @closed_hand and has_existing_yaku("Junchan")
+
+# kansai chiitoitsu is 4/8/yakuman
+define_yaku meta_yaku, "Kansai Chiitoitsu", [4, "Han"], has_existing_yaku("Chiitoitsu") and match(["hand", "calls", "winning_tile"], ~m"quad:1"), ["Chiitoitsu"]
+define_yaku meta_yaku, "Kansai Chiitoitsu", [4, "Han"], has_existing_yaku("Chiitoitsu") and match(["hand", "calls", "winning_tile"], ~m"quad:2"), ["Chiitoitsu"]
+define_yaku meta_yakuman, "Kansai Chiitoitsu", [1, "★"], has_existing_yaku("Chiitoitsu") and match(["hand", "calls", "winning_tile"], ~m"quad:3"), ["Chiitoitsu"]
+
+# chinitsu chiitoitsu is yakuman
+define_yaku meta_yakuman, "Chinitsu Chiitoitsu", [1, "★"], has_existing_yaku("Chinitsu", "Chiitoitsu")
+
+# no manzu, so these yaku no longer exist (optimization)
+remove_yaku yaku, "Sanshoku"
+remove_yaku meta_yaku, "Sanshoku"
+remove_yaku yakuman, "Kokushi Musou"
+remove_yaku meta_yakuman, "Kokushi Musou Juusan Menmachi"
+
+# nanashi musou: same as kokushi, with 19m replaced by 7p7s
+define_set nanashi_all, ~s"1m 9m 1p 9p 1s 9s 1z 2z 3z 4z 5z 6z 7z"
+define_set nanashi_any, ~s"1m|9m|1p|9p|1s|9s|1z|2z|3z|4z|5z|6z|7z"
+define_match kokushi_tenpai, ~m"unique, dismantle_calls, nanashi_any:12, nanashi_any:1"
+define_match kokushi_win, ~m"unique, dismantle_calls, nanashi_any:13, nanashi_any:1"
+define_yaku yakuman, "Nanashi Musou", [1, "★"], match(["hand", "winning_tile"], ~m"nanashi_all:1")
+define_yaku yakuman, "Nanashi Musou Juusan Menmachi", [2, "★"], match(["hand"], ~m"nanashi_all:1")
+
+on after_win do
+  # kazoe is worth 2 chips
+  if points >= 13 do shuugi_payment += 2 end
+end
+
+
+define_mod_category "Super Bingo", prepend: true
+define_mod super_bingo_rainbow_sevens, name: "Rainbow Sevens (unimplemented)", category: "Super Bingo", desc: "One of the eight 7p and one of the eight 7s is rainbow-colored. They are worth 10 shuugi each (same as how gold dora is worth 1)."
+define_mod super_bingo_grand_cross, conflicts: ["yaku/grand_cross"], name: "Grand Cross (unimplemented)", category: "Super Bingo", desc: "You may declare NEWS (one of each wind) as a concealed kan that grants immediate shuugi payments. There is also a special gold north tile that doubles said payments if you use it."
+define_mod super_bingo_seven_rush, name: "Seven Rush (unimplemented)", category: "Super Bingo", desc: "unimplemented"
+define_mod super_bingo_bases_loaded, name: "Bases Loaded (unimplemented)", category: "Super Bingo", desc: "unimplemented"
+define_mod super_bingo_crazy_cherry, name: "Crazy Cherry (unimplemented)", category: "Super Bingo", desc: "unimplemented"
+define_mod super_bingo_orochi, name: "Orochi (unimplemented)", category: "Super Bingo", desc: "unimplemented"
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+# TODO:
+
+# rules text for everything in here
+
+# Shiro-pocchi is wildcard after riichi, always. 
+# You can choose which instance of a tile it is (gold/red), as long as the
+# location of that instance of the tile isn’t known to you. i.e., if you
+# don’t see the gold 5 in anyone’s discards, or called/in your hand, and
+# you win w/ tsumo using the shiro-pocchi on a 2-5 ryanmen wait, you can
+# say that the shiro-pocchi is acting as the gold 5, and gives you those
+# benefits.
+# 
+# You can kan post-riichi, as long as it doesn’t change your wait. (It can
+# change your interpretation/yaku).
+# 
+# If your hand contains four of a seven, and your wait contains that seven
+# (i.e., 123456p4567777s waiting on 47s), then that 7 in your discards would
+# not make you furiten on your other waits.

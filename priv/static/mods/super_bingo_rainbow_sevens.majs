@@ -1,0 +1,5 @@
+on after_initialization do
+  add_rule("Tiles", "Rainbow Sevens", "(Super Bingo)")
+end
+
+# TODO

@@ -428,6 +428,7 @@ defmodule RiichiAdvanced.Constants do
     {"chinitsu",     "Chinitsu", "Two-player variant where the only tiles are bamboo tiles. Try not to chombo!"},
     {"minefield",    "Minefield", "Two-player variant where you start with 34 tiles to make a mangan+ hand, and your remaining tiles are your discards."},
     {"speed_tonpuu", "Speed Tonpuu (beta)", "Parlor-style riichi with a focus on shuugi payments. Includes blue sevens and a gold five."},
+    {"super_bingo",  "Super Bingo (beta)", "Sanma but you replace the 19m with four 7p and four 7s, with big shuugi payments."},
     {"saki",         "Sakicards v1.3", "Riichi, but everyone gets a different Saki power, which changes the game quite a bit. Some give you bonus han every time you use your power. Some let you recover dead discards. Some let you swap tiles around the entire board, including the dora indicator."},
     {"hk",           "Hong Kong", "Hong Kong Old Style mahjong. Three point minimum, everyone pays for a win, and win instantly if you have seven flowers."},
     {"sichuan",      "Sichuan Bloody", "Sichuan Bloody mahjong. Trade tiles, void a suit, and play until three players win (bloody end rules)."},
@@ -600,7 +601,6 @@ defmodule RiichiAdvanced.Constants do
       mods: [
         "tonpuu",
         "speed_tonpuu_dora",
-        # "unconditional_agariyame",
       ],
       post_mods: [
         "speed_tonpuu",
@@ -648,6 +648,24 @@ defmodule RiichiAdvanced.Constants do
         %{name: "shuugi/tobi", config: %{chips: 1}},
         %{name: "shuugi/called_game", config: %{chips: 1}},
         "shuugi/placement_only_battle",
+      ]
+    },
+    "super_bingo" => %{
+      display_name: "Super Bingo Sanma",
+      tutorial_link: "https://fansubbing.com/2024/03/10/super-bingo-sanma-rules/",
+      ruleset: "sanma",
+      mods: ["kansai_flowers", "zan_scoring"],
+      post_mods: ["super_bingo", "super_bingo_tictactoe", "super_bingo_tulips"],
+      default_mods: [
+        %{name: "honba", config: %{value: 2000}},
+        %{name: "tobi", config: %{below: 1}},
+        %{name: "aka", config: %{man: 0, pin: 1, sou: 1}},
+        %{name: "kin", config: %{man: 0, pin: 1, sou: 1}},
+        %{name: "shiro_pocchi", config: %{ippatsu_only: false}},
+        "yaku/open_riichi",
+        %{name: "shuugi/kin", config: %{chips: 1, closed_only: false}},
+        %{name: "shuugi/ura", config: %{chips: 1}},
+        %{name: "shuugi/yakuman", config: %{ron_chips: 50, tsumo_chips: 50, per_yakuman: true, allow_kazoe: false}},
       ]
     },
     "aka_test" => %{

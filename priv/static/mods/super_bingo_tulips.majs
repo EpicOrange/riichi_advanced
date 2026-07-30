@@ -1,0 +1,45 @@
+# TODO this needs a lot of UI support
+
+on after_win do
+  # ippatsu gives +1 extra life
+  if has_existing_yaku("Ippatsu") do extra_life += 1 end
+  # sanbaiman+ gives +1 extra life
+  if points >= 11 or points2 >= 1 do extra_life += 1 end
+
+  # count sevens
+  add_counter("seven_pins", "count_matches", ["hand", "calls", "winning_tile"], ~m"nojoker, 7p:1")
+  add_counter("seven_sous", "count_matches", ["hand", "calls", "winning_tile"], ~m"nojoker, 7s:1")
+  # TIER 1: both seven_pins and seven_sous are < 3
+  # 
+  # then do arisu with the following actions:
+  # add 1 shuugi for each occurrence
+  # - reveal suit tile: 1 shuugi per tile on or adjacent to it in dora indicator order
+  #   + (e.g. 1s -> count 9s/1s/2s in hand)
+  #   + (e.g. 4z -> count 3z/4z/1z in hand)
+  # - reveal flower: 3 shuugi per flower in calls
+  # - reveal 9z (shiro pocchi): pick any tile not visible to you
+  # if you got any shuugi from that reveal, repeat by revealing the next one
+  # lose 1 life when you don't get shuugi for a reveal
+  # (you start w one life)
+  # it is possible to run out the wall. in which case you stop
+  # (don't reveal the final single stack if any)
+  # shuugi payment is paid by full by discarder (ron)
+  # or from both other players (tsumo)
+
+  # TIER 2: only one of seven_pins and seven_sous is >= 3 OR double yakuman
+  # same as tier 1 but look at both top and bottom stack
+  # you continue if either tile gives you shuugi
+  # (don't reveal the final single stack if any)
+
+  # TIER 3: both seven_pins and seven_sous are >= 3 OR triple yakuman or higher
+  # same as tier 2 but you double the payment
+
+  # in addition you can advance tiers up to 3 during this process
+  # add 1 tier every time you hit 6 diff tiles from a reveal (e.g. 778899 revealing 8)
+
+  # rainbow sevens mod:
+  # if you have both rainbow 7s, +1 tier
+  # revealing a rainbow 7 is the same as regular 7 but doubles the shuugi gained
+  # shiro pocchi can select rainbow 7
+
+end

@@ -1,0 +1,37 @@
+on after_initialization do
+  add_rule("Rules", "Grand Cross", "(Super Bingo)")
+  add_rule("Tiles", "Gold North", "(Super Bingo)")
+end
+
+define_set grand_cross, ~s"1z 2z 3z 4z"
+define_button grand_cross,
+  display_name: "Grand Cross",
+  show_when: our_turn
+    and not_no_tiles_remaining
+    and not_just_discarded
+    and not_just_called
+    and status_missing("initial_flowers") # for default_flowers mod
+    and tile_not_drawn(-8)
+    and self_call_available,
+  call: [["1z", "2z", "3z"]],
+  call_conditions: called_tile_contains(["4z"], 1),
+  call_style: %{
+    self: [["1x", 2], 0, 1, ["1x", 3]]
+  }
+  do
+    big_text("Kan")
+    self_call
+    if status("kan") do
+      set_status("double_kan")
+    end
+    set_status("kan")
+    draw(1)
+  end
+
+define_yaku yaku, "Grand Cross", [1, "Han"], match(["calls"], ~m"grand_cross:1")
+define_yaku yaku, "Grand Cross", [1, "Han"], match(["calls"], ~m"grand_cross:2")
+define_yaku yaku, "Grand Cross", [1, "Han"], match(["calls"], ~m"grand_cross:3")
+define_yaku yaku, "Grand Cross", [1, "Han"], match(["calls"], ~m"grand_cross:4")
+
+apply append, "set_definitions.mentsu", ~s"1z 2z 3z 4z"
+

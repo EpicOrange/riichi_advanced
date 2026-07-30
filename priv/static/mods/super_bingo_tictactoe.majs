@@ -1,0 +1,114 @@
+
+# 2 ways to win haneman:
+# - last 3 post-riichi discards were 7p7s (even if called)
+# - or if at most 19 (passed) discards, any of the below
+#   + 5 and 10 post-riichi discards ago were also 7p7s
+#   + 6 and 12 post-riichi discards ago were also 7p7s
+#   + 7 and 14 post-riichi discards ago were also 7p7s
+# the way we calculate this is, on every 7p7s discard,
+# - track how many discarded in sequence (for first case)
+# - also set one of 6 counters that increments every discard
+# - if you have crossed a row boundary (6,12,18th discard)
+#   and the counter is 5, 6, or 7, reset counter to 0,
+#   second time you do this for the same count, you win
+# - only do this if discard passes (so ron has priority over bingo)
+
+# OOXOOO -10
+# OXOOOO -5
+# XOOOOO 0
+#
+# XOOOOO -12
+# XOOOOO -6
+# XOOOOO 0
+# 
+# XOOOOO -14
+# OXOOOO -7
+# OOXOOO 0
+
+# but not
+
+# OOOOOO
+# OXOOOO -10
+# XOOOOX -5 0
+
+define_play_effect "7p" do
+  if status("riichi") do set_status("discarded_7") end
+end
+define_play_effect "7s" do
+  if status("riichi") do set_status("discarded_7") end
+end
+
+def trigger_bingo do
+  set_status("bingo")
+  pause(1000)
+  if consecutive_sevens >= 3 do
+    push_message("wins a haneman hand for discarding %{num} sevens in a row while in riichi", %{num: "consecutive_sevens"})
+  else
+    push_message("wins a haneman hand for arranging three sevens in a straight line in their discards while in riichi")
+  end
+  win_by_draw("zan_tsumo")
+end
+
+apply append, "score_calculation.yaku_lists", "bingo"
+define_yaku bingo, "Bingo", [6, "Han"], status("bingo"), ["yaku", "meta_yaku", "extra_yaku"]
+
+on after_start do as east do place = 1 end end
+
+apply append, "functions.discard_passed" do
+  as kamicha do
+    if place > 0 do
+      discards_mod_6 = 1 + mod(num_passed_discards - 1, 6)
+      if num_passed_discards == 7 do set_status("row2"); unset_status("block_r"); place = 1 end
+      if num_passed_discards == 13 do set_status("row3"); unset_status("block_r"); place = 1 end
+      bingo_l_digit = mod(floor_div(bingo_l, place * 10), 10)
+      bingo_m_digit = mod(floor_div(bingo_m, place), 10)
+      bingo_r_digit = mod(floor_div(bingo_r * 10, place), 10)
+      if status("discarded_7") do
+        consecutive_sevens += 1
+        if consecutive_sevens >= 3 do
+          trigger_bingo
+        else
+          cond do
+            status("row3") ->
+              cond do
+                bingo_l_digit == discards_mod_6 -> trigger_bingo
+                bingo_m_digit == discards_mod_6 -> trigger_bingo
+                bingo_r_digit == discards_mod_6 -> trigger_bingo
+              end
+            status("row2") ->
+              if bingo_l_digit == discards_mod_6 do bingo_l += (bingo_l_digit * place * -10) + place end
+              if bingo_r_digit == discards_mod_6 do bingo_r += floor_div(bingo_r_digit * place * 9, 10) + place; set_status("block_r") end
+            true ->
+              # the idea for bingo_l, bingo_m, bingo_r is that
+              # each nonzero place is the index of the 7 in the row that starts/continues the line
+              # and the digit in that place is the index within the next row where you expect a 7
+              cond do
+                discards_mod_6 == 1 ->                       bingo_m += place * 1; bingo_r += place * 2; set_status("block_r")
+                discards_mod_6 == 2 ->                       bingo_m += place * 2; bingo_r += place * 3; set_status("block_r")
+                discards_mod_6 == 3 -> bingo_l += place * 2; bingo_m += place * 3; bingo_r += place * 4; set_status("block_r")
+                discards_mod_6 == 4 -> bingo_l += place * 3; bingo_m += place * 4; bingo_r += place * 5; set_status("block_r")
+                discards_mod_6 == 5 -> bingo_l += place * 4; bingo_m += place * 5
+                discards_mod_6 == 6 -> bingo_l += place * 5; bingo_m += place * 6
+              end
+          end
+        end
+      else
+        consecutive_sevens = 0
+        if bingo_l_digit == discards_mod_6 do bingo_l -= bingo_l_digit * place end
+        if bingo_m_digit == discards_mod_6 do bingo_m -= bingo_m_digit * place end
+        if bingo_r_digit == discards_mod_6 do
+          # whenever updating bingo_r we block resetting bingo_r until next row
+          unless status("block_r") do
+            bingo_r -= bingo_r_digit * place
+          end
+        end
+      end
+      unset_status("discarded_7")
+      place *= 10
+    end
+  end
+end
+
+on before_call do
+  unset_status("discarded_7")
+end
