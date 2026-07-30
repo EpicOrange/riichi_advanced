@@ -265,6 +265,8 @@ def before_bloody_end do
       # upon exhaustive draw, every tenpai player scores takame
       # so label the takame wait as "Best"
       modify_winner("winning_tile_text", "Best")
+      # also replace jokers with their values (namely the 4x joker we use)
+      replace_winning_hand_jokers
     end
   end
   as everyone do

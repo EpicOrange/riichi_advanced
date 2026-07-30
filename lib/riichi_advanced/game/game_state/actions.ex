@@ -1940,6 +1940,13 @@ defmodule RiichiAdvanced.GameState.Actions do
         state
       "change_dealership" -> Map.put(state, :next_dealer, Conditions.from_seat_spec(state, context, Enum.at(opts, 0, "shimocha")))
       "end_game" -> Map.put(state, :round_result, :end_game)
+      "replace_winning_hand_jokers" ->
+        winner = state.winners[Enum.at(state.winner_seats, state.winner_index)]
+        if winner != nil do
+          state = put_in(state.winners[Enum.at(state.winner_seats, state.winner_index)].arranged_hand, winner.assigned_hand)
+          state = put_in(state.winners[Enum.at(state.winner_seats, state.winner_index)].winning_tile, Enum.at(winner.assigned_winning_hand, -1))
+          state
+        else state end
       _                 ->
         IO.puts("Unhandled action #{action}")
         state
