@@ -1,4 +1,4 @@
-defmodule RiichiAdvanced.KansaiZanScoringTest do
+defmodule RiichiAdvanced.ZanScoringTest do
   use ExUnit.Case, async: true
   alias RiichiAdvanced.TestUtils, as: TestUtils
 
@@ -10,7 +10,7 @@ defmodule RiichiAdvanced.KansaiZanScoringTest do
     %{name: "uma", config: %{_1st: 30, _2nd: 10, _3rd: -10, _4th: -30}},
     "agarirenchan",
     "tenpairenchan",
-    "tenpaiyame",
+    %{name: "tenpaiyame", config: %{first_place_only: true, may_choose: false, round: "all_last"}},
     "kuikae_nashi",
     "double_wind_4_fu",
     "kokushi_ankan_chankan",
@@ -51,7 +51,7 @@ defmodule RiichiAdvanced.KansaiZanScoringTest do
   ]
 
   test "kansai - 1 han dealer tsumo" do
-    TestUtils.test_yaku_advanced("kansai", @zan_mods, """
+    TestUtils.test_yaku_advanced("zan", @zan_mods, """
     {
       "starting_hand": {
         "east": ["2p", "3p", "4p", "7p", "8p", "9p", "1s", "2s", "3s", "4z", "4z", "6s", "7s"],
@@ -74,7 +74,7 @@ defmodule RiichiAdvanced.KansaiZanScoringTest do
   end
 
   test "kansai - 2 han dealer tsumo" do
-    TestUtils.test_yaku_advanced("kansai", @zan_mods, """
+    TestUtils.test_yaku_advanced("zan", @zan_mods, """
     {
       "starting_hand": {
         "east": ["2p", "3p", "4p", "7p", "8p", "9p", "1s", "2s", "3s", "3z", "3z", "6s", "7s"],
@@ -97,7 +97,7 @@ defmodule RiichiAdvanced.KansaiZanScoringTest do
   end
 
   test "kansai - 3 han dealer tsumo" do
-    TestUtils.test_yaku_advanced("kansai", @zan_mods, """
+    TestUtils.test_yaku_advanced("zan", @zan_mods, """
     {
       "starting_hand": {
         "east": ["3p", "4p", "0p", "7p", "8p", "9p", "1s", "2s", "3s", "3z", "3z", "6s", "7s"],
@@ -120,7 +120,7 @@ defmodule RiichiAdvanced.KansaiZanScoringTest do
   end
 
   test "kansai - 4 han dealer tsumo" do
-    TestUtils.test_yaku_advanced("kansai", @zan_mods, """
+    TestUtils.test_yaku_advanced("zan", @zan_mods, """
     {
       "starting_hand": {
         "east": ["3p", "4p", "0p", "0p", "6p", "7p", "1s", "2s", "3s", "3z", "3z", "6s", "7s"],
@@ -143,7 +143,7 @@ defmodule RiichiAdvanced.KansaiZanScoringTest do
   end
 
   test "kansai - 1 han dealer ron" do
-    TestUtils.test_yaku_advanced("kansai", @zan_mods, """
+    TestUtils.test_yaku_advanced("zan", @zan_mods, """
     {
       "starting_hand": {
         "east": ["2p", "3p", "4p", "7p", "8p", "9p", "1s", "2s", "3s", "3z", "3z", "6s", "7s"],
@@ -165,7 +165,7 @@ defmodule RiichiAdvanced.KansaiZanScoringTest do
   end
 
   test "kansai - 2 han dealer ron" do
-    TestUtils.test_yaku_advanced("kansai", @zan_mods, """
+    TestUtils.test_yaku_advanced("zan", @zan_mods, """
     {
       "starting_hand": {
         "east": ["3p", "4p", "0p", "7p", "8p", "9p", "1s", "2s", "3s", "3z", "3z", "6s", "7s"],
@@ -187,7 +187,7 @@ defmodule RiichiAdvanced.KansaiZanScoringTest do
   end
 
   test "kansai - 3 han dealer ron" do
-    TestUtils.test_yaku_advanced("kansai", @zan_mods, """
+    TestUtils.test_yaku_advanced("zan", @zan_mods, """
     {
       "starting_hand": {
         "east": ["3p", "4p", "0p", "6p", "7p", "8p", "2s", "3s", "4s", "6s", "7s", "8s", "8s"],
@@ -209,7 +209,7 @@ defmodule RiichiAdvanced.KansaiZanScoringTest do
   end
 
   test "kansai - 4 han dealer ron" do
-    TestUtils.test_yaku_advanced("kansai", @zan_mods, """
+    TestUtils.test_yaku_advanced("zan", @zan_mods, """
     {
       "starting_hand": {
         "east": ["3p", "4p", "0p", "0p", "6p", "7p", "2s", "3s", "4s", "6s", "7s", "8s", "8s"],
@@ -231,7 +231,7 @@ defmodule RiichiAdvanced.KansaiZanScoringTest do
   end
 
   test "kansai - 1 han nondealer tsumo" do
-    TestUtils.test_yaku_advanced("kansai", @zan_mods, """
+    TestUtils.test_yaku_advanced("zan", @zan_mods, """
     {
       "starting_hand": {
         "east": ["1s", "2s", "3p", "2p", "3p", "4p", "3s", "4s", "0s", "1z", "1z", "1z", "4z"],
@@ -255,7 +255,7 @@ defmodule RiichiAdvanced.KansaiZanScoringTest do
   end
 
   test "kansai - 2 han nondealer tsumo" do
-    TestUtils.test_yaku_advanced("kansai", @zan_mods, """
+    TestUtils.test_yaku_advanced("zan", @zan_mods, """
     {
       "starting_hand": {
         "east": ["1s", "2s", "3p", "2p", "3p", "4p", "3s", "4s", "0s", "1z", "1z", "1z", "4z"],
@@ -279,7 +279,7 @@ defmodule RiichiAdvanced.KansaiZanScoringTest do
   end
 
   test "kansai - 3 han nondealer tsumo" do
-    TestUtils.test_yaku_advanced("kansai", @zan_mods, """
+    TestUtils.test_yaku_advanced("zan", @zan_mods, """
     {
       "starting_hand": {
         "east": ["1s", "2s", "3p", "2p", "3p", "4p", "3s", "4s", "0s", "1z", "1z", "1z", "4z"],
@@ -303,7 +303,7 @@ defmodule RiichiAdvanced.KansaiZanScoringTest do
   end
 
   test "kansai - 4 han nondealer tsumo" do
-    TestUtils.test_yaku_advanced("kansai", @zan_mods, """
+    TestUtils.test_yaku_advanced("zan", @zan_mods, """
     {
       "starting_hand": {
         "east": ["1s", "2s", "3p", "2p", "3p", "4p", "3s", "4s", "0s", "1z", "1z", "1z", "4z"],
@@ -327,7 +327,7 @@ defmodule RiichiAdvanced.KansaiZanScoringTest do
   end
 
   test "kansai - 1 han nondealer ron" do
-    TestUtils.test_yaku_advanced("kansai", @zan_mods, """
+    TestUtils.test_yaku_advanced("zan", @zan_mods, """
     {
       "starting_hand": {
         "east": ["1s", "2s", "3p", "2p", "3p", "4p", "3s", "4s", "0s", "1z", "1z", "1z", "4z"],
@@ -350,7 +350,7 @@ defmodule RiichiAdvanced.KansaiZanScoringTest do
   end
 
   test "kansai - 2 han nondealer ron" do
-    TestUtils.test_yaku_advanced("kansai", @zan_mods, """
+    TestUtils.test_yaku_advanced("zan", @zan_mods, """
     {
       "starting_hand": {
         "east": ["1s", "2s", "3p", "2p", "3p", "4p", "3s", "4s", "0s", "1z", "1z", "1z", "4z"],
@@ -373,7 +373,7 @@ defmodule RiichiAdvanced.KansaiZanScoringTest do
   end
 
   test "kansai - 3 han nondealer ron" do
-    TestUtils.test_yaku_advanced("kansai", @zan_mods, """
+    TestUtils.test_yaku_advanced("zan", @zan_mods, """
     {
       "starting_hand": {
         "east": ["1s", "2s", "3p", "2p", "3p", "4p", "3s", "4s", "0s", "1z", "1z", "1z", "4z"],
@@ -396,7 +396,7 @@ defmodule RiichiAdvanced.KansaiZanScoringTest do
   end
 
   test "kansai - 4 han nondealer ron" do
-    TestUtils.test_yaku_advanced("kansai", @zan_mods, """
+    TestUtils.test_yaku_advanced("zan", @zan_mods, """
     {
       "starting_hand": {
         "east": ["1s", "2s", "3p", "2p", "3p", "4p", "3s", "4s", "0s", "1z", "1z", "1z", "4z"],
@@ -419,7 +419,7 @@ defmodule RiichiAdvanced.KansaiZanScoringTest do
   end
 
   test "kansai - ippatsu awards shuugi" do
-    TestUtils.test_yaku_advanced("kansai", @zan_mods, """
+    TestUtils.test_yaku_advanced("zan", @zan_mods, """
     {
       "starting_hand": {
         "east": ["2p", "3p", "4p", "7p", "8p", "9p", "1s", "2s", "3s", "3z", "3z", "6s", "7s"],
@@ -442,7 +442,7 @@ defmodule RiichiAdvanced.KansaiZanScoringTest do
   end
 
   test "kansai - yakuman tsumo awards shuugi" do
-    TestUtils.test_yaku_advanced("kansai", @zan_mods, """
+    TestUtils.test_yaku_advanced("zan", @zan_mods, """
     {
       "starting_hand": {
         "east": ["2p", "3p", "4p", "7p", "8p", "9p", "1s", "2s", "3s", "3z", "3z", "6s", "7s"],
@@ -461,7 +461,7 @@ defmodule RiichiAdvanced.KansaiZanScoringTest do
   end
 
   test "kansai - yakuman ron awards shuugi" do
-    TestUtils.test_yaku_advanced("kansai", @zan_mods, """
+    TestUtils.test_yaku_advanced("zan", @zan_mods, """
     {
       "starting_hand": {
         "east": ["1s", "2s", "3p", "2p", "3p", "4p", "3s", "4s", "0s", "1z", "1z", "1z", "4z"],
@@ -481,7 +481,7 @@ defmodule RiichiAdvanced.KansaiZanScoringTest do
   end
 
   test "kansai - end of game shuugi payments" do
-    TestUtils.test_yaku_advanced("kansai", @zan_mods ++ [%{name: "dora", config: %{start_indicators: 1}}], """
+    TestUtils.test_yaku_advanced("zan", @zan_mods ++ [%{name: "dora", config: %{start_indicators: 1}}], """
     {
       "starting_hand": {
         "east": ["1s", "2s", "3p", "2p", "3p", "4p", "3s", "4s", "0s", "2s", "3s", "4s", "4z"],
