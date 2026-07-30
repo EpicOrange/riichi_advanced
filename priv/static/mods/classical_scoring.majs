@@ -2,9 +2,6 @@ on before_scoring do
   make_responsible_for("others")
 end
 
-apply append, "score_calculation.yaku_lists", "meta_yaku"
-define_yaku meta_yaku, "Chicken Hand", [0, "Fan"], has_no_yaku
-
 define_scoring win do
   total = 0
   if points2 > 0 do

@@ -25,7 +25,7 @@ defmodule RiichiAdvanced.YakuTest.ClassicalYaku do
       %{"type" => "buttons_pressed", "buttons" => [%{"button" => "ron"}, nil, nil, nil]}
     ], %{
       east: %{
-        yaku: [{"Chicken Hand", [0, "Fan"]}],
+        yaku: [],
         minipoints: 40, # 30 closed ron + 2 tanki wait + 2x4 closed triplet = 40
         score: 240 # dealer x2
       }
@@ -305,7 +305,7 @@ defmodule RiichiAdvanced.YakuTest.ClassicalYaku do
       %{"type" => "buttons_pressed", "buttons" => [%{"button" => "ron"}, nil, nil, nil]}
     ], %{
       east: %{
-        yaku: [{"Chicken Hand", [0, "Fan"]}],
+        yaku: [],
         minipoints: 50, # 30 closed ron + 2x8 closed honor triplet + 4 open honor triplet = 50
         score: 300 # dealer x2
       }
@@ -935,7 +935,7 @@ defmodule RiichiAdvanced.YakuTest.ClassicalYaku do
       %{"type" => "buttons_pressed", "buttons" => [%{"button" => "ron"}, nil, nil, nil]}
     ], %{
       east: %{
-        yaku: [{"Chicken Hand", [0, "Fan"]}],
+        yaku: [],
         minipoints: 40, # 30 closed ron + 2 tanki wait + 2x4 closed triplet = 40
         score: 240 # dealer x2
       }

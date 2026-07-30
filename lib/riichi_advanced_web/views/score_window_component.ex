@@ -1,5 +1,4 @@
 defmodule RiichiAdvancedWeb.ScoreWindowComponent do
-  alias RiichiAdvanced.GameState.Kyoku, as: Kyoku
   alias RiichiAdvanced.GameState.Payment, as: Payment
   alias RiichiAdvanced.GameState.Rules, as: Rules
   alias RiichiAdvanced.Riichi, as: Riichi

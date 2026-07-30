@@ -4,11 +4,11 @@ define_yaku yakuman, "Plucking the Moon from the Bottom of the Sea", [1, "Limit"
 define_yaku_precedence "All Honours", ["Round Wind", "Seat Wind", "All Triplets", "Half Flush", "All Terminals and Honors"]
 
 on before_scoring do
-  if seat_is("east") do
+  if seat_is("east", as: "winner") do
     add_honba(1)
   end
 end
-define_yaku yakuman, "Dealer's 13 Consecutive Win", [1, "Limit"], seat_is("east") and honba >= 12
+define_yaku yakuman, "Dealer's 13 Consecutive Win", [1, "Limit"], seat_is("east") and honba >= 13
 define_yaku_precedence yakuman, ["yaku"]
 
 set score_calculation, %{

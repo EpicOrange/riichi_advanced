@@ -1014,6 +1014,7 @@ There are two steps for scoring:
 - Run the action `make_responsible_for(seats)` at some point prior to scoring (e.g. `before_win` event). This makes `seats` responsible for paying all the current player's yaku.
 - Run `win_by_discard(key)`, `win_by_draw(key)`, or `win_by_call(key)`. This can occur before or after the `make_responsible_for` call
 - Write scoring logic using the `define_scoring(key)` command, which is called by the above. Counter assignments can be suffixed with `:: "Message"` to display that assignment as a message in the scoring screen ledger box (which appears when hovering over arrows).
+- Note that there must be _some_ yaku in order for this to work, so if you want to make it work for no-yaku hands you should write a Chicken Hand yaku worth 0.
 
 Here's an example:
 

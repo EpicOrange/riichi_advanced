@@ -109,22 +109,15 @@ defmodule RiichiAdvanced.GameState.ScoringOld do
   
   def score_yaku(state, seat, yaku, yaku2, is_dealer, is_self_draw, minipoints \\ 0) do
     score_rules = Rules.get(state.rules_ref, "score_calculation", %{})
-    yaku2_overrides = not Enum.empty?(yaku2) and Map.get(score_rules, "yaku2_overrides_yaku1", false)
 
     scoring_method = score_rules["scoring_method"]
-    # TODO generalize this
-    {yaku, scoring_method} = if yaku2_overrides and not Enum.empty?(yaku2) do
-      {yaku2, if is_list(scoring_method) do Enum.at(scoring_method, 1, Enum.at(scoring_method, 0)) else scoring_method end}
-    else
-      {yaku, if is_list(scoring_method) do Enum.at(scoring_method, 0) else scoring_method end}
-    end
-
+    scoring_method = if is_list(scoring_method) do Enum.at(scoring_method, 0) else scoring_method end
+    
     {score, points, points2, name} = case scoring_method do
       "multiplier" ->
         points_all = yaku |> Enum.map(fn {_name, value} -> value end) |> Enum.reduce([], &Scoring.add_yaku_values/2)
         points = Utils.get_from_points_list(points_all, score_rules["point_name"])
         points2 = Utils.get_from_points_list(points_all, score_rules["point2_name"])
-        points = if yaku2_overrides do points2 else points end
         score_multiplier = case Map.get(score_rules, "score_multiplier", 1) do
           "points2"        -> points2
           score_multiplier -> score_multiplier
