@@ -1,0 +1,13 @@
+# end the game at the last dora indicator
+if defined("dora") do
+  replace 1, "after_turn_change", "no_tiles_remaining", tile_revealed(0)
+  replace 1, "buttons.ankan", "not_no_tiles_remaining", not_tile_revealed(0)
+  replace 1, "buttons.kakan", "not_no_tiles_remaining", not_tile_revealed(0)
+  replace 1, "buttons.ankan", "not_no_tiles_remaining", not_tile_revealed(0)
+  replace 1, "buttons.flower", "not_no_tiles_remaining", not_tile_revealed(0)
+end
+
+# change haitei/houtei
+remove_yaku yaku, "Haitei"
+define_yaku yaku, "Haitei", [1, "Han"], tile_revealed(0) and won_by_draw and not status("kan")
+define_yaku yaku, "Houtei", [1, "Han"], tile_revealed(0) and not_won_by_draw and not status("kan")

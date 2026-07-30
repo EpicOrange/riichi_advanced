@@ -8,6 +8,7 @@ defmodule RiichiAdvancedWeb.ScoringTestLive do
   alias RiichiAdvanced.GameState.Scoring, as: Scoring
   alias RiichiAdvanced.GameState.TileBehavior, as: TileBehavior
   alias RiichiAdvanced.ModLoader, as: ModLoader
+  alias RiichiAdvanced.ModLoader.ModState, as: ModState
   alias RiichiAdvanced.RoomState, as: RoomState
   alias RiichiAdvanced.Utils, as: Utils
   use RiichiAdvancedWeb, :live_view
@@ -165,7 +166,7 @@ defmodule RiichiAdvancedWeb.ScoringTestLive do
   
   def switch_to_ruleset(socket, ruleset) when ruleset != socket.assigns.ruleset do
     socket = assign(socket, :ruleset, ruleset)
-    {ruleset_json, _defs} = ModLoader.get_ruleset_json(socket.assigns.ruleset)
+    ruleset_json = ModState.load_ruleset(socket.assigns.ruleset).ruleset_json
 
     # from the base ruleset, get its mod list
     rules_ref = case Rules.load_rules(ruleset_json, socket.assigns.ruleset) do
@@ -199,9 +200,10 @@ defmodule RiichiAdvancedWeb.ScoringTestLive do
     config = socket.assigns.config
     start_async(socket, :reload_ruleset, fn ->
       # apply all default mods + config to base ruleset
-      {ruleset_json, defs} = ModLoader.get_ruleset_json(ruleset, nil, true)
-      {ruleset_json, _defs} = ModLoader.apply_multiple_mods(ruleset_json, mods, %{}, defs)
-      JQ.query_string_with_string!(ruleset_json, ModLoader.convert_to_jq(config))
+      ModState.load_ruleset(ruleset)
+      |> ModState.apply_new_mods(mods)
+      |> Map.get(:ruleset_json)
+      |> JQ.query_string_with_string!(ModLoader.convert_to_jq(config))
     end)
   end
 

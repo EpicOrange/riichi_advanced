@@ -4,7 +4,7 @@ defmodule RiichiAdvanced.TestUtils do
   alias RiichiAdvanced.GameState.Rules, as: Rules
   alias RiichiAdvanced.GameState.TileBehavior, as: TileBehavior
   alias RiichiAdvanced.Match, as: Match
-  alias RiichiAdvanced.ModLoader, as: ModLoader
+  alias RiichiAdvanced.ModLoader.ModState, as: ModState
   alias RiichiAdvanced.LogControlState, as: LogControl
   alias RiichiAdvanced.Utils, as: Utils
   import ExUnit.Assertions
@@ -157,12 +157,10 @@ defmodule RiichiAdvanced.TestUtils do
   end
 
   def get_rules!(ruleset, mods) do
-    {ruleset_json, defs} = ModLoader.get_ruleset_json(ruleset)
-    assert {:ok, rules_ref} = ruleset_json
-    |> ModLoader.strip_comments()
-    |> ModLoader.apply_mods(mods, ruleset, %{}, defs)
-    |> elem(0)
-    |> Rules.load_rules(ruleset)
+    ruleset_json = ModState.load_ruleset(ruleset)
+    |> ModState.apply_new_mods(mods)
+    |> Map.get(:ruleset_json)
+    assert {:ok, rules_ref} = Rules.load_rules(ruleset_json, ruleset)
     rules_ref
   end
 

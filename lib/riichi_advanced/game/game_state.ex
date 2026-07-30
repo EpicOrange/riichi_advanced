@@ -14,6 +14,7 @@ defmodule RiichiAdvanced.GameState do
   alias RiichiAdvanced.LobbyState.LobbyRoom, as: LobbyRoom
   alias RiichiAdvanced.Match, as: Match
   alias RiichiAdvanced.ModLoader, as: ModLoader
+  alias RiichiAdvanced.ModLoader.ModState, as: ModState
   alias RiichiAdvanced.Riichi, as: Riichi
   alias RiichiAdvanced.RoomState.RoomPlayer, as: RoomPlayer
   alias RiichiAdvanced.Utils, as: Utils
@@ -360,30 +361,33 @@ defmodule RiichiAdvanced.GameState do
 
     # read in the ruleset
     mods = Map.get(state, :mods, [])
-    {ruleset_json, defs} = ModLoader.get_ruleset_json(state.ruleset, state.room_code, not Enum.empty?(mods))
+    mod_state = ModState.load_ruleset(state.ruleset, state.room_code)
 
     # apply mods
-    {ruleset_json, defs} = if state.ruleset != "custom" and not Enum.empty?(mods) do
-      ModLoader.apply_mods(ruleset_json, mods, state.ruleset, %{}, defs)
-    else {ruleset_json, defs} end
-    {ruleset_json, _defs} = ModLoader.apply_post_mods(ruleset_json, state.ruleset, defs)
+    mod_state = if state.ruleset != "custom" and not Enum.empty?(mods) do
+      mod_state
+      |> ModState.apply_new_mods(mods)
+      |> ModState.apply_post_mods()
+    else mod_state end
+
+    # cache mods if that was successful
     if not Enum.empty?(mods) do
-      # cache mods
+      # IO.puts("Caching mods for room #{state.room_code} ruleset #{state.ruleset}: #{inspect(mods, limit: :infinity)}")
       RiichiAdvanced.ETSCache.put({state.ruleset, state.room_code}, mods, :cache_mods)
     end
 
     # apply config
     ruleset_json = if state.config != nil and state.ruleset != "custom" do
       try do
-        ruleset_json = ModLoader.strip_comments(ruleset_json)
+        ruleset_json = ModLoader.strip_comments(mod_state.ruleset_json)
         query = ModLoader.convert_to_jq(ModLoader.strip_comments(state.config))
         JQ.query_string_with_string!(ruleset_json, query)
       rescue
         err ->
           IO.puts("Failed to load config:\n#{state.config}\nError was #{inspect(err)}")
-          ruleset_json
+          mod_state.ruleset_json
       end
-    else ruleset_json end
+    else mod_state.ruleset_json end
 
     # put params, debouncers, and process ids into state
     state = Map.merge(state, %Game{

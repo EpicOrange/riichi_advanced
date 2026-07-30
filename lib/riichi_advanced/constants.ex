@@ -584,12 +584,12 @@ defmodule RiichiAdvanced.Constants do
         %{name: "aka", config: %{man: 4, pin: 4, sou: 4}},
         %{name: "shuugi/aka", config: %{chips: 1, closed_only: false}},
         "shiny_dora",
-        "kansai_draw",
         "kansai_flowers",
         "kansai_no_100_sticks",
         "kansai_40_fu",
         "kansai_shuugi",
         "zan_scoring",
+        "kansai_draw",
         "kansai_no_furiten_riichi"
       ],
     },

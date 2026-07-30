@@ -1,6 +1,7 @@
 defmodule RiichiAdvanced.RoomState do
   alias RiichiAdvanced.GameState.Rules, as: Rules
   alias RiichiAdvanced.ModLoader, as: ModLoader
+  alias RiichiAdvanced.ModLoader.ModState, as: ModState
   alias RiichiAdvanced.Utils, as: Utils
   use GenServer
 
@@ -109,7 +110,7 @@ defmodule RiichiAdvanced.RoomState do
         if state.ruleset == "config" do
           Room.initial_textarea()
         else
-          ModLoader.get_ruleset_json(state.ruleset, state.room_code, true) |> elem(0)
+          ModState.load_ruleset(state.ruleset, state.room_code).ruleset_json
         end
     end
 

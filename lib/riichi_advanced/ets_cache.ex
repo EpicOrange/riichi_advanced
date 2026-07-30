@@ -9,7 +9,7 @@ defmodule RiichiAdvanced.ETSCache do
 
   def init(:ok) do
     # Cache for modded jsons
-    :ets.new(:cache_json, [:named_table, :ordered_set, :public, read_concurrency: true, write_concurrency: true])
+    :ets.new(:cache_modloader, [:named_table, :ordered_set, :public, read_concurrency: true, write_concurrency: true])
 
     # Cache for mods
     :ets.new(:cache_mods, [:named_table, :ordered_set, :public, read_concurrency: true, write_concurrency: true])
@@ -45,7 +45,7 @@ defmodule RiichiAdvanced.ETSCache do
   end
 
   def handle_cast(:flush_caches, state) do
-    :ets.delete_all_objects(:cache_json)
+    :ets.delete_all_objects(:cache_modloader)
     :ets.delete_all_objects(:cache_rulesets)
     :ets.delete_all_objects(:cache_mods)
     :ets.delete_all_objects(:cache_configs)

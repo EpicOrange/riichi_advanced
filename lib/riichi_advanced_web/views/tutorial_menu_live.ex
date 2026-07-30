@@ -3,7 +3,7 @@ defmodule RiichiAdvancedWeb.TutorialMenuLive do
   alias RiichiAdvanced.LobbyState, as: LobbyState
   alias RiichiAdvanced.LobbyState.Lobby, as: Lobby
   alias RiichiAdvanced.Constants, as: Constants
-  alias RiichiAdvanced.ModLoader, as: ModLoader
+  alias RiichiAdvanced.ModLoader.ModState, as: ModState
   alias RiichiAdvanced.Utils, as: Utils
   use RiichiAdvancedWeb, :live_view
   use Gettext, backend: RiichiAdvancedWeb.Gettext
@@ -20,7 +20,7 @@ defmodule RiichiAdvancedWeb.TutorialMenuLive do
     |> assign(:available_tutorials, Map.get(Constants.tutorials(), params["ruleset"], []))
     |> assign(:clicked_index, nil)
 
-    {ruleset_json, _defs} = ModLoader.get_ruleset_json(socket.assigns.ruleset, nil, true)
+    ruleset_json = ModState.load_ruleset(socket.assigns.ruleset).ruleset_json
     rules_ref =
       case Rules.load_rules(ruleset_json, socket.assigns.ruleset) do
         {:ok, rules_ref} -> rules_ref

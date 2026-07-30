@@ -1,5 +1,5 @@
 defmodule RiichiAdvanced.LobbyState do
-  alias RiichiAdvanced.ModLoader, as: ModLoader
+  alias RiichiAdvanced.ModLoader.ModState, as: ModState
   alias RiichiAdvanced.Utils, as: Utils
   use GenServer
 
@@ -57,8 +57,7 @@ defmodule RiichiAdvanced.LobbyState do
     [{exit_monitor, _}] = Utils.registry_lookup("exit_monitor_lobby", state.ruleset, "")
 
     # read in the ruleset
-
-    {ruleset_json, _defs} = ModLoader.get_ruleset_json(state.ruleset)
+    ruleset_json = ModState.load_ruleset(state.ruleset).ruleset_json
 
     # parse the ruleset just to get the display name
     {state, rules} = try do

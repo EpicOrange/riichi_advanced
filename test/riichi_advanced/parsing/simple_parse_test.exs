@@ -2,18 +2,19 @@ defmodule RiichiAdvanced.SimpleParseTest do
   use ExUnit.Case, async: true
   alias RiichiAdvanced.Constants, as: Constants
   alias RiichiAdvanced.ModLoader, as: ModLoader
+  alias RiichiAdvanced.ModLoader.ModState, as: ModState
 
   test "parse all rulesets" do
     for ruleset_path <- Path.wildcard(Application.app_dir(:riichi_advanced, "/priv/static/rulesets/**.json")) do
       ruleset = Path.basename(ruleset_path, ".json")
-      {ruleset_json, _defs} = ModLoader.get_ruleset_json(ruleset)
+      ruleset_json = ModState.load_ruleset(ruleset).ruleset_json
       assert ruleset_json not in [nil, "", "{}"]
     end
   end
 
   test "parse all modpacks" do
     for modpack <- Map.keys(Constants.modpacks()) do
-      {ruleset_json, _defs} = ModLoader.get_ruleset_json(modpack)
+      ruleset_json = ModState.load_ruleset(modpack).ruleset_json
       assert ruleset_json not in [nil, "", "{}"]
     end
   end
@@ -21,7 +22,7 @@ defmodule RiichiAdvanced.SimpleParseTest do
   test "parse all mahjongscript" do
     for ruleset_path <- Path.wildcard(Application.app_dir(:riichi_advanced, "/priv/static/rulesets/**.majs")) do
       ruleset = Path.basename(ruleset_path, ".majs")
-      {ruleset_json, _defs} = ModLoader.get_ruleset_json(ruleset)
+      ruleset_json = ModState.load_ruleset(ruleset).ruleset_json
       assert ruleset_json not in [nil, "", "{}"]
     end
   end
@@ -29,15 +30,15 @@ defmodule RiichiAdvanced.SimpleParseTest do
   test "parse all mods" do
     for ruleset_path <- Path.wildcard(Application.app_dir(:riichi_advanced, "/priv/static/rulesets/**.json")) do
       ruleset = Path.basename(ruleset_path, ".json")
-      {ruleset_json, defs} = try do
-        ModLoader.get_ruleset_json(ruleset, nil, true)
+      mod_state = try do
+        ModState.load_ruleset(ruleset)
       rescue
         e ->
           IO.inspect("failed to parse ruleset #{ruleset} from path #{ruleset}")
           raise e
       end
-      assert ruleset_json != nil
-      rules = Jason.decode!(ModLoader.strip_comments(ruleset_json))
+      assert mod_state.ruleset_json != nil
+      rules = Jason.decode!(ModLoader.strip_comments(mod_state.ruleset_json))
       mod_list = Map.get(rules, "available_mods", [])
       |> Enum.filter(&is_map/1)
       mods = for {mod, i} <- Enum.with_index(mod_list), into: %{} do
@@ -76,8 +77,8 @@ defmodule RiichiAdvanced.SimpleParseTest do
         mod_specs = mod_specs ++ [mod.spec]
         # IO.inspect(mod_specs)
         try do
-          {modded, _defs} = ModLoader.apply_multiple_mods(ruleset_json, mod_specs, %{}, defs)
-          assert modded != nil, "Failed to apply mods #{inspect(mod_specs)} to ruleset #{ruleset})"
+          mod_state = ModState.apply_new_mods(mod_state, mod_specs)
+          assert mod_state.ruleset_json != nil, "Failed to apply mods #{inspect(mod_specs)} to ruleset #{ruleset})"
         rescue
           _ ->
             IO.puts("Failed to apply mods #{inspect(mod_specs)} to ruleset #{ruleset})")
@@ -107,9 +108,10 @@ defmodule RiichiAdvanced.SimpleParseTest do
           %{"name" => name, "config" => config} -> %{name: name, config: config}
           name -> name
         end)
-        {ruleset_json, defs} = ModLoader.get_ruleset_json(ruleset, nil, true)
-        {modded, _defs} = ModLoader.apply_multiple_mods(ruleset_json, mod_specs, %{}, defs)
-        assert modded != nil, "Failed to apply mods #{inspect(mod_specs)} to ruleset #{ruleset})"
+        ruleset_json = ModState.load_ruleset(ruleset)
+        |> ModState.apply_new_mods(mod_specs)
+        |> Map.get(:ruleset_json)
+        assert ruleset_json != nil, "Failed to apply mods #{inspect(mod_specs)} to ruleset #{ruleset})"
       else
         # it just means the tutorial file is not in the Constants.tutorials() map
         # not an issue

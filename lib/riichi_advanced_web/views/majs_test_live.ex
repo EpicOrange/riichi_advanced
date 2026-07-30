@@ -2,6 +2,7 @@ defmodule RiichiAdvancedWeb.MajsTestLive do
   alias RiichiAdvanced.Constants, as: Constants
   alias RiichiAdvanced.GameState.Rules, as: Rules
   alias RiichiAdvanced.ModLoader, as: ModLoader
+  alias RiichiAdvanced.ModLoader.ModState, as: ModState
   alias RiichiAdvanced.RoomState, as: RoomState
   use RiichiAdvancedWeb, :live_view
   import RiichiAdvancedWeb.Translations
@@ -81,7 +82,7 @@ defmodule RiichiAdvancedWeb.MajsTestLive do
   def switch_mods_to_ruleset(socket, ruleset) do
     socket = assign(socket, :ruleset, ruleset)
 
-    {ruleset_json, _defs} = ModLoader.get_ruleset_json(socket.assigns.ruleset)
+    ruleset_json = ModState.load_ruleset(socket.assigns.ruleset).ruleset_json
     rules_ref = case Rules.load_rules(ruleset_json, socket.assigns.ruleset) do
       {:ok, rules_ref} -> rules_ref
       {:error, _msg}   -> nil
@@ -149,11 +150,10 @@ defmodule RiichiAdvancedWeb.MajsTestLive do
     if byte_size(config) <= 4 * 1024 * 1024 do
       self = self()
       Task.start(fn ->
-        {ruleset_json, defs} = ModLoader.get_ruleset_json(ruleset)
-        config_query = ModLoader.convert_to_jq(config)
-        mods = get_enabled_mods(socket)
-        {ruleset_json, _defs} = ModLoader.apply_multiple_mods(ruleset_json, mods, %{}, defs)
-        ruleset_json = JQ.query_string_with_string!(ruleset_json, config_query)
+        ruleset_json = ModState.load_ruleset(ruleset)
+        |> ModState.apply_new_mods(get_enabled_mods(socket))
+        |> Map.get(:ruleset_json)
+        |> JQ.query_string_with_string!(ModLoader.convert_to_jq(config))
         send(self, {:converted_majs, config, ruleset_json})
       end)
       socket = assign(socket, :loading, true)
