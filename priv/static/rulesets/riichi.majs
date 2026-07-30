@@ -692,6 +692,7 @@ define_mod "yaku/kanburi", name: "Kanburi", desc: "Local yaku. \"Shoot After Kan
 define_mod "yaku/honors_chiitoitsu", name: "Honors Chiitoitsu", desc: "Local yaku. 1 han on top of chiitoitsu if three of your pairs are dragons, or if four of your pairs are winds. If you have all seven honor pairs? Double yakuman."
 define_mod "yaku/uushin_tsuukan", name: "Uushin Tsuukan", desc: "Local yaku. \"Five-Heart Straight\". 1 han on top of ittsuu if the winning tile is the five needed for ittsuu."
 define_mod "yaku/ketsupaihou", name: "Ketsupaihou", desc: "Local yaku. \"Missing Tile\". 1 han if you have an edge (12, 89) or middle (24, 57) wait on a tile for which three are already publicly visible (so 12333 winning on 3 doesn't count)."
+define_mod "yaku/grand_cross", name: "Grand Cross", desc: "You may declare NEWS (one of each wind) as a concealed kan worth 1 han."
 # 2 han
 define_mod "yaku/open_riichi", name: "Open Riichi", deps: ["yaku/riichi"], desc: "You have the option to declare open riichi, which is worth 2 han but reveals your hand to the table. Open double riichi is 3 han."
 define_mod "yaku/sanrenkou", name: "Sanrenkou", desc: "Local yaku. \"Three Consecutive Triplets\". 2 han for having three triplets of the same suit in sequence, like 222 333 444."
