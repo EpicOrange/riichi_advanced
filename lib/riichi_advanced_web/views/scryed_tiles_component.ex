@@ -16,16 +16,16 @@ defmodule RiichiAdvancedWeb.ScryedTilesComponent do
     <div class="scryed-tiles-container">
       <div class={[@id]}>
         <%= if Enum.empty?(@marking) do %>
-          <div class={["tile", Utils.strip_attrs(tile)]} :for={tile <- prepare_scryed_tiles(assigns)}></div>
+          <div class={Utils.get_tile_class(tile, i, assigns)} :for={{tile, i} <- prepare_scryed_tiles(assigns)}></div>
         <% else %>
           <%= for {tile, i} <- prepare_scryed_tiles(assigns) do %>
             <%= if GenServer.call(@game_state, {:can_mark?, @viewer, nil, i, :scry}) do %>
-              <div class={["tile", Utils.strip_attrs(tile), "markable"]} phx-cancellable-click="mark_tile" phx-target={@myself} phx-value-index={i}></div>
+              <div class={Utils.get_tile_class(tile, i, assigns, ["markable"])} phx-cancellable-click="mark_tile" phx-target={@myself} phx-value-index={i}></div>
             <% else %>
               <%= if GenServer.call(@game_state, {:is_marked?, @viewer, nil, i, :scry}) do %>
-                <div class={["tile", Utils.strip_attrs(tile), "marked"]}></div>
+                <div class={Utils.get_tile_class(tile, i, assigns, ["marked"])}></div>
               <% else %>
-                <div class={["tile", Utils.strip_attrs(tile)]}></div>
+                <div class={Utils.get_tile_class(tile, i, assigns)}></div>
               <% end %>
             <% end %>
           <% end %>
@@ -37,7 +37,11 @@ defmodule RiichiAdvancedWeb.ScryedTilesComponent do
 
   def prepare_scryed_tiles(assigns) do
     # need to pass in assigns, so that this updates when marking updates
-    Enum.slice(assigns.wall, assigns.wall_index, assigns.num_scryed_tiles)
+    if not Enum.empty?(assigns.named_scryed_tiles) do
+      assigns.named_scryed_tiles
+    else
+      Enum.slice(assigns.wall, assigns.wall_index, assigns.num_scryed_tiles)
+    end
     |> Enum.with_index()
   end
 

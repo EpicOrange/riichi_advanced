@@ -1,5 +1,6 @@
 defmodule RiichiAdvancedWeb.GameLive do
   alias RiichiAdvanced.Constants, as: Constants
+  alias RiichiAdvanced.GameState, as: GameState
   alias RiichiAdvanced.GameState.Debug, as: Debug
   alias RiichiAdvanced.GameState.Game, as: Game
   alias RiichiAdvanced.GameState.Rules, as: Rules
@@ -285,8 +286,9 @@ defmodule RiichiAdvancedWeb.GameLive do
         wall={@state.wall}
         wall_index={@state.wall_index}
         num_scryed_tiles={@state.players[@seat].num_scryed_tiles}
+        named_scryed_tiles={Enum.map(@state.named_scryed_tiles, &GameState.from_named_tile(@state, %{seat: @seat}, &1))}
         marking={@state.marking[@seat]}
-        :if={@state.players[@seat].num_scryed_tiles > 0} />
+        :if={@state.players[@seat].num_scryed_tiles > 0 or not Enum.empty?(@state.named_scryed_tiles)} />
       <.live_component module={RiichiAdvancedWeb.DeclareYakuComponent}
         id="declare-yaku"
         game_state={@game_state}

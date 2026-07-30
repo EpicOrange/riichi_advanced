@@ -1,0 +1,244 @@
+on after_initialization do
+  add_rule("Rules", "Arisu", """
+    If you win with a concealed hand, flip the top tile of the wall after revealed dora indicators. Gain one chip for each matching tile, and if any tiles did match, repeat the process by flipping over the next top tile. This process stops once a match is not found OR if the end of the wall is reached (no more top tiles).
+    """)
+end
+
+# replace the win action on each win button to introduce a wall-flipping phase before actually winning
+
+replace 1, "buttons.ron", ["win_by_discard", "ron"], perform_arisu(%{key: "ron"})
+replace 1, "buttons.tsumo", ["win_by_draw", "tsumo"], perform_arisu(%{key: "tsumo"})
+replace 1, "buttons.chankan", ["win_by_call", "ron"], perform_arisu(%{key: "chankan"})
+apply append, "buttons.chii.show_when", status_missing("performing_arisu")
+apply append, "buttons.pon.show_when", status_missing("performing_arisu")
+apply append, "buttons.daiminkan.show_when", status_missing("performing_arisu")
+apply append, "buttons.ankan.show_when", status_missing("performing_arisu")
+apply append, "buttons.kakan.show_when", status_missing("performing_arisu")
+apply append, "buttons.riichi.show_when", status_missing("performing_arisu")
+apply append, "buttons.ron.show_when", status_missing("performing_arisu")
+apply append, "buttons.tsumo.show_when", status_missing("performing_arisu")
+apply append, "buttons.chankan.show_when", status_missing("performing_arisu")
+
+def perform_arisu do
+  if @closed_hand do
+    set_status("performing_arisu")
+    push_message("won with a closed hand, and will flip tiles on the wall from the dora indicator onward, scoring shuugi for every matching tile in hand")
+    save_revealed_tiles
+
+    pause(2000); matching = 0; flip_next_tile(%{key: "$key"})
+    arisu_50(%{key: "$key"})
+    arisu_50(%{key: "$key"})
+    arisu_50(%{key: "$key"})
+    arisu_50(%{key: "$key"})
+    pause(3000)
+    remove_attr([-18, -16, -14, -12, -10, -8, -6], ["inactive"])
+    clear_scry
+    load_revealed_tiles
+    pause(0)
+    cond do
+      "$key" == "tsumo"   -> win_by_draw("tsumo")
+      "$key" == "ron"     -> win_by_discard("ron")
+      "$key" == "chankan" -> win_by_call("ron")
+    end
+  else
+    cond do
+      "$key" == "tsumo"   -> win_by_draw("tsumo")
+      "$key" == "ron"     -> win_by_discard("ron")
+      "$key" == "chankan" -> win_by_call("ron")
+    end
+  end
+end
+
+define_yaku shuugi, "Arisu", ["arisu_matches", "⛀"], arisu_matches >= 1
+
+# put this at the end so you don't see what coding in a loopless language looks like
+
+def arisu_50 do
+  unless status("stop_arisu") do pause(1000); flip_next_tile(%{key: "$key"}) end
+  unless status("stop_arisu") do pause(1000); flip_next_tile(%{key: "$key"}) end
+  unless status("stop_arisu") do pause(1000); flip_next_tile(%{key: "$key"}) end
+  unless status("stop_arisu") do pause(1000); flip_next_tile(%{key: "$key"}) end
+  unless status("stop_arisu") do pause(1000); flip_next_tile(%{key: "$key"}) end
+  unless status("stop_arisu") do pause(1000); flip_next_tile(%{key: "$key"}) end
+  unless status("stop_arisu") do pause(1000); flip_next_tile(%{key: "$key"}) end
+  unless status("stop_arisu") do pause(1000); flip_next_tile(%{key: "$key"}) end
+  unless status("stop_arisu") do pause(1000); flip_next_tile(%{key: "$key"}) end
+  unless status("stop_arisu") do pause(1000); flip_next_tile(%{key: "$key"}) end
+  unless status("stop_arisu") do pause(1000); flip_next_tile(%{key: "$key"}) end
+  unless status("stop_arisu") do pause(1000); flip_next_tile(%{key: "$key"}) end
+  unless status("stop_arisu") do pause(1000); flip_next_tile(%{key: "$key"}) end
+  unless status("stop_arisu") do pause(1000); flip_next_tile(%{key: "$key"}) end
+  unless status("stop_arisu") do pause(1000); flip_next_tile(%{key: "$key"}) end
+  unless status("stop_arisu") do pause(1000); flip_next_tile(%{key: "$key"}) end
+  unless status("stop_arisu") do pause(1000); flip_next_tile(%{key: "$key"}) end
+  unless status("stop_arisu") do pause(1000); flip_next_tile(%{key: "$key"}) end
+  unless status("stop_arisu") do pause(1000); flip_next_tile(%{key: "$key"}) end
+  unless status("stop_arisu") do pause(1000); flip_next_tile(%{key: "$key"}) end
+  unless status("stop_arisu") do pause(1000); flip_next_tile(%{key: "$key"}) end
+  unless status("stop_arisu") do pause(1000); flip_next_tile(%{key: "$key"}) end
+  unless status("stop_arisu") do pause(1000); flip_next_tile(%{key: "$key"}) end
+  unless status("stop_arisu") do pause(1000); flip_next_tile(%{key: "$key"}) end
+  unless status("stop_arisu") do pause(1000); flip_next_tile(%{key: "$key"}) end
+  unless status("stop_arisu") do pause(1000); flip_next_tile(%{key: "$key"}) end
+  unless status("stop_arisu") do pause(1000); flip_next_tile(%{key: "$key"}) end
+  unless status("stop_arisu") do pause(1000); flip_next_tile(%{key: "$key"}) end
+  unless status("stop_arisu") do pause(1000); flip_next_tile(%{key: "$key"}) end
+  unless status("stop_arisu") do pause(1000); flip_next_tile(%{key: "$key"}) end
+  unless status("stop_arisu") do pause(1000); flip_next_tile(%{key: "$key"}) end
+  unless status("stop_arisu") do pause(1000); flip_next_tile(%{key: "$key"}) end
+  unless status("stop_arisu") do pause(1000); flip_next_tile(%{key: "$key"}) end
+  unless status("stop_arisu") do pause(1000); flip_next_tile(%{key: "$key"}) end
+  unless status("stop_arisu") do pause(1000); flip_next_tile(%{key: "$key"}) end
+  unless status("stop_arisu") do pause(1000); flip_next_tile(%{key: "$key"}) end
+  unless status("stop_arisu") do pause(1000); flip_next_tile(%{key: "$key"}) end
+  unless status("stop_arisu") do pause(1000); flip_next_tile(%{key: "$key"}) end
+  unless status("stop_arisu") do pause(1000); flip_next_tile(%{key: "$key"}) end
+  unless status("stop_arisu") do pause(1000); flip_next_tile(%{key: "$key"}) end
+  unless status("stop_arisu") do pause(1000); flip_next_tile(%{key: "$key"}) end
+  unless status("stop_arisu") do pause(1000); flip_next_tile(%{key: "$key"}) end
+  unless status("stop_arisu") do pause(1000); flip_next_tile(%{key: "$key"}) end
+  unless status("stop_arisu") do pause(1000); flip_next_tile(%{key: "$key"}) end
+  unless status("stop_arisu") do pause(1000); flip_next_tile(%{key: "$key"}) end
+  unless status("stop_arisu") do pause(1000); flip_next_tile(%{key: "$key"}) end
+  unless status("stop_arisu") do pause(1000); flip_next_tile(%{key: "$key"}) end
+  unless status("stop_arisu") do pause(1000); flip_next_tile(%{key: "$key"}) end
+  unless status("stop_arisu") do pause(1000); flip_next_tile(%{key: "$key"}) end
+end
+
+def flip_next_tile do
+  unless status("stop_arisu") do
+    # TODO write a binary search tree instead of this b-tree lookin ass garbage
+    if tile_revealed(-14) do
+      shift_tile_to_dead_wall(2)
+    end
+    cond do
+      tile_revealed(-150) -> cond do
+        tile_revealed(-198) and tile_not_revealed(-200) -> reveal_tile(-200); scry_named_tiles(-200); remove_attr([-198], ["highlight"]); add_attr([-200], ["highlight"])
+        tile_revealed(-196) and tile_not_revealed(-198) -> reveal_tile(-198); scry_named_tiles(-198); remove_attr([-196], ["highlight"]); add_attr([-198], ["highlight"])
+        tile_revealed(-194) and tile_not_revealed(-196) -> reveal_tile(-196); scry_named_tiles(-196); remove_attr([-194], ["highlight"]); add_attr([-196], ["highlight"])
+        tile_revealed(-192) and tile_not_revealed(-194) -> reveal_tile(-194); scry_named_tiles(-194); remove_attr([-192], ["highlight"]); add_attr([-194], ["highlight"])
+        tile_revealed(-190) and tile_not_revealed(-192) -> reveal_tile(-192); scry_named_tiles(-192); remove_attr([-190], ["highlight"]); add_attr([-192], ["highlight"])
+        tile_revealed(-188) and tile_not_revealed(-190) -> reveal_tile(-190); scry_named_tiles(-190); remove_attr([-188], ["highlight"]); add_attr([-190], ["highlight"])
+        tile_revealed(-186) and tile_not_revealed(-188) -> reveal_tile(-188); scry_named_tiles(-188); remove_attr([-186], ["highlight"]); add_attr([-188], ["highlight"])
+        tile_revealed(-184) and tile_not_revealed(-186) -> reveal_tile(-186); scry_named_tiles(-186); remove_attr([-184], ["highlight"]); add_attr([-186], ["highlight"])
+        tile_revealed(-182) and tile_not_revealed(-184) -> reveal_tile(-184); scry_named_tiles(-184); remove_attr([-182], ["highlight"]); add_attr([-184], ["highlight"])
+        tile_revealed(-180) and tile_not_revealed(-182) -> reveal_tile(-182); scry_named_tiles(-182); remove_attr([-180], ["highlight"]); add_attr([-182], ["highlight"])
+        tile_revealed(-178) and tile_not_revealed(-180) -> reveal_tile(-180); scry_named_tiles(-180); remove_attr([-178], ["highlight"]); add_attr([-180], ["highlight"])
+        tile_revealed(-176) and tile_not_revealed(-178) -> reveal_tile(-178); scry_named_tiles(-178); remove_attr([-176], ["highlight"]); add_attr([-178], ["highlight"])
+        tile_revealed(-174) and tile_not_revealed(-176) -> reveal_tile(-176); scry_named_tiles(-176); remove_attr([-174], ["highlight"]); add_attr([-176], ["highlight"])
+        tile_revealed(-172) and tile_not_revealed(-174) -> reveal_tile(-174); scry_named_tiles(-174); remove_attr([-172], ["highlight"]); add_attr([-174], ["highlight"])
+        tile_revealed(-170) and tile_not_revealed(-172) -> reveal_tile(-172); scry_named_tiles(-172); remove_attr([-170], ["highlight"]); add_attr([-172], ["highlight"])
+        tile_revealed(-168) and tile_not_revealed(-170) -> reveal_tile(-170); scry_named_tiles(-170); remove_attr([-168], ["highlight"]); add_attr([-170], ["highlight"])
+        tile_revealed(-166) and tile_not_revealed(-168) -> reveal_tile(-168); scry_named_tiles(-168); remove_attr([-166], ["highlight"]); add_attr([-168], ["highlight"])
+        tile_revealed(-164) and tile_not_revealed(-166) -> reveal_tile(-166); scry_named_tiles(-166); remove_attr([-164], ["highlight"]); add_attr([-166], ["highlight"])
+        tile_revealed(-162) and tile_not_revealed(-164) -> reveal_tile(-164); scry_named_tiles(-164); remove_attr([-162], ["highlight"]); add_attr([-164], ["highlight"])
+        tile_revealed(-160) and tile_not_revealed(-162) -> reveal_tile(-162); scry_named_tiles(-162); remove_attr([-160], ["highlight"]); add_attr([-162], ["highlight"])
+        tile_revealed(-158) and tile_not_revealed(-160) -> reveal_tile(-160); scry_named_tiles(-160); remove_attr([-158], ["highlight"]); add_attr([-160], ["highlight"])
+        tile_revealed(-156) and tile_not_revealed(-158) -> reveal_tile(-158); scry_named_tiles(-158); remove_attr([-156], ["highlight"]); add_attr([-158], ["highlight"])
+        tile_revealed(-154) and tile_not_revealed(-156) -> reveal_tile(-156); scry_named_tiles(-156); remove_attr([-154], ["highlight"]); add_attr([-156], ["highlight"])
+        tile_revealed(-152) and tile_not_revealed(-154) -> reveal_tile(-154); scry_named_tiles(-154); remove_attr([-152], ["highlight"]); add_attr([-154], ["highlight"])
+        tile_revealed(-150) and tile_not_revealed(-152) -> reveal_tile(-152); scry_named_tiles(-152); remove_attr([-150], ["highlight"]); add_attr([-152], ["highlight"])
+      end
+      tile_revealed(-100) -> cond do
+        tile_revealed(-148) and tile_not_revealed(-150) -> reveal_tile(-150); scry_named_tiles(-150); remove_attr([-148], ["highlight"]); add_attr([-150], ["highlight"])
+        tile_revealed(-146) and tile_not_revealed(-148) -> reveal_tile(-148); scry_named_tiles(-148); remove_attr([-146], ["highlight"]); add_attr([-148], ["highlight"])
+        tile_revealed(-144) and tile_not_revealed(-146) -> reveal_tile(-146); scry_named_tiles(-146); remove_attr([-144], ["highlight"]); add_attr([-146], ["highlight"])
+        tile_revealed(-142) and tile_not_revealed(-144) -> reveal_tile(-144); scry_named_tiles(-144); remove_attr([-142], ["highlight"]); add_attr([-144], ["highlight"])
+        tile_revealed(-140) and tile_not_revealed(-142) -> reveal_tile(-142); scry_named_tiles(-142); remove_attr([-140], ["highlight"]); add_attr([-142], ["highlight"])
+        tile_revealed(-138) and tile_not_revealed(-140) -> reveal_tile(-140); scry_named_tiles(-140); remove_attr([-138], ["highlight"]); add_attr([-140], ["highlight"])
+        tile_revealed(-136) and tile_not_revealed(-138) -> reveal_tile(-138); scry_named_tiles(-138); remove_attr([-136], ["highlight"]); add_attr([-138], ["highlight"])
+        tile_revealed(-134) and tile_not_revealed(-136) -> reveal_tile(-136); scry_named_tiles(-136); remove_attr([-134], ["highlight"]); add_attr([-136], ["highlight"])
+        tile_revealed(-132) and tile_not_revealed(-134) -> reveal_tile(-134); scry_named_tiles(-134); remove_attr([-132], ["highlight"]); add_attr([-134], ["highlight"])
+        tile_revealed(-130) and tile_not_revealed(-132) -> reveal_tile(-132); scry_named_tiles(-132); remove_attr([-130], ["highlight"]); add_attr([-132], ["highlight"])
+        tile_revealed(-128) and tile_not_revealed(-130) -> reveal_tile(-130); scry_named_tiles(-130); remove_attr([-128], ["highlight"]); add_attr([-130], ["highlight"])
+        tile_revealed(-126) and tile_not_revealed(-128) -> reveal_tile(-128); scry_named_tiles(-128); remove_attr([-126], ["highlight"]); add_attr([-128], ["highlight"])
+        tile_revealed(-124) and tile_not_revealed(-126) -> reveal_tile(-126); scry_named_tiles(-126); remove_attr([-124], ["highlight"]); add_attr([-126], ["highlight"])
+        tile_revealed(-122) and tile_not_revealed(-124) -> reveal_tile(-124); scry_named_tiles(-124); remove_attr([-122], ["highlight"]); add_attr([-124], ["highlight"])
+        tile_revealed(-120) and tile_not_revealed(-122) -> reveal_tile(-122); scry_named_tiles(-122); remove_attr([-120], ["highlight"]); add_attr([-122], ["highlight"])
+        tile_revealed(-118) and tile_not_revealed(-120) -> reveal_tile(-120); scry_named_tiles(-120); remove_attr([-118], ["highlight"]); add_attr([-120], ["highlight"])
+        tile_revealed(-116) and tile_not_revealed(-118) -> reveal_tile(-118); scry_named_tiles(-118); remove_attr([-116], ["highlight"]); add_attr([-118], ["highlight"])
+        tile_revealed(-114) and tile_not_revealed(-116) -> reveal_tile(-116); scry_named_tiles(-116); remove_attr([-114], ["highlight"]); add_attr([-116], ["highlight"])
+        tile_revealed(-112) and tile_not_revealed(-114) -> reveal_tile(-114); scry_named_tiles(-114); remove_attr([-112], ["highlight"]); add_attr([-114], ["highlight"])
+        tile_revealed(-110) and tile_not_revealed(-112) -> reveal_tile(-112); scry_named_tiles(-112); remove_attr([-110], ["highlight"]); add_attr([-112], ["highlight"])
+        tile_revealed(-108) and tile_not_revealed(-110) -> reveal_tile(-110); scry_named_tiles(-110); remove_attr([-108], ["highlight"]); add_attr([-110], ["highlight"])
+        tile_revealed(-106) and tile_not_revealed(-108) -> reveal_tile(-108); scry_named_tiles(-108); remove_attr([-106], ["highlight"]); add_attr([-108], ["highlight"])
+        tile_revealed(-104) and tile_not_revealed(-106) -> reveal_tile(-106); scry_named_tiles(-106); remove_attr([-104], ["highlight"]); add_attr([-106], ["highlight"])
+        tile_revealed(-102) and tile_not_revealed(-104) -> reveal_tile(-104); scry_named_tiles(-104); remove_attr([-102], ["highlight"]); add_attr([-104], ["highlight"])
+        tile_revealed(-100) and tile_not_revealed(-102) -> reveal_tile(-102); scry_named_tiles(-102); remove_attr([-100], ["highlight"]); add_attr([-102], ["highlight"])
+      end
+      tile_revealed(-50) -> cond do
+        tile_revealed(-98) and tile_not_revealed(-100) -> reveal_tile(-100); scry_named_tiles(-100); remove_attr([-98], ["highlight"]); add_attr([-100], ["highlight"])
+        tile_revealed(-96) and tile_not_revealed(-98) -> reveal_tile(-98); scry_named_tiles(-98); remove_attr([-96], ["highlight"]); add_attr([-98], ["highlight"])
+        tile_revealed(-94) and tile_not_revealed(-96) -> reveal_tile(-96); scry_named_tiles(-96); remove_attr([-94], ["highlight"]); add_attr([-96], ["highlight"])
+        tile_revealed(-92) and tile_not_revealed(-94) -> reveal_tile(-94); scry_named_tiles(-94); remove_attr([-92], ["highlight"]); add_attr([-94], ["highlight"])
+        tile_revealed(-90) and tile_not_revealed(-92) -> reveal_tile(-92); scry_named_tiles(-92); remove_attr([-90], ["highlight"]); add_attr([-92], ["highlight"])
+        tile_revealed(-88) and tile_not_revealed(-90) -> reveal_tile(-90); scry_named_tiles(-90); remove_attr([-88], ["highlight"]); add_attr([-90], ["highlight"])
+        tile_revealed(-86) and tile_not_revealed(-88) -> reveal_tile(-88); scry_named_tiles(-88); remove_attr([-86], ["highlight"]); add_attr([-88], ["highlight"])
+        tile_revealed(-84) and tile_not_revealed(-86) -> reveal_tile(-86); scry_named_tiles(-86); remove_attr([-84], ["highlight"]); add_attr([-86], ["highlight"])
+        tile_revealed(-82) and tile_not_revealed(-84) -> reveal_tile(-84); scry_named_tiles(-84); remove_attr([-82], ["highlight"]); add_attr([-84], ["highlight"])
+        tile_revealed(-80) and tile_not_revealed(-82) -> reveal_tile(-82); scry_named_tiles(-82); remove_attr([-80], ["highlight"]); add_attr([-82], ["highlight"])
+        tile_revealed(-78) and tile_not_revealed(-80) -> reveal_tile(-80); scry_named_tiles(-80); remove_attr([-78], ["highlight"]); add_attr([-80], ["highlight"])
+        tile_revealed(-76) and tile_not_revealed(-78) -> reveal_tile(-78); scry_named_tiles(-78); remove_attr([-76], ["highlight"]); add_attr([-78], ["highlight"])
+        tile_revealed(-74) and tile_not_revealed(-76) -> reveal_tile(-76); scry_named_tiles(-76); remove_attr([-74], ["highlight"]); add_attr([-76], ["highlight"])
+        tile_revealed(-72) and tile_not_revealed(-74) -> reveal_tile(-74); scry_named_tiles(-74); remove_attr([-72], ["highlight"]); add_attr([-74], ["highlight"])
+        tile_revealed(-70) and tile_not_revealed(-72) -> reveal_tile(-72); scry_named_tiles(-72); remove_attr([-70], ["highlight"]); add_attr([-72], ["highlight"])
+        tile_revealed(-68) and tile_not_revealed(-70) -> reveal_tile(-70); scry_named_tiles(-70); remove_attr([-68], ["highlight"]); add_attr([-70], ["highlight"])
+        tile_revealed(-66) and tile_not_revealed(-68) -> reveal_tile(-68); scry_named_tiles(-68); remove_attr([-66], ["highlight"]); add_attr([-68], ["highlight"])
+        tile_revealed(-64) and tile_not_revealed(-66) -> reveal_tile(-66); scry_named_tiles(-66); remove_attr([-64], ["highlight"]); add_attr([-66], ["highlight"])
+        tile_revealed(-62) and tile_not_revealed(-64) -> reveal_tile(-64); scry_named_tiles(-64); remove_attr([-62], ["highlight"]); add_attr([-64], ["highlight"])
+        tile_revealed(-60) and tile_not_revealed(-62) -> reveal_tile(-62); scry_named_tiles(-62); remove_attr([-60], ["highlight"]); add_attr([-62], ["highlight"])
+        tile_revealed(-58) and tile_not_revealed(-60) -> reveal_tile(-60); scry_named_tiles(-60); remove_attr([-58], ["highlight"]); add_attr([-60], ["highlight"])
+        tile_revealed(-56) and tile_not_revealed(-58) -> reveal_tile(-58); scry_named_tiles(-58); remove_attr([-56], ["highlight"]); add_attr([-58], ["highlight"])
+        tile_revealed(-54) and tile_not_revealed(-56) -> reveal_tile(-56); scry_named_tiles(-56); remove_attr([-54], ["highlight"]); add_attr([-56], ["highlight"])
+        tile_revealed(-52) and tile_not_revealed(-54) -> reveal_tile(-54); scry_named_tiles(-54); remove_attr([-52], ["highlight"]); add_attr([-54], ["highlight"])
+        tile_revealed(-50) and tile_not_revealed(-52) -> reveal_tile(-52); scry_named_tiles(-52); remove_attr([-50], ["highlight"]); add_attr([-52], ["highlight"])
+      end
+      true -> cond do
+        tile_revealed(-48) and tile_not_revealed(-50) -> reveal_tile(-50); scry_named_tiles(-50); remove_attr([-48], ["highlight"]); add_attr([-50], ["highlight"])
+        tile_revealed(-46) and tile_not_revealed(-48) -> reveal_tile(-48); scry_named_tiles(-48); remove_attr([-46], ["highlight"]); add_attr([-48], ["highlight"])
+        tile_revealed(-44) and tile_not_revealed(-46) -> reveal_tile(-46); scry_named_tiles(-46); remove_attr([-44], ["highlight"]); add_attr([-46], ["highlight"])
+        tile_revealed(-42) and tile_not_revealed(-44) -> reveal_tile(-44); scry_named_tiles(-44); remove_attr([-42], ["highlight"]); add_attr([-44], ["highlight"])
+        tile_revealed(-40) and tile_not_revealed(-42) -> reveal_tile(-42); scry_named_tiles(-42); remove_attr([-40], ["highlight"]); add_attr([-42], ["highlight"])
+        tile_revealed(-38) and tile_not_revealed(-40) -> reveal_tile(-40); scry_named_tiles(-40); remove_attr([-38], ["highlight"]); add_attr([-40], ["highlight"])
+        tile_revealed(-36) and tile_not_revealed(-38) -> reveal_tile(-38); scry_named_tiles(-38); remove_attr([-36], ["highlight"]); add_attr([-38], ["highlight"])
+        tile_revealed(-34) and tile_not_revealed(-36) -> reveal_tile(-36); scry_named_tiles(-36); remove_attr([-34], ["highlight"]); add_attr([-36], ["highlight"])
+        tile_revealed(-32) and tile_not_revealed(-34) -> reveal_tile(-34); scry_named_tiles(-34); remove_attr([-32], ["highlight"]); add_attr([-34], ["highlight"])
+        tile_revealed(-30) and tile_not_revealed(-32) -> reveal_tile(-32); scry_named_tiles(-32); remove_attr([-30], ["highlight"]); add_attr([-32], ["highlight"])
+        tile_revealed(-28) and tile_not_revealed(-30) -> reveal_tile(-30); scry_named_tiles(-30); remove_attr([-28], ["highlight"]); add_attr([-30], ["highlight"])
+        tile_revealed(-26) and tile_not_revealed(-28) -> reveal_tile(-28); scry_named_tiles(-28); remove_attr([-26], ["highlight"]); add_attr([-28], ["highlight"])
+        tile_revealed(-24) and tile_not_revealed(-26) -> reveal_tile(-26); scry_named_tiles(-26); remove_attr([-24], ["highlight"]); add_attr([-26], ["highlight"])
+        tile_revealed(-22) and tile_not_revealed(-24) -> reveal_tile(-24); scry_named_tiles(-24); remove_attr([-22], ["highlight"]); add_attr([-24], ["highlight"])
+        tile_revealed(-20) and tile_not_revealed(-22) -> reveal_tile(-22); scry_named_tiles(-22); remove_attr([-20], ["highlight"]); add_attr([-22], ["highlight"])
+        tile_revealed(-18) and tile_not_revealed(-20) -> reveal_tile(-20); scry_named_tiles(-20); remove_attr([-18], ["highlight"]); add_attr([-20], ["highlight"])
+        tile_revealed(-16) and tile_not_revealed(-18) -> reveal_tile(-18); scry_named_tiles(-18); remove_attr([-16], ["highlight"]); add_attr([-18], ["highlight"])
+        tile_revealed(-14) and tile_not_revealed(-16) -> reveal_tile(-16); scry_named_tiles(-16); remove_attr([-14], ["highlight"]); add_attr([-16], ["highlight"])
+        tile_revealed(-12) and tile_not_revealed(-14) -> reveal_tile(-14); scry_named_tiles(-14); remove_attr([-12], ["highlight"]); add_attr([-14], ["highlight"])
+        tile_revealed(-10) and tile_not_revealed(-12) -> reveal_tile(-12); scry_named_tiles(-12); remove_attr([-10], ["highlight"]); add_attr([-12], ["highlight"])
+        tile_revealed(-8) and tile_not_revealed(-10) -> reveal_tile(-10); scry_named_tiles(-10); remove_attr([-8], ["highlight"]); add_attr([-10], ["highlight"])
+        tile_revealed(-6) and tile_not_revealed(-8) -> reveal_tile(-8); scry_named_tiles(-8); remove_attr([-6], ["highlight"]); add_attr([-8], ["highlight"])
+      end
+    end
+    prev_arisu_matches = arisu_matches
+    add_counter("arisu_matches", "count_matching_ways", ["hand_any", "last_scryed_tile"], ~m"pair:1")
+    add_counter("arisu_matches", "count_matching_ways", ["call_tiles_any", "last_scryed_tile"], ~m"pair:1")
+    cond do
+      "$key" == "tsumo"   -> if match(["draw", "last_scryed_tile"], ~m"pair:1") do arisu_matches += 1 end
+      "$key" == "ron"     -> if match(["last_discard", "last_scryed_tile"], ~m"pair:1") do arisu_matches += 1 end
+      "$key" == "chankan" -> if match(["last_called_tile", "last_scryed_tile"], ~m"pair:1") do arisu_matches += 1 end
+    end
+    cond do
+      prev_arisu_matches == arisu_matches ->
+        cond do
+          "$key" == "tsumo" -> push_message("does not have any more tiles in hand matching the last revealed tile, and so will be paid $chips extra chips from the discarder", %{chips: "arisu_matches"})
+          true -> push_message("does not have any more tiles in hand matching the last revealed tile, and so will be paid $chips extra chips from all other players", %{chips: "arisu_matches"})
+        end
+        set_status("stop_arisu")
+      tiles_in_wall < 2 ->
+        cond do
+          "$key" == "tsumo" -> push_message("does not have any more top-stack tiles in wall to flip, and will be paid $chips extra chips from the discarder", %{chips: "arisu_matches"})
+          true -> push_message("does not have any more top-stack tiles in wall to flip, and will be paid $chips extra chips from all other players", %{chips: "arisu_matches"})
+        end
+        set_status("stop_arisu")
+    end
+  end
+end

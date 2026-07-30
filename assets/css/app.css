@@ -2065,7 +2065,7 @@ div.scryed-tiles-container {
   display: flex;
   position: absolute;
   font-size: calc(0.5 * var(--tile-size));
-  bottom: calc(1.5 * var(--tile-size));
+  bottom: calc(2.5 * var(--tile-size));
   left: 0;
   width: 100%;
   display: flex;
@@ -2080,7 +2080,7 @@ div.scryed-tiles {
 }
 div.scryed-tiles::before {
   content: "";
-  background: #0000001F;
+  background: #0000003F;
   position: absolute;
   border-radius: calc(0.25 * var(--tile-size));
   top: calc(-0.5 * var(--tile-size));

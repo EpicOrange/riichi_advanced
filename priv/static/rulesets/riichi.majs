@@ -786,6 +786,7 @@ config_mod "shuugi/tobi", name: "chips", values: [1, 2, 3, 4, 5], default: 1
 define_mod "shuugi/called_game", order: 4, name: "Called Game", deps: ["shuugi", "called_game"], desc: "If a player reaches the called game score, they receive 1 chip from every player."
 config_mod "shuugi/called_game", name: "chips", values: [1, 2, 3, 4, 5], default: 1
 define_mod "shuugi/placement_only_battle", order: 5, name: "Placement-Only Battle", desc: "Final scores are completely determined by oka and uma, using the final score to determine ranking."
+define_mod "shuugi/arisu", order: 5, name: "Arisu", deps: ["shuugi", "dora"], desc: "After a concealed win, flip tiles on the wall starting from the visible dora indicator, and gain chips for each matching tile. Repeat until you get no match. Not recommended with joker mods, since it will flip tiles forever."
 define_mod_category "Other"
 define_mod cancellable_riichi, order: 1, deps: ["yaku/riichi"], name: "Cancellable Riichi", desc: "Riichi declarations happen only after you confirm by discarding a tile."
 define_mod ten, order: 3, name: "Ten", desc: "Adds 10m, 10p, and 10s. Changes dora accordingly (if dora is enabled). Tanyao now allows nines, and chanta/junchan/honroutou require tens instead. 13 Orphans now requires the ten instead of the nine of each suit. Ittsuu allows 23456789T."
