@@ -27,6 +27,11 @@ if !sets >= 16 do # circle set
   define_play_effect "02j" do joker_discard(status: "discarded_2j", is_blue: 1) end
   define_play_effect "04j" do joker_discard(status: "discarded_4j", is_blue: 0) end
   define_play_effect "05j" do joker_discard(status: "discarded_5j", is_blue: 0) end
+  define_play_restriction "04j", status_missing("initial_flowers", "nfnl_eligible")
+  define_play_restriction "05j", status_missing("initial_flowers", "nfnl_eligible")
+  define_play_restriction "06j", status_missing("initial_flowers", "nfnl_eligible")
+  define_play_restriction "07j", status_missing("initial_flowers", "nfnl_eligible")
+  define_play_restriction "08j", status_missing("initial_flowers", "nfnl_eligible")
   define_yaku yaku, "Blue Joker Set", [1, "Mủn"], match(["hand", "calls", "flowers", "jokers", "winning_tile"], ~m"nojoker, 00j:1, 06j:1, 07j:1, 08j:1")
   define_yaku yaku, "Blue Joker Set", [1, "Mủn"], match(["flowers", "jokers"], ~m"nojoker, 00j:1, 06j:1, 07j:1, 08j:1")
   define_yaku yaku, "Red Joker Set", [1, "Mủn"], match(["hand", "calls", "flowers", "jokers", "winning_tile"], ~m"nojoker, 02j:1, 04j:1, 05j:1, 09j:1")
@@ -48,6 +53,11 @@ if !sets >= 24 do # diamond set
   define_play_effect "52j" do joker_discard(status: "discarded_2j", is_blue: 1) end
   define_play_effect "54j" do joker_discard(status: "discarded_4j", is_blue: 0) end
   define_play_effect "55j" do joker_discard(status: "discarded_5j", is_blue: 0) end
+  define_play_restriction "54j", status_missing("initial_flowers", "nfnl_eligible")
+  define_play_restriction "55j", status_missing("initial_flowers", "nfnl_eligible")
+  define_play_restriction "56j", status_missing("initial_flowers", "nfnl_eligible")
+  define_play_restriction "57j", status_missing("initial_flowers", "nfnl_eligible")
+  define_play_restriction "58j", status_missing("initial_flowers", "nfnl_eligible")
   define_yaku yaku, "Blue Joker Set", [1, "Mủn"], match(["hand", "calls", "flowers", "jokers", "winning_tile"], ~m"nojoker, 50j:1, 56j:1, 57j:1, 58j:1")
   define_yaku yaku, "Blue Joker Set", [1, "Mủn"], match(["flowers", "jokers"], ~m"nojoker, 50j:1, 56j:1, 57j:1, 58j:1")
   define_yaku yaku, "Red Joker Set", [1, "Mủn"], match(["hand", "calls", "flowers", "jokers", "winning_tile"], ~m"nojoker, 52j:1, 54j:1, 55j:1, 59j:1")
@@ -69,6 +79,11 @@ if !sets >= 32 do # hexagon set
   define_play_effect "82j" do joker_discard(status: "discarded_2j", is_blue: 1) end
   define_play_effect "84j" do joker_discard(status: "discarded_4j", is_blue: 0) end
   define_play_effect "85j" do joker_discard(status: "discarded_5j", is_blue: 0) end
+  define_play_restriction "84j", status_missing("initial_flowers", "nfnl_eligible")
+  define_play_restriction "85j", status_missing("initial_flowers", "nfnl_eligible")
+  define_play_restriction "86j", status_missing("initial_flowers", "nfnl_eligible")
+  define_play_restriction "87j", status_missing("initial_flowers", "nfnl_eligible")
+  define_play_restriction "88j", status_missing("initial_flowers", "nfnl_eligible")
   define_yaku yaku, "Blue Joker Set", [1, "Mủn"], match(["hand", "calls", "flowers", "jokers", "winning_tile"], ~m"nojoker, 80j:1, 86j:1, 87j:1, 88j:1")
   define_yaku yaku, "Blue Joker Set", [1, "Mủn"], match(["flowers", "jokers"], ~m"nojoker, 80j:1, 86j:1, 87j:1, 88j:1")
   define_yaku yaku, "Red Joker Set", [1, "Mủn"], match(["hand", "calls", "flowers", "jokers", "winning_tile"], ~m"nojoker, 82j:1, 84j:1, 85j:1, 89j:1")

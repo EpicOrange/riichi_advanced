@@ -60,6 +60,13 @@ on after_start do
   set_tile_alias_all(["8j"], ["1m","2m","3m","4m","5m","6m","7m","8m","9m"])
 end
 
+# cannot discard jokers (except 0j and 2j) after flower phase
+define_play_restriction "4j", status_missing("initial_flowers", "nfnl_eligible")
+define_play_restriction "5j", status_missing("initial_flowers", "nfnl_eligible")
+define_play_restriction "6j", status_missing("initial_flowers", "nfnl_eligible")
+define_play_restriction "7j", status_missing("initial_flowers", "nfnl_eligible")
+define_play_restriction "8j", status_missing("initial_flowers", "nfnl_eligible")
+
 # # funny animation. might remove it if it's annoying
 # apply set_append, "interruptible_actions", ["convert_last_discard"]
 # def make_joker_discard do

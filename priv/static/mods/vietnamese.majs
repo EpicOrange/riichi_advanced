@@ -27,7 +27,9 @@ on after_initialization do
   add_rule("Tiles", "Base Tiles", "- Four Kings %{kings}", %{kings: ~t"1234k"})
   add_rule("Tiles", "Base Tiles", "- Four Queens %{queens}", %{queens: ~t"1234q"})
   add_rule("Tiles", "Base Tiles", "- Plus 8 to 32 Joker tiles %{jokers}", %{jokers: ~t"07892456j"})
-  add_rule("Rules", "Discarded Flowers/Jokers", "A discarded flower or joker acts as an anything-joker, but can only be claimed for a win.")
+  add_rule("Rules", "Discarding Flowers/Jokers", "A discarded flower acts as an anything-joker, but can only be claimed for a win.")
+  add_rule("Rules", "Discarding Flowers/Jokers", "A discarded joker can also only be claimed for a win, but it acts as itself, not an anything-joker.")
+  add_rule("Rules", "Discarding Flowers/Jokers", "You cannot discard most jokers after the initial flower phase, unless you are going for a No Flowers No Leaves hand. Exception: you can always discard Anything (縂) and Number (合) jokers.")
   add_rule("Rules", "Scoring", """
     Upon a win, every 6 Phán is converted to 1 Mủn. If there are any Mủn, each Mủn is 32 points. Otherwise, 1/2/3/4/5 Phán is 1/2/4/8/16 points. This is your Single payment; double it to get the Double payment.
     Afterwards, if Mủn was scored, any leftover Phán adds 6 points to the Single payment and 6 (not 12) points to the Double payment.
@@ -188,7 +190,7 @@ define_mod viet_quad_bonus, name: "Quad Bonus", desc: "Adds a fixed undoubled bo
 config_mod viet_quad_bonus, name: "bonus", values: [5, 6], default: 6
 define_mod viet_phan_bonus, name: "Leftover Phán", desc: "Changes the undoubled amount added by extra phán, in hands scoring 1 mủn or more. It is normally 6."
 config_mod viet_phan_bonus, name: "bonus", values: [1, 2, 6], default: 6
-define_mod viet_more_jokers, name: "More Jokers (beta)", desc: "Add more sets of jokers to the wall on top of the existing 8. This is in beta since right now it makes the game run really slowly."
+define_mod viet_more_jokers, name: "More Jokers", desc: "Add more sets of jokers to the wall on top of the existing 8. It is recommended to enable No Seven Pairs when playing with extra jokers."
 config_mod viet_more_jokers, name: "sets", values: [16, 24, 32]
 define_mod suufon_renda, name: "Four Winds Draw", desc: "If the first discard for all four players is the same wind tile, the round ends in an abortive draw."
 config_mod suufon_renda, name: "name", values: ["Four Winds Draw"]

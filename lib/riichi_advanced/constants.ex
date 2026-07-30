@@ -871,7 +871,7 @@ defmodule RiichiAdvanced.Constants do
           list: "yaku", rinshan_name: "Win on Replacement Tile", flower_name: "Win on Replacement Tile", value: 1,
           double_list: "", double_name: "", double_value: 0, double_han: ""
         }},
-        %{name: "yaku/chiitoitsu", config: %{rules_tab: "1 Phán", list: "yaku", name: "Seven Pairs", value: 1, kansai: true}},
+        %{name: "yaku/chiitoitsu", config: %{rules_tab: "1 Mủn", list: "yaku", name: "Seven Pairs", value: 1, han: "Mủn", kansai: true}},
         %{name: "yaku/honitsu", config: %{
           hon_list: "yaku", hon_name: "Half Flush", hon_value: 3, hon_han: "Phán",
           chin_list: "yaku", chin_name: "Full Flush", chin_value: 1, chin_han: "Mủn"
