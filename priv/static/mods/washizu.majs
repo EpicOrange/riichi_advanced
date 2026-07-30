@@ -34,8 +34,6 @@ apply merge, "score_calculation", %{
   honba_value: 10
 }
 apply divide, "initial_score", 10
-apply divide, "score_calculation.tobi", 10
-apply round_up, "score_calculation.tobi", 1
 define_scoring ron do
   total /= 10 :: "Washizu"
 end

@@ -1,0 +1,2 @@
+set show_waits, %{win_definitions: ["win"]}
+

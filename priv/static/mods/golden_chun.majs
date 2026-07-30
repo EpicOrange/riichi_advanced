@@ -1,8 +1,8 @@
 on after_initialization do
-  add_rule("Tiles", "Golden Chun", "One of the green dragons is red and acts as aka dora. %{akahatsu}", %{akahatsu: ["06z"]})
-  add_rule("Tiles", "Golden Chun", "One of the red dragons is the golden chun, which can be used as a five of any suit, and grants 1 extra han when used as a five. %{golden_chun}", %{golden_chun: ["37z"]})
+  add_rule("Tiles", "Golden Chun", "One of the green dragons is red and acts as aka dora. %{akahatsu}", %{akahatsu: ~T"06z"})
+  add_rule("Tiles", "Golden Chun", "One of the red dragons is the golden chun, which can be used as a five of any suit, and grants 1 extra han when used as a five. %{golden_chun}", %{golden_chun: ~T"37z"})
   add_rule("Yakuman", "Sangen Pocchi", "(Golden Chun) Completing a hand via shiro pocchi while using the golden chun as a five and having the aka green dragon scores yakuman.")
-  update_rule("Yakuman", "Sangen Pocchi", "%{example_hand}", %{example_hand: ["6m", "7m", "8m", "2p", "2p", "2p", "3s", "4s", "37z", "5s", "6s", "6z", "06z", "3x", "9z"]})
+  update_rule("Yakuman", "Sangen Pocchi", "%{example_hand}", %{example_hand: ~T"6m7m8m2p2p2p3s4s37z5s6s6z06z3x9z"})
   update_rule("Rules", "Shuugi", "(Golden Chun) Each golden chun used as a five is worth 1 shuugi.")
 end
 
@@ -48,11 +48,11 @@ define_yaku extra_yaku, "Kin", ["golden_chuns", "Han"], golden_chuns >= 1
 define_yaku yakuman, "Sangen Pocchi", [1, "★"], status("shiro_pocchi", "aka_h", "golden_chun")
 
 # can't call golden chun unless as a chun
-apply append, "buttons.chii.call_conditions", not_call_contains("37z") or call_contains("7z")
-apply append, "buttons.pon.call_conditions", not_call_contains("37z") or call_contains("7z")
-apply append, "buttons.daiminkan.call_conditions", not_call_contains("37z") or call_contains("7z")
-apply append, "buttons.kakan.call_conditions", not_call_contains("37z") or call_contains("7z")
-apply append, "buttons.ankan.call_conditions", not_call_contains("37z") or call_contains("7z")
+apply append, "buttons.chii.call_conditions", not_call_contains(["37z"]) or call_contains(["7z"])
+apply append, "buttons.pon.call_conditions", not_call_contains(["37z"]) or call_contains(["7z"])
+apply append, "buttons.daiminkan.call_conditions", not_call_contains(["37z"]) or call_contains(["7z"])
+apply append, "buttons.kakan.call_conditions", not_call_contains(["37z"]) or call_contains(["7z"])
+apply append, "buttons.ankan.call_conditions", not_call_contains(["37z"]) or call_contains(["7z"])
 
 if defined("shuugi") do
   # golden chun used as a five is worth 2 chips
