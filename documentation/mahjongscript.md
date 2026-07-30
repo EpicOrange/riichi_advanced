@@ -741,7 +741,7 @@ The argument `flower` is a tile spec that restricts which kinds of tiles to run 
 apply add, "initial_points", 5000
 
 # set values at arbitrary paths
-apply set, "score_calculation.tenpairenchan", true
+apply set, "score_calculation.win_by_draw_name", "Tsumo"
 
 # append to a function
 apply append, "functions.myfunc" do

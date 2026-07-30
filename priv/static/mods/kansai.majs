@@ -1,3 +1,5 @@
+require "renchan"
+
 on after_initialization do
   add_rule("Rules", "Initial Score", "(Kansai) Everyone starts with 50000 points.")
   add_rule("Rules", "Notenrenchan", "(Kansai) In the south round only, the round repeats on exhaustive draws regardless of anyone's tenpai status.")
@@ -14,7 +16,11 @@ end
 set initial_score, 50000
 
 # notenrenchan for south round only
-apply set, "score_calculation.notenrenchan_south", true
+on before_start, prepend: true do
+  if kyoku >= 4 and not_anyone_status("tenpai") do
+    set_status("renchan", as: "east")
+  end
+end
 
 # some new yaku
 define_yaku yaku, "Shousharin", [6, "Han"], match(["hand", "calls", "winning_tile"], ~m"pair:7") and 

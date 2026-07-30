@@ -1,5 +1,9 @@
+require "renchan"
+
 on after_initialization do
   add_rule("Rules", "Repeat On Draw", "If the round ends in a draw, the round repeats.")
 end
 
-apply set, "score_calculation.ryuukyokurenchan", true
+on before_exhaustive_draw do
+  set_status("renchan")
+end

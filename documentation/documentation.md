@@ -1420,31 +1420,23 @@ After a win there are a few decisions to be made:
 - Who is the next dealer?
 - Do you increase the repeat counter?
 
-In general, these are all controlled by the following keys in the `"score_calculation"` object, which all default to false or unset:
-
-    "score_calculation": {
-      "tobi": (unset),
-      "next_dealer_is_first_winner": false,
-      "agarirenchan": false,
-      "tenpairenchan": false,
-      "ryuukyokurenchan": false,
-      "notenrenchan_south": false,
-    }
-
-Here's how they work:
-
-- `"tobi"`: if set, then if anyone's score is below this amount after a round, the game ends (that player "busts out").
-- `"next_dealer_is_first_winner"`: if true, then the (first) winner becomes the next round's dealer.
-- `"agarirenchan"`: if true, the round repeats if the dealer wins.
-- `"tenpairenchan"`: if true, the round repeats if the dealer is tenpai at exhaustive draw.
-- `"ryuukyokurenchan"`: if true, the round repeats at exhaustive draw.
-- `"notenrenchan_south"` if true, the round repeats if it's South round and no one is tenpai at exhaustive draw.
-
-Regardless of the above settings, the honba (repeat) counter is incremented when the dealer wins or an exhaustive draw happens, and is reset when a nondealer wins.
-
-Since the above is very ad-hoc and silly, there are a few actions you can run in `before_start` to implement custom behavior:
+In general, these are all controlled by the following actions you can run in `before_start`:
 
 - `change_dealership(seat_spec)`: sets the dealership, so `change_dealership("self")` keeps the dealership and `change_dealership("shimocha")` passes it on.
 - `end_game`: ends the game instead of proceeding to the next round.
 
-Eventually these actions will replace the functions of `"tobi"` etc.
+For instance, this is how it's used in Riichi:
+
+    on before_start do
+      as east do
+        if status("renchan") do
+          change_dealership("self")
+          add_honba(1)
+        else
+          if kyoku > 0 do
+            delta_honba = -honba;
+            add_honba("delta_honba") # clear honba
+          end
+        end
+      end
+    end

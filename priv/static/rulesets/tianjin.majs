@@ -1,3 +1,5 @@
+require "renchan"
+
 set display_name, "Tianjin Mahjong"
 set tutorial_link, "https://mahjongpros.com/blogs/how-to-play/beginners-guide-to-tianjin-mahjong"
 set wall, ["1m", "1m", "1m", "1m",
@@ -375,8 +377,6 @@ set shown_statuses_public, ["challenge_tokens"]
 set initial_score, 50
 set starting_tiles, 13
 set max_rounds, 16
-set agarirenchan, true
-set ryuukyokurenchan, true
 set display_wall, true
 
 on after_initialization do
@@ -430,4 +430,16 @@ on after_initialization do
   add_rule("Win Patterns", "Earthly Hand", "+1 fan and ×4 fan multiplier if you are not the dealer and you won with the tiles initially drawn. Does not contribute towards Multiple Patterns.")
   add_rule("Win Patterns", "Multiple Patterns", "+1 fan for each pattern if you won with 2 or more win patterns. Does not contribute towards the 2 fan minimum.")
   update_rule("Win Patterns", "Multiple Patterns", "%{example_hand}", %{example_hand: ~t"1234m6m@_dora789m234p88s 5m@dora"})
+end
+
+# agarirenchan
+on before_win do
+  if seat_is("east") do
+    set_status("renchan")
+  end
+end
+
+# ryuukyokurenchan
+on before_exhaustive_draw do
+  set_status("renchan")
 end
