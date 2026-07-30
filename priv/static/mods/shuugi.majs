@@ -2,7 +2,7 @@
 define "shuugi"
 
 on after_initialization do
-  add_rule("Rules", "Shuugi", "Part of the player's starting score is composed of shuugi chips worth %{worth} each, which are gained and lost separately from points.", %{worth: !worth})
+  add_rule("Rules", "Shuugi", "Part of the player's starting score is composed of shuugi chips worth %{worth} each, which are gained and lost separately from points.", %{worth: !worth}, -9)
   if !starting_shuugi > 0 do
     add_rule("Rules", "Shuugi", "Each player starts with %{starting_shuugi} chips.", %{starting_shuugi: !starting_shuugi})
   end

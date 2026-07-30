@@ -1,5 +1,4 @@
 on after_initialization do
-  update_rule("Rules", "Shuugi", "(Kansai) Non-kazoe yakuman ron is worth 10 chips instead of 5. Having all four flowers also awards 10 chips (ron) or 5 chips each (tsumo).")
   update_rule("Rules", "Shuugi", "(Kansai) At the end of the game, chips are exchanged based on placement and points.")
 end
 

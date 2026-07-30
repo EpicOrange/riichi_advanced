@@ -1,6 +1,5 @@
 .after_initialization.actions += [
-  ["update_rule", "Rules", "Dora", "(Ura) Players in riichi are also eligible for ura dora, worth 1 extra han each. Ura dora are indicated by ura dora indicators, the tiles underneath each dora indicator at the time a win is declared."],
-  ["update_rule", "Rules", "Shuugi", "(Ura) Each ura dora is worth 1 shuugi."]
+  ["update_rule", "Rules", "Dora", "(Ura) Players in riichi are also eligible for ura dora, worth 1 extra han each. Ura dora are indicated by ura dora indicators, the tiles underneath each dora indicator at the time a win is declared."]
 ]
 |
 # reveal ura after riichi win

@@ -1,8 +1,8 @@
 on after_initialization do
   if !closed_only do
-    add_rule("Rules", "Shuugi", "Each aka dora in a closed winning hand adds %{chips} shuugi to the payment.", %{chips: !chips})
+    add_rule("Rules", "Shuugi", "(Aka) Each aka (red) dora in a closed winning hand adds %{chips} shuugi to the payment.", %{chips: !chips})
   else
-    add_rule("Rules", "Shuugi", "Each aka dora in a winning hand adds %{chips} shuugi to the payment.", %{chips: !chips})
+    add_rule("Rules", "Shuugi", "(Aka) Each aka (red) dora in a winning hand adds %{chips} shuugi to the payment.", %{chips: !chips})
   end
 end
 

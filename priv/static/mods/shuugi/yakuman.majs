@@ -1,13 +1,13 @@
 on after_initialization do
   if !per_yakuman do
-    add_rule("Rules", "Shuugi", "Each count of yakuman adds %{ron_chips} shuugi to the payment if ron or %{tsumo_chips} shuugi if tsumo.", %{ron_chips: !ron_chips, tsumo_chips: !tsumo_chips})
+    add_rule("Rules", "Shuugi", "(Yakuman) Each count of yakuman adds %{ron_chips} shuugi to the payment if ron or %{tsumo_chips} shuugi if tsumo.", %{ron_chips: !ron_chips, tsumo_chips: !tsumo_chips})
   else
-    add_rule("Rules", "Shuugi", "A yakuman win adds %{ron_chips} shuugi to the payment if ron or %{tsumo_chips} shuugi if tsumo.", %{ron_chips: !ron_chips, tsumo_chips: !tsumo_chips})
+    add_rule("Rules", "Shuugi", "(Yakuman) A yakuman win adds %{ron_chips} shuugi to the payment if ron or %{tsumo_chips} shuugi if tsumo.", %{ron_chips: !ron_chips, tsumo_chips: !tsumo_chips})
   end
   if !allow_kazoe do
-    add_rule("Rules", "Shuugi", "Kazoe yakuman counts as yakuman for shuugi purposes.")
+    add_rule("Rules", "Shuugi", "(Yakuman) Kazoe yakuman counts as yakuman for shuugi purposes.")
   else
-    add_rule("Rules", "Shuugi", "Kazoe yakuman does not count as yakuman for shuugi purposes.")
+    add_rule("Rules", "Shuugi", "(Yakuman) Kazoe yakuman does not count as yakuman for shuugi purposes.")
   end
 end
 
