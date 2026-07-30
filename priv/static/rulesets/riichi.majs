@@ -803,7 +803,7 @@ define_mod washizu, order: 3.5, conflicts: ["called_game"], name: "Washizu", des
 config_mod washizu, name: "transparents", values: [1,2,3,4], default: 3
 define_mod yami, name: "Yami", desc: "You may bet 1000 points to discard facedown. Others can bet 2000 points to force it faceup, but you can bet a further 4000 points to keep it facedown."
 define_mod toriuchi, deps: ["shuugi"], name: "Toriuchi", desc: "On ron, each 1s (bird) tile is worth 1 shuugi, unless the discarder's hand contains 7p (pistol) which would shoot the birds dead. That is, unless the winner's hand contains 8s (birdcage) which would protect the birds from gunfire."
-define_mod nobekan, name: "Nobekan", desc: "You may kan a sequence of four number tiles."
+define_mod nobekan, order: -2, name: "Nobekan", desc: "You may kan a sequence of four number tiles."
 define_mod calls_are_forced, conflicts: ["chombo"], name: "Calls Are Forced", desc: "Forces you to make all available calls, including riichi (if enabled). You still get to choose if multiple calls are available."
 define_mod chombo, conflicts: ["calls_are_forced"], name: "Chombo", desc: "The tsumo and ron buttons are enabled on every draw and discard. If you make an incorrect win call, your hand is dead and you cannot make a win call for the remainder of the round."
 define_mod riichi_en, name: "English Yaku Names", desc: "Display English yaku names. (e.g. Tanyao -> All Simples)"
