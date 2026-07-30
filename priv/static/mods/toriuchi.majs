@@ -6,14 +6,14 @@ if defined("shuugi") do
   on before_win do
     if won_by_discard do
       as last_discarder do reveal_hand end
-      if not_match(["hand", "calls", "winning_tile"], ~m"7p:1", as: last_discarder)
+      if not_match(["hand", "calls", "winning_tile"], ~m"7p:1", as: "last_discarder")
           or match(["hand", "calls", "winning_tile"], ~m"8s:1") do
         add_counter("toriuchi", "count_matches", ["hand", "calls", "winning_tile"], ~m"1s:1")
       end
     end
     if won_by_call do
       as last_caller do reveal_hand end
-      if not_match(["hand", "calls", "winning_tile"], ~m"7p:1", as: last_caller)
+      if not_match(["hand", "calls", "winning_tile"], ~m"7p:1", as: "last_caller")
           or match(["hand", "calls", "winning_tile"], ~m"8s:1") do
         add_counter("toriuchi", "count_matches", ["hand", "calls", "winning_tile"], ~m"1s:1")
       end
