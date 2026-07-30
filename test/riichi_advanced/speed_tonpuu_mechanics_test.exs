@@ -32,7 +32,7 @@ defmodule RiichiAdvanced.YakuTest.SpeedTonpuuMechanics do
     # "pao_suukantsu", # note: affects the test 'suukantsu rinshan is scored as normal tsumo scoring shuugi'
     # "pao_rinshan",
     %{name: "yaku/riichi_renhou", config: %{is: "Yakuman"}},
-    %{name: "shuugi", config: %{worth: 5000, starting_shuugi: 100}},
+    %{name: "shuugi", config: %{worth: 5000, starting_shuugi: 100, }},
     %{name: "shuugi/ippatsu", config: %{chips: 1}},
     %{name: "shuugi/ura", config: %{chips: 1}},
     %{name: "shuugi/yakuman", config: %{ron_chips: 10, tsumo_chips: 5, per_yakuman: true, allow_kazoe: true}},
@@ -305,7 +305,7 @@ defmodule RiichiAdvanced.YakuTest.SpeedTonpuuMechanics do
       east: %{
         yaku: [{"Suukantsu ", [2, "★"]}]
       }
-    }, %{shuugi: [160, 80, 80, 80]})
+    }, %{shuugi: [130, 90, 90, 90]})
   end
 
   test "speed tonpuu - white dragon pocchi" do

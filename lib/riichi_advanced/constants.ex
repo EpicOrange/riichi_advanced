@@ -613,9 +613,9 @@ defmodule RiichiAdvanced.Constants do
         %{name: "yaku/riichi", config: %{bet: 1000, drawless: false}},
         %{name: "oka", config: %{ante: 4}},
         %{name: "uma", config: %{_1st: 10, _2nd: 4, _3rd: -4, _4th: -10}},
-        %{name: "tobi", config: %{below: 0}},
+        %{name: "tobi", config: %{below: 0, chips: 1}},
         %{name: "nagashi", config: %{is: "Haneman"}},
-        %{name: "called_game", config: %{above: 54999}},
+        %{name: "called_game", config: %{above: 54999, chips: 1}},
         %{name: "suufon_renda", config: %{name: "Suufon Renda"}},
         "suucha_riichi",
         %{name: "kyuushu_kyuuhai", config: %{name: "Kyuushu Kyuuhai"}},
@@ -656,6 +656,26 @@ defmodule RiichiAdvanced.Constants do
       ruleset: "riichi",
       mods: ["sanma", %{name: "aka", config: %{"man" => 1, "pin" => 1, "sou" => 1}}],
       default_mods: ["tobi"],
+    },
+    "sichuan" => %{
+      display_name: "Sichuan Bloody",
+      tutorial_link: "https://github.com/EpicOrange/riichi_advanced/blob/main/documentation/sichuan.md",
+      ruleset: "sichuan",
+      globals: %{
+        chii_name: "Chii",
+        pon_name: "Pon",
+        kan_name: "Kan",
+        ankan_name: "Ankan",
+        han: "Han"
+      },
+      mods: [
+        "global_mods",
+        "default_auto_buttons",
+      ],
+      post_mods: [
+        "sichuan_star_suit",
+      ],
+      default_mods: ["show_waits"]
     },
     "speed" => %{
       display_name: "Speed Mahjong",

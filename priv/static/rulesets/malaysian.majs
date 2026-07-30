@@ -24,16 +24,16 @@ set wall, ["1p", "1p", "1p", "1p",
            "2y", "2y", "2y", "2y"]
 
 set custom_style, %{
-    tile_indices: %{
-      "1a": "Cat",
-      "2a": "Rat",
-      "3a": "Chicken",
-      "4a": "Centipede",
-      "1y": "Face",
-      "2y": "Fei",
-      "5z": "White"
-    }
+  tile_indices: %{
+    "1a": "Cat",
+    "2a": "Rat",
+    "3a": "Chicken",
+    "4a": "Centipede",
+    "1y": "Face",
+    "2y": "Fei",
+    "5z": "White"
   }
+}
 
 define_set pair, ~s"0 0"
 define_set shuntsu, ~s"0 1 2"

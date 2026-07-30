@@ -1193,8 +1193,6 @@ The 2 added to `points` is configurable using the `"han_fu_starting_han"` key, w
 
 This is the actual value of `"scoring_method"` used for riichi. The idea for a two-value array value for `"scoring_method"` is that we use `"han_fu_formula"` for `points` and `"multiplier"` for `points2`, and add the resulting scores. For riichi, this means using `"han_fu_formula"` to calculate the standard Han score, and `"multiplier"` for yakuman hands.
 
-Riichi also specifies the key `"yaku2_overrides_yaku1": true`, which means if any yaku contribute to `points2`, then we ignore all yaku that contribute to `points`.
-
 ### Other scoring-related keys
 
 All of the keys described below are optional.

@@ -1,0 +1,90 @@
+define "ten"
+
+apply set_append, "wall", ["10p", "10p", "10p", "10p"]
+apply set_append, "wall", ["10s", "10s", "10s", "10s"]
+if defined("sanma") do
+  replace all, "wall", "9m", "10m"
+else
+  apply set_append, "wall", ["10m", "10m", "10m", "10m"]
+end
+if defined("star_suit") do
+  apply set_append, "wall", ["10t", "10t", "10t", "10t"]
+end
+
+# reorder tiles for space mahjong
+if defined("space") do
+  on after_start do
+    set_tile_ordering_all(["9m", "10m", "1m"])
+    set_tile_ordering_all(["9p", "10p", "1p"])
+    set_tile_ordering_all(["9s", "10s", "1s"])
+  end
+  if defined("star_suit") do
+    on after_start do
+      set_tile_ordering_all(["9t", "10t", "1t"])
+    end
+  end
+end
+
+# add rules text
+if defined("star_suit") do
+  on after_initialization do
+    add_rule("Tiles", "Ten", "There are four copies of the 10 of each suit: %{tens}", %{tens: ~T"10m 10p 10s 10t"})
+  end
+else 
+  on after_initialization do
+    add_rule("Tiles", "Ten", "There are four copies of the 10 of each suit: %{tens}", %{tens: ~T"10m 10p 10s"})
+  end
+end
+
+# expand dora indicator map, if it exists
+if defined("dora") do
+  apply merge, "dora_indicators", %{
+    "10m": ["1m"],
+    "10p": ["1p"],
+    "10s": ["1s"],
+  }
+  # reset 9s to connect to 10s
+  apply set, "dora_indicators[\"9m\"]", ["10m"]
+  apply set, "dora_indicators[\"9p\"]", ["10p"]
+  apply set, "dora_indicators[\"9s\"]", ["10s"]
+  # reset 1s to connect to 10s for sanma
+  if defined("sanma") do
+    apply set, "dora_indicators[\"1m\"]", ["10m"]
+    apply set, "dora_indicators[\"1p\"]", ["10p"]
+    apply set, "dora_indicators[\"1s\"]", ["10s"]
+  end
+
+  # do the same with star suit
+  if defined("star_suit") do
+    apply merge, "dora_indicators", %{"10t": ["1t"]}
+    apply set, "dora_indicators[\"9t\"]", ["10t"]
+    if defined("sanma") do
+      apply set, "dora_indicators[\"1t\"]", ["10t"]
+    end
+  end
+end 
+
+# change tanyao, chanta, honroutou etc
+# honitsu is already defined for ten
+
+# treat 9m etc as tanyaohai for tanyao, chanta, junchan (10m etc is already yaochuuhai)
+on before_scoring do
+  remove_attr_all("_tanyao")
+  add_attr(["hand", "calls", "winning_tile"], ["_tanyao"], ["1m", "1p", "1s", "1t", "9m", "9p", "9s", "9t"])
+end
+
+# redefine honroutou/chinroutou to use 10m etc
+remove_yaku yaku, "Honroutou"
+define_yaku yaku, "Honroutou", [2, "Han"], winning_hand_consists_of("1m","10m","1p","10p","1s","10s","1t","10t","1z","2z","3z","4z","5z","6z","7z")
+remove_yaku yakuman, "Chinroutou"
+define_yaku yakuman, "Chinroutou", [1, "★"], winning_hand_consists_of("1m","10m","1p","10p","1s","10s","1t","10t")
+
+# kokushi now uses 10m etc
+replace 1, "set_definitions.orphans_any", "9m", "10m"
+replace 1, "set_definitions.orphans_any", "9p", "10p"
+replace 1, "set_definitions.orphans_any", "9s", "10s"
+replace 1, "set_definitions.orphans_any", "9t", "10t"
+replace 1, "set_definitions.orphans_all", "9m", "10m"
+replace 1, "set_definitions.orphans_all", "9p", "10p"
+replace 1, "set_definitions.orphans_all", "9s", "10s"
+replace 1, "set_definitions.orphans_all", "9t", "10t"

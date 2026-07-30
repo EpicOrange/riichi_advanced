@@ -92,16 +92,18 @@ define_yaku yaku, "Sanankou", [2, "Han"],
      (won_by_draw and match(["hand", "calls", "winning_tile"], ["sanankou_tsumo"]))
   or (not_won_by_draw and match(["hand", "calls", "winning_tile"], ["sanankou_ron"]))
 define_yaku yaku, "Shousangen", [2, "Han"], match(["hand", "calls", "winning_tile"], ~m"(haku hatsu chun):2, (haku_pair hatsu_pair chun_pair):1")
-define_yaku yaku, "Honroutou", [2, "Han"], winning_hand_consists_of("1m","9m","1p","9p","1s","9s","1z","2z","3z","4z","5z","6z","7z")
+define_yaku yaku, "Honroutou", [2, "Han"], winning_hand_consists_of("1m","9m","1p","9p","1s","9s","1t","9t","1z","2z","3z","4z","5z","6z","7z")
 define_yaku yaku, "Ryanpeikou", [3, "Han"], @closed_hand and match(["hand", "calls", "winning_tile"], ~m"exhaustive, iipeikou:2, pair:1")
 define_yaku yaku, "Honitsu", [2, "Han"],
-     winning_hand_consists_of("1m","2m","3m","4m","5m","6m","7m","8m","9m","1z","2z","3z","4z","5z","6z","7z")
-  or winning_hand_consists_of("1p","2p","3p","4p","5p","6p","7p","8p","9p","1z","2z","3z","4z","5z","6z","7z")
-  or winning_hand_consists_of("1s","2s","3s","4s","5s","6s","7s","8s","9s","1z","2z","3z","4z","5z","6z","7z")
+     winning_hand_consists_of("1m","2m","3m","4m","5m","6m","7m","8m","9m","10m","1z","2z","3z","4z","5z","6z","7z")
+  or winning_hand_consists_of("1p","2p","3p","4p","5p","6p","7p","8p","9p","10p","1z","2z","3z","4z","5z","6z","7z")
+  or winning_hand_consists_of("1s","2s","3s","4s","5s","6s","7s","8s","9s","10s","1z","2z","3z","4z","5z","6z","7z")
+  or winning_hand_consists_of("1t","2t","3t","4t","5t","6t","7t","8t","9t","10t","1z","2z","3z","4z","5z","6z","7z")
 define_yaku yaku, "Chinitsu", [5, "Han"],
-     winning_hand_consists_of("1m","2m","3m","4m","5m","6m","7m","8m","9m")
-  or winning_hand_consists_of("1p","2p","3p","4p","5p","6p","7p","8p","9p")
-  or winning_hand_consists_of("1s","2s","3s","4s","5s","6s","7s","8s","9s")
+     winning_hand_consists_of("1m","2m","3m","4m","5m","6m","7m","8m","9m","10m")
+  or winning_hand_consists_of("1p","2p","3p","4p","5p","6p","7p","8p","9p","10p")
+  or winning_hand_consists_of("1s","2s","3s","4s","5s","6s","7s","8s","9s","10s")
+  or winning_hand_consists_of("1t","2t","3t","4t","5t","6t","7t","8t","9t","10t")
 define_yaku meta_yaku, "Chanta", [1, "Han"], @closed_hand and has_existing_yaku("Chanta")
 define_yaku meta_yaku, "Ittsuu", [1, "Han"], @closed_hand and has_existing_yaku("Ittsuu")
 define_yaku meta_yaku, "Sanshoku", [1, "Han"], @closed_hand and has_existing_yaku("Sanshoku")
@@ -601,8 +603,10 @@ define_mod_category "Endgames"
 define_mod tonpuu, name: "Tonpuu", desc: "Limit the game to the East round only."
 define_mod tobi, name: "Tobi", order: -1, desc: "Enable busting. Once anyone's points is reduced below zero (or the specified value), the game ends."
 config_mod tobi, name: "below", values: [0, 1, 1000, 1001]
+config_mod tobi, name: "chips", values: [1, 2, 3, 4, 5, 10]
 define_mod called_game, name: "Called Game", order: -1, desc: "Enable called game. Once anyone's points reaches above 54999 (or the specified value), the game ends."
 config_mod called_game, name: "above", values: [49999, 50000, 54999, 55000], default: 54999
+config_mod called_game, name: "chips", values: [1, 2, 3, 4, 5, 10]
 define_mod agarirenchan, name: "Agarirenchan", desc: "A round repeats if the dealer wins."
 define_mod tenpairenchan, name: "Tenpairenchan", desc: "A round repeats if the dealer is tenpai at draw."
 define_mod agariyame, deps: ["agarirenchan"], name: "Agariyame", desc: "All Last doesn't repeat if the dealer is first place and wins."
@@ -749,26 +753,26 @@ define_mod "yaku/junsei_ryuuiisou", name: "Junsei Ryuuiisou", desc: "Local yakum
 define_mod "yaku/chousangen", name: "Chousangen", desc: "Local yakuman. If you have kans of all three dragons, it's double yakuman. Doesn't stack with daisangen."
 define_mod "yaku/chousuushii", name: "Chousuushii", desc: "Local yakuman. If you have kans of all four winds, it's quadruple yakuman. Doesn't stack with daisuushi and suukantsu."
 define_mod_category "Shuugi"
-define_mod shuugi, order: 1, name: "Shuugi", desc: "Play with shuugi (poker chips). Each shuugi is worth some number of points each at the end. Win payments include shuugi along with points. On ron, you get shuugi from the discarder; on tsumo you get shuugi from everyone."
+define_mod shuugi, order: -1, name: "Shuugi", desc: "Play with shuugi (poker chips). Each shuugi is worth some number of points each at the end. Win payments include shuugi along with points. On ron, you get shuugi from the discarder; on tsumo you get shuugi from everyone."
 config_mod shuugi, name: "worth", values: [200,500,1000,2000,5000,10000], default: 2000
-config_mod shuugi, name: "starting_shuugi", values: [0,10,50,100], default: 0
-define_mod "shuugi/ippatsu", order: 1, name: "Ippatsu", deps: ["shuugi", "yaku/ippatsu"], desc: "Ippatsu is worth one shuugi."
-config_mod "shuugi/ippatsu", name: "chips", values: [1]
+config_mod shuugi, name: "starting_shuugi", values: [0,10,50,100,250,500,1000], default: 100
+define_mod "shuugi/ippatsu", order: 1, name: "Ippatsu", deps: ["shuugi", "yaku/ippatsu"], desc: "Ippatsu is typically worth one shuugi."
+config_mod "shuugi/ippatsu", name: "chips", values: [1, 2, 3, 4, 5], default: 1
 define_mod "shuugi/ura", order: 1, name: "Ura", deps: ["shuugi", "ura"], desc: "Each ura dora scores shuugi."
-config_mod "shuugi/ura", name: "chips", values: [1, 2, 3, 4, 5]
+config_mod "shuugi/ura", name: "chips", values: [1, 2, 3, 4, 5], default: 1
 define_mod "shuugi/yakuman", order: 1, name: "Yakuman", deps: ["shuugi"], desc: "Yakuman is typically worth 10 shuugi on ron and 5 on tsumo."
 config_mod "shuugi/yakuman", name: "ron_chips", values: [5, 10], default: 10
 config_mod "shuugi/yakuman", name: "tsumo_chips", values: [5, 10], default: 5
 config_mod "shuugi/yakuman", name: "per_yakuman", values: [false, true], default: false
 config_mod "shuugi/yakuman", name: "allow_kazoe", values: [false, true], default: false
 define_mod "shuugi/aka", order: 4, name: "Aka", deps: ["shuugi", "aka"], desc: "Each aka dora scores shuugi."
-config_mod "shuugi/aka", name: "chips", values: [1, 2, 3, 4, 5]
+config_mod "shuugi/aka", name: "chips", values: [1, 2, 3, 4, 5], default: 1
 config_mod "shuugi/aka", name: "closed_only", values: [false, true], default: false
 define_mod "shuugi/ao", order: 4, name: "Ao", deps: ["shuugi", "ao"], desc: "Each ao dora scores shuugi."
-config_mod "shuugi/ao", name: "chips", values: [1, 2, 3, 4, 5]
+config_mod "shuugi/ao", name: "chips", values: [1, 2, 3, 4, 5], default: 2
 config_mod "shuugi/ao", name: "closed_only", values: [false, true], default: false
 define_mod "shuugi/kin", order: 4, name: "Kin", deps: ["shuugi", "kin"], desc: "Each kin dora scores shuugi."
-config_mod "shuugi/kin", name: "chips", values: [1, 2, 3, 4, 5]
+config_mod "shuugi/kin", name: "chips", values: [1, 2, 3, 4, 5], default: 3
 config_mod "shuugi/kin", name: "closed_only", values: [false, true], default: false
 define_mod "shuugi/oka", order: 4, name: "Oka", deps: ["shuugi", "oka"], desc: "Oka applies directly to chips."
 define_mod "shuugi/uma", order: 4, name: "Uma", deps: ["shuugi", "uma"], desc: "Uma applies directly to chips."
@@ -798,7 +802,7 @@ set default_mods, [
   "honba", "yaku/riichi", "dora", "ura", "kandora", "aka",
   "yaku/ippatsu",
   "nagashi",
-  "tobi",
+  %{name: "tobi", config: %{below: 0}},
   "uma",
   "kuikae_nashi",
   "min_han",

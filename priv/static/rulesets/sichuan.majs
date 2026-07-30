@@ -34,9 +34,10 @@ define_set koutsu, ~s"0 0 0"
 define_set mentsu, ~s"0 0 0 | 0 1 2"
 define_set quad, ~s"0 0 0 0"
 define_set taatsu, ~s"0 0 | 0 1 | 0 2"
-define_set manzu, ~s"1m|2m|3m|4m|5m|6m|7m|8m|9m"
-define_set pinzu, ~s"1p|2p|3p|4p|5p|6p|7p|8p|9p"
-define_set souzu, ~s"1s|2s|3s|4s|5s|6s|7s|8s|9s"
+define_set manzu, ~s"1m|2m|3m|4m|5m|6m|7m|8m|9m|10m"
+define_set pinzu, ~s"1p|2p|3p|4p|5p|6p|7p|8p|9p|10p"
+define_set souzu, ~s"1s|2s|3s|4s|5s|6s|7s|8s|9s|10s"
+define_set stars, ~s"1t|2t|3t|4t|5t|6t|7t|8t|9t|10t"
 
 define_match standard_tenpai, ~m"exhaustive, mentsu:3, taatsu:1, pair:1 | exhaustive, mentsu:4"
 define_match chiitoitsu_tenpai, ~m"(daiminkan kakan ankan):-1, pair:6"
@@ -51,9 +52,10 @@ define_yaku yaku, "Root", 1, match(["hand", "call_tiles", "winning_tile"], ~m"qu
 define_yaku yaku, "Root", 1, match(["hand", "call_tiles", "winning_tile"], ~m"quad:4")
 define_yaku yaku, "All Triplets", 1, match(["hand", "calls", "winning_tile"], ~m"koutsu:4, pair:1")
 define_yaku yaku, "Full Flush", 2,
-     winning_hand_consists_of("1m","2m","3m","4m","5m","6m","7m","8m","9m")
-  or winning_hand_consists_of("1p","2p","3p","4p","5p","6p","7p","8p","9p")
-  or winning_hand_consists_of("1s","2s","3s","4s","5s","6s","7s","8s","9s")
+     winning_hand_consists_of("1m","2m","3m","4m","5m","6m","7m","8m","9m","10m")
+  or winning_hand_consists_of("1p","2p","3p","4p","5p","6p","7p","8p","9p","10p")
+  or winning_hand_consists_of("1s","2s","3s","4s","5s","6s","7s","8s","9s","10s")
+  or winning_hand_consists_of("1t","2t","3t","4t","5t","6t","7t","8t","9t","10t")
 define_yaku yaku, "Seven Pairs", 2, match(["hand", "winning_tile"], ~m"(daiminkan kakan ankan):-1, pair:7")
 define_yaku yaku, "Golden Single Wait", 2, match(["calls"], ~m"(pon daiminkan ankan kakan):4")
 define_yaku yaku, "Win After Kong", 1, status("kan")
@@ -82,9 +84,9 @@ on after_initialization do
   add_rule_tab("1 Fan")
   add_rule_tab("2 Fan")
   add_rule("Tiles", "Tiles", "Sichuan Bloody Rules uses only the 108 suited tiles:", -100)
-  add_rule("Tiles", "Tiles", "- Four each of the 1 to 9 of Dots %{pinzu}", %{"pinzu": ["1p", "2p", "3p", "4p", "5p", "6p", "7p", "8p", "9p"]})
-  add_rule("Tiles", "Tiles", "- Four each of the 1 to 9 of Bams %{souzu}", %{"souzu": ["1s", "2s", "3s", "4s", "5s", "6s", "7s", "8s", "9s"]})
-  add_rule("Tiles", "Tiles", "- Four each of the 1 to 9 of Craks %{manzu}", %{"manzu": ["1m", "2m", "3m", "4m", "5m", "6m", "7m", "8m", "9m"]})
+  add_rule("Tiles", "Tiles", "- Four each of the 1 to 9 of Dots %{pinzu}", %{pinzu: ["1p", "2p", "3p", "4p", "5p", "6p", "7p", "8p", "9p"]})
+  add_rule("Tiles", "Tiles", "- Four each of the 1 to 9 of Bams %{souzu}", %{souzu: ["1s", "2s", "3s", "4s", "5s", "6s", "7s", "8s", "9s"]})
+  add_rule("Tiles", "Tiles", "- Four each of the 1 to 9 of Craks %{manzu}", %{manzu: ["1m", "2m", "3m", "4m", "5m", "6m", "7m", "8m", "9m"]})
   add_rule("Rules", "Win Condition", "You may win with one of the following:", -100)
   add_rule("Rules", "Win Condition", "- Four sets (sequences or triplets) and a pair.", -100)
   add_rule("Rules", "Win Condition", "- (Seven Pairs) Seven distinct pairs.", -100)
@@ -396,9 +398,10 @@ define_button void_souzu,
   end
 
 define_const no_voided_calls,
-     (status("void_manzu") and not_call_contains(["1m", "2m", "3m", "4m", "5m", "6m", "7m", "8m", "9m"], 1))
-  or (status("void_pinzu") and not_call_contains(["1p", "2p", "3p", "4p", "5p", "6p", "7p", "8p", "9p"], 1))
-  or (status("void_souzu") and not_call_contains(["1s", "2s", "3s", "4s", "5s", "6s", "7s", "8s", "9s"], 1))
+     (status("void_manzu") and not_call_contains(["1m", "2m", "3m", "4m", "5m", "6m", "7m", "8m", "9m", "10m"], 1))
+  or (status("void_pinzu") and not_call_contains(["1p", "2p", "3p", "4p", "5p", "6p", "7p", "8p", "9p", "10p"], 1))
+  or (status("void_souzu") and not_call_contains(["1s", "2s", "3s", "4s", "5s", "6s", "7s", "8s", "9s", "10s"], 1))
+  or (status("void_stars") and not_call_contains(["1t", "2t", "3t", "4t", "5t", "6t", "7t", "8t", "9t", "10t"], 1))
 
 define_button pon,
   display_name: "Pong",
@@ -553,7 +556,8 @@ define_button ron,
     and match(["hand", "calls", "last_discard"], ["win"])
     and ((status("void_manzu") and not_match(["hand", "calls", "last_discard"], ~m"manzu:1"))
       or (status("void_pinzu") and not_match(["hand", "calls", "last_discard"], ~m"pinzu:1"))
-      or (status("void_souzu") and not_match(["hand", "calls", "last_discard"], ~m"souzu:1"))),
+      or (status("void_souzu") and not_match(["hand", "calls", "last_discard"], ~m"souzu:1"))
+      or (status("void_stars") and not_match(["hand", "calls", "last_discard"], ~m"stars:1"))),
   precedence_over: ["pon", "daiminkan"]
   do
     big_text("Hu")
@@ -573,7 +577,8 @@ define_button chankan,
     and match(["hand", "calls", "last_called_tile"], ["win"])
     and ((status("void_manzu") and not_match(["hand", "calls", "last_called_tile"], ~m"manzu:1"))
       or (status("void_pinzu") and not_match(["hand", "calls", "last_called_tile"], ~m"pinzu:1"))
-      or (status("void_souzu") and not_match(["hand", "calls", "last_called_tile"], ~m"souzu:1"))),
+      or (status("void_souzu") and not_match(["hand", "calls", "last_called_tile"], ~m"souzu:1"))
+      or (status("void_stars") and not_match(["hand", "calls", "last_called_tile"], ~m"stars:1"))),
   precedence_over: ["pon", "daiminkan"]
   do
     big_text("Hu")
@@ -591,51 +596,14 @@ define_button tsumo,
     and match(["hand", "calls", "draw"], ["win"])
     and ((status("void_manzu") and not_match(["hand", "calls", "draw"], ~m"manzu:1"))
       or (status("void_pinzu") and not_match(["hand", "calls", "draw"], ~m"pinzu:1"))
-      or (status("void_souzu") and not_match(["hand", "calls", "draw"], ~m"souzu:1")))
+      or (status("void_souzu") and not_match(["hand", "calls", "draw"], ~m"souzu:1"))
+      or (status("void_stars") and not_match(["hand", "calls", "draw"], ~m"stars:1")))
   do
     big_text("Zimo")
     pause(1000)
     set_status("won")
     reveal_hand
     win_by_draw("win")
-  end
-
-define_auto_button _1_auto_sort,
-  display_name: "A",
-  desc: "Automatically sort your hand.",
-  enabled_at_start: true
-  do
-    sort_hand
-  end
-
-define_auto_button _2_auto_ron,
-  display_name: "R",
-  desc: "Automatically declare wins."
-  do
-    if buttons_include("ron") do
-      press_button("ron")
-    end
-    if buttons_include("tsumo") do
-      press_button("tsumo")
-    end
-  end
-
-define_auto_button _3_auto_no_call,
-  display_name: "C",
-  desc: "Skip all calls except wins."
-  do
-    if not_our_turn and buttons_include("skip") and buttons_exclude("ron", "chankan") do
-      press_button("skip")
-    end
-  end
-
-define_auto_button _4_auto_discard,
-  display_name: "D",
-  desc: "Automatically discard your drawn tile."
-  do
-    if our_turn and buttons_exclude("tsumo", "ankan") and has_draw do
-      discard_draw
-    end
   end
 
 define_auto_button _5_auto_discard_void,
@@ -645,7 +613,8 @@ define_auto_button _5_auto_discard_void,
   do
     if    (status("void_manzu") and match(["draw"], ~m"manzu:1"))
        or (status("void_pinzu") and match(["draw"], ~m"pinzu:1"))
-       or (status("void_souzu") and match(["draw"], ~m"souzu:1")) do
+       or (status("void_souzu") and match(["draw"], ~m"souzu:1"))
+       or (status("void_stars") and match(["draw"], ~m"stars:1")) do
       discard_draw
     end
   end
@@ -658,10 +627,9 @@ set four_rows_discards, true
 set bloody_end, true
 set max_rounds, 16
 
-define_mod show_waits, name: "Show Waits", desc: "Add some UI that shows waits."
-define_mod open_hands, name: "Open Hands", desc: "Everyone plays with tiles shown."
 define_mod sichuan_no_charleston, name: "No Charleston", desc: "Disables the initial tile pass."
-define_mod ten, name: "Ten", desc: "Adds 10m, 10p, and 10s."
+define_mod ten, name: "Ten", order: 2, desc: "Adds 10m, 10p, and 10s."
+define_mod star_suit, name: "Star Suit", order: 1, desc: "Adds a fourth suit (stars). Can combine with Ten mod."
 define_mod space, name: "Space Mahjong", desc: "Sequences can wrap (891, 912)."
 define_mod chinitsu, name: "Chinitsu", conflicts: ["fifth_tile"], desc: "Replace the wall with 16 copies of each bamboo tile. Includes 10s if Ten is enabled."
 define_mod fifth_tile, name: "Fifth Tile", conflicts: ["chinitsu"], desc: "Adds a fifth copy of every standard tile."

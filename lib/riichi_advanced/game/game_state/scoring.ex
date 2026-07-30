@@ -8,7 +8,6 @@ defmodule RiichiAdvanced.GameState.Scoring do
   alias RiichiAdvanced.GameState.Rules, as: Rules
   alias RiichiAdvanced.GameState.Scoring, as: Scoring
   alias RiichiAdvanced.GameState.ScoringOld, as: ScoringOld
-  alias RiichiAdvanced.Riichi, as: Riichi
   alias RiichiAdvanced.Utils, as: Utils
   import RiichiAdvanced.GameState
 
@@ -224,7 +223,7 @@ defmodule RiichiAdvanced.GameState.Scoring do
           for {_seat, deltas} <- ScoringOld.calculate_delta_scores_per_player(state, winners), reduce: delta_scores do
             delta_scores_acc -> Map.new(delta_scores_acc, fn {seat, delta} -> {seat, delta + deltas[seat]} end)
           end
-        end
+        else Map.new(state.players, fn {seat, _player} -> {seat, 0} end) end
       end
       
     # multiply by delta_score_multiplier counter, if it exists
@@ -290,7 +289,6 @@ defmodule RiichiAdvanced.GameState.Scoring do
 
   def adjudicate_draw_scoring(state) do
     score_rules = Rules.get(state.rules_ref, "score_calculation", %{})
-    tenpai = Map.new(state.players, fn {seat, player} -> {seat, "tenpai" in player.status} end)
     delta_scores = Map.new(state.players, fn {seat, _player} -> {seat, 0} end)
 
     # handle hanada kirame's scoring quirk

@@ -1,3 +1,5 @@
+define "sanma"
+
 on after_initialization do
   add_rule("Rules", "No Chii", "(Sanma) You cannot call chii in sanma.")
   add_rule("Rules", "Wall", "(Sanma) The 2 to 8 of characters are removed from the wall.", -99)

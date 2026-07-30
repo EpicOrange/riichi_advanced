@@ -87,6 +87,9 @@ defmodule RiichiAdvanced.GameState.American do
                 shift = String.slice(group, -2, 1) |> String.to_integer()
                 result ++ [{suit, List.duplicate(shift, num)}]
               end
+            true ->
+              IO.puts("Invalid american match spec letter #{t} in #{am_match_definition}")
+              nil
           end
         end
     end

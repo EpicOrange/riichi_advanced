@@ -1,0 +1,70 @@
+on after_initialization do
+  add_rule("Tiles", "Golden Chun", "One of the green dragons is red and acts as aka dora. %{akahatsu}", %{akahatsu: ["06z"]})
+  add_rule("Tiles", "Golden Chun", "One of the red dragons is the golden chun, which can be used as a five of any suit, and grants 1 extra han when used as a five. %{golden_chun}", %{golden_chun: ["37z"]})
+  add_rule("Yakuman", "Sangen Pocchi", "(Golden Chun) Completing a hand via shiro pocchi while using the golden chun as a five and having the aka green dragon scores yakuman.")
+  update_rule("Yakuman", "Sangen Pocchi", "%{example_hand}", %{example_hand: ["6m", "7m", "8m", "2p", "2p", "2p", "3s", "4s", "37z", "5s", "6s", "6z", "06z", "3x", "9z"]})
+  update_rule("Rules", "Shuugi", "(Golden Chun) Each golden chun used as a five is worth 1 shuugi.")
+end
+
+replace 1, "wall", "6z", "06z"
+replace 1, "wall", "7z", "37z"
+
+apply merge, "dora_indicators", %{
+  "06z": ["7z"],
+  "37z": ["5z"]
+}
+
+on after_start do
+  set_tile_alias_all(["06z"], ["6z"])
+end
+
+# treat golden chun as 5 wildcard or chun
+
+# support for star suit mod
+if defined("star_suit") do
+  on after_start do
+    # we can use the "_golden" attribute to keep track of when the golden chun is used as a five
+    set_tile_alias_all(["37z"], [["5m", "_golden"], ["5p", "_golden"], ["5s", "_golden"], ["5t", "_golden"], "7z"])
+  end
+else
+  on after_start do
+    # we can use the "_golden" attribute to keep track of when the golden chun is used as a five
+    set_tile_alias_all(["37z"], [["5m", "_golden"], ["5p", "_golden"], ["5s", "_golden"], "7z"])
+  end
+end
+
+# track aka hatsu count and set aka hatsu status for aka mod
+on before_win do
+  add_counter("aka", "count_matches", ["hand", "calls", "winning_tile"], ~m"nojoker, 06z:1")
+  if aka > 0 do set_status("aka_h") end
+end
+# ditto but for golden chun
+on before_scoring do
+  add_counter("golden_chuns", "count_matches", ["hand", "calls", "winning_tile"], ~m"nojoker, any@golden:1")
+  if golden_chuns > 0 do set_status("golden_chun") end
+end
+
+define_yaku extra_yaku, "Kin", ["golden_chuns", "Han"], golden_chuns >= 1
+define_yaku yakuman, "Sangen Pocchi", [1, "★"], status("shiro_pocchi", "aka_h", "golden_chun")
+
+# can't call golden chun unless as a chun
+apply append, "buttons.chii.call_conditions", not_call_contains("37z") or call_contains("7z")
+apply append, "buttons.pon.call_conditions", not_call_contains("37z") or call_contains("7z")
+apply append, "buttons.daiminkan.call_conditions", not_call_contains("37z") or call_contains("7z")
+apply append, "buttons.kakan.call_conditions", not_call_contains("37z") or call_contains("7z")
+apply append, "buttons.ankan.call_conditions", not_call_contains("37z") or call_contains("7z")
+
+if defined("shuugi") do
+  # golden chun used as a five is worth 2 chips
+  on after_initialization do
+    add_rule("Rules", "Shuugi", "Winning with a hand that uses the golden chun as a five adds 2 shuugi to the payment.")
+  end
+  define_yaku shuugi, "Kin", ["golden_chuns", "⛀"], golden_chuns >= 1
+  apply prepend, "functions.announce_shuugi_payment" do
+    if won_by_draw do
+      if status("golden_chun") do push_system_message("Everyone pays 2 chips for golden chun used as a five (golden chun)") end
+    else
+      if status("golden_chun") do push_system_message("Discarder pays 2 chips for golden chun used as a five (golden chun)") end
+    end
+  end
+end

@@ -24,3 +24,17 @@ end
 apply set_merge, "dora_indicators", %{
   "9z": ["6z"],
 }
+
+if defined("shuugi") do
+  define_yaku shuugi, "Shiro Pocchi", [1, "⛀"], status("riichi", "shiro_pocchi")
+
+  apply append, "functions.announce_shuugi_payment" do
+    if status("riichi", "shiro_pocchi") do
+      if won_by_draw do
+        push_system_message("Everyone pays 1 chip for shiro pocchi")
+      else
+        push_system_message("Discarder pays 1 chip for shiro pocchi")
+      end
+    end
+  end
+end

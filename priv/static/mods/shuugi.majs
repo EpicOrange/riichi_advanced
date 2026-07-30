@@ -1,9 +1,11 @@
+# enables other mods to add shuugi-related scoring
+define "shuugi"
+
 on after_initialization do
   add_rule("Rules", "Shuugi", "Part of the player's starting score is composed of shuugi chips worth %{worth} each, which are gained and lost separately from points.", %{worth: !worth})
   if !starting_shuugi > 0 do
     add_rule("Rules", "Shuugi", "Each player starts with %{starting_shuugi} chips.", %{starting_shuugi: !starting_shuugi})
   end
-  # set shuugi so that everyone sees the counter
   as everyone do
     shuugi = !starting_shuugi
   end
@@ -11,29 +13,8 @@ end
 
 apply append, "score_calculation.yaku_lists", "shuugi"
 
-def calculate_shuugi_payment do
-  shuugi_payment += shuugi_gain
-
-  # TODO factor the below as mods
-  
-  # if status("kindora") do shuugi_payment += 2 end
-  # shuugi_payment += toriuchi
-  # shuugi_payment += galaxy_shuugi
-  # if status("riichi", "shiro_pocchi") do shuugi_payment += 1 end
-end
-
-def announce_shuugi_payment do
-  #   if status("kindora") do push_system_message("Everyone pays 2 chips for golden chun used as a five (golden chun)") end
-  #   if toriuchi >= 1 do push_system_message("Everyone pays 1 chip per bird tile (toriuchi)") end
-  #   if galaxy_shuugi >= 1 do push_system_message("Everyone pays 1 chip per galaxy joker used as their original value (galaxy)") end
-  #   if status("riichi", "shiro_pocchi") do push_system_message("Everyone pays 1 chip for for shiro pocchi riichi tsumo (shiro_pocchi)") end
-  #   if status("open_shiro_pocchi") do push_system_message("Everyone pays 1 chip for for open shiro pocchi tsumo (shiro_pocchi)") end
-
-  #   if status("yakuman") do push_system_message("Discarder pays 10 chips for a yakuman win (shuugi)") end
-  #   if status("kindora") do push_system_message("Discarder pays 2 chips for golden chun used as a five (golden chun)") end
-  #   if toriuchi >= 1 do push_system_message("Discarder pays 1 chip per bird tile (toriuchi)") end
-  #   if galaxy_shuugi >= 1 do push_system_message("Discarder pays 1 chip per galaxy joker used as their original value (galaxy)") end
-end
+# shuugi mods should extend this empty function
+def announce_shuugi_payment do end
 
 def execute_shuugi_payment do
   set_counter_all("shuugi_payment", "shuugi_payment")
@@ -57,7 +38,7 @@ def execute_shuugi_payment do
 end
 
 on after_win do
-  calculate_shuugi_payment
+  shuugi_payment += shuugi_gain # gained from yaku that score ⛀
   announce_shuugi_payment
   execute_shuugi_payment
 end
@@ -77,4 +58,6 @@ on before_conclusion do
 end
 
 apply append, "persistent_counters", "shuugi"
+
+# no longer needed since we have a shuugi graphic now
 # apply append, "shown_statuses_public", "shuugi"

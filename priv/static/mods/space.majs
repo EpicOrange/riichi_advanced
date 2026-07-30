@@ -1,3 +1,5 @@
+define "space"
+
 on after_initialization do
   add_rule("Rules", "Space Mahjong", "Sequences can wrap (891, 912). Winds and dragons can make sequences. You can chii from any direction.")
   add_rule("Rules", "Win Condition", "- (Space Mahjong) Seven Pairs is no longer a winning hand.", -100)

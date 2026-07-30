@@ -22,8 +22,10 @@ define_button suukantsu,
     win_by_draw
   end
 
-apply append, "functions.calculate_shuugi_payment" do
-  if status("suukantsu_rinshan") do
-    shuugi_payment = 20
+if defined("shuugi") do
+  apply append, "functions.calculate_shuugi_payment" do
+    if status("suukantsu_rinshan") do
+      shuugi_payment = 20
+    end
   end
 end
