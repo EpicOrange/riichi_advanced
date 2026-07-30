@@ -11,9 +11,9 @@ defmodule RiichiAdvanced.GameState.Kyoku do
   alias RiichiAdvanced.GameState.TileBehavior, as: TileBehavior
   alias RiichiAdvanced.Match, as: Match
   alias RiichiAdvanced.Riichi, as: Riichi
-  alias RiichiAdvanced.Utils, as: Utils
   alias RiichiAdvanced.Types, as: Types
   alias RiichiAdvanced.Types.Transaction, as: Transaction
+  alias RiichiAdvanced.Utils, as: Utils
   import RiichiAdvanced.GameState
   require Logger
 
@@ -168,7 +168,7 @@ defmodule RiichiAdvanced.GameState.Kyoku do
 
     state = Map.put(state, :game_active, false)
     dealer = Riichi.get_east_player_seat(state.kyoku, state.available_seats)
-    state = Map.put(state, :next_dealer, dealer)
+    state = Map.put(state, :next_dealer, Utils.next_turn(dealer))
     state = Map.put(state, :visible_screen, :winner)
     state = start_timer(state)
 
@@ -228,7 +228,7 @@ defmodule RiichiAdvanced.GameState.Kyoku do
     state = Map.put(state, :delta_scores, delta_scores)
     state = Map.put(state, :delta_scores_reason, if draw_name do draw_name else delta_scores_reason end)
     dealer = Riichi.get_east_player_seat(state.kyoku, state.available_seats)
-    state = Map.put(state, :next_dealer, dealer)
+    state = Map.put(state, :next_dealer, Utils.next_turn(dealer))
 
     # run after_scoring actions
     state = Actions.trigger_event(state, "after_scoring", %{seat: state.turn})
@@ -262,7 +262,7 @@ defmodule RiichiAdvanced.GameState.Kyoku do
     state = Map.put(state, :delta_scores, delta_scores)
     state = Map.put(state, :delta_scores_reason, if draw_name do draw_name else "Abortive Draw" end)
     dealer = Riichi.get_east_player_seat(state.kyoku, state.available_seats)
-    state = Map.put(state, :next_dealer, dealer)
+    state = Map.put(state, :next_dealer, Utils.next_turn(dealer))
 
     # run after_scoring actions
     state = Actions.trigger_event(state, "after_scoring", %{seat: state.turn})

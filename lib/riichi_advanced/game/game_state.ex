@@ -1862,7 +1862,6 @@ defmodule RiichiAdvanced.GameState do
       else
         update_player(state, seat, fn player -> %{ player | status: MapSet.union(player.status, MapSet.new(["renchan"])) } end)
       end
-      state = Map.put(state, :next_dealer, if renchan do Utils.next_turn(dealer) else dealer end)
       state = broadcast_state_change(state)
       {:noreply, state}
     else {:noreply, state} end
