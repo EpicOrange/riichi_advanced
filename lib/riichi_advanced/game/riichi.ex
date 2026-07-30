@@ -5,7 +5,7 @@ defmodule RiichiAdvanced.Riichi do
   alias RiichiAdvanced.MatchOld, as: MatchOld
   alias RiichiAdvanced.Utils, as: Utils
 
-  @flower_names ["start_flower", "start_joker", "flower", "joker"]
+  @flower_names ["start_flower", "start_joker", "flower", "joker", "pei", "nukidora"]
   def flower_names(), do: @flower_names
 
   @manzu      [:"1m", :"2m", :"3m", :"4m", :"5m", :"6m", :"7m", :"8m", :"9m", :"10m", :"0m",

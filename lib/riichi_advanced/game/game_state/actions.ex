@@ -337,9 +337,10 @@ defmodule RiichiAdvanced.GameState.Actions do
   def trigger_call(state, seat, button_name, call_choice, called_tile, call_source, silent \\ false) do
     # get the actual called tile (with attrs)
     called_tile = case call_source do
-      :discards -> Enum.at(state.players[state.turn].pond, -1)
+      :discards -> get_last_discard_action(state).tile
       :hand     -> called_tile
       :draw     -> called_tile
+      :call     -> get_last_call_action(state).called_tile
       _         -> IO.puts("Unhandled call_source #{inspect(call_source)}")
     end
 
@@ -367,6 +368,9 @@ defmodule RiichiAdvanced.GameState.Actions do
       :discards -> {update_player(state, state.turn, &%{ &1 | pond: Enum.drop(&1.pond, -1) }), call_choice}
       :hand     -> {state, if called_tile != nil do [called_tile | call_choice] else call_choice end}
       :draw     -> {state, if called_tile != nil do [called_tile | call_choice] else call_choice end}
+      :call     ->
+        state = update_in(state.players[get_last_call_action(state).seat].calls, &List.delete_at(&1, -1))
+        {state, call_choice}
       _         ->
         IO.puts("Unhandled call_source #{inspect(call_source)}")
         {state, call_choice}
@@ -1292,7 +1296,7 @@ defmodule RiichiAdvanced.GameState.Actions do
       "play_tile"             -> play_tile(state, context.seat, Enum.at(opts, 0, :"1m"), Enum.at(opts, 1, 0))
       "draw"                  -> draw_tile(state, context.seat, Enum.at(opts, 0, 1), Enum.at(opts, 1, nil), false)
       "draw_aside"            -> draw_tile(state, context.seat, Enum.at(opts, 0, 1), Enum.at(opts, 1, nil), true)
-      "call"                  -> trigger_call(state, context.seat, context.choice.name, context.choice.chosen_call_choice, context.choice.chosen_called_tile, :discards, silent)
+      "call"                  -> trigger_call(state, context.seat, context.choice.name, context.choice.chosen_call_choice, context.choice.chosen_called_tile, if get_last_action(state).action == :discard do :discards else :call end, silent)
       "self_call"             -> trigger_call(state, context.seat, context.choice.name, context.choice.chosen_call_choice, context.choice.chosen_called_tile, :hand, silent)
       "upgrade_call"          -> upgrade_call(state, context.seat, context.choice.name, context.choice.chosen_call_choice, context.choice.chosen_called_tile)
       "flower"                -> trigger_call(state, context.seat, context.choice.name, context.choice.chosen_call_choice, nil, :hand, silent)

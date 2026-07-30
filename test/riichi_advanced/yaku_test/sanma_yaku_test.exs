@@ -113,7 +113,7 @@ defmodule RiichiAdvanced.YakuTest.SanmaYaku do
       %{"type" => "buttons_pressed", "buttons" => [%{"button" => "ron"}, nil, nil, nil]}
     ], %{
       east: %{
-        yaku: [{"Riichi", [1, "Han"]}, {"Ippatsu", [1, "Han"]}, {"Pei", [1, "Han"]}],
+        yaku: [{"Riichi", [1, "Han"]}, {"Ippatsu", [1, "Han"]}, {"Nukidora", [1, "Han"]}],
         minipoints: 40
       }
     })

@@ -14,8 +14,9 @@ apply subtract, "default_mods", ["suufon_renda", "suucha_riichi"]
 define_mod_category "Sanma", prepend: true
 define_mod sanma_chii, order: 1, name: "Enable Chii", category: "Sanma", desc: "Allow chii during sanma."
 define_mod sanma_pei_yakuhai, order: 1, name: "North Is Yakuhai", category: "Sanma", desc: "North wind is now yakuhai. (1 han for a triplet, 2 fu for a pair)"
-define_mod sanma_disable_pei, order: 1, conflicts: ["sanma_nuki_19m"], name: "Disable Pei", category: "Sanma", desc: "You can no longer call north winds as nukidora."
+define_mod sanma_disable_pei, order: 1, conflicts: ["sanma_nuki_19m", "sanma_pon_nukidora"], name: "Disable Pei", category: "Sanma", desc: "You can no longer call north winds as nukidora."
 define_mod sanma_nuki_19m, order: 1, conflicts: ["sanma_disable_pei"], name: "Nuki 19m", category: "Sanma", desc: "The 19m tiles can be called as nukidora."
+define_mod sanma_pon_nukidora, order: 1, conflicts: ["sanma_disable_pei"], name: "Callable Nukidora", category: "Sanma", desc: "Nukidora can be called with pon or kan to deny the nukidora."
 define_mod sanma_no_tsumo_loss, order: 1, name: "No Tsumo Loss", category: "Sanma", desc: """
 Disable tsumo loss due to not having a fourth player. Available methods are:
 - half: Both players pay half of the missing payment.

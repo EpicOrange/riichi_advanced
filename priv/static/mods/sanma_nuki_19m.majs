@@ -39,3 +39,6 @@ define_auto_button _5_auto_pei,
 
 # don't let auto discard button skip pei
 apply append, "constants.no_auto_discard_calls", "nukidora"
+
+# allow chankan on nuki calls
+apply append, "interruptible_actions", ["nukidora"]

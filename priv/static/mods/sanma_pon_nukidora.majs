@@ -1,0 +1,50 @@
+on after_initialization do
+  add_rule("Rules", "Nukidora", "A nukidora declaration can be ponned or kanned by another player. The resulting pon/kan does not count as nukidora.")
+end
+
+define_button pon_nukidora,
+  display_name: "Pon",
+  msg_name: "pon",
+  call_name: "pon",
+  show_when: not_our_turn
+    and not_no_tiles_remaining
+    and someone_else_just_called
+    and last_call_is("pei", "flower", "nukidora")
+    and call_available,
+  precedence_over: ["chii", "pon"],
+  call: [[0, 0]],
+  call_style: %{
+    kamicha: ["call_sideways", 0, 1],
+    toimen: [0, "call_sideways", 1],
+    shimocha: [0, 1, "call_sideways"]
+  }
+  do
+    big_text("Pon")
+    call
+    change_turn("self")
+  end
+
+define_button daiminkan_nukidora,
+  display_name: "Kan",
+  msg_name: "daiminkan",
+  call_name: "daiminkan",
+  show_when: not_our_turn
+    and not_no_tiles_remaining
+    and someone_else_just_called
+    and last_call_is("pei", "flower", "nukidora")
+    and tile_not_drawn(-4)
+    and call_available,
+  precedence_over: ["chii", "pon", "pon_nukidora", "daiminkan", "daiminkan_nukidora"],
+  call: [[0, 0, 0]],
+  call_style: %{
+    kamicha: ["call_sideways", 0, 1, 2],
+    toimen: [0, "call_sideways", 1, 2],
+    shimocha: [0, 1, 2, "call_sideways"]
+  }
+  do
+    big_text("Kan")
+    set_status("kan")
+    call
+    change_turn("self")
+    do_kan_draw
+  end
