@@ -43,7 +43,7 @@ defmodule RiichiAdvanced.GameState.Kyoku do
         state
       state.visible_screen == :winner -> # need to see score exchange screen
         # since seeing this screen means we're done with all the winners so far, calculate the delta scores
-        {state, delta_scores, delta_scores_reason, _next_dealer} = Scoring.adjudicate_win_scoring(state)
+        {state, delta_scores, delta_scores_reason} = Scoring.adjudicate_win_scoring(state)
         state = Map.put(state, :delta_scores, delta_scores)
         state = Map.put(state, :delta_scores_reason, delta_scores_reason)
 
@@ -59,7 +59,7 @@ defmodule RiichiAdvanced.GameState.Kyoku do
           state = Map.put(state, :game_active, false)
 
           prev_round_result = state.round_result
-          {state, delta_scores, delta_scores_reason, _next_dealer} = Scoring.adjudicate_draw_scoring(state)
+          {state, delta_scores, delta_scores_reason} = Scoring.adjudicate_draw_scoring(state)
           state = Map.put(state, :delta_scores, Map.merge(state.delta_scores, delta_scores, fn _k, l, r -> l + r end))
           state = Map.put(state, :delta_scores_reason, delta_scores_reason)
           state = Map.put(state, :round_result, prev_round_result)
@@ -121,7 +121,6 @@ defmodule RiichiAdvanced.GameState.Kyoku do
                 state = Map.put(state, :visible_screen, nil)
                 # add to kyoku based on next dealer's seat
                 dealer = Riichi.get_east_player_seat(state.kyoku, state.available_seats)
-                IO.inspect({dealer, state.next_dealer})
                 kyoku = state.kyoku + case Utils.get_relative_seat(dealer, state.next_dealer) do
                   :shimocha -> 1
                   :toimen   -> 2
@@ -225,7 +224,7 @@ defmodule RiichiAdvanced.GameState.Kyoku do
 
     state = Map.put(state, :game_active, false)
 
-    {state, delta_scores, delta_scores_reason, _next_dealer} = Scoring.adjudicate_draw_scoring(state)
+    {state, delta_scores, delta_scores_reason} = Scoring.adjudicate_draw_scoring(state)
     state = Map.put(state, :delta_scores, delta_scores)
     state = Map.put(state, :delta_scores_reason, if draw_name do draw_name else delta_scores_reason end)
     dealer = Riichi.get_east_player_seat(state.kyoku, state.available_seats)

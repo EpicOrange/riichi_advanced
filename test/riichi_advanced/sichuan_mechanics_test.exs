@@ -560,7 +560,7 @@ defmodule RiichiAdvanced.SichuanMechanicsTest do
     })
   end
 
-  test "sichuan - score_best_hand_at_draw scores takame" do
+  test "sichuan - scores takame at draw" do
     TestUtils.test_yaku_advanced("sichuan", ["sichuan_no_charleston"], """
     {
       "starting_hand": {

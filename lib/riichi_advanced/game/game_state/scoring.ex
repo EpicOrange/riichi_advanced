@@ -218,9 +218,12 @@ defmodule RiichiAdvanced.GameState.Scoring do
           {seat, Map.get(totals_by_seat, seat, 0)}
         end
       else
-        # old method
-        for {_seat, deltas} <- ScoringOld.calculate_delta_scores_per_player(state, winners), reduce: delta_scores do
-          delta_scores_acc -> Map.new(delta_scores_acc, fn {seat, delta} -> {seat, delta + deltas[seat]} end)
+        if Rules.get(state.rules_ref, "scoring_logic", nil) == nil do
+          # old method
+          IO.puts("WARNING: using old scoring method to calculate delta scores")
+          for {_seat, deltas} <- ScoringOld.calculate_delta_scores_per_player(state, winners), reduce: delta_scores do
+            delta_scores_acc -> Map.new(delta_scores_acc, fn {seat, delta} -> {seat, delta + deltas[seat]} end)
+          end
         end
       end
       
@@ -274,23 +277,6 @@ defmodule RiichiAdvanced.GameState.Scoring do
       map_size(winners) == 3       -> Map.get(score_rules, "win_by_discard_name_3", Map.get(score_rules, "win_by_discard_name", "Win by Discard"))
     end
 
-    # get next dealer
-    agarirenchan = Map.get(score_rules, "agarirenchan", false)
-    next_dealer_is_first_winner = Map.get(score_rules, "next_dealer_is_first_winner", false)
-    next_dealer = cond do
-      next_dealer_is_first_winner and map_size(winners) == map_size(state.winners) ->
-        {_seat, winner} = Enum.at(winners, 0)
-        dealer_seat = Riichi.get_east_player_seat(state.kyoku, state.available_seats)
-        new_dealer_seat = cond do
-          is_draw                -> dealer_seat # if there is no first winner, dealer stays the same
-          map_size(winners) == 1 -> winner.seat # otherwise, the first winner becomes the next dealer
-          true                   -> get_last_discard_action(state).seat # if there are multiple first winners, the loser becomes the next dealer instead
-        end
-        Utils.get_relative_seat(dealer_seat, new_dealer_seat)
-      agarirenchan and Riichi.get_east_player_seat(state.kyoku, state.available_seats) in state.winner_seats -> :self
-      true -> :shimocha
-    end
-
     # run before_win actions for each new winner
     state = if Rules.has_key?(state.rules_ref, "before_win") do
       for {_seat, winner} <- winners, reduce: state do
@@ -299,7 +285,7 @@ defmodule RiichiAdvanced.GameState.Scoring do
       end
     else state end
 
-    {state, delta_scores, delta_scores_reason, next_dealer}
+    {state, delta_scores, delta_scores_reason}
   end
 
   def adjudicate_draw_scoring(state) do
@@ -312,17 +298,7 @@ defmodule RiichiAdvanced.GameState.Scoring do
 
     delta_scores_reason = Map.get(score_rules, "exhaustive_draw_name", "Draw")
 
-    tenpairenchan = Map.get(score_rules, "tenpairenchan", false)
-    notenrenchan_south = Map.get(score_rules, "notenrenchan_south", false)
-    ryuukyokurenchan = Map.get(score_rules, "ryuukyokurenchan", false)
-    next_dealer = cond do
-      tenpairenchan and tenpai[Riichi.get_east_player_seat(state.kyoku, state.available_seats)] -> :self
-      notenrenchan_south and Riichi.get_round_wind(state.kyoku, length(state.available_seats)) == :south -> :self
-      ryuukyokurenchan -> :self
-      true -> :shimocha
-    end
-
-    {state, delta_scores, delta_scores_reason, next_dealer}
+    {state, delta_scores, delta_scores_reason}
   end
 
   def ensure_scoring_method(state) do

@@ -111,7 +111,7 @@ defmodule RiichiAdvanced.GameState.Payment do
         |> Enum.uniq()
         # |> IO.inspect(label: inspect(payer))
         # only make a txn if we have yaku
-        state = if not Enum.empty?(new_yaku) do
+        state = if not Enum.empty?(new_yaku) or Enum.empty?(cxt.yaku) do
           new_points = new_yaku
           |> Enum.map(fn {_name, value} -> value end)
           |> Enum.reduce([], &Scoring.add_yaku_values/2)

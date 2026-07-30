@@ -291,7 +291,7 @@ defmodule RiichiAdvancedWeb.ScoringTestLive do
     state = Kyoku.calculate_winner_details_v2(state, :east, win_source, scoring_key)
     state = update_in(state.winners.east.yaku, & &1 ++ selected_yaku)
     state = if minipoints > 0 do update_in(state.winners.east.minipoints, fn _ -> minipoints end) else state end
-    {state, delta_scores, delta_scores_reason, _next_dealer} = Scoring.adjudicate_win_scoring(state)
+    {state, delta_scores, delta_scores_reason} = Scoring.adjudicate_win_scoring(state)
     state
     |> Map.put(:delta_scores, delta_scores)
     |> Map.put(:delta_scores_reason, delta_scores_reason)
