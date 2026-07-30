@@ -591,7 +591,6 @@ define_mod wareme, order: 1, name: "Wareme", desc: "In each round, the player wh
 define_mod aotenjou, order: 2, name: "Aotenjou", desc: "Removes limit hands. Score grows exponentially with han according to the formula 4 * fu * 2^(2+han). Not recommended with tobi enabled."
 define_mod yakitori, name: "Yakitori", desc: "If you do not win any hands by the end of the game, you pay each player a penalty."
 config_mod yakitori, name: "penalty", values: [1000,2000,3000,4000,5000,6000,7000,8000,9000,10000,15000,20000,25000,30000], default: 4000
-define_mod toriuchi, deps: ["shuugi"], name: "Toriuchi", desc: "On ron, each 1s (bird) tile is worth 1 shuugi, unless the discarder's hand contains 7p (pistol) which would shoot the birds dead. That is, unless the winner's hand contains 8s (birdcage) which would protect the birds from gunfire."
 define_mod kansai_chiitoitsu, name: "Kansai Chiitoitsu", desc: "Chiitoitsu now allows repeated pairs."
 define_mod min_han, order: 1, name: "Minimum Han", desc: "Minimum han required to win."
 config_mod min_han, name: "min", values: [1, 2, 3, 4, "Mangan", "Yakuman"], default: 1
@@ -803,6 +802,7 @@ define_mod chinitsu, order: -2, conflicts: ["aka", "aka1", "aka3", "aka7", "aka9
 define_mod washizu, order: 3.5, conflicts: ["called_game"], name: "Washizu", desc: "Each tile in the wall is transparent and visible to all, except for one copy. Unflipped dora indicators are not visible."
 config_mod washizu, name: "transparents", values: [1,2,3,4], default: 3
 define_mod yami, name: "Yami", desc: "You may bet 1000 points to discard facedown. Others can bet 2000 points to force it faceup, but you can bet a further 4000 points to keep it facedown."
+define_mod toriuchi, deps: ["shuugi"], name: "Toriuchi", desc: "On ron, each 1s (bird) tile is worth 1 shuugi, unless the discarder's hand contains 7p (pistol) which would shoot the birds dead. That is, unless the winner's hand contains 8s (birdcage) which would protect the birds from gunfire."
 define_mod nobekan, name: "Nobekan", desc: "You may kan a sequence of four number tiles."
 define_mod calls_are_forced, conflicts: ["chombo"], name: "Calls Are Forced", desc: "Forces you to make all available calls, including riichi (if enabled). You still get to choose if multiple calls are available."
 define_mod chombo, conflicts: ["calls_are_forced"], name: "Chombo", desc: "The tsumo and ron buttons are enabled on every draw and discard. If you make an incorrect win call, your hand is dead and you cannot make a win call for the remainder of the round."
@@ -1064,6 +1064,7 @@ define_preset "Just Like Modded Minecraft", [
   "yaku/honors_chiitoitsu",
   "yaku/uushin_tsuukan",
   "yaku/ketsupaihou",
+  "yaku/grand_cross",
   "yaku/open_riichi",
   "yaku/sanrenkou",
   "yaku/sanshoku_ittsuu",
@@ -1122,10 +1123,20 @@ define_preset "Just Like Modded Minecraft", [
   "golden_chun",
   "blue_dragon",
   "wareme",
+  "toriuchi",
+  "nobekan",
+  %{name: "shuugi", config: %{worth: 2000, starting_shuugi: 1000, pao_pays_all: true}},
+  %{name: "shuugi/ippatsu", config: %{chips: 1}},
+  %{name: "shuugi/ura", config: %{chips: 1}},
+  %{name: "shuugi/yakuman", config: %{ron_chips: 10, tsumo_chips: 5, per_yakuman: true, allow_kazoe: true}},
+  %{name: "shuugi/aka", config: %{chips: 1, closed_only: false}},
+  %{name: "shuugi/ao", config: %{chips: 1, closed_only: false}},
+  %{name: "shuugi/kin", config: %{chips: 1, closed_only: false}},
   %{name: "min_han", config: %{min: 1, han: "Han"}},
   "cancellable_riichi",
   "immediate_kan_dora",
   "yaku/ippatsu",
+  "yaku/nippatsu",
   "star_suit",
   "space",
   "galaxy",
