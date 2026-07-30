@@ -9,7 +9,7 @@ use crate::match_info::{prepare_tiles};
 use crate::primes::is_any;
 use crate::profile::{PROFILE_GET_WAITS, PROFILE_UNNEEDED_TILES, CALL_COUNT, MAX_NANOS, TOTAL_NANOS};
 use crate::tile_table::tile1x;
-use crate::types::{ElixirAliases, ElixirHandCalls, ElixirTile, MatchDefinitionElem, MatchDefinitions, MatchInfo, Tile};
+use crate::types::{ElixirAliases, ElixirHandCalls, ElixirTile, MatchDefinition, MatchDefinitions, MatchInfo, Tile};
 use crate::utils::{add_joker_to_aliases, remove_joker_from_aliases};
 
 #[rustler::nif(schedule = "DirtyCpu")]
@@ -230,8 +230,23 @@ pub fn __get_unneeded_tiles_v2(
     ordering_r,
   );
 
-  // remove each tile in turn
+  // precheck: remove the match definitions once
+  // if it fails, return empty right away
+  // if it succeeds, the remaining tile(s) are solutions we don't have to check again
+  // this also collects the match definitions that actually match
   let mut ret: HashSet<Tile> = HashSet::new();
+  let mut useful_defns: Vec<&MatchDefinition> = vec!();
+  for match_definition in match_definitions.iter() {
+    let mut used = false;
+    for tile in remove_match_definition(&match_info, match_definition).flat_map(|r| r[0].attrs.clone()) {
+      ret.insert(tile);
+      used = true;
+    }
+    if used { useful_defns.push(match_definition); }
+  }
+  if useful_defns.is_empty() { return vec!(); }
+
+  // remove each tile in turn
   for _ in 0..match_info.initial_hands[0].attrs.len() {
     if ret.contains(match_info.initial_hands[0].attrs.first().unwrap()) { continue; }
 
@@ -239,42 +254,23 @@ pub fn __get_unneeded_tiles_v2(
     // (can't use swap-remove since this is basically a queue)
     let tile = match_info.initial_hands[0].attrs.remove(0);
 
-    // check against defns
-    for match_definition in &match_definitions {
-      // first try a non-exhaustive version of the match definition, if any
-      let mut non_exhaustive_successful = false;
-      for match_elem in match_definition.iter() {
-        if let MatchDefinitionElem::Keyword(s) = match_elem {
-          if s == "exhaustive" { 
-            let mut non_exhaustive_defn = match_definition.clone();
-            non_exhaustive_defn.retain(|elem| {
-              *elem != MatchDefinitionElem::Keyword("exhaustive".to_owned())
-            });
-            let results: Vec<Tile> = remove_match_definition(&match_info, &non_exhaustive_defn).flat_map(|r| r[0].attrs.clone()).collect();
-            if !results.is_empty() {
-              for r in results { ret.insert(r); }
-              ret.insert(tile);
-              non_exhaustive_successful = true;
-              break;
-            }
-          }
-        }
-      }
-      if non_exhaustive_successful { break; }
-      // then try the given match definition
+    // check against each defn
+    for match_definition in useful_defns.iter() {
       // if removal is successful, any remaining tiles are unneeded
       // the tile we took out is also unneeded
-      let results: Vec<Tile> = remove_match_definition(&match_info, match_definition).flat_map(|r| r[0].attrs.clone()).collect();
-      if !results.is_empty() {
-        for r in results { ret.insert(r); }
-        ret.insert(tile);
+      let mut success = false;
+      for result in remove_match_definition(&match_info, match_definition).map(|r| r[0].attrs.clone()) {
+        for r in result { ret.insert(r); }
+        success = true;
       }
+      if success { ret.insert(tile); }
     }
 
-    // push the first element back in
+    // push the first element back in, but at the back
     match_info.initial_hands[0].attrs.push(tile);
   }
   // need to convert to vector to pass NIF boundary
   // also need to convert from encoded tile to elixir tile
   decode_tiles(ret.iter().collect::<Vec<_>>(), match_info.all_attrs)
 }
+

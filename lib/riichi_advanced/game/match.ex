@@ -692,7 +692,7 @@ defmodule RiichiAdvanced.Match do
   # "daiminkan": ["daiminkan"]
   # "kakan": ["kakan"]
 
-  @decorate cacheable(cache: RiichiAdvanced.Cache, key: {:generate_groups, group, tile_behavior.uuid})
+  @decorate cacheable(cache: RiichiAdvanced.Cache, key: {:generate_groups, group, tile_behavior.uuid}, opts: [ttl: :timer.seconds(10)])
   def generate_groups(group, tile_behavior, nojoker) do
     _generate_groups(
       group,
@@ -1333,10 +1333,11 @@ defmodule RiichiAdvanced.Match do
   # given a 14-tile hand, and match definitions for 13-tile hands,
   # return all the (unique) tiles that are not needed to match the definitions
   @u256_max 115792089237316195423570985008687907853269984665640564039457584007913129639935
+  @decorate cacheable(cache: RiichiAdvanced.Cache, key: {:get_unneeded_tiles_v2, hand, calls, match_definitions, TileBehavior.hash(tile_behavior)}, opts: [ttl: :timer.seconds(10)])
   def get_unneeded_tiles_v2(hand, calls, match_definitions, tile_behavior) do
     # check if rust should handle things
     tiles_in_hand = Utils.strip_attrs(hand ++ Enum.flat_map(calls, &Utils.call_to_tiles/1))
-    hash = tiles_in_hand |> Enum.map(&Constants.to_prime/1) |> Enum.product
+    hash = tiles_in_hand |> Enum.map(&Constants.to_prime/1) |> Enum.product()
     use_rust = hash <= @u256_max
     if use_rust do
       ret = _get_unneeded_tiles_v2({hand, calls}, match_definitions,
@@ -1348,7 +1349,7 @@ defmodule RiichiAdvanced.Match do
       ret
     else
       # t = System.ordering_rs_time(:millisecond)
-      ret = get_unneeded_tiles(hand, calls, match_definitions, tile_behavior)
+      ret = get_unneeded_tiles_v1(hand, calls, match_definitions, tile_behavior)
       # delta = System.os_time(:millisecond) - t
       # if delta > 10 do
       #   IO.puts("get_unneeded_tiles_v2: #{inspect(delta)} ms")
@@ -1356,8 +1357,9 @@ defmodule RiichiAdvanced.Match do
       ret
     end
   end
+  # (this should be replaced by rust, otherwise call v1)
   defp _get_unneeded_tiles_v2({hand, calls}, match_definitions, all_attrs, elixir_aliases, ordering, ordering_r) do
-    get_unneeded_tiles(hand, calls, match_definitions, %TileBehavior{
+    get_unneeded_tiles_v1(hand, calls, match_definitions, %TileBehavior{
       attrs: all_attrs |> MapSet.new(),
       aliases: elixir_aliases |> TileBehavior.restore_alias_mapsets(),
       ordering: ordering,
@@ -1367,8 +1369,8 @@ defmodule RiichiAdvanced.Match do
 
   # given a 14-tile hand, and match definitions for 13-tile hands,
   # return all the (unique) tiles that are not needed to match the definitions
-  # @decorate cacheable(cache: RiichiAdvanced.Cache, key: {:get_unneeded_tiles, hand, calls, match_definitions, TileBehavior.hash(tile_behavior)})
-  def get_unneeded_tiles(hand, calls, match_definitions, tile_behavior) do
+  # @decorate cacheable(cache: RiichiAdvanced.Cache, key: {:get_unneeded_tiles_v1, hand, calls, match_definitions, TileBehavior.hash(tile_behavior)})
+  def get_unneeded_tiles_v1(hand, calls, match_definitions, tile_behavior) do
     # t = System.os_time(:millisecond)
     tile_behavior = MatchOld.filter_irrelevant_tile_aliases(tile_behavior, hand ++ Enum.flat_map(calls, &Utils.call_to_tiles/1))
     ret = if not Enum.empty?(match_definitions) do
@@ -1438,7 +1440,7 @@ defmodule RiichiAdvanced.Match do
   end
 
   def needed_for_hand(hand, calls, tile, match_definitions, tile_behavior) do
-    tile not in get_unneeded_tiles(hand, calls, match_definitions, tile_behavior)
+    not Utils.has_matching_tile?([tile], get_unneeded_tiles_v2(hand, calls, match_definitions, tile_behavior))
   end
 
 end
