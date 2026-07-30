@@ -23,44 +23,44 @@ def check_limit do
   if total == 0 and points2 > 0 do
     total = points2 :: "★"
     total *= 8000 :: "Yakuman base"
-    modify_winner("score_name", "Yakuman")
+    modify_winner("score_name", "Yakuman", as: "winner")
   end
   if @kazoe_yakuman_ari and total == 0 and points >= 13 do
     total = points :: "Han"
     total = 8000 :: "Yakuman base"
-    modify_winner("score_name", "Kazoe Yakuman")
+    modify_winner("score_name", "Kazoe Yakuman", as: "winner")
   end
   if total == 0 and points >= 11 do
     total = points :: "Han"
     total = 6000 :: "Sanbaiman base"
-    modify_winner("score_name", "Sanbaiman")
+    modify_winner("score_name", "Sanbaiman", as: "winner")
   end
   if total == 0 and points >= 8 do
     total = points :: "Han"
     total = 4000 :: "Baiman base"
-    modify_winner("score_name", "Baiman")
+    modify_winner("score_name", "Baiman", as: "winner")
   end
   if total == 0 and points >= 6 do
     total = points :: "Han"
     total = 3000 :: "Haneman base"
-    modify_winner("score_name", "Haneman")
+    modify_winner("score_name", "Haneman", as: "winner")
   end
   if total == 0 and points >= 5 do
     total = points :: "Han"
     total = 2000 :: "Mangan base"
-    modify_winner("score_name", "Mangan")
+    modify_winner("score_name", "Mangan", as: "winner")
   end
   if total == 0 and points >= 4 and minipoints >= @mangan_4_han_fu do
     total = points :: "Han"
     total = minipoints :: "Fu"
     total = 2000 :: "Mangan base"
-    modify_winner("score_name", "Mangan")
+    modify_winner("score_name", "Mangan", as: "winner")
   end
   if total == 0 and points >= 3 and minipoints >= @mangan_3_han_fu do
     total = points :: "Han"
     total = minipoints :: "Fu"
     total = 2000 :: "Mangan base"
-    modify_winner("score_name", "Mangan")
+    modify_winner("score_name", "Mangan", as: "winner")
   end
 end
 
