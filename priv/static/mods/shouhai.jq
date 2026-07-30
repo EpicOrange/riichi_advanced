@@ -43,7 +43,17 @@ add_call_conditions("kakan")
 |
 add_call_conditions("ankan")
 |
+add_call_conditions("daiminnobekan")
+|
+add_call_conditions("kanobekan")
+|
+add_call_conditions("annobekan")
+|
+add_call_conditions("grand_cross")
+|
 add_call_conditions("pei")
+|
+add_call_conditions("nukidora")
 |
 # cosmic buttons
 add_call_conditions("ton")

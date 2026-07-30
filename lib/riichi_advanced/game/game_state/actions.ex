@@ -375,11 +375,12 @@ defmodule RiichiAdvanced.GameState.Actions do
         IO.puts("Unhandled call_source #{inspect(call_source)}")
         {state, call_choice}
     end
-    hand = state.players[seat].hand
-    draw = state.players[seat].draw
+    hand = state.players[seat].hand ++ state.players[seat].draw
     tile_behavior = state.players[seat].tile_behavior
-    new_hand = Match.try_remove_all_tiles(hand ++ draw, to_remove, %{}, tile_behavior.attrs)
+    # don't pass in aliases, since we've predetermined the exact tiles we'll remove
+    new_hand = Match.try_remove_all_tiles(hand, to_remove, %{}, tile_behavior.attrs)
     |> Enum.at(0)
+    call_choice = hand -- new_hand
     new_hand = if new_hand == nil do
       Logger.error("trigger_call: Call #{call_name} on #{inspect(call_choice)} #{inspect(called_tile)} is to remove #{inspect(to_remove)} from hand #{inspect(hand)}, but none found")
       hand
