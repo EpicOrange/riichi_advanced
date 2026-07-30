@@ -1,5 +1,9 @@
 on after_initialization do
   add_rule("Rules", "Nobekan", "You may kan a sequence of four number tiles. The replacement tile is drawn from the live wall. This flips kandora and can be robbed like a normal kan. When calculating yaku, either side of the nobekan can be used as a sequence. For example, 6789 can be used for both tanyao and chanta.")
+  add_rule("1 Han", "Sannobekantsu", "Your hand contains three nobekans.")
+  update_rule("1 Han", "Sannobekantsu", "%{example_hand}", %{example_hand: ~t"3z 567p 2345p 1234s 6789m 3z"})
+  add_rule("3 Han", "Suunobekantsu", "Your hand contains four nobekans.")
+  update_rule("3 Han", "Suunobekantsu", "%{example_hand}", %{example_hand: ~t"3z 5678p 2345p 1234s 6789m 3z"})
 end
 
 define_set nobekan, ~s"0 1 2 3"
@@ -10,7 +14,7 @@ define_button annobekan,
     and not_just_discarded
     and not_just_called
     and self_call_available,
-  call: [[-3, -2, -1], [-2, -1, 1], [-1, 1, 2], [1, 2, 3]],
+  call: [[1, 2, 3]],
   call_style: %{
     self: [["1x", 2], 0, 1, ["1x", 3]]
   }
@@ -31,7 +35,7 @@ define_button daiminnobekan,
     and someone_else_just_discarded
     and call_available,
   precedence_over: ["chii", "pon", "daiminkan"],
-  call: [[-3, -2, -1], [-2, -1, 1], [-1, 1, 2], [1, 2, 3]],
+  call: [[1, 2, 3]],
   call_style: %{
     kamicha: ["call_sideways", 0, 1, 2],
     toimen: [0, "call_sideways", 1, 2],
@@ -54,7 +58,7 @@ define_button kanobekan,
     and not_just_called
     and can_upgrade_call,
   precedence_over: ["chii", "pon", "daiminkan"],
-  call: [[-3, -2, -1], [-2, -1, 1], [-1, 1, 2], [1, 2, 3]],
+  call: [[1, 2, 3]],
   upgrades: "chii",
   call_style: %{
     kamicha: [["sideways", 0], "call_sideways", 1, 2],
@@ -69,3 +73,6 @@ define_button kanobekan,
     discard_passed
     draw(1)
   end
+
+define_yaku yaku, "Sannobekantsu", [1, "Han"], match(["calls"], ~m"(daiminnobekan annobekan kanobekan):4")
+define_yaku yaku, "Suunobekantsu", [3, "Han"], match(["calls"], ~m"(daiminnobekan annobekan kanobekan):4")
