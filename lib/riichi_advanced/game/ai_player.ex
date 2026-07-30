@@ -394,6 +394,7 @@ defmodule RiichiAdvanced.AIPlayer do
         "anfuun" in player.buttons -> "anfuun"
         "joker_swap" in player.buttons -> "joker_swap"
         "flower" in player.buttons -> "flower"
+        "nukidora" in player.buttons -> "nukidora"
         "start_flower" in player.buttons -> "start_flower"
         "start_no_flower" in player.buttons -> "start_no_flower"
         "extra_turn" in player.buttons -> "extra_turn"

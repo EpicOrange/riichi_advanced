@@ -1,0 +1,41 @@
+on after_initialization do
+  add_rule("Rules", "Nukidora", "%{19m} can also be declared in the same manner as north winds.", %{"19m": ~t"19m"})
+end
+
+# pei button
+define_button nukidora,
+  display_name: "Nukidora",
+  msg_name: "nukidora",
+  call_name: "flower",
+  show_when: our_turn
+    and not_no_tiles_remaining
+    and has_draw
+    and not_status("just_reached")
+    and match(["hand", "draw"], ~m"(1m 9m):1")
+    and tile_not_drawn(-8)
+  do
+    big_text("Nukidora")
+    set_status("pei", "can_chankan")
+    flower("1m", "9m")
+    unset_status("can_chankan")
+    discard_passed
+    do_kan_draw
+  end
+
+# pei auto button
+define_auto_button _5_auto_pei,
+  display_name: "N",
+  desc: "Automatically declare nukidora."
+  do
+    if buttons_include("flower") do
+      press_button("flower")
+      press_first_call_button("flower")
+    end
+    if buttons_include("nukidora") do
+      press_button("nukidora")
+      press_first_call_button("nukidora")
+    end
+  end
+
+# don't let auto discard button skip pei
+apply append, "constants.no_auto_discard_calls", "nukidora"
