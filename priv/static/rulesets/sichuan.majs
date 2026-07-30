@@ -122,7 +122,7 @@ on after_initialization do
   add_rule("2 Fan", "Full Flush", "You get 2 Fan if your hand comprises only tiles of one suit.")
   add_rule("2 Fan", "Seven Pairs", "You get 1 Fan if your hand comprises seven pairs. Pairs may be repeated.")
   add_rule("2 Fan", "Golden Single Wait", "You get 2 Fan if you have called four times, and are waiting on a single tile.")
-end  
+end
 
 on after_start do
   if dice_equals(3, 6, 9, 12) do
@@ -232,7 +232,7 @@ on before_win do
     else
       if won_by_discard do
         make_responsible_for("last_discarder", "all")
-      else 
+      else
         make_responsible_for("last_caller", "all")
       end
     end

@@ -9,17 +9,17 @@
     # Pungs & Chows
     "FF 222a 222b 222c DDDa", "FF 444a 444b 444c DDDa", "FF 666a 666b 666c DDDa", "FF 888a 888b 888c DDDa",
     "XXX0a XXX1b XXX2a XXX3b ZZ",
-    "FF 000 123a 444b 567c", "FF 000 234a 555b 678c", "FF 000 345a 666b 789c", 
+    "FF 000 123a 444b 567c", "FF 000 234a 555b 678c", "FF 000 345a 666b 789c",
     "FFF 123a 456b 789c ZZ",
     "123a Da NEWS 456b Db DDc", "234a Da NEWS 567b Db DDc", "345a Da NEWS 678b Db DDc", "456a Da NEWS 789b Db DDc", # concealed
     # Flower Bouquet
     "FFF XXXX0a FFF DDb DDc",
     "FFFF 111a 2026b 999c",
     "F 22a F 44b F 66c F 8888a",
-    "FFF 11a 2345678a 99a", "FFF 11a 2345678b 99a", 
+    "FFF 11a 2345678a 99a", "FFF 11a 2345678b 99a",
     "FF 123456789a Da FF", # concealed
     # Consecutive Numbers
-    "XX0a X1a X2a XXXX0b Db XXXX0c Dc", "X0a XX1a X2a XXXX1b Db XXXX1c Dc", "X0a X1a XX2a XXXX2b Db XXXX2c Dc", 
+    "XX0a X1a X2a XXXX0b Db XXXX0c Dc", "X0a XX1a X2a XXXX1b Db XXXX1c Dc", "X0a X1a XX2a XXXX2b Db XXXX2c Dc",
     "FFFF XX0a XXX1b XXX2a XX3b",
     "XX0a XX1a XXX2a XXX3a XXXX4a", "XX0a XX1a XXX2b XXX3b XXXX4a",
     "XX0a X1a XX0b XX1b X2b XX0c XX1c XX2c",
@@ -34,7 +34,7 @@
     # Windy Dragons
     "NNN EEE WWW SSS XX0a",
     "FFFF XXXX0a DDDb DDDc",
-    "EEE WWW 111a 111b DDc", "EEE WWW 333a 333b DDc", "EEE WWW 555a 555b DDc", "EEE WWW 777a 777b DDc", "EEE WWW 999a 999b DDc", 
+    "EEE WWW 111a 111b DDc", "EEE WWW 333a 333b DDc", "EEE WWW 555a 555b DDc", "EEE WWW 777a 777b DDc", "EEE WWW 999a 999b DDc",
     "NNN SSS 222a 222b DDc", "NNN SSS 444a 444b DDc", "NNN SSS 666a 666b DDc", "NNN SSS 888a 888b DDc",
     "NEWS XXX0a XXXX1b DDc",
     "NN EE WW SS DDDa DDDb",
@@ -43,8 +43,8 @@
     "222a 4444b 6666b 888a",
     "FF 222a 444b 666c 888a",
     "FFFF 2222a 444a 66a 8a", "FFFF 2222a 444b 66c 8a",
-    "2222a NEWS 222b 222c", "4444a NEWS 444b 444c", "6666a NEWS 666b 666c", "8888a NEWS 888b 888c", 
-    "FF 2468a DDa 222b 222c", "FF 2468a DDa 444b 444c", "FF 2468a DDa 666b 666c", "FF 2468a DDa 888b 888c", 
+    "2222a NEWS 222b 222c", "4444a NEWS 444b 444c", "6666a NEWS 666b 666c", "8888a NEWS 888b 888c",
+    "FF 2468a DDa 222b 222c", "FF 2468a DDa 444b 444c", "FF 2468a DDa 666b 666c", "FF 2468a DDa 888b 888c",
     "FF 2468a 2468b 2468c", # concealed
     # Odds
     "FF 1a Da 333b 55b 777b 9a Da",
@@ -71,15 +71,15 @@
     # Pungs & Chows
     "FF 222a 222b 222c DDDa", "FF 444a 444b 444c DDDa", "FF 666a 666b 666c DDDa", "FF 888a 888b 888c DDDa",
     "XXX0a XXX1b XXX2a XXX3b ZZ",
-    "FF 000 123a 444b 567c", "FF 000 234a 555b 678c", "FF 000 345a 666b 789c", 
+    "FF 000 123a 444b 567c", "FF 000 234a 555b 678c", "FF 000 345a 666b 789c",
     "FFF 123a 456b 789c ZZ",
     # Flower Bouquet
     "FFF XXXX0a FFF DDb DDc",
     "FFFF 111a 2026b 999c",
     "F 22a F 44b F 66c F 8888a",
-    "FFF 11a 2345678a 99a", "FFF 11a 2345678b 99a", 
+    "FFF 11a 2345678a 99a", "FFF 11a 2345678b 99a",
     # Consecutive Numbers
-    "XX0a X1a X2a XXXX0b Db XXXX0c Dc", "X0a XX1a X2a XXXX1b Db XXXX1c Dc", "X0a X1a XX2a XXXX2b Db XXXX2c Dc", 
+    "XX0a X1a X2a XXXX0b Db XXXX0c Dc", "X0a XX1a X2a XXXX1b Db XXXX1c Dc", "X0a X1a XX2a XXXX2b Db XXXX2c Dc",
     "FFFF XX0a XXX1b XXX2a XX3b",
     "XX0a XX1a XXX2a XXX3a XXXX4a", "XX0a XX1a XXX2b XXX3b XXXX4a",
     "XX0a X1a XX0b XX1b X2b XX0c XX1c XX2c",
@@ -92,7 +92,7 @@
     # Windy Dragons
     "NNN EEE WWW SSS XX0a",
     "FFFF XXXX0a DDDb DDDc",
-    "EEE WWW 111a 111b DDc", "EEE WWW 333a 333b DDc", "EEE WWW 555a 555b DDc", "EEE WWW 777a 777b DDc", "EEE WWW 999a 999b DDc", 
+    "EEE WWW 111a 111b DDc", "EEE WWW 333a 333b DDc", "EEE WWW 555a 555b DDc", "EEE WWW 777a 777b DDc", "EEE WWW 999a 999b DDc",
     "NNN SSS 222a 222b DDc", "NNN SSS 444a 444b DDc", "NNN SSS 666a 666b DDc", "NNN SSS 888a 888b DDc",
     "NEWS XXX0a XXXX1b DDc",
     "NN EE WW SS DDDa DDDb",
@@ -100,8 +100,8 @@
     "222a 4444b 6666b 888a",
     "FF 222a 444b 666c 888a",
     "FFFF 2222a 444a 66a 8a", "FFFF 2222a 444b 66c 8a",
-    "2222a NEWS 222b 222c", "4444a NEWS 444b 444c", "6666a NEWS 666b 666c", "8888a NEWS 888b 888c", 
-    "FF 2468a DDa 222b 222c", "FF 2468a DDa 444b 444c", "FF 2468a DDa 666b 666c", "FF 2468a DDa 888b 888c", 
+    "2222a NEWS 222b 222c", "4444a NEWS 444b 444c", "6666a NEWS 666b 666c", "8888a NEWS 888b 888c",
+    "FF 2468a DDa 222b 222c", "FF 2468a DDa 444b 444c", "FF 2468a DDa 666b 666c", "FF 2468a DDa 888b 888c",
     # Odds
     "FF 1a Da 333b 55b 777b 9a Da",
     "1111a 33a 55a 77a 9999a", "1111a 33b 55c 77b 9999a",

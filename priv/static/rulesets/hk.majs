@@ -37,7 +37,7 @@ on before_win do
   else
     if won_by_discard do
       make_responsible_for("last_discarder")
-    else 
+    else
       make_responsible_for("last_caller")
     end
   end

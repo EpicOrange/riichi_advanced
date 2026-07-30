@@ -12,7 +12,7 @@ apply append, "score_calculation.yaku_lists", "suukantsu"
 define_yaku suukantsu, "Suukantsu ", [2, "★"], status("suukantsu_rinshan"), ["yaku", "meta_yaku", "extra_yaku", "yakuman", "meta_yakuman", "shuugi"]
 # trigger special win
 define_button suukantsu,
-  display_name: "Suukantsu", 
+  display_name: "Suukantsu",
   show_when: our_turn and has_draw and status("kan") and match(["calls"], ~m"(daiminkan ankan kakan):4, pair:-1")
   do
     big_text("Tsumo")

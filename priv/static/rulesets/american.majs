@@ -274,7 +274,7 @@ define_play_restriction "any", status("dead_hand")
 
 def blind_pass_left do
   as ["east", "north", "west", "south"] do
-    cond do 
+    cond do
       to_pass == 3 ->
         set_status("pass_3")
       to_pass == 2 ->
@@ -285,7 +285,7 @@ def blind_pass_left do
       true -> print("ERROR invalid value for to_pass")
     end
     subtract_counter("to_pass", "count_draws", "self")
-    cond do 
+    cond do
       status("pass_3") ->
         pass_draws("kamicha", 3)
       status("pass_2") ->
@@ -300,7 +300,7 @@ end
 
 def blind_pass_right do
   as ["east", "south", "west", "north"] do
-    cond do 
+    cond do
       to_pass == 3 ->
         set_status("pass_3")
       to_pass == 2 ->
@@ -311,7 +311,7 @@ def blind_pass_right do
       true -> print("ERROR invalid value for to_pass")
     end
     subtract_counter("to_pass", "count_draws", "self")
-    cond do 
+    cond do
       status("pass_3") ->
         pass_draws("shimocha", 3)
       status("pass_2") ->

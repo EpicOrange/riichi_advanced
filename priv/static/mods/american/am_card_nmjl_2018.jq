@@ -33,7 +33,7 @@
     "XXXX0a XXX1b XXXX2a DDDb",
     "FF XXX0a XXX1a XXX0b XXX1b", # concealed
     # 13579
-    "11a 33a 555a 777a 9999a", 
+    "11a 33a 555a 777a 9999a",
     "111a 333a 3333b 5555b", "555a 777a 7777b 9999b",
     "FF 1111a 3333a 5555a", "FF 5555a 7777a 9999a",
     "1111a 333b 5555a DDDb", "5555a 777b 9999a DDDb",
@@ -96,7 +96,7 @@
     "FF XXXX0a XXXX1a XXXX2a", "FF XXXX0a XXXX1b XXXX2c",
     "XXXX0a XXX1b XXXX2a DDDb",
     # 13579
-    "11a 33a 555a 777a 9999a", 
+    "11a 33a 555a 777a 9999a",
     "111a 333a 3333b 5555b", "555a 777a 7777b 9999b",
     "FF 1111a 3333a 5555a", "FF 5555a 7777a 9999a",
     "1111a 333b 5555a DDDb", "5555a 777b 9999a DDDb",

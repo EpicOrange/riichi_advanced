@@ -7,7 +7,6 @@
 #    * We need some way to allow flowers to be used as jokers in a grouping.
 
 .win_definition = [
-    
     # Special Years
         # <TODO: implement this section>
     # have each player choose a year beforehand; α, β, γ, and δ correspond to the four digits of that year
@@ -54,7 +53,7 @@
     "N EE WWW SSSS DDDDa",
     "NNNN EEE WWW SSSS", "NNN EEEE WWWW SSS",
     "FF DDDDa NEWS DDDDb",
-    "NNN 111a RR 111b SSS", "NNN 333a RR 333b SSS", "NNN 555a RR 555b SSS", "NNN 777a RR 777b SSS", "NNN 999a RR 999b SSS", 
+    "NNN 111a RR 111b SSS", "NNN 333a RR 333b SSS", "NNN 555a RR 555b SSS", "NNN 777a RR 777b SSS", "NNN 999a RR 999b SSS",
     "EEE 222a GG 222b WWW", "EEE 444a GG 444b WWW", "EEE 666a GG 666b WWW", "EEE 888a GG 888b WWW",
     "NNN 111a 11c 111b SSS", "NNN 333a 33c 333b SSS", "NNN 555a 55c 555b SSS", "NNN 777a 77c 777b SSS", "NNN 999a 99c 999b SSS", # concealed
     "EEE 222a 22c 222b WWW", "EEE 444a 44c 444b WWW", "EEE 666a 66c 666b WWW", "EEE 888a 88c 888b WWW", # concealed
@@ -116,7 +115,7 @@
     "N EE WWW SSSS DDDDa",
     "NNNN EEE WWW SSSS", "NNN EEEE WWWW SSS",
     "FF DDDDa NEWS DDDDb",
-    "NNN 111a RR 111b SSS", "NNN 333a RR 333b SSS", "NNN 555a RR 555b SSS", "NNN 777a RR 777b SSS", "NNN 999a RR 999b SSS", 
+    "NNN 111a RR 111b SSS", "NNN 333a RR 333b SSS", "NNN 555a RR 555b SSS", "NNN 777a RR 777b SSS", "NNN 999a RR 999b SSS",
     "EEE 222a GG 222b WWW", "EEE 444a GG 444b WWW", "EEE 666a GG 666b WWW", "EEE 888a GG 888b WWW",
     "NNN 111a 11c 111b SSS", "NNN 333a 33c 333b SSS", "NNN 555a 55c 555b SSS", "NNN 777a 77c 777b SSS", "NNN 999a 99c 999b SSS", # concealed
     "EEE 222a 22c 222b WWW", "EEE 444a 44c 444b WWW", "EEE 666a 66c 666b WWW", "EEE 888a 88c 888b WWW", # concealed

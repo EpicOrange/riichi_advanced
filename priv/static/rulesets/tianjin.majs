@@ -338,7 +338,7 @@ define_button ankan,
   end
 
 define_button kakan,
-  display_name: "Kong", 
+  display_name: "Kong",
   show_when: status_missing("match_start", "won")
     and our_turn
     and not_no_tiles_remaining

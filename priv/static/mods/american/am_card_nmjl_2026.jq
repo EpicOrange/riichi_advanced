@@ -47,7 +47,7 @@
     "EEE 2222b 2222c WWW", "EEE 4444b 4444c WWW", "EEE 6666b 6666c WWW", "EEE 8888b 8888c WWW",
     "FFF ZZZZ FFF DDDD",
     "1a N 2a EE 3a WWW 4a SSSS",
-    "FF NNNN SSSS DDa DDb", "FF EEEE WWWW DDa DDb", 
+    "FF NNNN SSSS DDa DDb", "FF EEEE WWWW DDa DDb",
     "NN EEE 2026a WWW SS", # concealed
     # 369
     "333a 666a 6666b 9999b", "333a 666a 6666b 9999c",
@@ -110,7 +110,7 @@
     "EEE 2222b 2222c WWW", "EEE 4444b 4444c WWW", "EEE 6666b 6666c WWW", "EEE 8888b 8888c WWW",
     "FFF ZZZZ FFF DDDD",
     "1a N 2a EE 3a WWW 4a SSSS",
-    "FF NNNN SSSS DDa DDb", "FF EEEE WWWW DDa DDb", 
+    "FF NNNN SSSS DDa DDb", "FF EEEE WWWW DDa DDb",
     # 369
     "333a 666a 6666b 9999b", "333a 666a 6666b 9999c",
     "33a 66a 333b 666b 9999c",

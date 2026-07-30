@@ -29,10 +29,10 @@
     # Evens
     "222a 444b 666c DDDb 88b",
     "FF 222a 444b 666c 888c",
-    "222a 444a 666a 888a 22a", "222a 444a 666b 888b 22b", 
+    "222a 444a 666a 888a 22a", "222a 444a 666b 888b 22b",
     "FFFF 2222a 4444b DDb",
     "FF 4444a 4444b 4444c",
-    "222a 222b 2222c NEWS", "444a 444b 4444c NEWS", "666a 666b 6666c NEWS", "888a 888b 8888c NEWS", 
+    "222a 222b 2222c NEWS", "444a 444b 4444c NEWS", "666a 666b 6666c NEWS", "888a 888b 8888c NEWS",
     "FFFF 22a 44a 66a 8888a",
     # Prime Numbers
     "222a 333b 555c 77a ZZZ",
@@ -85,10 +85,10 @@
     # Evens
     "222a 444b 666c DDDb 88b",
     "FF 222a 444b 666c 888c",
-    "222a 444a 666a 888a 22a", "222a 444a 666b 888b 22b", 
+    "222a 444a 666a 888a 22a", "222a 444a 666b 888b 22b",
     "FFFF 2222a 4444b DDb",
     "FF 4444a 4444b 4444c",
-    "222a 222b 2222c NEWS", "444a 444b 4444c NEWS", "666a 666b 6666c NEWS", "888a 888b 8888c NEWS", 
+    "222a 222b 2222c NEWS", "444a 444b 4444c NEWS", "666a 666b 6666c NEWS", "888a 888b 8888c NEWS",
     "FFFF 22a 44a 66a 8888a",
     # Prime Numbers
     "222a 333b 555c 77a ZZZ",

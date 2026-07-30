@@ -43,7 +43,7 @@
     "NNNN EEEE WWWW SS",
     "FF DDDDa NEWS DDDDb",
     "NNNN SSSS 111a 111a", "NNNN SSSS 333a 333a", "NNNN SSSS 555a 555a", "NNNN SSSS 777a 777a", "NNNN SSSS 999a 999a",
-    "EEEE WWWW 222a 222a", "EEEE WWWW 444a 444a", "EEEE WWWW 666a 666a", "EEEE WWWW 888a 888a", 
+    "EEEE WWWW 222a 222a", "EEEE WWWW 444a 444a", "EEEE WWWW 666a 666a", "EEEE WWWW 888a 888a",
     "FF NNNN EE WW SSSS",
     "FFFF DDDDa DDb DDDDc",
     # 369
@@ -56,7 +56,7 @@
     # Singles and Pairs
     "NN EE WW SS XX0a XX1a XX2a", # concealed
     "FF XX0a XX1a XX2a XX3a XX4a DDa", # concealed
-    "11a 33a 55a 77a 99a 11b 11c", "11a 33a 55a 77a 99a 33b 33c", "11a 33a 55a 77a 99a 55b 55c", "11a 33a 55a 77a 99a 77b 77c", "11a 33a 55a 77a 99a 99b 99c", # concealed   
+    "11a 33a 55a 77a 99a 11b 11c", "11a 33a 55a 77a 99a 33b 33c", "11a 33a 55a 77a 99a 55b 55c", "11a 33a 55a 77a 99a 77b 77c", "11a 33a 55a 77a 99a 99b 99c", # concealed
     "FF 22a 44a 66a 88a 22b 22c", "FF 22a 44a 66a 88a 44b 44c", "FF 22a 44a 66a 88a 66b 66c", "FF 22a 44a 66a 88a 88b 88c", # concealed
     "FF XX0a XX1a XX0b XX1b XX0c XX1c", # concealed
     "998a 99887b 998877c", # concealed
@@ -101,7 +101,7 @@
     "NNNN EEEE WWWW SS",
     "FF DDDDa NEWS DDDDb",
     "NNNN SSSS 111a 111a", "NNNN SSSS 333a 333a", "NNNN SSSS 555a 555a", "NNNN SSSS 777a 777a", "NNNN SSSS 999a 999a",
-    "EEEE WWWW 222a 222a", "EEEE WWWW 444a 444a", "EEEE WWWW 666a 666a", "EEEE WWWW 888a 888a", 
+    "EEEE WWWW 222a 222a", "EEEE WWWW 444a 444a", "EEEE WWWW 666a 666a", "EEEE WWWW 888a 888a",
     "FF NNNN EE WW SSSS",
     "FFFF DDDDa DDb DDDDc",
     # 369

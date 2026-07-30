@@ -10,14 +10,14 @@
     "222a 4444a 666b 8888b",
     "FF 2222a 8888a DDDDa", "FF 2222a 8888b DDDDc",
     "22a 44a 444b 666b 8888c",
-    "FF 2222a 44b 66b 8888a", 
+    "FF 2222a 44b 66b 8888a",
     "222a 444a 666a 888a DDa", # concealed
     # Like Numbers
     "FF XXXX0a XXXX0b XXXX0c",
     # Seven Hands
-    "FFFF 1111a 66a 7777a", "FFFF 1111a 66a 7777a", 
-    "FFFF 2222a 55a 7777a", "FFFF 2222a 55a 7777a", 
-    "FFFF 3333a 44a 7777a", "FFFF 3333a 44a 7777a", 
+    "FFFF 1111a 66a 7777a", "FFFF 1111a 66a 7777a",
+    "FFFF 2222a 55a 7777a", "FFFF 2222a 55a 7777a",
+    "FFFF 3333a 44a 7777a", "FFFF 3333a 44a 7777a",
     # Quints
     "22a 333a 4444a 55555a",
     "XX0a X1a X2a XXXXX0b XXXXX0c", "X0a XX1a X2a XXXXX1b XXXXX1c", "X0a X1a XX2a XXXXX2b XXXXX2c",
@@ -42,7 +42,7 @@
     "NNNN EEEE WWWW SS",
     "FF NNNN EE WW SSSS",
     "NNNN SSSS 111a 111a", "NNNN SSSS 333a 333a", "NNNN SSSS 555a 555a", "NNNN SSSS 777a 777a", "NNNN SSSS 999a 999a",
-    "EEEE WWWW 222a 222a", "EEEE WWWW 444a 444a", "EEEE WWWW 666a 666a", "EEEE WWWW 888a 888a", 
+    "EEEE WWWW 222a 222a", "EEEE WWWW 444a 444a", "EEEE WWWW 666a 666a", "EEEE WWWW 888a 888a",
     "FFFF N EE WWW SSSS", # concealed
     "FFFF DDDDa DDb DDDDc",
     # 369
@@ -73,13 +73,13 @@
     "222a 4444a 666b 8888b",
     "FF 2222a 8888a DDDDa", "FF 2222a 8888b DDDDc",
     "22a 44a 444b 666b 8888c",
-    "FF 2222a 44b 66b 8888a", 
+    "FF 2222a 44b 66b 8888a",
     # Like Numbers
     "FF XXXX0a XXXX0b XXXX0c",
     # Seven Hands
-    "FFFF 1111a 66a 7777a", "FFFF 1111a 66a 7777a", 
-    "FFFF 2222a 55a 7777a", "FFFF 2222a 55a 7777a", 
-    "FFFF 3333a 44a 7777a", "FFFF 3333a 44a 7777a", 
+    "FFFF 1111a 66a 7777a", "FFFF 1111a 66a 7777a",
+    "FFFF 2222a 55a 7777a", "FFFF 2222a 55a 7777a",
+    "FFFF 3333a 44a 7777a", "FFFF 3333a 44a 7777a",
     # Quints
     "22a 333a 4444a 55555a",
     "XX0a X1a X2a XXXXX0b XXXXX0c", "X0a XX1a X2a XXXXX1b XXXXX1c", "X0a X1a XX2a XXXXX2b XXXXX2c",
@@ -102,7 +102,7 @@
     "NNNN EEEE WWWW SS",
     "FF NNNN EE WW SSSS",
     "NNNN SSSS 111a 111a", "NNNN SSSS 333a 333a", "NNNN SSSS 555a 555a", "NNNN SSSS 777a 777a", "NNNN SSSS 999a 999a",
-    "EEEE WWWW 222a 222a", "EEEE WWWW 444a 444a", "EEEE WWWW 666a 666a", "EEEE WWWW 888a 888a", 
+    "EEEE WWWW 222a 222a", "EEEE WWWW 444a 444a", "EEEE WWWW 666a 666a", "EEEE WWWW 888a 888a",
     "FFFF DDDDa DDb DDDDc",
     # 369
     "3333a 666a 9999a DDDa",

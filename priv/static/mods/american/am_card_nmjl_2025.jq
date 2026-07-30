@@ -8,7 +8,7 @@
     "222a 4444a 666a 8888a", "222a 4444a 666b 8888b",
     "FF 2222a 4444b 6666c", "FF 2222a 6666b 8888c",
     "22a 444a 66a 888a DDDDa",
-    "FFFF 2468a 222b 222c", "FFFF 2468a 444b 444c", "FFFF 2468a 666b 666c", "FFFF 2468a 888b 888c", 
+    "FFFF 2468a 222b 222c", "FFFF 2468a 444b 444c", "FFFF 2468a 666b 666c", "FFFF 2468a 888b 888c",
     "FFF 22a 44a 666a 8888a",
     "222a 4444a 666a 88b 88c",
     "FF 2222a DDDDb 2222c", "FF 4444a DDDDb 4444c", "FF 6666a DDDDb 6666c", "FF 8888a DDDDb 8888c",
@@ -52,9 +52,9 @@
     # 369
     "333a 6666a 666b 9999b", "333a 6666a 666b 9999c",
     "FF 3333a 6666a 9999a", "FF 3333a 6666b 9999c",
-    "3333a DDDa 3333b DDDb", "6666a DDDa 6666b DDDb", "9999a DDDa 9999b DDDb", 
+    "3333a DDDa 3333b DDDb", "6666a DDDa 6666b DDDb", "9999a DDDa 9999b DDDb",
     "FFF 3333a 369b 9999a",
-    "33a 66a 99a 3333b 3333c", "33a 66a 99a 6666b 6666c", "33a 66a 99a 9999b 9999c", 
+    "33a 66a 99a 3333b 3333c", "33a 66a 99a 6666b 6666c", "33a 66a 99a 9999b 9999c",
     "FF 333a Da 666b Db 999c Dc", # concealed
     # Singles and Pairs
     "NN EW SS XX0a XX1a XX2a XX3a", # concealed
@@ -74,7 +74,7 @@
     "222a 4444a 666a 8888a", "222a 4444a 666b 8888b",
     "FF 2222a 4444b 6666c", "FF 2222a 6666b 8888c",
     "22a 444a 66a 888a DDDDa",
-    "FFFF 2468a 222b 222c", "FFFF 2468a 444b 444c", "FFFF 2468a 666b 666c", "FFFF 2468a 888b 888c", 
+    "FFFF 2468a 222b 222c", "FFFF 2468a 444b 444c", "FFFF 2468a 666b 666c", "FFFF 2468a 888b 888c",
     "FFF 22a 44a 666a 8888a",
     "222a 4444a 666a 88b 88c",
     "FF 2222a DDDDb 2222c", "FF 4444a DDDDb 4444c", "FF 6666a DDDDb 6666c", "FF 8888a DDDDb 8888c",
@@ -113,7 +113,7 @@
     # 369
     "333a 6666a 666b 9999b", "333a 6666a 666b 9999c",
     "FF 3333a 6666a 9999a", "FF 3333a 6666b 9999c",
-    "3333a DDDa 3333b DDDb", "6666a DDDa 6666b DDDb", "9999a DDDa 9999b DDDb", 
+    "3333a DDDa 3333b DDDb", "6666a DDDa 6666b DDDb", "9999a DDDa 9999b DDDb",
     "FFF 3333a 369b 9999a",
     "33a 66a 99a 3333b 3333c", "33a 66a 99a 6666b 6666c", "33a 66a 99a 9999b 9999c"
   ]

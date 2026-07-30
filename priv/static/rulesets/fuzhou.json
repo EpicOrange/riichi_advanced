@@ -6,7 +6,7 @@
     // reddit post says only red dragon is a flower, not all 3 dragons
     // reddit post says if you have 3 gold you win immediately, but here it is just a valuable yaku
     // mahjongpros also seem to have a few more yaku
-  
+
   "default_mods": ["show_waits"],
   "available_mods": [
     {"id": "forced_flowers", "conflicts": ["discardable_flowers"], "name": "Forced Flowers", "desc": "Every drawn flower must be replaced immediately."},

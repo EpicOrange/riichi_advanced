@@ -6,8 +6,8 @@ define_set taatsu, ~s"0 0 | 0 1 | 0 2 | 0 10"
 # welcome to the chanta zone
 define_set terminal_k, ~s"0@terminal 10 20"
 define_set yaochuu_k, ~s"0@terminal 10 20"
-define_match chanta, ~m"exhaustive, (yaochuu_l yaochuu_r yaochuu_t yaochuu_k):4, yaochuu_pair:1" 
-define_match junchan, ~m"exhaustive, (terminal_l terminal_r terminal_t terminal_k):4, terminal_pair:1" 
+define_match chanta, ~m"exhaustive, (yaochuu_l yaochuu_r yaochuu_t yaochuu_k):4, yaochuu_pair:1"
+define_match junchan, ~m"exhaustive, (terminal_l terminal_r terminal_t terminal_k):4, terminal_pair:1"
 # now leaving the chanta zone
 
 # kontsu fu

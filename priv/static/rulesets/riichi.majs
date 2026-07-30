@@ -79,8 +79,8 @@ define_yaku yaku, "Hatsu", [1, "Han"], match(["hand", "calls", "winning_tile"], 
 define_yaku yaku, "Chun", [1, "Han"], match(["hand", "calls", "winning_tile"], ~m"exhaustive, chun:1, mentsu:3, pair:1")
 define_yaku yaku, "Round Wind", [1, "Han"], match(["hand", "calls", "winning_tile"], ~m"exhaustive, prevalent_wind:1, mentsu:3, pair:1")
 define_yaku yaku, "Seat Wind", [1, "Han"], match(["hand", "calls", "winning_tile"], ~m"exhaustive, seat_wind:1, mentsu:3, pair:1")
-define_match chanta, ~m"exhaustive, (yaochuu_l yaochuu_r yaochuu_t):4, yaochuu_pair:1" 
-define_match junchan, ~m"exhaustive, (terminal_l terminal_r terminal_t):4, terminal_pair:1" 
+define_match chanta, ~m"exhaustive, (yaochuu_l yaochuu_r yaochuu_t):4, yaochuu_pair:1"
+define_match junchan, ~m"exhaustive, (terminal_l terminal_r terminal_t):4, terminal_pair:1"
 define_yaku yaku, "Chanta", [1, "Han"], match(["hand", "calls", "winning_tile"], ["chanta"])
 define_yaku yaku, "Junchan", [2, "Han"], match(["hand", "calls", "winning_tile"], ["junchan"])
 define_yaku yaku, "Ittsuu", [1, "Han"], match(["hand", "calls", "winning_tile"], ~m"exhaustive, ittsuu:1, mentsu:1, pair:1")
@@ -186,10 +186,10 @@ def calculate_fu do
 
       # round up to nearest 10
       round_up(10)
-      
+
       # add original hand (for special hands like chiitoitsu and kokushi)
       add_original_hand
-      
+
       # chiitoitsu
       add(25, minipoints_equals(0) and match(["hand", "calls", "winning_tile"], [[ [["pair"], 7] ]]))
 

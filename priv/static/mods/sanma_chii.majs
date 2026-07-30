@@ -4,7 +4,7 @@ on after_initialization do
 end
 
 define_button chii,
-  display_name: "Chii", 
+  display_name: "Chii",
   show_when: not_our_turn
     and not_no_tiles_remaining
     and (

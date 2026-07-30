@@ -15,8 +15,8 @@
     "FF XXXX0a XXXX0b XXXX0c",
     "XX0a DDa XXX0b DDDb XXXX0c", # concealed
     # Addition: Heavenly 11s
-    "FFFF 5555a 6666a 11a", "FFFF 5555a 6666b 11c", 
-    "FFFF 4444a 7777a 11a", "FFFF 4444a 7777b 11c", 
+    "FFFF 5555a 6666a 11a", "FFFF 5555a 6666b 11c",
+    "FFFF 4444a 7777a 11a", "FFFF 4444a 7777b 11c",
     "FFFF 3333a 8888a 11a", "FFFF 3333a 8888b 11c",
     # Quints
     "XX0a XXX1a XXXX2a XXXXX3a",
@@ -74,8 +74,8 @@
     # Any Like Numbers
     "FF XXXX0a XXXX0b XXXX0c",
     # Addition: Heavenly 11s
-    "FFFF 5555a 6666a 11a", "FFFF 5555a 6666b 11c", 
-    "FFFF 4444a 7777a 11a", "FFFF 4444a 7777b 11c", 
+    "FFFF 5555a 6666a 11a", "FFFF 5555a 6666b 11c",
+    "FFFF 4444a 7777a 11a", "FFFF 4444a 7777b 11c",
     "FFFF 3333a 8888a 11a", "FFFF 3333a 8888b 11c",
     # Quints
     "XX0a XXX1a XXXX2a XXXXX3a",

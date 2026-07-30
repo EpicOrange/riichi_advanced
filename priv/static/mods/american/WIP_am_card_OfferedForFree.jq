@@ -9,7 +9,7 @@
     "FFFF 2222a 2222b 44c", "FFFF 2222a 4444b 88c",
     "2222a 444a 66a 8a DDDDa",
     "FFF 22468a 222b 222c", "FFF 24468a 444b 444c", "FFF 24668a 666b 666c", "FFF 24688a 888b 888c",
-    "FFFF 222a 222b NEWS", "FFFF 444a 444b NEWS", "FFFF 666a 666b NEWS", "FFFF 888a 888b NEWS", 
+    "FFFF 222a 222b NEWS", "FFFF 444a 444b NEWS", "FFFF 666a 666b NEWS", "FFFF 888a 888b NEWS",
     "FF 222a 444a 666b 888b", # concealed
     # Any Like Numbers
     "XXXX0a XXXX0b XXXX0c DDc",
@@ -33,12 +33,12 @@
     "FFFFF XXXX0a XXX1a XX2a", "FFFFF XXXX0a XXX1b XX2c",
     "FFF XXX0a XX1b XXX2c DDDb", # concealed
     # 13579
-    "1111a 33a 55a 77a 9999a", "1111a 33a 55b 77c 9999c", 
+    "1111a 33a 55a 77a 9999a", "1111a 33a 55b 77c 9999c",
     "111a 333a 5555b 7777b", "333a 555a 7777b 9999b",
     "FFFF 1a 33a 555a 7777a", "FFFF 3a 55a 777a 9999a",
     "1111a 7777a 3333b 51c", "1111a 3333a 7777b 91c",
     "111a 99a 11b 999b DDDDc",
-    "FFFF 1111a 333b 555c", "FFFF 3333a 555b 777c", "FFFF 5555a 777b 999c", 
+    "FFFF 1111a 333b 555c", "FFFF 3333a 555b 777c", "FFFF 5555a 777b 999c",
     "FFF 13579a 111b 111c", "FFF 13579a 333b 333c", "FFF 13579a 555b 555c", "FFF 13579a 777b 777c", "FFF 13579a 999b 999c", # concealed
     # Winds and Dragons
     "NNN EEE WWWW SSSS", "NNNN EEEE WWW SSS",
@@ -47,12 +47,12 @@
     "EEE 222a|444a|666a|888a GGGG WWWW",
     "X0a XX1a XXX2a DDDDb DDDDc",
     "X0a DDDDa XX1b DDDDb XXX2c",
-    "Da DDb DDDc NNNN SSSS", "Da DDb DDDc EEEE WWWW", 
+    "Da DDb DDDc NNNN SSSS", "Da DDb DDDc EEEE WWWW",
     "FFF XXX0a DDb DDc NEWS", # concealed
     # 369
     "333a 666a 9999b 9999c", "333a 666b 9999b 9999c",
     "FF 3333a 3333b 66c", "FFFF 3333a 6666b 99c",
-    "3333a Da 666b DDb 9c DDDc", "3333a Da 999b DDb 6c DDDc", "6666a Da 333b DDb 9c DDDc", "6666a Da 999b DDb 3c DDDc", "9999a Da 333b DDb 6c DDDc", "9999a Da 666b DDb 3c DDDc", 
+    "3333a Da 666b DDb 9c DDDc", "3333a Da 999b DDb 6c DDDc", "6666a Da 333b DDb 9c DDDc", "6666a Da 999b DDb 3c DDDc", "9999a Da 333b DDb 6c DDDc", "9999a Da 666b DDb 3c DDDc",
     "FF 3333a 3333b NEWS", "FF 6666a 6666b NEWS", "FF 9999a 9999b NEWS",
     "NN SS 333a 666a DDDDa", "NN SS 333a 999a DDDDa", "NN SS 666a 999a DDDDa", "EE WW 333a 666a DDDDa", "EE WW 333a 999a DDDDa", "EE WW 666a 999a DDDDa",
     "FFFFF 3333a 666a 99a", "FFFFF 3333a 666b 99c",
@@ -78,7 +78,7 @@
     "FFFF 2222a 2222b 44c", "FFFF 2222a 4444b 88c",
     "2222a 444a 66a 8a DDDDa",
     "FFF 22468a 222b 222c", "FFF 24468a 444b 444c", "FFF 24668a 666b 666c", "FFF 24688a 888b 888c",
-    "FFFF 222a 222b NEWS", "FFFF 444a 444b NEWS", "FFFF 666a 666b NEWS", "FFFF 888a 888b NEWS", 
+    "FFFF 222a 222b NEWS", "FFFF 444a 444b NEWS", "FFFF 666a 666b NEWS", "FFFF 888a 888b NEWS",
     # Any Like Numbers
     "XXXX0a XXXX0b XXXX0c DDc",
     "FFFF XXXX0a XXX0b XXX0c",
@@ -99,12 +99,12 @@
     "FF XXX0a DDa XXXX1b XXX2b",
     "FFFFF XXXX0a XXX1a XX2a", "FFFFF XXXX0a XXX1b XX2c",
     # 13579
-    "1111a 33a 55a 77a 9999a", "1111a 33a 55b 77c 9999c", 
+    "1111a 33a 55a 77a 9999a", "1111a 33a 55b 77c 9999c",
     "111a 333a 5555b 7777b", "333a 555a 7777b 9999b",
     "FFFF 1a 33a 555a 7777a", "FFFF 3a 55a 777a 9999a",
     "1111a 7777a 3333b 51c", "1111a 3333a 7777b 91c",
     "111a 99a 11b 999b DDDDc",
-    "FFFF 1111a 333b 555c", "FFFF 3333a 555b 777c", "FFFF 5555a 777b 999c", 
+    "FFFF 1111a 333b 555c", "FFFF 3333a 555b 777c", "FFFF 5555a 777b 999c",
     # Winds and Dragons
     "NNN EEE WWWW SSSS", "NNNN EEEE WWW SSS",
     "FFFF N EE WWW SSSS", "FFFF NNNN EEE WW S",
@@ -112,11 +112,11 @@
     "EEE 222a|444a|666a|888a GGGG WWWW",
     "X0a XX1a XXX2a DDDDb DDDDc",
     "X0a DDDDa XX1b DDDDb XXX2c",
-    "Da DDb DDDc NNNN SSSS", "Da DDb DDDc EEEE WWWW", 
+    "Da DDb DDDc NNNN SSSS", "Da DDb DDDc EEEE WWWW",
     # 369
     "333a 666a 9999b 9999c", "333a 666b 9999b 9999c",
     "FF 3333a 3333b 66c", "FFFF 3333a 6666b 99c",
-    "3333a Da 666b DDb 9c DDDc", "3333a Da 999b DDb 6c DDDc", "6666a Da 333b DDb 9c DDDc", "6666a Da 999b DDb 3c DDDc", "9999a Da 333b DDb 6c DDDc", "9999a Da 666b DDb 3c DDDc", 
+    "3333a Da 666b DDb 9c DDDc", "3333a Da 999b DDb 6c DDDc", "6666a Da 333b DDb 9c DDDc", "6666a Da 999b DDb 3c DDDc", "9999a Da 333b DDb 6c DDDc", "9999a Da 666b DDb 3c DDDc",
     "FF 3333a 3333b NEWS", "FF 6666a 6666b NEWS", "FF 9999a 9999b NEWS",
     "NN SS 333a 666a DDDDa", "NN SS 333a 999a DDDDa", "NN SS 666a 999a DDDDa", "EE WW 333a 666a DDDDa", "EE WW 333a 999a DDDDa", "EE WW 666a 999a DDDDa",
     "FFFFF 3333a 666a 99a", "FFFFF 3333a 666b 99c"

@@ -6,9 +6,9 @@
     "FF 22a 4444b 6666b 88a",
     "FFFF 444a 666a DDDDa",
     # Ten Hands
-    "FFFF 2222a 8888a 10a", "FFFF 2222a 8888b 10c", 
-    "FFFF 3333a 7777a 10a", "FFFF 3333a 7777b 10c", 
-    "FFFF 1111a 9999a 10a", "FFFF 1111a 9999b 10c", 
+    "FFFF 2222a 8888a 10a", "FFFF 2222a 8888b 10c",
+    "FFFF 3333a 7777a 10a", "FFFF 3333a 7777b 10c",
+    "FFFF 1111a 9999a 10a", "FFFF 1111a 9999b 10c",
     # Quints
     "XXXX0a XXXXX1a XXXXX2a",
     "FF XXX0a XXXX1b DDDDDc",
@@ -41,9 +41,9 @@
     "FF 22a 4444b 6666b 88a",
     "FFFF 444a 666a DDDDa",
     # Ten Hands
-    "FFFF 2222a 8888a 10a", "FFFF 2222a 8888b 10c", 
-    "FFFF 3333a 7777a 10a", "FFFF 3333a 7777b 10c", 
-    "FFFF 1111a 9999a 10a", "FFFF 1111a 9999b 10c", 
+    "FFFF 2222a 8888a 10a", "FFFF 2222a 8888b 10c",
+    "FFFF 3333a 7777a 10a", "FFFF 3333a 7777b 10c",
+    "FFFF 1111a 9999a 10a", "FFFF 1111a 9999b 10c",
     # Quints
     "XXXX0a XXXXX1a XXXXX2a",
     "FF XXX0a XXXX1b DDDDDc",

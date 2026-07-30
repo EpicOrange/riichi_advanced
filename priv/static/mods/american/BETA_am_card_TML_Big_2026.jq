@@ -5,9 +5,9 @@
 .win_definition = [
     # 2026
     "222a 0000 222b 6666c",
-    "DDDa Db 222a 222b 2026c", "DDDa Db 666a 666b 2026c", 
+    "DDDa Db 222a 222b 2026c", "DDDa Db 666a 666b 2026c",
     "FFF NEWS DDDa 2026a",
-    "FF 2026a 2222b 2222c", "FF 2026a 6666b 6666c", 
+    "FF 2026a 2222b 2222c", "FF 2026a 6666b 6666c",
     "NNN EE 2026a WW SSS",
     # 2468
     "F 222a 444a 666a 8888a", "F 222a 444a 666b 8888c",
@@ -24,12 +24,12 @@
     "XXX0a XXX0b XXX0c DDDDDa",
     "FFF XXXX0a FFF XXXX0b",
     # Consecutive Numbers
-    "FF XXX0a XXX1a XXX2a XXX3a", "FF XXX0a XXX1a XXX2b XXX3b", 
+    "FF XXX0a XXX1a XXX2a XXX3a", "FF XXX0a XXX1a XXX2b XXX3b",
     "XXX0a XXXX1a XXX0b XXXX1b",
     "FFFF ZZ XXX0a XXX1a DDa",
     "XXX0a XX1a XXXX2a XX3a XXX4a",
     "XXX0a XX1a NEWS XX2b XXX3b",
-    "FF XX2a XXX1a XXXX0a DDDa", "FF XX2a XXX1b XXXX0c DDDb", 
+    "FF XX2a XXX1a XXXX0a DDDa", "FF XX2a XXX1b XXXX0c DDDb",
     "XX0a XXX1a XXXX2a XXXXX3a", "XX0a XXX1a XXXX2a XXXXX3b",
     "FF 1233a 4566a 7899a", "FF 1233a 4566b 7899c", # concealed
     # 13579
@@ -67,9 +67,9 @@
 .open_win_definition = [
     # 2026
     "222a 0000 222b 6666c",
-    "DDDa Db 222a 222b 2026c", "DDDa Db 666a 666b 2026c", 
+    "DDDa Db 222a 222b 2026c", "DDDa Db 666a 666b 2026c",
     "FFF NEWS DDDa 2026a",
-    "FF 2026a 2222b 2222c", "FF 2026a 6666b 6666c", 
+    "FF 2026a 2222b 2222c", "FF 2026a 6666b 6666c",
     "NNN EE 2026a WW SSS",
     # 2468
     "F 222a 444a 666a 8888a", "F 222a 444a 666b 8888c",
@@ -84,12 +84,12 @@
     "XXX0a XXX0b XXX0c DDDDDa",
     "FFF XXXX0a FFF XXXX0b",
     # Consecutive Numbers
-    "FF XXX0a XXX1a XXX2a XXX3a", "FF XXX0a XXX1a XXX2b XXX3b", 
+    "FF XXX0a XXX1a XXX2a XXX3a", "FF XXX0a XXX1a XXX2b XXX3b",
     "XXX0a XXXX1a XXX0b XXXX1b",
     "FFFF ZZ XXX0a XXX1a DDa",
     "XXX0a XX1a XXXX2a XX3a XXX4a",
     "XXX0a XX1a NEWS XX2b XXX3b",
-    "FF XX2a XXX1a XXXX0a DDDa", "FF XX2a XXX1b XXXX0c DDDb", 
+    "FF XX2a XXX1a XXXX0a DDDa", "FF XX2a XXX1b XXXX0c DDDb",
     "XX0a XXX1a XXXX2a XXXXX3a", "XX0a XXX1a XXXX2a XXXXX3b",
     # 13579
     "NNN 111a 33a 555a SSS", "NNN 111a 33b 555c SSS",
@@ -136,7 +136,7 @@
 |
 # Card-specific rule: concealed hands get a +10 bonus, except for hands that are concealed on the Card. this occurs before the jokerless bonus
 # TODO: check whether this rule works as intended.
- 
+
 .after_scoring = [
     # concealed bonus
   ["when", [

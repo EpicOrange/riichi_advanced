@@ -79,7 +79,7 @@
     [ "exhaustive", [["shuntsu", "koutsu"], 5] ],
     [ [["pair"], 6], [["koutsu"], 1] ],
     [ [["pair"], 8] ]
-  ],  
+  ],
   // used to check for ting eligibility
   "win_definition": [
     [ "exhaustive", [["pair"], 1], [["shuntsu", "koutsu"], 5] ],

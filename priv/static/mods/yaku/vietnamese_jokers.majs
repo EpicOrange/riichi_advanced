@@ -218,7 +218,7 @@ end
 
 define_button joker_swap,
   display_name: "Bounce joker",
-  show_when: 
+  show_when:
     our_turn and not_just_discarded
     and not_status("can_rob_bounce")
     and match(["hand_draw_nonjoker_any", "self_joker_meld_tiles"], ~m"pair:1")

@@ -30,7 +30,7 @@ if defined("star_suit") do
   on after_initialization do
     add_rule("Tiles", "Ten", "There are four copies of the 10 of each suit: %{tens}", %{tens: ~T"10m 10p 10s 10t"})
   end
-else 
+else
   on after_initialization do
     add_rule("Tiles", "Ten", "There are four copies of the 10 of each suit: %{tens}", %{tens: ~T"10m 10p 10s"})
   end
@@ -62,7 +62,7 @@ if defined("dora") do
       apply set, "dora_indicators[\"1t\"]", ["10t"]
     end
   end
-end 
+end
 
 # change tanyao, chanta, honroutou etc
 # honitsu is already defined for ten

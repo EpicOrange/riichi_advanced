@@ -1,5 +1,5 @@
 define_button ron,
-  display_name: !ron_name, 
+  display_name: !ron_name,
   show_when: not_our_turn
     and someone_else_just_discarded
     and status_missing("initial_flowers") # for default_flowers mod

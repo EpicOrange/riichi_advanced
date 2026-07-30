@@ -3,7 +3,7 @@ on after_initialization do
 end
 
 define_button rob_bounce,
-  display_name: "Ù", 
+  display_name: "Ù",
   show_when: not_our_turn
     and status_missing("initial_flowers")
     and someone_else_just_called

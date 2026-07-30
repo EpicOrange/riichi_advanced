@@ -15,10 +15,10 @@
     "FF 1111a 1111b 1111c",
     "FF 1111a 1111b NEWS", # concealed
     # Addition
-    "FFFF 2222a 8888a 10a", "FFFF 2222a 8888b 10c", 
-    "FFFF 3333a 7777a 10a", "FFFF 3333a 7777b 10c", 
-    "FFFF 6666a 4444a 10a", "FFFF 6666a 4444b 10c", 
-    "FFFF 9999a 1111a 10a", "FFFF 9999a 1111b 10c", 
+    "FFFF 2222a 8888a 10a", "FFFF 2222a 8888b 10c",
+    "FFFF 3333a 7777a 10a", "FFFF 3333a 7777b 10c",
+    "FFFF 6666a 4444a 10a", "FFFF 6666a 4444b 10c",
+    "FFFF 9999a 1111a 10a", "FFFF 9999a 1111b 10c",
     # Quints
     "XX0a XXX1a XXXX2a XXXXX3a",
     "XXXXX0a XXXXX0b DDDDc",
@@ -77,10 +77,10 @@
     # Like Numbers
     "FF 1111a 1111b 1111c",
     # Addition
-    "FFFF 2222a 8888a 10a", "FFFF 2222a 8888b 10c", 
-    "FFFF 3333a 7777a 10a", "FFFF 3333a 7777b 10c", 
-    "FFFF 6666a 4444a 10a", "FFFF 6666a 4444b 10c", 
-    "FFFF 9999a 1111a 10a", "FFFF 9999a 1111b 10c", 
+    "FFFF 2222a 8888a 10a", "FFFF 2222a 8888b 10c",
+    "FFFF 3333a 7777a 10a", "FFFF 3333a 7777b 10c",
+    "FFFF 6666a 4444a 10a", "FFFF 6666a 4444b 10c",
+    "FFFF 9999a 1111a 10a", "FFFF 9999a 1111b 10c",
     # Quints
     "XX0a XXX1a XXXX2a XXXXX3a",
     "XXXXX0a XXXXX0b DDDDc",

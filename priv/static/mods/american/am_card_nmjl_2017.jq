@@ -51,14 +51,14 @@
     "333a 6666a 666b 9999b",
     "FF 3333a 6666a 9999a", "FF 3333a 6666b 9999c",
     "33a 66a 333b 666b 9999c",
-    "33a 66a 99a 3333b 3333c", "33a 66a 99a 6666b 6666c", "33a 66a 99a 9999b 9999c", 
+    "33a 66a 99a 3333b 3333c", "33a 66a 99a 6666b 6666c", "33a 66a 99a 9999b 9999c",
     "FF 333a 666a 999b 999c",  # concealed
     # Singles and Pairs
     "NN EE WW SS XX0a XX0b XX0c", # concealed
     "XX0a XX1a XX2a XX3a XX4a XX5a XX6a", # concealed
     "336a 33669b 336699c", # concealed
     "FF 22a 4a 6a 88a 22b 4b 6b 88b", # concealed
-    "11a 33a 55a 77a 99a 11b 11c", "11a 33a 55a 77a 99a 33b 33c", "11a 33a 55a 77a 99a 55b 55c", "11a 33a 55a 77a 99a 77b 77c", "11a 33a 55a 77a 99a 99b 99c", # concealed    
+    "11a 33a 55a 77a 99a 11b 11c", "11a 33a 55a 77a 99a 33b 33c", "11a 33a 55a 77a 99a 55b 55c", "11a 33a 55a 77a 99a 77b 77c", "11a 33a 55a 77a 99a 99b 99c", # concealed
     "FF XX0a XX1a XX0b XX1b XX0c XX1c", # concealed
     "FF 2017a DDa 2017b DDb" # concealed
   ]

@@ -3,7 +3,7 @@ on after_initialization do
 end
 
 define_button chankan,
-  display_name: !chankan_name, 
+  display_name: !chankan_name,
   show_when: not_our_turn
     and someone_else_just_called
     and status("can_chankan", as: "caller")

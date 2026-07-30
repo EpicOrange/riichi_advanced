@@ -387,7 +387,7 @@ end
 
 # finally done populating the wall with galaxy tiles
 
-# milky way 
+# milky way
 define_const milky_way_tenpai, ~m"nojoker, galaxy_tile:13"
 define_const milky_way_tenpai_14, ~m"nojoker, galaxy_tile:13"
 define_const milky_way_win, ~m"nojoker, galaxy_tile:14"

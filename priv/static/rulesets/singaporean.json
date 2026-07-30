@@ -1,5 +1,5 @@
 {
-    // TODO SUMMARY (2025-01-31): 
+    // TODO SUMMARY (2025-01-31):
     // * Implement the various Pao rules.
     // * Figure out how to implement the existence of the two limit scores. The only way to get the 10 Limit is to get daisangen/daisuushii; all other hands are capped at 5. I think this can be done with something similar to the way yakuman are implemented, or how I implemented something like this in Zung Jung.
     // * Three Lesser Scholars isn't scored for some reason?
@@ -12,7 +12,7 @@
     // * [FIXED, I think] Apparently 111m999m111p11s33z, won on discarded 3m, was scored for Thirteen Orphans and Hidden Treasure.
     // * [FIXED, I think] East should have the option to ankan on their starting turn, but currently doesn't? [This is because ankans are only allowed when we have a draw, but we merge our draw into our hand after declaring "No Flowers".]
     // * [FIXED, I think] Heavenly Hand is apparently scored wrong (can be scored after call(s), can be scored by someone other than East).
-    // * [FIXED] Add pauses after instant payments. Add `big_text` for instant payments. 
+    // * [FIXED] Add pauses after instant payments. Add `big_text` for instant payments.
   "default_mods": ["show_waits"],
   "available_mods": [
     {"id": "show_waits", "name": "Show Waits", "desc": "Add some UI that shows waits."},

@@ -32,7 +32,7 @@
     "XX0a XX1a XXX0b XXX1b XXXX2c",
     "XXX0a XX1a XXX2a DDDb DDDc", # concealed
     # 13579
-    "11a 33a 555a 777a 9999a", 
+    "11a 33a 555a 777a 9999a",
     "111a 333a 3333b 5555b", "555a 777a 7777b 9999b",
     "FFFF 1111a 33a 5555a", "FFFF 5555a 77a 9999a",
     "11a 33a 111b 333b 5555c",
@@ -49,9 +49,9 @@
     # 369
     "FF 3333a 66a 9999a DDa",
     "333a 666a 6666b 9999b",
-    "33a 66a 99a 3333b 3333b", "33a 66a 99a 6666b 6666b", "33a 66a 99a 9999b 9999b", 
+    "33a 66a 99a 3333b 3333b", "33a 66a 99a 6666b 6666b", "33a 66a 99a 9999b 9999b",
     "FF 3333a 6666a 9999a",
-    "333a 66a 999a 333b 333b", "333a 66a 999a 666b 666b", "333a 66a 999a 999b 999b", 
+    "333a 66a 999a 333b 333b", "333a 66a 999a 666b 666b", "333a 66a 999a 999b 999b",
     "333a 6a 999a 333b 6b 999b", # concealed
     # Singles and Pairs
     "NN EE WW SS XX0a XX0b XX0c", # concealed
@@ -94,7 +94,7 @@
     "FFFF XXXX0a XXXX1a DDa",
     "XX0a XX1a XXX0b XXX1b XXXX2c",
     # 13579
-    "11a 33a 555a 777a 9999a", 
+    "11a 33a 555a 777a 9999a",
     "111a 333a 3333b 5555b", "555a 777a 7777b 9999b",
     "FFFF 1111a 33a 5555a", "FFFF 5555a 77a 9999a",
     "11a 33a 111b 333b 5555c",
@@ -108,7 +108,7 @@
     # 369
     "FF 3333a 66a 9999a DDa",
     "333a 666a 6666b 9999b",
-    "33a 66a 99a 3333b 3333b", "33a 66a 99a 6666b 6666b", "33a 66a 99a 9999b 9999b", 
+    "33a 66a 99a 3333b 3333b", "33a 66a 99a 6666b 6666b", "33a 66a 99a 9999b 9999b",
     "FF 3333a 6666a 9999a",
     "333a 66a 999a 333b 333b", "333a 66a 999a 666b 666b", "333a 66a 999a 999b 999b"
   ]
@@ -118,7 +118,7 @@
     "FF XX0a XX1a XX2a XX3a XX4a DDa",
     "11a 33a 55a 77a 99a 11b 11c", "11a 33a 55a 77a 99a 33b 33c", "11a 33a 55a 77a 99a 55b 55c", "11a 33a 55a 77a 99a 77b 77c", "11a 33a 55a 77a 99a 99b 99c", # concealed
     "FF 22a 46a 88a 22b 46b 88b",
-    "FF XX0a XX1a XX0b XX1b XX0c XX1c", 
+    "FF XX0a XX1a XX0b XX1b XX0c XX1c",
     "336a 33669b 336699c",
     "FF 2014a 2014b 2014c"
   ]

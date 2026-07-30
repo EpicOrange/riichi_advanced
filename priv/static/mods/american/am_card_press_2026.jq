@@ -8,7 +8,7 @@
     # Three - Six - Nine
     "FFF ZZZ 333a 666b 99c",
     "N 333a E 6666a W 999a S",
-    "33a 66a 99a 3333b 3333c", "33a 66a 99a 6666b 6666c", "33a 66a 99a 9999b 9999c", 
+    "33a 66a 99a 3333b 3333c", "33a 66a 99a 6666b 6666c", "33a 66a 99a 9999b 9999c",
     "3333a 6666a 9999a DDa", "3333a 6666b 9999b DDc",
     "FF 333a 666b 999a DDDb", # concealed
     # Even Numbers
@@ -76,7 +76,7 @@
     # Three - Six - Nine
     "FFF ZZZ 333a 666b 99c",
     "N 333a E 6666a W 999a S",
-    "33a 66a 99a 3333b 3333c", "33a 66a 99a 6666b 6666c", "33a 66a 99a 9999b 9999c", 
+    "33a 66a 99a 3333b 3333c", "33a 66a 99a 6666b 6666c", "33a 66a 99a 9999b 9999c",
     "3333a 6666a 9999a DDa", "3333a 6666b 9999b DDc",
     # Even Numbers
     "FF 222a 4444b 66b 888c",

@@ -9,7 +9,7 @@ on after_initialization do
 end
 
 define_button daiminkan,
-  display_name: !kan_name, 
+  display_name: !kan_name,
   show_when: not_our_turn
     and not_no_tiles_remaining
     and someone_else_just_discarded
@@ -29,7 +29,7 @@ define_button daiminkan,
   end
 
 define_button ankan,
-  display_name: !ankan_name, 
+  display_name: !ankan_name,
   show_when: our_turn
     and not_no_tiles_remaining
     and not_just_discarded
@@ -48,7 +48,7 @@ define_button ankan,
   end
 
 define_button kakan,
-  display_name: !kan_name, 
+  display_name: !kan_name,
   show_when: our_turn
     and has_draw
     and not_no_tiles_remaining

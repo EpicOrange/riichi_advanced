@@ -12,7 +12,7 @@ on after_initialization do
 end
 
 define_button flower_win,
-  display_name: "Zimo", 
+  display_name: "Zimo",
   show_when: our_turn
     and has_draw
     and match(["draw"], ~m"unique, (1f 2f 3f 4f 1g 2g 3g 4g):1")

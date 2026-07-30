@@ -244,12 +244,12 @@
       "value": [130, "points"],
       "when": [{"name": "match", "opts": [["hand", "calls", "winning_tile"], ["big_three_dragons"]]}]
     },
-    { 
+    {
       "display_name": "Small Three Winds",
       "value": [30, "points"],
       "when": [{"name": "match", "opts": [["hand", "calls", "winning_tile"], ["little_three_winds"]]}]
     },
-    { 
+    {
       "display_name": "Big Three Winds",
       "value": [120, "points"],
       "when": [{"name": "match", "opts": [["hand", "calls", "winning_tile"], ["big_three_winds"]]}]
@@ -458,38 +458,38 @@
   "meta_yaku": [
     {"display_name": "Chicken Hand", "value": 1, "when": ["has_no_yaku"]}
   ],
-  
+
   // <TODO: Check if the yaku_precedence list satisfies the "Freedom of Count" entry at https://www.zj-mahjong.info/book_en/1.1%20Misc%20Rules.html .>
-  
+
   "yaku_precedence": {
     "Pure One-Suit": ["Mixed One-Suit"],
-  
+
     "Big Three Dragons": ["Small Three Dragons"],
     "Small Four Winds": ["Big Three Winds", "Small Three Winds"],
     "Big Three Winds": ["Small Three Winds"],
-  
+
     "Four Concealed Triplets": ["Three Concealed Triplets", "Two Concealed Triplets"],
     "Three Concealed Triplets": ["Two Concealed Triplets"],
     "Three Kong": ["Two Kong", "One Kong", "Seven Pairs"],
     "Two Kong": ["One Kong", "Seven Pairs"],
     "One Kong": ["Seven Pairs"],
-  
+
     "Three Identical Sequences": ["Two Identical Sequences Twice", "Two Identical Sequences", "Seven Pairs", "Three Consecutive Triplets"],
     "Two Identical Sequences Twice": ["Two Identical Sequences", "Seven Pairs"],
-  
+
     "Three Similar Triplets": ["Small Three Similar Triplets", "Seven Pairs"],
     "Small Three Similar Triplets": ["Seven Pairs"],
-  
+
     "Four Consecutive Triplets": ["Three Consecutive Triplets", "Seven Pairs", "Three Identical Sequences"],
     "Three Consecutive Triplets": ["Seven Pairs"],
-  
+
     "Mixed Greater Terminals": ["Pure Lesser Terminals", "Mixed Lesser Terminals"],
     "Pure Lesser Terminals": ["Mixed Lesser Terminals"],
 
     "Final Discard": ["Final Draw"],
     "Blessing of Earth": ["Blessing of Heaven"],
     "Seven Pairs": ["Concealed Hand", "Thirteen Terminals", "Two Identical Sequences", "All Sequences"],
-  
+
     "Thirteen Terminals": ["Concealed Hand", "Mixed Greater Terminals"],
 
     // listed limit hands are exclusive (can only score one of them, i.e. the highest one)

@@ -16,7 +16,7 @@ on after_initialization do
     - Throwing Blue Jokers (1 Mủn): Your first three discards are blue jokers %{blue_jokers}, or the number joker %{hop}. After that discard, you may choose to immediately declare a self-drawn win, even if you have honor tiles in hand. If you choose to forgo the win and go on to discard additional %{blue_jokers}%{hop}, each scores an additional Mủn and again gives you the choice to win.
     - Throwing Flowers (1 Mủn): Your first three discards are flowers or the flower joker %{hoa}. Due to the initial flower declaration round, this basically means that your first three draws are flowers. After that discard, you may choose to immediately declare a self-drawn win, even if you have honor tiles in hand. If you choose to forgo the win and go on to discard additional flower tiles, each scores an additional Mủn and again gives you the choice to win.
     - Throwing Flowers/Jokers (1 Mủn): Your first three discards are flowers or jokers. Afterwards, you win as soon as your hand is only composed of number tiles (no honors, flowers, or jokers), at which point you can call a win if any player discards a number tile (or if you draw one yourself). If your first discards are 5 or more joker/flower tiles in succession, you score an additional 1 Mủn per joker/flower tile starting with the 5th.
-    
+
     Note that True NFNL is the only NFNL hand that can combine with other hand patterns to score additional phán or mủn.
     """, %{hoa: ~t"9j", blue_jokers: ~t"0678j", hop: ~t"2j"}, -90)
 end
@@ -26,7 +26,7 @@ define_match has_non_nfnl_tile, ~m"nojoker, (any_flower any_joker any_honor):1"
 
 # True NFNL: replace regular win buttons with a button that says "No Flowers, No Leaves"
 define_button nfnl0,
-  display_name: "No Flowers, No Leaves", 
+  display_name: "No Flowers, No Leaves",
   show_when: status_missing("initial_flowers")
     and status("nfnl_eligible")
     and not_match(["hand", "draw", "calls", "flowers", "jokers"], ["has_non_nfnl_tile"])
@@ -55,7 +55,7 @@ apply append, "buttons.chankan.precedence_over", ["nfnl0", "nfnl1"]
 # Throwing Flowers/Jokers
 # TODO rn we'll show both nfnl0 and nfnl1 if the player's able to win on either
 define_button nfnl1,
-  display_name: "No Flowers, No Leaves", 
+  display_name: "No Flowers, No Leaves",
   show_when: status_missing("initial_flowers")
     and status("nfnl_eligible", "throwing_flowers_jokers_eligible")
     and flowers_jokers_discarded >= 3
@@ -77,7 +77,7 @@ define_button nfnl1,
 
 # Throwing Flowers/Blue Jokers
 define_button nfnl2,
-  display_name: "No Flowers, No Leaves", 
+  display_name: "No Flowers, No Leaves",
   show_when: our_turn and just_discarded
     and status_missing("initial_flowers")
     and status("nfnl_eligible")

@@ -32,7 +32,7 @@
     "XX0a XX1a XXX0b XXX1b XXXX2c",
     "FF XXX0a XXX1a XXX2a XXX3a", # concealed
     # 13579
-    "11a 33a 555a 777a 9999a", 
+    "11a 33a 555a 777a 9999a",
     "111a 333a 3333b 5555b", "555a 777a 7777b 9999b",
     "1111a 33b 55b 77b 9999a",
     "11a 333a DDDDb DDDc 55c", "55a 777a DDDDb 777c 99c",
@@ -51,7 +51,7 @@
     "333a 666a 6666b 9999b",
     "FF 3333a 6666a 9999a", "FF 3333a 6666b 9999c",
     "33a 66a 333b 666b 9999c",
-    "333a 66a 999a 333b 333b", "333a 66a 999a 666b 666b", "333a 66a 999a 999b 999b", 
+    "333a 66a 999a 333b 333b", "333a 66a 999a 666b 666b", "333a 66a 999a 999b 999b",
     "333a 6a 999a 333b 6b 999b", # concealed
     # Singles and Pairs
     "NN 11a 33a 55a 77a 99a SS", # concealed
@@ -93,7 +93,7 @@
     "XXX0a XXXX1b XXX2a DDDDb",
     "XX0a XX1a XXX0b XXX1b XXXX2c",
     # 13579
-    "11a 33a 555a 777a 9999a", 
+    "11a 33a 555a 777a 9999a",
     "111a 333a 3333b 5555b", "555a 777a 7777b 9999b",
     "1111a 33b 55b 77b 9999a",
     "11a 333a DDDDb DDDc 55c", "55a 777a DDDDb 777c 99c",
