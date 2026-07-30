@@ -16,8 +16,10 @@ on before_scoring do
   # terminals and honors
   add_attr(["hand", "calls", "winning_tile"], ["_terminal"], ["terminal"])
   add_attr(["hand", "calls", "winning_tile"], ["_yaochuu"], ["yaochuuhai"])
+  add_attr(["hand", "calls", "winning_tile"], ["_jihai"], ["jihai"])
   add_attr(["hand", "calls", "winning_tile"], ["_tanyao"], ["tanyaohai"])
 end
+define_set jihai, ~s"any@jihai"
 define_set yaochuuhai, ~s"any@yaochuu"
 define_set terminal, ~s"any@terminal"
 define_set tanyaohai, ~s"any@tanyao"

@@ -46,3 +46,25 @@ if defined("dora") do
     "8t": ["9t"]
   }
 end
+
+# change yaku to accommodate star suit
+# - Tanyao: already covered due to being based on attributes, not tile identity
+# - Chanta/Junchan: same 
+# - Honroutou/Chinroutou: same
+# - Honitsu/Chinitsu: star suit check already programmed in base riichi ruleset
+# - Sanshoku (Doujin/Doukou): need to allow all combinations of 3 suits TODO
+# - Kokushi (as yaku and as win con): need to add two more terminals to the set definitions
+
+# kokushi
+apply append, "set_definitions.orphans_all[0]", ["1t", "9t"]
+apply append, "set_definitions.orphans_any", ~s"1t|9t"
+
+# add new star suit yaku
+# TODO: the below don't work yet cause the engine only interprets standard suit shifts (m->p->s->m)
+#       need to modify the engine to represent more suits (perhaps with a suit_ordering map you can act on)
+
+# define_set yonshoku_doujun, ~s"0 1 2, 10 11 12, 20 21 22, 30 31 32"
+# define_set yonshoku_doukou, ~s"0 0 0, 10 10 10, 20 20 20, 30 30 30"
+# define_yaku yaku, "Yonshoku", [3, "Han"], match(["hand", "calls", "winning_tile"], ~m"exhaustive, yonshoku_doujun:1, mentsu:1, pair:1")
+# define_yaku meta_yaku, "Yonshoku", [1, "Han"], @closed_hand and has_existing_yaku("Yonshoku")
+# define_yaku yaku, "Yonshoku Doukou", [5, "Han"], match(["hand", "calls", "winning_tile"], ~m"exhaustive, yonshoku_doukou:1, mentsu:1, pair:1")
