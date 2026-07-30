@@ -1,0 +1,71 @@
+on after_initialization do
+  add_rule("Rules", "Nobekan", "You may kan a sequence of four number tiles. The replacement tile is drawn from the live wall. This flips kandora and can be robbed like a normal kan. When calculating yaku, either side of the nobekan can be used as a sequence. For example, 6789 can be used for both tanyao and chanta.")
+end
+
+define_set nobekan, ~s"0 1 2 3"
+define_button annobekan,
+  display_name: "Nobekan",
+  show_when: our_turn
+    and not_no_tiles_remaining
+    and not_just_discarded
+    and not_just_called
+    and self_call_available,
+  call: [[-3, -2, -1], [-2, -1, 1], [-1, 1, 2], [1, 2, 3]],
+  call_style: %{
+    self: [["1x", 2], 0, 1, ["1x", 3]]
+  }
+  do
+    big_text("Nobekan")
+    self_call
+    if status("kan") do
+      set_status("double_kan")
+    end
+    set_status("kan")
+    draw(1)
+  end
+
+define_button daiminnobekan,
+  display_name: "Nobekan",
+  show_when: not_our_turn
+    and not_no_tiles_remaining
+    and someone_else_just_discarded
+    and call_available,
+  precedence_over: ["chii", "pon", "daiminkan"],
+  call: [[-3, -2, -1], [-2, -1, 1], [-1, 1, 2], [1, 2, 3]],
+  call_style: %{
+    kamicha: ["call_sideways", 0, 1, 2],
+    toimen: [0, "call_sideways", 1, 2],
+    shimocha: [0, 1, 2, "call_sideways"]
+  }
+  do
+    big_text("Nobekan")
+    set_status("kan")
+    call
+    change_turn("self")
+    draw(1)
+  end
+
+define_button kanobekan,
+  display_name: "Nobekan",
+  show_when:
+        our_turn
+    and not_no_tiles_remaining
+    and not_just_discarded
+    and not_just_called
+    and can_upgrade_call,
+  precedence_over: ["chii", "pon", "daiminkan"],
+  call: [[-3, -2, -1], [-2, -1, 1], [-1, 1, 2], [1, 2, 3]],
+  upgrades: "chii",
+  call_style: %{
+    kamicha: [["sideways", 0], "call_sideways", 1, 2],
+    toimen: [0, ["sideways", 1], "call_sideways", 2],
+    shimocha: [0, 1, ["sideways", 2], "call_sideways"]
+  }
+  do
+    big_text("Nobekan")
+    set_status("kan", "can_chankan")
+    upgrade_call
+    unset_status("can_chankan")
+    discard_passed
+    draw(1)
+  end
