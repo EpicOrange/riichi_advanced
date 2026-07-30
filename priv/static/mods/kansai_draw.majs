@@ -8,6 +8,5 @@ if defined("dora") do
 end
 
 # change haitei/houtei
-remove_yaku yaku, "Haitei"
-define_yaku yaku, "Haitei", [1, "Han"], tile_revealed(0) and won_by_draw and not status("kan")
-define_yaku yaku, "Houtei", [1, "Han"], tile_revealed(0) and not_won_by_draw and not status("kan")
+replace_yaku yaku, "Haitei", [1, "Han"], tile_revealed(0) and won_by_draw and not status("kan")
+replace_yaku yaku, "Houtei", [1, "Han"], tile_revealed(0) and not_won_by_draw and not status("kan")

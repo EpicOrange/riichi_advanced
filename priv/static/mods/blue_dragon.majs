@@ -27,10 +27,8 @@ define_match shousangen, ~m"(haku hatsu chun baiban):2, (haku_pair hatsu_pair ch
 define_match daisangen, ~m"(haku hatsu chun baiban):3"
 define_match shousuugen, ~m"(haku hatsu chun baiban):3, (haku_pair hatsu_pair chun_pair baiban_pair):1"
 define_match daisuugen, ~m"haku:1, hatsu:1, chun:1, baiban:1"
-remove_yaku yaku, "Shousangen"
-remove_yaku yakuman, "Daisangen"
-define_yaku yaku, "Shousangen", [1, "Han"], match(["hand", "calls", "winning_tile"], ["shousangen"])
-define_yaku yaku, "Daisangen", [2, "Han"], match(["hand", "calls", "winning_tile"], ["daisangen"]), ["Shousangen"]
+replace_yaku yaku, "Shousangen", [1, "Han"], match(["hand", "calls", "winning_tile"], ["shousangen"])
+replace_yaku yaku, "Daisangen", [2, "Han"], match(["hand", "calls", "winning_tile"], ["daisangen"]), ["Shousangen"]
 define_yaku yakuman, "Shousuugen", [1, "★"], match(["hand", "calls", "winning_tile"], ["shousuugen"]), ["Daisangen"]
 define_yaku yakuman, "Daisuugen", [2, "★"], match(["hand", "calls", "winning_tile"], ["daisuugen"]), ["Shousuugen"]
 

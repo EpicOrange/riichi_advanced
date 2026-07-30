@@ -74,10 +74,8 @@ on before_scoring do
 end
 
 # redefine honroutou/chinroutou to use 10m etc
-remove_yaku yaku, "Honroutou"
-define_yaku yaku, "Honroutou", [2, "Han"], winning_hand_consists_of("1m","10m","1p","10p","1s","10s","1t","10t","1z","2z","3z","4z","5z","6z","7z")
-remove_yaku yakuman, "Chinroutou"
-define_yaku yakuman, "Chinroutou", [1, "★"], winning_hand_consists_of("1m","10m","1p","10p","1s","10s","1t","10t")
+replace_yaku yaku, "Honroutou", [2, "Han"], winning_hand_consists_of("1m","10m","1p","10p","1s","10s","1t","10t","1z","2z","3z","4z","5z","6z","7z")
+replace_yaku yakuman, "Chinroutou", [1, "★"], winning_hand_consists_of("1m","10m","1p","10p","1s","10s","1t","10t")
 
 # kokushi now uses 10m etc
 replace 1, "set_definitions.orphans_any", "9m", "10m"

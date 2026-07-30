@@ -2,8 +2,7 @@ on after_initialization do
   add_rule("Rules", "Suukaikan", "If fourth kans have been declared (not all by the same player), the game ends in an abortive draw.")
 end
 
-remove_yaku yakuman, "Suukantsu"
-define_yaku yakuman, "Suukantsu", [2, "★"], match(["calls"], ~m"(daiminkan ankan kakan):4")
+replace_yaku yakuman, "Suukantsu", [2, "★"], match(["calls"], ~m"(daiminkan ankan kakan):4")
 
 # if the rinshan after 4th kan fails to win, then it's an immediate win with double yakuman
 # this special win does not get additional chip yaku and cannot stack other yaku/yakuman
