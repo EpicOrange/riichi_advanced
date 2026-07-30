@@ -30,7 +30,7 @@ on before_abortive_draw do
 end
 
 on before_exhaustive_draw do
-  if equals(!counts_as, "tsumo") do
+  if equals(!counts_as, "tsumo") and anyone_status("nagashi") do
     win_by_draw("nagashi")
   end
 end
