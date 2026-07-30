@@ -195,14 +195,13 @@ defmodule RiichiAdvanced.GameState do
       auto_buttons: [],
       call_buttons: %{},
       choice: nil,
-      deferred_actions: [],
-      deferred_context: %{},
+      deferred_context_actions: [],
       big_text: "",
       status: MapSet.new(),
       counters: %{},
       riichi_stick: false,
       hand_revealed: false,
-      num_scryed_tiles: 0,
+      num_scryed_tiles: 0, # counting from live wall onward
       declared_yaku: nil,
       last_discard: nil, # for animation purposes and to avoid double discarding
       ready: false,
@@ -293,6 +292,7 @@ defmodule RiichiAdvanced.GameState do
       saved_revealed_tiles: [],
       max_revealed_tiles: 0,
       drawn_reserved_tiles: [],
+      named_scryed_tiles: [],
       tags: %{},
       marking: Map.new([:east, :south, :west, :north], fn seat -> {seat, %{}} end),
       txns: [],
@@ -654,6 +654,7 @@ defmodule RiichiAdvanced.GameState do
       |> Map.put(:revealed_tiles, revealed_tiles)
       |> Map.put(:saved_revealed_tiles, revealed_tiles)
       |> Map.put(:max_revealed_tiles, max_revealed_tiles)
+      |> Map.put(:named_scryed_tiles, [])
 
       # reserve some tiles in the dead wall
       reserved_tiles = Rules.get(state.rules_ref, "reserved_tiles", [])
@@ -720,6 +721,7 @@ defmodule RiichiAdvanced.GameState do
       |> Map.put(:saved_revealed_tiles, revealed_tiles)
       |> Map.put(:max_revealed_tiles, max_revealed_tiles)
       |> Map.put(:drawn_reserved_tiles, [])
+      |> Map.put(:named_scryed_tiles, [])
 
       scores = kyoku_log["players"]
       |> Enum.zip(state.available_seats)
@@ -935,7 +937,12 @@ defmodule RiichiAdvanced.GameState do
   end
 
   def get_scryed_tiles(state, seat) do
-    Enum.slice(state.wall, state.wall_index, state.players[seat].num_scryed_tiles)
+    if not Enum.empty?(state.named_scryed_tiles) do
+      state.named_scryed_tiles
+      |> Enum.map(&from_named_tile(state, %{seat: seat}, &1))
+    else
+      Enum.slice(state.wall, state.wall_index, state.players[seat].num_scryed_tiles)
+    end
   end
 
   def replace_revealed_tile(state, index, tile) do
@@ -1501,13 +1508,13 @@ defmodule RiichiAdvanced.GameState do
     notify_ai(state)
     {:noreply, state}
   end
-  def handle_cast({:unpause, context}, state) do
-    actions = state.players[context.seat].deferred_actions
+  def handle_cast({:unpause, seat}, state) do
+    actions = state.players[seat].deferred_context_actions
     if Debug.debug_actions() do
-      IO.puts("Unpausing with context #{inspect(context)}; actions are #{inspect(actions)}")
+      IO.puts("Unpausing with #{length(actions)} deferred_context_actions")
     end
     state = Map.put(state, :game_active, true)
-    state = Actions.run_deferred_actions(state, context)
+    state = Actions.run_deferred_actions(state, seat)
     state = broadcast_state_change(state)
     notify_ai(state)
     {:noreply, state}
@@ -1668,7 +1675,7 @@ defmodule RiichiAdvanced.GameState do
     event = ["press_call_button", Atom.to_string(seat), "cancel"]
     if state.forced_events == nil or event in state.forced_events do
       # go back to button clicking phase
-      state = update_player(state, seat, fn player -> %{ player | buttons: Buttons.to_buttons(state, seat, player.button_choices), call_buttons: %{}, deferred_actions: [], deferred_context: %{}, choice: nil } end)
+      state = update_player(state, seat, fn player -> %{ player | buttons: Buttons.to_buttons(state, seat, player.button_choices), call_buttons: %{}, deferred_context_actions: [], choice: nil } end)
 
       # tutorial stuff
       state = if state.forced_events != nil and event in state.forced_events do
@@ -1985,7 +1992,7 @@ defmodule RiichiAdvanced.GameState do
 
     # go back to button clicking phase
     state = Buttons.recalculate_buttons(state)
-    state = update_player(state, seat, fn player -> %{ player | deferred_actions: [], deferred_context: %{} } end)
+    state = update_player(state, seat, fn player -> %{ player | deferred_context_actions: [] } end)
     notify_ai(state)
 
     state = broadcast_state_change(state)

@@ -263,7 +263,7 @@ defmodule RiichiAdvanced.GameState.Actions do
 
     # erase previous turn's deferred actions
     state = if prev_turn != nil do
-      update_player(state, prev_turn, &%{ &1 | deferred_actions: [], deferred_context: %{} })
+      update_player(state, prev_turn, &%{ &1 | deferred_context_actions: [] })
     else state end
 
     # IO.puts("Changing turn from #{prev_turn} to #{seat}")
@@ -309,7 +309,7 @@ defmodule RiichiAdvanced.GameState.Actions do
       state
     else
       # reschedule this turn change
-      schedule_actions(state, state.turn, [["advance_turn"]], %{seat: state.turn})
+      schedule_actions(state, state.turn, [{%{seat: state.turn}, [["advance_turn"]]}])
     end
   end
 
@@ -941,6 +941,13 @@ defmodule RiichiAdvanced.GameState.Actions do
       else tile end
     end
   end
+  def remove_attr_matching(tiles, attrs, tile_specs, tile_behavior) do
+    for tile <- tiles do
+      if Riichi.tile_matches_all(tile_specs, %{tile: tile, tile_behavior: tile_behavior}) do
+        Utils.remove_attr(tile, attrs)
+      else tile end
+    end
+  end
 
   def add_attr_tagged(tiles, attrs, tagged) do
     for tile <- tiles do
@@ -1152,349 +1159,392 @@ defmodule RiichiAdvanced.GameState.Actions do
     state
   end
 
-  defp _run_actions(state, [], _context), do: {state, []}
+  @branching_actions ["when", "unless", "ite", "as", "when_anyone", "when_everyone", "when_others"]
+  defp _run_actions(state, [], _context), do: state
   defp _run_actions(state, [[action | opts] | actions], context) when is_binary(action) do
     buttons_before = Enum.map(state.players, fn {seat, player} -> {seat, player.buttons} end)
     marked_objects = state.marking[context.seat]
     uninterruptible = String.starts_with?(action, "uninterruptible_")
     silent = context[:silent] == true
     action = if uninterruptible do String.replace_leading(action, "uninterruptible_", "") else action end
-    state = case action do
-      "noop"                  -> state
-      "print"                 ->
-        IO.puts(interpolate_string(state, context, Enum.at(opts, 0, ""), Enum.at(opts, 1, %{})))
-        state
-      "inspect"               ->
-        IO.inspect(opts)
-        state
-      "print_status"          ->
-        for seat <- Conditions.from_seats_spec(state, context, Enum.at(opts, 0, "self")) do
-          IO.inspect({seat, state.players[seat].status}, charlists: :as_lists)
-        end
-        state
-      "print_counters"         ->
-        for seat <- Conditions.from_seats_spec(state, context, Enum.at(opts, 0, "self")) do
-          IO.inspect({seat, state.players[seat].counters}, charlists: :as_lists)
-        end
-        state
-      "print_responsibilities"         ->
-        for seat <- Conditions.from_seats_spec(state, context, Enum.at(opts, 0, "self")) do
-          IO.inspect({seat, state.players[seat].responsibilities}, charlists: :as_lists)
-        end
-        state
-      "print_context"         ->
-        IO.inspect(context, charlists: :as_lists)
-        # IO.inspect(context, limit: :infinity, charlists: :as_lists)
-        state
-      "print_hand"         ->
-        for seat <- Conditions.from_seats_spec(state, context, Enum.at(opts, 0, "self")) do
-          IO.inspect({seat, state.players[seat].hand, state.players[seat].draw, state.players[seat].calls}, charlists: :as_lists)
-        end
-        state
-      "print_discards"         ->
-        for seat <- Conditions.from_seats_spec(state, context, Enum.at(opts, 0, "self")) do
-          IO.inspect({seat, state.players[seat].discards}, charlists: :as_lists)
-        end
-        state
-      "print_tags"         ->
-        IO.inspect(state.tags, charlists: :as_lists)
-        state
-      "print_txns"         ->
-        IO.inspect(state.txns, charlists: :as_lists)
-        state
-      "push_message"          ->
-        if not silent do
-          vars = Enum.at(opts, 1, %{})
-          message = interpolate_string(state, context, Enum.at(opts, 0, ""), vars)
-          # IO.inspect(["Player #{player_name(state, context.seat)}", message], label: "Sent message")
-          push_message(state, player_prefix(state, context.seat) ++ [%{text: message, vars: map_var_amounts(state, context, vars)}])
+
+    {state, context_actions} = if action in @branching_actions do
+      case action do
+        "when"   -> if Conditions.check_cnf_condition(state, Enum.at(opts, 0, []), context) do {state, [{context, Enum.at(opts, 1, []) ++ actions}]} else {state, [{context, actions}]} end
+        "unless" -> if Conditions.check_cnf_condition(state, Enum.at(opts, 0, []), context) do {state, [{context, actions}]} else {state, [{context, Enum.at(opts, 1, []) ++ actions}]} end
+        "ite"    -> if Conditions.check_cnf_condition(state, Enum.at(opts, 0, []), context) do {state, [{context, Enum.at(opts, 1, []) ++ actions}]} else {state, [{context, Enum.at(opts, 2, []) ++ actions}]} end
+        "as" ->
+          for dir <- Conditions.from_seats_spec(state, context, Enum.at(opts, 0, [])), reduce: {state, [{context, actions}]} do
+            {state, context_actions} ->
+              context = Map.merge(context, %{seat: dir, prev_seat: context.seat})
+              actions = Enum.at(opts, 1, [])
+              {state, [{context, actions} | context_actions]}
+          end
+        "when_anyone" ->
+          for dir <- state.available_seats, Conditions.check_cnf_condition(state, Enum.at(opts, 0, []), %{context | seat: dir}), reduce: {state, [{context, actions}]} do
+            {state, context_actions} -> {state, [{%{context | seat: dir}, Enum.at(opts, 1, [])} | context_actions]}
+          end
+        "when_everyone" ->
+          if Enum.all?(state.available_seats, fn dir -> Conditions.check_cnf_condition(state, Enum.at(opts, 0, []), %{context | seat: dir}) end) do
+            {state, [{context, Enum.at(opts, 1, [])}]}
+          else state end
+        "when_others" ->
+          if Enum.all?(state.available_seats -- [context.seat], fn dir -> Conditions.check_cnf_condition(state, Enum.at(opts, 0, []), %{context | seat: dir}) end) do
+            {state, [{context, Enum.at(opts, 1, [])}]}
+          else state end
+        _ -> {state, [{context, actions}]}
+      end
+    else
+      state = case action do
+        "noop"                  -> state
+        "print"                 ->
+          IO.puts(interpolate_string(state, context, Enum.at(opts, 0, ""), Enum.at(opts, 1, %{})))
           state
-        else state end
-      "push_system_message"   ->
-        if not silent do
-          vars = Enum.at(opts, 1, %{})
-          message = interpolate_string(state, context, Enum.at(opts, 0, ""), vars)
-          push_message(state, [%{text: message, vars: map_var_amounts(state, context, vars)}])
+        "inspect"               ->
+          IO.inspect(opts)
           state
-        else state end
-      "add_rule"             ->
-        tab = Enum.at(opts, 0, "Rules")
-        id = Enum.at(opts, 1, "")
-        text = Enum.at(opts, 2, "")
-        {tab, id, text, vars, priority} = if is_map(Enum.at(opts, 3)) do
-          vars = Enum.at(opts, 3, %{})
-          tab = String.trim(interpolate_string(state, context, tab, vars))
-          id = String.trim(interpolate_string(state, context, id, vars))
-          text = interpolate_string(state, context, text, vars)
-          priority = Enum.at(opts, 4, nil)
-          {tab, id, text, vars, priority}
-        else {tab, id, text, %{}, Enum.at(opts, 3, nil)} end
-        state = if not Map.has_key?(state.rules_text, tab) do
-          state = put_in(state.rules_text[tab], %{})
-          state = update_in(state.rules_text_order, & &1 ++ [tab])
+        "print_status"          ->
+          for seat <- Conditions.from_seats_spec(state, context, Enum.at(opts, 0, "self")) do
+            IO.inspect({seat, state.players[seat].status}, charlists: :as_lists)
+          end
           state
-        else state end
-        update_in(state.rules_text[tab], &Map.update(&1, id,
-          {[text], map_var_amounts(state, context, vars), if priority == nil do 0 else priority end},
-          fn {orig_text, orig_vars, orig_priority} -> {
-              orig_text ++ [text],
-              Map.merge(orig_vars, map_var_amounts(state, context, vars)),
-              priority || orig_priority
-          } end)
-        )
-      "update_rule"             ->
-        tab = Enum.at(opts, 0, "Rules")
-        id = Enum.at(opts, 1, "")
-        text = Enum.at(opts, 2, "")
-        {tab, id, text, vars, priority} = if is_map(Enum.at(opts, 3)) do
-          vars = Enum.at(opts, 3, %{})
-          tab = String.trim(interpolate_string(state, context, tab, vars))
-          id = String.trim(interpolate_string(state, context, id, vars))
-          text = interpolate_string(state, context, text, vars)
-          priority = Enum.at(opts, 4, nil)
-          {tab, id, text, vars, priority}
-        else {tab, id, text, %{}, Enum.at(opts, 3, nil)} end
-        if Map.has_key?(state.rules_text, tab) and Map.has_key?(state.rules_text[tab], id) do
-          update_in(state.rules_text[tab], &Map.update!(&1, id,
+        "print_counters"         ->
+          for seat <- Conditions.from_seats_spec(state, context, Enum.at(opts, 0, "self")) do
+            IO.inspect({seat, state.players[seat].counters}, charlists: :as_lists)
+          end
+          state
+        "print_responsibilities"         ->
+          for seat <- Conditions.from_seats_spec(state, context, Enum.at(opts, 0, "self")) do
+            IO.inspect({seat, state.players[seat].responsibilities}, charlists: :as_lists)
+          end
+          state
+        "print_context"         ->
+          IO.inspect(context, charlists: :as_lists)
+          # IO.inspect(context, limit: :infinity, charlists: :as_lists)
+          state
+        "print_hand"         ->
+          for seat <- Conditions.from_seats_spec(state, context, Enum.at(opts, 0, "self")) do
+            IO.inspect({seat, state.players[seat].hand, state.players[seat].draw, state.players[seat].calls}, charlists: :as_lists)
+          end
+          state
+        "print_discards"         ->
+          for seat <- Conditions.from_seats_spec(state, context, Enum.at(opts, 0, "self")) do
+            IO.inspect({seat, state.players[seat].discards}, charlists: :as_lists)
+          end
+          state
+        "print_tags"         ->
+          IO.inspect(state.tags, charlists: :as_lists)
+          state
+        "print_txns"         ->
+          IO.inspect(state.txns, charlists: :as_lists)
+          state
+        "push_message"          ->
+          if not silent do
+            vars = Enum.at(opts, 1, %{})
+            message = interpolate_string(state, context, Enum.at(opts, 0, ""), vars)
+            # IO.inspect(["Player #{player_name(state, context.seat)}", message], label: "Sent message")
+            push_message(state, player_prefix(state, context.seat) ++ [%{text: message, vars: map_var_amounts(state, context, vars)}])
+            state
+          else state end
+        "push_system_message"   ->
+          if not silent do
+            vars = Enum.at(opts, 1, %{})
+            message = interpolate_string(state, context, Enum.at(opts, 0, ""), vars)
+            push_message(state, [%{text: message, vars: map_var_amounts(state, context, vars)}])
+            state
+          else state end
+        "add_rule"             ->
+          tab = Enum.at(opts, 0, "Rules")
+          id = Enum.at(opts, 1, "")
+          text = Enum.at(opts, 2, "")
+          {tab, id, text, vars, priority} = if is_map(Enum.at(opts, 3)) do
+            vars = Enum.at(opts, 3, %{})
+            tab = String.trim(interpolate_string(state, context, tab, vars))
+            id = String.trim(interpolate_string(state, context, id, vars))
+            text = interpolate_string(state, context, text, vars)
+            priority = Enum.at(opts, 4, nil)
+            {tab, id, text, vars, priority}
+          else {tab, id, text, %{}, Enum.at(opts, 3, nil)} end
+          state = if not Map.has_key?(state.rules_text, tab) do
+            state = put_in(state.rules_text[tab], %{})
+            state = update_in(state.rules_text_order, & &1 ++ [tab])
+            state
+          else state end
+          update_in(state.rules_text[tab], &Map.update(&1, id,
+            {[text], map_var_amounts(state, context, vars), if priority == nil do 0 else priority end},
             fn {orig_text, orig_vars, orig_priority} -> {
-                if text in orig_text do orig_text else orig_text ++ [text] end,
+                orig_text ++ [text],
                 Map.merge(orig_vars, map_var_amounts(state, context, vars)),
                 priority || orig_priority
             } end)
           )
-        else state end
-      "delete_rule"             ->
-        tab = Enum.at(opts, 0, "Rules")
-        id = Enum.at(opts, 1, "")
-        {tab, id} = if is_map(Enum.at(opts, 3)) do
-          vars = Enum.at(opts, 3, %{})
-          tab = String.trim(interpolate_string(state, context, tab, vars))
-          id = String.trim(interpolate_string(state, context, id, vars))
-          {tab, id}
-        else {tab, id} end
-        if Map.has_key?(state.rules_text, tab) and Map.has_key?(state.rules_text[tab], id) do
-          update_in(state.rules_text[tab], &Map.delete(&1, id))
-        else state end
-      "add_rule_tab"             ->
-        tab = String.trim(interpolate_string(state, context, Enum.at(opts, 0, "Rules"), Enum.at(opts, 1, %{})))
-        if not Map.has_key?(state.rules_text, tab) do
-          state = put_in(state.rules_text[tab], %{})
-          state = update_in(state.rules_text_order, & &1 ++ [tab])
+        "update_rule"             ->
+          tab = Enum.at(opts, 0, "Rules")
+          id = Enum.at(opts, 1, "")
+          text = Enum.at(opts, 2, "")
+          {tab, id, text, vars, priority} = if is_map(Enum.at(opts, 3)) do
+            vars = Enum.at(opts, 3, %{})
+            tab = String.trim(interpolate_string(state, context, tab, vars))
+            id = String.trim(interpolate_string(state, context, id, vars))
+            text = interpolate_string(state, context, text, vars)
+            priority = Enum.at(opts, 4, nil)
+            {tab, id, text, vars, priority}
+          else {tab, id, text, %{}, Enum.at(opts, 3, nil)} end
+          if Map.has_key?(state.rules_text, tab) and Map.has_key?(state.rules_text[tab], id) do
+            update_in(state.rules_text[tab], &Map.update!(&1, id,
+              fn {orig_text, orig_vars, orig_priority} -> {
+                  if text in orig_text do orig_text else orig_text ++ [text] end,
+                  Map.merge(orig_vars, map_var_amounts(state, context, vars)),
+                  priority || orig_priority
+              } end)
+            )
+          else state end
+        "delete_rule"             ->
+          tab = Enum.at(opts, 0, "Rules")
+          id = Enum.at(opts, 1, "")
+          {tab, id} = if is_map(Enum.at(opts, 3)) do
+            vars = Enum.at(opts, 3, %{})
+            tab = String.trim(interpolate_string(state, context, tab, vars))
+            id = String.trim(interpolate_string(state, context, id, vars))
+            {tab, id}
+          else {tab, id} end
+          if Map.has_key?(state.rules_text, tab) and Map.has_key?(state.rules_text[tab], id) do
+            update_in(state.rules_text[tab], &Map.delete(&1, id))
+          else state end
+        "add_rule_tab"             ->
+          tab = String.trim(interpolate_string(state, context, Enum.at(opts, 0, "Rules"), Enum.at(opts, 1, %{})))
+          if not Map.has_key?(state.rules_text, tab) do
+            state = put_in(state.rules_text[tab], %{})
+            state = update_in(state.rules_text_order, & &1 ++ [tab])
+            state
+          else state end
+        "rename_rule_tab"          ->
+          from = String.trim(interpolate_string(state, context, Enum.at(opts, 0, "Rules"), Enum.at(opts, 2, %{})))
+          to = String.trim(interpolate_string(state, context, Enum.at(opts, 1, "Rules"), Enum.at(opts, 2, %{})))
+          if Map.has_key?(state.rules_text, from) do
+            {contents, state} = pop_in(state.rules_text[from])
+            contents = Map.merge(contents, Map.get(state.rules_text, to, %{}))
+            state = update_in(state.rules_text, &Map.put(&1, to, contents))
+            state = if to not in state.rules_text_order do
+              # try to have `to` substitute `from`, otherwise append
+              ix = Enum.find_index(state.rules_text_order, & &1 == from)
+              if ix != nil do
+                update_in(state.rules_text_order, &List.replace_at(&1 -- [to], ix, to))
+              else
+                update_in(state.rules_text_order, & &1 ++ [to])
+              end
+            else update_in(state.rules_text_order, & &1 -- [from]) end
+            state
+          else state end
+        "run"                   -> call_function(state, context, Enum.at(opts, 0, "noop"), Enum.at(opts, 1, %{}))
+        "play_tile"             -> play_tile(state, context.seat, Enum.at(opts, 0, :"1m"), Enum.at(opts, 1, 0))
+        "draw"                  -> draw_tile(state, context.seat, Enum.at(opts, 0, 1), Enum.at(opts, 1, nil), false)
+        "draw_aside"            -> draw_tile(state, context.seat, Enum.at(opts, 0, 1), Enum.at(opts, 1, nil), true)
+        "call"                  -> trigger_call(state, context.seat, context.choice.name, context.choice.chosen_call_choice, context.choice.chosen_called_tile, if get_last_action(state).action == :discard do :discards else :call end, silent)
+        "self_call"             -> trigger_call(state, context.seat, context.choice.name, context.choice.chosen_call_choice, context.choice.chosen_called_tile, :hand, silent)
+        "upgrade_call"          -> upgrade_call(state, context.seat, context.choice.name, context.choice.chosen_call_choice, context.choice.chosen_called_tile)
+        "flower"                -> trigger_call(state, context.seat, context.choice.name, context.choice.chosen_call_choice, nil, :hand, silent)
+        "trigger_custom_call"   ->
+          name = Enum.at(opts, 0, "")
+          source = case Enum.at(opts, 1, "") do
+            "discards" -> :discards
+            _          -> :hand
+          end
+          {call_choice, _calls} = Conditions.get_hand_calls_spec(state, context, Enum.at(opts, 2, [])) |> Enum.at(0)
+          {called_tiles, _calls} = Conditions.get_hand_calls_spec(state, context, Enum.at(opts, 3, [])) |> Enum.at(0)
+          called_tile = Enum.at(called_tiles, 0)
+          trigger_call(state, context.seat, name, call_choice, called_tile, source, silent)
+        "draft_saki_card"       -> Saki.draft_saki_card(state, context.seat, context.choice.chosen_saki_card)
+        "reverse_turn_order"    -> Map.update!(state, :reversed_turn_order, &not &1)
+        "advance_turn"          -> advance_turn(state)
+        "change_turn"           -> change_turn(state, Conditions.from_seat_spec(state, context, Enum.at(opts, 0, "self")), true)
+        "win_by_discard"        -> Kyoku.win(state, context.seat, :discard, Enum.at(opts, 0, nil))
+        "win_by_call"           -> Kyoku.win(state, context.seat, :call, Enum.at(opts, 0, nil))
+        "win_by_draw"           -> Kyoku.win(state, context.seat, :draw, Enum.at(opts, 0, nil))
+        "win_by_second_visible_discard" -> Kyoku.win(state, context.seat, :second_discard, Enum.at(opts, 0, nil))
+        "ryuukyoku"             -> Kyoku.exhaustive_draw(state, Enum.at(opts, 0, nil))
+        "abortive_draw"         -> Kyoku.abortive_draw(state, Enum.at(opts, 0, nil))
+        "set_status"            -> update_player(state, context.seat, fn player -> %{ player | status: MapSet.union(player.status, MapSet.new(opts)) } end)
+        "unset_status"          -> update_player(state, context.seat, fn player -> %{ player | status: MapSet.difference(player.status, MapSet.new(opts)) } end)
+        "set_status_all"        -> update_all_players(state, fn _seat, player -> %{ player | status: MapSet.union(player.status, MapSet.new(opts)) } end)
+        "unset_status_all"      -> update_all_players(state, fn _seat, player -> %{ player | status: MapSet.difference(player.status, MapSet.new(opts)) } end)
+        "set_counter"           -> set_counter(state, context, Enum.at(opts, 0, "counter"), Enum.drop(opts, 1))
+        "_set_counter"          -> set_counter(state, context, Enum.at(opts, 0, "counter"), Enum.drop(opts, 1))
+        "_counter_assignment"   -> counter_assignment(state, context, Enum.at(opts, 0, "Counter"), Enum.at(opts, 1, "counter"), Enum.at(opts, 2, "+"), Enum.at(opts, 3, 0))
+        "set_counter_all"       -> set_counter_all(state, context, Enum.at(opts, 0, "counter"), Enum.drop(opts, 1))
+        "add_counter"           -> add_counter(state, context, Enum.at(opts, 0, "counter"), Enum.drop(opts, 1))
+        "subtract_counter"      -> subtract_counter(state, context, Enum.at(opts, 0, "counter"), Enum.drop(opts, 1))
+        "multiply_counter"      -> multiply_counter(state, context, Enum.at(opts, 0, "counter"), Enum.drop(opts, 1))
+        "divide_counter"        -> divide_counter(state, context, Enum.at(opts, 0, "counter"), Enum.drop(opts, 1))
+        "exponentiate_counter"  -> exponentiate_counter(state, context, Enum.at(opts, 0, "counter"), Enum.drop(opts, 1))
+        "big_text"              -> temp_display_big_text(state, context.seat, interpolate_string(state, context, Enum.at(opts, 0, ""), Enum.at(opts, 1, %{})))
+        "pause"                 -> state # noop
+        "sort_hand"             ->
+          {hand, orig_ixs} = Enum.with_index(state.players[context.seat].hand)
+          |> Enum.sort_by(fn {tile, _ix} -> Constants.sort_value(tile) end)
+          |> Enum.unzip()
+          ix_map = Enum.with_index(orig_ixs) |> Map.new()
+          # map marked tiles' indices
+          state = update_in(state.marking[context.seat], &Enum.map(&1, fn {key, val} ->
+            if key == :hand do
+              {key, update_in(val.marked, fn marked -> Enum.map(marked, fn {tile, seat, ix} -> {tile, seat, Map.get(ix_map, ix, ix)} end) end)}
+            else {key, val} end
+          end))
+          # map playable_indices
+          playable_indices = state.players[context.seat].cache.playable_indices
+          playable_indices = if is_list(playable_indices) do Enum.map(playable_indices, &Map.get(ix_map, &1, &1)) else playable_indices end
+          # set hand and playable_indices
+          update_player(state, context.seat, fn player -> %{ player | hand: hand, cache: %{ player.cache | playable_indices: playable_indices } } end)
+        "reveal_tile"           ->
+          tile_name = Enum.at(opts, 0, :"1m")
+          if Utils.is_tile(tile_name) do
+            state = Map.update!(state, :revealed_tiles, fn tiles -> tiles ++ [tile_name] end)
+            state
+          else
+            tile_name = interpret_amount(state, context, tile_name)
+            state = Map.update!(state, :revealed_tiles, fn tiles -> tiles ++ [tile_name] end)
+            state = Log.log(state, context.seat, :dora_flip, %{dora_count: length(state.revealed_tiles), dora_indicator: from_named_tile(state, context, tile_name)})
+            state
+          end
+        "add_score"             ->
+          amount = interpret_amount(state, context, Enum.at(opts, 0, 0))
+          recipients = Conditions.from_seats_spec(state, context, Enum.at(opts, 1, "self"))
+          for recipient <- recipients, reduce: state do
+            state -> update_player(state, recipient, fn player -> %{ player | score: player.score + amount } end)
+          end
+        "subtract_score"             ->
+          amount = -interpret_amount(state, context, Enum.at(opts, 0, 0))
+          recipients = Conditions.from_seats_spec(state, context, Enum.at(opts, 1, "self"))
+          for recipient <- recipients, reduce: state do
+            state -> update_player(state, recipient, fn player -> %{ player | score: player.score + amount } end)
+          end
+        "put_down_riichi_stick" ->
+          riichi_discard_indices = Map.new(state.players, fn {seat, player} -> {seat, length(player.discards)} end)
+          riichi_value = Rules.get(state.rules_ref, "score_calculation", %{}) |> Map.get("riichi_value", 0)
           state
-        else state end
-      "rename_rule_tab"          ->
-        from = String.trim(interpolate_string(state, context, Enum.at(opts, 0, "Rules"), Enum.at(opts, 2, %{})))
-        to = String.trim(interpolate_string(state, context, Enum.at(opts, 1, "Rules"), Enum.at(opts, 2, %{})))
-        if Map.has_key?(state.rules_text, from) do
-          {contents, state} = pop_in(state.rules_text[from])
-          contents = Map.merge(contents, Map.get(state.rules_text, to, %{}))
-          state = update_in(state.rules_text, &Map.put(&1, to, contents))
-          state = if to not in state.rules_text_order do
-            # try to have `to` substitute `from`, otherwise append
-            ix = Enum.find_index(state.rules_text_order, & &1 == from)
-            if ix != nil do
-              update_in(state.rules_text_order, &List.replace_at(&1 -- [to], ix, to))
-            else
-              update_in(state.rules_text_order, & &1 ++ [to])
-            end
-          else update_in(state.rules_text_order, & &1 -- [from]) end
+          |> Map.update!(:pot, & &1 + Enum.at(opts, 0, 1) * riichi_value)
+          |> update_player(context.seat, &%{ &1 | riichi_stick: true, cache: %{ &1.cache | riichi_discard_indices: riichi_discard_indices } })
+        "bet_points"            ->
+          amount = interpret_amount(state, context, opts)
           state
-        else state end
-      "run"                   -> call_function(state, context, Enum.at(opts, 0, "noop"), Enum.at(opts, 1, %{}))
-      "play_tile"             -> play_tile(state, context.seat, Enum.at(opts, 0, :"1m"), Enum.at(opts, 1, 0))
-      "draw"                  -> draw_tile(state, context.seat, Enum.at(opts, 0, 1), Enum.at(opts, 1, nil), false)
-      "draw_aside"            -> draw_tile(state, context.seat, Enum.at(opts, 0, 1), Enum.at(opts, 1, nil), true)
-      "call"                  -> trigger_call(state, context.seat, context.choice.name, context.choice.chosen_call_choice, context.choice.chosen_called_tile, if get_last_action(state).action == :discard do :discards else :call end, silent)
-      "self_call"             -> trigger_call(state, context.seat, context.choice.name, context.choice.chosen_call_choice, context.choice.chosen_called_tile, :hand, silent)
-      "upgrade_call"          -> upgrade_call(state, context.seat, context.choice.name, context.choice.chosen_call_choice, context.choice.chosen_called_tile)
-      "flower"                -> trigger_call(state, context.seat, context.choice.name, context.choice.chosen_call_choice, nil, :hand, silent)
-      "trigger_custom_call"   ->
-        name = Enum.at(opts, 0, "")
-        source = case Enum.at(opts, 1, "") do
-          "discards" -> :discards
-          _          -> :hand
-        end
-        {call_choice, _calls} = Conditions.get_hand_calls_spec(state, context, Enum.at(opts, 2, [])) |> Enum.at(0)
-        {called_tiles, _calls} = Conditions.get_hand_calls_spec(state, context, Enum.at(opts, 3, [])) |> Enum.at(0)
-        called_tile = Enum.at(called_tiles, 0)
-        trigger_call(state, context.seat, name, call_choice, called_tile, source, silent)
-      "draft_saki_card"       -> Saki.draft_saki_card(state, context.seat, context.choice.chosen_saki_card)
-      "reverse_turn_order"    -> Map.update!(state, :reversed_turn_order, &not &1)
-      "advance_turn"          -> advance_turn(state)
-      "change_turn"           -> change_turn(state, Conditions.from_seat_spec(state, context, Enum.at(opts, 0, "self")), true)
-      "win_by_discard"        -> Kyoku.win(state, context.seat, :discard, Enum.at(opts, 0, nil))
-      "win_by_call"           -> Kyoku.win(state, context.seat, :call, Enum.at(opts, 0, nil))
-      "win_by_draw"           -> Kyoku.win(state, context.seat, :draw, Enum.at(opts, 0, nil))
-      "win_by_second_visible_discard" -> Kyoku.win(state, context.seat, :second_discard, Enum.at(opts, 0, nil))
-      "ryuukyoku"             -> Kyoku.exhaustive_draw(state, Enum.at(opts, 0, nil))
-      "abortive_draw"         -> Kyoku.abortive_draw(state, Enum.at(opts, 0, nil))
-      "set_status"            -> update_player(state, context.seat, fn player -> %{ player | status: MapSet.union(player.status, MapSet.new(opts)) } end)
-      "unset_status"          -> update_player(state, context.seat, fn player -> %{ player | status: MapSet.difference(player.status, MapSet.new(opts)) } end)
-      "set_status_all"        -> update_all_players(state, fn _seat, player -> %{ player | status: MapSet.union(player.status, MapSet.new(opts)) } end)
-      "unset_status_all"      -> update_all_players(state, fn _seat, player -> %{ player | status: MapSet.difference(player.status, MapSet.new(opts)) } end)
-      "set_counter"           -> set_counter(state, context, Enum.at(opts, 0, "counter"), Enum.drop(opts, 1))
-      "_set_counter"          -> set_counter(state, context, Enum.at(opts, 0, "counter"), Enum.drop(opts, 1))
-      "_counter_assignment"   -> counter_assignment(state, context, Enum.at(opts, 0, "Counter"), Enum.at(opts, 1, "counter"), Enum.at(opts, 2, "+"), Enum.at(opts, 3, 0))
-      "set_counter_all"       -> set_counter_all(state, context, Enum.at(opts, 0, "counter"), Enum.drop(opts, 1))
-      "add_counter"           -> add_counter(state, context, Enum.at(opts, 0, "counter"), Enum.drop(opts, 1))
-      "subtract_counter"      -> subtract_counter(state, context, Enum.at(opts, 0, "counter"), Enum.drop(opts, 1))
-      "multiply_counter"      -> multiply_counter(state, context, Enum.at(opts, 0, "counter"), Enum.drop(opts, 1))
-      "divide_counter"        -> divide_counter(state, context, Enum.at(opts, 0, "counter"), Enum.drop(opts, 1))
-      "exponentiate_counter"  -> exponentiate_counter(state, context, Enum.at(opts, 0, "counter"), Enum.drop(opts, 1))
-      "big_text"              -> temp_display_big_text(state, context.seat, interpolate_string(state, context, Enum.at(opts, 0, ""), Enum.at(opts, 1, %{})))
-      "pause"                 ->
-        if not state.log_loading_mode do
-          Map.put(state, :game_active, false)
-        else state end
-      "sort_hand"             ->
-        {hand, orig_ixs} = Enum.with_index(state.players[context.seat].hand)
-        |> Enum.sort_by(fn {tile, _ix} -> Constants.sort_value(tile) end)
-        |> Enum.unzip()
-        ix_map = Enum.with_index(orig_ixs) |> Map.new()
-        # map marked tiles' indices
-        state = update_in(state.marking[context.seat], &Enum.map(&1, fn {key, val} ->
-          if key == :hand do
-            {key, update_in(val.marked, fn marked -> Enum.map(marked, fn {tile, seat, ix} -> {tile, seat, Map.get(ix_map, ix, ix)} end) end)}
-          else {key, val} end
-        end))
-        # map playable_indices
-        playable_indices = state.players[context.seat].cache.playable_indices
-        playable_indices = if is_list(playable_indices) do Enum.map(playable_indices, &Map.get(ix_map, &1, &1)) else playable_indices end
-        # set hand and playable_indices
-        update_player(state, context.seat, fn player -> %{ player | hand: hand, cache: %{ player.cache | playable_indices: playable_indices } } end)
-      "reveal_tile"           ->
-        tile_name = Enum.at(opts, 0, :"1m")
-        if Utils.is_tile(tile_name) do
-          state = Map.update!(state, :revealed_tiles, fn tiles -> tiles ++ [tile_name] end)
+          |> Map.update!(:pot, & &1 + amount)
+          |> update_player(context.seat, &%{ &1 | score: &1.score - amount })
+        "add_honba"             -> Map.update!(state, :honba, & &1 + interpret_amount(state, context, Enum.at(opts, 0, 1)))
+        "reveal_hand"           -> update_player(state, context.seat, fn player -> %{ player | hand_revealed: true } end)
+        "reveal_other_hands"    -> update_all_players(state, fn seat, player -> %{ player | hand_revealed: player.hand_revealed or seat != context.seat } end)
+        "discard_draw"          ->
+          if not state.log_seeking_mode and not state.log_loading_mode do
+            GenServer.cast(self(), {:play_tile, context.seat, length(state.players[context.seat].hand)})
+          end
           state
-        else
-          tile_name = interpret_amount(state, context, tile_name)
-          state = Map.update!(state, :revealed_tiles, fn tiles -> tiles ++ [tile_name] end)
-          state = Log.log(state, context.seat, :dora_flip, %{dora_count: length(state.revealed_tiles), dora_indicator: from_named_tile(state, context, tile_name)})
+        "press_button"          ->
+          if not state.log_seeking_mode and not state.log_loading_mode do
+            GenServer.cast(self(), {:press_button, context.seat, Enum.at(opts, 0, "skip")})
+          end
           state
-        end
-      "add_score"             ->
-        amount = interpret_amount(state, context, Enum.at(opts, 0, 0))
-        recipients = Conditions.from_seats_spec(state, context, Enum.at(opts, 1, "self"))
-        for recipient <- recipients, reduce: state do
-          state -> update_player(state, recipient, fn player -> %{ player | score: player.score + amount } end)
-        end
-      "subtract_score"             ->
-        amount = -interpret_amount(state, context, Enum.at(opts, 0, 0))
-        recipients = Conditions.from_seats_spec(state, context, Enum.at(opts, 1, "self"))
-        for recipient <- recipients, reduce: state do
-          state -> update_player(state, recipient, fn player -> %{ player | score: player.score + amount } end)
-        end
-      "put_down_riichi_stick" ->
-        riichi_discard_indices = Map.new(state.players, fn {seat, player} -> {seat, length(player.discards)} end)
-        riichi_value = Rules.get(state.rules_ref, "score_calculation", %{}) |> Map.get("riichi_value", 0)
-        state
-        |> Map.update!(:pot, & &1 + Enum.at(opts, 0, 1) * riichi_value)
-        |> update_player(context.seat, &%{ &1 | riichi_stick: true, cache: %{ &1.cache | riichi_discard_indices: riichi_discard_indices } })
-      "bet_points"            ->
-        amount = interpret_amount(state, context, opts)
-        state
-        |> Map.update!(:pot, & &1 + amount)
-        |> update_player(context.seat, &%{ &1 | score: &1.score - amount })
-      "add_honba"             -> Map.update!(state, :honba, & &1 + interpret_amount(state, context, Enum.at(opts, 0, 1)))
-      "reveal_hand"           -> update_player(state, context.seat, fn player -> %{ player | hand_revealed: true } end)
-      "reveal_other_hands"    -> update_all_players(state, fn seat, player -> %{ player | hand_revealed: player.hand_revealed or seat != context.seat } end)
-      "discard_draw"          ->
-        if not state.log_seeking_mode and not state.log_loading_mode do
-          GenServer.cast(self(), {:play_tile, context.seat, length(state.players[context.seat].hand)})
-        end
-        state
-      "press_button"          ->
-        if not state.log_seeking_mode and not state.log_loading_mode do
-          GenServer.cast(self(), {:press_button, context.seat, Enum.at(opts, 0, "skip")})
-        end
-        state
-      "press_first_call_button" ->
-        if not state.log_seeking_mode and not state.log_loading_mode do
-          GenServer.cast(self(), {:press_first_call_button, context.seat, Enum.at(opts, 0, "skip")})
-        end
-        state
-      "when"                  -> if Conditions.check_cnf_condition(state, Enum.at(opts, 0, []), context) do run_actions(state, Enum.at(opts, 1, []), context) else state end
-      "unless"                -> if Conditions.check_cnf_condition(state, Enum.at(opts, 0, []), context) do state else run_actions(state, Enum.at(opts, 1, []), context) end
-      "ite"                   -> if Conditions.check_cnf_condition(state, Enum.at(opts, 0, []), context) do run_actions(state, Enum.at(opts, 1, []), context) else run_actions(state, Enum.at(opts, 2, []), context) end
-      "as"                    ->
-        for dir <- Conditions.from_seats_spec(state, context, Enum.at(opts, 0, [])), reduce: state do
-          state -> run_actions(state, Enum.at(opts, 1, []), Map.merge(context, %{seat: dir, prev_seat: context.seat}))
-        end
-      "when_anyone"           ->
-        for dir <- state.available_seats, Conditions.check_cnf_condition(state, Enum.at(opts, 0, []), %{context | seat: dir}), reduce: state do
-          state -> run_actions(state, Enum.at(opts, 1, []), %{context | seat: dir})
-        end
-      "when_everyone"           ->
-        if Enum.all?(state.available_seats, fn dir -> Conditions.check_cnf_condition(state, Enum.at(opts, 0, []), %{context | seat: dir}) end) do
-          run_actions(state, Enum.at(opts, 1, []), context)
-        else state end
-      "when_others"           ->
-        if Enum.all?(state.available_seats -- [context.seat], fn dir -> Conditions.check_cnf_condition(state, Enum.at(opts, 0, []), %{context | seat: dir}) end) do
-          run_actions(state, Enum.at(opts, 1, []), context)
-        else state end
-      "mark" -> state # no-op
-      "move_tiles" -> move_tiles(state, context.seat, Enum.at(opts, 0, %{}), Enum.at(opts, 1, nil), :move)
-      "swap_tiles" -> move_tiles(state, context.seat, Enum.at(opts, 0, %{}), Enum.at(opts, 1, nil), :swap)
-      "copy_tiles" -> move_tiles(state, context.seat, Enum.at(opts, 0, %{}), Enum.at(opts, 1, nil), :copy)
-      "delete_tiles" -> move_tiles(state, context.seat, Enum.at(opts, 0, %{}), "delete", :delete)
-      "swap_marked_calls" ->
-        marked_call = Marking.get_marked(marked_objects, :calls)
-        {call1, call_seat1, call_index1} = Enum.at(marked_call, 0)
-        {call2, call_seat2, call_index2} = Enum.at(marked_call, 1)
+        "press_first_call_button" ->
+          if not state.log_seeking_mode and not state.log_loading_mode do
+            GenServer.cast(self(), {:press_first_call_button, context.seat, Enum.at(opts, 0, "skip")})
+          end
+          state
+        "mark" -> state # no-op
+        "move_tiles" -> move_tiles(state, context.seat, Enum.at(opts, 0, %{}), Enum.at(opts, 1, nil), :move)
+        "swap_tiles" -> move_tiles(state, context.seat, Enum.at(opts, 0, %{}), Enum.at(opts, 1, nil), :swap)
+        "copy_tiles" -> move_tiles(state, context.seat, Enum.at(opts, 0, %{}), Enum.at(opts, 1, nil), :copy)
+        "delete_tiles" -> move_tiles(state, context.seat, Enum.at(opts, 0, %{}), "delete", :delete)
+        "swap_marked_calls" ->
+          marked_call = Marking.get_marked(marked_objects, :calls)
+          {call1, call_seat1, call_index1} = Enum.at(marked_call, 0)
+          {call2, call_seat2, call_index2} = Enum.at(marked_call, 1)
 
-        state = update_player(state, call_seat1, &%{ &1 | calls: List.replace_at(&1.calls, call_index1, call2) })
-        state = update_player(state, call_seat2, &%{ &1 | calls: List.replace_at(&1.calls, call_index2, call1) })
+          state = update_player(state, call_seat1, &%{ &1 | calls: List.replace_at(&1.calls, call_index1, call2) })
+          state = update_player(state, call_seat2, &%{ &1 | calls: List.replace_at(&1.calls, call_index2, call1) })
 
-        state = Marking.mark_done(state, context.seat)
-        state
-      "swap_out_joker" ->
-        {tile, hand_seat, hand_index} = Marking.get_marked(marked_objects, :hand) |> Enum.at(0)
-        {call, call_seat, call_index} = Marking.get_marked(marked_objects, :calls) |> Enum.at(0)
-        joker_tiles = Enum.at(opts, 0, []) |> Enum.map(&Utils.to_tile(&1))
-        destination = Enum.at(opts, 1, "draw")
-        call_tiles = Utils.call_to_tiles(call)
+          state = Marking.mark_done(state, context.seat)
+          state
+        "swap_out_joker" ->
+          {tile, hand_seat, hand_index} = Marking.get_marked(marked_objects, :hand) |> Enum.at(0)
+          {call, call_seat, call_index} = Marking.get_marked(marked_objects, :calls) |> Enum.at(0)
+          joker_tiles = Enum.at(opts, 0, []) |> Enum.map(&Utils.to_tile(&1))
+          destination = Enum.at(opts, 1, "draw")
+          call_tiles = Utils.call_to_tiles(call)
 
-        call_joker_index = Enum.find_index(call_tiles, &Utils.has_matching_tile?([&1], joker_tiles))
-        actual_joker = Enum.at(call_tiles, call_joker_index)
-        new_call = with {call_type, call_content} <- call do
-          {call_type, List.update_at(call_content, call_joker_index, &Utils.replace_base_tile(&1, tile))}
-        end
-        push_message(state, player_prefix(state, context.seat) ++ [
-          %{text: "swapped out a joker from the call %{call}", vars: %{call: {:hand, call_tiles}}}
-        ])
+          call_joker_index = Enum.find_index(call_tiles, &Utils.has_matching_tile?([&1], joker_tiles))
+          actual_joker = Enum.at(call_tiles, call_joker_index)
+          new_call = with {call_type, call_content} <- call do
+            {call_type, List.update_at(call_content, call_joker_index, &Utils.replace_base_tile(&1, tile))}
+          end
+          push_message(state, player_prefix(state, context.seat) ++ [
+            %{text: "swapped out a joker from the call %{call}", vars: %{call: {:hand, call_tiles}}}
+          ])
 
-        # replace call with new call
-        state = update_player(state, call_seat, &%{ &1 | calls: List.replace_at(&1.calls, call_index, new_call) })
-        # allow for the tile-to-be-swapped-in to be robbed as a call
-        state = update_action(state, hand_seat, :call, %{from: hand_seat, called_tile: tile, other_tiles: [], call_name: "swap_out_joker"})
+          # replace call with new call
+          state = update_player(state, call_seat, &%{ &1 | calls: List.replace_at(&1.calls, call_index, new_call) })
+          # allow for the tile-to-be-swapped-in to be robbed as a call
+          state = update_action(state, hand_seat, :call, %{from: hand_seat, called_tile: tile, other_tiles: [], call_name: "swap_out_joker"})
 
-        state = case destination do
-          "draw" ->
-            # replace hand tile with joker (joker should end up as the drawn tile)
+          state = case destination do
+            "draw" ->
+              # replace hand tile with joker (joker should end up as the drawn tile)
+              hand_length = length(state.players[hand_seat].hand)
+              if hand_index < hand_length do
+                update_player(state, hand_seat, &%{ &1 | hand: List.delete_at(&1.hand, hand_index) ++ &1.draw, draw: [actual_joker] })
+              else
+                update_player(state, hand_seat, &%{ &1 | hand: &1.hand ++ List.delete_at(&1.draw, hand_index - hand_length), draw: [actual_joker] })
+              end
+            "call" ->
+              # declare as a call named "joker"
+              new_call = {"joker", [actual_joker]}
+              hand_length = length(state.players[hand_seat].hand)
+              if hand_index < hand_length do
+                update_player(state, hand_seat, &%{ &1 | hand: List.delete_at(&1.hand, hand_index) ++ &1.draw, draw: [], calls: [new_call | &1.calls] })
+              else
+                update_player(state, hand_seat, &%{ &1 | hand: &1.hand ++ List.delete_at(&1.draw, hand_index - hand_length), draw: [], calls: [new_call | &1.calls] })
+              end
+          end
+
+          state = Marking.mark_done(state, context.seat)
+          state
+        "extend_live_wall_with_marked" ->
+          marked_hand = Marking.get_marked(marked_objects, :hand)
+          marked_scry = Marking.get_marked(marked_objects, :scry)
+          {state, hand_tiles} = if not Enum.empty?(marked_hand) do
+            {_, hand_seat, _} = Enum.at(marked_hand, 0)
+            {hand_tiles, hand_indices} = marked_hand
+            |> Enum.map(fn {tile, _seat, ix} -> {tile, ix} end)
+            |> Enum.unzip()
+            # remove specified tiles from hand (rightmost first)
             hand_length = length(state.players[hand_seat].hand)
-            if hand_index < hand_length do
-              update_player(state, hand_seat, &%{ &1 | hand: List.delete_at(&1.hand, hand_index) ++ &1.draw, draw: [actual_joker] })
-            else
-              update_player(state, hand_seat, &%{ &1 | hand: &1.hand ++ List.delete_at(&1.draw, hand_index - hand_length), draw: [actual_joker] })
+            state = for ix <- Enum.sort_by(hand_indices, fn ix -> -ix end), reduce: state do
+              state ->
+                if ix < hand_length do
+                  update_player(state, hand_seat, &%{ &1 | hand: List.delete_at(&1.hand, ix) })
+                else
+                  update_player(state, hand_seat, &%{ &1 | draw: List.delete_at(&1.draw, ix - hand_length) })
+                end
             end
-          "call" ->
-            # declare as a call named "joker"
-            new_call = {"joker", [actual_joker]}
-            hand_length = length(state.players[hand_seat].hand)
-            if hand_index < hand_length do
-              update_player(state, hand_seat, &%{ &1 | hand: List.delete_at(&1.hand, hand_index) ++ &1.draw, draw: [], calls: [new_call | &1.calls] })
-            else
-              update_player(state, hand_seat, &%{ &1 | hand: &1.hand ++ List.delete_at(&1.draw, hand_index - hand_length), draw: [], calls: [new_call | &1.calls] })
-            end
-        end
+            {state, hand_tiles}
+          else {state, []} end
 
-        state = Marking.mark_done(state, context.seat)
-        state
-      "extend_live_wall_with_marked" ->
-        marked_hand = Marking.get_marked(marked_objects, :hand)
-        marked_scry = Marking.get_marked(marked_objects, :scry)
-        {state, hand_tiles} = if not Enum.empty?(marked_hand) do
+          {state, scry_tiles} = if not Enum.empty?(marked_scry) do
+            {scry_tiles, scry_indices} = marked_scry
+            |> Enum.map(fn {tile, _seat, ix} -> {tile, ix} end)
+            |> Enum.unzip()
+            state = for _i <- scry_indices, reduce: state do
+              state -> update_in(state.wall, &List.delete_at(&1, state.wall_index))
+            end
+            state = update_all_players(state, fn _seat, player -> %{ player | num_scryed_tiles: 0 } end)
+            {state, scry_tiles}
+          else {state, []} end
+
+          # place them at the end of the live wall
+          state = for tile <- (hand_tiles ++ scry_tiles), reduce: state do
+            state -> Map.update!(state, :wall, fn wall -> List.insert_at(wall, -1, tile) end)
+          end
+          state = Marking.mark_done(state, context.seat)
+          state
+        "extend_dead_wall_with_marked" ->
+          marked_hand = Marking.get_marked(marked_objects, :hand)
           {_, hand_seat, _} = Enum.at(marked_hand, 0)
           {hand_tiles, hand_indices} = marked_hand
           |> Enum.map(fn {tile, _seat, ix} -> {tile, ix} end)
@@ -1509,386 +1559,356 @@ defmodule RiichiAdvanced.GameState.Actions do
                 update_player(state, hand_seat, &%{ &1 | draw: List.delete_at(&1.draw, ix - hand_length) })
               end
           end
-          {state, hand_tiles}
-        else {state, []} end
-
-        {state, scry_tiles} = if not Enum.empty?(marked_scry) do
-          {scry_tiles, scry_indices} = marked_scry
-          |> Enum.map(fn {tile, _seat, ix} -> {tile, ix} end)
-          |> Enum.unzip()
-          state = for _i <- scry_indices, reduce: state do
-            state -> update_in(state.wall, &List.delete_at(&1, state.wall_index))
+          # place them at the end of the dead wall
+          state = for tile <- hand_tiles, reduce: state do
+            state -> Map.update!(state, :dead_wall, fn dead_wall -> List.insert_at(dead_wall, -1, tile) end)
           end
-          state = update_all_players(state, fn _seat, player -> %{ player | num_scryed_tiles: 0 } end)
-          {state, scry_tiles}
-        else {state, []} end
-
-        # place them at the end of the live wall
-        state = for tile <- (hand_tiles ++ scry_tiles), reduce: state do
-          state -> Map.update!(state, :wall, fn wall -> List.insert_at(wall, -1, tile) end)
-        end
-        state = Marking.mark_done(state, context.seat)
-        state
-      "extend_dead_wall_with_marked" ->
-        marked_hand = Marking.get_marked(marked_objects, :hand)
-        {_, hand_seat, _} = Enum.at(marked_hand, 0)
-        {hand_tiles, hand_indices} = marked_hand
-        |> Enum.map(fn {tile, _seat, ix} -> {tile, ix} end)
-        |> Enum.unzip()
-        # remove specified tiles from hand (rightmost first)
-        hand_length = length(state.players[hand_seat].hand)
-        state = for ix <- Enum.sort_by(hand_indices, fn ix -> -ix end), reduce: state do
-          state ->
-            if ix < hand_length do
-              update_player(state, hand_seat, &%{ &1 | hand: List.delete_at(&1.hand, ix) })
-            else
-              update_player(state, hand_seat, &%{ &1 | draw: List.delete_at(&1.draw, ix - hand_length) })
-            end
-        end
-        # place them at the end of the dead wall
-        state = for tile <- hand_tiles, reduce: state do
-          state -> Map.update!(state, :dead_wall, fn dead_wall -> List.insert_at(dead_wall, -1, tile) end)
-        end
-        state = Marking.mark_done(state, context.seat)
-        state
-      "pon_marked_discard" ->
-        {discard_tile, discard_seat, discard_index} = Marking.get_marked(marked_objects, :discard) |> Enum.at(0)
-
-        # replace pond tile with blank
-        state = update_player(state, discard_seat, &%{ &1 | pond: List.replace_at(&1.pond, discard_index, :"2x") })
-
-        # remove tiles from hand
-        call_choice = [:"7z", :"7z"]
-        state = update_player(state, context.seat, &%{ &1 | hand: &1.hand -- call_choice })
-
-        # make call
-        call_style = %{kamicha: ["call_sideways", 0, 1], toimen: [0, "call_sideways", 1], shimocha: [0, 1, "call_sideways"]}
-        style = call_style[Utils.get_relative_seat(context.seat, discard_seat)]
-        call = style_call(style, call_choice, discard_tile)
-        call = {"pon", call}
-        state = update_player(state, context.seat, &%{ &1 | calls: &1.calls ++ [call] })
-        state = update_action(state, context.seat, :call, %{from: discard_seat, called_tile: discard_tile, other_tiles: call_choice, call_name: "pon"})
-        state = trigger_event(state, "after_call", %{seat: context.seat, callee: discard_seat, caller: context.seat, call: call})
-        state = Marking.mark_done(state, context.seat)
-        state
-      "flip_marked_discard_facedown" ->
-        {_discard_tile, discard_seat, discard_index} = Marking.get_marked(marked_objects, :discard) |> Enum.at(0)
-        state = update_in(state.players[discard_seat].pond, &List.update_at(&1, discard_index, fn tile -> Utils.add_attr(tile, ["_facedown"]) end))
-        state = Marking.mark_done(state, context.seat)
-        state
-      "clear_marking"         -> Marking.mark_done(state, context.seat)
-      "set_tile_alias"        ->
-        from_tiles = Enum.at(opts, 0, []) |> Enum.flat_map(&translate_tile_alias(state, context, &1))
-        to_tiles = Enum.at(opts, 1, []) |> Enum.map(&Utils.to_tile/1)
-        set_tile_alias(state, context.seat, from_tiles, to_tiles)
-      "set_tile_alias_all"        ->
-        from_tiles = Enum.at(opts, 0, []) |> Enum.flat_map(&translate_tile_alias(state, context, &1))
-        to_tiles = Enum.at(opts, 1, []) |> Enum.map(&Utils.to_tile/1)
-        for seat <- state.available_seats, reduce: state do
-          state -> set_tile_alias(state, seat, from_tiles, to_tiles)
-        end
-      "save_tile_behavior"     ->
-        label = Enum.at(opts, 0, "default")
-        for seat <- state.available_seats, reduce: state do
-          state -> put_in(state.players[seat].cache.saved_tile_behavior[label], state.players[seat].tile_behavior)
-        end
-      "load_tile_behavior"     ->
-        label = Enum.at(opts, 0, "default")
-        for seat <- state.available_seats, reduce: state do
-          state -> put_in(state.players[seat].tile_behavior, Map.get(state.players[seat].cache.saved_tile_behavior, label, state.players[seat].tile_behavior))
-        end
-      "clear_tile_aliases"    -> update_player(state, context.seat, &%{ &1 | tile_behavior: %{ &1.tile_behavior | aliases: %{}, mappings: %{}, uuid: Ecto.UUID.generate() } })
-      "set_tile_ordering"     ->
-        tiles = Enum.map(Enum.at(opts, 0, []), &Utils.to_tile/1)
-        ordering = Enum.zip(Enum.drop(tiles, -1), Enum.drop(tiles, 1)) |> Map.new()
-        ordering_r = Enum.zip(Enum.drop(tiles, 1), Enum.drop(tiles, -1)) |> Map.new()
-        update_player(state, context.seat, &%{ &1 | tile_behavior: %{ &1.tile_behavior |
-          ordering: Map.merge(&1.tile_behavior.ordering, ordering),
-          ordering_r: Map.merge(&1.tile_behavior.ordering_r, ordering_r),
-          uuid: Ecto.UUID.generate()
-        } })
-      "set_tile_ordering_all" ->
-        tiles = Enum.map(Enum.at(opts, 0, []), &Utils.to_tile/1)
-        ordering = Enum.zip(Enum.drop(tiles, -1), Enum.drop(tiles, 1)) |> Map.new()
-        ordering_r = Enum.zip(Enum.drop(tiles, 1), Enum.drop(tiles, -1)) |> Map.new()
-        update_all_players(state, fn _seat, player -> %{ player | tile_behavior: %{ player.tile_behavior |
-          ordering: Map.merge(player.tile_behavior.ordering, ordering),
-          ordering_r: Map.merge(player.tile_behavior.ordering_r, ordering_r),
-          uuid: Ecto.UUID.generate()
-        } } end)
-      "add_attr" ->
-        targets = Enum.at(opts, 0, [])
-        attrs = List.wrap(Enum.at(opts, 1, []))
-        tile_specs = Enum.at(opts, 2, [])
-        tile_behavior = state.players[context.seat].tile_behavior
-        for target <- targets, reduce: state do
-          state ->
-            case target do
-              "hand" -> update_in(state.players[context.seat].hand, &add_attr_matching(&1, attrs, tile_specs, tile_behavior))
-              "draw" -> update_in(state.players[context.seat].draw, &add_attr_matching(&1, attrs, tile_specs, tile_behavior))
-              "calls" -> update_in(state.players[context.seat].calls, &Enum.map(&1, fn {name, call} -> {name, add_attr_matching(call, attrs, tile_specs, tile_behavior)} end))
-              "aside" -> update_in(state.players[context.seat].aside, &add_attr_matching(&1, attrs, tile_specs, tile_behavior))
-              "last_discard" -> update_winning_tile(state, context.seat, :discard, fn tile -> add_attr_matching([tile], attrs, tile_specs, tile_behavior) |> Enum.at(0) end)
-              "last_called_tile" -> update_winning_tile(state, context.seat, :call, fn tile -> add_attr_matching([tile], attrs, tile_specs, tile_behavior) |> Enum.at(0) end)
-              "winning_tile" -> update_winning_tile(state, context.seat, Map.get(context, :win_source, nil), fn tile -> add_attr_matching([tile], attrs, tile_specs, tile_behavior) |> Enum.at(0) end)
-              _ when is_integer(target) -> update_in(state.dead_wall, fn dead_wall -> List.update_at(dead_wall, target, &add_attr_matching([&1], attrs, tile_specs, tile_behavior) |> Enum.at(0)) end)
-              _      ->
-                IO.inspect("Unhandled add_attr target #{inspect(target)}")
-                state
-            end
-        end
-      "add_attr_first_tile"   ->
-        tile = Enum.at(opts, 0, :"1x") |> Utils.to_tile()
-        attrs = List.wrap(Enum.at(opts, 1, []))
-        ix = Enum.find_index(state.players[context.seat].hand ++ state.players[context.seat].draw, fn t -> Utils.same_tile(t, tile) end)
-        hand_len = length(state.players[context.seat].hand)
-        cond do
-          ix == nil -> state
-          ix < hand_len ->
-            update_player(state, context.seat, &%{ &1 | hand: List.update_at(&1.hand, ix, fn t -> Utils.add_attr(t, attrs) end) })
-          true ->
-            update_player(state, context.seat, &%{ &1 | draw: List.update_at(&1.draw, ix - hand_len, fn t -> Utils.add_attr(t, attrs) end) })
-        end
-      "add_attr_tagged"   ->
-        tag = Enum.at(opts, 0, "missing_tag")
-        tagged = Map.get(state.tags, tag, MapSet.new())
-        attrs = List.wrap(Enum.at(opts, 1, []))
-        # update every zone i guess
-        state = update_in(state.wall, &add_attr_tagged(&1, attrs, tagged))
-        state = update_in(state.dead_wall, &add_attr_tagged(&1, attrs, tagged))
-        state = for seat <- state.available_seats, reduce: state do
-          state ->
-            state = update_in(state.players[seat].hand, &add_attr_tagged(&1, attrs, tagged))
-            state = update_in(state.players[seat].draw, &add_attr_tagged(&1, attrs, tagged))
-            state = update_in(state.players[seat].aside, &add_attr_tagged(&1, attrs, tagged))
-            state = update_in(state.players[seat].pond, &add_attr_tagged(&1, attrs, tagged))
-            state = update_in(state.players[seat].discards, &add_attr_tagged(&1, attrs, tagged))
-            state = update_in(state.players[seat].calls, &Enum.map(&1, fn {name, call} -> {name, add_attr_tagged(call, attrs, tagged)} end))
-            state
-        end
-        state
-      "remove_attr_tagged"   ->
-        tag = Enum.at(opts, 0, "missing_tag")
-        tagged = Map.get(state.tags, tag, MapSet.new())
-        attrs = List.wrap(Enum.at(opts, 1, []))
-        # update every zone i guess
-        state = update_in(state.wall, &remove_attr_tagged(&1, attrs, tagged))
-        state = update_in(state.dead_wall, &remove_attr_tagged(&1, attrs, tagged))
-        state = for seat <- state.available_seats, reduce: state do
-          state ->
-            state = update_in(state.players[seat].hand, &remove_attr_tagged(&1, attrs, tagged))
-            state = update_in(state.players[seat].draw, &remove_attr_tagged(&1, attrs, tagged))
-            state = update_in(state.players[seat].aside, &remove_attr_tagged(&1, attrs, tagged))
-            state = update_in(state.players[seat].pond, &remove_attr_tagged(&1, attrs, tagged))
-            state = update_in(state.players[seat].discards, &remove_attr_tagged(&1, attrs, tagged))
-            state = update_in(state.players[seat].calls, &Enum.map(&1, fn {name, call} -> {name, remove_attr_tagged(call, attrs, tagged)} end))
-            state
-        end
-        state
-      "remove_attr_hand"      ->
-        # TODO generalize to remove_attr
-        state = update_player(state, context.seat, &%{ &1 | hand: Utils.remove_attr(&1.hand, opts) })
-        state
-      "remove_attr_all"       ->
-        # TODO generalize to remove_attr
-        state = update_player(state, context.seat, &%{ &1 | hand: Utils.remove_attr(&1.hand, opts), draw: Utils.remove_attr(&1.draw, opts), aside: Utils.remove_attr(&1.aside, opts) })
-        state
-      "tag_tiles"             ->
-        tag = Enum.at(opts, 0, "missing_tag")
-        tiles = List.wrap(Enum.at(opts, 1, [:"1x"]))
-        |> Enum.flat_map(&case &1 do
-          "last_discard" -> if get_last_discard_action(state) != nil do [get_last_discard_action(state).tile] else [] end
-          "all" -> state.players[context.seat].tile_behavior.all_tiles
-          _ -> [from_named_tile(state, context, &1)]
-        end)
-        state = Map.update!(state, :tags, fn tags -> Map.update(tags, tag, MapSet.new(tiles), &MapSet.union(&1, MapSet.new(tiles))) end)
-        state
-      "tag_drawn_tile"        ->
-        tag = Enum.at(opts, 0, "missing_tag")
-        tile = Enum.at(state.players[context.seat].draw, 0, :"1x")
-        state = Map.update!(state, :tags, fn tags -> Map.update(tags, tag, MapSet.new([tile]), &MapSet.put(&1, tile)) end)
-        state
-      "tag_last_discard"      ->
-        tag = Enum.at(opts, 0, "missing_tag")
-        tile = get_last_discard_action(state).tile
-        state = put_in(state.tags[tag], tile)
-        state = Map.update!(state, :tags, fn tags -> Map.update(tags, tag, MapSet.new([tile]), &MapSet.put(&1, tile)) end)
-        state
-      "tag_dora"              ->
-        tag = Enum.at(opts, 0, "missing_tag")
-        named_tile = Enum.at(opts, 1, -1)
-        dora_indicator = from_named_tile(state, context, named_tile)
-        dora_indicators_map = Rules.get(state.rules_ref, "dora_indicators", %{})
-        doras = Map.get(dora_indicators_map, Utils.tile_to_string(dora_indicator), [])
-        |> Enum.map(&Utils.to_tile/1)
-        state = Map.update!(state, :tags, fn tags -> Map.update(tags, tag, MapSet.new(doras), &MapSet.union(&1, MapSet.new(doras))) end)
-        state
-      "untag_tiles"           ->
-        tag = Enum.at(opts, 0, "missing_tag")
-        tiles = List.wrap(Enum.at(opts, 1, [:"1x"]))
-        |> Enum.flat_map(&case &1 do
-          "last_discard" -> if get_last_discard_action(state) != nil do [get_last_discard_action(state).tile] else [] end
-          "all" -> state.players[context.seat].tile_behavior.all_tiles
-          _ -> [from_named_tile(state, context, &1)]
-        end)
-        state = Map.update!(state, :tags, fn tags -> Map.update(tags, tag, MapSet.new(tiles), &MapSet.difference(&1, MapSet.new(tiles))) end)
-        state
-      "untag"                 ->
-        tag = Enum.at(opts, 0, "missing_tag")
-        {_, state} = pop_in(state.tags[tag])
-        state
-      "convert_last_discard"  ->
-        last_discarder = get_last_discard_action(state).seat
-        tile = Utils.to_tile(Enum.at(opts, 0, "0m"))
-        state = update_in(state.players[last_discarder].pond, fn pond -> List.replace_at(pond, -1, tile) end)
-        state = update_action(state, last_discarder, :discard, %{tile: tile})
-        state = Buttons.recalculate_buttons(state) # TODO remove
-        state
-      "flip_last_discard_faceup" ->
-        last_discarder = get_last_discard_action(state).seat
-        tile = Utils.remove_attr(Enum.at(state.players[last_discarder].pond, -1), ["_facedown"])
-        state = update_in(state.players[last_discarder].pond, fn pond -> List.replace_at(pond, -1, tile) end)
-        state = update_action(state, last_discarder, :discard, %{tile: tile})
-        state
-      "flip_all_calls_faceup"  ->
-        update_all_players(state, fn _seat, player ->
-          faceup_calls = Enum.map(player.calls, fn {call_name, call} -> {call_name, Utils.remove_attr(call, ["_facedown", "_concealed"])} end)
-          %{ player | calls: faceup_calls }
-        end)
-      "flip_first_visible_discard_facedown" -> 
-        ix = Enum.find_index(state.players[context.seat].pond, fn tile -> not Utils.has_attr?(tile, ["_facedown"]) and not Utils.has_attr?(tile, ["_concealed"]) and not Utils.same_tile(tile, :"1x") and not Utils.same_tile(tile, :"2x") end)
-        if ix != nil do
-          update_in(state.players[context.seat].pond, &List.update_at(&1, ix, fn tile -> Utils.add_attr(tile, ["_facedown"]) end))
-        else state end
-      "flip_aside_facedown" -> update_in(state.players[context.seat].aside, &Enum.map(&1, fn tile -> Utils.add_attr(tile, ["_facedown"]) end))
-      # "shuffle_aside"      -> update_in(state.players[context.seat].aside, &Enum.shuffle/1)
-      "draw_from_aside"    ->
-        state = case state.players[context.seat].aside do
-          [] -> state
-          [tile | aside] -> update_player(state, context.seat, &%{ &1 | draw: &1.draw ++ [Utils.add_attr(tile, ["_draw"])], aside: aside })
-        end
-        state
-      "charleston_left" -> do_charleston(state, :kamicha, context.seat, marked_objects)
-      "charleston_across" -> do_charleston(state, :toimen, context.seat, marked_objects)
-      "charleston_right" -> do_charleston(state, :shimocha, context.seat, marked_objects)
-      "shift_tile_to_dead_wall" -> 
-        amount = interpret_amount(state, context, Enum.at(opts, 0, 1))
-        {wall, tiles} = Enum.split(state.wall, -amount)
-        state
-        |> Map.put(:wall, wall)
-        |> Map.put(:dead_wall, tiles ++ state.dead_wall)
-      "resume_deferred_actions" -> resume_deferred_actions(state)
-      "cancel_deferred_actions" -> update_all_players(state, fn _seat, player -> %{ player | deferred_actions: [], deferred_context: %{} } end)
-      "recalculate_buttons" -> Buttons.recalculate_buttons(state, Enum.at(opts, 0, 0))
-      "recalculate_playables" -> 
-        GenServer.cast(self(), :calculate_playable_indices)
-        state
-      "draw_last_discard" ->
-        last_discard_action = get_last_discard_action(state)
-        if last_discard_action != nil do
-          state = update_player(state, context.seat, &%{ &1 | draw: &1.draw ++ [Utils.add_attr(last_discard_action.tile, ["_draw"])] })
-          state = update_in(state.players[last_discard_action.seat].pond, &Enum.drop(&1, -1))
+          state = Marking.mark_done(state, context.seat)
           state
-        else state end
-      "check_discard_passed" ->
-        last_action = get_last_action(state)
-        if last_action != nil and last_action.action == :discard do
-          trigger_event(state, "after_discard_passed", %{seat: context.seat})
-        else state end
-      "scry"            -> update_player(state, context.seat, &%{ &1 | num_scryed_tiles: Enum.at(opts, 0, 1) })
-      "scry_all"        ->
-        num = Enum.at(opts, 0, 1)
-        state = update_all_players(state, fn _seat, player -> %{ player | num_scryed_tiles: num } end)
-        push_message(state, player_prefix(state, context.seat) ++ [
-          %{text: "revealed tiles %{tiles}", vars: %{tiles: {:hand, get_scryed_tiles(state, context.seat)}}}
-        ])
-        state
-      "clear_scry"      -> update_all_players(state, fn _seat, player -> %{ player | num_scryed_tiles: 0 } end)
-      "choose_yaku"     -> declare_yaku(state, context.seat)
-      "disable_saki_card" ->
-        targets = Conditions.from_seats_spec(state, context, Enum.at(opts, 0, "self"))
-        state = Saki.disable_saki_card(state, targets)
-        state
-      "enable_saki_card" ->
-        targets = Conditions.from_seats_spec(state, context, Enum.at(opts, 0, "self"))
-        state = Saki.enable_saki_card(state, targets)
-        state
-      "save_revealed_tiles" -> put_in(state.saved_revealed_tiles, state.revealed_tiles)
-      "load_revealed_tiles" -> put_in(state.revealed_tiles, state.saved_revealed_tiles)
-      # deprecated
-      "merge_draw"          -> update_player(state, context.seat, &%{ &1 | hand: &1.hand ++ Utils.remove_attr(&1.draw, ["_draw"]), draw: [] })
-      "pass_draws"      ->
-        to = Conditions.from_seat_spec(state, context, Enum.at(opts, 0, "self"))
-        {to_pass, remaining} = Enum.split(state.players[context.seat].draw, Enum.at(opts, 1, 1))
-        state = update_player(state, context.seat, &%{ &1 | draw: remaining })
-        state = update_player(state, to, &%{ &1 | draw: &1.draw ++ to_pass })
-        state
-      "saki_start"      -> Saki.saki_start(state)
-      "register_last_discard" -> register_discard(state, context.seat, Enum.at(state.players[context.seat].pond, -1))
-      "enable_auto_button" ->
-        auto_button_name = Enum.at(opts, 0, "")
-        GenServer.cast(self(), {:toggle_auto_button, context.seat, auto_button_name, true})
-        state
-      "modify_winner"   ->
-        {key, type} = case Enum.at(opts, 0, nil) do
-          "score"              -> {:displayed_score, :number}
-          "points"             -> {:points, :number}
-          "points2"            -> {:points2, :number}
-          "score_name"         -> {:score_name, :string}
-          "point_name"         -> {:point_name, :string}
-          "point2_name"        -> {:point2_name, :string}
-          "shuugi_name"        -> {:shuugi_name, :string}
-          "minipoint_name"     -> {:minipoint_name, :string}
-          "minipoints"         -> {:minipoints, :number}
-          "score_denomination" -> {:score_name, :string}
-          "winning_tile_text"  -> {:winning_tile_text, :string}
-          key ->
-            IO.puts("Unhandled modify_winner key #{inspect(key)}")
-            {nil, nil}
-        end
-        method = case Enum.at(opts, 2) do
-          "add"      -> if type == :number do :add else nil end
-          "subtract" -> if type == :number do :subtract else nil end
-          "multiply" -> if type == :number do :multiply else nil end
-          "divide"   -> if type == :number do :divide else nil end
-          "min"      -> if type == :number do :min else nil end
-          "max"      -> if type == :number do :max else nil end
-          "prepend"  -> if type == :string do :prepend else nil end
-          "append"   -> if type == :string do :append else nil end
-          _          -> :set
-        end
-        if key != nil and method != nil and context.seat in state.winner_seats do
-          value = case type do
-            :number -> interpret_amount(state, context, Enum.at(opts, 1, 0))
-            :string -> Enum.at(opts, 1, "")
+        "pon_marked_discard" ->
+          {discard_tile, discard_seat, discard_index} = Marking.get_marked(marked_objects, :discard) |> Enum.at(0)
+
+          # replace pond tile with blank
+          state = update_player(state, discard_seat, &%{ &1 | pond: List.replace_at(&1.pond, discard_index, :"2x") })
+
+          # remove tiles from hand
+          call_choice = [:"7z", :"7z"]
+          state = update_player(state, context.seat, &%{ &1 | hand: &1.hand -- call_choice })
+
+          # make call
+          call_style = %{kamicha: ["call_sideways", 0, 1], toimen: [0, "call_sideways", 1], shimocha: [0, 1, "call_sideways"]}
+          style = call_style[Utils.get_relative_seat(context.seat, discard_seat)]
+          call = style_call(style, call_choice, discard_tile)
+          call = {"pon", call}
+          state = update_player(state, context.seat, &%{ &1 | calls: &1.calls ++ [call] })
+          state = update_action(state, context.seat, :call, %{from: discard_seat, called_tile: discard_tile, other_tiles: call_choice, call_name: "pon"})
+          state = trigger_event(state, "after_call", %{seat: context.seat, callee: discard_seat, caller: context.seat, call: call})
+          state = Marking.mark_done(state, context.seat)
+          state
+        "flip_marked_discard_facedown" ->
+          {_discard_tile, discard_seat, discard_index} = Marking.get_marked(marked_objects, :discard) |> Enum.at(0)
+          state = update_in(state.players[discard_seat].pond, &List.update_at(&1, discard_index, fn tile -> Utils.add_attr(tile, ["_facedown"]) end))
+          state = Marking.mark_done(state, context.seat)
+          state
+        "clear_marking"         -> Marking.mark_done(state, context.seat)
+        "set_tile_alias"        ->
+          from_tiles = Enum.at(opts, 0, []) |> Enum.flat_map(&translate_tile_alias(state, context, &1))
+          to_tiles = Enum.at(opts, 1, []) |> Enum.map(&Utils.to_tile/1)
+          set_tile_alias(state, context.seat, from_tiles, to_tiles)
+        "set_tile_alias_all"        ->
+          from_tiles = Enum.at(opts, 0, []) |> Enum.flat_map(&translate_tile_alias(state, context, &1))
+          to_tiles = Enum.at(opts, 1, []) |> Enum.map(&Utils.to_tile/1)
+          for seat <- state.available_seats, reduce: state do
+            state -> set_tile_alias(state, seat, from_tiles, to_tiles)
           end
-          update_in(state.winners[context.seat][key], fn prev_value -> case method do
-            :set      -> value
-            :add      -> prev_value + value
-            :subtract -> prev_value - value
-            :multiply -> prev_value * value
-            :divide   -> Integer.floor_div(prev_value, value)
-            :min      -> min(prev_value, value)
-            :max      -> max(prev_value, value)
-            :prepend  -> value <> prev_value
-            :append   -> prev_value <> value
-          end end)
-        else state end
-      "modify_payout"   ->
-        if not Enum.empty?(state.delta_scores) do
-          seats = Conditions.from_seats_spec(state, context, Enum.at(opts, 0, "self"))
+        "save_tile_behavior"     ->
+          label = Enum.at(opts, 0, "default")
+          for seat <- state.available_seats, reduce: state do
+            state -> put_in(state.players[seat].cache.saved_tile_behavior[label], state.players[seat].tile_behavior)
+          end
+        "load_tile_behavior"     ->
+          label = Enum.at(opts, 0, "default")
+          for seat <- state.available_seats, reduce: state do
+            state -> put_in(state.players[seat].tile_behavior, Map.get(state.players[seat].cache.saved_tile_behavior, label, state.players[seat].tile_behavior))
+          end
+        "clear_tile_aliases"    -> update_player(state, context.seat, &%{ &1 | tile_behavior: %{ &1.tile_behavior | aliases: %{}, mappings: %{}, uuid: Ecto.UUID.generate() } })
+        "set_tile_ordering"     ->
+          tiles = Enum.map(Enum.at(opts, 0, []), &Utils.to_tile/1)
+          ordering = Enum.zip(Enum.drop(tiles, -1), Enum.drop(tiles, 1)) |> Map.new()
+          ordering_r = Enum.zip(Enum.drop(tiles, 1), Enum.drop(tiles, -1)) |> Map.new()
+          update_player(state, context.seat, &%{ &1 | tile_behavior: %{ &1.tile_behavior |
+            ordering: Map.merge(&1.tile_behavior.ordering, ordering),
+            ordering_r: Map.merge(&1.tile_behavior.ordering_r, ordering_r),
+            uuid: Ecto.UUID.generate()
+          } })
+        "set_tile_ordering_all" ->
+          tiles = Enum.map(Enum.at(opts, 0, []), &Utils.to_tile/1)
+          ordering = Enum.zip(Enum.drop(tiles, -1), Enum.drop(tiles, 1)) |> Map.new()
+          ordering_r = Enum.zip(Enum.drop(tiles, 1), Enum.drop(tiles, -1)) |> Map.new()
+          update_all_players(state, fn _seat, player -> %{ player | tile_behavior: %{ player.tile_behavior |
+            ordering: Map.merge(player.tile_behavior.ordering, ordering),
+            ordering_r: Map.merge(player.tile_behavior.ordering_r, ordering_r),
+            uuid: Ecto.UUID.generate()
+          } } end)
+        "add_attr" ->
+          targets = Enum.at(opts, 0, [])
+          attrs = List.wrap(Enum.at(opts, 1, []))
+          tile_specs = Enum.at(opts, 2, [])
+          tile_behavior = state.players[context.seat].tile_behavior
+          for target <- targets, reduce: state do
+            state ->
+              case target do
+                "hand" -> update_in(state.players[context.seat].hand, &add_attr_matching(&1, attrs, tile_specs, tile_behavior))
+                "draw" -> update_in(state.players[context.seat].draw, &add_attr_matching(&1, attrs, tile_specs, tile_behavior))
+                "calls" -> update_in(state.players[context.seat].calls, &Enum.map(&1, fn {name, call} -> {name, add_attr_matching(call, attrs, tile_specs, tile_behavior)} end))
+                "aside" -> update_in(state.players[context.seat].aside, &add_attr_matching(&1, attrs, tile_specs, tile_behavior))
+                "last_discard" -> update_winning_tile(state, context.seat, :discard, fn tile -> add_attr_matching([tile], attrs, tile_specs, tile_behavior) |> Enum.at(0) end)
+                "last_called_tile" -> update_winning_tile(state, context.seat, :call, fn tile -> add_attr_matching([tile], attrs, tile_specs, tile_behavior) |> Enum.at(0) end)
+                "winning_tile" -> update_winning_tile(state, context.seat, Map.get(context, :win_source, nil), fn tile -> add_attr_matching([tile], attrs, tile_specs, tile_behavior) |> Enum.at(0) end)
+                _ when is_integer(target) -> update_in(state.dead_wall, fn dead_wall -> List.update_at(dead_wall, target, &add_attr_matching([&1], attrs, tile_specs, tile_behavior) |> Enum.at(0)) end)
+                _      ->
+                  IO.inspect("Unhandled add_attr target #{inspect(target)}")
+                  state
+              end
+          end
+        "remove_attr" ->
+          targets = Enum.at(opts, 0, [])
+          attrs = List.wrap(Enum.at(opts, 1, []))
+          tile_specs = Enum.at(opts, 2, [])
+          tile_behavior = state.players[context.seat].tile_behavior
+          for target <- targets, reduce: state do
+            state ->
+              case target do
+                "hand" -> update_in(state.players[context.seat].hand, &remove_attr_matching(&1, attrs, tile_specs, tile_behavior))
+                "draw" -> update_in(state.players[context.seat].draw, &remove_attr_matching(&1, attrs, tile_specs, tile_behavior))
+                "calls" -> update_in(state.players[context.seat].calls, &Enum.map(&1, fn {name, call} -> {name, remove_attr_matching(call, attrs, tile_specs, tile_behavior)} end))
+                "aside" -> update_in(state.players[context.seat].aside, &remove_attr_matching(&1, attrs, tile_specs, tile_behavior))
+                "last_discard" -> update_winning_tile(state, context.seat, :discard, fn tile -> remove_attr_matching([tile], attrs, tile_specs, tile_behavior) |> Enum.at(0) end)
+                "last_called_tile" -> update_winning_tile(state, context.seat, :call, fn tile -> remove_attr_matching([tile], attrs, tile_specs, tile_behavior) |> Enum.at(0) end)
+                "winning_tile" -> update_winning_tile(state, context.seat, Map.get(context, :win_source, nil), fn tile -> remove_attr_matching([tile], attrs, tile_specs, tile_behavior) |> Enum.at(0) end)
+                _ when is_integer(target) -> update_in(state.dead_wall, fn dead_wall -> List.update_at(dead_wall, target, &remove_attr_matching([&1], attrs, tile_specs, tile_behavior) |> Enum.at(0)) end)
+                _      ->
+                  IO.inspect("Unhandled remove_attr target #{inspect(target)}")
+                  state
+              end
+          end
+        "add_attr_first_tile"   ->
+          tile = Enum.at(opts, 0, :"1x") |> Utils.to_tile()
+          attrs = List.wrap(Enum.at(opts, 1, []))
+          ix = Enum.find_index(state.players[context.seat].hand ++ state.players[context.seat].draw, fn t -> Utils.same_tile(t, tile) end)
+          hand_len = length(state.players[context.seat].hand)
+          cond do
+            ix == nil -> state
+            ix < hand_len ->
+              update_player(state, context.seat, &%{ &1 | hand: List.update_at(&1.hand, ix, fn t -> Utils.add_attr(t, attrs) end) })
+            true ->
+              update_player(state, context.seat, &%{ &1 | draw: List.update_at(&1.draw, ix - hand_len, fn t -> Utils.add_attr(t, attrs) end) })
+          end
+        "add_attr_tagged"   ->
+          tag = Enum.at(opts, 0, "missing_tag")
+          tagged = Map.get(state.tags, tag, MapSet.new())
+          attrs = List.wrap(Enum.at(opts, 1, []))
+          # update every zone i guess
+          state = update_in(state.wall, &add_attr_tagged(&1, attrs, tagged))
+          state = update_in(state.dead_wall, &add_attr_tagged(&1, attrs, tagged))
+          state = for seat <- state.available_seats, reduce: state do
+            state ->
+              state = update_in(state.players[seat].hand, &add_attr_tagged(&1, attrs, tagged))
+              state = update_in(state.players[seat].draw, &add_attr_tagged(&1, attrs, tagged))
+              state = update_in(state.players[seat].aside, &add_attr_tagged(&1, attrs, tagged))
+              state = update_in(state.players[seat].pond, &add_attr_tagged(&1, attrs, tagged))
+              state = update_in(state.players[seat].discards, &add_attr_tagged(&1, attrs, tagged))
+              state = update_in(state.players[seat].calls, &Enum.map(&1, fn {name, call} -> {name, add_attr_tagged(call, attrs, tagged)} end))
+              state
+          end
+          state
+        "remove_attr_tagged"   ->
+          tag = Enum.at(opts, 0, "missing_tag")
+          tagged = Map.get(state.tags, tag, MapSet.new())
+          attrs = List.wrap(Enum.at(opts, 1, []))
+          # update every zone i guess
+          state = update_in(state.wall, &remove_attr_tagged(&1, attrs, tagged))
+          state = update_in(state.dead_wall, &remove_attr_tagged(&1, attrs, tagged))
+          state = for seat <- state.available_seats, reduce: state do
+            state ->
+              state = update_in(state.players[seat].hand, &remove_attr_tagged(&1, attrs, tagged))
+              state = update_in(state.players[seat].draw, &remove_attr_tagged(&1, attrs, tagged))
+              state = update_in(state.players[seat].aside, &remove_attr_tagged(&1, attrs, tagged))
+              state = update_in(state.players[seat].pond, &remove_attr_tagged(&1, attrs, tagged))
+              state = update_in(state.players[seat].discards, &remove_attr_tagged(&1, attrs, tagged))
+              state = update_in(state.players[seat].calls, &Enum.map(&1, fn {name, call} -> {name, remove_attr_tagged(call, attrs, tagged)} end))
+              state
+          end
+          state
+        "remove_attr_hand"      ->
+          # TODO generalize to remove_attr
+          state = update_player(state, context.seat, &%{ &1 | hand: Utils.remove_attr(&1.hand, opts) })
+          state
+        "remove_attr_all"       ->
+          # TODO generalize to remove_attr
+          state = update_player(state, context.seat, &%{ &1 | hand: Utils.remove_attr(&1.hand, opts), draw: Utils.remove_attr(&1.draw, opts), aside: Utils.remove_attr(&1.aside, opts) })
+          state
+        "tag_tiles"             ->
+          tag = Enum.at(opts, 0, "missing_tag")
+          tiles = List.wrap(Enum.at(opts, 1, [:"1x"]))
+          |> Enum.flat_map(&case &1 do
+            "last_discard" -> if get_last_discard_action(state) != nil do [get_last_discard_action(state).tile] else [] end
+            "all" -> state.players[context.seat].tile_behavior.all_tiles
+            _ -> [from_named_tile(state, context, &1)]
+          end)
+          state = Map.update!(state, :tags, fn tags -> Map.update(tags, tag, MapSet.new(tiles), &MapSet.union(&1, MapSet.new(tiles))) end)
+          state
+        "tag_drawn_tile"        ->
+          tag = Enum.at(opts, 0, "missing_tag")
+          tile = Enum.at(state.players[context.seat].draw, 0, :"1x")
+          state = Map.update!(state, :tags, fn tags -> Map.update(tags, tag, MapSet.new([tile]), &MapSet.put(&1, tile)) end)
+          state
+        "tag_last_discard"      ->
+          tag = Enum.at(opts, 0, "missing_tag")
+          tile = get_last_discard_action(state).tile
+          state = put_in(state.tags[tag], tile)
+          state = Map.update!(state, :tags, fn tags -> Map.update(tags, tag, MapSet.new([tile]), &MapSet.put(&1, tile)) end)
+          state
+        "tag_dora"              ->
+          tag = Enum.at(opts, 0, "missing_tag")
+          named_tile = Enum.at(opts, 1, -1)
+          dora_indicator = from_named_tile(state, context, named_tile)
+          dora_indicators_map = Rules.get(state.rules_ref, "dora_indicators", %{})
+          doras = Map.get(dora_indicators_map, Utils.tile_to_string(dora_indicator), [])
+          |> Enum.map(&Utils.to_tile/1)
+          state = Map.update!(state, :tags, fn tags -> Map.update(tags, tag, MapSet.new(doras), &MapSet.union(&1, MapSet.new(doras))) end)
+          state
+        "untag_tiles"           ->
+          tag = Enum.at(opts, 0, "missing_tag")
+          tiles = List.wrap(Enum.at(opts, 1, [:"1x"]))
+          |> Enum.flat_map(&case &1 do
+            "last_discard" -> if get_last_discard_action(state) != nil do [get_last_discard_action(state).tile] else [] end
+            "all" -> state.players[context.seat].tile_behavior.all_tiles
+            _ -> [from_named_tile(state, context, &1)]
+          end)
+          state = Map.update!(state, :tags, fn tags -> Map.update(tags, tag, MapSet.new(tiles), &MapSet.difference(&1, MapSet.new(tiles))) end)
+          state
+        "untag"                 ->
+          tag = Enum.at(opts, 0, "missing_tag")
+          {_, state} = pop_in(state.tags[tag])
+          state
+        "convert_last_discard"  ->
+          last_discarder = get_last_discard_action(state).seat
+          tile = Utils.to_tile(Enum.at(opts, 0, "0m"))
+          state = update_in(state.players[last_discarder].pond, fn pond -> List.replace_at(pond, -1, tile) end)
+          state = update_action(state, last_discarder, :discard, %{tile: tile})
+          state = Buttons.recalculate_buttons(state) # TODO remove
+          state
+        "flip_last_discard_faceup" ->
+          last_discarder = get_last_discard_action(state).seat
+          tile = Utils.remove_attr(Enum.at(state.players[last_discarder].pond, -1), ["_facedown"])
+          state = update_in(state.players[last_discarder].pond, fn pond -> List.replace_at(pond, -1, tile) end)
+          state = update_action(state, last_discarder, :discard, %{tile: tile})
+          state
+        "flip_all_calls_faceup"  ->
+          update_all_players(state, fn _seat, player ->
+            faceup_calls = Enum.map(player.calls, fn {call_name, call} -> {call_name, Utils.remove_attr(call, ["_facedown", "_concealed"])} end)
+            %{ player | calls: faceup_calls }
+          end)
+        "flip_first_visible_discard_facedown" -> 
+          ix = Enum.find_index(state.players[context.seat].pond, fn tile -> not Utils.has_attr?(tile, ["_facedown"]) and not Utils.has_attr?(tile, ["_concealed"]) and not Utils.same_tile(tile, :"1x") and not Utils.same_tile(tile, :"2x") end)
+          if ix != nil do
+            update_in(state.players[context.seat].pond, &List.update_at(&1, ix, fn tile -> Utils.add_attr(tile, ["_facedown"]) end))
+          else state end
+        "flip_aside_facedown" -> update_in(state.players[context.seat].aside, &Enum.map(&1, fn tile -> Utils.add_attr(tile, ["_facedown"]) end))
+        # "shuffle_aside"      -> update_in(state.players[context.seat].aside, &Enum.shuffle/1)
+        "draw_from_aside"    ->
+          state = case state.players[context.seat].aside do
+            [] -> state
+            [tile | aside] -> update_player(state, context.seat, &%{ &1 | draw: &1.draw ++ [Utils.add_attr(tile, ["_draw"])], aside: aside })
+          end
+          state
+        "charleston_left" -> do_charleston(state, :kamicha, context.seat, marked_objects)
+        "charleston_across" -> do_charleston(state, :toimen, context.seat, marked_objects)
+        "charleston_right" -> do_charleston(state, :shimocha, context.seat, marked_objects)
+        "shift_tile_to_dead_wall" -> 
+          amount = interpret_amount(state, context, Enum.at(opts, 0, 1))
+          {wall, tiles} = Enum.split(state.wall, -amount)
+          state
+          |> Map.put(:wall, wall)
+          |> Map.put(:dead_wall, tiles ++ state.dead_wall)
+        "resume_deferred_actions" -> resume_deferred_actions(state)
+        "cancel_deferred_actions" -> update_all_players(state, fn _seat, player -> %{ player | deferred_context_actions: [] } end)
+        "recalculate_buttons" -> Buttons.recalculate_buttons(state, Enum.at(opts, 0, 0))
+        "recalculate_playables" -> 
+          GenServer.cast(self(), :calculate_playable_indices)
+          state
+        "draw_last_discard" ->
+          last_discard_action = get_last_discard_action(state)
+          if last_discard_action != nil do
+            state = update_player(state, context.seat, &%{ &1 | draw: &1.draw ++ [Utils.add_attr(last_discard_action.tile, ["_draw"])] })
+            state = update_in(state.players[last_discard_action.seat].pond, &Enum.drop(&1, -1))
+            state
+          else state end
+        "check_discard_passed" ->
+          last_action = get_last_action(state)
+          if last_action != nil and last_action.action == :discard do
+            trigger_event(state, "after_discard_passed", %{seat: context.seat})
+          else state end
+        "scry"            -> update_player(state, context.seat, &%{ &1 | num_scryed_tiles: Enum.at(opts, 0, 1) })
+        "scry_all"        ->
+          num = Enum.at(opts, 0, 1)
+          state = update_all_players(state, fn _seat, player -> %{ player | num_scryed_tiles: num } end)
+          push_message(state, player_prefix(state, context.seat) ++ [
+            %{text: "revealed tiles %{tiles}", vars: %{tiles: {:hand, get_scryed_tiles(state, context.seat)}}}
+          ])
+          state
+        "scry_named_tiles"        ->
+          named_tiles = List.wrap(Enum.at(opts, 0, []))
+          state = update_in(state.named_scryed_tiles, fn ts -> Enum.uniq(ts ++ named_tiles) end)
+          tiles = Enum.map(named_tiles, &from_named_tile(state, context, &1))
+          push_message(state, player_prefix(state, context.seat) ++ [
+            %{text: "revealed tiles %{tiles}", vars: %{tiles: {:hand, tiles}}}
+          ])
+          state
+        "clear_scry"      ->
+          state = update_all_players(state, fn _seat, player -> %{ player | num_scryed_tiles: 0 } end)
+          state = put_in(state.named_scryed_tiles, [])
+          state
+        "choose_yaku"     -> declare_yaku(state, context.seat)
+        "disable_saki_card" ->
+          targets = Conditions.from_seats_spec(state, context, Enum.at(opts, 0, "self"))
+          state = Saki.disable_saki_card(state, targets)
+          state
+        "enable_saki_card" ->
+          targets = Conditions.from_seats_spec(state, context, Enum.at(opts, 0, "self"))
+          state = Saki.enable_saki_card(state, targets)
+          state
+        "save_revealed_tiles" -> put_in(state.saved_revealed_tiles, state.revealed_tiles)
+        "load_revealed_tiles" -> put_in(state.revealed_tiles, state.saved_revealed_tiles)
+        # deprecated
+        "merge_draw"          -> update_player(state, context.seat, &%{ &1 | hand: &1.hand ++ Utils.remove_attr(&1.draw, ["_draw"]), draw: [] })
+        "pass_draws"      ->
+          to = Conditions.from_seat_spec(state, context, Enum.at(opts, 0, "self"))
+          {to_pass, remaining} = Enum.split(state.players[context.seat].draw, Enum.at(opts, 1, 1))
+          state = update_player(state, context.seat, &%{ &1 | draw: remaining })
+          state = update_player(state, to, &%{ &1 | draw: &1.draw ++ to_pass })
+          state
+        "saki_start"      -> Saki.saki_start(state)
+        "register_last_discard" -> register_discard(state, context.seat, Enum.at(state.players[context.seat].pond, -1))
+        "enable_auto_button" ->
+          auto_button_name = Enum.at(opts, 0, "")
+          GenServer.cast(self(), {:toggle_auto_button, context.seat, auto_button_name, true})
+          state
+        "modify_winner"   ->
+          {key, type} = case Enum.at(opts, 0, nil) do
+            "score"              -> {:displayed_score, :number}
+            "points"             -> {:points, :number}
+            "points2"            -> {:points2, :number}
+            "score_name"         -> {:score_name, :string}
+            "point_name"         -> {:point_name, :string}
+            "point2_name"        -> {:point2_name, :string}
+            "shuugi_name"        -> {:shuugi_name, :string}
+            "minipoint_name"     -> {:minipoint_name, :string}
+            "minipoints"         -> {:minipoints, :number}
+            "score_denomination" -> {:score_name, :string}
+            "winning_tile_text"  -> {:winning_tile_text, :string}
+            key ->
+              IO.puts("Unhandled modify_winner key #{inspect(key)}")
+              {nil, nil}
+          end
           method = case Enum.at(opts, 2) do
-            "set"      -> :set
-            "subtract" -> :subtract
-            "multiply" -> :multiply
-            "divide"   -> :divide
-            "min"      -> :min
-            "max"      -> :max
-            _          -> :add
+            "add"      -> if type == :number do :add else nil end
+            "subtract" -> if type == :number do :subtract else nil end
+            "multiply" -> if type == :number do :multiply else nil end
+            "divide"   -> if type == :number do :divide else nil end
+            "min"      -> if type == :number do :min else nil end
+            "max"      -> if type == :number do :max else nil end
+            "prepend"  -> if type == :string do :prepend else nil end
+            "append"   -> if type == :string do :append else nil end
+            _          -> :set
           end
-          value = interpret_amount(state, context, Enum.at(opts, 1, 0))
-          for seat <- seats, reduce: state do
-            state -> update_in(state.delta_scores, &Map.update!(&1, seat, fn prev_value -> case method do
+          if key != nil and method != nil and context.seat in state.winner_seats do
+            value = case type do
+              :number -> interpret_amount(state, context, Enum.at(opts, 1, 0))
+              :string -> Enum.at(opts, 1, "")
+            end
+            update_in(state.winners[context.seat][key], fn prev_value -> case method do
               :set      -> value
               :add      -> prev_value + value
               :subtract -> prev_value - value
@@ -1896,108 +1916,153 @@ defmodule RiichiAdvanced.GameState.Actions do
               :divide   -> Integer.floor_div(prev_value, value)
               :min      -> min(prev_value, value)
               :max      -> max(prev_value, value)
-            end |> Utils.try_integer() end))
-          end
-        else
-          IO.puts("WARNING: called modify_payout before payouts were calculated")
-          state
-        end
-      "set_scoring_header" -> Map.put(state, :delta_scores_reason, interpolate_string(state, context, Enum.at(opts, 0, ""), Enum.at(opts, 1, %{})))
-      "make_responsible_for" ->
-        # make_responsible_for(seats, yaku)
-        # = make `seats` responsible for `yaku` if we win
-
-        # player.responsibilities: an entry %{seat => [yaku]} means if this player wins, `seat` must pay for `yaku`
-        # alternatively %{seat => ["all"]} means paying for all yaku,
-        # and %{seat1 => ["all"], seat2 => ["Daisangen"]} means seat1 pays for all except Daisangen
-        seats_spec = Enum.at(opts, 0, "self")
-        yaku = List.wrap(Enum.at(opts, 1, "all"))
-        for seat <- Conditions.from_seats_spec(state, context, seats_spec), reduce: state do
-          state -> update_in(state.players[seat].responsibilities, &Map.update(&1, context.seat, yaku, fn yakus -> Enum.uniq(yakus ++ yaku) end))
-        end
-      "clear_responsibilities" ->
-        # can pass "all" or an array like ["Daisangen"] or ["all"] to remove that entry only
-        towards = Conditions.from_seats_spec(state, context, Enum.at(opts, 0, "all"))
-        yakus_to_remove = Enum.at(opts, 1, "all")
-        update_in(state.players[context.seat].responsibilities, fn resps ->
-          for {seat, yakus} <- resps, into: %{} do
-            if seat in towards do
-              {seat, if yakus_to_remove == "all" do [] else yakus -- yakus_to_remove end}
-            else
-              {seat, yakus}
+              :prepend  -> value <> prev_value
+              :append   -> prev_value <> value
+            end end)
+          else state end
+        "modify_payout"   ->
+          if not Enum.empty?(state.delta_scores) do
+            seats = Conditions.from_seats_spec(state, context, Enum.at(opts, 0, "self"))
+            method = case Enum.at(opts, 2) do
+              "set"      -> :set
+              "subtract" -> :subtract
+              "multiply" -> :multiply
+              "divide"   -> :divide
+              "min"      -> :min
+              "max"      -> :max
+              _          -> :add
             end
+            value = interpret_amount(state, context, Enum.at(opts, 1, 0))
+            for seat <- seats, reduce: state do
+              state -> update_in(state.delta_scores, &Map.update!(&1, seat, fn prev_value -> case method do
+                :set      -> value
+                :add      -> prev_value + value
+                :subtract -> prev_value - value
+                :multiply -> prev_value * value
+                :divide   -> Integer.floor_div(prev_value, value)
+                :min      -> min(prev_value, value)
+                :max      -> max(prev_value, value)
+              end |> Utils.try_integer() end))
+            end
+          else
+            IO.puts("WARNING: called modify_payout before payouts were calculated")
+            state
           end
-        end)
-      # WIP new scoring methods
-      "declare_payment" ->
-        # # e.g. declare_payment("Nondealer Ron", 1300, "add", "nondealers", "winner", 0)
-        # id = Enum.at(opts, 0, "Payment")
-        # amount = Enum.at(opts, 1, 0)
-        # from = Enum.at(opts, 3, "pot")
-        # to = Enum.at(opts, 4, "pot")
-        # priority = Enum.at(opts, 5, 0)
-        # case Enum.at(opts, 2, 0) do
-        #   "add"      -> update_in(state.payments, &[{id, priority, from, to, :add, amount} | &1])
-        #   "subtract" -> update_in(state.payments, &[{id, priority, from, to, :subtract, amount} | &1])
-        #   "multiply" -> update_in(state.payments, &[{id, priority, from, to, :multiply, amount} | &1])
-        #   "divide"   -> update_in(state.payments, &[{id, priority, from, to, :divide, amount} | &1])
-        #   "pow"      -> update_in(state.payments, &[{id, priority, from, to, :pow, amount} | &1])
-        #   "floor"    -> update_in(state.payments, &[{id, priority, from, to, :floor, amount} | &1])
-        #   "ceil"     -> update_in(state.payments, &[{id, priority, from, to, :ceil, amount} | &1])
-        #   "set"      -> update_in(state.payments, &[{id, priority, from, to, :set, amount} | &1])
-        #   _          -> 
-        #     IO.puts("WARNING: add_payment action got unknown method #{Enum.at(opts, 2, 0)}")
-        #     state
-        # end
-        state
-      "change_dealership" -> Map.put(state, :next_dealer, Conditions.from_seat_spec(state, context, Enum.at(opts, 0, "shimocha")))
-      "end_game" -> Map.put(state, :round_result, :end_game)
-      "replace_winning_hand_jokers" ->
-        winner = state.winners[Enum.at(state.winner_seats, state.winner_index)]
-        if winner != nil do
-          state = put_in(state.winners[Enum.at(state.winner_seats, state.winner_index)].arranged_hand, winner.assigned_hand)
-          state = put_in(state.winners[Enum.at(state.winner_seats, state.winner_index)].winning_tile, Enum.at(winner.assigned_winning_hand, -1))
+        "set_scoring_header" -> Map.put(state, :delta_scores_reason, interpolate_string(state, context, Enum.at(opts, 0, ""), Enum.at(opts, 1, %{})))
+        "make_responsible_for" ->
+          # make_responsible_for(seats, yaku)
+          # = make `seats` responsible for `yaku` if we win
+
+          # player.responsibilities: an entry %{seat => [yaku]} means if this player wins, `seat` must pay for `yaku`
+          # alternatively %{seat => ["all"]} means paying for all yaku,
+          # and %{seat1 => ["all"], seat2 => ["Daisangen"]} means seat1 pays for all except Daisangen
+          seats_spec = Enum.at(opts, 0, "self")
+          yaku = List.wrap(Enum.at(opts, 1, "all"))
+          for seat <- Conditions.from_seats_spec(state, context, seats_spec), reduce: state do
+            state -> update_in(state.players[seat].responsibilities, &Map.update(&1, context.seat, yaku, fn yakus -> Enum.uniq(yakus ++ yaku) end))
+          end
+        "clear_responsibilities" ->
+          # can pass "all" or an array like ["Daisangen"] or ["all"] to remove that entry only
+          towards = Conditions.from_seats_spec(state, context, Enum.at(opts, 0, "all"))
+          yakus_to_remove = Enum.at(opts, 1, "all")
+          update_in(state.players[context.seat].responsibilities, fn resps ->
+            for {seat, yakus} <- resps, into: %{} do
+              if seat in towards do
+                {seat, if yakus_to_remove == "all" do [] else yakus -- yakus_to_remove end}
+              else
+                {seat, yakus}
+              end
+            end
+          end)
+        # WIP new scoring methods
+        "declare_payment" ->
+          # # e.g. declare_payment("Nondealer Ron", 1300, "add", "nondealers", "winner", 0)
+          # id = Enum.at(opts, 0, "Payment")
+          # amount = Enum.at(opts, 1, 0)
+          # from = Enum.at(opts, 3, "pot")
+          # to = Enum.at(opts, 4, "pot")
+          # priority = Enum.at(opts, 5, 0)
+          # case Enum.at(opts, 2, 0) do
+          #   "add"      -> update_in(state.payments, &[{id, priority, from, to, :add, amount} | &1])
+          #   "subtract" -> update_in(state.payments, &[{id, priority, from, to, :subtract, amount} | &1])
+          #   "multiply" -> update_in(state.payments, &[{id, priority, from, to, :multiply, amount} | &1])
+          #   "divide"   -> update_in(state.payments, &[{id, priority, from, to, :divide, amount} | &1])
+          #   "pow"      -> update_in(state.payments, &[{id, priority, from, to, :pow, amount} | &1])
+          #   "floor"    -> update_in(state.payments, &[{id, priority, from, to, :floor, amount} | &1])
+          #   "ceil"     -> update_in(state.payments, &[{id, priority, from, to, :ceil, amount} | &1])
+          #   "set"      -> update_in(state.payments, &[{id, priority, from, to, :set, amount} | &1])
+          #   _          -> 
+          #     IO.puts("WARNING: add_payment action got unknown method #{Enum.at(opts, 2, 0)}")
+          #     state
+          # end
           state
-        else state end
-      _                 ->
-        IO.puts("Unhandled action #{action}")
-        state
+        "change_dealership" -> Map.put(state, :next_dealer, Conditions.from_seat_spec(state, context, Enum.at(opts, 0, "shimocha")))
+        "end_game" -> Map.put(state, :round_result, :end_game)
+        "replace_winning_hand_jokers" ->
+          winner = state.winners[Enum.at(state.winner_seats, state.winner_index)]
+          if winner != nil do
+            state = put_in(state.winners[Enum.at(state.winner_seats, state.winner_index)].arranged_hand, winner.assigned_hand)
+            state = put_in(state.winners[Enum.at(state.winner_seats, state.winner_index)].winning_tile, Enum.at(winner.assigned_winning_hand, -1))
+            state
+          else state end
+        _                 ->
+          IO.puts("Unhandled action #{action}")
+          state
+      end
+      {state, [{context, actions}]}
     end
 
-    case action do
-      "pause" when not state.log_loading_mode ->
-        # schedule an unpause after the given delay
-        state = schedule_actions_before(state, context.seat, actions, context)
-        :timer.apply_after(Enum.at(opts, 0, 1500), GenServer, :cast, [self(), {:unpause, context}])
+    {state, paused} = if action == "pause" and not state.log_loading_mode do
+      # schedule an unpause after the given delay
+      duration = interpret_amount(state, context, Enum.at(opts, 0, 1500))
+      do_pause = duration > 0
+      state = if do_pause do
+        state = Map.put(state, :game_active, false)
+        state = schedule_actions(state, context.seat, context_actions)
+        :timer.apply_after(duration, GenServer, :cast, [self(), {:unpause, context.seat}])
         if Debug.debug_actions() do
           IO.puts("Stopping actions due to pause: #{inspect([[action | opts] | actions])}")
         end
-        {state, []}
-      _ ->
-        # if our action updates state, then we need to recalculate buttons
-        # this is so other players can react to certain actions
-        if not uninterruptible and Map.has_key?(state.interruptible_actions, action) do
-          state = if state.visible_screen != nil do
-            # if viewing a win screen, never display buttons
-            update_all_players(state, fn _seat, player -> %{ player | buttons: [], button_choices: %{}, call_buttons: %{}, choice: nil } end)
-          else
-            Buttons.recalculate_buttons(state, state.interruptible_actions[action])
-          end
-          buttons_after = Enum.map(state.players, fn {seat, player} -> {seat, player.buttons} end)
-          # IO.puts("buttons_before: #{inspect(buttons_before)}")
-          # IO.puts("buttons_after: #{inspect(buttons_after)}")
-          if buttons_before == buttons_after or Buttons.no_buttons_remaining?(state) do
-            _run_actions(state, actions, context)
-          else
-            # if buttons changed, stop evaluating actions here
-            if Debug.debug_actions() do
-              IO.puts("Stopping actions due to buttons: #{inspect(buttons_after)} actions are: #{inspect([[action | opts] | actions])}")
-            end
-            {state, actions}
-          end
+        state
+      else state end
+      {state, do_pause}
+    else {state, false} end
+
+    if paused do
+      state = broadcast_state_change(state, false)
+      state
+    else
+      # if our action updates state, then we need to recalculate buttons
+      # this is so other players can react to certain actions
+      if not uninterruptible and Map.has_key?(state.interruptible_actions, action) do
+        state = if state.visible_screen != nil do
+          # if viewing a win screen, never display buttons
+          update_all_players(state, fn _seat, player -> %{ player | buttons: [], button_choices: %{}, call_buttons: %{}, choice: nil } end)
         else
-          _run_actions(state, actions, context)
+          Buttons.recalculate_buttons(state, state.interruptible_actions[action])
         end
+        buttons_after = Enum.map(state.players, fn {seat, player} -> {seat, player.buttons} end)
+        # IO.puts("buttons_before: #{inspect(buttons_before)}")
+        # IO.puts("buttons_after: #{inspect(buttons_after)}")
+        if buttons_before == buttons_after or Buttons.no_buttons_remaining?(state) do
+          state = for {context, actions} <- context_actions, reduce: state do
+            state -> _run_actions(state, actions, context)
+          end
+          state
+        else
+          # if buttons changed, stop evaluating actions here
+          if Debug.debug_actions() do
+            IO.puts("Stopping actions due to buttons: #{inspect(buttons_after)} actions are: #{inspect([[action | opts] | actions])}")
+          end
+          state = schedule_actions(state, context.seat, context_actions)
+          state
+        end
+      else
+        state =for {context, actions} <- context_actions, reduce: state do
+          state -> _run_actions(state, actions, context)
+        end
+        state
+      end
     end
   end
   defp _run_actions(state, [action | actions], context) do
@@ -2007,7 +2072,7 @@ defmodule RiichiAdvanced.GameState.Actions do
   defp _run_actions(state, not_actions, _context) do
     IO.puts("Can't run actions #{inspect(not_actions)}")
     IO.inspect(Process.info(self(), :current_stacktrace))
-    {state, []}
+    state
   end
 
   def run_actions(state, actions, context) do
@@ -2018,49 +2083,44 @@ defmodule RiichiAdvanced.GameState.Actions do
     end
     # IO.puts("Running actions #{inspect(actions)} in context #{inspect(context)}")
     # IO.inspect(Process.info(self(), :current_stacktrace))
-    {state, deferred_actions} = _run_actions(state, actions, context)
+    state = _run_actions(state, actions, context)
     # defer the remaining actions
-    state = if not Enum.empty?(deferred_actions) do
-      if Debug.debug_actions() do
-        IO.puts("Deferred actions for seat #{context.seat} due to pause or existing buttons / #{inspect(deferred_actions)}")
-      end
-      state = schedule_actions(state, context.seat, deferred_actions, context)
-      state
-    else state end
     state
   end
 
-  def schedule_actions_before(state, seat, actions, context) do
-    update_player(state, seat, &%{ &1 | deferred_actions: actions ++ &1.deferred_actions, deferred_context: Map.merge(&1.deferred_context, context) })
+  # defp schedule_actions_before(state, seat, context_actions) do
+  #   update_player(state, seat, &%{ &1 | deferred_context_actions: context_actions ++ &1.deferred_context_actions })
+  # end
+
+  defp schedule_actions(state, seat, context_actions) do
+    update_player(state, seat, &%{ &1 | deferred_context_actions: &1.deferred_context_actions ++ context_actions })
   end
 
-  def schedule_actions(state, seat, actions, context) do
-    update_player(state, seat, &%{ &1 | deferred_actions: &1.deferred_actions ++ actions, deferred_context: Map.merge(&1.deferred_context, context) })
-  end
-
-  # TODO make context optional and use player.deferred_context instead
-  def run_deferred_actions(state, context) do
-    actions = state.players[context.seat].deferred_actions
-    if state.game_active and not Enum.empty?(actions) do
-      state = update_player(state, context.seat, &%{ &1 | choice: nil, deferred_actions: [], deferred_context: %{} })
-      if Debug.debug_actions() do
-        IO.puts("Running deferred actions #{inspect(actions)} in context #{inspect(context)}")
+  def run_deferred_actions(state, seat) do
+    context_actions = state.players[seat].deferred_context_actions
+    if state.game_active and not Enum.empty?(context_actions) do
+      state = update_player(state, seat, &%{ &1 | choice: nil, deferred_context_actions: [] })
+      for {context, actions} <- context_actions, reduce: state do
+        state ->
+          if Debug.debug_actions() do
+            IO.puts("Running deferred actions #{inspect(actions)} in context #{inspect(context)}")
+          end
+          state = run_actions(state, actions, context)
+          state = Buttons.recalculate_buttons(state)
+          notify_ai(state)
+          state
       end
-      state = run_actions(state, actions, context)
-      state = Buttons.recalculate_buttons(state)
-      notify_ai(state)
-      state
     else state end
   end
 
   def resume_deferred_actions(state) do
     for {seat, player} <- state.players, reduce: state do
       state ->
-        state = if not Enum.empty?(player.deferred_actions) do
+        state = if not Enum.empty?(player.deferred_context_actions) do
           if Debug.debug_actions() do
             IO.puts("Resuming deferred actions for #{seat}")
           end
-          run_deferred_actions(state, player.deferred_context)
+          run_deferred_actions(state, seat)
         else state end
         state = if not Enum.empty?(state.marking[seat]) and Marking.is_done?(state, seat) do
           state = Log.log(state, seat, :mark, %{marking: Log.encode_marking(state.marking[seat])})
@@ -2134,7 +2194,7 @@ defmodule RiichiAdvanced.GameState.Actions do
                 if Debug.debug_actions() do
                   IO.puts("Scheduling mark actions for #{seat}: #{inspect(actions)}")
                 end
-                state = schedule_actions(state, seat, actions, %{seat: seat})
+                state = schedule_actions(state, seat, [{%{seat: seat}, actions}])
                 state
               _ ->
                 # just run all button actions as normal
@@ -2193,7 +2253,7 @@ defmodule RiichiAdvanced.GameState.Actions do
     # for other players who have no buttons and have not made a choice yet, their choice is "skip"
     # also for other players who have made a choice, if their choice is superceded by others then set it to "skip"
     last_action = get_last_action(state)
-    turn_just_acted = last_action != nil and not Enum.empty?(state.players[state.turn].deferred_actions) and last_action.seat == state.turn
+    turn_just_acted = last_action != nil and not Enum.empty?(state.players[state.turn].deferred_context_actions) and last_action.seat == state.turn
     last_discard_action = get_last_discard_action(state)
     turn_just_discarded = last_discard_action != nil and last_discard_action.seat == state.turn
     extra_turn = "extra_turn" in state.players[state.turn].status
@@ -2369,7 +2429,7 @@ defmodule RiichiAdvanced.GameState.Actions do
         end
         # set choice now that a choice has been made
         state = update_player(state, seat, &%{ &1 | choice: %Choice{ name: choice_name, chosen_actions: actions, chosen_called_tile: called_tile, chosen_call_choice: call_choice, chosen_saki_card: saki_card } })
-        state = if choice_name != "skip" do update_player(state, seat, &%{ &1 | deferred_actions: [] }) else state end
+        state = if choice_name != "skip" do update_player(state, seat, &%{ &1 | deferred_context_actions: [] }) else state end
         evaluate_choices(state)
       end
     else state end

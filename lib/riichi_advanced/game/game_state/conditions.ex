@@ -59,9 +59,12 @@ defmodule RiichiAdvanced.GameState.Conditions do
           "tile" -> [{hand ++ [context.tile], calls}]
           "all_ponds" -> [{hand ++ Enum.flat_map(state.players, fn {_seat, player} -> player.pond end), calls}]
           "others_ponds" -> [{hand ++ Enum.flat_map(state.players, fn {seat, player} -> if seat == context.seat do [] else player.pond end end), calls}]
+          "scry" -> [{hand ++ get_scryed_tiles(state, context.seat), calls}]
+          "last_scryed_tile" -> [{hand ++ Enum.take(get_scryed_tiles(state, context.seat), -1), calls}]
 
           # multi-select
           "hand_any" -> Enum.flat_map(state.players[context.seat].hand, fn tile -> [{hand ++ [tile], calls}] end)
+          "call_tiles_any" -> Enum.flat_map(Enum.flat_map(state.players[context.seat].calls, &Utils.call_to_tiles(&1, true)), fn tile -> [{hand ++ [tile], calls}] end)
           "aside_unique" -> [{hand ++ Enum.uniq(state.players[context.seat].aside), calls}]
           "all_last_discards" -> [{hand ++ Enum.flat_map(state.players, fn {_seat, player} -> Enum.take(player.pond, -1) end), calls}]
           "any_discard" -> Enum.map(state.players[context.seat].discards, fn discard -> {hand ++ [discard], calls} end)
@@ -75,7 +78,6 @@ defmodule RiichiAdvanced.GameState.Conditions do
             Enum.flat_map(player.hand ++ player.draw, fn tile ->
               if TileBehavior.is_any_joker?(tile, player.tile_behavior) do [] else [{hand ++ [tile], calls}] end
             end)
-          "scry" -> [{hand ++ get_scryed_tiles(state, context.seat), calls}]
           "self_joker_meld_tiles" ->
             # used in malaysian, this selects one nonjoker tile from own exposed calls containing a joker
             state.players[context.seat].calls

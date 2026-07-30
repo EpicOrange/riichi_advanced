@@ -116,8 +116,10 @@ defmodule RiichiAdvancedWeb.TutorialOverlayComponent do
     |> Enum.reduce(socket, fn {key, value}, acc_socket -> assign(acc_socket, key, value) end)
 
     actions = Map.get(assigns, :actions, [])
-    actions = if actions == :resume do socket.assigns.deferred_actions else actions end
-    socket = run_actions(socket, actions)
+    context_actions = if actions == :resume do socket.assigns.deferred_context_actions else [{%{}, actions}] end
+    socket = for {_context, actions} <- context_actions, reduce: socket do
+      socket -> run_actions(socket, actions)
+    end
 
     {:ok, socket}
   end
