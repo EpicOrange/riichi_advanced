@@ -10,15 +10,27 @@ end
 
 # when drawing shiro pocchi in riichi, it becomes a wildcard
 on after_turn_change do
-  if status("riichi") and match(["draw"], ~m"nojoker, 9z:1") do
-    set_status("shiro_pocchi")
-    set_tile_alias(["9z"], ["any"])
+  if !ippatsu_only do
+    if status("riichi", "ippatsu") and match(["draw"], ~m"nojoker, 9z:1") do
+      set_status("shiro_pocchi")
+      save_tile_behavior("before_shiro_pocchi")
+      set_tile_alias(["9z"], ["any"])
+    end
+  else
+    if status("riichi") and match(["draw"], ~m"nojoker, 9z:1") do
+      set_status("shiro_pocchi")
+      save_tile_behavior("before_shiro_pocchi")
+      set_tile_alias(["9z"], ["any"])
+    end
   end
 end
 
-# remove shiro pocchi status on turn change
+# remove shiro pocchi wildcard status on turn change (to avoid furiten)
 on before_turn_change do
-  unset_status("shiro_pocchi")
+  if status("shiro_pocchi") do
+    unset_status("shiro_pocchi")
+    load_tile_behavior("before_shiro_pocchi")
+  end
 end
 
 apply set_merge, "dora_indicators", %{

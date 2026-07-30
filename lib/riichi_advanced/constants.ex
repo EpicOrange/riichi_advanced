@@ -580,7 +580,7 @@ defmodule RiichiAdvanced.Constants do
         %{name: "min_han", config: %{min: 1, han: "Han"}},
         "cancellable_riichi",
         "yaku/ippatsu",
-        "shiro_pocchi",
+        %{name: "shiro_pocchi", config: %{ippatsu_only: false}},
         %{name: "aka", config: %{man: 4, pin: 4, sou: 4}},
         %{name: "shuugi/aka", config: %{chips: 1, closed_only: false}},
         "shiny_dora",
