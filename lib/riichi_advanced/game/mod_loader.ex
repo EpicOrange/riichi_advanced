@@ -39,114 +39,101 @@ defmodule RiichiAdvanced.ModLoader.ModState do
       end
       %ModState{ruleset_json: ruleset_json, base_ruleset: "custom"}
     else
-      load_ruleset_rec(%ModState{ruleset: ruleset}, ruleset)
+      case RiichiAdvanced.ETSCache.get({ruleset, []}, [], :cache_modloader) do
+        [state] ->
+          # IO.puts("Cache hit: #{inspect({ruleset, []})}")
+          state
+        _       ->
+          # IO.puts("Cache miss: #{inspect({ruleset, []})}")
+          state = load_ruleset_rec(%ModState{ruleset: ruleset}, ruleset)
+          if not Debug.skip_ruleset_caching() do
+            RiichiAdvanced.ETSCache.put({ruleset, []}, state, :cache_modloader)
+          end
+          state
+      end
     end
   end
 
   def load_ruleset_rec(state, ruleset, prev_query \\ ".", visited \\ []) do
-    # first check the cache
-    case RiichiAdvanced.ETSCache.get({state.ruleset, state.mods}, [], :cache_modloader) do
-      [state2] ->
-        base_mods = state2.base_mods ++ state2.mods
-        combined_mods = base_mods ++ state.mods
+    modpacks = Constants.modpacks()
+    if Map.has_key?(modpacks, ruleset) and ruleset not in visited do
+      modpack = modpacks[ruleset]
+      mods = Map.get(modpack, :mods, [])
+      post_mods = Map.get(modpack, :post_mods, [])
+      all_mod_ids = Enum.map(mods ++ post_mods, &ModLoader.get_mod_name/1)
+      all_mod_ids_set = MapSet.new(all_mod_ids)
 
-        # first check for duplicates
-        duplicates = combined_mods -- Enum.uniq(combined_mods)
-        if not Enum.empty?(duplicates) do
-          IO.puts("WARNING: while loading #{state.ruleset}, these mods (for ruleset #{ruleset}) were applied twice: #{inspect(duplicates)}")
-        end
+      # set default mods
+      default_mods = Map.get(modpack, :default_mods, [])
+      |> Enum.reject(&ModLoader.get_mod_name(&1) in all_mod_ids_set)
+      query = ".default_mods += #{Jason.encode!(default_mods)}"
 
-        # combine states, applying all unapplied mods to the ruleset
-        state = %{state2 | ruleset: state.ruleset, base_mods: base_mods, mods: [], globals: Map.merge(state2.globals, state.globals)}
-        |> apply_new_mods(state.mods)
+      # set or remove display name and/or tutorial link
+      query = query <> case Map.get(modpack, :display_name, nil) do
+        nil          -> ""
+        :delete      -> "| del(.tutorial_link)"
+        display_name -> " | .display_name = \"#{display_name}\""
+      end
+      query = query <> case Map.get(modpack, :tutorial_link, nil) do
+        nil           -> ""
+        :delete       -> "| del(.tutorial_link)"
+        tutorial_link -> "| .tutorial_link = \"#{tutorial_link}\""
+      end
 
-        # apply query
-        state = %{state | ruleset_json: JQ.query_string_with_string!(state.ruleset_json, prev_query)}
+      # remove already applied mods
+      query = if not Enum.empty?(all_mod_ids) do
+        query = query <> " | " <> ".default_mods = (.default_mods // []) - #{Jason.encode!(all_mod_ids)}"
+        query = query <> " | " <> ".available_mods = ((.available_mods // []) | map(select(if type == \"object\" then .id else .  end | IN(#{Enum.map_join(all_mod_ids, ", ", &Jason.encode!/1)}) | not)))"
+        query
+      else query end
 
-        # cache and return
-        if not Debug.skip_ruleset_caching() do
-          RiichiAdvanced.ETSCache.put({state.ruleset, []}, state, :cache_modloader)
-        end
-        state
-      _ ->
-        modpacks = Constants.modpacks()
-        if Map.has_key?(modpacks, ruleset) and ruleset not in visited do
-          modpack = modpacks[ruleset]
-          mods = Map.get(modpack, :mods, [])
-          post_mods = Map.get(modpack, :post_mods, [])
-          all_mod_ids = Enum.map(mods ++ post_mods, &ModLoader.get_mod_name/1)
-          all_mod_ids_set = MapSet.new(all_mod_ids)
+      # we're traversing down, so "new" query/mods/globals should be run before "old" ones
+      query = query <> "\n|\n" <> prev_query
+      state = %{state | mods: mods ++ state.mods, post_mods: post_mods ++ state.post_mods, globals: Map.merge(Map.get(modpack, :globals, %{}), state.globals)}
+      # now recurse
+      load_ruleset_rec(state, modpack.ruleset, query, [ruleset | visited])
+    else # else, read the base ruleset filename and apply all mods
 
-          # set default mods
-          default_mods = Map.get(modpack, :default_mods, [])
-          |> Enum.reject(&ModLoader.get_mod_name(&1) in all_mod_ids_set)
-          query = ".default_mods += #{Jason.encode!(default_mods)}"
+      # first check for duplicates
+      mods = Enum.uniq(state.mods)
+      duplicates = state.mods -- mods
+      if not Enum.empty?(duplicates) do
+        IO.puts("WARNING: while loading #{state.ruleset}, these mods (for ruleset #{ruleset}) were included twice: #{inspect(duplicates)}")
+      end
 
-          # set or remove display name and/or tutorial link
-          query = query <> case Map.get(modpack, :display_name, nil) do
-            nil          -> ""
-            :delete      -> "| del(.tutorial_link)"
-            display_name -> " | .display_name = \"#{display_name}\""
-          end
-          query = query <> case Map.get(modpack, :tutorial_link, nil) do
-            nil           -> ""
-            :delete       -> "| del(.tutorial_link)"
-            tutorial_link -> "| .tutorial_link = \"#{tutorial_link}\""
-          end
+      # then actually apply all mods to the ruleset, if any
+      state = %{state | ruleset_json: ModLoader.read_ruleset_json(ruleset), mods: []}
+      state = if not Enum.empty?(mods) do
+        ModState.apply_new_mods(state, mods)
+      else state end
+      ruleset_json = state.ruleset_json
+      |> ModLoader.strip_comments()
+      |> JQ.query_string_with_string!(prev_query)
+      state = %{state | ruleset_json: ruleset_json}
 
-          # remove already applied mods
-          query = if not Enum.empty?(all_mod_ids) do
-            query = query <> " | " <> ".default_mods = (.default_mods // []) - #{Jason.encode!(all_mod_ids)}"
-            query = query <> " | " <> ".available_mods = ((.available_mods // []) | map(select(if type == \"object\" then .id else .  end | IN(#{Enum.map_join(all_mod_ids, ", ", &Jason.encode!/1)}) | not)))"
-            query
-          else query end
+      # return
+      state = %{state | base_ruleset: ruleset, base_mods: state.base_mods ++ state.mods, mods: []}
 
-          # we're traversing down, so "new" query/mods/globals should be run before "old" ones
-          query = query <> "\n|\n" <> prev_query
-          state = %{state | mods: mods ++ state.mods, post_mods: post_mods ++ state.post_mods, globals: Map.merge(Map.get(modpack, :globals, %{}), state.globals)}
-          # now recurse
-          load_ruleset_rec(state, modpack.ruleset, query, [ruleset | visited])
-        else # else, read the base ruleset filename and apply all mods
-
-          # first check for duplicates
-          mods = Enum.uniq(state.mods)
-          duplicates = state.mods -- mods
-          if not Enum.empty?(duplicates) do
-            IO.puts("WARNING: while loading #{state.ruleset}, these mods (for ruleset #{ruleset}) were included twice: #{inspect(duplicates)}")
-          end
-
-          # then actually apply all mods to the ruleset, if any
-          state = %{state | ruleset_json: ModLoader.read_ruleset_json(ruleset)}
-          state = if not Enum.empty?(mods) do
-            ModState.apply_new_mods(state, mods)
-          else state end
-          ruleset_json = state.ruleset_json
-          |> ModLoader.strip_comments()
-          |> JQ.query_string_with_string!(prev_query)
-          state = %{state | ruleset_json: ruleset_json}
-
-          # cache and return
-          state = %{state | base_ruleset: ruleset, base_mods: state.base_mods ++ state.mods, mods: []}
-          if not Debug.skip_ruleset_caching() do
-            RiichiAdvanced.ETSCache.put({state.ruleset, []}, state, :cache_modloader)
-          end
-          state
-        end
+      state
     end
   end
 
   def apply_new_mods(state, []), do: state
   def apply_new_mods(state, mods) do
-    case RiichiAdvanced.ETSCache.get({state.ruleset, mods}, [], :cache_modloader) do
-      [state] -> state
+    all_mods = state.mods ++ mods
+    case RiichiAdvanced.ETSCache.get({state.ruleset, all_mods}, [], :cache_modloader) do
+      [state] ->
+        # IO.puts("Cache hit for ruleset #{state.ruleset}: #{length(all_mods)} mods #{inspect(all_mods, limit: :infinity)}")
+        state
       _ ->
+        # IO.puts("Cache miss for ruleset #{state.ruleset}: #{length(all_mods)} mods #{inspect(all_mods, limit: :infinity)}")
         # check for duplicates
-        duplicates = mods -- Enum.uniq(mods)
+        duplicates = all_mods -- Enum.uniq(all_mods)
         if not Enum.empty?(duplicates) do
           IO.puts("Warning, the following mods (for ruleset #{state.base_ruleset}) were included twice: #{inspect(duplicates)}")
         end
 
-        # collect all jqs in reverse order
+        # collect all new jqs in reverse order
         {jqs, defs} = for mod <- mods, reduce: {[], state.defs} do
           {jqs, defs} ->
             {jq, defs} = ModLoader.read_mod(mod, defs)
@@ -162,7 +149,7 @@ defmodule RiichiAdvanced.ModLoader.ModState do
         global_jq = for {name, val} <- state.globals, ModLoader.is_jq_var?(name), do: "(#{Jason.encode!(val)}) as $#{name}"
         boilerplate = [Compiler.header() <> if Enum.empty?(mods) do "." else "\n.enabled_mods += #{Jason.encode!(mods)}" end]
         mod_jq = Enum.join(boilerplate ++ global_jq ++ mod_contents, "\n|")
-        state = %{state | ruleset_json: JQ.query_string_with_string!(state.ruleset_json, mod_jq), mods: mods, defs: defs}
+        state = %{state | ruleset_json: JQ.query_string_with_string!(state.ruleset_json, mod_jq), mods: state.mods ++ mods, defs: defs}
 
         # IO.puts(mod_jq)
         if Debug.print_mods() do
@@ -176,8 +163,8 @@ defmodule RiichiAdvanced.ModLoader.ModState do
 
         # cache and return
         if not Debug.skip_ruleset_caching() do
-          # IO.puts("Caching mods for ruleset #{state.ruleset}: #{inspect(state.mods)}")
-          RiichiAdvanced.ETSCache.put({state.ruleset, state.mods}, state, :cache_modloader)
+          # IO.puts("Caching mods for ruleset #{state.ruleset}: #{length(all_mods)} mods #{inspect(all_mods, limit: :infinity)}")
+          RiichiAdvanced.ETSCache.put({state.ruleset, all_mods}, state, :cache_modloader)
         end
         state
     end
