@@ -111,11 +111,11 @@ fn check_pair_match(call: &TileSet, groups: &[MatchGroup], match_info: &MatchInf
 
 fn run_blossom<'a>(
   mut hand: TileSet,
-  groups: &'a Vec<MatchGroup>, num: i8,
+  groups: &'a[MatchGroup], num: i8,
   match_info: &'a MatchInfo,
   debug: bool, nojoker: bool,
 ) -> Option<TileSet> {
-  let graph: Graph = check_pair_match(&hand, &groups, match_info, nojoker, false).into_iter().collect();
+  let graph: Graph = check_pair_match(&hand, groups, match_info, nojoker, false).into_iter().collect();
   if debug { println!("Graph: {graph:?}"); }
   let mut matching = graph.maximum_matching().edges();
   if debug { println!("Matching: {matching:?} ({}/{num})", matching.len()); }

@@ -139,7 +139,7 @@ pub fn print_group(group: &RemovableGroup, all_attrs: &[String], mut nojoker: bo
   }
 }
 
-pub fn has_attrs((_p, battrs): &Tile, attrs: &mut [String], all_attrs: &Vec<String>) -> bool {
+pub fn has_attrs((_p, battrs): &Tile, attrs: &mut [String], all_attrs: &[String]) -> bool {
   let required = encode_attrs(attrs, all_attrs);
   required & *battrs == required
 }

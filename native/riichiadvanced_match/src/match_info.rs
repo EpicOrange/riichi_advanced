@@ -23,9 +23,9 @@ pub fn prepare_tiles<'a>(
 ) -> MatchInfo<'a> {
   let orig_hands = prepare_hand_calls(hand_calls);
   let mut num_tiles_in_hand = 0;
-  let hand_tiles: HashSet<&ElixirTile> = orig_hands.iter().flat_map(|(&ref tiles, _)| {
+  let hand_tiles: HashSet<&ElixirTile> = orig_hands.iter().flat_map(|(tiles, _)| {
     num_tiles_in_hand += tiles.len();
-    tiles
+    tiles.iter()
   }).collect();
 
   let aliases = encode_aliases(elixir_aliases, all_attrs);

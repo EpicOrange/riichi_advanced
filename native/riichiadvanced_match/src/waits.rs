@@ -264,7 +264,7 @@ pub fn __get_unneeded_tiles_v2(
       // then try the given match definition
       // if removal is successful, any remaining tiles are unneeded
       // the tile we took out is also unneeded
-      let results: Vec<Tile> = remove_match_definition(&match_info, &match_definition).flat_map(|r| r[0].attrs.clone()).collect();
+      let results: Vec<Tile> = remove_match_definition(&match_info, match_definition).flat_map(|r| r[0].attrs.clone()).collect();
       if !results.is_empty() {
         for r in results { ret.insert(r); }
         ret.insert(tile);
