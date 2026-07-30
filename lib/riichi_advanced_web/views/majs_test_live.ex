@@ -81,7 +81,7 @@ defmodule RiichiAdvancedWeb.MajsTestLive do
   def switch_mods_to_ruleset(socket, ruleset) do
     socket = assign(socket, :ruleset, ruleset)
 
-    ruleset_json = ModLoader.get_ruleset_json(socket.assigns.ruleset)
+    {ruleset_json, _defs} = ModLoader.get_ruleset_json(socket.assigns.ruleset)
     rules_ref = case Rules.load_rules(ruleset_json, socket.assigns.ruleset) do
       {:ok, rules_ref} -> rules_ref
       {:error, _msg}   -> nil
@@ -149,10 +149,10 @@ defmodule RiichiAdvancedWeb.MajsTestLive do
     if byte_size(config) <= 4 * 1024 * 1024 do
       self = self()
       Task.start(fn ->
-        ruleset_json = ModLoader.get_ruleset_json(ruleset)
+        {ruleset_json, defs} = ModLoader.get_ruleset_json(ruleset)
         config_query = ModLoader.convert_to_jq(config)
         mods = get_enabled_mods(socket)
-        {ruleset_json, _} = ModLoader.apply_multiple_mods(ruleset_json, mods)
+        {ruleset_json, _defs} = ModLoader.apply_multiple_mods(ruleset_json, mods, %{}, defs)
         ruleset_json = JQ.query_string_with_string!(ruleset_json, config_query)
         send(self, {:converted_majs, config, ruleset_json})
       end)

@@ -58,7 +58,7 @@ defmodule RiichiAdvanced.LobbyState do
 
     # read in the ruleset
 
-    ruleset_json = ModLoader.get_ruleset_json(state.ruleset)
+    {ruleset_json, _defs} = ModLoader.get_ruleset_json(state.ruleset)
 
     # parse the ruleset just to get the display name
     {state, rules} = try do

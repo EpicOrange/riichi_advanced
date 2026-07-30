@@ -109,7 +109,7 @@ defmodule RiichiAdvanced.RoomState do
         if state.ruleset == "config" do
           Room.initial_textarea()
         else
-          ModLoader.get_ruleset_json(state.ruleset, state.room_code, true)
+          ModLoader.get_ruleset_json(state.ruleset, state.room_code, true) |> elem(0)
         end
     end
 

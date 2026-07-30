@@ -6,14 +6,14 @@ defmodule RiichiAdvanced.SimpleParseTest do
   test "parse all rulesets" do
     for ruleset_path <- Path.wildcard(Application.app_dir(:riichi_advanced, "/priv/static/rulesets/**.json")) do
       ruleset = Path.basename(ruleset_path, ".json")
-      ruleset_json = ModLoader.get_ruleset_json(ruleset)
+      {ruleset_json, _defs} = ModLoader.get_ruleset_json(ruleset)
       assert ruleset_json not in [nil, "", "{}"]
     end
   end
 
   test "parse all modpacks" do
     for modpack <- Map.keys(Constants.modpacks()) do
-      ruleset_json = ModLoader.get_ruleset_json(modpack)
+      {ruleset_json, _defs} = ModLoader.get_ruleset_json(modpack)
       assert ruleset_json not in [nil, "", "{}"]
     end
   end
@@ -21,7 +21,7 @@ defmodule RiichiAdvanced.SimpleParseTest do
   test "parse all mahjongscript" do
     for ruleset_path <- Path.wildcard(Application.app_dir(:riichi_advanced, "/priv/static/rulesets/**.majs")) do
       ruleset = Path.basename(ruleset_path, ".majs")
-      ruleset_json = ModLoader.get_ruleset_json(ruleset)
+      {ruleset_json, _defs} = ModLoader.get_ruleset_json(ruleset)
       assert ruleset_json not in [nil, "", "{}"]
     end
   end

@@ -15,7 +15,6 @@
 defmodule RiichiAdvanced.ModLoader do
   alias RiichiAdvanced.Constants, as: Constants
   alias RiichiAdvanced.GameState.Debug, as: Debug
-  alias RiichiAdvanced.GameState.Rules, as: Rules
   alias RiichiAdvanced.Compiler, as: Compiler
   alias RiichiAdvanced.Parser, as: Parser
 
