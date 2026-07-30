@@ -5,16 +5,18 @@ use std::sync::atomic::Ordering;
 use std::time::Instant;
 use rustler::Atom;
 
-use crate::encode::{decode, encode, encode_aliases, encode_tiles};
+use crate::encode::{decode, encode, encode_attrs, encode_aliases, encode_tiles};
 use crate::match_bipartite::perform_bipartite_match;
 use crate::match_blossom::perform_blossom_match;
 use crate::match_dfs::perform_dfs_match;
 use crate::match_elim::_elim_group;
+use crate::match_exact::perform_exact_match;
 use crate::match_info::prepare_tiles;
 use crate::offsets::{__generate_groups, get_base_tiles};
 use crate::profile::{PROFILE_MATCH, CALL_COUNT, MAX_NANOS, TOTAL_NANOS};
+use crate::tile_table::TILE_TABLE;
 use crate::tileset::_subtract_check_attrs_exhaustive;
-use crate::types::{ANY_PRIME, BaseTileVec, ElixirAliases, ElixirHand, ElixirHandCalls, ElixirTile, Hands, HandsIterator, MatchDefinition, MatchDefinitionElem, MatchDefinitions, MatchGroup, MatchInfo, MatchOffset};
+use crate::types::{ANY_PRIME, BaseTileVec, ElixirAliases, ElixirHand, ElixirHandCalls, ElixirTile, FIXED_OFFSETS, Hands, HandsIterator, MatchDefinition, MatchDefinitionElem, MatchDefinitions, MatchGroup, MatchInfo, MatchOffset, Tile};
 use crate::utils::remove_indices;
 
 // this is used a lot, especially for determining and processing calls
@@ -176,29 +178,81 @@ fn remove_match_group<'a>(
   // - every group is length 2
   // anything else is dfs
   let mut unique = unique;
+  let mut exact = !exhaustive && !unique;
   let mut bipartite = true;
   let mut blossom = !exhaustive;
   for elem in groups.iter() {
     match elem {
       MatchGroup::Offset(o) => {
         blossom = false;
-        if let MatchOffset::TileOrKeyword(s) = o {
-          if *s == "unique" { unique = true; blossom = false; }
-          else if *s == "nojoker" {} // no-op
-          else { bipartite = false; } // call name
+        match o {
+          MatchOffset::TileOrKeyword(s) => {
+            if *s == "unique" { unique = true; }
+            else if *s == "nojoker" {} // no-op
+            else if FIXED_OFFSETS.get(s).is_some() { exact = false; }
+            else if TILE_TABLE.get(s).is_some() {} // no-op
+            else { bipartite = false; } // call name
+          }
+          MatchOffset::AttrsTile(_) => {} // no-op
+          _ => { exact = false; }
         }
       }
       MatchGroup::Offsets(os) => {
         bipartite = false;
         if os.len() != 2 { blossom = false; }
+        if os.len() == 1 {
+          match &os[0] {
+            MatchOffset::TileOrKeyword(s) => {
+              if *s == "nojoker" {} // no-op
+              else if FIXED_OFFSETS.get(s).is_some() { exact = false; }
+              else if TILE_TABLE.get(s).is_some() {} // no-op
+            }
+            MatchOffset::AttrsTile(_) => {} // no-op
+            _ => { exact = false; }
+          }
+        } else { exact = false; }
       }
-      MatchGroup::Subgroups(_) => { bipartite = false; blossom = false; }
+      MatchGroup::Subgroups(_) => { exact = false; blossom = false; bipartite = false; }
     }
   }
-  if !unique || hands.len() > 1 { bipartite = false; }
+  let has_calls = hands.len() > 1;
+  if !unique || has_calls { bipartite = false; }
 
   // transform acc
-  let mut acc = if blossom {
+  let mut acc = if exact {
+    let mut call_names: Vec<String> = vec!();
+    let mut tiles: Vec<Tile> = (*groups).iter().cloned().filter_map(|group| {
+      match group {
+        MatchGroup::Offset(o) => 
+          match o {
+            MatchOffset::TileOrKeyword(s) => {
+              match TILE_TABLE.get(&s) {
+                Some(p) => Some((*p, 0)),
+                None => { call_names.push(s); None }
+              }
+            },
+            MatchOffset::AttrsTile(mut map) => Some((*TILE_TABLE.get(&map.tile)?, encode_attrs(&mut map.attrs, match_info.all_attrs))),
+            _ => None
+          }
+        MatchGroup::Offsets(mut os) if os.len() == 1 =>
+          match &mut os[0] {
+            MatchOffset::TileOrKeyword(s) => {
+              match TILE_TABLE.get(s) {
+                Some(p) => Some((*p, 0)),
+                None => { call_names.push(s.clone()); None }
+              }
+            },
+            MatchOffset::AttrsTile(map) => Some((*TILE_TABLE.get(&map.tile)?, encode_attrs(&mut map.attrs, match_info.all_attrs))),
+            _ => None
+          }
+        _ => None
+      }
+    }).collect();
+    tiles.sort_unstable();
+    tiles.dedup();
+    // println!("Running exact for groups {groups:?}, num = {num}");
+    perform_exact_match(tiles, num, call_names, Box::new(once(hands)), match_info, debug, exhaustive, unique, nojoker)
+  } else if blossom {
     perform_blossom_match((*groups).clone(), num, Box::new(once(hands)), match_info, debug, exhaustive, unique, nojoker)
   } else if bipartite {
     let base_tiles = base_tiles.clone();
@@ -301,8 +355,8 @@ pub fn __match_hand_v3<'a>(
     }
     let mut result = remove_match_definition(&match_info, &match_definition);
     let next = result.next();
-    if next.is_some() {
-      if debug { println!("Final result for match definition {:?}: {:?}", match_definition, next); }
+    if let Some(next) = next {
+      if debug { println!("Final result for match definition {:?}: {:?}", match_definition, next.iter().map(|hand| decode(hand, match_info.all_attrs)).collect::<Vec<_>>()); }
       return true;
     } else {
       if debug { println!("Final result for match definition {:?}: (none)", match_definition); }

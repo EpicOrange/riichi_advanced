@@ -1,3 +1,8 @@
+#![allow(
+  clippy::too_many_arguments,
+  clippy::type_complexity,
+)]
+
 mod n_rooks;
 mod tileset;
 mod types;
@@ -14,5 +19,6 @@ mod match_elim;
 mod match_dfs;
 mod match_bipartite;
 mod match_blossom;
+mod match_exact;
 
 rustler::init!("Elixir.RiichiAdvanced.Match");
