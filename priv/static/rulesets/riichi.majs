@@ -779,7 +779,9 @@ config_mod "shuugi/kin", name: "closed_only", values: [false, true], default: fa
 define_mod "shuugi/oka", order: 4, name: "Oka", deps: ["shuugi", "oka"], desc: "Oka applies directly to chips."
 define_mod "shuugi/uma", order: 4, name: "Uma", deps: ["shuugi", "uma"], desc: "Uma applies directly to chips."
 define_mod "shuugi/tobi", order: 4, name: "Tobi", deps: ["shuugi", "tobi"], desc: "If a player busts, they pay 1 chip to every player."
+config_mod "shuugi/tobi", name: "chips", values: [1, 2, 3, 4, 5], default: 1
 define_mod "shuugi/called_game", order: 4, name: "Called Game", deps: ["shuugi", "called_game"], desc: "If a player reaches the called game score, they receive 1 chip from every player."
+config_mod "shuugi/called_game", name: "chips", values: [1, 2, 3, 4, 5], default: 1
 define_mod "shuugi/placement_only_battle", order: 5, name: "Placement-Only Battle", desc: "Final scores are completely determined by oka and uma, using the final score to determine ranking."
 define_mod_category "Other"
 define_mod cancellable_riichi, order: 1, deps: ["yaku/riichi"], name: "Cancellable Riichi", desc: "Riichi declarations happen only after you confirm by discarding a tile."

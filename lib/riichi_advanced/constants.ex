@@ -525,7 +525,7 @@ defmodule RiichiAdvanced.Constants do
       tutorial_link: "https://github.com/EpicOrange/riichi_advanced/blob/main/documentation/chinitsu_challenge.md",
       ruleset: "riichi",
       mods: [%{name: "yaku/riichi", config: %{bet: 1000, drawless: false}}, "chinitsu_challenge"],
-      default_mods: ["chombo", "tobi", %{name: "yaku/riichi_renhou", config: %{is: "Yakuman"}}, "no_honors"],
+      default_mods: ["chombo", %{name: "tobi", config: %{below: 0}}, %{name: "yaku/riichi_renhou", config: %{is: "Yakuman"}}, "no_honors"],
     },
     "minefield" => %{
       display_name: "Minefield",
@@ -539,7 +539,7 @@ defmodule RiichiAdvanced.Constants do
       tutorial_link: "https://github.com/EpicOrange/riichi_advanced/blob/main/documentation/kansai.md",
       ruleset: "riichi",
       mods: ["sanma", "sanma_presets", "kansai", "kansai_yaku", "kansai_chiitoitsu"],
-      default_mods: ["tobi", "sanma_pei_yakuhai"],
+      default_mods: [%{name: "tobi", config: %{below: 0}}, "sanma_pei_yakuhai"],
     },
     "zan" => %{
       display_name: "Zan Sanma",
@@ -613,7 +613,7 @@ defmodule RiichiAdvanced.Constants do
         %{name: "yaku/riichi", config: %{bet: 1000, drawless: false}},
         %{name: "oka", config: %{ante: 4}},
         %{name: "uma", config: %{_1st: 10, _2nd: 4, _3rd: -4, _4th: -10}},
-        %{name: "tobi", config: %{below: 0, chips: 1}},
+        %{name: "tobi", config: %{below: 0}},
         %{name: "nagashi", config: %{is: "Haneman", counts_as: "tsumo"}},
         %{name: "called_game", config: %{above: 54999, chips: 1}},
         %{name: "suufon_renda", config: %{name: "Suufon Renda"}},
@@ -655,7 +655,7 @@ defmodule RiichiAdvanced.Constants do
       tutorial_link: "https://github.com/EpicOrange/riichi_advanced/blob/main/documentation/kansai.md",
       ruleset: "riichi",
       mods: ["sanma", %{name: "aka", config: %{"man" => 1, "pin" => 1, "sou" => 1}}],
-      default_mods: ["tobi"],
+      default_mods: [%{name: "tobi", config: %{below: 0}}],
     },
     "sichuan" => %{
       display_name: "Sichuan Bloody",
