@@ -6,7 +6,7 @@ defmodule RiichiAdvanced.AIPlayer do
   alias RiichiAdvanced.Utils, as: Utils
   use GenServer
 
-  @ai_speed 4
+  @ai_speed 40
 
   def start_link(init_state) do
     GenServer.start_link(__MODULE__, init_state, name: init_state[:name])
@@ -315,6 +315,7 @@ defmodule RiichiAdvanced.AIPlayer do
       player: player,
       turn: turn,
       last_discard: last_discard,
+      last_discarder_status: last_discarder_status,
     } = params
     if state.initialized do
       state = Map.put(state, :player, player)
@@ -396,6 +397,8 @@ defmodule RiichiAdvanced.AIPlayer do
         "start_flower" in player.buttons -> "start_flower"
         "start_no_flower" in player.buttons -> "start_no_flower"
         "extra_turn" in player.buttons -> "extra_turn"
+        "reveal" in player.buttons -> if "riichi" in last_discarder_status do "reveal" else "reveal_skip" end
+        "lock_skip" in player.buttons -> "lock_skip"
         "skip" in player.buttons -> "skip"
         true -> Enum.random(player.buttons)
       end

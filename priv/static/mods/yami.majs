@@ -1,0 +1,84 @@
+on after_initialization do
+  add_rule("Rules", "Yami", "(Conceal) Every turn, you may bet 1000 points in order to conceal your next discard (flipping it upside down). These concealed tiles are uncallable, are not considered furiten, and does not count against nagashi. Concealed tiles are not revealed at the end of a round.", -5)
+  update_rule("Rules", "Yami", "(Reveal) When another player conceals their discard, the first player to press Reveal bets 2000 points to negate the conceal action. All bets stay on the table.")
+  update_rule("Rules", "Yami", "(Lock) When another player reveals your concealed discard, you may bet 4000 additional points to negate the negation of your concealed discard. If this is done, then the tile is never revealed to the table, and this cannot be negated.")
+end
+
+
+define_button conceal,
+  display_name: "Conceal",
+  show_when: our_turn and has_score(1000) and not_just_discarded
+  do
+    big_text("Conceal")
+    push_message("bet 1000 points to discard facedown")
+    bet_points(1000)
+    set_status("discard_facedown")
+  end
+apply append, "constants.no_auto_discard_calls", ["conceal", "lock"]
+
+define_button reveal,
+  display_name: "Reveal",
+  show_when: not_our_turn
+    and has_score(2000)
+    and someone_else_just_discarded
+    and not_discarder_status("discard_passed")
+    and discarder_status("discard_facedown")
+    and not_discarder_status("lock_discard"),
+  precedence_over: ["reveal", "reveal_skip"],
+  unskippable: true
+  do
+    big_text("Reveal")
+    push_message("bet 2000 points to prevent a facedown discard")
+    bet_points(2000)
+    unset_status_all("discard_facedown")
+    set_status("revealing_discard")
+    recalculate_buttons
+  end
+
+define_button reveal_skip,
+  display_name: "Skip",
+  show_when: not_our_turn
+    and has_score(2000)
+    and someone_else_just_discarded
+    and not_discarder_status("discard_passed")
+    and discarder_status("discard_facedown")
+    and not_discarder_status("lock_discard"),
+  unskippable: true
+  do
+    advance_turn
+  end
+
+define_button lock,
+  display_name: "Lock",
+  show_when: our_turn
+    and has_score(4000)
+    and just_discarded
+    and status_missing("discard_facedown")
+    and anyone_status("revealing_discard"),
+  unskippable: true
+  do
+    unset_status_all("revealing_discard")
+    big_text("Lock")
+    push_message("bet 4000 points to force a facedown discard")
+    bet_points(4000)
+    set_status("discard_facedown", "lock_discard")
+    advance_turn
+  end
+
+define_button lock_skip,
+  display_name: "Skip",
+  show_when: our_turn
+    and has_score(4000)
+    and just_discarded
+    and status_missing("discard_facedown")
+    and anyone_status("revealing_discard"),
+  unskippable: true
+  do
+    unset_status_all("revealing_discard")
+    flip_last_discard_faceup
+    recalculate_buttons
+    advance_turn
+  end
+
+on before_turn_change do unset_status_all("discard_facedown", "revealing_discard", "lock_discard") end
+on before_call do unset_status_all("discard_facedown", "revealing_discard", "lock_discard") end

@@ -1705,6 +1705,7 @@ defmodule RiichiAdvanced.GameState do
               has_marking_ui = not Enum.empty?(state.marking[seat])
               last_discard_action = get_last_discard_action(state)
               last_discard = if last_discard_action != nil do Map.get(last_discard_action, :tile, nil) else nil end
+              last_discarder_status = if last_discard_action != nil do state.players[last_discard_action.seat].status else nil end
               if is_pid(Map.get(state, seat)) and has_buttons and not has_call_buttons and not has_marking_ui do
                 # IO.puts("Notifying #{seat} AI about their buttons: #{inspect(state.players[seat].buttons)}")
                 if state.ruleset == "american" do
@@ -1720,6 +1721,7 @@ defmodule RiichiAdvanced.GameState do
                       player: state.players[seat],
                       turn: state.turn,
                       last_discard: last_discard,
+                      last_discarder_status: last_discarder_status,
                       closest_american_hands: closest_american_hands,
                       open_am_match_definitions: Rules.get(state.rules_ref, "open_win_definition", []),
                     }
@@ -1730,6 +1732,7 @@ defmodule RiichiAdvanced.GameState do
                     player: state.players[seat],
                     turn: state.turn,
                     last_discard: last_discard,
+                    last_discarder_status: last_discarder_status,
                     closest_american_hands: [],
                     open_am_match_definitions: [],
                   }

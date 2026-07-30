@@ -1728,9 +1728,15 @@ defmodule RiichiAdvanced.GameState.Actions do
       "convert_last_discard"  ->
         last_discarder = get_last_discard_action(state).seat
         tile = Utils.to_tile(Enum.at(opts, 0, "0m"))
-        state = update_in(state.players[last_discarder].pond, fn pond -> Enum.drop(pond, -1) ++ [tile] end)
+        state = update_in(state.players[last_discarder].pond, fn pond -> List.replace_at(pond, -1, tile) end)
         state = update_action(state, last_discarder, :discard, %{tile: tile})
         state = Buttons.recalculate_buttons(state) # TODO remove
+        state
+      "flip_last_discard_faceup" ->
+        last_discarder = get_last_discard_action(state).seat
+        tile = Utils.remove_attr(Enum.at(state.players[last_discarder].pond, -1), ["_facedown"])
+        state = update_in(state.players[last_discarder].pond, fn pond -> List.replace_at(pond, -1, tile) end)
+        state = update_action(state, last_discarder, :discard, %{tile: tile})
         state
       "flip_all_calls_faceup"  ->
         update_all_players(state, fn _seat, player ->
