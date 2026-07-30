@@ -118,7 +118,7 @@ defmodule RiichiAdvanced.YakuTest.SpeedTonpuuMechanics do
   end
 
   test "speed tonpuu - ura dora" do
-    TestUtils.test_yaku_advanced("speed_tonpuu", @speed_tonpuu_mods ++ [%{name: "dora", config: %{start_indicators: 1}}, "ura"], """
+    TestUtils.test_yaku_advanced("speed_tonpuu", [%{name: "dora", config: %{start_indicators: 1}}, "ura"] ++ @speed_tonpuu_mods, """
     {
       "starting_hand": {
         "east": ["2m", "3m", "4m", "4m", "5m", "6m", "7p", "7p", "7p", "8s", "8s", "8s", "5p"],

@@ -76,7 +76,7 @@ on before_win do calculate_dora end
 on before_scoring do calculate_dora end
 
 define_yaku extra_yaku, "Dora", ["dora", "Han"], dora >= 1
-|
+
 # tag dora with dora tag
 on after_start do
   if tile_revealed(-6) do tag_dora("dora", -6) end
