@@ -148,6 +148,7 @@ defmodule RiichiAdvanced.GameState.Scoring do
 
       # obtain yaku and minipoints from this state
       {yaku, minipoints} = get_yaku_from_lists(state, yaku_list_names, seat, assigned_winning_tile, win_source)
+      # |> IO.inspect(label: inspect(win_source))
       minipoints >= min_minipoints && case min_points do
         :declared ->
           names = Enum.map(yaku, fn {name, _value} -> name end)

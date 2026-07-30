@@ -964,10 +964,12 @@ defmodule RiichiAdvanced.GameState do
     # take the last discarder's last discarded tile, or nil if there is none
     # (don't use last_discarder_action.tile, since that lacks attrs)
     last_discarder_action = get_last_discard_action(state)
-    if last_discarder_action != nil do
-      last_discarder = last_discarder_action.seat
-      Enum.at(state.players[last_discarder].discards, -1)
-    else nil end
+    last_discarder = if last_discarder_action != nil do
+      last_discarder_action.seat
+    else
+      Utils.prev_turn(state.turn)
+    end
+    Enum.at(state.players[last_discarder].discards, -1)
   end
   def get_winning_tile(state, _seat, :second_discard) do
     # take the last discarder's last discarded tile, or nil if there is none
@@ -1025,9 +1027,9 @@ defmodule RiichiAdvanced.GameState do
       state = update_in(state.players[last_discarder].pond, &List.update_at(&1, ix, fun))
       state
     else
-      # this branch is basically only used for tests
+      # this branch is basically only used for tests, or by calculate_wait_label/3 below
       last_discarder = Utils.prev_turn(state.turn)
-      state = update_in(state.players[last_discarder].discards, fn _ -> IO.inspect([fun.(:"4x")]) end)
+      state = update_in(state.players[last_discarder].discards, fn _ -> [fun.(:"4x")] end)
       state = update_in(state.players[last_discarder].pond, fn _ -> [fun.(:"4x")] end)
       state
     end
@@ -1041,6 +1043,27 @@ defmodule RiichiAdvanced.GameState do
     visible_ponds ++ visible_calls ++ visible_hands
   end
 
+  def calculate_wait_label(state, seat, wait) do
+    if "furiten" in state.players[seat].status do
+      "Furiten"
+    else
+      yaku_lists = Conditions.get_yaku_lists(state)
+      point_name = Rules.get(state.rules_ref, "score_calculation")["point_name"]
+      point2_name = Rules.get(state.rules_ref, "score_calculation")["point2_name"]
+      min_han = Rules.get(state.rules_ref, "constants") |> Map.get("min_points", 1)
+      score = fn state, win_source -> 
+        Scoring.seat_scores_points(state, yaku_lists, point_name, min_han, 0, seat, wait, win_source)
+        or Scoring.seat_scores_points(state, yaku_lists, point2_name, min_han, 0, seat, wait, win_source)
+      end
+      cond do
+        score.(update_winning_tile(state, Utils.prev_turn(seat), :discard, fn _ -> wait end), :discard) -> nil
+        score.(update_winning_tile(state, seat, :draw, fn _ -> wait end), :draw) -> "Self-Draw"
+        min_han > 1 -> "Min #{min_han}"
+        true -> "No Yaku"
+      end
+    end
+  end
+
   def get_visible_waits(state, seat, index) do
     hand = state.players[seat].hand ++ state.players[seat].draw
     hand = if index != nil do
@@ -1051,6 +1074,8 @@ defmodule RiichiAdvanced.GameState do
     tile_behavior = state.players[seat].tile_behavior
     visible_tiles = get_visible_tiles(state, seat)
     Match.get_waits_and_ukeire(hand, calls, win_definitions, visible_tiles, tile_behavior)
+    |> Enum.sort_by(fn {wait, _ukeire} -> Constants.sort_value(wait) end)
+    |> Enum.map(fn {wait, ukeire} -> {wait, ukeire, calculate_wait_label(state, seat, wait)} end)
   end
 
   def get_open_riichi_hands(state) do

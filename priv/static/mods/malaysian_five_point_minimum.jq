@@ -10,3 +10,5 @@ def add_5_condition($check):
 .after_initialization.actions += [
   ["add_rule", "Rules", "5 Fan Minimum", "You need at least 5 Fan to declare a win.", -101]
 ]
+|
+.constants.min_points = 5

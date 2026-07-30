@@ -9,3 +9,5 @@ def add_3_condition($check):
 .buttons.chankan.show_when += [add_3_condition("has_yaku_with_call")]
 |
 .buttons.tsumo.show_when += [add_3_condition("has_yaku_with_hand")]
+|
+.constants.min_points = 3

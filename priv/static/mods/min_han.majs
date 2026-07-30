@@ -1,3 +1,5 @@
+define_const min_points, !min
+
 on after_initialization do
   cond do
     equals(!min, "Mangan") -> add_rule("Rules", "Minimum Han", "Your hand must score at least mangan to win.", -10)

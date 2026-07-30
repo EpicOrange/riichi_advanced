@@ -348,15 +348,18 @@ defmodule RiichiAdvancedWeb.GameLive do
         </div>
       <% end %>
       <%= if @visible_waits != nil and @show_waits_index != nil and Map.get(@visible_waits, @show_waits_index, :loading) not in [:loading, %{}] do %>
-        <div class="visible-waits-container">
-          <div class="visible-waits">
-            <%= for {wait, num} <- Enum.sort_by(Map.get(@visible_waits, @show_waits_index, %{}), fn {wait, _num} -> Constants.sort_value(wait) end) do %>
+        <% waits = Map.get(@visible_waits, @show_waits_index, []) %>
+        <div class="visible-waits-container" :if={not Enum.empty?(waits)}>
+          <% has_label = Enum.any?(waits, fn {_wait, _num, label} -> label != nil end) %>
+          <div class={["visible-waits"] ++ if has_label do ["spaced"] else [] end}>
+            <%= for {wait, num, label} <- waits do %>
               <div class="visible-wait">
                 <div class="visible-wait-num"><%= num %></div>
-                <div class={Utils.get_tile_class(wait, 0)}></div>
+                <div class="visible-wait-label" :if={label != nil}><%= label %></div>
+                <div class={Utils.get_tile_class(wait, 0, %{}, if num == 0 do ["inactive"] else [] end)}></div>
               </div>
             <% end %>
-            &nbsp;=&nbsp;<%= Map.get(@visible_waits, @show_waits_index, %{}) |> Enum.map(fn {_wait, num} -> num end) |> Enum.sum() %>
+            &nbsp;=&nbsp;<%= waits |> Enum.map(fn {_wait, num, _label} -> num end) |> Enum.sum() %>
           </div>
         </div>
       <% end %>

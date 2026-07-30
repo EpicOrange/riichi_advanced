@@ -1960,7 +1960,7 @@ div.visible-waits-container {
   position: absolute;
   width: calc(100% - 8.25 * var(--tile-size));
   left: calc(4.125 * var(--tile-size));
-  bottom: calc(2 * var(--tile-size));
+  bottom: calc(1.5 * var(--tile-size));
   display: flex;
   flex-flow: row wrap;
   justify-content: center;
@@ -1973,16 +1973,35 @@ div.visible-waits {
   color: white;
   border-radius: calc(0.25 * var(--tile-size));
   padding: calc(0.25 * var(--tile-size));
+  padding-bottom: calc(0.5 * var(--tile-size));
   display: flex;
   flex-flow: row wrap;
   justify-content: center;
   align-items: flex-end;
 }
+div.visible-waits.spaced {
+  row-gap: calc(0.5 * var(--tile-size));
+}
 div.visible-waits > div.visible-wait {
+  position: relative;
   display: flex;
-  flex-direction: column;
+  flex-flow: column nowrap;
   align-items: center;
   row-gap: calc(0.25 * var(--tile-size));
+}
+div.visible-waits.spaced > div.visible-wait > div.tile {
+  margin: 0 calc(0.25 * var(--tile-size));
+}
+div.visible-waits > div.visible-wait > div.visible-wait-label {
+  position: absolute;
+  font-size: calc(0.275 * var(--tile-size));
+  background-color: var(--tile-back);
+  color: black;
+  border-radius: calc(0.125 * var(--tile-size));
+  padding: calc(var(--tile-size) / 32) calc(var(--tile-size) / 64);
+  bottom: calc(-0.5 * var(--tile-size));
+  white-space: nowrap;
+  z-index: 1;
 }
 
 /* nearest american hands */
