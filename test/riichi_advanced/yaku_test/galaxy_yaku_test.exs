@@ -140,6 +140,7 @@ defmodule RiichiAdvanced.YakuTest.GalaxyYaku do
   end
 
   # # fails with [{"Tenhou", 1}, {"Milky Way", 1}] on github's servers for some reason
+  # takes like 30s
   # test "galaxy - milky way ryuuiisou" do
   #   TestUtils.test_yaku_advanced("galaxy", [], """
   #   {
@@ -155,8 +156,7 @@ defmodule RiichiAdvanced.YakuTest.GalaxyYaku do
   #     %{"type" => "buttons_pressed", "buttons" => [%{"button" => "tsumo"}, nil, nil, nil]}
   #   ], %{
   #     east: [%{
-  #       yaku: [],
-  #       yaku2: [{"Tenhou", 1}, {"Milky Way", 1}, {"Ryuuiisou", 1}],
+  #       yaku: [{"Tenhou", [1, "★"]}, {"Milky Way", [1, "★"]}, {"Ryuuiisou", [1, "★"]}],
   #       minipoints: 30 # actually 40 (from 32), but we disable fu calculations for milky way
   #     }]
   #   })
@@ -178,8 +178,7 @@ defmodule RiichiAdvanced.YakuTest.GalaxyYaku do
   #     %{"type" => "buttons_pressed", "buttons" => [%{"button" => "tsumo"}, nil, nil, nil]}
   #   ], %{
   #     east: [%{
-  #       yaku: [],
-  #       yaku2: [{"Tenhou", 1}, {"Kokushi Musou Juusan Menmachi", 2}],
+  #       yaku: [{"Tenhou", [1, "★"]}, {"Kokushi Musou Juusan Menmachi", [2, "★"]}],
   #       minipoints: 60
   #     }]
   #   })

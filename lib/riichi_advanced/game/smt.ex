@@ -777,7 +777,7 @@ defmodule RiichiAdvanced.SMT do
       else "" end
     end |> Enum.join()
 
-    # if your hand has 2+ identical jokers {a, b, c...} that all map to the exact same values,
+    # if your hand has 2+ identical jokers {a, b, c...}
     # only allow the permutation satisfying the symmetry-breaking constraint a <= b <= c <= ...
     optimization_symmetry_breaking = for ix <- joker_ixs, ix < length(hand) do
       tile = Enum.at(hand, ix)
@@ -793,7 +793,28 @@ defmodule RiichiAdvanced.SMT do
       if constraint != nil do "(assert #{constraint})" else "" end
     end)
 
-    optimizations = [optimization_call_jokers] ++ optimization_symmetry_breaking #optimization1 ++ optimization2 #++ optimization3
+    # this is a generalization of the above: for every pair of jokers {a, b} whose domains overlap, enforce a <= b
+    # first pre-encode all values each joker can map to
+    joker_ixs_in_hand = Enum.filter(joker_ixs, & &1 < length(hand))
+    all_joker_choices = for i <- joker_ixs_in_hand, into: %{} do
+      tile = Enum.at(hand, i)
+      {joker, joker_choices} = Enum.find(tile_mappings, fn {joker, _choices} -> Utils.same_tile(tile, joker) end)
+      joker_choices = MapSet.new(joker_choices, &Utils.strip_attrs/1)
+      joker_choices = if :any in joker_choices do MapSet.new(all_tiles) else joker_choices end
+      {i, {joker, joker_choices}}
+    end
+    # then add a bvule constraint for each pairwise intersection between jokers in hand
+    encode_id = fn k, overlap -> "(or " <> Enum.map_join(overlap, "\n    ", fn t -> "(= joker#{k} #{to_smt_tile(t, encoding)})" end) <> ")" end
+    optimization_pairwise_symmetry_breaking = for i <- joker_ixs_in_hand, j <- joker_ixs_in_hand, i < j do
+      {joker_i, joker_choices_i} = Map.get(all_joker_choices, i)
+      {joker_j, joker_choices_j} = Map.get(all_joker_choices, j)
+      overlap = if joker_i == joker_j do joker_choices_i else MapSet.intersection(joker_choices_i, joker_choices_j) end
+      if not Enum.empty?(overlap) do
+        "(assert (=> (and\n  #{encode_id.(i, overlap)}\n  #{encode_id.(j, overlap)}) (bvule joker#{i} joker#{j})))\n"
+      else "" end
+    end
+
+    optimizations = [optimization_call_jokers] ++ optimization_symmetry_breaking ++ optimization_pairwise_symmetry_breaking #optimization1 ++ optimization2 #++ optimization3
 
     match_assertions = "(assert (or#{Enum.reverse(match_assertions)}))\n"
 
