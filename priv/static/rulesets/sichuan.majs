@@ -63,12 +63,7 @@ define_yaku yaku, "Under The Sea", 1, no_tiles_remaining and status_missing("ten
 define_yaku_precedence "Golden Single Wait", ["All Triplets"]
 
 set score_calculation, %{
-    scoring_method: "score_table",
-    score_table: %{"0": 1, "1": 2, "2": 4, max: 8},
     yaku_lists: ["yaku"],
-    self_draw_bonus: 1,
-    score_best_hand_at_draw: true,
-    next_dealer_is_first_winner: true,
     point_name: "Fan",
     win_by_discard_label: "Hu",
     win_by_draw_label: "Zimo",
@@ -76,6 +71,7 @@ set score_calculation, %{
     win_by_discard_name_2: "Double Hu",
     win_by_discard_name_3: "Triple Hu",
     win_by_draw_name: "Zimo",
+    win_with_pao_name: "Hu", # scoring engine sometimes thinks pao is on, so this is needed
     exhaustive_draw_name: "Draw"
   }
 
@@ -244,16 +240,21 @@ end
 define_scoring win do
   total = points :: "Fan"
   total = 0
-  if total == 0 and points >= 3 do total = 8 :: "3+ Fan → 8 pts" end
-  if total == 0 and points >= 2 do total = 4 :: "2 Fan → 4 pts" end
-  if total == 0 and points >= 1 do total = 2 :: "1 Fan → 2 pts" end
-  if total == 0                 do total = 1 :: "0 Fan → 1 pts" end
+  cond do
+    points >= 3 -> total = 8 :: "3+ Fan → 8 pts"
+    points >= 2 -> total = 4 :: "2 Fan → 4 pts"
+    points >= 1 -> total = 2 :: "1 Fan → 2 pts"
+    true        -> total = 1 :: "0 Fan → 1 pts"
+  end
   if status("do_noten_payments") do
     modify_winner("score_name", "Draw")
   else
     if won_by_draw do total += 1 :: "Self-draw bonus" end
   end
   modify_winner("score", total)
+  if not_anyone_status("first_winner") do
+    set_status("first_winner", as: "winner") # will be next dealer
+  end
 end
 
 def before_bloody_end do
@@ -291,6 +292,12 @@ def before_bloody_end do
       modify_payout("shimocha", 16)
       modify_payout("toimen", 16)
       modify_payout("kamicha", 16)
+    end
+    # change dealership to first winner
+    as everyone do
+      if status("first_winner") do
+        change_dealership("self")
+      end
     end
   end
 end
@@ -649,7 +656,7 @@ set initial_score, 0
 set starting_tiles, 13
 set four_rows_discards, true
 set bloody_end, true
-set max_rounds, 4
+set max_rounds, 16
 
 define_mod show_waits, name: "Show Waits", desc: "Add some UI that shows waits."
 define_mod open_hands, name: "Open Hands", desc: "Everyone plays with tiles shown."
