@@ -1,5 +1,5 @@
 on after_initialization do
-  add_rule("Tiles", "Kin", "%{man}x %{5m}, %{pin}x %{5p}, and %{sou}x %{5s} are replaced with gold \"kin dora\" fives %{kindora_fives} that are worth three extra han each.", %{man: !man, pin: !pin, sou: !sou, "5m": ["5m"], "5p": ["5p"], "5s": ["5s"], kindora_fives: ["35m", "35p", "35s"]}, -99)
+  add_rule("Tiles", "Kin", "%{man}x %{5m}, %{pin}x %{5p}, and %{sou}x %{5s} are replaced with gold \"kin dora\" fives %{kindora_fives} that are worth one extra han each.", %{man: !man, pin: !pin, sou: !sou, "5m": ["5m"], "5p": ["5p"], "5s": ["5s"], kindora_fives: ["35m", "35p", "35s"]}, -99)
 end
 
 replace !man, "wall", "5m", "35m"
@@ -19,7 +19,6 @@ end
 on before_win do
   # use set_counter to be compatible with other kin mods
   set_counter("kin", "count_matches", ["hand", "calls", "winning_tile"], ~m"nojoker, (35m 35p 35s 35t):1")
-  kin *= 3
 end
 
 define_yaku extra_yaku, "Kin", "kin", counter_at_least("kin", 1)
@@ -33,5 +32,5 @@ apply set_merge, "dora_indicators", %{
 
 # add tile indices for stars, tens, and so on
 apply set_merge, "custom_style.tile_indices", %{
-    "35t": "5"
+  "35t": "5"
 }
