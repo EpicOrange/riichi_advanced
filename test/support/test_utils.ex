@@ -157,9 +157,11 @@ defmodule RiichiAdvanced.TestUtils do
   end
 
   def get_rules!(ruleset, mods) do
-    assert {:ok, rules_ref} = ModLoader.get_ruleset_json(ruleset)
+    {ruleset_json, defs} = ModLoader.get_ruleset_json(ruleset)
+    assert {:ok, rules_ref} = ruleset_json
     |> ModLoader.strip_comments()
-    |> ModLoader.apply_mods(mods, ruleset)
+    |> ModLoader.apply_mods(mods, ruleset, %{}, defs)
+    |> elem(0)
     |> Rules.load_rules(ruleset)
     rules_ref
   end

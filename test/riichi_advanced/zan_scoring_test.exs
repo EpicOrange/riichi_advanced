@@ -481,7 +481,7 @@ defmodule RiichiAdvanced.ZanScoringTest do
   end
 
   test "kansai - end of game shuugi payments" do
-    TestUtils.test_yaku_advanced("zan", @zan_mods ++ [%{name: "dora", config: %{start_indicators: 1}}], """
+    TestUtils.test_yaku_advanced("zan", [%{name: "dora", config: %{start_indicators: 1}}] ++ @zan_mods, """
     {
       "starting_hand": {
         "east": ["1s", "2s", "3p", "2p", "3p", "4p", "3s", "4s", "0s", "2s", "3s", "4s", "4z"],

@@ -360,13 +360,13 @@ defmodule RiichiAdvanced.GameState do
 
     # read in the ruleset
     mods = Map.get(state, :mods, [])
-    ruleset_json = ModLoader.get_ruleset_json(state.ruleset, state.room_code, not Enum.empty?(mods))
+    {ruleset_json, defs} = ModLoader.get_ruleset_json(state.ruleset, state.room_code, not Enum.empty?(mods))
 
     # apply mods
-    ruleset_json = if state.ruleset != "custom" and not Enum.empty?(mods) do
-      ModLoader.apply_mods(ruleset_json, mods, state.ruleset)
-    else ruleset_json end
-    |> ModLoader.apply_post_mods(state.ruleset)
+    {ruleset_json, defs} = if state.ruleset != "custom" and not Enum.empty?(mods) do
+      ModLoader.apply_mods(ruleset_json, mods, state.ruleset, %{}, defs)
+    else {ruleset_json, defs} end
+    {ruleset_json, _defs} = ModLoader.apply_post_mods(ruleset_json, state.ruleset, defs)
     if not Enum.empty?(mods) do
       # cache mods
       RiichiAdvanced.ETSCache.put({state.ruleset, state.room_code}, mods, :cache_mods)

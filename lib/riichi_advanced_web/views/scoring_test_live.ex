@@ -201,6 +201,7 @@ defmodule RiichiAdvancedWeb.ScoringTestLive do
       # apply all default mods + config to base ruleset
       ModLoader.get_ruleset_json(ruleset, nil, true)
       |> ModLoader.apply_multiple_mods(mods)
+      |> elem(0)
       |> JQ.query_string_with_string!(ModLoader.convert_to_jq(config))
     end)
   end

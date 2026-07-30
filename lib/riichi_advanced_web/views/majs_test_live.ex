@@ -152,7 +152,7 @@ defmodule RiichiAdvancedWeb.MajsTestLive do
         ruleset_json = ModLoader.get_ruleset_json(ruleset)
         config_query = ModLoader.convert_to_jq(config)
         mods = get_enabled_mods(socket)
-        ruleset_json = ModLoader.apply_multiple_mods(ruleset_json, mods)
+        {ruleset_json, _} = ModLoader.apply_multiple_mods(ruleset_json, mods)
         ruleset_json = JQ.query_string_with_string!(ruleset_json, config_query)
         send(self, {:converted_majs, config, ruleset_json})
       end)

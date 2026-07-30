@@ -29,7 +29,7 @@ defmodule RiichiAdvanced.SimpleParseTest do
   test "parse all mods" do
     for ruleset_path <- Path.wildcard(Application.app_dir(:riichi_advanced, "/priv/static/rulesets/**.json")) do
       ruleset = Path.basename(ruleset_path, ".json")
-      ruleset_json = try do
+      {ruleset_json, defs} = try do
         ModLoader.get_ruleset_json(ruleset, nil, true)
       rescue
         e ->
@@ -76,7 +76,7 @@ defmodule RiichiAdvanced.SimpleParseTest do
         mod_specs = mod_specs ++ [mod.spec]
         # IO.inspect(mod_specs)
         try do
-          modded = ModLoader.apply_multiple_mods(ruleset_json, mod_specs)
+          {modded, _defs} = ModLoader.apply_multiple_mods(ruleset_json, mod_specs, %{}, defs)
           assert modded != nil, "Failed to apply mods #{inspect(mod_specs)} to ruleset #{ruleset})"
         rescue
           _ ->
@@ -107,8 +107,8 @@ defmodule RiichiAdvanced.SimpleParseTest do
           %{"name" => name, "config" => config} -> %{name: name, config: config}
           name -> name
         end)
-        ruleset_json = ModLoader.get_ruleset_json(ruleset, nil, true)
-        modded = ModLoader.apply_multiple_mods(ruleset_json, mod_specs)
+        {ruleset_json, defs} = ModLoader.get_ruleset_json(ruleset, nil, true)
+        {modded, _defs} = ModLoader.apply_multiple_mods(ruleset_json, mod_specs, %{}, defs)
         assert modded != nil, "Failed to apply mods #{inspect(mod_specs)} to ruleset #{ruleset})"
       else
         # it just means the tutorial file is not in the Constants.tutorials() map
