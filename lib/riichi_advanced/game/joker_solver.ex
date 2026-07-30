@@ -156,10 +156,6 @@ defmodule RiichiAdvanced.GameState.JokerSolver do
     yaku2 = Enum.map(yaku2, fn {name, value} -> {translate(state, name), value} end)
     points = Enum.map(yaku ++ yaku2, fn {_name, value} -> value end) |> Enum.reduce([], &Scoring.add_yaku_values/2)
 
-    # this bit is to support old scoring system, TODO remove
-    yaku2_overrides = not Enum.empty?(yaku2) and Map.get(score_rules, "yaku2_overrides_yaku1", false)
-    {yaku, yaku2} = if yaku2_overrides do {[], yaku2} else {yaku, yaku2} end
-
     {state, Map.merge(cxt, %{
       yaku: yaku,
       yaku2: yaku2,

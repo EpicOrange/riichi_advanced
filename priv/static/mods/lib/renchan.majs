@@ -4,8 +4,10 @@ on before_start do
       change_dealership("self")
       add_honba(1)
     else
-      delta_honba = -honba;
-      add_honba("delta_honba") # clear honba
+      if kyoku > 0 do
+        delta_honba = -honba;
+        add_honba("delta_honba") # clear honba
+      end
     end
   end
 end

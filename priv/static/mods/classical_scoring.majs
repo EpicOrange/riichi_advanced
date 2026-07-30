@@ -1,0 +1,33 @@
+on before_scoring do
+  make_responsible_for("others")
+end
+
+apply append, "score_calculation.yaku_lists", "meta_yaku"
+define_yaku meta_yaku, "Chicken Hand", [0, "Fan"], has_no_yaku
+
+define_scoring win do
+  total = 0
+  if points2 > 0 do
+    total = 500 :: "Limit"
+  else
+    total = points :: "Fan"
+    mult = 2 ** total :: "Doubling"
+    total = minipoints :: "Pts"
+    total *= mult :: "Base"
+    if seat_is("east", as: "winner") do
+      total *= 2 :: "Dealer mult"
+    end
+    if total > 500 do
+      total = 500 :: "Capped at 500"
+    end
+  end
+end
+replace all, "buttons", ["win_by_discard"], ["win_by_discard", "win"]
+replace all, "buttons", ["win_by_draw"], ["win_by_draw", "win"]
+replace all, "buttons", ["win_by_call"], ["win_by_call", "win"]
+
+on after_scoring do
+  as winner do
+    modify_winner("score", "total")
+  end
+end

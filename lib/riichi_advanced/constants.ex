@@ -554,7 +554,7 @@ defmodule RiichiAdvanced.Constants do
         %{name: "uma", config: %{_1st: 30, _2nd: 10, _3rd: -10, _4th: -30}},
         "agarirenchan",
         "tenpairenchan",
-        "tenpaiyame",
+        %{name: "tenpaiyame", config: %{first_place_only: true, may_choose: false, round: "all_last"}},
         "kuikae_nashi",
         "double_wind_4_fu",
         "kokushi_ankan_chankan",
@@ -608,10 +608,9 @@ defmodule RiichiAdvanced.Constants do
         "speed_tonpuu_pocchi",
         "suukaikan",
         "speed_tonpuu_suukantsu",
-        %{name: "shuugi/tobi", config: %{chips: 1}},
-        %{name: "shuugi/called_game", config: %{chips: 1}},
       ],
       default_mods: [
+        %{name: "yaku/riichi", config: %{bet: 1000, drawless: false}},
         %{name: "oka", config: %{ante: 4}},
         %{name: "uma", config: %{_1st: 10, _2nd: 4, _3rd: -4, _4th: -10}},
         %{name: "tobi", config: %{below: 0}},
@@ -620,6 +619,10 @@ defmodule RiichiAdvanced.Constants do
         %{name: "suufon_renda", config: %{name: "Suufon Renda"}},
         "suucha_riichi",
         %{name: "kyuushu_kyuuhai", config: %{name: "Kyuushu Kyuuhai"}},
+        "agarirenchan",
+        "tenpairenchan",
+        %{name: "agariyame", config: %{first_place_only: false, may_choose: true, round: "every"}},
+        %{name: "tenpaiyame", config: %{first_place_only: false, may_choose: true, round: "every"}},
         "kiriage_mangan",
         "double_round_wind",
         "immediate_kan_dora",
@@ -642,6 +645,8 @@ defmodule RiichiAdvanced.Constants do
         %{name: "shuugi/kin", config: %{chips: 1, closed_only: false}},
         "shuugi/oka",
         "shuugi/uma",
+        %{name: "shuugi/tobi", config: %{chips: 1}},
+        %{name: "shuugi/called_game", config: %{chips: 1}},
         "shuugi/placement_only_battle",
       ]
     },
@@ -752,6 +757,7 @@ defmodule RiichiAdvanced.Constants do
         %{name: "yaku/chiitoitsu", config: %{rules_tab: "4 Fan", list: "yaku", name: "Seven Pairs", value: 1, kansai: true}},
         %{name: "yaku/chankan", config: %{list: "yaku", name: "Robbing the Kong", value: 1}},
         "head_bump",
+        "agarirenchan",
         %{name: "default_flowers", config: %{
           undiscardable: true, auto_flower_by_default: true, draw_after_flowers: true,
           matching_flower_value: 1, matching_flower_han: "Fan",
@@ -799,6 +805,7 @@ defmodule RiichiAdvanced.Constants do
           chiihou_is_tsumo: true,
         }},
         "classical_fu",
+        "classical_scoring",
       ]
     },
     "tianjin" => %{

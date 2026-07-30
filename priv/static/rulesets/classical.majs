@@ -4,24 +4,15 @@ define_yaku yakuman, "Plucking the Moon from the Bottom of the Sea", [1, "Limit"
 define_yaku_precedence "All Honours", ["Round Wind", "Seat Wind", "All Triplets", "Half Flush", "All Terminals and Honors"]
 
 on before_scoring do
-  set_counter("dealer_repeats", "honba")
+  if seat_is("east") do
+    add_honba(1)
+  end
 end
-define_yaku yakuman, "Dealer's 13 Consecutive Win", [1, "Limit"], seat_is("east") and counter_at_least("dealer_repeats", 12)
+define_yaku yakuman, "Dealer's 13 Consecutive Win", [1, "Limit"], seat_is("east") and honba >= 12
+define_yaku_precedence yakuman, ["yaku"]
 
 set score_calculation, %{
-  scoring_method: ["han_fu_formula", "multiplier"],
-  score_multiplier: 500,
-  han_fu_starting_han: 0,
-  han_fu_multiplier: 1,
-  han_fu_rounding_factor: 1,
-  dealer_multiplier: 2,
-  self_draw_multiplier: 1,
-  dealer_self_draw_multiplier: 2,
-  max_score: 500,
-  yaku_lists: ["yaku"],
-  yaku2_lists: ["yakuman"],
-  yaku2_overrides_yaku1: true,
-  agarirenchan: true,
+  yaku_lists: ["yaku", "yakuman"],
   right_display: "minipoints",
   point_name: "Fan",
   point2_name: "Limit",
@@ -36,4 +27,3 @@ set score_calculation, %{
 }
 
 apply set_append, "interruptible_actions", ["play_tile", "draw"]
-
