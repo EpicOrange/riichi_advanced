@@ -7,7 +7,7 @@ end
 
 define_button conceal,
   display_name: "Conceal",
-  show_when: our_turn and has_score(1000) and not_just_discarded
+  show_when: our_turn and has_draw and has_score(1000) and not_just_discarded
   do
     big_text("Conceal")
     push_message("bet 1000 points to discard facedown")
