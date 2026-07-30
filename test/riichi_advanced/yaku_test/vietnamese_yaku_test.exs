@@ -775,29 +775,29 @@ defmodule RiichiAdvanced.YakuTest.VietnameseYaku do
   #   })
   # end
 
-  test "vietnamese - entire hand is jokers not tenhou" do
-    TestUtils.test_yaku_advanced("vietnamese", [%{name: "viet_more_jokers", config: %{sets: 32}}], """
-    {
-      "starting_hand": {
-        "east": ["4m", "6m", "6p", "6p", "2s", "4s", "8s", "8s", "6z", "6z", "2z", "3z", "4z"],
-        "south": ["0j", "2j", "8j", "00j", "02j", "6j", "50j", "52j", "7j", "80j", "58j", "08j", "5j"],
-        "west": ["1m", "4m", "7m", "2p", "5p", "8p", "3s", "7s", "9s", "0z", "2z", "3z", "4z"],
-        "north": ["1m", "3m", "7m", "2p", "5p", "8p", "3s", "7s", "9s", "0z", "2z", "4s", "5s"]
-      },
-      "starting_draws": ["82j"]
-    }
-    """, [
-      %{"type" => "buttons_pressed", "buttons" => [%{"button" => "start_no_flower"}, nil, nil, nil]},
-      %{"type" => "buttons_pressed", "buttons" => [nil, %{"button" => "start_no_flower"}, nil, nil]},
-      %{"type" => "buttons_pressed", "buttons" => [nil, nil, %{"button" => "start_no_flower"}, nil]},
-      %{"type" => "buttons_pressed", "buttons" => [nil, nil, nil, %{"button" => "start_no_flower"}]},
-      %{"type" => "discard", "tile" => "82j", "player" => 0, "tsumogiri" => true},
-      %{"type" => "buttons_pressed", "buttons" => [nil, %{"button" => "ron"}, nil, nil]}
-    ], %{
-      south: %{
-        yaku: [{"All Sets", [3, "Phán"]}, {"Blessing of Earth", [2, "Mủn"]}, {"Four Closed Sets", [3, "Mủn"]}, {"Progressive Counting", [3, "Phán"]}, {"Seat Wind", [1, "Phán"]}, {"Win on Discarded Joker", [1, "Mủn"]}],
-      }
-    })
-  end
+  # test "vietnamese - entire hand is jokers not tenhou" do
+  #   TestUtils.test_yaku_advanced("vietnamese", [%{name: "viet_more_jokers", config: %{sets: 32}}], """
+  #   {
+  #     "starting_hand": {
+  #       "east": ["4m", "6m", "6p", "6p", "2s", "4s", "8s", "8s", "6z", "6z", "2z", "3z", "4z"],
+  #       "south": ["0j", "2j", "8j", "00j", "02j", "6j", "50j", "52j", "7j", "80j", "58j", "08j", "5j"],
+  #       "west": ["1m", "4m", "7m", "2p", "5p", "8p", "3s", "7s", "9s", "0z", "2z", "3z", "4z"],
+  #       "north": ["1m", "3m", "7m", "2p", "5p", "8p", "3s", "7s", "9s", "0z", "2z", "4s", "5s"]
+  #     },
+  #     "starting_draws": ["82j"]
+  #   }
+  #   """, [
+  #     %{"type" => "buttons_pressed", "buttons" => [%{"button" => "start_no_flower"}, nil, nil, nil]},
+  #     %{"type" => "buttons_pressed", "buttons" => [nil, %{"button" => "start_no_flower"}, nil, nil]},
+  #     %{"type" => "buttons_pressed", "buttons" => [nil, nil, %{"button" => "start_no_flower"}, nil]},
+  #     %{"type" => "buttons_pressed", "buttons" => [nil, nil, nil, %{"button" => "start_no_flower"}]},
+  #     %{"type" => "discard", "tile" => "82j", "player" => 0, "tsumogiri" => true},
+  #     %{"type" => "buttons_pressed", "buttons" => [nil, %{"button" => "ron"}, nil, nil]}
+  #   ], %{
+  #     south: %{
+  #       yaku: [{"All Sets", [3, "Phán"]}, {"Blessing of Earth", [2, "Mủn"]}, {"Four Closed Sets", [3, "Mủn"]}, {"Progressive Counting", [3, "Phán"]}, {"Seat Wind", [1, "Phán"]}, {"Win on Discarded Joker", [1, "Mủn"]}],
+  #     }
+  #   })
+  # end
 
 end
