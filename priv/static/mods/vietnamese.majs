@@ -29,10 +29,10 @@ on after_initialization do
   add_rule("Tiles", "Base Tiles", "- Plus 8 to 32 Joker tiles %{jokers}", %{jokers: ~t"07892456j"})
   add_rule("Rules", "Discarding Flowers/Jokers", "A discarded flower acts as an anything-joker, but can only be claimed for a win.")
   add_rule("Rules", "Discarding Flowers/Jokers", "A discarded joker can also only be claimed for a win, but it acts as itself, not an anything-joker.")
-  add_rule("Rules", "Discarding Flowers/Jokers", "You cannot discard most jokers after the initial flower phase, unless you are going for a No Flowers No Leaves hand. Exception: you can always discard Anything (縂) and Number (合) jokers.")
+  add_rule("Rules", "Discarding Flowers/Jokers", "You can discard Anything (縂) and Number (合) jokers at any time during your turn. However, other jokers cannot be discarded after the initial flower phase, unless you are going for a No Flowers No Leaves hand.")
   add_rule("Rules", "Scoring", """
     Upon a win, every 6 Phán is converted to 1 Mủn. If there are any Mủn, each Mủn is 32 points. Otherwise, 1/2/3/4/5 Phán is 1/2/4/8/16 points. This is your Single payment; double it to get the Double payment.
-    Afterwards, if Mủn was scored, any leftover Phán adds 6 points to the Single payment and 6 (not 12) points to the Double payment.
+    Afterwards, if Mủn was scored, any leftover Phán adds 6 points to the Single payment and 6 points to the Double payment (not doubled to 12).
     In event of a win-by-discard (or by Robbing a Quad), the discarder (or caller) pays Double and the two other players pay Single.
     In event of a win-by-draw, all three other players pay Double.
     Exception: a 0 Phán hand (Mosquito Hand) scores both a Single and Double payment of 1.

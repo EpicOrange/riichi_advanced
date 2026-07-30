@@ -1,5 +1,5 @@
 on after_initialization do
-  add_rule("Rules", "Flowers", "- Vietnamese mahjong additionally includes 4 kings %{kings}, 4 %{queens}, and the flower joker %{hoa} as additional flower tiles.", %{kings: ~t"1234k", queens: ~t"1234q"});
+  add_rule("Rules", "Flowers", "- Vietnamese mahjong additionally includes 4 kings %{kings}, 4 queens %{queens}, and the flower joker %{hoa} as additional flower tiles.", %{kings: ~t"1234k", queens: ~t"1234q", hoa: ~t"9j"});
 end
 
 # expand all_flowers to include 1-4k, 1-4q, 9j

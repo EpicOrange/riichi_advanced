@@ -1,8 +1,9 @@
 on after_initialization do
-  add_rule("Rules", "Flowers", """
+  add_rule("Rules", "Flowers",
+  """
   %{all_flowers}
   - Flower tiles must be declared and replaced by a draw from the back of the wall.
-  - A flower tile is worth %{value} %{han} if its number matches your seat (1=east, 2=south, 3=west, 4=north).
+  - A flower tile is worth %{value} %{han} if its number matches your seat (1=east, 2=south, 3=west, 4=north).\
   """, %{
     all_flowers: @all_flowers,
     value: !matching_flower_value, han: !matching_flower_han,
@@ -16,9 +17,7 @@ on after_initialization do
     end
   end
   if !four_flowers_value > 0 do
-    add_rule("Rules", "Flowers", """
-    - Having all 4 flower tiles of the same set is instead worth %{four_flowers_value} %{four_flowers_han}.
-    """, %{four_flowers_value: !four_flowers_value, four_flowers_han: !four_flowers_han})
+    add_rule("Rules", "Flowers", "- Having all 4 flower tiles of the same set is instead worth %{four_flowers_value} %{four_flowers_han}.", %{four_flowers_value: !four_flowers_value, four_flowers_han: !four_flowers_han})
   end
 end
 
