@@ -483,6 +483,7 @@ defmodule RiichiAdvanced.GameState.Actions do
     "count_matching_ways",
     "tiles_in_wall",
     "num_discards",
+    "num_passed_discards",
     "num_aside",
     "num_facedown_tiles",
     "num_facedown_tiles_others",
@@ -536,6 +537,7 @@ defmodule RiichiAdvanced.GameState.Actions do
         Enum.count(hand_calls, fn {hand, calls} -> Match.match_hand(hand, calls, match_definitions, tile_behavior) end)
       ["tiles_in_wall" | _opts] -> length(state.wall) - state.wall_index
       ["num_discards" | _opts] -> length(state.players[context.seat].discards)
+      ["num_passed_discards" | _opts] -> length(state.players[context.seat].pond)
       ["num_aside" | _opts] -> length(state.players[context.seat].aside)
       ["num_facedown_tiles" | _opts] -> Utils.count_tiles(state.players[context.seat].pond, [:"1x"])
       ["num_facedown_tiles_others" | _opts] ->
@@ -794,6 +796,11 @@ defmodule RiichiAdvanced.GameState.Actions do
     l = eval_expression(state, context, l)
     r = eval_expression(state, context, r)
     Integer.floor_div(l, r)
+  end
+  defp eval_expression(state, context, ["mod", [l, r]]) do
+    l = eval_expression(state, context, l)
+    r = eval_expression(state, context, r)
+    rem(l, r)
   end
   defp eval_expression(state, context, v), do: interpret_amount(state, context, v)
   defp counter_assignment(state, context, display_name, counter_name, op, rhs) do

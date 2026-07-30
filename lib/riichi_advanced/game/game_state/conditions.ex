@@ -518,7 +518,7 @@ defmodule RiichiAdvanced.GameState.Conditions do
           end
           Match.match_hand(cxt_player.hand, cxt_player.calls, [[[[match_group], 4]]], cxt_player.tile_behavior)
         end)
-      "third_row_discard"   -> length(cxt_player.pond) >= 12
+      "third_row_discard"   -> length(cxt_player.pond) >= 12 # TODO replace with num_passed_discards counter
       "tiles_in_hand"       -> length(cxt_player.hand ++ cxt_player.draw) in opts
       "anyone"              -> Enum.any?(state.players, fn {seat, _player} -> check_cnf_condition(state, opts, %{seat: seat}) end)
       "dice_equals"         -> Enum.sum(state.dice) in opts

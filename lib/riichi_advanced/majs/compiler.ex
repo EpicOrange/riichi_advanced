@@ -54,7 +54,7 @@ defmodule RiichiAdvanced.Compiler do
   use RiichiAdvanced.ValidatorStrings
 
   @unops [:-, "round_up", "round_down", "round"]
-  @binops [:+, :-, :*, :/, :**, :=, "round_up", "round_down", "round", "floor_div"]
+  @binops [:+, :-, :*, :/, :**, :=, "round_up", "round_down", "round", "floor_div", "mod"]
   # "atan2", "copysign", "drem", "fdim", "fmax", "fmin", "fmod", "frexp", "hypot", "jn", "ldexp",
   # "modf", "nextafter", "nexttoward", "pow", "remainder", "scalb", "scalbln", "yn"
 
