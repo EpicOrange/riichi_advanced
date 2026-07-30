@@ -706,7 +706,7 @@ defmodule RiichiAdvanced.YakuTest.VietnameseYaku do
     {
       "starting_hand": {
         "east": ["1m", "2m", "3m", "5m", "6m", "7m", "3p", "4p", "5p", "1s", "2s", "3s", "5j"],
-        "south": ["3m", "6m", "3p", "4s", "7s", "7s", "3z", "3z", "50j", "06j", "02j", "5j", "85j"],
+        "south": ["3m", "6m", "3p", "4s", "7s", "7s", "3z", "3z", "50j", "06j", "02j", "55j", "85j"],
         "west": ["1m", "4m", "7m", "2p", "5p", "8p", "3s", "7s", "9s", "0z", "2z", "3z", "4z"],
         "north": ["1m", "3m", "7m", "2p", "5p", "8p", "3s", "7s", "9s", "0z", "2z", "4s", "5s"]
       },
@@ -721,7 +721,7 @@ defmodule RiichiAdvanced.YakuTest.VietnameseYaku do
       %{"type" => "buttons_pressed", "buttons" => [nil, %{"button" => "ron"}, nil, nil]}
     ], %{
       south: %{
-        yaku: [{"Blessing of Earth", [2, "Mủn"]}, {"Seven Pairs", [1, "Phán"]}],
+        yaku: [{"Blessing of Earth", [2, "Mủn"]}, {"Seven Pairs", [1, "Mủn"]}],
       }
     })
   end

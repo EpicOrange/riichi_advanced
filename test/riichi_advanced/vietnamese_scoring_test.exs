@@ -11,7 +11,7 @@ defmodule RiichiAdvanced.YakuTest.VietnameseScoring do
         "west": ["2m", "4m", "6m", "2p", "5p", "8p", "3s", "7s", "9s", "0z", "2z", "3z", "4z"],
         "north": ["1m", "1z", "1m", "4m", "1z", "4m", "7m", "1z", "7m", "5m", "5m", "6m", "1z"]
       },
-      "starting_draws": ["1m", "4m", "7m", "5m", "8j"],
+      "starting_draws": ["1m", "4m", "7m", "5m", "2j"],
       "starting_dead_wall": ["5s"]
     }
     """, [
@@ -31,7 +31,7 @@ defmodule RiichiAdvanced.YakuTest.VietnameseScoring do
       %{"type" => "discard", "tile" => "5m", "player" => 0, "tsumogiri" => true},
       %{"type" => "buttons_pressed", "buttons" => [nil, nil, nil, %{"button" => "pon"}]},
       %{"type" => "discard", "tile" => "1z", "player" => 3, "tsumogiri" => false},
-      %{"type" => "discard", "tile" => "8j", "player" => 0, "tsumogiri" => true},
+      %{"type" => "discard", "tile" => "2j", "player" => 0, "tsumogiri" => true},
       %{"type" => "buttons_pressed", "buttons" => [nil, nil, nil, %{"button" => "ron"}]},
     ], %{
       north: %{
