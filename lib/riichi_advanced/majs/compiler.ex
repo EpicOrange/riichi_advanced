@@ -936,6 +936,8 @@ defmodule RiichiAdvanced.Compiler do
          {:ok, names} <- Enum.map(names, &Jason.encode/1) |> Utils.sequence() do
       {:ok, ~s"""
       .available_mods |= map(select(type != "object" or (.id | IN(#{Enum.join(names, ",")}) | not)))
+      |
+      .default_mods |= . - [#{Enum.join(names, ",")}]
       """}
     end
   end

@@ -2975,6 +2975,23 @@ div.game-modal-container > div.timer {
   z-index: 1;
 }
 
+/* pass dealership toggle */
+div.game-modal-container > div.renchan-choice-container {
+  position: absolute;
+  right: calc(-0.25 * var(--tile-size));
+  bottom: calc(0.75 * var(--tile-size));
+  z-index: 1;
+}
+div.game-modal-container > div.renchan-choice-container > label {
+  font-size: calc(0.5 * var(--tile-size));
+  color: white;
+  width: calc(2.5 * var(--tile-size));
+  white-space: wrap;
+  text-align: left;
+  cursor: pointer;
+  pointer-events: all;
+}
+
 /* error box */
 div.game-modal.error-window {
   color: white;

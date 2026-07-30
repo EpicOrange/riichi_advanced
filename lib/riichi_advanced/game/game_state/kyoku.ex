@@ -43,12 +43,9 @@ defmodule RiichiAdvanced.GameState.Kyoku do
         state
       state.visible_screen == :winner -> # need to see score exchange screen
         # since seeing this screen means we're done with all the winners so far, calculate the delta scores
-        {state, delta_scores, delta_scores_reason, next_dealer} = Scoring.adjudicate_win_scoring(state)
+        {state, delta_scores, delta_scores_reason, _next_dealer} = Scoring.adjudicate_win_scoring(state)
         state = Map.put(state, :delta_scores, delta_scores)
-
         state = Map.put(state, :delta_scores_reason, delta_scores_reason)
-        # only populate next_dealer the first time we call Scoring.adjudicate_win_scoring
-        state = if state.next_dealer == nil do Map.put(state, :next_dealer, next_dealer) else state end
 
         state = if Rules.get(state.rules_ref, "bloody_end", false) and state.round_result != :continue do
           push_message(state, [%{text: "Game ended after three winners"}])
@@ -107,25 +104,6 @@ defmodule RiichiAdvanced.GameState.Kyoku do
         end
         state = Log.finalize_kyoku(state)
 
-        # check for tobi and called game
-        state = case Rules.get(state.rules_ref, "score_calculation") do
-          nil -> state
-          score_calculation ->
-            state = if is_number(Map.get(score_calculation, "tobi")) do
-              tobi = Map.get(score_calculation, "tobi", 0)
-              if Enum.any?(state.players, fn {_seat, player} -> player.score < tobi end) do
-                Map.put(state, :round_result, :end_game)
-              else state end
-            else state end
-            state = if is_number(Map.get(score_calculation, "called_game")) do
-              called_game = Map.get(score_calculation, "called_game", 0)
-              if Enum.any?(state.players, fn {_seat, player} -> player.score > called_game end) do
-                Map.put(state, :round_result, :end_game)
-              else state end
-            else state end
-            state
-        end
-
         # finish or initialize new round if needed, otherwise continue
         state = if state.round_result != :continue do
           if should_end_game(state) do
@@ -134,39 +112,24 @@ defmodule RiichiAdvanced.GameState.Kyoku do
             if not state.log_seeking_mode do
               # update starting score for the round
               state = update_all_players(state, fn _seat, player -> %{ player | start_score: player.score } end)
-              # clear delta scores (TODO is :delta_scores really a control variable then?)
+              # clear delta scores
               state = Map.put(state, :delta_scores, %{})
-              # update kyoku and honba
-              state = case state.round_result do
-                :win when state.next_dealer == :self ->
-                  state
-                    |> Map.update!(:honba, & &1 + 1)
-                    |> Map.put(:visible_screen, nil)
-                :win ->
-                  state
-                    |> Map.update!(:kyoku, & &1 + 1)
-                    |> Map.put(:honba, 0)
-                    |> Map.put(:visible_screen, nil)
-                :exhaustive_draw when state.next_dealer == :self ->
-                  state
-                    |> Map.update!(:honba, & &1 + 1)
-                    |> Map.put(:visible_screen, nil)
-                :exhaustive_draw ->
-                  state
-                    |> Map.update!(:kyoku, & &1 + 1)
-                    |> Map.update!(:honba, & &1 + 1)
-                    |> Map.put(:visible_screen, nil)
-                :abortive_draw when state.next_dealer == :self ->
-                  state
-                    |> Map.update!(:honba, & &1 + 1)
-                    |> Map.put(:visible_screen, nil)
-                :abortive_draw ->
-                  state
-                    |> Map.update!(:kyoku, & &1 + 1)
-                    |> Map.update!(:honba, & &1 + 1)
-                    |> Map.put(:visible_screen, nil)
-                :continue -> state
-                :end_game -> state
+
+              state = if state.round_result == :continue or state.round_result == :end_game do
+                state
+              else
+                state = Map.put(state, :visible_screen, nil)
+                # add to kyoku based on next dealer's seat
+                dealer = Riichi.get_east_player_seat(state.kyoku, state.available_seats)
+                IO.inspect({dealer, state.next_dealer})
+                kyoku = state.kyoku + case Utils.get_relative_seat(dealer, state.next_dealer) do
+                  :shimocha -> 1
+                  :toimen   -> 2
+                  :kamicha  -> 3
+                  :self     -> 0
+                end
+                state = Map.put(state, :kyoku, kyoku)
+                state
               end
               initialize_new_round(state)
             else
@@ -205,6 +168,8 @@ defmodule RiichiAdvanced.GameState.Kyoku do
     state = update_all_players(state, fn _seat, player -> %{ player | last_discard: nil } end)
 
     state = Map.put(state, :game_active, false)
+    dealer = Riichi.get_east_player_seat(state.kyoku, state.available_seats)
+    state = Map.put(state, :next_dealer, dealer)
     state = Map.put(state, :visible_screen, :winner)
     state = start_timer(state)
 
@@ -260,10 +225,11 @@ defmodule RiichiAdvanced.GameState.Kyoku do
 
     state = Map.put(state, :game_active, false)
 
-    {state, delta_scores, delta_scores_reason, next_dealer} = Scoring.adjudicate_draw_scoring(state)
+    {state, delta_scores, delta_scores_reason, _next_dealer} = Scoring.adjudicate_draw_scoring(state)
     state = Map.put(state, :delta_scores, delta_scores)
     state = Map.put(state, :delta_scores_reason, if draw_name do draw_name else delta_scores_reason end)
-    state = Map.put(state, :next_dealer, next_dealer)
+    dealer = Riichi.get_east_player_seat(state.kyoku, state.available_seats)
+    state = Map.put(state, :next_dealer, dealer)
 
     # run after_scoring actions
     state = Actions.trigger_event(state, "after_scoring", %{seat: state.turn})
@@ -296,7 +262,8 @@ defmodule RiichiAdvanced.GameState.Kyoku do
     delta_scores = Map.new(state.players, fn {seat, _player} -> {seat, 0} end)
     state = Map.put(state, :delta_scores, delta_scores)
     state = Map.put(state, :delta_scores_reason, if draw_name do draw_name else "Abortive Draw" end)
-    state = Map.put(state, :next_dealer, :self)
+    dealer = Riichi.get_east_player_seat(state.kyoku, state.available_seats)
+    state = Map.put(state, :next_dealer, dealer)
 
     # run after_scoring actions
     state = Actions.trigger_event(state, "after_scoring", %{seat: state.turn})
@@ -309,12 +276,9 @@ defmodule RiichiAdvanced.GameState.Kyoku do
 
   def should_end_game(state) do
     forced = state.round_result == :end_game # e.g. tobi
-    dealer = Riichi.get_east_player_seat(state.kyoku, state.available_seats)
-    agariyame = Rules.get(state.rules_ref, "agariyame", false) and state.round_result == :win and dealer in state.winner_seats
-    tenpaiyame = Rules.get(state.rules_ref, "tenpaiyame", false) and state.round_result in [:exhaustive_draw, :abortive_draw] and "tenpai" in state.players[dealer].status
     max_rounds = Rules.get(state.rules_ref, "max_rounds", :infinity)
     past_max_rounds = state.kyoku >= max_rounds - 1
-    forced or (agariyame and past_max_rounds) or (tenpaiyame and past_max_rounds) or if Rules.has_key?(state.rules_ref, "sudden_death_goal") do
+    forced or if Rules.has_key?(state.rules_ref, "sudden_death_goal") do
       above_goal = Enum.any?(state.players, fn {_seat, player} -> player.score >= Rules.get(state.rules_ref, "sudden_death_goal") end)
       past_extra_max_rounds = state.kyoku >= max_rounds + 3
       (above_goal and past_max_rounds) or past_extra_max_rounds
@@ -570,7 +534,7 @@ defmodule RiichiAdvanced.GameState.Kyoku do
       end
     end
     |> Payment.get_highest_scoring_txn(win_source == :worst_discard)
-
+    
     # kill the 0.5s timer if it's still sleeping
     if Task.yield(notify_task, 0) == nil do
       Task.shutdown(notify_task, :brutal_kill)

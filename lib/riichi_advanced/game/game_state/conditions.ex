@@ -638,6 +638,7 @@ defmodule RiichiAdvanced.GameState.Conditions do
         list = Enum.at(opts, 0, "yaku")
         name = Enum.at(opts, 1, "Riichi")
         Enum.any?(Rules.get(state.rules_ref, list, []), & &1["display_name"] == name)
+      "all_last"            -> state.kyoku >= Rules.get(state.rules_ref, "max_rounds", 0) - 1
       _                     ->
         IO.puts "Unhandled condition #{inspect(cond_spec)}"
         false

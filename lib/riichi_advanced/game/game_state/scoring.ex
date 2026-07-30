@@ -64,7 +64,8 @@ defmodule RiichiAdvanced.GameState.Scoring do
         excluded_yaku = if Enum.empty?(new_yaku) do [] else Map.get(yaku_precedence, yaku_list_name, []) end ++ excluded_yaku
         if Debug.debug_yaku_precedence() and Enum.any?(eligible_yaku, fn {name, _value} -> name in excluded_yaku end) do
           used_precedence = Enum.filter(yaku_precedence, fn {from, _to} -> Enum.any?(eligible_yaku, fn {name, _value} -> from == name end) or from == yaku_list_name end) |> Map.new()
-          IO.puts("Excluding yaku #{inspect(excluded_yaku)} from #{inspect(eligible_yaku)} due to precedence: #{inspect(used_precedence)}")
+          ret = Enum.reject(eligible_yaku, fn {name, value} -> Enum.any?(excluded_yaku, &Enum.member?([name | List.wrap(value)], &1)) end)
+          IO.puts("Excluding yaku\n- #{inspect(excluded_yaku)}\nfrom\n- #{inspect(eligible_yaku)}\ndue to precedence:\n- #{inspect(used_precedence)}\nleaving:\n- #{inspect(ret)}")
         end
         Enum.reject(eligible_yaku, fn {name, value} -> Enum.any?(excluded_yaku, &Enum.member?([name | List.wrap(value)], &1)) end)
     end

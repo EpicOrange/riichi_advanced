@@ -564,10 +564,6 @@ define_mod honba, name: "Honba", order: -1, desc: "Enables honba."
 config_mod honba, name: "value", values: [100, 500, 1000]
 define_mod nagashi, name: "Nagashi", order: -1, desc: "Enable nagashi mangan. When you discards are all terminals and honors at exhaustive draw, and none of your discards have been called, then you are paid mangan tsumo at draw."
 config_mod nagashi, name: "is", values: ["Mangan", "Haneman", "Baiman", "Sanbaiman", "Yakuman"]
-define_mod tobi, name: "Tobi", order: -1, desc: "Enable busting. Once anyone's points is reduced below zero (or the specified value), the game ends."
-config_mod tobi, name: "below", values: [0, 1, 1000, 1001]
-define_mod called_game, name: "Called Game", order: -1, desc: "Enable called game. Once anyone's points reaches above 54999 (or the specified value), the game ends."
-config_mod called_game, name: "above", values: [49999, 50000, 54999, 55000], default: 54999
 define_mod uma, name: "Uma", desc: "Enable uma. At the end of the game, points are awarded or deducted based on placement."
 config_mod uma, name: "_1st", values: [-30,-25,-20,-15,-10,-5,0,5,10,15,20,25,30], default: 10
 config_mod uma, name: "_2nd", values: [-30,-25,-20,-15,-10,-5,0,5,10,15,20,25,30], default: 5
@@ -575,13 +571,6 @@ config_mod uma, name: "_3rd", values: [-30,-25,-20,-15,-10,-5,0,5,10,15,20,25,30
 config_mod uma, name: "_4th", values: [-30,-25,-20,-15,-10,-5,0,5,10,15,20,25,30], default: -10
 define_mod oka, name: "Oka", desc: "Enable oka. Everyone antes the given amount, and the total is awarded to first place at the end of the game."
 config_mod oka, name: "ante", values: [5,10,15,20,25,30], default: 5
-define_mod agarirenchan, name: "Agarirenchan", desc: "A round repeats if the dealer wins."
-define_mod tenpairenchan, name: "Tenpairenchan", desc: "A round repeats if the dealer is tenpai at draw."
-define_mod agariyame, deps: ["agarirenchan"], name: "Agariyame", desc: "All Last doesn't repeat if the dealer is first place and wins."
-define_mod tenpaiyame, deps: ["tenpairenchan"], name: "Tenpaiyame", desc: "All Last doesn't repeat if the dealer is in first place and is tenpai at draw."
-define_mod sudden_death, name: "Sudden Death", desc: "Sets the goal points before the game can end. If the game reaches South 4 (or East 4, in the case of tonpuu) and every player is below [goal] points, play continues to the West (South) round until someone surpasses [goal] points, or at the end of West 4 (South 4)."
-config_mod sudden_death, name: "goal", values: [10000,15000,20000,25000,30000,35000,40000,45000,50000], default: 30000
-define_mod tonpuu, name: "Tonpuu", desc: "Limit the game to the East round only."
 define_mod kuitan_nashi, name: "Kuitan Nashi", desc: "Disallow open tanyao."
 define_mod kuikae_nashi, name: "Kuikae Nashi", desc: "Disallow swap-calling."
 define_mod kiriage_mangan, order: -1, name: "Kiriage Mangan", desc: "3 han 60 fu and 4 han 30 fu are worth mangan."
@@ -608,6 +597,24 @@ define_mod kokushi_ankan_chankan, name: "Kokushi Chankan", desc: "Allow robbing 
 define_mod first_gets_riichi_sticks, deps: ["yaku/riichi"], name: "First Gets Riichi Sticks", desc: "At the end of the game, all leftover riichi sticks on the table are given to first place. (Otherwise they are lost.)"
 define_mod starting_score, order: -2, name: "Starting Points", desc: "Number of points each player starts with. You can also set this by writing the following in the Config tab: \"initial_score\": 100000"
 config_mod starting_score, name: "points", values: [0,5000,10000,15000,20000,25000,30000,35000,40000,45000,50000,100000], default: 25000
+define_mod_category "Endgames"
+define_mod tonpuu, name: "Tonpuu", desc: "Limit the game to the East round only."
+define_mod tobi, name: "Tobi", order: -1, desc: "Enable busting. Once anyone's points is reduced below zero (or the specified value), the game ends."
+config_mod tobi, name: "below", values: [0, 1, 1000, 1001]
+define_mod called_game, name: "Called Game", order: -1, desc: "Enable called game. Once anyone's points reaches above 54999 (or the specified value), the game ends."
+config_mod called_game, name: "above", values: [49999, 50000, 54999, 55000], default: 54999
+define_mod agarirenchan, name: "Agarirenchan", desc: "A round repeats if the dealer wins."
+define_mod tenpairenchan, name: "Tenpairenchan", desc: "A round repeats if the dealer is tenpai at draw."
+define_mod agariyame, deps: ["agarirenchan"], name: "Agariyame", desc: "All Last doesn't repeat if the dealer is first place and wins."
+config_mod agariyame, name: "round", values: ["all_last", "every"], default: "all_last"
+config_mod agariyame, name: "first_place_only", values: [false, true], default: true
+config_mod agariyame, name: "may_choose", values: [false, true], default: false
+define_mod tenpaiyame, deps: ["tenpairenchan"], name: "Tenpaiyame", desc: "All Last doesn't repeat if the dealer is in first place and is tenpai at draw."
+config_mod tenpaiyame, name: "round", values: ["all_last", "every"], default: "all_last"
+config_mod tenpaiyame, name: "first_place_only", values: [false, true], default: true
+config_mod tenpaiyame, name: "may_choose", values: [false, true], default: false
+define_mod sudden_death, name: "Sudden Death", desc: "Sets the goal points before the game can end. If the game reaches South 4 (or East 4, in the case of tonpuu) and every player is below [goal] points, play continues to the West (South) round until someone surpasses [goal] points, or at the end of West 4 (South 4)."
+config_mod sudden_death, name: "goal", values: [10000,15000,20000,25000,30000,35000,40000,45000,50000], default: 30000
 define_mod_category "Abortive Draws"
 define_mod suufon_renda, name: "Suufon Renda", desc: "Enable 4 wind abortive draw."
 config_mod suufon_renda, name: "name", values: ["Suufon Renda"]
@@ -763,8 +770,10 @@ config_mod "shuugi/ao", name: "closed_only", values: [false, true], default: fal
 define_mod "shuugi/kin", order: 4, name: "Kin", deps: ["shuugi", "kin"], desc: "Each kin dora scores shuugi."
 config_mod "shuugi/kin", name: "chips", values: [1, 2, 3, 4, 5]
 config_mod "shuugi/kin", name: "closed_only", values: [false, true], default: false
-define_mod "shuugi/oka", order: 4, name: "Oka", deps: ["shuugi", "Oka"], desc: "Oka applies directly to chips."
-define_mod "shuugi/uma", order: 4, name: "Uma", deps: ["shuugi", "Uma"], desc: "Uma applies directly to chips."
+define_mod "shuugi/oka", order: 4, name: "Oka", deps: ["shuugi", "oka"], desc: "Oka applies directly to chips."
+define_mod "shuugi/uma", order: 4, name: "Uma", deps: ["shuugi", "uma"], desc: "Uma applies directly to chips."
+define_mod "shuugi/tobi", order: 4, name: "Tobi", deps: ["shuugi", "tobi"], desc: "If a player busts, they pay 1 chip to every player."
+define_mod "shuugi/called_game", order: 4, name: "Called Game", deps: ["shuugi", "called_game"], desc: "If a player reaches the called game score, they receive 1 chip from every player."
 define_mod "shuugi/placement_only_battle", order: 5, name: "Placement-Only Battle", desc: "Final scores are completely determined by oka and uma, using the final score to determine ranking."
 define_mod_category "Other"
 define_mod cancellable_riichi, order: 1, deps: ["yaku/riichi"], name: "Cancellable Riichi", desc: "Riichi declarations happen only after you confirm by discarding a tile."
@@ -811,8 +820,8 @@ define_preset "Mahjong Soul", [
   %{name: "uma", config: %{_1st: 15, _2nd: 5, _3rd: -5, _4th: -15}},
   "agarirenchan",
   "tenpairenchan",
-  "agariyame",
-  "tenpaiyame",
+  %{name: "agariyame", config: %{first_place_only: true, may_choose: false, round: "all_last"}},
+  %{name: "tenpaiyame", config: %{first_place_only: true, may_choose: false, round: "all_last"}},
   %{name: "sudden_death", config: %{goal: 30000}},
   "kuikae_nashi",
   "double_wind_4_fu",
@@ -841,8 +850,8 @@ define_preset "tenhou.net", [
   %{name: "uma", config: %{_1st: 20, _2nd: 10, _3rd: -10, _4th: -20}},
   "agarirenchan",
   "tenpairenchan",
-  "agariyame",
-  "tenpaiyame",
+  %{name: "agariyame", config: %{first_place_only: true, may_choose: false, round: "all_last"}},
+  %{name: "tenpaiyame", config: %{first_place_only: true, may_choose: false, round: "all_last"}},
   %{name: "sudden_death", config: %{goal: 30000}},
   "kuikae_nashi",
   "double_wind_4_fu",
@@ -872,8 +881,8 @@ define_preset "Riichi City", [
   %{name: "uma", config: %{_1st: 30, _2nd: 10, _3rd: -10, _4th: -30}},
   "agarirenchan",
   "tenpairenchan",
-  "agariyame",
-  "tenpaiyame",
+  %{name: "agariyame", config: %{first_place_only: true, may_choose: false, round: "all_last"}},
+  %{name: "tenpaiyame", config: %{first_place_only: true, may_choose: false, round: "all_last"}},
   %{name: "sudden_death", config: %{goal: 30000}},
   "kuikae_nashi",
   "double_wind_4_fu",
@@ -905,8 +914,8 @@ define_preset "Amatsuki Mahjong", [
   %{name: "uma", config: %{_1st: 10, _2nd: 5, _3rd: -5, _4th: -10}},
   "agarirenchan",
   "tenpairenchan",
-  "agariyame",
-  "tenpaiyame",
+  %{name: "agariyame", config: %{first_place_only: true, may_choose: false, round: "all_last"}},
+  %{name: "tenpaiyame", config: %{first_place_only: true, may_choose: false, round: "all_last"}},
   %{name: "sudden_death", config: %{goal: 30000}},
   "kuikae_nashi",
   "double_wind_4_fu",
@@ -982,8 +991,8 @@ define_preset "M.League", [
   %{name: "oka", config: %{ante: 5}},
   "agarirenchan",
   "tenpairenchan",
-  "agariyame",
-  "tenpaiyame",
+  %{name: "agariyame", config: %{first_place_only: true, may_choose: false, round: "all_last"}},
+  %{name: "tenpaiyame", config: %{first_place_only: true, may_choose: false, round: "all_last"}},
   "kuikae_nashi",
   "head_bump",
   "pao",
@@ -1013,8 +1022,8 @@ define_preset "Just Like Modded Minecraft", [
   %{name: "oka", config: %{ante: 5}},
   "agarirenchan",
   "tenpairenchan",
-  "agariyame",
-  "tenpaiyame",
+  %{name: "agariyame", config: %{first_place_only: true, may_choose: false, round: "all_last"}},
+  %{name: "tenpaiyame", config: %{first_place_only: true, may_choose: false, round: "all_last"}},
   %{name: "sudden_death", config: %{goal: 30000}},
   "tonpuu",
   "kuitan_nashi",

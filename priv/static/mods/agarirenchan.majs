@@ -1,6 +1,14 @@
+require "renchan"
+
 on after_initialization do
   add_rule("Rules", "Agarirenchan", "If the dealer (East wind) wins, the round repeats.")
   update_rule("Rules", "Honba", "(Agarirenchan) One honba stick is also added if the dealer (East wind) wins.")
 end
 
-apply set, "score_calculation.agarirenchan", true
+on before_win do
+  as east do
+    if is_winner("self") do
+      set_status("renchan")
+    end
+  end
+end

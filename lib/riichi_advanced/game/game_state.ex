@@ -1850,6 +1850,20 @@ defmodule RiichiAdvanced.GameState do
     {:noreply, state}
   end
 
+  def handle_cast({:toggle_next_dealer, seat, renchan}, state) do
+    dealer = Riichi.get_east_player_seat(state.kyoku, state.available_seats)
+    if seat == dealer and "renchan_choice" in state.players[dealer].status do
+      state = if renchan do
+        update_player(state, seat, fn player -> %{ player | status: MapSet.difference(player.status, MapSet.new(["renchan"])) } end)
+      else
+        update_player(state, seat, fn player -> %{ player | status: MapSet.union(player.status, MapSet.new(["renchan"])) } end)
+      end
+      state = Map.put(state, :next_dealer, if renchan do Utils.next_turn(dealer) else dealer end)
+      state = broadcast_state_change(state)
+      {:noreply, state}
+    else {:noreply, state} end
+  end
+
   def handle_cast(:dismiss_error, state) do
     state = Map.put(state, :error, nil)
     state = broadcast_state_change(state)

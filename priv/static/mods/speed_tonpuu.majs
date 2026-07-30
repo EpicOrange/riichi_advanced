@@ -8,12 +8,6 @@ define_yaku meta_yakuman, "Kansai Chiitoitsu", [1, "★"], has_existing_yaku("Ch
 # - shuugi (chips)
 #   + in the case of pao, responsible player pays all shuugi
 #   + nagashi earns chips as if self-draw
-# - unconditional agariyame/tenpaiyame
-#   + dealer must be able to choose whether to keep dealership every time.
-#   + maybe implement as a button choice at the start of next round?
-#   + in which case, must hide tiles (incl. dora indicataor) and not do initial draw.
-#   + probably better is to use before_continue and give dealer a button to press before moving onto next round
-#   + if round changes, honba is reset
 # - nagashi here should count as a tsumo haneman win, not an exhaustive draw
 # - rules text for all of the above
 

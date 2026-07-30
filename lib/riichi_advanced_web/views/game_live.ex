@@ -212,7 +212,7 @@ defmodule RiichiAdvancedWeb.GameLive do
         is_bot={Map.new([:east, :south, :west, :north], fn seat -> {seat, is_pid(Map.get(@state, seat))} end)} />
       <%= if @state.visible_screen != nil do %>
         <.live_component module={RiichiAdvancedWeb.WinWindowComponent} id="win-window" game_state={@game_state} seat={@seat} lang={@lang} winner={Map.get(@state.winners, Enum.at(@state.winner_seats, @state.winner_index), nil)} timer={@state.timer} waiting_on_timer={@waiting_on_timer} visible_screen={@state.visible_screen}/>
-        <.live_component module={RiichiAdvancedWeb.ScoreWindowComponent} id="score-window" game_state={@game_state} seat={@seat} lang={@lang} players={@state.players} winners={@state.winners} delta_scores={@state.delta_scores} delta_scores_reason={@state.delta_scores_reason} timer={@state.timer} waiting_on_timer={@waiting_on_timer} visible_screen={@state.visible_screen} available_seats={@state.available_seats} txns={@state.txns} round_result={@state.round_result}/>
+        <.live_component module={RiichiAdvancedWeb.ScoreWindowComponent} id="score-window" game_state={@game_state} seat={@seat} lang={@lang} players={@state.players} winners={@state.winners} delta_scores={@state.delta_scores} delta_scores_reason={@state.delta_scores_reason} timer={@state.timer} waiting_on_timer={@waiting_on_timer} visible_screen={@state.visible_screen} available_seats={@state.available_seats} txns={@state.txns} kyoku={@state.kyoku} next_dealer={@state.next_dealer} rules_ref={@state.rules_ref} round_result={@state.round_result}/>
         <.live_component module={RiichiAdvancedWeb.EndWindowComponent} id="end-window" game_state={@game_state} seat={@seat} lang={@lang} players={@state.players} visible_screen={@state.visible_screen}/>
       <% end %>
       <%= if @state.error != nil do %>
@@ -603,6 +603,12 @@ defmodule RiichiAdvancedWeb.GameLive do
     end
     socket = assign(socket, :waiting_on_timer, true)
     socket = assign(socket, :prev_timer, socket.assigns.state.timer)
+    {:noreply, socket}
+  end
+
+  def handle_event("toggle_next_dealer", _assigns, socket) do
+    status = socket.assigns.state.players[socket.assigns.seat].status
+    GenServer.cast(socket.assigns.game_state, {:toggle_next_dealer, socket.assigns.seat, "renchan" in status})
     {:noreply, socket}
   end
 

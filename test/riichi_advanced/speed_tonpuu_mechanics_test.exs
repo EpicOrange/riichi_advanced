@@ -2,8 +2,48 @@ defmodule RiichiAdvanced.YakuTest.SpeedTonpuuMechanics do
   use ExUnit.Case, async: true
   alias RiichiAdvanced.TestUtils, as: TestUtils
 
+  @speed_tonpuu_mods [
+    %{name: "honba", config: %{value: 100}},
+    %{name: "yaku/riichi", config: %{bet: 1000, drawless: false}},
+    "yaku/ippatsu",
+    "kuikae_nashi",
+    %{name: "min_han", config: %{min: 1, han: "Han"}},
+    "double_wind_4_fu",
+    %{name: "oka", config: %{ante: 4}},
+    %{name: "uma", config: %{_1st: 10, _2nd: 4, _3rd: -4, _4th: -10}},
+    %{name: "nagashi", config: %{is: "Haneman"}},
+    %{name: "suufon_renda", config: %{name: "Suufon Renda"}},
+    "suucha_riichi",
+    %{name: "kyuushu_kyuuhai", config: %{name: "Kyuushu Kyuuhai"}},
+    "agarirenchan",
+    "tenpairenchan",
+    %{name: "agariyame", config: %{first_place_only: false, may_choose: true, round: "every"}},
+    %{name: "tenpaiyame", config: %{first_place_only: false, may_choose: true, round: "every"}},
+    "kiriage_mangan",
+    "double_round_wind",
+    "yaku/open_riichi",
+    "kansai_chiitoitsu",
+    "kokushi_ankan_chankan",
+    "yaku/sanrenkou",
+    "yaku/suurenkou",
+    "yaku/shiisanpuutaa",
+    "yaku/shiisanuushi",
+    # "pao",
+    # "pao_suukantsu", # note: affects the test 'suukantsu rinshan is scored as normal tsumo scoring shuugi'
+    # "pao_rinshan",
+    %{name: "yaku/riichi_renhou", config: %{is: "Yakuman"}},
+    %{name: "shuugi", config: %{worth: 5000, starting_shuugi: 100}},
+    %{name: "shuugi/ippatsu", config: %{chips: 1}},
+    %{name: "shuugi/ura", config: %{chips: 1}},
+    %{name: "shuugi/yakuman", config: %{ron_chips: 10, tsumo_chips: 5, per_yakuman: true, allow_kazoe: true}},
+    %{name: "shuugi/aka", config: %{chips: 1, closed_only: false}},
+    %{name: "shuugi/ao", config: %{chips: 2, closed_only: false}},
+    %{name: "shuugi/kin", config: %{chips: 1, closed_only: false}},
+    "shuugi/placement_only_battle",
+  ]
+
   test "speed tonpuu - aka dora" do
-    TestUtils.test_yaku_advanced("speed_tonpuu", [%{name: "yaku/riichi", config: %{"bet" => 1000, "drawless" => false}}, %{name: "dora", config: %{"start_indicators" => 1}}], """
+    TestUtils.test_yaku_advanced("speed_tonpuu", @speed_tonpuu_mods, """
     {
       "starting_hand": {
         "east": ["2m", "3m", "4m", "4m", "05m", "6m", "7p", "7p", "7p", "8s", "8s", "8s", "05p"],
@@ -21,14 +61,14 @@ defmodule RiichiAdvanced.YakuTest.SpeedTonpuuMechanics do
       %{"type" => "buttons_pressed", "buttons" => [%{"button" => "ron"}, nil, nil, nil]}
     ], %{
       east: %{
-        yaku: [{"Double Riichi", [2, "Han"]}, {"Tanyao", [1, "Han"]}, {"Dora", [1, "Han"]}, {"Aka", [2, "Han", 2, "⛀"]}],
+        yaku: [{"Double Riichi", [2, "Han"]}, {"Ippatsu", [1, "Han", 1, "⛀"]}, {"Tanyao", [1, "Han"]}, {"Aka", [2, "Han", 2, "⛀"]}],
         minipoints: 40
       },
-    }, %{shuugi: [102, 98, 100, 100]})
+    }, %{shuugi: [103, 97, 100, 100]})
   end
 
   test "speed tonpuu - ao dora" do
-    TestUtils.test_yaku_advanced("speed_tonpuu", [%{name: "yaku/riichi", config: %{"bet" => 1000, "drawless" => false}}, %{name: "dora", config: %{"start_indicators" => 1}}], """
+    TestUtils.test_yaku_advanced("speed_tonpuu", @speed_tonpuu_mods, """
     {
       "starting_hand": {
         "east": ["2m", "3m", "4m", "4m", "5m", "6m", "27p", "7p", "7p", "8s", "8s", "8s", "5p"],
@@ -46,14 +86,14 @@ defmodule RiichiAdvanced.YakuTest.SpeedTonpuuMechanics do
       %{"type" => "buttons_pressed", "buttons" => [%{"button" => "ron"}, nil, nil, nil]}
     ], %{
       east: %{
-        yaku: [{"Double Riichi", [2, "Han"]}, {"Tanyao", [1, "Han"]}, {"Dora", [1, "Han"]}, {"Ao", [1, "Han", 2, "⛀"]}],
+        yaku: [{"Double Riichi", [2, "Han"]}, {"Ippatsu", [1, "Han", 1, "⛀"]}, {"Tanyao", [1, "Han"]}, {"Ao", [1, "Han", 2, "⛀"]}],
         minipoints: 40
       },
-    }, %{shuugi: [102, 98, 100, 100]})
+    }, %{shuugi: [103, 97, 100, 100]})
   end
 
   test "speed tonpuu - kin dora" do
-    TestUtils.test_yaku_advanced("speed_tonpuu", [%{name: "yaku/riichi", config: %{"bet" => 1000, "drawless" => false}}, %{name: "dora", config: %{"start_indicators" => 1}}], """
+    TestUtils.test_yaku_advanced("speed_tonpuu", @speed_tonpuu_mods, """
     {
       "starting_hand": {
         "east": ["2m", "3m", "4m", "4m", "5m", "6m", "7p", "7p", "7p", "8s", "8s", "8s", "35p"],
@@ -71,14 +111,14 @@ defmodule RiichiAdvanced.YakuTest.SpeedTonpuuMechanics do
       %{"type" => "buttons_pressed", "buttons" => [%{"button" => "ron"}, nil, nil, nil]}
     ], %{
       east: %{
-        yaku: [{"Double Riichi", [2, "Han"]}, {"Tanyao", [1, "Han"]}, {"Dora", [1, "Han"]}, {"Kin", [1, "Han", 1, "⛀"]}],
+        yaku: [{"Double Riichi", [2, "Han"]}, {"Ippatsu", [1, "Han", 1, "⛀"]}, {"Tanyao", [1, "Han"]}, {"Kin", [1, "Han", 1, "⛀"]}],
         minipoints: 40
       },
-    }, %{shuugi: [101, 99, 100, 100]})
+    }, %{shuugi: [102, 98, 100, 100]})
   end
 
   test "speed tonpuu - ura dora" do
-    TestUtils.test_yaku_advanced("speed_tonpuu", [%{name: "yaku/riichi", config: %{"bet" => 1000, "drawless" => false}}, %{name: "dora", config: %{"start_indicators" => 1}}, "ura"], """
+    TestUtils.test_yaku_advanced("speed_tonpuu", @speed_tonpuu_mods ++ [%{name: "dora", config: %{start_indicators: 1}}, "ura"], """
     {
       "starting_hand": {
         "east": ["2m", "3m", "4m", "4m", "5m", "6m", "7p", "7p", "7p", "8s", "8s", "8s", "5p"],
@@ -96,14 +136,14 @@ defmodule RiichiAdvanced.YakuTest.SpeedTonpuuMechanics do
       %{"type" => "buttons_pressed", "buttons" => [%{"button" => "ron"}, nil, nil, nil]}
     ], %{
       east: %{
-        yaku: [{"Double Riichi", [2, "Han"]}, {"Tanyao", [1, "Han"]}, {"Dora", [1, "Han"]}, {"Ura", [1, "Han", 1, "⛀"]}],
+        yaku: [{"Double Riichi", [2, "Han"]}, {"Ippatsu", [1, "Han", 1, "⛀"]}, {"Tanyao", [1, "Han"]}, {"Dora", [1, "Han"]}, {"Ura", [1, "Han", 1, "⛀"]}],
         minipoints: 40
       },
-    }, %{shuugi: [101, 99, 100, 100]})
+    }, %{shuugi: [102, 98, 100, 100]})
   end
 
   test "speed tonpuu - kin dora is sole yaku" do
-    TestUtils.test_yaku_advanced("speed_tonpuu", [%{name: "yaku/riichi", config: %{"bet" => 1000, "drawless" => false}}, %{name: "dora", config: %{"start_indicators" => 1}}], """
+    TestUtils.test_yaku_advanced("speed_tonpuu", @speed_tonpuu_mods, """
     {
       "starting_hand": {
         "east": ["2m", "3m", "4m", "4m", "5m", "6m", "35p", "7p", "7p", "7p", "1z", "1z", "2z"],
@@ -127,7 +167,7 @@ defmodule RiichiAdvanced.YakuTest.SpeedTonpuuMechanics do
   end
 
   test "speed tonpuu - ultimate all stars" do
-    TestUtils.test_yaku_advanced("speed_tonpuu", [], """
+    TestUtils.test_yaku_advanced("speed_tonpuu", @speed_tonpuu_mods, """
     {
       "starting_hand": {
         "east": ["05m", "6m", "27m", "27p", "8p", "9p", "05s", "6s", "27s", "05p", "35p", "1z", "1z"],
@@ -144,22 +184,23 @@ defmodule RiichiAdvanced.YakuTest.SpeedTonpuuMechanics do
       %{"type" => "buttons_pressed", "buttons" => [%{"button" => "ron"}, nil, nil, nil]}
     ], %{
       east: %{
-        yaku: [{"Ultimate All-Stars", [1, "★"]}],
+        yaku: [{"Aka", [3, "⛀"]}, {"Ao", [6, "⛀"]}, {"Kin", [1, "⛀"]}, {"Ultimate All-Stars", [1, "★"]}],
         minipoints: 40
       },
-    }, %{shuugi: [110, 90, 100, 100]})
+    }, %{shuugi: [120, 80, 100, 100]})
   end
 
   test "speed tonpuu - kazoe" do
-    TestUtils.test_yaku_advanced("speed_tonpuu", [%{name: "yaku/riichi", config: %{bet: 1000, drawless: false}}, "yaku/ippatsu", %{name: "min_han", config: %{min: 1, han: "Han"}}], """
+    TestUtils.test_yaku_advanced("speed_tonpuu", @speed_tonpuu_mods, """
     {
       "starting_hand": {
         "east": ["2p", "2p", "3p", "3p", "4p", "4p", "5p", "5p", "6p", "6p", "7p", "7p", "8p"],
         "south": ["1m", "2m", "3m", "4m", "5m", "7m", "3s", "6s", "9s", "1z", "2z", "3z", "4z"],
         "west": ["1m", "2m", "3m", "4m", "5m", "7m", "3s", "6s", "9s", "1z", "2z", "3z", "4z"],
-        "north": ["1m", "2m", "3m", "4m", "5m", "7m", "3s", "6s", "9s", "1z", "2z", "3z", "4z"]
+        "north": ["1m", "2m", "3m", "4m", "5m", "7m", "3s", "6s", "9s", "1z", "2z", "7z", "4z"]
       },
-      "starting_draws": ["3z", "8p"]
+      "starting_draws": ["3z", "8p"],
+      "starting_dead_wall": ["2z", "7z", "4z", "3z", "7z", "5z"]
     }
     """, [
       %{"type" => "buttons_pressed", "buttons" => [%{"button" => "riichi"}, nil, nil, nil]},
@@ -176,7 +217,7 @@ defmodule RiichiAdvanced.YakuTest.SpeedTonpuuMechanics do
   end
 
   test "speed tonpuu - shuugi per yakuman count" do
-    TestUtils.test_yaku_advanced("speed_tonpuu", [], """
+    TestUtils.test_yaku_advanced("speed_tonpuu", @speed_tonpuu_mods, """
     {
       "starting_hand": {
         "east": ["5m", "5m", "5m", "7m", "7m", "7m", "2p", "2p", "7s", "7s", "1s", "1s", "1s"],
@@ -196,7 +237,7 @@ defmodule RiichiAdvanced.YakuTest.SpeedTonpuuMechanics do
   end
 
   test "speed tonpuu - suukantsu rinshan is scored as normal tsumo scoring shuugi" do
-    TestUtils.test_yaku_advanced("speed_tonpuu", [], """
+    TestUtils.test_yaku_advanced("speed_tonpuu", @speed_tonpuu_mods, """
     {
       "starting_hand": {
         "east": ["1z", "1z", "1z", "2z", "2z", "2z", "3z", "3z", "3z", "4z", "4z", "6m", "27p"],
@@ -232,7 +273,7 @@ defmodule RiichiAdvanced.YakuTest.SpeedTonpuuMechanics do
   end
 
   test "speed tonpuu - suukantsu rinshan miss is scored specially" do
-    TestUtils.test_yaku_advanced("speed_tonpuu", [], """
+    TestUtils.test_yaku_advanced("speed_tonpuu", @speed_tonpuu_mods, """
     {
       "starting_hand": {
         "east": ["1z", "1z", "1z", "2z", "2z", "2z", "3z", "3z", "3z", "4z", "4z", "6m", "27p"],
@@ -268,7 +309,7 @@ defmodule RiichiAdvanced.YakuTest.SpeedTonpuuMechanics do
   end
 
   test "speed tonpuu - white dragon pocchi" do
-    TestUtils.test_yaku_advanced("speed_tonpuu", [%{name: "yaku/riichi", config: %{"bet" => 1000, "drawless" => false}}, "yaku/ippatsu"], """
+    TestUtils.test_yaku_advanced("speed_tonpuu", @speed_tonpuu_mods, """
     {
       "starting_hand": {
         "east": ["2m", "3m", "4m", "4m", "5m", "6m", "7p", "7p", "7p", "8s", "8s", "8s", "1z"],
@@ -294,7 +335,7 @@ defmodule RiichiAdvanced.YakuTest.SpeedTonpuuMechanics do
   end
 
   test "speed tonpuu - red dragon pocchi" do
-    TestUtils.test_yaku_advanced("speed_tonpuu", [%{name: "yaku/riichi", config: %{"bet" => 1000, "drawless" => false}}, "yaku/ippatsu"], """
+    TestUtils.test_yaku_advanced("speed_tonpuu", @speed_tonpuu_mods, """
     {
       "starting_hand": {
         "east": ["2m", "3m", "4m", "4m", "5m", "6m", "7p", "7p", "7p", "8s", "8s", "8s", "1z"],
@@ -320,7 +361,7 @@ defmodule RiichiAdvanced.YakuTest.SpeedTonpuuMechanics do
   end
 
   test "speed tonpuu - green dragon pocchi" do
-    TestUtils.test_yaku_advanced("speed_tonpuu", [], """
+    TestUtils.test_yaku_advanced("speed_tonpuu", @speed_tonpuu_mods, """
     {
       "starting_hand": {
         "east": ["2m", "3m", "4m", "4m", "5m", "6m", "35p", "5p", "1p", "8s", "8s", "8s", "7z"],
@@ -348,7 +389,7 @@ defmodule RiichiAdvanced.YakuTest.SpeedTonpuuMechanics do
   end
 
   test "speed tonpuu - white/red pocchi is unskippable" do
-    TestUtils.test_yaku_advanced("speed_tonpuu", [%{name: "yaku/riichi", config: %{"bet" => 1000, "drawless" => false}}, "yaku/ippatsu"], """
+    TestUtils.test_yaku_advanced("speed_tonpuu", @speed_tonpuu_mods, """
     {
       "starting_hand": {
         "east": ["2m", "3m", "4m", "4m", "5m", "6m", "7p", "7p", "7p", "8s", "8s", "8s", "1z"],
@@ -375,7 +416,7 @@ defmodule RiichiAdvanced.YakuTest.SpeedTonpuuMechanics do
   end
 
   test "speed tonpuu - green pocchi is skippable" do
-    TestUtils.test_yaku_advanced("speed_tonpuu", [], """
+    TestUtils.test_yaku_advanced("speed_tonpuu", @speed_tonpuu_mods, """
     {
       "starting_hand": {
         "east": ["2m", "3m", "4m", "4m", "5m", "6m", "35p", "5p", "1p", "8s", "8s", "8s", "7z"],

@@ -1,5 +1,14 @@
+require "renchan"
+
 on after_initialization do
   add_rule("Rules", "Tenpairenchan", "If the dealer (East wind) is tenpai at exhaustive draw, the round repeats. If honba is enabled, this adds one honba.")
 end
 
-apply set, "score_calculation.tenpairenchan", true
+on before_exhaustive_draw do
+  as east do
+    if status("tenpai") do
+      set_status("renchan")
+    end
+  end
+end
+

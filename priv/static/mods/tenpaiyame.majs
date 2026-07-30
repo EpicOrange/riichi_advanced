@@ -1,5 +1,30 @@
 on after_initialization do
-  update_rule("Rules", "Tenpairenchan", "(Tenpaiyame) An exception is if it's the last round and the tenpai dealer becomes first place -- then the game just ends.")
+  if !may_choose do
+    cond do
+      equals(!round, "all_last") and !first_place_only -> update_rule("Rules", "Tenpairenchan", "(Tenpaiyame) An exception is if it's the last round and the tenpai dealer becomes first place -- then the dealer may choose whether to end the game.")
+      equals(!round, "all_last") -> update_rule("Rules", "Tenpairenchan", "(Tenpaiyame) An exception is if it's the last round -- then the dealer may choose whether to end the game.")
+      equals(!round, "every") and !first_place_only -> update_rule("Rules", "Tenpairenchan", "(Tenpaiyame) An exception is if the tenpai dealer becomes first place -- then the dealer may choose whether to pass the dealership.")
+      equals(!round, "every") -> update_rule("Rules", "Tenpairenchan", "(Tenpaiyame) After every round, the dealer may choose whether to pass the dealership.")
+    end
+  else
+    cond do
+      equals(!round, "all_last") and !first_place_only -> update_rule("Rules", "Tenpairenchan", "(Tenpaiyame) An exception is if it's the last round and the tenpai dealer becomes first place -- then the game just ends.")
+      equals(!round, "all_last") -> update_rule("Rules", "Tenpairenchan", "(Tenpaiyame) An exception is if it's the last round -- then the game just ends.")
+      equals(!round, "every") and !first_place_only -> update_rule("Rules", "Tenpairenchan", "(Tenpaiyame) An exception is if the tenpai dealer becomes first place -- then the dealership passes.")
+      equals(!round, "every") -> delete_rule("Rules", "Tenpairenchan")
+    end
+  end
 end
 
-apply set, "tenpaiyame", true
+on before_exhaustive_draw do
+  if (equals(!round, "all_last") and all_last) or equals(!round, "every") do
+    as east do
+      unless !first_place_only and not_placement(1) do
+        if status("renchan") and !may_choose do
+          set_status("renchan_choice")
+        end
+      end
+    end
+  end
+end
+

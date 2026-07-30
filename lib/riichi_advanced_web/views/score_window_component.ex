@@ -1,5 +1,8 @@
 defmodule RiichiAdvancedWeb.ScoreWindowComponent do
+  alias RiichiAdvanced.GameState.Kyoku, as: Kyoku
   alias RiichiAdvanced.GameState.Payment, as: Payment
+  alias RiichiAdvanced.GameState.Rules, as: Rules
+  alias RiichiAdvanced.Riichi, as: Riichi
   alias RiichiAdvanced.Utils, as: Utils
   use RiichiAdvancedWeb, :live_component
   import RiichiAdvancedWeb.Translations
@@ -7,6 +10,8 @@ defmodule RiichiAdvancedWeb.ScoreWindowComponent do
   def mount(socket) do
     socket = assign(socket, :hovered, nil)
     socket = assign(socket, :txns, [])
+    socket = assign(socket, :renchan_choice, false)
+    socket = assign(socket, :is_last_round, false)
     {:ok, socket}
   end
 
@@ -71,7 +76,21 @@ defmodule RiichiAdvancedWeb.ScoreWindowComponent do
             </table>
           <% end %>
         </div>
-        </div>
+      </div>
+      <div class="renchan-choice-container" :if={@renchan_choice}>
+        <input id="renchan-choice" type="checkbox" phx-click="toggle_next_dealer" checked={@renchan}>
+        <label for="renchan-choice" class="renchan-choice">
+          <%= if @renchan do %>
+            <%= t(@lang, "Keeping dealership") %>
+          <% else %>
+            <%= if @is_last_round do %>
+              <%= t(@lang, "Ending game") %>
+            <% else %>
+              <%= t(@lang, "Passing dealership") %>
+            <% end %>
+          <% end %>
+        </label>
+      </div>
       <div class="timer" phx-cancellable-click="ready_for_next_round">
         <%= cond do %>
           <% @timer == -1 -> %> <%= dt(@lang, "Dismiss") %>
@@ -289,6 +308,16 @@ defmodule RiichiAdvancedWeb.ScoreWindowComponent do
       |> Enum.zip(["1st", "2nd", "3rd", "4th"])
       |> Map.new(fn {{seat, _score}, place} -> {seat, place} end)
     socket = assign(socket, :placements, placements)
+
+    max_rounds = Rules.get(socket.assigns.rules_ref, "max_rounds", :infinity)
+    is_last_round = socket.assigns.kyoku >= max_rounds
+    socket = assign(socket, :is_last_round, is_last_round)
+
+    dealer = Riichi.get_east_player_seat(socket.assigns.kyoku, socket.assigns.available_seats)
+    socket = if socket.assigns.seat == dealer do
+      assign(socket, :renchan_choice, "renchan_choice" in socket.assigns.players[socket.assigns.seat].status)
+    else socket end
+    socket = assign(socket, :renchan, "renchan" in socket.assigns.players[socket.assigns.seat].status)
 
     {:ok, socket}
   end
