@@ -6,7 +6,7 @@ defmodule RiichiAdvanced.AIPlayer do
   alias RiichiAdvanced.Utils, as: Utils
   use GenServer
 
-  @ai_speed 40
+  @ai_speed 4
 
   def start_link(init_state) do
     GenServer.start_link(__MODULE__, init_state, name: init_state[:name])
