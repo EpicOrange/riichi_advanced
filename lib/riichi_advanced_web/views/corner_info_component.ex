@@ -44,9 +44,9 @@ defmodule RiichiAdvancedWeb.CornerInfoComponent do
   end
 
   def calculate_chips(amt) do
-    {chip1, amt} = {Integer.floor_div(amt-100, 100), 100+rem(amt, 100)}
-    {chip2, amt} = {Integer.floor_div(amt-25, 25), 25+rem(amt, 25)}
-    {chip3, amt} = {Integer.floor_div(amt-5, 5), 5+rem(amt, 5)}
+    {chip1, amt} = if amt >= 100 do {Integer.floor_div(amt-100, 100), 100+rem(amt, 100)} else {0, amt} end
+    {chip2, amt} = if amt >= 25 do {Integer.floor_div(amt-25, 25), 25+rem(amt, 25)} else {0, amt} end
+    {chip3, amt} = if amt >= 5 do {Integer.floor_div(amt-5, 5), 5+rem(amt, 5)} else {0, amt} end
     chip4 = amt
     %{
       chip1: chip1,

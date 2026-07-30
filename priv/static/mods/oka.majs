@@ -1,0 +1,22 @@
+on after_initialization do
+  add_rule("Rules", "Oka", "At the end of the game, 1st/2nd/3rd/4th receive a bonus of %{1st}/%{2nd}/%{3rd}/%{4th} points.",
+     %{"1st": @oka_ante_gain, "2nd": @oka_ante_loss, "3rd": @oka_ante_loss, "4th": @oka_ante_loss})
+end
+
+define_const oka_ante_gain_base, !ante
+define_const oka_ante_loss_base, !ante / -4
+
+define_const oka_ante_gain, !ante * 1000
+define_const oka_ante_loss, !ante * -250
+
+def apply_oka do
+  as everyone do
+    add_score(@oka_ante_loss)
+    if placement(1) do add_score(@oka_ante_gain) end
+  end
+  push_system_message("Applied oka of %{ante}.", %{ante: @oka_ante_gain})
+end
+
+on before_conclusion do
+  apply_oka
+end

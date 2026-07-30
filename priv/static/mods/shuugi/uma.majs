@@ -1,0 +1,22 @@
+on after_initialization do
+  delete_rule("Rules", "Uma")
+  add_rule("Rules", "Uma", "At the end of the game, 1st/2nd/3rd/4th receive a bonus of %{1st}/%{2nd}/%{3rd}/%{4th} chips.",
+     %{"1st": @uma_ante_gain_base, "2nd": @uma_ante_loss_base, "3rd": @uma_ante_loss_base, "4th": @uma_ante_loss_base})
+end
+
+define_const uma_1st, @uma_1st_base
+define_const uma_2nd, @uma_2nd_base
+define_const uma_3rd, @uma_3rd_base
+define_const uma_4th, @uma_4th_base
+
+def apply_uma do
+  as everyone do
+    cond do
+      placement(1) -> shuugi += @uma_1st_base
+      placement(2) -> shuugi += @uma_2nd_base
+      placement(3) -> shuugi += @uma_3rd_base
+      placement(4) -> shuugi += @uma_4th_base
+    end
+  end
+  push_system_message("Applied uma of %{_1st}/%{_2nd}/%{_3rd}/%{_4th} chips.", %{_1st: @uma_1st, _2nd: @uma_2nd, _3rd: @uma_3rd, _4th: @uma_4th})
+end

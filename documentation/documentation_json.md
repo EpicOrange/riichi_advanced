@@ -1305,3 +1305,10 @@ Here's how they work:
 - `"notenrenchan_south"` if true, the round repeats if it's South round and no one is tenpai at exhaustive draw.
 
 Regardless of the above settings, the honba (repeat) counter is incremented when the dealer wins or an exhaustive draw happens, and is reset when a nondealer wins.
+
+Since the above is very ad-hoc and silly, there are a few actions you can run in `before_start` to implement custom behavior:
+
+- `["change_dealership", seat_spec]`: sets the dealership, so `["change_dealership", "self"]` keeps the dealership and `["change_dealership", "shimocha"]` passes it on.
+- `["end_game"]`: ends the game instead of proceeding to the next round.
+
+Eventually these actions will replace the functions of `"tobi"` etc.

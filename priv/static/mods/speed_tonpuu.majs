@@ -6,11 +6,7 @@ define_yaku meta_yakuman, "Kansai Chiitoitsu", [1, "★"], has_existing_yaku("Ch
 # remaining tasks
 # ===
 # - shuugi (chips)
-#   + each player gets 1 chip from tobi player
-#   + get 1 chip from each player if game is called at 55000 pts
 #   + in the case of pao, responsible player pays all shuugi
-#   + chips are worth 5000 pts each (option for 10000 pts)
-#   + oka/uma acts on chips (13/3/-5/-11)
 #   + nagashi earns chips as if self-draw
 # - unconditional agariyame/tenpaiyame
 #   + dealer must be able to choose whether to keep dealership every time.
@@ -19,6 +15,5 @@ define_yaku meta_yakuman, "Kansai Chiitoitsu", [1, "★"], has_existing_yaku("Ch
 #   + probably better is to use before_continue and give dealer a button to press before moving onto next round
 #   + if round changes, honba is reset
 # - nagashi here should count as a tsumo haneman win, not an exhaustive draw
-# - mod for placement-only battle (final score ignored)
 # - rules text for all of the above
 

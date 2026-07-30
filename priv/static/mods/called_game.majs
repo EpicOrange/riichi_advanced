@@ -2,4 +2,12 @@ on after_initialization do
   add_rule("Rules", "Called Game", "After a round, if anyone has more than %{above} points, the game ends.", %{above: !above})
 end
 
-apply set, "score_calculation.called_game", !above
+define_const called_game_above, !above
+
+on before_start do
+  as everyone do
+    if current_score > @called_game_above do
+      end_game
+    end
+  end
+end

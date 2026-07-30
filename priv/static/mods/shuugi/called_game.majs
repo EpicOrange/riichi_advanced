@@ -1,0 +1,25 @@
+on after_initialization do
+  add_rule("Rules", "Shuugi", "(Called Game) If any player is above %{called_game_above} points, the game ends and each such player is paid %{chips} shuugi from every other player.", %{chips: !chips, called_game_above: @called_game_above})
+end
+
+on before_start, prepend: true do
+  as everyone do
+    if current_score > @called_game_above do
+      as others do
+        shuugi -= !chips
+        as last_seat do
+          shuugi += !chips
+        end
+      end
+      set_status("someone_called_game", as: "last_seat")
+    end
+  end
+  if status("someone_called_game") do
+    if !chips == 1 do
+      push_system_message("Every player above %{above} score is paid 1 chip from others (called_game)", %{above: @called_game_above, chips: !chips})
+    else
+      push_system_message("Every player above %{above} score is paid %{chips} chips from others (called_game)", %{above: @called_game_above, chips: !chips})
+    end
+  end
+end
+

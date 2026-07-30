@@ -2494,7 +2494,8 @@ div.game-modal-container {
 @media (min-aspect-ratio: 6/5) {
   div.game-modal-container.inactive,
   div.game-modal-hide:active,
-  div.game-modal-hide:active + div.timer {
+  div.game-modal-hide:active + div.timer,
+  div.game-modal-hide:active + button.end-back-button {
     opacity: 0;
     pointer-events: none;
     user-select: none;
@@ -2505,7 +2506,7 @@ div.game-modal-container {
 @media (max-aspect-ratio: 6/5) {
   div.game-modal-container.inactive,
   div.game-modal-hide:active:not(:has(:is(div.score-badge:active, svg.arrow:active, svg.curve:active))) {
-    &, & + div.timer {
+    &, & + div.timer, & + button.end-back-button {
       opacity: 0;
       pointer-events: none;
       user-select: none;

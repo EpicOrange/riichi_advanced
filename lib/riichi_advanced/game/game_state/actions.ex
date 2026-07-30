@@ -1932,6 +1932,8 @@ defmodule RiichiAdvanced.GameState.Actions do
         #     state
         # end
         state
+      "set_dealership" -> Map.put(state, :next_dealer, Conditions.from_seat_spec(state, context, Enum.at(opts, 0, "self")))
+      "end_game" -> Map.put(state, :round_result, :end_game)
       _                 ->
         IO.puts("Unhandled action #{action}")
         state

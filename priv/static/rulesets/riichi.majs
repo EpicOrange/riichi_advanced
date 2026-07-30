@@ -743,7 +743,7 @@ define_mod "yaku/chousangen", name: "Chousangen", desc: "Local yakuman. If you h
 define_mod "yaku/chousuushii", name: "Chousuushii", desc: "Local yakuman. If you have kans of all four winds, it's quadruple yakuman. Doesn't stack with daisuushi and suukantsu."
 define_mod_category "Shuugi"
 define_mod shuugi, order: 1, name: "Shuugi", desc: "Play with shuugi (poker chips). Each shuugi is worth some number of points each at the end. Win payments include shuugi along with points. On ron, you get shuugi from the discarder; on tsumo you get shuugi from everyone."
-config_mod shuugi, name: "worth", values: [200,500,1000,2000,4000,8000], default: 2000
+config_mod shuugi, name: "worth", values: [200,500,1000,2000,5000,10000], default: 2000
 config_mod shuugi, name: "starting_shuugi", values: [0,10,50,100], default: 0
 define_mod "shuugi/ippatsu", order: 1, name: "Ippatsu", deps: ["shuugi", "yaku/ippatsu"], desc: "Ippatsu is worth one shuugi."
 config_mod "shuugi/ippatsu", name: "chips", values: [1]
@@ -763,6 +763,9 @@ config_mod "shuugi/ao", name: "closed_only", values: [false, true], default: fal
 define_mod "shuugi/kin", order: 4, name: "Kin", deps: ["shuugi", "kin"], desc: "Each kin dora scores shuugi."
 config_mod "shuugi/kin", name: "chips", values: [1, 2, 3, 4, 5]
 config_mod "shuugi/kin", name: "closed_only", values: [false, true], default: false
+define_mod "shuugi/oka", order: 4, name: "Oka", deps: ["shuugi", "Oka"], desc: "Oka applies directly to chips."
+define_mod "shuugi/uma", order: 4, name: "Uma", deps: ["shuugi", "Uma"], desc: "Uma applies directly to chips."
+define_mod "shuugi/placement_only_battle", order: 5, name: "Placement-Only Battle", desc: "Final scores are completely determined by oka and uma, using the final score to determine ranking."
 define_mod_category "Other"
 define_mod cancellable_riichi, order: 1, deps: ["yaku/riichi"], name: "Cancellable Riichi", desc: "Riichi declarations happen only after you confirm by discarding a tile."
 define_mod ten, order: 3, name: "Ten", desc: "Adds 10m, 10p, and 10s. Changes dora accordingly (if dora is enabled). Tanyao now allows nines, and chanta/junchan/honroutou require tens instead. 13 Orphans now requires the ten instead of the nine of each suit. Ittsuu allows 23456789T."

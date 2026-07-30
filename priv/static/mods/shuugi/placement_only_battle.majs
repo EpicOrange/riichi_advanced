@@ -1,0 +1,14 @@
+on after_initialization do
+  add_rule("Rules", "Placement-Only Battle", "At the end of the game, only the final ranking matters, and the final score is decided by oka and uma.")
+end
+
+on before_conclusion do
+  as everyone do
+    delta = shuugi - current_score
+    add_score("delta")
+  end
+end
+
+# don't convert shuugi to points
+def convert_shuugi do
+end

@@ -1,13 +1,27 @@
 on after_initialization do
-  add_rule("Rules", "Uma", "At the end of the game, 1st/2nd/3rd/4th receive a bonus of %{_1st}/%{_2nd}/%{_3rd}/%{_4th} points.", %{_1st: !_1st * 1000, _2nd: !_2nd * 1000, _3rd: !_3rd * 1000, _4th: !_4th * 1000})
+  add_rule("Rules", "Uma", "At the end of the game, 1st/2nd/3rd/4th receive a bonus of %{1st}/%{2nd}/%{3rd}/%{4th} points.",
+     %{"1st": @uma_1st, "2nd": @uma_2nd, "3rd": @uma_3rd, "4th": @uma_4th})
+end
+
+define_const uma_1st, !_1st * 1000
+define_const uma_2nd, !_2nd * 1000
+define_const uma_3rd, !_3rd * 1000
+define_const uma_4th, !_4th * 1000
+define_const uma_1st_base, !_1st
+define_const uma_2nd_base, !_2nd
+define_const uma_3rd_base, !_3rd
+define_const uma_4th_base, !_4th
+
+def apply_uma do
+  cond do
+    placement(1) -> add_score(@uma_1st)
+    placement(2) -> add_score(@uma_2nd)
+    placement(3) -> add_score(@uma_3rd)
+    placement(4) -> add_score(@uma_4th)
+  end
+  push_system_message("Applied uma of %{_1st}/%{_2nd}/%{_3rd}/%{_4th}.", %{_1st: @uma_1st, _2nd: @uma_2nd, _3rd: @uma_3rd, _4th: @uma_4th})
 end
 
 on before_conclusion do
-  push_system_message("Applied uma of %{_1st}/%{_2nd}/%{_3rd}/%{_4th}.", %{_1st: !_1st, _2nd: !_2nd, _3rd: !_3rd, _4th: !_4th})
-  as all do
-    if placement(1) do add_score(!_1st * 1000) end
-    if placement(2) do add_score(!_2nd * 1000) end
-    if placement(3) do add_score(!_3rd * 1000) end
-    if placement(4) do add_score(!_4th * 1000) end
-  end
+  apply_uma
 end

@@ -1,0 +1,25 @@
+on after_initialization do
+  add_rule("Rules", "Shuugi", "(Tobi) If any player dips below %{tobi_below} points, the game ends and each such player pays %{chips} shuugi to every other player.", %{chips: !chips, tobi_below: @tobi_below})
+end
+
+on before_start, prepend: true do
+  as everyone do
+    if current_score < @tobi_below do
+      as others do
+        shuugi += !chips
+        as last_seat do
+          shuugi -= !chips
+        end
+      end
+      set_status("someone_tobi", as: "last_seat")
+    end
+  end
+  if status("someone_tobi") do
+    if !chips == 1 do
+      push_system_message("All players below %{below} score pays 1 chip to others (tobi)", %{below: @tobi_below, chips: !chips})
+    else
+      push_system_message("All players below %{below} score pays %{chips} chips to others (tobi)", %{below: @tobi_below, chips: !chips})
+    end
+  end
+end
+

@@ -128,7 +128,6 @@ defmodule RiichiAdvanced.GameState.Kyoku do
 
         # finish or initialize new round if needed, otherwise continue
         state = if state.round_result != :continue do
-
           if should_end_game(state) do
             finalize_game(state)
           else

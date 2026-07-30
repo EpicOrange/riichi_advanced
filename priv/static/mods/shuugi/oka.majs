@@ -1,0 +1,13 @@
+on after_initialization do
+  delete_rule("Rules", "Oka")
+  add_rule("Rules", "Oka", "At the end of the game, 1st/2nd/3rd/4th receive a bonus of %{1st}/%{2nd}/%{3rd}/%{4th} chips.",
+     %{"1st": @oka_ante_gain_base, "2nd": @oka_ante_loss_base, "3rd": @oka_ante_loss_base, "4th": @oka_ante_loss_base})
+end
+
+def apply_oka do
+  as everyone do
+    add_score(@oka_ante_loss_base)
+    if placement(1) do add_score(@oka_ante_gain_base) end
+  end
+  push_system_message("Applied oka of %{ante} chips.", %{ante: @oka_ante_gain_base})
+end

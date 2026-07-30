@@ -62,7 +62,7 @@ on after_win do
   execute_shuugi_payment
 end
 
-on before_conclusion do
+def convert_shuugi do
   push_system_message("Converted each shuugi to %{worth} points.", %{worth: !worth})
   # convert to points
   as everyone do
@@ -70,6 +70,10 @@ on before_conclusion do
     shuugi_payout = shuugi_payout * !worth
     add_score("shuugi_payout")
   end
+end
+
+on before_conclusion do
+  convert_shuugi
 end
 
 apply append, "persistent_counters", "shuugi"

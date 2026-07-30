@@ -37,6 +37,9 @@ defimpl Jason.Encoder, for: RiichiAdvanced.Compiler.Expression do
     ["(if ", json, " | type == \"number\" then ", json, " else error(\"variable ", json, " in expression is not a number\") end)"]
   end
   def encode_operand(operand, opts), do: Jason.Encode.value(operand, opts)
+  def encode(%RiichiAdvanced.Compiler.Expression{op: op, l: nil, r: r}, opts) do
+    ["(", Atom.to_string(op)] ++ List.wrap(encode_operand(r, opts)) ++ [")"]
+  end
   def encode(%RiichiAdvanced.Compiler.Expression{op: op, l: l, r: r}, opts) do
     ["("] ++ List.wrap(encode_operand(l, opts)) ++ [Atom.to_string(op)] ++ List.wrap(encode_operand(r, opts)) ++ [")"]
   end
@@ -388,8 +391,9 @@ defmodule RiichiAdvanced.Compiler do
          {:error, _} <- Validator.validate_expression(value),
          {:error, _} <- Validator.validate_json(value),
          {:error, _} <- compile_condition_list(value, line, column),
-         {:error, _} <- compile_action(value, line, column) do
-      {:error, "Compiler.compile_constant: at line #{line}:#{column}, expected JSON, condition, action, or do block, got #{inspect(value)}"}
+         {:error, _} <- compile_action(value, line, column),
+         {:error, _} <- compile_expr(value, line, column) do
+      {:error, "Compiler.compile_constant: at line #{line}:#{column}, expected sigil, expression, JSON, condition, action, or do block, got #{inspect(value)}"}
     end
   end
 

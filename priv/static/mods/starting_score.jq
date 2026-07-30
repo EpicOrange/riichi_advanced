@@ -1,1 +1,0 @@
-.initial_score = $points
