@@ -67,6 +67,7 @@ end
 # these two are meant to be modifiable by pao mod
 def apply_scoring_modifiers do end
 define_const honba_condition, honba > 0
+define_const honba_value, 100
 
 define_scoring ron do
   total = 0
@@ -88,7 +89,7 @@ define_scoring ron do
     total = round_up(total, 100) :: "Round up"
   end
   if @honba_condition do
-    total += honba * 300 :: "Honba"
+    total += honba * 3 * @honba_value :: "Honba"
   end
 end
 
@@ -112,6 +113,6 @@ define_scoring tsumo do
     total = round_up(total, 100) :: "Round up"
   end
   if @honba_condition do
-    total += honba * 100 :: "Honba"
+    total += honba * @honba_value :: "Honba"
   end
 end

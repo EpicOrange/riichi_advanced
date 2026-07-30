@@ -598,7 +598,6 @@ defmodule RiichiAdvanced.Constants do
       tutorial_link: "https://peterish.com/riichi-docs/speed-tonpuu-rules",
       ruleset: "riichi",
       mods: [
-        %{name: "honba", config: %{value: 500}},
         "tonpuu",
         "speed_tonpuu_dora",
         # "unconditional_agariyame",
@@ -610,6 +609,7 @@ defmodule RiichiAdvanced.Constants do
         "speed_tonpuu_suukantsu",
       ],
       default_mods: [
+        %{name: "honba", config: %{value: 500}},
         %{name: "yaku/riichi", config: %{bet: 1000, drawless: false}},
         %{name: "oka", config: %{ante: 4}},
         %{name: "uma", config: %{_1st: 10, _2nd: 4, _3rd: -4, _4th: -10}},

@@ -7,5 +7,7 @@ on after_initialization do
   end
 end
 
+define_const honba_value, !value
+
 set display_honba, true
 apply set, "score_calculation.honba_value", !value
