@@ -2,3 +2,9 @@
 define_yaku meta_yaku, "Kansai Chiitoitsu", [1, "Han"], has_existing_yaku("Chiitoitsu") and match(["hand", "calls", "winning_tile"], ~m"quad:1")
 define_yaku meta_yaku, "Kansai Chiitoitsu", [2, "Han"], has_existing_yaku("Chiitoitsu") and match(["hand", "calls", "winning_tile"], ~m"quad:2")
 define_yaku meta_yakuman, "Kansai Chiitoitsu", [1, "★"], has_existing_yaku("Chiitoitsu") and match(["hand", "calls", "winning_tile"], ~m"quad:3")
+
+set translations, %{
+  "Aka": "Red Five",
+  "Ao": "Blue Seven",
+  "Kin": "Gold Five",
+}
