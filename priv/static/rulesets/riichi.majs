@@ -91,14 +91,15 @@ define_yaku yaku, "Chiitoitsu", [2, "Han"], match(["hand", "calls", "winning_til
 define_yaku yaku, "Sanankou", [2, "Han"],
      (won_by_draw and match(["hand", "calls", "winning_tile"], ["sanankou_tsumo"]))
   or (not_won_by_draw and match(["hand", "calls", "winning_tile"], ["sanankou_ron"]))
-define_yaku yaku, "Shousangen", [2, "Han"], match(["hand", "calls", "winning_tile"], ~m"(haku hatsu chun):2, (haku_pair hatsu_pair chun_pair):1")
+define_match shousangen, ~m"(haku hatsu chun):2, (haku_pair hatsu_pair chun_pair):1"
+define_yaku yaku, "Shousangen", [2, "Han"], match(["hand", "calls", "winning_tile"], ["shousangen"])
 define_yaku yaku, "Honroutou", [2, "Han"], match(["hand", "calls", "winning_tile"], ~m"tanyaohai:-1")
 define_yaku yaku, "Ryanpeikou", [3, "Han"], @closed_hand and match(["hand", "calls", "winning_tile"], ~m"exhaustive, iipeikou:2, pair:1")
 define_yaku yaku, "Honitsu", [2, "Han"],
-     winning_hand_consists_of("1m","2m","3m","4m","5m","6m","7m","8m","9m","10m","1z","2z","3z","4z","5z","6z","7z")
-  or winning_hand_consists_of("1p","2p","3p","4p","5p","6p","7p","8p","9p","10p","1z","2z","3z","4z","5z","6z","7z")
-  or winning_hand_consists_of("1s","2s","3s","4s","5s","6s","7s","8s","9s","10s","1z","2z","3z","4z","5z","6z","7z")
-  or winning_hand_consists_of("1t","2t","3t","4t","5t","6t","7t","8t","9t","10t","1z","2z","3z","4z","5z","6z","7z")
+     winning_hand_consists_of("1m","2m","3m","4m","5m","6m","7m","8m","9m","10m","0z","1z","2z","3z","4z","5z","6z","7z")
+  or winning_hand_consists_of("1p","2p","3p","4p","5p","6p","7p","8p","9p","10p","0z","1z","2z","3z","4z","5z","6z","7z")
+  or winning_hand_consists_of("1s","2s","3s","4s","5s","6s","7s","8s","9s","10s","0z","1z","2z","3z","4z","5z","6z","7z")
+  or winning_hand_consists_of("1t","2t","3t","4t","5t","6t","7t","8t","9t","10t","0z","1z","2z","3z","4z","5z","6z","7z")
 define_yaku yaku, "Chinitsu", [5, "Han"],
      winning_hand_consists_of("1m","2m","3m","4m","5m","6m","7m","8m","9m","10m")
   or winning_hand_consists_of("1p","2p","3p","4p","5p","6p","7p","8p","9p","10p")
@@ -112,7 +113,8 @@ define_yaku meta_yaku, "Honitsu", [1, "Han"], @closed_hand and has_existing_yaku
 define_yaku meta_yaku, "Chinitsu", [1, "Han"], @closed_hand and has_existing_yaku("Chinitsu")
 define_yaku yakuman, "Tenhou", [1, "★"], status("discards_empty") and won_by_draw and seat_is("east")
 define_yaku yakuman, "Chiihou", [1, "★"], status("discards_empty") and won_by_draw and not_seat_is("east")
-define_yaku yakuman, "Daisangen", [1, "★"], match(["hand", "calls", "winning_tile"], ~m"haku:1, hatsu:1, chun:1")
+define_match daisangen, ~m"haku:1, hatsu:1, chun:1"
+define_yaku yakuman, "Daisangen", [1, "★"], match(["hand", "calls", "winning_tile"], ["daisangen"])
 define_yaku yakuman, "Suuankou", [1, "★"], won_by_draw and @closed_hand and match(["hand", "calls"], ~m"koutsu:3, pair:2")
 define_yaku yakuman, "Suuankou Tanki", [2, "★"], @closed_hand and match(["hand", "calls"], ~m"koutsu:4") and match(["hand", "calls", "winning_tile"], ~m"koutsu:4, pair:1")
 define_yaku yakuman, "Tsuuiisou", [1, "★"], match(["hand", "calls", "winning_tile"], ~m"tanyaohai:-1, terminal:-1")

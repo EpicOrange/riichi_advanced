@@ -1,0 +1,46 @@
+define "blue_dragon"
+
+on after_initialization do
+  add_rule("Tiles", "Blue Dragon", "Four blue dragons %{blue_dragon} are added to the wall.", %{"blue_dragon": ~t"0z"}, -99)
+  add_rule("1 Han", "Blue Dragon", "A triplet of blue dragons is yakuhai.")
+  update_rule("1 Han", "Blue Dragon", "%{example_hand}", %{example_hand: ~t"234m33777p45s000z3x6s"})
+  delete_rule("2 Han", "Shousangen")
+  delete_rule("Yakuman", "Daisangen")
+  add_rule("1 Han", "Shousangen", "(Blue Dragon) Shousangen is now 1 han (+2 from dragons).")
+  update_rule("1 Han", "Shousangen", "%{example_hand}", %{example_hand: ~t"234m45s55566000z3x6s"})
+  add_rule("2 Han", "Daisangen", "(Blue Dragon) Daisangen is now 2 han (+3 from dragons).")
+  update_rule("2 Han", "Daisangen", "%{example_hand}", %{example_hand: ~t"234m44s55566000z3x6z"})
+  add_rule("Yakuman", "Shousuugen", "(Blue Dragon) Having three dragon triplets and a dragon pair awards the Shousuugen yakuman.")
+  update_rule("Yakuman", "Shousuugen", "%{example_hand}", %{example_hand: ~t"234m5556677000z3x6z"})
+  add_rule("Yakuman", "Daisuugen", "(Blue Dragon) Having four dragon triplets awards the Daisuugen double yakuman.")
+  update_rule("Yakuman", "Daisuugen", "%{example_hand}", %{example_hand: ~t"22m55566777000z3x6z"})
+  add_rule("Rules", "Dora", "(Blue Dragon) For dragons, the sequence for dora indicators is White, Green, Red, Blue.")
+end
+
+apply set_append, "wall", ["0z", "0z", "0z", "0z"]
+apply merge, "custom_style.tile_indices", %{"0z": "B"}
+define_set baiban, ~s"0z 0z 0z"
+define_set baiban_pair, ~s"0z 0z"
+define_yaku yaku, "Hakuban", [1, "Han"], match(["hand", "calls", "winning_tile"], ~m"baiban:1")
+
+define_match shousangen, ~m"(haku hatsu chun baiban):2, (haku_pair hatsu_pair chun_pair baiban_pair):1"
+define_match daisangen, ~m"(haku hatsu chun baiban):3"
+define_match shousuugen, ~m"(haku hatsu chun baiban):3, (haku_pair hatsu_pair chun_pair baiban_pair):1"
+define_match daisuugen, ~m"haku:1, hatsu:1, chun:1, baiban:1"
+remove_yaku yaku, "Shousangen"
+remove_yaku yakuman, "Daisangen"
+define_yaku yaku, "Shousangen", [1, "Han"], match(["hand", "calls", "winning_tile"], ["shousangen"])
+define_yaku yaku, "Daisangen", [2, "Han"], match(["hand", "calls", "winning_tile"], ["daisangen"]), ["Shousangen"]
+define_yaku yakuman, "Shousuugen", [1, "★"], match(["hand", "calls", "winning_tile"], ["shousuugen"]), ["Daisangen"]
+define_yaku yakuman, "Daisuugen", [2, "★"], match(["hand", "calls", "winning_tile"], ["daisuugen"]), ["Shousuugen"]
+
+if defined("dora") do
+  apply merge, "dora_indicators", %{
+    "0z": ["5z"],
+    "7z": ["0z"],
+    "07z": ["0z"],
+    "17z": ["0z"],
+    "27z": ["0z"],
+    "37z": ["0z"]
+  }
+end
