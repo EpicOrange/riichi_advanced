@@ -566,6 +566,7 @@ define_mod honba, name: "Honba", order: -1, desc: "Enables honba."
 config_mod honba, name: "value", values: [100, 500, 1000]
 define_mod nagashi, name: "Nagashi", order: -1, desc: "Enable nagashi mangan. When you discards are all terminals and honors at exhaustive draw, and none of your discards have been called, then you are paid mangan tsumo at draw."
 config_mod nagashi, name: "is", values: ["Mangan", "Haneman", "Baiman", "Sanbaiman", "Yakuman"]
+config_mod nagashi, name: "counts_as", values: ["tsumo", "draw"], default: "draw"
 define_mod uma, name: "Uma", desc: "Enable uma. At the end of the game, points are awarded or deducted based on placement."
 config_mod uma, name: "_1st", values: [-30,-25,-20,-15,-10,-5,0,5,10,15,20,25,30], default: 10
 config_mod uma, name: "_2nd", values: [-30,-25,-20,-15,-10,-5,0,5,10,15,20,25,30], default: 5
@@ -756,6 +757,7 @@ define_mod_category "Shuugi"
 define_mod shuugi, order: -1, name: "Shuugi", desc: "Play with shuugi (poker chips). Each shuugi is worth some number of points each at the end. Win payments include shuugi along with points. On ron, you get shuugi from the discarder; on tsumo you get shuugi from everyone."
 config_mod shuugi, name: "worth", values: [200,500,1000,2000,5000,10000], default: 2000
 config_mod shuugi, name: "starting_shuugi", values: [0,10,50,100,250,500,1000], default: 100
+config_mod shuugi, name: "pao_pays_all", values: [false, true], default: true
 define_mod "shuugi/ippatsu", order: 1, name: "Ippatsu", deps: ["shuugi", "yaku/ippatsu"], desc: "Ippatsu is typically worth one shuugi."
 config_mod "shuugi/ippatsu", name: "chips", values: [1, 2, 3, 4, 5], default: 1
 define_mod "shuugi/ura", order: 1, name: "Ura", deps: ["shuugi", "ura"], desc: "Each ura dora scores shuugi."
@@ -819,7 +821,7 @@ set default_mods, [
 define_preset "Mahjong Soul", [
   %{name: "honba", config: %{value: 100}},
   %{name: "yaku/riichi", config: %{bet: 1000, drawless: false}},
-  %{name: "nagashi", config: %{is: "Mangan"}},
+  %{name: "nagashi", config: %{is: "Mangan", counts_as: "draw"}},
   %{name: "tobi", config: %{below: 0}},
   %{name: "uma", config: %{_1st: 15, _2nd: 5, _3rd: -5, _4th: -15}},
   "agarirenchan",
@@ -849,7 +851,7 @@ define_preset "Mahjong Soul", [
 define_preset "tenhou.net", [
   %{name: "honba", config: %{value: 100}},
   %{name: "yaku/riichi", config: %{bet: 1000, drawless: false}},
-  %{name: "nagashi", config: %{is: "Mangan"}},
+  %{name: "nagashi", config: %{is: "Mangan", counts_as: "draw"}},
   %{name: "tobi", config: %{below: 0}},
   %{name: "uma", config: %{_1st: 20, _2nd: 10, _3rd: -10, _4th: -20}},
   "agarirenchan",
@@ -880,7 +882,7 @@ define_preset "tenhou.net", [
 define_preset "Riichi City", [
   %{name: "honba", config: %{value: 100}},
   %{name: "yaku/riichi", config: %{bet: 1000, drawless: false}},
-  %{name: "nagashi", config: %{is: "Mangan"}},
+  %{name: "nagashi", config: %{is: "Mangan", counts_as: "draw"}},
   %{name: "tobi", config: %{below: 0}},
   %{name: "uma", config: %{_1st: 30, _2nd: 10, _3rd: -10, _4th: -30}},
   "agarirenchan",
@@ -913,7 +915,7 @@ define_preset "Riichi City", [
 define_preset "Amatsuki Mahjong", [
   %{name: "honba", config: %{value: 100}},
   %{name: "yaku/riichi", config: %{bet: 1000, drawless: false}},
-  %{name: "nagashi", config: %{is: "Mangan"}},
+  %{name: "nagashi", config: %{is: "Mangan", counts_as: "draw"}},
   %{name: "tobi", config: %{below: 0}},
   %{name: "uma", config: %{_1st: 10, _2nd: 5, _3rd: -5, _4th: -10}},
   "agarirenchan",
@@ -990,7 +992,7 @@ define_preset "WRC 2025", [
 define_preset "M.League", [
   %{name: "honba", config: %{value: 100}},
   %{name: "yaku/riichi", config: %{bet: 1000, drawless: false}},
-  %{name: "nagashi", config: %{is: "Mangan"}},
+  %{name: "nagashi", config: %{is: "Mangan", counts_as: "draw"}},
   %{name: "uma", config: %{_1st: 30, _2nd: 10, _3rd: -10, _4th: -30}},
   %{name: "oka", config: %{ante: 5}},
   "agarirenchan",
@@ -1021,7 +1023,7 @@ define_preset "Just Like Modded Minecraft", [
   %{name: "yaku/riichi", config: %{bet: 1000, drawless: true}},
   "fifth_tile",
   "washizu",
-  %{name: "nagashi", config: %{is: "Yakuman"}},
+  %{name: "nagashi", config: %{is: "Yakuman", counts_as: "draw"}},
   %{name: "uma", config: %{_1st: 10, _2nd: 5, _3rd: -5, _4th: -10}},
   %{name: "oka", config: %{ante: 5}},
   "agarirenchan",

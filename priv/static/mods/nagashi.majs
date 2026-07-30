@@ -1,5 +1,10 @@
 on after_initialization do
   add_rule("Rules", "Nagashi $is", "If you end with an exhaustive draw, and no one has called any of your discards, and your discards are all terminal or honor tiles, a nagashi payment occurs, which is equivalent to a %{is} tsumo.", %{is: !is})
+  if equals(!counts_as, "tsumo") do
+    add_rule("Rules", "Nagashi $is", "Nagashi is treated as a tsumo win, i.e. it takes honba and riichi bets", %{is: !is})
+  else
+    add_rule("Rules", "Nagashi $is", "Nagashi is treated as an exhaustive draw, and does not take honba or riichi bets.", %{is: !is})
+  end
 end
 
 # start with nagashi set
@@ -24,44 +29,67 @@ on before_abortive_draw do
   unset_status_all("nagashi")
 end
 
+on before_exhaustive_draw do
+  if equals(!counts_as, "tsumo") do
+    win_by_draw("nagashi")
+  end
+end
+
+define_scoring nagashi do
+  execute_nagashi
+end
+
+on after_scoring do
+  unless equals(!counts_as, "tsumo") do
+    if ended_by_exhaustive_draw and anyone_status("nagashi") do
+      execute_nagashi
+    end
+  end
+end
+
 # pay out for nagashi
 # TODO note for future sakicards implementation:
 # - if kanbara satomi is in play, the player whose wall the last dora indicator is on loses double points
 # - logic for double 1500 payments is "always pay to your right, unless right is also paying"
-on after_scoring do
-  if ended_by_exhaustive_draw and anyone_status("nagashi") do
-    set_scoring_header("Nagashi $is", %{is: !is})
-    # clear tenpai payments
-    as everyone do
-      modify_payout("self", 0, "set")
-    end
-    as everyone do
-      if status("nagashi") do
-        cond do
-          equals(!is, "Mangan")    -> base_payment = 2000
-          equals(!is, "Haneman")   -> base_payment = 3000
-          equals(!is, "Baiman")    -> base_payment = 4000
-          equals(!is, "Sanbaiman") -> base_payment = 6000
-          true                     -> base_payment = 8000
+def execute_nagashi do
+  set_scoring_header("Nagashi $is", %{is: !is})
+  # clear tenpai payments
+  as everyone do
+    modify_payout("self", 0, "set")
+  end
+  as everyone do
+    if status("nagashi") do
+      cond do
+        equals(!is, "Mangan")    -> base_payment = 2000
+        equals(!is, "Haneman")   -> base_payment = 3000
+        equals(!is, "Baiman")    -> base_payment = 4000
+        equals(!is, "Sanbaiman") -> base_payment = 6000
+        true                     -> base_payment = 8000
+      end
+      if equals(!counts_as, "tsumo") do
+        # honba is counted
+        base_payment += 100 * honba
+        # take riichi bets too
+        riichi_bets = pot
+        modify_payout("self", "riichi_bets", "add")
+      end
+      if seat_is("east") do
+        # do payout for each other player
+        as others do
+          payment = base_payment * 2
+          modify_payout("self", "payment", "subtract")
+          modify_payout("prev_seat", "payment", "add")
         end
-        if seat_is("east") do
-          # do payout for each other player
-          as others do
+      else
+        # do payout for each other player
+        as others do
+          if seat_is("east") do
             payment = base_payment * 2
             modify_payout("self", "payment", "subtract")
             modify_payout("prev_seat", "payment", "add")
-          end
-        else
-          # do payout for each other player
-          as others do
-            if seat_is("east") do
-              payment = base_payment * 2
-              modify_payout("self", "payment", "subtract")
-              modify_payout("prev_seat", "payment", "add")
-            else
-              modify_payout("self", "base_payment", "subtract")
-              modify_payout("prev_seat", "base_payment", "add")
-            end
+          else
+            modify_payout("self", "base_payment", "subtract")
+            modify_payout("prev_seat", "base_payment", "add")
           end
         end
       end

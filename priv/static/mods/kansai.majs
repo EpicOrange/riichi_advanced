@@ -65,7 +65,7 @@ replace all, "available_mods",
 # add zan preset
 define_preset "Zan Sanma", [
   %{name: "honba", config: %{value: 1000}},
-  %{name: "nagashi", config: %{is: "Yakuman"}},
+  %{name: "nagashi", config: %{is: "Yakuman", counts_as: "draw"}},
   %{name: "tobi", config: %{below: 1}},
   %{name: "yaku/riichi", config: %{bet: 1000, drawless: true}},
   %{name: "uma", config: %{_1st: 30, _2nd: 10, _3rd: -10, _4th: -30}},

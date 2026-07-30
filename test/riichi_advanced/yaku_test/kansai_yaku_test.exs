@@ -4,7 +4,7 @@ defmodule RiichiAdvanced.YakuTest.KansaiYaku do
 
   @kansai_mods [
     %{name: "honba", config: %{value: 100}},
-    %{name: "nagashi", config: %{is: "Mangan"}},
+    %{name: "nagashi", config: %{is: "Mangan", counts_as: "draw"}},
     %{name: "tobi", config: %{below: 1}},
     %{name: "yaku/riichi", config: %{bet: 1000, drawless: false}},
     %{name: "uma", config: %{_1st: 10, _2nd: 5, _3rd: -5, _4th: -10}},

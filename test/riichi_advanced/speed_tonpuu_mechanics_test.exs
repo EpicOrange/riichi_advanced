@@ -11,7 +11,7 @@ defmodule RiichiAdvanced.YakuTest.SpeedTonpuuMechanics do
     "double_wind_4_fu",
     %{name: "oka", config: %{ante: 4}},
     %{name: "uma", config: %{_1st: 10, _2nd: 4, _3rd: -4, _4th: -10}},
-    %{name: "nagashi", config: %{is: "Haneman"}},
+    %{name: "nagashi", config: %{is: "Haneman", counts_as: "tsumo"}},
     %{name: "suufon_renda", config: %{name: "Suufon Renda"}},
     "suucha_riichi",
     %{name: "kyuushu_kyuuhai", config: %{name: "Kyuushu Kyuuhai"}},
@@ -32,7 +32,7 @@ defmodule RiichiAdvanced.YakuTest.SpeedTonpuuMechanics do
     # "pao_suukantsu", # note: affects the test 'suukantsu rinshan is scored as normal tsumo scoring shuugi'
     # "pao_rinshan",
     %{name: "yaku/riichi_renhou", config: %{is: "Yakuman"}},
-    %{name: "shuugi", config: %{worth: 5000, starting_shuugi: 100, }},
+    %{name: "shuugi", config: %{worth: 5000, starting_shuugi: 100, pao_pays_all: true}},
     %{name: "shuugi/ippatsu", config: %{chips: 1}},
     %{name: "shuugi/ura", config: %{chips: 1}},
     %{name: "shuugi/yakuman", config: %{ron_chips: 10, tsumo_chips: 5, per_yakuman: true, allow_kazoe: true}},

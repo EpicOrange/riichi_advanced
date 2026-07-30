@@ -18,22 +18,31 @@ def announce_shuugi_payment do end
 
 def execute_shuugi_payment do
   set_counter_all("shuugi_payment", "shuugi_payment")
-  cond do
-    won_by_draw ->
-      as others do
-        shuugi -= shuugi_payment
-        as prev_seat do shuugi += shuugi_payment end
+  if !pao_pays_all and anyone_status("pao") do
+    as everyone do
+      if status("pao") do
+        shuugi -= shuugi_payment * 3
+        as prev_seat do shuugi += shuugi_payment * 3 end
       end
-    won_by_call ->
-      as last_caller do
-        shuugi -= shuugi_payment
-      end
-      shuugi += shuugi_payment
-    true ->
-      as last_discarder do
-        shuugi -= shuugi_payment
-      end
-      shuugi += shuugi_payment
+    end
+  else
+    cond do
+      won_by_draw ->
+        as others do
+          shuugi -= shuugi_payment
+          as prev_seat do shuugi += shuugi_payment end
+        end
+      won_by_call ->
+        as last_caller do
+          shuugi -= shuugi_payment
+        end
+        shuugi += shuugi_payment
+      true ->
+        as last_discarder do
+          shuugi -= shuugi_payment
+        end
+        shuugi += shuugi_payment
+    end
   end
 end
 

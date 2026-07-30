@@ -4,7 +4,7 @@ defmodule RiichiAdvanced.ZanScoringTest do
 
   @zan_mods [
     %{name: "honba", config: %{value: 1000}},
-    %{name: "nagashi", config: %{is: "Yakuman"}},
+    %{name: "nagashi", config: %{is: "Yakuman", counts_as: "draw"}},
     %{name: "tobi", config: %{below: 1}},
     %{name: "yaku/riichi", config: %{bet: 1000, drawless: true}},
     %{name: "uma", config: %{_1st: 30, _2nd: 10, _3rd: -10, _4th: -30}},
@@ -30,7 +30,7 @@ defmodule RiichiAdvanced.ZanScoringTest do
     "yaku/suurenkou",
     "show_waits",
     "sanma_pei_yakuhai",
-    %{name: "shuugi", config: %{worth: 1000, starting_shuugi: 0}},
+    %{name: "shuugi", config: %{worth: 1000, starting_shuugi: 0, pao_pays_all: true}},
     %{name: "shuugi/ippatsu", config: %{chips: 1}},
     %{name: "shuugi/ura", config: %{chips: 1}},
     %{name: "shuugi/yakuman", config: %{ron_chips: 10, tsumo_chips: 5, per_yakuman: false, allow_kazoe: false}},

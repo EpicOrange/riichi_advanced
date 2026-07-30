@@ -1,13 +1,4 @@
-
+# kansai chiitoi is the only thing not covered by mods in @modpack (constants.ex)
 define_yaku meta_yaku, "Kansai Chiitoitsu", [1, "Han"], has_existing_yaku("Chiitoitsu") and match(["hand", "calls", "winning_tile"], ~m"quad:1")
 define_yaku meta_yaku, "Kansai Chiitoitsu", [2, "Han"], has_existing_yaku("Chiitoitsu") and match(["hand", "calls", "winning_tile"], ~m"quad:2")
 define_yaku meta_yakuman, "Kansai Chiitoitsu", [1, "★"], has_existing_yaku("Chiitoitsu") and match(["hand", "calls", "winning_tile"], ~m"quad:3")
-
-# remaining tasks
-# ===
-# - shuugi (chips)
-#   + in the case of pao, responsible player pays all shuugi
-#   + nagashi earns chips as if self-draw
-# - nagashi here should count as a tsumo haneman win, not an exhaustive draw
-# - rules text for all of the above
-
