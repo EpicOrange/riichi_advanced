@@ -684,7 +684,7 @@ define_mod "jokers/even", order: 4, name: "Even", desc: "Adds a copy of the even
 define_mod_category "Yaku"
 # 1 han
 define_mod "yaku/riichi", order: -1, name: "Riichi", desc: "Enable riichi declarations. When you are tenpai with at least 1000 points (and it is not your last discard), you may declare riichi before discarding. If the discard passes, you automatically bet 1000 and can no longer change your hand. If you win under this condition, you get the riichi yaku (1 han). If you riichi on your first discard (calls invalidate), this is called Double Riichi and worth 2 han."
-config_mod "yaku/riichi", name: "bet", values: [1000,2000,3000,4000,5000]
+config_mod "yaku/riichi", name: "bet", values: [0,1000,2000,3000,4000,5000]
 config_mod "yaku/riichi", name: "drawless", values: [false, true]
 define_mod "yaku/ippatsu", order: 2, name: "Ippatsu", deps: ["yaku/riichi"], desc: "Enables ippatsu. \"One-shot\". 1 han if you win before or during your next draw after riichi. Calls invalidate."
 define_mod "yaku/nippatsu", order: 2, name: "Nippatsu", deps: ["yaku/riichi"], desc: "Enables nippatsu. 1 han if you win during the second go-around after riichi ippatsu. Calls invalidate."
