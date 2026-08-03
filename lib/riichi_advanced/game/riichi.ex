@@ -474,6 +474,7 @@ defmodule RiichiAdvanced.Riichi do
     |> Enum.uniq()
     |> Enum.filter(fn tile ->
       cond do
+        tile in tile_behavior.mappings -> false
         Utils.count_tiles(hand, [tile], tile_behavior) >= 2 -> false
         Utils.count_tiles(hand, [Utils.strip_attrs(tile)], tile_behavior) >= 2 -> false
         is_jihai?(tile) -> true
