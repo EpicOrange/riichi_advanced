@@ -3,7 +3,7 @@ on after_initialization do
   add_rule("Tiles", "Gold North", "(Super Bingo) A single gold north wind is added. This tile has no special functionality except when you use it to declare a grand cross. In that case, you are paid 20 from each player instead of 10.")
 end
 
-if !gold_pei do
+if !add_gold_pei do
   replace 1, "wall", "4z", "34z"
   on after_start do
     set_tile_alias_all(["34z"], ["4z"])
