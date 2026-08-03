@@ -480,7 +480,7 @@ defmodule RiichiAdvanced.Constants do
     {"zan",          "Zan Sanma", "Popular Kansai Sanma variant with a focus on shuugi. Adds shiro pocchi, as well as some yakuman hands: suurenkou, daisharin, nagashi, renhou, manzu honitsu."},
     {"chinitsu",     "Chinitsu", "Two-player variant where the only tiles are bamboo tiles. Try not to chombo!"},
     {"minefield",    "Minefield", "Two-player variant where you start with 34 tiles to make a mangan+ hand, and your remaining tiles are your discards."},
-    {"speed_tonpuu", "Speed Tonpuu (beta)", "Parlor-style riichi with a focus on shuugi payments. Includes blue sevens and a gold five."},
+    {"speed_tonpuu", "Speed Tonpuu", "Parlor-style riichi with a focus on shuugi payments. Includes blue sevens and a gold five."},
     {"super_bingo",  "Super Bingo (beta)", "Sanma but you replace the 19m with four 7p and four 7s, with big shuugi payments."},
     {"saki",         "Sakicards v1.3", "Riichi, but everyone gets a different Saki power, which changes the game quite a bit. Some give you bonus han every time you use your power. Some let you recover dead discards. Some let you swap tiles around the entire board, including the dora indicator."},
     {"hk",           "Hong Kong", "Hong Kong Old Style mahjong. Three point minimum, everyone pays for a win, and win instantly if you have seven flowers."},
