@@ -789,7 +789,15 @@ defmodule RiichiAdvanced.GameState.Actions do
   def eval_expression(state, context, ["+", [l, r]]), do: eval_expression(state, context, l) + eval_expression(state, context, r)
   def eval_expression(state, context, ["-", [l, r]]), do: eval_expression(state, context, l) - eval_expression(state, context, r)
   def eval_expression(state, context, ["*", [l, r]]), do: eval_expression(state, context, l) * eval_expression(state, context, r)
-  def eval_expression(state, context, ["/", [l, r]]), do: eval_expression(state, context, l) / eval_expression(state, context, r)
+  def eval_expression(state, context, ["/", [l, r]]) do
+    r = eval_expression(state, context, r)
+    if r != 0 do
+      eval_expression(state, context, l) / r
+    else
+      Logger.error("WARNING: tried to divide by zero in counter_assignment")
+      0
+    end
+  end
   def eval_expression(state, context, ["**", [l, r]]), do: eval_expression(state, context, l) ** eval_expression(state, context, r)
   def eval_expression(state, context, ["round", [l, r]]) do
     l = eval_expression(state, context, l)
@@ -862,10 +870,7 @@ defmodule RiichiAdvanced.GameState.Actions do
     # - or ones that generate points for us (from = nil, to = seat)
     # find the first such txn
     payer = context.seat
-    recipient = Map.get(context, :winner_seat, nil)
-    if recipient == nil do
-      Logger.error("Tried to add to a transaction outside of scoring_logic")
-    end
+    recipient = Map.get(context, :winner_seat, Map.get(context, :prev_seat, context.seat))
     to_self = recipient == payer
     ix = if to_self do
       Enum.find_index(state.txns, & &1.from == nil and &1.to == payer)
@@ -927,7 +932,7 @@ defmodule RiichiAdvanced.GameState.Actions do
     warn_counter(counter_name)
     amount = interpret_amount(state, context, amt_spec)
     if amount == 0 do
-      IO.puts("WARNING: tried to divide by zero")
+      Logger.error("WARNING: tried to divide by zero in divide_counter")
       state
     else
       new_ctr = Utils.try_integer(Map.get(state.players[context.seat].counters, counter_name, 0) / amount)
