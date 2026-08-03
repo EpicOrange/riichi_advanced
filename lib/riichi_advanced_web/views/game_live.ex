@@ -241,7 +241,15 @@ defmodule RiichiAdvancedWeb.GameLive do
         <.live_component module={RiichiAdvancedWeb.HandPianoComponent}
           id="hand-piano-component"
           num_keys={length(@state.players[@seat].hand)}
+          game_state={@game_state}
+          seat={@seat}
+          viewer={@viewer}
+          marking={@state.marking[@seat]}
+          your_turn?={@seat == @state.turn}
+          playable_indices={@playable_indices}
           play_tile={&send(self(), {:play_tile, &1})}
+          mark_tile={&send(self(), {:mark_tile, &1, &2})}
+          unmark_tile={&send(self(), {:unmark_tile, &1, &2})}
           hover={&send(self(), {:hover, &1})}
           hover_off={fn -> send(self(), :hover_off) end}
           selected_index={@selected_index} />

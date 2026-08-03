@@ -1941,81 +1941,129 @@ div.hand-piano-container > div.hand-piano-key {
   --odd-color: hsl(27, 0%, 40%);
   --odd-color-pressed: hsl(27, 50%, 35%);
   position: relative;
-  box-sizing: border-box;
-  border-left: calc(0.001 * var(--tile-size)) solid black;
-  border-bottom: calc(0.001 * var(--tile-size)) solid black;
   flex: 0 0 calc(1.125 * var(--tile-size));
   transform-origin: 0 0;
   transform: scale(2);
   cursor: pointer;
-  &:nth-child(2n+1) {
-    top: calc(2 * var(--tile-size));
-    height: calc(1.5 * var(--tile-size));
-  }
-  &:first-child {
-    top: calc(1 * var(--tile-size));
-    height: calc(2 * var(--tile-size));
-  }
   &::before, &::after {
     position: absolute;
     content: "";
     display: block;
+    box-sizing: border-box;
   }
   &::before {
     background: var(--odd-color);
-    width: calc(1.125 * var(--tile-size));
+    width: calc(0.5625 * var(--tile-size));
     height: calc(2 * var(--tile-size));
   }
   &::after {
-    background: linear-gradient(to bottom, black calc(0 * var(--tile-size)), var(--odd-color) calc(0.125 * var(--tile-size)));
+    background: linear-gradient(to bottom, transparent calc(0 * var(--tile-size)), var(--odd-color) calc(0.125 * var(--tile-size)));
     width: calc(0.5625 * var(--tile-size));
     height: calc(1 * var(--tile-size));
     top: calc(1 * var(--tile-size));
     left: calc(0.5625 * var(--tile-size));
     z-index: 1;
   }
-  &:nth-child(2n+1):not(:first-child):before {
-    height: calc(1 * var(--tile-size));
-    top: calc(0.5 * var(--tile-size));
-  }
-  &:nth-child(2n+1):not(:first-child):after {
-    top: calc(0.5 * var(--tile-size));
-  }
-  &:nth-child(2n+1):last-child {
-    &::after {
-      background: var(--odd-color);
-      top: calc(-0.5 * var(--tile-size));
+  /* leftmost piano key */
+  &:nth-child(2n+1) {
+    top: calc(2 * var(--tile-size));
+    &:first-child {
+      top: calc(1 * var(--tile-size));
       height: calc(2 * var(--tile-size));
-      left: calc(0.25 * var(--tile-size));
     }
-    &:active::after, &.selected::after { background: var(--odd-color-pressed); }
   }
-  &:nth-child(2n):last-child::after {
-    left: calc(0.25 * var(--tile-size));
+  /* all piano keys */
+  &:nth-child(2n+1):not(:first-child) {
+    &:before {
+      height: calc(1 * var(--tile-size));
+      top: calc(0.5 * var(--tile-size));
+    }
+    &:after {
+      top: calc(0.5 * var(--tile-size));
+    }
   }
   &:nth-child(2n) {
     height: calc(1 * var(--tile-size));
     top: calc(1 * var(--tile-size));
     z-index: 2;
     &::before {
-      background: linear-gradient(to bottom, transparent calc(0 * var(--tile-size)), var(--even-color) calc(0.125 * var(--tile-size)));
+      background: var(--even-color);
       height: calc(1 * var(--tile-size));
     }
     &::after {
-      background: var(--even-color);
+      background: linear-gradient(to bottom, transparent calc(0 * var(--tile-size)), var(--even-color) calc(0.125 * var(--tile-size)));
       width: calc(0.5625 * var(--tile-size));
       height: calc(1 * var(--tile-size));
       top: 0;
-      left: 0;
+      left: calc(0.5625 * var(--tile-size));
     }
   }
-  &:active, &.selected {
-    &::before { background: var(--odd-color-pressed); }
-    &::after { background: linear-gradient(to bottom, black calc(0 * var(--tile-size)), var(--odd-color-pressed) calc(0.125 * var(--tile-size))); }
+  /* rightmost piano key */
+  &:nth-child(2n+1):last-child {
+    &::before {
+      height: calc(2 * var(--tile-size));
+      left: calc(0.25 * var(--tile-size));
+      top: calc(-0.5 * var(--tile-size));
+    }
+    &::after {
+      left: 0;
+      width: calc(1.125 * var(--tile-size));
+    }
   }
-  &:nth-child(2n):active, &:nth-child(2n).selected {
-    &::before { background: linear-gradient(to bottom, transparent calc(0 * var(--tile-size)), var(--even-color-pressed) calc(0.125 * var(--tile-size))); }
-    &::after { background: var(--even-color-pressed); }
+  &:nth-child(2n):last-child {
+    &::before {
+      left: calc(0.25 * var(--tile-size));
+    }
+    &::after {
+      left: 0;
+      width: calc(1.125 * var(--tile-size));
+    }
+  }
+  /* pressed */
+  &:not(.inactive) {
+    &:active, &.selected {
+      &::before { background: var(--odd-color-pressed); }
+      &::after { background: linear-gradient(to bottom, transparent calc(0 * var(--tile-size)), var(--odd-color-pressed) calc(0.125 * var(--tile-size))); }
+    }
+    &:nth-child(2n):active, &:nth-child(2n).selected {
+      &::before { background: var(--even-color-pressed); }
+      &::after { background: linear-gradient(to bottom, transparent calc(0 * var(--tile-size)), var(--even-color-pressed) calc(0.125 * var(--tile-size))); }
+    }
+  }
+  /* border and marking stuff */
+  --border-width: calc(0.001 * var(--tile-size));
+  --border-color: black;
+  &::before {
+    border-left: var(--border-width) solid var(--border-color);
+  }
+  &:last-child::before {
+    border-left: none;
+  }
+  &:last-child::after {
+    border-left: var(--border-width) solid var(--border-color);
+    border-right: var(--border-width) solid var(--border-color);
+  }
+  &.markable {
+    --border-width: calc(0.05 * var(--tile-size));
+    --border-color: var(--tile-back);
+    &::before, &::after {
+      border-bottom: var(--border-width) solid var(--border-color);
+    }
+  }
+  &.marked {
+    --border-width: calc(0.1 * var(--tile-size));
+    --border-color: var(--tile-back);
+    &::before, &::after {
+      border-bottom: var(--border-width) solid var(--border-color);
+    }
+  }
+  &.inactive {
+    cursor: default;
+    opacity: 0.7;
+    filter: brightness(60%);
+  }
+  &:nth-child(2n).markable, &:nth-child(2n).marked {
+    --border-color: var(--tile-back-side);
   }
 }
 @media (max-aspect-ratio: 6/5) {

@@ -206,7 +206,8 @@ defmodule RiichiAdvanced.GameState.Marking do
     if not Enum.empty?(state.marking[marking_player]) do
       valid_mark_info_ix = state.marking[marking_player]
       |> Enum.find_index(fn {src, mark_info} -> src == source and _can_mark?(state, marking_player, seat, index, source, mark_info) end)
-      if valid_mark_info_ix != nil do
+      not_already_marked = valid_mark_info_ix != nil and not Enum.any?(state.marking[marking_player] |> Enum.at(valid_mark_info_ix) |> elem(1) |> Map.get(:marked), fn {_, _, i} -> index == i end)
+      if not_already_marked do
         update_in(state.marking[marking_player], &List.update_at(&1, valid_mark_info_ix, fn {src, mark_info} ->
           {src, update_in(mark_info.marked, fn marked -> marked ++ [{get_object(state, seat, index, source), seat, index}] end)}
         end))
