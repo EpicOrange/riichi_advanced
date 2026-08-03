@@ -499,12 +499,13 @@ defmodule RiichiAdvanced.SMT do
     |> Enum.filter(fn [_groups, num] -> num > 0 end)
     |> Enum.flat_map(fn [groups, _num] -> groups end)
     |> Enum.reject(fn group -> is_binary(group) end) # filter out toplevel keywords
+    |> Enum.reject(fn group -> is_map(group) end) # filter out tiles with attributes
     |> Enum.reject(fn group -> is_list(group) and Utils.is_tile(Enum.at(group, 0)) end) # see `all_tile_groups` below
     |> Enum.map(&remove_group_keywords/1) # filter out group keywords
     |> Enum.uniq() # [[0, 0], [0, 1, 2], [0, 0, 0]]
     # IO.inspect(all_sets, charlists: :as_lists, label: "all_sets")
     set_definitions = all_sets
-    |> Enum.map(fn group -> Enum.flat_map(group, fn elem -> if is_list(elem) do elem else [elem] end end) end)
+    |> Enum.map(fn group -> Enum.flat_map(group, &List.wrap/1) end)
     |> Enum.with_index()
     |> Enum.map(fn {set, i} ->
       if Enum.any?(set, & &1 >= 10) do
