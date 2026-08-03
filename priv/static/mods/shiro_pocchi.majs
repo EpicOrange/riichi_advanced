@@ -9,21 +9,17 @@ on after_start do
 end
 
 # when drawing shiro pocchi in riichi, it becomes a wildcard
-on after_turn_change do
-  if !ippatsu_only do
-    if status("riichi", "ippatsu") and match(["draw"], ~m"nojoker, 9z:1") do
-      set_status("shiro_pocchi")
-      save_tile_behavior("before_shiro_pocchi")
-      set_tile_alias(["9z"], ["any"])
-    end
-  else
-    if status("riichi") and match(["draw"], ~m"nojoker, 9z:1") do
-      set_status("shiro_pocchi")
-      save_tile_behavior("before_shiro_pocchi")
-      set_tile_alias(["9z"], ["any"])
-    end
+def activate_shiro_pocchi do
+  unless status_missing("riichi")
+      or (!ippatsu_only and status_missing("ippatsu"))
+      or not_match(["draw"], ~m"nojoker, 9z:1") do
+    set_status("shiro_pocchi")
+    save_tile_behavior("before_shiro_pocchi")
+    set_tile_alias(["9z"], ["any"])
   end
 end
+
+on after_turn_change do activate_shiro_pocchi end
 
 # remove shiro pocchi wildcard status on turn change (to avoid furiten)
 on before_turn_change do
@@ -50,3 +46,9 @@ if defined("shuugi") do
     end
   end
 end
+
+# cannot call ankan or kakan on shiro pocchi except as a white dragon
+apply append, "buttons.ankan.call_conditions", not_call_contains(["9z"]) or call_contains(["5z"])
+apply append, "buttons.kakan.call_conditions", not_call_contains(["9z"]) or call_contains(["5z"])
+apply append, "buttons.kanobekan.call_conditions", not_call_contains(["9z"]) or call_contains(["5z"])
+apply append, "buttons.annobekan.call_conditions", not_call_contains(["9z"]) or call_contains(["5z"])
