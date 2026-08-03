@@ -1,6 +1,96 @@
 
 # Changelog
 
+- __19 Aug 2026__: v1.5.0:
+  + New things
+    * Added 0 as an option for riichi bets
+    * Added 19m nukidora sanma mod that lets you declare 19m like pei
+    * Added Arisu (Alices) mod where you flip tiles on the wall for chips after a concealed hand win
+    * Added Grand Cross riichi mod (kan but it's all 4 winds)
+    * Added Niipatsu riichi mod (ippatsu but for second go-around)
+    * Added Nobekan riichi mod (kan but it's a sequence of 4) with 3-nobekan and 4-nobekan yaku
+    * Added Speed Tonpuu (riichi variant)
+    * Added Super Bingo (sanma variant) with tictactoe win-con, tulips/Alices, rainbow sevens, and grand cross with gold pei
+    * Added Yami (Battle of Darkness) riichi mod
+    * Added Yes Riichi Ankan mod to allow any ankan during riichi
+    * Added Yonshoku yakus for Star Suit mod
+    * Added button to clear messages in message log
+    * Added labels, like "No Yaku" and "Furiten", to Show Waits dialog
+    * Added mobile 'piano-keys' UI for easier discarding
+    * Added robbing nukidora sanma mod that lets you rob any nukidora to win
+    * Added rules text to every existing variant
+    * Added some url query flags to persist selected variant across page navigations/refreshes
+    * Added visible graphics for shuugi (chips)
+    * Amerijong AI now calls tiles (sometimes)
+    * Changed ao and kindora to award shuugi instead of 2/3 han
+    * Changed error banner to be up top instead of some random text popping up
+    * Updated Vietnamese mahjong rules (more jokers, NFNL hands, progressive scoring, bouncing jokers) (Thanks @Dget!)
+    * Version number in main menu now links to this changelog
+  + Updates and fixes
+    * An attempt was made to make the Washizu mod score correctly
+    * Balanced some variables in the Just Like Modded Minecraft modpack (thanks Sophie!)
+    * Bots no longer constantly chombo in Chinitsu Challenge
+    * Fix discards sometimes emitting duplicate messages
+    * Fix nagashi not being invalidated by a Cancellable Riichi discard
+    * Fixed MahjLife card link (thanks Sophie!)
+    * Fixed broken image links in riichi docs (thanks @bill876 on GitHub!)
+    * Fixed cancellable riichi stopping you from calling Ron
+    * Fixed flowers not being callable in Amerijong 
+    * Fixed jokers erroneously filling singles and pairs in the Show Nearest Hands view
+    * Fixed nagashi being triggered on every exhaustive draw
+    * Fixed riichi scoring not having labels like Baiman
+    * Fixed scoring screen arrows drawing strangely in some browsers (Chrome)
+    * Fixed sichuan bloody rules having you discard before a void suit declaration
+    * Fixed solver crash on Windows (Thanks Sophie!)
+    * Fixed some UI elements (buttons, calls, revealed tiles, shuugi, scry window) covering each other
+    * Fixed some tutorials crashing
+    * Fixed ten, blue dragon, star suit, and galaxy mods' interoperability
+    * Fixed tiles with differing attributes being treated as two different waits for scoring purposes
+    * Fixed transparent dotted tiles not appearing
+    * Fixed waitfinder not finding any waits in joker-heavy variants (i.e. Modded Minecraft variant)
+    * HKOS self-pick yaku no longer requires a closed hand
+    * Hand scorer is now accessible from the main menu
+    * Invisible tiles no longer show up as a normal (flipped) tile to other players
+    * Mostly fixed hand arrangement when you hover over a hand in the yaku screen
+    * Moved Zan Sanma from being a Kansai Sanma preset, to being its own variant
+    * Rewrote riichi scoring since it was behaving strangely (e.g. showing score-after-honba as the hand score)
+    * Score ledger now shows the LHS of most operations
+    * Show Waits no longer fails to work with Cancellable Riichi mod
+    * Show Waits now displays a loading dialog
+    * Various optimizations (notably in AI discarding logic, win checking, wait checking, and joker solving) (Thanks Sophie and PolyWolf!)
+    * You can no longer hover other other player's hidden calls to reveal them
+    * You can no longer kan shiro pocchi with any tile when drawn in riichi (except with other white dragons)
+    * You can no longer replace flowers/nukidora in hand (not draw) while in riichi
+  + MahjongScript and internal game logic
+    * Added `!=` and `not_equals` for expressions
+    * Added `@debug_hands` flag in debug.ex, which overlays tile identities over each tile
+    * Added `@debug_tsumogiri_bots` flag in debug.ex, which makes bots tsumogiri-only
+    * Added `fail` keyword to match definitions, which instantly fails a match (useful for disabling existing matches from another script)
+    * Added `flower_or_joker` tile spec
+    * Added `has_yaku` condition as an `after_scoring`-only shorthand for `has_yaku_with_hand`, `has_yaku_with_call`, `has_yaku_with_discard`
+    * Added `persistent` key to auto buttons, to prevent them from going back to defaults every round
+    * Added `rename_rule_tab` to move or merge rules tabs
+    * Added `require` and `require_after` toplevel command to load another MahjongScript file as a module (see docs), also `default` toplevel command to specify default variables in those loaded fiiles
+    * Added `round(num)`, `round_up(num)`, `round_down(num)`, `mod(n1, n2)`, `min(n1, n2)`, `max(n1, n2)` in expressions
+    * Added `set_suit_ordering` alongside the existing `set_tile_ordering`, except it's for defining suits
+    * Added a `technical_notes.md` document in `documentation/`
+    * Added toplevel `cond do ... end` for conditional compilation
+    * Bumped Elixir dependencies (and removed unnecessary ones)
+    * Call styling now supports adding arbitrary attributes
+    * Can now specify an condition instead of just true/false for the `unskippable` key in buttons
+    * Expressions can now be used on either side of a comparison operator
+    * Fix Big Three Dragons not scoring in MCR
+    * Fixed strange crash when using golden chun mod
+    * Fixed toriuchi mod simply not working
+    * Moved from ETS tables to Nebulex caches for internal caching
+    * Paths can now fanout with `[]` (but only one time per path) 
+    * Rewrote action evalution to fix a race condition when calling functions (if the function uses `pause`, the caller would proceed before the function unpauses) 
+    * Rewrote many mods in MahjongScript to take in config variables (when imported via `require`)
+    * Rewrote renchan logic (now all controlled by mods via round-end `change_dealership` and `add_honba` commands)
+    * Rewrote the mod loader like 3 separate times, now it's super fast
+    * Variables can now be used in toplevel expressions
+    * `def` keyword for defining functions now supports `prepend` and `append` options
+
 - __15 Jul 2026__: v1.4.0:
   + Added `/scoringtest` for testing scoring for any ruleset/mods
   + Added `at_least` and `at_most` metaconditionals to MahjongScript (previously only in json)

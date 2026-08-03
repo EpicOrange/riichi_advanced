@@ -882,8 +882,8 @@ The allowed methods for `apply <method>` are:
 - `"divide"`: divide a numeric value.
 - `"modulo"`: modulo a numeric value.
 - `"round"`: round a numeric value.
-- `"round up"`: round up a numeric value.
-- `"round down"`: round down a numeric value.
+- `"round_up"`: round up a numeric value.
+- `"round_down"`: round down a numeric value.
 - `"min"`: take the minimum of both values.
 - `"max"`: take the maximum of both values.
 - `"delete_key"`: remove a key or an array of keys from an object. (specify keys as strings)
