@@ -2,6 +2,8 @@ defmodule RiichiAdvanced.YakuTest.HefeiYaku do
   use ExUnit.Case, async: true
   alias RiichiAdvanced.TestUtils, as: TestUtils
 
+  @single_wait {"Single Wait", [1, "嘴"]}
+
   test "hefei - chicken hand" do
     TestUtils.test_yaku_advanced("hefei", [], """
     {
@@ -41,7 +43,7 @@ defmodule RiichiAdvanced.YakuTest.HefeiYaku do
       %{"type" => "buttons_pressed", "buttons" => [%{"button" => "ron"}, nil, nil, nil]}
     ], %{
       east: %{
-        yaku: [{"Single Wait", [1, "嘴"]}]
+        yaku: [@single_wait]
       }
     })
   end
@@ -63,7 +65,7 @@ defmodule RiichiAdvanced.YakuTest.HefeiYaku do
       %{"type" => "buttons_pressed", "buttons" => [%{"button" => "ron"}, nil, nil, nil]}
     ], %{
       east: %{
-        yaku: [{"Single Wait", [1, "嘴"]}]
+        yaku: [@single_wait]
       }
     })
   end
@@ -85,7 +87,7 @@ defmodule RiichiAdvanced.YakuTest.HefeiYaku do
       %{"type" => "buttons_pressed", "buttons" => [%{"button" => "ron"}, nil, nil, nil]}
     ], %{
       east: %{
-        yaku: [{"Single Wait", [1, "嘴"]}]
+        yaku: [@single_wait]
       }
     })
   end
@@ -132,7 +134,7 @@ defmodule RiichiAdvanced.YakuTest.HefeiYaku do
       %{"type" => "buttons_pressed", "buttons" => [%{"button" => "ron"}, nil, nil, nil]}
     ], %{
       east: %{
-        yaku: [{"Suit Bonus", [1, "嘴"]}]
+        yaku: [{"Same Number Bonus (5)", [1, "嘴"]},{"Suit Bonus", [1, "嘴"]}]
       }
     })
   end
@@ -158,7 +160,9 @@ defmodule RiichiAdvanced.YakuTest.HefeiYaku do
       %{"type" => "buttons_pressed", "buttons" => [%{"button" => "ron"}, nil, nil, nil]}
     ], %{
       east: %{
-        yaku: [{"Same Number Bonus", [1, "嘴"]}, {"Suit Bonus", [2, "嘴"]}]
+        yaku: [{"Same Number Bonus (5)", [1, "嘴"]}, {"Same Number Bonus (8)", [1, "嘴"]}, {"Suit Bonus", [2, "嘴"]}
+
+]
       }
     })
   end
@@ -180,7 +184,7 @@ defmodule RiichiAdvanced.YakuTest.HefeiYaku do
       %{"type" => "buttons_pressed", "buttons" => [%{"button" => "ron"}, nil, nil, nil]}
     ], %{
       east: %{
-        yaku: [{"Concealed Pung", [1, "嘴"]}, {"Same Number Bonus", [1, "嘴"]}]
+        yaku: [{"Concealed Pung", [1, "嘴"]}, {"Same Number Bonus (5)", [2, "嘴"]}]
       }
     })
   end
@@ -202,7 +206,7 @@ defmodule RiichiAdvanced.YakuTest.HefeiYaku do
       %{"type" => "buttons_pressed", "buttons" => [%{"button" => "ron"}, nil, nil, nil]}
     ], %{
       east: %{
-        yaku: [{"Concealed Pungs", [2, "嘴"]}, {"Same Number Bonus", [2, "嘴"]}]
+        yaku: [{"Same Number Bonus (3)", [1, "嘴"]}, {"Same Number Bonus (5)", [2, "嘴"]}, {"Two Concealed Pungs", [2, "嘴"]}]
       }
     })
   end
@@ -224,7 +228,7 @@ defmodule RiichiAdvanced.YakuTest.HefeiYaku do
       %{"type" => "buttons_pressed", "buttons" => [%{"button" => "ron"}, nil, nil, nil]}
     ], %{
       east: %{
-        yaku: [{"Concealed Pungs", [3, "嘴"]}, {"Same Number Bonus", [1, "嘴"]}]
+        yaku: [{"Same Number Bonus (3)", [1, "嘴"]}, {"Same Number Bonus (5)", [1, "嘴"]}, {"Three Concealed Pungs", [4, "嘴"]}]
       }
     })
   end
@@ -249,7 +253,7 @@ defmodule RiichiAdvanced.YakuTest.HefeiYaku do
     ], %{
       east: %{
         yaku: [{"Four Concealed Pungs", [100, "嘴"]}],
-        score: 2000
+        displayed_score: 2000
       }
     })
   end
@@ -293,7 +297,7 @@ defmodule RiichiAdvanced.YakuTest.HefeiYaku do
       %{"type" => "buttons_pressed", "buttons" => [%{"button" => "ron"}, nil, nil, nil]}
     ], %{
       east: %{
-        yaku: [{"Concealed Double Sequences", [4, "嘴"]}]
+        yaku: [{"Concealed Double Sequences", [4, "嘴"]}, {"Same Number Bonus (5)", [1, "嘴"]}]
       }
     })
   end
@@ -435,6 +439,7 @@ defmodule RiichiAdvanced.YakuTest.HefeiYaku do
   end
 
   test "hefei - concealed kong" do
+    # 23456788m33s 5555p 3s tsumo
     TestUtils.test_yaku_advanced("hefei", [], """
     {
       "starting_hand": {
@@ -455,7 +460,7 @@ defmodule RiichiAdvanced.YakuTest.HefeiYaku do
       %{"type" => "buttons_pressed", "buttons" => [%{"button" => "tsumo"}, nil, nil, nil]}
     ], %{
       east: %{
-        yaku: [{"Concealed Kong", [4, "嘴"]}, {"Concealed Pungs", [2, "嘴"]}, {"Same Number Bonus", [3, "嘴"]}]
+        yaku: [{"Concealed Kong", [4, "嘴"]}, {"Same Number Bonus (3)", [1, "嘴"]}, {"Same Number Bonus (5)", [2, "嘴"]}, {"Two Concealed Pungs", [2, "嘴"]}]
       }
     })
   end
@@ -482,7 +487,7 @@ defmodule RiichiAdvanced.YakuTest.HefeiYaku do
       %{"type" => "buttons_pressed", "buttons" => [%{"button" => "tsumo"}, nil, nil, nil]}
     ], %{
       east: %{
-        yaku: [{"Concealed Kongs", [8, "嘴"]}, {"Concealed Pungs", [3, "嘴"]}, {"Same Number Bonus", [6, "嘴"]}, {"Suit Bonus", [1, "嘴"]}]
+        yaku: [{"Concealed Kongs", [8, "嘴"]}, {"Same Number Bonus (3)", [4, "嘴"]}, {"Same Number Bonus (5)", [2, "嘴"]}, {"Suit Bonus", [1, "嘴"]}, {"Three Concealed Pungs", [4, "嘴"]}]
       }
     })
   end
@@ -504,7 +509,7 @@ defmodule RiichiAdvanced.YakuTest.HefeiYaku do
       %{"type" => "buttons_pressed", "buttons" => [%{"button" => "ron"}, nil, nil, nil]}
     ], %{
       east: %{
-        yaku: [{"Concealed Pung", [1, "嘴"]}, {"Same Number Bonus", [2, "嘴"]}, {"Four of a Kind", [4, "嘴"]}]
+        yaku: [{"Concealed Pung", [1, "嘴"]}, {"Same Number Bonus (3)", [2, "嘴"]}, {"Four of a Kind", [4, "嘴"]}]
       }
     })
   end
@@ -526,7 +531,7 @@ defmodule RiichiAdvanced.YakuTest.HefeiYaku do
       %{"type" => "buttons_pressed", "buttons" => [%{"button" => "ron"}, nil, nil, nil]}
     ], %{
       east: %{
-        yaku: [{"Same Number Bonus", [2, "嘴"]}, {"Four of a Kind", [4, "嘴"]}]
+        yaku: [{"Same Number Bonus (5)", [3, "嘴"]}, {"Four of a Kind", [4, "嘴"]}]
       }
     })
   end
@@ -548,7 +553,7 @@ defmodule RiichiAdvanced.YakuTest.HefeiYaku do
       %{"type" => "buttons_pressed", "buttons" => [%{"button" => "ron"}, nil, nil, nil]}
     ], %{
       east: %{
-        yaku: [{"Concealed Pungs", [2, "嘴"]}, {"Same Number Bonus", [5, "嘴"]}, {"Four of a Kind", [4, "嘴"]}, {"Two Suits Only", [2, "嘴"]}]
+        yaku: [{"Four of a Kind", [8, "嘴"]}, {"Same Number Bonus (3)", [5, "嘴"]}, {"Two Concealed Pungs", [2, "嘴"]}, {"Two Suits Only", [2, "嘴"]}]
       }
     })
   end
@@ -680,7 +685,7 @@ defmodule RiichiAdvanced.YakuTest.HefeiYaku do
       %{"type" => "buttons_pressed", "buttons" => [%{"button" => "ron"}, nil, nil, nil]}
     ], %{
       east: %{
-        yaku: [{"Concealed Double Sequences", [4, "嘴"]}, {"Concealed Pungs", [2, "嘴"]}, {"Same Number Bonus", [1, "嘴"]}, {"Suit Bonus", [1, "嘴"]}]
+        yaku: [{"Concealed Double Sequences", [4, "嘴"]}, {"Same Number Bonus (6)", [1, "嘴"]}, {"Suit Bonus", [1, "嘴"]}, {"Two Concealed Pungs", [2, "嘴"]}]
       }
     })
   end
@@ -778,7 +783,7 @@ defmodule RiichiAdvanced.YakuTest.HefeiYaku do
       %{"type" => "buttons_pressed", "buttons" => [%{"button" => "tsumo"}, nil, nil, nil]}
     ], %{
       east: %{
-        yaku: [{"Concealed Pungs", [3, "嘴"]}, {"Same Number Bonus", [6, "嘴"]}]
+        yaku: [{"Same Number Bonus (3)", [6, "嘴"]}, {"Three Concealed Pungs", [4, "嘴"]}]
       }
     })
   end
@@ -808,9 +813,9 @@ defmodule RiichiAdvanced.YakuTest.HefeiYaku do
     {
       "starting_hand": {
         "east": ["2m", "4m", "7m", "2p", "3p", "4p", "6p", "2s", "4s", "5s", "6s", "7s", "8s"],
-        "south": ["2m", "3m", "4m", "5m", "6m", "7m", "8m", "8m", "3s", "4s", "4p", "5p", "6p"],
-        "west": ["2m", "4m", "7m", "2p", "3p", "4p", "6p", "2s", "4s", "5s", "6s", "7s", "8s"],
-        "north": ["2m", "4m", "7m", "2p", "3p", "4p", "6p", "2s", "4s", "5s", "6s", "7s", "8s"]
+        "south": ["2m", "3m", "4m", "3s", "4s", "5s", "6s", "7s", "8s", "8s", "4p", "5p", "6p"],
+        "west": ["2m", "4m", "7m", "2p", "3p", "4p", "6p", "2s", "4s", "5s", "6s", "7s", "7s"],
+        "north": ["2m", "4m", "6m", "7m", "8m", "2p", "3p", "4p", "6p", "2s", "4s", "6s", "8s"]
       },
       "starting_draws": ["8p", "5s"]
     }
@@ -824,7 +829,7 @@ defmodule RiichiAdvanced.YakuTest.HefeiYaku do
     })
   end
 
-  test "hefei - ankan invalidates heavenly win" do
+  test "hefei - ankan doesn't invalidate heavenly win" do
     TestUtils.test_yaku_advanced("hefei", [], """
     {
       "starting_hand": {
@@ -841,7 +846,7 @@ defmodule RiichiAdvanced.YakuTest.HefeiYaku do
       %{"type" => "buttons_pressed", "buttons" => [%{"button" => "tsumo"}, nil, nil, nil]}
     ], %{
       east: %{
-        yaku: [{"Concealed Kong", [4, "嘴"]}, {"Concealed Pung", [1, "嘴"]}, {"Same Number Bonus", [2, "嘴"]}, {"Suit Bonus", [1, "嘴"]}]
+        yaku: [{"Heavenly Win", [200, "嘴"]}]
       }
     })
   end
@@ -850,10 +855,10 @@ defmodule RiichiAdvanced.YakuTest.HefeiYaku do
     TestUtils.test_yaku_advanced("hefei", [], """
     {
       "starting_hand": {
-        "east": ["2m", "4m", "7m", "8p", "8p", "8p", "8p", "2s", "4s", "5s", "6s", "7s", "8s"],
-        "south": ["2m", "3m", "4m", "5m", "6m", "7m", "8m", "8m", "3s", "4s", "4p", "5p", "6p"],
-        "west": ["2m", "4m", "7m", "2p", "3p", "4p", "6p", "2s", "4s", "5s", "6s", "7s", "8s"],
-        "north": ["2m", "4m", "7m", "2p", "3p", "4p", "6p", "2s", "4s", "5s", "6s", "7s", "8s"]
+        "east": ["2m", "4m", "7m", "8p", "8p", "8p", "8p", "3s", "4s", "5s", "6s", "7s", "8s"],
+        "south": ["2m", "3m", "4m", "2s", "2s", "2s", "6s", "7s", "2p", "3p", "4p", "6p", "6p"],
+        "west": ["2m", "4m", "5m", "7m", "2p", "3p", "4p", "6p", "3s", "4s", "6s", "7s", "8s"],
+        "north": ["5m", "6m", "7m", "8m", "8m", "8m", "3s", "4s", "6s", "8s", "4p", "5p", "6p"]
       },
       "starting_draws": ["3s", "5s"],
       "starting_dead_wall": ["7p"]
@@ -874,22 +879,21 @@ defmodule RiichiAdvanced.YakuTest.HefeiYaku do
     {
       "starting_hand": {
         "east": ["2m", "4m", "7m", "8p", "8p", "8p", "8p", "2s", "4s", "5s", "6s", "7s", "8s"],
-        "south": ["2m", "3m", "4m", "5m", "6m", "7m", "8m", "8m", "3s", "4s", "4p", "5p", "6p"],
-        "west": ["2m", "4m", "7m", "2p", "3p", "4p", "6p", "2s", "4s", "5s", "6s", "7s", "8s"],
-        "north": ["2m", "4m", "7m", "2p", "3p", "4p", "6p", "2s", "4s", "5s", "6s", "7s", "8s"]
+        "south": ["2m", "4m", "7m", "2p", "3p", "4p", "6p", "2s", "4s", "5s", "6s", "7s", "8s"],
+        "west": ["2m", "4m", "5m", "7m", "8m", "2p", "3p", "4p", "6p", "2s", "4s", "6s", "7s"],
+        "north": ["6m", "7m", "8m", "3s", "4s", "5s", "6s", "7s", "8s", "8s", "4p", "5p", "6p"]
       },
-      "starting_draws": ["3s", "7p", "7p", "5s"],
+      "starting_draws": ["3s", "7p", "5s"],
       "starting_dead_wall": ["7p"]
     }
     """, [
       %{"type" => "buttons_pressed", "buttons" => [%{"button" => "ankan"}, nil, nil, nil]},
       %{"type" => "discard", "tile" => "7p", "player" => 0, "tsumogiri" => true},
       %{"type" => "discard", "tile" => "7p", "player" => 1, "tsumogiri" => true},
-      %{"type" => "discard", "tile" => "7p", "player" => 2, "tsumogiri" => true},
-      %{"type" => "discard", "tile" => "5s", "player" => 3, "tsumogiri" => true},
-      %{"type" => "buttons_pressed", "buttons" => [nil, %{"button" => "ron"}, nil, nil]}
+      %{"type" => "discard", "tile" => "5s", "player" => 2, "tsumogiri" => true},
+      %{"type" => "buttons_pressed", "buttons" => [nil, nil, nil, %{"button" => "ron"}]}
     ], %{
-      south: %{
+      north: %{
         yaku: [{"Earthly Win", [150, "嘴"]}]
       }
     })
@@ -1127,7 +1131,7 @@ defmodule RiichiAdvanced.YakuTest.HefeiYaku do
       %{"buttons" => [nil, nil, nil, %{"button" => "tsumo"}], "type" => "buttons_pressed"}
     ], %{
       north: %{
-        yaku: [{"Four of a Kind", [4, "嘴"]}, {"Same Number Bonus", [2, "嘴"]}, {"Single Wait", [1, "嘴"]}, {"Suit Bonus", [3, "嘴"]}, {"Two Suits Only", [2, "嘴"]}]
+        yaku: [{"Four of a Kind", [4, "嘴"]}, {"Same Number Bonus (4)", [2, "嘴"]}, {"Suit Bonus", [3, "嘴"]}, {"Two Suits Only", [2, "嘴"]}, @single_wait]
       }
     })
   end
@@ -1210,7 +1214,7 @@ defmodule RiichiAdvanced.YakuTest.HefeiYaku do
     {
       "starting_hand": {
         "east": ["2m", "3m", "4m", "5m", "6m", "7m", "8m", "8m", "3s", "4s", "4p", "5p", "6p"],
-        "south": ["2m", "4m", "7m", "2p", "3p", "4p", "6p", "2s", "4s", "5s", "6s", "7s", "8s"],
+        "south": ["2m", "4m", "6m", "7m", "2p", "3p", "4p", "6p", "2s", "4s", "5s", "7s", "8s"],
         "west": ["2m", "4m", "7m", "2p", "3p", "4p", "6p", "2s", "4s", "5s", "6s", "7s", "8s"],
         "north": ["2m", "4m", "7m", "2p", "3p", "4p", "6p", "2s", "4s", "5s", "6s", "7s", "8s"]
       },

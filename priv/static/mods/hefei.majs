@@ -1,0 +1,232 @@
+require "standard_sets"
+
+set interruptible_actions, ["play_tile", "draw", "call", "self_call", "upgrade_call"]
+set initial_score, 0
+set starting_tiles, 13
+set max_rounds, 16
+set display_honba, true
+
+set wall, ["2m", "2m", "2m", "2m",
+           "3m", "3m", "3m", "3m",
+           "4m", "4m", "4m", "4m",
+           "5m", "5m", "5m", "5m",
+           "6m", "6m", "6m", "6m",
+           "7m", "7m", "7m", "7m",
+           "8m", "8m", "8m", "8m",
+           "2p", "2p", "2p", "2p",
+           "3p", "3p", "3p", "3p",
+           "4p", "4p", "4p", "4p",
+           "5p", "5p", "5p", "5p",
+           "6p", "6p", "6p", "6p",
+           "7p", "7p", "7p", "7p",
+           "8p", "8p", "8p", "8p",
+           "2s", "2s", "2s", "2s",
+           "3s", "3s", "3s", "3s",
+           "4s", "4s", "4s", "4s",
+           "5s", "5s", "5s", "5s",
+           "6s", "6s", "6s", "6s",
+           "7s", "7s", "7s", "7s",
+           "8s", "8s", "8s", "8s"]
+
+define_set manzu, ~s"2m|3m|4m|5m|6m|7m|8m"
+define_set pinzu, ~s"2p|3p|4p|5p|6p|7p|8p"
+define_set souzu, ~s"2s|3s|4s|5s|6s|7s|8s"
+def set_majority do
+  set_counter("manzu_count", "count_matches", ["hand", "calls", "draw"], ~m"dismantle_calls, manzu:1")
+  set_counter("pinzu_count", "count_matches", ["hand", "calls", "draw"], ~m"dismantle_calls, pinzu:1")
+  set_counter("souzu_count", "count_matches", ["hand", "calls", "draw"], ~m"dismantle_calls, souzu:1")
+  majority_count = max(max("manzu_count", "pinzu_count"), "souzu_count")
+  remove_attr(["hand", "calls", "draw"], ["m"])
+  if manzu_count == majority_count do add_attr(["hand", "calls", "draw"], ["m"], ["manzu"]) end
+  if pinzu_count == majority_count do add_attr(["hand", "calls", "draw"], ["m"], ["pinzu"]) end
+  if souzu_count == majority_count do add_attr(["hand", "calls", "draw"], ["m"], ["souzu"]) end
+end
+on after_start do as everyone do set_majority end end
+on before_turn_change do set_majority; recalculate_buttons end
+on after_turn_change do set_majority; recalculate_buttons end
+on before_win do
+  set_majority
+  if not_won_by_draw do add_attr(["winning_tile"], ["m"]) end
+end
+
+define_set majority, ~s"any@m"
+define_set majority_pair, ~s"0@m 0@m"
+define_set majority_mentsu, ~s"0@m 0@m 0@m|0@m 1@m 2@m"
+define_const standard_tenpai, ~m"""
+  exhaustive, majority_mentsu:2, majority:0, mentsu:1, taatsu:1, pair:1 |
+  exhaustive, majority_mentsu:1, majority_pair:1, majority:0, mentsu:1, taatsu:1 |
+  exhaustive, majority_mentsu:2, majority:0, mentsu:2
+  """
+define_const chiitoitsu_tenpai, ~m"majority_pair:3, majority:0, pair:3"
+
+# for wins, need to ensure that we can win with with 7 tiles of majority suit, using winning tile as 8th
+# 7 tiles means one of: mentsu+pair+taatsu or quad+pair+tanki or 3 pairs+tanki
+define_play_effect any do remove_attr(["last_discard"], ["m"]); add_attr(["last_discard"], ["w"]) end
+on after_call do remove_attr(["last_called_tile"], ["m"]); add_attr(["last_called_tile"], ["w"]) end
+define_set tanki_complete, ~s"0@m 0@w"
+define_set taatsu_complete, ~s"0@w 0@m 0@m|0@w 1@m 2@m|0@m 1@w 2@m|0@m 1@m 2@w"
+define_const standard_win, ~m"""
+  exhaustive, (majority_mentsu taatsu_complete):1, majority_mentsu:1, mentsu:2, majority_pair:1 |
+  exhaustive, (majority_mentsu taatsu_complete):1, majority_mentsu:2, mentsu:1, pair:1 |
+  exhaustive, (majority_pair tanki_complete):1, majority_mentsu:2, mentsu:2
+  """
+define_const chiitoitsu_win, ~m"majority_pair:3, (majority_pair tanki_complete):1, pair:3"
+
+on before_win do
+  set_counter("manzu_count", "count_matches", ["hand", "calls", "winning_tile"], ~m"dismantle_calls, manzu:1")
+  set_counter("pinzu_count", "count_matches", ["hand", "calls", "winning_tile"], ~m"dismantle_calls, pinzu:1")
+  set_counter("souzu_count", "count_matches", ["hand", "calls", "winning_tile"], ~m"dismantle_calls, souzu:1")
+  cond do
+    manzu_count > 8 -> suit_bonus = manzu_count - 8
+    pinzu_count > 8 -> suit_bonus = pinzu_count - 8
+    souzu_count > 8 -> suit_bonus = souzu_count - 8
+  end
+end
+define_yaku yaku, "Suit Bonus", ["suit_bonus", "嘴"], suit_bonus >= 1
+
+on before_win do
+  set_counter("two_count", "count_matches", ["hand", "calls", "winning_tile"], ~m"dismantle_calls, (2m 2p 2s):1")
+  set_counter("three_count", "count_matches", ["hand", "calls", "winning_tile"], ~m"dismantle_calls, (3m 3p 3s):1")
+  set_counter("four_count", "count_matches", ["hand", "calls", "winning_tile"], ~m"dismantle_calls, (4m 4p 4s):1")
+  set_counter("five_count", "count_matches", ["hand", "calls", "winning_tile"], ~m"dismantle_calls, (5m 5p 5s):1")
+  set_counter("six_count", "count_matches", ["hand", "calls", "winning_tile"], ~m"dismantle_calls, (6m 6p 6s):1")
+  set_counter("seven_count", "count_matches", ["hand", "calls", "winning_tile"], ~m"dismantle_calls, (7m 7p 7s):1")
+  set_counter("eight_count", "count_matches", ["hand", "calls", "winning_tile"], ~m"dismantle_calls, (8m 8p 8s):1")
+  if two_count > 3 do same_number_bonus_2 += two_count - 3 end
+  if three_count > 3 do same_number_bonus_3 += three_count - 3 end
+  if four_count > 3 do same_number_bonus_4 += four_count - 3 end
+  if five_count > 3 do same_number_bonus_5 += five_count - 3 end
+  if six_count > 3 do same_number_bonus_6 += six_count - 3 end
+  if seven_count > 3 do same_number_bonus_7 += seven_count - 3 end
+  if eight_count > 3 do same_number_bonus_8 += eight_count - 3 end
+end
+define_yaku yaku, "Same Number Bonus (2)", ["same_number_bonus_2", "嘴"], same_number_bonus_2 >= 1
+define_yaku yaku, "Same Number Bonus (3)", ["same_number_bonus_3", "嘴"], same_number_bonus_3 >= 1
+define_yaku yaku, "Same Number Bonus (4)", ["same_number_bonus_4", "嘴"], same_number_bonus_4 >= 1
+define_yaku yaku, "Same Number Bonus (5)", ["same_number_bonus_5", "嘴"], same_number_bonus_5 >= 1
+define_yaku yaku, "Same Number Bonus (6)", ["same_number_bonus_6", "嘴"], same_number_bonus_6 >= 1
+define_yaku yaku, "Same Number Bonus (7)", ["same_number_bonus_7", "嘴"], same_number_bonus_7 >= 1
+define_yaku yaku, "Same Number Bonus (8)", ["same_number_bonus_8", "嘴"], same_number_bonus_8 >= 1
+
+define_yaku yaku, "Single Wait", [1, "嘴"], wait_count_at_most(1, "win")
+
+define_set open_iipeikou, ~s"0 1 2, 0 1 2"
+define_yaku yaku, "Double Sequences", [2, "嘴"], match(["hand", "calls", "winning_tile"], ~m"exhaustive, open_iipeikou:1, mentsu:2, pair:1")
+define_yaku yaku, "Two Suits Only", [2, "嘴"],
+     winning_hand_consists_of("2m","3m","4m","5m","6m","7m","8m","2p","3p","4p","5p","6p","7p","8p")
+  or winning_hand_consists_of("2m","3m","4m","5m","6m","7m","8m","2s","3s","4s","5s","6s","7s","8s")
+  or winning_hand_consists_of("2p","3p","4p","5p","6p","7p","8p","2s","3s","4s","5s","6s","7s","8s")
+
+define_set iipeikou, ~s"0 0 1 1 2 2"
+define_yaku yaku, "Concealed Double Sequences", [4, "嘴"],
+  match(["hand", "calls", "winning_tile"], ~m"exhaustive, iipeikou:1, any@winning_tile:0, mentsu:2, pair:1")
+  or (won_by_draw and match(["hand", "calls", "winning_tile"], ~m"exhaustive, iipeikou:1, pair:1")),
+  ["Double Sequences"]
+
+on before_win do
+  set_counter("ankan_bonus", "count_matches", ["calls"], ~m"ankan:1")
+  ankan_bonus *= 4
+end
+define_yaku yaku, "Concealed Kong", ["ankan_bonus", "嘴"], ankan_bonus == 4
+define_yaku yaku, "Concealed Kongs", ["ankan_bonus", "嘴"], ankan_bonus > 4
+
+# four of a kind: basically number of quads minus number of kans
+on before_win do
+  set_counter("tile_hog", "count_matches", ["hand", "call_tiles", "winning_tile"], ~m"quad:1")
+  subtract_counter("tile_hog", "count_matches", ["calls"], ~m"(daiminkan ankan kakan):1")
+  tile_hog *= 4
+end
+define_yaku yaku, "Four of a Kind", ["tile_hog", "嘴"], tile_hog > 0
+
+on before_win do
+  if seat_is("east") or (not_won_by_draw and seat_is("east", as: "last_discarder")) do
+    dealer_repeat_bonus = honba * 4
+  end
+end
+define_yaku dealer_repeat, "Dealer Repeat", ["dealer_repeat_bonus", "嘴"], dealer_repeat_bonus == 4
+define_yaku dealer_repeat, "Dealer Repeats", ["dealer_repeat_bonus", "嘴"], dealer_repeat_bonus > 4
+
+define_yaku special_yaku, "Luxury Seven Pairs", [50, "嘴"], match(["hand", "winning_tile"], ~m"quad:1, pair:5"), ["Seven Pairs"]
+define_yaku special_yaku, "Double Luxury Seven Pairs", [100, "嘴"], match(["hand", "winning_tile"], ~m"quad:2, pair:3"), ["Luxury Seven Pairs"]
+define_yaku special_yaku, "Sea Floor", [15, "嘴"], status("sea_floor")
+define_yaku special_yaku, "Pure Suit", [100, "嘴"], suit_bonus == 6, ["Suit Bonus", "Two Suits Only"]
+
+on before_win do
+  max_num_count = max("two_count", max("three_count", max("four_count", max("five_count", max("six_count", max("seven_count", "eight_count"))))))
+end
+define_yaku special_yaku, "Ten Identical Tiles", [100, "嘴"], max_num_count >= 10, ["Same Number Bonus"]
+
+define_yaku special_yaku, "Double Concealed Double Sequences", [100, "嘴"],
+  match(["hand", "calls", "winning_tile"], ~m"exhaustive, iipeikou:2, any@winning_tile:0, pair:1")
+  or (won_by_draw and match(["hand", "calls", "winning_tile"], ~m"exhaustive, iipeikou:2, pair:1")),
+  ["Concealed Double Sequences", "Seven Pairs", "Luxury Seven Pairs", "Double Luxury Seven Pairs"]
+
+define_yaku_precedence special_yaku, ["yaku"]
+
+on before_win do
+  cond do
+    won_by_draw -> make_responsible_for("others")
+    won_by_discard -> make_responsible_for("last_discarder")
+    won_by_call -> make_responsible_for("last_caller")
+  end
+end
+define_scoring win do
+  total = points :: "嘴"
+  total *= 20 :: "Base multiplier"
+  set_counter_all("total", "total")
+end
+on after_win do
+  modify_winner("score", "total")
+end
+
+set score_calculation,
+  yaku_lists: ["yaku", "special_yaku", "dealer_repeat"],
+  point_name: "嘴",
+  win_by_discard_label: "Hu",
+  win_by_draw_label: "Zimo",
+  win_by_discard_name: "Hu",
+  win_by_discard_name_2: "Double Hu",
+  win_by_discard_name_3: "Triple Hu",
+  win_by_draw_name: "Zimo",
+  exhaustive_draw_name: "Draw"
+
+on after_start do
+  # erase 1 and 9 from default ordering,
+  # so that they aren't counted as waits in wait_count_at_most
+  set_tile_ordering_all(["8m", "", "1m", "9m", "", "2m"])
+  set_tile_ordering_all(["8p", "", "1p", "9p", "", "2p"])
+  set_tile_ordering_all(["8s", "", "1s", "9s", "", "2s"])
+end
+
+on after_turn_change do
+  if not_tiles_remaining(4) do
+    if status_missing("sea_floor") do
+      set_status("sea_floor")
+      recalculate_buttons
+    end
+  end
+end
+
+on after_win do
+  if seat_is("east", as: "winner") do add_honba(1) end
+end
+
+# makes it impossible to discard the last four draws. passing the turn during this is done with the "No Win" button
+define_play_restriction any, status("sea_floor")
+apply append, "buttons.chii.show_when", tiles_remaining(4)
+apply append, "buttons.pon.show_when", tiles_remaining(4)
+apply append, "buttons.daiminkan.show_when", tiles_remaining(4)
+apply append, "buttons.kakan.show_when", tiles_remaining(4)
+apply append, "buttons.ankan.show_when", tiles_remaining(4)
+define_button sea_floor_no_win,
+  display_name: "Sea Floor - No Win",
+  show_when: our_turn
+    and has_draw
+    and status("sea_floor"),
+  unskippable: true
+  do
+    big_text("No Win")
+    advance_turn
+  end
+
+remove_mod "four_rows_discards" # useless since we don't have enough tiles to even get to third row

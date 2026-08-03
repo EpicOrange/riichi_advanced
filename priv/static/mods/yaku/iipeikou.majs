@@ -1,4 +1,5 @@
 default list, "yaku"
+default closed_only, false
 
 define "iipeikou"
 

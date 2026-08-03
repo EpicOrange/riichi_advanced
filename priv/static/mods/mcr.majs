@@ -114,7 +114,7 @@ define_yaku yaku, "Four Pure Shifted Pungs", [48, "Fan"], match(["hand", "calls"
 define_set four_shifted_chows, ~s"0 1 2, 1 2 3, 2 3 4, 3 4 5|0 1 2, 2 3 4, 4 5 6, 6 7 8"
 define_yaku yaku, "Four Pure Shifted Chows", [32, "Fan"], match(["hand", "calls", "winning_tile"], ~m"exhaustive, four_shifted_chows:1, pair:1")
 define_yaku yaku, "Three Kongs", [32, "Fan"], match(["calls"], ~m"(daiminkan ankan kakan):3"), ["Two Kongs"]
-define_yaku yaku, "All Terminals and Honors", [32, "Fan"], winning_hand_consists_of("1m","9m","1p","9p","1s","9s","1z","2z","3z","4z","0z","6z","7z")
+define_yaku yaku, "All Terminals and Honors", [32, "Fan"], winning_hand_consists_of("1m","9m","1p","9p","1s","9s","1z","2z","3z","4z","5z","6z","7z")
 
 # 24
 define_match greater_knitted, ~m"""
@@ -246,7 +246,7 @@ define_yaku yaku, "One Voided Suit", [1, "Fan"],
      winning_hand_consists_of("1m","2m","3m","4m","5m","6m","7m","8m","9m","1p","2p","3p","4p","5p","6p","7p","8p","9p","1z","2z","3z","4z","0z","6z","7z")
   or winning_hand_consists_of("1m","2m","3m","4m","5m","6m","7m","8m","9m","1s","2s","3s","4s","5s","6s","7s","8s","9s","1z","2z","3z","4z","0z","6z","7z")
   or winning_hand_consists_of("1p","2p","3p","4p","5p","6p","7p","8p","9p","1s","2s","3s","4s","5s","6s","7s","8s","9s","1z","2z","3z","4z","0z","6z","7z")
-define_yaku yaku, "No Honors", [1, "Fan"], not_match(["hand", "calls", "winning_tile"], ~m"(1z 2z 3z 4z 0z 6z 7z):1")
+define_yaku yaku, "No Honors", [1, "Fan"], not_match(["hand", "calls", "winning_tile"], ~m"(1z 2z 3z 4z 5z 6z 7z):1")
 define_yaku yaku, "Self-Drawn", [1, "Fan"], won_by_draw
 define_match edge_wait, ~m"exhaustive, pair:1, mentsu:3, penchan:1 | exhaustive, pair:1, knit_straight:1, penchan:1"
 define_match closed_wait, ~m"exhaustive, pair:1, mentsu:3, kanchan:1 | exhaustive, pair:1, knit_straight:1, kanchan:1"
@@ -271,7 +271,7 @@ define_yaku meta_yaku, "Pungs of Honors", [2, "Fan"], has_existing_yaku(["Pung o
 define_yaku extra_yaku, "Flower Tiles", ["flower_count", "Fan"], flower_count >= 1
 
 # 88
-define_yaku_precedence "Big Four Winds", ["Big Three Winds", "Little Four Winds", "Little Three Winds", "Half Flush", "Prevalent Wind", "Seat Wind"]
+define_yaku_precedence "Big Four Winds", ["Big Three Winds", "Little Four Winds", "Little Three Winds", "Half Flush", "One Voided Suit", "Prevalent Wind", "Seat Wind"]
 define_yaku_precedence "Big Three Dragons", ["Little Three Dragons", "Two Dragon Pungs", "White Dragon", "Green Dragon", "Red Dragon"]
 define_yaku_precedence "All Green", ["One Voided Suit"]
 define_yaku_precedence "Nine Gates", ["Full Flush", "Concealed Hand", "Pungs of Terminals", "Pung of Terminals"]
@@ -280,16 +280,16 @@ define_yaku_precedence "Seven Shifted Pairs", ["Seven Pairs", "Full Flush"]
 define_yaku_precedence "Thirteen Orphans", ["All Types", "All Terminals and Honors", "Concealed Hand", "Single Wait"]
 # 64
 define_yaku_precedence "All Terminals", ["All Terminals and Honors", "Pungs of Terminals", "Pung of Terminals", "Pungs of Honors", "Pung of Honors", "Outside Hand", "No Honors", "All Pungs"]
-define_yaku_precedence "Little Four Winds", ["Big Three Winds", "Little Three Winds", "All Pungs", "Pungs of Terminals", "Pung of Terminals", "Pungs of Honors", "Pung of Honors"]
-define_yaku_precedence "Little Three Dragons", ["Two Dragons Pungs", "White Dragon", "Green Dragon", "Red Dragon"]
+define_yaku_precedence "Little Four Winds", ["Big Three Winds", "Little Three Winds", "All Pungs", "Pungs of Terminals", "Pung of Terminals", "Pungs of Honors", "Pung of Honors", "Half Flush", "One Voided Suit", "Prevalent Wind", "Seat Wind"]
+define_yaku_precedence "Little Three Dragons", ["Two Dragon Pungs", "White Dragon", "Green Dragon", "Red Dragon"]
 define_yaku_precedence "All Honors", ["All Terminals and Honors", "Half Flush", "Pungs of Terminals", "Pung of Terminals", "Pungs of Honors", "Pung of Honors", "One Voided Suit", "All Pungs"]
-define_yaku_precedence "Four Concealed Pungs", ["Three Concealed Pungs", "Two Concealed Pungs", "All Pungs", "Concealed Hand"]
-define_yaku_precedence "Pure Terminal Chows", ["All Chows", "Pure Double Chow", "Two Terminal Chows", "Full Flush", "One Voided Suit", "No Honors"]
+define_yaku_precedence "Four Concealed Pungs", ["Three Concealed Pungs", "Two Concealed Pungs", "All Pungs", "Concealed Hand", "One Voided Suit"]
+define_yaku_precedence "Pure Terminal Chows", ["All Chows", "Pure Double Chow", "Two Terminal Chows", "Full Flush", "Half Flush", "One Voided Suit", "No Honors", "Seven Pairs"]
 # 48
 define_yaku_precedence "Quadruple Chow", ["Pure Triple Chow", "Tile Hog"]
 define_yaku_precedence "Four Pure Shifted Pungs", ["Pure Shifted Pungs", "All Pungs"]
 # 32
-define_yaku_precedence "Four Pure Shifted Chows", ["Pure Shifted Chows", "Short Straight", "Two Terminal Chows"]
+define_yaku_precedence "Four Pure Shifted Chows", ["Pure Shifted Chows", "Short Straight", "Two Terminal Chows", "All Chows", "One Voided Suit"]
 define_yaku_precedence "Three Kongs", ["Two Kongs", "Two Melded Kongs", "Melded Kong"] # Apparently Three Kongs can combine with Concealed Kong and Two Concealed Kongs.
 define_yaku_precedence "All Terminals and Honors", ["Pungs of Terminals", "Pung of Terminals", "Pungs of Honors", "Pung of Honors", "Outside Hand", "All Pungs"]
 # 24

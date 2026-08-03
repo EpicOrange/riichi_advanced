@@ -1034,8 +1034,8 @@ defmodule RiichiAdvanced.Constants do
         %{name: "yaku/toitoi", config: %{name: "All Triplets", value: 5}},
         %{name: "yaku/sanshoku_doujun", config: %{name: "Triple Sequences", value: 5}},
         %{name: "yaku/isshoku_sanjun", config: %{san_name: "Pure Triple Sequence", san_value: 10, yon_name: "Pure Quadruple Sequence", yon_value: 30}},
-        %{name: "yaku/iipeikou", config: %{name: "Identical Sequences", value: 2, closed_only: false}},
-        %{name: "yaku/ryanpeikou", config: %{name: "Double Identical Sequences", value: 10, closed_only: false}},
+        %{name: "yaku/iipeikou", config: %{name: "Identical Sequences", value: 2}},
+        %{name: "yaku/ryanpeikou", config: %{name: "Double Identical Sequences", value: 10}},
         %{name: "yaku/pinghu", config: %{name: "All Sequences", value: 2, no_value_pair: false}},
         %{name: "yaku/rinshan", config: %{rinshan_name: "After a Kong", value: 2}},
         %{name: "yaku/chankan", config: %{name: "Robbing a Kong", value: 5, scoring_key: "win"}},
@@ -1099,8 +1099,8 @@ defmodule RiichiAdvanced.Constants do
         %{name: "yaku/sankantsu", config: %{name: "Three Kong", value: 120}},
         %{name: "yaku/suukantsu", config: %{list: "listed_limit_hand", name: "Four Kong", value: 480}},
         # 5.0 identical sets
-        %{name: "yaku/iipeikou", config: %{name: "Two Identical Sequences", value: 10, closed_only: false}},
-        %{name: "yaku/ryanpeikou", config: %{name: "Two Identical Sequences Twice", value: 60, closed_only: false}},
+        %{name: "yaku/iipeikou", config: %{name: "Two Identical Sequences", value: 10}},
+        %{name: "yaku/ryanpeikou", config: %{name: "Two Identical Sequences Twice", value: 60}},
         %{name: "yaku/isshoku_sanjun", config: %{san_name: "Three Identical Sequences", san_value: 120, yon_list: "listed_limit_hand", yon_name: "Four Identical Sequences", yon_value: 480}},
         # 6.0 similar sets
         %{name: "yaku/sanshoku_doujun", config: %{name: "Three Similar Sequences", value: 35}},
@@ -1147,7 +1147,43 @@ defmodule RiichiAdvanced.Constants do
     "taiwanese" => %{ruleset: "taiwanese", mods: ["taiwanese_rules"]},
     "singaporean" => %{ruleset: "singaporean", mods: ["singaporean_rules"]},
     "ningbo" => %{ruleset: "ningbo", mods: ["ningbo_rules"]},
-    "hefei" => %{ruleset: "hefei", mods: ["hefei_rules"]},
+    "hefei" => %{
+      display_name: "Hefei Mahjong",
+      tutorial_link: "https://mahjongpros.com/blogs/how-to-play/beginners-guide-to-hefei-mahjong",
+      globals: %{
+        pon_name: "Pong",
+        kan_name: "Kong",
+        ankan_name: "Self Kong",
+        ron_name: "Hu",
+        chankan_name: "Hu",
+        tsumo_name: "Zimo",
+        han: "嘴",
+      },
+      mods: [
+        "base",
+        "standard_wall", "framed_5z",
+        "global_mods", "default_auto_buttons",
+        "pon",
+        %{name: "kan", config: %{hide_ankans: true}},
+        %{name: "ron", config: %{scoring_key: "win"}},
+        %{name: "tsumo", config: %{scoring_key: "win"}},
+        "standard_win",
+        %{name: "yaku/chiitoitsu", config: %{rules_tab: "10 嘴", list: "special_yaku", name: "Seven Pairs", value: 10}},
+        %{name: "yaku/iiankou", config: %{name: "Concealed Pung", value: 1}},
+        %{name: "yaku/ryanankou", config: %{name: "Two Concealed Pungs", value: 2, override: "Concealed Pung"}},
+        %{name: "yaku/sanankou", config: %{name: "Three Concealed Pungs", value: 4, override: "Two Concealed Pungs"}},
+        %{name: "yaku/suuankou", config: %{list: "special_yaku", name: "Four Concealed Pungs", value: 100, override: "Three Concealed Pungs"}},
+        %{name: "yaku/sanrenkou", config: %{san_list: "special_yaku", san_name: "Three Consecutive Pungs", san_value: 100, closed_only: true}},
+        %{name: "yaku/tenhou", config: %{
+          tenhou_list: "special_yaku", tenhou_name: "Heavenly Win", tenhou_value: 200,
+          chiihou_list: "special_yaku", chiihou_name: "Earthly Win", chiihou_value: 150,
+          renhou_list: "special_yaku", renhou_name: "Earthly Win", renhou_value: 150, # it's also earthly win
+          chiihou_is_tsumo: true, calls_invalidate: false,
+        }},
+        "hefei",
+        "hefei_rules",
+      ]
+    },
   }
 
   def modpacks, do: @modpacks
