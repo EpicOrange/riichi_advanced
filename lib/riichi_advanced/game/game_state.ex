@@ -1392,9 +1392,9 @@ defmodule RiichiAdvanced.GameState do
     {:reply, lobby_room, state}
   end
 
-  def handle_call({:force_event, events, blocking}, _from, state) do
+  def handle_call({:force_event, events, blocking?}, _from, state) do
     state = Map.put(state, :forced_events, events)
-    state = Map.put(state, :block_events, blocking)
+    state = Map.put(state, :block_events, blocking?)
     notify_ai(state)
     {:reply, :ok, state}
   end

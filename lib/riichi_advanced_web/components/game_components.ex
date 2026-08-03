@@ -1,11 +1,7 @@
 defmodule RiichiAdvancedWeb.GameComponents do
-  alias RiichiAdvanced.GameState, as: GameState
-  alias RiichiAdvanced.GameState.Debug, as: Debug
-  alias RiichiAdvanced.GameState.Game, as: Game
-  alias RiichiAdvanced.GameState.Rules, as: Rules
-  alias RiichiAdvanced.Match, as: Match
-  alias RiichiAdvanced.ModLoader, as: ModLoader
-  alias RiichiAdvanced.Utils, as: Utils
+  alias RiichiAdvanced.GameState
+  alias RiichiAdvanced.GameState.Rules
+  alias RiichiAdvanced.Utils
   use Phoenix.Component
   use Gettext, backend: RiichiAdvancedWeb.Gettext
   import RiichiAdvancedWeb.Translations
@@ -30,10 +26,9 @@ defmodule RiichiAdvancedWeb.GameComponents do
   attr :loading, :any, required: true
   attr :visible_waits, :any, required: true
   attr :show_waits_index, :any, required: true
-  attr :tutorial_sequence_name, :any, required: true
-  attr :waiting_for_click, :any, required: true
   attr :messages, :any, required: true
   attr :messages_state, :any, required: true
+  attr :tutorial_state, :any, required: true
   def game_view(assigns) do
     ~H"""
     <div id="container" class={[@ruleset == "minefield" && "minefield"]} phx-hook="ClickListener">
@@ -309,13 +304,13 @@ defmodule RiichiAdvancedWeb.GameComponents do
           </div>
         <% end %>
       <% end %>
-      <div class="tutorial-overlay" :if={@tutorial_sequence_name != nil}>
+      <div class="tutorial-overlay" :if={@tutorial_state != nil}>
         <.live_component module={RiichiAdvancedWeb.TutorialOverlayComponent}
           id="tutorial-overlay"
           game_state={@game_state}
           ruleset={@ruleset}
           lang={@lang}
-          waiting_for_click={@waiting_for_click}
+          waiting_for_click={@tutorial_state.waiting_for_click}
           play_scene={&send(self(), {:play_scene, &1})}
           await_click={&send(self(), {:await_click, &1})}
           force_event={&send(self(), {:force_event, &1, &2, &3})} />
