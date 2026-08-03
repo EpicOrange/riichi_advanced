@@ -495,9 +495,9 @@ defmodule RiichiAdvanced.SMT do
     |> Enum.reject(&Kernel.is_binary/1)
     |> Enum.filter(fn [_groups, num] -> num > 0 end)
     |> Enum.flat_map(fn [groups, _num] -> groups end)
-    |> Enum.reject(fn group -> is_binary(group) end)
-    |> Enum.reject(fn group -> is_list(group) and Utils.is_tile(Enum.at(group, 0)) end)
-    |> Enum.map(&remove_group_keywords/1)
+    |> Enum.reject(fn group -> is_binary(group) end) # filter out toplevel keywords
+    |> Enum.reject(fn group -> is_list(group) and Utils.is_tile(Enum.at(group, 0)) end) # see `all_tile_groups` below
+    |> Enum.map(&remove_group_keywords/1) # filter out group keywords
     |> Enum.uniq() # [[0, 0], [0, 1, 2], [0, 0, 0]]
     # IO.inspect(all_sets, charlists: :as_lists, label: "all_sets")
     set_definitions = all_sets
@@ -542,18 +542,22 @@ defmodule RiichiAdvanced.SMT do
     |> Enum.unzip()
 
     # collect all non-set tile groups used (sets of exact tiles rather than shiftable sets)
+    # example: [
+    #   {[["1m"], ["9m"], ["1p"], ["9p"], ["1s"], ["9s"], ["1z"], ["2z"], ["3z"], ["4z"], ["5z"], ["6z"], ["7z"] ], 1, true},
+    #   {[["1m"], ["9m"], ["1p"], ["9p"], ["1s"], ["9s"], ["1z"], ["2z"], ["3z"], ["4z"], ["5z"], ["6z"], ["7z"] ], 13, true},
+    #   {["1z", "2z", "3z", "4z"], 4, false}
+    # ]
+    # each entry is {group, num, unique?}
     all_tile_groups = for match_definition <- match_definitions, {[groups, num], group_ix} <- Enum.with_index(match_definition), num > 0, reduce: [] do
       all_tile_groups ->
-        unique_ix = Enum.find_index(match_definition, & &1 == "unique")
+        unique_ix = if "unique" in groups do -1 else Enum.find_index(match_definition, & &1 == "unique") end
         tile_groups = groups
-        |> Enum.map(&remove_group_keywords/1)
-        # reject groups that are already sets
-        |> Enum.reject(& &1 in all_sets)
-        # reject groups that contain tiles that don't exist in our encoding
+        # reject groups that don't contain tiles that exist in our encoding
         |> Enum.reject(&cond do
           Utils.is_tile(&1) -> not Map.has_key?(encoding, &1 |> Utils.to_tile() |> Utils.strip_attrs())
           is_list(&1) -> Enum.any?(&1, fn tile -> not Map.has_key?(encoding, tile |> Utils.to_tile() |> Utils.strip_attrs()) end)
-          true -> IO.puts("Unrecognized group #{inspect(&1)}\nGroups are: #{inspect(groups)}")
+          &1 in MatchOld.group_keywords() -> true
+          true -> IO.puts("Unrecognized group #{inspect(&1)}\nGroups are: #{inspect(groups)}"); true
         end)
         if Enum.empty?(tile_groups) do
           all_tile_groups
@@ -564,15 +568,16 @@ defmodule RiichiAdvanced.SMT do
           else
             Enum.flat_map(tile_groups, fn group -> cond do
               is_binary(group) -> [{[group], num, false}]
-              is_list(group) and Utils.is_tile(Enum.at(group, 0)) -> [{group, num, false}]
+              is_list(group) and Utils.is_tile(Enum.at(group, 0)) -> [{Enum.map(group, &List.wrap/1), num, false}]
               true ->
                 IO.puts("Unhandled SMT tile group #{inspect(group, charlists: :as_lists)}. Maybe it's an unrecognized set type not in all_sets?")
                 []
             end end)
           end
-          all_tile_groups ++ new_groups
+          new_groups ++ all_tile_groups
         end
     end |> Enum.uniq()
+    # IO.inspect(all_tile_groups, charlists: :as_lists, label: "all_tile_groups")
 
     # hand part 2: declare hand
     # (declare-const hand (_ BitVec 136))
@@ -710,6 +715,7 @@ defmodule RiichiAdvanced.SMT do
         unique_ix = Enum.find_index(match_definition, & &1 == "unique")
         {assertions, mentioned_set_ixs, mentioned_tiles_ixs, sumindices_assertions, tiles_used_assertions} = for {[groups, num], group_ix} <- Enum.with_index(match_definition), num > 0, reduce: {[], [], [], [], []} do
           {assertions, mentioned_set_ixs, mentioned_tiles_ixs, sumindices_assertions, tiles_used_assertions} ->
+            unique_ix = if "unique" in groups do -1 else unique_ix end
             unique = unique_ix != nil and group_ix > unique_ix
             {set_ixs, tiles_ixs} = if unique do
               ix = Enum.find_index(all_tile_groups, & &1 == {groups, num, unique})

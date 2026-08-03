@@ -729,7 +729,7 @@ define_mod "yaku/maneman", name: "Maneshi Mangan", desc: "Local yaku. \"Imitatio
 define_mod "yaku/rentsuu_honitsu", name: "Rentsuu Honitsu", desc: "Local yaku. Mangan if you have honitsu with dragon yakuhai matching the suit: manzu with chun, pinzu with hatsu (not a typo), or souzu with haku (also not a typo)."
 define_mod "yaku/dorahairi_chinroutou_chiitoitsu", deps: ["dora"], name: "Dorahairi Chinroutou Chiitoitsu", desc: "Local yaku. Mangan if you have chiitoitsu composed of each terminal tile with the seventh pair being dora."
 define_mod_category "Yakuman"
-define_mod "yaku/paarenchan", name: "Paarenchan", desc: "Local yakuman. The eighth consecutive dealer win is worth yakuman. Exhaustive and abortive draws break the streak. After 5 wins, the minimum han required for the dealer becomes 2 han."
+define_mod "yaku/paarenchan", deps: ["min_han"], name: "Paarenchan", desc: "Local yakuman. The eighth consecutive dealer win is worth yakuman. Exhaustive and abortive draws break the streak. After 5 wins, the minimum han required for the dealer becomes 2 han."
 define_mod "yaku/ishino_uenimo_sannen", name: "Ishino Uenimo Sannen", deps: ["yaku/riichi"], desc: "Local yakuman. \"Three Years on a Rock\". If you win with double riichi and haitei/houtei, it's yakuman."
 define_mod "yaku/toukanhou", name: "Toukanhou", desc: "Local yakuman. \"First Kan Win\". If you kan (concealed or from a player) before discarding any tile, and win with rinshan, it's yakuman. Any call from an opponent invalidates this."
 define_mod "yaku/shiisanpuutaa", name: "Shiisanpuutaa", desc: "Local yakuman. \"Thirteen Unconnected\". If you start with 13 disconnected tiles (with one forming a pair), it's yakuman. Calls invalidate."
