@@ -1,0 +1,3 @@
+on after_initialization do
+  # add_rule("Tiles", "Base Tiles", "By default, Ningbo mahjong uses the following tiles:", -100)
+end

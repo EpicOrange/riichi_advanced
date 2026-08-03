@@ -1142,6 +1142,10 @@ defmodule RiichiAdvanced.Constants do
         %{name: "yaku/yakuhai", config: %{triplet_value: 10}}, # no prevalent wind
       ],
     },
+    "taiwanese" => %{ruleset: "taiwanese", mods: ["taiwanese_rules"]},
+    "singaporean" => %{ruleset: "singaporean", mods: ["singaporean_rules"]},
+    "ningbo" => %{ruleset: "ningbo", mods: ["ningbo_rules"]},
+    "hefei" => %{ruleset: "hefei", mods: ["hefei_rules"]},
   }
 
   def modpacks, do: @modpacks

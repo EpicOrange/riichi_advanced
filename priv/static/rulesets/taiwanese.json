@@ -169,6 +169,7 @@
     { "display_name": "Robbing a Kong", "value": 1, "when": ["won_by_call", {"name": "caller_status", "opts": ["kan"]}] },
     { "display_name": "Closed Wait", "value": 2, "when": [{"name": "match", "opts": [["hand", "calls"], ["closed_wait"]]}] },
     { "display_name": "Single Wait", "value": 2, "when": [{"name": "match", "opts": [["hand", "calls"], ["single_wait"]]}] },
+    // TODO these shouldn't count called tiles
     { "display_name": "Within Ten Discards", "value": 5, "when": [{"name": "tiles_remaining", "opts": [54]}] },
     { "display_name": "Within Five Discards", "value": 10, "when": [{"name": "tiles_remaining", "opts": [59]}] },
     // Suit-based hands

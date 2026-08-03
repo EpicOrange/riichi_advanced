@@ -102,12 +102,11 @@ defmodule RiichiAdvanced.ModLoader.ModState do
       end
 
       # then actually apply all mods to the ruleset, if any
-      state = %{state | ruleset_json: ModLoader.read_ruleset_json(ruleset), mods: []}
+      state = %{state | ruleset_json: ModLoader.read_ruleset_json(ruleset) |> ModLoader.strip_comments(), mods: []}
       state = if not Enum.empty?(mods) do
         ModState.apply_new_mods(state, mods)
       else state end
       ruleset_json = state.ruleset_json
-      |> ModLoader.strip_comments()
       |> JQ.query_string_with_string!(prev_query)
       state = %{state | ruleset_json: ruleset_json}
 
