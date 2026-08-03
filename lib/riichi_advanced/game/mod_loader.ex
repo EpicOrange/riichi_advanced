@@ -9,6 +9,7 @@ defmodule RiichiAdvanced.ModLoader.ModState do
   alias RiichiAdvanced.Constants, as: Constants
   alias RiichiAdvanced.GameState.Debug, as: Debug
   alias RiichiAdvanced.Compiler, as: Compiler
+  alias RiichiAdvanced.Compiler.Defs, as: Defs
   alias RiichiAdvanced.Parser, as: Parser
   alias RiichiAdvanced.ModLoader, as: ModLoader
   defstruct [
@@ -133,16 +134,18 @@ defmodule RiichiAdvanced.ModLoader.ModState do
         end
 
         # collect all new jqs in reverse order
-        jq_defs = for mod <- mods, reduce: [] do
-          acc -> [ModLoader.read_mod(mod) | acc]
+        {jqs_vars, _defs} = for mod <- mods, reduce: {[], %Defs{}} do
+          {jqs_vars, defs} ->
+            {jq, defs} = ModLoader.read_mod(mod, defs)
+            {[{jq, defs.vars} | jqs_vars], %{defs | vars: []}}
         end
 
         # apply jqs
-        mod_contents = jq_defs
+        mod_contents = jqs_vars
         |> Enum.reverse()
-        |> Enum.map(fn {jq, defs} ->
+        |> Enum.map(fn {jq, vars} ->
           jq = jq |> String.trim() |> String.replace(Compiler.header(), "")
-          vars = for {name, val} <- Enum.reverse(defs.vars), ModLoader.is_jq_var?(name), do: "(#{Jason.encode!(val)}) as $#{name}\n|"
+          vars = for {name, val} <- Enum.reverse(vars), ModLoader.is_jq_var?(name), do: "(#{Jason.encode!(val)}) as $#{name}\n|"
           "(#{Enum.join(vars) <> jq}\n) as $_result\n|\n$_result"
         end)
         
@@ -201,9 +204,9 @@ defmodule RiichiAdvanced.ModLoader do
   def is_jq_var?(key) when is_atom(key), do: Regex.match?(~r/^[a-zA-Z_][a-zA-Z0-9_]*$/, Atom.to_string(key))
   def is_jq_var?(_key), do: false
 
-  def read_mod(mod) do
+  def read_mod(mod, defs) do
     {name, config} = get_mod_name_config(mod)
-    {mod_contents, defs} = read_mod_jq_defs(name)
+    {mod_contents, defs} = read_mod_jq_defs(name, defs)
     config_queries = for {key, val} <- config, is_integer(val) or is_boolean(val) or is_binary(val), is_jq_var?(key), do: "(#{inspect(val)}) as $#{key}\n|\n"
     {Enum.join(config_queries) <> "(" <> mod_contents <> ")", defs}
   end
@@ -234,7 +237,7 @@ defmodule RiichiAdvanced.ModLoader do
   #   apply_mods(ruleset_json, input_mods, ruleset)
   # end
 
-  def convert_to_jq_defs(majs, defs \\ %Defs{}) do
+  def convert_to_jq_defs(majs, defs) do
     # first check that it's not actually json
     case Jason.decode(majs) do
       {:ok, json}    -> {". * " <> Jason.encode!(json), defs} # just merge the json (reencoding to ensure it's safe)
@@ -255,7 +258,7 @@ defmodule RiichiAdvanced.ModLoader do
     end
   end
   def convert_to_jq(majs) do
-    {jq, _defs} = convert_to_jq_defs(majs)
+    {jq, _defs} = convert_to_jq_defs(majs, %Defs{})
     jq
   end
 
@@ -285,7 +288,7 @@ defmodule RiichiAdvanced.ModLoader do
       IO.puts("\nWARNING: file #{name}.jq looks kind of like .majs!\n")
     end
   end
-  defp read_mod_jq_defs(name, defs \\ %Defs{}) do
+  defp read_mod_jq_defs(name, defs) do
     case File.read(Application.app_dir(:riichi_advanced, "/priv/static/mods/#{name}.jq")) do
       {:ok, mod_jq} ->
         verify_jq(name, mod_jq)

@@ -303,8 +303,8 @@ defmodule RiichiAdvanced.Compiler do
                 end
               err -> err
             end
-            with {:ok, [first | cond_bodys]} <- rets do
-              for {cond, body} <- cond_bodys, reduce: {:ok, first |> elem(1) |> Enum.at(0)} do
+            with {:ok, [{first_cond, first} | cond_bodys]} <- rets do
+              for {cond, body} <- cond_bodys, reduce: {:ok, ["when", first_cond, first]} do
                 {:ok, else_branch} -> {:ok, ["ite", cond, body, [else_branch]]}
                 err -> err
               end
@@ -1235,7 +1235,7 @@ defmodule RiichiAdvanced.Compiler do
   end
 
   def compile_jq(ast) do
-    case compile_jq_defs(ast) do
+    case compile_jq_defs(ast, %Defs{}) do
       {:ok, {jq, _defs}} -> {:ok, jq}
       {:error, error} -> {:error, error}
     end
@@ -1253,7 +1253,7 @@ defmodule RiichiAdvanced.Compiler do
   """
   def header(), do: @header
 
-  def compile_jq_defs(ast, defs \\ %Defs{}, depth \\ 0) do
+  def compile_jq_defs(ast, defs, depth \\ 0) do
     case ast do
       _ when depth > 1 -> {:error, "Compiler.compile: exceeded max require depth of 1}"}
       {:__block__, _pos, []} -> {:ok, {".", defs}}
@@ -1272,7 +1272,7 @@ defmodule RiichiAdvanced.Compiler do
     end
   end
   def convert_to_jq(ast) do
-    case compile_jq_defs(ast) do
+    case compile_jq_defs(ast, %Defs{}) do
       {:ok, {jq, _defs}} -> jq
       {:error, error} -> raise error
     end
