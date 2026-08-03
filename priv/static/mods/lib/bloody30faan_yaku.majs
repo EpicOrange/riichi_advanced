@@ -104,7 +104,7 @@ define_yaku_precedence "Three Pure Linked Sequences", ["Three Mixed Linked Seque
 define_yaku_precedence "Golden Gate Bridge", ["Three Pure Linked Sequences"]
 define_yaku_precedence "Mixed Shifted Linked Sequences", ["Three Mixed Shifted Sequences", "Three Mixed Linked Sequences"]
 define_yaku_precedence "Pure Shifted Linked Sequences", ["Three Pure Shifted Sequences", "Three Pure Linked Sequences"]
-define_yaku_precedence "Pure Straight", ["Short Straight", "Mixed Straight", "Terminal Sequences"]
+define_yaku_precedence "Pure Straight", ["Short Straight", "Mixed Straight"]
 define_yaku_precedence "Tile Hog (3)", ["Tile Hog (2)"]
 define_yaku_precedence "Tile Hog (4)", ["Tile Hog (3)"]
 define_yaku_precedence "Two Number Hand", ["Three Number Hand"]
