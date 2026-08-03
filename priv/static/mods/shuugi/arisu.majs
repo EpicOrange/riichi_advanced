@@ -21,11 +21,14 @@ apply append, "buttons.chankan.show_when", status_missing("performing_arisu")
 
 define_yaku shuugi, "Arisu", ["arisu_matches", "⛀"], arisu_matches >= 1
 
+# make sure the reveal_ura function exists without overwriting it
+def reveal_ura, append: true do end
+
 def perform_arisu do
   if @closed_hand do
     # if you have shiro pocchi, revert its wildcard status
-    save_revealed_tiles("before flips")
     load_tile_behavior("before_shiro_pocchi")
+    save_revealed_tiles("before flips")
     set_status("performing_arisu")
     push_message("won with a closed hand, and will flip tiles on the wall from the dora indicator onward, scoring shuugi for every matching tile in hand")
     save_revealed_tiles
@@ -38,6 +41,8 @@ def perform_arisu do
     pause(3000)
     remove_attr([-6,-8,-10,-12,-14,-16,-18,-20,-22,-24,-26,-28,-30,-32,-34,-36,-38,-40,-42,-44,-46,-48,-50,-52,-54,-56,-58,-60,-62,-64,-66,-68,-70,-72,-74,-76,-78,-80,-82,-84,-86,-88,-90,-92,-94,-96,-98,-100,-102,-104,-106,-108,-110,-112,-114,-116,-118,-120,-122,-124,-126,-128,-130,-132,-134,-136,-138,-140,-142,-144,-146,-148,-150,-152,-154,-156,-158,-160,-162,-164,-166,-168,-170,-172,-174,-176,-178,-180,-182,-184,-186,-188,-190,-192,-194,-196,-198,-200], ["highlight", "inactive"])
     clear_scry
+    load_revealed_tiles
+    reveal_ura
     save_revealed_tiles("after flips")
     load_revealed_tiles("before flips")
     pause(0)

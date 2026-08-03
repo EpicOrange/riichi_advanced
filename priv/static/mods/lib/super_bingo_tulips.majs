@@ -32,9 +32,12 @@ apply append, "buttons.chankan.show_when", status_missing("performing_arisu")
 
 define_yaku shuugi, "Tulips", ["arisu_matches", "⛀"], arisu_matches >= 1
 
+# make sure the reveal_ura function exists without overwriting it
+def reveal_ura, append: true do end
+
 def perform_arisu do
   cond do
-    status("riichi")                                      -> set_status("performing_arisu"); push_message("won with a closed hand, and will flip tiles on the wall from the dora indicator onward, scoring shuugi for every matching tile in hand")
+    status("riichi")                                            -> set_status("performing_arisu"); push_message("won with a closed hand, and will flip tiles on the wall from the dora indicator onward, scoring shuugi for every matching tile in hand")
     equals("$key", "tsumo")   and has_yaku_with_hand(1, "★")    -> set_status("performing_arisu"); yakuman = 1; push_message("won with yakuman, and will flip tiles on the wall from the dora indicator onward, scoring shuugi for every matching tile in hand")
     equals("$key", "ron")     and has_yaku_with_discard(1, "★") -> set_status("performing_arisu"); yakuman = 1; push_message("won with yakuman, and will flip tiles on the wall from the dora indicator onward, scoring shuugi for every matching tile in hand")
     equals("$key", "chankan") and has_yaku_with_call(1, "★")    -> set_status("performing_arisu"); yakuman = 1; push_message("won with yakuman, and will flip tiles on the wall from the dora indicator onward, scoring shuugi for every matching tile in hand")
@@ -78,7 +81,7 @@ def perform_arisu do
     pause(3000)
     remove_attr([-18, -16, -14, -12, -10, -8, -6], ["inactive"])
     clear_scry
-    load_revealed_tiles
+    reveal_ura
     load_tile_behavior("before wrap")
     save_revealed_tiles("after flips")
     load_revealed_tiles("before flips")
@@ -180,7 +183,7 @@ def flip_next_tile do
     process_post_flip(%{key: "$key"})
   end
 end
-define_set arisu_adjacent, ~s"0 0|0 1"
+define_set arisu_adjacent, ~s"-1 0|0 0|0 1"
 
 def score_flip do
   prev_arisu_matches = arisu_matches

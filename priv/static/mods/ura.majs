@@ -2,8 +2,7 @@ on after_initialization do
   update_rule("Rules", "Dora", "(Ura) Players in riichi are also eligible for ura dora, worth 1 extra han each. Ura dora are indicated by ura dora indicators, the tiles underneath each dora indicator at the time a win is declared.")
 end
 
-# reveal ura after riichi win
-on before_win do
+def reveal_ura do
   if status("riichi") and status_missing("ura_revealed") do
     set_status_all("ura_revealed")
     if tile_revealed(-6) do # yonma dora indicator
@@ -43,6 +42,9 @@ on before_win do
     end
   end
 end
+
+# reveal ura after riichi win
+on before_win do reveal_ura end
 
 def calculate_dora, append: true do
   ura = 0 
