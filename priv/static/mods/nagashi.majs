@@ -42,11 +42,11 @@ if equals(!counts_as, "tsumo") do
   # nagashi becomes a yaku
   apply append, "score_calculation.yaku_lists", "nagashi"
   cond do
-    equals(!is, "Mangan")    -> define_yaku nagashi, "Nagashi Mangan", [5, "Han"], just_discarded and no_tiles_remaining and status("nagashi"), ["yaku", "meta_yaku", "extra_yaku", "yakuman", "meta_yakuman"]
-    equals(!is, "Haneman")   -> define_yaku nagashi, "Nagashi Haneman", [6, "Han"], just_discarded and no_tiles_remaining and status("nagashi"), ["yaku", "meta_yaku", "extra_yaku", "yakuman", "meta_yakuman"]
-    equals(!is, "Baiman")    -> define_yaku nagashi, "Nagashi Baiman", [8, "Han"], just_discarded and no_tiles_remaining and status("nagashi"), ["yaku", "meta_yaku", "extra_yaku", "yakuman", "meta_yakuman"]
-    equals(!is, "Sanbaiman") -> define_yaku nagashi, "Nagashi Sanbaiman", [11, "Han"], just_discarded and no_tiles_remaining and status("nagashi"), ["yaku", "meta_yaku", "extra_yaku", "yakuman", "meta_yakuman"]
-    true                     -> define_yaku nagashi, "Nagashi Yakuman", [1, "★"], just_discarded and no_tiles_remaining and status("nagashi"), ["yaku", "meta_yaku", "extra_yaku", "yakuman", "meta_yakuman"]
+    equals(!is, "Mangan")    -> define_yaku nagashi, "Nagashi Mangan", [5, "Han"], won_by_draw and no_tiles_remaining and status("nagashi"), ["yaku", "meta_yaku", "extra_yaku", "yakuman", "meta_yakuman"]
+    equals(!is, "Haneman")   -> define_yaku nagashi, "Nagashi Haneman", [6, "Han"], won_by_draw and no_tiles_remaining and status("nagashi"), ["yaku", "meta_yaku", "extra_yaku", "yakuman", "meta_yakuman"]
+    equals(!is, "Baiman")    -> define_yaku nagashi, "Nagashi Baiman", [8, "Han"], won_by_draw and no_tiles_remaining and status("nagashi"), ["yaku", "meta_yaku", "extra_yaku", "yakuman", "meta_yakuman"]
+    equals(!is, "Sanbaiman") -> define_yaku nagashi, "Nagashi Sanbaiman", [11, "Han"], won_by_draw and no_tiles_remaining and status("nagashi"), ["yaku", "meta_yaku", "extra_yaku", "yakuman", "meta_yakuman"]
+    true                     -> define_yaku nagashi, "Nagashi Yakuman", [1, "★"], won_by_draw and no_tiles_remaining and status("nagashi"), ["yaku", "meta_yaku", "extra_yaku", "yakuman", "meta_yakuman"]
   end
 end
 
