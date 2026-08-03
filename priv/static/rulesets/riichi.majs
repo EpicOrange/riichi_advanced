@@ -222,7 +222,7 @@ set score_calculation, %{
   }
 
 def turn_cleanup do
-  # unset furiten
+  # unset furiten before turn change
   unset_status("furiten")
   check_tenpai
 end
@@ -463,6 +463,8 @@ on after_turn_change do
     end
     draw
   end
+  # unset furiten (mostly so show_waits doesn't complain)
+  unset_status("furiten")
 end
 
 on before_call do
