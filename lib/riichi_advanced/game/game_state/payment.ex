@@ -58,15 +58,27 @@ defmodule RiichiAdvanced.GameState.Payment do
     for %{from: from, to: to} = txn <- txns, reduce: %{} do
       ledger when omit_pot_payments and from == nil -> ledger
       ledger when txn.line_items == [] -> ledger
-      ledger ->
-        txn_name = if from != nil do
-          case Utils.get_relative_seat(from, to) do
-            :self     -> "From self"
-            :shimocha -> "From left"
-            :toimen   -> "From across"
-            :kamicha  -> "From right"
+      ledger when from == nil ->
+        # split into individual txns
+        # note: currently only supports +, -, or = operations
+        txns = for line_item <- Enum.reverse(txn.line_items) do
+          case line_item.op do
+            "=" -> %{txn | name: line_item.reason, line_items: [%{line_item | result: line_item.amount, prev: nil}]}
+            "+" -> %{txn | name: line_item.reason, line_items: [%{line_item | result: line_item.amount, prev: nil}]}
+            "-" -> %{txn | name: line_item.reason, line_items: [%{line_item | result: -line_item.amount, prev: nil}]}
+            _  ->
+              IO.puts("WARNING: tried to pay self with op #{inspect(line_item.op)}")
+              txn
           end
-        else Enum.at(txn.line_items, 0).reason end
+        end
+        Map.update(ledger, to, txns, &txns ++ &1)
+      ledger ->
+        txn_name = case Utils.get_relative_seat(from, to) do
+          :self     -> "From self"
+          :shimocha -> "From left"
+          :toimen   -> "From across"
+          :kamicha  -> "From right"
+        end
         txn = Map.put(txn, :name, txn_name)
         txn2 = invert_txn(txn)
         ledger
