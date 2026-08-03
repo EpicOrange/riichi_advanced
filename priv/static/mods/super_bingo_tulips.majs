@@ -23,9 +23,9 @@ define_set seven, ~s"7p|7s"
 def perform_arisu do
   cond do
     status("riichi")                                      -> set_status("performing_arisu"); push_message("won with a closed hand, and will flip tiles on the wall from the dora indicator onward, scoring shuugi for every matching tile in hand")
-    "$key" == "tsumo"   and has_yaku_with_hand(3, "★")    -> set_status("performing_arisu"); push_message("won with yakuman, and will flip tiles on the wall from the dora indicator onward, scoring shuugi for every matching tile in hand")
-    "$key" == "ron"     and has_yaku_with_discard(3, "★") -> set_status("performing_arisu"); push_message("won with yakuman, and will flip tiles on the wall from the dora indicator onward, scoring shuugi for every matching tile in hand")
-    "$key" == "chankan" and has_yaku_with_call(3, "★")    -> set_status("performing_arisu"); push_message("won with yakuman, and will flip tiles on the wall from the dora indicator onward, scoring shuugi for every matching tile in hand")
+    "$key" == "tsumo"   and has_yaku_with_hand(3, "★")    -> set_status("performing_arisu"); yakuman = 1; push_message("won with yakuman, and will flip tiles on the wall from the dora indicator onward, scoring shuugi for every matching tile in hand")
+    "$key" == "ron"     and has_yaku_with_discard(3, "★") -> set_status("performing_arisu"); yakuman = 1; push_message("won with yakuman, and will flip tiles on the wall from the dora indicator onward, scoring shuugi for every matching tile in hand")
+    "$key" == "chankan" and has_yaku_with_call(3, "★")    -> set_status("performing_arisu"); yakuman = 1; push_message("won with yakuman, and will flip tiles on the wall from the dora indicator onward, scoring shuugi for every matching tile in hand")
   end
   if status("performing_arisu") do
     save_revealed_tiles
@@ -39,9 +39,14 @@ def perform_arisu do
 
     lives = 1
     # ippatsu gives +1 extra life
-    if status("ippatsu") do lives += 1 end
+    if status("ippatsu") do lives += 1; push_message("gets an extra life for winning with ippatsu") end
     # sanbaiman+ gives +1 extra life
-    if points >= 11 or points2 >= 1 do lives += 1 end
+    cond do
+      yakuman == 1 -> lives += 1; push_message("gets an extra life for winning with yakuman")
+      "$key" == "tsumo"   and has_yaku_with_hand(11, "Han")    -> lives += 1; push_message("gets an extra life for winning with sanbaiman")
+      "$key" == "ron"     and has_yaku_with_discard(11, "Han") -> lives += 1; push_message("gets an extra life for winning with sanbaiman")
+      "$key" == "chankan" and has_yaku_with_call(11, "Han")    -> lives += 1; push_message("gets an extra life for winning with sanbaiman")
+    end
 
     # count sevens to get tier
     cond do
