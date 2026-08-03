@@ -39,18 +39,18 @@ def calculate_base_score do
       # not sure if mangans stack
       # total = points2 * 2000 :: "Mangan base"
       total = 2000 :: "Mangan base"
-      modify_winner("score_name", "Mangan", as: "winner")
+      modify_winner("score_name", "Mangan")
     points >= 5 ->
       total = 2000 :: "Mangan base"
-      modify_winner("score_name", "Mangan", as: "winner")
+      modify_winner("score_name", "Mangan")
     points >= 4 and minipoints >= @mangan_4_han_fu ->
       total = minipoints :: "Fu"
       total = 2000 :: "Mangan base"
-      modify_winner("score_name", "Mangan", as: "winner")
+      modify_winner("score_name", "Mangan")
     points >= 3 and minipoints >= @mangan_3_han_fu ->
       total = minipoints :: "Fu"
       total = 2000 :: "Mangan base"
-      modify_winner("score_name", "Mangan", as: "winner")
+      modify_winner("score_name", "Mangan")
     true ->
       han_mult = 2 ** points :: "Han mult."
       total = minipoints :: "Fu"

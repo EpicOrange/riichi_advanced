@@ -38,25 +38,25 @@ define_scoring zan_ron do
   total = 0
   if points2 > 0 do
     total = points2 * 32000 :: "Yakuman ron"
-    modify_winner("score_name", "Yakuman", as: "winner")
+    modify_winner("score_name", "Yakuman")
   else
     han = points :: "Han"
     cond do
       points >= 13 ->
         total = 32000 :: "Yakuman ron"
-        modify_winner("score_name", "Kazoe Yakuman", as: "winner")
+        modify_winner("score_name", "Kazoe Yakuman")
       points >= 11 ->
         total = 24000 :: "Sanbaiman ron"
-        modify_winner("score_name", "Sanbaiman", as: "winner")
+        modify_winner("score_name", "Sanbaiman")
       points >= 8 ->
         total = 16000 :: "Baiman ron"
-        modify_winner("score_name", "Baiman", as: "winner")
+        modify_winner("score_name", "Baiman")
       points >= 6 ->
         total = 12000 :: "Haneman ron"
-        modify_winner("score_name", "Haneman", as: "winner")
+        modify_winner("score_name", "Haneman")
       points >= 4 ->
         total = 8000 :: "Mangan ron"
-        modify_winner("score_name", "Mangan", as: "winner")
+        modify_winner("score_name", "Mangan")
       points >= 3 -> total = 4000 :: "3 han ron"
       points >= 2 -> total = 2000 :: "2 han ron"
       points >= 1 -> total = 1000 :: "1 han ron"
@@ -103,7 +103,7 @@ define_scoring zan_tsumo do
     else
       total = points2 * 12000 :: "Yakuman tsumo"
     end
-    modify_winner("score_name", "Yakuman", as: "winner")
+    modify_winner("score_name", "Yakuman")
   else
     han = points :: "Han"
     cond do
@@ -117,7 +117,7 @@ define_scoring zan_tsumo do
         else
           total = 12000 :: "Yakuman tsumo"
         end
-        modify_winner("score_name", "Kazoe Yakuman", as: "winner")
+        modify_winner("score_name", "Kazoe Yakuman")
       points >= 11 ->
         if dealer == 1 do
           if winner_dealer == 1 do
@@ -128,7 +128,7 @@ define_scoring zan_tsumo do
         else
           total = 8000 :: "Sanbaiman tsumo"
         end
-        modify_winner("score_name", "Sanbaiman", as: "winner")
+        modify_winner("score_name", "Sanbaiman")
       points >= 8 ->
         if dealer == 1 do
           if winner_dealer == 1 do
@@ -139,7 +139,7 @@ define_scoring zan_tsumo do
         else
           total = 6000 :: "Baiman tsumo"
         end
-        modify_winner("score_name", "Baiman", as: "winner")
+        modify_winner("score_name", "Baiman")
       points >= 6 ->
         if dealer == 1 do
           if winner_dealer == 1 do
@@ -150,7 +150,7 @@ define_scoring zan_tsumo do
         else
           total = 4000 :: "Haneman tsumo"
         end
-        modify_winner("score_name", "Haneman", as: "winner")
+        modify_winner("score_name", "Haneman")
       points >= 4 ->
         if dealer == 1 do
           if winner_dealer == 1 do
@@ -161,7 +161,7 @@ define_scoring zan_tsumo do
         else
           total = 3000 :: "Mangan tsumo"
         end
-        modify_winner("score_name", "Mangan", as: "winner")
+        modify_winner("score_name", "Mangan")
       points >= 3 ->
         if dealer == 1 do
           total = 3000 :: "3 han dealer tsumo"

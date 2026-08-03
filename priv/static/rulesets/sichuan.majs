@@ -261,12 +261,12 @@ define_scoring win do
     true        -> total = 1 :: "0 Fan → 1 pts"
   end
   if status("do_noten_payments") do
-    modify_winner("score_name", "Draw", as: "winner")
+    modify_winner("score_name", "Draw")
   else
     if won_by_draw do total += 1 :: "Self-draw bonus" end
   end
   set_counter_all("total", "total")
-  modify_winner("score", total, as: "winner")
+  modify_winner("score", total)
   if not_anyone_status("first_winner") do
     set_status("first_winner", as: "winner") # will be next dealer
   end
@@ -279,7 +279,7 @@ def before_bloody_end do
       # so label the takame wait as "Best"
       modify_winner("winning_tile_text", "Best")
       # also replace jokers with their values (namely the 4x joker we use)
-      replace_winning_hand_jokers
+      replace_winning_hand_jokers # TODO remove this action
     end
   end
   as everyone do

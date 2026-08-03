@@ -4,28 +4,28 @@ def calculate_base_score, prepend: true do
     total > 0 -> noop
     points >= 104 ->
       total = 64000 :: "Octuple Yakuman base"
-      modify_winner("score_name", "Octuple Yakuman", as: "winner")
+      modify_winner("score_name", "Octuple Yakuman")
     points >= 91 ->
       total = 56000 :: "Septuple Yakuman base"
-      modify_winner("score_name", "Septuple Yakuman", as: "winner")
+      modify_winner("score_name", "Septuple Yakuman")
     points >= 78 ->
       total = 48000 :: "Sextuple Yakuman base"
-      modify_winner("score_name", "Sextuple Yakuman", as: "winner")
+      modify_winner("score_name", "Sextuple Yakuman")
     points >= 65 ->
       total = 40000 :: "Quintuple Yakuman base"
-      modify_winner("score_name", "Quintuple Yakuman", as: "winner")
+      modify_winner("score_name", "Quintuple Yakuman")
     points >= 52 ->
       total = 32000 :: "Quadruple Yakuman base"
-      modify_winner("score_name", "Quadruple Yakuman", as: "winner")
+      modify_winner("score_name", "Quadruple Yakuman")
     points >= 39 ->
       total = 24000 :: "Triple Yakuman base"
-      modify_winner("score_name", "Triple Yakuman", as: "winner")
+      modify_winner("score_name", "Triple Yakuman")
     points >= 26 ->
       total = 16000 :: "Double Yakuman base"
-      modify_winner("score_name", "Double Yakuman", as: "winner")
+      modify_winner("score_name", "Double Yakuman")
     points >= 18 ->
       total = 12000 :: "Haneyakuman base"
-      modify_winner("score_name", "Haneyakuman", as: "winner")
+      modify_winner("score_name", "Haneyakuman")
   end
 end
 

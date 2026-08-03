@@ -157,30 +157,30 @@ def calculate_base_score do
     total > 0 -> noop
     points2 > 0 ->
       total = points2 * 8000 :: "Yakuman base"
-      modify_winner("score_name", "Yakuman", as: "winner")
+      modify_winner("score_name", "Yakuman")
     points >= 13 ->
       total = 8000 :: "Yakuman base"
-      modify_winner("score_name", "Kazoe Yakuman", as: "winner")
+      modify_winner("score_name", "Kazoe Yakuman")
     points >= 11 ->
       total = 6000 :: "Sanbaiman base"
-      modify_winner("score_name", "Sanbaiman", as: "winner")
+      modify_winner("score_name", "Sanbaiman")
     points >= 8 ->
       total = 4000 :: "Baiman base"
-      modify_winner("score_name", "Baiman", as: "winner")
+      modify_winner("score_name", "Baiman")
     points >= 6 ->
       total = 3000 :: "Haneman base"
-      modify_winner("score_name", "Haneman", as: "winner")
+      modify_winner("score_name", "Haneman")
     points >= 5 ->
       total = 2000 :: "Mangan base"
-      modify_winner("score_name", "Mangan", as: "winner")
+      modify_winner("score_name", "Mangan")
     points >= 4 and minipoints >= @mangan_4_han_fu ->
       total = minipoints :: "Fu"
       total = 2000 :: "Mangan base"
-      modify_winner("score_name", "Mangan", as: "winner")
+      modify_winner("score_name", "Mangan")
     points >= 3 and minipoints >= @mangan_3_han_fu ->
       total = minipoints :: "Fu"
       total = 2000 :: "Mangan base"
-      modify_winner("score_name", "Mangan", as: "winner")
+      modify_winner("score_name", "Mangan")
     true ->
       han_mult = 2 ** (points + 2) :: "Han mult."
       total = minipoints :: "Fu"
@@ -244,7 +244,7 @@ def finalize_score do
 end
 
 on after_win do
-  modify_winner("score", "display_total", as: "winner") # before honba and riichi sticks
+  modify_winner("score", "display_total") # before honba and riichi sticks
   # gather riichi sticks for the first winner
   as winners do
     riichi_stick_payment = pot
@@ -255,7 +255,7 @@ on after_win do
   end
 end
 
-on after_scoring, do: if points2 > 0, do: modify_winner("point_name", "★", as: "winner")
+on after_scoring, do: if points2 > 0, do: modify_winner("point_name", "★")
 
 
 
