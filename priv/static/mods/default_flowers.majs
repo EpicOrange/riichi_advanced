@@ -43,6 +43,8 @@ if !four_flowers_value > 0 do
   define_yaku yaku, "All Seasons", [!four_flowers_value, !four_flowers_han], match(["flowers"], ~m"1g:1, 2g:1, 3g:1, 4g:1"), ["Seat Season"]
 end
 
+define_set any_flower, ~s"1f|2f|3f|4f|1g|2g|3g|4g"
+define_match any_flower, ~m"nojoker, any_flower:1"
 define_button start_flower,
   display_name: "Reveal flower",
   show_when: status("initial_flowers")
@@ -72,11 +74,10 @@ define_button start_no_flower,
 
 if !undiscardable do
   define_play_restriction "flower", false
+else
+  define_play_restriction any, not_status_missing("initial_flowers")
 end
-define_play_restriction any, not_status_missing("initial_flowers")
 
-define_set any_flower, ~s"1f|2f|3f|4f|1g|2g|3g|4g"
-define_match any_flower, ~m"nojoker, any_flower:1"
 define_button flower,
   display_name: "Flower",
   show_when: our_turn

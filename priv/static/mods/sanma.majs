@@ -68,7 +68,7 @@ define_button flower,
     and not_no_tiles_remaining
     and has_draw
     and not_status("just_reached")
-    and match(["hand", "draw"], ~m"4z:1")
+    and match(["playable_tiles"], ~m"4z:1")
     and tile_not_drawn(-8)
   do
     big_text("Pei")
