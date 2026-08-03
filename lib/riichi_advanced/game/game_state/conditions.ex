@@ -219,7 +219,11 @@ defmodule RiichiAdvanced.GameState.Conditions do
     (get_in(score_rules["yaku_lists"]) || []) -- (get_in(score_rules["extra_yaku_lists"]) || [])
   end
 
-  def check_condition(state, cond_spec, context \\ %{}, opts \\ []) do
+  # actual booleans can be passed in if we're using a @constant as a condition
+  def check_condition(state, cond_spec, context \\ %{}, opts \\ [])
+  def check_condition(state, true, context, opts), do: true
+  def check_condition(state, false, context, opts), do: false
+  def check_condition(state, cond_spec, context, opts) do
     t = System.os_time(:millisecond)
 
     negated = String.starts_with?(cond_spec, "not_")
