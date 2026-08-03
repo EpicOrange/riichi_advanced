@@ -20,8 +20,7 @@ defmodule RiichiAdvancedWeb.YakuSelectionComponent do
               (
               <form phx-change="change_yaku_value" phx-value-index={index}>
                 <input name="yaku-value" type="number" value={print_value(value)} onclick="this.select();" style={"--width: #{print_value(value) |> String.length()};"}>
-              </form>
-              <%= dt(@lang, value_name) %>
+              </form>&nbsp;<%= dt(@lang, value_name) %>
               )
             </label>
           <% end %>

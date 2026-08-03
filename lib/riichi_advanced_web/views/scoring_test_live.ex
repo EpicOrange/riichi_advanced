@@ -210,7 +210,7 @@ defmodule RiichiAdvancedWeb.ScoringTestLive do
     yaku_assign
     |> Enum.filter(& &1.selected)
     |> Enum.group_by(& &1.list_name)
-    |> Enum.flat_map(fn {_list_name, yaku} -> Enum.map(yaku, &{&1.name, &1.value}) end)
+    |> Enum.flat_map(fn {_list_name, yaku} -> Enum.map(yaku, &{&1.name, [&1.value, &1.value_name]}) end)
   end
   
   def switch_to_ruleset(socket, ruleset) when ruleset != socket.assigns.ruleset do
@@ -273,9 +273,9 @@ defmodule RiichiAdvancedWeb.ScoringTestLive do
       |> Enum.map(fn yaku = %{"display_name" => name, "value" => value} -> %{
         name: name,
         desc: Map.get(yaku, "desc", ""),
-        value: value,
+        value: if is_integer(value) do value else Enum.at(value, 0) end,
         list_name: list_name,
-        value_name: Map.get(point_names, list_name, ""),
+        value_name: Map.get(point_names, list_name, if is_integer(value) do "" else Enum.at(value, 1) end),
         selected: MapSet.member?(prev_selections, name),
         index: 0,
       } end)
@@ -349,9 +349,13 @@ defmodule RiichiAdvancedWeb.ScoringTestLive do
       %{"win" => _} -> "win"
       _ -> nil
     end
+    # add manually selected fu
+    state = if minipoints > 0 do update_in(state.players.east.counters, &Map.put(&1, "fu", minipoints)) else state end
+    # score using this fu
     state = Kyoku.calculate_winner_details_v2(state, :east, win_source, scoring_key)
-    state = update_in(state.winners.east.yaku, & &1 ++ selected_yaku) # add manually selected yaku
-    state = if minipoints > 0 do update_in(state.winners.east.minipoints, fn _ -> minipoints end) else state end # add manually selected fu
+    # add manually selected yaku
+    state = update_in(state.winners.east.yaku, & &1 ++ selected_yaku)
+    # calculate delta_scores
     {state, delta_scores, delta_scores_reason} = Scoring.adjudicate_win_scoring(state)
     winner = state.winners.east
     state = Actions.trigger_event(state, "after_win", %{winner | seat: winner.winner_seat})
@@ -470,16 +474,22 @@ defmodule RiichiAdvancedWeb.ScoringTestLive do
   # for yaku_selection_component
   def handle_event("toggle_yaku", %{"index" => index, "selected" => selected}, socket) do
     selected = selected == "true"
-    ix = String.to_integer(index)
-    socket = assign(socket, :yaku, List.update_at(socket.assigns.yaku, ix, &Map.put(&1, :selected, not selected)))
-    {:noreply, socket}
+    case Integer.parse(index) do
+      {ix, _rest} -> 
+        socket = assign(socket, :yaku, List.update_at(socket.assigns.yaku, ix, &Map.put(&1, :selected, not selected)))
+        {:noreply, socket}
+      :error -> {:noreply, socket}
+    end
   end
   def handle_event("change_yaku_value", %{"index" => index, "yaku-value" => value}, socket) do
-    ix = String.to_integer(index)
-    value = String.to_integer(value)
-    yaku = socket.assigns.yaku
-    socket = assign(socket, :yaku, List.update_at(yaku, ix, &Map.put(&1, :value, value)))
-    {:noreply, socket}
+    with {ix, _rest} <- Integer.parse(index),
+         {value, _rest} <- Integer.parse(value) do {ix, value} end
+    |> case do
+      {ix, value} ->
+        socket = assign(socket, :yaku, List.update_at(socket.assigns.yaku, ix, &Map.put(&1, :value, value)))
+        {:noreply, socket}
+      :error -> {:noreply, socket}
+    end
   end
   def handle_event("clear_yaku", _assigns, socket) do
     yaku = socket.assigns.yaku
@@ -487,9 +497,10 @@ defmodule RiichiAdvancedWeb.ScoringTestLive do
     {:noreply, socket}
   end
   def handle_event("change_minipoints_value", %{"value" => minipoints}, socket) do
-    {minipoints, _rest} = Integer.parse(minipoints)
-    socket = assign(socket, :minipoints, minipoints)
-    {:noreply, socket}
+    case Integer.parse(minipoints) do
+      {minipoints, _rest} -> {:noreply, assign(socket, :minipoints, minipoints)}
+      :error -> {:noreply, socket}
+    end
   end
   def handle_event("ready_for_next_round", _assigns, socket) do
     socket = if socket.assigns.state.visible_screen == :winner do
@@ -575,7 +586,7 @@ defmodule RiichiAdvancedWeb.ScoringTestLive do
     {:noreply, socket}
   end
   def handle_async(id, result, socket) do
-    IO.inspect({id, result}, label: "handle_async")
+    # IO.inspect({id, result}, label: "handle_async")
     {:noreply, socket}
   end
 
