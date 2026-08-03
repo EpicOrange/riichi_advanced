@@ -12,6 +12,7 @@ require "standard_sets"
 require "global_mods"
 require "standard_wall"
 require "default_auto_buttons"
+require "renchan"
 require "riichi_scoring"
 require "riichi_kan" # adds kan fu for riichi_scoring, also adds chankan and yaku like suukantsu
 

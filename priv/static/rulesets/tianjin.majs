@@ -6,6 +6,8 @@ require "standard_sets"
 require "renchan"
 require "global_mods"
 require "default_auto_buttons"
+require "agarirenchan"
+require "ryuukyokurenchan"
 require "yaku/tenhou", %{tenhou_name: "Heavenly Hand", tenhou_value: 6, tenhou_han: "×", chiihou_name: "Earthly Hand", chiihou_value: 4, chiihou_han: "×", chiihou_is_tsumo: true}
 
 set wall, ["1m", "1m", "1m", "1m",
@@ -451,16 +453,4 @@ on after_initialization do
   add_rule("Win Patterns", "Earthly Hand", "×4 fan multiplier if you are not the dealer and you won with the tiles initially drawn. Does not contribute towards Multiple Patterns.")
   add_rule("Win Patterns", "Multiple Patterns", "+1 fan for each pattern if you won with 2 or more win patterns. Does not contribute towards the 2 fan minimum.")
   update_rule("Win Patterns", "Multiple Patterns", "%{example_hand}", %{example_hand: ~t"1234m6m@_dora789m234p88s 5m@dora"})
-end
-
-# agarirenchan
-on before_win do
-  if seat_is("east") do
-    set_status("renchan")
-  end
-end
-
-# ryuukyokurenchan
-on before_exhaustive_draw do
-  set_status("renchan")
 end

@@ -1,0 +1,11 @@
+require "renchan"
+
+on after_initialization do
+  add_rule("Rules", "Ryuukyokurenchan", "If the game results in a draw, the round repeats.")
+end
+
+on before_exhaustive_draw do
+  as east do
+    set_status("renchan")
+  end
+end
