@@ -1,4 +1,5 @@
 on after_initialization do
+  delete_rule("Rules", "No Abortive Draws")
   add_rule("Rules", "Suucha Riichi", "If all four players have declared riichi (and the final discard passes), the game ends in an abortive draw.")
 end
 

@@ -1,4 +1,5 @@
 on after_initialization do
+  delete_rule("Rules", "No Abortive Draws")
   add_rule("Rules", !name, "If a player starts with nine different kinds of terminals, they have the option to call an abortive draw. Any call (chii, pon, etc) invalidates this opportunity for all players.")
   update_rule("Rules", !name, "%{example_hand}", %{example_hand: ~t"358m1369s123457z 9p"})
 end

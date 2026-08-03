@@ -1,4 +1,5 @@
 on after_initialization do
+  delete_rule("Rules", "No Abortive Draws")
   add_rule("Rules", !name, "If all four players discard the same wind tile as their first discard, the game ends in an abortive draw.")
 end
 

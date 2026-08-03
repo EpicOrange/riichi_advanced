@@ -1,0 +1,6 @@
+on after_initialization do
+  delete_rule("Rules", "No Abortive Draws")
+  add_rule("Rules", "Sanchahou", "A triple ron ends the game in an abortive draw.")
+end
+
+apply set, "score_calculation.triple_ron_draw", true
