@@ -526,6 +526,8 @@ define_mod "jokers/456", order: 4, name: "456", desc: "Adds a copy of the 456 jo
 define_mod "jokers/789", order: 4, name: "789", desc: "Adds a copy of the 789 joker, which looks like 大 and can be used as any 7, 8, or 9."
 define_mod "jokers/odd", order: 4, name: "Odd", desc: "Adds a copy of the odd joker, which looks like 單 and can be used as any odd number tile."
 define_mod "jokers/even", order: 4, name: "Even", desc: "Adds a copy of the even joker, which looks like 雙 and can be used as any even number tile."
+define_mod "jokers/five_honors", order: 4, name: "Five/Honors", desc: "Adds a copy of the five/honors joker, which looks like 伍番 and can be used as any five or any honor tile."
+define_mod "jokers/kanchan_honors", order: 4, name: "Kanchan/Honors", desc: "Adds a copy of the kanchan/honors joker, which looks like 卡番 and can be used as any honor tile, but can also be used as the middle tile in any sequence."
 define_mod_category "Yaku"
 # 1 han
 define_mod "lib/yaku/riichi", order: -1, name: "Riichi", desc: "Enable riichi declarations. When you are tenpai with at least 1000 points (and it is not your last discard), you may declare riichi before discarding. If the discard passes, you automatically bet 1000 and can no longer change your hand. If you win under this condition, you get the riichi yaku (1 han). If you riichi on your first discard (calls invalidate), this is called Double Riichi and worth 2 han."
@@ -1036,6 +1038,8 @@ define_preset "Just Like Modded Minecraft", [
   "jokers/789",
   "jokers/odd",
   "jokers/even",
+  "jokers/five_honors",
+  "jokers/kanchan_honors",
   "yaku/mondeikou",
   "shiny_dora"
 ]

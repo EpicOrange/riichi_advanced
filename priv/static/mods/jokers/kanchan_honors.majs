@@ -1,0 +1,21 @@
+on after_initialization do
+  add_rule("Tiles", "Jokers", "- One %{31j} joker is added to the wall. This joker acts as any honor tile, but can also be used as the middle tile in any sequence.", %{"31j": ~T"31j"})
+end
+apply append, "wall", ["31j"]
+on after_start do set_tile_alias_all(["31j"], ["1z", "2z", "3z", "4z", "5z", "6z", "7z"]) end
+apply merge, "custom_style.tile_indices", %{"31j": "kanchan"}
+apply merge, "dora_indicators", %{"31j": ["1z", "2z", "3z", "4z", "5z", "6z", "7z"]}
+
+# this gives it kanchan ability
+apply append, "set_definitions.mentsu", ~s"0 31j 2"
+apply append, "constants.winning_groups_fu", [
+  %{groups: ~s"0 31j 2"},
+  %{groups: ~s"0 31j@winning_tile 2", value: 2}
+]
+apply append, "constants.groups_fu", [
+  %{groups: ~s"0 31j 2"}
+]
+apply append, "constants.always_yakuhai", ["31j"]
+
+# make sure it is eligible for tanyao
+apply append, "set_definitions.tanyao_mentsu", ~s"0@tanyao 31j 2@tanyao"

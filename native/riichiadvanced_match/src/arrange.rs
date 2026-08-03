@@ -8,7 +8,7 @@ use crate::r#match::{__match_hand_v3, __pop_group};
 use crate::match_info::prepare_tiles;
 use crate::offsets::get_base_tiles;
 use crate::primes::to_prime;
-use crate::tile_table::tile7x;
+use crate::tile_table::{TILE_TABLE, tile7x};
 use crate::types::{BaseTileVec, ElixirHandCalls, ElixirTile, ElixirTileOrdering, Hands, MatchDefinitionElem, MatchDefinitions, MatchGroup, MatchInfo, MatchOffset, RemovableGroup, Tile, TileSet};
 
 #[rustler::nif(schedule = "DirtyCpu")]
@@ -159,6 +159,14 @@ fn _separate_standard_winner_hand(
       }
     }
     group.attrs.sort_unstable();
+
+    // for kanchan jokers, always display them as the second tile
+    if let Some(kanchan_prime) = TILE_TABLE.get("31j") {
+      if let Some(i) = group.attrs.iter().position(|(p, _)| p == kanchan_prime) {
+        let tile = group.attrs.remove(i);
+        group.attrs.insert(1, tile);
+      }
+    }
   }
 
   // try to maintain ordering of groups from the resulting hand, based on first tile of each group

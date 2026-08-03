@@ -1,0 +1,13 @@
+on after_initialization do
+  add_rule("Tiles", "Jokers", "- One %{30j} joker is added to the wall. This joker acts as any five or any honor tile.", %{"30j": ~T"30j"})
+end
+apply append, "wall", ["30j"]
+apply merge, "custom_style.tile_indices", %{"30j": "5 Honors"}
+
+if defined("star_suit") do
+  on after_start do set_tile_alias_all(["30j"], ["5m", "5p", "5s", "5t", "1z", "2z", "3z", "4z", "5z", "6z", "7z"]) end
+  apply merge, "dora_indicators", %{"30j": ["6m", "6p", "6s", "6t", "1z", "2z", "3z", "4z", "5z", "6z", "7z"]}
+else
+  on after_start do set_tile_alias_all(["30j"], ["5m", "5p", "5s", "1z", "2z", "3z", "4z", "5z", "6z", "7z"]) end
+  apply merge, "dora_indicators", %{"30j": ["6m", "6p", "6s", "1z", "2z", "3z", "4z", "5z", "6z", "7z"]}
+end
