@@ -744,6 +744,7 @@ defmodule RiichiAdvanced.Compiler do
 
   defp compile_command("replace_yaku", name, args, line, column) do
     yaku_spec = case args do
+      [display_name, value] when is_binary(display_name) and (is_number(value) or is_binary(value) or is_list(value)) -> {:ok, {display_name, value, nil, []}}
       [display_name, value, condition] when is_binary(display_name) and (is_number(value) or is_binary(value) or is_list(value)) -> {:ok, {display_name, value, condition, []}}
       [display_name, value, condition, supercedes] when is_binary(display_name) and (is_number(value) or is_binary(value) or is_list(value)) and is_list(supercedes) -> {:ok, {display_name, value, condition, supercedes}}
       _ -> {:error, "Compiler.compile: at line #{line}:#{column}, `replace_yaku` command expects a yaku list name, a display name, a value, and a condition, got #{inspect(args)}"}
@@ -754,13 +755,23 @@ defmodule RiichiAdvanced.Compiler do
          {:ok, display_name} <- Jason.encode(display_name),
          {:ok, value} <- Validator.validate_json(value),
          {:ok, value} <- Jason.encode(value),
-         {:ok, condition} <- compile_condition_list(condition, line, column),
-         {:ok, condition} <- Jason.encode(condition) do
-      add_yaku = """
+         {:ok, condition} <- (if condition == nil do {:ok, nil} else compile_condition_list(condition, line, column) end),
+         {:ok, condition} <- (if condition == nil do {:ok, nil} else Jason.encode(condition) end) do
+      add_yaku = if condition == nil do
+        # only update the value (for all instances of this yaku)
+        """
+        if has(#{name}) and (.[#{name}] | any(.display_name == #{display_name})) then
+          .[#{name}] |= map(if .display_name == #{display_name} then .value = #{value} else . end)
+        else . end
+        """
+      else
+        # replace all instances of this yaku with one copy of the new yaku
+        """
         if has(#{name}) and (.[#{name}] | any(.display_name == #{display_name})) then
           .[#{name}] |= map(select(.display_name != #{display_name})) + [{\"display_name\": #{display_name}, \"value\": #{value}, \"when\": #{condition}}]
         else . end
-      """
+        """
+      end
       if Enum.empty?(supercedes) do
         {:ok, add_yaku}
       else

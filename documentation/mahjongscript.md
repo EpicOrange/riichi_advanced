@@ -737,6 +737,14 @@ replace_yaku list_name, display_name, value, condition, optional_supercedes_list
 
 This is essentially the same as `remove_yaku display_name` followed by `define_yaku`, except it will do nothing if the yaku doesn't exist in the first place.
 
+There is also a short version that just replaces the value of (each instance of) the given yaku:
+
+```elixir
+replace_yaku list_name, display_name, value
+```
+
+This keeps the existing condition intact, and is useful for modifying existing yaku.
+
 ### `define_button`: Add a new button
 
 ```elixir
