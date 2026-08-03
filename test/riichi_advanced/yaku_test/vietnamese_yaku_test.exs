@@ -885,7 +885,7 @@ defmodule RiichiAdvanced.YakuTest.VietnameseYaku do
     })
   end
 
-  test "vietnamese - single wait fully closed bonus on joker tanki" do
+  test "vietnamese - no single wait fully closed bonus on joker tanki" do
     TestUtils.test_yaku_advanced("vietnamese", [], [], """
     {
       "starting_hand": {
@@ -908,7 +908,7 @@ defmodule RiichiAdvanced.YakuTest.VietnameseYaku do
         yaku: [
           {"All Terminals", [4, "Mủn"]},
           {"Four Closed Sets", [3, "Mủn"]},
-          {"Single Wait Fully Closed Bonus", [1, "Mủn"]}
+          {"Fully Closed Hand", [1, "Phán"]}
         ]
       }
     })
@@ -962,7 +962,7 @@ defmodule RiichiAdvanced.YakuTest.VietnameseYaku do
       %{"type" => "buttons_pressed", "buttons" => [%{"button" => "tsumo"}, nil, nil, nil]}
     ], %{
       east: %{
-        yaku: [{"All Runs", [1, "Phán"]}, {"Blessing of Heaven", [2, "Mủn"]}, {"Single Wait Fully Closed Bonus", [1, "Mủn"]}],
+        yaku: [{"All Runs", [1, "Phán"]}, {"Blessing of Heaven", [2, "Mủn"]}, {"Fully Closed Hand", [1, "Phán"]}],
       }
     })
   end
