@@ -29,6 +29,11 @@ on before_turn_change do unset_status_all("call_made") end
 
 on after_start do set_status_all("first_turn", "discards_empty") end
 define_play_effect any do unset_status("discards_empty") end
+on before_turn_change do
+  if status_missing("match_start", "initial_flowers") do
+    unset_status("first_turn")
+  end
+end
 
 define_const can_draw_condition, status_missing("match_start", "initial_flowers")
 on after_turn_change do
