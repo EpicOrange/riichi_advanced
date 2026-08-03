@@ -156,6 +156,21 @@ defmodule RiichiAdvanced.TestUtils do
     end
   end
 
+  def test_wait_calculation(ruleset, mods, hand, calls, expected_waits) do
+    test_state = initialize_test_state(ruleset, mods)
+    GenServer.cast(test_state.game_state_pid, :sort_hands)
+    state = GenServer.call(test_state.game_state_pid, :get_state)
+    GenServer.cast(test_state.game_state_pid, :terminate_game)
+
+    hand = interpret_hand(hand)
+    calls = interpret_calls(calls)
+    expected_waits = interpret_hand(expected_waits)
+    win_definitions = Rules.translate_match_definitions(state.rules_ref, ["win"])
+
+    waits = Match.get_waits(hand, calls, win_definitions, state.players.east.tile_behavior)
+    assert MapSet.new(waits) == MapSet.new(expected_waits)
+  end
+
   def get_rules!(ruleset, mods) do
     ruleset_json = ModState.load_ruleset(ruleset)
     |> ModState.apply_new_mods(mods)

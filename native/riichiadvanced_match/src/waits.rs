@@ -3,14 +3,13 @@ use std::sync::atomic::Ordering;
 use std::time::Instant;
 use rustler::Atom;
 
-use crate::encode::{decode_tiles, encode_aliases, encode_tile};
+use crate::encode::{decode_tiles, encode_tiles};
 use crate::r#match::remove_match_definition;
 use crate::match_info::{prepare_tiles};
-use crate::primes::is_any;
 use crate::profile::{PROFILE_GET_WAITS, PROFILE_UNNEEDED_TILES, CALL_COUNT, MAX_NANOS, TOTAL_NANOS};
-use crate::tile_table::tile1x;
+use crate::tile_table::{TILE_TABLE, tile1x};
 use crate::types::{ElixirAliases, ElixirHandCalls, ElixirTile, MatchDefinition, MatchDefinitions, MatchInfo, Tile};
-use crate::utils::{add_joker_to_aliases, remove_joker_from_aliases};
+use crate::utils::{add_joker_to_elixir_aliases, add_joker_to_aliases, remove_joker_from_aliases};
 
 #[rustler::nif(schedule = "DirtyCpu")]
 fn _get_waits_v3(
@@ -63,13 +62,9 @@ pub fn __get_waits_v3(
   // we want to take the transitive closure of all nonwaits, then take complement
 
   // first let's make that joker
-  let joker = ElixirTile::AtomTile(tile1x());
-  hand_calls.0.push(joker.clone());
-  add_joker_to_aliases(elixir_aliases, &joker, game_tiles.iter());
-  let all_joker_tiles: HashSet<&ElixirTile> = elixir_aliases
-    .values()
-    .flat_map(|attrs_aliases| attrs_aliases.values().flatten())
-    .collect();
+  let elixir_joker = ElixirTile::AtomTile(tile1x());
+  add_joker_to_elixir_aliases(elixir_aliases, &elixir_joker, game_tiles.iter());
+  hand_calls.0.push(elixir_joker);
 
   // then let's make match_info based on that joker
   let mut match_info = prepare_tiles(
@@ -79,82 +74,66 @@ pub fn __get_waits_v3(
     ordering,
     ordering_r,
   );
+  let joker = (*TILE_TABLE.get("1x").unwrap(), 0);
+  let mut not_waits: HashSet<Tile> = HashSet::new();
+  not_waits.insert(joker);
 
-  let mut not_waits: HashSet<&ElixirTile> = HashSet::new();
-  not_waits.insert(&joker);
   // this differs from match_info.joker_tiles since that only contains jokers in hand
   // whereas this one contains all jokers in alias table
-
-  // let (joker_game_tiles, nonjoker_game_tiles): (Vec<ElixirTile>, Vec<ElixirTile>) = game_tiles
-  //   .into_iter()
-  //   .partition(|tile| match_info.elixir_joker_tiles.contains(tile));
-  //   // .collect::<Vec<&ElixirTile>>();
-
-  // populate not_waits with the closure of non-wait tiles
-  let mut aliases_copy = elixir_aliases.clone();
-  ___get_waits_v3(&mut match_info, &match_definitions, &mut aliases_copy, &mut not_waits, &game_tiles.iter().collect::<Vec<_>>(), &joker);
-  // take complement of not_waits and return
-  let mut ret: Vec<ElixirTile> = game_tiles
-      .iter()
-      .filter(|t| !not_waits.contains(t))
-      .cloned()
-      .collect();
-
-  // now deal with jokers,
-  // replacing the final 1x in match_info.initial_hands by each in turn
-  let not_waits2: HashSet<&ElixirTile> = all_joker_tiles
-    .iter()
-    .filter(|joker| {
-      if is_any(joker) { return true; }
-      // first do the replacement
-      let hand = &mut match_info.initial_hands[0];
-      if let Some(last_tile) = hand.attrs.last_mut() {
-        if let Some(encoded_joker) = encode_tile(joker, match_info.all_attrs) {
-          *last_tile = encoded_joker;
-          match_info.joker_tiles.insert(encoded_joker);
-        } else { return false; } // impossible (encode_tile only fails on unknown tiles)
-      } else { return false; } // impossible (we always insert 1x)
-      // println!("hand: {:?}", decode(hand, &match_info.all_attrs));
-      
-      // then check against match definitions
-      match_definitions.iter().all(|match_definition| {
-        remove_match_definition(&match_info, match_definition).next().is_none()
-      })
-    })
-    .cloned()
+  let nonjoker_game_tiles: Vec<Tile> = encode_tiles(&game_tiles, match_info.all_attrs)
+    .filter(|tile| !match_info.joker_tiles.contains(tile))
     .collect();
 
-  ret.extend(all_joker_tiles
+  // populate not_waits with the closure of non-wait tiles
+  // save aliases first
+  let aliases_backup = match_info.aliases.clone();
+  ___get_waits_v3(&mut match_info, &match_definitions, &mut not_waits, &nonjoker_game_tiles, &joker);
+  // take complement of not_waits and return
+  let mut ret: Vec<Tile> = nonjoker_game_tiles
     .iter()
     .copied()
-    .filter(|t| !not_waits2.contains(t))
-    .cloned());
+    .filter(|tile| !not_waits.contains(tile))
+    .collect();
 
-  ret
+  // also add all joker tiles that map to something in ret
+  let mut ret_jokers: HashSet<Tile> = ret
+    .iter()
+    .flat_map(|t| aliases_backup.get(&t.0)?.get(&t.1))
+    .flatten()
+    .copied()
+    .collect();
+  ret_jokers.remove(&joker);
+  
+  // println!("ret: {:?}", ret);
+  // println!("ret_jokers: {:?}", ret_jokers);
+
+  ret.extend(ret_jokers);
+  decode_tiles(&ret, match_info.all_attrs)
 }
-pub fn ___get_waits_v3<'a>(
+pub fn ___get_waits_v3(
   match_info: &mut MatchInfo,
   match_definitions: &MatchDefinitions,
-  aliases: &mut ElixirAliases,
-  not_waits: &mut HashSet<&'a ElixirTile>,
-  current_tiles: &[&'a ElixirTile],
-  joker: &ElixirTile,
+  not_waits: &mut HashSet<Tile>,
+  current_tiles: &[Tile],
+  joker: &Tile,
 ) {
   if current_tiles.is_empty() {
     // println!("Empty, so we're done");
     return;
   }
-  // println!("tiles: {:?}", current_tiles);
+  // println!("\ntiles: {:?}", decode_tiles(current_tiles, match_info.all_attrs));
 
   // test with current aliases (only need to match 1 to succeed)
-  match_info.aliases = encode_aliases(aliases, match_info.all_attrs);
+  // println!("before removing: {:?}", match_info.initial_hands.iter().map(|t| decode(t, match_info.all_attrs)).collect::<Vec<_>>());
   let all_nonwaits = match_definitions.iter().all(|match_definition| {
+    // println!("after removing: {:?}", remove_match_definition(match_info, match_definition).map(|ts| ts.iter().map(|t| decode(t, match_info.all_attrs)).collect::<Vec<_>>()).collect::<Vec<_>>());
     remove_match_definition(match_info, match_definition).next().is_none()
   });
 
   // if all nonwaits, mark current_tiles and return, as we're done
   // (no need to remove any aliases)
   if all_nonwaits {
+    // println!("Not waits: {:?}", current_tiles);
     for &tile in current_tiles {
       not_waits.insert(tile);
     }
@@ -163,7 +142,7 @@ pub fn ___get_waits_v3<'a>(
 
   // if that was one tile, no more recursing
   if current_tiles.len() == 1 {
-    remove_joker_from_aliases(aliases, joker, current_tiles.iter().copied());
+    remove_joker_from_aliases(&mut match_info.aliases, &mut match_info.mapping, *joker, current_tiles);
     return;
   }
 
@@ -172,16 +151,16 @@ pub fn ___get_waits_v3<'a>(
   let left = &current_tiles[..m];
   let right = &current_tiles[m..];
   // remove the right half aliases
-  remove_joker_from_aliases(aliases, joker, right.iter().copied());
+  remove_joker_from_aliases(&mut match_info.aliases, &mut match_info.mapping, *joker, right);
   // recurse with left half
-  ___get_waits_v3(match_info, match_definitions, aliases, not_waits, left, joker);
+  ___get_waits_v3(match_info, match_definitions, not_waits, left, joker);
   // remove the left half aliases
   // (not strictly needed for correctness, but less powerful jokers are faster to solve for)
-  remove_joker_from_aliases(aliases, joker, left.iter().copied());
+  remove_joker_from_aliases(&mut match_info.aliases, &mut match_info.mapping, *joker, left);
   // re-add the right half aliases
-  add_joker_to_aliases(aliases, joker, right.iter().copied());
+  add_joker_to_aliases(&mut match_info.aliases, &mut match_info.mapping, *joker, right);
   // recurse with right half
-  ___get_waits_v3(match_info, match_definitions, aliases, not_waits, right, joker);
+  ___get_waits_v3(match_info, match_definitions, not_waits, right, joker);
 }
 
 #[rustler::nif(schedule = "DirtyCpu")]

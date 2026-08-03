@@ -3,7 +3,7 @@ use std::collections::HashMap;
 use rustler::Atom;
 use smallvec::{Array, SmallVec};
 use crate::primes::is_any;
-use crate::types::{ElixirAliases, ElixirTile, IndexVec};
+use crate::types::{ANY_PRIME, Aliases, ElixirAliases, ElixirTile, IndexVec, Mapping, Tile};
 
 // precondition: `is` sorted and deduped
 #[inline]
@@ -67,7 +67,7 @@ pub fn get_tile_atom_attrs(tile: &ElixirTile) -> (&Atom, Vec<String>) {
 //   }
 // }
 
-pub fn add_joker_to_aliases<'a>(
+pub fn add_joker_to_elixir_aliases<'a>(
   elixir_aliases: &mut ElixirAliases,
   joker: &ElixirTile,
   tiles: impl IntoIterator<Item = &'a ElixirTile>
@@ -91,22 +91,65 @@ pub fn add_joker_to_aliases<'a>(
   }
 }
 
-pub fn remove_joker_from_aliases<'a>(
-  elixir_aliases: &mut ElixirAliases,
-  joker: &ElixirTile,
-  tiles: impl IntoIterator<Item = &'a ElixirTile>
+// pub fn remove_joker_from_elixir_aliases<'a>(
+//   elixir_aliases: &mut ElixirAliases,
+//   joker: &ElixirTile,
+//   tiles: impl IntoIterator<Item = &'a ElixirTile>
+// ) {
+//   for to in tiles {
+//     let (tile, attrs) = &mut get_tile_atom_attrs(to);
+//     for attr in attrs.iter_mut() {
+//       *attr = attr.trim_start_matches('_').to_owned();
+//     }
+//     if let Some(attrs_aliases) = elixir_aliases.get_mut(&ElixirTile::AtomTile(**tile)) {
+//       if let Some(aliases) = attrs_aliases.get_mut(attrs) {
+//         if let Some(i) = aliases.iter().position(|t| *t == *joker) {
+//           aliases.swap_remove(i);
+//         }
+//       }
+//     }
+//   }
+// }
+
+
+pub fn add_joker_to_aliases<'a>(
+  aliases: &mut Aliases,
+  mapping: &mut Mapping,
+  joker: Tile,
+  tiles: impl IntoIterator<Item = &'a Tile>
 ) {
-  for to in tiles {
-    let (tile, attrs) = &mut get_tile_atom_attrs(to);
-    for attr in attrs.iter_mut() {
-      *attr = attr.trim_start_matches('_').to_owned();
-    }
-    if let Some(attrs_aliases) = elixir_aliases.get_mut(&ElixirTile::AtomTile(**tile)) {
+  let mut all_tiles: Vec<Tile> = tiles.into_iter().copied().collect();
+  for (tile, attrs) in all_tiles.iter() {
+    if (*tile, *attrs) == (ANY_PRIME, 0) { continue; }
+    aliases.entry(*tile)
+      .and_modify(|attrs_aliases| {
+        attrs_aliases.entry(*attrs)
+          .and_modify(|aliases| aliases.push(joker))
+          .or_insert_with(|| vec!(joker));
+      }).or_insert_with(|| {
+        let mut attrs_aliases = HashMap::new();
+        attrs_aliases.insert(*attrs, vec!(joker));
+        attrs_aliases
+      });
+  }
+  mapping.entry(joker).and_modify(|v| v.append(&mut all_tiles));
+}
+
+pub fn remove_joker_from_aliases<'a>(
+  aliases: &mut Aliases,
+  mapping: &mut Mapping,
+  joker: Tile,
+  tiles: impl IntoIterator<Item = &'a Tile>
+) {
+  let all_tiles: Vec<Tile> = tiles.into_iter().copied().collect();
+  for (tile, attrs) in all_tiles.iter() {
+    if let Some(attrs_aliases) = aliases.get_mut(tile) {
       if let Some(aliases) = attrs_aliases.get_mut(attrs) {
-        if let Some(i) = aliases.iter().position(|t| *t == *joker) {
+        if let Some(i) = aliases.iter().position(|t| *t == joker) {
           aliases.swap_remove(i);
         }
       }
     }
   }
+  mapping.entry(joker).and_modify(|v| v.retain(|t| !all_tiles.contains(t)));
 }

@@ -1,7 +1,7 @@
 use std::collections::{HashMap, HashSet};
 use ruint::aliases::U256;
 
-use crate::types::{AliasEntry, Aliases, BitAttrs, ElixirAliases, ElixirHand, ElixirTile, Hash, RemovableGroup, Tile, TileSet};
+use crate::types::{AliasEntry, Aliases, BitAttrs, ElixirAliases, ElixirHand, ElixirTile, Hash, Mapping, RemovableGroup, Tile, TileSet};
 use crate::primes::{from_prime, to_prime};
 use crate::utils::get_tile_atom;
 
@@ -97,6 +97,22 @@ pub fn encode_aliases(aliases: &ElixirAliases, all_attrs: &[String]) -> Aliases 
   ret
 }
 
+pub fn convert_to_mapping(aliases: &Aliases) -> Mapping {
+  let mut mapping: Mapping = HashMap::new();
+  for (&prime, attrs_aliases) in aliases.iter() {
+    for (&attrs, aliases) in attrs_aliases {
+      let tile = (prime, attrs);
+      for t in aliases {
+        match mapping.get_mut(t) {
+          Some(v) => { v.push(tile); }
+          None => { mapping.insert(*t, vec!(tile)); }
+        }
+      }
+    }
+  }
+  mapping
+}
+
 pub fn decode_tile((p, mut battrs): Tile, all_attrs: &[String]) -> Option<ElixirTile> {
   from_prime(&p).map(|tile| {
     if battrs == 0 {
@@ -119,6 +135,17 @@ pub fn decode_tiles<'a>(attrs: impl IntoIterator<Item = &'a Tile>, all_attrs: &[
 
 pub fn decode(tileset: &TileSet, all_attrs: &[String]) -> ElixirHand {
   decode_tiles(&tileset.attrs, all_attrs)
+}
+
+
+pub fn decode_mapping(mapping: &Mapping, all_attrs: &[String]) -> HashMap<ElixirTile, Vec<ElixirTile>> {
+  let mut ret = HashMap::new();
+  for (k, v) in mapping {
+    if let Some(t) = decode_tile(*k, all_attrs) {
+      ret.insert(t, decode_tiles(v, all_attrs));
+    }
+  }
+  ret
 }
 
 pub fn print_group(group: &RemovableGroup, all_attrs: &[String], mut nojoker: bool) -> String {
