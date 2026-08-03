@@ -204,6 +204,7 @@ defmodule RiichiAdvanced.TestUtils do
   def get_rules!(ruleset, mods) do
     ruleset_json = ModState.load_ruleset(ruleset)
     |> ModState.apply_new_mods(mods)
+    |> ModState.apply_post_mods()
     |> Map.get(:ruleset_json)
     assert {:ok, rules_ref} = Rules.load_rules(ruleset_json, ruleset)
     rules_ref

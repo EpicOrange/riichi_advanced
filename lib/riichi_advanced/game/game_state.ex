@@ -360,7 +360,7 @@ defmodule RiichiAdvanced.GameState do
     mod_state = ModState.load_ruleset(state.ruleset, state.room_code)
 
     # apply mods
-    mod_state = if state.ruleset != "custom" and not Enum.empty?(mods) do
+    mod_state = if state.ruleset != "custom" do
       mod_state
       |> ModState.apply_new_mods(mods)
       |> ModState.apply_post_mods()
