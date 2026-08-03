@@ -690,7 +690,11 @@ defmodule RiichiAdvanced.GameState.Actions do
                       %{"groups" => groups} = group_spec <- group_specs,
                       value = Map.get(group_spec, "value", 0),
                       group <- groups,
-                      hand <- Match.remove_group(hand, group, tile_behavior, true),
+                      # debug = group == [
+                      #   %{"attrs" => ["not_yakuhai"], "offset" => 0},
+                      #   %{"attrs" => ["winning_tile"], "offset" => 0}
+                      # ],
+                      hand <- Match.remove_group(hand, group, tile_behavior, true, nil, false),
                       uniq: true do {hand, calls, Enum.map(fus, & &1 + value)} end
                 # roll back if no matches
                 if Enum.empty?(result) do hand_calls_fus else result end

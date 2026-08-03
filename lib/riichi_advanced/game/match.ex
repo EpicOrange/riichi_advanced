@@ -1191,7 +1191,7 @@ defmodule RiichiAdvanced.Match do
     end
   end
 
-  def remove_group(hand, group, tile_behavior, exhaustive \\ false, base_tiles \\ nil) do
+  def remove_group(hand, group, tile_behavior, exhaustive \\ false, base_tiles \\ nil, debug \\ false) do
     # IO.inspect({
     #   hand, group,
     #   tile_behavior.attrs |> Enum.to_list(),
@@ -1203,7 +1203,7 @@ defmodule RiichiAdvanced.Match do
       hand, group,
       tile_behavior.attrs |> Enum.to_list(),
       tile_behavior.aliases |> TileBehavior.remove_alias_mapsets(), tile_behavior.ordering, tile_behavior.ordering_r,
-      exhaustive, Enum.empty?(tile_behavior.mappings),
+      debug, exhaustive, Enum.empty?(tile_behavior.mappings),
       base_tiles
     )
   end
@@ -1211,7 +1211,7 @@ defmodule RiichiAdvanced.Match do
     hand, group,
     all_attrs,
     elixir_aliases, ordering, ordering_r,
-    exhaustive, nojoker,
+    _debug, exhaustive, nojoker,
     base_tiles
   ) do
     __remove_group(hand, group, %TileBehavior{

@@ -16,7 +16,7 @@ use crate::offsets::{__generate_groups, get_base_tiles};
 use crate::profile::{PROFILE_MATCH, CALL_COUNT, MAX_NANOS, TOTAL_NANOS};
 use crate::tile_table::TILE_TABLE;
 use crate::tileset::_subtract_check_attrs_exhaustive;
-use crate::types::{ANY_PRIME, BaseTileVec, ElixirAliases, ElixirHand, ElixirHandCalls, ElixirTile, FIXED_OFFSETS, Hands, HandsIterator, MatchDefinition, MatchDefinitionElem, MatchDefinitions, MatchGroup, MatchInfo, MatchOffset, Tile};
+use crate::types::{ANY_PRIME, BaseTileVec, ElixirAliases, ElixirHand, ElixirHandCalls, ElixirTile, FIXED_OFFSETS, Hands, HandsIterator, MatchDefinition, MatchDefinitionElem, MatchDefinitions, MatchGroup, MatchInfo, MatchOffset, RemovableGroup, Tile};
 use crate::utils::remove_indices;
 
 // this is used a lot, especially for determining and processing calls
@@ -371,7 +371,7 @@ pub fn _remove_group(
   all_attrs: Vec<String>,
   elixir_aliases: ElixirAliases,
   ordering: HashMap<Atom, Atom>, ordering_r: HashMap<Atom, Atom>,
-  exhaustive: bool, nojoker: bool,
+  debug: bool, exhaustive: bool, nojoker: bool,
   base_tiles: Option<Vec<ElixirTile>>,
 ) -> Vec<ElixirHand> {
   __remove_group(
@@ -380,6 +380,7 @@ pub fn _remove_group(
     &elixir_aliases,
     &ordering,
     &ordering_r,
+    debug,
     exhaustive,
     nojoker,
     &base_tiles,
@@ -392,7 +393,7 @@ fn __remove_group<'a>(
   all_attrs: &'a Vec<String>,
   elixir_aliases: &'a ElixirAliases,
   ordering: &'a HashMap<Atom, Atom>, ordering_r: &'a HashMap<Atom, Atom>,
-  exhaustive: bool, mut nojoker: bool,
+  debug: bool, exhaustive: bool, mut nojoker: bool,
   base_tiles: &'a Option<Vec<ElixirTile>>,
 ) -> Vec<ElixirHand> {
   // special case: if we are trying to remove the empty group,
@@ -421,7 +422,7 @@ fn __remove_group<'a>(
 
   // reify all groups into removable groups
   let mut base_tiles_iter = base_tiles.into_iter();
-  let reified_groups = __generate_groups(
+  let mut reified_groups_iter = __generate_groups(
     group,
     &mut base_tiles_iter,
     match_info.all_attrs,
@@ -430,20 +431,21 @@ fn __remove_group<'a>(
     &mut nojoker,
   );
 
-  // println!("Hand tiles: {0:?}", match_info.initial_hands.iter().collect::<Vec<_>>());
-  // println!("Relevant tiles: {0:?}", match_info.relevant_tiles.iter().collect::<Vec<_>>());
-  // for group in &reified_groups {
-  //   println!("Reified group:");
-  //   println!("  {0:?}", &group);
-  //   println!("Into the groups:");
-  //   match group {
-  //     RemovableGroup::CallName(name) => println!("- \"{0:?}\"", name),
-  //     RemovableGroup::Group(group) => println!("- {0:?}", decode(group, match_info.all_attrs)),
-  //     RemovableGroup::Multigroup(subgroups) => println!("- {0:?}", subgroups.iter().map(|subgroup| decode(subgroup, match_info.all_attrs)).collect::<Vec<_>>()),
-  //   }
-  // }
+  if debug {
+    // println!("Hand tiles: {0:?}", match_info.initial_hands.iter().collect::<Vec<_>>());
+    // println!("Relevant tiles: {0:?}", match_info.relevant_tiles.iter().collect::<Vec<_>>());
+    reified_groups_iter = Box::new(reified_groups_iter.inspect(|group| {
+      println!("Reified group: {:?} into the groups:", &group);
+      match group {
+        RemovableGroup::CallName(name) => println!("- \"{0:?}\"", name),
+        RemovableGroup::Group(group) => println!("- {0:?}", decode(group, match_info.all_attrs)),
+        RemovableGroup::Multigroup(subgroups) => println!("- {0:?}", subgroups.iter().map(|subgroup| decode(subgroup, match_info.all_attrs)).collect::<Vec<_>>()),
+      }
+    }));
+  }
+
   let mut ret: Vec<ElixirHand> = vec!();
-  for group in reified_groups {
+  for group in reified_groups_iter {
     let mut result = _elim_group(match_info.initial_hands.clone(), &group, &match_info.aliases, &match_info.mapping, &match_info.joker_tiles, exhaustive);
     if let Some(hands) = result.next() {
       ret.push(decode(&hands[0], match_info.all_attrs));
@@ -454,5 +456,10 @@ fn __remove_group<'a>(
       }
     }
   }
+
+  if debug {
+    println!("result was {:?}", ret);
+  }
+
   ret
 }

@@ -52,9 +52,10 @@ pub fn perform_blossom_match<'a>(
 }
 
 // since groups are size 2, we can simply check first tile, then second tile
-fn check_pair_match(call: &TileSet, groups: &[MatchGroup], match_info: &MatchInfo, nojoker: bool, stop_early: bool) -> HashMap<usize, Vec<usize>> {
+fn check_pair_match(hand: &TileSet, groups: &[MatchGroup], match_info: &MatchInfo, nojoker: bool, stop_early: bool) -> HashMap<usize, Vec<usize>> {
   let mut ret: HashMap<usize, Vec<usize>> = HashMap::new();
   let aliases = if nojoker { &HashMap::new() } else { &match_info.aliases };
+  let mapping = if nojoker { &HashMap::new() } else { &match_info.mapping };
   for group in groups {
     if let MatchGroup::Offsets(os) = group {
       // first, find the first numeric offset and use it to offset the other offset
@@ -65,13 +66,16 @@ fn check_pair_match(call: &TileSet, groups: &[MatchGroup], match_info: &MatchInf
         (MatchOffset::AttrsOffset(map1), MatchOffset::AttrsOffset(map2)) => Some(MatchOffset::AttrsOffset(AttrOffsetMap{offset: map2.offset - map1.offset, attrs: map2.attrs})),
         _ => None,
       } {
-        // then see if applying the offset to one tile gets you one of the other tiles in the call
+        // then see if applying the combined offset to one tile gets you one of the other tiles in the hand
         let offset = Rc::new(vec!(offset));
-        for (i, tile1) in call.attrs.iter().enumerate() {
+        for (i, tile1) in hand.attrs.iter().enumerate() {
           if let Some(target) = apply_offsets(tile1, &offset.clone(), match_info.all_attrs, &match_info.ordering, &match_info.ordering_r).0[0] {
-            for (j, tile2) in call.attrs.iter().enumerate() {
+            for (j, tile2) in hand.attrs.iter().enumerate() {
               if i == j { continue; }
-              if _check_equivalence(tile2, &target, aliases) {
+              // draw an edge between two tiles iff they share any aliases
+              let tile2_vec = vec!(*tile2);
+              let tile2_aliases = mapping.get(tile2).unwrap_or(&tile2_vec);
+              if tile2_aliases.iter().any(|t| _check_equivalence(&target, t, aliases)) {
                 ret.entry(i)
                   .and_modify(|ixs| ixs.push(j))
                   .or_insert_with(|| vec!(j));
@@ -87,11 +91,11 @@ fn check_pair_match(call: &TileSet, groups: &[MatchGroup], match_info: &MatchInf
         // if offsets are not both numeric,
         // then we just look for two indices that match the offsets
         // first collect all tiles that could match os[0]
-        let matched_tiles: Vec<(usize, &Tile)> = call.attrs.iter().enumerate().filter(|&(_i, &t)| is_offset_dest(t, os[0].clone(), match_info)).collect();
+        let matched_tiles: Vec<(usize, &Tile)> = hand.attrs.iter().enumerate().filter(|&(_i, &t)| is_offset_dest(t, os[0].clone(), match_info)).collect();
         if matched_tiles.is_empty() { continue; }
         // then find all tiles that could match os[1]
         // this only works since it's not the case that both offsets are numeric
-        for (i, &t) in call.attrs.iter().enumerate() {
+        for (i, &t) in hand.attrs.iter().enumerate() {
           let Some(&(j, _t2)) = matched_tiles.iter().find(|(j, _)| i != *j) else { continue; };
           if is_offset_dest(t, os[1].clone(), match_info) {
             ret.entry(i)

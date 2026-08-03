@@ -444,4 +444,50 @@ defmodule RiichiAdvanced.YakuTest.SpeedTonpuuMechanics do
     }, %{shuugi: [89, 111, 100, 100]})
   end
 
+  test "speed tonpuu - red 5p matches gold 5p" do
+    TestUtils.test_yaku_advanced("speed_tonpuu", @speed_tonpuu_mods, """
+    {
+      "starting_hand": {
+        "east": ["2m", "3m", "4m", "4m", "5m", "6m", "05p", "35p", "1p", "8s", "8s", "8s", "2p"],
+        "south": ["1m", "4m", "7m", "2p", "4p", "8p", "3s", "6s", "9s", "1z", "2z", "3z", "4z"],
+        "west": ["1m", "4m", "7m", "2p", "4p", "8p", "3s", "6s", "9s", "1z", "2z", "3z", "4z"],
+        "north": ["1m", "3m", "7m", "2p", "4p", "8p", "3s", "6s", "9s", "1z", "2z", "3z", "4z"]
+      },
+      "starting_draws": ["1p", "3p"]
+    }
+    """, [
+      %{"type" => "discard", "tile" => "1p", "player" => 0, "tsumogiri" => true},
+      %{"type" => "discard", "tile" => "3p", "player" => 1, "tsumogiri" => true},
+      %{"type" => "buttons_pressed", "buttons" => [%{"button" => "ron"}, nil, nil, nil]},
+    ], %{
+      east: %{
+        yaku: [{"Gold Five", [1, "Han", 1, "⛀"]}, {"Red Five", [1, "Han", 1, "⛀"]}],
+        minipoints: 40
+      }
+    }, %{shuugi: [102, 98, 100, 100]})
+  end
+
+  test "speed tonpuu - waiting on blue seven" do
+    TestUtils.test_yaku_advanced("speed_tonpuu", @speed_tonpuu_mods, """
+    {
+      "starting_hand": {
+        "east": ["3m", "3m", "4m", "4m", "1p", "1p", "05p", "35p", "27p", "8s", "8s", "2p", "2p"],
+        "south": ["1m", "4m", "7m", "2p", "4p", "8p", "3s", "6s", "9s", "1z", "2z", "3z", "4z"],
+        "west": ["1m", "4m", "7m", "2p", "4p", "8p", "3s", "6s", "9s", "1z", "2z", "3z", "4z"],
+        "north": ["1m", "3m", "7m", "2p", "4p", "8p", "3s", "6s", "9s", "1z", "2z", "3z", "4z"]
+      },
+      "starting_draws": ["1p", "7p"]
+    }
+    """, [
+      %{"type" => "discard", "tile" => "1p", "player" => 0, "tsumogiri" => true},
+      %{"type" => "discard", "tile" => "7p", "player" => 1, "tsumogiri" => true},
+      %{"type" => "buttons_pressed", "buttons" => [%{"button" => "ron"}, nil, nil, nil]},
+    ], %{
+      east: %{
+        yaku: [{"Chiitoitsu", [2, "Han"]}, {"Gold Five", [1, "Han", 1, "⛀"]}, {"Red Five", [1, "Han", 1, "⛀"]}, {"Blue Seven", [1, "Han", 2, "⛀"]}],
+        minipoints: 25
+      }
+    }, %{shuugi: [104, 96, 100, 100]})
+  end
+
 end
