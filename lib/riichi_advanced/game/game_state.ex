@@ -318,6 +318,7 @@ defmodule RiichiAdvanced.GameState do
         private: Keyword.get(init_data, :private, true),
         reserved_seats: Keyword.get(init_data, :reserved_seats, %{}),
         init_actions: Keyword.get(init_data, :init_actions, []),
+        rules_ref: Keyword.get(init_data, :rules_ref, nil),
       },
       name: Keyword.get(init_data, :name))
   end
@@ -365,38 +366,9 @@ defmodule RiichiAdvanced.GameState do
       :north => big_text_debouncer_north
     }
 
-    # read in the ruleset
-    mods = Map.get(state, :mods, [])
-    mod_state = ModState.load_ruleset(state.ruleset, state.room_code)
-
-    # apply mods
-    mod_state = if state.ruleset != "custom" do
-      ModState.prepend_mods(mod_state, mods)
-    else mod_state end
-    
-    ruleset_json = ModState.extract_json(mod_state)
-
-    # cache mods if that was successful
-    if not Enum.empty?(mods) do
-      # IO.puts("Caching mods for room #{state.room_code} ruleset #{state.ruleset}: #{inspect(mods, limit: :infinity)}")
-      RiichiAdvanced.Cache.put({:cache_mods, state.ruleset, state.room_code}, mods)
-    end
-
-    # apply config
-    ruleset_json = if state.config != nil and state.ruleset != "custom" do
-      try do
-        ruleset_json = ModLoader.strip_comments(ruleset_json)
-        query = ModLoader.convert_to_jq(ModLoader.strip_comments(state.config))
-        JQ.query_string_with_string!(ruleset_json, query)
-      rescue
-        err ->
-          IO.puts("Failed to load config:\n#{state.config}\nError was #{inspect(err)}")
-          ruleset_json
-      end
-    else ruleset_json end
-
     # put params, debouncers, and process ids into state
     state = Map.merge(state, %Game{
+      supervisor: state.supervisor,
       ruleset: state.ruleset,
       room_code: state.room_code,
       mods: state.mods,
@@ -404,7 +376,7 @@ defmodule RiichiAdvanced.GameState do
       private: state.private,
       reserved_seats: state.reserved_seats,
       init_actions: state.init_actions,
-      supervisor: state.supervisor,
+      rules_ref: state.rules_ref,
       mutex: mutex,
       smt_solver: smt_solver,
       ai_supervisor: ai_supervisor,
@@ -415,9 +387,43 @@ defmodule RiichiAdvanced.GameState do
       timer_debouncer: timer_debouncer
     })
 
-    state = case Rules.load_rules(ruleset_json, state.ruleset) do
-      {:ok, rules_ref} -> Map.put(state, :rules_ref, rules_ref)
-      {:error, msg}    -> show_error(state, msg)
+    # if not passed in a rules_ref, read in the ruleset
+    state = case state.rules_ref do
+      _ when state.ruleset == "custom" ->
+        ruleset_json = ModState.load_ruleset("custom", state.room_code) |> ModState.extract_json()
+        case Rules.load_rules(ruleset_json, state.ruleset) do
+          {:ok, rules_ref} -> Map.put(state, :rules_ref, rules_ref)
+          {:error, msg}    -> show_error(state, msg)
+        end
+      nil ->
+        mods = Map.get(state, :mods, [])
+        ruleset_json = ModState.load_ruleset(state.ruleset)
+        |> ModState.prepend_mods(mods)
+        |> ModState.extract_json()
+
+        # cache mods if that was successful
+        if not Enum.empty?(mods) do
+          # IO.puts("Caching mods for room #{state.room_code} ruleset #{state.ruleset}: #{inspect(mods, limit: :infinity)}")
+          RiichiAdvanced.Cache.put({:cache_mods, state.ruleset, state.room_code}, mods)
+        end
+
+        ruleset_json = if state.config != nil do
+          try do
+            ruleset_json = ModLoader.strip_comments(ruleset_json)
+            query = ModLoader.convert_to_jq(ModLoader.strip_comments(state.config))
+            JQ.query_string_with_string!(ruleset_json, query)
+          rescue
+            err ->
+              IO.puts("Failed to load config:\n#{state.config}\nError was #{inspect(err)}")
+              ruleset_json
+          end
+        else ruleset_json end
+
+        case Rules.load_rules(ruleset_json, state.ruleset) do
+          {:ok, rules_ref} -> Map.put(state, :rules_ref, rules_ref)
+          {:error, msg}    -> show_error(state, msg)
+        end
+      _ -> state
     end
 
     state = Map.put(state, :available_seats, case Rules.get(state.rules_ref, "num_players", 4) do

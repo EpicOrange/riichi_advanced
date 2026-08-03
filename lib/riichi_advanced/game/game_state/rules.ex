@@ -1,9 +1,10 @@
 defmodule RiichiAdvanced.GameState.Rules do
-  alias RiichiAdvanced.GameState.American, as: American
-  alias RiichiAdvanced.GameState.Debug, as: Debug
-  alias RiichiAdvanced.MatchOld, as: MatchOld
-  alias RiichiAdvanced.ModLoader, as: ModLoader
-  alias RiichiAdvanced.Utils, as: Utils
+  alias RiichiAdvanced.GameState.American
+  alias RiichiAdvanced.GameState.Debug
+  alias RiichiAdvanced.MatchOld
+  alias RiichiAdvanced.ModLoader
+  alias RiichiAdvanced.ModLoader.ModState
+  alias RiichiAdvanced.Utils
   require Logger
 
   def decode_ruleset_json(ruleset_json, ruleset \\ "unknown") do
@@ -142,85 +143,81 @@ defmodule RiichiAdvanced.GameState.Rules do
   end
 
   def load_rules(ruleset_json, ruleset \\ "unknown") do
+    with {:ok, rules} <- read_rules_from_json(ruleset_json, ruleset) do
+      # store rules in an anonymous ETS table
+      rules_ref = :ets.new(nil, [:set, :protected, read_concurrency: true]) 
+      test_heir = Process.whereis(RiichiAdvanced.TestStaticEtsOwner)
+      if test_heir != nil do
+        :ets.setopts(rules_ref, {:heir, Process.whereis(RiichiAdvanced.TestStaticEtsOwner), :no_extra_info})
+      end
+      :ets.insert(rules_ref, Map.to_list(rules))
+
+      # attach formatted json, unless we're a test
+      if test_heir == nil do
+        ruleset_json = RiichiAdvanced.Formatter.format(Jason.decode!(ruleset_json), 80)
+        :ets.insert(rules_ref, {:ruleset_json, ruleset_json})
+      end
+
+      # toposort yaku and calculate shanten definitions and stuff
+      preprocess_rules(rules_ref, rules)
+      {:ok, rules_ref}
+    end
+  end
+  defp read_rules_from_json(ruleset_json, ruleset) do
     with {:ok, rules} <- decode_ruleset_json(ruleset_json, ruleset),
          {:ok, rules} <- replace_constants(rules),
          {:ok, rules} <- replace_constants(rules),
          {:ok, rules} <- replace_constants(rules),
          {:ok, rules} <- check_rules(rules) do
-      # IO.inspect(rules["meta_yaku"] |> Enum.find(fn f -> f["display_name"] == "debug" end))
-      # store rules in an anonymous ETS table
-      # this is cleaned up once the creating process (GameState) dies
-      rules_ref = :ets.new(nil, [:set, :public, read_concurrency: true]) 
-      for {k, v} <- rules do
-        :ets.insert(rules_ref, {k, v})
-      end
-
-      # add the json
-      :ets.insert(rules_ref, {:ruleset_json_unformatted, ruleset_json})
-
-      # then toposort all yaku by precedence
-      score_rules = get(rules_ref, "score_calculation", %{})
-      yaku_lists = Map.get(score_rules, "yaku_lists", [])
-      {toposorted_yaku, skip_map} = yaku_lists
-      |> Enum.map(&{&1, get(rules_ref, &1, [])})
-      |> toposort_yaku(get(rules_ref, "yaku_precedence", %{}), score_rules["point_name"])
-      :ets.insert(rules_ref, {:yaku, toposorted_yaku})
-      :ets.insert(rules_ref, {:yaku_skip_map, skip_map})
-
-      # generate shanten definitions if they don't exist
-      shantens = [:win, :tenpai, :iishanten, :ryanshanten, :sanshanten, :suushanten, :uushanten, :roushanten]
-      shanten_definitions = Map.new(shantens, fn shanten -> {shanten, translate_match_definitions(rules_ref, Map.get(rules, Atom.to_string(shanten) <> "_definition", []))} end)
-      shanten_definitions = for {from, to} <- Enum.zip(Enum.drop(shantens, -1), Enum.drop(shantens, 1)), Enum.empty?(shanten_definitions[to]), reduce: shanten_definitions do
-        shanten_definitions ->
-          # IO.puts("Generating #{to} definitions")
-          if length(shanten_definitions[from]) < 100 do
-            next_definitions = MatchOld.compute_almost_match_definitions(shanten_definitions[from])
-            if length(next_definitions) > 2 * length(shanten_definitions[from]) do
-              # use "almost" keyword instead
-              next_definitions = Enum.map(shanten_definitions[from], &["almost" | &1])
-              Map.put(shanten_definitions, to, next_definitions)
-            else
-              Map.put(shanten_definitions, to, next_definitions)
-            end
-          else
-            Map.put(shanten_definitions, to, [])
-          end
-      end
-      :ets.insert(rules_ref, {:shanten_definitions, shanten_definitions})
-      # IO.inspect(shanten_definitions, limit: :infinity, charlists: :as_lists)
-      # IO.inspect(Map.new(shanten_definitions, fn {shanten, definition} -> {shanten, length(definition)} end))
-      # IO.inspect(shanten_definitions.ryanshanten, limit: :infinity, charlists: :as_lists)
-
-      # get all attributes used in the entire ruleset
-      all_attrs = rules
-      |> Enum.map(fn {_k, v} -> v end)
-      |> List.flatten()
-      |> Utils.reduce_json(fn %{"attrs" => attrs}, acc -> attrs ++ acc; _, acc -> acc end)
-      |> MapSet.new()
-      :ets.insert(rules_ref, {:all_attrs, all_attrs})
-
-      {:ok, rules_ref}
+      {:ok, rules}
     end
+  end
+  defp preprocess_rules(rules_ref, rules) do
+    # toposort all yaku by precedence
+    score_rules = get(rules_ref, "score_calculation", %{})
+    yaku_lists = Map.get(score_rules, "yaku_lists", [])
+    {toposorted_yaku, skip_map} = yaku_lists
+    |> Enum.map(&{&1, get(rules_ref, &1, [])})
+    |> toposort_yaku(get(rules_ref, "yaku_precedence", %{}), score_rules["point_name"])
+    :ets.insert(rules_ref, {:yaku, toposorted_yaku})
+    :ets.insert(rules_ref, {:yaku_skip_map, skip_map})
+
+    # generate shanten definitions if they don't exist
+    shantens = [:win, :tenpai, :iishanten, :ryanshanten, :sanshanten, :suushanten, :uushanten, :roushanten]
+    shanten_definitions = Map.new(shantens, fn shanten -> {shanten, translate_match_definitions(rules_ref, Map.get(rules, Atom.to_string(shanten) <> "_definition", []))} end)
+    shanten_definitions = for {from, to} <- Enum.zip(Enum.drop(shantens, -1), Enum.drop(shantens, 1)), Enum.empty?(shanten_definitions[to]), reduce: shanten_definitions do
+      shanten_definitions ->
+        # IO.puts("Generating #{to} definitions")
+        if length(shanten_definitions[from]) < 100 do
+          next_definitions = MatchOld.compute_almost_match_definitions(shanten_definitions[from])
+          if length(next_definitions) > 2 * length(shanten_definitions[from]) do
+            # use "almost" keyword instead
+            next_definitions = Enum.map(shanten_definitions[from], &["almost" | &1])
+            Map.put(shanten_definitions, to, next_definitions)
+          else
+            Map.put(shanten_definitions, to, next_definitions)
+          end
+        else
+          Map.put(shanten_definitions, to, [])
+        end
+    end
+    :ets.insert(rules_ref, {:shanten_definitions, shanten_definitions})
+    # IO.inspect(shanten_definitions, limit: :infinity, charlists: :as_lists)
+    # IO.inspect(Map.new(shanten_definitions, fn {shanten, definition} -> {shanten, length(definition)} end))
+    # IO.inspect(shanten_definitions.ryanshanten, limit: :infinity, charlists: :as_lists)
+
+    # get all attributes used in the entire ruleset
+    all_attrs = rules
+    |> Enum.map(fn {_k, v} -> v end)
+    |> List.flatten()
+    |> Utils.reduce_json(fn %{"attrs" => attrs}, acc -> attrs ++ acc; _, acc -> acc end)
+    |> MapSet.new()
+
+    :ets.insert(rules_ref, {:all_attrs, all_attrs})
   end
 
   def get(rules_ref, key, default \\ nil)
   def get(nil, _key, default), do: default
-  def get(rules_ref, :ruleset_json, default) do
-    # lazily format the ruleset json, only if requested
-    # (this way we don't waste time formatting json during tests)
-    case :ets.lookup(rules_ref, :ruleset_json) do
-      [{:ruleset_json, ruleset_json}] -> ruleset_json
-      _ ->
-        [{_, ruleset_json_unformatted}] = :ets.lookup(rules_ref, :ruleset_json_unformatted)
-        ruleset_json = RiichiAdvanced.Formatter.format(Jason.decode!(ruleset_json_unformatted), 80)
-        :ets.insert(rules_ref, {:ruleset_json, ruleset_json})
-        ruleset_json
-    end
-  rescue
-    err ->
-      Logger.error(err)
-      default
-  end
   def get(rules_ref, key, default) do
     case :ets.lookup(rules_ref, key) do
       [{^key, value}] -> value
@@ -290,7 +287,9 @@ defmodule RiichiAdvanced.GameState.Rules do
   #   [[["pair"], 7]],
   #   "kokushi_musou" // defined top-level as "kokushi_musou_definition"
   # ]
-  def translate_match_definitions(rules_ref, match_definitions, fail_silently? \\ false) do
+  def translate_match_definitions(rules_ref, match_definitions, fail_silently? \\ false, depth \\ 0)
+  def translate_match_definitions(_rules_ref, _match_definitions, _fail_silently?, depth) when depth >= 5, do: []
+  def translate_match_definitions(rules_ref, match_definitions, fail_silently?, depth) do
     set_definitions = get(rules_ref, "set_definitions", %{})
     for match_definition <- List.wrap(match_definitions), reduce: [] do
       acc ->
@@ -306,11 +305,7 @@ defmodule RiichiAdvanced.GameState.Rules do
                     nil
                   else [] end
                 end
-              named_match_definitions -> 
-                {am_match_definitions, match_definitions} = Enum.split_with(named_match_definitions, &is_binary/1)
-                translated_match_definitions = translate_sets_in_match_definitions(match_definitions, set_definitions)
-                translated_am_match_definitions = American.translate_american_match_definitions(am_match_definitions)
-                translated_match_definitions ++ translated_am_match_definitions
+              named_match_definitions -> translate_match_definitions(rules_ref, named_match_definitions, fail_silently?, depth + 1)
             end
           is_list(match_definition)   -> translate_sets_in_match_definitions([match_definition], set_definitions)
           true                        ->
@@ -388,4 +383,49 @@ defmodule RiichiAdvanced.GameState.Rules do
     {mods, Enum.reverse(categories)}
   end
 
+  # only used by tests!
+  # given a ruleset, load its default mods plus the given mods and json config, and return a rules_ref
+  # this rules_ref is essentially a clone of a long-lived cached rules_ref, so hopefully it's fast
+  # RiichiAdvanced.GameState.Rules.load_default_ruleset("riichi", [])
+  @mods_ignored_by_tests [
+    "cancellable_riichi",
+    %{"name" => "dora", "config" => %{"start_indicators" => 1}},
+    "ura",
+    "kandora",
+  ]
+  def load_default_ruleset(ruleset, mods, json_config \\ "{}") do
+    base_rules_ref = case RiichiAdvanced.Cache.get({:cache_default_ruleset, ruleset, mods}) do
+      {:ok, nil} ->
+        base_ruleset_state = ModState.load_ruleset(ruleset)
+        default_mods = base_ruleset_state
+        |> ModState.append_mods(mods)
+        |> ModState.apply_mods()
+        |> ModState.append_jq({nil, "(.default_mods? // [])"})
+        |> ModState.extract_json()
+        |> Jason.decode!()
+
+        # some mods are not good for tests
+        default_mods = default_mods -- @mods_ignored_by_tests
+
+        # now apply these defaults to the base ruleset and return the rules ref
+        ruleset_json = base_ruleset_state
+        |> ModState.append_mods(default_mods)
+        |> ModState.append_mods(mods)
+        |> ModState.extract_json()
+        
+        {:ok, rules_ref} = load_rules(ruleset_json, ruleset)
+
+        # cache if that was successful
+        # need to first give it to a static dummy module so it stays alive
+        RiichiAdvanced.Cache.put({:cache_default_ruleset, ruleset, mods}, rules_ref)
+
+        rules_ref
+      {:ok, rules_ref} -> rules_ref
+    end
+    # create a clone that simply ads the json_config
+    rules_ref = :ets.new(nil, [:set, :protected, read_concurrency: true])
+    :ets.insert(rules_ref, :ets.tab2list(base_rules_ref))
+    :ets.insert(rules_ref, json_config |> Jason.decode!() |> Map.to_list())
+    rules_ref
+  end
 end

@@ -17,8 +17,10 @@ defmodule RiichiAdvanced.TestUtils do
     IO.puts("initialize_test_state: You passed in `nil` instead of a mod list! Check if you are using an undefined module attribute like @zan_mods.")
   end
   def initialize_test_state(ruleset, mods, config) do
+    rules_ref = Rules.load_default_ruleset(ruleset, mods, config)
+    # IO.inspect(Rules.get(rules_ref, "score_calculation"), limit: :infinity)
     room_code = Ecto.UUID.generate()
-    args = [room_code: room_code, ruleset: ruleset, mods: mods, config: config, name: Utils.via_registry("game", ruleset, room_code)]
+    args = [room_code: room_code, ruleset: ruleset, mods: mods, config: config, rules_ref: rules_ref, name: Utils.via_registry("game", ruleset, room_code)]
     game_spec = Supervisor.child_spec(%{
       id: {RiichiAdvanced.GameSupervisor, ruleset, room_code},
       start: {RiichiAdvanced.GameSupervisor, :start_link, [args]}
