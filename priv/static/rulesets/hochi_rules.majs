@@ -17,11 +17,30 @@ set initial_score, 5000
 # open pinfu is 20 fu, pinfu tsumo is 22 fu
 define_const closed_tsumo_20_fu, false
 define_const open_30_fu, false
+define_const chiitoitsu_fu, 30
+
+# yaku differences are:
+# - no ippatsu, iipeikou, ryanpeikou, ryuuiisou
+# - pinfu can be open
+# - closed honitsu is still 2 han
+# - add iishoku sanjun worth 2/3 han
+# - add iishoku yonjun worth shoumangan
+# - add daichiishin worth shoumangan
+# - chinitsu, honroutou, renhou are now shoumangan
+# - no double yakuman variants of kokushi, chuurenpoutou, suuankou
+# - all yakuman are daimangan
+# - except chuurenpoutou which is baimangan
+# - pao applies to daisangen, daisuushii, suukantsu, tsuuiisou, and chinroutou
 
 apply subtract, "default_mods", [
+  "lib/yaku/ippatsu",
+  "lib/yaku/iipeikou",
+  "lib/yaku/ryuuiisou",
+  "lib/yaku/honitsu",
+  "lib/yaku/honroutou",
+  "lib/yaku/honroutou",
   "honba",
   "dora", "ura", "kandora", "aka",
-  "lib/yaku/ippatsu",
   "nagashi",
   %{name: "lib/tobi", config: %{below: 0}},
   "uma",
@@ -29,17 +48,20 @@ apply subtract, "default_mods", [
   "lib/min_han",
   %{name: "suufon_renda", config: %{name: "Suufon Renda"}},
   "suucha_riichi",
+  "lib/pao_standard", # already preapplied
   "lib/suukaikan",
   "tenpairenchan",
   %{name: "kyuushu_kyuuhai", config: %{name: "Kyuushu Kyuuhai"}},
-  "yaku/riichi_renhou", "lib/pao_standard", "kokushi_ankan_chankan",
-  "cancellable_riichi"
+  "kokushi_ankan_chankan",
+  %{name: "lib/yaku/riichi_renhou", config: %{is: "Yakuman"}},
 ]
 
 apply append, "default_mods", [
-  "lib/yaku/riichi",
+  %{name: "lib/yaku/honitsu", config: %{hon_value: 2, chin_value: 1, chin_han: "★", closed_bonus: 1}},
+  %{name: "lib/yaku/honroutou", config: %{hon_value: 1, hon_han: "★", chin_value: 1.5, chin_han: "★"}},
+  %{name: "lib/yaku/isshoku_sanjun", config: %{san_value: 2, yon_value: 1, yon_han: "★", closed_bonus: 1}},
   "no_riichi_ankan",
-  "lib/yaku/riichi_isshoku_sanjun",
+  %{name: "lib/yaku/riichi_renhou", config: %{is: "Shoumangan"}},
 ]
 
 # TODO:
@@ -53,11 +75,6 @@ on after_initialization do
   add_rule("Rules", "Fu", "(Hochi Rules) Fu is not rounded. However, pinfu tsumo is 20 fu.")
   add_rule("Rules", "Scoring", "Scores are rounded to the nearest 10, maxing out at 1000 points (considered shoumangan, 4000/6000). Hands that are yakuman in riichi are daimangan (6000/9000), with the exception of chuurenpoutou, which is baimangan (8000/12000)")
   add_rule("Rules", "Minimum Han", "After 1 or more repeats, winning requires a minimum of 1 han.")
-
-  add_rule_tab("Shoumangan")
-  add_rule_tab("Daimangan")
-  add_rule_tab("Baimangan")
-  rename_rule_tab("Yakuman", "Daimangan")
 
   delete_rule("1 Han", "Pinfu")
   add_rule("1 Han", "Pinfu", "You won off a double-sided sequence wait, with an all-sequence hand whose pair is not yakuhai.")
@@ -75,8 +92,6 @@ on after_initialization do
   add_rule("Shoumangan", "Honroutou", "Shoumangan if your hand contains only terminal and honor tiles.")
   update_rule("Shoumangan", "Honroutou", "%{example_hand}", %{example_hand: ~t"1233445568889s 7s"})
 
-  add_rule("Shoumangan", "Renhou", "Shoumangan if you win off the first tile someone dropped before your first draw. Calls invalidate.")
-
   add_rule("Shoumangan", "Daichiishin", "Shoumangan if you have one pair of each of the seven honor tiles.")
   update_rule("Shoumangan", "Daichiishin", "%{example_hand}", %{example_hand: ~t"1122334455667z 7z"})
 
@@ -87,16 +102,8 @@ on after_initialization do
   delete_rule("Daimangan", "Chuurenpoutou")
   add_rule("Baimangan", "Chuurenpoutou", "You have no calls and your winning hand is the pattern 1112345678999 in one suit, plus one additional tile.")
   update_rule("Baimangan", "Chuurenpoutou", "%{example_hand}", %{example_hand: ~t"1112345568999s 7s"})
-
-  delete_rule("1 Han", "Iipeikou")
-  delete_rule("3+ Han", "Ryanpeikou")
-  delete_rule("Daimangan", "Junsei Chuurenpoutou")
-  delete_rule("Daimangan", "Kokushi Musou Juusan Menmachi")
-  delete_rule("Daimangan", "Ryuuiisou")
 end
 
-replace_yaku yaku, "Pinfu", [1, "Han"], match(["hand", "calls", "winning_tile"], ["standard_win"])
-  and ((won_by_draw and minipoints_equals(22)) or minipoints_equals(20))
 replace_yaku yaku, "Honroutou", [1, "★"]
 define_yaku yakuman, "Daichiishin", [1.5, "★"], has_existing_yaku("Chiitoitsu") and winning_hand_consists_of("1z","2z","3z","4z","5z","6z","7z"), ["Tsuuiisou"]
 replace_yaku yakuman, "Suukantsu", [1.5, "★"]
@@ -110,11 +117,6 @@ replace_yaku yakuman, "Chinroutou", [1.5, "★"]
 replace_yaku yakuman, "Tenhou", [1.5, "★"]
 replace_yaku yakuman, "Chiihou", [1.5, "★"], current_turn_is("east") and status("first_turn") and won_by_discard
 replace_yaku yakuman, "Chuurenpoutou", [2, "★"]
-remove_yaku yaku, "Iipeikou"
-remove_yaku yaku, "Ryanpeikou"
-remove_yaku yakuman, "Ryuuiisou"
-remove_yaku meta_yaku, "Honitsu"
-remove_yaku meta_yaku, "Chinitsu"
 remove_yaku meta_yakuman, "Suuankou Tanki"
 remove_yaku meta_yakuman, "Junsei Chuurenpoutou"
 remove_yaku meta_yakuman, "Kokushi Musou Juusan Menmachi"

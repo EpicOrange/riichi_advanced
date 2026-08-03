@@ -2,6 +2,18 @@ define_const round_fu, false
 define_const riichi_bet, 300
 define_const riichi_score_rounding, 1 # turn off basic rounding
 
+# fix rules tabs
+on after_initialization do
+  rename_rule_tab("Yakuman", "Daimangan")
+  rename_rule_tab("1 ★", "Shoumangan")
+  rename_rule_tab("1.5 ★", "Daimangan")
+  rename_rule_tab("2 ★", "Baimangan")
+end
+
+# allow open pinfu and pinfu tsumo
+replace_yaku yaku, "Pinfu", [1, "Han"], match(["hand", "calls", "winning_tile"], ["standard_win"])
+  and ((won_by_draw and minipoints_equals(22)) or minipoints_equals(20))
+
 # min han but only if there's honba
 define_const min_han_check_discard,
      honba == 0
@@ -18,6 +30,29 @@ apply append, "buttons.tsumo.show_when", +@min_han_check_hand
 # disable noten payments
 def setup_noten_payments do end
 def execute_noten_payments do end
+
+def calculate_base_score do
+  cond do
+    total > 0 -> noop
+    points2 >= 2 ->
+      total = 2000 :: "Baimangan base"
+      modify_winner("score_name", "Baimangan")
+    points2 >= 1.5 ->
+      total = 1500 :: "Daimangan base"
+      modify_winner("score_name", "Daimangan")
+    points2 >= 1 ->
+      total = 1000 :: "Shoumangan base"
+      modify_winner("score_name", "Shoumangan")
+    true ->
+      han_mult = 2 ** points :: "Han mult."
+      total = minipoints :: "Fu"
+      total *= han_mult :: "Base"
+      if total >= 1000 do
+        total = 1000 :: "Shoumangan limit"
+      end
+  end
+  base_score = total # save base_score for mods to use
+end
 
 def finalize_score, prepend: true do
   # round to nearest 10, which could be up or down

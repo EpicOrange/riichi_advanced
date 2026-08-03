@@ -94,7 +94,7 @@ defmodule RiichiAdvanced.GameState.Scoring do
             end
           else
             if yaku["display_name"] in Debug.debug_specific_yaku() do
-              IO.inspect(clause_cache, label: "Yaku #{inspect(yaku.key)}: failed check, clause cache:", limit: :infinity)
+              IO.inspect(clause_cache, label: "Yaku #{inspect(yaku.key)}: failed check, clause cache", limit: :infinity)
             end
             {acc, existing_yaku, skips, clause_cache}
           end
@@ -275,7 +275,6 @@ defmodule RiichiAdvanced.GameState.Scoring do
       shuugi: Utils.get_from_points_list(points, score_rules["shuugi_name"]),
       total_points: points,
     })
-
     {state, cxt}
   end
   

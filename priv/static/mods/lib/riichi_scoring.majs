@@ -33,6 +33,8 @@ define_const always_yakuhai, ["5z", "6z", "7z"]
 define_const closed_tsumo_20_fu, true
 define_const open_30_fu, true
 define_const round_fu, true
+define_const chiitoitsu_open_fu, 25
+define_const chiitoitsu_closed_fu, 25
 define_const double_wind_fu, 2 # only used in rules text
 on after_initialization do
   add_rule("Rules", "Fu", "Fu (minipoints) is scored based on the composition of the hand as well as how you win.", -5)
@@ -48,7 +50,11 @@ on after_initialization do
     add_rule("Rules", "Fu", "- After adding all the fu, round up to the next 10. So 32 becomes 40 fu, but 30 fu stays 30 fu.")
   end
   add_rule("Rules", "Fu", "Exceptions:")
-  add_rule("Rules", "Fu", "- Chiitoitsu (7 pairs) is worth 25 fu flat.")
+  if @chiitoitsu_open_fu == @chiitoitsu_closed_fu do
+    add_rule("Rules", "Fu", "- Chiitoitsu (7 pairs) is worth %{fu} fu flat.", %{fu: @chiitoitsu_closed_fu})
+  else
+    add_rule("Rules", "Fu", "- Chiitoitsu (7 pairs) is worth %{open_fu} fu open and %{closed_fu} fu closed.", %{open_fu: @chiitoitsu_open_fu, closed_fu: @chiitoitsu_closed_fu})
+  end
   add_rule("Rules", "Fu", "- Kokushi musou (13 orphans) is 30 fu. (Fu does not matter for kokushi hands, but here we say it's 30 fu.)")
   if @closed_tsumo_20_fu do
     add_rule("Rules", "Fu", "- If you have a closed hand and won with tsumo (20+2 fu) but not scoring any more fu, it is treated as 20 fu (and awards you the 1 han yaku Pinfu).")
@@ -106,7 +112,8 @@ def calculate_fu do
       add_original_hand
 
       # chiitoitsu
-      add(25, minipoints_equals(0) and match(["hand", "calls", "winning_tile"], ~m"pair:7"))
+      add(@chiitoitsu_closed_fu, not_won_by_draw and @closed_hand and minipoints_equals(0) and match(["hand", "calls", "winning_tile"], ~m"pair:7"))
+      add(@chiitoitsu_open_fu, not(not_won_by_draw and @closed_hand) and minipoints_equals(0) and match(["hand", "calls", "winning_tile"], ~m"pair:7"))
 
       # kokushi
       add(40, not_won_by_draw and @closed_hand and minipoints_equals(0) and match(["hand", "calls", "winning_tile"], ["kokushi_win"]))
@@ -210,8 +217,8 @@ end
 define_const riichi_score_rounding, 100
 
 define_scoring ron do
+  if points2 > 0 do total = points2 :: "★" else total = points :: "Han" end
   total = 0
-  if points2 > 0 do points2 = points2 :: "★" else points = points :: "Han" end
   calculate_base_score
   apply_ron_scoring
   if mod(total, @riichi_score_rounding) > 0 do
@@ -221,8 +228,8 @@ define_scoring ron do
 end
 
 define_scoring tsumo do
+  if points2 > 0 do total = points2 :: "★" else total = points :: "Han" end
   total = 0
-  if points2 > 0 do points2 = points2 :: "★" else points = points :: "Han" end
   calculate_base_score
   apply_tsumo_scoring
   if mod(total, @riichi_score_rounding) > 0 do
