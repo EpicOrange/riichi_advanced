@@ -85,10 +85,13 @@ pub fn __get_waits_v3(
   //   .cloned()
   //   .filter(|tile| !match_info.joker_tiles.contains(tile))
   //   .collect();
-  let nonjoker_game_tiles: Vec<Tile> =
+  let mut nonjoker_game_tiles: Vec<Tile> =
     encode_tiles(&elixir_game_tiles, &match_info.all_attrs)
     .filter(|tile| !match_info.joker_tiles.contains(tile))
     .collect();
+  nonjoker_game_tiles.extend(match_info.relevant_tiles.iter().cloned());
+  nonjoker_game_tiles.sort_unstable();
+  nonjoker_game_tiles.dedup();
   add_joker_to_aliases(&mut match_info.aliases, &mut match_info.mapping, joker, &nonjoker_game_tiles);
   // println!("starting aliases for 1x: {:?}", decode_tiles(match_info.mapping.get(&joker).unwrap(), &match_info.all_attrs));
   // println!("joker_tiles: {:?}", decode_tiles(&match_info.joker_tiles, &match_info.all_attrs));
