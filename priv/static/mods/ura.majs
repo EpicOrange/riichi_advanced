@@ -1,0 +1,60 @@
+on after_initialization do
+  update_rule("Rules", "Dora", "(Ura) Players in riichi are also eligible for ura dora, worth 1 extra han each. Ura dora are indicated by ura dora indicators, the tiles underneath each dora indicator at the time a win is declared.")
+end
+
+# reveal ura after riichi win
+on before_win do
+  if status("riichi") and status_missing("ura_revealed") do
+    set_status_all("ura_revealed")
+    if tile_revealed(-6) do # yonma dora indicator
+      if tile_not_revealed(-6) do reveal_tile("1x") end
+      if tile_not_revealed(-8) do reveal_tile("1x") end
+      if tile_not_revealed(-10) do reveal_tile("1x") end
+      if tile_not_revealed(-12) do reveal_tile("1x") end
+      if tile_not_revealed(-14) do reveal_tile("1x") end
+      reveal_tile("3x")
+      if tile_revealed(-6) do reveal_tile(-5) end
+      if tile_revealed(-8) do reveal_tile(-7) end
+      if tile_revealed(-10) do reveal_tile(-9) end
+      if tile_revealed(-12) do reveal_tile(-11) end
+      if tile_revealed(-14) do reveal_tile(-13) end
+      if tile_not_revealed(-5) do reveal_tile("1x") end
+      if tile_not_revealed(-7) do reveal_tile("1x") end
+      if tile_not_revealed(-9) do reveal_tile("1x") end
+      if tile_not_revealed(-11) do reveal_tile("1x") end
+      if tile_not_revealed(-13) do reveal_tile("1x") end
+    else
+      if tile_not_revealed(-10) do reveal_tile("1x") end
+      if tile_not_revealed(-12) do reveal_tile("1x") end
+      if tile_not_revealed(-14) do reveal_tile("1x") end
+      if tile_not_revealed(-16) do reveal_tile("1x") end
+      if tile_not_revealed(-18) do reveal_tile("1x") end
+      reveal_tile("3x")
+      if tile_revealed(-10) do reveal_tile(-9) end
+      if tile_revealed(-12) do reveal_tile(-11) end
+      if tile_revealed(-14) do reveal_tile(-13) end
+      if tile_revealed(-16) do reveal_tile(-15) end
+      if tile_revealed(-18) do reveal_tile(-17) end
+      if tile_not_revealed(-9) do reveal_tile("1x") end
+      if tile_not_revealed(-11) do reveal_tile("1x") end
+      if tile_not_revealed(-13) do reveal_tile("1x") end
+      if tile_not_revealed(-15) do reveal_tile("1x") end
+      if tile_not_revealed(-17) do reveal_tile("1x") end
+    end
+  end
+end
+
+apply append, "functions.calculate_dora" do
+  ura = 0 
+  if tile_revealed(-5) do add_counter("ura", "count_dora", -5, ["hand", "calls", "flowers", "winning_tile"]) end
+  if tile_revealed(-7) do add_counter("ura", "count_dora", -7, ["hand", "calls", "flowers", "winning_tile"]) end
+  if tile_revealed(-9) do add_counter("ura", "count_dora", -9, ["hand", "calls", "flowers", "winning_tile"]) end
+  if tile_revealed(-11) do add_counter("ura", "count_dora", -11, ["hand", "calls", "flowers", "winning_tile"]) end
+  if tile_revealed(-13) do add_counter("ura", "count_dora", -13, ["hand", "calls", "flowers", "winning_tile"]) end
+  if tile_revealed(-15) do add_counter("ura", "count_dora", -15, ["hand", "calls", "flowers", "winning_tile"]) end
+  if tile_revealed(-17) do add_counter("ura", "count_dora", -17, ["hand", "calls", "flowers", "winning_tile"]) end
+end
+
+# add ura yaku
+# the "won" is there because of minefield, where dora counts but ura doesn't (until the actual win)
+define_yaku extra_yaku, "Ura", ["ura", "Han"], won and ura >= 1
