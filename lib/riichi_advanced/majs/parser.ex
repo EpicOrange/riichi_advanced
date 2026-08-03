@@ -107,9 +107,13 @@ defmodule RiichiAdvanced.Parser do
             _ -> {:error, "invalid attribute syntax: #{group}"}
           end
           with {:ok, {base, attrs}} <- base_attrs do
+            {base, key} = case Integer.parse(base) do
+              {base, ""} -> {base, "offset"}
+              _          -> {base, "tile"}
+            end
             groups = case attrs do
               [] -> base
-              attrs -> {:%{}, [], [{"tile", base}, {"attrs", attrs}]}
+              attrs -> {:%{}, [], [{key, base}, {"attrs", attrs}]}
             end
             {:ok, groups}
           end
