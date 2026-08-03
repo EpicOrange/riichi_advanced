@@ -121,6 +121,8 @@ defmodule RiichiAdvanced.GameState.JokerSolver do
     {assigned_hand, assigned_calls, _assigned_winning_hand, assigned_winning_tile} = apply_joker_assignment(state.players[seat].hand, state.players[seat].calls, winning_tile, joker_assignment)
 
     # replace the winner's hand/calls temporarily (for yaku evaluation)
+    orig_hand = state.players[seat].hand
+    orig_calls = state.players[seat].calls
     state = update_player(state, seat, &%{ &1 | hand: assigned_hand, calls: assigned_calls, cache: %{ &1.cache | orig_hand: &1.hand, orig_calls: &1.calls, orig_winning_tile: winning_tile } })
 
     # also replace the actual winning tile within state
@@ -160,6 +162,11 @@ defmodule RiichiAdvanced.GameState.JokerSolver do
     yaku2 = Enum.map(yaku2, fn {name, value} -> {translate(state, name), value} end) |> Scoring.dedup_yaku()
 
     points = Enum.map(yaku ++ yaku2, fn {_name, value} -> value end) |> Enum.reduce([], &Scoring.add_yaku_values/2)
+
+    # put back hand/calls/winning tile
+    state = state
+    |> update_player(seat, &%{ &1 | hand: orig_hand, calls: orig_calls })
+    |> update_winning_tile(seat, win_source, fn _ -> winning_tile end)
 
     {state, Map.merge(cxt, %{
       yaku: yaku,
