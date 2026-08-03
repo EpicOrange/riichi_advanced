@@ -3,6 +3,7 @@ defmodule RiichiAdvancedWeb.GameLive do
   alias RiichiAdvanced.GameState.Debug, as: Debug
   alias RiichiAdvanced.GameState.Game, as: Game
   alias RiichiAdvanced.GameState.Rules, as: Rules
+  alias RiichiAdvanced.Match, as: Match
   alias RiichiAdvanced.ModLoader, as: ModLoader
   alias RiichiAdvanced.Utils, as: Utils
   use Gettext, backend: RiichiAdvancedWeb.Gettext
@@ -348,21 +349,29 @@ defmodule RiichiAdvancedWeb.GameLive do
           <% end %>
         </div>
       <% end %>
-      <%= if @visible_waits != nil and @show_waits_index != nil and Map.get(@visible_waits, @show_waits_index, :loading) not in [:loading, %{}] do %>
-        <% waits = Map.get(@visible_waits, @show_waits_index, []) %>
-        <div class="visible-waits-container" :if={not Enum.empty?(waits)}>
-          <% has_label = Enum.any?(waits, fn {_wait, _num, label} -> label != nil end) %>
-          <div class={["visible-waits"] ++ if has_label do ["spaced"] else [] end}>
-            <%= for {wait, num, label} <- waits do %>
-              <div class="visible-wait">
-                <div class="visible-wait-num"><%= num %></div>
-                <div class="visible-wait-label" :if={label != nil}><%= label %></div>
-                <div class={Utils.get_tile_class(wait, 0, %{}, if num == 0 do ["inactive"] else [] end)}></div>
-              </div>
-            <% end %>
-            &nbsp;=&nbsp;<%= waits |> Enum.map(fn {_wait, num, _label} -> num end) |> Enum.sum() %>
+      <%= if @visible_waits != nil and @show_waits_index != nil do %>
+        <%= if Map.get(@visible_waits, @show_waits_index, :loading) == :loading do %>
+          <div class="visible-waits-container">
+            <div class="visible-waits visible-waits-loading">
+              Calculating waits...
+            </div>
           </div>
-        </div>
+        <% else %>
+          <% waits = Map.get(@visible_waits, @show_waits_index, []) %>
+          <div class="visible-waits-container" :if={not Enum.empty?(waits)}>
+            <% has_label = Enum.any?(waits, fn {_wait, _num, label} -> label != nil end) %>
+            <div class={["visible-waits"] ++ if has_label do ["spaced"] else [] end}>
+              <%= for {wait, num, label} <- waits do %>
+                <div class="visible-wait">
+                  <div class="visible-wait-num"><%= num %></div>
+                  <div class="visible-wait-label" :if={label != nil}><%= label %></div>
+                  <div class={Utils.get_tile_class(wait, 0, %{}, if num == 0 do ["inactive"] else [] end)}></div>
+                </div>
+              <% end %>
+              &nbsp;=&nbsp;<%= waits |> Enum.map(fn {_wait, num, _label} -> num end) |> Enum.sum() %>
+            </div>
+          </div>
+        <% end %>
       <% end %>
       <div class="tutorial-overlay" :if={@tutorial_sequence_name != nil}>
         <.live_component module={RiichiAdvancedWeb.TutorialOverlayComponent}
@@ -447,7 +456,8 @@ defmodule RiichiAdvancedWeb.GameLive do
   end
 
   defp get_visible_waits(socket, index) do
-    hand = socket.assigns.state.players[socket.assigns.seat].hand ++ socket.assigns.state.players[socket.assigns.seat].draw
+    player = socket.assigns.state.players[socket.assigns.seat]
+    hand = player.hand ++ player.draw
     socket = if hand != socket.assigns.visible_waits_hand do
       socket
       |> assign(:visible_waits, nil)
@@ -455,9 +465,13 @@ defmodule RiichiAdvancedWeb.GameLive do
     else socket end
     visible_waits = socket.assigns.visible_waits || %{}
     if not Map.has_key?(visible_waits, index) do
-      # async call; gets handled below in :set_visible_waits
-      GenServer.cast(socket.assigns.game_state, {:get_visible_waits, self(), socket.assigns.seat, index})
-      assign(socket, :visible_waits, Map.put(visible_waits, index, :loading))
+      # first check if we even need this tile
+      match_definitions = Rules.translate_match_definitions(socket.assigns.state.rules_ref, "tenpai")
+      if Enum.empty?(match_definitions) or not Match.needed_for_hand(hand, player.calls, Enum.at(hand, index), match_definitions, player.tile_behavior) do
+        # async call; gets handled below in :set_visible_waits
+        GenServer.cast(socket.assigns.game_state, {:get_visible_waits, self(), socket.assigns.seat, index})
+        assign(socket, :visible_waits, Map.put(visible_waits, index, :loading))
+      else socket end
     else socket end
   end
 

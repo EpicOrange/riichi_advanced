@@ -1984,6 +1984,10 @@ div.visible-waits {
 div.visible-waits.spaced {
   row-gap: calc(0.5 * var(--tile-size));
 }
+div.visible-waits.visible-waits-loading {
+  padding-bottom: calc(0.25 * var(--tile-size));
+  margin-bottom: calc(1.25 * var(--tile-size));
+}
 div.visible-waits > div.visible-wait {
   position: relative;
   display: flex;
