@@ -298,4 +298,28 @@ defmodule RiichiAdvanced.YakuTest.Bloody30FaanYaku do
     })
   end
 
+  # TODO more tests
+
+  test "b30fj - knitted straight" do
+    TestUtils.test_yaku_advanced("bloody30faan", [], """
+    {
+      "starting_hand": {
+        "east": ["1m", "4m", "18j", "2p", "5p", "8p", "3s", "6s", "9s", "1z", "2z", "3z", "7z"],
+        "south": ["1m", "4m", "7m", "2p", "5p", "8p", "3s", "6s", "9s", "1z", "2z", "3z", "4z"],
+        "west": ["1m", "4m", "7m", "2p", "5p", "8p", "3s", "6s", "9s", "1z", "2z", "3z", "4z"],
+        "north": ["1m", "3m", "7m", "2p", "5p", "8p", "3s", "6s", "9s", "1z", "2z", "3z", "4z"]
+      },
+      "starting_draws": ["2m", "7z"]
+    }
+    """, [
+      %{"type" => "discard", "tile" => "2m", "player" => 0, "tsumogiri" => true},
+      %{"type" => "discard", "tile" => "7z", "player" => 1, "tsumogiri" => true},
+      %{"type" => "buttons_pressed", "buttons" => [%{"button" => "ron"}, nil, nil, nil]}
+    ], %{
+      east: %{
+        yaku: [@closed, {"Knitted Straight", [5, "Faan"]}, {"Thirteen Unconnected", [5, "Faan"]}, {"Within Seven Tiles", [8, "Faan"]}],
+      }
+    })
+  end
+
 end

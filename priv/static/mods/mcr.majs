@@ -44,7 +44,7 @@ define_set orphans_all, ~s"1m 9m 1p 9p 1s 9s 1z 2z 3z 4z 0z 6z 7z"
 define_set orphans_any, ~s"1m|9m|1p|9p|1s|9s|1z|2z|3z|4z|0z|6z|7z"
 define_set chuurenpoutou, ~s"0 0 0 1 2 3 4 5 6 7 8 8 8"
 
-define_const knitted_straight_tenpai, ~m"exhaustive, almost, pair:1, mentsu:1, knit_straight:1, exhaustive, mentsu:1, knit_straight:1"
+define_const knitted_straight_tenpai, ~m"exhaustive, almost, knit_straight:1, mentsu:1, pair:1"
 define_const knitted_hand_tenpai, ~m"""
   unique, (1m 4m 7m 2p 5p 8p 3s 6s 9s 1z 2z 3z 4z 0z 6z 7z):13 |
   unique, (1m 4m 7m 3p 6p 9p 2s 5s 8s 1z 2z 3z 4z 0z 6z 7z):13 |
@@ -53,7 +53,7 @@ define_const knitted_hand_tenpai, ~m"""
   unique, (3m 6m 9m 1p 4p 7p 2s 5s 8s 1z 2z 3z 4z 0z 6z 7z):13 |
   unique, (3m 6m 9m 2p 5p 8p 1s 4s 7s 1z 2z 3z 4z 0z 6z 7z):13
   """
-define_const knitted_straight_win, ~m"exhaustive, pair:1, mentsu:1, knit_straight:1"
+define_const knitted_straight_win, ~m"exhaustive, knit_straight:1, mentsu:1, pair:1"
 define_const knitted_hand_win, ~m"""
   unique, (1m 4m 7m 2p 5p 8p 3s 6s 9s 1z 2z 3z 4z 0z 6z 7z):14 |
   unique, (1m 4m 7m 3p 6p 9p 2s 5s 8s 1z 2z 3z 4z 0z 6z 7z):14 |

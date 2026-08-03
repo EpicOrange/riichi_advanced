@@ -93,7 +93,14 @@ defmodule RiichiAdvanced.GameState.Rules do
         shanten_definitions ->
           # IO.puts("Generating #{to} definitions")
           if length(shanten_definitions[from]) < 100 do
-            Map.put(shanten_definitions, to, MatchOld.compute_almost_match_definitions(shanten_definitions[from]))
+            next_definitions = MatchOld.compute_almost_match_definitions(shanten_definitions[from])
+            if length(next_definitions) > 2 * length(shanten_definitions[from]) do
+              # use "almost" keyword instead
+              next_definitions = Enum.map(shanten_definitions[from], &["almost" | &1])
+              Map.put(shanten_definitions, to, next_definitions)
+            else
+              Map.put(shanten_definitions, to, next_definitions)
+            end
           else
             Map.put(shanten_definitions, to, [])
           end
@@ -101,6 +108,7 @@ defmodule RiichiAdvanced.GameState.Rules do
       :ets.insert(rules_ref, {:shanten_definitions, shanten_definitions})
       # IO.inspect(shanten_definitions, limit: :infinity, charlists: :as_lists)
       # IO.inspect(Map.new(shanten_definitions, fn {shanten, definition} -> {shanten, length(definition)} end))
+      # IO.inspect(shanten_definitions.ryanshanten, limit: :infinity, charlists: :as_lists)
 
       # get all attributes used in the entire ruleset
       all_attrs = rules

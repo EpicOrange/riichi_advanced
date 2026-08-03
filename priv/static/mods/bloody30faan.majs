@@ -83,6 +83,11 @@ define_set knit7, ~s"3m|6m|9m|1p|4p|7p|2s|5s|8s|1z|2z|3z|4z|0z|6z|7z"
 define_set knit8, ~s"3m|6m|9m|2p|5p|8p|1s|4s|7s|1z|2z|3z|4z|0z|6z|7z"
 define_set knit9, ~s"3m|6m|9m|3p|6p|9p|3s|6s|9s|1z|2z|3z|4z|0z|6z|7z"
 
+# NOTE: replacing the knit# sets with numeric offsets like this:
+#   define_set knit1, ~s"0|3|6|11|14|17|22|25|28|1z|2z|3z|4z|0z|6z|7z"
+#   define_set knit2, ~s"0|3|6|12|15|18|21|24|27|1z|2z|3z|4z|0z|6z|7z"
+# turns out to make it really hard for the smt solver to solve even one joker, so don't do it
+
 define_const knitted_tenpai, ~m"""
     unique, knit1:12, knit1:1
   | unique, knit2:12, knit2:1
@@ -95,15 +100,15 @@ define_const knitted_tenpai, ~m"""
   | unique, knit9:12, knit9:1
   """
 define_const knitted_win, ~m"""
-    pair:1, restart, manzu:1, pinzu:1, souzu:1, (1z 2z 3z 4z):1, (0z 6z 7z):1, restart, unique, knit1:13, knit1:1
-  | pair:1, restart, manzu:1, pinzu:1, souzu:1, (1z 2z 3z 4z):1, (0z 6z 7z):1, restart, unique, knit2:13, knit2:1
-  | pair:1, restart, manzu:1, pinzu:1, souzu:1, (1z 2z 3z 4z):1, (0z 6z 7z):1, restart, unique, knit3:13, knit3:1
-  | pair:1, restart, manzu:1, pinzu:1, souzu:1, (1z 2z 3z 4z):1, (0z 6z 7z):1, restart, unique, knit4:13, knit4:1
-  | pair:1, restart, manzu:1, pinzu:1, souzu:1, (1z 2z 3z 4z):1, (0z 6z 7z):1, restart, unique, knit5:13, knit5:1
-  | pair:1, restart, manzu:1, pinzu:1, souzu:1, (1z 2z 3z 4z):1, (0z 6z 7z):1, restart, unique, knit6:13, knit6:1
-  | pair:1, restart, manzu:1, pinzu:1, souzu:1, (1z 2z 3z 4z):1, (0z 6z 7z):1, restart, unique, knit7:13, knit7:1
-  | pair:1, restart, manzu:1, pinzu:1, souzu:1, (1z 2z 3z 4z):1, (0z 6z 7z):1, restart, unique, knit8:13, knit8:1
-  | pair:1, restart, manzu:1, pinzu:1, souzu:1, (1z 2z 3z 4z):1, (0z 6z 7z):1, restart, unique, knit9:13, knit9:1
+    (unique knit1):13, knit1:1, restart, pair:1, restart, manzu:1, pinzu:1, souzu:1, (1z 2z 3z 4z):1, (0z 6z 7z):1
+  | (unique knit2):13, knit2:1, restart, pair:1, restart, manzu:1, pinzu:1, souzu:1, (1z 2z 3z 4z):1, (0z 6z 7z):1
+  | (unique knit3):13, knit3:1, restart, pair:1, restart, manzu:1, pinzu:1, souzu:1, (1z 2z 3z 4z):1, (0z 6z 7z):1
+  | (unique knit4):13, knit4:1, restart, pair:1, restart, manzu:1, pinzu:1, souzu:1, (1z 2z 3z 4z):1, (0z 6z 7z):1
+  | (unique knit5):13, knit5:1, restart, pair:1, restart, manzu:1, pinzu:1, souzu:1, (1z 2z 3z 4z):1, (0z 6z 7z):1
+  | (unique knit6):13, knit6:1, restart, pair:1, restart, manzu:1, pinzu:1, souzu:1, (1z 2z 3z 4z):1, (0z 6z 7z):1
+  | (unique knit7):13, knit7:1, restart, pair:1, restart, manzu:1, pinzu:1, souzu:1, (1z 2z 3z 4z):1, (0z 6z 7z):1
+  | (unique knit8):13, knit8:1, restart, pair:1, restart, manzu:1, pinzu:1, souzu:1, (1z 2z 3z 4z):1, (0z 6z 7z):1
+  | (unique knit9):13, knit9:1, restart, pair:1, restart, manzu:1, pinzu:1, souzu:1, (1z 2z 3z 4z):1, (0z 6z 7z):1
   """
 apply set_append, "tenpai_definition", +@knitted_tenpai
 apply set_append, "win_definition", +@knitted_win
