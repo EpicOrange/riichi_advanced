@@ -120,13 +120,36 @@ defmodule RiichiAdvancedWeb.ScoringTestLive do
           <label for="show-none" class="shuffle-seats"><%= t(@lang, "None") %></label>
         </header>
         <div class="hand-outer-container">
-          <.live_component module={RiichiAdvancedWeb.HandSelectionComponent} id="scoringtest-hand" lang={@lang} ruleset={@ruleset} hand={@hand} hand_length={@hand_length} calls={@calls} call_selection_ixs={@call_selection_ixs} call_buttons={@call_buttons} selected_call_button={@selected_call_button} tiles={@tiles}/>
+          <.live_component module={RiichiAdvancedWeb.HandSelectionComponent}
+            id="scoringtest-hand"
+            lang={@lang}
+            ruleset={@ruleset}
+            hand={@hand}
+            hand_length={@hand_length}
+            calls={@calls}
+            call_selection_ixs={@call_selection_ixs}
+            call_buttons={@call_buttons}
+            selected_call_button={@selected_call_button}
+            reindex_hand={&send(self(), {:reindex_hand, &1, &2})}
+            tiles={@tiles} />
         </div>
         <div class="yaku-outer-container">
-          <.live_component module={RiichiAdvancedWeb.YakuSelectionComponent} id="scoringtest-yaku" lang={@lang} ruleset={@ruleset} yaku={@yaku} yaku_list_names={@yaku_list_names} minipoints={@minipoints} minipoint_name={@minipoint_name} />
+          <.live_component module={RiichiAdvancedWeb.YakuSelectionComponent}
+            id="scoringtest-yaku"
+            lang={@lang}
+            ruleset={@ruleset}
+            yaku={@yaku}
+            yaku_list_names={@yaku_list_names}
+            minipoints={@minipoints}
+            minipoint_name={@minipoint_name} />
         </div>
         <div class="mods-container">
-          <.live_component module={RiichiAdvancedWeb.ModSelectionComponent} id="scoringtest-mods" lang={@lang} ruleset={@ruleset} mods={@room_state.mods} categories={@room_state.categories} />
+          <.live_component module={RiichiAdvancedWeb.ModSelectionComponent}
+            id="scoringtest-mods"
+            lang={@lang}
+            ruleset={@ruleset}
+            mods={@room_state.mods}
+            categories={@room_state.categories} />
         </div>
         <div class="config-container">
           <textarea name="config" phx-blur="save_config"><%= @config %></textarea>
@@ -565,6 +588,21 @@ defmodule RiichiAdvancedWeb.ScoringTestLive do
     else
       {:noreply, socket}
     end
+  end
+
+  def handle_info({:reindex_hand, from, to}, socket) do
+    hand = socket.assigns.hand
+    n = length(hand)
+    if n >= 1 do
+      # force_rerender? = from >= n # TODO not sure how to fix moving from winning tile to other side of call
+      from = min(from, n-1)
+      to = min(to, n-1)
+      {l1, [tile | r1]} = Enum.split(hand, from)
+      {l2, r2} = Enum.split(l1 ++ r1, to)
+      new_hand = l2 ++ [tile] ++ r2
+      socket = assign(socket, :hand, new_hand)
+      {:noreply, socket}
+    else {:noreply, socket} end
   end
 
   def handle_info(_info, socket), do: {:noreply, socket}

@@ -17,7 +17,7 @@ defmodule RiichiAdvancedWeb.HandSelectionComponent do
     <div class={["hand-selection-container", "yaku-#{@ruleset}"]}>
       <div class="hand-selection-inner-container">
         Hand:
-        <div class="hand-selection-hand">
+        <div class="hand-selection-hand" phx-hook="Sortable" id="scoringtest-hand-sortable">
           <%= for {tile, i} <- Enum.with_index(@hand) |> Enum.take(@hand_length) do %>
             <%= if @selected_call_button != nil do %>
               <%= if i in @call_selection_ixs do %>
@@ -35,7 +35,7 @@ defmodule RiichiAdvancedWeb.HandSelectionComponent do
             <% end %>
           <% end %>
           <%= for {{_name, call_tiles}, i} <- @calls |> Enum.with_index() |> Enum.reverse() do %>
-            <button type="button" class="hand-selection-call" phx-cancellable-click="remove_call" phx-value-index={i}>
+            <button type="button" class="hand-selection-call undraggable" phx-cancellable-click="remove_call" phx-value-index={i}>
               <%= for tile <- call_tiles do %>
                 <div class={tile |> Utils.to_tile() |> Utils.get_tile_class(-1, %{}, ["flat"])}></div>
               <% end %>
@@ -75,4 +75,8 @@ defmodule RiichiAdvancedWeb.HandSelectionComponent do
     """
   end
 
+  def handle_event("reposition", %{"new" => to, "old" => from}, socket) do
+    socket.assigns.reindex_hand.(from, to)
+    {:noreply, socket}
+  end
 end

@@ -24,9 +24,10 @@ Hooks.Sortable = {
     let isPortrait = (window.innerWidth / window.innerHeight) < 1.2
     let sorter = new Sortable(this.el, {
       animation: 150,
-      delay: isPortrait ? 1500 : 0,
+      delay: isPortrait ? 1500 : 200,
       dragClass: "drag-item",
       ghostClass: "drag-ghost",
+      filter: ".undraggable",
       forceFallback: true,
       onStart: function (evt) {
         window.mouseDownElement = null;
