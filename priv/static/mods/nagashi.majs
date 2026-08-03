@@ -21,17 +21,20 @@ on after_start do
   set_status_all("nagashi")
 end
 
+# unset nagashi whenever our last discard was tanyaohai
+# (this is used instead of play effects, since it also handles cancellable riichi discards
+on before_turn_change do
+  if last_discard_matches("tanyaohai") do
+    unset_status("nagashi")
+  end
+end
+
 # unset nagashi when called from
 on before_call do
   unless seat_is("self", as: "caller") do
     unset_status("nagashi")
   end
 end
-
-# unset nagashi when playing tanyaohai
-apply set_append, "play_effects", [
-  ["tanyaohai", [["unset_status", "nagashi"]]]
-]
 
 # aborts don't award nagashi
 on before_abortive_draw do
