@@ -250,8 +250,7 @@ on after_win do
     riichi_stick_payment = pot
     if riichi_stick_payment > 0 do
       total += riichi_stick_payment :: "Riichi bets"
-      riichi_stick_payment *= -1
-      add_to_pot("riichi_stick_payment") # zero out pot
+      subtract_from_pot("riichi_stick_payment") # zero out pot
     end
   end
 end

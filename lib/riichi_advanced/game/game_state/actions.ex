@@ -1484,11 +1484,10 @@ defmodule RiichiAdvanced.GameState.Actions do
           state
           |> Map.update!(:pot, & &1 + amount)
           |> update_player(context.seat, &%{ &1 | score: &1.score - amount })
-        "add_to_pot"            ->
-          amount = interpret_amount(state, context, opts)
-          state
-          |> Map.update!(:pot, & &1 + amount)
+        "add_to_pot"            -> Map.update!(state, :pot, & &1 + interpret_amount(state, context, Enum.at(opts, 0, 0)))
+        "subtract_from_pot"     -> Map.update!(state, :pot, & &1 - interpret_amount(state, context, Enum.at(opts, 0, 0)))
         "add_honba"             -> Map.update!(state, :honba, & &1 + interpret_amount(state, context, Enum.at(opts, 0, 1)))
+        "subtract_honba"        -> Map.update!(state, :honba, & &1 - interpret_amount(state, context, Enum.at(opts, 0, 1)))
         "reveal_hand"           -> update_player(state, context.seat, fn player -> %{ player | hand_revealed: true } end)
         "reveal_other_hands"    -> update_all_players(state, fn seat, player -> %{ player | hand_revealed: player.hand_revealed or seat != context.seat } end)
         "discard_draw"          ->

@@ -4,10 +4,8 @@ on before_exhaustive_draw do
 end
 on before_start do
   if status("reset_honba") do
-    curr_honba = honba
-    curr_honba = curr_honba * -1
-    curr_honba = curr_honba - 1
-    add_honba("curr_honba")
+    subtract_honba("honba")
+    subtract_honba(1)
     unset_status_all("reset_honba")
   end
 end

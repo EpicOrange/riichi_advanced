@@ -155,8 +155,7 @@ if defined("honba") do
     if anyone_status("pao") do
       # zero out the honba counter, we will apply honba manually
       set_counter_all("actual_honba", "honba")
-      minus_honba = -honba
-      add_honba("minus_honba")
+      subtract_honba("honba")
     end
   end
 end

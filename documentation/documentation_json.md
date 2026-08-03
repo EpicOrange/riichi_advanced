@@ -747,7 +747,10 @@ Colors are specified as CSS color strings like `"#808080"` or `"lightblue"`. Exa
 - `["add_score", amount, recipients]`: Add to the score for the current player, or for the `recipients` if specified. Allowed values for `recipients` are: `"shimocha"`, `"toimen"`, `"kamicha"`, `"self"`, `"last_discarder"`, `"all"`, `"others"`
 - `["subtract_score", amount, recipients]`: Same as `add_score`, but subtracts it.
 - `["put_down_riichi_stick", num]`: Makes the current player put down a riichi stick, or `num` riichi sticks if specified. Adds the value of a riichi stick to the pot, but does not change the player's score (use `"subtract_score"` for that).
-- `["add_honba", num]`: Adds the given number of honba. (default 1)
+- `["add_to_pot", amount]`: Adds a given number of points to the pot. (default: 0)
+- `["subtract_from_pot", amount]`: Subtracts a given number of points from the pot. (default: 0)
+- `["add_honba", amount]`: Adds the given number of honba. (default: 1)
+- `["subtract_honba", amount]`: Removes the given number of honba. (default: 1)
 - `["reveal_hand"]`: Shows the current player's hand to everyone for the remainder of the round.
 - `["reveal_other_hands"]`: Same as `"reveal_hand"` but for everyone except the current player.
 - `["discard_draw"]`: Discards the current player's draw. Useful as an auto button.

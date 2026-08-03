@@ -124,8 +124,7 @@ if equals(!counts_as, "tsumo") do
       # take riichi bets too
       riichi_bets = pot
       total += riichi_bets :: "Honba"
-      riichi_bets *= -1
-      add_to_pot("riichi_bets")
+      subtract_from_pot("riichi_bets")
     end
   end
 else
