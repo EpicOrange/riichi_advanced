@@ -220,6 +220,9 @@ defmodule RiichiAdvancedWeb.ScoringTestLive do
 
     state = socket.assigns.state
     |> Map.put(:rules_ref, rules_ref)
+    |> Map.put(:rules_text, %{})
+    |> Map.put(:rules_text_order, [])
+    |> Map.put(:players, Map.new([:east, :south, :west, :north], fn seat -> {seat, %Player{}} end))
     |> Actions.trigger_event("after_initialization", %{seat: :east}) # to populate rules
     |> Actions.trigger_event("after_start", %{seat: :east}) # to populate tile alliases
     socket = assign(socket, :state, state)
@@ -298,6 +301,15 @@ defmodule RiichiAdvancedWeb.ScoringTestLive do
       log_loading_mode: true,
       log_state: %{log: []},
       timer: -1,
+      round_result: nil,
+      winners: %{},
+      winner_seats: [],
+      winner_index: 0,
+      delta_scores: %{},
+      delta_scores_reason: nil,
+      next_dealer: nil,
+      tags: %{},
+      txns: [],
     }
     initial_score = Rules.get(state.rules_ref, "initial_score", 0)
     tile_freqs = Enum.frequencies(state.wall ++ state.dead_wall)
