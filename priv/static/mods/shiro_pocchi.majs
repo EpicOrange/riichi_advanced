@@ -36,7 +36,7 @@ apply set_merge, "dora_indicators", %{
 if defined("shuugi") do
   define_yaku shuugi, "Shiro Pocchi", [1, "⛀"], status("riichi", "shiro_pocchi")
 
-  apply append, "functions.announce_shuugi_payment" do
+  def announce_shuugi_payment, append: true do
     if status("riichi", "shiro_pocchi") do
       if won_by_draw do
         push_system_message("Everyone pays 1 chip for shiro pocchi")

@@ -1,6 +1,6 @@
 # half: Both players pay half of the missing payment.
 if equals(!method, "half") do
-  apply prepend, "functions.finalize_score" do
+  def finalize_score, prepend: true do
     if won_by_draw do
       total += missing_payment / 2 :: "No tsumo loss (half)"
     end
@@ -9,7 +9,7 @@ end
 
 # full: Both players pay the missing payment in full (which doubles the missing payment).
 if equals(!method, "full") do
-  apply prepend, "functions.finalize_score" do
+  def finalize_score, prepend: true do
     if won_by_draw do
       total += missing_payment :: "No tsumo loss (full)"
     end
@@ -18,7 +18,7 @@ end
 
 # equalize: The missing payment is split so that both players pay the same amount.
 if equals(!method, "equalize") do
-  apply prepend, "functions.finalize_score" do
+  def finalize_score, prepend: true do
     # dealer win: nondealer pays 2x -> nondealer pays 3x
     # nondealer win: dealer pays 2x, nondealer pays 1x -> dealer pays 2x, nondealer pays 2x
     # in both cases, we just add 1x to nondealer payments
@@ -30,7 +30,7 @@ end
 
 # proportional: The missing payment is split so that the dealer still pays roughly 2x the nondealer.
 if equals(!method, "proportional") do
-  apply prepend, "functions.finalize_score" do
+  def finalize_score, prepend: true do
     # dealer win: nondealer pays 2x -> nondealer pays 3x
     # nondealer win: dealer pays 2x, nondealer pays 1x -> dealer pays 2.67x, nondealer pays 1.33x
     if won_by_draw do
@@ -46,7 +46,7 @@ end
 
 # oya_pays: The missing payment is paid in full by the dealer.
 if equals(!method, "oya_pays") do
-  apply prepend, "functions.finalize_score" do
+  def finalize_score, prepend: true do
     # dealer win: nondealer pays 2x -> nondealer pays 3x
     # nondealer win: dealer pays 2x, nondealer pays 1x -> dealer pays 3x, nondealer pays 1x
     if won_by_draw do
@@ -59,7 +59,7 @@ end
 
 # ko_pays: The missing payment is paid in full by the nondealer.
 if equals(!method, "ko_pays") do
-  apply prepend, "functions.finalize_score" do
+  def finalize_score, prepend: true do
     # dealer win: nondealer pays 2x -> nondealer pays 3x
     # nondealer win: dealer pays 2x, nondealer pays 1x -> dealer pays 2x, nondealer pays 2x
     if won_by_draw and not_seat_is("east") do
@@ -70,7 +70,7 @@ end
 
 # add_1000: Add a flat +1000 to each player's payment.
 if equals(!method, "add_1000") do
-  apply prepend, "functions.finalize_score" do
+  def finalize_score, prepend: true do
     if won_by_draw do
       total += 1000 :: "No tsumo loss (add_1000)"
     end
@@ -79,14 +79,14 @@ end
 
 # ron_loss: Tsumo loss is on, but ron payment is decreased to be the same as tsumo.
 if equals(!method, "ron_loss") do
-  apply prepend, "functions.finalize_score" do
+  def finalize_score, prepend: true do
     if not_won_by_draw do
       total -= missing_payment :: "Ron loss"
     end
   end
 end
 
-apply prepend, "functions.finalize_score" do
+def finalize_score, prepend: true do
   if seat_is("east", as: "winner") do
     missing_payment = base_score * 2
   else

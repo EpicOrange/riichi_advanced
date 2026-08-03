@@ -40,7 +40,7 @@ end
 define_scoring tsumo do
   total /= 10 :: "Washizu"
 end
-apply append, "functions.noten_payments" do
+def noten_payments, append: true do
   as everyone do
     tenpai_points *= -0.9
     noten_points *= -0.9

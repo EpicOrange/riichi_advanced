@@ -16,7 +16,7 @@ else
   define_yaku shuugi, "Ao", ["ao_payment", "⛀"], ao_payment > 0
 end
 
-apply append, "functions.announce_shuugi_payment" do
+def announce_shuugi_payment, append: true do
   if ao >= 1 do
     if won_by_draw do
       unless !closed_only do

@@ -4,7 +4,7 @@ on after_initialization do
   add_rule("Rules", "No Kazoe Yakuman", "13+ han is worth sanbaiman, not yakuman.")
 end
 
-apply prepend, "functions.calculate_base_score" do
+def calculate_base_score, prepend: true do
   if total == 0 and points2 == 0 and points >= 13 do
     total = 6000 :: "Sanbaiman base"
     modify_winner("score_name", "Sanbaiman", as: "winner")

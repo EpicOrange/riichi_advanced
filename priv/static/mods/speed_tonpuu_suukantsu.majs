@@ -22,7 +22,7 @@ define_button suukantsu,
   end
 
 if defined("shuugi") do
-  apply append, "functions.calculate_shuugi_payment" do
+  def calculate_shuugi_payment, append: true do
     if status("suukantsu_rinshan") do
       shuugi_payment = 20
     end

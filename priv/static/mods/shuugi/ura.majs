@@ -4,7 +4,7 @@ end
 
 define_yaku meta_yaku, "Ura", ["ura", "⛀"], ura > 0
 
-apply append, "functions.announce_shuugi_payment" do
+def announce_shuugi_payment, append: true do
   if ura > 0 do
     if won_by_draw do
       if !chips == 1 do

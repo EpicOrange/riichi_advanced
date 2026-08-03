@@ -26,7 +26,7 @@ on after_win, prepend: true do
   end
 end
 
-apply append, "functions.announce_shuugi_payment" do
+def announce_shuugi_payment, append: true do
   if points2 > 0 do
     if !per_yakuman do
       if won_by_draw do

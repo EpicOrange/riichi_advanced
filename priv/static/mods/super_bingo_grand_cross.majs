@@ -37,7 +37,7 @@ define_button grand_cross,
     do_kan_draw
   end
 
-apply prepend, "functions.do_kan_draw" do
+def do_kan_draw, prepend: true do
   if last_call_is("grand_cross") do
     flip_dora
     # set status to prevent a second dora flip after turn change

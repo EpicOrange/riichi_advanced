@@ -3,7 +3,7 @@ on after_initialization do
   add_rule("Rules", "Atozuke Nashi", "%{example_hand}", %{example_hand: ~t"23456m22678p222s"})
 end
 
-apply append, "functions.check_tenpai" do
+def check_tenpai, append: true do
   if status("tenpai") and is_atozuke("win") do
     set_status("atozuke")
   else

@@ -22,7 +22,7 @@ if defined("shuugi") do
 
   define_yaku shuugi, "Toriuchi", ["toriuchi", "⛀"], toriuchi >= 1
 
-  apply append, "functions.announce_shuugi_payment" do
+  def announce_shuugi_payment, append: true do
     if toriuchi >= 1 do
       push_system_message("Discarder pays 1 chip for each bird tile (1s) in winner's hand")
     end

@@ -3,7 +3,7 @@ define_set mixed_pair, ~s"0 1"
 define_set mentsu, ~s"0 0 0 | 0 1 2 | 0 10 20"
 define_set taatsu, ~s"0 0 | 0 1 | 0 2 | 0 10"
 
-# welcome to the chanta zone
+# welcome to the chanta zone TODO replace with `require "value_honors"`
 define_set terminal_k, ~s"0@terminal 10 20"
 define_set yaochuu_k, ~s"0@terminal 10 20"
 define_match chanta, ~m"exhaustive, (yaochuu_l yaochuu_r yaochuu_t yaochuu_k):4, yaochuu_pair:1"
@@ -35,7 +35,7 @@ apply append, "constants.groups_fu", [
   %{groups: ~s"0@terminal 10@terminal 20@terminal", value: 4},
   %{groups: ~s"0@jihai 1@jihai 2@jihai", value: 4}
 ]
-apply append, "functions.add_scoring_attrs" do
+def add_scoring_attrs, append: true do
   add_attr(["hand", "calls", "winning_tile"], ["_jihai"], ["jihai"])
 end
 apply prepend, "functions.calculate_fu[0][3]" do

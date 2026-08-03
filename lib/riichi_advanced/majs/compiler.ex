@@ -422,9 +422,18 @@ defmodule RiichiAdvanced.Compiler do
   end
 
   defp compile_command("def", name, args, line, column) do
+    {effect, args} = case args do
+      [[{"append", append}],   [do: args]] when append == true  -> {:append, args}
+      [[{"prepend", prepend}], [do: args]] when prepend == true -> {:prepend, args}
+      args -> {:set, args}
+    end
     with {:ok, actions} <- compile_action_list(args, line, column),
          {:ok, actions} <- Jason.encode(actions) do
-      {:ok, ".functions[#{name}] = #{actions}"}
+      case effect do
+        :append  -> {:ok, ".functions[#{name}] |= . + #{actions}"}
+        :prepend -> {:ok, ".functions[#{name}] |= #{actions} + ."}
+        _        -> {:ok, ".functions[#{name}] = #{actions}"}
+      end
     end
   end
 

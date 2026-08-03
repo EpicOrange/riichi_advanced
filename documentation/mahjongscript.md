@@ -479,6 +479,16 @@ end
 
 The above showcases all the special forms: `if/do/end` and `if/do/else/end` is are typical conditionals, `unless` is like `if` but inverts its condition, and `as` lets you switch the current player (and sort of serves as a loop, if multiple players are specified).
 
+You may also set `append: true` or `prepend: true` in the function header like so:
+
+```elixir
+def my_function_name, prepend: true do
+  ...
+end
+```
+
+This lets you add onto an existing function. If the function doesn't exist, it will be created. Omitting the `append` or `prepend` will simply overwrite the function if it already exists.
+
 ### `set`: Set any toplevel parameter
 
 ```elixir

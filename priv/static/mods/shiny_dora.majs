@@ -4,6 +4,6 @@ on after_start do
   add_attr_tagged("dora", "_dora")
 end
 
-apply append, "functions.flip_dora" do
+def flip_dora, append: true do
   add_attr_tagged("dora", "_dora")
 end

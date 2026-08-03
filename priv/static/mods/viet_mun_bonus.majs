@@ -1,4 +1,4 @@
-apply prepend, "functions.add_leftover_phan" do
+def add_leftover_phan, prepend: true do
   if mun > 0 do
     total += mun * !bonus :: "Mủn bonus"
   end

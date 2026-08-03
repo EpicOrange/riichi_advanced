@@ -44,7 +44,7 @@ on before_win do
   end
 end
 
-apply append, "functions.calculate_dora" do
+def calculate_dora, append: true do
   ura = 0 
   if tile_revealed(-5) do add_counter("ura", "count_dora", -5, ["hand", "calls", "flowers", "winning_tile"]) end
   if tile_revealed(-7) do add_counter("ura", "count_dora", -7, ["hand", "calls", "flowers", "winning_tile"]) end

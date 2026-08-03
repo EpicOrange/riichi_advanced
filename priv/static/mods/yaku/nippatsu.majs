@@ -4,7 +4,7 @@ end
 
 define_yaku riichi_yaku, "Nippatsu", [1, "Han"], status("nippatsu")
 
-apply set_prepend, "functions.discard_passed" do
+def discard_passed, prepend: true do
   # set nippatsu status if your own discard passes and you had ippatsu
   as last_discarder do
     if status("ippatsu") do

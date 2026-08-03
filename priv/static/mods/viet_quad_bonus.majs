@@ -1,4 +1,4 @@
-apply prepend, "functions.add_leftover_phan" do
+def add_leftover_phan, prepend: true do
   add_counter("quads", "count_matches", ["calls"], ~m"(daiminkan ankan kakan):1")
   if quads > 0 do
     total += quads * !bonus :: "Quad bonus"

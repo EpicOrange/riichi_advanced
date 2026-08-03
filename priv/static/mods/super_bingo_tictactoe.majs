@@ -64,7 +64,7 @@ define_yaku bingo, "Bingo", [6, "Han"], status("bingo"), ["yaku", "meta_yaku", "
 
 on after_start do as east do place = 1 end end
 
-apply append, "functions.discard_passed" do
+def discard_passed, append: true do
   as kamicha do
     if place > 0 do
       discards_mod_6 = 1 + mod(num_passed_discards - 1, 6)

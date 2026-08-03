@@ -17,14 +17,14 @@ def do_kan_draw do
   draw(1, "opposite_end")
 end
 
-apply prepend, "functions.discard_passed" do
+def discard_passed, prepend: true do
   as others do
     unset_status("kan")
   end
 end
 
 # additional furiten check
-apply append, "functions.discard_passed" do
+def discard_passed, append: true do
   as everyone do
     if (last_call_is("kakan") and match(["hand", "calls", "last_called_tile"], ["win"]))
        or (last_call_is("ankan") and match(["hand", "calls"], ["kokushi_tenpai"]) and match(["hand", "calls", "last_called_tile"], ["win"])) do

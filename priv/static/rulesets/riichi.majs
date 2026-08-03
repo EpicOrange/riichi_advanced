@@ -319,7 +319,7 @@ define_const groups_fu, [
 ]
 define_const always_yakuhai, ["5z", "6z", "7z"]
 
-apply append, "functions.add_scoring_attrs" do
+def add_scoring_attrs, append: true do
   tag_tiles("not_yakuhai", "all")
   untag_tiles("not_yakuhai", @always_yakuhai)
   if round_wind_is("east") or seat_is("east") do untag_tiles("not_yakuhai", "1z") end

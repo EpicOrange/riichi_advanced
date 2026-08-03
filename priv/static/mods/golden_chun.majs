@@ -60,7 +60,7 @@ if defined("shuugi") do
     add_rule("Rules", "Shuugi", "Winning with a hand that uses the golden chun as a five adds 2 shuugi to the payment.")
   end
   define_yaku shuugi, "Kin", ["golden_chuns", "⛀"], golden_chuns >= 1
-  apply prepend, "functions.announce_shuugi_payment" do
+  def announce_shuugi_payment, prepend: true do
     if won_by_draw do
       if status("golden_chun") do push_system_message("Everyone pays 2 chips for golden chun used as a five (golden chun)") end
     else

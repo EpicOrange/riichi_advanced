@@ -28,7 +28,7 @@ end
 
 define_yaku shuugi, "Rainbow Seven", ["rainbow_payment", "⛀"], rainbow_payment > 0
 
-apply append, "functions.announce_shuugi_payment" do
+def announce_shuugi_payment, append: true do
   if rainbows >= 1 do
     if won_by_draw do
       push_system_message("Everyone pays 10 chips per rainbow seven")
@@ -38,7 +38,7 @@ apply append, "functions.announce_shuugi_payment" do
   end
 end
 
-apply append, "functions.calculate_tulips_tier" do
+def calculate_tulips_tier, append: true do
   cond do
     equals("$key", "tsumo")   -> if match(["hand", "calls", "draw"], ~m"rainbow:2") do tier += 1; push_message("gains a tier for having both rainbow sevens") end
     equals("$key", "ron")     -> if match(["hand", "calls", "last_discard"], ~m"rainbow:2") do tier += 1; push_message("gains a tier for having both rainbow sevens") end
@@ -46,7 +46,7 @@ apply append, "functions.calculate_tulips_tier" do
   end
 end
 
-apply append, "functions.score_flip" do
+def score_flip, append: true do
   if diff > 0 and tiles_match(["flipped"], ["47p", "47s"]) do
     arisu_matches += matches
     diff += matches
