@@ -313,14 +313,14 @@ defmodule RiichiAdvancedWeb.ScoringTestLive do
     } end)
     {winning_tile, hand} = List.pop_at(hand, -1)
     state = if is_ron? do
-      payer = :west
       state
       |> GameState.update_player(:east, &%{ &1 | hand: hand, calls: calls })
-      |> GameState.update_player(payer, &%{ &1 | discards: [winning_tile] })
-      |> Actions.register_discard(payer, winning_tile, true, true)
+      |> GameState.update_player(:west, &%{ &1 | discards: [winning_tile] })
+      |> Actions.register_discard(:west, winning_tile, true, true)
     else
       state
-      |> GameState.update_player(:east, &%{ &1 | hand: hand, calls: calls, draw: [Utils.add_attr(winning_tile, ["_draw"])] })
+      |> Actions.register_discard(:west, :"1m", true, true) # invalidate tenhou
+      |> GameState.update_player(:east, &%{ &1 | hand: hand, calls: calls, draw: [winning_tile] })
     end
     win_source = if is_ron? do :discard else :draw end
     scoring_key = case Rules.get(state.rules_ref, "scoring_logic", %{}) do

@@ -196,14 +196,12 @@ fn arrange(
   win_definitions: MatchDefinitions,
   match_info: &mut MatchInfo
 ) -> Hands {
-  let ret = hands.clone();
-
   let hand = hands.remove(0); // pop front
   let calls = hands;
   let base_tiles = get_base_tiles(match_info, &win_definitions.clone().into_iter().flatten().collect());
+  // println!("base_tiles={:?}", decode_tiles(&base_tiles, &match_info.all_attrs));
 
-  let Some((remaining_hand, groups_removed)) = _arrange(hand, &calls, vec!(), &groups_to_remove, 0, &base_tiles, &win_definitions, match_info)
-  else { return ret; };
+  let (remaining_hand, groups_removed) = _arrange(hand, &calls, vec!(), &groups_to_remove, 0, &base_tiles, &win_definitions, match_info);
 
   let mut ret = smallvec!(remaining_hand);
   // convert groups to tilesets, then append calls
@@ -241,32 +239,29 @@ fn _arrange(
   base_tiles: &BaseTileVec,
   win_definitions: &MatchDefinitions,
   match_info: &mut MatchInfo
-) -> Option<(TileSet, Vec<TileSet>)> {
-  if i >= groups.len() {
-    if is_valid_arrangement((hand.clone(), removed.clone()), calls.clone(), win_definitions, match_info) {
-      return Some((hand, removed));
-    } else {
-      return None;
-    }
-  }
+) -> (TileSet, Vec<TileSet>) {
+  if i >= groups.len() { return (hand, removed); }
 
   // initialize to best result of removing nothing at this step
   let mut best = _arrange(hand.clone(), calls, removed.clone(), groups, i + 1, base_tiles, win_definitions, match_info);
-  let mut best_len = usize::MAX;
-  if let Some((ref h, _)) = best { best_len = h.attrs.len(); };
+  let mut best_len = best.0.attrs.len();
 
   // compare with removing a group in every possible way
   // if i >= 3 { println!("i={i}, __pop_group={:?}", __pop_group(hand.clone(), groups[i].clone(), match_info, false, true, true, base_tiles.clone())); }
   for (new_hand, new_group) in __pop_group(hand.clone(), groups[i].clone(), match_info, false, true, true, base_tiles.clone()) {
     let new_calls = group_to_calls(new_group);
+    if new_calls.is_empty() { continue; }
+    // println!("new_calls={:?}", decode(&new_calls[0], &match_info.all_attrs));
     let mut removed2 = removed.clone();
     removed2.extend(new_calls);
     
-    if let Some(next) = _arrange(new_hand.clone(), calls, removed2, groups, i, base_tiles, win_definitions, match_info) {
-      if best_len >= next.0.attrs.len() {
-        best_len = next.0.attrs.len();
-        best = Some(next);
-      }
+    // prune this possibility if we can't make a winning hand with it
+    if !is_valid_arrangement((new_hand.clone(), removed2.clone()), calls.clone(), win_definitions, match_info) { continue; }
+
+    let next = _arrange(new_hand.clone(), calls, removed2, groups, i, base_tiles, win_definitions, match_info);
+    if best_len > next.0.attrs.len() {
+      best_len = next.0.attrs.len();
+      best = next;
     }
   }
   best
