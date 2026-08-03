@@ -92,12 +92,17 @@ defmodule RiichiAdvanced.GameState.JokerSolver do
     |> Enum.with_index()
     |> Enum.map(fn {tile, ix} -> Map.get(joker_assignment, ix, tile) end)
 
+    # get a mapping from call index (i) to smt hand index (ix)
+    {call_i_to_ix, _} = for {{_name, call}, i} <- Enum.with_index(non_flower_calls), reduce: {%{}, length(hand) + 1} do
+      {acc, ix} -> {Map.put(acc, i, ix), ix + length(call)}
+    end
+
     assigned_non_flower_calls = non_flower_calls
     |> Enum.with_index()
     |> Enum.map(fn {{call_name, call}, i} ->
       call = call
       |> Enum.with_index()
-      |> Enum.map(fn {tile, ix} -> Map.get(joker_assignment, length(hand) + 1 + 3*i + ix, tile) end)
+      |> Enum.map(fn {tile, ix} -> Map.get(joker_assignment, Map.get(call_i_to_ix, i) + ix, tile) end)
       {call_name, call}
     end)
     assigned_calls = flower_calls ++ assigned_non_flower_calls
@@ -109,83 +114,6 @@ defmodule RiichiAdvanced.GameState.JokerSolver do
     {assigned_hand, assigned_calls, assigned_winning_hand, assigned_winning_tile}
   end
 
-  def evaluate_joker_assignment(state, cxt, joker_assignment) do
-    %{
-      seat: seat,
-      smt_hand: smt_hand,
-      win_source: win_source,
-      winning_tile: winning_tile,
-    } = cxt
-    score_rules = Rules.get(state.rules_ref, "score_calculation", %{})
-    highest_scoring_yaku_only = Map.get(score_rules, "highest_scoring_yaku_only", false)
-
-    # use the joker assignment to obtain winner's {hand, calls} with jokers replaced by their assignments
-    {assigned_hand, assigned_calls, _assigned_winning_hand, assigned_winning_tile} = apply_joker_assignment(state.players[seat].hand, state.players[seat].calls, winning_tile, joker_assignment)
-
-    # replace the winner's hand/calls temporarily (for yaku evaluation)
-    orig_hand = state.players[seat].hand
-    orig_calls = state.players[seat].calls
-    state = update_player(state, seat, &%{ &1 | hand: assigned_hand, calls: assigned_calls, cache: %{ &1.cache | orig_hand: &1.hand, orig_calls: &1.calls, orig_winning_tile: winning_tile } })
-
-    # also replace the actual winning tile within state
-    state = if assigned_winning_tile != nil do
-      update_winning_tile(state, seat, win_source, fn _ -> assigned_winning_tile end)
-    else
-      IO.puts("WARNING: no assigned_winning_tile for a win! hand: #{inspect(smt_hand)}, joker_assignment: #{inspect(joker_assignment)}")
-      state
-    end
-
-    # run before_scoring only after replacing those tiles
-    # this is because before_scoring might add attributes to hand, which will be used for yaku calculation
-    # also you need non-joker tiles in order to calculate fu and such here
-    state = Actions.trigger_event(state, "before_scoring", cxt)
-
-    # fetch the new hand, calls, and winning tile
-    %{hand: assigned_hand, calls: assigned_calls} = state.players[seat]
-    assigned_winning_tile = get_winning_tile(state, seat, win_source)
-    if assigned_winning_tile == nil do
-      IO.puts("[WARNING] evaluate_joker_assignment: the winning tile must exist, but got nil")
-    end
-    assigned_winning_hand = assigned_hand ++ Enum.flat_map(assigned_calls, &Utils.call_to_tiles/1) ++ [assigned_winning_tile]
-
-    # obtain yaku and minipoints from this state
-    {yaku, minipoints} = Scoring.get_yaku_from_lists(state, Map.get(score_rules, "yaku_lists", []), seat, assigned_winning_tile, win_source)
-    {yaku2, _minipoints} = if Map.has_key?(score_rules, "yaku2_lists") do
-      Scoring.get_yaku_from_lists(state, Map.get(score_rules, "yaku2_lists", []), seat, assigned_winning_tile, win_source)
-    else {[], 0} end
-    if Debug.print_wins() do
-      assigned_winning_hand = state.players[seat].cache.winning_hand
-      IO.puts("checking assignment, hand: #{inspect(assigned_winning_hand)}, tile: #{inspect(winning_tile)}, yaku: #{inspect(yaku)}, yaku2: #{inspect(yaku2)}")
-    end
-
-    yaku = if not Enum.empty?(yaku) and highest_scoring_yaku_only do [Enum.max_by(yaku, fn {_name, value} -> value end)] else yaku end
-    yaku2 = if not Enum.empty?(yaku2) and highest_scoring_yaku_only do [Enum.max_by(yaku2, fn {_name, value} -> value end)] else yaku2 end
-    yaku = Enum.map(yaku, fn {name, value} -> {translate(state, name), value} end) |> Scoring.dedup_yaku()
-    yaku2 = Enum.map(yaku2, fn {name, value} -> {translate(state, name), value} end) |> Scoring.dedup_yaku()
-
-    points = Enum.map(yaku ++ yaku2, fn {_name, value} -> value end) |> Enum.reduce([], &Scoring.add_yaku_values/2)
-
-    # put back hand/calls/winning tile
-    state = state
-    |> update_player(seat, &%{ &1 | hand: orig_hand, calls: orig_calls })
-    |> update_winning_tile(seat, win_source, fn _ -> winning_tile end)
-
-    {state, Map.merge(cxt, %{
-      yaku: yaku,
-      yaku2: yaku2,
-      minipoints: minipoints,
-      points: Utils.get_from_points_list(points, score_rules["point_name"]),
-      points2: Utils.get_from_points_list(points, score_rules["point2_name"]),
-      shuugi: Utils.get_from_points_list(points, score_rules["shuugi_name"]),
-      total_points: points,
-      joker_assignment: joker_assignment,
-      winning_tile: assigned_winning_tile,
-      assigned_hand: assigned_hand,
-      assigned_calls: assigned_calls,
-      assigned_winning_hand: assigned_winning_hand,
-    })}
-  end
-  
   def get_highest_scoring_evaluation(evaluations, get_worst_instead \\ false) do
     Enum.max_by(evaluations,
       fn %{score: score, points: points, points2: points2, minipoints: minipoints, yaku: yaku, yaku2: yaku2} ->

@@ -53,10 +53,6 @@ apply append, "constants.pao_yaku", ["Daisuugen"]
 on after_call do
   if last_call_is("pon", "daiminkan") do
     as caller do
-      if match(["last_call"], ~m"(haku hatsu chun baiban):1") and match(["calls"], ~m"unique, baiban:1, (haku hatsu chun):2") do
-        make_responsible_for("callee", ["Daisangen"])
-        set_status("pao", as: "callee")
-      end
       if match(["last_call"], ~m"(haku hatsu chun baiban):1") and match(["calls"], ~m"unique, baiban:1, (haku hatsu chun):3") do
         make_responsible_for("callee", ["Daisuugen"])
         set_status("pao", as: "callee")
@@ -70,11 +66,13 @@ end
 if defined("daisangen_pao") do
   on after_call do
     if last_call_is("pon", "daiminkan") do
-      if match(["last_call"], ~m"(haku hatsu chun):1") and match(["calls"], ~m"haku:1, hatsu:1, chun:1") do
-        make_responsible_for("callee", ["Daisangen"])
-        set_status("pao", as: "callee")
-        if pao_yakuman > 0 do pao_yakuman -= 1 end # override existing
-        pao_han += 2
+      as caller do
+        if match(["last_call"], ~m"(haku hatsu chun):1") and match(["calls"], ~m"haku:1, hatsu:1, chun:1") do
+          make_responsible_for("callee", ["Daisangen"])
+          set_status("pao", as: "callee")
+          if pao_yakuman > 0 do pao_yakuman -= 1 end # override existing
+          pao_han += 2
+        end
       end
     end
   end

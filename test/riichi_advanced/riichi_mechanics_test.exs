@@ -387,7 +387,7 @@ defmodule RiichiAdvanced.RiichiMechanicsTest do
         "west": ["2m", "4m", "7m", "3p", "5p", "8p", "3s", "6s", "9s", "2z", "4z", "6z", "7z"],
         "north": ["2m", "4m", "7m", "3p", "5p", "8p", "3s", "6s", "9s", "2z", "4z", "6z", "7z"]
       },
-      "starting_draws": ["1z", "1z"]
+      "starting_draws": ["2p", "2p"]
     }
     """, [
       %{"type" => "buttons_pressed", "buttons" => [%{"button" => "annobekan"}, nil, nil, nil]},

@@ -144,7 +144,7 @@ defmodule RiichiAdvanced.GameState.Scoring do
   end
 
   def score_yaku(state, yaku_list_names, seat, winning_tiles, win_source) do
-    lazy_map_joker_cxts(state, seat, winning_tiles, win_source, fn state, cxt ->
+    lazy_map_state_cxts(state, seat, winning_tiles, win_source, fn state, cxt ->
       get_yaku_from_lists(state, yaku_list_names, seat, cxt.assigned_winning_tile, win_source)
     end)
   end
@@ -152,17 +152,21 @@ defmodule RiichiAdvanced.GameState.Scoring do
   # for every joker assignment and winning tile, call:
   #   f.(state, cxt)
   # returns a stream of results
-  def lazy_map_joker_cxts(state, seat, winning_tiles, win_source, f) do
+  # note: the given state will have already called "before_win" and "before_scoring"
+  # note: the given state has replaced the state's hand/calls/winning tile
+  def lazy_map_state_cxts(state, seat, winning_tiles, win_source, f) do
     %{hand: hand, tile_behavior: tile_behavior} = state.players[seat]
     is_tenhou? = winning_tiles == nil or winning_tiles == [nil]
     if is_tenhou? do hand else winning_tiles end
+    |> Enum.uniq()
     |> Enum.map(fn winning_tile ->
       # first, if this was tenhou, we need to remove the winning tile from hand
       hand = if is_tenhou? do
-        # try each tile, starting from the rightmost
-        for winning_tile <- Enum.reverse(Enum.uniq(hand)) do
-          List.delete(hand, winning_tile)
-        end
+        # delete the winning tile that is rightmost in hand
+        hand
+        |> Enum.reverse()
+        |> List.delete(winning_tile)
+        |> Enum.reverse()
       else hand end
 
       # then update hand
@@ -202,20 +206,11 @@ defmodule RiichiAdvanced.GameState.Scoring do
         state = if assigned_winning_tile != nil do
           update_winning_tile(state, seat, win_source, fn _ -> assigned_winning_tile end)
         else
-          IO.puts("WARNING: no assigned_winning_tile for a win! hand: #{inspect(smt_hand)}, joker_assignment: #{inspect(joker_assignment)}")
+          IO.puts("[WARNING] lazy_map_state_cxts: no assigned_winning_tile for a win! hand: #{inspect(smt_hand)}, joker_assignment: #{inspect(joker_assignment)}")
           state
         end
 
-        # run before_scoring only after replacing those tiles
-        # this is because before_scoring might add attributes to hand, which will be used for yaku calculation
-        # also you need non-joker tiles in order to calculate fu and such here
-        state = Actions.trigger_event(state, "before_scoring", %{seat: seat, win_source: win_source, winning_tile: assigned_winning_tile, silent: true})
-        
-        # fetch the new winning tile
-        assigned_winning_tile = get_winning_tile(state, seat, win_source)
-        if assigned_winning_tile == nil do
-          IO.puts("[WARNING] seat_scores_points: the winning tile must exist, but got nil")
-        end
+        assigned_winning_hand = assigned_hand ++ Enum.flat_map(assigned_calls, &Utils.call_to_tiles/1) ++ [assigned_winning_tile]
         cxt = %{
           seat: seat,
           winner_seat: seat,
@@ -226,14 +221,83 @@ defmodule RiichiAdvanced.GameState.Scoring do
           obvious_joker_assignment: obvious_joker_assignment,
           nonobvious_joker_assignment: nonobvious_joker_assignment,
           joker_assignment: joker_assignment,
-          assigned_winning_tile: assigned_winning_tile
+          assigned_hand: assigned_hand,
+          assigned_calls: assigned_calls,
+          assigned_winning_tile: assigned_winning_tile,
+          assigned_winning_hand: assigned_winning_hand,
         }
+
+        # run before_scoring
+        # this is because before_scoring might add attributes to hand, which will be used for yaku calculation
+        # also you need non-joker tiles in order to calculate fu and such here
+        state = Actions.trigger_event(state, "before_scoring", cxt)
+
+        # fetch the new hand, calls, and winning tile
+        %{hand: assigned_hand, calls: assigned_calls} = state.players[seat]
+        assigned_winning_tile = get_winning_tile(state, seat, win_source)
+        if assigned_winning_tile == nil do
+          IO.puts("[WARNING] lazy_map_state_cxts: the winning tile must exist, but got nil")
+        end
+
+        assigned_winning_hand = assigned_hand ++ Enum.flat_map(assigned_calls, &Utils.call_to_tiles/1) ++ [assigned_winning_tile]
+        cxt = %{ cxt |
+          assigned_hand: assigned_hand,
+          assigned_calls: assigned_calls,
+          assigned_winning_tile: assigned_winning_tile,
+          assigned_winning_hand: assigned_winning_hand,
+        }
+
         f.(state, cxt)
       end, timeout: :infinity, ordered: false)
     end)
     |> Stream.concat()
     |> Stream.map(fn {:ok, ret} -> ret end)
     # |> Enum.to_list() |> IO.inspect(label: inspect(win_source))
+  end
+  
+  def evaluate_state_cxt(state, cxt) do
+    %{
+      seat: seat,
+      win_source: win_source,
+      winning_tile: winning_tile,
+      assigned_winning_tile: assigned_winning_tile,
+    } = cxt
+    score_rules = Rules.get(state.rules_ref, "score_calculation", %{})
+
+    # obtain yaku and minipoints from this state
+    {yaku, minipoints} = Scoring.get_yaku_from_lists(state, Map.get(score_rules, "yaku_lists", []), seat, assigned_winning_tile, win_source)
+    {yaku2, _minipoints} = if Map.has_key?(score_rules, "yaku2_lists") do
+      Scoring.get_yaku_from_lists(state, Map.get(score_rules, "yaku2_lists", []), seat, assigned_winning_tile, win_source)
+    else {[], 0} end
+    if Debug.print_wins() do
+      assigned_winning_hand = state.players[seat].cache.winning_hand
+      IO.puts("checking assignment, hand: #{inspect(assigned_winning_hand)}, tile: #{inspect(winning_tile)}, yaku: #{inspect(yaku)}, yaku2: #{inspect(yaku2)}")
+    end
+
+    highest_scoring_yaku_only = Map.get(score_rules, "highest_scoring_yaku_only", false)
+    yaku = if not Enum.empty?(yaku) and highest_scoring_yaku_only do [Enum.max_by(yaku, fn {_name, value} -> value end)] else yaku end
+    yaku2 = if not Enum.empty?(yaku2) and highest_scoring_yaku_only do [Enum.max_by(yaku2, fn {_name, value} -> value end)] else yaku2 end
+    yaku = Enum.map(yaku, fn {name, value} -> {translate(state, name), value} end) |> Scoring.dedup_yaku()
+    yaku2 = Enum.map(yaku2, fn {name, value} -> {translate(state, name), value} end) |> Scoring.dedup_yaku()
+
+    points = Enum.map(yaku ++ yaku2, fn {_name, value} -> value end) |> Enum.reduce([], &Scoring.add_yaku_values/2)
+
+    # put back hand/calls/winning tile
+    state = state
+    |> update_player(seat, &%{ &1 | hand: &1.cache.orig_hand, calls: &1.cache.orig_calls })
+    |> update_winning_tile(seat, win_source, fn _ -> winning_tile end)
+
+    cxt = Map.merge(cxt, %{
+      yaku: yaku,
+      yaku2: yaku2,
+      minipoints: minipoints,
+      points: Utils.get_from_points_list(points, score_rules["point_name"]),
+      points2: Utils.get_from_points_list(points, score_rules["point2_name"]),
+      shuugi: Utils.get_from_points_list(points, score_rules["shuugi_name"]),
+      total_points: points,
+    })
+
+    {state, cxt}
   end
   
   def hanada_kirame_score_protection(state, delta_scores) do

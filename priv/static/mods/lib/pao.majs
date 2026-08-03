@@ -26,6 +26,11 @@ def apply_rinshan_pao_scoring do
   end
 end
 
+on before_win do
+  set_counter_all("pao_han", "pao_han")
+  set_counter_all("pao_yakuman", "pao_yakuman")
+end
+
 define_scoring pao_tsumo do
   total = 0
   if points > 0 and status("rinshan_pao_eligible") do
@@ -38,11 +43,11 @@ define_scoring pao_tsumo do
     if status("pao") do
       orig_points2 = points2
       orig_points = points
-      points2 = points2 - pao_yakuman
-      points = points - pao_han
+      points2 -= pao_yakuman
+      points -= pao_han
       # score remaining amount normally, if any
       if points > 0 or points2 > 0 do
-      if points2 > 0 do points2 = points2 :: "★" else points = points :: "Han" end
+        if points2 > 0 do points2 = points2 :: "★" else points = points :: "Han" end
         calculate_base_score; if total > 0 do apply_tsumo_scoring end
       end
       # we pay the pao tsumo payment in full, as ron
@@ -90,8 +95,8 @@ define_scoring pao_ron do
     # and pay that in full. do not pay honba
     orig_points2 = points2
     orig_points = points
-    points2 = points2 - pao_yakuman
-    points = points - pao_han
+    points2 -= pao_yakuman
+    points -= pao_han
     # score remaining amount normally, if any
     if points > 0 or points2 > 0 do
       if points2 > 0 do points2 = points2 :: "★" else points = points :: "Han" end

@@ -362,10 +362,12 @@ defmodule RiichiAdvanced.GameState.Kyoku do
     state = Map.update!(state, :winners, &Map.put(&1, seat, %{}))
     state = Map.update!(state, :winner_seats, & &1 ++ [seat])
 
-    {is_tenhou?, winning_tiles} = case get_winning_tile(state, seat, win_source) do
-      nil  -> {true, state.players[seat].hand ++ state.players[seat].draw |> Utils.remove_attr(["_draw"])}
-      tile -> {false, [tile]}
-    end
+    winning_tiles = [get_winning_tile(state, seat, win_source)]
+    is_tenhou? = winning_tiles == [nil]
+    # if it's tenhou, add draw to hand
+    state = if is_tenhou? do
+      update_player(state, seat, &%{ &1 | hand: &1.hand ++ &1.draw |> Utils.remove_attr(["_draw"]), draw: []})
+    else state end
 
     # push a message if it takes more than 0.5 seconds to return
     # (tenhou solver and joker solver are the same thing)
@@ -373,9 +375,9 @@ defmodule RiichiAdvanced.GameState.Kyoku do
     notify_text = if is_tenhou? do "Running tenhou solver..." else "Running joker solver..." end
     notify_task = Task.async(fn -> :timer.sleep(500); push_message(state, [%{text: notify_text}]) end)
 
-    {state, cxt} = Scoring.lazy_map_joker_cxts(state, seat, winning_tiles, win_source, fn state, cxt ->
+    {state, cxt} = Scoring.lazy_map_state_cxts(state, seat, winning_tiles, win_source, fn state, cxt ->
       {state, cxt} = try do
-        JokerSolver.evaluate_joker_assignment(state, cxt, cxt.joker_assignment)
+        Scoring.evaluate_state_cxt(state, cxt)
       rescue
         err -> Logger.error(Exception.format(:error, err, __STACKTRACE__))
       end
@@ -416,7 +418,7 @@ defmodule RiichiAdvanced.GameState.Kyoku do
     # {assigned_hand, assigned_calls, _, _} = JokerSolver.apply_joker_assignment(cxt.smt_hand, orig_calls, cxt.winning_tile, cxt.joker_assignment)
 
     # arrange the hand for display on yaku screen
-    arranged_hand = Utils.sort_tiles(state.players[seat].hand -- [cxt.winning_tile], cxt.joker_assignment)
+    arranged_hand = Utils.sort_tiles(state.players[seat].hand, cxt.joker_assignment)
 
     # arrange the hand more nicely when you hover over it
     tile_behavior = state.players[seat].tile_behavior
