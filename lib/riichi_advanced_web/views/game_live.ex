@@ -129,7 +129,7 @@ defmodule RiichiAdvancedWeb.GameLive do
         </svg>
       </label>
       <input id="tile-numbers-checkbox" type="checkbox" class="tile-numbers-checkbox" phx-update="ignore">
-      <label for="tile-numbers-checkbox">123</label>
+      <label for="tile-numbers-checkbox" class="game-bottom-element">123</label>
       <.live_component module={RiichiAdvancedWeb.HandComponent}
         id={"hand #{Utils.get_relative_seat(@seat, seat)}"}
         game_state={@game_state}
@@ -236,7 +236,12 @@ defmodule RiichiAdvancedWeb.GameLive do
             <% end %>
           <% end %>
         </div>
-        <div class="auto-buttons">
+        <.live_component module={RiichiAdvancedWeb.HandPianoComponent}
+          id="hand-piano-component"
+          num_keys={length(@state.players[@seat].hand)}
+          play_tile={&send(self(), {:play_tile, &1})}
+          selected_index={@selected_index} />
+        <div class="auto-buttons game-bottom-element">
           <%= for {{name, desc, checked, _}, i} <- Enum.with_index(@state.players[@seat].auto_buttons) do %>
             <input id={"auto-button-" <> name} type="checkbox" class="auto-button" phx-click="auto_button_toggled" phx-value-name={name} phx-value-enabled={if checked do "true" else "false" end} checked={checked}>
             <label for={"auto-button-" <> name} title={desc} data-name={t(@lang, get_auto_button_name(@state.rules_ref, name))} tabindex={i}><%= Rules.get(@state.rules_ref, "auto_buttons", %{})[name]["display_name"] %></label>
@@ -295,7 +300,7 @@ defmodule RiichiAdvancedWeb.GameLive do
         viewer={@viewer}
         yakus={Rules.get(@state.rules_ref, "declarable_yaku", [])}
         :if={@state.players[@seat].declared_yaku == []} />
-      <div class="display-wall-hover" :if={Rules.get(@state.rules_ref, "display_wall", false)} phx-click="noop"><%= t(@lang, "Show wall") %></div>
+      <div class="display-wall-hover game-bottom-element" :if={Rules.get(@state.rules_ref, "display_wall", false)} phx-click="noop"><%= t(@lang, "Show wall") %></div>
       <.live_component module={RiichiAdvancedWeb.DisplayWallComponent}
         id="display-wall"
         game_state={@game_state}
@@ -316,7 +321,7 @@ defmodule RiichiAdvancedWeb.GameLive do
         available_seats={@state.available_seats}
         :if={Rules.get(@state.rules_ref, "display_wall", false)} />
       <div class={["big-text"]} :if={@loading}><%= t(@lang, "Loading...") %></div>
-      <div class="display-am-hand-hover" :if={Rules.get(@state.rules_ref, "show_nearest_american_hand", false)}></div>
+      <div class="display-am-hand-hover game-bottom-element" :if={Rules.get(@state.rules_ref, "show_nearest_american_hand", false)}></div>
       <div class="display-am-hand-container" :if={Rules.get(@state.rules_ref, "show_nearest_american_hand", false)}>
         <% open_definitions = Rules.get(@state.rules_ref, "open_win_definition", []) %>
         <%= for {am_match_definition, _shanten, arranged_hand} <- @state.players[@seat].cache.closest_american_hands do %>
@@ -415,7 +420,7 @@ defmodule RiichiAdvancedWeb.GameLive do
         <label for={"rules-popover-unselect"}></label>
       </div>
       <.live_component module={RiichiAdvancedWeb.MessagesComponent} id="messages" messages={@messages} lang={@lang} />
-      <div class="ruleset">
+      <div class="ruleset game-bottom-element">
         <div class="ruleset-text"><%= t(@lang, "Ruleset:") %></div>
         <textarea readonly><%= Rules.get(@state.rules_ref, :ruleset_json) %></textarea>
       </div>

@@ -10,7 +10,7 @@ defmodule RiichiAdvancedWeb.MessagesComponent do
 
   def render(assigns) do
     ~H"""
-    <div class="messages-container" phx-click="noop" phx-target={@myself}>
+    <div class="messages-container game-bottom-element" phx-click="noop" phx-target={@myself}>
       <div class="messages">
         <%= for msg <- @messages do %>
           <span>
