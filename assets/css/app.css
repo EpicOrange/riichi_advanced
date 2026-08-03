@@ -1984,7 +1984,13 @@ div.visible-waits {
 div.visible-waits.spaced {
   row-gap: calc(0.5 * var(--tile-size));
 }
+@keyframes showWaitsLoading {
+  90% { opacity: 0 }
+  100% { opacity: 1 }
+}
 div.visible-waits.visible-waits-loading {
+  opacity: 0;
+  animation: showWaitsLoading 0.5s linear forwards;
   padding-bottom: calc(0.25 * var(--tile-size));
   margin-bottom: calc(1.25 * var(--tile-size));
 }

@@ -466,12 +466,14 @@ defmodule RiichiAdvancedWeb.GameLive do
     visible_waits = socket.assigns.visible_waits || %{}
     if not Map.has_key?(visible_waits, index) do
       # first check if we even need this tile
-      match_definitions = Rules.translate_match_definitions(socket.assigns.state.rules_ref, "tenpai")
-      if Enum.empty?(match_definitions) or not Match.needed_for_hand(hand, player.calls, Enum.at(hand, index), match_definitions, player.tile_behavior) do
+      tenpai_definitions = Rules.translate_match_definitions(socket.assigns.state.rules_ref, "tenpai")
+      if Enum.empty?(tenpai_definitions) || Match.needed_for_hand(hand, player.calls, Enum.at(hand, index), tenpai_definitions, player.tile_behavior) do
+        assign(socket, :visible_waits, Map.put(visible_waits, index, []))
+      else
         # async call; gets handled below in :set_visible_waits
         GenServer.cast(socket.assigns.game_state, {:get_visible_waits, self(), socket.assigns.seat, index})
         assign(socket, :visible_waits, Map.put(visible_waits, index, :loading))
-      else socket end
+      end
     else socket end
   end
 
