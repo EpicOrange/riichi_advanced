@@ -1062,7 +1062,7 @@ defmodule RiichiAdvanced.GameState do
     yaku_lists = Conditions.get_yaku_lists(state)
     point_name = Rules.get(state.rules_ref, "score_calculation")["point_name"]
     point2_name = Rules.get(state.rules_ref, "score_calculation")["point2_name"]
-    min_han = Rules.get(state.rules_ref, "constants") |> Map.get("min_points", 1)
+    min_han = Rules.get(state.rules_ref, "constants") |> Map.get("min_points", 0)
     # pretend you have discarded that tile
     state = if discard != nil do
       state
@@ -1074,12 +1074,12 @@ defmodule RiichiAdvanced.GameState do
       or Scoring.seat_scores_points(state, yaku_lists, point2_name, min_han, 0, seat, wait, win_source)
     end
     cond do
-      get_score.(update_winning_tile(state, state.turn, :discard, fn _ -> wait end), :discard) -> nil
+      min_han > 0 and get_score.(update_winning_tile(state, state.turn, :discard, fn _ -> wait end), :discard) -> nil
       "furiten" in state.players[seat].status -> "Furiten" # hardcoded version of "Self-Draw" for riichi
       "atozuke" in state.players[seat].status -> "Atozuke" # hardcoded version of "Self-Draw" for riichi
-      get_score.(update_winning_tile(state, seat, :draw, fn _ -> wait end), :draw) -> "Self-Draw"
-      min_han > 1 -> "Min #{min_han}"
-      true -> "No Yaku"
+      min_han > 0 and get_score.(update_winning_tile(state, seat, :draw, fn _ -> wait end), :draw) -> "Self-Draw"
+      min_han > 0 -> if min_han > 1 do "Min #{min_han}" else "No Yaku" end
+      true -> nil
     end
   end
 
