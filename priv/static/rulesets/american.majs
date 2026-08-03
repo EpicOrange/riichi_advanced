@@ -39,8 +39,46 @@ set wall, ["1m", "1m", "1m", "1m",
            "1j", "1j", "1j", "1j",
            "1j", "1j", "1j", "1j"]
 
+on after_initialization do
+  add_rule("Tiles", "Base Tiles", "By default, American mahjong uses the following 152 tiles:", -100)
+  add_rule("Tiles", "Base Tiles", "- Four each of the 1 to 9 of circles %{pinzu}", %{pinzu: ~t"123456789p"})
+  add_rule("Tiles", "Base Tiles", "- Four each of the 1 to 9 of bamboo %{souzu}", %{souzu: ~t"123456789s"})
+  add_rule("Tiles", "Base Tiles", "- Four each of the 1 to 9 of characters %{manzu}", %{manzu: ~t"123456789m"})
+  add_rule("Tiles", "Base Tiles", "- Four each of the four winds (East, South, West, North) %{winds}", %{winds: ~t"1234z"})
+  add_rule("Tiles", "Base Tiles", "- Four each of the three dragons (White, Green, Red) %{dragons}", %{dragons: ~t"067z"})
+  add_rule("Tiles", "Base Tiles", "- Four flowers %{flowers}", %{flowers: ~t"1234f"})
+  add_rule("Tiles", "Base Tiles", "- Four seasons %{seasons}", %{seasons: ~t"1234g"})
+  add_rule("Tiles", "Base Tiles", "- Eight jokers %{jokers}", %{jokers: ~t"11111111j"})
+  add_rule("Rules", "Charleston", "At the start of the round, each player chooses to pass 3 tiles to the player to the right. This is one charleston pass. A total of 3 charleston passes are done (right, across, left) and if all players agree, 3 more passes are done (left, across, right). Regardless of the decision, there is a final round where each player decides to pass 0 to 3 tiles across, and both player passes the lower amount of the two decisions.", -50)
+  add_rule("Rules", "Charleston", "Jokers may not be passed during the Charleston.")
+  add_rule("Rules", "Charleston", "(Blind Pass) On the third (and sixth) charleston pass, each player may choose to 'blind pass' up to three tiles, which means instead of passing a tile from hand, pass 1 to 3 of the tiles that are being passed to you this round. In Riichi Advanced, this is done by selecting the upside-down tiles that appear in your hand.")
+  add_rule("Rules", "Win Condition", "To win, one must exactly match one of the hands on the preselected rules card. The 'nearest hands' button at the bottom can show all nearest hands, which is the easiest way to achieve a win as a beginner. You can also scroll down to see the ruleset's win definitions. The encoding for these definitions is described in the \"American hand match specifications\" section of 'documentation/documentation.json' on the Riichi Advanced GitHub page.", -100)
+  add_rule("Rules", "Win Condition", "When it comes to forming a winning hand, jokers cannot be used to fill single tiles or pairs. A hand like '1 22 333' can use up to three jokers for the 333, but no jokers can be used for the 1 or 22. There are no sequences in American Mahjong, only singles, pairs, triplets, quads, and so on.")
+  add_rule("Rules", "Win Condition", "Note that some hands can only be won while concealed (no calls). These are marked with 'c' to the right of the Nearest Hands hands. 'x' on the other hand means 'exposed' and you can win those hands whether your hand has calls or not.")
+  add_rule("Rules", "Win Condition", "You cannot win on a discarded joker.")
+  add_rule("Rules", "Scoring", "Only one hand can be scored for each win. Typically all hands are disjoint (you can't have more than one) but in the event that the winning hand is ambiguous, Riichi Advanced picks the highest-scoring one.")
+  add_rule("Rules", "Scoring", "If you win by discard, everyone pays you the hand value but the discarder's payment is doubled. If you win by self-draw, all players pay double the hand value.")
+  add_rule("Rules", "Jokers", "There are by default 8 jokers %{joker} in the wall. Any amount of jokers can be used to call tiles. By default, calls that don't use any non-joker tiles are automatically skipped, but you can deactivate this behavior by toggling off the JC button on the bottom-left (you only need to do this once).", %{joker: ~t"11111111j"})
+  add_rule("Rules", "Jokers", "Joker tiles cannot be called (to form a meld, or to win).")
+  add_rule("Rules", "Calls", "You may call Pung/Kong/Quint if a just-discarded tile (not a joker!) matches 2/3/4 of the same tile in hand. You may use any amount of joker tiles for this. Pairs cannot be called. After calling, the involved tiles are shown to all players and cannot be modified. Note that there are no 'replacement tiles' in American mahjong, so in every case you will have to immediately discard from hand after calling. There is no way to 'add' to an existing called meld.")
+  add_rule("Rules", "Calls", "(Joker Swapping) During any player's turn, they can replace a tile in hand if it matches an existing meld on the table (not just their own melds!) that contains a joker. This action swaps the tile in hand with the meld's joker.")
+  add_rule("Rules", "Dead Hand", "If someone's exposed melds indicate that they have no possible winning hand, you can press the skull button for that player to declare their hand dead. If the declaration is correct, then the target player can no longer draw or discard, and must sit out of the rest of the round. If the declaration is incorrect, you suffer that penalty instead.")
+end
+
 set custom_style, %{
-  tile_indices: %{"5z": "", "0z": "0", "1f": "F", "2f": "F", "3f": "F", "4f": "F", "1g": "F", "2g": "F", "3g": "F", "4g": "F", "1j": "J"}
+  tile_indices: %{
+    "5z": "",
+    "0z": "0",
+    "1f": "F",
+    "2f": "F",
+    "3f": "F",
+    "4f": "F",
+    "1g": "F",
+    "2g": "F",
+    "3g": "F",
+    "4g": "F",
+    "1j": "J"
+  }
 }
 
 set default_mods, ["american/am_num_jokers_flowers", "american/am_card_nmjl_2026", "american/show_nearest_american_hand", "show_waits"]
@@ -825,7 +863,9 @@ define_auto_button _3_auto_no_call,
 
 define_auto_button _4_auto_no_call,
   display_name: "JC",
-  desc: "Skip calls that only use your jokers."
+  desc: "Skip calls that only use your jokers.",
+  enabled_at_start: true,
+  persistent: true
   do
     if not_our_turn and buttons_include("skip") and buttons_exclude("mahjong_discard", "mahjong_heavenly", "am_joker_swap")
         and (not_match(["hand"], ~m"nojoker, (1f 2f 3f 4f 1g 2g 3g 4g):1") or not_match(["last_discard"], ~m"nojoker, (1f 2f 3f 4f 1g 2g 3g 4g):1"))
@@ -837,7 +877,8 @@ define_auto_button _4_auto_no_call,
 define_auto_button _5_auto_no_dead_call,
   display_name: "DC",
   desc: "Skip calls that deaden your hand.",
-  enabled_at_start: true
+  enabled_at_start: true,
+  persistent: true
   do
     if not_our_turn and buttons_include("skip") and buttons_exclude("mahjong_discard", "mahjong_heavenly", "am_joker_swap") and all_calls_deaden_hand do
       press_button("skip")
