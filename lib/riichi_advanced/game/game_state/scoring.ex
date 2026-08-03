@@ -24,6 +24,12 @@ defmodule RiichiAdvanced.GameState.Scoring do
     |> Enum.flat_map(fn {type, amt} -> [Utils.try_integer(amt), type] end)
   end
 
+  def dedup_yaku(yaku) do
+    for {name, value} <- yaku, reduce: %{} do
+      acc -> Map.update(acc, name, value, &add_yaku_values(&1, value))
+    end |> Enum.to_list()
+  end
+
   def get_yaku(state, yaku_list, yaku_list_name, seat, winning_tile, win_source, minipoints, existing_yaku \\ []) do
     context = %{
       seat: seat,
@@ -33,34 +39,37 @@ defmodule RiichiAdvanced.GameState.Scoring do
       existing_yaku: existing_yaku
     }
 
+    score_rules = Rules.get(state.rules_ref, "score_calculation", %{})
+    default_unit = score_rules["point_name"]
+    default_value = fn value -> if not is_list(value) do
+      [Actions.interpret_amount(state, context, value), default_unit]
+    else value end end
+
     if Debug.debug_yaku() do
       IO.puts("Going thru list #{yaku_list_name}: #{inspect(Enum.map(yaku_list, & &1["display_name"]), limit: :infinity)}")
     end
-    new_yaku = yaku_list
-      |> Enum.filter(fn %{"when" => cond_spec} -> Conditions.check_cnf_condition(state, cond_spec, context) end)
-      |> Enum.map(fn %{"display_name" => name, "value" => value} ->
-        if is_list(value) do
-          value = value
-          |> Enum.chunk_every(2)
-          |> Enum.flat_map(fn [amt, type] -> [Actions.interpret_amount(state, context, amt) |> Utils.try_integer(), type] end)
-          {name, value}
-        else
-          value = Actions.interpret_amount(state, context, value)
-          # default to point_name for the units
-          score_rules = Rules.get(state.rules_ref, "score_calculation", %{})
-          # for rulesets that don't specify units of points for yakuman lists, use the point name only
-          unit = score_rules["point_name"]
-          {name, [value, unit]}
-        end
-      end)
-    eligible_yaku = existing_yaku ++ new_yaku
-    yaku_map = for {name, value} <- eligible_yaku, reduce: %{} do
-      acc -> Map.update(acc, name, value, &add_yaku_values(&1, value))
+
+    yaku_precedence = Rules.get(state.rules_ref, "yaku_precedence", %{})
+    existing_yaku_names = MapSet.new(existing_yaku, fn {name, value} -> {Map.get(yaku_precedence, name, []), Enum.drop_every(default_value.(value), 2)} end)
+    new_yaku = for %{"display_name" => name, "when" => cond_spec, "value" => value} = yaku <- yaku_list, reduce: {[], existing_yaku_names} do
+      {acc, skip} ->
+        value = default_value.(value)
+        denominations = Enum.drop_every(value, 2)
+        if {name, denominations} not in skip and Conditions.check_cnf_condition(state, cond_spec, context) do
+          new_skip = Map.get(yaku_precedence, name, [])
+          |> Enum.map(&{&1, denominations})
+          |> MapSet.new()
+          {[%{yaku | "value" => value} | acc], MapSet.union(skip, new_skip)}
+        else {acc, skip} end
     end
-    eligible_yaku = eligible_yaku
-      |> Enum.map(fn {name, _value} -> name end)
-      |> Enum.uniq()
-      |> Enum.map(fn name -> {name, yaku_map[name]} end)
+    |> elem(0)
+    |> Enum.map(fn %{"display_name" => name, "value" => value} ->
+      value = value
+      |> Enum.chunk_every(2)
+      |> Enum.flat_map(fn [amt, type] -> [Actions.interpret_amount(state, context, amt) |> Utils.try_integer(), type] end)
+      {name, value}
+    end)
+    eligible_yaku = dedup_yaku(existing_yaku ++ new_yaku)
     eligible_yaku = case Rules.get(state.rules_ref, "yaku_precedence") do
       nil -> eligible_yaku
       yaku_precedence ->

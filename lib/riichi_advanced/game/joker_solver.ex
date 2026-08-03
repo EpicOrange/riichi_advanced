@@ -157,8 +157,9 @@ defmodule RiichiAdvanced.GameState.JokerSolver do
 
     yaku = if not Enum.empty?(yaku) and highest_scoring_yaku_only do [Enum.max_by(yaku, fn {_name, value} -> value end)] else yaku end
     yaku2 = if not Enum.empty?(yaku2) and highest_scoring_yaku_only do [Enum.max_by(yaku2, fn {_name, value} -> value end)] else yaku2 end
-    yaku = Enum.map(yaku, fn {name, value} -> {translate(state, name), value} end)
-    yaku2 = Enum.map(yaku2, fn {name, value} -> {translate(state, name), value} end)
+    yaku = Enum.map(yaku, fn {name, value} -> {translate(state, name), value} end) |> Scoring.dedup_yaku()
+    yaku2 = Enum.map(yaku2, fn {name, value} -> {translate(state, name), value} end) |> Scoring.dedup_yaku()
+
     points = Enum.map(yaku ++ yaku2, fn {_name, value} -> value end) |> Enum.reduce([], &Scoring.add_yaku_values/2)
 
     {state, Map.merge(cxt, %{
