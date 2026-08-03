@@ -1,12 +1,8 @@
 defmodule RiichiAdvanced.GameState.JokerSolver do
-  alias RiichiAdvanced.GameState.Actions, as: Actions
-  alias RiichiAdvanced.GameState.Debug, as: Debug
   alias RiichiAdvanced.GameState.Rules, as: Rules
-  alias RiichiAdvanced.GameState.Scoring, as: Scoring
   alias RiichiAdvanced.GameState.TileBehavior, as: TileBehavior
   alias RiichiAdvanced.Riichi, as: Riichi
   alias RiichiAdvanced.Utils, as: Utils
-  import RiichiAdvanced.GameState
 
   # TODO type these
   def is_dealer?(seat, kyoku, available_seats) do

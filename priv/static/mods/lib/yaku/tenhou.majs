@@ -44,8 +44,8 @@ end
 
 on after_start do set_status_all("first_turn") end
 define_play_effect any, unset_status("first_turn")
-on before_turn_change do if status_missing("match_start", "initial_flowers") do unset_status("first_turn") end end
-on before_call do if !calls_invalidate and status_missing("match_start", "initial_flowers") do unset_status_all("first_turn") end end
+on before_turn_change do if not_anyone_status("match_start") and not_anyone_status("initial_flowers") do unset_status("first_turn") end end
+on before_call do if !calls_invalidate do unset_status_all("first_turn") end end
 
 define_yaku !tenhou_list, !tenhou_name, [!tenhou_value, !tenhou_han], status("first_turn") and won_by_draw and seat_is("east")
 if !chiihou_is_tsumo do

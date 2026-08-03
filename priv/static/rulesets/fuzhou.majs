@@ -31,6 +31,7 @@ require "tsumo", %{scoring_key: "win"}
 require "agarirenchan"
 require "head_bump"
 require "default_flowers", %{draw_after_flower_phase: true, auto_flower_by_default: true, replace_from_dead_wall: true, shift_dead_wall: true}
+require "yaku/tenhou", %{tenhou_name: "Blessing of Heaven", tenhou_value: 50, chiihou_name: "Blessing of Earth", chiihou_value: 40, chiihou_is_tsumo: true}
 
 on after_initialization do
   add_rule("Rules", "Win Condition", "You may win with one of the following:", -100)
@@ -203,8 +204,6 @@ define_yaku yaku, "Golden Pair", [20, ""], match(["hand", "calls", "winning_tile
 define_yaku yaku, "Golden Dragon", [40, ""], match(["hand", "calls", "winning_tile"], ["golden_dragon"])
 
 define_yaku yaku, "Robbing the Gold", [50, ""], status("qiangjin")
-
-require "yaku/tenhou", %{tenhou_name: "Blessing of Heaven", tenhou_value: 50, chiihou_name: "Blessing of Earth", chiihou_value: 40, chiihou_is_tsumo: true}
 
 apply merge, "yaku_precedence", %{
   "Golden Pair": ["Gold"],

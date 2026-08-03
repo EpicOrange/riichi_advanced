@@ -74,8 +74,8 @@ define_set chun_pair, ~s"7z 7z"
 # this narrows it down to 4 cases
 # - 4 triplets
 # - 3 triplets, 1 kontsu
-# - 3 kontsu, 1 triplet
 # - 4 kontsu
+# - 3 kontsu, 1 triplet
 on before_scoring do
   four_triplet_points = 0
   three_triplet_points = 0
