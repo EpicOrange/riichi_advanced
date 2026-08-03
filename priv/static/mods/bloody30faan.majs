@@ -114,10 +114,10 @@ apply set_append, "tenpai_definition", +@knitted_tenpai
 apply set_append, "win_definition", +@knitted_win
 
 define_match joker_tanki_tenpai, ~m"""
-    exhaustive, (10j 12j):1, mentsu:4,
-  | (10j 12j):1, pair:6,
-  | unique, (10j 12j):1, orphans_any:12,
-  | unique, (10j 12j):2, orphans_any:11,
+    exhaustive, (10j 12j):1, mentsu:4
+  | (10j 12j):1, pair:6
+  | unique, (10j 12j):1, orphans_any:12
+  | unique, (10j 12j):2, orphans_any:11
   | unique, (10j 12j):1, knit1:12
   | unique, (10j 12j):1, knit2:12
   | unique, (10j 12j):1, knit3:12
