@@ -58,7 +58,8 @@ define_yaku yaku, "Pure Double Terminal Sequences", [20, "Faan"], match(["hand",
 # yaku/chanta.majs adds Mixed Outside Hand (5 Faan) and Pure Outside Hand (8 Faan)
 # yaku/honroutou.majs adds Mixed Terminals (10 Faan) and Pure Terminals (30 Faan)
 define_yaku_precedence "Double Terminal Sequences", ["Terminal Sequences"]
-define_yaku_precedence "Pure Double Terminal Sequences", ["Double Terminal Sequences"]
+define_yaku_precedence "Pure Double Terminal Sequences", ["Pure Double Identical Sequences", "Double Terminal Sequences", "Double Identical Sequences", "Identical Sequences"]
+define_yaku_precedence "Pure Double Identical Sequences", ["Double Terminal Sequences", "Double Identical Sequences", "Identical Sequences"]
 define_yaku_precedence "Pure Outside Hand", ["Mixed Outside Hand"]
 define_yaku_precedence "Mixed Terminals", ["Pure Outside Hand", "Mixed Outside Hand"]
 define_yaku_precedence "Mixed Flush", ["One Voided Suit"]

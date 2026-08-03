@@ -138,9 +138,9 @@ defmodule RiichiAdvanced.YakuTest.Bloody30FaanYaku do
       east: %{
         yaku: [
           {"All Sequences", [2, "Faan"]},
-          {"Identical Sequences", [2, "Faan"]},
           {"One Voided Suit", [2, "Faan"]},
-          {"Pure Double Identical Sequences", [15, "Faan"]},
+          {"Seven Pairs", [5, "Faan"]},
+          {"Three Consecutive Pairs", [2, "Faan"]},
           {"Pure Double Terminal Sequences", [20, "Faan"]},
           @closed, @seven, @no_honors
         ]
