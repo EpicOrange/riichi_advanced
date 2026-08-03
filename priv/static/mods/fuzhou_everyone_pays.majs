@@ -1,0 +1,3 @@
+on before_win do
+  make_responsible_for("others")
+end
