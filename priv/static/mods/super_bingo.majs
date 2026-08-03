@@ -91,7 +91,8 @@ define_mod super_bingo_bases_loaded, name: "Bases Loaded (unimplemented)", categ
 define_mod super_bingo_crazy_cherry, name: "Crazy Cherry (unimplemented)", category: "Super Bingo", desc: "unimplemented"
 define_mod super_bingo_orochi, name: "Orochi (unimplemented)", category: "Super Bingo", desc: "unimplemented"
 
-
+remove_mod sanma_disable_pei
+remove_mod sanma_pei_yakuhai
 
 
 

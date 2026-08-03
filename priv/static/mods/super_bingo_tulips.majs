@@ -1,6 +1,6 @@
 on after_initialization do
   add_rule("Rules", "Tulips", """
-    If you win with a concealed hand, flip the top tile of the wall after revealed dora indicators. Gain one chip for each matching tile, and if any tiles did match, repeat the process by flipping over the next top tile. This process stops once a match is not found OR if the end of the wall is reached (no more top tiles).
+    If you win with riichi, flip the top tile of the wall after revealed dora indicators. Gain one chip for each matching tile, and if any tiles did match, repeat the process by flipping over the next top tile. This process stops once a match is not found OR if the end of the wall is reached (no more top tiles).
     """)
 end
 
@@ -21,57 +21,62 @@ define_yaku shuugi, "Tulips", ["arisu_matches", "⛀"], arisu_matches >= 1
 
 define_set seven, ~s"7p|7s"
 def perform_arisu do
-  set_status("performing_arisu")
-  push_message("won with a closed hand, and will flip tiles on the wall from the dora indicator onward, scoring shuugi for every matching tile in hand")
-  save_revealed_tiles
-  save_tile_behavior("before wrap")
-
-  # wrap tiles like space mahjong (exclude nonexistent manzu suit)
-  set_tile_ordering(["9p", "1p"])
-  set_tile_ordering(["9s", "1s"])
-  set_tile_ordering(["1z", "2z", "3z", "4z", "1z"])
-  set_tile_ordering(["5z", "6z", "7z", "5z"])
-
-  lives = 1
-  # ippatsu gives +1 extra life
-  if status("ippatsu") do lives += 1 end
-  # sanbaiman+ gives +1 extra life
-  if points >= 11 or points2 >= 1 do lives += 1 end
-
-  # count sevens to get tier
   cond do
-    "$key" == "tsumo"   -> add_counter("seven_pins", "count_matches", ["hand", "calls", "draw"], ~m"nojoker, seven:1")
-    "$key" == "ron"     -> add_counter("seven_pins", "count_matches", ["hand", "calls", "last_discard"], ~m"nojoker, seven:1")
-    "$key" == "chankan" -> add_counter("seven_pins", "count_matches", ["hand", "calls", "last_called_tile"], ~m"nojoker, seven:1")
+    status("riichi")                                      -> set_status("performing_arisu"); push_message("won with a closed hand, and will flip tiles on the wall from the dora indicator onward, scoring shuugi for every matching tile in hand")
+    "$key" == "tsumo"   and has_yaku_with_hand(3, "★")    -> set_status("performing_arisu"); push_message("won with yakuman, and will flip tiles on the wall from the dora indicator onward, scoring shuugi for every matching tile in hand")
+    "$key" == "ron"     and has_yaku_with_discard(3, "★") -> set_status("performing_arisu"); push_message("won with yakuman, and will flip tiles on the wall from the dora indicator onward, scoring shuugi for every matching tile in hand")
+    "$key" == "chankan" and has_yaku_with_call(3, "★")    -> set_status("performing_arisu"); push_message("won with yakuman, and will flip tiles on the wall from the dora indicator onward, scoring shuugi for every matching tile in hand")
   end
-  cond do
-    "$key" == "tsumo"   and has_yaku_with_hand(3, "★")    -> tier = 3; push_message("starts in tier 3 for earning triple yakuman")
-    "$key" == "ron"     and has_yaku_with_discard(3, "★") -> tier = 3; push_message("starts in tier 3 for earning triple yakuman")
-    "$key" == "chankan" and has_yaku_with_call(3, "★")    -> tier = 3; push_message("starts in tier 3 for earning triple yakuman")
-    "$key" == "tsumo"   and has_yaku_with_hand(2, "★")    -> tier = 2; push_message("starts in tier 2 for earning double yakuman")
-    "$key" == "ron"     and has_yaku_with_discard(2, "★") -> tier = 2; push_message("starts in tier 2 for earning double yakuman")
-    "$key" == "chankan" and has_yaku_with_call(2, "★")    -> tier = 2; push_message("starts in tier 2 for earning double yakuman")
-    seven_pins >= 3 and seven_sous >= 3 -> tier = 3; push_message("starts in tier 3 for having 3 sevens of both suits")
-    seven_pins >= 3 or  seven_sous >= 3 -> tier = 2; push_message("starts in tier 2 for having 3 sevens in one suit")
-    true                                -> tier = 1
-  end
+  if status("performing_arisu") do
+    save_revealed_tiles
+    save_tile_behavior("before wrap")
 
-  pause(2000)
-  arisu_50(%{key: "$key"})
-  arisu_50(%{key: "$key"})
-  arisu_50(%{key: "$key"})
-  arisu_50(%{key: "$key"})
-  if tier == 3 do
-    pause(1000)
-    push_message("doubles their chip payment for being in tier 3")
-    arisu_matches *= 2
+    # wrap tiles like space mahjong (exclude nonexistent manzu suit)
+    set_tile_ordering(["9p", "1p"])
+    set_tile_ordering(["9s", "1s"])
+    set_tile_ordering(["1z", "2z", "3z", "4z", "1z"])
+    set_tile_ordering(["5z", "6z", "7z", "5z"])
+
+    lives = 1
+    # ippatsu gives +1 extra life
+    if status("ippatsu") do lives += 1 end
+    # sanbaiman+ gives +1 extra life
+    if points >= 11 or points2 >= 1 do lives += 1 end
+
+    # count sevens to get tier
+    cond do
+      "$key" == "tsumo"   -> add_counter("seven_pins", "count_matches", ["hand", "calls", "draw"], ~m"nojoker, seven:1")
+      "$key" == "ron"     -> add_counter("seven_pins", "count_matches", ["hand", "calls", "last_discard"], ~m"nojoker, seven:1")
+      "$key" == "chankan" -> add_counter("seven_pins", "count_matches", ["hand", "calls", "last_called_tile"], ~m"nojoker, seven:1")
+    end
+    cond do
+      "$key" == "tsumo"   and has_yaku_with_hand(3, "★")    -> tier = 3; push_message("starts in tier 3 for earning triple yakuman")
+      "$key" == "ron"     and has_yaku_with_discard(3, "★") -> tier = 3; push_message("starts in tier 3 for earning triple yakuman")
+      "$key" == "chankan" and has_yaku_with_call(3, "★")    -> tier = 3; push_message("starts in tier 3 for earning triple yakuman")
+      "$key" == "tsumo"   and has_yaku_with_hand(2, "★")    -> tier = 2; push_message("starts in tier 2 for earning double yakuman")
+      "$key" == "ron"     and has_yaku_with_discard(2, "★") -> tier = 2; push_message("starts in tier 2 for earning double yakuman")
+      "$key" == "chankan" and has_yaku_with_call(2, "★")    -> tier = 2; push_message("starts in tier 2 for earning double yakuman")
+      seven_pins >= 3 and seven_sous >= 3 -> tier = 3; push_message("starts in tier 3 for having 3 sevens of both suits")
+      seven_pins >= 3 or  seven_sous >= 3 -> tier = 2; push_message("starts in tier 2 for having 3 sevens in one suit")
+      true                                -> tier = 1
+    end
+
+    pause(2000)
+    arisu_50(%{key: "$key"})
+    arisu_50(%{key: "$key"})
+    arisu_50(%{key: "$key"})
+    arisu_50(%{key: "$key"})
+    if tier == 3 do
+      pause(1000)
+      push_message("doubles their chip payment for being in tier 3")
+      arisu_matches *= 2
+    end
+    pause(3000)
+    remove_attr([-18, -16, -14, -12, -10, -8, -6], ["inactive"])
+    clear_scry
+    load_revealed_tiles
+    load_tile_behavior("before wrap")
   end
-  pause(3000)
-  remove_attr([-18, -16, -14, -12, -10, -8, -6], ["inactive"])
-  clear_scry
-  load_revealed_tiles
-  load_tile_behavior("before wrap")
-  pause(0)
   cond do
     "$key" == "tsumo"   -> win_by_draw("zan_tsumo")
     "$key" == "ron"     -> win_by_discard("zan_ron")
