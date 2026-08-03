@@ -4,10 +4,10 @@ defmodule RiichiAdvanced.YakuTest.SpeedTonpuuMechanics do
 
   @speed_tonpuu_mods [
     %{name: "honba", config: %{value: 100}},
-    %{name: "yaku/riichi", config: %{bet: 1000, drawless: false}},
+    %{name: "lib/yaku/riichi", config: %{bet: 1000, drawless: false}},
     "yaku/ippatsu",
-    "kuikae_nashi",
-    %{name: "min_han", config: %{min: 1, han: "Han"}},
+    "lib/kuikae_nashi",
+    %{name: "lib/min_han", config: %{min: 1, han: "Han"}},
     "double_wind_4_fu",
     %{name: "oka", config: %{ante: 4}},
     %{name: "uma", config: %{_1st: 10, _2nd: 4, _3rd: -4, _4th: -10}},
@@ -15,16 +15,16 @@ defmodule RiichiAdvanced.YakuTest.SpeedTonpuuMechanics do
     %{name: "suufon_renda", config: %{name: "Suufon Renda"}},
     "suucha_riichi",
     %{name: "kyuushu_kyuuhai", config: %{name: "Kyuushu Kyuuhai"}},
-    "agarirenchan",
+    "lib/agarirenchan",
     "tenpairenchan",
     %{name: "agariyame", config: %{first_place_only: false, may_choose: true, round: "every"}},
     %{name: "tenpaiyame", config: %{first_place_only: false, may_choose: true, round: "every"}},
     "kiriage_mangan",
     "double_round_wind",
     "yaku/open_riichi",
-    "yaku/kansai_chiitoitsu",
+    "lib/yaku/kansai_chiitoitsu",
     "kokushi_ankan_chankan",
-    %{name: "yaku/sanrenkou", config: %{
+    %{name: "lib/yaku/sanrenkou", config: %{
       san_list: "yaku", san_name: "Sanrenkou", san_value: 2, san_han: "Han",
       suu_list: "yakuman", suu_name: "Suurenkou", suu_value: 1, suu_han: "★"
     }},
@@ -34,7 +34,7 @@ defmodule RiichiAdvanced.YakuTest.SpeedTonpuuMechanics do
     # "pao_suukantsu", # note: affects the test 'suukantsu rinshan is scored as normal tsumo scoring shuugi'
     # "pao_rinshan",
     %{name: "yaku/riichi_renhou", config: %{is: "Yakuman"}},
-    %{name: "shuugi", config: %{worth: 5000, starting_shuugi: 100, pao_pays_all: true}},
+    %{name: "lib/shuugi", config: %{worth: 5000, starting_shuugi: 100, pao_pays_all: true}},
     %{name: "shuugi/ippatsu", config: %{chips: 1}},
     %{name: "shuugi/ura", config: %{chips: 1}},
     %{name: "shuugi/yakuman", config: %{ron_chips: 10, tsumo_chips: 5, per_yakuman: true, allow_kazoe: true}},

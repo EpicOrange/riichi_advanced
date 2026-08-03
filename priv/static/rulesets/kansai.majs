@@ -6,7 +6,7 @@ require "yaku/sanrenkou", %{san_name: "Sanrenkou", san_value: 2}
 require "yaku/riichi_suurenkou"
 require "yaku/sanpuukou", %{dai_name: "Sanpuukou", dai_value: 2}
 require "yaku/kansai_chiitoitsu"
-apply set_append, "default_mods", [%{name: "tobi", config: %{below: 0}}, "sanma_pei_yakuhai"]
+apply set_append, "default_mods", [%{name: "lib/tobi", config: %{below: 0}}, "sanma_pei_yakuhai"]
 
 define_yaku yakuman, "Manzu Chinitsu", [1, "★"], winning_hand_consists_of(["1m","2m","3m","4m","5m","6m","7m","8m","9m"]), ["Chinitsu"]
 define_yaku meta_yaku, "Honitsu Chiitoitsu", [6, "Han"], has_existing_yaku("Honitsu", "Chiitoitsu"), ["Honitsu", "Chiitoitsu"]
@@ -53,20 +53,18 @@ define_yaku_precedence "Manzu Honitsu", ["Honitsu", "Chinitsu"]
 
 # below is mod and preset stuff
 
-remove_mod "yaku/kansai_chiitoitsu" # this is preapplied
-
 define_mod_category "Kansai", prepend: true
-define_mod kansai_draw, name: "Draw To Dora Indicator", category: "Kansai", order: 6, deps: ["dora"], desc: "The game ends once the next draw is the last dora indicator."
-define_mod kansai_flowers, name: "Kansai Flowers", category: "Kansai", order: 5, desc: "Four flowers are added to the game and act as nukidora. Flowers cannot form sequences, triplets, or pairs. North winds are no longer nukidora, but they are now yakuhai: a triplet is worth 1 han, and a pair is worth 2 fu."
+define_mod "lib/kansai_draw", name: "Draw To Dora Indicator", category: "Kansai", order: 6, deps: ["dora"], desc: "The game ends once the next draw is the last dora indicator."
+define_mod "lib/kansai_flowers", name: "Kansai Flowers", category: "Kansai", order: 5, desc: "Four flowers are added to the game and act as nukidora. Flowers cannot form sequences, triplets, or pairs. North winds are no longer nukidora, but they are now yakuhai: a triplet is worth 1 han, and a pair is worth 2 fu."
 define_mod kansai_yaku, name: "Kansai Yaku", category: "Kansai", order: 5, desc: "Enables kansai yaku, namely: Three Consecutive Triplets (2 Han), Four Consecutive Triplets (Yakuman), Big Three Winds (2 Han), Manzu Chinitsu (Yakuman), Honitsu Chiitoitsu (6 Han), and Chinitsu Chiitoitsu (Yakuman). The last three don't stack with Honitsu/Chinitsu/Chiitoitsu."
-define_mod kansai_no_furiten_riichi, name: "No Furiten Riichi", category: "Kansai", order: 6, deps: ["yaku/riichi"], desc: "Riichi is disallowed while in furiten."
+define_mod kansai_no_furiten_riichi, name: "No Furiten Riichi", category: "Kansai", order: 6, deps: ["lib/yaku/riichi"], desc: "Riichi is disallowed while in furiten."
 define_mod kansai_no_100_sticks, name: "No 100 sticks", category: "Kansai", order: 5, desc: "All scores are rounded to 1000s instead of 100s."
 define_mod kansai_30_fu, name: "30 Fu", category: "Kansai", order: 5, conflicts: ["kansai_40_fu"], desc: "Fu is fixed at 30."
 define_mod kansai_40_fu, name: "40 Fu", category: "Kansai", order: 5, conflicts: ["kansai_30_fu"], desc: "Fu is fixed at 40."
 define_mod kansai_shuugi, name: "Zan Shuugi", category: "Kansai", order: 5, deps: ["shuugi"], desc: "Enable zan shuugi: having 4 flowers is 10 chips ron / 5 chips tsumo. Same payment for non-kazoe yakuman."
-define_mod zan_scoring, name: "Zan Scoring", category: "Kansai", order: 5, desc: "Use the zan scoring table."
+define_mod "lib/zan_scoring", name: "Zan Scoring", category: "Kansai", order: 5, desc: "Use the zan scoring table."
 
-apply append, "default_mods", ["kansai_draw", "kansai_flowers", "kansai_no_furiten_riichi", "kansai_no_100_sticks", "kansai_30_fu", %{name: "sanma_no_tsumo_loss", config: %{"method" => "half"}}, "kansai_shuugi", "zan_scoring"]
+apply append, "default_mods", ["lib/kansai_draw", "lib/kansai_flowers", "kansai_no_furiten_riichi", "kansai_no_100_sticks", "kansai_30_fu", %{name: "sanma_no_tsumo_loss", config: %{"method" => "half"}}, "kansai_shuugi", "lib/zan_scoring"]
 
 # set default tobi option to below 1
 replace all, "available_mods",

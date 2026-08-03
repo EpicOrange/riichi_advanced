@@ -148,7 +148,7 @@ config_mod seven_flower_win, name: "win_on", values: ["7 flowers", "8 flowers", 
 define_mod pao_12_tile, name: "12 Tile Pao", desc: "If you discarded a tile called as someone's fourth call, you are liable for paying for their hand if they win."
 define_mod hk_flowers_open_hand, name: "Flowers Open Hand", desc: "A hand with flowers declared cannot earn 1 fan from Concealed Hand."
 define_mod remove_flowers, name: "Remove Flowers", conflicts: ["seven_flower_win"], desc: "Remove all eight flowers from the wall."
-define_mod head_bump, name: "Head Bump", desc: "Enable head bump. In case of multiple hu, only the person closest in turn order gets the win."
+define_mod "lib/head_bump", name: "Head Bump", desc: "Enable head bump. In case of multiple hu, only the person closest in turn order gets the win."
 define_mod hk_seven_pairs, name: "Seven Pairs", desc: "Add seven pairs as a possible winning hand, worth 4 fan."
 define_mod hk_repeat_on_draw, name: "Repeat On Draw", desc: "If the round ends in a draw, the round repeats."
 

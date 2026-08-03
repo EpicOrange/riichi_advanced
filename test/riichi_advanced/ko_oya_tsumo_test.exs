@@ -7,22 +7,22 @@ defmodule RiichiAdvanced.KoOyaTsumoTest do
 
   @default_riichi_mods [
     %{name: "honba", config: %{"value" => 100}},
-    %{name: "yaku/riichi", config: %{"bet" => 1000, "drawless" => false}},
+    %{name: "lib/yaku/riichi", config: %{"bet" => 1000, "drawless" => false}},
     %{name: "nagashi", config: %{"is" => "Mangan", counts_as: "draw"}},
-    %{name: "tobi", config: %{"below" => 0}},
+    %{name: "lib/tobi", config: %{"below" => 0}},
     %{
      name: "uma",
      config: %{"_1st" => 10, "_2nd" => 5, "_3rd" => -5, "_4th" => -10}
     },
-    "agarirenchan",
+    "lib/agarirenchan",
     "tenpairenchan",
-    "kuikae_nashi",
+    "lib/kuikae_nashi",
     "double_wind_4_fu",
     "pao",
     "kokushi_ankan_chankan",
     %{name: "suufon_renda", config: %{name: "Suufon Renda"}},
     "suucha_riichi",
-    "suukaikan",
+    "lib/suukaikan",
     %{name: "kyuushu_kyuuhai", config: %{name: "Kyuushu Kyuuhai"}},
     %{name: "dora", config: %{"start_indicators" => 1}},
     "ura",
@@ -30,7 +30,7 @@ defmodule RiichiAdvanced.KoOyaTsumoTest do
     "yaku/ippatsu",
     %{name: "yaku/riichi_renhou", config: %{"is" => "Yakuman"}},
     "show_waits",
-    %{name: "min_han", config: %{"min" => 1, han: "Han"}},
+    %{name: "lib/min_han", config: %{"min" => 1, han: "Han"}},
     %{name: "aka", config: %{"man" => 1, "pin" => 1, "sou" => 1}}
   ]
 

@@ -397,7 +397,7 @@ define_button kakan,
 
 define_button ron,
   display_name: "Wu",
-  precedence_over: ["chii", "pon", "kan", "daiminkan", "ankan", "kakan"],
+  precedence_over: ["chii", "pon", "lib/kan", "daiminkan", "ankan", "kakan"],
   show_when: not_our_turn
     and match(["hand", "calls", "draw"], ["tenpai"])
     and someone_else_just_discarded
@@ -411,7 +411,7 @@ define_button ron,
 
 define_button chankan,
   display_name: "Wu",
-  precedence_over: ["chii", "pon", "kan", "daiminkan", "ankan", "kakan"],
+  precedence_over: ["chii", "pon", "lib/kan", "daiminkan", "ankan", "kakan"],
   show_when: not_our_turn
     and match(["hand", "calls", "draw"], ["tenpai"])
     and last_call_is("kakan")
@@ -425,7 +425,7 @@ define_button chankan,
 
 define_button tsumo,
   display_name: "Wu",
-  precedence_over: ["chii", "pon", "kan", "daiminkan", "ankan", "kakan"],
+  precedence_over: ["chii", "pon", "lib/kan", "daiminkan", "ankan", "kakan"],
   show_when: our_turn
     and status_missing("match_start")
     and match(["hand", "calls", "draw"], ["tenpai"])
@@ -515,7 +515,7 @@ define_auto_button _4_auto_no_call,
   display_name: "C",
   desc: "Skip all calls except wins."
   do
-    if not_our_turn and buttons_include("skip") and buttons_exclude("ron", "chankan") do
+    if not_our_turn and buttons_include("skip") and buttons_exclude("lib/ron", "chankan") do
       press_button("skip")
     end
   end

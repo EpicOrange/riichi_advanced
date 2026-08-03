@@ -40,7 +40,7 @@ defmodule RiichiAdvanced.RiichiMechanicsTest do
   end
 
   test "riichi - kuikae nashi" do
-    TestUtils.test_yaku_advanced("riichi", ["kuikae_nashi"], """
+    TestUtils.test_yaku_advanced("riichi", ["lib/kuikae_nashi"], """
     {
       "starting_hand": {
         "east": ["2m", "2m", "5z", "5m", "5m", "5z", "6m", "6m", "5z", "5s", "6s", "7s", "8s"],
@@ -72,7 +72,7 @@ defmodule RiichiAdvanced.RiichiMechanicsTest do
   end
 
   test "riichi - kuikae nashi 2" do
-    TestUtils.test_yaku_advanced("riichi", ["kuikae_nashi"], """
+    TestUtils.test_yaku_advanced("riichi", ["lib/kuikae_nashi"], """
     {
       "starting_hand": {
         "east": ["2m", "2m", "5z", "5m", "5m", "5z", "6m", "6m", "5z", "5s", "6s", "7s", "8p"],
@@ -103,7 +103,7 @@ defmodule RiichiAdvanced.RiichiMechanicsTest do
   end
 
   test "riichi - can't kuikae softlock" do
-    TestUtils.test_yaku_advanced("riichi", ["kuikae_nashi"], """
+    TestUtils.test_yaku_advanced("riichi", ["lib/kuikae_nashi"], """
     {
       "starting_hand": {
         "east": ["2m", "2m", "5z", "5m", "5m", "5z", "6m", "6m", "5z", "6s", "6s", "7s", "8s"],
@@ -135,7 +135,7 @@ defmodule RiichiAdvanced.RiichiMechanicsTest do
 
 
   test "chinitsu - fifth tile tenpai" do
-    TestUtils.test_yaku_advanced("chinitsu", [%{name: "yaku/riichi", config: %{bet: 1000, drawless: true}}, "no_honors"], """
+    TestUtils.test_yaku_advanced("chinitsu", [%{name: "lib/yaku/riichi", config: %{bet: 1000, drawless: true}}, "no_honors"], """
     {
       "starting_hand": {
         "east": ["1s", "2s", "3s", "4s", "5s", "6s", "4s", "5s", "6s", "9s", "9s", "9s", "9s"],
@@ -158,7 +158,7 @@ defmodule RiichiAdvanced.RiichiMechanicsTest do
   end
 
   test "chinitsu - no fifth tile tenpai" do
-    TestUtils.test_yaku_advanced("chinitsu", [%{name: "yaku/riichi", config: %{bet: 1000, drawless: true}}, "no_honors", "no_fifth_tile_tenpai"], """
+    TestUtils.test_yaku_advanced("chinitsu", [%{name: "lib/yaku/riichi", config: %{bet: 1000, drawless: true}}, "no_honors", "no_fifth_tile_tenpai"], """
     {
       "starting_hand": {
         "east": ["1s", "2s", "3s", "4s", "5s", "6s", "4s", "5s", "6s", "9s", "9s", "9s", "9s"],
@@ -181,7 +181,7 @@ defmodule RiichiAdvanced.RiichiMechanicsTest do
   end
 
   test "riichi - kazoe" do
-    TestUtils.test_yaku_advanced("riichi", [%{name: "yaku/riichi", config: %{bet: 1000, drawless: false}}, "yaku/ippatsu", %{name: "min_han", config: %{min: 1, han: "Han"}}], """
+    TestUtils.test_yaku_advanced("riichi", [%{name: "lib/yaku/riichi", config: %{bet: 1000, drawless: false}}, "yaku/ippatsu", %{name: "lib/min_han", config: %{min: 1, han: "Han"}}], """
     {
       "starting_hand": {
         "east": ["2p", "2p", "3p", "3p", "4p", "4p", "5p", "5p", "6p", "6p", "7p", "7p", "8p"],
@@ -206,7 +206,7 @@ defmodule RiichiAdvanced.RiichiMechanicsTest do
   end
 
   test "riichi - no kazoe" do
-    TestUtils.test_yaku_advanced("riichi", [%{name: "yaku/riichi", config: %{bet: 1000, drawless: false}}, "yaku/ippatsu", "no_kazoe_yakuman", %{name: "min_han", config: %{min: 1, han: "Han"}}], """
+    TestUtils.test_yaku_advanced("riichi", [%{name: "lib/yaku/riichi", config: %{bet: 1000, drawless: false}}, "yaku/ippatsu", "no_kazoe_yakuman", %{name: "lib/min_han", config: %{min: 1, han: "Han"}}], """
     {
       "starting_hand": {
         "east": ["2p", "2p", "3p", "3p", "4p", "4p", "5p", "5p", "6p", "6p", "7p", "7p", "8p"],
@@ -231,7 +231,7 @@ defmodule RiichiAdvanced.RiichiMechanicsTest do
   end
 
   test "riichi - kazoe with yakuman only" do
-    TestUtils.test_yaku_advanced("riichi", [%{name: "yaku/riichi", config: %{bet: 1000, drawless: false}}, "yaku/ippatsu", "no_kazoe_yakuman", %{name: "min_han", config: %{min: "Yakuman", han: "Han"}}], """
+    TestUtils.test_yaku_advanced("riichi", [%{name: "lib/yaku/riichi", config: %{bet: 1000, drawless: false}}, "yaku/ippatsu", "no_kazoe_yakuman", %{name: "lib/min_han", config: %{min: "Yakuman", han: "Han"}}], """
     {
       "starting_hand": {
         "east": ["2p", "2p", "3p", "3p", "4p", "4p", "5p", "5p", "6p", "6p", "7p", "7p", "8p"],

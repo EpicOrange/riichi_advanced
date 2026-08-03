@@ -3,7 +3,7 @@ defmodule RiichiAdvanced.CosmicMechanicsTest do
   alias RiichiAdvanced.TestUtils, as: TestUtils
 
   @cosmic_mods [
-    "yaku/riichi",
+    "lib/yaku/riichi",
     "yaku/ippatsu",
     "kontsu",
     "yaku/kontsu_yaku",
@@ -42,7 +42,7 @@ defmodule RiichiAdvanced.CosmicMechanicsTest do
   end
 
   test "cosmic - mini-sangen is not enough han" do
-    TestUtils.test_yaku_advanced("cosmic", [%{name: "min_han", config: %{min: 1, han: "Han"}} | @cosmic_mods], """
+    TestUtils.test_yaku_advanced("cosmic", [%{name: "lib/min_han", config: %{min: 1, han: "Han"}} | @cosmic_mods], """
     {
       "starting_hand": {
         "east": ["9m", "1m", "2m", "8p", "9p", "1p", "1s", "2s", "3s", "5z", "6z", "7z", "6p"],

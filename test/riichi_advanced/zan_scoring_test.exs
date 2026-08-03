@@ -5,13 +5,13 @@ defmodule RiichiAdvanced.ZanScoringTest do
   @zan_mods [
     %{name: "honba", config: %{value: 1000}},
     %{name: "nagashi", config: %{is: "Yakuman", counts_as: "draw"}},
-    %{name: "tobi", config: %{below: 1}},
-    %{name: "yaku/riichi", config: %{bet: 1000, drawless: true}},
+    %{name: "lib/tobi", config: %{below: 1}},
+    %{name: "lib/yaku/riichi", config: %{bet: 1000, drawless: true}},
     %{name: "uma", config: %{_1st: 30, _2nd: 10, _3rd: -10, _4th: -30}},
-    "agarirenchan",
+    "lib/agarirenchan",
     "tenpairenchan",
     %{name: "tenpaiyame", config: %{first_place_only: true, may_choose: false, round: "all_last"}},
-    "kuikae_nashi",
+    "lib/kuikae_nashi",
     "double_wind_4_fu",
     "kokushi_ankan_chankan",
     "first_gets_riichi_sticks",
@@ -24,34 +24,34 @@ defmodule RiichiAdvanced.ZanScoringTest do
     # "ura",
     # "kandora",
     "yaku/open_riichi",
-    %{name: "yaku/sanrenkou", config: %{
+    %{name: "lib/yaku/sanrenkou", config: %{
       san_list: "yaku", san_name: "Sanrenkou", san_value: 2, san_han: "Han",
       suu_list: "yakuman", suu_name: "Suurenkou", suu_value: 1, suu_han: "★"
     }},
-    %{name: "yaku/sanpuukou", config: %{
+    %{name: "lib/yaku/sanpuukou", config: %{
       shou_list: "", shou_name: "", shou_value: 0, shou_han: "",
       dai_list: "yaku", dai_name: "Sanpuukou", dai_value: 2, dai_han: "Han"
     }},
     %{name: "yaku/riichi_renhou", config: %{is: "Yakuman"}},
     "show_waits",
     "sanma_pei_yakuhai",
-    %{name: "shuugi", config: %{worth: 1000, starting_shuugi: 0, pao_pays_all: true}},
+    %{name: "lib/shuugi", config: %{worth: 1000, starting_shuugi: 0, pao_pays_all: true}},
     %{name: "shuugi/ippatsu", config: %{chips: 1}},
     %{name: "shuugi/ura", config: %{chips: 1}},
     %{name: "shuugi/yakuman", config: %{ron_chips: 10, tsumo_chips: 5, per_yakuman: false, allow_kazoe: false}},
-    %{name: "min_han", config: %{min: 1, han: "Han"}},
+    %{name: "lib/min_han", config: %{min: 1, han: "Han"}},
     # "cancellable_riichi",
     "yaku/ippatsu",
     %{name: "shiro_pocchi", config: %{ippatsu_only: false}},
     %{name: "aka", config: %{man: 4, pin: 4, sou: 4}},
     %{name: "shuugi/aka", config: %{chips: 1, closed_only: false}},
     "shiny_dora",
-    "kansai_flowers",
+    "lib/kansai_flowers",
     "kansai_no_100_sticks",
     "kansai_40_fu",
     "kansai_shuugi",
-    "zan_scoring",
-    "kansai_draw",
+    "lib/zan_scoring",
+    "lib/kansai_draw",
     "kansai_no_furiten_riichi"
   ]
 

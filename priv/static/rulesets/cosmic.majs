@@ -10,7 +10,7 @@ on after_initialization do
   add_rule("Rules", "Win Condition", "- (Cosmic Riichi) Seven Pairs is again a possible winning hand.", -100)
 end
 
-remove_mod "space"
+remove_mod "lib/space"
 define_mod_category "Cosmic", prepend: true
 define_mod kontsu, name: "Kontsu", category: "Cosmic", order: 5, desc: "Add mixed triplets, or kontsu. If you have the same number in three suits, that counts as one of your sets towards four sets and a pair. For example, 1m1s1p is a kontsu. Also considered kontsu: 3 different winds, or one of each dragon."
 define_mod cosmic_calls, name: "Cosmic Calls", order: 4, category: "Cosmic", deps: ["kontsu"], order: 2, desc: "Add the following calls: Ton (calls a pair), Chon (calls kontsu), and Fuun (calls a set of 4 different winds). The precedence is Ton < Chii < Chon < Fuun < Pon < Kan."

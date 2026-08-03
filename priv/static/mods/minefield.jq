@@ -1,6 +1,6 @@
-.default_mods |= map(select(IN("riichi_kan", "yaku/riichi", "kandora", "aka", "yaku/renhou_yakuman", {"name": "kyuushu_kyuuhai", "config": {"name": "Kyuushu Kyuuhai"}}, "pao", {"name": "suufon_renda", "config": {"name": "Suufon Renda"}}, "suucha_riichi", "suukaikan", "show_waits") | not))
+.default_mods |= map(select(IN("riichi_kan", "lib/yaku/riichi", "kandora", "aka", "yaku/renhou_yakuman", {"name": "kyuushu_kyuuhai", "config": {"name": "Kyuushu Kyuuhai"}}, "pao", {"name": "suufon_renda", "config": {"name": "Suufon Renda"}}, "suucha_riichi", "suukaikan", "show_waits") | not))
 |
-.available_mods |= map(select(type != "object" or (.id | IN("riichi_kan", "yaku/riichi") | not)))
+.available_mods |= map(select(type != "object" or (.id | IN("riichi_kan", "lib/yaku/riichi") | not)))
 |
 .starting_tiles = 34
 |
@@ -98,7 +98,7 @@ else . end
 .score_calculation.extra_yaku_lists = []
 |
 .available_mods |= map(if type == "object" then
-  if .id == "tobi" then
+  if .id == "lib/tobi" then
     # set tobi default to <1000; we lose as we can't riichi
     .config[0].default = 1000
   elif .id == "min_han" then
@@ -108,7 +108,7 @@ else . end
 else . end)
 |
 # note: doesn't handle washizu mod's 0.1x score multiplier
-.available_mods |= map(if type == "object" and .id == "tobi" then .config[0].default = 1000 else . end)
+.available_mods |= map(if type == "object" and .id == "lib/tobi" then .config[0].default = 1000 else . end)
 |
 .win_timer = 20
 |

@@ -3,7 +3,7 @@ set display_name, "Chinitsu Challenge"
 set tutorial_link, "https://github.com/EpicOrange/riichi_advanced/blob/main/documentation/chinitsu_challenge.md"
 set num_players, 2
 require "yaku/riichi", %{bet: 1000, drawless: false}
-apply set_append, "default_mods", ["chombo", %{name: "tobi", config: %{below: 0}}, %{name: "yaku/riichi_renhou", config: %{is: "Yakuman"}}, "no_honors"]
+apply set_append, "default_mods", ["chombo", %{name: "lib/tobi", config: %{below: 0}}, %{name: "yaku/riichi_renhou", config: %{is: "Yakuman"}}, "no_honors"]
 
 set wall, ["1s", "1s", "1s", "1s",
            "2s", "2s", "2s", "2s",
@@ -57,7 +57,7 @@ on before_win do
 end
 
 remove_mod honba
-remove_mod "yaku/riichi"
+remove_mod "lib/yaku/riichi"
 remove_mod ura
 remove_mod aka
 remove_mod kandora

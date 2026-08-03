@@ -560,7 +560,7 @@ defmodule RiichiAdvanced.Constants do
       display_name: "Minefield",
       tutorial_link: "https://riichi.wiki/Minefield_mahjong",
       ruleset: "riichi",
-      mods: [%{name: "yaku/riichi", config: %{bet: 1000, drawless: false}}, "minefield"],
+      mods: [%{name: "lib/yaku/riichi", config: %{bet: 1000, drawless: false}}, "minefield"],
       default_mods: ["kiriage_mangan"],
     },
     # taiwanese is .json
@@ -574,7 +574,7 @@ defmodule RiichiAdvanced.Constants do
       display_name: "No Jokers Mahjong League 2024",
       tutorial_link: "https://docs.google.com/document/d/1APpd-YBnsKKssGmyLQiCp90Wk-06SlIScV1sKpJUbQo",
       ruleset: "riichi",
-      mods: ["kiriage_mangan", "agarirenchan", "tenpairenchan", %{name: "dora", config: %{start_indicators: 1}}, "ura", "kandora", "yaku/ippatsu", %{name: "tobi", config: %{below: 0}}, "immediate_kan_dora", "head_bump", "no_double_yakuman", "nojokersmahjongleague"],
+      mods: ["kiriage_mangan", "lib/agarirenchan", "tenpairenchan", %{name: "dora", config: %{start_indicators: 1}}, "ura", "kandora", "yaku/ippatsu", %{name: "lib/tobi", config: %{below: 0}}, "immediate_kan_dora", "head_bump", "no_double_yakuman", "nojokersmahjongleague"],
       default_mods: ["show_waits"],
     },
     "aka_test" => %{
@@ -582,12 +582,12 @@ defmodule RiichiAdvanced.Constants do
       tutorial_link: "https://github.com/EpicOrange/riichi_advanced/blob/main/documentation/kansai.md",
       ruleset: "riichi",
       mods: ["sanma", %{name: "aka", config: %{"man" => 1, "pin" => 1, "sou" => 1}}],
-      default_mods: [%{name: "tobi", config: %{below: 0}}],
+      default_mods: [%{name: "lib/tobi", config: %{below: 0}}],
     },
     "speed" => %{
       display_name: "Speed Mahjong",
       ruleset: "riichi",
-      mods: [%{name: "yaku/riichi", config: %{bet: 1000, drawless: false}}, "speed"]
+      mods: [%{name: "lib/yaku/riichi", config: %{bet: 1000, drawless: false}}, "speed"]
     },
     "mod_test" => %{
       globals: %{

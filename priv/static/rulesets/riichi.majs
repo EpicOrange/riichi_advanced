@@ -416,9 +416,9 @@ define_mod oka, name: "Oka", desc: "Enable oka. Everyone antes the given amount,
 config_mod oka, name: "ante", values: [5,10,15,20,25,30], default: 5
 define_mod kuitan_nashi, name: "Kuitan Nashi", desc: "Disallow open tanyao."
 define_mod atozuke_nashi, deps: ["min_han"], name: "Atozuke Nashi", desc: "Disallow wins if one of your waiting tiles does not earn yaku."
-define_mod kuikae_nashi, name: "Kuikae Nashi", desc: "Disallow swap-calling."
+define_mod "lib/kuikae_nashi", name: "Kuikae Nashi", desc: "Disallow swap-calling."
 define_mod kiriage_mangan, order: -1, name: "Kiriage Mangan", desc: "3 han 60 fu and 4 han 30 fu are worth mangan."
-define_mod head_bump, conflicts: ["sanchahou"], name: "Head Bump", desc: "Enable head bump. In case of multiple ron, only the person closest in turn order gets the win."
+define_mod "lib/head_bump", conflicts: ["sanchahou"], name: "Head Bump", desc: "Enable head bump. In case of multiple ron, only the person closest in turn order gets the win."
 define_mod double_wind_4_fu, name: "Double Wind 4 Fu", desc: "A pair of round+seat winds is worth 4 fu instead of 2 fu."
 define_mod double_round_wind, name: "Double Round Wind", desc: "Both East and West are round winds during East Round, and North and South during South Round. Similarly for West and North Rounds."
 define_mod pao, name: "Sekinin Barai", desc: "If you deal the last dragon called for a daisangen hand, or the last wind called for a daisuushii hand, you are responsible for the yakuman payment if they tsumo, or half of the payment if they ron off someone else."
@@ -430,27 +430,27 @@ define_mod wareme, order: 1, name: "Wareme", desc: "In each round, the player wh
 define_mod aotenjou, order: 2, name: "Aotenjou", desc: "Removes limit hands. Score grows exponentially with han according to the formula 4 * fu * 2^(2+han). Not recommended with tobi enabled."
 define_mod yakitori, name: "Yakitori", desc: "If you do not win any hands by the end of the game, you pay each player a penalty."
 config_mod yakitori, name: "penalty", values: [1000,2000,3000,4000,5000,6000,7000,8000,9000,10000,15000,20000,25000,30000], default: 4000
-define_mod "yaku/kansai_chiitoitsu", name: "Kansai Chiitoitsu", desc: "Chiitoitsu now allows repeated pairs."
-define_mod min_han, order: 1, name: "Minimum Han", desc: "Minimum han required to win."
-config_mod min_han, name: "min", values: [1, 2, 3, 4, "Mangan", "Yakuman"], default: 1
-config_mod min_han, name: "han", values: ["Han"], default: "Han"
-define_mod no_riichi_ankan, deps: ["yaku/riichi"], name: "No Riichi Ankan", desc: "Disallow any concealed kan while in riichi, not just ones that change your waits."
-define_mod no_fifth_tile_tenpai, deps: ["yaku/riichi"], name: "No Fifth Tile Tenpai", desc: "At exhaustive draw, you are not considered tenpai if all four tiles of each wait is in hand: for example, 123456789m1111p. You may still declare riichi with such a hand, however."
+define_mod "lib/yaku/kansai_chiitoitsu", name: "Kansai Chiitoitsu", desc: "Chiitoitsu now allows repeated pairs."
+define_mod "lib/min_han", order: 1, name: "Minimum Han", desc: "Minimum han required to win."
+config_mod "lib/min_han", name: "min", values: [1, 2, 3, 4, "Mangan", "Yakuman"], default: 1
+config_mod "lib/min_han", name: "han", values: ["Han"], default: "Han"
+define_mod no_riichi_ankan, deps: ["lib/yaku/riichi"], name: "No Riichi Ankan", desc: "Disallow any concealed kan while in riichi, not just ones that change your waits."
+define_mod no_fifth_tile_tenpai, deps: ["lib/yaku/riichi"], name: "No Fifth Tile Tenpai", desc: "At exhaustive draw, you are not considered tenpai if all four tiles of each wait is in hand: for example, 123456789m1111p. You may still declare riichi with such a hand, however."
 define_mod kokushi_ankan_chankan, name: "Kokushi Chankan", desc: "Allow robbing ankans if in tenpai for kokushi musou."
-define_mod first_gets_riichi_sticks, deps: ["yaku/riichi"], name: "First Gets Riichi Sticks", desc: "At the end of the game, all leftover riichi sticks on the table are given to first place. (Otherwise they are lost.)"
+define_mod first_gets_riichi_sticks, deps: ["lib/yaku/riichi"], name: "First Gets Riichi Sticks", desc: "At the end of the game, all leftover riichi sticks on the table are given to first place. (Otherwise they are lost.)"
 define_mod starting_score, order: -2, name: "Starting Points", desc: "Number of points each player starts with. You can also set this by writing the following in the Config tab: \"initial_score\": 100000"
 config_mod starting_score, name: "points", values: [0,5000,10000,15000,20000,25000,30000,35000,40000,45000,50000,100000], default: 25000
 define_mod_category "Endgames"
-define_mod tonpuu, name: "Tonpuu", desc: "Limit the game to the East round only."
-define_mod tobi, name: "Tobi", order: -1, desc: "Enable busting. Once anyone's points is reduced below zero (or the specified value), the game ends."
-config_mod tobi, name: "below", values: [0, 1, 1000, 1001]
-config_mod tobi, name: "chips", values: [1, 2, 3, 4, 5, 10]
+define_mod "lib/tonpuu", name: "Tonpuu", desc: "Limit the game to the East round only."
+define_mod "lib/tobi", name: "Tobi", order: -1, desc: "Enable busting. Once anyone's points is reduced below zero (or the specified value), the game ends."
+config_mod "lib/tobi", name: "below", values: [0, 1, 1000, 1001]
+config_mod "lib/tobi", name: "chips", values: [1, 2, 3, 4, 5, 10]
 define_mod called_game, conflicts: ["washizu"], name: "Called Game", order: -1, desc: "Enable called game. Once anyone's points reaches above 54999 (or the specified value), the game ends."
 config_mod called_game, name: "above", values: [49999, 50000, 54999, 55000], default: 54999
 config_mod called_game, name: "chips", values: [1, 2, 3, 4, 5, 10]
-define_mod agarirenchan, name: "Agarirenchan", desc: "A round repeats if the dealer wins."
+define_mod "lib/agarirenchan", name: "Agarirenchan", desc: "A round repeats if the dealer wins."
 define_mod tenpairenchan, name: "Tenpairenchan", desc: "A round repeats if the dealer is tenpai at draw."
-define_mod agariyame, deps: ["agarirenchan"], name: "Agariyame", desc: "All Last doesn't repeat if the dealer is first place and wins."
+define_mod agariyame, deps: ["lib/agarirenchan"], name: "Agariyame", desc: "All Last doesn't repeat if the dealer is first place and wins."
 config_mod agariyame, name: "round", values: ["all_last", "every"], default: "all_last"
 config_mod agariyame, name: "first_place_only", values: [false, true], default: true
 config_mod agariyame, name: "may_choose", values: [false, true], default: false
@@ -463,8 +463,8 @@ config_mod sudden_death, name: "goal", values: [10000,15000,20000,25000,30000,35
 define_mod_category "Abortive Draws"
 define_mod suufon_renda, name: "Suufon Renda", desc: "Enable 4 wind abortive draw."
 config_mod suufon_renda, name: "name", values: ["Suufon Renda"]
-define_mod suucha_riichi, name: "Suucha Riichi", deps: ["yaku/riichi"], desc: "Enable 4 riichi abortive draw."
-define_mod suukaikan, name: "Suukaikan", desc: "Enable 4 kan abortive draw."
+define_mod suucha_riichi, name: "Suucha Riichi", deps: ["lib/yaku/riichi"], desc: "Enable 4 riichi abortive draw."
+define_mod "lib/suukaikan", name: "Suukaikan", desc: "Enable 4 kan abortive draw."
 define_mod sanchahou, conflicts: ["head_bump"], name: "Sanchahou", desc: "Enable triple ron abortive draw."
 define_mod kyuushu_kyuuhai, name: "Kyuushu Kyuuhai", desc: "Enable 9 distinct terminal/honor abortive draw."
 config_mod kyuushu_kyuuhai, name: "name", values: ["Kyuushu Kyuuhai"]
@@ -522,12 +522,12 @@ define_mod "jokers/odd", order: 4, name: "Odd", desc: "Adds a copy of the odd jo
 define_mod "jokers/even", order: 4, name: "Even", desc: "Adds a copy of the even joker, which looks like 雙 and can be used as any even number tile."
 define_mod_category "Yaku"
 # 1 han
-define_mod "yaku/riichi", order: -1, name: "Riichi", desc: "Enable riichi declarations. When you are tenpai with at least 1000 points (and it is not your last discard), you may declare riichi before discarding. If the discard passes, you automatically bet 1000 and can no longer change your hand. If you win under this condition, you get the riichi yaku (1 han). If you riichi on your first discard (calls invalidate), this is called Double Riichi and worth 2 han."
-config_mod "yaku/riichi", name: "bet", values: [0,1000,2000,3000,4000,5000], default: 1000
-config_mod "yaku/riichi", name: "drawless", values: [false, true], default: false
-define_mod "yaku/ippatsu", order: 2, name: "Ippatsu", deps: ["yaku/riichi"], desc: "Enables ippatsu. \"One-shot\". 1 han if you win before or during your next draw after riichi. Calls invalidate."
-define_mod "yaku/nippatsu", order: 2, name: "Nippatsu", deps: ["yaku/riichi"], desc: "Enables nippatsu. 1 han if you win during the second go-around after riichi ippatsu. Calls invalidate."
-define_mod "yaku/tsubame_gaeshi", name: "Tsubame Gaeshi", deps: ["yaku/riichi"], desc: "Local yaku. \"Swallow Reversal\". 1 han if you win off a riichi declaration discard."
+define_mod "lib/yaku/riichi", order: -1, name: "Riichi", desc: "Enable riichi declarations. When you are tenpai with at least 1000 points (and it is not your last discard), you may declare riichi before discarding. If the discard passes, you automatically bet 1000 and can no longer change your hand. If you win under this condition, you get the riichi yaku (1 han). If you riichi on your first discard (calls invalidate), this is called Double Riichi and worth 2 han."
+config_mod "lib/yaku/riichi", name: "bet", values: [0,1000,2000,3000,4000,5000], default: 1000
+config_mod "lib/yaku/riichi", name: "drawless", values: [false, true], default: false
+define_mod "yaku/ippatsu", order: 2, name: "Ippatsu", deps: ["lib/yaku/riichi"], desc: "Enables ippatsu. \"One-shot\". 1 han if you win before or during your next draw after riichi. Calls invalidate."
+define_mod "yaku/nippatsu", order: 2, name: "Nippatsu", deps: ["lib/yaku/riichi"], desc: "Enables nippatsu. 1 han if you win during the second go-around after riichi ippatsu. Calls invalidate."
+define_mod "yaku/tsubame_gaeshi", name: "Tsubame Gaeshi", deps: ["lib/yaku/riichi"], desc: "Local yaku. \"Swallow Reversal\". 1 han if you win off a riichi declaration discard."
 define_mod "yaku/shiiaru_raotai", name: "Shiiaru Raotai", desc: "Local yaku. \"Twelve Tiles Down\". 1 han if you win with four calls (and therefore on a single tile wait). Closed kans are permitted."
 define_mod "yaku/kanburi", name: "Kanburi", desc: "Local yaku. \"Shoot After Kan\". 1 han if you win off the tile discarded by a player who just called kan."
 define_mod "yaku/honors_chiitoitsu", name: "Honors Chiitoitsu", desc: "Local yaku. 1 han on top of chiitoitsu if three of your pairs are dragons, or if four of your pairs are winds. If you have all seven honor pairs? Double yakuman."
@@ -535,35 +535,35 @@ define_mod "yaku/uushin_tsuukan", name: "Uushin Tsuukan", desc: "Local yaku. \"F
 define_mod "yaku/ketsupaihou", name: "Ketsupaihou", desc: "Local yaku. \"Missing Tile\". 1 han if you have an edge (12, 89) or middle (24, 57) wait on a tile for which three are already publicly visible (so 12333 winning on 3 doesn't count)."
 define_mod "yaku/grand_cross", conflicts: ["super_bingo_grand_cross"], name: "Grand Cross", desc: "You may declare NEWS (one of each wind) as a concealed kan worth 1 han."
 # 2 han
-define_mod "yaku/open_riichi", name: "Open Riichi", deps: ["yaku/riichi"], desc: "You have the option to declare open riichi, which is worth 2 han but reveals your hand to the table. Open double riichi is 3 han."
-define_mod "yaku/sanrenkou", name: "Sanrenkou", desc: "Local yaku. \"Three Consecutive Triplets\". 2 han for having three triplets of the same suit in sequence, like 222 333 444."
-config_mod "yaku/sanrenkou", name: "san_list", values: ["yaku"]
-config_mod "yaku/sanrenkou", name: "san_name", values: ["Sanrenkou"]
-config_mod "yaku/sanrenkou", name: "san_value", values: [2]
-config_mod "yaku/sanrenkou", name: "san_han", values: ["Han"]
-config_mod "yaku/sanrenkou", name: "suu_list", values: [""]
-config_mod "yaku/sanrenkou", name: "suu_name", values: [""]
-config_mod "yaku/sanrenkou", name: "suu_value", values: [0]
-config_mod "yaku/sanrenkou", name: "suu_han", values: [""]
+define_mod "yaku/open_riichi", name: "Open Riichi", deps: ["lib/yaku/riichi"], desc: "You have the option to declare open riichi, which is worth 2 han but reveals your hand to the table. Open double riichi is 3 han."
+define_mod "lib/yaku/sanrenkou", name: "Sanrenkou", desc: "Local yaku. \"Three Consecutive Triplets\". 2 han for having three triplets of the same suit in sequence, like 222 333 444."
+config_mod "lib/yaku/sanrenkou", name: "san_list", values: ["yaku"]
+config_mod "lib/yaku/sanrenkou", name: "san_name", values: ["Sanrenkou"]
+config_mod "lib/yaku/sanrenkou", name: "san_value", values: [2]
+config_mod "lib/yaku/sanrenkou", name: "san_han", values: ["Han"]
+config_mod "lib/yaku/sanrenkou", name: "suu_list", values: [""]
+config_mod "lib/yaku/sanrenkou", name: "suu_name", values: [""]
+config_mod "lib/yaku/sanrenkou", name: "suu_value", values: [0]
+config_mod "lib/yaku/sanrenkou", name: "suu_han", values: [""]
 define_mod "yaku/sanshoku_ittsuu", name: "Sanshoku Ittsuu", desc: "Local yaku. 1 han for having a three-color straight, like 123m 456p 789s. 2 han if closed."
 define_mod "yaku/kyandonhou", name: "Kyandonhou", desc: "Local yaku. \"Twice Mixed Double Sequence\". A mixed double sequence is when you have two sequences of the same number in different suits, like 345m 345p. 2 han for having two mixed double sequences."
 define_mod "yaku/ryandoukou", name: "Ryandoukou", desc: "Local yaku. \"Twice Double Triplets\". A double triplet is when you have two triplets of the same number in different suits, like 333m 333p. 2 han for having two sets of double triplets."
 define_mod "yaku/shoutate", name: "Shoutate", desc: "Local yaku. \"Little Mixed Triplets\". 2 han for having sanshoku doukou, except one of the triplets is a pair."
 define_mod "yaku/choupaikou", name: "Choupaikou etc.", desc: "Local yaku. 2 han for having the pattern 111333555 (choupaikou), 111444777 (sujipaikou), or 111555999 (chousankou) in one suit. The pattern does not have to start with 1, but cannot wrap. 1 han if instead, all three triplets are in different suits."
 define_mod "yaku/suuzuukou", name: "Suuzuukou", desc: "Local yaku. \"Four Honor Triplets\". 2 han for having four honor tile triplets."
-define_mod "yaku/uumensai", name: "Uumensai", desc: "Local yaku. \"Five Suits Collected\". 2 han if your hand includes all five suits (character, circle, bamboo, wind, dragon)."
-config_mod "yaku/uumensai", name: "name", values: ["Uumensai"]
-config_mod "yaku/uumensai", name: "value", values: ["2"]
-config_mod "yaku/uumensai", name: "han", values: ["Han"]
-define_mod "yaku/sanpuukou", name: "Sanpuukou", desc: "Local yaku. \"Three Wind Triplets\". 2 han if you have three wind triplets."
-config_mod "yaku/sanpuukou", name: "shou_list", values: [""]
-config_mod "yaku/sanpuukou", name: "shou_name", values: [""]
-config_mod "yaku/sanpuukou", name: "shou_value", values: [0]
-config_mod "yaku/sanpuukou", name: "shou_han", values: [""]
-config_mod "yaku/sanpuukou", name: "dai_list", values: ["yaku"]
-config_mod "yaku/sanpuukou", name: "dai_name", values: ["Sanpuukou"]
-config_mod "yaku/sanpuukou", name: "dai_value", values: [2]
-config_mod "yaku/sanpuukou", name: "dai_han", values: ["Han"]
+define_mod "lib/yaku/uumensai", name: "Uumensai", desc: "Local yaku. \"Five Suits Collected\". 2 han if your hand includes all five suits (character, circle, bamboo, wind, dragon)."
+config_mod "lib/yaku/uumensai", name: "name", values: ["Uumensai"]
+config_mod "lib/yaku/uumensai", name: "value", values: ["2"]
+config_mod "lib/yaku/uumensai", name: "han", values: ["Han"]
+define_mod "lib/yaku/sanpuukou", name: "Sanpuukou", desc: "Local yaku. \"Three Wind Triplets\". 2 han if you have three wind triplets."
+config_mod "lib/yaku/sanpuukou", name: "shou_list", values: [""]
+config_mod "lib/yaku/sanpuukou", name: "shou_name", values: [""]
+config_mod "lib/yaku/sanpuukou", name: "shou_value", values: [0]
+config_mod "lib/yaku/sanpuukou", name: "shou_han", values: [""]
+config_mod "lib/yaku/sanpuukou", name: "dai_list", values: ["yaku"]
+config_mod "lib/yaku/sanpuukou", name: "dai_name", values: ["Sanpuukou"]
+config_mod "lib/yaku/sanpuukou", name: "dai_value", values: [2]
+config_mod "lib/yaku/sanpuukou", name: "dai_han", values: ["Han"]
 define_mod "yaku/renkaihou", name: "Renkaihou", desc: "Local yaku. \"Consecutive Blossom\". 2 han if you kan off the rinshan tile and win off of _that_ rinshan tile. Does not stack with rinshan."
 define_mod "yaku/mondeikou", deps: ["aka"], name: "Mondeikou", desc: "Local yaku. If you have 4 aka, 2 han on top of aka. This counts as a yaku."
 # 3 han
@@ -572,7 +572,7 @@ define_mod "yaku/ittsuu_chanta", name: "Ittsuu Chanta", desc: "Local yaku. 2 han
 define_mod "yaku/tanfonhou", name: "Tanfonhou", desc: "Local yaku. \"Win Without Red\". 2 han if your hand contains no red. This means you can have only 248p (2,4,8 circles), 23468s (2,3,4,6,8 bamboo), and any honors except red dragon. 5 han instead if no honor tiles (chintanfon). +1 han if closed."
 define_mod "yaku/chinpeikou", name: "Chinpeikou", desc: "Local yaku. 3 han on top of ryanpeikou if your ryanpeikou sequences are all the same numbers (may be different suits), like 112233 112233. No restriction on the pair, so you can have an honor pair (despite 'chin' being in the name)."
 # 4 han
-define_mod "yaku/chinchii_toushii", deps: ["yaku/ketsupaihou"], name: "Chinchii Toushii", desc: "Local yaku. \"Golden Rooster Steals Food\". 4 han instead of the usual 2 han if you win ketsupaihou by chankan."
+define_mod "yaku/chinchii_toushii", deps: ["lib/yaku/ketsupaihou"], name: "Chinchii Toushii", desc: "Local yaku. \"Golden Rooster Steals Food\". 4 han instead of the usual 2 han if you win ketsupaihou by chankan."
 define_mod_category "Mangan"
 define_mod "yaku/riichi_renhou", name: "Renhou", desc: "Local yaku. Instant mangan/yakuman if you win off the first tile someone dropped before your first draw. Calls invalidate."
 config_mod "yaku/riichi_renhou", name: "is", values: ["Mangan", "Yakuman"], default: "Yakuman"
@@ -589,11 +589,11 @@ define_mod "yaku/rentsuu_honitsu", name: "Rentsuu Honitsu", desc: "Local yaku. M
 define_mod "yaku/dorahairi_chinroutou_chiitoitsu", deps: ["dora"], name: "Dorahairi Chinroutou Chiitoitsu", desc: "Local yaku. Mangan if you have chiitoitsu composed of each terminal tile with the seventh pair being dora."
 define_mod_category "Yakuman"
 define_mod "yaku/paarenchan", deps: ["min_han"], name: "Paarenchan", desc: "Local yakuman. The eighth consecutive dealer win is worth yakuman. Exhaustive and abortive draws break the streak. After 5 wins, the minimum han required for the dealer becomes 2 han."
-define_mod "yaku/ishino_uenimo_sannen", name: "Ishino Uenimo Sannen", deps: ["yaku/riichi"], desc: "Local yakuman. \"Three Years on a Rock\". If you win with double riichi and haitei/houtei, it's yakuman."
+define_mod "yaku/ishino_uenimo_sannen", name: "Ishino Uenimo Sannen", deps: ["lib/yaku/riichi"], desc: "Local yakuman. \"Three Years on a Rock\". If you win with double riichi and haitei/houtei, it's yakuman."
 define_mod "yaku/toukanhou", name: "Toukanhou", desc: "Local yakuman. \"First Kan Win\". If you kan (concealed or from a player) before discarding any tile, and win with rinshan, it's yakuman. Any call from an opponent invalidates this."
 define_mod "yaku/shiisanpuutaa", name: "Shiisanpuutaa", desc: "Local yakuman. \"Thirteen Unconnected\". If you start with 13 disconnected tiles (with one forming a pair), it's yakuman. Calls invalidate."
 define_mod "yaku/shiisanuushi", name: "Shiisanuushi", desc: "Local yakuman. \"Thirteen Independent\". If you start with 14 disconnected tiles, it's yakuman. Calls invalidate."
-define_mod "yaku/riichi_suurenkou", name: "Suurenkou", desc: "Local yakuman. \"Four Consecutive Triplets\". If you have four triplets of the same suit of increasing number, like 111 222 333 444, it's yakuman. Pao is applied if the fourth triplet is called."
+define_mod "lib/yaku/riichi_suurenkou", name: "Suurenkou", desc: "Local yakuman. \"Four Consecutive Triplets\". If you have four triplets of the same suit of increasing number, like 111 222 333 444, it's yakuman. Pao is applied if the fourth triplet is called."
 define_mod "yaku/suuchoupaikou", name: "Suuchoupaikou", desc: "Local yakuman. \"Four Skipped Tile Triplets\". If you have four triplets of the same suit whose numbers step by 2, like 111 333 555 777, it's yakuman. Pao is applied if the fourth triplet is called."
 define_mod "yaku/daisharin", name: "Daisharin etc.", desc: "Local yakuman. If your hand is closed and your winning hand is 22334455667788 in one suit, it's yakuman."
 define_mod "yaku/shousharin", name: "Shousharin etc.", desc: "Local yakuman. If your hand is closed and your winning hand is 11223344556677 or 33445566778899 in one suit, it's yakuman."
@@ -615,52 +615,52 @@ define_mod "yaku/junsei_ryuuiisou", name: "Junsei Ryuuiisou", desc: "Local yakum
 define_mod "yaku/chousangen", name: "Chousangen", desc: "Local yakuman. If you have kans of all three dragons, it's double yakuman. Doesn't stack with daisangen."
 define_mod "yaku/chousuushii", name: "Chousuushii", desc: "Local yakuman. If you have kans of all four winds, it's quadruple yakuman. Doesn't stack with daisuushi and suukantsu."
 define_mod_category "Shuugi"
-define_mod shuugi, order: -1, name: "Shuugi", desc: "Play with shuugi (poker chips). Each shuugi is worth some number of points each at the end. Win payments include shuugi along with points. On ron, you get shuugi from the discarder; on tsumo you get shuugi from everyone."
-config_mod shuugi, name: "worth", values: [200,500,1000,2000,5000,10000], default: 2000
-config_mod shuugi, name: "starting_shuugi", values: [0,10,50,100,250,500,1000], default: 100
-config_mod shuugi, name: "pao_pays_all", values: [false, true], default: true
-define_mod "shuugi/ippatsu", order: 1, name: "Ippatsu", deps: ["shuugi", "yaku/ippatsu"], desc: "Ippatsu is typically worth one shuugi."
+define_mod "lib/shuugi", order: -1, name: "Shuugi", desc: "Play with shuugi (poker chips). Each shuugi is worth some number of points each at the end. Win payments include shuugi along with points. On ron, you get shuugi from the discarder; on tsumo you get shuugi from everyone."
+config_mod "lib/shuugi", name: "worth", values: [200,500,1000,2000,5000,10000], default: 2000
+config_mod "lib/shuugi", name: "starting_shuugi", values: [0,10,50,100,250,500,1000], default: 100
+config_mod "lib/shuugi", name: "pao_pays_all", values: [false, true], default: true
+define_mod "shuugi/ippatsu", order: 1, name: "Ippatsu", deps: ["lib/shuugi", "yaku/ippatsu"], desc: "Ippatsu is typically worth one shuugi."
 config_mod "shuugi/ippatsu", name: "chips", values: [1, 2, 3, 4, 5], default: 1
-define_mod "shuugi/ura", order: 1, name: "Ura", deps: ["shuugi", "ura"], desc: "Each ura dora scores shuugi."
+define_mod "shuugi/ura", order: 1, name: "Ura", deps: ["lib/shuugi", "ura"], desc: "Each ura dora scores shuugi."
 config_mod "shuugi/ura", name: "chips", values: [1, 2, 3, 4, 5], default: 1
 define_mod "shuugi/yakuman", order: 1, name: "Yakuman", deps: ["shuugi"], desc: "Yakuman is typically worth 10 shuugi on ron and 5 on tsumo."
 config_mod "shuugi/yakuman", name: "ron_chips", values: [5, 10], default: 10
 config_mod "shuugi/yakuman", name: "tsumo_chips", values: [5, 10], default: 5
 config_mod "shuugi/yakuman", name: "per_yakuman", values: [false, true], default: false
 config_mod "shuugi/yakuman", name: "allow_kazoe", values: [false, true], default: false
-define_mod "shuugi/aka", order: 4, name: "Aka", deps: ["shuugi", "aka"], desc: "Each aka dora scores shuugi."
+define_mod "shuugi/aka", order: 4, name: "Aka", deps: ["lib/shuugi", "aka"], desc: "Each aka dora scores shuugi."
 config_mod "shuugi/aka", name: "chips", values: [1, 2, 3, 4, 5], default: 1
 config_mod "shuugi/aka", name: "closed_only", values: [false, true], default: false
-define_mod "shuugi/ao", order: 4, name: "Ao", deps: ["shuugi", "ao"], desc: "Each ao dora scores shuugi."
+define_mod "shuugi/ao", order: 4, name: "Ao", deps: ["lib/shuugi", "ao"], desc: "Each ao dora scores shuugi."
 config_mod "shuugi/ao", name: "chips", values: [1, 2, 3, 4, 5], default: 2
 config_mod "shuugi/ao", name: "closed_only", values: [false, true], default: false
-define_mod "shuugi/kin", order: 4, name: "Kin", deps: ["shuugi", "kin"], desc: "Each kin dora scores shuugi."
+define_mod "shuugi/kin", order: 4, name: "Kin", deps: ["lib/shuugi", "kin"], desc: "Each kin dora scores shuugi."
 config_mod "shuugi/kin", name: "chips", values: [1, 2, 3, 4, 5], default: 3
 config_mod "shuugi/kin", name: "closed_only", values: [false, true], default: false
-define_mod "shuugi/oka", order: 4, name: "Oka", deps: ["shuugi", "oka"], desc: "Oka applies directly to chips."
-define_mod "shuugi/uma", order: 4, name: "Uma", deps: ["shuugi", "uma"], desc: "Uma applies directly to chips."
+define_mod "shuugi/oka", order: 4, name: "Oka", deps: ["lib/shuugi", "oka"], desc: "Oka applies directly to chips."
+define_mod "shuugi/uma", order: 4, name: "Uma", deps: ["lib/shuugi", "uma"], desc: "Uma applies directly to chips."
 define_mod "shuugi/toriuchi", deps: ["shuugi"], name: "Toriuchi", desc: "On ron, each 1s (bird) tile is worth 1 shuugi, unless the discarder's hand contains 7p (pistol) which would shoot the birds dead. That is, unless the winner's hand contains 8s (birdcage) which would protect the birds from gunfire."
-define_mod "shuugi/tobi", order: 4, name: "Tobi", deps: ["shuugi", "tobi"], desc: "If a player busts, they pay 1 chip to every player."
+define_mod "shuugi/tobi", order: 4, name: "Tobi", deps: ["lib/shuugi", "lib/tobi"], desc: "If a player busts, they pay 1 chip to every player."
 config_mod "shuugi/tobi", name: "chips", values: [1, 2, 3, 4, 5], default: 1
-define_mod "shuugi/called_game", order: 4, name: "Called Game", deps: ["shuugi", "called_game"], desc: "If a player reaches the called game score, they receive 1 chip from every player."
+define_mod "shuugi/called_game", order: 4, name: "Called Game", deps: ["lib/shuugi", "called_game"], desc: "If a player reaches the called game score, they receive 1 chip from every player."
 config_mod "shuugi/called_game", name: "chips", values: [1, 2, 3, 4, 5], default: 1
 define_mod "shuugi/placement_only_battle", order: 5, name: "Placement-Only Battle", desc: "Final scores are completely determined by oka and uma, using the final score to determine ranking."
-define_mod "shuugi/arisu", order: 5, name: "Arisu", deps: ["shuugi", "dora"], desc: "After a concealed win, flip tiles on the wall starting from the visible dora indicator, and gain chips for each matching tile. Repeat until you get no match. Not recommended with joker mods, since it will flip tiles forever."
+define_mod "shuugi/arisu", order: 5, name: "Arisu", deps: ["lib/shuugi", "dora"], desc: "After a concealed win, flip tiles on the wall starting from the visible dora indicator, and gain chips for each matching tile. Repeat until you get no match. Not recommended with joker mods, since it will flip tiles forever."
 define_mod_category "Other"
-define_mod cancellable_riichi, order: 1, deps: ["yaku/riichi"], name: "Cancellable Riichi", desc: "Riichi declarations happen only after you confirm by discarding a tile."
+define_mod cancellable_riichi, order: 1, deps: ["lib/yaku/riichi"], name: "Cancellable Riichi", desc: "Riichi declarations happen only after you confirm by discarding a tile."
 define_mod ten, order: 3, name: "Ten", desc: "Adds 10m, 10p, and 10s. Changes dora accordingly (if dora is enabled). Tanyao now allows nines, and chanta/junchan/honroutou require tens instead. 13 Orphans now requires the ten instead of the nine of each suit. Ittsuu allows 23456789T."
 define_mod star_suit, order: 2, conflicts: ["chinitsu"], name: "Star Suit", desc: "Adds a fourth suit (stars)."
-define_mod space, order: 2, name: "Space Mahjong", desc: "Sequences can wrap (891, 912). Winds and dragons can make sequences. You can chii from any direction. Chiitoitsu is disabled. Open kokushi is allowed and worth 3 han."
-define_mod galaxy, order: 2, conflicts: ["chinitsu"], name: "Galaxy Mahjong", desc: "Replaces one of each tile with a blue 'galaxy' tile that acts as a wildcard of its number. For example, galaxy 3s can be used as 3m, 3p, or 3s. Galaxy winds are wind wildcards, and galaxy dragons are dragon wildcards."
+define_mod "lib/space", order: 2, name: "Space Mahjong", desc: "Sequences can wrap (891, 912). Winds and dragons can make sequences. You can chii from any direction. Chiitoitsu is disabled. Open kokushi is allowed and worth 3 han."
+define_mod "lib/galaxy", order: 2, conflicts: ["chinitsu"], name: "Galaxy Mahjong", desc: "Replaces one of each tile with a blue 'galaxy' tile that acts as a wildcard of its number. For example, galaxy 3s can be used as 3m, 3p, or 3s. Galaxy winds are wind wildcards, and galaxy dragons are dragon wildcards."
 define_mod fifth_tile, order: -1, conflicts: ["chinitsu"], name: "Fifth Tile", desc: "Adds a fifth copy of every standard tile."
 define_mod no_honors, order: -1, conflicts: ["shiro_pocchi", "golden_chun", "blue_dragon"], name: "No Honors", desc: "Removes the honor tiles (winds and dragons) from the game."
-define_mod shiro_pocchi, order: 2, deps: ["yaku/riichi"], conflicts: ["no_honors", "chinitsu"], name: "Shiro Pocchi", desc: "One of the white dragons is shiro pocchi. Shiro pocchi acts a joker tile when drawn while in riichi."
+define_mod shiro_pocchi, order: 2, deps: ["lib/yaku/riichi"], conflicts: ["no_honors", "chinitsu"], name: "Shiro Pocchi", desc: "One of the white dragons is shiro pocchi. Shiro pocchi acts a joker tile when drawn while in riichi."
 config_mod shiro_pocchi, name: "ippatsu_only", values: [false, true], default: false
 # config_mod shiro_pocchi, name: "choose_ura", values: [false, true], default: false
-define_mod golden_chun, order: 5, deps: ["aka", "yaku/riichi", "shiro_pocchi"], conflicts: ["no_honors", "chinitsu"], name: "Golden Chun", desc: "One of each dragon tile is a special tile. The special white dragon is shiro pocchi, which acts a joker tile when drawn while in riichi. The special green dragon is an aka dora. The special red dragon is the golden chun, which can be used as a five of any suit, and grants 1 han when used as a five. Completing a hand via shiro pocchi while using the golden chun as a five and having the aka green dragon scores yakuman. If playing with shuugi, a golden chun used as a five scores 1 shuugi."
+define_mod golden_chun, order: 5, deps: ["aka", "lib/yaku/riichi", "shiro_pocchi"], conflicts: ["no_honors", "chinitsu"], name: "Golden Chun", desc: "One of each dragon tile is a special tile. The special white dragon is shiro pocchi, which acts a joker tile when drawn while in riichi. The special green dragon is an aka dora. The special red dragon is the golden chun, which can be used as a five of any suit, and grants 1 han when used as a five. Completing a hand via shiro pocchi while using the golden chun as a five and having the aka green dragon scores yakuman. If playing with shuugi, a golden chun used as a five scores 1 shuugi."
 define_mod blue_dragon, conflicts: ["no_honors", "chinitsu"], name: "Blue Dragon", desc: "Adds the Chinese blue-framed white dragon as a fourth dragon tile (hakuban). Yaku treats it as an honor tile. Shousangen is reduced to 1 han (+2 from dragons) and Daisangen is reduced to 2 han (+3 from dragons). Adds Shousuugen (3 dragons + dragon pair) as yakuman and Daisuugen (4 dragons) as double yakuman."
 define_mod shouhai, order: 3, name: "Shouhai", desc: "Reduces tiles in hand from 13 to 12. The goal is to achieve a tenpai hand rather than a winning hand. The idea is that your 13th tile is replaced with an invisible 'joker' tile that can be used to complete any hand."
-define_mod chinitsu, order: -2, conflicts: ["aka", "aka1", "aka3", "aka7", "aka9", "yaku/mondeikou", "galaxy", "fifth_tile", "shiro_pocchi", "golden_chun", "blue_dragon", "star_suit"], name: "Chinitsu", desc: "Replace the wall with 16 copies of each bamboo tile. Includes 10s if Ten is enabled."
+define_mod chinitsu, order: -2, conflicts: ["aka", "aka1", "aka3", "aka7", "aka9", "yaku/mondeikou", "lib/galaxy", "fifth_tile", "shiro_pocchi", "golden_chun", "blue_dragon", "star_suit"], name: "Chinitsu", desc: "Replace the wall with 16 copies of each bamboo tile. Includes 10s if Ten is enabled."
 define_mod washizu, order: 3.5, conflicts: ["called_game"], name: "Washizu", desc: "Each tile in the wall is transparent and visible to all, except for one copy. Unflipped dora indicators are not visible."
 config_mod washizu, name: "transparents", values: [1,2,3,4], default: 3
 define_mod yami, name: "Yami", desc: "You may bet 1000 points to discard facedown. Others can bet 2000 points to force it faceup, but you can bet a further 4000 points to keep it facedown."
@@ -670,17 +670,17 @@ define_mod chombo, conflicts: ["calls_are_forced"], name: "Chombo", desc: "The t
 define_mod riichi_en, name: "English Yaku Names", desc: "Display English yaku names. (e.g. Tanyao -> All Simples)"
 
 set default_mods, [
-  "honba", "yaku/riichi", "dora", "ura", "kandora", "aka",
+  "honba", "lib/yaku/riichi", "dora", "ura", "kandora", "aka",
   "yaku/ippatsu",
   "nagashi",
-  %{name: "tobi", config: %{below: 0}},
+  %{name: "lib/tobi", config: %{below: 0}},
   "uma",
-  "kuikae_nashi",
-  "min_han",
+  "lib/kuikae_nashi",
+  "lib/min_han",
   %{name: "suufon_renda", config: %{name: "Suufon Renda"}},
   "suucha_riichi",
-  "suukaikan",
-  "agarirenchan", "tenpairenchan",
+  "lib/suukaikan",
+  "lib/agarirenchan", "tenpairenchan",
   %{name: "kyuushu_kyuuhai", config: %{name: "Kyuushu Kyuuhai"}},
   "double_wind_4_fu",
   "yaku/riichi_renhou", "pao", "kokushi_ankan_chankan",
@@ -689,29 +689,29 @@ set default_mods, [
 
 define_preset "Mahjong Soul", [
   %{name: "honba", config: %{value: 100}},
-  %{name: "yaku/riichi", config: %{bet: 1000, drawless: false}},
+  %{name: "lib/yaku/riichi", config: %{bet: 1000, drawless: false}},
   %{name: "nagashi", config: %{is: "Mangan", counts_as: "draw"}},
-  %{name: "tobi", config: %{below: 0}},
+  %{name: "lib/tobi", config: %{below: 0}},
   %{name: "uma", config: %{_1st: 15, _2nd: 5, _3rd: -5, _4th: -15}},
-  "agarirenchan",
+  "lib/agarirenchan",
   "tenpairenchan",
   %{name: "agariyame", config: %{first_place_only: true, may_choose: false, round: "all_last"}},
   %{name: "tenpaiyame", config: %{first_place_only: true, may_choose: false, round: "all_last"}},
   %{name: "sudden_death", config: %{goal: 30000}},
-  "kuikae_nashi",
+  "lib/kuikae_nashi",
   "double_wind_4_fu",
   "pao",
   "kokushi_ankan_chankan",
   %{name: "suufon_renda", config: %{name: "Suufon Renda"}},
   "suucha_riichi",
-  "suukaikan",
+  "lib/suukaikan",
   %{name: "kyuushu_kyuuhai", config: %{name: "Kyuushu Kyuuhai"}},
   %{name: "dora", config: %{start_indicators: 1}},
   "ura",
   "kandora",
   "yaku/ippatsu",
   "show_waits",
-  %{name: "min_han", config: %{min: 1, han: "Han"}},
+  %{name: "lib/min_han", config: %{min: 1, han: "Han"}},
   "cancellable_riichi",
   %{name: "aka", config: %{man: 1, pin: 1, sou: 1}},
   "shiny_dora",
@@ -719,23 +719,23 @@ define_preset "Mahjong Soul", [
 ]
 define_preset "tenhou.net", [
   %{name: "honba", config: %{value: 100}},
-  %{name: "yaku/riichi", config: %{bet: 1000, drawless: false}},
+  %{name: "lib/yaku/riichi", config: %{bet: 1000, drawless: false}},
   %{name: "nagashi", config: %{is: "Mangan", counts_as: "draw"}},
-  %{name: "tobi", config: %{below: 0}},
+  %{name: "lib/tobi", config: %{below: 0}},
   %{name: "uma", config: %{_1st: 20, _2nd: 10, _3rd: -10, _4th: -20}},
-  "agarirenchan",
+  "lib/agarirenchan",
   "tenpairenchan",
   %{name: "agariyame", config: %{first_place_only: true, may_choose: false, round: "all_last"}},
   %{name: "tenpaiyame", config: %{first_place_only: true, may_choose: false, round: "all_last"}},
   %{name: "sudden_death", config: %{goal: 30000}},
-  "kuikae_nashi",
+  "lib/kuikae_nashi",
   "double_wind_4_fu",
   "pao",
   "no_fifth_tile_tenpai",
   "kokushi_ankan_chankan",
   %{name: "suufon_renda", config: %{name: "Suufon Renda"}},
   "suucha_riichi",
-  "suukaikan",
+  "lib/suukaikan",
   "sanchahou",
   %{name: "kyuushu_kyuuhai", config: %{name: "Kyuushu Kyuuhai"}},
   %{name: "dora", config: %{start_indicators: 1}},
@@ -743,30 +743,30 @@ define_preset "tenhou.net", [
   "kandora",
   "yaku/ippatsu",
   "show_waits",
-  %{name: "min_han", config: %{min: 1, han: "Han"}},
+  %{name: "lib/min_han", config: %{min: 1, han: "Han"}},
   %{name: "aka", config: %{man: 1, pin: 1, sou: 1}},
   "shiny_dora",
   "first_gets_riichi_sticks"
 ]
 define_preset "Riichi City", [
   %{name: "honba", config: %{value: 100}},
-  %{name: "yaku/riichi", config: %{bet: 1000, drawless: false}},
+  %{name: "lib/yaku/riichi", config: %{bet: 1000, drawless: false}},
   %{name: "nagashi", config: %{is: "Mangan", counts_as: "draw"}},
-  %{name: "tobi", config: %{below: 0}},
+  %{name: "lib/tobi", config: %{below: 0}},
   %{name: "uma", config: %{_1st: 30, _2nd: 10, _3rd: -10, _4th: -30}},
-  "agarirenchan",
+  "lib/agarirenchan",
   "tenpairenchan",
   %{name: "agariyame", config: %{first_place_only: true, may_choose: false, round: "all_last"}},
   %{name: "tenpaiyame", config: %{first_place_only: true, may_choose: false, round: "all_last"}},
   %{name: "sudden_death", config: %{goal: 30000}},
-  "kuikae_nashi",
+  "lib/kuikae_nashi",
   "double_wind_4_fu",
   "pao",
   "pao_rinshan",
   "kokushi_ankan_chankan",
   %{name: "suufon_renda", config: %{name: "Suufon Renda"}},
   "suucha_riichi",
-  "suukaikan",
+  "lib/suukaikan",
   "sanchahou",
   %{name: "kyuushu_kyuuhai", config: %{name: "Kyuushu Kyuuhai"}},
   %{name: "dora", config: %{start_indicators: 1}},
@@ -774,7 +774,7 @@ define_preset "Riichi City", [
   "kandora",
   "yaku/ippatsu",
   "show_waits",
-  %{name: "min_han", config: %{min: 1, han: "Han"}},
+  %{name: "lib/min_han", config: %{min: 1, han: "Han"}},
   "cancellable_riichi",
   %{name: "aka", config: %{man: 1, pin: 1, sou: 1}},
   "shiny_dora",
@@ -783,29 +783,29 @@ define_preset "Riichi City", [
 # amatsuki rules seem to be a clone of mahjong soul rules
 define_preset "Amatsuki Mahjong", [
   %{name: "honba", config: %{value: 100}},
-  %{name: "yaku/riichi", config: %{bet: 1000, drawless: false}},
+  %{name: "lib/yaku/riichi", config: %{bet: 1000, drawless: false}},
   %{name: "nagashi", config: %{is: "Mangan", counts_as: "draw"}},
-  %{name: "tobi", config: %{below: 0}},
+  %{name: "lib/tobi", config: %{below: 0}},
   %{name: "uma", config: %{_1st: 10, _2nd: 5, _3rd: -5, _4th: -10}},
-  "agarirenchan",
+  "lib/agarirenchan",
   "tenpairenchan",
   %{name: "agariyame", config: %{first_place_only: true, may_choose: false, round: "all_last"}},
   %{name: "tenpaiyame", config: %{first_place_only: true, may_choose: false, round: "all_last"}},
   %{name: "sudden_death", config: %{goal: 30000}},
-  "kuikae_nashi",
+  "lib/kuikae_nashi",
   "double_wind_4_fu",
   "pao",
   "kokushi_ankan_chankan",
   %{name: "suufon_renda", config: %{name: "Suufon Renda"}},
   "suucha_riichi",
-  "suukaikan",
+  "lib/suukaikan",
   %{name: "kyuushu_kyuuhai", config: %{name: "Kyuushu Kyuuhai"}},
   %{name: "dora", config: %{start_indicators: 1}},
   "ura",
   "kandora",
   "yaku/ippatsu",
   "show_waits",
-  %{name: "min_han", config: %{min: 1, han: "Han"}},
+  %{name: "lib/min_han", config: %{min: 1, han: "Han"}},
   "cancellable_riichi",
   %{name: "aka", config: %{man: 1, pin: 1, sou: 1}},
   "shiny_dora",
@@ -813,14 +813,14 @@ define_preset "Amatsuki Mahjong", [
 ]
 define_preset "WRC 2022", [
   %{name: "honba", config: %{value: 100}},
-  %{name: "yaku/riichi", config: %{bet: 1000, drawless: false}},
+  %{name: "lib/yaku/riichi", config: %{bet: 1000, drawless: false}},
   %{name: "uma", config: %{_1st: 15, _2nd: 5, _3rd: -5, _4th: -15}},
-  "agarirenchan",
+  "lib/agarirenchan",
   "tenpairenchan",
   "tenpaiyame",
-  "kuikae_nashi",
+  "lib/kuikae_nashi",
   "kiriage_mangan",
-  "head_bump",
+  "lib/head_bump",
   "pao",
   "pao_suukantsu",
   "no_kazoe_yakuman",
@@ -831,20 +831,20 @@ define_preset "WRC 2022", [
   "yaku/ippatsu",
   %{name: "yaku/riichi_renhou", config: %{is: "Mangan"}},
   "show_waits",
-  %{name: "min_han", config: %{min: 1, han: "Han"}},
+  %{name: "lib/min_han", config: %{min: 1, han: "Han"}},
   "cancellable_riichi",
   %{name: "starting_score", config: %{points: 30000}}
 ]
 define_preset "WRC 2025", [
   %{name: "honba", config: %{value: 100}},
-  %{name: "yaku/riichi", config: %{bet: 1000, drawless: true}},
+  %{name: "lib/yaku/riichi", config: %{bet: 1000, drawless: true}},
   %{name: "uma", config: %{_1st: 15, _2nd: 5, _3rd: -5, _4th: -15}},
-  "agarirenchan",
+  "lib/agarirenchan",
   "tenpairenchan",
   "tenpaiyame",
-  "kuikae_nashi",
+  "lib/kuikae_nashi",
   "kiriage_mangan",
-  "head_bump",
+  "lib/head_bump",
   "pao",
   "pao_suukantsu",
   "no_double_yakuman",
@@ -854,22 +854,22 @@ define_preset "WRC 2025", [
   "yaku/ippatsu",
   %{name: "yaku/riichi_renhou", config: %{is: "Mangan"}},
   "show_waits",
-  %{name: "min_han", config: %{min: 1, han: "Han"}},
+  %{name: "lib/min_han", config: %{min: 1, han: "Han"}},
   "cancellable_riichi",
   %{name: "starting_score", config: %{points: 30000}}
 ]
 define_preset "M.League", [
   %{name: "honba", config: %{value: 100}},
-  %{name: "yaku/riichi", config: %{bet: 1000, drawless: false}},
+  %{name: "lib/yaku/riichi", config: %{bet: 1000, drawless: false}},
   %{name: "nagashi", config: %{is: "Mangan", counts_as: "draw"}},
   %{name: "uma", config: %{_1st: 30, _2nd: 10, _3rd: -10, _4th: -30}},
   %{name: "oka", config: %{ante: 5}},
-  "agarirenchan",
+  "lib/agarirenchan",
   "tenpairenchan",
   %{name: "agariyame", config: %{first_place_only: true, may_choose: false, round: "all_last"}},
   %{name: "tenpaiyame", config: %{first_place_only: true, may_choose: false, round: "all_last"}},
-  "kuikae_nashi",
-  "head_bump",
+  "lib/kuikae_nashi",
+  "lib/head_bump",
   "pao",
   "pao_suukantsu",
   "no_kazoe_yakuman",
@@ -881,39 +881,39 @@ define_preset "M.League", [
   "immediate_kan_dora",
   "yaku/ippatsu",
   "show_waits",
-  %{name: "min_han", config: %{min: 1, han: "Han"}},
+  %{name: "lib/min_han", config: %{min: 1, han: "Han"}},
   "cancellable_riichi",
   %{name: "aka", config: %{man: 1, pin: 1, sou: 1}}
 ]
 define_preset "Just Like Modded Minecraft", [
   %{name: "starting_score", config: %{points: 25000}},
   %{name: "honba", config: %{value: 500}},
-  %{name: "tobi", config: %{below: 0}},
-  %{name: "yaku/riichi", config: %{bet: 1000, drawless: true}},
+  %{name: "lib/tobi", config: %{below: 0}},
+  %{name: "lib/yaku/riichi", config: %{bet: 1000, drawless: true}},
   "fifth_tile",
   %{name: "washizu", config: %{transparents: 1}},
   %{name: "nagashi", config: %{is: "Yakuman", counts_as: "draw"}},
   %{name: "uma", config: %{_1st: 10, _2nd: 5, _3rd: -5, _4th: -10}},
   %{name: "oka", config: %{ante: 5}},
-  "agarirenchan",
+  "lib/agarirenchan",
   "tenpairenchan",
   %{name: "agariyame", config: %{first_place_only: true, may_choose: false, round: "all_last"}},
   %{name: "tenpaiyame", config: %{first_place_only: true, may_choose: false, round: "all_last"}},
   %{name: "sudden_death", config: %{goal: 30000}},
-  "tonpuu",
+  "lib/tonpuu",
   "kuitan_nashi",
-  "kuikae_nashi",
+  "lib/kuikae_nashi",
   "kiriage_mangan",
   "double_wind_4_fu",
   "double_round_wind",
   "pao",
   "pao_suukantsu",
   "pao_rinshan",
-  "yaku/kansai_chiitoitsu",
+  "lib/yaku/kansai_chiitoitsu",
   "kokushi_ankan_chankan",
   "first_gets_riichi_sticks",
   %{name: "suufon_renda", config: %{name: "Suufon Renda"}},
-  "suukaikan",
+  "lib/suukaikan",
   "sanchahou",
   %{name: "kyuushu_kyuuhai", config: %{name: "Kyuushu Kyuuhai"}},
   %{name: "dora", config: %{start_indicators: 3}},
@@ -927,7 +927,7 @@ define_preset "Just Like Modded Minecraft", [
   "yaku/ketsupaihou",
   "yaku/grand_cross",
   "yaku/open_riichi",
-  %{name: "yaku/sanrenkou", config: %{
+  %{name: "lib/yaku/sanrenkou", config: %{
     san_list: "yaku", san_name: "Sanrenkou", san_value: 2, san_han: "Han",
     suu_list: "yakuman", suu_name: "Suurenkou", suu_value: 1, suu_han: "★"
   }},
@@ -937,8 +937,8 @@ define_preset "Just Like Modded Minecraft", [
   "yaku/shoutate",
   "yaku/choupaikou",
   "yaku/suuzuukou",
-  %{name: "yaku/uumensai", config: %{name: "Uumensai", value: 2}},
-  %{name: "yaku/sanpuukou", config: %{
+  %{name: "lib/yaku/uumensai", config: %{name: "Uumensai", value: 2}},
+  %{name: "lib/yaku/sanpuukou", config: %{
     shou_list: "yaku", shou_name: "", shou_value: 0, shou_han: "Han",
     dai_list: "yaku", dai_name: "Big Three Winds", dai_value: 120, dai_han: "Han"
   }},
@@ -965,7 +965,7 @@ define_preset "Just Like Modded Minecraft", [
   "yaku/toukanhou",
   "yaku/shiisanpuutaa",
   "yaku/shiisanuushi",
-  "yaku/riichi_suurenkou",
+  "lib/yaku/riichi_suurenkou",
   "yaku/suuchoupaikou",
   "yaku/daisharin",
   "yaku/shousharin",
@@ -992,21 +992,21 @@ define_preset "Just Like Modded Minecraft", [
   "wareme",
   "shuugi/toriuchi",
   "nobekan",
-  %{name: "shuugi", config: %{worth: 2000, starting_shuugi: 10, pao_pays_all: true}},
+  %{name: "lib/shuugi", config: %{worth: 2000, starting_shuugi: 10, pao_pays_all: true}},
   %{name: "shuugi/ippatsu", config: %{chips: 1}},
   %{name: "shuugi/ura", config: %{chips: 1}},
   %{name: "shuugi/yakuman", config: %{ron_chips: 10, tsumo_chips: 5, per_yakuman: true, allow_kazoe: true}},
   %{name: "shuugi/aka", config: %{chips: 1, closed_only: false}},
   %{name: "shuugi/ao", config: %{chips: 2, closed_only: false}},
   %{name: "shuugi/kin", config: %{chips: 3, closed_only: false}},
-  %{name: "min_han", config: %{min: 1, han: "Han"}},
+  %{name: "lib/min_han", config: %{min: 1, han: "Han"}},
   "cancellable_riichi",
   "immediate_kan_dora",
   "yaku/ippatsu",
   "yaku/nippatsu",
   "star_suit",
-  "space",
-  "galaxy",
+  "lib/space",
+  "lib/galaxy",
   %{name: "shiro_pocchi", config: %{ippatsu_only: false}},
   "ten",
   %{name: "aka", config: %{man: 2, pin: 2, sou: 2}},

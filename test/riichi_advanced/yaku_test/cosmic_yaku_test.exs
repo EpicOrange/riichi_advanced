@@ -3,7 +3,7 @@ defmodule RiichiAdvanced.YakuTest.CosmicYaku do
   alias RiichiAdvanced.TestUtils, as: TestUtils
 
   @cosmic_mods [
-    "yaku/riichi",
+    "lib/yaku/riichi",
     "yaku/ippatsu",
     "kontsu",
     "yaku/kontsu_yaku",

@@ -11,7 +11,7 @@ require "super_bingo_tulips"
 require_after "super_bingo_yaku"
 apply set_append, "default_mods", [
   %{name: "honba", config: %{value: 1000}},
-  %{name: "tobi", config: %{below: 1}},
+  %{name: "lib/tobi", config: %{below: 1}},
   %{name: "aka", config: %{pin: 1, sou: 1, man: 0}},
   %{name: "kin", config: %{pin: 1, sou: 1, man: 0}},
   %{name: "shiro_pocchi", config: %{ippatsu_only: false}},
