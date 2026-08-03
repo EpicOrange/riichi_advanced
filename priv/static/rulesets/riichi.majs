@@ -526,7 +526,7 @@ config_mod "lib/yaku/sanpuukou", name: "dai_han", values: ["Han"]
 define_mod "yaku/renkaihou", name: "Renkaihou", desc: "Local yaku. \"Consecutive Blossom\". 2 han if you kan off the rinshan tile and win off of _that_ rinshan tile. Does not stack with rinshan."
 define_mod "yaku/mondeikou", deps: ["aka"], name: "Mondeikou", desc: "Local yaku. If you have 4 aka, 2 han on top of aka. This counts as a yaku."
 # 3 han
-define_mod "yaku/riichi_isshoku_sanjun", name: "Isshoku Sanjun", desc: "Local yaku. \"Pure Triple Sequences\". 2 han if you have three of the exact same sequence in one suit, like 123 123 123. Like iipeikou but three. +1 han if closed. Does not stack with iipeikou (123 123) or sanrenkou (111 222 333)."
+define_mod "lib/yaku/riichi_isshoku_sanjun", name: "Isshoku Sanjun", desc: "Local yaku. \"Pure Triple Sequences\". 2 han if you have three of the exact same sequence in one suit, like 123 123 123. Like iipeikou but three. +1 han if closed. Does not stack with iipeikou (123 123) or sanrenkou (111 222 333)."
 define_mod "yaku/ittsuu_chanta", name: "Ittsuu Chanta", desc: "Local yaku. 2 han if you have ittsuu, and (except the 456) the rest of your hand is chanta (or junchan, in which case it's 3 han). +1 han if closed. Does not stack with ittsuu."
 define_mod "yaku/tanfonhou", name: "Tanfonhou", desc: "Local yaku. \"Win Without Red\". 2 han if your hand contains no red. This means you can have only 248p (2,4,8 circles), 23468s (2,3,4,6,8 bamboo), and any honors except red dragon. 5 han instead if no honor tiles (chintanfon). +1 han if closed."
 define_mod "yaku/chinpeikou", name: "Chinpeikou", desc: "Local yaku. 3 han on top of ryanpeikou if your ryanpeikou sequences are all the same numbers (may be different suits), like 112233 112233. No restriction on the pair, so you can have an honor pair (despite 'chin' being in the name)."
@@ -902,7 +902,7 @@ define_preset "Just Like Modded Minecraft", [
     dai_list: "yaku", dai_name: "Big Three Winds", dai_value: 120, dai_han: "Han"
   }},
   "yaku/renkaihou",
-  "yaku/riichi_isshoku_sanjun",
+  "lib/yaku/riichi_isshoku_sanjun",
   "yaku/ittsuu_chanta",
   "yaku/tanfonhou",
   "yaku/chinpeikou",
