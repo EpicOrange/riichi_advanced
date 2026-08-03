@@ -237,6 +237,7 @@ defmodule RiichiAdvanced.AIPlayer do
           end
           GenServer.cast(state.game_state, {:ai_thinking, state.seat})
           {{tile, index}, shanten} = cond do
+            state.tsumogiri_bot -> {Enum.at(playables, -1), :infinity} # tsumogiri
             state.ruleset == "american" ->
               case choose_american_discard(state, playables, closest_american_hands) do
                 {nil, _} ->
@@ -246,7 +247,6 @@ defmodule RiichiAdvanced.AIPlayer do
                   {Enum.at(playables, -1), :infinity} # tsumogiri, or last playable tile
                 t -> t
               end
-            state.tsumogiri_bot -> {Enum.at(playables, -1), :infinity} # tsumogiri
             true ->
               case choose_discard(state, playables, visible_tiles) do
                 {nil, _} ->
@@ -329,6 +329,15 @@ defmodule RiichiAdvanced.AIPlayer do
       # TODO clear thinking upon pressing a button
       # GenServer.cast(state.game_state, {:ai_thinking, state.seat})
       button_name = cond do
+        state.tsumogiri_bot -> cond do
+          "skip" in player.buttons -> "skip"
+          "anfuun" in player.buttons -> "anfuun"
+          "flower" in player.buttons -> "flower"
+          "start_flower" in player.buttons -> "start_flower"
+          "start_no_flower" in player.buttons -> "start_no_flower"
+          "extra_turn" in player.buttons -> "extra_turn"
+          true -> Enum.random(player.buttons)
+        end
         "void_manzu" in player.buttons ->
           # count suits, pick the minimum suit
           hand = player.hand ++ player.draw
@@ -373,15 +382,6 @@ defmodule RiichiAdvanced.AIPlayer do
             "skip" in player.buttons -> "skip"
             true -> Enum.random(player.buttons)
           end
-        state.tsumogiri_bot -> cond do
-          "skip" in player.buttons -> "skip"
-          "anfuun" in player.buttons -> "anfuun"
-          "flower" in player.buttons -> "flower"
-          "start_flower" in player.buttons -> "start_flower"
-          "start_no_flower" in player.buttons -> "start_no_flower"
-          "extra_turn" in player.buttons -> "extra_turn"
-          true -> Enum.random(player.buttons)
-        end
         "ron" in player.buttons and Match.match_hand(player.hand ++ [last_discard], player.calls, state.shanten_definitions.win, player.tile_behavior) -> "ron"
         "tsumo" in player.buttons and Match.match_hand(player.hand ++ player.draw, player.calls, state.shanten_definitions.win, player.tile_behavior) -> "tsumo"
         "hu" in player.buttons and Match.match_hand(player.hand ++ [last_discard], player.calls, state.shanten_definitions.win, player.tile_behavior) -> "hu"
