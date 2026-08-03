@@ -585,7 +585,7 @@ defmodule RiichiAdvancedWeb.ScoringTestLive do
     |> assign(:loading, false)
     {:noreply, socket}
   end
-  def handle_async(id, result, socket) do
+  def handle_async(_id, _result, socket) do
     # IO.inspect({id, result}, label: "handle_async")
     {:noreply, socket}
   end
