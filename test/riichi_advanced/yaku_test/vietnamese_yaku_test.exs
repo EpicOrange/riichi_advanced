@@ -264,7 +264,7 @@ defmodule RiichiAdvanced.YakuTest.VietnameseYaku do
     TestUtils.test_yaku_advanced("vietnamese", [], """
     {
       "starting_hand": {
-        "east": ["0j", "3m", "4m", "4m", "5m", "6m", "7p", "7p", "7p", "5s", "6s", "6s", "6s"],
+        "east": ["8j", "3m", "4m", "4m", "5m", "6m", "7p", "7p", "7p", "5s", "6s", "6s", "6s"],
         "south": ["1m", "4m", "7m", "2p", "5p", "8p", "3s", "7s", "9s", "1z", "2z", "3z", "4z"],
         "west": ["1m", "4m", "7m", "2p", "5p", "8p", "3s", "7s", "9s", "0z", "2z", "3z", "4z"],
         "north": ["1m", "3m", "7m", "2p", "5p", "8p", "3s", "7s", "9s", "0z", "2z", "4s", "4s"]
@@ -280,12 +280,12 @@ defmodule RiichiAdvanced.YakuTest.VietnameseYaku do
       %{"type" => "discard", "tile" => "4s", "player" => 1, "tsumogiri" => true},
       %{"type" => "discard", "tile" => "2s", "player" => 2, "tsumogiri" => true},
       %{"type" => "discard", "tile" => "3p", "player" => 3, "tsumogiri" => true},
-      %{"type" => "discard", "tile" => "0j", "player" => 0, "tsumogiri" => false},
+      %{"type" => "discard", "tile" => "2m", "player" => 0, "tsumogiri" => true},
       %{"type" => "discard", "tile" => "4s", "player" => 1, "tsumogiri" => true},
       %{"type" => "buttons_pressed", "buttons" => [%{"button" => "ron"}, nil, nil, nil]}
     ], %{
       east: %{
-        yaku: [{"No Jokers Mosquito Hand", [1, "Mủn"]}],
+        yaku: [{"Mosquito Hand", [0, "Phán"]}],
       }
     })
   end
