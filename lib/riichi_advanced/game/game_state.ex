@@ -811,6 +811,18 @@ defmodule RiichiAdvanced.GameState do
     # run after_start actions
     state = Actions.trigger_event(state, "after_start", %{seat: state.turn})
 
+    # "starting_calls" debug key
+    state = case Rules.get(state.rules_ref, "starting_calls") do
+      nil -> state
+      starting_calls ->
+        for {seat, calls} <- starting_calls, reduce: state do
+          state ->
+            calls = Enum.map(calls, fn [name, call] -> {name, Enum.map(call, fn tile -> Utils.to_tile(tile) end)} end)
+            call_tiles = Enum.flat_map(calls, &Utils.call_to_tiles/1)
+            update_player(state, String.to_existing_atom(seat), &%{ &1 | hand: Enum.drop(&1.hand, -length(call_tiles)), calls: calls })
+        end
+    end
+
     # initialize interruptible actions
     # we only do this after running change_turn and after_start, so that their actions can't be interrupted
     interruptible_actions = Map.new(Rules.get(state.rules_ref, "interruptible_actions", []) |> Enum.uniq(), fn action -> {action, 100} end)

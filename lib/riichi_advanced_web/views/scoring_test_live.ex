@@ -408,6 +408,9 @@ defmodule RiichiAdvancedWeb.ScoringTestLive do
       style = Map.get(button, "call_style", %{})
       style = Map.get(style, "kamicha", Map.get(style, "self", nil))
       new_call_tiles = if style != nil do Actions.style_call(style, call_choice, called_tile) else [called_tile | call_choice] end
+      new_call_tiles = if Enum.all?(new_call_tiles, &Utils.has_attr?(&1, "facedown")) do
+        [called_tile | call_choice]
+      else new_call_tiles end
       new_call = {socket.assigns.selected_call_button, new_call_tiles}
       socket = assign(socket, :hand, socket.assigns.hand -- call_tiles)
       socket = assign(socket, :calls, [new_call | socket.assigns.calls])

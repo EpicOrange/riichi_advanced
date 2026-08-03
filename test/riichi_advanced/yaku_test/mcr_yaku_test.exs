@@ -1,153 +1,119 @@
 defmodule RiichiAdvanced.YakuTest.MCRYaku do
   use ExUnit.Case, async: true
   alias RiichiAdvanced.TestUtils, as: TestUtils
+  import RiichiAdvanced.TestUtils, only: [sigil_t: 2]
 
-  test "mcr - not outside hand" do
-    TestUtils.test_yaku_advanced("mcr", [], [], """
-    {
-      "starting_hand": {
-        "east": ["8m", "9m", "1p", "2p", "3p", "6p", "6p", "7p", "8p", "9p", "4s", "5s", "6s"],
-        "south": ["1m", "4m", "7m", "2p", "5p", "8p", "3s", "6s", "9s", "1z", "2z", "3z", "4z"],
-        "west": ["1m", "4m", "7m", "2p", "5p", "8p", "3s", "6s", "9s", "1z", "2z", "3z", "4z"],
-        "north": ["1m", "3m", "7m", "2p", "5p", "8p", "3s", "6s", "9s", "1z", "2z", "3z", "4z"]
-      },
-      "starting_draws": ["1z", "7m"]
-    }
-    """, [
+  @mcr_yaku %{
+    "Big Four Winds" => 88,
+    "Big Three Dragons" => 88,
+    "All Green" => 88,
+    "Nine Gates" => 88,
+    "Four Kongs" => 88,
+    "Seven Shifted Pairs" => 88,
+    "All Terminals" => 64,
+    "Little Four Winds" => 64,
+    "Little Three Dragons" => 64,
+    "All Honors" => 64,
+    "Four Concealed Pungs" => 64,
+    "Pure Terminal Chows" => 64,
+    "Quadruple Chow" => 48,
+    "Four Pure Shifted Pungs" => 48,
+    "Four Pure Shifted Chows" => 32,
+    "Three Kongs" => 32,
+    "All Terminals and Honors" => 32,
+    "Greater Honors and Knitted Tiles" => 24,
+    "Full Flush" => 24,
+    "Pure Triple Chow" => 24,
+    "Pure Shifted Pungs" => 24,
+    "Upper Tiles" => 24,
+    "Middle Tiles" => 24,
+    "Lower Tiles" => 24,
+    "Pure Straight" => 16,
+    "Three-Suited Terminal Chows" => 16,
+    "Pure Shifted Chows" => 16,
+    "All Fives" => 16,
+    "Triple Pung" => 16,
+    "Three Concealed Pungs" => 16,
+    "Lesser Honors and Knitted Tiles" => 12,
+    "Knitted Straight" => 12,
+    "Upper Four" => 12,
+    "Lower Four" => 12,
+    "Big Three Winds" => 12,
+    "Mixed Straight" => 8,
+    "Reversible Tiles" => 8,
+    "Mixed Triple Chow" => 8,
+    "Mixed Shifted Pungs" => 8,
+    "Last Tile Draw" => 8,
+    "Last Tile Claim" => 8,
+    "Out with Replacement Tile" => 8,
+    "Robbing The Kong" => 8,
+    "Two Concealed Kongs" => 8,
+    "Chicken Hand" => 8,
+    "All Pungs" => 6,
+    "Half Flush" => 6,
+    "Mixed Shifted Chows" => 6,
+    "All Types" => 6,
+    "Melded Hand" => 6,
+    "Two Dragon Pungs" => 6,
+    "Two Kongs" => 6,
+    "Outside Hand" => 4,
+    "Fully Concealed Hand" => 4,
+    "Two Melded Kongs" => 4,
+    "Last Tile" => 4,
+    "White Dragon" => 2,
+    "Green Dragon" => 2,
+    "Red Dragon" => 2,
+    "Prevalent Wind" => 2,
+    "Seat Wind" => 2,
+    "Concealed Hand" => 2,
+    "All Chows" => 2,
+    "Tile Hog" => 2,
+    "Double Pung" => 2,
+    "Two Concealed Pungs" => 2,
+    "Concealed Kong" => 2,
+    "All Simples" => 2,
+    "Pure Double Chow" => 1,
+    "Mixed Double Chow" => 1,
+    "Short Straight" => 1,
+    "Two Terminal Chows" => 1,
+    "Pung of Terminals" => 1,
+    "Pung of Honors" => 1,
+    "Melded Kong" => 1,
+    "One Voided Suit" => 1,
+    "No Honors" => 1,
+    "Self-Drawn" => 1,
+    "Edge Wait" => 1,
+    "Closed Wait" => 1,
+    "Single Wait" => 1,
+    "Pungs of Terminals" => 2,
+    "Pungs of Honors" => 2,
+  }
+
+  def test_mcr(test_spec) do
+    test_spec = Keyword.update!(test_spec, :yaku, &Enum.map(&1, fn {name, value} -> {name, [value, "Fan"]}; name -> {name, [Map.get(@mcr_yaku, name, 0), "Fan"]} end)) ++ [pre_events: [
       %{"type" => "buttons_pressed", "buttons" => [%{"button" => "start_no_flower"}, nil, nil, nil]},
       %{"type" => "buttons_pressed", "buttons" => [nil, %{"button" => "start_no_flower"}, nil, nil]},
       %{"type" => "buttons_pressed", "buttons" => [nil, nil, %{"button" => "start_no_flower"}, nil]},
       %{"type" => "buttons_pressed", "buttons" => [nil, nil, nil, %{"button" => "start_no_flower"}]},
-      %{"type" => "discard", "tile" => "1z", "player" => 0, "tsumogiri" => true},
-      %{"type" => "discard", "tile" => "7m", "player" => 1, "tsumogiri" => true},
-      %{"type" => "buttons_pressed", "buttons" => [%{"button" => "ron"}, nil, nil, nil]}
-    ], %{
-      east: %{
-        yaku: [{"All Chows", [2, "Fan"]}, {"Concealed Hand", [2, "Fan"]}, {"Edge Wait", [1, "Fan"]}, {"Mixed Double Chow", [1, "Fan"]}, {"Mixed Straight", [8, "Fan"]}, {"Two Terminal Chows", [0, "Fan"]}]
-      }
-    })
+    ]]
+    TestUtils.test_win("mcr", ["lib/no_flowers"], test_spec)
   end
 
-  test "mcr - knitted straight" do
-    TestUtils.test_yaku_advanced("mcr", [], [], """
-    {
-      "starting_hand": {
-        "east": ["1m", "4m", "7m", "2p", "5p", "8p", "3s", "6s", "9s", "4z", "4z", "4z", "6z"],
-        "south": ["1m", "4m", "7m", "2p", "5p", "8p", "3s", "6s", "9s", "1z", "2z", "3z", "7z"],
-        "west": ["1m", "4m", "7m", "2p", "5p", "8p", "3s", "6s", "9s", "1z", "2z", "3z", "7z"],
-        "north": ["1m", "3m", "7m", "2p", "5p", "8p", "3s", "6s", "9s", "1z", "2z", "3z", "7z"]
-      },
-      "starting_draws": ["6z"]
-    }
-    """, [
-      %{"type" => "buttons_pressed", "buttons" => [%{"button" => "start_no_flower"}, nil, nil, nil]},
-      %{"type" => "buttons_pressed", "buttons" => [nil, %{"button" => "start_no_flower"}, nil, nil]},
-      %{"type" => "buttons_pressed", "buttons" => [nil, nil, %{"button" => "start_no_flower"}, nil]},
-      %{"type" => "buttons_pressed", "buttons" => [nil, nil, nil, %{"button" => "start_no_flower"}]},
-      %{"type" => "buttons_pressed", "buttons" => [%{"button" => "tsumo"}, nil, nil, nil]}
-    ], %{
-      east: %{
-        yaku: [{"All Types", [6, "Fan"]}, {"Fully Concealed Hand", [4, "Fan"]}, {"Knitted Straight", [12, "Fan"]}, {"Pung of Honors", [1, "Fan"]}, {"Single Wait", [1, "Fan"]}],
-      }
-    })
+  test "mcr - big four winds" do
+    test_mcr(hand: ~t"3334477z4z pon:111z pon:222z", yaku: ["Big Four Winds", "All Honors"])
+    test_mcr(hand: ~t"333z44z99m4z pon:111z pon:222z", yaku: ["Big Four Winds", "All Terminals and Honors", "Half Flush"])
+    test_mcr(hand: ~t"333z44z33s4z pon:111z pon:222z", yaku: ["Big Four Winds", "Half Flush"])
   end
 
-# # 88
-# "Big Four Winds"
-# "Big Three Dragons"
-# "All Green"
-# "Nine Gates"
-# "Four Kongs"
-# "Seven Shifted Pairs"
-# "Thirteen Orphans"
-# # 64
-# "All Terminals"
-# "Little Four Winds"
-# "Little Three Dragons"
-# "All Honors"
-# "Four Concealed Pungs"
-# "Pure Terminal Chows"
-# # 48
-# "Quadruple Chow"
-# "Four Pure Shifted Pungs"
-# # 32
-# "Four Pure Shifted Chows"
-# "Three Kongs"
-# "All Terminals and Honors"
-# # 24
-# "Seven Pairs"
-# "Greater Honors and Knitted Tiles"
-# "All Even Pungs"
-# "Full Flush"
-# "Pure Triple Chow"
-# "Pure Shifted Pungs"
-# "Upper Tiles"
-# "Middle Tiles"
-# "Lower Tiles"
-# # 16
-# "Pure Straight"
-# "Three-Suited Terminal Chows"
-# "Pure Shifted Chows"
-# "All Fives"
-# "Triple Pung"
-# "Three Concealed Pungs"
-# # 12
-# "Lesser Honors and Knitted Tiles"
-# "Knitted Straight"
-# "Upper Four"
-# "Lower Four"
-# "Big Three Winds"
-# # 8
-# "Mixed Straight"
-# "Reversible Tiles"
-# "Mixed Triple Chow"
-# "Mixed Shifted Pungs"
-# "Last Tile Draw"
-# "Last Tile Claim"
-# "Out with Replacement Tile"
-# "Robbing The Kong"
-# "Two Concealed Kongs"
-# # 6
-# "All Pungs"
-# "Half Flush"
-# "Mixed Shifted Chows"
-# "All Types"
-# "Melded Hand"
-# "Two Dragon Pungs"
-# "Two Kongs"
-# # 4
-# "Outside Hand"
-# "Fully Concealed Hand"
-# "Two Melded Kongs"
-# "Last Tile"
-# # 2
-# "White Dragon"
-# "Green Dragon"
-# "Red Dragon"
-# "Prevalent Wind"
-# "Seat Wind"
-# "Concealed Hand"
-# "All Chows"
-# "Tile Hog"
-# "Double Pung"
-# "Two Concealed Pungs"
-# "Concealed Kong"
-# "All Simples"
-# # 1
-# "Pure Double Chow"
-# "Mixed Double Chow"
-# "Short Straight"
-# "Two Terminal Chows"
-# "Pungs of Terminals"
-# "Pung of Terminals"
-# "Pungs of Honors"
-# "Pung of Honors"
-# "Melded Kong"
-# "One Voided Suit"
-# "No Honors"
-# "Self-Drawn"
-# "Edge Wait"
-# "Closed Wait"
-# "Single Wait"
+  test "mcr - big three dragons" do
+    test_mcr(hand: ~t"000z11m99p1m pon:777z pon:666z", yaku: ["Big Three Dragons", "All Terminals and Honors"])
+  end
+
+
+
+
+
+
+
 
 end

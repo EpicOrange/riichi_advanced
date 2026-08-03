@@ -60,6 +60,7 @@ defmodule RiichiAdvanced.Utils do
   def remove_attr(tile, _attrs), do: tile
 
   def has_attr?({_tile, existing_attrs}, attrs) do
+    attrs = List.wrap(attrs)
     {invisible, salient} = Enum.split_with(existing_attrs, &String.starts_with?(&1, "_"))
     salient_hashes = MapSet.new(salient, &:erlang.phash2(&1))
     invisible_hashes = MapSet.new(invisible, &:erlang.phash2(&1))

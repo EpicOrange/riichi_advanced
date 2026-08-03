@@ -241,13 +241,12 @@ defmodule RiichiAdvanced.TestUtils do
   end
 
   # short notation
-  def interpret_hand(hand) when is_list(hand), do: Enum.map(hand, &Utils.to_tile/1)
+  def sigil_t(hand, _modifiers), do: interpret_hand(hand)
   def interpret_hand(hand) when is_binary(hand) do
     case String.split(hand, " ", trim: true) do
-      [hand_spec] -> for [_, nums, suit] <- Regex.scan(~r/(\d+)([a-zA-Z])/, hand_spec), num <- String.graphemes(nums), do: "#{num}#{suit}"
-      hand -> hand
+      [hand_spec] -> for [_, nums, suit] <- Regex.scan(~r/(\d+)([a-zA-Z])/, hand_spec), num <- String.graphemes(nums), do: Utils.to_tile("#{num}#{suit}")
+      [hand_spec | call_spec] -> [interpret_hand(hand_spec) | interpret_calls(call_spec)]
     end
-    |> interpret_hand()
   end
   defp interpret_call(call) do
     with [call_name, call] <- String.split(call, ":", trim: true) do
@@ -256,45 +255,46 @@ defmodule RiichiAdvanced.TestUtils do
   end
   defp interpret_calls(calls) when is_list(calls), do: Enum.map(calls, &interpret_call/1)
   defp interpret_calls(calls) when is_binary(calls), do: interpret_calls(String.split(calls, " ", trim: true))
-  defp test_generic(ruleset, mods, test_spec) do
-    hand = interpret_hand(Keyword.get(test_spec, :hand, []))
-    {hand, winning_tile} = Enum.split(hand, -1)
+  defp test_generic(ruleset, mods, excluded_mods, test_spec) do
+    hand = Keyword.get(test_spec, :hand, [])
+    [hand | calls] = if is_list(Enum.at(hand, 0)) do hand else [hand] end
+    {hand, [winning_tile]} = Enum.split(hand, -1)
     rules_ref = get_rules!(ruleset, mods)
     wall = Rules.get(rules_ref, "wall", [])
     unused = wall -- hand
     non_furiten_tile = if winning_tile == :"1z" do :"2z" else :"1z" end
-    starting_draws = Enum.take(unused, 3) ++ [non_furiten_tile] ++ Enum.take(unused, 2) ++ [winning_tile, winning_tile]
+    starting_draws = Enum.take(unused, 3) ++ [non_furiten_tile] ++ Enum.take(Enum.drop(unused, 3), 2) ++ [winning_tile, winning_tile]
     config = """
     {
       "starting_hand": {
-        "east": [],
-        "south": [],
-        "west": [],
         "north": #{Jason.encode!(hand)}
+      },
+      "starting_calls": {
+        "north": #{Jason.encode!(Enum.map(calls, fn {name, call} -> [name, call] end))}
       },
       "starting_draws": #{Jason.encode!(starting_draws)}
     }
     """
     events = Keyword.get(test_spec, :pre_events, []) ++ [
       %{"type" => "discard", "tile" => Enum.at(starting_draws, 0), "player" => 0, "tsumogiri" => true},
-        %{"type" => "discard", "tile" => Enum.at(starting_draws, 1), "player" => 1, "tsumogiri" => true},
-        %{"type" => "discard", "tile" => Enum.at(starting_draws, 2), "player" => 2, "tsumogiri" => true},
-        %{"type" => "discard", "tile" => Enum.at(starting_draws, 3), "player" => 3, "tsumogiri" => true},
-        %{"type" => "discard", "tile" => Enum.at(starting_draws, 4), "player" => 0, "tsumogiri" => true},
-        %{"type" => "discard", "tile" => Enum.at(starting_draws, 5), "player" => 1, "tsumogiri" => true},
-        %{"type" => "discard", "tile" => Enum.at(starting_draws, 6), "player" => 2, "tsumogiri" => true},
+      %{"type" => "discard", "tile" => Enum.at(starting_draws, 1), "player" => 1, "tsumogiri" => true},
+      %{"type" => "discard", "tile" => Enum.at(starting_draws, 2), "player" => 2, "tsumogiri" => true},
+      %{"type" => "discard", "tile" => Enum.at(starting_draws, 3), "player" => 3, "tsumogiri" => true},
+      %{"type" => "discard", "tile" => Enum.at(starting_draws, 4), "player" => 0, "tsumogiri" => true},
+      %{"type" => "discard", "tile" => Enum.at(starting_draws, 5), "player" => 1, "tsumogiri" => true},
+      %{"type" => "discard", "tile" => Enum.at(starting_draws, 6), "player" => 2, "tsumogiri" => true},
     ] ++ Keyword.get(test_spec, :post_events, [])
     outcome = Keyword.get(test_spec, :outcome, :no_winners)
-    test_yaku_advanced(ruleset, mods, config, events, outcome)
+    test_yaku_advanced(ruleset, mods, excluded_mods, config, events, outcome)
   end
 
   # usage:
-  # TestUtils.test_win(ruleset, mods,
+  # TestUtils.test_win(ruleset, mods, excluded_mods, 
   #   hand: ["2m", "2m", "2p", "2p", "2p", "2p", "2s", "2s", "2s", "2s", "7z", "7z", "7z", "7z"],
   #   win_button: "ron",
   #   yaku: [],
   # )
-  def test_win(ruleset, mods, test_spec) do
+  def test_win(ruleset, mods \\ [], excluded_mods \\ [], test_spec) do
     win_button = Keyword.get(test_spec, :win_button, "ron")
     outcome = %{
       north: %{
@@ -302,20 +302,20 @@ defmodule RiichiAdvanced.TestUtils do
       }
     }
     post_events = [
-      %{"type" => "buttons_pressed", "buttons" => [nil, nil, nil, %{"button" => win_button}]}
+      %{"type" => "buttons_pressed", "buttons" => [nil, nil, nil, %{"button" => win_button}]},
     ]
     test_spec = Keyword.put(test_spec, :outcome, outcome)
     test_spec = Keyword.put(test_spec, :post_events, post_events)
-    test_generic(ruleset, mods, test_spec)
+    test_generic(ruleset, mods, excluded_mods, test_spec)
   end
 
   # usage:
-  # TestUtils.test_no_win(ruleset, mods,
+  # TestUtils.test_no_win(ruleset, mods, excluded_mods,
   #   hand: ["2m", "2m", "2p", "2p", "2p", "2p", "2s", "2s", "2s", "2s", "7z", "7z", "7z", "2z"],
   # )
-  def test_no_win(ruleset, mods, test_spec) do
+  def test_no_win(ruleset, mods, excluded_mods, test_spec) do
     test_spec = Keyword.put(test_spec, :outcome, :no_winners)
-    test_generic(ruleset, mods, test_spec)
+    test_generic(ruleset, mods, excluded_mods, test_spec)
   end
 
   defp match_hand(rules_ref, match_definition_name, hand, calls, tile_aliases) do

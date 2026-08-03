@@ -14,7 +14,6 @@ require "standard_sets"
 require "base"
 require "standard_wall"
 require "framed_5z"
-require "global_mods"
 require "default_auto_buttons"
 require "chii"
 require "pon"
@@ -28,6 +27,7 @@ require "yaku/kokushi", %{name: "Thirteen Orphans", value: 88}
 require "head_bump"
 require "default_flowers", %{auto_flower_by_default: true}
 require "min_han", %{min: 8}
+require_after "global_mods"
 
 set custom_style, %{
   tile_indices: %{
@@ -300,26 +300,26 @@ define_yaku meta_yaku, "Pungs of Honors", [2, "Fan"], has_existing_yaku(["Pung o
 define_yaku extra_yaku, "Flower Tiles", ["flower_count", "Fan"], flower_count >= 1
 
 # 88
-define_yaku_precedence "Big Four Winds", ["Big Three Winds", "Little Four Winds", "Little Three Winds", "Half Flush", "One Voided Suit", "Prevalent Wind", "Seat Wind"]
-define_yaku_precedence "Big Three Dragons", ["Little Three Dragons", "Two Dragon Pungs", "White Dragon", "Green Dragon", "Red Dragon"]
-define_yaku_precedence "All Green", ["One Voided Suit"]
+define_yaku_precedence "Big Four Winds", ["Little Four Winds"]
+define_yaku_precedence "Big Three Dragons", ["Little Three Dragons", "White Dragon", "Green Dragon", "Red Dragon"]
+define_yaku_precedence "All Green", []
 define_yaku_precedence "Nine Gates", ["Full Flush", "Concealed Hand", "Pungs of Terminals", "Pung of Terminals"]
 define_yaku_precedence "Four Kongs", ["Three Kongs", "All Pungs", "Single Wait"]
 define_yaku_precedence "Seven Shifted Pairs", ["Seven Pairs", "Full Flush"]
 define_yaku_precedence "Thirteen Orphans", ["All Types", "All Terminals and Honors", "Concealed Hand", "Single Wait"]
 # 64
 define_yaku_precedence "All Terminals", ["All Terminals and Honors", "Pungs of Terminals", "Pung of Terminals", "Pungs of Honors", "Pung of Honors", "Outside Hand", "No Honors", "All Pungs"]
-define_yaku_precedence "Little Four Winds", ["Big Three Winds", "Little Three Winds", "All Pungs", "Pungs of Terminals", "Pung of Terminals", "Pungs of Honors", "Pung of Honors", "Half Flush", "One Voided Suit", "Prevalent Wind", "Seat Wind"]
+define_yaku_precedence "Little Four Winds", ["Big Three Winds", "All Pungs", "Pungs of Terminals", "Pung of Terminals", "Pungs of Honors", "Pung of Honors", "Prevalent Wind", "Seat Wind"]
 define_yaku_precedence "Little Three Dragons", ["Two Dragon Pungs", "White Dragon", "Green Dragon", "Red Dragon"]
 define_yaku_precedence "All Honors", ["All Terminals and Honors", "Half Flush", "Pungs of Terminals", "Pung of Terminals", "Pungs of Honors", "Pung of Honors", "One Voided Suit", "All Pungs"]
 define_yaku_precedence "Four Concealed Pungs", ["Three Concealed Pungs", "Two Concealed Pungs", "All Pungs", "Concealed Hand", "One Voided Suit"]
 define_yaku_precedence "Pure Terminal Chows", ["All Chows", "Pure Double Chow", "Two Terminal Chows", "Full Flush", "Half Flush", "One Voided Suit", "No Honors", "Seven Pairs"]
 # 48
-define_yaku_precedence "Quadruple Chow", ["Pure Triple Chow", "Tile Hog"]
+define_yaku_precedence "Quadruple Chow", ["Pure Triple Chow", "Tile Hog", "Seven Pairs", "Three Concealed Pungs", "Pure Shifted Pungs"]
 define_yaku_precedence "Four Pure Shifted Pungs", ["Pure Shifted Pungs", "All Pungs"]
 # 32
 define_yaku_precedence "Four Pure Shifted Chows", ["Pure Shifted Chows", "Short Straight", "Two Terminal Chows", "All Chows", "One Voided Suit"]
-define_yaku_precedence "Three Kongs", ["Two Kongs", "Two Melded Kongs", "Melded Kong"] # Apparently Three Kongs can combine with Concealed Kong and Two Concealed Kongs.
+define_yaku_precedence "Three Kongs", ["Two Concealed Kongs", "Two Kongs", "Two Melded Kongs", "Concealed Kong", "Melded Kong"]
 define_yaku_precedence "All Terminals and Honors", ["Pungs of Terminals", "Pung of Terminals", "Pungs of Honors", "Pung of Honors", "Outside Hand", "All Pungs"]
 # 24
 define_yaku_precedence "Seven Pairs", ["Concealed Hand", "Single Wait", "All Even Pungs"]
@@ -396,7 +396,6 @@ define_yaku_precedence "Self-Drawn", []
 define_yaku_precedence "Edge Wait", ["Closed Wait", "Single Wait"]
 define_yaku_precedence "Closed Wait", ["Single Wait"]
 define_yaku_precedence "Single Wait", []
-
 set score_calculation, %{
   yaku_lists: ["yaku", "meta_yaku", "extra_yaku"],
   extra_yaku_lists: ["extra_yaku"],
@@ -666,6 +665,7 @@ set max_rounds, 16
 
 # mods
 
-define_mod_category "Other"
-define_mod "lib/tonpuu", name: "East Round Only", desc: "Play only the East Round (4 hands), instead of all four rounds (16 hands)", category: "Other"
-define_mod mcr_chicken_hand_challenge, name: "Chicken Hand Challenge", desc: "Makes everything worth 0 Fan except for flowers and Chicken Hand.", category: "Other"
+define_mod_category "MCR"
+define_mod "lib/tonpuu", name: "East Round Only", desc: "Play only the East Round (4 hands), instead of all four rounds (16 hands)"
+define_mod "lib/no_flowers", name: "No Flowers", desc: "Remove flowers from the game."
+define_mod mcr_chicken_hand_challenge, name: "Chicken Hand Challenge", desc: "Makes everything worth 0 Fan except for flowers and Chicken Hand."

@@ -1,0 +1,1 @@
+apply subtract, "wall", [+@all_flowers]
