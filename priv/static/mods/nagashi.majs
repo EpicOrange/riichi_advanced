@@ -130,7 +130,7 @@ else
 end
 
 on after_scoring do
-  if anyone_status("nagashi") do
+  if ended_by_exhaustive_draw and anyone_status("nagashi") do
     set_scoring_header("Nagashi $is", %{is: !is})
   end
 end
