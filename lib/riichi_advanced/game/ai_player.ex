@@ -420,7 +420,7 @@ defmodule RiichiAdvanced.AIPlayer do
             "ankan" in player.buttons -> "ankan"
             true -> "skip"
           end
-        state.ruleset == "fuzhou" ->
+        state.ruleset == "fuzhou" or state.ruleset == "vietnamese" ->
           cond do
             "ron" in player.buttons and Match.match_hand(player.hand ++ [last_discard], player.calls, state.shanten_definitions.win, player.tile_behavior) -> "ron"
             "tsumo" in player.buttons and Match.match_hand(player.hand ++ player.draw, player.calls, state.shanten_definitions.win, player.tile_behavior) -> "tsumo"
