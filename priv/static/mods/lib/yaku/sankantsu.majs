@@ -1,8 +1,15 @@
 default list, "yaku"
+default closed_name, ""
+default closed_value, 0
 
 on after_initialization do
   add_rule("$value $han", "$name", "%{value} %{han} if you called %{kan} three times.", %{value: !value, han: !han, name: !name, kan: !kan_name})
   update_rule("$value $han", "$name", "%{example_hand}", %{value: !value, han: !han, name: !name, example_hand: ~t"567p3z 8888p 2222z 9999m 3z"})
 end
 
-define_yaku !list, !name, [!value, !han], match(["calls"], ~m"(daiminkan ankan kakan):3")
+if !closed_value > 0 do
+  define_yaku !list, !name, [!value, !han], match(["calls"], ~m"(daiminkan kakan):3")
+  define_yaku !list, !closed_name, [!closed_value, !han], match(["calls"], ~m"ankan:3")
+else
+  define_yaku !list, !name, [!value, !han], match(["calls"], ~m"(daiminkan ankan kakan):3")
+end
