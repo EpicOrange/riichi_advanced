@@ -17,7 +17,7 @@ require "pon"
 require "kan"
 require "ron"
 require "tsumo"
-require "default_flowers", %{four_flowers_value: 1, matching_flower_value: 1, four_flowers_han: "Mủn"}
+require "default_flowers", %{must_discard: true, four_flowers_value: 1, matching_flower_value: 1, four_flowers_han: "Mủn"}
 require "standard_win"
 require "yaku/yakuhai", %{round_wind_name: "Prevalent Wind", value: 1}
 require "yaku/menzentsumo", %{name: "Fully Closed Hand", value: 1}
