@@ -6,24 +6,6 @@ There isn't currently a structured way to contribute to this codebase, but if th
 
 Right now Riichi Advanced has a couple avenues for contribution:
 
-## Issues
-
-You could check out the [issues](https://github.com/EpicOrange/riichi_advanced/issues) and specifically look for issues labeled `tanyao level issue`. These are issues that should be relatively easy to complete. (Tanyao is the common name for the "All Simples" win condition in Riichi Mahjong.)
-
-There's no requirement for pull requests. I guess you should probably at least mention what issue you're addressing, but since we don't have great test coverage or CI or anything at the moment, you can just go ahead and submit PRs as you like.
-
-## Quality assurance
-
-Riichi Advanced does not have good test coverage, and more importantly, we're not 100% sure about certain rules. If you know a mahjong variant quite well, definitely try it out on Riichi Advanced and see if it matches your expectations! If not, open an [issue](https://github.com/EpicOrange/riichi_advanced/issues) or drop us a message on the [Discord](https://discord.gg/5QQHmZQavP), preferably with a screenshot.
-
-One way Riichi Advanced facilitates testing is letting you rig the wall in all variants: when in a room, hit Room Settings and then Config, and uncomment the lines in the textbox. You can also add `"debug_status": true` to show statuses, counters, and buttons for all players. Also, the Open Hands mod could be helpful.
-
-## Ruleset tutorials
-
-Riichi Advanced supports custom tutorials, and the documentation for that is available [here](documentation/tutorials.md). To start, navigate to the [main menu](https://riichiadvanced.com), select a variant, press Learn, press Create your own ruleset, and start writing! To share your tutorials, simply copy the URL when playing said tutorial.
-
-Note that these shared tutorials are only stored temporarily. If you end up creating a custom tutorial that you want to add to the game, drop it in [Discord](https://discord.gg/5QQHmZQavP) or submit a pull request! All in-game tutorials are stored in the directory [`priv/static/tutorials/`](priv/static/tutorials/).
-
 ## Ruleset documentation
 
 In order to implement mahjong variants we need a good source of rules (preferably in English). You can contribute by sending us rulesets for your favorite mahjong from any source, including yourself! Just drop it in [Discord](https://discord.gg/5QQHmZQavP) or post an issue or open a PR adding it to the toplevel `documentation/` directory.
@@ -43,6 +25,24 @@ There's also [`priv/static/mods/`](priv/static/mods/) -- if you want to create a
 - Look at the top of [`priv/static/rulesets/riichi.json`](priv/static/rulesets/riichi.json) to see how to make mods available for a given ruleset.
 
 Currently some rulesets are actually modpacks, modded derivatives of existing rulesets (mostly Riichi), and those can be found [here](lib/riichi_advanced/game/mod_loader.ex#L48). The location of these modpack definitions may change in the future.
+
+## Issues
+
+You could check out the [issues](https://github.com/EpicOrange/riichi_advanced/issues) and specifically look for issues labeled `tanyao level issue`. These are issues that should be relatively easy to complete. (Tanyao is the common name for the "All Simples" win condition in Riichi Mahjong.)
+
+Pull requests can be for pretty much everything but avoid full rewrites or AI slop please!
+
+## Quality assurance
+
+Riichi Advanced does not have good test coverage, and more importantly, we're not 100% sure about certain rules. If you know a mahjong variant quite well, definitely try it out on Riichi Advanced and see if it matches your expectations! If not, open an [issue](https://github.com/EpicOrange/riichi_advanced/issues) or drop us a message on the [Discord](https://discord.gg/5QQHmZQavP), preferably with a screenshot.
+
+One way Riichi Advanced facilitates testing is letting you rig the wall in all variants: when in a room, hit Room Settings and then Config, and uncomment the lines in the textbox. You can also add `"debug_status": true` to show statuses, counters, and buttons for all players. Also, the Open Hands mod could be helpful.
+
+## Ruleset tutorials
+
+Riichi Advanced supports custom tutorials, and the documentation for that is available [here](documentation/tutorials.md). To start, navigate to the [main menu](https://riichiadvanced.com), select a variant, press Learn, press Create your own ruleset, and start writing! To share your tutorials, simply copy the URL when playing said tutorial.
+
+Note that these shared tutorials are only stored temporarily. If you end up creating a custom tutorial that you want to add to the game, drop it in [Discord](https://discord.gg/5QQHmZQavP) or submit a pull request! All in-game tutorials are stored in the directory [`priv/static/tutorials/`](priv/static/tutorials/).
 
 ## Tests
 
