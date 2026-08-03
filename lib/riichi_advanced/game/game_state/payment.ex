@@ -61,9 +61,9 @@ defmodule RiichiAdvanced.GameState.Payment do
         txn_name = if from != nil do
           case Utils.get_relative_seat(from, to) do
             :self     -> "From self"
-            :shimocha -> "From right"
+            :shimocha -> "From left"
             :toimen   -> "From across"
-            :kamicha  -> "From left"
+            :kamicha  -> "From right"
           end
         else "" end
         txn = Map.put(txn, :name, txn_name)
