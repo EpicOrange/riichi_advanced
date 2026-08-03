@@ -774,7 +774,8 @@ Colors are specified as CSS color strings like `"#808080"` or `"lightblue"`. Exa
 - `tag_dora(tag_name, dora_indicator)`: Globally tag the dora indicated by the given dora_indicator tile, using the toplevel `"dora_indicators"` key as reference.
 - `untag(tag_name)`: Untag all tiles tagged with the given tag name.
 - `convert_last_discard(tile)`: Turn the last discard into the given tile.
-- `flip_all_calls_faceup`: Flip all draws faceup. Mostly used to flip all concealed kongs faceup for variants that hide them.
+- `flip_own_calls_faceup`: Flip the current player's calls faceup. Mostly used to flip all concealed kongs faceup for variants that hide them.
+- `flip_all_calls_faceup`: Flip all calls faceup. Mostly used to flip all concealed kongs faceup for variants that hide them.
 - `draw_from_aside`: Draw a tile from the tiles set aside. This action will be removed in the future in favor of `"move_tiles"`.
 - `charleston_left`: Select and pass three tiles left. Must be preceded by a `"mark"` action that marks 3 hand tiles.
 - `charleston_across`: Select and pass three tiles across. Must be preceded by a `"mark"` action that marks 3 hand tiles.

@@ -1858,6 +1858,11 @@ defmodule RiichiAdvanced.GameState.Actions do
           state = update_in(state.players[last_discarder].pond, fn pond -> List.replace_at(pond, -1, tile) end)
           state = update_action(state, last_discarder, :discard, %{tile: tile})
           state
+        "flip_own_calls_faceup"  ->
+          update_player(state, context.seat, fn player ->
+            faceup_calls = Enum.map(player.calls, fn {call_name, call} -> {call_name, Utils.remove_attr(call, ["_facedown", "_concealed"])} end)
+            %{ player | calls: faceup_calls }
+          end)
         "flip_all_calls_faceup"  ->
           update_all_players(state, fn _seat, player ->
             faceup_calls = Enum.map(player.calls, fn {call_name, call} -> {call_name, Utils.remove_attr(call, ["_facedown", "_concealed"])} end)
@@ -2159,7 +2164,7 @@ defmodule RiichiAdvanced.GameState.Actions do
   def run_actions(state, actions, context) do
     if Debug.debug_actions() do
       if (Enum.empty?(actions) or (actions |> Enum.at(0) |> Enum.at(0)) not in ["when", "sort_hand", "unset_status"]) do
-        IO.puts("Running actions #{inspect(actions)} in context #{inspect(context)}")
+        IO.puts("Running actions #{inspect(actions, limit: :infinity)} in context #{inspect(context, limit: :infinity)}")
       end
     end
 
