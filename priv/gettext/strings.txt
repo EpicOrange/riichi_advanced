@@ -67,6 +67,26 @@ Calling tiles
 Differences from four-player
 Intro to space mahjong
 Intro to Tianjin Mahjong
+Agarihouki (AI)
+Bakahon (AI)
+Betaori (AI)
+Chombo (AI)
+Furiten (AI)
+Goumii (AI)
+Houjuu (AI)
+Jigoku (AI)
+Kuikae (AI)
+Noten (AI)
+Oyakaburi (AI)
+Pao (AI)
+Penchan (AI)
+Sashikomi (AI)
+Tobi (AI)
+Uushanten (AI)
+Yakitori (AI)
+Yakuless (AI)
+Yamagoshi (AI)
+Yasume (AI)
 If the AI is stuck or missing, clicking the center compass will try to unstuck them.
 Clicking on the center compass will briefly have it show score differences relative to each opponent.
 After someone calls a win, hover over the winning hand to see how it breaks into sets. (On mobile: tap the winning hand.)
@@ -1890,6 +1910,10 @@ Remove Flowers
 Head Bump
 Seven Pairs
 Repeat On Draw
+Suufon Renda
+Kyuushu Kyuuhai
+Isshoku Sanjun
+Isshoku Yonjun
 Sanrenkou
 Sanpuukou
 Draw To Dora Indicator
@@ -2926,7 +2950,6 @@ Rules
 Rules
 Rules
 Rules
-Rules
 1 Han
 1 Han
 1 Han
@@ -2988,6 +3011,26 @@ Rules
 Rules
 Rules
 Rules
+Rules
+Rules
+1 Han
+1 Han
+2 Han
+2 Han
+Shoumangan
+Shoumangan
+Shoumangan
+Shoumangan
+Shoumangan
+Shoumangan
+Shoumangan
+Daimangan
+Daimangan
+Baimangan
+Baimangan
+Rules
+Rules
+Rules
 3+ Han
 3+ Han
 Yakuman
@@ -3261,7 +3304,6 @@ Tiles
 Tiles
 Tiles
 Tiles
-Rules
 Rules
 Rules
 Rules
@@ -3692,6 +3734,7 @@ $value $han
 $value $han
 $value $han
 Rules
+Rules
 Tiles
 Rules
 Yakuman
@@ -3744,11 +3787,12 @@ Rules
 Rules
 Rules
 Rules
+Rules
 1 Han
 1 Han
+2 Han
 2 Han
 Yakuman
-2 Han
 Yakuman
 Rules
 Rules
@@ -3845,6 +3889,9 @@ $value $han
 $value $han
 Rules
 1 Han
+Rules
+2 Han
+2 Han
 Yakuman
 Yakuman
 Rules
@@ -4199,8 +4246,6 @@ Yakuman
 1 Han
 Rules
 Rules
-2 Han
-2 Han
 Yakuman
 Yakuman
 Rules
@@ -4261,7 +4306,6 @@ Jokers
 Calls
 Calls
 Dead Hand
-Furiten
 Ittsuu
 Ittsuu
 Toitoi
@@ -4318,8 +4362,28 @@ Robbing the Gold
 Blessing of Heaven
 Win Condition
 Scoring
-Tontonsen
-Partial Head Bump
+Tontonsen (unimplemented)
+Partial Head Bump (unimplemented)
+Hochi Fu
+Sekinin Barai (Pao)
+Sekinin Barai (Pao)
+Scoring
+Minimum Han
+Pinfu
+Pinfu
+Honitsu
+Honitsu
+Chinitsu
+Chinitsu
+Honroutou
+Honroutou
+Renhou
+Daichiishin
+Daichiishin
+Daisuushii
+Daisuushii
+Chuurenpoutou
+Chuurenpoutou
 Initial Score
 Notenrenchan
 North Wind
@@ -4601,7 +4665,6 @@ Win Condition
 Win Condition
 Win Condition
 Win Condition
-Furiten
 Kuikae Ari
 No Abortive Draws
 Tsumo
@@ -5024,6 +5087,7 @@ Flowers
 Flowers
 Flowers
 Flowers
+Furiten
 Galaxy Mahjong
 Win Condition
 Milky Way
@@ -5073,11 +5137,12 @@ Minimum Han
 Sekinin Barai (Pao)
 Sekinin Barai (Pao)
 Sekinin Barai (Pao)
+Furiten
 Rinshan
 Chankan
 Sankantsu
-Suukantsu
 Sankantsu
+Suukantsu
 Suukantsu
 Fu
 Fu
@@ -5174,6 +5239,9 @@ $name
 $name
 Riichi
 Riichi
+No Ippatsu
+Isshoku Sanjun
+Isshoku Sanjun
 Suurenkou
 Suurenkou
 Sekinin Barai (Pao)
@@ -5527,8 +5595,6 @@ Yondoukon
 Rinshan
 Riichi
 Riichi
-Isshoku Sanjun
-Isshoku Sanjun
 Isshoku Yonjun
 Isshoku Yonjun
 Sekinin Barai (Pao)
@@ -5589,7 +5655,6 @@ Joker tiles cannot be called (to form a meld, or to win).
 You may call Pung/Kong/Quint if a just-discarded tile (not a joker!) matches 2/3/4 of the same tile in hand. You may use any amount of joker tiles for this. Pairs cannot be called. After calling, the involved tiles are shown to all players and cannot be modified. Note that there are no 'replacement tiles' in American mahjong, so in every case you will have to immediately discard from hand after calling. There is no way to 'add' to an existing called meld.
 (Joker Swapping) During any player's turn, they can replace a tile in hand if it matches an existing meld on the table (not just their own melds!) that contains a joker. This action swaps the tile in hand with the meld's joker.
 If someone's exposed melds indicate that they have no possible winning hand, you can press the skull button for that player to declare their hand dead. If the declaration is correct, then the target player can no longer draw or discard, and must sit out of the rest of the round. If the declaration is incorrect, you suffer that penalty instead.
-You cannot win on a discarded tile that you yourself have discarded (or skipped a win on). You can still win on such tiles by tsumo (self-draw).
 1 han if your hand contains the sequences 123 456 789 in one suit.
 %{example_hand}
 1 han if your hand is all triplets.
@@ -5646,6 +5711,26 @@ The dealer won on their first draw.
 - Five sets (sequences or triplets) and a pair.
 The game consists of two east rounds.
 If there are multiple winners, then the earliest winner in turn order gets the full payment for the hand, and the other winners get half each. As for riichi sticks, each winner first takes back their own riichi stick (if any) and any remaining non-winner riichi sticks are evenly divided among winners.
+Fu is not rounded. However, pinfu tsumo is 20 fu.
+(Tsuuiisou Pao) Dealing the last tile called for kan for a tsuuiisou hand also counts.
+(Chinroutou Pao) Dealing the last tile called for kan for a chinroutou hand also counts.
+Scores are rounded to the nearest 10, maxing out at 1000 points (considered shoumangan, 4000/6000). Hands that are yakuman in riichi are daimangan (6000/9000), with the exception of chuurenpoutou, which is baimangan (8000/12000)
+After 1 or more repeats, winning requires a minimum of 1 han.
+You won off a double-sided sequence wait, with an all-sequence hand whose pair is not yakuhai.
+%{example_hand}
+2 han if your hand is comprised of one suit plus honor tiles.
+%{example_hand}
+Shoumangan if your hand is comprised of one suit only (no honor tiles).
+%{example_hand}
+Shoumangan if your hand contains only terminal and honor tiles.
+%{example_hand}
+Shoumangan if you win off the first tile someone dropped before your first draw. Calls invalidate.
+Shoumangan if you have one pair of each of the seven honor tiles.
+%{example_hand}
+Daimangan if your hand contains triplets or kans of all four winds.
+%{example_hand}
+You have no calls and your winning hand is the pattern 1112345678999 in one suit, plus one additional tile.
+%{example_hand}
 (Kansai) Everyone starts with 50000 points.
 (Kansai) In the south round only, the round repeats on exhaustive draws regardless of anyone's tenpai status.
 (Kansai) In the south round only, the round repeats on exhaustive draws regardless of anyone's tenpai status.
@@ -5926,7 +6011,6 @@ You may win with one of the following:
 - Four sets (sequences or triplets) and a pair.
 - (Chiitoitsu) Seven distinct pairs.
 - (Kokushi Musou) All thirteen terminal/honor tiles plus one forming a pair.
-If you are waiting for a tile to win, but one of your winning tiles is among your discards (including tiles called by other players), then you are 'in furiten' and cannot win by ron (including chankan). You can still win by tsumo.
 Swap-calling is allowed. That is, if you call %{tile} with %{tiles}, you may discard a tile that could have made a set with %{tiles}. (e.g. calling %{aka}, then discarding %{tile}, or calling %{tile}, then discarding %{tile2})
 There are no abortive draws enabled.
 Win by self-draw with a closed hand.
@@ -6343,6 +6427,7 @@ Another way to think about it is to have either 123 234 345 567 or 123 345 456 5
 %{value} %{han} for each flower tile whose number matches your seat. Since your current seat is West, that would be the following flowers: %{flowers}
 %{value} %{han} for each flower tile whose number matches your seat. Since your current seat is North, that would be the following flowers: %{flowers}
 - Having all 4 flower tiles of the same set is instead worth %{four_flowers_value} %{four_flowers_han}.
+If you are waiting for a tile to win, but one of your winning tiles is among your discards (including tiles called by other players), then you are 'in furiten' and cannot win by ron (including chankan). You can still win by tsumo.
 One of each tile is replaced with a blue 'galaxy' tile that acts as a wildcard of its number. For example, %{galaxy_3s} can be used as any of %{threes}. Galaxy winds are wind wildcards, and galaxy dragons are dragon wildcards.
 - (Galaxy Mahjong) You have 14 galaxy tiles.
 (Galaxy Mahjong) Having any 14 galaxy tiles awards the Milky Way yakuman.
@@ -6392,11 +6477,12 @@ Your hand must score at least %{score} %{han} to win.
 If you deal the last dragon called for a daisangen hand, or the last wind called for a daisuushii hand, you are responsible for that single yakuman payment if they tsumo, or half of the yakuman payment if they ron off someone else.
 (Suukantsu Pao) Dealing the last tile called for kan for a suukantsu hand also counts.
 If you deal the last tile called for kan for a suukantsu hand, you are responsible for that single yakuman payment if they tsumo, or half of the yakuman payment if they ron off someone else.
+You cannot win on a discarded tile that you yourself have discarded (or skipped a win on). You can still win on such tiles by tsumo (self-draw).
 If you kan and then tsumo on the replacement tile, you are awarded rinshan (1 han).
 If someone calls kan to upgrade an open triplet, and you are waiting to win on that tile, you may specially call ron on that added tile. Doing so awards the 1 han yaku Chankan.
 Your hand contains three kans.
-Your hand contains four kans.
 %{example_hand}
+Your hand contains four kans.
 %{example_hand}
 Fu (minipoints) is scored based on the composition of the hand as well as how you win.
 - Start with 20 fu.
@@ -6488,6 +6574,9 @@ You have no flowers.
 Your pair must not be a value pair (pair of dragons, round wind, or seat wind).
 If you can, you may discard into tenpai (ready hand) by declaring 'riichi' to lock your hand. If your discard passes, you bet %{bet} points. If you win, you are awarded Riichi (1 han yaku). If you declared riichi on your very first discard, then you are instead awarded double riichi (2 han). Calls before the riichi declaration invalidate double riichi.
 1 Han for winning after declaring riichi.
+Winning in the first go-around after your riichi declaration does not award Ippatsu.
+\\\"Pure Triple Sequences\\\". 2 han if you have three of the exact same sequence in one suit, like 123 123 123. Like iipeikou but three. 3 han if closed. Does not stack with iipeikou (123 123) or sanrenkou (111 222 333).
+%{example_hand}
 \\\"Four Consecutive Triplets\\\". You have four triplets of the same suit of increasing number, like 111 222 333 444.
 %{example_hand}
 (Suurenkou) If you win with suurenkou (four consecutive triplets of the same suit like 111 222 333 444) and called the fourth triplet or kan from a player, that player is responsible for the yakuman payment if you tsumo, or half of the payment if you ron off someone else.
@@ -6837,8 +6926,6 @@ Yakuman if your hand contains four copies of the exact same kontsu.
 (Cosmic) If you fuun and then tsumo on the replacement tile, you are awarded rinshan (1 han).
 (Nippatsu) If you win on the second go-around after riichi, you are awarded nippatsu (1 han). Any call starting from the riichi onward invalidates nippatsu.
 (Open Riichi) You may also declare open riichi, which reveals your hand but is worth 1 more han if you win.
-\\\"Pure Triple Sequences\\\". 2 han if you have three of the exact same sequence in one suit, like 123 123 123. Like iipeikou but three. 3 han if closed. Does not stack with iipeikou (123 123) or sanrenkou (111 222 333).
-%{example_hand}
 \\\"Pure Quadruple Sequences\\\". You have four of the exact same sequence in one suit, like 123m 123m 123m 123m. Like iipeikou but four.
 %{example_hand}
 (Isshoku Yonjun) If you win with isshoku yonjun (123123123123 of the same suit) and called the fourth sequence from a player, that player is responsible for the yakuman payment if you tsumo, or half of the payment if you ron off someone else.

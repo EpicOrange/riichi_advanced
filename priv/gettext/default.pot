@@ -331,6 +331,9 @@ msgstr ""
 msgid "(Chii in Sanma) Chii is allowed."
 msgstr ""
 
+msgid "(Chinroutou Pao) Dealing the last tile called for kan for a chinroutou hand also counts."
+msgstr ""
+
 msgid "(Click the tile to discard it.)"
 msgstr ""
 
@@ -542,6 +545,9 @@ msgid "(Tobi) If any player dips below %{tobi_below} points, the game ends and e
 msgstr ""
 
 msgid "(Toriuchi) On ron, each 1s (bird) tile is worth 1 shuugi, unless the discarder's hand contains 7p (pistol) which would shoot the birds dead. That is, unless the winner's hand contains 8s (birdcage) which would protect the birds from gunfire."
+msgstr ""
+
+msgid "(Tsuuiisou Pao) Dealing the last tile called for kan for a tsuuiisou hand also counts."
 msgstr ""
 
 msgid "(Ura) Each ura dora adds %{chips} shuugi to the payment."
@@ -1585,6 +1591,9 @@ msgstr ""
 msgid "2 han if your hand is all triplets."
 msgstr ""
 
+msgid "2 han if your hand is comprised of one suit plus honor tiles."
+msgstr ""
+
 msgid "2 han if your hand is comprised of one suit plus honor tiles. 3 han if closed."
 msgstr ""
 
@@ -2221,6 +2230,9 @@ msgstr ""
 msgid "Adds the requirement that Seven Pairs is completed by self-draw. (Useful when playing with more than 8 jokers.)"
 msgstr ""
 
+msgid "After 1 or more repeats, winning requires a minimum of 1 han."
+msgstr ""
+
 msgid "After Multiple Gongs"
 msgstr ""
 
@@ -2258,6 +2270,9 @@ msgid "After issuing a challenge (or passing), you can see your hand and the gam
 msgstr ""
 
 msgid "After someone calls a win, hover over the winning hand to see how it breaks into sets. (On mobile: tap the winning hand.)"
+msgstr ""
+
+msgid "Agarihouki (AI)"
 msgstr ""
 
 msgid "Agarirenchan"
@@ -2593,6 +2608,12 @@ msgstr ""
 msgid "Baiman tsumo"
 msgstr ""
 
+msgid "Baimangan"
+msgstr ""
+
+msgid "Bakahon (AI)"
+msgstr ""
+
 msgid "Bamboo Joker (索)"
 msgstr ""
 
@@ -2651,6 +2672,9 @@ msgid "Bet 1000 to change wait to aside tiles"
 msgstr ""
 
 msgid "Bet half of points to flip 3 dora indicators"
+msgstr ""
+
+msgid "Betaori (AI)"
 msgstr ""
 
 msgid "Big Four Winds"
@@ -2878,6 +2902,9 @@ msgstr ""
 msgid "Chombo"
 msgstr ""
 
+msgid "Chombo (AI)"
+msgstr ""
+
 msgid "Chon"
 msgstr ""
 
@@ -3034,10 +3061,19 @@ msgstr ""
 msgid "DD"
 msgstr ""
 
+msgid "Daichiishin"
+msgstr ""
+
 msgid "Daichikurin"
 msgstr ""
 
 msgid "Daichisei"
+msgstr ""
+
+msgid "Daimangan"
+msgstr ""
+
+msgid "Daimangan if your hand contains triplets or kans of all four winds."
 msgstr ""
 
 msgid "Daisangen"
@@ -3913,6 +3949,9 @@ msgstr ""
 msgid "Fu is fixed at 40."
 msgstr ""
 
+msgid "Fu is not rounded. However, pinfu tsumo is 20 fu."
+msgstr ""
+
 msgid "Fukuji Mihoko"
 msgstr ""
 
@@ -3935,6 +3974,9 @@ msgid "Funakubo Hiroko"
 msgstr ""
 
 msgid "Furiten"
+msgstr ""
+
+msgid "Furiten (AI)"
 msgstr ""
 
 msgid "Furiten Tsumo"
@@ -4001,6 +4043,9 @@ msgid "Golden Single Wait"
 msgstr ""
 
 msgid "Gong"
+msgstr ""
+
+msgid "Goumii (AI)"
 msgstr ""
 
 msgid "Grand Cross"
@@ -4120,6 +4165,9 @@ msgstr ""
 msgid "Hit the back button to return to the main menu."
 msgstr ""
 
+msgid "Hochi Fu"
+msgstr ""
+
 msgid "Hochi Rules (beta)"
 msgstr ""
 
@@ -4142,6 +4190,9 @@ msgid "Honors Chiitoitsu"
 msgstr ""
 
 msgid "Honroutou"
+msgstr ""
+
+msgid "Houjuu (AI)"
 msgstr ""
 
 msgid "Houtei"
@@ -4480,6 +4531,9 @@ msgstr ""
 msgid "JC"
 msgstr ""
 
+msgid "Jigoku (AI)"
+msgstr ""
+
 msgid "Jihai"
 msgstr ""
 
@@ -4640,6 +4694,9 @@ msgid "Kouitten"
 msgstr ""
 
 msgid "Kouittenrin"
+msgstr ""
+
+msgid "Kuikae (AI)"
 msgstr ""
 
 msgid "Kuikae Ari"
@@ -5353,6 +5410,9 @@ msgstr ""
 msgid "No Honors or Flowers"
 msgstr ""
 
+msgid "No Ippatsu"
+msgstr ""
+
 msgid "No Jokers"
 msgstr ""
 
@@ -5501,6 +5561,9 @@ msgid "Note that you were not prompted to call ton on this white dragon. Since t
 msgstr ""
 
 msgid "Note that your existing 3 of circles is grayed out -- it cannot be discarded. This is because we are playing with a rule called \\\"kuikae nashi\\\", i.e. no swap-calling. You cannot call with 45 of circles and subsequently discard 3 or 6 of circles."
+msgstr ""
+
+msgid "Noten (AI)"
 msgstr ""
 
 msgid "Noten payment"
@@ -5698,6 +5761,9 @@ msgstr ""
 msgid "Overall payment"
 msgstr ""
 
+msgid "Oyakaburi (AI)"
+msgstr ""
+
 msgid "PIE"
 msgstr ""
 
@@ -5708,6 +5774,9 @@ msgid "Pair"
 msgstr ""
 
 msgid "Pao"
+msgstr ""
+
+msgid "Pao (AI)"
 msgstr ""
 
 msgid "Pao dealer tsumo"
@@ -5725,7 +5794,7 @@ msgstr ""
 msgid "Part of the player's starting score is composed of shuugi chips worth %{worth} each, which are gained and lost separately from points."
 msgstr ""
 
-msgid "Partial Head Bump"
+msgid "Partial Head Bump (unimplemented)"
 msgstr ""
 
 msgid "Pass"
@@ -5747,6 +5816,9 @@ msgid "Payment (value ≤ 25)"
 msgstr ""
 
 msgid "Pei"
+msgstr ""
+
+msgid "Penchan (AI)"
 msgstr ""
 
 msgid "Perform swap"
@@ -6352,6 +6424,9 @@ msgstr ""
 msgid "Sanshoku Sujipaikou"
 msgstr ""
 
+msgid "Sashikomi (AI)"
+msgstr ""
+
 msgid "Sawamura Tomoki"
 msgstr ""
 
@@ -6359,6 +6434,9 @@ msgid "Score"
 msgstr ""
 
 msgid "Scorer"
+msgstr ""
+
+msgid "Scores are rounded to the nearest 10, maxing out at 1000 points (considered shoumangan, 4000/6000). Hands that are yakuman in riichi are daimangan (6000/9000), with the exception of chuurenpoutou, which is baimangan (8000/12000)"
 msgstr ""
 
 msgid "Scoring"
@@ -6563,6 +6641,21 @@ msgid "Shouchikurin"
 msgstr ""
 
 msgid "Shouhai"
+msgstr ""
+
+msgid "Shoumangan"
+msgstr ""
+
+msgid "Shoumangan if you have one pair of each of the seven honor tiles."
+msgstr ""
+
+msgid "Shoumangan if you win off the first tile someone dropped before your first draw. Calls invalidate."
+msgstr ""
+
+msgid "Shoumangan if your hand contains only terminal and honor tiles."
+msgstr ""
+
+msgid "Shoumangan if your hand is comprised of one suit only (no honor tiles)."
 msgstr ""
 
 msgid "Shousangen"
@@ -7237,6 +7330,9 @@ msgstr ""
 msgid "Tobi"
 msgstr ""
 
+msgid "Tobi (AI)"
+msgstr ""
+
 msgid "Toggle all"
 msgstr ""
 
@@ -7258,7 +7354,7 @@ msgstr ""
 msgid "Tonpuu"
 msgstr ""
 
-msgid "Tontonsen"
+msgid "Tontonsen (unimplemented)"
 msgstr ""
 
 msgid "Toriuchi"
@@ -7466,6 +7562,9 @@ msgid "Uumensai (cosmic)"
 msgstr ""
 
 msgid "Uupin Kaihou"
+msgstr ""
+
+msgid "Uushanten (AI)"
 msgstr ""
 
 msgid "Uushin Tsuukan"
@@ -7684,6 +7783,9 @@ msgstr ""
 msgid "Winner"
 msgstr ""
 
+msgid "Winning in the first go-around after your riichi declaration does not award Ippatsu."
+msgstr ""
+
 msgid "Winning on Replacement Tile"
 msgstr ""
 
@@ -7717,10 +7819,16 @@ msgstr ""
 msgid "Yakitori"
 msgstr ""
 
+msgid "Yakitori (AI)"
+msgstr ""
+
 msgid "Yaku"
 msgstr ""
 
 msgid "Yakuhai"
+msgstr ""
+
+msgid "Yakuless (AI)"
 msgstr ""
 
 msgid "Yakuman"
@@ -7744,7 +7852,13 @@ msgstr ""
 msgid "Yakuman tsumo"
 msgstr ""
 
+msgid "Yamagoshi (AI)"
+msgstr ""
+
 msgid "Yami"
+msgstr ""
+
+msgid "Yasume (AI)"
 msgstr ""
 
 msgid "Yeah, that's what I thought."
@@ -8180,6 +8294,9 @@ msgid "You won having collected at least 8 of the 16 flowers. 1 mủn on top of 
 msgstr ""
 
 msgid "You won off a double-sided sequence wait, with a closed all-sequence hand whose pair is not yakuhai."
+msgstr ""
+
+msgid "You won off a double-sided sequence wait, with an all-sequence hand whose pair is not yakuhai."
 msgstr ""
 
 msgid "You won off the replacement draw after two or more consecutive Gongs."
