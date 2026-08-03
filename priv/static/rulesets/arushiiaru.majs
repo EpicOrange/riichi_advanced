@@ -1,0 +1,144 @@
+define_base_ruleset riichi
+set display_name, "Arushiiaru"
+set tutorial_link, "https://riichi.wiki/Arushiiaru_mahjong"
+
+set initial_score, 2000
+
+apply subtract, "default_mods", [
+  "honba", "lib/yaku/riichi", "dora", "ura", "kandora", "aka",
+  "yaku/ippatsu",
+  "nagashi",
+  %{name: "lib/tobi", config: %{below: 0}},
+  "uma",
+  "lib/kuikae_nashi",
+  "lib/min_han",
+  %{name: "suufon_renda", config: %{name: "Suufon Renda"}},
+  "suucha_riichi",
+  "lib/suukaikan",
+  "tenpairenchan",
+  %{name: "kyuushu_kyuuhai", config: %{name: "Kyuushu Kyuuhai"}},
+  "yaku/riichi_renhou", "pao", "kokushi_ankan_chankan",
+  "cancellable_riichi"
+]
+
+# furiten is basically the same,
+# except furiten on one wait doesn't invalidate another wait
+# implement this by removing furiten status when a non-furiten discard appears
+define_play_effect any do
+  as everyone do
+    if status("tenpai", "furiten") do
+      if match(["hand", "calls", "last_discard"], ["win"]) and
+         not_match(["hand", "calls", "any_discard"], ["win"]) do
+        unset_status("furiten")
+        recalculate_buttons
+      end
+    end
+  end
+end
+
+# open pinfu is 20 fu, pinfu tsumo is 22 fu
+define_const arishiiaru, true
+
+# remove noten payments
+def setup_noten_payments do end
+def execute_noten_payments do end
+
+def calculate_base_score do
+  cond do
+    points2 > 0 ->
+      # not sure if mangans stack
+      # total = points2 * 2000 :: "Mangan base"
+      total = 2000 :: "Mangan base"
+      modify_winner("score_name", "Mangan", as: "winner")
+    points >= 5 ->
+      total = 2000 :: "Mangan base"
+      modify_winner("score_name", "Mangan", as: "winner")
+    points >= 4 and minipoints >= @mangan_4_han_fu ->
+      total = minipoints :: "Fu"
+      total = 2000 :: "Mangan base"
+      modify_winner("score_name", "Mangan", as: "winner")
+    points >= 3 and minipoints >= @mangan_3_han_fu ->
+      total = minipoints :: "Fu"
+      total = 2000 :: "Mangan base"
+      modify_winner("score_name", "Mangan", as: "winner")
+    true ->
+      han_mult = 2 ** points :: "Han mult."
+      total = minipoints :: "Fu"
+      total *= han_mult :: "Base"
+  end
+  base_score = total
+end
+
+apply set, "scoring_logic.ron" do
+  total = 0
+  if points2 > 0 do points2 = points2 :: "★" else points = points :: "Han" end
+  calculate_base_score
+  apply_ron_scoring
+  set_counter_all("display_total", "total")
+end
+
+apply set, "scoring_logic.tsumo" do
+  total = 0
+  if points2 > 0 do points2 = points2 :: "★" else points = points :: "Han" end
+  calculate_base_score
+  apply_tsumo_scoring
+  set_counter_all("display_total", "total")
+end
+
+# Yaku differences can be summarized as follows:
+
+# Chiitoitsu: not a thing
+define_match tenpai, "standard_tenpai", "kokushi_tenpai"
+define_match win, "standard_win", "kokushi_win"
+remove_yaku yaku, "Chiitoitsu"
+
+# Pinfu: does not require open (since open pinfu is 20 fu now)
+replace_yaku yaku, "Pinfu", [1, "Han"], won_by_draw and minipoints_equals(20)
+
+# Some yaku are always 1 han (and no +1 for closed)
+replace_yaku yaku, "Honitsu", [1, "Han"]
+replace_yaku yaku, "Toitoi", [1, "Han"]
+replace_yaku yaku, "Ittsuu", [1, "Han"]
+replace_yaku yaku, "Chanta", [1, "Han"]
+replace_yaku yaku, "Sanankou", [1, "Han"]
+replace_yaku yaku, "Shousangen", [1, "Han"]
+remove_yaku meta_yaku, "Ittsuu"
+remove_yaku meta_yaku, "Chanta"
+remove_yaku meta_yaku, "Honitsu"
+
+# Chinitsu is always 3 han (no +1 for closed)
+replace_yaku yaku, "Chinitsu", [3, "Han"]
+remove_yaku meta_yaku, "Chinitsu"
+
+# All yakuman are Mangan (same score because we interpret ★ as Mangan)
+# only difference is that chuurenpoutou must be junsei
+replace_yaku yakuman, "Suuankou", [1, "★"]
+replace_yaku yakuman, "Daisangen", [1, "★"]
+replace_yaku yakuman, "Kokushi Musou", [1, "★"]
+replace_yaku yakuman, "Shousuushii", [1, "★"]
+replace_yaku yakuman, "Daisuushii", [1, "★"]
+replace_yaku yakuman, "Tsuuiisou", [1, "★"]
+replace_yaku yakuman, "Chinroutou", [1, "★"]
+replace_yaku yakuman, "Chuurenpoutou", [1, "★"], match(["hand"], ~m"chuurenpoutou:1")
+replace_yaku yakuman, "Tenhou", [1, "★"]
+replace_yaku yakuman, "Chiihou", [1, "★"]
+
+# And these yaku do not exist
+remove_yaku yaku, "Tsumo"
+remove_yaku yaku, "Iipeikou"
+remove_yaku yaku, "Junchan"
+remove_yaku meta_yaku, "Junchan"
+remove_yaku yaku, "Sanshoku"
+remove_yaku meta_yaku, "Sanshoku"
+remove_yaku yaku, "Sanshoku Doukou"
+remove_yaku yaku, "Honroutou"
+remove_yaku yaku, "Ryanpeikou"
+remove_yaku yakuman, "Suuankou Tanki"
+remove_yaku yakuman, "Ryuuiisou"
+remove_yaku yakuman, "Kokushi Musou Juusan Menmachi"
+remove_yaku yakuman, "Junsei Chuurenpoutou"
+remove_yaku meta_yakuman, "Suuankou Tanki"
+remove_yaku meta_yakuman, "Junsei Chuurenpoutou"
+remove_yaku meta_yakuman, "Kokushi Musou Juusan Menmachi"
+
+# now you have arushiiaru!

@@ -29,6 +29,7 @@ define_const groups_fu, [
   %{groups: ~s"0@prevalent 0@prevalent | 0@seat 0@seat | 5z 5z | 6z 6z | 7z 7z", value: 2}
 ]
 define_const always_yakuhai, ["5z", "6z", "7z"]
+define_const arishiiaru, false
 
 def calculate_fu do
   if fu == 0 do
@@ -60,11 +61,11 @@ def calculate_fu do
       add(20)
 
       # tsumo +2 (except closed pinfu tsumo)
-      add(2, won_by_draw and (minipoints_at_most(999) or not @closed_hand))
+      add(2, won_by_draw and (@arishiiaru or minipoints_at_most(999) or not @closed_hand))
 
       # closed ron +10 and open pinfu ron +10
       add(10, not_won_by_draw and @closed_hand)
-      add(10, not_won_by_draw and not @closed_hand and minipoints_at_least(1000))
+      add(10, not @arishiiaru or (not_won_by_draw and not @closed_hand and minipoints_at_least(1000)))
 
       # take max, then subtract 1000 from pinfu hands
       take_maximum
@@ -126,44 +127,37 @@ define_const mangan_4_han_fu, 40
 define_const mangan_3_han_fu, 70
 
 def calculate_base_score do
-  if total == 0 and points2 > 0 do
-    total = points2 * 8000 :: "Yakuman base"
-    modify_winner("score_name", "Yakuman", as: "winner")
-  end
-  if total == 0 and points >= 13 do
-    total = 8000 :: "Yakuman base"
-    modify_winner("score_name", "Kazoe Yakuman", as: "winner")
-  end
-  if total == 0 and points >= 11 do
-    total = 6000 :: "Sanbaiman base"
-    modify_winner("score_name", "Sanbaiman", as: "winner")
-  end
-  if total == 0 and points >= 8 do
-    total = 4000 :: "Baiman base"
-    modify_winner("score_name", "Baiman", as: "winner")
-  end
-  if total == 0 and points >= 6 do
-    total = 3000 :: "Haneman base"
-    modify_winner("score_name", "Haneman", as: "winner")
-  end
-  if total == 0 and points >= 5 do
-    total = 2000 :: "Mangan base"
-    modify_winner("score_name", "Mangan", as: "winner")
-  end
-  if total == 0 and points >= 4 and minipoints >= @mangan_4_han_fu do
-    total = minipoints :: "Fu"
-    total = 2000 :: "Mangan base"
-    modify_winner("score_name", "Mangan", as: "winner")
-  end
-  if total == 0 and points >= 3 and minipoints >= @mangan_3_han_fu do
-    total = minipoints :: "Fu"
-    total = 2000 :: "Mangan base"
-    modify_winner("score_name", "Mangan", as: "winner")
-  end
-  if total == 0 do
-    han_mult = 2 ** (points + 2) :: "Han mult."
-    total = minipoints :: "Fu"
-    total *= han_mult :: "Base"
+  cond do
+    points2 > 0 ->
+      total = points2 * 8000 :: "Yakuman base"
+      modify_winner("score_name", "Yakuman", as: "winner")
+    points >= 13 ->
+      total = 8000 :: "Yakuman base"
+      modify_winner("score_name", "Kazoe Yakuman", as: "winner")
+    points >= 11 ->
+      total = 6000 :: "Sanbaiman base"
+      modify_winner("score_name", "Sanbaiman", as: "winner")
+    points >= 8 ->
+      total = 4000 :: "Baiman base"
+      modify_winner("score_name", "Baiman", as: "winner")
+    points >= 6 ->
+      total = 3000 :: "Haneman base"
+      modify_winner("score_name", "Haneman", as: "winner")
+    points >= 5 ->
+      total = 2000 :: "Mangan base"
+      modify_winner("score_name", "Mangan", as: "winner")
+    points >= 4 and minipoints >= @mangan_4_han_fu ->
+      total = minipoints :: "Fu"
+      total = 2000 :: "Mangan base"
+      modify_winner("score_name", "Mangan", as: "winner")
+    points >= 3 and minipoints >= @mangan_3_han_fu ->
+      total = minipoints :: "Fu"
+      total = 2000 :: "Mangan base"
+      modify_winner("score_name", "Mangan", as: "winner")
+    true ->
+      han_mult = 2 ** (points + 2) :: "Han mult."
+      total = minipoints :: "Fu"
+      total *= han_mult :: "Base"
   end
   base_score = total # save base_score for mods to use
 end
@@ -174,9 +168,6 @@ def apply_ron_scoring do
   else
     total *= 4 :: "Nondealer ron"
   end
-  if mod(total, 100) > 0 do
-    total = round_up(total, 100) :: "Round up"
-  end
 end
 
 def apply_tsumo_scoring do
@@ -185,9 +176,6 @@ def apply_tsumo_scoring do
   else
     total *= 1 :: "Nondealer tsumo"
   end
-  if mod(total, 100) > 0 do
-    total = round_up(total, 100) :: "Round up"
-  end
 end
 
 define_scoring ron do
@@ -195,7 +183,7 @@ define_scoring ron do
   if points2 > 0 do points2 = points2 :: "★" else points = points :: "Han" end
   calculate_base_score
   apply_ron_scoring
-  if mod(total, 100) > 0 do
+  if mod(total, 100) > 0 and not @arishiiaru do
     total = round_up(total, 100) :: "Round up"
   end
   finalize_score
@@ -206,7 +194,7 @@ define_scoring tsumo do
   if points2 > 0 do points2 = points2 :: "★" else points = points :: "Han" end
   calculate_base_score
   apply_tsumo_scoring
-  if mod(total, 100) > 0 do
+  if mod(total, 100) > 0 and not @arishiiaru do
     total = round_up(total, 100) :: "Round up"
   end
   finalize_score
