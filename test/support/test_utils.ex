@@ -35,7 +35,7 @@ defmodule RiichiAdvanced.TestUtils do
     # activate game
     GenServer.call(game_state, {:put_log_loading_mode, true})
     GenServer.call(game_state, {:put_log_seeking_mode, true})
-    GenServer.cast(game_state, {:initialize_game, nil})
+    GenServer.cast(game_state, :initialize_test)
     %LogControl.LogControl{
       ruleset: ruleset,
       room_code: room_code,

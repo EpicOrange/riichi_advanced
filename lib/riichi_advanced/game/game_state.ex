@@ -429,10 +429,6 @@ defmodule RiichiAdvanced.GameState do
     state = Map.put(state, :players, Map.new(state.available_seats, fn seat -> {seat, %Player{}} end))
     state = Log.init_log(state)
 
-    # set starting kyoku, if any
-    state = Map.put(state, :kyoku, Rules.get(state.rules_ref, "starting_round", 0))
-    state = Map.put(state, :honba, Rules.get(state.rules_ref, "starting_honba", 0))
-
     # initialize player state
     initial_score = Rules.get(state.rules_ref, "initial_score", 0)
     state = update_players(state, &%{ &1 | score: initial_score, start_score: initial_score })
@@ -445,9 +441,6 @@ defmodule RiichiAdvanced.GameState do
 
     # run after_initialization actions
     state = Actions.trigger_event(state, "after_initialization", %{seat: state.turn})
-
-    # starting honba is reset here, since otherwise it's cleared by renchan mod
-    state = Map.put(state, :honba, Rules.get(state.rules_ref, "starting_honba", 0))
 
     # terminate game if no one joins in 15 minutes
     # (also effectively serves as a 15 minute timeout for exunit tests)
@@ -476,7 +469,7 @@ defmodule RiichiAdvanced.GameState do
           GenServer.cast(self(), {:fetch_messages, session_id})
           state
         ["initialize_game" | opts] ->
-          # this should happen after init_player calls (which populate state.reserved_seats)
+          # this should happen after init_player calls (which populates state.reserved_seats)
           session_id = Enum.at(opts, 0, nil)
           log = Enum.at(opts, 1, nil)
 
@@ -548,6 +541,7 @@ defmodule RiichiAdvanced.GameState do
   def initialize_new_round(state, kyoku_log \\ nil) do
     # t = System.os_time(:millisecond)
     {state, hands, scores} = if kyoku_log == nil do
+
       # initialize wall
       wall_tiles = Enum.map(Rules.get(state.rules_ref, "wall", []), &Utils.to_tile(&1))
 
@@ -1408,6 +1402,19 @@ defmodule RiichiAdvanced.GameState do
     state = Actions.trigger_event(state, "before_start", %{seat: state.turn})
 
     state = initialize_new_round(state, log)
+    {:noreply, state}
+  end
+
+  def handle_cast(:initialize_test, state) do
+    # run before_start actions
+    state = Actions.trigger_event(state, "before_start", %{seat: state.turn})
+
+    # set starting kyoku and honba now (after before_start, which could clear honba via renchan mod)
+    # this is required because tests shouldn't run init_actions, which would set this otherwise
+    state = Map.put(state, :kyoku, Rules.get(state.rules_ref, "starting_round", 0))
+    state = Map.put(state, :honba, Rules.get(state.rules_ref, "starting_honba", 0))
+
+    state = initialize_new_round(state)
     {:noreply, state}
   end
 

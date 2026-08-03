@@ -4,7 +4,7 @@ on before_start do
       change_dealership("self")
       add_honba(1)
     else
-      delta_honba = -honba;
+      delta_honba = -honba
       add_honba("delta_honba") # clear honba
     end
   end
