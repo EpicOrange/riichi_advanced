@@ -242,6 +242,8 @@ defmodule RiichiAdvancedWeb.GameLive do
           id="hand-piano-component"
           num_keys={length(@state.players[@seat].hand)}
           play_tile={&send(self(), {:play_tile, &1})}
+          hover={&send(self(), {:hover, &1})}
+          hover_off={fn -> send(self(), :hover_off) end}
           selected_index={@selected_index} />
         <div class="auto-buttons game-bottom-element">
           <%= for {{name, desc, checked, _}, i} <- Enum.with_index(@state.players[@seat].auto_buttons) do %>
