@@ -130,6 +130,14 @@ defmodule RiichiAdvanced.GameState.Debug do
     # wall = List.replace_at(wall, -4, :"2m") # fourth kan draw
     wall
   end
+  def interpret_hand(hand) when is_list(hand), do: Enum.map(hand, &Utils.to_tile/1)
+  def interpret_hand(hand) when is_binary(hand) do
+    case String.split(hand, " ", trim: true) do
+      [hand_spec] -> for [_, nums, suit] <- Regex.scan(~r/(\d+)([a-zA-Z])/, hand_spec), num <- String.graphemes(nums), do: "#{num}#{suit}"
+      hand -> hand
+    end
+    |> interpret_hand()
+  end
   def set_starting_hand(wall) do
     hands = %{:east  => Utils.sort_tiles(Enum.slice(wall, 0..12)),
               :south => Utils.sort_tiles(Enum.slice(wall, 13..25)),
@@ -137,10 +145,10 @@ defmodule RiichiAdvanced.GameState.Debug do
               :north => Utils.sort_tiles(Enum.slice(wall, 39..51))}
 
     # testing hand
-    hands = %{:east  => Utils.sort_tiles([:"3m", :"3m", :"4m", :"4m", :"6p", :"6p", :"2s", :"2s", :"4s", :"4s", :"5s", :"2z", :"2z"]),
-              :south => Enum.slice(wall, 13..25),
-              :west  => Enum.slice(wall, 26..38),
-              :north => Enum.slice(wall, 39..51)}
+    hands = %{:east  => Utils.sort_tiles(interpret_hand("123456456899s") ++ [:"17j"]),
+              :south => Utils.sort_tiles(Enum.slice(wall, 13..25)),
+              :west  => Utils.sort_tiles(Enum.slice(wall, 26..38)),
+              :north => Utils.sort_tiles(Enum.slice(wall, 39..51))}
 
     # # 12-tile starting hand
     # hands = %{:east  => Enum.slice(wall, 0..11),
