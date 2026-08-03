@@ -1240,7 +1240,7 @@ defmodule RiichiAdvanced.YakuTest.HefeiYaku do
     ], %{
       east: %{
         yaku: [@base, {"Dealer Repeats", [2, "×"]}],
-        displayed_score: 30
+        displayed_score: 15
       }
     }, %{delta_scores: [60, -15, -15, -30]})
   end
