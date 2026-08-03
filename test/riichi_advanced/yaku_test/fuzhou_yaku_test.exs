@@ -63,7 +63,7 @@ defmodule RiichiAdvanced.YakuTest.FuzhouYaku do
     TestUtils.test_yaku_advanced("fuzhou", ["discardable_flowers"], """
     {
       "starting_hand": {
-        "east": ["3m", "3m", "3m", "5m", "6m", "7m", "8m", "8m", "2s", "4s", "4p", "5p", "6p", "7p", "8p", "9p"],
+        "east": ["3m", "3m", "3m", "5m", "6m", "7m", "8m", "8m", "2s", "5s", "4p", "5p", "6p", "7p", "8p", "9p"],
         "south": ["2m", "4m", "7m", "2p", "3p", "4p", "6p", "7p", "8p", "9p", "2s", "4s", "5s", "6s", "7s", "8s"],
         "west": ["2m", "4m", "7m", "2p", "3p", "4p", "6p", "7p", "8p", "9p", "2s", "4s", "5s", "6s", "7s", "8s"],
         "north": ["2m", "4m", "7m", "2p", "3p", "4p", "6p", "7p", "8p", "9p", "2s", "4s", "5s", "6s", "7s", "8s"]
@@ -90,7 +90,7 @@ defmodule RiichiAdvanced.YakuTest.FuzhouYaku do
     TestUtils.test_yaku_advanced("fuzhou", ["discardable_flowers"], """
     {
       "starting_hand": {
-        "east": ["3m", "3m", "3m", "5m", "6m", "7m", "8m", "8m", "2s", "4s", "4p", "5p", "6p", "7p", "8p", "9p"],
+        "east": ["1m", "1m", "1m", "5m", "6m", "7m", "8m", "8m", "2s", "4s", "4p", "5p", "6p", "7p", "8p", "9p"],
         "south": ["2m", "4m", "7m", "2p", "3p", "4p", "6p", "7p", "8p", "9p", "2s", "4s", "5s", "6s", "7s", "8s"],
         "west": ["2m", "4m", "7m", "2p", "3p", "4p", "6p", "7p", "8p", "9p", "2s", "4s", "5s", "6s", "7s", "8s"],
         "north": ["2m", "4m", "7m", "2p", "3p", "4p", "6p", "7p", "8p", "9p", "2s", "4s", "5s", "6s", "7s", "8s"]
@@ -320,6 +320,7 @@ defmodule RiichiAdvanced.YakuTest.FuzhouYaku do
     })
   end
 
+  # 333m 567m JJ 34s 456p 789p
   test "fuzhou - golden pair" do
     TestUtils.test_yaku_advanced("fuzhou", [], """
     {

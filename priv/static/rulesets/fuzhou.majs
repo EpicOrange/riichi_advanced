@@ -10,7 +10,6 @@ set display_name, "Fuzhou"
 set tutorial_link, "https://github.com/EpicOrange/riichi_advanced/blob/main/documentation/fuzhou.md"
 define_global han, ""
 define_global ankan_name, "Self Kong"
-define_global chankan_name, "Hu"
 define_global chii_name, "Chow"
 define_global pon_name, "Pung"
 define_global kan_name, "Kong"
@@ -32,7 +31,6 @@ require "tsumo", %{scoring_key: "win"}
 require "agarirenchan"
 require "head_bump"
 require "default_flowers", %{draw_after_flower_phase: true, auto_flower_by_default: true, replace_from_dead_wall: true, shift_dead_wall: true}
-
 
 on after_initialization do
   add_rule("Rules", "Win Condition", "You may win with one of the following:", -100)
@@ -92,61 +90,42 @@ end
 
 # optimization so we don't have to actually calculate jokers to match hands with them
 # based on goal reduction theory: https://injusticejudge.com/2026/07/22/joker-theory
-define_const standard_win, ~m"exhaustive, mentsu:5, pair:1"
-define_match standard_win, @standard_win
-define_const gold_tenpai, ~m"""
+# this only works because you cannot call with jokers, so they will always stay in hand
+define_match win, ~m"exhaustive, mentsu:5, pair:1"
+define_match tenpai, ~m"""
     exhaustive, any@jin:1, mentsu:5
   | exhaustive, any@jin:1, mentsu:4, taatsu:1, pair:1
   """
-define_const gold_iishanten, ~m"""
+define_match iishanten, ~m"""
     exhaustive, any@jin:2, mentsu:4, taatsu:1
   | exhaustive, any@jin:2, mentsu:3, taatsu:2, pair:1
   """
-define_const gold_ryanshanten, ~m"""
+define_match ryanshanten, ~m"""
     exhaustive, any@jin:3, mentsu:4
   | exhaustive, any@jin:3, mentsu:3, taatsu:2 
   | exhaustive, any@jin:3, mentsu:2, taatsu:3, pair:1
   """
-# define_const gold_sanshanten, ~m"""
-#     exhaustive, any@jin:4, mentsu:3, pair:1
-#   | exhaustive, any@jin:4, mentsu:2, taatsu:3
-#   | exhaustive, any@jin:4, mentsu:1, taatsu:4, pair:1
-#   """
-apply set_append, "win_definition", +@gold_ryanshanten
-apply set_append, "win_definition", +@gold_iishanten
-apply set_append, "win_definition", +@gold_tenpai
-apply set_append, "win_definition", +@standard_win
 
-define_match tenpai, ~m"""
-    exhaustive, mentsu:5
-  | exhaustive, mentsu:4, taatsu:1, pair:1
-  """
+# add alternate win conditions:
+# - 1 jin and tenpai
+# - 2 jin and iishanten
+# - 3 jin and ryanshanten
+def count_hand_gold do set_counter("hand_gold", "count_matches", ["hand", "draw"], ~m"any@jin:1") end
+on after_turn_change do count_hand_gold end
+on after_call do count_hand_gold end
+replace 1, "buttons.ron.show_when", %{name: "match", opts: [["hand", "calls"], ["tenpai"]]}, true
+replace 1, "buttons.tsumo.show_when", %{name: "match", opts: [["hand", "calls"], ["tenpai"]]}, true
 
-# to check for all sequences, do a similar thing
-define_set pinghu_wait, ~s"0 1 | 0 2"
-define_const pinghu_win, ~m"exhaustive, shuntsu:5, pair:1"
-define_const pinghu_tenpai, ~m"""
-    exhaustive, any@jin:1, shuntsu:5
-  | exhaustive, any@jin:1, shuntsu:4, pinghu_wait:1, pair:1
-  """
-define_const pinghu_iishanten, ~m"""
-    exhaustive, gold_pair:-1, any@jin:2, shuntsu:4, taatsu:1
-  | exhaustive, gold_pair:-1, any@jin:2, shuntsu:3, pinghu_wait:2, pair:1
-  """
-define_const pinghu_ryanshanten, ~m"""
-    exhaustive, gold_pair:-1, gold_koutsu:-1, any@jin:3, shuntsu:4
-  | exhaustive, gold_pair:-1, gold_koutsu:-1, any@jin:3, shuntsu:3, pinghu_wait:1, taatsu:1 
-  | exhaustive, gold_pair:-1, gold_koutsu:-1, any@jin:3, shuntsu:2, pinghu_wait:3, pair:1
-  """
-# define_const pinghu_sanshanten, ~m"""
-#     exhaustive, any@jin:3, shuntsu:3, taatsu:1
-#   | exhaustive, any@jin:3, shuntsu:2, pinghu_wait:2, taatsu:1
-#   | exhaustive, any@jin:3, shuntsu:1, pinghu_wait:4, pair:1
-#   """
-apply set_append, "pinghu_definition", +@pinghu_ryanshanten
-apply set_append, "pinghu_definition", +@pinghu_iishanten
-apply set_append, "pinghu_definition", +@pinghu_tenpai
-apply set_append, "pinghu_definition", +@pinghu_win
+replace 1, "buttons.ron.show_when", %{name: "match", opts: [["hand", "calls", "last_discard"], ["win"]]},
+     (hand_gold == 0 and match(["hand", "calls", "last_discard"], ["win"]))
+  or (hand_gold == 1 and match(["hand", "calls", "last_discard"], ["tenpai"]))
+  or (hand_gold == 2 and match(["hand", "calls", "last_discard"], ["iishanten"]))
+  or (hand_gold == 3 and match(["hand", "calls", "last_discard"], ["ryanshanten"]))
+replace 1, "buttons.tsumo.show_when", %{name: "match", opts: [["hand", "calls", "draw"], ["win"]]},
+     (hand_gold == 0 and match(["hand", "calls", "draw"], ["win"]))
+  or (hand_gold == 1 and match(["hand", "calls", "draw"], ["tenpai"]))
+  or (hand_gold == 2 and match(["hand", "calls", "draw"], ["iishanten"]))
+  or (hand_gold == 3 and match(["hand", "calls", "draw"], ["ryanshanten"]))
 
 # Yaku
 
@@ -155,22 +134,15 @@ define_yaku yaku, "Base Points", [10, ""], true
 on before_win do
   if seat_is("east") do dealer_continuation = honba end
   set_counter("flower_count", "count_matches", ["flowers"], ~m"any_flower:1")
-  set_counter("gold_count", "count_matches", ["hand", "calls", "winning_tile", "flowers"], ~m"nojoker, any@jin:1")
+  set_counter("gold_count", "count_matches", ["hand", "calls", "winning_tile", "flowers"], ~m"any@jin:1")
   dealer_continuation_bonus = dealer_continuation * 2
   flower_bonus = flower_count * 2
   gold_bonus = gold_count * 2
 end
-
 define_yaku yaku, "Flowers", ["flower_bonus", ""], flower_count >= 1
 define_yaku yaku, "Gold", ["gold_bonus", ""], gold_count >= 1
 define_yaku yaku, "Three Gold Knockdown", [30, ""], gold_count >= 3
 define_yaku yaku, "Dealer Continuation", ["dealer_continuation_bonus", ""], seat_is("east") and dealer_continuation_bonus >= 1
-
-on before_win do
-  if seat_is("east") do dealer_continuation = honba end
-  set_counter("flower_count", "count_matches", ["flowers"], ["any_flower"])
-  set_counter("gold_count", "count_matches", ["hand", "calls", "winning_tile", "flowers"], ~m"nojoker, any@jin:1")
-end
 
 on before_win do
   set_counter("minkans", "count_matches", ["calls"], ~m"(daiminkan kakan):1")
@@ -181,35 +153,52 @@ end
 define_yaku yaku, "Open Kongs", ["minkan_bonus", ""], minkan_bonus > 0
 define_yaku yaku, "Concealed Kongs", ["ankan_bonus", ""], ankan_bonus > 0
 
-define_yaku yaku, "Full Bloom (Flowers)", [12, ""], match(["flowers"], ~m"nojoker, unique, (1f 2f 3f 4f):4")
-define_yaku yaku, "Full Bloom (Seasons)", [12, ""], match(["flowers"], ~m"nojoker, unique, (1g 2g 3g 4g):4")
-define_yaku yaku, "Full Bloom (East)", [12, ""], match(["flowers"], ~m"nojoker, 1z:4")
-define_yaku yaku, "Full Bloom (South)", [12, ""], match(["flowers"], ~m"nojoker, 2z:4")
-define_yaku yaku, "Full Bloom (West)", [12, ""], match(["flowers"], ~m"nojoker, 3z:4")
-define_yaku yaku, "Full Bloom (North)", [12, ""], match(["flowers"], ~m"nojoker, 4z:4")
-define_yaku yaku, "Full Bloom (White)", [12, ""], match(["flowers"], ~m"nojoker, 0z:4")
-define_yaku yaku, "Full Bloom (Green)", [12, ""], match(["flowers"], ~m"nojoker, 6z:4")
-define_yaku yaku, "Full Bloom (Red)", [12, ""], match(["flowers"], ~m"nojoker, 7z:4")
+define_yaku yaku, "Full Bloom (Flowers)", [12, ""], match(["flowers"], ~m"unique, (1f 2f 3f 4f):4")
+define_yaku yaku, "Full Bloom (Seasons)", [12, ""], match(["flowers"], ~m"unique, (1g 2g 3g 4g):4")
+define_yaku yaku, "Full Bloom (East)", [12, ""], match(["flowers"], ~m"1z:4")
+define_yaku yaku, "Full Bloom (South)", [12, ""], match(["flowers"], ~m"2z:4")
+define_yaku yaku, "Full Bloom (West)", [12, ""], match(["flowers"], ~m"3z:4")
+define_yaku yaku, "Full Bloom (North)", [12, ""], match(["flowers"], ~m"4z:4")
+define_yaku yaku, "Full Bloom (White)", [12, ""], match(["flowers"], ~m"0z:4")
+define_yaku yaku, "Full Bloom (Green)", [12, ""], match(["flowers"], ~m"6z:4")
+define_yaku yaku, "Full Bloom (Red)", [12, ""], match(["flowers"], ~m"7z:4")
 
-define_yaku yaku, "All Sequences", [10, ""], match(["hand", "calls", "winning_tile"], ["pinghu"])
+# to check for all sequences, do a similar thing as with the win condition
+# except you start with all shuntsu instead
+define_set pinghu_wait, ~s"0 1 | 0 2"
+define_match pinghu_win, ~m"exhaustive, shuntsu:5, pair:1"
+define_match pinghu_tenpai, ~m"""
+    exhaustive, shuntsu:5
+  | exhaustive, shuntsu:4, pinghu_wait:1, pair:1
+  """
+define_match pinghu_iishanten, ~m"""
+    exhaustive, shuntsu:4, taatsu:1
+  | exhaustive, shuntsu:3, pinghu_wait:2, pair:1
+  """
+define_match pinghu_ryanshanten, ~m"""
+    exhaustive, shuntsu:4
+  | exhaustive, shuntsu:3, pinghu_wait:1, taatsu:1 
+  | exhaustive, shuntsu:2, pinghu_wait:3, pair:1
+  """
+define_yaku yaku, "All Sequences", [10, ""],
+    ((gold_count == 0 and match(["hand", "calls", "winning_tile"], ["pinghu_win"]))
+  or (gold_count == 1 and match(["hand", "calls", "winning_tile"], ["pinghu_tenpai"]))
+  or (gold_count == 2 and match(["hand", "calls", "winning_tile"], ["pinghu_iishanten"]))
+  or (gold_count == 3 and match(["hand", "calls", "winning_tile"], ["pinghu_ryanshanten"])))
+  # it's possible for there to be a choice between golden pair (20) and all sequences (10)
+  # so for 2 gold, check for hands where both are possible (i.e. all sequences with golden pair)
+  # skip if that's not the case
+  and (gold_count < 2 or match(["hand", "calls", "winning_tile"], ~m"exhaustive, golden_pair:1, shuntsu:5"))
 
 define_const all_flowers, ["1f", "2f", "3f", "4f", "1g", "2g", "3g", "4g", "1z", "2z", "3z", "4z", "0z", "6z", "7z"]
 define_set all_flowers, ~s"1f 2f 3f 4f 1g 2g 3g 4g 1z 2z 3z 4z 0z 6z 7z"
 define_set any_flower, ~s"1f|2f|3f|4f|1g|2g|3g|4g|1z|2z|3z|4z|0z|6z|7z"
-define_yaku yaku, "Only One Flower", [15, ""], match(["flowers"], ~m"nojoker, any_flower:1, any_flower:-1")
+define_yaku yaku, "Only One Flower", [15, ""], match(["flowers"], ~m"any_flower:1, any_flower:-1")
 
-# old version
-# define_set gold_pair, ~s"0@is_jin 0@is_jin"
-# define_set gold_koutsu, ~s"0@is_jin 0@is_jin 0@is_jin"
-# define_match golden_pair, ~m"exhaustive, (nojoker gold_pair):1, mentsu:5"
-# define_match golden_dragon, ~m"exhaustive, (nojoker gold_koutsu):1, mentsu:4, pair:1"
-# define_yaku yaku, "Golden Pair", [20, ""], match(["hand", "calls", "winning_tile"], ["golden_pair"])
-# define_yaku yaku, "Golden Dragon", [40, ""], match(["hand", "calls", "winning_tile"], ["golden_dragon"])
-
-define_set gold_pair, ~s"0@jin 0@jin"
-define_set gold_koutsu, ~s"0@jin 0@jin 0@jin"
-define_match golden_pair, ~m"exhaustive, gold_pair:1, mentsu:5"
-define_match golden_dragon, ~m"exhaustive, gold_koutsu:1, mentsu:4, pair:1"
+define_set golden_pair, ~s"0@jin 0@jin"
+define_set golden_koutsu, ~s"0@jin 0@jin 0@jin"
+define_match golden_pair, ~m"exhaustive, golden_pair:1, mentsu:5"
+define_match golden_dragon, ~m"exhaustive, golden_koutsu:1, mentsu:4, pair:1"
 define_yaku yaku, "Golden Pair", [20, ""], match(["hand", "calls", "winning_tile"], ["golden_pair"])
 define_yaku yaku, "Golden Dragon", [40, ""], match(["hand", "calls", "winning_tile"], ["golden_dragon"])
 
@@ -256,7 +245,7 @@ on after_start do
 
   # check for qiangjin for all players
   as everyone do
-    if match(["hand", "revealed_tiles"], ["standard_win"]) do
+    if match(["hand", "revealed_tiles"], ["win"]) do
       set_status("qiangjin")
     end
   end
@@ -283,7 +272,6 @@ apply append, "buttons.daiminkan.call_conditions", not_call_contains(%{tile: "an
 apply append, "buttons.ankan.actions" do shift_tile_to_dead_wall(1) end
 
 apply append, "buttons.ron.show_when", status_missing("initial_flowers", "tsumo_only") and not_match(["last_discard"], ~m"any@jin:1")
-apply append, "buttons.chankan.show_when", status_missing("initial_flowers", "tsumo_only") and not_match(["last_discard"], ~m"any@jin:1")
 apply append, "buttons.tsumo.show_when", status_missing("initial_flowers")
 
 on before_win do

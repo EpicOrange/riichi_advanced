@@ -4,8 +4,8 @@ define_button tsumo,
   display_name: !tsumo_name,
   show_when: our_turn
     and status_missing("initial_flowers") # for default_flowers mod
-    and match(["hand", "calls", "draw", "flowers"], ["tenpai"])
-    and match(["hand", "calls", "draw", "flowers"], ["win"])
+    and match(["hand", "calls"], ["tenpai"])
+    and match(["hand", "calls", "draw"], ["win"])
   do
     big_text(!tsumo_name)
     pause(1000)

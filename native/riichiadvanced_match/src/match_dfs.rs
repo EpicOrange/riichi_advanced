@@ -212,25 +212,26 @@ fn _dfs_match<'a>(
     .flat_map(|(&j, v)| v.iter().cloned().map(|g| (j, g)).collect::<Vec<_>>())
     .collect::<Vec<_>>();
   if debug {
-    println!("Removal {0}/{1}{2} from ({3:?}) {4:?} / {5:?} \\ {6} {{{7}}} {8}{9}{10}",
+    println!("Removal {0}/{1}{2} from ({3:?}) {4:?} / {5:?} \\ {{{6}}} {7}{8}{9}",
       i + 1,
       actual_num,
       if num <= 0 { " (lookahead)" } else { "" },
       hands[0].attrs.len(),
       decode(&hands[0], &match_info.all_attrs),
       hands[1..].iter().map(|call| decode(call, &match_info.all_attrs)).collect::<Vec<_>>(),
-      groups.iter().map(|g| print_group(&g.1, &match_info.all_attrs, nojoker)).collect::<Vec<_>>().join(","), num,
+      // groups.iter().map(|g| print_group(&g.1, &match_info.all_attrs, nojoker)).collect::<Vec<_>>().join(","),
+      num,
       if exhaustive { " exhaustive" } else { "" },
       if unique { " unique" } else { "" },
       if nojoker { " nojoker" } else { "" },
     );
-    for (j, group) in groups.iter() {
-      let mut alternatives: Vec<String> = vec!();
-      alternatives.push(print_group(group, &match_info.all_attrs, nojoker));
-      if !alternatives.is_empty() {
-        println!("{0:4}. {1}{2}", j, alternatives.join(", "), if nojoker { " nojoker" } else { "" });
-      }
-    }
+    // for (j, group) in groups.iter() {
+    //   let mut alternatives: Vec<String> = vec!();
+    //   alternatives.push(print_group(group, &match_info.all_attrs, nojoker));
+    //   if !alternatives.is_empty() {
+    //     println!("{0:4}. {1}{2}", j, alternatives.join(", "), if nojoker { " nojoker" } else { "" });
+    //   }
+    // }
   }
   let visited = visited.clone();
   Box::new((0..groups.len()).flat_map(move |k| -> AccIterator<'a> {
