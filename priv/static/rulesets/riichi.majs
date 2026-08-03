@@ -559,7 +559,7 @@ define_mod "yaku/ryandoukou", name: "Ryandoukou", desc: "Local yaku. \"Twice Dou
 define_mod "yaku/shoutate", name: "Shoutate", desc: "Local yaku. \"Little Mixed Triplets\". 2 han for having sanshoku doukou, except one of the triplets is a pair."
 define_mod "yaku/choupaikou", name: "Choupaikou etc.", desc: "Local yaku. 2 han for having the pattern 111333555 (choupaikou), 111444777 (sujipaikou), or 111555999 (chousankou) in one suit. The pattern does not have to start with 1, but cannot wrap. 1 han if instead, all three triplets are in different suits."
 define_mod "yaku/suuzuukou", name: "Suuzuukou", desc: "Local yaku. \"Four Honor Triplets\". 2 han for having four honor tile triplets."
-define_mod "lib/yaku/uumensai", name: "Uumensai", desc: "Local yaku. \"Five Suits Collected\". 2 han if your hand includes all five suits (character, circle, bamboo, wind, dragon)."
+define_mod "lib/yaku/uumensai", conflicts: ["star_suit", "chinitsu"], name: "Uumensai", desc: "Local yaku. \"Five Suits Collected\". 2 han if your hand includes all five suits (character, circle, bamboo, wind, dragon)."
 config_mod "lib/yaku/uumensai", name: "name", values: ["Uumensai"]
 config_mod "lib/yaku/uumensai", name: "value", values: ["2"]
 config_mod "lib/yaku/uumensai", name: "han", values: ["Han"]
@@ -657,7 +657,7 @@ define_mod "shuugi/arisu", order: 5, name: "Arisu", deps: ["lib/shuugi", "dora"]
 define_mod_category "Other"
 define_mod cancellable_riichi, order: 1, deps: ["lib/yaku/riichi"], name: "Cancellable Riichi", desc: "Riichi declarations happen only after you confirm by discarding a tile."
 define_mod ten, order: 3, name: "Ten", desc: "Adds 10m, 10p, and 10s. Changes dora accordingly (if dora is enabled). Tanyao now allows nines, and chanta/junchan/honroutou require tens instead. 13 Orphans now requires the ten instead of the nine of each suit. Ittsuu allows 23456789T."
-define_mod star_suit, order: 2, conflicts: ["chinitsu"], name: "Star Suit", desc: "Adds a fourth suit (stars)."
+define_mod star_suit, order: 2, conflicts: ["chinitsu", "lib/yaku/uumensai"], name: "Star Suit", desc: "Adds a fourth suit (stars)."
 define_mod "lib/space", order: 2, name: "Space Mahjong", desc: "Sequences can wrap (891, 912). Winds and dragons can make sequences. You can chii from any direction. Chiitoitsu is disabled. Open kokushi is allowed and worth 3 han."
 define_mod "lib/galaxy", order: 2, conflicts: ["chinitsu"], name: "Galaxy Mahjong", desc: "Replaces one of each tile with a blue 'galaxy' tile that acts as a wildcard of its number. For example, galaxy 3s can be used as 3m, 3p, or 3s. Galaxy winds are wind wildcards, and galaxy dragons are dragon wildcards."
 define_mod fifth_tile, order: -1, conflicts: ["chinitsu"], name: "Fifth Tile", desc: "Adds a fifth copy of every standard tile."
@@ -668,7 +668,7 @@ config_mod shiro_pocchi, name: "ippatsu_only", values: [false, true], default: f
 define_mod golden_chun, order: 5, deps: ["aka", "lib/yaku/riichi", "shiro_pocchi"], conflicts: ["no_honors", "chinitsu"], name: "Golden Chun", desc: "One of each dragon tile is a special tile. The special white dragon is shiro pocchi, which acts a joker tile when drawn while in riichi. The special green dragon is an aka dora. The special red dragon is the golden chun, which can be used as a five of any suit, and grants 1 han when used as a five. Completing a hand via shiro pocchi while using the golden chun as a five and having the aka green dragon scores yakuman. If playing with shuugi, a golden chun used as a five scores 1 shuugi."
 define_mod blue_dragon, conflicts: ["no_honors", "chinitsu"], name: "Blue Dragon", desc: "Adds the Chinese blue-framed white dragon as a fourth dragon tile (hakuban). Yaku treats it as an honor tile. Shousangen is reduced to 1 han (+2 from dragons) and Daisangen is reduced to 2 han (+3 from dragons). Adds Shousuugen (3 dragons + dragon pair) as yakuman and Daisuugen (4 dragons) as double yakuman."
 define_mod shouhai, order: 3, name: "Shouhai", desc: "Reduces tiles in hand from 13 to 12. The goal is to achieve a tenpai hand rather than a winning hand. The idea is that your 13th tile is replaced with an invisible 'joker' tile that can be used to complete any hand."
-define_mod chinitsu, order: -2, conflicts: ["aka", "aka1", "aka3", "aka7", "aka9", "yaku/mondeikou", "lib/galaxy", "fifth_tile", "shiro_pocchi", "golden_chun", "blue_dragon", "star_suit"], name: "Chinitsu", desc: "Replace the wall with 16 copies of each bamboo tile. Includes 10s if Ten is enabled."
+define_mod chinitsu, order: -2, conflicts: ["aka", "aka1", "aka3", "aka7", "aka9", "yaku/mondeikou", "lib/galaxy", "fifth_tile", "shiro_pocchi", "golden_chun", "blue_dragon", "star_suit", "lib/yaku/uumensai"], name: "Chinitsu", desc: "Replace the wall with 16 copies of each bamboo tile. Includes 10s if Ten is enabled."
 define_mod washizu, order: 3.5, conflicts: ["called_game"], name: "Washizu", desc: "Each tile in the wall is transparent and visible to all, except for one copy. Unflipped dora indicators are not visible."
 config_mod washizu, name: "transparents", values: [1,2,3,4], default: 3
 define_mod yami, name: "Yami", desc: "You may bet 1000 points to discard facedown. Others can bet 2000 points to force it faceup, but you can bet a further 4000 points to keep it facedown."
@@ -946,7 +946,6 @@ define_preset "Just Like Modded Minecraft", [
   "yaku/shoutate",
   "yaku/choupaikou",
   "yaku/suuzuukou",
-  %{name: "lib/yaku/uumensai", config: %{name: "Uumensai", value: 2}},
   %{name: "lib/yaku/sanpuukou", config: %{
     shou_list: "yaku", shou_name: "", shou_value: 0, shou_han: "Han",
     dai_list: "yaku", dai_name: "Big Three Winds", dai_value: 120, dai_han: "Han"
