@@ -376,7 +376,7 @@ defmodule RiichiAdvancedWeb.GameLive do
                 <div class="visible-wait">
                   <div class="visible-wait-num"><%= num %></div>
                   <div class="visible-wait-label" :if={label != nil}><%= label %></div>
-                  <div class={Utils.get_tile_class(wait, 0, %{}, if num == 0 do ["inactive"] else [] end)}></div>
+                  <div class={Utils.get_tile_class(wait, 0, %{}, if num == 0 do ["inactive"] else [] end)}><%= raw RiichiAdvancedWeb.HandComponent.debug_tile(wait) %></div>
                 </div>
               <% end %>
               &nbsp;=&nbsp;<%= waits |> Enum.map(fn {_wait, num, _label} -> num end) |> Enum.sum() %>

@@ -9,7 +9,7 @@ use crate::match_info::{prepare_tiles};
 use crate::offsets::get_base_tiles_from_defns;
 use crate::profile::{PROFILE_GET_WAITS, PROFILE_UNNEEDED_TILES, CALL_COUNT, MAX_NANOS, TOTAL_NANOS};
 use crate::tile_table::{TILE_TABLE, tile1x};
-use crate::types::{ElixirAliases, ElixirHandCalls, ElixirTile, ElixirTileOrdering, MatchDefinitionElem, MatchDefinitions, MatchInfo, Tile};
+use crate::types::{BitAttrs, ElixirAliases, ElixirHandCalls, ElixirTile, ElixirTileOrdering, MatchDefinitionElem, MatchDefinitions, MatchInfo, Tile};
 use crate::utils::{add_joker_to_aliases, remove_indices, remove_joker_from_aliases};
 
 #[rustler::nif(schedule = "DirtyCpu")]
@@ -77,33 +77,34 @@ pub fn __get_waits_v3(
   not_waits.insert(joker);
   match_info.joker_tiles.insert(joker);
 
-  // let game_tiles: Vec<Tile> = encode_tiles(&elixir_game_tiles, &match_info.all_attrs).collect();
-  // let nonjoker_game_tiles: Vec<Tile> = game_tiles
-  //   .iter()
-  //   .cloned()
-  //   .filter(|tile| !match_info.joker_tiles.contains(tile))
-  //   .collect();
-  let mut nonjoker_game_tiles: Vec<Tile> =
+  let mut possible_waits: Vec<Tile> =
     encode_tiles(&elixir_game_tiles, &match_info.all_attrs)
     .filter(|tile| !match_info.joker_tiles.contains(tile))
     .collect();
-  nonjoker_game_tiles.extend(get_base_tiles_from_defns(&match_info, &match_definitions));
-  nonjoker_game_tiles.sort_unstable();
-  nonjoker_game_tiles.dedup();
-  // println!("nonjoker_game_tiles={:?}", decode_tiles(&nonjoker_game_tiles, &match_info.all_attrs));
-  add_joker_to_aliases(&mut match_info.aliases, &mut match_info.mapping, joker, &nonjoker_game_tiles);
+  possible_waits.extend(get_base_tiles_from_defns(&match_info, &match_definitions));
+
+  possible_waits.sort_unstable();
+  possible_waits.dedup();
+
+  // println!("possible_waits={:?}", decode_tiles(&possible_waits, &match_info.all_attrs));
+  add_joker_to_aliases(&mut match_info.aliases, &mut match_info.mapping, joker, &possible_waits);
   // println!("starting aliases for 1x: {:?}", decode_tiles(match_info.mapping.get(&joker).unwrap(), &match_info.all_attrs));
   // println!("joker_tiles: {:?}", decode_tiles(&match_info.joker_tiles, &match_info.all_attrs));
 
-  // populate not_waits with the closure of non-wait tiles
   // save aliases first
   let aliases_backup = match_info.aliases.clone();
-  ___get_waits_v3(&mut match_info, &match_definitions, &mut not_waits, &nonjoker_game_tiles, &joker);
+  // populate not_waits with the closure of non-wait tiles
+  ___get_waits_v3(&mut match_info, &match_definitions, &mut not_waits, &possible_waits, &joker);
   // take complement of not_waits and return
-  let mut ret: Vec<Tile> = nonjoker_game_tiles
-    .iter()
-    .copied()
-    .filter(|tile| !not_waits.contains(tile))
+
+  possible_waits.retain(|tile| !not_waits.contains(tile));
+  
+  // dedup same-id tiles
+  // for tiles with same id diff attrs,
+  //   take the intersection of all attrs as the canonical base
+  let mut ret: Vec<Tile> = possible_waits
+    .chunk_by(|l, r| l.0 == r.0)
+    .map(|c| c.iter().fold((0, BitAttrs::MAX), |(_, a1), (p, a2)| (*p, a1 & a2)))
     .collect();
 
   // also add all joker tiles that map to something in ret

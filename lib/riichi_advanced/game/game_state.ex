@@ -1095,6 +1095,7 @@ defmodule RiichiAdvanced.GameState do
     tile_behavior = state.players[seat].tile_behavior
     visible_tiles = get_visible_tiles(state, seat)
     Match.get_waits_and_ukeire(hand, calls, win_definitions, visible_tiles, tile_behavior)
+    |> Enum.uniq_by(fn {wait, _ukeire} -> Utils.strip_attrs(wait, :invisible) end)
     |> Enum.sort_by(fn {wait, _ukeire} -> Constants.sort_value(wait) end)
     |> Enum.map(fn {wait, ukeire} -> {wait, ukeire, calculate_wait_label(state, seat, wait, discard, index)} end)
   end
