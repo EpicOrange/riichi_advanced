@@ -289,6 +289,7 @@ defmodule RiichiAdvancedWeb.ScoringTestLive do
     socket
   end
 
+  def score_hand(state, [], [], _is_ron?, _selected_yaku, _minipoints), do: state
   def score_hand(state, hand, calls, is_ron?, selected_yaku, minipoints) do
     wall = Enum.map(Rules.get(state.rules_ref, "wall", []), &Utils.to_tile(&1))
     dead_wall_length = Rules.get(state.rules_ref, "initial_dead_wall_length", 0)
