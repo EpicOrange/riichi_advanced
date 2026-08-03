@@ -200,7 +200,7 @@ define_yaku yaku, "Concealed Kong", [2, "Faan"], match(["calls"], ~m"ankan:1")
 # yaku/sanankou.majs adds Three Concealed Triplets (8 Faan)
 # yaku/suuankou.majs adds Four Concealed Triplets (15 Faan)
 define_set 兩連刻, ~s"0 0 0, 1 1 1|0 0 0, 11 11 11|0 0 0, 21 21 21"
-define_match 兩連刻, ~m"兩連刻:1, mentsu:2, pair:1"
+define_match 兩連刻, ~m"exhaustive, 兩連刻:1, mentsu:2, pair:1"
 define_yaku yaku, "Two Shifted Triplets", [2, "Faan"], match(["hand", "calls", "winning_tile"], ["兩連刻"])
 define_set 小三連刻, ~s"""
     0 0 0, 1 1 1, 2 2
