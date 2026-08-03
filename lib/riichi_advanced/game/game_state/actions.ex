@@ -76,6 +76,12 @@ defmodule RiichiAdvanced.GameState.Actions do
     state
   end
 
+  def unregister_last_discard(state) do
+    state = update_in(state.actions, &Enum.drop(&1, 1))
+    state = update_in(state.log_state.log, &Enum.drop(&1, 1))
+    state
+  end
+
   def play_tile(state, seat, tile, index, quiet \\ false) do
     if can_discard(state, seat) and is_playable?(state, seat, tile) do
       # IO.puts("#{seat} played tile: #{inspect(tile)} at index #{index}")
@@ -110,6 +116,7 @@ defmodule RiichiAdvanced.GameState.Actions do
       tile = Enum.at(state.players[seat].discards, -1)
       state = update_in(state.players[seat].discards, &List.update_at(&1, -1, fn _ -> tile end))
       state = update_in(state.players[seat].pond, &List.update_at(&1, -1, fn _ -> tile end))
+      state = unregister_last_discard(state)
       state = register_discard(state, seat, if facedown do :"1x" else tile end, tsumogiri, quiet)
 
       state = Map.put(state, :awaiting_discard, false)
@@ -1728,6 +1735,7 @@ defmodule RiichiAdvanced.GameState.Actions do
                 "aside" -> update_in(state.players[context.seat].aside, &add_attr_matching(&1, attrs, tile_specs, tile_behavior))
                 "last_discard" -> update_winning_tile(state, context.seat, :discard, fn tile -> add_attr_matching([tile], attrs, tile_specs, tile_behavior) |> Enum.at(0) end)
                 "last_called_tile" -> update_winning_tile(state, context.seat, :call, fn tile -> add_attr_matching([tile], attrs, tile_specs, tile_behavior) |> Enum.at(0) end)
+                "last_call" -> update_in(state.players[context.seat].calls, fn calls -> List.update_at(calls, -1, fn {name, call} -> {name, add_attr_matching(call, attrs, tile_specs, tile_behavior)} end) end)
                 "winning_tile" -> update_winning_tile(state, context.seat, Map.get(context, :win_source, nil), fn tile -> add_attr_matching([tile], attrs, tile_specs, tile_behavior) |> Enum.at(0) end)
                 _ when is_integer(target) -> update_in(state.dead_wall, fn dead_wall -> List.update_at(dead_wall, target, &add_attr_matching([&1], attrs, tile_specs, tile_behavior) |> Enum.at(0)) end)
                 _      ->
@@ -1867,7 +1875,6 @@ defmodule RiichiAdvanced.GameState.Actions do
           tile = Utils.to_tile(Enum.at(opts, 0, "0m"))
           state = update_in(state.players[last_discarder].pond, fn pond -> List.replace_at(pond, -1, tile) end)
           state = update_action(state, last_discarder, :discard, %{tile: tile})
-          state = Buttons.recalculate_buttons(state) # TODO remove
           state
         "flip_last_discard_faceup" ->
           last_discarder = get_last_discard_action(state).seat

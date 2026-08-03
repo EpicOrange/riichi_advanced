@@ -15,6 +15,7 @@ defimpl Jason.Encoder, for: Tuple do
 end
 
 defmodule RiichiAdvanced.GameState.Log do
+  alias RiichiAdvanced.GameState.Debug, as: Debug
   alias RiichiAdvanced.GameState.Marking, as: Marking
   alias RiichiAdvanced.GameState.Rules, as: Rules
   alias RiichiAdvanced.Utils, as: Utils
@@ -60,6 +61,7 @@ defmodule RiichiAdvanced.GameState.Log do
   end
 
   def log(state, seat, event_type, params) do
+    if Debug.debug_log() do IO.inspect({seat, event_type, params}, label: "Logging #{length(state.log_state.log)} (log)") end
     if seat != nil do
       update_in(state.log_state.log, &[%{ seat: to_seat(seat), event_type: event_type, params: params } | &1])
     else
@@ -68,6 +70,7 @@ defmodule RiichiAdvanced.GameState.Log do
   end
 
   defp modify_last_draw_discard(state, fun) do
+    if Debug.debug_log() do IO.puts("Logging #{length(state.log_state.log)} (modify_last_draw_discard)") end
     ix = Enum.find_index(state.log_state.log, fn event -> event.event_type == :draw or event.event_type == :discard end)
     if ix != nil do
       update_in(state.log_state.log, &List.update_at(&1, ix, fun))
@@ -75,6 +78,7 @@ defmodule RiichiAdvanced.GameState.Log do
   end
 
   defp modify_last_button_press(state, fun, create_at_seat) do
+    if Debug.debug_log() do IO.puts("Logging #{length(state.log_state.log)} (modify_last_button_press)") end
     state = case Enum.at(state.log_state.log, 0) do
       event when (event != nil and event.event_type == :buttons_pressed) ->
         if create_at_seat != nil and Enum.at(event.params.buttons, to_seat(create_at_seat)) != nil do
@@ -86,6 +90,7 @@ defmodule RiichiAdvanced.GameState.Log do
   end
 
   def add_call_choices(state, seat, call_name, call_choices) do
+    if Debug.debug_log() do IO.inspect({seat, call_name, call_choices}, label: "Logging #{length(state.log_state.log)} (add_call_choices)") end
     possible_calls = for {called_tile, choices} <- call_choices do
       for choice <- choices do
         if state.turn == seat do
