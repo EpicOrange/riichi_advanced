@@ -1,3 +1,4 @@
+use smallvec::smallvec;
 use std::collections::{HashMap, HashSet};
 use std::sync::atomic::Ordering;
 use std::time::Instant;
@@ -9,7 +10,7 @@ use crate::match_info::{prepare_tiles};
 use crate::profile::{PROFILE_GET_WAITS, PROFILE_UNNEEDED_TILES, CALL_COUNT, MAX_NANOS, TOTAL_NANOS};
 use crate::tile_table::{TILE_TABLE, tile1x};
 use crate::types::{ElixirAliases, ElixirHandCalls, ElixirTile, MatchDefinition, MatchDefinitions, MatchInfo, Tile};
-use crate::utils::{add_joker_to_elixir_aliases, add_joker_to_aliases, remove_joker_from_aliases};
+use crate::utils::{add_joker_to_aliases, add_joker_to_elixir_aliases, remove_indices, remove_joker_from_aliases};
 
 #[rustler::nif(schedule = "DirtyCpu")]
 fn _get_waits_v3(
@@ -103,7 +104,7 @@ pub fn __get_waits_v3(
     .copied()
     .collect();
   ret_jokers.remove(&joker);
-  
+
   // println!("ret: {:?}", ret);
   // println!("ret_jokers: {:?}", ret_jokers);
 
@@ -217,37 +218,47 @@ pub fn __get_unneeded_tiles_v2(
   let mut useful_defns: Vec<&MatchDefinition> = vec!();
   for match_definition in match_definitions.iter() {
     let mut used = false;
-    for tile in remove_match_definition(&match_info, match_definition).flat_map(|r| r[0].attrs.clone()) {
-      ret.insert(tile);
+    for hands in remove_match_definition(&match_info, match_definition) {
+      ret.extend(hands[0].attrs.iter());
       used = true;
     }
     if used { useful_defns.push(match_definition); }
   }
   if useful_defns.is_empty() { return vec!(); }
 
-  // remove each tile in turn
+  // remove each tile in turn and try to see if the match succeeds without that tile
+  let prev_hash = match_info.initial_hands[0].hash;
   for _ in 0..match_info.initial_hands[0].attrs.len() {
-    if ret.contains(match_info.initial_hands[0].attrs.first().unwrap()) { continue; }
+    // println!("initial_hands is now {:?}", decode(&match_info.initial_hands[0], match_info.all_attrs));
+    // println!("ret is now {:?}", decode_tiles(&ret.iter().cloned().collect::<Vec<_>>(), match_info.all_attrs));
+    let tile = match_info.initial_hands[0].attrs.first().copied().unwrap();
+    if ret.contains(&tile) {
+      match_info.initial_hands[0].attrs.rotate_left(1);
+      continue;
+    }
 
     // remove first element, we'll push it later to the back
-    // (can't use swap-remove since this is basically a queue)
-    let tile = match_info.initial_hands[0].attrs.remove(0);
+    // (can't use swap_remove since this is basically a queue)
+    remove_indices(&mut match_info.initial_hands[0].attrs, smallvec!(0));
 
     // check against each defn
     for match_definition in useful_defns.iter() {
       // if removal is successful, any remaining tiles are unneeded
       // the tile we took out is also unneeded
       let mut success = false;
-      for result in remove_match_definition(&match_info, match_definition).map(|r| r[0].attrs.clone()) {
-        for r in result { ret.insert(r); }
+      for hands in remove_match_definition(&match_info, match_definition) {
+        ret.extend(hands[0].attrs.iter());
         success = true;
       }
+      // println!("matched after taking out {:?}? {success}", decode_tile(tile, match_info.all_attrs));
       if success { ret.insert(tile); }
     }
 
     // push the first element back in, but at the back
+    match_info.initial_hands[0].hash = prev_hash;
     match_info.initial_hands[0].attrs.push(tile);
   }
+
   // need to convert to vector to pass NIF boundary
   // also need to convert from encoded tile to elixir tile
   decode_tiles(ret.iter().collect::<Vec<_>>(), match_info.all_attrs)

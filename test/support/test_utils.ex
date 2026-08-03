@@ -156,12 +156,8 @@ defmodule RiichiAdvanced.TestUtils do
     end
   end
 
-  def test_wait_calculation(ruleset, mods, hand, calls, expected_waits) do
-    test_state = initialize_test_state(ruleset, mods)
-    GenServer.cast(test_state.game_state_pid, :sort_hands)
-    state = GenServer.call(test_state.game_state_pid, :get_state)
-    GenServer.cast(test_state.game_state_pid, :terminate_game)
-
+  # TODO cache these %Game{} states for every ruleset/mod combination
+  def test_wait_calculation(state, hand, calls, expected_waits) do
     hand = interpret_hand(hand)
     calls = interpret_calls(calls)
     expected_waits = interpret_hand(expected_waits)
@@ -169,6 +165,16 @@ defmodule RiichiAdvanced.TestUtils do
 
     waits = Match.get_waits(hand, calls, win_definitions, state.players.east.tile_behavior)
     assert MapSet.new(waits) == MapSet.new(expected_waits)
+  end
+
+  def test_unneeded_tile_calculation(state, hand, calls, expected_tiles) do
+    hand = interpret_hand(hand)
+    calls = interpret_calls(calls)
+    expected_tiles = interpret_hand(expected_tiles)
+    tenpai_definitions = Rules.translate_match_definitions(state.rules_ref, ["tenpai"])
+
+    tiles = Match.get_unneeded_tiles_v2(hand, calls, tenpai_definitions, state.players.east.tile_behavior)
+    assert MapSet.new(tiles) == MapSet.new(expected_tiles)
   end
 
   def get_rules!(ruleset, mods) do

@@ -6,7 +6,7 @@ use blossom::Graph;
 use num::abs;
 use smallvec::smallvec;
 
-use crate::encode::{decode_mapping, decode_tiles};
+use crate::encode::{decode, decode_mapping, decode_tiles};
 use crate::offsets::{apply_offsets, is_offset_dest};
 use crate::tileset::{_check_equivalence, remove_tileset_indices};
 use crate::types::{AttrOffsetMap, HandsIterator, IndexVec, MatchGroup, MatchInfo, MatchOffset, Tile, TileSet};
@@ -24,6 +24,11 @@ pub fn perform_blossom_match<'a>(
 ) -> HandsIterator<'a> {
   let mut actual_num = if num == 0 { 1 } else { abs(num) } as usize;
   Box::new(acc.flat_map(move |mut hands| -> HandsIterator<'a> {
+    let num_removes_possible = (hands[0].attrs.len() / 2) + hands.len() - 1;
+    if num_removes_possible < actual_num {
+      if debug { println!("Aborting because not enough tiles to remove {actual_num} groups of size 2; hands = {:?}", hands.iter().map(|h| decode(h, match_info.all_attrs)).collect::<Vec<_>>()) }
+      return Box::new(empty());
+    }
     if debug {
       println!("Running blossom with hands = {:?}, groups = {groups:?}, actual_num = {actual_num}, mapping = {:?}",
         hands.iter().map(|h| decode_tiles(&h.attrs, match_info.all_attrs)).collect::<Vec<_>>(),
@@ -136,6 +141,6 @@ fn run_blossom<'a>(
   ixs.sort();
   ixs.dedup();
   remove_tileset_indices(&mut hand, ixs, &match_info.joker_tiles);
-  if debug { println!("After removal: {:?}", hand); }
+  if debug { println!("After removal: {:?}", decode(&hand, match_info.all_attrs)); }
   Some(hand)
 }
