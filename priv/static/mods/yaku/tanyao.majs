@@ -1,4 +1,5 @@
 require "value_honors"
+default list, "yaku"
 
 on after_initialization do
   add_rule("$value $han", "$name", "%{value} %{han} if your hand consists only of 2-8 number tiles.", %{value: !value, han: !han, name: !name})

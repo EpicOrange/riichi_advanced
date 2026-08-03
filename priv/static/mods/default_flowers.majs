@@ -1,3 +1,11 @@
+default draw_after_flower_phase, true
+default auto_flower_by_default, false
+default undiscardable, false
+default matching_flower_value, 0
+default matching_flower_han, !han
+default four_flowers_value, 0
+default four_flowers_han, !han
+
 on after_initialization do
   add_rule("Rules", "Flowers",
   """
@@ -119,6 +127,9 @@ define_auto_button _5_auto_flower,
 
 on after_start do
   set_status_all("initial_flowers")
+  if !draw_after_flower_phase do
+    uninterruptible_draw(-1) # un-draw
+  end
 end
 
 on before_turn_change do
@@ -130,16 +141,14 @@ on before_call do
 end
 
 on after_turn_change do
-  # un-draw if we're still declaring flowers
-  if !draw_after_flowers and status("initial_flowers") do
-    uninterruptible_draw(-1)
-  end
   # exit flower declaration stage
   if everyone_status("no_flowers") do
     unset_status_all("no_flowers", "initial_flowers")
     set_status_all("first_turn")
-    change_turn("east")
     as others do move_tiles("draw", "hand") end
+    if !draw_after_flower_phase do
+      uninterruptible_draw(1)
+    end
   end
 end
 

@@ -1,3 +1,17 @@
+default tenhou_list, "yaku"
+default tenhou_name, ""
+default tenhou_value, 0
+default tenhou_han, !han
+default chiihou_list, "yaku"
+default chiihou_name, ""
+default chiihou_value, 0
+default chiihou_han, !han
+default chiihou_is_tsumo, false
+default renhou_list, "yaku"
+default renhou_name, ""
+default renhou_value, 0
+default renhou_han, !han
+
 on after_initialization do
   add_rule("$value $han", "$name", "%{value} %{han} if as dealer, you win with your initial draw.", %{value: !tenhou_value, han: !tenhou_han, name: !tenhou_name})
   if !chiihou_is_tsumo do

@@ -2,14 +2,14 @@ require "value_honors"
 
 on after_initialization do
   add_rule("Tiles", "Jokers", "There are 8 jokers in the game: %{jokers}.", %{jokers: ~T"10j12j3j14j15j6j17j18j"}, -10)
-  update_rule("Tiles", "Jokers", "- %{any} can represent any tile." %{any: ~T"10j"})
-  update_rule("Tiles", "Jokers", "- %{number} can represent any number (suited) tile." %{number: ~T"12j"})
-  update_rule("Tiles", "Jokers", "- %{honour} can represent any honour tile." %{honour: ~T"3j"})
-  update_rule("Tiles", "Jokers", "- %{dragon} can represent any dragon." %{dragon: ~T"14j"})
-  update_rule("Tiles", "Jokers", "- %{wind} can represent any wind tile." %{wind: ~T"15j"})
-  update_rule("Tiles", "Jokers", "- %{pinzu} can represent any circle tile." %{pinzu: ~T"6j"})
-  update_rule("Tiles", "Jokers", "- %{souzu} can represent any bamboo tile." %{souzu: ~T"17j"})
-  update_rule("Tiles", "Jokers", "- %{manzu} can represent any character tile." %{manzu: ~T"18j"})
+  update_rule("Tiles", "Jokers", "- %{any} can represent any tile.", %{any: ~T"10j"})
+  update_rule("Tiles", "Jokers", "- %{number} can represent any number (suited) tile.", %{number: ~T"12j"})
+  update_rule("Tiles", "Jokers", "- %{honour} can represent any honour tile.", %{honour: ~T"3j"})
+  update_rule("Tiles", "Jokers", "- %{dragon} can represent any dragon.", %{dragon: ~T"14j"})
+  update_rule("Tiles", "Jokers", "- %{wind} can represent any wind tile.", %{wind: ~T"15j"})
+  update_rule("Tiles", "Jokers", "- %{pinzu} can represent any circle tile.", %{pinzu: ~T"6j"})
+  update_rule("Tiles", "Jokers", "- %{souzu} can represent any bamboo tile.", %{souzu: ~T"17j"})
+  update_rule("Tiles", "Jokers", "- %{manzu} can represent any character tile.", %{manzu: ~T"18j"})
   update_rule("Tiles", "Jokers", "You can also replace jokers in hand with a replacement tile during your turn. Each joker declared this way earns 1 Faan.")
   update_rule("Rules", "Jokers", "You can replace jokers in hand %{jokers} with a replacement tile during your turn. Each joker declared this way earns 1 Faan. Jokers declared in this manner cannot be robbed for a win.", %{jokers: ~T"10j12j3j14j15j6j17j18j"})
   update_rule("Rules", "Scoring", """
@@ -33,6 +33,10 @@ on after_initialization do
   update_rule("Rules", "Pung", "You cannot pung a discard using more than one joker.")
   update_rule("Rules", "Kong", "Concealed kongs are completely hidden until the end of a round.")
   update_rule("Rules", "Kong", "You cannot add a joker to a pung, nor can you concealed kong with a joker.")
+  rename_rule_tab("2 Faan", "1 Faan")
+  rename_rule_tab("1 Faan", "1,2 Faan")
+  rename_rule_tab("8 Faan", "5 Faan")
+  rename_rule_tab("5 Faan", "5,8 Faan")
 end
 
 set interruptible_actions, ["play_tile", "draw", "call", "self_call", "upgrade_call"]
@@ -172,16 +176,6 @@ on before_turn_change do
   if status_missing("match_start") do
     unset_status("first_turn")
   end
-end
-
-on after_turn_change do
-  if no_tiles_remaining do
-    pause(1000)
-    ryuukyoku
-  else
-    if status_missing("match_start") do draw end
-  end
-  if status("won") do advance_turn end
 end
 
 on after_call do set_status("call_made") end

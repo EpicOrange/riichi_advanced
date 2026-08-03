@@ -1,3 +1,12 @@
+default haitei_list, "yaku"
+default haitei_name, ""
+default haitei_value, 0
+default haitei_han, !han
+default houtei_list, "yaku"
+default houtei_name, ""
+default houtei_value, 0
+default houtei_han, !han
+
 on after_initialization do
   if equals(!haitei_name, !houtei_name) and equals(!haitei_value, !houtei_value) do
     add_rule("$value $han", "$name", "%{value} %{han} if you win off the last draw or discard.", %{value: !haitei_value, han: !han, name: !haitei_name})

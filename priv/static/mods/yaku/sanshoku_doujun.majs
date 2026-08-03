@@ -1,3 +1,5 @@
+default list, "yaku"
+
 on after_initialization do
   add_rule("$value $han", "$name", "%{value} %{han} if your hand contains the same number sequence in all three suits.", %{value: !value, han: !han, name: !name})
   update_rule("$value $han", "$name", "%{example_hand}", %{value: !value, han: !han, name: !name, example_hand: ~t"24p23334678s 2M34m 3p"})

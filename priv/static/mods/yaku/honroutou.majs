@@ -1,4 +1,12 @@
 require "value_honors"
+default hon_list, "yaku"
+default hon_name, ""
+default hon_value, 0
+default hon_han, !han
+default chin_list, "yaku"
+default chin_name, ""
+default chin_value, 0
+default chin_han, !han
 
 on after_initialization do
   add_rule("$value $han", "$name", "%{value} %{han} if your hand consists only of 1, 9, and honor tiles.", %{value: !hon_value, han: !hon_han, name: !hon_name})

@@ -1,3 +1,12 @@
+default san_list, "yaku"
+default san_name, ""
+default san_value, 0
+default san_han, !han
+default yon_list, "yaku"
+default yon_name, ""
+default yon_value, 0
+default yon_han, !han
+
 on after_initialization do
   add_rule("$value $han", "$name", "%{value} %{han} if you have three of the exact same sequence in one suit, like 123 123 123.", %{value: !san_value, han: !san_han, name: !san_name})
   update_rule("$value $han", "$name", "%{example_hand}", %{example_hand: ~t"345345m789p6s 34m5M 6s", value: !san_value, han: !san_han, name: !san_name})

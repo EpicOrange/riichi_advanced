@@ -1,4 +1,12 @@
 require "value_honors"
+default chanta_list, "yaku"
+default chanta_name, ""
+default chanta_value, 0
+default chanta_han, !han
+default junchan_list, "yaku"
+default junchan_name, ""
+default junchan_value, 0
+default junchan_han, !han
 
 on after_initialization do
   add_rule("$value $han", "$name", "%{value} %{han} if every set/pair in your hand contains a terminal or honor tile.", %{value: !chanta_value, han: !chanta_han, name: !chanta_name})

@@ -1,3 +1,5 @@
+default list, "yaku"
+
 define "iipeikou"
 
 on after_initialization do

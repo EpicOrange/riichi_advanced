@@ -1,3 +1,5 @@
+default list, "yaku"
+
 on after_initialization do
   add_rule("$value $han", "$name", "%{value} %{han} if your hand contains the same number triplet in all three suits.", %{value: !value, han: !han, name: !name})
   update_rule("$value $han", "$name", "%{example_hand}", %{value: !value, han: !han, name: !name, example_hand: ~t"2244p222456s 2M22m 2p"})

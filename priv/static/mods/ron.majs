@@ -1,3 +1,5 @@
+default scoring_key, "ron"
+
 define_button ron,
   display_name: !ron_name,
   show_when: not_our_turn

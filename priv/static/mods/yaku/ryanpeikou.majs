@@ -1,3 +1,5 @@
+default list, "yaku"
+
 on after_initialization do
   add_rule("$value $han", "$name", "%{value} %{han} if you have two double sequences, each being two copies of the exact same sequence in one suit, like 123 123. Cannot be scored together with seven pairs.", %{value: !value, han: !han, name: !name})
   if !closed_only do

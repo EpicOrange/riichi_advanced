@@ -1,3 +1,5 @@
+default list, "yaku"
+
 on after_initialization do
   add_rule("$value $han", "$name", "You have no calls (except %{ankan}) and you won by self-draw.", %{value: !value, han: !han, name: !name, ankan: !ankan_name})
 end

@@ -1,3 +1,5 @@
+default list, "yaku"
+
 on after_initialization do
   add_rule("$value $han", "$name", "You have no flowers.", %{value: !value, han: !han, name: !name})
 end

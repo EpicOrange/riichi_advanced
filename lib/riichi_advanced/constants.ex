@@ -534,7 +534,7 @@ defmodule RiichiAdvanced.Constants do
         "standard_wall",
         "default_auto_buttons",
         "riichi_kan", # also adds chankan and yaku like suukantsu
-        "riichi_scoring", # depends on honba
+        "riichi_scoring",
       ],
       default_mods: []
     },
@@ -622,15 +622,9 @@ defmodule RiichiAdvanced.Constants do
         "ura",
         "kandora",
         "yaku/open_riichi",
-        %{name: "yaku/sanpuukou", config: %{
-          shou_list: "", shou_name: "", shou_value: 9, shou_han: "",
-          dai_list: "yaku", dai_name: "Sanpuukou", dai_value: 2, dai_han: "Han"
-        }},
+        %{name: "yaku/sanpuukou", config: %{dai_name: "Sanpuukou", dai_value: 2}},
         %{name: "yaku/riichi_renhou", config: %{is: "Yakuman"}},
-        %{name: "yaku/sanrenkou", config: %{
-          san_list: "yaku", san_name: "Sanrenkou", san_value: 2, san_han: "Han",
-          suu_list: "yakuman", suu_name: "Suurenkou", suu_value: 1, suu_han: "★"
-        }},
+        %{name: "yaku/sanrenkou", config: %{san_name: "Sanrenkou", san_value: 2, suu_list: "yakuman", suu_name: "Suurenkou", suu_value: 1, suu_han: "★"}},
         "show_waits",
         %{name: "shuugi", config: %{worth: 1000, starting_shuugi: 100, pao_pays_all: true}},
         %{name: "shuugi/ippatsu", config: %{chips: 1}},
@@ -687,10 +681,7 @@ defmodule RiichiAdvanced.Constants do
         "yaku/open_riichi",
         "kansai_chiitoitsu",
         "kokushi_ankan_chankan",
-        %{name: "yaku/sanrenkou", config: %{
-          san_list: "yaku", san_name: "Sanrenkou", san_value: 2, san_han: "Han",
-          suu_list: "yakuman", suu_name: "Suurenkou", suu_value: 1, suu_han: "★"
-        }},
+        %{name: "yaku/sanrenkou", config: %{san_name: "Sanrenkou", san_value: 2, suu_list: "yakuman", suu_name: "Suurenkou", suu_value: 1, suu_han: "★"}},
         "yaku/shiisanpuutaa",
         "yaku/shiisanuushi",
         "pao_suukantsu",
@@ -790,57 +781,34 @@ defmodule RiichiAdvanced.Constants do
         "base",
         "global_mods", "default_auto_buttons",
         "standard_wall", "framed_5z",
-        "chii", "pon", %{name: "kan", config: %{replace_from_dead_wall: true, hide_ankans: false}},
+        "chii", "pon", "kan",
         %{name: "ron", config: %{scoring_key: "win"}},
         %{name: "tsumo", config: %{scoring_key: "win"}},
-        %{name: "yaku/chankan", config: %{list: "yaku", name: "Robbing a Kong", value: 1, scoring_key: "win"}},
+        %{name: "yaku/chankan", config: %{name: "Robbing a Kong", value: 1, scoring_key: "win"}},
         "standard_win",
-        %{name: "yaku/yakuhai", config: %{list: "yaku", value: 1, round_wind_name: "Prevalent Wind"}},
-        %{name: "default_flowers", config: %{
-          undiscardable: true, auto_flower_by_default: true, draw_after_flowers: true,
-          matching_flower_value: 1, matching_flower_han: "Fan",
-          four_flowers_value: 2, four_flowers_han: "Fan"
-        }}, 
-        %{name: "yaku/no_flowers", config: %{list: "yaku", name: "No Flowers", value: 1}},
-        %{name: "yaku/rinshan", config: %{
-          list: "yaku", rinshan_name: "After a Kong", flower_name: "After a Flower", value: 1,
-          double_list: "yaku", double_name: "After Multiple Kongs", double_value: 8, double_han: "Fan"
-        }},
-        %{name: "yaku/tsumo", config: %{list: "yaku", name: "Self Draw", value: 1}},
-        %{name: "yaku/menzenchin", config: %{list: "yaku", name: "Concealed Hand", value: 1}},
-        %{name: "yaku/honitsu", config: %{
-          hon_list: "yaku", hon_name: "Half Flush", hon_value: 3, hon_han: "Fan",
-          chin_list: "yaku", chin_name: "Full Flush", chin_value: 7, chin_han: "Fan"
-        }},
-        %{name: "yaku/honroutou", config: %{
-          hon_list: "yaku", hon_name: "Mixed Terminals", hon_value: 4, hon_han: "Fan",
-          chin_list: "yaku", chin_name: "All Terminals", chin_value: 13, chin_han: "Fan"
-        }},
-        %{name: "yaku/ittsuu", config: %{list: "yaku", name: "Pure Straight", value: 8}},
-        %{name: "yaku/pinghu", config: %{list: "yaku", name: "All Sequences", value: 1, no_value_pair: false}},
-        %{name: "yaku/toitoi", config: %{list: "yaku", name: "All Triplets", value: 3}},
-        %{name: "yaku/haitei", config: %{
-          haitei_list: "yaku", haitei_name: "Final Tile", haitei_value: 1,
-          houtei_list: "yaku", houtei_name: "Final Tile", houtei_value: 1
-        }},
-        %{name: "yaku/suuankou", config: %{list: "yaku", name: "Four Concealed Triplets", value: 8}},
-        %{name: "yaku/suukantsu", config: %{list: "yaku", name: "Four Kongs", value: 13}},
-        %{name: "yaku/kokushi", config: %{list: "yaku", rules_tab: "13 Fan", name: "Thirteen Orphans", value: 13}},
-        %{name: "yaku/chuurenpoutou", config: %{list: "yaku", name: "Nine Gates", value: 13, must_wait_9: false}},
-        %{name: "yaku/tsuuiisou", config: %{list: "yaku", name: "All Honours", value: 10}},
-        %{name: "yaku/shousangen", config: %{
-          shou_list: "yaku", shou_name: "Little Three Dragons", shou_value: 5, shou_han: "Fan",
-          dai_list: "yaku", dai_name: "Big Three Dragons", dai_value: 8, dai_han: "Fan"
-        }},
-        %{name: "yaku/shousuushii", config: %{
-          shou_list: "yaku", shou_name: "Little Four Winds", shou_value: 6, shou_han: "Fan",
-          dai_list: "yaku", dai_name: "Big Four Winds", dai_value: 13, dai_han: "Fan"
-        }},
+        %{name: "yaku/yakuhai", config: %{triplet_value: 1, round_wind_name: "Prevalent Wind"}},
+        %{name: "default_flowers", config: %{undiscardable: true, auto_flower_by_default: true, matching_flower_value: 1, four_flowers_value: 2}},
+        %{name: "yaku/no_flowers", config: %{name: "No Flowers", value: 1}},
+        %{name: "yaku/rinshan", config: %{rinshan_name: "After a Kong", flower_name: "After a Flower", value: 1, double_name: "After Multiple Kongs", double_value: 8}},
+        %{name: "yaku/tsumo", config: %{name: "Self Draw", value: 1}},
+        %{name: "yaku/menzenchin", config: %{name: "Concealed Hand", value: 1}},
+        %{name: "yaku/honitsu", config: %{hon_name: "Half Flush", hon_value: 3, chin_name: "Full Flush", chin_value: 7}},
+        %{name: "yaku/honroutou", config: %{hon_name: "Mixed Terminals", hon_value: 4, chin_name: "All Terminals", chin_value: 13}},
+        %{name: "yaku/ittsuu", config: %{name: "Pure Straight", value: 8}},
+        %{name: "yaku/pinghu", config: %{name: "All Sequences", value: 1, no_value_pair: false}},
+        %{name: "yaku/toitoi", config: %{name: "All Triplets", value: 3}},
+        %{name: "yaku/haitei", config: %{haitei_name: "Final Tile", haitei_value: 1, houtei_name: "Final Tile", houtei_value: 1}},
+        %{name: "yaku/suuankou", config: %{name: "Four Concealed Triplets", value: 8}},
+        %{name: "yaku/suukantsu", config: %{name: "Four Kongs", value: 13}},
+        %{name: "yaku/kokushi", config: %{rules_tab: "13 Fan", name: "Thirteen Orphans", value: 13}},
+        %{name: "yaku/chuurenpoutou", config: %{name: "Nine Gates", value: 13, must_wait_9: false}},
+        %{name: "yaku/tsuuiisou", config: %{name: "All Honours", value: 10}},
+        %{name: "yaku/shousangen", config: %{shou_name: "Little Three Dragons", shou_value: 5, dai_name: "Big Three Dragons", dai_value: 8}},
+        %{name: "yaku/shousuushii", config: %{shou_name: "Little Four Winds", shou_value: 6, dai_name: "Big Four Winds", dai_value: 13}},
         %{name: "yaku/tenhou", config: %{
-          tenhou_list: "yaku", tenhou_name: "Blessing of Heaven", tenhou_value: 13, tenhou_han: "Fan",
-          chiihou_list: "yaku", chiihou_name: "Blessing of Earth", chiihou_value: 13, chiihou_han: "Fan",
-          renhou_list: "yaku", renhou_name: "Blessing of Man", renhou_value: 13, renhou_han: "Fan",
-          chiihou_is_tsumo: false,
+          tenhou_name: "Blessing of Heaven", tenhou_value: 13,
+          chiihou_name: "Blessing of Earth", chiihou_value: 13,
+          renhou_name: "Blessing of Man", renhou_value: 13,
         }},
       ]
     },
@@ -863,52 +831,42 @@ defmodule RiichiAdvanced.Constants do
         "base",
         "global_mods", "default_auto_buttons",
         "standard_wall", "framed_5z",
-        "chii", "pon", %{name: "kan", config: %{replace_from_dead_wall: true, hide_ankans: false}},
+        "chii", "pon", "kan",
         %{name: "ron", config: %{scoring_key: "win"}},
         %{name: "tsumo", config: %{scoring_key: "win"}},
         "standard_win",
-        %{name: "yaku/yakuhai", config: %{list: "yaku", value: 1, round_wind_name: "Prevalent Wind"}},
-        %{name: "yaku/chiitoitsu", config: %{rules_tab: "4 Fan", list: "yaku", name: "Seven Pairs", value: 1, kansai: true}},
-        %{name: "yaku/chankan", config: %{list: "yaku", name: "Robbing the Kong", value: 1, scoring_key: "win"}},
+        %{name: "yaku/yakuhai", config: %{triplet_value: 1, round_wind_name: "Prevalent Wind"}},
+        %{name: "yaku/chiitoitsu", config: %{rules_tab: "4 Fan", name: "Seven Pairs", value: 1, kansai: true}},
+        %{name: "yaku/chankan", config: %{name: "Robbing the Kong", value: 1, scoring_key: "win"}},
         "head_bump",
         "agarirenchan",
-        %{name: "default_flowers", config: %{
-          undiscardable: true, auto_flower_by_default: true, draw_after_flowers: true,
-          matching_flower_value: 1, matching_flower_han: "Fan",
-          four_flowers_value: 4, four_flowers_han: "Fan"
-        }}, 
-        %{name: "yaku/menzentsumo", config: %{list: "yaku", name: "Concealed Hand", value: 1}},
+        %{name: "default_flowers", config: %{undiscardable: true, auto_flower_by_default: true, matching_flower_value: 1, four_flowers_value: 4}},
+        %{name: "yaku/menzentsumo", config: %{name: "Concealed Hand", value: 1}},
         %{name: "yaku/rinshan", config: %{
-          list: "yaku", rinshan_name: "Out on a Replacement", flower_name: "Out on a Replacement", value: 1,
+          rinshan_name: "Out on a Replacement", flower_name: "Out on a Replacement", value: 1,
           double_list: "yakuman", double_name: "Two-Fold Fortune", double_value: 1, double_han: "Limit"
         }},
         %{name: "yaku/honitsu", config: %{
-          hon_list: "yaku", hon_name: "Half Flush", hon_value: 1, hon_han: "Fan",
-          chin_list: "yaku", chin_name: "Full Flush", chin_value: 4, chin_han: "Fan"
+          hon_name: "Half Flush", hon_value: 1,
+          chin_name: "Full Flush", chin_value: 4,
         }},
-        %{name: "yaku/ittsuu", config: %{list: "yaku", name: "Pure Straight", value: 1}},
-        %{name: "yaku/tanyao", config: %{list: "yaku", name: "All Simples", value: 1}},
+        %{name: "yaku/ittsuu", config: %{name: "Pure Straight", value: 1}},
+        %{name: "yaku/tanyao", config: %{name: "All Simples", value: 1}},
         %{name: "yaku/honroutou", config: %{
-          hon_list: "yaku", hon_name: "All Terminals and Honors", hon_value: 1, hon_han: "Fan",
-          chin_list: "yakuman", chin_name: "All Terminals", chin_value: 1, chin_han: "Limit"
+          hon_name: "All Terminals and Honors", hon_value: 1,
+          chin_name: "All Terminals", chin_value: 1, chin_han: "Limit"
         }},
-        %{name: "yaku/toitoi", config: %{list: "yaku", name: "All Triplets", value: 1}},
-        %{name: "yaku/chanta", config: %{
-          chanta_list: "yaku", chanta_name: "Outside Hand", chanta_value: 1, chanta_han: "Fan",
-          junchan_list: "yaku", junchan_name: "", junchan_value: 0, junchan_han: "Fan"
-        }},
-        %{name: "yaku/haitei", config: %{
-          haitei_list: "yaku", haitei_name: "Last Tile Draw", haitei_value: 1,
-          houtei_list: "yaku", houtei_name: "Last Tile Discard", houtei_value: 1
-        }},
-        %{name: "yaku/sanankou", config: %{list: "yaku", name: "Three Concealed Triplets", value: 1}},
+        %{name: "yaku/toitoi", config: %{name: "All Triplets", value: 1}},
+        %{name: "yaku/chanta", config: %{chanta_name: "Outside Hand", chanta_value: 1}},
+        %{name: "yaku/haitei", config: %{haitei_name: "Last Tile Draw", haitei_value: 1, houtei_name: "Last Tile Discard", houtei_value: 1}},
+        %{name: "yaku/sanankou", config: %{name: "Three Concealed Triplets", value: 1}},
         %{name: "yaku/suuankou", config: %{list: "yakuman", name: "Four Concealed Triplets", value: 1, han: "Limit"}},
         %{name: "yaku/suukantsu", config: %{list: "yakuman", name: "Four Kongs", value: 1, han: "Limit"}},
         %{name: "yaku/kokushi", config: %{rules_tab: "Limit", list: "yakuman", name: "Thirteen Orphans", value: 1, han: "Limit"}},
         %{name: "yaku/chuurenpoutou", config: %{list: "yakuman", name: "Nine Gates", value: 1, han: "Limit", must_wait_9: false}},
         %{name: "yaku/tsuuiisou", config: %{list: "yakuman", name: "All Honors", value: 1, han: "Limit"}},
         %{name: "yaku/shousangen", config: %{
-          shou_list: "yaku", shou_name: "Little Three Dragons", shou_value: 3, shou_han: "Fan",
+          shou_name: "Little Three Dragons", shou_value: 3,
           dai_list: "yakuman", dai_name: "Big Three Dragons", dai_value: 1, dai_han: "Limit"
         }},
         %{name: "yaku/shousuushii", config: %{
@@ -918,7 +876,6 @@ defmodule RiichiAdvanced.Constants do
         %{name: "yaku/tenhou", config: %{
           tenhou_list: "yakuman", tenhou_name: "Blessing of Heaven", tenhou_value: 1, tenhou_han: "Limit",
           chiihou_list: "yakuman", chiihou_name: "Blessing of Earth", chiihou_value: 1, chiihou_han: "Limit",
-          renhou_list: "", renhou_name: "", renhou_value: 0, renhou_han: "",
           chiihou_is_tsumo: true,
         }},
         "classical_fu",
@@ -953,55 +910,42 @@ defmodule RiichiAdvanced.Constants do
         "base",
         "standard_wall", "framed_5z",
         "default_auto_buttons",
-        "chii", "pon", %{name: "kan", config: %{replace_from_dead_wall: true, hide_ankans: false}},
-        %{name: "ron", config: %{scoring_key: "ron"}},
-        %{name: "tsumo", config: %{scoring_key: "tsumo"}},
-        %{name: "default_flowers", config: %{
-          undiscardable: false, auto_flower_by_default: false, draw_after_flowers: false,
-          matching_flower_value: 1, matching_flower_han: "Phán",
-          four_flowers_value: 1, four_flowers_han: "Mủn"
-        }}, 
+        "chii", "pon", "kan", "ron", "tsumo",
+        %{name: "default_flowers", config: %{draw_after_flower_phase: false, matching_flower_value: 1, four_flowers_value: 1, four_flowers_han: "Mủn"}},
         "standard_win",
-        %{name: "yaku/yakuhai", config: %{list: "yaku", value: 1, round_wind_name: "Prevalent Wind"}},
-        %{name: "yaku/menzentsumo", config: %{list: "yaku", name: "Fully Closed Hand", value: 1}},
-        %{name: "yaku/chankan", config: %{list: "yaku", name: "Robbing a Quad", value: 1, scoring_key: "ron"}},
-        %{name: "yaku/rinshan", config: %{
-          list: "yaku", rinshan_name: "Win on Replacement Tile", flower_name: "Win on Replacement Tile", value: 1,
-          double_list: "", double_name: "", double_value: 0, double_han: ""
-        }},
-        %{name: "yaku/chiitoitsu", config: %{rules_tab: "1 Mủn", list: "yaku", name: "Seven Pairs", value: 1, han: "Mủn", kansai: true}},
+        %{name: "yaku/yakuhai", config: %{triplet_value: 1, round_wind_name: "Prevalent Wind"}},
+        %{name: "yaku/menzentsumo", config: %{name: "Fully Closed Hand", value: 1}},
+        %{name: "yaku/chankan", config: %{name: "Robbing a Quad", value: 1, scoring_key: "ron"}},
+        %{name: "yaku/rinshan", config: %{rinshan_name: "Win on Replacement Tile", flower_name: "Win on Replacement Tile", value: 1}},
+        %{name: "yaku/chiitoitsu", config: %{rules_tab: "1 Mủn", name: "Seven Pairs", value: 1, han: "Mủn", kansai: true}},
         %{name: "yaku/honitsu", config: %{
-          hon_list: "yaku", hon_name: "Half Flush", hon_value: 3, hon_han: "Phán",
-          chin_list: "yaku", chin_name: "Full Flush", chin_value: 1, chin_han: "Mủn"
+          hon_name: "Half Flush", hon_value: 3, hon_han: "Phán",
+          chin_name: "Full Flush", chin_value: 1, chin_han: "Mủn"
         }},
-        %{name: "yaku/haitei", config: %{
-          haitei_list: "yaku", haitei_name: "Win on Last Tile", haitei_value: 1,
-          houtei_list: "yaku", houtei_name: "Win on Last Tile", houtei_value: 1
-        }},
-        %{name: "yaku/pinghu", config: %{list: "yaku", name: "All Runs", value: 1, no_value_pair: true}},
-        %{name: "yaku/toitoi", config: %{list: "yaku", name: "All Sets", value: 3}},
+        %{name: "yaku/haitei", config: %{haitei_name: "Win on Last Tile", haitei_value: 1, houtei_name: "Win on Last Tile", houtei_value: 1}},
+        %{name: "yaku/pinghu", config: %{name: "All Runs", value: 1, no_value_pair: true}},
+        %{name: "yaku/toitoi", config: %{name: "All Sets", value: 3}},
         %{name: "yaku/honroutou", config: %{
-          hon_list: "yaku", hon_name: "All Terminals and Honors", hon_value: 1, hon_han: "Mủn",
-          chin_list: "yaku", chin_name: "All Terminals", chin_value: 4, chin_han: "Mủn"
+          hon_name: "All Terminals and Honors", hon_value: 1, hon_han: "Mủn",
+          chin_name: "All Terminals", chin_value: 4, chin_han: "Mủn"
         }},
         %{name: "yaku/shousangen", config: %{
-          shou_list: "yaku", shou_name: "Little Three Dragons", shou_value: 1, shou_han: "Mủn",
-          dai_list: "yaku", dai_name: "Big Three Dragons", dai_value: 9, dai_han: "Phán"
+          shou_name: "Little Three Dragons", shou_value: 1, shou_han: "Mủn",
+          dai_name: "Big Three Dragons", dai_value: 9, dai_han: "Phán"
         }},
-        %{name: "yaku/kokushi", config: %{rules_tab: "13 Phán", list: "yaku", name: "Thirteen Orphans", value: 13}},
-        %{name: "yaku/suuankou", config: %{list: "yaku", name: "Four Closed Sets", value: 3, han: "Mủn"}},
-        %{name: "yaku/suukantsu", config: %{list: "yaku", name: "Four Quads", value: 4, han: "Mủn"}},
-        %{name: "yaku/chuurenpoutou", config: %{list: "yaku", name: "Nine Gates", value: 3, han: "Mủn", must_wait_9: false}},
-        %{name: "yaku/tsuuiisou", config: %{list: "yaku", name: "All Honors", value: 4, han: "Mủn"}},
+        %{name: "yaku/kokushi", config: %{rules_tab: "13 Phán", name: "Thirteen Orphans", value: 13}},
+        %{name: "yaku/suuankou", config: %{name: "Four Closed Sets", value: 3, han: "Mủn"}},
+        %{name: "yaku/suukantsu", config: %{name: "Four Quads", value: 4, han: "Mủn"}},
+        %{name: "yaku/chuurenpoutou", config: %{name: "Nine Gates", value: 3, han: "Mủn", must_wait_9: false}},
+        %{name: "yaku/tsuuiisou", config: %{name: "All Honors", value: 4, han: "Mủn"}},
         %{name: "yaku/shousuushii", config: %{
-          shou_list: "yaku", shou_name: "Little Four Winds", shou_value: 4, shou_han: "Mủn",
-          dai_list: "yaku", dai_name: "Big Four Winds", dai_value: 8, dai_han: "Mủn"
+          shou_name: "Little Four Winds", shou_value: 4, shou_han: "Mủn",
+          dai_name: "Big Four Winds", dai_value: 8, dai_han: "Mủn"
         }},
         %{name: "yaku/tenhou", config: %{
-          tenhou_list: "yaku", tenhou_name: "Blessing of Heaven", tenhou_value: 2, tenhou_han: "Mủn",
-          chiihou_list: "yaku", chiihou_name: "Blessing of Earth", chiihou_value: 2, chiihou_han: "Mủn",
-          renhou_list: "yaku", renhou_name: "Blessing of Man", renhou_value: 2, renhou_han: "Mủn",
-          chiihou_is_tsumo: false,
+          tenhou_name: "Blessing of Heaven", tenhou_value: 2, tenhou_han: "Mủn",
+          chiihou_name: "Blessing of Earth", chiihou_value: 2, chiihou_han: "Mủn",
+          renhou_name: "Blessing of Man", renhou_value: 2, renhou_han: "Mủn",
         }},
         "yaku/vietnamese_flowers",
         "yaku/vietnamese_jokers",
@@ -1029,19 +973,13 @@ defmodule RiichiAdvanced.Constants do
         "base",
         "standard_wall", "framed_5z",
         "global_mods", "default_auto_buttons",
-        "chii", "pon", %{name: "kan", config: %{replace_from_dead_wall: true, hide_ankans: true}},
+        "chii", "pon", %{name: "kan", config: %{hide_ankans: true}}, "ron", "tsumo",
         "riichi_call_style",
-        %{name: "ron", config: %{scoring_key: "ron"}},
-        %{name: "tsumo", config: %{scoring_key: "tsumo"}},
         "standard_win",
-        %{name: "yaku/chiitoitsu", config: %{rules_tab: "24+ Fan", list: "yaku", name: "Seven Pairs", value: 24, kansai: true}},
-        %{name: "yaku/kokushi", config: %{rules_tab: "24+ Fan", list: "yaku", name: "Thirteen Orphans", value: 88}},
+        %{name: "yaku/chiitoitsu", config: %{rules_tab: "24+ Fan", name: "Seven Pairs", value: 24}},
+        %{name: "yaku/kokushi", config: %{rules_tab: "24+ Fan", name: "Thirteen Orphans", value: 88}},
         "head_bump",
-        %{name: "default_flowers", config: %{
-          undiscardable: false, auto_flower_by_default: true, draw_after_flowers: true,
-          matching_flower_value: 0, matching_flower_han: "Fan",
-          four_flowers_value: 0, four_flowers_han: "Fan"
-        }},
+        %{name: "default_flowers", config: %{auto_flower_by_default: true}},
         %{name: "min_han", config: %{min: 8}},
         "mcr"
       ],
@@ -1070,69 +1008,43 @@ defmodule RiichiAdvanced.Constants do
         %{name: "tsumo", config: %{scoring_key: "win"}},
         "standard_win",
         "kuikae_nashi",
-        %{name: "yaku/yakuhai", config: %{list: "yaku", value: 1, round_wind_name: "Round Wind"}},
-        %{name: "yaku/shousangen", config: %{
-          shou_list: "yaku", shou_name: "Little Three Dragons", shou_value: 8, shou_han: "Faan",
-          dai_list: "yaku", dai_name: "Big Three Dragons", dai_value: 15, dai_han: "Faan"
-        }},
-        %{name: "yaku/sanpuukou", config: %{
-          shou_list: "yaku", shou_name: "Little Three Winds", shou_value: 5, shou_han: "Faan",
-          dai_list: "yaku", dai_name: "Big Three Winds", dai_value: 10, dai_han: "Faan"
-        }},
-        %{name: "yaku/shousuushii", config: %{
-          shou_list: "listed_limit_hand", shou_name: "Little Four Winds", shou_value: 20, shou_han: "Faan",
-          dai_list: "listed_limit_hand", dai_name: "Big Four Winds", dai_value: 30, dai_han: "Faan"
-        }},
-        %{name: "yaku/tanyao", config: %{list: "yaku", name: "All Simples", value: 2}},
-        %{name: "yaku/chanta", config: %{
-          chanta_list: "yaku", chanta_name: "Mixed Outside Hand", chanta_value: 5, chanta_han: "Faan",
-          junchan_list: "yaku", junchan_name: "Pure Outside Hand", junchan_value: 8, junchan_han: "Faan"
-        }},
-        %{name: "yaku/honroutou", config: %{
-          hon_list: "yaku", hon_name: "Mixed Terminals", hon_value: 10, hon_han: "Faan",
-          chin_list: "yaku", chin_name: "Pure Terminals", chin_value: 30, chin_han: "Faan"
-        }},
-        %{name: "yaku/uumensai", config: %{list: "yaku", name: "All Types", value: 5}},
-        %{name: "yaku/honitsu", config: %{
-          hon_list: "yaku", hon_name: "Mixed Flush", hon_value: 5, hon_han: "Faan",
-          chin_list: "yaku", chin_name: "Full Flush", chin_value: 10, chin_han: "Faan"
-        }},
-        %{name: "yaku/chuurenpoutou", config: %{list: "yaku", name: "Nine Gates", value: 30, must_wait_9: false}},
-        %{name: "yaku/ryankantsu", config: %{list: "yaku", name: "Two Kongs", value: 5}},
-        %{name: "yaku/sankantsu", config: %{list: "yaku", name: "Three Kongs", value: 15}},
-        %{name: "yaku/suukantsu", config: %{list: "yaku", name: "Four Kongs", value: 30}},
-        %{name: "yaku/ryanankou", config: %{list: "yaku", name: "Two Concealed Triplets", value: 2}},
-        %{name: "yaku/sanankou", config: %{list: "yaku", name: "Three Concealed Triplets", value: 8}},
-        %{name: "yaku/suuankou", config: %{list: "yaku", name: "Four Concealed Triplets", value: 15}},
-        %{name: "yaku/sanrenkou", config: %{
-          san_list: "yaku", san_name: "Three Pure Shifted Triplets", san_value: 10, san_han: "faan",
-          suu_list: "yaku", suu_name: "Four Pure Shifted Triplets", suu_value: 20, suu_han: "Faan"
-        }},
-        %{name: "yaku/sanshoku_doukou", config: %{list: "yaku", name: "Triple Triplets", value: 10}},
-        %{name: "yaku/toitoi", config: %{list: "yaku", name: "All Triplets", value: 5}},
-        %{name: "yaku/sanshoku_doujun", config: %{list: "yaku", name: "Triple Sequences", value: 5}},
-        %{name: "yaku/isshoku_sanjun", config: %{list: "yaku",
-          san_list: "yaku", san_name: "Pure Triple Sequence", san_value: 10, san_han: "Faan",
-          yon_list: "yaku", yon_name: "Pure Quadruple Sequence", yon_value: 30, yon_han: "Faan"
-        }},
-        %{name: "yaku/iipeikou", config: %{list: "yaku", name: "Identical Sequences", value: 2, closed_only: false}},
-        %{name: "yaku/ryanpeikou", config: %{list: "yaku", name: "Double Identical Sequences", value: 10, closed_only: false}},
-        %{name: "yaku/pinghu", config: %{list: "yaku", name: "All Sequences", value: 2, no_value_pair: false}},
-        # %{name: "yaku/rinshan", config: %{
-        #   list: "yaku", rinshan_name: "After a Kong", flower_name: "", value: 2,
-        #   double_list: "yaku", double_name: "", double_value: 0, double_han: "Faan"
-        # }},
-        %{name: "yaku/chankan", config: %{list: "yaku", name: "Robbing a Kong", value: 5, scoring_key: "win"}},
+        %{name: "yaku/yakuhai", config: %{triplet_value: 1, round_wind_name: "Round Wind"}},
+        %{name: "yaku/shousangen", config: %{shou_name: "Little Three Dragons", shou_value: 8, dai_name: "Big Three Dragons", dai_value: 15}},
+        %{name: "yaku/sanpuukou", config: %{shou_name: "Little Three Winds", shou_value: 5, dai_name: "Big Three Winds", dai_value: 10}},
+        %{name: "yaku/shousuushii", config: %{shou_name: "Little Four Winds", shou_value: 20, dai_name: "Big Four Winds", dai_value: 30}},
+        %{name: "yaku/tanyao", config: %{name: "All Simples", value: 2}},
+        %{name: "yaku/chanta", config: %{chanta_name: "Mixed Outside Hand", chanta_value: 5, junchan_name: "Pure Outside Hand", junchan_value: 8}},
+        %{name: "yaku/honroutou", config: %{hon_name: "Mixed Terminals", hon_value: 10, chin_name: "Pure Terminals", chin_value: 30}},
+        %{name: "yaku/uumensai", config: %{name: "All Types", value: 5}},
+        %{name: "yaku/honitsu", config: %{hon_name: "Mixed Flush", hon_value: 5, chin_name: "Full Flush", chin_value: 10}},
+        %{name: "yaku/chuurenpoutou", config: %{name: "Nine Gates", value: 30, must_wait_9: false}},
+        %{name: "yaku/ryankantsu", config: %{name: "Two Kongs", value: 5}},
+        %{name: "yaku/sankantsu", config: %{name: "Three Kongs", value: 15}},
+        %{name: "yaku/suukantsu", config: %{name: "Four Kongs", value: 30}},
+        %{name: "yaku/ryanankou", config: %{name: "Two Concealed Triplets", value: 2}},
+        %{name: "yaku/sanankou", config: %{name: "Three Concealed Triplets", value: 8}},
+        %{name: "yaku/suuankou", config: %{name: "Four Concealed Triplets", value: 15}},
+        %{name: "yaku/sanrenkou", config: %{san_name: "Three Pure Shifted Triplets", san_value: 10, suu_name: "Four Pure Shifted Triplets", suu_value: 20}},
+        %{name: "yaku/sanshoku_shoudoukou", config: %{name: "Small Triple Triplets", value: 5}},
+        %{name: "yaku/sanshoku_doukou", config: %{name: "Triple Triplets", value: 10}},
+        %{name: "yaku/toitoi", config: %{name: "All Triplets", value: 5}},
+        %{name: "yaku/sanshoku_doujun", config: %{name: "Triple Sequences", value: 5}},
+        %{name: "yaku/isshoku_sanjun", config: %{san_name: "Pure Triple Sequence", san_value: 10, yon_name: "Pure Quadruple Sequence", yon_value: 30}},
+        %{name: "yaku/iipeikou", config: %{name: "Identical Sequences", value: 2, closed_only: false}},
+        %{name: "yaku/ryanpeikou", config: %{name: "Double Identical Sequences", value: 10, closed_only: false}},
+        %{name: "yaku/pinghu", config: %{name: "All Sequences", value: 2, no_value_pair: false}},
+        %{name: "yaku/rinshan", config: %{rinshan_name: "After a Kong", value: 2}},
+        %{name: "yaku/chankan", config: %{name: "Robbing a Kong", value: 5, scoring_key: "win"}},
         %{name: "yaku/tenhou", config: %{
-          tenhou_list: "yaku", tenhou_name: "Hand of Heaven", tenhou_value: 30, tenhou_han: "Faan",
-          chiihou_list: "yaku", chiihou_name: "Hand of Earth", chiihou_value: 30, chiihou_han: "Faan",
-          renhou_list: "yaku", renhou_name: "Hand of Man", renhou_value: 15, renhou_han: "Faan",
+          tenhou_name: "Hand of Heaven", tenhou_value: 30,
+          chiihou_name: "Hand of Earth", chiihou_value: 30,
+          renhou_name: "Hand of Man", renhou_value: 15,
           chiihou_is_tsumo: true,
         }},
-        %{name: "yaku/menzenchin", config: %{list: "yaku", name: "Concealed Hand", value: 1}},
-        %{name: "yaku/menzentsumo", config: %{list: "yaku", name: "Fully Concealed Hand", value: 2}},
-        %{name: "yaku/chiitoitsu", config: %{rules_tab: "5 Faan", list: "yaku", name: "Seven Pairs", value: 5, kansai: false}},
-        %{name: "yaku/kokushi", config: %{list: "yaku", rules_tab: "20 Faan", name: "Thirteen Orphans", value: 20}},
+        %{name: "yaku/menzenchin", config: %{name: "Concealed Hand", value: 1}},
+        %{name: "yaku/menzentsumo", config: %{name: "Fully Concealed Hand", value: 2}},
+        %{name: "yaku/chiitoitsu", config: %{rules_tab: "5 Faan", name: "Seven Pairs", value: 5}},
+        %{name: "yaku/kokushi", config: %{rules_tab: "20 Faan", name: "Thirteen Orphans", value: 20}},
         "bloody30faan_yaku",
         "bloody30faan",
       ]
@@ -1162,85 +1074,71 @@ defmodule RiichiAdvanced.Constants do
 
         %{name: "yaku/chicken_hand", config: %{list: "meta_yaku", name: "Chicken Hand", value: 1}},
         # 1.0 trivial patterns
-        %{name: "yaku/pinghu", config: %{list: "yaku", name: "All Sequences", value: 5, no_value_pair: false}},
-        %{name: "yaku/menzenchin", config: %{list: "yaku", name: "Concealed Hand", value: 5}},
-        %{name: "yaku/tanyao", config: %{list: "yaku", name: "No Terminals", value: 5}},
+        %{name: "yaku/pinghu", config: %{name: "All Sequences", value: 5, no_value_pair: false}},
+        %{name: "yaku/menzenchin", config: %{name: "Concealed Hand", value: 5}},
+        %{name: "yaku/tanyao", config: %{name: "No Terminals", value: 5}},
         # 2.0 one-suit patterns
-        %{name: "yaku/honitsu", config: %{
-          hon_list: "yaku", hon_name: "Mixed One-Suit", hon_value: 40, hon_han: "pts",
-          chin_list: "yaku", chin_name: "Pure One-Suit", chin_value: 80, chin_han: "pts"
-        }},
+        %{name: "yaku/honitsu", config: %{hon_name: "Mixed One-Suit", hon_value: 40, chin_name: "Pure One-Suit", chin_value: 80}},
         %{name: "yaku/chuurenpoutou", config: %{list: "listed_limit_hand", name: "Nine Gates", value: 480, must_wait_9: true}},
         # 3.0 honor tiles
-        %{name: "yaku/yakuhai", config: %{list: "yaku", value: 10, round_wind_name: ""}}, # no prevalent wind
-        %{name: "yaku/shousangen", config: %{
-          shou_list: "yaku", shou_name: "Small Three Dragons", shou_value: 40, shou_han: "pts",
-          dai_list: "yaku", dai_name: "Big Three Dragons", dai_value: 130, dai_han: "pts"
-        }},
-        %{name: "yaku/sanpuukou", config: %{
-          shou_list: "yaku", shou_name: "Small Three Winds", shou_value: 30, shou_han: "pts",
-          dai_list: "yaku", dai_name: "Big Three Winds", dai_value: 120, dai_han: "pts"
-        }},
-        %{name: "yaku/shousuushii", config: %{
-          shou_list: "listed_limit_hand", shou_name: "Small Four Winds", shou_value: 320, shou_han: "pts",
-          dai_list: "listed_limit_hand", dai_name: "Big Four Winds", dai_value: 400, dai_han: "pts"
-        }},
+        %{name: "yaku/yakuhai", config: %{triplet_value: 10}}, # no prevalent wind
+        %{name: "yaku/shousangen", config: %{shou_name: "Small Three Dragons", shou_value: 40, dai_name: "Big Three Dragons", dai_value: 130}},
+        %{name: "yaku/sanpuukou", config: %{shou_name: "Small Three Winds", shou_value: 30, dai_name: "Big Three Winds", dai_value: 120}},
+        %{name: "yaku/shousuushii", config: %{shou_list: "listed_limit_hand", shou_name: "Small Four Winds", shou_value: 320, dai_list: "listed_limit_hand", dai_name: "Big Four Winds", dai_value: 400}},
         %{name: "yaku/tsuuiisou", config: %{list: "listed_limit_hand", name: "All Honors", value: 320}},
         # 4.0 triplets and kong
-        %{name: "yaku/toitoi", config: %{list: "yaku", name: "All Triplets", value: 30}},
-        %{name: "yaku/ryanankou", config: %{list: "yaku", name: "Two Concealed Triplets", value: 5}},
-        %{name: "yaku/sanankou", config: %{list: "yaku", name: "Three Concealed Triplets", value: 30}},
-        %{name: "yaku/suuankou", config: %{list: "yaku", name: "Four Concealed Triplets", value: 125}},
-        %{name: "yaku/iikantsu", config: %{list: "yaku", name: "One Kong", value: 5}},
-        %{name: "yaku/ryankantsu", config: %{list: "yaku", name: "Two Kong", value: 20}},
-        %{name: "yaku/sankantsu", config: %{list: "yaku", name: "Three Kong", value: 120}},
+        %{name: "yaku/toitoi", config: %{name: "All Triplets", value: 30}},
+        %{name: "yaku/ryanankou", config: %{name: "Two Concealed Triplets", value: 5}},
+        %{name: "yaku/sanankou", config: %{name: "Three Concealed Triplets", value: 30}},
+        %{name: "yaku/suuankou", config: %{name: "Four Concealed Triplets", value: 125}},
+        %{name: "yaku/iikantsu", config: %{name: "One Kong", value: 5}},
+        %{name: "yaku/ryankantsu", config: %{name: "Two Kong", value: 20}},
+        %{name: "yaku/sankantsu", config: %{name: "Three Kong", value: 120}},
         %{name: "yaku/suukantsu", config: %{list: "listed_limit_hand", name: "Four Kong", value: 480}},
         # 5.0 identical sets
-        %{name: "yaku/iipeikou", config: %{list: "yaku", name: "Two Identical Sequences", value: 10, closed_only: false}},
-        %{name: "yaku/ryanpeikou", config: %{list: "yaku", name: "Two Identical Sequences Twice", value: 60, closed_only: false}},
-        %{name: "yaku/isshoku_sanjun", config: %{list: "yaku",
-          san_list: "yaku", san_name: "Three Identical Sequences", san_value: 120, san_han: "pts",
-          yon_list: "listed_limit_hand", yon_name: "Four Identical Sequences", yon_value: 480, yon_han: "pts"
-        }},
+        %{name: "yaku/iipeikou", config: %{name: "Two Identical Sequences", value: 10, closed_only: false}},
+        %{name: "yaku/ryanpeikou", config: %{name: "Two Identical Sequences Twice", value: 60, closed_only: false}},
+        %{name: "yaku/isshoku_sanjun", config: %{san_name: "Three Identical Sequences", san_value: 120, yon_list: "listed_limit_hand", yon_name: "Four Identical Sequences", yon_value: 480}},
         # 6.0 similar sets
-        %{name: "yaku/sanshoku_doujun", config: %{list: "yaku", name: "Three Similar Sequences", value: 35}},
-        %{name: "yaku/sanshoku_shoudoukou", config: %{list: "yaku", name: "Small Three Similar Triplets", value: 30}},
-        %{name: "yaku/sanshoku_doukou", config: %{list: "yaku", name: "Three Similar Triplets", value: 120}},
+        %{name: "yaku/sanshoku_doujun", config: %{name: "Three Similar Sequences", value: 35}},
+        %{name: "yaku/sanshoku_shoudoukou", config: %{name: "Small Three Similar Triplets", value: 30}},
+        %{name: "yaku/sanshoku_doukou", config: %{name: "Three Similar Triplets", value: 120}},
         # 7.0 consecutive sets
-        %{name: "yaku/ittsuu", config: %{list: "yaku", name: "Nine-Tile Straight", value: 40}},
-        %{name: "yaku/sanrenkou", config: %{
-          san_list: "yaku", san_name: "Three Consecutive Triplets", san_value: 100, san_han: "pts",
-          suu_list: "yaku", suu_name: "Four Consecutive Triplets", suu_value: 200, suu_han: "pts"
-        }},
+        %{name: "yaku/ittsuu", config: %{name: "Nine-Tile Straight", value: 40}},
+        %{name: "yaku/sanrenkou", config: %{san_name: "Three Consecutive Triplets", san_value: 100, suu_name: "Four Consecutive Triplets", suu_value: 200}},
         # 8.0 terminals
-        %{name: "yaku/chanta", config: %{
-          chanta_list: "yaku", chanta_name: "Mixed Lesser Terminals", chanta_value: 40, chanta_han: "pts",
-          junchan_list: "yaku", junchan_name: "Pure Lesser Terminals", junchan_value: 50, junchan_han: "pts"
-        }},
-        %{name: "yaku/honroutou", config: %{
-          hon_list: "yaku", hon_name: "Mixed Greater Terminals", hon_value: 100, hon_han: "pts",
-          chin_list: "listed_limit_hand", chin_name: "Pure Greater Terminals", chin_value: 400, chin_han: "pts"
-        }},
+        %{name: "yaku/chanta", config: %{chanta_name: "Mixed Lesser Terminals", chanta_value: 40, junchan_name: "Pure Lesser Terminals", junchan_value: 50}},
+        %{name: "yaku/honroutou", config: %{hon_name: "Mixed Greater Terminals", hon_value: 100, chin_list: "listed_limit_hand", chin_name: "Pure Greater Terminals", chin_value: 400}},
         # 9.0 incidental bonuses
-        %{name: "yaku/haitei", config: %{
-          haitei_list: "yaku", haitei_name: "Final Draw", haitei_value: 10,
-          houtei_list: "yaku", houtei_name: "Final Discard", houtei_value: 10
-        }},
-        %{name: "yaku/rinshan", config: %{
-          list: "yaku", rinshan_name: "Win on Kong", flower_name: "", value: 10,
-          double_list: "yaku", double_name: "", double_value: 0, double_han: "pts"
-        }},
-        %{name: "yaku/chankan", config: %{list: "yaku", name: "Robbing a Kong", value: 10, scoring_key: "win"}},
-        %{name: "yaku/tenhou", config: %{
-          tenhou_list: "yaku", tenhou_name: "Blessing of Heaven", tenhou_value: 155, tenhou_han: "pts",
-          chiihou_list: "yaku", chiihou_name: "Blessing of Earth", chiihou_value: 155, chiihou_han: "pts",
-          renhou_list: "", renhou_name: "", renhou_value: 0, renhou_han: "",
-          chiihou_is_tsumo: false,
-        }},
+        %{name: "yaku/haitei", config: %{haitei_name: "Final Draw", haitei_value: 10, houtei_name: "Final Discard", houtei_value: 10}},
+        %{name: "yaku/rinshan", config: %{rinshan_name: "Win on Kong", value: 10}},
+        %{name: "yaku/chankan", config: %{name: "Robbing a Kong", value: 10, scoring_key: "win"}},
+        %{name: "yaku/tenhou", config: %{tenhou_name: "Blessing of Heaven", tenhou_value: 155, chiihou_name: "Blessing of Earth", chiihou_value: 155}},
         # 10.0 irregular hands
-        %{name: "yaku/chiitoitsu", config: %{rules_tab: "30 pts", list: "yaku", name: "Seven Pairs", value: 30, kansai: true}},
-        %{name: "yaku/kokushi", config: %{rules_tab: "Limit", list: "yaku", name: "Thirteen Terminals", value: 160}},
+        %{name: "yaku/chiitoitsu", config: %{rules_tab: "30 pts", name: "Seven Pairs", value: 30}},
+        %{name: "yaku/kokushi", config: %{rules_tab: "Limit", name: "Thirteen Terminals", value: 160}},
         "zung_jung" # mostly defines yaku precedence and scoring
+      ],
+    },
+    "mod_test" => %{
+      globals: %{
+        chii_name: "Chow",
+        pon_name: "Pong",
+        kan_name: "Kong",
+        ankan_name: "Self Kong",
+        ron_name: "Hu",
+        chankan_name: "Hu",
+        tsumo_name: "Zimo",
+        han: "Han",
+      },
+      mods: [
+        "base", "standard_wall", "global_mods", "default_auto_buttons",
+        "chii", "pon", %{name: "kan", config: %{replace_from_dead_wall: false, hide_ankans: false}},
+        %{name: "ron", config: %{scoring_key: "win"}},
+        %{name: "tsumo", config: %{scoring_key: "win"}},
+        "standard_win",
+        "head_bump",
+        %{name: "yaku/yakuhai", config: %{triplet_value: 10}}, # no prevalent wind
       ],
     },
   }

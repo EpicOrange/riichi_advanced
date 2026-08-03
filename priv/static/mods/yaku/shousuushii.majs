@@ -1,4 +1,12 @@
 require "value_honors"
+default shou_list, "yaku"
+default shou_name, ""
+default shou_value, 0
+default shou_han, !han
+default dai_list, "yaku"
+default dai_name, ""
+default dai_value, 0
+default dai_han, !han
 
 on after_initialization do
   add_rule("$value $han", "$name", "%{value} %{han} if you have triplets of three different winds, and a pair of the fourth.", %{value: !shou_value, han: !shou_han, name: !shou_name})

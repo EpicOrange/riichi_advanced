@@ -1,3 +1,5 @@
+default list, "yaku"
+
 on after_initialization do
   add_rule("Rules", "Win Condition", "- (%{name}) All thirteen terminal/honor tiles plus one forming a pair.", %{name: !name}, -100)
   if !value > 0 do

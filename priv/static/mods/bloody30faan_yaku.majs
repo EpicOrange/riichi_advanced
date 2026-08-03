@@ -6,7 +6,6 @@ require "value_honors"
 
 on after_initialization do
   add_rule("1 Faan", "Flower", "1 Faan for each joker you declare as a flower.")
-  update_rule("1 Faan", "Flower", "%{example_hand}", %{example_hand: ~t"234m33777p45s 678s 6s"})
 end
 define_yaku yaku, "Flower", ["called_jokers", "Faan"], called_jokers >= 1
 define_yaku yaku, "No Honors or Flowers", [2, "Faan"], not_match(["hand", "calls", "winning_tile"], ~m"jihai:1") and called_jokers == 0
@@ -159,16 +158,7 @@ define_yaku yaku, "Five Mixed Small Shifted Triplets", [20, "Faan"], match(["han
 define_set 兩同刻, ~s"0 0 0, 10 10 10|0 0 0, 20 20 20"
 define_match 兩同刻, ~m"兩同刻:1, mentsu:2, pair:1"
 define_yaku yaku, "Double Triplets", [2, "Faan"], match(["hand", "calls", "winning_tile"], ["兩同刻"])
-define_set 小三同刻, ~s"""
-    0 0 0, 10 10 10, 20 20
-  | 0 0 0, 20 20 20, 10 10
-  | 0 0 0, 10 10, 20 20 20
-  | 0 0 0, 20 20, 10 10 10
-  | 0 0, 10 10 10, 20 20 20
-  | 0 0, 20 20 20, 10 10 10
-  """
-define_match 小三同刻, ~m"小三同刻:1, mentsu:2, pair:1"
-define_yaku yaku, "Small Triple Triplets", [5, "Faan"], match(["hand", "calls", "winning_tile"], ["小三同刻"])
+# yaku/sanshoku_shoudoukou.majs adds Small Triple Triplets (5 Faan)
 # yaku/sanshoku_doukou.majs adds Triple Triplets (10 Faan)
 define_set 四同刻, ~s"""
     0 0 0, 10 10 10, 20 20 20, 0 0 0

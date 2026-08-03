@@ -1,3 +1,5 @@
+default list, "yaku"
+
 on after_initialization do
   add_rule("$value $han", "$name", "%{value} %{han} if you have two concealed triplets. A triplet completed by a self-draw win counts as concealed.", %{value: !value, han: !han, name: !name})
   update_rule("$value $han", "$name", "%{example_hand}", %{value: !value, han: !han, name: !name, example_hand: ~t"222888m444p123s1z 1z"})

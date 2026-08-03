@@ -1,3 +1,5 @@
+default list, "yaku"
+
 on after_initialization do
   add_rule("$value $han", "$name", "%{value} %{han} if you win off someone else adding a drawn tile to an existing %{pung} to form a %{kong}.", %{value: !value, han: !han, name: !name, pung: !pon_name, kong: !kan_name})
 end

@@ -1,3 +1,6 @@
+default replace_from_dead_wall, true
+default hide_ankans, false
+
 on after_initialization do
   add_rule("Rules", !kan_name, """
   You may declare %{kan} to set aside four tiles in three situations:

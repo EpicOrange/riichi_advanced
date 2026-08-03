@@ -1,3 +1,12 @@
+default hon_list, "yaku"
+default hon_name, ""
+default hon_value, 0
+default hon_han, !han
+default chin_list, "yaku"
+default chin_name, ""
+default chin_value, 0
+default chin_han, !han
+
 on after_initialization do
   add_rule("$value $han", "$name", "%{value} %{han} if your hand consists of only one suit plus honor tiles.", %{value: !hon_value, han: !hon_han, name: !hon_name})
   update_rule("$value $han", "$name", "%{example_hand}", %{value: !hon_value, han: !hon_han, name: !hon_name, example_hand: ~t"123345888p11z22z 2z"})

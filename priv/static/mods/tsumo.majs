@@ -1,3 +1,5 @@
+default scoring_key, "tsumo"
+
 define_button tsumo,
   display_name: !tsumo_name,
   show_when: our_turn

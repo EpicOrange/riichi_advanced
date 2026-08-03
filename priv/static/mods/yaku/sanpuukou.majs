@@ -1,4 +1,12 @@
 require "value_honors"
+default shou_list, "yaku"
+default shou_name, ""
+default shou_value, 0
+default shou_han, !han
+default dai_list, "yaku"
+default dai_name, ""
+default dai_value, 0
+default dai_han, !han
 
 if !shou_value > 0 do
   on after_initialization do

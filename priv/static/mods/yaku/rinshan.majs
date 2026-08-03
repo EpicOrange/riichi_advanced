@@ -1,3 +1,10 @@
+default list, "yaku"
+default flower_name, ""
+default double_list, "yaku"
+default double_name, ""
+default double_value, 0
+default double_han, !han
+
 on after_initialization do
   if equals(!rinshan_name, !flower_name) do
     add_rule("$value $han", "$name", "%{value} %{han} if you win off a %{kan} or flower replacement tile.", %{value: !value, han: !han, name: !rinshan_name, kan: !kan_name})
