@@ -376,12 +376,20 @@ pub fn get_base_tiles<'a>(
   // get all offsets of matchable tiles
   // we need to do this because jokers/offsets could reify into a tile
   //   that we can't otherwise encode, since it's not in hand
+  let rev_offsets = gather_rev_offsets(match_definition);
   let mut base_tiles: HashSet<Tile> = match_info.relevant_tiles
     .iter()
-    .flat_map(|tile| apply_offsets(tile, &gather_rev_offsets(match_definition), &match_info.all_attrs, &match_info.ordering).0)
+    .flat_map(|tile| apply_offsets(tile, &rev_offsets, &match_info.all_attrs, &match_info.ordering).0)
     .flatten()
     .filter_map(|(tile, _attrs)| if tile != ANY_PRIME { Some((tile, 0)) } else { None })
     .collect();
+
+  let have_fixed_offsets = rev_offsets.iter().any(|o| if let MatchOffset::TileOrKeyword(s) = o { FIXED_OFFSETS.contains_key(s) } else { false });
+  if have_fixed_offsets {
+    base_tiles.insert((to_prime(&tile1m()).unwrap(), 0));
+    base_tiles.insert((to_prime(&tile1p()).unwrap(), 0));
+    base_tiles.insert((to_prime(&tile1s()).unwrap(), 0));
+  }
 
   for (p, _) in &match_info.joker_tiles { base_tiles.remove(&(*p, 0)); }
 
