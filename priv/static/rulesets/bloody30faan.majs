@@ -331,5 +331,5 @@ define_button joker,
     end
   end
 
-define_mod b30fj_chicken_hand_challenge, name: "Chicken Hand Challenge", desc: "Makes everything worth 0 Faan except for Chicken Hand."
+define_mod b30fj_chicken_hand_challenge, name: "Chicken Hand Challenge", desc: "Makes everything worth 0 Faan except for Chicken Hand. Also requires you to have at least 1 Faan to win (i.e. Chicken Hand)."
 define_mod b30fj_zh, name: "Chinese Yaku Names", desc: "Display yaku names in Traditional Chinese."

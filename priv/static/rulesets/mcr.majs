@@ -540,17 +540,18 @@ on after_initialization do
   add_rule("8 Fan", "Chicken Hand", "%{example_hand}", %{example_hand: ~t"234456m78p00z 44p4P 9p"})
   add_rule("8 Fan", "Chicken Hand", """
     In practice, this means the following:
-    - You must win off a discard, and not on the fourth tile where three are visible. (avoids Self-Drawn and Robbing a Kong and Last Tile)
+    - You must have two winds or two dragons as your pair, and these are the only honor tiles in hand. (avoids No Honors and All Types)
+    - You must discard any other terminal or honor pairs. (avoids Terminal or Honor Triplets, Pure Double Chow)
+    - You must have at least one triplet, but not all triplets or more than one concealed triplet. (avoids All Chows, All Pungs, Two Concealed Triplets)
+    - You must call at least once (no kongs) and not four times. (avoids Concealed Hand, Melded Hand, and any Kong)
+    - You must have all three suits in hand. (avoids One Voided Suit)
     - You must have more than one wait. (avoids Closed Wait, Edge Wait, and Single Wait)
-    - You must have two winds or two dragons as your pair. (avoids No Honors)
-    - Your four sets (not pair) must include all three suits and no honor tiles. (avoids One Voided Suit, All Types, and every honor-tile-triplet Fan)
-    - You must have at least one but not four calls, with no kongs. (avoids Concealed Hand, Melded Hand, and any kong-related Fan)
-    - You must have a sequence, and no more than one concealed triplet. (avoids All Pungs and concealed triplet Fans)
+    - You must win off a discard, and not on the fourth tile where three are visible. (avoids Self-Drawn, Robbing a Kong, Last Tile)
     - You must avoid the following:
-      - 123 789 in one suit (Two Terminal Chows)
-      - 234 567 in one suit (Short Straight)
       - 234 234 in one or two suits (Mixed Double Chow or Pure Double Chow)
+      - 234 567 in one suit (Short Straight)
       - 222 222 in two suits (Double Pung)
+      - 123 789 in one suit (Two Terminal Chows)
       - 234 345 456 in three suits (Mixed Shifted Chows)
       - including all four of a single tile (Tile Hog)
     """)
@@ -667,4 +668,4 @@ set max_rounds, 16
 
 define_mod_category "Other"
 define_mod "lib/tonpuu", name: "East Round Only", desc: "Play only the East Round (4 hands), instead of all four rounds (16 hands)", category: "Other"
-define_mod mcr_chicken_hand_challenge, name: "Chicken Hand Challenge", desc: "Makes everything worth 0 Fan except for Chicken Hand.", category: "Other"
+define_mod mcr_chicken_hand_challenge, name: "Chicken Hand Challenge", desc: "Makes everything worth 0 Fan except for flowers and Chicken Hand.", category: "Other"
