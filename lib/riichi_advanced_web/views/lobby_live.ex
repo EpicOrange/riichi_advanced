@@ -13,6 +13,7 @@ defmodule RiichiAdvancedWeb.LobbyLive do
     |> assign(:lang, Map.get(params, "lang", "en"))
     |> assign(:lobby_state, nil)
     |> assign(:messages, [])
+    |> assign(:messages_state, nil)
     |> assign(:state, %Lobby{})
     |> assign(:show_room_code_buttons, false)
     |> assign(:room_code, [])
@@ -122,7 +123,7 @@ defmodule RiichiAdvancedWeb.LobbyLive do
       <div class="top-right-container">
         <.live_component module={RiichiAdvancedWeb.MenuButtonsComponent} id="menu-buttons" lang={@lang} />
       </div>
-      <.live_component module={RiichiAdvancedWeb.MessagesComponent} id="messages" messages={@messages} lang={@lang} />
+      <.live_component module={RiichiAdvancedWeb.MessagesComponent} id="messages" messages={@messages} messages_state={@messages_state} lang={@lang} />
       <div class="ruleset">
         <div class="ruleset-text"><%= t(@lang, "Ruleset:") %></div>
         <textarea readonly><%= @state.ruleset_json %></textarea>

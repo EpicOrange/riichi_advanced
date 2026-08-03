@@ -31,6 +31,7 @@ defmodule RiichiAdvancedWeb.TutorialCreatorLive do
     socket = socket
     |> assign(:session_id, session["session_id"])
     |> assign(:messages, [])
+    |> assign(:messages_state, nil)
     |> assign(:nickname, Map.get(params, "nickname", ""))
     |> assign(:ruleset, Map.get(params, "ruleset", "riichi"))
     |> assign(:seat, Map.get(params, "seat", "east"))
@@ -86,7 +87,7 @@ defmodule RiichiAdvancedWeb.TutorialCreatorLive do
       <div class="top-right-container">
         <.live_component module={RiichiAdvancedWeb.MenuButtonsComponent} id="menu-buttons" lang={@lang} />
       </div>
-      <.live_component module={RiichiAdvancedWeb.MessagesComponent} id="messages" messages={@messages} lang={@lang} />
+      <.live_component module={RiichiAdvancedWeb.MessagesComponent} id="messages" messages={@messages} messages_state={@messages_state} lang={@lang} />
     </div>
     """
   end

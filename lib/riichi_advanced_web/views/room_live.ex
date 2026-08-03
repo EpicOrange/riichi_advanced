@@ -24,6 +24,7 @@ defmodule RiichiAdvancedWeb.RoomLive do
     |> assign(:players, %{east: nil, south: nil, west: nil, north: nil})
     |> assign(:room_state, nil)
     |> assign(:messages, [])
+    |> assign(:messages_state, nil)
     |> assign(:symbols, %{east: "東", south: "南", west: "西", north: "北"})
     |> assign(:state, %Room{})
     |> assign(:root_pid, socket.root_pid)
@@ -217,7 +218,7 @@ defmodule RiichiAdvancedWeb.RoomLive do
       <div class="top-right-container">
         <.live_component module={RiichiAdvancedWeb.MenuButtonsComponent} id="menu-buttons" lang={@lang} />
       </div>
-      <.live_component module={RiichiAdvancedWeb.MessagesComponent} id="messages" messages={@messages} lang={@lang} />
+      <.live_component module={RiichiAdvancedWeb.MessagesComponent} id="messages" messages={@messages} messages_state={@messages_state} lang={@lang} />
       <div class="ruleset">
         <div class="ruleset-text"><%= t(@lang, "Ruleset:") %></div>
         <textarea readonly><%= Rules.get(@state.rules_ref, :ruleset_json) %></textarea>

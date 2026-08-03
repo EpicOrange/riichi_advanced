@@ -13,6 +13,7 @@ defmodule RiichiAdvancedWeb.TutorialMenuLive do
     socket = socket
     |> assign(:session_id, session["session_id"])
     |> assign(:messages, [])
+    |> assign(:messages_state, nil)
     |> assign(:ruleset, params["ruleset"])
     |> assign(:nickname, Map.get(params, "nickname", ""))
     |> assign(:display_name, params["ruleset"])
@@ -83,7 +84,7 @@ defmodule RiichiAdvancedWeb.TutorialMenuLive do
       <div class="top-right-container">
         <.live_component module={RiichiAdvancedWeb.MenuButtonsComponent} id="menu-buttons" lang={@lang} />
       </div>
-      <.live_component module={RiichiAdvancedWeb.MessagesComponent} id="messages" messages={@messages} lang={@lang} />
+      <.live_component module={RiichiAdvancedWeb.MessagesComponent} id="messages" messages={@messages} messages_state={@messages_state} lang={@lang} />
       <div class="ruleset">
         <div class="ruleset-text"><%= t(@lang, "Ruleset:") %></div>
         <textarea readonly><%= Rules.get(@rules_ref, :ruleset_json) %></textarea>

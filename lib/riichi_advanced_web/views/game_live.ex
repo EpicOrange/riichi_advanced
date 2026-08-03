@@ -21,6 +21,8 @@ defmodule RiichiAdvancedWeb.GameLive do
     |> assign(:lang, Map.get(params, "lang", "en"))
     |> assign(:game_state, nil)
     |> assign(:messages, [])
+    |> assign(:messages_state, nil)
+    |> assign(:messages_state, nil)
     |> assign(:state, %Game{})
     |> assign(:seat, :east)
     |> assign(:shimocha, nil)
@@ -419,7 +421,7 @@ defmodule RiichiAdvancedWeb.GameLive do
         <input type="radio" id={"rules-popover-unselect"} name="rules-popover-tab" class="rules-popover-unselect" phx-update="ignore">
         <label for={"rules-popover-unselect"}></label>
       </div>
-      <.live_component module={RiichiAdvancedWeb.MessagesComponent} id="messages" messages={@messages} lang={@lang} />
+      <.live_component module={RiichiAdvancedWeb.MessagesComponent} id="messages" messages={@messages} messages_state={@messages_state} lang={@lang} />
       <div class="ruleset game-bottom-element">
         <div class="ruleset-text"><%= t(@lang, "Ruleset:") %></div>
         <textarea readonly><%= Rules.get(@state.rules_ref, :ruleset_json) %></textarea>

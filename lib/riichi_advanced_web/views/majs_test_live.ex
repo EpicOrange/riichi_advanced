@@ -11,6 +11,7 @@ defmodule RiichiAdvancedWeb.MajsTestLive do
     socket = socket
     |> assign(:session_id, session["session_id"])
     |> assign(:messages, [])
+    |> assign(:messages_state, nil)
     |> assign(:nickname, Map.get(params, "nickname", ""))
     |> assign(:lang, Map.get(params, "lang", "en"))
     |> assign(:config, ModLoader.default_config())
@@ -65,7 +66,7 @@ defmodule RiichiAdvancedWeb.MajsTestLive do
       <div class="top-right-container">
         <.live_component module={RiichiAdvancedWeb.MenuButtonsComponent} id="menu-buttons" lang={@lang} />
       </div>
-      <.live_component module={RiichiAdvancedWeb.MessagesComponent} id="messages" messages={@messages} lang={@lang} />
+      <.live_component module={RiichiAdvancedWeb.MessagesComponent} id="messages" messages={@messages} messages_state={@messages_state} lang={@lang} />
     </div>
     """
   end

@@ -17,6 +17,7 @@ defmodule RiichiAdvancedWeb.LogLive do
     |> assign(:game_state, nil)
     |> assign(:log_control_state, nil)
     |> assign(:messages, [])
+    |> assign(:messages_state, nil)
     |> assign(:state, %Game{})
     |> assign(:log, nil)
     |> assign(:log_json, "")
@@ -256,7 +257,7 @@ defmodule RiichiAdvancedWeb.LogLive do
           display_honba={@display_honba} />
         <.live_component module={RiichiAdvancedWeb.MenuButtonsComponent} id="menu-buttons" log_button={true} lang={@lang} />
       </div>
-      <.live_component module={RiichiAdvancedWeb.MessagesComponent} id="messages" messages={@messages} lang={@lang} />
+      <.live_component module={RiichiAdvancedWeb.MessagesComponent} id="messages" messages={@messages} messages_state={@messages_state} lang={@lang} />
       <div class="ruleset">
         <div class="ruleset-text"><%= t(@lang, "Ruleset:") %></div>
         <textarea readonly><%= Rules.get(@state.rules_ref, :ruleset_json) %></textarea>

@@ -77,6 +77,11 @@ defmodule RiichiAdvanced.MessagesState do
     {:noreply, state}
   end
 
+  def handle_cast(:clear_messages, state) do
+    state = Map.put(state, :messages, [])
+    {:noreply, state}
+  end
+
   def handle_cast(:terminate_if_disconnected, state) do
     if state.disconnected do
       DynamicSupervisor.terminate_child(RiichiAdvanced.MessagesSessionSupervisor, state.supervisor)

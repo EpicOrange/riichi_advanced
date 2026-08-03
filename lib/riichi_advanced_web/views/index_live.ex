@@ -13,6 +13,7 @@ defmodule RiichiAdvancedWeb.IndexLive do
     |> assign(:lang, Map.get(params, "lang", "en"))
     |> assign(:ruleset, Map.get(params, "ruleset", "riichi"))
     |> assign(:messages, [])
+    |> assign(:messages_state, nil)
     |> assign(:show_room_code_buttons, false)
     |> assign(:room_code, [])
     |> assign(:version, Constants.version())
@@ -79,7 +80,7 @@ defmodule RiichiAdvancedWeb.IndexLive do
       <div class="top-right-container">
         <.live_component module={RiichiAdvancedWeb.MenuButtonsComponent} id="menu-buttons" lang={@lang} back_button={false} />
       </div>
-      <.live_component module={RiichiAdvancedWeb.MessagesComponent} id="messages" messages={@messages} lang={@lang} />
+      <.live_component module={RiichiAdvancedWeb.MessagesComponent} id="messages" messages={@messages} messages_state={@messages_state} lang={@lang} />
     </div>
     """
   end

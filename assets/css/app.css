@@ -82,6 +82,7 @@ main div#container {
 }
 main div.messages-container {
   position: absolute;
+  box-sizing: border-box;
   background: #3f3f3f;
   border-radius: calc(0.25 * var(--tile-size));
   color: white;
@@ -100,6 +101,16 @@ main div.messages-container > div.messages {
 main div.messages-container > div.messages span.bold {
   font-weight: 800;
 }
+main div.messages-container > button.clear-messages-button {
+  background: gray;
+  filter: drop-shadow(0 calc(var(--tile-size) / 8) 0 var(--tile-front-side));
+  padding: 0;
+  border-radius: calc(0.125 * var(--tile-size));
+  margin: auto calc(0.25 * var(--tile-size)) calc(0.75 * var(--tile-size)) auto;
+  width: calc(1 * var(--tile-size));
+  height: calc(1 * var(--tile-size));
+  &:active { filter: none; }
+}
 /* make scrolling work */
 /* https://stackoverflow.com/a/78124664 */
 main div.messages-container {
@@ -107,6 +118,7 @@ main div.messages-container {
   flex-direction: column-reverse;
   overflow-y: auto;
   scrollbar-color: white transparent;
+  scrollbar-gutter: stable;
 }
 main div.messages-container > div.messages {
   display: flex;
