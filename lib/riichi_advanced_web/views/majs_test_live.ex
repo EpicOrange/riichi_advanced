@@ -152,7 +152,7 @@ defmodule RiichiAdvancedWeb.MajsTestLive do
       self = self()
       Task.start(fn ->
         ruleset_json = ModState.load_ruleset(ruleset)
-        |> ModState.append_mods(get_enabled_mods(socket))
+        |> ModState.prepend_mods(get_enabled_mods(socket))
         |> ModState.extract_json()
         |> JQ.query_string_with_string!(ModLoader.convert_to_jq(config))
         send(self, {:converted_majs, config, ruleset_json})

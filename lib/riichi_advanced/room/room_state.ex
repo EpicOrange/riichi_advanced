@@ -113,7 +113,7 @@ defmodule RiichiAdvanced.RoomState do
 
     ruleset_json = case RiichiAdvanced.Cache.get({:cache_rulesets, state.room_code}) do
       {:ok, nil} when state.ruleset == "custom" -> Room.initial_textarea()
-      {:ok, nil} -> ModState.load_ruleset(state.ruleset, state.room_code).ruleset_json
+      {:ok, nil} -> ModState.load_ruleset(state.ruleset, state.room_code) |> ModState.extract_json()
       {:ok, ruleset_json_or_majs} when ruleset_json_or_majs != nil -> ruleset_json_or_majs
     end
 
@@ -418,14 +418,13 @@ defmodule RiichiAdvanced.RoomState do
 
   def update_rules_task(state) do
     ruleset_json = ModState.load_ruleset(state.ruleset, state.room_code)
-    |> ModState.append_mods(get_enabled_mods(state))
+    |> ModState.prepend_mods(get_enabled_mods(state))
     |> ModState.extract_json()
     # we do not need to add config here
 
     # parse the ruleset
     case Rules.load_rules(ruleset_json, state.ruleset) do
       {:ok, rules_ref} ->
-        Map.put(state, :rules_ref, rules_ref)
         game_state = %Game{rules_ref: rules_ref, rules_text: %{}, rules_text_order: [], game_active: true}
         |> Actions.trigger_event("after_initialization", %{seat: :east})
         {:load_rules, %{

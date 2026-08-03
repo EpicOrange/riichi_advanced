@@ -160,7 +160,7 @@ defmodule RiichiAdvanced.Validator do
   @valid_lib_regex ~r/^[a-z_][a-z0-9_\/]*$/
   def validate_lib(name) when is_binary(name) do
     if Regex.match?(@valid_lib_regex, name) do
-      {:ok, name}
+      {:ok, "lib/" <> name}
     else
       {:error, "invalid lib name: #{inspect(name)}"}
     end
@@ -173,9 +173,13 @@ defmodule RiichiAdvanced.Validator do
   def validate_variable_value(_name, value) when is_number(value), do: {:ok, value}
   def validate_variable_value(_name, value) when is_binary(value), do: {:ok, sanitize_string(value)}
   def validate_variable_value(_name, {:!, _, [{name, _, nil}]}) when is_binary(name), do: validate_variable(sanitize_string(name))
+  def validate_variable_value(_name, %RiichiAdvanced.Compiler.Variable{name: name}), do: validate_variable(sanitize_string(name))
   def validate_variable_value(name, value) do
     # IO.inspect(Process.info(self(), :current_stacktrace))
     {:error, "expected `default #{name}, (default)` to set as default a boolean, number, string, or variable, instead got: #{inspect(value)}"}
   end
+
+  def is_variable?(%RiichiAdvanced.Compiler.Variable{}), do: true
+  def is_variable?(_), do: false
 
 end

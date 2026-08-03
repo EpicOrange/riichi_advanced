@@ -52,7 +52,6 @@ defmodule RiichiAdvancedWeb.RoomLive do
       socket = socket
       |> assign(:room_state, room_state)
       |> assign(:state, state)
-      |> assign(:display_name, state.display_name)
 
       # fetch messages
       messages_init = RiichiAdvanced.MessagesState.link_player_socket(socket.root_pid, socket.assigns.session_id)
@@ -92,7 +91,7 @@ defmodule RiichiAdvancedWeb.RoomLive do
     ~H"""
     <div id="container" class="room" phx-hook="ClickListener">
       <header>
-        <div class="room-header-title"><%= dt(@lang, @display_name) %></div>
+        <div class="room-header-title"><%= dt(@lang, @state.display_name) %></div>
         <div class="room-header-bottom">
           <div class="session">
             <%= for tile <- String.split(@room_code, ",") do %>

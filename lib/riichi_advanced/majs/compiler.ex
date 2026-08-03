@@ -62,10 +62,11 @@ defmodule RiichiAdvanced.Compiler do
   defmodule Defs do
     defstruct [
       libs: MapSet.new(),
-      vars: [],
       defines: MapSet.new(),
       globals: %{},
-      post_mods: [],
+      vars: [],      # reversed
+      mods: [],      # reversed
+      post_mods: [], # reversed
       base_ruleset: nil,
     ]
   end
@@ -547,7 +548,7 @@ defmodule RiichiAdvanced.Compiler do
       end
       with {:ok, operation} <- operation do
         # only perform operation if the path exists
-        {:ok, "#{path} |= if type != \"null\" then #{operation} else . end"}
+        {:ok, "if (#{path}) != null then #{path} |= (if type != \"null\" then #{operation} else . end) else . end"}
       end
     end
   end
@@ -971,6 +972,8 @@ defmodule RiichiAdvanced.Compiler do
       .available_mods |= map(select(type != "object" or (.id | IN(#{Enum.join(names, ",")}) | not)))
       |
       .default_mods -= [#{Enum.join(names, ",")}]
+      |
+      if has("available_presets") then (.available_presets[].enabled_mods -= [#{Enum.join(names, ",")}]) else . end
       """}
     end
   end
@@ -1025,25 +1028,6 @@ defmodule RiichiAdvanced.Compiler do
 
   defp compile_command(cmd, _name, _args, line, column) do
     {:error, "Compiler.compile: at line #{line}:#{column}, #{inspect(cmd)} is not a valid toplevel command!"}
-  end
-
-  def load_lib(defs, name, config, depth \\ 0, [line: line, column: column] \\ [line: 0, column: 0]) do
-    if name not in defs.libs do
-      defs = update_in(defs.libs, &MapSet.put(&1, name))
-      case File.read(Application.app_dir(:riichi_advanced, "/priv/static/mods/lib/#{name}.majs")) do
-        {:ok, majs} ->
-          with {:ok, ast} <- Parser.parse(majs),
-               {:ok, {jq, defs}} <- compile_jq_defs(ast, defs, depth + 1) do
-            config = for {name, val} <- config, reduce: [] do
-              acc -> ["(#{Jason.encode!(val)}) as $#{name}\n|" | acc]
-            end
-            {:ok, {"(" <> Enum.join(config) <> jq <> ")", defs}}
-          end
-        {:error, _err}  ->
-          IO.puts("WARNING: at line #{line}:#{column}, could not find mod lib/#{name}!")
-          {:ok, {".", defs}}
-      end
-    else {:ok, {".", defs}} end
   end
 
   def compile_toplevel_constant(constant, line, column) do
@@ -1178,42 +1162,54 @@ defmodule RiichiAdvanced.Compiler do
         end
       {"define", _pos, [name | _]} ->
         {:ok, {".", update_in(defs.defines, &MapSet.put(&1, Validator.sanitize_string(name)))}}
-      {"require", pos, [name | opts]} ->
-        config = case opts do
-          [] -> {:ok, %{}}
-          [{:%{}, _, opts}] -> 
-            for {name, value} <- opts, reduce: {:ok, []} do
-              {:ok, acc} ->
-                with {:ok, %Variable{name: name}} <- Validator.validate_variable(name),
-                     {:ok, value} <- Validator.validate_variable_value(name, value) do
-                  {:ok, [{name, value} | acc]}
+      {"require", _pos, [name | opts]} ->
+        with {:ok, name} <- Validator.validate_lib(name) do
+          if name in defs.libs do
+            {:ok, {".", defs}}
+          else
+            config = case opts do
+              [] -> {:ok, %{}}
+              [{:%{}, _, opts}] -> 
+                for {name, value} <- opts, reduce: {:ok, []} do
+                  {:ok, acc} ->
+                    with {:ok, %Variable{name: name}} <- Validator.validate_variable(name),
+                         {:ok, value} <- Validator.validate_variable_value(name, value) do
+                      {:ok, [{name, value} | acc]}
+                    end
+                  err -> err
                 end
-              err -> err
+              _ -> {:error, "Compiler.compile: at line #{line}:#{column}, require command expects a map of configs %{var: \"value\"}, got: #{inspect(opts)}`"}
             end
-          _ -> {:error, "Compiler.compile: at line #{line}:#{column}, require command expects a map of configs %{var: \"value\"}, got: #{inspect(opts)}`"}
-        end
-        with {:ok, config} <- config,
-             {:ok, name} <- Validator.validate_lib(name) do
-          load_lib(defs, name, config, depth, pos)
+            with {:ok, config} <- config do
+              lib = if Enum.empty?(config) do name else %{name: name, config: config} end
+              {:ok, {".", %{defs | mods: [lib | defs.mods], libs: MapSet.put(defs.libs, name)}}}
+            end
+          end
         end
       {"require", [line: line, column: column], args} -> {:error, "Compiler.compile: at line #{line}:#{column}, require command expects a library name optionally followed by a map of configs %{var: \"value\"}, got: #{inspect(args)}`"}
       {"require_after", _pos, [name | opts]} ->
-        config = case opts do
-          [] -> {:ok, %{}}
-          [{:%{}, _, opts}] -> 
-            for {name, value} <- opts, reduce: {:ok, []} do
-              {:ok, acc} ->
-                with {:ok, %Variable{name: name}} <- Validator.validate_variable(name),
-                     {:ok, value} <- Validator.validate_variable_value(name, value) do
-                  {:ok, [{name, value} | acc]}
+        with {:ok, name} <- Validator.validate_lib(name) do
+          if name in defs.libs do
+            {:ok, {".", defs}}
+          else
+            config = case opts do
+              [] -> {:ok, %{}}
+              [{:%{}, _, opts}] -> 
+                for {name, value} <- opts, reduce: {:ok, []} do
+                  {:ok, acc} ->
+                    with {:ok, %Variable{name: name}} <- Validator.validate_variable(name),
+                         {:ok, value} <- Validator.validate_variable_value(name, value) do
+                      {:ok, [{name, value} | acc]}
+                    end
+                  err -> err
                 end
-              err -> err
+              _ -> {:error, "Compiler.compile: at line #{line}:#{column}, require_after command expects a map of configs %{var: \"value\"}, got: #{inspect(opts)}`"}
             end
-          _ -> {:error, "Compiler.compile: at line #{line}:#{column}, require_after command expects a map of configs %{var: \"value\"}, got: #{inspect(opts)}`"}
-        end
-        with {:ok, config} <- config,
-             {:ok, name} <- Validator.validate_lib(name) do
-          {:ok, {".", update_in(defs.post_mods, &[%{name: "lib/" <> name, config: config} | &1])}}
+            with {:ok, config} <- config do
+              lib = if Enum.empty?(config) do name else %{name: name, config: config} end
+              {:ok, {".", %{defs | post_mods: [lib | defs.post_mods], libs: MapSet.put(defs.libs, name)}}}
+            end
+          end
         end
       {"require_after", [line: line, column: column], args} -> {:error, "Compiler.compile: at line #{line}:#{column}, require_after command expects a library name optionally followed by a map of configs %{var: \"value\"}, got: #{inspect(args)}`"}
       {"default", _pos, [{name, _, nil}, default]} ->
@@ -1243,7 +1239,7 @@ defmodule RiichiAdvanced.Compiler do
           _ -> {:error, "Compiler.compile: at line #{line}:#{column}, `#{cmd}` command got invalid name #{inspect(name)}"}
         end
         ret = with {:ok, name} <- name,
-             {:ok, name} <- Jason.encode(name) do
+                   {:ok, name} <- Jason.encode(name) do
           case args do
             [[do: args]] -> compile_command(cmd, name, args, line, column)
             args when is_list(args) -> compile_command(cmd, name, args, line, column)
@@ -1325,7 +1321,7 @@ defmodule RiichiAdvanced.Compiler do
           {:ok, {ret, defs}} -> {:ok, {header <> ret, defs}}
           {:error, msg}      -> {:error, msg}
         end
-      {_name, _pos, _actions} -> compile_jq_defs({:__block__, [], [ast]}, defs)
+      {_name, _pos, _actions} -> compile_jq_defs({:__block__, [], [ast]}, defs, depth)
       _ -> {:error, "Compiler.compile: got invalid root node #{inspect(ast)}"}
     end
   end

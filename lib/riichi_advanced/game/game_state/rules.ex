@@ -124,7 +124,7 @@ defmodule RiichiAdvanced.GameState.Rules do
 
   def get(rules_ref, key, default \\ nil)
   def get(nil, _key, default), do: default
-  def get(rules_ref, :ruleset_json, _default) do
+  def get(rules_ref, :ruleset_json, default) do
     # lazily format the ruleset json, only if requested
     # (this way we don't waste time formatting json during tests)
     case :ets.lookup(rules_ref, :ruleset_json) do
@@ -135,6 +135,8 @@ defmodule RiichiAdvanced.GameState.Rules do
         :ets.insert(rules_ref, {:ruleset_json, ruleset_json})
         ruleset_json
     end
+  rescue
+    _err -> default
   end
   def get(rules_ref, key, default) do
     try do

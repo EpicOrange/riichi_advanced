@@ -371,9 +371,7 @@ defmodule RiichiAdvanced.GameState do
 
     # apply mods
     mod_state = if state.ruleset != "custom" do
-      mod_state
-      |> ModState.append_mods(mods)
-      |> ModState.apply_mods()
+      ModState.prepend_mods(mod_state, Enum.reverse(mods))
     else mod_state end
     
     ruleset_json = ModState.extract_json(mod_state)
