@@ -1,5 +1,39 @@
 
 # Changelog
+- __2 Sep 2026__: v1.5.2:
+  + Added 1952 Hochi rules ruleset
+  + Added MCR chicken hand challenge mod (untested)
+  + Added a partial implementation of 1957 Tokyo rules
+  + Added joker assignment printout in scorer
+  + Added rules text for when certain mods are missing in riichi (Ippatsu, abortive draws, kuikae nashi)
+  + Added tile indices button to scorer
+  + Changed vietnamese flower button to declare all flowers at once
+  + Fixed AI discarding flowers instead of declaring them
+  + Fixed AI not pressing 7-flower-win button
+  + Fixed being able to erroneously keep vietnamese flowers
+  + Fixed head bump not being enabled in vietnamese mahjong
+  + Fixed kokushi treating different white dragons as different tiles
+  + Fixed minefield mode and made it compatible with shouhai
+  + Fixed multiple NFNL or win buttons appearing together in vietnamese mahjong
+  + Fixed readable rules not reloading in rooms and scorer when mods change
+  + Fixed some tile positioning errors on mobile when a hand is more than 14 tiles long
+  + Fixed tiles with attributes in scorer
+  + Fixed vietnamese anything/suit jokers being discardable outside of a NFNL attempt
+  + Fixed washizu displayed score not dividing by 10
+  + Updated some translations
+  + Updated vietnamese yaku to newest iteration of ruleset
+  + Internal stuff
+    * Added `subtract_from_pot` and `subtract_honba` actions
+    * Added condition caching for yaku `when` checks and button `show_when` checks
+    * Added more actions for editing rules text and tabs
+    * Added more debug flags in `debug.ex` (specific yaku, specific mods)
+    * Changed behavior of `after_win` to run after _everyone_ has run `before_win`
+    * Changed yaku evaluation order to depend on precedence instead of yaku list order
+    * Constants can be used for actions now
+    * Decomposed riichi ruleset yaku into individual mods
+    * Mod loader now circumvents the 65536 byte limit for jq pipelines
+    * Ported remaining rulesets (ningbo, singaporean, and taiwanese) to majs
+    * Tests now use default mods set in each ruleset (and can specify exclusions)
 - __23 Aug 2026__: v1.5.1:
   + Add rules tabs to relevant locations
   + Added arishiiaru mode
