@@ -126,6 +126,7 @@ define_scoring tsumo do
   riichi_stick_payment = pot
   if riichi_stick_payment > 0 do
     total += riichi_stick_payment :: "Riichi sticks"
-    add_to_pot(-riichi_stick_payment)
+    riichi_stick_payment *= -1
+    add_to_pot("riichi_stick_payment")
   end
 end

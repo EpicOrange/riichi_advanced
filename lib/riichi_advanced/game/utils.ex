@@ -234,7 +234,7 @@ defmodule RiichiAdvanced.Utils do
       raise err
   end
 
-  def atamahane_order(curr_seat, nil), do: 5
+  def atamahane_order(_curr_seat, nil), do: 5
   def atamahane_order(curr_seat, seat) do
     case get_relative_seat(curr_seat, seat) do
       :self -> 0
