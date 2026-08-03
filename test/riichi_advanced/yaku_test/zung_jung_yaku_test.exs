@@ -1606,9 +1606,9 @@ defmodule RiichiAdvanced.YakuTest.ZungJungYaku do
       %{"buttons" => [nil, %{"button" => "tsumo"}, nil, nil], "type" => "buttons_pressed"}
     ], %{
       south: %{
-        yaku: [{"Concealed Hand", [5, "pts"]}, {"Final Draw", [10, "pts"]}, {"Mixed One-Suit", [40, "pts"]}, {"Value Honor", [10, "pts"]}]
+        yaku: [{"Concealed Hand", [5, "pts"]}, {"Final Draw", [10, "pts"]}, {"Three Concealed Triplets", [30, "pts"]}, {"Mixed One-Suit", [40, "pts"]}, {"Value Honor", [10, "pts"]}]
       }
-    }, %{delta_scores: [-65, 195, -65, -65]})
+    }, %{delta_scores: [-95, 285, -95, -95]})
   end
 
 end
