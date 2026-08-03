@@ -700,7 +700,37 @@ defmodule RiichiAdvanced.MatchOld do
         [[[0]], _] -> false
         _          -> true
       end)
-    end |> Enum.reverse()
+    end
+  end
+
+  defp reorder_match_definitions(match_definitions) do
+    for match_definition <- match_definitions do
+      cond do
+        "restart" in match_definition -> match_definition
+        Enum.any?(match_definition, fn [_groups, count] -> count <= 0; _ -> false end) -> match_definition
+        true ->
+          # extract leading keywords, give up if that's not all keywords
+          {keywords, group_elems} = Enum.split_while(match_definition, &is_binary/1)
+          if Enum.any?(group_elems, &is_binary/1) do match_definition else
+            # simply sort all groups
+            group_elems = Enum.sort(group_elems)
+            # now if any identical groups are contiguous, combine them
+            |> Enum.reduce([], fn [groups, num], acc ->
+              case acc do
+                [] -> [[groups, num]]
+                [[last_groups, last_num] | rest] ->
+                  if groups == last_groups do
+                    [[groups, num + last_num] | rest]
+                  else
+                    [[groups, num], [last_groups, last_num] | rest]
+                  end
+              end
+            end)
+            # output is sorted by highest count first
+            keywords ++ Enum.sort_by(group_elems, fn [_groups, num] -> -num end)
+          end
+      end
+    end
   end
 
   # not only does this deduplicate, but it also removes match definitions subsumed by another
@@ -777,6 +807,7 @@ defmodule RiichiAdvanced.MatchOld do
     |> Enum.uniq()
     # |> IO.inspect(label: "before deduplication")
     |> remove_singleton_groups()
+    |> reorder_match_definitions()
     |> deduplicate_match_definitions()
     # |> then(fn result ->
     #   IO.inspect(length(result), label: "result")
