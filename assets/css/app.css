@@ -270,6 +270,10 @@ div.hand {
   transform-style: preserve-3d;
   width: calc(100% - 2 * var(--tile-size));
 }
+div.call {
+
+  align-items: flex-end;
+}
 div.self { z-index: 10; } /* your stuff goes above other people's stuff */
 div.hand, div.draws { z-index: 20; } /* so if they overlap with calls, the hand goes on top */
 div.hand.self, div.draws.self { z-index: 30; } /* your stuff goes above other people's stuff */
@@ -1646,8 +1650,8 @@ div.hand.self div.draws > div.tile.selected::before {
   bottom: calc(-0.25 * var(--tile-size));
 }
 div.tile.sideways:not(.flat) {
-  box-shadow: 0 calc(var(--tile-height) / -16) 0 0 var(--tile-front-side),
-              0 calc(var(--tile-height) / -8) 0 0 var(--tile-back-side);
+  box-shadow: 0 calc(var(--tile-height) / -8) 0 0 var(--tile-front-side),
+              0 calc(var(--tile-height) / -4) 0 0 var(--tile-back-side);
 }
 div.pond.self div.tile:not(.flat),
 div.self div.flowers div.tile:not(.flat) {
