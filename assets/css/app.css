@@ -1855,7 +1855,7 @@ div.buttons, div.call-buttons-container {
   bottom: calc(1.5 * var(--tile-size));
   right: calc(1.5 * var(--tile-size));
   align-items: flex-end;
-  z-index: 10;
+  z-index: 30;
 }
 div#container.minefield div.buttons, div#container.minefield div.call-buttons-container {
   bottom: calc(2.75 * var(--tile-size));
