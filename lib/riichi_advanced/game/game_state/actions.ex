@@ -1805,7 +1805,7 @@ defmodule RiichiAdvanced.GameState.Actions do
           |> Enum.flat_map(&case &1 do
             "last_discard" -> if get_last_discard_action(state) != nil do [get_last_discard_action(state).tile] else [] end
             "last_scryed_tile" -> Enum.take(get_scryed_tiles(state, context.seat), -1)
-            "all" -> state.players[context.seat].tile_behavior.all_tiles
+            "all" -> state.players[context.seat].tile_behavior.tile_freqs |> Map.keys()
             _ -> [from_named_tile(state, context, &1)]
           end)
           state = Map.update!(state, :tags, fn tags -> Map.update(tags, tag, MapSet.new(tiles), &MapSet.union(&1, MapSet.new(tiles))) end)
