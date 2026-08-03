@@ -4,22 +4,22 @@ if defined("shuugi") do
   end
 
   on before_win do
-    add_counter("birds", "count_matches", ["hand", "calls", "winning_tile"], ~m"1s:1")
+    add_counter("birds", "count_matches", ["hand", "calls", "winning_tile"], ~m"nojoker, (1s 01s 11s 21s 31s 41s 51s 00s 000s 100s 200s 300s 400s 500s):1")
     set_counter_all("start_birds", "birds")
     if won_by_discard do
       as last_discarder do
         reveal_hand
-        add_counter("pistols", "count_matches", ["hand", "calls"], ~m"7p:1")
+        add_counter("pistols", "count_matches", ["hand", "calls"], ~m"nojoker, (7p 07p 17p 27p 37p 47p 57p):1")
         set_counter_all("start_pistols", "pistols")
       end
     end
     if won_by_call do
       as caller do
         reveal_hand
-        add_counter("pistols", "count_matches", ["hand", "calls"], ~m"7p:1")
+        add_counter("pistols", "count_matches", ["hand", "calls"], ~m"nojoker, (7p 07p 17p 27p 37p 47p 57p):1")
       end
     end
-    add_counter("cages", "count_matches", ["hand", "calls", "winning_tile"], ~m"8s:1")
+    add_counter("cages", "count_matches", ["hand", "calls", "winning_tile"], ~m"nojoker, (8s 08s 18s 28s 38s 48s 58s):1")
     set_counter_all("start_cages", "cages")
     pistols = start_pistols
     if cages > 0 do pistols -= cages end
