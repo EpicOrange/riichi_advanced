@@ -9,6 +9,7 @@ defmodule RiichiAdvanced.AIPlayer do
   use GenServer
 
   @ai_speed 4
+  @ai_speed 40
 
   def start_link(init_state) do
     GenServer.start_link(__MODULE__, init_state, name: init_state[:name])
