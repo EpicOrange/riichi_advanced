@@ -182,37 +182,23 @@ apply set, "buttons.ankan.call_style", %{self: [0, ["1x", 1], 2, 3]}
 define_yaku meta_yaku, "Mosquito Hand", [0, "Phán"], has_no_yaku
 define_yaku meta_yaku, "No Jokers Mosquito Hand", [1, "Mủn"], has_no_yaku and status_missing("has_joker"), ["Mosquito Hand"]
 define_yaku yaku, "Single Wait", [1, "Phán"], won_by_draw and wait_count_at_most(1, "win")
+define_yaku yaku, "Pair Wait", [1, "Phán"], won_by_draw and wait_count_at_most(1, "win") and match(["hand", "calls"], ~m"exhaustive, mentsu:4"), ["Single Wait"]
 define_yaku yaku, "Quad", [1, "Phán"], match(["calls"], ~m"(daiminkan ankan kakan):1")
 define_yaku yaku, "Quad", [1, "Phán"], match(["calls"], ~m"(daiminkan ankan kakan):2")
 define_yaku yaku, "Quad", [1, "Phán"], match(["calls"], ~m"(daiminkan ankan kakan):3")
 define_yaku yaku, "All Called", [3, "Phán"], not_won_by_draw and match(["calls"], ~m"(chii pon daiminkan ankan kakan):4")
 
-# upgrades to existing yaku
-define_yaku meta_yaku, "No Jokers", [1, "Phán"], has_existing_yaku("All Sets") and status_missing("has_joker")
-define_yaku meta_yaku, "No Jokers", [1, "Phán"], has_existing_yaku("All Called") and status_missing("has_joker")
-define_yaku meta_yaku, "No Jokers", [1, "Mủn"], has_existing_yaku("All Terminals") and status_missing("has_joker")
-define_yaku meta_yaku, "No Jokers", [1, "Mủn"], has_existing_yaku("Big Three Dragons") and status_missing("has_joker")
-define_yaku meta_yaku, "No Jokers", [1, "Mủn"], has_existing_yaku("Thirteen Orphans") and status_missing("has_joker")
-define_yaku meta_yaku, "No Jokers", [1, "Mủn"], has_existing_yaku("Nine Gates") and status_missing("has_joker")
-define_yaku meta_yaku, "No Jokers", [1, "Mủn"], has_existing_yaku("Four Closed Sets") and status_missing("has_joker")
-define_yaku meta_yaku, "No Jokers", [1, "Mủn"], has_existing_yaku("All Honors") and status_missing("has_joker")
-define_yaku meta_yaku, "No Jokers", [1, "Mủn"], has_existing_yaku("Little Four Winds") and status_missing("has_joker")
-define_yaku meta_yaku, "No Jokers", [1, "Mủn"], has_existing_yaku("Big Four Winds") and status_missing("has_joker")
-
-define_yaku meta_yaku, "All Terminals", [1, "Mủn"], has_existing_yaku("All Terminals", "Single Wait", "Fully Closed Hand")
-define_yaku meta_yaku, "Thirteen Orphans", [1, "Mủn"], has_existing_yaku("Thirteen Orphans") and not_has_existing_yaku("Single Wait")
-define_yaku meta_yaku, "Nine Gates", [1, "Mủn"], has_existing_yaku("Nine Gates", "Single Wait", "Fully Closed Hand")
-define_yaku meta_yaku, "Four Closed Sets", [1, "Mủn"], has_existing_yaku("Four Closed Sets", "Single Wait", "Fully Closed Hand")
-define_yaku meta_yaku, "Four Quads", [1, "Mủn"], has_existing_yaku("Four Quads") and match(["calls"], ~m"ankan:4")
-define_yaku meta_yaku, "All Honors", [1, "Mủn"], has_existing_yaku("All Honors", "Single Wait", "Fully Closed Hand")
-define_yaku meta_yaku, "Little Four Winds", [1, "Mủn"], has_existing_yaku("Little Four Winds", "Single Wait", "Fully Closed Hand")
-define_yaku meta_yaku, "Big Four Winds", [1, "Mủn"], has_existing_yaku("Big Four Winds", "Single Wait", "Fully Closed Hand")
+# bonsues
+define_yaku meta_yaku, "Small No Jokers Bonus", [1, "Phán"], status_missing("has_joker") and has_existing_yaku("All Sets") and not_has_points(1, "Mủn") and not_has_points(6, "Phán")
+define_yaku meta_yaku, "No Jokers Bonus", [1, "Mủn"], status_missing("has_joker") and (has_points(1, "Mủn") or has_points(6, "Phán"))
+define_yaku meta_yaku, "Single Wait Fully Closed Bonus", [1, "Mủn"], has_existing_yaku("Fully Closed Hand") and (has_existing_yaku("Single Wait") or has_existing_yaku("Pair Wait")) and has_points(2, "Mủn"), ["Fully Closed Hand", "Single Wait", "Pair Wait"]
 
 define_yaku_precedence "Big Three Dragons", ["White Dragon", "Green Dragon", "Red Dragon"]
 define_yaku_precedence "Nine Gates", ["Full Flush"]
 define_yaku_precedence "Four Quads", ["Quad", "Four Concealed Triplets"]
 define_yaku_precedence "Little Four Winds", ["Round Wind", "Seat Wind"]
 define_yaku_precedence "Big Four Winds", ["Little Four Winds"]
+define_yaku_precedence "All Terminals and Honors", ["All Sets"]
 
 set score_calculation, %{
   yaku_lists: ["yaku", "progressive", "meta_yaku"],

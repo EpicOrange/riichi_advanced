@@ -79,7 +79,7 @@ defmodule RiichiAdvanced.YakuTest.VietnameseYaku do
       %{"type" => "buttons_pressed", "buttons" => [%{"button" => "ron"}, nil, nil, nil]},
     ], %{
       east: %{
-        yaku: [{"Win on Discarded Flower", [1, "Mủn"]}],
+        yaku: [{"No Jokers Bonus", [1, "Mủn"]}, {"Win on Discarded Flower", [1, "Mủn"]}],
       }
     })
   end
@@ -119,7 +119,7 @@ defmodule RiichiAdvanced.YakuTest.VietnameseYaku do
     })
   end
 
-  test "vietnamese - true nfnl doesn't score with throwing jokers" do
+  test "vietnamese - true nfnl scores with throwing jokers" do
     TestUtils.test_yaku_advanced("vietnamese", [], """
     {
       "starting_hand": {
@@ -149,9 +149,8 @@ defmodule RiichiAdvanced.YakuTest.VietnameseYaku do
     ], %{
       east: %{
         yaku: [
+          {"Throwing Flowers/Jokers", [1, "Mủn"]},
           {"True No Flowers, No Leaves", [1, "Mủn"]},
-          {"Anything Joker (縂)", [3, "Phán"]},
-          {"Number Joker (合)", [1, "Phán"]},
         ],
       }
     })
@@ -611,7 +610,7 @@ defmodule RiichiAdvanced.YakuTest.VietnameseYaku do
           {"All Sets", [3, "Phán"]},
           {"Half Flush", [3, "Phán"]},
           {"Progressive Counting", [3, "Phán"]},
-          {"No Jokers", [2, "Phán"]},
+          {"No Jokers Bonus", [1, "Mủn"]},
         ],
       }
     })
@@ -643,9 +642,8 @@ defmodule RiichiAdvanced.YakuTest.VietnameseYaku do
         yaku: [
           {"Big Three Dragons", [9, "Phán"]},
           {"All Terminals and Honors", [1, "Mủn"]},
-          {"All Sets", [3, "Phán"]},
           {"Half Flush", [3, "Phán"]},
-          {"Progressive Counting+", [2, "Mủn", 3, "Phán"]},
+          {"Progressive Counting", [6, "Phán"]},
         ],
       }
     })
@@ -701,6 +699,35 @@ defmodule RiichiAdvanced.YakuTest.VietnameseYaku do
     })
   end
 
+  test "vietnamese - single wait fully closed bonus on joker tanki" do
+    TestUtils.test_yaku_advanced("vietnamese", [], """
+    {
+      "starting_hand": {
+        "east": ["2m", "4m", "7m", "2p", "5p", "8p", "3s", "7s", "9s", "1z", "8s", "3z", "4z"],
+        "south": ["1m", "1m", "1m", "9m", "9m", "9m", "1s", "1s", "1s", "9s", "9s", "9s", "6j"],
+        "west": ["2m", "4m", "7m", "2p", "5p", "8p", "3s", "7s", "8s", "0z", "2z", "3z", "4z"],
+        "north": ["2m", "3m", "7m", "2p", "5p", "8p", "3s", "7s", "8s", "0z", "2z", "4s", "5s"]
+      },
+      "starting_draws": ["2z", "1p"]
+    }
+    """, [
+      %{"type" => "buttons_pressed", "buttons" => [%{"button" => "start_no_flower"}, nil, nil, nil]},
+      %{"type" => "buttons_pressed", "buttons" => [nil, %{"button" => "start_no_flower"}, nil, nil]},
+      %{"type" => "buttons_pressed", "buttons" => [nil, nil, %{"button" => "start_no_flower"}, nil]},
+      %{"type" => "buttons_pressed", "buttons" => [nil, nil, nil, %{"button" => "start_no_flower"}]},
+      %{"type" => "discard", "tile" => "2z", "player" => 0, "tsumogiri" => true},
+      %{"type" => "buttons_pressed", "buttons" => [nil, %{"button" => "tsumo"}, nil, nil]}
+    ], %{
+      south: %{
+        yaku: [
+          {"All Terminals", [4, "Mủn"]},
+          {"Four Closed Sets", [3, "Mủn"]},
+          {"Single Wait Fully Closed Bonus", [1, "Mủn"]}
+        ]
+      }
+    })
+  end
+
   test "vietnamese - many jokers seven pairs" do
     TestUtils.test_yaku_advanced("vietnamese", [%{name: "viet_more_jokers", config: %{sets: 32}}], """
     {
@@ -721,7 +748,7 @@ defmodule RiichiAdvanced.YakuTest.VietnameseYaku do
       %{"type" => "buttons_pressed", "buttons" => [nil, %{"button" => "ron"}, nil, nil]}
     ], %{
       south: %{
-        yaku: [{"Blessing of Earth", [2, "Mủn"]}, {"Seven Pairs", [1, "Mủn"]}],
+        yaku: [{"Blessing of Earth", [2, "Mủn"]}, {"No Jokers Bonus", [1, "Mủn"]}, {"Seven Pairs", [1, "Mủn"]}],
       }
     })
   end
@@ -745,7 +772,7 @@ defmodule RiichiAdvanced.YakuTest.VietnameseYaku do
       %{"type" => "buttons_pressed", "buttons" => [%{"button" => "tsumo"}, nil, nil, nil]}
     ], %{
       east: %{
-        yaku: [{"All Runs", [1, "Phán"]}, {"Blessing of Heaven", [2, "Mủn"]}, {"Fully Closed Hand", [1, "Phán"]}],
+        yaku: [{"All Runs", [1, "Phán"]}, {"Blessing of Heaven", [2, "Mủn"]}, {"Progressive Counting", [3, "Phán"]}, {"Single Wait Fully Closed Bonus", [1, "Mủn"]}],
       }
     })
   end

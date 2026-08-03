@@ -85,52 +85,25 @@ apply prepend, "buttons.ron.actions" do pao_text end
 apply prepend, "buttons.chankan.actions" do pao_text end
 apply prepend, "buttons.tsumo.actions" do pao_text end
 
-# progressive scoring: you have at least 1 mun
+# progressive counting
 
 define_yaku progressive, "_has_Mủn", [0, "Mủn"], has_points(1, "Mủn")
-define_yaku meta_yaku, "Progressive Counting", [3, "Phán"],
-  has_existing_yaku("_has_Mủn", "All Sets")
-define_yaku meta_yaku, "Progressive Counting", [3, "Phán"],
-  has_existing_yaku("_has_Mủn", "All Called")
+define_yaku meta_yaku, "Progressive Counting", [3, "Phán"], has_existing_yaku("_has_Mủn", "All Sets")
+define_yaku meta_yaku, "Progressive Counting", [3, "Phán"], has_existing_yaku("_has_Mủn", "All Called")
 define_yaku meta_yaku, "Progressive Counting", [3, "Phán"],
   has_existing_yaku("_has_Mủn", "Half Flush")
   or has_existing_yaku("Half Flush", "All Sets", "All Called")
 define_yaku meta_yaku, "Progressive Counting", [3, "Phán"],
+  has_existing_yaku("_has_Mủn", "Big Three Dragons")
+  or (has_existing_yaku("Big Three Dragons")
+  and at_least(2, has_existing_yaku("Half Flush"), has_existing_yaku("All Sets"), has_existing_yaku("All Called")))
+define_yaku meta_yaku, "Progressive Counting", [3, "Phán"],
   has_existing_yaku("_has_Mủn", "Single Wait", "All Runs", "Fully Closed Hand")
   or (has_existing_yaku("Single Wait", "All Runs", "Fully Closed Hand")
-  and at_least(2,
-    has_existing_yaku("Half Flush"),
-    has_existing_yaku("All Sets"),
-    has_existing_yaku("All Called")))
-
-# progressive scoring: big three dragons
-define_yaku progressive, "_has_daisangen", [0, "Mủn"],
-  has_existing_yaku("Big Three Dragons") and
-  (has_existing_yaku("All Terminals and Honors") or at_least(2,
-    has_existing_yaku("Half Flush"),
-    has_existing_yaku("All Sets"),
-    has_existing_yaku("All Called"),
-    has_existing_yaku("Single Wait", "All Runs", "Fully Closed Hand")))
-define_yaku meta_yaku, "Progressive Counting+", [3, "Phán"], has_existing_yaku("_has_daisangen")
-define_yaku meta_yaku, "Progressive Counting+", [1, "Mủn"],
-  has_existing_yaku("_has_daisangen", "All Terminals and Honors", "All Sets")
-define_yaku meta_yaku, "Progressive Counting+", [1, "Mủn"],
-  has_existing_yaku("_has_daisangen", "All Terminals and Honors", "All Called")
-define_yaku meta_yaku, "Progressive Counting+", [1, "Mủn"],
-  has_existing_yaku("_has_daisangen", "All Terminals and Honors", "Half Flush")
-  or has_existing_yaku("_has_daisangen", "Half Flush", "All Sets", "All Called")
-define_yaku meta_yaku, "Progressive Counting+", [1, "Mủn"],
-  has_existing_yaku("_has_daisangen", "All Terminals and Honors", "Single Wait", "All Runs", "Fully Closed Hand")
-  or (has_existing_yaku("_has_daisangen", "Single Wait", "All Runs", "Fully Closed Hand")
-  and at_least(2,
-    has_existing_yaku("Half Flush"),
-    has_existing_yaku("All Sets"),
-    has_existing_yaku("All Called")))
-define_yaku_precedence "Progressive Counting+", ["Progressive Counting"]
-
+  and at_least(3, has_existing_yaku("Half Flush"), has_existing_yaku("All Sets"), has_existing_yaku("All Called"), has_existing_yaku("Big Three Dragons")))
+define_yaku_precedence "Progressive Counting", ["Small No Jokers Bonus"]
 # clear temporary marker yaku
 define_yaku meta_yaku, "_clear_has_Mủn", [0, "Mủn"], has_existing_yaku("_has_Mủn"), ["_has_Mủn", "_clear_has_Mủn"]
-define_yaku meta_yaku, "_clear_has_daisangen", [0, "Mủn"], has_existing_yaku("_has_daisangen"), ["_has_daisangen", "_clear_has_daisangen"]
 
 def get_base_score do
   cond do

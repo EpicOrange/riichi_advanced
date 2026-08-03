@@ -175,21 +175,18 @@ define_yaku nfnl, "Throwing Flowers/Jokers", ["throwing_flowers_jokers_value", "
   status("nfnl_eligible", "throwing_flowers_jokers_eligible")
   and not just_discarded
   and throwing_flowers_jokers_value > 0
-  and not_match(["hand", "calls", "winning_tile"], ["win"])
   and not_match(["hand", "calls", "winning_tile"], ["has_non_nfnl_tile"]),
   ["yaku", "progressive", "meta_yaku"]
 define_yaku nfnl, "Throwing Flowers", ["throwing_flowers_value", "Mủn"],
   status("nfnl_eligible", "throwing_flowers_eligible")
   and our_turn and just_discarded
   and throwing_flowers_value > 0
-  and not_match(["hand", "calls", "winning_tile"], ["win"])
   and not_match(["hand", "calls", "flowers", "jokers"], ~m"nojoker, (any_flower any_joker):1"),
   ["yaku", "progressive", "meta_yaku"]
 define_yaku nfnl, "Throwing Blue Jokers", ["throwing_blue_jokers_value", "Mủn"],
   status("nfnl_eligible", "throwing_blue_jokers_eligible")
   and our_turn and just_discarded
   and throwing_blue_jokers_value > 0
-  and not_match(["hand", "calls", "winning_tile"], ["win"])
   and not_match(["hand", "calls", "flowers", "jokers"], ~m"nojoker, (any_flower any_joker):1"),
   ["yaku", "progressive", "meta_yaku"]
 define_yaku nfnl, "True No Flowers, No Leaves", [1, "Mủn"],

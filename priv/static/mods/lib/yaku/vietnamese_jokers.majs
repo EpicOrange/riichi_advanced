@@ -32,14 +32,14 @@ on after_initialization do
       nguyen: ~t"5j",
       hop: ~t"2j"
     }, -90)
-  add_rule("2 Phán", "Anything Joker (縂)", "The anything joker %{tong} can be replaced for 3 Phán if you are the East player or if you replace it at the start of the game, or 2 Phán otherwise.", %{tong: ~t"0j"})
-  add_rule("1 Phán", "Dot Joker (筒)", "The dot joker %{thung} can be replaced for 2 Phán if you are the South player, or 1 Phán otherwise.", %{thung: ~t"6j"})
-  add_rule("1 Phán", "Bamboo Joker (索)", "The bamboo joker %{sooc} can be replaced for 2 Phán if you are the West player, or 1 Phán otherwise.", %{sooc: ~t"7j"})
-  add_rule("1 Phán", "Character Joker (萬)", "The character joker %{man} can be replaced for 2 Phán if you are the North player, or 1 Phán otherwise.", %{man: ~t"8j"})
-  add_rule("2 Phán", "Flower Joker (花)", "The flower joker %{hoa} can be replaced for 2 Phán regardless of seat.", %{hoa: ~t"9j"})
-  add_rule("1 Phán", "Wind Joker (喜)", "The wind joker %{hi} can be replaced for 2 Phán if you are the South player, or 1 Phán otherwise.", %{ho: ~t"4j"})
-  add_rule("1 Phán", "Dragon Joker (元)", "The dragon joker %{nguyen} can be replaced for 2 Phán if you are the West player, or 1 Phán otherwise.", %{nguyen: ~t"5j"})
-  add_rule("2 Phán", "Number Joker (合)", "The number joker %{hop} can be replaced for 3 Phán if you are the North player or if you replace it at the start of the game, or 2 Phán otherwise.", %{hop: ~t"2j"})
+  add_rule("Phán", "Anything Joker (縂)", "The anything joker %{tong} can be replaced for 3 Phán if you are the East player or if you replace it at the start of the game, or 2 Phán otherwise.", %{tong: ~t"0j"})
+  add_rule("Phán", "Dot Joker (筒)", "The dot joker %{thung} can be replaced for 2 Phán if you are the South player, or 1 Phán otherwise.", %{thung: ~t"6j"})
+  add_rule("Phán", "Bamboo Joker (索)", "The bamboo joker %{sooc} can be replaced for 2 Phán if you are the West player, or 1 Phán otherwise.", %{sooc: ~t"7j"})
+  add_rule("Phán", "Character Joker (萬)", "The character joker %{man} can be replaced for 2 Phán if you are the North player, or 1 Phán otherwise.", %{man: ~t"8j"})
+  add_rule("Phán", "Flower Joker (花)", "The flower joker %{hoa} can be replaced for 2 Phán regardless of seat.", %{hoa: ~t"9j"})
+  add_rule("Phán", "Wind Joker (喜)", "The wind joker %{hi} can be replaced for 2 Phán if you are the South player, or 1 Phán otherwise.", %{ho: ~t"4j"})
+  add_rule("Phán", "Dragon Joker (元)", "The dragon joker %{nguyen} can be replaced for 2 Phán if you are the West player, or 1 Phán otherwise.", %{nguyen: ~t"5j"})
+  add_rule("Phán", "Number Joker (合)", "The number joker %{hop} can be replaced for 3 Phán if you are the North player or if you replace it at the start of the game, or 2 Phán otherwise.", %{hop: ~t"2j"})
 
   add_rule("Rules", "Ăn", "(Vietnamese) You cannot Ăn with more than one joker tile.")
   add_rule("Rules", "Phỗng", "(Vietnamese) You cannot Phỗng with more than one joker tile.")

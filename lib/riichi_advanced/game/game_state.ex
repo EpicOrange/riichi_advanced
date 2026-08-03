@@ -890,6 +890,8 @@ defmodule RiichiAdvanced.GameState do
   
   def from_named_tile(state, context, tile_name) do
     cond do
+      tile_name == "tile" -> context.tile
+      tile_name == "tile2" -> context.tile2
       is_binary(tile_name) and tile_name in state.reserved_tiles ->
         case Enum.find_index(state.reserved_tiles, fn name -> name == tile_name end) do
           nil -> nil # not possible...

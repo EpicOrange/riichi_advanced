@@ -494,16 +494,22 @@ defmodule RiichiAdvanced.GameState.Conditions do
         waits_before != waits_after
       "wait_count_at_least" ->
         number = Enum.at(opts, 0, 1)
+        exclude_jokers? = Enum.at(opts, 2, true)
         win_definitions = Rules.translate_match_definitions(state.rules_ref, Enum.at(opts, 1, []))
-        tile_behavior = cxt_player.tile_behavior
+        tile_behavior = if exclude_jokers? do
+          %{cxt_player.tile_behavior | aliases: %{}, mappings: %{}}
+        else cxt_player.tile_behavior end
         hand = cxt_player.hand
         calls = cxt_player.calls
         waits = Match.get_waits(hand, calls, win_definitions, tile_behavior) |> Enum.uniq_by(&Utils.strip_attrs/1)
         length(waits) >= number
       "wait_count_at_most" ->
         number = Enum.at(opts, 0, 1)
+        exclude_jokers? = Enum.at(opts, 1, false)
         win_definitions = Rules.translate_match_definitions(state.rules_ref, Enum.at(opts, 1, []))
-        tile_behavior = cxt_player.tile_behavior
+        tile_behavior = if exclude_jokers? do
+          %{cxt_player.tile_behavior | aliases: %{}, mappings: %{}}
+        else cxt_player.tile_behavior end
         hand = cxt_player.hand
         calls = cxt_player.calls
         waits = Match.get_waits(hand, calls, win_definitions, tile_behavior) |> Enum.uniq_by(&Utils.strip_attrs/1)

@@ -40,11 +40,11 @@ defmodule RiichiAdvanced.YakuTest.VietnameseScoring do
           {"All Called", [3, "Phán"]},
           {"All Sets", [3, "Phán"]},
           {"Full Flush", [1, "Mủn"]},
-          {"No Jokers", [2, "Phán"]},
+          {"No Jokers Bonus", [1, "Mủn"]},
           {"Progressive Counting", [6, "Phán"]}
         ]
       }
-    }, %{delta_scores: [-420, 0, 0, 420]})
+    }, %{delta_scores: [-512, 0, 0, 512]})
   end
   
   test "vietnamese - daisangen liability" do
@@ -81,10 +81,9 @@ defmodule RiichiAdvanced.YakuTest.VietnameseScoring do
           {"All Terminals and Honors", [1, "Mủn"]},
           {"Big Three Dragons", [9, "Phán"]},
           {"Half Flush", [3, "Phán"]},
-          {"Progressive Counting+", [2, "Mủn", 3, "Phán"]},
-          {"All Sets", [3, "Phán"]},
+          {"Progressive Counting", [6, "Phán"]},
           {"Seat Wind", [1, "Phán"]},
-          {"Win on Discarded Joker", [1, "Mủn"]},
+          {"Win on Discarded Joker", [1, "Mủn"]}
         ]
       }
     }, %{delta_scores: [-914, 0, 0, 914]})
@@ -113,10 +112,11 @@ defmodule RiichiAdvanced.YakuTest.VietnameseScoring do
       north: %{
         yaku: [
           {"Blessing of Earth", [2, "Mủn"]},
+          {"No Jokers Bonus", [1, "Mủn"]},
           {"Win on Discarded Flower", [1, "Mủn"]}
         ]
       }
-    }, %{delta_scores: [-384, 0, 0, 384]})
+    }, %{delta_scores: [-512, 0, 0, 512]})
   end
 
   test "vietnamese - robbing a bounce" do
