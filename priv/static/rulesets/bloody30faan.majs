@@ -25,7 +25,7 @@ require "standard_win"
 require "kuikae_nashi"
 require "bloody30faan_yaku"
 require "yaku/tsuuiisou", %{name: "All Honours", value: 30}
-require "yaku/yakuhai", %{round_wind_name: "Round Wind", triplet_value: 1}
+require "yaku/yakuhai", %{round_wind_name: "Round Wind", value: 1}
 require "yaku/shousangen", %{dai_name: "Big Three Dragons", dai_value: 15, shou_name: "Little Three Dragons", shou_value: 8}
 require "yaku/sanpuukou", %{dai_name: "Big Three Winds", dai_value: 10, shou_name: "Little Three Winds", shou_value: 5}
 require "yaku/shousuushii", %{dai_name: "Big Four Winds", dai_value: 30, shou_name: "Little Four Winds", shou_value: 20}

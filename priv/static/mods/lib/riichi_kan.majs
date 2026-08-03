@@ -1,6 +1,6 @@
 on after_initialization do
   add_rule("1 Han", "Rinshan", "If you kan and then tsumo on the replacement tile, you are awarded rinshan (1 han).")
-  add_rule("1 Han", "Chankan", "If someone calls kan to upgrade an open triplet, you may call ron on the added tile. Doing so awards chankan (1 han).)")
+  add_rule("1 Han", "Chankan", "If someone calls kan to upgrade an open triplet, and you are waiting to win on that tile, you may specially call ron on that added tile. Doing so awards the 1 han yaku Chankan.")
   add_rule("2 Han", "Sankantsu", "Your hand contains three kans.")
   add_rule("Yakuman", "Suukantsu", "Your hand contains four kans.")
   update_rule("2 Han", "Sankantsu", "%{example_hand}", %{example_hand: ~t"123s3z 55p5P5p 8p88P8p 1x99m1x 3z"})

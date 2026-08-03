@@ -212,7 +212,7 @@ on after_initialization, prepend: true do
   add_rule("Rules", "Win Condition", "- Four sets (sequences or triplets) and a pair.", -100)
   add_rule("Rules", "Win Condition", "- (Chiitoitsu) Seven distinct pairs.", -100)
   add_rule("Rules", "Win Condition", "- (Kokushi Musou) All thirteen terminal/honor tiles plus one forming a pair.", -100)
-  add_rule("Rules", "Furiten", "If you are waiting for a tile to win, but one of your winning tiles is among your discards (including tiles called by other players), then you are 'in furiten' and cannot win by ron (but you can still win by tsumo).")
+  add_rule("Rules", "Furiten", "If you are waiting for a tile to win, but one of your winning tiles is among your discards (including tiles called by other players), then you are 'in furiten' and cannot win by ron (including chankan). You can still win by tsumo.")
   add_rule("1 Han", "Tsumo", "Win by self-draw with a closed hand.")
   add_rule("1 Han", "Haitei", "Win by drawing the last tile in the wall.")
   add_rule("1 Han", "Houtei", "Win off a discard after the last tile in the wall is drawn.")
@@ -222,7 +222,7 @@ on after_initialization, prepend: true do
   update_rule("1 Han", "Tanyao", "%{example_hand}", %{example_hand: ~t"234m33777p45678s 6s"})
   add_rule("1 Han", "Iipeikou", "Your closed hand has a double sequence: two copies of the exact same sequence in one suit, like 123 123.")
   update_rule("1 Han", "Iipeikou", "%{example_hand}", %{example_hand: ~t"33445m33777p678s 5m"})
-  add_rule("1 Han", "Yakuhai", "1 %{han} for each of the following triplets in your hand:")
+  add_rule("1 Han", "Yakuhai", "1 han for each of the following triplets in your hand:")
   add_rule("1 Han", "Yakuhai", "- A triplet of dragon tiles %{dragons}", %{dragons: ~t"777z"})
   cond do
     round_wind_is("east")  -> add_rule("1 Han", "Yakuhai", "- A triplet of winds matching the round marker %{round_winds}", %{round_winds: ~t"111z"})

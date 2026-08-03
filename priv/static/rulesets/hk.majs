@@ -21,7 +21,7 @@ require "ron", %{scoring_key: "win"}
 require "tsumo", %{scoring_key: "win"}
 require "yaku/chankan", %{name: "Robbing a Kong", value: 1, scoring_key: "win"}
 require "standard_win"
-require "yaku/yakuhai", %{round_wind_name: "Prevalent Wind", triplet_value: 1}
+require "yaku/yakuhai", %{round_wind_name: "Prevalent Wind", value: 1}
 require "default_flowers", %{four_flowers_value: 2, auto_flower_by_default: true, matching_flower_value: 1, undiscardable: true}
 require "yaku/no_flowers", %{name: "No Flowers", value: 1}
 require "yaku/rinshan", %{value: 1, flower_name: "After a Flower", rinshan_name: "After a Kong", double_name: "After Multiple Kongs", double_value: 8}

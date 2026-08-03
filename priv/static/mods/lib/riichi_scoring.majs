@@ -29,8 +29,34 @@ define_const groups_fu, [
   %{groups: ~s"0@prevalent 0@prevalent | 0@seat 0@seat | 5z 5z | 6z 6z | 7z 7z", value: 2}
 ]
 define_const always_yakuhai, ["5z", "6z", "7z"]
-define_const arishiiaru, false
 
+define_const closed_tsumo_20_fu, true
+define_const open_30_fu, true
+define_const round_fu, true
+define_const double_wind_fu, 2 # only used in rules text
+on after_initialization do
+  add_rule("Rules", "Fu", "Fu (minipoints) is scored based on the composition of the hand as well as how you win.", -5)
+  add_rule("Rules", "Fu", "- Start with 20 fu.")
+  add_rule("Rules", "Fu", "- Sequences are worth 0 fu.")
+  add_rule("Rules", "Fu", "- Each triplet is worth 2 fu, 4 if terminal/honors, 4 if closed, 8 if terminal/honors and closed.")
+  add_rule("Rules", "Fu", "- Kans are the same but worth 4x that amount (so 8, 16, or 32 fu).")
+  add_rule("Rules", "Fu", "- Tsumo adds 2 fu.")
+  add_rule("Rules", "Fu", "- Ron with a closed hand adds 10 fu.")
+  add_rule("Rules", "Fu", "- Having a yakuhai pair adds 2 fu. A double wind pair (i.e. both round and seat wind) adds %{double_wind_fu} fu.", %{double_wind_fu: @double_wind_fu})
+  add_rule("Rules", "Fu", "- Having a single wait like 12₍₃₎, 1₍₂₎3, or 2₍₂₎ adds 2 fu. Only the final shape matters, so 1234 waiting for a pair of 1 or 4, counts as a single wait since it could be read as 1 234 or 123 4.")
+  if @round_fu do
+    add_rule("Rules", "Fu", "- After adding all the fu, round up to the next 10. So 32 becomes 40 fu, but 30 fu stays 30 fu.")
+  end
+  add_rule("Rules", "Fu", "Exceptions:")
+  add_rule("Rules", "Fu", "- Chiitoitsu (7 pairs) is worth 25 fu flat.")
+  add_rule("Rules", "Fu", "- Kokushi musou (13 orphans) is 30 fu. (Fu does not matter for kokushi hands, but here we say it's 30 fu.)")
+  if @closed_tsumo_20_fu do
+    add_rule("Rules", "Fu", "- If you have a closed hand and won with tsumo (20+2 fu) but not scoring any more fu, it is treated as 20 fu (and awards you the 1 han yaku Pinfu).")
+  end
+  if @open_30_fu do
+    add_rule("Rules", "Fu", "- An open hand is minimum 30 fu. You still start at 20 fu, but if you end with 20 fu, it becomes 30 fu.")
+  end
+end
 def calculate_fu do
   if fu == 0 do
     set_counter("fu", "minipoints") do
@@ -61,18 +87,18 @@ def calculate_fu do
       add(20)
 
       # tsumo +2 (except closed pinfu tsumo)
-      add(2, won_by_draw and (@arishiiaru or minipoints_at_most(999) or not @closed_hand))
+      add(2, won_by_draw and (not @closed_tsumo_20_fu or minipoints_at_most(999) or not @closed_hand))
 
       # closed ron +10 and open pinfu ron +10
       add(10, not_won_by_draw and @closed_hand)
-      add(10, not @arishiiaru or (not_won_by_draw and not @closed_hand and minipoints_at_least(1000)))
+      add(10, @open_30_fu and not_won_by_draw and not @closed_hand and minipoints_at_least(1000))
 
       # take max, then subtract 1000 from pinfu hands
       take_maximum
       add(-1000, minipoints_at_least(1000))
 
       # round up to nearest 10
-      round_up(10)
+      round_up(10, @round_fu)
 
       # add original hand (for special hands like chiitoitsu and kokushi)
       add_original_hand
@@ -178,13 +204,15 @@ def apply_tsumo_scoring do
   end
 end
 
+define_const riichi_score_rounding, 100
+
 define_scoring ron do
   total = 0
   if points2 > 0 do points2 = points2 :: "★" else points = points :: "Han" end
   calculate_base_score
   apply_ron_scoring
-  if mod(total, 100) > 0 and not @arishiiaru do
-    total = round_up(total, 100) :: "Round up"
+  if mod(total, @riichi_score_rounding) > 0 do
+    total = round_up(total, @riichi_score_rounding) :: "Round up"
   end
   finalize_score
 end
@@ -194,8 +222,8 @@ define_scoring tsumo do
   if points2 > 0 do points2 = points2 :: "★" else points = points :: "Han" end
   calculate_base_score
   apply_tsumo_scoring
-  if mod(total, 100) > 0 and not @arishiiaru do
-    total = round_up(total, 100) :: "Round up"
+  if mod(total, @riichi_score_rounding) > 0 do
+    total = round_up(total, @riichi_score_rounding) :: "Round up"
   end
   finalize_score
 end

@@ -20,7 +20,7 @@ require "kan"
 require "ron", %{scoring_key: "win"}
 require "tsumo", %{scoring_key: "win"}
 require "standard_win"
-require "yaku/yakuhai", %{round_wind_name: "Prevalent Wind", triplet_value: 1}
+require "yaku/yakuhai", %{round_wind_name: "Prevalent Wind", value: 1}
 require "yaku/chiitoitsu", %{name: "Seven Pairs", value: 1, kansai: true, rules_tab: "4 Fan"}
 require "yaku/chankan", %{name: "Robbing the Kong", value: 1, scoring_key: "win"}
 require "head_bump"

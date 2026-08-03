@@ -26,7 +26,7 @@ require "yaku/menzenchin", %{name: "Concealed Hand", value: 5}
 require "yaku/tanyao", %{name: "No Terminals", value: 5}
 require "yaku/honitsu", %{chin_name: "Pure One-Suit", chin_value: 80, hon_name: "Mixed One-Suit", hon_value: 40}
 require "yaku/chuurenpoutou", %{list: "listed_limit_hand", name: "Nine Gates", value: 480, must_wait_9: true}
-require "yaku/yakuhai", %{triplet_value: 10}
+require "yaku/yakuhai", %{value: 10}
 require "yaku/shousangen", %{dai_name: "Big Three Dragons", dai_value: 130, shou_name: "Small Three Dragons", shou_value: 40}
 require "yaku/sanpuukou", %{dai_name: "Big Three Winds", dai_value: 120, shou_name: "Small Three Winds", shou_value: 30}
 require "yaku/shousuushii", %{dai_name: "Big Four Winds", dai_value: 400, shou_name: "Small Four Winds", shou_value: 320, dai_list: "listed_limit_hand", shou_list: "listed_limit_hand"}

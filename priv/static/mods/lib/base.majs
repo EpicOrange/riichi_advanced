@@ -21,6 +21,14 @@ on after_initialization do
   add_rule_tab("Limit")
   add_rule_tab("Yakuman")
   add_rule_tab("Shuugi")
+  add_rule_tab("2")
+  add_rule_tab("10")
+  add_rule_tab("12")
+  add_rule_tab("15")
+  add_rule_tab("20")
+  add_rule_tab("30")
+  add_rule_tab("40")
+  add_rule_tab("50")
   add_rule("Rules", "Win Condition", "You may win with one of the following:", -100)
 end
 

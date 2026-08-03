@@ -19,7 +19,7 @@ require "ron"
 require "tsumo"
 require "default_flowers", %{four_flowers_value: 1, matching_flower_value: 1, four_flowers_han: "Mủn"}
 require "standard_win"
-require "yaku/yakuhai", %{round_wind_name: "Prevalent Wind", triplet_value: 1}
+require "yaku/yakuhai", %{round_wind_name: "Prevalent Wind", value: 1}
 require "yaku/menzentsumo", %{name: "Fully Closed Hand", value: 1}
 require "yaku/chankan", %{name: "Robbing a Quad", value: 1, scoring_key: "ron"}
 require "yaku/rinshan", %{value: 1, flower_name: "Win on Replacement Tile", rinshan_name: "Win on Replacement Tile"}
