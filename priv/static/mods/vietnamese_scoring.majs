@@ -194,7 +194,7 @@ define_scoring pay_liability do
   end
 end
 
-replace all, "buttons", win_by_discard do
+replace all, "buttons", win_by_discard("ron") do
   cond do
     anyone_status("pao") -> win_by_discard("pay_liability")
     match(["last_discard"], ~m"nojoker, (any_flower any_joker):1") ->
@@ -204,7 +204,7 @@ replace all, "buttons", win_by_discard do
     true -> win_by_discard("ron")
   end
 end
-replace all, "buttons", win_by_call do
+replace all, "buttons", win_by_call("ron") do
   cond do
     anyone_status("pao") -> win_by_call("pay_liability")
     # # don't think chankan counts as discarding a tile, in this case, so no liability
@@ -215,7 +215,7 @@ replace all, "buttons", win_by_call do
     true -> win_by_call("ron")
   end
 end
-replace all, "buttons", win_by_draw do
+replace all, "buttons", win_by_draw("tsumo") do
   cond do
     anyone_status("pao") -> win_by_draw("pay_liability")
     true -> win_by_draw("tsumo")

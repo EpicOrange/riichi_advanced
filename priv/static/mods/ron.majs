@@ -10,7 +10,7 @@ define_button ron,
     big_text(!ron_name)
     pause(1000)
     reveal_hand
-    win_by_discard
+    win_by_discard(!scoring_key)
   end
 
 apply set_append, "interruptible_actions", ["play_tile"]

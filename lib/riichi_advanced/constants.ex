@@ -534,8 +534,6 @@ defmodule RiichiAdvanced.Constants do
         "standard_wall",
         "default_auto_buttons",
         "riichi_kan", # also adds chankan and yaku like suukantsu
-      ],
-      post_mods: [
         "riichi_scoring", # depends on honba
       ],
       default_mods: []
@@ -785,8 +783,10 @@ defmodule RiichiAdvanced.Constants do
         "base",
         "global_mods", "default_auto_buttons",
         "standard_wall", "framed_5z",
-        "chii", "pon", "kan", "ron", "tsumo",
-        %{name: "yaku/chankan", config: %{list: "yaku", name: "Robbing a Kong", value: 1}},
+        "chii", "pon", "kan",
+        %{name: "ron", config: %{scoring_key: "win"}},
+        %{name: "tsumo", config: %{scoring_key: "win"}},
+        %{name: "yaku/chankan", config: %{list: "yaku", name: "Robbing a Kong", value: 1, scoring_key: "win"}},
         "standard_win",
         %{name: "yaku/yakuhai", config: %{list: "yaku", value: 1}},
         %{name: "default_flowers", config: %{
@@ -855,11 +855,13 @@ defmodule RiichiAdvanced.Constants do
         "base",
         "global_mods", "default_auto_buttons",
         "standard_wall", "framed_5z",
-        "chii", "pon", "kan", "ron", "tsumo",
+        "chii", "pon", "kan",
+        %{name: "ron", config: %{scoring_key: "win"}},
+        %{name: "tsumo", config: %{scoring_key: "win"}},
         "standard_win",
         %{name: "yaku/yakuhai", config: %{list: "yaku", value: 1}},
         %{name: "yaku/chiitoitsu", config: %{rules_tab: "4 Fan", list: "yaku", name: "Seven Pairs", value: 1, kansai: true}},
-        %{name: "yaku/chankan", config: %{list: "yaku", name: "Robbing the Kong", value: 1}},
+        %{name: "yaku/chankan", config: %{list: "yaku", name: "Robbing the Kong", value: 1, scoring_key: "win"}},
         "head_bump",
         "agarirenchan",
         %{name: "default_flowers", config: %{
@@ -941,7 +943,9 @@ defmodule RiichiAdvanced.Constants do
         "base",
         "standard_wall", "framed_5z",
         "default_auto_buttons",
-        "chii", "pon", "kan", "ron", "tsumo",
+        "chii", "pon", "kan",
+        %{name: "ron", config: %{scoring_key: "ron"}},
+        %{name: "tsumo", config: %{scoring_key: "tsumo"}},
         %{name: "default_flowers", config: %{
           undiscardable: false, auto_flower_by_default: false, draw_after_flowers: false,
           matching_flower_value: 1, matching_flower_han: "Phán",
@@ -950,7 +954,7 @@ defmodule RiichiAdvanced.Constants do
         "standard_win",
         %{name: "yaku/yakuhai", config: %{list: "yaku", value: 1}},
         %{name: "yaku/menzentsumo", config: %{list: "yaku", name: "Fully Closed Hand", value: 1}},
-        %{name: "yaku/chankan", config: %{list: "yaku", name: "Robbing a Quad", value: 1}},
+        %{name: "yaku/chankan", config: %{list: "yaku", name: "Robbing a Quad", value: 1, scoring_key: "ron"}},
         %{name: "yaku/rinshan", config: %{
           list: "yaku", rinshan_name: "Win on Replacement Tile", flower_name: "Win on Replacement Tile", value: 1,
           double_list: "", double_name: "", double_value: 0, double_han: ""
@@ -1014,7 +1018,9 @@ defmodule RiichiAdvanced.Constants do
         "base",
         "standard_wall", "framed_5z",
         "global_mods", "default_auto_buttons",
-        "chii", "pon", "kan", "ron", "tsumo",
+          "chii", "pon", "kan",
+          %{name: "ron", config: %{scoring_key: "ron"}},
+          %{name: "tsumo", config: %{scoring_key: "tsumo"}},
         "standard_win",
         %{name: "yaku/chiitoitsu", config: %{rules_tab: "", list: "yaku", name: "Seven Pairs", value: 0, kansai: true}},
         %{name: "yaku/kokushi", config: %{list: "yakuman", name: "Thirteen Orphans", value: 0}},
