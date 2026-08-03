@@ -519,7 +519,7 @@ defmodule RiichiAdvanced.GameState.American do
     calls = state.players[seat].calls
     tile_behavior = state.players[seat].tile_behavior
     
-    hand = hand ++ draw
+    hand = Utils.strip_attrs(hand ++ draw)
 
     # t = System.os_time(:millisecond)
     am_match_definitions = if not Enum.empty?(Debug.debug_am_match_definitions()) do
@@ -544,7 +544,7 @@ defmodule RiichiAdvanced.GameState.American do
               edge_cache = for tile <- Enum.uniq(matching_hand_joker), tile2 <- Enum.uniq(hand), not Map.has_key?(edge_cache, {tile2, tile, true}), reduce: edge_cache do
                 edge_cache -> Map.put(edge_cache, {tile2, tile, true}, Utils.same_tile(tile2, tile, tile_behavior))
               end
-              edge_cache = for tile <- Enum.uniq(matching_hand_nojoker), tile2 <- Enum.uniq(hand), not Map.has_key?(edge_cache, {tile2, tile, false}), reduce: edge_cache do
+              edge_cache = for tile <- Enum.uniq(matching_hand_nojoker), tile2 <- Enum.uniq(hand), tile2 != :"1j", not Map.has_key?(edge_cache, {tile2, tile, false}), reduce: edge_cache do
                 edge_cache -> Map.put(edge_cache, {tile2, tile, false}, Utils.same_tile(tile2, tile, %{ tile_behavior | aliases: Map.delete(tile_behavior.aliases, :any), uuid: Ecto.UUID.generate() }))
               end
 
