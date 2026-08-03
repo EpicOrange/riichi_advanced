@@ -299,16 +299,7 @@ defmodule RiichiAdvanced.GameState.ScoringOld do
     end
     # put original payer liability last while ordering pao liabilities in atamahane order
     # order is important because only the first liability pays honba
-    |> Enum.sort_by(fn
-      {nil, _} -> 4
-      {seat, _} -> case Utils.get_relative_seat(winner.seat, seat) do
-        _ when seat == payer -> 4
-        :shimocha -> 1
-        :toimen -> 2
-        :kamicha -> 3
-        _ -> 4
-      end
-    end)
+    |> Enum.sort_by(fn {seat, _} -> Utils.atamahane_order(winner.seat, seat) end)
     # add honba as additional penalty
     |> case do
       # if tsumo with no pao players, add 1x honba payment

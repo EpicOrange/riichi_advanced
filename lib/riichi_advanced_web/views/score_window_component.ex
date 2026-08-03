@@ -156,7 +156,7 @@ defmodule RiichiAdvancedWeb.ScoreWindowComponent do
 
   def format_txns(txns, seat, _players) do
     # first make ledger for arrows
-    ret = for txn = %{from: from, to: to, line_items: line_items} <- txns, reduce: [] do
+    ret = for txn = %{from: from, to: to, line_items: line_items} <- txns, from != nil, reduce: [] do
       ret -> [{make_key(seat, from, to), Payment.get_txn_result(txn), Enum.reverse(line_items)} | ret]
     end
     # then make ledgers for individual players
@@ -171,6 +171,7 @@ defmodule RiichiAdvancedWeb.ScoreWindowComponent do
           [{Utils.get_relative_seat(seat, seat2) |> Atom.to_string(), result, Enum.reverse(line_items)} | ret]
         end
     end
+    
     ret
   end
 

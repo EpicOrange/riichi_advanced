@@ -91,6 +91,14 @@ define_scoring ron do
   if @honba_condition do
     total += honba * 3 * @honba_value :: "Honba"
   end
+  as winners do
+    riichi_stick_payment = pot
+    if riichi_stick_payment > 0 do
+      total += riichi_stick_payment :: "Riichi sticks"
+      riichi_stick_payment *= -1
+      add_to_pot("riichi_stick_payment")
+    end
+  end
 end
 
 define_scoring tsumo do
@@ -114,5 +122,10 @@ define_scoring tsumo do
   end
   if @honba_condition do
     total += honba * @honba_value :: "Honba"
+  end
+  riichi_stick_payment = pot
+  if riichi_stick_payment > 0 do
+    total += riichi_stick_payment :: "Riichi sticks"
+    add_to_pot(-riichi_stick_payment)
   end
 end

@@ -181,6 +181,7 @@ defmodule RiichiAdvanced.GameState.Conditions do
     end
     |> Enum.filter(& &1 in state.available_seats)
     if negated do state.available_seats -- seats else seats end
+    |> Enum.sort_by(&Utils.atamahane_order(context.seat, &1))
   end
 
   def get_placements(state) do

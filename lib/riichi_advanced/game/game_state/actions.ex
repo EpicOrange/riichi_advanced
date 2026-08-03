@@ -15,6 +15,7 @@ defmodule RiichiAdvanced.GameState.Actions do
   alias RiichiAdvanced.Match, as: Match
   alias RiichiAdvanced.MatchOld, as: MatchOld
   alias RiichiAdvanced.Riichi, as: Riichi
+  alias RiichiAdvanced.Types.Transaction, as: Transaction
   alias RiichiAdvanced.Utils, as: Utils
   require Logger
   import RiichiAdvanced.GameState
@@ -819,7 +820,8 @@ defmodule RiichiAdvanced.GameState.Actions do
 
     result = eval_expression(state, context, orig_rhs) |> Utils.try_integer()
     state = put_in(state.players[context.seat].counters[counter_name], result)
-    # add as a line item to the most recent transaction
+
+    # add as a line item
     line_item = %{
       op: if op == "=" do nil else op end,
       prev: if op == "=" do nil else lhs_value end,
@@ -827,9 +829,26 @@ defmodule RiichiAdvanced.GameState.Actions do
       result: result,
       reason: display_name
     }
-    state = update_in(state.txns, &List.update_at(&1, 0,
-      fn txn -> %{txn | line_items: [line_item | txn.line_items]} end
-    ))
+
+    # we update the latest txn for which context.seat
+    # if context.seat is a winner, search the first txn where they win
+    # otherwise, search for the first txn where they're paying
+    # depending on whether context.seat is a winner, 
+    is_winner = context.seat in state.winner_seats
+    ix = Enum.find_index(state.txns, if is_winner do 
+      &context.seat == &1.to and &1.from == nil
+    else
+      &context.seat == &1.from
+    end)
+    state = if ix != nil do
+      update_in(state.txns, &List.update_at(&1, ix,
+        fn txn -> %{txn | line_items: [line_item | txn.line_items]} end
+      ))
+    else
+      # add a new txn towards themselves
+      new_txn = %Transaction{name: display_name, from: nil, to: context.seat, line_items: [line_item]}
+      update_in(state.txns, &[new_txn | &1])
+    end
     state
   end
 
@@ -1431,6 +1450,10 @@ defmodule RiichiAdvanced.GameState.Actions do
           state
           |> Map.update!(:pot, & &1 + amount)
           |> update_player(context.seat, &%{ &1 | score: &1.score - amount })
+        "add_to_pot"            ->
+          amount = interpret_amount(state, context, opts)
+          state
+          |> Map.update!(:pot, & &1 + amount)
         "add_honba"             -> Map.update!(state, :honba, & &1 + interpret_amount(state, context, Enum.at(opts, 0, 1)))
         "reveal_hand"           -> update_player(state, context.seat, fn player -> %{ player | hand_revealed: true } end)
         "reveal_other_hands"    -> update_all_players(state, fn seat, player -> %{ player | hand_revealed: player.hand_revealed or seat != context.seat } end)
@@ -2127,7 +2150,9 @@ defmodule RiichiAdvanced.GameState.Actions do
   end
 
   def resume_deferred_actions(state) do
-    for {seat, player} <- state.players, reduce: state do
+    sorted_players = state.players
+    |> Enum.sort_by(fn {seat, _player} -> Utils.atamahane_order(state.turn, seat) end)
+    for {seat, player} <- sorted_players, reduce: state do
       state ->
         state = if not Enum.empty?(player.deferred_context_actions) do
           if Debug.debug_actions() do
@@ -2165,8 +2190,11 @@ defmodule RiichiAdvanced.GameState.Actions do
       end
       # clear ai thinking and last discard
       state = update_all_players(state, fn _seat, player -> %{ player | ai_thinking: false, last_discard: nil } end)
-      # trigger all choices that aren't "skip"
-      state = for {seat, player} <- state.players, reduce: state do
+      # trigger all choices that aren't "skip", in atamahane order
+
+      sorted_players = state.players
+      |> Enum.sort_by(fn {seat, _player} -> Utils.atamahane_order(state.turn, seat) end)
+      state = for {seat, player} <- sorted_players, reduce: state do
         state ->
           choice = player.choice
           # don't clear deferred actions here

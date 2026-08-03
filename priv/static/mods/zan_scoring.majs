@@ -72,6 +72,14 @@ define_scoring zan_ron do
   if honba > 0 do
     total += honba * 1000 :: "Honba"
   end
+  as winners do
+    riichi_stick_payment = pot
+    if riichi_stick_payment > 0 do
+      total += riichi_stick_payment :: "Riichi sticks"
+      riichi_stick_payment *= -1
+      add_to_pot("riichi_stick_payment")
+    end
+  end
 end
 
 define_scoring zan_tsumo do

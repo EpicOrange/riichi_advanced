@@ -234,6 +234,17 @@ defmodule RiichiAdvanced.Utils do
       raise err
   end
 
+  def atamahane_order(curr_seat, nil), do: 5
+  def atamahane_order(curr_seat, seat) do
+    case get_relative_seat(curr_seat, seat) do
+      :self -> 0
+      :shimocha -> 1
+      :toimen -> 2
+      :kamicha -> 3
+      _ -> 4
+    end
+  end
+
   def get_wind_name(wind) do
     case wind do
       :east  -> "東"
@@ -242,7 +253,6 @@ defmodule RiichiAdvanced.Utils do
       :north -> "北"
     end
   end
-
 
   def to_registry_name(name, id) do
     name <> "-" <> id

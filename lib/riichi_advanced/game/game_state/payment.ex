@@ -91,7 +91,7 @@ defmodule RiichiAdvanced.GameState.Payment do
     # IO.inspect(cxt.yaku, label: "cxt.yaku")
     # IO.inspect(all_mentioned_yaku, label: "all_mentioned_yaku")
     # IO.inspect(unmentioned_yaku, label: "unmentioned_yaku")
-    state = for {payer, player} <- players,
+    for {payer, player} <- players,
         payer != cxt.seat,
         {seat, yakus} <- player.responsibilities,
         seat == cxt.seat,
@@ -147,14 +147,6 @@ defmodule RiichiAdvanced.GameState.Payment do
         else state end
         state
     end
-    # then give pot to winner
-    state = if state.pot > 0 do
-      line_item = %{op: "+", prev: nil, amount: state.pot, result: state.pot, reason: "Riichi sticks"}
-      pot_txn = %Transaction{name: "Riichi sticks", from: nil, to: cxt.seat, line_items: [line_item]}
-      state = update_in(state.txns, &[pot_txn | &1])
-      state
-    else state end
-    state
   end
   def run_scoring_logic(state, _cxt), do: state # do nothing if no scoring key
 
