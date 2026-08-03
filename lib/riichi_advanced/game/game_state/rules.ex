@@ -159,13 +159,11 @@ defmodule RiichiAdvanced.GameState.Rules do
     end
   end
 
-
-
   def translate_sets_in_match_definitions(match_definitions, set_definitions) do
     for match_definition <- match_definitions do
       for match_definition_elem <- match_definition do
         case match_definition_elem do
-          [groups, num] -> [Enum.flat_map(groups, &Map.get(set_definitions, &1, [&1])), num]
+          [groups, num] -> [Enum.flat_map(groups, &Map.get(set_definitions, &1, [&1])) |> Enum.map(fn [x] -> x; g -> g end), num]
           _ when is_binary(match_definition_elem) -> match_definition_elem
           _ ->
             IO.puts("#{inspect(match_definition_elem)} is not a valid match definition element.")
