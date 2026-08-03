@@ -4,15 +4,4 @@ on after_initialization do
   rename_rule_tab("3 Han", "3+ Han")
   rename_rule_tab("4 Han", "3+ Han")
   rename_rule_tab("5 Han", "3+ Han")
-
-  # reset order
-  rename_rule_tab("Tiles", "Tiles")
-  rename_rule_tab("Rules", "Rules")
-  rename_rule_tab("0.5 Han", "0.5 Han") # cosmic riichi
-  rename_rule_tab("1 Han", "1 Han")
-  rename_rule_tab("2 Han", "2 Han")
-  rename_rule_tab("3+ Han", "3+ Han")
-  rename_rule_tab("Mangan", "Mangan")
-  rename_rule_tab("Yakuman", "Yakuman")
-  rename_rule_tab("Shuugi", "Shuugi")
 end

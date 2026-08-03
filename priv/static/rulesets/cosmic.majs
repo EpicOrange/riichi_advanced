@@ -17,7 +17,7 @@ apply set_append, "default_mods", [
   %{name: "lib/yaku/chiitoitsu", config: %{kansai: false, name: "Chiitoitsu", value: 1}},
   "yaku/tsubame_gaeshi",
   "yaku/kanburi",
-  %{name: "lib/yaku/isshoku_sanjun", config: %{san_value: 2, yon_value: 1, yon_han: "★", closed_bonus: 1}},
+  %{name: "lib/yaku/isshoku_sanjun", config: %{san_value: 2, yon_list: "yakuman", yon_value: 1, yon_han: "★", san_closed_bonus: 1}},
 ]
 
 on after_initialization do

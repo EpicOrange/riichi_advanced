@@ -1,28 +1,30 @@
 default san_list, "yaku"
-default san_name, ""
+default san_name, "Isshoku Sanjun"
 default san_value, 0
 default san_han, !han
 default yon_list, "yaku"
-default yon_name, ""
+default yon_name, "Isshoku Yonjun"
 default yon_value, 0
 default yon_han, !han
-default closed_list, "meta_yaku"
-default closed_bonus, 0
+default san_closed_list, "meta_yaku"
+default san_closed_bonus, 0
+default yon_closed_list, "meta_yakuman"
+default yon_closed_bonus, 0
 
 if !san_value > 0 do
   on after_initialization do
     add_rule("$value $han", !san_name, "%{value} %{han} if you have three of the exact same sequence in one suit, like 123 123 123.", %{value: !san_value, han: !san_han})
     update_rule("$value $han", !san_name, "%{example_hand}", %{example_hand: ~t"345345m789p6s 34m5M 6s", value: !san_value, han: !san_han})
   end
-  if !closed_bonus > 0 do
-    on after_initialization do
-      add_rule("$value $han", !san_name, "+%{bonus} %{han} if your hand is closed (no calls besides ankan).", %{value: !san_value, han: !san_han, bonus: !closed_bonus})
-    end
-    apply initialize, "constants.closed_hand", has_no_call_named("chii", "pon", "daiminkan", "kakan")
-    define_yaku !closed_list, !san_name, [!closed_bonus, !san_han], @closed_hand and has_existing_yaku(!san_name)
-  end
   define_set iishoku_sanjun, ~s"0 1 2, 0 1 2, 0 1 2"
   define_yaku !san_list, !san_name, [!san_value, !san_han], match(["hand", "calls", "winning_tile"], ~m"exhaustive, iishoku_sanjun:1, mentsu:1, pair:1")
+  if !san_closed_bonus > 0 do
+    on after_initialization do
+      add_rule("$value $han", !san_name, "+%{bonus} %{han} if your hand is closed (no calls besides ankan).", %{value: !san_value, han: !san_han, bonus: !san_closed_bonus})
+    end
+    apply initialize, "constants.closed_hand", has_no_call_named("chii", "pon", "daiminkan", "kakan")
+    define_yaku !san_closed_list, !san_name, [!san_closed_bonus, !san_han], @closed_hand and has_existing_yaku(!san_name)
+  end
 end
 
 if !yon_value > 0 do
@@ -30,13 +32,23 @@ if !yon_value > 0 do
     add_rule("$value $han", !yon_name, "%{value} %{han} if you have four of the exact same sequence in one suit, like 123 123 123 123.", %{value: !yon_value, han: !yon_han})
     update_rule("$value $han", !yon_name, "%{example_hand}", %{example_hand: ~t"345345m789p6s 34m5M 6s", value: !yon_value, han: !yon_han})
   end
-  if !closed_bonus > 0 do
-    on after_initialization do
-      add_rule("$value $han", !yon_name, "+%{bonus} %{han} if your hand is closed (no calls besides ankan).", %{value: !yon_value, han: !yon_han, bonus: !closed_bonus})
-    end
-    apply initialize, "constants.closed_hand", has_no_call_named("chii", "pon", "daiminkan", "kakan")
-    define_yaku !closed_list, !yon_name, [!closed_bonus, !yon_han], @closed_hand and has_existing_yaku(!yon_name)
-  end
   define_set iishoku_yonjun, ~s"0 1 2, 0 1 2, 0 1 2, 0 1 2"
   define_yaku !yon_list, !yon_name, [!yon_value, !yon_han], match(["hand", "calls", "winning_tile"], ~m"exhaustive, iishoku_yonjun:1, pair:1"), [!san_name]
+  if !yon_closed_bonus > 0 do
+    on after_initialization do
+      add_rule("$value $han", !yon_name, "+%{bonus} %{han} if your hand is closed (no calls besides ankan).", %{value: !yon_value, han: !yon_han, bonus: !yon_closed_bonus})
+    end
+    apply initialize, "constants.closed_hand", has_no_call_named("chii", "pon", "daiminkan", "kakan")
+    define_yaku !yon_closed_list, !yon_name, [!yon_closed_bonus, !yon_han], @closed_hand and has_existing_yaku(!yon_name)
+  end
+end
+
+if defined("riichi") do
+  on after_initialization do
+    delete_rule("$value $han", !san_name, %{value: !san_value, han: !san_han})
+    add_rule("$value $han", !san_name, "\"Pure Triple Sequences\". %{value} %{han} if you have three of the exact same sequence in one suit, like 123 123 123. Like iipeikou but three. +%{bonus} %{han} if closed. Does not stack with iipeikou (123 123) or sanrenkou (111 222 333).", %{value: !san_value, han: !san_han, bonus: !san_closed_bonus})
+    update_rule("$value $han", !san_name, "%{example_hand}", %{example_hand: ~t"345345m789p6s 34m5M 6s", value: !san_value, han: !san_han})
+  end
+  define_yaku_precedence "Isshoku Sanjun", ["Iipeikou", "Sanankou", "Sanrenkou", "Choupaikou", "Sujipaikou", "Chousankou"]
+  define_yaku_precedence "Suuankou", ["Isshoku Sanjun"]
 end

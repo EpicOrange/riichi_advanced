@@ -64,7 +64,7 @@ apply subtract, "default_mods", [
 apply append, "default_mods", [
   %{name: "lib/yaku/honitsu", config: %{hon_value: 2, chin_value: 1, chin_han: "★", closed_bonus: 1}},
   %{name: "lib/yaku/honroutou", config: %{hon_value: 1, hon_han: "★", chin_value: 1.5, chin_han: "★"}},
-  %{name: "lib/yaku/isshoku_sanjun", config: %{san_value: 2, yon_value: 1, yon_han: "★", closed_bonus: 1}},
+  %{name: "lib/yaku/isshoku_sanjun", config: %{san_value: 2, yon_list: "yakuman", yon_value: 1, yon_han: "★", san_closed_bonus: 1}},
   "no_riichi_ankan",
   %{name: "lib/yaku/riichi_renhou", config: %{is: "Shoumangan"}},
 ]

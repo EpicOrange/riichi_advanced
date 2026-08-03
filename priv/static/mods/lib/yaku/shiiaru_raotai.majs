@@ -1,0 +1,12 @@
+default list, "yaku"
+default name, "Shiiaru Raotai"
+default value, 1
+
+on after_initialization do
+  add_rule("$value $han", !name, "\"Twelve Tiles Down\". Win with four calls (so your hand is just one tile waiting for a pair). Ankans are allowed.", %{value: !value, han: !han})
+  update_rule("$value $han", !name, "%{example_hand}", %{value: !value, han: !han, example_hand: ~t"6z 9s9S9s 2p2P2p 4P06p 1P23p 6z"})
+end
+
+define_yaku !list, !name, [!value, !han],
+  (won_by_draw and not_hand_length_at_least(3))
+  or (not_won_by_draw and not_hand_length_at_least(2))

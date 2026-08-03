@@ -245,12 +245,12 @@ defmodule RiichiAdvanced.GameState.Conditions do
         for seat <- from_seats_spec(state, context, Enum.at(opts, 0, "self")) do
           IO.inspect({seat, state.players[seat].status}, charlists: :as_lists)
         end
-        state
+        true
       "print_counters"              ->
         for seat <- from_seats_spec(state, context, Enum.at(opts, 0, "self")) do
           IO.inspect({seat, state.players[seat].counters}, charlists: :as_lists)
         end
-        state
+        true
       "print_context"               ->
         IO.inspect(context)
         true

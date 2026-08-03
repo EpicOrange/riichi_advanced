@@ -1390,8 +1390,8 @@ defmodule RiichiAdvanced.GameState.Actions do
         "delete_rule"             ->
           tab = Enum.at(opts, 0, "Rules")
           id = Enum.at(opts, 1, "")
-          {tab, id} = if is_map(Enum.at(opts, 3)) do
-            vars = Enum.at(opts, 3, %{})
+          {tab, id} = if is_map(Enum.at(opts, 2)) do
+            vars = Enum.at(opts, 2, %{})
             tab = String.trim(interpolate_string(state, context, tab, vars))
             id = String.trim(interpolate_string(state, context, id, vars))
             {tab, id}

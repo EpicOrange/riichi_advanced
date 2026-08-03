@@ -65,7 +65,7 @@ apply subtract, "default_mods", [
   %{name: "lib/yaku/chiitoitsu", config: %{kansai: false, name: "Chiitoitsu", value: 2}},
   %{name: "lib/yaku/chanta", config: %{chanta_value: 1, closed_bonus: 1, junchan_value: 2}},
   %{name: "lib/yaku/ittsuu", config: %{closed_bonus: 1}},
-  %{name: "lib/yaku/sanankou", config: %{san_value: 2, suu_han: "★", suu_list: "yakuman", suu_tanki_value: 2, suu_value: 1}},
+  %{name: "lib/yaku/sanankou", config: %{san_value: 2, suu_han: "★", suu_list: "yakuman", suu_tanki_value: 2, suu_tanki_han: "★", suu_value: 1}},
   %{name: "lib/yaku/sanshoku_doujun", config: %{closed_bonus: 1, value: 1}},
   %{name: "lib/yaku/sanshoku_doukou", config: %{value: 2}},
   %{name: "lib/yaku/shousangen", config: %{dai_han: "★", dai_list: "yakuman", dai_value: 1, shou_value: 2}},
@@ -114,6 +114,11 @@ apply append, "default_mods", [
   %{name: "lib/yaku/tsuuiisou", config: %{value: 1.5, han: "★"}},
   %{name: "lib/yaku/kokushi", config: %{value: 1.5, han: "★"}},
   %{name: "lib/yaku/chuurenpoutou", config: %{value: 2, han: "★"}},
+  "lib/yaku/shiiaru_raotai",
+  "lib/yaku/ketsupaihou",
+  %{name: "lib/yaku/sanshoku_ittsuu", config: %{value: 2}},
+  %{name: "lib/yaku/shiisanpuutaa", config: %{value: 3}},
+  %{name: "lib/yaku/isshoku_sanjun", config: %{san_value: 3, san_closed_bonus: 1}},
   "no_riichi_ankan",
 ]
 

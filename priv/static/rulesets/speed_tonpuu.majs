@@ -32,7 +32,7 @@ apply set_append, "default_mods", [
   "kokushi_ankan_chankan",
   %{name: "lib/yaku/sanrenkou", config: %{san_name: "Sanrenkou", san_value: 2}},
   "lib/yaku/riichi_suurenkou",
-  "yaku/shiisanpuutaa",
+  %{name: "lib/yaku/shiisanpuutaa", config: %{list: "yakuman", value: 1, han: "★"}},
   "yaku/shiisanuushi",
   "lib/pao_suukantsu",
   "pao_rinshan",

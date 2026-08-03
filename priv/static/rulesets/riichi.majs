@@ -1,6 +1,8 @@
 set display_name, "Riichi"
 set tutorial_link, "https://github.com/EpicOrange/riichi_advanced/blob/main/documentation/riichi.md"
 
+define "riichi"
+
 define_global chii_name, "Chii"
 define_global pon_name, "Pon"
 define_global kan_name, "Kan"
@@ -10,6 +12,7 @@ define_global chankan_name, "Ron"
 define_global tsumo_name, "Tsumo"
 define_global han, "Han"
 
+require "base"
 require "value_honors"
 require "standard_sets"
 require "global_mods"
@@ -41,23 +44,9 @@ set score_calculation, %{
 }
 
 define_const can_draw_condition, true
-def discard_passed do end # extended by mods
-on after_turn_change do
-  if no_tiles_remaining do
-    pause(1000)
-    ryuukyoku("Ryuukyoku", "ryuukyoku")
-  else
-    if not_game_start do discard_passed end
-    if @can_draw_condition do draw end
-  end
+replace 1, "functions.discard_passed", ryuukyoku do
+  ryuukyoku("Ryuukyoku", "ryuukyoku")
 end
-
-on after_start do set_status_all("discards_empty") end
-on before_call do unset_status_all("discards_empty") end
-
-apply set_append, "play_effects", [
-  ["any", [["unset_status", "discards_empty"]]]
-]
 
 define_button chii,
   display_name: "Chii",
@@ -128,6 +117,7 @@ set initial_score, 25000
 set initial_dead_wall_length, 14
 set starting_tiles, 13
 set max_rounds, 8
+set four_rows_discards, false
 
 on after_initialization do
   add_rule_tab("Tiles")
@@ -328,11 +318,11 @@ define_mod_category "Local Yaku"
 # 1 han
 define_mod "yaku/nippatsu", order: 2, name: "Nippatsu", deps: ["lib/yaku/riichi"], desc: "Enables nippatsu. 1 han if you win during the second go-around after riichi ippatsu. Calls invalidate."
 define_mod "yaku/tsubame_gaeshi", name: "Tsubame Gaeshi", deps: ["lib/yaku/riichi"], desc: "Local yaku. \"Swallow Reversal\". 1 han if you win off a riichi declaration discard."
-define_mod "yaku/shiiaru_raotai", name: "Shiiaru Raotai", desc: "Local yaku. \"Twelve Tiles Down\". 1 han if you win with four calls (and therefore on a single tile wait). Closed kans are permitted."
+define_mod "lib/yaku/shiiaru_raotai", name: "Shiiaru Raotai", desc: "Local yaku. \"Twelve Tiles Down\". 1 han if you win with four calls (and therefore on a single tile wait). Closed kans are permitted."
 define_mod "yaku/kanburi", name: "Kanburi", desc: "Local yaku. \"Shoot After Kan\". 1 han if you win off the tile discarded by a player who just called kan."
 define_mod "yaku/honors_chiitoitsu", name: "Honors Chiitoitsu", desc: "Local yaku. 1 han on top of chiitoitsu if three of your pairs are dragons, or if four of your pairs are winds. If you have all seven honor pairs? Double yakuman."
 define_mod "yaku/uushin_tsuukan", name: "Uushin Tsuukan", desc: "Local yaku. \"Five-Heart Straight\". 1 han on top of ittsuu if the winning tile is the five needed for ittsuu."
-define_mod "yaku/ketsupaihou", name: "Ketsupaihou", desc: "Local yaku. \"Missing Tile\". 1 han if you have an edge (12, 89) or middle (24, 57) wait on a tile for which three are already publicly visible (so 12333 winning on 3 doesn't count)."
+define_mod "lib/yaku/ketsupaihou", name: "Ketsupaihou", desc: "Local yaku. \"Missing Tile\". 1 han if you have an edge (12, 89) or middle (24, 57) wait on a tile for which three are already publicly visible (so 12333 winning on 3 doesn't count)."
 # 2 han
 define_mod "yaku/open_riichi", name: "Open Riichi", deps: ["lib/yaku/riichi"], desc: "You have the option to declare open riichi, which is worth 2 han but reveals your hand to the table. Open double riichi is 3 han."
 define_mod "lib/yaku/sanrenkou", name: "Sanrenkou", desc: "Local yaku. \"Three Consecutive Triplets\". 2 han for having three triplets of the same suit in sequence, like 222 333 444."
@@ -368,7 +358,12 @@ config_mod "lib/yaku/sanpuukou", name: "dai_han", values: ["Han"]
 define_mod "yaku/renkaihou", deps: ["lib/yaku/rinshan"], name: "Renkaihou", desc: "Local yaku. \"Consecutive Blossom\". 2 han if you kan off the rinshan tile and win off of _that_ rinshan tile. Does not stack with rinshan."
 define_mod "yaku/mondeikou", deps: ["aka"], name: "Mondeikou", desc: "Local yaku. If you have 4 aka, 2 han on top of aka. This counts as a yaku."
 # 3 han
-define_mod "lib/yaku/riichi_isshoku_sanjun", name: "Isshoku Sanjun", desc: "Local yaku. \"Pure Triple Sequences\". 2 han if you have three of the exact same sequence in one suit, like 123 123 123. Like iipeikou but three. +1 han if closed. Does not stack with iipeikou (123 123) or sanrenkou (111 222 333)."
+define_mod "lib/yaku/isshoku_sanjun", name: "Isshoku Sanjun", desc: "Local yaku. \"Pure Triple Sequences\". 2 han if you have three of the exact same sequence in one suit, like 123 123 123. Like iipeikou but three. +1 han if closed. Does not stack with iipeikou (123 123) or sanrenkou (111 222 333)."
+config_mod "lib/yaku/isshoku_sanjun", name: "san_value", values: [2]
+config_mod "lib/yaku/isshoku_sanjun", name: "san_closed_bonus", values: [1]
+config_mod "lib/yaku/isshoku_sanjun", name: "yon_list", values: ["yakuman"]
+config_mod "lib/yaku/isshoku_sanjun", name: "yon_value", values: [1]
+config_mod "lib/yaku/isshoku_sanjun", name: "yon_han", values: ["★"]
 define_mod "yaku/ittsuu_chanta", name: "Ittsuu Chanta", desc: "Local yaku. 2 han if you have ittsuu, and (except the 456) the rest of your hand is chanta (or junchan, in which case it's 3 han). +1 han if closed. Does not stack with ittsuu."
 define_mod "yaku/tanfonhou", name: "Tanfonhou", desc: "Local yaku. \"Win Without Red\". 2 han if your hand contains no red. This means you can have only 248p (2,4,8 circles), 23468s (2,3,4,6,8 bamboo), and any honors except red dragon. 5 han instead if no honor tiles (chintanfon). +1 han if closed."
 define_mod "yaku/chinpeikou", name: "Chinpeikou", desc: "Local yaku. 3 han on top of ryanpeikou if your ryanpeikou sequences are all the same numbers (may be different suits), like 112233 112233. No restriction on the pair, so you can have an honor pair (despite 'chin' being in the name)."
@@ -390,7 +385,7 @@ define_mod_category "Yakuman"
 define_mod "yaku/paarenchan", deps: ["min_han"], name: "Paarenchan", desc: "Local yakuman. The eighth consecutive dealer win is worth yakuman. Exhaustive and abortive draws break the streak. After 5 wins, the minimum han required for the dealer becomes 2 han."
 define_mod "yaku/ishino_uenimo_sannen", name: "Ishino Uenimo Sannen", deps: ["lib/yaku/riichi"], desc: "Local yakuman. \"Three Years on a Rock\". If you win with double riichi and haitei/houtei, it's yakuman."
 define_mod "yaku/toukanhou", name: "Toukanhou", desc: "Local yakuman. \"First Kan Win\". If you kan (concealed or from a player) before discarding any tile, and win with rinshan, it's yakuman. Any call from an opponent invalidates this."
-define_mod "yaku/shiisanpuutaa", name: "Shiisanpuutaa", desc: "Local yakuman. \"Thirteen Unconnected\". If you start with 13 disconnected tiles (with one forming a pair), it's yakuman. Calls invalidate."
+define_mod "lib/yaku/shiisanpuutaa", name: "Shiisanpuutaa", desc: "Local yakuman. \"Thirteen Unconnected\". If you start with 13 disconnected tiles (with one forming a pair), it's yakuman. Calls invalidate."
 define_mod "yaku/shiisanuushi", name: "Shiisanuushi", desc: "Local yakuman. \"Thirteen Independent\". If you start with 14 disconnected tiles, it's yakuman. Calls invalidate."
 define_mod "lib/yaku/riichi_suurenkou", name: "Suurenkou", desc: "Local yakuman. \"Four Consecutive Triplets\". If you have four triplets of the same suit of increasing number, like 111 222 333 444, it's yakuman. Pao is applied if the fourth triplet is called."
 define_mod "yaku/suuchoupaikou", name: "Suuchoupaikou", desc: "Local yakuman. \"Four Skipped Tile Triplets\". If you have four triplets of the same suit whose numbers step by 2, like 111 333 555 777, it's yakuman. Pao is applied if the fourth triplet is called."
@@ -946,28 +941,31 @@ define_preset "Just Like Modded Minecraft", [
   "ura",
   "kandora",
   "yaku/tsubame_gaeshi",
-  "yaku/shiiaru_raotai",
+  "lib/yaku/shiiaru_raotai",
   "yaku/kanburi",
   "yaku/honors_chiitoitsu",
   "yaku/uushin_tsuukan",
-  "yaku/ketsupaihou",
+  "lib/yaku/ketsupaihou",
   "yaku/open_riichi",
   %{name: "lib/yaku/sanrenkou", config: %{
     san_list: "yaku", san_name: "Sanrenkou", san_value: 2, san_han: "Han",
     suu_list: "yakuman", suu_name: "Suurenkou", suu_value: 1, suu_han: "★"
   }},
-  "lib/yaku/sanshoku_ittsuu",
+  %{name: "lib/yaku/sanshoku_ittsuu", config: %{value: 1, closed_bonus: 1}},
   "yaku/kyandonhou",
   "yaku/ryandoukou",
   "yaku/shoutate",
   "yaku/choupaikou",
   "yaku/suuzuukou",
   %{name: "lib/yaku/sanpuukou", config: %{
-    shou_list: "yaku", shou_name: "", shou_value: 0, shou_han: "Han",
-    dai_list: "yaku", dai_name: "Big Three Winds", dai_value: 120, dai_han: "Han"
+    shou_name: "", shou_value: 0,
+    dai_name: "Sanpuukou", dai_value: 2
   }},
   "yaku/renkaihou",
-  "lib/yaku/riichi_isshoku_sanjun",
+  %{name: "lib/yaku/isshoku_sanjun", config: %{
+    san_value: 2, san_closed_bonus: 1,
+    # yon_list: "yakuman", yon_value: 1, yon_han: "★",
+  }},
   "yaku/ittsuu_chanta",
   "yaku/tanfonhou",
   "yaku/chinpeikou",
@@ -987,7 +985,7 @@ define_preset "Just Like Modded Minecraft", [
   "yaku/paarenchan",
   "yaku/ishino_uenimo_sannen",
   "yaku/toukanhou",
-  "yaku/shiisanpuutaa",
+  %{name: "lib/yaku/shiisanpuutaa", config: %{list: "yakuman", value: 1, han: "★"}},
   "yaku/shiisanuushi",
   "lib/yaku/riichi_suurenkou",
   "yaku/suuchoupaikou",
