@@ -829,9 +829,9 @@ defmodule RiichiAdvanced.GameState do
     end)
   end
 
-  def is_playable?(state, seat, tile) do
+  def is_playable?(state, seat, tile, ignore_buttons? \\ false) do
     tile != nil
-    and not has_unskippable_button?(state, seat)
+    and (ignore_buttons? or not has_unskippable_button?(state, seat))
     and not Utils.has_attr?(tile, ["no_discard"])
     and if Rules.has_key?(state.rules_ref, "play_restrictions") do
       Enum.all?(Rules.get(state.rules_ref, "play_restrictions"), fn [tile_spec, cond_spec] ->
@@ -846,8 +846,8 @@ defmodule RiichiAdvanced.GameState do
     # if tile == nil do
     #   IO.puts("#{seat} cannot play tile #{tile} because it is nil")
     #   false
-    # else if has_unskippable_button?(state, seat) do
-    #   IO.puts("#{seat} cannot play tile #{tile} because someone has an unskippable button")
+    # else if not ignore_buttons? and has_unskippable_button?(state, seat) do
+    #   IO.puts("#{seat} cannot play tile #{tile} because they have an unskippable button")
     #   false
     # else if Utils.has_attr?(tile, ["no_discard"]) do
     #   IO.puts("#{seat} cannot play tile #{tile} because it is no_discard")
