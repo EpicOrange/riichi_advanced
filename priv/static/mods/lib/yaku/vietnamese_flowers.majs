@@ -76,3 +76,10 @@ define_button start_flower,
     draw(1, "opposite_end")
     recalculate_buttons
   end
+
+# if you have declared flowers/jokers, cannot keep flowers in hand
+apply prepend, "buttons.start_flower.actions" do set_status("has_flower") end
+apply prepend, "buttons.flower.actions" do set_status("has_flower") end
+apply prepend, "buttons.start_joker.actions" do set_status("has_flower") end
+apply prepend, "buttons.joker.actions" do set_status("has_flower") end
+apply set, "buttons.flower.unskippable", status("has_flower")
