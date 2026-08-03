@@ -1,4 +1,7 @@
 defmodule RiichiAdvancedWeb.TutorialMenuLive do
+  alias RiichiAdvanced.GameState.Actions, as: Actions
+  alias RiichiAdvanced.GameState.Game, as: Game
+  alias RiichiAdvanced.GameState.Player, as: Player
   alias RiichiAdvanced.GameState.Rules, as: Rules
   alias RiichiAdvanced.LobbyState, as: LobbyState
   alias RiichiAdvanced.LobbyState.Lobby, as: Lobby
@@ -20,6 +23,31 @@ defmodule RiichiAdvancedWeb.TutorialMenuLive do
     |> assign(:lang, Map.get(params, "lang", "en"))
     |> assign(:available_tutorials, Map.get(Constants.tutorials(), params["ruleset"], []))
     |> assign(:clicked_index, nil)
+    |> assign(:state, %Game{
+      winners: %{east: %{}},
+      winner_seats: [:east],
+      winner_index: 0,
+      timer: -1,
+      visible_screen: nil,
+      players: Map.new([:east, :south, :west, :north], fn seat -> {seat, %Player{}} end),
+      delta_scores: %{},
+      delta_scores_reason: nil,
+      available_seats: [:east, :south, :west, :north],
+      txns: [],
+      kyoku: 0,
+      next_dealer: nil,
+      rules_text: %{},
+      rules_text_order: [],
+      game_active: true,
+      turn: :east,
+      actions: [],
+      wall: [],
+      wall_index: 0,
+      interruptible_actions: %{},
+      marking: Map.new([:east, :south, :west, :north], fn seat -> {seat, %{}} end),
+      mutex: nil,
+      smt_solver: nil,
+    })
 
     ruleset_json = ModState.load_ruleset(socket.assigns.ruleset) |> ModState.extract_json()
     rules_ref =
@@ -32,6 +60,16 @@ defmodule RiichiAdvancedWeb.TutorialMenuLive do
           nil
       end
     socket = assign(socket, :rules_ref, rules_ref)
+    
+    state = socket.assigns.state
+    |> Map.put(:rules_ref, rules_ref)
+    |> Map.put(:rules_text, %{})
+    |> Map.put(:rules_text_order, [])
+    |> Map.put(:players, Map.new([:east, :south, :west, :north], fn seat -> {seat, %Player{}} end))
+    |> Actions.trigger_event("after_initialization", %{seat: :east}) # to populate rules tabs
+    socket = assign(socket, :state, state)
+    socket = assign(socket, :rules_text, state.rules_text)
+    socket = assign(socket, :rules_text_order, state.rules_text_order)
 
     # parse the ruleset to get its display name
     socket = assign(socket, :display_name, Rules.get(rules_ref, "display_name", socket.assigns.display_name))
@@ -75,6 +113,7 @@ defmodule RiichiAdvancedWeb.TutorialMenuLive do
             </button>
           </div>
         <% end %>
+        <.live_component module={RiichiAdvancedWeb.RulesPopoverComponent} id="rules-popover" rules_text={@state.rules_text} rules_text_order={@state.rules_text_order} lang={@lang} />
       </div>
       <footer class="tutorial-menu-footer">
         <button phx-cancellable-click="play_game">
