@@ -18,18 +18,23 @@ on after_initialization do
   end
 end
 
-if !min == "Mangan" do
-  define_const min_han_check_discard,
-       has_yaku_with_discard(3, !han, @mangan_3_han_fu)
-    or has_yaku_with_discard(4, !han, @mangan_4_han_fu)
-    or has_yaku_with_discard(5, !han)
-    or has_yaku_with_discard(1, "★")
-else
-  if !min == "Yakuman" do
-    define_const min_han_check_discard, (@kazoe_yakuman_ari and has_yaku_with_discard(13, !han)) or has_yaku_with_discard(1, "★")
-  else
-    define_const min_han_check_discard, has_yaku_with_discard(!min, !han) or has_yaku_with_discard(1, "★")
-  end
+cond do
+  !min == "Yakuman" and defined("kazoe_yakuman_nashi") ->
+    define_const min_han_check_discard, has_yaku_with_discard(1, "★")
+  !min == "Yakuman" ->
+    define_const min_han_check_discard,
+         has_yaku_with_discard(13, !han)
+      or has_yaku_with_discard(1, "★")
+  !min == "Mangan" ->
+    define_const min_han_check_discard,
+         has_yaku_with_discard(3, !han, @mangan_3_han_fu)
+      or has_yaku_with_discard(4, !han, @mangan_4_han_fu)
+      or has_yaku_with_discard(5, !han)
+      or has_yaku_with_discard(1, "★")
+  true ->
+    define_const min_han_check_discard,
+         has_yaku_with_discard(!min, !han)
+      or has_yaku_with_discard(1, "★")
 end
 define_const min_han_check_call, @min_han_check_discard
 replace all, "constants.min_han_check_call", "has_yaku_with_discard", "has_yaku_with_call"

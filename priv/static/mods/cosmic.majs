@@ -3,8 +3,7 @@ on after_initialization do
 end
 
 # add haneyakuman, etc
-apply prepend, "functions.check_limit" do
-  x = points
+apply prepend, "functions.calculate_base_score" do
   if total == 0 and points >= 104 do
     total = points :: "Han"
     total = 64000 :: "Octuple Yakuman base"

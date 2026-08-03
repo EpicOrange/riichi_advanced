@@ -1,6 +1,3 @@
-# flag that mods can use to turn off this behavior
-define_const kazoe_yakuman_ari, true
-
 on before_scoring do
   add_scoring_attrs
   calculate_fu
@@ -27,7 +24,7 @@ def calculate_base_score do
     total = points2 * 8000 :: "Yakuman base"
     modify_winner("score_name", "Yakuman", as: "winner")
   end
-  if @kazoe_yakuman_ari and total == 0 and points >= 13 do
+  if total == 0 and points >= 13 do
     total = 8000 :: "Yakuman base"
     modify_winner("score_name", "Kazoe Yakuman", as: "winner")
   end
@@ -61,7 +58,6 @@ def calculate_base_score do
     han_mult = 2 ** (points + 2) :: "Han mult."
     total = minipoints :: "Fu"
     total *= han_mult :: "Base"
-    total = round_up(total, 100) :: "Round up"
   end
   base_score = total # save base_score for mods to use
 end
@@ -72,6 +68,9 @@ def apply_ron_scoring do
   else
     total *= 4 :: "Nondealer ron"
   end
+  if mod(total, 100) > 0 do
+    total = round_up(total, 100) :: "Round up"
+  end
 end
 
 def apply_tsumo_scoring do
@@ -80,8 +79,12 @@ def apply_tsumo_scoring do
   else
     total *= 1 :: "Nondealer tsumo"
   end
+  if mod(total, 100) > 0 do
+    total = round_up(total, 100) :: "Round up"
+  end
 end
 
+define_const honba_mult, 3
 def finalize_score do
   as winners do
     riichi_stick_payment = pot
@@ -91,21 +94,11 @@ def finalize_score do
       add_to_pot("riichi_stick_payment")
     end
   end
-end
-
-if defined("honba") do
-  if defined("sanma") do
-    define_const honba_mult, 2
-  else
-    define_const honba_mult, 3
-  end
-  apply append, "functions.finalize_score" do
-    if honba > 0 do
-      if won_by_draw do
-        total += honba * @honba_value :: "Honba"
-      else
-        total += honba * @honba_mult * @honba_value :: "Honba"
-      end
+  if honba > 0 do
+    if won_by_draw do
+      total += honba * @honba_value :: "Honba"
+    else
+      total += honba * @honba_mult * @honba_value :: "Honba"
     end
   end
 end

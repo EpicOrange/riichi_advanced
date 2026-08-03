@@ -1,5 +1,12 @@
+define "kazoe_yakuman_nashi"
+
 on after_initialization do
   add_rule("Rules", "No Kazoe Yakuman", "13+ han is worth sanbaiman, not yakuman.")
 end
 
-define_const kazoe_yakuman_ari, false
+apply prepend, "functions.calculate_base_score" do
+  if total == 0 and points2 == 0 and points >= 13 do
+    total = 6000 :: "Sanbaiman base"
+    modify_winner("score_name", "Sanbaiman", as: "winner")
+  end
+end

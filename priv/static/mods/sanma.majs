@@ -10,6 +10,7 @@ set num_players, 3
 set initial_score, 35000
 set max_rounds, 6
 apply subtract, "default_mods", ["suufon_renda", "suucha_riichi"]
+define_const honba_mult, 2
 
 define_mod_category "Sanma", prepend: true
 define_mod sanma_chii, order: 1, name: "Enable Chii", category: "Sanma", desc: "Allow chii during sanma."
