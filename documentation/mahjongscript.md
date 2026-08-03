@@ -789,8 +789,9 @@ The allowed methods for `apply <method>` are:
 - `"round"`: round a numeric value.
 - `"round up"`: round up a numeric value.
 - `"round down"`: round down a numeric value.
+- `"min"`: take the minimum of both values.
+- `"max"`: take the maximum of both values.
 - `"delete_key"`: remove a key or an array of keys from an object. (specify keys as strings)
-- any of the following C binary numeric operations theoretically work too: `"atan2", "copysign", "drem", "fdim", "fmax", "fmin", "fmod", "frexp", "hypot", "jn", "ldexp", "modf", "nextafter", "nexttoward", "pow", "remainder", "scalb", "scalbln", "yn"`
 
 If the parent node for the given path doesn't exist, the command does nothing (with the exception of `apply initialize` or `apply set`, in which case the path is created). You can also make an exception for this by prepending `set_` to the method, such as `apply set_append` -- this will `append` but default to `set` if the path doesn't exist.
 

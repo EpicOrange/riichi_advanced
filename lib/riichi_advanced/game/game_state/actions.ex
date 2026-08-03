@@ -812,6 +812,16 @@ defmodule RiichiAdvanced.GameState.Actions do
     r = eval_expression(state, context, r)
     rem(trunc(l), r)
   end
+  def eval_expression(state, context, ["min", [l, r]]) do
+    l = eval_expression(state, context, l)
+    r = eval_expression(state, context, r)
+    min(l, r)
+  end
+  def eval_expression(state, context, ["max", [l, r]]) do
+    l = eval_expression(state, context, l)
+    r = eval_expression(state, context, r)
+    max(l, r)
+  end
   def eval_expression(state, context, v), do: interpret_amount(state, context, v)
   defp counter_assignment(state, context, display_name, counter_name, op, rhs) do
     warn_counter(counter_name)

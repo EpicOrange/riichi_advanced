@@ -209,6 +209,8 @@ defmodule RiichiAdvancedWeb.ScoreWindowComponent do
       "round_down" -> "↓"
       "floor_div" -> "÷"
       "mod" -> "%"
+      "min" -> "min"
+      "mod" -> "max"
       _  -> ""
     end
   end

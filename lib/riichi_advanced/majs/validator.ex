@@ -2,7 +2,7 @@ defmodule RiichiAdvanced.ValidatorStrings do
   defmacro __using__(_) do
     quote do
       @unops [:-, "round_up", "round_down", "round"]
-      @binops [:+, :-, :*, :/, :**, :=, "round_up", "round_down", "round", "floor_div", "mod"]
+      @binops [:+, :-, :*, :/, :**, :=, "round_up", "round_down", "round", "floor_div", "mod", "min", "max"]
       # "atan2", "copysign", "drem", "fdim", "fmax", "fmin", "fmod", "frexp", "hypot", "jn", "ldexp",
       # "modf", "nextafter", "nexttoward", "pow", "remainder", "scalb", "scalbln", "yn"
       @allowed_actions [

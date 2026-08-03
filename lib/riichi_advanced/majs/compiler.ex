@@ -489,6 +489,8 @@ defmodule RiichiAdvanced.Compiler do
         "round"                                -> {:ok, "#{path} |= round"}
         "round_up"                             -> {:ok, "#{path} |= ceil"}
         "round_down"                           -> {:ok, "#{path} |= floor"}
+        "min"                                  -> {:ok, "#{path} |= [., #{value}] | min"}
+        "max"                                  -> {:ok, "#{path} |= [., #{value}] | max"}
         "delete_key" when is_binary(value_val) -> {:ok, "#{path} |= del(.[#{value}])"}
         "delete_key" when is_list(value_val)   ->
           if Enum.all?(value_val, &is_binary/1) do
