@@ -662,7 +662,7 @@ defmodule RiichiAdvancedWeb.GameLive do
     |> Enum.filter(fn {t, _i} -> t == tile end)
     |> Enum.map(fn {_t, i} -> i end)
     |> Enum.reduce(socket.assigns.interaction_state.visible_waits, &Map.put(&2, &1, waits))
-    socket =  update_interaction_state(socket, &%{&1 | visible_waits: new_visible_waits})
+    socket = update_interaction_state(socket, &%{&1 | visible_waits: new_visible_waits})
     {:noreply, socket}
   end
 

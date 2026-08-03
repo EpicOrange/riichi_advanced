@@ -1073,6 +1073,7 @@ defmodule RiichiAdvanced.GameState do
     state = if discard != nil do
       state
       |> Actions.play_tile(seat, discard, index, true)
+      |> Map.put(:log_loading_mode, true) # prevent pause actions running broadcast_state_change
       |> Actions.advance_turn()
     else state end
     get_score = fn state, win_source ->
