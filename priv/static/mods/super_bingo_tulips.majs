@@ -32,7 +32,6 @@ apply append, "buttons.chankan.show_when", status_missing("performing_arisu")
 
 define_yaku shuugi, "Tulips", ["arisu_matches", "⛀"], arisu_matches >= 1
 
-define_set seven, ~s"7p|7s"
 def perform_arisu do
   cond do
     status("riichi")                                      -> set_status("performing_arisu"); push_message("won with a closed hand, and will flip tiles on the wall from the dora indicator onward, scoring shuugi for every matching tile in hand")
@@ -97,9 +96,14 @@ end
 
 def calculate_tulips_tier do
   cond do
-    equals("$key", "tsumo")   -> add_counter("seven_pins", "count_matches", ["hand", "calls", "draw"], ~m"nojoker, seven:1")
-    equals("$key", "ron")     -> add_counter("seven_pins", "count_matches", ["hand", "calls", "last_discard"], ~m"nojoker, seven:1")
-    equals("$key", "chankan") -> add_counter("seven_pins", "count_matches", ["hand", "calls", "last_called_tile"], ~m"nojoker, seven:1")
+    equals("$key", "tsumo")   -> add_counter("seven_pins", "count_matches", ["hand", "calls", "draw"], ~m"nojoker, 7p:1")
+    equals("$key", "ron")     -> add_counter("seven_pins", "count_matches", ["hand", "calls", "last_discard"], ~m"nojoker, 7p:1")
+    equals("$key", "chankan") -> add_counter("seven_pins", "count_matches", ["hand", "calls", "last_called_tile"], ~m"nojoker, 7p:1")
+  end
+  cond do
+    equals("$key", "tsumo")   -> add_counter("seven_sous", "count_matches", ["hand", "calls", "draw"], ~m"nojoker, 7s:1")
+    equals("$key", "ron")     -> add_counter("seven_sous", "count_matches", ["hand", "calls", "last_discard"], ~m"nojoker, 7s:1")
+    equals("$key", "chankan") -> add_counter("seven_sous", "count_matches", ["hand", "calls", "last_called_tile"], ~m"nojoker, 7s:1")
   end
   cond do
     equals("$key", "tsumo")   and has_yaku_with_hand(3, "★")    -> tier = 3; push_message("starts in tier 3 for achieving triple yakuman")
@@ -108,8 +112,8 @@ def calculate_tulips_tier do
     equals("$key", "tsumo")   and has_yaku_with_hand(2, "★")    -> tier = 2; push_message("starts in tier 2 for achieving double yakuman")
     equals("$key", "ron")     and has_yaku_with_discard(2, "★") -> tier = 2; push_message("starts in tier 2 for achieving double yakuman")
     equals("$key", "chankan") and has_yaku_with_call(2, "★")    -> tier = 2; push_message("starts in tier 2 for achieving double yakuman")
-    seven_pins >= 3 and seven_sous >= 3 -> tier = 3; push_message("starts in tier 3 for having 3 sevens of both suits")
-    seven_pins >= 3 or  seven_sous >= 3 -> tier = 2; push_message("starts in tier 2 for having 3 sevens in one suit")
+    seven_pins >= 3 and seven_sous >= 3 -> tier = 3; push_message("starts in tier 3 for having three sevens of both suits")
+    seven_pins >= 3 or  seven_sous >= 3 -> tier = 2; push_message("starts in tier 2 for having three sevens in one suit")
     true                                -> tier = 1
   end
 end
