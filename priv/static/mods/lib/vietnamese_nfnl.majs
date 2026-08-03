@@ -59,7 +59,7 @@ define_button nfnl1,
   show_when: status_missing("initial_flowers")
     and status("nfnl_eligible", "discarding_flowers_jokers_eligible")
     and flowers_jokers_discarded >= 3
-    and not_match(["hand", "draw", "calls", "flowers", "jokers"], ["has_non_nfnl_tile"])
+    and not_match(["hand", "draw", "calls", "flowers", "jokers"], ["has_non_nfnl1_tile"])
     and ((our_turn and has_draw and not_match(["draw"], ["has_non_nfnl1_tile"]))
       or (not_our_turn and someone_else_just_discarded and not_match(["last_discard"], ["has_non_nfnl1_tile"]))
       or (not_our_turn and someone_else_just_called and status("can_chankan", as: "caller") and not_match(["last_called_tile"], ["has_non_nfnl1_tile"]))),
