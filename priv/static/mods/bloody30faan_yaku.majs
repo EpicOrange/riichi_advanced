@@ -4,6 +4,10 @@ require "value_honors"
 
 # (1) 字花類
 
+on after_initialization do
+  add_rule("1 Faan", "Flower", "1 Faan for each joker you declare as a flower.")
+  update_rule("1 Faan", "Flower", "%{example_hand}", %{example_hand: ~t"234m33777p45s 678s 6s"})
+end
 define_yaku yaku, "Flower", ["called_jokers", "Faan"], called_jokers >= 1
 define_yaku yaku, "No Honors or Flowers", [2, "Faan"], not_match(["hand", "calls", "winning_tile"], ~m"jihai:1") and called_jokers == 0
 define_yaku yaku, "No Jokers", [2, "Faan"], called_jokers == 0

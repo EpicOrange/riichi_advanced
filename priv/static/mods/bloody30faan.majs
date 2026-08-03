@@ -1,5 +1,40 @@
 require "value_honors"
 
+on after_initialization do
+  add_rule("Tiles", "Jokers", "There are 8 jokers in the game: %{jokers}.", %{jokers: ~T"10j12j3j14j15j6j17j18j"}, -10)
+  update_rule("Tiles", "Jokers", "- %{any} can represent any tile." %{any: ~T"10j"})
+  update_rule("Tiles", "Jokers", "- %{number} can represent any number (suited) tile." %{number: ~T"12j"})
+  update_rule("Tiles", "Jokers", "- %{honour} can represent any honour tile." %{honour: ~T"3j"})
+  update_rule("Tiles", "Jokers", "- %{dragon} can represent any dragon." %{dragon: ~T"14j"})
+  update_rule("Tiles", "Jokers", "- %{wind} can represent any wind tile." %{wind: ~T"15j"})
+  update_rule("Tiles", "Jokers", "- %{pinzu} can represent any circle tile." %{pinzu: ~T"6j"})
+  update_rule("Tiles", "Jokers", "- %{souzu} can represent any bamboo tile." %{souzu: ~T"17j"})
+  update_rule("Tiles", "Jokers", "- %{manzu} can represent any character tile." %{manzu: ~T"18j"})
+  update_rule("Tiles", "Jokers", "You can also replace jokers in hand with a replacement tile during your turn. Each joker declared this way earns 1 Faan.")
+  update_rule("Rules", "Jokers", "You can replace jokers in hand %{jokers} with a replacement tile during your turn. Each joker declared this way earns 1 Faan. Jokers declared in this manner cannot be robbed for a win.", %{jokers: ~T"10j12j3j14j15j6j17j18j"})
+  update_rule("Rules", "Scoring", """
+    When scoring, add up all faan earned. The amount of points exchanged is based on total faan:
+    - 0 Faan = 1 points
+    - 1-2 Faan = 2 points
+    - 3-4 Faan = 4 points
+    - 5-6 Faan = 8 points
+    - 7-8 Faan = 12 points
+    - 9-10 Faan = 16 points
+    - 11-13 Faan = 24 points
+    - 14-16 Faan = 32 points
+    - 17-19 Faan = 48 points
+    - 20-24 Faan = 64 points
+    - 25-29 Faan = 96 points
+    - 30-39 Faan = 128 points
+    On Hu, the discarder pays the full amount. On Zimo, all players who have not yet won pay the full amount.
+    """)
+  update_rule("Rules", "Bloody End", "Play continues after a win. The round only ends when three players have won, or if the wall is exhausted.")
+  update_rule("Rules", "Sheung", "You cannot sheung a discarded joker.")
+  update_rule("Rules", "Pung", "You cannot pung a discard using more than one joker.")
+  update_rule("Rules", "Kong", "Concealed kongs are completely hidden until the end of a round.")
+  update_rule("Rules", "Kong", "You cannot add a joker to a pung, nor can you concealed kong with a joker.")
+end
+
 set interruptible_actions, ["play_tile", "draw", "call", "self_call", "upgrade_call"]
 set initial_score, 0
 set starting_tiles, 13
@@ -86,7 +121,19 @@ define_match joker_tanki_tenpai, ~m"""
 
 define_match any_joker, ~m"nojoker, (10j 12j 3j 14j 15j 16j 17j 18j):1"
 
-on before_scoring do make_responsible_for("others") end
+on before_scoring do
+  if won_by_draw do
+    if status_missing("won", as: "shimocha") do make_responsible_for("shimocha") end
+    if status_missing("won", as: "toimen") do make_responsible_for("toimen") end
+    if status_missing("won", as: "kamicha") do make_responsible_for("kamicha") end
+  else
+    if won_by_discard do
+      make_responsible_for("last_discarder")
+    else
+      make_responsible_for("last_caller")
+    end
+  end
+end
 define_scoring win do
   cond do
     points == 0 -> total = 1 :: "0 Faan"

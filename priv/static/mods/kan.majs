@@ -78,3 +78,10 @@ define_button kakan,
 on before_turn_change do
   unset_status("kan", "double_kan")
 end
+
+if !hide_ankans do
+  apply initialize, "buttons.ankan.call_style", %{self: [["1x", 0], ["1x", 1], ["1x", 2], ["1x", 3]]}
+  on before_win do flip_all_calls_faceup end
+  on before_exhaustive_draw do flip_all_calls_faceup end
+  on before_abortive_draw do flip_all_calls_faceup end
+end
