@@ -1104,8 +1104,8 @@ defmodule RiichiAdvanced.Compiler do
           err -> err
         end
         with {:ok, {cond_bodys, defs}} <- rets do
-          for {cond, body} <- cond_bodys, reduce: {:ok, ["."]} do
-            {:ok, else_branch} ->
+          for {cond, body} <- cond_bodys, reduce: {:ok, {["."], defs}} do
+            {:ok, {else_branch, defs}} ->
               {:ok, {"(if #{cond} then\n#{body}\nelse\n#{else_branch}\nend)", defs}}
             err -> err
           end
