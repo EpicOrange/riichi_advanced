@@ -1,0 +1,325 @@
+# TODOs:
+#  qiangjin needs to pause the game, rather than continuing to display after East has drawn their first tile
+#  need to have a "win_by_qiangjin" that shows the gold tile as the winning tile, in the win screen
+# mods/rule-variants
+#  reddit post says only red dragon is a flower, not all 3 dragons
+#  reddit post says if you have 3 gold you win immediately, but here it is just a valuable yaku
+#  mahjongpros also seem to have a few more yaku
+
+set display_name, "Fuzhou"
+set tutorial_link, "https://github.com/EpicOrange/riichi_advanced/blob/main/documentation/fuzhou.md"
+define_global han, ""
+define_global ankan_name, "Self Kong"
+define_global chankan_name, "Hu"
+define_global chii_name, "Chow"
+define_global pon_name, "Pung"
+define_global kan_name, "Kong"
+define_global flower_name, "Flower"
+define_global ron_name, "Hu"
+define_global tsumo_name, "Zimo"
+require "standard_sets"
+require "base"
+require "standard_wall"
+require "framed_5z"
+require "global_mods"
+require "default_auto_buttons"
+require "chii"
+require "pon"
+require "kan", %{hide_ankans: false, replace_from_dead_wall: true, shift_dead_wall: true}
+require "ron", %{scoring_key: "win"}
+require "tsumo", %{scoring_key: "win"}
+require "agarirenchan"
+require "head_bump"
+require "default_flowers", %{draw_after_flower_phase: true, auto_flower_by_default: true, undiscardable: true, replace_from_dead_wall: true, shift_dead_wall: true}
+
+on after_initialization do
+  add_rule("Rules", "Win Condition", "You may win with one of the following:", -100)
+  add_rule("Rules", "Win Condition", "- Five sets (sequences or triplets) and a pair.", -100)
+  add_rule("Rules", "Gold", "After all flowers have been declared, the \"gold tile\" is revealed (top left).")
+  add_rule("Rules", "Gold", "When the gold tile is revealed, if it is your winning tile, you may instantly declare a win off it (Qiangjin).")
+  add_rule("Rules", "Gold", "Otherwise, the gold tile is a joker for any tile, but it cannot be used in calls.")
+  add_rule("Rules", "Gold", "If you discard a gold tile, you may only win by self-draw.")
+  add_rule("Rules", "Flowers", "All honour tiles are flowers.")
+  add_rule("2", "Flower Points", "You get 2 points per flower tile.")
+  add_rule("2", "Gold Points", "You get 2 points per gold tile.")
+  add_rule("2", "Dealer Continuation", "The dealer gets 2 points for each dealer continuation.")
+  add_rule("2", "Open Kong", "You get 2 points per open kong.")
+  add_rule("10", "Base", "You get 10 points for winning.")
+  add_rule("10", "All Sequences", "You have five sequences and a pair.")
+  add_rule("12", "Full Bloom", "Declaring all four of a given type of flower gives 12 points per set.")
+  add_rule("15", "One Flower", "Your hand has exactly one flower.")
+  add_rule("20", "Golden Pair", "Your pair is made of two gold tiles.")
+  add_rule("30", "Three Gold Knockdown", "Your hand contains all three gold tiles.")
+  add_rule("40", "Golden Dragon", "Your hand contains three gold tiles as a triplet.")
+  add_rule("40", "Blessing of Earth", "A non-dealer player won on their first draw.")
+  add_rule("50", "Robbing the Gold", "You declared a win off the gold tile when it was revealed.")
+  add_rule("50", "Blessing of Heaven", "The dealer won on their first draw.")
+end
+
+set interruptible_actions, ["play_tile", "draw", "advance_turn", "upgrade_call"]
+set display_honba, true
+set display_wall, true
+set initial_score, 0
+set initial_dead_wall_length, 18
+set starting_tiles, 16
+
+apply merge, "dora_indicators", %{
+  "1m": ["1m"], "2m": ["2m"], "3m": ["3m"], "4m": ["4m"], "5m": ["5m"], "6m": ["6m"], "7m": ["7m"], "8m": ["8m"], "9m": ["9m"], "0m": ["5m"],
+  "1p": ["1p"], "2p": ["2p"], "3p": ["3p"], "4p": ["4p"], "5p": ["5p"], "6p": ["6p"], "7p": ["7p"], "8p": ["8p"], "9p": ["9p"], "0p": ["5p"],
+  "1s": ["1s"], "2s": ["2s"], "3s": ["3s"], "4s": ["4s"], "5s": ["5s"], "6s": ["6s"], "7s": ["7s"], "8s": ["8s"], "9s": ["9s"], "0s": ["5s"],
+  "1z": ["1z"], "2z": ["2z"], "3z": ["3z"], "4z": ["4z"], "0z": ["0z"], "6z": ["6z"], "7z": ["7z"],
+  "1f": ["1f", "2f", "3f", "4f", "1g", "2g", "3g", "4g"],
+  "2f": ["1f", "2f", "3f", "4f", "1g", "2g", "3g", "4g"],
+  "3f": ["1f", "2f", "3f", "4f", "1g", "2g", "3g", "4g"],
+  "4f": ["1f", "2f", "3f", "4f", "1g", "2g", "3g", "4g"],
+  "1g": ["1f", "2f", "3f", "4f", "1g", "2g", "3g", "4g"],
+  "2g": ["1f", "2f", "3f", "4f", "1g", "2g", "3g", "4g"],
+  "3g": ["1f", "2f", "3f", "4f", "1g", "2g", "3g", "4g"],
+  "4g": ["1f", "2f", "3f", "4f", "1g", "2g", "3g", "4g"],
+}
+
+on after_initialization do
+  add_rule("Rules", "Win Condition", "- Five sets (sequences or triplets) and a pair.", -100)
+end
+
+# # we don't use this since jokers are expensive with 5 possible mentsu, see below
+# define_const standard_tenpai, ~m"exhaustive, mentsu:4, taatsu:1, pair:1 | exhaustive, mentsu:5"
+# define_const standard_win, ~m"exhaustive, mentsu:5, pair:1"
+# apply set_append, "tenpai_definition", +@standard_tenpai
+# apply set_append, "win_definition", +@standard_win
+
+# optimization so we don't have to actually calculate jokers to match hands with them
+# based on goal reduction theory: https://injusticejudge.com/2026/07/22/joker-theory
+define_const gold_win, ~m"exhaustive, any@jin:-1, mentsu:5, taatsu:1"
+define_const gold_tenpai, ~m"""
+    exhaustive, any@jin:1, any@jin:-1, mentsu:5
+  | exhaustive, any@jin:1, any@jin:-1, mentsu:4, taatsu:1, pair:1
+  """
+define_const gold_iishanten, ~m"""
+    exhaustive, any@jin:2, any@jin:-1, mentsu:4, taatsu:1
+  | exhaustive, any@jin:2, any@jin:-1, mentsu:3, taatsu:2, pair:1
+  """
+define_const gold_ryanshanten, ~m"""
+    exhaustive, any@jin:3, any@jin:-1, mentsu:4
+  | exhaustive, any@jin:3, any@jin:-1, mentsu:3, taatsu:2 
+  | exhaustive, any@jin:3, any@jin:-1, mentsu:2, taatsu:3, pair:1
+  """
+# define_const gold_sanshanten, ~m"""
+#     exhaustive, any@jin:4, any@jin:-1, mentsu:3, pair:1
+#   | exhaustive, any@jin:4, any@jin:-1, mentsu:2, taatsu:3
+#   | exhaustive, any@jin:4, any@jin:-1, mentsu:1, taatsu:4, pair:1
+#   """
+apply set_append, "win_definition", +@gold_win
+apply set_append, "win_definition", +@gold_tenpai
+apply set_append, "win_definition", +@gold_iishanten
+apply set_append, "win_definition", +@gold_ryanshanten
+# replace tenpai check with a stub
+define_match tenpai, ~m""
+# qiangjin is just regular win
+define_match qiangjin, ~m"exhaustive, mentsu:5, pair:1"
+
+# to check for all sequences, do a similar thing
+define_set pinghu_wait, ~s"0 1 | 0 2"
+define_const pinghu_win, ~m"exhaustive, any@jin:-1, shuntsu:5, pair:1"
+define_const pinghu_tenpai, ~m"""
+    exhaustive, any@jin:1, any@jin:-1, shuntsu:5
+  | exhaustive, any@jin:1, any@jin:-1, shuntsu:4, pinghu_wait:1, pair:1
+  """
+define_const pinghu_iishanten, ~m"""
+    exhaustive, gold_pair:-1, any@jin:2, any@jin:-1, shuntsu:4, taatsu:1
+  | exhaustive, gold_pair:-1, any@jin:2, any@jin:-1, shuntsu:3, pinghu_wait:2, pair:1
+  """
+define_const pinghu_ryanshanten, ~m"""
+    exhaustive, gold_pair:-1, gold_koutsu:-1, any@jin:3, any@jin:-1, shuntsu:4
+  | exhaustive, gold_pair:-1, gold_koutsu:-1, any@jin:3, any@jin:-1, shuntsu:3, pinghu_wait:1, taatsu:1 
+  | exhaustive, gold_pair:-1, gold_koutsu:-1, any@jin:3, any@jin:-1, shuntsu:2, pinghu_wait:3, pair:1
+  """
+# define_const pinghu_sanshanten, ~m"""
+#     exhaustive, any@jin:3, any@jin:-1, shuntsu:3, taatsu:1
+#   | exhaustive, any@jin:3, any@jin:-1, shuntsu:2, pinghu_wait:2, taatsu:1
+#   | exhaustive, any@jin:3, any@jin:-1, shuntsu:1, pinghu_wait:4, pair:1
+#   """
+apply set_append, "pinghu_definition", +@pinghu_win
+apply set_append, "pinghu_definition", +@pinghu_tenpai
+apply set_append, "pinghu_definition", +@pinghu_iishanten
+apply set_append, "pinghu_definition", +@pinghu_ryanshanten
+
+# Yaku
+
+define_yaku yaku, "Base Points", [10, ""], true
+
+on before_win do
+  if seat_is("east") do dealer_continuation = honba end
+  set_counter("flower_count", "count_matches", ["flowers"], ~m"any_flower:1")
+  set_counter("gold_count", "count_matches", ["hand", "calls", "winning_tile", "flowers"], ~m"nojoker, any@jin:1")
+  dealer_continuation_bonus = dealer_continuation * 2
+  flower_bonus = flower_count * 2
+  gold_bonus = gold_count * 2
+end
+
+define_yaku yaku, "Flowers", ["flower_bonus", ""], flower_count >= 1
+define_yaku yaku, "Gold", ["gold_bonus", ""], gold_count >= 1
+define_yaku yaku, "Three Gold Knockdown", [30, ""], gold_count >= 3
+define_yaku yaku, "Dealer Continuation", ["dealer_continuation_bonus", ""], seat_is("east") and dealer_continuation_bonus >= 1
+
+on before_win do
+  if seat_is("east") do dealer_continuation = honba end
+  set_counter("flower_count", "count_matches", ["flowers"], ["any_flower"])
+  set_counter("gold_count", "count_matches", ["hand", "calls", "winning_tile", "flowers"], ~m"nojoker, any@jin:1")
+end
+
+on before_win do
+  set_counter("minkans", "count_matches", ["calls"], ~m"(daiminkan kakan):1")
+  set_counter("ankans", "count_matches", ["calls"], ~m"ankan:1")
+  minkan_bonus = minkans * 2
+  ankan_bonus = ankans * 2
+end
+define_yaku yaku, "Open Kongs", ["minkan_bonus", ""], minkan_bonus > 0
+define_yaku yaku, "Concealed Kongs", ["ankan_bonus", ""], ankan_bonus > 0
+
+define_yaku yaku, "Full Bloom (Flowers)", [12, ""], match(["flowers"], ~m"nojoker, unique, (1f 2f 3f 4f):4")
+define_yaku yaku, "Full Bloom (Seasons)", [12, ""], match(["flowers"], ~m"nojoker, unique, (1g 2g 3g 4g):4")
+define_yaku yaku, "Full Bloom (East)", [12, ""], match(["flowers"], ~m"nojoker, 1z:4")
+define_yaku yaku, "Full Bloom (South)", [12, ""], match(["flowers"], ~m"nojoker, 2z:4")
+define_yaku yaku, "Full Bloom (West)", [12, ""], match(["flowers"], ~m"nojoker, 3z:4")
+define_yaku yaku, "Full Bloom (North)", [12, ""], match(["flowers"], ~m"nojoker, 4z:4")
+define_yaku yaku, "Full Bloom (White)", [12, ""], match(["flowers"], ~m"nojoker, 0z:4")
+define_yaku yaku, "Full Bloom (Green)", [12, ""], match(["flowers"], ~m"nojoker, 6z:4")
+define_yaku yaku, "Full Bloom (Red)", [12, ""], match(["flowers"], ~m"nojoker, 7z:4")
+
+define_yaku yaku, "All Sequences", [10, ""], match(["hand", "calls", "winning_tile"], ["pinghu"])
+
+define_const all_flowers, ["1f", "2f", "3f", "4f", "1g", "2g", "3g", "4g", "1z", "2z", "3z", "4z", "0z", "6z", "7z"]
+define_set all_flowers, ~s"1f 2f 3f 4f 1g 2g 3g 4g 1z 2z 3z 4z 0z 6z 7z"
+define_set any_flower, ~s"1f|2f|3f|4f|1g|2g|3g|4g|1z|2z|3z|4z|0z|6z|7z"
+define_yaku yaku, "Only One Flower", [15, ""], match(["flowers"], ~m"nojoker, any_flower:1, any_flower:-1")
+
+# old version
+# define_set gold_pair, ~s"0@is_jin 0@is_jin"
+# define_set gold_koutsu, ~s"0@is_jin 0@is_jin 0@is_jin"
+# define_match golden_pair, ~m"exhaustive, (nojoker gold_pair):1, mentsu:5"
+# define_match golden_dragon, ~m"exhaustive, (nojoker gold_koutsu):1, mentsu:4, pair:1"
+# define_yaku yaku, "Golden Pair", [20, ""], match(["hand", "calls", "winning_tile"], ["golden_pair"])
+# define_yaku yaku, "Golden Dragon", [40, ""], match(["hand", "calls", "winning_tile"], ["golden_dragon"])
+
+define_set gold_pair, ~s"0@jin 0@jin"
+define_set gold_koutsu, ~s"0@jin 0@jin 0@jin"
+define_match golden_pair, ~m"exhaustive, gold_pair:1, mentsu:5"
+define_match golden_dragon, ~m"exhaustive, gold_koutsu:1, mentsu:4, pair:1"
+define_yaku yaku, "Golden Pair", [20, ""], match(["hand", "calls", "winning_tile"], ["golden_pair"])
+define_yaku yaku, "Golden Dragon", [40, ""], match(["hand", "calls", "winning_tile"], ["golden_dragon"])
+
+define_yaku yaku, "Robbing the Gold", [50, ""], status("qiangjin")
+
+require "yaku/tenhou", %{tenhou_name: "Blessing of Heaven", tenhou_value: 50, chiihou_name: "Blessing of Earth", chiihou_value: 40, chiihou_is_tsumo: true}
+
+apply merge, "yaku_precedence", %{
+  "Golden Pair": ["Gold"],
+  "Golden Dragon": ["All Sequences", "Three Gold Knockdown", "Golden Pair", "Gold"],
+  "Three Gold Knockdown": ["Golden Pair", "Gold"],
+  "Robbing the Gold": ["Blessing of Heaven", "Blessing of Earth"]
+}
+
+set score_calculation, %{
+  "yaku_lists": ["yaku"],
+  "agarirenchan": true,
+  "point_name": "",
+  "win_by_discard_label": "Hu",
+  "win_by_draw_label": "Zimo",
+  "win_by_discard_name": "Hu",
+  "win_by_draw_name": "Zimo",
+  "exhaustive_draw_name": "Draw"
+}
+
+# can't discard flowers
+define_play_restriction flower, false
+define_play_restriction "1z", false
+define_play_restriction "2z", false
+define_play_restriction "3z", false
+define_play_restriction "4z", false
+define_play_restriction "0z", false
+define_play_restriction "6z", false
+define_play_restriction "7z", false
+
+define_play_effect dora, set_status("tsumo_only")
+
+on after_start do
+  # flip gold tile
+  tag_dora("jin", -2)
+  reveal_tile(-2)
+  copy_tiles(%{dead_wall: [-2]}, %{atop_wall: [-9]})
+  add_attr([-2], ["_skip_draw", "_hidden"])
+
+  # check for qiangjin for all players
+  as everyone do
+    if match(["hand", "revealed_tiles"], ["qiangjin"]) do
+      set_status("qiangjin")
+    end
+  end
+
+  # add the "dora" attribute to tiles tagged with "jin", which should make them shiny
+  # also adds the "jin" attribute needed to make it a joker upon a win
+  add_attr_tagged("jin", ["_dora", "jin"])
+end
+
+on before_win, prepend: true do
+  # sets any tile with attribute "jin" to be an any-joker with attribute "is_jin"
+  # set_tile_alias_all([%{tile: "any", attrs: ["jin"]}], [%{tile: "any", attrs: ["is_jin"]}])
+  # nvm turns out you can implement this without any joker logic :)
+end
+
+apply append, "buttons.start_flower.show_when", status("initial_flowers") and status_missing("qiangjin")
+apply append, "buttons.flower.show_when", status_missing("initial_flowers") and status_missing("qiangjin")
+
+apply append, "buttons.chii.call_conditions", not_call_contains(%{tile: "any", attrs: ["jin"]}, 1)
+apply append, "buttons.pon.call_conditions", not_call_contains(%{tile: "any", attrs: ["jin"]}, 1)
+apply append, "buttons.daiminkan.call_conditions", not_call_contains(%{tile: "any", attrs: ["jin"]}, 1)
+
+# ankan moves two tiles
+apply append, "buttons.ankan.actions" do shift_tile_to_dead_wall(1) end
+
+apply append, "buttons.ron.show_when", status_missing("initial_flowers", "tsumo_only") and not_match(["last_discard"], ~m"any@jin:1")
+apply append, "buttons.chankan.show_when", status_missing("initial_flowers", "tsumo_only") and not_match(["last_discard"], ~m"any@jin:1")
+apply append, "buttons.tsumo.show_when", status_missing("initial_flowers")
+
+on before_win do
+  cond do
+    won_by_draw -> make_responsible_for("others")
+    won_by_discard -> make_responsible_for("last_discarder")
+    won_by_call -> make_responsible_for("last_caller")
+  end
+end
+define_scoring win do
+  total = points :: "Score"
+  set_counter_all("total", "total")
+end
+
+define_button qiangjin,
+  display_name: "Qiangjin",
+  show_when: status("initial_flowers", "qiangjin") and status_missing("flower"),
+  precedence_over: ["start_flower", "start_no_flower"],
+  unskippable: true
+  do
+    big_text("Qiangjin")
+    pause(1000)
+    move_tiles("revealed_tile", "draw")
+    reveal_hand
+    win_by_draw("win")
+  end
+
+define_button qiangjin_skip,
+  display_name: "Skip",
+  show_when: status("initial_flowers", "qiangjin") and status_missing("flower"),
+  unskippable: true
+  do
+    unset_status("qiangjin")
+    recalculate_buttons
+  end
+
+set default_mods, ["show_waits"]
+
+define_mod forced_flowers, conflicts: ["discardable_flowers"], name: "Forced Flowers", desc: "Every drawn flower must be replaced immediately."
+define_mod discardable_flowers, conflicts: ["forced_flowers"], name: "Discardable Flowers", desc: "You may discard flower tiles like normal tiles."
+define_mod forbid_golden_flowers, name: "No Gold Flowers", desc: "The gold tile is determined by checking each tile in the dead wall until you find a non-flower tile. Flowers revealed in this process are given to the player whose wall is broken. If all nine tiles on the dead wall are flowers, then there is no gold tile for the round."
+define_mod fuzhou_everyone_pays, name: "Everyone Pays On Discard", desc: "Non-discarders also pay for a win by discard."
+define_mod reset_honba_on_draw, name: "Draws Reset Dealer Bonus", desc: "Reset the dealer continuation bonus on exhaustive draws. (The default behavior is to increase the bonus on a draw.)"

@@ -1,6 +1,8 @@
 default draw_after_flower_phase, false
 default auto_flower_by_default, false
 default undiscardable, false
+default replace_from_dead_wall, true
+default shift_dead_wall, false
 default matching_flower_value, 0
 default matching_flower_han, !han
 default four_flowers_value, 0
@@ -61,8 +63,10 @@ define_button start_flower,
   unskippable: true
   do
     big_text(!flower_name)
+    set_status("flower")
     flower(+@all_flowers)
-    draw(1, "opposite_end")
+    if !shift_dead_wall do shift_tile_to_dead_wall(1) end
+    if !replace_from_dead_wall do draw(1, "opposite_end") else draw end
     recalculate_buttons
   end
 
@@ -102,7 +106,8 @@ define_button flower,
     if no_tiles_remaining do
       advance_turn
     else
-      draw(1, "opposite_end")
+      if !shift_dead_wall do shift_tile_to_dead_wall(1) end
+      if !replace_from_dead_wall do draw(1, "opposite_end") else draw end
     end
   end
 

@@ -2374,6 +2374,8 @@ div.rules-wrapper > label {
   display: flex;
   justify-content: center;
   align-items: center;
+  flex: 0 0 auto;
+  min-height: calc(1 * var(--tile-size));
 }
 div.rules-wrapper > label.lang-en {
   transform: rotate(180deg); /* make text face right */

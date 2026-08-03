@@ -1,0 +1,3 @@
+replace 1, "play_restrictions", [["flower"], ["false"]], [["flower"], ["true"]]
+apply set, "buttons.flower.unskippable", false
+apply set, "auto_buttons._5_auto_flower.enabled_at_start", false

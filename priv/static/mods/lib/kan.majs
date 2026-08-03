@@ -1,4 +1,5 @@
 default replace_from_dead_wall, true
+default shift_dead_wall, false
 default hide_ankans, false
 default ankan_only, false
 
@@ -37,9 +38,12 @@ unless !ankan_only do
         set_status("double_kan")
       end
       set_status("kan")
-      if !replace_from_dead_wall do
-        draw(1, "opposite_end")
-      else draw end
+      if no_tiles_remaining do
+        advance_turn
+      else
+        if !shift_dead_wall do shift_tile_to_dead_wall(1) end
+        if !replace_from_dead_wall do draw(1, "opposite_end") else draw end
+      end
     end
 end
 
@@ -59,9 +63,12 @@ define_button ankan,
       set_status("double_kan")
     end
     set_status("kan")
-    if !replace_from_dead_wall do
-      draw(1, "opposite_end")
-    else draw end
+    if no_tiles_remaining do
+      advance_turn
+    else
+      if !shift_dead_wall do shift_tile_to_dead_wall(1) end
+      if !replace_from_dead_wall do draw(1, "opposite_end") else draw end
+    end
   end
 
 unless !ankan_only do
@@ -84,9 +91,12 @@ unless !ankan_only do
       set_status("kan", "can_chankan")
       upgrade_call
       unset_status("can_chankan")
-      if !replace_from_dead_wall do
-        draw(1, "opposite_end")
-      else draw end
+      if no_tiles_remaining do
+        advance_turn
+      else
+        if !shift_dead_wall do shift_tile_to_dead_wall(1) end
+        if !replace_from_dead_wall do draw(1, "opposite_end") else draw end
+      end
     end
 end
 
