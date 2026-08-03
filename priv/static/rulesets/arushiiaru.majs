@@ -17,7 +17,7 @@ apply subtract, "default_mods", [
   "lib/suukaikan",
   "tenpairenchan",
   %{name: "kyuushu_kyuuhai", config: %{name: "Kyuushu Kyuuhai"}},
-  "yaku/riichi_renhou", "pao", "kokushi_ankan_chankan",
+  "yaku/riichi_renhou", "lib/pao_standard", "kokushi_ankan_chankan",
   "cancellable_riichi"
 ]
 

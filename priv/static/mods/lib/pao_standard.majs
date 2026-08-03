@@ -1,4 +1,4 @@
-require "pao"
+require "pao_base"
 define "daisangen_pao"
 define "daisuushii_pao"
 

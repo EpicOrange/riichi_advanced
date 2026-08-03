@@ -35,6 +35,7 @@ defmodule RiichiAdvanced.ZanScoringTest do
     %{name: "yaku/riichi_renhou", config: %{is: "Yakuman"}},
     "show_waits",
     "sanma_pei_yakuhai",
+    "lib/pao_standard",
     %{name: "lib/shuugi", config: %{worth: 1000, starting_shuugi: 0, pao_pays_all: true}},
     %{name: "shuugi/ippatsu", config: %{chips: 1}},
     %{name: "shuugi/ura", config: %{chips: 1}},

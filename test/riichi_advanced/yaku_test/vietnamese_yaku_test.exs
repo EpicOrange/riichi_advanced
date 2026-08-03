@@ -53,7 +53,7 @@ defmodule RiichiAdvanced.YakuTest.VietnameseYaku do
       %{"type" => "buttons_pressed", "buttons" => [%{"button" => "nfnl0"}, nil, nil, nil]}
     ], %{
       east: %{
-        yaku: [{"True No Flowers, No Leaves", [2, "Mủn"]}],
+        yaku: [{"True No Flowers, No Leaves", [1, "Mủn"]}],
       }
     })
   end
@@ -111,7 +111,7 @@ defmodule RiichiAdvanced.YakuTest.VietnameseYaku do
     ], %{
       east: %{
         yaku: [
-          {"True No Flowers, No Leaves", [2, "Mủn"]},
+          {"True No Flowers, No Leaves", [1, "Mủn"]},
           {"Anything Joker (縂)", [3, "Phán"]},
           {"Number Joker (合)", [1, "Phán"]},
         ],
@@ -149,7 +149,7 @@ defmodule RiichiAdvanced.YakuTest.VietnameseYaku do
     ], %{
       east: %{
         yaku: [
-          {"True No Flowers, No Leaves", [2, "Mủn"]},
+          {"True No Flowers, No Leaves", [1, "Mủn"]},
           {"Anything Joker (縂)", [3, "Phán"]},
           {"Number Joker (合)", [1, "Phán"]},
         ],
@@ -191,7 +191,7 @@ defmodule RiichiAdvanced.YakuTest.VietnameseYaku do
         yaku: [
           {"Number Joker (合)", [1, "Phán"]},
           {"Robbing a Quad", [1, "Phán"]},
-          {"True No Flowers, No Leaves", [2, "Mủn"]},
+          {"True No Flowers, No Leaves", [1, "Mủn"]},
           {"Anything Joker (縂)", [3, "Phán"]}
         ],
       }
@@ -223,7 +223,7 @@ defmodule RiichiAdvanced.YakuTest.VietnameseYaku do
       east: %{
         yaku: [
           {"Fully Closed Hand", [1, "Phán"]},
-          {"True No Flowers, No Leaves", [2, "Mủn"]},
+          {"True No Flowers, No Leaves", [1, "Mủn"]},
           {"Anything Joker (縂)", [3, "Phán"]},
         ],
       }
@@ -254,7 +254,7 @@ defmodule RiichiAdvanced.YakuTest.VietnameseYaku do
       east: %{
         yaku: [
           {"Fully Closed Hand", [1, "Phán"]},
-          {"True No Flowers, No Leaves", [2, "Mủn"]},
+          {"True No Flowers, No Leaves", [1, "Mủn"]},
         ],
       }
     })

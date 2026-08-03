@@ -1,4 +1,4 @@
-require "pao"
+require "pao_base"
 
 on after_initialization do
   if rule_exists("Rules", "Sekinin Barai (Pao)") do

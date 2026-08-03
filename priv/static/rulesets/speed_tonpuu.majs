@@ -31,7 +31,7 @@ apply set_append, "default_mods", [
   "lib/yaku/riichi_suurenkou",
   "yaku/shiisanpuutaa",
   "yaku/shiisanuushi",
-  "pao_suukantsu",
+  "lib/pao_suukantsu",
   "pao_rinshan",
   %{name: "yaku/riichi_renhou", config: %{is: "Yakuman"}},
   %{name: "lib/shuugi", config: %{worth: 5000, pao_pays_all: true, starting_shuugi: 100}},

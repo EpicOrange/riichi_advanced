@@ -1,4 +1,4 @@
-require "pao"
+require "pao_base"
 define "blue_dragon"
 define "daisuugen_pao"
 

@@ -30,8 +30,8 @@ defmodule RiichiAdvanced.YakuTest.SpeedTonpuuMechanics do
     }},
     "yaku/shiisanpuutaa",
     "yaku/shiisanuushi",
-    # "pao",
-    # "pao_suukantsu", # note: affects the test 'suukantsu rinshan is scored as normal tsumo scoring shuugi'
+    # "lib/pao_standard",
+    # "lib/pao_suukantsu", # note: affects the test 'suukantsu rinshan is scored as normal tsumo scoring shuugi'
     # "pao_rinshan",
     %{name: "yaku/riichi_renhou", config: %{is: "Yakuman"}},
     %{name: "lib/shuugi", config: %{worth: 5000, starting_shuugi: 100, pao_pays_all: true}},

@@ -12,7 +12,7 @@ defmodule RiichiAdvanced.YakuTest.KansaiYaku do
     "tenpairenchan",
     "lib/kuikae_nashi",
     "double_wind_4_fu",
-    "pao",
+    "lib/pao_standard",
     "kokushi_ankan_chankan",
     %{name: "sanma_no_tsumo_loss", config: %{method: "half"}},
     "lib/suukaikan",

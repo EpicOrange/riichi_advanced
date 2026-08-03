@@ -21,7 +21,7 @@ apply subtract, "default_mods", [
   "aka",
   "yaku/renhou_yakuman",
   %{name: "kyuushu_kyuuhai", config: %{name: "Kyuushu Kyuuhai"}},
-  "pao",
+  "lib/pao_standard",
   %{name: "suufon_renda", config: %{name: "Suufon Renda"}},
   "suucha_riichi",
   "suukaikan",

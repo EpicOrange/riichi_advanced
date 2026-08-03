@@ -428,8 +428,8 @@ define_mod kiriage_mangan, order: -1, name: "Kiriage Mangan", desc: "3 han 60 fu
 define_mod "lib/head_bump", conflicts: ["sanchahou"], name: "Head Bump", desc: "Enable head bump. In case of multiple ron, only the person closest in turn order gets the win."
 define_mod double_wind_4_fu, name: "Double Wind 4 Fu", desc: "A pair of round+seat winds is worth 4 fu instead of 2 fu."
 define_mod double_round_wind, name: "Double Round Wind", desc: "Both East and West are round winds during East Round, and North and South during South Round. Similarly for West and North Rounds."
-define_mod pao, name: "Sekinin Barai", desc: "If you deal the last dragon called for a daisangen hand, or the last wind called for a daisuushii hand, you are responsible for the yakuman payment if they tsumo, or half of the payment if they ron off someone else."
-define_mod pao_suukantsu, name: "Suukantsu Pao", desc: "If you deal the last kan tile called for a suukantsu hand, you are responsible for the yakuman payment if they tsumo, or half the payment if they ron off someone else."
+define_mod "lib/pao_standard", name: "Sekinin Barai", desc: "If you deal the last dragon called for a daisangen hand, or the last wind called for a daisuushii hand, you are responsible for the yakuman payment if they tsumo, or half of the payment if they ron off someone else."
+define_mod "lib/pao_suukantsu", name: "Suukantsu Pao", desc: "If you deal the last kan tile called for a suukantsu hand, you are responsible for the yakuman payment if they tsumo, or half the payment if they ron off someone else."
 define_mod pao_rinshan, name: "Rinshan Pao", desc: "If someone calls kan on your discard and wins off the kan draw, you are responsible for the full payment."
 define_mod no_kazoe_yakuman, order: -1, name: "No Kazoe Yakuman", desc: "Disable kazoe yakuman. 13+ han is worth sanbaiman."
 define_mod no_double_yakuman, name: "No Double Yakuman", desc: "Disable double yakuman. Yakuman still stacks, but each yaku that typically awards double yakuman only awards one stack of yakuman."
@@ -693,7 +693,7 @@ set default_mods, [
   "lib/agarirenchan", "tenpairenchan",
   %{name: "kyuushu_kyuuhai", config: %{name: "Kyuushu Kyuuhai"}},
   "double_wind_4_fu",
-  "yaku/riichi_renhou", "pao", "kokushi_ankan_chankan",
+  "yaku/riichi_renhou", "lib/pao_standard", "kokushi_ankan_chankan",
   "cancellable_riichi",
   "show_waits"
 ]
@@ -833,7 +833,7 @@ define_preset "WRC 2022", [
   "kiriage_mangan",
   "lib/head_bump",
   "pao",
-  "pao_suukantsu",
+  "lib/pao_suukantsu",
   "no_kazoe_yakuman",
   "no_double_yakuman",
   %{name: "dora", config: %{start_indicators: 1}},
@@ -857,7 +857,7 @@ define_preset "WRC 2025", [
   "kiriage_mangan",
   "lib/head_bump",
   "pao",
-  "pao_suukantsu",
+  "lib/pao_suukantsu",
   "no_double_yakuman",
   %{name: "dora", config: %{start_indicators: 1}},
   "ura",
@@ -882,7 +882,7 @@ define_preset "M.League", [
   "lib/kuikae_nashi",
   "lib/head_bump",
   "pao",
-  "pao_suukantsu",
+  "lib/pao_suukantsu",
   "no_kazoe_yakuman",
   "no_double_yakuman",
   "kokushi_ankan_chankan",
@@ -918,7 +918,7 @@ define_preset "Just Like Modded Minecraft", [
   "double_wind_4_fu",
   "double_round_wind",
   "pao",
-  "pao_suukantsu",
+  "lib/pao_suukantsu",
   "pao_rinshan",
   "lib/yaku/kansai_chiitoitsu",
   "kokushi_ankan_chankan",
