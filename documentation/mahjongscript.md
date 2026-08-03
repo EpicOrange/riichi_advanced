@@ -538,6 +538,18 @@ This toplevel command is identical to `require`, except it will load the desired
 - `define_mod` mods (with order specified by the `order` field, then by the order it's defined in the file)
 - `require_after` mods, in the order they are defined
 
+## `define_base_ruleset`: Stack rulesets
+
+If you'd like to first inherit all rules from another existing ruleset, simply do:
+
+```elixir
+define_base_ruleset riichi
+```
+
+and everything in the file will be applied to that existing base ruleset, rather than to the empty ruleset `{}`.
+
+Every ruleset may only have one base ruleset, i.e. if you run that twice, the second base ruleset overrides the first.
+
 # Command Reference
 
 A reference cheatsheet for all of the following commands appears at the [bottom of this page.](#all-commands)

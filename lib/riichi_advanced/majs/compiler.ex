@@ -66,6 +66,7 @@ defmodule RiichiAdvanced.Compiler do
       defines: MapSet.new(),
       globals: %{},
       post_mods: [],
+      base_ruleset: nil,
     ]
   end
 
@@ -1026,7 +1027,7 @@ defmodule RiichiAdvanced.Compiler do
     {:error, "Compiler.compile: at line #{line}:#{column}, #{inspect(cmd)} is not a valid toplevel command!"}
   end
 
-  def load_lib(defs, name, config, depth, [line: line, column: column]) do
+  def load_lib(defs, name, config, depth \\ 0, [line: line, column: column] \\ [line: 0, column: 0]) do
     if name not in defs.libs do
       defs = update_in(defs.libs, &MapSet.put(&1, name))
       case File.read(Application.app_dir(:riichi_advanced, "/priv/static/mods/lib/#{name}.majs")) do
@@ -1227,6 +1228,11 @@ defmodule RiichiAdvanced.Compiler do
           {:ok, {".", update_in(defs.globals, &Map.put(&1, name, value))}}
         end
       {"define_global", [line: line, column: column], args} -> {:error, "Compiler.compile: at line #{line}:#{column}, define_global command expects a variable name followed by a value (boolean, number, string, or variable), got: #{inspect(args)}`"}
+      {"define_base_ruleset", _pos, [{name, _, nil}]} ->
+        with {:ok, name} <- Validator.validate_ruleset_name(name)do
+          {:ok, {".", put_in(defs.base_ruleset, name)}}
+        end
+      {"define_base_ruleset", [line: line, column: column], args} -> {:error, "Compiler.compile: at line #{line}:#{column}, define_base_ruleset command expects a ruleset name, got: #{inspect(args)}`"}
       {cmd, [line: line, column: column], [name | args]} when is_binary(cmd) ->
         name = case name do
           name when is_binary(name) or is_integer(name) -> Validator.validate_json(name)

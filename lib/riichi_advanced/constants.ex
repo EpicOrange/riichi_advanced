@@ -518,33 +518,6 @@ defmodule RiichiAdvanced.Constants do
   def unimplemented_rulesets, do: @unimplemented_rulesets
 
   @modpacks %{
-    "riichi" => %{
-      display_name: "Riichi",
-      tutorial_link: "https://github.com/EpicOrange/riichi_advanced/blob/main/documentation/riichi.md",
-      ruleset: "riichi",
-      globals: %{
-        chii_name: "Chii",
-        pon_name: "Pon",
-        kan_name: "Kan",
-        ankan_name: "Ankan",
-        han: "Han"
-      },
-      mods: [
-        "global_mods",
-        "standard_wall",
-        "default_auto_buttons",
-        "riichi_kan", # also adds chankan and yaku like suukantsu
-        "riichi_scoring",
-      ],
-      default_mods: []
-    },
-    "sanma" => %{
-      display_name: "Sanma",
-      tutorial_link: "https://github.com/EpicOrange/riichi_advanced/blob/main/documentation/sanma.md",
-      ruleset: "riichi",
-      mods: ["sanma", "sanma_presets"],
-      default_mods: []
-    },
     "cosmic" => %{
       display_name: "Cosmic Riichi",
       tutorial_link: "https://docs.google.com/document/d/1F-NhQ5fdi5CnAyEqwNE_qWR0Og99NtCo2NGkvBc5EwU",

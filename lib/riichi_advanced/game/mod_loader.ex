@@ -45,7 +45,7 @@ defmodule RiichiAdvanced.ModLoader.ModState do
           # IO.puts("Cache miss: #{inspect({ruleset, []})}")
           state = load_ruleset_rec(%ModState{ruleset: ruleset}, ruleset)
           if not Debug.skip_ruleset_caching() do
-            RiichiAdvanced.Cache.put({:cache_modloader, ruleset, []}, state)
+            # RiichiAdvanced.Cache.put({:cache_modloader, ruleset, []}, state)
           end
           state
         {:ok, state} ->
@@ -165,7 +165,7 @@ defmodule RiichiAdvanced.ModLoader.ModState do
         # cache and return
         if not Debug.skip_ruleset_caching() do
           # IO.puts("Caching mods for ruleset #{state.ruleset}: #{length(all_mods)} mods #{inspect(all_mods, limit: :infinity)}")
-          RiichiAdvanced.Cache.put({:cache_modloader, state.ruleset, all_mods}, state)
+          # RiichiAdvanced.Cache.put({:cache_modloader, state.ruleset, all_mods}, state)
         end
         state
       {:ok, state} ->
@@ -261,32 +261,46 @@ defmodule RiichiAdvanced.ModLoader do
   end
 
   def convert_to_jq(majs) do
-    {jq, defs} = convert_to_jq_defs(majs, %Defs{})
-    global_jq = for {name, val} <- defs.globals, is_jq_var?(name), do: "(#{Jason.encode!(val)}) as $#{name}"
-    vars_jq = for {name, val} <- Enum.reverse(defs.vars), is_jq_var?(name), do: "(#{Jason.encode!(val)}) as $#{name}"
-    for {name, config} <- defs.post_mods, reduce: {:ok, {[], defs}} do
-      {:ok, {acc, defs}} -> with {:ok, {jq, defs}} <- Compiler.load_lib(defs, name, config, 0, [line: 0, column: 0]) do
-        {:ok, {[jq | acc], defs}}
-      end
-      {:error, err} when is_binary(err) -> "Error loading mod #{name} with config #{inspect(config)}: #{err}"
-      err -> err
-    end
-    |> case do
-      {:ok, {post_mods_jq, _defs}} -> Enum.join(global_jq ++ vars_jq ++ [jq] ++ post_mods_jq, "\n|")
-      err -> raise err
-    end
+    {jq, _defs} = convert_to_jq_defs(majs, %Defs{})
+    jq
   end
 
-  def read_ruleset_json(ruleset) do
+  def read_ruleset_json(ruleset, visited \\ [])
+  def read_ruleset_json(ruleset, visited) when length(visited) > 3 do
+    IO.puts("WARNING: Reached max ruleset depth of 3 while trying to load base ruleset #{ruleset}")
+    "{}"
+  end
+  def read_ruleset_json(ruleset, visited) do
     # IO.puts("Loading ruleset #{ruleset}")
     case File.read(Application.app_dir(:riichi_advanced, "/priv/static/rulesets/#{ruleset}.json")) do
       {:ok, ruleset_json} -> ruleset_json
       {:error, _err}      ->
         case File.read(Application.app_dir(:riichi_advanced, "/priv/static/rulesets/#{ruleset}.majs")) do
           {:ok, ruleset_majs} ->
-            jq = convert_to_jq(ruleset_majs)
+            {jq, defs} = convert_to_jq_defs(ruleset_majs, %Defs{})
+
+            global_jq = for {name, val} <- defs.globals, is_jq_var?(name), do: "(#{Jason.encode!(val)}) as $#{name}"
+            vars_jq = for {name, val} <- Enum.reverse(defs.vars), is_jq_var?(name), do: "(#{Jason.encode!(val)}) as $#{name}"
+            for {name, config} <- defs.post_mods, reduce: {:ok, {[], defs}} do
+              {:ok, {acc, defs}} -> with {:ok, {jq, defs}} <- Compiler.load_lib(defs, name, config) do
+                {:ok, {[jq | acc], defs}}
+              end
+              {:error, err} when is_binary(err) -> "Error loading mod #{name} with config #{inspect(config)}: #{err}"
+              err -> err
+            end
+            |> case do
+              {:ok, {post_mods_jq, _defs}} -> Enum.join(global_jq ++ vars_jq ++ [jq] ++ post_mods_jq, "\n|")
+              err -> raise err
+            end
+
             # IO.puts("Successfully loaded ruleset #{ruleset}")
-            JQ.query_string_with_string!("{}", jq)
+
+            base_ruleset = if defs.base_ruleset == nil do
+              "{}"
+            else
+              read_ruleset_json(defs.base_ruleset, [ruleset | visited])
+            end
+            JQ.query_string_with_string!(base_ruleset, jq)
           {:error, _err}      -> "{}"
         end
     end

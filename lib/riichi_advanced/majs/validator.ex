@@ -147,6 +147,16 @@ defmodule RiichiAdvanced.Validator do
   end
   def validate_variable(name), do: {:error, "non-string variable name: #{inspect(name)}"}
 
+  @valid_ruleset_name_regex ~r/^[a-z0-9_]+$/
+  def validate_ruleset_name(name) when is_binary(name) do
+    if Regex.match?(@valid_ruleset_name_regex, name) do
+      {:ok, name}
+    else
+      {:error, "invalid ruleset name: #{inspect(name)}"}
+    end
+  end
+  def validate_ruleset_name(name), do: {:error, "non-string ruleset name: #{inspect(name)}"}
+
   @valid_lib_regex ~r/^[a-z_][a-z0-9_\/]*$/
   def validate_lib(name) when is_binary(name) do
     if Regex.match?(@valid_lib_regex, name) do
