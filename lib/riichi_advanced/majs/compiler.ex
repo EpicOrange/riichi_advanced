@@ -1187,7 +1187,6 @@ defmodule RiichiAdvanced.Compiler do
         end
         ret = with {:ok, name} <- name,
              {:ok, name} <- Jason.encode(name) do
-          compile_command(cmd, name, args, line, column)
           case args do
             [[do: args]] -> compile_command(cmd, name, args, line, column)
             args when is_list(args) -> compile_command(cmd, name, args, line, column)

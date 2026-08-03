@@ -101,7 +101,7 @@ fn bipartite_match<'a>(
   debug: bool,
 ) -> HandsIterator<'a> {
   // basically just backtracking search, same as the dfs tbh
-  // except we enjoy a lot more caching in the form of `all_edges`
+  // except we enjoy a lot more caching in the form of `matching`
   if offset_tiles.len() < num + skipped {
     if debug { println!("Giving up because we've skipped {skipped} of {} offset tiles and cannot reach {num} matches", offset_tiles.len()); }
     if let Some(j) = last_j { matching.borrow_mut().remove(&j); };

@@ -547,7 +547,7 @@ defmodule RiichiAdvanced.Constants do
     },
     "cosmic" => %{
       display_name: "Cosmic Riichi",
-      tutorial_link: "https://docs.google.com/document/d/1F-NhQ5fdi5CnAyEqwNE_qWR0Og99NtCo2NGkvBc5EwU/edit",
+      tutorial_link: "https://docs.google.com/document/d/1F-NhQ5fdi5CnAyEqwNE_qWR0Og99NtCo2NGkvBc5EwU",
       ruleset: "riichi",
       mods: ["cosmic_base"],
       post_mods: ["yakuman_13_han"],
@@ -555,7 +555,7 @@ defmodule RiichiAdvanced.Constants do
     },
     "nojokersmahjongleague" => %{
       display_name: "No Jokers Mahjong League 2024",
-      tutorial_link: "https://docs.google.com/document/d/1APpd-YBnsKKssGmyLQiCp90Wk-06SlIScV1sKpJUbQo/edit?usp=sharing",
+      tutorial_link: "https://docs.google.com/document/d/1APpd-YBnsKKssGmyLQiCp90Wk-06SlIScV1sKpJUbQo",
       ruleset: "riichi",
       mods: ["kiriage_mangan", "agarirenchan", "tenpairenchan", %{name: "dora", config: %{start_indicators: 1}}, "ura", "kandora", "yaku/ippatsu", %{name: "tobi", config: %{below: 0}}, "immediate_kan_dora", "head_bump", "no_double_yakuman", "nojokersmahjongleague"],
       default_mods: ["show_waits"],
