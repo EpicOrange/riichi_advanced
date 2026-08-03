@@ -303,6 +303,7 @@ defmodule RiichiAdvanced.Utils do
     id = if reversed do strip_attrs(tile) else id end
     facedown = has_attr?(tile, ["facedown"]) and not (Map.get(assigns, :your_hand?, true) and Map.get(assigns, :hover_index, nil) == i)
     concealed = has_attr?(tile, ["concealed"])
+    not_visible = (facedown or concealed) and not Map.get(assigns, :your_hand?, true) # i.e. send 1x to other players
     anim = has_attr?(tile, ["anim"])
     played = animate_played and Map.get(assigns, :your_hand?, true) and i != nil and Map.get(assigns, :preplayed_index, nil) == i
     sideways = i != nil and i == Map.get(assigns, :riichi_index, nil) or has_attr?(tile, ["sideways"])
@@ -327,8 +328,7 @@ defmodule RiichiAdvanced.Utils do
     color_classes = Enum.filter(@valid_tile_colors, &has_attr?(tile, [&1]))
     id = cond do
       hidden -> :"4x"
-      facedown -> :"1x"
-      concealed -> :"1x"
+      not_visible -> :"1x"
       true -> id
     end
     number_class = if hidden or facedown or concealed do [] else number_class end
