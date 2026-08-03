@@ -65,11 +65,14 @@ apply append, "set_definitions.orphans_all[0]", ["1t", "9t"]
 apply append, "set_definitions.orphans_any", ~s"1t|9t"
 
 # add new star suit yaku
-# TODO: the below don't work yet cause the engine only interprets standard suit shifts (m->p->s->m)
-#       need to modify the engine to represent more suits (perhaps with a suit_ordering map you can act on)
-
-# define_set yonshoku_doujun, ~s"0 1 2, 10 11 12, 20 21 22, 30 31 32"
-# define_set yonshoku_doukou, ~s"0 0 0, 10 10 10, 20 20 20, 30 30 30"
-# define_yaku yaku, "Yonshoku", [3, "Han"], match(["hand", "calls", "winning_tile"], ~m"exhaustive, yonshoku_doujun:1, mentsu:1, pair:1")
-# define_yaku meta_yaku, "Yonshoku", [1, "Han"], @closed_hand and has_existing_yaku("Yonshoku")
-# define_yaku yaku, "Yonshoku Doukou", [5, "Han"], match(["hand", "calls", "winning_tile"], ~m"exhaustive, yonshoku_doukou:1, mentsu:1, pair:1")
+on after_initialization do
+  add_rule("3+ Han", "Yonshoku", "5 han if your hand contains the same number sequence in all four suits. 6 han if closed.")
+  update_rule("3+ Han", "Yonshoku", "%{example_hand}", %{example_hand: ~t"24p234s234t77z 2M34m 3p"})
+  add_rule("3+ Han", "Yonshoku Doukou", "5 han if your hand contains the same number triplet in all four suits. Stacks with toitoi.")
+  update_rule("3+ Han", "Yonshoku Doukou", "%{example_hand}", %{example_hand: ~t"2244p222s222t 2M22m 2p"})
+end
+define_set yonshoku_doujun, ~s"0 1 2, 10 11 12, 20 21 22, 30 31 32"
+define_set yonshoku_doukou, ~s"0 0 0, 10 10 10, 20 20 20, 30 30 30"
+define_yaku yaku, "Yonshoku", [5, "Han"], match(["hand", "calls", "winning_tile"], ~m"exhaustive, yonshoku_doujun:1, pair:1"), ["Sanshoku"]
+define_yaku meta_yaku, "Yonshoku", [1, "Han"], @closed_hand and has_existing_yaku("Yonshoku")
+define_yaku yaku, "Yonshoku Doukou", [5, "Han"], match(["hand", "calls", "winning_tile"], ~m"exhaustive, yonshoku_doukou:1, pair:1"), ["Sanshoku Doukou"]

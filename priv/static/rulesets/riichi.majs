@@ -794,7 +794,7 @@ define_mod "shuugi/arisu", order: 5, name: "Arisu", deps: ["shuugi", "dora"], de
 define_mod_category "Other"
 define_mod cancellable_riichi, order: 1, deps: ["yaku/riichi"], name: "Cancellable Riichi", desc: "Riichi declarations happen only after you confirm by discarding a tile."
 define_mod ten, order: 3, name: "Ten", desc: "Adds 10m, 10p, and 10s. Changes dora accordingly (if dora is enabled). Tanyao now allows nines, and chanta/junchan/honroutou require tens instead. 13 Orphans now requires the ten instead of the nine of each suit. Ittsuu allows 23456789T."
-define_mod star_suit, order: 2, conflicts: ["chinitsu"], name: "Star Suit (beta)", desc: "Adds a fourth suit (stars). This suit does not form yaku. This mod is in beta because we should probably write some yaku for it."
+define_mod star_suit, order: 2, conflicts: ["chinitsu"], name: "Star Suit", desc: "Adds a fourth suit (stars)."
 define_mod space, order: 2, name: "Space Mahjong", desc: "Sequences can wrap (891, 912). Winds and dragons can make sequences. You can chii from any direction. Chiitoitsu is disabled. Open kokushi is allowed and worth 3 han."
 define_mod galaxy, order: 2, conflicts: ["chinitsu"], name: "Galaxy Mahjong", desc: "Replaces one of each tile with a blue 'galaxy' tile that acts as a wildcard of its number. For example, galaxy 3s can be used as 3m, 3p, or 3s. Galaxy winds are wind wildcards, and galaxy dragons are dragon wildcards."
 define_mod fifth_tile, order: -1, conflicts: ["chinitsu"], name: "Fifth Tile", desc: "Adds a fifth copy of every standard tile."
