@@ -96,7 +96,7 @@ define_auto_button _5_auto_pei,
   end
 
 # don't let auto discard button skip pei
-apply append, "constants.no_auto_discard_calls", "flower"
+apply append, "constants.no_auto_discard_buttons", "flower"
 
 # we need these in case kan mod is not enabled
 def do_kan_draw do

@@ -14,7 +14,7 @@ define_button conceal,
     bet_points(1000)
     set_status("discard_facedown")
   end
-apply append, "constants.no_auto_discard_calls", ["conceal", "lock"]
+apply append, "constants.no_auto_discard_buttons", ["conceal", "lock"]
 
 define_button reveal,
   display_name: "Reveal",

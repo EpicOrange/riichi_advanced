@@ -21,9 +21,12 @@ end
 def turn_cleanup, append: true do flip_after_kan end
 # dora flip on win
 on before_win, prepend: true do flip_after_kan end
+
+apply initialize, "constants.closed_kans", ["ankan"]
+
 # dora flips immediately after ankan
 def do_kan_draw, prepend: true do
-  if last_call_is("ankan") do
+  if last_call_is(+@closed_kans) do
     flip_dora
     # set status to prevent a second dora flip after turn change
     set_status("skip_kan_dora_flip")

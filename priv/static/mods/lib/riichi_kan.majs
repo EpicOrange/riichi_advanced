@@ -9,8 +9,9 @@ end
 
 define_yaku yaku, "Chankan", [1, "Han"], won_by_call and status("kan", as: "caller")
 define_yaku yaku, "Rinshan", [1, "Han"], status("kan")
-define_yaku yaku, "Sankantsu", [2, "Han"], match(["calls"], ~m"(daiminkan ankan kakan):3")
-define_yaku yakuman, "Suukantsu", [1, "★"], match(["calls"], ~m"(daiminkan ankan kakan):4")
+define_set kan_call, ~s"daiminkan|ankan|kakan"
+define_yaku yaku, "Sankantsu", [2, "Han"], match(["calls"], ~m"kan_call:3")
+define_yaku yakuman, "Suukantsu", [1, "★"], match(["calls"], ~m"kan_call:4")
 
 def do_kan_draw do
   shift_tile_to_dead_wall(1)

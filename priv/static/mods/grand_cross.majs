@@ -1,5 +1,5 @@
 on after_initialization do
-  add_rule("Rules", "Grand Cross", "You can declare NEWS (one of each wind) as a concealed kan, worth 1 han, and you draw a replacement tile from the live wall.")
+  add_rule("Rules", "Grand Cross", "You can declare NEWS (one of each wind) as a concealed kan, worth 16 fu, and you draw a replacement tile from the live wall.")
 end
 
 define_set grand_cross, ~s"1z 2z 3z 4z"
@@ -26,10 +26,17 @@ define_button grand_cross,
     draw(1)
   end
 
-define_yaku yaku, "Grand Cross", [1, "Han"], match(["calls"], ~m"grand_cross:1")
-define_yaku yaku, "Grand Cross", [1, "Han"], match(["calls"], ~m"grand_cross:2")
-define_yaku yaku, "Grand Cross", [1, "Han"], match(["calls"], ~m"grand_cross:3")
-define_yaku yaku, "Grand Cross", [1, "Han"], match(["calls"], ~m"grand_cross:4")
+# grand cross flips kandora immediately
+apply set_append, "constants.closed_kans", ["grand_cross"]
 
+# so "auto skip calls" doesn't skip over grand cross
+apply append, "constants.no_auto_discard_buttons", ["grand_cross"]
+
+# grand cross counts as a set for match and SMT
 apply append, "set_definitions.mentsu", ~s"1z 2z 3z 4z"
 
+# this 8 fu gets doubled by fu calculation since it's honors
+apply merge, "constants.calls_fu", %{grand_cross: 8}
+
+# grand cross counts for sankantsu etc.
+apply set_append, "set_definitions.kan_call", ~s"grand_cross"

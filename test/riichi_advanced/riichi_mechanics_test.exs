@@ -378,6 +378,35 @@ defmodule RiichiAdvanced.RiichiMechanicsTest do
     ]), 67), :no_winners, %{delta_scores: [0, 0, 0, 0]})
   end
 
+  test "riichi - grand cross and nobekan count for sankantsu" do
+    TestUtils.test_yaku_advanced("riichi", ["nobekan", "grand_cross"], """
+    {
+      "starting_hand": {
+        "east": ["1z", "2z", "3z", "4z", "7s", "8s", "9s", "7p", "7p", "7p", "5z", "6p", "6p"],
+        "south": ["1m", "4m", "7m", "3p", "5p", "8p", "3s", "6s", "9s", "2z", "4z", "6z", "7z"],
+        "west": ["2m", "4m", "7m", "3p", "5p", "8p", "3s", "6s", "9s", "2z", "4z", "6z", "7z"],
+        "north": ["2m", "4m", "7m", "3p", "5p", "8p", "3s", "6s", "9s", "2z", "4z", "6z", "7z"]
+      },
+      "starting_draws": ["2p", "2p", "6s", "5z", "7p", "5z"],
+      "starting_dead_wall": ["5z"]
+    }
+    """, [
+      %{"type" => "buttons_pressed", "buttons" => [%{"button" => "grand_cross"}, nil, nil, nil]},
+      %{"type" => "discard", "tile" => "6p", "player" => 0, "tsumogiri" => false},
+      %{"type" => "discard", "tile" => "6s", "player" => 1, "tsumogiri" => true},
+      %{"type" => "buttons_pressed", "buttons" => [%{"button" => "daiminnobekan"}, nil, nil, nil]},
+      %{"type" => "discard", "tile" => "6p", "player" => 0, "tsumogiri" => false},
+      %{"type" => "discard", "tile" => "7p", "player" => 1, "tsumogiri" => true},
+      %{"type" => "buttons_pressed", "buttons" => [%{"button" => "daiminkan"}, nil, nil, nil]},
+      %{"type" => "buttons_pressed", "buttons" => [%{"button" => "tsumo"}, nil, nil, nil]},
+    ], %{
+      east: %{
+        yaku: [{"Haku", [1, "Han"]}, {"Rinshan", [1, "Han"]}, {"Sankantsu", [2, "Han"]}],
+        minipoints: 60, # 22 tsumo + grand cross 16 + daiminnobekan 4 + daiminkan 8 + closed honor koutsu 8 = 58
+      }
+    })
+  end
+
   test "riichi - nobekan with joker scores tanyao" do
     TestUtils.test_yaku_advanced("riichi", ["jokers/vietnamese", "nobekan"], """
     {

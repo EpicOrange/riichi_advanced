@@ -1,5 +1,5 @@
 on after_initialization do
-  add_rule("Rules", "Nobekan", "You may kan a sequence of four number tiles. The replacement tile is drawn from the live wall. This flips kandora and can be robbed like a normal kan. When calculating yaku, either side of the nobekan can be used as a sequence. For example, 6789 can be used for both tanyao and chanta.")
+  add_rule("Rules", "Nobekan", "You may kan a sequence of four number tiles. The replacement tile is drawn from the live wall. This flips kandora and can be robbed like a normal kan, but is worth half fu (4 fu open, 8 fu closed). When calculating yaku, either side of the nobekan can be used as a sequence. For example, 6789 can be used for both tanyao and chanta.")
   add_rule("1 Han", "Sannobekantsu", "Your hand contains three nobekans.")
   update_rule("1 Han", "Sannobekantsu", "%{example_hand}", %{example_hand: ~t"3z 567p 2345p 1234s 6789m 3z"})
   add_rule("3+ Han", "Suunobekantsu", "Your hand contains four nobekans.")
@@ -74,7 +74,18 @@ define_button kanobekan,
     draw(1)
   end
 
-define_yaku yaku, "Sannobekantsu", [1, "Han"], match(["calls"], ~m"(daiminnobekan annobekan kanobekan):4")
-define_yaku yaku, "Suunobekantsu", [3, "Han"], match(["calls"], ~m"(daiminnobekan annobekan kanobekan):4")
+# annobekan flips kandora immediately
+apply set_append, "constants.closed_kans", ["annobekan"]
 
-apply append, "constants.no_auto_discard_calls", ["annobekan"]
+# so "auto skip calls" doesn't skip over annobekan
+apply append, "constants.no_auto_discard_buttons", ["annobekan"]
+
+# nobekans award half fu
+apply merge, "constants.calls_fu", %{
+  annobekan: 8,
+  daiminnobekan: 4,
+  kanobekan: 4,
+}
+
+# nobekans count for sankantsu etc.
+apply set_append, "set_definitions.kan_call", ~s"daiminnobekan|annobekan|kanobekan"
