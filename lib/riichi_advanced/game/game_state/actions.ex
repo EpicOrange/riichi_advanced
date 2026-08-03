@@ -380,6 +380,7 @@ defmodule RiichiAdvanced.GameState.Actions do
       Logger.error("trigger_call: Call #{call_name} on #{inspect(call_choice)} #{inspect(called_tile)} is to remove #{inspect(to_remove)} from hand #{inspect(hand)}, but none found")
       hand
     else new_hand end
+    |> Utils.remove_attr(["_draw"])
 
     # actually add the call to the player
     state = update_player(state, seat, &%{ &1 | hand: new_hand, draw: [], calls: &1.calls ++ [call] })
