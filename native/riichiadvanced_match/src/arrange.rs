@@ -3,7 +3,7 @@ use std::collections::HashMap;
 use num::abs;
 use smallvec::{SmallVec, smallvec};
 
-use crate::encode::{decode, decode_tiles, encode_tile, encode_tiles};
+use crate::encode::{decode, decode_tile, decode_tiles, encode_tile, encode_tiles};
 use crate::r#match::{__match_hand_v3, __pop_group};
 use crate::match_info::prepare_tiles;
 use crate::offsets::get_base_tiles;
@@ -57,7 +57,7 @@ fn _separate_standard_winner_hand(
     if !match_info.relevant_tiles.contains(&to) { match_info.relevant_tiles.push(to); }
   }
 
-  // replace all jokers using aliases
+  // use mapping to unjoker all tiles in hands/calls
   let mut hands = match_info.initial_hands.clone();
   for hand in hands.iter_mut() {
     for tile in hand.attrs.iter_mut() {
@@ -70,11 +70,14 @@ fn _separate_standard_winner_hand(
     }
   }
 
-  // keep track original index of each Tile in hand (not calls)
+  // keep track of original index of each Tile in `hands` (not calls)
   // so that we can reconstruct the original hand after rearrangement
+  // origin_map = {unjokered deattred tile => vec of indices it appears in}
+  // we need to deattr because we later obtain groups by converting from RemovableGroup
+  //   which will have no attrs
   let mut origin_map: HashMap<Tile, SmallVec<[u8; 4]>> = HashMap::new();
   for (i, tile) in hands[0].attrs.iter().enumerate() {
-    origin_map.entry(*tile).and_modify(|v| v.push(i as u8)).or_insert(smallvec!(i as u8));
+    origin_map.entry((tile.0, 0)).and_modify(|v| v.push(i as u8)).or_insert(smallvec!(i as u8));
   }
 
   // check if the win definition ever mentions offsets of at least 10
@@ -119,7 +122,6 @@ fn _separate_standard_winner_hand(
     )
   };
 
-
   let orig_initial_hands = match_info.initial_hands.clone();
   let mut result: Hands = arrange(hands, groups_to_remove, win_definitions, &mut match_info);
   match_info.initial_hands = orig_initial_hands;
@@ -136,19 +138,22 @@ fn _separate_standard_winner_hand(
       }
     }
   }
-  // replace all jokers in result, also sort each group in result
+  // rejoker the unjokered tiles in result, also sort each group in result
   for group in result.iter_mut() {
     for tile in group.attrs.iter_mut() {
       if let Some(is) = origin_map.get_mut(tile) {
         match is.pop() {
           Some(i) => {
-            // println!("Successfully mapped tile {tile:?} back to original tile at index {i}");
+            // println!("Successfully mapped tile {:?} back to original tile {:?} at index {i}",
+            //   decode_tile(*tile, &match_info.all_attrs),
+            //   decode_tile(match_info.initial_hands[0].attrs[i as usize], &match_info.all_attrs));
             group.hash /= tile.0;
             *tile = match_info.initial_hands[0].attrs[i as usize];
             group.hash *= tile.0;
           }
           None => {
-            // println!("Tried to map tile {tile:?} back to original tile but we are out of indices");
+            // println!("Tried to map tile {:?} back to original tile but we are out of indices",
+            //   decode_tile(*tile, &match_info.all_attrs));
           }
         }
       }
@@ -184,7 +189,7 @@ fn _separate_standard_winner_hand(
       ret.extend(hand.attrs);
     }
   }
-  // remove last instance of winning tile
+  // attempt to remove last instance of winning tile
   if let Some(ix) = ret.iter().rposition(|t| t.0 == winning_tile.0) { ret.remove(ix); }
   decode_tiles(&ret, &match_info.all_attrs)
 }

@@ -1495,7 +1495,7 @@ defmodule RiichiAdvanced.Match do
 
   def separate_standard_winner_hand(smt_hand, smt_calls, calls, tile_behavior, joker_assignment, win_definitions) do
     # check if rust should handle things
-    tiles_in_hand = Utils.strip_attrs(List.flatten([smt_hand | smt_calls]))
+    tiles_in_hand = List.flatten([smt_hand | smt_calls])
     hash = tiles_in_hand |> Enum.map(&Constants.to_prime/1) |> Enum.product()
     use_rust = hash <= @u256_max
     if use_rust do
