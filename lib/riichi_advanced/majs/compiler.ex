@@ -1036,12 +1036,26 @@ defmodule RiichiAdvanced.Compiler do
              {:ok, r} <- Jason.encode(r) do
           {:ok, "(#{l} == #{r})"}
         end
+      {"not_equals", [line: line, column: column], [l, r]} ->
+        with {:ok, l} <- compile_toplevel_constant(l, line, column),
+             {:ok, r} <- compile_toplevel_constant(r, line, column),
+             {:ok, l} <- Jason.encode(l),
+             {:ok, r} <- Jason.encode(r) do
+          {:ok, "(#{l} != #{r})"}
+        end
       {:==, [line: line, column: column], [l, r]} ->
         with {:ok, l} <- compile_toplevel_constant(l, line, column),
              {:ok, r} <- compile_toplevel_constant(r, line, column),
              {:ok, l} <- Jason.encode(l),
              {:ok, r} <- Jason.encode(r) do
           {:ok, "(#{l} == #{r})"}
+        end
+      {:!=, [line: line, column: column], [l, r]} ->
+        with {:ok, l} <- compile_toplevel_constant(l, line, column),
+             {:ok, r} <- compile_toplevel_constant(r, line, column),
+             {:ok, l} <- Jason.encode(l),
+             {:ok, r} <- Jason.encode(r) do
+          {:ok, "(#{l} != #{r})"}
         end
       {:<, [line: line, column: column], [l, r]} ->
         with {:ok, l} <- compile_toplevel_constant(l, line, column),
