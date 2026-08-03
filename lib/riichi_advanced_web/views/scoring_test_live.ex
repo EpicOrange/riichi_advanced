@@ -213,7 +213,7 @@ defmodule RiichiAdvancedWeb.ScoringTestLive do
       rules_ref: rules_ref,
     })
     |> assign(:hand_length, hand_length)
-    |> assign(:hand, socket.assigns.hand |> Enum.take(hand_length))
+    |> assign(:hand, socket.assigns.hand |> Enum.take(hand_length + 1))
     |> assign(:calls, [])
     |> assign(:call_selection_ixs, [])
     |> assign(:call_buttons, %{})
