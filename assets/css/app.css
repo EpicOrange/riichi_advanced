@@ -565,10 +565,13 @@ div:not(.four-rows) > div.pond::after { content: ""; width: 100%; order: 1; }
 .pond.toimen.secondary-pond > .tile:nth-child(n+6) { z-index: 2; }
 .pond.toimen.secondary-pond > .tile:nth-child(n+11) { z-index: 1; }
 .pond.toimen.secondary-pond > .tile:nth-child(n+16) { z-index: 0; }
+div.pond {
+  z-index: 4; /* below compass and above corner info */
+}
 div.pond.self {
   left: calc(50% - (2.375 * var(--tile-size)));
   top: calc(50% + (2.125 * var(--tile-size)));
-  z-index: 4; /* above compass */
+  z-index: 6; /* above compass and above corner info */
 }
 div.pond.shimocha {
   transform: rotate(270deg);
@@ -579,7 +582,6 @@ div.pond.toimen {
   transform: rotate(180deg);
   left: calc(50% - (2.375 * var(--tile-size)));
   top: calc(50% + (2.625 * var(--tile-size)));
-  z-index: 1; /* below compass */
 }
 div.pond.kamicha {
   transform: rotate(90deg);
@@ -665,7 +667,7 @@ div.compass {
   top: calc(50% - (2.625 * var(--tile-size)));
   transform-origin: 50% 50%;
   user-select: none;
-  z-index: 2;
+  z-index: 5;
 }
 div.compass::before {
   position: absolute;
