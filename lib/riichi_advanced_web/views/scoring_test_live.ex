@@ -92,7 +92,7 @@ defmodule RiichiAdvancedWeb.ScoringTestLive do
           <div><%= t(@lang, "Ruleset") %></div>
           <form>
             <select name="ruleset" class="ruleset-dropdown" phx-change="switch_ruleset">
-              <%= for {ruleset, name, _desc} <- Constants.available_rulesets() do %>
+              <%= for {ruleset, name, _desc} <- Constants.available_rulesets(), ruleset != "custom" do %>
                 <%= if ruleset == @ruleset do %>
                   <option value={ruleset} selected><%= name %></option>
                 <% else %>
