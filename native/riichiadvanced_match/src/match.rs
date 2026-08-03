@@ -180,7 +180,7 @@ fn remove_match_group<'a>(
   let mut unique = unique;
   let mut exact = !exhaustive && !unique;
   let mut bipartite = true;
-  let mut blossom = !exhaustive;
+  let mut blossom = false;
   for elem in groups.iter() {
     match elem {
       MatchGroup::Offset(o) => {
