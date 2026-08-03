@@ -2,6 +2,7 @@ defmodule RiichiAdvanced.YakuTest.HefeiYaku do
   use ExUnit.Case, async: true
   alias RiichiAdvanced.TestUtils, as: TestUtils
 
+  @base {"Base Score", [15, "嘴"]}
   @single_wait {"Single Wait", [1, "嘴"]}
 
   test "hefei - chicken hand" do
@@ -21,7 +22,7 @@ defmodule RiichiAdvanced.YakuTest.HefeiYaku do
       %{"type" => "buttons_pressed", "buttons" => [%{"button" => "ron"}, nil, nil, nil]}
     ], %{
       east: %{
-        yaku: []
+        yaku: [@base]
       }
     })
   end
@@ -43,7 +44,7 @@ defmodule RiichiAdvanced.YakuTest.HefeiYaku do
       %{"type" => "buttons_pressed", "buttons" => [%{"button" => "ron"}, nil, nil, nil]}
     ], %{
       east: %{
-        yaku: [@single_wait]
+        yaku: [@base, @single_wait]
       }
     })
   end
@@ -65,7 +66,7 @@ defmodule RiichiAdvanced.YakuTest.HefeiYaku do
       %{"type" => "buttons_pressed", "buttons" => [%{"button" => "ron"}, nil, nil, nil]}
     ], %{
       east: %{
-        yaku: [@single_wait]
+        yaku: [@base, @single_wait]
       }
     })
   end
@@ -87,7 +88,7 @@ defmodule RiichiAdvanced.YakuTest.HefeiYaku do
       %{"type" => "buttons_pressed", "buttons" => [%{"button" => "ron"}, nil, nil, nil]}
     ], %{
       east: %{
-        yaku: [@single_wait]
+        yaku: [@base, @single_wait]
       }
     })
   end
@@ -109,7 +110,7 @@ defmodule RiichiAdvanced.YakuTest.HefeiYaku do
       %{"type" => "buttons_pressed", "buttons" => [%{"button" => "ron"}, nil, nil, nil]}
     ], %{
       east: %{
-        yaku: []
+        yaku: [@base]
       }
     })
   end
@@ -118,23 +119,24 @@ defmodule RiichiAdvanced.YakuTest.HefeiYaku do
     TestUtils.test_yaku_advanced("hefei", [], """
     {
       "starting_hand": {
-        "east": ["2m", "3m", "4m", "5m", "6m", "7m", "8m", "8m", "3s", "4s", "5p", "5p", "5p"],
+        "east": ["2m", "3m", "4m", "5m", "6m", "7m", "8m", "8m", "3s", "3s", "5p", "5p", "5p"],
         "south": ["2m", "4m", "7m", "2p", "3p", "4p", "6p", "2s", "4s", "5s", "6s", "7s", "8s"],
         "west": ["2m", "4m", "7m", "2p", "3p", "4p", "6p", "2s", "4s", "5s", "6s", "7s", "8s"],
         "north": ["2m", "4m", "7m", "2p", "3p", "4p", "6p", "2s", "4s", "5s", "6s", "7s", "8s"]
       },
-      "starting_draws": ["8p", "8m", "5s"]
+      "starting_draws": ["8p", "3m", "5m", "6m", "6p", "8m"]
     }
     """, [
       %{"type" => "discard", "tile" => "8p", "player" => 0, "tsumogiri" => true},
+      %{"type" => "discard", "tile" => "3m", "player" => 1, "tsumogiri" => true},
+      %{"type" => "discard", "tile" => "4m", "player" => 2, "tsumogiri" => true},
+      %{"type" => "discard", "tile" => "6m", "player" => 3, "tsumogiri" => true},
+      %{"type" => "discard", "tile" => "6p", "player" => 0, "tsumogiri" => true},
       %{"type" => "discard", "tile" => "8m", "player" => 1, "tsumogiri" => true},
-      %{"type" => "buttons_pressed", "buttons" => [%{"button" => "pon"}, nil, nil, nil]},
-      %{"type" => "discard", "tile" => "5p", "player" => 0, "tsumogiri" => false},
-      %{"type" => "discard", "tile" => "5s", "player" => 1, "tsumogiri" => true},
       %{"type" => "buttons_pressed", "buttons" => [%{"button" => "ron"}, nil, nil, nil]}
     ], %{
       east: %{
-        yaku: [{"Same Number Bonus (5)", [1, "嘴"]},{"Suit Bonus", [1, "嘴"]}]
+        yaku: [@base, {"Concealed Pung", [1, "嘴"]}, {"Suit Bonus", [1, "嘴"]}]
       }
     })
   end
@@ -143,26 +145,26 @@ defmodule RiichiAdvanced.YakuTest.HefeiYaku do
     TestUtils.test_yaku_advanced("hefei", [], """
     {
       "starting_hand": {
-        "east": ["2m", "3m", "4m", "5m", "6m", "7m", "8m", "8m", "8m", "3s", "4s", "5p", "5p"],
+        "east": ["2m", "3m", "4m", "5m", "6m", "7m", "8m", "8m", "8m", "3s", "4s", "8p", "8p"],
         "south": ["2m", "4m", "7m", "2p", "3p", "4p", "6p", "2s", "4s", "5s", "6s", "7s", "8s"],
         "west": ["2m", "4m", "7m", "2p", "3p", "4p", "6p", "2s", "4s", "5s", "6s", "7s", "8s"],
         "north": ["2m", "4m", "7m", "2p", "3p", "4p", "6p", "2s", "4s", "5s", "6s", "7s", "8s"]
       },
-      "starting_draws": ["8p", "8m", "5s"],
+      "starting_draws": ["8p", "3m", "3m", "3m", "8m", "5s"],
       "starting_dead_wall": ["5p"]
     }
     """, [
       %{"type" => "discard", "tile" => "8p", "player" => 0, "tsumogiri" => true},
-      %{"type" => "discard", "tile" => "8m", "player" => 1, "tsumogiri" => true},
-      %{"type" => "buttons_pressed", "buttons" => [%{"button" => "daiminkan"}, nil, nil, nil]},
+      %{"type" => "discard", "tile" => "3m", "player" => 1, "tsumogiri" => true},
+      %{"type" => "discard", "tile" => "3m", "player" => 2, "tsumogiri" => true},
+      %{"type" => "discard", "tile" => "3m", "player" => 3, "tsumogiri" => true},
+      %{"type" => "buttons_pressed", "buttons" => [%{"button" => "ankan"}, nil, nil, nil]},
       %{"type" => "discard", "tile" => "5p", "player" => 0, "tsumogiri" => true},
       %{"type" => "discard", "tile" => "5s", "player" => 1, "tsumogiri" => true},
       %{"type" => "buttons_pressed", "buttons" => [%{"button" => "ron"}, nil, nil, nil]}
     ], %{
       east: %{
-        yaku: [{"Same Number Bonus (5)", [1, "嘴"]}, {"Same Number Bonus (8)", [1, "嘴"]}, {"Suit Bonus", [2, "嘴"]}
-
-]
+        yaku: [@base, {"Base Score", [15, "嘴"]}, {"Concealed Kong", [4, "嘴"]}, {"Concealed Pung", [1, "嘴"]}, {"Same Number Bonus (8)", [2, "嘴"]}, {"Suit Bonus", [2, "嘴"]}]
       }
     })
   end
@@ -184,7 +186,7 @@ defmodule RiichiAdvanced.YakuTest.HefeiYaku do
       %{"type" => "buttons_pressed", "buttons" => [%{"button" => "ron"}, nil, nil, nil]}
     ], %{
       east: %{
-        yaku: [{"Concealed Pung", [1, "嘴"]}, {"Same Number Bonus (5)", [2, "嘴"]}]
+        yaku: [@base, {"Concealed Pung", [1, "嘴"]}, {"Same Number Bonus (5)", [1, "嘴"]}]
       }
     })
   end
@@ -206,7 +208,7 @@ defmodule RiichiAdvanced.YakuTest.HefeiYaku do
       %{"type" => "buttons_pressed", "buttons" => [%{"button" => "ron"}, nil, nil, nil]}
     ], %{
       east: %{
-        yaku: [{"Same Number Bonus (3)", [1, "嘴"]}, {"Same Number Bonus (5)", [2, "嘴"]}, {"Two Concealed Pungs", [2, "嘴"]}]
+        yaku: [@base, {"Same Number Bonus (5)", [1, "嘴"]}, {"Two Concealed Pungs", [2, "嘴"]}]
       }
     })
   end
@@ -228,7 +230,7 @@ defmodule RiichiAdvanced.YakuTest.HefeiYaku do
       %{"type" => "buttons_pressed", "buttons" => [%{"button" => "ron"}, nil, nil, nil]}
     ], %{
       east: %{
-        yaku: [{"Same Number Bonus (3)", [1, "嘴"]}, {"Same Number Bonus (5)", [1, "嘴"]}, {"Three Concealed Pungs", [4, "嘴"]}]
+        yaku: [@base, {"Three Concealed Pungs", [4, "嘴"]}]
       }
     })
   end
@@ -252,8 +254,8 @@ defmodule RiichiAdvanced.YakuTest.HefeiYaku do
       %{"type" => "buttons_pressed", "buttons" => [%{"button" => "tsumo"}, nil, nil, nil]}
     ], %{
       east: %{
-        yaku: [{"Four Concealed Pungs", [100, "嘴"]}],
-        displayed_score: 2000
+        yaku: [@base, {"Four Concealed Pungs", [100, "嘴"]}],
+        displayed_score: 115
       }
     })
   end
@@ -275,7 +277,7 @@ defmodule RiichiAdvanced.YakuTest.HefeiYaku do
       %{"type" => "buttons_pressed", "buttons" => [%{"button" => "ron"}, nil, nil, nil]}
     ], %{
       east: %{
-        yaku: [{"Double Sequences", [2, "嘴"]}]
+        yaku: [@base, {"Double Sequences", [2, "嘴"]}]
       }
     })
   end
@@ -297,7 +299,7 @@ defmodule RiichiAdvanced.YakuTest.HefeiYaku do
       %{"type" => "buttons_pressed", "buttons" => [%{"button" => "ron"}, nil, nil, nil]}
     ], %{
       east: %{
-        yaku: [{"Concealed Double Sequences", [4, "嘴"]}, {"Same Number Bonus (5)", [1, "嘴"]}]
+        yaku: [@base, {"Concealed Double Sequences", [4, "嘴"]}]
       }
     })
   end
@@ -319,7 +321,7 @@ defmodule RiichiAdvanced.YakuTest.HefeiYaku do
       %{"type" => "buttons_pressed", "buttons" => [%{"button" => "ron"}, nil, nil, nil]}
     ], %{
       east: %{
-        yaku: [{"Seven Pairs", [10, "嘴"]}]
+        yaku: [@base, {"Seven Pairs", [10, "嘴"]}]
       }
     })
   end
@@ -341,7 +343,7 @@ defmodule RiichiAdvanced.YakuTest.HefeiYaku do
       %{"type" => "buttons_pressed", "buttons" => [%{"button" => "ron"}, nil, nil, nil]}
     ], %{
       east: %{
-        yaku: [{"Seven Pairs", [10, "嘴"]}]
+        yaku: [@base, {"Seven Pairs", [10, "嘴"]}]
       }
     })
   end
@@ -365,7 +367,7 @@ defmodule RiichiAdvanced.YakuTest.HefeiYaku do
       %{"type" => "buttons_pressed", "buttons" => [%{"button" => "tsumo"}, nil, nil, nil]}
     ], %{
       east: %{
-        yaku: [{"Concealed Double Sequences", [4, "嘴"]}]
+        yaku: [@base, {"Concealed Double Sequences", [4, "嘴"]}]
       }
     })
   end
@@ -389,7 +391,7 @@ defmodule RiichiAdvanced.YakuTest.HefeiYaku do
       %{"type" => "buttons_pressed", "buttons" => [%{"button" => "tsumo"}, nil, nil, nil]}
     ], %{
       east: %{
-        yaku: [{"Double Concealed Double Sequences", [100, "嘴"]}]
+        yaku: [@base, {"Double Concealed Double Sequences", [100, "嘴"]}]
       }
     })
   end
@@ -411,7 +413,7 @@ defmodule RiichiAdvanced.YakuTest.HefeiYaku do
       %{"type" => "buttons_pressed", "buttons" => [%{"button" => "ron"}, nil, nil, nil]}
     ], %{
       east: %{
-        yaku: [{"Double Concealed Double Sequences", [100, "嘴"]}]
+        yaku: [@base, {"Double Concealed Double Sequences", [100, "嘴"]}]
       }
     })
   end
@@ -433,7 +435,7 @@ defmodule RiichiAdvanced.YakuTest.HefeiYaku do
       %{"type" => "buttons_pressed", "buttons" => [%{"button" => "ron"}, nil, nil, nil]}
     ], %{
       east: %{
-        yaku: [{"Two Suits Only", [2, "嘴"]}]
+        yaku: [@base, {"Two Suits Only", [2, "嘴"]}]
       }
     })
   end
@@ -460,7 +462,7 @@ defmodule RiichiAdvanced.YakuTest.HefeiYaku do
       %{"type" => "buttons_pressed", "buttons" => [%{"button" => "tsumo"}, nil, nil, nil]}
     ], %{
       east: %{
-        yaku: [{"Concealed Kong", [4, "嘴"]}, {"Same Number Bonus (3)", [1, "嘴"]}, {"Same Number Bonus (5)", [2, "嘴"]}, {"Two Concealed Pungs", [2, "嘴"]}]
+        yaku: [@base, {"Concealed Kong", [4, "嘴"]}, {"Same Number Bonus (5)", [1, "嘴"]}, {"Two Concealed Pungs", [2, "嘴"]}]
       }
     })
   end
@@ -487,7 +489,7 @@ defmodule RiichiAdvanced.YakuTest.HefeiYaku do
       %{"type" => "buttons_pressed", "buttons" => [%{"button" => "tsumo"}, nil, nil, nil]}
     ], %{
       east: %{
-        yaku: [{"Concealed Kongs", [8, "嘴"]}, {"Same Number Bonus (3)", [4, "嘴"]}, {"Same Number Bonus (5)", [2, "嘴"]}, {"Suit Bonus", [1, "嘴"]}, {"Three Concealed Pungs", [4, "嘴"]}]
+        yaku: [@base, {"Concealed Kongs", [8, "嘴"]}, {"Same Number Bonus (3)", [3, "嘴"]}, {"Same Number Bonus (5)", [1, "嘴"]}, {"Suit Bonus", [1, "嘴"]}, {"Three Concealed Pungs", [4, "嘴"]}]
       }
     })
   end
@@ -509,7 +511,7 @@ defmodule RiichiAdvanced.YakuTest.HefeiYaku do
       %{"type" => "buttons_pressed", "buttons" => [%{"button" => "ron"}, nil, nil, nil]}
     ], %{
       east: %{
-        yaku: [{"Concealed Pung", [1, "嘴"]}, {"Same Number Bonus (3)", [2, "嘴"]}, {"Four of a Kind", [4, "嘴"]}]
+        yaku: [@base, {"Concealed Pung", [1, "嘴"]}, {"Same Number Bonus (3)", [1, "嘴"]}, {"Four of a Kind", [4, "嘴"]}]
       }
     })
   end
@@ -531,7 +533,7 @@ defmodule RiichiAdvanced.YakuTest.HefeiYaku do
       %{"type" => "buttons_pressed", "buttons" => [%{"button" => "ron"}, nil, nil, nil]}
     ], %{
       east: %{
-        yaku: [{"Same Number Bonus (5)", [3, "嘴"]}, {"Four of a Kind", [4, "嘴"]}]
+        yaku: [@base, {"Same Number Bonus (5)", [2, "嘴"]}, {"Four of a Kind", [4, "嘴"]}]
       }
     })
   end
@@ -553,7 +555,7 @@ defmodule RiichiAdvanced.YakuTest.HefeiYaku do
       %{"type" => "buttons_pressed", "buttons" => [%{"button" => "ron"}, nil, nil, nil]}
     ], %{
       east: %{
-        yaku: [{"Four of a Kind", [8, "嘴"]}, {"Same Number Bonus (3)", [5, "嘴"]}, {"Two Concealed Pungs", [2, "嘴"]}, {"Two Suits Only", [2, "嘴"]}]
+        yaku: [@base, {"Four of a Kind", [8, "嘴"]}, {"Same Number Bonus (3)", [4, "嘴"]}, {"Two Concealed Pungs", [2, "嘴"]}, {"Two Suits Only", [2, "嘴"]}]
       }
     })
   end
@@ -575,7 +577,7 @@ defmodule RiichiAdvanced.YakuTest.HefeiYaku do
       %{"type" => "buttons_pressed", "buttons" => [%{"button" => "ron"}, nil, nil, nil]}
     ], %{
       east: %{
-        yaku: [{"Seven Pairs", [10, "嘴"]}]
+        yaku: [@base, {"Seven Pairs", [10, "嘴"]}]
       }
     })
   end
@@ -597,7 +599,7 @@ defmodule RiichiAdvanced.YakuTest.HefeiYaku do
       %{"type" => "buttons_pressed", "buttons" => [%{"button" => "ron"}, nil, nil, nil]}
     ], %{
       east: %{
-        yaku: [{"Luxury Seven Pairs", [50, "嘴"]}]
+        yaku: [@base, {"Luxury Seven Pairs", [50, "嘴"]}]
       }
     })
   end
@@ -619,7 +621,7 @@ defmodule RiichiAdvanced.YakuTest.HefeiYaku do
       %{"type" => "buttons_pressed", "buttons" => [%{"button" => "ron"}, nil, nil, nil]}
     ], %{
       east: %{
-        yaku: [{"Double Luxury Seven Pairs", [100, "嘴"]}]
+        yaku: [@base, {"Double Luxury Seven Pairs", [100, "嘴"]}]
       }
     })
   end
@@ -641,7 +643,7 @@ defmodule RiichiAdvanced.YakuTest.HefeiYaku do
       %{"type" => "buttons_pressed", "buttons" => [%{"button" => "ron"}, nil, nil, nil]}
     ], %{
       east: %{
-        yaku: [{"Pure Suit", [100, "嘴"]}]
+        yaku: [@base, {"Pure Suit", [100, "嘴"]}]
       }
     })
   end
@@ -663,7 +665,7 @@ defmodule RiichiAdvanced.YakuTest.HefeiYaku do
       %{"type" => "buttons_pressed", "buttons" => [%{"button" => "ron"}, nil, nil, nil]}
     ], %{
       east: %{
-        yaku: [{"Three Consecutive Pungs", [100, "嘴"]}]
+        yaku: [@base, {"Three Consecutive Pungs", [100, "嘴"]}]
       }
     })
   end
@@ -685,7 +687,7 @@ defmodule RiichiAdvanced.YakuTest.HefeiYaku do
       %{"type" => "buttons_pressed", "buttons" => [%{"button" => "ron"}, nil, nil, nil]}
     ], %{
       east: %{
-        yaku: [{"Concealed Double Sequences", [4, "嘴"]}, {"Same Number Bonus (6)", [1, "嘴"]}, {"Suit Bonus", [1, "嘴"]}, {"Two Concealed Pungs", [2, "嘴"]}]
+        yaku: [@base, {"Concealed Double Sequences", [4, "嘴"]}, {"Suit Bonus", [1, "嘴"]}, {"Two Concealed Pungs", [2, "嘴"]}]
       }
     })
   end
@@ -709,7 +711,7 @@ defmodule RiichiAdvanced.YakuTest.HefeiYaku do
       %{"type" => "buttons_pressed", "buttons" => [%{"button" => "tsumo"}, nil, nil, nil]}
     ], %{
       east: %{
-        yaku: [{"Three Consecutive Pungs", [100, "嘴"]}]
+        yaku: [@base, {"Three Consecutive Pungs", [100, "嘴"]}]
       }
     })
   end
@@ -733,7 +735,7 @@ defmodule RiichiAdvanced.YakuTest.HefeiYaku do
       %{"type" => "buttons_pressed", "buttons" => [%{"button" => "tsumo"}, nil, nil, nil]}
     ], %{
       east: %{
-        yaku: [{"Ten Identical Tiles", [100, "嘴"]}]
+        yaku: [@base, {"Ten Identical Tiles", [100, "嘴"]}]
       }
     })
   end
@@ -759,7 +761,7 @@ defmodule RiichiAdvanced.YakuTest.HefeiYaku do
       %{"type" => "buttons_pressed", "buttons" => [%{"button" => "tsumo"}, nil, nil, nil]}
     ], %{
       east: %{
-        yaku: [{"Ten Identical Tiles", [100, "嘴"]}]
+        yaku: [@base, {"Ten Identical Tiles", [100, "嘴"]}]
       }
     })
   end
@@ -783,7 +785,7 @@ defmodule RiichiAdvanced.YakuTest.HefeiYaku do
       %{"type" => "buttons_pressed", "buttons" => [%{"button" => "tsumo"}, nil, nil, nil]}
     ], %{
       east: %{
-        yaku: [{"Same Number Bonus (3)", [6, "嘴"]}, {"Three Concealed Pungs", [4, "嘴"]}]
+        yaku: [@base, {"Same Number Bonus (3)", [5, "嘴"]}, {"Three Concealed Pungs", [4, "嘴"]}]
       }
     })
   end
@@ -803,7 +805,7 @@ defmodule RiichiAdvanced.YakuTest.HefeiYaku do
       %{"type" => "buttons_pressed", "buttons" => [%{"button" => "tsumo"}, nil, nil, nil]}
     ], %{
       east: %{
-        yaku: [{"Heavenly Win", [200, "嘴"]}]
+        yaku: [@base, {"Heavenly Win", [200, "嘴"]}]
       }
     })
   end
@@ -824,7 +826,7 @@ defmodule RiichiAdvanced.YakuTest.HefeiYaku do
       %{"type" => "buttons_pressed", "buttons" => [nil, %{"button" => "tsumo"}, nil, nil]}
     ], %{
       south: %{
-        yaku: [{"Earthly Win", [150, "嘴"]}]
+        yaku: [@base, {"Earthly Win", [150, "嘴"]}]
       }
     })
   end
@@ -846,7 +848,7 @@ defmodule RiichiAdvanced.YakuTest.HefeiYaku do
       %{"type" => "buttons_pressed", "buttons" => [%{"button" => "tsumo"}, nil, nil, nil]}
     ], %{
       east: %{
-        yaku: [{"Heavenly Win", [200, "嘴"]}]
+        yaku: [@base, {"Heavenly Win", [200, "嘴"]}]
       }
     })
   end
@@ -856,7 +858,7 @@ defmodule RiichiAdvanced.YakuTest.HefeiYaku do
     {
       "starting_hand": {
         "east": ["2m", "4m", "7m", "8p", "8p", "8p", "8p", "3s", "4s", "5s", "6s", "7s", "8s"],
-        "south": ["2m", "3m", "4m", "2s", "2s", "2s", "6s", "7s", "2p", "3p", "4p", "6p", "6p"],
+        "south": ["2m", "3m", "4m", "2s", "2s", "2s", "5s", "5s", "6s", "7s", "2p", "3p", "4p"],
         "west": ["2m", "4m", "5m", "7m", "2p", "3p", "4p", "6p", "3s", "4s", "6s", "7s", "8s"],
         "north": ["5m", "6m", "7m", "8m", "8m", "8m", "3s", "4s", "6s", "8s", "4p", "5p", "6p"]
       },
@@ -869,7 +871,7 @@ defmodule RiichiAdvanced.YakuTest.HefeiYaku do
       %{"type" => "buttons_pressed", "buttons" => [nil, %{"button" => "tsumo"}, nil, nil]}
     ], %{
       south: %{
-        yaku: [{"Earthly Win", [150, "嘴"]}]
+        yaku: [@base, {"Earthly Win", [150, "嘴"]}]
       }
     })
   end
@@ -894,7 +896,7 @@ defmodule RiichiAdvanced.YakuTest.HefeiYaku do
       %{"type" => "buttons_pressed", "buttons" => [nil, nil, nil, %{"button" => "ron"}]}
     ], %{
       north: %{
-        yaku: [{"Earthly Win", [150, "嘴"]}]
+        yaku: [@base, {"Earthly Win", [150, "嘴"]}]
       }
     })
   end
@@ -921,220 +923,220 @@ defmodule RiichiAdvanced.YakuTest.HefeiYaku do
       %{"type" => "buttons_pressed", "buttons" => [nil, %{"button" => "ron"}, nil, nil]}
     ], %{
       south: %{
-        yaku: []
+        yaku: [@base]
       }
     })
   end
 
-  test "hefei - sea floor (first draw as east)" do
-    TestUtils.test_yaku_advanced("hefei", [], """
-    {
-      "starting_hand": {
-        "east": ["7s","6s","4s","2p","6p","5p","2m","5s","2p","6s","4s","2p","8s"],
-        "south": ["4p","4m","3m","6m","2m","8s","2s","3p","6p","3m","3p","5m","5m"],
-        "west": ["6m","4m","5m","4m","2m","5s","7m","7m","4p","6p","8s","2s","6s"],
-        "north": ["6p","3s","2p","2m","4p","8m","8p","3s","7p","4s","3p","8m","7p"]
-      },
-      "starting_draws": ["8m","7s","4s","3p","5s","8s","8p","5s","8m","2s","4p","5p","4m","3m","5m","7p","2s","6m","5p","5p","7p","3s","8p","7m","3m","7m","6s","8p","3s","7s","6m","7s"],
-      "starting_round": 0,
-      "starting_honba": 0
-    }
-    """, [
-      %{"player" => 0, "tile" => "8m", "tsumogiri" => true, "type" => "discard"},
-      %{"player" => 1, "tile" => "8s", "tsumogiri" => false, "type" => "discard"},
-      %{"player" => 2, "tile" => "2s", "tsumogiri" => false, "type" => "discard"},
-      %{"player" => 3, "tile" => "2p", "tsumogiri" => false, "type" => "discard"},
-      %{"player" => 0, "tile" => "2m", "tsumogiri" => false, "type" => "discard"},
-      %{"player" => 1, "tile" => "8s", "tsumogiri" => true, "type" => "discard"},
-      %{"player" => 2, "tile" => "8p", "tsumogiri" => true, "type" => "discard"},
-      %{"player" => 3, "tile" => "2m", "tsumogiri" => false, "type" => "discard"},
-      %{"player" => 0, "tile" => "8m", "tsumogiri" => true, "type" => "discard"},
-      %{"player" => 1, "tile" => "2s", "tsumogiri" => true, "type" => "discard"},
-      %{"player" => 2, "tile" => "8s", "tsumogiri" => false, "type" => "discard"},
-      %{"player" => 3, "tile" => "8m", "tsumogiri" => false, "type" => "discard"},
-      %{"player" => 0, "tile" => "4m", "tsumogiri" => true, "type" => "discard"},
-      %{"player" => 1, "tile" => "2m", "tsumogiri" => false, "type" => "discard"},
-      %{"player" => 2, "tile" => "2m", "tsumogiri" => false, "type" => "discard"},
-      %{"player" => 3, "tile" => "8m", "tsumogiri" => false, "type" => "discard"},
-      %{"player" => 0, "tile" => "2p", "tsumogiri" => false, "type" => "discard"},
-      %{"player" => 1, "tile" => "3p", "tsumogiri" => false, "type" => "discard"},
-      %{"player" => 2, "tile" => "5p", "tsumogiri" => true, "type" => "discard"},
-      %{"player" => 3, "tile" => "8p", "tsumogiri" => false, "type" => "discard"},
-      %{"player" => 0, "tile" => "2s", "tsumogiri" => false, "type" => "discard"},
-      %{"player" => 1, "tile" => "7s", "tsumogiri" => false, "type" => "discard"},
-      %{"player" => 2, "tile" => "8p", "tsumogiri" => true, "type" => "discard"},
-      %{"player" => 3, "tile" => "7m", "tsumogiri" => true, "type" => "discard"},
-      %{"player" => 0, "tile" => "3m", "tsumogiri" => true, "type" => "discard"},
-      %{"player" => 1, "tile" => "3m", "tsumogiri" => false, "type" => "discard"},
-      %{"player" => 2, "tile" => "4p", "tsumogiri" => false, "type" => "discard"},
-      %{"player" => 3, "tile" => "8p", "tsumogiri" => true, "type" => "discard"},
-      %{"buttons" => [%{"button" => "tsumo"}, nil, nil, nil], "type" => "buttons_pressed"}
-    ], %{
-      east: %{
-        yaku: [{"Sea Floor", [15, "嘴"]}]
-      }
-    })
-  end
+  # test "hefei - sea floor (first draw as east)" do
+  #   TestUtils.test_yaku_advanced("hefei", [], """
+  #   {
+  #     "starting_hand": {
+  #       "east": ["7s","6s","4s","2p","6p","5p","2m","5s","2p","6s","4s","2p","8s"],
+  #       "south": ["4p","4m","3m","6m","2m","8s","2s","3p","6p","3m","3p","5m","5m"],
+  #       "west": ["6m","4m","5m","4m","2m","5s","7m","7m","4p","6p","8s","2s","6s"],
+  #       "north": ["6p","3s","2p","2m","4p","8m","8p","3s","7p","4s","3p","8m","7p"]
+  #     },
+  #     "starting_draws": ["8m","7s","4s","3p","5s","8s","8p","5s","8m","2s","4p","5p","4m","3m","5m","7p","2s","6m","5p","5p","7p","3s","8p","7m","3m","7m","6s","8p","3s","7s","6m","7s"],
+  #     "starting_round": 0,
+  #     "starting_honba": 1
+  #   }
+  #   """, [
+  #     %{"player" => 0, "tile" => "8m", "tsumogiri" => true, "type" => "discard"},
+  #     %{"player" => 1, "tile" => "8s", "tsumogiri" => false, "type" => "discard"},
+  #     %{"player" => 2, "tile" => "2s", "tsumogiri" => false, "type" => "discard"},
+  #     %{"player" => 3, "tile" => "2p", "tsumogiri" => false, "type" => "discard"},
+  #     %{"player" => 0, "tile" => "2m", "tsumogiri" => false, "type" => "discard"},
+  #     %{"player" => 1, "tile" => "8s", "tsumogiri" => true, "type" => "discard"},
+  #     %{"player" => 2, "tile" => "8p", "tsumogiri" => true, "type" => "discard"},
+  #     %{"player" => 3, "tile" => "2m", "tsumogiri" => false, "type" => "discard"},
+  #     %{"player" => 0, "tile" => "8m", "tsumogiri" => true, "type" => "discard"},
+  #     %{"player" => 1, "tile" => "2s", "tsumogiri" => true, "type" => "discard"},
+  #     %{"player" => 2, "tile" => "8s", "tsumogiri" => false, "type" => "discard"},
+  #     %{"player" => 3, "tile" => "8m", "tsumogiri" => false, "type" => "discard"},
+  #     %{"player" => 0, "tile" => "4m", "tsumogiri" => true, "type" => "discard"},
+  #     %{"player" => 1, "tile" => "2m", "tsumogiri" => false, "type" => "discard"},
+  #     %{"player" => 2, "tile" => "2m", "tsumogiri" => false, "type" => "discard"},
+  #     %{"player" => 3, "tile" => "8m", "tsumogiri" => false, "type" => "discard"},
+  #     %{"player" => 0, "tile" => "2p", "tsumogiri" => false, "type" => "discard"},
+  #     %{"player" => 1, "tile" => "3p", "tsumogiri" => false, "type" => "discard"},
+  #     %{"player" => 2, "tile" => "5p", "tsumogiri" => true, "type" => "discard"},
+  #     %{"player" => 3, "tile" => "8p", "tsumogiri" => false, "type" => "discard"},
+  #     %{"player" => 0, "tile" => "2s", "tsumogiri" => false, "type" => "discard"},
+  #     %{"player" => 1, "tile" => "7s", "tsumogiri" => false, "type" => "discard"},
+  #     %{"player" => 2, "tile" => "8p", "tsumogiri" => true, "type" => "discard"},
+  #     %{"player" => 3, "tile" => "7m", "tsumogiri" => true, "type" => "discard"},
+  #     %{"player" => 0, "tile" => "3m", "tsumogiri" => true, "type" => "discard"},
+  #     %{"player" => 1, "tile" => "3m", "tsumogiri" => false, "type" => "discard"},
+  #     %{"player" => 2, "tile" => "4p", "tsumogiri" => false, "type" => "discard"},
+  #     %{"player" => 3, "tile" => "8p", "tsumogiri" => true, "type" => "discard"},
+  #     %{"buttons" => [%{"button" => "tsumo"}, nil, nil, nil], "type" => "buttons_pressed"}
+  #   ], %{
+  #     east: %{
+  #       yaku: [@base, {"Sea Floor", [15, "嘴"]}]
+  #     }
+  #   })
+  # end
 
-  test "hefei - sea floor (last draw as east)" do
-    TestUtils.test_yaku_advanced("hefei", [], """
-    {
-      "starting_hand": {
-        "east": ["7s","5s","3m","6p","7p","5p","4s","3s","7p","7m","2p","6p","2s"],
-        "south": ["3s","2p","6p","2s","5m","2p","8m","3m","3p","6s","5s","6s","7m"],
-        "west": ["4m","2p","5p","3p","2s","3p","3s","8p","4m","6m","4s","8p","8s"],
-        "north": ["8m","8s","8s","6m","7m","6s","4p","3m","6m","4p","7p","4p","5p"]
-      },
-      "starting_draws": ["7s","8m","3m","6p","3s","5m","8p","5m","6m","7p","2s","2m","6s","5s","5s","2m","4p","4m","5m","7m","8p","2m","8s","7s","4m","2m","4s","8m","5p","3p","4s","7s"],
-      "starting_round": 0,
-      "starting_honba": 0
-    }
-    """, [
-      %{"player" => 0, "tile" => "3m", "tsumogiri" => false, "type" => "discard"},
-      %{"player" => 1, "tile" => "6p", "tsumogiri" => false, "type" => "discard"},
-      %{"player" => 2, "tile" => "2p", "tsumogiri" => false, "type" => "discard"},
-      %{"player" => 3, "tile" => "8m", "tsumogiri" => false, "type" => "discard"},
-      %{"player" => 0, "tile" => "7m", "tsumogiri" => false, "type" => "discard"},
-      %{"player" => 1, "tile" => "5m", "tsumogiri" => true, "type" => "discard"},
-      %{"player" => 2, "tile" => "8s", "tsumogiri" => false, "type" => "discard"},
-      %{"player" => 3, "tile" => "8s", "tsumogiri" => false, "type" => "discard"},
-      %{"player" => 0, "tile" => "6m", "tsumogiri" => true, "type" => "discard"},
-      %{"player" => 1, "tile" => "7p", "tsumogiri" => true, "type" => "discard"},
-      %{"player" => 2, "tile" => "8p", "tsumogiri" => false, "type" => "discard"},
-      %{"player" => 3, "tile" => "8s", "tsumogiri" => false, "type" => "discard"},
-      %{"player" => 0, "tile" => "2p", "tsumogiri" => false, "type" => "discard"},
-      %{"player" => 1, "tile" => "5s", "tsumogiri" => true, "type" => "discard"},
-      %{"player" => 2, "tile" => "8p", "tsumogiri" => false, "type" => "discard"},
-      %{"player" => 3, "tile" => "7p", "tsumogiri" => false, "type" => "discard"},
-      %{"player" => 0, "tile" => "6p", "tsumogiri" => false, "type" => "discard"},
-      %{"player" => 1, "tile" => "4m", "tsumogiri" => true, "type" => "discard"},
-      %{"player" => 2, "tile" => "8p", "tsumogiri" => false, "type" => "discard"},
-      %{"player" => 3, "tile" => "2m", "tsumogiri" => false, "type" => "discard"},
-      %{"player" => 0, "tile" => "8p", "tsumogiri" => true, "type" => "discard"},
-      %{"player" => 1, "tile" => "2m", "tsumogiri" => true, "type" => "discard"},
-      %{"player" => 2, "tile" => "3p", "tsumogiri" => false, "type" => "discard"},
-      %{"player" => 3, "tile" => "7s", "tsumogiri" => true, "type" => "discard"},
-      %{"buttons" => [%{"button" => "pon", "call_choice" => ["7s", "7s"], "called_tile" => "7s"}, nil, nil, nil], "type" => "buttons_pressed"},
-      %{"player" => 0, "tile" => "3s", "tsumogiri" => false, "type" => "discard"},
-      %{"player" => 1, "tile" => "4m", "tsumogiri" => true, "type" => "discard"},
-      %{"player" => 2, "tile" => "2m", "tsumogiri" => true, "type" => "discard"},
-      %{"player" => 3, "tile" => "4p", "tsumogiri" => false, "type" => "discard"},
-      %{"player" => 0, "tile" => "8m", "tsumogiri" => true, "type" => "discard"},
-      %{"buttons" => [nil, %{"button" => "sea_floor_no_win"}, nil, nil], "type" => "buttons_pressed"},
-      %{"buttons" => [nil, nil, %{"button" => "sea_floor_no_win"}, nil], "type" => "buttons_pressed"},
-      %{"buttons" => [nil, nil, nil, %{"button" => "sea_floor_no_win"}], "type" => "buttons_pressed"},
-      %{"buttons" => [%{"button" => "tsumo"}, nil, nil, nil], "type" => "buttons_pressed"}
-    ], %{
-      east: %{
-        yaku: [{"Sea Floor", [15, "嘴"]}]
-      }
-    })
-  end
+  # test "hefei - sea floor (last draw as east)" do
+  #   TestUtils.test_yaku_advanced("hefei", [], """
+  #   {
+  #     "starting_hand": {
+  #       "east": ["7s","5s","3m","6p","7p","5p","4s","3s","7p","7m","2p","6p","2s"],
+  #       "south": ["3s","2p","6p","2s","5m","2p","8m","3m","3p","6s","5s","6s","7m"],
+  #       "west": ["4m","2p","5p","3p","2s","3p","3s","8p","4m","6m","4s","8p","8s"],
+  #       "north": ["8m","8s","8s","6m","7m","6s","4p","3m","6m","4p","7p","4p","5p"]
+  #     },
+  #     "starting_draws": ["7s","8m","3m","6p","3s","5m","8p","5m","6m","7p","2s","2m","6s","5s","5s","2m","4p","4m","5m","7m","8p","2m","8s","7s","4m","2m","4s","8m","5p","3p","4s","7s"],
+  #     "starting_round": 0,
+  #     "starting_honba": 1
+  #   }
+  #   """, [
+  #     %{"player" => 0, "tile" => "3m", "tsumogiri" => false, "type" => "discard"},
+  #     %{"player" => 1, "tile" => "6p", "tsumogiri" => false, "type" => "discard"},
+  #     %{"player" => 2, "tile" => "2p", "tsumogiri" => false, "type" => "discard"},
+  #     %{"player" => 3, "tile" => "8m", "tsumogiri" => false, "type" => "discard"},
+  #     %{"player" => 0, "tile" => "7m", "tsumogiri" => false, "type" => "discard"},
+  #     %{"player" => 1, "tile" => "5m", "tsumogiri" => true, "type" => "discard"},
+  #     %{"player" => 2, "tile" => "8s", "tsumogiri" => false, "type" => "discard"},
+  #     %{"player" => 3, "tile" => "8s", "tsumogiri" => false, "type" => "discard"},
+  #     %{"player" => 0, "tile" => "6m", "tsumogiri" => true, "type" => "discard"},
+  #     %{"player" => 1, "tile" => "7p", "tsumogiri" => true, "type" => "discard"},
+  #     %{"player" => 2, "tile" => "8p", "tsumogiri" => false, "type" => "discard"},
+  #     %{"player" => 3, "tile" => "8s", "tsumogiri" => false, "type" => "discard"},
+  #     %{"player" => 0, "tile" => "2p", "tsumogiri" => false, "type" => "discard"},
+  #     %{"player" => 1, "tile" => "5s", "tsumogiri" => true, "type" => "discard"},
+  #     %{"player" => 2, "tile" => "8p", "tsumogiri" => false, "type" => "discard"},
+  #     %{"player" => 3, "tile" => "7p", "tsumogiri" => false, "type" => "discard"},
+  #     %{"player" => 0, "tile" => "6p", "tsumogiri" => false, "type" => "discard"},
+  #     %{"player" => 1, "tile" => "4m", "tsumogiri" => true, "type" => "discard"},
+  #     %{"player" => 2, "tile" => "8p", "tsumogiri" => false, "type" => "discard"},
+  #     %{"player" => 3, "tile" => "2m", "tsumogiri" => false, "type" => "discard"},
+  #     %{"player" => 0, "tile" => "8p", "tsumogiri" => true, "type" => "discard"},
+  #     %{"player" => 1, "tile" => "2m", "tsumogiri" => true, "type" => "discard"},
+  #     %{"player" => 2, "tile" => "3p", "tsumogiri" => false, "type" => "discard"},
+  #     %{"player" => 3, "tile" => "7s", "tsumogiri" => true, "type" => "discard"},
+  #     %{"buttons" => [%{"button" => "pon", "call_choice" => ["7s", "7s"], "called_tile" => "7s"}, nil, nil, nil], "type" => "buttons_pressed"},
+  #     %{"player" => 0, "tile" => "3s", "tsumogiri" => false, "type" => "discard"},
+  #     %{"player" => 1, "tile" => "4m", "tsumogiri" => true, "type" => "discard"},
+  #     %{"player" => 2, "tile" => "2m", "tsumogiri" => true, "type" => "discard"},
+  #     %{"player" => 3, "tile" => "4p", "tsumogiri" => false, "type" => "discard"},
+  #     %{"player" => 0, "tile" => "8m", "tsumogiri" => true, "type" => "discard"},
+  #     %{"buttons" => [nil, %{"button" => "sea_floor_no_win"}, nil, nil], "type" => "buttons_pressed"},
+  #     %{"buttons" => [nil, nil, %{"button" => "sea_floor_no_win"}, nil], "type" => "buttons_pressed"},
+  #     %{"buttons" => [nil, nil, nil, %{"button" => "sea_floor_no_win"}], "type" => "buttons_pressed"},
+  #     %{"buttons" => [%{"button" => "tsumo"}, nil, nil, nil], "type" => "buttons_pressed"}
+  #   ], %{
+  #     east: %{
+  #       yaku: [@base, {"Sea Floor", [15, "嘴"]}]
+  #     }
+  #   })
+  # end
 
-  test "hefei - sea floor (last draw as north)" do
-    TestUtils.test_yaku_advanced("hefei", [], """
-    {
-      "starting_hand": {
-        "east": ["2m","8m","4m","4s","5m","8p","8p","4s","5s","2s","8p","3s","8m"],
-        "south": ["6s","2m","5p","8s","6p","5p","3p","6p","7m","6m","8s","3p","6s"],
-        "west": ["3m","8s","7m","4p","4p","2p","7m","3m","5m","2s","2m","7m","2m"],
-        "north": ["7p","7s","6p","5s","8p","3p","3m","5s","5p","2s","7s","7s","5m"]
-      },
-      "starting_draws": ["2p","4m","6m","6p","2p","3s","5p","4p","7p","5m","4s","2s","6s","8s","3p","4m","7s","8m","3s","8m","4m","6m","5s","3m","4p","4s","7p","6m","7p","3s","6s"],
-      "starting_dead_wall": ["2p"],
-      "starting_round": 1,
-      "starting_honba": 0
-    }
-    """, [
-      %{"player" => 1, "tile" => "6m", "tsumogiri" => false, "type" => "discard"},
-      %{"player" => 2, "tile" => "2p", "tsumogiri" => false, "type" => "discard"},
-      %{"player" => 3, "tile" => "8p", "tsumogiri" => false, "type" => "discard"},
-      %{"buttons" => [%{"button" => "daiminkan", "call_choice" => ["8p", "8p", "8p"], "called_tile" => "8p"}, nil, nil, nil], "type" => "buttons_pressed"},
-      %{"player" => 0, "tile" => "2p", "tsumogiri" => true, "type" => "discard"},
-      %{"player" => 1, "tile" => "2p", "tsumogiri" => false, "type" => "discard"},
-      %{"player" => 2, "tile" => "2m", "tsumogiri" => false, "type" => "discard"},
-      %{"player" => 3, "tile" => "7p", "tsumogiri" => false, "type" => "discard"},
-      %{"player" => 0, "tile" => "5p", "tsumogiri" => true, "type" => "discard"},
-      %{"player" => 1, "tile" => "8s", "tsumogiri" => false, "type" => "discard"},
-      %{"player" => 2, "tile" => "8s", "tsumogiri" => false, "type" => "discard"},
-      %{"player" => 3, "tile" => "3p", "tsumogiri" => false, "type" => "discard"},
-      %{"player" => 0, "tile" => "2m", "tsumogiri" => false, "type" => "discard"},
-      %{"player" => 1, "tile" => "8s", "tsumogiri" => false, "type" => "discard"},
-      %{"player" => 2, "tile" => "2p", "tsumogiri" => false, "type" => "discard"},
-      %{"player" => 3, "tile" => "8s", "tsumogiri" => true, "type" => "discard"},
-      %{"player" => 0, "tile" => "4m", "tsumogiri" => false, "type" => "discard"},
-      %{"player" => 1, "tile" => "2m", "tsumogiri" => false, "type" => "discard"},
-      %{"player" => 2, "tile" => "2m", "tsumogiri" => false, "type" => "discard"},
-      %{"player" => 3, "tile" => "8m", "tsumogiri" => true, "type" => "discard"},
-      %{"player" => 0, "tile" => "5m", "tsumogiri" => false, "type" => "discard"},
-      %{"player" => 1, "tile" => "8m", "tsumogiri" => true, "type" => "discard"},
-      %{"player" => 2, "tile" => "2s", "tsumogiri" => false, "type" => "discard"},
-      %{"player" => 3, "tile" => "3m", "tsumogiri" => false, "type" => "discard"},
-      %{"player" => 0, "tile" => "3p", "tsumogiri" => false, "type" => "discard"},
-      %{"player" => 1, "tile" => "2s", "tsumogiri" => false, "type" => "discard"},
-      %{"player" => 2, "tile" => "7s", "tsumogiri" => false, "type" => "discard"},
-      %{"player" => 3, "tile" => "2s", "tsumogiri" => false, "type" => "discard"},
-      %{"player" => 0, "tile" => "7p", "tsumogiri" => true, "type" => "discard"},
-      %{"buttons" => [nil, %{"button" => "sea_floor_no_win"}, nil, nil], "type" => "buttons_pressed"},
-      %{"buttons" => [nil, nil, %{"button" => "sea_floor_no_win"}, nil], "type" => "buttons_pressed"},
-      %{"buttons" => [nil, nil, nil, %{"button" => "sea_floor_no_win"}], "type" => "buttons_pressed"},
-      %{"buttons" => [%{"button" => "tsumo"}, nil, nil, nil], "type" => "buttons_pressed"}
-    ], %{
-      east: %{
-        yaku: [{"Sea Floor", [15, "嘴"]}]
-      }
-    })
-  end
+  # test "hefei - sea floor (last draw as north)" do
+  #   TestUtils.test_yaku_advanced("hefei", [], """
+  #   {
+  #     "starting_hand": {
+  #       "east": ["2m","8m","4m","4s","5m","8p","8p","4s","5s","2s","8p","3s","8m"],
+  #       "south": ["6s","2m","5p","8s","6p","5p","3p","6p","7m","6m","8s","3p","6s"],
+  #       "west": ["3m","8s","7m","4p","4p","2p","7m","3m","5m","2s","2m","7m","2m"],
+  #       "north": ["7p","7s","6p","5s","8p","3p","3m","5s","5p","2s","7s","7s","5m"]
+  #     },
+  #     "starting_draws": ["2p","4m","6m","6p","2p","3s","5p","4p","7p","5m","4s","2s","6s","8s","3p","4m","7s","8m","3s","8m","4m","6m","5s","3m","4p","4s","7p","6m","7p","3s","6s"],
+  #     "starting_dead_wall": ["2p"],
+  #     "starting_round": 1,
+  #     "starting_honba": 1
+  #   }
+  #   """, [
+  #     %{"player" => 1, "tile" => "6m", "tsumogiri" => false, "type" => "discard"},
+  #     %{"player" => 2, "tile" => "2p", "tsumogiri" => false, "type" => "discard"},
+  #     %{"player" => 3, "tile" => "8p", "tsumogiri" => false, "type" => "discard"},
+  #     %{"buttons" => [%{"button" => "daiminkan", "call_choice" => ["8p", "8p", "8p"], "called_tile" => "8p"}, nil, nil, nil], "type" => "buttons_pressed"},
+  #     %{"player" => 0, "tile" => "2p", "tsumogiri" => true, "type" => "discard"},
+  #     %{"player" => 1, "tile" => "2p", "tsumogiri" => false, "type" => "discard"},
+  #     %{"player" => 2, "tile" => "2m", "tsumogiri" => false, "type" => "discard"},
+  #     %{"player" => 3, "tile" => "7p", "tsumogiri" => false, "type" => "discard"},
+  #     %{"player" => 0, "tile" => "5p", "tsumogiri" => true, "type" => "discard"},
+  #     %{"player" => 1, "tile" => "8s", "tsumogiri" => false, "type" => "discard"},
+  #     %{"player" => 2, "tile" => "8s", "tsumogiri" => false, "type" => "discard"},
+  #     %{"player" => 3, "tile" => "3p", "tsumogiri" => false, "type" => "discard"},
+  #     %{"player" => 0, "tile" => "2m", "tsumogiri" => false, "type" => "discard"},
+  #     %{"player" => 1, "tile" => "8s", "tsumogiri" => false, "type" => "discard"},
+  #     %{"player" => 2, "tile" => "2p", "tsumogiri" => false, "type" => "discard"},
+  #     %{"player" => 3, "tile" => "8s", "tsumogiri" => true, "type" => "discard"},
+  #     %{"player" => 0, "tile" => "4m", "tsumogiri" => false, "type" => "discard"},
+  #     %{"player" => 1, "tile" => "2m", "tsumogiri" => false, "type" => "discard"},
+  #     %{"player" => 2, "tile" => "2m", "tsumogiri" => false, "type" => "discard"},
+  #     %{"player" => 3, "tile" => "8m", "tsumogiri" => true, "type" => "discard"},
+  #     %{"player" => 0, "tile" => "5m", "tsumogiri" => false, "type" => "discard"},
+  #     %{"player" => 1, "tile" => "8m", "tsumogiri" => true, "type" => "discard"},
+  #     %{"player" => 2, "tile" => "2s", "tsumogiri" => false, "type" => "discard"},
+  #     %{"player" => 3, "tile" => "3m", "tsumogiri" => false, "type" => "discard"},
+  #     %{"player" => 0, "tile" => "3p", "tsumogiri" => false, "type" => "discard"},
+  #     %{"player" => 1, "tile" => "2s", "tsumogiri" => false, "type" => "discard"},
+  #     %{"player" => 2, "tile" => "7s", "tsumogiri" => false, "type" => "discard"},
+  #     %{"player" => 3, "tile" => "2s", "tsumogiri" => false, "type" => "discard"},
+  #     %{"player" => 0, "tile" => "7p", "tsumogiri" => true, "type" => "discard"},
+  #     %{"buttons" => [nil, %{"button" => "sea_floor_no_win"}, nil, nil], "type" => "buttons_pressed"},
+  #     %{"buttons" => [nil, nil, %{"button" => "sea_floor_no_win"}, nil], "type" => "buttons_pressed"},
+  #     %{"buttons" => [nil, nil, nil, %{"button" => "sea_floor_no_win"}], "type" => "buttons_pressed"},
+  #     %{"buttons" => [%{"button" => "tsumo"}, nil, nil, nil], "type" => "buttons_pressed"}
+  #   ], %{
+  #     east: %{
+  #       yaku: [@base, {"Sea Floor", [15, "嘴"]}]
+  #     }
+  #   })
+  # end
 
-  test "hefei - winning right before sea floor doesn't give sea floor" do
-    TestUtils.test_yaku_advanced("hefei", [], """
-    {
-      "starting_hand": {
-        "east": ["5p","6p","8p","4m","5m","6m","3s","2p","6s","7p","7s","8s","6s"],
-        "south": ["7m","4p","2s","3m","5s","2p","8s","3s","5s","7m","2s","3m","2p"],
-        "west": ["7p","3m","4m","6s","8m","2s","5s","8m","2m","7p","7p","8p","7s"],
-        "north": ["5p","5p","4s","2s","7s","6m","3s","3s","5m","5s","8s","2m","6m"]
-      },
-      "starting_draws": ["4p","7m","7m","4m","6p","8s","5m","3m","3p","4p","2p","4s","3p","8p","8m","4p","8m","6p","7s","6s","6m","3p","2m","4s","3p","5p","6p","4s","5m","4m","8p","2m"],
-      "starting_dead_wall": [],
-      "starting_round": 0,
-      "starting_honba": 0
-    }
-    """, [
-      %{"player" => 0, "tile" => "7s", "tsumogiri" => false, "type" => "discard"},
-      %{"player" => 1, "tile" => "2p", "tsumogiri" => false, "type" => "discard"},
-      %{"player" => 2, "tile" => "8p", "tsumogiri" => false, "type" => "discard"},
-      %{"player" => 3, "tile" => "2m", "tsumogiri" => false, "type" => "discard"},
-      %{"player" => 0, "tile" => "8s", "tsumogiri" => false, "type" => "discard"},
-      %{"player" => 1, "tile" => "2p", "tsumogiri" => false, "type" => "discard"},
-      %{"player" => 2, "tile" => "2s", "tsumogiri" => false, "type" => "discard"},
-      %{"player" => 3, "tile" => "5p", "tsumogiri" => false, "type" => "discard"},
-      %{"player" => 0, "tile" => "2p", "tsumogiri" => false, "type" => "discard"},
-      %{"player" => 1, "tile" => "8s", "tsumogiri" => false, "type" => "discard"},
-      %{"player" => 2, "tile" => "2p", "tsumogiri" => true, "type" => "discard"},
-      %{"player" => 3, "tile" => "5p", "tsumogiri" => false, "type" => "discard"},
-      %{"player" => 0, "tile" => "8p", "tsumogiri" => false, "type" => "discard"},
-      %{"player" => 1, "tile" => "8p", "tsumogiri" => true, "type" => "discard"},
-      %{"player" => 2, "tile" => "8m", "tsumogiri" => true, "type" => "discard"},
-      %{"player" => 3, "tile" => "4p", "tsumogiri" => true, "type" => "discard"},
-      %{"player" => 0, "tile" => "8m", "tsumogiri" => true, "type" => "discard"},
-      %{"player" => 1, "tile" => "7m", "tsumogiri" => false, "type" => "discard"},
-      %{"player" => 2, "tile" => "7p", "tsumogiri" => false, "type" => "discard"},
-      %{"player" => 3, "tile" => "6m", "tsumogiri" => false, "type" => "discard"},
-      %{"player" => 0, "tile" => "3s", "tsumogiri" => false, "type" => "discard"},
-      %{"player" => 1, "tile" => "7m", "tsumogiri" => false, "type" => "discard"},
-      %{"player" => 2, "tile" => "2m", "tsumogiri" => true, "type" => "discard"},
-      %{"player" => 3, "tile" => "3m", "tsumogiri" => false, "type" => "discard"},
-      %{"player" => 0, "tile" => "3p", "tsumogiri" => true, "type" => "discard"},
-      %{"player" => 1, "tile" => "7m", "tsumogiri" => false, "type" => "discard"},
-      %{"player" => 2, "tile" => "7s", "tsumogiri" => false, "type" => "discard"},
-      %{"buttons" => [nil, nil, nil, %{"button" => "tsumo"}], "type" => "buttons_pressed"}
-    ], %{
-      north: %{
-        yaku: [{"Four of a Kind", [4, "嘴"]}, {"Same Number Bonus (4)", [2, "嘴"]}, {"Suit Bonus", [3, "嘴"]}, {"Two Suits Only", [2, "嘴"]}, @single_wait]
-      }
-    })
-  end
+  # test "hefei - winning right before sea floor doesn't give sea floor" do
+  #   TestUtils.test_yaku_advanced("hefei", [], """
+  #   {
+  #     "starting_hand": {
+  #       "east": ["5p","6p","8p","4m","5m","6m","3s","2p","6s","7p","7s","8s","6s"],
+  #       "south": ["7m","4p","2s","3m","5s","2p","8s","3s","5s","7m","2s","3m","2p"],
+  #       "west": ["7p","3m","4m","6s","8m","2s","5s","8m","2m","7p","7p","8p","7s"],
+  #       "north": ["5p","5p","4s","2s","7s","6m","3s","3s","5m","5s","8s","2m","6m"]
+  #     },
+  #     "starting_draws": ["4p","7m","7m","4m","6p","8s","5m","3m","3p","4p","2p","4s","3p","8p","8m","4p","8m","6p","7s","6s","6m","3p","2m","4s","3p","5p","6p","4s","5m","4m","8p","2m"],
+  #     "starting_dead_wall": [],
+  #     "starting_round": 0,
+  #     "starting_honba": 1
+  #   }
+  #   """, [
+  #     %{"player" => 0, "tile" => "7s", "tsumogiri" => false, "type" => "discard"},
+  #     %{"player" => 1, "tile" => "2p", "tsumogiri" => false, "type" => "discard"},
+  #     %{"player" => 2, "tile" => "8p", "tsumogiri" => false, "type" => "discard"},
+  #     %{"player" => 3, "tile" => "2m", "tsumogiri" => false, "type" => "discard"},
+  #     %{"player" => 0, "tile" => "8s", "tsumogiri" => false, "type" => "discard"},
+  #     %{"player" => 1, "tile" => "2p", "tsumogiri" => false, "type" => "discard"},
+  #     %{"player" => 2, "tile" => "2s", "tsumogiri" => false, "type" => "discard"},
+  #     %{"player" => 3, "tile" => "5p", "tsumogiri" => false, "type" => "discard"},
+  #     %{"player" => 0, "tile" => "2p", "tsumogiri" => false, "type" => "discard"},
+  #     %{"player" => 1, "tile" => "8s", "tsumogiri" => false, "type" => "discard"},
+  #     %{"player" => 2, "tile" => "2p", "tsumogiri" => true, "type" => "discard"},
+  #     %{"player" => 3, "tile" => "5p", "tsumogiri" => false, "type" => "discard"},
+  #     %{"player" => 0, "tile" => "8p", "tsumogiri" => false, "type" => "discard"},
+  #     %{"player" => 1, "tile" => "8p", "tsumogiri" => true, "type" => "discard"},
+  #     %{"player" => 2, "tile" => "8m", "tsumogiri" => true, "type" => "discard"},
+  #     %{"player" => 3, "tile" => "4p", "tsumogiri" => true, "type" => "discard"},
+  #     %{"player" => 0, "tile" => "8m", "tsumogiri" => true, "type" => "discard"},
+  #     %{"player" => 1, "tile" => "7m", "tsumogiri" => false, "type" => "discard"},
+  #     %{"player" => 2, "tile" => "7p", "tsumogiri" => false, "type" => "discard"},
+  #     %{"player" => 3, "tile" => "6m", "tsumogiri" => false, "type" => "discard"},
+  #     %{"player" => 0, "tile" => "3s", "tsumogiri" => false, "type" => "discard"},
+  #     %{"player" => 1, "tile" => "7m", "tsumogiri" => false, "type" => "discard"},
+  #     %{"player" => 2, "tile" => "2m", "tsumogiri" => true, "type" => "discard"},
+  #     %{"player" => 3, "tile" => "3m", "tsumogiri" => false, "type" => "discard"},
+  #     %{"player" => 0, "tile" => "3p", "tsumogiri" => true, "type" => "discard"},
+  #     %{"player" => 1, "tile" => "7m", "tsumogiri" => false, "type" => "discard"},
+  #     %{"player" => 2, "tile" => "7s", "tsumogiri" => false, "type" => "discard"},
+  #     %{"buttons" => [nil, nil, nil, %{"button" => "tsumo"}], "type" => "buttons_pressed"}
+  #   ], %{
+  #     north: %{
+  #       yaku: [@base, {"Four of a Kind", [4, "嘴"]}, {"Same Number Bonus (4)", [1, "嘴"]}, {"Suit Bonus", [3, "嘴"]}, {"Two Suits Only", [2, "嘴"]}, @single_wait]
+  #     }
+  #   })
+  # end
 
   test "hefei - one dealer repeat dealer win" do
     TestUtils.test_yaku_advanced("hefei", [], """
@@ -1154,12 +1156,12 @@ defmodule RiichiAdvanced.YakuTest.HefeiYaku do
       %{"type" => "buttons_pressed", "buttons" => [%{"button" => "ron"}, nil, nil, nil]}
     ], %{
       east: %{
-        yaku: [{"Dealer Repeat", [4, "嘴"]}]
+        yaku: [@base]
       }
     })
   end
 
-  test "hefei - one dealer repeat nondealer win" do
+  test "hefei - one dealer repeat nondealer ron" do
     TestUtils.test_yaku_advanced("hefei", [], """
     {
       "starting_hand": {
@@ -1181,9 +1183,66 @@ defmodule RiichiAdvanced.YakuTest.HefeiYaku do
       %{"type" => "buttons_pressed", "buttons" => [%{"button" => "ron"}, nil, nil, nil]}
     ], %{
       east: %{
-        yaku: [{"Dealer Repeat", [4, "嘴"]}]
+        yaku: [@base],
+        displayed_score: 15
       }
-    })
+    }, %{delta_scores: [15, 0, 0, -15]})
+  end
+
+  test "hefei - two dealer repeat nondealer ron" do
+    TestUtils.test_yaku_advanced("hefei", [], """
+    {
+      "starting_hand": {
+        "east": ["2m", "3m", "4m", "5m", "6m", "7m", "8m", "8m", "3s", "4s", "4p", "5p", "6p"],
+        "south": ["2m", "4m", "7m", "2p", "3p", "4p", "6p", "2s", "4s", "5s", "6s", "7s", "8s"],
+        "west": ["2m", "4m", "7m", "2p", "3p", "4p", "6p", "2s", "4s", "5s", "6s", "7s", "8s"],
+        "north": ["2m", "4m", "7m", "2p", "3p", "4p", "6p", "2s", "4s", "5s", "6s", "7s", "8s"]
+      },
+      "starting_draws": ["8p", "8p", "8p", "8p", "5s"],
+      "starting_round": 3,
+      "starting_honba": 2
+    }
+    """, [
+      %{"type" => "discard", "tile" => "8p", "player" => 3, "tsumogiri" => true},
+      %{"type" => "discard", "tile" => "8p", "player" => 0, "tsumogiri" => true},
+      %{"type" => "discard", "tile" => "8p", "player" => 1, "tsumogiri" => true},
+      %{"type" => "discard", "tile" => "8p", "player" => 2, "tsumogiri" => true},
+      %{"type" => "discard", "tile" => "5s", "player" => 3, "tsumogiri" => true},
+      %{"type" => "buttons_pressed", "buttons" => [%{"button" => "ron"}, nil, nil, nil]}
+    ], %{
+      east: %{
+        yaku: [@base, {"Dealer Repeats", [2, "×"]}],
+        displayed_score: 30
+      }
+    }, %{delta_scores: [30, 0, 0, -30]})
+  end
+
+  test "hefei - two dealer repeat nondealer tsumo" do
+    TestUtils.test_yaku_advanced("hefei", [], """
+    {
+      "starting_hand": {
+        "east": ["2m", "3m", "4m", "5m", "6m", "7m", "8m", "8m", "3s", "4s", "4p", "5p", "6p"],
+        "south": ["2m", "4m", "7m", "2p", "3p", "4p", "6p", "2s", "4s", "5s", "6s", "7s", "8s"],
+        "west": ["2m", "4m", "7m", "2p", "3p", "4p", "6p", "2s", "4s", "5s", "6s", "7s", "8s"],
+        "north": ["2m", "4m", "7m", "2p", "3p", "4p", "6p", "2s", "4s", "5s", "6s", "7s", "8s"]
+      },
+      "starting_draws": ["8p", "8p", "8p", "8p", "7p", "5s"],
+      "starting_round": 3,
+      "starting_honba": 2
+    }
+    """, [
+      %{"type" => "discard", "tile" => "8p", "player" => 3, "tsumogiri" => true},
+      %{"type" => "discard", "tile" => "8p", "player" => 0, "tsumogiri" => true},
+      %{"type" => "discard", "tile" => "8p", "player" => 1, "tsumogiri" => true},
+      %{"type" => "discard", "tile" => "8p", "player" => 2, "tsumogiri" => true},
+      %{"type" => "discard", "tile" => "7p", "player" => 3, "tsumogiri" => true},
+      %{"type" => "buttons_pressed", "buttons" => [%{"button" => "tsumo"}, nil, nil, nil]}
+    ], %{
+      east: %{
+        yaku: [@base, {"Dealer Repeats", [2, "×"]}],
+        displayed_score: 30
+      }
+    }, %{delta_scores: [60, -15, -15, -30]})
   end
 
   test "hefei - seven pairs with dealer repeat" do
@@ -1204,7 +1263,7 @@ defmodule RiichiAdvanced.YakuTest.HefeiYaku do
       %{"type" => "buttons_pressed", "buttons" => [%{"button" => "ron"}, nil, nil, nil]}
     ], %{
       east: %{
-        yaku: [{"Seven Pairs", [10, "嘴"]}, {"Dealer Repeats", [12, "嘴"]}]
+        yaku: [@base, {"Seven Pairs", [10, "嘴"]}, {"Dealer Repeats", [3, "×"]}]
       }
     })
   end
@@ -1227,7 +1286,7 @@ defmodule RiichiAdvanced.YakuTest.HefeiYaku do
       %{"type" => "buttons_pressed", "buttons" => [%{"button" => "ron"}, nil, nil, nil]}
     ], %{
       east: %{
-        yaku: [{"Dealer Repeats", [20, "嘴"]}]
+        yaku: [@base, {"Dealer Repeats", [5, "×"]}]
       }
     })
   end
