@@ -53,7 +53,7 @@ defmodule RiichiAdvanced.ModLoader.ModState do
     end
   end
 
-  def load_ruleset_rec(state, ruleset, prev_query \\ ".", visited \\ []) do
+  defp load_ruleset_rec(state, ruleset, prev_query \\ ".", visited \\ MapSet.new()) do
     modpacks = Constants.modpacks()
     if Map.has_key?(modpacks, ruleset) and ruleset not in visited do
       modpack = modpacks[ruleset]
@@ -91,7 +91,7 @@ defmodule RiichiAdvanced.ModLoader.ModState do
       globals = Map.get(modpack, :globals, %{}) |> Map.new(fn {k, v} -> {Atom.to_string(k), v} end)
       state = %{state | mods: mods ++ state.mods, post_mods: post_mods ++ state.post_mods, globals: Map.merge(globals, state.globals)}
       # now recurse
-      load_ruleset_rec(state, Map.get(modpack, :ruleset, "empty"), query, [ruleset | visited])
+      load_ruleset_rec(state, Map.get(modpack, :ruleset, "empty"), query, MapSet.put(visited, ruleset))
     else # else, read the base ruleset filename and apply all mods
 
       # first check for duplicates
@@ -143,7 +143,7 @@ defmodule RiichiAdvanced.ModLoader.ModState do
         |> Enum.reverse()
         |> Enum.map(fn {jq, defs} ->
           jq = jq |> String.trim() |> String.replace(Compiler.header(), "")
-          vars = for {name, val} <- defs.vars, ModLoader.is_jq_var?(name), do: "(#{Jason.encode!(val)}) as $#{name}\n|"
+          vars = for {name, val} <- Enum.reverse(defs.vars), ModLoader.is_jq_var?(name), do: "(#{Jason.encode!(val)}) as $#{name}\n|"
           "(#{Enum.join(vars) <> jq}\n) as $_result\n|\n$_result"
         end)
         

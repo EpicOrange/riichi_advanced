@@ -1,3 +1,8 @@
+default man, 1
+default pin, 1
+default sou, 1
+default star, !man # just reuse !man, keep it simple
+
 on after_initialization do
   add_rule("Tiles", "Aka", "%{man}x %{5m}, %{pin}x %{5p}, and %{sou}x %{5s} are replaced with red \"aka dora\" fives %{akadora_fives} that are worth one extra han each.", %{man: !man, pin: !pin, sou: !sou, "5m": ["5m"], "5p": ["5p"], "5s": ["5s"], akadora_fives: ["0m", "0p", "0s"]}, -99)
 end
@@ -5,7 +10,6 @@ end
 replace !man, "wall", "5m", "0m"
 replace !pin, "wall", "5p", "0p"
 replace !sou, "wall", "5s", "0s"
-default star, !man # just reuse !man, keep it simple
 replace !star, "wall", "5t", "0t"
 
 on after_start do
