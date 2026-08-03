@@ -148,18 +148,20 @@ defmodule RiichiAdvanced.GameState.Rules do
       rules_ref = :ets.new(nil, [:set, :protected, read_concurrency: true]) 
       :ets.insert(rules_ref, {:ruleset, ruleset})
       :ets.insert(rules_ref, Map.to_list(rules))
+
+      # toposort yaku and calculate shanten definitions and stuff
+      preprocess_rules(rules_ref, rules)
+
       test_heir = Process.whereis(RiichiAdvanced.TestStaticEtsOwner)
       if test_heir != nil do
         # attach rules_ref to a long-lived owner
-        :ets.setopts(rules_ref, {:heir, Process.whereis(RiichiAdvanced.TestStaticEtsOwner), :no_extra_info})
+        :ets.give_away(rules_ref, test_heir, :no_extra_info)
       else
         # attach formatted json if we're not a test
         ruleset_json = RiichiAdvanced.Formatter.format(Jason.decode!(ruleset_json), 80)
         :ets.insert(rules_ref, {:ruleset_json, ruleset_json})
       end
 
-      # toposort yaku and calculate shanten definitions and stuff
-      preprocess_rules(rules_ref, rules)
       {:ok, rules_ref}
     end
   end

@@ -1,5 +1,3 @@
-ExUnit.start(timeout: :infinity)
-
 # start a long-lived genserver to hold ruleset ets tables generated in TestUtils
 defmodule RiichiAdvanced.TestStaticEtsOwner do
   use GenServer
@@ -10,3 +8,5 @@ defmodule RiichiAdvanced.TestStaticEtsOwner do
   end
 end
 {:ok, _pid} = RiichiAdvanced.TestStaticEtsOwner.start_link([])
+
+ExUnit.start(timeout: :infinity)

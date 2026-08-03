@@ -34,6 +34,10 @@ defmodule RiichiAdvanced.TestUtils do
       Process.group_leader(game_state, io)
     end
 
+    # give game_state ownership of rules_ref, so it always has access even if our process dies
+    # (also will be cleaned up when game_state dies)
+    :ets.give_away(rules_ref, game_state, :no_extra_info)
+
     # activate game
     GenServer.call(game_state, {:put_log_loading_mode, true})
     GenServer.call(game_state, {:put_log_seeking_mode, true})

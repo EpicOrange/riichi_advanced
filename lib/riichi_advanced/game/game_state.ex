@@ -2217,6 +2217,11 @@ defmodule RiichiAdvanced.GameState do
     {:noreply, state}
   end
 
+  # tests make GameState take ownership of a cached rules_ref, ignore this message
+  def handle_info({:"ETS-TRANSFER", _rules_ref, _from_pid, _extra}, state) do
+    {:noreply, state}
+  end
+
   def sanitize_state(state) do
     Map.drop(state, [
       :ruleset,
