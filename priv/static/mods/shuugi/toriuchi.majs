@@ -1,0 +1,56 @@
+if defined("shuugi") do
+  on after_initialization do
+    add_rule("Shuugi", "Toriuchi", "(Toriuchi) On ron, each 1s (bird) tile is worth 1 shuugi, unless the discarder's hand contains 7p (pistol) which would shoot the birds dead. That is, unless the winner's hand contains 8s (birdcage) which would protect the birds from gunfire.")
+  end
+
+  on before_win do
+    add_counter("birds", "count_matches", ["hand", "calls", "winning_tile"], ~m"1s:1")
+    set_counter_all("start_birds", "birds")
+    if won_by_discard do
+      as last_discarder do
+        reveal_hand
+        add_counter("pistols", "count_matches", ["hand", "calls"], ~m"7p:1")
+        set_counter_all("start_pistols", "pistols")
+      end
+    end
+    if won_by_call do
+      as caller do
+        reveal_hand
+        add_counter("pistols", "count_matches", ["hand", "calls"], ~m"7p:1")
+      end
+    end
+    add_counter("cages", "count_matches", ["hand", "calls", "winning_tile"], ~m"8s:1")
+    set_counter_all("start_cages", "cages")
+    pistols = start_pistols
+    if cages > 0 do pistols -= cages end
+    if pistols > 0 do birds -= pistols end
+    if birds < 0 do birds = 0 end
+  end
+
+  define_yaku shuugi, "Toriuchi", ["birds", "⛀"], birds >= 1
+
+  def announce_shuugi_payment, append: true do
+    if start_birds >= 1 and not_won_by_draw do
+      push_message("has $start_birds 1s (birds) in hand", %{start_birds: "start_birds"})
+      if start_pistols > 0 do
+        if won_by_discard do
+          as last_discarder do
+            push_message("has $start_pistols 7p (pistols) in hand each shooting one bird dead", %{start_pistols: "start_pistols"})
+          end
+        else
+          as last_caller do
+            push_message("has $start_pistols 7p (pistols) in hand each shooting one bird dead", %{start_pistols: "start_pistols"})
+          end
+        end
+        if start_cages > 0 do
+          push_message("however has $start_cages 8s (cages) in hand each protecting one bird from gunfire", %{start_cages: "start_cages"})
+        end
+      end
+      if birds > 0 do
+        push_system_message("Discarder pays $birds chip(s) for bird tiles", %{birds: "birds"})
+      else
+        push_system_message("Discarder does not pay any chips for bird tiles since they were all shot dead")
+      end
+    end
+  end
+end
