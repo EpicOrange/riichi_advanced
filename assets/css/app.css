@@ -255,9 +255,9 @@ div.hand {
   transform-style: preserve-3d;
   width: calc(100% - 2 * var(--tile-size));
 }
-div.self { z-index: 1; } /* your stuff goes above other people's stuff */
-div.hand, div.draws { z-index: 2; } /* so if they overlap with calls, the hand goes on top */
-div.hand.self, div.draws.self { z-index: 3; } /* your stuff goes above other people's stuff */
+div.self { z-index: 10; } /* your stuff goes above other people's stuff */
+div.hand, div.draws { z-index: 20; } /* so if they overlap with calls, the hand goes on top */
+div.hand.self, div.draws.self { z-index: 30; } /* your stuff goes above other people's stuff */
 div.tiles, div.call.aside {
   flex-wrap: wrap-reverse;
   row-gap: calc(0.25 * var(--tile-size));
