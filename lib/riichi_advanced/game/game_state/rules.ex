@@ -4,20 +4,19 @@ defmodule RiichiAdvanced.GameState.Rules do
   alias RiichiAdvanced.MatchOld, as: MatchOld
   alias RiichiAdvanced.ModLoader, as: ModLoader
   alias RiichiAdvanced.Utils, as: Utils
+  require Logger
 
   def decode_ruleset_json(ruleset_json, ruleset \\ "unknown") do
     # decode the rules json
-    try do
-      case Jason.decode(ModLoader.strip_comments(ruleset_json)) do
-        {:ok, rules} -> {:ok, rules}
-        {:error, err} ->
-          IO.puts("Erroring json:")
-          IO.puts(ruleset_json)
-          {:error, "WARNING: Failed to read rules file at character position #{err.position}!\nRemember that trailing commas are invalid!"}
-      end
-    rescue
-      ArgumentError -> {:error, "WARNING: Ruleset \"#{ruleset}\" doesn't exist!"}
+    case Jason.decode(ModLoader.strip_comments(ruleset_json)) do
+      {:ok, rules} -> {:ok, rules}
+      {:error, err} ->
+        IO.puts("Erroring json:")
+        IO.puts(ruleset_json)
+        {:error, "WARNING: Failed to read rules file at character position #{err.position}!\nRemember that trailing commas are invalid!"}
     end
+  rescue
+    ArgumentError -> {:error, "WARNING: Ruleset \"#{ruleset}\" doesn't exist!"}
   end
 
   # catch-all verification
@@ -136,29 +135,31 @@ defmodule RiichiAdvanced.GameState.Rules do
         ruleset_json
     end
   rescue
-    _err -> default
+    err ->
+      Logger.error(err)
+      default
   end
   def get(rules_ref, key, default) do
-    try do
-      case :ets.lookup(rules_ref, key) do
-        [{^key, value}] -> value
-        [] -> default
-      end
-    rescue
-      _ -> default
+    case :ets.lookup(rules_ref, key) do
+      [{^key, value}] -> value
+      [] -> default
     end
+  rescue
+    err ->
+      Logger.error(err)
+      default
   end
 
   def has_key?(nil, _key), do: false
   def has_key?(rules_ref, key) do
-    try do
-      case :ets.lookup(rules_ref, key) do
-        [_] -> true
-        [] -> false
-      end
-    rescue
-      _ -> false
+    case :ets.lookup(rules_ref, key) do
+      [_] -> true
+      [] -> false
     end
+  rescue
+    err ->
+      Logger.error(err)
+      false
   end
 
   def translate_sets_in_match_definitions(match_definitions, set_definitions) do

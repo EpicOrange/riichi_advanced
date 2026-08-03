@@ -57,7 +57,7 @@ defmodule RiichiAdvanced.LobbyState do
     [{exit_monitor, _}] = Utils.registry_lookup("exit_monitor_lobby", state.ruleset, "")
 
     # read in the ruleset
-    ruleset_json = ModState.load_ruleset(state.ruleset).ruleset_json
+    ruleset_json = ModState.load_ruleset(state.ruleset) |> ModState.extract_json()
 
     # parse the ruleset just to get the display name
     {state, rules} = try do

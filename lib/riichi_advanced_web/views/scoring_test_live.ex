@@ -219,7 +219,7 @@ defmodule RiichiAdvancedWeb.ScoringTestLive do
   
   def switch_to_ruleset(socket, ruleset) when ruleset != socket.assigns.ruleset do
     socket = assign(socket, :ruleset, ruleset)
-    ruleset_json = ModState.load_ruleset(socket.assigns.ruleset).ruleset_json
+    ruleset_json = ModState.load_ruleset(ruleset) |> ModState.extract_json()
 
     # from the base ruleset, get its mod list
     rules_ref = case Rules.load_rules(ruleset_json, socket.assigns.ruleset) do
@@ -277,9 +277,9 @@ defmodule RiichiAdvancedWeb.ScoringTestLive do
       |> Enum.map(fn yaku = %{"display_name" => name, "value" => value} -> %{
         name: name,
         desc: Map.get(yaku, "desc", ""),
-        value: if is_integer(value) do value else Enum.at(value, 0) end,
+        value: if is_list(value) do Enum.at(value, 0) else value end,
         list_name: list_name,
-        value_name: Map.get(point_names, list_name, if is_integer(value) do "" else Enum.at(value, 1) end),
+        value_name: Map.get(point_names, list_name, if is_list(value) do Enum.at(value, 1) else "" end),
         selected: MapSet.member?(prev_selections, name),
         index: 0,
       } end)

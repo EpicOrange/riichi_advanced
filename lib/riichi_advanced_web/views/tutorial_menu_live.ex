@@ -21,7 +21,7 @@ defmodule RiichiAdvancedWeb.TutorialMenuLive do
     |> assign(:available_tutorials, Map.get(Constants.tutorials(), params["ruleset"], []))
     |> assign(:clicked_index, nil)
 
-    ruleset_json = ModState.load_ruleset(socket.assigns.ruleset).ruleset_json
+    ruleset_json = ModState.load_ruleset(socket.assigns.ruleset) |> ModState.extract_json()
     rules_ref =
       case Rules.load_rules(ruleset_json, socket.assigns.ruleset) do
         {:ok, rules_ref} -> rules_ref

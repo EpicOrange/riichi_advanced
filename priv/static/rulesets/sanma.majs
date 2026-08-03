@@ -57,7 +57,7 @@ apply merge, "score_calculation", %{
 }
 
 # nukidora
-define_yaku extra_yaku, "Nukidora", "nukidora", counter_at_least("nukidora", 1)
+define_yaku extra_yaku, "Nukidora", ["nukidora", "Han"], counter_at_least("nukidora", 1)
 on before_win do
   add_counter("nukidora", "count_matches", ["flowers"], ~m"flower:1")
 end
