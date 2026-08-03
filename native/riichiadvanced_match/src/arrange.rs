@@ -3,7 +3,7 @@ use std::collections::HashMap;
 use num::abs;
 use smallvec::{SmallVec, smallvec};
 
-use crate::encode::{decode, decode_tile, decode_tiles, encode_tile, encode_tiles};
+use crate::encode::{decode, decode_tiles, encode_tile, encode_tiles};
 use crate::r#match::{__match_hand_v3, __pop_group};
 use crate::match_info::prepare_tiles;
 use crate::offsets::get_base_tiles;
