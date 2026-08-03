@@ -1,5 +1,6 @@
 on after_initialization do
-  add_rule("Rules", "Kuikae Nashi", "Swap-calling is disallowed. That is, if you call two tiles, you cannot discard a tile that could have made a set with those two tiles. (e.g. calling a red five and discarding a normal five)")
+  delete_rule("Rules", "Kuikae Ari")
+  add_rule("Rules", "Kuikae Nashi", "Swap-calling is disallowed. That is, if you call %{tile} with %{tiles}, you cannot discard a tile that could have made a set with %{tiles}. (e.g. calling %{aka}, then discarding %{tile}, or calling %{tile}, then discarding %{tile2})", %{tile: ~t"5p", tile2: ~t"2p", tiles: ~t"34p", aka: ~t"0p"})
 end
 
 define_play_restriction "any", just_called and last_called_tile_matches("kuikae")

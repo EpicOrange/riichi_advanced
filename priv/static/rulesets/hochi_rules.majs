@@ -1,0 +1,18 @@
+define_base_ruleset arushiiaru
+set display_name, "Hochi Rules (c. 1952)"
+set tutorial_link, "https://riichi.wiki/Hochi_rules"
+
+require_after "hochi_scoring"
+apply append, "default_mods", ["lib/yaku/riichi", "no_riichi_ankan"]
+
+set initial_score, 5000
+
+# on after_initialization do
+#   add_rule("Rules", "Tontonsen", "The game consists of two east rounds.")
+# end
+
+# TODO:
+# - double east round (tontonsen)
+# - on double ron, pay full to first in atamahane order, pay half to others
+# - tsuuiisou and chinroutou pao
+# - don't round fu

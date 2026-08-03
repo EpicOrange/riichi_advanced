@@ -1,0 +1,9 @@
+define_const round_fu, false
+define_const riichi_bet, 300
+
+def finalize_score, prepend: true do
+  # round to nearest 10, which could be up or down
+  if mod(total, 10) > 0 do
+    total = round(total, 10) :: "Round"
+  end
+end
