@@ -241,7 +241,7 @@ defmodule RiichiAdvanced.ModLoader.ModState do
     # apply jqs
     mod_contents = for {mod, jq} <- jqs do
       jq = jq |> String.trim() |> String.replace(Compiler.header(), "")
-      jq = "(#{jq}) as $_result\n|$_result"
+      jq = "(#{jq}) as $_ret\n|$_ret"
       # IO.puts(jq)
       {mod, jq}
     end
@@ -263,13 +263,11 @@ defmodule RiichiAdvanced.ModLoader.ModState do
 
   def extract_json(state) when state.ruleset_jq == [], do: state.ruleset_json
   def extract_json(state) do
-    global_jq = for {name, val} <- state.globals, ModLoader.is_jq_var?(name), do: {nil, "(#{Jason.encode!(val)}) as $#{name}"}
-    state = prepend_jqs(state, Enum.reverse(global_jq))
-
     # apply any unapplied mods to get the final jq
     state = apply_mods(state)
 
     {applied_mods, jqs} = state.ruleset_jq |> Enum.reverse() |> Enum.unzip()
+
     applied_mods = applied_mods |> Enum.reject(&is_nil/1)
     if Debug.print_mods() do
       IO.puts("Extracting json after applying the following mods:")
@@ -281,7 +279,15 @@ defmodule RiichiAdvanced.ModLoader.ModState do
         if Debug.debug_cache() do
           IO.puts("Cache miss for ruleset #{state.ruleset}: #{length(applied_mods)} mods #{inspect(applied_mods, limit: :infinity)}")
         end
-        jq = Compiler.header() <> Enum.join(jqs, "\n|")
+
+        # compile the final jq query
+        # for some reason pipelines are limited to 65536 bytes, so just wrap each jq into its own function
+        declarations = jqs
+        |> Enum.with_index()
+        |> Enum.map_join("\n", fn {jq, i} -> "def _f#{i}: #{jq};" end)
+        globals = for {name, val} <- state.globals, ModLoader.is_jq_var?(name), do: "(#{Jason.encode!(val)}) as $#{name}\n|"
+        invocations = Enum.map_join(0..(length(jqs)-1), "|", &"_f#{&1}")
+        jq = Compiler.header() <> Enum.join(globals) <> declarations <> "\n" <> invocations
         if Debug.print_jq() do
           IO.puts("===")
           IO.puts(jq)
