@@ -106,19 +106,14 @@ define_scoring tsumo do
   finalize_score
 end
 
+set starting_honba, 3
 define_const honba_mult, 3
 def finalize_score do
-  if display_total == 0 do
-    # store total winnings without honba, for display
-    cond do
-      won_by_draw and seat_is("east", as: "winner") -> display_total = total * 3
-      won_by_draw and seat_is("east") -> display_total = total * 2
-      true -> display_total = total
-    end
-    set_counter_all("display_total", "display_total")
-  end
+  # store total winnings without honba, for display
+  display_total += total
+  set_counter_all("display_total", "display_total")
   if honba > 0 do
-    if won_by_draw do
+    if won_by_draw(as: "winner") do
       total += honba * @honba_value :: "Honba"
     else
       total += honba * @honba_mult * @honba_value :: "Honba"
