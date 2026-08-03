@@ -497,17 +497,19 @@ defmodule RiichiAdvanced.GameState.Kyoku do
     arranged_hand = Utils.sort_tiles(orig_hand -- [cxt.winning_tile], cxt.joker_assignment)
 
     # arrange the hand more nicely when you hover over it
-    separated_hand = if state.ruleset == "american" do
-      arrange_american_yaku = Map.get(score_rules, "arrange_american_yaku", false)
-      if arrange_american_yaku do
-        separate_american_winner_hand(
-          orig_hand, orig_calls, tile_behavior, cxt.winning_tile,
-          cxt.yaku, Rules.get(state.rules_ref, "yaku", []))
-      else arranged_hand end
-    else
-      Match.separate_standard_winner_hand(
-        cxt.smt_hand, cxt.smt_calls, orig_calls, tile_behavior, cxt.joker_assignment,
-        Rules.translate_match_definitions(state.rules_ref, ["win"]))
+    separated_hand = cond do
+      state.log_seeking_mode -> arranged_hand # no need to arrange hands when running tests
+      state.ruleset == "american" ->
+        arrange_american_yaku = Map.get(score_rules, "arrange_american_yaku", false)
+        if arrange_american_yaku do
+          separate_american_winner_hand(
+            orig_hand, orig_calls, tile_behavior, cxt.winning_tile,
+            cxt.yaku, Rules.get(state.rules_ref, "yaku", []))
+        else arranged_hand end
+      true ->
+        Match.separate_standard_winner_hand(
+          cxt.smt_hand, cxt.smt_calls, orig_calls, tile_behavior, cxt.joker_assignment,
+          Rules.translate_match_definitions(state.rules_ref, ["win"]))
     end
 
     # player = state.players[seatt]
