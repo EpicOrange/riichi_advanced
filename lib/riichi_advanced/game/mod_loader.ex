@@ -49,14 +49,21 @@ defmodule RiichiAdvanced.ModLoader.ModState do
     else
       case RiichiAdvanced.Cache.get({:cache_modloader, ruleset, []}) do
         {:ok, nil} ->
-          # IO.puts("Cache miss: #{inspect({ruleset, []})}")
+          if Debug.debug_cache() do
+            IO.puts("Cache miss: #{inspect({ruleset, []})}")
+          end
           state = load_ruleset_rec(%ModState{ruleset: ruleset}, ruleset)
           if not Debug.skip_ruleset_caching() do
-            # RiichiAdvanced.Cache.put({:cache_modloader, ruleset, []}, state)
+            if Debug.debug_cache() do
+              IO.puts("Caching ruleset #{state.ruleset}")
+            end
+            RiichiAdvanced.Cache.put({:cache_modloader, ruleset, []}, state)
           end
           state
         {:ok, state} ->
-          # IO.puts("Cache hit: #{inspect({ruleset, []})}")
+          if Debug.debug_cache() do
+            IO.puts("Cache hit: #{inspect({ruleset, []})}")
+          end
           state
       end
     end
@@ -188,74 +195,68 @@ defmodule RiichiAdvanced.ModLoader.ModState do
   def apply_mods(state) when state.mods == [], do: state
   def apply_mods(state) do
     # inspect_state(state)
-    case RiichiAdvanced.Cache.get({:cache_modloader, state.ruleset, state.mods}) do
-      {:ok, nil} ->
-        # IO.puts("Cache miss for ruleset #{state.ruleset}: #{length(state.mods)} mods #{inspect(state.mods, limit: :infinity)}")
-        mods = state.mods |> Enum.uniq() |> Enum.reverse()
-        if Debug.print_mods() do
-          IO.puts("Applying mods #{inspect(mods, limit: :infinity)}")
-        end
-        # check for duplicates
-        applied_mods = Enum.map(state.ruleset_jq, fn {mod, _jq} -> mod end) |> Enum.reject(&is_nil/1)
-        all_mod_names = MapSet.new(state.mods ++ applied_mods, &ModLoader.get_mod_name/1)
-        duplicates = MapSet.difference(all_mod_names, MapSet.new(all_mod_names))
-        if not Enum.empty?(duplicates) do
-          IO.puts("Warning, the following mods (for ruleset #{state.base_ruleset}) were included twice: #{inspect(Enum.to_list(duplicates))}")
-        end
 
-        # collect all new jqs
-        defs = %Defs{globals: state.globals, defines: state.defines, libs: state.libs}
-        {jqs, defs} = for mod <- mods, reduce: {[], defs} do
-          {jqs, defs} -> 
-            if Debug.print_mods() do
-              IO.puts("Reading mod #{inspect(mod)} with defines #{inspect(defs.defines)}")
-            end
-            {jq, defs} = read_mod(mod, %{defs | vars: [], mods: []})
-
-            # immediately apply any new mod dependencies from the mod we just read
-            all_mod_names = MapSet.union(all_mod_names, MapSet.new(jqs, fn {mod, _jq} -> mod end))
-            deps = Enum.reject(defs.mods, fn mod -> mod in all_mod_names end)
-            {jqs, defs} = if not Enum.empty?(deps) do
-              state = apply_mods(%{state | ruleset_jq: [], mods: deps, globals: defs.globals, defines: defs.defines, libs: defs.libs})
-              {state.ruleset_jq ++ jqs, %{defs | globals: state.globals, defines: state.defines, libs: state.libs}}
-            else {jqs, defs} end
-
-            # IO.puts("Done reading mod #{inspect(mod)}")
-            {[{mod, jq} | jqs], defs}
-        end
-        # update state with new globals and defines
-        state = %{state |
-          mods: [],
-          globals: defs.globals,
-          defines: defs.defines,
-          libs: defs.libs,
-        }
-
-        # apply jqs
-        mod_contents = for {mod, jq} <- jqs do
-          jq = jq |> String.trim() |> String.replace(Compiler.header(), "")
-          jq = "(#{jq}) as $_result\n|$_result"
-          # IO.puts(jq)
-          {mod, jq}
-        end
-        state = append_jqs(state, mod_contents)
-        encoded_mods = mods
-        # |> IO.inspect(limit: :infinity)
-        |> Enum.map(fn
-          %{config: config} = mod -> %{ mod | config: Map.new(config) }
-          mod -> mod
-        end)
-        |> Jason.encode!()
-        # IO.puts(encoded_mods)
-        enabled_mods = if Enum.empty?(mods) do "." else ".enabled_mods += #{encoded_mods}" end
-        # IO.inspect(enabled_mods, limit: :infinity)
-        state = append_jq(state, {nil, enabled_mods})
-
-        state
-      {:ok, state} ->
-        # IO.puts("Cache hit for ruleset #{state.ruleset}: #{length(state.mods)} mods #{inspect(state.mods, limit: :infinity)}")
-        state
+    mods = state.mods |> Enum.uniq() |> Enum.reverse()
+    if Debug.print_mods() do
+      IO.puts("Applying mods #{inspect(mods, limit: :infinity)}")
     end
+    # check for duplicates
+    applied_mods = Enum.map(state.ruleset_jq, fn {mod, _jq} -> mod end) |> Enum.reject(&is_nil/1)
+    all_mod_names = MapSet.new(state.mods ++ applied_mods, &ModLoader.get_mod_name/1)
+    duplicates = MapSet.difference(all_mod_names, MapSet.new(all_mod_names))
+    if not Enum.empty?(duplicates) do
+      IO.puts("Warning, the following mods (for ruleset #{state.base_ruleset}) were included twice: #{inspect(Enum.to_list(duplicates))}")
+    end
+
+    # collect all new jqs
+    defs = %Defs{globals: state.globals, defines: state.defines, libs: state.libs}
+    {jqs, defs} = for mod <- mods, reduce: {[], defs} do
+      {jqs, defs} -> 
+        if Debug.print_mods() do
+          IO.puts("Reading mod #{inspect(mod)} with defines #{inspect(defs.defines)}")
+        end
+        {jq, defs} = read_mod(mod, %{defs | vars: [], mods: []})
+
+        # immediately apply any new mod dependencies from the mod we just read
+        all_mod_names = MapSet.union(all_mod_names, MapSet.new(jqs, fn {mod, _jq} -> mod end))
+        deps = Enum.reject(defs.mods, fn mod -> mod in all_mod_names end)
+        {jqs, defs} = if not Enum.empty?(deps) do
+          state = apply_mods(%{state | ruleset_jq: [], mods: deps, globals: defs.globals, defines: defs.defines, libs: defs.libs})
+          {state.ruleset_jq ++ jqs, %{defs | globals: state.globals, defines: state.defines, libs: state.libs}}
+        else {jqs, defs} end
+
+        # IO.puts("Done reading mod #{inspect(mod)}")
+        {[{mod, jq} | jqs], defs}
+    end
+    # update state with new globals and defines
+    state = %{state |
+      mods: [],
+      globals: defs.globals,
+      defines: defs.defines,
+      libs: defs.libs,
+    }
+
+    # apply jqs
+    mod_contents = for {mod, jq} <- jqs do
+      jq = jq |> String.trim() |> String.replace(Compiler.header(), "")
+      jq = "(#{jq}) as $_result\n|$_result"
+      # IO.puts(jq)
+      {mod, jq}
+    end
+    state = append_jqs(state, mod_contents)
+    encoded_mods = mods
+    # |> IO.inspect(limit: :infinity)
+    |> Enum.map(fn
+      %{config: config} = mod -> %{ mod | config: Map.new(config) }
+      mod -> mod
+    end)
+    |> Jason.encode!()
+    # IO.puts(encoded_mods)
+    enabled_mods = if Enum.empty?(mods) do "." else ".enabled_mods += #{encoded_mods}" end
+    # IO.inspect(enabled_mods, limit: :infinity)
+    state = append_jq(state, {nil, enabled_mods})
+
+    state
   end
 
   def extract_json(state) when state.ruleset_jq == [], do: state.ruleset_json
@@ -264,23 +265,37 @@ defmodule RiichiAdvanced.ModLoader.ModState do
     state = prepend_jqs(state, Enum.reverse(global_jq))
 
     state = apply_mods(state)
-
-    # now actually apply the jq
     {applied_mods, jqs} = state.ruleset_jq |> Enum.reverse() |> Enum.unzip()
+    applied_mods = applied_mods |> Enum.reject(&is_nil/1)
+
     if Debug.print_mods() do
       IO.puts("Extracting json after applying the following mods:")
-      IO.inspect(applied_mods |> Enum.reject(&is_nil/1), limit: :infinity)
+      IO.inspect(applied_mods, limit: :infinity)
     end
-    ruleset_json = JQ.query_string_with_string!(state.ruleset_json, Compiler.header() <> Enum.join(jqs, "\n|"))
-    # IO.puts(state.ruleset_json)
-    # IO.puts(ruleset_json)
-    # cache and return
-    if not Debug.skip_ruleset_caching() do
-      # TODO redo this
-      # IO.puts("Caching mods for ruleset #{state.ruleset}: #{length(state.mods)} mods #{inspect(state.mods, limit: :infinity)}")
-      # RiichiAdvanced.Cache.put({:cache_modloader, state.ruleset, state.mods}, state)
+
+    state = case RiichiAdvanced.Cache.get({:cache_modloader, state.ruleset, applied_mods}) do
+      {:ok, nil} ->
+        if Debug.debug_cache() do
+          IO.puts("Cache miss for ruleset #{state.ruleset}: #{length(applied_mods)} mods #{inspect(applied_mods, limit: :infinity)}")
+        end
+        ruleset_json = JQ.query_string_with_string!(state.ruleset_json, Compiler.header() <> Enum.join(jqs, "\n|"))
+        state = %{state | ruleset_json: ruleset_json}
+        # cache and return
+        if not Debug.skip_ruleset_caching() do
+          if Debug.debug_cache() do
+            IO.puts("Caching mods for ruleset #{state.ruleset}: #{length(applied_mods)} mods #{inspect(applied_mods, limit: :infinity)}")
+          end
+          RiichiAdvanced.Cache.put({:cache_modloader, state.ruleset, applied_mods}, state)
+        end
+        state
+      {:ok, state} ->
+        if Debug.debug_cache() do
+          IO.puts("Cache hit for ruleset #{state.ruleset}: #{length(applied_mods)} mods #{inspect(applied_mods, limit: :infinity)}")
+        end
+        state
     end
-    ruleset_json
+
+    state.ruleset_json
   end
 
   @some_majs_commands ["on", "define_set", "define_match", "define_const", "define_yaku", "define_yaku_precedence", "remove_yaku", "replace_yaku", "define_button", "define_auto_button", "define_mod_category", "define_mod", "config_mod", "remove_mod", "apply", "replace_all"]
@@ -309,16 +324,33 @@ defmodule RiichiAdvanced.ModLoader.ModState do
     end
   end
   defp read_mod(mod, defs) do
-    {name, config} = ModLoader.get_mod_name_config(mod)
-    {mod_contents, defs} = read_mod_jq_defs(name, defs)
-    defaults = Map.new(Enum.reverse(defs.vars))
-    vars = Map.merge(defaults, config, fn _k, l, nil -> l; _k, _l, r -> r end)
-    config_queries = for {key, val} <- vars,
-                         is_integer(val) or is_boolean(val) or is_binary(val) or Validator.is_variable?(val),
-                         ModLoader.is_jq_var?(key), do: "(#{Jason.encode!(val)}) as $#{key}\n|\n"
-    # IO.inspect({defaults, config, vars})
-    # IO.puts(Enum.join(config_queries))
-    {Enum.join(config_queries) <> "(" <> mod_contents <> ")", defs}
+    case RiichiAdvanced.Cache.get({:cache_modloader_mod, mod, defs.defines, defs.globals}) do
+      {:ok, nil} ->
+        if Debug.debug_cache() do
+          IO.puts("Cache miss for mod #{inspect(mod)} using defs #{inspect(defs, limit: :infinity)}")
+        end
+        {name, config} = ModLoader.get_mod_name_config(mod)
+        {mod_contents, defs} = read_mod_jq_defs(name, defs)
+        defaults = Map.new(Enum.reverse(defs.vars))
+        vars = Map.merge(defaults, config, fn _k, l, nil -> l; _k, _l, r -> r end)
+        config_queries = for {key, val} <- vars,
+                             is_integer(val) or is_boolean(val) or is_binary(val) or Validator.is_variable?(val),
+                             ModLoader.is_jq_var?(key), do: "(#{Jason.encode!(val)}) as $#{key}\n|\n"
+        jq = Enum.join(config_queries) <> "(" <> mod_contents <> ")"
+        # cache and return
+        if not Debug.skip_ruleset_caching() do
+          if Debug.debug_cache() do
+            IO.puts("Caching mod #{inspect(mod)} using defs #{inspect(defs, limit: :infinity)}")
+          end
+          RiichiAdvanced.Cache.put({:cache_modloader_mod, mod, defs.defines, defs.globals}, {jq, defs})
+        end
+        {jq, defs}
+      {:ok, {jq, defs}} ->
+        if Debug.debug_cache() do
+          IO.puts("Cache hit for mod #{inspect(mod)} using defs #{inspect(defs, limit: :infinity)}")
+        end
+        {jq, defs}
+    end
   end
 
 end
