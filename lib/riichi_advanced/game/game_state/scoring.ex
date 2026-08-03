@@ -165,7 +165,7 @@ defmodule RiichiAdvanced.GameState.Scoring do
     # obtain smt_hand and smt_calls after before_win runs
     #   because we may have run actions to modify the hand (e.g. by adding attributes)
     {smt_hand, smt_calls} = JokerSolver.get_smt_hand_calls(state.players[seat].hand, state.players[seat].calls, winning_tile)
-    # |> IO.inspect(label: inspect(win_source))
+    # |> IO.inspect(label: inspect(win_source), limit: :infinity)
 
     # now calculate joker assignments
     # and see if any of them result in a score at least min_points and min_minipoints
@@ -178,7 +178,7 @@ defmodule RiichiAdvanced.GameState.Scoring do
     |> Task.async_stream(fn joker_assignment ->
       # apply joker assignments
       {assigned_hand, assigned_calls, _assigned_winning_hand, assigned_winning_tile} = JokerSolver.apply_joker_assignment(state.players[seat].hand, state.players[seat].calls, winning_tile, joker_assignment)
-
+      # IO.inspect({smt_calls, assigned_calls, state.players[seat].calls}, label: inspect(joker_assignment), limit: :infinity)
       # replace the winner's hand/calls temporarily (for yaku evaluation)
       state = update_player(state, seat, &%{ &1 | hand: assigned_hand, calls: assigned_calls, cache: %{ &1.cache | orig_hand: &1.hand, orig_calls: &1.calls, orig_winning_tile: winning_tile } })
 

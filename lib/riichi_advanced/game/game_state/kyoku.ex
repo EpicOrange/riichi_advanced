@@ -385,11 +385,9 @@ defmodule RiichiAdvanced.GameState.Kyoku do
     state = Map.update!(state, :winner_seats, & &1 ++ [seat])
 
     tile_behavior = state.players[seat].tile_behavior
-    {state, cxt} = for {hand, _calls, winning_tile} <- hand_calls_tile do
-      state = if is_tenhou? do
-        # replace hand and draw
-        update_player(state, seat, &%{ &1 | hand: hand, draw: [winning_tile] })
-      else state end
+    {state, cxt} = for {hand, calls, winning_tile} <- hand_calls_tile do
+      # replace hand/calls/draw
+      state = update_player(state, seat, &%{ &1 | hand: hand, calls: calls, draw: [winning_tile] })
 
       # we need to let before_win actions know about the winning tile
       #   so we store it in state.winners
@@ -444,30 +442,17 @@ defmodule RiichiAdvanced.GameState.Kyoku do
         {state, cxt}
       end, timeout: :infinity, ordered: false)
       |> Stream.map(fn {:ok, state_cxt} -> state_cxt end)
-      |> Payment.get_highest_scoring_txn(win_source == :worst_discard)
-      |> case do
-        nil ->
-          # nil = no joker assignments returned by smt
-          # (this happens for hands the solver doesn't support, like milky way)
-          {state, cxt} = JokerSolver.evaluate_joker_assignment(state, cxt, %{})
-          state = Payment.run_scoring_logic(state, cxt)
-          {state, cxt}
-        r   -> r
-      end
     end
+    |> Stream.concat()
     |> Payment.get_highest_scoring_txn(win_source == :worst_discard)
-    
+
     # kill the 0.5s timer if it's still sleeping
     if Task.yield(notify_task, 0) == nil do
       Task.shutdown(notify_task, :brutal_kill)
     end
 
-    # restore original hand state
-    # this only matters for tenhou, where we run before_scoring on possible tenhou hands
-    state = update_player(state, seat, &%{ &1 | hand: orig_hand, draw: orig_draw, calls: orig_calls })
-
     # push message saying which joker maps to what, excluding obvious jokers
-    # TODO we're calculating this twice (this is the second time)
+    # TODO we're calling get_obvious_joker_assignment twice (this is the second time)
     smt_hand_calls = cxt.smt_hand ++ Enum.concat(cxt.smt_calls)
     obvious_joker_assignment = JokerSolver.get_obvious_joker_assignment(tile_behavior, cxt.smt_hand, cxt.smt_calls)
     non_obvious_joker_assignment = Map.drop(cxt.joker_assignment, Map.keys(obvious_joker_assignment))
@@ -494,7 +479,7 @@ defmodule RiichiAdvanced.GameState.Kyoku do
     # {assigned_hand, assigned_calls, _, _} = JokerSolver.apply_joker_assignment(cxt.smt_hand, orig_calls, cxt.winning_tile, cxt.joker_assignment)
 
     # arrange the hand for display on yaku screen
-    arranged_hand = Utils.sort_tiles(orig_hand -- [cxt.winning_tile], cxt.joker_assignment)
+    arranged_hand = Utils.sort_tiles(state.players[seat].hand -- [cxt.winning_tile], cxt.joker_assignment)
 
     # arrange the hand more nicely when you hover over it
     separated_hand = cond do
@@ -503,16 +488,16 @@ defmodule RiichiAdvanced.GameState.Kyoku do
         arrange_american_yaku = Map.get(score_rules, "arrange_american_yaku", false)
         if arrange_american_yaku do
           separate_american_winner_hand(
-            orig_hand, orig_calls, tile_behavior, cxt.winning_tile,
+            state.players[seat].hand, state.players[seat].calls, tile_behavior, cxt.winning_tile,
             cxt.yaku, Rules.get(state.rules_ref, "yaku", []))
         else arranged_hand end
       true ->
         Match.separate_standard_winner_hand(
-          cxt.smt_hand, cxt.smt_calls, orig_calls, tile_behavior, cxt.joker_assignment,
+          cxt.smt_hand, cxt.smt_calls, state.players[seat].calls, tile_behavior, cxt.joker_assignment,
           Rules.translate_match_definitions(state.rules_ref, ["win"]))
     end
 
-    # player = state.players[seatt]
+    # player = state.players[seat]
     winner = Map.merge(cxt,
       %{
         # player: update_in(player.cache, &%{ &1 | assigned_hand: assigned_hand, assigned_calls: assigned_calls }),
@@ -551,7 +536,7 @@ defmodule RiichiAdvanced.GameState.Kyoku do
         opponents: opponents,
         # hand to show in the yaku screen
         arranged_hand: arranged_hand,
-        arranged_calls: orig_calls,
+        arranged_calls: state.players[seat].calls,
         # hand to show on hover in the yaku screen
         separated_hand: separated_hand,
         separated_calls: if state.ruleset == "american" do [] else orig_calls end
