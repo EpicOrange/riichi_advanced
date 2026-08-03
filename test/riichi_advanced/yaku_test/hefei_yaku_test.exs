@@ -848,7 +848,7 @@ defmodule RiichiAdvanced.YakuTest.HefeiYaku do
       %{"type" => "buttons_pressed", "buttons" => [%{"button" => "tsumo"}, nil, nil, nil]}
     ], %{
       east: %{
-        yaku: [@base, {"Heavenly Win", [200, "嘴"]}]
+        yaku: [@base, {"After a Kong", [2, "×"]}, {"Heavenly Win", [200, "嘴"]}]
       }
     })
   end

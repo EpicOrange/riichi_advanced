@@ -4,7 +4,7 @@ require "standard_sets"
 set interruptible_actions, ["play_tile", "draw", "call", "self_call", "upgrade_call"]
 set initial_score, 0
 set starting_tiles, 13
-set starting_honba, 1
+set starting_honba, 3
 set max_rounds, 16
 set display_honba, true
 
@@ -43,6 +43,10 @@ def set_majority do
     manzu_count == majority_count -> add_attr(["hand", "calls", "draw"], ["_m"], ["manzu"])
     pinzu_count == majority_count -> add_attr(["hand", "calls", "draw"], ["_m"], ["pinzu"])
     souzu_count == majority_count -> add_attr(["hand", "calls", "draw"], ["_m"], ["souzu"])
+  end
+  if has_draw and status("kan") do
+    # need to recalculate after adding _m since it changes whether we match win conditions
+    recalculate_buttons
   end
 end
 on after_start do as everyone do set_majority end end
@@ -150,7 +154,7 @@ on before_win do
     dealer_repeat_bonus = honba
   # end
 end
-define_yaku dealer_repeat, "Dealer Repeats", ["dealer_repeat_bonus", "×"], dealer_repeat_bonus > 1
+define_yaku mult, "Dealer Repeats", ["dealer_repeat_bonus", "×"], dealer_repeat_bonus > 1
 
 define_yaku special_yaku, "Luxury Seven Pairs", [50, "嘴"], match(["hand", "winning_tile"], ~m"quad:1, pair:5"), ["Seven Pairs"]
 define_yaku special_yaku, "Double Luxury Seven Pairs", [100, "嘴"], match(["hand", "winning_tile"], ~m"quad:2, pair:3"), ["Luxury Seven Pairs"]
@@ -178,6 +182,9 @@ on before_win do
 end
 define_scoring win do
   total = points :: "嘴"
+  if status("kan", as: "winner") do
+    total *= 2 :: "After a Kong"
+  end
   if honba > 1 do
     if seat_is("east") or seat_is("east", as: "winner") do
       total *= honba :: "Dealer bonus"
@@ -186,11 +193,19 @@ define_scoring win do
   set_counter_all("total", "total")
 end
 on after_win do
-  modify_winner("score", "total")
+  if won do
+    as winner do
+      if status("kan") do
+        actual_pts2 = 2 * (points2 - 2)
+        modify_winner("points2", "actual_pts2")
+      end
+      modify_winner("score", "total")
+    end
+  end
 end
 
 set score_calculation,
-  yaku_lists: ["base", "yaku", "special_yaku", "dealer_repeat"],
+  yaku_lists: ["base", "yaku", "special_yaku", "mult"],
   point_name: "嘴",
   point2_name: "×",
   win_by_discard_label: "Hu",

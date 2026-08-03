@@ -10,6 +10,7 @@ defmodule RiichiAdvanced.GameState.Actions do
   alias RiichiAdvanced.GameState.PlayerCache, as: PlayerCache
   alias RiichiAdvanced.GameState.Rules, as: Rules
   alias RiichiAdvanced.GameState.Saki, as: Saki
+  alias RiichiAdvanced.GameState.Scoring, as: Scoring
   alias RiichiAdvanced.GameState.TileBehavior, as: TileBehavior
   alias RiichiAdvanced.GameState.Log, as: Log
   alias RiichiAdvanced.Match, as: Match
@@ -2010,7 +2011,8 @@ defmodule RiichiAdvanced.GameState.Actions do
               :number -> interpret_amount(state, context, Enum.at(opts, 1, 0))
               :string -> Enum.at(opts, 1, "")
             end
-            update_in(state.winners[context.seat][key], fn prev_value -> case method do
+            prev_amt = state.winners[context.seat][key]
+            state = update_in(state.winners[context.seat][key], fn prev_value -> case method do
               :set      -> value
               :add      -> prev_value + value
               :subtract -> prev_value - value
@@ -2021,6 +2023,28 @@ defmodule RiichiAdvanced.GameState.Actions do
               :prepend  -> value <> prev_value
               :append   -> prev_value <> value
             end end)
+            new_amt = state.winners[context.seat][key]
+            score_rules = Rules.get(state.rules_ref, "score_calculation", %{})
+            point_name = score_rules["point_name"]
+            point2_name = score_rules["point2_name"]
+            # update total_points if points or points2 changed
+            state = case key do
+              :points -> update_in(state.winners[context.seat].total_points, &Scoring.update_yaku_amount(&1, point_name, new_amt))
+              :points2 -> update_in(state.winners[context.seat].total_points, &Scoring.update_yaku_amount(&1, point2_name, new_amt))
+              :point_name -> update_in(state.winners[context.seat].total_points, &Scoring.update_yaku_unit(&1, point_name, new_amt))
+              :point2_name -> update_in(state.winners[context.seat].total_points, &Scoring.update_yaku_unit(&1, point2_name, new_amt))
+              _ -> state
+            end
+            # also update right_display if it changed
+            if score_rules["right_display"] == Enum.at(opts, 0, nil) do
+              case score_rules["right_display"] do
+                "points"       -> put_in(state.winners[context.seat].right_display, new_amt)
+                "points2"      -> put_in(state.winners[context.seat].right_display, new_amt)
+                "shuugi"       -> put_in(state.winners[context.seat].right_display, new_amt)
+                "minipoints"   -> put_in(state.winners[context.seat].right_display, new_amt)
+              end
+            else state end
+            state
           else
             cond do
               key == nil -> IO.puts("WARNING: Failed to modify_winner, since key #{inspect(key)} is nil")

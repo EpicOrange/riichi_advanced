@@ -1168,6 +1168,7 @@ defmodule RiichiAdvanced.Constants do
         %{name: "tsumo", config: %{scoring_key: "win"}},
         "standard_win",
         %{name: "yaku/chiitoitsu", config: %{rules_tab: "10 嘴", list: "special_yaku", name: "Seven Pairs", value: 10}},
+        %{name: "yaku/rinshan", config: %{list: "mult", rinshan_name: "After a Kong", value: 2, han: "×"}},
         %{name: "yaku/iiankou", config: %{name: "Concealed Pung", value: 1}},
         %{name: "yaku/ryanankou", config: %{name: "Two Concealed Pungs", value: 2, override: "Concealed Pung"}},
         %{name: "yaku/sanankou", config: %{name: "Three Concealed Pungs", value: 4, override: "Two Concealed Pungs"}},

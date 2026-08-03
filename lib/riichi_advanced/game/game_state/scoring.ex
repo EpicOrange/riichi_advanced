@@ -24,6 +24,19 @@ defmodule RiichiAdvanced.GameState.Scoring do
     |> Enum.flat_map(fn {type, amt} -> [Utils.try_integer(amt), type] end)
   end
 
+  def update_yaku_amount(yaku, unit, new_amount) do
+    case Enum.find_index(yaku, & &1 == unit) do
+      nil -> yaku
+      i when rem(i, 2) == 1 -> List.replace_at(yaku, i - 1, new_amount)
+    end
+  end
+  def update_yaku_unit(yaku, unit, new_unit) do
+    case Enum.find_index(yaku, & &1 == unit) do
+      nil -> yaku
+      i when rem(i, 2) == 1 -> List.replace_at(yaku, i, new_unit)
+    end
+  end
+
   def dedup_yaku(yaku) do
     for {name, value} <- yaku, reduce: %{} do
       acc -> Map.update(acc, name, value, &add_yaku_values(&1, value))
