@@ -44,9 +44,7 @@ set score_calculation, %{
 }
 
 define_const can_draw_condition, true
-replace 1, "functions.discard_passed", ryuukyoku do
-  ryuukyoku("Ryuukyoku", "ryuukyoku")
-end
+define_const ryuukyoku, ryuukyoku("Ryuukyoku", "ryuukyoku")
 
 define_button chii,
   display_name: "Chii",

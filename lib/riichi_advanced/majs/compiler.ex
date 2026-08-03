@@ -253,18 +253,8 @@ defmodule RiichiAdvanced.Compiler do
           {:"**=", pos, [{l, _, nil}, r]} -> compile_action({"_counter_assignment", pos, [l, "**", r, display_name]}, line, column)
           _                              -> {:error, "Compiler.compile_action: at line #{line}:#{column}, expected an assignment, got #{assignment}"}
         end
-      # {:=, pos, [{l, _, nil}, {:+, _, [{l, _, nil}, {r, _, nil}]}]} -> compile_action({"add_counter", pos, [l, r]}, line, column)
-      # {:=, pos, [{l, _, nil}, {:-, _, [{l, _, nil}, {r, _, nil}]}]} -> compile_action({"subtract_counter", pos, [l, r]}, line, column)
-      # {:=, pos, [{l, _, nil}, {:*, _, [{l, _, nil}, {r, _, nil}]}]} -> compile_action({"multiply_counter", pos, [l, r]}, line, column)
-      # {:=, pos, [{l, _, nil}, {:/, _, [{l, _, nil}, {r, _, nil}]}]} -> compile_action({"divide_counter", pos, [l, r]}, line, column)
-      # {:=, pos, [{l, _, nil}, {:**, _, [{l, _, nil}, {r, _, nil}]}]} -> compile_action({"exponentiate_counter", pos, [l, r]}, line, column)
-      # {:=, pos, [{l, _, nil}, {:+, _, [{l, _, nil}, r]}]} -> compile_action({"add_counter", pos, [l, r]}, line, column)
-      # {:=, pos, [{l, _, nil}, {:-, _, [{l, _, nil}, r]}]} -> compile_action({"subtract_counter", pos, [l, r]}, line, column)
-      # {:=, pos, [{l, _, nil}, {:*, _, [{l, _, nil}, r]}]} -> compile_action({"multiply_counter", pos, [l, r]}, line, column)
-      # {:=, pos, [{l, _, nil}, {:/, _, [{l, _, nil}, r]}]} -> compile_action({"divide_counter", pos, [l, r]}, line, column)
-      # {:=, pos, [{l, _, nil}, {:**, _, [{l, _, nil}, r]}]} -> compile_action({"exponentiate_counter", pos, [l, r]}, line, column)
-      # {:=, pos, [{l, _, nil}, {r, _, nil}]} -> compile_action({"set_counter", pos, [l, r]}, line, column)
       {:=, pos, [l, r]} -> compile_action({"_set_counter", pos, [l, r]}, line, column)
+      {:@, _, [{const_name, _, nil}]} = constant when is_binary(const_name) -> Validator.validate_json(constant)
       {"if", [line: line, column: column], opts} ->
         case opts do
           [condition, actions] ->

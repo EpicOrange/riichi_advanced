@@ -44,10 +44,11 @@ define_play_effect any do unset_status("discards_empty") end
 
 define_const can_draw_condition, not_anyone_status("match_start") and not_anyone_status("initial_flowers")
 def discard_passed do end # extended by mods
+define_const ryuukyoku, ryuukyoku
 on after_turn_change do
   if no_tiles_remaining do
     pause(1000)
-    ryuukyoku
+    @ryuukyoku
   else
     if not_game_start do discard_passed end
     if @can_draw_condition do draw end

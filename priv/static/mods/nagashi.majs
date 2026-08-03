@@ -8,7 +8,7 @@ on after_initialization do
 end
 
 # replace ryuukyoku in after_turn_change
-replace 1, "after_turn_change", ryuukyoku("Ryuukyoku", "ryuukyoku") do
+define_const ryuukyoku do
   if anyone_status("nagashi") do
     ryuukyoku("", "nagashi")
   else
