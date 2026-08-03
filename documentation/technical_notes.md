@@ -106,6 +106,22 @@ The important moving parts of Riichi Advanced's supervision tree roughly looks l
 
 This tree omits a lot, mostly because they don't matter much in the course of working on this project. I didn't know any Elixir prior to working on Riichi Advanced, so forgive me and do say something if you see a better way of doing things that I am not doing.
 
+### Actions, conditions, events, and interrupts
+
+The game is modelled using a Lisp-like language in JSON. A ruleset consists of a JSON file whose toplevel keys are mostly event names, whose values are lists of actions to undertake. There is also a `buttons` toplevel key which houses buttons that are available to everyone to press, but they are only shown when a given condition is true. Conditions are also Lisp-like expression trees represented by nested arrays. The first layer of the condition array is in CNF (take AND of every clause, and take OR of every condition inside each clause). Technically it's not normal form, the next layer is another conjunction of terms and so it just alternates between AND/OR at every level, but this is rarely used.
+
+There are only two actions a player may take to alter the state of the game. First, they could discard a tile by clicking on it twice. Second, they can press buttons, if they appear. These are called 'choices' in the code, andtThere are also some other ad-hoc choices for other game modes (like selecting a Saki card) but they're kind of old, the last time I touched that stuff was like early 2025. If I were to rework this system it would be for adding activatable function tiles: basically tiles that act as spell cards, but I digress.
+
+Choosing a choice doesn't immediately execute it; all players must submit a choice before the game updates state. This is because some choices can have precedence over others (e.g. pon overrides chii) so we need all choices in before we continue. Players who don't have choices (not their turn and they have no buttons) automatically submit a 'skip' for their choice. Once all players have a choice submitted, only then does the engine start moving, adjudicating each action in order to update the game state. The resulting state is broadcast to all clients.
+
+This process can be interrupted; instead of an external process issuing an interrupt, the way it works is that some actions are interruptible, and every time an interruptible action is done executing, the game stops and recalculates buttons. If any buttons for any player are available, the game halts and defers all later computation until all players submit a choice again. This is how calls are able to work; after playing a tile (an interruptible action) everyone who can call gets a call button generated for them that they can press to take the discard. This naturally extends to interrupting interrupts, e.g. calling chankan (a button choice) after someone executes an added kan (also a button chioce).
+
+Branching conditionals, function calls, and `pause` all act a little differently. Branching conditionals add all of the actions to a stack (the same stack used for deferring computation). Function calls merely save some context along with the function body, and puts it on the same stack. `pause` is completely different; it is a no op, but its existence forces the game to halt and stop processing anything for a certain amount of time. This is achieved by setting `game_active` (basically a game global) to `false`, and issuing a future message to itself to flip it back to `true` after the duration has passed.
+
+### AI players
+
+Every time state is broadcast, AI players are also notified. AI players, despite having different names in-game, all act the same way, and their behavior is entirely described in `ai_player.ex`. Essentially they are efficiency maximizers in the sense that they calculate waits-towards-next-shanten and also counting ukeire. They will not make any calls since idk what good call strategy looks like, so (in riichi) they will just find the most efficient path to riichi. "Decreasing shanten" applies to pretty much every variant so the AI does the same thing for every mahjong variant.
+
 ### Tile representation
 
 Internally, tiles are represented as Elixir atoms, so `:"1m"` is the 1 of characters.
