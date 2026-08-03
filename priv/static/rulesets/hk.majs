@@ -62,12 +62,12 @@ define_scoring win do
     true                              -> total = 1 :: "0 Fan"
   end
   if won_by_discard do
-    total *= 2 :: "Win by discard"
+    total *= 2 :: "Win by Discard"
   else
     if won_by_call do
       total *= 2 :: "Win by Robbing Kong"
     else
-      total *= 1 :: "Win by self-draw"
+      total *= 1 :: "Win by Self-draw"
     end
   end
   modify_winner("score", "total")

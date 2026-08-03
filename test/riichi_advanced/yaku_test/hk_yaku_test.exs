@@ -32,7 +32,7 @@ defmodule RiichiAdvanced.YakuTest.HKOSYaku do
       east: %{
         yaku: []
       }
-    })
+    }, %{delta_scores: [2, -2, 0, 0]})
   end
 
   test "hk - seat flower" do

@@ -294,7 +294,7 @@ defmodule RiichiAdvancedWeb.ScoringTestLive do
     scoring_key = case Rules.get(state.rules_ref, "scoring_logic", %{}) do
       %{"ron" => _} -> if is_ron? do "ron" else "tsumo" end
       logic when is_map(logic) -> Enum.at(logic, 0) |> elem(0)
-      _ -> if is_ron? do "ron" else "tsumo" end
+      _ -> nil
     end
     state = Kyoku.calculate_winner_details_v2(state, :east, win_source, scoring_key)
     state = update_in(state.winners.east.yaku, & &1 ++ selected_yaku)
