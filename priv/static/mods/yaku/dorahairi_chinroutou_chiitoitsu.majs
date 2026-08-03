@@ -1,0 +1,15 @@
+on after_initialization do
+  add_rule("Mangan", "Dorahairi Chinroutou Chiitoitsu", "Mangan if you have chiitoitsu composed of each terminal tile with the seventh pair being dora.", 105)
+  update_rule("Mangan", "Dorahairi Chinroutou Chiitoitsu", "%{example_hand}", %{example_hand: ~t"1199m1199p1199s8p@dora 8p@dora"})
+end
+
+apply append, "score_calculation.yaku_lists", "yaku_dorahairi_chinroutou_chiitoitsu"
+
+# tag all dora "dorahairi_dora" instead of "dora" (which would make it shiny)
+on before_win do
+  add_attr_tagged("dora", "dorahairi_dora")
+end
+
+define_yaku yaku_dorahairi_chinroutou_chiitoitsu, "Dorahairi Chinroutou Chiitoitsu", [5, "Han"],
+  not_has_points(5) and winning_hand_consists_of("1m", "9m", "1p", "9p", "1s", "9s", %{tile: "any", attrs: ["dorahairi_dora"]}),
+  [1, 2, 3, 4]
