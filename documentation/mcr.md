@@ -125,7 +125,7 @@ Some fan may have overlapping requirements, and there are some rules about that 
 - __Chicken Hand (#43)__ (0.8192%): None of the other fan apply to your hand.
 - __Reversible Tiles (#40)__ (0.5837%): Your hand is composed of tiles from the following set: 1234589 of circles, 245689 of bamboo, and white dragon. (Ignores flowers.)
 - __Mixed Shifted Pungs (#42)__ (0.4544%): You have consecutive triplets in the pattern 111 222 333 in different suits.
-- __Out with Replacement Tile (#46)__ (0.4310%): Win off the replacement tile after calling a flower of a kong.
+- __Out with Replacement Tile (#46)__ (0.4310%): Win off the replacement tile after calling a flower or a kong.
 - __Robbing The Kong (#47)__ (0.2972%): Win off the tile someone tried to add to a pung.
 - __Last Tile Claim (#45)__ (0.1488%): Win off the last discard.
 - __Last Tile Draw (#44)__ (0.08838%): Win off the last draw.

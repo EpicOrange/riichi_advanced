@@ -42,6 +42,7 @@ If interested in contributing, check out the [contributing doc](CONTRIBUTING.md)
 - [Repository breakdown](#repository-breakdown)
 - [Running the server locally](#running-the-server-locally)
 - [Technical notes](#technical-notes)
+- [Links to all documentation](#links-to-all-documentation)
 - [Acknowledgments](#acknowledgments)
 
 ## Changelog
@@ -136,6 +137,36 @@ If you're interested in the technicals, there are basically five moving parts to
 - __Fault tolerance!__ It's an Elixir project, so any crashing subprocess (like game states) just get restarted. Writing a usable supervision tree took several design iterations, but has settled on `Application` -> `GameSessionSupervisor` -> (many) `GameSupervisor` -> `GameState`. The application root is [here](/lib/riichiadvanced/application.ex).
 
 A longer version of this can be found in [technical_notes.md](documentation/technical_notes.md). If you like solving these kinds of problems, consider joining the [Discord](https://discord.gg/5QQHmZQavP)! We have a lot of problems.
+
+## Links to all documentation
+
+__Riichi Advanced__: all about programming the game engine.
+
+- [Ruleset tutorial + documentation (MahjongScript)](/documentation/documentation.md)
+- [Ruleset tutorial + documentation (old JSON version)](/documentation/documentation_json.md)
+- [MahjongScript language reference](/documentation/mahjongscript.md)
+- [Mod creation reference](/documentation/mahjongscript.md)
+- [Tutorial creation reference](/documentation/tutorials.md)
+- [Tiles reference](/documentation/tiles.md)
+- [Technical notes (engine internals)](/documentation/technical_notes.md)
+
+__Rulesets__ (for nerds): Most of the rules can be accessed in-game by clicking on Rules after entering a room. Note that there are also in-game rules tabs! Otherwise, here are links to all the writeups stored in the `/documentation` directory of this repository.
+
+- Riichi variants
+  + [Riichi](/documentation/riichi.md)
+  + [Sanma](/documentation/sanma.md)
+  + [Galaxy Mahjong](/documentation/galaxy.md)
+  + [Chinitsu Challenge](/documentation/chinitsu_challenge.md)
+  + [Zan Sanma](/documentation/Zansanma.md)
+- Non-Riichi variants
+  + [American Mahjong](/documentation/Zansanma.md)
+  + [Bloody 30 Faan Jokers](/documentation/bloody30faan.md)
+  + [Fuzhou Mahjong](/documentation/fuzhou.md)
+  + [Hong Kong Old Style](/documentation/hk.md)
+  + [MCR strategy guide](/documentation/mcr.md)
+  + [Sichuan Bloody Rules](/documentation/sichuan.md)
+  + [Vietnamese](/documentation/vietnamese.md)
+  + [Zung Jung](/documentation/zung_jung.md)
 
 ## Acknowledgments
 

@@ -99,10 +99,10 @@ The important moving parts of Riichi Advanced's supervision tree roughly looks l
     │       ├── MessagesState (one per connected client)
     │       ├── MessagesState
     │       └── MessagesState
-    ├── ETSCache (hosts all cached data from the above)
-    ├── Phoenix.PubSub (how state processes above communicate with LiveViews)
+    ├── Cache (defines one cache for cached data, and a shorter-lived one for function memoization)
+    ├── Phoenix.PubSub (used by state processes above to communicate with LiveViews)
     ├── PlugAttack.Storage.Ets (used by PlugAttack to implement rate limiting)
-    └── RiichiAdvancedWeb.Endpoint (serves the webpage hosting the game)
+    └── RiichiAdvancedWeb.Endpoint (used to serve the webpage hosting the game)
 
 This tree omits a lot, mostly because they don't matter much in the course of working on this project. I didn't know any Elixir prior to working on Riichi Advanced, so forgive me and do say something if you see a better way of doing things that I am not doing.
 
