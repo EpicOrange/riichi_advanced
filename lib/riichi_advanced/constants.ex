@@ -483,7 +483,7 @@ defmodule RiichiAdvanced.Constants do
     {"speed_tonpuu", "Speed Tonpuu", "Parlor-style riichi with a focus on shuugi payments. Includes blue sevens and a gold five."},
     {"super_bingo",  "Super Bingo (beta)", "Sanma but you replace the 19m with four 7p and four 7s, with big shuugi payments."},
     {"saki",         "Sakicards v1.3", "Riichi, but everyone gets a different Saki power, which changes the game quite a bit. Some give you bonus han every time you use your power. Some let you recover dead discards. Some let you swap tiles around the entire board, including the dora indicator."},
-    {"arushiiaru",   "Arishiiaru", "Predecessor of Riichi mahjong, which is basically the same thing except scores are 4 times smaller and max out at 2000 (Mangan)."},
+    {"arushiiaru",   "Arushiiaru", "Predecessor of Riichi mahjong, which is basically the same thing except scores are 4 times smaller and max out at 2000 (Mangan)."},
     {"hk",           "Hong Kong", "Hong Kong Old Style mahjong. Three point minimum, everyone pays for a win, and win instantly if you have seven flowers."},
     {"sichuan",      "Sichuan Bloody", "Sichuan Bloody mahjong. Trade tiles, void a suit, and play until three players win (bloody end rules)."},
     {"mcr",          "MCR", "Mahjong Competition Rules. Has a scoring system of a different kind of complexity than Riichi."},

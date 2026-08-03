@@ -28,7 +28,7 @@ define_play_effect any do
   as everyone do
     if status("tenpai", "furiten") do
       if match(["hand", "calls", "last_discard"], ["win"]) and
-         not_match(["hand", "calls", "any_discard"], ["win"]) do
+         not_match(["last_discard", "any_discard"], ~m"pair:1") do
         unset_status("furiten")
         recalculate_buttons
       end
@@ -36,12 +36,16 @@ define_play_effect any do
   end
 end
 
-# open pinfu is 20 fu, pinfu tsumo is 22 fu
-define_const arishiiaru, true
-
 # remove noten payments
 def setup_noten_payments do end
 def execute_noten_payments do end
+
+# open pinfu is 20 fu, pinfu tsumo is 22 fu
+define_const closed_tsumo_20_fu, false
+define_const open_30_fu, false
+
+# round to nearest 10 instead
+define_const riichi_score_rounding, 10
 
 def calculate_base_score do
   cond do
@@ -69,22 +73,6 @@ def calculate_base_score do
   base_score = total
 end
 
-apply set, "scoring_logic.ron" do
-  total = 0
-  if points2 > 0 do points2 = points2 :: "★" else points = points :: "Han" end
-  calculate_base_score
-  apply_ron_scoring
-  set_counter_all("display_total", "total")
-end
-
-apply set, "scoring_logic.tsumo" do
-  total = 0
-  if points2 > 0 do points2 = points2 :: "★" else points = points :: "Han" end
-  calculate_base_score
-  apply_tsumo_scoring
-  set_counter_all("display_total", "total")
-end
-
 # Yaku differences can be summarized as follows:
 
 # Chiitoitsu: not a thing
@@ -92,8 +80,8 @@ define_match tenpai, "standard_tenpai", "kokushi_tenpai"
 define_match win, "standard_win", "kokushi_win"
 remove_yaku yaku, "Chiitoitsu"
 
-# Pinfu: does not require open (since open pinfu is 20 fu now)
-replace_yaku yaku, "Pinfu", [1, "Han"], won_by_draw and minipoints_equals(20)
+# Pinfu: does not require closed (since open pinfu is 20 fu now)
+replace_yaku yaku, "Pinfu", [1, "Han"], minipoints_equals(20)
 
 # Some yaku are always 1 han (and no +1 for closed)
 replace_yaku yaku, "Honitsu", [1, "Han"]
@@ -110,7 +98,7 @@ remove_yaku meta_yaku, "Honitsu"
 replace_yaku yaku, "Chinitsu", [3, "Han"]
 remove_yaku meta_yaku, "Chinitsu"
 
-# All yakuman are Mangan (same score because we interpret ★ as Mangan)
+# All yakuman are mangan (same score, because we'll just interpret ★ as mangan)
 # only difference is that chuurenpoutou must be junsei
 replace_yaku yakuman, "Suuankou", [1, "★"]
 replace_yaku yakuman, "Daisangen", [1, "★"]
@@ -133,12 +121,66 @@ remove_yaku meta_yaku, "Sanshoku"
 remove_yaku yaku, "Sanshoku Doukou"
 remove_yaku yaku, "Honroutou"
 remove_yaku yaku, "Ryanpeikou"
+remove_yaku yaku, "Sankantsu"
 remove_yaku yakuman, "Suuankou Tanki"
 remove_yaku yakuman, "Ryuuiisou"
 remove_yaku yakuman, "Kokushi Musou Juusan Menmachi"
 remove_yaku yakuman, "Junsei Chuurenpoutou"
+remove_yaku yakuman, "Suukantsu"
 remove_yaku meta_yakuman, "Suuankou Tanki"
 remove_yaku meta_yakuman, "Junsei Chuurenpoutou"
 remove_yaku meta_yakuman, "Kokushi Musou Juusan Menmachi"
+
+# update all the rules text to match
+define_const closed_tsumo_20_fu, false
+define_const open_30_fu, false
+on after_initialization do
+  delete_rule("Rules", "Furiten")
+  add_rule("Rules", "Furiten", "You cannot win on a discarded tile that you yourself have discarded (or skipped a win on). You can still win on such tiles by tsumo (self-draw).")
+  delete_rule("Rules", "Tenpai Payments")
+  delete_rule("2 Han", "Chiitoitsu")
+  delete_rule("1 Han", "Tsumo")
+  delete_rule("1 Han", "Iipeikou")
+  delete_rule("2 Han", "Junchan")
+  delete_rule("1 Han", "Sanshoku")
+  delete_rule("2 Han", "Sanshoku Doukou")
+  delete_rule("2 Han", "Honroutou")
+  delete_rule("3+ Han", "Ryanpeikou")
+  delete_rule("2 Han", "Sankantsu")
+  delete_rule("3+ Han", "Chinitsu")
+  delete_rule("Yakuman", "Suuankou Tanki")
+  delete_rule("Yakuman", "Ryuuiisou")
+  delete_rule("Yakuman", "Kokushi Musou Juusan Menmachi")
+  delete_rule("Yakuman", "Junsei Chuurenpoutou")
+  rename_rule_tab("Yakuman", "Mangan")
+
+  delete_rule("1 Han", "Ittsuu")
+  add_rule("1 Han", "Ittsuu", "1 han if your hand contains the sequences 123 456 789 in one suit.")
+  update_rule("1 Han", "Ittsuu", "%{example_hand}", %{example_hand: ~t"234p4567779s 12s3S 8s"})
+
+  delete_rule("2 Han", "Toitoi")
+  add_rule("1 Han", "Toitoi", "1 han if your hand is all triplets.")
+  update_rule("2 Han", "Toitoi", "%{example_hand}", %{example_hand: ~t"888m222p33s22z 1z1Z1z 3s"})
+
+  delete_rule("2 Han", "Sanankou")
+  add_rule("1 Han", "Sanankou", "1 han if your hand has three closed triplets. A triplet formed by a self-draw win counts as closed.")
+  update_rule("2 Han", "Sanankou", "%{example_hand}", %{example_hand: ~t"222888m444p123s1z 1z"})
+
+  delete_rule("2 Han", "Shousangen")
+  add_rule("1 Han", "Shousangen", "1 han on top of yakuhai if you have two dragon triplets/kans and a dragon pair.")
+  update_rule("2 Han", "Shousangen", "%{example_hand}", %{example_hand: ~t"123m23s66777z 55z5Z 4s"})
+
+  delete_rule("2 Han", "Honitsu")
+  add_rule("1 Han", "Honitsu", "1 han if your hand is comprised of one suit plus honor tiles.")
+  update_rule("2 Han", "Honitsu", "%{example_hand}", %{example_hand: ~t"123345888p11z22z 2z"})
+
+  delete_rule("3 Han", "Chinitsu")
+  add_rule("3 Han", "Chinitsu", "3 han if your hand is comprised of one suit only (no honor tiles).")
+  update_rule("3 Han", "Chinitsu", "%{example_hand}", %{example_hand: ~t"1233445568889s 7s"})
+
+  add_rule("Mangan", "Chuurenpoutou", "Mangan if your hand was 1112345678999 in one suit, and you won via its nine-sided wait.", 2)
+  update_rule("Mangan", "Chuurenpoutou", "%{example_hand}", %{example_hand: ~t"1112345678999s 7s"})
+end
+
 
 # now you have arushiiaru!
