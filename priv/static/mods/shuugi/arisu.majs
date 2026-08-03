@@ -19,13 +19,15 @@ apply append, "buttons.ron.show_when", status_missing("performing_arisu")
 apply append, "buttons.tsumo.show_when", status_missing("performing_arisu")
 apply append, "buttons.chankan.show_when", status_missing("performing_arisu")
 
+define_yaku shuugi, "Arisu", ["arisu_matches", "⛀"], arisu_matches >= 1
+
 def perform_arisu do
   if @closed_hand do
     set_status("performing_arisu")
     push_message("won with a closed hand, and will flip tiles on the wall from the dora indicator onward, scoring shuugi for every matching tile in hand")
     save_revealed_tiles
 
-    pause(2000); matching = 0; flip_next_tile(%{key: "$key"})
+    pause(2000)
     arisu_50(%{key: "$key"})
     arisu_50(%{key: "$key"})
     arisu_50(%{key: "$key"})
@@ -48,8 +50,6 @@ def perform_arisu do
     end
   end
 end
-
-define_yaku shuugi, "Arisu", ["arisu_matches", "⛀"], arisu_matches >= 1
 
 # put this at the end so you don't see what coding in a loopless language looks like
 
@@ -229,16 +229,21 @@ def flip_next_tile do
     cond do
       prev_arisu_matches == arisu_matches ->
         cond do
-          "$key" == "tsumo" -> push_message("does not have any more tiles in hand matching the last revealed tile, and so will be paid $chips extra chips from the discarder", %{chips: "arisu_matches"})
-          true -> push_message("does not have any more tiles in hand matching the last revealed tile, and so will be paid $chips extra chips from all other players", %{chips: "arisu_matches"})
+          "$key" == "tsumo" -> push_message("does not have any more tiles in hand matching the last revealed tile, ending with a total payment of $chips extra chips from the discarder", %{chips: "arisu_matches"})
+          true -> push_message("does not have any more tiles in hand matching the last revealed tile, ending with a total payment of $chips extra chips from all other players", %{chips: "arisu_matches"})
         end
         set_status("stop_arisu")
       tiles_in_wall < 2 ->
         cond do
-          "$key" == "tsumo" -> push_message("does not have any more top-stack tiles in wall to flip, and will be paid $chips extra chips from the discarder", %{chips: "arisu_matches"})
-          true -> push_message("does not have any more top-stack tiles in wall to flip, and will be paid $chips extra chips from all other players", %{chips: "arisu_matches"})
+          "$key" == "tsumo" -> push_message("has run out of 2-stacks in wall to flip, ending with a total payment of $chips extra chips from the discarder", %{chips: "arisu_matches"})
+          true -> push_message("has run out of 2-stacks in wall to flip, ending with a total payment of $chips extra chips from all other players", %{chips: "arisu_matches"})
         end
         set_status("stop_arisu")
+      true ->
+        diff = arisu_matches - prev_arisu_matches
+        push_message("adds $diff chips to the payment for matching $diff tiles", %{diff: "diff"})
     end
   end
 end
+
+apply set_append, "shown_statuses", ["arisu_matches"]

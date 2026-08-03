@@ -1,25 +1,48 @@
+on after_initialization do
+  add_rule("Tiles", "Additional Sevens", "The %{manzu} are replaced with %{sevens}.", %{manzu: ~t"11119999m", sevens: ~t"7777p7777s"})
+  add_rule("Rules", "Unskippable Win", "You are not permitted to skip a winning tile.")
+  delete_rule("1 Han", "Chanta")
+  delete_rule("2 Han", "Junchan")
+  add_rule("3 Han", "Chanta", "3 han if each of the 5 blocks in your hand contains a terminal or honor. 4 han if closed.")
+  update_rule("3 Han", "Chanta", "%{example_hand}", %{example_hand: ~t"12379p789s77z 11p1P 8p"})
+  add_rule("4 Han", "Junchan", "2 han if each of the 5 blocks in your hand contains a terminal. 6 han if closed.")
+  update_rule("4 Han", "Junchan", "%{example_hand}", %{example_hand: ~t"12379p78999s 1P11p 8p"})
+  add_rule("6 Han", "Renhou", "6 han if you win off someone's discard before your first draw. Calls invalidate.")
+  delete_rule("1 Han", "Sanshoku")
+  delete_rule("2 Han", "Sanshoku Doukou")
+  delete_rule("Yakuman", "Kokushi Musou")
+  delete_rule("Yakuman", "Kokushi Musou Juusan Menmachi")
+  add_rule("Yakuman", "Nanashi Musou", "Yakuman if your winning hand consists of one of each terminal/seven/honor tile, with another copy of one of those tiles forming a pair.")
+  update_rule("Yakuman", "Nanashi Musou", "%{example_hand}", %{example_hand: ~t"799p179s1234567z 1p"})
+  add_rule("Yakuman", "Nanashi Musou Juusan Menmachi", "Double yakuman if your winning hand consists of one of each terminal/seven/honor tile and you won with a thirteen-sided wait for the pair.", 2)
+  update_rule("Yakuman", "Nanashi Musou Juusan Menmachi", "%{example_hand}", %{example_hand: ~t"179p179s1234567z 1p"})
+  delete_rule("2 Han", "Chiitoitsu")
+  add_rule("4 Han", "Kansai Chiitoitsu", "4 han if you win with seven pairs with a repeated pair. 8 han for two repeated pairs, yakuman for three.")
+  update_rule("4 Han", "Kansai Chiitoitsu", "%{example_hand}", %{example_hand: ~t"2266m999p4477s33z 9p"})
+end
+
 replace all, "wall", "1m", "7p"
 replace all, "wall", "9m", "7s"
 
 set initial_score, 30000
 
-# # can't skip wins
-# apply set, "buttons.ron.unskippable", true
-# apply set, "buttons.tsumo.unskippable", true
-# apply set, "buttons.chankan.unskippable", true
+# can't skip wins
+apply set, "buttons.ron.unskippable", true
+apply set, "buttons.tsumo.unskippable", true
+apply set, "buttons.chankan.unskippable", true
 
 # can't win with more than 4 sevens of a single suit
-apply append, "buttons.ron.show_when", match(["hand", "calls", "last_discard"], ~m"nojoker, 7p:5")
-apply append, "buttons.ron.show_when", match(["hand", "calls", "last_discard"], ~m"nojoker, 7s:5")
-apply append, "buttons.tsumo.show_when", match(["hand", "calls", "draw"], ~m"nojoker, 7p:5")
-apply append, "buttons.tsumo.show_when", match(["hand", "calls", "draw"], ~m"nojoker, 7s:5")
-apply append, "buttons.chankan.show_when", match(["hand", "calls", "last_called_tile"], ~m"nojoker, 7p:5")
-apply append, "buttons.chankan.show_when", match(["hand", "calls", "last_called_tile"], ~m"nojoker, 7s:5")
+apply append, "buttons.ron.show_when", not_match(["hand", "calls", "last_discard"], ~m"nojoker, 7p:5")
+apply append, "buttons.ron.show_when", not_match(["hand", "calls", "last_discard"], ~m"nojoker, 7s:5")
+apply append, "buttons.tsumo.show_when", not_match(["hand", "calls", "draw"], ~m"nojoker, 7p:5")
+apply append, "buttons.tsumo.show_when", not_match(["hand", "calls", "draw"], ~m"nojoker, 7s:5")
+apply append, "buttons.chankan.show_when", not_match(["hand", "calls", "last_called_tile"], ~m"nojoker, 7p:5")
+apply append, "buttons.chankan.show_when", not_match(["hand", "calls", "last_called_tile"], ~m"nojoker, 7s:5")
 
-# # must open riichi if furiten
-# if defined("open_riichi") do
-#   apply set, "buttons.open_riichi.unskippable", status("furiten")
-# end
+# must open riichi if furiten
+if defined("open_riichi") do
+  apply set, "buttons.open_riichi.unskippable", status("furiten")
+end
 
 # chanta is 3/4 han, junchan is 4/6 han
 replace_yaku yaku, "Chanta", [3, "Han"], match(["hand", "calls", "winning_tile"], ["chanta"])
@@ -34,6 +57,9 @@ define_yaku meta_yakuman, "Kansai Chiitoitsu", [1, "★"], has_existing_yaku("Ch
 
 # chinitsu chiitoitsu is yakuman
 define_yaku meta_yakuman, "Chinitsu Chiitoitsu", [1, "★"], has_existing_yaku("Chinitsu", "Chiitoitsu")
+
+# renhou
+define_yaku yaku, "Renhou", [6, "Han"], status("discards_empty") and status_missing("call_made") and won_by_discard
 
 # no manzu, so these yaku no longer exist (optimization)
 remove_yaku yaku, "Sanshoku"
@@ -51,9 +77,11 @@ define_yaku yakuman, "Nanashi Musou Juusan Menmachi", [2, "★"], match(["hand"]
 
 on after_win do
   # kazoe is worth 2 chips
-  if points >= 13 do shuugi_payment += 2 end
+  if points >= 13 do
+    push_message("earns 2 chips for kazoe yakuman")
+    shuugi_payment += 2
+  end
 end
-
 
 define_mod_category "Super Bingo", prepend: true
 define_mod super_bingo_rainbow_sevens, name: "Rainbow Sevens (unimplemented)", category: "Super Bingo", desc: "One of the eight 7p and one of the eight 7s is rainbow-colored. They are worth 10 shuugi each (same as how gold dora is worth 1)."
@@ -62,14 +90,6 @@ define_mod super_bingo_seven_rush, name: "Seven Rush (unimplemented)", category:
 define_mod super_bingo_bases_loaded, name: "Bases Loaded (unimplemented)", category: "Super Bingo", desc: "unimplemented"
 define_mod super_bingo_crazy_cherry, name: "Crazy Cherry (unimplemented)", category: "Super Bingo", desc: "unimplemented"
 define_mod super_bingo_orochi, name: "Orochi (unimplemented)", category: "Super Bingo", desc: "unimplemented"
-
-
-
-
-
-
-
-
 
 
 

@@ -966,9 +966,9 @@ defmodule RiichiAdvanced.GameState.Actions do
       if actions != nil do
         actions = Utils.walk_json(actions, &Map.get(args, &1, &1))
         if Debug.debug_actions() do
-          IO.puts("Running function #{fn_name}: #{inspect(actions)}")
+          IO.puts("Running function #{fn_name} with stack #{inspect(context.call_stack)}")
         end
-        {state, context, actions}
+        {state, context, actions ++ [["_end_function"]]}
       else
         IO.puts("Tried to call nonexistent function #{fn_name}!")
         {state, context, []}
@@ -1158,7 +1158,9 @@ defmodule RiichiAdvanced.GameState.Actions do
     uninterruptible = String.starts_with?(action, "uninterruptible_")
     silent = context[:silent] == true
     action = if uninterruptible do String.replace_leading(action, "uninterruptible_", "") else action end
-
+    {state, context} = if action == "_end_function" do
+      {state, update_in(context.call_stack, fn [_ | stack] -> stack end)}
+    else {state, context} end
     {state, context_actions} = if action in @branching_actions do
       case action do
         "when"   -> if Conditions.check_cnf_condition(state, Enum.at(opts, 0, []), context) do {state, [{context, Enum.at(opts, 1, []) ++ actions}]} else {state, [{context, actions}]} end
@@ -1726,6 +1728,7 @@ defmodule RiichiAdvanced.GameState.Actions do
           tiles = List.wrap(Enum.at(opts, 1, [:"1x"]))
           |> Enum.flat_map(&case &1 do
             "last_discard" -> if get_last_discard_action(state) != nil do [get_last_discard_action(state).tile] else [] end
+            "last_scryed_tile" -> Enum.take(get_scryed_tiles(state, context.seat), -1)
             "all" -> state.players[context.seat].tile_behavior.all_tiles
             _ -> [from_named_tile(state, context, &1)]
           end)
@@ -1756,6 +1759,7 @@ defmodule RiichiAdvanced.GameState.Actions do
           tiles = List.wrap(Enum.at(opts, 1, [:"1x"]))
           |> Enum.flat_map(&case &1 do
             "last_discard" -> if get_last_discard_action(state) != nil do [get_last_discard_action(state).tile] else [] end
+            "last_scryed_tile" -> Enum.take(get_scryed_tiles(state, context.seat), -1)
             "all" -> state.players[context.seat].tile_behavior.all_tiles
             _ -> [from_named_tile(state, context, &1)]
           end)
@@ -1998,6 +2002,7 @@ defmodule RiichiAdvanced.GameState.Actions do
             state = put_in(state.winners[Enum.at(state.winner_seats, state.winner_index)].winning_tile, Enum.at(winner.assigned_winning_hand, -1))
             state
           else state end
+        "_end_function"   -> state # noop
         _                 ->
           IO.puts("Unhandled action #{action}")
           state
@@ -2010,6 +2015,7 @@ defmodule RiichiAdvanced.GameState.Actions do
       duration = interpret_amount(state, context, Enum.at(opts, 0, 1500))
       do_pause = duration > 0
       state = if do_pause do
+        state = broadcast_state_change(state, false)
         state = Map.put(state, :game_active, false)
         state = schedule_actions_before(state, context.seat, context_actions)
         :timer.apply_after(duration, GenServer, :cast, [self(), {:unpause, context.seat}])
@@ -2023,9 +2029,7 @@ defmodule RiichiAdvanced.GameState.Actions do
     else {state, false} end
 
     cond do
-      paused ->
-        state = broadcast_state_change(state, false)
-        state
+      paused -> state
       uninterruptible or not Map.has_key?(state.interruptible_actions, action) ->
         state = for {context, actions} <- context_actions, reduce: state do
           state -> _run_actions(state, actions, context)

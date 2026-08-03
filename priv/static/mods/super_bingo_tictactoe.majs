@@ -1,3 +1,13 @@
+on after_initialization do
+  add_rule("Rules", "Win Condition", "- (Super Bingo) While in riichi, you instantly win with haneman if you discard three sevens in a row.", -100)
+  add_rule("Rules", "Win Condition", "- (Super Bingo) While in riichi, you instantly win with haneman if your riichi discards form a line of three sevens in your discards (orthogonal or diagonal).", -100)
+  add_rule("6 Han", "Bingo", """
+    6 han if you discard three sevens in a row while in riichi, or if your riichi discards form a line of three sevens in your discard pool (orthogonal or diagonal).
+    %{row1}
+    %{row2}
+    %{row3}
+    """, %{row1: ~t"1z2z7s2m7z6z", row2: ~t"4m8m2p7p1p3s", row3: ~t"6m4m2s1z7s"})
+end
 
 # 2 ways to win haneman:
 # - last 3 post-riichi discards were 7p7s (even if called)

@@ -1,4 +1,9 @@
 # kansai chiitoi is the only thing not covered by mods in @modpack (constants.ex)
+
+on after_initialization do
+  add_rule("1 Han", "Kansai Chiitoitsu", "1 han if you win with seven pairs with a repeated pair. 2 han for two repeated pairs, yakuman for three.")
+end
+
 define_yaku meta_yaku, "Kansai Chiitoitsu", [1, "Han"], has_existing_yaku("Chiitoitsu") and match(["hand", "calls", "winning_tile"], ~m"quad:1")
 define_yaku meta_yaku, "Kansai Chiitoitsu", [2, "Han"], has_existing_yaku("Chiitoitsu") and match(["hand", "calls", "winning_tile"], ~m"quad:2")
 define_yaku meta_yakuman, "Kansai Chiitoitsu", [1, "★"], has_existing_yaku("Chiitoitsu") and match(["hand", "calls", "winning_tile"], ~m"quad:3")

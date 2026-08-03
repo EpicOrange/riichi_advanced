@@ -654,10 +654,17 @@ defmodule RiichiAdvanced.Constants do
       display_name: "Super Bingo Sanma",
       tutorial_link: "https://fansubbing.com/2024/03/10/super-bingo-sanma-rules/",
       ruleset: "sanma",
-      mods: ["kansai_flowers", "zan_scoring"],
-      post_mods: ["super_bingo", "super_bingo_tictactoe", "super_bingo_tulips"],
+      mods: [
+        "kansai_flowers",
+        "zan_scoring",
+        "kansai_draw",
+        %{name: "shuugi", config: %{worth: 1000, starting_shuugi: 1000, pao_pays_all: true}},
+        "super_bingo",
+        "super_bingo_tictactoe",
+        "super_bingo_tulips"
+      ],
       default_mods: [
-        %{name: "honba", config: %{value: 2000}},
+        %{name: "honba", config: %{value: 1000}},
         %{name: "tobi", config: %{below: 1}},
         %{name: "aka", config: %{man: 0, pin: 1, sou: 1}},
         %{name: "kin", config: %{man: 0, pin: 1, sou: 1}},
