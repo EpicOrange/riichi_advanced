@@ -1,0 +1,26 @@
+if defined("star_suit") do
+
+  define_button void_stars,
+    display_name: "No Stars",
+    show_when: status("round_start"),
+    unskippable: true,
+    cancellable: false
+    do
+      big_text("No Stars")
+      set_status("void_stars")
+      if seat_is("east") do reveal_tile("1z") end
+      if seat_is("south") do reveal_tile("2z") end
+      if seat_is("west") do reveal_tile("3z") end
+      if seat_is("north") do reveal_tile("4z") end
+      reveal_tile("1t")
+      reveal_tile("3x")
+      unset_status("round_start")
+      move_tiles("draw", "hand")
+      recalculate_buttons
+    end
+
+  on after_initialization do
+    add_rule("Tiles", "Stars", "The wall also contains four each of the 1 to 9 of Stars %{stars}", %{stars: ["1t", "2t", "3t", "4t", "5t", "6t", "7t", "8t", "9t"]})
+  end
+
+end

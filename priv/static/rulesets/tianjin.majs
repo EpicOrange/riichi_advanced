@@ -1,7 +1,9 @@
-require "renchan"
-
 set display_name, "Tianjin Mahjong"
 set tutorial_link, "https://mahjongpros.com/blogs/how-to-play/beginners-guide-to-tianjin-mahjong"
+require "renchan"
+require "global_mods"
+require "default_auto_buttons"
+
 set wall, ["1m", "1m", "1m", "1m",
            "2m", "2m", "2m", "2m",
            "3m", "3m", "3m", "3m",

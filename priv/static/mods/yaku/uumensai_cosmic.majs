@@ -8,8 +8,9 @@ end
 
 define_match uumensai_win, ~m"exhaustive, (shuntsu koutsu kontsu_123 kontsu_124 kontsu_134 kontsu_234):4, pair:1"
 
-# remove existing uumensai
-replace_yaku yaku, "Uumensai", [2, "Han"],
+# remove existing uumensai; cosmic version forbids suited kontsu for uumensai
+remove_yaku yaku, "Uumensai"
+define_yaku yaku, "Uumensai", [2, "Han"],
       match(["hand", "calls", "winning_tile"], ["uumensai_win"])
   and match(["hand", "calls", "winning_tile"], ~m"""
     (1m 2m 3m 4m 5m 6m 7m 8m 9m):1,

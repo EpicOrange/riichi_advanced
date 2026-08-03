@@ -205,14 +205,14 @@
 }
 |
 # Other calls still have precedence over Sextets
-.buttons."1_am_pung"."precedence_over" += ["am_sextet"]
+if .buttons."1_am_pung" then .buttons."1_am_pung"."precedence_over" += ["am_sextet"] else . end
 |
-.buttons."2_am_kong"."precedence_over" += ["am_sextet"]
+if .buttons."2_am_kong" then .buttons."2_am_kong"."precedence_over" += ["am_sextet"] else . end
 |
-.buttons."3_am_quint"."precedence_over" += ["am_sextet"]
+if .buttons."3_am_quint" then .buttons."3_am_quint"."precedence_over" += ["am_sextet"] else . end
 |
-.buttons."mahjong_heavenly"."precedence_over" += ["am_sextet"]
+if .buttons."mahjong_heavenly" then .buttons."mahjong_heavenly"."precedence_over" += ["am_sextet"] else . end
 |
-.buttons."mahjong_draw"."precedence_over" += ["am_sextet"]
+if .buttons."mahjong_draw" then .buttons."mahjong_draw"."precedence_over" += ["am_sextet"] else . end
 |
-.buttons."mahjong_discard"."precedence_over" += ["am_sextet"]
+if .buttons."mahjong_discard" then .buttons."mahjong_discard"."precedence_over" += ["am_sextet"] else . end

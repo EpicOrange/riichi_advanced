@@ -1,3 +1,4 @@
+require "global_mods"
 set display_name, "Malaysian"
 set tutorial_link, "https://www.sloperama.com/mahjongg/malaysian.html"
 

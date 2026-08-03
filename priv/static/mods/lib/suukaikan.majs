@@ -1,0 +1,21 @@
+on after_initialization do
+  add_rule("Rules", "Suukaikan", "If fourth kans have been declared (not all by the same player), the game ends in an abortive draw.")
+end
+
+def check_suukantsu do
+  if match(["calls"], ~m"(daiminkan ankan kakan):4") do
+    set_status("suukantsu")
+  end
+end
+
+apply append, "buttons.daiminkan.actions" do check_suukantsu end
+apply append, "buttons.ankan.actions" do check_suukantsu end
+apply append, "buttons.kakan.actions" do check_suukantsu end
+
+# unless anyone is suukantsu, trigger draw on fourth global kan
+on before_turn_change do
+  if not_anyone_status("suukantsu") and match(["all_calls"], ~m"(daiminkan ankan kakan):4") do
+    pause(1000)
+    abortive_draw("Suukaikan")
+  end
+end

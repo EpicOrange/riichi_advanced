@@ -1,8 +1,6 @@
 define_base_ruleset riichi
-
 set display_name, "Sanma"
 set tutorial_link, "https://github.com/EpicOrange/riichi_advanced/blob/main/documentation/sanma.md"
-
 require "sanma_presets"
 
 define "sanma"

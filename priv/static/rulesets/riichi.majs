@@ -12,8 +12,8 @@ require "standard_sets"
 require "global_mods"
 require "standard_wall"
 require "default_auto_buttons"
-require "riichi_kan" # also adds chankan and yaku like suukantsu
 require "riichi_scoring"
+require "riichi_kan" # adds kan fu for riichi_scoring, also adds chankan and yaku like suukantsu
 
 define_set iipeikou, ~s"0 1 2, 0 1 2"
 define_set ittsuu, ~s"0 1 2, 3 4 5, 6 7 8"
@@ -136,80 +136,23 @@ define_yaku_precedence "Kokushi Musou Juusan Menmachi", ["Kokushi Musou"]
 define_yaku_precedence "Daisuushii", ["Shousuushii"]
 define_yaku_precedence "yakuman", ["yaku", "meta_yaku", "extra_yaku"]
 
-def calculate_fu do
-  if fu == 0 do
-    set_counter("fu", "minipoints") do
-      # score calls
-      convert_calls(@calls_fu)
-      remove_calls(["tanyaohai"])
-      convert_calls(@calls_fu)
-      remove_calls
-
-      # now remove all closed groups
-      remove_groups(@winning_groups_fu)
-      remove_groups(@groups_fu)
-      prune(method: "tile_count", num_tiles: [1,4,7,10])
-      remove_groups(@groups_fu)
-      prune(method: "tile_count", num_tiles: [1,4,7,10])
-      remove_groups(@groups_fu)
-      prune(method: "tile_count", num_tiles: [1,4,7,10])
-      remove_groups(@groups_fu)
-      prune(method: "tile_count", num_tiles: [1,4,7,10])
-
-      # only retain configurations with 0 tiles remaining
-      retain_empty_hands
-
-      # add 1000 to pinfu hands so we prioritize pinfu later
-      add(1000, minipoints_equals(0))
-
-      # base 20
-      add(20)
-
-      # tsumo +2 (except closed pinfu tsumo)
-      add(2, won_by_draw and (minipoints_at_most(999) or not @closed_hand))
-
-      # closed ron +10 and open pinfu ron +10
-      add(10, not_won_by_draw and @closed_hand)
-      add(10, not_won_by_draw and not @closed_hand and minipoints_at_least(1000))
-
-      # take max, then subtract 1000 from pinfu hands
-      take_maximum
-      add(-1000, minipoints_at_least(1000))
-
-      # round up to nearest 10
-      round_up(10)
-
-      # add original hand (for special hands like chiitoitsu and kokushi)
-      add_original_hand
-
-      # chiitoitsu
-      add(25, minipoints_equals(0) and match(["hand", "calls", "winning_tile"], ~m"pair:7"))
-
-      # kokushi
-      add(40, not_won_by_draw and @closed_hand and minipoints_equals(0) and match(["hand", "calls", "winning_tile"], ["kokushi_win"]))
-      add(30, minipoints_equals(0) and match(["hand", "calls", "winning_tile"], ["kokushi_win"]))
-      take_maximum
-    end
-  end
-end
-
 set score_calculation, %{
-    yaku_lists: ["yaku", "meta_yaku", "extra_yaku", "yakuman", "meta_yakuman"],
-    extra_yaku_lists: ["extra_yaku"],
-    right_display: "minipoints",
-    point_name: "Han",
-    point2_name: "★",
-    shuugi_name: "⛀",
-    minipoint_name: "Fu",
-    win_by_discard_label: "Ron",
-    win_by_draw_label: "Tsumo",
-    win_by_discard_name: "Ron",
-    win_by_discard_name_2: "Double Ron",
-    win_by_discard_name_3: "Triple Ron",
-    win_by_draw_name: "Tsumo",
-    triple_win_draw_name: "Sanchahou",
-    exhaustive_draw_name: "Ryuukyoku"
-  }
+  yaku_lists: ["yaku", "meta_yaku", "extra_yaku", "yakuman", "meta_yakuman"],
+  extra_yaku_lists: ["extra_yaku"],
+  right_display: "minipoints",
+  point_name: "Han",
+  point2_name: "★",
+  shuugi_name: "⛀",
+  minipoint_name: "Fu",
+  win_by_discard_label: "Ron",
+  win_by_draw_label: "Tsumo",
+  win_by_discard_name: "Ron",
+  win_by_discard_name_2: "Double Ron",
+  win_by_discard_name_3: "Triple Ron",
+  win_by_draw_name: "Tsumo",
+  triple_win_draw_name: "Sanchahou",
+  exhaustive_draw_name: "Ryuukyoku"
+}
 
 def turn_cleanup do
   # unset furiten before turn change
@@ -233,53 +176,6 @@ def check_tenpai do
     set_status("tenpai")
   else
     unset_status("tenpai")
-  end
-end
-
-define_const calls_fu, %{pon: 2}
-define_const winning_groups_fu, [
-  # kanchan
-  %{groups: ~s"-1 0@winning_tile 1", value: 2},
-  # penchan
-  %{groups: ~s"0@winning_tile -1@tanyao -2@terminal", value: 2},
-  %{groups: ~s"0@winning_tile 1@tanyao 2@terminal", value: 2},
-  # ryanmen
-  %{groups: ~s"0@winning_tile -1@tanyao -2@tanyao"},
-  %{groups: ~s"0@winning_tile 1@tanyao 2@tanyao"},
-  # shanpon
-  %{groups: ~s"0@tanyao 0@tanyao 0@winning_tile&ron", value: 2},
-  %{groups: ~s"0@yaochuu 0@yaochuu 0@winning_tile&ron", value: 4},
-  %{groups: ~s"0@tanyao 0@tanyao 0@winning_tile&tsumo", value: 4},
-  %{groups: ~s"0@yaochuu 0@yaochuu 0@winning_tile&tsumo", value: 8},
-  # tanki
-  %{groups: ~s"0@not_yakuhai 0@winning_tile", value: 2},
-  %{groups: ~s"0@prevalent 0@winning_tile | 0@seat 0@winning_tile | 5z 5z@winning_tile | 6z 6z@winning_tile | 7z 7z@winning_tile", value: 4}
-]
-define_const groups_fu, [
-  %{groups: ~s"0 1 2"},
-  %{groups: ~s"0@tanyao 0@tanyao 0@tanyao", value: 4},
-  %{groups: ~s"0@yaochuu 0@yaochuu 0@yaochuu", value: 8},
-  # pair
-  # for pinfu reasons, only non-yakuhai can be removed for 0 value
-  %{groups: ~s"0@not_yakuhai 0@not_yakuhai"},
-  %{groups: ~s"0@prevalent 0@prevalent | 0@seat 0@seat | 5z 5z | 6z 6z | 7z 7z", value: 2}
-]
-define_const always_yakuhai, ["5z", "6z", "7z"]
-
-def add_scoring_attrs, append: true do
-  tag_tiles("not_yakuhai", "all")
-  untag_tiles("not_yakuhai", @always_yakuhai)
-  if round_wind_is("east") or seat_is("east") do untag_tiles("not_yakuhai", "1z") end
-  if round_wind_is("south") or seat_is("south") do untag_tiles("not_yakuhai", "2z") end
-  if round_wind_is("west") or seat_is("west") do untag_tiles("not_yakuhai", "3z") end
-  if round_wind_is("north") or seat_is("north") do untag_tiles("not_yakuhai", "4z") end
-  add_attr_tagged("not_yakuhai", "_not_yakuhai")
-  # tag winning tile with some attributes
-  add_attr(["winning_tile"], ["_winning_tile"])
-  if won_by_draw do
-    add_attr(["winning_tile"], ["_tsumo"])
-  else
-    add_attr(["winning_tile"], ["_ron"])
   end
 end
 
@@ -407,12 +303,10 @@ on after_turn_change do
     pause(1000)
     ryuukyoku("Ryuukyoku", "ryuukyoku")
   else
-    if not_game_start do
-      discard_passed
-    end
+    if not_game_start do discard_passed end
     draw
   end
-  # unset furiten (mostly so show_waits doesn't complain)
+  # unset furiten (mostly so show_waits mod doesn't complain)
   unset_status("furiten")
 end
 
@@ -421,14 +315,8 @@ on before_call do
   unset_status_all("discards_empty")
 end
 
-on before_win do
-  noop
-end
-
-on before_scoring do
-  add_scoring_attrs
-  calculate_fu
-end
+# so mods can add onto it
+on before_win do noop end
 
 on after_start do
   set_status_all("discards_empty")
@@ -542,7 +430,7 @@ define_mod wareme, order: 1, name: "Wareme", desc: "In each round, the player wh
 define_mod aotenjou, order: 2, name: "Aotenjou", desc: "Removes limit hands. Score grows exponentially with han according to the formula 4 * fu * 2^(2+han). Not recommended with tobi enabled."
 define_mod yakitori, name: "Yakitori", desc: "If you do not win any hands by the end of the game, you pay each player a penalty."
 config_mod yakitori, name: "penalty", values: [1000,2000,3000,4000,5000,6000,7000,8000,9000,10000,15000,20000,25000,30000], default: 4000
-define_mod kansai_chiitoitsu, name: "Kansai Chiitoitsu", desc: "Chiitoitsu now allows repeated pairs."
+define_mod "yaku/kansai_chiitoitsu", name: "Kansai Chiitoitsu", desc: "Chiitoitsu now allows repeated pairs."
 define_mod min_han, order: 1, name: "Minimum Han", desc: "Minimum han required to win."
 config_mod min_han, name: "min", values: [1, 2, 3, 4, "Mangan", "Yakuman"], default: 1
 config_mod min_han, name: "han", values: ["Han"], default: "Han"
@@ -1021,7 +909,7 @@ define_preset "Just Like Modded Minecraft", [
   "pao",
   "pao_suukantsu",
   "pao_rinshan",
-  "kansai_chiitoitsu",
+  "yaku/kansai_chiitoitsu",
   "kokushi_ankan_chankan",
   "first_gets_riichi_sticks",
   %{name: "suufon_renda", config: %{name: "Suufon Renda"}},

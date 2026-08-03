@@ -1,0 +1,422 @@
+on after_initialization do
+  add_rule("Tiles", "Galaxy Mahjong", "One of each tile is replaced with a blue 'galaxy' tile that acts as a wildcard of its number. For example, %{galaxy_3s} can be used as any of %{threes}. Galaxy winds are wind wildcards, and galaxy dragons are dragon wildcards.", %{galaxy_3s: ["13s"], threes: ["3s", "3p", "3m"]}, -99)
+  add_rule("Rules", "Win Condition", "- (Galaxy Mahjong) You have 14 galaxy tiles.", -100)
+  add_rule("Yakuman", "Milky Way", "(Galaxy Mahjong) Having any 14 galaxy tiles awards the Milky Way yakuman.")
+  update_rule("Yakuman", "Milky Way", "%{example_hand}", %{example_hand: ["11m", "15m", "16m", "19m", "12p", "14p", "17p", "11s", "13s", "17s", "12z", "14z", "3x", "17z"]})
+end
+
+# first, replace one of each tile in the wall with a galaxy tile
+
+replace 1, "wall", "1m", "11m"
+replace 1, "wall", "2m", "12m"
+replace 1, "wall", "3m", "13m"
+replace 1, "wall", "4m", "14m"
+replace 1, "wall", "5m", "15m"
+replace 1, "wall", "6m", "16m"
+replace 1, "wall", "7m", "17m"
+replace 1, "wall", "8m", "18m"
+replace 1, "wall", "9m", "19m"
+replace 1, "wall", "1p", "11p"
+replace 1, "wall", "2p", "12p"
+replace 1, "wall", "3p", "13p"
+replace 1, "wall", "4p", "14p"
+replace 1, "wall", "5p", "15p"
+replace 1, "wall", "6p", "16p"
+replace 1, "wall", "7p", "17p"
+replace 1, "wall", "8p", "18p"
+replace 1, "wall", "9p", "19p"
+replace 1, "wall", "1s", "11s"
+replace 1, "wall", "2s", "12s"
+replace 1, "wall", "3s", "13s"
+replace 1, "wall", "4s", "14s"
+replace 1, "wall", "5s", "15s"
+replace 1, "wall", "6s", "16s"
+replace 1, "wall", "7s", "17s"
+replace 1, "wall", "8s", "18s"
+replace 1, "wall", "9s", "19s"
+replace 1, "wall", "1z", "11z"
+replace 1, "wall", "2z", "12z"
+replace 1, "wall", "3z", "13z"
+replace 1, "wall", "4z", "14z"
+replace 1, "wall", "5z", "15z"
+replace 1, "wall", "6z", "16z"
+replace 1, "wall", "7z", "17z"
+if defined("star_suit") do
+  replace 1, "wall", "1t", "11t"
+  replace 1, "wall", "2t", "12t"
+  replace 1, "wall", "3t", "13t"
+  replace 1, "wall", "4t", "14t"
+  replace 1, "wall", "5t", "15t"
+  replace 1, "wall", "6t", "16t"
+  replace 1, "wall", "7t", "17t"
+  replace 1, "wall", "8t", "18t"
+  replace 1, "wall", "9t", "19t"
+end
+if defined("ten") do
+  replace 1, "wall", "10m", "110m"
+  replace 1, "wall", "10p", "110p"
+  replace 1, "wall", "10s", "110s"
+  if defined("star_suit") do
+    replace 1, "wall", "10t", "110t"
+  end
+end
+if defined("blue_dragon") do
+  replace 1, "wall", "0z", "10z"
+end
+
+# add joker rules
+on after_start do
+  set_tile_alias_all(["11m"], [["1m","original"],"1p","1s"])
+  set_tile_alias_all(["12m"], [["2m","original"],"2p","2s"])
+  set_tile_alias_all(["13m"], [["3m","original"],"3p","3s"])
+  set_tile_alias_all(["14m"], [["4m","original"],"4p","4s"])
+  set_tile_alias_all(["15m"], [["5m","original"],"5p","5s"])
+  set_tile_alias_all(["16m"], [["6m","original"],"6p","6s"])
+  set_tile_alias_all(["17m"], [["7m","original"],"7p","7s"])
+  set_tile_alias_all(["18m"], [["8m","original"],"8p","8s"])
+  set_tile_alias_all(["19m"], [["9m","original"],"9p","9s"])
+  set_tile_alias_all(["11p"], ["1m",["1p","original"],"1s"])
+  set_tile_alias_all(["12p"], ["2m",["2p","original"],"2s"])
+  set_tile_alias_all(["13p"], ["3m",["3p","original"],"3s"])
+  set_tile_alias_all(["14p"], ["4m",["4p","original"],"4s"])
+  set_tile_alias_all(["15p"], ["5m",["5p","original"],"5s"])
+  set_tile_alias_all(["16p"], ["6m",["6p","original"],"6s"])
+  set_tile_alias_all(["17p"], ["7m",["7p","original"],"7s"])
+  set_tile_alias_all(["18p"], ["8m",["8p","original"],"8s"])
+  set_tile_alias_all(["19p"], ["9m",["9p","original"],"9s"])
+  set_tile_alias_all(["11s"], ["1m","1p",["1s","original"]])
+  set_tile_alias_all(["12s"], ["2m","2p",["2s","original"]])
+  set_tile_alias_all(["13s"], ["3m","3p",["3s","original"]])
+  set_tile_alias_all(["14s"], ["4m","4p",["4s","original"]])
+  set_tile_alias_all(["15s"], ["5m","5p",["5s","original"]])
+  set_tile_alias_all(["16s"], ["6m","6p",["6s","original"]])
+  set_tile_alias_all(["17s"], ["7m","7p",["7s","original"]])
+  set_tile_alias_all(["18s"], ["8m","8p",["8s","original"]])
+  set_tile_alias_all(["19s"], ["9m","9p",["9s","original"]])
+  set_tile_alias_all(["11z"], [["1z","original"],"2z","3z","4z"])
+  set_tile_alias_all(["12z"], ["1z",["2z","original"],"3z","4z"])
+  set_tile_alias_all(["13z"], ["1z","2z",["3z","original"],"4z"])
+  set_tile_alias_all(["14z"], ["1z","2z","3z",["4z","original"]])
+  set_tile_alias_all(["15z"], [["5z","original"],"6z","7z","0z"])
+  set_tile_alias_all(["16z"], ["5z",["6z","original"],"7z","0z"])
+  set_tile_alias_all(["17z"], ["5z","6z",["7z","original"],"0z"])
+end
+if defined("star_suit") do
+  on after_start do
+    set_tile_alias_all(["11m"], ["1t"])
+    set_tile_alias_all(["12m"], ["2t"])
+    set_tile_alias_all(["13m"], ["3t"])
+    set_tile_alias_all(["14m"], ["4t"])
+    set_tile_alias_all(["15m"], ["5t"])
+    set_tile_alias_all(["16m"], ["6t"])
+    set_tile_alias_all(["17m"], ["7t"])
+    set_tile_alias_all(["18m"], ["8t"])
+    set_tile_alias_all(["19m"], ["9t"])
+    set_tile_alias_all(["11p"], ["1t"])
+    set_tile_alias_all(["12p"], ["2t"])
+    set_tile_alias_all(["13p"], ["3t"])
+    set_tile_alias_all(["14p"], ["4t"])
+    set_tile_alias_all(["15p"], ["5t"])
+    set_tile_alias_all(["16p"], ["6t"])
+    set_tile_alias_all(["17p"], ["7t"])
+    set_tile_alias_all(["18p"], ["8t"])
+    set_tile_alias_all(["19p"], ["9t"])
+    set_tile_alias_all(["11s"], ["1t"])
+    set_tile_alias_all(["12s"], ["2t"])
+    set_tile_alias_all(["13s"], ["3t"])
+    set_tile_alias_all(["14s"], ["4t"])
+    set_tile_alias_all(["15s"], ["5t"])
+    set_tile_alias_all(["16s"], ["6t"])
+    set_tile_alias_all(["17s"], ["7t"])
+    set_tile_alias_all(["18s"], ["8t"])
+    set_tile_alias_all(["19s"], ["9t"])
+    set_tile_alias_all(["11t"], ["1m","1p","1s",["1t","original"]])
+    set_tile_alias_all(["12t"], ["2m","2p","2s",["2t","original"]])
+    set_tile_alias_all(["13t"], ["3m","3p","3s",["3t","original"]])
+    set_tile_alias_all(["14t"], ["4m","4p","4s",["4t","original"]])
+    set_tile_alias_all(["15t"], ["5m","5p","5s",["5t","original"]])
+    set_tile_alias_all(["16t"], ["6m","6p","6s",["6t","original"]])
+    set_tile_alias_all(["17t"], ["7m","7p","7s",["7t","original"]])
+    set_tile_alias_all(["18t"], ["8m","8p","8s",["8t","original"]])
+    set_tile_alias_all(["19t"], ["9m","9p","9s",["9t","original"]])
+  end
+end
+if defined("ten") do
+  on after_start do
+    set_tile_alias_all(["110m"], [["10m","original"],"10s","10p"])
+    set_tile_alias_all(["110p"], ["10m",["10s","original"],"10p"])
+    set_tile_alias_all(["110s"], ["10m","10s",["10p","original"]])
+  end
+  if defined("star_suit") do
+    on after_start do
+      set_tile_alias_all(["110m"], ["10t"])
+      set_tile_alias_all(["110p"], ["10t"])
+      set_tile_alias_all(["110s"], ["10t"])
+      set_tile_alias_all(["110t"], ["10m", "10p", "10s", ["10t","original"]])
+    end
+  end
+end
+if defined("blue_dragon") do
+  on after_start do
+    set_tile_alias_all(["10z"], [["0z","original"],"6z","7z","5z"])
+  end
+end
+
+# expand dora indicator map, if it exists
+if defined("dora") do
+  # first do suited tiles
+  if defined("ten") do # 10 -> 1
+    apply merge, "dora_indicators", %{
+      "11m": ["2m", "2p", "2s"],
+      "12m": ["3m", "3p", "3s"],
+      "13m": ["4m", "4p", "4s"],
+      "14m": ["5m", "5p", "5s"],
+      "15m": ["6m", "6p", "6s"],
+      "16m": ["7m", "7p", "7s"],
+      "17m": ["8m", "8p", "8s"],
+      "18m": ["9m", "9p", "9s"],
+      "19m": ["10m", "10p", "10s"],
+      "110m": ["1m", "1p", "1s"],
+      "11p": ["2m", "2p", "2s"],
+      "12p": ["3m", "3p", "3s"],
+      "13p": ["4m", "4p", "4s"],
+      "14p": ["5m", "5p", "5s"],
+      "15p": ["6m", "6p", "6s"],
+      "16p": ["7m", "7p", "7s"],
+      "17p": ["8m", "8p", "8s"],
+      "18p": ["9m", "9p", "9s"],
+      "19p": ["10m", "10p", "10s"],
+      "110p": ["1m", "1p", "1s"],
+      "11s": ["2m", "2p", "2s"],
+      "12s": ["3m", "3p", "3s"],
+      "13s": ["4m", "4p", "4s"],
+      "14s": ["5m", "5p", "5s"],
+      "15s": ["6m", "6p", "6s"],
+      "16s": ["7m", "7p", "7s"],
+      "17s": ["8m", "8p", "8s"],
+      "18s": ["9m", "9p", "9s"],
+      "19s": ["10m", "10p", "10s"],
+      "110s": ["1m", "1p", "1s"],
+    }
+    if defined("star_suit") do
+      apply merge, "dora_indicators", %{
+        "11m": ["2t"],
+        "12m": ["3t"],
+        "13m": ["4t"],
+        "14m": ["5t"],
+        "15m": ["6t"],
+        "16m": ["7t"],
+        "17m": ["8t"],
+        "18m": ["9t"],
+        "19m": ["10t"],
+        "110m": ["1t"],
+        "11p": ["2t"],
+        "12p": ["3t"],
+        "13p": ["4t"],
+        "14p": ["5t"],
+        "15p": ["6t"],
+        "16p": ["7t"],
+        "17p": ["8t"],
+        "18p": ["9t"],
+        "19p": ["10t"],
+        "110p": ["1t"],
+        "11s": ["2t"],
+        "12s": ["3t"],
+        "13s": ["4t"],
+        "14s": ["5t"],
+        "15s": ["6t"],
+        "16s": ["7t"],
+        "17s": ["8t"],
+        "18s": ["9t"],
+        "19s": ["10t"],
+        "110s": ["1t"],
+        "11t": ["2m", "2p", "2s", "2t"],
+        "12t": ["3m", "3p", "3s", "3t"],
+        "13t": ["4m", "4p", "4s", "4t"],
+        "14t": ["5m", "5p", "5s", "5t"],
+        "15t": ["6m", "6p", "6s", "6t"],
+        "16t": ["7m", "7p", "7s", "7t"],
+        "17t": ["8m", "8p", "8s", "8t"],
+        "18t": ["9m", "9p", "9s", "9t"],
+        "19t": ["10m", "10p", "10s", "10t"],
+        "110t": ["1m", "1p", "1s", "1t"],
+      }
+    end
+  else # 9 -> 1
+    apply merge, "dora_indicators", %{
+      "11m": ["2m", "2p", "2s"],
+      "12m": ["3m", "3p", "3s"],
+      "13m": ["4m", "4p", "4s"],
+      "14m": ["5m", "5p", "5s"],
+      "15m": ["6m", "6p", "6s"],
+      "16m": ["7m", "7p", "7s"],
+      "17m": ["8m", "8p", "8s"],
+      "18m": ["9m", "9p", "9s"],
+      "19m": ["1m", "1p", "1s"],
+      "11p": ["2m", "2p", "2s"],
+      "12p": ["3m", "3p", "3s"],
+      "13p": ["4m", "4p", "4s"],
+      "14p": ["5m", "5p", "5s"],
+      "15p": ["6m", "6p", "6s"],
+      "16p": ["7m", "7p", "7s"],
+      "17p": ["8m", "8p", "8s"],
+      "18p": ["9m", "9p", "9s"],
+      "19p": ["1m", "1p", "1s"],
+      "11s": ["2m", "2p", "2s"],
+      "12s": ["3m", "3p", "3s"],
+      "13s": ["4m", "4p", "4s"],
+      "14s": ["5m", "5p", "5s"],
+      "15s": ["6m", "6p", "6s"],
+      "16s": ["7m", "7p", "7s"],
+      "17s": ["8m", "8p", "8s"],
+      "18s": ["9m", "9p", "9s"],
+      "19s": ["1m", "1p", "1s"],
+    }
+    if defined("star_suit") do
+      apply merge, "dora_indicators", %{
+        "11m": ["2t"],
+        "12m": ["3t"],
+        "13m": ["4t"],
+        "14m": ["5t"],
+        "15m": ["6t"],
+        "16m": ["7t"],
+        "17m": ["8t"],
+        "18m": ["9t"],
+        "19m": ["1t"],
+        "11p": ["2t"],
+        "12p": ["3t"],
+        "13p": ["4t"],
+        "14p": ["5t"],
+        "15p": ["6t"],
+        "16p": ["7t"],
+        "17p": ["8t"],
+        "18p": ["9t"],
+        "19p": ["1t"],
+        "11s": ["2t"],
+        "12s": ["3t"],
+        "13s": ["4t"],
+        "14s": ["5t"],
+        "15s": ["6t"],
+        "16s": ["7t"],
+        "17s": ["8t"],
+        "18s": ["9t"],
+        "19s": ["1t"],
+        "11t": ["2m", "2p", "2s", "2t"],
+        "12t": ["3m", "3p", "3s", "3t"],
+        "13t": ["4m", "4p", "4s", "4t"],
+        "14t": ["5m", "5p", "5s", "5t"],
+        "15t": ["6m", "6p", "6s", "6t"],
+        "16t": ["7m", "7p", "7s", "7t"],
+        "17t": ["8m", "8p", "8s", "8t"],
+        "18t": ["9m", "9p", "9s", "9t"],
+        "19t": ["1m", "1p", "1s", "1t"],
+      }
+    end
+  end
+
+  # then do honor tiles
+  apply merge, "dora_indicators", %{
+    "11z": ["1z", "2z", "3z", "4z"],
+    "12z": ["1z", "2z", "3z", "4z"],
+    "13z": ["1z", "2z", "3z", "4z"],
+    "14z": ["1z", "2z", "3z", "4z"],
+    "15z": ["5z", "6z", "7z", "0z"],
+    "16z": ["5z", "6z", "7z", "0z"],
+    "17z": ["5z", "6z", "7z", "0z"]
+  }
+  if defined("blue_dragon") do
+    apply merge, "dora_indicators", %{"10z": ["5z", "6z", "7z", "0z"]}
+  end
+  if defined("sanma") do
+    if defined("ten") do
+      apply merge, "dora_indicators", %{"11m": ["10m", "10p", "10s"]}
+      if defined("star_suit") do
+        apply merge, "dora_indicators", %{"11t": ["10t"]}
+      end
+    else
+      apply merge, "dora_indicators", %{"11m": ["9m", "9p", "9s"]}
+      if defined("star_suit") do
+        apply merge, "dora_indicators", %{"11t": ["10t"]}
+      end
+    end
+  end
+end
+
+# tile indices
+if defined("star_suit") do
+  apply merge, "custom_style.tile_indices", %{
+    "11t": "1",
+    "12t": "2",
+    "13t": "3",
+    "14t": "4",
+    "15t": "5",
+    "16t": "6",
+    "17t": "7",
+    "18t": "8",
+    "19t": "9",
+  }
+  if defined("ten") do
+    apply merge, "custom_style.tile_indices", %{"110t": "T"}
+  end
+end
+if defined("ten") do
+  apply merge, "custom_style.tile_indices", %{
+    "110m": "T",
+    "110p": "T",
+    "110s": "T",
+  }
+end
+if defined("blue_dragon") do
+  apply merge, "custom_style.tile_indices", %{"10z": "B"}
+end
+
+# define the set of galaxy tiles
+define_set galaxy_tile, ~s"11m|12m|13m|14m|15m|16m|17m|18m|19m|110m|11p|12p|13p|14p|15p|16p|17p|18p|19p|110p|11s|12s|13s|14s|15s|16s|17s|18s|19s|110s|10z|11z|12z|13z|14z|15z|16z|17z"
+if defined("star_suit") do
+  apply append, "set_definitions.galaxy_tile", ~s"11t|12t|13t|14t|15t|16t|17t|18t|19t"
+  if defined("ten") do
+    apply append, "set_definitions.galaxy_tile", ~s"110t"
+  end
+end
+if defined("ten") do
+  apply append, "set_definitions.galaxy_tile", ~s"110m|110p|110s"
+end
+if defined("blue_dragon") do
+  apply append, "set_definitions.galaxy_tile", ~s"10z"
+end
+
+# finally done populating the wall with galaxy tiles
+
+# milky way
+define_const milky_way_tenpai, ~m"nojoker, galaxy_tile:13"
+define_const milky_way_tenpai_14, ~m"nojoker, galaxy_tile:13"
+define_const milky_way_win, ~m"nojoker, galaxy_tile:14"
+apply set_append, "tenpai_definition", +@milky_way_tenpai
+apply set_append, "tenpai_14_definition", +@milky_way_tenpai_14
+apply set_append, "win_definition", +@milky_way_win
+define_yaku yakuman, "Milky Way", [1, "★"], non_galaxy_jokers == 0
+
+# ankans are displayed all-face-up
+apply set, "buttons.ankan.call_style.self", [0, 1, 2, 3]
+
+on before_win do
+  add_counter("galaxy_jokers", "count_matches", ["hand", "calls", "winning_tile"], ~m"galaxy_tile:1")
+  set_counter("non_galaxy_jokers", "count_matches", ["hand", "calls", "winning_tile"], ~m"any:1") # count num of tiles in hand
+  non_galaxy_jokers -= galaxy_jokers
+  if non_galaxy_jokers == 0 do
+    fu = 30
+  end
+end
+
+# there is a rule that you gain shuugi equal to the number of galaxy tiles used as their own value,
+# but our current joker solver does not try to maximize galaxy tiles used as their own value
+# so this is not currently possible to implement
+if defined("shuugi") do
+  on after_initialization do
+    update_rule("Shuugi", "Galaxy Tiles", "(Galaxy Mahjong) Every galaxy tile used as its original tile awards one shuugi.")
+  end
+  on before_scoring do
+    set_counter("galaxy_shuugi", "count_matches", ["hand", "calls", "winning_tile"], ~m"any@original:1")
+  end
+  define_yaku shuugi, "Original Galaxy Tile", ["galaxy_shuugi", "⛀"], galaxy_shuugi >= 1
+end

@@ -1,6 +1,8 @@
-.after_initialization.actions += [["add_rule", "Tiles", "Chinitsu", "The wall is composed of 16 copies of each bamboo tile.", -99]]
-|
-[
+on after_initialization do
+  add_rule("Tiles", "Chinitsu", "The wall is composed of 16 copies of each bamboo tile.", -99)
+end
+
+set wall, [
   "1s", "1s", "1s", "1s", "1s", "1s", "1s", "1s", "1s", "1s", "1s", "1s", "1s", "1s", "1s", "1s",
   "2s", "2s", "2s", "2s", "2s", "2s", "2s", "2s", "2s", "2s", "2s", "2s", "2s", "2s", "2s", "2s",
   "3s", "3s", "3s", "3s", "3s", "3s", "3s", "3s", "3s", "3s", "3s", "3s", "3s", "3s", "3s", "3s",
@@ -10,21 +12,24 @@
   "7s", "7s", "7s", "7s", "7s", "7s", "7s", "7s", "7s", "7s", "7s", "7s", "7s", "7s", "7s", "7s",
   "8s", "8s", "8s", "8s", "8s", "8s", "8s", "8s", "8s", "8s", "8s", "8s", "8s", "8s", "8s", "8s",
   "9s", "9s", "9s", "9s", "9s", "9s", "9s", "9s", "9s", "9s", "9s", "9s", "9s", "9s", "9s", "9s"
-] as $wall
-|
-# ten support
-(if any(.wall[]; . == "10s") then
-  $wall + ["10s", "10s", "10s", "10s", "10s", "10s", "10s", "10s", "10s", "10s", "10s", "10s", "10s", "10s", "10s", "10s"]
-else
-  $wall
-end) as $wall
-|
-.wall = $wall
-|
-# skip sichuan voided suit prompt
-if (.buttons | has("void_souzu")) then
-  .after_charleston.actions += [["as", "everyone", [["unset_status", "round_start"], ["set_status", "void_manzu"]]]]
-  |
-  .
-  .buttons |= del(.void_manzu, .void_pinzu, .void_souzu)
-else . end
+]
+
+if defined("ten") do
+  apply append, "wall", ["10s", "10s", "10s", "10s", "10s", "10s", "10s", "10s", "10s", "10s", "10s", "10s", "10s", "10s", "10s", "10s"]
+end
+
+if defined("sichuan") do
+# skip sichuan voided suit prompt, we're voiding manzu always
+  on after_charleston do
+    as everyone do
+      unset_status("round_start")
+      set_status("void_manzu")
+    end
+  end
+  apply delete_key, "buttons", "void_manzu"
+  apply delete_key, "buttons", "void_pinzu"
+  apply delete_key, "buttons", "void_souzu"
+  if defined("star_suit")
+    apply delete_key, "buttons", "void_stars"
+  end
+end

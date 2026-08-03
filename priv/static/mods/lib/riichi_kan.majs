@@ -128,3 +128,5 @@ apply merge, "constants.calls_fu", %{
   daiminkan: 8,
   kakan: 8
 }
+
+apply set_append, "interruptible_actions", ["self_call"]

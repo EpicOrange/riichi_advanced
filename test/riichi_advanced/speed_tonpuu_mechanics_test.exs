@@ -22,7 +22,7 @@ defmodule RiichiAdvanced.YakuTest.SpeedTonpuuMechanics do
     "kiriage_mangan",
     "double_round_wind",
     "yaku/open_riichi",
-    "kansai_chiitoitsu",
+    "yaku/kansai_chiitoitsu",
     "kokushi_ankan_chankan",
     %{name: "yaku/sanrenkou", config: %{
       san_list: "yaku", san_name: "Sanrenkou", san_value: 2, san_han: "Han",
@@ -476,7 +476,7 @@ defmodule RiichiAdvanced.YakuTest.SpeedTonpuuMechanics do
         "east": ["3m", "3m", "4m", "4m", "1p", "1p", "05p", "35p", "27p", "8s", "8s", "2p", "2p"],
         "south": ["1m", "4m", "7m", "2p", "4p", "8p", "3s", "6s", "9s", "1z", "2z", "3z", "4z"],
         "west": ["1m", "4m", "7m", "2p", "4p", "8p", "3s", "6s", "9s", "1z", "2z", "3z", "4z"],
-        "north": ["1m", "3m", "7m", "2p", "4p", "8p", "3s", "6s", "9s", "1z", "2z", "3z", "4z"]
+        "north": ["1m", "3m", "7m", "3p", "4p", "8p", "3s", "6s", "9s", "1z", "2z", "3z", "4z"]
       },
       "starting_draws": ["1p", "7p"]
     }

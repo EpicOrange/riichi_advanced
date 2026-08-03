@@ -1,3 +1,52 @@
+set display_name, "Chinese Classical"
+set tutorial_link, "http://mahjong.wikidot.com/rules:chinese-classical-scoring"
+define_global han, "Fan"
+define_global ankan_name, "Concealed Kong"
+define_global chankan_name, "Hu"
+define_global chii_name, "Chow"
+define_global flower_name, "Flower"
+define_global kan_name, "Kong"
+define_global pon_name, "Pung"
+define_global ron_name, "Hu"
+define_global tsumo_name, "Zimo"
+require "base"
+require "global_mods"
+require "default_auto_buttons"
+require "standard_wall"
+require "framed_5z"
+require "chii"
+require "pon"
+require "kan"
+require "ron", %{scoring_key: "win"}
+require "tsumo", %{scoring_key: "win"}
+require "standard_win"
+require "yaku/yakuhai", %{round_wind_name: "Prevalent Wind", triplet_value: 1}
+require "yaku/chiitoitsu", %{name: "Seven Pairs", value: 1, kansai: true, rules_tab: "4 Fan"}
+require "yaku/chankan", %{name: "Robbing the Kong", value: 1, scoring_key: "win"}
+require "head_bump"
+require "agarirenchan"
+require "default_flowers", %{four_flowers_value: 4, auto_flower_by_default: true, matching_flower_value: 1, undiscardable: true}
+require "yaku/menzentsumo", %{name: "Concealed Hand", value: 1}
+require "yaku/rinshan", %{value: 1, flower_name: "Out on a Replacement", rinshan_name: "Out on a Replacement", double_han: "Limit", double_list: "yakuman", double_name: "Two-Fold Fortune", double_value: 1}
+require "yaku/honitsu", %{chin_name: "Full Flush", chin_value: 4, hon_name: "Half Flush", hon_value: 1}
+require "yaku/ittsuu", %{name: "Pure Straight", value: 1}
+require "yaku/tanyao", %{name: "All Simples", value: 1}
+require "yaku/honroutou", %{chin_name: "All Terminals", chin_value: 1, hon_name: "All Terminals and Honors", hon_value: 1, chin_han: "Limit", chin_list: "yakuman"}
+require "yaku/toitoi", %{name: "All Triplets", value: 1}
+require "yaku/chanta", %{chanta_name: "Outside Hand", chanta_value: 1}
+require "yaku/haitei", %{haitei_name: "Last Tile Draw", haitei_value: 1, houtei_name: "Last Tile Discard", houtei_value: 1}
+require "yaku/sanankou", %{name: "Three Concealed Triplets", value: 1}
+require "yaku/suuankou", %{list: "yakuman", name: "Four Concealed Triplets", value: 1, han: "Limit"}
+require "yaku/suukantsu", %{list: "yakuman", name: "Four Kongs", value: 1, han: "Limit"}
+require "yaku/kokushi", %{list: "yakuman", name: "Thirteen Orphans", value: 1, han: "Limit", rules_tab: "Limit"}
+require "yaku/chuurenpoutou", %{list: "yakuman", name: "Nine Gates", value: 1, han: "Limit", must_wait_9: false}
+require "yaku/tsuuiisou", %{list: "yakuman", name: "All Honors", value: 1, han: "Limit"}
+require "yaku/shousangen", %{dai_name: "Big Three Dragons", dai_value: 1, shou_name: "Little Three Dragons", shou_value: 3, dai_han: "Limit", dai_list: "yakuman"}
+require "yaku/shousuushii", %{dai_name: "Big Four Winds", dai_value: 1, shou_name: "Little Four Winds", shou_value: 1, dai_han: "Limit", dai_list: "yakuman", shou_han: "Limit", shou_list: "yakuman"}
+require "yaku/tenhou", %{chiihou_is_tsumo: true, chiihou_name: "Blessing of Earth", chiihou_value: 1, tenhou_name: "Blessing of Heaven", tenhou_value: 1, chiihou_han: "Limit", chiihou_list: "yakuman", tenhou_han: "Limit", tenhou_list: "yakuman"}
+require "classical_fu"
+require "classical_scoring"
+
 define_yaku yakuman, "Gathering the Plum Blossom from the Roof", [1, "Limit"], status("kan") and match(["winning_tile"], ~m"5p:1")
 define_yaku yakuman, "Scratching a Carrying-Pole", [1, "Limit"], won_by_call and match(["winning_tile"], ~m"2s:1")
 define_yaku yakuman, "Plucking the Moon from the Bottom of the Sea", [1, "Limit"], no_tiles_remaining and won_by_draw and match(["winning_tile"], ~m"1p:1")

@@ -1,4 +1,20 @@
+define_base_ruleset sanma
+set display_name, "Kansai Sanma"
+set tutorial_link, "https://github.com/EpicOrange/riichi_advanced/blob/main/documentation/kansai.md"
 require "renchan"
+require "yaku/sanrenkou", %{san_name: "Sanrenkou", san_value: 2}
+require "yaku/riichi_suurenkou"
+require "yaku/sanpuukou", %{dai_name: "Sanpuukou", dai_value: 2}
+require "yaku/kansai_chiitoitsu"
+apply set_append, "default_mods", [%{name: "tobi", config: %{below: 0}}, "sanma_pei_yakuhai"]
+
+define_yaku yakuman, "Manzu Chinitsu", [1, "★"], winning_hand_consists_of(["1m","2m","3m","4m","5m","6m","7m","8m","9m"]), ["Chinitsu"]
+define_yaku meta_yaku, "Honitsu Chiitoitsu", [6, "Han"], has_existing_yaku("Honitsu", "Chiitoitsu"), ["Honitsu", "Chiitoitsu"]
+define_yaku meta_yakuman, "Chinitsu Chiitoitsu", [1, "★"], has_existing_yaku("Chinitsu", "Chiitoitsu"), ["Chinitsu", "Chiitoitsu"]
+define_yaku_precedence "Tsumo", ["Pinfu"] # tsumo fu invalidates pinfu
+
+# furiten riichi not allowed
+apply append, "buttons.riichi.show_when", status_missing("furiten")
 
 on after_initialization do
   add_rule("Rules", "Initial Score", "(Kansai) Everyone starts with 50000 points.")
@@ -37,7 +53,7 @@ define_yaku_precedence "Manzu Honitsu", ["Honitsu", "Chinitsu"]
 
 # below is mod and preset stuff
 
-remove_mod "kansai_chiitoitsu" # this is preapplied
+remove_mod "yaku/kansai_chiitoitsu" # this is preapplied
 
 define_mod_category "Kansai", prepend: true
 define_mod kansai_draw, name: "Draw To Dora Indicator", category: "Kansai", order: 6, deps: ["dora"], desc: "The game ends once the next draw is the last dora indicator."
@@ -50,7 +66,7 @@ define_mod kansai_40_fu, name: "40 Fu", category: "Kansai", order: 5, conflicts:
 define_mod kansai_shuugi, name: "Zan Shuugi", category: "Kansai", order: 5, deps: ["shuugi"], desc: "Enable zan shuugi: having 4 flowers is 10 chips ron / 5 chips tsumo. Same payment for non-kazoe yakuman."
 define_mod zan_scoring, name: "Zan Scoring", category: "Kansai", order: 5, desc: "Use the zan scoring table."
 
-apply append, "default_mods", ["kansai_draw", "kansai_flowers", "kansai_yaku", "kansai_no_furiten_riichi", "kansai_no_100_sticks", "kansai_30_fu", %{name: "sanma_no_tsumo_loss", config: %{"method" => "half"}}, "kansai_shuugi", "zan_scoring"]
+apply append, "default_mods", ["kansai_draw", "kansai_flowers", "kansai_no_furiten_riichi", "kansai_no_100_sticks", "kansai_30_fu", %{name: "sanma_no_tsumo_loss", config: %{"method" => "half"}}, "kansai_shuugi", "zan_scoring"]
 
 # set default tobi option to below 1
 replace all, "available_mods",
@@ -61,51 +77,3 @@ replace all, "available_mods",
 replace all, "available_mods",
   %{type: "dropdown", name: "is", values: ["Mangan", "Yakuman"], default: "Mangan"},
   %{type: "dropdown", name: "is", values: ["Mangan", "Yakuman"], default: "Yakuman"}
-
-# add zan preset
-define_preset "Zan Sanma", [
-  %{name: "honba", config: %{value: 1000}},
-  %{name: "nagashi", config: %{is: "Yakuman", counts_as: "draw"}},
-  %{name: "tobi", config: %{below: 1}},
-  %{name: "yaku/riichi", config: %{bet: 1000, drawless: true}},
-  %{name: "uma", config: %{_1st: 30, _2nd: 10, _3rd: -10, _4th: -30}},
-  "agarirenchan",
-  "tenpairenchan",
-  "tenpaiyame",
-  "kuikae_nashi",
-  "double_wind_4_fu",
-  "kokushi_ankan_chankan",
-  "first_gets_riichi_sticks",
-  "sanma_no_tsumo_loss",
-  %{name: "suufon_renda", config: %{name: "Suufon Renda"}},
-  "suucha_riichi",
-  "sanchahou",
-  %{name: "kyuushu_kyuuhai", config: %{name: "Kyuushu Kyuuhai"}},
-  %{name: "dora", config: %{start_indicators: 1}},
-  "ura",
-  "kandora",
-  "yaku/open_riichi",
-  "yaku/sanrenkou",
-  "yaku/sanpuukou",
-  %{name: "yaku/riichi_renhou", config: %{is: "Yakuman"}},
-  "yaku/suurenkou",
-  "show_waits",
-  %{name: "shuugi", config: %{worth: 1000, starting_shuugi: 0}},
-  %{name: "shuugi/ippatsu", config: %{chips: 1}},
-  %{name: "shuugi/ura", config: %{chips: 1}},
-  %{name: "shuugi/yakuman", config: %{ron_chips: 10, tsumo_chips: 5, per_yakuman: false}},
-  %{name: "min_han", config: %{min: 1, han: "Han"}},
-  "cancellable_riichi",
-  "yaku/ippatsu",
-  %{name: "shiro_pocchi", config: %{ippatsu_only: false}},
-  %{name: "aka", config: %{man: 4, pin: 4, sou: 4}},
-  %{name: "shuugi/aka", config: %{chips: 1, closed_only: false}},
-  "shiny_dora",
-  "kansai_draw",
-  "kansai_flowers",
-  "kansai_no_100_sticks",
-  "kansai_40_fu",
-  "kansai_shuugi",
-  "zan_scoring",
-  "kansai_no_furiten_riichi"
-]

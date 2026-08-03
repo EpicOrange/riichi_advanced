@@ -5,3 +5,5 @@ end
 define_const can_chankan,
   status("can_chankan", as: "caller")
   or (last_call_is("ankan") and match(["hand", "calls"], ["kokushi_tenpai"]))
+
+apply set_append, "interruptible_actions", ["self_call"]

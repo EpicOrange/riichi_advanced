@@ -1,4 +1,62 @@
+set display_name, "Bloody 30-Faan Jokers"
+set tutorial_link, "https://github.com/EpicOrange/riichi_advanced/blob/main/documentation/bloody30faan.md"
+define_global han, "Faan"
+define_global ankan_name, "Self Kong"
+define_global chankan_name, "Hu"
+define_global chii_name, "Sheung"
+define_global flower_name, "Flower"
+define_global kan_name, "Kong"
+define_global pon_name, "Pung"
+define_global ron_name, "Hu"
+define_global tsumo_name, "Zimo"
 require "value_honors"
+require "base"
+require "standard_wall"
+require "framed_5z"
+require "global_mods"
+require "default_auto_buttons"
+require "chii"
+require "pon"
+require "kan", %{hide_ankans: true}
+require "riichi_call_style"
+require "ron", %{scoring_key: "win"}
+require "tsumo", %{scoring_key: "win"}
+require "standard_win"
+require "kuikae_nashi"
+require "bloody30faan_yaku"
+require "yaku/tsuuiisou", %{name: "All Honours", value: 30}
+require "yaku/yakuhai", %{round_wind_name: "Round Wind", triplet_value: 1}
+require "yaku/shousangen", %{dai_name: "Big Three Dragons", dai_value: 15, shou_name: "Little Three Dragons", shou_value: 8}
+require "yaku/sanpuukou", %{dai_name: "Big Three Winds", dai_value: 10, shou_name: "Little Three Winds", shou_value: 5}
+require "yaku/shousuushii", %{dai_name: "Big Four Winds", dai_value: 30, shou_name: "Little Four Winds", shou_value: 20}
+require "yaku/tanyao", %{name: "All Simples", value: 2}
+require "yaku/chanta", %{chanta_name: "Mixed Outside Hand", chanta_value: 5, junchan_name: "Pure Outside Hand", junchan_value: 8}
+require "yaku/honroutou", %{chin_name: "Pure Terminals", chin_value: 30, hon_name: "Mixed Terminals", hon_value: 10}
+require "yaku/uumensai", %{name: "All Types", value: 5}
+require "yaku/honitsu", %{chin_name: "Full Flush", chin_value: 10, hon_name: "Mixed Flush", hon_value: 5}
+require "yaku/chuurenpoutou", %{name: "Nine Gates", value: 30, must_wait_9: false}
+require "yaku/ryankantsu", %{name: "Two Kongs", value: 5}
+require "yaku/sankantsu", %{name: "Three Kongs", value: 15}
+require "yaku/suukantsu", %{name: "Four Kongs", value: 30}
+require "yaku/ryanankou", %{name: "Two Concealed Triplets", value: 2}
+require "yaku/sanankou", %{name: "Three Concealed Triplets", value: 8}
+require "yaku/suuankou", %{name: "Four Concealed Triplets", value: 15}
+require "yaku/sanrenkou", %{san_name: "Three Pure Shifted Triplets", san_value: 10, suu_name: "Four Pure Shifted Triplets", suu_value: 20}
+require "yaku/sanshoku_shoudoukou", %{name: "Small Triple Triplets", value: 5}
+require "yaku/sanshoku_doukou", %{name: "Triple Triplets", value: 10}
+require "yaku/toitoi", %{name: "All Triplets", value: 5}
+require "yaku/sanshoku_doujun", %{name: "Triple Sequences", value: 5}
+require "yaku/isshoku_sanjun", %{san_name: "Pure Triple Sequence", san_value: 10, yon_name: "Pure Quadruple Sequence", yon_value: 30}
+require "yaku/iipeikou", %{name: "Identical Sequences", value: 2}
+require "yaku/ryanpeikou", %{name: "Double Identical Sequences", value: 10}
+require "yaku/pinghu", %{name: "All Sequences", value: 2, no_value_pair: false}
+require "yaku/rinshan", %{value: 2, rinshan_name: "After a Kong"}
+require "yaku/chankan", %{name: "Robbing a Kong", value: 5, scoring_key: "win"}
+require "yaku/tenhou", %{chiihou_is_tsumo: true, chiihou_name: "Hand of Earth", chiihou_value: 30, renhou_name: "Hand of Man", renhou_value: 15, tenhou_name: "Hand of Heaven", tenhou_value: 30}
+require "yaku/menzenchin", %{name: "Concealed Hand", value: 1}
+require "yaku/menzentsumo", %{name: "Fully Concealed Hand", value: 2}
+require "yaku/chiitoitsu", %{name: "Seven Pairs", value: 5, kansai: false, rules_tab: "5 Faan"}
+require "yaku/kokushi", %{name: "Thirteen Orphans", value: 20, rules_tab: "20 Faan"}
 
 on after_initialization do
   add_rule("Tiles", "Jokers", "There are 8 jokers in the game: %{jokers}.", %{jokers: ~T"10j12j3j14j15j6j17j18j"}, -10)

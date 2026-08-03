@@ -1,0 +1,65 @@
+define_base_ruleset riichi
+set display_name, "Speed Tonpuu"
+set tutorial_link, "https://peterish.com/riichi-docs/speed-tonpuu-rules"
+require "tonpuu"
+require "yaku/kansai_chiitoitsu"
+require "speed_tonpuu_dora"
+require "speed_tonpuu_pocchi"
+require "suukaikan"
+require_after "speed_tonpuu_suukantsu"
+apply set_append, "default_mods", [
+  %{name: "honba", config: %{value: 500}},
+  %{name: "yaku/riichi", config: %{bet: 1000, drawless: false}},
+  %{name: "oka", config: %{ante: 4}},
+  %{name: "uma", config: %{_4th: -10, _3rd: -4, _2nd: 4, _1st: 10}},
+  %{name: "tobi", config: %{below: 0}},
+  %{name: "nagashi", config: %{is: "Haneman", counts_as: "tsumo"}},
+  %{name: "called_game", config: %{above: 54999, chips: 1}},
+  %{name: "suufon_renda", config: %{name: "Suufon Renda"}},
+  "suucha_riichi",
+  %{name: "kyuushu_kyuuhai", config: %{name: "Kyuushu Kyuuhai"}},
+  "agarirenchan",
+  "tenpairenchan",
+  %{name: "agariyame", config: %{round: "every", first_place_only: false, may_choose: true}},
+  %{name: "tenpaiyame", config: %{round: "every", first_place_only: false, may_choose: true}},
+  "kiriage_mangan",
+  "double_round_wind",
+  "immediate_kan_dora",
+  "yaku/open_riichi",
+  "kokushi_ankan_chankan",
+  %{name: "yaku/sanrenkou", config: %{san_name: "Sanrenkou", san_value: 2}},
+  "yaku/riichi_suurenkou",
+  "yaku/shiisanpuutaa",
+  "yaku/shiisanuushi",
+  "pao_suukantsu",
+  "pao_rinshan",
+  %{name: "yaku/riichi_renhou", config: %{is: "Yakuman"}},
+  %{name: "shuugi", config: %{worth: 5000, pao_pays_all: true, starting_shuugi: 100}},
+  %{name: "shuugi/ippatsu", config: %{chips: 1}},
+  %{name: "shuugi/ura", config: %{chips: 1}},
+  %{name: "shuugi/yakuman", config: %{allow_kazoe: true, per_yakuman: true, ron_chips: 10, tsumo_chips: 5}},
+  %{name: "shuugi/aka", config: %{chips: 1, closed_only: false}},
+  %{name: "shuugi/ao", config: %{chips: 2, closed_only: false}},
+  %{name: "shuugi/kin", config: %{chips: 1, closed_only: false}},
+  "shuugi/oka",
+  "shuugi/uma",
+  %{name: "shuugi/tobi", config: %{chips: 1}},
+  %{name: "shuugi/called_game", config: %{chips: 1}},
+  "shuugi/placement_only_battle",
+]
+
+# kansai chiitoi is the only thing not covered by mods in @modpack (constants.ex)
+
+on after_initialization do
+  add_rule("1 Han", "Kansai Chiitoitsu", "1 han if you win with seven pairs with a repeated pair. 2 han for two repeated pairs, yakuman for three.")
+end
+
+define_yaku meta_yaku, "Kansai Chiitoitsu", [1, "Han"], has_existing_yaku("Chiitoitsu") and match(["hand", "calls", "winning_tile"], ~m"quad:1")
+define_yaku meta_yaku, "Kansai Chiitoitsu", [2, "Han"], has_existing_yaku("Chiitoitsu") and match(["hand", "calls", "winning_tile"], ~m"quad:2")
+define_yaku meta_yakuman, "Kansai Chiitoitsu", [1, "★"], has_existing_yaku("Chiitoitsu") and match(["hand", "calls", "winning_tile"], ~m"quad:3")
+
+set translations, %{
+  "Aka": "Red Five",
+  "Ao": "Blue Seven",
+  "Kin": "Gold Five",
+}

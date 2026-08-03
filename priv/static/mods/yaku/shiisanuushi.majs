@@ -15,5 +15,5 @@ define_button shiisanuushi,
     big_text("Tsumo")
     pause(1000)
     reveal_hand
-    win_by_draw
+    win_by_draw("tsumo")
   end

@@ -1,3 +1,109 @@
+define_const calls_fu, %{pon: 2}
+
+define_const winning_groups_fu, [
+  # kanchan
+  %{groups: ~s"-1 0@winning_tile 1", value: 2},
+  # penchan
+  %{groups: ~s"0@winning_tile -1@tanyao -2@terminal", value: 2},
+  %{groups: ~s"0@winning_tile 1@tanyao 2@terminal", value: 2},
+  # ryanmen
+  %{groups: ~s"0@winning_tile -1@tanyao -2@tanyao"},
+  %{groups: ~s"0@winning_tile 1@tanyao 2@tanyao"},
+  # shanpon
+  %{groups: ~s"0@tanyao 0@tanyao 0@winning_tile&ron", value: 2},
+  %{groups: ~s"0@yaochuu 0@yaochuu 0@winning_tile&ron", value: 4},
+  %{groups: ~s"0@tanyao 0@tanyao 0@winning_tile&tsumo", value: 4},
+  %{groups: ~s"0@yaochuu 0@yaochuu 0@winning_tile&tsumo", value: 8},
+  # tanki
+  %{groups: ~s"0@not_yakuhai 0@winning_tile", value: 2},
+  %{groups: ~s"0@prevalent 0@winning_tile | 0@seat 0@winning_tile | 5z 5z@winning_tile | 6z 6z@winning_tile | 7z 7z@winning_tile", value: 4}
+]
+
+define_const groups_fu, [
+  %{groups: ~s"0 1 2"},
+  %{groups: ~s"0@tanyao 0@tanyao 0@tanyao", value: 4},
+  %{groups: ~s"0@yaochuu 0@yaochuu 0@yaochuu", value: 8},
+  # pair
+  # for pinfu reasons, only non-yakuhai can be removed for 0 value
+  %{groups: ~s"0@not_yakuhai 0@not_yakuhai"},
+  %{groups: ~s"0@prevalent 0@prevalent | 0@seat 0@seat | 5z 5z | 6z 6z | 7z 7z", value: 2}
+]
+define_const always_yakuhai, ["5z", "6z", "7z"]
+
+def calculate_fu do
+  if fu == 0 do
+    set_counter("fu", "minipoints") do
+      # score calls
+      convert_calls(@calls_fu)
+      remove_calls(["tanyaohai"])
+      convert_calls(@calls_fu)
+      remove_calls
+
+      # now remove all closed groups
+      remove_groups(@winning_groups_fu)
+      remove_groups(@groups_fu)
+      prune(method: "tile_count", num_tiles: [1,4,7,10])
+      remove_groups(@groups_fu)
+      prune(method: "tile_count", num_tiles: [1,4,7,10])
+      remove_groups(@groups_fu)
+      prune(method: "tile_count", num_tiles: [1,4,7,10])
+      remove_groups(@groups_fu)
+      prune(method: "tile_count", num_tiles: [1,4,7,10])
+
+      # only retain configurations with 0 tiles remaining
+      retain_empty_hands
+
+      # add 1000 to pinfu hands so we prioritize pinfu later
+      add(1000, minipoints_equals(0))
+
+      # base 20
+      add(20)
+
+      # tsumo +2 (except closed pinfu tsumo)
+      add(2, won_by_draw and (minipoints_at_most(999) or not @closed_hand))
+
+      # closed ron +10 and open pinfu ron +10
+      add(10, not_won_by_draw and @closed_hand)
+      add(10, not_won_by_draw and not @closed_hand and minipoints_at_least(1000))
+
+      # take max, then subtract 1000 from pinfu hands
+      take_maximum
+      add(-1000, minipoints_at_least(1000))
+
+      # round up to nearest 10
+      round_up(10)
+
+      # add original hand (for special hands like chiitoitsu and kokushi)
+      add_original_hand
+
+      # chiitoitsu
+      add(25, minipoints_equals(0) and match(["hand", "calls", "winning_tile"], ~m"pair:7"))
+
+      # kokushi
+      add(40, not_won_by_draw and @closed_hand and minipoints_equals(0) and match(["hand", "calls", "winning_tile"], ["kokushi_win"]))
+      add(30, minipoints_equals(0) and match(["hand", "calls", "winning_tile"], ["kokushi_win"]))
+      take_maximum
+    end
+  end
+end
+
+def add_scoring_attrs, append: true do
+  tag_tiles("not_yakuhai", "all")
+  untag_tiles("not_yakuhai", @always_yakuhai)
+  if round_wind_is("east") or seat_is("east") do untag_tiles("not_yakuhai", "1z") end
+  if round_wind_is("south") or seat_is("south") do untag_tiles("not_yakuhai", "2z") end
+  if round_wind_is("west") or seat_is("west") do untag_tiles("not_yakuhai", "3z") end
+  if round_wind_is("north") or seat_is("north") do untag_tiles("not_yakuhai", "4z") end
+  add_attr_tagged("not_yakuhai", "_not_yakuhai")
+  # tag winning tile with some attributes
+  add_attr(["winning_tile"], ["_winning_tile"])
+  if won_by_draw do
+    add_attr(["winning_tile"], ["_tsumo"])
+  else
+    add_attr(["winning_tile"], ["_ron"])
+  end
+end
+
 on before_scoring do
   add_scoring_attrs
   calculate_fu
@@ -106,7 +212,6 @@ define_scoring tsumo do
   finalize_score
 end
 
-set starting_honba, 3
 define_const honba_mult, 3
 def finalize_score do
   # store total winnings without honba, for display

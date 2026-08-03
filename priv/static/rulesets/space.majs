@@ -1,0 +1,4 @@
+define_base_ruleset riichi
+set display_name, "Space Mahjong"
+set tutorial_link, "https://riichi.wiki/Space_mahjong"
+require "space"

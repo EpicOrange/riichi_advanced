@@ -1,3 +1,26 @@
+define_base_ruleset sanma
+set display_name, "Super Bingo Sanma"
+set tutorial_link, "https://fansubbing.com/2024/03/10/super-bingo-sanma-rules/"
+require "kansai_flowers"
+require "zan_scoring"
+require "kansai_draw"
+require "yaku/kansai_chiitoitsu"
+require "shuugi", %{worth: 1000, pao_pays_all: true, starting_shuugi: 1000}
+require "super_bingo_tictactoe"
+require "super_bingo_tulips"
+require_after "super_bingo_yaku"
+apply set_append, "default_mods", [
+  %{name: "honba", config: %{value: 1000}},
+  %{name: "tobi", config: %{below: 1}},
+  %{name: "aka", config: %{pin: 1, sou: 1, man: 0}},
+  %{name: "kin", config: %{pin: 1, sou: 1, man: 0}},
+  %{name: "shiro_pocchi", config: %{ippatsu_only: false}},
+  "yaku/open_riichi",
+  %{name: "shuugi/kin", config: %{chips: 1, closed_only: false}},
+  %{name: "shuugi/ura", config: %{chips: 1}},
+  %{name: "shuugi/yakuman", config: %{allow_kazoe: false, per_yakuman: true, ron_chips: 50, tsumo_chips: 50}}
+]
+
 on after_initialization do
   delete_rule("1 Han", "Chanta")
   delete_rule("2 Han", "Junchan")

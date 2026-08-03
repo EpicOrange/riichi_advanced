@@ -1,0 +1,71 @@
+define_base_ruleset riichi
+set display_name, "Chinitsu Challenge"
+set tutorial_link, "https://github.com/EpicOrange/riichi_advanced/blob/main/documentation/chinitsu_challenge.md"
+set num_players, 2
+require "yaku/riichi", %{bet: 1000, drawless: false}
+apply set_append, "default_mods", ["chombo", %{name: "tobi", config: %{below: 0}}, %{name: "yaku/riichi_renhou", config: %{is: "Yakuman"}}, "no_honors"]
+
+set wall, ["1s", "1s", "1s", "1s",
+           "2s", "2s", "2s", "2s",
+           "3s", "3s", "3s", "3s",
+           "4s", "4s", "4s", "4s",
+           "5s", "5s", "5s", "5s",
+           "6s", "6s", "6s", "6s",
+           "7s", "7s", "7s", "7s",
+           "8s", "8s", "8s", "8s",
+           "9s", "9s", "9s", "9s"]
+
+set initial_score, 150000
+set initial_dead_wall_length, 0
+set max_revealed_tiles, 0
+set display_riichi_sticks, false
+apply set, "score_calculation.riichi_value", 0
+
+apply delete_key, "buttons", "chii"
+apply delete_key, "buttons", "chii"
+apply delete_key, "buttons", "pon"
+apply delete_key, "buttons", "daiminkan"
+apply delete_key, "buttons", "kakan"
+
+define_yaku yakuman, "_clear_yaku", [1, "★"], others_status("dead_hand"), [1,2,3,4,5,6]
+define_yaku meta_yakuman, "Chombo", [1, "★"], others_status("dead_hand")
+
+def finalize_score, prepend: true do
+  if won_by_draw do
+    total *= 3 :: "No tsumo loss"
+  end
+end
+
+on after_turn_change, prepend: true do
+  if others_status("dead_hand") do
+    fu = 30
+    cancel_deferred_actions
+    win_by_draw("tsumo")
+    uninterruptible_draw(-1)
+  end
+end
+
+on before_win do
+  as winner do
+    if others_status("dead_hand") do
+      move_tiles("draw", "hand")
+      move_tiles("hand", "aside")
+      flip_aside_facedown
+      move_tiles("aside", "hand")
+    end
+  end
+end
+
+remove_mod honba
+remove_mod "yaku/riichi"
+remove_mod ura
+remove_mod aka
+remove_mod kandora
+remove_mod suufon_renda
+remove_mod suucha_riichi
+remove_mod kyuushu_kyuuhai
+remove_mod show_waits
+remove_mod star_suit
+remove_mod shiro_pocchi
+remove_mod chinitsu
+

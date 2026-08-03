@@ -149,10 +149,21 @@ if defined("honba") do
   on before_win do
     if anyone_status("pao") do
       # zero out the honba counter, we will apply honba manually
-      actual_honba = honba
-      set_counter_all("actual_honba", "actual_honba")
+      set_counter_all("actual_honba", "honba")
       minus_honba = -honba
       add_honba("minus_honba")
     end
+  end
+end
+
+def finalize_score, prepend: true do
+  if actual_honba > 0 and anyone_status("pao") do
+    # the pao player(s) pays all honba, regardless of ron or tsumo
+    if status("pao") do
+      total += honba * @honba_mult * @honba_value :: "Honba (pao)"
+    end
+  else
+    # defer to original honba logic
+    add_honba("actual_honba")
   end
 end

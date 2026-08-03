@@ -1,3 +1,61 @@
+set display_name, "Zung Jung"
+set tutorial_link, "https://github.com/EpicOrange/riichi_advanced/blob/main/documentation/zung_jung.md"
+define_global han, "pts"
+define_global ankan_name, "Self Kong"
+define_global chankan_name, "Hu"
+define_global kan_name, "Kong"
+define_global pon_name, "Pong"
+define_global ron_name, "Hu"
+define_global tsumo_name, "Zimo"
+define_global chii_name, "Chow"
+require "base"
+require "standard_wall"
+require "framed_5z"
+require "global_mods"
+require "default_auto_buttons"
+require "chii"
+require "pon"
+require "kan", %{hide_ankans: false, replace_from_dead_wall: false}
+require "ron", %{scoring_key: "win"}
+require "tsumo", %{scoring_key: "win"}
+require "standard_win"
+require "head_bump"
+require "yaku/chicken_hand", %{list: "meta_yaku", name: "Chicken Hand", value: 1}
+require "yaku/pinghu", %{name: "All Sequences", value: 5, no_value_pair: false}
+require "yaku/menzenchin", %{name: "Concealed Hand", value: 5}
+require "yaku/tanyao", %{name: "No Terminals", value: 5}
+require "yaku/honitsu", %{chin_name: "Pure One-Suit", chin_value: 80, hon_name: "Mixed One-Suit", hon_value: 40}
+require "yaku/chuurenpoutou", %{list: "listed_limit_hand", name: "Nine Gates", value: 480, must_wait_9: true}
+require "yaku/yakuhai", %{triplet_value: 10}
+require "yaku/shousangen", %{dai_name: "Big Three Dragons", dai_value: 130, shou_name: "Small Three Dragons", shou_value: 40}
+require "yaku/sanpuukou", %{dai_name: "Big Three Winds", dai_value: 120, shou_name: "Small Three Winds", shou_value: 30}
+require "yaku/shousuushii", %{dai_name: "Big Four Winds", dai_value: 400, shou_name: "Small Four Winds", shou_value: 320, dai_list: "listed_limit_hand", shou_list: "listed_limit_hand"}
+require "yaku/tsuuiisou", %{list: "listed_limit_hand", name: "All Honors", value: 320}
+require "yaku/toitoi", %{name: "All Triplets", value: 30}
+require "yaku/ryanankou", %{name: "Two Concealed Triplets", value: 5}
+require "yaku/sanankou", %{name: "Three Concealed Triplets", value: 30}
+require "yaku/suuankou", %{name: "Four Concealed Triplets", value: 125}
+require "yaku/iikantsu", %{name: "One Kong", value: 5}
+require "yaku/ryankantsu", %{name: "Two Kong", value: 20}
+require "yaku/sankantsu", %{name: "Three Kong", value: 120}
+require "yaku/suukantsu", %{list: "listed_limit_hand", name: "Four Kong", value: 480}
+require "yaku/iipeikou", %{name: "Two Identical Sequences", value: 10}
+require "yaku/ryanpeikou", %{name: "Two Identical Sequences Twice", value: 60}
+require "yaku/isshoku_sanjun", %{san_name: "Three Identical Sequences", san_value: 120, yon_list: "listed_limit_hand", yon_name: "Four Identical Sequences", yon_value: 480}
+require "yaku/sanshoku_doujun", %{name: "Three Similar Sequences", value: 35}
+require "yaku/sanshoku_shoudoukou", %{name: "Small Three Similar Triplets", value: 30}
+require "yaku/sanshoku_doukou", %{name: "Three Similar Triplets", value: 120}
+require "yaku/ittsuu", %{name: "Nine-Tile Straight", value: 40}
+require "yaku/sanrenkou", %{san_name: "Three Consecutive Triplets", san_value: 100, suu_name: "Four Consecutive Triplets", suu_value: 200}
+require "yaku/chanta", %{chanta_name: "Mixed Lesser Terminals", chanta_value: 40, junchan_name: "Pure Lesser Terminals", junchan_value: 50}
+require "yaku/honroutou", %{chin_name: "Pure Greater Terminals", chin_value: 400, hon_name: "Mixed Greater Terminals", hon_value: 100, chin_list: "listed_limit_hand"}
+require "yaku/haitei", %{haitei_name: "Final Draw", haitei_value: 10, houtei_name: "Final Discard", houtei_value: 10}
+require "yaku/rinshan", %{value: 10, rinshan_name: "Win on Kong"}
+require "yaku/chankan", %{name: "Robbing a Kong", value: 10, scoring_key: "win"}
+require "yaku/tenhou", %{chiihou_name: "Blessing of Earth", chiihou_value: 155, tenhou_name: "Blessing of Heaven", tenhou_value: 155}
+require "yaku/chiitoitsu", %{name: "Seven Pairs", value: 30, rules_tab: "30 pts"}
+require "yaku/kokushi", %{name: "Thirteen Terminals", value: 160, rules_tab: "Limit"}
+
 on after_initialization do
   add_rule_tab("Patterns")
   add_rule_tab("Limit")

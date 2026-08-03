@@ -4,7 +4,7 @@ defmodule RiichiAdvanced.MatchTest do
 
   @ruleset "riichi"
   @mods [
-    "kansai_chiitoitsu",
+    "yaku/kansai_chiitoitsu",
     %{name: "dora", config: %{start_indicators: 0}},
     %{name: "aka", config: %{man: 1, pin: 1, sou: 1}},
     %{name: "aka9", config: %{man: 1, pin: 1, sou: 1}},

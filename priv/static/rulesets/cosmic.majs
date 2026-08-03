@@ -1,6 +1,17 @@
-# add cosmic mods in front
+define_base_ruleset space
+set display_name, "Cosmic Riichi"
+set tutorial_link, "https://docs.google.com/document/d/1F-NhQ5fdi5CnAyEqwNE_qWR0Og99NtCo2NGkvBc5EwU"
+define_global han, "Han"
+require "cosmic"
+require_after "yakuman_13_han"
+apply set_append, "default_mods", ["kontsu", "yaku/kontsu_yaku", "yaku/chanfuun", "yaku/fuunburi", "yaku/uumensai_cosmic", "cosmic_calls", "yaku/tsubame_gaeshi", "yaku/kanburi", "yaku/riichi_isshoku_sanjun", "yaku/riichi_isshoku_yonjun"]
+
+on after_initialization do
+  add_rule("Rules", "Win Condition", "- (Cosmic Riichi) Seven Pairs is again a possible winning hand.", -100)
+end
+
+remove_mod "space"
 define_mod_category "Cosmic", prepend: true
-define_mod cosmic, name: "Cosmic", category: "Cosmic", order: 4, deps: ["space", "kontsu", "cosmic_calls"], desc: "Base mod for Cosmic Riichi. Adds most relevant yaku and sets up the score table for things like haneyakuman."
 define_mod kontsu, name: "Kontsu", category: "Cosmic", order: 5, desc: "Add mixed triplets, or kontsu. If you have the same number in three suits, that counts as one of your sets towards four sets and a pair. For example, 1m1s1p is a kontsu. Also considered kontsu: 3 different winds, or one of each dragon."
 define_mod cosmic_calls, name: "Cosmic Calls", order: 4, category: "Cosmic", deps: ["kontsu"], order: 2, desc: "Add the following calls: Ton (calls a pair), Chon (calls kontsu), and Fuun (calls a set of 4 different winds). The precedence is Ton < Chii < Chon < Fuun < Pon < Kan."
 define_mod "yaku/kontsu_yaku", name: "Kontsu Yaku", order: 4, category: "Cosmic", deps: ["kontsu"], desc: "A wind kontsu counts as 0.5 han if it contains both the round wind and seat wind. A dragon kontsu is always 0.5 han, and is called mini-sangen. Having two of the same kontsu in a closed hand is 1 han (ryandoukon), having three is 2 han open 3 han closed (sandoukon), and having four is yakuman (yondoukon)."

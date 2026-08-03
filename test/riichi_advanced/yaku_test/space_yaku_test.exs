@@ -212,7 +212,7 @@ defmodule RiichiAdvanced.YakuTest.SpaceYaku do
   end
 
   test "space - ten mod support" do
-    TestUtils.test_yaku_advanced("riichi", ["space", "ten"], """
+    TestUtils.test_yaku_advanced("space", ["ten"], """
     {
       "starting_hand": {
         "east": ["9m", "1m", "9p", "10p", "1p", "10s", "1s", "2s", "5z", "6z", "7z", "10s", "10s"],

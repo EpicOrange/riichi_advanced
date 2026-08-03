@@ -1,0 +1,12 @@
+default list, "yaku"
+
+on after_initialization do
+  add_rule("$value $han", "$name", "%{value} %{han} if your hand includes all 5 suits (character, circle, bamboo, wind, dragon).", %{value: !value, han: !han, name: !name})
+  update_rule("$value $han", "$name", "%{example_hand}", %{value: !value, han: !han, name: !name, example_hand: ~t"99s66z 4z4Z4z 2m2M2m 6P45p 9s"})
+end
+
+define_set manzu, ~s"1m|2m|3m|4m|5m|6m|7m|8m|9m"
+define_set pinzu, ~s"1p|2p|3p|4p|5p|6p|7p|8p|9p"
+define_set souzu, ~s"1s|2s|3s|4s|5s|6s|7s|8s|9s"
+
+define_yaku !list, !name, [!value, !han], match(["hand", "calls", "winning_tile"], ~m"manzu:1, pinzu:1, souzu:1, (1z 2z 3z 4z):1, (0z 6z 7z):1")

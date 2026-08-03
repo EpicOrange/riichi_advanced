@@ -55,6 +55,7 @@ defmodule RiichiAdvanced.ZanScoringTest do
     "kansai_no_furiten_riichi"
   ]
 
+
   test "zan - 1 han dealer tsumo" do
     TestUtils.test_yaku_advanced("zan", @zan_mods, """
     {

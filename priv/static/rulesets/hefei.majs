@@ -41,7 +41,7 @@ require "yaku/tenhou", %{
 set interruptible_actions, ["play_tile", "draw", "call", "self_call", "upgrade_call"]
 set initial_score, 0
 set starting_tiles, 13
-set starting_honba, 3
+set starting_honba, 1
 set max_rounds, 16
 set display_honba, true
 

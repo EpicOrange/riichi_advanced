@@ -1,5 +1,17 @@
 set display_name, "Sichuan Bloody"
 set tutorial_link, "https://github.com/EpicOrange/riichi_advanced/blob/main/documentation/sichuan.md"
+define_global han, "Han"
+define_global ankan_name, "Ankan"
+define_global chii_name, "Chii"
+define_global kan_name, "Kan"
+define_global pon_name, "Pon"
+require "global_mods"
+require "default_auto_buttons"
+require_after "sichuan_star_suit"
+apply set_append, "default_mods", ["show_waits"]
+
+define "sichuan"
+
 set wall, ["1m", "1m", "1m", "1m",
            "2m", "2m", "2m", "2m",
            "3m", "3m", "3m", "3m",
