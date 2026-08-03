@@ -865,6 +865,7 @@ Prepend `"not_"` to any of the condition names to negate it.
 - `won_by_draw`: The winner won by drawing the winning tile.
 - `won_by_discard`: The winner won by stealing the discard tile.
 - `minipoints_equals(fu)`: The winning player has the given amount of minipoints.
+- `has_yaku(yaku1, yaku2, ...)`: Only works in `after_scoring`. Check if all of the given yaku names are present in the final score.
 - `has_yaku_with_hand(points, point_name, minipoints)`: Using the current player's draw as the winning tile, the current player's hand scores at least `points` `point_name` using the yaku in `.score_calculation.yaku_lists`. You may optionally also test for at least `minipoints` minipoints. Example: `has_yaku_with_hand(4, "Han", 30)`
 - `has_yaku_with_discard(points, point_name, minipoints)`: Using the last discard as the winning tile, the current player's hand scores at least `points` `point_name` using the yaku in `.score_calculation.yaku_lists`. You may optionally also test for at least `minipoints` minipoints. Example: `has_yaku_with_discard(4, "Han", 30)`
 - `has_yaku_with_call(points, point_name, minipoints)`: Using the last called tile as the winning tile, the current player's hand scores at least `points` `point_name` using the yaku in `.score_calculation.yaku_lists`. You may optionally also test for at least `minipoints` minipoints. Example: `has_yaku_with_call(4, "Han", 30)`
@@ -901,8 +902,8 @@ Prepend `"not_"` to any of the condition names to negate it.
 - `winning_hand_consists_of(tile1, tile2, ...)`: The winning hand (including winning tile) contains only the given tiles (jokers allowed).
 - `winning_hand_not_tile_consists_of(tile1, tile2, ...)`: The winning hand (excluding winning tile) contains only the given tiles (jokers allowed).
 - `all_saki_cards_drafted`: Everyone has at least one saki card.
-- `has_existing_yaku(yaku1, yaku2, ...)`: Used in `meta_yaku` only. The winner has scored all of the given yaku.
-- `has_no_yaku`: Used in `meta_yaku` only. The winner has scored no yaku.
+- `has_existing_yaku(yaku1, yaku2, ...)`: Used in yaku calculation. The winner has scored all of the given yaku in a previous yaku list.
+- `has_no_yaku`: Used in yaku calculation. The winner has not scored any yaku in any previous yaku lists.
 - `placement(num)`: The current player has the given placement (`num` = 1-4).
 - `last_discard_matches_existing`: The last discarded tile matches one of the current player's existing discards (includes called discards) (uses jokers).
 - `called_tile_matches_any_discard`: The last called tile matches one of anybody's existing discards (excludes called discards) (uses jokers).

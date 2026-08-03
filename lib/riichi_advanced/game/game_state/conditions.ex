@@ -267,7 +267,11 @@ defmodule RiichiAdvanced.GameState.Conditions do
       "won_by_discard"           -> Map.get(context, :win_source, nil) == :discard
       "ended_by_exhaustive_draw" -> state.round_result == :exhaustive_draw
       "ended_by_abortive_draw"   -> state.round_result == :abortive_draw
-      "has_yaku"                 -> context.seat in state.winner_seats and Scoring.seat_scores_points(state, get_yaku_lists(state), Enum.at(opts, 1, Rules.get(state.rules_ref, "score_calculation")["point_name"]), Enum.at(opts, 0, 1), Enum.at(opts, 2, 0), context.seat, state.winners[context.seat].winning_tile, state.winners[context.seat].win_source)
+      "has_yaku"                 ->
+        case Map.get(state.winners, context.seat, nil) do
+          nil    -> false
+          winner -> Enum.any?(opts, &Enum.any?(winner.yaku, fn {yaku, _points} -> yaku == &1 end))
+        end
       "has_yaku_with_hand"       -> Scoring.seat_scores_points(state, get_yaku_lists(state), Enum.at(opts, 1, Rules.get(state.rules_ref, "score_calculation")["point_name"]), Enum.at(opts, 0, 1), Enum.at(opts, 2, 0), context.seat, Enum.at(cxt_player.draw, 0, nil), :draw)
       "has_yaku_with_discard"    -> last_action != nil and last_action.action == :discard and Scoring.seat_scores_points(state, get_yaku_lists(state), Enum.at(opts, 1, Rules.get(state.rules_ref, "score_calculation")["point_name"]), Enum.at(opts, 0, 1), Enum.at(opts, 2, 0), context.seat, last_action.tile, :discard)
       "has_yaku_with_call"       -> last_action != nil and last_action.action == :call and Scoring.seat_scores_points(state, get_yaku_lists(state), Enum.at(opts, 1, Rules.get(state.rules_ref, "score_calculation")["point_name"]), Enum.at(opts, 0, 1), Enum.at(opts, 2, 0), context.seat, last_call_action.called_tile, :call)
