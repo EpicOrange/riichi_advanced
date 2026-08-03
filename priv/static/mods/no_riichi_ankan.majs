@@ -1,0 +1,6 @@
+on after_initialization do
+  update_rule("Rules", "Riichi", "(No Riichi Ankan) You may not call concealed kan while in riichi.")
+end
+
+apply append, "buttons.ankan.call_conditions", status_missing("riichi")
+apply append, "buttons.annobekan.call_conditions", status_missing("riichi")

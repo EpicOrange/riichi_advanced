@@ -1,0 +1,6 @@
+on after_initialization do
+  update_rule("Rules", "Riichi", "(Yes Riichi Ankan) You may freely call concealed quads in riichi even if they change your waits.")
+end
+
+replace 1, "buttons.ankan.call_conditions", "not_call_changes_waits", true
+replace 1, "buttons.annobekan.call_conditions", "not_call_changes_waits", true
