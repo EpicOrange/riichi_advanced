@@ -454,7 +454,7 @@ defmodule RiichiAdvanced.AIPlayer do
         "extra_turn" in player.buttons -> "extra_turn"
         "reveal" in player.buttons -> if "riichi" in last_discarder_status do "reveal" else "reveal_skip" end
         "lock_skip" in player.buttons -> "lock_skip"
-        "skip" in player.buttons -> "skip"
+        "skip" in player.buttons and state.seat != turn -> "skip"
         true -> Enum.random(player.buttons)
       end
       if Debug.debug_ai() do
