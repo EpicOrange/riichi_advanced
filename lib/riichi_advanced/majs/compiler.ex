@@ -1137,11 +1137,12 @@ defmodule RiichiAdvanced.Compiler do
             defs = MapSet.put(defs, "lib_#{name}")
             case File.read(Application.app_dir(:riichi_advanced, "/priv/static/mods/lib/#{name}.majs")) do
               {:ok, majs} ->
-                with {:ok, ast} <- Parser.parse(majs) do
-                  compile_jq_defs(ast, defs, depth + 1)
+                with {:ok, ast} <- Parser.parse(majs),
+                     {:ok, {jq, defs}} <- compile_jq_defs(ast, defs, depth + 1) do
+                  {:ok, {"(" <> jq <> ")", defs}}
                 end
               {:error, _err}  ->
-                IO.puts("WARNING: Could not find mod #{name}!")
+                IO.puts("WARNING: Could not find mod lib/#{name}!")
                 {:ok, {".", defs}}
             end
           else {:ok, {".", defs}} end
@@ -1178,8 +1179,6 @@ defmodule RiichiAdvanced.Compiler do
         end
         compile_jq_toplevel(nodes, line, column, defs, depth)
       _ when is_list(ast) ->
-        # TODO pass thru defs
-        # TODO handle 'define'
         for node <- ast, reduce: {:ok, {[], defs}} do
           {:ok, {rets, defs}} ->
             with {:ok, {ret, defs}} <- compile_jq_toplevel(node, line, column, defs, depth) do

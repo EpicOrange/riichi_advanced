@@ -91,7 +91,7 @@ defmodule RiichiAdvanced.ModLoader.ModState do
       query = query <> "\n|\n" <> prev_query
       state = %{state | mods: mods ++ state.mods, post_mods: post_mods ++ state.post_mods, globals: Map.merge(Map.get(modpack, :globals, %{}), state.globals)}
       # now recurse
-      load_ruleset_rec(state, modpack.ruleset, query, [ruleset | visited])
+      load_ruleset_rec(state, Map.get(modpack, :ruleset, "empty"), query, [ruleset | visited])
     else # else, read the base ruleset filename and apply all mods
 
       # first check for duplicates
@@ -241,6 +241,7 @@ defmodule RiichiAdvanced.ModLoader do
         # now try to parse it as majs
         with {:ok, ast} <- Parser.parse(majs),
              {:ok, {jq, defs}} <- Compiler.compile_jq_defs(ast, defs) do
+          # IO.inspect(jq, label: "jq", limit: :infinity)
           {jq, defs}
         else
           {:error, msg} ->
@@ -258,11 +259,15 @@ defmodule RiichiAdvanced.ModLoader do
   end
 
   def read_ruleset_json(ruleset) do
+    # IO.puts("Loading ruleset #{ruleset}")
     case File.read(Application.app_dir(:riichi_advanced, "/priv/static/rulesets/#{ruleset}.json")) do
       {:ok, ruleset_json} -> ruleset_json
       {:error, _err}      ->
         case File.read(Application.app_dir(:riichi_advanced, "/priv/static/rulesets/#{ruleset}.majs")) do
-          {:ok, ruleset_majs} -> JQ.query_string_with_string!("{}", convert_to_jq(ruleset_majs))
+          {:ok, ruleset_majs} ->
+            jq = convert_to_jq(ruleset_majs)
+            # IO.puts("Successfully loaded ruleset #{ruleset}")
+            JQ.query_string_with_string!("{}", jq)
           {:error, _err}      -> "{}"
         end
     end
