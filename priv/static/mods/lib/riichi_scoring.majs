@@ -154,6 +154,7 @@ define_const mangan_3_han_fu, 70
 
 def calculate_base_score do
   cond do
+    total > 0 -> noop
     points2 > 0 ->
       total = points2 * 8000 :: "Yakuman base"
       modify_winner("score_name", "Yakuman", as: "winner")
