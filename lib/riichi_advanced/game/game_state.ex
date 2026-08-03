@@ -1434,7 +1434,7 @@ defmodule RiichiAdvanced.GameState do
         state ->
           {:ok, ai_pid} = DynamicSupervisor.start_child(state.ai_supervisor, %{
             id: RiichiAdvanced.AIPlayer,
-            start: {RiichiAdvanced.AIPlayer, :start_link, [%{game_state: self(), ruleset: state.ruleset, seat: dir, player: state.players[dir], shanten_definitions: Rules.get(state.rules_ref, :shanten_definitions), tsumogiri_bot: tsumogiri_bot}]},
+            start: {RiichiAdvanced.AIPlayer, :start_link, [%{game_state: self(), ruleset: state.ruleset, seat: dir, player: state.players[dir], rules_ref: state.rules_ref, shanten_definitions: Rules.get(state.rules_ref, :shanten_definitions), tsumogiri_bot: tsumogiri_bot}]},
             restart: :permanent
           })
           IO.puts("Starting AI for #{dir}: #{inspect(ai_pid)}")

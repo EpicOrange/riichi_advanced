@@ -298,13 +298,14 @@ on before_turn_change do
   end
 end
 
+define_const can_draw_condition, true
 on after_turn_change do
   if no_tiles_remaining do
     pause(1000)
     ryuukyoku("Ryuukyoku", "ryuukyoku")
   else
     if not_game_start do discard_passed end
-    draw
+    if @can_draw_condition do draw end
   end
   # unset furiten (mostly so show_waits mod doesn't complain)
   unset_status("furiten")
@@ -389,7 +390,7 @@ define_button tsumo,
     win_by_draw("tsumo")
   end
 
-set interruptible_actions, ["play_tile", "advance_turn", "draw", "self_call", "upgrade_call", "recalculate_buttons"]
+set interruptible_actions, ["play_tile", "advance_turn", "draw", "self_call", "upgrade_call"]
 set shown_statuses, ["furiten"]
 set display_wall, true
 set initial_score, 25000

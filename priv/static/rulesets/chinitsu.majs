@@ -22,7 +22,6 @@ set display_riichi_sticks, false
 apply set, "score_calculation.riichi_value", 0
 
 apply delete_key, "buttons", "chii"
-apply delete_key, "buttons", "chii"
 apply delete_key, "buttons", "pon"
 apply delete_key, "buttons", "daiminkan"
 apply delete_key, "buttons", "kakan"
@@ -41,11 +40,13 @@ on after_turn_change, prepend: true do
     fu = 30
     cancel_deferred_actions
     win_by_draw("tsumo")
-    uninterruptible_draw(-1)
   end
 end
 
+define_const can_draw_condition, not_others_status("dead_hand")
+
 on before_win do
+  make_responsible_for("others")
   as winner do
     if others_status("dead_hand") do
       move_tiles("draw", "hand")
@@ -64,8 +65,8 @@ remove_mod kandora
 remove_mod suufon_renda
 remove_mod suucha_riichi
 remove_mod kyuushu_kyuuhai
-remove_mod show_waits
 remove_mod star_suit
 remove_mod shiro_pocchi
 remove_mod chinitsu
+apply subtract, "default_mods", ["show_waits"]
 

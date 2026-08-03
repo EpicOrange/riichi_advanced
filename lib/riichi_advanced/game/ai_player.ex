@@ -1,6 +1,7 @@
 defmodule RiichiAdvanced.AIPlayer do
   alias RiichiAdvanced.GameState.Debug, as: Debug
   alias RiichiAdvanced.GameState.Marking, as: Marking
+  alias RiichiAdvanced.GameState.Rules, as: Rules
   alias RiichiAdvanced.GameState.TileBehavior, as: TileBehavior
   alias RiichiAdvanced.Match, as: Match
   alias RiichiAdvanced.Riichi, as: Riichi
@@ -83,7 +84,9 @@ defmodule RiichiAdvanced.AIPlayer do
           {ret, i}
         {nil, _} ->
           ret = Match.get_unneeded_tiles_v2(reduced_hand, calls, shanten_definition, tile_behavior)
+          |> IO.inspect(label: "unneeded for #{shanten}")
           |> choose_playable_tile(playables)
+          |> IO.inspect(label: "chose tile")
           {ret, i}
         ret -> ret
       end
@@ -92,7 +95,6 @@ defmodule RiichiAdvanced.AIPlayer do
       if Debug.debug_ai() and ret != nil do
         IO.puts(" >> #{state.seat}: I'm currently #{shanten}-shanten, with #{num_jokers_removed} jokers in hand!")
       end
-
       if ret == nil do # shanten > 6?
         ret = Riichi.get_disconnected_tiles(hand, tile_behavior)
         |> choose_playable_tile(playables)
@@ -196,6 +198,18 @@ defmodule RiichiAdvanced.AIPlayer do
     |> Map.put(:minefield_tiles, nil)
     |> Map.put(:minefield_hand, nil)
     |> Map.put(:minefield_waits, nil)
+
+    # chinitsu needs match definitions so we don't chombo
+    state = if state.ruleset == "chinitsu" do
+      win = Rules.translate_match_definitions(state.rules_ref, "win", true)
+      win = if win == nil or win == [] do [] else win end
+      tenpai_14 = Rules.translate_match_definitions(state.rules_ref, "tenpai_14", true)
+      tenpai_14 = if tenpai_14 == nil or tenpai_14 == [] do [] else tenpai_14 end
+      state = Map.put(state, :win_defn, win)
+      state = Map.put(state, :tenpai_14, tenpai_14)
+      state
+    else state end
+
     GenServer.cast(state.game_state, :notify_ai)
     {:noreply, state}
   end
@@ -398,6 +412,14 @@ defmodule RiichiAdvanced.AIPlayer do
             "skip" in player.buttons -> "skip"
             true -> Enum.random(player.buttons)
           end
+        state.ruleset == "chinitsu" ->
+          cond do
+            "ron" in player.buttons and Match.match_hand(player.hand ++ [last_discard], player.calls, state.win_defn, player.tile_behavior) -> "ron"
+            "tsumo" in player.buttons and Match.match_hand(player.hand ++ player.draw, player.calls, state.win_defn, player.tile_behavior) -> "tsumo"
+            "riichi" in player.buttons and Match.match_hand(player.hand ++ player.draw, player.calls, state.tenpai_14, player.tile_behavior) -> "riichi"
+            "ankan" in player.buttons -> "ankan"
+            true -> "skip"
+          end
         "ron" in player.buttons and Match.match_hand(player.hand ++ [last_discard], player.calls, state.shanten_definitions.win, player.tile_behavior) -> "ron"
         "tsumo" in player.buttons and Match.match_hand(player.hand ++ player.draw, player.calls, state.shanten_definitions.win, player.tile_behavior) -> "tsumo"
         "hu" in player.buttons and Match.match_hand(player.hand ++ [last_discard], player.calls, state.shanten_definitions.win, player.tile_behavior) -> "hu"
@@ -544,6 +566,13 @@ defmodule RiichiAdvanced.AIPlayer do
               {{_, i}, _} -> {state, Enum.filter(choices, fn {_, j} -> i == j end)}
             end
           end
+        "chinitsu" ->
+          if Marking.is_marking?(marked_objects, :hand) do
+            playables = Enum.map(choices, fn {{_seat, _source, obj}, i} -> {obj, i} end)
+            {{_, i}, _} = choose_discard(state, playables, visible_tiles)
+            IO.inspect({choices, i, Enum.filter(choices, fn {_, j} -> i == j end)})
+            {state, Enum.filter(choices, fn {_, j} -> i == j end)}
+          else {state, choices} end
         _ -> {state, choices}
       end
 
