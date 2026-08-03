@@ -418,8 +418,8 @@ defmodule RiichiAdvanced.RoomState do
 
   def update_rules_task(state) do
     ruleset_json = ModState.load_ruleset(state.ruleset, state.room_code)
-    |> ModState.apply_new_mods(get_enabled_mods(state))
-    |> Map.get(:ruleset_json)
+    |> ModState.append_mods(get_enabled_mods(state))
+    |> ModState.extract_json()
     # we do not need to add config here
 
     # parse the ruleset

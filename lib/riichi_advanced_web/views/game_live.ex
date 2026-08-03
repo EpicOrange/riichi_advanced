@@ -60,7 +60,7 @@ defmodule RiichiAdvancedWeb.GameLive do
 
     # liveviews mount twice; we only want to init a new player on the second mount
     # also do not init anything if the node is currently draining for cutover
-    if socket.root_pid != nil and not :persistent_term.get(:drain, false) do
+    if connected?(socket) and not :persistent_term.get(:drain, false) do
       # check if we're a tutorial; if so, load its config instead
       socket = setup_tutorial(socket)
       mods = if Map.has_key?(socket.assigns, :tutorial_sequence) do
@@ -484,7 +484,7 @@ defmodule RiichiAdvancedWeb.GameLive do
 
       # decode the sequence json
       tutorial_sequence = try do
-        case Jason.decode(RiichiAdvanced.ModLoader.strip_comments(sequence_json)) do
+        case Jason.decode(ModLoader.strip_comments(sequence_json)) do
           {:ok, sequence} -> sequence
           {:error, err} ->
             IO.puts("Erroring json:")

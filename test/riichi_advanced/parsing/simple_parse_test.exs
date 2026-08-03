@@ -7,14 +7,14 @@ defmodule RiichiAdvanced.SimpleParseTest do
   test "parse all rulesets" do
     for ruleset_path <- Path.wildcard(Application.app_dir(:riichi_advanced, "/priv/static/rulesets/**.json")) do
       ruleset = Path.basename(ruleset_path, ".json")
-      ruleset_json = ModState.load_ruleset(ruleset).ruleset_json
+      ruleset_json = ModState.load_ruleset(ruleset) |> ModState.extract_json()
       assert ruleset_json not in [nil, "", "{}"]
     end
   end
 
   test "parse all modpacks" do
     for modpack <- Map.keys(Constants.modpacks()) do
-      ruleset_json = ModState.load_ruleset(modpack).ruleset_json
+      ruleset_json = ModState.load_ruleset(modpack) |> ModState.extract_json()
       assert ruleset_json not in [nil, "", "{}"]
     end
   end
@@ -22,7 +22,7 @@ defmodule RiichiAdvanced.SimpleParseTest do
   test "parse all mahjongscript" do
     for ruleset_path <- Path.wildcard(Application.app_dir(:riichi_advanced, "/priv/static/rulesets/**.majs")) do
       ruleset = Path.basename(ruleset_path, ".majs")
-      ruleset_json = ModState.load_ruleset(ruleset).ruleset_json
+      ruleset_json = ModState.load_ruleset(ruleset) |> ModState.extract_json()
       assert ruleset_json not in [nil, "", "{}"]
     end
   end
@@ -77,8 +77,8 @@ defmodule RiichiAdvanced.SimpleParseTest do
         mod_specs = mod_specs ++ [mod.spec]
         # IO.inspect(mod_specs)
         try do
-          mod_state = ModState.apply_new_mods(mod_state, mod_specs)
-          assert mod_state.ruleset_json != nil, "Failed to apply mods #{inspect(mod_specs)} to ruleset #{ruleset})"
+          ruleset_json = ModState.append_mods(mod_state, mod_specs) |> ModState.extract_json()
+          assert ruleset_json != nil, "Failed to apply mods #{inspect(mod_specs)} to ruleset #{ruleset})"
         rescue
           _ ->
             IO.puts("Failed to apply mods #{inspect(mod_specs)} to ruleset #{ruleset})")
@@ -109,8 +109,8 @@ defmodule RiichiAdvanced.SimpleParseTest do
           name -> name
         end)
         ruleset_json = ModState.load_ruleset(ruleset)
-        |> ModState.apply_new_mods(mod_specs)
-        |> Map.get(:ruleset_json)
+        |> ModState.append_mods(mod_specs)
+        |> ModState.extract_json()
         assert ruleset_json != nil, "Failed to apply mods #{inspect(mod_specs)} to ruleset #{ruleset})"
       else
         # it just means the tutorial file is not in the Constants.tutorials() map

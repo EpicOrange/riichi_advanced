@@ -251,8 +251,8 @@ defmodule RiichiAdvancedWeb.ScoringTestLive do
     start_async(socket, :reload_ruleset, fn ->
       # apply all default mods + config to base ruleset
       ModState.load_ruleset(ruleset)
-      |> ModState.apply_new_mods(mods)
-      |> Map.get(:ruleset_json)
+      |> ModState.append_mods(mods)
+      |> ModState.extract_json()
       |> JQ.query_string_with_string!(ModLoader.convert_to_jq(config))
     end)
   end

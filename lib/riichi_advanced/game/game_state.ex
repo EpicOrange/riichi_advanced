@@ -372,9 +372,11 @@ defmodule RiichiAdvanced.GameState do
     # apply mods
     mod_state = if state.ruleset != "custom" do
       mod_state
-      |> ModState.apply_new_mods(mods)
-      |> ModState.apply_post_mods()
+      |> ModState.append_mods(mods)
+      |> ModState.apply_mods()
     else mod_state end
+    
+    ruleset_json = ModState.extract_json(mod_state)
 
     # cache mods if that was successful
     if not Enum.empty?(mods) do
@@ -385,15 +387,15 @@ defmodule RiichiAdvanced.GameState do
     # apply config
     ruleset_json = if state.config != nil and state.ruleset != "custom" do
       try do
-        ruleset_json = ModLoader.strip_comments(mod_state.ruleset_json)
+        ruleset_json = ModLoader.strip_comments(ruleset_json)
         query = ModLoader.convert_to_jq(ModLoader.strip_comments(state.config))
         JQ.query_string_with_string!(ruleset_json, query)
       rescue
         err ->
           IO.puts("Failed to load config:\n#{state.config}\nError was #{inspect(err)}")
-          mod_state.ruleset_json
+          ruleset_json
       end
-    else mod_state.ruleset_json end
+    else ruleset_json end
 
     # put params, debouncers, and process ids into state
     state = Map.merge(state, %Game{

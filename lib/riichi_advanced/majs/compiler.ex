@@ -1213,7 +1213,7 @@ defmodule RiichiAdvanced.Compiler do
         end
         with {:ok, config} <- config,
              {:ok, name} <- Validator.validate_lib(name) do
-          {:ok, {".", update_in(defs.post_mods, &[{name, config} | &1])}}
+          {:ok, {".", update_in(defs.post_mods, &[%{name: "lib/" <> name, config: config} | &1])}}
         end
       {"require_after", [line: line, column: column], args} -> {:error, "Compiler.compile: at line #{line}:#{column}, require_after command expects a library name optionally followed by a map of configs %{var: \"value\"}, got: #{inspect(args)}`"}
       {"default", _pos, [{name, _, nil}, default]} ->
