@@ -557,14 +557,6 @@ defmodule RiichiAdvanced.Constants do
 
   @modpacks %{
     # TODO migrate these
-    # minefield is .jq
-    "minefield" => %{
-      display_name: "Minefield",
-      tutorial_link: "https://riichi.wiki/Minefield_mahjong",
-      ruleset: "riichi",
-      mods: [%{name: "lib/yaku/riichi", config: %{bet: 1000, drawless: false}}, "minefield"],
-      default_mods: ["kiriage_mangan"],
-    },
     # taiwanese is .json
     "taiwanese" => %{ruleset: "taiwanese", mods: ["taiwanese_rules"]},
     # singaporean is .json

@@ -277,6 +277,7 @@ div.tiles, div.call.aside {
   flex-wrap: wrap-reverse;
   row-gap: calc(0.25 * var(--tile-size));
   max-width: calc(17.5 * 0.75 * var(--tile-size));
+  height: 0;
 }
 div.call.aside {
   justify-content: flex-end;
@@ -387,7 +388,10 @@ div.hand.kamicha {
 div.hand.self {
   transform: translateX(calc(2 * var(--tile-size)));
 }
-div.hand:not(.self) > div.tiles { flex-wrap: nowrap; }
+div.hand.shimocha > div.tiles,
+div.hand.kamicha > div.tiles {
+  flex-wrap: nowrap;
+}
 div.calls:hover { z-index: 100; }
 div.draws::before, div.tiles:hover::before, div.calls:hover::before {
   content: "";
