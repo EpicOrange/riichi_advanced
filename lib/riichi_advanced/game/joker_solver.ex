@@ -65,18 +65,18 @@ defmodule RiichiAdvanced.GameState.JokerSolver do
     {smt_hand, smt_calls} = replace_obvious_jokers({smt_hand, smt_calls}, obvious_joker_assignment)
 
     use_smt = Rules.get(rules_ref, "score_calculation", %{}) |> Map.get("use_smt", true)
-    ret = if use_smt and Enum.any?(Enum.uniq(smt_hand ++ Enum.concat(smt_calls)), &TileBehavior.is_joker?(&1, tile_behavior)) do
+    if use_smt and Enum.any?(Enum.uniq(smt_hand ++ Enum.concat(smt_calls)), &TileBehavior.is_joker?(&1, tile_behavior)) do
       # obtain all joker assignments (as a stream)
       RiichiAdvanced.SMT.match_hand_smt_v4(mutex, smt_solver, smt_hand, smt_calls, Rules.translate_match_definitions(rules_ref, ["win"]), tile_behavior)
-    else Stream.concat([[%{}]]) end
+    else Stream.concat([]) end
     # re-add the obvious jokers back into each assignment
     # also returns Stream.new([[obvious_joker_assignment]]) if stream was empty
     |> Stream.transform(
         fn -> true end,
         fn joker_assignment, _empty? -> {[Map.merge(obvious_joker_assignment, joker_assignment)], false} end,
-        fn empty? -> {if empty? do [obvious_joker_assignment] else [] end, nil} end
+        fn empty? -> {if empty? do [obvious_joker_assignment] else [] end, nil} end,
+        fn _ -> nil end
       )
-    ret
   end
 
   # input is original hand and calls, and original winning tile
