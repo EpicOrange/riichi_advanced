@@ -1064,7 +1064,7 @@ defmodule RiichiAdvanced.GameState do
     yaku_lists = Conditions.get_yaku_lists(state)
     point_name = Rules.get(state.rules_ref, "score_calculation")["point_name"]
     point2_name = Rules.get(state.rules_ref, "score_calculation")["point2_name"]
-    min_han = Rules.get(state.rules_ref, "constants") |> Map.get("min_points", 0)
+    min_han = Rules.get(state.rules_ref, "constants", %{}) |> Map.get("min_points", 0)
     # pretend you have discarded that tile
     state = if discard != nil do
       state
