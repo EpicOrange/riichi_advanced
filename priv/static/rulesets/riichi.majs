@@ -552,7 +552,7 @@ define_button tsumo,
     win_by_draw("tsumo")
   end
 
-set interruptible_actions, ["play_tile", "draw", "advance_turn", "self_call", "upgrade_call", "recalculate_buttons"]
+set interruptible_actions, ["play_tile", "advance_turn", "draw", "self_call", "upgrade_call"]
 set shown_statuses, ["furiten"]
 set display_wall, true
 set initial_score, 25000

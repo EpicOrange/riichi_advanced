@@ -24,7 +24,7 @@ defmodule RiichiAdvanced.GameState.Actions do
       nil -> state
       event ->
         if Debug.debug_actions() do
-          IO.puts("Triggered event #{event_name}: running #{inspect(event["actions"])}")
+          IO.puts("Triggered event #{event_name}: running #{inspect(event["actions"], charlists: :as_lists, limit: :infinity)}")
         end
         run_actions(state, event["actions"], context)
     end
@@ -2120,7 +2120,6 @@ defmodule RiichiAdvanced.GameState.Actions do
             IO.puts("Running deferred actions #{inspect(actions)} in context #{inspect(context)}")
           end
           state = run_actions(state, actions, context)
-          state = Buttons.recalculate_buttons(state)
           notify_ai(state)
           state
       end
