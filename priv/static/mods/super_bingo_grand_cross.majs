@@ -1,6 +1,13 @@
 on after_initialization do
-  add_rule("Rules", "Grand Cross", "(Super Bingo)")
-  add_rule("Tiles", "Gold North", "(Super Bingo)")
+  add_rule("Rules", "Grand Cross", "You can declare NEWS (one of each wind) as a concealed kan, worth 1 han, and you draw a replacement tile from the live wall.")
+  add_rule("Tiles", "Gold North", "(Super Bingo) A single gold north wind is added. This tile has no special functionality except when you use it to declare a grand cross. In that case, you are paid 20 from each player instead of 10.")
+end
+
+if !gold_pei do
+  replace 1, "wall", "4z", "34z"
+  on after_start do
+    set_tile_alias_all(["34z"], ["4z"])
+  end
 end
 
 define_set grand_cross, ~s"1z 2z 3z 4z"
@@ -14,19 +21,47 @@ define_button grand_cross,
     and tile_not_drawn(-8)
     and self_call_available,
   call: [["1z", "2z", "3z"]],
-  call_conditions: called_tile_contains(["4z"], 1),
+  call_conditions: called_tile_contains(["4z", "34z"], 1),
   call_style: %{
     self: [["1x", 2], 0, 1, ["1x", 3]]
   }
   do
     big_text("Kan")
     self_call
+    # instant payment of 10 chips, or 20 chips if gold pei included
+    grand_cross_payment
     if status("kan") do
       set_status("double_kan")
     end
     set_status("kan")
-    draw(1)
+    do_kan_draw
   end
+
+apply prepend, "functions.do_kan_draw" do
+  if last_call_is("grand_cross") do
+    flip_dora
+    # set status to prevent a second dora flip after turn change
+    set_status("skip_kan_dora_flip")
+  end
+end
+
+def grand_cross_payment do
+  if match(["last_call"], ~m"nojoker, 34z:1") do
+    push_message("is paid 20 shuugi from all players for declaring grand cross with a gold pei")
+    as others do
+      big_text("   -20    ")
+      shuugi -= 20
+      as prev_seat do shuugi += 20 end
+    end
+  else
+    push_message("is paid 10 shuugi from all players for declaring grand cross")
+    as others do
+      big_text("   -10    ")
+      shuugi -= 10
+      as prev_seat do shuugi += 10 end
+    end
+  end
+end
 
 define_yaku yaku, "Grand Cross", [1, "Han"], match(["calls"], ~m"grand_cross:1")
 define_yaku yaku, "Grand Cross", [1, "Han"], match(["calls"], ~m"grand_cross:2")
@@ -35,3 +70,7 @@ define_yaku yaku, "Grand Cross", [1, "Han"], match(["calls"], ~m"grand_cross:4")
 
 apply append, "set_definitions.mentsu", ~s"1z 2z 3z 4z"
 
+define_yaku meta_yaku, "(grand cross override)", has_call_named("grand_cross"), [
+  "(grand cross override)",
+  "Tanyao", "Honitsu", "Chanta", "Honroutou"
+]

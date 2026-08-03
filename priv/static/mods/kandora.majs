@@ -1,0 +1,36 @@
+def after_initialization do
+  add_rule("Rules", "Kandora", "Every kan reveals another dora indicator after the discard, except for concealed kan, which reveals one immediately.")
+end
+
+def flip_dora do
+  if tile_revealed(-16) and tile_not_revealed(-18) do reveal_tile(-18); tag_dora("dora", -18) end
+  if tile_revealed(-14) and tile_not_revealed(-16) do reveal_tile(-16); tag_dora("dora", -16) end
+  if tile_revealed(-12) and tile_not_revealed(-14) do reveal_tile(-14); tag_dora("dora", -14) end
+  if tile_revealed(-10) and tile_not_revealed(-12) do reveal_tile(-12); tag_dora("dora", -12) end
+  if tile_revealed(-8) and tile_not_revealed(-10) do reveal_tile(-10); tag_dora("dora", -10) end
+  if tile_revealed(-6) and tile_not_revealed(-8) do reveal_tile(-8); tag_dora("dora", -8) end
+end
+
+def flip_after_kan do
+  if status("kan") and status_missing("skip_kan_dora_flip") do
+    flip_dora
+  end
+end
+
+# dora flip on discard/call
+apply append, "functions.turn_cleanup" do flip_after_kan end
+# dora flip on win
+on before_win, prepend: true do flip_after_kan end
+# dora flips immediately after ankan
+apply prepend, "functions.do_kan_draw" do
+  if last_call_is("ankan") do
+    flip_dora
+    # set status to prevent a second dora flip after turn change
+    set_status("skip_kan_dora_flip")
+  end
+end
+
+# reset that status
+on before_turn_change do
+  if not_just_called do unset_status("skip_kan_dora_flip") end
+end
