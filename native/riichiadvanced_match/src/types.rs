@@ -20,6 +20,7 @@ pub type Masks = SmallVec<[(Mask, RowIndex); 16]>;
 pub type RowIndex = u8; // index into Mask
 pub type IndexVec = SmallVec<[RowIndex; 16]>;
 
+pub type OffsetVec = SmallVec<[MatchOffset; 4]>;
 
 #[derive(PartialEq, Eq, PartialOrd, Ord, Clone, Copy, Debug, Hash)]
 #[repr(transparent)]
@@ -217,8 +218,8 @@ pub enum MatchOffset {
 #[derive(PartialEq, Eq, Clone)]
 pub enum MatchGroup {
   Offset(MatchOffset),
-  Offsets(Vec<MatchOffset>),
-  Subgroups(Vec<Vec<MatchOffset>>),
+  Offsets(OffsetVec),
+  Subgroups(Vec<OffsetVec>),
 }
 
 impl MatchGroup {
@@ -302,7 +303,7 @@ impl Encoder for MatchGroup {
     match self {
       MatchGroup::Offset(offset) => offset.encode(env),
       MatchGroup::Offsets(offsets) => offsets.encode(env),
-      MatchGroup::Subgroups(subgroupings) => subgroupings.encode(env),
+      MatchGroup::Subgroups(subgroupings) => subgroupings.iter().map(|subgroup| subgroup.as_slice().encode(env)).collect::<Vec<_>>().encode(env)
     }
   }
 }
@@ -310,8 +311,8 @@ impl Encoder for MatchGroup {
 impl<'a> Decoder<'a> for MatchGroup {
   fn decode(term: Term<'a>) -> NifResult<Self> {
     if let Ok(offset) = term.decode::<MatchOffset>() { Ok(MatchGroup::Offset(offset)) }
-    else if let Ok(offsets) = term.decode::<Vec<MatchOffset>>() { Ok(MatchGroup::Offsets(offsets)) }
-    else if let Ok(subgroupings) = term.decode::<Vec<Vec<MatchOffset>>>() { Ok(MatchGroup::Subgroups(subgroupings)) }
+    else if let Ok(offsets) = term.decode::<Vec<MatchOffset>>() { Ok(MatchGroup::Offsets(offsets.into())) }
+    else if let Ok(subgroupings) = term.decode::<Vec<Vec<MatchOffset>>>() { Ok(MatchGroup::Subgroups(subgroupings.into_iter().map(|subgroup| subgroup.into()).collect())) }
     else { Err(Error::BadArg) }
   }
 }

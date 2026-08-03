@@ -1,12 +1,12 @@
 use std::collections::{HashSet, VecDeque};
 use std::iter::{empty, once};
 
-use smallvec::SmallVec;
+use smallvec::{SmallVec, smallvec};
 
 use crate::encode::{encode_attrs, encode_tiles, has_attrs, to_tileset};
 use crate::tile_table::*;
 use crate::tileset::_check_equivalence;
-use crate::types::{ANY_PRIME, BaseTileVec, ElixirTile, FIXED_OFFSETS, GroupIterator, MatchDefinition, MatchDefinitionElem, MatchGroup, MatchInfo, MatchOffset, RemovableGroup, Tile, TileOrdering, TileSet};
+use crate::types::{ANY_PRIME, BaseTileVec, ElixirTile, FIXED_OFFSETS, GroupIterator, MatchDefinition, MatchDefinitionElem, MatchGroup, MatchInfo, MatchOffset, OffsetVec, RemovableGroup, Tile, TileOrdering, TileSet};
 use crate::primes::{is_jihai, is_manzu, is_pinzu, is_souzu, shift_suit_mut, to_prime};
 
 // return true if changed
@@ -264,7 +264,7 @@ pub fn is_offset_dest(tile: Tile, offset: MatchOffset, match_info: &MatchInfo) -
 // reifies offsets into a TileSet for each base tile
 // wraps each in a RemovableGroup::Group
 pub fn generate_groups_from_offsets<'a>(
-    offsets: Vec<MatchOffset>,
+    offsets: OffsetVec,
     base_tiles: &'a mut impl Iterator<Item = Tile>, all_attrs: &'a [String],
     joker_tiles: &'a HashSet<Tile>,
     ordering: &'a TileOrdering, ordering_r: &'a TileOrdering,
@@ -304,7 +304,7 @@ pub fn __generate_groups<'a>(
       // first check if it's a tile name or fixed offset,
       match ATOM_TABLE.get(&s).or_else(|| FIXED_OFFSETS.get(&s)) {
         // in which case we do the same as for MatchGroup::Offset
-        Some(_) => generate_groups_from_offsets(vec!(MatchOffset::TileOrKeyword(s)), base_tiles, all_attrs, joker_tiles, ordering, ordering_r, nojoker),
+        Some(_) => generate_groups_from_offsets(smallvec!(MatchOffset::TileOrKeyword(s)), base_tiles, all_attrs, joker_tiles, ordering, ordering_r, nojoker),
         None => {
           if s == "nojoker" {
             *nojoker = true;
@@ -318,7 +318,7 @@ pub fn __generate_groups<'a>(
         }
       }
     }
-    MatchGroup::Offset(offset) => generate_groups_from_offsets(vec!(offset), base_tiles, all_attrs, joker_tiles, ordering, ordering_r, nojoker),
+    MatchGroup::Offset(offset) => generate_groups_from_offsets(smallvec!(offset), base_tiles, all_attrs, joker_tiles, ordering, ordering_r, nojoker),
     MatchGroup::Offsets(offsets) => generate_groups_from_offsets(offsets, base_tiles, all_attrs, joker_tiles, ordering, ordering_r, nojoker),
     MatchGroup::Subgroups(subgroupings) => {
       Box::new(base_tiles.filter_map(move |base_tile|
@@ -335,8 +335,8 @@ pub fn __generate_groups<'a>(
   }
 }
 
-pub fn gather_rev_offsets(match_definition: &MatchDefinition) -> Vec<MatchOffset> {
-  let mut ret = vec!(MatchOffset::Offset(0));
+pub fn gather_rev_offsets(match_definition: &MatchDefinition) -> OffsetVec {
+  let mut ret = smallvec!(MatchOffset::Offset(0));
   for match_elem in match_definition {
     if let MatchDefinitionElem::Group(groups, _n) = match_elem {
       for group in groups {
@@ -346,7 +346,7 @@ pub fn gather_rev_offsets(match_definition: &MatchDefinition) -> Vec<MatchOffset
   }
   _gather_rev_offsets(ret)
 }
-pub fn _gather_rev_offsets(mut offsets: Vec<MatchOffset>) -> Vec<MatchOffset> {
+pub fn _gather_rev_offsets(mut offsets: OffsetVec) -> OffsetVec {
   offsets.sort_unstable();
   offsets.dedup();
   for offset in offsets.iter_mut() {

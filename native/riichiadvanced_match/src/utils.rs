@@ -2,7 +2,6 @@ use std::collections::HashMap;
 
 use rustler::Atom;
 use smallvec::{Array, SmallVec};
-use crate::encode::decode_tiles_no_attrs;
 use crate::primes::is_any;
 use crate::types::{ANY_PRIME, Aliases, ElixirAliases, ElixirTile, IndexVec, Mapping, Tile};
 

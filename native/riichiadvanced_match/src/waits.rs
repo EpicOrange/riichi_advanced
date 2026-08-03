@@ -4,13 +4,13 @@ use std::sync::atomic::Ordering;
 use std::time::Instant;
 use rustler::Atom;
 
-use crate::encode::{decode, decode_tiles, encode_tiles};
+use crate::encode::{decode_tiles, encode_tiles};
 use crate::r#match::__remove_match_definition;
 use crate::match_info::{prepare_tiles};
 use crate::profile::{PROFILE_GET_WAITS, PROFILE_UNNEEDED_TILES, CALL_COUNT, MAX_NANOS, TOTAL_NANOS};
 use crate::tile_table::{TILE_TABLE, tile1x};
 use crate::types::{ElixirAliases, ElixirHandCalls, ElixirTile, MatchDefinition, MatchDefinitions, MatchInfo, Tile};
-use crate::utils::{add_joker_to_aliases, add_joker_to_elixir_aliases, remove_indices, remove_joker_from_aliases};
+use crate::utils::{add_joker_to_aliases, remove_indices, remove_joker_from_aliases};
 
 #[rustler::nif(schedule = "DirtyCpu")]
 fn _get_waits_v3(
