@@ -170,7 +170,7 @@ defmodule RiichiAdvancedWeb.MajsTestLive do
   end
 
   def handle_info({:converted_majs, _config, result}, socket) do
-    socket = assign(socket, :result, result)
+    socket = assign(socket, :result, RiichiAdvanced.Formatter.format(Jason.decode!(result), 80))
     socket = assign(socket, :loading, false)
     {:noreply, socket}
   end
