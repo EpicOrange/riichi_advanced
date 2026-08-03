@@ -530,6 +530,7 @@ div.tile > span.tile-debug {
   pointer-events: none;
   & > span { font-size: 60%; }
 }
+div.tile:hover > span.tile-debug { display: none; }
 div.kamicha div.tile > span.tile-debug,
 div.shimocha div.tile > span.tile-debug {
   top: 0;

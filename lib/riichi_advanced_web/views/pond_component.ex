@@ -1,5 +1,6 @@
 defmodule RiichiAdvancedWeb.PondComponent do
-  alias RiichiAdvanced.Utils, as: Utils
+  alias RiichiAdvanced.GameState.Debug
+  alias RiichiAdvanced.Utils
   use RiichiAdvancedWeb, :live_component
 
   def mount(socket) do
@@ -24,34 +25,34 @@ defmodule RiichiAdvancedWeb.PondComponent do
         <%= if not Enum.empty?(@marking) do %>
           <%= for {tile, i} <- prepare_pond(@pond, @marking) |> Enum.take(24) do %>
             <%= if GenServer.call(@game_state, {:can_mark?, @viewer, @seat, i, :discard}) do %>
-              <div class={Utils.get_tile_class(tile, i, assigns, ["markable"])} phx-cancellable-click="mark_tile" phx-target={@myself} phx-value-index={i}></div>
+              <div class={Utils.get_tile_class(tile, i, assigns, ["markable"])} phx-cancellable-click="mark_tile" phx-target={@myself} phx-value-index={i}><%= raw debug_tile(tile) %></div>
             <% else %>
               <%= if GenServer.call(@game_state, {:is_marked?, @viewer, @seat, i, :discard}) do %>
-                <div class={Utils.get_tile_class(tile, i, assigns, ["marked"])}></div>
+                <div class={Utils.get_tile_class(tile, i, assigns, ["marked"])}><%= raw debug_tile(tile) %></div>
               <% else %>
-                <div class={Utils.get_tile_class(tile, i, assigns)}></div>
+                <div class={Utils.get_tile_class(tile, i, assigns)}><%= raw debug_tile(tile) %></div>
               <% end %>
             <% end %>
           <% end %>
         <% else %>
-          <div :for={{tile, i} <- Enum.take(Enum.with_index(@pond), 24)} class={Utils.get_tile_class(tile, i, assigns)}></div>
+          <div :for={{tile, i} <- Enum.take(Enum.with_index(@pond), 24)} class={Utils.get_tile_class(tile, i, assigns)}><%= raw debug_tile(tile) %></div>
         <% end %>
       </div>
       <div class={[@id, "secondary-pond", @highlight? && "highlight"]} :if={@secondary_pond?}>
         <%= if not Enum.empty?(@marking) do %>
           <%= for {tile, i} <- prepare_pond(@pond, @marking) |> Enum.drop(24) do %>
             <%= if GenServer.call(@game_state, {:can_mark?, @viewer, @seat, i, :discard}) do %>
-              <div class={Utils.get_tile_class(tile, i, assigns, ["markable"])} phx-cancellable-click="mark_tile" phx-target={@myself} phx-value-index={i}></div>
+              <div class={Utils.get_tile_class(tile, i, assigns, ["markable"])} phx-cancellable-click="mark_tile" phx-target={@myself} phx-value-index={i}><%= raw debug_tile(tile) %></div>
             <% else %>
               <%= if GenServer.call(@game_state, {:is_marked?, @viewer, @seat, i, :discard}) do %>
-                <div class={Utils.get_tile_class(tile, i, assigns, ["marked"])}></div>
+                <div class={Utils.get_tile_class(tile, i, assigns, ["marked"])}><%= raw debug_tile(tile) %></div>
               <% else %>
-                <div class={Utils.get_tile_class(tile, i, assigns)}></div>
+                <div class={Utils.get_tile_class(tile, i, assigns)}><%= raw debug_tile(tile) %></div>
               <% end %>
             <% end %>
           <% end %>
         <% else %>
-          <div :for={{tile, i} <- Enum.drop(Enum.with_index(@pond), 24)} class={Utils.get_tile_class(tile, i, assigns)}></div>
+          <div :for={{tile, i} <- Enum.drop(Enum.with_index(@pond), 24)} class={Utils.get_tile_class(tile, i, assigns)}><%= raw debug_tile(tile) %></div>
         <% end %>
       </div>
     </div>
@@ -67,6 +68,20 @@ defmodule RiichiAdvancedWeb.PondComponent do
     {ix, _} = Integer.parse(index)
     GenServer.cast(socket.assigns.game_state, {:mark_tile, socket.assigns.viewer, socket.assigns.seat, ix, :discard})
     {:noreply, socket}
+  end
+
+  # may be untrusted input, so we must validate
+  @valid_tile_regex ~r/^[0-9]+[a-z]$/
+  @valid_attr_regex ~r/^[a-zA-Z0-9_]+$/
+  def debug_tile(tile) do
+    if Debug.debug_hands() do
+      attrs = Utils.get_attrs(tile)
+      tile_id = Utils.strip_attrs(tile)
+      if Regex.match?(@valid_tile_regex, Atom.to_string(tile_id)) and Enum.all?(attrs, &Regex.match?(@valid_attr_regex, &1)) do
+        attr_string = Enum.map_join(attrs, &"<span>#{&1}</span>")
+        "<span class=\"tile-debug\">#{tile_id}#{attr_string}</span>"
+      else "" end
+    else "" end
   end
 
   def update(assigns, socket) do

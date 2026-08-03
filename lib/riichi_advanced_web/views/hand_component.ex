@@ -320,6 +320,7 @@ defmodule RiichiAdvancedWeb.HandComponent do
       else "" end
     else "" end
   end
+
   def update(assigns, socket) do
     # randomize position of played tile (if tedashi)
     no_played_tile_yet? = socket.assigns.played_tile_index == nil
