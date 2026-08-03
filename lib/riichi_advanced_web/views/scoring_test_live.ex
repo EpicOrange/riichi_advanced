@@ -561,10 +561,9 @@ defmodule RiichiAdvancedWeb.ScoringTestLive do
       call_buttons = call_buttons
       |> Map.new(fn {name, button} ->
         display_name = Map.get(button, "display_name", "")
-        display_name = if call_button_display_names[display_name] > 1 do
-          "#{display_name} (#{name})"
-        else display_name end
-        {name, Map.put(button, "display_name", display_name)}
+        if call_button_display_names[display_name] > 1 do
+          {name, Map.put(button, "disambiguate", name)}
+        else {name, button} end
       end)
       socket = assign(socket, :call_buttons, call_buttons)
 

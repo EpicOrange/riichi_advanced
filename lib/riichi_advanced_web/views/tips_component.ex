@@ -26,6 +26,7 @@ defmodule RiichiAdvancedWeb.TipsComponent do
     # e.g. "In Space Mahjong, any three different winds form a sequence."
     # will need a mechanism to only show them in the Space Mahjong lobby though
   ]
+  def tips, do: @tips
 
   def mount(socket) do
     n = Enum.count(@tips)

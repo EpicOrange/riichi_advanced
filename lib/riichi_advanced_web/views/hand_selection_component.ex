@@ -1,6 +1,7 @@
 defmodule RiichiAdvancedWeb.HandSelectionComponent do
   alias RiichiAdvanced.Utils, as: Utils
   use RiichiAdvancedWeb, :live_component
+  import RiichiAdvancedWeb.Translations
 
   def mount(socket) do
     socket = socket
@@ -64,9 +65,9 @@ defmodule RiichiAdvancedWeb.HandSelectionComponent do
         <div class="hand-selection-calls">
           <%= for {name, button} <- @call_buttons do %>
             <%= if @selected_call_button == name do %>
-              <button type="button" class="button scoringtest_call_button pressed" phx-cancellable-click="deselect_call_button"><%= button["display_name"] %></button>
+              <button type="button" class="button scoringtest_call_button pressed" phx-cancellable-click="deselect_call_button"><%= dt(@lang, button["display_name"]) <> if Map.has_key?(button, "disambiguate") do " (" <> button["disambiguate"] <> ")" else "" end %></button>
             <% else %>
-              <button type="button" class="button scoringtest_call_button" phx-cancellable-click="select_call_button" phx-value-name={name}><%= button["display_name"] %></button>
+              <button type="button" class="button scoringtest_call_button" phx-cancellable-click="select_call_button" phx-value-name={name}><%= dt(@lang, button["display_name"]) <> if Map.has_key?(button, "disambiguate") do " (" <> button["disambiguate"] <> ")" else "" end %></button>
             <% end %>
           <% end %>
         </div>
