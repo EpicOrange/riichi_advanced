@@ -35,7 +35,7 @@ defmodule RiichiAdvanced.YakuTest.TokyoRulesYaku do
       east: %{
         yaku: [{"Shiiaru Raotai", [1, "Han"]}],
         minipoints: 28,
-        score: 1344
+        score: 340
       }
     })
   end
@@ -63,7 +63,7 @@ defmodule RiichiAdvanced.YakuTest.TokyoRulesYaku do
       east: %{
         yaku: [{"Sanankou", [2, "Han"]}, {"Tanyao", [1, "Han"]}, {"Ketsupaihou", [1, "Han"]}],
         minipoints: 44,
-        score: 12000
+        score: 4220
       }
     })
   end
@@ -87,7 +87,7 @@ defmodule RiichiAdvanced.YakuTest.TokyoRulesYaku do
       east: %{
         yaku: [{"Sanshoku Ittsuu", [2, "Han"]}, {"Hatsu", [1, "Han"]}],
         minipoints: 38,
-        score: 7296
+        score: 1820
       }
     })
   end
@@ -109,7 +109,7 @@ defmodule RiichiAdvanced.YakuTest.TokyoRulesYaku do
       east: %{
         yaku: [{"Shiisanpuutaa", [3, "Han"]}],
         minipoints: 30,
-        score: 5760
+        score: 1440
       }
     })
   end
@@ -138,7 +138,7 @@ defmodule RiichiAdvanced.YakuTest.TokyoRulesYaku do
       east: %{
         yaku: [{"Isshoku Sanjun", [3, "Han"]}],
         minipoints: 24,
-        score: 4608
+        score: 1150
       }
     })
   end

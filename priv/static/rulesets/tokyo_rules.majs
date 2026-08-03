@@ -6,6 +6,7 @@ require "pao_standard"
 require "pao_suukantsu"
 require "pao_tsuuiisou"
 require "pao_chinroutou"
+require "min_han", %{min: 1}
 require_after "partial_furiten", %{check_ryanmen: true}
 require_after "tokyo_scoring"
 
@@ -13,6 +14,16 @@ set display_honba, true
 set always_east_round, true
 set max_rounds, 8
 set initial_score, 20000
+
+on after_initialization do
+  add_rule("Rules", "Tontonsen", "The game consists of two east rounds.")
+  delete_rule("Rules", "Multiple Ron")
+  add_rule("Rules", "Head Bump", "If there are multiple winners, then the earliest winner in turn order gets the full payment for the hand, and the other winners get half each. As for riichi sticks, each winner first takes back their own riichi stick (if any) and any leftover riichi sticks is given to the first winner in turn order.")
+  add_rule("Rules", "Fu", "(Tokyo Rules) Fu is not rounded.")
+  add_rule("Rules", "Scoring", "Scores are rounded to the nearest 10, maxing out at 1000 points (considered kazumangan, 4000/6000). Having 7+ han qualifies you for hanemangan (8000/12000). Some hands are shoumangan (6000/9000). Hands that are yakuman in riichi are daimangan (12000/18000), with the exception of chuurenpoutou, which is choumangan (16000/24000)")
+  add_rule("Rules", "Minimum Han", "Winning requires a minimum of 1 han.")
+  add_rule("Rules", "Zoroba (unimplemented)", "Each 1 or 6 die rolled in the beginning adds 1 han to the winning hand. It is guaranteed that one of the dice is a 1 or 6. This does not count towards the 1 han minimum.")
+end
 
 # yaku differences are:
 # - no ippatsu

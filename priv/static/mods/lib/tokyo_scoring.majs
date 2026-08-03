@@ -7,10 +7,6 @@ define_const chiitoitsu_ron_fu, 40
 define_const closed_tsumo_20_fu, false
 define_const open_30_fu, false
 
-# disable noten payments
-def setup_noten_payments do end
-def execute_noten_payments do end
-
 on after_initialization do
   rename_rule_tab("1 ★", "Shoumangan")
   rename_rule_tab("1.5 ★", "Daimangan")
@@ -36,5 +32,87 @@ on after_initialization do
 end
 define_yaku_precedence "Daichiishin", ["Tsuuiisou"] # for some reason.
 
+# disable noten payments
+def setup_noten_payments do end
+def execute_noten_payments do end
 
+def calculate_base_score do
+  cond do
+    total > 0 -> noop
+    points2 >= 2 ->
+      total = 4000 :: "Choumangan base"
+      modify_winner("score_name", "Choumangan")
+    points2 >= 1.5 ->
+      total = 3000 :: "Daimangan base"
+      modify_winner("score_name", "Daimangan")
+    points >= 7 and dora > 0 ->
+      total = 2000 :: "Hanemangan base"
+      modify_winner("score_name", "Hanemangan")
+    points2 >= 1 ->
+      total = 1500 :: "Shoumangan base"
+      modify_winner("score_name", "Shoumangan")
+    true ->
+      han_mult = 2 ** points :: "Han mult."
+      total = minipoints :: "Fu"
+      total *= han_mult :: "Base"
+      if total >= 1000 do
+        total = 1000 :: "Shoumangan limit"
+      end
+      modify_winner("score_name", "Kazumangan")
+  end
+  base_score = total # save base_score for mods to use
+end
 
+def finalize_score, prepend: true do
+  # round to nearest 10, which could be up or down
+  if mod(total, 10) > 0 do
+    total = round(total, 10) :: "Round"
+  end
+end
+
+def apply_ron_scoring, append: true do
+  # in the event of multiple ron, only get half
+  if status("win_half", as: "winner") do
+    total /= 2 :: "Partial head bump"
+  end
+end
+
+def check_multiple_ron do
+  num_winners += 1
+  set_counter_all("num_winners", "num_winners")
+  if num_winners > 1 do
+    set_status("win_half", as: "prev_seat")
+  end
+end
+
+apply prepend, "buttons.ron.actions" do check_multiple_ron end
+apply prepend, "buttons.chankan.actions" do check_multiple_ron end
+
+def apply_ron_scoring, append: true do
+  # in the event of multiple ron, only get half
+  if status("win_half", as: "winner") do
+    total /= 2 :: "Partial head bump"
+  end
+end
+
+def precalculate_riichi_payments do
+  # winners get their own riichi stick back
+  as winners do
+    if status("riichi") do
+      riichi_bet = @riichi_bet
+      subtract_from_pot("riichi_bet")
+    end
+  end
+end
+
+on after_win, prepend: true do
+  modify_winner("score", "display_total") # before honba and riichi sticks
+  if pot > 0 do precalculate_riichi_payments end
+  if status("riichi") do
+    total += @riichi_bet :: "Reclaim riichi bet"
+  end
+  if pot > 0 do
+    total += pot :: "Take remaining bets"
+    subtract_from_pot("pot") # zero out pot so other players don't get it
+  end
+end

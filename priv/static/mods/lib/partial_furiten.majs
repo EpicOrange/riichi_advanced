@@ -1,8 +1,14 @@
 require "furiten"
+default check_ryanmen, false
 
 on after_initialization do
   delete_rule("Rules", "Furiten")
   add_rule("Rules", "Furiten", "You cannot win on a discarded tile that you yourself have discarded (or skipped a win on). You can still win on such tiles by tsumo (self-draw).")
+end
+if !check_ryanmen do
+  on after_initialization do
+    update_rule("Rules", "Furiten", "Also, you also cannot win on a two-sided wait (e.g. 34 waiting for 2/5, or 1234 waiting for 1/4) if you have discarded either side of the wait.")
+  end
 end
 
 # furiten on one wait doesn't invalidate another wait
@@ -12,8 +18,14 @@ define_play_effect any do
     if status("tenpai", "furiten") do
       if match(["hand", "calls", "last_discard"], ["win"]) and
          not_match(["last_discard", "any_discard"], ~m"pair:1") do
-        unset_status("furiten")
-        recalculate_buttons
+        if !check_ryanmen do
+          # TODO: implement some fancy match check here
+          unset_status("furiten")
+          recalculate_buttons
+        else
+          unset_status("furiten")
+          recalculate_buttons
+        end
       end
     end
   end
