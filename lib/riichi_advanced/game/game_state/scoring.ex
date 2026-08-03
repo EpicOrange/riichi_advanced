@@ -1,4 +1,3 @@
-
 defmodule RiichiAdvanced.GameState.Scoring do
   alias RiichiAdvanced.GameState.Actions, as: Actions
   alias RiichiAdvanced.GameState.Conditions, as: Conditions
@@ -121,9 +120,9 @@ defmodule RiichiAdvanced.GameState.Scoring do
     end
   end
 
-  def seat_scores_points(state, yaku_list_names, point_name, min_points, min_minipoints, seat, winning_tile, win_source) do
-    score_yaku(state, yaku_list_names, seat, winning_tile, win_source)
-    |> Enum.any?(fn {:ok, {yaku, minipoints}} ->
+  def seat_scores_points(state, yaku_list_names, point_name, min_points, min_minipoints, seat, winning_tiles, win_source) do
+    score_yaku(state, yaku_list_names, seat, winning_tiles, win_source)
+    |> Enum.any?(fn {yaku, minipoints} ->
       minipoints >= min_minipoints && case min_points do
         :declared ->
           names = Enum.map(yaku, fn {name, _value} -> name end)
@@ -138,73 +137,102 @@ defmodule RiichiAdvanced.GameState.Scoring do
   end
 
   # this is a memoized version of score_yaku, it returns a list not a stream
-  @decorate cacheable(cache: RiichiAdvanced.Cache.Memo, key: {:score_yaku_cached, state, yaku_list_names, seat, winning_tile, win_source}, opts: [ttl: :timer.seconds(10)])
-  def score_yaku_cached(state, yaku_list_names, seat, winning_tile, win_source) do
-    score_yaku(state, yaku_list_names, seat, winning_tile, win_source)
+  @decorate cacheable(cache: RiichiAdvanced.Cache.Memo, key: {:score_yaku_cached, state, yaku_list_names, seat, winning_tiles, win_source}, opts: [ttl: :timer.seconds(10)])
+  def score_yaku_cached(state, yaku_list_names, seat, winning_tiles, win_source) do
+    score_yaku(state, yaku_list_names, seat, winning_tiles, win_source)
     |> Enum.to_list()
   end
 
-  # this is basically a clone of Kyoku.calculate_winner_details_v2 and Joker.evaluate_joker_assignment
-  # doesn't calculate a whole winner object, just returns a stream of yaku
-  # TODO DRY
-  def score_yaku(state, yaku_list_names, seat, winning_tile, win_source) do
-    winning_tile = if winning_tile == nil do Enum.at(state.players[seat].hand, -1) else winning_tile end
-    # we need to let before_win actions know about the winning tile
-    #   so we store it in state.winners
-    state = Map.update!(state, :winners, &Map.put(&1, seat, %{winning_tile: winning_tile}))
+  def score_yaku(state, yaku_list_names, seat, winning_tiles, win_source) do
+    lazy_map_joker_cxts(state, seat, winning_tiles, win_source, fn state, cxt ->
+      get_yaku_from_lists(state, yaku_list_names, seat, cxt.assigned_winning_tile, win_source)
+    end)
+  end
 
-    # trigger before_win before solving for jokers
-    state = Actions.trigger_event(state, "before_win", %{seat: seat, win_source: win_source, winning_tile: winning_tile, silent: true})
+  # for every joker assignment and winning tile, call:
+  #   f.(state, cxt)
+  # returns a stream of results
+  def lazy_map_joker_cxts(state, seat, winning_tiles, win_source, f) do
+    %{hand: hand, tile_behavior: tile_behavior} = state.players[seat]
+    is_tenhou? = winning_tiles == nil or winning_tiles == [nil]
+    if is_tenhou? do hand else winning_tiles end
+    |> Enum.map(fn winning_tile ->
+      # first, if this was tenhou, we need to remove the winning tile from hand
+      hand = if is_tenhou? do
+        # try each tile, starting from the rightmost
+        for winning_tile <- Enum.reverse(Enum.uniq(hand)) do
+          List.delete(hand, winning_tile)
+        end
+      else hand end
 
-    # it's possible the winning tile was modified by before_win, so fetch it again
-    winning_tile = case get_winning_tile(state, seat, win_source) do
-      nil          -> winning_tile # this was tenhou, and we were assigned a winning tile
-      winning_tile -> winning_tile
-    end
+      # then update hand
+      state = update_player(state, seat, &%{ &1 | hand: hand })
 
-    # obtain smt_hand and smt_calls after before_win runs
-    #   because we may have run actions to modify the hand (e.g. by adding attributes)
-    {smt_hand, smt_calls} = JokerSolver.get_smt_hand_calls(state.players[seat].hand, state.players[seat].calls, winning_tile)
-    # |> IO.inspect(label: inspect(win_source), limit: :infinity)
+      # we need to let before_win actions know about the winning tile
+      #   so we store it in state.winners
+      state = Map.update!(state, :winners, &Map.put(&1, seat, %{winning_tile: winning_tile}))
+      state = update_winning_tile(state, seat, win_source, fn _ -> winning_tile end)
 
-    # now calculate joker assignments
-    # and see if any of them result in a score at least min_points and min_minipoints
-    JokerSolver.solve_for_jokers(
-      state.mutex,
-      smt_hand, smt_calls,
-      state.smt_solver,
-      state.rules_ref,
-      state.players[seat].tile_behavior)
-    |> Task.async_stream(fn joker_assignment ->
-      # apply joker assignments
-      {assigned_hand, assigned_calls, _assigned_winning_hand, assigned_winning_tile} = JokerSolver.apply_joker_assignment(state.players[seat].hand, state.players[seat].calls, winning_tile, joker_assignment)
-      # IO.inspect({smt_calls, assigned_calls, state.players[seat].calls}, label: inspect(joker_assignment), limit: :infinity)
-      # replace the winner's hand/calls temporarily (for yaku evaluation)
-      state = update_player(state, seat, &%{ &1 | hand: assigned_hand, calls: assigned_calls, cache: %{ &1.cache | orig_hand: &1.hand, orig_calls: &1.calls, orig_winning_tile: winning_tile } })
+      # trigger before_win before solving for jokers
+      state = Actions.trigger_event(state, "before_win", %{seat: seat, win_source: win_source, winning_tile: winning_tile, silent: true})
 
-      # also replace the actual winning tile within state
-      state = if assigned_winning_tile != nil do
-        update_winning_tile(state, seat, win_source, fn _ -> assigned_winning_tile end)
-      else
-        IO.puts("WARNING: no assigned_winning_tile for a win! hand: #{inspect(smt_hand)}, joker_assignment: #{inspect(joker_assignment)}")
-        state
+      # it's possible the winning tile was modified by before_win, so fetch it again
+      winning_tile = case get_winning_tile(state, seat, win_source) do
+        nil          -> winning_tile # this was tenhou, and we were assigned a winning tile
+        winning_tile -> winning_tile
       end
 
-      # run before_scoring only after replacing those tiles
-      # this is because before_scoring might add attributes to hand, which will be used for yaku calculation
-      # also you need non-joker tiles in order to calculate fu and such here
-      state = Actions.trigger_event(state, "before_scoring", %{seat: seat, win_source: win_source, winning_tile: assigned_winning_tile, silent: true})
-      
-      # fetch the new winning tile
-      assigned_winning_tile = get_winning_tile(state, seat, win_source)
-      if assigned_winning_tile == nil do
-        IO.puts("[WARNING] seat_scores_points: the winning tile must exist, but got nil")
-      end
+      # obtain smt_hand and smt_calls after before_win runs
+      #   because we may have run actions to modify the hand (e.g. by adding attributes)
+      {smt_hand, smt_calls} = JokerSolver.get_smt_hand_calls(state.players[seat].hand, state.players[seat].calls, winning_tile)
+      # |> IO.inspect(label: inspect(win_source), limit: :infinity)
 
-      # obtain yaku and minipoints from this state
-      get_yaku_from_lists(state, yaku_list_names, seat, assigned_winning_tile, win_source)
-      # |> IO.inspect(label: inspect(win_source))
-    end, timeout: :infinity, ordered: false)
+      # now calculate joker assignments
+      # and see if any of them result in a score at least min_points and min_minipoints
+      JokerSolver.solve_for_jokers(state.mutex, smt_hand, smt_calls, state.smt_solver, state.rules_ref, tile_behavior)
+      |> Task.async_stream(fn {obvious_joker_assignment, nonobvious_joker_assignment} ->
+        joker_assignment = Map.merge(obvious_joker_assignment, nonobvious_joker_assignment)
+        # apply joker assignments
+        {assigned_hand, assigned_calls, _assigned_winning_hand, assigned_winning_tile} = JokerSolver.apply_joker_assignment(state.players[seat].hand, state.players[seat].calls, winning_tile, joker_assignment)
+        # IO.inspect({smt_calls, assigned_calls, state.players[seat].calls}, label: inspect(joker_assignment), limit: :infinity)
+        # replace the winner's hand/calls temporarily (for yaku evaluation)
+        state = update_player(state, seat, &%{ &1 | hand: assigned_hand, calls: assigned_calls, cache: %{ &1.cache | orig_hand: &1.hand, orig_calls: &1.calls, orig_winning_tile: winning_tile } })
+
+        # also replace the actual winning tile within state
+        state = if assigned_winning_tile != nil do
+          update_winning_tile(state, seat, win_source, fn _ -> assigned_winning_tile end)
+        else
+          IO.puts("WARNING: no assigned_winning_tile for a win! hand: #{inspect(smt_hand)}, joker_assignment: #{inspect(joker_assignment)}")
+          state
+        end
+
+        # run before_scoring only after replacing those tiles
+        # this is because before_scoring might add attributes to hand, which will be used for yaku calculation
+        # also you need non-joker tiles in order to calculate fu and such here
+        state = Actions.trigger_event(state, "before_scoring", %{seat: seat, win_source: win_source, winning_tile: assigned_winning_tile, silent: true})
+        
+        # fetch the new winning tile
+        assigned_winning_tile = get_winning_tile(state, seat, win_source)
+        if assigned_winning_tile == nil do
+          IO.puts("[WARNING] seat_scores_points: the winning tile must exist, but got nil")
+        end
+        cxt = %{
+          seat: seat,
+          winner_seat: seat,
+          win_source: win_source,
+          smt_hand: smt_hand,
+          smt_calls: smt_calls,
+          winning_tile: winning_tile,
+          obvious_joker_assignment: obvious_joker_assignment,
+          nonobvious_joker_assignment: nonobvious_joker_assignment,
+          joker_assignment: joker_assignment,
+          assigned_winning_tile: assigned_winning_tile
+        }
+        f.(state, cxt)
+      end, timeout: :infinity, ordered: false)
+    end)
+    |> Stream.concat()
+    |> Stream.map(fn {:ok, ret} -> ret end)
     # |> Enum.to_list() |> IO.inspect(label: inspect(win_source))
   end
   

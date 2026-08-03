@@ -59,6 +59,9 @@ defmodule RiichiAdvanced.GameState.JokerSolver do
       end
       {smt_hand, smt_calls}
   end
+
+  # returns a stream of {obvious_joker_assignment, nonobvious_joker_assignment}
+  # do Map.merge(obvious_joker_assignment, nonobvious_joker_assignment) to get all assignments
   def solve_for_jokers(mutex, smt_hand, smt_calls, smt_solver, rules_ref, tile_behavior) do
     # first grab the obvious jokers (the ones that map only to one value, basically red fives)
     obvious_joker_assignment = get_obvious_joker_assignment(tile_behavior, smt_hand, smt_calls)
@@ -73,8 +76,8 @@ defmodule RiichiAdvanced.GameState.JokerSolver do
     # also returns Stream.new([[obvious_joker_assignment]]) if stream was empty
     |> Stream.transform(
         fn -> true end,
-        fn joker_assignment, _empty? -> {[Map.merge(obvious_joker_assignment, joker_assignment)], false} end,
-        fn empty? -> {if empty? do [obvious_joker_assignment] else [] end, nil} end,
+        fn joker_assignment, _empty? -> {[{obvious_joker_assignment, joker_assignment}], false} end,
+        fn empty? -> {if empty? do [{obvious_joker_assignment, %{}}] else [] end, nil} end,
         fn _ -> nil end
       )
   end

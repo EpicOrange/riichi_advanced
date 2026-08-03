@@ -358,8 +358,14 @@ defmodule RiichiAdvanced.GameState.Kyoku do
       Enum.reject(state.available_seats, fn dir -> Map.has_key?(state.winners, dir) or dir == seat end)
     else state.available_seats -- [seat] end
 
-    winning_tile = get_winning_tile(state, seat, win_source)
-    is_tenhou? = winning_tile == nil
+    # place an empty winner object first, so that modify_winner actions work as intended later on
+    state = Map.update!(state, :winners, &Map.put(&1, seat, %{}))
+    state = Map.update!(state, :winner_seats, & &1 ++ [seat])
+
+    {is_tenhou?, winning_tiles} = case get_winning_tile(state, seat, win_source) do
+      nil  -> {true, state.players[seat].hand ++ state.players[seat].draw |> Utils.remove_attr(["_draw"])}
+      tile -> {false, [tile]}
+    end
 
     # push a message if it takes more than 0.5 seconds to return
     # (tenhou solver and joker solver are the same thing)
@@ -367,84 +373,18 @@ defmodule RiichiAdvanced.GameState.Kyoku do
     notify_text = if is_tenhou? do "Running tenhou solver..." else "Running joker solver..." end
     notify_task = Task.async(fn -> :timer.sleep(500); push_message(state, [%{text: notify_text}]) end)
 
-    # save original hand to restore later
-    %{hand: orig_hand, draw: orig_draw, calls: orig_calls} = state.players[seat]
-
-    # if this is tenhou, we instead create a bunch of possibilities for the winning tile
-    hand_calls_tile = if is_tenhou? do
-      hand = orig_hand ++ orig_draw |> Utils.remove_attr(["_draw"])
-      calls = state.players[seat].calls
-      # try each tile, starting from the rightmost
-      for winning_tile <- Enum.reverse(Enum.uniq(hand)) do
-        {List.delete(hand, winning_tile), calls, winning_tile}
+    {state, cxt} = Scoring.lazy_map_joker_cxts(state, seat, winning_tiles, win_source, fn state, cxt ->
+      {state, cxt} = try do
+        JokerSolver.evaluate_joker_assignment(state, cxt, cxt.joker_assignment)
+      rescue
+        err -> Logger.error(Exception.format(:error, err, __STACKTRACE__))
       end
-    else [{orig_hand, orig_calls, winning_tile}] end
-
-    # place an empty winner object first, so that modify_winner actions work as intended later on
-    state = Map.update!(state, :winners, &Map.put(&1, seat, %{}))
-    state = Map.update!(state, :winner_seats, & &1 ++ [seat])
-
-    tile_behavior = state.players[seat].tile_behavior
-    {state, cxt} = for {hand, calls, winning_tile} <- hand_calls_tile do
-      # replace hand/calls
-      state = update_player(state, seat, &%{ &1 | hand: hand, calls: calls })
-
-      # we need to let before_win actions know about the winning tile
-      #   so we store it in state.winners
-      state = Map.update!(state, :winners, &Map.put(&1, seat, %{winning_tile: winning_tile}))
-      state = update_winning_tile(state, seat, win_source, fn _ -> winning_tile end)
-
-      # trigger before_win before solving for jokers
-      state = Actions.trigger_event(state, "before_win", %{seat: seat, winner_seat: seat, win_source: win_source, winning_tile: winning_tile})
-
-      # it's possible the winning tile was modified by before_win, so fetch it again
-      winning_tile = case get_winning_tile(state, seat, win_source) do
-        nil          -> winning_tile # this was tenhou, and we were assigned a winning tile
-        winning_tile -> winning_tile
-      end
-
-      # obtain smt_hand and smt_calls after before_win runs
-      #   because we may have run actions to modify the hand (e.g. by adding attributes)
-      {smt_hand, smt_calls} = JokerSolver.get_smt_hand_calls(state.players[seat].hand, state.players[seat].calls, winning_tile)
-
-      # now calculate joker assignments
-      # and find the maximum score obtainable across all joker assignments
-
-      # this is a stream of joker assignments
-      joker_assignments = JokerSolver.solve_for_jokers(state.mutex, smt_hand, smt_calls, state.smt_solver, state.rules_ref, tile_behavior)
-
-      # evaluate every joker assignment
-      # this turns jokers into normal tiles (via the assignment) and returns the best scoring one
-      # returns cxt, which will contain `joker_assignment`, `yaku`, `yaku2`, and `minipoints`
-      # note this captures (read: copies) `state` and returns it (read: copies again)
-      # TODO avoid this by only capturing and returning the important information
-      cxt = %{
-        seat: seat,
-        winner_seat: seat,
-        win_source: win_source,
-        smt_hand: smt_hand,
-        smt_calls: smt_calls,
-        winning_tile: winning_tile,
-        is_dealer: is_dealer,
-        scoring_key: scoring_key,
-        rules_ref: state.rules_ref,
-      }
-      Task.async_stream(joker_assignments, fn joker_assignment ->
-        {state, cxt} = try do
-          JokerSolver.evaluate_joker_assignment(state, cxt, joker_assignment)
-        rescue
-          err -> 
-            Logger.error(Exception.format(:error, err, __STACKTRACE__))
-            nil # should crash
-        end
-        # make a new txn in state.txns by running scoring_logic
-        # this might run the modify_winner action, which is why we place a fake winner object first
-        state = Payment.run_scoring_logic(state, cxt)
-        {state, cxt}
-      end, timeout: :infinity, ordered: false)
-      |> Stream.map(fn {:ok, state_cxt} -> state_cxt end)
-    end
-    |> Stream.concat()
+      cxt = Map.put(cxt, :scoring_key, scoring_key)
+      # make a new txn in state.txns by running scoring_logic
+      # this might run the modify_winner action, which is why we place a fake winner object first
+      state = Payment.run_scoring_logic(state, cxt)
+      {state, cxt}
+    end)
     |> Payment.get_highest_scoring_txn(win_source == :worst_discard)
 
     # kill the 0.5s timer if it's still sleeping
@@ -453,14 +393,10 @@ defmodule RiichiAdvanced.GameState.Kyoku do
     end
 
     # push message saying which joker maps to what, excluding obvious jokers
-    # TODO we're calling get_obvious_joker_assignment twice (this is the second time)
     smt_hand_calls = cxt.smt_hand ++ Enum.concat(cxt.smt_calls)
-    obvious_joker_assignment = JokerSolver.get_obvious_joker_assignment(tile_behavior, cxt.smt_hand, cxt.smt_calls)
-    non_obvious_joker_assignment = Map.drop(cxt.joker_assignment, Map.keys(obvious_joker_assignment))
-    |> Enum.map(fn {joker_ix, tile} -> {Enum.at(smt_hand_calls, joker_ix), tile} end)
-    if not Enum.empty?(non_obvious_joker_assignment) do
-      joker_assignment_message = non_obvious_joker_assignment
-      |> Enum.map_intersperse([%{text: ","}], fn {joker_tile, tile} -> [Utils.pt(joker_tile), %{text: "→"}, Utils.pt(tile)] end)
+    if not Enum.empty?(cxt.nonobvious_joker_assignment) do
+      joker_assignment_message = cxt.nonobvious_joker_assignment
+      |> Enum.map_intersperse([%{text: ","}], fn {joker_ix, tile} -> [Utils.pt(Enum.at(smt_hand_calls, joker_ix)), %{text: "→"}, Utils.pt(tile)] end)
       |> Enum.concat()
       push_message(state, [%{text: "Using joker assignment"}] ++ joker_assignment_message)
     end
@@ -483,6 +419,7 @@ defmodule RiichiAdvanced.GameState.Kyoku do
     arranged_hand = Utils.sort_tiles(state.players[seat].hand -- [cxt.winning_tile], cxt.joker_assignment)
 
     # arrange the hand more nicely when you hover over it
+    tile_behavior = state.players[seat].tile_behavior
     separated_hand = cond do
       state.log_seeking_mode -> arranged_hand # no need to arrange hands when running tests
       state.ruleset == "american" ->
@@ -540,7 +477,7 @@ defmodule RiichiAdvanced.GameState.Kyoku do
         arranged_calls: state.players[seat].calls,
         # hand to show on hover in the yaku screen
         separated_hand: separated_hand,
-        separated_calls: if state.ruleset == "american" do [] else orig_calls end
+        separated_calls: if state.ruleset == "american" do [] else state.players[seat].calls end
       })
     state = Map.update!(state, :winners, &Map.put(&1, seat, Map.merge(winner, &1[seat])))
     state
