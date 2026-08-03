@@ -16,7 +16,7 @@ on after_initialization do
 end
 
 define_yaku !shou_list, !shou_name, [!shou_value, !shou_han], match(["hand", "calls", "winning_tile"], ~m"unique, (haku hatsu chun):2, (haku_pair hatsu_pair chun_pair):1")
-define_yaku !dai_list, !dai_name, [!dai_value, !dai_han], match(["hand", "calls", "winning_tile"], ~m"unique, (haku hatsu chun):3")
+define_yaku !dai_list, !dai_name, [!dai_value, !dai_han], match(["hand", "calls", "winning_tile"], ~m"haku:1, hatsu:1, chun:1")
 define_yaku_precedence !dai_name, [!shou_name]
 
 on after_call do
