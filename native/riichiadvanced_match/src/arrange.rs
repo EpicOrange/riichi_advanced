@@ -204,9 +204,9 @@ fn arrange(
   let (remaining_hand, groups_removed) = _arrange(hand, &calls, vec!(), &groups_to_remove, 0, &base_tiles, &win_definitions, match_info);
 
   let mut ret = smallvec!(remaining_hand);
-  // convert groups to tilesets, then append calls
+  // convert groups to tilesets
+  // don't append calls, we only expect a hand
   ret.extend(groups_removed);
-  ret.extend(calls);
   ret
 }
 
