@@ -6,6 +6,7 @@ use std::time::Instant;
 use crate::encode::{decode_tiles, encode_tiles};
 use crate::r#match::{__match_hand_v3, __remove_match_definition};
 use crate::match_info::{prepare_tiles};
+use crate::offsets::get_base_tiles_from_defns;
 use crate::profile::{PROFILE_GET_WAITS, PROFILE_UNNEEDED_TILES, CALL_COUNT, MAX_NANOS, TOTAL_NANOS};
 use crate::tile_table::{TILE_TABLE, tile1x};
 use crate::types::{ElixirAliases, ElixirHandCalls, ElixirTile, ElixirTileOrdering, MatchDefinitionElem, MatchDefinitions, MatchInfo, Tile};
@@ -53,7 +54,7 @@ pub fn __get_waits_v3(
     ordering: &ElixirTileOrdering,
     elixir_game_tiles: Vec<ElixirTile>,
 ) -> Vec<ElixirTile> {
-  // basic strategy is to add a custom joker 1x that starts of being "all tiles"
+  // basic strategy is to add a custom joker 1x that starts off being "all tiles"
   // we can test a set of tiles at a time by setting the joker to that set
   //   and then calling match to see if it matches the match_definitions
   // if the match succeeds, that tells us nothing
@@ -86,9 +87,10 @@ pub fn __get_waits_v3(
     encode_tiles(&elixir_game_tiles, &match_info.all_attrs)
     .filter(|tile| !match_info.joker_tiles.contains(tile))
     .collect();
-  nonjoker_game_tiles.extend(match_info.relevant_tiles.iter().cloned());
+  nonjoker_game_tiles.extend(get_base_tiles_from_defns(&match_info, &match_definitions));
   nonjoker_game_tiles.sort_unstable();
   nonjoker_game_tiles.dedup();
+  // println!("nonjoker_game_tiles={:?}", decode_tiles(&nonjoker_game_tiles, &match_info.all_attrs));
   add_joker_to_aliases(&mut match_info.aliases, &mut match_info.mapping, joker, &nonjoker_game_tiles);
   // println!("starting aliases for 1x: {:?}", decode_tiles(match_info.mapping.get(&joker).unwrap(), &match_info.all_attrs));
   // println!("joker_tiles: {:?}", decode_tiles(&match_info.joker_tiles, &match_info.all_attrs));

@@ -6,12 +6,12 @@ use smallvec::{SmallVec, smallvec};
 use crate::encode::{encode_attrs, encode_tiles, has_attrs, to_tileset};
 use crate::tile_table::*;
 use crate::tileset::_check_equivalence;
-use crate::types::{ANY_PRIME, BaseTileVec, ElixirTile, FIXED_OFFSETS, GroupIterator, MatchDefinition, MatchDefinitionElem, MatchGroup, MatchInfo, MatchOffset, OffsetVec, Prime, RemovableGroup, Tile, TileOrdering, TileOrderingMap, TileSet};
+use crate::types::{ANY_PRIME, BaseTileVec, ElixirTile, FIXED_OFFSETS, GroupIterator, MatchDefinition, MatchDefinitions, MatchDefinitionElem, MatchGroup, MatchInfo, MatchOffset, OffsetVec, Prime, RemovableGroup, Tile, TileOrdering, TileOrderingMap, TileSet};
 use crate::primes::{is_jihai, is_manzu, is_pinzu, is_souzu, to_prime};
 
 // return true if changed
 fn apply_ordering_mut(
-    tile: &mut Tile, ordering_map: &TileOrderingMap, base_ordering_map: &phf::Map<Prime, Prime>
+  tile: &mut Tile, ordering_map: &TileOrderingMap, base_ordering_map: &phf::Map<Prime, Prime>
 ) -> bool {
   match ordering_map.get(&tile.0) {
     Some(p) => {tile.0 = *p; true},
@@ -23,9 +23,9 @@ fn apply_ordering_mut(
 }
 
 fn fetch_offset(
-    q: &mut VecDeque<Tile>,
-    l: &mut isize, r: &mut isize, target: isize,
-    ordering: &TileOrdering,
+  q: &mut VecDeque<Tile>,
+  l: &mut isize, r: &mut isize, target: isize,
+  ordering: &TileOrdering,
 ) -> Option<Tile> {
   if *l <= target && target <= *r {
     // already in queue, just fetch it
@@ -146,9 +146,9 @@ pub fn apply_fixed_offset(base_tile: &Tile, fixed_offset: &str) -> Option<Tile> 
 
 // returns a pair (a vec of reified tiles for each offset, index of nojoker keyword)
 pub fn apply_offsets(
-    base_tile: &Tile, offsets: &[MatchOffset],
-    all_attrs: &[String],
-    ordering: &TileOrdering,
+  base_tile: &Tile, offsets: &[MatchOffset],
+  all_attrs: &[String],
+  ordering: &TileOrdering,
 ) -> (Vec<Option<Tile>>, usize) {
   let mut q = VecDeque::from([*base_tile]); // get offset o via q.get(o-l as usize)
   let mut l = 0;
@@ -192,10 +192,10 @@ pub fn apply_offsets(
 // same as above but, ignoring keywords, returns None if any offset fails to reify
 // the returned nojoker_ix points to where it should be after removing all keywords
 pub fn apply_offsets_early_exit(
-    base_tile: &Tile, offsets: &[MatchOffset],
-    all_attrs: &[String],
-    ordering: &TileOrdering,
-    mut num_ignorable: usize,
+  base_tile: &Tile, offsets: &[MatchOffset],
+  all_attrs: &[String],
+  ordering: &TileOrdering,
+  mut num_ignorable: usize,
 ) -> Option<(Vec<Tile>, usize)> {
   let mut q = VecDeque::from([*base_tile]); // get offset o via q.get(o-l as usize)
   let mut l = 0;
@@ -275,11 +275,11 @@ pub fn is_offset_dest(tile: Tile, offset: MatchOffset, match_info: &MatchInfo) -
 // reifies offsets into a TileSet for each base tile
 // wraps each in a RemovableGroup::Group
 pub fn generate_groups_from_offsets<'a>(
-    offsets: OffsetVec,
-    base_tiles: &'a mut impl Iterator<Item = Tile>, all_attrs: &'a [String],
-    joker_tiles: &'a HashSet<Tile>,
-    ordering: &'a TileOrdering,
-    nojoker: &'a mut bool,
+  offsets: OffsetVec,
+  base_tiles: &'a mut impl Iterator<Item = Tile>, all_attrs: &'a [String],
+  joker_tiles: &'a HashSet<Tile>,
+  ordering: &'a TileOrdering,
+  nojoker: &'a mut bool,
 ) -> GroupIterator<'a> {
   Box::new(base_tiles.filter_map(move |base_tile| {
     let (tiles, nojoker_ix) = apply_offsets(&base_tile, &offsets, all_attrs, ordering);
@@ -292,22 +292,22 @@ pub fn generate_groups_from_offsets<'a>(
 
 // #[rustler::nif]
 fn _generate_groups(
-    group: MatchGroup,
-    base_tiles: Vec<ElixirTile>,
-    all_attrs: Vec<String>,
-    joker_tiles: Vec<Tile>,
-    ordering: TileOrdering,
-    nojoker: bool,
+  group: MatchGroup,
+  base_tiles: Vec<ElixirTile>,
+  all_attrs: Vec<String>,
+  joker_tiles: Vec<Tile>,
+  ordering: TileOrdering,
+  nojoker: bool,
 ) -> Vec<RemovableGroup> {
   __generate_groups(group, &mut encode_tiles(&base_tiles, &all_attrs), &all_attrs, &joker_tiles.into_iter().collect(), &ordering, &mut nojoker.clone()).collect()
 }
 pub fn __generate_groups<'a>(
-    group: MatchGroup,
-    base_tiles: &'a mut impl Iterator<Item = Tile>,
-    all_attrs: &'a [String],
-    joker_tiles: &'a HashSet<Tile>,
-    ordering: &'a TileOrdering,
-    nojoker: &'a mut bool,
+  group: MatchGroup,
+  base_tiles: &'a mut impl Iterator<Item = Tile>,
+  all_attrs: &'a [String],
+  joker_tiles: &'a HashSet<Tile>,
+  ordering: &'a TileOrdering,
+  nojoker: &'a mut bool,
 ) -> GroupIterator<'a> {
   match group {
     // special case group-level keywords, which could be call names
@@ -368,20 +368,35 @@ pub fn _gather_rev_offsets(mut offsets: OffsetVec) -> OffsetVec {
   offsets
 }
 
-// returns a sorted vec of base tiles
-pub fn get_base_tiles<'a>( 
-    match_info: &'a MatchInfo,
-    match_definition: &'a MatchDefinition,
-) -> BaseTileVec {
+// returns a vec of base tiles with no attributes
+// used for match
+pub fn get_base_tiles(match_info: &MatchInfo, match_definition: &MatchDefinition) -> BaseTileVec {
   // get all offsets of matchable tiles
   // we need to do this because jokers/offsets could reify into a tile
   //   that we can't otherwise encode, since it's not in hand
   let rev_offsets = gather_rev_offsets(match_definition);
+  _get_base_tiles(match_info, &rev_offsets, true)
+}
+// returns a vec of base tiles with attributes
+// used for identifying waits with attributes
+pub fn get_base_tiles_from_defns(match_info: &MatchInfo, match_definitions: &MatchDefinitions) -> BaseTileVec {
+  let mut rev_offsets: OffsetVec = match_definitions.iter().flat_map(gather_rev_offsets).collect();
+  rev_offsets.sort_unstable();
+  rev_offsets.dedup();
+  _get_base_tiles(match_info, &rev_offsets, false)
+}
+
+#[inline]
+fn _get_base_tiles(match_info: &MatchInfo, rev_offsets: &[MatchOffset], strip_attrs: bool) -> BaseTileVec {
+  // get all offsets of matchable tiles
+  // we need to do this because jokers/offsets could reify into a tile
+  //   that we can't otherwise encode, since it's not in hand
   let mut base_tiles: HashSet<Tile> = match_info.relevant_tiles
     .iter()
-    .flat_map(|tile| apply_offsets(tile, &rev_offsets, &match_info.all_attrs, &match_info.ordering).0)
+    .flat_map(|tile| apply_offsets(tile, rev_offsets, &match_info.all_attrs, &match_info.ordering).0)
     .flatten()
-    .filter_map(|(tile, _attrs)| if tile != ANY_PRIME { Some((tile, 0)) } else { None })
+    // remove any tiles, and strip attributes if needed
+    .filter_map(|(tile, attrs)| if tile != ANY_PRIME { Some((tile, if strip_attrs {0} else {attrs})) } else { None })
     .collect();
 
   let have_fixed_offsets = rev_offsets.iter().any(|o| if let MatchOffset::TileOrKeyword(s) = o { FIXED_OFFSETS.contains_key(s) } else { false });
@@ -391,11 +406,9 @@ pub fn get_base_tiles<'a>(
     base_tiles.insert((to_prime(&tile1s()).unwrap(), 0));
   }
 
-  for (p, _) in &match_info.joker_tiles { base_tiles.remove(&(*p, 0)); }
+  for t in &match_info.joker_tiles { base_tiles.remove(t); }
 
-  let mut base_tiles = base_tiles.into_iter().collect::<SmallVec<_>>();
-  base_tiles.sort_unstable();
-  base_tiles.dedup();
-  base_tiles
+  // already deduped since `base_tiles` is a `HashSet`
+  base_tiles.into_iter().collect::<SmallVec<_>>()
 }
 
