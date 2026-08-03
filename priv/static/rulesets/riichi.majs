@@ -557,7 +557,6 @@ set initial_score, 25000
 set initial_dead_wall_length, 14
 set starting_tiles, 13
 set max_rounds, 8
-set four_rows_discards, false
 
 # globals
 define "limit" # for min_han mod
