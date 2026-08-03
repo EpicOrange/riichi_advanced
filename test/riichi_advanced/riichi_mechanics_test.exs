@@ -378,4 +378,25 @@ defmodule RiichiAdvanced.RiichiMechanicsTest do
     ]), 67), :no_winners, %{delta_scores: [0, 0, 0, 0]})
   end
 
+  test "riichi - nobekan with joker scores tanyao" do
+    TestUtils.test_yaku_advanced("riichi", ["jokers/vietnamese", "nobekan"], """
+    {
+      "starting_hand": {
+        "east": ["1m", "2m", "3m", "8j", "7s", "8s", "6s", "7p", "7p", "7p", "2s", "2s", "2s"],
+        "south": ["1m", "4m", "7m", "3p", "5p", "8p", "3s", "6s", "9s", "2z", "4z", "6z", "7z"],
+        "west": ["2m", "4m", "7m", "3p", "5p", "8p", "3s", "6s", "9s", "2z", "4z", "6z", "7z"],
+        "north": ["2m", "4m", "7m", "3p", "5p", "8p", "3s", "6s", "9s", "2z", "4z", "6z", "7z"]
+      },
+      "starting_draws": ["1z", "1z"]
+    }
+    """, [
+      %{"type" => "buttons_pressed", "buttons" => [%{"button" => "annobekan"}, nil, nil, nil]},
+      %{"type" => "buttons_pressed", "buttons" => [%{"button" => "tsumo"}, nil, nil, nil]},
+    ], %{
+      east: %{
+        yaku: [{"Rinshan", [1, "Han"]}, {"Tsumo", [1, "Han"]}, {"Tanyao", [1, "Han"]}],
+      }
+    })
+  end
+
 end

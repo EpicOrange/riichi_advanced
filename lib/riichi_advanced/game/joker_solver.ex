@@ -19,7 +19,6 @@ defmodule RiichiAdvanced.GameState.JokerSolver do
     smt_calls = calls
     |> Enum.reject(fn {call_name, _call} -> call_name in Riichi.flower_names() end)
     |> Enum.map(&Utils.call_to_tiles/1)
-    |> Enum.map(&Enum.take(&1, 3))
     {smt_hand, smt_calls}
   end
   # get an assignment for the obvious jokers (the ones with only one assignable value)

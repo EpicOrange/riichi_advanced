@@ -427,9 +427,7 @@ defmodule RiichiAdvanced.SMT do
   def _match_hand_smt_v4(mutex, solver_pid, hand, calls, match_definitions, tile_behavior) do
     %{ordering: ordering, mappings: tile_mappings} = tile_behavior
 
-    calls = calls
-    |> Enum.map(&Enum.take(&1, 3)) # ignore kans
-    |> Enum.with_index()
+    calls = Enum.with_index(calls)
 
     jokers = Map.keys(tile_mappings)
     if Debug.print_smt() do
@@ -611,6 +609,11 @@ defmodule RiichiAdvanced.SMT do
     add_used_tiles = if Enum.empty?(all_tile_groups) do [] else Enum.map(tile_group_indices, fn i -> "\n    (ite tiles#{i}_used tiles#{i} zero)" end) end
     assert_hand_indices = if Enum.empty?(all_sets) do [] else ["(assert\n  (equal_digits hand (bvadd#{add_hand_indices}#{add_used_tiles})))\n"] end
 
+    # get a mapping from call index (i) to smt hand index (ix)
+    {call_i_to_ix, _} = for {call, i} <- calls, reduce: {%{}, length(hand)} do
+      {acc, ix} -> {Map.put(acc, i, ix), ix + length(call)}
+    end
+
     has_calls = length(calls) > 0
     calls_smt = if has_calls do
       # calls part 1: declare each non-flower call
@@ -618,12 +621,56 @@ defmodule RiichiAdvanced.SMT do
       # (assert (= call1 (bvadd joker3 #x0000000011000000000000000000000000)))
       # (declare-const call2 (_ BitVec 136))
       # (assert (= call2 (bvadd #x0000000000111000000000000000000000)))
-      calls_decls = for {call, i} <- calls, reduce: [] do
-        calls_decls ->
-          call_smt = call
-          |> Enum.with_index()
-          |> Enum.map(fn {tile, ix} -> "#{to_smt_tile(tile, encoding, length(hand)+i*3+ix, joker_ixs)}" end)
-          calls_decls ++ ["(declare-const call#{i+1} (_ BitVec #{len}))\n(assert (= call#{i+1} (bvadd #{Enum.join(call_smt, "\n                        ")})))\n"]
+      calls_decls = for {call, i} <- calls do
+        cond do
+          length(call) <= 3 ->
+            call_smt = call
+            |> Enum.with_index()
+            |> Enum.map(fn {tile, ix} -> "#{to_smt_tile(tile, encoding, Map.get(call_i_to_ix, i)+ix, joker_ixs)}" end)
+            """
+            (declare-const call#{i+1} (_ BitVec #{len}))
+            (assert (= call#{i+1} (bvadd #{Enum.join(call_smt, "\n                        ")})))
+            """
+          length(call) == 4 ->
+            # for length-4 calls, we can pick any subset of 3, so it would look more like
+            # (declare-const call3_1 (_ BitVec 136))
+            # (declare-const call3_2 (_ BitVec 136))
+            # (declare-const call3_3 (_ BitVec 136))
+            # (declare-const call3_4 (_ BitVec 136))
+            # (assert (= call3_1 (bvadd joker4 #x0000000000101000000000000000000000)))
+            # (assert (= call3_2 (bvadd joker4 #x0000000001001000000000000000000000)))
+            # (assert (= call3_3 (bvadd        #x0000000001101000000000000000000000)))
+            # (assert (= call3_4 (bvadd joker4 #x0000000001100000000000000000000000)))
+            # (declare-const call3 (_ BitVec 136))
+            # (assert (or
+            #   (= call3 call3_1)
+            #   (= call3 call3_2)
+            #   (= call3 call3_3)
+            #   (= call3 call3_4)))
+            call_smts = for n <- 0..3 do
+              call
+              |> Enum.with_index()
+              |> List.delete_at(n)
+              |> Enum.map(fn {tile, ix} -> "#{to_smt_tile(tile, encoding, Map.get(call_i_to_ix, i)+ix, joker_ixs)}" end)
+            end
+            """
+            (declare-const call#{i+1}_1 (_ BitVec #{len}))
+            (declare-const call#{i+1}_2 (_ BitVec #{len}))
+            (declare-const call#{i+1}_3 (_ BitVec #{len}))
+            (declare-const call#{i+1}_4 (_ BitVec #{len}))
+            (assert (= call#{i+1}_1 (bvadd #{Enum.join(Enum.at(call_smts, 0), "\n                        ")})))
+            (assert (= call#{i+1}_2 (bvadd #{Enum.join(Enum.at(call_smts, 1), "\n                        ")})))
+            (assert (= call#{i+1}_3 (bvadd #{Enum.join(Enum.at(call_smts, 2), "\n                        ")})))
+            (assert (= call#{i+1}_4 (bvadd #{Enum.join(Enum.at(call_smts, 3), "\n                        ")})))
+            (declare-const call#{i+1} (_ BitVec #{len}))
+            (assert (or
+              (= call#{i+1} call#{i+1}_1)
+              (= call#{i+1} call#{i+1}_2)
+              (= call#{i+1} call#{i+1}_3)
+              (= call#{i+1} call#{i+1}_4)))
+            """
+          true -> raise "_match_hand_smt_v4: cannot support calls of length #{length(call)}, offending call was #{inspect(call)}"
+        end
       end
 
       # calls part 2: declare variables for call indices and set identities
@@ -780,10 +827,10 @@ defmodule RiichiAdvanced.SMT do
     # optimization4 = if Enum.empty?(all_tile_groups) do [] else ["(assert ((_ at-most #{max_tiles_used_usages})\n  #{Enum.map(tile_group_indices, fn i -> "tiles#{i}_used" end) |> Enum.join(" ")}))\n"] end
 
     # we can trivially solve for the identity of a joker in a triplet/quad/etc
-    optimization_call_jokers = for {call, i} <- calls, {_tile, ix} <- Enum.with_index(call), length(hand)+i*3+ix in joker_ixs do
+    optimization_call_jokers = for {call, i} <- calls, {_tile, ix} <- Enum.with_index(call), Map.get(call_i_to_ix, i)+ix in joker_ixs do
       tile = Utils.get_joker_meld_tile({"", call}, tile_behavior)
       if tile != nil do
-        "(assert (= joker#{length(hand)+i*3+ix} #{to_smt_tile(tile, encoding)}))\n"
+        "(assert (= joker#{Map.get(call_i_to_ix, i)+ix} #{to_smt_tile(tile, encoding)}))\n"
       else "" end
     end |> Enum.join()
 

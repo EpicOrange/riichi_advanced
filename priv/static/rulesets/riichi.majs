@@ -62,7 +62,10 @@ define_yaku yaku, "Houtei", [1, "Han"], no_tiles_remaining and not_won_by_draw a
 define_yaku yaku, "Pinfu", [1, "Han"], @closed_hand
   and match(["hand", "calls", "winning_tile"], ["standard_win"])
   and ((won_by_draw and minipoints_equals(20)) or (not_won_by_draw and minipoints_equals(30)))
-define_yaku yaku, "Tanyao", [1, "Han"], not_match(["hand", "calls", "winning_tile"], ~m"(any@yaochuu):1")
+define_set tanyao_mentsu, ~s"0@tanyao 0@tanyao 0@tanyao|0@tanyao 1@tanyao 2@tanyao"
+define_set tanyao_pair, ~s"0@tanyao 0@tanyao"
+define_match tanyao, ~m"exhaustive, tanyao_mentsu:4, tanyao_pair:1"
+define_yaku yaku, "Tanyao", [1, "Han"], match(["hand", "calls", "winning_tile"], ["tanyao"])
 define_yaku yaku, "Iipeikou", [1, "Han"], @closed_hand and match(["hand", "calls", "winning_tile"], ~m"exhaustive, iipeikou:1, mentsu:2, pair:1")
 define_yaku yaku, "Haku", [1, "Han"], match(["hand", "calls", "winning_tile"], ~m"exhaustive, haku:1, mentsu:3, pair:1")
 define_yaku yaku, "Hatsu", [1, "Han"], match(["hand", "calls", "winning_tile"], ~m"exhaustive, hatsu:1, mentsu:3, pair:1")
