@@ -301,7 +301,7 @@ defmodule RiichiAdvanced.Utils do
     last_sideways = has_attr?(tile, ["last_sideways"])
     reversed = transparent and id == :"1x"
     id = if reversed do strip_attrs(tile) else id end
-    facedown = has_attr?(tile, ["facedown"]) and Map.get(assigns, :hover_index, nil) != i
+    facedown = has_attr?(tile, ["facedown"]) and not (Map.get(assigns, :your_hand?, true) and Map.get(assigns, :hover_index, nil) == i)
     concealed = has_attr?(tile, ["concealed"])
     anim = has_attr?(tile, ["anim"])
     played = animate_played and Map.get(assigns, :your_hand?, true) and i != nil and Map.get(assigns, :preplayed_index, nil) == i
