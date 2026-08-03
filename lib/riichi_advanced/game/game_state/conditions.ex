@@ -389,14 +389,14 @@ defmodule RiichiAdvanced.GameState.Conditions do
         winning_tile = get_winning_tile(state, context.seat, context.win_source)
         winning_tile = if winning_tile == nil do context.winning_tile else winning_tile end
         winning_tile = if winning_tile == nil do [] else [winning_tile] end
-        # IO.inspect({winning_hand ++ winning_tile, tiles}, label: "winning_hand_consists_of")
-        Enum.all?(winning_hand ++ winning_tile, &Utils.has_matching_tile?([&1] ++ Map.get(tile_mappings, &1, []), tiles))
+        # IO.inspect({winning_hand ++ winning_tile, tiles}, label: "winning_hand_consists_of", limit: :infinity)
+        Enum.all?(winning_hand ++ winning_tile, &Utils.has_matching_tile?(Enum.concat([&1], Map.get(tile_mappings, &1, [])), tiles))
       "winning_hand_not_tile_consists_of" ->
         tile_mappings = cxt_player.tile_behavior.mappings
         tiles = Enum.map(opts, &Utils.to_tile/1)
         non_flower_calls = Enum.reject(cxt_player.calls, fn {call_name, _call} -> call_name in Riichi.flower_names() end)
         winning_hand = cxt_player.hand ++ Enum.flat_map(non_flower_calls, &Utils.call_to_tiles/1)
-        Enum.all?(winning_hand, &Utils.has_matching_tile?([&1] ++ Map.get(tile_mappings, &1, []), tiles))
+        Enum.all?(winning_hand, &Utils.has_matching_tile?(Enum.concat([&1], Map.get(tile_mappings, &1, [])), tiles))
       "all_saki_cards_drafted"   -> Map.has_key?(state, :saki) and Saki.check_if_all_drafted(state)
       "has_existing_yaku"        -> Enum.all?(opts, fn opt -> case opt do
           [name, value] -> Enum.any?(context.existing_yaku, fn {name2, value2} -> name == name2 and value == value2 end)
