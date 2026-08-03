@@ -35,6 +35,8 @@ defmodule RiichiAdvancedWeb.ScoringTestLive do
       delta_scores_reason: nil,
       available_seats: [:east, :south, :west, :north],
       txns: [],
+      kyoku: 0,
+      next_dealer: nil,
     })
     |> assign(:ruleset, nil)
     |> assign(:ruleset_json, nil)
@@ -52,6 +54,7 @@ defmodule RiichiAdvancedWeb.ScoringTestLive do
     |> assign(:call_selection_ixs, [])
     |> assign(:call_buttons, %{})
     |> assign(:selected_call_button, nil)
+    |> assign(:rules_ref, nil)
     # |> assign(:hand, [:"4m", :"2m", :"3m", :"4p", :"4p", :"4p", :"5p", :"6p", :"7p", :"3s", :"4s", :"2s", :"2s", :"2s"])
 
     socket = switch_to_ruleset(socket, "riichi")
@@ -138,6 +141,9 @@ defmodule RiichiAdvancedWeb.ScoringTestLive do
           visible_screen={@state.visible_screen}
           available_seats={@state.available_seats}
           txns={@state.txns}
+          kyoku={@state.kyoku}
+          next_dealer={@state.next_dealer}
+          rules_ref={@rules_ref}
           round_result={:win}
           />
       </div>
