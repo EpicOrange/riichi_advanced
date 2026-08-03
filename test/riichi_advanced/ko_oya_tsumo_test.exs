@@ -28,8 +28,8 @@ defmodule RiichiAdvanced.KoOyaTsumoTest do
     %{name: "dora", config: %{"start_indicators" => 1}},
     "ura",
     "kandora",
-    "yaku/ippatsu",
-    %{name: "yaku/riichi_renhou", config: %{"is" => "Yakuman"}},
+    "lib/yaku/ippatsu",
+    %{name: "lib/yaku/riichi_renhou", config: %{"is" => "Yakuman"}},
     "show_waits",
     %{name: "lib/min_han", config: %{"min" => 1, han: "Han"}},
     %{name: "aka", config: %{"man" => 1, "pin" => 1, "sou" => 1}}

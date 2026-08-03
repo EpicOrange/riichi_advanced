@@ -57,6 +57,8 @@ on after_initialization do
     add_rule("Rules", "Fu", "- An open hand is minimum 30 fu. You still start at 20 fu, but if you end with 20 fu, it becomes 30 fu.")
   end
 end
+
+apply initialize, "constants.closed_hand", has_no_call_named("chii", "pon", "daiminkan", "kakan")
 def calculate_fu do
   if fu == 0 do
     set_counter("fu", "minipoints") do

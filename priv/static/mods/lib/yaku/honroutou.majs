@@ -1,20 +1,27 @@
 require "value_honors"
+
 default hon_list, "yaku"
-default hon_name, ""
+default hon_name, "Honroutou"
 default hon_value, 0
 default hon_han, !han
 default chin_list, "yaku"
-default chin_name, ""
+default chin_name, "Chinroutou"
 default chin_value, 0
 default chin_han, !han
 
-on after_initialization do
-  add_rule("$value $han", "$name", "%{value} %{han} if your hand consists only of 1, 9, and honor tiles.", %{value: !hon_value, han: !hon_han, name: !hon_name})
-  update_rule("$value $han", "$name", "%{example_hand}", %{value: !hon_value, han: !hon_han, name: !hon_name, example_hand: ~t"111m2223344z 999p 4z"})
-  add_rule("$value $han", "$name", "%{value} %{han} if your hand consists only of 1 and 9 tiles.", %{value: !chin_value, han: !chin_han, name: !chin_name})
-  update_rule("$value $han", "$name", "%{example_hand}", %{value: !chin_value, han: !chin_han, name: !chin_name, example_hand: ~t"111m999p1199s 999m 9s"})
+if !hon_value > 0 do
+  on after_initialization do
+    add_rule("$value $han", !hon_name, "%{value} %{han} if your hand consists only of 1, 9, and honor tiles.", %{value: !hon_value, han: !hon_han})
+    update_rule("$value $han", !hon_name, "%{example_hand}", %{value: !hon_value, han: !hon_han, example_hand: ~t"111m2223344z 9P99p 4z"})
+  end
+  define_yaku !hon_list, !hon_name, [!hon_value, !hon_han], not_match(["hand", "calls", "winning_tile"], ~m"tanyaohai:1")
 end
 
-define_yaku !hon_list, !hon_name, [!hon_value, !hon_han], not_match(["hand", "calls", "winning_tile"], ~m"tanyaohai:1")
-define_yaku !chin_list, !chin_name, [!chin_value, !chin_han], not_match(["hand", "calls", "winning_tile"], ~m"(tanyaohai jihai):1")
-define_yaku_precedence !chin_name, [!hon_name]
+if !chin_value > 0 do
+  on after_initialization do
+    add_rule("$value $han", !chin_name, "%{value} %{han} if your hand consists only of 1 and 9 tiles.", %{value: !chin_value, han: !chin_han})
+    update_rule("$value $han", !chin_name, "%{example_hand}", %{value: !chin_value, han: !chin_han, example_hand: ~t"111m999p1199s 9m9M9m 9s"})
+  end
+  define_yaku !chin_list, !chin_name, [!chin_value, !chin_han], not_match(["hand", "calls", "winning_tile"], ~m"(tanyaohai jihai):1")
+  if !hon_value > 0 do define_yaku_precedence !chin_name, [!hon_name] end
+end

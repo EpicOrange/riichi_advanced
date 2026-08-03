@@ -1,5 +1,5 @@
 {
-  "mods": ["lib/kuikae_nashi"],
+  "mods": [{"name": "lib/yaku/riichi", "config": {"bet": 1000, "drawless": false, "double_value": 2}}, "lib/yaku/ippatsu", "lib/kuikae_nashi", "show_waits"],
   "config": {
     "starting_hand": {
       "east": ["1m", "2m", "3m", "2p", "3p", "8p", "8p", "1s", "2s", "3s", "7s", "8s", "8s"],

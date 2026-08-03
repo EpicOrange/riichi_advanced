@@ -34,7 +34,7 @@ apply set_append, "default_mods", [
   %{name: "shuugi/yakuman", config: %{allow_kazoe: false, per_yakuman: false, ron_chips: 10, tsumo_chips: 5}},
   %{name: "lib/min_han", config: %{min: 1, han: "Han"}},
   "cancellable_riichi",
-  "yaku/ippatsu",
+  "lib/yaku/ippatsu",
   %{name: "shiro_pocchi", config: %{ippatsu_only: false}},
   %{name: "aka", config: %{pin: 4, sou: 4, man: 4}},
   %{name: "shuugi/aka", config: %{chips: 1, closed_only: false}},

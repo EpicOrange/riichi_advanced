@@ -50,11 +50,11 @@ require "yaku/sanrenkou", %{san_name: "Three Consecutive Triplets", san_value: 1
 require "yaku/chanta", %{chanta_name: "Mixed Lesser Terminals", chanta_value: 40, junchan_name: "Pure Lesser Terminals", junchan_value: 50}
 require "yaku/honroutou", %{chin_name: "Pure Greater Terminals", chin_value: 400, hon_name: "Mixed Greater Terminals", hon_value: 100, chin_list: "listed_limit_hand"}
 require "yaku/haitei", %{haitei_name: "Final Draw", haitei_value: 10, houtei_name: "Final Discard", houtei_value: 10}
-require "yaku/rinshan", %{value: 10, rinshan_name: "Win on Kong"}
+require "yaku/rinshan", %{value: 10, name: "Win on Kong"}
 require "yaku/chankan", %{name: "Robbing a Kong", value: 10, scoring_key: "win"}
 require "yaku/tenhou", %{chiihou_name: "Blessing of Earth", chiihou_value: 155, tenhou_name: "Blessing of Heaven", tenhou_value: 155}
-require "yaku/chiitoitsu", %{name: "Seven Pairs", value: 30, rules_tab: "30 pts"}
-require "yaku/kokushi", %{name: "Thirteen Terminals", value: 160, rules_tab: "Limit"}
+require "yaku/chiitoitsu", %{name: "Seven Pairs", value: 30}
+require "yaku/kokushi", %{name: "Thirteen Terminals", value: 160}
 
 on after_initialization do
   add_rule_tab("Patterns")

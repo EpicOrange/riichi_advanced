@@ -1,4 +1,8 @@
 default list, "yaku"
+default name, "Sanshoku Doukou"
+default value, 1
+default closed_list, "meta_yaku"
+default closed_bonus, 0
 
 on after_initialization do
   add_rule("$value $han", "$name", "%{value} %{han} if your hand contains the same number triplet in all three suits.", %{value: !value, han: !han, name: !name})

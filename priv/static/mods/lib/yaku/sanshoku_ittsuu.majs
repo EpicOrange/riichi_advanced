@@ -1,0 +1,25 @@
+require "standard_sets"
+
+default list, "yaku"
+default name, "Sanshoku Ittsuu"
+default value, 1
+default closed_list, "meta_yaku"
+default closed_bonus, 0
+
+on after_initialization do
+  if !closed_bonus > 0 do
+    add_rule("$value $han", !name, "%{value} %{han} for having a three-color straight (%{example}, for example). +%{bonus} %{han} if closed.", %{value: !value, han: !han, example: ~t"123m 456p 789s", bonus: !closed_bonus})
+  else
+    add_rule("$value $han", !name, "%{value} %{han} for having a three-color straight (%{example}, for example).", %{value: !value, han: !han, example: ~t"123m 456p 789s"})
+  end
+  update_rule("$value $han", !name, "%{example_hand}", %{value: !value, han: !han, example_hand: ~t"123m456p789s1333z 1z"})
+end
+
+define_set sanshoku_ittsuu, ~s"0 1 2, 13 14 15, 26 27 28|0 1 2, 23 24 25, 16 17 18"
+
+define_yaku !list, !name, [!value, !han], match(["hand", "calls", "winning_tile"], ~m"exhaustive, sanshoku_ittsuu:1, mentsu:1, pair:1")
+
+if !closed_bonus > 0 do
+  apply initialize, "constants.closed_hand", has_no_call_named("chii", "pon", "daiminkan", "kakan")
+  define_yaku !closed_list, !name, [!closed_bonus, !han], @closed_hand and has_existing_yaku(!name)
+end

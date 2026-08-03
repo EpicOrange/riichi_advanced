@@ -1,20 +1,42 @@
-default list, "yaku"
+require "standard_sets"
+
+default ii_list, "yaku"
+default ii_name, "Iipeikou"
+default ii_value, 0
+default ii_han, !han
+default ryan_list, "yaku"
+default ryan_name, "Ryanpeikou"
+default ryan_value, 0
+default ryan_han, !han
 default closed_only, false
 
-define "iipeikou"
-
-on after_initialization do
-  add_rule("$value $han", "$name", "%{value} %{han} if you have a double sequence: two copies of the exact same sequence in one suit, like 123 123.", %{value: !value, han: !han, name: !name})
-  if !closed_only do
-    update_rule("$value $han", "$name", "Your hand must be closed.", %{value: !value, han: !han, name: !name})
+if !ii_value > 0 do
+  on after_initialization do
+    add_rule("$value $han", !ii_name, "%{value} %{han} if you have a double sequence: two copies of the exact same sequence in one suit, like 123 123.", %{value: !ii_value, han: !ii_han})
+    if !closed_only do
+      update_rule("$value $han", !ii_name, "Your hand must be closed.", %{value: !ii_value, han: !ii_han})
+    end
+    update_rule("$value $han", !ii_name, "%{example_hand}", %{value: !ii_value, han: !ii_han, example_hand: ~t"33445m33777p678s 5m"})
   end
-  update_rule("$value $han", "$name", "%{example_hand}", %{value: !value, han: !han, name: !name, example_hand: ~t"33445m33777p678s 5m"})
+  if !closed_only do
+    define_yaku !ii_list, !ii_name, [!ii_value, !ii_han], @closed_hand and match(["hand", "calls", "winning_tile"], ~m"exhaustive, iipeikou:1, mentsu:2, pair:1")
+  else
+    define_yaku !ii_list, !ii_name, [!ii_value, !ii_han], match(["hand", "calls", "winning_tile"], ~m"exhaustive, iipeikou:1, mentsu:2, pair:1")
+  end
 end
 
-define_set iipeikou, ~s"0 1 2, 0 1 2"
-
-if !closed_only do
-  define_yaku !list, !name, [!value, !han], @closed_hand and match(["hand", "calls", "winning_tile"], ~m"exhaustive, iipeikou:1, mentsu:2, pair:1")
-else
-  define_yaku !list, !name, [!value, !han], match(["hand", "calls", "winning_tile"], ~m"exhaustive, iipeikou:1, mentsu:2, pair:1")
+if !ryan_value > 0 do
+  on after_initialization do
+    add_rule("$value $han", !ryan_name, "%{value} %{han} if you have two double sequences, each being two copies of the exact same sequence in one suit, like 123 123. Cannot be scored as a seven pairs hand.", %{value: !ryan_value, han: !ryan_han})
+    if !closed_only do
+      update_rule("$value $han", !ryan_name, "Your hand must be closed.", %{value: !ryan_value, han: !ryan_han})
+    end
+    update_rule("$value $han", !ryan_name, "%{example_hand}", %{value: !ryan_value, han: !ryan_han, example_hand: ~t"33445m33777p678s 5m"})
+  end
+  if !closed_only do
+    define_yaku !ryan_list, !ryan_name, [!ryan_value, !ryan_han], @closed_hand and match(["hand", "calls", "winning_tile"], ~m"exhaustive, iipeikou:1, mentsu:2, pair:1")
+  else
+    define_yaku !ryan_list, !ryan_name, [!ryan_value, !ryan_han], match(["hand", "calls", "winning_tile"], ~m"exhaustive, iipeikou:1, mentsu:2, pair:1")
+  end
+  if !ii_value > 0 do define_yaku_precedence !ryan_name, [!ii_name] end
 end

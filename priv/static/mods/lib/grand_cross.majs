@@ -45,4 +45,4 @@ apply append, "buttons.open_riichi.show_when", not_match(["hand"], ["grand_cross
 apply merge, "constants.calls_fu", %{grand_cross: 8}
 
 # grand cross counts for sankantsu etc.
-apply set_append, "set_definitions.kan_call", ~s"grand_cross"
+apply set_append, "set_definitions.closed_kan_call", ~s"grand_cross"

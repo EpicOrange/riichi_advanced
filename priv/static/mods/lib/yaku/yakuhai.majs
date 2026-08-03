@@ -1,34 +1,41 @@
+require "standard_sets"
 require "value_honors"
+
 default list, "yaku"
-default value, 0
+default value, 1
+default rules_name, "Yakuhai"
+default white_name, "White Dragon"
+default green_name, "Green Dragon"
+default red_name, "Red Dragon"
 default round_wind_name, "Round Wind"
 default seat_wind_name, "Seat Wind"
 
 on after_initialization do
-  add_rule("$value $han", "Value Triplets", "%{value} %{han} for each of the following triplets in your hand:", %{value: !value, han: !han})
-  add_rule("$value $han", "Value Triplets", "- A triplet of dragon tiles %{dragons}", %{value: !value, han: !han, dragons: ~t"777z"})
+  add_rule("$value $han", !rules_name, "%{value} %{han} for each of the following triplets (or kans) in your hand:", %{value: !value, han: !han})
+  add_rule("$value $han", !rules_name, "- A triplet of dragon tiles %{dragons}", %{value: !value, han: !han, dragons: ~t"777z"})
   unless equals(!round_wind_name, "") do
     cond do
-      round_wind_is("east")  -> add_rule("$value $han", "Value Triplets", "- A triplet of winds matching the round marker %{round_winds}", %{value: !value, han: !han, round_winds: ~t"111z"})
-      round_wind_is("south") -> add_rule("$value $han", "Value Triplets", "- A triplet of winds matching the round marker %{round_winds}", %{value: !value, han: !han, round_winds: ~t"222z"})
-      round_wind_is("west")  -> add_rule("$value $han", "Value Triplets", "- A triplet of winds matching the round marker %{round_winds}", %{value: !value, han: !han, round_winds: ~t"333z"})
-      round_wind_is("north") -> add_rule("$value $han", "Value Triplets", "- A triplet of winds matching the round marker %{round_winds}", %{value: !value, han: !han, round_winds: ~t"444z"})
+      round_wind_is("east")  -> add_rule("$value $han", !rules_name, "- A triplet of winds matching the round marker %{round_winds}", %{value: !value, han: !han, round_winds: ~t"111z"})
+      round_wind_is("south") -> add_rule("$value $han", !rules_name, "- A triplet of winds matching the round marker %{round_winds}", %{value: !value, han: !han, round_winds: ~t"222z"})
+      round_wind_is("west")  -> add_rule("$value $han", !rules_name, "- A triplet of winds matching the round marker %{round_winds}", %{value: !value, han: !han, round_winds: ~t"333z"})
+      round_wind_is("north") -> add_rule("$value $han", !rules_name, "- A triplet of winds matching the round marker %{round_winds}", %{value: !value, han: !han, round_winds: ~t"444z"})
     end
   end
   unless equals(!seat_wind_name, "") do
     cond do
-      seat_is("east")  -> add_rule("$value $han", "Value Triplets", "- A triplet of winds matching your seat %{seat_winds}", %{value: !value, han: !han, seat_winds: ~t"111z"})
-      seat_is("south") -> add_rule("$value $han", "Value Triplets", "- A triplet of winds matching your seat %{seat_winds}", %{value: !value, han: !han, seat_winds: ~t"222z"})
-      seat_is("west")  -> add_rule("$value $han", "Value Triplets", "- A triplet of winds matching your seat %{seat_winds}", %{value: !value, han: !han, seat_winds: ~t"333z"})
-      seat_is("north") -> add_rule("$value $han", "Value Triplets", "- A triplet of winds matching your seat %{seat_winds}", %{value: !value, han: !han, seat_winds: ~t"444z"})
+      seat_is("east")  -> add_rule("$value $han", !rules_name, "- A triplet of winds matching your seat %{seat_winds}", %{value: !value, han: !han, seat_winds: ~t"111z"})
+      seat_is("south") -> add_rule("$value $han", !rules_name, "- A triplet of winds matching your seat %{seat_winds}", %{value: !value, han: !han, seat_winds: ~t"222z"})
+      seat_is("west")  -> add_rule("$value $han", !rules_name, "- A triplet of winds matching your seat %{seat_winds}", %{value: !value, han: !han, seat_winds: ~t"333z"})
+      seat_is("north") -> add_rule("$value $han", !rules_name, "- A triplet of winds matching your seat %{seat_winds}", %{value: !value, han: !han, seat_winds: ~t"444z"})
     end
   end
+  add_rule("$value $han", !rules_name, "If a wind triplet matches both the round marker and your seat position, score both.", %{value: !value, han: !han, seat_winds: ~t"444z"})
 end
 
 # dragons
-define_yaku !list, "White Dragon", [!value, !han], match(["hand", "calls", "winning_tile"], ~m"exhaustive, haku:1, mentsu:3, pair:1")
-define_yaku !list, "Green Dragon", [!value, !han], match(["hand", "calls", "winning_tile"], ~m"exhaustive, hatsu:1, mentsu:3, pair:1")
-define_yaku !list, "Red Dragon", [!value, !han], match(["hand", "calls", "winning_tile"], ~m"exhaustive, chun:1, mentsu:3, pair:1")
+define_yaku !list, !white_name, [!value, !han], match(["hand", "calls", "winning_tile"], ~m"exhaustive, haku:1, mentsu:3, pair:1")
+define_yaku !list, !green_name, [!value, !han], match(["hand", "calls", "winning_tile"], ~m"exhaustive, hatsu:1, mentsu:3, pair:1")
+define_yaku !list, !red_name, [!value, !han], match(["hand", "calls", "winning_tile"], ~m"exhaustive, chun:1, mentsu:3, pair:1")
 
 unless equals(!round_wind_name, "") do
   define_yaku !list, !round_wind_name, [!value, !han], match(["hand", "calls", "winning_tile"], ~m"exhaustive, prevalent_wind:1, mentsu:3, pair:1")

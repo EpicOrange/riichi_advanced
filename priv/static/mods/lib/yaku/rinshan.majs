@@ -1,4 +1,6 @@
 default list, "yaku"
+default name, "Rinshan"
+default value, 0
 default flower_name, ""
 default double_list, "yaku"
 default double_name, ""
@@ -6,10 +8,10 @@ default double_value, 0
 default double_han, !han
 
 on after_initialization do
-  if equals(!rinshan_name, !flower_name) do
-    add_rule("$value $han", "$name", "%{value} %{han} if you win off a %{kan} or flower replacement tile.", %{value: !value, han: !han, name: !rinshan_name, kan: !kan_name})
+  if equals(!name, !flower_name) do
+    add_rule("$value $han", "$name", "%{value} %{han} if you win off a %{kan} or flower replacement tile.", %{value: !value, han: !han, name: !name, kan: !kan_name})
   else
-    add_rule("$value $han", "$name", "%{value} %{han} if you win off a %{kan} replacement tile.", %{value: !value, han: !han, name: !rinshan_name, kan: !kan_name})
+    add_rule("$value $han", "$name", "%{value} %{han} if you win off a %{kan} replacement tile.", %{value: !value, han: !han, name: !name, kan: !kan_name})
   end
   unless equals(!flower_name, "") do
     add_rule("$value $han", "$name", "%{value} %{han} if you win off a flower replacement tile.", %{value: !value, han: !han, name: !flower_name})
@@ -19,12 +21,12 @@ on after_initialization do
   end
 end
 
-define_yaku !list, !rinshan_name, [!value, !han], status("kan")
+define_yaku !list, !name, [!value, !han], status("kan")
 unless equals(!flower_name, "") do
   define_yaku !list, !flower_name, [!value, !han], status("flower")
 end
 if !double_value > 0 do
-  define_yaku !double_list, !double_name, [!double_value, !double_han], status("double_kan"), [!rinshan_name]
+  define_yaku !double_list, !double_name, [!double_value, !double_han], status("double_kan"), [!name]
 end
 
 unless equals(!flower_name, "") do

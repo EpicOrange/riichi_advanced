@@ -1,9 +1,11 @@
 default list, "yaku"
+default name, "Tsumo"
+default value, 1
+default ankan_name, "Ankan"
 
 on after_initialization do
-  add_rule("$value $han", "$name", "You have no calls (except %{ankan}) and you won by self-draw.", %{value: !value, han: !han, name: !name, ankan: !ankan_name})
+  add_rule("$value $han", !name, "%{value} %{han} if you win by self-draw without having called any tiles (except %{ankan}).", %{value: !value, han: !han, ankan: !ankan_name})
 end
 
-define_const closed_hand, has_no_call_named("chii", "pon", "daiminkan", "kakan")
-
+apply initialize, "constants.closed_hand", has_no_call_named("chii", "pon", "daiminkan", "kakan")
 define_yaku !list, !name, [!value, !han], won_by_draw and @closed_hand

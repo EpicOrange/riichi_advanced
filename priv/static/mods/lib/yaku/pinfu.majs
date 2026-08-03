@@ -1,0 +1,13 @@
+default list, "yaku"
+default name, "Pinfu"
+default value, 0
+
+on after_initialization do
+  add_rule("$value $han", !name, "%{value} %{han} if your hand is closed and only scores base fu (30 for ron and 20 for tsumo, excluding the +2 fu for tsumo). To achieve this, you must win off a double-sided sequence wait, with a closed all-sequence hand, with a non-yakuhai pair.", %{value: !value, han: !han})
+  update_rule("$value $han", !name, "%{example_hand}", %{value: !value, han: !han, example_hand: ~t"345789m45p23499s 6p"})
+end
+
+apply initialize, "constants.closed_hand", has_no_call_named("chii", "pon", "daiminkan", "kakan")
+define_yaku !list, !name, [!value, !han], @closed_hand
+  and match(["hand", "calls", "winning_tile"], @standard_win)
+  and ((won_by_draw and minipoints_equals(20)) or (not_won_by_draw and minipoints_equals(30)))

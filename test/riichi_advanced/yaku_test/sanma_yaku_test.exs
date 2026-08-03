@@ -3,8 +3,7 @@ defmodule RiichiAdvanced.YakuTest.SanmaYaku do
   alias RiichiAdvanced.TestUtils, as: TestUtils
 
   test "sanma - chankan pei awards ippatsu" do
-    TestUtils.test_yaku_advanced("sanma", [%{name: "lib/yaku/riichi", config: %{"bet" => 1000, "drawless" => false, "double_value" => 2}
-}, "yaku/ippatsu"], """
+    TestUtils.test_yaku_advanced("sanma", [%{name: "lib/yaku/riichi", config: %{"bet" => 1000, "drawless" => false, double_value: 2}}, "lib/yaku/ippatsu"], """
     {
       "starting_hand": {
         "east": ["2p", "3p", "4p", "4p", "5p", "6p", "7z", "7z", "7z", "8s", "8s", "8s", "4z"],
@@ -27,8 +26,7 @@ defmodule RiichiAdvanced.YakuTest.SanmaYaku do
   end
 
   test "sanma - pei breaks ippatsu" do
-    TestUtils.test_yaku_advanced("sanma", [%{name: "lib/yaku/riichi", config: %{"bet" => 1000, "drawless" => false, "double_value" => 2}
-}, "yaku/ippatsu"], """
+    TestUtils.test_yaku_advanced("sanma", [%{name: "lib/yaku/riichi", config: %{"bet" => 1000, "drawless" => false, double_value: 2}}, "lib/yaku/ippatsu"], """
     {
       "starting_hand": {
         "east": ["2p", "3p", "4p", "4p", "5p", "6p", "7z", "7z", "7z", "8s", "8s", "8s", "5z"],
@@ -52,8 +50,7 @@ defmodule RiichiAdvanced.YakuTest.SanmaYaku do
   end
 
   test "sanma - manzu triplet gives fu" do
-    TestUtils.test_yaku_advanced("sanma", [%{name: "lib/yaku/riichi", config: %{"bet" => 1000, "drawless" => false, "double_value" => 2}
-}, "yaku/ippatsu"], """
+    TestUtils.test_yaku_advanced("sanma", [%{name: "lib/yaku/riichi", config: %{"bet" => 1000, "drawless" => false, double_value: 2}}, "lib/yaku/ippatsu"], """
     {
       "starting_hand": {
         "east": ["9m", "9m", "9m", "2p", "3p", "9p", "9p", "1s", "2s", "3s", "7s", "8s", "9s"],
@@ -75,8 +72,7 @@ defmodule RiichiAdvanced.YakuTest.SanmaYaku do
   end
 
   test "sanma - fu calculation works" do
-    TestUtils.test_yaku_advanced("sanma", [%{name: "lib/yaku/riichi", config: %{"bet" => 1000, "drawless" => false, "double_value" => 2}
-}, "yaku/ippatsu"], """
+    TestUtils.test_yaku_advanced("sanma", [%{name: "lib/yaku/riichi", config: %{"bet" => 1000, "drawless" => false, double_value: 2}}, "lib/yaku/ippatsu"], """
     {
       "starting_hand": {
         "east": ["1m", "1m", "1m", "3p", "5p", "9p", "9p", "1s", "2s", "3s", "7s", "8s", "9s"],
@@ -99,8 +95,7 @@ defmodule RiichiAdvanced.YakuTest.SanmaYaku do
   end
 
   test "sanma - fu calculation ignores pei calls" do
-    TestUtils.test_yaku_advanced("sanma", [%{name: "lib/yaku/riichi", config: %{"bet" => 1000, "drawless" => false, "double_value" => 2}
-}, "yaku/ippatsu"], """
+    TestUtils.test_yaku_advanced("sanma", [%{name: "lib/yaku/riichi", config: %{"bet" => 1000, "drawless" => false, double_value: 2}}, "lib/yaku/ippatsu"], """
     {
       "starting_hand": {
         "east": ["1m", "1m", "1m", "3p", "5p", "9p", "9p", "1s", "2s", "3s", "7s", "8s", "9s"],

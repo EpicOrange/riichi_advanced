@@ -1,10 +1,24 @@
+require "standard_sets"
+
 default list, "yaku"
+default name, "Sanshoku"
+default value, 1
+default closed_list, "yaku"
+default closed_bonus, 0
 
 on after_initialization do
-  add_rule("$value $han", "$name", "%{value} %{han} if your hand contains the same number sequence in all three suits.", %{value: !value, han: !han, name: !name})
-  update_rule("$value $han", "$name", "%{example_hand}", %{value: !value, han: !han, name: !name, example_hand: ~t"24p23334678s 2M34m 3p"})
+  if !closed_bonus > 0 do
+    add_rule("$value $han", !name, "%{value} %{han} if your hand contains the same number sequence in all three suits. +%{bonus} %{han} if closed.", %{value: !value, han: !han, bonus: !closed_bonus})
+  else
+    add_rule("$value $han", !name, "%{value} %{han} if your hand contains the same number sequence in all three suits.", %{value: !value, han: !han})
+  end
+  update_rule("$value $han", !name, "%{example_hand}", %{value: !value, han: !han, example_hand: ~t"24p23334678s 2M34m 3p"})
 end
 
 define_set sanshoku_doujun, ~s"0 1 2, 10 11 12, 20 21 22"
-
 define_yaku !list, !name, [!value, !han], match(["hand", "calls", "winning_tile"], ~m"exhaustive, sanshoku_doujun:1, mentsu:1, pair:1")
+
+if !closed_bonus > 0 do
+  apply initialize, "constants.closed_hand", has_no_call_named("chii", "pon", "daiminkan", "kakan")
+  define_yaku !closed_list, !name, [!closed_bonus, !han], @closed_hand and has_existing_yaku(!name)
+end

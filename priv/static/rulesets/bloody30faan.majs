@@ -50,13 +50,13 @@ require "yaku/isshoku_sanjun", %{san_name: "Pure Triple Sequence", san_value: 10
 require "yaku/iipeikou", %{name: "Identical Sequences", value: 2}
 require "yaku/ryanpeikou", %{name: "Double Identical Sequences", value: 10}
 require "yaku/pinghu", %{name: "All Sequences", value: 2, no_value_pair: false}
-require "yaku/rinshan", %{value: 2, rinshan_name: "After a Kong"}
+require "yaku/rinshan", %{value: 2, name: "After a Kong"}
 require "yaku/chankan", %{name: "Robbing a Kong", value: 5, scoring_key: "win"}
 require "yaku/tenhou", %{chiihou_is_tsumo: true, chiihou_name: "Hand of Earth", chiihou_value: 30, renhou_name: "Hand of Man", renhou_value: 15, tenhou_name: "Hand of Heaven", tenhou_value: 30}
 require "yaku/menzenchin", %{name: "Concealed Hand", value: 1}
 require "yaku/menzentsumo", %{name: "Fully Concealed Hand", value: 2}
-require "yaku/chiitoitsu", %{name: "Seven Pairs", value: 5, kansai: false, rules_tab: "5 Faan"}
-require "yaku/kokushi", %{name: "Thirteen Orphans", value: 20, rules_tab: "20 Faan"}
+require "yaku/chiitoitsu", %{name: "Seven Pairs", value: 5, kansai: false}
+require "yaku/kokushi", %{name: "Thirteen Orphans", value: 20}
 
 on after_initialization do
   add_rule("Tiles", "Jokers", "There are 8 jokers in the game: %{jokers}.", %{jokers: ~T"10j12j3j14j15j6j17j18j"}, -10)

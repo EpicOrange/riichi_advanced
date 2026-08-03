@@ -1,10 +1,11 @@
+require "standard_sets"
+
 on after_initialization do
+  unless rule_exists("Rules", "Win Condition") do
+    add_rule("Rules", "Win Condition", "You may win with one of the following:", -100)
+  end
   add_rule("Rules", "Win Condition", "- Four sets (sequences or triplets) and a pair.", -100)
 end
-
-define_set pair, ~s"0 0"
-define_set mentsu, ~s"0 0 0 | 0 1 2"
-define_set taatsu, ~s"0 0 | 0 1 | 0 2"
 
 define_const standard_tenpai, ~m"exhaustive, mentsu:3, taatsu:1, pair:1 | exhaustive, mentsu:4"
 define_const standard_win, ~m"exhaustive, mentsu:4, pair:1"

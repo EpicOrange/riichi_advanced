@@ -1,4 +1,6 @@
 default list, "yaku"
+default name, "Uumensai"
+default value, 2
 
 on after_initialization do
   add_rule("$value $han", "$name", "%{value} %{han} if your hand includes all 5 suits (character, circle, bamboo, wind, dragon).", %{value: !value, han: !han, name: !name})

@@ -4,7 +4,7 @@ defmodule RiichiAdvanced.CosmicMechanicsTest do
 
   @cosmic_mods [
     "lib/yaku/riichi",
-    "yaku/ippatsu",
+    "lib/yaku/ippatsu",
     "kontsu",
     "yaku/kontsu_yaku",
     "yaku/chanfuun",

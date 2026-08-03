@@ -1,30 +1,58 @@
-default list, "yaku"
-default override, ""
+require "standard_sets"
 
-on after_initialization do
-  add_rule("$value $han", "$name", "%{value} %{han} if you have three concealed triplets. A triplet completed by a self-draw win counts as concealed.", %{value: !value, han: !han, name: !name})
-  update_rule("$value $han", "$name", "%{example_hand}", %{value: !value, han: !han, name: !name, example_hand: ~t"222888m444p123s1z 1z"})
+default san_list, "yaku"
+default san_name, "Sanankou"
+default san_value, 0
+default san_han, !han
+default suu_list, "yaku"
+default suu_name, "Suuankou"
+default suu_value, 0
+default suu_han, !han
+default suu_tanki_list, !suu_list
+default suu_tanki_name, "Suuankou Tanki"
+default suu_tanki_value, 0
+default suu_tanki_han, !han
+
+on before_scoring do add_attr(["winning_tile"], ["_winning_tile"]) end
+
+if !san_value > 0 do
+  on after_initialization do
+    add_rule("$value $han", !san_name, "%{value} %{han} if you have three concealed triplets. A triplet completed by a self-draw win counts as concealed. A triplet completed by a discard does not count as concealed.", %{value: !san_value, han: !san_han})
+    update_rule("$value $han", !san_name, "%{example_hand}", %{value: !san_value, han: !san_han, example_hand: ~t"222888m444p123s1z 1z"})
+  end
+  define_match sanankou_tsumo, ~m"""
+    exhaustive, (pon daiminkan kakan):-1, koutsu:3, mentsu:1, pair:1 |
+                (pon daiminkan kakan):-2, koutsu:4, pair:1
+    """
+  define_match sanankou_ron, ~m"""
+    exhaustive, (pon daiminkan kakan):-1, koutsu:3, (any@winning_tile):0, mentsu:1, pair:1 |
+                (pon daiminkan kakan):-2, koutsu:4, (any@winning_tile):0, pair:1
+    """
+  define_yaku !san_list, !san_name, [!san_value, !san_han],
+       (won_by_draw and match(["hand", "calls", "winning_tile"], ["sanankou_tsumo"]))
+    or (not_won_by_draw and match(["hand", "calls", "winning_tile"], ["sanankou_ron"]))
 end
 
-define_set pair, ~s"0 0"
-define_set koutsu, ~s"0 0 0"
-define_set mentsu, ~s"0 0 0 | 0 1 2"
-
-on before_scoring do
-  add_attr(["winning_tile"], ["_winning_tile"])
+if !suu_value > 0 do
+  on after_initialization do
+    add_rule("$value $han", !suu_name, "%{value} %{han} if you have four concealed triplets. A triplet completed by a self-draw win counts as concealed. A triplet completed by a discard does not count as concealed.", %{value: !suu_value, han: !suu_han})
+    update_rule("$value $han", !suu_name, "%{example_hand}", %{value: !suu_value, han: !suu_han, example_hand: ~t"222888m444p333s1z 1z"})
+    if !suu_tanki_value > 0 do
+      add_rule("$value $han", !suu_tanki_name, "%{value} %{han} if you have four concealed triplets, and won by completing your pair.", %{value: !suu_tanki_value, han: !suu_tanki_han})
+      update_rule("$value $han", !suu_tanki_name, "%{example_hand}", %{value: !suu_tanki_value, han: !suu_tanki_han, example_hand: ~t"222888m444p333s1z 1z"})
+    end
+  end
+  define_match suuankou_tsumo, ~m"(pon daiminkan kakan):-1, koutsu:4, pair:1"
+  define_match suuankou_ron, ~m"(pon daiminkan kakan):-1, koutsu:4, (any@winning_tile):0, pair:1"
+  if !suu_tanki_value > 0 do
+    define_yaku !suu_list, !suu_name, [!suu_value, !suu_han],
+      won_by_draw and match(["hand", "calls", "winning_tile"], ["suuankou_tsumo"])
+    define_yaku !suu_tanki_list, !suu_tanki_name, [!suu_tanki_value, !suu_tanki_han],
+      match(["hand", "calls", "winning_tile"], ["suuankou_ron"]), [!san_name, !suu_name]
+  else
+    define_yaku !suu_list, !suu_name, [!suu_value, !suu_han],
+         (won_by_draw and match(["hand", "calls", "winning_tile"], ["suuankou_tsumo"]))
+      or (not_won_by_draw and match(["hand", "calls", "winning_tile"], ["suuankou_ron"])), [!san_name]
+  end
+  if !san_value > 0 do define_yaku_precedence !suu_name, [!san_name] end
 end
-
-define_match sanankou_tsumo, ~m"""
-  exhaustive, (pon daiminkan kakan):-1, koutsu:3, mentsu:1, pair:1 |
-              (pon daiminkan kakan):-2, koutsu:4, pair:1
-  """
-define_match sanankou_ron, ~m"""
-  exhaustive, (pon daiminkan kakan):-1, koutsu:3, (any@winning_tile):0, mentsu:1, pair:1 |
-              (pon daiminkan kakan):-2, koutsu:4, (any@winning_tile):0, pair:1
-  """
-
-define_yaku !list, !name, [!value, !han],
-     (won_by_draw and match(["hand", "calls", "winning_tile"], ["sanankou_tsumo"]))
-  or (not_won_by_draw and match(["hand", "calls", "winning_tile"], ["sanankou_ron"]))
-
-unless equals(!override, "") do define_yaku_precedence !name, [!override] end

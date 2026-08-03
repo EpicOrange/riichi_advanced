@@ -1,4 +1,5 @@
 on after_initialization do 
+  delete_rule("Rules", "Multiple Ron")
   add_rule("Rules", "Head Bump", "If multiple players win on the same tile, only the closest player in turn order gets the win.")
 end
 

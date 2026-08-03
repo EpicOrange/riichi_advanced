@@ -1,18 +1,23 @@
 default list, "yaku"
+default name, "Seven Pairs"
+default value, 0
 default kansai, true
 
 on after_initialization do
+  unless rule_exists("Rules", "Win Condition") do
+    add_rule("Rules", "Win Condition", "You may win with one of the following:", -100)
+  end
   if !kansai do
     add_rule("Rules", "Win Condition", "- Seven pairs (repeated pairs OK).", -100)
     if !value > 0 do
-      add_rule("$rules_tab", "Seven Pairs", "%{value} %{han} if your hand consists of seven pairs (repeated pairs OK).", %{value: !value, han: !han, rules_tab: !rules_tab})
-      update_rule("$rules_tab", "Seven Pairs", "%{example_hand}", %{example_hand: ~t"2266m999p4477s33z 9p", rules_tab: !rules_tab})
+      add_rule("$value $han", !name, "%{value} %{han} if your hand consists of seven pairs (repeated pairs OK).", %{value: !value, han: !han})
+      update_rule("$value $han", !name, "%{example_hand}", %{example_hand: ~t"2266m999p4477s33z 9p"})
     end
   else
     add_rule("Rules", "Win Condition", "- Seven pairs (no repeated pairs).", -100)
     if !value > 0 do
-      add_rule("$rules_tab", "Seven Pairs", "%{value} %{han} if your hand consists of seven pairs (no repeated pairs).", %{value: !value, han: !han, rules_tab: !rules_tab})
-      update_rule("$rules_tab", "Seven Pairs", "%{example_hand}", %{example_hand: ~t"2266m339p4477s33z 9p", rules_tab: !rules_tab})
+      add_rule("$value $han", !name, "%{value} %{han} if your hand consists of seven pairs (no repeated pairs).", %{value: !value, han: !han})
+      update_rule("$value $han", !name, "%{example_hand}", %{example_hand: ~t"2266m339p4477s33z 9p"})
     end
   end
 end

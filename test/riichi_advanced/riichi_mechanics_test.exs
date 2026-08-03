@@ -2,8 +2,41 @@ defmodule RiichiAdvanced.RiichiMechanicsTest do
   use ExUnit.Case, async: true
   alias RiichiAdvanced.TestUtils, as: TestUtils
 
+  @riichi_mods [
+    "lib/yaku/menzentsumo",
+    %{name: "lib/yaku/riichi", config: %{bet: 1000, drawless: true}},
+    "lib/yaku/ippatsu",
+    "lib/yaku/chankan",
+    %{name: "lib/yaku/rinshan", config: %{value: 1}},
+    %{name: "lib/yaku/haitei", config: %{haitei_value: 1, houtei_value: 1} },
+    %{name: "lib/yaku/pinfu", config: %{value: 1}},
+    %{name: "lib/yaku/tanyao", config: %{closed_only: false}},
+    %{name: "lib/yaku/iipeikou", config: %{ii_value: 1, ryan_value: 3}},
+    %{name: "lib/yaku/yakuhai", config: %{white_name: "Haku", green_name: "Hatsu", red_name: "Chun"}},
+    %{name: "lib/yaku/chiitoitsu", config: %{kansai: false, name: "Chiitoitsu", value: 2} },
+    %{name: "lib/yaku/chanta", config: %{chanta_value: 1, closed_bonus: 1, junchan_value: 2} },
+    %{name: "lib/yaku/ittsuu", config: %{closed_bonus: 1}},
+    %{name: "lib/yaku/sanshoku_doujun", config: %{closed_bonus: 1, value: 1} },
+    %{name: "lib/yaku/sanshoku_doukou", config: %{value: 2}},
+    %{name: "lib/yaku/sankantsu", config: %{value: 2}},
+    %{name: "lib/yaku/toitoi", config: %{value: 2}},
+    %{name: "lib/yaku/sanankou", config: %{san_value: 2, suu_han: "★", suu_list: "yakuman", suu_tanki_value: 2, suu_value: 1 } },
+    %{name: "lib/yaku/shousangen", config: %{dai_han: "★", dai_list: "yakuman", dai_value: 1, shou_value: 2 } },
+    %{name: "lib/yaku/honroutou", config: %{chin_han: "★", chin_list: "yakuman", chin_value: 1, hon_value: 2 } },
+    %{name: "lib/yaku/honitsu", config: %{chin_value: 5, closed_bonus: 1, hon_value: 2} },
+    %{name: "lib/yaku/tenhou", config: %{chiihou_is_tsumo: true, chiihou_list: "yakuman", chiihou_value: 1, chiihou_han: "★", tenhou_list: "yakuman", tenhou_value: 1, tenhou_han: "★" } },
+    %{name: "lib/yaku/riichi_renhou", config: %{is: "Yakuman"}},
+    %{name: "lib/yaku/tsuuiisou", config: %{han: "★"}},
+    %{name: "lib/yaku/ryuuiisou", config: %{han: "★"}},
+    %{name: "lib/yaku/chuurenpoutou", config: %{han: "★", junsei_han: "★", junsei_list: "yakuman", junsei_value: 2, list: "yakuman", value: 1 } },
+    %{name: "lib/yaku/kokushi", config: %{han: "★", juusan_han: "★", juusan_list: "yakuman", juusan_value: 2, list: "yakuman", value: 1 } },
+    %{name: "lib/yaku/shousuushii", config: %{dai_han: "★", dai_list: "yakuman", dai_value: 2, shou_han: "★", shou_list: "yakuman", shou_value: 1 } },
+    %{name: "lib/yaku/suukantsu", config: %{han: "★", value: 1}},
+    %{name: "lib/min_han", config: %{han: "Han", min: 1}},
+  ]
+
   test "riichi - kuikae ari" do
-    TestUtils.test_yaku_advanced("riichi", [], """
+    TestUtils.test_yaku_advanced("riichi", @riichi_mods, """
     {
       "starting_hand": {
         "east": ["2m", "2m", "5z", "5m", "5m", "5z", "6m", "6m", "5z", "5s", "6s", "7s", "8s"],
@@ -39,7 +72,7 @@ defmodule RiichiAdvanced.RiichiMechanicsTest do
   end
 
   test "riichi - kuikae nashi" do
-    TestUtils.test_yaku_advanced("riichi", ["lib/kuikae_nashi"], """
+    TestUtils.test_yaku_advanced("riichi", @riichi_mods ++ ["lib/kuikae_nashi"], """
     {
       "starting_hand": {
         "east": ["2m", "2m", "5z", "5m", "5m", "5z", "6m", "6m", "5z", "5s", "6s", "7s", "8s"],
@@ -71,7 +104,7 @@ defmodule RiichiAdvanced.RiichiMechanicsTest do
   end
 
   test "riichi - kuikae nashi 2" do
-    TestUtils.test_yaku_advanced("riichi", ["lib/kuikae_nashi"], """
+    TestUtils.test_yaku_advanced("riichi", @riichi_mods ++ ["lib/kuikae_nashi"], """
     {
       "starting_hand": {
         "east": ["2m", "2m", "5z", "5m", "5m", "5z", "6m", "6m", "5z", "5s", "6s", "7s", "8p"],
@@ -102,7 +135,7 @@ defmodule RiichiAdvanced.RiichiMechanicsTest do
   end
 
   test "riichi - can't kuikae softlock" do
-    TestUtils.test_yaku_advanced("riichi", ["lib/kuikae_nashi"], """
+    TestUtils.test_yaku_advanced("riichi", @riichi_mods ++ ["lib/kuikae_nashi"], """
     {
       "starting_hand": {
         "east": ["2m", "2m", "5z", "5m", "5m", "5z", "6m", "6m", "5z", "6s", "6s", "7s", "8s"],
@@ -134,7 +167,7 @@ defmodule RiichiAdvanced.RiichiMechanicsTest do
 
 
   test "chinitsu - fifth tile tenpai" do
-    TestUtils.test_yaku_advanced("chinitsu", [%{name: "lib/yaku/riichi", config: %{bet: 1000, drawless: true, double_value: 2}}, "no_honors"], """
+    TestUtils.test_yaku_advanced("chinitsu", @riichi_mods ++ ["no_honors"], """
     {
       "starting_hand": {
         "east": ["1s", "2s", "3s", "4s", "5s", "6s", "4s", "5s", "6s", "9s", "9s", "9s", "9s"],
@@ -157,7 +190,7 @@ defmodule RiichiAdvanced.RiichiMechanicsTest do
   end
 
   test "chinitsu - no fifth tile tenpai" do
-    TestUtils.test_yaku_advanced("chinitsu", [%{name: "lib/yaku/riichi", config: %{bet: 1000, drawless: true, double_value: 2}}, "no_honors", "no_fifth_tile_tenpai"], """
+    TestUtils.test_yaku_advanced("chinitsu", @riichi_mods ++ ["no_honors", "no_fifth_tile_tenpai"], """
     {
       "starting_hand": {
         "east": ["1s", "2s", "3s", "4s", "5s", "6s", "4s", "5s", "6s", "9s", "9s", "9s", "9s"],
@@ -180,7 +213,7 @@ defmodule RiichiAdvanced.RiichiMechanicsTest do
   end
 
   test "riichi - kazoe" do
-    TestUtils.test_yaku_advanced("riichi", [%{name: "lib/yaku/riichi", config: %{bet: 1000, drawless: false, double_value: 2}}, "yaku/ippatsu", %{name: "lib/min_han", config: %{min: 1, han: "Han"}}], """
+    TestUtils.test_yaku_advanced("riichi", @riichi_mods ++ [%{name: "lib/min_han", config: %{min: 1, han: "Han"}}], """
     {
       "starting_hand": {
         "east": ["2p", "2p", "3p", "3p", "4p", "4p", "5p", "5p", "6p", "6p", "7p", "7p", "8p"],
@@ -205,7 +238,7 @@ defmodule RiichiAdvanced.RiichiMechanicsTest do
   end
 
   test "riichi - no kazoe" do
-    TestUtils.test_yaku_advanced("riichi", [%{name: "lib/yaku/riichi", config: %{bet: 1000, drawless: false, double_value: 2}}, "yaku/ippatsu", "no_kazoe_yakuman", %{name: "lib/min_han", config: %{min: 1, han: "Han"}}], """
+    TestUtils.test_yaku_advanced("riichi", @riichi_mods ++ ["no_kazoe_yakuman", %{name: "lib/min_han", config: %{min: 1, han: "Han"}}], """
     {
       "starting_hand": {
         "east": ["2p", "2p", "3p", "3p", "4p", "4p", "5p", "5p", "6p", "6p", "7p", "7p", "8p"],
@@ -230,7 +263,7 @@ defmodule RiichiAdvanced.RiichiMechanicsTest do
   end
 
   test "riichi - kazoe with yakuman only" do
-    TestUtils.test_yaku_advanced("riichi", [%{name: "lib/yaku/riichi", config: %{bet: 1000, drawless: false, double_value: 2}}, "yaku/ippatsu", "no_kazoe_yakuman", %{name: "lib/min_han", config: %{min: "Yakuman", han: "Han"}}], """
+    TestUtils.test_yaku_advanced("riichi", @riichi_mods ++ ["no_kazoe_yakuman", %{name: "lib/min_han", config: %{min: "Yakuman", han: "Han"}}], """
     {
       "starting_hand": {
         "east": ["2p", "2p", "3p", "3p", "4p", "4p", "5p", "5p", "6p", "6p", "7p", "7p", "8p"],
@@ -249,7 +282,7 @@ defmodule RiichiAdvanced.RiichiMechanicsTest do
 
   test "riichi - noten payments with no tenpai" do
     draws = List.duplicate("5p", 70) |> List.replace_at(1, "4s")
-    TestUtils.test_yaku_advanced("riichi", [], """
+    TestUtils.test_yaku_advanced("riichi", @riichi_mods, """
     {
       "starting_hand": {
         "east": ["4m", "4m", "4m", "6m", "7m", "8m", "1p", "1p", "3z", "4z", "4s", "4s", "1z"],
@@ -275,7 +308,7 @@ defmodule RiichiAdvanced.RiichiMechanicsTest do
 
   test "riichi - noten payments with 1 tenpai" do
     draws = List.duplicate("5p", 70) |> List.replace_at(1, "4s")
-    TestUtils.test_yaku_advanced("riichi", [], """
+    TestUtils.test_yaku_advanced("riichi", @riichi_mods, """
     {
       "starting_hand": {
         "east": ["4m", "4m", "4m", "6m", "7m", "8m", "1p", "1p", "3z", "3z", "4s", "4s", "1z"],
@@ -301,7 +334,7 @@ defmodule RiichiAdvanced.RiichiMechanicsTest do
 
   test "riichi - noten payments with 2 tenpai" do
     draws = List.duplicate("5p", 70) |> List.replace_at(1, "4s")
-    TestUtils.test_yaku_advanced("riichi", [], """
+    TestUtils.test_yaku_advanced("riichi", @riichi_mods, """
     {
       "starting_hand": {
         "east": ["4m", "4m", "4m", "6m", "7m", "8m", "1p", "1p", "3z", "3z", "4s", "4s", "1z"],
@@ -327,7 +360,7 @@ defmodule RiichiAdvanced.RiichiMechanicsTest do
 
   test "riichi - noten payments with 3 tenpai" do
     draws = List.duplicate("5p", 70) |> List.replace_at(1, "4s")
-    TestUtils.test_yaku_advanced("riichi", [], """
+    TestUtils.test_yaku_advanced("riichi", @riichi_mods, """
     {
       "starting_hand": {
         "east": ["4m", "4m", "4m", "6m", "7m", "8m", "1p", "1p", "3z", "3z", "4s", "4s", "1z"],
@@ -353,7 +386,7 @@ defmodule RiichiAdvanced.RiichiMechanicsTest do
 
   test "riichi - noten payments with 4 tenpai" do
     draws = List.duplicate("5p", 70) |> List.replace_at(1, "4s")
-    TestUtils.test_yaku_advanced("riichi", [], """
+    TestUtils.test_yaku_advanced("riichi", @riichi_mods, """
     {
       "starting_hand": {
         "east": ["4m", "4m", "4m", "6m", "7m", "8m", "1p", "1p", "3z", "3z", "4s", "4s", "1z"],
@@ -378,7 +411,7 @@ defmodule RiichiAdvanced.RiichiMechanicsTest do
   end
 
   test "riichi - grand cross and nobekan count for sankantsu" do
-    TestUtils.test_yaku_advanced("riichi", ["nobekan", "lib/grand_cross"], """
+    TestUtils.test_yaku_advanced("riichi", @riichi_mods ++ ["nobekan", "lib/grand_cross"], """
     {
       "starting_hand": {
         "east": ["1z", "2z", "3z", "4z", "7s", "8s", "9s", "7p", "7p", "7p", "5z", "6p", "6p"],
@@ -407,7 +440,7 @@ defmodule RiichiAdvanced.RiichiMechanicsTest do
   end
 
   test "riichi - nobekan with joker scores tanyao" do
-    TestUtils.test_yaku_advanced("riichi", ["jokers/vietnamese", "nobekan"], """
+    TestUtils.test_yaku_advanced("riichi", @riichi_mods ++ ["jokers/vietnamese", "nobekan"], """
     {
       "starting_hand": {
         "east": ["1m", "2m", "3m", "8j", "7s", "8s", "6s", "7p", "7p", "7p", "2s", "2s", "2s"],

@@ -1,25 +1,47 @@
 default hon_list, "yaku"
-default hon_name, ""
+default hon_name, "Honitsu"
 default hon_value, 0
 default hon_han, !han
 default chin_list, "yaku"
-default chin_name, ""
+default chin_name, "Chinitsu"
 default chin_value, 0
 default chin_han, !han
+default closed_list, "meta_yaku"
+default closed_bonus, 0
 
-on after_initialization do
-  add_rule("$value $han", "$name", "%{value} %{han} if your hand consists of only one suit plus honor tiles.", %{value: !hon_value, han: !hon_han, name: !hon_name})
-  update_rule("$value $han", "$name", "%{example_hand}", %{value: !hon_value, han: !hon_han, name: !hon_name, example_hand: ~t"123345888p11z22z 2z"})
-  add_rule("$value $han", "$name", "%{value} %{han} if your hand consists of only one suit, no honor tiles.", %{value: !chin_value, han: !chin_han, name: !chin_name})
-  update_rule("$value $han", "$name", "%{example_hand}", %{value: !chin_value, han: !chin_han, name: !chin_name, example_hand: ~t"1233445568889s 7s"})
+if !hon_value > 0 do
+  on after_initialization do
+    add_rule("$value $han", !hon_name, "%{value} %{han} if your hand consists of only one suit plus honor tiles.", %{value: !hon_value, han: !hon_han})
+    update_rule("$value $han", !hon_name, "%{example_hand}", %{value: !hon_value, han: !hon_han, example_hand: ~t"123345888p11z22z 2z"})
+  end
+  if !closed_bonus > 0 do
+    on after_initialization do
+      add_rule("$value $han", !hon_name, "+%{bonus} %{han} if your hand is closed (no calls besides ankan).", %{value: !hon_value, han: !hon_han, bonus: !closed_bonus})
+    end
+    apply initialize, "constants.closed_hand", has_no_call_named("chii", "pon", "daiminkan", "kakan")
+    define_yaku !closed_list, !hon_name, [!closed_bonus, !hon_han], @closed_hand and has_existing_yaku(!hon_name)
+  end
+  define_yaku !hon_list, !hon_name, [!hon_value, !hon_han],
+       winning_hand_consists_of("1m","2m","3m","4m","5m","6m","7m","8m","9m","1z","2z","3z","4z","5z","6z","7z","0z")
+    or winning_hand_consists_of("1p","2p","3p","4p","5p","6p","7p","8p","9p","1z","2z","3z","4z","5z","6z","7z","0z")
+    or winning_hand_consists_of("1s","2s","3s","4s","5s","6s","7s","8s","9s","1z","2z","3z","4z","5z","6z","7z","0z")
 end
 
-define_yaku !hon_list, !hon_name, [!hon_value, !hon_han],
-     winning_hand_consists_of("1m","2m","3m","4m","5m","6m","7m","8m","9m","1z","2z","3z","4z","5z","6z","7z","0z")
-  or winning_hand_consists_of("1p","2p","3p","4p","5p","6p","7p","8p","9p","1z","2z","3z","4z","5z","6z","7z","0z")
-  or winning_hand_consists_of("1s","2s","3s","4s","5s","6s","7s","8s","9s","1z","2z","3z","4z","5z","6z","7z","0z")
-define_yaku !chin_list, !chin_name, [!chin_value, !chin_han],
-     winning_hand_consists_of("1m","2m","3m","4m","5m","6m","7m","8m","9m")
-  or winning_hand_consists_of("1p","2p","3p","4p","5p","6p","7p","8p","9p")
-  or winning_hand_consists_of("1s","2s","3s","4s","5s","6s","7s","8s","9s")
-define_yaku_precedence !chin_name, [!hon_name]
+if !chin_value > 0 do
+  on after_initialization do
+    add_rule("$value $han", !chin_name, "%{value} %{han} if your hand consists of only one suit, no honor tiles.", %{value: !chin_value, han: !chin_han})
+    update_rule("$value $han", !chin_name, "%{example_hand}", %{value: !chin_value, han: !chin_han, example_hand: ~t"1233445568889s 7s"})
+  end
+  if !closed_bonus > 0 and !hon_han == !chin_han do
+    on after_initialization do
+      add_rule("$value $han", !chin_name, "+%{bonus} %{han} if your hand is closed (no calls besides ankan).", %{value: !chin_value, han: !chin_han, bonus: !closed_bonus})
+    end
+    apply initialize, "constants.closed_hand", has_no_call_named("chii", "pon", "daiminkan", "kakan")
+    define_yaku !closed_list, !chin_name, [!closed_bonus, !chin_han], @closed_hand and has_existing_yaku(!chin_name)
+  end
+  define_yaku !chin_list, !chin_name, [!chin_value, !chin_han],
+       winning_hand_consists_of("1m","2m","3m","4m","5m","6m","7m","8m","9m")
+    or winning_hand_consists_of("1p","2p","3p","4p","5p","6p","7p","8p","9p")
+    or winning_hand_consists_of("1s","2s","3s","4s","5s","6s","7s","8s","9s")
+  if !hon_value > 0 do define_yaku_precedence !chin_name, [!hon_name] end
+end

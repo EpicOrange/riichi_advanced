@@ -1,14 +1,14 @@
 default tenhou_list, "yaku"
-default tenhou_name, ""
+default tenhou_name, "Tenhou"
 default tenhou_value, 0
 default tenhou_han, !han
 default chiihou_list, "yaku"
-default chiihou_name, ""
+default chiihou_name, "Chiihou"
 default chiihou_value, 0
 default chiihou_han, !han
 default chiihou_is_tsumo, false
 default renhou_list, "yaku"
-default renhou_name, ""
+default renhou_name, "Renhou"
 default renhou_value, 0
 default renhou_han, !han
 default calls_invalidate, true
@@ -35,11 +35,6 @@ on after_initialization do
       add_rule("$value $han", "$name", "%{value} %{han} if you win on someone's discard, before your first draw. Calls do not invalidate this.", %{value: !renhou_value, han: !renhou_han, name: !renhou_name})
     end
   end
-  rename_rule_tab("15 嘴", "Special")
-  rename_rule_tab("40 嘴", "Special")
-  rename_rule_tab("100 嘴", "Special")
-  rename_rule_tab("150 嘴", "Special")
-  rename_rule_tab("200 嘴", "Special")
 end
 
 on after_start do set_status_all("first_turn") end

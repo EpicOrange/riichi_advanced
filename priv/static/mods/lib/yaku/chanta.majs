@@ -1,22 +1,41 @@
 require "value_honors"
+
 default chanta_list, "yaku"
-default chanta_name, ""
+default chanta_name, "Chanta"
 default chanta_value, 0
 default chanta_han, !han
 default junchan_list, "yaku"
-default junchan_name, ""
+default junchan_name, "Junchan"
 default junchan_value, 0
 default junchan_han, !han
+default closed_bonus, 0
 
-on after_initialization do
-  add_rule("$value $han", "$name", "%{value} %{han} if every set/pair in your hand contains a terminal or honor tile.", %{value: !chanta_value, han: !chanta_han, name: !chanta_name})
+if !chanta_value > 0 do
+  on after_initialization do
+    if !closed_bonus > 0 do
+      add_rule("$value $han", !chanta_name, "%{value} %{han} if every set/pair in your hand contains at least one terminal or honor tile. +%{bonus} %{han} if closed.", %{value: !chanta_value, han: !chanta_han, bonus: !closed_bonus})
+    else
+      add_rule("$value $han", !chanta_name, "%{value} %{han} if every set/pair in your hand contains at least one terminal or honor tile.", %{value: !chanta_value, han: !chanta_han})
+    end
+    update_rule("$value $han", !chanta_name, "%{example_hand}", %{value: !chanta_value, han: !chanta_han, example_hand: ~t"123m79p789s77z 111p 8p"})
+  end
+  define_yaku !chanta_list, !chanta_name, [!chanta_value, !chanta_han], match(["hand", "calls", "winning_tile"], ~m"exhaustive, (yaochuu_l yaochuu_r yaochuu_t):4, yaochuu_pair:1")
 end
-define_yaku !chanta_list, !chanta_name, [!chanta_value, !chanta_han], match(["hand", "calls", "winning_tile"], ~m"exhaustive, (yaochuu_l yaochuu_r yaochuu_t):4, yaochuu_pair:1")
 
 if !junchan_value > 0 do
   on after_initialization do
-    add_rule("$value $han", "$name", "%{value} %{han} if every set/pair in your hand contains a terminal tile.", %{value: !junchan_value, han: !junchan_han, name: !junchan_name})
-    update_rule("$value $han", "$name", "%{example_hand}", %{value: !junchan_value, han: !junchan_han, name: !junchan_name, example_hand: ~t"123m79p789s77z 111p 8p"})
+    if !closed_bonus > 0 do
+      add_rule("$value $han", !junchan_name, "%{value} %{han} if every set/pair in your hand contains at least one terminal tile. +%{bonus} %{han} if closed.", %{value: !junchan_value, han: !junchan_han, bonus: !closed_bonus})
+    else
+      add_rule("$value $han", !junchan_name, "%{value} %{han} if every set/pair in your hand contains at least one terminal tile.", %{value: !junchan_value, han: !junchan_han})
+    end
+    update_rule("$value $han", !junchan_name, "%{example_hand}", %{value: !junchan_value, han: !junchan_han, example_hand: ~t"123m7999p789s 111p 8p"})
   end
   define_yaku !junchan_list, !junchan_name, [!junchan_value, !junchan_han], match(["hand", "calls", "winning_tile"], ~m"exhaustive, (terminal_l terminal_r terminal_t):4, terminal_pair:1"), [!chanta_name]
+end
+
+if !closed_bonus > 0 do
+  apply initialize, "constants.closed_hand", has_no_call_named("chii", "pon", "daiminkan", "kakan")
+  define_yaku !chanta_list, !chanta_name, [!closed_bonus, !han], @closed_hand and has_existing_yaku(!chanta_name)
+  define_yaku !junchan_list, !junchan_name, [!closed_bonus, !han], @closed_hand and has_existing_yaku(!junchan_name)
 end

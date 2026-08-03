@@ -145,7 +145,7 @@ defmodule RiichiAdvanced.Compiler do
     case condition do
       {"at_least", [line: line, column: column], args} ->
         case args do
-          [n | conds] when is_number(n) ->
+          [n | conds] when is_integer(n) ->
             with {:ok, compiled_args} <- conds |> Enum.map(&_compile_condition_list(&1, line, column, true, false)) |> Utils.sequence() do
               ret = Enum.flat_map(compiled_args, &List.wrap/1)
               {:ok, if conj do (if toplevel do [n | ret] else [[[n | ret]]] end) else [[n | ret]] end}
@@ -154,7 +154,7 @@ defmodule RiichiAdvanced.Compiler do
         end
       {"at_most", [line: line, column: column], args} ->
         case args do
-          [n | conds] when is_number(n) ->
+          [n | conds] when is_integer(n) ->
             with {:ok, compiled_args} <- conds |> Enum.map(&_compile_condition_list(&1, line, column, true, false)) |> Utils.sequence() do
               ret = Enum.flat_map(compiled_args, &List.wrap/1)
               {:ok, if conj do [[n | ret]] else [[[n | ret]]] end}

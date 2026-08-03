@@ -2,11 +2,11 @@ default list, "yaku"
 default closed_only, false
 
 on after_initialization do
-  add_rule("$value $han", "$name", "%{value} %{han} if you have two double sequences, each being two copies of the exact same sequence in one suit, like 123 123. Cannot be scored together with seven pairs.", %{value: !value, han: !han, name: !name})
+  add_rule("$value $han", !name, "%{value} %{han} if you have two double sequences, each being two copies of the exact same sequence in one suit, like 123 123. Cannot be scored together with seven pairs.", %{value: !value, han: !han})
   if !closed_only do
-    update_rule("$value $han", "$name", "Your hand must be closed.", %{value: !value, han: !han, name: !name})
+    update_rule("$value $han", !name, "Your hand must be closed.", %{value: !value, han: !han})
   end
-  update_rule("$value $han", "$name", "%{example_hand}", %{value: !value, han: !han, name: !name, example_hand: ~t"33445m33777p678s 5m"})
+  update_rule("$value $han", !name, "%{example_hand}", %{value: !value, han: !han, example_hand: ~t"33445m33777p678s 5m"})
 end
 
 define_set iipeikou, ~s"0 1 2, 0 1 2"

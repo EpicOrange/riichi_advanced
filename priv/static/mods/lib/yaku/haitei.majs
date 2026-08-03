@@ -1,20 +1,20 @@
 default haitei_list, "yaku"
-default haitei_name, ""
+default haitei_name, "Haitei"
 default haitei_value, 0
 default haitei_han, !han
 default houtei_list, "yaku"
-default houtei_name, ""
+default houtei_name, "Houtei"
 default houtei_value, 0
 default houtei_han, !han
 
 on after_initialization do
   if equals(!haitei_name, !houtei_name) and equals(!haitei_value, !houtei_value) do
-    add_rule("$value $han", "$name", "%{value} %{han} if you win off the last draw or discard.", %{value: !haitei_value, han: !han, name: !haitei_name})
+    add_rule("$value $han", !haitei_name, "%{value} %{han} if you win off the last draw or discard.", %{value: !haitei_value, han: !han})
   else
-    add_rule("$value $han", "$name", "%{value} %{han} if you win by drawing the last tile in the wall.", %{value: !haitei_value, han: !han, name: !haitei_name})
-    add_rule("$value $han", "$name", "%{value} %{han} if you win off a discard after the last tile in the wall is drawn.", %{value: !houtei_value, han: !han, name: !houtei_name})
+    add_rule("$value $han", !haitei_name, "%{value} %{han} if you win by drawing the last tile in the wall.", %{value: !haitei_value, han: !han})
+    add_rule("$value $han", !houtei_name, "%{value} %{han} if you win off a discard after the last tile in the wall is drawn.", %{value: !houtei_value, han: !han})
   end
 end
 
-define_yaku !haitei_list, !haitei_name, [!haitei_value, !han], no_tiles_remaining and won_by_draw
-define_yaku !houtei_list, !houtei_name, [!houtei_value, !han], no_tiles_remaining and not_won_by_draw
+define_yaku !haitei_list, !haitei_name, [!haitei_value, !han], no_tiles_remaining and won_by_draw and not status("kan")
+define_yaku !houtei_list, !houtei_name, [!houtei_value, !han], no_tiles_remaining and not_won_by_draw and not status("kan")

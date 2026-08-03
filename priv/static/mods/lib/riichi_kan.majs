@@ -1,18 +1,3 @@
-on after_initialization do
-  add_rule("1 Han", "Rinshan", "If you kan and then tsumo on the replacement tile, you are awarded rinshan (1 han).")
-  add_rule("1 Han", "Chankan", "If someone calls kan to upgrade an open triplet, and you are waiting to win on that tile, you may specially call ron on that added tile. Doing so awards the 1 han yaku Chankan.")
-  add_rule("2 Han", "Sankantsu", "Your hand contains three kans.")
-  update_rule("2 Han", "Sankantsu", "%{example_hand}", %{example_hand: ~t"123s3z 55p5P5p 8p88P8p 1x99m1x 3z"})
-  add_rule("Yakuman", "Suukantsu", "Your hand contains four kans.")
-  update_rule("Yakuman", "Suukantsu", "%{example_hand}", %{example_hand: ~t"3z 55p5P5p 1x88p1x 22Z22z 1x99m1x 3z"})
-end
-
-define_yaku yaku, "Chankan", [1, "Han"], won_by_call and status("kan", as: "caller")
-define_yaku yaku, "Rinshan", [1, "Han"], status("kan")
-define_set kan_call, ~s"daiminkan|ankan|kakan"
-define_yaku yaku, "Sankantsu", [2, "Han"], match(["calls"], ~m"kan_call:3")
-define_yaku yakuman, "Suukantsu", [1, "★"], match(["calls"], ~m"kan_call:4")
-
 def do_kan_draw do
   shift_tile_to_dead_wall(1)
   draw(1, "opposite_end")
@@ -131,3 +116,19 @@ apply merge, "constants.calls_fu", %{
 }
 
 apply set_append, "interruptible_actions", ["self_call"]
+
+# # disabled in favor of individual mods
+# on after_initialization do
+#   add_rule("1 Han", "Rinshan", "If you kan and then tsumo on the replacement tile, you are awarded rinshan (1 han).")
+#   add_rule("1 Han", "Chankan", "If someone calls kan to upgrade an open triplet, and you are waiting to win on that tile, you may specially call ron on that added tile. Doing so awards the 1 han yaku Chankan.")
+#   add_rule("2 Han", "Sankantsu", "Your hand contains three kans.")
+#   update_rule("2 Han", "Sankantsu", "%{example_hand}", %{example_hand: ~t"123s3z 55p5P5p 8p88P8p 1x99m1x 3z"})
+#   add_rule("Yakuman", "Suukantsu", "Your hand contains four kans.")
+#   update_rule("Yakuman", "Suukantsu", "%{example_hand}", %{example_hand: ~t"3z 55p5P5p 1x88p1x 22Z22z 1x99m1x 3z"})
+# end
+
+# define_yaku yaku, "Chankan", [1, "Han"], won_by_call and status("kan", as: "caller")
+# define_yaku yaku, "Rinshan", [1, "Han"], status("kan")
+# define_set kan_call, ~s"daiminkan|ankan|kakan"
+# define_yaku yaku, "Sankantsu", [2, "Han"], match(["calls"], ~m"kan_call:3")
+# define_yaku yakuman, "Suukantsu", [1, "★"], match(["calls"], ~m"kan_call:4")

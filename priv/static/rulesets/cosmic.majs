@@ -4,7 +4,17 @@ set tutorial_link, "https://docs.google.com/document/d/1F-NhQ5fdi5CnAyEqwNE_qWR0
 define_global han, "Han"
 require "cosmic"
 require_after "yakuman_13_han"
-apply set_append, "default_mods", ["kontsu", "yaku/kontsu_yaku", "yaku/chanfuun", "yaku/fuunburi", "yaku/uumensai_cosmic", "cosmic_calls", "yaku/tsubame_gaeshi", "yaku/kanburi", "lib/yaku/riichi_isshoku_sanjun", "lib/yaku/riichi_isshoku_yonjun"]
+apply set_append, "default_mods", [
+  "kontsu",
+  "yaku/kontsu_yaku",
+  "yaku/chanfuun",
+  "yaku/fuunburi",
+  "yaku/uumensai_cosmic",
+  "cosmic_calls",
+  "yaku/tsubame_gaeshi",
+  "yaku/kanburi",
+  %{name: "lib/yaku/isshoku_sanjun", config: %{san_value: 2, yon_value: 1, yon_han: "★", closed_bonus: 1}},
+]
 
 on after_initialization do
   add_rule("Rules", "Win Condition", "- (Cosmic Riichi) Seven Pairs is again a possible winning hand.", -100)

@@ -1,15 +1,26 @@
-default list, "yaku"
+require "standard_sets"
 
-on after_initialization do
-  add_rule("$value $han", "$name", "%{value} %{han} if your final hand (including winning tile) looks like 1112345678999 of any suit, plus one additional tile of that suit.", %{value: !value, han: !han, name: !name})
-  update_rule("$value $han", "$name", "%{example_hand}", %{value: !value, han: !han, name: !name, example_hand: ~t"1112345568999s 7s"})
+default list, "yaku"
+default name, "Chuurenpoutou"
+default value, 0
+default junsei_list, "yaku"
+default junsei_name, "Junsei Chuurenpoutou"
+default junsei_value, 0
+default junsei_han, !han
+
+if !value > 0 do
+  on after_initialization do
+    add_rule("$value $han", !name, "%{value} %{han} if your final hand (including winning tile) has no calls and looks like 1112345678999 of any suit, plus one additional tile of that suit.", %{value: !value, han: !han})
+    update_rule("$value $han", !name, "%{example_hand}", %{value: !value, han: !han, example_hand: ~t"1112345568999s 7s"})
+  end
+  define_yaku !list, !name, [!value, !han], match(["hand", "winning_tile"], ~m"chuurenpoutou:1")
 end
 
-define_set chuurenpoutou, ~s"0 0 0 1 2 3 4 5 6 7 8 8 8"
-
-if !must_wait_9 do
-  define_yaku !list, !name, [!value, !han], match(["hand"], ~m"chuurenpoutou:1")
-else
-  define_yaku !list, !name, [!value, !han], match(["hand", "winning_tile"], ~m"chuurenpoutou:1")
+if !junsei_value > 0 do
+  on after_initialization do
+    add_rule("$value $han", !junsei_name, "%{value} %{han} if your final hand (excluding winning tile) has no calls and looks like 1112345678999 of any suit, a nine-sided wait.", %{value: !junsei_value, han: !junsei_han})
+    update_rule("$value $han", !junsei_name, "%{example_hand}", %{value: !junsei_value, han: !junsei_han, example_hand: ~t"1112345678999s 7s"})
+  end
+  define_yaku !junsei_list, !junsei_name, [!junsei_value, !junsei_han], match(["hand"], ~m"chuurenpoutou:1"), [!name]
 end
 

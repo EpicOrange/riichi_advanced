@@ -1,0 +1,116 @@
+require "standard_sets"
+
+# without chiitoitsu
+
+# define_match win, ~m"exhaustive, mentsu:4, pair:1"
+# define_match tenpai, ~m"""
+#     exhaustive, mentsu:4
+#   | exhaustive, mentsu:3, taatsu:1, pair:1
+#   """
+# define_match iishanten, ~m"""
+#     exhaustive, mentsu:3, taatsu:1
+#   | exhaustive, mentsu:2, taatsu:2, pair:1
+#   """
+# define_match ryanshanten, ~m"""
+#     exhaustive, mentsu:3
+#   | exhaustive, mentsu:2, taatsu:2 
+#   | exhaustive, mentsu:1, taatsu:3, pair:1
+#   """
+# define_match sanshanten, ~m"""
+#     exhaustive, mentsu:2, pair:1
+#   | exhaustive, mentsu:1, taatsu:3
+#   | exhaustive, taatsu:4, pair:1
+#   """
+# define_match suushanten, ~m"""
+#     exhaustive, mentsu:2
+#   | exhaustive, mentsu:1, taatsu:2
+#   | exhaustive, taatsu:4
+#   """
+# define_match uushanten, ~m"""
+#   | exhaustive, mentsu:1, taatsu:1
+#   | exhaustive, taatsu:3
+#   """
+# define_match roushanten, ~m"""
+#   | exhaustive, mentsu:1
+#   | exhaustive, taatsu:2
+#   """
+
+# with chiitoitsu and kokushi
+
+define_match win, ~m"""
+    exhaustive, mentsu:4, pair:1
+  | quad:-1, pair:7
+  | unique, dismantle_calls, orphans_any:13, orphans_any:1
+  """
+define_match tenpai, ~m"""
+    exhaustive, mentsu:4
+  | exhaustive, mentsu:3, taatsu:1, pair:1
+  | koutsu:-2, pair:6
+  | unique, dismantle_calls, orphans_any:12, orphans_any:1
+  """
+define_match iishanten, ~m"""
+    exhaustive, mentsu:3, taatsu:1
+  | exhaustive, mentsu:2, taatsu:2, pair:1
+  | pair:5
+  | unique, dismantle_calls, orphans_any:11, orphans_any:1
+  """
+define_match ryanshanten, ~m"""
+    exhaustive, mentsu:3
+  | exhaustive, mentsu:2, taatsu:2 
+  | exhaustive, mentsu:1, taatsu:3, pair:1
+  | pair:4
+  | unique, dismantle_calls, orphans_any:10, orphans_any:1
+  """
+define_match sanshanten, ~m"""
+    exhaustive, mentsu:2, pair:1
+  | exhaustive, mentsu:1, taatsu:3
+  | exhaustive, taatsu:4, pair:1
+  | pair:3
+  | unique, dismantle_calls, orphans_any:9, orphans_any:1
+  """
+define_match suushanten, ~m"""
+    exhaustive, mentsu:2
+  | exhaustive, mentsu:1, taatsu:2
+  | exhaustive, taatsu:4
+  | pair:2
+  | unique, dismantle_calls, orphans_any:8, orphans_any:1
+  """
+define_match uushanten, ~m"""
+    pair:1
+  | unique, dismantle_calls, orphans_any:8
+  """
+define_match roushanten, ~m"any:1"
+
+# for shouhai, without chiitoitsu
+
+define_match win, ~m"""
+    exhaustive, mentsu:4
+  | exhaustive, mentsu:3, taatsu:1, pair:1
+  """
+define_match tenpai, ~m"""
+    exhaustive, mentsu:3, taatsu:1
+  | exhaustive, mentsu:2, taatsu:2, pair:1
+  """
+define_match iishanten, ~m"""
+    exhaustive, mentsu:3
+  | exhaustive, mentsu:2, taatsu:2 
+  | exhaustive, mentsu:1, taatsu:3, pair:1
+  """
+define_match ryanshanten, ~m"""
+    exhaustive, mentsu:2, pair:1
+  | exhaustive, mentsu:1, taatsu:3
+  | exhaustive, taatsu:4, pair:1
+  """
+define_match sanshanten, ~m"""
+    exhaustive, mentsu:2
+  | exhaustive, mentsu:1, taatsu:2
+  | exhaustive, taatsu:4
+  """
+define_match suushanten, ~m"""
+  | exhaustive, mentsu:1, taatsu:1
+  | exhaustive, taatsu:3
+  """
+define_match uushanten, ~m"""
+  | exhaustive, mentsu:1
+  | exhaustive, taatsu:2
+  """

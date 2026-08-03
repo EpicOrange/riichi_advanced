@@ -1,15 +1,27 @@
+require "standard_sets"
+
 default list, "yaku"
+default name, "Kokushi Musou"
+default value, 0
+default juusan_list, "yaku"
+default juusan_name, "Kokushi Musou Juusan Menmachi"
+default juusan_value, 0
+default juusan_han, !han
 
 on after_initialization do
+  unless rule_exists("Rules", "Win Condition") do
+    add_rule("Rules", "Win Condition", "You may win with one of the following:", -100)
+  end
   add_rule("Rules", "Win Condition", "- (%{name}) All thirteen terminal/honor tiles plus one forming a pair.", %{name: !name}, -100)
   if !value > 0 do
-    add_rule("$rules_tab", "$name", "%{value} %{han} if you win by having one of each terminal and honor tile, with one of them forming a pair.", %{rules_tab: !rules_tab, value: !value, han: !han, name: !name})
-    update_rule("$rules_tab", "$name", "%{example_hand}", %{rules_tab: !rules_tab, value: !value, han: !han, name: !name, example_hand: ~t"19m99p19s1234567z 1p"})
+    add_rule("$value $han", !name, "%{value} %{han} if you won by having 'thirteen orphans': one of each terminal and honor tile, with one of them forming a pair.", %{value: !value, han: !han})
+    update_rule("$value $han", !name, "%{example_hand}", %{value: !value, han: !han, example_hand: ~t"19m99p19s1234567z 1p"})
+    if !juusan_value > 0 do
+      add_rule("$value $han", !name, "%{value} %{han} if you won by having one of each terminal and honor tile on a 13-sided wait for a pair.", %{value: !juusan_value, han: !juusan_han})
+      update_rule("$value $han", !name, "%{example_hand}", %{value: !juusan_value, han: !juusan_han, example_hand: ~t"19m19p19s1234567z 1p"})
+    end
   end
 end
-
-define_set orphans_any, ~s"1m|9m|1p|9p|1s|9s|1z|2z|3z|4z|5z|0z|6z|7z"
-define_set orphans_all, ~s"1m 9m 1p 9p 1s 9s 1z 2z 3z 4z 5z 6z 7z|1m 9m 1p 9p 1s 9s 1z 2z 3z 4z 0z 6z 7z"
 
 define_const kokushi_tenpai, ~m"unique, dismantle_calls, orphans_any:12, orphans_any:1"
 define_const kokushi_win, ~m"unique, dismantle_calls, orphans_any:13, orphans_any:1"
@@ -19,4 +31,7 @@ apply set_append, "win_definition", +@kokushi_win
 
 if !value > 0 do
   define_yaku !list, !name, [!value, !han], match(["hand", "winning_tile"], ~m"orphans_all:1")
+  if !juusan_value > 0 do
+    define_yaku !juusan_list, !juusan_name, [!juusan_value, !juusan_han], match(["hand"], ~m"orphans_all:1"), [!name]
+  end
 end

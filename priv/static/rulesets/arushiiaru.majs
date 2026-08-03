@@ -7,7 +7,7 @@ set initial_score, 2000
 
 apply subtract, "default_mods", [
   "honba", "lib/yaku/riichi", "dora", "ura", "kandora", "aka",
-  "yaku/ippatsu",
+  "lib/yaku/ippatsu",
   "nagashi",
   %{name: "lib/tobi", config: %{below: 0}},
   "uma",

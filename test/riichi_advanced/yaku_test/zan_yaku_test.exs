@@ -31,7 +31,7 @@ defmodule RiichiAdvanced.YakuTest.ZanYaku do
     %{name: "lib/yaku/sanpuukou", config: %{
       dai_name: "Sanpuukou", dai_value: 2,
     }},
-    %{name: "yaku/riichi_renhou", config: %{is: "Yakuman"}},
+    %{name: "lib/yaku/riichi_renhou", config: %{is: "Yakuman"}},
     "show_waits",
     "sanma_pei_yakuhai",
     "lib/yaku/kansai_chiitoitsu",
@@ -42,7 +42,7 @@ defmodule RiichiAdvanced.YakuTest.ZanYaku do
     %{name: "shuugi/yakuman", config: %{ron_chips: 5, tsumo_chips: 5, per_yakuman: false, allow_kazoe: false}},
     %{name: "lib/min_han", config: %{min: 1, han: "Han"}},
     # "cancellable_riichi",
-    "yaku/ippatsu",
+    "lib/yaku/ippatsu",
     %{name: "shiro_pocchi", config: %{ippatsu_only: false}},
     %{name: "aka", config: %{man: 4, pin: 4, sou: 4}},
     %{name: "shuugi/aka", config: %{chips: 1, closed_only: false}},

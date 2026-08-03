@@ -88,4 +88,5 @@ apply merge, "constants.calls_fu", %{
 }
 
 # nobekans count for sankantsu etc.
-apply set_append, "set_definitions.kan_call", ~s"daiminnobekan|annobekan|kanobekan"
+apply set_append, "set_definitions.open_kan_call", ~s"daiminnobekan|kanobekan"
+apply set_append, "set_definitions.closed_kan_call", ~s"annobekan"

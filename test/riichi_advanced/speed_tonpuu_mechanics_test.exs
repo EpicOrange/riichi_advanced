@@ -5,7 +5,7 @@ defmodule RiichiAdvanced.YakuTest.SpeedTonpuuMechanics do
   @speed_tonpuu_mods [
     %{name: "honba", config: %{value: 100}},
     %{name: "lib/yaku/riichi", config: %{bet: 1000, drawless: false, double_value: 2}},
-    "yaku/ippatsu",
+    "lib/yaku/ippatsu",
     "lib/kuikae_nashi",
     %{name: "lib/min_han", config: %{min: 1, han: "Han"}},
     "double_wind_4_fu",
@@ -33,7 +33,7 @@ defmodule RiichiAdvanced.YakuTest.SpeedTonpuuMechanics do
     # "lib/pao_standard",
     # "lib/pao_suukantsu", # note: affects the test 'suukantsu rinshan is scored as normal tsumo scoring shuugi'
     # "pao_rinshan",
-    %{name: "yaku/riichi_renhou", config: %{is: "Yakuman"}},
+    %{name: "lib/yaku/riichi_renhou", config: %{is: "Yakuman"}},
     %{name: "lib/shuugi", config: %{worth: 5000, starting_shuugi: 100, pao_pays_all: true}},
     %{name: "shuugi/ippatsu", config: %{chips: 1}},
     %{name: "shuugi/ura", config: %{chips: 1}},

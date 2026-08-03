@@ -30,7 +30,7 @@ defmodule RiichiAdvanced.Validator do
   def validate_json(true), do: {:ok, true}
   def validate_json(false), do: {:ok, false}
   def validate_json(ast) when is_number(ast), do: {:ok, ast}
-  def validate_json({:-, _pos, [value]}) when is_integer(value), do: {:ok, -value} # negative literals
+  def validate_json({:-, _pos, [value]}) when is_number(value), do: {:ok, -value} # negative literals
   def validate_json(ast) when is_binary(ast), do: {:ok, sanitize_string(ast)}
   def validate_json(ast) when is_list(ast), do: ast |> Enum.map(&validate_json(&1)) |> Utils.sequence()
   def validate_json({:+, _, [{:@, _, [{name, _, nil}]}]}) when is_binary(name), do: validate_constant(sanitize_string(name), true)

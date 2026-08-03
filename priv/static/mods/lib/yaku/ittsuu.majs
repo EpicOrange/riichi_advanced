@@ -1,10 +1,23 @@
+require "standard_sets"
+
 default list, "yaku"
+default name, "Ittsuu"
+default value, 1
+default closed_list, "meta_yaku"
+default closed_bonus, 0
 
 on after_initialization do
-  add_rule("$value $han", "$name", "%{value} %{han} if your hand contains the sequences 123 456 879 in one suit.", %{value: !value, han: !han, name: !name})
-  update_rule("$value $han", "$name", "%{example_hand}", %{value: !value, han: !han, name: !name, example_hand: ~t"234p4567779s 123s 8s"})
+  if !closed_bonus > 0 do
+    add_rule("$value $han", !name, "%{value} %{han} if your hand contains the sequences 123 456 879 in one suit. +%{bonus} %{han} if closed.", %{value: !value, han: !han, bonus: !closed_bonus})
+  else
+    add_rule("$value $han", !name, "%{value} %{han} if your hand contains the sequences 123 456 879 in one suit.", %{value: !value, han: !han})
+  end
+  update_rule("$value $han", !name, "%{example_hand}", %{value: !value, han: !han, example_hand: ~t"234p4567779s 123s 8s"})
 end
 
-define_set ittsuu, ~s"0 1 2, 3 4 5, 6 7 8"
-
 define_yaku !list, !name, [!value, !han], match(["hand", "calls", "winning_tile"], ~m"exhaustive, ittsuu:1, mentsu:1, pair:1")
+
+if !closed_bonus > 0 do
+  apply initialize, "constants.closed_hand", has_no_call_named("chii", "pon", "daiminkan", "kakan")
+  define_yaku !closed_list, !name, [!closed_bonus, !han], @closed_hand and has_existing_yaku(!name)
+end

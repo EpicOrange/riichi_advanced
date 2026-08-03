@@ -32,7 +32,7 @@ defmodule RiichiAdvanced.ZanScoringTest do
       shou_list: "", shou_name: "", shou_value: 0, shou_han: "",
       dai_list: "yaku", dai_name: "Sanpuukou", dai_value: 2, dai_han: "Han"
     }},
-    %{name: "yaku/riichi_renhou", config: %{is: "Yakuman"}},
+    %{name: "lib/yaku/riichi_renhou", config: %{is: "Yakuman"}},
     "show_waits",
     "sanma_pei_yakuhai",
     "lib/pao_standard",
@@ -42,7 +42,7 @@ defmodule RiichiAdvanced.ZanScoringTest do
     %{name: "shuugi/yakuman", config: %{ron_chips: 10, tsumo_chips: 5, per_yakuman: false, allow_kazoe: false}},
     %{name: "lib/min_han", config: %{min: 1, han: "Han"}},
     # "cancellable_riichi",
-    "yaku/ippatsu",
+    "lib/yaku/ippatsu",
     %{name: "shiro_pocchi", config: %{ippatsu_only: false}},
     %{name: "aka", config: %{man: 4, pin: 4, sou: 4}},
     %{name: "shuugi/aka", config: %{chips: 1, closed_only: false}},

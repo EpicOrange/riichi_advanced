@@ -1,0 +1,15 @@
+on after_initialization do
+  rename_rule_tab("1 ★", "Yakuman")
+  rename_rule_tab("2 ★", "Yakuman")
+  rename_rule_tab("3 Han", "3+ Han")
+  rename_rule_tab("4 Han", "3+ Han")
+  rename_rule_tab("5 Han", "3+ Han")
+
+  # reset order
+  rename_rule_tab("Tiles", "Tiles")
+  rename_rule_tab("Rules", "Rules")
+  rename_rule_tab("1 Han", "1 Han")
+  rename_rule_tab("2 Han", "2 Han")
+  rename_rule_tab("3+ Han", "3+ Han")
+  rename_rule_tab("Yakuman", "Yakuman")
+end

@@ -1,9 +1,12 @@
 require "value_honors"
+
 default list, "yaku"
+default name, "Tsuuiisou"
+default value, 1
 
 on after_initialization do
-  add_rule("$value $han", "$name", "%{value} %{han} if your hand consists only of honor tiles.", %{value: !value, han: !han, name: !name})
-  update_rule("$value $han", "$name", "%{example_hand}", %{value: !value, han: !han, name: !name, example_hand: ~t"1112224477z 666z 4z"})
+  add_rule("$value $han", !name, "%{value} %{han} if your hand consists only of honor tiles.", %{value: !value, han: !han})
+  update_rule("$value $han", !name, "%{example_hand}", %{value: !value, han: !han, example_hand: ~t"1112224477z 666z 4z"})
 end
 
 define_yaku !list, !name, [!value, !han], not_match(["hand", "calls", "winning_tile"], ~m"(tanyaohai terminal):1")
