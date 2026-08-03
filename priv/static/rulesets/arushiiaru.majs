@@ -1,6 +1,7 @@
 define_base_ruleset riichi
 set display_name, "Arushiiaru"
 set tutorial_link, "https://riichi.wiki/Arushiiaru_mahjong"
+require_after "partial_furiten"
 
 set initial_score, 2000
 
@@ -20,21 +21,6 @@ apply subtract, "default_mods", [
   "yaku/riichi_renhou", "lib/pao_standard", "kokushi_ankan_chankan",
   "cancellable_riichi"
 ]
-
-# furiten is basically the same,
-# except furiten on one wait doesn't invalidate another wait
-# implement this by removing furiten status when a non-furiten discard appears
-define_play_effect any do
-  as everyone do
-    if status("tenpai", "furiten") do
-      if match(["hand", "calls", "last_discard"], ["win"]) and
-         not_match(["last_discard", "any_discard"], ~m"pair:1") do
-        unset_status("furiten")
-        recalculate_buttons
-      end
-    end
-  end
-end
 
 # remove noten payments
 def setup_noten_payments do end
@@ -135,8 +121,6 @@ remove_yaku meta_yakuman, "Kokushi Musou Juusan Menmachi"
 define_const closed_tsumo_20_fu, false
 define_const open_30_fu, false
 on after_initialization do
-  delete_rule("Rules", "Furiten")
-  add_rule("Rules", "Furiten", "You cannot win on a discarded tile that you yourself have discarded (or skipped a win on). You can still win on such tiles by tsumo (self-draw).")
   delete_rule("Rules", "Tenpai Payments")
   delete_rule("2 Han", "Chiitoitsu")
   delete_rule("1 Han", "Tsumo")

@@ -25,3 +25,7 @@ define_set orphans_all, ~s"1m 9m 1p 9p 1s 9s 1z 2z 3z 4z 5z 6z 7z"
 define_set orphans_any, ~s"1m|9m|1p|9p|1s|9s|1z|2z|3z|4z|5z|6z|7z"
 define_set chuurenpoutou, ~s"0 0 0 1 2 3 4 5 6 7 8 8 8"
 define_set ittsuu, ~s"0 1 2, 3 4 5, 6 7 8"
+define_set iipeikou, ~s"0 1 2, 0 1 2"
+define_set sanshoku_doujun, ~s"0 1 2, 10 11 12, 20 21 22"
+define_set sanshoku_doukou, ~s"0 0 0, 10 10 10, 20 20 20"
+

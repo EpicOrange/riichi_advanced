@@ -1,0 +1,20 @@
+require "furiten"
+
+on after_initialization do
+  delete_rule("Rules", "Furiten")
+  add_rule("Rules", "Furiten", "You cannot win on a discarded tile that you yourself have discarded (or skipped a win on). You can still win on such tiles by tsumo (self-draw).")
+end
+
+# furiten on one wait doesn't invalidate another wait
+# implement this by removing furiten status when a non-furiten discard appears
+define_play_effect any do
+  as everyone do
+    if status("tenpai", "furiten") do
+      if match(["hand", "calls", "last_discard"], ["win"]) and
+         not_match(["last_discard", "any_discard"], ~m"pair:1") do
+        unset_status("furiten")
+        recalculate_buttons
+      end
+    end
+  end
+end

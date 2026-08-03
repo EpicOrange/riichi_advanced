@@ -1,0 +1,34 @@
+require "tenpai_check"
+
+on after_initialization do
+  add_rule("Rules", "Furiten", "If you are waiting for a tile to win, but one of your winning tiles is among your discards (including tiles called by other players), then you are 'in furiten' and cannot win by ron (including chankan). You can still win by tsumo.")
+end
+
+apply set_append, "shown_statuses", ["furiten"]
+
+# unset furiten if your turn passes (unless in riichi)
+def unset_furiten do if status_missing("riichi") do unset_status("furiten") end end
+on before_turn_change, prepend: true do unset_furiten end
+on before_call, prepend: true do unset_furiten end
+
+on before_turn_change do
+  # add furiten due to discards
+  if status("tenpai") and match(["hand", "calls", "any_discard"], ["win"]) do
+    set_status("furiten")
+  end
+end
+
+# (unset furiten so show_waits mod doesn't see your just-expired furiten)
+on after_turn_change, prepend: true do
+  unset_furiten
+end
+
+def discard_passed, prepend: true do
+  # furiten check for everyone including last discarder
+  as everyone do
+    if match(["hand", "calls", "last_discard"], ["win"]) do
+      set_status("furiten")
+    end
+  end
+end
+

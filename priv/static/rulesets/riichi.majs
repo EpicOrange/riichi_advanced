@@ -15,11 +15,119 @@ require "default_auto_buttons"
 require "renchan"
 require "riichi_scoring"
 require "riichi_kan" # adds kan fu for riichi_scoring, also adds chankan and yaku like suukantsu
+require "furiten"
 
-define_set iipeikou, ~s"0 1 2, 0 1 2"
-define_set ittsuu, ~s"0 1 2, 3 4 5, 6 7 8"
-define_set sanshoku_doujun, ~s"0 1 2, 10 11 12, 20 21 22"
-define_set sanshoku_doukou, ~s"0 0 0, 10 10 10, 20 20 20"
+on after_initialization, prepend: true do
+  add_rule_tab("Tiles")
+  add_rule_tab("Rules")
+  add_rule_tab("0.5 Han")
+  add_rule_tab("1 Han")
+  add_rule_tab("2 Han")
+  add_rule_tab("3 Han")
+  add_rule_tab("3+ Han")
+  add_rule_tab("4 Han")
+  add_rule_tab("5 Han")
+  add_rule_tab("6 Han")
+  add_rule_tab("7 Han")
+  add_rule_tab("8 Han")
+  add_rule_tab("9 Han")
+  add_rule_tab("10 Han")
+  add_rule_tab("11 Han")
+  add_rule_tab("12 Han")
+  add_rule_tab("13 Han")
+  add_rule_tab("Limit")
+  add_rule_tab("Mangan")
+  add_rule_tab("Yakuman")
+  add_rule("Tiles", "Base Tiles", "By default, Riichi uses the following 136 tiles:", -100)
+  add_rule("Tiles", "Base Tiles", "- Four each of the 1 to 9 of circles %{pinzu}", %{pinzu: ["1p", "2p", "3p", "4p", "5p", "6p", "7p", "8p", "9p"]})
+  add_rule("Tiles", "Base Tiles", "- Four each of the 1 to 9 of bamboo %{souzu}", %{souzu: ["1s", "2s", "3s", "4s", "5s", "6s", "7s", "8s", "9s"]})
+  add_rule("Tiles", "Base Tiles", "- Four each of the 1 to 9 of characters %{manzu}", %{manzu: ["1m", "2m", "3m", "4m", "5m", "6m", "7m", "8m", "9m"]})
+  add_rule("Tiles", "Base Tiles", "- Four each of the four winds (East, South, West, North) %{winds}", %{winds: ["1z", "2z", "3z", "4z"]})
+  add_rule("Tiles", "Base Tiles", "- Four each of the three dragons (White, Green, Red) %{dragons}", %{dragons: ["5z", "6z", "7z"]})
+  add_rule("Rules", "Tenpai Payments", "In event of an exhaustive draw, players not in tenpai pay players in tenpai. 3000 points total are paid, with the payment split among the non-tenpai players. If all or no players are tenpai, no payment occurs.")
+  delete_rule("Rules", "Win Condition")
+  add_rule("Rules", "Win Condition", "You may win with one of the following:", -100)
+  add_rule("Rules", "Win Condition", "- Four sets (sequences or triplets) and a pair.", -100)
+  add_rule("Rules", "Win Condition", "- (Chiitoitsu) Seven distinct pairs.", -100)
+  add_rule("Rules", "Win Condition", "- (Kokushi Musou) All thirteen terminal/honor tiles plus one forming a pair.", -100)
+  add_rule("Rules", "Kuikae Ari", "Swap-calling is allowed. That is, if you call %{tile} with %{tiles}, you may discard a tile that could have made a set with %{tiles}. (e.g. calling %{aka}, then discarding %{tile}, or calling %{tile}, then discarding %{tile2})", %{tile: ~t"5p", tile2: ~t"2p", tiles: ~t"34p", aka: ~t"0p"})
+  add_rule("Rules", "No Abortive Draws", "There are no abortive draws enabled.")
+  add_rule("1 Han", "Tsumo", "Win by self-draw with a closed hand.")
+  add_rule("1 Han", "Haitei", "Win by drawing the last tile in the wall.")
+  add_rule("1 Han", "Houtei", "Win off a discard after the last tile in the wall is drawn.")
+  add_rule("1 Han", "Pinfu", "You won off a double-sided sequence wait, with a closed all-sequence hand whose pair is not yakuhai.")
+  update_rule("1 Han", "Pinfu", "%{example_hand}", %{example_hand: ~t"345789m45p23499s 6p"})
+  add_rule("1 Han", "Tanyao", "Your hand contains only tiles numbered 2-8.")
+  update_rule("1 Han", "Tanyao", "%{example_hand}", %{example_hand: ~t"234m33777p45678s 6s"})
+  add_rule("1 Han", "Iipeikou", "Your closed hand has a double sequence: two copies of the exact same sequence in one suit, like 123 123.")
+  update_rule("1 Han", "Iipeikou", "%{example_hand}", %{example_hand: ~t"33445m33777p678s 5m"})
+  add_rule("1 Han", "Yakuhai", "1 han for each of the following triplets in your hand:")
+  add_rule("1 Han", "Yakuhai", "- A triplet of dragon tiles %{dragons}", %{dragons: ~t"777z"})
+  cond do
+    round_wind_is("east")  -> add_rule("1 Han", "Yakuhai", "- A triplet of winds matching the round marker %{round_winds}", %{round_winds: ~t"111z"})
+    round_wind_is("south") -> add_rule("1 Han", "Yakuhai", "- A triplet of winds matching the round marker %{round_winds}", %{round_winds: ~t"222z"})
+    round_wind_is("west")  -> add_rule("1 Han", "Yakuhai", "- A triplet of winds matching the round marker %{round_winds}", %{round_winds: ~t"333z"})
+    round_wind_is("north") -> add_rule("1 Han", "Yakuhai", "- A triplet of winds matching the round marker %{round_winds}", %{round_winds: ~t"444z"})
+  end
+  cond do
+    seat_is("east")  -> add_rule("1 Han", "Yakuhai", "- A triplet of winds matching your seat %{seat_winds}", %{seat_winds: ~t"111z"})
+    seat_is("south") -> add_rule("1 Han", "Yakuhai", "- A triplet of winds matching your seat %{seat_winds}", %{seat_winds: ~t"222z"})
+    seat_is("west")  -> add_rule("1 Han", "Yakuhai", "- A triplet of winds matching your seat %{seat_winds}", %{seat_winds: ~t"333z"})
+    seat_is("north") -> add_rule("1 Han", "Yakuhai", "- A triplet of winds matching your seat %{seat_winds}", %{seat_winds: ~t"444z"})
+  end
+  add_rule("2 Han", "Chiitoitsu", "Your hand consists of seven non-repeating pairs.")
+  update_rule("2 Han", "Chiitoitsu", "%{example_hand}", %{example_hand: ~t"2266m99p24477s33z 2s"})
+  add_rule("1 Han", "Chanta", "1 han if each of the 5 blocks in your hand contains a terminal or honor. 2 han if closed.")
+  update_rule("1 Han", "Chanta", "%{example_hand}", %{example_hand: ~t"123m79p789s77z 11p1P 8p"})
+  add_rule("2 Han", "Junchan", "2 han if each of the 5 blocks in your hand contains a terminal. 3 han if closed.")
+  update_rule("2 Han", "Junchan", "%{example_hand}", %{example_hand: ~t"123m79p78999s 1P11p 8p"})
+  add_rule("1 Han", "Ittsuu", "1 han if your hand contains the sequences 123 456 789 in one suit. 2 han if closed.")
+  update_rule("1 Han", "Ittsuu", "%{example_hand}", %{example_hand: ~t"234p4567779s 12s3S 8s"})
+  add_rule("1 Han", "Sanshoku", "1 han if your hand contains the same number sequence in all three suits. 2 han if closed.")
+  update_rule("1 Han", "Sanshoku", "%{example_hand}", %{example_hand: ~t"24p23334678s 2M34m 3p"})
+  add_rule("2 Han", "Sanshoku Doukou", "2 han if your hand contains the same number triplet in all three suits.")
+  update_rule("2 Han", "Sanshoku Doukou", "%{example_hand}", %{example_hand: ~t"2244p222456s 2M22m 2p"})
+  add_rule("2 Han", "Toitoi", "2 han if your hand is all triplets.")
+  update_rule("2 Han", "Toitoi", "%{example_hand}", %{example_hand: ~t"888m222p33s22z 1z1Z1z 3s"})
+  add_rule("2 Han", "Sanankou", "2 han if your hand has three closed triplets. A triplet formed by a self-draw win counts as closed.")
+  update_rule("2 Han", "Sanankou", "%{example_hand}", %{example_hand: ~t"222888m444p123s1z 1z"})
+  add_rule("2 Han", "Shousangen", "2 han on top of yakuhai if you have two dragon triplets/kans and a dragon pair.")
+  update_rule("2 Han", "Shousangen", "%{example_hand}", %{example_hand: ~t"123m23s66777z 55z5Z 4s"})
+  add_rule("2 Han", "Honroutou", "2 han if your hand contains only terminal and honor tiles.")
+  update_rule("2 Han", "Honroutou", "%{example_hand}", %{example_hand: ~t"111m2223344z 9p9P9p 4z"})
+  add_rule("2 Han", "Honitsu", "2 han if your hand is comprised of one suit plus honor tiles. 3 han if closed.")
+  update_rule("2 Han", "Honitsu", "%{example_hand}", %{example_hand: ~t"123345888p11z22z 2z"})
+  add_rule("3+ Han", "Ryanpeikou", "3 han if you have two double sequences, each being two copies of the exact same sequence in one suit, like 123 123. Does not count as chiitoitsu (7 pairs).")
+  update_rule("3+ Han", "Ryanpeikou", "%{example_hand}", %{example_hand: ~t"3344566m112233s 5m"})
+  add_rule("3+ Han", "Chinitsu", "5 han if your hand is comprised of one suit only (no honor tiles). 6 han if closed.")
+  update_rule("3+ Han", "Chinitsu", "%{example_hand}", %{example_hand: ~t"1233445568889s 7s"})
+  add_rule("Yakuman", "Tenhou", "Win with your initial hand as dealer.")
+  add_rule("Yakuman", "Chiihou", "Win with your first draw as non-dealer.")
+  add_rule("Yakuman", "Daisangen", "Your hand contains triplets or kans of all three dragons.")
+  update_rule("Yakuman", "Daisangen", "%{example_hand}", %{example_hand: ~t"123m22s66777z 55z5Z 6z"})
+  add_rule("Yakuman", "Suuankou", "Your hand has three closed triplets in hand, and you won by self-drawing the fourth.")
+  update_rule("Yakuman", "Suuankou", "%{example_hand}", %{example_hand: ~t"222888m444p33s11z 1z"})
+  add_rule("Yakuman", "Suuankou Tanki", "Double yakuman if your hand has four closed triplets in hand, and you won by completing your pair.", 2)
+  update_rule("Yakuman", "Suuankou Tanki", "%{example_hand}", %{example_hand: ~t"222888m444p333s1z 1z"})
+  add_rule("Yakuman", "Tsuuiisou", "Your hand consists of only honor tiles.")
+  update_rule("Yakuman", "Tsuuiisou", "%{example_hand}", %{example_hand: ~t"1112224477z 66z6Z 4z"})
+  add_rule("Yakuman", "Ryuuiisou", "Your hand consists of only all-green tiles (23468 bamboo and green dragon).")
+  update_rule("Yakuman", "Ryuuiisou", "%{example_hand}", %{example_hand: ~t"2234466888s 6Z66z 3s"})
+  add_rule("Yakuman", "Chinroutou", "Your hand consists of only terminals.")
+  update_rule("Yakuman", "Chinroutou", "%{example_hand}", %{example_hand: ~t"111m999p1199s 9M99m 9s"})
+  add_rule("Yakuman", "Chuurenpoutou", "You have no calls and your winning hand is the pattern 1112345678999 in one suit, plus one additional tile.")
+  update_rule("Yakuman", "Chuurenpoutou", "%{example_hand}", %{example_hand: ~t"1112345568999s 7s"})
+  add_rule("Yakuman", "Junsei Chuurenpoutou", "Double yakuman if your hand was 1112345678999 in one suit, and you won via its nine-sided wait.", 2)
+  update_rule("Yakuman", "Junsei Chuurenpoutou", "%{example_hand}", %{example_hand: ~t"1112345678999s 7s"})
+  add_rule("Yakuman", "Kokushi Musou", "Your winning hand consists of one of each terminal/honor tile plus one forming a pair.")
+  update_rule("Yakuman", "Kokushi Musou", "%{example_hand}", %{example_hand: ~t"19m99p19s1234567z 1p"})
+  add_rule("Yakuman", "Kokushi Musou Juusan Menmachi", "Double yakuman if your winning hand consists of one of each terminal/honor tile and you won with a thirteen-sided wait for the pair.", 2)
+  update_rule("Yakuman", "Kokushi Musou Juusan Menmachi", "%{example_hand}", %{example_hand: ~t"19m19p19s1234567z 1p"})
+  add_rule("Yakuman", "Shousuushii", "Your hand contains triplets or kans of three winds, plus a pair of the fourth wind.")
+  update_rule("Yakuman", "Shousuushii", "%{example_hand}", %{example_hand: ~t"23s22233444z 1z1Z1z 4s"})
+  add_rule("Yakuman", "Daisuushii", "Double yakuman if your hand contains triplets or kans of all four winds.", 2)
+  update_rule("Yakuman", "Daisuushii", "%{example_hand}", %{example_hand: ~t"22s22233444z 1z1Z1z 3z"})
+end
 
 # the instances of any:1 are for minefield,
 # which assumes that tenpai specifies exactly 13 tiles
@@ -158,152 +266,6 @@ set score_calculation, %{
   exhaustive_draw_name: "Ryuukyoku"
 }
 
-def turn_cleanup do
-  # unset furiten before turn change
-  unset_status("furiten")
-  check_tenpai
-end
-
-def discard_passed do
-  # furiten check
-  as everyone do
-    if match(["hand", "calls", "last_discard"], ["win"]) do
-      set_status("furiten")
-    end
-  end
-end
-
-# tenpai check
-# this is used to determine furiten and noten payments
-def check_tenpai do
-  if match(["hand", "calls", "draw"], ["tenpai"]) do
-    set_status("tenpai")
-  else
-    unset_status("tenpai")
-  end
-end
-
-on after_initialization, prepend: true do
-  add_rule_tab("Tiles")
-  add_rule_tab("Rules")
-  add_rule_tab("0.5 Han")
-  add_rule_tab("1 Han")
-  add_rule_tab("2 Han")
-  add_rule_tab("3 Han")
-  add_rule_tab("3+ Han")
-  add_rule_tab("4 Han")
-  add_rule_tab("5 Han")
-  add_rule_tab("6 Han")
-  add_rule_tab("7 Han")
-  add_rule_tab("8 Han")
-  add_rule_tab("9 Han")
-  add_rule_tab("10 Han")
-  add_rule_tab("11 Han")
-  add_rule_tab("12 Han")
-  add_rule_tab("13 Han")
-  add_rule_tab("Limit")
-  add_rule_tab("Mangan")
-  add_rule_tab("Yakuman")
-  add_rule("Tiles", "Base Tiles", "By default, Riichi uses the following 136 tiles:", -100)
-  add_rule("Tiles", "Base Tiles", "- Four each of the 1 to 9 of circles %{pinzu}", %{pinzu: ["1p", "2p", "3p", "4p", "5p", "6p", "7p", "8p", "9p"]})
-  add_rule("Tiles", "Base Tiles", "- Four each of the 1 to 9 of bamboo %{souzu}", %{souzu: ["1s", "2s", "3s", "4s", "5s", "6s", "7s", "8s", "9s"]})
-  add_rule("Tiles", "Base Tiles", "- Four each of the 1 to 9 of characters %{manzu}", %{manzu: ["1m", "2m", "3m", "4m", "5m", "6m", "7m", "8m", "9m"]})
-  add_rule("Tiles", "Base Tiles", "- Four each of the four winds (East, South, West, North) %{winds}", %{winds: ["1z", "2z", "3z", "4z"]})
-  add_rule("Tiles", "Base Tiles", "- Four each of the three dragons (White, Green, Red) %{dragons}", %{dragons: ["5z", "6z", "7z"]})
-  add_rule("Rules", "Tenpai Payments", "In event of an exhaustive draw, players not in tenpai pay players in tenpai. 3000 points total are paid, with the payment split among the non-tenpai players. If all or no players are tenpai, no payment occurs.")
-  delete_rule("Rules", "Win Condition")
-  add_rule("Rules", "Win Condition", "You may win with one of the following:", -100)
-  add_rule("Rules", "Win Condition", "- Four sets (sequences or triplets) and a pair.", -100)
-  add_rule("Rules", "Win Condition", "- (Chiitoitsu) Seven distinct pairs.", -100)
-  add_rule("Rules", "Win Condition", "- (Kokushi Musou) All thirteen terminal/honor tiles plus one forming a pair.", -100)
-  add_rule("Rules", "Furiten", "If you are waiting for a tile to win, but one of your winning tiles is among your discards (including tiles called by other players), then you are 'in furiten' and cannot win by ron (including chankan). You can still win by tsumo.")
-  add_rule("Rules", "Kuikae Ari", "Swap-calling is allowed. That is, if you call %{tile} with %{tiles}, you may discard a tile that could have made a set with %{tiles}. (e.g. calling %{aka}, then discarding %{tile}, or calling %{tile}, then discarding %{tile2})", %{tile: ~t"5p", tile2: ~t"2p", tiles: ~t"34p", aka: ~t"0p"})
-  add_rule("Rules", "No Abortive Draws", "There are no abortive draws enabled.")
-  add_rule("1 Han", "Tsumo", "Win by self-draw with a closed hand.")
-  add_rule("1 Han", "Haitei", "Win by drawing the last tile in the wall.")
-  add_rule("1 Han", "Houtei", "Win off a discard after the last tile in the wall is drawn.")
-  add_rule("1 Han", "Pinfu", "You won off a double-sided sequence wait, with a closed all-sequence hand whose pair is not yakuhai.")
-  update_rule("1 Han", "Pinfu", "%{example_hand}", %{example_hand: ~t"345789m45p23499s 6p"})
-  add_rule("1 Han", "Tanyao", "Your hand contains only tiles numbered 2-8.")
-  update_rule("1 Han", "Tanyao", "%{example_hand}", %{example_hand: ~t"234m33777p45678s 6s"})
-  add_rule("1 Han", "Iipeikou", "Your closed hand has a double sequence: two copies of the exact same sequence in one suit, like 123 123.")
-  update_rule("1 Han", "Iipeikou", "%{example_hand}", %{example_hand: ~t"33445m33777p678s 5m"})
-  add_rule("1 Han", "Yakuhai", "1 han for each of the following triplets in your hand:")
-  add_rule("1 Han", "Yakuhai", "- A triplet of dragon tiles %{dragons}", %{dragons: ~t"777z"})
-  cond do
-    round_wind_is("east")  -> add_rule("1 Han", "Yakuhai", "- A triplet of winds matching the round marker %{round_winds}", %{round_winds: ~t"111z"})
-    round_wind_is("south") -> add_rule("1 Han", "Yakuhai", "- A triplet of winds matching the round marker %{round_winds}", %{round_winds: ~t"222z"})
-    round_wind_is("west")  -> add_rule("1 Han", "Yakuhai", "- A triplet of winds matching the round marker %{round_winds}", %{round_winds: ~t"333z"})
-    round_wind_is("north") -> add_rule("1 Han", "Yakuhai", "- A triplet of winds matching the round marker %{round_winds}", %{round_winds: ~t"444z"})
-  end
-  cond do
-    seat_is("east")  -> add_rule("1 Han", "Yakuhai", "- A triplet of winds matching your seat %{seat_winds}", %{seat_winds: ~t"111z"})
-    seat_is("south") -> add_rule("1 Han", "Yakuhai", "- A triplet of winds matching your seat %{seat_winds}", %{seat_winds: ~t"222z"})
-    seat_is("west")  -> add_rule("1 Han", "Yakuhai", "- A triplet of winds matching your seat %{seat_winds}", %{seat_winds: ~t"333z"})
-    seat_is("north") -> add_rule("1 Han", "Yakuhai", "- A triplet of winds matching your seat %{seat_winds}", %{seat_winds: ~t"444z"})
-  end
-  add_rule("2 Han", "Chiitoitsu", "Your hand consists of seven non-repeating pairs.")
-  update_rule("2 Han", "Chiitoitsu", "%{example_hand}", %{example_hand: ~t"2266m99p24477s33z 2s"})
-  add_rule("1 Han", "Chanta", "1 han if each of the 5 blocks in your hand contains a terminal or honor. 2 han if closed.")
-  update_rule("1 Han", "Chanta", "%{example_hand}", %{example_hand: ~t"123m79p789s77z 11p1P 8p"})
-  add_rule("2 Han", "Junchan", "2 han if each of the 5 blocks in your hand contains a terminal. 3 han if closed.")
-  update_rule("2 Han", "Junchan", "%{example_hand}", %{example_hand: ~t"123m79p78999s 1P11p 8p"})
-  add_rule("1 Han", "Ittsuu", "1 han if your hand contains the sequences 123 456 789 in one suit. 2 han if closed.")
-  update_rule("1 Han", "Ittsuu", "%{example_hand}", %{example_hand: ~t"234p4567779s 12s3S 8s"})
-  add_rule("1 Han", "Sanshoku", "1 han if your hand contains the same number sequence in all three suits. 2 han if closed.")
-  update_rule("1 Han", "Sanshoku", "%{example_hand}", %{example_hand: ~t"24p23334678s 2M34m 3p"})
-  add_rule("2 Han", "Sanshoku Doukou", "2 han if your hand contains the same number triplet in all three suits.")
-  update_rule("2 Han", "Sanshoku Doukou", "%{example_hand}", %{example_hand: ~t"2244p222456s 2M22m 2p"})
-  add_rule("2 Han", "Toitoi", "2 han if your hand is all triplets.")
-  update_rule("2 Han", "Toitoi", "%{example_hand}", %{example_hand: ~t"888m222p33s22z 1z1Z1z 3s"})
-  add_rule("2 Han", "Sanankou", "2 han if your hand has three closed triplets. A triplet formed by a self-draw win counts as closed.")
-  update_rule("2 Han", "Sanankou", "%{example_hand}", %{example_hand: ~t"222888m444p123s1z 1z"})
-  add_rule("2 Han", "Shousangen", "2 han on top of yakuhai if you have two dragon triplets/kans and a dragon pair.")
-  update_rule("2 Han", "Shousangen", "%{example_hand}", %{example_hand: ~t"123m23s66777z 55z5Z 4s"})
-  add_rule("2 Han", "Honroutou", "2 han if your hand contains only terminal and honor tiles.")
-  update_rule("2 Han", "Honroutou", "%{example_hand}", %{example_hand: ~t"111m2223344z 9p9P9p 4z"})
-  add_rule("2 Han", "Honitsu", "2 han if your hand is comprised of one suit plus honor tiles. 3 han if closed.")
-  update_rule("2 Han", "Honitsu", "%{example_hand}", %{example_hand: ~t"123345888p11z22z 2z"})
-  add_rule("3+ Han", "Ryanpeikou", "3 han if you have two double sequences, each being two copies of the exact same sequence in one suit, like 123 123. Does not count as chiitoitsu (7 pairs).")
-  update_rule("3+ Han", "Ryanpeikou", "%{example_hand}", %{example_hand: ~t"3344566m112233s 5m"})
-  add_rule("3+ Han", "Chinitsu", "5 han if your hand is comprised of one suit only (no honor tiles). 6 han if closed.")
-  update_rule("3+ Han", "Chinitsu", "%{example_hand}", %{example_hand: ~t"1233445568889s 7s"})
-  add_rule("Yakuman", "Tenhou", "Win with your initial hand as dealer.")
-  add_rule("Yakuman", "Chiihou", "Win with your first draw as non-dealer.")
-  add_rule("Yakuman", "Daisangen", "Your hand contains triplets or kans of all three dragons.")
-  update_rule("Yakuman", "Daisangen", "%{example_hand}", %{example_hand: ~t"123m22s66777z 55z5Z 6z"})
-  add_rule("Yakuman", "Suuankou", "Your hand has three closed triplets in hand, and you won by self-drawing the fourth.")
-  update_rule("Yakuman", "Suuankou", "%{example_hand}", %{example_hand: ~t"222888m444p33s11z 1z"})
-  add_rule("Yakuman", "Suuankou Tanki", "Double yakuman if your hand has four closed triplets in hand, and you won by completing your pair.", 2)
-  update_rule("Yakuman", "Suuankou Tanki", "%{example_hand}", %{example_hand: ~t"222888m444p333s1z 1z"})
-  add_rule("Yakuman", "Tsuuiisou", "Your hand consists of only honor tiles.")
-  update_rule("Yakuman", "Tsuuiisou", "%{example_hand}", %{example_hand: ~t"1112224477z 66z6Z 4z"})
-  add_rule("Yakuman", "Ryuuiisou", "Your hand consists of only all-green tiles (23468 bamboo and green dragon).")
-  update_rule("Yakuman", "Ryuuiisou", "%{example_hand}", %{example_hand: ~t"2234466888s 6Z66z 3s"})
-  add_rule("Yakuman", "Chinroutou", "Your hand consists of only terminals.")
-  update_rule("Yakuman", "Chinroutou", "%{example_hand}", %{example_hand: ~t"111m999p1199s 9M99m 9s"})
-  add_rule("Yakuman", "Chuurenpoutou", "You have no calls and your winning hand is the pattern 1112345678999 in one suit, plus one additional tile.")
-  update_rule("Yakuman", "Chuurenpoutou", "%{example_hand}", %{example_hand: ~t"1112345568999s 7s"})
-  add_rule("Yakuman", "Junsei Chuurenpoutou", "Double yakuman if your hand was 1112345678999 in one suit, and you won via its nine-sided wait.", 2)
-  update_rule("Yakuman", "Junsei Chuurenpoutou", "%{example_hand}", %{example_hand: ~t"1112345678999s 7s"})
-  add_rule("Yakuman", "Kokushi Musou", "Your winning hand consists of one of each terminal/honor tile plus one forming a pair.")
-  update_rule("Yakuman", "Kokushi Musou", "%{example_hand}", %{example_hand: ~t"19m99p19s1234567z 1p"})
-  add_rule("Yakuman", "Kokushi Musou Juusan Menmachi", "Double yakuman if your winning hand consists of one of each terminal/honor tile and you won with a thirteen-sided wait for the pair.", 2)
-  update_rule("Yakuman", "Kokushi Musou Juusan Menmachi", "%{example_hand}", %{example_hand: ~t"19m19p19s1234567z 1p"})
-  add_rule("Yakuman", "Shousuushii", "Your hand contains triplets or kans of three winds, plus a pair of the fourth wind.")
-  update_rule("Yakuman", "Shousuushii", "%{example_hand}", %{example_hand: ~t"23s22233444z 1z1Z1z 4s"})
-  add_rule("Yakuman", "Daisuushii", "Double yakuman if your hand contains triplets or kans of all four winds.", 2)
-  update_rule("Yakuman", "Daisuushii", "%{example_hand}", %{example_hand: ~t"22s22233444z 1z1Z1z 3z"})
-end
-
-on before_turn_change do
-  turn_cleanup
-  # add furiten due to discards
-  if status("tenpai") and match(["hand", "calls", "any_discard"], ["win"]) do
-    set_status("furiten")
-  end
-end
-
 define_const can_draw_condition, true
 on after_turn_change do
   if no_tiles_remaining do
@@ -313,21 +275,10 @@ on after_turn_change do
     if not_game_start do discard_passed end
     if @can_draw_condition do draw end
   end
-  # unset furiten (mostly so show_waits mod doesn't complain)
-  unset_status("furiten")
 end
 
-on before_call do
-  turn_cleanup
-  unset_status_all("discards_empty")
-end
-
-# so mods can add onto it
-on before_win do noop end
-
-on after_start do
-  set_status_all("discards_empty")
-end
+on after_start do set_status_all("discards_empty") end
+on before_call do unset_status_all("discards_empty") end
 
 apply set_append, "play_effects", [
   ["any", [["unset_status", "discards_empty"]]]
@@ -372,8 +323,8 @@ define_button ron,
   display_name: "Ron",
   show_when: not_our_turn
     and someone_else_just_discarded
-    and match(["hand", "calls"], ["tenpai"])
     and status_missing("furiten")
+    and match(["hand", "calls"], ["tenpai"])
     and match(["hand", "calls", "last_discard"], ["win"]),
   precedence_over: ["chii", "pon"]
   do
@@ -397,7 +348,6 @@ define_button tsumo,
   end
 
 set interruptible_actions, ["play_tile", "advance_turn", "draw", "self_call", "upgrade_call"]
-set shown_statuses, ["furiten"]
 set display_wall, true
 set initial_score, 25000
 set initial_dead_wall_length, 14

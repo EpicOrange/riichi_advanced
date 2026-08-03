@@ -1,0 +1,11 @@
+# this is used to determine furiten and noten payments
+def check_tenpai do
+  if match(["hand", "calls", "draw"], ["tenpai"]) do
+    set_status("tenpai")
+  else
+    unset_status("tenpai")
+  end
+end
+
+on before_turn_change do check_tenpai end
+on before_call do check_tenpai end

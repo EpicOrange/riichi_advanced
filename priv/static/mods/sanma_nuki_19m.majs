@@ -10,7 +10,7 @@ define_button nukidora,
   show_when: our_turn
     and not_no_tiles_remaining
     and has_draw
-    and not_status("just_reached")
+    and status_missing("just_reached")
     and match(["hand", "draw"], ~m"(1m 9m):1")
     and tile_not_drawn(-8)
   do

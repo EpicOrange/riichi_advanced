@@ -7,6 +7,7 @@ define_const riichi_bet, !bet
 on after_initialization do
   add_rule("Rules", "Riichi", "If you can, you may discard into tenpai (ready hand) by declaring 'riichi' to lock your hand. If your discard passes, you bet %{bet} points. If you win, you are awarded Riichi (1 han yaku). If you declared riichi on your very first discard, then you are instead awarded double riichi (2 han). Calls before the riichi declaration invalidate double riichi.", %{bet: @riichi_bet})
   add_rule("1 Han", "Riichi", "1 Han for winning after declaring riichi.")
+  add_rule("Rules", "No Ippatsu", "Winning in the first go-around after your riichi declaration does not award Ippatsu.")
 end
 
 apply set_prepend, "score_calculation.yaku_lists", ["riichi_yaku"]
@@ -54,11 +55,8 @@ apply append, "buttons.ron.show_when", status_missing("just_reached")
 apply append, "buttons.chankan.show_when", status_missing("just_reached")
 apply append, "buttons.tsumo.show_when", status_missing("just_reached")
 
-# unset furiten (unless in riichi)
-replace all, "functions.turn_cleanup", unset_status("furiten"), (if status_missing("riichi") do unset_status("furiten") end)
-
 def discard_passed, prepend: true do
-  as everyone do
+  as last_discarder do
     if status("just_reached") do
       place_riichi_stick
       enable_auto_button("_4_auto_discard")
