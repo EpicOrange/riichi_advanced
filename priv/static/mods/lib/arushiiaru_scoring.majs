@@ -1,0 +1,57 @@
+# fix rules
+on after_initialization do
+  rename_rule_tab("1 ★", "Mangan")
+  rename_rule_tab("Yakuman", "Mangan")
+  rename_rule_tab("Mangan", "Mangan") # place it last
+  delete_rule("Rules", "Tenpai Payments")
+
+  delete_rule("1 Han", "Pinfu")
+  add_rule("1 Han", "Pinfu", "You won off a double-sided sequence wait, with an all-sequence hand whose pair is not yakuhai.")
+  update_rule("1 Han", "Pinfu", "%{example_hand}", %{example_hand: ~t"345789m45p99s 2S34s 6p"})
+
+  add_rule("Mangan", "Chuurenpoutou", "Mangan if your hand was 1112345678999 in one suit, and you won via its nine-sided wait.", 2)
+  update_rule("Mangan", "Chuurenpoutou", "%{example_hand}", %{example_hand: ~t"1112345678999s 7s"})
+end
+
+# remove noten payments
+def setup_noten_payments do end
+def execute_noten_payments do end
+
+def calculate_base_score do
+  cond do
+    points2 > 0 ->
+      # not sure if mangans stack
+      # total = points2 * 2000 :: "Mangan base"
+      total = 2000 :: "Mangan base"
+      modify_winner("score_name", "Mangan")
+    points >= 5 ->
+      total = 2000 :: "Mangan base"
+      modify_winner("score_name", "Mangan")
+    points >= 4 and minipoints >= @mangan_4_han_fu ->
+      total = minipoints :: "Fu"
+      total = 2000 :: "Mangan base"
+      modify_winner("score_name", "Mangan")
+    points >= 3 and minipoints >= @mangan_3_han_fu ->
+      total = minipoints :: "Fu"
+      total = 2000 :: "Mangan base"
+      modify_winner("score_name", "Mangan")
+    true ->
+      han_mult = 2 ** points :: "Han mult."
+      total = minipoints :: "Fu"
+      total *= han_mult :: "Base"
+  end
+  base_score = total
+end
+
+# turn off basic rounding
+define_const riichi_score_rounding, 1
+
+# open pinfu is 20 fu, pinfu tsumo is 22 fu
+define_const closed_tsumo_20_fu, false
+define_const open_30_fu, false
+
+# Pinfu is open or closed ron only
+replace_yaku yaku, "Pinfu", [1, "Han"], minipoints_equals(20) or (not_won_by_draw and minipoints_equals(30))
+
+# Chuurenpoutou must be junsei
+replace_yaku yakuman, "Chuurenpoutou", [1, "★"], match(["hand"], ~m"chuurenpoutou:1")

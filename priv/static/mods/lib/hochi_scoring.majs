@@ -8,7 +8,35 @@ on after_initialization do
   rename_rule_tab("1 ★", "Shoumangan")
   rename_rule_tab("1.5 ★", "Daimangan")
   rename_rule_tab("2 ★", "Baimangan")
+  delete_rule("1 Han", "Pinfu")
+  
+  add_rule("1 Han", "Pinfu", "You won off a double-sided sequence wait, with an all-sequence hand whose pair is not yakuhai.")
+  update_rule("1 Han", "Pinfu", "%{example_hand}", %{example_hand: ~t"345789m45p99s 2S34s 6p"})
+
+  add_rule("Shoumangan", "Daichiishin", "Shoumangan if you have one pair of each of the seven honor tiles.")
+  update_rule("Shoumangan", "Daichiishin", "%{example_hand}", %{example_hand: ~t"1122334455667z 7z"})
+
+  delete_rule("Daimangan", "Chuurenpoutou")
+  add_rule("Baimangan", "Chuurenpoutou", "Baimangan if you have no calls and your winning hand is the pattern 1112345678999 in one suit, plus one additional tile.")
+  update_rule("Baimangan", "Chuurenpoutou", "%{example_hand}", %{example_hand: ~t"1112345568999s 7s"})
 end
+
+replace_yaku yaku, "Honroutou", [1, "★"]
+define_yaku yakuman, "Daichiishin", [1.5, "★"], has_existing_yaku("Chiitoitsu") and winning_hand_consists_of("1z","2z","3z","4z","5z","6z","7z"), ["Tsuuiisou"]
+replace_yaku yakuman, "Suukantsu", [1.5, "★"]
+replace_yaku yakuman, "Suuankou", [1.5, "★"]
+replace_yaku yakuman, "Daisangen", [1.5, "★"]
+replace_yaku yakuman, "Kokushi", [1.5, "★"]
+replace_yaku yakuman, "Shousuushii", [1.5, "★"]
+replace_yaku yakuman, "Daisuushii", [1.5, "★"]
+replace_yaku yakuman, "Tsuuiisou", [1.5, "★"]
+replace_yaku yakuman, "Chinroutou", [1.5, "★"]
+replace_yaku yakuman, "Tenhou", [1.5, "★"]
+replace_yaku yakuman, "Chiihou", [1.5, "★"], current_turn_is("east") and status("first_turn") and won_by_discard
+replace_yaku yakuman, "Chuurenpoutou", [2, "★"]
+remove_yaku meta_yakuman, "Suuankou Tanki"
+remove_yaku meta_yakuman, "Junsei Chuurenpoutou"
+remove_yaku meta_yakuman, "Kokushi Musou Juusan Menmachi"
 
 # allow open pinfu and pinfu tsumo
 replace_yaku yaku, "Pinfu", [1, "Han"], match(["hand", "calls", "winning_tile"], ["standard_win"])

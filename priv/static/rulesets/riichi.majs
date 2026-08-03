@@ -289,137 +289,39 @@ define_mod "jokers/five_honors", order: 4, name: "Five/Honors", desc: "Adds a co
 define_mod "jokers/kanchan_honors", order: 4, name: "Kanchan/Honors", desc: "Adds a copy of the kanchan/honors joker, which looks like 卡番 and can be used as any honor tile, but can also be used as the middle tile in any sequence."
 
 define_mod_category "Standard Yaku"
-
 define_mod "lib/yaku/menzentsumo", name: "Tsumo", desc: "Enables menzentsumo. \"Closed Self-Draw\". 1 han if you win by self-draw without having called any tiles (except concealed kan)."
 define_mod "lib/yaku/riichi", order: -1, name: "Riichi", desc: "Enable riichi declarations. When you are tenpai with at least 1000 points (and it is not your last discard), you may declare riichi before discarding. If the discard passes, you automatically bet 1000 and can no longer change your hand. If you win under this condition, you get the riichi yaku (1 han). If you riichi on your first discard (calls invalidate), this is called Double Riichi and worth 2 han."
 config_mod "lib/yaku/riichi", name: "bet", values: [0,1000,2000,3000,4000,5000], default: 1000
 config_mod "lib/yaku/riichi", name: "drawless", values: [false, true], default: false
-config_mod "lib/yaku/riichi", name: "double_value", values: [2]
-
 define_mod "lib/yaku/ippatsu", deps: ["lib/yaku/riichi"], name: "Ippatsu", desc: "Enables ippatsu. \"One-shot\". 1 han if you win before or during your next draw after riichi. Calls invalidate."
-
 define_mod "lib/yaku/chankan", name: "Chankan", desc: "Enables chankan. \"Robbing a Kan\". 1 han if you win off a player adding a drawn tile to an existing pon to form a kan."
-
 define_mod "lib/yaku/rinshan", name: "Rinshan", desc: "Enables rinshan kaihou. \"Flower Blooming on the Mountain Range\". 1 han if you tsumo on your kan replacement tile."
-config_mod "lib/yaku/rinshan", name: "value", values: [1]
-
 define_mod "lib/yaku/haitei", name: "Haitei/Houtei", desc: "Enables haitei (\"Under the Sea\") and houtei (\"Under the River\"). 1 han if you win by drawing the last tile (Haitei) or by claiming the last discard (Houtai)."
-config_mod "lib/yaku/haitei", name: "haitei_value", values: [1]
-config_mod "lib/yaku/haitei", name: "houtei_value", values: [1]
-
 define_mod "lib/yaku/pinfu", name: "Pinfu", desc: "Enables pinfu. \"Minimal Fu\". 1 han if your hand is closed and only scores base fu (30 for ron and 20 for tsumo)."
-config_mod "lib/yaku/pinfu", name: "value", values: [1]
-
 define_mod "lib/yaku/tanyao", name: "Tanyao", desc: "Enables tanyaochuu. \"Cut Honors And Terminals\". 1 han if your hand contains no terminals (1,9 tiles) or honor tiles."
 config_mod "lib/yaku/tanyao", name: "closed_only", values: [false, true], default: false
-
 define_mod "lib/yaku/iipeikou", name: "Iipeikou/Ryanpeikou", desc: "Enables iipeikou (\"Identical Sequences\") and ryanpeikou (\"Twice Identical Sequences\"). 1 han if you have the exact same sequence twice, 3 han if you have two of those in your hand."
-config_mod "lib/yaku/iipeikou", name: "ii_value", values: [1]
-config_mod "lib/yaku/iipeikou", name: "ryan_value", values: [3]
-
 define_mod "lib/yaku/yakuhai", name: "Yakuhai", desc: "Enables yakuhai. \"Value Triplets\". 1 han for each dragon triplet or kan, 1 han for a wind triplet or kan matching the round wind, and 1 han for a wind triplet or kan matching your seat. If a wind triplet or kan matches both the round wind or seat wind, you score both (2 han)."
-config_mod "lib/yaku/yakuhai", name: "white_name", values: ["Haku"]
-config_mod "lib/yaku/yakuhai", name: "green_name", values: ["Hatsu"]
-config_mod "lib/yaku/yakuhai", name: "red_name", values: ["Chun"]
-
 define_mod "lib/yaku/chiitoitsu", name: "Chiitoitsu", desc: "Enable chiitoitsu. \"Seven Pairs\". Enables winning with a seven pair hand, which also scores 2 han."
-config_mod "lib/yaku/chiitoitsu", name: "name", values: ["Chiitoitsu"]
-config_mod "lib/yaku/chiitoitsu", name: "kansai", values: [false]
-config_mod "lib/yaku/chiitoitsu", name: "value", values: [2]
-
 define_mod "lib/yaku/chanta", name: "Chanta/Junchan", desc: "Enable chantaiyaochuu (\"All Contains Honors/Terminals\") and junchantaiyaochuu (\"All Contains Terminals\"). 1 han if every set/pair in your hand contains an honor or terminal, +1 han if your hand is closed (no calls besides ankan). 2 han instead if each set/pair contains a terminal with no honor tiles, again +1 han if your hand is closed."
-config_mod "lib/yaku/chanta", name: "chanta_value", values: [1]
-config_mod "lib/yaku/chanta", name: "junchan_value", values: [2]
-config_mod "lib/yaku/chanta", name: "closed_bonus", values: [1]
-
 define_mod "lib/yaku/ittsuu", name: "Ittsuu", desc: "Enable ikkitsuukan. \"Punch Through in One Go\". 1 han if your hand contains 123 456 789 in one suit, +1 han if your hand is closed (no calls besides ankan)."
-config_mod "lib/yaku/ittsuu", name: "closed_bonus", values: [1]
-
 define_mod "lib/yaku/sanshoku_doujun", name: "Sanshoku", desc: "Enable sanshoku doujun. \"Three-Colored Same Sequence\". 1 han if your hand contains the same numbered sequence in three suits, +1 han if your hand is closed (no calls besides ankan)."
-config_mod "lib/yaku/sanshoku_doujun", name: "value", values: [1]
-config_mod "lib/yaku/sanshoku_doujun", name: "closed_bonus", values: [1]
-
 define_mod "lib/yaku/sanshoku_doukou", name: "Sanshoku Doukou", desc: "Enable sanshoku doukou. \"Three-Colored Same Triplet\". 1 han if your hand contains the same numbered triplet in three suits, +1 han if your hand is closed (no calls besides ankan)."
-config_mod "lib/yaku/sanshoku_doukou", name: "value", values: [2]
-
 define_mod "lib/yaku/sankantsu", name: "Sankantsu", desc: "Enable sankantsu (\"Three Kans\"). 2 han if you called three kans."
-config_mod "lib/yaku/sankantsu", name: "value", values: [2]
-
 define_mod "lib/yaku/toitoi", name: "Toitoi", desc: "Enable toitoihou. \"All Triplets\". 2 han if your hand consists of four triplets and a pair."
-config_mod "lib/yaku/toitoi", name: "value", values: [2]
-
 define_mod "lib/yaku/sanankou", name: "Sanankou/Suuankou", desc: "Enable sanankou. \"Three Concealed Triplets\". 2 han if your hand contains three closed triplets. A closed triplet is a triplet hidden in hand, or a triplet formed by self-draw. Also enables the yakuman suuankou (\"Four Concealed Triplets\") and double yakuman suuankou tanki (\"Four Concealed Triplets Single-Wait\")."
-config_mod "lib/yaku/sanankou", name: "san_value", values: [2]
-config_mod "lib/yaku/sanankou", name: "suu_list", values: ["yakuman"]
-config_mod "lib/yaku/sanankou", name: "suu_value", values: [1]
-config_mod "lib/yaku/sanankou", name: "suu_han", values: ["★"]
-config_mod "lib/yaku/sanankou", name: "suu_tanki_value", values: [2]
-
 define_mod "lib/yaku/shousangen", name: "Shousangen/Daisangen", desc: "Enable shousangen. \"Little Three Dragons\". 2 han (on top of yakuhai) if your hand contains two dragon triplets and a pair of the third. Also enables daisangen (\"Big Three Dragons\"), which is yakuman for having three dragon triplets."
-config_mod "lib/yaku/shousangen", name: "shou_value", values: [2]
-config_mod "lib/yaku/shousangen", name: "dai_list", values: ["yakuman"]
-config_mod "lib/yaku/shousangen", name: "dai_value", values: [1]
-config_mod "lib/yaku/shousangen", name: "dai_han", values: ["★"]
-
 define_mod "lib/yaku/honroutou", name: "Honroutou/Chinroutou", desc: "Enable honroutou. \"Mixed Terminals and Honors\". 1 han if your hand is composed only of terminals (1,9 tiles) and honor tiles. Also enables chinroutou (\"Pure Terminals and Honors\") which is yakuman if your hand is composed only of terminals (no honors)."
-config_mod "lib/yaku/honroutou", name: "hon_value", values: [2]
-config_mod "lib/yaku/honroutou", name: "chin_list", values: ["yakuman"]
-config_mod "lib/yaku/honroutou", name: "chin_value", values: [1]
-config_mod "lib/yaku/honroutou", name: "chin_han", values: ["★"]
-
 define_mod "lib/yaku/honitsu", name: "Honitsu/Chinitsu", desc: "Enable honitsu. \"Mixed One-Color\". 2 han if your hand consists of a single suit plus honor tiles, +1 han if your hand is closed (no calls besides ankan). Also enables chinitsu (\"Pure One-Color\"), which is 5 han if your hand consists of a single suit (no honor tiles), +1 han if your hand is closed."
-config_mod "lib/yaku/honitsu", name: "hon_value", values: [2]
-config_mod "lib/yaku/honitsu", name: "chin_value", values: [5]
-config_mod "lib/yaku/honitsu", name: "closed_bonus", values: [1]
-
 define_mod "lib/yaku/tenhou", name: "Tenhou/Chiihou", desc: "Enable tenhou and chiihou. \"Heavenly/Earthly Win\". Yakuman if you win with your first draw as dealer (Tenhou) or as non-dealer (Chiihou). Calls invalidate."
-config_mod "lib/yaku/tenhou", name: "tenhou_list", values: ["yakuman"]
-config_mod "lib/yaku/tenhou", name: "tenhou_value", values: [1]
-config_mod "lib/yaku/tenhou", name: "tenhou_han", values: ["★"]
-config_mod "lib/yaku/tenhou", name: "chiihou_list", values: ["yakuman"]
-config_mod "lib/yaku/tenhou", name: "chiihou_value", values: [1]
-config_mod "lib/yaku/tenhou", name: "chiihou_is_tsumo", values: [true]
-config_mod "lib/yaku/tenhou", name: "chiihou_han", values: ["★"]
-
 define_mod "lib/yaku/riichi_renhou", name: "Renhou", desc: "Enable renhou. \"Hand of Man\". Instant mangan or yakuman if you win off a discard before your first draw. Calls invalidate."
 config_mod "lib/yaku/riichi_renhou", name: "is", values: ["Mangan", "Yakuman"], default: "Yakuman"
-
 define_mod "lib/yaku/tsuuiisou", name: "Tsuuiisou", desc: "Enable tsuuiisou. \"One-Color Characters\". Yakuman if your hand is composed only of honor tiles."
-config_mod "lib/yaku/tsuuiisou", name: "list", values: ["yakuman"]
-config_mod "lib/yaku/tsuuiisou", name: "han", values: ["★"]
-
 define_mod "lib/yaku/ryuuiisou", name: "Ryuuiisou", desc: "Enable ryuuiisou. \"Green One-Color\". Yakuman if your hand is composed only of 23468 bamboo and/or green dragon."
-config_mod "lib/yaku/ryuuiisou", name: "list", values: ["yakuman"]
-config_mod "lib/yaku/ryuuiisou", name: "han", values: ["★"]
-
 define_mod "lib/yaku/chuurenpoutou", name: "Chuurenpoutou", desc: "Enable chuurenpoutou. \"Nine Connected Lanterns\". Yakuman if your hand (including winning tile) has no calls and looks like 1112345678999 of any suit, plus one additional tile of that suit. Double yakuman if your hand (no winning tile) contains exactly 1112345678999, which is a nine-sided wait."
-config_mod "lib/yaku/chuurenpoutou", name: "list", values: ["yakuman"]
-config_mod "lib/yaku/chuurenpoutou", name: "value", values: [1]
-config_mod "lib/yaku/chuurenpoutou", name: "han", values: ["★"]
-config_mod "lib/yaku/chuurenpoutou", name: "junsei_list", values: ["yakuman"]
-config_mod "lib/yaku/chuurenpoutou", name: "junsei_value", values: [2]
-config_mod "lib/yaku/chuurenpoutou", name: "junsei_han", values: ["★"]
-
 define_mod "lib/yaku/kokushi", name: "Kokushi Musou", desc: "Enable kokushi musou. \"Peerless Warriors\". Yakuman if your hand (including winning tile) contains all 13 terminals and honors, plus an extra one forming a pair. Double yakuman if your hand (no winning tile) contains all 13 terminals and honors, waiting on a 13-sided wait for a pair."
-config_mod "lib/yaku/kokushi", name: "list", values: ["yakuman"]
-config_mod "lib/yaku/kokushi", name: "value", values: [1]
-config_mod "lib/yaku/kokushi", name: "han", values: ["★"]
-config_mod "lib/yaku/kokushi", name: "juusan_list", values: ["yakuman"]
-config_mod "lib/yaku/kokushi", name: "juusan_value", values: [2]
-config_mod "lib/yaku/kokushi", name: "juusan_han", values: ["★"]
-
 define_mod "lib/yaku/shousuushii", name: "Shousuushii", desc: "Enable shousuushii. \"Little Four Happiness\". Yakuman if your hand contains three wind triplets/kans, with a pair of the fourth. Also enables daisuushii (\"Big Four Happiness\") which is double yakuman if your hand contains four wind triplets/kans."
-config_mod "lib/yaku/shousuushii", name: "shou_list", values: ["yakuman"]
-config_mod "lib/yaku/shousuushii", name: "shou_value", values: [1]
-config_mod "lib/yaku/shousuushii", name: "shou_han", values: ["★"]
-config_mod "lib/yaku/shousuushii", name: "dai_list", values: ["yakuman"]
-config_mod "lib/yaku/shousuushii", name: "dai_value", values: [2]
-config_mod "lib/yaku/shousuushii", name: "dai_han", values: ["★"]
-
 define_mod "lib/yaku/suukantsu", name: "Suukantsu", desc: "Enable suukantsu (\"Four Kans\"). 2 han if you called three kans."
-config_mod "lib/yaku/suukantsu", name: "list", values: ["yakuman"]
-config_mod "lib/yaku/suukantsu", name: "value", values: [1]
-config_mod "lib/yaku/suukantsu", name: "han", values: ["★"]
 
 define_mod_category "Local Yaku"
 # 1 han
@@ -568,9 +470,34 @@ define_mod riichi_en, name: "English Yaku Names", desc: "Display English yaku na
 
 set default_mods, [
   "lib/yaku/menzentsumo",
-  %{name: "lib/yaku/riichi", config: %{bet: 1000, drawless: false}},
-  "lib/yaku/ippatsu", "lib/yaku/chankan", "lib/yaku/rinshan", "lib/yaku/haitei", "lib/yaku/pinfu", "lib/yaku/tanyao", "lib/yaku/iipeikou", "lib/yaku/yakuhai", "lib/yaku/chiitoitsu", "lib/yaku/chanta", "lib/yaku/ittsuu", "lib/yaku/sanshoku_doujun", "lib/yaku/sanshoku_doukou", "lib/yaku/sankantsu", "lib/yaku/toitoi", "lib/yaku/sanankou", "lib/yaku/shousangen", "lib/yaku/honroutou", "lib/yaku/honitsu", "lib/yaku/tenhou", "lib/yaku/tsuuiisou", "lib/yaku/ryuuiisou", "lib/yaku/chuurenpoutou", "lib/yaku/kokushi", "lib/yaku/shousuushii", "lib/yaku/suukantsu",
+  %{name: "lib/yaku/riichi", config: %{bet: 1000, drawless: true}},
+  "lib/yaku/ippatsu",
+  "lib/yaku/chankan",
+  %{name: "lib/yaku/rinshan", config: %{value: 1}},
+  %{name: "lib/yaku/haitei", config: %{haitei_value: 1, houtei_value: 1} },
+  %{name: "lib/yaku/pinfu", config: %{value: 1}},
+  %{name: "lib/yaku/tanyao", config: %{closed_only: false}},
+  %{name: "lib/yaku/iipeikou", config: %{ii_value: 1, ryan_value: 3}},
+  %{name: "lib/yaku/yakuhai", config: %{white_name: "Haku", green_name: "Hatsu", red_name: "Chun"}},
+  %{name: "lib/yaku/chiitoitsu", config: %{kansai: false, name: "Chiitoitsu", value: 2} },
+  %{name: "lib/yaku/chanta", config: %{chanta_value: 1, closed_bonus: 1, junchan_value: 2} },
+  %{name: "lib/yaku/ittsuu", config: %{closed_bonus: 1}},
+  %{name: "lib/yaku/sanshoku_doujun", config: %{closed_bonus: 1, value: 1} },
+  %{name: "lib/yaku/sanshoku_doukou", config: %{value: 2}},
+  %{name: "lib/yaku/sankantsu", config: %{value: 2}},
+  %{name: "lib/yaku/toitoi", config: %{value: 2}},
+  %{name: "lib/yaku/sanankou", config: %{san_value: 2, suu_han: "★", suu_list: "yakuman", suu_tanki_value: 2, suu_value: 1 } },
+  %{name: "lib/yaku/shousangen", config: %{dai_han: "★", dai_list: "yakuman", dai_value: 1, shou_value: 2 } },
+  %{name: "lib/yaku/honroutou", config: %{chin_han: "★", chin_list: "yakuman", chin_value: 1, hon_value: 2 } },
+  %{name: "lib/yaku/honitsu", config: %{chin_value: 5, closed_bonus: 1, hon_value: 2} },
+  %{name: "lib/yaku/tenhou", config: %{chiihou_is_tsumo: true, chiihou_list: "yakuman", chiihou_value: 1, chiihou_han: "★", tenhou_list: "yakuman", tenhou_value: 1, tenhou_han: "★" } },
   %{name: "lib/yaku/riichi_renhou", config: %{is: "Yakuman"}},
+  %{name: "lib/yaku/tsuuiisou", config: %{han: "★"}},
+  %{name: "lib/yaku/ryuuiisou", config: %{han: "★"}},
+  %{name: "lib/yaku/chuurenpoutou", config: %{han: "★", junsei_han: "★", junsei_list: "yakuman", junsei_value: 2, list: "yakuman", value: 1 } },
+  %{name: "lib/yaku/kokushi", config: %{han: "★", juusan_han: "★", juusan_list: "yakuman", juusan_value: 2, list: "yakuman", value: 1 } },
+  %{name: "lib/yaku/shousuushii", config: %{dai_han: "★", dai_list: "yakuman", dai_value: 2, shou_han: "★", shou_list: "yakuman", shou_value: 1 } },
+  %{name: "lib/yaku/suukantsu", config: %{han: "★", value: 1}},
   "honba", "dora", "ura", "kandora", "aka",
   "nagashi",
   %{name: "lib/tobi", config: %{below: 0}},
@@ -590,8 +517,33 @@ set default_mods, [
 
 define_preset "Mahjong Soul", [
   "lib/yaku/menzentsumo",
-  %{name: "lib/yaku/riichi", config: %{bet: 1000, drawless: false, double_value: 2}},
-  "lib/yaku/ippatsu", "lib/yaku/chankan", "lib/yaku/rinshan", "lib/yaku/haitei", "lib/yaku/pinfu", "lib/yaku/tanyao", "lib/yaku/iipeikou", "lib/yaku/yakuhai", "lib/yaku/chiitoitsu", "lib/yaku/chanta", "lib/yaku/ittsuu", "lib/yaku/sanshoku_doujun", "lib/yaku/sanshoku_doukou", "lib/yaku/sankantsu", "lib/yaku/toitoi", "lib/yaku/sanankou", "lib/yaku/shousangen", "lib/yaku/honroutou", "lib/yaku/honitsu", "lib/yaku/tenhou", "lib/yaku/tsuuiisou", "lib/yaku/ryuuiisou", "lib/yaku/chuurenpoutou", "lib/yaku/kokushi", "lib/yaku/shousuushii", "lib/yaku/suukantsu",
+  %{name: "lib/yaku/riichi", config: %{bet: 1000, drawless: true}},
+  "lib/yaku/ippatsu",
+  "lib/yaku/chankan",
+  %{name: "lib/yaku/rinshan", config: %{value: 1}},
+  %{name: "lib/yaku/haitei", config: %{haitei_value: 1, houtei_value: 1} },
+  %{name: "lib/yaku/pinfu", config: %{value: 1}},
+  %{name: "lib/yaku/tanyao", config: %{closed_only: false}},
+  %{name: "lib/yaku/iipeikou", config: %{ii_value: 1, ryan_value: 3}},
+  %{name: "lib/yaku/yakuhai", config: %{white_name: "Haku", green_name: "Hatsu", red_name: "Chun"}},
+  %{name: "lib/yaku/chiitoitsu", config: %{kansai: false, name: "Chiitoitsu", value: 2} },
+  %{name: "lib/yaku/chanta", config: %{chanta_value: 1, closed_bonus: 1, junchan_value: 2} },
+  %{name: "lib/yaku/ittsuu", config: %{closed_bonus: 1}},
+  %{name: "lib/yaku/sanshoku_doujun", config: %{closed_bonus: 1, value: 1} },
+  %{name: "lib/yaku/sanshoku_doukou", config: %{value: 2}},
+  %{name: "lib/yaku/sankantsu", config: %{value: 2}},
+  %{name: "lib/yaku/toitoi", config: %{value: 2}},
+  %{name: "lib/yaku/sanankou", config: %{san_value: 2, suu_han: "★", suu_list: "yakuman", suu_tanki_value: 2, suu_value: 1 } },
+  %{name: "lib/yaku/shousangen", config: %{dai_han: "★", dai_list: "yakuman", dai_value: 1, shou_value: 2 } },
+  %{name: "lib/yaku/honroutou", config: %{chin_han: "★", chin_list: "yakuman", chin_value: 1, hon_value: 2 } },
+  %{name: "lib/yaku/honitsu", config: %{chin_value: 5, closed_bonus: 1, hon_value: 2} },
+  %{name: "lib/yaku/tenhou", config: %{chiihou_is_tsumo: true, chiihou_list: "yakuman", chiihou_value: 1, chiihou_han: "★", tenhou_list: "yakuman", tenhou_value: 1, tenhou_han: "★" } },
+  %{name: "lib/yaku/tsuuiisou", config: %{han: "★"}},
+  %{name: "lib/yaku/ryuuiisou", config: %{han: "★"}},
+  %{name: "lib/yaku/chuurenpoutou", config: %{han: "★", junsei_han: "★", junsei_list: "yakuman", junsei_value: 2, list: "yakuman", value: 1 } },
+  %{name: "lib/yaku/kokushi", config: %{han: "★", juusan_han: "★", juusan_list: "yakuman", juusan_value: 2, list: "yakuman", value: 1 } },
+  %{name: "lib/yaku/shousuushii", config: %{dai_han: "★", dai_list: "yakuman", dai_value: 2, shou_han: "★", shou_list: "yakuman", shou_value: 1 } },
+  %{name: "lib/yaku/suukantsu", config: %{han: "★", value: 1}},
   %{name: "honba", config: %{value: 100}},
   %{name: "nagashi", config: %{is: "Mangan", counts_as: "draw"}},
   %{name: "lib/tobi", config: %{below: 0}},
@@ -621,8 +573,33 @@ define_preset "Mahjong Soul", [
 ]
 define_preset "tenhou.net", [
   "lib/yaku/menzentsumo",
-  %{name: "lib/yaku/riichi", config: %{bet: 1000, drawless: false, double_value: 2}},
-  "lib/yaku/ippatsu", "lib/yaku/chankan", "lib/yaku/rinshan", "lib/yaku/haitei", "lib/yaku/pinfu", "lib/yaku/tanyao", "lib/yaku/iipeikou", "lib/yaku/yakuhai", "lib/yaku/chiitoitsu", "lib/yaku/chanta", "lib/yaku/ittsuu", "lib/yaku/sanshoku_doujun", "lib/yaku/sanshoku_doukou", "lib/yaku/sankantsu", "lib/yaku/toitoi", "lib/yaku/sanankou", "lib/yaku/shousangen", "lib/yaku/honroutou", "lib/yaku/honitsu", "lib/yaku/tenhou", "lib/yaku/tsuuiisou", "lib/yaku/ryuuiisou", "lib/yaku/chuurenpoutou", "lib/yaku/kokushi", "lib/yaku/shousuushii", "lib/yaku/suukantsu",
+  %{name: "lib/yaku/riichi", config: %{bet: 1000, drawless: true}},
+  "lib/yaku/ippatsu",
+  "lib/yaku/chankan",
+  %{name: "lib/yaku/rinshan", config: %{value: 1}},
+  %{name: "lib/yaku/haitei", config: %{haitei_value: 1, houtei_value: 1} },
+  %{name: "lib/yaku/pinfu", config: %{value: 1}},
+  %{name: "lib/yaku/tanyao", config: %{closed_only: false}},
+  %{name: "lib/yaku/iipeikou", config: %{ii_value: 1, ryan_value: 3}},
+  %{name: "lib/yaku/yakuhai", config: %{white_name: "Haku", green_name: "Hatsu", red_name: "Chun"}},
+  %{name: "lib/yaku/chiitoitsu", config: %{kansai: false, name: "Chiitoitsu", value: 2} },
+  %{name: "lib/yaku/chanta", config: %{chanta_value: 1, closed_bonus: 1, junchan_value: 2} },
+  %{name: "lib/yaku/ittsuu", config: %{closed_bonus: 1}},
+  %{name: "lib/yaku/sanshoku_doujun", config: %{closed_bonus: 1, value: 1} },
+  %{name: "lib/yaku/sanshoku_doukou", config: %{value: 2}},
+  %{name: "lib/yaku/sankantsu", config: %{value: 2}},
+  %{name: "lib/yaku/toitoi", config: %{value: 2}},
+  %{name: "lib/yaku/sanankou", config: %{san_value: 2, suu_han: "★", suu_list: "yakuman", suu_tanki_value: 2, suu_value: 1 } },
+  %{name: "lib/yaku/shousangen", config: %{dai_han: "★", dai_list: "yakuman", dai_value: 1, shou_value: 2 } },
+  %{name: "lib/yaku/honroutou", config: %{chin_han: "★", chin_list: "yakuman", chin_value: 1, hon_value: 2 } },
+  %{name: "lib/yaku/honitsu", config: %{chin_value: 5, closed_bonus: 1, hon_value: 2} },
+  %{name: "lib/yaku/tenhou", config: %{chiihou_is_tsumo: true, chiihou_list: "yakuman", chiihou_value: 1, chiihou_han: "★", tenhou_list: "yakuman", tenhou_value: 1, tenhou_han: "★" } },
+  %{name: "lib/yaku/tsuuiisou", config: %{han: "★"}},
+  %{name: "lib/yaku/ryuuiisou", config: %{han: "★"}},
+  %{name: "lib/yaku/chuurenpoutou", config: %{han: "★", junsei_han: "★", junsei_list: "yakuman", junsei_value: 2, list: "yakuman", value: 1 } },
+  %{name: "lib/yaku/kokushi", config: %{han: "★", juusan_han: "★", juusan_list: "yakuman", juusan_value: 2, list: "yakuman", value: 1 } },
+  %{name: "lib/yaku/shousuushii", config: %{dai_han: "★", dai_list: "yakuman", dai_value: 2, shou_han: "★", shou_list: "yakuman", shou_value: 1 } },
+  %{name: "lib/yaku/suukantsu", config: %{han: "★", value: 1}},
   %{name: "honba", config: %{value: 100}},
   %{name: "nagashi", config: %{is: "Mangan", counts_as: "draw"}},
   %{name: "lib/tobi", config: %{below: 0}},
@@ -653,8 +630,33 @@ define_preset "tenhou.net", [
 ]
 define_preset "Riichi City", [
   "lib/yaku/menzentsumo",
-  %{name: "lib/yaku/riichi", config: %{bet: 1000, drawless: false, double_value: 2}},
-  "lib/yaku/ippatsu", "lib/yaku/chankan", "lib/yaku/rinshan", "lib/yaku/haitei", "lib/yaku/pinfu", "lib/yaku/tanyao", "lib/yaku/iipeikou", "lib/yaku/yakuhai", "lib/yaku/chiitoitsu", "lib/yaku/chanta", "lib/yaku/ittsuu", "lib/yaku/sanshoku_doujun", "lib/yaku/sanshoku_doukou", "lib/yaku/sankantsu", "lib/yaku/toitoi", "lib/yaku/sanankou", "lib/yaku/shousangen", "lib/yaku/honroutou", "lib/yaku/honitsu", "lib/yaku/tenhou", "lib/yaku/tsuuiisou", "lib/yaku/ryuuiisou", "lib/yaku/chuurenpoutou", "lib/yaku/kokushi", "lib/yaku/shousuushii", "lib/yaku/suukantsu",
+  %{name: "lib/yaku/riichi", config: %{bet: 1000, drawless: true}},
+  "lib/yaku/ippatsu",
+  "lib/yaku/chankan",
+  %{name: "lib/yaku/rinshan", config: %{value: 1}},
+  %{name: "lib/yaku/haitei", config: %{haitei_value: 1, houtei_value: 1} },
+  %{name: "lib/yaku/pinfu", config: %{value: 1}},
+  %{name: "lib/yaku/tanyao", config: %{closed_only: false}},
+  %{name: "lib/yaku/iipeikou", config: %{ii_value: 1, ryan_value: 3}},
+  %{name: "lib/yaku/yakuhai", config: %{white_name: "Haku", green_name: "Hatsu", red_name: "Chun"}},
+  %{name: "lib/yaku/chiitoitsu", config: %{kansai: false, name: "Chiitoitsu", value: 2} },
+  %{name: "lib/yaku/chanta", config: %{chanta_value: 1, closed_bonus: 1, junchan_value: 2} },
+  %{name: "lib/yaku/ittsuu", config: %{closed_bonus: 1}},
+  %{name: "lib/yaku/sanshoku_doujun", config: %{closed_bonus: 1, value: 1} },
+  %{name: "lib/yaku/sanshoku_doukou", config: %{value: 2}},
+  %{name: "lib/yaku/sankantsu", config: %{value: 2}},
+  %{name: "lib/yaku/toitoi", config: %{value: 2}},
+  %{name: "lib/yaku/sanankou", config: %{san_value: 2, suu_han: "★", suu_list: "yakuman", suu_tanki_value: 2, suu_value: 1 } },
+  %{name: "lib/yaku/shousangen", config: %{dai_han: "★", dai_list: "yakuman", dai_value: 1, shou_value: 2 } },
+  %{name: "lib/yaku/honroutou", config: %{chin_han: "★", chin_list: "yakuman", chin_value: 1, hon_value: 2 } },
+  %{name: "lib/yaku/honitsu", config: %{chin_value: 5, closed_bonus: 1, hon_value: 2} },
+  %{name: "lib/yaku/tenhou", config: %{chiihou_is_tsumo: true, chiihou_list: "yakuman", chiihou_value: 1, chiihou_han: "★", tenhou_list: "yakuman", tenhou_value: 1, tenhou_han: "★" } },
+  %{name: "lib/yaku/tsuuiisou", config: %{han: "★"}},
+  %{name: "lib/yaku/ryuuiisou", config: %{han: "★"}},
+  %{name: "lib/yaku/chuurenpoutou", config: %{han: "★", junsei_han: "★", junsei_list: "yakuman", junsei_value: 2, list: "yakuman", value: 1 } },
+  %{name: "lib/yaku/kokushi", config: %{han: "★", juusan_han: "★", juusan_list: "yakuman", juusan_value: 2, list: "yakuman", value: 1 } },
+  %{name: "lib/yaku/shousuushii", config: %{dai_han: "★", dai_list: "yakuman", dai_value: 2, shou_han: "★", shou_list: "yakuman", shou_value: 1 } },
+  %{name: "lib/yaku/suukantsu", config: %{han: "★", value: 1}},
   %{name: "honba", config: %{value: 100}},
   %{name: "nagashi", config: %{is: "Mangan", counts_as: "draw"}},
   %{name: "lib/tobi", config: %{below: 0}},
@@ -687,8 +689,33 @@ define_preset "Riichi City", [
 # amatsuki rules seem to be a clone of mahjong soul rules
 define_preset "Amatsuki Mahjong", [
   "lib/yaku/menzentsumo",
-  %{name: "lib/yaku/riichi", config: %{bet: 1000, drawless: false, double_value: 2}},
-  "lib/yaku/ippatsu", "lib/yaku/chankan", "lib/yaku/rinshan", "lib/yaku/haitei", "lib/yaku/pinfu", "lib/yaku/tanyao", "lib/yaku/iipeikou", "lib/yaku/yakuhai", "lib/yaku/chiitoitsu", "lib/yaku/chanta", "lib/yaku/ittsuu", "lib/yaku/sanshoku_doujun", "lib/yaku/sanshoku_doukou", "lib/yaku/sankantsu", "lib/yaku/toitoi", "lib/yaku/sanankou", "lib/yaku/shousangen", "lib/yaku/honroutou", "lib/yaku/honitsu", "lib/yaku/tenhou", "lib/yaku/tsuuiisou", "lib/yaku/ryuuiisou", "lib/yaku/chuurenpoutou", "lib/yaku/kokushi", "lib/yaku/shousuushii", "lib/yaku/suukantsu",
+  %{name: "lib/yaku/riichi", config: %{bet: 1000, drawless: true}},
+  "lib/yaku/ippatsu",
+  "lib/yaku/chankan",
+  %{name: "lib/yaku/rinshan", config: %{value: 1}},
+  %{name: "lib/yaku/haitei", config: %{haitei_value: 1, houtei_value: 1} },
+  %{name: "lib/yaku/pinfu", config: %{value: 1}},
+  %{name: "lib/yaku/tanyao", config: %{closed_only: false}},
+  %{name: "lib/yaku/iipeikou", config: %{ii_value: 1, ryan_value: 3}},
+  %{name: "lib/yaku/yakuhai", config: %{white_name: "Haku", green_name: "Hatsu", red_name: "Chun"}},
+  %{name: "lib/yaku/chiitoitsu", config: %{kansai: false, name: "Chiitoitsu", value: 2} },
+  %{name: "lib/yaku/chanta", config: %{chanta_value: 1, closed_bonus: 1, junchan_value: 2} },
+  %{name: "lib/yaku/ittsuu", config: %{closed_bonus: 1}},
+  %{name: "lib/yaku/sanshoku_doujun", config: %{closed_bonus: 1, value: 1} },
+  %{name: "lib/yaku/sanshoku_doukou", config: %{value: 2}},
+  %{name: "lib/yaku/sankantsu", config: %{value: 2}},
+  %{name: "lib/yaku/toitoi", config: %{value: 2}},
+  %{name: "lib/yaku/sanankou", config: %{san_value: 2, suu_han: "★", suu_list: "yakuman", suu_tanki_value: 2, suu_value: 1 } },
+  %{name: "lib/yaku/shousangen", config: %{dai_han: "★", dai_list: "yakuman", dai_value: 1, shou_value: 2 } },
+  %{name: "lib/yaku/honroutou", config: %{chin_han: "★", chin_list: "yakuman", chin_value: 1, hon_value: 2 } },
+  %{name: "lib/yaku/honitsu", config: %{chin_value: 5, closed_bonus: 1, hon_value: 2} },
+  %{name: "lib/yaku/tenhou", config: %{chiihou_is_tsumo: true, chiihou_list: "yakuman", chiihou_value: 1, chiihou_han: "★", tenhou_list: "yakuman", tenhou_value: 1, tenhou_han: "★" } },
+  %{name: "lib/yaku/tsuuiisou", config: %{han: "★"}},
+  %{name: "lib/yaku/ryuuiisou", config: %{han: "★"}},
+  %{name: "lib/yaku/chuurenpoutou", config: %{han: "★", junsei_han: "★", junsei_list: "yakuman", junsei_value: 2, list: "yakuman", value: 1 } },
+  %{name: "lib/yaku/kokushi", config: %{han: "★", juusan_han: "★", juusan_list: "yakuman", juusan_value: 2, list: "yakuman", value: 1 } },
+  %{name: "lib/yaku/shousuushii", config: %{dai_han: "★", dai_list: "yakuman", dai_value: 2, shou_han: "★", shou_list: "yakuman", shou_value: 1 } },
+  %{name: "lib/yaku/suukantsu", config: %{han: "★", value: 1}},
   %{name: "honba", config: %{value: 100}},
   %{name: "nagashi", config: %{is: "Mangan", counts_as: "draw"}},
   %{name: "lib/tobi", config: %{below: 0}},
@@ -718,8 +745,33 @@ define_preset "Amatsuki Mahjong", [
 ]
 define_preset "WRC 2022", [
   "lib/yaku/menzentsumo",
-  %{name: "lib/yaku/riichi", config: %{bet: 1000, drawless: false, double_value: 2}},
-  "lib/yaku/ippatsu", "lib/yaku/chankan", "lib/yaku/rinshan", "lib/yaku/haitei", "lib/yaku/pinfu", "lib/yaku/tanyao", "lib/yaku/iipeikou", "lib/yaku/yakuhai", "lib/yaku/chiitoitsu", "lib/yaku/chanta", "lib/yaku/ittsuu", "lib/yaku/sanshoku_doujun", "lib/yaku/sanshoku_doukou", "lib/yaku/sankantsu", "lib/yaku/toitoi", "lib/yaku/sanankou", "lib/yaku/shousangen", "lib/yaku/honroutou", "lib/yaku/honitsu", "lib/yaku/tenhou", "lib/yaku/tsuuiisou", "lib/yaku/ryuuiisou", "lib/yaku/chuurenpoutou", "lib/yaku/kokushi", "lib/yaku/shousuushii", "lib/yaku/suukantsu",
+  %{name: "lib/yaku/riichi", config: %{bet: 1000, drawless: true}},
+  "lib/yaku/ippatsu",
+  "lib/yaku/chankan",
+  %{name: "lib/yaku/rinshan", config: %{value: 1}},
+  %{name: "lib/yaku/haitei", config: %{haitei_value: 1, houtei_value: 1} },
+  %{name: "lib/yaku/pinfu", config: %{value: 1}},
+  %{name: "lib/yaku/tanyao", config: %{closed_only: false}},
+  %{name: "lib/yaku/iipeikou", config: %{ii_value: 1, ryan_value: 3}},
+  %{name: "lib/yaku/yakuhai", config: %{white_name: "Haku", green_name: "Hatsu", red_name: "Chun"}},
+  %{name: "lib/yaku/chiitoitsu", config: %{kansai: false, name: "Chiitoitsu", value: 2} },
+  %{name: "lib/yaku/chanta", config: %{chanta_value: 1, closed_bonus: 1, junchan_value: 2} },
+  %{name: "lib/yaku/ittsuu", config: %{closed_bonus: 1}},
+  %{name: "lib/yaku/sanshoku_doujun", config: %{closed_bonus: 1, value: 1} },
+  %{name: "lib/yaku/sanshoku_doukou", config: %{value: 2}},
+  %{name: "lib/yaku/sankantsu", config: %{value: 2}},
+  %{name: "lib/yaku/toitoi", config: %{value: 2}},
+  %{name: "lib/yaku/sanankou", config: %{san_value: 2, suu_han: "★", suu_list: "yakuman", suu_tanki_value: 2, suu_value: 1 } },
+  %{name: "lib/yaku/shousangen", config: %{dai_han: "★", dai_list: "yakuman", dai_value: 1, shou_value: 2 } },
+  %{name: "lib/yaku/honroutou", config: %{chin_han: "★", chin_list: "yakuman", chin_value: 1, hon_value: 2 } },
+  %{name: "lib/yaku/honitsu", config: %{chin_value: 5, closed_bonus: 1, hon_value: 2} },
+  %{name: "lib/yaku/tenhou", config: %{chiihou_is_tsumo: true, chiihou_list: "yakuman", chiihou_value: 1, chiihou_han: "★", tenhou_list: "yakuman", tenhou_value: 1, tenhou_han: "★" } },
+  %{name: "lib/yaku/tsuuiisou", config: %{han: "★"}},
+  %{name: "lib/yaku/ryuuiisou", config: %{han: "★"}},
+  %{name: "lib/yaku/chuurenpoutou", config: %{han: "★", junsei_han: "★", junsei_list: "yakuman", junsei_value: 2, list: "yakuman", value: 1 } },
+  %{name: "lib/yaku/kokushi", config: %{han: "★", juusan_han: "★", juusan_list: "yakuman", juusan_value: 2, list: "yakuman", value: 1 } },
+  %{name: "lib/yaku/shousuushii", config: %{dai_han: "★", dai_list: "yakuman", dai_value: 2, shou_han: "★", shou_list: "yakuman", shou_value: 1 } },
+  %{name: "lib/yaku/suukantsu", config: %{han: "★", value: 1}},
   %{name: "honba", config: %{value: 100}},
   %{name: "uma", config: %{_1st: 15, _2nd: 5, _3rd: -5, _4th: -15}},
   "lib/agarirenchan",
@@ -767,8 +819,33 @@ define_preset "WRC 2025", [
 ]
 define_preset "M.League", [
   "lib/yaku/menzentsumo",
-  %{name: "lib/yaku/riichi", config: %{bet: 1000, drawless: false, double_value: 2}},
-  "lib/yaku/ippatsu", "lib/yaku/chankan", "lib/yaku/rinshan", "lib/yaku/haitei", "lib/yaku/pinfu", "lib/yaku/tanyao", "lib/yaku/iipeikou", "lib/yaku/yakuhai", "lib/yaku/chiitoitsu", "lib/yaku/chanta", "lib/yaku/ittsuu", "lib/yaku/sanshoku_doujun", "lib/yaku/sanshoku_doukou", "lib/yaku/sankantsu", "lib/yaku/toitoi", "lib/yaku/sanankou", "lib/yaku/shousangen", "lib/yaku/honroutou", "lib/yaku/honitsu", "lib/yaku/tenhou", "lib/yaku/tsuuiisou", "lib/yaku/ryuuiisou", "lib/yaku/chuurenpoutou", "lib/yaku/kokushi", "lib/yaku/shousuushii", "lib/yaku/suukantsu",
+  %{name: "lib/yaku/riichi", config: %{bet: 1000, drawless: true}},
+  "lib/yaku/ippatsu",
+  "lib/yaku/chankan",
+  %{name: "lib/yaku/rinshan", config: %{value: 1}},
+  %{name: "lib/yaku/haitei", config: %{haitei_value: 1, houtei_value: 1} },
+  %{name: "lib/yaku/pinfu", config: %{value: 1}},
+  %{name: "lib/yaku/tanyao", config: %{closed_only: false}},
+  %{name: "lib/yaku/iipeikou", config: %{ii_value: 1, ryan_value: 3}},
+  %{name: "lib/yaku/yakuhai", config: %{white_name: "Haku", green_name: "Hatsu", red_name: "Chun"}},
+  %{name: "lib/yaku/chiitoitsu", config: %{kansai: false, name: "Chiitoitsu", value: 2} },
+  %{name: "lib/yaku/chanta", config: %{chanta_value: 1, closed_bonus: 1, junchan_value: 2} },
+  %{name: "lib/yaku/ittsuu", config: %{closed_bonus: 1}},
+  %{name: "lib/yaku/sanshoku_doujun", config: %{closed_bonus: 1, value: 1} },
+  %{name: "lib/yaku/sanshoku_doukou", config: %{value: 2}},
+  %{name: "lib/yaku/sankantsu", config: %{value: 2}},
+  %{name: "lib/yaku/toitoi", config: %{value: 2}},
+  %{name: "lib/yaku/sanankou", config: %{san_value: 2, suu_han: "★", suu_list: "yakuman", suu_tanki_value: 2, suu_value: 1 } },
+  %{name: "lib/yaku/shousangen", config: %{dai_han: "★", dai_list: "yakuman", dai_value: 1, shou_value: 2 } },
+  %{name: "lib/yaku/honroutou", config: %{chin_han: "★", chin_list: "yakuman", chin_value: 1, hon_value: 2 } },
+  %{name: "lib/yaku/honitsu", config: %{chin_value: 5, closed_bonus: 1, hon_value: 2} },
+  %{name: "lib/yaku/tenhou", config: %{chiihou_is_tsumo: true, chiihou_list: "yakuman", chiihou_value: 1, chiihou_han: "★", tenhou_list: "yakuman", tenhou_value: 1, tenhou_han: "★" } },
+  %{name: "lib/yaku/tsuuiisou", config: %{han: "★"}},
+  %{name: "lib/yaku/ryuuiisou", config: %{han: "★"}},
+  %{name: "lib/yaku/chuurenpoutou", config: %{han: "★", junsei_han: "★", junsei_list: "yakuman", junsei_value: 2, list: "yakuman", value: 1 } },
+  %{name: "lib/yaku/kokushi", config: %{han: "★", juusan_han: "★", juusan_list: "yakuman", juusan_value: 2, list: "yakuman", value: 1 } },
+  %{name: "lib/yaku/shousuushii", config: %{dai_han: "★", dai_list: "yakuman", dai_value: 2, shou_han: "★", shou_list: "yakuman", shou_value: 1 } },
+  %{name: "lib/yaku/suukantsu", config: %{han: "★", value: 1}},
   %{name: "honba", config: %{value: 100}},
   %{name: "nagashi", config: %{is: "Mangan", counts_as: "draw"}},
   %{name: "uma", config: %{_1st: 30, _2nd: 10, _3rd: -10, _4th: -30}},

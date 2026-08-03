@@ -349,11 +349,7 @@ defmodule RiichiAdvanced.GameState.Rules do
 
     available_mods = Enum.map(mods, & &1["id"])
     starting_mods = starting_mods
-    |> Enum.map(&case &1 do
-      %{"name" => mod_name, "config" => config} -> {mod_name, config}
-      %{name: mod_name, config: config}         -> {mod_name, config}
-      mod_name when is_binary(mod_name)         -> {mod_name, nil}
-    end)
+    |> Enum.map(&ModLoader.get_mod_name_config/1)
     |> Enum.filter(fn {mod_name, _config} -> mod_name in available_mods end)
     |> Map.new()
 
@@ -365,9 +361,11 @@ defmodule RiichiAdvanced.GameState.Rules do
       category: mod["category"],
       config: Map.get(mod, "config", [])
            |> Map.new(&Map.pop(&1, "name"))
+           |> then(&Map.merge(&1, Map.get(starting_mods, mod["id"], %{}) |> Map.new(fn {name, value} -> {name, %{"values" => [value]}} end)))
            |> Map.new(fn {config_name, config} ->
                 default = get_in(starting_mods[mod["id"]][config_name])
                 default = if default == nil do Map.get(config, "default", Enum.at(config["values"], 0)) else default end
+                # IO.puts("At mod #{mod["id"]} config name #{config_name}, passed in config is #{inspect(config)} with default #{inspect(default)}")
                 config = Map.put(config, :value, default)
                 config = if default != nil do
                   config = Map.put(config, "default", default)

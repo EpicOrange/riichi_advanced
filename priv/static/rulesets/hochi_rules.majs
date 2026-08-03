@@ -1,3 +1,7 @@
+# TODO:
+# - ryuukyoku should divide riichi sticks among players; riichi sticks are never carried over to the next round
+# - not sure how different mangans combine
+
 define_base_ruleset riichi
 set display_name, "Hochi Rules (c. 1952)"
 set tutorial_link, "https://riichi.wiki/Hochi_rules"
@@ -64,10 +68,6 @@ apply append, "default_mods", [
   %{name: "lib/yaku/riichi_renhou", config: %{is: "Shoumangan"}},
 ]
 
-# TODO:
-# - ryuukyoku should divide riichi sticks among players; riichi sticks are never carried over to the next round
-# - not sure how different mangans combine
-
 on after_initialization do
   add_rule("Rules", "Tontonsen", "The game consists of two east rounds.")
   delete_rule("Rules", "Multiple Ron")
@@ -75,48 +75,4 @@ on after_initialization do
   add_rule("Rules", "Fu", "(Hochi Rules) Fu is not rounded. However, pinfu tsumo is 20 fu.")
   add_rule("Rules", "Scoring", "Scores are rounded to the nearest 10, maxing out at 1000 points (considered shoumangan, 4000/6000). Hands that are yakuman in riichi are daimangan (6000/9000), with the exception of chuurenpoutou, which is baimangan (8000/12000)")
   add_rule("Rules", "Minimum Han", "After 1 or more repeats, winning requires a minimum of 1 han.")
-
-  delete_rule("1 Han", "Pinfu")
-  add_rule("1 Han", "Pinfu", "You won off a double-sided sequence wait, with an all-sequence hand whose pair is not yakuhai.")
-  update_rule("1 Han", "Pinfu", "%{example_hand}", %{example_hand: ~t"345789m45p99s 2S34s 6p"})
-
-  delete_rule("2 Han", "Honitsu")
-  add_rule("2 Han", "Honitsu", "2 han if your hand is comprised of one suit plus honor tiles.")
-  update_rule("2 Han", "Honitsu", "%{example_hand}", %{example_hand: ~t"123345888p11z22z 2z"})
-
-  delete_rule("3+ Han", "Chinitsu")
-  add_rule("Shoumangan", "Chinitsu", "Shoumangan if your hand is comprised of one suit only (no honor tiles).")
-  update_rule("Shoumangan", "Chinitsu", "%{example_hand}", %{example_hand: ~t"1233445568889s 7s"})
-
-  delete_rule("2 Han", "Honroutou")
-  add_rule("Shoumangan", "Honroutou", "Shoumangan if your hand contains only terminal and honor tiles.")
-  update_rule("Shoumangan", "Honroutou", "%{example_hand}", %{example_hand: ~t"1233445568889s 7s"})
-
-  add_rule("Shoumangan", "Daichiishin", "Shoumangan if you have one pair of each of the seven honor tiles.")
-  update_rule("Shoumangan", "Daichiishin", "%{example_hand}", %{example_hand: ~t"1122334455667z 7z"})
-
-  delete_rule("Daimangan", "Daisuushii")
-  add_rule("Daimangan", "Daisuushii", "Daimangan if your hand contains triplets or kans of all four winds.", 2)
-  update_rule("Daimangan", "Daisuushii", "%{example_hand}", %{example_hand: ~t"22s22233444z 1z1Z1z 3z"})
-
-  delete_rule("Daimangan", "Chuurenpoutou")
-  add_rule("Baimangan", "Chuurenpoutou", "You have no calls and your winning hand is the pattern 1112345678999 in one suit, plus one additional tile.")
-  update_rule("Baimangan", "Chuurenpoutou", "%{example_hand}", %{example_hand: ~t"1112345568999s 7s"})
 end
-
-replace_yaku yaku, "Honroutou", [1, "★"]
-define_yaku yakuman, "Daichiishin", [1.5, "★"], has_existing_yaku("Chiitoitsu") and winning_hand_consists_of("1z","2z","3z","4z","5z","6z","7z"), ["Tsuuiisou"]
-replace_yaku yakuman, "Suukantsu", [1.5, "★"]
-replace_yaku yakuman, "Suuankou", [1.5, "★"]
-replace_yaku yakuman, "Daisangen", [1.5, "★"]
-replace_yaku yakuman, "Kokushi", [1.5, "★"]
-replace_yaku yakuman, "Shousuushii", [1.5, "★"]
-replace_yaku yakuman, "Daisuushii", [1.5, "★"]
-replace_yaku yakuman, "Tsuuiisou", [1.5, "★"]
-replace_yaku yakuman, "Chinroutou", [1.5, "★"]
-replace_yaku yakuman, "Tenhou", [1.5, "★"]
-replace_yaku yakuman, "Chiihou", [1.5, "★"], current_turn_is("east") and status("first_turn") and won_by_discard
-replace_yaku yakuman, "Chuurenpoutou", [2, "★"]
-remove_yaku meta_yakuman, "Suuankou Tanki"
-remove_yaku meta_yakuman, "Junsei Chuurenpoutou"
-remove_yaku meta_yakuman, "Kokushi Musou Juusan Menmachi"

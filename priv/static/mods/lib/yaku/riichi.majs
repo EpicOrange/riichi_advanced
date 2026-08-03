@@ -23,7 +23,9 @@ on after_initialization do
     end
   end
   add_rule("$value $han", !name, "%{value} %{han} for winning after declaring %{name}.", %{name: !name, value: !value, han: !han})
-  add_rule("$value $han", !double_name, "%{value} %{han} for winning after declaring %{name} on your first discard.", %{name: !name, value: !double_value, han: !han})
+  if !double_value > 0 do
+    add_rule("$value $han", !double_name, "%{value} %{han} for winning after declaring %{name} on your first discard.", %{name: !name, value: !double_value, han: !han})
+  end
   add_rule("Rules", "No Ippatsu", "Winning in the first go-around after your riichi declaration does not award Ippatsu.")
 end
  
