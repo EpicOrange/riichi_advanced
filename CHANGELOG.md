@@ -1,6 +1,24 @@
 
 # Changelog
-
+- __23 Aug 2026__: v1.5.1:
+  + Add rules tabs to relevant locations
+  + Added arishiiaru mode
+  + Added more tips
+  + Added solver support for joker kans (and nobekan)
+  + Added two jokers as riichi mods: kanchan honors and five honors
+  + Changed super bingo chips value (1000->10)
+  + Fix tenhou win removing a random tile in hand
+  + Fixed arisu mod messages
+  + Fixed log viewer to actually work
+  + Fixed scorer not showing mods and also crashing
+  + Fixed ura not showing after arisu
+  + Fixed various game crashes
+  + Fixed visual bug where winning tile is added to hand
+  + Fixed visual bug with upside-down tiles
+  + Made Fuzhou AI always call if possible
+  + Made Fuzhou mahjong and Tianjin mahjong really fast
+  + Made riichi grand cross worth 16 fu instead of 1 han
+  + Update `replace_yaku` majs command to support only replacing the value of the yaku
 - __19 Aug 2026__: v1.5.0:
   + New things
     * Added 0 as an option for riichi bets
