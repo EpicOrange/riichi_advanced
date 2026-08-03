@@ -78,17 +78,10 @@ defmodule RiichiAdvanced.GameState.Payment do
   
   # populates a new entry in state.txns using scoring_logic
   def run_scoring_logic(state, cxt) when is_map_key(cxt, :scoring_key) and cxt.scoring_key != nil do
-    # sort players into atamahane order
-    players = Enum.sort_by(state.players, fn
-      {nil, _} -> 5
-      {seat, _} -> case Utils.get_relative_seat(cxt.seat, seat) do
-        :shimocha -> 1
-        :toimen -> 2
-        :kamicha -> 3
-        _ -> 4
-      end
-    end)
+    winner_seat = cxt.seat
 
+    # sort players into atamahane order
+    players = Enum.sort_by(state.players, fn {seat, _} -> Utils.atamahane_order(winner_seat, Utils.next_turn(seat)) end)
     score_rules = Rules.get(state.rules_ref, "score_calculation", %{})
 
     # for each player responsible for a yaku that is in cxt.yaku,
@@ -102,11 +95,11 @@ defmodule RiichiAdvanced.GameState.Payment do
     # IO.inspect(all_mentioned_yaku, label: "all_mentioned_yaku")
     # IO.inspect(unmentioned_yaku, label: "unmentioned_yaku")
     for {payer, player} <- players,
-        payer != cxt.seat,
-        {seat, yakus} <- player.responsibilities,
-        seat == cxt.seat,
+        payer != winner_seat,
+        Map.has_key?(player.responsibilities, winner_seat),
         reduce: state do
       state ->
+        yakus = player.responsibilities[winner_seat]
         # IO.inspect(yakus, label: "#{seat} responsibilities")
         # modify the points and yaku to only be for the ones payer is responsible for
         new_yaku = Enum.flat_map(yakus, &cond do
@@ -128,13 +121,13 @@ defmodule RiichiAdvanced.GameState.Payment do
           |> Enum.reduce([], &Scoring.add_yaku_values/2)
 
           # create an empty txn
-          txn_name = case Utils.get_relative_seat(seat, payer) do
+          txn_name = case Utils.get_relative_seat(winner_seat, payer) do
             :self     -> "From self"
             :shimocha -> "From right"
             :toimen   -> "From across"
             :kamicha  -> "From left"
           end
-          txn = %Transaction{name: txn_name, from: payer, to: seat, line_items: []}
+          txn = %Transaction{name: txn_name, from: payer, to: winner_seat, line_items: []}
           state = update_in(state.txns, &[txn | &1])
 
           # run scoring_logic to populate this new txn with line items
@@ -142,13 +135,14 @@ defmodule RiichiAdvanced.GameState.Payment do
           state = if scoring_logic_actions != nil do
             cxt = Map.merge(cxt, %{
               seat: payer,
+              winner_seat: winner_seat,
               yaku: new_yaku,
               points: Utils.get_from_points_list(new_points, score_rules["point_name"]),
               points2: Utils.get_from_points_list(new_points, score_rules["point2_name"]),
               shuugi: Utils.get_from_points_list(new_points, score_rules["shuugi_name"]),
             })
             # add cxt as a winner object before evaluating scoring_logic
-            state = update_in(state, [Access.key(:winners, %{}), Access.key(seat, %{})], &Map.merge(cxt, &1))
+            state = update_in(state, [Access.key(:winners, %{}), Access.key(winner_seat, nil)], &Map.merge(cxt, &1))
             |> Actions.run_actions(scoring_logic_actions, cxt)
             state
           else

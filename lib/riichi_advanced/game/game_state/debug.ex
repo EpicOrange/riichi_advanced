@@ -22,6 +22,8 @@ defmodule RiichiAdvanced.GameState.Debug do
   @debug_cache false
   @print_mods false
   @print_smt false
+  @print_txns true
+  @print_all_actions false
   @skip_ruleset_caching false
   @print_wins false
 
@@ -45,6 +47,8 @@ defmodule RiichiAdvanced.GameState.Debug do
   def debug_cache, do: Process.get(:ignore_type_error, @debug_cache)
   def print_mods, do: Process.get(:ignore_type_error, @print_mods)
   def print_smt, do: Process.get(:ignore_type_error, @print_smt)
+  def print_txns, do: Process.get(:ignore_type_error, @print_txns)
+  def print_all_actions, do: Process.get(:ignore_type_error, @print_all_actions)
   def print_wins, do: Process.get(:ignore_type_error, @print_wins)
   def skip_ruleset_caching, do: Process.get(:ignore_type_error, @skip_ruleset_caching)
 

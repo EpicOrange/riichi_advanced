@@ -1200,6 +1200,10 @@ defmodule RiichiAdvanced.GameState do
   end
 
   def broadcast_state_change(state, postprocess \\ false) do
+    state = if state.round_result == :win or state.round_result == :continue do
+      seat = Enum.at(state.winner_seats, state.winner_index)
+      Kyoku.process_new_winner(state, seat)
+    else state end
     if postprocess do send_async_tasks(state) end
     # IO.puts("broadcast_state_change called")
     RiichiAdvancedWeb.Endpoint.broadcast(state.ruleset <> ":" <> state.room_code, "state_updated", %{"state" => state})
@@ -1958,6 +1962,7 @@ defmodule RiichiAdvanced.GameState do
         state = Map.put(state, :timer, state.timer - 1)
         state
     end
+    # TODO shouldn't have to broadcast whole state just for timer ticks
     state = broadcast_state_change(state)
     {:noreply, state}
   end

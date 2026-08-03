@@ -170,7 +170,7 @@ defmodule RiichiAdvanced.GameState.Conditions do
         if last_call_action != nil do last_call_action.from else context.seat end
       "prev_seat" -> Map.get(context, :prev_seat, context.seat)
       "last_seat" -> Map.get(context, :prev_seat, context.seat)
-      "winner"    -> Map.get(context, :winner, Map.get(context, :winner_seat, nil))
+      "winner"    -> Map.get(context, :winner_seat, Enum.at(state.winner_seats, state.winner_index, context.seat))
       _ ->
         IO.puts("Invalid seat spec #{inspect(seat_spec)}!")
         context.seat
@@ -360,7 +360,11 @@ defmodule RiichiAdvanced.GameState.Conditions do
       "has_score"                -> state.players[context.seat].score >= Actions.interpret_amount(state, context, opts)
       "has_score_below"          -> state.players[context.seat].score < Actions.interpret_amount(state, context, opts)
       "round_wind_is"            ->
-        round_wind = Riichi.get_round_wind(state.kyoku, length(state.available_seats))
+        round_wind = if Rules.get(state.rules_ref, "always_east_round", false) do
+          :east
+        else
+          Riichi.get_round_wind(state.kyoku, length(state.available_seats))
+        end
         case Enum.at(opts, 0, "east") do
           "east"  -> round_wind == :east
           "south" -> round_wind == :south

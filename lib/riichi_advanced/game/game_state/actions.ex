@@ -26,7 +26,11 @@ defmodule RiichiAdvanced.GameState.Actions do
       nil -> state
       event ->
         if Debug.debug_actions() do
-          IO.puts("Triggered event #{event_name}: running #{inspect(event["actions"], charlists: :as_lists, limit: :infinity)}")
+          if Debug.print_all_actions() do
+            IO.puts("Triggered event #{event_name} for seat #{context.seat}: running #{inspect(event["actions"], charlists: :as_lists, limit: :infinity)}")
+          else
+            IO.puts("Triggered event #{event_name} for seat #{context.seat}")
+          end
         end
         run_actions(state, event["actions"], context)
     end
@@ -857,12 +861,16 @@ defmodule RiichiAdvanced.GameState.Actions do
     # - ones that we pay (from = seat) which is usually the last winner
     # - or ones that generate points for us (from = nil, to = seat)
     # find the first such txn
-    recipient = Enum.at(state.winner_seats, -1, Map.get(context, :prev_seat, context.seat))
-    to_self = recipient == context.seat
+    payer = context.seat
+    recipient = Map.get(context, :winner_seat, nil)
+    if recipient == nil do
+      Logger.error("Tried to add to a transaction outside of scoring_logic")
+    end
+    to_self = recipient == payer
     ix = if to_self do
-      Enum.find_index(state.txns, & &1.from == nil and &1.to == context.seat)
+      Enum.find_index(state.txns, & &1.from == nil and &1.to == payer)
     else
-      Enum.find_index(state.txns, & &1.from == context.seat and &1.to == recipient)
+      Enum.find_index(state.txns, & &1.from == payer and &1.to == recipient)
     end
 
     # then, update that txn with the new line item
@@ -878,7 +886,8 @@ defmodule RiichiAdvanced.GameState.Actions do
         update_in(state.txns, &[new_txn | &1])
       else
         # add one that's (from = seat, to = recipient)
-        new_txn = %Transaction{name: display_name, from: context.seat, to: context.prev_seat, line_items: [line_item]}
+        from = if context.seat == context.prev_seat do nil else context.seat end
+        new_txn = %Transaction{name: display_name, from: from, to: context.prev_seat, line_items: [line_item]}
         update_in(state.txns, &[new_txn | &1])
       end
     end
@@ -2008,12 +2017,15 @@ defmodule RiichiAdvanced.GameState.Actions do
             "append"   -> if type == :string do :append else nil end
             _          -> :set
           end
-          if key != nil and method != nil and context.seat in state.winner_seats do
+          seat = if context.seat not in state.winner_seats do
+            Enum.at(state.winner_seats, state.winner_index)
+          else context.seat end
+          if key != nil and method != nil and seat in state.winner_seats do
             value = case type do
               :number -> interpret_amount(state, context, Enum.at(opts, 1, 0))
               :string -> Enum.at(opts, 1, "")
             end
-            state = update_in(state.winners[context.seat][key], fn prev_value -> case method do
+            state = update_in(state.winners[seat][key], fn prev_value -> case method do
               :set      -> value
               :add      -> prev_value + value
               :subtract -> prev_value - value
@@ -2024,25 +2036,25 @@ defmodule RiichiAdvanced.GameState.Actions do
               :prepend  -> value <> prev_value
               :append   -> prev_value <> value
             end end)
-            new_amt = state.winners[context.seat][key]
+            new_amt = state.winners[seat][key]
             score_rules = Rules.get(state.rules_ref, "score_calculation", %{})
             point_name = score_rules["point_name"]
             point2_name = score_rules["point2_name"]
             # update total_points if points or points2 changed
             state = case key do
-              :points -> update_in(state.winners[context.seat].total_points, &Scoring.update_yaku_amount(&1, point_name, new_amt))
-              :points2 -> update_in(state.winners[context.seat].total_points, &Scoring.update_yaku_amount(&1, point2_name, new_amt))
-              :point_name -> update_in(state.winners[context.seat].total_points, &Scoring.update_yaku_unit(&1, point_name, new_amt))
-              :point2_name -> update_in(state.winners[context.seat].total_points, &Scoring.update_yaku_unit(&1, point2_name, new_amt))
+              :points -> update_in(state.winners[seat].total_points, &Scoring.update_yaku_amount(&1, point_name, new_amt))
+              :points2 -> update_in(state.winners[seat].total_points, &Scoring.update_yaku_amount(&1, point2_name, new_amt))
+              :point_name -> update_in(state.winners[seat].total_points, &Scoring.update_yaku_unit(&1, point_name, new_amt))
+              :point2_name -> update_in(state.winners[seat].total_points, &Scoring.update_yaku_unit(&1, point2_name, new_amt))
               _ -> state
             end
             # also update right_display if it changed
             if score_rules["right_display"] == Enum.at(opts, 0, nil) do
               case score_rules["right_display"] do
-                "points"       -> put_in(state.winners[context.seat].right_display, new_amt)
-                "points2"      -> put_in(state.winners[context.seat].right_display, new_amt)
-                "shuugi"       -> put_in(state.winners[context.seat].right_display, new_amt)
-                "minipoints"   -> put_in(state.winners[context.seat].right_display, new_amt)
+                "points"       -> put_in(state.winners[seat].right_display, new_amt)
+                "points2"      -> put_in(state.winners[seat].right_display, new_amt)
+                "shuugi"       -> put_in(state.winners[seat].right_display, new_amt)
+                "minipoints"   -> put_in(state.winners[seat].right_display, new_amt)
               end
             else state end
             state
@@ -2221,7 +2233,7 @@ defmodule RiichiAdvanced.GameState.Actions do
   end
 
   def run_actions(state, actions, context) do
-    if Debug.debug_actions() do
+    if Debug.print_all_actions() do
       if (Enum.empty?(actions) or (actions |> Enum.at(0) |> Enum.at(0)) not in ["when", "sort_hand", "unset_status"]) do
         IO.puts("Running actions #{inspect(actions, limit: :infinity)} in context #{inspect(context, limit: :infinity)}")
       end
@@ -2245,7 +2257,7 @@ defmodule RiichiAdvanced.GameState.Actions do
   def run_deferred_actions(state, seat) do
     context_actions = state.players[seat].deferred_context_actions
     if state.game_active and not Enum.empty?(context_actions) do
-      state = update_player(state, seat, &%{ &1 | choice: nil, deferred_context_actions: [] })
+      state = update_player(state, seat, &%{ &1 | deferred_context_actions: [] })
       for {context, actions} <- context_actions, reduce: state do
         state ->
           if Debug.debug_actions() do
@@ -2289,96 +2301,104 @@ defmodule RiichiAdvanced.GameState.Actions do
   end
 
   # triggered when all players' choices are non-nil
+  defp adjudicate_actions(state) when not state.game_active do
+    if Debug.debug_actions() do
+      IO.puts("Tried to adjudicate_actions, but game is not active")
+    end
+    state
+  end
   defp adjudicate_actions(state) do
-    if state.game_active do
-      lock = Mutex.await(state.mutex, __MODULE__)
+    lock = Mutex.await(state.mutex, __MODULE__)
 
-      if Debug.debug_actions() do
-        IO.puts("\nAdjudicating actions! Choices: #{inspect(Map.new(state.players, fn {seat, player} -> {seat, player.choice} end))}")
-        # IO.puts("Button choices: #{inspect(Map.new(state.players, fn {seat, player} -> {seat, player.button_choices} end))}")
-      end
-      # clear ai thinking and last discard
-      state = update_all_players(state, fn _seat, player -> %{ player | ai_thinking: false, last_discard: nil } end)
-      # trigger all choices that aren't "skip", in atamahane order
+    if Debug.debug_actions() do
+      IO.puts("\nAdjudicating actions! Choices: #{inspect(Map.new(state.players, fn {seat, player} -> {seat, player.choice} end))}")
+      # IO.puts("Button choices: #{inspect(Map.new(state.players, fn {seat, player} -> {seat, player.button_choices} end))}")
+    end
+    # clear ai thinking and last discard
+    state = update_all_players(state, fn _seat, player -> %{ player | ai_thinking: false, last_discard: nil } end)
+    # trigger all choices that aren't "skip", in atamahane order
 
-      sorted_players = state.players
-      |> Enum.sort_by(fn {seat, _player} -> Utils.atamahane_order(state.turn, seat) end)
-      state = for {seat, player} <- sorted_players, reduce: state do
-        state ->
-          choice = player.choice
-          # don't clear deferred actions here
-          # for example, someone might play a tile and have advance_turn interrupted by their own button
-          # if they choose to skip, we still want to advance turn
-          # also don't clear buttons here!! buttons are only cleared by player and in evaluate_choices
-          state = update_player(state, seat, fn player -> %{ player | choice: nil } end)
-          state = if choice != nil and choice.name != "skip" do
-            actions = choice.chosen_actions
-            button_choices = player.button_choices
-            button_choice = if button_choices != nil do Map.get(button_choices, choice.name, nil) else nil end
-            case button_choice do
-              {:call, _call_choices} ->
-                if Debug.debug_actions() do
-                  IO.puts("Running call actions for #{seat}: #{inspect(actions)}")
-                end
+    sorted_players = state.players
+    |> Enum.sort_by(fn {seat, _player} -> Utils.atamahane_order(state.turn, seat) end)
+    state = for {seat, player} <- sorted_players, reduce: state do
+      state ->
+        choice = player.choice
+        # don't clear deferred actions here
+        # for example, someone might play a tile and have advance_turn interrupted by their own button
+        # if they choose to skip, we still want to advance turn
+        # also don't clear buttons here!! buttons are only cleared by player and in evaluate_choices
+        state = update_player(state, seat, fn player -> %{ player | choice: nil } end)
+        state = if choice != nil and choice.name != "skip" do
+          if Debug.debug_actions() do
+            IO.puts("Running choices for seat #{seat} (prev: #{choice.name})")
+          end
+          actions = choice.chosen_actions
+          button_choices = player.button_choices
+          button_choice = if button_choices != nil do Map.get(button_choices, choice.name, nil) else nil end
+          case button_choice do
+            {:call, _call_choices} ->
+              if Debug.debug_actions() do
+                IO.puts("Running call actions for #{seat}: #{inspect(actions)}")
+              end
 
-                # run before_call actions
-                callee = state.turn
-                state = trigger_event(state, "before_call", %{seat: state.turn, callee: callee, caller: seat})
+              # run before_call actions
+              callee = state.turn
+              state = trigger_event(state, "before_call", %{seat: state.turn, callee: callee, caller: seat})
 
-                state = run_actions(state, actions, %{seat: seat, choice: choice})
+              state = run_actions(state, actions, %{seat: seat, choice: choice})
 
-                # run after_call actions
-                state = trigger_event(state, "after_call", %{seat: state.turn, callee: callee, caller: seat})
+              # run after_call actions
+              state = trigger_event(state, "after_call", %{seat: state.turn, callee: callee, caller: seat})
 
-                state
-              {:mark, mark_spec, pre_actions, post_actions, cancel_actions} ->
-                # run pre-mark actions
-                if Debug.debug_actions() do
-                  IO.puts("Running pre-mark actions for #{seat}: #{inspect(pre_actions)}")
-                end
-                state = run_actions(state, pre_actions, %{seat: seat})
-                # setup marking
-                buttons = Rules.get(state.rules_ref, "buttons", %{})
-                cancellable = Map.get(buttons[choice.name], "cancellable", true)
-                state = Marking.setup_marking(state, seat, mark_spec, cancellable, post_actions, cancel_actions)
-                if Debug.debug_actions() do
-                  IO.puts("Scheduling mark actions for #{seat}: #{inspect(actions)}")
-                end
-                state = schedule_actions(state, seat, [{%{seat: seat}, actions}])
-                state
-              _ ->
-                # just run all button actions as normal
-                if Debug.debug_actions() do
-                  IO.puts("Running actions for #{seat}: #{inspect(actions)}")
-                end
-                state = run_actions(state, actions, %{seat: seat})
-                state
-            end
-          else state end
-          state
-      end
-
-      # done with all choices
-      state = if not performing_intermediate_action?(state) do
-        notify_ai(state)
+              state
+            {:mark, mark_spec, pre_actions, post_actions, cancel_actions} ->
+              # run pre-mark actions
+              if Debug.debug_actions() do
+                IO.puts("Running pre-mark actions for #{seat}: #{inspect(pre_actions)}")
+              end
+              state = run_actions(state, pre_actions, %{seat: seat})
+              # setup marking
+              buttons = Rules.get(state.rules_ref, "buttons", %{})
+              cancellable = Map.get(buttons[choice.name], "cancellable", true)
+              state = Marking.setup_marking(state, seat, mark_spec, cancellable, post_actions, cancel_actions)
+              if Debug.debug_actions() do
+                IO.puts("Scheduling mark actions for #{seat}: #{inspect(actions)}")
+              end
+              state = schedule_actions(state, seat, [{%{seat: seat}, actions}])
+              state
+            _ ->
+              # just run all button actions as normal
+              if Debug.debug_actions() do
+                IO.puts("Running #{choice.name} actions for #{seat}: #{inspect(actions)}")
+              end
+              state = run_actions(state, actions, %{seat: seat})
+              state
+          end
+        else state end
         state
-      else state end
+    end
 
-      Mutex.release(state.mutex, lock)
-      # IO.puts("Done adjudicating actions!\n")
-
-      # after releasing mutex, check if new choices exist
-      # this is possible if actions pressed buttons or played tiles, for example
-      state = if Enum.any?(state.players, fn {_seat, player} -> player.choice != nil end) do
-        adjudicate_actions(state)
-      else state end
-
-      # ensure playable_indices is populated for the current player
-      # this also notifies ai marking once :set_playable_indices is received
-      state = broadcast_state_change(state, true)
-
+    # done with all choices
+    state = if not performing_intermediate_action?(state) do
+      notify_ai(state)
       state
     else state end
+
+    Mutex.release(state.mutex, lock)
+    # IO.puts("Done adjudicating actions!\n")
+
+    # after releasing mutex, check if new choices exist
+    # this is possible if actions pressed buttons or played tiles, for example
+    state = if Enum.any?(state.players, fn {_seat, player} -> player.choice != nil end) do
+      state = adjudicate_actions(state)
+      state
+    else state end
+
+    # ensure playable_indices is populated for the current player
+    # this also notifies ai marking once :set_playable_indices is received
+    state = broadcast_state_change(state, true)
+
+    state
   end
 
   def performing_intermediate_action?(state) do
@@ -2411,12 +2431,12 @@ defmodule RiichiAdvanced.GameState.Actions do
       state -> cond do
         seat == state.turn and (turn_just_acted or (turn_just_discarded and not extra_turn)) and Enum.empty?(player.buttons) and not performing_intermediate_action?(state, seat) ->
           if Debug.debug_actions() do
-            IO.puts("Player #{seat} must skip due to having just discarded")
+            IO.puts("Player #{seat} must skip due to having just discarded (prev choice: #{get_in(state.players[seat].choice.name) || "nil"})")
           end
           update_player(state, seat, &%{ &1 | choice: %Choice{ name: "skip" } })
         seat != state.turn and player.choice == nil and Enum.empty?(player.buttons) and not performing_intermediate_action?(state, seat) ->
           if Debug.debug_actions() do
-            IO.puts("Player #{seat} must skip due to having no buttons")
+            IO.puts("Player #{seat} must skip due to having no buttons (prev choice: #{get_in(state.players[seat].choice.name) || "nil"})")
           end
           update_player(state, seat, &%{ &1 | choice: %Choice{ name: "skip" } })
         true -> state
@@ -2499,6 +2519,9 @@ defmodule RiichiAdvanced.GameState.Actions do
         if state.game_active and not from_deferred_actions do
           # IO.puts("All choices are no-ops, running deferred actions")
           state = resume_deferred_actions(state)
+          if Debug.debug_actions() do
+            IO.puts("Clearing choices for all seats")
+          end
           state = update_all_players(state, fn _seat, player -> %{ player | choice: nil } end)
           GenServer.cast(self(), :calculate_playable_indices) # need to newly calculate playable indices
           state = broadcast_state_change(state, false)

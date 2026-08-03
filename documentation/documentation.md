@@ -576,13 +576,12 @@ Here is the basic event lifecycle for each round:
 - (game starts, button calculations / interrupts are now active)
 - (either a draw or a winner is declared)
 - On a win:
-  + `before_win`
-  + `before_scoring`
-  + `after_win`
-  + `after_scoring`
-  + `before_continue` (if bloody end rules are enabled)
+  + `before_win`, then `before_scoring` (for each winner)
+  + `after_win` (for each winner)
+  + `after_scoring` (for each winner)
 - On a draw (or after 3 players win in bloody end rules):
-  + `before_exhaustive_draw`/`before_abortive_draw`
+  + `before_exhaustive_draw` (if it was after 3 wins or if it was an exhaustive draw)
+  + `before_abortive_draw` (if it was an abortive draw)
   + `after_scoring`
 - Then one of these is run:
   - `before_continue` (if bloody end rules are enabled, and 3 players have not won yet)

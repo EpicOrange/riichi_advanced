@@ -191,22 +191,31 @@ defmodule RiichiAdvanced.GameState.Kyoku do
       Map.put(state, :round_result, if map_size(state.winners) == 3 do :win else :continue end)
     else state end
 
-    # run after_win actions, using the winner as the context
-    winner = state.winners[seat]
-    state = Actions.trigger_event(state, "after_win", %{winner | seat: winner.winner_seat})
-
-    # Push message about yaku and score
-    push_message(state, player_prefix(state, seat) ++ [
-      %{text: "scored a %{score}-point hand", vars: %{score: winner.displayed_score}},
-    ] ++ if not Enum.empty?(winner.yaku) or not Enum.empty?(winner.yaku2) do
-           [%{text: "with yaku:"}]
-           ++ Utils.print_yaku(winner.yaku)
-           ++ if Enum.empty?(winner.yaku) or Enum.empty?(winner.yaku2) do [] else [%{text: " / "}] end
-           ++ Utils.print_yaku(winner.yaku2)
-         else [] end
-    )
-
     state
+  end
+
+  # runs after_win and then broadcasts a message about the yaku
+  def process_new_winner(state, seat) do
+    if get_in(state.winners[seat].needs_after_win) == true do
+      # we just triggered a win (or nonterminating bloody end win, i.e. :continue),
+      # run after_win and push a message for the winner we're currently viewing
+      context = state.winners[seat]
+      state = Actions.trigger_event(state, "after_win", context)
+
+      # send message that prints out yaku and displayed score
+      push_message(state, player_prefix(state, context.seat) ++ [
+        %{text: "scored a %{score}-point hand", vars: %{score: context.displayed_score}},
+      ] ++ if not Enum.empty?(context.yaku) or not Enum.empty?(context.yaku2) do
+             [%{text: "with yaku:"}]
+             ++ Utils.print_yaku(context.yaku)
+             ++ if Enum.empty?(context.yaku) or Enum.empty?(context.yaku2) do [] else [%{text: " / "}] end
+             ++ Utils.print_yaku(context.yaku2)
+           else [] end
+      )
+
+      state = put_in(state.winners[seat].needs_after_win, false)
+      state
+    else state end
   end
 
   def exhaustive_draw(state, draw_name, scoring_key) do
@@ -351,14 +360,14 @@ defmodule RiichiAdvanced.GameState.Kyoku do
     score_as_dealer = "score_as_dealer" in state.players[seat].status
     if score_as_dealer do push_message(state, player_prefix(state, seat) ++ [%{text: "is treated as a dealer for scoring purposes (Ryuumonbuchi Touka)"}]) end
     is_dealer = score_as_dealer or Riichi.is_dealer?(seat, state.kyoku, state.available_seats)
-    
+
     # if we're playing bloody end, record our opponents
     opponents = if Rules.get(state.rules_ref, "bloody_end", false) do
       Enum.reject(state.available_seats, fn dir -> Map.has_key?(state.winners, dir) or dir == seat end)
     else state.available_seats -- [seat] end
 
     # place an empty winner object first, so that modify_winner actions work as intended later on
-    state = Map.update!(state, :winners, &Map.put(&1, seat, %{}))
+    state = Map.update!(state, :winners, &Map.put(&1, seat, %{seat: seat}))
     state = Map.update!(state, :winner_seats, & &1 ++ [seat])
 
     winning_tiles = [get_winning_tile(state, seat, win_source)]
@@ -403,7 +412,6 @@ defmodule RiichiAdvanced.GameState.Kyoku do
     end
 
     # create a winner object
-    score_rules = Rules.get(state.rules_ref, "score_calculation", %{})
     score = if Rules.get(state.rules_ref, "scoring_logic", nil) != nil do
       state.txns |> Enum.filter(& &1.to == seat) |> Payment.consolidate_txns(true) |> Map.get(seat, %Transaction{}) |> Payment.get_txn_result()
     else
@@ -424,6 +432,7 @@ defmodule RiichiAdvanced.GameState.Kyoku do
     separated_hand = cond do
       state.log_seeking_mode -> arranged_hand # no need to arrange hands when running tests
       state.ruleset == "american" ->
+        score_rules = Rules.get(state.rules_ref, "score_calculation", %{})
         arrange_american_yaku = Map.get(score_rules, "arrange_american_yaku", false)
         if arrange_american_yaku do
           separate_american_winner_hand(
@@ -436,10 +445,10 @@ defmodule RiichiAdvanced.GameState.Kyoku do
           Rules.translate_match_definitions(state.rules_ref, ["win"]))
     end
 
-    # player = state.players[seat]
+    score_rules = Rules.get(state.rules_ref, "score_calculation", %{})
     winner = Map.merge(cxt,
       %{
-        # player: update_in(player.cache, &%{ &1 | assigned_hand: assigned_hand, assigned_calls: assigned_calls }),
+        seat: seat,
         player: state.players[seat],
         existing_yaku: cxt.yaku ++ cxt.yaku2,
         score: score,
@@ -478,7 +487,9 @@ defmodule RiichiAdvanced.GameState.Kyoku do
         arranged_calls: state.players[seat].calls,
         # hand to show on hover in the yaku screen
         separated_hand: separated_hand,
-        separated_calls: if state.ruleset == "american" do [] else state.players[seat].calls end
+        separated_calls: if state.ruleset == "american" do [] else state.players[seat].calls end,
+        # flag to check if after_win has been called for this winner
+        needs_after_win: true,
       })
     state = Map.update!(state, :winners, &Map.put(&1, seat, Map.merge(winner, &1[seat])))
     state

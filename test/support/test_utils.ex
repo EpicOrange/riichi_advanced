@@ -109,8 +109,10 @@ defmodule RiichiAdvanced.TestUtils do
           assert seat in state.winner_seats
           errs = Enum.map(List.wrap(expected_winner), &check_winner.(seat, &1))
           if [] not in errs do
-            IO.inspect(state.txns, label: "txns", limit: :infinity)
-            IO.puts("")
+            if Debug.print_txns() do
+              IO.inspect(state.txns, label: "txns", limit: :infinity)
+              IO.puts("")
+            end
             for tuples <- errs, {k, actual, expected} <- tuples do
               IO.puts("#{k}:\n\n    #{inspect(actual)}\n\nexpected #{k}:\n\n    #{inspect(expected)}")
             end
@@ -124,7 +126,16 @@ defmodule RiichiAdvanced.TestUtils do
         Map.get(state.delta_scores, seat, 0)
       end
       if delta_scores != expected_state.delta_scores do
-        IO.inspect(state.txns, label: "txns", limit: :infinity)
+        IO.puts("")
+        if Debug.print_txns() do
+          IO.inspect(state.txns, label: "Final txns are", limit: :infinity)
+        end
+        if Debug.debug_actions() do
+          choices = for seat <- [:east, :south, :west, :north], seat in state.available_seats, into: %{} do
+            {seat, Map.get(state.delta_scores, :choice, nil)}
+          end
+          IO.inspect(choices, label: "Final choices are", limit: :infinity)
+        end
       end
       assert_list(delta_scores, expected_state.delta_scores)
     end

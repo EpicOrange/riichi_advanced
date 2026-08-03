@@ -360,9 +360,9 @@ defmodule RiichiAdvancedWeb.ScoringTestLive do
     # add manually selected yaku
     state = update_in(state.winners.east.yaku, & &1 ++ selected_yaku)
     # calculate delta_scores
-    {state, delta_scores, delta_scores_reason} = Scoring.adjudicate_win_scoring(state)
     winner = state.winners.east
-    state = Actions.trigger_event(state, "after_win", %{winner | seat: winner.winner_seat})
+    state = Actions.trigger_event(state, "after_win", winner)
+    {state, delta_scores, delta_scores_reason} = Scoring.adjudicate_win_scoring(state)
     state
     |> Map.put(:delta_scores, delta_scores)
     |> Map.put(:delta_scores_reason, delta_scores_reason)

@@ -175,7 +175,7 @@ defmodule RiichiAdvanced.GameState.Scoring do
 
       # we need to let before_win actions know about the winning tile
       #   so we store it in state.winners
-      state = Map.update!(state, :winners, &Map.put(&1, seat, %{winning_tile: winning_tile}))
+      state = Map.update!(state, :winners, &Map.update(&1, seat, %{winning_tile: winning_tile}, fn winner -> Map.put(winner, :winning_tile, winning_tile) end))
       state = update_winning_tile(state, seat, win_source, fn _ -> winning_tile end)
 
       # trigger before_win before solving for jokers
@@ -214,7 +214,6 @@ defmodule RiichiAdvanced.GameState.Scoring do
         assigned_winning_hand = assigned_hand ++ Enum.flat_map(assigned_calls, &Utils.call_to_tiles/1) ++ [assigned_winning_tile]
         cxt = %{
           seat: seat,
-          winner_seat: seat,
           win_source: win_source,
           smt_hand: smt_hand,
           smt_calls: smt_calls,
@@ -343,6 +342,7 @@ defmodule RiichiAdvanced.GameState.Scoring do
     state = Map.update!(state, :winners, &Map.new(&1, fn {seat, winner} -> {seat, Map.put(winner, :processed, true)} end))
 
     # check for sanchahou; clear winners in that case
+    # TODO replace with after_win stuff
     sanchahou = Map.get(score_rules, "triple_ron_draw", false) and map_size(winners) == 3
     winners = if sanchahou do %{} else winners end
 
@@ -414,14 +414,6 @@ defmodule RiichiAdvanced.GameState.Scoring do
       map_size(winners) == 2       -> Map.get(score_rules, "win_by_discard_name_2", Map.get(score_rules, "win_by_discard_name", "Win by Discard"))
       map_size(winners) == 3       -> Map.get(score_rules, "win_by_discard_name_3", Map.get(score_rules, "win_by_discard_name", "Win by Discard"))
     end
-
-    # run before_win actions for each new winner
-    state = if Rules.has_key?(state.rules_ref, "before_win") do
-      for {_seat, winner} <- winners, reduce: state do
-        # not sure if this is a good idea, but conveniently, winner objects can be used as a context
-        state -> Actions.trigger_event(state, "before_win", winner)
-      end
-    else state end
 
     {state, delta_scores, delta_scores_reason}
   end
