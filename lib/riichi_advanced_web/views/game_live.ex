@@ -360,7 +360,7 @@ defmodule RiichiAdvancedWeb.GameLive do
           <% end %>
         </div>
       <% end %>
-      <%= if @visible_waits != nil and @show_waits_index != nil do %>
+      <%= if @visible_waits != nil and @show_waits_index != nil and Rules.has_key?(@state.rules_ref, "show_waits") do %>
         <%= if Map.get(@visible_waits, @show_waits_index, :loading) == :loading do %>
           <div class="visible-waits-container">
             <div class="visible-waits visible-waits-loading">

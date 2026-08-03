@@ -684,7 +684,8 @@ set default_mods, [
   %{name: "kyuushu_kyuuhai", config: %{name: "Kyuushu Kyuuhai"}},
   "double_wind_4_fu",
   "yaku/riichi_renhou", "pao", "kokushi_ankan_chankan",
-  "cancellable_riichi"
+  "cancellable_riichi",
+  "show_waits"
 ]
 
 define_preset "Mahjong Soul", [
