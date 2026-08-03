@@ -7,7 +7,10 @@ require "pao_suukantsu"
 require_after "partial_furiten"
 require_after "hochi_scoring"
 
+set display_honba, true
+
 apply subtract, "default_mods", [
+  "honba",
   "dora", "ura", "kandora", "aka",
   "yaku/ippatsu",
   "nagashi",
@@ -39,6 +42,7 @@ on after_initialization do
   update_rule("Rules", "Sekinin Barai (Pao)", "(Tsuuiisou Pao) Dealing the last tile called for kan for a tsuuiisou hand also counts.")
   update_rule("Rules", "Sekinin Barai (Pao)", "(Chinroutou Pao) Dealing the last tile called for kan for a chinroutou hand also counts.")
   add_rule("Rules", "Scoring", "Scores are rounded to the nearest 10, maxing out at 1000 points (considered shoumangan, 4000/6000). Hands that are yakuman in riichi are daimangan (6000/9000), with the exception of chuurenpoutou, which is baimangan (8000/12000)")
+  add_rule("Rules", "Minimum Han", "After 1 or more repeats, winning requires a minimum of 1 han.")
 
   add_rule_tab("Shoumangan")
   add_rule_tab("Daimangan")
@@ -82,7 +86,7 @@ on after_initialization do
 end
 
 replace_yaku yaku, "Pinfu", [1, "Han"], match(["hand", "calls", "winning_tile"], ["standard_win"])
-  and ((won_by_draw and minipoints_equals(22)) or minipoints_equals(20) or minipoints_equals(30))
+  and ((won_by_draw and minipoints_equals(22)) or minipoints_equals(20))
 replace_yaku yaku, "Honroutou", [1, "★"]
 define_yaku yakuman, "Daichiishin", [1.5, "★"], has_existing_yaku("Chiitoitsu") and winning_hand_consists_of("1z","2z","3z","4z","5z","6z","7z"), ["Tsuuiisou"]
 replace_yaku yakuman, "Suukantsu", [1.5, "★"]
@@ -103,13 +107,3 @@ remove_yaku meta_yaku, "Chinitsu"
 remove_yaku meta_yakuman, "Suuankou Tanki"
 remove_yaku meta_yakuman, "Junsei Chuurenpoutou"
 remove_yaku meta_yakuman, "Kokushi Musou Juusan Menmachi"
-
-
-
-# TODO:
-# - double east round (tontonsen)
-# - on double ron, pay full to first in atamahane order, pay half to others
-# - tsuuiisou and chinroutou pao
-# - yaku tests
-# - 1 han min only when 1+ honba
-# - open pinfu allowed
