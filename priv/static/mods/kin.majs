@@ -21,7 +21,7 @@ on before_win do
   set_counter("kin", "count_matches", ["hand", "calls", "winning_tile"], ~m"nojoker, (35m 35p 35s 35t):1")
 end
 
-define_yaku yaku, "Kin", ["kin", "Han"], counter_at_least("kin", 1)
+define_yaku extra_yaku, "Kin", ["kin", "Han"], counter_at_least("kin", 1)
 
 apply set_merge, "dora_indicators", %{
   "35m": ["6m"],

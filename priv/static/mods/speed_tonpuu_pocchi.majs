@@ -3,7 +3,6 @@ remove_mod shiro_pocchi
 on after_initialization do
   add_rule("Tiles", "Shiro Pocchi", "One of the white dragons %{5z} and one of the red dragons %{7z} are replaced with shiro pocchi %{shiro_pocchi}. Shiro pocchi acts a joker tile when drawn while in riichi.", %{"5z": ~t"5z", "7z": ~t"7z", shiro_pocchi: ~T"9z 07z"}, -99)
   add_rule("Tiles", "Shiro Pocchi", "One of the green dragons %{6z} is replaced with hatsu pocchi %{hatsu_pocchi}. Hatsu pocchi acts a joker tile when drawn with an open tenpai hand.", %{"6z": ~t"6z", hatsu_pocchi: ~T"56z@green"}, -99)
-  update_rule("Rules", "Shuugi", "(Shiro Pocchi) Winning in riichi via shiro pocchi is worth 1 shuugi.")
 end
 
 replace 1, "wall", "5z", "9z"
@@ -50,6 +49,9 @@ apply set_merge, "dora_indicators", %{
   "9z": ["6z"],
 }
 
+on after_initialization do
+  add_rule("Shuugi", "Shiro Pocchi", "(Shiro Pocchi) Winning in riichi via shiro pocchi is worth 1 shuugi.")
+end
 # each pocchi gives 1 chip, regardless of whether it's used as a wildcard
 on before_win do
   if match(["hand", "calls", "winning_tile"], ~m"nojoker, 9z:1") do pocchi += 1 end

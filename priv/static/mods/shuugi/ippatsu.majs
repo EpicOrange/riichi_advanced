@@ -1,7 +1,7 @@
 
 if defined("shuugi") do
   on after_initialization do
-    add_rule("Rules", "Shuugi", "(Ippatsu) Winning by ippatsu adds %{chips} shuugi to the payment.", %{chips: !chips})
+    add_rule("Shuugi", "Ippatsu", "(Ippatsu) Winning by ippatsu adds %{chips} shuugi to the payment.", %{chips: !chips})
   end
   define_yaku shuugi, "Ippatsu", [1, "⛀"], has_existing_yaku("Ippatsu")
   def announce_shuugi_payment, append: true do

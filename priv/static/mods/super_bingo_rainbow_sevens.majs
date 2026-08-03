@@ -1,8 +1,8 @@
 on after_initialization do
-  add_rule("Tiles", "Rainbow Sevens", "(Rainbow Sevens) One %{7p} and one %{7s} are replaced by %{rainbows}.", %{"7p": ~t"7p", "7s": ~t"7s", rainbows: ~T"47p@rainbow 47s@rainbow"})
-  add_rule("Rules", "Shuugi", "(Rainbow Sevens) Each rainbow seven in a winning hand adds 10 shuugi to the payment.")
-  add_rule("Rules", "Tulips: Flipping", "- (Rainbow Sevens) A rainbow seven flipped during this process is treated as a normal seven (matches 678 of that suit) but earns twice the number of chips, that is, two chips per match.")
-  add_rule("Rules", "Tulips: Tiers", "(Rainbow Sevens) Having both rainbow sevens in your winning hand grants +1 tier (max tier is still 3).")
+  add_rule("Tiles", "Rainbow Sevens", "(Super Bingo) One %{7p} and one %{7s} are replaced by %{rainbows}.", %{"7p": ~t"7p", "7s": ~t"7s", rainbows: ~T"47p@rainbow 47s@rainbow"})
+  add_rule("Rules", "Tulips: Flipping", "- (Super Bingo) A rainbow seven flipped during this process is treated as a normal seven (matches 678 of that suit) but earns twice the number of chips, that is, two chips per match.")
+  add_rule("Rules", "Tulips: Tiers", "(Super Bingo) Having both rainbow sevens in your winning hand grants +1 tier (max tier is still 3).")
+  add_rule("Shuugi", "Rainbow Sevens", "(Super Bingo) Each rainbow seven in a winning hand adds 10 shuugi to the payment.")
 end
 
 replace 1, "wall", "7p", ["47p", "rainbow"]

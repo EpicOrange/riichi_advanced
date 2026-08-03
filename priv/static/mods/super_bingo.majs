@@ -1,56 +1,75 @@
 on after_initialization do
-  add_rule("Tiles", "Additional Sevens", "The %{manzu} are replaced with %{sevens}.", %{manzu: ~t"11119999m", sevens: ~t"7777p7777s"})
-  add_rule("Rules", "Unskippable Win", "You are not permitted to skip a winning tile.")
   delete_rule("1 Han", "Chanta")
   delete_rule("2 Han", "Junchan")
-  add_rule("3 Han", "Chanta", "3 han if each of the 5 blocks in your hand contains a terminal or honor. 4 han if closed.")
-  update_rule("3 Han", "Chanta", "%{example_hand}", %{example_hand: ~t"12379p789s77z 11p1P 8p"})
-  add_rule("4 Han", "Junchan", "2 han if each of the 5 blocks in your hand contains a terminal. 6 han if closed.")
-  update_rule("4 Han", "Junchan", "%{example_hand}", %{example_hand: ~t"12379p78999s 1P11p 8p"})
-  add_rule("6 Han", "Renhou", "6 han if you win off someone's discard before your first draw. Calls invalidate.")
+  add_rule("3+ Han", "Chanta", "(Super Bingo) 3 han if each of the 5 blocks in your hand contains a terminal or honor. 4 han if closed.")
+  update_rule("3+ Han", "Chanta", "%{example_hand}", %{example_hand: ~t"12379p789s77z 11p1P 8p"})
+  add_rule("3+ Han", "Junchan", "(Super Bingo) 4 han if each of the 5 blocks in your hand contains a terminal. 6 han if closed.")
+  update_rule("3+ Han", "Junchan", "%{example_hand}", %{example_hand: ~t"12379p78999s 1P11p 8p"})
+  add_rule("3+ Han", "Renhou", "(Super Bingo) 6 han if you win off someone's discard before your first draw. Calls invalidate.")
   delete_rule("1 Han", "Sanshoku")
   delete_rule("2 Han", "Sanshoku Doukou")
   delete_rule("Yakuman", "Kokushi Musou")
   delete_rule("Yakuman", "Kokushi Musou Juusan Menmachi")
-  add_rule("Yakuman", "Nanashi Musou", "Yakuman if your winning hand consists of one of each terminal/seven/honor tile, with another copy of one of those tiles forming a pair.")
+  add_rule("Yakuman", "Nanashi Musou", "(Super Bingo) Yakuman if your winning hand consists of one of each terminal/seven/honor tile, with another copy of one of those tiles forming a pair.")
   update_rule("Yakuman", "Nanashi Musou", "%{example_hand}", %{example_hand: ~t"799p179s1234567z 1p"})
-  add_rule("Yakuman", "Nanashi Musou Juusan Menmachi", "Double yakuman if your winning hand consists of one of each terminal/seven/honor tile and you won with a thirteen-sided wait for the pair.", 2)
+  add_rule("Yakuman", "Nanashi Musou Juusan Menmachi", "(Super Bingo) Double yakuman if your winning hand consists of one of each terminal/seven/honor tile and you won with a thirteen-sided wait for the pair.", 2)
   update_rule("Yakuman", "Nanashi Musou Juusan Menmachi", "%{example_hand}", %{example_hand: ~t"179p179s1234567z 1p"})
+
   delete_rule("2 Han", "Chiitoitsu")
-  add_rule("4 Han", "Kansai Chiitoitsu", "4 han if you win with seven pairs with a repeated pair. 8 han for two repeated pairs, yakuman for three.")
-  update_rule("4 Han", "Kansai Chiitoitsu", "%{example_hand}", %{example_hand: ~t"2266m999p4477s33z 9p"})
+  add_rule("3+ Han", "Kansai Chiitoitsu", "(Super Bingo) 4 han if you win with seven pairs with a repeated pair. 8 han for two repeated pairs, yakuman for three.")
+  update_rule("3+ Han", "Kansai Chiitoitsu", "%{example_hand}", %{example_hand: ~t"2266m999p4477s33z 9p"})
 end
 
+# replace all 1m and 9m with 7p/7s
+on after_initialization do
+  add_rule("Tiles", "Additional Sevens", "(Super Bingo) The %{manzu} are replaced with %{sevens}.", %{manzu: ~t"11119999m", sevens: ~t"7777p7777s"})
+end
 replace all, "wall", "1m", "7p"
 replace all, "wall", "9m", "7s"
 
-set initial_score, 30000
+# can't win with more than 4 sevens of a single suit
+on after_initialization do
+  add_rule("Rules", "Additional Sevens", "(Super Bingo) You may not use more than 4 of the same seven in your winning hand. If you have all 4 sevens, any potential wait on the same 7 is not counted as a wait (cannot put you in furiten).")
+end
+define_match standard_tenpai, ~m"exhaustive, (nojoker 7p):-5, (nojoker 7s):-5, mentsu:3, taatsu:1, pair:1 | exhaustive, mentsu:4, any:1"
+define_match chiitoitsu_tenpai, ~m"(nojoker koutsu):-1, (nojoker 7p):-5, (nojoker 7s):-5, pair:6, any:1"
+define_match tenpai, "standard_tenpai", "chiitoitsu_tenpai", "kokushi_tenpai"
+define_match standard_win, ~m"exhaustive, (nojoker 7p):-5, (nojoker 7s):-5, mentsu:4, pair:1"
+define_match chiitoitsu_win, ~m"(nojoker quad):-1, (nojoker 7p):-5, (nojoker 7s):-5, pair:7"
+define_match win, "standard_win", "chiitoitsu_win", "kokushi_win"
 
 # can't skip wins
+on after_initialization do
+  add_rule("Rules", "Unskippable Win", "(Super Bingo) You are not permitted to skip a winning tile.")
+end
 apply set, "buttons.ron.unskippable", true
 apply set, "buttons.tsumo.unskippable", true
 apply set, "buttons.chankan.unskippable", true
 
-# can't win with more than 4 sevens of a single suit
-apply append, "buttons.ron.show_when", not_match(["hand", "calls", "last_discard"], ~m"nojoker, 7p:5")
-apply append, "buttons.ron.show_when", not_match(["hand", "calls", "last_discard"], ~m"nojoker, 7s:5")
-apply append, "buttons.tsumo.show_when", not_match(["hand", "calls", "draw"], ~m"nojoker, 7p:5")
-apply append, "buttons.tsumo.show_when", not_match(["hand", "calls", "draw"], ~m"nojoker, 7s:5")
-apply append, "buttons.chankan.show_when", not_match(["hand", "calls", "last_called_tile"], ~m"nojoker, 7p:5")
-apply append, "buttons.chankan.show_when", not_match(["hand", "calls", "last_called_tile"], ~m"nojoker, 7s:5")
-
 # must open riichi if furiten
+on after_initialization do
+  add_rule("Rules", "Open Riichi", "(Super Bingo) If you are in furiten, then you are required to declare open riichi when possible.")
+end
 if defined("open_riichi") do
   apply set, "buttons.open_riichi.unskippable", status("furiten")
 end
 
+# kazoe is worth 2 chips
+on after_initialization do
+  add_rule("Shuugi", "Kazoe Yakuman", "(Super Bingo) Actually, kazoe yakuman awards 2 chips flat.")
+end
 on after_win do
-  # kazoe is worth 2 chips
   if points >= 13 do
     push_message("earns 2 chips for kazoe yakuman")
     shuugi_payment += 2
   end
 end
+
+# shiro pocchi can choose unseen colored variants of tiles
+on after_initialization do
+  add_rule("Rules", "Shiro Pocchi", "(Super Bingo) If you win with shiro pocchi %{9z}, it takes on the identity of any unseen tile. In particular, it can take on the identity of a red five or gold five as long as those tiles are not visible to you. (Unimplemented:) The game automatically chooses for you, with priority %{35p} >  %{05p} >  %{5p}.", %{"9z": ~t"9z", "35p": ~t"35p", "05p": ~t"05p", "5p": ~t"5p"})
+end
+# TODO
 
 define_mod_category "Super Bingo", prepend: true
 define_mod super_bingo_rainbow_sevens, name: "Rainbow Sevens", category: "Super Bingo", desc: "One of the eight 7p and one of the eight 7s is rainbow-colored. They are worth 10 shuugi each (same as how gold dora is worth 1)."
@@ -65,28 +84,8 @@ remove_mod sanma_disable_pei
 remove_mod sanma_pei_yakuhai
 remove_mod "yaku/riichi_renhou"
 
-apply append, "default_mods", ["super_bingo_rainbow_sevens", "super_bingo_grand_cross"]
-
-
-
-
-
-
-# TODO:
-
-# rules text for everything in here
-
-# Shiro-pocchi is wildcard after riichi, always. 
-# You can choose which instance of a tile it is (gold/red), as long as the
-# location of that instance of the tile isn’t known to you. i.e., if you
-# don’t see the gold 5 in anyone’s discards, or called/in your hand, and
-# you win w/ tsumo using the shiro-pocchi on a 2-5 ryanmen wait, you can
-# say that the shiro-pocchi is acting as the gold 5, and gives you those
-# benefits.
-# 
-# You can kan post-riichi, as long as it doesn’t change your wait. (It can
-# change your interpretation/yaku).
-# 
-# If your hand contains four of a seven, and your wait contains that seven
-# (i.e., 123456p4567777s waiting on 47s), then that 7 in your discards would
-# not make you furiten on your other waits.
+apply append, "default_mods", [
+  %{name: "starting_score", config: %{points: 30000}},
+  "super_bingo_rainbow_sevens",
+  "super_bingo_grand_cross",
+]

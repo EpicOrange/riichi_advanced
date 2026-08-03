@@ -2,8 +2,8 @@ on after_initialization do
   add_rule("Rules", "Nobekan", "You may kan a sequence of four number tiles. The replacement tile is drawn from the live wall. This flips kandora and can be robbed like a normal kan. When calculating yaku, either side of the nobekan can be used as a sequence. For example, 6789 can be used for both tanyao and chanta.")
   add_rule("1 Han", "Sannobekantsu", "Your hand contains three nobekans.")
   update_rule("1 Han", "Sannobekantsu", "%{example_hand}", %{example_hand: ~t"3z 567p 2345p 1234s 6789m 3z"})
-  add_rule("3 Han", "Suunobekantsu", "Your hand contains four nobekans.")
-  update_rule("3 Han", "Suunobekantsu", "%{example_hand}", %{example_hand: ~t"3z 5678p 2345p 1234s 6789m 3z"})
+  add_rule("3+ Han", "Suunobekantsu", "Your hand contains four nobekans.")
+  update_rule("3+ Han", "Suunobekantsu", "%{example_hand}", %{example_hand: ~t"3z 5678p 2345p 1234s 6789m 3z"})
 end
 
 define_set nobekan, ~s"0 1 2 3"

@@ -1,6 +1,5 @@
 on after_initialization do
   add_rule("Tiles", "Shiro Pocchi", "One of the white dragons %{5z} is replaced with a shiro pocchi %{shiro_pocchi}. Shiro pocchi acts a joker tile when drawn while in riichi.", %{"5z": ~t"5z", shiro_pocchi: ~t"9z"}, -99)
-  update_rule("Rules", "Shuugi", "(Shiro Pocchi) Winning in riichi via shiro pocchi is worth 1 shuugi.")
 end
 
 replace 1, "wall", "5z", "9z"
@@ -34,6 +33,9 @@ apply set_merge, "dora_indicators", %{
 }
 
 if defined("shuugi") do
+  on after_initialization do
+    add_rule("Shuugi", "Shiro Pocchi", "(Shiro Pocchi) Winning in riichi via shiro pocchi is worth 1 shuugi.")
+  end
   define_yaku shuugi, "Shiro Pocchi", [1, "⛀"], status("riichi", "shiro_pocchi")
 
   def announce_shuugi_payment, append: true do

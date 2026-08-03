@@ -1,6 +1,6 @@
 .after_initialization.actions += [
-  ["add_rule", "4 Han", "Chinchii Toushii", "\"Golden Rooster Steals Food\". 4 han instead of the usual 2 han if you win ketsupaihou by chankan -- that is, you robbed a kan with an edge or middle wait.", 104],
-  ["update_rule", "4 Han", "Chinchii Toushii", "%{example_hand}", {"example_hand": ["1p", "2p", "9p", "9p", "9p", "1s", "1s", "3s", "4s", "5s", "5m", "6m", "7m", "3x", "3m"]}]
+  ["add_rule", "3+ Han", "Chinchii Toushii", "\"Golden Rooster Steals Food\". 4 han instead of the usual 2 han if you win ketsupaihou by chankan -- that is, you robbed a kan with an edge or middle wait.", 104],
+  ["update_rule", "3+ Han", "Chinchii Toushii", "%{example_hand}", {"example_hand": ["1p", "2p", "9p", "9p", "9p", "1s", "1s", "3s", "4s", "5s", "5m", "6m", "7m", "3x", "3m"]}]
 ]
 |
 .meta_yaku += [

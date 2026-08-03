@@ -1,5 +1,5 @@
 on after_initialization do
-  add_rule("Rules", "Grand Cross", "You can declare NEWS (one of each wind) as a concealed kan, worth 1 han, and you draw a replacement tile from the live wall.")
+  add_rule("Rules", "Grand Cross", "(Super Bingo) You can declare NEWS (one of each wind) as a concealed kan, worth 1 han, and you draw a replacement tile from the live wall.")
   add_rule("Tiles", "Gold North", "(Super Bingo) A single gold north wind is added. This tile has no special functionality except when you use it to declare a grand cross. In that case, you are paid 20 from each player instead of 10.")
 end
 

@@ -1,5 +1,5 @@
 on after_initialization do
-  add_rule("Rules", "Shuugi", "(Tobi) If any player dips below %{tobi_below} points, the game ends and each such player pays %{chips} shuugi to every other player.", %{chips: !chips, tobi_below: @tobi_below})
+  add_rule("Shuugi", "Tobi", "(Tobi) If any player dips below %{tobi_below} points, the game ends and each such player pays %{chips} shuugi to every other player.", %{chips: !chips, tobi_below: @tobi_below})
 end
 
 on before_start, prepend: true do

@@ -1,5 +1,5 @@
 on after_initialization do
-  add_rule("Rules", "Shuugi", "(Called Game) If any player is above %{called_game_above} points, the game ends and each such player is paid %{chips} shuugi from every other player.", %{chips: !chips, called_game_above: @called_game_above})
+  add_rule("Shuugi", "Called Game", "(Called Game) If any player is above %{called_game_above} points, the game ends and each such player is paid %{chips} shuugi from every other player.", %{chips: !chips, called_game_above: @called_game_above})
 end
 
 on before_start, prepend: true do

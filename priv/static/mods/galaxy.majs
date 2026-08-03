@@ -413,7 +413,7 @@ end
 # so this is not currently possible to implement
 if defined("shuugi") do
   on after_initialization do
-    update_rule("Rules", "Shuugi", "(Galaxy Mahjong) Every galaxy tile used as its original tile awards one shuugi.")
+    update_rule("Shuugi", "Galaxy Tiles", "(Galaxy Mahjong) Every galaxy tile used as its original tile awards one shuugi.")
   end
   on before_scoring do
     set_counter("galaxy_shuugi", "count_matches", ["hand", "calls", "winning_tile"], ~m"any@original:1")
