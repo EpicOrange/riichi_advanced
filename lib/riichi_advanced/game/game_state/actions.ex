@@ -792,7 +792,7 @@ defmodule RiichiAdvanced.GameState.Actions do
   def eval_expression(state, context, ["/", [l, r]]) do
     r = eval_expression(state, context, r)
     if r != 0 do
-      eval_expression(state, context, l) / r
+      Utils.try_integer(eval_expression(state, context, l) / r)
     else
       Logger.error("WARNING: tried to divide by zero in counter_assignment")
       0
