@@ -37,6 +37,7 @@ Note: this file is for the `majs` documentation. The `json` documentation is [he
     * [Payment-related statuses](#payment-related-statuses)
   + [Calculating fu](#calculating-fu)
   + [Setting up next-round logic](#setting-up-next-round-logic)
+  + [Debugging](#debugging)
 
 # `ruleset.majs` basic concepts
 
@@ -1450,3 +1451,23 @@ For instance, this is how it's used in Riichi:
         end
       end
     end
+
+## Debugging
+
+There are a few actions useful for debugging:
+
+- `print_status(optional_seat)`
+- `print_counters(optional_seat)`
+- `print_hand(optional_seat)`
+- `print_discards(optional_seat)`
+- `print_context`
+- `print_tags`
+- `print_txns`
+
+These print the relevant information to the terminal running the server. For the first four, there is an optional seat argument where you can specify one or more seats (e.g. `print_status("everyone")`).
+
+All 7 debug actions are also usable as conditions equivalent to `true`, except evaluating them performs the debug printing.
+
+If you aren't running your own server instance, you won't be able to make much use of any of these debug utilities. However, you can still perform print-debugging via sending messages to the message log, via `push_message` described earlier.
+
+

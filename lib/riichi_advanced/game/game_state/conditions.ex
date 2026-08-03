@@ -237,10 +237,14 @@ defmodule RiichiAdvanced.GameState.Conditions do
         IO.inspect(opts)
         true
       "print_status"                ->
-        IO.inspect({context.seat, state.players[context.seat].status})
+        for seat <- from_seats_spec(state, context, Enum.at(opts, 0, "self")) do
+          IO.inspect({seat, state.players[seat].status}, charlists: :as_lists)
+        end
         state
       "print_counters"              ->
-        IO.inspect({context.seat, Map.get(state.players[context.seat].counters, Enum.at(opts, 0, "all"), 0)})
+        for seat <- from_seats_spec(state, context, Enum.at(opts, 0, "self")) do
+          IO.inspect({seat, state.players[seat].counters}, charlists: :as_lists)
+        end
         state
       "print_context"               ->
         IO.inspect(context)
@@ -249,6 +253,17 @@ defmodule RiichiAdvanced.GameState.Conditions do
         for seat <- from_seats_spec(state, context, Enum.at(opts, 0, "self")) do
           IO.inspect({seat, state.players[seat].hand, state.players[seat].draw, state.players[seat].calls}, charlists: :as_lists)
         end
+        true
+      "print_discards"         ->
+        for seat <- from_seats_spec(state, context, Enum.at(opts, 0, "self")) do
+          IO.inspect({seat, state.players[seat].discards}, charlists: :as_lists)
+        end
+        true
+      "print_tags"         ->
+        IO.inspect(state.tags, charlists: :as_lists)
+        true
+      "print_txns"         ->
+        IO.inspect(state.txns, charlists: :as_lists, limit: :infinity)
         true
       "our_turn"                    -> state.turn == context.seat
       "our_turn_is_next"            -> state.turn == if state.reversed_turn_order do Utils.next_turn(context.seat) else Utils.prev_turn(context.seat) end
