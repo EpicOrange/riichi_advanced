@@ -62,13 +62,9 @@ config :logger, LoggerFileBackend,
 
 config :riichi_advanced, RiichiAdvanced.Cache,
   gc_interval: :timer.hours(24),
-  max_size: 10000,
-  allocated_memory: 1000000000, # 1 GB
-  gc_memory_check_interval: :timer.minutes(5)
+  telemetry: false
 
 config :riichi_advanced, RiichiAdvanced.Cache.Memo,
-  gc_interval: :timer.minutes(1),
-  max_size: 1000000,
-  allocated_memory: 1000000000, # 1 GB
-  gc_memory_check_interval: :timer.seconds(10)
+  gc_interval: :timer.minutes(5),
+  telemetry: false
 
