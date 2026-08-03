@@ -155,6 +155,7 @@ __Rulesets__ (for nerds): Most of the rules can be accessed in-game by clicking 
 - Riichi variants
   + [Riichi](/documentation/riichi.md)
   + [Sanma](/documentation/sanma.md)
+  + [Space Mahjong](/documentation/space.md)
   + [Galaxy Mahjong](/documentation/galaxy.md)
   + [Chinitsu Challenge](/documentation/chinitsu_challenge.md)
   + [Zan Sanma](/documentation/Zansanma.md)
