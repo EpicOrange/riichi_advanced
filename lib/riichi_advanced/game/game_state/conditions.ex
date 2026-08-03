@@ -479,7 +479,7 @@ defmodule RiichiAdvanced.GameState.Conditions do
         tile_behavior = cxt_player.tile_behavior
         hand = cxt_player.hand
         calls = cxt_player.calls
-        waits = Match.get_waits(hand, calls, win_definitions, tile_behavior)
+        waits = Match.get_waits(hand, calls, win_definitions, tile_behavior) |> Enum.uniq_by(&Utils.strip_attrs/1)
         length(waits) >= number
       "wait_count_at_most" ->
         number = Enum.at(opts, 0, 1)
@@ -487,7 +487,7 @@ defmodule RiichiAdvanced.GameState.Conditions do
         tile_behavior = cxt_player.tile_behavior
         hand = cxt_player.hand
         calls = cxt_player.calls
-        waits = Match.get_waits(hand, calls, win_definitions, tile_behavior)
+        waits = Match.get_waits(hand, calls, win_definitions, tile_behavior) |> Enum.uniq_by(&Utils.strip_attrs/1)
         length(waits) <= number
       "call_contains" ->
         tiles = Enum.at(opts, 0, []) |> Enum.map(&Utils.to_tile(&1))
