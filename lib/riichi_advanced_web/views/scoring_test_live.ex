@@ -83,7 +83,10 @@ defmodule RiichiAdvancedWeb.ScoringTestLive do
       {:ok, _pid} = ExSMT.Solver.start_link(name: Utils.via_registry("smt_solver", "scoringtest", uuid), room_code: uuid, ruleset: "scoringtest")
       [{mutex, _}] = Utils.registry_lookup("mutex", "scoringtest", uuid)
       [{smt_solver, _}] = Utils.registry_lookup("smt_solver", "scoringtest", uuid)
-      socket = switch_to_ruleset(socket, Map.get(params, "ruleset", "riichi"))
+      socket = assign(socket, :room_state, %{ socket.assigns.room_state |
+        ruleset: "riichi",
+        room_code: uuid,
+      })
       socket = assign(socket, :state, %{ socket.assigns.state | mutex: mutex, smt_solver: smt_solver })
       messages_init = RiichiAdvanced.MessagesState.link_player_socket(socket.root_pid, socket.assigns.session_id)
       socket = if Map.has_key?(messages_init, :messages_state) do
@@ -529,25 +532,18 @@ defmodule RiichiAdvancedWeb.ScoringTestLive do
   def handle_info({:"ETS-TRANSFER", rules_ref, _from_pid, _extra}, socket) do
     # make a clone after applying config
     ruleset = Rules.get(rules_ref, :ruleset, nil)
-    ruleset_json = Rules.get(rules_ref, :ruleset_json, nil)
-    |> JQ.query_string_with_string!(ModLoader.convert_to_jq(socket.assigns.config))
-    {:ok, rules_ref} = Rules.load_rules(ruleset_json, ruleset)
-
-    IO.puts("Dropping old rules_ref (length #{String.length(Rules.get(socket.assigns.rules_ref, :ruleset_json, "{}"))})")
-    if socket.assigns.rules_ref != nil do :ets.delete(socket.assigns.rules_ref) end
-    socket = assign(socket, :rules_ref, rules_ref)
-    IO.puts("Adding new rules_ref (length #{String.length(Rules.get(socket.assigns.rules_ref, :ruleset_json, "{}"))})")
-
     # check if it's a different ruleset
     # reset mods and other state if so
     socket = if ruleset != socket.assigns.ruleset do
       IO.puts("Switching ruleset from #{socket.assigns.ruleset} to #{ruleset}")
+      socket = socket
+      |> assign(:ruleset, ruleset)
+      |> assign(:switching_ruleset, true)
       # get mod list
       default_mods = Rules.get(rules_ref, "default_mods", [])
       {mods, categories} = Rules.parse_available_mods(Rules.get(rules_ref, "available_mods", []), default_mods)
-      hand_length = min(17, Rules.get(rules_ref, "starting_tiles", 13))
       # mock room state
-      socket = assign(socket, :room_state, %{
+      room_state = %{
         scoring_test: true,
         ruleset: ruleset,
         mods: mods,
@@ -555,48 +551,61 @@ defmodule RiichiAdvancedWeb.ScoringTestLive do
         room_code: socket.assigns.uuid,
         rules_ref: rules_ref,
         rules_pid: nil,
-      })
-      |> assign(:hand_length, hand_length)
-      |> assign(:hand, socket.assigns.hand |> Enum.take(hand_length + 1))
-      |> assign(:calls, [])
-      |> assign(:call_selection_ixs, [])
-      |> assign(:call_buttons, %{})
-      |> assign(:selected_call_button, nil)
-      |> assign(:ruleset, ruleset)
-      socket = assign(socket, :room_state, RoomState.start_update_rules_task(socket.assigns.room_state))
+      }
+      socket = assign(socket, :room_state, RoomState.start_update_rules_task(room_state))
       socket
-    else socket end
+    else
+      socket = if socket.assigns.switching_ruleset do
+        hand_length = min(17, Rules.get(rules_ref, "starting_tiles", 13))
+        socket
+        |> assign(:hand_length, hand_length)
+        |> assign(:hand, socket.assigns.hand |> Enum.take(hand_length + 1))
+        |> assign(:calls, [])
+        |> assign(:call_selection_ixs, [])
+        |> assign(:call_buttons, %{})
+        |> assign(:selected_call_button, nil)
+        |> assign(:switching_ruleset, false)
+      else socket end
+      ruleset_json = Rules.get(rules_ref, :ruleset_json, nil)
+      |> JQ.query_string_with_string!(ModLoader.convert_to_jq(socket.assigns.config))
+      {:ok, rules_ref} = Rules.load_rules(ruleset_json, ruleset)
 
-    wall = Rules.get(rules_ref, "wall", [])
-    socket = assign(socket, :tiles, Enum.uniq(wall))
-    call_buttons = Rules.get(rules_ref, "buttons", [])
-    |> Enum.filter(fn {_name, button} -> Map.has_key?(button, "call") end)
-    call_button_display_names = call_buttons
-    |> Enum.map(fn {_name, button} -> Map.get(button, "display_name", "") end)
-    |> Enum.frequencies()
-    call_buttons = call_buttons
-    |> Map.new(fn {name, button} ->
-      display_name = Map.get(button, "display_name", "")
-      if call_button_display_names[display_name] > 1 do
-        {name, Map.put(button, "disambiguate", name)}
-      else {name, button} end
-    end)
-    socket = assign(socket, :call_buttons, call_buttons)
+      IO.puts("Dropping old rules_ref (length #{String.length(Rules.get(socket.assigns.rules_ref, :ruleset_json, "{}"))})")
+      if socket.assigns.rules_ref != nil do :ets.delete(socket.assigns.rules_ref) end
+      socket = assign(socket, :rules_ref, rules_ref)
+      IO.puts("Adding new rules_ref (length #{String.length(Rules.get(socket.assigns.rules_ref, :ruleset_json, "{}"))})")
 
-    socket = retrieve_yaku_lists(socket)
+      wall = Rules.get(rules_ref, "wall", [])
+      socket = assign(socket, :tiles, Enum.uniq(wall))
+      call_buttons = Rules.get(rules_ref, "buttons", [])
+      |> Enum.filter(fn {_name, button} -> Map.has_key?(button, "call") end)
+      call_button_display_names = call_buttons
+      |> Enum.map(fn {_name, button} -> Map.get(button, "display_name", "") end)
+      |> Enum.frequencies()
+      call_buttons = call_buttons
+      |> Map.new(fn {name, button} ->
+        display_name = Map.get(button, "display_name", "")
+        if call_button_display_names[display_name] > 1 do
+          {name, Map.put(button, "disambiguate", name)}
+        else {name, button} end
+      end)
+      socket = assign(socket, :call_buttons, call_buttons)
 
-    state = socket.assigns.state
-    |> Map.put(:rules_ref, rules_ref)
-    |> Map.put(:rules_text, %{})
-    |> Map.put(:rules_text_order, [])
-    |> Map.put(:players, Map.new([:east, :south, :west, :north], fn seat -> {seat, %Player{}} end))
-    |> Actions.trigger_event("after_initialization", %{seat: :east}) # to populate rules tabs
-    |> Actions.trigger_event("after_start", %{seat: :east}) # to populate tile alliases
-    socket = assign(socket, :state, state)
-    socket = assign(socket, :rules_text, state.rules_text)
-    socket = assign(socket, :rules_text_order, state.rules_text_order)
-    socket = assign(socket, :ruleset_json, Rules.get(rules_ref, :ruleset_json, "{}"))
+      socket = retrieve_yaku_lists(socket)
 
+      state = socket.assigns.state
+      |> Map.put(:rules_ref, rules_ref)
+      |> Map.put(:rules_text, %{})
+      |> Map.put(:rules_text_order, [])
+      |> Map.put(:players, Map.new([:east, :south, :west, :north], fn seat -> {seat, %Player{}} end))
+      |> Actions.trigger_event("after_initialization", %{seat: :east}) # to populate rules tabs
+      |> Actions.trigger_event("after_start", %{seat: :east}) # to populate tile alliases
+      socket = assign(socket, :state, state)
+      socket = assign(socket, :rules_text, state.rules_text)
+      socket = assign(socket, :rules_text_order, state.rules_text_order)
+      socket = assign(socket, :ruleset_json, Rules.get(rules_ref, :ruleset_json, "{}"))
+      socket
+    end
     {:noreply, socket}
   end
 

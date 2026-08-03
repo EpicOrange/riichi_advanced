@@ -40,10 +40,10 @@ defmodule RiichiAdvancedWeb.YakuSelectionComponent do
 
   def print_value(value) do
     cond do
-      is_number(value) -> Integer.to_string(value)
+      is_number(value) -> "#{value}"
       is_list(value) ->
         case Enum.at(value, 0) do
-          v when is_number(v) -> Integer.to_string(v)
+          v when is_number(v) -> "#{v}"
           _ -> "0"
         end
       is_binary(value) -> "0"
