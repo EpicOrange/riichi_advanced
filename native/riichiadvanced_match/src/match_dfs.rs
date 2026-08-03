@@ -148,11 +148,11 @@ fn reify_groups(
       }
       if debug {
         if !stored_groups.is_empty() {
-          println!("Reified group {0}/{1}: {2:?} using base tiles <{3:?}> into the groups{4}: {5:?}",
+          println!("Reified group {0}/{1}: {2:?} using base tiles <{3:?}> into the groups{4}: {5}",
             i + 1, num_groups, &group,
             decode_tiles(&*base_tiles, &match_info.all_attrs),
             if separate_suits { " (separate_suits)" } else { "" },
-            stored_groups.iter().map(|group| print_group(group, &match_info.all_attrs, nojoker)).collect::<Vec<_>>().join(", "));
+            stored_groups.iter().map(|group| print_group(group, &match_info.all_attrs, nojoker)).collect::<Vec<_>>().join(", "))
         } else {
           println!("Reified group {0}/{1}: {2:?} using base tiles <{3:?}> into (no groups){4}", i + 1, num_groups, &group, decode_tiles(&*base_tiles, &match_info.all_attrs), if separate_suits { " (separate_suits)" } else { "" });
         }
@@ -212,7 +212,7 @@ fn _dfs_match<'a>(
     .flat_map(|(&j, v)| v.iter().cloned().map(|g| (j, g)).collect::<Vec<_>>())
     .collect::<Vec<_>>();
   if debug {
-    println!("Removal {0}/{1}{2} from ({3:?}) {4:?} / {5:?} \\ {6:?} {{{7}}} {8}{9}{10}",
+    println!("Removal {0}/{1}{2} from ({3:?}) {4:?} / {5:?} \\ {6} {{{7}}} {8}{9}{10}",
       i + 1,
       actual_num,
       if num <= 0 { " (lookahead)" } else { "" },
@@ -261,7 +261,7 @@ fn _dfs_match<'a>(
       .peekable());
     match ret.peek() {
       Some(t) => {
-        if debug { println!("Removal of group {0:?} was a success, first result is {1:?} / {2} call(s)", print_group(&group, &match_info.all_attrs, false), decode(&t.0[0], &match_info.all_attrs), t.0.len() - 1); }
+        if debug { println!("Removal of group {0} was a success, first result is {1:?} / {2} call(s)", print_group(&group, &match_info.all_attrs, false), decode(&t.0[0], &match_info.all_attrs), t.0.len() - 1); }
         ret
       }
       None    => {
