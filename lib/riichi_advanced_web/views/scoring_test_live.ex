@@ -295,7 +295,6 @@ defmodule RiichiAdvancedWeb.ScoringTestLive do
     scoring_key = case Rules.get(state.rules_ref, "scoring_logic", %{}) do
       %{"ron" => _} -> if is_ron? do "ron" else "tsumo" end
       %{"win" => _} -> "win"
-      logic when is_map(logic) -> Enum.at(logic, 0) |> elem(0)
       _ -> nil
     end
     state = Kyoku.calculate_winner_details_v2(state, :east, win_source, scoring_key)
@@ -371,9 +370,9 @@ defmodule RiichiAdvancedWeb.ScoringTestLive do
     if length(new_selections) == call_length do
       call_tiles = Enum.map(new_selections, &Enum.at(socket.assigns.hand, &1))
       [called_tile | call_choice] = Enum.map(call_tiles, &Utils.to_tile/1)
-      style = Map.get(button, "call_style", %{"kamicha" => [0, 0]})
-      style = Map.get(style, "kamicha", Map.get(style, "self", [0, 0]))
-      new_call_tiles = Actions.style_call(style, call_choice, called_tile)
+      style = Map.get(button, "call_style", %{})
+      style = Map.get(style, "kamicha", Map.get(style, "self", nil))
+      new_call_tiles = if style != nil do Actions.style_call(style, call_choice, called_tile) else [called_tile | call_choice] end
       new_call = {socket.assigns.selected_call_button, new_call_tiles}
       socket = assign(socket, :hand, socket.assigns.hand -- call_tiles)
       socket = assign(socket, :calls, [new_call | socket.assigns.calls])
