@@ -1,9 +1,12 @@
 defmodule RiichiAdvanced.RoomState do
+  alias RiichiAdvanced.GameState.Actions, as: Actions
+  alias RiichiAdvanced.GameState.Game, as: Game
   alias RiichiAdvanced.GameState.Rules, as: Rules
   alias RiichiAdvanced.ModLoader, as: ModLoader
   alias RiichiAdvanced.ModLoader.ModState, as: ModState
   alias RiichiAdvanced.Utils, as: Utils
   use GenServer
+  require Logger
 
   defmodule RoomPlayer do
     defstruct [
@@ -78,6 +81,9 @@ defmodule RiichiAdvanced.RoomState do
       selected_preset_ix: nil,
       categories: [],
       tutorial_link: nil,
+      rules_pid: nil,
+      rules_text: %{},
+      rules_text_order: [],
       textarea: [Delta.Op.insert(@initial_textarea)],
       textarea_deltas: [[Delta.Op.insert(@initial_textarea)]],
       textarea_delta_uuids: [[]],
@@ -182,6 +188,9 @@ defmodule RiichiAdvanced.RoomState do
       [{lobby_state, _}] -> GenServer.cast(lobby_state, {:update_room_state, state.room_code, state})
       _                  -> nil
     end
+
+    # initialize rules tabs
+    start_update_rules_task(state)
 
     {:ok, state}
   end
@@ -407,7 +416,57 @@ defmodule RiichiAdvanced.RoomState do
     {:reply, :ok, state}
   end
 
+  def update_rules_task(state) do
+    ruleset_json = ModState.load_ruleset(state.ruleset, state.room_code)
+    |> ModState.apply_new_mods(get_enabled_mods(state))
+    |> Map.get(:ruleset_json)
+    # we do not need to add config here
 
+    # parse the ruleset
+    case Rules.load_rules(ruleset_json, state.ruleset) do
+      {:ok, rules_ref} ->
+        Map.put(state, :rules_ref, rules_ref)
+        game_state = %Game{rules_ref: rules_ref, rules_text: %{}, rules_text_order: [], game_active: true}
+        |> Actions.trigger_event("after_initialization", %{seat: :east})
+        {:load_rules, %{
+          ruleset_json: ruleset_json,
+          rules_ref: state.rules_ref,
+          rules_text: game_state.rules_text,
+          rules_text_order: game_state.rules_text_order,
+        }}
+      {:error, msg}    ->
+        show_error(state, msg)
+        {:load_rules, %{}}
+    end
+  end
+
+  def start_update_rules_task(state) do
+    if state.ruleset != "custom" do
+      if state.rules_pid != nil do Task.shutdown(state.rules_pid, 5000) end
+      state = Map.put(state, :rules_pid, Task.async(fn -> update_rules_task(state) end))
+      state
+    else state end
+  end
+
+  def handle_info({_ref, {:load_rules, rules}}, state) do
+    if state.rules_pid != nil do Task.shutdown(state.rules_pid, 5000) end
+    state = Map.merge(state, rules)
+    |> Map.put(:rules_pid, nil)
+    state = broadcast_state_change(state)
+    {:noreply, state}
+  end
+
+  # :DOWN is sent when task crashes
+  def handle_info({:DOWN, _ref, :process, pid, _reason}, state) do
+    if pid == state.rules_pid do
+      {:noreply, Map.put(state, :rules_pid, nil)}
+    else {:noreply, state} end
+  end
+
+  def handle_info(msg, state) do
+    Logger.error("Room state got unknown message: #{inspect(msg)}")
+    {:noreply, state}
+  end
 
   def handle_cast(:delta_compression, state) do
     state = Map.put(state, :textarea_version, 0)
@@ -451,36 +510,42 @@ defmodule RiichiAdvanced.RoomState do
   def handle_cast({:set_preset, ix}, state) do
     state = set_preset(state, ix)
     state = broadcast_state_change(state)
+    state = start_update_rules_task(state)
     {:noreply, state}
   end
 
   def handle_cast({:toggle_mod, mod_name, enabled}, state) do
     state = toggle_mod(state, mod_name, enabled)
     state = broadcast_state_change(state)
+    state = start_update_rules_task(state)
     {:noreply, state}
   end
 
   def handle_cast({:change_mod_config, mod_name, name, ix}, state) do
     state = change_mod_config(state, mod_name, name, ix)
     state = broadcast_state_change(state)
+    state = start_update_rules_task(state)
     {:noreply, state}
   end
 
   def handle_cast({:toggle_category, category_name}, state) do
     state = toggle_category(state, category_name)
     state = broadcast_state_change(state)
+    state = start_update_rules_task(state)
     {:noreply, state}
   end
 
   def handle_cast(:reset_mods_to_default, state) do
     state = reset_mods_to_default(state)
     state = broadcast_state_change(state)
+    state = start_update_rules_task(state)
     {:noreply, state}
   end
 
   def handle_cast(:randomize_mods, state) do
     state = randomize_mods(state)
     state = broadcast_state_change(state)
+    state = start_update_rules_task(state)
     {:noreply, state}
   end
 

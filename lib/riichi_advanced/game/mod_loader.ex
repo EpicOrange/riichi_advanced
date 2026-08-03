@@ -24,7 +24,10 @@ defmodule RiichiAdvanced.ModLoader.ModState do
     globals: %{},
     defines: MapSet.new(),
   ]
-  # def get_ruleset_json(ruleset, room_code \\ nil, apply_mods? \\ false, visited \\ [], prev_query \\ ".", prev_mods \\ [], globals \\ %{}, orig_ruleset \\ nil) do
+
+  def load_ruleset_json(ruleset_json, ruleset \\ "load_ruleset_json") do
+    %ModState{ruleset_json: ruleset_json, base_ruleset: ruleset, ruleset: ruleset}
+  end
 
   def load_ruleset(ruleset, room_code \\ nil) do
     # IO.puts("Fetching ruleset #{ruleset}")
@@ -35,7 +38,7 @@ defmodule RiichiAdvanced.ModLoader.ModState do
         {:ok, _}    -> ruleset_json_or_majs
         {:error, _} -> JQ.query_string_with_string!("{}", ModLoader.convert_to_jq(ruleset_json_or_majs))
       end
-      %ModState{ruleset_json: ruleset_json, base_ruleset: "custom"}
+      %ModState{ruleset_json: ruleset_json, base_ruleset: "custom", ruleset: "custom"}
     else
       case RiichiAdvanced.Cache.get({:cache_modloader, ruleset, []}) do
         {:ok, nil} ->

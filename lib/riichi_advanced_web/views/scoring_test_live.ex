@@ -67,8 +67,6 @@ defmodule RiichiAdvancedWeb.ScoringTestLive do
     |> assign(:call_buttons, %{})
     |> assign(:selected_call_button, nil)
     |> assign(:rules_ref, nil)
-    |> assign(:rules_text, %{})
-    |> assign(:rules_text_order, [])
     # |> assign(:hand, [:"4m", :"2m", :"3m", :"4p", :"4p", :"4p", :"5p", :"6p", :"7p", :"3s", :"4s", :"2s", :"2s", :"2s"])
 
     if connected?(socket) do
@@ -190,7 +188,7 @@ defmodule RiichiAdvancedWeb.ScoringTestLive do
           next_dealer={@state.next_dealer}
           rules_ref={@rules_ref}
           />
-        <.live_component module={RiichiAdvancedWeb.RulesPopoverComponent} id="rules-popover" rules_text={@rules_text} rules_text_order={@rules_text_order} lang={@lang} />
+        <.live_component module={RiichiAdvancedWeb.RulesPopoverComponent} id="rules-popover" rules_text={@state.rules_text} rules_text_order={@state.rules_text_order} lang={@lang} />
       </div>
       <div class="top-right-container">
         <.live_component module={RiichiAdvancedWeb.MenuButtonsComponent} id="menu-buttons" lang={@lang} />
