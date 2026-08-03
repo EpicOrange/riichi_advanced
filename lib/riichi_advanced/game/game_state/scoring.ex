@@ -67,10 +67,11 @@ defmodule RiichiAdvanced.GameState.Scoring do
       {acc, skip} ->
         value = default_value.(value)
         denominations = Enum.drop_every(value, 2)
-        if {name, denominations} not in skip and Conditions.check_cnf_condition(state, cond_spec, context) do
+        if {name, denominations} not in skip
+            and {[name, value], denominations} not in skip
+            and Conditions.check_cnf_condition(state, cond_spec, context) do
           new_skip = Map.get(yaku_precedence, name, [])
-          |> Enum.map(&{&1, denominations})
-          |> MapSet.new()
+          |> MapSet.new(&{&1, denominations})
           {[%{yaku | "value" => value} | acc], MapSet.union(skip, new_skip)}
         else {acc, skip} end
     end
