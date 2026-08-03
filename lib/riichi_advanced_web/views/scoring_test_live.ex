@@ -273,11 +273,12 @@ defmodule RiichiAdvancedWeb.ScoringTestLive do
     }
     initial_score = Rules.get(state.rules_ref, "initial_score", 0)
     tile_freqs = Enum.frequencies(state.wall ++ state.dead_wall)
+    all_attrs = Rules.get(state.rules_ref, :all_attrs, [])
     state = GameState.update_all_players(state, fn seat, _player -> %Player{
       nickname: Atom.to_string(seat) |> String.capitalize(),
       score: initial_score,
       start_score: initial_score,
-      tile_behavior: %TileBehavior{ tile_freqs: tile_freqs }
+      tile_behavior: %TileBehavior{ tile_freqs: tile_freqs, attrs: all_attrs }
     } end)
     {winning_tile, hand} = List.pop_at(hand, -1)
     state = if is_ron? do

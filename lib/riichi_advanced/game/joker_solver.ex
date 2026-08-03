@@ -69,9 +69,12 @@ defmodule RiichiAdvanced.GameState.JokerSolver do
       RiichiAdvanced.SMT.match_hand_smt_v4(mutex, smt_solver, smt_hand, smt_calls, Rules.translate_match_definitions(rules_ref, ["win"]), tile_behavior)
     else Stream.concat([[%{}]]) end
     # re-add the obvious jokers back into each assignment
-    |> Stream.map(&Map.merge(obvious_joker_assignment, &1))
+    # also returns Stream.new([[obvious_joker_assignment]]) if stream was empty
+    |> Stream.transform(fn -> true end,
+        fn joker_assignment, empty? -> {[Map.merge(obvious_joker_assignment, joker_assignment)], false} end,
+        fn empty? -> {if empty? do [obvious_joker_assignment] else [] end, nil} end
+      )
     ret
-    # TODO can we somehow check if the stream is empty, and return Stream.new([[obvious_joker_assignment]]) if so?
   end
 
   # input is original hand and calls, and original winning tile
