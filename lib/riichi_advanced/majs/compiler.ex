@@ -37,10 +37,16 @@ defimpl Jason.Encoder, for: RiichiAdvanced.Compiler.Expression do
     ["(if ", json, " | type == \"number\" then ", json, " else error(\"variable ", json, " in expression is not a number\") end)"]
   end
   def encode_operand(operand, opts), do: Jason.Encode.value(operand, opts)
-  def encode(%RiichiAdvanced.Compiler.Expression{op: op, l: nil, r: r}, opts) do
+  def encode(%RiichiAdvanced.Compiler.Expression{op: op, l: nil, r: r}, opts) when is_binary(op) do
+    [op, "("] ++ List.wrap(encode_operand(r, opts)) ++ [")"]
+  end
+  def encode(%RiichiAdvanced.Compiler.Expression{op: op, l: nil, r: r}, opts) when is_atom(op) do
     ["(", Atom.to_string(op)] ++ List.wrap(encode_operand(r, opts)) ++ [")"]
   end
-  def encode(%RiichiAdvanced.Compiler.Expression{op: op, l: l, r: r}, opts) do
+  def encode(%RiichiAdvanced.Compiler.Expression{op: op, l: l, r: r}, opts) when is_binary(op) do
+    [op, "("] ++ List.wrap(encode_operand(l, opts)) ++ [","] ++ List.wrap(encode_operand(r, opts)) ++ [")"]
+  end
+  def encode(%RiichiAdvanced.Compiler.Expression{op: op, l: l, r: r}, opts) when is_atom(op) do
     ["("] ++ List.wrap(encode_operand(l, opts)) ++ [Atom.to_string(op)] ++ List.wrap(encode_operand(r, opts)) ++ [")"]
   end
 end
@@ -53,31 +59,33 @@ defmodule RiichiAdvanced.Compiler do
   alias RiichiAdvanced.Validator
   use RiichiAdvanced.ValidatorStrings
 
-  @unops [:-, "round_up", "round_down", "round"]
-  @binops [:+, :-, :*, :/, :**, :=, "round_up", "round_down", "round", "floor_div", "mod"]
-  # "atan2", "copysign", "drem", "fdim", "fmax", "fmin", "fmod", "frexp", "hypot", "jn", "ldexp",
-  # "modf", "nextafter", "nexttoward", "pow", "remainder", "scalb", "scalbln", "yn"
+  defp compile_comparison(condition_name, [line, column], l, r) do
+    with {:ok, l} <- compile_expr(l, line, column),
+         {:ok, r} <- compile_expr(r, line, column) do
+      {:ok, %{"name" => condition_name, "opts" => [l, r]}}
+    end
+  end
 
   defp compile_condition(condition, line, column) do
     case condition do
-      {:==, pos, [{l, _, nil}, {r, _, nil}]} -> compile_condition({"amount_equals", pos, [l, r]}, line, column)
-      {:==, pos, [{l, _, nil}, r]} -> compile_condition({"amount_equals", pos, [l, r]}, line, column)
-      {:==, pos, [l, r]} -> compile_condition({"amount_equals", pos, [l, r]}, line, column)
-      {:!=, pos, [{l, _, nil}, {r, _, nil}]} -> compile_condition({"not_counter_equals", pos, [l, r]}, line, column)
-      {:!=, pos, [{l, _, nil}, r]} -> compile_condition({"not_counter_equals", pos, [l, r]}, line, column)
-      {:!=, pos, [l, r]} -> compile_condition({"not_counter_equals", pos, [l, r]}, line, column)
-      {:<=, pos, [{l, _, nil}, {r, _, nil}]} -> compile_condition({"amount_at_most", pos, [l, r]}, line, column)
-      {:<=, pos, [{l, _, nil}, r]} -> compile_condition({"amount_at_most", pos, [l, r]}, line, column)
-      {:<=, pos, [l, r]} -> compile_condition({"amount_at_most", pos, [l, r]}, line, column)
-      {:>=, pos, [{l, _, nil}, {r, _, nil}]} -> compile_condition({"amount_at_least", pos, [l, r]}, line, column)
-      {:>=, pos, [{l, _, nil}, r]} -> compile_condition({"amount_at_least", pos, [l, r]}, line, column)
-      {:>=, pos, [l, r]} -> compile_condition({"amount_at_least", pos, [l, r]}, line, column)
-      {:<, pos, [{l, _, nil}, {r, _, nil}]} -> compile_condition({"amount_less_than", pos, [l, r]}, line, column)
-      {:<, pos, [{l, _, nil}, r]} -> compile_condition({"amount_less_than", pos, [l, r]}, line, column)
-      {:<, pos, [l, r]} -> compile_condition({"amount_less_than", pos, [l, r]}, line, column)
-      {:>, pos, [{l, _, nil}, {r, _, nil}]} -> compile_condition({"amount_more_than", pos, [l, r]}, line, column)
-      {:>, pos, [{l, _, nil}, r]} -> compile_condition({"amount_more_than", pos, [l, r]}, line, column)
-      {:>, pos, [l, r]} -> compile_condition({"amount_more_than", pos, [l, r]}, line, column)
+      {:==, pos, [{l, _, nil}, {r, _, nil}]} -> compile_comparison("amount_equals", pos, l, r)
+      {:==, pos, [{l, _, nil}, r]} -> compile_comparison("amount_equals", pos, l, r)
+      {:==, pos, [l, r]} -> compile_comparison("amount_equals", pos, l, r)
+      {:!=, pos, [{l, _, nil}, {r, _, nil}]} -> compile_comparison("not_amount_equals", pos, l, r)
+      {:!=, pos, [{l, _, nil}, r]} -> compile_comparison("not_amount_equals", pos, l, r)
+      {:!=, pos, [l, r]} -> compile_comparison("not_amount_equals", pos, l, r)
+      {:<=, pos, [{l, _, nil}, {r, _, nil}]} -> compile_comparison("amount_at_most", pos, l, r)
+      {:<=, pos, [{l, _, nil}, r]} -> compile_comparison("amount_at_most", pos, l, r)
+      {:<=, pos, [l, r]} -> compile_comparison("amount_at_most", pos, l, r)
+      {:>=, pos, [{l, _, nil}, {r, _, nil}]} -> compile_comparison("amount_at_least", pos, l, r)
+      {:>=, pos, [{l, _, nil}, r]} -> compile_comparison("amount_at_least", pos, l, r)
+      {:>=, pos, [l, r]} -> compile_comparison("amount_at_least", pos, l, r)
+      {:<, pos, [{l, _, nil}, {r, _, nil}]} -> compile_comparison("amount_less_than", pos, l, r)
+      {:<, pos, [{l, _, nil}, r]} -> compile_comparison("amount_less_than", pos, l, r)
+      {:<, pos, [l, r]} -> compile_comparison("amount_less_than", pos, l, r)
+      {:>, pos, [{l, _, nil}, {r, _, nil}]} -> compile_comparison("amount_more_than", pos, l, r)
+      {:>, pos, [{l, _, nil}, r]} -> compile_comparison("amount_more_than", pos, l, r)
+      {:>, pos, [l, r]} -> compile_comparison("amount_more_than", pos, l, r)
       {:not, _, [condition]} ->
         with {:ok, result} <- compile_condition_list(condition, line, column) do
           {:ok, %{"name" => "not", "opts" => [result]}}
@@ -97,12 +105,9 @@ defmodule RiichiAdvanced.Compiler do
           {condition, _, nil} when is_binary(condition) -> {:ok, {condition, []}}
           {condition, _, opts} when is_binary(condition) -> {:ok, {condition, opts}}
           %{"name" => condition, "opts" => opts} -> {:ok, {condition, opts}}
-          condition ->
-            case condition do
-              {:ok, %Constant{} = condition} -> {:ok, {condition, []}}
-              {:ok, %Variable{} = condition} -> {:ok, {condition, []}}
-              _ -> {:error, "Compiler.compile_condition: at line #{line}:#{column}, expecting a condition, got #{inspect(condition)}"}
-            end
+          {:ok, %Constant{} = condition} -> {:ok, {condition, []}}
+          {:ok, %Variable{} = condition} -> {:ok, {condition, []}}
+          _ -> {:error, "Compiler.compile_condition: at line #{line}:#{column}, expecting a condition, got #{inspect(condition)}"}
         end
         with {:ok, {condition, opts}} <- condition,
              {:ok, opts} <- Parser.parse_sigils(opts),
@@ -129,7 +134,7 @@ defmodule RiichiAdvanced.Compiler do
       {"at_least", [line: line, column: column], args} ->
         case args do
           [n | conds] when is_number(n) ->
-            with {:ok, compiled_args} <- Utils.sequence(Enum.map(conds, &_compile_condition_list(&1, line, column, true))) do
+            with {:ok, compiled_args} <- conds |> Enum.map(&_compile_condition_list(&1, line, column, true)) |> Utils.sequence() do
               ret = compiled_args |> Enum.map(&List.wrap/1) |> Enum.concat()
               {:ok, if conj do [n | ret] else [[n | ret]] end}
             end
@@ -138,19 +143,19 @@ defmodule RiichiAdvanced.Compiler do
       {"at_most", [line: line, column: column], args} ->
         case args do
           [n | conds] when is_number(n) ->
-            with {:ok, compiled_args} <- Utils.sequence(Enum.map(conds, &_compile_condition_list(&1, line, column, true))) do
+            with {:ok, compiled_args} <- conds |> Enum.map(&_compile_condition_list(&1, line, column, true)) |> Utils.sequence() do
               ret = compiled_args |> Enum.map(&List.wrap/1) |> Enum.concat()
               {:ok, if conj do [[n | ret]] else [n | ret] end}
             end
           _ -> {:error, "at_least(n, conditions) expects a number as the first argument, got #{inspect(Enum.at(args, 0))}"}
         end
       {:and, [line: line, column: column], args} ->
-        with {:ok, compiled_args} <- Utils.sequence(Enum.map(args, &_compile_condition_list(&1, line, column, true))) do
+        with {:ok, compiled_args} <- args |> Enum.map(&_compile_condition_list(&1, line, column, true)) |> Utils.sequence() do
           ret = compiled_args |> Enum.map(&List.wrap/1) |> Enum.concat()
           {:ok, if conj do ret else [ret] end}
         end
       {:or, [line: line, column: column], args} ->
-        with {:ok, compiled_args} <- Utils.sequence(Enum.map(args, &_compile_condition_list(&1, line, column, false))) do
+        with {:ok, compiled_args} <- args |> Enum.map(&_compile_condition_list(&1, line, column, false)) |> Utils.sequence() do
           ret = compiled_args |> Enum.map(&List.wrap/1) |> Enum.concat()
           {:ok, if conj do [ret] else ret end}
         end
@@ -347,12 +352,18 @@ defmodule RiichiAdvanced.Compiler do
           end
         else
           # convert into a function call
-          with {:ok, name} <- Validator.validate_json(name),
-               {:ok, args} <- Parser.parse_sigils(args),
-               {:ok, args} <- Validator.validate_json(args) do
-            case args do
-              [args] -> {:ok, ["run", name, args]}
-              _      -> {:ok, ["run", name]}
+          if args != nil do
+            with {:ok, name} <- Validator.validate_json(name),
+                 {:ok, args} <- Parser.parse_sigils(args),
+                 {:ok, args} <- Validator.validate_json(args) do
+              case args do
+                [args] -> {:ok, ["run", name, args]}
+                _      -> {:ok, ["run", name]}
+              end
+            end
+          else
+            with {:ok, name} <- Validator.validate_json(name) do
+              {:ok, ["run", name]}
             end
           end
         end
@@ -1074,7 +1085,7 @@ defmodule RiichiAdvanced.Compiler do
              {:ok, value} <- Jason.encode(json) do
           {:ok, "#{value}"}
         end
-    end
+    end |> add_error_cxt("while compiling toplevel condition at line #{line}:#{column}")
   end
   defp compile_jq_toplevel(ast, line, column, defs, depth) do
     case ast do

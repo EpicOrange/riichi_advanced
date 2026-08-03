@@ -1,6 +1,10 @@
 defmodule RiichiAdvanced.ValidatorStrings do  
   defmacro __using__(_) do
     quote do
+      @unops [:-, "round_up", "round_down", "round"]
+      @binops [:+, :-, :*, :/, :**, :=, "round_up", "round_down", "round", "floor_div", "mod"]
+      # "atan2", "copysign", "drem", "fdim", "fmax", "fmin", "fmod", "frexp", "hypot", "jn", "ldexp",
+      # "modf", "nextafter", "nexttoward", "pow", "remainder", "scalb", "scalbln", "yn"
       @allowed_actions [
         # normal actions
         "pause", "noop", "print", "print_status", "print_counters", "print_responsibilities", "print_context", "print_hand", "print_discards", "print_tags", "print_txns", "push_message", "push_system_message", "add_rule", "update_rule", "delete_rule", "add_rule_tab", "rename_rule_tab", "run", "play_tile", "draw", "draw_aside", "call", "self_call", "upgrade_call", "flower", "trigger_custom_call", "draft_saki_card", "reverse_turn_order", "advance_turn", "change_turn", "win_by_discard", "win_by_call", "win_by_draw", "win_by_second_visible_discard", "ryuukyoku", "abortive_draw", "set_status", "unset_status", "set_status_all", "unset_status_all", "set_counter", "set_counter_all", "add_counter", "subtract_counter", "multiply_counter", "divide_counter", "big_text", "pause", "sort_hand", "reveal_tile", "add_score", "subtract_score", "put_down_riichi_stick", "bet_points", "add_to_pot", "add_honba", "reveal_hand", "reveal_other_hands", "discard_draw", "press_button", "press_first_call_button", "when", "unless", "ite", "as", "when_anyone", "when_everyone", "when_others", "mark", "move_tiles", "swap_tiles", "copy_tiles", "delete_tiles", "swap_marked_calls", "swap_out_joker", "extend_live_wall_with_marked", "extend_dead_wall_with_marked", "pon_marked_discard", "flip_marked_discard_facedown", "clear_marking", "set_tile_alias", "set_tile_alias_all", "save_tile_behavior", "load_tile_behavior", "clear_tile_aliases", "set_tile_ordering", "set_tile_ordering_all", "add_attr", "remove_attr", "add_attr_first_tile", "add_attr_tagged", "remove_attr_hand", "remove_attr_all", "tag_tiles", "tag_drawn_tile", "tag_last_discard", "tag_dora", "untag_tiles", "untag", "convert_last_discard", "flip_last_discard_faceup", "flip_all_calls_faceup", "flip_first_visible_discard_facedown", "flip_aside_facedown", "draw_from_aside", "charleston_left", "charleston_across", "charleston_right", "shift_tile_to_dead_wall", "resume_deferred_actions", "cancel_deferred_actions", "recalculate_buttons", "recalculate_playables", "draw_last_discard", "check_discard_passed", "scry", "scry_all", "scry_named_tiles", "clear_scry", "choose_yaku", "disable_saki_card", "enable_saki_card", "save_revealed_tiles", "load_revealed_tiles", "merge_draw", "pass_draws", "saki_start", "register_last_discard", "enable_auto_button", "modify_winner", "modify_payout", "set_scoring_header", "make_responsible_for", "clear_responsibilities", "change_dealership", "end_game", "replace_winning_hand_jokers", "clear_player_cache",
@@ -32,9 +36,8 @@ defmodule RiichiAdvanced.Validator do
   def validate_json({:+, _, [{:@, _, [{name, _, nil}]}]}) when is_binary(name), do: validate_constant(sanitize_string(name), true)
   def validate_json({:@, _, [{name, _, nil}]}) when is_binary(name), do: validate_constant(sanitize_string(name))
   def validate_json({:!, _, [{name, _, nil}]}) when is_binary(name), do: validate_variable(sanitize_string(name))
-  def validate_json({:+, _, _} = ast), do: validate_expression(ast)
-  def validate_json({:-, _, _} = ast), do: validate_expression(ast)
-  def validate_json({:*, _, _} = ast), do: validate_expression(ast)
+  def validate_json({op, _,} = ast) when op in @unops, do: validate_expression(ast)
+  def validate_json({op, _, _} = ast) when op in @binops, do: validate_expression(ast)
   # def validate_json(%RiichiAdvanced.Compiler.Constant{name: name}), do: validate_constant(sanitize_string(name))
   # def validate_json(%RiichiAdvanced.Compiler.Variable{name: name}), do: validate_variable(sanitize_string(name))
   # def validate_json(ast) when is_map(ast), do: validate_map(ast) # this matches structs...
@@ -47,19 +50,16 @@ defmodule RiichiAdvanced.Validator do
   # numeric expressions can only contain numeric expressions, not JSON
   def validate_expression(ast) when is_number(ast), do: {:ok, ast}
   def validate_expression({:!, _, [{name, _, nil}]}), do: validate_variable(name)
-  def validate_expression({:+, _, [l, r]}), do: validate_binop(:+, l, r)
-  def validate_expression({:-, _, [r]}), do: validate_unop(:-, r)
-  def validate_expression({:-, _, [l, r]}), do: validate_binop(:-, l, r)
-  def validate_expression({:*, _, [l, r]}), do: validate_binop(:*, l, r)
-  def validate_expression({:/, _, [l, r]}), do: validate_binop(:/, l, r)
-  def validate_expression({:**, _, [l, r]}), do: validate_binop(:**, l, r)
+  def validate_expression({op, _, [r]}) when op in @unops, do: validate_unop(op, r)
+  def validate_expression({op, _, [l, r]}) when op in @binops, do: validate_binop(op, l, r)
+  def validate_expression({amount, _, nil}) when is_binary(amount), do: {:ok, sanitize_string(amount)}
   def validate_expression(ast), do: {:error, "non-numeric node in expression: #{inspect(ast)}"}
-  def validate_unop(op, r) when is_atom(op) do
+  def validate_unop(op, r) when op in @unops do
     with {:ok, r} <- validate_expression(r) do
       {:ok, %RiichiAdvanced.Compiler.Expression{op: op, l: nil, r: r}}
     end
   end
-  def validate_binop(op, l, r) when is_atom(op) do
+  def validate_binop(op, l, r) when op in @binops do
     with {:ok, l} <- validate_expression(l),
          {:ok, r} <- validate_expression(r) do
       {:ok, %RiichiAdvanced.Compiler.Expression{op: op, l: l, r: r}}

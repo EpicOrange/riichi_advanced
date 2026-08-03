@@ -79,6 +79,9 @@ define_scoring pao_ron do
     if points2 > 0 do points2 = points2 :: "★" else points = points :: "Han" end
     calculate_base_score; if total > 0 do apply_ron_scoring end
     total /= 2 :: "Pao split"
+    if mod(total, 100) > 0 do
+      total = round_up(total, 100) :: "Round up"
+    end
     # pay all honba in full
     if actual_honba > 0 do total += actual_honba * @honba_mult * @honba_value :: "Honba" end
   else
@@ -104,6 +107,9 @@ define_scoring pao_ron do
     end
     calculate_base_score; if total > 0 do apply_ron_scoring end
     total /= 2 :: "Pao split"
+    if mod(total, 100) > 0 do
+      total = round_up(total, 100) :: "Round up"
+    end
     total += nonpao_total :: "Sum total"
   end
   finalize_score
