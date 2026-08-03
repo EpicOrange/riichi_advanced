@@ -89,13 +89,6 @@ def finalize_score, prepend: true do
   end
 end
 
-def apply_ron_scoring, append: true do
-  # in the event of multiple ron, only get half
-  if status("win_half", as: "winner") do
-    total /= 2 :: "Partial head bump"
-  end
-end
-
 def check_multiple_ron do
   num_winners += 1
   set_counter_all("num_winners", "num_winners")
@@ -103,13 +96,20 @@ def check_multiple_ron do
     set_status("win_half", as: "prev_seat")
   end
 end
+
 apply prepend, "buttons.ron.actions" do check_multiple_ron end
 apply prepend, "buttons.chankan.actions" do check_multiple_ron end
+
+def apply_ron_scoring, append: true do
+  # in the event of multiple ron, only get half
+  if status("win_half", as: "winner") do
+    total /= 2 :: "Partial head bump"
+  end
+end
 
 def precalculate_riichi_payments do
   # winners get their own riichi stick back
   # then divide remaining pot among winners
-  # (this could be from nonwinner riichi bets, or from prev rounds)
   as winners do
     if status("riichi") do
       riichi_bet = @riichi_bet
@@ -130,4 +130,18 @@ on after_win, prepend: true do
   if riichi_share > 0 do
     total += riichi_share :: "Split remaining bets"
   end
+end
+
+define_scoring ryuukyoku do
+  # riichi bet is paid to other players
+  as everyone do
+    if status("riichi") do
+      as others do
+        as self do
+          total += 100 :: "Riichi bet"
+        end
+      end
+    end
+  end
+  subtract_from_pot("pot") # zero out pot
 end
