@@ -47,19 +47,8 @@ defmodule RiichiAdvanced.GameState.Rules do
     {:ok, rules}
   end
 
-  defp toposort_yaku(yaku_lists, yaku_precedence, default_unit) do
-    # use this to handle values without units (old value format)
-    default_value = fn value -> if not is_list(value) do [value, default_unit] else value end end
-
-    yakus = yaku_lists
-    |> Enum.flat_map(fn {list_name, yaku_list} -> Enum.map(yaku_list, &Map.put(&1, :list_name, list_name)) end)
-    |> Enum.map(&Map.update(&1, "value", [0, ""], default_value))
-    |> Enum.map(&Map.put(&1, :key, [&1["display_name"], Enum.drop_every(&1["value"], 2)]))
-    |> Enum.map(&Map.put(&1, :value_num, &1["value"] |> Enum.at(0, 0)))
-    |> Enum.with_index()
-    |> Enum.map(fn {yaku, ix} -> yaku |> Map.put(:ix, ix) end)
-
-    # IO.inspect(Enum.map(yakus, &{&1.ix, &1["display_name"]}), limit: :infinity, label: inspect(Enum.map(yaku_lists, &elem(&1, 0))))
+  defp toposort_yaku(yakus, yaku_precedence) do
+    # IO.inspect(Enum.map(yakus, &{&1.ix, &1["display_name"]}), limit: :infinity, label: inspect(Enum.map(yakus, &elem(&1, 0))))
 
     yaku_map = %{}
     |> Map.merge(Enum.group_by(yakus, &Map.get(&1, :key)))
@@ -178,10 +167,19 @@ defmodule RiichiAdvanced.GameState.Rules do
     # toposort all yaku by precedence
     score_rules = get(rules_ref, "score_calculation", %{})
     yaku_lists = Map.get(score_rules, "yaku_lists", [])
+    # use this to handle values without units (old value format)
+    default_value = fn value -> if not is_list(value) do [value, score_rules["point_name"]] else value end end
     {toposorted_yaku, skip_map} = yaku_lists
     |> Enum.map(&{&1, get(rules_ref, &1, [])})
-    |> toposort_yaku(get(rules_ref, "yaku_precedence", %{}), score_rules["point_name"])
+    |> Enum.flat_map(fn {list_name, yaku_list} -> Enum.map(yaku_list, &Map.put(&1, :list_name, list_name)) end)
+    |> Enum.map(&Map.update(&1, "value", [0, ""], default_value))
+    |> Enum.map(&Map.put(&1, :key, [&1["display_name"], Enum.drop_every(&1["value"], 2)]))
+    |> Enum.map(&Map.put(&1, :value_num, &1["value"] |> Enum.at(0, 0)))
+    |> Enum.with_index()
+    |> Enum.map(fn {yaku, ix} -> yaku |> Map.put(:ix, ix) end)
+    |> toposort_yaku(get(rules_ref, "yaku_precedence", %{}))
     :ets.insert(rules_ref, {:yaku, toposorted_yaku})
+    :ets.insert(rules_ref, {:yaku_by_key, Enum.group_by(toposorted_yaku, & &1.key)})
     :ets.insert(rules_ref, {:yaku_skip_map, skip_map})
 
     # generate shanten definitions if they don't exist

@@ -422,10 +422,28 @@ defmodule RiichiAdvanced.GameState.Conditions do
         winning_hand = cxt_player.hand ++ Enum.flat_map(non_flower_calls, &Utils.call_to_tiles/1)
         Enum.all?(winning_hand, &Utils.has_matching_tile?(Enum.concat([&1], Map.get(tile_mappings, &1, [])), tiles))
       "all_saki_cards_drafted"   -> Map.has_key?(state, :saki) and Saki.check_if_all_drafted(state)
-      "has_existing_yaku"        -> Enum.all?(opts, fn opt -> case opt do
+      "has_existing_yaku"        ->
+        by_name = Enum.all?(opts, fn opt -> case opt do
           [name, value] -> Enum.any?(context.existing_yaku, fn {name2, value2} -> name == name2 and value == value2 end)
-          name          -> Enum.any?(context.existing_yaku, fn {name2, _value} -> name == name2 end)
-        end end)
+          name_or_value -> Enum.any?(context.existing_yaku, fn {name2, value2} -> name_or_value == name2 or name_or_value == value2 end)
+         end end)
+        by_name or (
+          # by_list
+          score_rules = Rules.get(state.rules_ref, "score_calculation", %{})
+          yaku_lists = Map.get(score_rules, "yaku_lists", [])
+          lists = Enum.filter(opts, & &1 in yaku_lists)
+          if Enum.empty?(lists) do false else
+            # true if any of the existing yaku matches a yaku in lists
+            yaku_by_key = Rules.get(state.rules_ref, :yaku_by_key, %{})
+            Enum.any?(context.existing_yaku, fn {name, value} ->
+              possible_denominations = Enum.drop_every(value, 2)
+              possible_denominations = [possible_denominations | Enum.map(possible_denominations, &[&1])]
+              Enum.any?(possible_denominations, fn denomination ->
+                Enum.any?(Map.get(yaku_by_key, [name, denomination], []), & &1.list_name in lists)
+              end)
+            end)
+          end
+        )
       "has_no_yaku"             -> Enum.empty?(context.existing_yaku)
       "has_points"              ->
         totals = context.existing_yaku

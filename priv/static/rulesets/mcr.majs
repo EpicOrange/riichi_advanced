@@ -10,6 +10,7 @@ define_global pon_name, "Pung"
 define_global ron_name, "Hu"
 define_global tsumo_name, "Hu"
 require "value_honors"
+require "standard_sets"
 require "base"
 require "standard_wall"
 require "framed_5z"
@@ -186,7 +187,6 @@ define_yaku yaku, "Knitted Straight", [12, "Fan"], match(["hand", "calls", "winn
 define_yaku yaku, "Upper Four", [12, "Fan"], winning_hand_consists_of("6m","7m","8m","9m","6p","7p","8p","9p","6s","7s","8s","9s")
 define_yaku yaku, "Lower Four", [12, "Fan"], winning_hand_consists_of("1m","2m","3m","4m","1p","2p","3p","4p","1s","2s","3s","4s")
 define_yaku yaku, "Big Three Winds", [12, "Fan"], match(["hand", "calls", "winning_tile"], ~m"unique, (ton nan shaa pei):3")
-define_yaku meta_yaku, "Chicken Hand", [12, "Fan"], has_no_yaku
 
 # 8
 define_set mixed_straight, ~s"0 1 2, 13 14 15, 26 27 28|0 1 2, 16 17 18, 23 24 25"
@@ -201,6 +201,7 @@ define_yaku yaku, "Last Tile Claim", [8, "Fan"], not_won_by_draw and no_tiles_re
 define_yaku yaku, "Out with Replacement Tile", [8, "Fan"], not_status_missing("kan")
 define_yaku yaku, "Robbing The Kong", [8, "Fan"], won_by_call
 define_yaku yaku, "Two Concealed Kongs", [8, "Fan"], match(["calls"], ~m"ankan:2")
+define_yaku meta_yaku, "Chicken Hand", [8, "Fan"], not_has_existing_yaku("yaku")
 
 # 6
 define_yaku yaku, "All Pungs", [6, "Fan"], match(["hand", "calls", "winning_tile"], ~m"koutsu:4, pair:1")
@@ -262,10 +263,10 @@ define_yaku yaku, "Short Straight", [1, "Fan"], match(["hand", "calls", "winning
 define_yaku yaku, "Short Straight", [1, "Fan"], match(["hand", "calls", "winning_tile"], ~m"exhaustive, short_straight:2, pair:1")
 define_yaku yaku, "Two Terminal Chows", [1, "Fan"], match(["hand", "calls", "winning_tile"], ~m"exhaustive, terminal_sequences:1, mentsu:2, pair:1")
 define_yaku yaku, "Two Terminal Chows", [1, "Fan"], match(["hand", "calls", "winning_tile"], ~m"exhaustive, terminal_sequences:2, pair:1")
-define_yaku yaku, "Pung of Terminals", [1, "Fan"], match(["hand", "calls", "winning_tile"], ~m"terminal_t:1")
-define_yaku yaku, "Pung of Terminals", [1, "Fan"], match(["hand", "calls", "winning_tile"], ~m"terminal_t:2")
-define_yaku yaku, "Pung of Terminals", [1, "Fan"], match(["hand", "calls", "winning_tile"], ~m"terminal_t:3")
-define_yaku yaku, "Pung of Terminals", [1, "Fan"], match(["hand", "calls", "winning_tile"], ~m"terminal_t:4")
+define_yaku yaku, "Pung of Terminals", [1, "Fan"], match(["hand", "calls", "winning_tile"], ~m"exhaustive, terminal_t:1, mentsu:3, pair:1")
+define_yaku yaku, "Pung of Terminals", [1, "Fan"], match(["hand", "calls", "winning_tile"], ~m"exhaustive, terminal_t:2, mentsu:2, pair:1")
+define_yaku yaku, "Pung of Terminals", [1, "Fan"], match(["hand", "calls", "winning_tile"], ~m"exhaustive, terminal_t:3, mentsu:1, pair:1")
+define_yaku yaku, "Pung of Terminals", [1, "Fan"], match(["hand", "calls", "winning_tile"], ~m"exhaustive, terminal_t:4, pair:1")
 # pung of honors is just guest winds
 define_yaku yaku, "Pung of Honors", [1, "Fan"], match(["hand", "calls", "winning_tile"], ~m"(ton nan shaa pei):-3, guest_wind:1")
 define_yaku yaku, "Pung of Honors", [1, "Fan"], match(["hand", "calls", "winning_tile"], ~m"(ton nan shaa pei):-3, guest_wind:2")

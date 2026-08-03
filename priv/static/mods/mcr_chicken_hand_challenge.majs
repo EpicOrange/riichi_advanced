@@ -14,16 +14,17 @@ replace all, "meta_yaku", [-1, "Fan"], [0, "Fan"]
 replace all, "meta_yaku", [1, "Fan"], [0, "Fan"]
 replace all, "meta_yaku", [2, "Fan"], [0, "Fan"]
 # chicken hand is a meta_yaku worth 8, so it is untouched
+# flowers are extra_yaku, so also untouched
 
 on after_initialization do
   move_rule("8 Fan", "Chicken Hand", "Chicken Hand", "Chicken Hand")
-  add_rule("1 Fan", "Chicken Hand Challenge", "Everything here is actually worth 0 Fan (including flowers.)", -1)
-  add_rule("2 Fan", "Chicken Hand Challenge", "Everything here is actually worth 0 Fan (including flowers.)", -1)
-  add_rule("4 Fan", "Chicken Hand Challenge", "Everything here is actually worth 0 Fan (including flowers.)", -1)
-  add_rule("6 Fan", "Chicken Hand Challenge", "Everything here is actually worth 0 Fan (including flowers.)", -1)
-  add_rule("8 Fan", "Chicken Hand Challenge", "Everything here is actually worth 0 Fan (including flowers.)", -1)
-  add_rule("12 Fan", "Chicken Hand Challenge", "Everything here is actually worth 0 Fan (including flowers.)", -1)
-  add_rule("16 Fan", "Chicken Hand Challenge", "Everything here is actually worth 0 Fan (including flowers.)", -1)
+  add_rule("1 Fan", "Chicken Hand Challenge", "Everything here is actually worth 0 Fan (excluding flowers.)", -1)
+  add_rule("2 Fan", "Chicken Hand Challenge", "Everything here is actually worth 0 Fan (excluding flowers.)", -1)
+  add_rule("4 Fan", "Chicken Hand Challenge", "Everything here is actually worth 0 Fan (excluding flowers.)", -1)
+  add_rule("6 Fan", "Chicken Hand Challenge", "Everything here is actually worth 0 Fan (excluding flowers.)", -1)
+  add_rule("8 Fan", "Chicken Hand Challenge", "Everything here is actually worth 0 Fan (excluding flowers.)", -1)
+  add_rule("12 Fan", "Chicken Hand Challenge", "Everything here is actually worth 0 Fan (excluding flowers.)", -1)
+  add_rule("16 Fan", "Chicken Hand Challenge", "Everything here is actually worth 0 Fan (excluding flowers.)", -1)
   rename_rule_tab("24+ Fan", "12+ Fan")
   rename_rule_tab("16 Fan", "12+ Fan")
   rename_rule_tab("12 Fan", "12+ Fan")
