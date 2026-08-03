@@ -154,6 +154,7 @@ defmodule RiichiAdvanced.ModLoader.ModState do
   # this means defines in later rulesets are passed to earlier rulesets, not the reverse
   defp read_ruleset(ruleset, defs, acc \\ [], visited \\ [])
   defp read_ruleset(nil, _defs, acc, _visited), do: acc
+  defp read_ruleset("custom", _defs, acc, _visited), do: acc
   defp read_ruleset(ruleset, _defs, _acc, visited) when length(visited) >= 5, do: raise "read_ruleset: Reached max ruleset depth of 5 while trying to load base ruleset #{ruleset} (stack was #{inspect(visited)})"
   defp read_ruleset(ruleset, defs, acc, visited) do
     if ruleset in visited do acc else
