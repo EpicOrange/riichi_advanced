@@ -1050,41 +1050,42 @@ defmodule RiichiAdvanced.GameState do
     visible_ponds ++ visible_calls ++ visible_hands
   end
 
-  def calculate_wait_label(state, seat, wait) do
-    if "furiten" in state.players[seat].status do
-      "Furiten"
-    else
-      yaku_lists = Conditions.get_yaku_lists(state)
-      point_name = Rules.get(state.rules_ref, "score_calculation")["point_name"]
-      point2_name = Rules.get(state.rules_ref, "score_calculation")["point2_name"]
-      min_han = Rules.get(state.rules_ref, "constants") |> Map.get("min_points", 1)
-      prev_seat = Utils.prev_turn(seat)
-      score = fn state, win_source ->
-        state = if win_source == :discard do Map.put(state, :turn, prev_seat) else state end
-        Scoring.seat_scores_points(state, yaku_lists, point_name, min_han, 0, seat, wait, win_source)
-        or Scoring.seat_scores_points(state, yaku_lists, point2_name, min_han, 0, seat, wait, win_source)
-      end
-      cond do
-        score.(update_winning_tile(state, prev_seat, :discard, fn _ -> wait end), :discard) -> nil
-        score.(update_winning_tile(state, seat, :draw, fn _ -> wait end), :draw) -> "Self-Draw"
-        min_han > 1 -> "Min #{min_han}"
-        true -> "No Yaku"
-      end
+  def calculate_wait_label(state, seat, wait, discard, index) do
+    yaku_lists = Conditions.get_yaku_lists(state)
+    point_name = Rules.get(state.rules_ref, "score_calculation")["point_name"]
+    point2_name = Rules.get(state.rules_ref, "score_calculation")["point2_name"]
+    min_han = Rules.get(state.rules_ref, "constants") |> Map.get("min_points", 1)
+    # pretend you have discarded that tile
+    state = if discard != nil do
+      state
+      |> Actions.play_tile(seat, discard, index, true)
+      |> Actions.advance_turn()
+    else state end
+    get_score = fn state, win_source ->
+      Scoring.seat_scores_points(state, yaku_lists, point_name, min_han, 0, seat, wait, win_source)
+      or Scoring.seat_scores_points(state, yaku_lists, point2_name, min_han, 0, seat, wait, win_source)
+    end
+    cond do
+      get_score.(update_winning_tile(state, state.turn, :discard, fn _ -> wait end), :discard) -> nil
+      "furiten" in state.players[seat].status -> "Furiten" # hardcoded version of "Self-Draw" for riichi
+      get_score.(update_winning_tile(state, seat, :draw, fn _ -> wait end), :draw) -> "Self-Draw"
+      min_han > 1 -> "Min #{min_han}"
+      true -> "No Yaku"
     end
   end
 
   def get_visible_waits(state, seat, index) do
     hand = state.players[seat].hand ++ state.players[seat].draw
-    hand = if index != nil do
-      List.delete_at(hand, index)
-    else hand end
+    {discard, hand} = if index != nil do
+      List.pop_at(hand, index)
+    else {nil, hand} end
     calls = state.players[seat].calls
     win_definitions = Rules.translate_match_definitions(state.rules_ref, Rules.get(state.rules_ref, "show_waits", %{}) |> Map.get("win_definitions", []))
     tile_behavior = state.players[seat].tile_behavior
     visible_tiles = get_visible_tiles(state, seat)
     Match.get_waits_and_ukeire(hand, calls, win_definitions, visible_tiles, tile_behavior)
     |> Enum.sort_by(fn {wait, _ukeire} -> Constants.sort_value(wait) end)
-    |> Enum.map(fn {wait, ukeire} -> {wait, ukeire, calculate_wait_label(state, seat, wait)} end)
+    |> Enum.map(fn {wait, ukeire} -> {wait, ukeire, calculate_wait_label(state, seat, wait, discard, index)} end)
   end
 
   def get_open_riichi_hands(state) do

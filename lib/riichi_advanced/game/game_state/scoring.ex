@@ -118,6 +118,7 @@ defmodule RiichiAdvanced.GameState.Scoring do
     # obtain smt_hand and smt_calls after before_win runs
     #   because we may have run actions to modify the hand (e.g. by adding attributes)
     {smt_hand, smt_calls} = JokerSolver.get_smt_hand_calls(state.players[seat].hand, state.players[seat].calls, winning_tile)
+    # |> IO.inspect(label: inspect(win_source))
 
     # now calculate joker assignments
     # and see if any of them result in a score at least min_points and min_minipoints
@@ -167,6 +168,7 @@ defmodule RiichiAdvanced.GameState.Scoring do
           points >= min_points
       end
     end, timeout: :infinity, ordered: false)
+    # |> Enum.to_list() |> IO.inspect(label: inspect(win_source))
     |> Enum.any?(fn {:ok, result} -> result end)
   end
   

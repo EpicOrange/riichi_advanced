@@ -74,7 +74,7 @@ defmodule RiichiAdvanced.GameState.Actions do
     state
   end
 
-  def play_tile(state, seat, tile, index) do
+  def play_tile(state, seat, tile, index, quiet \\ false) do
     if can_discard(state, seat) and is_playable?(state, seat, tile) do
       # IO.puts("#{seat} played tile: #{inspect(tile)} at index #{index}")
       
@@ -108,7 +108,7 @@ defmodule RiichiAdvanced.GameState.Actions do
       tile = Enum.at(state.players[seat].discards, -1)
       state = update_in(state.players[seat].discards, &List.update_at(&1, -1, fn _ -> tile end))
       state = update_in(state.players[seat].pond, &List.update_at(&1, -1, fn _ -> tile end))
-      state = register_discard(state, seat, if facedown do :"1x" else tile end, tsumogiri)
+      state = register_discard(state, seat, if facedown do :"1x" else tile end, tsumogiri, quiet)
 
       state = Map.put(state, :awaiting_discard, false)
 
