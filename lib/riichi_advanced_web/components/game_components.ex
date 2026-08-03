@@ -11,24 +11,18 @@ defmodule RiichiAdvancedWeb.GameComponents do
   attr :seat, :any, required: true
   attr :game_state, :any, required: true
   attr :viewer, :any, required: true
-  attr :hovered_called_tile, :any, required: true
-  attr :hovered_call_choice, :any, required: true
-  attr :playable_indices, :any, required: true
-  attr :selected_index, :any, required: true
-  attr :preplayed_index, :any, required: true
   attr :lang, :any, required: true
   attr :display_riichi_sticks, :any, required: true
   attr :display_honba, :any, required: true
   attr :waiting_on_timer, :any, required: true
-  attr :hide_buttons, :any, required: true
   attr :marking, :any, required: true
   attr :revealed_tiles, :any, required: true
   attr :loading, :any, required: true
-  attr :visible_waits, :any, required: true
-  attr :show_waits_index, :any, required: true
   attr :messages, :any, required: true
   attr :messages_state, :any, required: true
+  attr :interaction_state, :any, required: true
   attr :tutorial_state, :any, required: true
+  slot :inner_block
   def game_view(assigns) do
     ~H"""
     <div id="container" class={[@ruleset == "minefield" && "minefield"]} phx-hook="ClickListener">
@@ -61,11 +55,11 @@ defmodule RiichiAdvancedWeb.GameComponents do
         status={player.status}
         saki={if Map.has_key?(@state, :saki) do @state.saki else nil end}
         marking={@state.marking[@seat]}
-        called_tile={@hovered_called_tile}
-        call_choice={@hovered_call_choice}
-        playable_indices={@playable_indices}
-        selected_index={@selected_index}
-        preplayed_index={@preplayed_index}
+        called_tile={@interaction_state.hovered_called_tile}
+        call_choice={@interaction_state.hovered_call_choice}
+        playable_indices={@interaction_state.playable_indices}
+        selected_index={@interaction_state.selected_index}
+        preplayed_index={@interaction_state.preplayed_index}
         dead_hand_buttons={Rules.get(@state.rules_ref, "dead_hand_buttons", false)}
         dead_hand?={"dead_hand" in @state.players[seat].status}
         play_tile={&send(self(), {:play_tile, &1})}
@@ -136,7 +130,7 @@ defmodule RiichiAdvancedWeb.GameComponents do
         <.live_component module={RiichiAdvancedWeb.ErrorWindowComponent} id="error-window" game_state={@game_state} seat={@seat} lang={@lang} players={@state.players} error={@state.error}/>
       <% end %>
       <%= if @viewer != :spectator do %>
-        <div class="buttons" :if={not @hide_buttons and @state.players[@seat].declared_yaku != []}>
+        <div class="buttons" :if={not @interaction_state.hide_buttons and @state.players[@seat].declared_yaku != []}>
           <%= if @marking and not Enum.empty?(@state.marking[@seat]) do %>
             <button class="button" phx-cancellable-click="clear_marked_objects" :if={RiichiAdvanced.GameState.Marking.num_objects_needed(@state.marking[@seat]) > 1}><%= t(@lang, "Clear") %></button>
             <button class="button" phx-cancellable-click="cancel_marked_objects" :if={Keyword.get(@state.marking[@seat], :cancellable)}><%= t(@lang, "Cancel") %></button>
@@ -160,13 +154,13 @@ defmodule RiichiAdvancedWeb.GameComponents do
           viewer={@viewer}
           marking={@state.marking[@seat]}
           your_turn?={@seat == @state.turn}
-          playable_indices={@playable_indices}
+          playable_indices={@interaction_state.playable_indices}
           play_tile={&send(self(), {:play_tile, &1})}
           mark_tile={&send(self(), {:mark_tile, &1, &2})}
           unmark_tile={&send(self(), {:unmark_tile, &1, &2})}
           hover={&send(self(), {:hover, &1})}
           hover_off={fn -> send(self(), :hover_off) end}
-          selected_index={@selected_index} />
+          selected_index={@interaction_state.selected_index} />
         <div class="auto-buttons game-bottom-element">
           <%= for {{name, desc, checked, _}, i} <- Enum.with_index(@state.players[@seat].auto_buttons) do %>
             <input id={"auto-button-" <> name} type="checkbox" class="auto-button" phx-click="auto_button_toggled" phx-value-name={name} phx-value-enabled={if checked do "true" else "false" end} checked={checked}>
@@ -280,15 +274,15 @@ defmodule RiichiAdvancedWeb.GameComponents do
           <% end %>
         </div>
       <% end %>
-      <%= if @visible_waits != nil and @show_waits_index != nil and Rules.has_key?(@state.rules_ref, "show_waits") do %>
-        <%= if Map.get(@visible_waits, @show_waits_index, :loading) == :loading do %>
+      <%= if @interaction_state.visible_waits != nil and @interaction_state.show_waits_index != nil and Rules.has_key?(@state.rules_ref, "show_waits") do %>
+        <%= if Map.get(@interaction_state.visible_waits, @interaction_state.show_waits_index, :loading) == :loading do %>
           <div class="visible-waits-container">
             <div class="visible-waits visible-waits-loading">
               Calculating waits...
             </div>
           </div>
         <% else %>
-          <% waits = Map.get(@visible_waits, @show_waits_index, []) %>
+          <% waits = Map.get(@interaction_state.visible_waits, @interaction_state.show_waits_index, []) %>
           <div class="visible-waits-container" :if={not Enum.empty?(waits)}>
             <% has_label = Enum.any?(waits, fn {_wait, _num, label} -> label != nil end) %>
             <div class={["visible-waits"] ++ if has_label do ["spaced"] else [] end}>
