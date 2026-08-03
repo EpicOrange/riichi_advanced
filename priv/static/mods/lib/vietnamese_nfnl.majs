@@ -22,17 +22,22 @@ on after_initialization do
 end
 
 define_match has_non_nfnl_tile, ~m"nojoker, (any_flower any_joker):1"
+define_match has_non_nfnl1_tile, ~m"nojoker, (any_flower any_joker 1z 2z 3z 4z 0z 6z 7z):1"
 
 # True NFNL: replace regular win buttons with a button that says "No Flowers, No Leaves"
+define_const true_nfnl,
+  status("nfnl_eligible")
+  and (flowers_jokers_discarded < 3 or not_our_turn or not_has_draw or match(["draw"], ["has_non_nfnl_tile"]))
+  and not_match(["hand", "draw", "calls", "flowers", "jokers"], ["has_non_nfnl_tile"])
+define_const has_win_button,
+  (not_our_turn and someone_else_just_discarded and not_match(["last_discard"], ["any_flower", "any_joker"]) and match(["hand", "calls", "last_discard"], ["win"]))
+  or (not_our_turn and someone_else_just_called and not_match(["last_called_tile"], ["any_flower", "any_joker"]) and status("can_chankan", as: "caller") and match(["hand", "calls", "last_called_tile"], ["win"]))
+  or (our_turn and not_match(["draw"], ["any_flower", "any_joker"]) and match(["hand", "calls", "draw", "flowers"], ["win"]))
 define_button nfnl0,
   display_name: "No Flowers, No Leaves",
   show_when: status_missing("initial_flowers")
-    and status("nfnl_eligible")
-    and (flowers_jokers_discarded < 3 or not_our_turn or not_has_draw or match(["draw"], ["has_non_nfnl_tile"]))
-    and not_match(["hand", "draw", "calls", "flowers", "jokers"], ["has_non_nfnl_tile"])
-    and ((not_our_turn and someone_else_just_discarded and match(["hand", "calls", "last_discard"], ["win"]) and not_match(["last_discard"], ["any_flower", "any_joker"]))
-      or (not_our_turn and someone_else_just_called and status("can_chankan", as: "caller") and match(["hand", "calls", "last_called_tile"], ["win"]) and not_match(["last_called_tile"], ["any_flower", "any_joker"]))
-      or (our_turn and match(["hand", "calls", "draw", "flowers"], ["win"]) and not_match(["draw"], ["any_flower", "any_joker"]))),
+    and +@true_nfnl
+    and +@has_win_button,
   precedence_over: ["chii", "pon", "daiminkan", "ron", "chankan", "nfnl0", "nfnl1"]
   do
     if our_turn do big_text("Chỉ Mó") else big_text("Ù") end
@@ -55,9 +60,9 @@ define_button nfnl1,
     and status("nfnl_eligible", "discarding_flowers_jokers_eligible")
     and flowers_jokers_discarded >= 3
     and not_match(["hand", "draw", "calls", "flowers", "jokers"], ["has_non_nfnl_tile"])
-    and ((our_turn and has_draw and not_match(["draw"], ["has_non_nfnl_tile"]))
-      or (not_our_turn and someone_else_just_discarded and not_match(["last_discard"], ["has_non_nfnl_tile"]))
-      or (not_our_turn and someone_else_just_called and status("can_chankan", as: "caller") and not_match(["last_called_tile"], ["has_non_nfnl_tile"]))),
+    and ((our_turn and has_draw and not_match(["draw"], ["has_non_nfnl1_tile"]))
+      or (not_our_turn and someone_else_just_discarded and not_match(["last_discard"], ["has_non_nfnl1_tile"]))
+      or (not_our_turn and someone_else_just_called and status("can_chankan", as: "caller") and not_match(["last_called_tile"], ["has_non_nfnl1_tile"]))),
   precedence_over: ["chii", "pon", "daiminkan", "ron", "chankan", "nfnl0", "nfnl1"]
   do
     big_text("No Flowers, No Leaves")
