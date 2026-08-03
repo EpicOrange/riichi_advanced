@@ -76,3 +76,5 @@ define_button kanobekan,
 
 define_yaku yaku, "Sannobekantsu", [1, "Han"], match(["calls"], ~m"(daiminnobekan annobekan kanobekan):4")
 define_yaku yaku, "Suunobekantsu", [3, "Han"], match(["calls"], ~m"(daiminnobekan annobekan kanobekan):4")
+
+apply append, "constants.no_auto_discard_calls", ["annobekan"]
