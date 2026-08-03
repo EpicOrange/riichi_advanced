@@ -59,7 +59,7 @@ defmodule RiichiAdvancedWeb.HandSelectionComponent do
         </div>
         <div class="hand-selection-buttons">
           <%= for tile <- @tiles do %>
-            <button type="button" phx-cancellable-click="add_hand_tile" phx-value-tile={tile}><div class={tile |> Utils.to_tile() |> Utils.get_tile_class(-1, %{}, ["flat"])}></div></button>
+            <button type="button" phx-cancellable-click="add_hand_tile" phx-value-tile={tile |> Utils.to_tile() |> serialize_tile()}><div class={tile |> Utils.to_tile() |> Utils.get_tile_class(-1, %{}, ["flat"])}></div></button>
           <% end %>
         </div>
         <div class="hand-selection-calls">
@@ -74,6 +74,11 @@ defmodule RiichiAdvancedWeb.HandSelectionComponent do
       </div>
     </div>
     """
+  end
+
+  def serialize_tile(tile) do
+    {tile, attrs} = Utils.to_attr_tile(tile)
+    Enum.join([tile | attrs], "#")
   end
 
   def handle_event("reposition", %{"new" => to, "old" => from}, socket) do

@@ -384,7 +384,9 @@ defmodule RiichiAdvancedWeb.ScoringTestLive do
   end
 
   # for hand selection component
-  def handle_event("add_hand_tile", %{"tile" => tile}, socket) do
+  def handle_event("add_hand_tile", %{"tile" => serialized_tile}, socket) do
+    [tile | attrs] = String.split(serialized_tile, "#")
+    tile = Utils.construct_tile(tile, attrs)
     socket = assign(socket, :hand, Enum.take(socket.assigns.hand ++ [tile], 1 + socket.assigns.hand_length))
     {:noreply, socket}
   end
