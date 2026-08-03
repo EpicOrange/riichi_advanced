@@ -568,7 +568,7 @@ div:not(.four-rows) > div.pond::after { content: ""; width: 100%; order: 1; }
 div.pond.self {
   left: calc(50% - (2.375 * var(--tile-size)));
   top: calc(50% + (2.125 * var(--tile-size)));
-  z-index: 3; /* above compass */
+  z-index: 4; /* above compass */
 }
 div.pond.shimocha {
   transform: rotate(270deg);
@@ -931,7 +931,7 @@ div.corner-info > div.ai-thinking::before {
   animation: aiThinking 3s linear forwards infinite;
 }
 div.corner-info.self {
-  z-index: 5; /* above pond */
+  z-index: 3; /* below pond */
 }
 div.corner-info > div.shuugi-display {
   display: flex;
