@@ -102,17 +102,18 @@ main div.messages-container > div.messages span.bold {
   font-weight: 800;
 }
 main div.messages-container > button.clear-messages-button {
+  position: sticky;
   background: gray;
   filter: drop-shadow(0 calc(var(--tile-size) / 8) 0 var(--tile-front-side));
-  position: fixed;
-  margin-top: calc(6.25 * var(--tile-size));
-  right: 0;
-  padding: 0;
   border-radius: calc(0.125 * var(--tile-size));
   width: calc(1 * var(--tile-size));
   height: calc(1 * var(--tile-size));
+  padding: 0;
+  margin-top: calc(0.125 * var(--tile-size));
+  margin-left: auto;
   &:active { filter: none; }
 }
+
 /* make scrolling work */
 /* https://stackoverflow.com/a/78124664 */
 main div.messages-container {
