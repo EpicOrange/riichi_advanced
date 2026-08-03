@@ -86,6 +86,7 @@ end
 
 define_const honba_mult, 3
 def finalize_score do
+  modify_winner("score", "total")
   as winners do
     riichi_stick_payment = pot
     if riichi_stick_payment > 0 do

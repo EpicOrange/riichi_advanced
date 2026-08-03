@@ -10,40 +10,17 @@ on after_initialization do
   end
 end
 
-on after_start do
-  set_status_all("first_turn")
-end
-on before_turn_change do
-  if status("first_turn") and match(["discards"], ~m"any:1") do
-    unset_status("first_turn")
-  end
-end
-on after_call do
-  if status("first_turn") and not_last_call_is("flower", "start_flower") do
-    unset_status("first_turn")
-  end
-end
+on after_start do set_status_all("first_turn") end
+define_play_effect any, unset_status("first_turn")
+on after_call do if not_last_call_is("flower", "start_flower") do unset_status_all("first_turn") end end
 
 define_yaku !tenhou_list, !tenhou_name, [!tenhou_value, !tenhou_han], status("first_turn") and won_by_draw and seat_is("east")
-define_yaku !chiihou_list, !chiihou_name, [!chiihou_value, !chiihou_han], status("first_turn") and won_by_draw and not_seat_is("east")
-define_yaku !chiihou_list, !chiihou_name, [!chiihou_value, !chiihou_han], everyone_status("first_turn") and won_by_discard
-if !renhou_value > 0 do
-  define_yaku !renhou_list, !renhou_name, [!renhou_value, !renhou_han], not_everyone_status("first_turn") and status("first_turn") and won_by_discard
-  define_yaku_precedence !chiihou_name, [!renhou_name]
+if !chiihou_is_tsumo do
+  define_yaku !chiihou_list, !chiihou_name, [!chiihou_value, !chiihou_han], status("first_turn") and won_by_draw and not_seat_is("east")
+else
+  define_yaku !chiihou_list, !chiihou_name, [!chiihou_value, !chiihou_han], status_missing("first_turn", as: "east") and status("first_turn") and won_by_discard
 end
-
-# invalidate certain wins
-on before_win do
-  if !chiihou_is_tsumo do
-    if not_won_by_draw do
-      unset_status("first_turn")
-    end
-  else
-    if not_seat_is("east") and won_by_draw do
-      unset_status("first_turn")
-    end
-  end
-  unless !renhou_value > 0 or won_by_draw do
-    unset_status("first_turn")
-  end
+if !renhou_value > 0 do
+  define_yaku !renhou_list, !renhou_name, [!renhou_value, !renhou_han], print_status and status("first_turn") and won_by_discard
+  define_yaku_precedence !chiihou_name, [!renhou_name]
 end

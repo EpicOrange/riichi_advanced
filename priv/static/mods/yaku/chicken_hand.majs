@@ -1,0 +1,5 @@
+on after_initialization do
+  add_rule("$value $han", "$name", "%{value} %{han} if your hand didn't earn any points.", %{value: !value, han: !han, name: !name})
+end
+
+define_yaku !list, !name, [!value, !han], has_no_yaku

@@ -1,17 +1,14 @@
 require "value_honors"
 
 on after_initialization do
-  add_rule("$value $han", "$name", "Every set/pair in your hand contains a terminal or honor tile.", %{value: !value, han: !han, name: !name})
-  update_rule("$value $han", "$name", "%{example_hand}", %{value: !value, han: !han, name: !name, example_hand: ~t"123m79p789s77z 111p 8p"})
+  add_rule("$value $han", "$name", "%{value} %{han} if every set/pair in your hand contains a terminal or honor tile.", %{value: !chanta_value, han: !chanta_han, name: !chanta_name})
 end
+define_yaku !chanta_list, !chanta_name, [!chanta_value, !chanta_han], match(["hand", "calls", "winning_tile"], ~m"exhaustive, (yaochuu_l yaochuu_r yaochuu_t):4, yaochuu_pair:1")
 
-on before_scoring do
-  add_attr(["hand", "calls", "winning_tile"], ["_yaochuu"], ["yaochuuhai"])
+if !junchan_value > 0 do
+  on after_initialization do
+    add_rule("$value $han", "$name", "%{value} %{han} if every set/pair in your hand contains a terminal tile.", %{value: !junchan_value, han: !junchan_han, name: !junchan_name})
+    update_rule("$value $han", "$name", "%{example_hand}", %{value: !junchan_value, han: !junchan_han, name: !junchan_name, example_hand: ~t"123m79p789s77z 111p 8p"})
+  end
+  define_yaku !junchan_list, !junchan_name, [!junchan_value, !junchan_han], match(["hand", "calls", "winning_tile"], ~m"exhaustive, (terminal_l terminal_r terminal_t):4, terminal_pair:1"), [!chanta_name]
 end
-
-define_set yaochuu_l, ~s"0@yaochuu 1 2"
-define_set yaochuu_r, ~s"0 1 2@yaochuu"
-define_set yaochuu_t, ~s"0@yaochuu 0@yaochuu 0@yaochuu"
-define_set yaochuu_pair, ~s"0@yaochuu 0@yaochuu"
-
-define_yaku !list, !name, [!value, !han], match(["hand", "calls", "winning_tile"], ~m"exhaustive, (yaochuu_l yaochuu_r yaochuu_t):4, yaochuu_pair:1")

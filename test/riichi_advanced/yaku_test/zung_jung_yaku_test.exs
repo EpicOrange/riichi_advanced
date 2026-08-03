@@ -22,7 +22,7 @@ defmodule RiichiAdvanced.YakuTest.ZungJungYaku do
       %{"type" => "buttons_pressed", "buttons" => [%{"button" => "ron"}, nil, nil, nil]}
     ], %{
       east: %{
-        yaku: [{"Chicken Hand", [1, "points"]}]
+        yaku: [{"Chicken Hand", [1, "pts"]}]
       }
     }, %{delta_scores: [3, -1, -1, -1]})
   end
@@ -44,7 +44,7 @@ defmodule RiichiAdvanced.YakuTest.ZungJungYaku do
       %{"type" => "buttons_pressed", "buttons" => [%{"button" => "ron"}, nil, nil, nil]}
     ], %{
       east: %{
-        yaku: [{"Concealed Hand", [5, "points"]}]
+        yaku: [{"Concealed Hand", [5, "pts"]}]
       }
     }, %{delta_scores: [15, -5, -5, -5]})
   end
@@ -67,7 +67,7 @@ defmodule RiichiAdvanced.YakuTest.ZungJungYaku do
       %{"type" => "buttons_pressed", "buttons" => [%{"button" => "ron"}, nil, nil, nil]}
     ], %{
       east: %{
-        yaku: [{"Concealed Hand", [5, "points"]}, {"One Kong", [5, "points"]}]
+        yaku: [{"Concealed Hand", [5, "pts"]}, {"One Kong", [5, "pts"]}]
       }
     }, %{delta_scores: [30, -10, -10, -10]})
   end
@@ -94,7 +94,7 @@ defmodule RiichiAdvanced.YakuTest.ZungJungYaku do
       %{"type" => "buttons_pressed", "buttons" => [%{"button" => "ron"}, nil, nil, nil]}
     ], %{
       east: %{
-        yaku: [{"All Sequences", [5, "points"]}]
+        yaku: [{"All Sequences", [5, "pts"]}]
       }
     }, %{delta_scores: [15, -5, -5, -5]})
   end
@@ -116,7 +116,7 @@ defmodule RiichiAdvanced.YakuTest.ZungJungYaku do
       %{"type" => "buttons_pressed", "buttons" => [%{"button" => "ron"}, nil, nil, nil]}
     ], %{
       east: %{
-        yaku: [{"All Sequences", [5, "points"]}, {"Concealed Hand", [5, "points"]}]
+        yaku: [{"All Sequences", [5, "pts"]}, {"Concealed Hand", [5, "pts"]}]
       }
     }, %{delta_scores: [30, -10, -10, -10]})
   end
@@ -143,7 +143,7 @@ defmodule RiichiAdvanced.YakuTest.ZungJungYaku do
       %{"type" => "buttons_pressed", "buttons" => [%{"button" => "ron"}, nil, nil, nil]}
     ], %{
       east: %{
-        yaku: [{"No Terminals", [5, "points"]}]
+        yaku: [{"No Terminals", [5, "pts"]}]
       }
     }, %{delta_scores: [15, -5, -5, -5]})
   end
@@ -170,7 +170,7 @@ defmodule RiichiAdvanced.YakuTest.ZungJungYaku do
       %{"type" => "buttons_pressed", "buttons" => [%{"button" => "ron"}, nil, nil, nil]}
     ], %{
       east: %{
-        yaku: [{"Mixed One-Suit", [40, "points"]}]
+        yaku: [{"Mixed One-Suit", [40, "pts"]}]
       }
     }, %{delta_scores: [120, -70, -25, -25]})
   end
@@ -197,7 +197,7 @@ defmodule RiichiAdvanced.YakuTest.ZungJungYaku do
       %{"type" => "buttons_pressed", "buttons" => [%{"button" => "ron"}, nil, nil, nil]}
     ], %{
       east: %{
-        yaku: [{"Pure One-Suit", [80, "points"]}]
+        yaku: [{"Pure One-Suit", [80, "pts"]}]
       }
     }, %{delta_scores: [240, -190, -25, -25]})
   end
@@ -219,7 +219,7 @@ defmodule RiichiAdvanced.YakuTest.ZungJungYaku do
       %{"type" => "buttons_pressed", "buttons" => [%{"button" => "ron"}, nil, nil, nil]}
     ], %{
       east: %{
-        yaku: [{"Concealed Hand", [5, "points"]}, {"Pure One-Suit", [80, "points"]}]
+        yaku: [{"Concealed Hand", [5, "pts"]}, {"Pure One-Suit", [80, "pts"]}]
       }
     }, %{delta_scores: [255, -205, -25, -25]})
   end
@@ -241,7 +241,7 @@ defmodule RiichiAdvanced.YakuTest.ZungJungYaku do
       %{"type" => "buttons_pressed", "buttons" => [%{"button" => "ron"}, nil, nil, nil]}
     ], %{
       east: %{
-        yaku: [{"Nine Gates", [480, "points"]}]
+        yaku: [{"Nine Gates", [480, "pts"]}]
       }
     }, %{delta_scores: [1440, -1390, -25, -25]})
   end
@@ -266,7 +266,7 @@ defmodule RiichiAdvanced.YakuTest.ZungJungYaku do
       %{"type" => "buttons_pressed", "buttons" => [%{"button" => "ron"}, nil, nil, nil]}
     ], %{
       east: %{
-        yaku: [{"Value Honor", [10, "points"]}]
+        yaku: [{"Value Honor", [10, "pts"]}]
       }
     }, %{delta_scores: [30, -10, -10, -10]})
   end
@@ -291,7 +291,7 @@ defmodule RiichiAdvanced.YakuTest.ZungJungYaku do
       %{"type" => "buttons_pressed", "buttons" => [%{"button" => "ron"}, nil, nil, nil]}
     ], %{
       east: %{
-        yaku: [{"Value Honor", [10, "points"]}]
+        yaku: [{"Value Honor", [10, "pts"]}]
       }
     }, %{delta_scores: [30, -10, -10, -10]})
   end
@@ -316,7 +316,7 @@ defmodule RiichiAdvanced.YakuTest.ZungJungYaku do
       %{"type" => "buttons_pressed", "buttons" => [%{"button" => "ron"}, nil, nil, nil]}
     ], %{
       east: %{
-        yaku: [{"Value Honor", [10, "points"]}]
+        yaku: [{"Value Honor", [10, "pts"]}]
       }
     }, %{delta_scores: [30, -10, -10, -10]})
   end
@@ -341,7 +341,7 @@ defmodule RiichiAdvanced.YakuTest.ZungJungYaku do
       %{"type" => "buttons_pressed", "buttons" => [%{"button" => "ron"}, nil, nil, nil]}
     ], %{
       east: %{
-        yaku: [{"Value Honor", [10, "points"]}]
+        yaku: [{"Value Honor", [10, "pts"]}]
       }
     }, %{delta_scores: [30, -10, -10, -10]})
   end
@@ -366,7 +366,7 @@ defmodule RiichiAdvanced.YakuTest.ZungJungYaku do
       %{"type" => "buttons_pressed", "buttons" => [%{"button" => "ron"}, nil, nil, nil]}
     ], %{
       east: %{
-        yaku: [{"Value Honor", [20, "points"]}, {"Two Concealed Triplets", [5, "points"]}]
+        yaku: [{"Value Honor", [20, "pts"]}, {"Two Concealed Triplets", [5, "pts"]}]
       }
     }, %{delta_scores: [75, -25, -25, -25]})
   end
@@ -391,7 +391,7 @@ defmodule RiichiAdvanced.YakuTest.ZungJungYaku do
       %{"type" => "buttons_pressed", "buttons" => [%{"button" => "ron"}, nil, nil, nil]}
     ], %{
       east: %{
-        yaku: [{"Small Three Dragons", [40, "points"]}, {"Value Honor", [20, "points"]}]
+        yaku: [{"Small Three Dragons", [40, "pts"]}, {"Value Honor", [20, "pts"]}]
       }
     }, %{delta_scores: [180, -130, -25, -25]})
   end
@@ -419,7 +419,7 @@ defmodule RiichiAdvanced.YakuTest.ZungJungYaku do
       %{"type" => "buttons_pressed", "buttons" => [%{"button" => "ron"}, nil, nil, nil]}
     ], %{
       east: %{
-        yaku: [{"Big Three Dragons", [130, "points"]}, {"Value Honor", [30, "points"]}]
+        yaku: [{"Big Three Dragons", [130, "pts"]}, {"Value Honor", [30, "pts"]}]
       }
     }, %{delta_scores: [480, -430, -25, -25]})
   end
@@ -444,7 +444,7 @@ defmodule RiichiAdvanced.YakuTest.ZungJungYaku do
       %{"type" => "buttons_pressed", "buttons" => [%{"button" => "ron"}, nil, nil, nil]}
     ], %{
       east: %{
-        yaku: [{"Small Three Winds", [30, "points"]}]
+        yaku: [{"Small Three Winds", [30, "pts"]}]
       }
     }, %{delta_scores: [90, -40, -25, -25]})
   end
@@ -472,7 +472,7 @@ defmodule RiichiAdvanced.YakuTest.ZungJungYaku do
       %{"type" => "buttons_pressed", "buttons" => [%{"button" => "ron"}, nil, nil, nil]}
     ], %{
       east: %{
-        yaku: [{"Big Three Winds", [120, "points"]}]
+        yaku: [{"Big Three Winds", [120, "pts"]}]
       }
     }, %{delta_scores: [360, -310, -25, -25]})
   end
@@ -497,7 +497,7 @@ defmodule RiichiAdvanced.YakuTest.ZungJungYaku do
       %{"type" => "buttons_pressed", "buttons" => [%{"button" => "ron"}, nil, nil, nil]}
     ], %{
       east: %{
-        yaku: [{"Small Four Winds", [320, "points"]}]
+        yaku: [{"Small Four Winds", [320, "pts"]}]
       }
     }, %{delta_scores: [960, -910, -25, -25]})
   end
@@ -522,7 +522,7 @@ defmodule RiichiAdvanced.YakuTest.ZungJungYaku do
       %{"type" => "buttons_pressed", "buttons" => [%{"button" => "ron"}, nil, nil, nil]}
     ], %{
       east: %{
-        yaku: [{"Big Four Winds", [400, "points"]}]
+        yaku: [{"Big Four Winds", [400, "pts"]}]
       }
     }, %{delta_scores: [1200, -1150, -25, -25]})
   end
@@ -554,7 +554,7 @@ defmodule RiichiAdvanced.YakuTest.ZungJungYaku do
       %{"type" => "buttons_pressed", "buttons" => [%{"button" => "ron"}, nil, nil, nil]}
     ], %{
       east: %{
-        yaku: [{"All Triplets", [30, "points"]}]
+        yaku: [{"All Triplets", [30, "pts"]}]
       }
     }, %{delta_scores: [90, -40, -25, -25]})
   end
@@ -579,7 +579,7 @@ defmodule RiichiAdvanced.YakuTest.ZungJungYaku do
       %{"type" => "buttons_pressed", "buttons" => [%{"button" => "ron"}, nil, nil, nil]}
     ], %{
       east: %{
-        yaku: [{"Two Concealed Triplets", [5, "points"]}]
+        yaku: [{"Two Concealed Triplets", [5, "pts"]}]
       }
     }, %{delta_scores: [15, -5, -5, -5]})
   end
@@ -602,7 +602,7 @@ defmodule RiichiAdvanced.YakuTest.ZungJungYaku do
       %{"type" => "buttons_pressed", "buttons" => [%{"button" => "ron"}, nil, nil, nil]}
     ], %{
       east: %{
-        yaku: [{"Concealed Hand", [5, "points"]}, {"One Kong", [5, "points"]}, {"Two Concealed Triplets", [5, "points"]}]
+        yaku: [{"Concealed Hand", [5, "pts"]}, {"One Kong", [5, "pts"]}, {"Two Concealed Triplets", [5, "pts"]}]
       }
     }, %{delta_scores: [45, -15, -15, -15]})
   end
@@ -629,7 +629,7 @@ defmodule RiichiAdvanced.YakuTest.ZungJungYaku do
       %{"type" => "buttons_pressed", "buttons" => [%{"button" => "ron"}, nil, nil, nil]}
     ], %{
       east: %{
-        yaku: [{"Three Concealed Triplets", [30, "points"]}]
+        yaku: [{"Three Concealed Triplets", [30, "pts"]}]
       }
     }, %{delta_scores: [90, -40, -25, -25]})
   end
@@ -651,7 +651,7 @@ defmodule RiichiAdvanced.YakuTest.ZungJungYaku do
       %{"type" => "buttons_pressed", "buttons" => [%{"button" => "ron"}, nil, nil, nil]}
     ], %{
       east: %{
-        yaku: [{"All Triplets", [30, "points"]}, {"Concealed Hand", [5, "points"]}, {"Four Concealed Triplets", [125, "points"]}]
+        yaku: [{"All Triplets", [30, "pts"]}, {"Concealed Hand", [5, "pts"]}, {"Four Concealed Triplets", [125, "pts"]}]
       }
     }, %{delta_scores: [480, -430, -25, -25]})
   end
@@ -676,7 +676,7 @@ defmodule RiichiAdvanced.YakuTest.ZungJungYaku do
       %{"type" => "buttons_pressed", "buttons" => [%{"button" => "ron"}, nil, nil, nil]}
     ], %{
       east: %{
-        yaku: [{"One Kong", [5, "points"]}]
+        yaku: [{"One Kong", [5, "pts"]}]
       }
     }, %{delta_scores: [15, -5, -5, -5]})
   end
@@ -704,7 +704,7 @@ defmodule RiichiAdvanced.YakuTest.ZungJungYaku do
       %{"type" => "buttons_pressed", "buttons" => [%{"button" => "ron"}, nil, nil, nil]}
     ], %{
       east: %{
-        yaku: [{"Two Kong", [20, "points"]}]
+        yaku: [{"Two Kong", [20, "pts"]}]
       }
     }, %{delta_scores: [60, -20, -20, -20]})
   end
@@ -735,7 +735,7 @@ defmodule RiichiAdvanced.YakuTest.ZungJungYaku do
       %{"type" => "buttons_pressed", "buttons" => [%{"button" => "ron"}, nil, nil, nil]}
     ], %{
       east: %{
-        yaku: [{"Three Kong", [120, "points"]}]
+        yaku: [{"Three Kong", [120, "pts"]}]
       }
     }, %{delta_scores: [360, -310, -25, -25]})
   end
@@ -769,7 +769,7 @@ defmodule RiichiAdvanced.YakuTest.ZungJungYaku do
       %{"type" => "buttons_pressed", "buttons" => [%{"button" => "ron"}, nil, nil, nil]}
     ], %{
       east: %{
-        yaku: [{"Four Kong", [480, "points"]}]
+        yaku: [{"Four Kong", [480, "pts"]}]
       }
     }, %{delta_scores: [1440, -1390, -25, -25]})
   end
@@ -796,7 +796,7 @@ defmodule RiichiAdvanced.YakuTest.ZungJungYaku do
       %{"type" => "buttons_pressed", "buttons" => [%{"button" => "ron"}, nil, nil, nil]}
     ], %{
       east: %{
-        yaku: [{"Two Identical Sequences", [10, "points"]}]
+        yaku: [{"Two Identical Sequences", [10, "pts"]}]
       }
     }, %{delta_scores: [30, -10, -10, -10]})
   end
@@ -823,7 +823,7 @@ defmodule RiichiAdvanced.YakuTest.ZungJungYaku do
       %{"type" => "buttons_pressed", "buttons" => [%{"button" => "ron"}, nil, nil, nil]}
     ], %{
       east: %{
-        yaku: [{"Three Identical Sequences", [120, "points"]}]
+        yaku: [{"Three Identical Sequences", [120, "pts"]}]
       }
     }, %{delta_scores: [360, -310, -25, -25]})
   end
@@ -850,7 +850,7 @@ defmodule RiichiAdvanced.YakuTest.ZungJungYaku do
       %{"type" => "buttons_pressed", "buttons" => [%{"button" => "ron"}, nil, nil, nil]}
     ], %{
       east: %{
-        yaku: [{"Four Identical Sequences", [480, "points"]}]
+        yaku: [{"Four Identical Sequences", [480, "pts"]}]
       }
     }, %{delta_scores: [1440, -1390, -25, -25]})
   end
@@ -877,7 +877,7 @@ defmodule RiichiAdvanced.YakuTest.ZungJungYaku do
       %{"type" => "buttons_pressed", "buttons" => [%{"button" => "ron"}, nil, nil, nil]}
     ], %{
       east: %{
-        yaku: [{"Three Similar Sequences", [35, "points"]}]
+        yaku: [{"Three Similar Sequences", [35, "pts"]}]
       }
     }, %{delta_scores: [105, -55, -25, -25]})
   end
@@ -902,7 +902,7 @@ defmodule RiichiAdvanced.YakuTest.ZungJungYaku do
       %{"type" => "buttons_pressed", "buttons" => [%{"button" => "ron"}, nil, nil, nil]}
     ], %{
       east: %{
-        yaku: [{"Small Three Similar Triplets", [30, "points"]}]
+        yaku: [{"Small Three Similar Triplets", [30, "pts"]}]
       }
     }, %{delta_scores: [90, -40, -25, -25]})
   end
@@ -930,7 +930,7 @@ defmodule RiichiAdvanced.YakuTest.ZungJungYaku do
       %{"type" => "buttons_pressed", "buttons" => [%{"button" => "ron"}, nil, nil, nil]}
     ], %{
       east: %{
-        yaku: [{"Three Similar Triplets", [120, "points"]}]
+        yaku: [{"Three Similar Triplets", [120, "pts"]}]
       }
     }, %{delta_scores: [360, -310, -25, -25]})
   end
@@ -962,7 +962,7 @@ defmodule RiichiAdvanced.YakuTest.ZungJungYaku do
       %{"type" => "buttons_pressed", "buttons" => [%{"button" => "ron"}, nil, nil, nil]}
     ], %{
       east: %{
-        yaku: [{"Nine-Tile Straight", [40, "points"]}],
+        yaku: [{"Nine-Tile Straight", [40, "pts"]}],
       }
     }, %{delta_scores: [120, -70, -25, -25]})
   end
@@ -984,7 +984,7 @@ defmodule RiichiAdvanced.YakuTest.ZungJungYaku do
       %{"type" => "buttons_pressed", "buttons" => [%{"button" => "ron"}, nil, nil, nil]}
     ], %{
       east: %{
-        yaku: [{"All Sequences", [5, "points"]}, {"Concealed Hand", [5, "points"]}, {"Nine-Tile Straight", [40, "points"]}],
+        yaku: [{"All Sequences", [5, "pts"]}, {"Concealed Hand", [5, "pts"]}, {"Nine-Tile Straight", [40, "pts"]}],
       }
     }, %{delta_scores: [150, -100, -25, -25]})
   end
@@ -1012,7 +1012,7 @@ defmodule RiichiAdvanced.YakuTest.ZungJungYaku do
       %{"type" => "buttons_pressed", "buttons" => [%{"button" => "ron"}, nil, nil, nil]}
     ], %{
       east: %{
-        yaku: [{"Three Consecutive Triplets", [100, "points"]}]
+        yaku: [{"Three Consecutive Triplets", [100, "pts"]}]
       }
     }, %{delta_scores: [300, -250, -25, -25]})
   end
@@ -1043,7 +1043,7 @@ defmodule RiichiAdvanced.YakuTest.ZungJungYaku do
       %{"type" => "buttons_pressed", "buttons" => [%{"button" => "ron"}, nil, nil, nil]}
     ], %{
       east: %{
-        yaku: [{"All Triplets", [30, "points"]}, {"Four Consecutive Triplets", [200, "points"]}]
+        yaku: [{"All Triplets", [30, "pts"]}, {"Four Consecutive Triplets", [200, "pts"]}]
       }
     }, %{delta_scores: [690, -640, -25, -25]})
   end
@@ -1070,7 +1070,7 @@ defmodule RiichiAdvanced.YakuTest.ZungJungYaku do
       %{"type" => "buttons_pressed", "buttons" => [%{"button" => "ron"}, nil, nil, nil]}
     ], %{
       east: %{
-        yaku: [{"Mixed Lesser Terminals", [40, "points"]}]
+        yaku: [{"Mixed Lesser Terminals", [40, "pts"]}]
       }
     }, %{delta_scores: [120, -70, -25, -25]})
   end
@@ -1097,7 +1097,7 @@ defmodule RiichiAdvanced.YakuTest.ZungJungYaku do
       %{"type" => "buttons_pressed", "buttons" => [%{"button" => "ron"}, nil, nil, nil]}
     ], %{
       east: %{
-        yaku: [{"Pure Lesser Terminals", [50, "points"]}]
+        yaku: [{"Pure Lesser Terminals", [50, "pts"]}]
       }
     }, %{delta_scores: [150, -100, -25, -25]})
   end
@@ -1130,7 +1130,7 @@ defmodule RiichiAdvanced.YakuTest.ZungJungYaku do
       %{"type" => "buttons_pressed", "buttons" => [%{"button" => "ron"}, nil, nil, nil]}
     ], %{
       east: %{
-        yaku: [{"All Triplets", [30, "points"]}, {"Mixed Greater Terminals", [100, "points"]}]
+        yaku: [{"All Triplets", [30, "pts"]}, {"Mixed Greater Terminals", [100, "pts"]}]
       }
     }, %{delta_scores: [390, -340, -25, -25]})
   end
@@ -1157,7 +1157,7 @@ defmodule RiichiAdvanced.YakuTest.ZungJungYaku do
       %{"type" => "buttons_pressed", "buttons" => [%{"button" => "ron"}, nil, nil, nil]}
     ], %{
       east: %{
-        yaku: [{"Pure Greater Terminals", [400, "points"]}]
+        yaku: [{"Pure Greater Terminals", [400, "pts"]}]
       }
     }, %{delta_scores: [1200, -1150, -25, -25]})
   end
@@ -1180,7 +1180,7 @@ defmodule RiichiAdvanced.YakuTest.ZungJungYaku do
       %{"type" => "buttons_pressed", "buttons" => [%{"button" => "tsumo"}, nil, nil, nil]}
     ], %{
       east: %{
-        yaku: [{"One Kong", [5, "points"]}, {"Win on Kong", [10, "points"]}]
+        yaku: [{"One Kong", [5, "pts"]}, {"Win on Kong", [10, "pts"]}]
       }
     }, %{delta_scores: [45, -15, -15, -15]})
   end
@@ -1206,7 +1206,7 @@ defmodule RiichiAdvanced.YakuTest.ZungJungYaku do
       %{"type" => "buttons_pressed", "buttons" => [%{"button" => "chankan"}, nil, nil, nil]}
     ], %{
       east: %{
-        yaku: [{"Robbing a Kong", [10, "points"]}]
+        yaku: [{"Robbing a Kong", [10, "pts"]}]
       }
     }, %{delta_scores: [30, -10, -10, -10]})
   end
@@ -1226,7 +1226,7 @@ defmodule RiichiAdvanced.YakuTest.ZungJungYaku do
       %{"type" => "buttons_pressed", "buttons" => [%{"button" => "tsumo"}, nil, nil, nil]}
     ], %{
       east: %{
-        yaku: [{"Concealed Hand", [5, "points"]}, {"Blessing of Heaven", [155, "points"]}]
+        yaku: [{"Concealed Hand", [5, "pts"]}, {"Blessing of Heaven", [155, "pts"]}]
       }
     }, %{delta_scores: [480, -160, -160, -160]})
   end
@@ -1247,7 +1247,7 @@ defmodule RiichiAdvanced.YakuTest.ZungJungYaku do
       %{"type" => "buttons_pressed", "buttons" => [%{"button" => "tsumo"}, nil, nil, nil]}
     ], %{
       east: %{
-        yaku: [{"Concealed Hand", [5, "points"]}, {"One Kong", [5, "points"]}, {"Win on Kong", [10, "points"]}]
+        yaku: [{"Concealed Hand", [5, "pts"]}, {"One Kong", [5, "pts"]}, {"Win on Kong", [10, "pts"]}]
       }
     }, %{delta_scores: [60, -20, -20, -20]})
   end
@@ -1268,7 +1268,7 @@ defmodule RiichiAdvanced.YakuTest.ZungJungYaku do
       %{"type" => "buttons_pressed", "buttons" => [nil, %{"button" => "ron"}, nil, nil]}
     ], %{
       south: %{
-        yaku: [{"Concealed Hand", [5, "points"]}, {"Blessing of Earth", [155, "points"]}]
+        yaku: [{"Concealed Hand", [5, "pts"]}, {"Blessing of Earth", [155, "pts"]}]
       }
     }, %{delta_scores: [-430, 480, -25, -25]})
   end
@@ -1290,7 +1290,7 @@ defmodule RiichiAdvanced.YakuTest.ZungJungYaku do
       %{"type" => "buttons_pressed", "buttons" => [nil, %{"button" => "ron"}, nil, nil]}
     ], %{
       south: %{
-        yaku: [{"Concealed Hand", [5, "points"]}]
+        yaku: [{"Concealed Hand", [5, "pts"]}]
       }
     }, %{delta_scores: [-5, 15, -5, -5]})
   end
@@ -1312,7 +1312,7 @@ defmodule RiichiAdvanced.YakuTest.ZungJungYaku do
       %{"type" => "buttons_pressed", "buttons" => [nil, %{"button" => "ron"}, nil, nil]}
     ], %{
       south: %{
-        yaku: [{"Thirteen Terminals", [160, "points"]}]
+        yaku: [{"Thirteen Terminals", [160, "pts"]}]
       }
     }, %{delta_scores: [-430, 480, -25, -25]})
   end
@@ -1334,7 +1334,7 @@ defmodule RiichiAdvanced.YakuTest.ZungJungYaku do
       %{"type" => "buttons_pressed", "buttons" => [nil, %{"button" => "ron"}, nil, nil]}
     ], %{
       south: %{
-        yaku: [{"Thirteen Terminals", [160, "points"]}]
+        yaku: [{"Thirteen Terminals", [160, "pts"]}]
       }
     }, %{delta_scores: [-430, 480, -25, -25]})
   end
@@ -1356,7 +1356,7 @@ defmodule RiichiAdvanced.YakuTest.ZungJungYaku do
       %{"type" => "buttons_pressed", "buttons" => [nil, %{"button" => "ron"}, nil, nil]}
     ], %{
       south: %{
-        yaku: [{"Seven Pairs", [30, "points"]}]
+        yaku: [{"Seven Pairs", [30, "pts"]}]
       }
     }, %{delta_scores: [-40, 90, -25, -25]})
   end
@@ -1378,7 +1378,7 @@ defmodule RiichiAdvanced.YakuTest.ZungJungYaku do
       %{"type" => "buttons_pressed", "buttons" => [nil, %{"button" => "ron"}, nil, nil]}
     ], %{
       south: %{
-        yaku: [{"Seven Pairs", [30, "points"]}]
+        yaku: [{"Seven Pairs", [30, "pts"]}]
       }
     }, %{delta_scores: [-40, 90, -25, -25]})
   end
@@ -1419,7 +1419,7 @@ defmodule RiichiAdvanced.YakuTest.ZungJungYaku do
       %{"type" => "buttons_pressed", "buttons" => [%{"button" => "ron"}, nil, nil, nil]}
     ], %{
       east: %{
-        yaku: [{"All Honours", [320, "points"]}]
+        yaku: [{"All Honors", [320, "pts"]}]
       }
     }, %{delta_scores: [960, -910, -25, -25]})
   end
@@ -1434,7 +1434,7 @@ defmodule RiichiAdvanced.YakuTest.ZungJungYaku do
         "west": ["2s","3m","4z","2s","8p","3z","7m","4s","2m","8p","2z","6m","9m"],
         "north": ["6p","5s","1z","9s","4m","8s","9m","4p","3s","8p","9p","2m","7p"]
       },
-      "starting_draws": ["8m","3p","5s","7z","6s","4z","5m","7p","3z","1z","2p","3s","1z","3p","4p","1s","6s","7m","4m","9m","8s","3p","8m","4m","1p","0z","1s","3m","8p","7p","6s","0z","1z","2m","1m","2z","7s","4m","8m","4p","2m","7z","7z","0z","7s","9s","1s","3z","3p","2p","8s","0z","8s","6z","4s","1p","6s","6m","5s","2z","7z","5m","8m","3s","6p","3z","7p","5p"],
+      "starting_draws": ["8m","3p","5s","7z","6s","4z","5m","7p","3z","1z","2p","3s","1z","3p","4p","1s","6s","7m","4m","9m","8s","3p","8m","4m","1p","0z","1s","3m","8p","7p","6s","0z","1z","2m","1m","2z","7s","4m","8m","4p","2m","7z","7z","0z","7s","9s","1s","3z","3p","2p","8s","0z","8s","6z","4s","1p","6s","1m","5s","2z","7z","5m","8m","3s","6p","3z","7p","6m","4z","5p"],
       "starting_dead_wall": ["9s","9m","7m","9p","6z","3m","4z","7s","2p","6m","5m","2s","5p","5s"]
     }
     """, [
@@ -1498,23 +1498,25 @@ defmodule RiichiAdvanced.YakuTest.ZungJungYaku do
       %{"player" => 1, "tile" => "1p", "tsumogiri" => true, "type" => "discard"},
       %{"buttons" => [%{"button" => "daiminkan", "call_choice" => ["1p", "1p", "1p"], "called_tile" => "1p"}, nil, nil, nil], "type" => "buttons_pressed"},
       %{"buttons" => [%{"button" => "kakan", "call_choice" => ["6s", "6s", "6s"], "called_tile" => "6s"}, nil, nil, nil], "type" => "buttons_pressed"},
-      %{"player" => 0, "tile" => "6m", "tsumogiri" => true, "type" => "discard"},
-      %{"player" => 1, "tile" => "5s", "tsumogiri" => true, "type" => "discard"},
-      %{"player" => 2, "tile" => "2z", "tsumogiri" => true, "type" => "discard"},
-      %{"player" => 3, "tile" => "7z", "tsumogiri" => true, "type" => "discard"},
-      %{"player" => 0, "tile" => "5m", "tsumogiri" => true, "type" => "discard"},
-      %{"player" => 1, "tile" => "8m", "tsumogiri" => true, "type" => "discard"},
-      %{"player" => 2, "tile" => "3s", "tsumogiri" => true, "type" => "discard"},
-      %{"player" => 3, "tile" => "6p", "tsumogiri" => true, "type" => "discard"},
-      %{"player" => 0, "tile" => "3z", "tsumogiri" => true, "type" => "discard"},
-      %{"player" => 1, "tile" => "7p", "tsumogiri" => true, "type" => "discard"},
-      %{"player" => 2, "tile" => "5p", "tsumogiri" => true, "type" => "discard"},
+      %{"buttons" => [%{"button" => "ankan", "call_choice" => ["1m", "1m", "1m"], "called_tile" => "1m"}, nil, nil, nil], "type" => "buttons_pressed"},
+      %{"player" => 0, "tile" => "5s", "tsumogiri" => true, "type" => "discard"},
+      %{"player" => 1, "tile" => "2z", "tsumogiri" => true, "type" => "discard"},
+      %{"player" => 2, "tile" => "7z", "tsumogiri" => true, "type" => "discard"},
+      %{"player" => 3, "tile" => "5m", "tsumogiri" => true, "type" => "discard"},
+      %{"player" => 0, "tile" => "8m", "tsumogiri" => false, "type" => "discard"},
+      %{"player" => 1, "tile" => "3s", "tsumogiri" => true, "type" => "discard"},
+      %{"player" => 2, "tile" => "6p", "tsumogiri" => true, "type" => "discard"},
+      %{"player" => 3, "tile" => "3z", "tsumogiri" => true, "type" => "discard"},
+      %{"player" => 0, "tile" => "7p", "tsumogiri" => true, "type" => "discard"},
+      %{"player" => 1, "tile" => "6m", "tsumogiri" => true, "type" => "discard"},
+      %{"player" => 2, "tile" => "4z", "tsumogiri" => true, "type" => "discard"},
+      %{"player" => 3, "tile" => "5p", "tsumogiri" => true, "type" => "discard"},
       %{"buttons" => [%{"button" => "ron"}, nil, nil, nil], "type" => "buttons_pressed"}
     ], %{
       east: %{
-        yaku: [{"All Triplets", [30, "points"]}, {"Final Discard", [10, "points"]}, {"Two Kong", [20, "points"]}]
+        yaku: [{"All Triplets", [30, "pts"]}, {"Final Discard", [10, "pts"]}, {"Three Kong", [120, "pts"]}]
       }
-    }, %{delta_scores: [180, -25, -130, -25]})
+    }, %{delta_scores: [480, -25, -25, -430]})
   end
 
   test "zung jung - final draw" do
@@ -1604,7 +1606,7 @@ defmodule RiichiAdvanced.YakuTest.ZungJungYaku do
       %{"buttons" => [nil, %{"button" => "tsumo"}, nil, nil], "type" => "buttons_pressed"}
     ], %{
       south: %{
-        yaku: [{"Concealed Hand", [5, "points"]}, {"Final Draw", [10, "points"]}, {"Mixed One-Suit", [40, "points"]}, {"Value Honor", [10, "points"]}]
+        yaku: [{"Concealed Hand", [5, "pts"]}, {"Final Draw", [10, "pts"]}, {"Mixed One-Suit", [40, "pts"]}, {"Value Honor", [10, "pts"]}]
       }
     }, %{delta_scores: [-65, 195, -65, -65]})
   end

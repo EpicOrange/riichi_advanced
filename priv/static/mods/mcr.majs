@@ -1,8 +1,5 @@
 require "value_honors"
 
-set display_name, "MCR"
-set tutorial_link, "https://ooyamaneko.net/download/mahjong/mcr/MCR_2014_en.pdf"
-
 set custom_style, %{
   tile_indices: %{
     "1f": "F",
@@ -123,7 +120,6 @@ define_yaku yaku, "Three Kongs", [32, "Fan"], match(["calls"], ~m"(daiminkan ank
 define_yaku yaku, "All Terminals and Honors", [32, "Fan"], winning_hand_consists_of("1m","9m","1p","9p","1s","9s","1z","2z","3z","4z","0z","6z","7z")
 
 # 24
-define_yaku yaku, "Seven Pairs", [24, "Fan"], match(["hand", "winning_tile"], ["chiitoitsu_win"])
 define_match greater_knitted, ~m"""
   unique, (1m 4m 7m 2p 5p 8p 3s 6s 9s):7, (1z 2z 3z 4z 0z 6z 7z):7 |
   unique, (1m 4m 7m 3p 6p 9p 2s 5s 8s):7, (1z 2z 3z 4z 0z 6z 7z):7 |
@@ -616,8 +612,6 @@ on after_initialization do
   # 88 Fan
   add_rule("24+ Fan", "Big Three Dragons (88 Fan)", "You have three dragon triplets.")
   add_rule("24+ Fan", "Big Three Dragons (88 Fan)", "%{example_hand}", %{example_hand: ~t"11m345s00066z 7z7Z7z 6z"})
-  add_rule("24+ Fan", "Thirteen Orphans (88 Fan)", "You have one of each terminal and honor tile, one of them forming a pair.")
-  add_rule("24+ Fan", "Thirteen Orphans (88 Fan)", "%{example_hand}", %{example_hand: ~t"19m19p19s1234457z 6z"})
   add_rule("24+ Fan", "All Green (88 Fan)", "Your hand is composed of tiles from the following (ignore flowers):")
   add_rule("24+ Fan", "All Green (88 Fan)", "- Bamboo tiles: %{reversible_s}", %{reversible_s: ~t"23468s"})
   add_rule("24+ Fan", "All Green (88 Fan)", "- Green dragon: %{reversible_z}", %{reversible_z: ~t"6z"})

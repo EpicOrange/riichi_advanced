@@ -21,7 +21,7 @@ defmodule RiichiAdvanced.ZungJungScoringTest do
       %{"type" => "buttons_pressed", "buttons" => [nil, %{"button" => "ron"}, nil, nil]}
     ], %{
       south: %{
-        yaku: [{"Thirteen Terminals", [160, "points"]}]
+        yaku: [{"Thirteen Terminals", [160, "pts"]}]
       }
     }, %{delta_scores: [-430, 480, -25, -25]})
   end
@@ -46,7 +46,7 @@ defmodule RiichiAdvanced.ZungJungScoringTest do
       %{"type" => "buttons_pressed", "buttons" => [nil, %{"button" => "ron"}, nil, nil]}
     ], %{
       south: %{
-        yaku: [{"Thirteen Terminals", [160, "points"]}]
+        yaku: [{"Thirteen Terminals", [160, "pts"]}]
       }
     }, %{delta_scores: [-25, 480, -430, -25]})
   end
@@ -72,7 +72,7 @@ defmodule RiichiAdvanced.ZungJungScoringTest do
       %{"type" => "buttons_pressed", "buttons" => [nil, %{"button" => "ron"}, nil, nil]}
     ], %{
       south: %{
-        yaku: [{"Thirteen Terminals", [160, "points"]}]
+        yaku: [{"Thirteen Terminals", [160, "pts"]}]
       }
     }, %{delta_scores: [-25, 480, -430, -25]})
   end
@@ -98,7 +98,7 @@ defmodule RiichiAdvanced.ZungJungScoringTest do
       %{"type" => "buttons_pressed", "buttons" => [nil, %{"button" => "ron"}, nil, nil]}
     ], %{
       south: %{
-        yaku: [{"Thirteen Terminals", [160, "points"]}]
+        yaku: [{"Thirteen Terminals", [160, "pts"]}]
       }
     }, %{delta_scores: [-25, 480, -25, -430]})
   end
@@ -124,12 +124,12 @@ defmodule RiichiAdvanced.ZungJungScoringTest do
       %{"type" => "buttons_pressed", "buttons" => [nil, %{"button" => "ron"}, nil, nil]}
     ], %{
       south: %{
-        yaku: [{"Thirteen Terminals", [160, "points"]}]
+        yaku: [{"Thirteen Terminals", [160, "pts"]}]
       }
     }, %{delta_scores: [-160, 480, -160, -160]})
   end
 
-  test "zung jung - compound limit hand cap at 320 points" do
+  test "zung jung - compound limit hand cap at 320 pts" do
     TestUtils.test_yaku_advanced("zung_jung", [], """
     {
       "starting_hand": {
@@ -145,14 +145,14 @@ defmodule RiichiAdvanced.ZungJungScoringTest do
     ], %{
       east: %{
         yaku: [
-          {"All Triplets", [30, "points"]},
-          {"Blessing of Heaven", [155, "points"]},
-          {"Concealed Hand", [5, "points"]},
-          {"Four Concealed Triplets", [125, "points"]},
-          {"Four Consecutive Triplets", [200, "points"]},
-          {"Pure One-Suit", [80, "points"]}
+          {"All Triplets", [30, "pts"]},
+          {"Blessing of Heaven", [155, "pts"]},
+          {"Concealed Hand", [5, "pts"]},
+          {"Four Concealed Triplets", [125, "pts"]},
+          {"Four Consecutive Triplets", [200, "pts"]},
+          {"Pure One-Suit", [80, "pts"]}
         ],
-        displayed_score: 320
+        displayed_score: 960
       }
     }, %{delta_scores: [960, -320, -320, -320]})
   end
@@ -182,7 +182,7 @@ defmodule RiichiAdvanced.ZungJungScoringTest do
       %{"type" => "buttons_pressed", "buttons" => [nil, %{"button" => "ron"}, nil, nil]} # east deals in, north responsible
     ], %{
       south: %{
-        yaku: [{"Thirteen Terminals", [160, "points"]}]
+        yaku: [{"Thirteen Terminals", [160, "pts"]}]
       }
     }, %{delta_scores: [-25, 480, -25, -430]})
   end

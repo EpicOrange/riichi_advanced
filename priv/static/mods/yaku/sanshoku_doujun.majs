@@ -1,0 +1,8 @@
+on after_initialization do
+  add_rule("$value $han", "$name", "%{value} %{han} if your hand contains the same number sequence in all three suits.", %{value: !value, han: !han, name: !name})
+  update_rule("$value $han", "$name", "%{example_hand}", %{value: !value, han: !han, name: !name, example_hand: ~t"24p23334678s 2M34m 3p"})
+end
+
+define_set sanshoku_doujun, ~s"0 1 2, 10 11 12, 20 21 22"
+
+define_yaku !list, !name, [!value, !han], match(["hand", "calls", "winning_tile"], ~m"exhaustive, sanshoku_doujun:1, mentsu:1, pair:1")

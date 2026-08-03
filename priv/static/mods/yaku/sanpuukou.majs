@@ -1,0 +1,17 @@
+require "value_honors"
+
+if !shou_value > 0 do
+  on after_initialization do
+    add_rule("$value $han", "$name", "%{value} %{han} if you have triplets of two different winds, and a pair of a third.", %{value: !shou_value, han: !shou_han, name: !shou_name})
+    update_rule("$value $han", "$name", "%{example_hand}", %{value: !shou_value, han: !shou_han, name: !shou_name, example_hand: ~t"234p23s22233z 111z 4s"})
+  end
+
+  define_yaku !shou_list, !shou_name, [!shou_value, !shou_han], match(["hand", "calls", "winning_tile"], ~m"unique, (ton nan shaa pei):2, (ton_pair nan_pair shaa_pair pei_pair):1")
+end
+if dai_value > 0 do
+  on after_initialization do
+    add_rule("$value $han", "$name", "%{value} %{han} if you have triplets of three different winds.", %{value: !dai_value, han: !dai_han, name: !dai_name})
+    update_rule("$value $han", "$name", "%{example_hand}", %{value: !dai_value, han: !dai_han, name: !dai_name, example_hand: ~t"234p22s22233z 111z 3z"})
+  end
+  define_yaku !dai_list, !dai_name, [!dai_value, !dai_han], match(["hand", "calls", "winning_tile"], ~m"unique, (ton nan shaa pei):3"), [!shou_name]
+end

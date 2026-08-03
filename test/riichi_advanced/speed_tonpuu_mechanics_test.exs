@@ -24,8 +24,10 @@ defmodule RiichiAdvanced.YakuTest.SpeedTonpuuMechanics do
     "yaku/open_riichi",
     "kansai_chiitoitsu",
     "kokushi_ankan_chankan",
-    "yaku/sanrenkou",
-    "yaku/suurenkou",
+    %{name: "yaku/sanrenkou", config: %{
+      san_list: "yaku", san_name: "Sanrenkou", san_value: 2, san_han: "Han",
+      suu_list: "yakuman", suu_name: "Suurenkou", suu_value: 1, suu_han: "★"
+    }},
     "yaku/shiisanpuutaa",
     "yaku/shiisanuushi",
     # "pao",

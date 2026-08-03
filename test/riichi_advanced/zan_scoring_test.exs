@@ -24,10 +24,15 @@ defmodule RiichiAdvanced.ZanScoringTest do
     # "ura",
     # "kandora",
     "yaku/open_riichi",
-    "yaku/sanrenkou",
-    "yaku/sanpuukou",
+    %{name: "yaku/sanrenkou", config: %{
+      san_list: "yaku", san_name: "Sanrenkou", san_value: 2, san_han: "Han",
+      suu_list: "yakuman", suu_name: "Suurenkou", suu_value: 1, suu_han: "★"
+    }},
+    %{name: "yaku/sanpuukou", config: %{
+      shou_list: "", shou_name: "", shou_value: 0, shou_han: "",
+      dai_list: "yaku", dai_name: "Sanpuukou", dai_value: 2, dai_han: "Han"
+    }},
     %{name: "yaku/riichi_renhou", config: %{is: "Yakuman"}},
-    "yaku/suurenkou",
     "show_waits",
     "sanma_pei_yakuhai",
     %{name: "shuugi", config: %{worth: 1000, starting_shuugi: 0, pao_pays_all: true}},

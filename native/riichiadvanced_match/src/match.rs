@@ -186,6 +186,8 @@ fn remove_match_group<'a>(
   // - no calls (not supported yet)
   // blossom requires:
   // - every group is length 2
+  // - not exhaustive
+  // - no offsets with attrs
   // anything else is dfs
   let mut unique = unique;
   let mut exact = !exhaustive && !unique;
@@ -203,6 +205,7 @@ fn remove_match_group<'a>(
             else if TILE_TABLE.contains_key(s) {} // no-op
             else { bipartite = false; } // call name
           }
+          MatchOffset::AttrsOffset(_) => { blossom = false; } // no-op
           MatchOffset::AttrsTile(_) => {} // no-op
           _ => { exact = false; }
         }

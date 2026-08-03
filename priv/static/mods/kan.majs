@@ -25,7 +25,9 @@ define_button daiminkan,
       set_status("double_kan")
     end
     set_status("kan")
-    draw(1, "opposite_end")
+    if !replace_from_dead_wall do
+      draw(1, "opposite_end")
+    else draw end
   end
 
 define_button ankan,
@@ -44,7 +46,9 @@ define_button ankan,
       set_status("double_kan")
     end
     set_status("kan")
-    draw(1, "opposite_end")
+    if !replace_from_dead_wall do
+      draw(1, "opposite_end")
+    else draw end
   end
 
 define_button kakan,
@@ -66,7 +70,9 @@ define_button kakan,
     set_status("kan", "can_chankan")
     upgrade_call
     unset_status("can_chankan")
-    draw(1, "opposite_end")
+    if !replace_from_dead_wall do
+      draw(1, "opposite_end")
+    else draw end
   end
 
 on before_turn_change do

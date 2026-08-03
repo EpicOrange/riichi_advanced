@@ -1,0 +1,8 @@
+on after_initialization do
+  add_rule("$value $han", "$name", "%{value} %{han} if your hand contains the same number triplet in two different suits, plus a pair in the third suit.", %{value: !value, han: !han, name: !name})
+  update_rule("$value $han", "$name", "%{example_hand}", %{value: !value, han: !han, name: !name, example_hand: ~t"2244p222456s 2M22m 4p"})
+end
+
+define_set sanshoku_shoudoukou, ~s"0 0, 10 10 10, 20 20 20|0 0 0, 10 10, 20 20 20|0 0 0, 10 10 10, 20 20"
+
+define_yaku !list, !name, [!value, !han], match(["hand", "calls", "winning_tile"], ~m"exhaustive, sanshoku_shoudoukou:1, mentsu:2")

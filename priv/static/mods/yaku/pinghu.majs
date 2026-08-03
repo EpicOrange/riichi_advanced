@@ -1,3 +1,5 @@
+require "value_honors"
+
 on after_initialization do
   add_rule("$value $han", "$name", "%{value} %{han} if all four of your sets are sequences.", %{value: !value, han: !han, name: !name})
   add_rule("$value $han", "$name", "%{example_hand}", %{value: !value, han: !han, name: !name, example_hand: ~t"345789m46p23499s 5p"})
@@ -10,7 +12,6 @@ define_set pair, ~s"0 0"
 define_set shuntsu, ~s"0 1 2"
 
 if !no_value_pair do
-  require "value_honors"
   define_yaku !list, !name, [!value, !han], match(["hand", "calls", "winning_tile"], ~m"exhaustive, shuntsu:4, value_pair:-1, pair:1")
 else
   define_yaku !list, !name, [!value, !han], match(["hand", "calls", "winning_tile"], ~m"exhaustive, shuntsu:4, pair:1")

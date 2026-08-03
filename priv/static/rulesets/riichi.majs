@@ -1,4 +1,4 @@
-require "value_honors"
+  require "value_honors"
 
 # TODO: Figure out how to fix the `cancellable_riichi` mod, then re-add it as default as well as in modpacks.
 
@@ -701,6 +701,14 @@ define_mod "yaku/grand_cross", conflicts: ["super_bingo_grand_cross"], name: "Gr
 # 2 han
 define_mod "yaku/open_riichi", name: "Open Riichi", deps: ["yaku/riichi"], desc: "You have the option to declare open riichi, which is worth 2 han but reveals your hand to the table. Open double riichi is 3 han."
 define_mod "yaku/sanrenkou", name: "Sanrenkou", desc: "Local yaku. \"Three Consecutive Triplets\". 2 han for having three triplets of the same suit in sequence, like 222 333 444."
+config_mod "yaku/sanrenkou", name: "san_list", values: ["yaku"]
+config_mod "yaku/sanrenkou", name: "san_name", values: ["Sanrenkou"]
+config_mod "yaku/sanrenkou", name: "san_value", values: [2]
+config_mod "yaku/sanrenkou", name: "san_han", values: ["Han"]
+config_mod "yaku/sanrenkou", name: "suu_list", values: [""]
+config_mod "yaku/sanrenkou", name: "suu_name", values: [""]
+config_mod "yaku/sanrenkou", name: "suu_value", values: [0]
+config_mod "yaku/sanrenkou", name: "suu_han", values: [""]
 define_mod "yaku/sanshoku_ittsuu", name: "Sanshoku Ittsuu", desc: "Local yaku. 1 han for having a three-color straight, like 123m 456p 789s. 2 han if closed."
 define_mod "yaku/kyandonhou", name: "Kyandonhou", desc: "Local yaku. \"Twice Mixed Double Sequence\". A mixed double sequence is when you have two sequences of the same number in different suits, like 345m 345p. 2 han for having two mixed double sequences."
 define_mod "yaku/ryandoukou", name: "Ryandoukou", desc: "Local yaku. \"Twice Double Triplets\". A double triplet is when you have two triplets of the same number in different suits, like 333m 333p. 2 han for having two sets of double triplets."
@@ -709,10 +717,18 @@ define_mod "yaku/choupaikou", name: "Choupaikou etc.", desc: "Local yaku. 2 han 
 define_mod "yaku/suuzuukou", name: "Suuzuukou", desc: "Local yaku. \"Four Honor Triplets\". 2 han for having four honor tile triplets."
 define_mod "yaku/uumensai", name: "Uumensai", desc: "Local yaku. \"Five Suits Collected\". 2 han if your hand includes all five suits (character, circle, bamboo, wind, dragon)."
 define_mod "yaku/sanpuukou", name: "Sanpuukou", desc: "Local yaku. \"Three Wind Triplets\". 2 han if you have three wind triplets."
+config_mod "yaku/sanpuukou", name: "shou_list", values: [""]
+config_mod "yaku/sanpuukou", name: "shou_name", values: [""]
+config_mod "yaku/sanpuukou", name: "shou_value", values: [0]
+config_mod "yaku/sanpuukou", name: "shou_han", values: [""]
+config_mod "yaku/sanpuukou", name: "dai_list", values: ["yaku"]
+config_mod "yaku/sanpuukou", name: "dai_name", values: ["Sanpuukou"]
+config_mod "yaku/sanpuukou", name: "dai_value", values: [2]
+config_mod "yaku/sanpuukou", name: "dai_han", values: ["Han"]
 define_mod "yaku/renkaihou", name: "Renkaihou", desc: "Local yaku. \"Consecutive Blossom\". 2 han if you kan off the rinshan tile and win off of _that_ rinshan tile. Does not stack with rinshan."
 define_mod "yaku/mondeikou", deps: ["aka"], name: "Mondeikou", desc: "Local yaku. If you have 4 aka, 2 han on top of aka. This counts as a yaku."
 # 3 han
-define_mod "yaku/isshoku_sanjun", name: "Isshoku Sanjun", desc: "Local yaku. \"Pure Triple Sequences\". 2 han if you have three of the exact same sequence in one suit, like 123 123 123. Like iipeikou but three. +1 han if closed. Does not stack with iipeikou (123 123) or sanrenkou (111 222 333)."
+define_mod "yaku/riichi_isshoku_sanjun", name: "Isshoku Sanjun", desc: "Local yaku. \"Pure Triple Sequences\". 2 han if you have three of the exact same sequence in one suit, like 123 123 123. Like iipeikou but three. +1 han if closed. Does not stack with iipeikou (123 123) or sanrenkou (111 222 333)."
 define_mod "yaku/ittsuu_chanta", name: "Ittsuu Chanta", desc: "Local yaku. 2 han if you have ittsuu, and (except the 456) the rest of your hand is chanta (or junchan, in which case it's 3 han). +1 han if closed. Does not stack with ittsuu."
 define_mod "yaku/tanfonhou", name: "Tanfonhou", desc: "Local yaku. \"Win Without Red\". 2 han if your hand contains no red. This means you can have only 248p (2,4,8 circles), 23468s (2,3,4,6,8 bamboo), and any honors except red dragon. 5 han instead if no honor tiles (chintanfon). +1 han if closed."
 define_mod "yaku/chinpeikou", name: "Chinpeikou", desc: "Local yaku. 3 han on top of ryanpeikou if your ryanpeikou sequences are all the same numbers (may be different suits), like 112233 112233. No restriction on the pair, so you can have an honor pair (despite 'chin' being in the name)."
@@ -738,11 +754,11 @@ define_mod "yaku/ishino_uenimo_sannen", name: "Ishino Uenimo Sannen", deps: ["ya
 define_mod "yaku/toukanhou", name: "Toukanhou", desc: "Local yakuman. \"First Kan Win\". If you kan (concealed or from a player) before discarding any tile, and win with rinshan, it's yakuman. Any call from an opponent invalidates this."
 define_mod "yaku/shiisanpuutaa", name: "Shiisanpuutaa", desc: "Local yakuman. \"Thirteen Unconnected\". If you start with 13 disconnected tiles (with one forming a pair), it's yakuman. Calls invalidate."
 define_mod "yaku/shiisanuushi", name: "Shiisanuushi", desc: "Local yakuman. \"Thirteen Independent\". If you start with 14 disconnected tiles, it's yakuman. Calls invalidate."
-define_mod "yaku/suurenkou", name: "Suurenkou", desc: "Local yakuman. \"Four Consecutive Triplets\". If you have four triplets of the same suit of increasing number, like 111 222 333 444, it's yakuman. Pao is applied if the fourth triplet is called."
+define_mod "yaku/riichi_suurenkou", name: "Suurenkou", desc: "Local yakuman. \"Four Consecutive Triplets\". If you have four triplets of the same suit of increasing number, like 111 222 333 444, it's yakuman. Pao is applied if the fourth triplet is called."
 define_mod "yaku/suuchoupaikou", name: "Suuchoupaikou", desc: "Local yakuman. \"Four Skipped Tile Triplets\". If you have four triplets of the same suit whose numbers step by 2, like 111 333 555 777, it's yakuman. Pao is applied if the fourth triplet is called."
 define_mod "yaku/daisharin", name: "Daisharin etc.", desc: "Local yakuman. If your hand is closed and your winning hand is 22334455667788 in one suit, it's yakuman."
 define_mod "yaku/shousharin", name: "Shousharin etc.", desc: "Local yakuman. If your hand is closed and your winning hand is 11223344556677 or 33445566778899 in one suit, it's yakuman."
-define_mod "yaku/isshoku_yonjun", name: "Isshoku Yonjun", desc: "Local yakuman. \"Pure Quadruple Sequences\". If you have four of the exact same sequence in one suit, like 123m 123m 123m 123m, it's yakuman. Like iipeikou but four. Pao is applied if the fourth sequence is called."
+define_mod "yaku/riichi_isshoku_yonjun", name: "Isshoku Yonjun", desc: "Local yakuman. \"Pure Quadruple Sequences\". If you have four of the exact same sequence in one suit, like 123m 123m 123m 123m, it's yakuman. Like iipeikou but four. Pao is applied if the fourth sequence is called."
 define_mod "yaku/hyakuman_goku", name: "Hyakuman Goku", desc: "Local yakuman. \"One Million Stones\". If your hand is purely character tiles whose numbers sum up to at least 100, it's yakuman."
 define_mod "yaku/kachoufuugetsu", name: "Kachoufuugetsu", desc: "Local yakuman. \"Flower, Bird, Wind, Moon\". If your hand is 555p (5 circles) + 111s (birds) + triplet of round or seat wind + 111p (1 circles), it's yakuman."
 define_mod "yaku/fuukasetsugetsu", name: "Fuukasetsugetsu", desc: "Local yakuman. \"Flower, Bird, Snow, Moon\". If your hand is 555p (5 circles) + 555z (white dragon) + triplet of round or seat wind + 111p (1 circles), it's yakuman."
@@ -1072,7 +1088,10 @@ define_preset "Just Like Modded Minecraft", [
   "yaku/ketsupaihou",
   "yaku/grand_cross",
   "yaku/open_riichi",
-  "yaku/sanrenkou",
+  %{name: "yaku/sanrenkou", config: %{
+    san_list: "yaku", san_name: "Sanrenkou", san_value: 2, san_han: "Han",
+    suu_list: "yakuman", suu_name: "Suurenkou", suu_value: 1, suu_han: "★"
+  }},
   "yaku/sanshoku_ittsuu",
   "yaku/kyandonhou",
   "yaku/ryandoukou",
@@ -1080,9 +1099,12 @@ define_preset "Just Like Modded Minecraft", [
   "yaku/choupaikou",
   "yaku/suuzuukou",
   "yaku/uumensai",
-  "yaku/sanpuukou",
+  %{name: "yaku/sanpuukou", config: %{
+    shou_list: "yaku", shou_name: "", shou_value: 0, shou_han: "Han",
+    dai_list: "yaku", dai_name: "Big Three Winds", dai_value: 120, dai_han: "Han"
+  }},
   "yaku/renkaihou",
-  "yaku/isshoku_sanjun",
+  "yaku/riichi_isshoku_sanjun",
   "yaku/ittsuu_chanta",
   "yaku/tanfonhou",
   "yaku/chinpeikou",
@@ -1108,7 +1130,7 @@ define_preset "Just Like Modded Minecraft", [
   "yaku/suuchoupaikou",
   "yaku/daisharin",
   "yaku/shousharin",
-  "yaku/isshoku_yonjun",
+  "yaku/riichi_isshoku_yonjun",
   "yaku/hyakuman_goku",
   "yaku/kachoufuugetsu",
   "yaku/fuukasetsugetsu",

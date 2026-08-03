@@ -1,0 +1,190 @@
+on after_initialization do
+  add_rule_tab("Patterns")
+  add_rule_tab("Limit")
+  rename_rule_tab("0 pts", "Patterns")
+  rename_rule_tab("1 pts", "Patterns")
+  rename_rule_tab("5 pts", "Patterns")
+  rename_rule_tab("10 pts", "Patterns")
+  rename_rule_tab("20 pts", "Patterns")
+  rename_rule_tab("30 pts", "Patterns")
+  rename_rule_tab("35 pts", "Patterns")
+  rename_rule_tab("40 pts", "Patterns")
+  rename_rule_tab("50 pts", "Patterns")
+  rename_rule_tab("60 pts", "Patterns")
+  rename_rule_tab("80 pts", "Patterns")
+  rename_rule_tab("100 pts", "Patterns")
+  rename_rule_tab("120 pts", "Patterns")
+  rename_rule_tab("125 pts", "Patterns")
+  rename_rule_tab("130 pts", "Patterns")
+  rename_rule_tab("155 pts", "Patterns")
+  rename_rule_tab("200 pts", "Patterns")
+  rename_rule_tab("320 pts", "Limit")
+  rename_rule_tab("400 pts", "Limit")
+  rename_rule_tab("480 pts", "Limit")
+  add_rule("Rules", "Limit", "The maximum hand value is 320 points. However, if your winning hand matches a pattern worth more than 320 points, score only that pattern and its points.")
+  add_rule("Rules", "Payment", """
+    When you win, your hand value is the sum of its patterns. Note that different versions of the same pattern type (e.g. Mixed One-Suit and Pure One-Suit) may not be scored together.
+    After calculating the hand value, the winner earns 3 times the hand value. There are two methods for payment. If you called Hu on a discard to win, and the hand value is greater than 25 points, then every non-winner pays 25, and the discarder pays the remainder (i.e. 3x value minus 50). Otherwise, every non-winner pays the hand value. There are two exceptions for the first case, known as Same-Round Immunity:
+    -  If the winning discard was also dealt by another player after the winner's last turn, then the first such player to discard that tile is treated as the discarder who pays the remainder (if the hand value is more than 25 points).
+    -  If the winning discard was dealt by the winner on their last turn, then everyone pays the hand value amount.
+    """, -10)
+end
+
+set display_wall, true
+set initial_score, 0
+set initial_dead_wall_length, 14
+set starting_tiles, 13
+set max_rounds, 16
+set interruptible_actions, ["play_tile", "draw", "call", "self_call", "upgrade_call"]
+
+set score_calculation, %{
+    yaku_lists: ["yaku", "listed_limit_hand", "meta_yaku"],
+    point_name: "pts",
+    right_display: "",
+    win_by_discard_label: "Hu",
+    win_by_draw_label: "Zimo",
+    win_by_discard_name: "Hu",
+    win_by_discard_name_2: "Double Hu",
+    win_by_discard_name_3: "Triple Hu",
+    win_by_draw_name: "Zimo",
+    exhaustive_draw_name: "Draw"
+  }
+
+set translations, %{
+  "White Dragon": "Value Honor",
+  "Green Dragon": "Value Honor",
+  "Red Dragon": "Value Honor",
+  # no prevalent wind
+  "Seat Wind": "Value Honor",
+}
+
+apply merge, "yaku_precedence", %{
+  "Pure One-Suit": ["Mixed One-Suit"],
+
+  "Big Three Dragons": ["Small Three Dragons"],
+  "Small Four Winds": ["Big Three Winds", "Small Three Winds"],
+  "Big Three Winds": ["Small Three Winds"],
+
+  "Four Concealed Triplets": ["Three Concealed Triplets", "Two Concealed Triplets"],
+  "Three Concealed Triplets": ["Two Concealed Triplets"],
+  "Three Kong": ["Two Kong", "One Kong", "Seven Pairs"],
+  "Two Kong": ["One Kong", "Seven Pairs"],
+  "One Kong": ["Seven Pairs"],
+
+  "Three Identical Sequences": ["Two Identical Sequences Twice", "Two Identical Sequences", "Seven Pairs", "Three Consecutive Triplets"],
+  "Two Identical Sequences Twice": ["Two Identical Sequences", "Seven Pairs"],
+
+  "Three Similar Triplets": ["Small Three Similar Triplets", "Seven Pairs"],
+  "Small Three Similar Triplets": ["Seven Pairs"],
+
+  "Four Consecutive Triplets": ["Three Consecutive Triplets", "Seven Pairs", "Three Identical Sequences"],
+  "Three Consecutive Triplets": ["Seven Pairs"],
+
+  "Mixed Greater Terminals": ["Pure Lesser Terminals", "Mixed Lesser Terminals"],
+  "Pure Lesser Terminals": ["Mixed Lesser Terminals"],
+
+  "Final Discard": ["Final Draw"],
+  "Blessing of Earth": ["Blessing of Heaven"],
+  "Seven Pairs": ["Concealed Hand", "Thirteen Terminals", "Two Identical Sequences", "All Sequences"],
+
+  "Thirteen Terminals": ["Concealed Hand", "Mixed Greater Terminals"],
+
+  # listed limit hands are exclusive (can only score one of them, i.e. the highest one)
+  # we have
+  # "All Honours" < "Small Four Winds" (value 320)
+  # <
+  # "Big Four Winds" = "Pure Greater Terminals" (value 400)
+  # <
+  # "Four Identical Sequences" = "Nine Gates" = "Four Kong" (value 480)
+  "Small Four Winds": ["All Honours"],
+  "Big Four Winds": ["All Honours", "Small Four Winds"],
+  "Pure Greater Terminals": ["All Honours", "Small Four Winds"],
+  "Four Kong": ["All Honours", "Small Four Winds", "Big Four Winds", "Pure Greater Terminals"],
+  "Four Identical Sequences": ["All Honours", "Small Four Winds", "Big Four Winds", "Pure Greater Terminals"],
+  "Nine Gates": ["All Honours", "Small Four Winds", "Big Four Winds", "Pure Greater Terminals"],
+  "listed_limit_hand": ["yaku", "meta_yaku"] # they override all non-listed limit hands
+}
+
+# scoring
+on before_win do
+  cond do
+    won_by_discard -> set_status("payer", as: "last_discarder")
+    won_by_call    -> set_status("payer", as: "last_caller")
+  end
+  make_responsible_for("others", "all")
+end
+
+define_set match_east,  ~s"0@winning_tile 0@responsible_for_east"
+define_set match_south, ~s"0@winning_tile 0@responsible_for_south"
+define_set match_west,  ~s"0@winning_tile 0@responsible_for_west"
+define_set match_north, ~s"0@winning_tile 0@responsible_for_north"
+
+on before_scoring do
+  cond do
+    seat_is("east")  -> as everyone do if not_anyone_status("responsible") and match(["winning_tile", "any_discard"], ~m"match_east:1")  do set_status("responsible") end end
+    seat_is("south") -> as everyone do if not_anyone_status("responsible") and match(["winning_tile", "any_discard"], ~m"match_south:1") do set_status("responsible") end end
+    seat_is("west")  -> as everyone do if not_anyone_status("responsible") and match(["winning_tile", "any_discard"], ~m"match_west:1")  do set_status("responsible") end end
+    seat_is("north") -> as everyone do if not_anyone_status("responsible") and match(["winning_tile", "any_discard"], ~m"match_north:1") do set_status("responsible") end end
+  end
+  if not_anyone_status("responsible") do
+    cond do
+      won_by_discard -> set_status("responsible", as: "last_discarder")
+      won_by_call    -> set_status("responsible", as: "last_caller")
+      won_by_draw    -> set_status("responsible", as: "current_turn")
+    end
+  end
+end
+define_scoring win do
+  pts = points :: "Hand value"
+  if points > 320 and not_has_yaku("Small Four Winds", "Big Four Winds", "All Honours", "Four Kong", "Four Identical Sequences", "Pure Greater Terminals", "Nine Gates", as: "winner") do
+    pts = 320 :: "Cap"
+  end
+  if won_by_draw or pts <= 25 do
+    total = pts :: "Payment (value ≤ 25)"
+  else
+    print_counters
+    cond do
+      # if winner is "responsible", everyone pays
+      status("responsible", as: "winner") -> total = pts :: "Payment (value ≤ 25)"
+      # otherwise we're responsible
+      status("responsible") -> total = pts * 3 :: "Overall payment"; total -= 50 :: "Discarder payment"
+      # otherwise we're not responsible, but still pay 25
+      true -> total = 25 :: "Non-discarder payment"
+    end
+  end
+end
+
+# calculate same round immunity
+def tag_responsible do
+  if not_tagged("last_discard", "$tag")
+      and match(["hand", "calls"], ["tenpai"])
+      and match(["hand", "calls", "last_discard"], ["win"]) do
+    tag_tiles("$tag", "last_discard")
+    add_attr(["last_discard"], "$tag")
+  end
+end
+def untag_responsible do
+  remove_attr_tagged("$tag", ["$tag"])
+  untag("$tag")
+end
+on after_turn_change do
+  cond do
+    seat_is("east")  -> untag_responsible(%{tag: "responsible_for_east"})
+    seat_is("south") -> untag_responsible(%{tag: "responsible_for_south"})
+    seat_is("west")  -> untag_responsible(%{tag: "responsible_for_west"})
+    seat_is("north") -> untag_responsible(%{tag: "responsible_for_north"})
+  end
+end
+# tag this discard with the correct responsibilities
+define_play_effect any do
+  tag_responsible(%{tag: "responsible_for_east"},  as: "east")
+  tag_responsible(%{tag: "responsible_for_south"}, as: "south")
+  tag_responsible(%{tag: "responsible_for_west"},  as: "west")
+  tag_responsible(%{tag: "responsible_for_north"}, as: "north")
+end
+
+define_mod "zungjung/zj_flowers", name: "Bonus Tiles", desc: "Adds flower tiles to the game. Declaring flowers that match your seat is worth 4 points each, otherwise it's 2 points each. Completing a full set (1234) of either the flowers or the searcons is worth 10 points."
+config_mod "zungjung/zj_flowers", name: "flower_value", values: [1, 2], default: 2
+define_mod "zungjung/zj_five_point_minimum", name: "Five Point Minimum", desc: "Adds a requirement of having 5 points in hand in order to win."
+
+# <TODO: Check if the yaku_precedence list satisfies the "Freedom of Count" entry at https://www.zj-mahjong.info/book_en/1.1%20Misc%20Rules.html .>
