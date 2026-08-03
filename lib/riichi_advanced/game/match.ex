@@ -1021,8 +1021,8 @@ defmodule RiichiAdvanced.Match do
     tile_behavior = %{tile_behavior | all_tiles: all_tiles, base_tiles: base_tiles, encoded_joker_tiles: encoded_joker_tiles, uuid: Ecto.UUID.generate() }
 
     # encode aliases again, using new all_tiles that includes offset tiles
-    encoded_aliases = encode_aliases(tile_behavior)
-    encoded_mapping = encode_mapping(tile_behavior)
+    encoded_aliases = encode_aliases(tile_behavior) |> TileBehavior.remove_alias_mapsets()
+    encoded_mapping = encode_mapping(tile_behavior) |> TileBehavior.remove_mapping_mapsets()
     tile_behavior = %{tile_behavior | encoded_aliases: encoded_aliases, encoded_mapping: encoded_mapping, uuid: Ecto.UUID.generate() }
     # dbg = length(hand) === 14
     # if dbg do
@@ -1044,10 +1044,40 @@ defmodule RiichiAdvanced.Match do
   end
 
   def remove_match_definition(hand, calls, match_definition, tile_behavior) do
-    prepare_tiles([hand | calls], [match_definition], tile_behavior)
-    |> _remove_match_definition(match_definition, true)
+    # check if rust should handle things
+    tiles_in_hand = Utils.strip_attrs(hand ++ Enum.flat_map(calls, &Utils.call_to_tiles/1))
+    hash = tiles_in_hand |> Enum.map(&Constants.to_prime/1) |> Enum.product()
+    use_rust = hash <= @u256_max
+    if use_rust do
+      ret = _remove_match_definition({hand, calls}, match_definition,
+        tile_behavior.attrs |> Enum.to_list() |> Enum.sort(),
+        tile_behavior.aliases |> TileBehavior.remove_alias_mapsets(),
+        tile_behavior.ordering, tile_behavior.ordering_r
+      )
+      # profile()
+      ret
+    else
+      IO.puts("Warning: falling back to elixir remove_match_definition for hand #{inspect(hand)} / #{inspect(calls)} with hash #{hash}")
+      # t = System.os_time(:millisecond)
+      ret = prepare_tiles([hand | calls], [match_definition], tile_behavior)
+      |> __remove_match_definition(match_definition, true)
+      # delta = System.os_time(:millisecond) - t
+      # if delta > 10 do
+      #   IO.puts("remove_match_definition: #{inspect(delta)} ms")
+      # end
+      ret
+    end
   end
-  def _remove_match_definition({tiles_in_hand, initial_hands, tile_behavior}, match_definition, decode? \\ false) do
+  def _remove_match_definition({hand, calls}, match_definition, all_attrs, elixir_aliases, ordering, ordering_r) do
+    prepare_tiles([hand | calls], [match_definition], %TileBehavior{
+      attrs: all_attrs |> MapSet.new(),
+      aliases: elixir_aliases |> TileBehavior.restore_alias_mapsets(),
+      ordering: ordering,
+      ordering_r: ordering_r,
+    }) |> __remove_match_definition(match_definition, true)
+  end
+
+  def __remove_match_definition({tiles_in_hand, initial_hands, tile_behavior}, match_definition, decode? \\ false) do
     # early exit if we have more groups than tiles!
     # this is mostly to prevent 14 tile hands, like kokushi, from matching when we have 13 tiles
     debug = "debug" in match_definition
@@ -1150,12 +1180,12 @@ defmodule RiichiAdvanced.Match do
       ret
     else
       IO.puts("Warning: falling back to elixir match_hand_v3 for hand #{inspect(hand)} / #{inspect(calls)} with hash #{hash}")
-      t = System.os_time(:millisecond)
+      # t = System.os_time(:millisecond)
       ret = __match_hand_v3(hand, calls, match_definitions, tile_behavior)
-      delta = System.os_time(:millisecond) - t
-      if delta > 10 do
-        IO.puts("match_hand_v3: #{inspect(delta)} ms")
-      end
+      # delta = System.os_time(:millisecond) - t
+      # if delta > 10 do
+      #   IO.puts("match_hand_v3: #{inspect(delta)} ms")
+      # end
       ret
     end
   end
@@ -1174,7 +1204,7 @@ defmodule RiichiAdvanced.Match do
 
     # try each match definition in turn
     Enum.any?(match_definitions, fn match_definition ->
-      _remove_match_definition({tiles_in_hand, initial_hands, tile_behavior}, match_definition)
+      __remove_match_definition({tiles_in_hand, initial_hands, tile_behavior}, match_definition)
       # return if any results exist
       |> Enum.empty?()
       |> Kernel.not()
@@ -1268,12 +1298,12 @@ defmodule RiichiAdvanced.Match do
       # profile()
       ret
     else
-      t = System.os_time(:millisecond)
+      # t = System.os_time(:millisecond)
       ret = __get_waits_v3(hand, calls, match_definitions, tile_behavior)
-      delta = System.os_time(:millisecond) - t
-      if delta > 10 do
-        IO.puts("get_waits_v3: #{inspect(delta)} ms")
-      end
+      # delta = System.os_time(:millisecond) - t
+      # if delta > 10 do
+      #   IO.puts("get_waits_v3: #{inspect(delta)} ms")
+      # end
       ret
     end
   end
@@ -1318,7 +1348,7 @@ defmodule RiichiAdvanced.Match do
     get_waits_v3(hand, calls, match_definitions, tile_behavior)
   end
 
-  # @decorate cacheable(cache: RiichiAdvanced.Cache, key: {:get_waits_and_ukeire_v2, hand, calls, match_definitions, visible_tiles, TileBehavior.hash(tile_behavior)})
+  # @decorate cacheable(cache: RiichiAdvanced.Cache, key: {:get_waits_and_ukeire_v2, hand, calls, match_definitions, visible_tiles, tile_behavior.uuid}, opts: [ttl: :timer.seconds(10)])
   defp get_waits_and_ukeire_v2(hand, calls, match_definitions, visible_tiles, tile_behavior) do
     waits = get_waits_v3(hand, calls, match_definitions, tile_behavior)
     freqs = Utils.inverse_frequencies(visible_tiles, tile_behavior)

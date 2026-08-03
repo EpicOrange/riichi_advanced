@@ -133,6 +133,22 @@ pub fn decode_tiles<'a>(attrs: impl IntoIterator<Item = &'a Tile>, all_attrs: &[
   attrs.into_iter().flat_map(|&tile| decode_tile(tile, all_attrs)).collect()
 }
 
+#[allow(dead_code)]
+pub fn decode_tile_no_attrs((p, battrs): Tile) -> Option<ElixirTile> {
+  from_prime(&p).map(|tile| {
+    if battrs == 0 {
+      ElixirTile::AtomTile(*tile)
+    } else {
+      ElixirTile::AttrTile(*tile, vec!(battrs.to_string()))
+    }
+  })
+}
+
+#[allow(dead_code)]
+pub fn decode_tiles_no_attrs<'a>(attrs: impl IntoIterator<Item = &'a Tile>) -> ElixirHand {
+  attrs.into_iter().flat_map(|&tile| decode_tile_no_attrs(tile)).collect()
+}
+
 pub fn decode(tileset: &TileSet, all_attrs: &[String]) -> ElixirHand {
   decode_tiles(&tileset.attrs, all_attrs)
 }

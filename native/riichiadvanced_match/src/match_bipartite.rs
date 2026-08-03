@@ -50,7 +50,7 @@ pub fn perform_bipartite_match<'a>(
 
     if debug {
       println!("Attempting to match and remove {} offsets {:?} from hand {:?}; base tiles <{:?}>",
-        num, offsets, decode(&hands[0], match_info.all_attrs), base_tiles);
+        num, offsets, decode(&hands[0], &match_info.all_attrs), base_tiles);
     }
 
     let base_tiles = base_tiles.clone();
@@ -58,7 +58,7 @@ pub fn perform_bipartite_match<'a>(
     Box::new((0..base_tiles.len()).flat_map(move |ix| -> HandsIterator<'a> {
       let base_tile = base_tiles[ix];
       let num_ignores = num_offsets - actual_num; // can skip reifying this many tiles
-      let Some((offset_tiles, mut nojoker_ix)) = apply_offsets_early_exit(&base_tile, &offsets, match_info.all_attrs, &match_info.ordering, &match_info.ordering_r, num_ignores)
+      let Some((offset_tiles, mut nojoker_ix)) = apply_offsets_early_exit(&base_tile, &offsets, &match_info.all_attrs, &match_info.ordering, &match_info.ordering_r, num_ignores)
       else {
         // if debug { println!("Giving up since we cannot reify enough offsets ({}/{}) in {:?} with base tile <{:?}> (num_ignores={})", num, num_offsets, offsets, base_tile, num_ignores); }
         return Box::new(empty());
@@ -109,7 +109,7 @@ fn bipartite_match<'a>(
     ixs.sort_unstable();
     remove_tileset_indices(&mut hands[0], ixs, &match_info.joker_tiles);
     if visited.borrow_mut().insert(hands[0].hash) {
-      if debug { println!("Matched {}/{} offset tiles (total {}, skipping {}), returning {:?}", i, num, offset_tiles.len(), skipped, decode(&hands[0], match_info.all_attrs)); }
+      if debug { println!("Matched {}/{} offset tiles (total {}, skipping {}), returning {:?}", i, num, offset_tiles.len(), skipped, decode(&hands[0], &match_info.all_attrs)); }
       let ret = Box::new(once(hands));
       if let Some(j) = last_j { matching.borrow_mut().remove(&j); };
       return ret;
@@ -120,7 +120,7 @@ fn bipartite_match<'a>(
     }
   }
 
-  if debug { println!("{i} = {:?}, {nojoker_ix}", decode_tiles(&vec!(offset_tiles[i]), match_info.all_attrs)); }
+  if debug { println!("{i} = {:?}, {nojoker_ix}", decode_tiles(&vec!(offset_tiles[i]), &match_info.all_attrs)); }
 
   // precompute hand indices j to recurse on
   let attrs = Rc::new(hands[0].attrs.clone());

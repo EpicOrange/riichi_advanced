@@ -239,17 +239,17 @@ pub fn is_offset_dest(tile: Tile, offset: MatchOffset, match_info: &MatchInfo) -
   match offset {
     MatchOffset::Offset(o) => {
       let offset = vec!(MatchOffset::Offset(-o));
-      apply_offsets_early_exit(&tile, &offset, match_info.all_attrs, &match_info.ordering, &match_info.ordering_r, 0).is_some()
+      apply_offsets_early_exit(&tile, &offset, &match_info.all_attrs, &match_info.ordering, &match_info.ordering_r, 0).is_some()
     }
     MatchOffset::AttrsOffset(mut map) => {
-      if has_attrs(&tile, &mut map.attrs, match_info.all_attrs) {
+      if has_attrs(&tile, &mut map.attrs, &match_info.all_attrs) {
         let offset = vec!(MatchOffset::Offset(-map.offset));
-        apply_offsets_early_exit(&tile, &offset, match_info.all_attrs, &match_info.ordering, &match_info.ordering_r, 0).is_some()
+        apply_offsets_early_exit(&tile, &offset, &match_info.all_attrs, &match_info.ordering, &match_info.ordering_r, 0).is_some()
       } else { false }
     }
     MatchOffset::AttrsTile(mut map) => {
       let Some(p2) = TILE_TABLE.get(&map.tile) else { return false; };
-      let tile2 = (*p2, encode_attrs(&mut map.attrs, match_info.all_attrs));
+      let tile2 = (*p2, encode_attrs(&mut map.attrs, &match_info.all_attrs));
       _check_equivalence(&tile, &tile2, &match_info.aliases)
     }
     MatchOffset::TileOrKeyword(s) => {
@@ -359,7 +359,7 @@ pub fn _gather_rev_offsets(mut offsets: Vec<MatchOffset>) -> Vec<MatchOffset> {
 
 // returns a sorted vec of base tiles
 pub fn get_base_tiles<'a>( 
-    match_info: &'a MatchInfo<'a>,
+    match_info: &'a MatchInfo,
     match_definition: &'a MatchDefinition,
 ) -> BaseTileVec {
   // get all offsets of matchable tiles
@@ -367,7 +367,7 @@ pub fn get_base_tiles<'a>(
   //   that we can't otherwise encode, since it's not in hand
   let mut base_tiles: HashSet<Tile> = match_info.relevant_tiles
     .iter()
-    .flat_map(|tile| apply_offsets(tile, &gather_rev_offsets(match_definition), match_info.all_attrs, &match_info.ordering, &match_info.ordering_r).0)
+    .flat_map(|tile| apply_offsets(tile, &gather_rev_offsets(match_definition), &match_info.all_attrs, &match_info.ordering, &match_info.ordering_r).0)
     .flatten()
     .filter_map(|(tile, _attrs)| if tile != ANY_PRIME { Some((tile, 0)) } else { None })
     .collect();

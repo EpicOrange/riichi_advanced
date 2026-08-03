@@ -4,6 +4,7 @@ use rustler::Atom;
 
 use crate::encode::{convert_to_mapping, encode, encode_aliases, encode_tiles};
 use crate::primes::to_prime;
+use crate::tileset::_check_equivalence;
 use crate::types::{ElixirAliases, ElixirHand, ElixirHandCalls, ElixirTile, MatchInfo, Tile};
 
 // move all tiles from (hand, calls) into two structures:
@@ -17,10 +18,10 @@ fn prepare_hand_calls((hand, calls): &ElixirHandCalls) -> Vec<(&ElixirHand, Stri
 
 pub fn prepare_tiles<'a>(
   hand_calls: &'a ElixirHandCalls,
-  all_attrs: &'a Vec<String>,
+  mut all_attrs: Vec<String>,
   elixir_aliases: &'a ElixirAliases,
   ordering: &'a HashMap<Atom, Atom>, ordering_r: &'a HashMap<Atom, Atom>,
-) -> MatchInfo<'a> {
+) -> MatchInfo {
   let orig_hands = prepare_hand_calls(hand_calls);
   let mut num_tiles_in_hand = 0;
   let hand_tiles: HashSet<&ElixirTile> = orig_hands.iter().flat_map(|(tiles, _)| {
@@ -28,7 +29,11 @@ pub fn prepare_tiles<'a>(
     tiles.iter()
   }).collect();
 
-  let aliases = encode_aliases(elixir_aliases, all_attrs);
+  for attr in all_attrs.iter_mut() { *attr = attr.trim_start_matches('_').to_owned(); }
+  all_attrs.sort_unstable();
+  all_attrs.dedup();
+
+  let aliases = encode_aliases(elixir_aliases, &all_attrs);
   let mapping = convert_to_mapping(&aliases);
 
   // relevant_tiles = nonjoker tiles in hand + tiles mapped to by jokers in hand
@@ -36,19 +41,20 @@ pub fn prepare_tiles<'a>(
   // (we use relevant_tiles to calculate base tiles)
   let mut relevant_tiles: Vec<Tile> = Vec::with_capacity(num_tiles_in_hand);
   let mut joker_tiles: HashSet<Tile> = HashSet::new();
-  for tile in encode_tiles(hand_tiles, all_attrs) {
-    if let Some(aliases) = mapping.get(&tile) {
-      joker_tiles.insert(tile);
-      relevant_tiles.extend(aliases);
-    }
+  for tile in encode_tiles(hand_tiles, &all_attrs) {
     relevant_tiles.push(tile);
+    for (tile2, tile2_aliases) in mapping.iter() {
+      if _check_equivalence(&tile, tile2, &aliases) {
+        joker_tiles.insert(tile);
+        relevant_tiles.extend(tile2_aliases.clone());
+      }
+    }
   }
   relevant_tiles.sort_unstable();
   relevant_tiles.dedup();
-
   let mut initial_hands = smallvec!();
   for (hand, name) in &orig_hands {
-    let mut ret = encode(hand, all_attrs, &joker_tiles);
+    let mut ret = encode(hand, &all_attrs, &joker_tiles);
     if !name.is_empty() { ret.name = Some(name.to_owned()); }
     initial_hands.push(ret);
   }

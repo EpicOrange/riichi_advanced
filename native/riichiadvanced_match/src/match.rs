@@ -5,7 +5,7 @@ use std::sync::atomic::Ordering;
 use std::time::Instant;
 use rustler::Atom;
 
-use crate::encode::{decode, encode, encode_attrs, encode_aliases, encode_tiles};
+use crate::encode::{decode, encode, encode_aliases, encode_attrs, encode_tiles};
 use crate::match_bipartite::perform_bipartite_match;
 use crate::match_blossom::perform_blossom_match;
 use crate::match_dfs::perform_dfs_match;
@@ -67,7 +67,21 @@ fn _try_remove_all_tiles(
   }
 }
 
-pub fn remove_match_definition<'a>(
+#[rustler::nif]
+pub fn _remove_match_definition(
+  hand_calls: ElixirHandCalls,
+  match_definition: MatchDefinition,
+  all_attrs: Vec<String>,
+  elixir_aliases: ElixirAliases,
+  ordering: HashMap<Atom, Atom>, ordering_r: HashMap<Atom, Atom>,
+) -> Vec<Vec<ElixirHand>> {
+  let match_info = prepare_tiles(&hand_calls, all_attrs, &elixir_aliases, &ordering, &ordering_r);
+  __remove_match_definition(&match_info, &match_definition)
+    .map(|sv| sv.iter().map(|ts| decode(ts, &match_info.all_attrs)).collect())
+    .collect()
+}
+
+pub fn __remove_match_definition<'a>(
   match_info: &'a MatchInfo, match_definition: &'a MatchDefinition
 ) -> HandsIterator<'a> {
   // first walk the definition to check for keywords and sum of group counts
@@ -219,7 +233,7 @@ fn remove_match_group<'a>(
   if !unique || has_calls { bipartite = false; }
 
   // transform acc
-  let mut acc = if exact {
+  let acc = if exact {
     let mut call_names: Vec<String> = vec!();
     let mut tiles: Vec<Tile> = (*groups).iter().cloned().filter_map(|group| {
       match group {
@@ -231,7 +245,7 @@ fn remove_match_group<'a>(
                 None => { call_names.push(s); None }
               }
             },
-            MatchOffset::AttrsTile(mut map) => Some((*TILE_TABLE.get(&map.tile)?, encode_attrs(&mut map.attrs, match_info.all_attrs))),
+            MatchOffset::AttrsTile(mut map) => Some((*TILE_TABLE.get(&map.tile)?, encode_attrs(&mut map.attrs, &match_info.all_attrs))),
             _ => None
           }
         MatchGroup::Offsets(mut os) if os.len() == 1 =>
@@ -242,7 +256,7 @@ fn remove_match_group<'a>(
                 None => { call_names.push(s.clone()); None }
               }
             },
-            MatchOffset::AttrsTile(map) => Some((*TILE_TABLE.get(&map.tile)?, encode_attrs(&mut map.attrs, match_info.all_attrs))),
+            MatchOffset::AttrsTile(map) => Some((*TILE_TABLE.get(&map.tile)?, encode_attrs(&mut map.attrs, &match_info.all_attrs))),
             _ => None
           }
         _ => None
@@ -266,8 +280,9 @@ fn remove_match_group<'a>(
   };
 
   // process lookaheads
+  let mut acc = Box::new(acc.peekable());
   if num == 0 { // forward lookahead
-    match acc.next() {
+    match acc.peek() {
       Some(_) => {
         if debug { println!("Reverting due to last group being a successful forward lookahead (num=0)"); }
         Box::new(once(prev_hands))
@@ -275,32 +290,32 @@ fn remove_match_group<'a>(
       None => Box::new(empty())
     }
   } else if num < 0 { // negative lookahead
-    match acc.next() {
-      Some(_) => {
+    match acc.peek() {
+      None => {
         if debug { println!("Reverting due to last group being a successful negative lookahead (num={num})"); }
-        Box::new(empty())
+        Box::new(once(prev_hands))
       }
-      None => Box::new(once(prev_hands))
+      Some(_) => Box::new(empty())
     }
   } else { // it was a normal match
-    match acc.next() {
+    match acc.peek() {
       Some(hands) => {
         if debug {
           println!("Result after [{0:?}, {1}]: ({2:?}) {3:?} / {4:?}",
             groups, num,
             hands[0].attrs.len(),
-            decode(&hands[0], match_info.all_attrs),
-            hands[1..].iter().map(|call| decode(call, match_info.all_attrs)).collect::<Vec<_>>(),
+            decode(&hands[0], &match_info.all_attrs),
+            hands[1..].iter().map(|call| decode(call, &match_info.all_attrs)).collect::<Vec<_>>(),
           );
           println!();
         }
-        Box::new(once(hands).chain(acc))
+        acc
       }
       None => {
         if debug {
           println!("Result after [{0:?}, {1}]: (empty)", groups, num);
         }
-        Box::new(empty())
+        acc
       }
     }
   }
@@ -319,7 +334,7 @@ pub fn _match_hand_v3(
   let ret = __match_hand_v3(
     &hand_calls,
     match_definitions,
-    &all_attrs,
+    all_attrs,
     &elixir_aliases,
     &ordering,
     &ordering_r,
@@ -335,7 +350,7 @@ pub fn _match_hand_v3(
 pub fn __match_hand_v3<'a>(
   hand_calls: &'a ElixirHandCalls,
   match_definitions: MatchDefinitions,
-  all_attrs: &'a Vec<String>,
+  all_attrs: Vec<String>,
   elixir_aliases: &'a ElixirAliases,
   ordering: &'a HashMap<Atom, Atom>, ordering_r: &'a HashMap<Atom, Atom>,
 ) -> bool {
@@ -353,10 +368,10 @@ pub fn __match_hand_v3<'a>(
         if s == "debug" { debug = true; break; }
       }
     }
-    let mut result = remove_match_definition(&match_info, &match_definition);
+    let mut result = __remove_match_definition(&match_info, &match_definition);
     let next = result.next();
     if let Some(next) = next {
-      if debug { println!("Final result for match definition {:?}: {:?}", match_definition, next.iter().map(|hand| decode(hand, match_info.all_attrs)).collect::<Vec<_>>()); }
+      if debug { println!("Final result for match definition {:?}: {:?}", match_definition, next.iter().map(|hand| decode(hand, &match_info.all_attrs)).collect::<Vec<_>>()); }
       return true;
     } else {
       if debug { println!("Final result for match definition {:?}: (none)", match_definition); }
@@ -376,7 +391,7 @@ pub fn _remove_group(
 ) -> Vec<ElixirHand> {
   __remove_group(
     hand, group,
-    &all_attrs,
+    all_attrs,
     &elixir_aliases,
     &ordering,
     &ordering_r,
@@ -390,7 +405,7 @@ pub fn _remove_group(
 #[inline]
 fn __remove_group<'a>(
   hand: ElixirHand, group: MatchGroup, 
-  all_attrs: &'a Vec<String>,
+  all_attrs: Vec<String>,
   elixir_aliases: &'a ElixirAliases,
   ordering: &'a HashMap<Atom, Atom>, ordering_r: &'a HashMap<Atom, Atom>,
   debug: bool, exhaustive: bool, mut nojoker: bool,
@@ -413,7 +428,7 @@ fn __remove_group<'a>(
     ordering_r,
   );
   let base_tiles: BaseTileVec = match base_tiles {
-    Some(base_tiles) => encode_tiles(base_tiles, all_attrs).collect(),
+    Some(base_tiles) => encode_tiles(base_tiles, &match_info.all_attrs).collect(),
     None => {
       let match_definition = vec!(MatchDefinitionElem::Group(vec!(group.clone()), 1));
       get_base_tiles(&match_info, &match_definition)
@@ -425,7 +440,7 @@ fn __remove_group<'a>(
   let mut reified_groups_iter = __generate_groups(
     group,
     &mut base_tiles_iter,
-    match_info.all_attrs,
+    &match_info.all_attrs,
     &match_info.joker_tiles,
     &match_info.ordering, &match_info.ordering_r,
     &mut nojoker,
@@ -438,8 +453,8 @@ fn __remove_group<'a>(
       println!("Reified group: {:?} into the groups:", &group);
       match group {
         RemovableGroup::CallName(name) => println!("- \"{0:?}\"", name),
-        RemovableGroup::Group(group) => println!("- {0:?}", decode(group, match_info.all_attrs)),
-        RemovableGroup::Multigroup(subgroups) => println!("- {0:?}", subgroups.iter().map(|subgroup| decode(subgroup, match_info.all_attrs)).collect::<Vec<_>>()),
+        RemovableGroup::Group(group) => println!("- {0:?}", decode(group, &match_info.all_attrs)),
+        RemovableGroup::Multigroup(subgroups) => println!("- {0:?}", subgroups.iter().map(|subgroup| decode(subgroup, &match_info.all_attrs)).collect::<Vec<_>>()),
       }
     }));
   }
@@ -448,11 +463,11 @@ fn __remove_group<'a>(
   for group in reified_groups_iter {
     let mut result = _elim_group(match_info.initial_hands.clone(), &group, &match_info.aliases, &match_info.mapping, &match_info.joker_tiles, exhaustive);
     if let Some(hands) = result.next() {
-      ret.push(decode(&hands[0], match_info.all_attrs));
+      ret.push(decode(&hands[0], &match_info.all_attrs));
       if !exhaustive {
         return ret;
       } else {
-        ret.extend(result.map(|hands| decode(&hands[0], match_info.all_attrs)));
+        ret.extend(result.map(|hands| decode(&hands[0], &match_info.all_attrs)));
       }
     }
   }

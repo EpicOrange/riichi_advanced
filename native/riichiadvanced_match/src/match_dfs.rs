@@ -5,7 +5,7 @@ use std::iter::{empty, once};
 use std::rc::Rc;
 use num::abs;
 
-use crate::encode::{decode, print_group};
+use crate::encode::{decode, decode_tiles, print_group};
 use crate::match_elim::elim_group_iter;
 use crate::offsets::{__generate_groups};
 use crate::primes::{is_manzu, is_pinzu, is_souzu, to_prime};
@@ -130,12 +130,11 @@ fn reify_groups(
       let reified = __generate_groups(
         group.clone(),
         &mut base_tile_iter,
-        match_info.all_attrs,
+        &match_info.all_attrs,
         &match_info.joker_tiles,
         &match_info.ordering, &match_info.ordering_r,
         &mut nojoker);
 
-      if debug { println!("Reified group {0}/{1}: {2:?} using base tiles <{3:?}> into the groups{4}:", i + 1, num_groups, &group, base_tiles, if separate_suits { " (separate_suits)" } else { "" }); }
       let mut stored_groups = vec!();
       for group in reified {
         if let Some(&ix) = reified_bank_r.get(&group) {
@@ -147,7 +146,17 @@ fn reify_groups(
           stored_groups.push(reified_bank[ix].clone());
         }
       }
-      if debug { println!("- {}", stored_groups.iter().map(|group| print_group(group, match_info.all_attrs, nojoker)).collect::<Vec<_>>().join(", ")); }
+      if debug {
+        if !stored_groups.is_empty() {
+          println!("Reified group {0}/{1}: {2:?} using base tiles <{3:?}> into the groups{4}: {5:?}",
+            i + 1, num_groups, &group,
+            decode_tiles(&*base_tiles, &match_info.all_attrs),
+            if separate_suits { " (separate_suits)" } else { "" },
+            stored_groups.iter().map(|group| print_group(group, &match_info.all_attrs, nojoker)).collect::<Vec<_>>().join(", "));
+        } else {
+          println!("Reified group {0}/{1}: {2:?} using base tiles <{3:?}> into (no groups){4}", i + 1, num_groups, &group, decode_tiles(&*base_tiles, &match_info.all_attrs), if separate_suits { " (separate_suits)" } else { "" });
+        }
+      }
       let map = ret.entry(key.clone()).or_insert_with(|| Rc::new(BTreeMap::new()));
       if let Some(m) = Rc::get_mut(map) {
         m.insert(i, Rc::new(stored_groups));
@@ -208,16 +217,16 @@ fn _dfs_match<'a>(
       actual_num,
       if num <= 0 { " (lookahead)" } else { "" },
       hands[0].attrs.len(),
-      decode(&hands[0], match_info.all_attrs),
-      hands[1..].iter().map(|call| decode(call, match_info.all_attrs)).collect::<Vec<_>>(),
-      groups.iter().map(|g| print_group(&g.1, match_info.all_attrs, nojoker)).collect::<Vec<_>>().join(","), num,
+      decode(&hands[0], &match_info.all_attrs),
+      hands[1..].iter().map(|call| decode(call, &match_info.all_attrs)).collect::<Vec<_>>(),
+      groups.iter().map(|g| print_group(&g.1, &match_info.all_attrs, nojoker)).collect::<Vec<_>>().join(","), num,
       if exhaustive { " exhaustive" } else { "" },
       if unique { " unique" } else { "" },
       if nojoker { " nojoker" } else { "" },
     );
     for (j, group) in groups.iter() {
       let mut alternatives: Vec<String> = vec!();
-      alternatives.push(print_group(group, match_info.all_attrs, nojoker));
+      alternatives.push(print_group(group, &match_info.all_attrs, nojoker));
       if !alternatives.is_empty() {
         println!("{0:4}. {1}{2}", j, alternatives.join(", "), if nojoker { " nojoker" } else { "" });
       }
@@ -241,14 +250,22 @@ fn _dfs_match<'a>(
     }
     path.push(group.clone());
     let new_path = path.clone();
+    // if debug {
+    //   if let RemovableGroup::Group(ts) = group.clone() {
+    //     println!("Subtracting tiles {:?} from hand {:?}", decode(&ts, &match_info.all_attrs), decode(&hands[0], &match_info.all_attrs));
+    //     println!("match_info: {:?}", &match_info);
+    //   }
+    // }
     let mut ret = Box::new(elim_group_iter(hands.clone(), group.clone(), &match_info.aliases, &match_info.mapping, &match_info.joker_tiles, debug, exhaustive)
-      .map(move |hands| (hands, if unique { j + 1 } else { j }, new_path.clone())));
-    match ret.next() {
+      .map(move |hands| (hands, if unique { j + 1 } else { j }, new_path.clone()))
+      .peekable());
+    match ret.peek() {
       Some(t) => {
-        if debug { println!("Removal of group {0:?} was a success, first result is {1:?} / {2} call(s)", print_group(&group, match_info.all_attrs, false), decode(&t.0[0], match_info.all_attrs), t.0.len() - 1); }
-        Box::new(once(t).chain(ret))
+        if debug { println!("Removal of group {0:?} was a success, first result is {1:?} / {2} call(s)", print_group(&group, &match_info.all_attrs, false), decode(&t.0[0], &match_info.all_attrs), t.0.len() - 1); }
+        ret
       }
       None    => {
+        // if debug { println!("Failed to remove group {0:?}", print_group(&group, &match_info.all_attrs, false)); }
         if path.len() <= 4 && i < actual_num - 1 { // no need to store paths for the last iteration
           let mut key = path.clone();
           key.sort_unstable();
@@ -259,7 +276,7 @@ fn _dfs_match<'a>(
           //     visited.borrow().len());
           // }
         }
-        Box::new(empty())
+        ret
       }
     }
   }))

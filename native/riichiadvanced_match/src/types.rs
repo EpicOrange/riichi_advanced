@@ -16,6 +16,7 @@ pub type Aliases = HashMap<Prime, AliasEntry>;
 pub type Mapping = HashMap<Tile, Vec<Tile>>;
 
 pub type Mask = u64;
+pub type Masks = SmallVec<[(Mask, RowIndex); 16]>;
 pub type RowIndex = u8; // index into Mask
 pub type IndexVec = SmallVec<[RowIndex; 16]>;
 
@@ -212,6 +213,7 @@ pub enum MatchOffset {
   TileOrKeyword(String), // group keywords, includes amerijong fixed offsets
 }
 
+// TODO we basically never have more than 4 tiles in a group
 #[derive(PartialEq, Eq, Clone)]
 pub enum MatchGroup {
   Offset(MatchOffset),
@@ -413,14 +415,14 @@ pub static FIXED_OFFSETS: phf::Map<&'static str, fn() -> Atom> = phf::phf_map! {
 
 pub type TileOrdering = HashMap<Prime, Prime>;
 #[derive(Debug)]
-pub struct MatchInfo<'a> {
+pub struct MatchInfo {
   pub initial_hands: Hands,
   pub num_tiles_in_hand: usize,
   pub aliases: Aliases,
   pub mapping: Mapping,
   pub relevant_tiles: Vec<Tile>,
   pub joker_tiles: HashSet<Tile>,
-  pub all_attrs: &'a Vec<String>,
+  pub all_attrs: Vec<String>,
   pub ordering: TileOrdering,
   pub ordering_r: TileOrdering,
 }

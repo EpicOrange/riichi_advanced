@@ -26,13 +26,13 @@ pub fn perform_blossom_match<'a>(
   Box::new(acc.flat_map(move |mut hands| -> HandsIterator<'a> {
     let num_removes_possible = (hands[0].attrs.len() / 2) + hands.len() - 1;
     if num_removes_possible < actual_num {
-      if debug { println!("Aborting because not enough tiles to remove {actual_num} groups of size 2; hands = {:?}", hands.iter().map(|h| decode(h, match_info.all_attrs)).collect::<Vec<_>>()) }
+      if debug { println!("Aborting because not enough tiles to remove {actual_num} groups of size 2; hands = {:?}", hands.iter().map(|h| decode(h, &match_info.all_attrs)).collect::<Vec<_>>()) }
       return Box::new(empty());
     }
     if debug {
       println!("Running blossom with hands = {:?}, groups = {groups:?}, actual_num = {actual_num}, mapping = {:?}",
-        hands.iter().map(|h| decode_tiles(&h.attrs, match_info.all_attrs)).collect::<Vec<_>>(),
-        decode_mapping(&match_info.mapping, match_info.all_attrs)
+        hands.iter().map(|h| decode_tiles(&h.attrs, &match_info.all_attrs)).collect::<Vec<_>>(),
+        decode_mapping(&match_info.mapping, &match_info.all_attrs)
       );
     }
     // try to match as many calls as possible
@@ -77,7 +77,7 @@ fn check_pair_match(hand: &TileSet, groups: &[MatchGroup], match_info: &MatchInf
         // then see if applying the combined offset to one tile gets you one of the other tiles in the hand
         let offset = Rc::new(vec!(offset));
         for (i, tile1) in hand.attrs.iter().enumerate() {
-          if let Some(target) = apply_offsets(tile1, &offset.clone(), match_info.all_attrs, &match_info.ordering, &match_info.ordering_r).0[0] {
+          if let Some(target) = apply_offsets(tile1, &offset.clone(), &match_info.all_attrs, &match_info.ordering, &match_info.ordering_r).0[0] {
             for (j, tile2) in hand.attrs.iter().enumerate() {
               if i == j { continue; }
               // draw an edge between two tiles iff they share any aliases
@@ -141,6 +141,6 @@ fn run_blossom<'a>(
   ixs.sort();
   ixs.dedup();
   remove_tileset_indices(&mut hand, ixs, &match_info.joker_tiles);
-  if debug { println!("After removal: {:?}", decode(&hand, match_info.all_attrs)); }
+  if debug { println!("After removal: {:?}", decode(&hand, &match_info.all_attrs)); }
   Some(hand)
 }

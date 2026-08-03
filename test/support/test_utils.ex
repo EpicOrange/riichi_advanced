@@ -156,7 +156,31 @@ defmodule RiichiAdvanced.TestUtils do
     end
   end
 
-  # TODO cache these %Game{} states for every ruleset/mod combination
+  def test_subtract_calculation(state, hand, group, expected) do
+    hand = with {:ok, tiles} <- parse_tiles(hand) do Enum.map(tiles, &Utils.to_tile/1) end
+    group = with {:ok, tiles} <- parse_tiles(group) do Enum.map(tiles, &Utils.to_tile/1) end
+    expected = with {:ok, tiles} <- parse_tiles(expected) do Enum.map(tiles, &Utils.to_tile/1) end
+    tile_behavior = Map.put(state.players.east.tile_behavior, :all_attrs, ["dora"])
+    {_, _, tile_behavior} = Match.prepare_tiles([hand], [], tile_behavior)
+    hand = Match.encode(hand, tile_behavior)
+    group = Match.encode(group, tile_behavior)
+    expected = Match.encode(expected, tile_behavior)
+    encoded_aliases = tile_behavior.encoded_aliases
+    encoded_mapping = tile_behavior.encoded_mapping
+    encoded_joker_tiles = tile_behavior.encoded_joker_tiles
+    result = Match.subtract(hand, group, encoded_aliases, encoded_mapping, encoded_joker_tiles)
+    assert not is_nil(result)
+    assert Enum.sort(result.attrs) == Enum.sort(expected.attrs)
+  end
+
+  def test_remove_match_definition(state, hand, calls, match_definition, expected) do
+    hand = with {:ok, tiles} <- parse_tiles(hand) do Enum.map(tiles, &Utils.to_tile/1) end
+    expected = with {:ok, tiles} <- parse_tiles(expected) do Enum.map(tiles, &Utils.to_tile/1) end
+    results = Match.remove_match_definition(hand, calls, match_definition, state.players.east.tile_behavior)
+    assert not Enum.empty?(results)
+    assert Enum.sort(results |> Enum.at(0) |> Enum.at(0)) == Enum.sort(expected)
+  end
+
   def test_wait_calculation(state, hand, calls, expected_waits) do
     hand = interpret_hand(hand)
     calls = interpret_calls(calls)
@@ -185,6 +209,21 @@ defmodule RiichiAdvanced.TestUtils do
     rules_ref
   end
 
+  # long notation
+  def parse_tiles(tiles_spec) when is_binary(tiles_spec) do
+    ret = for group <- String.split(tiles_spec, " ", trim: true), [_, num, suit | attrs] <- Regex.scan(~r/(\d+)([a-zA-Z])(@([a-zA-Z0-9_&]+))?/, group) do
+      tile = "#{num}#{String.downcase(suit)}"
+      attrs = case attrs do
+        [_, attrs] -> String.split(attrs, "&", trim: true)
+        _ -> []
+      end
+      attrs = if suit == String.upcase(suit) do ["_sideways" | attrs] else attrs end
+      if Enum.empty?(attrs) do tile else {tile, attrs} end
+    end
+    {:ok, ret}
+  end
+
+  # short notation
   def interpret_hand(hand) when is_list(hand), do: Enum.map(hand, &Utils.to_tile/1)
   def interpret_hand(hand) when is_binary(hand) do
     case String.split(hand, " ", trim: true) do

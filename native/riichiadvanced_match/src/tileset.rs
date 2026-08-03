@@ -2,8 +2,9 @@ use smallvec::smallvec;
 use std::collections::{HashMap, HashSet};
 use ruint::aliases::U256;
 use rustler::{Encoder, Env, Term};
+
 use crate::n_rooks;
-use crate::types::{ANY_PRIME, Aliases, Hash, IndexVec, Mapping, Mask, Prime, RowIndex, Tile, TileSet};
+use crate::types::{ANY_PRIME, Aliases, Hash, IndexVec, Mapping, Mask, Masks, Prime, Tile, TileSet};
 use crate::utils::remove_indices;
 
 #[rustler::nif]
@@ -59,9 +60,9 @@ pub fn _check_equivalence(l: &Tile, r: &Tile, aliases: &Aliases) -> bool {
   false
 }
 
-pub fn compute_attr_masks(ls: &[Tile], rs: &[Tile], aliases: &Aliases) -> (Vec<(Mask, RowIndex)>, Mask) {
+pub fn compute_attr_masks(ls: &[Tile], rs: &[Tile], aliases: &Aliases) -> (Masks, Mask) {
   assert!(rs.len() <= Mask::BITS as usize, "mask size too small for given tiles");
-  let mut masks: Vec<(Mask, RowIndex)> = vec![(0,0); ls.len()];
+  let mut masks: Masks = smallvec![(0,0); ls.len()];
   let mut col_mask: Mask = 0;
   for j in 0..ls.len() {
     masks[j].1 = j as u8;
@@ -83,8 +84,8 @@ pub fn subtract_check_attrs<'a>(env: Env<'a>, l: Vec<Tile>, r: Vec<Tile>, aliase
   }
 }
 pub fn _subtract_check_attrs(l: &[Tile], r: &[Tile], aliases: &Aliases) -> Option<IndexVec> {
-  if l.is_empty() { return None; }
   if r.is_empty() { return Some(smallvec!()); }
+  if l.is_empty() { return None; }
   let (masks, col_mask) = compute_attr_masks(l, r, aliases);
   n_rooks::_solve_n_rooks(&masks, col_mask, r.len() as u8)
 }
@@ -162,8 +163,12 @@ pub fn move_jokers_to_end(attrs: &mut [Tile], joker_tiles: &HashSet<Tile>) -> (u
       j -= 1;
     }
   }
-  if i == j && joker_tiles.contains(&attrs[i]) {
-    joker_hash *= U256::from(attrs[i].0);
+  if i == j {
+    if joker_tiles.contains(&attrs[i]) {
+      joker_hash *= U256::from(attrs[i].0);
+    } else {
+      i += 1;
+    }
   }
   (i, Hash(joker_hash))
 }
@@ -233,8 +238,7 @@ pub fn __subtract(
 
   // if divides, no need to use jokers
   // otherwise, use jokers, but if not exhaustive, prioritize nonjokers-only if possible
-  let aliases = if divides { &empty_aliases } else { aliases };
-
+  let nojoker = nojoker || divides;
   match _subtract_check_attrs(&hand_attrs[0..num_nonjokers], group_attrs, &empty_aliases) {
     Some(mut indices) => {
       let mut hand = TileSet{

@@ -1117,7 +1117,7 @@ defmodule RiichiAdvanced.GameState do
     tile_behavior = state.players[seat].tile_behavior
     score_rules = Rules.get(state.rules_ref, "score_calculation", %{})
     {tiles_in_hand, initial_hands, tile_behavior} = Match.prepare_tiles([tiles], tenpai_definitions, tile_behavior)
-    Enum.flat_map(tenpai_definitions, &Match._remove_match_definition({tiles_in_hand, initial_hands, tile_behavior}, &1, true))
+    Enum.flat_map(tenpai_definitions, &Match.__remove_match_definition({tiles_in_hand, initial_hands, tile_behavior}, &1, true))
     |> Enum.take(max_results)
     |> Enum.map(fn [hand | _calls] -> tiles -- hand end)
     |> Enum.uniq()

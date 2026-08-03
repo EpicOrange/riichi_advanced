@@ -21,7 +21,7 @@ pub fn perform_exact_match<'a>(
 ) -> HandsIterator<'a> {
   let mut actual_num = if num == 0 { 1 } else { abs(num) } as usize;
   Box::new(acc.flat_map(move |mut hands| -> HandsIterator<'a> {
-    if debug { println!("Running exact with hands = {:?}, tiles = {:?}, call_names = {call_names:?}, actual_num = {actual_num}", hands.iter().map(|hand| decode(hand, match_info.all_attrs)).collect::<Vec<_>>(), decode_tiles(&tiles, match_info.all_attrs)); }
+    if debug { println!("Running exact with hands = {:?}, tiles = {:?}, call_names = {call_names:?}, actual_num = {actual_num}", hands.iter().map(|hand| decode(hand, &match_info.all_attrs)).collect::<Vec<_>>(), decode_tiles(&tiles, &match_info.all_attrs)); }
 
     // first remove call names
     let mut call_ixs: IndexVec = hands[1..]
@@ -60,7 +60,7 @@ pub fn exact_match<'a>(
   match tiles.pop() {
     None => Box::new(empty()),
     Some(tile) => {
-      if debug { println!("  <{:?}> have {hand_tiles_remaining} tiles/calls, of which we need to remove {num} from {:?}", decode_tile(tile, match_info.all_attrs).unwrap(), hands.iter().map(|hand| decode(hand, match_info.all_attrs)).collect::<Vec<_>>()); }
+      if debug { println!("  <{:?}> have {hand_tiles_remaining} tiles/calls, of which we need to remove {num} from {:?}", decode_tile(tile, &match_info.all_attrs).unwrap(), hands.iter().map(|hand| decode(hand, &match_info.all_attrs)).collect::<Vec<_>>()); }
       // check calls first
       let mut call_ixs: IndexVec = hands[1..]
         .iter()

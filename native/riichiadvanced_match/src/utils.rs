@@ -2,6 +2,7 @@ use std::collections::HashMap;
 
 use rustler::Atom;
 use smallvec::{Array, SmallVec};
+use crate::encode::decode_tiles_no_attrs;
 use crate::primes::is_any;
 use crate::types::{ANY_PRIME, Aliases, ElixirAliases, ElixirTile, IndexVec, Mapping, Tile};
 
@@ -132,7 +133,7 @@ pub fn add_joker_to_aliases<'a>(
         attrs_aliases
       });
   }
-  mapping.entry(joker).and_modify(|v| v.append(&mut all_tiles));
+  mapping.entry(joker).and_modify(|v| v.append(&mut all_tiles)).or_insert(all_tiles);
 }
 
 pub fn remove_joker_from_aliases<'a>(
@@ -153,3 +154,7 @@ pub fn remove_joker_from_aliases<'a>(
   }
   mapping.entry(joker).and_modify(|v| v.retain(|t| !all_tiles.contains(t)));
 }
+
+// pub fn prime_is_tile(p: Prime, tile: &str) -> bool {
+//   p == *TILE_TABLE.get(tile).unwrap()
+// }
