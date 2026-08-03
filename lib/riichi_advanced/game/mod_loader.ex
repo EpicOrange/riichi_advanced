@@ -29,6 +29,7 @@ defmodule RiichiAdvanced.ModLoader.ModState do
     %ModState{ruleset_json: ruleset_json, base_ruleset: ruleset, ruleset: ruleset}
   end
 
+  # main entry point
   def load_ruleset(ruleset, room_code \\ nil) do
     # IO.puts("Fetching ruleset #{ruleset}")
 
@@ -104,7 +105,9 @@ defmodule RiichiAdvanced.ModLoader.ModState do
       end
 
       # then actually apply all mods to the ruleset, if any
-      state = %{state | ruleset_json: ModLoader.read_ruleset_json(ruleset) |> ModLoader.strip_comments(), mods: []}
+      {ruleset_json, globals} = ModLoader.read_ruleset_json(ruleset)
+      state = update_in(state.globals, &Map.merge(&1, globals))
+      state = %{state | ruleset_json: ruleset_json |> ModLoader.strip_comments(), mods: []}
       state = if not Enum.empty?(mods) do
         ModState.apply_new_mods(state, mods)
       else state end
@@ -121,6 +124,7 @@ defmodule RiichiAdvanced.ModLoader.ModState do
 
   def apply_new_mods(state, []), do: state
   def apply_new_mods(state, mods) do
+    # IO.inspect(state, label: "state", limit: :infinity)
     all_mods = state.mods ++ mods
     case RiichiAdvanced.Cache.get({:cache_modloader, state.ruleset, all_mods}) do
       {:ok, nil} ->
@@ -268,20 +272,29 @@ defmodule RiichiAdvanced.ModLoader do
   def read_ruleset_json(ruleset, visited \\ [])
   def read_ruleset_json(ruleset, visited) when length(visited) > 3 do
     IO.puts("WARNING: Reached max ruleset depth of 3 while trying to load base ruleset #{ruleset}")
-    "{}"
+    {"{}", %{}}
   end
   def read_ruleset_json(ruleset, visited) do
     # IO.puts("Loading ruleset #{ruleset}")
     case File.read(Application.app_dir(:riichi_advanced, "/priv/static/rulesets/#{ruleset}.json")) do
-      {:ok, ruleset_json} -> ruleset_json
+      {:ok, ruleset_json} -> {ruleset_json, %{}}
       {:error, _err}      ->
         case File.read(Application.app_dir(:riichi_advanced, "/priv/static/rulesets/#{ruleset}.majs")) do
           {:ok, ruleset_majs} ->
             {jq, defs} = convert_to_jq_defs(ruleset_majs, %Defs{})
 
+            # evaluate the base ruleset to get prev rulesets' globals before we do anything
+            {base_ruleset, globals} = if defs.base_ruleset == nil do
+              {"{}", %{}}
+            else
+              read_ruleset_json(defs.base_ruleset, [ruleset | visited])
+            end
+            defs = update_in(defs.globals, &Map.merge(globals, &1))
+
+
             global_jq = for {name, val} <- defs.globals, is_jq_var?(name), do: "(#{Jason.encode!(val)}) as $#{name}"
             vars_jq = for {name, val} <- Enum.reverse(defs.vars), is_jq_var?(name), do: "(#{Jason.encode!(val)}) as $#{name}"
-            for {name, config} <- defs.post_mods, reduce: {:ok, {[], defs}} do
+            jq = for {name, config} <- defs.post_mods, reduce: {:ok, {[], defs}} do
               {:ok, {acc, defs}} -> with {:ok, {jq, defs}} <- Compiler.load_lib(defs, name, config) do
                 {:ok, {[jq | acc], defs}}
               end
@@ -295,13 +308,8 @@ defmodule RiichiAdvanced.ModLoader do
 
             # IO.puts("Successfully loaded ruleset #{ruleset}")
 
-            base_ruleset = if defs.base_ruleset == nil do
-              "{}"
-            else
-              read_ruleset_json(defs.base_ruleset, [ruleset | visited])
-            end
-            JQ.query_string_with_string!(base_ruleset, jq)
-          {:error, _err}      -> "{}"
+            {JQ.query_string_with_string!(base_ruleset, jq), defs.globals}
+          {:error, _err}      -> {"{}", %{}}
         end
     end
   end

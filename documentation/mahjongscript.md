@@ -546,7 +546,7 @@ If you'd like to first inherit all rules from another existing ruleset, simply d
 define_base_ruleset riichi
 ```
 
-and everything in the file will be applied to that existing base ruleset, rather than to the empty ruleset `{}`.
+and everything in the file will be applied to that existing base ruleset, rather than to the empty ruleset `{}`. In addition, all globals defined by the base ruleset will be made available.
 
 Every ruleset may only have one base ruleset, i.e. if you run that twice, the second base ruleset overrides the first.
 

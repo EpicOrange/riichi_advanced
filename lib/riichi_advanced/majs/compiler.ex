@@ -1312,7 +1312,7 @@ defmodule RiichiAdvanced.Compiler do
 
   def compile_jq_defs(ast, defs, depth \\ 0) do
     case ast do
-      _ when depth > 1 -> {:error, "Compiler.compile: exceeded max require depth of 1}"}
+      _ when depth > 2 -> {:error, "Compiler.compile: exceeded max require depth of 2}"}
       {:__block__, _pos, []} -> {:ok, {".", defs}}
       {:__block__, pos, nodes} ->
         # IO.inspect(nodes, label: "AST", limit: :infinity)
@@ -1320,8 +1320,9 @@ defmodule RiichiAdvanced.Compiler do
           [line: line, column: column] -> {line, column}
           _ -> {0, 0}
         end
+        header = if depth == 0 do @header else "" end
         case compile_jq_toplevel(nodes, line, column, defs, depth) do
-          {:ok, {ret, defs}} -> {:ok, {@header <> ret, defs}}
+          {:ok, {ret, defs}} -> {:ok, {header <> ret, defs}}
           {:error, msg}      -> {:error, msg}
         end
       {_name, _pos, _actions} -> compile_jq_defs({:__block__, [], [ast]}, defs)
