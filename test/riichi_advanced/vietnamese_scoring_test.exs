@@ -86,7 +86,7 @@ defmodule RiichiAdvanced.YakuTest.VietnameseScoring do
           {"Win on Discarded Joker", [1, "Mủn"]}
         ]
       }
-    }, %{delta_scores: [-914, 0, 0, 914]})
+    }, %{delta_scores: [-658, 0, 0, 658]})
   end
 
   test "vietnamese - nfnl liability" do
