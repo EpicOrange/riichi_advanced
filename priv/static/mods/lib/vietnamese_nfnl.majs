@@ -29,6 +29,7 @@ define_button nfnl0,
   display_name: "No Flowers, No Leaves",
   show_when: status_missing("initial_flowers")
     and status("nfnl_eligible")
+    and status_missing("throwing_flowers_jokers_eligible")
     and not_match(["hand", "draw", "calls", "flowers", "jokers"], ["has_non_nfnl_tile"])
     and ((not_our_turn and someone_else_just_discarded and match(["hand", "calls", "last_discard"], ["win"]) and not_match(["last_discard"], ["any_flower", "any_joker"]))
       or (not_our_turn and someone_else_just_called and status("can_chankan", as: "caller") and match(["hand", "calls", "last_called_tile"], ["win"]) and not_match(["last_called_tile"], ["any_flower", "any_joker"]))
@@ -53,7 +54,6 @@ apply append, "buttons.ron.precedence_over", ["nfnl0", "nfnl1"]
 apply append, "buttons.chankan.precedence_over", ["nfnl0", "nfnl1"]
 
 # Throwing Flowers/Jokers
-# TODO rn we'll show both nfnl0 and nfnl1 if the player's able to win on either
 define_button nfnl1,
   display_name: "No Flowers, No Leaves",
   show_when: status_missing("initial_flowers")
@@ -65,14 +65,10 @@ define_button nfnl1,
       or (not_our_turn and someone_else_just_called and status("can_chankan", as: "caller") and not_match(["last_called_tile"], ["has_non_nfnl_tile"]))),
   precedence_over: ["chii", "pon", "daiminkan", "ron", "chankan", "nfnl0", "nfnl1"]
   do
-    if our_turn do big_text("Chỉ Mó") else big_text("Ù") end
+    big_text("No Flowers, No Leaves")
     pause(1000)
     reveal_hand
-    cond do
-      someone_else_just_discarded -> win_by_discard("ron")
-      someone_else_just_called -> win_by_call("ron")
-      true -> win_by_draw("tsumo")
-    end
+    win_by_discard("tsumo")
   end
 
 # Throwing Flowers/Blue Jokers
@@ -85,10 +81,10 @@ define_button nfnl2,
       or (status("throwing_blue_jokers_eligible") and blue_jokers_discarded >= 3)
     and not_match(["hand", "calls", "flowers", "jokers"], ~m"(any_flower any_joker):1"))
   do
-    big_text("Chỉ Mó")
+    big_text("No Flowers, No Leaves")
     pause(1000)
     reveal_hand
-    win_by_discard("ron")
+    win_by_discard("tsumo")
   end
 
 on after_call do
@@ -178,29 +174,34 @@ on before_win do
   end
 end
 
-define_yaku yaku, "Throwing Flowers/Jokers", ["throwing_flowers_jokers_value", "Mủn"],
+apply append, "score_calculation.yaku_lists", "nfnl"
+define_yaku nfnl, "Throwing Flowers/Jokers", ["throwing_flowers_jokers_value", "Mủn"],
   status("nfnl_eligible", "throwing_flowers_jokers_eligible")
   and not just_discarded
   and throwing_flowers_jokers_value > 0
   and not_match(["hand", "calls", "winning_tile"], ["has_non_nfnl_tile"]),
-  ["Single Wait"]
-define_yaku yaku, "Throwing Flowers", ["throwing_flowers_value", "Mủn"],
+  ["yaku", "progressive", "meta_yaku"]
+define_yaku nfnl, "Throwing Flowers", ["throwing_flowers_value", "Mủn"],
   status("nfnl_eligible", "throwing_flowers_eligible")
-  and our_turn and just_discarded
+  and our_turn and print("a") and just_discarded and print("b")
   and throwing_flowers_value > 0
   and not_match(["hand", "calls", "flowers", "jokers"], ~m"nojoker, (any_flower any_joker):1"),
-  ["Single Wait", "Win on Discarded Flower", "Win on Discarded Joker"]
-define_yaku yaku, "Throwing Blue Jokers", ["throwing_blue_jokers_value", "Mủn"],
+  ["yaku", "progressive", "meta_yaku"]
+define_yaku nfnl, "Throwing Blue Jokers", ["throwing_blue_jokers_value", "Mủn"],
   status("nfnl_eligible", "throwing_blue_jokers_eligible")
   and our_turn and just_discarded
   and throwing_blue_jokers_value > 0
   and not_match(["hand", "calls", "flowers", "jokers"], ~m"nojoker, (any_flower any_joker):1"),
-  ["Single Wait", "Win on Discarded Flower", "Win on Discarded Joker"]
-define_yaku yaku, "True No Flowers, No Leaves", [2, "Mủn"],
+  ["yaku", "progressive", "meta_yaku"]
+define_yaku nfnl, "True No Flowers, No Leaves", [1, "Mủn"],
   status("nfnl_eligible")
   and match(["hand", "calls", "winning_tile"], ["win"])
   and not_match(["hand", "calls", "winning_tile"], ["has_non_nfnl_tile"]),
-  ["Throwing Flowers/Jokers", "Throwing Flowers", "Throwing Blue Jokers"]
+  ["yaku", "progressive", "meta_yaku", "Throwing Flowers/Jokers", "Throwing Flowers", "Throwing Blue Jokers"]
+
+if defined("more_jokers") do
+  replace_yaku nfnl, "True No Flowers, No Leaves", [2, "Mủn"]
+end
 
 on before_win do
   if status("nfnl_eligible") and not_match(["hand", "draw", "calls", "flowers", "jokers"], ["has_non_nfnl_tile"]) and match(["hand", "calls", "winning_tile"], ["win"]) do
@@ -216,5 +217,6 @@ on before_win do
       if status_missing("discarded_4j") do nguyen_value = 0 end
       if status_missing("discarded_2j") do hop_value = 0 end
     end
+    make_responsible_for("others")
   end
 end

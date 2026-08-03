@@ -38,10 +38,10 @@ require "yaku/chuurenpoutou", %{name: "Nine Gates", value: 3, han: "Mủn", must
 require "yaku/tsuuiisou", %{name: "All Honors", value: 4, han: "Mủn"}
 require "yaku/shousuushii", %{dai_name: "Big Four Winds", dai_value: 8, shou_name: "Little Four Winds", shou_value: 4, dai_han: "Mủn", shou_han: "Mủn"}
 require "yaku/tenhou", %{chiihou_name: "Blessing of Earth", chiihou_value: 2, renhou_name: "Blessing of Man", renhou_value: 2, tenhou_name: "Blessing of Heaven", tenhou_value: 2, chiihou_han: "Mủn", tenhou_han: "Mủn", renhou_han: "Mủn"}
-require "yaku/vietnamese_flowers"
-require "yaku/vietnamese_jokers"
-require "vietnamese_nfnl"
-require "vietnamese_scoring"
+require_after "yaku/vietnamese_flowers"
+require_after "yaku/vietnamese_jokers"
+require_after "vietnamese_nfnl"
+require_after "vietnamese_scoring"
 
 on after_initialization, prepend: true do
   add_rule_tab("Rules")

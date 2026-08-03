@@ -1,3 +1,4 @@
+define "more_jokers"
 
 on after_start do
   set_tile_alias_all(["00j", "50j", "80j"], ["any"])
