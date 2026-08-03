@@ -1071,8 +1071,8 @@ defmodule RiichiAdvanced.GameState do
       |> Actions.advance_turn()
     else state end
     get_score = fn state, win_source ->
-      Scoring.seat_scores_points(state, yaku_lists, point_name, min_han, 0, seat, wait, win_source)
-      or Scoring.seat_scores_points(state, yaku_lists, point2_name, min_han, 0, seat, wait, win_source)
+      Scoring.seat_scores_points(state, yaku_lists, point_name, min_han, 0, seat, [wait], win_source)
+      or Scoring.seat_scores_points(state, yaku_lists, point2_name, min_han, 0, seat, [wait], win_source)
     end
     cond do
       min_han > 0 and get_score.(update_winning_tile(state, state.turn, :discard, fn _ -> wait end), :discard) -> nil

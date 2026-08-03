@@ -57,7 +57,7 @@ defmodule RiichiAdvanced.GameState.Payment do
   def consolidate_txns(txns, omit_pot_payments \\ false) do
     for %{from: from, to: to} = txn <- txns, reduce: %{} do
       ledger when omit_pot_payments and from == nil -> ledger
-      ledger when length(txn.line_items) == 0 -> ledger
+      ledger when txn.line_items == [] -> ledger
       ledger ->
         txn_name = if from != nil do
           case Utils.get_relative_seat(from, to) do
