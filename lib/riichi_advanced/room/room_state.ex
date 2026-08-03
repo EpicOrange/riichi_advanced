@@ -247,30 +247,35 @@ defmodule RiichiAdvanced.RoomState do
 
   def toggle_mod(state, mod_name, enabled) do
     state = Map.put(state, :selected_preset_ix, nil)
-    state = put_in(state.mods[mod_name].enabled, enabled)
-    if enabled do
-      # enable dependencies and disable conflicting mods
-      state = for dep <- state.mods[mod_name].deps, Map.has_key?(state.mods, dep), reduce: state do
-        state -> put_in(state.mods[dep].enabled, true)
-      end
-      for conflict <- state.mods[mod_name].conflicts, reduce: state do
-        state ->
-          # conflicts can either be a mod id, or a category name
-          if Map.has_key?(state.mods, conflict) do
-            put_in(state.mods[conflict].enabled, false)
-          else
-            # is a category, disable all mods of the same category (except this one)
-            for {id, mod} <- state.mods, reduce: state do
-              state when id == mod_name -> state
-              state when mod.category == conflict -> put_in(state.mods[id].enabled, false)
-              state -> state
-            end
-          end
-      end
+    if get_in(state.mods[mod_name]) == nil do
+      Logger.error("WARNING: cannot find mod #{inspect(mod_name)}")
+      state
     else
-      # disable dependent mods
-      for {dep, opts} <- state.mods, mod_name in opts.deps, reduce: state do
-        state -> put_in(state.mods[dep].enabled, false)
+      state = put_in(state.mods[mod_name].enabled, enabled)
+      if enabled do
+        # enable dependencies and disable conflicting mods
+        state = for dep <- state.mods[mod_name].deps, Map.has_key?(state.mods, dep), reduce: state do
+          state -> put_in(state.mods[dep].enabled, true)
+        end
+        for conflict <- state.mods[mod_name].conflicts, reduce: state do
+          state ->
+            # conflicts can either be a mod id, or a category name
+            if Map.has_key?(state.mods, conflict) do
+              put_in(state.mods[conflict].enabled, false)
+            else
+              # is a category, disable all mods of the same category (except this one)
+              for {id, mod} <- state.mods, reduce: state do
+                state when id == mod_name -> state
+                state when mod.category == conflict -> put_in(state.mods[id].enabled, false)
+                state -> state
+              end
+            end
+        end
+      else
+        # disable dependent mods
+        for {dep, opts} <- state.mods, mod_name in opts.deps, reduce: state do
+          state -> put_in(state.mods[dep].enabled, false)
+        end
       end
     end
   end

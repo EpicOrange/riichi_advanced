@@ -185,11 +185,11 @@ defmodule RiichiAdvanced.Compiler do
     end
   end
 
-  defp compile_identifier(id, line, column) when is_binary(id) do
+  defp compile_identifier(id, _line, _column) when is_binary(id) do
     if Regex.match?(~r/^\$?[a-z_][a-z0-9_]*$/, id) do
       {:ok, id}
     else
-      {:error, "Compiler.compile_identifier: at line #{line}:#{column}, invalid identifier #{inspect(id)}"}
+      {:ok, Jason.encode!(id)} # it's a string constant
     end
   end
   defp compile_identifier(id, line, column) do
@@ -640,6 +640,11 @@ defmodule RiichiAdvanced.Compiler do
             with {:ok, match_spec} <- Validator.validate_json(match_spec),
                  {:ok, match_spec} <- Jason.encode(match_spec) do
               {:ok, "[#{match_spec}]"}
+            end
+          {:+, _, [{:@, _, [{match_spec, _, nil}]}]} when is_binary(match_spec) ->
+            # splatted constant
+            with {:ok, match_spec} <- Validator.validate_json(match_spec) do
+              {:ok, ".constants[\"#{match_spec}\"]"}
             end
           match_spec when is_binary(match_spec) ->
             # existing match definition
@@ -1329,6 +1334,7 @@ defmodule RiichiAdvanced.Compiler do
         end
         header = if depth == 0 do @header else "" end
         case compile_jq_toplevel(nodes, line, column, defs, depth) do
+          {:ok, {"", defs}} ->  {:ok, {".", defs}}
           {:ok, {ret, defs}} -> {:ok, {header <> ret, defs}}
           {:error, msg}      -> {:error, msg}
         end

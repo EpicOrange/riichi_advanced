@@ -187,7 +187,7 @@ defmodule RiichiAdvanced.ModLoader.ModState do
 
   # these are reversed because the respective fields are stacks
   def append_mods(state, mods), do: %{state | mods: mods ++ state.mods}
-  def prepend_mods(state, mods), do: %{state | mods: state.mods ++ mods}
+  def prepend_mods(state, mods), do: %{state | mods: state.mods ++ Enum.reverse(mods)}
   def append_jq(state, jq), do: %{state | ruleset_jq: [jq | state.ruleset_jq]}
   def prepend_jqs(state, jqs), do: %{state | ruleset_jq: state.ruleset_jq ++ jqs}
   def append_jqs(state, jqs), do: %{state | ruleset_jq: jqs ++ state.ruleset_jq}
@@ -226,6 +226,7 @@ defmodule RiichiAdvanced.ModLoader.ModState do
         else {jqs, defs} end
 
         # IO.puts("Done reading mod #{inspect(mod)}")
+        # IO.puts("#{inspect(mod)} emitted the following jq:\n#{jq}")
         {[{mod, jq} | jqs], defs}
     end
     # update state with new globals and defines
@@ -278,7 +279,11 @@ defmodule RiichiAdvanced.ModLoader.ModState do
         if Debug.debug_cache() do
           IO.puts("Cache miss for ruleset #{state.ruleset}: #{length(applied_mods)} mods #{inspect(applied_mods, limit: :infinity)}")
         end
-        ruleset_json = JQ.query_string_with_string!(state.ruleset_json, Compiler.header() <> Enum.join(jqs, "\n|"))
+        jq = Compiler.header() <> Enum.join(jqs, "\n|")
+        # IO.puts("===")
+        # IO.puts(jq)
+        # IO.puts("===")
+        ruleset_json = JQ.query_string_with_string!(state.ruleset_json, jq)
         state = %{state | ruleset_json: ruleset_json}
         # cache and return
         if not Debug.skip_ruleset_caching() do
@@ -330,6 +335,7 @@ defmodule RiichiAdvanced.ModLoader.ModState do
           IO.puts("Cache miss for mod #{inspect(mod)} using defs #{inspect(defs, limit: :infinity)}")
         end
         {name, config} = ModLoader.get_mod_name_config(mod)
+        config = Map.new(config, fn {key, val} -> {if is_atom(key) do Atom.to_string(key) else key end, val} end)
         {mod_contents, defs} = read_mod_jq_defs(name, defs)
         defaults = Map.new(Enum.reverse(defs.vars))
         vars = Map.merge(defaults, config, fn _k, l, nil -> l; _k, _l, r -> r end)
