@@ -499,10 +499,13 @@ defmodule RiichiAdvanced.Utils do
   def sequence(xs) do
     xs
     |> Enum.with_index()
-    |> Enum.find(fn {{tag, _}, _i} -> tag == :error end)
+    |> Enum.reduce_while([], fn
+      {{:ok, x}, _i}, acc -> {:cont, [x | acc]}
+      {{:error, msg}, i}, _acc -> {:halt, {:error, "index #{i}: #{if is_binary(msg) do msg else inspect(msg) end}"}}
+    end)
     |> case do
-      nil                -> {:ok, Enum.map(xs, fn {:ok, x} -> x end)}
-      {{:error, msg}, i} -> {:error, "index #{i}: #{if is_binary(msg) do msg else inspect(msg) end}"}
+      {:error, _} = err -> err
+      acc -> {:ok, Enum.reverse(acc)}
     end
   end
 
