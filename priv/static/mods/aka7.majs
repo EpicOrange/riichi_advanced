@@ -4,7 +4,9 @@ end
 
 unless defined("aka") do
   define "aka"
-  add_rule("Shuugi", "Aka", "(Aka) If your hand is closed, each aka dora is worth 1 shuugi chip.")
+  on after_initialization do
+    add_rule("Shuugi", "Aka", "(Aka) If your hand is closed, each aka dora is worth 1 shuugi chip.")
+  end
 end
 
 replace !man, "wall", "7m", "07m"
