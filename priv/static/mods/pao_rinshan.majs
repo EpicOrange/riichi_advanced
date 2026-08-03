@@ -35,8 +35,8 @@ end
 on before_win do
   as others do
     if status("rinshan_pao_eligible") do
-      make_responsible_for("prev_seat", "all")
-      clear_responsibilities(as: "others")
+      as everyone do clear_responsibilities end
+      make_responsible_for("last_seat", "all", as: "last_seat")
     end
   end
 end

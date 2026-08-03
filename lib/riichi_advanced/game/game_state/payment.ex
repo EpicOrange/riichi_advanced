@@ -97,11 +97,12 @@ defmodule RiichiAdvanced.GameState.Payment do
         seat == cxt.seat,
         reduce: state do
       state ->
+        # IO.inspect(yakus, label: "#{seat} responsibilities")
         # modify the points and yaku to only be for the ones payer is responsible for
-        new_yaku = Enum.flat_map(yakus, &
-          if &1 == "all" do
-            unmentioned_yaku
-          else
+        new_yaku = Enum.flat_map(yakus, &cond do
+          &1 == "all" -> cxt.yaku
+          &1 == "remaining" -> unmentioned_yaku
+          true ->
             Enum.find(cxt.yaku, fn {name, _value} -> name == &1 end)
             |> case do
               nil -> []

@@ -1,19 +1,23 @@
 require "pao"
+define "daisangen_pao"
+define "daisuushii_pao"
 
 on after_initialization do
   add_rule("Rules", "Sekinin Barai (Pao)", "If you deal the last dragon called for a daisangen hand, or the last wind called for a daisuushii hand, you are responsible for that single yakuman payment if they tsumo, or half of the yakuman payment if they ron off someone else.")
 end
 
+apply append, "constants.pao_yaku", ["Daisangen", "Daisuushii"]
+
 on after_call do
   if last_call_is("pon", "daiminkan") do
     as caller do
       if match(["last_call"], ~m"(haku hatsu chun):1") and match(["calls"], ~m"haku:1, hatsu:1, chun:1") do
-        make_responsible_for("callee", "Daisangen")
+        make_responsible_for("callee", "Daisangen", as: "last_seat")
         set_status("pao", as: "callee")
         pao_yakuman += 1
       end
       if match(["last_call"], ~m"(ton nan shaa pei):1") and match(["calls"], ~m"ton:1, nan:1, shaa:1, pei:1") do
-        make_responsible_for("callee", "Daisuushii")
+        make_responsible_for("callee", "Daisuushii", as: "last_seat")
         set_status("pao", as: "callee")
         pao_yakuman += 2
       end

@@ -1,4 +1,6 @@
+require "pao"
 define "blue_dragon"
+define "daisuugen_pao"
 
 on after_initialization do
   add_rule("Tiles", "Blue Dragon", "Four blue dragons %{blue_dragon} are added to the wall.", %{"blue_dragon": ~t"0z"}, -99)
@@ -28,7 +30,8 @@ define_match daisangen, ~m"(haku hatsu chun baiban):3"
 define_match shousuugen, ~m"(haku hatsu chun baiban):3, (haku_pair hatsu_pair chun_pair baiban_pair):1"
 define_match daisuugen, ~m"haku:1, hatsu:1, chun:1, baiban:1"
 replace_yaku yaku, "Shousangen", [1, "Han"], match(["hand", "calls", "winning_tile"], ["shousangen"])
-replace_yaku yaku, "Daisangen", [2, "Han"], match(["hand", "calls", "winning_tile"], ["daisangen"]), ["Shousangen"]
+remove_yaku yakuman, "Daisangen"
+define_yaku yaku, "Daisangen", [2, "Han"], match(["hand", "calls", "winning_tile"], ["daisangen"]), ["Shousangen"]
 define_yaku yakuman, "Shousuugen", [1, "★"], match(["hand", "calls", "winning_tile"], ["shousuugen"]), ["Daisangen"]
 define_yaku yakuman, "Daisuugen", [2, "★"], match(["hand", "calls", "winning_tile"], ["daisuugen"]), ["Shousuugen"]
 
@@ -41,4 +44,38 @@ if defined("dora") do
     "27z": ["0z"],
     "37z": ["0z"]
   }
+end
+
+# handle pao
+
+apply append, "constants.pao_yaku", ["Daisuugen"]
+
+on after_call do
+  if last_call_is("pon", "daiminkan") do
+    as caller do
+      if match(["last_call"], ~m"(haku hatsu chun baiban):1") and match(["calls"], ~m"unique, baiban:1, (haku hatsu chun):2") do
+        make_responsible_for("callee", ["Daisangen"])
+        set_status("pao", as: "callee")
+      end
+      if match(["last_call"], ~m"(haku hatsu chun baiban):1") and match(["calls"], ~m"unique, baiban:1, (haku hatsu chun):3") do
+        make_responsible_for("callee", ["Daisuugen"])
+        set_status("pao", as: "callee")
+        pao_yakuman += 2
+      end
+    end
+  end
+end
+
+# cancel out existing daisangen since it is not yakuman anymore
+if defined("daisangen_pao") do
+  on after_call do
+    if last_call_is("pon", "daiminkan") do
+      if match(["last_call"], ~m"(haku hatsu chun):1") and match(["calls"], ~m"haku:1, hatsu:1, chun:1") do
+        make_responsible_for("callee", ["Daisangen"])
+        set_status("pao", as: "callee")
+        if pao_yakuman > 0 do pao_yakuman -= 1 end # override existing
+        pao_han += 2
+      end
+    end
+  end
 end

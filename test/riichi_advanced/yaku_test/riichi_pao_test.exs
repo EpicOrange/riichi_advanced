@@ -301,4 +301,33 @@ defmodule RiichiAdvanced.YakuTest.RiichiPaoTest do
     ], %{}, %{delta_scores: [48300, -48300, 0, 0]})
   end
 
+  test "riichi - blue dragon daisangen pao ron split" do
+    TestUtils.test_yaku_advanced("riichi", [%{name: "honba", config: %{"value" => 100}}, "pao", "blue_dragon"], """
+    {
+      "starting_hand": {
+        "east": ["2m", "3m", "4m", "4m", "5m", "6m", "7m", "5z", "5z", "6z", "6z", "7z", "7z"],
+        "south": ["1m", "3m", "7m", "2p", "5p", "8p", "3s", "6s", "8s", "1z", "2z", "3z", "4z"],
+        "west": ["1m", "3m", "7m", "2p", "5p", "8p", "3s", "6s", "8s", "1z", "2z", "3z", "4z"],
+        "north": ["1m", "3m", "7m", "2p", "5p", "8p", "3s", "6s", "8s", "1z", "2z", "3z", "4z"]
+      },
+      "starting_draws": ["1z", "5z", "6z", "7z", "2m", "1m"],
+      "starting_honba": 1
+    }
+    """, [
+      %{"type" => "discard", "tile" => "1z", "player" => 0, "tsumogiri" => true},
+      %{"type" => "discard", "tile" => "5z", "player" => 1, "tsumogiri" => true},
+      %{"type" => "buttons_pressed", "buttons" => [%{"button" => "pon"}, nil, nil, nil]},
+      %{"type" => "discard", "tile" => "7m", "player" => 0, "tsumogiri" => false},
+      %{"type" => "discard", "tile" => "6z", "player" => 1, "tsumogiri" => true},
+      %{"type" => "buttons_pressed", "buttons" => [%{"button" => "pon"}, nil, nil, nil]},
+      %{"type" => "discard", "tile" => "6m", "player" => 0, "tsumogiri" => false},
+      %{"type" => "discard", "tile" => "7z", "player" => 1, "tsumogiri" => true},
+      %{"type" => "buttons_pressed", "buttons" => [%{"button" => "pon"}, nil, nil, nil]},
+      %{"type" => "discard", "tile" => "5m", "player" => 0, "tsumogiri" => false},
+      %{"type" => "discard", "tile" => "2m", "player" => 1, "tsumogiri" => true},
+      %{"type" => "discard", "tile" => "1m", "player" => 2, "tsumogiri" => true},
+      %{"type" => "buttons_pressed", "buttons" => [%{"button" => "ron"}, nil, nil, nil]}
+    ], %{}, %{delta_scores: [16300, -2300, -14000, 0]}) # truly cursed...
+  end
+
 end

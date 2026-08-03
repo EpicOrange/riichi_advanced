@@ -1,3 +1,5 @@
+define "honba"
+
 on after_initialization do
   players = "num_players"
   if players == 4 do

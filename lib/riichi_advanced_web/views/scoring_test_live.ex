@@ -294,6 +294,7 @@ defmodule RiichiAdvancedWeb.ScoringTestLive do
     win_source = if is_ron? do :discard else :draw end
     scoring_key = case Rules.get(state.rules_ref, "scoring_logic", %{}) do
       %{"ron" => _} -> if is_ron? do "ron" else "tsumo" end
+      %{"win" => _} -> "win"
       logic when is_map(logic) -> Enum.at(logic, 0) |> elem(0)
       _ -> nil
     end

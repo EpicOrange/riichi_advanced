@@ -1013,7 +1013,7 @@ There now exists a more customizable way to do scoring. The old scoring system s
 
 There are two steps for scoring:
 
-- Run the action `make_responsible_for(seats)` at some point prior to scoring (e.g. `before_win` event). This makes `seats` responsible for paying all the current player's yaku.
+- Run the action `make_responsible_for(seats, yaku)` at some point prior to scoring (e.g. `before_win` event). This makes `seats` responsible for paying all the current player's `yaku`, or you can set `yaku` to `"all"` for all yaku or `"remaining"` for all yaku minus ones that other players are responsible for (calculated at the end).
 - Run `win_by_discard(key)`, `win_by_draw(key)`, or `win_by_call(key)`. This can occur before or after the `make_responsible_for` call
 - Write scoring logic using the `define_scoring(key)` command, which is called by the above. Counter assignments can be suffixed with `:: "Message"` to display that assignment as a message in the scoring screen ledger box (which appears when hovering over arrows).
 - Note that there must be _some_ yaku in order for this to work, so if you want to make it work for no-yaku hands you should write a Chicken Hand yaku worth 0.
@@ -1023,12 +1023,12 @@ Here's an example:
     on before_win do
       if won_by_draw do
         # make non-winners responsible for all yaku
-        make_responsible_for("others")
+        make_responsible_for("others", "remaining")
       else
         if won_by_discard do
-          make_responsible_for("last_discarder")
+          make_responsible_for("last_discarder", "all")
         else 
-          make_responsible_for("last_caller")
+          make_responsible_for("last_caller", "all")
         end
       end
     end

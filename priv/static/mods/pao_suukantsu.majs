@@ -10,12 +10,10 @@ end
 
 on after_call do
   if last_call_is("daiminkan") and match(["calls"], ~m"(daiminkan ankan kakan):4") do
-    as callee do
-      make_responsible_for("callee", "Suukantsu", as: "caller")
+    as caller do
+      make_responsible_for("callee", "Suukantsu", as: "last_seat")
       set_status("pao", as: "callee")
-      as caller do
-        pao_yakuman += 1
-      end
+      pao_yakuman += 1
     end
   end
 end

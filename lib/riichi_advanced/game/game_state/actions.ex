@@ -1984,12 +1984,12 @@ defmodule RiichiAdvanced.GameState.Actions do
         "make_responsible_for" ->
           # make_responsible_for(seats, yaku)
           # = make `seats` responsible for `yaku` if we win
-
           # player.responsibilities: an entry %{seat => [yaku]} means if this player wins, `seat` must pay for `yaku`
           # alternatively %{seat => ["all"]} means paying for all yaku,
           # and %{seat1 => ["all"], seat2 => ["Daisangen"]} means seat1 pays for all except Daisangen
           seats_spec = Enum.at(opts, 0, "self")
           yaku = List.wrap(Enum.at(opts, 1, "all"))
+          # IO.puts("make_responsible_for: making #{seats_spec} = #{inspect(Conditions.from_seats_spec(state, context, seats_spec))} responsible for #{context.seat}'s yaku: #{inspect(yaku)}")
           for seat <- Conditions.from_seats_spec(state, context, seats_spec), reduce: state do
             state -> update_in(state.players[seat].responsibilities, &Map.update(&1, context.seat, yaku, fn yakus -> Enum.uniq(yakus ++ yaku) end))
           end
