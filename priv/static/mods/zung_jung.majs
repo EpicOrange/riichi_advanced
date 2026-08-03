@@ -25,8 +25,8 @@ on after_initialization do
   add_rule("Rules", "Payment", """
     When you win, your hand value is the sum of its patterns. Note that different versions of the same pattern type (e.g. Mixed One-Suit and Pure One-Suit) may not be scored together.
     After calculating the hand value, the winner earns 3 times the hand value. There are two methods for payment. If you called Hu on a discard to win, and the hand value is greater than 25 points, then every non-winner pays 25, and the discarder pays the remainder (i.e. 3x value minus 50). Otherwise, every non-winner pays the hand value. There are two exceptions for the first case, known as Same-Round Immunity:
-    -  If the winning discard was also dealt by another player after the winner's last turn, then the first such player to discard that tile is treated as the discarder who pays the remainder (if the hand value is more than 25 points).
-    -  If the winning discard was dealt by the winner on their last turn, then everyone pays the hand value amount.
+    -  If the winning discard tile had been previously dealt by another player after the winner's last turn, then the first such player to discard that tile is treated as the discarder who pays the remainder (if the hand value is more than 25 points).
+    -  If the winning discard tile had been previously dealt by the winner on their last turn (i.e. they chose to ignore a win), then everyone pays the hand value amount (i.e. it's as if they self-drew).
     """, -10)
 end
 
