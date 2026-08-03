@@ -9,7 +9,6 @@ defmodule RiichiAdvanced.AIPlayer do
   use GenServer
 
   @ai_speed 4
-  @ai_speed 40
 
   def start_link(init_state) do
     GenServer.start_link(__MODULE__, init_state, name: init_state[:name])
@@ -85,9 +84,9 @@ defmodule RiichiAdvanced.AIPlayer do
           {ret, i}
         {nil, _} ->
           ret = Match.get_unneeded_tiles_v2(reduced_hand, calls, shanten_definition, tile_behavior)
-          |> IO.inspect(label: "unneeded for #{shanten}")
+          # |> IO.inspect(label: "unneeded for #{shanten}")
           |> choose_playable_tile(playables)
-          |> IO.inspect(label: "chose tile")
+          # |> IO.inspect(label: "chose tile")
           {ret, i}
         ret -> ret
       end
@@ -440,6 +439,8 @@ defmodule RiichiAdvanced.AIPlayer do
         "hu" in player.buttons and Match.match_hand(player.hand ++ [last_discard], player.calls, state.shanten_definitions.win, player.tile_behavior) -> "hu"
         "zimo" in player.buttons and Match.match_hand(player.hand ++ player.draw, player.calls, state.shanten_definitions.win, player.tile_behavior) -> "zimo"
         "riichi" in player.buttons and Match.match_hand(player.hand ++ player.draw, player.calls, state.shanten_definitions.tenpai, player.tile_behavior) -> "riichi"
+        "annobekan" in player.buttons -> "annobekan"
+        "grand_cross" in player.buttons -> "grand_cross"
         "ankan" in player.buttons -> "ankan"
         # "daiminkan" in player.buttons -> "daiminkan"
         # "pon" in player.buttons -> "pon"
