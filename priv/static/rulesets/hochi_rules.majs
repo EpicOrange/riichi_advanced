@@ -38,11 +38,10 @@ define_const chiitoitsu_fu, 30
 
 apply subtract, "default_mods", [
   "lib/yaku/ippatsu",
-  "lib/yaku/iipeikou",
-  "lib/yaku/ryuuiisou",
-  "lib/yaku/honitsu",
-  "lib/yaku/honroutou",
-  "lib/yaku/honroutou",
+  %{name: "lib/yaku/iipeikou", config: %{ii_value: 1, ryan_value: 3}},
+  %{name: "lib/yaku/ryuuiisou", config: %{han: "★"}},
+  %{name: "lib/yaku/honitsu", config: %{chin_value: 5, closed_bonus: 1, hon_value: 2} },
+  %{name: "lib/yaku/honroutou", config: %{chin_han: "★", chin_list: "yakuman", chin_value: 1, hon_value: 2 } },
   "honba",
   "dora", "ura", "kandora", "aka",
   "nagashi",

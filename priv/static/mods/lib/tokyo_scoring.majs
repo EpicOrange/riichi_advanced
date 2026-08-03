@@ -1,70 +1,35 @@
 define_const round_fu, false
 define_const riichi_bet, 100
 define_const riichi_score_rounding, 1 # turn off basic rounding
-
-# min han but only if there's honba
-define_const min_han_check_discard,
-     honba == 0
-  or has_yaku_with_discard(1, "Han")
-  or has_yaku_with_discard(1, "★")
-define_const min_han_check_call, @min_han_check_discard
-replace all, "constants.min_han_check_call", "has_yaku_with_discard", "has_yaku_with_call"
-define_const min_han_check_hand, @min_han_check_discard
-replace all, "constants.min_han_check_hand", "has_yaku_with_discard", "has_yaku_with_hand"
-apply append, "buttons.ron.show_when", +@min_han_check_discard
-apply append, "buttons.chankan.show_when", +@min_han_check_call
-apply append, "buttons.tsumo.show_when", +@min_han_check_hand
+define_const chiitoitsu_tsumo_fu, 30
+define_const chiitoitsu_ron_fu, 40
+# open pinfu is 20 fu, pinfu tsumo is 22 fu
+define_const closed_tsumo_20_fu, false
+define_const open_30_fu, false
 
 # disable noten payments
 def setup_noten_payments do end
 def execute_noten_payments do end
 
-def finalize_score, prepend: true do
-  # round to nearest 10, which could be up or down
-  if mod(total, 10) > 0 do
-    total = round(total, 10) :: "Round"
-  end
-end
+on after_initialization do
+  rename_rule_tab("Shoumangan", "Shou.")
+  rename_rule_tab("1 ★", "Shou.")
+  rename_rule_tab("1.5 ★", "Dai.")
+  rename_rule_tab("2 ★", "Chou.")
+  delete_rule("1 Han", "Pinfu")
+  add_rule("1 Han", "Pinfu", "You won off a double-sided sequence wait, with an all-sequence hand whose pair is not yakuhai.")
+  update_rule("1 Han", "Pinfu", "%{example_hand}", %{example_hand: ~t"345789m45p99s 2S34s 6p"})
 
-def apply_ron_scoring, append: true do
-  # in the event of multiple ron, only get half
-  if status("win_half", as: "winner") do
-    total /= 2 :: "Partial head bump"
-  end
-end
+  add_rule("Rules", "Tontonsen", "The game consists of two east rounds.")
+  delete_rule("Rules", "Multiple Ron")
+  add_rule("Rules", "Head Bump", "If there are multiple winners, then the earliest winner in turn order gets the full payment for the hand, and the other winners get half each. As for riichi sticks, each winner first takes back their own riichi stick (if any) and any leftover riichi sticks are evenly divided among winners.")
+  add_rule("Rules", "Fu", "(Tokyo Rules) Fu is not rounded.")
+  add_rule("Rules", "Scoring", "Scores are rounded to the nearest 10, maxing out at 1000 points (considered shoumangan, 4000/6000). Hands that are yakuman in riichi are daimangan (6000/9000), with the exception of chuurenpoutou, which is baimangan (8000/12000)")
+  add_rule("Rules", "Minimum Han", "After 1 or more repeats, winning requires a minimum of 1 han.")
+  update_rule("2 Han", "Ryuuiisou", "Stacks with Honitsu (2 han), so it is effectively worth 4 han.")
 
-def check_multiple_ron do
-  num_winners += 1
-  set_counter_all("num_winners", "num_winners")
-  if num_winners > 1 do
-    set_status("win_half", as: "prev_seat")
-  end
 end
-apply prepend, "buttons.ron.actions" do check_multiple_ron end
-apply prepend, "buttons.chankan.actions" do check_multiple_ron end
+define_yaku_precedence "Daichiishin", ["Tsuuiisou"] # for some reason.
 
-def precalculate_riichi_payments do
-  # winners get their own riichi stick back
-  # then divide remaining pot among winners
-  # (this could be from nonwinner riichi bets, or from prev rounds)
-  as winners do
-    if status("riichi") do
-      riichi_bet = @riichi_bet
-      subtract_from_pot("riichi_bet")
-    end
-  end
-  riichi_share = round(pot / num_winners, 10)
-  set_counter_all("riichi_share", "riichi_share")
-  subtract_from_pot("pot") # zero out pot so `riichi_scoring` mod doesn't use it
-end
 
-on after_win, prepend: true do
-  modify_winner("score", "display_total") # before honba and riichi sticks
-  if pot > 0 do precalculate_riichi_payments end
-  if status("riichi") do
-    total += @riichi_bet :: "Reclaim riichi bet"
-  end
-  if riichi_share > 0 do
-    total += riichi_share :: "Split remaining bets"
-  end
-end
+

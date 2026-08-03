@@ -1,0 +1,148 @@
+define_base_ruleset riichi
+set display_name, "Tokyo Rules (c. 1957)"
+set tutorial_link, "https://riichi.wiki/Tokyo_rules"
+require "ryuukyokurenchan"
+require "pao_standard"
+require "pao_suukantsu"
+require "pao_tsuuiisou"
+require "pao_chinroutou"
+require_after "partial_furiten", %{check_ryanmen: true}
+require_after "tokyo_scoring"
+
+set display_honba, true
+set always_east_round, true
+set max_rounds, 8
+set initial_score, 20000
+
+# yaku differences are:
+# - no ippatsu
+# - pinfu can be open
+# - chiitoitsu is 30 fu tsumo or 40 fu ron
+# - honitsu is always 2 han
+# - ittsuu, sanshoku, chanta are 2/3 han
+# - sanshoku doukou is 3 han
+# - junchan is 3/4 han
+# - ryuuiisou is 2 han plus honitsu
+# - shousangen is 2 han plus yakuhai
+# - ryanpeikou is 4 han
+# - chinitsu, honroutou, renhou are shoumangan
+# - chinroutou, daisangen, suushiihou, suuankou, suukantsu are daimangan
+# - tenhou is daimangan
+# - chiihou is daimangan, ronning dealer
+# - tsuuiisou is daimangan, and cannot be daichiishin (which is shoumangan)
+# - kokushi musou is daimangan
+# - chuuren poutou is choumangan
+# plus a bunch of new yaku
+# - shiiaru raotai is 1 han
+# - ketsupaihou is 1 han
+# - sanshoku ittsuu is 2 han
+# - shiisanpuutaa is 3 han
+# - isshoku sanjun, is 3/4 han
+# - sanrenkou is 3 han
+# - renkaihou is 3 han
+# - choupaikou/sujipaikou/chousankou is 3 han
+# - otakaze sankou is 3 han
+# - uushin tsuukan is 4 han
+# - ryandoukou, is 2 han plus toitoi
+# - iipin mouyue is 4 han
+# - uupin kaihou is 4 han
+# - ryansou chankan is 4 han
+# - chinchii toushii is 4 han
+# - isshoku yonjun is shoumangan
+# - rentsuu honitsu is shoumangan
+# - dorahairi chinroutou chiitoitsu is shoumangan
+# - daichiishin is shoumangan
+
+# TODO:
+# - furiten should also forbid ryanmen and nobetan waits
+# - zoroba rules with the dice
+
+
+
+apply subtract, "default_mods", [
+  "lib/yaku/ippatsu",
+  %{name: "lib/yaku/iipeikou", config: %{ii_value: 1, ryan_value: 3}},
+  %{name: "lib/yaku/chiitoitsu", config: %{kansai: false, name: "Chiitoitsu", value: 2}},
+  %{name: "lib/yaku/chanta", config: %{chanta_value: 1, closed_bonus: 1, junchan_value: 2}},
+  %{name: "lib/yaku/ittsuu", config: %{closed_bonus: 1}},
+  %{name: "lib/yaku/sanankou", config: %{san_value: 2, suu_han: "★", suu_list: "yakuman", suu_tanki_value: 2, suu_value: 1}},
+  %{name: "lib/yaku/sanshoku_doujun", config: %{closed_bonus: 1, value: 1}},
+  %{name: "lib/yaku/sanshoku_doukou", config: %{value: 2}},
+  %{name: "lib/yaku/shousangen", config: %{dai_han: "★", dai_list: "yakuman", dai_value: 1, shou_value: 2}},
+  %{name: "lib/yaku/honroutou", config: %{chin_han: "★", chin_list: "yakuman", chin_value: 1, hon_value: 2}},
+  %{name: "lib/yaku/honitsu", config: %{chin_value: 5, closed_bonus: 1, hon_value: 2}},
+  %{name: "lib/yaku/tenhou", config: %{chiihou_is_tsumo: true, chiihou_list: "yakuman", chiihou_value: 1, chiihou_han: "★", tenhou_list: "yakuman", tenhou_value: 1, tenhou_han: "★"}},
+  %{name: "lib/yaku/riichi_renhou", config: %{is: "Yakuman"}},
+  %{name: "lib/yaku/tsuuiisou", config: %{han: "★"}},
+  %{name: "lib/yaku/ryuuiisou", config: %{han: "★"}},
+  %{name: "lib/yaku/chuurenpoutou", config: %{han: "★", junsei_han: "★", junsei_list: "yakuman", junsei_value: 2, list: "yakuman", value: 1}},
+  %{name: "lib/yaku/kokushi", config: %{han: "★", juusan_han: "★", juusan_list: "yakuman", juusan_value: 2, list: "yakuman", value: 1}},
+  %{name: "lib/yaku/shousuushii", config: %{dai_han: "★", dai_list: "yakuman", dai_value: 2, shou_han: "★", shou_list: "yakuman", shou_value: 1}},
+  %{name: "lib/yaku/suukantsu", config: %{han: "★", value: 1}},
+  %{name: "lib/yaku/riichi_renhou", config: %{is: "Yakuman"}},
+  "honba",
+  "dora", "ura", "kandora", "aka",
+  "nagashi",
+  %{name: "lib/tobi", config: %{below: 0}},
+  "uma",
+  "lib/kuikae_nashi",
+  "lib/min_han",
+  %{name: "suufon_renda", config: %{name: "Suufon Renda"}},
+  "suucha_riichi",
+  "lib/pao_standard", # already preapplied
+  "lib/suukaikan",
+  "tenpairenchan",
+  %{name: "kyuushu_kyuuhai", config: %{name: "Kyuushu Kyuuhai"}},
+  "kokushi_ankan_chankan",
+]
+
+apply append, "default_mods", [
+  %{name: "lib/yaku/honitsu", config: %{hon_value: 2, chin_value: 1, chin_han: "★", closed_bonus: 1}},
+  %{name: "lib/yaku/ittsuu", config: %{value: 2, closed_bonus: 1}},
+  %{name: "lib/yaku/sanshoku_doujun", config: %{value: 2, closed_bonus: 1}},
+  %{name: "lib/yaku/chanta", config: %{chanta_value: 2, closed_bonus: 1, junchan_value: 3}},
+  %{name: "lib/yaku/sanshoku_doukou", config: %{value: 3}},
+  %{name: "lib/yaku/ryuuiisou", config: %{value: 2}},
+  %{name: "lib/yaku/shousangen", config: %{shou_value: 2, dai_han: "★", dai_list: "yakuman", dai_value: 1.5}},
+  %{name: "lib/yaku/iipeikou", config: %{ii_value: 1, ryan_value: 4}},
+  %{name: "lib/yaku/honroutou", config: %{hon_han: "★", hon_list: "yakuman", hon_value: 1, chin_han: "★", chin_list: "yakuman", chin_value: 1.5}},
+  %{name: "lib/yaku/riichi_renhou", config: %{is: "Shoumangan"}},
+  %{name: "lib/yaku/shousuushii", config: %{dai_han: "★", dai_list: "yakuman", dai_value: 1.5, shou_han: "★", shou_list: "yakuman", shou_value: 1.5}},
+  %{name: "lib/yaku/sanankou", config: %{san_value: 2, suu_han: "★", suu_list: "yakuman", suu_value: 1.5}},
+  %{name: "lib/yaku/suukantsu", config: %{list: "yakuman", han: "★", value: 1.5}},
+  %{name: "lib/yaku/tenhou", config: %{chiihou_is_tsumo: false, chiihou_list: "yakuman", chiihou_value: 1.5, chiihou_han: "★", tenhou_list: "yakuman", tenhou_value: 1.5, tenhou_han: "★"}},
+  %{name: "lib/yaku/tsuuiisou", config: %{value: 1.5, han: "★"}},
+  %{name: "lib/yaku/kokushi", config: %{value: 1.5, han: "★"}},
+  %{name: "lib/yaku/chuurenpoutou", config: %{value: 2, han: "★"}},
+  "no_riichi_ankan",
+]
+
+# - shiiaru raotai is 1 han
+# - ketsupaihou is 1 han
+# - sanshoku ittsuu is 2 han
+# - shiisanpuutaa is 3 han
+# - isshoku sanjun, is 3/4 han
+# - sanrenkou is 3 han
+# - renkaihou is 3 han
+# - choupaikou/sujipaikou/chousankou is 3 han
+# - otakaze sankou is 3 han
+# - uushin tsuukan is 4 han
+# - ryandoukou, is 2 han plus toitoi
+# - iipin mouyue is 4 han
+# - uupin kaihou is 4 han
+# - ryansou chankan is 4 han
+# - chinchii toushii is 4 han
+# - isshoku yonjun is shoumangan
+# - rentsuu honitsu is shoumangan
+# - dorahairi chinroutou chiitoitsu is shoumangan
+# - daichiishin is shoumangan
+
+on after_initialization do
+  add_rule_tab("1 Han")
+  add_rule_tab("2 Han")
+  add_rule_tab("3 Han")
+  add_rule_tab("4 Han")
+  add_rule_tab("Shou")
+  add_rule_tab("Dai")
+  add_rule_tab("Chou")
+end
