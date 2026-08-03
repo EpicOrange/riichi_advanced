@@ -86,9 +86,9 @@ define_button start_no_flower,
   end
 
 cond do
-  !undiscardable -> define_play_restriction "flower", false
+  !undiscardable -> define_play_restriction "flower", true
   !must_discard -> define_play_restriction "not_flower", match(["hand", "draw"], ["any_flower"])
-  true -> define_play_restriction any, not_status_missing("initial_flowers")
+  true -> define_play_restriction any, status("initial_flowers")
 end
 
 define_button flower,

@@ -23,7 +23,7 @@ define_play_restriction not_flower, status("first_turn") and match(["hand", "dra
 apply prepend, "buttons.flower.show_when", status_missing("first_turn")
 
 # flowers can only be discarded if you're going for nfnl
-define_play_restriction not_flower, status_missing("nfnl_eligible") and match(["hand", "draw"], "any_flower")
+define_play_restriction flower, status_missing("nfnl_eligible") and match(["hand", "draw"], "any_flower")
 
 # flower yaku (seat flowers and seat season already defined by default_flowers mod)
 define_yaku yaku, "Seat King", [1, "Phán"], seat_is("east") and match(["flowers"], ~m"1k:1")
