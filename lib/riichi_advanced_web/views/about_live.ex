@@ -74,6 +74,7 @@ defmodule RiichiAdvancedWeb.AboutLive do
         <button phx-click="goto_index"><%= t(@lang, "Back") %></button>
         <button><a href="https://github.com/EpicOrange/riichi_advanced"><%= t(@lang, "Source") %></a></button>
         <button><a href="https://discord.gg/5QQHmZQavP"><%= t(@lang, "Discord") %></a></button>
+        <button phx-click="goto_scoringtest"><%= t(@lang, "Scorer") %></button>
         <button phx-click="goto_logs"><%= t(@lang, "Logs") %></button>
       </div>
       <div class="top-right-container">
