@@ -330,13 +330,13 @@ pub fn _match_hand_v3(
   ordering: ElixirTileOrdering,
 ) -> bool {
   let start = Instant::now();
-  let ret = __match_hand_v3(
+  let match_info = prepare_tiles(
     &hand_calls,
-    match_definitions,
     all_attrs,
     &elixir_aliases,
     &ordering,
   );
+  let ret = __match_hand_v3(&match_info, &match_definitions);
   if PROFILE_MATCH {
     let elapsed = start.elapsed();
     TOTAL_NANOS.fetch_add(elapsed.as_nanos() as u64, Ordering::Relaxed);
@@ -345,19 +345,10 @@ pub fn _match_hand_v3(
   }
   ret
 }
-pub fn __match_hand_v3<'a>(
-  hand_calls: &'a ElixirHandCalls,
-  match_definitions: MatchDefinitions,
-  all_attrs: Vec<String>,
-  elixir_aliases: &'a ElixirAliases,
-  ordering: &'a ElixirTileOrdering,
+pub fn __match_hand_v3(
+  match_info: &MatchInfo,
+  match_definitions: &MatchDefinitions,
 ) -> bool {
-  let match_info = prepare_tiles(
-    hand_calls,
-    all_attrs,
-    elixir_aliases,
-    ordering,
-  );
   for match_definition in match_definitions {
     let mut debug = false;
     for elem in match_definition.iter() {
@@ -365,7 +356,7 @@ pub fn __match_hand_v3<'a>(
         if s == "debug" { debug = true; break; }
       }
     }
-    let mut result = __remove_match_definition(&match_info, &match_definition);
+    let mut result = __remove_match_definition(match_info, match_definition);
     let next = result.next();
     if let Some(next) = next {
       if debug { println!("Final result for match definition {:?}: {:?}", match_definition, next.iter().map(|hand| decode(hand, &match_info.all_attrs)).collect::<Vec<_>>()); }

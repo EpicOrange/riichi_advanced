@@ -1,7 +1,10 @@
 use std::sync::atomic::{AtomicU64, Ordering};
 
+#[allow(dead_code)]
 pub const PROFILE_MATCH: bool = false;
+#[allow(dead_code)]
 pub const PROFILE_GET_WAITS: bool = false;
+#[allow(dead_code)]
 pub const PROFILE_UNNEEDED_TILES: bool = false;
 
 pub static TOTAL_NANOS: AtomicU64 = AtomicU64::new(0);

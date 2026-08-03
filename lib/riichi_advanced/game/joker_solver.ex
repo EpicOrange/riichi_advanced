@@ -122,7 +122,7 @@ defmodule RiichiAdvanced.GameState.JokerSolver do
     # else joker_assignment end
 
     # use the joker assignment to obtain winner's {hand, calls} with jokers replaced by their assignments
-    {assigned_hand, assigned_calls, assigned_winning_hand, assigned_winning_tile} = apply_joker_assignment(state.players[seat].hand, state.players[seat].calls, winning_tile, joker_assignment)
+    {assigned_hand, assigned_calls, _assigned_winning_hand, assigned_winning_tile} = apply_joker_assignment(state.players[seat].hand, state.players[seat].calls, winning_tile, joker_assignment)
 
     # replace the winner's hand/calls temporarily (for yaku evaluation)
     state = update_player(state, seat, &%{ &1 | hand: assigned_hand, calls: assigned_calls, cache: %{ &1.cache | orig_hand: &1.hand, orig_calls: &1.calls, orig_winning_tile: winning_tile } })

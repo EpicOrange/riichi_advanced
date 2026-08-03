@@ -1323,6 +1323,7 @@ defmodule RiichiAdvanced.Match do
     tiles_in_hand = Utils.strip_attrs(hand ++ Enum.flat_map(calls, &Utils.call_to_tiles/1))
     hash = tiles_in_hand |> Enum.map(&Constants.to_prime/1) |> Enum.product()
     use_rust = hash <= @u256_max
+    tile_behavior = MatchOld.filter_irrelevant_tile_aliases(tile_behavior, hand ++ Enum.flat_map(calls, &Utils.call_to_tiles/1))
     if use_rust do
       ret = _get_unneeded_tiles_v2({hand, calls}, match_definitions,
         tile_behavior.attrs |> Enum.to_list() |> Enum.sort(),
@@ -1355,7 +1356,6 @@ defmodule RiichiAdvanced.Match do
   # @decorate cacheable(cache: RiichiAdvanced.Cache, key: {:get_unneeded_tiles_v1, hand, calls, match_definitions, TileBehavior.hash(tile_behavior)})
   def get_unneeded_tiles_v1(hand, calls, match_definitions, tile_behavior) do
     # t = System.os_time(:millisecond)
-    tile_behavior = MatchOld.filter_irrelevant_tile_aliases(tile_behavior, hand ++ Enum.flat_map(calls, &Utils.call_to_tiles/1))
     ret = if not Enum.empty?(match_definitions) do
       # # method 1: keep tiles in hand that are not needed to match the given match definitions
       # ret = hand

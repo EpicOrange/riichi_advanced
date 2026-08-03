@@ -135,8 +135,7 @@ defmodule RiichiAdvanced.GameState.Scoring do
   # doesn't calculate a whole winner object, just returns a stream of yaku
   # TODO DRY
   def score_yaku(state, yaku_list_names, seat, winning_tile, win_source) do
-    %{hand: hand, calls: calls} = state.players[seat]
-    {winning_tile, hand} = if winning_tile == nil do List.pop_at(hand, -1) else {winning_tile, hand} end
+    winning_tile = if winning_tile == nil do Enum.at(state.players[seat].hand, -1) else winning_tile end
     # we need to let before_win actions know about the winning tile
     #   so we store it in state.winners
     state = Map.update!(state, :winners, &Map.put(&1, seat, %{winning_tile: winning_tile}))
@@ -159,10 +158,10 @@ defmodule RiichiAdvanced.GameState.Scoring do
       state.players[seat].tile_behavior)
     |> Task.async_stream(fn joker_assignment ->
       # apply joker assignments
-      {assigned_hand, assigned_calls, assigned_winning_hand, assigned_winning_tile} = JokerSolver.apply_joker_assignment(state.players[seat].hand, state.players[seat].calls, winning_tile, joker_assignment)
+      {assigned_hand, assigned_calls, _assigned_winning_hand, assigned_winning_tile} = JokerSolver.apply_joker_assignment(state.players[seat].hand, state.players[seat].calls, winning_tile, joker_assignment)
 
       # replace the winner's hand/calls temporarily (for yaku evaluation)
-      state = update_player(state, seat, &%{ &1 | hand: assigned_hand, calls: assigned_calls })
+      state = update_player(state, seat, &%{ &1 | hand: assigned_hand, calls: assigned_calls, cache: %{ &1.cache | orig_hand: &1.hand, orig_calls: &1.calls, orig_winning_tile: winning_tile } })
 
       # also replace the actual winning tile within state
       state = if assigned_winning_tile != nil do

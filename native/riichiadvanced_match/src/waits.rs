@@ -4,11 +4,11 @@ use std::sync::atomic::Ordering;
 use std::time::Instant;
 
 use crate::encode::{decode_tiles, encode_tiles};
-use crate::r#match::__remove_match_definition;
+use crate::r#match::{__match_hand_v3, __remove_match_definition};
 use crate::match_info::{prepare_tiles};
 use crate::profile::{PROFILE_GET_WAITS, PROFILE_UNNEEDED_TILES, CALL_COUNT, MAX_NANOS, TOTAL_NANOS};
 use crate::tile_table::{TILE_TABLE, tile1x};
-use crate::types::{ElixirAliases, ElixirHandCalls, ElixirTile, ElixirTileOrdering, MatchDefinition, MatchDefinitions, MatchInfo, Tile};
+use crate::types::{ElixirAliases, ElixirHandCalls, ElixirTile, ElixirTileOrdering, MatchDefinitionElem, MatchDefinitions, MatchInfo, Tile};
 use crate::utils::{add_joker_to_aliases, remove_indices, remove_joker_from_aliases};
 
 #[rustler::nif(schedule = "DirtyCpu")]
@@ -179,7 +179,7 @@ pub fn ___get_waits_v3(
   // println!("after removing {:?} from right again: {:?}", decode_tiles(right, &match_info.all_attrs), decode_tiles(match_info.mapping.get(joker).unwrap(), &match_info.all_attrs));
 }
 
-#[rustler::nif(schedule = "DirtyCpu")]
+// #[rustler::nif(schedule = "DirtyCpu")]
 fn _get_unneeded_tiles_v2(
     hand_calls: ElixirHandCalls,
     match_definitions: MatchDefinitions,
@@ -214,32 +214,23 @@ pub fn __get_unneeded_tiles_v2(
     elixir_aliases: &ElixirAliases,
     ordering: &ElixirTileOrdering,
 ) -> Vec<ElixirTile> {
-  // just try removing each tile in turn and seeing the resulting match fails
-
   let mut match_info = prepare_tiles(
     &hand_calls,
     all_attrs,
     elixir_aliases,
     ordering,
   );
-
-  // precheck: remove the match definitions once
-  // if it fails, return empty right away
-  // if it succeeds, the remaining tile(s) are solutions we don't have to check again
-  // this also collects the match definitions that actually match
   let mut ret: HashSet<Tile> = HashSet::new();
-  let mut useful_defns: Vec<&MatchDefinition> = vec!();
-  for match_definition in match_definitions.iter() {
-    let mut used = false;
-    for hands in __remove_match_definition(&match_info, match_definition) {
-      ret.extend(hands[0].attrs.iter());
-      used = true;
-    }
-    if used { useful_defns.push(match_definition); }
-  }
-  if useful_defns.is_empty() { return vec!(); }
 
-  // remove each tile in turn and try to see if the match succeeds without that tile
+  // first get leftover tiles from removing a non-exhaustive version of the match definitions
+  for mut match_definition in match_definitions.clone() {
+    match_definition.retain(|e| *e != MatchDefinitionElem::Keyword("exhaustive".to_owned()));
+    for hands in __remove_match_definition(&match_info, &match_definition) {
+      ret.extend(hands[0].attrs.iter());
+    }
+  }
+
+  // then try removing each tile in turn and see if the match succeeds without that tile
   let prev_hash = match_info.initial_hands[0].hash;
   for _ in 0..match_info.initial_hands[0].attrs.len() {
     // println!("initial_hands is now {:?}", decode(&match_info.initial_hands[0], &match_info.all_attrs));
@@ -254,18 +245,8 @@ pub fn __get_unneeded_tiles_v2(
     // (can't use swap_remove since this is basically a queue)
     remove_indices(&mut match_info.initial_hands[0].attrs, smallvec!(0));
 
-    // check against each defn
-    for match_definition in useful_defns.iter() {
-      // if removal is successful, any remaining tiles are unneeded
-      // the tile we took out is also unneeded
-      let mut success = false;
-      for hands in __remove_match_definition(&match_info, match_definition) {
-        ret.extend(hands[0].attrs.iter());
-        success = true;
-      }
-      // println!("matched after taking out {:?}? {success}", decode_tile(tile, &match_info.all_attrs));
-      if success { ret.insert(tile); }
-    }
+    // check if it matches
+    if __match_hand_v3(&match_info, &match_definitions) { ret.insert(tile); }
 
     // push the first element back in, but at the back
     match_info.initial_hands[0].hash = prev_hash;

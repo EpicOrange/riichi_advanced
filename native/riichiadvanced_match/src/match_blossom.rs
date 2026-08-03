@@ -74,30 +74,34 @@ fn check_pair_match(hand: &TileSet, groups: &[MatchGroup], match_info: &MatchInf
         (MatchOffset::AttrsOffset(mut map1), MatchOffset::AttrsOffset(mut map2)) => Some((map2.offset - map1.offset, encode_attrs(&mut map1.attrs, &match_info.all_attrs), encode_attrs(&mut map2.attrs, &match_info.all_attrs))),
         _ => None,
       } {
-        let required_attr_tile = (ANY_PRIME, from_attrs);
+        let required_attr_tile1 = (ANY_PRIME, from_attrs);
+        let required_attr_tile2 = (ANY_PRIME, to_attrs);
         // then see if applying the combined offset to one tile gets you one of the other tiles in the hand
         let offsets = vec!(MatchOffset::Offset(offset));
         for (i, tile1) in hand.attrs.iter().enumerate() {
           // if tile1 doesn't have the required attrs, skip it
-          if !_check_equivalence(tile1, &required_attr_tile, aliases) { continue; }
+          if !_check_equivalence(tile1, &required_attr_tile1, aliases) { continue; }
           if let Some(mut target) = apply_offsets(tile1, &offsets, &match_info.all_attrs, &match_info.ordering).0[0] {
             target.1 &= !from_attrs;
             target.1 |= to_attrs;
             for (j, tile2) in hand.attrs.iter().enumerate() {
               if i == j { continue; }
+              // if tile2 doesn't have the required attrs, skip it
+              if !_check_equivalence(tile2, &required_attr_tile2, aliases) { continue; }
               // draw an edge between two tiles iff they share any aliases
               let tile2_vec = vec!(*tile2);
               let tile2_mappings = mapping.get(tile2).unwrap_or(&tile2_vec);
               if debug {
                 println!("{:?} == {:?} == {:?} == {:?} == {:?}",
-                  decode_tile(required_attr_tile, &match_info.all_attrs),
+                  decode_tile(required_attr_tile1, &match_info.all_attrs),
                   decode_tile(*tile1, &match_info.all_attrs),
                   decode_tile(target, &match_info.all_attrs),
                   decode_tiles(tile2_mappings, &match_info.all_attrs),
-                  decode_tile((1, to_attrs), &match_info.all_attrs),
+                  decode_tile(required_attr_tile2, &match_info.all_attrs),
                   );
               }
               if tile2_mappings.iter().any(|t| _check_equivalence(&target, t, aliases)) {
+                if debug { println!("true"); }
                 ret.entry(i)
                   .and_modify(|ixs| ixs.push(j))
                   .or_insert_with(|| vec!(j));
