@@ -667,4 +667,4 @@ set max_rounds, 16
 
 define_mod_category "Other"
 define_mod "lib/tonpuu", name: "East Round Only", desc: "Play only the East Round (4 hands), instead of all four rounds (16 hands)", category: "Other"
-define_mod "mcr_chicken_hand_challenge", name: "Chicken Hand Challenge", desc: "Makes everything worth 0 Fan except for Chicken Hand.", category: "Other"
+define_mod mcr_chicken_hand_challenge, name: "Chicken Hand Challenge", desc: "Makes everything worth 0 Fan except for Chicken Hand.", category: "Other"

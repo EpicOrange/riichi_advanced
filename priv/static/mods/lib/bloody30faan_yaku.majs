@@ -659,14 +659,14 @@ on after_initialization do
   update_rule("20 Faan", "Pure Shifted Linked Sequences", "Another way to think about it is to have either 123 234 345 567 or 123 345 456 567.")
 
   add_rule("15 Faan", "Chicken Hand", "15 Faan for having none of the other scoring patterns.", -50)
-  update_rule("15 Faan", "Chicken Hand", "%{example_hand}", %{example_hand: ~t"123m345p34z3j 7s7S7s 3z"})
+  update_rule("15 Faan", "Chicken Hand", "%{example_hand}", %{example_hand: ~t"123m345p344z3j 7s7S7s 3z"})
   update_rule("15 Faan", "Chicken Hand", """
     This boils down to the following:
     - Have no declared jokers (as flowers).
     - Have at least one joker used in hand.
     - You must win off a discard, and not on a hell wait.
       - (rare) It must also be a discard after the 11th tile is drawn.
-    - You must have two winds or two dragons as your pair.
+    - You must have two winds or two dragons as your pair, or a number pair if you get a triplet of guest winds.
     - Your four sets (not pair) must all be numeric and include all three suits, one sequence, and one triplet.
     - You must have at least one but not four calls, with no kongs.
     - You must not include all four of a single tile in hand (not calls).
@@ -677,7 +677,7 @@ on after_initialization do
       - Mixed-suit 111/111, 111/222, or 111/22/333 (that's a pair in the middle)
       - More than one concealed triplet.
       - (rare) They don't form All Evens, All Odds, One Suji Only, or Three Number Hand.
-    If you are familiar with MCR, the major differences from MCR's Chicken Hand are flowers counting against Chicken Hand, and the last part about sequences and triplets, and also that short straights can only be 123456 or 456789. Also you can have a single wait, as that scores nothing, and you care about avoiding Hell Wait and not Last Tile. Also you need a triplet to not score All Sequences. Also Upper/Lower Four are not a thing, instead you worry about All Evens etc.
+    If you are familiar with MCR, the major differences from MCR's Chicken Hand are flowers counting against Chicken Hand, terminal and guest wind triplets being okay, and the last part sequences and triplets. Also that short straights can only be 123456 or 456789. Also you can have a single wait, as that scores nothing, and you care about avoiding Hell Wait and not Last Tile. Also you need a triplet to not score All Sequences. Also (rare) Upper/Lower Four are not a thing, instead you worry about All Evens/All Odds/One Suji Only/Three Number Hand.
     """)
 end
 define_set 將眼, ~s"0@n2 0|0@n5 0|0@n7 0"
@@ -691,4 +691,4 @@ define_yaku meta_yaku, "Thirteen Orphans", [5, "Faan"], has_existing_yaku("Thirt
 define_yaku meta_yaku, "Thirteen Orphans", [5, "Faan"], has_existing_yaku("Thirteen Orphans") and jokers <= 1
 define_yaku meta_yaku, "Mixed Shifted Linked Sequences", [8, "Faan"], has_existing_yaku("Three Mixed Shifted Sequences", "Three Mixed Linked Sequences")
 define_yaku meta_yaku, "Pure Shifted Linked Sequences", [20, "Faan"], has_existing_yaku("Three Pure Shifted Sequences", "Three Pure Linked Sequences")
-define_yaku meta_yaku, "Chicken Hand", [15, "Faan"], has_no_yaku
+define_yaku meta_yaku, "Chicken Hand", [15, "Faan"], not_has_existing_yaku("yaku")

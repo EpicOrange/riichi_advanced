@@ -1,0 +1,41 @@
+replace all, "yaku", [1, "Faan"], [0, "Faan"]
+replace all, "yaku", [2, "Faan"], [0, "Faan"]
+replace all, "yaku", [5, "Faan"], [0, "Faan"]
+replace all, "yaku", [8, "Faan"], [0, "Faan"]
+replace all, "yaku", [10, "Faan"], [0, "Faan"]
+replace all, "yaku", [15, "Faan"], [0, "Faan"]
+replace all, "yaku", [20, "Faan"], [0, "Faan"]
+replace all, "yaku", [30, "Faan"], [0, "Faan"]
+replace all, "meta_yaku", [2, "Faan"], [0, "Faan"]
+replace all, "meta_yaku", [5, "Faan"], [0, "Faan"]
+replace all, "meta_yaku", [8, "Faan"], [0, "Faan"]
+replace all, "meta_yaku", [10, "Faan"], [0, "Faan"]
+replace all, "meta_yaku", [20, "Faan"], [0, "Faan"]
+replace all, "meta_yaku", [30, "Faan"], [0, "Faan"]
+# chicken hand is the only meta_yaku worth 15, so it is untouched
+
+on after_initialization do
+  move_rule("15", "Chicken Hand", "Chicken Hand", "Chicken Hand")
+  add_rule("1 Faan", "Chicken Hand Challenge", "Everything here is actually worth 0 Faan (excluding flowers.)", -1)
+  add_rule("2 Faan", "Chicken Hand Challenge", "Everything here is actually worth 0 Faan (excluding flowers.)", -1)
+  add_rule("5 Faan", "Chicken Hand Challenge", "Everything here is actually worth 0 Faan (excluding flowers.)", -1)
+  add_rule("8 Faan", "Chicken Hand Challenge", "Everything here is actually worth 0 Faan (excluding flowers.)", -1)
+  add_rule("10", "Chicken Hand Challenge", "Everything here is actually worth 0 Faan (excluding flowers.)", -1)
+  add_rule("15", "Chicken Hand Challenge", "Everything here is actually worth 0 Faan (excluding flowers.)", -1)
+  add_rule("20", "Chicken Hand Challenge", "Everything here is actually worth 0 Faan (excluding flowers.)", -1)
+  add_rule("30", "Chicken Hand Challenge", "Everything here is actually worth 0 Faan (excluding flowers.)", -1)
+  rename_rule_tab("10", "10+")
+  rename_rule_tab("15", "10+")
+  rename_rule_tab("20", "10+")
+  rename_rule_tab("30", "10+")
+end
+
+define_const min_han_check_discard, has_yaku_with_discard(1, "Faan")
+define_const min_han_check_call, @min_han_check_discard
+replace all, "constants.min_han_check_call", "has_yaku_with_discard", "has_yaku_with_call"
+define_const min_han_check_hand, @min_han_check_discard
+replace all, "constants.min_han_check_hand", "has_yaku_with_discard", "has_yaku_with_hand"
+
+apply append, "buttons.ron.show_when", +@min_han_check_discard
+apply append, "buttons.chankan.show_when", +@min_han_check_call
+apply append, "buttons.tsumo.show_when", +@min_han_check_hand
