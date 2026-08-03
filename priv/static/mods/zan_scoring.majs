@@ -30,8 +30,9 @@ apply merge, "score_calculation", %{right_display: ""}
 apply delete, "yaku_precedence.Tsumo", "Pinfu"
 
 # use a different scoring logic
-replace all, "buttons", "ron", "zan_ron"
-replace all, "buttons", "tsumo", "zan_tsumo"
+replace all, "buttons.ron", "ron", "zan_ron"
+replace all, "buttons.chankan", "ron", "zan_ron"
+replace all, "buttons.tsumo", "tsumo", "zan_tsumo"
 
 define_scoring zan_ron do
   total = 0

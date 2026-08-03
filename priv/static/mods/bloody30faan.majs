@@ -1,0 +1,210 @@
+require "value_honors"
+
+set interruptible_actions, ["play_tile", "draw", "call", "self_call", "upgrade_call"]
+set initial_score, 0
+set starting_tiles, 13
+set four_rows_discards, true
+set bloody_end, true
+set max_rounds, 16
+set win_timer, 30
+
+apply set_merge, "custom_style.tile_indices", %{
+  "10j": "Any",
+  "12j": "Number",
+  "3j": "Honour",
+  "14j": "Dragon",
+  "15j": "Wind",
+  "6j": "Pinzu",
+  "17j": "Souzu",
+  "18j": "Manzu"
+}
+
+define_set pair, ~s"0 0"
+define_set shuntsu, ~s"0 1 2"
+define_set koutsu, ~s"0 0 0"
+define_set quad, ~s"0 0 0 0"
+define_set taatsu, ~s"0 0 | 0 1 | 0 2"
+define_set mentsu, ~s"0 0 0 | 0 1 2 | 0 10 20"
+define_set sanshoku_doujun, ~s"0 1 2, 10 11 12, 20 21 22"
+define_set sanshoku_doukou, ~s"0 0 0, 10 10 10, 20 20 20"
+define_set manzu, ~s"1m|2m|3m|4m|5m|6m|7m|8m|9m"
+define_set pinzu, ~s"1p|2p|3p|4p|5p|6p|7p|8p|9p"
+define_set souzu, ~s"1s|2s|3s|4s|5s|6s|7s|8s|9s"
+define_set orphans_any, ~s"1m|9m|1p|9p|1s|9s|1z|2z|3z|4z|0z|6z|7z"
+define_set orphans_all, ~s"1m 9m 1p 9p 1s 9s 1z 2z 3z 4z 0z 6z 7z"
+define_set chuurenpoutou, ~s"0 0 0 1 2 3 4 5 6 7 8 8 8"
+define_set knit1, ~s"1m|4m|7m|1p|4p|7p|1s|4s|7s|1z|2z|3z|4z|0z|6z|7z"
+define_set knit2, ~s"1m|4m|7m|2p|5p|8p|3s|6s|9s|1z|2z|3z|4z|0z|6z|7z"
+define_set knit3, ~s"1m|4m|7m|3p|6p|9p|2s|5s|8s|1z|2z|3z|4z|0z|6z|7z"
+define_set knit4, ~s"2m|5m|8m|1p|4p|7p|3s|6s|9s|1z|2z|3z|4z|0z|6z|7z"
+define_set knit5, ~s"2m|5m|8m|2p|5p|8p|2s|5s|8s|1z|2z|3z|4z|0z|6z|7z"
+define_set knit6, ~s"2m|5m|8m|3p|6p|9p|1s|4s|7s|1z|2z|3z|4z|0z|6z|7z"
+define_set knit7, ~s"3m|6m|9m|1p|4p|7p|2s|5s|8s|1z|2z|3z|4z|0z|6z|7z"
+define_set knit8, ~s"3m|6m|9m|2p|5p|8p|1s|4s|7s|1z|2z|3z|4z|0z|6z|7z"
+define_set knit9, ~s"3m|6m|9m|3p|6p|9p|3s|6s|9s|1z|2z|3z|4z|0z|6z|7z"
+
+define_const knitted_tenpai, ~m"""
+    unique, knit1:12, knit1:1
+  | unique, knit2:12, knit2:1
+  | unique, knit3:12, knit3:1
+  | unique, knit4:12, knit4:1
+  | unique, knit5:12, knit5:1
+  | unique, knit6:12, knit6:1
+  | unique, knit7:12, knit7:1
+  | unique, knit8:12, knit8:1
+  | unique, knit9:12, knit9:1
+  """
+define_const knitted_win, ~m"""
+    pair:1, restart, manzu:1, pinzu:1, souzu:1, (1z 2z 3z 4z):1, (0z 6z 7z):1, restart, unique, knit1:13, knit1:1
+  | pair:1, restart, manzu:1, pinzu:1, souzu:1, (1z 2z 3z 4z):1, (0z 6z 7z):1, restart, unique, knit2:13, knit2:1
+  | pair:1, restart, manzu:1, pinzu:1, souzu:1, (1z 2z 3z 4z):1, (0z 6z 7z):1, restart, unique, knit3:13, knit3:1
+  | pair:1, restart, manzu:1, pinzu:1, souzu:1, (1z 2z 3z 4z):1, (0z 6z 7z):1, restart, unique, knit4:13, knit4:1
+  | pair:1, restart, manzu:1, pinzu:1, souzu:1, (1z 2z 3z 4z):1, (0z 6z 7z):1, restart, unique, knit5:13, knit5:1
+  | pair:1, restart, manzu:1, pinzu:1, souzu:1, (1z 2z 3z 4z):1, (0z 6z 7z):1, restart, unique, knit6:13, knit6:1
+  | pair:1, restart, manzu:1, pinzu:1, souzu:1, (1z 2z 3z 4z):1, (0z 6z 7z):1, restart, unique, knit7:13, knit7:1
+  | pair:1, restart, manzu:1, pinzu:1, souzu:1, (1z 2z 3z 4z):1, (0z 6z 7z):1, restart, unique, knit8:13, knit8:1
+  | pair:1, restart, manzu:1, pinzu:1, souzu:1, (1z 2z 3z 4z):1, (0z 6z 7z):1, restart, unique, knit9:13, knit9:1
+  """
+apply set_append, "tenpai_definition", +@knitted_tenpai
+apply set_append, "win_definition", +@knitted_win
+
+define_match joker_tanki_tenpai, ~m"""
+    exhaustive, (10j 12j):1, mentsu:4,
+  | (10j 12j):1, pair:6,
+  | unique, (10j 12j):1, orphans_any:12,
+  | unique, (10j 12j):2, orphans_any:11,
+  | unique, (10j 12j):1, knit1:12
+  | unique, (10j 12j):1, knit2:12
+  | unique, (10j 12j):1, knit3:12
+  | unique, (10j 12j):1, knit4:12
+  | unique, (10j 12j):1, knit5:12
+  | unique, (10j 12j):1, knit6:12
+  | unique, (10j 12j):1, knit7:12
+  | unique, (10j 12j):1, knit8:12
+  | unique, (10j 12j):1, knit9:12
+  """
+
+define_match any_joker, ~m"nojoker, (10j 12j 3j 14j 15j 16j 17j 18j):1"
+
+on before_scoring do make_responsible_for("others") end
+define_scoring win do
+  cond do
+    points == 0 -> total = 1 :: "0 Faan"
+    points <= 2 -> total = 2 :: "1-2 Faan"
+    points <= 4 -> total = 4 :: "3-4 Faan"
+    points <= 6 -> total = 8 :: "5-6 Faan"
+    points <= 8 -> total = 12 :: "7-8 Faan"
+    points <= 10 -> total = 16 :: "9-10 Faan"
+    points <= 13 -> total = 24 :: "11-13 Faan"
+    points <= 16 -> total = 32 :: "14-16 Faan"
+    points <= 19 -> total = 48 :: "17-19 Faan"
+    points <= 24 -> total = 64 :: "20-24 Faan"
+    points <= 29 -> total = 96 :: "25-29 Faan"
+    points <= 39 -> total = 128 :: "30-39 Faan"
+    true -> total = 256 :: "40+ Faan"
+  end
+end
+
+set score_calculation, %{
+  yaku_lists: ["yaku", "meta_yaku"],
+  point_name: "Faan",
+  win_by_discard_label: "Hu",
+  win_by_draw_label: "Zimo",
+  win_by_discard_name: "Hu",
+  win_by_discard_name_2: "Double Hu",
+  win_by_discard_name_3: "Triple Hu",
+  win_by_draw_name: "Zimo",
+  exhaustive_draw_name: "Draw"
+}
+
+define_play_restriction any, just_called and last_called_tile_matches("kuikae")
+
+on before_turn_change do
+  unset_status("kan", "joker")
+  unset_status_all("call_made")
+  if status_missing("match_start") do
+    unset_status("first_turn")
+  end
+end
+
+on after_turn_change do
+  if no_tiles_remaining do
+    pause(1000)
+    ryuukyoku
+  else
+    if status_missing("match_start") do draw end
+  end
+  if status("won") do advance_turn end
+end
+
+on after_call do set_status("call_made") end
+
+on before_win do
+  add_counter("called_jokers", "count_matches", ["jokers"], ["any_joker"])
+  subtract_counter("jokers", "count_matches", ["jokers"], ["any_joker"])
+end
+
+on after_win do if three_winners do flip_all_calls_faceup end end
+
+on before_exhaustive_draw do flip_all_calls_faceup end
+
+on before_continue do advance_turn end
+
+define_play_effect any, do: unset_status("discards_empty")
+
+on after_start do
+  set_status_all("first_turn", "discards_empty")
+  set_tile_alias_all(["10j"], ["any"])
+  set_tile_alias_all(["12j"], ["1m","2m","3m","4m","5m","6m","7m","8m","9m","1p","2p","3p","4p","5p","6p","7p","8p","9p","1s","2s","3s","4s","5s","6s","7s","8s","9s"])
+  set_tile_alias_all(["3j"], ["1z","2z","3z","4z","0z","6z","7z"])
+  set_tile_alias_all(["14j"], ["0z","6z","7z"])
+  set_tile_alias_all(["15j"], ["1z","2z","3z","4z"])
+  set_tile_alias_all(["16j"], ["1p","2p","3p","4p","5p","6p","7p","8p","9p"])
+  set_tile_alias_all(["17j"], ["1s","2s","3s","4s","5s","6s","7s","8s","9s"])
+  set_tile_alias_all(["18j"], ["1m","2m","3m","4m","5m","6m","7m","8m","9m"])
+  recalculate_buttons
+end
+
+apply append, "buttons.chii.call_conditions", not_call_contains(["10j", "12j", "3j", "14j", "15j", "16j", "17j", "18j"], 1)
+apply append, "buttons.pon.call_conditions", not_call_contains(["10j", "12j", "3j", "14j", "15j", "16j", "17j", "18j"], 2)
+apply append, "buttons.pon.call_priority_list" do
+  not_call_choice_contains(["10j", "12j", "3j", "14j", "15j", "16j", "17j", "18j"], 1)
+  call_choice_contains(["14j", "15j", "16j", "17j", "18j"], 1)
+  call_choice_contains(["12j", "3j"], 1)
+  call_choice_contains(["10j"], 1)
+end
+apply append, "buttons.daiminkan.call_conditions", not_call_contains(["10j", "12j", "3j", "14j", "15j", "16j", "17j", "18j"], 2)
+apply append, "buttons.daiminkan.call_priority_list" do
+  not_call_choice_contains(["10j", "12j", "3j", "14j", "15j", "16j", "17j", "18j"], 1)
+  call_choice_contains(["14j", "15j", "16j", "17j", "18j"], 1)
+  call_choice_contains(["12j", "3j"], 1)
+  call_choice_contains(["10j"], 1)
+end
+apply append, "buttons.kakan.call_conditions", not_call_contains(["10j", "12j", "3j", "14j", "15j", "16j", "17j", "18j"], 1)
+apply append, "buttons.ankan.call_conditions", not_call_contains(["10j", "12j", "3j", "14j", "15j", "16j", "17j", "18j"], 1)
+apply append, "buttons.ron.show_when", not_match(["hand", "calls"], ["joker_tanki_tenpai"]) and status_missing("match_start", "won")
+apply append, "buttons.chankan.show_when", not_match(["hand", "calls"], ["joker_tanki_tenpai"]) and status_missing("match_start", "won")
+
+on before_win do
+  add_counter("jokers", "count_matches", ["hand", "calls", "winning_tile"], ["any_joker"])
+end
+
+define_button joker,
+  display_name: "Replace joker",
+  show_when:
+    status_missing("match_start", "won")
+    and our_turn and has_draw and not_others_status("call_made")
+    and not_just_discarded
+    and match(["hand", "draw"], ["any_joker"])
+  do
+    big_text("Flower")
+    flower("10j", "12j", "3j", "14j", "15j", "16j", "17j", "18j")
+    set_status("joker")
+    if no_tiles_remaining do
+      advance_turn
+    else
+      draw(1, "opposite_end")
+    end
+  end
+
+define_mod b30fj_zh, name: "Chinese Yaku Names", desc: "Display yaku names in Traditional Chinese."

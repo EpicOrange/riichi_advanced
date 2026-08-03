@@ -638,7 +638,7 @@ defmodule RiichiAdvanced.Compiler do
           match_spec when is_binary(match_spec) ->
             # existing match definition
             with {:ok, match_spec} <- Validator.validate_json(match_spec) do
-              {:ok, ".#{match_spec}_definition"}
+              {:ok, ".[\"#{match_spec}_definition\"]"}
             end
         end)
         |> Utils.sequence()

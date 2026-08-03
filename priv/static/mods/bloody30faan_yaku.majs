@@ -1,0 +1,509 @@
+require "value_honors"
+
+# TODO rules text and example hand for everything defined here and not in other mods
+
+# (1) 字花類
+
+define_yaku yaku, "Flower", ["called_jokers", "Faan"], called_jokers >= 1
+define_yaku yaku, "No Honors or Flowers", [2, "Faan"], not_match(["hand", "calls", "winning_tile"], ~m"jihai:1") and called_jokers == 0
+define_yaku yaku, "No Jokers", [2, "Faan"], called_jokers == 0
+define_yaku yaku, "All Honours", [30, "Faan"], winning_hand_consists_of("1z", "2z", "3z", "4z", "0z", "6z", "7z")
+# yaku/yakuhai.majs adds all 5 yakuhai (1 Faan each)
+# yaku/shousangen.majs adds Little Three Dragons (8 Faan) and Big Three Dragons (15 Faan)
+# yaku/sanpuukou.majs adds Little Three Winds (5 Faan) and Big Three Winds (10 Faan)
+# yaku/shousuushii.majs adds Little Four Winds (20 Faan) and Big Four Winds (30 Faan)
+
+# (2) 么九類
+
+define_set 老少順, ~s"0 1 2, 6 7 8"
+define_set 一色老少雙順, ~s"0 1 2, 0 1 2, 6 7 8, 6 7 8"
+define_match 老少順, ~m"exhaustive, 老少順:1, mentsu:2, pair:1"
+define_match 老少雙順, ~m"老少順:2, pair:1"
+define_match 一色老少雙順, ~m"一色老少雙順:1, pair:1"
+define_yaku yaku, "Terminal Sequences", [1, "Faan"], match(["hand", "calls", "winning_tile"], ["老少順"])
+define_yaku yaku, "Double Terminal Sequences", [10, "Faan"], match(["hand", "calls", "winning_tile"], ["老少雙順"])
+define_yaku yaku, "Pure Double Terminal Sequences", [20, "Faan"], match(["hand", "calls", "winning_tile"], ["一色老少雙順"])
+# yaku/tanyao.majs adds All Simples (2 Faan)
+# yaku/chanta.majs adds Mixed Outside Hand (5 Faan) and Pure Outside Hand (8 Faan)
+# yaku/honroutou.majs adds Mixed Terminals (10 Faan) and Pure Terminals (30 Faan)
+
+# (3) 花色類
+
+define_yaku yaku, "One Voided Suit", [2, "Faan"],
+     winning_hand_consists_of("1m","2m","3m","4m","5m","6m","7m","8m","9m","1p","2p","3p","4p","5p","6p","7p","8p","9p","1z","2z","3z","4z","0z","6z","7z")
+  or winning_hand_consists_of("1m","2m","3m","4m","5m","6m","7m","8m","9m","1s","2s","3s","4s","5s","6s","7s","8s","9s","1z","2z","3z","4z","0z","6z","7z")
+  or winning_hand_consists_of("1p","2p","3p","4p","5p","6p","7p","8p","9p","1s","2s","3s","4s","5s","6s","7s","8s","9s","1z","2z","3z","4z","0z","6z","7z")
+# yaku/uumensai.majs adds All Types (5 Faan)
+# yaku/honitsu.majs adds Mixed Flush (5 Faan) and Full Flush (10 Faan)
+define_set 副露九子連環, ~s"""
+    0 0 0, 0 1 2, 3 4 5, 6 7 8, 8 8 
+  | 0 0 0, 1 1, 2 3 4, 5 6 7, 8 8 8 
+  | 0 0, 0 1 2, 2 3 4, 5 6 7, 8 8 8 
+  | 0 0 0, 1 2 3, 3 4 5, 6 7 8, 8 8 
+  | 0 0 0, 1 2 3, 4 4, 5 6 7, 8 8 8 
+  | 0 0, 0 1 2, 3 4 5, 5 6 7, 8 8 8 
+  | 0 0 0, 1 2 3, 4 5 6, 6 7 8, 8 8 
+  | 0 0 0, 1 2 3, 4 5 6, 7 7, 8 8 8 
+  | 0 0, 0 1 2, 3 4 5, 6 7 8, 8 8 8
+  """
+define_match 副露九子連環, ~m"副露九子連環:1"
+define_yaku yaku, "Open Nine Gates", [20, "Faan"], match(["hand", "winning_tile"], ["副露九子連環"])
+# yaku/chuurenpoutou.majs adds Nine Gates (30 Faan)
+
+# (1) 刻/槓子類
+define_yaku yaku, "Open Kong", [1, "Faan"], match(["calls"], ~m"(daiminkan kakan):1")
+define_yaku yaku, "Concealed Kong", [2, "Faan"], match(["calls"], ~m"ankan:1")
+# yaku/ryankantsu.majs adds Two Kongs (5 Faan)
+# yaku/sankantsu.majs adds Three Kongs (15 Faan)
+# yaku/suukantsu.majs adds Four Kongs (30 Faan)
+# yaku/ryanankou.majs adds Two Concealed Triplets (2 Faan)
+# yaku/sanankou.majs adds Three Concealed Triplets (8 Faan)
+# yaku/suuankou.majs adds Four Concealed Triplets (15 Faan)
+
+define_set 兩連刻, ~s"0 0 0, 1 1 1|0 0 0, 11 11 11|0 0 0, 21 21 21"
+define_match 兩連刻, ~m"兩連刻:1, mentsu:2, pair:1"
+define_yaku yaku, "Two Shifted Triplets", [2, "Faan"], match(["hand", "calls", "winning_tile"], ["兩連刻"])
+define_set 小三連刻, ~s"""
+    0 0 0, 1 1 1, 2 2
+  | 0 0 0, 1 1 1, 12 12
+  | 0 0 0, 1 1 1, 22 22
+  | 0 0 0, 11 11 11, 2 2
+  | 0 0 0, 11 11 11, 12 12
+  | 0 0 0, 11 11 11, 22 22
+  | 0 0 0, 21 21 21, 2 2
+  | 0 0 0, 21 21 21, 12 12
+  | 0 0 0, 21 21 21, 22 22
+  | 0 0 0, 1 1, 2 2 2
+  | 0 0 0, 1 1, 12 12 12
+  | 0 0 0, 1 1, 22 22 22
+  | 0 0 0, 11 11, 2 2 2
+  | 0 0 0, 11 11, 12 12 12
+  | 0 0 0, 11 11, 22 22 22
+  | 0 0 0, 21 21, 2 2 2
+  | 0 0 0, 21 21, 12 12 12
+  | 0 0 0, 21 21, 22 22 22
+  | 0 0, 1 1 1, 2 2 2
+  | 0 0, 1 1 1, 12 12 12
+  | 0 0, 1 1 1, 22 22 22
+  | 0 0, 11 11 11, 2 2 2
+  | 0 0, 11 11 11, 12 12 12
+  | 0 0, 11 11 11, 22 22 22
+  | 0 0, 21 21 21, 2 2 2
+  | 0 0, 21 21 21, 12 12 12
+  | 0 0, 21 21 21, 22 22 22
+  """
+define_match 小三連刻, ~m"小三連刻:1, mentsu:2"
+define_yaku yaku, "Three Small Shifted Triplets", [5, "Faan"], match(["hand", "calls", "winning_tile"], ["小三連刻"])
+# yaku/sanrenkou.majs adds Three Pure Shifted Triplets (10 Faan) and Four Pure Shifted Triplets (20 Faan)
+define_set 小一色四連刻, ~s"""
+    0 0 0, 1 1 1, 2 2 2, 3 3
+  | 0 0 0, 1 1 1, 2 2, 3 3 3
+  | 0 0 0, 1 1, 2 2 2, 3 3 3
+  | 0 0, 1 1 1, 2 2 2, 3 3 3
+  """
+define_match 小一色四連刻, ~m"小一色四連刻:1, mentsu:1"
+define_yaku yaku, "Four Pure Small Shifted Triplets", [15, "Faan"], match(["hand", "calls", "winning_tile"], ["小一色四連刻"])
+define_set 小三色連刻, ~s"""
+    0 0 0, 11 11 11, 22 22
+  | 0 0 0, 21 21 21, 12 12
+  | 0 0 0, 11 11, 22 22 22
+  | 0 0 0, 21 21, 12 12 12
+  | 0 0, 11 11 11, 22 22 22
+  | 0 0, 21 21 21, 12 12 12
+  """
+define_match 小三色連刻, ~m"小三色連刻:1, mentsu:2"
+define_yaku yaku, "Three Mixed Small Shifted Triplets", [5, "Faan"], match(["hand", "calls", "winning_tile"], ["小三色連刻"])
+define_set 三色連刻, ~s"""
+    0 0 0, 11 11 11, 22 22
+  | 0 0 0, 21 21 21, 12 12
+  | 0 0 0, 11 11, 22 22 22
+  | 0 0 0, 21 21, 12 12 12
+  | 0 0, 11 11 11, 22 22 22
+  | 0 0, 21 21 21, 12 12 12
+  """
+define_match 三色連刻, ~m"三色連刻:1, mentsu:1, pair:1"
+define_yaku yaku, "Three Mixed Shifted Triplets", [8, "Faan"], match(["hand", "calls", "winning_tile"], ["三色連刻"])
+define_set 小三色四連刻, ~s"""
+    0 0 0, 11 11 11, 22 22 22, 3 3
+  | 0 0 0, 21 21 21, 12 12 12, 3 3
+  | 0 0 0, 11 11 11, 22 22, 3 3 3
+  | 0 0 0, 21 21 21, 12 12, 3 3 3
+  | 0 0 0, 11 11, 22 22 22, 3 3 3
+  | 0 0 0, 21 21, 12 12 12, 3 3 3
+  | 0 0, 11 11 11, 22 22 22, 3 3 3
+  | 0 0, 21 21 21, 12 12 12, 3 3 3
+  """
+define_match 小三色四連刻, ~m"小三色四連刻:1, mentsu:1"
+define_yaku yaku, "Four Mixed Small Shifted Triplets", [10, "Faan"], match(["hand", "calls", "winning_tile"], ["小三色四連刻"])
+define_set 三色四連刻, ~s"0 0 0, 11 11 11, 22 22 22, 3 3 3 | 0 0 0, 21 21 21, 12 12 12, 3 3 3"
+define_match 三色四連刻, ~m"三色四連刻:1, pair:1"
+define_yaku yaku, "Four Mixed Shifted Triplets", [15, "Faan"], match(["hand", "calls", "winning_tile"], ["三色四連刻"])
+define_set 三色五連刻, ~s"""
+    0 0 0, 11 11 11, 22 22 22, 3 3 3, 14 14
+  | 0 0 0, 21 21 21, 12 12 12, 3 3 3, 24 24
+  | 0 0 0, 11 11 11, 22 22 22, 3 3, 14 14 14
+  | 0 0 0, 21 21 21, 12 12 12, 3 3, 24 24 24
+  | 0 0 0, 11 11 11, 22 22, 3 3 3, 14 14 14
+  | 0 0 0, 21 21 21, 12 12, 3 3 3, 24 24 24
+  | 0 0 0, 11 11, 22 22 22, 3 3 3, 14 14 14
+  | 0 0 0, 21 21, 12 12 12, 3 3 3, 24 24 24
+  | 0 0, 11 11 11, 22 22 22, 3 3 3, 14 14 14
+  | 0 0, 21 21 21, 12 12 12, 3 3 3, 24 24 24
+  """
+define_match 三色五連刻, ~m"三色五連刻:1"
+define_yaku yaku, "Five Mixed Small Shifted Triplets", [20, "Faan"], match(["hand", "calls", "winning_tile"], ["三色五連刻"])
+define_set 兩同刻, ~s"0 0 0, 10 10 10|0 0 0, 20 20 20"
+define_match 兩同刻, ~m"兩同刻:1, mentsu:2, pair:1"
+define_yaku yaku, "Double Triplets", [2, "Faan"], match(["hand", "calls", "winning_tile"], ["兩同刻"])
+define_set 小三同刻, ~s"""
+    0 0 0, 10 10 10, 20 20
+  | 0 0 0, 20 20 20, 10 10
+  | 0 0 0, 10 10, 20 20 20
+  | 0 0 0, 20 20, 10 10 10
+  | 0 0, 10 10 10, 20 20 20
+  | 0 0, 20 20 20, 10 10 10
+  """
+define_match 小三同刻, ~m"小三同刻:1, mentsu:2, pair:1"
+define_yaku yaku, "Small Triple Triplets", [5, "Faan"], match(["hand", "calls", "winning_tile"], ["小三同刻"])
+# yaku/sanshoku_doukou.majs adds Triple Triplets (10 Faan)
+define_set 四同刻, ~s"""
+    0 0 0, 10 10 10, 20 20 20, 0 0 0
+  | 0 0 0, 10 10 10, 20 20 20, 10 10 10
+  | 0 0 0, 10 10 10, 20 20 20, 20 20 20
+  """
+define_match 四同刻, ~m"四同刻:1, pair:1"
+define_yaku yaku, "Quadruple Triplets", [30, "Faan"], match(["hand", "calls", "winning_tile"], ["四同刻"])
+# yaku/toitoi.majs adds All Triplets (5 Faan)
+
+# (2) 順子類
+
+define_set 兩相逢, ~s"0 1 2, 10 11 12"
+define_set 無雙兩相逢, ~s"0 1 2, 0 1 2, 10 11 12, 10 11 12"
+define_match 兩相逢, ~m"兩相逢:1, mentsu:2, pair:1"
+define_match 雙兩相逢, ~m"無雙兩相逢:-1, 兩相逢:2, pair:1"
+define_yaku yaku, "Double Sequences", [1, "Faan"], match(["hand", "calls", "winning_tile"], ["兩相逢"])
+define_yaku yaku, "Double Sequences", [1, "Faan"], match(["hand", "calls", "winning_tile"], ["雙兩相逢"])
+# yaku/sanshoku_doujun.majs adds Triple Sequences (5 Faan)
+# yaku/isshoku_sanjun.majs adds Pure Triple Sequence (10 Faan) and Pure Quadruple Sequence (30 Faan)
+define_set 連六, ~s"0 1 2, 3 4 5"
+define_match 連六, ~m"連六:1, mentsu:2, pair:1"
+define_match 雙連六, ~m"連六:2, pair:1"
+define_yaku yaku, "Short Straight", [1, "Faan"], match(["hand", "calls", "winning_tile"], ["連六"])
+define_yaku yaku, "Short Straight", [1, "Faan"], match(["hand", "calls", "winning_tile"], ["雙連六"])
+define_set 連六雙順, ~s"0 1 2, 3 4 5, 10 11 12, 13 14 15|0 1 2, 3 4 5, 20 21 22, 23 24 25"
+define_match 連六雙順, ~m"連六雙順:2, pair:1"
+define_yaku yaku, "Double Short Straight", [10, "Faan"], match(["hand", "calls", "winning_tile"], ["連六雙順"])
+define_set 一色連六雙順, ~s"0 1 2, 0 1 2, 3 4 5, 3 4 5"
+define_match 一色連六雙順, ~m"一色連六雙順:1, pair:1"
+define_yaku yaku, "Pure Double Short Straight", [20, "Faan"], match(["hand", "calls", "winning_tile"], ["一色連六雙順"])
+# yaku/iipeikou.majs adds Identical Sequences (2 Faan)
+# yaku/ryanpeikou.majs adds Double Identical Sequences (10 Faan)
+define_set 清般高, ~s"""
+    0 0 1 1 2 2 0 0 1 1 2 2
+  | 0 0 1 1 2 2 1 1 2 2 3 3
+  | 0 0 1 1 2 2 2 2 3 3 4 4
+  | 0 0 1 1 2 2 3 3 4 4 5 5
+  | 0 0 1 1 2 2 4 4 5 5 6 6
+  | 0 0 1 1 2 2 5 5 6 6 7 7
+  | 0 0 1 1 2 2 6 6 7 7 8 8
+  """
+define_match 清般高, ~m"清般高:1, pair:1"
+define_yaku yaku, "Pure Double Identical Sequences", [15, "Faan"], match(["hand", "calls", "winning_tile"], ["清般高"])
+define_set 三色三步高, ~s"0 1 2, 11 12 13, 22 23 24|0 1 2, 21 22 23, 12 13 14"
+define_match 三色三步高, ~m"三色三步高:1, mentsu:1, pair:1"
+define_yaku yaku, "Three Mixed Shifted Sequences", [2, "Faan"], match(["hand", "calls", "winning_tile"], ["三色三步高"])
+define_set 三色四步高, ~s"0 1 2, 11 12 13, 22 23 24, 3 4 5|0 1 2, 21 22 23, 12 13 14, 3 4 5"
+define_match 三色四步高, ~m"三色四步高:1, pair:1"
+define_yaku yaku, "Four Mixed Shifted Sequences", [8, "Faan"], match(["hand", "calls", "winning_tile"], ["三色四步高"])
+define_set 一色三步高, ~s"0 1 2, 1 2 3, 2 3 4|0 1 2, 1 2 3, 2 3 4"
+define_match 一色三步高, ~m"一色三步高:1, mentsu:1, pair:1"
+define_yaku yaku, "Three Pure Shifted Sequences", [10, "Faan"], match(["hand", "calls", "winning_tile"], ["一色三步高"])
+define_set 一色四步高, ~s"0 1 2, 1 2 3, 2 3 4, 3 4 5|0 1 2, 1 2 3, 2 3 4, 3 4 5"
+define_match 一色四步高, ~m"一色四步高:1, pair:1"
+define_yaku yaku, "Four Pure Shifted Sequences", [30, "Faan"], match(["hand", "calls", "winning_tile"], ["一色四步高"])
+define_set 三色跳步高, ~s"0 1 2, 12 13 14, 24 25 26"
+define_match 三色跳步高, ~m"三色跳步高:1, mentsu:1, pair:1"
+define_yaku yaku, "Three Mixed Linked Sequences", [2, "Faan"], match(["hand", "calls", "winning_tile"], ["三色跳步高"])
+define_set 一色跳步高, ~s"0 1 2, 2 3 4, 4 5 6"
+define_match 一色跳步高, ~m"一色跳步高:1, mentsu:1, pair:1"
+define_yaku yaku, "Three Pure Linked Sequences", [8, "Faan"], match(["hand", "calls", "winning_tile"], ["一色跳步高"])
+define_set 金門大橋, ~s"0 1 2, 2 3 4, 4 5 6, 6 7 8"
+define_match 金門大橋, ~m"金門大橋:1, pair:1"
+define_yaku yaku, "Golden Gate Bridge", [20, "Faan"], match(["hand", "calls", "winning_tile"], ["金門大橋"])
+# TODO replace with sanshoku_ittsuu
+define_set 雜龍, ~s"0 1 2, 13 14 15, 26 27 28|0 1 2, 23 24 25, 16 17 18"
+define_match 雜龍, ~m"雜龍:1, mentsu:1, pair:1"
+define_yaku yaku, "Mixed Straight", [5, "Faan"], match(["hand", "calls", "winning_tile"], ["雜龍"])
+# TODO replace with ittsuu
+# yaku/ittsuu.majs adds Pure Straight (8 Faan)
+# yaku/pinghu.majs adds All Sequences (2 Faan)
+
+# (3) 四歸類
+
+define_set 四歸二, ~s"0 0 0, 0 1 2|0 1 2, 1 1 1|0 1 2, 2 2 2"
+define_match 四歸二, ~m"四歸二:1, mentsu:2, pair:1"
+define_yaku yaku, "Tile Hog (2)", [2, "Faan"], match(["hand", "calls", "winning_tile"], ["四歸二"])
+define_set 四歸三, ~s"0 0, 0 1 2, 0 1 2|0 1 2, 0 1 2, 1 1|0 1 2, 0 1 2, 2 2|0 1 2, 1 1, 1 2 3|0 1 2, 1 2 3, 2 2|0 1 2, 2 2, 2 3 4"
+define_match 四歸三, ~m"四歸三:1, mentsu:2"
+define_yaku yaku, "Tile Hog (3)", [5, "Faan"], match(["hand", "calls", "winning_tile"], ["四歸三"])
+define_set 四歸四, ~s"0 1 2, 0 1 2, 0 1 2, 0 1 2|0 1 2, 0 1 2, 0 1 2, 1 2 3|0 1 2, 0 1 2, 0 1 2, 2 3 4|0 1 2, 0 1 2, 1 2 3, 1 2 3|0 1 2, 0 1 2, 1 2 3, 2 3 4|0 1 2, 0 1 2, 2 3 4, 2 3 4|0 1 2, 1 2 3, 1 2 3, 1 2 3|0 1 2, 1 2 3, 1 2 3, 2 3 4|0 1 2, 1 2 3, 2 3 4, 2 3 4|0 1 2, 2 3 4, 2 3 4, 2 3 4"
+define_match 四歸四, ~m"四歸四:1, pair:1"
+define_yaku yaku, "Tile Hog (4)", [15, "Faan"], match(["hand", "calls", "winning_tile"], ["四歸四"])
+define_yaku yaku, "Double Tile Hog", [8, "Faan"], match(["hand", "winning_tile"], ~m"quad:2")
+define_yaku yaku, "Double Tile Hog", [30, "Faan"], match(["hand", "winning_tile"], ~m"quad:3")
+apply merge, "translations", %{
+  "Tile Hog (2)": "Tile Hog",
+  "Tile Hog (3)": "Tile Hog",
+  "Tile Hog (4)": "Tile Hog"
+}
+
+# (4) 數字類
+
+on before_win do
+   add_attr(["hand", "calls", "winning_tile"], ["n1"], ["1"])
+   add_attr(["hand", "calls", "winning_tile"], ["n2"], ["2"])
+   add_attr(["hand", "calls", "winning_tile"], ["n3"], ["3"])
+   add_attr(["hand", "calls", "winning_tile"], ["n4"], ["4"])
+   add_attr(["hand", "calls", "winning_tile"], ["n5"], ["5"])
+   add_attr(["hand", "calls", "winning_tile"], ["n6"], ["6"])
+   add_attr(["hand", "calls", "winning_tile"], ["n7"], ["7"])
+   add_attr(["hand", "calls", "winning_tile"], ["n8"], ["8"])
+   add_attr(["hand", "calls", "winning_tile"], ["n9"], ["9"])
+end
+define_set 滿庭芳_1, ~s"0@n1 0 0 | 0@n1 1 2 | 0 1@n1 2 | 0 1 2@n1"
+define_set 滿庭芳_2, ~s"0@n2 0 0 | 0@n2 1 2 | 0 1@n2 2 | 0 1 2@n2"
+define_set 滿庭芳_3, ~s"0@n3 0 0 | 0@n3 1 2 | 0 1@n3 2 | 0 1 2@n3"
+define_set 滿庭芳_4, ~s"0@n4 0 0 | 0@n4 1 2 | 0 1@n4 2 | 0 1 2@n4"
+define_set 滿庭芳_5, ~s"0@n5 0 0 | 0@n5 1 2 | 0 1@n5 2 | 0 1 2@n5"
+define_set 滿庭芳_6, ~s"0@n6 0 0 | 0@n6 1 2 | 0 1@n6 2 | 0 1 2@n6"
+define_set 滿庭芳_7, ~s"0@n7 0 0 | 0@n7 1 2 | 0 1@n7 2 | 0 1 2@n7"
+define_set 滿庭芳_8, ~s"0@n8 0 0 | 0@n8 1 2 | 0 1@n8 2 | 0 1 2@n8"
+define_set 滿庭芳_9, ~s"0@n9 0 0 | 0@n9 1 2 | 0 1@n9 2 | 0 1 2@n9"
+define_match 滿庭芳_1, ~m"(0@n1 0):1, 滿庭芳_1:4"
+define_match 滿庭芳_2, ~m"(0@n2 0):1, 滿庭芳_2:4"
+define_match 滿庭芳_3, ~m"(0@n3 0):1, 滿庭芳_3:4"
+define_match 滿庭芳_4, ~m"(0@n4 0):1, 滿庭芳_4:4"
+define_match 滿庭芳_5, ~m"(0@n5 0):1, 滿庭芳_5:4"
+define_match 滿庭芳_6, ~m"(0@n6 0):1, 滿庭芳_6:4"
+define_match 滿庭芳_7, ~m"(0@n7 0):1, 滿庭芳_7:4"
+define_match 滿庭芳_8, ~m"(0@n8 0):1, 滿庭芳_8:4"
+define_match 滿庭芳_9, ~m"(0@n9 0):1, 滿庭芳_9:4"
+define_match 滿庭芳, "滿庭芳_1", "滿庭芳_2", "滿庭芳_3", "滿庭芳_4", "滿庭芳_5", "滿庭芳_6", "滿庭芳_7", "滿庭芳_8", "滿庭芳_9"
+define_yaku yaku, "All Like Numbers", [8, "Faan"], match(["hand", "calls", "winning_tile"], ["滿庭芳"])
+define_yaku yaku, "All Odds", [5, "Faan"], winning_hand_consists_of("1m","3m","5m","7m","9m","1p","3p","5p","7p","9p","1s","3s","5s","7s","9s")
+define_yaku yaku, "All Evens", [5, "Faan"], winning_hand_consists_of("2m","4m","6m","8m","2p","4p","6p","8p","2s","4s","6s","8s")
+define_yaku yaku, "One Suji Only", [5, "Faan"],
+     winning_hand_consists_of("1m","4m","7m","1p","4p","7p","1s","4s","7s")
+  or winning_hand_consists_of("2m","5m","8m","2p","5p","8p","2s","5s","8s")
+  or winning_hand_consists_of("3m","6m","9m","3p","6p","9p","3s","6s","9s")
+define_yaku yaku, "Three Number Hand", [5, "Faan"], at_most(3,
+    winning_hand_consists_of("1m","1p","1s"),
+    winning_hand_consists_of("2m","2p","2s"),
+    winning_hand_consists_of("3m","3p","3s"),
+    winning_hand_consists_of("4m","4p","4s"),
+    winning_hand_consists_of("5m","5p","5s"),
+    winning_hand_consists_of("6m","6p","6s"),
+    winning_hand_consists_of("7m","7p","7s"),
+    winning_hand_consists_of("8m","8p","8s"),
+    winning_hand_consists_of("9m","9p","9s")
+  )
+define_yaku yaku, "Two Number Hand", [10, "Faan"], at_most(2,
+    winning_hand_consists_of("1m","1p","1s"),
+    winning_hand_consists_of("2m","2p","2s"),
+    winning_hand_consists_of("3m","3p","3s"),
+    winning_hand_consists_of("4m","4p","4s"),
+    winning_hand_consists_of("5m","5p","5s"),
+    winning_hand_consists_of("6m","6p","6s"),
+    winning_hand_consists_of("7m","7p","7s"),
+    winning_hand_consists_of("8m","8p","8s"),
+    winning_hand_consists_of("9m","9p","9s")
+  )
+
+# (5) 偶然類
+
+define_yaku yaku, "After a Flower", [1, "Faan"], status("joker")
+# yaku/rinshan.majs adds After a Kong (2 Faan)
+# yaku/chankan.majs adds Robbing a Kong (5 Faan)
+define_yaku yaku, "Under the Sea", [2, "Faan"], no_tiles_remaining
+define_yaku yaku, "Within Ten Tiles", [5, "Faan"], tiles_remaining(82)
+define_yaku yaku, "Within Seven Tiles", [8, "Faan"], tiles_remaining(85)
+# yaku/tenhou.majs adds Hand of Heaven (30 Faan), Hand of Earth (30 Faan), Hand of Man (15 Faan)
+
+# (6) 狀態類
+
+# yaku/menzenchin.majs adds Concealed Hand (1 Faan)
+# yaku/menzentsumo.majs adds Fully Concealed Hand (2 Faan)
+define_yaku yaku, "Self Drawn Melded Hand", [2, "Faan"], won_by_draw and match(["calls"], ~m"(chii pon daiminkan ankan kakan):4")
+define_yaku yaku, "Melded Hand", [5, "Faan"], not_won_by_draw and match(["calls"], ~m"(chii pon daiminkan ankan kakan):4")
+define_yaku yaku, "Hell Wait", [2, "Faan"], has_hell_wait("win")
+define_yaku yaku, "Hell Wait", [2, "Faan"], has_hell_wait("win")
+
+# (7) 對子類
+
+# yaku/chiitoitsu.majs adds Seven Pairs (5 Faan)
+define_set 三連對, ~s"0 0 1 1 2 2"
+define_match 三連對, ~m"三連對:1, pair:4"
+define_yaku meta_yaku, "Three Consecutive Pairs", [2, "Faan"], has_existing_yaku("Seven Pairs") and match(["hand", "winning_tile"], ["三連對"])
+define_set 五連對, ~s"0 0 1 1 2 2 3 3 4 4"
+define_match 五連對, ~m"五連對:1, pair:2"
+define_yaku meta_yaku, "Five Consecutive Pairs", [10, "Faan"], has_existing_yaku("Seven Pairs") and match(["hand", "winning_tile"], ["五連對"])
+define_set 七連對, ~s"0 0 1 1 2 2 3 3 4 4 5 5 6 6"
+define_match 七連對, ~m"七連對:1"
+define_yaku meta_yaku, "Seven Consecutive Pairs", [30, "Faan"], has_existing_yaku("Seven Pairs") and match(["hand", "winning_tile"], ["七連對"])
+define_set 三同對, ~s"0 0 10 10 20 20"
+define_match 三同對, ~m"三同對:1, pair:4"
+define_yaku meta_yaku, "Three Identical Pairs", [5, "Faan"], has_existing_yaku("Seven Pairs") and match(["hand", "winning_tile"], ["三同對"])
+define_set 三元七對, ~s"0z 0z 6z 6z 7z 7z"
+define_match 三元七對, ~m"三元七對:1, pair:4"
+define_yaku meta_yaku, "Three Dragons Seven Pairs", [5, "Faan"], has_existing_yaku("Seven Pairs") and match(["hand", "winning_tile"], ["三元七對"])
+define_set 四喜七對, ~s"1z 1z 2z 2z 3z 3z 4z 4z"
+define_match 四喜七對, ~m"四喜七對:1, pair:3"
+define_yaku meta_yaku, "Four Winds Seven Pairs", [10, "Faan"], has_existing_yaku("Seven Pairs") and match(["hand", "winning_tile"], ["四喜七對"])
+
+# (8) 不搭類
+
+define_match 十三不搭, ~m"""
+    pair:1, restart, unique, knit1:13
+  | pair:1, restart, unique, knit2:13
+  | pair:1, restart, unique, knit3:13
+  | pair:1, restart, unique, knit4:13
+  | pair:1, restart, unique, knit5:13
+  | pair:1, restart, unique, knit6:13
+  | pair:1, restart, unique, knit7:13
+  | pair:1, restart, unique, knit8:13
+  | pair:1, restart, unique, knit9:13
+  """
+define_yaku yaku, "Thirteen Unconnected", [5, "Faan"], match(["hand", "winning_tile"], ["十三不搭"])
+define_set 不搭連六, ~s"0 3, 11 14, 22 25|0 3, 21 24, 12 15"
+define_match 不搭連六, ~m"不搭連六:1"
+define_match 雙不搭連六, ~m"不搭連六:2"
+define_yaku yaku, "Knitted Short Straight", [5, "Faan"], match(["hand", "winning_tile"], ["不搭連六"])
+define_yaku yaku, "Knitted Short Straight", [5, "Faan"], match(["hand", "winning_tile"], ["雙不搭連六"])
+define_set 不搭老少, ~s"0 6, 11 17, 22 28|0 6, 21 27, 12 18"
+define_match 不搭老少, ~m"knit_terminal_seqs:1"
+define_match 雙不搭老少, ~m"knit_terminal_seqs:2"
+define_yaku yaku, "Knitted Short Straight", [5, "Faan"], match(["hand", "winning_tile"], ["不搭老少"])
+define_yaku yaku, "Knitted Short Straight", [5, "Faan"], match(["hand", "winning_tile"], ["雙不搭老少"])
+define_set 不搭雜龍, ~s"0 3 6, 11 14 17, 22 25 28|0 3 6, 21 24 27, 12 15 18"
+define_match 不搭雜龍, ~m"不搭雜龍:1"
+define_yaku yaku, "Knitted Straight", [5, "Faan"], match(["hand", "winning_tile"], ["不搭雜龍"])
+define_set 不搭三相逢, ~s"0 3 6, 10 13 16, 20 23 26"
+define_match 不搭三相逢, ~m"不搭三相逢:1"
+define_yaku yaku, "Knitted Triplets", [5, "Faan"], match(["hand", "winning_tile"], ["不搭三相逢"])
+define_set suji1, ~s"1m|4m|7m|1p|4p|7p|1s|4s|7s"
+define_set suji2, ~s"1m|4m|7m|2p|5p|8p|3s|6s|9s"
+define_set suji3, ~s"1m|4m|7m|3p|6p|9p|2s|5s|8s"
+define_set suji4, ~s"2m|5m|8m|1p|4p|7p|3s|6s|9s"
+define_set suji5, ~s"2m|5m|8m|2p|5p|8p|2s|5s|8s"
+define_set suji6, ~s"2m|5m|8m|3p|6p|9p|1s|4s|7s"
+define_set suji7, ~s"3m|6m|9m|1p|4p|7p|2s|5s|8s"
+define_set suji8, ~s"3m|6m|9m|2p|5p|8p|1s|4s|7s"
+define_set suji9, ~s"3m|6m|9m|3p|6p|9p|3s|6s|9s"
+define_match 不搭七星, ~m"""
+    unique, (1z 2z 3z 4z 0z 6z 7z):7, restart, manzu:1, souzu:1, pinzu:1, restart, suji1:6
+  | unique, (1z 2z 3z 4z 0z 6z 7z):7, restart, manzu:1, souzu:1, pinzu:1, restart, suji1:6
+  | unique, (1z 2z 3z 4z 0z 6z 7z):7, restart, manzu:1, souzu:1, pinzu:1, restart, suji1:6
+  | unique, (1z 2z 3z 4z 0z 6z 7z):7, restart, manzu:1, souzu:1, pinzu:1, restart, suji1:6
+  | unique, (1z 2z 3z 4z 0z 6z 7z):7, restart, manzu:1, souzu:1, pinzu:1, restart, suji1:6
+  | unique, (1z 2z 3z 4z 0z 6z 7z):7, restart, manzu:1, souzu:1, pinzu:1, restart, suji1:6
+  | unique, (1z 2z 3z 4z 0z 6z 7z):7, restart, manzu:1, souzu:1, pinzu:1, restart, suji1:6
+  | unique, (1z 2z 3z 4z 0z 6z 7z):7, restart, manzu:1, souzu:1, pinzu:1, restart, suji1:6
+  | unique, (1z 2z 3z 4z 0z 6z 7z):7, restart, manzu:1, souzu:1, pinzu:1, restart, suji1:6
+  """
+define_yaku yaku, "Knitted Honors", [5, "Faan"], match(["hand", "winning_tile"], ["不搭七星"])
+
+# (9) 其他
+
+define_set 將眼, ~s"0@n2 0|0@n5 0|0@n7 0"
+define_match 將眼, ~m"將眼:1, mentsu:4"
+define_yaku yaku, "Eyes of the General", [1, "Faan"], match(["hand", "calls", "winning_tile"], ["將眼"])
+define_set 清龍, ~s"0 1 2, 3 4 5, 6 7 8"
+define_match 科大列車, ~m"((7z 7z)):1, 清龍:1, ((0@3 0 0)):1, ((0@4 0 0 0)):1"
+define_yaku yaku, "University Train", [20, "Faan"], match(["hand", "calls", "winning_tile"], ["科大列車"])
+# yaku/kokushi.majs adds Thirteen Orphans (20 Faan)
+define_yaku meta_yaku, "Thirteen Orphans", [5, "Faan"], has_existing_yaku("Thirteen Orphans") and jokers <= 3
+define_yaku meta_yaku, "Thirteen Orphans", [5, "Faan"], has_existing_yaku("Thirteen Orphans") and jokers <= 1
+define_yaku meta_yaku, "Mixed Shifted Linked Sequences", [8, "Faan"], has_existing_yaku("Three Mixed Shifted Sequences", "Three Mixed Linked Sequences")
+define_yaku meta_yaku, "Pure Shifted Linked Sequences", [20, "Faan"], has_existing_yaku("Three Pure Shifted Sequences", "Three Pure Linked Sequences")
+define_yaku meta_yaku, "Chicken Hand", [15, "Faan"], has_no_yaku
+
+define_yaku_precedence "Big Three Winds", ["Little Three Winds"]
+define_yaku_precedence "Little Four Winds", ["Big Three Winds"]
+define_yaku_precedence "Big Four Winds", ["Little Four Winds"]
+define_yaku_precedence "Big Three Dragons", ["Little Three Dragons"]
+define_yaku_precedence "Double Terminal Sequences", ["Terminal Sequences"]
+define_yaku_precedence "Pure Double Terminal Sequences", ["Double Terminal Sequences"]
+define_yaku_precedence "Pure Outside Hand", ["Mixed Outside Hand"]
+define_yaku_precedence "Mixed Terminals", ["Pure Outside Hand", "Mixed Outside Hand"]
+define_yaku_precedence "Mixed Flush", ["One Voided Suit"]
+define_yaku_precedence "Full Flush", ["Mixed Flush"]
+define_yaku_precedence "Nine Gates", ["Open Nine Gates"]
+define_yaku_precedence "Two Kongs", ["Open Kong", "Concealed Kong"]
+define_yaku_precedence "Three Kongs", ["Two Kongs"]
+define_yaku_precedence "Four Kongs", ["Three Kongs"]
+define_yaku_precedence "Three Concealed Triplets", ["Two Concealed Triplets"]
+define_yaku_precedence "Four Concealed Triplets", ["Three Concealed Triplets", "Two Concealed Triplets"]
+define_yaku_precedence "Three Small Shifted Triplets", ["Two Shifted Triplets"]
+define_yaku_precedence "Three Pure Shifted Triplets", ["Two Shifted Triplets"]
+define_yaku_precedence "Four Pure Small Shifted Triplets", ["Three Small Shifted Triplets"]
+define_yaku_precedence "Four Pure Shifted Triplets", ["Three Pure Shifted Triplets"]
+define_yaku_precedence "Three Mixed Small Shifted Triplets", ["Two Shifted Triplets", "Three Small Shifted Triplets"]
+define_yaku_precedence "Three Mixed Shifted Triplets", ["Two Shifted Triplets"]
+define_yaku_precedence "Four Mixed Small Shifted Triplets", ["Three Mixed Small Shifted Triplets"]
+define_yaku_precedence "Four Mixed Shifted Triplets", ["Three Mixed Shifted Triplets"]
+define_yaku_precedence "Five Mixed Small Shifted Triplets", ["Four Mixed Small Shifted Triplets"]
+define_yaku_precedence "Small Triple Triplets", ["Double Triplets"]
+define_yaku_precedence "Triple Triplets", ["Double Triplets"]
+define_yaku_precedence "Quadruple Triplets", ["Triple Triplets", "Double Triplets"]
+define_yaku_precedence "Triple Sequences", ["Double Sequences"]
+define_yaku_precedence "Pure Triple Sequence", ["Triple Sequences", "Double Sequences"]
+define_yaku_precedence "Pure Quadruple Sequence", ["Pure Triple Sequence", "Triple Sequences", "Double Sequences"]
+define_yaku_precedence "Double Short Straight", ["Short Straight"]
+define_yaku_precedence "Pure Double Short Straight", ["Short Straight", "Double Short Straight"]
+define_yaku_precedence "Double Identical Sequences", [
+  "Identical Sequences",
+  "Seven Pairs",
+  "Three Consecutive Pairs",
+  "Five Consecutive Pairs",
+  "Seven Consecutive Pairs",
+  "Three Identical Pairs",
+  "Three Dragons Seven Pairs",
+  "Four Winds Seven Pairs"
+]
+define_yaku_precedence "Pure Double Identical Sequences", ["Double Identical Sequences"]
+define_yaku_precedence "Four Mixed Shifted Sequences", ["Three Mixed Shifted Sequences"]
+define_yaku_precedence "Four Pure Shifted Sequences", ["Three Pure Shifted Sequences"]
+define_yaku_precedence "Three Pure Linked Sequences", ["Three Mixed Linked Sequences"]
+define_yaku_precedence "Golden Gate Bridge", ["Three Pure Linked Sequences"]
+define_yaku_precedence "Mixed Shifted Linked Sequences", ["Three Mixed Shifted Sequences", "Three Mixed Linked Sequences"]
+define_yaku_precedence "Pure Shifted Linked Sequences", ["Three Pure Shifted Sequences", "Three Pure Linked Sequences"]
+define_yaku_precedence "Pure Straight", ["Short Straight", "Mixed Straight", "Terminal Sequences"]
+define_yaku_precedence "Tile Hog (3)", ["Tile Hog (2)"]
+define_yaku_precedence "Tile Hog (4)", ["Tile Hog (3)"]
+define_yaku_precedence "Two Number Hand", ["Three Number Hand"]
+define_yaku_precedence "Within Seven Tiles", ["Within Ten Tiles"]
+define_yaku_precedence "Hand of Man", ["Within Seven Tiles"]
+define_yaku_precedence "Hand of Heaven", ["Within Seven Tiles"]
+define_yaku_precedence "Hand of Earth", ["Within Seven Tiles"]
+define_yaku_precedence "Triple Tile Hog", ["Double Tile Hog"]
+define_yaku_precedence "Fully Concealed Hand", ["Concealed Hand"]
+define_yaku_precedence "Five Consecutive Pairs", ["Three Consecutive Pairs"]
+define_yaku_precedence "Seven Consecutive Pairs", ["Five Consecutive Pairs"]
+define_yaku_precedence "Thirteen Unconnected", [
+  "Seat Wind",
+  "Round Wind",
+  "White Dragon",
+  "Green Dragon",
+  "Red Dragon",
+  "All Types"
+]
+define_yaku_precedence "Knitted Straight", ["Knitted Short Straight", "Knitted Terminal Sequences", "All Types"]
+define_yaku_precedence "Thirteen Orphans", [
+  "Seat Wind",
+  "Round Wind",
+  "White Dragon",
+  "Green Dragon",
+  "Red Dragon",
+  "Mixed Terminals",
+  "All Types"
+]
