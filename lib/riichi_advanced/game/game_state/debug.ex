@@ -21,7 +21,7 @@ defmodule RiichiAdvanced.GameState.Debug do
   @debug_yaku_precedence false
   @print_mods false
   @print_smt false
-  @skip_ruleset_caching true
+  @skip_ruleset_caching false
   @print_wins false
 
   def debug, do: Process.get(:ignore_type_error, @debug)
@@ -115,6 +115,13 @@ defmodule RiichiAdvanced.GameState.Debug do
     # wall = List.replace_at(wall, -5, :"2s") # first ura indicator
     # wall = List.replace_at(wall, -7, :"2p") # second ura indicator
     # wall = List.replace_at(wall, -9, :"2p") # third ura indicator
+    # wall = List.replace_at(wall, -8, :"0s") # second dora indicator
+    wall = List.replace_at(wall, -10, :"2p") # third dora indicator / first for sanma
+    wall = List.replace_at(wall, -12, {:"47p", ["rainbow"]}) # fourth dora indicator
+    wall = List.replace_at(wall, -14, {:"47p", ["rainbow"]}) # fifth dora indicator
+    wall = List.replace_at(wall, -5, :"2s") # first ura indicator
+    wall = List.replace_at(wall, -7, :"2p") # second ura indicator
+    wall = List.replace_at(wall, -9, :"2p") # third ura indicator
     # wall = List.replace_at(wall, -11, :"2p") # fourth ura indicator
     # wall = List.replace_at(wall, -13, :"2p") # fifth ura indicator
     # wall = List.replace_at(wall, -1, :"1s") # first kan draw
@@ -131,6 +138,7 @@ defmodule RiichiAdvanced.GameState.Debug do
 
     # testing hand
     hands = %{:east  => Utils.sort_tiles([:"2p", :"3p", :"4p", :"5m", :"5m", :"5m", :"1s", :"2s", :"3s", :"4z", :"4z", :"7s", :"7s"]),
+    hands = %{:east  => Utils.sort_tiles([:"3m", :"3m", :"4m", :"4m", :"6p", :"6p", :"2s", :"2s", :"5s", :"5s", :"5s", :"2z", :"2z"]),
               :south => Enum.slice(wall, 13..25),
               :west  => Enum.slice(wall, 26..38),
               :north => Enum.slice(wall, 39..51)}

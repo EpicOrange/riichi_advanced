@@ -1,0 +1,32 @@
+
+# chanta is 3/4 han, junchan is 4/6 han
+replace_yaku yaku, "Chanta", [3, "Han"], match(["hand", "calls", "winning_tile"], ["chanta"])
+replace_yaku yaku, "Junchan", [4, "Han"], match(["hand", "calls", "winning_tile"], ["junchan"])
+replace_yaku meta_yaku, "Chanta", [1, "Han"], @closed_hand and has_existing_yaku("Chanta")
+replace_yaku meta_yaku, "Junchan", [2, "Han"], @closed_hand and has_existing_yaku("Junchan")
+
+# kansai chiitoitsu is 4/8/yakuman
+define_yaku meta_yaku, "Kansai Chiitoitsu", [4, "Han"], has_existing_yaku("Chiitoitsu") and match(["hand", "calls", "winning_tile"], ~m"quad:1"), ["Chiitoitsu"]
+define_yaku meta_yaku, "Kansai Chiitoitsu", [4, "Han"], has_existing_yaku("Chiitoitsu") and match(["hand", "calls", "winning_tile"], ~m"quad:2"), ["Chiitoitsu"]
+define_yaku meta_yakuman, "Kansai Chiitoitsu", [1, "★"], has_existing_yaku("Chiitoitsu") and match(["hand", "calls", "winning_tile"], ~m"quad:3"), ["Chiitoitsu"]
+
+# chinitsu chiitoitsu is yakuman
+define_yaku meta_yakuman, "Chinitsu Chiitoitsu", [1, "★"], has_existing_yaku("Chinitsu", "Chiitoitsu")
+
+# nanashi musou: same as kokushi, with 19m replaced by 7p7s
+define_set nanashi_all, ~s"1m 9m 1p 9p 1s 9s 1z 2z 3z 4z 5z 6z 7z"
+define_set nanashi_any, ~s"1m|9m|1p|9p|1s|9s|1z|2z|3z|4z|5z|6z|7z"
+define_match kokushi_tenpai, ~m"unique, dismantle_calls, nanashi_any:12, nanashi_any:1"
+define_match kokushi_win, ~m"unique, dismantle_calls, nanashi_any:13, nanashi_any:1"
+define_yaku yakuman, "Nanashi Musou", [1, "★"], match(["hand", "winning_tile"], ~m"nanashi_all:1")
+define_yaku yakuman, "Nanashi Musou Juusan Menmachi", [2, "★"], match(["hand"], ~m"nanashi_all:1")
+
+# renhou
+remove_yaku yakuman, "Renhou"
+# define_yaku yaku, "Renhou", [6, "Han"], status("discards_empty") and status_missing("call_made") and won_by_discard
+
+# no manzu, so these yaku no longer exist (optimization)
+remove_yaku yaku, "Sanshoku"
+remove_yaku meta_yaku, "Sanshoku"
+remove_yaku yakuman, "Kokushi Musou"
+remove_yaku meta_yakuman, "Kokushi Musou Juusan Menmachi"

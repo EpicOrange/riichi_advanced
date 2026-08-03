@@ -658,10 +658,14 @@ defmodule RiichiAdvanced.Constants do
         "kansai_flowers",
         "zan_scoring",
         "kansai_draw",
+        "kansai_chiitoitsu",
         %{name: "shuugi", config: %{worth: 1000, starting_shuugi: 1000, pao_pays_all: true}},
         "super_bingo",
         "super_bingo_tictactoe",
-        "super_bingo_tulips"
+        "super_bingo_tulips",
+      ],
+      post_mods: [
+        "super_bingo_yaku",
       ],
       default_mods: [
         %{name: "honba", config: %{value: 1000}},
