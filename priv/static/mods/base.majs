@@ -16,6 +16,8 @@ on after_initialization do
   add_rule_tab("11 $han", %{han: !han})
   add_rule_tab("12 $han", %{han: !han})
   add_rule_tab("13 $han", %{han: !han})
+  add_rule_tab("16 $han", %{han: !han})
+  add_rule_tab("24+ $han", %{han: !han})
   add_rule_tab("Limit")
   add_rule_tab("Yakuman")
   add_rule_tab("Shuugi")
