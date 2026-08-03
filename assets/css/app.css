@@ -2060,6 +2060,7 @@ div.revealed-tiles {
   font-size: calc(0.5 * var(--tile-size));
   top: calc(-1.5 * var(--tile-size));
   left: 0;
+  z-index: -1;
 }
 
 /* scryed tiles */
