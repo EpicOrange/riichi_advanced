@@ -280,9 +280,11 @@ defmodule RiichiAdvanced.ModLoader.ModState do
           IO.puts("Cache miss for ruleset #{state.ruleset}: #{length(applied_mods)} mods #{inspect(applied_mods, limit: :infinity)}")
         end
         jq = Compiler.header() <> Enum.join(jqs, "\n|")
-        # IO.puts("===")
-        # IO.puts(jq)
-        # IO.puts("===")
+        if Debug.print_jq() do
+          IO.puts("===")
+          IO.puts(jq)
+          IO.puts("===")
+        end
         ruleset_json = JQ.query_string_with_string!(state.ruleset_json, jq)
         state = %{state | ruleset_json: ruleset_json}
         # cache and return
@@ -340,9 +342,17 @@ defmodule RiichiAdvanced.ModLoader.ModState do
         defaults = Map.new(Enum.reverse(defs.vars))
         vars = Map.merge(defaults, config, fn _k, l, nil -> l; _k, _l, r -> r end)
         config_queries = for {key, val} <- vars,
-                             is_integer(val) or is_boolean(val) or is_binary(val) or Validator.is_variable?(val),
+                             is_number(val) or is_boolean(val) or is_binary(val) or Validator.is_variable?(val),
                              ModLoader.is_jq_var?(key), do: "(#{Jason.encode!(val)}) as $#{key}\n|\n"
         jq = Enum.join(config_queries) <> "(" <> mod_contents <> ")"
+        if name in Debug.debug_specific_mods() do
+          IO.puts("Debugging mod #{name}")
+          IO.inspect(defs.defines, label: "Defines are", limit: :infinity)
+          IO.inspect(defs.globals, label: "Globals are", limit: :infinity)
+          IO.inspect(vars, label: "Defaults are", limit: :infinity)
+          IO.puts("jq emitted is:")
+          IO.puts(jq)
+        end
         # cache and return
         if not Debug.skip_ruleset_caching() do
           if Debug.debug_cache() do

@@ -12,7 +12,7 @@ defmodule RiichiAdvanced.GameState.Debug do
   @debug_am_match_definitions []
   @debug_actions false
   @debug_buttons false
-  @debug_specific_buttons %{east: []}
+  @debug_specific_buttons %{east: [], south: [], west: [], north: []}
   @debug_conditions true
   @debug_ai false
   @debug_log false
@@ -21,7 +21,9 @@ defmodule RiichiAdvanced.GameState.Debug do
   @debug_specific_yaku []
   @debug_yaku_precedence false
   @debug_cache false
+  @debug_specific_mods []
   @print_mods false
+  @print_jq false
   @print_smt false
   @print_txns true
   @print_all_actions false
@@ -47,7 +49,9 @@ defmodule RiichiAdvanced.GameState.Debug do
   def debug_specific_yaku, do: Process.get(:ignore_type_error, @debug_specific_yaku)
   def debug_yaku_precedence, do: Process.get(:ignore_type_error, @debug_yaku_precedence)
   def debug_cache, do: Process.get(:ignore_type_error, @debug_cache)
+  def debug_specific_mods, do: Process.get(:ignore_type_error, @debug_specific_mods)
   def print_mods, do: Process.get(:ignore_type_error, @print_mods)
+  def print_jq, do: Process.get(:ignore_type_error, @print_jq)
   def print_smt, do: Process.get(:ignore_type_error, @print_smt)
   def print_txns, do: Process.get(:ignore_type_error, @print_txns)
   def print_all_actions, do: Process.get(:ignore_type_error, @print_all_actions)
