@@ -533,52 +533,12 @@ defmodule RiichiAdvanced.Match do
     end
   end
 
-  @shift_suit %{:"1m"=>:"1p", :"2m"=>:"2p", :"3m"=>:"3p", :"4m"=>:"4p", :"5m"=>:"5p", :"6m"=>:"6p", :"7m"=>:"7p", :"8m"=>:"8p", :"9m"=>:"9p", :"10m"=>:"10p",
-                :"1p"=>:"1s", :"2p"=>:"2s", :"3p"=>:"3s", :"4p"=>:"4s", :"5p"=>:"5s", :"6p"=>:"6s", :"7p"=>:"7s", :"8p"=>:"8s", :"9p"=>:"9s", :"10p"=>:"10s",
-                :"1s"=>:"1m", :"2s"=>:"2m", :"3s"=>:"3m", :"4s"=>:"4m", :"5s"=>:"5m", :"6s"=>:"6m", :"7s"=>:"7m", :"8s"=>:"8m", :"9s"=>:"9m", :"10s"=>:"10m",
-                :"0z"=>nil, :"1z"=>nil, :"2z"=>nil, :"3z"=>nil, :"4z"=>nil, :"5z"=>nil, :"6z"=>nil, :"7z"=>nil, :"8z"=>nil}
-  def apply_ordering(tile, ordering, attrs \\ []) do
+  def apply_ordering(tile, ordering, base_ordering, attrs \\ []) do
     case tile do
-      {tile, _attrs} -> if Enum.empty?(attrs) do ordering[tile] else {ordering[tile], attrs} end
-      tile -> ordering[tile]
+      {tile, _attrs} -> if Enum.empty?(attrs) do Map.get(ordering, tile, base_ordering[tile]) else {Map.get(ordering, tile, base_ordering[tile]), attrs} end
+      tile -> Map.get(ordering, tile, base_ordering[tile])
     end
   end
-
-  @fixed_offsets %{
-    "1A"  => :"1m",
-    "2A"  => :"2m",
-    "3A"  => :"3m",
-    "4A"  => :"4m",
-    "5A"  => :"5m",
-    "6A"  => :"6m",
-    "7A"  => :"7m",
-    "8A"  => :"8m",
-    "9A"  => :"9m",
-    "10A" => :"10m",
-    "DA"  => :"7z",
-    "1B"  => :"1p",
-    "2B"  => :"2p",
-    "3B"  => :"3p",
-    "4B"  => :"4p",
-    "5B"  => :"5p",
-    "6B"  => :"6p",
-    "7B"  => :"7p",
-    "8B"  => :"8p",
-    "9B"  => :"9p",
-    "10B" => :"10p",
-    "DB"  => :"0z",
-    "1C"  => :"1s",
-    "2C"  => :"2s",
-    "3C"  => :"3s",
-    "4C"  => :"4s",
-    "5C"  => :"5s",
-    "6C"  => :"6s",
-    "7C"  => :"7s",
-    "8C"  => :"8s",
-    "9C"  => :"9s",
-    "10C" => :"10s",
-    "DC"  => :"6z",
-  }
 
   defp suit_to_offset(tile) do
     cond do
@@ -610,8 +570,8 @@ defmodule RiichiAdvanced.Match do
   # when offset is a string, either try it as a tile or a @fixed_offset value
   def _apply_offsets(base_tile, [o | offsets], ordering, ordering_r, n, acc) when is_binary(o) do
     cond do
-      Map.has_key?(@fixed_offsets, o) ->
-        tile = Map.get(@fixed_offsets, o)
+      Map.has_key?(Constants.fixed_offsets(), o) ->
+        tile = Map.get(Constants.fixed_offsets(), o)
         # then shift it based on the base_tile
         suit_offset = suit_to_offset(base_tile)
         if suit_offset == nil do
@@ -639,10 +599,10 @@ defmodule RiichiAdvanced.Match do
     end
   end
   # standard case: when offset is a map (so it can specify attrs)
-  def _apply_offsets(base_tile, [%{"offset" => o} | _] = os, ordering, ordering_r, n, acc) when is_number(o) and n < o and o >= 10 and (o-n) >= 10, do: _apply_offsets(base_tile |> apply_ordering(@shift_suit), os, ordering, ordering_r, n+10, acc)
-  def _apply_offsets(base_tile, [%{"offset" => o} | _] = os, ordering, ordering_r, n, acc) when is_number(o) and n > o and o <= -10 and (o-n) <= -10, do: _apply_offsets(base_tile |> apply_ordering(@shift_suit) |> apply_ordering(@shift_suit), os, ordering, ordering_r, n-10, acc)
-  def _apply_offsets(base_tile, [%{"offset" => o} | _] = os, ordering, ordering_r, n, acc) when is_number(o) and n < o, do: _apply_offsets(base_tile |> apply_ordering(ordering), os, ordering, ordering_r, n+1, acc)
-  def _apply_offsets(base_tile, [%{"offset" => o} | _] = os, ordering, ordering_r, n, acc) when is_number(o) and n > o, do: _apply_offsets(base_tile |> apply_ordering(ordering_r), os, ordering, ordering_r, n-1, acc)
+  def _apply_offsets(base_tile, [%{"offset" => o} | _] = os, ordering, ordering_r, n, acc) when is_number(o) and n < o and o >= 10 and (o-n) >= 10, do: _apply_offsets(base_tile |> apply_ordering(%{}, Constants.shift_suit()), os, ordering, ordering_r, n+10, acc)
+  def _apply_offsets(base_tile, [%{"offset" => o} | _] = os, ordering, ordering_r, n, acc) when is_number(o) and n > o and o <= -10 and (o-n) <= -10, do: _apply_offsets(base_tile |> apply_ordering(%{}, Constants.shift_suit_r()), os, ordering, ordering_r, n-10, acc)
+  def _apply_offsets(base_tile, [%{"offset" => o} | _] = os, ordering, ordering_r, n, acc) when is_number(o) and n < o, do: _apply_offsets(base_tile |> apply_ordering(ordering, Constants.ordering()), os, ordering, ordering_r, n+1, acc)
+  def _apply_offsets(base_tile, [%{"offset" => o} | _] = os, ordering, ordering_r, n, acc) when is_number(o) and n > o, do: _apply_offsets(base_tile |> apply_ordering(ordering_r, Constants.ordering_r()), os, ordering, ordering_r, n-1, acc)
   # base cases
   def _apply_offsets(base_tile, [%{"offset" => o, "attrs" => attrs} | offsets], ordering, ordering_r, n, acc) when is_number(o) and n == o, do: _apply_offsets(base_tile, offsets, ordering, ordering_r, n, [{base_tile, attrs} | acc])
   def _apply_offsets(base_tile, [%{"offset" => o} | offsets], ordering, ordering_r, n, acc) when is_number(o) and n == o, do: _apply_offsets(base_tile, offsets, ordering, ordering_r, n, [base_tile | acc])
@@ -846,7 +806,7 @@ defmodule RiichiAdvanced.Match do
             # we only care about the group keyword "nojoker" for now
             # this flags all later groups with nojoker = true
             {nojoker or group == "nojoker", acc}
-          Map.has_key?(@fixed_offsets, group) || is_number(group) ->
+          Map.has_key?(Constants.fixed_offsets(), group) || is_number(group) ->
             # amerijong offsets
             # return a version of each group for each possible base tile
             base_tiles = MapSet.union(tile_behavior.base_tiles, MapSet.new([:"1m", :"1p", :"1s"]))

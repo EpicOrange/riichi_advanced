@@ -1,4 +1,5 @@
 defmodule RiichiAdvanced.SMT do
+  alias RiichiAdvanced.Constants, as: Constants
   alias RiichiAdvanced.GameState.Debug, as: Debug
   alias RiichiAdvanced.GameState.TileBehavior, as: TileBehavior
   alias RiichiAdvanced.MatchOld, as: MatchOld
@@ -222,6 +223,7 @@ defmodule RiichiAdvanced.SMT do
   end
 
   def determine_encoding(ordering, other_tiles \\ []) do
+    ordering = Map.merge(Constants.ordering(), ordering)
     {chains, cycles} = find_chains_cycles(ordering, other_tiles)
     num_tiles = length(Enum.concat(chains ++ cycles))
     len = 4 * num_tiles

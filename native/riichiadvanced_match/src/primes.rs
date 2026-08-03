@@ -3,7 +3,7 @@ use std::sync::OnceLock;
 use rustler::Atom;
 
 use crate::tile_table::{TILE_TABLE, ATOM_TABLE};
-use crate::types::{Prime, Tile, TileOrdering};
+use crate::types::{Prime, Tile};
 
 static TO_PRIME: OnceLock<HashMap<Atom, Prime>> = OnceLock::new();
 static FROM_PRIME: OnceLock<HashMap<Prime, Atom>> = OnceLock::new();
@@ -11,7 +11,7 @@ static MANZU_PRIMES: OnceLock<HashSet<Prime>> = OnceLock::new();
 static SOUZU_PRIMES: OnceLock<HashSet<Prime>> = OnceLock::new();
 static PINZU_PRIMES: OnceLock<HashSet<Prime>> = OnceLock::new();
 static JIHAI_PRIMES: OnceLock<HashSet<Prime>> = OnceLock::new();
-static SHIFT_SUIT: OnceLock<TileOrdering> = OnceLock::new();
+// static SHIFT_SUIT: OnceLock<TileOrdering> = OnceLock::new();
 
 pub fn to_prime(atom: &Atom) -> Option<Prime> {
   let to_prime_table = TO_PRIME.get_or_init(|| {
@@ -103,29 +103,29 @@ pub fn is_jihai(tile: &Tile) -> bool {
 //   }
 // }
 
-// returns false if failed to shift
-pub fn shift_suit_mut(tile: &mut Tile) -> bool {
-  let shift_suit_table = SHIFT_SUIT.get_or_init(|| {
-    ATOM_TABLE.entries()
-      .filter_map(|(&s, &atom)| {
-        let mut s2 = s.to_string();
-        match s2.pop() {
-          Some('m') => s2.push('p'),
-          Some('p') => s2.push('s'),
-          Some('s') => s2.push('m'),
-          _         => ()
-        }
-        match ATOM_TABLE.get(s2.as_str()) {
-          Some(atom2) => to_prime(&atom()).zip(to_prime(&atom2())),
-          None => None
-        }
-      }).collect()
-  });
-  match shift_suit_table.get(&tile.0) {
-    Some(t) => {tile.0 = *t; true},
-    None    => false,
-  }
-}
+// // returns false if failed to shift
+// pub fn shift_suit_mut(tile: &mut Tile) -> bool {
+//   let shift_suit_table = SHIFT_SUIT.get_or_init(|| {
+//     ATOM_TABLE.entries()
+//       .filter_map(|(&s, &atom)| {
+//         let mut s2 = s.to_string();
+//         match s2.pop() {
+//           Some('m') => s2.push('p'),
+//           Some('p') => s2.push('s'),
+//           Some('s') => s2.push('m'),
+//           _         => ()
+//         }
+//         match ATOM_TABLE.get(s2.as_str()) {
+//           Some(atom2) => to_prime(&atom()).zip(to_prime(&atom2())),
+//           None => None
+//         }
+//       }).collect()
+//   });
+//   match shift_suit_table.get(&tile.0) {
+//     Some(t) => {tile.0 = *t; true},
+//     None    => false,
+//   }
+// }
 
 
 

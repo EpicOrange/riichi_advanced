@@ -1,4 +1,4 @@
-use std::collections::{HashSet, VecDeque};
+use std::collections::{HashMap, HashSet, VecDeque};
 use std::iter::{empty, once};
 
 use smallvec::{SmallVec, smallvec};
@@ -6,16 +6,19 @@ use smallvec::{SmallVec, smallvec};
 use crate::encode::{encode_attrs, encode_tiles, has_attrs, to_tileset};
 use crate::tile_table::*;
 use crate::tileset::_check_equivalence;
-use crate::types::{ANY_PRIME, BaseTileVec, ElixirTile, FIXED_OFFSETS, GroupIterator, MatchDefinition, MatchDefinitionElem, MatchGroup, MatchInfo, MatchOffset, OffsetVec, RemovableGroup, Tile, TileOrdering, TileSet};
-use crate::primes::{is_jihai, is_manzu, is_pinzu, is_souzu, shift_suit_mut, to_prime};
+use crate::types::{ANY_PRIME, BaseTileVec, ElixirTile, FIXED_OFFSETS, GroupIterator, MatchDefinition, MatchDefinitionElem, MatchGroup, MatchInfo, MatchOffset, OffsetVec, Prime, RemovableGroup, Tile, TileOrdering, TileSet};
+use crate::primes::{is_jihai, is_manzu, is_pinzu, is_souzu, to_prime};
 
 // return true if changed
 fn apply_ordering_mut(
-    tile: &mut Tile, ordering: &TileOrdering
+    tile: &mut Tile, ordering: &TileOrdering, base_ordering: &phf::Map<Prime, Prime>
 ) -> bool {
   match ordering.get(&tile.0) {
     Some(p) => {tile.0 = *p; true},
-    None => false
+    None => match base_ordering.get(&tile.0) {
+      Some(p) => {tile.0 = *p; true},
+      None => false
+    }
   }
 }
 
@@ -31,7 +34,7 @@ fn fetch_offset(
     // look to the right
     let mut tile = *q.back().unwrap();
     loop {
-      if apply_ordering_mut(&mut tile, ordering) {
+      if apply_ordering_mut(&mut tile, ordering, &ORDERING) {
         q.push_back(tile);
         *r += 1;
       } else {
@@ -44,7 +47,7 @@ fn fetch_offset(
     // look to the left
     let mut tile = *q.front().unwrap();
     loop {
-      if apply_ordering_mut(&mut tile, ordering_r) {
+      if apply_ordering_mut(&mut tile, ordering_r, &ORDERING_R) {
         q.push_front(tile);
         *l -= 1;
       } else {
@@ -62,7 +65,7 @@ fn fetch_offset(
         // this is slightly inefficient since each >10 offset generates a new queue
         // TODO make it not have to do that (maintain 3 queues?)
         let mut base_tile = *q.get(-*l as usize).unwrap();
-        if shift_suit_mut(&mut base_tile) {
+        if apply_ordering_mut(&mut base_tile, &HashMap::new(), &SHIFT_SUIT) {
           let mut q2 = VecDeque::from([base_tile]);
           let mut l2 = 0;
           let mut r2 = 0;
@@ -72,7 +75,7 @@ fn fetch_offset(
       2 => {
         // same deal, just shift suit twice
         let mut base_tile = *q.get(-*l as usize).unwrap();
-        if shift_suit_mut(&mut base_tile) && shift_suit_mut(&mut base_tile) {
+        if apply_ordering_mut(&mut base_tile, &HashMap::new(), &SHIFT_SUIT_R) {
           let mut q2 = VecDeque::from([base_tile]);
           let mut l2 = 0;
           let mut r2 = 0;
@@ -123,10 +126,9 @@ pub fn apply_fixed_offset(base_tile: &Tile, fixed_offset: &str) -> Option<Tile> 
         else if is_souzu(base_tile) || base_tile.0 == green { ret.0 = green; }
       } else { return None; }
     } else {
-      // use shift_suit_mut to shift
-      if is_manzu(base_tile) { }
-      else if is_pinzu(base_tile) { shift_suit_mut(&mut ret); }
-      else if is_souzu(base_tile) { shift_suit_mut(&mut ret); shift_suit_mut(&mut ret); }
+      if is_manzu(base_tile) {}
+      else if is_pinzu(base_tile) { apply_ordering_mut(&mut ret, &HashMap::new(), &SHIFT_SUIT); }
+      else if is_souzu(base_tile) { apply_ordering_mut(&mut ret, &HashMap::new(), &SHIFT_SUIT_R); }
       else { return None; }
     }
     Some(ret)
