@@ -71,7 +71,7 @@ fn reify_groups(
           if abs(map.offset) >= 10 { separate_suits = true; break; }
         },
         MatchOffset::TileOrKeyword(s) => {
-          if FIXED_OFFSETS.get(&s).is_some() { separate_suits = true; break; }
+          if FIXED_OFFSETS.contains_key(&s) { separate_suits = true; break; }
         }
       }
     }
@@ -99,7 +99,7 @@ fn reify_groups(
         MatchOffset::AttrsTile(_) => {}
         MatchOffset::AttrsOffset(_) => { have_numeric_offsets = true; }
         MatchOffset::TileOrKeyword(s) => {
-          if FIXED_OFFSETS.get(&s).is_some() { have_fixed_offsets = true; }
+          if FIXED_OFFSETS.contains_key(&s) { have_fixed_offsets = true; }
         }
       }
     }

@@ -116,10 +116,7 @@ pub fn __remove_match_definition<'a>(
     return Box::new(empty());
   }
 
-  let mut base_tiles = get_base_tiles(match_info, match_definition);
-  base_tiles.sort_unstable();
-  base_tiles.dedup();
-  let base_tiles = Rc::new(base_tiles);
+  let base_tiles = Rc::new(get_base_tiles(match_info, match_definition));
   let exhaustive = match_definition.contains(&MatchDefinitionElem::Keyword("exhaustive".to_string()));
   let mut unique = false;
   let mut nojoker = false;
@@ -202,8 +199,8 @@ fn remove_match_group<'a>(
           MatchOffset::TileOrKeyword(s) => {
             if *s == "unique" { unique = true; }
             else if *s == "nojoker" {} // no-op
-            else if FIXED_OFFSETS.get(s).is_some() { exact = false; }
-            else if TILE_TABLE.get(s).is_some() {} // no-op
+            else if FIXED_OFFSETS.contains_key(s) { exact = false; }
+            else if TILE_TABLE.contains_key(s) {} // no-op
             else { bipartite = false; } // call name
           }
           MatchOffset::AttrsTile(_) => {} // no-op
@@ -217,8 +214,8 @@ fn remove_match_group<'a>(
           match &os[0] {
             MatchOffset::TileOrKeyword(s) => {
               if *s == "nojoker" {} // no-op
-              else if FIXED_OFFSETS.get(s).is_some() { exact = false; }
-              else if TILE_TABLE.get(s).is_some() {} // no-op
+              else if FIXED_OFFSETS.contains_key(s) { exact = false; }
+              else if TILE_TABLE.contains_key(s) {} // no-op
             }
             MatchOffset::AttrsTile(_) => {} // no-op
             _ => { exact = false; }
@@ -270,11 +267,11 @@ fn remove_match_group<'a>(
   } else if bipartite {
     let base_tiles = base_tiles.clone();
     let offsets = Rc::new(groups.iter().flat_map(|g| g.flatten()).collect());
-    if debug { println!("Starting bipartite match for {num} offsets: {:?} from hands: {:?}", offsets, hands); }
+    if debug { println!("Starting bipartite match for {num} offsets: {:?} from hands: {:?}", offsets, hands.iter().map(|hand| decode(hand, &match_info.all_attrs)).collect::<Vec<_>>()) }
     perform_bipartite_match(offsets, num, Box::new(once(hands)), base_tiles, match_info, debug, exhaustive, unique, nojoker)
   } else {
     let base_tiles = base_tiles.clone();
-    if debug { println!("Starting dfs match for {num} groups: {:?} from hands: {:?}", groups, hands); }
+    if debug { println!("Starting dfs match for {num} groups: {:?} from hands: {:?}", groups, hands.iter().map(|hand| decode(hand, &match_info.all_attrs)).collect::<Vec<_>>()) }
     perform_dfs_match((*groups).clone(), num, Box::new(once(hands)), base_tiles, match_info, debug, exhaustive, unique, nojoker)
   };
 

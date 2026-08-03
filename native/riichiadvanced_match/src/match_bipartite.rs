@@ -18,6 +18,7 @@ pub fn perform_bipartite_match<'a>(
   debug: bool, _exhaustive: bool, _unique: bool, nojoker: bool,
 ) -> HandsIterator<'a> {
   // count the number of actual offsets (not keywords)
+  // also check if there's any fixed offsets
   let mut num_offsets = 0;
   for o in offsets.iter() {
     match o {
@@ -50,7 +51,9 @@ pub fn perform_bipartite_match<'a>(
 
     if debug {
       println!("Attempting to match and remove {} offsets {:?} from hand {:?}; base tiles <{:?}>",
-        num, offsets, decode(&hands[0], &match_info.all_attrs), base_tiles);
+        num, offsets,
+        decode(&hands[0], &match_info.all_attrs),
+        decode_tiles(&*base_tiles, &match_info.all_attrs));
     }
 
     let base_tiles = base_tiles.clone();
