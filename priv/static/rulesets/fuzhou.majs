@@ -17,6 +17,7 @@ define_global kan_name, "Kong"
 define_global flower_name, "Flower"
 define_global ron_name, "Hu"
 define_global tsumo_name, "Zimo"
+
 require "standard_sets"
 require "base"
 require "standard_wall"
@@ -30,7 +31,8 @@ require "ron", %{scoring_key: "win"}
 require "tsumo", %{scoring_key: "win"}
 require "agarirenchan"
 require "head_bump"
-require "default_flowers", %{draw_after_flower_phase: true, auto_flower_by_default: true, undiscardable: true, replace_from_dead_wall: true, shift_dead_wall: true}
+require "default_flowers", %{draw_after_flower_phase: true, auto_flower_by_default: true, replace_from_dead_wall: true, shift_dead_wall: true}
+
 
 on after_initialization do
   add_rule("Rules", "Win Condition", "You may win with one of the following:", -100)
@@ -90,59 +92,61 @@ end
 
 # optimization so we don't have to actually calculate jokers to match hands with them
 # based on goal reduction theory: https://injusticejudge.com/2026/07/22/joker-theory
-define_const gold_win, ~m"exhaustive, any@jin:-1, mentsu:5, taatsu:1"
+define_const standard_win, ~m"exhaustive, mentsu:5, pair:1"
+define_match standard_win, @standard_win
 define_const gold_tenpai, ~m"""
-    exhaustive, any@jin:1, any@jin:-1, mentsu:5
-  | exhaustive, any@jin:1, any@jin:-1, mentsu:4, taatsu:1, pair:1
+    exhaustive, any@jin:1, mentsu:5
+  | exhaustive, any@jin:1, mentsu:4, taatsu:1, pair:1
   """
 define_const gold_iishanten, ~m"""
-    exhaustive, any@jin:2, any@jin:-1, mentsu:4, taatsu:1
-  | exhaustive, any@jin:2, any@jin:-1, mentsu:3, taatsu:2, pair:1
+    exhaustive, any@jin:2, mentsu:4, taatsu:1
+  | exhaustive, any@jin:2, mentsu:3, taatsu:2, pair:1
   """
 define_const gold_ryanshanten, ~m"""
-    exhaustive, any@jin:3, any@jin:-1, mentsu:4
-  | exhaustive, any@jin:3, any@jin:-1, mentsu:3, taatsu:2 
-  | exhaustive, any@jin:3, any@jin:-1, mentsu:2, taatsu:3, pair:1
+    exhaustive, any@jin:3, mentsu:4
+  | exhaustive, any@jin:3, mentsu:3, taatsu:2 
+  | exhaustive, any@jin:3, mentsu:2, taatsu:3, pair:1
   """
 # define_const gold_sanshanten, ~m"""
-#     exhaustive, any@jin:4, any@jin:-1, mentsu:3, pair:1
-#   | exhaustive, any@jin:4, any@jin:-1, mentsu:2, taatsu:3
-#   | exhaustive, any@jin:4, any@jin:-1, mentsu:1, taatsu:4, pair:1
+#     exhaustive, any@jin:4, mentsu:3, pair:1
+#   | exhaustive, any@jin:4, mentsu:2, taatsu:3
+#   | exhaustive, any@jin:4, mentsu:1, taatsu:4, pair:1
 #   """
-apply set_append, "win_definition", +@gold_win
-apply set_append, "win_definition", +@gold_tenpai
-apply set_append, "win_definition", +@gold_iishanten
 apply set_append, "win_definition", +@gold_ryanshanten
-# replace tenpai check with a stub
-define_match tenpai, ~m""
-# qiangjin is just regular win
-define_match qiangjin, ~m"exhaustive, mentsu:5, pair:1"
+apply set_append, "win_definition", +@gold_iishanten
+apply set_append, "win_definition", +@gold_tenpai
+apply set_append, "win_definition", +@standard_win
+
+define_match tenpai, ~m"""
+    exhaustive, mentsu:5
+  | exhaustive, mentsu:4, taatsu:1, pair:1
+  """
 
 # to check for all sequences, do a similar thing
 define_set pinghu_wait, ~s"0 1 | 0 2"
-define_const pinghu_win, ~m"exhaustive, any@jin:-1, shuntsu:5, pair:1"
+define_const pinghu_win, ~m"exhaustive, shuntsu:5, pair:1"
 define_const pinghu_tenpai, ~m"""
-    exhaustive, any@jin:1, any@jin:-1, shuntsu:5
-  | exhaustive, any@jin:1, any@jin:-1, shuntsu:4, pinghu_wait:1, pair:1
+    exhaustive, any@jin:1, shuntsu:5
+  | exhaustive, any@jin:1, shuntsu:4, pinghu_wait:1, pair:1
   """
 define_const pinghu_iishanten, ~m"""
-    exhaustive, gold_pair:-1, any@jin:2, any@jin:-1, shuntsu:4, taatsu:1
-  | exhaustive, gold_pair:-1, any@jin:2, any@jin:-1, shuntsu:3, pinghu_wait:2, pair:1
+    exhaustive, gold_pair:-1, any@jin:2, shuntsu:4, taatsu:1
+  | exhaustive, gold_pair:-1, any@jin:2, shuntsu:3, pinghu_wait:2, pair:1
   """
 define_const pinghu_ryanshanten, ~m"""
-    exhaustive, gold_pair:-1, gold_koutsu:-1, any@jin:3, any@jin:-1, shuntsu:4
-  | exhaustive, gold_pair:-1, gold_koutsu:-1, any@jin:3, any@jin:-1, shuntsu:3, pinghu_wait:1, taatsu:1 
-  | exhaustive, gold_pair:-1, gold_koutsu:-1, any@jin:3, any@jin:-1, shuntsu:2, pinghu_wait:3, pair:1
+    exhaustive, gold_pair:-1, gold_koutsu:-1, any@jin:3, shuntsu:4
+  | exhaustive, gold_pair:-1, gold_koutsu:-1, any@jin:3, shuntsu:3, pinghu_wait:1, taatsu:1 
+  | exhaustive, gold_pair:-1, gold_koutsu:-1, any@jin:3, shuntsu:2, pinghu_wait:3, pair:1
   """
 # define_const pinghu_sanshanten, ~m"""
-#     exhaustive, any@jin:3, any@jin:-1, shuntsu:3, taatsu:1
-#   | exhaustive, any@jin:3, any@jin:-1, shuntsu:2, pinghu_wait:2, taatsu:1
-#   | exhaustive, any@jin:3, any@jin:-1, shuntsu:1, pinghu_wait:4, pair:1
+#     exhaustive, any@jin:3, shuntsu:3, taatsu:1
+#   | exhaustive, any@jin:3, shuntsu:2, pinghu_wait:2, taatsu:1
+#   | exhaustive, any@jin:3, shuntsu:1, pinghu_wait:4, pair:1
 #   """
-apply set_append, "pinghu_definition", +@pinghu_win
-apply set_append, "pinghu_definition", +@pinghu_tenpai
-apply set_append, "pinghu_definition", +@pinghu_iishanten
 apply set_append, "pinghu_definition", +@pinghu_ryanshanten
+apply set_append, "pinghu_definition", +@pinghu_iishanten
+apply set_append, "pinghu_definition", +@pinghu_tenpai
+apply set_append, "pinghu_definition", +@pinghu_win
 
 # Yaku
 
@@ -252,7 +256,7 @@ on after_start do
 
   # check for qiangjin for all players
   as everyone do
-    if match(["hand", "revealed_tiles"], ["qiangjin"]) do
+    if match(["hand", "revealed_tiles"], ["standard_win"]) do
       set_status("qiangjin")
     end
   end
@@ -317,6 +321,9 @@ define_button qiangjin_skip,
   end
 
 set default_mods, ["show_waits"]
+
+# make sure auto-flower doesn't consume jin tiles after the initial flower declaration
+replace 1, "auto_buttons._5_auto_flower.actions", buttons_include("flower"), buttons_include("flower") and not_match(["hand", "draw"], ~m"(1f@jin 2f@jin 3f@jin 4f@jin 1g@jin 2g@jin 3g@jin 4g@jin 1z@jin 2z@jin 3z@jin 4z@jin 5z@jin 6z@jin 7z@jin):1")
 
 define_mod forced_flowers, conflicts: ["discardable_flowers"], name: "Forced Flowers", desc: "Every drawn flower must be replaced immediately."
 define_mod discardable_flowers, conflicts: ["forced_flowers"], name: "Discardable Flowers", desc: "You may discard flower tiles like normal tiles."

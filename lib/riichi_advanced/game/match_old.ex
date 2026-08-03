@@ -682,14 +682,21 @@ defmodule RiichiAdvanced.MatchOld do
     case {match_definition_elem1, match_definition_elem2} do
       {_, r} when is_binary(r) -> match_definition_subsumes?([match_definition_elem1 | match_definition1], match_definition2, keywords1, [r | keywords2])
       {l, _} when is_binary(l) -> match_definition_subsumes?(match_definition1, [match_definition_elem2 | match_definition2], [l | keywords1], keywords2)
-      {[groups1, num1], [groups2, num2]} ->
-        if groups_subsumes?(groups1, groups2) do
-          cond do
-            num1 == num2 or (num1 >= num2 and "unique" in keywords2) -> match_definition_subsumes?(match_definition1, match_definition2, keywords1, keywords2)
-            num1 >  num2 -> match_definition_subsumes?([[groups1, num1 - num2] | match_definition1], match_definition2, keywords1, keywords2)
-            num1 <  num2 -> match_definition_subsumes?(match_definition1, [[groups2, num2 - num1] | match_definition2], keywords1, keywords2)
-          end
-        else false end
+      {[groups1, num1], [groups2, num2]} -> cond do
+          groups_subsumes?(groups1, groups2) ->
+            cond do
+              num1 == num2 or (num1 >= num2 and "unique" in keywords2) -> match_definition_subsumes?(match_definition1, match_definition2, keywords1, keywords2)
+              num1 >  num2 -> match_definition_subsumes?([[groups1, num1 - num2] | match_definition1], match_definition2, keywords1, keywords2)
+              num1 <  num2 -> match_definition_subsumes?(match_definition1, [[groups2, num2 - num1] | match_definition2], keywords1, keywords2)
+            end
+          groups_subsumes?(groups2, groups1) ->
+            cond do
+              num2 == num1 or (num2 >= num1 and "unique" in keywords1) -> match_definition_subsumes?(match_definition2, match_definition1, keywords2, keywords1)
+              num2 >  num1 -> match_definition_subsumes?([[groups2, num2 - num1] | match_definition2], match_definition1, keywords2, keywords1)
+              num2 <  num1 -> match_definition_subsumes?(match_definition2, [[groups1, num1 - num2] | match_definition1], keywords2, keywords1)
+            end
+          true -> false
+        end
       _ -> false
     end
   end

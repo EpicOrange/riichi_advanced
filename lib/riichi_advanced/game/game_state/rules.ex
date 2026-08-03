@@ -237,7 +237,7 @@ defmodule RiichiAdvanced.GameState.Rules do
               nil
             else [] end
         end
-        if translated != nil do
+        if translated != nil and translated != [] and translated != [[]] do
           [translated | acc]
         else acc end
     end |> Enum.reverse() |> Enum.concat()
