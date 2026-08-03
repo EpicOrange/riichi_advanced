@@ -58,8 +58,7 @@ defmodule RiichiAdvancedWeb.ScoringTestLive do
     |> assign(:rules_ref, nil)
     # |> assign(:hand, [:"4m", :"2m", :"3m", :"4p", :"4p", :"4p", :"5p", :"6p", :"7p", :"3s", :"4s", :"2s", :"2s", :"2s"])
 
-    socket = switch_to_ruleset(socket, "riichi")
-    |> reload_ruleset()
+    socket = switch_to_ruleset(socket, Map.get(params, "ruleset", "riichi")) |> reload_ruleset()
 
     messages_init = RiichiAdvanced.MessagesState.link_player_socket(socket.root_pid, socket.assigns.session_id)
     socket = if Map.has_key?(messages_init, :messages_state) do
@@ -316,7 +315,7 @@ defmodule RiichiAdvancedWeb.ScoringTestLive do
   def handle_event("double_clicked", _assigns, socket), do: {:noreply, socket}
   def handle_event("right_clicked", _assigns, socket), do: {:noreply, socket}
   def handle_event("change_language", %{"lang" => lang}, socket), do: {:noreply, assign(socket, :lang, lang)}
-  def handle_event("switch_ruleset", %{"ruleset" => ruleset}, socket), do: {:noreply, socket |> switch_to_ruleset(ruleset) |> reload_ruleset()}
+  def handle_event("switch_ruleset", %{"ruleset" => ruleset}, socket), do: {:noreply, push_patch(socket, to: ~p"/scoringtest?ruleset=#{ruleset}")}
   def handle_event("save_mods", _assigns, socket), do: {:noreply, socket |> reload_ruleset()}
   def handle_event("save_config", %{"value" => value}, socket), do: {:noreply, socket |> assign(:config, value) |> reload_ruleset()}
 
@@ -524,5 +523,12 @@ defmodule RiichiAdvancedWeb.ScoringTestLive do
   end
 
   def handle_info(_info, socket), do: {:noreply, socket}
+
+  def handle_params(params, _uri, socket) do
+    socket = socket
+    |> switch_to_ruleset(Map.get(params, "ruleset", "riichi"))
+    |> reload_ruleset()
+    {:noreply, socket}
+  end
 
 end

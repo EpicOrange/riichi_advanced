@@ -4566,8 +4566,8 @@ div.scoringtest-container > div.scoring-test-bottom-buttons {
   justify-content: center;
   column-gap: calc(0.25 * var(--tile-size));
   & > form { flex-grow: 1; display: flex; column-gap: calc(0.25 * var(--tile-size)); }
-  & button { font-size: 150%; flex-grow: 0; }
-  & button[type="submit"] { flex-grow: 1; }
+  & button { font-size: 150%; flex-grow: 1; }
+  & button.clear { flex-grow: 0; }
 }
 div.scoringtest-container div.yaku-outer-container {
   & span.yaku-bottom-minipoint-name {
