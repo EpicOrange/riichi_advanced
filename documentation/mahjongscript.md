@@ -9,7 +9,7 @@ There are four types of data in MahjongScript:
 - [**Actions**](#actions): function calls or `do`-blocks containing actions
 - [**Sigils**](#sigils): set specifications, match specifications
 
-The entirety of a MahjongScript file is a list of top-level commands that use these data in some way. [A list of commands is provided at the bottom](#all-commands).
+The entirety of a MahjongScript file is a list of toplevel commands that use these data in some way. [A list of commands is provided at the bottom](#all-commands).
 
 ## JSON
 
@@ -461,7 +461,7 @@ This will default the variable `!below` to 0 unless otherwise specified. Like wi
 
 ## Toplevel `if` (Conditional compilation)
 
-Mods can write conditionals (`if`, `unless`, `cond`) at the top-level, for example:
+Mods can write conditionals (`if`, `unless`, `cond`) at the toplevel, for example:
 
 ```elixir
 if !min == "Mangan" do
@@ -528,7 +528,15 @@ unless defined("pao") do
 end
 ```
 
-Essentially this means that only the first mod that hits this top-level conditional will evaluate the commands inside of it, since `"pao"` will be set thereafter. This is reminscent of C preprocessor defines, where certain headers only get evaluated once.
+Essentially this means that only the first mod that hits this toplevel conditional will evaluate the commands inside of it, since `"pao"` will be set thereafter. This is reminscent of C preprocessor defines, where certain headers only get evaluated once.
+
+## `require_after`: Defer mod loading
+
+This toplevel command is identical to `require`, except it will load the desired library mod _after_ user-selected ones. So the mod load order is like this:
+
+- `require` mods, in the order they are defined
+- `define_mod` mods (with order specified by the `order` field, then by the order it's defined in the file)
+- `require_after` mods, in the order they are defined
 
 # Command Reference
 
@@ -912,7 +920,7 @@ Here is a cheatsheet for all the commands that exist.
 
 **Setting variables**
 
-- `set win_timer, 30`: Sets the top-level JSON key `win_timer` to a specific value (`30`).
+- `set win_timer, 30`: Sets the toplevel JSON key `win_timer` to a specific value (`30`).
 - `define_set shuntsu, ~s"0 1 2"`: Defines `shuntsu` to refer to the set `0 1 2`. This allows any match specification to mention `shuntsu`, e.g. `~m"shuntsu:4"`
 - `define_match win, ~m"(shuntsu koutsu):4 pair:1"`: Defines `win` as the match specification given by `<match>`. Note that AI bots will use the match definition named `win` when making decisions.
 - `define_const always_yakuhai, ["5z", "6z", "7z"]`: Define the constant `@always_yakuhai`. At load time, all instances of `@always_yakuhai` will be replaced with `["5z", "6z", "7z"]`, and all instances of `+@always_yakuhai` in an array will insert the elements `"5z", "6z", "7z"` at that spot in the containing array. Later mods can change the final value of a constant via `apply append, "constants.always_yakuhai", "4z"`.

@@ -259,11 +259,22 @@ defmodule RiichiAdvanced.ModLoader do
         end
     end
   end
+
   def convert_to_jq(majs) do
     {jq, defs} = convert_to_jq_defs(majs, %Defs{})
-    global_jq = for {name, val} <- defs.globals, is_jq_var?(name), do: "(#{Jason.encode!(val)}) as $#{name}\n|"
-    vars_jq = for {name, val} <- Enum.reverse(defs.vars), is_jq_var?(name), do: "(#{Jason.encode!(val)}) as $#{name}\n|"
-    Enum.join(global_jq ++ vars_jq ++ [jq])
+    global_jq = for {name, val} <- defs.globals, is_jq_var?(name), do: "(#{Jason.encode!(val)}) as $#{name}"
+    vars_jq = for {name, val} <- Enum.reverse(defs.vars), is_jq_var?(name), do: "(#{Jason.encode!(val)}) as $#{name}"
+    for {name, config} <- defs.post_mods, reduce: {:ok, {[], defs}} do
+      {:ok, {acc, defs}} -> with {:ok, {jq, defs}} <- Compiler.load_lib(defs, name, config, 0, [line: 0, column: 0]) do
+        {:ok, {[jq | acc], defs}}
+      end
+      {:error, err} when is_binary(err) -> "Error loading mod #{name} with config #{inspect(config)}: #{err}"
+      err -> err
+    end
+    |> case do
+      {:ok, {post_mods_jq, _defs}} -> Enum.join(global_jq ++ vars_jq ++ [jq] ++ post_mods_jq, "\n|")
+      err -> raise err
+    end
   end
 
   def read_ruleset_json(ruleset) do
