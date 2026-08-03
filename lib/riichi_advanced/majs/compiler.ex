@@ -303,8 +303,8 @@ defmodule RiichiAdvanced.Compiler do
                 end
               err -> err
             end
-            with {:ok, cond_bodys} <- rets do
-              for {cond, body} <- cond_bodys, reduce: {:ok, ["noop"]} do
+            with {:ok, [first | cond_bodys]} <- rets do
+              for {cond, body} <- cond_bodys, reduce: {:ok, first |> elem(1) |> Enum.at(0)} do
                 {:ok, else_branch} -> {:ok, ["ite", cond, body, [else_branch]]}
                 err -> err
               end
@@ -473,7 +473,7 @@ defmodule RiichiAdvanced.Compiler do
       op = if default_to_set do String.replace_leading(op, "set_", "") else op end
       operation = case op do
         "set"                                  -> {:ok, "#{path} = #{value}"}
-        "initialize"                           -> {:ok, "#{path} = #{value}"}
+        "initialize"                           -> {:ok, "#{path} |= if . == null then #{value} else . end"}
         "add"                                  -> {:ok, "#{path} += #{value}"}
         "prepend"                              -> {:ok, "#{path} |= _safe_append(#{value}; .)"}
         "append"                               -> {:ok, "#{path} |= _safe_append(.; #{value})"}
