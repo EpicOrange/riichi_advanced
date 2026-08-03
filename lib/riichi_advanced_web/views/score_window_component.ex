@@ -18,7 +18,7 @@ defmodule RiichiAdvancedWeb.ScoreWindowComponent do
   def render(assigns) do
     ~H"""
     <div class={["game-modal-container", @visible_screen != :scores && "inactive"]}>
-      <div class={["game-modal", "game-modal-hide"] ++ get_arrow_classes(@seat, @delta_scores, @round_result)}>
+      <div class={["game-modal", "game-modal-hide"] ++ get_arrow_classes(@seat, @txns)}>
         <svg class="arrow t2u" phx-hover="hover" phx-focus="hover" phx-hover-off="hover_off" phx-blur="hover_off" phx-target={@myself} phx-value-key="t2u" style="--xpos: 6.875; --ypos: 3; --rotate: 90; --length: 7.5;"><use href="#arrow"/></svg>
         <svg class="arrow u2t" phx-hover="hover" phx-focus="hover" phx-hover-off="hover_off" phx-blur="hover_off" phx-target={@myself} phx-value-key="u2t" style="--xpos: 6.875; --ypos: 10.5; --rotate: -90; --length: 7.5;"><use href="#arrow"/></svg>
         <svg class="arrow k2s" phx-hover="hover" phx-focus="hover" phx-hover-off="hover_off" phx-blur="hover_off" phx-target={@myself} phx-value-key="k2s" style="--xpos: 4.5; --ypos: 6.625; --rotate: 0; --length: 5;"><use href="#arrow"/></svg>
@@ -175,26 +175,26 @@ defmodule RiichiAdvancedWeb.ScoreWindowComponent do
     ret
   end
 
-  def get_arrow_classes(our_seat, delta_scores, round_result) do
-    # TODO: just because someone lost pts, doesn't necessarily mean they paid everyone who got points
-    # we'll change this once we find an example situation (double ron pao is one of them)
-    {winners, losers} = delta_scores
-    |> Enum.filter(fn {_seat, delta} -> delta != 0 end)
-    |> Enum.map(fn {seat, delta} -> case Utils.get_relative_seat(our_seat, seat) do
-      :shimocha -> {"s", delta}
-      :toimen   -> {"t", delta}
-      :kamicha  -> {"k", delta}
-      :self     -> {"u", delta}
+  def get_arrow_classes(seat, txns) do
+    Enum.flat_map(txns, fn %{from: from, to: to} -> case {from && Utils.get_relative_seat(seat, from), to && Utils.get_relative_seat(seat, to)} do
+      {:shimocha, :shimocha} -> ["shimocha"]
+      {:shimocha, :toimen  } -> ["s2t"]
+      {:shimocha, :kamicha } -> ["s2k"]
+      {:shimocha, :self    } -> ["s2u"]
+      {:toimen,   :shimocha} -> ["t2s"]
+      {:toimen,   :toimen  } -> ["toimen"]
+      {:toimen,   :kamicha } -> ["t2k"]
+      {:toimen,   :self    } -> ["t2u"]
+      {:kamicha,  :shimocha} -> ["k2s"]
+      {:kamicha,  :toimen  } -> ["k2t"]
+      {:kamicha,  :kamicha } -> ["kamicha"]
+      {:kamicha,  :self    } -> ["k2u"]
+      {:self,     :shimocha} -> ["u2s"]
+      {:self,     :toimen  } -> ["u2t"]
+      {:self,     :kamicha } -> ["u2k"]
+      {:self,     :self    } -> ["self"]
+      _                      -> []
     end end)
-    |> Enum.split_with(fn {_seat, delta} -> delta > 0 end)
-    for {w, _delta} <- winners, {l, _delta} <- losers, do: "#{l}2#{w}"
-
-    if length(winners) == 2 and length(losers) == 2 and round_result == :exhaustive_draw do
-      # 2 arrows for riichi noten payments
-      for {{w, _delta}, {l, _delta2}} <- Enum.zip(winners, losers), do: "#{l}2#{w}"
-    else
-      for {w, _delta} <- winners, {l, _delta} <- losers, do: "#{l}2#{w}"
-    end
   end
 
   def display_op(op) do

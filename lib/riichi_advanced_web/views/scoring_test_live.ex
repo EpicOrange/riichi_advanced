@@ -144,7 +144,6 @@ defmodule RiichiAdvancedWeb.ScoringTestLive do
           kyoku={@state.kyoku}
           next_dealer={@state.next_dealer}
           rules_ref={@rules_ref}
-          round_result={:win}
           />
       </div>
       <div class="top-right-container">
