@@ -25,9 +25,9 @@ defmodule RiichiAdvanced.TianjinPaymentsTest do
       %{"type" => "buttons_pressed", "buttons" => [nil, %{"button" => "tsumo"}, nil, nil]}
     ], %{
       south: %{
-        yaku: [{"Earthly Hand", [1, "Fan", 4, "×"]}, {"Pure Hand", [2, "Fan"]}]
+        yaku: [{"Earthly Hand", [4, "×"]}, {"Pure Hand", [2, "Fan"]}]
       }
-    }, %{delta_scores: [-24, 48, -12, -12]})
+    }, %{delta_scores: [-16, 32, -8, -8]})
   end
 
   test "tianjin - dealer challenge but someone else won" do
@@ -53,9 +53,9 @@ defmodule RiichiAdvanced.TianjinPaymentsTest do
       %{"type" => "buttons_pressed", "buttons" => [nil, %{"button" => "tsumo"}, nil, nil]}
     ], %{
       south: %{
-        yaku: [{"Earthly Hand", [1, "Fan", 4, "×"]}, {"Pure Hand", [2, "Fan"]}]
+        yaku: [{"Earthly Hand", [4, "×"]}, {"Pure Hand", [2, "Fan"]}]
       }
-    }, %{delta_scores: [-12, 36, -12, -12]})
+    }, %{delta_scores: [-8, 24, -8, -8]})
   end
 
   test "tianjin - dealer challenge with double down but someone else won" do
@@ -81,9 +81,9 @@ defmodule RiichiAdvanced.TianjinPaymentsTest do
       %{"type" => "buttons_pressed", "buttons" => [nil, %{"button" => "tsumo"}, nil, nil]}
     ], %{
       south: %{
-        yaku: [{"Earthly Hand", [1, "Fan", 4, "×"]}, {"Pure Hand", [2, "Fan"]}]
+        yaku: [{"Earthly Hand", [4, "×"]}, {"Pure Hand", [2, "Fan"]}]
       }
-    }, %{delta_scores: [-24, 48, -12, -12]})
+    }, %{delta_scores: [-16, 32, -8, -8]})
   end
 
   test "tianjin - dealer pays x4 from 2x challenge" do
@@ -109,9 +109,9 @@ defmodule RiichiAdvanced.TianjinPaymentsTest do
       %{"type" => "buttons_pressed", "buttons" => [nil, %{"button" => "tsumo"}, nil, nil]}
     ], %{
       south: %{
-        yaku: [{"Earthly Hand", [1, "Fan", 4, "×"]}, {"Pure Hand", [2, "Fan"]}]
+        yaku: [{"Earthly Hand", [4, "×"]}, {"Pure Hand", [2, "Fan"]}]
       }
-    }, %{delta_scores: [-48, 72, -12, -12]})
+    }, %{delta_scores: [-32, 48, -8, -8]})
   end
 
   test "tianjin - dealer pays x8" do
@@ -137,9 +137,9 @@ defmodule RiichiAdvanced.TianjinPaymentsTest do
       %{"type" => "buttons_pressed", "buttons" => [nil, %{"button" => "tsumo"}, nil, nil]}
     ], %{
       south: %{
-        yaku: [{"Earthly Hand", [1, "Fan", 4, "×"]}, {"Pure Hand", [2, "Fan"]}]
+        yaku: [{"Earthly Hand", [4, "×"]}, {"Pure Hand", [2, "Fan"]}]
       }
-    }, %{delta_scores: [-96, 120, -12, -12]})
+    }, %{delta_scores: [-64, 80, -8, -8]})
   end
 
   test "tianjin - double down doubles win payments" do
@@ -164,9 +164,9 @@ defmodule RiichiAdvanced.TianjinPaymentsTest do
       %{"type" => "buttons_pressed", "buttons" => [%{"button" => "tsumo"}, nil, nil, nil]}
     ], %{
       east: %{
-        yaku: [{"Heavenly Hand", [1, "Fan", 6, "×"]}, {"Pure Hand", [2, "Fan"]}]
+        yaku: [{"Heavenly Hand", [6, "×"]}, {"Pure Hand", [2, "Fan"]}]
       }
-    }, %{delta_scores: [108, -36, -36, -36]})
+    }, %{delta_scores: [72, -24, -24, -24]})
   end
 
   test "tianjin - double down with additional challenges" do
@@ -191,9 +191,9 @@ defmodule RiichiAdvanced.TianjinPaymentsTest do
       %{"type" => "buttons_pressed", "buttons" => [%{"button" => "tsumo"}, nil, nil, nil]}
     ], %{
       east: %{
-        yaku: [{"Heavenly Hand", [1, "Fan", 6, "×"]}, {"Pure Hand", [2, "Fan"]}]
+        yaku: [{"Heavenly Hand", [6, "×"]}, {"Pure Hand", [2, "Fan"]}]
       }
-    }, %{delta_scores: [252, -72, -144, -36]})
+    }, %{delta_scores: [168, -48, -96, -24]})
   end
 
   test "tianjin - daiminkan payment" do

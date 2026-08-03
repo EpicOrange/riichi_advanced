@@ -2,6 +2,8 @@ defmodule RiichiAdvanced.YakuTest.TianjinYaku do
   use ExUnit.Case, async: true
   alias RiichiAdvanced.TestUtils, as: TestUtils
 
+  @base {"Base", [1, "Fan"]}
+
   test "tianjin - pure hand" do
     TestUtils.test_yaku_advanced("tianjin", [], """
     {
@@ -209,9 +211,9 @@ defmodule RiichiAdvanced.YakuTest.TianjinYaku do
       %{"type" => "buttons_pressed", "buttons" => [%{"button" => "tsumo"}, nil, nil, nil]}
     ], %{
       east: %{
-        yaku: [{"Dragon", [4, "Fan"]}, {"Kong Blossom", [1, "Fan", 2, "×"]}, {"Pure Hand", [2, "Fan"]}, {"Multiple Patterns", [3, "Fan"]}]
+        yaku: [{"Dragon", [4, "Fan"]}, {"Kong Blossom", [2, "×"]}, {"Pure Hand", [2, "Fan"]}, {"Multiple Patterns", [3, "Fan"]}]
       }
-    }, %{delta_scores: [60, -20, -20, -20]})
+    }, %{delta_scores: [54, -18, -18, -18]})
   end
 
   test "tianjin - dragon after ankan" do
@@ -241,9 +243,9 @@ defmodule RiichiAdvanced.YakuTest.TianjinYaku do
       %{"type" => "buttons_pressed", "buttons" => [%{"button" => "tsumo"}, nil, nil, nil]}
     ], %{
       east: %{
-        yaku: [{"Concealed Kong", [1, "Fan"]}, {"Dragon", [4, "Fan"]}, {"Kong Blossom", [1, "Fan", 2, "×"]}, {"Pure Hand", [2, "Fan"]}, {"Multiple Patterns", [3, "Fan"]}]
+        yaku: [{"Concealed Kong", [1, "Fan"]}, {"Dragon", [4, "Fan"]}, {"Kong Blossom", [2, "×"]}, {"Pure Hand", [2, "Fan"]}, {"Multiple Patterns", [3, "Fan"]}]
       }
-    }, %{delta_scores: [66, -22, -22, -22]})
+    }, %{delta_scores: [60, -20, -20, -20]})
   end
 
   test "tianjin - heavenly hand with wild" do
@@ -268,7 +270,7 @@ defmodule RiichiAdvanced.YakuTest.TianjinYaku do
       %{"type" => "buttons_pressed", "buttons" => [%{"button" => "tsumo"}, nil, nil, nil]}
     ], %{
       east: %{
-        yaku: [{"Heavenly Hand", [1, "Fan", 6, "×"]}]
+        yaku: [@base, {"Heavenly Hand", [6, "×"]}]
       }
     }, %{delta_scores: [18, -6, -6, -6]})
   end
@@ -295,9 +297,9 @@ defmodule RiichiAdvanced.YakuTest.TianjinYaku do
       %{"type" => "buttons_pressed", "buttons" => [%{"button" => "tsumo"}, nil, nil, nil]}
     ], %{
       east: %{
-        yaku: [{"Heavenly Hand", [1, "Fan", 6, "×"]}, {"Pure Hand", [2, "Fan"]}]
+        yaku: [{"Heavenly Hand", [6, "×"]}, {"Pure Hand", [2, "Fan"]}]
       }
-    }, %{delta_scores: [54, -18, -18, -18]})
+    }, %{delta_scores: [36, -12, -12, -12]})
   end
 
   test "tianjin - earthly hand with wild" do
@@ -323,7 +325,7 @@ defmodule RiichiAdvanced.YakuTest.TianjinYaku do
       %{"type" => "buttons_pressed", "buttons" => [nil, %{"button" => "tsumo"}, nil, nil]}
     ], %{
       south: %{
-        yaku: [{"Earthly Hand", [1, "Fan", 4, "×"]}]
+        yaku: [@base, {"Earthly Hand", [4, "×"]}]
       }
     }, %{delta_scores: [-4, 12, -4, -4]})
   end
@@ -351,9 +353,9 @@ defmodule RiichiAdvanced.YakuTest.TianjinYaku do
       %{"type" => "buttons_pressed", "buttons" => [nil, %{"button" => "tsumo"}, nil, nil]}
     ], %{
       south: %{
-        yaku: [{"Earthly Hand", [1, "Fan", 4, "×"]}, {"Pure Hand", [2, "Fan"]}]
+        yaku: [{"Earthly Hand", [4, "×"]}, {"Pure Hand", [2, "Fan"]}]
       }
-    }, %{delta_scores: [-12, 36, -12, -12]})
+    }, %{delta_scores: [-8, 24, -8, -8]})
   end
 
 end
