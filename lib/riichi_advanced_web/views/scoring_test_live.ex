@@ -282,7 +282,6 @@ defmodule RiichiAdvancedWeb.ScoringTestLive do
     state = %{ state |
       wall: wall,
       dead_wall: dead_wall,
-      log_loading_mode: true,
       log_state: %{log: []},
       timer: -1,
       round_result: nil,
@@ -498,6 +497,7 @@ defmodule RiichiAdvancedWeb.ScoringTestLive do
       |> Map.put(:config, socket.assigns.config)
       |> Map.put(:room_code, "scoringtest_" <> String.slice(socket.assigns.session_id, 0..7))
       |> Map.put(:rules_ref, socket.assigns.rules_ref)
+      |> Map.put(:messages_states, %{east: [{socket.assigns.session_id, socket.assigns.messages_state}]})
       is_ron? = Map.has_key?(params, "ron")    
       hand = Enum.map(socket.assigns.hand, &Utils.to_tile(&1))
       calls = socket.assigns.calls
