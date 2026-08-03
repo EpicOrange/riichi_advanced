@@ -54,3 +54,22 @@ define_play_effect flower do
 end
 
 define_yaku yaku, "Win on Discarded Flower", [1, "Mủn"], won_by_discard and match(["last_discard"], "any_flower")
+
+define_button start_flower,
+  display_name: "Replace all flowers",
+  show_when: status("initial_flowers")
+    and our_turn
+    and match(["hand", "draw"], ["any_flower"]),
+  unskippable: true
+  do
+    big_text(!flower_name)
+    set_status("flower")
+    # declare all flowers at once
+    press_button("start_flower")
+    press_first_call_button("start_flower")
+    # skip no flower declarations
+    press_button("start_no_flower")
+    flower(+@all_flowers)
+    draw(1, "opposite_end")
+    recalculate_buttons
+  end
