@@ -1,9 +1,11 @@
 if (.buttons | has("riichi")) then
   .buttons.riichi.actions = [
     ["mark", [["hand", 1, ["self", "can_discard"]]], [
+      ["clear_player_cache"],
       ["set_status", "riichi", "just_reached"],
       ["recalculate_playables"]
     ], [], [
+      ["clear_player_cache"],
       ["unset_status", "riichi", "just_reached"],
       ["recalculate_playables"]
     ]],

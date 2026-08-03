@@ -447,11 +447,11 @@ defmodule RiichiAdvancedWeb.GameLive do
   end
 
   defp get_visible_waits(socket, index) do
-    hand = socket.assigns.state.players[socket.assigns.seat].hand
+    hand = socket.assigns.state.players[socket.assigns.seat].hand ++ socket.assigns.state.players[socket.assigns.seat].draw
     socket = if hand != socket.assigns.visible_waits_hand do
       socket
       |> assign(:visible_waits, nil)
-      |> assign(:visible_waits_hand, nil)
+      |> assign(:visible_waits_hand, hand)
     else socket end
     visible_waits = socket.assigns.visible_waits || %{}
     if not Map.has_key?(visible_waits, index) do
@@ -873,6 +873,15 @@ defmodule RiichiAdvancedWeb.GameLive do
     end
   end
 
+  def handle_info(%{topic: topic, event: "reset_visible_waits", payload: %{"seat" => seat}}, socket) do
+    if topic == (socket.assigns.ruleset <> ":" <> socket.assigns.room_code) and socket.assigns.seat == seat do
+      # force reset waits, sent via clear_player_cache action
+      {:noreply, assign(socket, :visible_waits, nil)}
+    else
+      {:noreply, socket}
+    end
+  end
+
   def handle_info({:reset_hand_anim, seat}, socket) do
     relative_seat = Utils.get_relative_seat(socket.assigns.seat, seat)
     send_update(RiichiAdvancedWeb.HandComponent, id: "hand #{relative_seat}", hand: socket.assigns.state.players[seat].hand, played_tile: nil, played_tile_index: nil)
@@ -897,10 +906,23 @@ defmodule RiichiAdvancedWeb.GameLive do
     {:noreply, socket}
   end
 
-  def handle_info({:set_visible_waits, hand, index, waits}, socket) do
-    socket = socket
-    |> assign(:visible_waits, Map.put(socket.assigns.visible_waits, index, waits))
-    |> assign(:visible_waits_hand, hand)
+  # hand is hand ++ draw
+  # tile is the tile that, when removed, yields the waits
+  # waits is something like [{:"0s", 2, "Self-Draw"}, {:"5s", 0, "Self-Draw"}, {:"35s", 1, nil}]
+  # assign that array to each index in hand equal to tile
+  def handle_info({:set_visible_waits, hand, tile, waits}, socket) do
+    socket = if hand != socket.assigns.visible_waits_hand do
+      # IO.puts("Resetting waits because #{inspect(hand)} != cached #{inspect(socket.assigns.visible_waits_hand)}")
+      socket
+      |> assign(:visible_waits, %{})
+      |> assign(:visible_waits_hand, hand)
+    else socket end
+    new_visible_waits = hand
+    |> Enum.with_index()
+    |> Enum.filter(fn {t, _i} -> t == tile end)
+    |> Enum.map(fn {_t, i} -> i end)
+    |> Enum.reduce(socket.assigns.visible_waits, &Map.put(&2, &1, waits))
+    socket = assign(socket, :visible_waits, new_visible_waits)
     {:noreply, socket}
   end
 

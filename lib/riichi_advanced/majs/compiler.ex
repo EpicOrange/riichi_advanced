@@ -937,7 +937,7 @@ defmodule RiichiAdvanced.Compiler do
       {:ok, ~s"""
       .available_mods |= map(select(type != "object" or (.id | IN(#{Enum.join(names, ",")}) | not)))
       |
-      .default_mods |= . - [#{Enum.join(names, ",")}]
+      .default_mods -= [#{Enum.join(names, ",")}]
       """}
     end
   end

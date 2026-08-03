@@ -1333,7 +1333,7 @@ defmodule RiichiAdvanced.Match do
   # given a 14-tile hand, and match definitions for 13-tile hands,
   # return all the (unique) tiles that are not needed to match the definitions
   @u256_max 115792089237316195423570985008687907853269984665640564039457584007913129639935
-  @decorate cacheable(cache: RiichiAdvanced.Cache, key: {:get_unneeded_tiles_v2, hand, calls, match_definitions, TileBehavior.hash(tile_behavior)}, opts: [ttl: :timer.seconds(10)])
+  @decorate cacheable(cache: RiichiAdvanced.Cache, key: {:get_unneeded_tiles_v2, hand, calls, match_definitions, tile_behavior.uuid}, opts: [ttl: :timer.seconds(10)])
   def get_unneeded_tiles_v2(hand, calls, match_definitions, tile_behavior) do
     # check if rust should handle things
     tiles_in_hand = Utils.strip_attrs(hand ++ Enum.flat_map(calls, &Utils.call_to_tiles/1))

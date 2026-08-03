@@ -7,6 +7,7 @@ defmodule RiichiAdvanced.GameState.Actions do
   alias RiichiAdvanced.GameState.Debug, as: Debug
   alias RiichiAdvanced.GameState.Kyoku, as: Kyoku
   alias RiichiAdvanced.GameState.Marking, as: Marking
+  alias RiichiAdvanced.GameState.PlayerCache, as: PlayerCache
   alias RiichiAdvanced.GameState.Rules, as: Rules
   alias RiichiAdvanced.GameState.Saki, as: Saki
   alias RiichiAdvanced.GameState.TileBehavior, as: TileBehavior
@@ -2008,6 +2009,11 @@ defmodule RiichiAdvanced.GameState.Actions do
             state = put_in(state.winners[Enum.at(state.winner_seats, state.winner_index)].winning_tile, Enum.at(winner.assigned_winning_hand, -1))
             state
           else state end
+        "clear_player_cache" ->
+          RiichiAdvancedWeb.Endpoint.broadcast(state.ruleset <> ":" <> state.room_code, "reset_visible_waits", %{"seat" => context.seat})
+          send_async_tasks(state)
+          state = update_player(state, context.seat, &%{ &1 | cache: %PlayerCache{} })
+          state
         "_end_function"   -> state # noop
         _                 ->
           IO.puts("Unhandled action #{action}")

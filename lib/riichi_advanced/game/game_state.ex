@@ -1058,12 +1058,14 @@ defmodule RiichiAdvanced.GameState do
       point_name = Rules.get(state.rules_ref, "score_calculation")["point_name"]
       point2_name = Rules.get(state.rules_ref, "score_calculation")["point2_name"]
       min_han = Rules.get(state.rules_ref, "constants") |> Map.get("min_points", 1)
-      score = fn state, win_source -> 
+      prev_seat = Utils.prev_turn(seat)
+      score = fn state, win_source ->
+        state = if win_source == :discard do Map.put(state, :turn, prev_seat) else state end
         Scoring.seat_scores_points(state, yaku_lists, point_name, min_han, 0, seat, wait, win_source)
         or Scoring.seat_scores_points(state, yaku_lists, point2_name, min_han, 0, seat, wait, win_source)
       end
       cond do
-        score.(update_winning_tile(state, Utils.prev_turn(seat), :discard, fn _ -> wait end), :discard) -> nil
+        score.(update_winning_tile(state, prev_seat, :discard, fn _ -> wait end), :discard) -> nil
         score.(update_winning_tile(state, seat, :draw, fn _ -> wait end), :draw) -> "Self-Draw"
         min_han > 1 -> "Min #{min_han}"
         true -> "No Yaku"
@@ -1171,18 +1173,22 @@ defmodule RiichiAdvanced.GameState do
     end
   end
 
-  def broadcast_state_change(state, postprocess \\ false) do
-    if postprocess do
-      # async calculate playable indices for current turn player
-      GenServer.cast(self(), :calculate_playable_indices)
-      # notify ai marking for all other players
-      for seat <- state.available_seats, seat != state.turn, Marking.needs_marking?(state, seat) do
-        notify_ai_marking(state, seat)
-      end
-      
-      # async populate closest_american_hands for all players
-      if state.ruleset == "american" do GenServer.cast(self(), :calculate_closest_american_hands) end
+  def send_async_tasks(state) do
+    kill_all_tasks(state) # kill existing async calls
+
+    # async calculate playable indices for current turn player
+    GenServer.cast(self(), :calculate_playable_indices)
+    # notify ai marking for all other players
+    for seat <- state.available_seats, seat != state.turn, Marking.needs_marking?(state, seat) do
+      notify_ai_marking(state, seat)
     end
+    
+    # async populate closest_american_hands for all players
+    if state.ruleset == "american" do GenServer.cast(self(), :calculate_closest_american_hands) end
+  end
+
+  def broadcast_state_change(state, postprocess \\ false) do
+    if postprocess do send_async_tasks(state) end
     # IO.puts("broadcast_state_change called")
     RiichiAdvancedWeb.Endpoint.broadcast(state.ruleset <> ":" <> state.room_code, "state_updated", %{"state" => state})
     # reset anim
@@ -1944,14 +1950,17 @@ defmodule RiichiAdvanced.GameState do
   def handle_cast({:get_visible_waits, from, seat, index}, state) do
     if Rules.has_key?(state.rules_ref, "show_waits") do
       Task.start(fn ->
-        hand = state.players[seat].hand
-        draw = state.players[seat].draw
+        hand = state.players[seat].hand ++ state.players[seat].draw
+        tile = Enum.at(hand, index)
         waits = cond do
           index == nil -> get_visible_waits(state, seat, nil)
-          is_playable?(state, seat, Enum.at(hand ++ draw, index)) -> get_visible_waits(state, seat, index)
+          is_playable?(state, seat, tile) -> get_visible_waits(state, seat, index)
           true -> %{}
         end
-        send(from, {:set_visible_waits, hand, index, waits})
+        # since this is called so often we don't want to broadcast_state_change
+        # so as an optimization we use send() to send it to the caller
+        # we will send %{tile => waits} but caller translates and saves %{index => waits}
+        send(from, {:set_visible_waits, hand, tile, waits})
       end)
     end
     {:noreply, state}
@@ -1988,7 +1997,6 @@ defmodule RiichiAdvanced.GameState do
         if Debug.debug_actions() do
           IO.puts("Running cancel actions for #{seat}: #{inspect(cancel_actions)}")
         end
-          IO.puts("Running cancel actions for #{seat}: #{inspect(cancel_actions)}")
         Actions.run_actions(state, cancel_actions, %{seat: seat})
       _ -> state
     end
