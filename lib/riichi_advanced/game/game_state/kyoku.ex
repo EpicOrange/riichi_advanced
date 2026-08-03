@@ -386,8 +386,8 @@ defmodule RiichiAdvanced.GameState.Kyoku do
 
     tile_behavior = state.players[seat].tile_behavior
     {state, cxt} = for {hand, calls, winning_tile} <- hand_calls_tile do
-      # replace hand/calls/draw
-      state = update_player(state, seat, &%{ &1 | hand: hand, calls: calls, draw: [winning_tile] })
+      # replace hand/calls
+      state = update_player(state, seat, &%{ &1 | hand: hand, calls: calls })
 
       # we need to let before_win actions know about the winning tile
       #   so we store it in state.winners
