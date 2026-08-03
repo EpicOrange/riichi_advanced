@@ -11,6 +11,11 @@ defmodule RiichiAdvancedWeb.MessagesComponent do
   def render(assigns) do
     ~H"""
     <div class="messages-container game-bottom-element" phx-click="noop" phx-target={@myself}>
+      <button class="clear-messages-button" phx-cancellable-click="clear_messages" phx-target={@myself}>
+        <svg xmlns="http://www.w3.org/2000/svg" width="100%" height="100%" fill="none" viewBox="0 0 24 24">
+          <path stroke="white" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 7h14m-9 3v8m4-8v8M10 3h4a1 1 0 0 1 1 1v3H9V4a1 1 0 0 1 1-1ZM6 7h12v13a1 1 0 0 1-1 1H7a1 1 0 0 1-1-1V7Z"/>
+        </svg>
+      </button>
       <div class="messages">
         <%= for msg <- @messages do %>
           <span>
@@ -22,11 +27,6 @@ defmodule RiichiAdvancedWeb.MessagesComponent do
           </span>
         <% end %>
       </div>
-      <button class="clear-messages-button" phx-cancellable-click="clear_messages" phx-target={@myself}>
-        <svg xmlns="http://www.w3.org/2000/svg" width="100%" height="100%" fill="none" viewBox="0 0 24 24">
-          <path stroke="white" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 7h14m-9 3v8m4-8v8M10 3h4a1 1 0 0 1 1 1v3H9V4a1 1 0 0 1 1-1ZM6 7h12v13a1 1 0 0 1-1 1H7a1 1 0 0 1-1-1V7Z"/>
-        </svg>
-      </button>
     </div>
     """
   end
