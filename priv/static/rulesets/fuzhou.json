@@ -259,7 +259,7 @@
         ]]
       ]],
       // sets any tile with attribute "jin" to be an any-joker with attribute "is_jin"
-      ["set_tile_alias", [{"tile": "any", "attrs": ["jin"]}], [{"tile": "any", "attrs": ["is_jin"]}]],
+      ["set_tile_alias_all", [{"tile": "any", "attrs": ["jin"]}], [{"tile": "any", "attrs": ["is_jin"]}]],
       ["set_status_all", "first_turn", "match_start"]
     ]
   },
