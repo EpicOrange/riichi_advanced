@@ -1,7 +1,20 @@
 on after_initialization do
-  add_rule("Rules", "Tulips", """
-    If you win with riichi, flip the top tile of the wall after revealed dora indicators. Gain one chip for each matching tile, and if any tiles did match, repeat the process by flipping over the next top tile. This process stops once a match is not found OR if the end of the wall is reached (no more top tiles).
-    """)
+  add_rule("Rules", "Tulips: Flipping", """
+    If you win with riichi, flip the top tile of the wall after revealed dora indicators.
+    - Gain one chip for each matching tile, and if any tiles did match (is the same tile or either adjacent tile in dora indicator order), repeat the process by flipping over the next top tile of the next 2-stack in the wall.
+    - Flipped flowers match all your flowers and add 3 chips per flower you have declared.
+    - The shiro pocchi is supposed to be a wildcard of your choice, as long as it is a tile that exists but is not visible to you. Unfortunately, this is not yet implemented, so you get 10 chips instead.
+    """, -95)
+  add_rule("Rules", "Tulips: Lives", """
+    If you matched any tile from the last flip, continue by flipping over the next top tile of a 2-stack in the wall, stopping only once you lose all your lives OR if there are no more 2-stacks in the wall to flip over.
+    You start with one life, and lose one life every time a match is not found.
+    You gain +1 extra life if you win with ippatsu, and +1 extra life if you win with sanbaiman (11+ Han) or yakuman.
+    """, -94)
+  add_rule("Rules", "Tulips: Tiers", """
+    In addition, if your winning hand contains three sevens of the same suit, you start at "tier 2" meaning you flip over both tiles in every 2-stack, and gain chips for both tiles if they match. You lose a life only if neither tile matches.
+    If your winning hand contains three sevens of both suits, you start at "tier 3" which is tier 2 except it simply doubles the number of chips you win from this process.
+    Every time the flipped wall tile(s) match 6+ distinct tiles in your hand at once, your tier increases by 1, to a maximum of 3.
+    """, -93)
 end
 
 replace 1, "buttons.ron", ["win_by_discard", "zan_ron"], perform_arisu(%{key: "ron"})
@@ -23,15 +36,17 @@ define_set seven, ~s"7p|7s"
 def perform_arisu do
   cond do
     status("riichi")                                      -> set_status("performing_arisu"); push_message("won with a closed hand, and will flip tiles on the wall from the dora indicator onward, scoring shuugi for every matching tile in hand")
-    "$key" == "tsumo"   and has_yaku_with_hand(3, "★")    -> set_status("performing_arisu"); yakuman = 1; push_message("won with yakuman, and will flip tiles on the wall from the dora indicator onward, scoring shuugi for every matching tile in hand")
-    "$key" == "ron"     and has_yaku_with_discard(3, "★") -> set_status("performing_arisu"); yakuman = 1; push_message("won with yakuman, and will flip tiles on the wall from the dora indicator onward, scoring shuugi for every matching tile in hand")
-    "$key" == "chankan" and has_yaku_with_call(3, "★")    -> set_status("performing_arisu"); yakuman = 1; push_message("won with yakuman, and will flip tiles on the wall from the dora indicator onward, scoring shuugi for every matching tile in hand")
+    equals("$key", "tsumo")   and has_yaku_with_hand(1, "★")    -> set_status("performing_arisu"); yakuman = 1; push_message("won with yakuman, and will flip tiles on the wall from the dora indicator onward, scoring shuugi for every matching tile in hand")
+    equals("$key", "ron")     and has_yaku_with_discard(1, "★") -> set_status("performing_arisu"); yakuman = 1; push_message("won with yakuman, and will flip tiles on the wall from the dora indicator onward, scoring shuugi for every matching tile in hand")
+    equals("$key", "chankan") and has_yaku_with_call(1, "★")    -> set_status("performing_arisu"); yakuman = 1; push_message("won with yakuman, and will flip tiles on the wall from the dora indicator onward, scoring shuugi for every matching tile in hand")
   end
   if status("performing_arisu") do
-    save_revealed_tiles
+    # if you have shiro pocchi, revert its wildcard status (no-op otherwise)
+    load_tile_behavior("before_shiro_pocchi")
+    save_revealed_tiles("before flips")
     save_tile_behavior("before wrap")
 
-    # wrap tiles like space mahjong (exclude nonexistent manzu suit)
+    # temporarily wrap tiles like space mahjong (exclude nonexistent manzu suit)
     set_tile_ordering(["9p", "1p"])
     set_tile_ordering(["9s", "1s"])
     set_tile_ordering(["1z", "2z", "3z", "4z", "1z"])
@@ -43,28 +58,13 @@ def perform_arisu do
     # sanbaiman+ gives +1 extra life
     cond do
       yakuman == 1 -> lives += 1; push_message("gets an extra life for winning with yakuman")
-      "$key" == "tsumo"   and has_yaku_with_hand(11, "Han")    -> lives += 1; push_message("gets an extra life for winning with sanbaiman")
-      "$key" == "ron"     and has_yaku_with_discard(11, "Han") -> lives += 1; push_message("gets an extra life for winning with sanbaiman")
-      "$key" == "chankan" and has_yaku_with_call(11, "Han")    -> lives += 1; push_message("gets an extra life for winning with sanbaiman")
+      equals("$key", "tsumo")   and has_yaku_with_hand(11, "Han")    -> lives += 1; push_message("gets an extra life for winning with sanbaiman")
+      equals("$key", "ron")     and has_yaku_with_discard(11, "Han") -> lives += 1; push_message("gets an extra life for winning with sanbaiman")
+      equals("$key", "chankan") and has_yaku_with_call(11, "Han")    -> lives += 1; push_message("gets an extra life for winning with sanbaiman")
     end
 
-    # count sevens to get tier
-    cond do
-      "$key" == "tsumo"   -> add_counter("seven_pins", "count_matches", ["hand", "calls", "draw"], ~m"nojoker, seven:1")
-      "$key" == "ron"     -> add_counter("seven_pins", "count_matches", ["hand", "calls", "last_discard"], ~m"nojoker, seven:1")
-      "$key" == "chankan" -> add_counter("seven_pins", "count_matches", ["hand", "calls", "last_called_tile"], ~m"nojoker, seven:1")
-    end
-    cond do
-      "$key" == "tsumo"   and has_yaku_with_hand(3, "★")    -> tier = 3; push_message("starts in tier 3 for earning triple yakuman")
-      "$key" == "ron"     and has_yaku_with_discard(3, "★") -> tier = 3; push_message("starts in tier 3 for earning triple yakuman")
-      "$key" == "chankan" and has_yaku_with_call(3, "★")    -> tier = 3; push_message("starts in tier 3 for earning triple yakuman")
-      "$key" == "tsumo"   and has_yaku_with_hand(2, "★")    -> tier = 2; push_message("starts in tier 2 for earning double yakuman")
-      "$key" == "ron"     and has_yaku_with_discard(2, "★") -> tier = 2; push_message("starts in tier 2 for earning double yakuman")
-      "$key" == "chankan" and has_yaku_with_call(2, "★")    -> tier = 2; push_message("starts in tier 2 for earning double yakuman")
-      seven_pins >= 3 and seven_sous >= 3 -> tier = 3; push_message("starts in tier 3 for having 3 sevens of both suits")
-      seven_pins >= 3 or  seven_sous >= 3 -> tier = 2; push_message("starts in tier 2 for having 3 sevens in one suit")
-      true                                -> tier = 1
-    end
+    # count sevens in hand to get starting tier
+    calculate_tulips_tier(%{key: "$key"})
 
     pause(2000)
     arisu_50(%{key: "$key"})
@@ -81,11 +81,36 @@ def perform_arisu do
     clear_scry
     load_revealed_tiles
     load_tile_behavior("before wrap")
+    save_revealed_tiles("after flips")
+    load_revealed_tiles("before flips")
   end
   cond do
-    "$key" == "tsumo"   -> win_by_draw("zan_tsumo")
-    "$key" == "ron"     -> win_by_discard("zan_ron")
-    "$key" == "chankan" -> win_by_call("zan_ron")
+    equals("$key", "tsumo")   -> win_by_draw("zan_tsumo")
+    equals("$key", "ron")     -> win_by_discard("zan_ron")
+    equals("$key", "chankan") -> win_by_call("zan_ron")
+  end
+end
+
+on after_win do
+  load_revealed_tiles("after flips")
+end
+
+def calculate_tulips_tier do
+  cond do
+    equals("$key", "tsumo")   -> add_counter("seven_pins", "count_matches", ["hand", "calls", "draw"], ~m"nojoker, seven:1")
+    equals("$key", "ron")     -> add_counter("seven_pins", "count_matches", ["hand", "calls", "last_discard"], ~m"nojoker, seven:1")
+    equals("$key", "chankan") -> add_counter("seven_pins", "count_matches", ["hand", "calls", "last_called_tile"], ~m"nojoker, seven:1")
+  end
+  cond do
+    equals("$key", "tsumo")   and has_yaku_with_hand(3, "★")    -> tier = 3; push_message("starts in tier 3 for achieving triple yakuman")
+    equals("$key", "ron")     and has_yaku_with_discard(3, "★") -> tier = 3; push_message("starts in tier 3 for achieving triple yakuman")
+    equals("$key", "chankan") and has_yaku_with_call(3, "★")    -> tier = 3; push_message("starts in tier 3 for achieving triple yakuman")
+    equals("$key", "tsumo")   and has_yaku_with_hand(2, "★")    -> tier = 2; push_message("starts in tier 2 for achieving double yakuman")
+    equals("$key", "ron")     and has_yaku_with_discard(2, "★") -> tier = 2; push_message("starts in tier 2 for achieving double yakuman")
+    equals("$key", "chankan") and has_yaku_with_call(2, "★")    -> tier = 2; push_message("starts in tier 2 for achieving double yakuman")
+    seven_pins >= 3 and seven_sous >= 3 -> tier = 3; push_message("starts in tier 3 for having 3 sevens of both suits")
+    seven_pins >= 3 or  seven_sous >= 3 -> tier = 2; push_message("starts in tier 2 for having 3 sevens in one suit")
+    true                                -> tier = 1
   end
 end
 
@@ -144,9 +169,9 @@ end
 def flip_next_tile do
   unless status("stop_arisu") do
     cond do
-      tier == 1 -> flip_next_top_tile; print("a"); score_flip(%{key: "$key"})
-      tier == 2 -> flip_next_top_tile; print("a"); score_flip(%{key: "$key"}); flip_next_bottom_tile; score_flip(%{key: "$key"})
-      tier == 3 -> flip_next_top_tile; print("a"); score_flip(%{key: "$key"}); flip_next_bottom_tile; score_flip(%{key: "$key"})
+      tier == 1 -> flip_next_top_tile; score_flip(%{key: "$key"})
+      tier == 2 -> flip_next_top_tile; score_flip(%{key: "$key"}); flip_next_bottom_tile; score_flip(%{key: "$key"})
+      tier == 3 -> flip_next_top_tile; score_flip(%{key: "$key"}); flip_next_bottom_tile; score_flip(%{key: "$key"})
     end
     process_post_flip(%{key: "$key"})
   end
@@ -154,23 +179,23 @@ end
 define_set arisu_adjacent, ~s"0 0|0 1"
 
 def score_flip do
-  tag_tiles("flipped", "last_scryed_tile")
   prev_arisu_matches = arisu_matches
+  matches = 0
   cond do
     tiles_match(["flipped"], ["9z"]) ->
       # shiro pocchi: choose what tile it is, must not be visible. unimplemented, just get 10 chips for now
       arisu_matches += 10
     tiles_match(["flipped"], ["pinzu", "souzu", "jihai"]) ->
       # number tile: 1 shuugi per tile on or adjacent to it in dora indicator order
-      add_counter("arisu_matches", "count_matching_ways", ["hand_any", "last_scryed_tile"], ~m"arisu_adjacent:1")
-      add_counter("arisu_matches", "count_matching_ways", ["call_tiles_any", "last_scryed_tile"], ~m"arisu_adjacent:1")
+      add_counter("matches", "count_matching_ways", ["hand_any", "last_scryed_tile"], ~m"arisu_adjacent:1")
+      add_counter("matches", "count_matching_ways", ["call_tiles_any", "last_scryed_tile"], ~m"arisu_adjacent:1")
       cond do
-        "$key" == "tsumo"   -> if match(["draw", "last_scryed_tile"], ~m"arisu_adjacent:1") do arisu_matches += 1 end
-        "$key" == "ron"     -> if match(["last_discard", "last_scryed_tile"], ~m"arisu_adjacent:1") do arisu_matches += 1 end
-        "$key" == "chankan" -> if match(["last_called_tile", "last_scryed_tile"], ~m"arisu_adjacent:1") do arisu_matches += 1 end
+        equals("$key", "tsumo")   -> if match(["draw", "last_scryed_tile"], ~m"arisu_adjacent:1") do matches += 1 end
+        equals("$key", "ron")     -> if match(["last_discard", "last_scryed_tile"], ~m"arisu_adjacent:1") do matches += 1 end
+        equals("$key", "chankan") -> if match(["last_called_tile", "last_scryed_tile"], ~m"arisu_adjacent:1") do matches += 1 end
       end
-      diff = arisu_matches - prev_arisu_matches
-      if tier < 3 and diff >= 6 do
+      arisu_matches += matches
+      if tier < 3 and matches >= 6 do
         push_message("advances to tier $tier for matching $diff distinct tiles", %{tier: "tier", diff: "diff"})
         tier += 1
       end
@@ -182,7 +207,7 @@ def score_flip do
     true ->
       print("warning, tile didn't match anything")
   end
-  untag_tiles("flipped", "last_scryed_tile")
+  diff = arisu_matches - prev_arisu_matches
 
   # TODO rainbow sevens mod:
   # if you have both rainbow 7s, +1 tier
@@ -191,27 +216,27 @@ def score_flip do
 end
 
 def process_post_flip do
+  untag_tiles("flipped", "scryed_tiles")
   cond do
+    tiles_in_wall < 2 ->
+      cond do
+        equals("$key", "tsumo") -> push_message("has run out of 2-stacks in wall to flip, ending with a total payment of $chips extra chips from the discarder", %{chips: "arisu_matches"})
+        true -> push_message("has run out of 2-stacks in wall to flip, ending with a total payment of $chips extra chips from all other players", %{chips: "arisu_matches"})
+      end
+      set_status("stop_arisu")
     prev_arisu_matches == arisu_matches ->
       if lives > 1 do
         lives -= 1
         push_message("loses one life")
       else
         cond do
-          "$key" == "tsumo" -> push_message("has run out of lives, ending with a total payment of $chips extra chips from the discarder", %{chips: "arisu_matches"})
+          equals("$key", "tsumo") -> push_message("has run out of lives, ending with a total payment of $chips extra chips from the discarder", %{chips: "arisu_matches"})
           true -> push_message("has run out of lives, ending with a total payment of $chips extra chips from all other players", %{chips: "arisu_matches"})
         end
         set_status("stop_arisu")
       end
-    tiles_in_wall < 2 ->
-      cond do
-        "$key" == "tsumo" -> push_message("has run out of 2-stacks in wall to flip, ending with a total payment of $chips extra chips from the discarder", %{chips: "arisu_matches"})
-        true -> push_message("has run out of 2-stacks in wall to flip, ending with a total payment of $chips extra chips from all other players", %{chips: "arisu_matches"})
-      end
-      set_status("stop_arisu")
     true ->
-      diff = arisu_matches - prev_arisu_matches
-      push_message("adds $diff chip(s) to the payment for matching $diff tile(s)", %{diff: "diff"})
+      push_message("adds $diff chip(s) to the payment for matching $matches tile(s)", %{diff: "diff", matches: "matches"})
   end
 end
 
@@ -328,6 +353,7 @@ def flip_next_top_tile do
       tile_revealed(-6) and tile_not_revealed(-8) -> reveal_tile(-8); scry_named_tiles(-8); remove_attr([-6], ["highlight"]); add_attr([-8], ["highlight"])
     end
   end
+  tag_tiles("flipped", "last_scryed_tile");
 end
 
 def flip_next_bottom_tile do
@@ -438,4 +464,5 @@ def flip_next_bottom_tile do
       tile_revealed(-6) and tile_not_revealed(-8) -> reveal_tile(-7); scry_named_tiles(-7); remove_attr([-5], ["highlight"]); add_attr([-7], ["highlight"])
     end
   end
+  tag_tiles("flipped", "last_scryed_tile");
 end

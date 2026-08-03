@@ -785,8 +785,8 @@ Colors are specified as CSS color strings like `"#808080"` or `"lightblue"`. Exa
 - `choose_yaku`: Bring up a UI that allows you to select a subset of every yaku in the current ruleset. This is used in conjunction with the conditions `"has_declared_yaku_with_hand"` etc. to ensure that the current player has their selected yaku. This action is used in Sakicards for Shimizudani Ryuuka's third ability.
 - `disable_saki_card(seat_spec)`: Disable all sakicards for the given seat.
 - `enable_saki_card(seat_spec)`: Enable all sakicards for the given seat.
-- `save_revealed_tiles`: Save the current state of the revealed tiles (e.g. dora indicators).
-- `load_revealed_tiles`: Load the previously saved state of the revealed tiles (e.g. dora indicators).
+- `save_revealed_tiles(label)`: Save the current state of the revealed tiles (e.g. dora indicators).
+- `load_revealed_tiles(label)`: Load the previously saved state of the revealed tiles (e.g. dora indicators).
 - `merge_draw`: Move the draw into the hand. This action will be removed in the future in favor of `"move_tiles"`.
 - `pass_draws(seat_spec, num)`: Move up to `num` tiles from the current player's draw to the given seat's draw. This action will be removed in the future in favor of `"move_tiles"`.
 - `saki_start`: Prints some messages about what cards each player chose, and triggers the `after_saki_start` event.

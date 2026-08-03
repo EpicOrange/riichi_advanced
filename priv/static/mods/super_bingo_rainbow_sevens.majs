@@ -1,5 +1,62 @@
 on after_initialization do
-  add_rule("Tiles", "Rainbow Sevens", "(Super Bingo)")
+  add_rule("Tiles", "Rainbow Sevens", "(Rainbow Sevens) One %{7p} and one %{7s} are replaced by %{rainbows}.", %{"7p": ~t"7p", "7s": ~t"7s", rainbows: ~T"47p@rainbow 47s@rainbow"})
+  add_rule("Rules", "Shuugi", "(Rainbow Sevens) Each rainbow seven in a winning hand adds 10 shuugi to the payment.")
+  add_rule("Rules", "Tulips: Flipping", "- (Rainbow Sevens) A rainbow seven flipped during this process is treated as a normal seven (matches 678 of that suit) but earns twice the number of chips, that is, two chips per match.")
+  add_rule("Rules", "Tulips: Tiers", "(Rainbow Sevens) Having both rainbow sevens in your winning hand grants +1 tier (max tier is still 3).")
 end
 
-# TODO
+replace 1, "wall", "7p", ["47p", "rainbow"]
+replace 1, "wall", "7s", ["47s", "rainbow"]
+define_set rainbow, ~s"47p@rainbow|47s@rainbow"
+apply append, "set_definitions.seven", ~s"47p@rainbow|47s@rainbow"
+
+on after_start do
+  set_tile_alias_all([["47p", "rainbow"]], ["7p"])
+  set_tile_alias_all([["47s", "rainbow"]], ["7s"])
+  tag_tiles("dora", [["47p", "rainbow"], ["47s", "rainbow"]])
+end
+
+apply set_merge, "dora_indicators", %{
+  "47p": ["8p"],
+  "47s": ["8s"],
+}
+
+on before_win do
+  add_counter("rainbows", "count_matches", ["hand", "calls", "winning_tile"], ~m"nojoker, rainbow:1")
+  rainbow_payment = rainbows * 10
+end
+
+define_yaku shuugi, "Rainbow Seven", ["rainbow_payment", "⛀"], rainbow_payment > 0
+
+apply append, "functions.announce_shuugi_payment" do
+  if rainbows >= 1 do
+    if won_by_draw do
+      push_system_message("Everyone pays 10 chips per rainbow seven")
+    else
+      push_system_message("Discarder pays 10 chips per rainbow seven")
+    end
+  end
+end
+
+apply append, "functions.calculate_tulips_tier" do
+  cond do
+    equals("$key", "tsumo")   -> if match(["hand", "calls", "draw"], ~m"rainbow:2") do tier += 1; push_message("gains a tier for having both rainbow sevens") end
+    equals("$key", "ron")     -> if match(["hand", "calls", "last_discard"], ~m"rainbow:2") do tier += 1; push_message("gains a tier for having both rainbow sevens") end
+    equals("$key", "chankan") -> if match(["hand", "calls", "last_called_tile"], ~m"rainbow:2") do tier += 1; push_message("gains a tier for having both rainbow sevens") end
+  end
+end
+
+apply append, "functions.score_flip" do
+  if diff > 0 and tiles_match(["flipped"], ["47p", "47s"]) do
+    arisu_matches += matches
+    diff += matches
+  end
+end
+
+
+
+
+
+
+
+

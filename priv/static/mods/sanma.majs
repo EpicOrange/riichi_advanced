@@ -2,7 +2,7 @@ define "sanma"
 
 on after_initialization do
   add_rule("Rules", "No Chii", "(Sanma) You cannot call chii in sanma.")
-  add_rule("Rules", "Wall", "(Sanma) The 2 to 8 of characters are removed from the wall.", -99)
+  add_rule("Tiles", "Sanma", "(Sanma) The 2 to 8 of characters are removed from the wall.", -99)
   add_rule("Rules", "Nukidora", "(Sanma) You may declare north winds to draw a replacement tile from the dead wall. Each is worth 1 han. North winds are still usable to form pairs and triplets. If you are waiting on the north wind, you may ron a north wind declaration much like chankan (but you are not awarded chankan).")
 end
 

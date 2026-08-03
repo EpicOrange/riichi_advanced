@@ -53,7 +53,7 @@ on after_win do
 end
 
 define_mod_category "Super Bingo", prepend: true
-define_mod super_bingo_rainbow_sevens, name: "Rainbow Sevens (unimplemented)", category: "Super Bingo", desc: "One of the eight 7p and one of the eight 7s is rainbow-colored. They are worth 10 shuugi each (same as how gold dora is worth 1)."
+define_mod super_bingo_rainbow_sevens, name: "Rainbow Sevens", category: "Super Bingo", desc: "One of the eight 7p and one of the eight 7s is rainbow-colored. They are worth 10 shuugi each (same as how gold dora is worth 1)."
 define_mod super_bingo_grand_cross, conflicts: ["yaku/grand_cross"], name: "Grand Cross (unimplemented)", category: "Super Bingo", desc: "You may declare NEWS (one of each wind) as a concealed kan that grants immediate shuugi payments. There is also a special gold north tile that doubles said payments if you use it."
 define_mod super_bingo_seven_rush, name: "Seven Rush (unimplemented)", category: "Super Bingo", desc: "unimplemented"
 define_mod super_bingo_bases_loaded, name: "Bases Loaded (unimplemented)", category: "Super Bingo", desc: "unimplemented"

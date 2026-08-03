@@ -289,7 +289,7 @@ defmodule RiichiAdvanced.GameState do
       reversed_turn_order: false,
       reserved_tiles: [],
       revealed_tiles: [],
-      saved_revealed_tiles: [],
+      saved_revealed_tiles: %{},
       max_revealed_tiles: 0,
       drawn_reserved_tiles: [],
       named_scryed_tiles: [],
@@ -652,7 +652,7 @@ defmodule RiichiAdvanced.GameState do
       |> Map.put(:wall_index, wall_index)
       |> Map.put(:dead_wall_index, 0)
       |> Map.put(:revealed_tiles, revealed_tiles)
-      |> Map.put(:saved_revealed_tiles, revealed_tiles)
+      |> Map.put(:saved_revealed_tiles, %{})
       |> Map.put(:max_revealed_tiles, max_revealed_tiles)
       |> Map.put(:named_scryed_tiles, [])
 
@@ -718,7 +718,7 @@ defmodule RiichiAdvanced.GameState do
       |> Map.put(:dead_wall_index, 0)
       |> Map.put(:reserved_tiles, reserved_tiles)
       |> Map.put(:revealed_tiles, revealed_tiles)
-      |> Map.put(:saved_revealed_tiles, revealed_tiles)
+      |> Map.put(:saved_revealed_tiles, %{})
       |> Map.put(:max_revealed_tiles, max_revealed_tiles)
       |> Map.put(:drawn_reserved_tiles, [])
       |> Map.put(:named_scryed_tiles, [])

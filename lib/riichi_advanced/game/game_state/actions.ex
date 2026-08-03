@@ -1766,6 +1766,7 @@ defmodule RiichiAdvanced.GameState.Actions do
           tiles = List.wrap(Enum.at(opts, 1, [:"1x"]))
           |> Enum.flat_map(&case &1 do
             "last_discard" -> if get_last_discard_action(state) != nil do [get_last_discard_action(state).tile] else [] end
+            "scryed_tiles" -> get_scryed_tiles(state, context.seat)
             "last_scryed_tile" -> Enum.take(get_scryed_tiles(state, context.seat), -1)
             "all" -> state.players[context.seat].tile_behavior.all_tiles
             _ -> [from_named_tile(state, context, &1)]
@@ -1863,8 +1864,12 @@ defmodule RiichiAdvanced.GameState.Actions do
           targets = Conditions.from_seats_spec(state, context, Enum.at(opts, 0, "self"))
           state = Saki.enable_saki_card(state, targets)
           state
-        "save_revealed_tiles" -> put_in(state.saved_revealed_tiles, state.revealed_tiles)
-        "load_revealed_tiles" -> put_in(state.revealed_tiles, state.saved_revealed_tiles)
+        "save_revealed_tiles" ->
+          label = Enum.at(opts, 0, "default")
+          put_in(state.saved_revealed_tiles[label], state.revealed_tiles)
+        "load_revealed_tiles" ->
+          label = Enum.at(opts, 0, "default")
+          put_in(state.revealed_tiles, Map.get(state.saved_revealed_tiles, label, state.revealed_tiles))
         # deprecated
         "merge_draw"          -> update_player(state, context.seat, &%{ &1 | hand: &1.hand ++ Utils.remove_attr(&1.draw, ["_draw"]), draw: [] })
         "pass_draws"      ->
