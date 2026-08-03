@@ -5,7 +5,7 @@ require "kansai_flowers"
 require "zan_scoring"
 require "kansai_draw"
 require "yaku/kansai_chiitoitsu"
-require "shuugi", %{worth: 1000, pao_pays_all: true, starting_shuugi: 1000}
+require "shuugi", %{worth: 10, pao_pays_all: true, starting_shuugi: 1000}
 require "super_bingo_tictactoe"
 require "super_bingo_tulips"
 require_after "super_bingo_yaku"
