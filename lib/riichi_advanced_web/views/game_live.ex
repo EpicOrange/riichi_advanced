@@ -124,6 +124,7 @@ defmodule RiichiAdvancedWeb.GameLive do
   alias RiichiAdvancedWeb.GameLive.Tutorial
   use Gettext, backend: RiichiAdvancedWeb.Gettext
   use RiichiAdvancedWeb, :live_view
+  import RiichiAdvancedWeb.GameComponents
 
   def mount(params, session, socket) do
     socket = socket
@@ -138,9 +139,9 @@ defmodule RiichiAdvancedWeb.GameLive do
     |> assign(:messages_state, nil)
     |> assign(:state, %Game{})
     |> assign(:seat, :east)
-    |> assign(:shimocha, nil)
-    |> assign(:toimen, nil)
-    |> assign(:kamicha, nil)
+    |> assign(:shimocha, :south)
+    |> assign(:toimen, :west)
+    |> assign(:kamicha, :north)
     |> assign(:viewer, :spectator)
     |> assign(:display_riichi_sticks, false)
     |> assign(:display_honba, false)
@@ -225,7 +226,7 @@ defmodule RiichiAdvancedWeb.GameLive do
 
   def render(assigns) do
     ~H"""
-    <RiichiAdvancedWeb.GameComponents.game_view
+    <.game_view
       state={@state}
       ruleset={@ruleset}
       seat={@seat}
@@ -242,7 +243,7 @@ defmodule RiichiAdvancedWeb.GameLive do
       interaction_state={@interaction_state}
       messages={@messages}
       messages_state={@messages_state}>
-    </RiichiAdvancedWeb.GameComponents.game_view>
+    </.game_view>
     """
   end
 
@@ -255,7 +256,7 @@ defmodule RiichiAdvancedWeb.GameLive do
         player = socket.assigns.state.players[socket.assigns.seat]
         if socket.assigns.seat == socket.assigns.state.turn and not Enum.empty?(player.draw) do
           send(self(), {:play_tile, length(player.hand)})
-          socket = update_interaction_state(socket, &%{&1 | selected_index: :any})
+          update_interaction_state(socket, &%{&1 | selected_index: :any})
         else
           if "skip" in player.buttons do
             GenServer.cast(socket.assigns.game_state, {:press_button, socket.assigns.seat, "skip"})

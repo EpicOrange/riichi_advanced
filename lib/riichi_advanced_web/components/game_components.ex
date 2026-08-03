@@ -23,6 +23,7 @@ defmodule RiichiAdvancedWeb.GameComponents do
   attr :interaction_state, :any, required: true
   attr :tutorial_state, :any, required: true
   slot :inner_block
+  slot :log_control
   def game_view(assigns) do
     ~H"""
     <div id="container" class={[@ruleset == "minefield" && "minefield"]} phx-hook="ClickListener">
@@ -43,7 +44,7 @@ defmodule RiichiAdvancedWeb.GameComponents do
       <.live_component module={RiichiAdvancedWeb.HandComponent}
         id={"hand #{Utils.get_relative_seat(@seat, seat)}"}
         game_state={@game_state}
-        revealed?={@viewer == seat or player.hand_revealed}
+        revealed?={@viewer == seat or player.hand_revealed or @state.log_seeking_mode}
         your_hand?={@viewer == seat}
         your_turn?={@seat == @state.turn}
         seat={seat}
@@ -257,6 +258,7 @@ defmodule RiichiAdvancedWeb.GameComponents do
           </div>
         <% end %>
       </div>
+      {render_slot(@log_control)}
       <div class={["big-text"]} :if={@loading}><%= t(@lang, "Loading...") %></div>
       <%= if RiichiAdvanced.GameState.Debug.debug_status() or Rules.get(@state.rules_ref, "debug_status", false) do %>
         <div class={["status-line", Utils.get_relative_seat(@seat, seat)]} :for={{seat, player} <- @state.players}>
