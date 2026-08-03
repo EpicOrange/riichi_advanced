@@ -137,8 +137,7 @@ defmodule RiichiAdvanced.GameState.Debug do
               :north => Utils.sort_tiles(Enum.slice(wall, 39..51))}
 
     # testing hand
-    hands = %{:east  => Utils.sort_tiles([:"2p", :"3p", :"4p", :"5m", :"5m", :"5m", :"1s", :"2s", :"3s", :"4z", :"4z", :"7s", :"7s"]),
-    hands = %{:east  => Utils.sort_tiles([:"3m", :"3m", :"4m", :"4m", :"6p", :"6p", :"2s", :"2s", :"5s", :"5s", :"5s", :"2z", :"2z"]),
+    hands = %{:east  => Utils.sort_tiles([:"3m", :"3m", :"4m", :"4m", :"6p", :"6p", :"2s", :"2s", :"4s", :"4s", :"5s", :"2z", :"2z"]),
               :south => Enum.slice(wall, 13..25),
               :west  => Enum.slice(wall, 26..38),
               :north => Enum.slice(wall, 39..51)}
