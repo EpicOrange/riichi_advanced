@@ -12,6 +12,8 @@ define_global tsumo_name, "Zimo"
 
 require "value_honors"
 require "standard_sets"
+require "taiwanese_rules"
+
 require "base"
 require "standard_wall"
 require "framed_5z"
