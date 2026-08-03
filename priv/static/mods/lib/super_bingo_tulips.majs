@@ -224,8 +224,8 @@ def process_post_flip do
   cond do
     tiles_in_wall < 2 ->
       cond do
-        equals("$key", "tsumo") -> push_message("has run out of 2-stacks in wall to flip, ending with a total payment of $chips extra chips from the discarder", %{chips: "arisu_matches"})
-        true -> push_message("has run out of 2-stacks in wall to flip, ending with a total payment of $chips extra chips from all other players", %{chips: "arisu_matches"})
+        equals("$key", "tsumo") -> push_message("has run out of 2-stacks in wall to flip, ending with a total payment of $chips extra chips from all other players", %{chips: "arisu_matches"})
+        true -> push_message("has run out of 2-stacks in wall to flip, ending with a total payment of $chips extra chips from the discarder", %{chips: "arisu_matches"})
       end
       set_status("stop_arisu")
     prev_arisu_matches == arisu_matches ->
@@ -234,8 +234,8 @@ def process_post_flip do
         push_message("loses one life")
       else
         cond do
-          equals("$key", "tsumo") -> push_message("has run out of lives, ending with a total payment of $chips extra chips from the discarder", %{chips: "arisu_matches"})
-          true -> push_message("has run out of lives, ending with a total payment of $chips extra chips from all other players", %{chips: "arisu_matches"})
+          equals("$key", "tsumo") -> push_message("has run out of lives, ending with a total payment of $chips extra chips from all other players", %{chips: "arisu_matches"})
+          true -> push_message("has run out of lives, ending with a total payment of $chips extra chips from the discarder", %{chips: "arisu_matches"})
         end
         set_status("stop_arisu")
       end
