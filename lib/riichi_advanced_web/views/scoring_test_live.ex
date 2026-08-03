@@ -102,6 +102,8 @@ defmodule RiichiAdvancedWeb.ScoringTestLive do
   def render(assigns) do
     ~H"""
     <div id="container" phx-hook="ClickListener">
+      <input id="tile-numbers-checkbox" type="checkbox" class="tile-numbers-checkbox" phx-update="ignore">
+      <label for="tile-numbers-checkbox" class="game-bottom-element">123</label>
       <div class="scoringtest-container">
         <input id="show-yaku" name="scoringtest-header" type="radio" phx-update="ignore">
         <input id="show-mods" name="scoringtest-header" type="radio" phx-update="ignore">
