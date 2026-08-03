@@ -223,7 +223,7 @@ define_button joker_swap,
   show_when:
     our_turn and not_just_discarded
     and not_status("can_rob_bounce")
-    and match(["hand_draw_nonjoker_any", "self_joker_meld_tiles"], ~m"pair:1")
+    and match(["hand_draw_nonjoker_any", "self_joker_meld_tiles"], ~m"nojoker, pair:1")
     and not_no_tiles_remaining
   do
     big_text("Bounce")
