@@ -77,7 +77,7 @@ fn check_pair_match(hand: &TileSet, groups: &[MatchGroup], match_info: &MatchInf
         // then see if applying the combined offset to one tile gets you one of the other tiles in the hand
         let offset = Rc::new(vec!(offset));
         for (i, tile1) in hand.attrs.iter().enumerate() {
-          if let Some(target) = apply_offsets(tile1, &offset.clone(), &match_info.all_attrs, &match_info.ordering, &match_info.ordering_r).0[0] {
+          if let Some(target) = apply_offsets(tile1, &offset.clone(), &match_info.all_attrs, &match_info.ordering).0[0] {
             for (j, tile2) in hand.attrs.iter().enumerate() {
               if i == j { continue; }
               // draw an edge between two tiles iff they share any aliases

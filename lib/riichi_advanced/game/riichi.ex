@@ -211,7 +211,7 @@ defmodule RiichiAdvanced.Riichi do
         # |> Enum.reject(&TileBehavior.is_joker?(&1, tile_behavior))
         |> Utils.strip_attrs()
         |> Enum.flat_map(fn instance ->
-          case Match.apply_offsets(instance, call_spec, tile_behavior.ordering, tile_behavior.ordering_r) do
+          case Match.apply_offsets(instance, call_spec, tile_behavior.ordering) do
             nil -> []
             target_tiles ->
               possible_removals = Match.try_remove_all_tiles(hand, target_tiles, tile_behavior.aliases, tile_behavior.attrs)
@@ -480,7 +480,7 @@ defmodule RiichiAdvanced.Riichi do
         true ->
           arr = [-4, -3, -2, -1, 0, 1, 2, 3, 4]
           |> Enum.map(fn offset -> 
-            tiles = Match.apply_offsets(tile, [offset], tile_behavior.ordering, tile_behavior.ordering_r)
+            tiles = Match.apply_offsets(tile, [offset], tile_behavior.ordering)
             if tiles != nil do
               test_tiles(hand, [tile | tiles], tile_behavior)
             else false end
@@ -516,10 +516,10 @@ defmodule RiichiAdvanced.Riichi do
   def genbutsu_to_suji(genbutsu, tile_behavior) do
     check = [nil | genbutsu]
     Enum.flat_map(genbutsu, fn tile ->
-      ll = Match.apply_offset(tile, -6, tile_behavior.ordering, tile_behavior.ordering_r)
-      l = Match.apply_offset(tile, -3, tile_behavior.ordering, tile_behavior.ordering_r)
-      r = Match.apply_offset(tile, 3, tile_behavior.ordering, tile_behavior.ordering_r)
-      rr = Match.apply_offset(tile, 6, tile_behavior.ordering, tile_behavior.ordering_r)
+      ll = Match.apply_offset(tile, -6, tile_behavior.ordering)
+      l = Match.apply_offset(tile, -3, tile_behavior.ordering)
+      r = Match.apply_offset(tile, 3, tile_behavior.ordering)
+      rr = Match.apply_offset(tile, 6, tile_behavior.ordering)
       (if ll in check do [l] else [] end) ++ (if rr in check do [r] else [] end)
     end)
   end

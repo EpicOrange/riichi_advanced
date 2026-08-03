@@ -58,7 +58,7 @@ pub fn perform_bipartite_match<'a>(
     Box::new((0..base_tiles.len()).flat_map(move |ix| -> HandsIterator<'a> {
       let base_tile = base_tiles[ix];
       let num_ignores = num_offsets - actual_num; // can skip reifying this many tiles
-      let Some((offset_tiles, mut nojoker_ix)) = apply_offsets_early_exit(&base_tile, &offsets, &match_info.all_attrs, &match_info.ordering, &match_info.ordering_r, num_ignores)
+      let Some((offset_tiles, mut nojoker_ix)) = apply_offsets_early_exit(&base_tile, &offsets, &match_info.all_attrs, &match_info.ordering, num_ignores)
       else {
         // if debug { println!("Giving up since we cannot reify enough offsets ({}/{}) in {:?} with base tile <{:?}> (num_ignores={})", num, num_offsets, offsets, base_tile, num_ignores); }
         return Box::new(empty());

@@ -1641,20 +1641,52 @@ defmodule RiichiAdvanced.GameState.Actions do
           tiles = Enum.map(Enum.at(opts, 0, []), &Utils.to_tile/1)
           ordering = Enum.zip(Enum.drop(tiles, -1), Enum.drop(tiles, 1)) |> Map.new()
           ordering_r = Enum.zip(Enum.drop(tiles, 1), Enum.drop(tiles, -1)) |> Map.new()
-          update_player(state, context.seat, &%{ &1 | tile_behavior: %{ &1.tile_behavior |
-            ordering: Map.merge(&1.tile_behavior.ordering, ordering),
-            ordering_r: Map.merge(&1.tile_behavior.ordering_r, ordering_r),
-            uuid: Ecto.UUID.generate()
-          } })
+          update_player(state, context.seat, fn player ->
+            player = update_in(player.tile_behavior.ordering.ordering, &Map.merge(&1, ordering))
+            player = update_in(player.tile_behavior.ordering.ordering_r, &Map.merge(&1, ordering_r))
+            player = put_in(player.tile_behavior.uuid, Ecto.UUID.generate())
+            player
+          end)
         "set_tile_ordering_all" ->
           tiles = Enum.map(Enum.at(opts, 0, []), &Utils.to_tile/1)
           ordering = Enum.zip(Enum.drop(tiles, -1), Enum.drop(tiles, 1)) |> Map.new()
           ordering_r = Enum.zip(Enum.drop(tiles, 1), Enum.drop(tiles, -1)) |> Map.new()
-          update_all_players(state, fn _seat, player -> %{ player | tile_behavior: %{ player.tile_behavior |
-            ordering: Map.merge(player.tile_behavior.ordering, ordering),
-            ordering_r: Map.merge(player.tile_behavior.ordering_r, ordering_r),
-            uuid: Ecto.UUID.generate()
-          } } end)
+          update_all_players(state, fn _seat, player ->
+            player = update_in(player.tile_behavior.ordering.ordering, &Map.merge(&1, ordering))
+            player = update_in(player.tile_behavior.ordering.ordering_r, &Map.merge(&1, ordering_r))
+            player = put_in(player.tile_behavior.uuid, Ecto.UUID.generate())
+            player
+          end)
+        "set_suit_ordering"     ->
+          suits = opts |> Enum.map(fn suit -> Enum.map(suit, &Utils.to_tile/1) end)
+          suit_ordering = for {suit1, suit2} <- Enum.zip(Enum.drop(suits, -1), Enum.drop(suits, 1)), reduce: %{} do
+            acc -> Map.merge(acc, Enum.zip(suit1, suit2) |> Map.new())
+          end
+          suit_ordering_r = for {suit1, suit2} <- Enum.zip(Enum.drop(suits, 1), Enum.drop(suits, -1)), reduce: %{} do
+            acc -> Map.merge(acc, Enum.zip(suit1, suit2) |> Map.new())
+          end
+          ret = update_player(state, context.seat, fn player ->
+            player = update_in(player.tile_behavior.ordering.suit_ordering, &Map.merge(&1, suit_ordering))
+            player = update_in(player.tile_behavior.ordering.suit_ordering_r, &Map.merge(&1, suit_ordering_r))
+            player = put_in(player.tile_behavior.uuid, Ecto.UUID.generate())
+            player
+          end)
+          IO.inspect(state[context.seat].player.tile_behavior.ordering.suit_ordering)
+          ret
+        "set_suit_ordering_all" ->
+          suits = opts |> Enum.map(fn suit -> Enum.map(suit, &Utils.to_tile/1) end)
+          suit_ordering = for {suit1, suit2} <- Enum.zip(Enum.drop(suits, -1), Enum.drop(suits, 1)), reduce: %{} do
+            acc -> Map.merge(acc, Enum.zip(suit1, suit2) |> Map.new())
+          end
+          suit_ordering_r = for {suit1, suit2} <- Enum.zip(Enum.drop(suits, 1), Enum.drop(suits, -1)), reduce: %{} do
+            acc -> Map.merge(acc, Enum.zip(suit1, suit2) |> Map.new())
+          end
+          update_all_players(state, fn _seat, player ->
+            player = update_in(player.tile_behavior.ordering.suit_ordering, &Map.merge(&1, suit_ordering))
+            player = update_in(player.tile_behavior.ordering.suit_ordering_r, &Map.merge(&1, suit_ordering_r))
+            player = put_in(player.tile_behavior.uuid, Ecto.UUID.generate())
+            player
+          end)
         "add_attr" ->
           targets = Enum.at(opts, 0, [])
           attrs = List.wrap(Enum.at(opts, 1, []))

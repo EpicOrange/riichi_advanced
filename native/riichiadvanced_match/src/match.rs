@@ -1,9 +1,8 @@
-use std::collections::{HashMap, HashSet};
+use std::collections::HashSet;
 use std::iter::{empty, once};
 use std::rc::Rc;
 use std::sync::atomic::Ordering;
 use std::time::Instant;
-use rustler::Atom;
 
 use crate::encode::{decode, encode, encode_aliases, encode_attrs, encode_tiles};
 use crate::match_bipartite::perform_bipartite_match;
@@ -16,7 +15,7 @@ use crate::offsets::{__generate_groups, get_base_tiles};
 use crate::profile::{PROFILE_MATCH, CALL_COUNT, MAX_NANOS, TOTAL_NANOS};
 use crate::tile_table::TILE_TABLE;
 use crate::tileset::_subtract_check_attrs_exhaustive;
-use crate::types::{ANY_PRIME, BaseTileVec, ElixirAliases, ElixirHand, ElixirHandCalls, ElixirTile, FIXED_OFFSETS, Hands, HandsIterator, MatchDefinition, MatchDefinitionElem, MatchDefinitions, MatchGroup, MatchInfo, MatchOffset, RemovableGroup, Tile};
+use crate::types::{ANY_PRIME, BaseTileVec, ElixirAliases, ElixirHand, ElixirHandCalls, ElixirTile, ElixirTileOrdering, FIXED_OFFSETS, Hands, HandsIterator, MatchDefinition, MatchDefinitionElem, MatchDefinitions, MatchGroup, MatchInfo, MatchOffset, RemovableGroup, Tile};
 use crate::utils::remove_indices;
 
 // this is used a lot, especially for determining and processing calls
@@ -73,9 +72,9 @@ pub fn _remove_match_definition(
   match_definition: MatchDefinition,
   all_attrs: Vec<String>,
   elixir_aliases: ElixirAliases,
-  ordering: HashMap<Atom, Atom>, ordering_r: HashMap<Atom, Atom>,
+  ordering: ElixirTileOrdering,
 ) -> Vec<Vec<ElixirHand>> {
-  let match_info = prepare_tiles(&hand_calls, all_attrs, &elixir_aliases, &ordering, &ordering_r);
+  let match_info = prepare_tiles(&hand_calls, all_attrs, &elixir_aliases, &ordering);
   __remove_match_definition(&match_info, &match_definition)
     .map(|sv| sv.iter().map(|ts| decode(ts, &match_info.all_attrs)).collect())
     .collect()
@@ -328,7 +327,7 @@ pub fn _match_hand_v3(
   match_definitions: MatchDefinitions,
   all_attrs: Vec<String>,
   elixir_aliases: ElixirAliases,
-  ordering: HashMap<Atom, Atom>, ordering_r: HashMap<Atom, Atom>,
+  ordering: ElixirTileOrdering,
 ) -> bool {
   let start = Instant::now();
   let ret = __match_hand_v3(
@@ -337,7 +336,6 @@ pub fn _match_hand_v3(
     all_attrs,
     &elixir_aliases,
     &ordering,
-    &ordering_r,
   );
   if PROFILE_MATCH {
     let elapsed = start.elapsed();
@@ -352,14 +350,13 @@ pub fn __match_hand_v3<'a>(
   match_definitions: MatchDefinitions,
   all_attrs: Vec<String>,
   elixir_aliases: &'a ElixirAliases,
-  ordering: &'a HashMap<Atom, Atom>, ordering_r: &'a HashMap<Atom, Atom>,
+  ordering: &'a ElixirTileOrdering,
 ) -> bool {
   let match_info = prepare_tiles(
     hand_calls,
     all_attrs,
     elixir_aliases,
     ordering,
-    ordering_r,
   );
   for match_definition in match_definitions {
     let mut debug = false;
@@ -385,7 +382,7 @@ pub fn _remove_group(
   hand: ElixirHand, group: MatchGroup,
   all_attrs: Vec<String>,
   elixir_aliases: ElixirAliases,
-  ordering: HashMap<Atom, Atom>, ordering_r: HashMap<Atom, Atom>,
+  ordering: ElixirTileOrdering,
   debug: bool, exhaustive: bool, nojoker: bool,
   base_tiles: Option<Vec<ElixirTile>>,
 ) -> Vec<ElixirHand> {
@@ -394,7 +391,6 @@ pub fn _remove_group(
     all_attrs,
     &elixir_aliases,
     &ordering,
-    &ordering_r,
     debug,
     exhaustive,
     nojoker,
@@ -407,7 +403,7 @@ fn __remove_group<'a>(
   hand: ElixirHand, group: MatchGroup, 
   all_attrs: Vec<String>,
   elixir_aliases: &'a ElixirAliases,
-  ordering: &'a HashMap<Atom, Atom>, ordering_r: &'a HashMap<Atom, Atom>,
+  ordering: &'a ElixirTileOrdering,
   debug: bool, exhaustive: bool, mut nojoker: bool,
   base_tiles: &'a Option<Vec<ElixirTile>>,
 ) -> Vec<ElixirHand> {
@@ -425,7 +421,6 @@ fn __remove_group<'a>(
     all_attrs,
     elixir_aliases,
     ordering,
-    ordering_r,
   );
   let base_tiles: BaseTileVec = match base_tiles {
     Some(base_tiles) => encode_tiles(base_tiles, &match_info.all_attrs).collect(),
@@ -442,7 +437,7 @@ fn __remove_group<'a>(
     &mut base_tiles_iter,
     &match_info.all_attrs,
     &match_info.joker_tiles,
-    &match_info.ordering, &match_info.ordering_r,
+    &match_info.ordering,
     &mut nojoker,
   );
 

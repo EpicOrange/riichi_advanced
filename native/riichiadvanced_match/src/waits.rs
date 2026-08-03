@@ -1,15 +1,14 @@
 use smallvec::smallvec;
-use std::collections::{HashMap, HashSet};
+use std::collections::HashSet;
 use std::sync::atomic::Ordering;
 use std::time::Instant;
-use rustler::Atom;
 
 use crate::encode::{decode_tiles, encode_tiles};
 use crate::r#match::__remove_match_definition;
 use crate::match_info::{prepare_tiles};
 use crate::profile::{PROFILE_GET_WAITS, PROFILE_UNNEEDED_TILES, CALL_COUNT, MAX_NANOS, TOTAL_NANOS};
 use crate::tile_table::{TILE_TABLE, tile1x};
-use crate::types::{ElixirAliases, ElixirHandCalls, ElixirTile, MatchDefinition, MatchDefinitions, MatchInfo, Tile};
+use crate::types::{ElixirAliases, ElixirHandCalls, ElixirTile, ElixirTileOrdering, MatchDefinition, MatchDefinitions, MatchInfo, Tile};
 use crate::utils::{add_joker_to_aliases, remove_indices, remove_joker_from_aliases};
 
 #[rustler::nif(schedule = "DirtyCpu")]
@@ -18,7 +17,7 @@ fn _get_waits_v3(
     match_definitions: MatchDefinitions,
     all_attrs: Vec<String>,
     elixir_aliases: ElixirAliases,
-    ordering: HashMap<Atom, Atom>, ordering_r: HashMap<Atom, Atom>,
+    ordering: ElixirTileOrdering,
     game_tiles: Vec<ElixirTile>,
 ) -> Vec<ElixirTile> {
 
@@ -35,7 +34,6 @@ fn _get_waits_v3(
     all_attrs,
     &mut elixir_aliases.clone(),
     &ordering,
-    &ordering_r,
     game_tiles,
   );
   if PROFILE_GET_WAITS {
@@ -52,7 +50,7 @@ pub fn __get_waits_v3(
     match_definitions: MatchDefinitions,
     all_attrs: Vec<String>,
     elixir_aliases: &mut ElixirAliases,
-    ordering: &HashMap<Atom, Atom>, ordering_r: &HashMap<Atom, Atom>,
+    ordering: &ElixirTileOrdering,
     elixir_game_tiles: Vec<ElixirTile>,
 ) -> Vec<ElixirTile> {
   // basic strategy is to add a custom joker 1x that starts of being "all tiles"
@@ -72,7 +70,6 @@ pub fn __get_waits_v3(
     all_attrs,
     elixir_aliases,
     ordering,
-    ordering_r,
   );
   let joker = (*TILE_TABLE.get("1x").unwrap(), 0);
   let mut not_waits: HashSet<Tile> = HashSet::new();
@@ -188,7 +185,7 @@ fn _get_unneeded_tiles_v2(
     match_definitions: MatchDefinitions,
     all_attrs: Vec<String>,
     elixir_aliases: ElixirAliases,
-    ordering: HashMap<Atom, Atom>, ordering_r: HashMap<Atom, Atom>,
+    ordering: ElixirTileOrdering,
 ) -> Vec<ElixirTile> {
   let start = Instant::now();
   let ret = __get_unneeded_tiles_v2(
@@ -197,7 +194,6 @@ fn _get_unneeded_tiles_v2(
     all_attrs,
     &elixir_aliases,
     &ordering,
-    &ordering_r,
   );
   if PROFILE_UNNEEDED_TILES {
     let elapsed = start.elapsed();
@@ -216,7 +212,7 @@ pub fn __get_unneeded_tiles_v2(
     match_definitions: MatchDefinitions,
     all_attrs: Vec<String>,
     elixir_aliases: &ElixirAliases,
-    ordering: &HashMap<Atom, Atom>, ordering_r: &HashMap<Atom, Atom>,
+    ordering: &ElixirTileOrdering,
 ) -> Vec<ElixirTile> {
   // just try removing each tile in turn and seeing the resulting match fails
 
@@ -225,7 +221,6 @@ pub fn __get_unneeded_tiles_v2(
     all_attrs,
     elixir_aliases,
     ordering,
-    ordering_r,
   );
 
   // precheck: remove the match definitions once

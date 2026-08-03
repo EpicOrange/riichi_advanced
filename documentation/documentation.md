@@ -758,6 +758,8 @@ Colors are specified as CSS color strings like `"#808080"` or `"lightblue"`. Exa
 - `clear_tile_aliases`: Clears all joker assignments for the current player.
 - `set_tile_ordering([tile1, tile2, ...])`: Asserts that `tile1` comes after `tile2` and so on. Applies only to the current player.
 - `set_tile_ordering_all([tile1, tile2, ...])`: Same, but applies this assertion to all players.
+- `set_suit_ordering([suit1, suit2, ...])`: Asserts that `suit1` comes after `suit2` and so on. A suit is just an array of tiles, each argument should have the same number of tiles. Applies only to the current player.
+- `set_suit_ordering_all([suit1, suit2, ...])`: Same, but applies this assertion to all players.
 - `save_tile_behavior(label)`: Saves all joker assignments and tile orderings under the name `label` for the current player, which defaults to `"default"` when not supplied.
 - `load_tile_behavior(label)`: Loads all joker assignments and tile orderings under the name `label` for the current player, which defaults to `"default"` when not supplied.
 - `add_attr([target1, ...], [attr1, ...], [tile_spec1...])`: Add the given attributes to the given targets that match all given tile specs.

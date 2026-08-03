@@ -11,7 +11,7 @@ static MANZU_PRIMES: OnceLock<HashSet<Prime>> = OnceLock::new();
 static SOUZU_PRIMES: OnceLock<HashSet<Prime>> = OnceLock::new();
 static PINZU_PRIMES: OnceLock<HashSet<Prime>> = OnceLock::new();
 static JIHAI_PRIMES: OnceLock<HashSet<Prime>> = OnceLock::new();
-// static SHIFT_SUIT: OnceLock<TileOrdering> = OnceLock::new();
+// static SUIT_ORDERING: OnceLock<TileOrdering> = OnceLock::new();
 
 pub fn to_prime(atom: &Atom) -> Option<Prime> {
   let to_prime_table = TO_PRIME.get_or_init(|| {
@@ -71,7 +71,7 @@ pub fn is_jihai(tile: &Tile) -> bool {
 // }
 
 // pub fn shift_suit(tile: &ElixirTile) -> Option<ElixirTile> {
-//   let shift_suit_table = SHIFT_SUIT.get_or_init(|| {
+//   let shift_suit_table = SUIT_ORDERING.get_or_init(|| {
 //     ATOM_TABLE.entries()
 //       .map(|(&s, &atom)| {
 //         let mut s2 = s.to_string();
@@ -105,7 +105,7 @@ pub fn is_jihai(tile: &Tile) -> bool {
 
 // // returns false if failed to shift
 // pub fn shift_suit_mut(tile: &mut Tile) -> bool {
-//   let shift_suit_table = SHIFT_SUIT.get_or_init(|| {
+//   let shift_suit_table = SUIT_ORDERING.get_or_init(|| {
 //     ATOM_TABLE.entries()
 //       .filter_map(|(&s, &atom)| {
 //         let mut s2 = s.to_string();

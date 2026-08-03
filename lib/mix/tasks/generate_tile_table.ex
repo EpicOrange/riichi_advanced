@@ -22,10 +22,10 @@ defmodule Mix.Tasks.GenerateTileTable do
     ordering_r = Constants.ordering_r()
     |> Enum.map(fn {from, to} ->  "  #{Constants.to_prime(from)}u32 => #{Constants.to_prime(to)}," end)
     |> Enum.join("\n")
-    shift_suit = Constants.shift_suit()
+    suit_ordering = Constants.suit_ordering()
     |> Enum.map(fn {from, to} ->  "  #{Constants.to_prime(from)}u32 => #{Constants.to_prime(to)}," end)
     |> Enum.join("\n")
-    shift_suit_r = Constants.shift_suit_r()
+    suit_ordering_r = Constants.suit_ordering_r()
     |> Enum.map(fn {from, to} ->  "  #{Constants.to_prime(from)}u32 => #{Constants.to_prime(to)}," end)
     |> Enum.join("\n")
     File.write!("native/riichiadvanced_match/src/tile_table.rs", """
@@ -47,11 +47,11 @@ defmodule Mix.Tasks.GenerateTileTable do
     pub static ORDERING_R: phf::Map<Prime, Prime> = phf::phf_map! {
     #{ordering_r}
     };
-    pub static SHIFT_SUIT: phf::Map<Prime, Prime> = phf::phf_map! {
-    #{shift_suit}
+    pub static SUIT_ORDERING: phf::Map<Prime, Prime> = phf::phf_map! {
+    #{suit_ordering}
     };
-    pub static SHIFT_SUIT_R: phf::Map<Prime, Prime> = phf::phf_map! {
-    #{shift_suit_r}
+    pub static SUIT_ORDERING_R: phf::Map<Prime, Prime> = phf::phf_map! {
+    #{suit_ordering_r}
     };
     """)
   end

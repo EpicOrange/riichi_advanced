@@ -31,7 +31,12 @@ apply set_append, "wall", [
 ]
 
 on after_start do
-  set_tile_ordering(["1t", "2t", "3t", "4t", "5t", "6t", "7t", "8t", "9t"])
+  set_tile_ordering_all(["1t", "2t", "3t", "4t", "5t", "6t", "7t", "8t", "9t"])
+  set_suit_ordering_all(
+    ["1s", "2s", "3s", "4s", "5s", "6s", "7s", "8s", "9s"],
+    ["1t", "2t", "3t", "4t", "5t", "6t", "7t", "8t", "9t"],
+    ["1m", "2m", "3m", "4m", "5m", "6m", "7m", "8m", "9m"]
+  )
 end
 
 if defined("dora") do

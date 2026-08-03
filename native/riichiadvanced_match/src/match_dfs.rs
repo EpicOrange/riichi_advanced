@@ -132,7 +132,7 @@ fn reify_groups(
         &mut base_tile_iter,
         &match_info.all_attrs,
         &match_info.joker_tiles,
-        &match_info.ordering, &match_info.ordering_r,
+        &match_info.ordering,
         &mut nojoker);
 
       let mut stored_groups = vec!();

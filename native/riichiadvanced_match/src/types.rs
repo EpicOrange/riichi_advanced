@@ -414,7 +414,24 @@ pub static FIXED_OFFSETS: phf::Map<&'static str, fn() -> Atom> = phf::phf_map! {
   "DC"  => tile6z,
 };
 
-pub type TileOrdering = HashMap<Prime, Prime>;
+pub type ElixirTileOrderingMap = HashMap<Atom, Atom>;
+#[derive(NifStruct, PartialEq, Eq, Clone, Debug)]
+#[module = "RiichiAdvanced.GameState.TileOrdering"]
+pub struct ElixirTileOrdering {
+  pub ordering: ElixirTileOrderingMap,
+  pub ordering_r: ElixirTileOrderingMap,
+  pub suit_ordering: ElixirTileOrderingMap,
+  pub suit_ordering_r: ElixirTileOrderingMap,
+}
+pub type TileOrderingMap = HashMap<Prime, Prime>;
+#[derive(PartialEq, Eq, Clone, Debug)]
+pub struct TileOrdering {
+  pub ordering: TileOrderingMap,
+  pub ordering_r: TileOrderingMap,
+  pub suit_ordering: TileOrderingMap,
+  pub suit_ordering_r: TileOrderingMap,
+}
+
 #[derive(Debug)]
 pub struct MatchInfo {
   pub initial_hands: Hands,
@@ -425,7 +442,6 @@ pub struct MatchInfo {
   pub joker_tiles: HashSet<Tile>,
   pub all_attrs: Vec<String>,
   pub ordering: TileOrdering,
-  pub ordering_r: TileOrdering,
 }
 
 // dfs match

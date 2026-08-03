@@ -223,8 +223,8 @@ defmodule RiichiAdvanced.SMT do
   end
 
   def determine_encoding(ordering, other_tiles \\ []) do
-    ordering = Map.merge(Constants.ordering(), ordering)
-    {chains, cycles} = find_chains_cycles(ordering, other_tiles)
+    tile_ordering = Map.merge(Constants.ordering(), ordering.ordering)
+    {chains, cycles} = find_chains_cycles(tile_ordering, other_tiles)
     num_tiles = length(Enum.concat(chains ++ cycles))
     len = 4 * num_tiles
     # (define-fun shift_set ((indices (_ BitVec 136)) (set (_ BitVec 136))) (_ BitVec 136)
@@ -251,8 +251,9 @@ defmodule RiichiAdvanced.SMT do
     # so cosmic mahjong can shift suits
     # (our encoding of 10, 20 offsets assumes 8 digit gap between tiles)
     # (which requires aligning the three suits)
+    base_suits = if Map.has_key?(ordering.suit_ordering, :"1t") do [:"1m", :"1p", :"1s", :"1t"] else [:"1m", :"1p", :"1s"] end
     cycles = for cycle <- cycles do
-      one_ix = Enum.find_index(cycle, & &1 in [:"1m", :"1p", :"1s"])
+      one_ix = Enum.find_index(cycle, & &1 in base_suits)
       if one_ix != nil do
         {head, tail} = Enum.split(cycle, one_ix)
         tail ++ head
@@ -347,7 +348,7 @@ defmodule RiichiAdvanced.SMT do
     # input: [0, 0, 3, 6, 11, 11, 14, 17, 22, 22, 25, 28]
     # output: "#x100100200010010020001001002"
     # 100, 101, 102 correspond to dragons, we ignore them
-    {tiles, _dragons} = Enum.split_with(set, fn i -> i < 30 end)
+    {tiles, _dragons} = Enum.split_with(set, fn i -> i < 40 end)
     tiles
     |> Enum.group_by(fn i -> trunc(i / 10) end)
     |> add_missing_suit()
@@ -509,8 +510,8 @@ defmodule RiichiAdvanced.SMT do
       if Enum.any?(set, & &1 >= 10) do
         # multi-suit set; must be equal to one of three possible suit rotations
         str1 = set_to_bitvector(set, len)
-        str2 = set_to_bitvector(Enum.map(set, &Integer.mod(&1 + 10, 30)), len)
-        str3 = set_to_bitvector(Enum.map(set, &Integer.mod(&1 + 20, 30)), len)
+        str2 = set_to_bitvector(Enum.map(set, &Integer.mod(&1 + 10, 40)), len)
+        str3 = set_to_bitvector(Enum.map(set, &Integer.mod(&1 + 20, 40)), len)
         """
         (declare-const set#{i+1}_sel (_ BitVec 2))
         (define-fun set#{i+1} () (_ BitVec #{len})

@@ -6,16 +6,16 @@ use smallvec::{SmallVec, smallvec};
 use crate::encode::{encode_attrs, encode_tiles, has_attrs, to_tileset};
 use crate::tile_table::*;
 use crate::tileset::_check_equivalence;
-use crate::types::{ANY_PRIME, BaseTileVec, ElixirTile, FIXED_OFFSETS, GroupIterator, MatchDefinition, MatchDefinitionElem, MatchGroup, MatchInfo, MatchOffset, OffsetVec, Prime, RemovableGroup, Tile, TileOrdering, TileSet};
+use crate::types::{ANY_PRIME, BaseTileVec, ElixirTile, FIXED_OFFSETS, GroupIterator, MatchDefinition, MatchDefinitionElem, MatchGroup, MatchInfo, MatchOffset, OffsetVec, Prime, RemovableGroup, Tile, TileOrdering, TileOrderingMap, TileSet};
 use crate::primes::{is_jihai, is_manzu, is_pinzu, is_souzu, to_prime};
 
 // return true if changed
 fn apply_ordering_mut(
-    tile: &mut Tile, ordering: &TileOrdering, base_ordering: &phf::Map<Prime, Prime>
+    tile: &mut Tile, ordering_map: &TileOrderingMap, base_ordering_map: &phf::Map<Prime, Prime>
 ) -> bool {
-  match ordering.get(&tile.0) {
+  match ordering_map.get(&tile.0) {
     Some(p) => {tile.0 = *p; true},
-    None => match base_ordering.get(&tile.0) {
+    None => match base_ordering_map.get(&tile.0) {
       Some(p) => {tile.0 = *p; true},
       None => false
     }
@@ -25,7 +25,7 @@ fn apply_ordering_mut(
 fn fetch_offset(
     q: &mut VecDeque<Tile>,
     l: &mut isize, r: &mut isize, target: isize,
-    ordering: &TileOrdering, ordering_r: &TileOrdering
+    ordering: &TileOrdering,
 ) -> Option<Tile> {
   if *l <= target && target <= *r {
     // already in queue, just fetch it
@@ -34,7 +34,7 @@ fn fetch_offset(
     // look to the right
     let mut tile = *q.back().unwrap();
     loop {
-      if apply_ordering_mut(&mut tile, ordering, &ORDERING) {
+      if apply_ordering_mut(&mut tile, &ordering.ordering, &ORDERING) {
         q.push_back(tile);
         *r += 1;
       } else {
@@ -47,7 +47,7 @@ fn fetch_offset(
     // look to the left
     let mut tile = *q.front().unwrap();
     loop {
-      if apply_ordering_mut(&mut tile, ordering_r, &ORDERING_R) {
+      if apply_ordering_mut(&mut tile, &ordering.ordering_r, &ORDERING_R) {
         q.push_front(tile);
         *l -= 1;
       } else {
@@ -59,30 +59,39 @@ fn fetch_offset(
   } else { // abs(target) >= 10
     // figure out how many suits to shift first, then rerun with div 10
     let target2 = target % 10; // truncate towards 0
-    match (target / 10).rem_euclid(3) { // classify into 0,1,2
+    match (target / 10).rem_euclid(4) { // classify into 0,1,2,3
       1 => {
         // get a new deque that takes original base tile shifted once
         // this is slightly inefficient since each >10 offset generates a new queue
         // TODO make it not have to do that (maintain 3 queues?)
         let mut base_tile = *q.get(-*l as usize).unwrap();
-        if apply_ordering_mut(&mut base_tile, &HashMap::new(), &SHIFT_SUIT) {
+        if apply_ordering_mut(&mut base_tile, &ordering.suit_ordering, &SUIT_ORDERING) {
           let mut q2 = VecDeque::from([base_tile]);
           let mut l2 = 0;
           let mut r2 = 0;
-          fetch_offset(&mut q2, &mut l2, &mut r2, target2, ordering, ordering_r)
+          fetch_offset(&mut q2, &mut l2, &mut r2, target2, ordering)
         } else { None }
       }
       2 => {
-        // same deal, just shift suit twice
         let mut base_tile = *q.get(-*l as usize).unwrap();
-        if apply_ordering_mut(&mut base_tile, &HashMap::new(), &SHIFT_SUIT_R) {
+        if apply_ordering_mut(&mut base_tile, &ordering.suit_ordering, &SUIT_ORDERING)
+            && apply_ordering_mut(&mut base_tile, &ordering.suit_ordering, &SUIT_ORDERING) {
           let mut q2 = VecDeque::from([base_tile]);
           let mut l2 = 0;
           let mut r2 = 0;
-          fetch_offset(&mut q2, &mut l2, &mut r2, target2, ordering, ordering_r)
+          fetch_offset(&mut q2, &mut l2, &mut r2, target2, ordering)
         } else { None }
       }
-      _ => fetch_offset(q, l, r, target2, ordering, ordering_r),
+      3 => {
+        let mut base_tile = *q.get(-*l as usize).unwrap();
+        if apply_ordering_mut(&mut base_tile, &ordering.suit_ordering_r, &SUIT_ORDERING_R) {
+          let mut q2 = VecDeque::from([base_tile]);
+          let mut l2 = 0;
+          let mut r2 = 0;
+          fetch_offset(&mut q2, &mut l2, &mut r2, target2, ordering)
+        } else { None }
+      }
+      _ => fetch_offset(q, l, r, target2, ordering),
     }
   }
 }
@@ -127,8 +136,8 @@ pub fn apply_fixed_offset(base_tile: &Tile, fixed_offset: &str) -> Option<Tile> 
       } else { return None; }
     } else {
       if is_manzu(base_tile) {}
-      else if is_pinzu(base_tile) { apply_ordering_mut(&mut ret, &HashMap::new(), &SHIFT_SUIT); }
-      else if is_souzu(base_tile) { apply_ordering_mut(&mut ret, &HashMap::new(), &SHIFT_SUIT_R); }
+      else if is_pinzu(base_tile) { apply_ordering_mut(&mut ret, &HashMap::new(), &SUIT_ORDERING); }
+      else if is_souzu(base_tile) { apply_ordering_mut(&mut ret, &HashMap::new(), &SUIT_ORDERING_R); }
       else { return None; }
     }
     Some(ret)
@@ -139,7 +148,7 @@ pub fn apply_fixed_offset(base_tile: &Tile, fixed_offset: &str) -> Option<Tile> 
 pub fn apply_offsets(
     base_tile: &Tile, offsets: &[MatchOffset],
     all_attrs: &[String],
-    ordering: &TileOrdering, ordering_r: &TileOrdering,
+    ordering: &TileOrdering,
 ) -> (Vec<Option<Tile>>, usize) {
   let mut q = VecDeque::from([*base_tile]); // get offset o via q.get(o-l as usize)
   let mut l = 0;
@@ -148,7 +157,7 @@ pub fn apply_offsets(
   let mut ret = vec!();
   for (i, offset) in offsets.iter().enumerate() {
     ret.push(match offset {
-      MatchOffset::Offset(o) => fetch_offset(&mut q, &mut l, &mut r, *o, ordering, ordering_r),
+      MatchOffset::Offset(o) => fetch_offset(&mut q, &mut l, &mut r, *o, ordering),
       MatchOffset::AttrsTile(map) => {
         match ATOM_TABLE.get(&map.tile) {
           Some(atom_fn) => to_prime(&atom_fn()).map(|p| (p, encode_attrs(&mut map.attrs.clone(), all_attrs))),
@@ -156,7 +165,7 @@ pub fn apply_offsets(
         }
       }
       MatchOffset::AttrsOffset(map) => {
-        fetch_offset(&mut q, &mut l, &mut r, map.offset, ordering, ordering_r)
+        fetch_offset(&mut q, &mut l, &mut r, map.offset, ordering)
           .map(|mut tile| { add_attrs_mut(&mut tile, &mut map.attrs.clone(), all_attrs); tile })
       }
       MatchOffset::TileOrKeyword(s) => {
@@ -185,7 +194,7 @@ pub fn apply_offsets(
 pub fn apply_offsets_early_exit(
     base_tile: &Tile, offsets: &[MatchOffset],
     all_attrs: &[String],
-    ordering: &TileOrdering, ordering_r: &TileOrdering,
+    ordering: &TileOrdering,
     mut num_ignorable: usize,
 ) -> Option<(Vec<Tile>, usize)> {
   let mut q = VecDeque::from([*base_tile]); // get offset o via q.get(o-l as usize)
@@ -197,7 +206,7 @@ pub fn apply_offsets_early_exit(
   for (i, offset) in offsets.iter().enumerate() {
     match offset {
       MatchOffset::Offset(o) => {
-        let Some(tile) = fetch_offset(&mut q, &mut l, &mut r, *o, ordering, ordering_r)
+        let Some(tile) = fetch_offset(&mut q, &mut l, &mut r, *o, ordering)
         else { if num_ignorable == 0 { return None; } else { num_ignorable -= 1; continue; } };
         ret.push(tile);
       }
@@ -207,7 +216,7 @@ pub fn apply_offsets_early_exit(
         ret.push((p, encode_attrs(&mut map.attrs.clone(), all_attrs)))
       }
       MatchOffset::AttrsOffset(map) => {
-        let Some(mut tile) = fetch_offset(&mut q, &mut l, &mut r, map.offset, ordering, ordering_r)
+        let Some(mut tile) = fetch_offset(&mut q, &mut l, &mut r, map.offset, ordering)
         else { if num_ignorable == 0 { return None; } else { num_ignorable -= 1; continue; } };
         add_attrs_mut(&mut tile, &mut map.attrs.clone(), all_attrs);
         ret.push(tile);
@@ -241,12 +250,12 @@ pub fn is_offset_dest(tile: Tile, offset: MatchOffset, match_info: &MatchInfo) -
   match offset {
     MatchOffset::Offset(o) => {
       let offset = vec!(MatchOffset::Offset(-o));
-      apply_offsets_early_exit(&tile, &offset, &match_info.all_attrs, &match_info.ordering, &match_info.ordering_r, 0).is_some()
+      apply_offsets_early_exit(&tile, &offset, &match_info.all_attrs, &match_info.ordering, 0).is_some()
     }
     MatchOffset::AttrsOffset(mut map) => {
       if has_attrs(&tile, &mut map.attrs, &match_info.all_attrs) {
         let offset = vec!(MatchOffset::Offset(-map.offset));
-        apply_offsets_early_exit(&tile, &offset, &match_info.all_attrs, &match_info.ordering, &match_info.ordering_r, 0).is_some()
+        apply_offsets_early_exit(&tile, &offset, &match_info.all_attrs, &match_info.ordering, 0).is_some()
       } else { false }
     }
     MatchOffset::AttrsTile(mut map) => {
@@ -269,11 +278,11 @@ pub fn generate_groups_from_offsets<'a>(
     offsets: OffsetVec,
     base_tiles: &'a mut impl Iterator<Item = Tile>, all_attrs: &'a [String],
     joker_tiles: &'a HashSet<Tile>,
-    ordering: &'a TileOrdering, ordering_r: &'a TileOrdering,
+    ordering: &'a TileOrdering,
     nojoker: &'a mut bool,
 ) -> GroupIterator<'a> {
   Box::new(base_tiles.filter_map(move |base_tile| {
-    let (tiles, nojoker_ix) = apply_offsets(&base_tile, &offsets, all_attrs, ordering, ordering_r);
+    let (tiles, nojoker_ix) = apply_offsets(&base_tile, &offsets, all_attrs, ordering);
     if nojoker_ix < offsets.len() { *nojoker = true; }
     tiles
       .into_iter().collect::<Option<Vec<_>>>()
@@ -287,17 +296,17 @@ fn _generate_groups(
     base_tiles: Vec<ElixirTile>,
     all_attrs: Vec<String>,
     joker_tiles: Vec<Tile>,
-    ordering: TileOrdering, ordering_r: TileOrdering,
+    ordering: TileOrdering,
     nojoker: bool,
 ) -> Vec<RemovableGroup> {
-  __generate_groups(group, &mut encode_tiles(&base_tiles, &all_attrs), &all_attrs, &joker_tiles.into_iter().collect(), &ordering, &ordering_r, &mut nojoker.clone()).collect()
+  __generate_groups(group, &mut encode_tiles(&base_tiles, &all_attrs), &all_attrs, &joker_tiles.into_iter().collect(), &ordering, &mut nojoker.clone()).collect()
 }
 pub fn __generate_groups<'a>(
     group: MatchGroup,
     base_tiles: &'a mut impl Iterator<Item = Tile>,
     all_attrs: &'a [String],
     joker_tiles: &'a HashSet<Tile>,
-    ordering: &'a TileOrdering, ordering_r: &'a TileOrdering,
+    ordering: &'a TileOrdering,
     nojoker: &'a mut bool,
 ) -> GroupIterator<'a> {
   match group {
@@ -306,7 +315,7 @@ pub fn __generate_groups<'a>(
       // first check if it's a tile name or fixed offset,
       match ATOM_TABLE.get(&s).or_else(|| FIXED_OFFSETS.get(&s)) {
         // in which case we do the same as for MatchGroup::Offset
-        Some(_) => generate_groups_from_offsets(smallvec!(MatchOffset::TileOrKeyword(s)), base_tiles, all_attrs, joker_tiles, ordering, ordering_r, nojoker),
+        Some(_) => generate_groups_from_offsets(smallvec!(MatchOffset::TileOrKeyword(s)), base_tiles, all_attrs, joker_tiles, ordering, nojoker),
         None => {
           if s == "nojoker" {
             *nojoker = true;
@@ -320,13 +329,13 @@ pub fn __generate_groups<'a>(
         }
       }
     }
-    MatchGroup::Offset(offset) => generate_groups_from_offsets(smallvec!(offset), base_tiles, all_attrs, joker_tiles, ordering, ordering_r, nojoker),
-    MatchGroup::Offsets(offsets) => generate_groups_from_offsets(offsets, base_tiles, all_attrs, joker_tiles, ordering, ordering_r, nojoker),
+    MatchGroup::Offset(offset) => generate_groups_from_offsets(smallvec!(offset), base_tiles, all_attrs, joker_tiles, ordering, nojoker),
+    MatchGroup::Offsets(offsets) => generate_groups_from_offsets(offsets, base_tiles, all_attrs, joker_tiles, ordering, nojoker),
     MatchGroup::Subgroups(subgroupings) => {
       Box::new(base_tiles.filter_map(move |base_tile|
         subgroupings.iter()
           .map(|subgroup| 
-            apply_offsets(&base_tile, subgroup, all_attrs, ordering, ordering_r)
+            apply_offsets(&base_tile, subgroup, all_attrs, ordering)
               .0.into_iter()
               .collect::<Option<Vec<Tile>>>()
               .map(|tiles| to_tileset(tiles, joker_tiles).set_nojoker(*nojoker)))
@@ -369,7 +378,7 @@ pub fn get_base_tiles<'a>(
   //   that we can't otherwise encode, since it's not in hand
   let mut base_tiles: HashSet<Tile> = match_info.relevant_tiles
     .iter()
-    .flat_map(|tile| apply_offsets(tile, &gather_rev_offsets(match_definition), &match_info.all_attrs, &match_info.ordering, &match_info.ordering_r).0)
+    .flat_map(|tile| apply_offsets(tile, &gather_rev_offsets(match_definition), &match_info.all_attrs, &match_info.ordering).0)
     .flatten()
     .filter_map(|(tile, _attrs)| if tile != ANY_PRIME { Some((tile, 0)) } else { None })
     .collect();

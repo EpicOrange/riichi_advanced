@@ -80,8 +80,8 @@ defmodule RiichiAdvanced.MatchOld do
 
   defp _offset_tile_basic(tile, n, tile_behavior) do
     cond do
-      n <= -1 -> _offset_tile(tile_behavior.ordering_r[tile], n+1, tile_behavior)
-      n >= 1 -> _offset_tile(tile_behavior.ordering[tile], n-1, tile_behavior)
+      n <= -1 -> _offset_tile(tile_behavior.ordering.ordering_r[tile], n+1, tile_behavior)
+      n >= 1 -> _offset_tile(tile_behavior.ordering.ordering[tile], n-1, tile_behavior)
       true -> tile
     end
   end
@@ -90,7 +90,7 @@ defmodule RiichiAdvanced.MatchOld do
       cond do
         Map.has_key?(@fixed_offsets, n) -> _offset_tile(@fixed_offsets[n], suit_to_offset(tile), tile_behavior, true)
         Utils.is_tile(n) -> Utils.to_tile(n)
-        (n < 1 and n > -1) or n < -30 or n >= 30 -> tile
+        (n < 1 and n > -1) or n < -40 or n >= 40 -> tile
         n >= 10 ->
           cond do
             shift_dragons and tile == :"7z" -> _offset_tile(:"0z", n-10, tile_behavior, true)
@@ -367,7 +367,7 @@ defmodule RiichiAdvanced.MatchOld do
       IO.puts("Match definition: #{inspect(match_definition, charlists: :as_lists)}")
       IO.puts("Starting hand / calls: #{inspect(hand, charlists: :as_lists)} / #{inspect(calls, charlists: :as_lists)}")
       IO.puts("Tile aliases: #{inspect(tile_behavior.aliases)}")
-      # IO.puts("Tile ordering: #{inspect(tile_behavior.ordering)}")
+      # IO.puts("Tile ordering: #{inspect(tile_behavior.ordering.ordering)}")
     end
     ret = for {match_definition_elem, i} <- Enum.with_index(match_definition), reduce: [{hand, calls}] do
       [] -> []

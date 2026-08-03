@@ -1466,7 +1466,7 @@ pub static ORDERING_R: phf::Map<Prime, Prime> = phf::phf_map! {
   5u32 => 3,
   3u32 => 2,
 };
-pub static SHIFT_SUIT: phf::Map<Prime, Prime> = phf::phf_map! {
+pub static SUIT_ORDERING: phf::Map<Prime, Prime> = phf::phf_map! {
   2u32 => 37,
   37u32 => 83,
   83u32 => 2,
@@ -1498,7 +1498,7 @@ pub static SHIFT_SUIT: phf::Map<Prime, Prime> = phf::phf_map! {
   5u32 => 43,
   3u32 => 41,
 };
-pub static SHIFT_SUIT_R: phf::Map<Prime, Prime> = phf::phf_map! {
+pub static SUIT_ORDERING_R: phf::Map<Prime, Prime> = phf::phf_map! {
   2u32 => 83,
   37u32 => 2,
   83u32 => 37,

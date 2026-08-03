@@ -549,26 +549,26 @@ defmodule RiichiAdvanced.Match do
     end
   end
 
-  def apply_offset(base_tile, offset, ordering, ordering_r) do
-    case apply_offsets(base_tile, [offset], ordering, ordering_r) do
+  def apply_offset(base_tile, offset, ordering) do
+    case apply_offsets(base_tile, [offset], ordering) do
       [t] -> t
       _ -> nil
     end
   end
-  # @decorate cacheable(cache: RiichiAdvanced.Cache, key: {:apply_offsets, base_tile, offsets, ordering, ordering_r.uuid})
-  def apply_offsets(base_tile, offsets, ordering, ordering_r), do: _apply_offsets(Utils.strip_attrs(base_tile), offsets, ordering, ordering_r, 0, [])
-  def _apply_offsets(_base_tile, [], _ordering, _ordering_r, n, []) when abs(n) > 100 do
+  # @decorate cacheable(cache: RiichiAdvanced.Cache, key: {:apply_offsets, base_tile, offsets, ordering, uuid})
+  def apply_offsets(base_tile, offsets, ordering), do: _apply_offsets(Utils.strip_attrs(base_tile), offsets, ordering, 0, [])
+  def _apply_offsets(_base_tile, [], _ordering, n, []) when abs(n) > 100 do
     IO.puts("Infinite loop detected")
     IO.inspect(Process.info(self(), :current_stacktrace))
     nil
   end
-  def _apply_offsets(_base_tile, [], _ordering, _ordering_r, _n, []), do: nil
-  def _apply_offsets(_base_tile, [], _ordering, _ordering_r, _n, acc), do: Enum.reverse(acc)
-  def _apply_offsets(nil, _offsets, _ordering, _ordering_r, _n, _acc), do: nil
+  def _apply_offsets(_base_tile, [], _ordering, _n, []), do: nil
+  def _apply_offsets(_base_tile, [], _ordering, _n, acc), do: Enum.reverse(acc)
+  def _apply_offsets(nil, _offsets, _ordering, _n, _acc), do: nil
   # when offset is a number, convert it into a map
-  def _apply_offsets(base_tile, [o | offsets], ordering, ordering_r, n, acc) when is_number(o), do: _apply_offsets(base_tile, [%{"offset" => o} | offsets], ordering, ordering_r, n, acc)
+  def _apply_offsets(base_tile, [o | offsets], ordering, n, acc) when is_number(o), do: _apply_offsets(base_tile, [%{"offset" => o} | offsets], ordering, n, acc)
   # when offset is a string, either try it as a tile or a @fixed_offset value
-  def _apply_offsets(base_tile, [o | offsets], ordering, ordering_r, n, acc) when is_binary(o) do
+  def _apply_offsets(base_tile, [o | offsets], ordering, n, acc) when is_binary(o) do
     cond do
       Map.has_key?(Constants.fixed_offsets(), o) ->
         tile = Map.get(Constants.fixed_offsets(), o)
@@ -588,31 +588,31 @@ defmodule RiichiAdvanced.Match do
             tile == :"6z" and suit_offset ==  0 -> :"6z"
             tile == :"6z" and suit_offset == 10 -> :"7z"
             tile == :"6z" and suit_offset == 20 -> :"0z"
-            true          -> _apply_offsets(tile, [suit_offset], ordering, ordering_r, 0, []) |> Enum.at(0)
+            true          -> _apply_offsets(tile, [suit_offset], ordering, 0, []) |> Enum.at(0)
           end
           # IO.inspect({base_tile, o, tile})
-          _apply_offsets(base_tile, offsets, ordering, ordering_r, n, [tile | acc])
+          _apply_offsets(base_tile, offsets, ordering, n, [tile | acc])
         end
-      Utils.is_tile(o) -> _apply_offsets(base_tile, offsets, ordering, ordering_r, n, [Utils.to_tile(o) | acc]) # also handles "any"
+      Utils.is_tile(o) -> _apply_offsets(base_tile, offsets, ordering, n, [Utils.to_tile(o) | acc]) # also handles "any"
       # otherwise, probably a group keyword; ignore
-      true -> _apply_offsets(base_tile, offsets, ordering, ordering_r, n, acc)
+      true -> _apply_offsets(base_tile, offsets, ordering, n, acc)
     end
   end
   # standard case: when offset is a map (so it can specify attrs)
-  def _apply_offsets(base_tile, [%{"offset" => o} | _] = os, ordering, ordering_r, n, acc) when is_number(o) and n < o and o >= 10 and (o-n) >= 10, do: _apply_offsets(base_tile |> apply_ordering(%{}, Constants.shift_suit()), os, ordering, ordering_r, n+10, acc)
-  def _apply_offsets(base_tile, [%{"offset" => o} | _] = os, ordering, ordering_r, n, acc) when is_number(o) and n > o and o <= -10 and (o-n) <= -10, do: _apply_offsets(base_tile |> apply_ordering(%{}, Constants.shift_suit_r()), os, ordering, ordering_r, n-10, acc)
-  def _apply_offsets(base_tile, [%{"offset" => o} | _] = os, ordering, ordering_r, n, acc) when is_number(o) and n < o, do: _apply_offsets(base_tile |> apply_ordering(ordering, Constants.ordering()), os, ordering, ordering_r, n+1, acc)
-  def _apply_offsets(base_tile, [%{"offset" => o} | _] = os, ordering, ordering_r, n, acc) when is_number(o) and n > o, do: _apply_offsets(base_tile |> apply_ordering(ordering_r, Constants.ordering_r()), os, ordering, ordering_r, n-1, acc)
+  def _apply_offsets(base_tile, [%{"offset" => o} | _] = os, ordering, n, acc) when is_number(o) and n < o and o >= 10 and (o-n) >= 10, do: _apply_offsets(base_tile |> apply_ordering(ordering.suit_ordering, Constants.suit_ordering()), os, ordering, n+10, acc)
+  def _apply_offsets(base_tile, [%{"offset" => o} | _] = os, ordering, n, acc) when is_number(o) and n > o and o <= -10 and (o-n) <= -10, do: _apply_offsets(base_tile |> apply_ordering(ordering.suit_ordering_r, Constants.suit_ordering_r()), os, ordering, n-10, acc)
+  def _apply_offsets(base_tile, [%{"offset" => o} | _] = os, ordering, n, acc) when is_number(o) and n < o, do: _apply_offsets(base_tile |> apply_ordering(ordering.ordering, Constants.ordering()), os, ordering, n+1, acc)
+  def _apply_offsets(base_tile, [%{"offset" => o} | _] = os, ordering, n, acc) when is_number(o) and n > o, do: _apply_offsets(base_tile |> apply_ordering(ordering.ordering_r, Constants.ordering_r()), os, ordering, n-1, acc)
   # base cases
-  def _apply_offsets(base_tile, [%{"offset" => o, "attrs" => attrs} | offsets], ordering, ordering_r, n, acc) when is_number(o) and n == o, do: _apply_offsets(base_tile, offsets, ordering, ordering_r, n, [{base_tile, attrs} | acc])
-  def _apply_offsets(base_tile, [%{"offset" => o} | offsets], ordering, ordering_r, n, acc) when is_number(o) and n == o, do: _apply_offsets(base_tile, offsets, ordering, ordering_r, n, [base_tile | acc])
+  def _apply_offsets(base_tile, [%{"offset" => o, "attrs" => attrs} | offsets], ordering, n, acc) when is_number(o) and n == o, do: _apply_offsets(base_tile, offsets, ordering, n, [{base_tile, attrs} | acc])
+  def _apply_offsets(base_tile, [%{"offset" => o} | offsets], ordering, n, acc) when is_number(o) and n == o, do: _apply_offsets(base_tile, offsets, ordering, n, [base_tile | acc])
   # for when offset is a tile (non-numeric)
   # this will generate nil if o is not a tile
-  def _apply_offsets(base_tile, [%{"tile" => o, "attrs" => attrs} | offsets], ordering, ordering_r, n, acc), do: _apply_offsets(base_tile, offsets, ordering, ordering_r, n, [{Utils.to_tile(o), attrs}| acc])
-  def _apply_offsets(base_tile, [%{"offset" => o, "attrs" => attrs} | offsets], ordering, ordering_r, n, acc), do: _apply_offsets(base_tile, offsets, ordering, ordering_r, n, [{Utils.to_tile(o), attrs}| acc])
-  def _apply_offsets(base_tile, [%{"tile" => o} | offsets], ordering, ordering_r, n, acc), do: _apply_offsets(base_tile, offsets, ordering, ordering_r, n, [Utils.to_tile(o) | acc])
-  def _apply_offsets(base_tile, [%{"offset" => o} | offsets], ordering, ordering_r, n, acc), do: _apply_offsets(base_tile, offsets, ordering, ordering_r, n, [Utils.to_tile(o) | acc])
-  def _apply_offsets(base_tile, [o | offsets], ordering, ordering_r, n, acc), do: _apply_offsets(base_tile, offsets, ordering, ordering_r, n, [Utils.to_tile(o) | acc])
+  def _apply_offsets(base_tile, [%{"tile" => o, "attrs" => attrs} | offsets], ordering, n, acc), do: _apply_offsets(base_tile, offsets, ordering, n, [{Utils.to_tile(o), attrs}| acc])
+  def _apply_offsets(base_tile, [%{"offset" => o, "attrs" => attrs} | offsets], ordering, n, acc), do: _apply_offsets(base_tile, offsets, ordering, n, [{Utils.to_tile(o), attrs}| acc])
+  def _apply_offsets(base_tile, [%{"tile" => o} | offsets], ordering, n, acc), do: _apply_offsets(base_tile, offsets, ordering, n, [Utils.to_tile(o) | acc])
+  def _apply_offsets(base_tile, [%{"offset" => o} | offsets], ordering, n, acc), do: _apply_offsets(base_tile, offsets, ordering, n, [Utils.to_tile(o) | acc])
+  def _apply_offsets(base_tile, [o | offsets], ordering, n, acc), do: _apply_offsets(base_tile, offsets, ordering, n, [Utils.to_tile(o) | acc])
 
   def is_bad_group(nil), do: true
   def is_bad_group({nil, _}), do: true
@@ -660,27 +660,25 @@ defmodule RiichiAdvanced.Match do
       tile_behavior.attrs |> Enum.to_list(),
       tile_behavior.encoded_joker_tiles |> Enum.to_list(),
       tile_behavior.ordering,
-      tile_behavior.ordering_r,
       nojoker
     )
   end
-  def _generate_groups(group, base_tiles, all_attrs, encoded_joker_tiles, ordering, ordering_r, nojoker) do
+  def _generate_groups(group, base_tiles, all_attrs, encoded_joker_tiles, ordering, nojoker) do
     __generate_groups(group,
       base_tiles |> MapSet.new(),
       all_attrs |> MapSet.new(),
       encoded_joker_tiles |> MapSet.new(),
       ordering,
-      ordering_r,
       nojoker
     )
   end
-  def __generate_groups(group, base_tiles, all_attrs, encoded_joker_tiles, ordering, ordering_r, nojoker) do
+  def __generate_groups(group, base_tiles, all_attrs, encoded_joker_tiles, ordering, nojoker) do
     case group do
-      [[_ | _] | _] -> Enum.map(base_tiles, &Enum.map(group, fn subgroup -> apply_offsets(&1, subgroup, ordering, ordering_r) end))
-      [_ | _] -> Enum.map(base_tiles, &apply_offsets(&1, group, ordering, ordering_r))
+      [[_ | _] | _] -> Enum.map(base_tiles, &Enum.map(group, fn subgroup -> apply_offsets(&1, subgroup, ordering) end))
+      [_ | _] -> Enum.map(base_tiles, &apply_offsets(&1, group, ordering))
       _ ->
         cond do
-          MatchOld.is_offset(group) -> Enum.map(base_tiles, &apply_offsets(&1, [group], ordering, ordering_r))
+          MatchOld.is_offset(group) -> Enum.map(base_tiles, &apply_offsets(&1, [group], ordering))
           Utils.is_tile(group) -> [Utils.to_tile(group)]
           is_binary(group) -> if group in MatchOld.group_keywords() do [] else [group] end # call name
           true ->
@@ -966,7 +964,7 @@ defmodule RiichiAdvanced.Match do
     #   that we can't otherwise encode, since it's not in hand
     offset_tiles =
       for base_tile <- base_tiles,
-          group = apply_offsets(base_tile, gather_offsets(match_definitions), tile_behavior.ordering, tile_behavior.ordering_r),
+          group = apply_offsets(base_tile, gather_offsets(match_definitions), tile_behavior.ordering),
           not is_bad_group(group),
           offset_tile <- group,
           not is_any_tile(offset_tile),
@@ -1012,7 +1010,7 @@ defmodule RiichiAdvanced.Match do
       ret = _remove_match_definition({hand, calls}, match_definition,
         tile_behavior.attrs |> Enum.to_list() |> Enum.sort(),
         tile_behavior.aliases |> TileBehavior.remove_alias_mapsets(),
-        tile_behavior.ordering, tile_behavior.ordering_r
+        tile_behavior.ordering
       )
       # profile()
       ret
@@ -1028,12 +1026,11 @@ defmodule RiichiAdvanced.Match do
       ret
     end
   end
-  def _remove_match_definition({hand, calls}, match_definition, all_attrs, elixir_aliases, ordering, ordering_r) do
+  def _remove_match_definition({hand, calls}, match_definition, all_attrs, elixir_aliases, ordering) do
     prepare_tiles([hand | calls], [match_definition], %TileBehavior{
       attrs: all_attrs |> MapSet.new(),
       aliases: elixir_aliases |> TileBehavior.restore_alias_mapsets(),
       ordering: ordering,
-      ordering_r: ordering_r,
     }) |> __remove_match_definition(match_definition, true)
   end
 
@@ -1134,7 +1131,7 @@ defmodule RiichiAdvanced.Match do
       ret = _match_hand_v3({hand, calls}, match_definitions,
         tile_behavior.attrs |> Enum.to_list() |> Enum.sort(),
         tile_behavior.aliases |> TileBehavior.remove_alias_mapsets(),
-        tile_behavior.ordering, tile_behavior.ordering_r
+        tile_behavior.ordering
       )
       # profile()
       ret
@@ -1149,12 +1146,11 @@ defmodule RiichiAdvanced.Match do
       ret
     end
   end
-  defp _match_hand_v3({hand, calls}, match_definitions, all_attrs, elixir_aliases, ordering, ordering_r) do
+  defp _match_hand_v3({hand, calls}, match_definitions, all_attrs, elixir_aliases, ordering) do
     __match_hand_v3(hand, calls, match_definitions, %TileBehavior{
       attrs: all_attrs |> MapSet.new(),
       aliases: elixir_aliases |> TileBehavior.restore_alias_mapsets(),
       ordering: ordering,
-      ordering_r: ordering_r,
     })
   end
   defp __match_hand_v3(hand, calls, match_definitions, tile_behavior) do
@@ -1185,14 +1181,14 @@ defmodule RiichiAdvanced.Match do
     # IO.inspect({
     #   hand, group,
     #   tile_behavior.attrs |> Enum.to_list(),
-    #   tile_behavior.aliases |> TileBehavior.remove_alias_mapsets(), tile_behavior.ordering, tile_behavior.ordering_r,
+    #   tile_behavior.aliases |> TileBehavior.remove_alias_mapsets(), tile_behavior.ordering,
     #   exhaustive, Enum.empty?(tile_behavior.mappings),
     #   base_tiles
     # })
     _remove_group(
       hand, group,
       tile_behavior.attrs |> Enum.to_list(),
-      tile_behavior.aliases |> TileBehavior.remove_alias_mapsets(), tile_behavior.ordering, tile_behavior.ordering_r,
+      tile_behavior.aliases |> TileBehavior.remove_alias_mapsets(), tile_behavior.ordering,
       debug, exhaustive, Enum.empty?(tile_behavior.mappings),
       base_tiles
     )
@@ -1200,7 +1196,7 @@ defmodule RiichiAdvanced.Match do
   def _remove_group(
     hand, group,
     all_attrs,
-    elixir_aliases, ordering, ordering_r,
+    elixir_aliases, ordering,
     _debug, exhaustive, nojoker,
     base_tiles
   ) do
@@ -1208,7 +1204,6 @@ defmodule RiichiAdvanced.Match do
       attrs: all_attrs |> MapSet.new(),
       aliases: elixir_aliases |> TileBehavior.restore_alias_mapsets(),
       ordering: ordering,
-      ordering_r: ordering_r
       }, exhaustive, nojoker, base_tiles)
   end
   def __remove_group(hand, [], _tile_behavior, false, _nojoker, _base_tiles), do: hand
@@ -1252,7 +1247,7 @@ defmodule RiichiAdvanced.Match do
       ret = _get_waits_v3({hand, calls}, match_definitions,
         tile_behavior.attrs |> Enum.to_list() |> Enum.sort(),
         tile_behavior.aliases |> TileBehavior.remove_alias_mapsets(),
-        tile_behavior.ordering, tile_behavior.ordering_r,
+        tile_behavior.ordering,
         Map.keys(tile_behavior.tile_freqs)
       )
       # profile()
@@ -1267,12 +1262,11 @@ defmodule RiichiAdvanced.Match do
       ret
     end
   end
-  defp _get_waits_v3({hand, calls}, match_definitions, all_attrs, elixir_aliases, ordering, ordering_r, game_tiles) do
+  defp _get_waits_v3({hand, calls}, match_definitions, all_attrs, elixir_aliases, ordering, game_tiles) do
     __get_waits_v3(hand, calls, match_definitions, %TileBehavior{
       attrs: all_attrs |> MapSet.new(),
       aliases: elixir_aliases |> TileBehavior.restore_alias_mapsets(),
       ordering: ordering,
-      ordering_r: ordering_r,
       tile_freqs: Map.new(game_tiles, &{&1, 4}),
     })
   end
@@ -1333,7 +1327,7 @@ defmodule RiichiAdvanced.Match do
       ret = _get_unneeded_tiles_v2({hand, calls}, match_definitions,
         tile_behavior.attrs |> Enum.to_list() |> Enum.sort(),
         tile_behavior.aliases |> TileBehavior.remove_alias_mapsets(),
-        tile_behavior.ordering, tile_behavior.ordering_r
+        tile_behavior.ordering
       )
       # profile()
       ret
@@ -1348,12 +1342,11 @@ defmodule RiichiAdvanced.Match do
     end
   end
   # (this should be replaced by rust, otherwise call v1)
-  defp _get_unneeded_tiles_v2({hand, calls}, match_definitions, all_attrs, elixir_aliases, ordering, ordering_r) do
+  defp _get_unneeded_tiles_v2({hand, calls}, match_definitions, all_attrs, elixir_aliases, ordering) do
     get_unneeded_tiles_v1(hand, calls, match_definitions, %TileBehavior{
       attrs: all_attrs |> MapSet.new(),
       aliases: elixir_aliases |> TileBehavior.restore_alias_mapsets(),
       ordering: ordering,
-      ordering_r: ordering_r,
     })
   end
 

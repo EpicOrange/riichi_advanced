@@ -41,6 +41,15 @@ defmodule RiichiAdvanced.GameState do
     ]
   end
 
+  defmodule TileOrdering do
+    defstruct [
+      ordering: %{},
+      ordering_r: %{},
+      suit_ordering: %{},
+      suit_ordering_r: %{},
+    ]
+  end
+
   defmodule TileBehavior do
     defstruct [
       # aliases is a map looking like this:
@@ -49,11 +58,8 @@ defmodule RiichiAdvanced.GameState do
       aliases: %{},
       # mappings is kind of the reverse, %{joker tile with attributes => MapSet of tiles it can be used as}
       mappings: %{},
-      ordering: %{},
-      ordering_r: %{},
       tile_freqs: %{},
-
-      # below is used by match
+      ordering: %TileOrdering{},
 
       # we populate attrs in match definitions at initialization
       # and whenever we set tile aliases, we add the attrs in from_tiles
