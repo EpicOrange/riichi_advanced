@@ -381,7 +381,9 @@ defmodule RiichiAdvanced.GameState.Actions do
     tile_behavior = state.players[seat].tile_behavior
     # don't pass in aliases, since we've predetermined the exact tiles we'll remove
     case Match.try_remove_all_tiles(hand, to_remove, %{}, tile_behavior.attrs) do
-      [] -> Logger.error("trigger_call: seat #{seat}, Call #{call_name} on #{inspect(call_choice)} #{inspect(called_tile)} is to remove #{inspect(to_remove)} from hand #{inspect(hand)}, but none found")
+      [] ->
+        Logger.error("trigger_call: seat #{seat}, Call #{call_name} on #{inspect(call_choice)} #{inspect(called_tile)} is to remove #{inspect(to_remove)} from hand #{inspect(hand)}, but none found")
+        state
       [new_hand | _] -> 
         call_choice = hand -- new_hand
         # actually add the call to the player
