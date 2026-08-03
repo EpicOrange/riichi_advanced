@@ -200,7 +200,7 @@ defmodule RiichiAdvanced.GameState.Kyoku do
       # we just triggered a win (or nonterminating bloody end win, i.e. :continue),
       # run after_win and push a message for the winner we're currently viewing
       context = state.winners[seat]
-      state = Actions.trigger_event(state, "after_win", context)
+      state = Actions.trigger_event(state, "after_win", Map.put(context, :winner_seat, seat))
 
       # send message that prints out yaku and displayed score
       push_message(state, player_prefix(state, context.seat) ++ [

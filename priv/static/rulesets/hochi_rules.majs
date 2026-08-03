@@ -44,8 +44,8 @@ apply append, "default_mods", [
 set initial_score, 5000
 
 on after_initialization do
-  add_rule("Rules", "Tontonsen (unimplemented)", "The game consists of two east rounds.")
-  add_rule("Rules", "Partial Head Bump (unimplemented)", "If there are multiple winners, then the earliest winner in turn order gets the full payment for the hand, and the other winners get half each. As for riichi sticks, each winner first takes back their own riichi stick (if any) and any remaining non-winner riichi sticks are evenly divided among winners.")
+  add_rule("Rules", "Tontonsen", "The game consists of two east rounds.")
+  add_rule("Rules", "Head Bump", "If there are multiple winners, then the earliest winner in turn order gets the full payment for the hand, and the other winners get half each. As for riichi sticks, each winner first takes back their own riichi stick (if any) and any remaining non-winner riichi sticks are evenly divided among winners.")
   add_rule("Rules", "Hochi Fu", "Fu is not rounded. However, pinfu tsumo is 20 fu.")
   update_rule("Rules", "Sekinin Barai (Pao)", "(Tsuuiisou Pao) Dealing the last tile called for kan for a tsuuiisou hand also counts.")
   update_rule("Rules", "Sekinin Barai (Pao)", "(Chinroutou Pao) Dealing the last tile called for kan for a chinroutou hand also counts.")

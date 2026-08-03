@@ -60,11 +60,9 @@ end
 
 on after_win, prepend: true do
   modify_winner("score", "display_total") # before honba and riichi sticks
-  if pot > 0 do
-    precalculate_riichi_payments
-  end
+  if pot > 0 do precalculate_riichi_payments end
   if status("riichi") do
-    total = @riichi_bet :: "Reclaim riichi bet"
+    total += @riichi_bet :: "Reclaim riichi bet"
   end
   if riichi_share > 0 do
     total += riichi_share :: "Split remaining bets"
