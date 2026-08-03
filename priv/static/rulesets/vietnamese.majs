@@ -244,3 +244,5 @@ define_mod "yaku/viet_no_renhou", name: "No Blessing of Man", desc: "Blessing of
 
 define_mod_category "Other"
 define_mod vietnamese_vi, name: "Vietnamese Yaku Names", desc: "Display Vietnamese yaku names. (e.g. All Runs -> Phình)"
+
+apply set_append, "default_mods", ["yaku/viet_tsumo_seven_pairs"]
