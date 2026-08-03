@@ -30,7 +30,7 @@ apply subtract, "default_mods", [
 apply append, "default_mods", [
   "lib/yaku/riichi",
   "no_riichi_ankan",
-  %{name: "lib/yaku/riichi_isshoku_sanjun", config: %{san_name: "Isshoku Sanjun", san_value: 2, yon_name: "Isshoku Yonjun", yon_value: 1, yon_han: "★"}},
+  "lib/yaku/riichi_isshoku_sanjun",
 ]
 
 set initial_score, 5000

@@ -13,8 +13,8 @@ defmodule RiichiAdvanced.YakuTest.CosmicYaku do
     "cosmic_calls",
     "yaku/tsubame_gaeshi",
     "yaku/kanburi",
-    "yaku/riichi_isshoku_sanjun",
-    "yaku/riichi_isshoku_yonjun"
+    "lib/yaku/riichi_isshoku_sanjun",
+    "lib/yaku/riichi_isshoku_yonjun"
   ]
 
   test "cosmic - mini-sangen x2 should give ryandoukon instead of iipeikou" do

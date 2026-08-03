@@ -556,7 +556,7 @@ define_mod "lib/yaku/riichi_suurenkou", name: "Suurenkou", desc: "Local yakuman.
 define_mod "yaku/suuchoupaikou", name: "Suuchoupaikou", desc: "Local yakuman. \"Four Skipped Tile Triplets\". If you have four triplets of the same suit whose numbers step by 2, like 111 333 555 777, it's yakuman. Pao is applied if the fourth triplet is called."
 define_mod "yaku/daisharin", name: "Daisharin etc.", desc: "Local yakuman. If your hand is closed and your winning hand is 22334455667788 in one suit, it's yakuman."
 define_mod "yaku/shousharin", name: "Shousharin etc.", desc: "Local yakuman. If your hand is closed and your winning hand is 11223344556677 or 33445566778899 in one suit, it's yakuman."
-define_mod "yaku/riichi_isshoku_yonjun", name: "Isshoku Yonjun", desc: "Local yakuman. \"Pure Quadruple Sequences\". If you have four of the exact same sequence in one suit, like 123m 123m 123m 123m, it's yakuman. Like iipeikou but four. Pao is applied if the fourth sequence is called."
+define_mod "lib/yaku/riichi_isshoku_yonjun", name: "Isshoku Yonjun", desc: "Local yakuman. \"Pure Quadruple Sequences\". If you have four of the exact same sequence in one suit, like 123m 123m 123m 123m, it's yakuman. Like iipeikou but four. Pao is applied if the fourth sequence is called."
 define_mod "yaku/hyakuman_goku", name: "Hyakuman Goku", desc: "Local yakuman. \"One Million Stones\". If your hand is purely character tiles whose numbers sum up to at least 100, it's yakuman."
 define_mod "yaku/kachoufuugetsu", name: "Kachoufuugetsu", desc: "Local yakuman. \"Flower, Bird, Wind, Moon\". If your hand is 555p (5 circles) + 111s (birds) + triplet of round or seat wind + 111p (1 circles), it's yakuman."
 define_mod "yaku/fuukasetsugetsu", name: "Fuukasetsugetsu", desc: "Local yakuman. \"Flower, Bird, Snow, Moon\". If your hand is 555p (5 circles) + 555z (white dragon) + triplet of round or seat wind + 111p (1 circles), it's yakuman."
@@ -928,7 +928,7 @@ define_preset "Just Like Modded Minecraft", [
   "yaku/suuchoupaikou",
   "yaku/daisharin",
   "yaku/shousharin",
-  "yaku/riichi_isshoku_yonjun",
+  "lib/yaku/riichi_isshoku_yonjun",
   "yaku/hyakuman_goku",
   "yaku/kachoufuugetsu",
   "yaku/fuukasetsugetsu",
