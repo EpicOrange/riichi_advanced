@@ -641,6 +641,19 @@ defmodule RiichiAdvanced.GameState.Conditions do
         name = Enum.at(opts, 1, "Riichi")
         Enum.any?(Rules.get(state.rules_ref, list, []), & &1["display_name"] == name)
       "all_last"            -> state.kyoku >= Rules.get(state.rules_ref, "max_rounds", 0) - 1
+      "is_atozuke"          ->
+        win_definitions = Rules.translate_match_definitions(state.rules_ref, Enum.take(opts, 1))
+        waits = Match.get_waits(cxt_player.hand, cxt_player.calls, win_definitions, cxt_player.tile_behavior)
+        if Enum.empty?(waits) do false else
+          point_name = Enum.at(opts, 2, Rules.get(state.rules_ref, "score_calculation")["point_name"])
+          min_points = Enum.at(opts, 1, 1)
+          min_minipoints = Enum.at(opts, 3, 0)
+          yaku_lists = get_yaku_lists(state)
+          not Enum.all?(waits, &Scoring.seat_scores_points(
+            state, yaku_lists,
+            point_name, min_points, min_minipoints,
+            context.seat, &1, :discard))
+        end
       _                     ->
         IO.puts "Unhandled condition #{inspect(cond_spec)}"
         false

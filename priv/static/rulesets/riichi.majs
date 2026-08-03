@@ -578,6 +578,7 @@ config_mod uma, name: "_4th", values: [-30,-25,-20,-15,-10,-5,0,5,10,15,20,25,30
 define_mod oka, name: "Oka", desc: "Enable oka. Everyone antes the given amount, and the total is awarded to first place at the end of the game."
 config_mod oka, name: "ante", values: [5,10,15,20,25,30], default: 5
 define_mod kuitan_nashi, name: "Kuitan Nashi", desc: "Disallow open tanyao."
+define_mod atozuke_nashi, deps: ["min_han"], name: "Atozuke Nashi", desc: "Disallow wins if one of your waiting tiles does not earn yaku."
 define_mod kuikae_nashi, name: "Kuikae Nashi", desc: "Disallow swap-calling."
 define_mod kiriage_mangan, order: -1, name: "Kiriage Mangan", desc: "3 han 60 fu and 4 han 30 fu are worth mangan."
 define_mod head_bump, conflicts: ["sanchahou"], name: "Head Bump", desc: "Enable head bump. In case of multiple ron, only the person closest in turn order gets the win."

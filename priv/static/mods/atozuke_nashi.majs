@@ -1,0 +1,18 @@
+on after_initialization do
+  add_rule("Rules", "Atozuke Nashi", "If a hand is in tenpai (about to win) but one of the tiles it is waiting on wins no yaku, then the hand cannot win at all (on any wait).")
+  add_rule("Rules", "Atozuke Nashi", "%{example_hand}", %{example_hand: ~t"23456m22678p222s"})
+end
+
+apply append, "functions.check_tenpai" do
+  if status("tenpai") and is_atozuke("win") do
+    set_status("atozuke")
+  else
+    unset_status("atozuke")
+  end
+end
+
+apply append, "buttons.ron.show_when", status_missing("atozuke")
+apply append, "buttons.chankan.show_when", status_missing("atozuke")
+apply append, "buttons.tsumo.show_when", status_missing("atozuke")
+
+apply set_append, "shown_statuses", ["atozuke"]

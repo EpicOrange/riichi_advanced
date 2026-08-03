@@ -10,6 +10,7 @@ defmodule RiichiAdvanced.GameState.Scoring do
   alias RiichiAdvanced.GameState.ScoringOld, as: ScoringOld
   alias RiichiAdvanced.Utils, as: Utils
   import RiichiAdvanced.GameState
+  use Nebulex.Caching
 
   def add_yaku_values(value1, value2) do
     # fallback: get the first unit of the first side that has a unit attached
@@ -98,10 +99,33 @@ defmodule RiichiAdvanced.GameState.Scoring do
     end
   end
 
-  # this is basically a clone of Kyoku.calculate_winner_details_v2 and Joker.evaluate_joker_assignment
-  # doesn't calculate a whole winner object, just finds yaku and dips
-  # TODO DRY
   def seat_scores_points(state, yaku_list_names, point_name, min_points, min_minipoints, seat, winning_tile, win_source) do
+    score_yaku(state, yaku_list_names, seat, winning_tile, win_source)
+    |> Enum.any?(fn {:ok, {yaku, minipoints}} ->
+      minipoints >= min_minipoints && case min_points do
+        :declared ->
+          names = Enum.map(yaku, fn {name, _value} -> name end)
+          Enum.all?(state.players[seat].declared_yaku, fn yaku -> yaku in names end)
+        _ ->
+          points = Enum.map(yaku, fn {_name, value} -> value end) |> Enum.reduce([], &Scoring.add_yaku_values/2)
+          |> Utils.get_from_points_list(point_name)
+          # |> IO.inspect(label: inspect(yaku))
+          points >= min_points
+      end
+    end)
+  end
+
+  # this is a memoized version of score_yaku, it returns a list not a stream
+  @decorate cacheable(cache: RiichiAdvanced.Cache, key: {:score_yaku_cached, state, yaku_list_names, seat, winning_tile, win_source}, opts: [ttl: :timer.seconds(10)])
+  def score_yaku_cached(state, yaku_list_names, seat, winning_tile, win_source) do
+    score_yaku(state, yaku_list_names, seat, winning_tile, win_source)
+    |> Enum.to_list()
+  end
+
+  # this is basically a clone of Kyoku.calculate_winner_details_v2 and Joker.evaluate_joker_assignment
+  # doesn't calculate a whole winner object, just returns a stream of yaku
+  # TODO DRY
+  def score_yaku(state, yaku_list_names, seat, winning_tile, win_source) do
     %{hand: hand, calls: calls} = state.players[seat]
     {winning_tile, hand} = if winning_tile == nil do List.pop_at(hand, -1) else {winning_tile, hand} end
     # we need to let before_win actions know about the winning tile
@@ -155,21 +179,10 @@ defmodule RiichiAdvanced.GameState.Scoring do
       end
 
       # obtain yaku and minipoints from this state
-      {yaku, minipoints} = get_yaku_from_lists(state, yaku_list_names, seat, assigned_winning_tile, win_source)
+      get_yaku_from_lists(state, yaku_list_names, seat, assigned_winning_tile, win_source)
       # |> IO.inspect(label: inspect(win_source))
-      minipoints >= min_minipoints && case min_points do
-        :declared ->
-          names = Enum.map(yaku, fn {name, _value} -> name end)
-          Enum.all?(state.players[seat].declared_yaku, fn yaku -> yaku in names end)
-        _ ->
-          points = Enum.map(yaku, fn {_name, value} -> value end) |> Enum.reduce([], &Scoring.add_yaku_values/2)
-          |> Utils.get_from_points_list(point_name)
-          # |> IO.inspect(label: inspect(yaku))
-          points >= min_points
-      end
     end, timeout: :infinity, ordered: false)
     # |> Enum.to_list() |> IO.inspect(label: inspect(win_source))
-    |> Enum.any?(fn {:ok, result} -> result end)
   end
   
   def hanada_kirame_score_protection(state, delta_scores) do
