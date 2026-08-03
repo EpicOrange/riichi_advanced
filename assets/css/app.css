@@ -2126,6 +2126,11 @@ div.visible-waits > div.visible-wait > div.visible-wait-label {
 }
 
 /* nearest american hands */
+div.display-am-hand-hover {
+  position: absolute;
+  bottom: calc(-0.5 * var(--tile-size));
+  right: calc(6.5 * var(--tile-size));
+}
 div.display-am-hand-hover::before {
   content: "(nearest hands)";
   background: gray;
@@ -2133,8 +2138,7 @@ div.display-am-hand-hover::before {
   padding: 0 calc(0.125 * var(--tile-size));
   border-radius: calc(0.125 * var(--tile-size));
   font-size: calc(0.75 * var(--tile-size));
-  bottom: calc(-1.5 * var(--tile-size));
-  right: calc(0.75 * var(--tile-size));
+  white-space: nowrap;
 }
 div.display-am-hand-container {
   position: absolute;

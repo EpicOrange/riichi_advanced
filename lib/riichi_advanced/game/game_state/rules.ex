@@ -199,7 +199,7 @@ defmodule RiichiAdvanced.GameState.Rules do
   #   [[["pair"], 7]],
   #   "kokushi_musou" // defined top-level as "kokushi_musou_definition"
   # ]
-  def translate_match_definitions(rules_ref, match_definitions) do
+  def translate_match_definitions(rules_ref, match_definitions, fail_silently? \\ false) do
     set_definitions = get(rules_ref, "set_definitions", %{})
     for match_definition <- List.wrap(match_definitions), reduce: [] do
       acc ->
@@ -210,8 +210,10 @@ defmodule RiichiAdvanced.GameState.Rules do
                 if String.contains?(match_definition, " ") do
                   American.translate_american_match_definitions([match_definition])
                 else
-                  GenServer.cast(self(), {:show_error, "Could not find match definition \"#{match_definition}_definition\" in the rules."})
-                  []
+                  if not fail_silently? do
+                    GenServer.cast(self(), {:show_error, "Could not find match definition \"#{match_definition}_definition\" in the rules."})
+                    nil
+                  else [] end
                 end
               named_match_definitions -> 
                 {am_match_definitions, match_definitions} = Enum.split_with(named_match_definitions, &is_binary/1)
@@ -221,10 +223,14 @@ defmodule RiichiAdvanced.GameState.Rules do
             end
           is_list(match_definition)   -> translate_sets_in_match_definitions([match_definition], set_definitions)
           true                        ->
-            GenServer.cast(self(), {:show_error, "#{inspect(match_definition)} is not a valid match definition."})
-            []
+            if not fail_silently? do
+              GenServer.cast(self(), {:show_error, "#{inspect(match_definition)} is not a valid match definition."})
+              nil
+            else [] end
         end
-        [translated | acc]
+        if translated != nil do
+          [translated | acc]
+        else acc end
     end |> Enum.reverse() |> Enum.concat()
   end
 
