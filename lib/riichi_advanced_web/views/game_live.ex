@@ -322,7 +322,7 @@ defmodule RiichiAdvancedWeb.GameLive do
         drawn_reserved_tiles={@state.drawn_reserved_tiles}
         available_seats={@state.available_seats}
         :if={Rules.get(@state.rules_ref, "display_wall", false)} />
-      <div class={["big-text"]} :if={@loading}><%= t(@lang, "Loading...") %></div>
+      <div class={["big-text"]} :if={@loading && Rules.has_key?(@state.rules_ref, "show_waits")}><%= t(@lang, "Loading...") %></div>
       <div class="display-am-hand-hover game-bottom-element" :if={Rules.get(@state.rules_ref, "show_nearest_american_hand", false)}></div>
       <div class="display-am-hand-container" :if={Rules.get(@state.rules_ref, "show_nearest_american_hand", false)}>
         <% open_definitions = Rules.get(@state.rules_ref, "open_win_definition", []) %>
