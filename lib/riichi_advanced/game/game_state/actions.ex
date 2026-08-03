@@ -1369,6 +1369,24 @@ defmodule RiichiAdvanced.GameState.Actions do
               } end)
             )
           else state end
+        "move_rule"             ->
+          from_tab = Enum.at(opts, 0, "Rules")
+          from_id = Enum.at(opts, 1, "")
+          to_tab = Enum.at(opts, 2, "Rules")
+          to_id = Enum.at(opts, 3, from_id)
+          vars = Enum.at(opts, 4, %{})
+          from_tab = String.trim(interpolate_string(state, context, from_tab, vars))
+          from_id = String.trim(interpolate_string(state, context, from_id, vars))
+          to_tab = String.trim(interpolate_string(state, context, to_tab, vars))
+          to_id = String.trim(interpolate_string(state, context, to_id, vars))
+          {rule, state} = pop_in(state.rules_text[from_tab][from_id])
+          if rule != nil do
+            state = update_in(state.rules_text, fn tabs -> Map.update(tabs, to_tab, Map.new([{to_id, rule}]), &Map.put(&1, to_id, rule)) end)
+            state = if to_tab not in state.rules_text_order do
+              update_in(state.rules_text_order, & &1 ++ [to_tab])
+            else state end
+            state
+          else state end
         "delete_rule"             ->
           tab = Enum.at(opts, 0, "Rules")
           id = Enum.at(opts, 1, "")
@@ -1388,6 +1406,11 @@ defmodule RiichiAdvanced.GameState.Actions do
             state = update_in(state.rules_text_order, & &1 ++ [tab])
             state
           else state end
+        "delete_rule_tab"          ->
+          tab = String.trim(interpolate_string(state, context, Enum.at(opts, 0, "Rules"), Enum.at(opts, 1, %{})))
+          state = Map.update(state, :rules_text, %{}, &Map.delete(&1, tab))
+          state = Map.update(state, :rules_text_order, [], &List.delete(&1, tab))
+          state
         "rename_rule_tab"          ->
           from = String.trim(interpolate_string(state, context, Enum.at(opts, 0, "Rules"), Enum.at(opts, 2, %{})))
           to = String.trim(interpolate_string(state, context, Enum.at(opts, 1, "Rules"), Enum.at(opts, 2, %{})))
