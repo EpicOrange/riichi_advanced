@@ -1,11 +1,9 @@
 defmodule RiichiAdvancedWeb.LogLive do
   alias RiichiAdvanced.GameState.Choice
   alias RiichiAdvanced.GameState.Game
-  alias RiichiAdvanced.GameState.Rules
   alias RiichiAdvanced.ModLoader
   alias RiichiAdvanced.Utils
   alias RiichiAdvancedWeb.GameLive.InteractionState
-  alias RiichiAdvancedWeb.GameLive.Tutorial
   use RiichiAdvancedWeb, :live_view
   use Gettext, backend: RiichiAdvancedWeb.Gettext
   import RiichiAdvancedWeb.GameComponents
@@ -311,7 +309,7 @@ defmodule RiichiAdvancedWeb.LogLive do
     end
   end
 
-  def handle_info(%{topic: topic, event: "reset_visible_waits", payload: %{"seat" => seat}}, socket) do
+  def handle_info(%{event: "reset_visible_waits"}, socket) do
     {:noreply, socket}
   end
 
