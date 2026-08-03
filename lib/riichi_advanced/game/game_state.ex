@@ -965,7 +965,7 @@ defmodule RiichiAdvanced.GameState do
   def get_winning_tile(state, seat, :draw) do
     if get_last_discard_action(state) == nil
         and Enum.empty?(state.players[seat].calls)
-        and get_in(state.winners[seat].winning_tile) == nil do
+        and get_in(state, [Access.key(:winners, %{}), Access.key(seat, %{}), Access.key(:winning_tile, nil)]) == nil do
       # it's tenhou, or we moved draw into hand, either way return nil
       nil
     else

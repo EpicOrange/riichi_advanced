@@ -2,6 +2,7 @@ defmodule RiichiAdvancedWeb.ScoringTestLive do
   alias RiichiAdvanced.Constants, as: Constants
   alias RiichiAdvanced.GameState, as: GameState
   alias RiichiAdvanced.GameState.Actions, as: Actions
+  alias RiichiAdvanced.GameState.Game, as: Game
   alias RiichiAdvanced.GameState.Kyoku, as: Kyoku
   alias RiichiAdvanced.GameState.Player, as: Player
   alias RiichiAdvanced.GameState.Rules, as: Rules
@@ -25,7 +26,7 @@ defmodule RiichiAdvancedWeb.ScoringTestLive do
     |> assign(:result, "")
     |> assign(:loading, false)
     |> assign(:seat, :east)
-    |> assign(:state, %{
+    |> assign(:state, %Game{
       winners: %{east: %{}},
       winner_seats: [:east],
       winner_index: 0,
@@ -47,6 +48,8 @@ defmodule RiichiAdvancedWeb.ScoringTestLive do
       wall_index: 0,
       interruptible_actions: %{},
       marking: Map.new([:east, :south, :west, :north], fn seat -> {seat, %{}} end),
+      mutex: nil,
+      smt_solver: nil,
     })
     |> assign(:ruleset, nil)
     |> assign(:ruleset_json, nil)
@@ -67,17 +70,26 @@ defmodule RiichiAdvancedWeb.ScoringTestLive do
     |> assign(:rules_ref, nil)
     # |> assign(:hand, [:"4m", :"2m", :"3m", :"4p", :"4p", :"4p", :"5p", :"6p", :"7p", :"3s", :"4s", :"2s", :"2s", :"2s"])
 
-    socket = switch_to_ruleset(socket, Map.get(params, "ruleset", "riichi")) |> reload_ruleset()
-
-    messages_init = RiichiAdvanced.MessagesState.link_player_socket(socket.root_pid, socket.assigns.session_id)
-    socket = if Map.has_key?(messages_init, :messages_state) do
-      socket = assign(socket, :messages_state, messages_init.messages_state)
-      # subscribe to message updates
-      Phoenix.PubSub.subscribe(RiichiAdvanced.PubSub, "messages:" <> socket.assigns.session_id)
-      GenServer.cast(messages_init.messages_state, :poll_messages)
-      socket
-    else socket end
-    {:ok, socket}
+    if connected?(socket) do
+      uuid = Ecto.UUID.generate()
+      {:ok, _pid} = Mutex.start_link(name: Utils.via_registry("mutex", "scoringtest", uuid))
+      {:ok, _pid} = ExSMT.Solver.start_link(name: Utils.via_registry("smt_solver", "scoringtest", uuid), room_code: uuid, ruleset: "scoringtest")
+      [{mutex, _}] = Utils.registry_lookup("mutex", "scoringtest", uuid)
+      [{smt_solver, _}] = Utils.registry_lookup("smt_solver", "scoringtest", uuid)
+      socket = assign(socket, :state, %{ socket.assigns.state | mutex: mutex, smt_solver: smt_solver })
+      switch_to_ruleset(socket, Map.get(params, "ruleset", "riichi")) |> reload_ruleset()
+      messages_init = RiichiAdvanced.MessagesState.link_player_socket(socket.root_pid, socket.assigns.session_id)
+      socket = if Map.has_key?(messages_init, :messages_state) do
+        socket = assign(socket, :messages_state, messages_init.messages_state)
+        # subscribe to message updates
+        Phoenix.PubSub.subscribe(RiichiAdvanced.PubSub, "messages:" <> socket.assigns.session_id)
+        GenServer.cast(messages_init.messages_state, :poll_messages)
+        socket
+      else socket end
+      {:ok, socket}
+    else
+      {:ok, socket}
+    end
   end
 
   def render(assigns) do
@@ -206,10 +218,11 @@ defmodule RiichiAdvancedWeb.ScoringTestLive do
     |> assign(:call_buttons, %{})
     |> assign(:selected_call_button, nil)
 
-    # run after_initialization to populate rules
     state = socket.assigns.state
     |> Map.put(:rules_ref, rules_ref)
-    |> Actions.trigger_event("after_initialization", %{seat: :east})
+    |> Actions.trigger_event("after_initialization", %{seat: :east}) # to populate rules
+    |> Actions.trigger_event("after_start", %{seat: :east}) # to populate tile alliases
+    socket = assign(socket, :state, state)
     socket = assign(socket, :rules_text, state.rules_text)
     socket = assign(socket, :rules_text_order, state.rules_text_order)
     
@@ -279,23 +292,21 @@ defmodule RiichiAdvancedWeb.ScoringTestLive do
     {wall, dead_wall} = if dead_wall_length > 0 do
       Enum.split(wall, -dead_wall_length)
     else {wall, []} end
-    state = %GameState.Game{
+    state = %{ state |
       wall: wall,
       dead_wall: dead_wall,
       log_loading_mode: true,
-      rules_ref: state.rules_ref,
-      players: state.players,
       log_state: %{log: []},
       timer: -1,
     }
     initial_score = Rules.get(state.rules_ref, "initial_score", 0)
     tile_freqs = Enum.frequencies(state.wall ++ state.dead_wall)
     all_attrs = Rules.get(state.rules_ref, :all_attrs, [])
-    state = GameState.update_all_players(state, fn seat, _player -> %Player{
+    state = GameState.update_all_players(state, fn seat, player -> %Player{
       nickname: Atom.to_string(seat) |> String.capitalize(),
       score: initial_score,
       start_score: initial_score,
-      tile_behavior: %TileBehavior{ tile_freqs: tile_freqs, attrs: all_attrs }
+      tile_behavior: %{ player.tile_behavior | tile_freqs: tile_freqs, attrs: all_attrs }
     } end)
     {winning_tile, hand} = List.pop_at(hand, -1)
     state = if is_ron? do
