@@ -1,0 +1,30 @@
+replace all, "yaku", [1, "Fan"], [0, "Fan"]
+replace all, "yaku", [2, "Fan"], [0, "Fan"]
+replace all, "yaku", [4, "Fan"], [0, "Fan"]
+replace all, "yaku", [6, "Fan"], [0, "Fan"]
+replace all, "yaku", [8, "Fan"], [0, "Fan"]
+replace all, "yaku", [12, "Fan"], [0, "Fan"]
+replace all, "yaku", [16, "Fan"], [0, "Fan"]
+replace all, "yaku", [24, "Fan"], [0, "Fan"]
+replace all, "yaku", [32, "Fan"], [0, "Fan"]
+replace all, "yaku", [48, "Fan"], [0, "Fan"]
+replace all, "yaku", [64, "Fan"], [0, "Fan"]
+replace all, "yaku", [88, "Fan"], [0, "Fan"]
+replace all, "meta_yaku", [-1, "Fan"], [0, "Fan"]
+replace all, "meta_yaku", [1, "Fan"], [0, "Fan"]
+replace all, "meta_yaku", [2, "Fan"], [0, "Fan"]
+# chicken hand is a meta_yaku worth 8, so it is untouched
+
+on after_initialization do
+  move_rule("8 Fan", "Chicken Hand", "Chicken Hand", "Chicken Hand")
+  add_rule("1 Fan", "Chicken Hand Challenge", "Everything here is actually worth 0 Fan (including flowers.)", -1)
+  add_rule("2 Fan", "Chicken Hand Challenge", "Everything here is actually worth 0 Fan (including flowers.)", -1)
+  add_rule("4 Fan", "Chicken Hand Challenge", "Everything here is actually worth 0 Fan (including flowers.)", -1)
+  add_rule("6 Fan", "Chicken Hand Challenge", "Everything here is actually worth 0 Fan (including flowers.)", -1)
+  add_rule("8 Fan", "Chicken Hand Challenge", "Everything here is actually worth 0 Fan (including flowers.)", -1)
+  add_rule("12 Fan", "Chicken Hand Challenge", "Everything here is actually worth 0 Fan (including flowers.)", -1)
+  add_rule("16 Fan", "Chicken Hand Challenge", "Everything here is actually worth 0 Fan (including flowers.)", -1)
+  rename_rule_tab("24+ Fan", "12+ Fan")
+  rename_rule_tab("16 Fan", "12+ Fan")
+  rename_rule_tab("12 Fan", "12+ Fan")
+end
