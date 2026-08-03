@@ -375,6 +375,7 @@ defmodule RiichiAdvanced.GameState.Actions do
     # don't pass in aliases, since we've predetermined the exact tiles we'll remove
     new_hand = Match.try_remove_all_tiles(hand, to_remove, %{}, tile_behavior.attrs)
     |> Enum.at(0)
+    # TODO sometimes new_hand is nil
     call_choice = hand -- new_hand
     new_hand = if new_hand == nil do
       Logger.error("trigger_call: Call #{call_name} on #{inspect(call_choice)} #{inspect(called_tile)} is to remove #{inspect(to_remove)} from hand #{inspect(hand)}, but none found")

@@ -1,6 +1,7 @@
 defmodule RiichiAdvanced.AIPlayer do
   alias RiichiAdvanced.GameState.Debug, as: Debug
   alias RiichiAdvanced.GameState.Marking, as: Marking
+  alias RiichiAdvanced.GameState.TileBehavior, as: TileBehavior
   alias RiichiAdvanced.Match, as: Match
   alias RiichiAdvanced.Riichi, as: Riichi
   alias RiichiAdvanced.Utils, as: Utils
@@ -55,26 +56,41 @@ defmodule RiichiAdvanced.AIPlayer do
         {6,  state.shanten_definitions.roushanten}
       ]
       shanten = min(state.shanten, 6)
+
+      # if there's any-tile jokers, take them out
+      {reduced_hand, shanten, num_jokers_removed} = if Map.has_key?(state.player.tile_behavior.aliases, :any) do
+        # up to 6-`shanten` any-tile jokers can be removed from hand
+        # this will decrease the shanten requirement by number of jokers removed
+        {any_tile_jokers, reduced_hand} = Enum.split_with(hand, &TileBehavior.is_any_joker?(&1, state.player.tile_behavior))
+        {removed_jokers, jokers_to_return} = Enum.split(any_tile_jokers, max(0, 6 - shanten))
+        num_jokers_removed = length(removed_jokers)
+        shanten = min(6, shanten + num_jokers_removed)
+        reduced_hand = reduced_hand ++ jokers_to_return
+        {reduced_hand, shanten, num_jokers_removed}
+      else {hand, shanten, 0} end
+
       shanten_definitions = Enum.drop(shanten_definitions, max(0, shanten))
       {ret, shanten} = for {i, shanten_definition} <- shanten_definitions, reduce: {nil, shanten} do
         {nil, _} when shanten >= 4 ->
           # discard disconnected tiles instead
           ret =
-            Riichi.get_disconnected_tiles(hand, tile_behavior)
+            Riichi.get_disconnected_tiles(reduced_hand, tile_behavior)
             |> choose_playable_tile(playables)
           ret = if ret == nil do
-            Match.get_unneeded_tiles_v2(hand, calls, shanten_definition, tile_behavior)
+            Match.get_unneeded_tiles_v2(reduced_hand, calls, shanten_definition, tile_behavior)
             |> choose_playable_tile(playables)
           else ret end
           {ret, i}
         {nil, _} ->
-          ret = Match.get_unneeded_tiles_v2(hand, calls, shanten_definition, tile_behavior)
+          ret = Match.get_unneeded_tiles_v2(reduced_hand, calls, shanten_definition, tile_behavior)
           |> choose_playable_tile(playables)
-          if Debug.debug_ai() and ret != nil do
-            IO.puts(" >> #{state.seat}: I'm currently #{i}-shanten!")
-          end
           {ret, i}
         ret -> ret
+      end
+
+      shanten = max(0, shanten - num_jokers_removed)
+      if Debug.debug_ai() and ret != nil do
+        IO.puts(" >> #{state.seat}: I'm currently #{shanten}-shanten, with #{num_jokers_removed} jokers in hand!")
       end
 
       if ret == nil do # shanten > 6?

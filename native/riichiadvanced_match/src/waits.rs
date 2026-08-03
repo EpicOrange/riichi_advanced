@@ -179,7 +179,7 @@ pub fn ___get_waits_v3(
   // println!("after removing {:?} from right again: {:?}", decode_tiles(right, &match_info.all_attrs), decode_tiles(match_info.mapping.get(joker).unwrap(), &match_info.all_attrs));
 }
 
-// #[rustler::nif(schedule = "DirtyCpu")]
+#[rustler::nif(schedule = "DirtyCpu")]
 fn _get_unneeded_tiles_v2(
     hand_calls: ElixirHandCalls,
     match_definitions: MatchDefinitions,

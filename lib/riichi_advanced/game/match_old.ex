@@ -66,7 +66,11 @@ defmodule RiichiAdvanced.MatchOld do
       offset                -> {offset, []}
     end
     attrs = MapSet.to_list(MapSet.intersection(MapSet.new(attrs1), MapSet.new(attrs2)))
-    %{"offset" => op.(o1, o2), "attrs" => attrs}
+    if Enum.empty?(attrs) do
+      op.(o1, o2)
+    else
+      %{"offset" => op.(o1, o2), "attrs" => attrs}
+    end
   end
 
   defp suit_to_offset(tile) do
@@ -690,6 +694,15 @@ defmodule RiichiAdvanced.MatchOld do
     end
   end
 
+  defp remove_singleton_groups(match_definitions) do
+    for match_definition <- match_definitions do
+      Enum.filter(match_definition, &case &1 do
+        [[[0]], _] -> false
+        _          -> true
+      end)
+    end |> Enum.reverse()
+  end
+
   # not only does this deduplicate, but it also removes match definitions subsumed by another
   defp deduplicate_match_definitions(match_definitions) do
     for match_definition <- match_definitions, reduce: [] do
@@ -763,6 +776,7 @@ defmodule RiichiAdvanced.MatchOld do
     |> Enum.concat()
     |> Enum.uniq()
     # |> IO.inspect(label: "before deduplication")
+    |> remove_singleton_groups()
     |> deduplicate_match_definitions()
     # |> then(fn result ->
     #   IO.inspect(length(result), label: "result")

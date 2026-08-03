@@ -99,7 +99,7 @@ defmodule RiichiAdvanced.GameState.Rules do
           end
       end
       :ets.insert(rules_ref, {:shanten_definitions, shanten_definitions})
-      # IO.inspect(shanten_definitions)
+      # IO.inspect(shanten_definitions, limit: :infinity, charlists: :as_lists)
       # IO.inspect(Map.new(shanten_definitions, fn {shanten, definition} -> {shanten, length(definition)} end))
 
       # get all attributes used in the entire ruleset
