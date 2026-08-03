@@ -1,15 +1,14 @@
 use std::collections::HashMap;
 use std::iter::{empty, once};
-use std::rc::Rc;
 
 use blossom::Graph;
 use num::abs;
 use smallvec::smallvec;
 
-use crate::encode::{decode, decode_mapping, decode_tiles};
+use crate::encode::{decode, decode_mapping, decode_tile, decode_tiles, encode_attrs};
 use crate::offsets::{apply_offsets, is_offset_dest};
 use crate::tileset::{_check_equivalence, remove_tileset_indices};
-use crate::types::{AttrOffsetMap, HandsIterator, IndexVec, MatchGroup, MatchInfo, MatchOffset, Tile, TileSet};
+use crate::types::{ANY_PRIME, HandsIterator, IndexVec, MatchGroup, MatchInfo, MatchOffset, Tile, TileSet};
 use crate::utils::remove_indices_smallvec;
 
 // this is for matching length-2 groups, usually [0, 0] for chiitoitsu
@@ -30,16 +29,17 @@ pub fn perform_blossom_match<'a>(
       return Box::new(empty());
     }
     if debug {
+      let mapping = if nojoker { &HashMap::new() } else { &match_info.mapping };
       println!("Running blossom with hands = {:?}, groups = {groups:?}, actual_num = {actual_num}, mapping = {:?}",
         hands.iter().map(|h| decode_tiles(&h.attrs, &match_info.all_attrs)).collect::<Vec<_>>(),
-        decode_mapping(&match_info.mapping, &match_info.all_attrs)
+        decode_mapping(mapping, &match_info.all_attrs)
       );
     }
     // try to match as many calls as possible
     let mut matching_call_ixs: IndexVec = hands[1..]
       .iter()
       .enumerate()
-      .filter(|(_i, call)| !check_pair_match(call, &groups, match_info, nojoker, true).is_empty())
+      .filter(|(_i, call)| !check_pair_match(call, &groups, match_info, debug, nojoker, true).is_empty())
       .map(|(i, _call)| 1 + i as u8)
       .collect();
     matching_call_ixs.truncate(actual_num as usize);
@@ -57,8 +57,8 @@ pub fn perform_blossom_match<'a>(
   }))
 }
 
-// since groups are size 2, we can simply check first tile, then second tile
-fn check_pair_match(hand: &TileSet, groups: &[MatchGroup], match_info: &MatchInfo, nojoker: bool, stop_early: bool) -> HashMap<usize, Vec<usize>> {
+// since groups are size 2, we can 'simply' check if shifting first tile results in second tile
+fn check_pair_match(hand: &TileSet, groups: &[MatchGroup], match_info: &MatchInfo, debug: bool, nojoker: bool, stop_early: bool) -> HashMap<usize, Vec<usize>> {
   let mut ret: HashMap<usize, Vec<usize>> = HashMap::new();
   let aliases = if nojoker { &HashMap::new() } else { &match_info.aliases };
   let mapping = if nojoker { &HashMap::new() } else { &match_info.mapping };
@@ -67,22 +67,36 @@ fn check_pair_match(hand: &TileSet, groups: &[MatchGroup], match_info: &MatchInf
   for group in groups {
     if let MatchGroup::Offsets(os) = group {
       // first, find the first numeric offset and use it to offset the other offset
-      if let Some(offset) = match (os[0].clone(), os[1].clone()) {
-        (MatchOffset::Offset(a), MatchOffset::Offset(b)) => Some(MatchOffset::Offset(b - a)),
-        (MatchOffset::Offset(a), MatchOffset::AttrsOffset(map)) => Some(MatchOffset::AttrsOffset(AttrOffsetMap{offset: map.offset - a, attrs: map.attrs})),
-        (MatchOffset::AttrsOffset(map), MatchOffset::Offset(a)) => Some(MatchOffset::AttrsOffset(AttrOffsetMap{offset: map.offset - a, attrs: map.attrs})),
-        (MatchOffset::AttrsOffset(map1), MatchOffset::AttrsOffset(map2)) => Some(MatchOffset::AttrsOffset(AttrOffsetMap{offset: map2.offset - map1.offset, attrs: map2.attrs})),
+      if let Some((offset, from_attrs, to_attrs)) = match (os[0].clone(), os[1].clone()) {
+        (MatchOffset::Offset(a), MatchOffset::Offset(b)) => Some((b - a, 0, 0)),
+        (MatchOffset::Offset(a), MatchOffset::AttrsOffset(mut map)) => Some((map.offset - a, 0, encode_attrs(&mut map.attrs, &match_info.all_attrs))),
+        (MatchOffset::AttrsOffset(mut map), MatchOffset::Offset(a)) => Some((map.offset - a, encode_attrs(&mut map.attrs, &match_info.all_attrs), 0)),
+        (MatchOffset::AttrsOffset(mut map1), MatchOffset::AttrsOffset(mut map2)) => Some((map2.offset - map1.offset, encode_attrs(&mut map1.attrs, &match_info.all_attrs), encode_attrs(&mut map2.attrs, &match_info.all_attrs))),
         _ => None,
       } {
+        let required_attr_tile = (ANY_PRIME, from_attrs);
         // then see if applying the combined offset to one tile gets you one of the other tiles in the hand
-        let offset = Rc::new(vec!(offset));
+        let offsets = vec!(MatchOffset::Offset(offset));
         for (i, tile1) in hand.attrs.iter().enumerate() {
-          if let Some(target) = apply_offsets(tile1, &offset.clone(), &match_info.all_attrs, &match_info.ordering).0[0] {
+          // if tile1 doesn't have the required attrs, skip it
+          if !_check_equivalence(tile1, &required_attr_tile, aliases) { continue; }
+          if let Some(mut target) = apply_offsets(tile1, &offsets, &match_info.all_attrs, &match_info.ordering).0[0] {
+            target.1 &= !from_attrs;
+            target.1 |= to_attrs;
             for (j, tile2) in hand.attrs.iter().enumerate() {
               if i == j { continue; }
               // draw an edge between two tiles iff they share any aliases
               let tile2_vec = vec!(*tile2);
               let tile2_mappings = mapping.get(tile2).unwrap_or(&tile2_vec);
+              if debug {
+                println!("{:?} == {:?} == {:?} == {:?} == {:?}",
+                  decode_tile(required_attr_tile, &match_info.all_attrs),
+                  decode_tile(*tile1, &match_info.all_attrs),
+                  decode_tile(target, &match_info.all_attrs),
+                  decode_tiles(tile2_mappings, &match_info.all_attrs),
+                  decode_tile((1, to_attrs), &match_info.all_attrs),
+                  );
+              }
               if tile2_mappings.iter().any(|t| _check_equivalence(&target, t, aliases)) {
                 ret.entry(i)
                   .and_modify(|ixs| ixs.push(j))
@@ -127,7 +141,7 @@ fn run_blossom<'a>(
   match_info: &'a MatchInfo,
   debug: bool, nojoker: bool,
 ) -> Option<TileSet> {
-  let graph: Graph = check_pair_match(&hand, groups, match_info, nojoker, false).into_iter().collect();
+  let graph: Graph = check_pair_match(&hand, groups, match_info, debug, nojoker, false).into_iter().collect();
   if debug { println!("Graph: {graph:?}"); }
   let mut matching = graph.maximum_matching().edges();
   if debug { println!("Matching: {matching:?} ({}/{num})", matching.len()); }
