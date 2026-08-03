@@ -1623,4 +1623,21 @@ defmodule RiichiAdvanced.Match do
     separated_hand
   end
 
+  def get_match_length(match_definitions) do
+    for match_definition <- match_definitions do
+      for match_definition_elem <- match_definition do
+        case match_definition_elem do
+          [groups, num] when num > 0 -> num * Enum.max(Enum.map(groups, fn group ->
+            group
+            |> List.wrap()
+            |> List.flatten()
+            |> Enum.reject(& &1 in MatchOld.group_keywords())
+            |> length()
+          end))
+          _ -> 0
+        end
+      end |> Enum.sum()
+    end |> Enum.max()
+  end
+
 end

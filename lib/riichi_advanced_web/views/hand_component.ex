@@ -32,7 +32,7 @@ defmodule RiichiAdvancedWeb.HandComponent do
     ~H"""
     <div class={[@id, @just_called != nil && "just-called", @just_upgraded != nil && "just-upgraded", @just_called_flower != nil && "just-called-flower", @just_drew && "just-drew", not Enum.empty?(@marking) && "marking"]}>
       <%= if @your_hand? do %>
-        <%= if not Enum.empty?(@marking) do %>
+        <%= if not Enum.empty?(@marking) and @viewer != :spectator do %>
           <div class="tiles">
             <%= for {i, tile, removed, _highlight} <- prepare_hand(assigns) do %>
               <%= if removed do %>
@@ -101,7 +101,7 @@ defmodule RiichiAdvancedWeb.HandComponent do
         </div>
       <% end %>
       <div class="calls">
-        <%= if not Enum.empty?(@marking) do %>
+        <%= if not Enum.empty?(@marking) and @viewer != :spectator do %>
           <%= for {{_name, call}, i} <- prepare_calls(assigns) do %>
             <div class="dead-hand-button inactive" :if={@dead_hand_buttons and i == 0 and @seat != @viewer and @viewer != :spectator}></div>
             <%= if GenServer.call(@game_state, {:can_mark?, @viewer, @seat, i, :calls}) do %>
@@ -130,7 +130,7 @@ defmodule RiichiAdvancedWeb.HandComponent do
         <% end %>
         <div class="call aside">
           <%= for {tile, i} <- prepare_aside(assigns) do %>
-            <%= if not Enum.empty?(@marking) do %>
+            <%= if not Enum.empty?(@marking) and @viewer != :spectator do %>
               <%= if GenServer.call(@game_state, {:can_mark?, @viewer, @seat, i, :aside}) do %>
                 <div class={Utils.get_tile_class(tile, i, assigns, ["markable"])} phx-cancellable-click="mark_tile_aside" phx-target={@myself} phx-value-index={i}><%= raw debug_tile(tile) %></div>
               <% else %>

@@ -1,0 +1,55 @@
+on after_initialization do
+  add_rule("Rules", "Shouhai", "Reduces tiles in hand from 13 to 12. The goal is to achieve a tenpai hand rather than a winning hand. The idea is that your 13th tile is replaced with an invisible 'joker' tile that can be used to complete any hand.")
+end
+
+if defined("minefield") do
+  apply set, "buttons.build.display_name", "Select 12 tiles to form a tenpai hand"
+  replace 1, "buttons.build.actions", ["hand", 13, ["self"]], ["hand", 12, ["self"]]
+else
+  set starting_tiles, 12
+end
+
+define_match win, ~m"""
+    exhaustive, mentsu:4
+  | exhaustive, mentsu:3, taatsu:1, pair:1
+  | koutsu:-2, pair:6
+  | unique, dismantle_calls, orphans_any:12, orphans_any:1
+  """
+define_match tenpai, ~m"""
+    exhaustive, mentsu:3, taatsu:1
+  | exhaustive, mentsu:2, taatsu:2, pair:1
+  | pair:5
+  | unique, dismantle_calls, orphans_any:11, orphans_any:1
+  """
+define_match iishanten, ~m"""
+    exhaustive, mentsu:3
+  | exhaustive, mentsu:2, taatsu:2 
+  | exhaustive, mentsu:1, taatsu:3, pair:1
+  | pair:4
+  | unique, dismantle_calls, orphans_any:10, orphans_any:1
+  """
+define_match ryanshanten, ~m"""
+    exhaustive, mentsu:2, pair:1
+  | exhaustive, mentsu:1, taatsu:3
+  | exhaustive, taatsu:4, pair:1
+  | pair:3
+  | unique, dismantle_calls, orphans_any:9, orphans_any:1
+  """
+define_match sanshanten, ~m"""
+    exhaustive, mentsu:2
+  | exhaustive, mentsu:1, taatsu:2
+  | exhaustive, taatsu:4
+  | pair:2
+  | unique, dismantle_calls, orphans_any:8, orphans_any:1
+  """
+define_match suushanten, ~m"""
+    pair:1
+  | unique, dismantle_calls, orphans_any:8
+  """
+define_match uushanten, ~m"any:1"
+
+on before_win do
+  uninterruptible_draw(1, ["4x", "hidden"])
+  merge_draw
+  set_tile_alias(["4x"], ["any"])
+end

@@ -1127,16 +1127,17 @@ defmodule RiichiAdvanced.GameState do
     end)
   end
 
-  def get_best_minefield_hand(state, seat, tenpai_definitions, tiles, max_results \\ 100) do
+  def get_best_minefield_hand(state, seat, tenpai_definitions, hand_length, tiles, max_results \\ 100) do
     # returns {yakuman, han, minipoints, hand}
     tile_behavior = state.players[seat].tile_behavior
     score_rules = Rules.get(state.rules_ref, "score_calculation", %{})
     {tiles_in_hand, initial_hands, tile_behavior} = Match.prepare_tiles([tiles], tenpai_definitions, tile_behavior)
+    doras = get_doras(state)
     Enum.flat_map(tenpai_definitions, &Match.__remove_match_definition({tiles_in_hand, initial_hands, tile_behavior}, &1, true))
     |> Enum.take(max_results)
-    |> Enum.map(fn [hand | _calls] -> tiles -- hand end)
     |> Enum.uniq()
-    |> Enum.map(fn hand ->
+    |> Enum.map(fn [remaining | _] ->
+      hand = tiles -- Enum.take(remaining, length(tiles) - hand_length)
       state = update_player(state, seat, &%{ &1 | hand: hand, status: MapSet.new(["riichi"]) }) # avoid renhou
       # run before_win actions
       state = Actions.trigger_event(state, "before_win", %{seat: seat, win_source: :discard, silent: true})
@@ -1150,12 +1151,11 @@ defmodule RiichiAdvanced.GameState do
       {yakuman, han, minipoints, hand}
     end)
     |> Enum.max(&>=/2, fn ->
-      # take all doras and also take the most central tiles
-      doras = get_doras(state)
+      # if no valid hand found, take all doras and then the most central tiles for safety
       hand = tiles
       |> Enum.sort_by(&{&1 in doras, Riichi.get_centralness(&1)})
-      |> Enum.take(-13)
-      if length(hand) == 13 do {0, 0, 0, hand} else {-1, -1, -1, []} end
+      |> Enum.take(-hand_length)
+      if length(hand) == hand_length do {0, 0, 0, hand} else {-1, -1, -1, []} end
     end)
   end
 
@@ -2140,25 +2140,27 @@ defmodule RiichiAdvanced.GameState do
         |> update_player(toimen, &%{ &1 | discards: &1.discards ++ [:any] })
         |> Actions.register_discard(toimen, :any, true, true)
 
+        hand_length = Match.get_match_length(tenpai_definitions)
         # look for certain hands
         {_yakuman, _han, _minipoints, hand} = Enum.max([
           # tsuuiisou
-          get_best_minefield_hand(state, seat, tenpai_definitions, Enum.filter(tiles, &Riichi.is_jihai?/1), 5),
+          get_best_minefield_hand(state, seat, tenpai_definitions, hand_length, Enum.filter(tiles, &Riichi.is_jihai?/1), 5),
           # chinitsu
-          get_best_minefield_hand(state, seat, tenpai_definitions, Enum.filter(tiles, &Riichi.is_manzu?/1), 10),
-          get_best_minefield_hand(state, seat, tenpai_definitions, Enum.filter(tiles, &Riichi.is_pinzu?/1), 10),
-          get_best_minefield_hand(state, seat, tenpai_definitions, Enum.filter(tiles, &Riichi.is_souzu?/1), 10),
+          get_best_minefield_hand(state, seat, tenpai_definitions, hand_length, Enum.filter(tiles, &Riichi.is_manzu?/1), 10),
+          get_best_minefield_hand(state, seat, tenpai_definitions, hand_length, Enum.filter(tiles, &Riichi.is_pinzu?/1), 10),
+          get_best_minefield_hand(state, seat, tenpai_definitions, hand_length, Enum.filter(tiles, &Riichi.is_souzu?/1), 10),
           # honitsu
-          get_best_minefield_hand(state, seat, tenpai_definitions, Enum.filter(tiles, &Riichi.is_manzu?(&1) or Riichi.is_jihai?(&1)), 10),
-          get_best_minefield_hand(state, seat, tenpai_definitions, Enum.filter(tiles, &Riichi.is_pinzu?(&1) or Riichi.is_jihai?(&1)), 10),
-          get_best_minefield_hand(state, seat, tenpai_definitions, Enum.filter(tiles, &Riichi.is_pinzu?(&1) or Riichi.is_jihai?(&1)), 10),
+          get_best_minefield_hand(state, seat, tenpai_definitions, hand_length, Enum.filter(tiles, &Riichi.is_manzu?(&1) or Riichi.is_jihai?(&1)), 10),
+          get_best_minefield_hand(state, seat, tenpai_definitions, hand_length, Enum.filter(tiles, &Riichi.is_pinzu?(&1) or Riichi.is_jihai?(&1)), 10),
+          get_best_minefield_hand(state, seat, tenpai_definitions, hand_length, Enum.filter(tiles, &Riichi.is_pinzu?(&1) or Riichi.is_jihai?(&1)), 10),
           # tanyao
-          get_best_minefield_hand(state, seat, tenpai_definitions, Enum.filter(tiles, &Riichi.is_tanyaohai?/1), 10),
+          get_best_minefield_hand(state, seat, tenpai_definitions, hand_length, Enum.filter(tiles, &Riichi.is_tanyaohai?/1), 10),
           # chanta
-          get_best_minefield_hand(state, seat, tenpai_definitions, Enum.filter(tiles, &Riichi.is_yaochuuhai?/1), 5),
+          get_best_minefield_hand(state, seat, tenpai_definitions, hand_length, Enum.filter(tiles, &Riichi.is_yaochuuhai?/1), 5),
           # any hand
-          get_best_minefield_hand(state, seat, tenpai_definitions, tiles, 10),
+          get_best_minefield_hand(state, seat, tenpai_definitions, hand_length, tiles, 20),
         ])
+
         # IO.inspect({yakuman, han, minipoints, hand})
         GenServer.cast(self, {:set_best_minefield_hand, seat, tiles, hand})
       end)
@@ -2168,7 +2170,8 @@ defmodule RiichiAdvanced.GameState do
   end
 
   def handle_cast({:set_best_minefield_hand, seat, tiles, hand}, state) do
-    if length(hand) == 13 do
+    len = length(hand)
+    if len == 12 or len == 13 do # sanity check
       send(Map.get(state, seat), {:set_best_minefield_hand, tiles, hand})
       notify_ai_marking(state, seat)
     else

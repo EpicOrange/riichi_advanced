@@ -547,7 +547,7 @@ defmodule RiichiAdvanced.AIPlayer do
       {state, choices} = case state.ruleset do
         "minefield" ->
           cond do
-            Marking.is_marking?(marked_objects, :hand) and length(player.hand) == 34 ->
+            Marking.is_marking?(marked_objects, :hand) ->
               # marking stage
               if has_minefield_hand do
                 remaining_tiles = state.minefield_hand -- Enum.map(Marking.get_marked(marked_objects, :hand), fn {tile, _seat, _ix} -> tile end)
@@ -557,7 +557,7 @@ defmodule RiichiAdvanced.AIPlayer do
                 GenServer.cast(state.game_state, {:get_best_minefield_hand, state.seat, state.shanten_definitions.tenpai})
                 {state, []}
               end
-            Marking.is_marking?(marked_objects, :aside) and length(player.hand) == 13 ->
+            Marking.is_marking?(marked_objects, :aside) ->
               # discard stage
               choice = Enum.min_by(choices, fn {{_seat, _source, tile}, _i} -> get_minefield_discard_danger(state.minefield_tiles, state.minefield_waits, doras, visible_tiles, tile, player.tile_behavior) end, &<=/2, fn -> nil end)
               {state, if choice == nil do [] else [choice] end}
