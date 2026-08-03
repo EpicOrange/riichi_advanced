@@ -142,7 +142,6 @@ define_scoring win do
   if won_by_draw or pts <= 25 do
     total = pts :: "Payment (value ≤ 25)"
   else
-    print_counters
     cond do
       # if winner is "responsible", everyone pays
       status("responsible", as: "winner") -> total = pts :: "Payment (value ≤ 25)"

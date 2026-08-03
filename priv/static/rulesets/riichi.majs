@@ -1,6 +1,4 @@
-  require "value_honors"
-
-# TODO: Figure out how to fix the `cancellable_riichi` mod, then re-add it as default as well as in modpacks.
+require "value_honors"
 
 define_set pair, ~s"0 0"
 define_set shuntsu, ~s"0 1 2"
