@@ -966,25 +966,23 @@ defmodule RiichiAdvanced.GameState.Actions do
   end
 
   defp call_function(state, context, fn_name, args) do
-    if length(state.call_stack) < 10 do
+    if length(Map.get(context, :call_stack, [])) < 10 do
       args = Map.new(args, fn {name, value} -> {"$" <> name, value} end)
-      state = Map.update!(state, :call_stack, &[[fn_name | args] | &1])
+      context = Map.update(context, :call_stack, [[fn_name | args]], &[[fn_name | args] | &1])
       actions = Rules.get(state.rules_ref, "functions", %{}) |> Map.get(fn_name)
       if actions != nil do
         actions = Utils.walk_json(actions, &Map.get(args, &1, &1))
         if Debug.debug_actions() do
           IO.puts("Running function #{fn_name}: #{inspect(actions)}")
         end
-        state = run_actions(state, actions, context)
-        state = Map.update!(state, :call_stack, &Enum.drop(&1, 1))
-        state
+        {state, context, actions}
       else
         IO.puts("Tried to call nonexistent function #{fn_name}!")
-        state
+        {state, context, []}
       end
     else
       IO.puts("Cannot call function #{fn_name}: call stack limit reached")
-      state
+      {state, context, []}
     end
   end
 
@@ -1159,7 +1157,7 @@ defmodule RiichiAdvanced.GameState.Actions do
     state
   end
 
-  @branching_actions ["when", "unless", "ite", "as", "when_anyone", "when_everyone", "when_others"]
+  @branching_actions ["when", "unless", "ite", "as", "when_anyone", "when_everyone", "when_others", "run"]
   defp _run_actions(state, [], _context), do: state
   defp _run_actions(state, [[action | opts] | actions], context) when is_binary(action) do
     buttons_before = Enum.map(state.players, fn {seat, player} -> {seat, player.buttons} end)
@@ -1174,14 +1172,14 @@ defmodule RiichiAdvanced.GameState.Actions do
         "unless" -> if Conditions.check_cnf_condition(state, Enum.at(opts, 0, []), context) do {state, [{context, actions}]} else {state, [{context, Enum.at(opts, 1, []) ++ actions}]} end
         "ite"    -> if Conditions.check_cnf_condition(state, Enum.at(opts, 0, []), context) do {state, [{context, Enum.at(opts, 1, []) ++ actions}]} else {state, [{context, Enum.at(opts, 2, []) ++ actions}]} end
         "as" ->
-          for dir <- Conditions.from_seats_spec(state, context, Enum.at(opts, 0, [])), reduce: {state, [{context, actions}]} do
+          for dir <- Conditions.from_seats_spec(state, context, Enum.at(opts, 0, [])) |> Enum.reverse(), reduce: {state, [{context, actions}]} do
             {state, context_actions} ->
               context = Map.merge(context, %{seat: dir, prev_seat: context.seat})
               actions = Enum.at(opts, 1, [])
               {state, [{context, actions} | context_actions]}
           end
         "when_anyone" ->
-          for dir <- state.available_seats, Conditions.check_cnf_condition(state, Enum.at(opts, 0, []), %{context | seat: dir}), reduce: {state, [{context, actions}]} do
+          for dir <- state.available_seats |> Enum.reverse(), Conditions.check_cnf_condition(state, Enum.at(opts, 0, []), %{context | seat: dir}), reduce: {state, [{context, actions}]} do
             {state, context_actions} -> {state, [{%{context | seat: dir}, Enum.at(opts, 1, [])} | context_actions]}
           end
         "when_everyone" ->
@@ -1192,6 +1190,9 @@ defmodule RiichiAdvanced.GameState.Actions do
           if Enum.all?(state.available_seats -- [context.seat], fn dir -> Conditions.check_cnf_condition(state, Enum.at(opts, 0, []), %{context | seat: dir}) end) do
             {state, [{context, Enum.at(opts, 1, [])}]}
           else state end
+        "run" -> 
+          {state, fn_context, fn_actions} = call_function(state, context, Enum.at(opts, 0, "noop"), Enum.at(opts, 1, %{}))
+          {state, [{Map.merge(context, fn_context), fn_actions ++ actions}]}
         _ -> {state, [{context, actions}]}
       end
     else
@@ -1336,7 +1337,6 @@ defmodule RiichiAdvanced.GameState.Actions do
             else update_in(state.rules_text_order, & &1 -- [from]) end
             state
           else state end
-        "run"                   -> call_function(state, context, Enum.at(opts, 0, "noop"), Enum.at(opts, 1, %{}))
         "play_tile"             -> play_tile(state, context.seat, Enum.at(opts, 0, :"1m"), Enum.at(opts, 1, 0))
         "draw"                  -> draw_tile(state, context.seat, Enum.at(opts, 0, 1), Enum.at(opts, 1, nil), false)
         "draw_aside"            -> draw_tile(state, context.seat, Enum.at(opts, 0, 1), Enum.at(opts, 1, nil), true)
@@ -2018,10 +2018,11 @@ defmodule RiichiAdvanced.GameState.Actions do
       do_pause = duration > 0
       state = if do_pause do
         state = Map.put(state, :game_active, false)
-        state = schedule_actions(state, context.seat, context_actions)
+        state = schedule_actions_before(state, context.seat, context_actions)
         :timer.apply_after(duration, GenServer, :cast, [self(), {:unpause, context.seat}])
         if Debug.debug_actions() do
-          IO.puts("Stopping actions due to pause: #{inspect([[action | opts] | actions])}")
+          IO.puts("\nPausing for #{duration} ms!\n")
+          # IO.puts("Stopping actions due to pause: #{inspect([[action | opts] | actions])}")
         end
         state
       else state end
@@ -2054,7 +2055,7 @@ defmodule RiichiAdvanced.GameState.Actions do
           if Debug.debug_actions() do
             IO.puts("Stopping actions due to buttons: #{inspect(buttons_after)} actions are: #{inspect([[action | opts] | actions])}")
           end
-          state = schedule_actions(state, context.seat, context_actions)
+          state = schedule_actions_before(state, context.seat, context_actions)
           state
         end
       else
@@ -2081,6 +2082,7 @@ defmodule RiichiAdvanced.GameState.Actions do
         IO.puts("Running actions #{inspect(actions)} in context #{inspect(context)}")
       end
     end
+
     # IO.puts("Running actions #{inspect(actions)} in context #{inspect(context)}")
     # IO.inspect(Process.info(self(), :current_stacktrace))
     state = _run_actions(state, actions, context)
@@ -2088,9 +2090,9 @@ defmodule RiichiAdvanced.GameState.Actions do
     state
   end
 
-  # defp schedule_actions_before(state, seat, context_actions) do
-  #   update_player(state, seat, &%{ &1 | deferred_context_actions: context_actions ++ &1.deferred_context_actions })
-  # end
+  defp schedule_actions_before(state, seat, context_actions) do
+    update_player(state, seat, &%{ &1 | deferred_context_actions: context_actions ++ &1.deferred_context_actions })
+  end
 
   defp schedule_actions(state, seat, context_actions) do
     update_player(state, seat, &%{ &1 | deferred_context_actions: &1.deferred_context_actions ++ context_actions })
