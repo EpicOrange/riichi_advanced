@@ -87,7 +87,7 @@ pub fn exact_match<'a>(
       hand_ixs.truncate(num);
       if !hand_ixs.is_empty() {
         num -= hand_ixs.len();
-        if debug { println!("    Removing tile {tile:?} at indices {hand_ixs:?}; remaining num = {num}"); }
+        if debug { println!("    Removing tile {:?} at indices {hand_ixs:?}; remaining num = {num}", decode_tile(tile, &match_info.all_attrs)); }
         remove_indices(&mut hands[0].attrs, hand_ixs);
         if num == 0 {
           if debug { println!("Returning hands = {hands:?}"); }

@@ -1,23 +1,47 @@
 require "value_honors"
 
-# TODO rules text and example hand for everything defined here and not in other mods
-
 # (1) 字花類
 
 on after_initialization do
+  add_rule_tab("1 Faan")
+  add_rule_tab("2 Faan")
+  add_rule_tab("5 Faan")
+  add_rule_tab("8 Faan")
+  add_rule_tab("10 Faan")
+  add_rule_tab("15 Faan")
+  add_rule_tab("20 Faan")
+  add_rule_tab("30 Faan")
   add_rule("1 Faan", "Flower", "1 Faan for each joker you declare as a flower.")
+  add_rule("2 Faan", "No Honors or Flowers", "2 Faan for not having any honors or declared jokers.")
+  update_rule("2 Faan", "No Honors or Flowers", "%{example_hand}", %{example_hand: ~t"11234m456p88899s 1m"})
+  add_rule("2 Faan", "No Jokers", "2 Faan for not having jokers in hand. Jokers declared as flowers do not count as jokers.")
+  update_rule("2 Faan", "No Jokers", "%{example_hand}", %{example_hand: ~t"11234m456p88899s 3j 1m"})
+end
+
+define_match any_joker, ~m"nojoker, (10j 12j 3j 14j 15j 16j 17j 18j):1"
+on before_win do
+  add_counter("called_jokers", "count_matches", ["jokers"], ["any_joker"])
+  subtract_counter("jokers", "count_matches", ["jokers"], ["any_joker"])
 end
 define_yaku yaku, "Flower", ["called_jokers", "Faan"], called_jokers >= 1
 define_yaku yaku, "No Honors or Flowers", [2, "Faan"], not_match(["hand", "calls", "winning_tile"], ~m"jihai:1") and called_jokers == 0
-define_yaku yaku, "No Jokers", [2, "Faan"], called_jokers == 0
-define_yaku yaku, "All Honours", [30, "Faan"], winning_hand_consists_of("1z", "2z", "3z", "4z", "0z", "6z", "7z")
-# yaku/yakuhai.majs adds all 5 yakuhai (1 Faan each)
+define_yaku yaku, "No Jokers", [2, "Faan"], jokers <= 0
+# yaku/tsuuiisou.majs adds All Honours (30 faan)
+# yaku/yakuhai.majs adds all 5 yakuhai yaku (1 Faan each)
 # yaku/shousangen.majs adds Little Three Dragons (8 Faan) and Big Three Dragons (15 Faan)
 # yaku/sanpuukou.majs adds Little Three Winds (5 Faan) and Big Three Winds (10 Faan)
 # yaku/shousuushii.majs adds Little Four Winds (20 Faan) and Big Four Winds (30 Faan)
 
 # (2) 么九類
 
+on after_initialization do
+  add_rule("1 Faan", "Terminal Sequences", "1 Faan for having 123 789 in the same suit.")
+  update_rule("1 Faan", "Terminal Sequences", "%{example_hand}", %{example_hand: ~t"222m1222379p456s 8p"})
+  add_rule("10 Faan", "Double Terminal Sequences", "10 Faan for having 123 789 in the same suit, for two different suits.")
+  update_rule("10 Faan", "Double Terminal Sequences", "%{example_hand}", %{example_hand: ~t"1223789p123789s 2p"})
+  add_rule("20 Faan", "Pure Double Terminal Sequences", "20 Faan for having 123 123 789 789 in the same suit.")
+  update_rule("20 Faan", "Pure Double Terminal Sequences", "%{example_hand}", %{example_hand: ~t"1122337778899p 7p"})
+end
 define_set 老少順, ~s"0 1 2, 6 7 8"
 define_set 一色老少雙順, ~s"0 1 2, 0 1 2, 6 7 8, 6 7 8"
 define_match 老少順, ~m"exhaustive, 老少順:1, mentsu:2, pair:1"
@@ -32,6 +56,10 @@ define_yaku yaku, "Pure Double Terminal Sequences", [20, "Faan"], match(["hand",
 
 # (3) 花色類
 
+on after_initialization do
+  add_rule("2 Faan", "One Voided Suit", "1 Faan for having 123 789 in the same suit.")
+  update_rule("2 Faan", "One Voided Suit", "%{example_hand}", %{example_hand: ~t"111456m2234579p 8p"})
+end
 define_yaku yaku, "One Voided Suit", [2, "Faan"],
      winning_hand_consists_of("1m","2m","3m","4m","5m","6m","7m","8m","9m","1p","2p","3p","4p","5p","6p","7p","8p","9p","1z","2z","3z","4z","0z","6z","7z")
   or winning_hand_consists_of("1m","2m","3m","4m","5m","6m","7m","8m","9m","1s","2s","3s","4s","5s","6s","7s","8s","9s","1z","2z","3z","4z","0z","6z","7z")
@@ -39,14 +67,14 @@ define_yaku yaku, "One Voided Suit", [2, "Faan"],
 # yaku/uumensai.majs adds All Types (5 Faan)
 # yaku/honitsu.majs adds Mixed Flush (5 Faan) and Full Flush (10 Faan)
 define_set 副露九子連環, ~s"""
-    0 0 0, 0 1 2, 3 4 5, 6 7 8, 8 8 
-  | 0 0 0, 1 1, 2 3 4, 5 6 7, 8 8 8 
-  | 0 0, 0 1 2, 2 3 4, 5 6 7, 8 8 8 
-  | 0 0 0, 1 2 3, 3 4 5, 6 7 8, 8 8 
-  | 0 0 0, 1 2 3, 4 4, 5 6 7, 8 8 8 
-  | 0 0, 0 1 2, 3 4 5, 5 6 7, 8 8 8 
-  | 0 0 0, 1 2 3, 4 5 6, 6 7 8, 8 8 
-  | 0 0 0, 1 2 3, 4 5 6, 7 7, 8 8 8 
+    0 0 0, 0 1 2, 3 4 5, 6 7 8, 8 8
+  | 0 0 0, 1 1, 2 3 4, 5 6 7, 8 8 8
+  | 0 0, 0 1 2, 2 3 4, 5 6 7, 8 8 8
+  | 0 0 0, 1 2 3, 3 4 5, 6 7 8, 8 8
+  | 0 0 0, 1 2 3, 4 4, 5 6 7, 8 8 8
+  | 0 0, 0 1 2, 3 4 5, 5 6 7, 8 8 8
+  | 0 0 0, 1 2 3, 4 5 6, 6 7 8, 8 8
+  | 0 0 0, 1 2 3, 4 5 6, 7 7, 8 8 8
   | 0 0, 0 1 2, 3 4 5, 6 7 8, 8 8 8
   """
 define_match 副露九子連環, ~m"副露九子連環:1"
@@ -291,26 +319,26 @@ define_yaku yaku, "One Suji Only", [5, "Faan"],
   or winning_hand_consists_of("2m","5m","8m","2p","5p","8p","2s","5s","8s")
   or winning_hand_consists_of("3m","6m","9m","3p","6p","9p","3s","6s","9s")
 define_yaku yaku, "Three Number Hand", [5, "Faan"], at_most(3,
-    winning_hand_consists_of("1m","1p","1s"),
-    winning_hand_consists_of("2m","2p","2s"),
-    winning_hand_consists_of("3m","3p","3s"),
-    winning_hand_consists_of("4m","4p","4s"),
-    winning_hand_consists_of("5m","5p","5s"),
-    winning_hand_consists_of("6m","6p","6s"),
-    winning_hand_consists_of("7m","7p","7s"),
-    winning_hand_consists_of("8m","8p","8s"),
-    winning_hand_consists_of("9m","9p","9s")
+    match(["winning_hand"], ~m"0@n1:1"),
+    match(["winning_hand"], ~m"0@n2:1"),
+    match(["winning_hand"], ~m"0@n3:1"),
+    match(["winning_hand"], ~m"0@n4:1"),
+    match(["winning_hand"], ~m"0@n5:1"),
+    match(["winning_hand"], ~m"0@n6:1"),
+    match(["winning_hand"], ~m"0@n7:1"),
+    match(["winning_hand"], ~m"0@n8:1"),
+    match(["winning_hand"], ~m"0@n9:1")
   )
 define_yaku yaku, "Two Number Hand", [10, "Faan"], at_most(2,
-    winning_hand_consists_of("1m","1p","1s"),
-    winning_hand_consists_of("2m","2p","2s"),
-    winning_hand_consists_of("3m","3p","3s"),
-    winning_hand_consists_of("4m","4p","4s"),
-    winning_hand_consists_of("5m","5p","5s"),
-    winning_hand_consists_of("6m","6p","6s"),
-    winning_hand_consists_of("7m","7p","7s"),
-    winning_hand_consists_of("8m","8p","8s"),
-    winning_hand_consists_of("9m","9p","9s")
+    match(["winning_hand"], ~m"0@n1:1"),
+    match(["winning_hand"], ~m"0@n2:1"),
+    match(["winning_hand"], ~m"0@n3:1"),
+    match(["winning_hand"], ~m"0@n4:1"),
+    match(["winning_hand"], ~m"0@n5:1"),
+    match(["winning_hand"], ~m"0@n6:1"),
+    match(["winning_hand"], ~m"0@n7:1"),
+    match(["winning_hand"], ~m"0@n8:1"),
+    match(["winning_hand"], ~m"0@n9:1")
   )
 
 # (5) 偶然類

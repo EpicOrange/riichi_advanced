@@ -47,6 +47,7 @@ set bloody_end, true
 set max_rounds, 16
 set win_timer, 30
 
+apply append, "wall", ["10j", "12j", "3j", "14j", "15j", "6j", "17j", "18j"]
 apply set_merge, "custom_style.tile_indices", %{
   "10j": "Any",
   "12j": "Number",
@@ -63,7 +64,7 @@ define_set shuntsu, ~s"0 1 2"
 define_set koutsu, ~s"0 0 0"
 define_set quad, ~s"0 0 0 0"
 define_set taatsu, ~s"0 0 | 0 1 | 0 2"
-define_set mentsu, ~s"0 0 0 | 0 1 2 | 0 10 20"
+define_set mentsu, ~s"0 0 0 | 0 1 2"
 define_set sanshoku_doujun, ~s"0 1 2, 10 11 12, 20 21 22"
 define_set sanshoku_doukou, ~s"0 0 0, 10 10 10, 20 20 20"
 define_set manzu, ~s"1m|2m|3m|4m|5m|6m|7m|8m|9m"
@@ -123,22 +124,8 @@ define_match joker_tanki_tenpai, ~m"""
   | unique, (10j 12j):1, knit9:12
   """
 
-define_match any_joker, ~m"nojoker, (10j 12j 3j 14j 15j 16j 17j 18j):1"
-
-on before_scoring do
-  if won_by_draw do
-    if status_missing("won", as: "shimocha") do make_responsible_for("shimocha") end
-    if status_missing("won", as: "toimen") do make_responsible_for("toimen") end
-    if status_missing("won", as: "kamicha") do make_responsible_for("kamicha") end
-  else
-    if won_by_discard do
-      make_responsible_for("last_discarder")
-    else
-      make_responsible_for("last_caller")
-    end
-  end
-end
 define_scoring win do
+  total = points :: "Faan"
   cond do
     points == 0 -> total = 1 :: "0 Faan"
     points <= 2 -> total = 2 :: "1-2 Faan"
@@ -178,16 +165,44 @@ on before_turn_change do
   end
 end
 
-on after_call do set_status("call_made") end
-
-on before_win do
-  add_counter("called_jokers", "count_matches", ["jokers"], ["any_joker"])
-  subtract_counter("jokers", "count_matches", ["jokers"], ["any_joker"])
+define_const can_draw_condition, status_missing("match_start", "won")
+on after_turn_change do
+  if status("won") and not_everyone_status("won") and not_no_tiles_remaining do
+    advance_turn
+  end
 end
 
-on after_win do if three_winners do flip_all_calls_faceup end end
+on after_call do set_status("call_made") end
 
+define_match any_joker, ~m"nojoker, (10j 12j 3j 14j 15j 16j 17j 18j):1"
+on before_win do
+  set_counter("jokers", "count_matches", ["hand", "calls", "draw"], ["any_joker"])
+  cond do
+    won_by_discard -> add_attr(["last_discard"], "highlight")
+    won_by_draw -> add_attr(["draw"], "highlight")
+  end
+  flip_own_calls_faceup
+end
+
+on before_scoring do
+  if won_by_draw do
+    if status_missing("won", as: "shimocha") do make_responsible_for("shimocha") end
+    if status_missing("won", as: "toimen") do make_responsible_for("toimen") end
+    if status_missing("won", as: "kamicha") do make_responsible_for("kamicha") end
+  else
+    if won_by_discard do
+      make_responsible_for("last_discarder")
+    else
+      make_responsible_for("last_caller")
+    end
+  end
+end
+
+on after_scoring do
+  if three_winners do flip_all_calls_faceup end
+end
 on before_exhaustive_draw do flip_all_calls_faceup end
+on before_abortive_draw do flip_all_calls_faceup end
 
 on before_continue do advance_turn end
 
@@ -208,27 +223,32 @@ end
 
 apply append, "buttons.chii.call_conditions", not_call_contains(["10j", "12j", "3j", "14j", "15j", "16j", "17j", "18j"], 1)
 apply append, "buttons.pon.call_conditions", not_call_contains(["10j", "12j", "3j", "14j", "15j", "16j", "17j", "18j"], 2)
-apply append, "buttons.pon.call_priority_list" do
+apply append, "buttons.pon.call_priority_list",
   not_call_choice_contains(["10j", "12j", "3j", "14j", "15j", "16j", "17j", "18j"], 1)
-  call_choice_contains(["14j", "15j", "16j", "17j", "18j"], 1)
-  call_choice_contains(["12j", "3j"], 1)
-  call_choice_contains(["10j"], 1)
-end
+  and call_choice_contains(["14j", "15j", "16j", "17j", "18j"], 1)
+  and call_choice_contains(["12j", "3j"], 1)
+  and call_choice_contains(["10j"], 1)
 apply append, "buttons.daiminkan.call_conditions", not_call_contains(["10j", "12j", "3j", "14j", "15j", "16j", "17j", "18j"], 2)
-apply append, "buttons.daiminkan.call_priority_list" do
+apply append, "buttons.daiminkan.call_priority_list",
   not_call_choice_contains(["10j", "12j", "3j", "14j", "15j", "16j", "17j", "18j"], 1)
-  call_choice_contains(["14j", "15j", "16j", "17j", "18j"], 1)
-  call_choice_contains(["12j", "3j"], 1)
-  call_choice_contains(["10j"], 1)
-end
+  and call_choice_contains(["14j", "15j", "16j", "17j", "18j"], 1)
+  and call_choice_contains(["12j", "3j"], 1)
+  and call_choice_contains(["10j"], 1)
 apply append, "buttons.kakan.call_conditions", not_call_contains(["10j", "12j", "3j", "14j", "15j", "16j", "17j", "18j"], 1)
 apply append, "buttons.ankan.call_conditions", not_call_contains(["10j", "12j", "3j", "14j", "15j", "16j", "17j", "18j"], 1)
 apply append, "buttons.ron.show_when", not_match(["hand", "calls"], ["joker_tanki_tenpai"]) and status_missing("match_start", "won")
 apply append, "buttons.chankan.show_when", not_match(["hand", "calls"], ["joker_tanki_tenpai"]) and status_missing("match_start", "won")
-
-on before_win do
-  add_counter("jokers", "count_matches", ["hand", "calls", "winning_tile"], ["any_joker"])
-end
+apply append, "buttons.chii.show_when", status_missing("won")
+apply append, "buttons.pon.show_when", status_missing("won")
+apply append, "buttons.daiminkan.show_when", status_missing("won")
+apply append, "buttons.kakan.show_when", status_missing("won")
+apply append, "buttons.ankan.show_when", status_missing("won")
+apply append, "buttons.ron.show_when", status_missing("won")
+apply append, "buttons.chankan.show_when", status_missing("won")
+apply append, "buttons.tsumo.show_when", status_missing("won")
+apply append, "buttons.ron.actions", do: set_status("won")
+apply append, "buttons.chankan.actions", do: set_status("won")
+apply append, "buttons.tsumo.actions", do: set_status("won")
 
 define_button joker,
   display_name: "Replace joker",

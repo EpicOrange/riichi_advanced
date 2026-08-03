@@ -260,7 +260,7 @@ defmodule RiichiAdvanced.GameState.Scoring do
     delta_scores = Map.new(delta_scores, fn {seat, delta} -> {seat, delta + Map.get(state.players[seat].counters, "delta_score", 0)} end)
 
     is_tsumo = Enum.any?(winners, fn {_seat, winner} -> winner.win_source == :draw end)
-    is_pao = Enum.any?(winners, fn {_seat, winner} -> not Enum.empty?(winner.player.responsibilities) end) # TODO this is wrong now
+    is_pao = Enum.any?(winners, fn {_seat, winner} -> "pao" in winner.player.status end)
 
     # handle ezaki hitomi's scoring quirk
     {state, delta_scores} = if is_tsumo do

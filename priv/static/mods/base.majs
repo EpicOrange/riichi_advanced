@@ -30,12 +30,13 @@ on before_turn_change do unset_status_all("call_made") end
 on after_start do set_status_all("first_turn", "discards_empty") end
 define_play_effect any do unset_status("discards_empty") end
 
+define_const can_draw_condition, status_missing("match_start", "initial_flowers")
 on after_turn_change do
   if no_tiles_remaining do
     pause(1000)
     ryuukyoku
   else
-    if status_missing("match_start", "initial_flowers") do draw end
+    if @can_draw_condition do draw end
   end
 end
 

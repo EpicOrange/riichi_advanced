@@ -1009,9 +1009,11 @@ defmodule RiichiAdvanced.GameState do
 
   def update_winning_tile(state, seat, :draw, fun) do
     # replace the first drawn tile
-    # if no drawn tiles, just place a new one
+    # if no drawn tiles, just place a new one, unless it's nil
     update_in(state.players[seat].draw, fn
-      [] -> [fun.(nil)]
+      [] ->
+        ret = fun.(nil)
+        if ret != nil do [ret] else [] end
       [draw] -> [fun.(draw)]
       [draw | rest] -> [fun.(draw) | rest]
     end)
