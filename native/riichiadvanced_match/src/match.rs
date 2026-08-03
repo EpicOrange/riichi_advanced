@@ -15,7 +15,7 @@ use crate::match_info::prepare_tiles;
 use crate::offsets::{__generate_groups, get_base_tiles};
 use crate::profile::{PROFILE_MATCH, CALL_COUNT, MAX_NANOS, TOTAL_NANOS};
 use crate::tile_table::TILE_TABLE;
-use crate::tileset::_subtract_check_attrs_exhaustive;
+use crate::tileset::{__subtract, _subtract_check_attrs_exhaustive};
 use crate::types::{ANY_PRIME, BaseTileVec, ElixirAliases, ElixirHand, ElixirHandCalls, ElixirTile, ElixirTileOrdering, FIXED_OFFSETS, Hands, HandsIterator, MatchDefinition, MatchDefinitionElem, MatchDefinitions, MatchGroup, MatchInfo, MatchOffset, RemovableGroup, Tile, TileSet};
 use crate::utils::remove_indices;
 
@@ -97,6 +97,7 @@ pub fn __remove_match_definition<'a>(
           debug = true;
         }
         else if s == "restart" { has_restart = true; }
+        else if s == "invert" { has_restart = true; }
         else if s == "almost" { has_almost = true; }
       }
       MatchDefinitionElem::Group(_, n) => if *n > 0 { min_match_length += *n; },
@@ -141,6 +142,15 @@ pub fn __remove_match_definition<'a>(
           if acc.next().is_some() {
             Box::new(once(match_info.initial_hands.clone()))
           } else { Box::new(empty()) }
+        }
+        else if s == "invert" {
+          Box::new(acc.map(|mut hands| {
+            let mut hand = hands.swap_remove(0);
+            hand = __subtract(&match_info.initial_hands[0], &hand, &match_info.aliases, &match_info.mapping, &match_info.joker_tiles).unwrap_or(hand);
+            hands.retain(|h| !match_info.initial_hands[1..].contains(h));
+            hands.insert(0, hand);
+            hands
+          }))
         }
         else if s == "fail" { Box::new(empty()) }
         else if s == "dismantle_calls" {

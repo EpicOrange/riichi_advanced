@@ -1066,6 +1066,10 @@ defmodule RiichiAdvanced.Match do
           %{state | acc: acc}
         state when match_elem == "debug" -> state
         state when match_elem == "restart" -> %{state | acc: [initial_hands]}
+        state when match_elem == "invert" ->
+          [initial_hand | initial_calls] = initial_hands
+          acc = Enum.map(state.acc, fn [hand | calls] -> [subtract(initial_hand, hand, tile_behavior.encoded_aliases, tile_behavior.encoded_mapping, tile_behavior.encoded_joker_tiles) | initial_calls -- calls] end)
+          %{state | acc: acc}
         state when match_elem == "fail" -> %{state | acc: []}
         state when match_elem == "dismantle_calls" -> %{state | acc: Enum.map(state.acc, fn hands ->
           [Enum.reduce(hands, fn call, acc ->

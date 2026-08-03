@@ -46,13 +46,15 @@ defmodule RiichiAdvanced.Utils do
   def get_attrs(_tile), do: []
 
   def add_attr(tile, []), do: tile
-  def add_attr({tile, existing_attrs}, attrs), do: {tile, Enum.uniq(existing_attrs ++ attrs)}
+  def add_attr({tile, existing_attrs}, attrs) when is_list(attrs), do: {tile, Enum.uniq(attrs ++ existing_attrs)}
+  def add_attr({tile, existing_attrs}, attrs), do: {tile, Enum.uniq([attrs | existing_attrs])}
   def add_attr(tiles, attrs) when is_list(tiles), do: Enum.map(tiles, &add_attr(&1, attrs))
   def add_attr(tiles, attrs) when is_struct(tiles, MapSet), do: MapSet.new(tiles, &add_attr(&1, attrs))
   def add_attr(tile, attrs), do: {tile, attrs}
 
   def remove_attr(tile, []), do: tile
-  def remove_attr({tile, existing_attrs}, attrs), do: construct_tile(tile, Enum.uniq(existing_attrs -- attrs))
+  def remove_attr({tile, existing_attrs}, attrs) when is_list(attrs), do: construct_tile(tile, Enum.uniq(existing_attrs -- attrs))
+  def remove_attr({tile, existing_attrs}, attrs), do: construct_tile(tile, Enum.uniq(existing_attrs -- [attrs]))
   def remove_attr(tiles, attrs) when is_list(tiles), do: Enum.map(tiles, &remove_attr(&1, attrs))
   def remove_attr(tiles, attrs) when is_struct(tiles, MapSet), do: MapSet.new(tiles, &remove_attr(&1, attrs))
   def remove_attr(tile, _attrs), do: tile
