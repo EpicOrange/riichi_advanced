@@ -429,6 +429,7 @@ defmodule RiichiAdvanced.GameState do
     state = Map.put(state, :players, Map.new(state.available_seats, fn seat -> {seat, %Player{}} end))
     state = Log.init_log(state)
 
+    # set starting kyoku, if any
     state = Map.put(state, :kyoku, Rules.get(state.rules_ref, "starting_round", 0))
     state = Map.put(state, :honba, Rules.get(state.rules_ref, "starting_honba", 0))
 
@@ -444,6 +445,9 @@ defmodule RiichiAdvanced.GameState do
 
     # run after_initialization actions
     state = Actions.trigger_event(state, "after_initialization", %{seat: state.turn})
+
+    # starting honba is reset here, since otherwise it's cleared by renchan mod
+    state = Map.put(state, :honba, Rules.get(state.rules_ref, "starting_honba", 0))
 
     # terminate game if no one joins in 15 minutes
     # (also effectively serves as a 15 minute timeout for exunit tests)
