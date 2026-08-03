@@ -377,72 +377,66 @@ defmodule RiichiAdvanced.GameState.Actions do
         IO.puts("Unhandled call_source #{inspect(call_source)}")
         {state, call_choice}
     end
-    hand = state.players[seat].hand ++ state.players[seat].draw
+    hand = state.players[seat].hand ++ state.players[seat].draw |> Utils.remove_attr(["_draw"])
     tile_behavior = state.players[seat].tile_behavior
     # don't pass in aliases, since we've predetermined the exact tiles we'll remove
-    {new_hand, call_choice} = case Match.try_remove_all_tiles(hand, to_remove, %{}, tile_behavior.attrs) do
+    case Match.try_remove_all_tiles(hand, to_remove, %{}, tile_behavior.attrs) do
+      [] -> Logger.error("trigger_call: seat #{seat}, Call #{call_name} on #{inspect(call_choice)} #{inspect(called_tile)} is to remove #{inspect(to_remove)} from hand #{inspect(hand)}, but none found")
       [new_hand | _] -> 
         call_choice = hand -- new_hand
-        {new_hand, call_choice}
-      [] -> 
-        # TODO sometimes not able to remove is nil
-        Logger.error("trigger_call: seat #{seat}, Call #{call_name} on #{inspect(call_choice)} #{inspect(called_tile)} is to remove #{inspect(to_remove)} from hand #{inspect(hand)}, but none found")
-        call_choice = if called_tile == nil do to_remove else [called_tile | to_remove] end
-        {Utils.remove_attr(hand, ["_draw"]), call_choice}
+        # actually add the call to the player
+        state = update_player(state, seat, &%{ &1 | hand: new_hand, draw: [], calls: &1.calls ++ [call] })
+        state = if called_tile != nil do
+          update_action(state, seat, :call, %{from: state.turn, called_tile: called_tile, other_tiles: call_choice, call_name: call_name})
+        else
+          # flower
+          update_action(state, seat, :call, %{from: state.turn, called_tile: Enum.at(call_choice, 0), other_tiles: [], call_name: call_name})
+        end
+
+        state = Log.add_call(state, seat, call_name, call_choice, called_tile)
+
+        if not silent do
+          # messages and log
+          cond do
+            hidden ->
+              push_message(state, player_prefix(state, seat) ++ [%{
+                text: "called %{call}",
+                vars: %{
+                  call: {:text, msg_name, %{bold: true}}
+                }
+              }])
+            called_tile != nil ->
+              push_message(state, player_prefix(state, seat) ++ [%{
+                text: "called %{call} on %{tile} with %{choice}",
+                vars: %{
+                  call: {:text, msg_name, %{bold: true}},
+                  tile: {:tile, called_tile},
+                  choice: {:hand, call_choice}
+                }
+              }])
+            true ->
+              push_message(state, player_prefix(state, seat) ++ [%{
+                text: "called %{call} on %{tile}",
+                vars: %{
+                  call: {:text, msg_name, %{bold: true}},
+                  tile: {:hand, call_choice}
+                }
+              }])
+          end
+          # play sound
+          click_sounds = [
+            "/audio/call1.mp3",
+            "/audio/call2.mp3",
+            "/audio/call3.mp3",
+            "/audio/call4.mp3",
+            "/audio/call5.mp3",
+          ]
+          play_sound(state, Enum.random(click_sounds))
+        end
+
+        state = update_player(state, seat, &%{ &1 | call_buttons: %{} })
+        state
     end
-
-    # actually add the call to the player
-    state = update_player(state, seat, &%{ &1 | hand: new_hand, draw: [], calls: &1.calls ++ [call] })
-    state = if called_tile != nil do
-      update_action(state, seat, :call, %{from: state.turn, called_tile: called_tile, other_tiles: call_choice, call_name: call_name})
-    else
-      # flower
-      update_action(state, seat, :call, %{from: state.turn, called_tile: Enum.at(call_choice, 0), other_tiles: [], call_name: call_name})
-    end
-
-    state = Log.add_call(state, seat, call_name, call_choice, called_tile)
-
-    if not silent do
-      # messages and log
-      cond do
-        hidden ->
-          push_message(state, player_prefix(state, seat) ++ [%{
-            text: "called %{call}",
-            vars: %{
-              call: {:text, msg_name, %{bold: true}}
-            }
-          }])
-        called_tile != nil ->
-          push_message(state, player_prefix(state, seat) ++ [%{
-            text: "called %{call} on %{tile} with %{choice}",
-            vars: %{
-              call: {:text, msg_name, %{bold: true}},
-              tile: {:tile, called_tile},
-              choice: {:hand, call_choice}
-            }
-          }])
-        true ->
-          push_message(state, player_prefix(state, seat) ++ [%{
-            text: "called %{call} on %{tile}",
-            vars: %{
-              call: {:text, msg_name, %{bold: true}},
-              tile: {:hand, call_choice}
-            }
-          }])
-      end
-      # play sound
-      click_sounds = [
-        "/audio/call1.mp3",
-        "/audio/call2.mp3",
-        "/audio/call3.mp3",
-        "/audio/call4.mp3",
-        "/audio/call5.mp3",
-      ]
-      play_sound(state, Enum.random(click_sounds))
-    end
-
-    state = update_player(state, seat, &%{ &1 | call_buttons: %{} })
-    state
   end
 
   defp upgrade_call(state, seat, call_name, call_choice, called_tile) do
