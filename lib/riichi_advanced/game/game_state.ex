@@ -1016,7 +1016,6 @@ defmodule RiichiAdvanced.GameState do
       [] ->
         ret = fun.(nil)
         if ret != nil do [ret] else [] end
-      [draw] -> [fun.(draw)]
       [draw | rest] -> [fun.(draw) | rest]
     end)
   end

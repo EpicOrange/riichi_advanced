@@ -372,7 +372,7 @@ defmodule RiichiAdvanced.GameState.Kyoku do
 
     # if this is tenhou, we instead create a bunch of possibilities for the winning tile
     hand_calls_tile = if is_tenhou? do
-      hand = orig_hand ++ orig_draw
+      hand = orig_hand ++ orig_draw |> Utils.remove_attr(["_draw"])
       calls = state.players[seat].calls
       # try each tile, starting from the rightmost
       for winning_tile <- Enum.reverse(Enum.uniq(hand)) do
@@ -392,6 +392,7 @@ defmodule RiichiAdvanced.GameState.Kyoku do
       # we need to let before_win actions know about the winning tile
       #   so we store it in state.winners
       state = Map.update!(state, :winners, &Map.put(&1, seat, %{winning_tile: winning_tile}))
+      state = update_winning_tile(state, seat, win_source, fn _ -> winning_tile end)
 
       # trigger before_win before solving for jokers
       state = Actions.trigger_event(state, "before_win", %{seat: seat, winner_seat: seat, win_source: win_source, winning_tile: winning_tile})
