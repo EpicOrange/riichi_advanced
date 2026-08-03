@@ -1,5 +1,19 @@
+set display_name, "Riichi"
+set tutorial_link, "https://github.com/EpicOrange/riichi_advanced/blob/main/documentation/riichi.md"
+
+define_global chii_name, "Chii"
+define_global pon_name, "Pon"
+define_global kan_name, "Kan"
+define_global ankan_name, "Ankan"
+define_global han, "Han"
+
 require "value_honors"
 require "standard_sets"
+require "global_mods"
+require "standard_wall"
+require "default_auto_buttons"
+require "riichi_kan" # also adds chankan and yaku like suukantsu
+require "riichi_scoring"
 
 define_set iipeikou, ~s"0 1 2, 0 1 2"
 define_set ittsuu, ~s"0 1 2, 3 4 5, 6 7 8"
@@ -269,7 +283,7 @@ def add_scoring_attrs, append: true do
   end
 end
 
-on after_initialization do
+on after_initialization, prepend: true do
   add_rule_tab("Tiles")
   add_rule_tab("Rules")
   add_rule_tab("0.5 Han")
