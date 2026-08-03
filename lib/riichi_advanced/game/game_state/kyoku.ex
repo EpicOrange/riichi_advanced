@@ -461,7 +461,7 @@ defmodule RiichiAdvanced.GameState.Kyoku do
     state = Map.update!(state, :winner_seats, & &1 ++ [seat])
 
     tile_behavior = state.players[seat].tile_behavior
-    {state, cxt} = for {hand, calls, winning_tile} <- hand_calls_tile do
+    {state, cxt} = for {hand, _calls, winning_tile} <- hand_calls_tile do
       state = if is_tenhou? do
         # replace hand and draw
         update_player(state, seat, &%{ &1 | hand: hand, draw: [winning_tile] })
@@ -470,12 +470,6 @@ defmodule RiichiAdvanced.GameState.Kyoku do
       # we need to let before_win actions know about the winning tile
       #   so we store it in state.winners
       state = Map.update!(state, :winners, &Map.put(&1, seat, %{winning_tile: winning_tile}))
-
-      # save winning_hand
-      # (Q: does anyone actually use this?)
-      # (A: ningbo does, like once. should probably rewrite that TODO)
-      winning_hand = hand ++ calls ++ [winning_tile]
-      state = update_player(state, seat, &%{ &1 | cache: %{ &1.cache | winning_hand: winning_hand } })
 
       # trigger before_win before solving for jokers
       state = Actions.trigger_event(state, "before_win", %{seat: seat, winner_seat: seat, win_source: win_source, winning_tile: winning_tile})
@@ -502,7 +496,6 @@ defmodule RiichiAdvanced.GameState.Kyoku do
         smt_hand: smt_hand,
         smt_calls: smt_calls,
         winning_tile: winning_tile,
-        winning_hand: winning_hand,
         is_dealer: is_dealer,
         scoring_key: scoring_key,
         rules_ref: state.rules_ref,

@@ -141,10 +141,6 @@ defmodule RiichiAdvanced.GameState.Scoring do
     #   so we store it in state.winners
     state = Map.update!(state, :winners, &Map.put(&1, seat, %{winning_tile: winning_tile}))
 
-    # save winning_hand (TODO does anyone actually use this?)
-    winning_hand = hand ++ calls ++ [winning_tile]
-    state = update_player(state, seat, &%{ &1 | cache: %{ &1.cache | winning_hand: winning_hand } })
-
     # trigger before_win before solving for jokers
     state = Actions.trigger_event(state, "before_win", %{seat: seat, win_source: win_source, winning_tile: winning_tile, silent: true})
 
@@ -166,7 +162,7 @@ defmodule RiichiAdvanced.GameState.Scoring do
       {assigned_hand, assigned_calls, assigned_winning_hand, assigned_winning_tile} = JokerSolver.apply_joker_assignment(state.players[seat].hand, state.players[seat].calls, winning_tile, joker_assignment)
 
       # replace the winner's hand/calls temporarily (for yaku evaluation)
-      state = update_player(state, seat, &%{ &1 | hand: assigned_hand, calls: assigned_calls, cache: %{ &1.cache | winning_hand: assigned_winning_hand } })
+      state = update_player(state, seat, &%{ &1 | hand: assigned_hand, calls: assigned_calls })
 
       # also replace the actual winning tile within state
       state = if assigned_winning_tile != nil do

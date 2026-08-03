@@ -30,11 +30,28 @@ defmodule RiichiAdvanced.GameState.Conditions do
           "jokers" -> [{hand, calls ++ Enum.filter(state.players[context.seat].calls, fn {call_name, _call} -> call_name in ["joker", "start_joker"] end)}]
           "start_jokers" -> [{hand, calls ++ Enum.filter(state.players[context.seat].calls, fn {call_name, _call} -> call_name == "start_joker" end)}]
           "call_tiles" -> [{hand ++ Enum.flat_map(state.players[context.seat].calls, &Utils.call_to_tiles(&1, true)), calls}]
-          "winning_hand" -> [{hand ++ state.players[context.seat].cache.winning_hand, calls}]
+          "winning_hand" ->
+            winning_tile = case get_winning_tile(state, context.seat, context.win_source) do
+              nil  -> []
+              tile -> [Utils.add_attr(tile, ["winning_tile"])]
+            end
+            [{hand ++ state.players[context.seat].hand ++ winning_tile, calls ++ Enum.reject(state.players[context.seat].calls, fn {call_name, _call} -> call_name in Riichi.flower_names() end)}]
           "winning_tile" -> case get_winning_tile(state, context.seat, context.win_source) do
             nil  -> [{hand, calls}]
-            tile -> [{hand ++ [tile |> Utils.add_attr(["winning_tile"])], calls}]
+            tile -> [{hand ++ [Utils.add_attr(tile, ["winning_tile"])], calls}]
           end
+          "orig_hand" -> [{hand ++ state.players[context.seat].cache.orig_hand, calls}]
+          "orig_calls" -> [{hand, calls ++ Enum.reject(state.players[context.seat].cache.orig_calls, fn {call_name, _call} -> call_name in Riichi.flower_names() end)}]
+          "orig_winning_tile" -> case state.players[context.seat].cache.orig_winning_tile do
+            nil  -> [{hand, calls}]
+            tile -> [{hand ++ [Utils.add_attr(tile, ["winning_tile"])], calls}]
+          end
+          "orig_winning_hand" ->
+            winning_tile = case state.players[context.seat].cache.orig_winning_tile do
+              nil  -> []
+              tile -> [Utils.add_attr(tile, ["winning_tile"])]
+            end
+            [{hand ++ state.players[context.seat].cache.orig_hand ++ winning_tile, calls ++ Enum.reject(state.players[context.seat].cache.orig_calls, fn {call_name, _call} -> call_name in Riichi.flower_names() end)}]
           "last_call" -> if last_call_action != nil do [{hand, calls ++ [get_last_call(state)]}] else [{hand, calls}] end
           "last_called_tile" -> if last_call_action != nil do [{hand ++ [last_call_action.called_tile], calls}] else [{hand, calls}] end
           "last_discard" -> if last_discard_action != nil do [{hand ++ [last_discard_action.tile], calls}] else [{hand, calls}] end

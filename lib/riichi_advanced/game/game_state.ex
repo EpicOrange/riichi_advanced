@@ -37,7 +37,11 @@ defmodule RiichiAdvanced.GameState do
       riichi_discard_indices: nil,
       playable_indices: [],
       closest_american_hands: [],
-      winning_hand: [],
+
+      # stores hand before being replaced by joker assignment
+      orig_hand: [],
+      orig_calls: [],
+      orig_winning_tile: nil,
     ]
   end
 

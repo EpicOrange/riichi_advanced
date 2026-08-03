@@ -975,8 +975,12 @@ There's quite a few possible match targets that can be passed as the first argum
 - `"jokers"`: selects the player's jokers set aside (including starting jokers). 
 - `"start_jokers"`: selects the player's starting jokers set aside only.
 - `"call_tiles"`: selects the player's calls as if their tiles were part of the hand (therefore their tiles can be combined with tiles in hand).
-- `"winning_hand"`: selects the winning hand + call tiles + winning tile. Only usable during or after `"before_win"`. If used in `"before_win"`, you get the winning hand with jokers, but if used during or after `"before_scoring"`, then those jokers get replaced by actual values.
+- `"winning_hand"`: Shorthand for `["hand", "calls", "winning_tile"]`. Only usable during or after `"before_win"`. If used in `"before_win"`, you get the winning hand with jokers, but if used during or after `"before_scoring"`, then those jokers get replaced by actual values.
 - `"winning_tile"`: selects the winning tile. Only usable during or after `"before_win"`. Note that if the winning tile is a joker tile, it will remain a joker tile when checked in `"before_win"`, but will be replaced by its actual value during `"before_scoring"` and after.
+- `"orig_hand"`: During or after `"before_scoring"`, selects the player's hand before it was replaced by jokers.
+- `"orig_calls"`: During or after `"before_scoring"`, selects the player's calls before it was replaced by jokers.
+- `"orig_winning_tile"`: During or after `"before_scoring"`, selects the player's original winning tile before it was replaced by jokers.
+- `"orig_winning_hand"`: Shorthand for `["orig_hand", "orig_calls", "orig_winning_tile"]`.
 - `"last_call"`: selects the last call made by any player.
 - `"last_called_tile"`: selects the called tile for the last call made by any player.
 - `"last_discard"`: selects the last discard made by any player.
@@ -997,6 +1001,7 @@ There's quite a few possible match targets that can be passed as the first argum
 - `"revealed_tiles"`: selects revealed tiles, i.e. the tiles that appear on top of the game (like dora indicators)
 - `"visible_tiles"`: selects all tiles visible to the current player. (basically treats this as a big hand to match on) This includes visible tiles in other players' hands (e.g. when Open Hands is on).
 - `"scry"`: selects scryed tiles visible to the current player. See the `"scry"` action for more info.
+- `"last_scryed_tile"`: selects the last scryed tile visible to the current player. See the `"scry"` action for more info.
 
 In addition, a couple selectors allow you to select _multiple_ targets. For example, selecting `["hand_any", "last discard"]` and matching on pairs will check if any individual hand tile matches the last discard, and will not match a pair that exists purely in hand. Note that using two or more of these leads to the cartesian product of the targets, which can be expensive to match against.
 
