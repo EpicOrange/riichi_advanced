@@ -119,6 +119,10 @@ define_button chankan,
     win_by_call("ron")
   end
 
+on before_turn_change do
+  unset_status("kan")
+end
+
 apply merge, "constants.calls_fu", %{
   ankan: 16,
   daiminkan: 8,
