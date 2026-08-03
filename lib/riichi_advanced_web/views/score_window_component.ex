@@ -123,7 +123,7 @@ defmodule RiichiAdvancedWeb.ScoreWindowComponent do
               <path d="M 0,125 v 50 l 90,-75 -90,-75 v 50 z" fill="white"/>
             </marker>
           </defs>
-          <path d="M0,0 Q0,200 130,200" fill="none" stroke="url(#fade2)" stroke-width="45" vector-effect="non-scaling-stroke" marker-end="url(#arrowhead2)"/>
+          <path d="M0,0 Q0,200 130,200" fill="none" stroke="url(#fade2)" stroke-width="12" marker-end="url(#arrowhead2)"/>
         </symbol>
         <symbol id="curve2" viewBox="0 0 125 200" overflow="visible">
           <defs>
@@ -136,7 +136,7 @@ defmodule RiichiAdvancedWeb.ScoreWindowComponent do
               <path d="M 0,125 v 50 l 90,-75 -90,-75 v 50 z" fill="white"/>
             </marker>
           </defs>
-          <path d="M150,200 Q0,200 0,0" fill="none" stroke="url(#fade3)" stroke-width="45" vector-effect="non-scaling-stroke" marker-end="url(#arrowhead3)"/>
+          <path d="M150,200 Q0,200 0,0" fill="none" stroke="url(#fade3)" stroke-width="12" marker-end="url(#arrowhead3)"/>
         </symbol>
       </svg>
     </div>
