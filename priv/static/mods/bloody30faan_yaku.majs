@@ -14,8 +14,6 @@ on after_initialization do
   add_rule("1 Faan", "Flower", "1 Faan for each joker you declare as a flower.")
   add_rule("2 Faan", "No Honors or Flowers", "2 Faan for not having any honors or declared jokers.")
   update_rule("2 Faan", "No Honors or Flowers", "%{example_hand}", %{example_hand: ~t"11234m456p88899s 1m"})
-  add_rule("2 Faan", "No Jokers", "2 Faan for not having jokers in hand. Jokers declared as flowers do not count as jokers.")
-  update_rule("2 Faan", "No Jokers", "%{example_hand}", %{example_hand: ~t"11234m456p88899s 3j 1m"})
 end
 
 define_match any_joker, ~m"nojoker, (10j 12j 3j 14j 15j 16j 17j 18j):1"
@@ -25,12 +23,18 @@ on before_win do
 end
 define_yaku yaku, "Flower", ["called_jokers", "Faan"], called_jokers >= 1
 define_yaku yaku, "No Honors or Flowers", [2, "Faan"], not_match(["hand", "calls", "winning_tile"], ~m"jihai:1") and called_jokers == 0
-define_yaku yaku, "No Jokers", [2, "Faan"], jokers <= 0
 # yaku/tsuuiisou.majs adds All Honours (30 faan)
 # yaku/yakuhai.majs adds all 5 yakuhai yaku (1 Faan each)
 # yaku/shousangen.majs adds Little Three Dragons (8 Faan) and Big Three Dragons (15 Faan)
 # yaku/sanpuukou.majs adds Little Three Winds (5 Faan) and Big Three Winds (10 Faan)
 # yaku/shousuushii.majs adds Little Four Winds (20 Faan) and Big Four Winds (30 Faan)
+define_yaku_precedence "No Honours or Flowers", ["Flower"]
+define_yaku_precedence "All Honours", ["No Honours or Flowers"]
+define_yaku_precedence "Big Four Winds", ["Little Four Winds"]
+define_yaku_precedence "Little Four Winds", ["Big Three Winds"]
+define_yaku_precedence "Big Three Winds", ["Little Three Winds"]
+define_yaku_precedence "Big Three Dragons", ["Little Three Dragons"]
+define_yaku_precedence "Little Three Winds", ["No Jokers"]
 
 # (2) 么九類
 
@@ -53,12 +57,90 @@ define_yaku yaku, "Pure Double Terminal Sequences", [20, "Faan"], match(["hand",
 # yaku/tanyao.majs adds All Simples (2 Faan)
 # yaku/chanta.majs adds Mixed Outside Hand (5 Faan) and Pure Outside Hand (8 Faan)
 # yaku/honroutou.majs adds Mixed Terminals (10 Faan) and Pure Terminals (30 Faan)
+define_yaku_precedence "Double Terminal Sequences", ["Terminal Sequences"]
+define_yaku_precedence "Pure Double Terminal Sequences", ["Double Terminal Sequences"]
+define_yaku_precedence "Pure Outside Hand", ["Mixed Outside Hand"]
+define_yaku_precedence "Mixed Terminals", ["Pure Outside Hand", "Mixed Outside Hand"]
+define_yaku_precedence "Mixed Flush", ["One Voided Suit"]
+define_yaku_precedence "Full Flush", ["Mixed Flush"]
+define_yaku_precedence "Nine Gates", ["Open Nine Gates"]
+define_yaku_precedence "Two Kongs", ["Open Kong", "Concealed Kong"]
+define_yaku_precedence "Three Kongs", ["Two Kongs"]
+define_yaku_precedence "Four Kongs", ["Three Kongs"]
+define_yaku_precedence "Three Concealed Triplets", ["Two Concealed Triplets"]
+define_yaku_precedence "Four Concealed Triplets", ["Three Concealed Triplets", "Two Concealed Triplets"]
+define_yaku_precedence "Three Small Shifted Triplets", ["Two Shifted Triplets"]
+define_yaku_precedence "Three Pure Shifted Triplets", ["Two Shifted Triplets"]
+define_yaku_precedence "Four Pure Small Shifted Triplets", ["Three Small Shifted Triplets"]
+define_yaku_precedence "Four Pure Shifted Triplets", ["Three Pure Shifted Triplets"]
+define_yaku_precedence "Three Mixed Small Shifted Triplets", ["Two Shifted Triplets", "Three Small Shifted Triplets"]
+define_yaku_precedence "Three Mixed Shifted Triplets", ["Two Shifted Triplets"]
+define_yaku_precedence "Four Mixed Small Shifted Triplets", ["Three Mixed Small Shifted Triplets"]
+define_yaku_precedence "Four Mixed Shifted Triplets", ["Three Mixed Shifted Triplets"]
+define_yaku_precedence "Five Mixed Small Shifted Triplets", ["Four Mixed Small Shifted Triplets"]
+define_yaku_precedence "Small Triple Triplets", ["Double Triplets"]
+define_yaku_precedence "Triple Triplets", ["Double Triplets"]
+define_yaku_precedence "Quadruple Triplets", ["Triple Triplets", "Double Triplets"]
+define_yaku_precedence "Triple Sequences", ["Double Sequences"]
+define_yaku_precedence "Pure Triple Sequence", ["Triple Sequences", "Double Sequences"]
+define_yaku_precedence "Pure Quadruple Sequence", ["Pure Triple Sequence", "Triple Sequences", "Double Sequences"]
+define_yaku_precedence "Double Short Straight", ["Short Straight"]
+define_yaku_precedence "Pure Double Short Straight", ["Short Straight", "Double Short Straight"]
+define_yaku_precedence "Double Identical Sequences", [
+  "Identical Sequences",
+  "Seven Pairs",
+  "Three Consecutive Pairs",
+  "Five Consecutive Pairs",
+  "Seven Consecutive Pairs",
+  "Three Identical Pairs",
+  "Three Dragons Seven Pairs",
+  "Four Winds Seven Pairs"
+]
+define_yaku_precedence "Pure Double Identical Sequences", ["Double Identical Sequences"]
+define_yaku_precedence "Four Mixed Shifted Sequences", ["Three Mixed Shifted Sequences"]
+define_yaku_precedence "Four Pure Shifted Sequences", ["Three Pure Shifted Sequences"]
+define_yaku_precedence "Three Pure Linked Sequences", ["Three Mixed Linked Sequences"]
+define_yaku_precedence "Golden Gate Bridge", ["Three Pure Linked Sequences"]
+define_yaku_precedence "Mixed Shifted Linked Sequences", ["Three Mixed Shifted Sequences", "Three Mixed Linked Sequences"]
+define_yaku_precedence "Pure Shifted Linked Sequences", ["Three Pure Shifted Sequences", "Three Pure Linked Sequences"]
+define_yaku_precedence "Pure Straight", ["Short Straight", "Mixed Straight", "Terminal Sequences"]
+define_yaku_precedence "Tile Hog (3)", ["Tile Hog (2)"]
+define_yaku_precedence "Tile Hog (4)", ["Tile Hog (3)"]
+define_yaku_precedence "Two Number Hand", ["Three Number Hand"]
+define_yaku_precedence "Within Seven Tiles", ["Within Ten Tiles"]
+define_yaku_precedence "Hand of Man", ["Within Seven Tiles"]
+define_yaku_precedence "Hand of Heaven", ["Within Seven Tiles"]
+define_yaku_precedence "Hand of Earth", ["Within Seven Tiles"]
+define_yaku_precedence "Triple Tile Hog", ["Double Tile Hog"]
+define_yaku_precedence "Fully Concealed Hand", ["Concealed Hand"]
+define_yaku_precedence "Five Consecutive Pairs", ["Three Consecutive Pairs"]
+define_yaku_precedence "Seven Consecutive Pairs", ["Five Consecutive Pairs"]
+define_yaku_precedence "Thirteen Unconnected", [
+  "Seat Wind",
+  "Round Wind",
+  "White Dragon",
+  "Green Dragon",
+  "Red Dragon",
+  "All Types"
+]
+define_yaku_precedence "Knitted Straight", ["Knitted Short Straight", "Knitted Terminal Sequences", "All Types"]
+define_yaku_precedence "Thirteen Orphans", [
+  "Seat Wind",
+  "Round Wind",
+  "White Dragon",
+  "Green Dragon",
+  "Red Dragon",
+  "Mixed Terminals",
+  "All Types"
+]
 
 # (3) 花色類
 
 on after_initialization do
   add_rule("2 Faan", "One Voided Suit", "1 Faan for having 123 789 in the same suit.")
   update_rule("2 Faan", "One Voided Suit", "%{example_hand}", %{example_hand: ~t"111456m2234579p 8p"})
+  add_rule("20 Faan", "Open Nine Gates", "20 Faan for having an open hand that contains 1112345678999 plus another number tile all in the same suit.")
+  update_rule("20 Faan", "Open Nine Gates", "%{example_hand}", %{example_hand: ~t"1234568999p 1P11p 7p"})
 end
 define_yaku yaku, "One Voided Suit", [2, "Faan"],
      winning_hand_consists_of("1m","2m","3m","4m","5m","6m","7m","8m","9m","1p","2p","3p","4p","5p","6p","7p","8p","9p","1z","2z","3z","4z","0z","6z","7z")
@@ -78,10 +160,37 @@ define_set 副露九子連環, ~s"""
   | 0 0, 0 1 2, 3 4 5, 6 7 8, 8 8 8
   """
 define_match 副露九子連環, ~m"副露九子連環:1"
-define_yaku yaku, "Open Nine Gates", [20, "Faan"], match(["hand", "winning_tile"], ["副露九子連環"])
+define_yaku yaku, "Open Nine Gates", [20, "Faan"], match(["hand", "calls", "winning_tile"], ["副露九子連環"])
 # yaku/chuurenpoutou.majs adds Nine Gates (30 Faan)
 
 # (1) 刻/槓子類
+
+on after_initialization do
+  add_rule("1 Faan", "Open Kong", "1 Faan for having an open kong. This could be a kong formed by calling a discard %{daiminkan}, or a kong formed by adding onto an existing pung %{kakan}.", %{daiminkan: ~t"1p1P11p", kakan: ~t"1p11P1p"})
+  add_rule("2 Faan", "Concealed Kong", "2 Faan for having a concealed kong %{ankan}, a kong declared with four identical tiles in your hand.", %{ankan: ~t"1111x"})
+  add_rule("1 Faan", "Two Shifted Triplets", "1 Faan for having consecutive triplets in the pattern 111222. They do not have to be the same suit. If they are the same suit, it's still 1 Faan.")
+  update_rule("1 Faan", "Two Shifted Triplets", "%{example_hand}", %{example_hand: ~t"333m4445677p 7S89s 7p"})
+  update_rule("1 Faan", "Two Shifted Triplets", "%{example_hand2}", %{example_hand2: ~t"333444m5677p 7S89s 7p"})
+  add_rule("5 Faan", "Three Small Shifted Triplets", "5 Faan for having consecutive triplets in the pattern 111222333, except one of them is actually a pair. The three can be of any suit. They do not have to be the same suit. If they are all the same suit, it's still 5 Faan.")
+  update_rule("5 Faan", "Three Small Shifted Triplets", "%{example_hand}", %{example_hand: ~t"333m4445577p 7S89s 7p"})
+  update_rule("5 Faan", "Three Small Shifted Triplets", "%{example_hand2}", %{example_hand2: ~t"33344555m56p 7S89s 7p"})
+  add_rule("15 Faan", "Four Pure Small Shifted Triplets", "15 Faan for having consecutive triplets in the pattern 111222333444 all in the same suit, except one of them is actually a pair.")
+  update_rule("15 Faan", "Four Pure Small Shifted Triplets", "%{example_hand}", %{example_hand: ~t"333m44455p66s 7S89s 5p"})
+  add_rule("5 Faan", "Three Mixed Small Shifted Triplets", "5 Faan for having consecutive triplets in the pattern 111222333, except one of them is actually a pair. They must all be of different suits.")
+  update_rule("5 Faan", "Three Mixed Small Shifted Triplets", "%{example_hand}", %{example_hand: ~t"34445m55p123666s 1S23s 4m"})
+  add_rule("8 Faan", "Three Mixed Shifted Triplets", "8 Faan for having consecutive triplets in the pattern 111222333. They must all be of different suits.")
+  update_rule("8 Faan", "Three Mixed Shifted Triplets", "%{example_hand}", %{example_hand: ~t"34445m55p666s 1S23s 5p"})
+  add_rule("10 Faan", "Four Mixed Small Shifted Triplets", "10 Faan for having consecutive triplets in the pattern 111222333444, except one of them is actually a pair. Their suits have to cycle: e.g. if it starts with characters, circles, bamboo, the last suit must be characters again.")
+  update_rule("10 Faan", "Four Mixed Small Shifted Triplets", "%{example_hand}", %{example_hand: ~t"34445m55p666s  3S33s4m"})
+  add_rule("15 Faan", "Four Mixed Shifted Triplets", "15 Faan for having consecutive triplets in the pattern 111222333444. Their suits have to cycle: e.g. if it starts with characters, circles, bamboo, the last suit must be characters again.")
+  update_rule("15 Faan", "Four Mixed Shifted Triplets", "%{example_hand}", %{example_hand: ~t"33444m55p666s  3S33s5p"})
+  add_rule("20 Faan", "Five Mixed Small Shifted Triplets", "20 Faan for having consecutive triplets in the pattern 111222333444555, except one of them is actually a pair. Their suits have to cycle: e.g. if it starts with characters, circles, bamboo, the next suit must be characters again, and the following suit must be circles again.")
+  update_rule("20 Faan", "Five Mixed Small Shifted Triplets", "%{example_hand}", %{example_hand: ~t"44m22555p666s 3S33s 4m"})
+  add_rule("2 Faan", "Double Triplets", "2 Faan if your hand contains the same number triplet in two suits.")
+  update_rule("2 Faan", "Double Triplets", "%{example_hand}", %{example_hand: ~t"333m333456p678s3z 3z"})
+  add_rule("30 Faan", "Quadruple Triplets", "30 Faan for having four triplets of the same number. This requires some joker tomfoolery, since it must include 6 of the same tile in one of the three suits.")
+  update_rule("30 Faan", "Quadruple Triplets", "%{example_hand}", %{example_hand: ~T"8m8m8m8p8p8p8s8s8s12j17j3z3z3x8s"})
+end
 define_yaku yaku, "Open Kong", [1, "Faan"], match(["calls"], ~m"(daiminkan kakan):1")
 define_yaku yaku, "Concealed Kong", [2, "Faan"], match(["calls"], ~m"ankan:1")
 # yaku/ryankantsu.majs adds Two Kongs (5 Faan)
@@ -90,7 +199,6 @@ define_yaku yaku, "Concealed Kong", [2, "Faan"], match(["calls"], ~m"ankan:1")
 # yaku/ryanankou.majs adds Two Concealed Triplets (2 Faan)
 # yaku/sanankou.majs adds Three Concealed Triplets (8 Faan)
 # yaku/suuankou.majs adds Four Concealed Triplets (15 Faan)
-
 define_set 兩連刻, ~s"0 0 0, 1 1 1|0 0 0, 11 11 11|0 0 0, 21 21 21"
 define_match 兩連刻, ~m"兩連刻:1, mentsu:2, pair:1"
 define_yaku yaku, "Two Shifted Triplets", [2, "Faan"], match(["hand", "calls", "winning_tile"], ["兩連刻"])
@@ -199,6 +307,34 @@ define_yaku yaku, "Quadruple Triplets", [30, "Faan"], match(["hand", "calls", "w
 
 # (2) 順子類
 
+on after_initialization do
+  add_rule("1 Faan", "Double Sequences", "1 Faan for having two of the same sequence in different suits. It is possible to get this one twice by also having two of a different-numbered sequence, which gives you a total of 2 faan.")
+  update_rule("1 Faan", "Double Sequences", "%{example_hand}", %{example_hand: ~t"234m23466p789s33z 3z"})
+  add_rule("1 Faan", "Short Straight", "1 Faan for having 123 456 or 456 789 of one suit. It is possible to get this one twice by having two short straights, which gives you a total of 2 faan.")
+  update_rule("1 Faan", "Short Straight", "%{example_hand}", %{example_hand: ~t"123m123456p3366z 3z"})
+  add_rule("10 Faan", "Double Short Straight", "10 Faan for having 123 456 or 456 789 of one suit and the same 123 456 or 456 789 of another suit.")
+  update_rule("10 Faan", "Double Short Straight", "%{example_hand}", %{example_hand: ~t"456789p456789s2z 2z"})
+  add_rule("20 Faan", "Pure Double Short Straight", "20 Faan for having 123 123 456 456 or 456 456 789 789 of one suit.")
+  update_rule("20 Faan", "Pure Double Short Straight", "%{example_hand}", %{example_hand: ~t"456789456789p2z 2z"})
+  add_rule("15 Faan", "Pure Double Identical Sequences", "15 Faan for having two of the exact same sequence in one suit, and two of another exact same sequence in the same suit.")
+  update_rule("15 Faan", "Pure Double Identical Sequences", "%{example_hand}", %{example_hand: ~t"445566p4455667s 7s"})
+  add_rule("2 Faan", "Three Mixed Shifted Sequences", "2 Faan for having something like 123 234 345, with each sequence being in a different suit.")
+  update_rule("2 Faan", "Three Mixed Shifted Sequences", "%{example_hand}", %{example_hand: ~t"234m345p456s3377z 7z"})
+  add_rule("8 Faan", "Four Mixed Shifted Sequences", "8 Faan for having something like 123 234 345 456, and their suits cycle: e.g. if it starts with characters, circles, bamboo, the last sequence's suit must be characters again.")
+  update_rule("8 Faan", "Four Mixed Shifted Sequences", "%{example_hand}", %{example_hand: ~t"234567m345p456s7z 7z"})
+  add_rule("10 Faan", "Three Pure Shifted Sequences", "10 Faan for having something like 123 234 345 in the same suit. This forms a 'pyramid' shape, like 233444556.")
+  update_rule("10 Faan", "Three Pure Shifted Sequences", "%{example_hand}", %{example_hand: ~t"233444556p2333s 1s"})
+  add_rule("30 Faan", "Four Pure Shifted Sequences", "30 Faan for having something like 123 234 345 456 in the same suit.")
+  update_rule("30 Faan", "Four Pure Shifted Sequences", "%{example_hand}", %{example_hand: ~t"1223344568p 3P45p 8p"})
+  add_rule("2 Faan", "Three Mixed Linked Sequences", "2 Faan for having something like 123 345 567, all of different suits.")
+  update_rule("2 Faan", "Three Mixed Linked Sequences", "%{example_hand}", %{example_hand: ~t"234m678p456s2227z 7z"})
+  add_rule("8 Faan", "Three Pure Linked Sequences", "8 Faan for having something like 123 345 567 in the same suit.")
+  update_rule("8 Faan", "Three Pure Linked Sequences", "%{example_hand}", %{example_hand: ~t"123m234456678p3s 3s"})
+  add_rule("20 Faan", "Golden Gate Bridge", "20 Faan for having 123 345 567 789 in the same suit.")
+  update_rule("20 Faan", "Golden Gate Bridge", "%{example_hand}", %{example_hand: ~t"1233455677m 7M89m 7m"})
+  add_rule("5 Faan", "Mixed Straight", "5 Faan for having 123 456 789, all of different suits.")
+  update_rule("5 Faan", "Mixed Straight", "%{example_hand}", %{example_hand: ~t"456m123p78999s11z 9s"})
+end
 define_set 兩相逢, ~s"0 1 2, 10 11 12"
 define_set 無雙兩相逢, ~s"0 1 2, 0 1 2, 10 11 12, 10 11 12"
 define_match 兩相逢, ~m"兩相逢:1, mentsu:2, pair:1"
@@ -256,12 +392,23 @@ define_yaku yaku, "Golden Gate Bridge", [20, "Faan"], match(["hand", "calls", "w
 define_set 雜龍, ~s"0 1 2, 13 14 15, 26 27 28|0 1 2, 23 24 25, 16 17 18"
 define_match 雜龍, ~m"雜龍:1, mentsu:1, pair:1"
 define_yaku yaku, "Mixed Straight", [5, "Faan"], match(["hand", "calls", "winning_tile"], ["雜龍"])
-# TODO replace with ittsuu
 # yaku/ittsuu.majs adds Pure Straight (8 Faan)
 # yaku/pinghu.majs adds All Sequences (2 Faan)
 
 # (3) 四歸類
 
+on after_initialization do
+  add_rule("2 Faan", "Tile Hog", "2 Faan if two of your sets in hand (not calls) overlap and use up all four of a given tile.")
+  update_rule("2 Faan", "Tile Hog", "%{example_hand}", %{example_hand: ~t"1111234s 4P56p 88m8M 4s"})
+  add_rule("5 Faan", "Tile Hog", "5 Faan if two of your sets in hand (not calls) overlap your pair, using up all four of a given tile. Does not stack with Tile Hog (2 Faan).")
+  update_rule("5 Faan", "Tile Hog", "%{example_hand}", %{example_hand: ~t"2344456s 4P56p 88m8M 4s"})
+  add_rule("15 Faan", "Tile Hog", "15 Faan if four of your sets in hand (not calls) all overlap, using up all four of a given tile. Does not stack with Tile Hog (5 Faan) or Tile Hog (2 Faan).")
+  update_rule("15 Faan", "Tile Hog", "%{example_hand}", %{example_hand: ~t"12233344455s 4P56p 88m8M 3s"})
+  add_rule("8 Faan", "Double Tile Hog", "8 Faan if your hand (not calls) use up all eight of two different tiles.")
+  update_rule("8 Faan", "Double Tile Hog", "%{example_hand}", %{example_hand: ~t"22224444s77z 88m8M 3s"})
+  add_rule("30 Faan", "Triple Tile Hog", "30 Faan if your hand (not calls) use up all twelve of three different tiles. Without jokers, you can only get this via the shape 111 123 33 345 555.")
+  update_rule("30 Faan", "Triple Tile Hog", "%{example_hand}", %{example_hand: ~t"2222444456666m 3s"})
+end
 define_set 四歸二, ~s"0 0 0, 0 1 2|0 1 2, 1 1 1|0 1 2, 2 2 2"
 define_match 四歸二, ~m"四歸二:1, mentsu:2, pair:1"
 define_yaku yaku, "Tile Hog (2)", [2, "Faan"], match(["hand", "calls", "winning_tile"], ["四歸二"])
@@ -281,6 +428,20 @@ apply merge, "translations", %{
 
 # (4) 數字類
 
+on after_initialization do
+  add_rule("8 Faan", "All Like Numbers", "8 Faan if all of your sets and your pair contain the same number.")
+  update_rule("8 Faan", "All Like Numbers", "%{example_hand}", %{example_hand: ~t"23445m44456p444s 3m"})
+  add_rule("5 Faan", "All Odds", "5 Faan for a hand that contains only number tiles numbered 13579.")
+  update_rule("5 Faan", "All Odds", "%{example_hand}", %{example_hand: ~t"11m333p33999s 7s7S7s 1m"})
+  add_rule("5 Faan", "All Evens", "5 Faan for a hand that contains only number tiles numbered 2468.")
+  update_rule("5 Faan", "All Evens", "%{example_hand}", %{example_hand: ~t"888m222p4488s 6M66m 4s"})
+  add_rule("5 Faan", "One Suji Only", "5 Faan for having a hand consisting of 147 only, 258 only, or 369 only. Stacks with Three Number Hand (5 Faan).")
+  update_rule("5 Faan", "One Suji Only", "%{example_hand}", %{example_hand: ~t"999m33399p33s 66s6S 9p"})
+  add_rule("5 Faan", "Three Number Hand", "5 Faan for having a hand consisting of only three different numbers (of any suit).")
+  update_rule("5 Faan", "Three Number Hand", "%{example_hand}", %{example_hand: ~t"22223m33444p333s 4m"})
+  add_rule("10 Faan", "Two Number Hand", "10 Faan for having a hand consisting of only two different numbers (of any suit).")
+  update_rule("10 Faan", "Two Number Hand", "%{example_hand}", %{example_hand: ~t"333m333p2233s 2p2P2p 2s"})
+end
 on before_win do
    add_attr(["hand", "calls", "winning_tile"], ["n1"], ["1"])
    add_attr(["hand", "calls", "winning_tile"], ["n2"], ["2"])
@@ -343,6 +504,12 @@ define_yaku yaku, "Two Number Hand", [10, "Faan"], at_most(2,
 
 # (5) 偶然類
 
+on after_initialization do
+  add_rule("1 Faan", "After a Flower", "1 Faan if you win off the replacement tile after calling a joker as a flower.")
+  add_rule("2 Faan", "Under the Sea", "2 Faan if you win off the last draw or last discard.")
+  add_rule("5 Faan", "Within Ten Tiles", "5 Faan if you win before the eleventh tile is drawn.")
+  add_rule("8 Faan", "Within Seven Tiles", "8 Faan if you win before the eighth tile is drawn.")
+end
 define_yaku yaku, "After a Flower", [1, "Faan"], status("joker")
 # yaku/rinshan.majs adds After a Kong (2 Faan)
 # yaku/chankan.majs adds Robbing a Kong (5 Faan)
@@ -353,15 +520,38 @@ define_yaku yaku, "Within Seven Tiles", [8, "Faan"], tiles_remaining(85)
 
 # (6) 狀態類
 
+on after_initialization do
+  add_rule("2 Faan", "Self Drawn Melded Hand", "2 Faan if you have four calls and won by self-draw.")
+  update_rule("2 Faan", "Self Drawn Melded Hand", "%{example_hand}", %{example_hand: ~t"4z 2P34p 5M46m 2S34s 7Z77z 4z"})
+  add_rule("5 Faan", "Melded Hand", "5 Faan if you have four calls and won on someone's discard (or by robbing a kong).")
+  update_rule("5 Faan", "Melded Hand", "%{example_hand}", %{example_hand: ~t"4z 2P34p 5M46m 2S34s 7Z77z 4z"})
+  add_rule("2 Faan", "Hell Wait", "2 Faan if you win with a hell wait. A hell wait is defined as a final wait in which all tiles except one are already visible to you, so there is only one remaining left in the wall (or in others' hands).")
+  add_rule("2 Faan", "No Jokers", "2 Faan for not having jokers in hand. Jokers declared as flowers do not count as jokers.")
+  update_rule("2 Faan", "No Jokers", "%{example_hand}", %{example_hand: ~t"11234m456p88899s 3j 1m"})
+end
 # yaku/menzenchin.majs adds Concealed Hand (1 Faan)
 # yaku/menzentsumo.majs adds Fully Concealed Hand (2 Faan)
 define_yaku yaku, "Self Drawn Melded Hand", [2, "Faan"], won_by_draw and match(["calls"], ~m"(chii pon daiminkan ankan kakan):4")
 define_yaku yaku, "Melded Hand", [5, "Faan"], not_won_by_draw and match(["calls"], ~m"(chii pon daiminkan ankan kakan):4")
 define_yaku yaku, "Hell Wait", [2, "Faan"], has_hell_wait("win")
-define_yaku yaku, "Hell Wait", [2, "Faan"], has_hell_wait("win")
+define_yaku yaku, "No Jokers", [2, "Faan"], jokers <= 0
 
 # (7) 對子類
 
+on after_initialization do
+  add_rule("2 Faan", "Three Consecutive Pairs", "2 Faan for having something like 11 22 33 in one suit in a seven-pair hand.")
+  update_rule("2 Faan", "Three Consecutive Pairs", "%{example_hand}", %{example_hand: ~t"22778888m3p5533z 3p"})
+  add_rule("10 Faan", "Five Consecutive Pairs", "10 Faan for having something like 11 22 33 44 55 in one suit in a seven-pair hand.")
+  update_rule("10 Faan", "Five Consecutive Pairs", "%{example_hand}", %{example_hand: ~t"44m22334455669p 9p"})
+  add_rule("30 Faan", "Seven Consecutive Pairs", "30 Faan for having something like 11 22 33 44 55 66 77 in one suit in a seven-pair hand.")
+  update_rule("30 Faan", "Seven Consecutive Pairs", "%{example_hand}", %{example_hand: ~t"3344556678899s 7s"})
+  add_rule("5 Faan", "Three Identical Pairs", "5 Faan for having the same number pair in three suits in a seven-pair hand.")
+  update_rule("5 Faan", "Three Identical Pairs", "%{example_hand}", %{example_hand: ~t"33m33p33s11200z 2z"})
+  add_rule("5 Faan", "Three Dragons Seven Pairs", "5 Faan if three of your pairs in a seven-pair hand are are dragon pairs.")
+  update_rule("5 Faan", "Three Dragons Seven Pairs", "%{example_hand}", %{example_hand: ~t"22m3377p4s006677z 4s"})
+  add_rule("10 Faan", "Four Winds Seven Pairs", "10 Faan if four of your pairs in a seven-pair hand are are wind pairs.")
+  update_rule("10 Faan", "Four Winds Seven Pairs", "%{example_hand}", %{example_hand: ~t"22m99s112233446z 6z"})
+end
 # yaku/chiitoitsu.majs adds Seven Pairs (5 Faan)
 define_set 三連對, ~s"0 0 1 1 2 2"
 define_match 三連對, ~m"三連對:1, pair:4"
@@ -384,6 +574,22 @@ define_yaku meta_yaku, "Four Winds Seven Pairs", [10, "Faan"], has_existing_yaku
 
 # (8) 不搭類
 
+on after_initialization do
+  add_rule("5 Faan", "Thirteen Unconnected", "5 Faan if all of your tiles are not connected, i.e. they are 3 away from each other or more. You also have a pair of one of the tiles. In addition, the suited tiles among them must form a partial Knitted Triplets (147 147 147) or a partial Knitted Straight (147 258 369); and you must have at least one tile of each suit, at least one wind, and at least one dragon. Does not stack with All Types.", -50)
+  update_rule("5 Faan", "Thirteen Unconnected", "%{example_hand} (partial knitted straight)", %{example_hand: ~t"147m28p36s122346z 7z"})
+  update_rule("5 Faan", "Thirteen Unconnected", "%{example_hand2} (partial knitted triplets)", %{example_hand2: ~t"258m58p28s123307z 4z"})
+  update_rule("5 Faan", "Thirteen Unconnected", "In addition, the following patterns add an additional 5 Faan to the hand:")
+  update_rule("5 Faan", "Thirteen Unconnected", "- Knitted Short Straight: 5 Faan for having something like 14 25 36.")
+  update_rule("5 Faan", "Thirteen Unconnected", "  %{example_hand3}", %{example_hand3: ~t"147m2p36s1223467z 5p"})
+  update_rule("5 Faan", "Thirteen Unconnected", "- Knitted Terminal Sequences: 5 Faan for having 17 28 39.")
+  update_rule("5 Faan", "Thirteen Unconnected", "  %{example_hand4}", %{example_hand4: ~t"147m28p3s1223467z 9s"})
+  update_rule("5 Faan", "Thirteen Unconnected", "- Knitted Straight: 5 Faan for having 147 258 369.")
+  update_rule("5 Faan", "Thirteen Unconnected", "  %{example_hand5}", %{example_hand5: ~t"147m258p36s22467z 9s"})
+  update_rule("5 Faan", "Thirteen Unconnected", "- Knitted Triplets: 5 Faan for having something like 147 147 147.")
+  update_rule("5 Faan", "Thirteen Unconnected", "  %{example_hand6}", %{example_hand6: ~t"369m369p36s22467z 9s"})
+  update_rule("5 Faan", "Thirteen Unconnected", "- Knitted Honors: 5 Faan for having at least one of each honor tile.")
+  update_rule("5 Faan", "Thirteen Unconnected", "  %{example_hand7}", %{example_hand7: ~t"147m258p1234567z 9s"})
+end
 define_match 十三不搭, ~m"""
     pair:1, restart, unique, knit1:13
   | pair:1, restart, unique, knit2:13
@@ -398,14 +604,10 @@ define_match 十三不搭, ~m"""
 define_yaku yaku, "Thirteen Unconnected", [5, "Faan"], match(["hand", "winning_tile"], ["十三不搭"])
 define_set 不搭連六, ~s"0 3, 11 14, 22 25|0 3, 21 24, 12 15"
 define_match 不搭連六, ~m"不搭連六:1"
-define_match 雙不搭連六, ~m"不搭連六:2"
 define_yaku yaku, "Knitted Short Straight", [5, "Faan"], match(["hand", "winning_tile"], ["不搭連六"])
-define_yaku yaku, "Knitted Short Straight", [5, "Faan"], match(["hand", "winning_tile"], ["雙不搭連六"])
 define_set 不搭老少, ~s"0 6, 11 17, 22 28|0 6, 21 27, 12 18"
 define_match 不搭老少, ~m"knit_terminal_seqs:1"
-define_match 雙不搭老少, ~m"knit_terminal_seqs:2"
-define_yaku yaku, "Knitted Short Straight", [5, "Faan"], match(["hand", "winning_tile"], ["不搭老少"])
-define_yaku yaku, "Knitted Short Straight", [5, "Faan"], match(["hand", "winning_tile"], ["雙不搭老少"])
+define_yaku yaku, "Knitted Terminal Sequences", [5, "Faan"], match(["hand", "winning_tile"], ["不搭老少"])
 define_set 不搭雜龍, ~s"0 3 6, 11 14 17, 22 25 28|0 3 6, 21 24 27, 12 15 18"
 define_match 不搭雜龍, ~m"不搭雜龍:1"
 define_yaku yaku, "Knitted Straight", [5, "Faan"], match(["hand", "winning_tile"], ["不搭雜龍"])
@@ -436,6 +638,48 @@ define_yaku yaku, "Knitted Honors", [5, "Faan"], match(["hand", "winning_tile"],
 
 # (9) 其他
 
+on after_initialization do
+  add_rule("1 Faan", "Eyes of the General", "1 Faan if your pair is 22, 55, or 88.")
+  update_rule("1 Faan", "Eyes of the General", "%{example_hand}", %{example_hand: ~t"234m78889p44s444z 4s"})
+  add_rule("20 Faan", "University Train", "20 Faan for having a pair of red dragons, plus a pure straight (123456789) of any suit, plus either a triplet of threes or a kong of fours.")
+  update_rule("20 Faan", "University Train", "%{example_hand}", %{example_hand: ~t"23456789p77z 4s44S4s 1p"})
+  update_rule("20 Faan", "University Train", "%{example_hand2}", %{example_hand2: ~t"12345m333p77z 7M89m 6m"})
+  update_rule("20 Faan", "University Train", "Stacks with One Voided Suit (2 Faan).")
+  update_rule("20 Faan", "Thirteen Orphans", "If you use no more than 3 jokers it becomes 25 Faan, and if you use no more than one joker it's 30 Faan.")
+  update_rule("20 Faan", "Thirteen Orphans", "Stacks with All Types (5 Faan).")
+
+  add_rule("8 Faan", "Mixed Shifted Linked Sequences", "8 Faan for having both Three Mixed Shifted Sequences and Three Mixed Linked Sequences simulaneously.")
+  update_rule("8 Faan", "Mixed Shifted Linked Sequences", "%{example_hand}", %{example_hand: ~t"123p234s6z 3M45m 5S67s 6z"})
+  update_rule("8 Faan", "Mixed Shifted Linked Sequences", "In the example above, %{shifted} forms Three Mixed Shifted Sequences and %{linked} forms Three Mixed Linked Sequences.", %{shifted: ~t"123p234s 3M45m", linked: ~t"123p 3M45m 5S67s"})
+  update_rule("8 Faan", "Mixed Shifted Linked Sequences", "Another way to think about it is to have 234567 in one suit, 123 in a second suit, and 345 in the third suit OR 234567 in one suit, 456 in a second suit, and 678 in the third suit.")
+
+  add_rule("20 Faan", "Pure Shifted Linked Sequences", "20 Faan for having both Three Pure Shifted Sequences and Three Pure Linked Sequences simulaneously.")
+  update_rule("20 Faan", "Pure Shifted Linked Sequences", "%{example_hand}", %{example_hand: ~t"123234p6z 3P45p 5P67p 6z"})
+  update_rule("20 Faan", "Pure Shifted Linked Sequences", "In the example above, %{shifted} forms Three Pure Shifted Sequences and %{linked} forms Three Pure Linked Sequences.", %{shifted: ~t"123p234p 3P45p", linked: ~t"123p 3P45p 5P67p"})
+  update_rule("20 Faan", "Pure Shifted Linked Sequences", "Another way to think about it is to have either 123 234 345 567 or 123 345 456 567.")
+
+  add_rule("15 Faan", "Chicken Hand", "15 Faan for having none of the other scoring patterns.", -50)
+  update_rule("15 Faan", "Chicken Hand", "%{example_hand}", %{example_hand: ~t"123m345p34z3j 7s7S7s 3z"})
+  update_rule("15 Faan", "Chicken Hand", """
+    This boils down to the following:
+    - Have no declared jokers (as flowers).
+    - Have at least one joker used in hand.
+    - You must win off a discard, and not on a hell wait.
+      - (rare) It must also be a discard after the 11th tile is drawn.
+    - You must have two winds or two dragons as your pair.
+    - Your four sets (not pair) must all be numeric and include all three suits, one sequence, and one triplet.
+    - You must have at least one but not four calls, with no kongs.
+    - You must not include all four of a single tile in hand (not calls).
+    - Sequences must avoid the following (be wary of jokers):
+      - Same-suit 123 123, 123 789, 123 456, 456 789, or 123 456 789.
+      - Mixed-suit 123/123, 123/234/345, 123/345/567, or 123/456/789.
+    - Triplets must avoid the following (be wary of jokers):
+      - Mixed-suit 111/111, 111/222, or 111/22/333 (that's a pair in the middle)
+      - More than one concealed triplet.
+      - (rare) They don't form All Evens, All Odds, One Suji Only, or Three Number Hand.
+    If you are familiar with MCR, the major differences from MCR's Chicken Hand are flowers counting against Chicken Hand, and the last part about sequences and triplets, and also that short straights can only be 123456 or 456789. Also you can have a single wait, as that scores nothing, and you care about avoiding Hell Wait and not Last Tile. Also you need a triplet to not score All Sequences. Also Upper/Lower Four are not a thing, instead you worry about All Evens etc.
+    """)
+end
 define_set 將眼, ~s"0@n2 0|0@n5 0|0@n7 0"
 define_match 將眼, ~m"將眼:1, mentsu:4"
 define_yaku yaku, "Eyes of the General", [1, "Faan"], match(["hand", "calls", "winning_tile"], ["將眼"])
@@ -448,84 +692,3 @@ define_yaku meta_yaku, "Thirteen Orphans", [5, "Faan"], has_existing_yaku("Thirt
 define_yaku meta_yaku, "Mixed Shifted Linked Sequences", [8, "Faan"], has_existing_yaku("Three Mixed Shifted Sequences", "Three Mixed Linked Sequences")
 define_yaku meta_yaku, "Pure Shifted Linked Sequences", [20, "Faan"], has_existing_yaku("Three Pure Shifted Sequences", "Three Pure Linked Sequences")
 define_yaku meta_yaku, "Chicken Hand", [15, "Faan"], has_no_yaku
-
-define_yaku_precedence "Big Three Winds", ["Little Three Winds"]
-define_yaku_precedence "Little Four Winds", ["Big Three Winds"]
-define_yaku_precedence "Big Four Winds", ["Little Four Winds"]
-define_yaku_precedence "Big Three Dragons", ["Little Three Dragons"]
-define_yaku_precedence "Double Terminal Sequences", ["Terminal Sequences"]
-define_yaku_precedence "Pure Double Terminal Sequences", ["Double Terminal Sequences"]
-define_yaku_precedence "Pure Outside Hand", ["Mixed Outside Hand"]
-define_yaku_precedence "Mixed Terminals", ["Pure Outside Hand", "Mixed Outside Hand"]
-define_yaku_precedence "Mixed Flush", ["One Voided Suit"]
-define_yaku_precedence "Full Flush", ["Mixed Flush"]
-define_yaku_precedence "Nine Gates", ["Open Nine Gates"]
-define_yaku_precedence "Two Kongs", ["Open Kong", "Concealed Kong"]
-define_yaku_precedence "Three Kongs", ["Two Kongs"]
-define_yaku_precedence "Four Kongs", ["Three Kongs"]
-define_yaku_precedence "Three Concealed Triplets", ["Two Concealed Triplets"]
-define_yaku_precedence "Four Concealed Triplets", ["Three Concealed Triplets", "Two Concealed Triplets"]
-define_yaku_precedence "Three Small Shifted Triplets", ["Two Shifted Triplets"]
-define_yaku_precedence "Three Pure Shifted Triplets", ["Two Shifted Triplets"]
-define_yaku_precedence "Four Pure Small Shifted Triplets", ["Three Small Shifted Triplets"]
-define_yaku_precedence "Four Pure Shifted Triplets", ["Three Pure Shifted Triplets"]
-define_yaku_precedence "Three Mixed Small Shifted Triplets", ["Two Shifted Triplets", "Three Small Shifted Triplets"]
-define_yaku_precedence "Three Mixed Shifted Triplets", ["Two Shifted Triplets"]
-define_yaku_precedence "Four Mixed Small Shifted Triplets", ["Three Mixed Small Shifted Triplets"]
-define_yaku_precedence "Four Mixed Shifted Triplets", ["Three Mixed Shifted Triplets"]
-define_yaku_precedence "Five Mixed Small Shifted Triplets", ["Four Mixed Small Shifted Triplets"]
-define_yaku_precedence "Small Triple Triplets", ["Double Triplets"]
-define_yaku_precedence "Triple Triplets", ["Double Triplets"]
-define_yaku_precedence "Quadruple Triplets", ["Triple Triplets", "Double Triplets"]
-define_yaku_precedence "Triple Sequences", ["Double Sequences"]
-define_yaku_precedence "Pure Triple Sequence", ["Triple Sequences", "Double Sequences"]
-define_yaku_precedence "Pure Quadruple Sequence", ["Pure Triple Sequence", "Triple Sequences", "Double Sequences"]
-define_yaku_precedence "Double Short Straight", ["Short Straight"]
-define_yaku_precedence "Pure Double Short Straight", ["Short Straight", "Double Short Straight"]
-define_yaku_precedence "Double Identical Sequences", [
-  "Identical Sequences",
-  "Seven Pairs",
-  "Three Consecutive Pairs",
-  "Five Consecutive Pairs",
-  "Seven Consecutive Pairs",
-  "Three Identical Pairs",
-  "Three Dragons Seven Pairs",
-  "Four Winds Seven Pairs"
-]
-define_yaku_precedence "Pure Double Identical Sequences", ["Double Identical Sequences"]
-define_yaku_precedence "Four Mixed Shifted Sequences", ["Three Mixed Shifted Sequences"]
-define_yaku_precedence "Four Pure Shifted Sequences", ["Three Pure Shifted Sequences"]
-define_yaku_precedence "Three Pure Linked Sequences", ["Three Mixed Linked Sequences"]
-define_yaku_precedence "Golden Gate Bridge", ["Three Pure Linked Sequences"]
-define_yaku_precedence "Mixed Shifted Linked Sequences", ["Three Mixed Shifted Sequences", "Three Mixed Linked Sequences"]
-define_yaku_precedence "Pure Shifted Linked Sequences", ["Three Pure Shifted Sequences", "Three Pure Linked Sequences"]
-define_yaku_precedence "Pure Straight", ["Short Straight", "Mixed Straight", "Terminal Sequences"]
-define_yaku_precedence "Tile Hog (3)", ["Tile Hog (2)"]
-define_yaku_precedence "Tile Hog (4)", ["Tile Hog (3)"]
-define_yaku_precedence "Two Number Hand", ["Three Number Hand"]
-define_yaku_precedence "Within Seven Tiles", ["Within Ten Tiles"]
-define_yaku_precedence "Hand of Man", ["Within Seven Tiles"]
-define_yaku_precedence "Hand of Heaven", ["Within Seven Tiles"]
-define_yaku_precedence "Hand of Earth", ["Within Seven Tiles"]
-define_yaku_precedence "Triple Tile Hog", ["Double Tile Hog"]
-define_yaku_precedence "Fully Concealed Hand", ["Concealed Hand"]
-define_yaku_precedence "Five Consecutive Pairs", ["Three Consecutive Pairs"]
-define_yaku_precedence "Seven Consecutive Pairs", ["Five Consecutive Pairs"]
-define_yaku_precedence "Thirteen Unconnected", [
-  "Seat Wind",
-  "Round Wind",
-  "White Dragon",
-  "Green Dragon",
-  "Red Dragon",
-  "All Types"
-]
-define_yaku_precedence "Knitted Straight", ["Knitted Short Straight", "Knitted Terminal Sequences", "All Types"]
-define_yaku_precedence "Thirteen Orphans", [
-  "Seat Wind",
-  "Round Wind",
-  "White Dragon",
-  "Green Dragon",
-  "Red Dragon",
-  "Mixed Terminals",
-  "All Types"
-]

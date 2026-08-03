@@ -13,9 +13,9 @@ default renhou_value, 0
 default renhou_han, !han
 
 on after_initialization do
-  add_rule("$value $han", "$name", "%{value} %{han} if as dealer, you win with your initial draw.", %{value: !tenhou_value, han: !tenhou_han, name: !tenhou_name})
+  add_rule("$value $han", "$name", "%{value} %{han} if as dealer, you win with your initial draw. Calls invalidate.", %{value: !tenhou_value, han: !tenhou_han, name: !tenhou_name})
   if !chiihou_is_tsumo do
-    add_rule("$value $han", "$name", "%{value} %{han} if as a non-dealer, you win with your initial draw.", %{value: !chiihou_value, han: !chiihou_han, name: !chiihou_name})
+    add_rule("$value $han", "$name", "%{value} %{han} if as a non-dealer, you win with your initial draw. Calls invalidate.", %{value: !chiihou_value, han: !chiihou_han, name: !chiihou_name})
   else
     add_rule("$value $han", "$name", "%{value} %{han} if you win on the dealer's first discard. Calls invalidate.", %{value: !chiihou_value, han: !chiihou_han, name: !chiihou_name})
   end

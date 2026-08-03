@@ -1002,7 +1002,7 @@ defmodule RiichiAdvanced.Constants do
         "base",
         "standard_wall", "framed_5z",
         "global_mods", "default_auto_buttons",
-        "chii", "pon", %{name: "kan", config: %{replace_from_dead_wall: false, hide_ankans: true}},
+        "chii", "pon", %{name: "kan", config: %{hide_ankans: true}},
         "riichi_call_style",
         %{name: "ron", config: %{scoring_key: "win"}},
         %{name: "tsumo", config: %{scoring_key: "win"}},
@@ -1045,7 +1045,7 @@ defmodule RiichiAdvanced.Constants do
         }},
         %{name: "yaku/menzenchin", config: %{name: "Concealed Hand", value: 1}},
         %{name: "yaku/menzentsumo", config: %{name: "Fully Concealed Hand", value: 2}},
-        %{name: "yaku/chiitoitsu", config: %{rules_tab: "5 Faan", name: "Seven Pairs", value: 5}},
+        %{name: "yaku/chiitoitsu", config: %{rules_tab: "5 Faan", name: "Seven Pairs", value: 5, kansai: false}},
         %{name: "yaku/kokushi", config: %{rules_tab: "20 Faan", name: "Thirteen Orphans", value: 20}},
         "bloody30faan",
       ]
