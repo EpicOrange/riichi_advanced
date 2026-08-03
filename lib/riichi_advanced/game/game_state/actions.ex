@@ -2011,7 +2011,6 @@ defmodule RiichiAdvanced.GameState.Actions do
               :number -> interpret_amount(state, context, Enum.at(opts, 1, 0))
               :string -> Enum.at(opts, 1, "")
             end
-            prev_amt = state.winners[context.seat][key]
             state = update_in(state.winners[context.seat][key], fn prev_value -> case method do
               :set      -> value
               :add      -> prev_value + value
