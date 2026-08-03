@@ -398,6 +398,12 @@ defmodule RiichiAdvanced.GameState.Kyoku do
       # trigger before_win before solving for jokers
       state = Actions.trigger_event(state, "before_win", %{seat: seat, winner_seat: seat, win_source: win_source, winning_tile: winning_tile})
 
+      # it's possible the winning tile was modified by before_win, so fetch it again
+      winning_tile = case get_winning_tile(state, seat, win_source) do
+        nil          -> winning_tile # this was tenhou, and we were assigned a winning tile
+        winning_tile -> winning_tile
+      end
+
       # obtain smt_hand and smt_calls after before_win runs
       #   because we may have run actions to modify the hand (e.g. by adding attributes)
       {smt_hand, smt_calls} = JokerSolver.get_smt_hand_calls(state.players[seat].hand, state.players[seat].calls, winning_tile)
