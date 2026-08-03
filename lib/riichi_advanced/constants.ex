@@ -551,7 +551,7 @@ defmodule RiichiAdvanced.Constants do
       ruleset: "riichi",
       mods: ["cosmic_base"],
       post_mods: ["yakuman_13_han"],
-      default_mods: ["cosmic", "space", "kontsu", "yaku/kontsu_yaku", "yaku/chanfuun", "yaku/fuunburi", "yaku/uumensai_cosmic", "cosmic_calls", "yaku/tsubame_gaeshi", "yaku/kanburi", "yaku/uumensai", "yaku/riichi_isshoku_sanjun", "yaku/riichi_isshoku_yonjun"],
+      default_mods: ["cosmic", "space", "kontsu", "yaku/kontsu_yaku", "yaku/chanfuun", "yaku/fuunburi", %{name: "yaku/uumensai", config: %{name: "Uumensai", value: 2}}, "yaku/uumensai_cosmic", "cosmic_calls", "yaku/tsubame_gaeshi", "yaku/kanburi", "yaku/riichi_isshoku_sanjun", "yaku/riichi_isshoku_yonjun"],
     },
     "nojokersmahjongleague" => %{
       display_name: "No Jokers Mahjong League 2024",

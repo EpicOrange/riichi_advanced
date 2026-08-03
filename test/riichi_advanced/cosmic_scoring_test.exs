@@ -23,7 +23,7 @@ defmodule RiichiAdvanced.CosmicScoringTest do
     # "kandora",
     "yaku/tsubame_gaeshi",
     "yaku/kanburi",
-    "yaku/uumensai",
+    %{name: "yaku/uumensai", config: %{name: "Uumensai", value: 2}},
     "yaku/riichi_isshoku_sanjun",
     %{name: "yaku/riichi_renhou", config: %{is: "Yakuman"}},
     "yaku/riichi_isshoku_yonjun",

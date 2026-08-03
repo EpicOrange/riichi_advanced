@@ -672,6 +672,9 @@ define_mod "yaku/shoutate", name: "Shoutate", desc: "Local yaku. \"Little Mixed 
 define_mod "yaku/choupaikou", name: "Choupaikou etc.", desc: "Local yaku. 2 han for having the pattern 111333555 (choupaikou), 111444777 (sujipaikou), or 111555999 (chousankou) in one suit. The pattern does not have to start with 1, but cannot wrap. 1 han if instead, all three triplets are in different suits."
 define_mod "yaku/suuzuukou", name: "Suuzuukou", desc: "Local yaku. \"Four Honor Triplets\". 2 han for having four honor tile triplets."
 define_mod "yaku/uumensai", name: "Uumensai", desc: "Local yaku. \"Five Suits Collected\". 2 han if your hand includes all five suits (character, circle, bamboo, wind, dragon)."
+config_mod "yaku/uumensai", name: "name", values: ["Uumensai"]
+config_mod "yaku/uumensai", name: "value", values: ["2"]
+config_mod "yaku/uumensai", name: "han", values: ["Han"]
 define_mod "yaku/sanpuukou", name: "Sanpuukou", desc: "Local yaku. \"Three Wind Triplets\". 2 han if you have three wind triplets."
 config_mod "yaku/sanpuukou", name: "shou_list", values: [""]
 config_mod "yaku/sanpuukou", name: "shou_name", values: [""]
@@ -1054,7 +1057,7 @@ define_preset "Just Like Modded Minecraft", [
   "yaku/shoutate",
   "yaku/choupaikou",
   "yaku/suuzuukou",
-  "yaku/uumensai",
+  %{name: "yaku/uumensai", config: %{name: "Uumensai", value: 2}},
   %{name: "yaku/sanpuukou", config: %{
     shou_list: "yaku", shou_name: "", shou_value: 0, shou_han: "Han",
     dai_list: "yaku", dai_name: "Big Three Winds", dai_value: 120, dai_han: "Han"
