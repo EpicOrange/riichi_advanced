@@ -8,7 +8,7 @@ default ryan_list, "yaku"
 default ryan_name, "Ryanpeikou"
 default ryan_value, 0
 default ryan_han, !han
-default closed_only, false
+default closed_only, true
 
 if !ii_value > 0 do
   on after_initialization do
@@ -34,9 +34,9 @@ if !ryan_value > 0 do
     update_rule("$value $han", !ryan_name, "%{example_hand}", %{value: !ryan_value, han: !ryan_han, example_hand: ~t"33445m33777p678s 5m"})
   end
   if !closed_only do
-    define_yaku !ryan_list, !ryan_name, [!ryan_value, !ryan_han], @closed_hand and match(["hand", "calls", "winning_tile"], ~m"exhaustive, iipeikou:1, mentsu:2, pair:1")
+    define_yaku !ryan_list, !ryan_name, [!ryan_value, !ryan_han], @closed_hand and match(["hand", "calls", "winning_tile"], ~m"exhaustive, iipeikou:2, pair:1")
   else
-    define_yaku !ryan_list, !ryan_name, [!ryan_value, !ryan_han], match(["hand", "calls", "winning_tile"], ~m"exhaustive, iipeikou:1, mentsu:2, pair:1")
+    define_yaku !ryan_list, !ryan_name, [!ryan_value, !ryan_han], match(["hand", "calls", "winning_tile"], ~m"exhaustive, iipeikou:2, pair:1")
   end
   if !ii_value > 0 do define_yaku_precedence !ryan_name, [!ii_name] end
 end

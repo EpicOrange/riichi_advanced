@@ -9,5 +9,5 @@ end
 
 apply initialize, "constants.closed_hand", has_no_call_named("chii", "pon", "daiminkan", "kakan")
 define_yaku !list, !name, [!value, !han], @closed_hand
-  and match(["hand", "calls", "winning_tile"], @standard_win)
+  and match(["hand", "calls", "winning_tile"], ["standard_win"])
   and ((won_by_draw and minipoints_equals(20)) or (not_won_by_draw and minipoints_equals(30)))

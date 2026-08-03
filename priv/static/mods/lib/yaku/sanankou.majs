@@ -48,7 +48,7 @@ if !suu_value > 0 do
     define_yaku !suu_list, !suu_name, [!suu_value, !suu_han],
       won_by_draw and match(["hand", "calls", "winning_tile"], ["suuankou_tsumo"])
     define_yaku !suu_tanki_list, !suu_tanki_name, [!suu_tanki_value, !suu_tanki_han],
-      match(["hand", "calls", "winning_tile"], ["suuankou_ron"]), [!san_name, !suu_name]
+      match(["hand", "calls"], ~m"(pon daiminkan kakan):-1, koutsu:4"), [!san_name, !suu_name]
   else
     define_yaku !suu_list, !suu_name, [!suu_value, !suu_han],
          (won_by_draw and match(["hand", "calls", "winning_tile"], ["suuankou_tsumo"]))

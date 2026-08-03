@@ -36,8 +36,8 @@ define_yaku riichi_yaku, !name, [!value, !han], status("riichi")
 define_yaku riichi_yaku, !double_name, [!double_value, !han], status("double_riichi")
 define_yaku_precedence !double_name, [!name]
  
-define_const chiitoitsu_tenpai_14, ~m"(nojoker quad):-1, (nojoker koutsu):-2, pair:6"
-define_match tenpai_14, +@standard_tenpai, +@chiitoitsu_tenpai_14, +@kokushi_tenpai
+define_match chiitoitsu_tenpai_14, ~m"(nojoker quad):-1, (nojoker koutsu):-2, pair:6"
+define_match tenpai_14, "standard_tenpai", "chiitoitsu_tenpai_14", "kokushi_tenpai"
 
 set display_riichi_sticks, true
 
@@ -76,6 +76,8 @@ apply append, "buttons.grand_cross.call_conditions", status_missing("riichi") or
 apply append, "buttons.ron.show_when", status_missing("just_reached")
 apply append, "buttons.chankan.show_when", status_missing("just_reached")
 apply append, "buttons.tsumo.show_when", status_missing("just_reached")
+
+on before_call do unset_status("just_reached") end
  
 def discard_passed, prepend: true do
   as last_discarder do

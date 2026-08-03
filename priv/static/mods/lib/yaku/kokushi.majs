@@ -23,11 +23,11 @@ on after_initialization do
   end
 end
 
-define_const kokushi_tenpai, ~m"unique, dismantle_calls, orphans_any:12, orphans_any:1"
-define_const kokushi_win, ~m"unique, dismantle_calls, orphans_any:13, orphans_any:1"
+define_match kokushi_tenpai, ~m"unique, dismantle_calls, orphans_any:12, orphans_any:1"
+define_match kokushi_win, ~m"unique, dismantle_calls, orphans_any:13, orphans_any:1"
 
-apply set_append, "tenpai_definition", +@kokushi_tenpai
-apply set_append, "win_definition", +@kokushi_win
+apply set_append, "tenpai_definition", ["kokushi_tenpai"]
+apply set_append, "win_definition", ["kokushi_win"]
 
 if !value > 0 do
   define_yaku !list, !name, [!value, !han], match(["hand", "winning_tile"], ~m"orphans_all:1")
