@@ -86,7 +86,7 @@ end
 
 define_const honba_mult, 3
 def finalize_score do
-  modify_winner("score", "total")
+  set_counter_all("before_modifiers", "total")
   as winners do
     riichi_stick_payment = pot
     if riichi_stick_payment > 0 do
@@ -122,4 +122,8 @@ define_scoring tsumo do
     total = round_up(total, 100) :: "Round up"
   end
   finalize_score
+end
+
+on after_win do
+  modify_winner("score", "before_modifiers")
 end
