@@ -261,10 +261,12 @@ defmodule RiichiAdvanced.ModLoader.ModState do
     state
   end
 
-  def extract_json(state) when state.ruleset_jq == [], do: state.ruleset_json
-  def extract_json(state) do
+  def extract_json(state, opts \\ [])
+  def extract_json(state, _opts) when state.ruleset_jq == [], do: state.ruleset_json
+  def extract_json(state, opts) do
     # apply any unapplied mods to get the final jq
     state = apply_mods(state)
+    use_cache = Keyword.get(opts, :no_cache) != true
 
     {applied_mods, jqs} = state.ruleset_jq |> Enum.reverse() |> Enum.unzip()
 
@@ -273,8 +275,10 @@ defmodule RiichiAdvanced.ModLoader.ModState do
       IO.puts("Extracting json after applying the following mods:")
       IO.inspect(applied_mods, limit: :infinity)
     end
-
-    state = case RiichiAdvanced.Cache.get({:cache_modloader, state.ruleset, applied_mods}) do
+    cache_result = if use_cache do
+      RiichiAdvanced.Cache.get({:cache_modloader, state.ruleset, applied_mods})
+    else {:ok, nil} end
+    state = case cache_result do
       {:ok, nil} ->
         if Debug.debug_cache() do
           IO.puts("Cache miss for ruleset #{state.ruleset}: #{length(applied_mods)} mods #{inspect(applied_mods, limit: :infinity)}")
@@ -296,7 +300,7 @@ defmodule RiichiAdvanced.ModLoader.ModState do
         ruleset_json = JQ.query_string_with_string!(state.ruleset_json, jq)
         state = %{state | ruleset_json: ruleset_json}
         # cache and return
-        if not Debug.skip_ruleset_caching() do
+        if not Debug.skip_ruleset_caching() and use_cache do
           if Debug.debug_cache() do
             IO.puts("Caching mods for ruleset #{state.ruleset}: #{length(applied_mods)} mods #{inspect(applied_mods, limit: :infinity)}")
           end

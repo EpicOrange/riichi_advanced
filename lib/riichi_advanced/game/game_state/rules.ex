@@ -405,7 +405,7 @@ defmodule RiichiAdvanced.GameState.Rules do
         default_mods = base_ruleset_state
         |> ModState.apply_mods()
         |> ModState.append_jq({nil, "(.default_mods? // [])"})
-        |> ModState.extract_json()
+        |> ModState.extract_json(no_cache: true)
         |> Jason.decode!()
         |> Enum.reject(fn mod -> ModLoader.get_mod_name(mod) in forbidden_mods or mod in forbidden_mods end)
         # |> IO.inspect(limit: :infinity, label: "default_mods")
