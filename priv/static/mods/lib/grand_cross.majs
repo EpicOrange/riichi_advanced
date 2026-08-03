@@ -10,6 +10,7 @@ define_button grand_cross,
     and not_just_discarded
     and not_just_called
     and status_missing("initial_flowers") # for default_flowers mod
+    and tile_not_drawn(-8)
     and self_call_available,
   call: [["1z", "2z", "3z"]],
   call_conditions: called_tile_contains(["4z"], 1),
@@ -34,6 +35,11 @@ apply append, "constants.no_auto_discard_buttons", ["grand_cross"]
 
 # grand cross counts as a set for match and SMT
 apply append, "set_definitions.mentsu", ~s"1z 2z 3z 4z"
+# but don't let riichi button appear if uncalled grand cross is in hand
+# (as that might mean zero discardable tiles for riichi)
+define_match grand_cross_not_riichi, ~m"(ton nan shaa pei):-1, grand_cross:1 | (ton nan shaa pei):1, grand_cross:1"
+apply append, "buttons.riichi.show_when", not_match(["hand"], ["grand_cross_not_riichi"])
+apply append, "buttons.open_riichi.show_when", not_match(["hand"], ["grand_cross_not_riichi"])
 
 # this 8 fu gets doubled by fu calculation since it's honors
 apply merge, "constants.calls_fu", %{grand_cross: 8}

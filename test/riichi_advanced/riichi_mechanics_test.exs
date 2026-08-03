@@ -379,7 +379,7 @@ defmodule RiichiAdvanced.RiichiMechanicsTest do
   end
 
   test "riichi - grand cross and nobekan count for sankantsu" do
-    TestUtils.test_yaku_advanced("riichi", ["nobekan", "grand_cross"], """
+    TestUtils.test_yaku_advanced("riichi", ["nobekan", "lib/grand_cross"], """
     {
       "starting_hand": {
         "east": ["1z", "2z", "3z", "4z", "7s", "8s", "9s", "7p", "7p", "7p", "5z", "6p", "6p"],
