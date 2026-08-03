@@ -3,8 +3,7 @@ use std::sync::OnceLock;
 use rustler::Atom;
 
 use crate::tile_table::{TILE_TABLE, ATOM_TABLE};
-use crate::types::{ANY_PRIME, ElixirTile, Prime, Tile, TileOrdering};
-use crate::utils::{get_tile_atom};
+use crate::types::{Prime, Tile, TileOrdering};
 
 static TO_PRIME: OnceLock<HashMap<Atom, Prime>> = OnceLock::new();
 static FROM_PRIME: OnceLock<HashMap<Prime, Atom>> = OnceLock::new();
@@ -63,13 +62,13 @@ pub fn is_jihai(tile: &Tile) -> bool {
   });
   jihau_primes_table.contains(&tile.0)
 }
-#[inline]
-pub fn is_any(tile: &ElixirTile) -> bool {
-  match to_prime(get_tile_atom(tile)) {
-    Some(prime) => prime == ANY_PRIME,
-    None => false,
-  }
-}
+// #[inline]
+// pub fn is_any(tile: &ElixirTile) -> bool {
+//   match to_prime(get_tile_atom(tile)) {
+//     Some(prime) => prime == ANY_PRIME,
+//     None => false,
+//   }
+// }
 
 // pub fn shift_suit(tile: &ElixirTile) -> Option<ElixirTile> {
 //   let shift_suit_table = SHIFT_SUIT.get_or_init(|| {
