@@ -70,7 +70,7 @@ define_yaku yaku, "Grand Cross", [1, "Han"], match(["calls"], ~m"grand_cross:4")
 
 apply append, "set_definitions.mentsu", ~s"1z 2z 3z 4z"
 
-define_yaku meta_yaku, "(grand cross override)", has_call_named("grand_cross"), [
+define_yaku meta_yaku, "(grand cross override)", [0, "Han"], has_call_named("grand_cross"), [
   "(grand cross override)",
   "Tanyao", "Honitsu", "Chanta", "Honroutou"
 ]
