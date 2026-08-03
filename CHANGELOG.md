@@ -24,6 +24,7 @@
     * Amerijong AI now calls tiles (sometimes)
     * Changed ao and kindora to award shuugi instead of 2/3 han
     * Changed error banner to be up top instead of some random text popping up
+    * Moved Zan Sanma from being a Kansai Sanma preset, to being its own variant in the main menu
     * Updated Vietnamese mahjong rules (more jokers, NFNL hands, progressive scoring, bouncing jokers) (Thanks @Dget!)
     * Version number in main menu now links to this changelog
   + Updates and fixes
@@ -52,7 +53,6 @@
     * Hand scorer is now accessible from the main menu
     * Invisible tiles no longer show up as a normal (flipped) tile to other players
     * Mostly fixed hand arrangement when you hover over a hand in the yaku screen
-    * Moved Zan Sanma from being a Kansai Sanma preset, to being its own variant
     * Rewrote riichi scoring since it was behaving strangely (e.g. showing score-after-honba as the hand score)
     * Score ledger now shows the LHS of most operations
     * Show Waits no longer fails to work with Cancellable Riichi mod

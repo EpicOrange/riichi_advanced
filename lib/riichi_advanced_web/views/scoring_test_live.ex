@@ -627,4 +627,9 @@ defmodule RiichiAdvancedWeb.ScoringTestLive do
     {:noreply, socket}
   end
 
+  # since we call `after_start` and that might call actions like `draw`
+  # which calls `GenServer.cast` with a message like `:calculate_playable_indices`
+  # we need this to handle the message (i.e. not crash)
+  def handle_cast(_msg, state), do: {:noreply, state}
+
 end
