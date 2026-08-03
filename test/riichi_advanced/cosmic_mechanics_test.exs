@@ -40,7 +40,6 @@ defmodule RiichiAdvanced.CosmicMechanicsTest do
     "yaku/fuunburi",
     "yaku/uumensai_cosmic",
     "kontsu",
-    "yakuman_13_han"
   ]
 
   test "cosmic - sequences wrap" do

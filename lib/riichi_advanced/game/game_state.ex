@@ -974,7 +974,7 @@ defmodule RiichiAdvanced.GameState do
     last_discarder = if last_discarder_action != nil do
       last_discarder_action.seat
     else
-      Utils.prev_turn(state.turn)
+      Utils.get_prev_player_turn(state.turn, state.available_seats)
     end
     Enum.at(state.players[last_discarder].discards, -1)
   end
@@ -1035,7 +1035,7 @@ defmodule RiichiAdvanced.GameState do
       state
     else
       # this branch is basically only used for tests, or by calculate_wait_label/3 below
-      last_discarder = Utils.prev_turn(state.turn)
+      last_discarder = Utils.get_prev_player_turn(state.turn, state.available_seats)
       state = update_in(state.players[last_discarder].discards, fn _ -> [fun.(:"4x")] end)
       state = update_in(state.players[last_discarder].pond, fn _ -> [fun.(:"4x")] end)
       state
@@ -1535,7 +1535,12 @@ defmodule RiichiAdvanced.GameState do
   end
 
   def handle_cast({:run_deferred_actions, context}, state) do 
-    state = Actions.run_deferred_actions(state, context)
+    # update first deferred action with context
+    state = update_in(state.players[context.seat].deferred_context_actions, fn
+      [] -> []
+      [{cxt, actions} | context_actions] -> [{Map.merge(cxt, context), actions} | context_actions]
+    end)
+    state = Actions.run_deferred_actions(state, context.seat)
     state = broadcast_state_change(state)
     {:noreply, state}
   end

@@ -232,7 +232,7 @@ define_button chanfuun,
 
 # clear kan/fuun status on discard passing
 apply prepend, "functions.discard_passed" do
-  as others do
+  as everyone do
     unset_status("kan", "fuun")
   end
 end

@@ -53,7 +53,7 @@ apply append, "buttons.tsumo.show_when", status_missing("just_reached")
 replace all, "functions.turn_cleanup", unset_status("furiten"), (if status_missing("riichi") do unset_status("furiten") end)
 
 apply prepend, "functions.discard_passed" do
-  as others do
+  as everyone do
     if status("just_reached") do
       place_riichi_stick
       enable_auto_button("_4_auto_discard")

@@ -61,7 +61,7 @@ defmodule RiichiAdvanced.YakuTest.SpeedTonpuuMechanics do
       %{"type" => "buttons_pressed", "buttons" => [%{"button" => "ron"}, nil, nil, nil]}
     ], %{
       east: %{
-        yaku: [{"Double Riichi", [2, "Han"]}, {"Ippatsu", [1, "Han", 1, "⛀"]}, {"Tanyao", [1, "Han"]}, {"Aka", [2, "Han", 2, "⛀"]}],
+        yaku: [{"Double Riichi", [2, "Han"]}, {"Ippatsu", [1, "Han", 1, "⛀"]}, {"Tanyao", [1, "Han"]}, {"Red Five", [2, "Han", 2, "⛀"]}],
         minipoints: 40
       },
     }, %{shuugi: [103, 97, 100, 100]})
@@ -86,7 +86,7 @@ defmodule RiichiAdvanced.YakuTest.SpeedTonpuuMechanics do
       %{"type" => "buttons_pressed", "buttons" => [%{"button" => "ron"}, nil, nil, nil]}
     ], %{
       east: %{
-        yaku: [{"Double Riichi", [2, "Han"]}, {"Ippatsu", [1, "Han", 1, "⛀"]}, {"Tanyao", [1, "Han"]}, {"Ao", [1, "Han", 2, "⛀"]}],
+        yaku: [{"Double Riichi", [2, "Han"]}, {"Ippatsu", [1, "Han", 1, "⛀"]}, {"Tanyao", [1, "Han"]}, {"Blue Seven", [1, "Han", 2, "⛀"]}],
         minipoints: 40
       },
     }, %{shuugi: [103, 97, 100, 100]})
@@ -111,7 +111,7 @@ defmodule RiichiAdvanced.YakuTest.SpeedTonpuuMechanics do
       %{"type" => "buttons_pressed", "buttons" => [%{"button" => "ron"}, nil, nil, nil]}
     ], %{
       east: %{
-        yaku: [{"Double Riichi", [2, "Han"]}, {"Ippatsu", [1, "Han", 1, "⛀"]}, {"Tanyao", [1, "Han"]}, {"Kin", [1, "Han", 1, "⛀"]}],
+        yaku: [{"Double Riichi", [2, "Han"]}, {"Ippatsu", [1, "Han", 1, "⛀"]}, {"Tanyao", [1, "Han"]}, {"Gold Five", [1, "Han", 1, "⛀"]}],
         minipoints: 40
       },
     }, %{shuugi: [102, 98, 100, 100]})
@@ -160,7 +160,7 @@ defmodule RiichiAdvanced.YakuTest.SpeedTonpuuMechanics do
       %{"type" => "buttons_pressed", "buttons" => [%{"button" => "ron"}, nil, nil, nil]}
     ], %{
       east: %{
-        yaku: [{"Kin", [1, "Han", 1, "⛀"]}],
+        yaku: [{"Gold Five", [1, "Han", 1, "⛀"]}],
         minipoints: 40
       },
     }, %{shuugi: [101, 99, 100, 100]})
@@ -184,7 +184,7 @@ defmodule RiichiAdvanced.YakuTest.SpeedTonpuuMechanics do
       %{"type" => "buttons_pressed", "buttons" => [%{"button" => "ron"}, nil, nil, nil]}
     ], %{
       east: %{
-        yaku: [{"Aka", [3, "⛀"]}, {"Ao", [6, "⛀"]}, {"Kin", [1, "⛀"]}, {"Ultimate All-Stars", [1, "★"]}],
+        yaku: [{"Red Five", [3, "⛀"]}, {"Blue Seven", [6, "⛀"]}, {"Gold Five", [1, "⛀"]}, {"Ultimate All-Stars", [1, "★"]}],
         minipoints: 40
       },
     }, %{shuugi: [120, 80, 100, 100]})
@@ -267,7 +267,7 @@ defmodule RiichiAdvanced.YakuTest.SpeedTonpuuMechanics do
       %{"type" => "buttons_pressed", "buttons" => [%{"button" => "tsumo"}, nil, nil, nil]}
     ], %{
       east: %{
-        yaku: [{"Ao", [2, "⛀"]}, {"Daisuushii", [2, "★"]}, {"Suukantsu", [2, "★"]}]
+        yaku: [{"Blue Seven", [2, "⛀"]}, {"Daisuushii", [2, "★"]}, {"Suukantsu", [2, "★"]}]
       }
     }, %{shuugi: [166, 78, 78, 78]})
   end
@@ -382,7 +382,7 @@ defmodule RiichiAdvanced.YakuTest.SpeedTonpuuMechanics do
       %{"type" => "buttons_pressed", "buttons" => [%{"button" => "tsumo"}, nil, nil, nil]}
     ], %{
       east: %{
-        yaku: [{"Kin", [1, "Han", 1, "⛀"]}, {"Shiro Pocchi", [1, "⛀"]}],
+        yaku: [{"Gold Five", [1, "Han", 1, "⛀"]}, {"Shiro Pocchi", [1, "⛀"]}],
         minipoints: 40
       }
     }, %{shuugi: [106, 98, 98, 98]})

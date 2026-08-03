@@ -1,7 +1,7 @@
 
 apply append, "wall", ~t"1234f"
 
-define extra_yaku, "Flower", ["flowers", "Han"], flowers >= 1
+define_yaku extra_yaku, "Flower", ["flowers", "Han"], flowers >= 1
 
 # replace pei call
 apply delete_key, "buttons", "flower"

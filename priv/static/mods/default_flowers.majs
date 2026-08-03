@@ -131,7 +131,7 @@ end
 on after_turn_change do
   # un-draw if we're still declaring flowers
   if !draw_after_flowers and status("initial_flowers") do
-    draw(-1)
+    uninterruptible_draw(-1)
   end
   # exit flower declaration stage
   if everyone_status("no_flowers") do

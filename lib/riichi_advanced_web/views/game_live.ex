@@ -1,5 +1,4 @@
 defmodule RiichiAdvancedWeb.GameLive do
-  alias RiichiAdvanced.Constants, as: Constants
   alias RiichiAdvanced.GameState, as: GameState
   alias RiichiAdvanced.GameState.Debug, as: Debug
   alias RiichiAdvanced.GameState.Game, as: Game

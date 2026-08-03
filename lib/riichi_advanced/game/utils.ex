@@ -195,6 +195,18 @@ defmodule RiichiAdvanced.Utils do
     end
     if iterations <= 0 do seat else prev_turn(prev, iterations - 1) end
   end
+
+  def get_prev_player_turn(turn, available_seats) do
+    for _ <- 1..4, reduce: prev_turn(turn) do
+      new_turn -> if new_turn in available_seats do new_turn else prev_turn(new_turn) end
+    end
+  end
+  
+  def get_next_player_turn(turn, available_seats) do
+    for _ <- 1..4, reduce: next_turn(turn) do
+      new_turn -> if new_turn in available_seats do new_turn else next_turn(new_turn) end
+    end
+  end
   
   @spec get_seat(
           :east | :kamicha | :north | :self | :shimocha | :south | :toimen | :west,

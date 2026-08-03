@@ -246,7 +246,7 @@ defmodule RiichiAdvanced.GameState.Marking do
       state = for seat <- state.available_seats, not Enum.empty?(state.marking[seat]), reduce: state do
         state ->
           # run actions, including the mark action that marks done
-          state = Actions.run_deferred_actions(state, %{seat: seat})
+          state = Actions.run_deferred_actions(state, seat)
           # only reset marking once the mark action marks it done
           if is_done?(state, seat) do
             state = Log.log(state, seat, :mark, %{marking: Log.encode_marking(state.marking[seat])})

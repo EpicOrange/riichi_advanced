@@ -39,8 +39,7 @@ defmodule RiichiAdvanced.YakuTest.CosmicYaku do
     "yaku/chanfuun",
     "yaku/fuunburi",
     "yaku/uumensai_cosmic",
-    "kontsu",
-    "yakuman_13_han"
+    "kontsu"
   ]
 
   test "cosmic - mini-sangen x2 should give ryandoukon instead of iipeikou" do

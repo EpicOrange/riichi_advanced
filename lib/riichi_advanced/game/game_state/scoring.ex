@@ -31,6 +31,10 @@ defmodule RiichiAdvanced.GameState.Scoring do
       minipoints: minipoints,
       existing_yaku: existing_yaku
     }
+
+    if Debug.debug_yaku() do
+      IO.puts("Going thru list #{yaku_list_name}: #{inspect(Enum.map(yaku_list, & &1["display_name"]), limit: :infinity)}")
+    end
     new_yaku = yaku_list
       |> Enum.filter(fn %{"when" => cond_spec} -> Conditions.check_cnf_condition(state, cond_spec, context) end)
       |> Enum.map(fn %{"display_name" => name, "value" => value} ->
@@ -75,6 +79,9 @@ defmodule RiichiAdvanced.GameState.Scoring do
     # returns {yaku, minipoints}
     score_rules = Rules.get(state.rules_ref, "score_calculation", %{})
     declare_only_yaku_list_names = Map.get(score_rules, "declare_only_yaku_lists", [])
+    if Debug.debug_yaku() do
+      IO.puts("Checking the following yaku lists: #{inspect(yaku_list_names)}")
+    end
     for yaku_list_name <- yaku_list_names, reduce: {[], 0} do
       {yaku, minipoints} ->
         if Rules.has_key?(state.rules_ref, yaku_list_name) do

@@ -50,7 +50,7 @@ defmodule RiichiAdvanced.ZanScoringTest do
     "kansai_no_furiten_riichi"
   ]
 
-  test "kansai - 1 han dealer tsumo" do
+  test "zan - 1 han dealer tsumo" do
     TestUtils.test_yaku_advanced("zan", @zan_mods, """
     {
       "starting_hand": {
@@ -73,7 +73,7 @@ defmodule RiichiAdvanced.ZanScoringTest do
     }, %{delta_scores: [2000, -1000, -1000], shuugi: [0, 0, 0]})
   end
 
-  test "kansai - 2 han dealer tsumo" do
+  test "zan - 2 han dealer tsumo" do
     TestUtils.test_yaku_advanced("zan", @zan_mods, """
     {
       "starting_hand": {
@@ -96,7 +96,7 @@ defmodule RiichiAdvanced.ZanScoringTest do
     }, %{delta_scores: [4000, -2000, -2000], shuugi: [0, 0, 0]})
   end
 
-  test "kansai - 3 han dealer tsumo" do
+  test "zan - 3 han dealer tsumo" do
     TestUtils.test_yaku_advanced("zan", @zan_mods, """
     {
       "starting_hand": {
@@ -119,7 +119,7 @@ defmodule RiichiAdvanced.ZanScoringTest do
     }, %{delta_scores: [6000, -3000, -3000], shuugi: [2, -1, -1]})
   end
 
-  test "kansai - 4 han dealer tsumo" do
+  test "zan - 4 han dealer tsumo" do
     TestUtils.test_yaku_advanced("zan", @zan_mods, """
     {
       "starting_hand": {
@@ -142,7 +142,7 @@ defmodule RiichiAdvanced.ZanScoringTest do
     }, %{delta_scores: [12000, -6000, -6000], shuugi: [4, -2, -2]})
   end
 
-  test "kansai - 1 han dealer ron" do
+  test "zan - 1 han dealer ron" do
     TestUtils.test_yaku_advanced("zan", @zan_mods, """
     {
       "starting_hand": {
@@ -164,7 +164,7 @@ defmodule RiichiAdvanced.ZanScoringTest do
     }, %{delta_scores: [2000, -2000, 0], shuugi: [0, 0, 0]})
   end
 
-  test "kansai - 2 han dealer ron" do
+  test "zan - 2 han dealer ron" do
     TestUtils.test_yaku_advanced("zan", @zan_mods, """
     {
       "starting_hand": {
@@ -186,7 +186,7 @@ defmodule RiichiAdvanced.ZanScoringTest do
     }, %{delta_scores: [3000, -3000, 0], shuugi: [1, -1, 0]})
   end
 
-  test "kansai - 3 han dealer ron" do
+  test "zan - 3 han dealer ron" do
     TestUtils.test_yaku_advanced("zan", @zan_mods, """
     {
       "starting_hand": {
@@ -208,7 +208,7 @@ defmodule RiichiAdvanced.ZanScoringTest do
     }, %{delta_scores: [6000, -6000, 0], shuugi: [1, -1, 0]})
   end
 
-  test "kansai - 4 han dealer ron" do
+  test "zan - 4 han dealer ron" do
     TestUtils.test_yaku_advanced("zan", @zan_mods, """
     {
       "starting_hand": {
@@ -230,7 +230,7 @@ defmodule RiichiAdvanced.ZanScoringTest do
     }, %{delta_scores: [12000, -12000, 0], shuugi: [2, -2, 0]})
   end
 
-  test "kansai - 1 han nondealer tsumo" do
+  test "zan - 1 han nondealer tsumo" do
     TestUtils.test_yaku_advanced("zan", @zan_mods, """
     {
       "starting_hand": {
@@ -254,7 +254,7 @@ defmodule RiichiAdvanced.ZanScoringTest do
     }, %{delta_scores: [-1000, 2000, -1000], shuugi: [0, 0, 0]})
   end
 
-  test "kansai - 2 han nondealer tsumo" do
+  test "zan - 2 han nondealer tsumo" do
     TestUtils.test_yaku_advanced("zan", @zan_mods, """
     {
       "starting_hand": {
@@ -278,7 +278,7 @@ defmodule RiichiAdvanced.ZanScoringTest do
     }, %{delta_scores: [-1000, 2000, -1000], shuugi: [0, 0, 0]})
   end
 
-  test "kansai - 3 han nondealer tsumo" do
+  test "zan - 3 han nondealer tsumo" do
     TestUtils.test_yaku_advanced("zan", @zan_mods, """
     {
       "starting_hand": {
@@ -302,7 +302,7 @@ defmodule RiichiAdvanced.ZanScoringTest do
     }, %{delta_scores: [-3000, 4000, -1000], shuugi: [-1, 2, -1]})
   end
 
-  test "kansai - 4 han nondealer tsumo" do
+  test "zan - 4 han nondealer tsumo" do
     TestUtils.test_yaku_advanced("zan", @zan_mods, """
     {
       "starting_hand": {
@@ -326,7 +326,7 @@ defmodule RiichiAdvanced.ZanScoringTest do
     }, %{delta_scores: [-5000, 8000, -3000], shuugi: [-2, 4, -2]})
   end
 
-  test "kansai - 1 han nondealer ron" do
+  test "zan - 1 han nondealer ron" do
     TestUtils.test_yaku_advanced("zan", @zan_mods, """
     {
       "starting_hand": {
@@ -349,7 +349,7 @@ defmodule RiichiAdvanced.ZanScoringTest do
     }, %{delta_scores: [0, 1000, -1000], shuugi: [0, 0, 0]})
   end
 
-  test "kansai - 2 han nondealer ron" do
+  test "zan - 2 han nondealer ron" do
     TestUtils.test_yaku_advanced("zan", @zan_mods, """
     {
       "starting_hand": {
@@ -372,7 +372,7 @@ defmodule RiichiAdvanced.ZanScoringTest do
     }, %{delta_scores: [0, 2000, -2000], shuugi: [0, 1, -1]})
   end
 
-  test "kansai - 3 han nondealer ron" do
+  test "zan - 3 han nondealer ron" do
     TestUtils.test_yaku_advanced("zan", @zan_mods, """
     {
       "starting_hand": {
@@ -395,7 +395,7 @@ defmodule RiichiAdvanced.ZanScoringTest do
     }, %{delta_scores: [0, 4000, -4000], shuugi: [0, 1, -1]})
   end
 
-  test "kansai - 4 han nondealer ron" do
+  test "zan - 4 han nondealer ron" do
     TestUtils.test_yaku_advanced("zan", @zan_mods, """
     {
       "starting_hand": {
@@ -418,7 +418,7 @@ defmodule RiichiAdvanced.ZanScoringTest do
     }, %{delta_scores: [0, 8000, -8000], shuugi: [0, 2, -2]})
   end
 
-  test "kansai - ippatsu awards shuugi" do
+  test "zan - ippatsu awards shuugi" do
     TestUtils.test_yaku_advanced("zan", @zan_mods, """
     {
       "starting_hand": {
@@ -441,7 +441,7 @@ defmodule RiichiAdvanced.ZanScoringTest do
     }, %{delta_scores: [13000, -12000, 0], shuugi: [1, -1, 0]})
   end
 
-  test "kansai - yakuman tsumo awards shuugi" do
+  test "zan - yakuman tsumo awards shuugi" do
     TestUtils.test_yaku_advanced("zan", @zan_mods, """
     {
       "starting_hand": {
@@ -460,7 +460,7 @@ defmodule RiichiAdvanced.ZanScoringTest do
     }, %{delta_scores: [48000, -24000, -24000], shuugi: [10, -5, -5]})
   end
 
-  test "kansai - yakuman ron awards shuugi" do
+  test "zan - yakuman ron awards shuugi" do
     TestUtils.test_yaku_advanced("zan", @zan_mods, """
     {
       "starting_hand": {
@@ -480,7 +480,7 @@ defmodule RiichiAdvanced.ZanScoringTest do
     }, %{delta_scores: [-32000, 32000, 0], shuugi: [-10, 10, 0]})
   end
 
-  test "kansai - end of game shuugi payments" do
+  test "zan - end of game shuugi payments" do
     TestUtils.test_yaku_advanced("zan", [%{name: "dora", config: %{start_indicators: 1}}] ++ @zan_mods, """
     {
       "starting_hand": {

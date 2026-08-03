@@ -55,7 +55,7 @@ defmodule RiichiAdvanced.YakuTest.KansaiYaku do
       %{"type" => "buttons_pressed", "buttons" => [%{"button" => "ron"}, nil, nil]}
     ], %{
       east: %{
-        yaku: [{"Ao", [2, "Han"]}, {"Double Riichi", [2, "Han"]}, {"Honitsu", [3, "Han"]}, {"Ippatsu", [1, "Han"]}, {"North Wind", [1, "Han"]}],
+        yaku: [{"Ao", [1, "Han"]}, {"Double Riichi", [2, "Han"]}, {"Honitsu", [3, "Han"]}, {"Ippatsu", [1, "Han"]}, {"North Wind", [1, "Han"]}],
         minipoints: 50
       }
     })

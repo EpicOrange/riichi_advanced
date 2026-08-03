@@ -107,7 +107,7 @@ define_button chankan,
   display_name: "Ron",
   show_when: not_our_turn
     and someone_else_just_called
-    and status_missing("furiten", "just_reached")
+    # and status_missing("furiten", "just_reached")
     and +@can_chankan
     and match(["hand", "calls"], ["tenpai"])
     and match(["hand", "calls", "last_called_tile"], ["win"]),

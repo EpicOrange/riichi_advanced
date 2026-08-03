@@ -297,19 +297,12 @@ defmodule RiichiAdvanced.GameState.Actions do
     # this action is called after playing a tile
     # it should trigger on_turn_change, so don't mark the turn change as via_action
     if state.game_active do
-      new_turn = if state.reversed_turn_order do Utils.prev_turn(state.turn) else Utils.next_turn(state.turn) end
-      new_turn = for _ <- 1..4, reduce: new_turn do
-        new_turn -> if new_turn in state.available_seats do
-          new_turn
-        else
-          if state.reversed_turn_order do Utils.prev_turn(new_turn) else Utils.next_turn(new_turn) end
-        end
-      end
+      new_turn = Utils.get_next_player_turn(state.turn, state.available_seats)
       state = change_turn(state, new_turn)
       state
     else
       # reschedule this turn change
-      schedule_actions(state, state.turn, [{%{seat: state.turn}, [["advance_turn"]]}])
+      schedule_actions_before(state, state.turn, [{%{seat: state.turn}, [["advance_turn"]]}])
     end
   end
 
@@ -2029,13 +2022,16 @@ defmodule RiichiAdvanced.GameState.Actions do
       {state, do_pause}
     else {state, false} end
 
-    if paused do
-      state = broadcast_state_change(state, false)
-      state
-    else
-      # if our action updates state, then we need to recalculate buttons
-      # this is so other players can react to certain actions
-      if not uninterruptible and Map.has_key?(state.interruptible_actions, action) do
+    cond do
+      paused ->
+        state = broadcast_state_change(state, false)
+        state
+      uninterruptible or not Map.has_key?(state.interruptible_actions, action) ->
+        state = for {context, actions} <- context_actions, reduce: state do
+          state -> _run_actions(state, actions, context)
+        end
+        state
+      true -> # interrupt
         state = if state.visible_screen != nil do
           # if viewing a win screen, never display buttons
           update_all_players(state, fn _seat, player -> %{ player | buttons: [], button_choices: %{}, call_buttons: %{}, choice: nil } end)
@@ -2043,6 +2039,7 @@ defmodule RiichiAdvanced.GameState.Actions do
           Buttons.recalculate_buttons(state, state.interruptible_actions[action])
         end
         buttons_after = Enum.map(state.players, fn {seat, player} -> {seat, player.buttons} end)
+
         # IO.puts("buttons_before: #{inspect(buttons_before)}")
         # IO.puts("buttons_after: #{inspect(buttons_after)}")
         if buttons_before == buttons_after or Buttons.no_buttons_remaining?(state) do
@@ -2058,12 +2055,6 @@ defmodule RiichiAdvanced.GameState.Actions do
           state = schedule_actions_before(state, context.seat, context_actions)
           state
         end
-      else
-        state =for {context, actions} <- context_actions, reduce: state do
-          state -> _run_actions(state, actions, context)
-        end
-        state
-      end
     end
   end
   defp _run_actions(state, [action | actions], context) do

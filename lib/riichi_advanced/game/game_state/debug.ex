@@ -4,6 +4,7 @@ defmodule RiichiAdvanced.GameState.Debug do
 
   @debug false
   @debug_status false
+  @debug_tsumogiri_bots false
   @debug_hands false
   @debug_fast_ai false
   @debug_saki_card_ours nil
@@ -14,17 +15,18 @@ defmodule RiichiAdvanced.GameState.Debug do
   @debug_specific_buttons %{east: []}
   @debug_conditions true
   @debug_ai false
-  @debug_tsumogiri_bots false
   @debug_log true
   @debug_tutorial false
+  @debug_yaku false
   @debug_yaku_precedence false
   @print_mods false
   @print_smt false
-  @skip_ruleset_caching false
+  @skip_ruleset_caching true
   @print_wins false
 
   def debug, do: Process.get(:ignore_type_error, @debug)
   def debug_status, do: Process.get(:ignore_type_error, @debug_status)
+  def debug_tsumogiri_bots, do: Process.get(:ignore_type_error, @debug_tsumogiri_bots)
   def debug_hands, do: Process.get(:ignore_type_error, @debug_hands)
   def debug_fast_ai, do: Process.get(:ignore_type_error, @debug_fast_ai)
   def debug_saki_card_ours, do: Process.get(:ignore_type_error, @debug_saki_card_ours)
@@ -35,9 +37,9 @@ defmodule RiichiAdvanced.GameState.Debug do
   def debug_specific_buttons, do: Process.get(:ignore_type_error, @debug_specific_buttons)
   def debug_conditions, do: Process.get(:ignore_type_error, @debug_conditions)
   def debug_ai, do: Process.get(:ignore_type_error, @debug_ai)
-  def debug_tsumogiri_bots, do: Process.get(:ignore_type_error, @debug_tsumogiri_bots)
   def debug_log, do: Process.get(:ignore_type_error, @debug_log)
   def debug_tutorial, do: Process.get(:ignore_type_error, @debug_tutorial)
+  def debug_yaku, do: Process.get(:ignore_type_error, @debug_yaku)
   def debug_yaku_precedence, do: Process.get(:ignore_type_error, @debug_yaku_precedence)
   def print_mods, do: Process.get(:ignore_type_error, @print_mods)
   def print_smt, do: Process.get(:ignore_type_error, @print_smt)
@@ -45,15 +47,23 @@ defmodule RiichiAdvanced.GameState.Debug do
   def skip_ruleset_caching, do: Process.get(:ignore_type_error, @skip_ruleset_caching)
 
   def set_wall(wall) do
-    # wall = List.replace_at(wall, 39, :"6z") # first draw (sanma)
-    # wall = List.replace_at(wall, 40, :"6z")
-    # wall = List.replace_at(wall, 41, :"7z")
-    # wall = List.replace_at(wall, 42, :"8s")
-    wall = List.replace_at(wall, 52, :"1m") # first draw
-    wall = List.replace_at(wall, 53, :"5m")
-    wall = List.replace_at(wall, 54, :"5m")
-    wall = List.replace_at(wall, 55, :"5m")
-    wall = List.replace_at(wall, 56, :"5m") # second draw
+    wall = List.replace_at(wall, 39, :"6z") # first draw (sanma)
+    wall = List.replace_at(wall, 40, :"4z")
+    wall = List.replace_at(wall, 41, :"7z")
+    wall = List.replace_at(wall, 42, :"8s")
+    # wall = List.replace_at(wall, 43, :"6z") # second draw (sanma)
+    # wall = List.replace_at(wall, 44, :"6z")
+    # wall = List.replace_at(wall, 45, :"7z")
+    # wall = List.replace_at(wall, 46, :"8s")
+    # wall = List.replace_at(wall, 47, :"6z") # third draw (sanma)
+    # wall = List.replace_at(wall, 48, :"6z")
+    # wall = List.replace_at(wall, 49, :"7z")
+    # wall = List.replace_at(wall, 50, :"8s")
+    # wall = List.replace_at(wall, 52, :"1m") # first draw
+    # wall = List.replace_at(wall, 53, :"4m")
+    # wall = List.replace_at(wall, 54, :"4m")
+    # wall = List.replace_at(wall, 55, :"4m")
+    # wall = List.replace_at(wall, 56, :"5s") # second draw
     # wall = List.replace_at(wall, 57, :"5m")
     # wall = List.replace_at(wall, 58, :"1m")
     # wall = List.replace_at(wall, 59, :"1m")
@@ -98,7 +108,7 @@ defmodule RiichiAdvanced.GameState.Debug do
     # wall = List.replace_at(wall, 41, :"9p")
     # wall = List.replace_at(wall, 42, :"6m") # second draw (malaysian)
     # wall = List.replace_at(wall, -6, :"6m") # first dora indicator
-    # wall = List.replace_at(wall, -8, :"2p") # second dora indicator
+    wall = List.replace_at(wall, -8, :"0s") # second dora indicator
     # wall = List.replace_at(wall, -10, :"8s") # third dora indicator
     # wall = List.replace_at(wall, -12, :"2p") # fourth dora indicator
     # wall = List.replace_at(wall, -14, :"2p") # fifth dora indicator
@@ -120,7 +130,7 @@ defmodule RiichiAdvanced.GameState.Debug do
               :north => Utils.sort_tiles(Enum.slice(wall, 39..51))}
 
     # testing hand
-    hands = %{:east  => Utils.sort_tiles([:"2p", :"3p", :"4p", :"5m", :"5m", :"0j", :"1s", :"2s", :"3s", :"4z", :"4z", :"6s", :"7s"]),
+    hands = %{:east  => Utils.sort_tiles([:"2p", :"3p", :"4p", :"5m", :"5m", :"5m", :"1s", :"2s", :"3s", :"4z", :"4z", :"7s", :"7s"]),
               :south => Enum.slice(wall, 13..25),
               :west  => Enum.slice(wall, 26..38),
               :north => Enum.slice(wall, 39..51)}

@@ -458,10 +458,10 @@ on after_turn_change do
     pause(1000)
     ryuukyoku
   else
+    if not_game_start do
+      discard_passed
+    end
     draw
-  end
-  if not_game_start do
-    discard_passed
   end
 end
 

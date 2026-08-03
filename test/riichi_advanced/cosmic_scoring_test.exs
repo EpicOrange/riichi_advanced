@@ -40,7 +40,6 @@ defmodule RiichiAdvanced.CosmicScoringTest do
     "yaku/fuunburi",
     "yaku/uumensai_cosmic",
     "kontsu",
-    "yakuman_13_han"
   ]
 
   test "cosmic - 18 han is haneyakuman" do
