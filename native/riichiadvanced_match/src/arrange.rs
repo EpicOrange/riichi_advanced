@@ -201,7 +201,7 @@ fn arrange(
   let base_tiles = get_base_tiles(match_info, &win_definitions.clone().into_iter().flatten().collect());
   // println!("base_tiles={:?}", decode_tiles(&base_tiles, &match_info.all_attrs));
 
-  let (remaining_hand, groups_removed) = _arrange(hand, &calls, vec!(), &groups_to_remove, 0, &base_tiles, &win_definitions, match_info);
+  let (remaining_hand, groups_removed) = _arrange(hand, &calls, vec!(), &groups_to_remove, 0, &base_tiles, &win_definitions, match_info, 0);
 
   let mut ret = smallvec!(remaining_hand);
   // convert groups to tilesets
@@ -238,12 +238,13 @@ fn _arrange(
   i: usize,
   base_tiles: &BaseTileVec,
   win_definitions: &MatchDefinitions,
-  match_info: &mut MatchInfo
+  match_info: &mut MatchInfo,
+  depth: u8
 ) -> (TileSet, Vec<TileSet>) {
   if i >= groups.len() { return (hand, removed); }
 
   // initialize to best result of removing nothing at this step
-  let mut best = _arrange(hand.clone(), calls, removed.clone(), groups, i + 1, base_tiles, win_definitions, match_info);
+  let mut best = _arrange(hand.clone(), calls, removed.clone(), groups, i + 1, base_tiles, win_definitions, match_info, depth);
   let mut best_len = best.0.attrs.len();
 
   // compare with removing a group in every possible way
@@ -255,10 +256,10 @@ fn _arrange(
     let mut removed2 = removed.clone();
     removed2.extend(new_calls);
     
-    // prune this possibility if we can't make a winning hand with it
-    if !is_valid_arrangement((new_hand.clone(), removed2.clone()), calls.clone(), win_definitions, match_info) { continue; }
+    // for the first group only, prune this possibility if we can't make a winning hand with it
+    if depth == 0 && !is_valid_arrangement((new_hand.clone(), removed2.clone()), calls.clone(), win_definitions, match_info) { continue; }
 
-    let next = _arrange(new_hand.clone(), calls, removed2, groups, i, base_tiles, win_definitions, match_info);
+    let next = _arrange(new_hand.clone(), calls, removed2, groups, i, base_tiles, win_definitions, match_info, depth + 1);
     if best_len > next.0.attrs.len() {
       best_len = next.0.attrs.len();
       best = next;
