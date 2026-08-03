@@ -126,13 +126,9 @@ defmodule RiichiAdvanced.Parser do
   def parse_match(match_spec) when is_binary(match_spec) do
     for match_definition <- String.split(match_spec, "|") |> Enum.map(&String.trim/1) do
       items = String.split(match_definition, ",", trim: true) |> Enum.map(&String.trim/1)
-      if "american" in items do
-        {:ok, Enum.find(items, & &1 != "american")}
-      else
-        for item <- items do
-          if item not in @match_keywords do parse_group(item) else {:ok, item} end
-        end |> Utils.sequence()
-      end
+      for item <- items do
+        if item not in @match_keywords do parse_group(item) else {:ok, item} end
+      end |> Utils.sequence()
     end |> Utils.sequence()
   end
 
