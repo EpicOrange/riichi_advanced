@@ -309,7 +309,7 @@ defmodule RiichiAdvanced.GameState.Kyoku do
     # trigger before_conclusion actions
     state = Actions.trigger_event(state, "before_conclusion", %{seat: state.turn})
 
-    IO.puts("Game concluded")
+    # IO.puts("Game concluded")
     state = Map.put(state, :visible_screen, :game_end)
     state
   end

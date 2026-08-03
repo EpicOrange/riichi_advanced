@@ -7,42 +7,42 @@ def calculate_base_score, prepend: true do
   if total == 0 and points >= 104 do
     total = points :: "Han"
     total = 64000 :: "Octuple Yakuman base"
-    modify_winner("score_name", "Octuple Yakuman")
+    modify_winner("score_name", "Octuple Yakuman", as: "winner")
   end
   if total == 0 and points >= 91 do
     total = points :: "Han"
     total = 56000 :: "Septuple Yakuman base"
-    modify_winner("score_name", "Septuple Yakuman")
+    modify_winner("score_name", "Septuple Yakuman", as: "winner")
   end
   if total == 0 and points >= 78 do
     total = points :: "Han"
     total = 48000 :: "Sextuple Yakuman base"
-    modify_winner("score_name", "Sextuple Yakuman")
+    modify_winner("score_name", "Sextuple Yakuman", as: "winner")
   end
   if total == 0 and points >= 65 do
     total = points :: "Han"
     total = 40000 :: "Quintuple Yakuman base"
-    modify_winner("score_name", "Quintuple Yakuman")
+    modify_winner("score_name", "Quintuple Yakuman", as: "winner")
   end
   if total == 0 and points >= 52 do
     total = points :: "Han"
     total = 32000 :: "Quadruple Yakuman base"
-    modify_winner("score_name", "Quadruple Yakuman")
+    modify_winner("score_name", "Quadruple Yakuman", as: "winner")
   end
   if total == 0 and points >= 39 do
     total = points :: "Han"
     total = 24000 :: "Triple Yakuman base"
-    modify_winner("score_name", "Triple Yakuman")
+    modify_winner("score_name", "Triple Yakuman", as: "winner")
   end
   if total == 0 and points >= 26 do
     total = points :: "Han"
     total = 16000 :: "Double Yakuman base"
-    modify_winner("score_name", "Double Yakuman")
+    modify_winner("score_name", "Double Yakuman", as: "winner")
   end
   if total == 0 and points >= 18 do
     total = points :: "Han"
     total = 12000 :: "Haneyakuman base"
-    modify_winner("score_name", "Haneyakuman")
+    modify_winner("score_name", "Haneyakuman", as: "winner")
   end
 end
 

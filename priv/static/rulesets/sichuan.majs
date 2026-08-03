@@ -249,11 +249,12 @@ define_scoring win do
     true        -> total = 1 :: "0 Fan → 1 pts"
   end
   if status("do_noten_payments") do
-    modify_winner("score_name", "Draw")
+    modify_winner("score_name", "Draw", as: "winner")
   else
     if won_by_draw do total += 1 :: "Self-draw bonus" end
   end
-  modify_winner("score", total)
+  set_counter_all("total", "total")
+  modify_winner("score", total, as: "winner")
   if not_anyone_status("first_winner") do
     set_status("first_winner", as: "winner") # will be next dealer
   end

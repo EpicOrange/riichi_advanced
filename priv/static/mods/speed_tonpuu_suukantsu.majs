@@ -18,7 +18,7 @@ define_button suukantsu,
     set_status("suukantsu_rinshan")
     pause(1000)
     reveal_hand
-    win_by_draw
+    win_by_draw("tsumo")
   end
 
 if defined("shuugi") do

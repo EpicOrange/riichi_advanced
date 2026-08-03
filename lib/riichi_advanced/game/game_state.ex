@@ -626,7 +626,9 @@ defmodule RiichiAdvanced.GameState do
       if Enum.frequencies(wall) != Enum.frequencies(wall_tiles) do
         missing = wall_tiles -- wall
         extra = wall -- wall_tiles
-        IO.puts("Warning: rigged wall:\n- is missing these tiles: #{inspect(missing)}\n- is extra these tiles: #{inspect(extra)}")
+        if length(missing) < 20 or length(extra) < 20 do
+          IO.puts("Warning: rigged wall:\n- is missing these tiles: #{inspect(missing)}\n- is extra these tiles: #{inspect(extra)}")
+        end
       end
 
       # distribute haipai
