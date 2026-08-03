@@ -172,7 +172,7 @@ define_match singles_win,
   ~a"2024a NN EW SS 2024b"
 
 define_match win, "open_win", "concealed_win", "singles_win"
-define_const concealed, has_no_call_named("am_pung", "am_kong", "am_quint")
+define_const concealed, has_no_call_named("am_pung", "am_kong", "am_quint", "am_sextet")
 
 define_yaku yaku, "2024", [25, "Pts"], match(["hand", "call_tiles", "winning_tile"], ~a"222a 000 2222b 4444b")
 define_yaku yaku, "2024", [25, "Pts"], match(["hand", "call_tiles", "winning_tile"], ~a"FFFF 2222a 0000 24b")
@@ -604,8 +604,8 @@ define_button abort_during_charleston,
 define_button "1_am_pung",
   display_name: "Pung",
   show_when: status_missing("match_start", "dead_hand") and not_our_turn and not_no_tiles_remaining and someone_else_just_discarded and call_available,
-  precedence_over: ["am_pung", "am_kong", "am_quint"],
-  call: [[0, 0]],
+  precedence_over: ["am_pung", "am_kong", "am_quint", "am_sextet"],
+  call: [[0, 0], ["1f", "1f"]],
   call_name: "am_pung",
   call_conditions: hand_length_at_least(3)
     and not_called_tile_contains(["1j"], 1)
@@ -620,8 +620,8 @@ define_button "1_am_pung",
 define_button "2_am_kong",
   display_name: "Kong",
   show_when: status_missing("match_start", "dead_hand") and not_our_turn and not_no_tiles_remaining and someone_else_just_discarded and call_available,
-  precedence_over: ["am_pung", "am_kong", "am_quint"],
-  call: [[0, 0, 0]],
+  precedence_over: ["am_pung", "am_kong", "am_quint", "am_sextet"],
+  call: [[0, 0, 0], ["1f", "1f", "1f"]],
   call_name: "am_kong",
   call_conditions: hand_length_at_least(4)
     and not_called_tile_contains(["1j"], 1)
@@ -635,8 +635,8 @@ define_button "2_am_kong",
 define_button "3_am_quint",
   display_name: "Quint",
   show_when: status_missing("match_start", "dead_hand") and not_our_turn and not_no_tiles_remaining and someone_else_just_discarded and call_available,
-  precedence_over: ["am_pung", "am_kong", "am_quint"],
-  call: [[0, 0, 0, 0]],
+  precedence_over: ["am_pung", "am_kong", "am_quint", "am_sextet"],
+  call: [[0, 0, 0, 0], ["1f", "1f", "1f", "1f"]],
   call_name: "am_quint",
   call_conditions: hand_length_at_least(5)
     and not_called_tile_contains(["1j"], 1)
@@ -660,7 +660,7 @@ define_button am_joker_swap,
 define_button mahjong_heavenly,
   display_name: "Mah Jongg",
   show_when: status("heavenly_available", "charleston_left") and our_turn and is_tenpai_american and match(["hand", "call_tiles", "draw"], ["win"]),
-  precedence_over: ["am_pung", "am_kong", "am_quint", "abort_during_charleston"]
+  precedence_over: ["am_pung", "am_kong", "am_quint", "am_sextet", "abort_during_charleston"]
   do
     big_text("Mah Jongg")
     pause(1000)
@@ -671,8 +671,8 @@ define_button mahjong_heavenly,
 define_button mahjong_draw,
   display_name: "Mah Jongg",
   show_when: status_missing("match_start", "dead_hand") and our_turn and has_draw and is_tenpai_american
-      and (match(["hand", "call_tiles", "draw"], ["open_win"]) or (has_no_call_named("am_pung", "am_kong", "am_quint") and match(["hand", "call_tiles", "draw"], ["win"]))),
-  precedence_over: ["am_pung", "am_kong", "am_quint"]
+      and (match(["hand", "call_tiles", "draw"], ["open_win"]) or (has_no_call_named("am_pung", "am_kong", "am_quint", "am_sextet") and match(["hand", "call_tiles", "draw"], ["win"]))),
+  precedence_over: ["am_pung", "am_kong", "am_quint", "am_sextet"]
   do
     big_text("Mah Jongg")
     pause(1000)
@@ -684,8 +684,8 @@ define_button mahjong_discard,
   display_name: "Mah Jongg",
   show_when: status_missing("match_start", "dead_hand") and not_our_turn and not_just_discarded and someone_else_just_discarded and is_tenpai_american
       and not_match(["last_discard"], ~m"1j:1")
-      and (match(["hand", "call_tiles", "last_discard"], ["open_win"]) or (has_no_call_named("am_pung", "am_kong", "am_quint") and match(["hand", "call_tiles", "last_discard"], ["win"]))),
-  precedence_over: ["am_pung", "am_kong", "am_quint", "mahjong_discard"]
+      and (match(["hand", "call_tiles", "last_discard"], ["open_win"]) or (has_no_call_named("am_pung", "am_kong", "am_quint", "am_sextet") and match(["hand", "call_tiles", "last_discard"], ["win"]))),
+  precedence_over: ["am_pung", "am_kong", "am_quint", "am_sextet", "mahjong_discard"]
   do
     big_text("Mah Jongg")
     pause(1000)

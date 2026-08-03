@@ -189,7 +189,7 @@
 # The 2026 Card includes hands with a Sextet, so we have to implement that here:
 .buttons."4_am_sextet" = {
     "display_name": "Sextet",
-    "call": [[0, 0, 0, 0, 0]],
+    "call": [[0, 0, 0, 0, 0], ["1f", "1f", "1f", "1f", "1f"]],
     "call_name": "am_sextet",
     "call_conditions": [
       {"name": "hand_length_at_least", "opts": [6]},
