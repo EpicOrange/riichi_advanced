@@ -27,6 +27,7 @@ defmodule RiichiAdvancedWeb.RoomLive do
     |> assign(:messages_state, nil)
     |> assign(:symbols, %{east: "東", south: "南", west: "西", north: "北"})
     |> assign(:state, %Room{})
+    |> assign(:ruleset_json, "{}")
     |> assign(:root_pid, socket.root_pid)
     if connected?(socket) do
       # start a new room process, if it doesn't exist already
@@ -221,7 +222,7 @@ defmodule RiichiAdvancedWeb.RoomLive do
       <.live_component module={RiichiAdvancedWeb.MessagesComponent} id="messages" messages={@messages} messages_state={@messages_state} lang={@lang} />
       <div class="ruleset">
         <div class="ruleset-text"><%= t(@lang, "Ruleset:") %></div>
-        <textarea readonly><%= Rules.get(@state.rules_ref, :ruleset_json) %></textarea>
+        <textarea readonly><%= @ruleset_json %></textarea>
       </div>
     </div>
     """
@@ -335,6 +336,14 @@ defmodule RiichiAdvancedWeb.RoomLive do
       socket = assign(socket, :state, state)
       socket = if state.started do vacate_room(socket) else socket end
       {:noreply, socket}
+    else
+      {:noreply, socket}
+    end
+  end
+
+  def handle_info(%{topic: topic, event: "rules_updated", payload: %{"rules_ref" => rules_ref}}, socket) do
+    if topic == (socket.assigns.ruleset <> "-room:" <> socket.assigns.room_code) do
+      {:noreply, assign(socket, :ruleset_json, Rules.get(rules_ref, :ruleset_json, "{}"))}
     else
       {:noreply, socket}
     end

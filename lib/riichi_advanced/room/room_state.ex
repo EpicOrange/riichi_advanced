@@ -57,7 +57,6 @@ defmodule RiichiAdvanced.RoomState do
     defstruct [
       # params
       ruleset: nil,
-      ruleset_json: nil,
       room_code: nil,
       # pids
       supervisor: nil,
@@ -88,6 +87,7 @@ defmodule RiichiAdvanced.RoomState do
       textarea_deltas: [[Delta.Op.insert(@initial_textarea)]],
       textarea_delta_uuids: [[]],
       textarea_version: 0,
+      scoring_test: false,
     ]
   end
 
@@ -110,7 +110,6 @@ defmodule RiichiAdvanced.RoomState do
     [{exit_monitor, _}] = Utils.registry_lookup("exit_monitor_room", state.ruleset, state.room_code)
 
     # read in the last cached ruleset
-
     ruleset_json = case RiichiAdvanced.Cache.get({:cache_rulesets, state.room_code}) do
       {:ok, nil} when state.ruleset == "custom" -> Room.initial_textarea()
       {:ok, nil} -> ModState.load_ruleset(state.ruleset, state.room_code) |> ModState.extract_json()
@@ -153,7 +152,6 @@ defmodule RiichiAdvanced.RoomState do
       available_seats: available_seats,
       seats: Map.new(available_seats, &{&1, nil}),
       ruleset: state.ruleset,
-      ruleset_json: ruleset_json,
       room_code: state.room_code,
       rules_ref: rules_ref,
       error: state.error,
@@ -337,6 +335,13 @@ defmodule RiichiAdvanced.RoomState do
     state
   end
 
+  def broadcast_rules_change(state) do
+    # IO.puts("broadcast_rules_change called")
+    topic = if state.scoring_test do "scoringtest" else state.ruleset end
+    RiichiAdvancedWeb.Endpoint.broadcast(topic <> "-room:" <> state.room_code, "rules_updated", %{"rules_ref" => state.rules_ref})
+    state
+  end
+
   def broadcast_textarea_change(state, {from_version, version, uuids, deltas}) do
     # IO.puts("broadcast_textarea_change called")
     if version > from_version do
@@ -421,20 +426,20 @@ defmodule RiichiAdvanced.RoomState do
     {:reply, :ok, state}
   end
 
-  def update_rules_task(state) do
+  def update_rules_task(state, self) do
     ruleset_json = ModState.load_ruleset(state.ruleset, state.room_code)
     |> ModState.prepend_mods(get_enabled_mods(state))
     |> ModState.extract_json()
     # we do not need to add config here
-
     # parse the ruleset
     case Rules.load_rules(ruleset_json, state.ruleset) do
       {:ok, rules_ref} ->
+        :ets.setopts(rules_ref, {:heir, self, :no_extra_info})
         game_state = %Game{rules_ref: rules_ref, rules_text: %{}, rules_text_order: [], game_active: true}
         |> Actions.trigger_event("after_initialization", %{seat: :east})
+        # the return value will be handled in handle_info for :load_rules below
+        # scoringtest will ignore this, instead doing everything after inheriting the ets table instead
         {:load_rules, %{
-          ruleset_json: ruleset_json,
-          rules_ref: state.rules_ref,
           rules_text: game_state.rules_text,
           rules_text_order: game_state.rules_text_order,
         }}
@@ -447,7 +452,8 @@ defmodule RiichiAdvanced.RoomState do
   def start_update_rules_task(state) do
     if state.ruleset != "custom" do
       if state.rules_pid != nil do Task.shutdown(state.rules_pid, 5000) end
-      state = Map.put(state, :rules_pid, Task.async(fn -> update_rules_task(state) end))
+      self = self()
+      state = Map.put(state, :rules_pid, Task.async(fn -> update_rules_task(state, self) end))
       state
     else state end
   end
@@ -465,6 +471,16 @@ defmodule RiichiAdvanced.RoomState do
     if pid == state.rules_pid do
       {:noreply, Map.put(state, :rules_pid, nil)}
     else {:noreply, state} end
+  end
+
+  # :"ETS-TRANSFER" is sent when we inherit a new rules_ref
+  def handle_info({:"ETS-TRANSFER", rules_ref, _from_pid, _extra}, state) do
+    # IO.puts("Dropping old rules_ref (length #{String.length(Rules.get(state.rules_ref, :ruleset_json, "{}"))})")
+    if state.rules_ref != nil do :ets.delete(state.rules_ref) end
+    state = %{state | rules_ref: rules_ref}
+    # IO.puts("Adding new rules_ref (length #{String.length(Rules.get(state.rules_ref, :ruleset_json, "{}"))})")
+    state = broadcast_rules_change(state)
+    {:noreply, state}
   end
 
   def handle_info(msg, state) do

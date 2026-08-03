@@ -1,16 +1,15 @@
 defmodule RiichiAdvancedWeb.ScoringTestLive do
-  alias RiichiAdvanced.Constants, as: Constants
-  alias RiichiAdvanced.GameState, as: GameState
-  alias RiichiAdvanced.GameState.Actions, as: Actions
-  alias RiichiAdvanced.GameState.Game, as: Game
-  alias RiichiAdvanced.GameState.Kyoku, as: Kyoku
-  alias RiichiAdvanced.GameState.Player, as: Player
-  alias RiichiAdvanced.GameState.Rules, as: Rules
-  alias RiichiAdvanced.GameState.Scoring, as: Scoring
-  alias RiichiAdvanced.ModLoader, as: ModLoader
-  alias RiichiAdvanced.ModLoader.ModState, as: ModState
-  alias RiichiAdvanced.RoomState, as: RoomState
-  alias RiichiAdvanced.Utils, as: Utils
+  alias RiichiAdvanced.Constants
+  alias RiichiAdvanced.GameState
+  alias RiichiAdvanced.GameState.Actions
+  alias RiichiAdvanced.GameState.Game
+  alias RiichiAdvanced.GameState.Kyoku
+  alias RiichiAdvanced.GameState.Player
+  alias RiichiAdvanced.GameState.Rules
+  alias RiichiAdvanced.GameState.Scoring
+  alias RiichiAdvanced.ModLoader
+  alias RiichiAdvanced.RoomState
+  alias RiichiAdvanced.Utils
   use RiichiAdvancedWeb, :live_view
   import RiichiAdvancedWeb.Translations
 
@@ -50,6 +49,14 @@ defmodule RiichiAdvancedWeb.ScoringTestLive do
       mutex: nil,
       smt_solver: nil,
     })
+    |> assign(:room_state, %{
+      scoring_test: true,
+      ruleset: "riichi",
+      mods: %{},
+      categories: [],
+      room_code: "",
+      rules_pid: nil,
+    })
     |> assign(:ruleset, nil)
     |> assign(:ruleset_json, nil)
     |> assign(:yaku, [])
@@ -66,16 +73,18 @@ defmodule RiichiAdvancedWeb.ScoringTestLive do
     |> assign(:call_buttons, %{})
     |> assign(:selected_call_button, nil)
     |> assign(:rules_ref, nil)
+    |> assign(:ruleset_json, "{}")
     # |> assign(:hand, [:"4m", :"2m", :"3m", :"4p", :"4p", :"4p", :"5p", :"6p", :"7p", :"3s", :"4s", :"2s", :"2s", :"2s"])
 
     if connected?(socket) do
       uuid = Ecto.UUID.generate()
+      socket = assign(socket, :uuid, uuid)
       {:ok, _pid} = Mutex.start_link(name: Utils.via_registry("mutex", "scoringtest", uuid))
       {:ok, _pid} = ExSMT.Solver.start_link(name: Utils.via_registry("smt_solver", "scoringtest", uuid), room_code: uuid, ruleset: "scoringtest")
       [{mutex, _}] = Utils.registry_lookup("mutex", "scoringtest", uuid)
       [{smt_solver, _}] = Utils.registry_lookup("smt_solver", "scoringtest", uuid)
+      socket = switch_to_ruleset(socket, Map.get(params, "ruleset", "riichi"))
       socket = assign(socket, :state, %{ socket.assigns.state | mutex: mutex, smt_solver: smt_solver })
-      switch_to_ruleset(socket, Map.get(params, "ruleset", "riichi")) |> reload_ruleset()
       messages_init = RiichiAdvanced.MessagesState.link_player_socket(socket.root_pid, socket.assigns.session_id)
       socket = if Map.has_key?(messages_init, :messages_state) do
         socket = assign(socket, :messages_state, messages_init.messages_state)
@@ -195,70 +204,28 @@ defmodule RiichiAdvancedWeb.ScoringTestLive do
       <.live_component module={RiichiAdvancedWeb.MessagesComponent} id="messages" messages={@messages} messages_state={@messages_state} lang={@lang} />
       <div class="ruleset">
         <div class="ruleset-text"><%= t(@lang, "Ruleset:") %></div>
-        <textarea readonly><%= Rules.get(@state.rules_ref, :ruleset_json) %></textarea>
+        <textarea readonly><%= @ruleset_json %></textarea>
       </div>
     </div>
     """
   end
 
-  def get_enabled_mods(socket) do
-    socket.assigns.room_state.mods
-    |> Enum.filter(fn {_mod, opts} -> opts.enabled end)
-    |> Enum.sort_by(fn {_mod, opts} -> {opts.order, opts.index} end)
-    |> Enum.map(fn {mod, opts} -> if Enum.empty?(opts.config) do mod else
-        %{name: mod, config: Map.new(opts.config, fn {name, config} -> {name, config.value} end)}
-      end end)
-  end
-  def get_selected_yaku(yaku_assign) do
-    yaku_assign
+  def get_selected_yaku(yaku_assigns) do
+    yaku_assigns
     |> Enum.filter(& &1.selected)
     |> Enum.group_by(& &1.list_name)
     |> Enum.flat_map(fn {_list_name, yaku} -> Enum.map(yaku, &{&1.name, [&1.value, &1.value_name]}) end)
   end
   
   def switch_to_ruleset(socket, ruleset) when ruleset != socket.assigns.ruleset do
-    socket = assign(socket, :ruleset, ruleset)
-    ruleset_json = ModState.load_ruleset(ruleset) |> ModState.extract_json()
-
-    # from the base ruleset, get its mod list
-    rules_ref = case Rules.load_rules(ruleset_json, socket.assigns.ruleset) do
-      {:ok, rules_ref} -> rules_ref
-      {:error, _msg}   -> nil
-    end
-    socket = assign(socket, :rules_ref, rules_ref)
-
-    default_mods = Rules.get(rules_ref, "default_mods", [])
-    {mods, categories} = Rules.parse_available_mods(Rules.get(rules_ref, "available_mods", []), default_mods)
-    hand_length = min(17, Rules.get(rules_ref, "starting_tiles", 13))
     # mock room state
-    socket = assign(socket, :room_state, %{
-      mods: mods,
-      categories: categories,
-      rules_ref: rules_ref,
-    })
-    |> assign(:hand_length, hand_length)
-    |> assign(:hand, socket.assigns.hand |> Enum.take(hand_length + 1))
-    |> assign(:calls, [])
-    |> assign(:call_selection_ixs, [])
-    |> assign(:call_buttons, %{})
-    |> assign(:selected_call_button, nil)
-
+    socket = assign(socket, :room_state, %{ socket.assigns.room_state |
+      ruleset: ruleset,
+      room_code: socket.assigns.uuid,
+    } |> RoomState.start_update_rules_task())
     socket
   end
   def switch_to_ruleset(socket, _ruleset), do: socket
-
-  def reload_ruleset(socket) do
-    ruleset = socket.assigns.ruleset
-    mods = get_enabled_mods(socket)
-    config = socket.assigns.config
-    start_async(socket, :reload_ruleset, fn ->
-      # apply all default mods + config to base ruleset
-      ModState.load_ruleset(ruleset)
-      |> ModState.prepend_mods(mods)
-      |> ModState.extract_json()
-      |> JQ.query_string_with_string!(ModLoader.convert_to_jq(config))
-    end)
-  end
 
   def retrieve_yaku_lists(socket) do
     rules_ref = socket.assigns.rules_ref
@@ -374,8 +341,7 @@ defmodule RiichiAdvancedWeb.ScoringTestLive do
   def handle_event("right_clicked", _assigns, socket), do: {:noreply, socket}
   def handle_event("change_language", %{"lang" => lang}, socket), do: {:noreply, assign(socket, :lang, lang)}
   def handle_event("switch_ruleset", %{"ruleset" => ruleset}, socket), do: {:noreply, push_patch(socket, to: ~p"/scoringtest?ruleset=#{ruleset}")}
-  def handle_event("save_mods", _assigns, socket), do: {:noreply, socket |> reload_ruleset()}
-  def handle_event("save_config", %{"value" => value}, socket), do: {:noreply, socket |> assign(:config, value) |> reload_ruleset()}
+  def handle_event("save_config", %{"value" => value}, socket), do: {:noreply, socket |> assign(:config, value) |> assign(:room_state, RoomState.start_update_rules_task(socket.assigns.room_state))}
 
   # reuse RoomState's functions for mod selection stuff
   # ideally these functions would be in mod_selection_component.ex,
@@ -385,6 +351,7 @@ defmodule RiichiAdvancedWeb.ScoringTestLive do
   def handle_event("toggle_mod", %{"mod" => mod, "enabled" => enabled}, socket) do
     enabled = enabled == "true"
     socket = assign(socket, :room_state, RoomState.toggle_mod(socket.assigns.room_state, mod, not enabled))
+    socket = assign(socket, :room_state, RoomState.start_update_rules_task(socket.assigns.room_state))
     {:noreply, socket}
   end
 
@@ -392,21 +359,25 @@ defmodule RiichiAdvancedWeb.ScoringTestLive do
     %{"mod" => mod, "name" => name} = assigns
     ix = String.to_integer(assigns[name])
     socket = assign(socket, :room_state, RoomState.change_mod_config(socket.assigns.room_state, mod, name, ix))
+    socket = assign(socket, :room_state, RoomState.start_update_rules_task(socket.assigns.room_state))
     {:noreply, socket}
   end
 
   def handle_event("toggle_category", %{"category" => category}, socket) do
     socket = assign(socket, :room_state, RoomState.toggle_category(socket.assigns.room_state, category))
+    socket = assign(socket, :room_state, RoomState.start_update_rules_task(socket.assigns.room_state))
     {:noreply, socket}
   end
 
   def handle_event("reset_mods_to_default", _assigns, socket) do
     socket = assign(socket, :room_state, RoomState.reset_mods_to_default(socket.assigns.room_state))
+    socket = assign(socket, :room_state, RoomState.start_update_rules_task(socket.assigns.room_state))
     {:noreply, socket}
   end
 
   def handle_event("randomize_mods", _assigns, socket) do
     socket = assign(socket, :room_state, RoomState.randomize_mods(socket.assigns.room_state))
+    socket = assign(socket, :room_state, RoomState.start_update_rules_task(socket.assigns.room_state))
     {:noreply, socket}
   end
 
@@ -502,6 +473,7 @@ defmodule RiichiAdvancedWeb.ScoringTestLive do
       :error -> {:noreply, socket}
     end
   end
+
   def handle_event("ready_for_next_round", _assigns, socket) do
     socket = if socket.assigns.state.visible_screen == :winner do
       assign(socket, :state, %{socket.assigns.state | visible_screen: :scores})
@@ -537,55 +509,90 @@ defmodule RiichiAdvancedWeb.ScoringTestLive do
     {:noreply, socket}
   end
 
-  def handle_async(:reload_ruleset, {:ok, ruleset_json}, socket) do
-    if ruleset_json != socket.assigns.ruleset_json do
-      socket = assign(socket, :ruleset_json, ruleset_json)
-
-      rules_ref = case Rules.load_rules(ruleset_json, socket.assigns.ruleset) do
-        {:ok, rules_ref} -> rules_ref
-        {:error, _msg}   -> nil
-      end
-      socket = assign(socket, :rules_ref, rules_ref)
-
-      wall = Rules.get(rules_ref, "wall", [])
-      socket = assign(socket, :tiles, Enum.uniq(wall))
-      call_buttons = Rules.get(rules_ref, "buttons", [])
-      |> Enum.filter(fn {_name, button} -> Map.has_key?(button, "call") end)
-      call_button_display_names = call_buttons
-      |> Enum.map(fn {_name, button} -> Map.get(button, "display_name", "") end)
-      |> Enum.frequencies()
-      call_buttons = call_buttons
-      |> Map.new(fn {name, button} ->
-        display_name = Map.get(button, "display_name", "")
-        if call_button_display_names[display_name] > 1 do
-          {name, Map.put(button, "disambiguate", name)}
-        else {name, button} end
-      end)
-      socket = assign(socket, :call_buttons, call_buttons)
-
-      socket = retrieve_yaku_lists(socket)
-
-      state = socket.assigns.state
-      |> Map.put(:rules_ref, rules_ref)
-      |> Map.put(:rules_text, %{})
-      |> Map.put(:rules_text_order, [])
-      |> Map.put(:players, Map.new([:east, :south, :west, :north], fn seat -> {seat, %Player{}} end))
-      |> Actions.trigger_event("after_initialization", %{seat: :east}) # to populate rules tabs
-      |> Actions.trigger_event("after_start", %{seat: :east}) # to populate tile alliases
-      socket = assign(socket, :state, state)
-      socket = assign(socket, :rules_text, state.rules_text)
-      socket = assign(socket, :rules_text_order, state.rules_text_order)
-      {:noreply, socket}
-    else {:noreply, socket} end
-  end
   def handle_async(:put_state, {:ok, state}, socket) do
     socket = socket
     |> assign(:state, state)
     |> assign(:loading, false)
     {:noreply, socket}
   end
+
   def handle_async(_id, _result, socket) do
     # IO.inspect({id, result}, label: "handle_async")
+    {:noreply, socket}
+  end
+
+  # :"ETS-TRANSFER" is sent when we inherit a new rules_ref
+  def handle_info({:"ETS-TRANSFER", rules_ref, _from_pid, _extra}, socket) do
+    # make a clone after applying config
+    ruleset = Rules.get(rules_ref, :ruleset, nil)
+    ruleset_json = Rules.get(rules_ref, :ruleset_json, nil)
+    |> JQ.query_string_with_string!(ModLoader.convert_to_jq(socket.assigns.config))
+    {:ok, rules_ref} = Rules.load_rules(ruleset_json, ruleset)
+
+    IO.puts("Dropping old rules_ref (length #{String.length(Rules.get(socket.assigns.rules_ref, :ruleset_json, "{}"))})")
+    if socket.assigns.rules_ref != nil do :ets.delete(socket.assigns.rules_ref) end
+    socket = assign(socket, :rules_ref, rules_ref)
+    IO.puts("Adding new rules_ref (length #{String.length(Rules.get(socket.assigns.rules_ref, :ruleset_json, "{}"))})")
+
+    # check if it's a different ruleset
+    # reset mods and other state if so
+    socket = if ruleset != socket.assigns.ruleset do
+      IO.puts("Switching ruleset from #{socket.assigns.ruleset} to #{ruleset}")
+      # get mod list
+      default_mods = Rules.get(rules_ref, "default_mods", [])
+      {mods, categories} = Rules.parse_available_mods(Rules.get(rules_ref, "available_mods", []), default_mods)
+      hand_length = min(17, Rules.get(rules_ref, "starting_tiles", 13))
+      # mock room state
+      socket = assign(socket, :room_state, %{
+        scoring_test: true,
+        ruleset: ruleset,
+        mods: mods,
+        categories: categories,
+        room_code: socket.assigns.uuid,
+        rules_ref: rules_ref,
+        rules_pid: nil,
+      })
+      |> assign(:hand_length, hand_length)
+      |> assign(:hand, socket.assigns.hand |> Enum.take(hand_length + 1))
+      |> assign(:calls, [])
+      |> assign(:call_selection_ixs, [])
+      |> assign(:call_buttons, %{})
+      |> assign(:selected_call_button, nil)
+      |> assign(:ruleset, ruleset)
+      socket = assign(socket, :room_state, RoomState.start_update_rules_task(socket.assigns.room_state))
+      socket
+    else socket end
+
+    wall = Rules.get(rules_ref, "wall", [])
+    socket = assign(socket, :tiles, Enum.uniq(wall))
+    call_buttons = Rules.get(rules_ref, "buttons", [])
+    |> Enum.filter(fn {_name, button} -> Map.has_key?(button, "call") end)
+    call_button_display_names = call_buttons
+    |> Enum.map(fn {_name, button} -> Map.get(button, "display_name", "") end)
+    |> Enum.frequencies()
+    call_buttons = call_buttons
+    |> Map.new(fn {name, button} ->
+      display_name = Map.get(button, "display_name", "")
+      if call_button_display_names[display_name] > 1 do
+        {name, Map.put(button, "disambiguate", name)}
+      else {name, button} end
+    end)
+    socket = assign(socket, :call_buttons, call_buttons)
+
+    socket = retrieve_yaku_lists(socket)
+
+    state = socket.assigns.state
+    |> Map.put(:rules_ref, rules_ref)
+    |> Map.put(:rules_text, %{})
+    |> Map.put(:rules_text_order, [])
+    |> Map.put(:players, Map.new([:east, :south, :west, :north], fn seat -> {seat, %Player{}} end))
+    |> Actions.trigger_event("after_initialization", %{seat: :east}) # to populate rules tabs
+    |> Actions.trigger_event("after_start", %{seat: :east}) # to populate tile alliases
+    socket = assign(socket, :state, state)
+    socket = assign(socket, :rules_text, state.rules_text)
+    socket = assign(socket, :rules_text_order, state.rules_text_order)
+    socket = assign(socket, :ruleset_json, Rules.get(rules_ref, :ruleset_json, "{}"))
+
     {:noreply, socket}
   end
 
@@ -616,9 +623,9 @@ defmodule RiichiAdvancedWeb.ScoringTestLive do
   def handle_info(_info, socket), do: {:noreply, socket}
 
   def handle_params(params, _uri, socket) do
-    socket = socket
-    |> switch_to_ruleset(Map.get(params, "ruleset", "riichi"))
-    |> reload_ruleset()
+    socket = if connected?(socket) do
+      switch_to_ruleset(socket, Map.get(params, "ruleset", "riichi"))
+    else socket end
     {:noreply, socket}
   end
 

@@ -146,14 +146,14 @@ defmodule RiichiAdvanced.GameState.Rules do
     with {:ok, rules} <- read_rules_from_json(ruleset_json, ruleset) do
       # store rules in an anonymous ETS table
       rules_ref = :ets.new(nil, [:set, :protected, read_concurrency: true]) 
+      :ets.insert(rules_ref, {:ruleset, ruleset})
+      :ets.insert(rules_ref, Map.to_list(rules))
       test_heir = Process.whereis(RiichiAdvanced.TestStaticEtsOwner)
       if test_heir != nil do
+        # attach rules_ref to a long-lived owner
         :ets.setopts(rules_ref, {:heir, Process.whereis(RiichiAdvanced.TestStaticEtsOwner), :no_extra_info})
-      end
-      :ets.insert(rules_ref, Map.to_list(rules))
-
-      # attach formatted json, unless we're a test
-      if test_heir == nil do
+      else
+        # attach formatted json if we're not a test
         ruleset_json = RiichiAdvanced.Formatter.format(Jason.decode!(ruleset_json), 80)
         :ets.insert(rules_ref, {:ruleset_json, ruleset_json})
       end

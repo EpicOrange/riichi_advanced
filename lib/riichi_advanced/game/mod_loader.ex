@@ -186,7 +186,7 @@ defmodule RiichiAdvanced.ModLoader.ModState do
   end
 
   # these are reversed because the respective fields are stacks
-  def append_mods(state, mods), do: %{state | mods: mods ++ state.mods}
+  def append_mods(state, mods), do: %{state | mods: Enum.reverse(mods) ++ state.mods}
   def prepend_mods(state, mods), do: %{state | mods: state.mods ++ Enum.reverse(mods)}
   def append_jq(state, jq), do: %{state | ruleset_jq: [jq | state.ruleset_jq]}
   def prepend_jqs(state, jqs), do: %{state | ruleset_jq: state.ruleset_jq ++ jqs}
@@ -265,10 +265,11 @@ defmodule RiichiAdvanced.ModLoader.ModState do
     global_jq = for {name, val} <- state.globals, ModLoader.is_jq_var?(name), do: {nil, "(#{Jason.encode!(val)}) as $#{name}"}
     state = prepend_jqs(state, Enum.reverse(global_jq))
 
+    # apply any unapplied mods to get the final jq
     state = apply_mods(state)
+
     {applied_mods, jqs} = state.ruleset_jq |> Enum.reverse() |> Enum.unzip()
     applied_mods = applied_mods |> Enum.reject(&is_nil/1)
-
     if Debug.print_mods() do
       IO.puts("Extracting json after applying the following mods:")
       IO.inspect(applied_mods, limit: :infinity)
@@ -402,32 +403,6 @@ defmodule RiichiAdvanced.ModLoader do
   def is_jq_var?(key) when is_binary(key), do: Regex.match?(~r/^[a-zA-Z_][a-zA-Z0-9_]*$/, key)
   def is_jq_var?(key) when is_atom(key), do: Regex.match?(~r/^[a-zA-Z_][a-zA-Z0-9_]*$/, Atom.to_string(key))
   def is_jq_var?(_key), do: false
-
-  # def check_and_apply_mods(ruleset_json, input_mods, ruleset) do
-  #   # check the ruleset to see and set missing default configs
-  #   # note this only checks for mods mentioned in ruleset_json
-  #   # so mods added by other mods will not be checked
-  #   input_mods =
-  #     with {:ok, decoded} <- Rules.decode_ruleset_json(ruleset_json, ruleset),
-  #          {mods, _categories} <- Rules.parse_available_mods(Map.get(decoded, "available_mods", []), Map.get(decoded, "default_mods", [])) do
-  #       # normalize to {name, config} just for this part
-  #       input_mods = Enum.map(input_mods, &get_mod_name_config/1)
-  #       for {name, config} <- input_mods do
-  #         config = if Map.has_key?(mods, name) do
-  #           # check if there is more config we haven't mentioned
-  #           missing_config = Map.keys(mods[name].config) -- Map.keys(config)
-  #           for config_name <- missing_config, reduce: config do
-  #             config ->
-  #               config_obj = mods[name].config[config_name]
-  #               default = Map.get(config_obj, "default", Enum.at(config_obj["values"], 0))
-  #               Map.put(config, config_name, default)
-  #           end
-  #         else config end
-  #         if Enum.empty?(config) do name else %{name: name, config: config} end
-  #       end
-  #     end
-  #   apply_mods(ruleset_json, input_mods, ruleset)
-  # end
 
   def convert_to_jq_defs(majs, defs) do
     # first check that it's not actually json
