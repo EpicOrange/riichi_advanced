@@ -1,0 +1,21 @@
+require "pao_base"
+
+on after_initialization do
+  update_rule("Rules", "Sekinin Barai (Pao)", "(Chinroutou Pao) Discarding a tile that is called by another player to form their fourth terminal triplet counts, but only if the winner wins tsuuiisou by self-draw.")
+end
+
+apply append, "constants.pao_yaku", ["Chinroutou"]
+
+define_set terminals, ~s"1m 1m 1m|9m 9m 9m|1p 1p 1p|9p 9p 9p|1s 1s 1s|9s 9s 9s"
+
+on after_call do
+  if last_call_is("pon", "daiminkan") do
+    as caller do
+      if match(["last_call"], ~m"terminals:1") and match(["calls"], ~m"terminals:4") do
+        make_responsible_for("callee", "Chinroutou", as: "last_seat")
+        set_status("pao", as: "callee")
+        pao_yakuman += 1
+      end
+    end
+  end
+end

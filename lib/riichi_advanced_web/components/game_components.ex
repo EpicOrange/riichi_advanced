@@ -94,6 +94,7 @@ defmodule RiichiAdvancedWeb.GameComponents do
         all_drafted={if Map.has_key?(@state, :saki) do RiichiAdvanced.GameState.Saki.check_if_all_drafted(@state) else nil end}
         num_players={length(@state.available_seats)}
         display_round_marker={Rules.get(@state.rules_ref, "display_round_marker", true)}
+        always_east_round={Rules.get(@state.rules_ref, "always_east_round", false)}
         ai_thinking={@state.players[seat].ai_thinking}
         :for={{seat, player} <- @state.players} />
       <.live_component module={RiichiAdvancedWeb.BigTextComponent}

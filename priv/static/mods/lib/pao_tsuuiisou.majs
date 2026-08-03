@@ -1,0 +1,20 @@
+require "pao_base"
+
+on after_initialization do
+  update_rule("Rules", "Sekinin Barai (Pao)", "(Tsuuiisou Pao) Discarding a tile that is called by another player to form their fourth honor triplet counts, but only if the winner wins tsuuiisou by self-draw.")
+end
+
+apply append, "constants.pao_yaku", ["Tsuuiisou"]
+
+on after_call do
+  if last_call_is("pon", "daiminkan") do
+    as caller do
+      if match(["last_call"], ~m"(ton nan shaa pei haku hatsu chun):1") and match(["calls"], ~m"(ton nan shaa pei haku hatsu chun):4") do
+        make_responsible_for("callee", "Tsuuiisou", as: "last_seat")
+        set_status("pao", as: "callee")
+        pao_yakuman += 1
+      end
+    end
+  end
+end
+

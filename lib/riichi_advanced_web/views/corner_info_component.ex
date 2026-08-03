@@ -6,6 +6,7 @@ defmodule RiichiAdvancedWeb.CornerInfoComponent do
 
   def mount(socket) do
     socket = assign(socket, :display_round_marker, false)
+    socket = assign(socket, :always_east_round, false)
     socket = assign(socket, :ai_thinking, false)
     socket = assign(socket, :chips, %{})
     {:ok, socket}
@@ -16,7 +17,7 @@ defmodule RiichiAdvancedWeb.CornerInfoComponent do
     <div class={@id}>
       <%= @player.nickname %>
       <div class="round-marker" :if={@display_round_marker and @seat == :east}>
-        <%= Utils.get_wind_name(Riichi.get_round_wind(@kyoku, @num_players)) %>
+        <%= Utils.get_wind_name(if @always_east_round do :east else Riichi.get_round_wind(@kyoku, @num_players) end) %>
       </div>
       <%= if @saki != nil and @all_drafted do %>
         <div class="saki-cards">

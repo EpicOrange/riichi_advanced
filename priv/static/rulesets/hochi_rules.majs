@@ -2,12 +2,20 @@ define_base_ruleset riichi
 set display_name, "Hochi Rules (c. 1952)"
 set tutorial_link, "https://riichi.wiki/Hochi_rules"
 require "ryuukyokurenchan"
-require "pao_base"
+require "pao_standard"
 require "pao_suukantsu"
+require "pao_tsuuiisou"
+require "pao_chinroutou"
 require_after "partial_furiten"
 require_after "hochi_scoring"
 
 set display_honba, true
+set always_east_round, true
+set max_rounds, 8
+
+# open pinfu is 20 fu, pinfu tsumo is 22 fu
+define_const closed_tsumo_20_fu, false
+define_const open_30_fu, false
 
 apply subtract, "default_mods", [
   "honba",
