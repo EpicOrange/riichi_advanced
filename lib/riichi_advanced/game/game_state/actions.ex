@@ -1398,12 +1398,18 @@ defmodule RiichiAdvanced.GameState.Actions do
             state = if to not in state.rules_text_order do
               # try to have `to` substitute `from`, otherwise append
               ix = Enum.find_index(state.rules_text_order, & &1 == from)
-              if ix != nil do
-                update_in(state.rules_text_order, &List.replace_at(&1 -- [to], ix, to))
-              else
-                update_in(state.rules_text_order, & &1 ++ [to])
+              cond do
+                # if they are the same, simply move it to the back
+                from == to -> update_in(state.rules_text_order, &(&1 -- [from]) ++ [to])
+                ix != nil -> update_in(state.rules_text_order, &List.replace_at(&1 -- [to], ix, to))
+                true -> update_in(state.rules_text_order, & &1 ++ [to])
               end
-            else update_in(state.rules_text_order, & &1 -- [from]) end
+            else 
+              cond do
+                from == to -> update_in(state.rules_text_order, &(&1 -- [from]) ++ [to])
+                true -> update_in(state.rules_text_order, & &1 -- [from])
+              end
+            end
             state
           else state end
         "play_tile"             -> play_tile(state, context.seat, Enum.at(opts, 0, :"1m"), Enum.at(opts, 1, 0))
