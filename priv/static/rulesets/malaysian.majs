@@ -537,7 +537,15 @@ set four_rows_discards, true
 set max_rounds, 16
 
 # mods
-set default_mods, ["malaysian_five_point_minimum", "malaysian_replaceable_fei_joker", "malaysian_stackable_limit", "malaysian_half_flush", "malaysian_4_fei_win", "malaysian_fei_payments", "show_waits"]
+set default_mods, [
+  "malaysian_five_point_minimum",
+  "malaysian_replaceable_fei_joker",
+  "malaysian_stackable_limit",
+  "malaysian_half_flush",
+  "malaysian_4_fei_win",
+  %{name: "malaysian_fei_payments", config: %{fei_value: 50}},
+  "show_waits"
+]
 define_mod_category "Malaysian"
 define_mod malaysian_five_point_minimum, name: "Five Fan Minimum", desc: "Only allow wins worth 5+ fan."
 define_mod malaysian_replaceable_fei_joker, name: "Replaceable Fei Joker", desc: "Allow swapping out fei jokers from your own pungs using the same tile."

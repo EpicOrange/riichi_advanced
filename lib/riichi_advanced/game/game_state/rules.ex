@@ -386,43 +386,46 @@ defmodule RiichiAdvanced.GameState.Rules do
   # only used by tests!
   # given a ruleset, load its default mods plus the given mods and json config, and return a rules_ref
   # this rules_ref is essentially a clone of a long-lived cached rules_ref, so hopefully it's fast
-  # RiichiAdvanced.GameState.Rules.load_default_ruleset("riichi", [])
-  @mods_ignored_by_tests [
+  # RiichiAdvanced.GameState.Rules.load_default_ruleset("riichi", [], [])
+  @always_ignored_default_mods [
     "cancellable_riichi",
-    %{"name" => "dora", "config" => %{"start_indicators" => 1}},
+    "dora",
     "ura",
     "kandora",
+    "lib/tobi",
+    "called_game",
+    "shuugi/tobi",
+    "shuugi/called_game",
   ]
-  def load_default_ruleset(ruleset, mods, json_config \\ "{}") do
-    base_rules_ref = case RiichiAdvanced.Cache.get({:cache_default_ruleset, ruleset, mods}) do
+  def load_default_ruleset(ruleset, mods, excluded_mods, json_config \\ "{}") do
+    base_rules_ref = case RiichiAdvanced.Cache.get({:cache_default_ruleset, ruleset, mods, excluded_mods}) do
       {:ok, nil} ->
+        forbidden_mods = excluded_mods ++ @always_ignored_default_mods
         base_ruleset_state = ModState.load_ruleset(ruleset)
         default_mods = base_ruleset_state
-        |> ModState.append_mods(mods)
         |> ModState.apply_mods()
         |> ModState.append_jq({nil, "(.default_mods? // [])"})
         |> ModState.extract_json()
         |> Jason.decode!()
-
-        # some mods are not good for tests
-        default_mods = default_mods -- @mods_ignored_by_tests
+        |> Enum.reject(fn mod -> ModLoader.get_mod_name(mod) in forbidden_mods or mod in forbidden_mods end)
+        # |> IO.inspect(limit: :infinity, label: "default_mods")
+        # IO.inspect(forbidden_mods, label: "forbidden_mods")
 
         # now apply these defaults to the base ruleset and return the rules ref
         ruleset_json = base_ruleset_state
-        |> ModState.append_mods(default_mods)
+        |> ModState.prepend_mods(default_mods)
         |> ModState.append_mods(mods)
         |> ModState.extract_json()
-        
         {:ok, rules_ref} = load_rules(ruleset_json, ruleset)
 
         # cache if that was successful
         # need to first give it to a static dummy module so it stays alive
-        RiichiAdvanced.Cache.put({:cache_default_ruleset, ruleset, mods}, rules_ref)
+        RiichiAdvanced.Cache.put({:cache_default_ruleset, ruleset, mods, excluded_mods}, rules_ref)
 
         rules_ref
       {:ok, rules_ref} -> rules_ref
     end
-    # create a clone that simply ads the json_config
+    # create a clone that simply adds the json_config
     rules_ref = :ets.new(nil, [:set, :protected, read_concurrency: true])
     :ets.insert(rules_ref, :ets.tab2list(base_rules_ref))
     :ets.insert(rules_ref, json_config |> Jason.decode!() |> Map.to_list())

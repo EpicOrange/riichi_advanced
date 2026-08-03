@@ -2,23 +2,8 @@ defmodule RiichiAdvanced.CosmicScoringTest do
   use ExUnit.Case, async: true
   alias RiichiAdvanced.TestUtils, as: TestUtils
 
-  @cosmic_mods [
-    "lib/yaku/riichi",
-    "lib/yaku/ippatsu",
-    "kontsu",
-    "yaku/kontsu_yaku",
-    "yaku/chanfuun",
-    "yaku/fuunburi",
-    "yaku/uumensai_cosmic",
-    "cosmic_calls",
-    "yaku/tsubame_gaeshi",
-    "yaku/kanburi",
-    "lib/yaku/riichi_isshoku_sanjun",
-    "lib/yaku/riichi_isshoku_yonjun"
-  ]
-
   test "cosmic - 18 han is haneyakuman" do
-    TestUtils.test_yaku_advanced("cosmic", @cosmic_mods, """
+    TestUtils.test_yaku_advanced("cosmic", [], [], """
     {
       "starting_hand": {
         "east": ["2m", "2m", "2m", "4p", "4p", "4p", "1z", "1z", "1z", "3z", "3z", "6z", "6z"],
@@ -42,7 +27,7 @@ defmodule RiichiAdvanced.CosmicScoringTest do
   end
 
   test "cosmic - 17 han is just yakuman" do
-    TestUtils.test_yaku_advanced("cosmic", @cosmic_mods, """
+    TestUtils.test_yaku_advanced("cosmic", [], [], """
     {
       "starting_hand": {
         "east": ["2m", "2m", "2m", "4p", "4p", "4p", "1z", "1z", "1z", "3z", "3z", "4z", "4z"],

@@ -12,11 +12,8 @@ defmodule RiichiAdvanced.MatchTest do
     "yaku/dorahairi_chinroutou_chiitoitsu",
     "shiny_dora",
   ]
-  @config """
-  
-  """
   setup do
-    test_state = TestUtils.initialize_test_state(@ruleset, @mods, @config)
+    test_state = TestUtils.initialize_test_state(@ruleset, @mods)
     GenServer.cast(test_state.game_state_pid, :sort_hands)
     state = GenServer.call(test_state.game_state_pid, :get_state)
     on_exit(fn -> GenServer.cast(test_state.game_state_pid, :terminate_game) end)

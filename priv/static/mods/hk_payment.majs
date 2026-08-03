@@ -8,7 +8,7 @@ on before_win do
     won_by_draw and !self_pick_pay > 0 -> make_responsible_for("others")
     won_by_discard and !nondiscarders_pay > 0 -> make_responsible_for("others")
     won_by_discard -> make_responsible_for("last_discarder")
-    won_by_call and !nondiscarders_pay -> make_responsible_for("others")
+    won_by_call and !nondiscarders_pay > 0 -> make_responsible_for("others")
     won_by_call -> make_responsible_for("last_caller")
   end
 end

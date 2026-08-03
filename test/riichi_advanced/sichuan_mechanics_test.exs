@@ -3,7 +3,7 @@ defmodule RiichiAdvanced.SichuanMechanicsTest do
   alias RiichiAdvanced.TestUtils, as: TestUtils
 
   test "sichuan - void suit disallows win" do
-    TestUtils.test_yaku_advanced("sichuan", ["sichuan_no_charleston"], """
+    TestUtils.test_yaku_advanced("sichuan", ["sichuan_no_charleston"], [], """
     {
       "starting_hand": {
         "east": ["2m", "3m", "4m", "4m", "5m", "6m", "7p", "7p", "7p", "6m", "2s", "3s", "4s"],
@@ -26,7 +26,7 @@ defmodule RiichiAdvanced.SichuanMechanicsTest do
   end
 
   test "sichuan - void penalty" do
-    TestUtils.test_yaku_advanced("sichuan", ["show_waits", "sichuan_no_charleston"], """
+    TestUtils.test_yaku_advanced("sichuan", ["show_waits", "sichuan_no_charleston"], [], """
     {
       "starting_hand": {
         "east": ["5p","9s","2p","5m","7p","9m","4m","4s","3p","7m","5s","9s","6s"],
@@ -98,7 +98,7 @@ defmodule RiichiAdvanced.SichuanMechanicsTest do
   end
 
   test "sichuan - kakan from hand awards no points" do
-    TestUtils.test_yaku_advanced("sichuan", ["sichuan_no_charleston"], """
+    TestUtils.test_yaku_advanced("sichuan", ["sichuan_no_charleston"], [], """
     {
       "starting_hand": {
         "east": ["2m", "3m", "4m", "6m", "9p", "6m", "7p", "7p", "7p", "6m", "2s", "3s", "4s"],
@@ -126,7 +126,7 @@ defmodule RiichiAdvanced.SichuanMechanicsTest do
   end
 
   test "sichuan - kakan awards no points until discard" do
-    TestUtils.test_yaku_advanced("sichuan", ["sichuan_no_charleston"], """
+    TestUtils.test_yaku_advanced("sichuan", ["sichuan_no_charleston"], [], """
     {
       "starting_hand": {
         "east": ["2m", "3m", "4m", "4m", "9p", "6m", "7p", "7p", "7p", "6m", "2s", "3s", "4s"],
@@ -154,7 +154,7 @@ defmodule RiichiAdvanced.SichuanMechanicsTest do
   end
 
   test "sichuan - daiminkan awards no points until discard" do
-    TestUtils.test_yaku_advanced("sichuan", ["sichuan_no_charleston"], """
+    TestUtils.test_yaku_advanced("sichuan", ["sichuan_no_charleston"], [], """
     {
       "starting_hand": {
         "east": ["2m", "3m", "4m", "4m", "6m", "6m", "7p", "7p", "7p", "6m", "2s", "3s", "4s"],
@@ -179,7 +179,7 @@ defmodule RiichiAdvanced.SichuanMechanicsTest do
   end
   
   test "sichuan - ankan awards no points until discard" do
-    TestUtils.test_yaku_advanced("sichuan", ["sichuan_no_charleston"], """
+    TestUtils.test_yaku_advanced("sichuan", ["sichuan_no_charleston"], [], """
     {
       "starting_hand": {
         "east": ["2m", "3m", "4m", "5m", "6m", "6m", "7p", "7p", "7p", "6m", "2s", "3s", "4s"],
@@ -201,7 +201,7 @@ defmodule RiichiAdvanced.SichuanMechanicsTest do
   end
 
   test "sichuan - kakan awards points after discard" do
-    TestUtils.test_yaku_advanced("sichuan", ["sichuan_no_charleston"], """
+    TestUtils.test_yaku_advanced("sichuan", ["sichuan_no_charleston"], [], """
     {
       "starting_hand": {
         "east": ["2m", "3m", "4m", "4m", "9p", "6m", "7p", "7p", "7p", "6m", "2s", "3s", "4s"],
@@ -230,7 +230,7 @@ defmodule RiichiAdvanced.SichuanMechanicsTest do
   end
 
   test "sichuan - daiminkan awards points after discard" do
-    TestUtils.test_yaku_advanced("sichuan", ["sichuan_no_charleston"], """
+    TestUtils.test_yaku_advanced("sichuan", ["sichuan_no_charleston"], [], """
     {
       "starting_hand": {
         "east": ["2m", "3m", "4m", "4m", "6m", "6m", "7p", "7p", "7p", "6m", "2s", "3s", "4s"],
@@ -256,7 +256,7 @@ defmodule RiichiAdvanced.SichuanMechanicsTest do
   end
   
   test "sichuan - ankan awards points after discard" do
-    TestUtils.test_yaku_advanced("sichuan", ["sichuan_no_charleston"], """
+    TestUtils.test_yaku_advanced("sichuan", ["sichuan_no_charleston"], [], """
     {
       "starting_hand": {
         "east": ["2m", "3m", "4m", "5m", "6m", "6m", "7p", "7p", "7p", "6m", "2s", "3s", "4s"],
@@ -279,7 +279,7 @@ defmodule RiichiAdvanced.SichuanMechanicsTest do
   end
 
   test "sichuan - chankan skips kakan payment" do
-    TestUtils.test_yaku_advanced("sichuan", ["sichuan_no_charleston"], """
+    TestUtils.test_yaku_advanced("sichuan", ["sichuan_no_charleston"], [], """
     {
       "starting_hand": {
         "east": ["2m", "3m", "4m", "6m", "9p", "6m", "7p", "7p", "7p", "6m", "2s", "3s", "4s"],
@@ -312,7 +312,7 @@ defmodule RiichiAdvanced.SichuanMechanicsTest do
   end
 
   test "sichuan - kanburi skips kan payment" do
-    TestUtils.test_yaku_advanced("sichuan", ["sichuan_no_charleston"], """
+    TestUtils.test_yaku_advanced("sichuan", ["sichuan_no_charleston"], [], """
     {
       "starting_hand": {
         "east": ["2m", "3m", "4m", "6m", "9p", "6m", "7p", "7p", "7p", "1s", "2s", "3s", "4s"],
@@ -346,7 +346,7 @@ defmodule RiichiAdvanced.SichuanMechanicsTest do
   end
 
   test "sichuan - skipped chankan no kan payment until discard" do
-    TestUtils.test_yaku_advanced("sichuan", ["sichuan_no_charleston"], """
+    TestUtils.test_yaku_advanced("sichuan", ["sichuan_no_charleston"], [], """
     {
       "starting_hand": {
         "east": ["2m", "3m", "4m", "6m", "9p", "6m", "7p", "7p", "7p", "1s", "2s", "3s", "4s"],
@@ -375,7 +375,7 @@ defmodule RiichiAdvanced.SichuanMechanicsTest do
   end
 
   test "sichuan - skipped chankan allows kan payment after discard" do
-    TestUtils.test_yaku_advanced("sichuan", ["sichuan_no_charleston"], """
+    TestUtils.test_yaku_advanced("sichuan", ["sichuan_no_charleston"], [], """
     {
       "starting_hand": {
         "east": ["2m", "3m", "4m", "6m", "9p", "6m", "7p", "7p", "7p", "1s", "2s", "3s", "4s"],
@@ -405,7 +405,7 @@ defmodule RiichiAdvanced.SichuanMechanicsTest do
   end
 
   test "sichuan - tenpai at draw scores as a win 1" do
-    TestUtils.test_yaku_advanced("sichuan", ["sichuan_no_charleston"], """
+    TestUtils.test_yaku_advanced("sichuan", ["sichuan_no_charleston"], [], """
     {
       "starting_hand": {
         "east": ["7s","9m","3s","7p","8p","7m","1m","8s","5s","6p","7m","7s","9m"],
@@ -483,7 +483,7 @@ defmodule RiichiAdvanced.SichuanMechanicsTest do
   end
 
   test "sichuan - tenpai at draw scores as a win 2" do
-    TestUtils.test_yaku_advanced("sichuan", ["sichuan_no_charleston"], """
+    TestUtils.test_yaku_advanced("sichuan", ["sichuan_no_charleston"], [], """
     {
       "starting_hand": {
         "east": ["3s","4s","5s","6s","7s","1s","2s","3s","4s","5s","6s","9s","9s"],
@@ -559,7 +559,7 @@ defmodule RiichiAdvanced.SichuanMechanicsTest do
   end
 
   test "sichuan - scores takame at draw" do
-    TestUtils.test_yaku_advanced("sichuan", ["sichuan_no_charleston"], """
+    TestUtils.test_yaku_advanced("sichuan", ["sichuan_no_charleston"], [], """
     {
       "starting_hand": {
         "east": ["3p","4p","4p","4p","2s","2s","2s","5s","5s","5s","9s","9s","9s"],

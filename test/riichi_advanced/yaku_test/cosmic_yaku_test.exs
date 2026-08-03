@@ -2,23 +2,8 @@ defmodule RiichiAdvanced.YakuTest.CosmicYaku do
   use ExUnit.Case, async: true
   alias RiichiAdvanced.TestUtils, as: TestUtils
 
-  @cosmic_mods [
-    "lib/yaku/riichi",
-    "lib/yaku/ippatsu",
-    "kontsu",
-    "yaku/kontsu_yaku",
-    "yaku/chanfuun",
-    "yaku/fuunburi",
-    "yaku/uumensai_cosmic",
-    "cosmic_calls",
-    "yaku/tsubame_gaeshi",
-    "yaku/kanburi",
-    "lib/yaku/riichi_isshoku_sanjun",
-    "lib/yaku/riichi_isshoku_yonjun"
-  ]
-
   test "cosmic - mini-sangen x2 should give ryandoukon instead of iipeikou" do
-    TestUtils.test_yaku_advanced("cosmic", @cosmic_mods, """
+    TestUtils.test_yaku_advanced("cosmic", [], [], """
     {
       "starting_hand": {
         "east": ["9m", "1m", "2m", "8p", "9p", "1p", "5z", "6z", "7z", "5z", "6z", "7z", "6p"],
@@ -41,7 +26,7 @@ defmodule RiichiAdvanced.YakuTest.CosmicYaku do
   end
 
   test "cosmic - mixed winds as east with 123z" do
-    TestUtils.test_yaku_advanced("cosmic", @cosmic_mods, """
+    TestUtils.test_yaku_advanced("cosmic", [], [], """
     {
       "starting_hand": {
         "east": ["9m", "1m", "2m", "8p", "9p", "1p", "7z", "7z", "7z", "1z", "2z", "3z", "6p"],
@@ -64,7 +49,7 @@ defmodule RiichiAdvanced.YakuTest.CosmicYaku do
   end
 
   test "cosmic - mixed winds as east with 124z" do
-    TestUtils.test_yaku_advanced("cosmic", @cosmic_mods, """
+    TestUtils.test_yaku_advanced("cosmic", [], [], """
     {
       "starting_hand": {
         "east": ["9m", "1m", "2m", "8p", "9p", "1p", "7z", "7z", "7z", "1z", "2z", "4z", "6p"],
@@ -87,7 +72,7 @@ defmodule RiichiAdvanced.YakuTest.CosmicYaku do
   end
 
   test "cosmic - mixed winds as east with 134z" do
-    TestUtils.test_yaku_advanced("cosmic", @cosmic_mods, """
+    TestUtils.test_yaku_advanced("cosmic", [], [], """
     {
       "starting_hand": {
         "east": ["9m", "1m", "2m", "8p", "9p", "1p", "7z", "7z", "7z", "1z", "3z", "4z", "6p"],
@@ -110,7 +95,7 @@ defmodule RiichiAdvanced.YakuTest.CosmicYaku do
   end
 
   test "cosmic - mixed winds as east with 234z" do
-    TestUtils.test_yaku_advanced("cosmic", @cosmic_mods, """
+    TestUtils.test_yaku_advanced("cosmic", [], [], """
     {
       "starting_hand": {
         "east": ["9m", "1m", "2m", "8p", "9p", "1p", "7z", "7z", "7z", "2z", "3z", "4z", "6p"],
@@ -133,7 +118,7 @@ defmodule RiichiAdvanced.YakuTest.CosmicYaku do
   end
 
   test "cosmic - mixed winds as north with 123z" do
-    TestUtils.test_yaku_advanced("cosmic", @cosmic_mods, """
+    TestUtils.test_yaku_advanced("cosmic", [], [], """
     {
       "starting_hand": {
         "east": ["1m", "4m", "7m", "2p", "5p", "8p", "3s", "6s", "9s", "1z", "2z", "3z", "4z"],
@@ -159,7 +144,7 @@ defmodule RiichiAdvanced.YakuTest.CosmicYaku do
   end
 
   test "cosmic - mixed winds as north with 124z" do
-    TestUtils.test_yaku_advanced("cosmic", @cosmic_mods, """
+    TestUtils.test_yaku_advanced("cosmic", [], [], """
     {
       "starting_hand": {
         "east": ["1m", "4m", "7m", "2p", "5p", "8p", "3s", "6s", "9s", "1z", "2z", "3z", "4z"],
@@ -185,7 +170,7 @@ defmodule RiichiAdvanced.YakuTest.CosmicYaku do
   end
 
   test "cosmic - mixed winds as north with 134z" do
-    TestUtils.test_yaku_advanced("cosmic", @cosmic_mods, """
+    TestUtils.test_yaku_advanced("cosmic", [], [], """
     {
       "starting_hand": {
         "east": ["1m", "4m", "7m", "2p", "5p", "8p", "3s", "6s", "9s", "1z", "2z", "3z", "4z"],
@@ -211,7 +196,7 @@ defmodule RiichiAdvanced.YakuTest.CosmicYaku do
   end
 
   test "cosmic - mixed winds as north with 234z" do
-    TestUtils.test_yaku_advanced("cosmic", @cosmic_mods, """
+    TestUtils.test_yaku_advanced("cosmic", [], [], """
     {
       "starting_hand": {
         "east": ["1m", "4m", "7m", "2p", "5p", "8p", "3s", "6s", "9s", "1z", "2z", "3z", "4z"],
@@ -237,7 +222,7 @@ defmodule RiichiAdvanced.YakuTest.CosmicYaku do
   end
 
   test "cosmic - fuun should only count as one mixed wind, and is eligible for ryandoukon" do
-    TestUtils.test_yaku_advanced("cosmic", @cosmic_mods, """
+    TestUtils.test_yaku_advanced("cosmic", [], [], """
     {
       "starting_hand": {
         "east": ["1m", "4m", "7m", "2p", "5p", "8p", "3s", "6s", "9s", "1z", "2z", "3z", "4z"],
@@ -264,7 +249,7 @@ defmodule RiichiAdvanced.YakuTest.CosmicYaku do
   end
 
   test "cosmic - tsubame gaeshi" do
-    TestUtils.test_yaku_advanced("cosmic", @cosmic_mods, """
+    TestUtils.test_yaku_advanced("cosmic", [], [], """
     {
       "starting_hand": {
         "east": ["9m", "1m", "2m", "8p", "9p", "1p", "1s", "2s", "3s", "7z", "7z", "7z", "6p"],
@@ -288,7 +273,7 @@ defmodule RiichiAdvanced.YakuTest.CosmicYaku do
   end
 
   test "cosmic - fuun gives rinshan" do
-    TestUtils.test_yaku_advanced("cosmic", @cosmic_mods, """
+    TestUtils.test_yaku_advanced("cosmic", [], [], """
     {
       "starting_hand": {
         "east": ["9m", "1m", "2m", "8p", "9p", "1p", "1s", "2s", "3s", "1z", "2z", "3z", "4z"],
@@ -310,7 +295,7 @@ defmodule RiichiAdvanced.YakuTest.CosmicYaku do
   end
 
   test "cosmic - open chiitoitsu" do
-    TestUtils.test_yaku_advanced("cosmic", @cosmic_mods, """
+    TestUtils.test_yaku_advanced("cosmic", [], [], """
     {
       "starting_hand": {
         "east": ["1m", "1m", "4m", "4m", "5m", "5m", "2p", "2p", "4p", "6s", "6s", "1z", "2z"],
@@ -336,7 +321,7 @@ defmodule RiichiAdvanced.YakuTest.CosmicYaku do
   end
 
   test "cosmic - closed chiitoitsu" do
-    TestUtils.test_yaku_advanced("cosmic", @cosmic_mods, """
+    TestUtils.test_yaku_advanced("cosmic", [], [], """
     {
       "starting_hand": {
         "east": ["1m", "1m", "4m", "4m", "5m", "5m", "2p", "2p", "4p", "6s", "6s", "1z", "1z"],
@@ -359,7 +344,7 @@ defmodule RiichiAdvanced.YakuTest.CosmicYaku do
   end
 
   test "cosmic - open ryanpeikou is always better than open chiitoitsu" do
-    TestUtils.test_yaku_advanced("cosmic", @cosmic_mods, """
+    TestUtils.test_yaku_advanced("cosmic", [], [], """
     {
       "starting_hand": {
         "east": ["1m", "1m", "2m", "2m", "3m", "3m", "4m", "4m", "8m", "9m", "9m", "1s", "1z"],
@@ -385,7 +370,7 @@ defmodule RiichiAdvanced.YakuTest.CosmicYaku do
   end
 
   test "cosmic - closed ryanpeikou" do
-    TestUtils.test_yaku_advanced("cosmic", @cosmic_mods, """
+    TestUtils.test_yaku_advanced("cosmic", [], [], """
     {
       "starting_hand": {
         "east": ["1m", "1m", "2m", "2m", "2m", "3m", "3m", "4m", "4m", "9m", "9m", "1s", "1s"],
@@ -408,7 +393,7 @@ defmodule RiichiAdvanced.YakuTest.CosmicYaku do
   end
 
   test "cosmic - chankan on kakakan" do
-    TestUtils.test_yaku_advanced("cosmic", @cosmic_mods, """
+    TestUtils.test_yaku_advanced("cosmic", [], [], """
     {
       "starting_hand": {
         "east": ["1m", "2m", "3m", "4m", "4m", "1z", "1z", "2z", "3z", "3z", "4z", "6z", "7z"],
@@ -448,7 +433,7 @@ defmodule RiichiAdvanced.YakuTest.CosmicYaku do
   end
 
   test "cosmic - toikon closed" do
-    TestUtils.test_yaku_advanced("cosmic", @cosmic_mods, """
+    TestUtils.test_yaku_advanced("cosmic", [], [], """
     {
       "starting_hand": {
         "east": ["1m", "1p", "1s", "5m", "5p", "5s", "5z", "6z", "7z", "2z", "3z", "4z", "6p"],
@@ -471,7 +456,7 @@ defmodule RiichiAdvanced.YakuTest.CosmicYaku do
   end
 
   test "cosmic - toikon open" do
-    TestUtils.test_yaku_advanced("cosmic", @cosmic_mods, """
+    TestUtils.test_yaku_advanced("cosmic", [], [], """
     {
       "starting_hand": {
         "east": ["1m", "1p", "1s", "5m", "5p", "5s", "5z", "6z", "1z", "2z", "3z", "4z", "6p"],
@@ -497,7 +482,7 @@ defmodule RiichiAdvanced.YakuTest.CosmicYaku do
   end
 
   test "cosmic - ryandoukon closed" do
-    TestUtils.test_yaku_advanced("cosmic", @cosmic_mods, """
+    TestUtils.test_yaku_advanced("cosmic", [], [], """
     {
       "starting_hand": {
         "east": ["1m", "1p", "1s", "1m", "1p", "1s", "7z", "7z", "7z", "1z", "3z", "4z", "6p"],
@@ -520,7 +505,7 @@ defmodule RiichiAdvanced.YakuTest.CosmicYaku do
   end
 
   test "cosmic - no ryandoukon if open" do
-    TestUtils.test_yaku_advanced("cosmic", @cosmic_mods, """
+    TestUtils.test_yaku_advanced("cosmic", [], [], """
     {
       "starting_hand": {
         "east": ["1m", "1p", "1s", "1m", "1p", "1s", "7z", "7z", "1z", "1z", "3z", "4z", "6p"],
@@ -546,7 +531,7 @@ defmodule RiichiAdvanced.YakuTest.CosmicYaku do
   end
 
   test "cosmic - ryandoukon honors closed" do
-    TestUtils.test_yaku_advanced("cosmic", @cosmic_mods, """
+    TestUtils.test_yaku_advanced("cosmic", [], [], """
     {
       "starting_hand": {
         "east": ["1z", "2z", "3z", "1z", "2z", "3z", "5m", "5m", "5m", "1z", "3z", "4z", "6p"],
@@ -569,7 +554,7 @@ defmodule RiichiAdvanced.YakuTest.CosmicYaku do
   end
 
   test "cosmic - no ryandoukon honors open" do
-    TestUtils.test_yaku_advanced("cosmic", @cosmic_mods, """
+    TestUtils.test_yaku_advanced("cosmic", [], [], """
     {
       "starting_hand": {
         "east": ["1z", "2z", "3z", "1z", "2z", "3z", "5m", "5m", "1z", "1z", "3z", "4z", "6p"],
@@ -595,7 +580,7 @@ defmodule RiichiAdvanced.YakuTest.CosmicYaku do
   end
 
   test "cosmic - most concealed sandoukon is actually sanshoku doukou + sanankou" do
-    TestUtils.test_yaku_advanced("cosmic", @cosmic_mods, """
+    TestUtils.test_yaku_advanced("cosmic", [], [], """
     {
       "starting_hand": {
         "east": ["1m", "1p", "1s", "1m", "1p", "1s", "1m", "1p", "1s", "7z", "7z", "5p", "7p"],
@@ -618,7 +603,7 @@ defmodule RiichiAdvanced.YakuTest.CosmicYaku do
   end
 
   test "cosmic - sandoukon open" do
-    TestUtils.test_yaku_advanced("cosmic", @cosmic_mods, """
+    TestUtils.test_yaku_advanced("cosmic", [], [], """
     {
       "starting_hand": {
         "east": ["1m", "1p", "1s", "1m", "1p", "1s", "1m", "1p", "1z", "7z", "7z", "7z", "6p"],
@@ -644,7 +629,7 @@ defmodule RiichiAdvanced.YakuTest.CosmicYaku do
   end
 
   test "cosmic - concealed sandoukon requires anfuun" do
-    TestUtils.test_yaku_advanced("cosmic", @cosmic_mods, """
+    TestUtils.test_yaku_advanced("cosmic", [], [], """
     {
       "starting_hand": {
         "east": ["1z", "2z", "3z", "1z", "2z", "3z", "1z", "2z", "3z", "4z", "4s", "4s", "6p"],
@@ -668,7 +653,7 @@ defmodule RiichiAdvanced.YakuTest.CosmicYaku do
   end
 
   test "cosmic - anfuun is the only way to get concealed sandoukon" do
-    TestUtils.test_yaku_advanced("cosmic", @cosmic_mods, """
+    TestUtils.test_yaku_advanced("cosmic", [], [], """
     {
       "starting_hand": {
         "east": ["1z", "2z", "3z", "1z", "2z", "3z", "1z", "2z", "3z", "4z", "4s", "4s", "6p"],
@@ -690,7 +675,7 @@ defmodule RiichiAdvanced.YakuTest.CosmicYaku do
   end
 
   test "cosmic - closed ron honors yondoukon is scored using kontsu only" do
-    TestUtils.test_yaku_advanced("cosmic", @cosmic_mods, """
+    TestUtils.test_yaku_advanced("cosmic", [], [], """
     {
       "starting_hand": {
         "east": ["1z", "2z", "3z", "1z", "2z", "3z", "1z", "2z", "3z", "1z", "2z", "3z", "6p"],
@@ -718,7 +703,7 @@ defmodule RiichiAdvanced.YakuTest.CosmicYaku do
   end
 
   test "cosmic - closed tsumo honors yondoukon is scored using kontsu only" do
-    TestUtils.test_yaku_advanced("cosmic", @cosmic_mods, """
+    TestUtils.test_yaku_advanced("cosmic", [], [], """
     {
       "starting_hand": {
         "east": ["1z", "2z", "3z", "1z", "2z", "3z", "1z", "2z", "3z", "1z", "2z", "3z", "6p"],
@@ -743,7 +728,7 @@ defmodule RiichiAdvanced.YakuTest.CosmicYaku do
   end
 
   test "cosmic - closed ron non-honors yondoukon is scored using kontsu only" do
-    TestUtils.test_yaku_advanced("cosmic", @cosmic_mods, """
+    TestUtils.test_yaku_advanced("cosmic", [], [], """
     {
       "starting_hand": {
         "east": ["2m", "2p", "2s", "2m", "2p", "2s", "2m", "2p", "2s", "2m", "2p", "2s", "1p"],
@@ -766,7 +751,7 @@ defmodule RiichiAdvanced.YakuTest.CosmicYaku do
   end
 
   test "cosmic - tsumo non-honors yondoukon is scored using kontsu only" do
-    TestUtils.test_yaku_advanced("cosmic", @cosmic_mods, """
+    TestUtils.test_yaku_advanced("cosmic", [], [], """
     {
       "starting_hand": {
         "east": ["2m", "2p", "2s", "2m", "2p", "2s", "2m", "2p", "2s", "2m", "2p", "2s", "1p"],
@@ -791,7 +776,7 @@ defmodule RiichiAdvanced.YakuTest.CosmicYaku do
   end
 
   test "cosmic - open yondoukon is scored using kontsu only" do
-    TestUtils.test_yaku_advanced("cosmic", @cosmic_mods, """
+    TestUtils.test_yaku_advanced("cosmic", [], [], """
     {
       "starting_hand": {
         "east": ["2m", "2p", "2s", "2m", "2p", "2s", "2m", "2p", "2s", "2m", "2p", "1z", "1p"],
@@ -817,7 +802,7 @@ defmodule RiichiAdvanced.YakuTest.CosmicYaku do
   end
 
   test "cosmic - closed sandoukon wins over doukou if 4th group is kontsu" do
-    TestUtils.test_yaku_advanced("cosmic", @cosmic_mods, """
+    TestUtils.test_yaku_advanced("cosmic", [], [], """
     {
       "starting_hand": {
         "east": ["2m", "2p", "2s", "3m", "3m", "3m", "3p", "3p", "3p", "3s", "3s", "3s", "1p"],
@@ -840,7 +825,7 @@ defmodule RiichiAdvanced.YakuTest.CosmicYaku do
   end
 
   test "cosmic - doukou wins over open sandoukon" do
-    TestUtils.test_yaku_advanced("cosmic", @cosmic_mods, """
+    TestUtils.test_yaku_advanced("cosmic", [], [], """
     {
       "starting_hand": {
         "east": ["2m", "2p", "1z", "3m", "3m", "3m", "3p", "3p", "3p", "3s", "3s", "3s", "1p"],
@@ -866,7 +851,7 @@ defmodule RiichiAdvanced.YakuTest.CosmicYaku do
   end
 
   test "cosmic - doukou wins over sandoukon if 4th group is triplet" do
-    TestUtils.test_yaku_advanced("cosmic", @cosmic_mods, """
+    TestUtils.test_yaku_advanced("cosmic", [], [], """
     {
       "starting_hand": {
         "east": ["2m", "2m", "1z", "3m", "3m", "3m", "3p", "3p", "3p", "3s", "3s", "3s", "1p"],
@@ -892,7 +877,7 @@ defmodule RiichiAdvanced.YakuTest.CosmicYaku do
   end
 
   test "cosmic - open uumensai" do
-    TestUtils.test_yaku_advanced("cosmic", @cosmic_mods, """
+    TestUtils.test_yaku_advanced("cosmic", [], [], """
     {
       "starting_hand": {
         "east": ["1m", "1z", "3m", "5p", "5p", "5p", "4s", "4s", "4s", "2z", "2z", "7z", "7z"],
@@ -918,7 +903,7 @@ defmodule RiichiAdvanced.YakuTest.CosmicYaku do
   end
 
   test "cosmic - kontsu doesn't contribute to uumensai" do
-    TestUtils.test_yaku_advanced("cosmic", @cosmic_mods, """
+    TestUtils.test_yaku_advanced("cosmic", [], [], """
     {
       "starting_hand": {
         "east": ["2s", "2p", "1z", "5p", "5p", "5p", "4s", "4s", "4s", "2z", "2z", "7z", "7z"],
@@ -944,7 +929,7 @@ defmodule RiichiAdvanced.YakuTest.CosmicYaku do
   end
 
   test "cosmic - cosmic uumensai" do
-    TestUtils.test_yaku_advanced("cosmic", @cosmic_mods, """
+    TestUtils.test_yaku_advanced("cosmic", [], [], """
     {
       "starting_hand": {
         "east": ["2s", "2p", "1z", "5p", "5p", "5p", "4s", "1z", "2z", "3z", "4z", "7z", "7z"],

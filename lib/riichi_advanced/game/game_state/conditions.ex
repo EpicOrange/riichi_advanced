@@ -849,10 +849,7 @@ defmodule RiichiAdvanced.GameState.Conditions do
             end
           end)
         result = num_falses <= allowed_falses
-        clause_cache = if not toplevel do
-          # don't cache the whole toplevel CNF condition
-          Map.put(clause_cache, {:cnf, clause, context.key}, result)
-        else clause_cache end
+        clause_cache = Map.put(clause_cache, {:cnf, clause, context.key}, result)
         {result, clause_cache, debug_clause}
       b -> {b, clause_cache, cond_spec}
     end

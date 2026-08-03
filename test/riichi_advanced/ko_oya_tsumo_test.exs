@@ -5,36 +5,6 @@ defmodule RiichiAdvanced.KoOyaTsumoTest do
   alias RiichiAdvanced.Riichi, as: Riichi
   alias RiichiAdvanced.TestUtils, as: TestUtils
 
-  @default_riichi_mods [
-    %{name: "honba", config: %{"value" => 100}},
-    %{name: "lib/yaku/riichi", config: %{"bet" => 1000, "drawless" => false, "double_value" => 2}
-},
-    %{name: "nagashi", config: %{"is" => "Mangan", counts_as: "draw"}},
-    %{name: "lib/tobi", config: %{"below" => 0}},
-    %{
-     name: "uma",
-     config: %{"_1st" => 10, "_2nd" => 5, "_3rd" => -5, "_4th" => -10}
-    },
-    "lib/agarirenchan",
-    "tenpairenchan",
-    "lib/kuikae_nashi",
-    "double_wind_4_fu",
-    "lib/pao_standard",
-    "kokushi_ankan_chankan",
-    %{name: "suufon_renda", config: %{name: "Suufon Renda"}},
-    "suucha_riichi",
-    "lib/suukaikan",
-    %{name: "kyuushu_kyuuhai", config: %{name: "Kyuushu Kyuuhai"}},
-    %{name: "dora", config: %{"start_indicators" => 1}},
-    "ura",
-    "kandora",
-    "lib/yaku/ippatsu",
-    %{name: "lib/yaku/riichi_renhou", config: %{"is" => "Yakuman"}},
-    "show_waits",
-    %{name: "lib/min_han", config: %{"min" => 1, han: "Han"}},
-    %{name: "aka", config: %{"man" => 1, "pin" => 1, "sou" => 1}}
-  ]
-
   def test_ko_oya_3p(score, expected) do
     assert expected == Riichi.calc_ko_oya_points(score, false, 3, 100)
   end
@@ -107,12 +77,11 @@ defmodule RiichiAdvanced.KoOyaTsumoTest do
   end
 
   def tsumo_loss_yakuman_test(tsumo_loss, seat, expected_score, expected_delta_scores) do
-    mods = @default_riichi_mods
     tsumo_loss_mod = case tsumo_loss do
       nil -> []
       method -> [%{name: "sanma_no_tsumo_loss", config: %{"method" => method}}]
     end
-    test_state = TestUtils.initialize_test_state("kansai", mods ++ tsumo_loss_mod, "");
+    test_state = TestUtils.initialize_test_state("sanma", tsumo_loss_mod);
     state = GenServer.call(test_state.game_state_pid, :get_state)
     hand = [:"2m", :"3m", :"4m", :"4m", :"5m", :"6m", :"7p", :"7p", :"7p", :"8s", :"8s", :"8s", :"6p"]
     draw = [:"6p"]

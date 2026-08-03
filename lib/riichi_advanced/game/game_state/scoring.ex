@@ -38,9 +38,11 @@ defmodule RiichiAdvanced.GameState.Scoring do
 
   def dedup_yaku(yaku) do
     {acc, order} = for {name, value} <- yaku, reduce: {%{}, []} do
-      {acc, order} -> {Map.update(acc, name, value, &add_yaku_values(&1, value)), [name | order]}
+      {acc, order} ->
+        {Map.update(acc, name, value, &add_yaku_values(&1, value)), [name | order]}
     end
     order
+    |> Enum.uniq()
     |> Enum.reverse()
     |> Enum.map(&{&1, Map.get(acc, &1)})
   end
@@ -72,18 +74,22 @@ defmodule RiichiAdvanced.GameState.Scoring do
       Rules.get(state.rules_ref, "score_calculation", %{})
       |> Map.get("extra_yaku_lists", [])
     else [] end
+
     {acc, existing_yaku, _skips, _clause_cache} = for yaku <- yakus, reduce: {[], [], MapSet.new(), %{}} do
       {acc, existing_yaku, skips, clause_cache} ->
+        debug = yaku["display_name"] in Debug.debug_specific_yaku()
         if yaku.key not in skips and yaku.list_name not in excluded_lists do
           if Debug.debug_yaku_precedence() do
             IO.puts("Evaluating yaku #{yaku["display_name"]}")
           end
           context = Map.put(context, :existing_yaku, existing_yaku)
-          {result, clause_cache} = Conditions.cached_check_cnf_condition(state, yaku["when"], context, clause_cache)
+          debug_label = if debug do "Debugging yaku #{yaku["display_name"]}" else nil end
+          {result, clause_cache} = Conditions.cached_check_cnf_condition(state, yaku["when"], context, clause_cache, debug_label)
+          # result = Conditions.check_cnf_condition(state, yaku["when"], context)
           if result do
             new_skips = MapSet.union(skips, Map.get(yaku_skip_map, yaku.key, MapSet.new()))
             %{"display_name" => name, "value" => value} = yaku
-            if name in Debug.debug_specific_yaku() do IO.puts("Yaku #{inspect(yaku.key)}: passed all checks") end
+            if debug do IO.puts("Yaku #{inspect(yaku.key)}: passed all checks") end
             if yaku.key in new_skips do
               {acc, existing_yaku, new_skips, clause_cache} # we override ourselves
             else
@@ -93,8 +99,17 @@ defmodule RiichiAdvanced.GameState.Scoring do
               {[yaku | acc], [{name, value} | existing_yaku], new_skips, clause_cache}
             end
           else
-            if yaku["display_name"] in Debug.debug_specific_yaku() do
-              IO.inspect(clause_cache, label: "Yaku #{inspect(yaku.key)}: failed check, clause cache", limit: :infinity)
+            if debug do
+              # IO.inspect(clause_cache, label: "Yaku #{inspect(yaku.key)}: failed check, clause cache", limit: :infinity)
+              IO.puts("Yaku #{inspect(yaku.key)}: failed check, clauses:")
+              key = Map.take(context, [:seat, :calls_spec])
+              for clause <- yaku["when"] do
+                case Map.get(clause_cache, {:dnf, clause, key}, nil) do
+                  true -> IO.puts("- Passed: #{inspect(clause)}")
+                  false -> IO.puts("- Failed: #{inspect(clause)}")
+                  nil -> IO.puts("- Skipped: #{inspect(clause)}")
+                end
+              end
             end
             {acc, existing_yaku, skips, clause_cache}
           end
@@ -261,7 +276,6 @@ defmodule RiichiAdvanced.GameState.Scoring do
     yaku = if not Enum.empty?(yaku) and highest_scoring_yaku_only do [Enum.max_by(yaku, fn {_name, value} -> value end)] else yaku end
     yaku = Enum.map(yaku, fn {name, value} -> {translate(state, name), value} end) |> Scoring.dedup_yaku()
     points = Enum.map(yaku, fn {_name, value} -> value end) |> Enum.reduce([], &Scoring.add_yaku_values/2)
-
     # put back hand/calls/winning tile
     state = state
     |> update_player(seat, &%{ &1 | hand: &1.cache.orig_hand, calls: &1.cache.orig_calls })

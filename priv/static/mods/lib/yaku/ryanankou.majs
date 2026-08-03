@@ -1,5 +1,4 @@
 default list, "yaku"
-default override, ""
 
 on after_initialization do
   add_rule("$value $han", "$name", "%{value} %{han} if you have two concealed triplets. A triplet completed by a self-draw win counts as concealed.", %{value: !value, han: !han, name: !name})
@@ -28,5 +27,3 @@ define_match ryanankou_ron, ~m"""
 define_yaku !list, !name, [!value, !han],
      (won_by_draw and match(["hand", "calls", "winning_tile"], ["ryanankou_tsumo"]))
   or (not_won_by_draw and match(["hand", "calls", "winning_tile"], ["ryanankou_ron"]))
-
-unless equals(!override, "") do define_yaku_precedence !name, [!override] end

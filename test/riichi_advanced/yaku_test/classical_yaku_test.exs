@@ -5,7 +5,7 @@ defmodule RiichiAdvanced.YakuTest.ClassicalYaku do
   # note: every `score` check here is multiplied by 3 since you get 3 payments
 
   test "classical - chicken hand" do
-    TestUtils.test_yaku_advanced("classical", [], """
+    TestUtils.test_yaku_advanced("classical", [], [], """
     {
       "starting_hand": {
         "east": ["1m", "2m", "3m", "5m", "5m", "5m", "7m", "8m", "9m", "8s", "8s", "8s", "6p"],
@@ -33,7 +33,7 @@ defmodule RiichiAdvanced.YakuTest.ClassicalYaku do
   end
 
   test "classical - pure straight" do
-    TestUtils.test_yaku_advanced("classical", [], """
+    TestUtils.test_yaku_advanced("classical", [], [], """
     {
       "starting_hand": {
         "east": ["1m", "2m", "3m", "4m", "5m", "6m", "7m", "8m", "9m", "8s", "8s", "8s", "6p"],
@@ -61,7 +61,7 @@ defmodule RiichiAdvanced.YakuTest.ClassicalYaku do
   end
 
   test "classical - all triplets, three concealed" do
-    TestUtils.test_yaku_advanced("classical", [], """
+    TestUtils.test_yaku_advanced("classical", [], [], """
     {
       "starting_hand": {
         "east": ["2m", "2m", "2m", "5m", "5m", "5m", "9m", "9m", "9m", "8s", "8s", "6p", "6p"],
@@ -89,7 +89,7 @@ defmodule RiichiAdvanced.YakuTest.ClassicalYaku do
   end
 
   test "classical - four concealed triplets" do
-    TestUtils.test_yaku_advanced("classical", [], """
+    TestUtils.test_yaku_advanced("classical", [], [], """
     {
       "starting_hand": {
         "east": ["2m", "2m", "2m", "5m", "5m", "5m", "8m", "8m", "8m", "8s", "8s", "8s", "6p"],
@@ -117,7 +117,7 @@ defmodule RiichiAdvanced.YakuTest.ClassicalYaku do
   end
 
   test "classical - white dragon" do
-    TestUtils.test_yaku_advanced("classical", [], """
+    TestUtils.test_yaku_advanced("classical", [], [], """
     {
       "starting_hand": {
         "east": ["1m", "2m", "3m", "5m", "5m", "5m", "7m", "8m", "9m", "0z", "0z", "0z", "6p"],
@@ -145,7 +145,7 @@ defmodule RiichiAdvanced.YakuTest.ClassicalYaku do
   end
 
   test "classical - green dragon" do
-    TestUtils.test_yaku_advanced("classical", [], """
+    TestUtils.test_yaku_advanced("classical", [], [], """
     {
       "starting_hand": {
         "east": ["1m", "2m", "3m", "5m", "5m", "5m", "7m", "8m", "9m", "6z", "6z", "6z", "6p"],
@@ -173,7 +173,7 @@ defmodule RiichiAdvanced.YakuTest.ClassicalYaku do
   end
 
   test "classical - red dragon" do
-    TestUtils.test_yaku_advanced("classical", [], """
+    TestUtils.test_yaku_advanced("classical", [], [], """
     {
       "starting_hand": {
         "east": ["1m", "2m", "3m", "5m", "5m", "5m", "7m", "8m", "9m", "7z", "7z", "7z", "6p"],
@@ -201,7 +201,7 @@ defmodule RiichiAdvanced.YakuTest.ClassicalYaku do
   end
 
   test "classical - little three dragons" do
-    TestUtils.test_yaku_advanced("classical", [], """
+    TestUtils.test_yaku_advanced("classical", [], [], """
     {
       "starting_hand": {
         "east": ["1m", "2m", "3m", "4p", "4p", "4p", "0z", "0z", "0z", "6z", "6z", "7z", "7z"],
@@ -229,7 +229,7 @@ defmodule RiichiAdvanced.YakuTest.ClassicalYaku do
   end
 
   test "classical - all simples" do
-    TestUtils.test_yaku_advanced("classical", [], """
+    TestUtils.test_yaku_advanced("classical", [], [], """
     {
       "starting_hand": {
         "east": ["2m", "3m", "4m", "5m", "6m", "7m", "2p", "3p", "4p", "8s", "8s", "8s", "6p"],
@@ -257,7 +257,7 @@ defmodule RiichiAdvanced.YakuTest.ClassicalYaku do
   end
 
   test "classical - prevalent and seat wind" do
-    TestUtils.test_yaku_advanced("classical", [], """
+    TestUtils.test_yaku_advanced("classical", [], [], """
     {
       "starting_hand": {
         "east": ["1m", "2m", "3m", "5m", "5m", "5m", "7m", "8m", "9m", "1z", "1z", "1z", "6p"],
@@ -285,7 +285,7 @@ defmodule RiichiAdvanced.YakuTest.ClassicalYaku do
   end
   
   test "classical - non-prevalent or seat wind" do
-    TestUtils.test_yaku_advanced("classical", [], """
+    TestUtils.test_yaku_advanced("classical", [], [], """
     {
       "starting_hand": {
         "east": ["1m", "2m", "3m", "2z", "2z", "2z", "3z", "3z", "3z", "4z", "4z", "6p", "6p"],
@@ -313,7 +313,7 @@ defmodule RiichiAdvanced.YakuTest.ClassicalYaku do
   end
   
   test "classical - outside hand" do
-    TestUtils.test_yaku_advanced("classical", [], """
+    TestUtils.test_yaku_advanced("classical", [], [], """
     {
       "starting_hand": {
         "east": ["1m", "2m", "3m", "7p", "8p", "9p", "3z", "3z", "3z", "4z", "4z", "0z", "0z"],
@@ -341,7 +341,7 @@ defmodule RiichiAdvanced.YakuTest.ClassicalYaku do
   end
   
   test "classical - all terminals and honors" do
-    TestUtils.test_yaku_advanced("classical", [], """
+    TestUtils.test_yaku_advanced("classical", [], [], """
     {
       "starting_hand": {
         "east": ["1m", "1m", "1m", "9p", "9p", "9p", "3z", "3z", "3z", "4z", "4z", "1z", "1z"],
@@ -369,7 +369,7 @@ defmodule RiichiAdvanced.YakuTest.ClassicalYaku do
   end
   
   test "classical - half flush" do
-    TestUtils.test_yaku_advanced("classical", [], """
+    TestUtils.test_yaku_advanced("classical", [], [], """
     {
       "starting_hand": {
         "east": ["1m", "2m", "3m", "6m", "7m", "8m", "3z", "3z", "3z", "4z", "4z", "1z", "1z"],
@@ -397,7 +397,7 @@ defmodule RiichiAdvanced.YakuTest.ClassicalYaku do
   end
 
   test "classical - full flush" do
-    TestUtils.test_yaku_advanced("classical", [], """
+    TestUtils.test_yaku_advanced("classical", [], [], """
     {
       "starting_hand": {
         "east": ["2m", "4m", "7m", "2p", "5p", "8p", "3s", "6s", "9s", "2z", "0z", "6z", "7z"],
@@ -424,7 +424,7 @@ defmodule RiichiAdvanced.YakuTest.ClassicalYaku do
   end
 
   test "classical - out on a replacement and concealed hand" do
-    TestUtils.test_yaku_advanced("classical", [], """
+    TestUtils.test_yaku_advanced("classical", [], [], """
     {
       "starting_hand": {
         "east": ["1m", "1m", "1m", "6m", "7m", "8m", "3z", "3z", "3z", "4z", "4z", "1z", "1z"],
@@ -452,7 +452,7 @@ defmodule RiichiAdvanced.YakuTest.ClassicalYaku do
   end
   
   test "classical - robbing the kong" do
-    TestUtils.test_yaku_advanced("classical", [], """
+    TestUtils.test_yaku_advanced("classical", [], [], """
     {
       "starting_hand": {
         "east": ["2m", "2m", "2m", "3m", "3m", "4m", "4m", "7p", "8p", "9p", "7m", "8m", "1m"],
@@ -484,7 +484,7 @@ defmodule RiichiAdvanced.YakuTest.ClassicalYaku do
   end
   
   test "classical - seat flower and season" do
-    TestUtils.test_yaku_advanced("classical", [], """
+    TestUtils.test_yaku_advanced("classical", [], [], """
     {
       "starting_hand": {
         "east": ["1m", "2m", "3m", "5m", "5m", "5m", "7m", "8m", "9m", "8s", "8s", "8s", "6p"],
@@ -517,7 +517,7 @@ defmodule RiichiAdvanced.YakuTest.ClassicalYaku do
   end
 
   test "classical - all flowers" do
-    TestUtils.test_yaku_advanced("classical", [], """
+    TestUtils.test_yaku_advanced("classical", [], [], """
     {
       "starting_hand": {
         "east": ["1m", "4m", "7m", "2p", "5p", "8p", "3s", "6s", "9s", "1z", "2z", "3z", "4z"],
@@ -551,7 +551,7 @@ defmodule RiichiAdvanced.YakuTest.ClassicalYaku do
   end
 
   test "classical - all seasons" do
-    TestUtils.test_yaku_advanced("classical", [], """
+    TestUtils.test_yaku_advanced("classical", [], [], """
     {
       "starting_hand": {
         "east": ["1m", "4m", "7m", "2p", "5p", "8p", "3s", "6s", "9s", "1z", "2z", "3z", "4z"],
@@ -585,7 +585,7 @@ defmodule RiichiAdvanced.YakuTest.ClassicalYaku do
   end
 
   test "classical - blessing of heaven" do
-    TestUtils.test_yaku_advanced("classical", [], """
+    TestUtils.test_yaku_advanced("classical", [], [], """
     {
       "starting_hand": {
         "east": ["1m", "2m", "3m", "5m", "5m", "5m", "7m", "8m", "9m", "8s", "8s", "8s", "6p"],
@@ -611,7 +611,7 @@ defmodule RiichiAdvanced.YakuTest.ClassicalYaku do
   end
 
   test "classical - blessing of earth" do
-    TestUtils.test_yaku_advanced("classical", [], """
+    TestUtils.test_yaku_advanced("classical", [], [], """
     {
       "starting_hand": {
         "east": ["1m", "4m", "7m", "2p", "5p", "8p", "3s", "6s", "9s", "1z", "2z", "3z", "4z"],
@@ -638,7 +638,7 @@ defmodule RiichiAdvanced.YakuTest.ClassicalYaku do
   end
 
   test "classical - chousuushii" do
-    TestUtils.test_yaku_advanced("classical", [], """
+    TestUtils.test_yaku_advanced("classical", [], [], """
     {
       "starting_hand": {
         "east": ["1z", "1z", "1z", "2z", "2z", "2z", "3z", "3z", "3z", "4z", "4z", "5m", "1p"],
@@ -680,7 +680,7 @@ defmodule RiichiAdvanced.YakuTest.ClassicalYaku do
   end
 
   test "classical - chinroutou" do
-    TestUtils.test_yaku_advanced("classical", [], """
+    TestUtils.test_yaku_advanced("classical", [], [], """
     {
       "starting_hand": {
         "east": ["1m", "1m", "1m", "1p", "1p", "1p", "9p", "9p", "9s", "9s", "1s", "1s", "7z"],
@@ -711,7 +711,7 @@ defmodule RiichiAdvanced.YakuTest.ClassicalYaku do
   end
 
   test "classical - daisangen tsuuiisou suuankou" do
-    TestUtils.test_yaku_advanced("classical", [], """
+    TestUtils.test_yaku_advanced("classical", [], [], """
     {
       "starting_hand": {
         "east": ["0z", "0z", "0z", "6z", "6z", "6z", "2z", "2z", "3z", "3z", "7z", "7z", "7z"],
@@ -739,7 +739,7 @@ defmodule RiichiAdvanced.YakuTest.ClassicalYaku do
   end
 
   test "classical - kokushi tenhou with starting flower" do
-    TestUtils.test_yaku_advanced("classical", [], """
+    TestUtils.test_yaku_advanced("classical", [], [], """
     {
       "starting_hand": {
         "east": ["1m", "9m", "1p", "9p", "1s", "9s", "1z", "1z", "3z", "4z", "0z", "6z", "7z"],
@@ -767,7 +767,7 @@ defmodule RiichiAdvanced.YakuTest.ClassicalYaku do
   end
 
   test "classical - chuurenpoutou chiihou with starting flower" do
-    TestUtils.test_yaku_advanced("classical", [], """
+    TestUtils.test_yaku_advanced("classical", [], [], """
     {
       "starting_hand": {
         "east": ["2m", "4m", "8m", "2p", "5p", "8p", "3s", "6s", "9s", "1z", "2z", "3z", "4z"],
@@ -796,7 +796,7 @@ defmodule RiichiAdvanced.YakuTest.ClassicalYaku do
   end
 
   test "classical - twofold fortune" do
-    TestUtils.test_yaku_advanced("classical", [], """
+    TestUtils.test_yaku_advanced("classical", [], [], """
     {
       "starting_hand": {
         "east": ["1m", "2m", "3m", "5m", "5m", "5m", "8m", "9m", "8s", "8s", "8s", "9s", "9s"],
@@ -825,7 +825,7 @@ defmodule RiichiAdvanced.YakuTest.ClassicalYaku do
   end
 
   test "classical - uupin kaihou" do
-    TestUtils.test_yaku_advanced("classical", [], """
+    TestUtils.test_yaku_advanced("classical", [], [], """
     {
       "starting_hand": {
         "east": ["1m", "2m", "3m", "7m", "8m", "9m", "4p", "6p", "8s", "8s", "8s", "9s", "9s"],
@@ -853,7 +853,7 @@ defmodule RiichiAdvanced.YakuTest.ClassicalYaku do
   end
 
   test "classical - ryanzou chankan" do
-    TestUtils.test_yaku_advanced("classical", [], """
+    TestUtils.test_yaku_advanced("classical", [], [], """
     {
       "starting_hand": {
         "east": ["2m", "2m", "2m", "3m", "3m", "4m", "4m", "7p", "8p", "9p", "3s", "4s", "1m"],
@@ -885,7 +885,7 @@ defmodule RiichiAdvanced.YakuTest.ClassicalYaku do
   end
 
   test "classical - dealer's 13 consecutive win" do
-    TestUtils.test_yaku_advanced("classical", [], """
+    TestUtils.test_yaku_advanced("classical", [], [], """
     {
       "starting_hand": {
         "east": ["1m", "2m", "3m", "5m", "5m", "5m", "7m", "8m", "9m", "8s", "8s", "8s", "6p"],
@@ -914,7 +914,7 @@ defmodule RiichiAdvanced.YakuTest.ClassicalYaku do
   end
   
   test "classical - dealer's 12th consecutive win is not awarded" do
-    TestUtils.test_yaku_advanced("classical", [], """
+    TestUtils.test_yaku_advanced("classical", [], [], """
     {
       "starting_hand": {
         "east": ["1m", "2m", "3m", "5m", "5m", "5m", "7m", "8m", "9m", "8s", "8s", "8s", "6p"],
@@ -943,7 +943,7 @@ defmodule RiichiAdvanced.YakuTest.ClassicalYaku do
   end
 
   test "classical - haitei" do
-    TestUtils.test_yaku_advanced("classical", [], """
+    TestUtils.test_yaku_advanced("classical", [], [], """
     {
       "starting_hand": {
         "east": ["5m","8m","4z","8p","2p","4s","6m","7p","2s","6s","5p","7s","1s"],
@@ -1063,7 +1063,7 @@ defmodule RiichiAdvanced.YakuTest.ClassicalYaku do
   end
 
   test "classical - houtei" do
-    TestUtils.test_yaku_advanced("classical", [], """
+    TestUtils.test_yaku_advanced("classical", [], [], """
     {
       "starting_hand": {
         "east": ["6z","2f","9s","3s","4p","4s","3s","7p","6p","2p","8s","8p","1p"],
@@ -1184,7 +1184,7 @@ defmodule RiichiAdvanced.YakuTest.ClassicalYaku do
   end
 
   test "classical - iipin mouyue" do
-    TestUtils.test_yaku_advanced("classical", [], """
+    TestUtils.test_yaku_advanced("classical", [], [], """
     {
       "starting_hand": {
         "east": ["7p","2m","3z","2s","8m","9p","8s","7m","9m","6m","6z","8s","7p"],

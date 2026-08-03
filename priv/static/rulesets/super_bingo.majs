@@ -9,6 +9,7 @@ require "shuugi", %{worth: 10, pao_pays_all: true, starting_shuugi: 1000}
 require "super_bingo_tictactoe"
 require "super_bingo_tulips"
 require_after "super_bingo_yaku"
+require_after "riichi_fix_rules_tabs"
 apply set_append, "default_mods", [
   %{name: "honba", config: %{value: 1000}},
   %{name: "lib/tobi", config: %{below: 1}},
@@ -105,10 +106,10 @@ define_mod super_bingo_orochi, name: "Orochi (unimplemented)", category: "Super 
 
 remove_mod sanma_disable_pei
 remove_mod sanma_pei_yakuhai
-remove_mod "yaku/riichi_renhou"
+remove_mod "lib/yaku/riichi_renhou"
 
 apply append, "default_mods", [
   %{name: "starting_score", config: %{points: 30000}},
   "super_bingo_rainbow_sevens",
-  "super_bingo_grand_cross",
+  %{name: "super_bingo_grand_cross", config: %{add_gold_pei: true}},
 ]

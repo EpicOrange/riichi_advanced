@@ -68,11 +68,11 @@ require "yaku/shousangen", %{dai_name: "Three Great Scholars", dai_value: 10, sh
 require "yaku/honroutou", %{chin_name: "All Terminals", chin_value: 5, hon_name: "All Terminals Or Honors", hon_value: 4}
 require "yaku/shousuushii", %{dai_name: "Four Great Blessings", dai_value: 10, shou_name: "Four Lesser Blessings", shou_value: 4}
 require "yaku/tsuuiisou", %{name: "All Honours", value: 5}
-require "yaku/suuankou", %{name: "Hidden Treasure", value: 5, tsumo_only: true}
+require "yaku/sanankou", %{suu_name: "Hidden Treasure", suu_value: 5, suu_tsumo_only: true}
 require "yaku/kokushi", %{name: "Thirteen Orphans", value: 5, rules_tab: "5 Tai"}
 # TODO import ryuuiisou instead of defining it here
 define_yaku yaku, "All Green", [1, "★"], winning_hand_consists_of("2s","3s","4s","6s","8s","6z")
-require "yaku/chuurenpoutou", %{name: "Nine Gates", value: 13, must_wait_9: false}
+require "yaku/chuurenpoutou", %{name: "Nine Gates", value: 13}
 require "yaku/suukantsu", %{name: "Eighteen Arhats", value: 5}
 require "yaku/tenhou", %{chiihou_name: "Earthly Hand", chiihou_value: 5, tenhou_name: "Heavenly Hand", tenhou_value: 5}
 require "pao_standard"

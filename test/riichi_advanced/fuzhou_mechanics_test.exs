@@ -5,7 +5,7 @@ defmodule RiichiAdvanced.YakuTest.FuzhouMechanicsTest do
   @base {"Base Points", [10, ""]}
 
   test "fuzhou - tenpai is not win (0 jin)" do
-    TestUtils.test_yaku_advanced("fuzhou", [], """
+    TestUtils.test_yaku_advanced("fuzhou", [], [], """
     {
       "starting_hand": {
         "east": ["3m", "3m", "3m", "5m", "6m", "7m", "8m", "9m", "3s", "4s", "4p", "5p", "6p", "7p", "8p", "9p"],
@@ -27,7 +27,7 @@ defmodule RiichiAdvanced.YakuTest.FuzhouMechanicsTest do
   end
 
   test "fuzhou - iishanten is not win (1 jin)" do
-    TestUtils.test_yaku_advanced("fuzhou", [], """
+    TestUtils.test_yaku_advanced("fuzhou", [], [], """
     {
       "starting_hand": {
         "east": ["1m", "3m", "3m", "5m", "6m", "7m", "8m", "9m", "3s", "4s", "4p", "5p", "6p", "7p", "8p", "9p"],
@@ -49,7 +49,7 @@ defmodule RiichiAdvanced.YakuTest.FuzhouMechanicsTest do
   end
 
   test "fuzhou - ryanshanten is not win (2 jin)" do
-    TestUtils.test_yaku_advanced("fuzhou", [], """
+    TestUtils.test_yaku_advanced("fuzhou", [], [], """
     {
       "starting_hand": {
         "east": ["1m", "3m", "3m", "5m", "6m", "7m", "9m", "9m", "3s", "4s", "4p", "5p", "6p", "7p", "8p", "8p"],
@@ -71,7 +71,7 @@ defmodule RiichiAdvanced.YakuTest.FuzhouMechanicsTest do
   end
 
   test "fuzhou - sanshanten is not win (3 jin)" do
-    TestUtils.test_yaku_advanced("fuzhou", [], """
+    TestUtils.test_yaku_advanced("fuzhou", [], [], """
     {
       "starting_hand": {
         "east": ["1m", "3m", "3m", "5m", "6m", "9m", "9m", "9m", "3s", "4s", "4p", "5p", "6p", "7p", "8p", "8p"],
@@ -93,7 +93,7 @@ defmodule RiichiAdvanced.YakuTest.FuzhouMechanicsTest do
   end
 
   test "fuzhou - win is win (0 jin)" do
-    TestUtils.test_yaku_advanced("fuzhou", [], """
+    TestUtils.test_yaku_advanced("fuzhou", [], [], """
     {
       "starting_hand": {
         "east": ["3m", "3m", "3m", "5m", "6m", "7m", "8m", "8m", "3s", "4s", "4p", "5p", "6p", "7p", "8p", "9p"],
@@ -120,7 +120,7 @@ defmodule RiichiAdvanced.YakuTest.FuzhouMechanicsTest do
   end
 
   test "fuzhou - tenpai is win (1 jin)" do
-    TestUtils.test_yaku_advanced("fuzhou", [], """
+    TestUtils.test_yaku_advanced("fuzhou", [], [], """
     {
       "starting_hand": {
         "east": ["3m", "3m", "3m", "3m", "6m", "7m", "8m", "9m", "3s", "4s", "4p", "5p", "6p", "7p", "8p", "9p"],
@@ -147,7 +147,7 @@ defmodule RiichiAdvanced.YakuTest.FuzhouMechanicsTest do
   end
 
   test "fuzhou - iishanten is win (2 jin)" do
-    TestUtils.test_yaku_advanced("fuzhou", [], """
+    TestUtils.test_yaku_advanced("fuzhou", [], [], """
     {
       "starting_hand": {
         "east": ["3m", "3m", "3m", "5m", "6m", "7m", "9m", "9m", "3s", "4s", "4p", "5p", "6p", "7p", "8p", "8p"],
@@ -174,7 +174,7 @@ defmodule RiichiAdvanced.YakuTest.FuzhouMechanicsTest do
   end
 
   test "fuzhou - ryanshanten is win (3 jin)" do
-    TestUtils.test_yaku_advanced("fuzhou", [], """
+    TestUtils.test_yaku_advanced("fuzhou", [], [], """
     {
       "starting_hand": {
         "east": ["3m", "3m", "3m", "5m", "6m", "9m", "9m", "9m", "3s", "4s", "4p", "5p", "6p", "7p", "8p", "8p"],

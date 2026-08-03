@@ -3,7 +3,7 @@ defmodule RiichiAdvanced.YakuTest.ZungJungYaku do
   alias RiichiAdvanced.TestUtils, as: TestUtils
 
   test "zung jung - chicken hand" do
-    TestUtils.test_yaku_advanced("zung_jung", [], """
+    TestUtils.test_yaku_advanced("zung_jung", [], [], """
     {
       "starting_hand": {
         "east": ["3m", "3m", "3m", "5m", "6m", "7m", "8m", "9m", "5s", "5s", "7p", "8p", "9p"],
@@ -28,7 +28,7 @@ defmodule RiichiAdvanced.YakuTest.ZungJungYaku do
   end
 
   test "zung jung - concealed hand" do
-    TestUtils.test_yaku_advanced("zung_jung", [], """
+    TestUtils.test_yaku_advanced("zung_jung", [], [], """
     {
       "starting_hand": {
         "east": ["3m", "3m", "3m", "5m", "6m", "7m", "8m", "8m", "3s", "4s", "7p", "8p", "9p"],
@@ -50,7 +50,7 @@ defmodule RiichiAdvanced.YakuTest.ZungJungYaku do
   end
 
   test "zung jung - ankan preserves concealed hand" do
-    TestUtils.test_yaku_advanced("zung_jung", [], """
+    TestUtils.test_yaku_advanced("zung_jung", [], [], """
     {
       "starting_hand": {
         "east": ["3m", "3m", "3m", "5m", "6m", "7m", "8m", "8m", "3s", "4s", "7p", "8p", "9p"],
@@ -73,7 +73,7 @@ defmodule RiichiAdvanced.YakuTest.ZungJungYaku do
   end
 
   test "zung jung - all sequences" do
-    TestUtils.test_yaku_advanced("zung_jung", [], """
+    TestUtils.test_yaku_advanced("zung_jung", [], [], """
     {
       "starting_hand": {
         "east": ["3m", "3m", "3m", "5m", "6m", "7m", "8m", "9m", "5s", "6s", "7p", "8p", "9p"],
@@ -100,7 +100,7 @@ defmodule RiichiAdvanced.YakuTest.ZungJungYaku do
   end
 
   test "zung jung - all sequences concealed" do
-    TestUtils.test_yaku_advanced("zung_jung", [], """
+    TestUtils.test_yaku_advanced("zung_jung", [], [], """
     {
       "starting_hand": {
         "east": ["1m", "2m", "3m", "5m", "6m", "7m", "8m", "8m", "3s", "4s", "7p", "8p", "9p"],
@@ -122,7 +122,7 @@ defmodule RiichiAdvanced.YakuTest.ZungJungYaku do
   end
 
   test "zung jung - no terminals" do
-    TestUtils.test_yaku_advanced("zung_jung", [], """
+    TestUtils.test_yaku_advanced("zung_jung", [], [], """
     {
       "starting_hand": {
         "east": ["3m", "3m", "1z", "5m", "6m", "7m", "8m", "4s", "5s", "6s", "3p", "4p", "5p"],
@@ -149,7 +149,7 @@ defmodule RiichiAdvanced.YakuTest.ZungJungYaku do
   end
 
   test "zung jung - mixed one suit" do
-    TestUtils.test_yaku_advanced("zung_jung", [], """
+    TestUtils.test_yaku_advanced("zung_jung", [], [], """
     {
       "starting_hand": {
         "east": ["3m", "3m", "1z", "5m", "6m", "7m", "8m", "4m", "5m", "6m", "4z", "4z", "4z"],
@@ -176,7 +176,7 @@ defmodule RiichiAdvanced.YakuTest.ZungJungYaku do
   end
 
   test "zung jung - pure one suit" do
-    TestUtils.test_yaku_advanced("zung_jung", [], """
+    TestUtils.test_yaku_advanced("zung_jung", [], [], """
     {
       "starting_hand": {
         "east": ["3m", "3m", "1z", "5m", "6m", "7m", "8m", "4m", "5m", "6m", "7m", "8m", "9m"],
@@ -203,7 +203,7 @@ defmodule RiichiAdvanced.YakuTest.ZungJungYaku do
   end
 
   test "zung jung - not nine gates" do
-    TestUtils.test_yaku_advanced("zung_jung", [], """
+    TestUtils.test_yaku_advanced("zung_jung", [], [], """
     {
       "starting_hand": {
         "east": ["1m", "1m", "1m", "2m", "3m", "4m", "4m", "6m", "7m", "8m", "9m", "9m", "9m"],
@@ -225,7 +225,7 @@ defmodule RiichiAdvanced.YakuTest.ZungJungYaku do
   end
 
   test "zung jung - nine gates" do
-    TestUtils.test_yaku_advanced("zung_jung", [], """
+    TestUtils.test_yaku_advanced("zung_jung", [], [], """
     {
       "starting_hand": {
         "east": ["1m", "1m", "1m", "2m", "3m", "4m", "5m", "6m", "7m", "8m", "9m", "9m", "9m"],
@@ -247,7 +247,7 @@ defmodule RiichiAdvanced.YakuTest.ZungJungYaku do
   end
 
   test "zung jung - haku" do
-    TestUtils.test_yaku_advanced("zung_jung", [], """
+    TestUtils.test_yaku_advanced("zung_jung", [], [], """
     {
       "starting_hand": {
         "east": ["1m", "2m", "3m", "5m", "6m", "7m", "8m", "9m", "5s", "5s", "0z", "0z", "0z"],
@@ -272,7 +272,7 @@ defmodule RiichiAdvanced.YakuTest.ZungJungYaku do
   end
 
   test "zung jung - hatsu" do
-    TestUtils.test_yaku_advanced("zung_jung", [], """
+    TestUtils.test_yaku_advanced("zung_jung", [], [], """
     {
       "starting_hand": {
         "east": ["1m", "2m", "3m", "5m", "6m", "7m", "8m", "9m", "5s", "5s", "6z", "6z", "6z"],
@@ -297,7 +297,7 @@ defmodule RiichiAdvanced.YakuTest.ZungJungYaku do
   end
 
   test "zung jung - chun" do
-    TestUtils.test_yaku_advanced("zung_jung", [], """
+    TestUtils.test_yaku_advanced("zung_jung", [], [], """
     {
       "starting_hand": {
         "east": ["1m", "2m", "3m", "5m", "6m", "7m", "8m", "9m", "5s", "5s", "7z", "7z", "7z"],
@@ -322,7 +322,7 @@ defmodule RiichiAdvanced.YakuTest.ZungJungYaku do
   end
 
   test "zung jung - seat wind" do
-    TestUtils.test_yaku_advanced("zung_jung", [], """
+    TestUtils.test_yaku_advanced("zung_jung", [], [], """
     {
       "starting_hand": {
         "east": ["1m", "2m", "3m", "5m", "6m", "7m", "8m", "9m", "5s", "5s", "1z", "1z", "1z"],
@@ -347,7 +347,7 @@ defmodule RiichiAdvanced.YakuTest.ZungJungYaku do
   end
 
   test "zung jung - value honors stack" do
-    TestUtils.test_yaku_advanced("zung_jung", [], """
+    TestUtils.test_yaku_advanced("zung_jung", [], [], """
     {
       "starting_hand": {
         "east": ["0z", "0z", "0z", "5m", "6m", "7m", "8m", "9m", "5s", "5s", "1z", "1z", "1z"],
@@ -372,7 +372,7 @@ defmodule RiichiAdvanced.YakuTest.ZungJungYaku do
   end
 
   test "zung jung - small three dragons" do
-    TestUtils.test_yaku_advanced("zung_jung", [], """
+    TestUtils.test_yaku_advanced("zung_jung", [], [], """
     {
       "starting_hand": {
         "east": ["0z", "0z", "1m", "5m", "6m", "7p", "8p", "9p", "6z", "6z", "7z", "7z", "7z"],
@@ -397,7 +397,7 @@ defmodule RiichiAdvanced.YakuTest.ZungJungYaku do
   end
 
   test "zung jung - big three dragons" do
-    TestUtils.test_yaku_advanced("zung_jung", [], """
+    TestUtils.test_yaku_advanced("zung_jung", [], [], """
     {
       "starting_hand": {
         "east": ["0z", "0z", "1m", "5m", "6p", "7p", "8p", "6z", "6z", "1m", "7z", "7z", "7z"],
@@ -425,7 +425,7 @@ defmodule RiichiAdvanced.YakuTest.ZungJungYaku do
   end
 
   test "zung jung - small three winds" do
-    TestUtils.test_yaku_advanced("zung_jung", [], """
+    TestUtils.test_yaku_advanced("zung_jung", [], [], """
     {
       "starting_hand": {
         "east": ["2z", "2z", "1m", "5m", "6m", "7p", "8p", "9p", "3z", "3z", "4z", "4z", "4z"],
@@ -450,7 +450,7 @@ defmodule RiichiAdvanced.YakuTest.ZungJungYaku do
   end
 
   test "zung jung - big three winds" do
-    TestUtils.test_yaku_advanced("zung_jung", [], """
+    TestUtils.test_yaku_advanced("zung_jung", [], [], """
     {
       "starting_hand": {
         "east": ["2z", "2z", "1m", "5m", "6p", "7p", "8p", "3z", "3z", "1z", "4z", "4z", "4z"],
@@ -478,7 +478,7 @@ defmodule RiichiAdvanced.YakuTest.ZungJungYaku do
   end
 
   test "zung jung - small four winds" do
-    TestUtils.test_yaku_advanced("zung_jung", [], """
+    TestUtils.test_yaku_advanced("zung_jung", [], [], """
     {
       "starting_hand": {
         "east": ["1z", "1z", "1m", "5m", "6m", "2z", "2z", "2z", "3z", "3z", "4z", "4z", "4z"],
@@ -503,7 +503,7 @@ defmodule RiichiAdvanced.YakuTest.ZungJungYaku do
   end
 
   test "zung jung - big four winds" do
-    TestUtils.test_yaku_advanced("zung_jung", [], """
+    TestUtils.test_yaku_advanced("zung_jung", [], [], """
     {
       "starting_hand": {
         "east": ["1z", "1z", "1m", "5m", "2z", "2z", "2z", "3z", "3z", "3z", "4z", "4z", "4z"],
@@ -529,7 +529,7 @@ defmodule RiichiAdvanced.YakuTest.ZungJungYaku do
 
 
   test "zung jung - all triplets" do
-    TestUtils.test_yaku_advanced("zung_jung", [], """
+    TestUtils.test_yaku_advanced("zung_jung", [], [], """
     {
       "starting_hand": {
         "east": ["9m", "9m", "9m", "5m", "1m", "2p", "2p", "1m", "3s", "3s", "1m", "4s", "4s"],
@@ -560,7 +560,7 @@ defmodule RiichiAdvanced.YakuTest.ZungJungYaku do
   end
 
   test "zung jung - two concealed triplets" do
-    TestUtils.test_yaku_advanced("zung_jung", [], """
+    TestUtils.test_yaku_advanced("zung_jung", [], [], """
     {
       "starting_hand": {
         "east": ["1m", "9m", "9m", "5m", "1p", "2p", "3p", "3s", "3s", "3s", "4s", "4s", "4s"],
@@ -585,7 +585,7 @@ defmodule RiichiAdvanced.YakuTest.ZungJungYaku do
   end
 
   test "zung jung - ankan counts as concealed triplet" do
-    TestUtils.test_yaku_advanced("zung_jung", [], """
+    TestUtils.test_yaku_advanced("zung_jung", [], [], """
     {
       "starting_hand": {
         "east": ["3m", "3m", "3m", "5m", "5m", "5m", "8m", "8m", "3s", "4s", "7p", "8p", "9p"],
@@ -608,7 +608,7 @@ defmodule RiichiAdvanced.YakuTest.ZungJungYaku do
   end
 
   test "zung jung - three concealed triplets" do
-    TestUtils.test_yaku_advanced("zung_jung", [], """
+    TestUtils.test_yaku_advanced("zung_jung", [], [], """
     {
       "starting_hand": {
         "east": ["1m", "7m", "8m", "5m", "2p", "2p", "2p", "3s", "3s", "3s", "4s", "4s", "4s"],
@@ -635,7 +635,7 @@ defmodule RiichiAdvanced.YakuTest.ZungJungYaku do
   end
 
   test "zung jung - four concealed triplets" do
-    TestUtils.test_yaku_advanced("zung_jung", [], """
+    TestUtils.test_yaku_advanced("zung_jung", [], [], """
     {
       "starting_hand": {
         "east": ["9m", "9m", "9m", "5m", "2p", "2p", "2p", "3s", "3s", "3s", "4s", "4s", "4s"],
@@ -657,7 +657,7 @@ defmodule RiichiAdvanced.YakuTest.ZungJungYaku do
   end
 
   test "zung jung - one kong" do
-    TestUtils.test_yaku_advanced("zung_jung", [], """
+    TestUtils.test_yaku_advanced("zung_jung", [], [], """
     {
       "starting_hand": {
         "east": ["6m", "7m", "8m", "5m", "2p", "2p", "2p", "3s", "4s", "5s", "4z", "4z", "4z"],
@@ -682,7 +682,7 @@ defmodule RiichiAdvanced.YakuTest.ZungJungYaku do
   end
 
   test "zung jung - two kong" do
-    TestUtils.test_yaku_advanced("zung_jung", [], """
+    TestUtils.test_yaku_advanced("zung_jung", [], [], """
     {
       "starting_hand": {
         "east": ["6m", "7m", "8m", "5m", "2p", "2p", "2p", "3s", "4s", "5s", "4z", "4z", "4z"],
@@ -710,7 +710,7 @@ defmodule RiichiAdvanced.YakuTest.ZungJungYaku do
   end
 
   test "zung jung - three kong" do
-    TestUtils.test_yaku_advanced("zung_jung", [], """
+    TestUtils.test_yaku_advanced("zung_jung", [], [], """
     {
       "starting_hand": {
         "east": ["9m", "9m", "9m", "5m", "2p", "2p", "2p", "3s", "4s", "5s", "4z", "4z", "4z"],
@@ -741,7 +741,7 @@ defmodule RiichiAdvanced.YakuTest.ZungJungYaku do
   end
 
   test "zung jung - four kong" do
-    TestUtils.test_yaku_advanced("zung_jung", [], """
+    TestUtils.test_yaku_advanced("zung_jung", [], [], """
     {
       "starting_hand": {
         "east": ["9m", "9m", "9m", "5m", "2p", "2p", "2p", "3s", "3s", "3s", "4z", "4z", "4z"],
@@ -775,7 +775,7 @@ defmodule RiichiAdvanced.YakuTest.ZungJungYaku do
   end
 
   test "zung jung - open two identical sequences" do
-    TestUtils.test_yaku_advanced("zung_jung", [], """
+    TestUtils.test_yaku_advanced("zung_jung", [], [], """
     {
       "starting_hand": {
         "east": ["3m", "3m", "3m", "5m", "6m", "7m", "7m", "8m", "8m", "9m", "4s", "5s", "6s"],
@@ -802,7 +802,7 @@ defmodule RiichiAdvanced.YakuTest.ZungJungYaku do
   end
 
   test "zung jung - open three identical sequences" do
-    TestUtils.test_yaku_advanced("zung_jung", [], """
+    TestUtils.test_yaku_advanced("zung_jung", [], [], """
     {
       "starting_hand": {
         "east": ["5p", "5p", "5p", "5m", "6m", "7m", "7m", "7m", "8m", "8m", "8m", "9m", "9m"],
@@ -829,7 +829,7 @@ defmodule RiichiAdvanced.YakuTest.ZungJungYaku do
   end
 
   test "zung jung - open four identical sequences" do
-    TestUtils.test_yaku_advanced("zung_jung", [], """
+    TestUtils.test_yaku_advanced("zung_jung", [], [], """
     {
       "starting_hand": {
         "east": ["5m", "6m", "7m", "7m", "7m", "7m", "8m", "8m", "8m", "8m", "9m", "9m", "9m"],
@@ -856,7 +856,7 @@ defmodule RiichiAdvanced.YakuTest.ZungJungYaku do
   end
 
   test "zung jung - open three similar sequences" do
-    TestUtils.test_yaku_advanced("zung_jung", [], """
+    TestUtils.test_yaku_advanced("zung_jung", [], [], """
     {
       "starting_hand": {
         "east": ["5p", "5p", "5p", "5m", "6m", "7m", "7p", "7s", "8m", "8p", "8s", "9p", "9s"],
@@ -883,7 +883,7 @@ defmodule RiichiAdvanced.YakuTest.ZungJungYaku do
   end
 
   test "zung jung - open small three similar triplets" do
-    TestUtils.test_yaku_advanced("zung_jung", [], """
+    TestUtils.test_yaku_advanced("zung_jung", [], [], """
     {
       "starting_hand": {
         "east": ["1p", "2p", "3p", "5m", "6m", "6m", "7m", "7m", "7m", "7p", "7p", "7s", "7s"],
@@ -908,7 +908,7 @@ defmodule RiichiAdvanced.YakuTest.ZungJungYaku do
   end
 
   test "zung jung - open three similar triplets" do
-    TestUtils.test_yaku_advanced("zung_jung", [], """
+    TestUtils.test_yaku_advanced("zung_jung", [], [], """
     {
       "starting_hand": {
         "east": ["1p", "2p", "3p", "5m", "6m", "6m", "7m", "7m", "7m", "7p", "7p", "7s", "7s"],
@@ -936,7 +936,7 @@ defmodule RiichiAdvanced.YakuTest.ZungJungYaku do
   end
 
   test "zung jung - open ittsuu" do
-    TestUtils.test_yaku_advanced("zung_jung", [], """
+    TestUtils.test_yaku_advanced("zung_jung", [], [], """
     {
       "starting_hand": {
         "east": ["1m", "1m", "1p", "2p", "4p", "5p", "6p", "6p", "6p", "8p", "9p", "1z", "2z"],
@@ -968,7 +968,7 @@ defmodule RiichiAdvanced.YakuTest.ZungJungYaku do
   end
 
   test "zung jung - closed ittsuu" do
-    TestUtils.test_yaku_advanced("zung_jung", [], """
+    TestUtils.test_yaku_advanced("zung_jung", [], [], """
     {
       "starting_hand": {
         "east": ["1m", "2m", "3m", "4m", "5m", "6m", "7m", "8m", "7p", "8p", "9p", "9s", "9s"],
@@ -990,7 +990,7 @@ defmodule RiichiAdvanced.YakuTest.ZungJungYaku do
   end
 
   test "zung jung - open three consecutive triplets" do
-    TestUtils.test_yaku_advanced("zung_jung", [], """
+    TestUtils.test_yaku_advanced("zung_jung", [], [], """
     {
       "starting_hand": {
         "east": ["1p", "2p", "3p", "5m", "6m", "6m", "7m", "7m", "7m", "8m", "8m", "7s", "7s"],
@@ -1018,7 +1018,7 @@ defmodule RiichiAdvanced.YakuTest.ZungJungYaku do
   end
 
   test "zung jung - open four consecutive triplets" do
-    TestUtils.test_yaku_advanced("zung_jung", [], """
+    TestUtils.test_yaku_advanced("zung_jung", [], [], """
     {
       "starting_hand": {
         "east": ["5p", "6m", "6m", "7m", "7m", "8m", "8m", "9m", "9m", "9m", "7s", "8s", "9s"],
@@ -1049,7 +1049,7 @@ defmodule RiichiAdvanced.YakuTest.ZungJungYaku do
   end
 
   test "zung jung - mixed lesser terminals" do
-    TestUtils.test_yaku_advanced("zung_jung", [], """
+    TestUtils.test_yaku_advanced("zung_jung", [], [], """
     {
       "starting_hand": {
         "east": ["1m", "2m", "1z", "2z", "2z", "2z", "7p", "8p", "9p", "1s", "1s", "1s", "3s"],
@@ -1076,7 +1076,7 @@ defmodule RiichiAdvanced.YakuTest.ZungJungYaku do
   end
 
   test "zung jung - pure lesser terminals" do
-    TestUtils.test_yaku_advanced("zung_jung", [], """
+    TestUtils.test_yaku_advanced("zung_jung", [], [], """
     {
       "starting_hand": {
         "east": ["1m", "2m", "1z", "9m", "9m", "9m", "7p", "8p", "9p", "1s", "1s", "1s", "3s"],
@@ -1103,7 +1103,7 @@ defmodule RiichiAdvanced.YakuTest.ZungJungYaku do
   end
 
   test "zung jung - mixed greater terminals" do
-    TestUtils.test_yaku_advanced("zung_jung", [], """
+    TestUtils.test_yaku_advanced("zung_jung", [], [], """
     {
       "starting_hand": {
         "east": ["1m", "1m", "1z", "1p", "1p", "2z", "9p", "9p", "3z", "0z", "0z", "9s", "9s"],
@@ -1136,7 +1136,7 @@ defmodule RiichiAdvanced.YakuTest.ZungJungYaku do
   end
 
   test "zung jung - pure greater terminals" do
-    TestUtils.test_yaku_advanced("zung_jung", [], """
+    TestUtils.test_yaku_advanced("zung_jung", [], [], """
     {
       "starting_hand": {
         "east": ["1m", "1m", "1z", "9m", "9m", "9m", "9p", "9p", "9p", "1s", "1s", "1s", "9s"],
@@ -1163,7 +1163,7 @@ defmodule RiichiAdvanced.YakuTest.ZungJungYaku do
   end
 
   test "zung jung - win on kong" do
-    TestUtils.test_yaku_advanced("zung_jung", [], """
+    TestUtils.test_yaku_advanced("zung_jung", [], [], """
     {
       "starting_hand": {
         "east": ["6m", "7m", "8m", "5m", "2p", "2p", "2p", "3s", "4s", "5s", "4z", "4z", "4z"],
@@ -1186,7 +1186,7 @@ defmodule RiichiAdvanced.YakuTest.ZungJungYaku do
   end
 
   test "zung jung - robbing a kong" do
-    TestUtils.test_yaku_advanced("zung_jung", [], """
+    TestUtils.test_yaku_advanced("zung_jung", [], [], """
     {
       "starting_hand": {
         "east": ["1m", "2m", "3m", "5m", "7m", "2p", "2p", "3s", "4s", "5s", "4z", "4z", "1z"],
@@ -1212,7 +1212,7 @@ defmodule RiichiAdvanced.YakuTest.ZungJungYaku do
   end
 
   test "zung jung - blessing of heaven" do
-    TestUtils.test_yaku_advanced("zung_jung", [], """
+    TestUtils.test_yaku_advanced("zung_jung", [], [], """
     {
       "starting_hand": {
         "east": ["1m", "2m", "3m", "5m", "7m", "2p", "2p", "3s", "4s", "5s", "4z", "4z", "4z"],
@@ -1232,7 +1232,7 @@ defmodule RiichiAdvanced.YakuTest.ZungJungYaku do
   end
 
   test "zung jung - calls invalidate blessing of heaven" do
-    TestUtils.test_yaku_advanced("zung_jung", [], """
+    TestUtils.test_yaku_advanced("zung_jung", [], [], """
     {
       "starting_hand": {
         "east": ["1m", "2m", "3m", "5m", "7m", "2p", "2p", "3s", "4s", "5s", "4z", "4z", "4z"],
@@ -1253,7 +1253,7 @@ defmodule RiichiAdvanced.YakuTest.ZungJungYaku do
   end
 
   test "zung jung - blessing of earth" do
-    TestUtils.test_yaku_advanced("zung_jung", [], """
+    TestUtils.test_yaku_advanced("zung_jung", [], [], """
     {
       "starting_hand": {
         "east": ["6m", "6m", "1p", "3p", "4p", "6p", "7p", "8p", "9p", "2s", "6s", "7s", "8s"],
@@ -1274,7 +1274,7 @@ defmodule RiichiAdvanced.YakuTest.ZungJungYaku do
   end
 
   test "zung jung - calls invalidate blessing of earth" do
-    TestUtils.test_yaku_advanced("zung_jung", [], """
+    TestUtils.test_yaku_advanced("zung_jung", [], [], """
     {
       "starting_hand": {
         "east": ["6m", "6m", "1p", "3p", "4p", "6p", "7p", "8p", "9p", "2s", "8s", "8s", "8s"],
@@ -1296,7 +1296,7 @@ defmodule RiichiAdvanced.YakuTest.ZungJungYaku do
   end
 
   test "zung jung - non-juusan kokushi" do
-    TestUtils.test_yaku_advanced("zung_jung", [], """
+    TestUtils.test_yaku_advanced("zung_jung", [], [], """
     {
       "starting_hand": {
         "east": ["1m", "4m", "7m", "2p", "5p", "8p", "3s", "6s", "9s", "3p", "3p", "3p", "4z"],
@@ -1318,7 +1318,7 @@ defmodule RiichiAdvanced.YakuTest.ZungJungYaku do
   end
 
   test "zung jung - juusan kokushi" do
-    TestUtils.test_yaku_advanced("zung_jung", [], """
+    TestUtils.test_yaku_advanced("zung_jung", [], [], """
     {
       "starting_hand": {
         "east": ["1m", "4m", "7m", "2p", "5p", "8p", "3s", "6s", "9s", "3p", "3p", "3p", "4z"],
@@ -1340,7 +1340,7 @@ defmodule RiichiAdvanced.YakuTest.ZungJungYaku do
   end
 
   test "zung jung - seven pairs" do
-    TestUtils.test_yaku_advanced("zung_jung", [], """
+    TestUtils.test_yaku_advanced("zung_jung", [], [], """
     {
       "starting_hand": {
         "east": ["1m", "4m", "7m", "2p", "5p", "8p", "3s", "6s", "9s", "3p", "3p", "3p", "4z"],
@@ -1362,7 +1362,7 @@ defmodule RiichiAdvanced.YakuTest.ZungJungYaku do
   end
 
   test "zung jung - seven pairs with duplicate" do
-    TestUtils.test_yaku_advanced("zung_jung", [], """
+    TestUtils.test_yaku_advanced("zung_jung", [], [], """
     {
       "starting_hand": {
         "east": ["1m", "4m", "7m", "2p", "5p", "8p", "3s", "6s", "9s", "3p", "3p", "3p", "4z"],
@@ -1384,7 +1384,7 @@ defmodule RiichiAdvanced.YakuTest.ZungJungYaku do
   end
 
   test "zung jung - two kong is not seven pairs" do
-    TestUtils.test_yaku_advanced("zung_jung", [], """
+    TestUtils.test_yaku_advanced("zung_jung", [], [], """
     {
       "starting_hand": {
         "east": ["3m", "3m", "3m", "5m", "5m", "5m", "6m", "6m", "8m", "8m", "1z", "1z", "2z"],
@@ -1403,7 +1403,7 @@ defmodule RiichiAdvanced.YakuTest.ZungJungYaku do
   end
 
   test "zung jung - all honours" do
-    TestUtils.test_yaku_advanced("zung_jung", [], """
+    TestUtils.test_yaku_advanced("zung_jung", [], [], """
     {
       "starting_hand": {
         "east": ["1z", "1z", "2z", "2z", "3z", "3z", "4z", "4z", "0z", "0z", "6z", "6z", "7z"],
@@ -1426,7 +1426,7 @@ defmodule RiichiAdvanced.YakuTest.ZungJungYaku do
 
   test "zung jung - final discard" do
     # kyoku 0:
-    TestUtils.test_yaku_advanced("zung_jung", [], """
+    TestUtils.test_yaku_advanced("zung_jung", [], [], """
     {
       "starting_hand": {
         "east": ["6m","6z","5p","1m","5p","6p","1p","2p","1p","6p","1m","2s","3m"],
@@ -1520,7 +1520,7 @@ defmodule RiichiAdvanced.YakuTest.ZungJungYaku do
   end
 
   test "zung jung - final draw" do
-    TestUtils.test_yaku_advanced("zung_jung", [], """
+    TestUtils.test_yaku_advanced("zung_jung", [], [], """
     {
       "starting_hand": {
         "east": ["7m","8m","1z","9m","4s","4z","1s","1p","2s","3z","9s","4p","4s"],

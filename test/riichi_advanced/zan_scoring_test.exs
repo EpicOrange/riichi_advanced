@@ -2,63 +2,8 @@ defmodule RiichiAdvanced.ZanScoringTest do
   use ExUnit.Case, async: true
   alias RiichiAdvanced.TestUtils, as: TestUtils
 
-  @zan_mods [
-    %{name: "honba", config: %{value: 1000}},
-    %{name: "nagashi", config: %{is: "Yakuman", counts_as: "draw"}},
-    %{name: "lib/tobi", config: %{below: 1}},
-    %{name: "lib/yaku/riichi", config: %{bet: 1000, drawless: true, double_value: 2}},
-    %{name: "uma", config: %{_1st: 30, _2nd: 10, _3rd: -10, _4th: -30}},
-    "lib/agarirenchan",
-    "tenpairenchan",
-    %{name: "tenpaiyame", config: %{first_place_only: true, may_choose: false, round: "all_last"}},
-    "lib/kuikae_nashi",
-    "double_wind_4_fu",
-    "kokushi_ankan_chankan",
-    "first_gets_riichi_sticks",
-    %{name: "sanma_no_tsumo_loss", config: %{"method" => "half"}},
-    %{name: "suufon_renda", config: %{name: "Suufon Renda"}},
-    "suucha_riichi",
-    "sanchahou",
-    %{name: "kyuushu_kyuuhai", config: %{name: "Kyuushu Kyuuhai"}},
-    # %{name: "dora", config: %{start_indicators: 1}},
-    # "ura",
-    # "kandora",
-    "yaku/open_riichi",
-    %{name: "lib/yaku/sanrenkou", config: %{
-      san_list: "yaku", san_name: "Sanrenkou", san_value: 2, san_han: "Han",
-      suu_list: "yakuman", suu_name: "Suurenkou", suu_value: 1, suu_han: "★"
-    }},
-    %{name: "lib/yaku/sanpuukou", config: %{
-      shou_list: "", shou_name: "", shou_value: 0, shou_han: "",
-      dai_list: "yaku", dai_name: "Sanpuukou", dai_value: 2, dai_han: "Han"
-    }},
-    %{name: "lib/yaku/riichi_renhou", config: %{is: "Yakuman"}},
-    "show_waits",
-    "sanma_pei_yakuhai",
-    "lib/pao_standard",
-    %{name: "lib/shuugi", config: %{worth: 1000, starting_shuugi: 0, pao_pays_all: true}},
-    %{name: "shuugi/ippatsu", config: %{chips: 1}},
-    %{name: "shuugi/ura", config: %{chips: 1}},
-    %{name: "shuugi/yakuman", config: %{ron_chips: 10, tsumo_chips: 5, per_yakuman: false, allow_kazoe: false}},
-    %{name: "lib/min_han", config: %{min: 1, han: "Han"}},
-    # "cancellable_riichi",
-    "lib/yaku/ippatsu",
-    %{name: "shiro_pocchi", config: %{ippatsu_only: false}},
-    %{name: "aka", config: %{man: 4, pin: 4, sou: 4}},
-    %{name: "shuugi/aka", config: %{chips: 1, closed_only: false}},
-    "shiny_dora",
-    "lib/kansai_flowers",
-    "kansai_no_100_sticks",
-    "kansai_40_fu",
-    "kansai_shuugi",
-    "lib/zan_scoring",
-    "lib/kansai_draw",
-    "kansai_no_furiten_riichi"
-  ]
-
-
   test "zan - 1 han dealer tsumo" do
-    TestUtils.test_yaku_advanced("zan", @zan_mods, """
+    TestUtils.test_yaku_advanced("zan", [], [], """
     {
       "starting_hand": {
         "east": ["2p", "3p", "4p", "7p", "8p", "9p", "1s", "2s", "3s", "4z", "4z", "6s", "7s"],
@@ -76,11 +21,11 @@ defmodule RiichiAdvanced.ZanScoringTest do
       east: %{
         yaku: [{"Tsumo", [1, "Han"]}]
       }
-    }, %{delta_scores: [2000, -1000, -1000], shuugi: [0, 0, 0]})
+    }, %{delta_scores: [2000, -1000, -1000], shuugi: [100, 100, 100]})
   end
 
   test "zan - 2 han dealer tsumo" do
-    TestUtils.test_yaku_advanced("zan", @zan_mods, """
+    TestUtils.test_yaku_advanced("zan", [], [], """
     {
       "starting_hand": {
         "east": ["2p", "3p", "4p", "7p", "8p", "9p", "1s", "2s", "3s", "3z", "3z", "6s", "7s"],
@@ -98,11 +43,11 @@ defmodule RiichiAdvanced.ZanScoringTest do
       east: %{
         yaku: [{"Tsumo", [1, "Han"]}, {"Pinfu", [1, "Han"]}]
       }
-    }, %{delta_scores: [4000, -2000, -2000], shuugi: [0, 0, 0]})
+    }, %{delta_scores: [4000, -2000, -2000], shuugi: [100, 100, 100]})
   end
 
   test "zan - 3 han dealer tsumo" do
-    TestUtils.test_yaku_advanced("zan", @zan_mods, """
+    TestUtils.test_yaku_advanced("zan", [], [], """
     {
       "starting_hand": {
         "east": ["3p", "4p", "0p", "7p", "8p", "9p", "1s", "2s", "3s", "3z", "3z", "6s", "7s"],
@@ -120,11 +65,11 @@ defmodule RiichiAdvanced.ZanScoringTest do
       east: %{
         yaku: [{"Tsumo", [1, "Han"]}, {"Pinfu", [1, "Han"]}, {"Aka", [1, "Han", 1, "⛀"]}]
       }
-    }, %{delta_scores: [6000, -3000, -3000], shuugi: [2, -1, -1]})
+    }, %{delta_scores: [6000, -3000, -3000], shuugi: [102, 99, 99]})
   end
 
   test "zan - 4 han dealer tsumo" do
-    TestUtils.test_yaku_advanced("zan", @zan_mods, """
+    TestUtils.test_yaku_advanced("zan", [], [], """
     {
       "starting_hand": {
         "east": ["3p", "4p", "0p", "0p", "6p", "7p", "1s", "2s", "3s", "3z", "3z", "6s", "7s"],
@@ -142,11 +87,11 @@ defmodule RiichiAdvanced.ZanScoringTest do
       east: %{
         yaku: [{"Tsumo", [1, "Han"]}, {"Pinfu", [1, "Han"]}, {"Aka", [2, "Han", 2, "⛀"]}]
       }
-    }, %{delta_scores: [12000, -6000, -6000], shuugi: [4, -2, -2]})
+    }, %{delta_scores: [12000, -6000, -6000], shuugi: [104, 98, 98]})
   end
 
   test "zan - 1 han dealer ron" do
-    TestUtils.test_yaku_advanced("zan", @zan_mods, """
+    TestUtils.test_yaku_advanced("zan", [], [], """
     {
       "starting_hand": {
         "east": ["2p", "3p", "4p", "7p", "8p", "9p", "1s", "2s", "3s", "3z", "3z", "6s", "7s"],
@@ -163,11 +108,11 @@ defmodule RiichiAdvanced.ZanScoringTest do
       east: %{
         yaku: [{"Pinfu", [1, "Han"]}]
       }
-    }, %{delta_scores: [2000, -2000, 0], shuugi: [0, 0, 0]})
+    }, %{delta_scores: [2000, -2000, 0], shuugi: [100, 100, 100]})
   end
 
   test "zan - 2 han dealer ron" do
-    TestUtils.test_yaku_advanced("zan", @zan_mods, """
+    TestUtils.test_yaku_advanced("zan", [], [], """
     {
       "starting_hand": {
         "east": ["3p", "4p", "0p", "7p", "8p", "9p", "1s", "2s", "3s", "3z", "3z", "6s", "7s"],
@@ -184,11 +129,11 @@ defmodule RiichiAdvanced.ZanScoringTest do
       east: %{
         yaku: [{"Aka", [1, "Han", 1, "⛀"]}, {"Pinfu", [1, "Han"]}]
       }
-    }, %{delta_scores: [3000, -3000, 0], shuugi: [1, -1, 0]})
+    }, %{delta_scores: [3000, -3000, 0], shuugi: [101, 99, 100]})
   end
 
   test "zan - 3 han dealer ron" do
-    TestUtils.test_yaku_advanced("zan", @zan_mods, """
+    TestUtils.test_yaku_advanced("zan", [], [], """
     {
       "starting_hand": {
         "east": ["3p", "4p", "0p", "6p", "7p", "8p", "2s", "3s", "4s", "6s", "7s", "8s", "8s"],
@@ -205,11 +150,11 @@ defmodule RiichiAdvanced.ZanScoringTest do
       east: %{
         yaku: [{"Aka", [1, "Han", 1, "⛀"]}, {"Tanyao", [1, "Han"]}, {"Pinfu", [1, "Han"]}]
       }
-    }, %{delta_scores: [6000, -6000, 0], shuugi: [1, -1, 0]})
+    }, %{delta_scores: [6000, -6000, 0], shuugi: [101, 99, 100]})
   end
 
   test "zan - 4 han dealer ron" do
-    TestUtils.test_yaku_advanced("zan", @zan_mods, """
+    TestUtils.test_yaku_advanced("zan", [], [], """
     {
       "starting_hand": {
         "east": ["3p", "4p", "0p", "0p", "6p", "7p", "2s", "3s", "4s", "6s", "7s", "8s", "8s"],
@@ -226,11 +171,11 @@ defmodule RiichiAdvanced.ZanScoringTest do
       east: %{
         yaku: [{"Aka", [2, "Han", 2, "⛀"]}, {"Tanyao", [1, "Han"]}, {"Pinfu", [1, "Han"]}]
       }
-    }, %{delta_scores: [12000, -12000, 0], shuugi: [2, -2, 0]})
+    }, %{delta_scores: [12000, -12000, 0], shuugi: [102, 98, 100]})
   end
 
   test "zan - 1 han nondealer tsumo" do
-    TestUtils.test_yaku_advanced("zan", @zan_mods, """
+    TestUtils.test_yaku_advanced("zan", [], [], """
     {
       "starting_hand": {
         "east": ["1s", "2s", "3p", "2p", "3p", "4p", "3s", "4s", "0s", "1z", "1z", "1z", "4z"],
@@ -249,11 +194,11 @@ defmodule RiichiAdvanced.ZanScoringTest do
       south: %{
         yaku: [{"Tsumo", [1, "Han"]}]
       }
-    }, %{delta_scores: [-1000, 2000, -1000], shuugi: [0, 0, 0]})
+    }, %{delta_scores: [-1000, 2000, -1000], shuugi: [100, 100, 100]})
   end
 
   test "zan - 2 han nondealer tsumo" do
-    TestUtils.test_yaku_advanced("zan", @zan_mods, """
+    TestUtils.test_yaku_advanced("zan", [], [], """
     {
       "starting_hand": {
         "east": ["1s", "2s", "3p", "2p", "3p", "4p", "3s", "4s", "0s", "1z", "1z", "1z", "4z"],
@@ -272,11 +217,11 @@ defmodule RiichiAdvanced.ZanScoringTest do
       south: %{
         yaku: [{"Tsumo", [1, "Han"]}, {"Pinfu", [1, "Han"]}]
       }
-    }, %{delta_scores: [-1000, 2000, -1000], shuugi: [0, 0, 0]})
+    }, %{delta_scores: [-1000, 2000, -1000], shuugi: [100, 100, 100]})
   end
 
   test "zan - 3 han nondealer tsumo" do
-    TestUtils.test_yaku_advanced("zan", @zan_mods, """
+    TestUtils.test_yaku_advanced("zan", [], [], """
     {
       "starting_hand": {
         "east": ["1s", "2s", "3p", "2p", "3p", "4p", "3s", "4s", "0s", "1z", "1z", "1z", "4z"],
@@ -295,11 +240,11 @@ defmodule RiichiAdvanced.ZanScoringTest do
       south: %{
         yaku: [{"Tsumo", [1, "Han"]}, {"Pinfu", [1, "Han"]}, {"Aka", [1, "Han", 1, "⛀"]}]
       }
-    }, %{delta_scores: [-3000, 4000, -1000], shuugi: [-1, 2, -1]})
+    }, %{delta_scores: [-3000, 4000, -1000], shuugi: [99, 102, 99]})
   end
 
   test "zan - 4 han nondealer tsumo" do
-    TestUtils.test_yaku_advanced("zan", @zan_mods, """
+    TestUtils.test_yaku_advanced("zan", [], [], """
     {
       "starting_hand": {
         "east": ["1s", "2s", "3p", "2p", "3p", "4p", "3s", "4s", "0s", "1z", "1z", "1z", "4z"],
@@ -318,11 +263,11 @@ defmodule RiichiAdvanced.ZanScoringTest do
       south: %{
         yaku: [{"Tsumo", [1, "Han"]}, {"Pinfu", [1, "Han"]}, {"Aka", [2, "Han", 2, "⛀"]}]
       }
-    }, %{delta_scores: [-5000, 8000, -3000], shuugi: [-2, 4, -2]})
+    }, %{delta_scores: [-5000, 8000, -3000], shuugi: [98, 104, 98]})
   end
 
   test "zan - 1 han nondealer ron" do
-    TestUtils.test_yaku_advanced("zan", @zan_mods, """
+    TestUtils.test_yaku_advanced("zan", [], [], """
     {
       "starting_hand": {
         "east": ["1s", "2s", "3p", "2p", "3p", "4p", "3s", "4s", "0s", "1z", "1z", "1z", "4z"],
@@ -340,11 +285,11 @@ defmodule RiichiAdvanced.ZanScoringTest do
       south: %{
         yaku: [{"Pinfu", [1, "Han"]}]
       }
-    }, %{delta_scores: [0, 1000, -1000], shuugi: [0, 0, 0]})
+    }, %{delta_scores: [0, 1000, -1000], shuugi: [100, 100, 100]})
   end
 
   test "zan - 2 han nondealer ron" do
-    TestUtils.test_yaku_advanced("zan", @zan_mods, """
+    TestUtils.test_yaku_advanced("zan", [], [], """
     {
       "starting_hand": {
         "east": ["1s", "2s", "3p", "2p", "3p", "4p", "3s", "4s", "0s", "1z", "1z", "1z", "4z"],
@@ -362,11 +307,11 @@ defmodule RiichiAdvanced.ZanScoringTest do
       south: %{
         yaku: [{"Aka", [1, "Han", 1, "⛀"]}, {"Pinfu", [1, "Han"]}]
       }
-    }, %{delta_scores: [0, 2000, -2000], shuugi: [0, 1, -1]})
+    }, %{delta_scores: [0, 2000, -2000], shuugi: [100, 101, 99]})
   end
 
   test "zan - 3 han nondealer ron" do
-    TestUtils.test_yaku_advanced("zan", @zan_mods, """
+    TestUtils.test_yaku_advanced("zan", [], [], """
     {
       "starting_hand": {
         "east": ["1s", "2s", "3p", "2p", "3p", "4p", "3s", "4s", "0s", "1z", "1z", "1z", "4z"],
@@ -384,11 +329,11 @@ defmodule RiichiAdvanced.ZanScoringTest do
       south: %{
         yaku: [{"Aka", [1, "Han", 1, "⛀"]}, {"Tanyao", [1, "Han"]}, {"Pinfu", [1, "Han"]}]
       }
-    }, %{delta_scores: [0, 4000, -4000], shuugi: [0, 1, -1]})
+    }, %{delta_scores: [0, 4000, -4000], shuugi: [100, 101, 99]})
   end
 
   test "zan - 4 han nondealer ron" do
-    TestUtils.test_yaku_advanced("zan", @zan_mods, """
+    TestUtils.test_yaku_advanced("zan", [], [], """
     {
       "starting_hand": {
         "east": ["1s", "2s", "3p", "2p", "3p", "4p", "3s", "4s", "0s", "1z", "1z", "1z", "4z"],
@@ -406,11 +351,11 @@ defmodule RiichiAdvanced.ZanScoringTest do
       south: %{
         yaku: [{"Aka", [2, "Han", 2, "⛀"]}, {"Tanyao", [1, "Han"]}, {"Pinfu", [1, "Han"]}]
       }
-    }, %{delta_scores: [0, 8000, -8000], shuugi: [0, 2, -2]})
+    }, %{delta_scores: [0, 8000, -8000], shuugi: [100, 102, 98]})
   end
 
   test "zan - ippatsu awards shuugi" do
-    TestUtils.test_yaku_advanced("zan", @zan_mods, """
+    TestUtils.test_yaku_advanced("zan", [], [], """
     {
       "starting_hand": {
         "east": ["2p", "3p", "4p", "7p", "8p", "9p", "1s", "2s", "3s", "3z", "3z", "6s", "7s"],
@@ -428,11 +373,11 @@ defmodule RiichiAdvanced.ZanScoringTest do
       east: %{
         yaku: [{"Double Riichi", [2, "Han"]}, {"Ippatsu", [1, "Han", 1, "⛀"]}, {"Pinfu", [1, "Han"]}]
       }
-    }, %{delta_scores: [13000, -12000, 0], shuugi: [1, -1, 0]})
+    }, %{delta_scores: [13000, -12000, 0], shuugi: [101, 99, 100]})
   end
 
   test "zan - yakuman tsumo awards shuugi" do
-    TestUtils.test_yaku_advanced("zan", @zan_mods, """
+    TestUtils.test_yaku_advanced("zan", [], [], """
     {
       "starting_hand": {
         "east": ["2p", "3p", "4p", "7p", "8p", "9p", "1s", "2s", "3s", "3z", "3z", "6s", "7s"],
@@ -447,11 +392,11 @@ defmodule RiichiAdvanced.ZanScoringTest do
       east: %{
         yaku: [{"Tenhou", [1, "★"]}]
       }
-    }, %{delta_scores: [48000, -24000, -24000], shuugi: [10, -5, -5]})
+    }, %{delta_scores: [48000, -24000, -24000], shuugi: [110, 95, 95]})
   end
 
   test "zan - yakuman ron awards shuugi" do
-    TestUtils.test_yaku_advanced("zan", @zan_mods, """
+    TestUtils.test_yaku_advanced("zan", [], [], """
     {
       "starting_hand": {
         "east": ["1s", "2s", "3p", "2p", "3p", "4p", "3s", "4s", "0s", "1z", "1z", "1z", "4z"],
@@ -467,11 +412,11 @@ defmodule RiichiAdvanced.ZanScoringTest do
       south: %{
         yaku: [{"Renhou", [1, "★"]}]
       }
-    }, %{delta_scores: [-32000, 32000, 0], shuugi: [-10, 10, 0]})
+    }, %{delta_scores: [-32000, 32000, 0], shuugi: [90, 110, 100]})
   end
 
   test "zan - end of game shuugi payments" do
-    TestUtils.test_yaku_advanced("zan", [%{name: "dora", config: %{start_indicators: 1}}] ++ @zan_mods, """
+    TestUtils.test_yaku_advanced("zan", [%{name: "dora", config: %{start_indicators: 1}}], [], """
     {
       "starting_hand": {
         "east": ["1s", "2s", "3p", "2p", "3p", "4p", "3s", "4s", "0s", "2s", "3s", "4s", "4z"],
@@ -492,7 +437,7 @@ defmodule RiichiAdvanced.ZanScoringTest do
         yaku: [{"Dora", [3, "Han"]}, {"Round Wind", [1, "Han"]}]
       }
       # finishing at 50000/58000/42000 means 0/8/-8 chips
-    }, %{delta_scores: [0, 8000, -8000], shuugi: [0, 8, -8]})
+    }, %{delta_scores: [0, 8000, -8000], shuugi: [100, 108, 92]})
   end
   
 end

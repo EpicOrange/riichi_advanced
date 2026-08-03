@@ -1,3 +1,5 @@
+default closed_only, true
+
 on after_initialization do
   if !closed_only do
     add_rule("Shuugi", "Aka", "(Aka) Each aka (red) dora in a closed winning hand adds %{chips} shuugi to the payment.", %{chips: !chips})

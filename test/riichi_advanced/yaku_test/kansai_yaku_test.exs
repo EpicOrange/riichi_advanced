@@ -2,44 +2,8 @@ defmodule RiichiAdvanced.YakuTest.KansaiYaku do
   use ExUnit.Case, async: true
   alias RiichiAdvanced.TestUtils, as: TestUtils
 
-  @kansai_mods [
-    %{name: "honba", config: %{value: 100}},
-    %{name: "nagashi", config: %{is: "Mangan", counts_as: "draw"}},
-    %{name: "lib/tobi", config: %{below: 1}},
-    %{name: "lib/yaku/riichi", config: %{bet: 1000, drawless: false, double_value: 2}},
-    %{name: "uma", config: %{_1st: 10, _2nd: 5, _3rd: -5, _4th: -10}},
-    "lib/agarirenchan",
-    "tenpairenchan",
-    "lib/kuikae_nashi",
-    "double_wind_4_fu",
-    "lib/pao_standard",
-    "kokushi_ankan_chankan",
-    %{name: "sanma_no_tsumo_loss", config: %{method: "half"}},
-    "lib/suukaikan",
-    %{name: "kyuushu_kyuuhai", config: %{name: "Kyuushu Kyuuhai"}},
-    # %{name: "dora", config: %{start_indicators: 1}},
-    # "ura",
-    # "kandora",
-    %{name: "lib/yaku/riichi_renhou", config: %{is: "Yakuman"}},
-    "show_waits",
-    "sanma_pei_yakuhai",
-    %{name: "lib/min_han", config: %{min: 1, han: "Han"}},
-    # "cancellable_riichi",
-    "lib/yaku/ippatsu",
-    %{name: "aka", config: %{man: 1, pin: 1, sou: 1}},
-    %{name: "ao", config: %{man: 1, pin: 1, sou: 1}},
-    %{name: "kin", config: %{man: 1, pin: 1, sou: 1}},
-    "lib/kansai_flowers",
-    "kansai_no_100_sticks",
-    "kansai_30_fu",
-    "kansai_shuugi",
-    "lib/zan_scoring",
-    "lib/kansai_draw",
-    "kansai_no_furiten_riichi"
-  ]
-
   test "kansai - ao doesn't break half flush" do
-    TestUtils.test_yaku_advanced("kansai", @kansai_mods, """
+    TestUtils.test_yaku_advanced("kansai", [%{name: "ao", config: %{man: 1, pin: 1, sou: 1}}], [], """
     {
       "starting_hand": {
         "east": ["2p", "3p", "4p", "4p", "25p", "6p", "7p", "4z", "4z", "4z", "2z", "2z", "2z"],
@@ -62,7 +26,7 @@ defmodule RiichiAdvanced.YakuTest.KansaiYaku do
   end
 
   test "kansai - ippatsu still works" do
-    TestUtils.test_yaku_advanced("kansai", @kansai_mods, """
+    TestUtils.test_yaku_advanced("kansai", [], [], """
     {
       "starting_hand": {
         "east": ["2p", "3p", "4p", "4p", "5p", "6p", "7p", "7p", "7p", "8s", "8s", "8s", "6p"],
@@ -85,7 +49,7 @@ defmodule RiichiAdvanced.YakuTest.KansaiYaku do
   end
 
   test "kansai - north wind is not a seat wind" do
-    TestUtils.test_yaku_advanced("kansai", @kansai_mods, """
+    TestUtils.test_yaku_advanced("kansai", [], [], """
     {
       "starting_hand": {
         "east": ["2p", "3p", "4p", "4p", "5p", "6p", "7p", "7p", "7p", "4z", "4z", "4z", "6p"],
@@ -108,7 +72,7 @@ defmodule RiichiAdvanced.YakuTest.KansaiYaku do
   end
 
   test "kansai - flower is not a yaku" do
-    TestUtils.test_yaku_advanced("kansai", @kansai_mods, """
+    TestUtils.test_yaku_advanced("kansai", [], [], """
     {
       "starting_hand": {
         "east": ["2p", "3p", "4p", "4p", "5p", "6p", "7p", "7p", "7p", "9s", "9s", "9s", "1f"],
@@ -126,7 +90,7 @@ defmodule RiichiAdvanced.YakuTest.KansaiYaku do
   end
 
   test "kansai - seat wind still works" do
-    TestUtils.test_yaku_advanced("kansai", @kansai_mods, """
+    TestUtils.test_yaku_advanced("kansai", [], [], """
     {
       "starting_hand": {
         "east": ["2p", "3p", "4p", "4p", "5p", "6p", "8s", "8s", "8s", "3z", "3z", "3z", "1f"],

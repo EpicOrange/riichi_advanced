@@ -6,7 +6,7 @@ defmodule RiichiAdvanced.YakuTest.HefeiYaku do
   @single_wait {"Single Wait", [1, "嘴"]}
 
   test "hefei - chicken hand" do
-    TestUtils.test_yaku_advanced("hefei", [], """
+    TestUtils.test_yaku_advanced("hefei", [], [], """
     {
       "starting_hand": {
         "east": ["2m", "3m", "4m", "5m", "6m", "7m", "8m", "8m", "3s", "4s", "4p", "5p", "6p"],
@@ -28,7 +28,7 @@ defmodule RiichiAdvanced.YakuTest.HefeiYaku do
   end
 
   test "hefei - penchan awards single wait" do
-    TestUtils.test_yaku_advanced("hefei", [], """
+    TestUtils.test_yaku_advanced("hefei", [], [], """
     {
       "starting_hand": {
         "east": ["2m", "3m", "4m", "5m", "6m", "7m", "8m", "8m", "2s", "3s", "4p", "5p", "6p"],
@@ -50,7 +50,7 @@ defmodule RiichiAdvanced.YakuTest.HefeiYaku do
   end
 
   test "hefei - kanchan awards single wait" do
-    TestUtils.test_yaku_advanced("hefei", [], """
+    TestUtils.test_yaku_advanced("hefei", [], [], """
     {
       "starting_hand": {
         "east": ["2m", "3m", "4m", "5m", "6m", "7m", "8m", "8m", "2s", "4s", "4p", "5p", "6p"],
@@ -72,7 +72,7 @@ defmodule RiichiAdvanced.YakuTest.HefeiYaku do
   end
 
   test "hefei - tanki awards single wait" do
-    TestUtils.test_yaku_advanced("hefei", [], """
+    TestUtils.test_yaku_advanced("hefei", [], [], """
     {
       "starting_hand": {
         "east": ["2m", "3m", "4m", "4m", "5m", "6m", "8m", "2s", "3s", "4s", "5p", "6p", "7p"],
@@ -94,7 +94,7 @@ defmodule RiichiAdvanced.YakuTest.HefeiYaku do
   end
 
   test "hefei - extended tanki doesn't award single wait" do
-    TestUtils.test_yaku_advanced("hefei", [], """
+    TestUtils.test_yaku_advanced("hefei", [], [], """
     {
       "starting_hand": {
         "east": ["2m", "3m", "4m", "5m", "6m", "7m", "8m", "2s", "3s", "4s", "4p", "5p", "6p"],
@@ -116,7 +116,7 @@ defmodule RiichiAdvanced.YakuTest.HefeiYaku do
   end
 
   test "hefei - suit bonus" do
-    TestUtils.test_yaku_advanced("hefei", [], """
+    TestUtils.test_yaku_advanced("hefei", [], [], """
     {
       "starting_hand": {
         "east": ["2m", "3m", "4m", "5m", "6m", "7m", "8m", "8m", "3s", "3s", "5p", "5p", "5p"],
@@ -142,7 +142,7 @@ defmodule RiichiAdvanced.YakuTest.HefeiYaku do
   end
 
   test "hefei - kans count 4 towards suit and number bonuses" do
-    TestUtils.test_yaku_advanced("hefei", [], """
+    TestUtils.test_yaku_advanced("hefei", [], [], """
     {
       "starting_hand": {
         "east": ["2m", "3m", "4m", "5m", "6m", "7m", "8m", "8m", "8m", "3s", "4s", "8p", "8p"],
@@ -170,7 +170,7 @@ defmodule RiichiAdvanced.YakuTest.HefeiYaku do
   end
 
   test "hefei - one concealed triplet" do
-    TestUtils.test_yaku_advanced("hefei", [], """
+    TestUtils.test_yaku_advanced("hefei", [], [], """
     {
       "starting_hand": {
         "east": ["2m", "3m", "4m", "5m", "5m", "5m", "8m", "8m", "3s", "4s", "4p", "5p", "6p"],
@@ -192,7 +192,7 @@ defmodule RiichiAdvanced.YakuTest.HefeiYaku do
   end
 
   test "hefei - two concealed triplets" do
-    TestUtils.test_yaku_advanced("hefei", [], """
+    TestUtils.test_yaku_advanced("hefei", [], [], """
     {
       "starting_hand": {
         "east": ["3m", "3m", "3m", "5m", "5m", "5m", "8m", "8m", "3s", "4s", "4p", "5p", "6p"],
@@ -214,7 +214,7 @@ defmodule RiichiAdvanced.YakuTest.HefeiYaku do
   end
 
   test "hefei - three concealed triplets" do
-    TestUtils.test_yaku_advanced("hefei", [], """
+    TestUtils.test_yaku_advanced("hefei", [], [], """
     {
       "starting_hand": {
         "east": ["3m", "3m", "3m", "5m", "5m", "5m", "8m", "8m", "3s", "4s", "7p", "7p", "7p"],
@@ -236,7 +236,7 @@ defmodule RiichiAdvanced.YakuTest.HefeiYaku do
   end
 
   test "hefei - four concealed triplets" do
-    TestUtils.test_yaku_advanced("hefei", [], """
+    TestUtils.test_yaku_advanced("hefei", [], [], """
     {
       "starting_hand": {
         "east": ["3m", "3m", "3m", "5m", "5m", "5m", "8m", "8m", "2s", "2s", "7p", "7p", "7p"],
@@ -261,7 +261,7 @@ defmodule RiichiAdvanced.YakuTest.HefeiYaku do
   end
 
   test "hefei - open double sequences" do
-    TestUtils.test_yaku_advanced("hefei", [], """
+    TestUtils.test_yaku_advanced("hefei", [], [], """
     {
       "starting_hand": {
         "east": ["3m", "3m", "5m", "5m", "6m", "6m", "7m", "2s", "3s", "4s", "4p", "5p", "6p"],
@@ -283,7 +283,7 @@ defmodule RiichiAdvanced.YakuTest.HefeiYaku do
   end
 
   test "hefei - closed double sequences" do
-    TestUtils.test_yaku_advanced("hefei", [], """
+    TestUtils.test_yaku_advanced("hefei", [], [], """
     {
       "starting_hand": {
         "east": ["3m", "3m", "5m", "5m", "6m", "6m", "7m", "7m", "3s", "4s", "4p", "5p", "6p"],
@@ -305,7 +305,7 @@ defmodule RiichiAdvanced.YakuTest.HefeiYaku do
   end
 
   test "hefei - open double sequences x2 is seven pairs" do
-    TestUtils.test_yaku_advanced("hefei", [], """
+    TestUtils.test_yaku_advanced("hefei", [], [], """
     {
       "starting_hand": {
         "east": ["3m", "3m", "5m", "5m", "6m", "6m", "7m", "7m", "6p", "6p", "7p", "7p", "8p"],
@@ -327,7 +327,7 @@ defmodule RiichiAdvanced.YakuTest.HefeiYaku do
   end
 
   test "hefei - open/closed double sequences x2" do
-    TestUtils.test_yaku_advanced("hefei", [], """
+    TestUtils.test_yaku_advanced("hefei", [], [], """
     {
       "starting_hand": {
         "east": ["3m", "3m", "5m", "5m", "6m", "6m", "7m", "6p", "6p", "7p", "7p", "8p", "8p"],
@@ -349,7 +349,7 @@ defmodule RiichiAdvanced.YakuTest.HefeiYaku do
   end
 
   test "hefei - self drawn double sequences x1 is closed" do
-    TestUtils.test_yaku_advanced("hefei", [], """
+    TestUtils.test_yaku_advanced("hefei", [], [], """
     {
       "starting_hand": {
         "east": ["3m", "3m", "5m", "5m", "6m", "6m", "7m", "5p", "6p", "7p", "2s", "3s", "4s"],
@@ -373,7 +373,7 @@ defmodule RiichiAdvanced.YakuTest.HefeiYaku do
   end
 
   test "hefei - self drawn double sequences x2 is closed" do
-    TestUtils.test_yaku_advanced("hefei", [], """
+    TestUtils.test_yaku_advanced("hefei", [], [], """
     {
       "starting_hand": {
         "east": ["3m", "3m", "5m", "5m", "6m", "6m", "7m", "6p", "6p", "7p", "7p", "8p", "8p"],
@@ -397,7 +397,7 @@ defmodule RiichiAdvanced.YakuTest.HefeiYaku do
   end
 
   test "hefei - closed double sequences x2" do
-    TestUtils.test_yaku_advanced("hefei", [], """
+    TestUtils.test_yaku_advanced("hefei", [], [], """
     {
       "starting_hand": {
         "east": ["3m", "5m", "5m", "6m", "6m", "7m", "7m", "6p", "6p", "7p", "7p", "8p", "8p"],
@@ -419,7 +419,7 @@ defmodule RiichiAdvanced.YakuTest.HefeiYaku do
   end
 
   test "hefei - two suits" do
-    TestUtils.test_yaku_advanced("hefei", [], """
+    TestUtils.test_yaku_advanced("hefei", [], [], """
     {
       "starting_hand": {
         "east": ["2m", "3m", "4m", "5m", "6m", "7m", "8m", "8m", "3p", "4p", "4p", "5p", "6p"],
@@ -442,7 +442,7 @@ defmodule RiichiAdvanced.YakuTest.HefeiYaku do
 
   test "hefei - concealed kong" do
     # 23456788m33s 5555p 3s tsumo
-    TestUtils.test_yaku_advanced("hefei", [], """
+    TestUtils.test_yaku_advanced("hefei", [], [], """
     {
       "starting_hand": {
         "east": ["2m", "3m", "4m", "5m", "6m", "7m", "8m", "8m", "3s", "3s", "5p", "5p", "5p"],
@@ -468,7 +468,7 @@ defmodule RiichiAdvanced.YakuTest.HefeiYaku do
   end
 
   test "hefei - two concealed kongs" do
-    TestUtils.test_yaku_advanced("hefei", [], """
+    TestUtils.test_yaku_advanced("hefei", [], [], """
     {
       "starting_hand": {
         "east": ["3m", "3m", "3m", "5m", "6m", "7m", "8m", "8m", "3s", "3s", "5p", "5p", "5p"],
@@ -495,7 +495,7 @@ defmodule RiichiAdvanced.YakuTest.HefeiYaku do
   end
 
   test "hefei - four of a kind" do
-    TestUtils.test_yaku_advanced("hefei", [], """
+    TestUtils.test_yaku_advanced("hefei", [], [], """
     {
       "starting_hand": {
         "east": ["2m", "3m", "3m", "3m", "3m", "4m", "8m", "8m", "3s", "4s", "4p", "5p", "6p"],
@@ -517,7 +517,7 @@ defmodule RiichiAdvanced.YakuTest.HefeiYaku do
   end
 
   test "hefei - four of a kind using pair" do
-    TestUtils.test_yaku_advanced("hefei", [], """
+    TestUtils.test_yaku_advanced("hefei", [], [], """
     {
       "starting_hand": {
         "east": ["3m", "4m", "5m", "5m", "5m", "5m", "6m", "7m", "3s", "4s", "4p", "5p", "6p"],
@@ -539,7 +539,7 @@ defmodule RiichiAdvanced.YakuTest.HefeiYaku do
   end
 
   test "hefei - double four of a kind treated as single" do
-    TestUtils.test_yaku_advanced("hefei", [], """
+    TestUtils.test_yaku_advanced("hefei", [], [], """
     {
       "starting_hand": {
         "east": ["2m", "3m", "3m", "3m", "3m", "4m", "8m", "8m", "3s", "3s", "3s", "3s", "4s"],
@@ -561,7 +561,7 @@ defmodule RiichiAdvanced.YakuTest.HefeiYaku do
   end
 
   test "hefei - seven pairs" do
-    TestUtils.test_yaku_advanced("hefei", [], """
+    TestUtils.test_yaku_advanced("hefei", [], [], """
     {
       "starting_hand": {
         "east": ["3m", "3m", "5m", "5m", "6m", "6m", "8m", "8m", "6p", "6p", "7p", "7p", "3s"],
@@ -583,7 +583,7 @@ defmodule RiichiAdvanced.YakuTest.HefeiYaku do
   end
 
   test "hefei - luxury seven pairs" do
-    TestUtils.test_yaku_advanced("hefei", [], """
+    TestUtils.test_yaku_advanced("hefei", [], [], """
     {
       "starting_hand": {
         "east": ["3m", "3m", "5m", "5m", "6m", "6m", "6m", "6m", "6p", "6p", "7p", "7p", "3s"],
@@ -605,7 +605,7 @@ defmodule RiichiAdvanced.YakuTest.HefeiYaku do
   end
 
   test "hefei - double luxury seven pairs" do
-    TestUtils.test_yaku_advanced("hefei", [], """
+    TestUtils.test_yaku_advanced("hefei", [], [], """
     {
       "starting_hand": {
         "east": ["3m", "3m", "3m", "3m", "6m", "6m", "6m", "6m", "6p", "6p", "7p", "7p", "3s"],
@@ -627,7 +627,7 @@ defmodule RiichiAdvanced.YakuTest.HefeiYaku do
   end
 
   test "hefei - pure suit" do
-    TestUtils.test_yaku_advanced("hefei", [], """
+    TestUtils.test_yaku_advanced("hefei", [], [], """
     {
       "starting_hand": {
         "east": ["2m", "3m", "4m", "4m", "4m", "4m", "5m", "6m", "6m", "6m", "6m", "7m", "8m"],
@@ -649,7 +649,7 @@ defmodule RiichiAdvanced.YakuTest.HefeiYaku do
   end
 
   test "hefei - three consecutive pungs" do
-    TestUtils.test_yaku_advanced("hefei", [], """
+    TestUtils.test_yaku_advanced("hefei", [], [], """
     {
       "starting_hand": {
         "east": ["6m", "6m", "6m", "7m", "7m", "7m", "8m", "8m", "8m", "3s", "4p", "5p", "6p"],
@@ -671,7 +671,7 @@ defmodule RiichiAdvanced.YakuTest.HefeiYaku do
   end
 
   test "hefei - three consecutive pungs must be closed" do
-    TestUtils.test_yaku_advanced("hefei", [], """
+    TestUtils.test_yaku_advanced("hefei", [], [], """
     {
       "starting_hand": {
         "east": ["6m", "6m", "6m", "7m", "7m", "7m", "8m", "8m", "3s", "3s", "4p", "5p", "6p"],
@@ -693,7 +693,7 @@ defmodule RiichiAdvanced.YakuTest.HefeiYaku do
   end
 
   test "hefei - three consecutive pungs via tsumo" do
-    TestUtils.test_yaku_advanced("hefei", [], """
+    TestUtils.test_yaku_advanced("hefei", [], [], """
     {
       "starting_hand": {
         "east": ["6m", "6m", "6m", "7m", "7m", "7m", "8m", "8m", "3s", "3s", "4p", "5p", "6p"],
@@ -717,7 +717,7 @@ defmodule RiichiAdvanced.YakuTest.HefeiYaku do
   end
 
   test "hefei - 10 identical tiles" do
-    TestUtils.test_yaku_advanced("hefei", [], """
+    TestUtils.test_yaku_advanced("hefei", [], [], """
     {
       "starting_hand": {
         "east": ["3m", "3m", "3m", "3m", "4m", "5m", "8m", "8m", "3p", "3p", "3s", "3s", "3s"],
@@ -741,7 +741,7 @@ defmodule RiichiAdvanced.YakuTest.HefeiYaku do
   end
 
   test "hefei - 11 identical tiles is more than enough" do
-    TestUtils.test_yaku_advanced("hefei", [], """
+    TestUtils.test_yaku_advanced("hefei", [], [], """
     {
       "starting_hand": {
         "east": ["3m", "3m", "3m", "3m", "4m", "5m", "8m", "8m", "3p", "3p", "3s", "3s", "3s"],
@@ -767,7 +767,7 @@ defmodule RiichiAdvanced.YakuTest.HefeiYaku do
   end
 
   test "hefei - 9 identical tiles is not enough" do
-    TestUtils.test_yaku_advanced("hefei", [], """
+    TestUtils.test_yaku_advanced("hefei", [], [], """
     {
       "starting_hand": {
         "east": ["3m", "3m", "3m", "4m", "5m", "6m", "8m", "8m", "3p", "3p", "3s", "3s", "3s"],
@@ -791,7 +791,7 @@ defmodule RiichiAdvanced.YakuTest.HefeiYaku do
   end
 
   test "hefei - heavenly win" do
-    TestUtils.test_yaku_advanced("hefei", [], """
+    TestUtils.test_yaku_advanced("hefei", [], [], """
     {
       "starting_hand": {
         "east": ["2m", "3m", "4m", "5m", "6m", "7m", "8m", "8m", "3s", "4s", "4p", "5p", "6p"],
@@ -811,7 +811,7 @@ defmodule RiichiAdvanced.YakuTest.HefeiYaku do
   end
 
   test "hefei - earthly win" do
-    TestUtils.test_yaku_advanced("hefei", [], """
+    TestUtils.test_yaku_advanced("hefei", [], [], """
     {
       "starting_hand": {
         "east": ["2m", "4m", "7m", "2p", "3p", "4p", "6p", "2s", "4s", "5s", "6s", "7s", "8s"],
@@ -832,7 +832,7 @@ defmodule RiichiAdvanced.YakuTest.HefeiYaku do
   end
 
   test "hefei - ankan doesn't invalidate heavenly win" do
-    TestUtils.test_yaku_advanced("hefei", [], """
+    TestUtils.test_yaku_advanced("hefei", [], [], """
     {
       "starting_hand": {
         "east": ["2m", "3m", "4m", "5m", "5m", "5m", "8m", "8m", "3s", "4s", "4p", "5p", "6p"],
@@ -854,7 +854,7 @@ defmodule RiichiAdvanced.YakuTest.HefeiYaku do
   end
 
   test "hefei - others' calls don't invalidate earthly win" do
-    TestUtils.test_yaku_advanced("hefei", [], """
+    TestUtils.test_yaku_advanced("hefei", [], [], """
     {
       "starting_hand": {
         "east": ["2m", "4m", "7m", "8p", "8p", "8p", "8p", "3s", "4s", "5s", "6s", "7s", "8s"],
@@ -877,7 +877,7 @@ defmodule RiichiAdvanced.YakuTest.HefeiYaku do
   end
 
   test "hefei - renhou is earthly win" do
-    TestUtils.test_yaku_advanced("hefei", [], """
+    TestUtils.test_yaku_advanced("hefei", [], [], """
     {
       "starting_hand": {
         "east": ["2m", "4m", "7m", "8p", "8p", "8p", "8p", "2s", "4s", "5s", "6s", "7s", "8s"],
@@ -902,7 +902,7 @@ defmodule RiichiAdvanced.YakuTest.HefeiYaku do
   end
 
   test "hefei - after first round is not renhou" do
-    TestUtils.test_yaku_advanced("hefei", [], """
+    TestUtils.test_yaku_advanced("hefei", [], [], """
     {
       "starting_hand": {
         "east": ["2m", "4m", "7m", "8p", "8p", "8p", "8p", "2s", "4s", "5s", "6s", "7s", "8s"],
@@ -929,7 +929,7 @@ defmodule RiichiAdvanced.YakuTest.HefeiYaku do
   end
 
   # test "hefei - sea floor (first draw as east)" do
-  #   TestUtils.test_yaku_advanced("hefei", [], """
+  #   TestUtils.test_yaku_advanced("hefei", [], [], """
   #   {
   #     "starting_hand": {
   #       "east": ["7s","6s","4s","2p","6p","5p","2m","5s","2p","6s","4s","2p","8s"],
@@ -979,7 +979,7 @@ defmodule RiichiAdvanced.YakuTest.HefeiYaku do
   # end
 
   # test "hefei - sea floor (last draw as east)" do
-  #   TestUtils.test_yaku_advanced("hefei", [], """
+  #   TestUtils.test_yaku_advanced("hefei", [], [], """
   #   {
   #     "starting_hand": {
   #       "east": ["7s","5s","3m","6p","7p","5p","4s","3s","7p","7m","2p","6p","2s"],
@@ -1034,7 +1034,7 @@ defmodule RiichiAdvanced.YakuTest.HefeiYaku do
   # end
 
   # test "hefei - sea floor (last draw as north)" do
-  #   TestUtils.test_yaku_advanced("hefei", [], """
+  #   TestUtils.test_yaku_advanced("hefei", [], [], """
   #   {
   #     "starting_hand": {
   #       "east": ["2m","8m","4m","4s","5m","8p","8p","4s","5s","2s","8p","3s","8m"],
@@ -1089,7 +1089,7 @@ defmodule RiichiAdvanced.YakuTest.HefeiYaku do
   # end
 
   # test "hefei - winning right before sea floor doesn't give sea floor" do
-  #   TestUtils.test_yaku_advanced("hefei", [], """
+  #   TestUtils.test_yaku_advanced("hefei", [], [], """
   #   {
   #     "starting_hand": {
   #       "east": ["5p","6p","8p","4m","5m","6m","3s","2p","6s","7p","7s","8s","6s"],
@@ -1139,7 +1139,7 @@ defmodule RiichiAdvanced.YakuTest.HefeiYaku do
   # end
 
   test "hefei - one dealer repeat dealer win" do
-    TestUtils.test_yaku_advanced("hefei", [], """
+    TestUtils.test_yaku_advanced("hefei", [], [], """
     {
       "starting_hand": {
         "east": ["2m", "3m", "4m", "5m", "6m", "7m", "8m", "8m", "3s", "4s", "4p", "5p", "6p"],
@@ -1162,7 +1162,7 @@ defmodule RiichiAdvanced.YakuTest.HefeiYaku do
   end
 
   test "hefei - one dealer repeat nondealer ron" do
-    TestUtils.test_yaku_advanced("hefei", [], """
+    TestUtils.test_yaku_advanced("hefei", [], [], """
     {
       "starting_hand": {
         "east": ["2m", "3m", "4m", "5m", "6m", "7m", "8m", "8m", "3s", "4s", "4p", "5p", "6p"],
@@ -1190,7 +1190,7 @@ defmodule RiichiAdvanced.YakuTest.HefeiYaku do
   end
 
   test "hefei - two dealer repeat nondealer ron" do
-    TestUtils.test_yaku_advanced("hefei", [], """
+    TestUtils.test_yaku_advanced("hefei", [], [], """
     {
       "starting_hand": {
         "east": ["2m", "3m", "4m", "5m", "6m", "7m", "8m", "8m", "3s", "4s", "4p", "5p", "6p"],
@@ -1218,7 +1218,7 @@ defmodule RiichiAdvanced.YakuTest.HefeiYaku do
   end
 
   test "hefei - two dealer repeat nondealer tsumo" do
-    TestUtils.test_yaku_advanced("hefei", [], """
+    TestUtils.test_yaku_advanced("hefei", [], [], """
     {
       "starting_hand": {
         "east": ["2m", "3m", "4m", "5m", "6m", "7m", "8m", "8m", "3s", "4s", "4p", "5p", "6p"],
@@ -1246,7 +1246,7 @@ defmodule RiichiAdvanced.YakuTest.HefeiYaku do
   end
 
   test "hefei - seven pairs with dealer repeat" do
-    TestUtils.test_yaku_advanced("hefei", [], """
+    TestUtils.test_yaku_advanced("hefei", [], [], """
     {
       "starting_hand": {
         "east": ["3m", "3m", "5m", "5m", "6m", "6m", "8m", "8m", "6p", "6p", "7p", "7p", "3s"],
@@ -1269,7 +1269,7 @@ defmodule RiichiAdvanced.YakuTest.HefeiYaku do
   end
 
   test "hefei - multiple dealer repeats" do
-    TestUtils.test_yaku_advanced("hefei", [], """
+    TestUtils.test_yaku_advanced("hefei", [], [], """
     {
       "starting_hand": {
         "east": ["2m", "3m", "4m", "5m", "6m", "7m", "8m", "8m", "3s", "4s", "4p", "5p", "6p"],

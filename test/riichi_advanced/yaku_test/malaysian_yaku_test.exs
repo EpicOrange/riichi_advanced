@@ -2,15 +2,8 @@ defmodule RiichiAdvanced.YakuTest.MalaysianYaku do
   use ExUnit.Case, async: true
   alias RiichiAdvanced.TestUtils, as: TestUtils
 
-  @malaysian_mods [
-    "malaysian_five_point_minimum",
-    "malaysian_stackable_limit",
-    "malaysian_half_flush",
-    "malaysian_4_fei_win",
-  ]
-
   test "malaysian - single flowers work" do
-    TestUtils.test_yaku_advanced("malaysian", @malaysian_mods, """
+    TestUtils.test_yaku_advanced("malaysian", [], [], """
     {
       "starting_hand": {
         "east": ["1p", "2p", "3p", "5p", "5p", "5p", "7p", "8p", "9p", "8z", "8z", "8z", "1p"],
@@ -54,7 +47,7 @@ defmodule RiichiAdvanced.YakuTest.MalaysianYaku do
   end
 
   test "malaysian - all flowers override fan from individual flowers" do
-    TestUtils.test_yaku_advanced("malaysian", @malaysian_mods, """
+    TestUtils.test_yaku_advanced("malaysian", [], [], """
     {
       "starting_hand": {
         "east": ["1a", "2p", "3p", "5p", "5p", "5p", "7p", "8p", "9p", "8z", "8z", "8z", "1p"],
@@ -93,7 +86,7 @@ defmodule RiichiAdvanced.YakuTest.MalaysianYaku do
   end
 
   test "malaysian - every single flower at start" do
-    TestUtils.test_yaku_advanced("malaysian", @malaysian_mods, """
+    TestUtils.test_yaku_advanced("malaysian", [], [], """
     {
       "starting_hand": {
         "east": ["1p", "2p", "3p", "5p", "5p", "5p", "7p", "8p", "9p", "8z", "8z", "8z", "1p"],
@@ -145,7 +138,7 @@ defmodule RiichiAdvanced.YakuTest.MalaysianYaku do
   end
 
   test "malaysian - 4 fei win" do
-    TestUtils.test_yaku_advanced("malaysian", @malaysian_mods, """
+    TestUtils.test_yaku_advanced("malaysian", [], [], """
     {
       "starting_hand": {
         "east": ["1p", "2p", "3p", "5p", "5p", "5p", "7p", "8p", "9p", "8z", "8z", "8z", "1p"],
@@ -171,7 +164,7 @@ defmodule RiichiAdvanced.YakuTest.MalaysianYaku do
   end
 
   test "malaysian - kokushi" do
-    TestUtils.test_yaku_advanced("malaysian", @malaysian_mods, """
+    TestUtils.test_yaku_advanced("malaysian", [], [], """
     {
       "starting_hand": {
         "east": ["1a", "9p", "2y", "2y", "2y", "2y", "1z", "2z", "3z", "4z", "8z", "6z", "7z"],
@@ -200,7 +193,7 @@ defmodule RiichiAdvanced.YakuTest.MalaysianYaku do
   end
 
   test "malaysian - white dragon via fei joker" do
-    TestUtils.test_yaku_advanced("malaysian", @malaysian_mods, """
+    TestUtils.test_yaku_advanced("malaysian", [], [], """
     {
       "starting_hand": {
         "east": ["2p", "3p", "4p", "5p", "5p", "5p", "6p", "7p", "7p", "8p", "9p", "8z", "2y"],
@@ -236,7 +229,7 @@ defmodule RiichiAdvanced.YakuTest.MalaysianYaku do
   end
 
   test "malaysian - winds" do
-    TestUtils.test_yaku_advanced("malaysian", @malaysian_mods, """
+    TestUtils.test_yaku_advanced("malaysian", [], [], """
     {
       "starting_hand": {
         "east": ["1p", "4p", "7p", "2p", "7p", "8p", "3p", "6p", "9p", "6z", "6z", "7z", "7z"],

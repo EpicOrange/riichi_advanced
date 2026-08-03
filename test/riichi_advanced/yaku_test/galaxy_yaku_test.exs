@@ -3,7 +3,7 @@ defmodule RiichiAdvanced.YakuTest.GalaxyYaku do
   alias RiichiAdvanced.TestUtils, as: TestUtils
 
   test "galaxy - galaxy jokers work" do
-    TestUtils.test_yaku_advanced("galaxy", [], """
+    TestUtils.test_yaku_advanced("galaxy", [], [], """
     {
       "starting_hand": {
         "east": ["2m", "3m", "14m", "14p", "5m", "6m", "7p", "7p", "17m", "5z", "16z", "1z", "14z"],
@@ -26,7 +26,7 @@ defmodule RiichiAdvanced.YakuTest.GalaxyYaku do
   end
 
   test "galaxy - galaxy jokers should only give one dragon yaku" do
-    TestUtils.test_yaku_advanced("galaxy", [], """
+    TestUtils.test_yaku_advanced("galaxy", [], [], """
     {
       "starting_hand": {
         "east": ["2m", "3m", "4m", "4m", "5m", "6m", "7p", "7p", "7p", "8s", "8s", "15z", "16z"],
@@ -55,7 +55,7 @@ defmodule RiichiAdvanced.YakuTest.GalaxyYaku do
   end
 
   test "galaxy - galaxy jokers should give the best wind yaku" do
-    TestUtils.test_yaku_advanced("galaxy", [], """
+    TestUtils.test_yaku_advanced("galaxy", [], [], """
     {
       "starting_hand": {
         "east": ["2m", "3m", "4m", "4m", "5m", "6m", "7p", "7p", "7p", "8s", "8s", "12z", "13z"],
@@ -78,7 +78,7 @@ defmodule RiichiAdvanced.YakuTest.GalaxyYaku do
   end
 
   test "galaxy - furiten works" do
-    TestUtils.test_yaku_advanced("galaxy", [], """
+    TestUtils.test_yaku_advanced("galaxy", [], [], """
     {
       "starting_hand": {
         "east": ["2m", "3m", "4m", "4m", "5m", "6m", "7p", "7p", "7p", "8s", "8s", "12z", "13z"],
@@ -95,7 +95,7 @@ defmodule RiichiAdvanced.YakuTest.GalaxyYaku do
   end
 
   test "galaxy - milky way" do
-    TestUtils.test_yaku_advanced("galaxy", [], """
+    TestUtils.test_yaku_advanced("galaxy", [], [], """
     {
       "starting_hand": {
         "east": ["1m", "4m", "7m", "2p", "5p", "8p", "3s", "6s", "9s", "1z", "2z", "3z", "4z"],
@@ -117,7 +117,7 @@ defmodule RiichiAdvanced.YakuTest.GalaxyYaku do
   end
 
   test "galaxy - chiitoitsu with galaxy tiles" do
-    TestUtils.test_yaku_advanced("galaxy", [], """
+    TestUtils.test_yaku_advanced("galaxy", [], [], """
     {
       "starting_hand": {
         "east": ["2m", "12m", "6p", "16m", "4s", "14m", "7p", "7p", "9p", "8s", "8s", "1z", "1z"],
@@ -142,7 +142,7 @@ defmodule RiichiAdvanced.YakuTest.GalaxyYaku do
   # # fails with [{"Tenhou", 1}, {"Milky Way", 1}] on github's servers for some reason
   # takes like 30s
   # test "galaxy - milky way ryuuiisou" do
-  #   TestUtils.test_yaku_advanced("galaxy", [], """
+  #   TestUtils.test_yaku_advanced("galaxy", [], [], """
   #   {
   #     "starting_hand": {
   #       "east": ["12m", "13m", "14m", "16m", "18m", "16p", "18p", "12s", "13s", "14s", "16s", "18s", "16z"],
@@ -164,7 +164,7 @@ defmodule RiichiAdvanced.YakuTest.GalaxyYaku do
   
   # # takes like 90s
   # test "galaxy - kokushi or suuankou" do
-  #   TestUtils.test_yaku_advanced("galaxy", [], """
+  #   TestUtils.test_yaku_advanced("galaxy", [], [], """
   #   {
   #     "starting_hand": {
   #       "east": ["11m", "19m", "11p", "19p", "11s", "19s", "11z", "12z", "13z", "14z", "15z", "16z", "17z"],

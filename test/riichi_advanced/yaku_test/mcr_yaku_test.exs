@@ -3,7 +3,7 @@ defmodule RiichiAdvanced.YakuTest.MCRYaku do
   alias RiichiAdvanced.TestUtils, as: TestUtils
 
   test "mcr - not outside hand" do
-    TestUtils.test_yaku_advanced("mcr", [], """
+    TestUtils.test_yaku_advanced("mcr", [], [], """
     {
       "starting_hand": {
         "east": ["8m", "9m", "1p", "2p", "3p", "6p", "6p", "7p", "8p", "9p", "4s", "5s", "6s"],
@@ -29,13 +29,13 @@ defmodule RiichiAdvanced.YakuTest.MCRYaku do
   end
 
   test "mcr - knitted straight" do
-    TestUtils.test_yaku_advanced("mcr", [], """
+    TestUtils.test_yaku_advanced("mcr", [], [], """
     {
       "starting_hand": {
-        "east": ["1m", "4m", "7m", "2p", "5p", "8p", "3s", "6s", "9s", "1z", "2z", "3z", "7z"],
-        "south": ["1m", "4m", "7m", "2p", "5p", "8p", "3s", "6s", "9s", "1z", "2z", "3z", "4z"],
-        "west": ["1m", "4m", "7m", "2p", "5p", "8p", "3s", "6s", "9s", "1z", "2z", "3z", "4z"],
-        "north": ["1m", "3m", "7m", "2p", "5p", "8p", "3s", "6s", "9s", "1z", "2z", "3z", "4z"]
+        "east": ["1m", "4m", "7m", "2p", "5p", "8p", "3s", "6s", "9s", "4z", "4z", "4z", "6z"],
+        "south": ["1m", "4m", "7m", "2p", "5p", "8p", "3s", "6s", "9s", "1z", "2z", "3z", "7z"],
+        "west": ["1m", "4m", "7m", "2p", "5p", "8p", "3s", "6s", "9s", "1z", "2z", "3z", "7z"],
+        "north": ["1m", "3m", "7m", "2p", "5p", "8p", "3s", "6s", "9s", "1z", "2z", "3z", "7z"]
       },
       "starting_draws": ["6z"]
     }
@@ -47,7 +47,7 @@ defmodule RiichiAdvanced.YakuTest.MCRYaku do
       %{"type" => "buttons_pressed", "buttons" => [%{"button" => "tsumo"}, nil, nil, nil]}
     ], %{
       east: %{
-        yaku: [{"All Types", [6, "Fan"]}, {"Fully Concealed Hand", [4, "Fan"]}, {"Knitted Straight", [12, "Fan"]}],
+        yaku: [{"All Types", [6, "Fan"]}, {"Fully Concealed Hand", [4, "Fan"]}, {"Knitted Straight", [12, "Fan"]}, {"Pung of Honors", [1, "Fan"]}, {"Single Wait", [1, "Fan"]}],
       }
     })
   end

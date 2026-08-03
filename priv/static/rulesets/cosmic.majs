@@ -4,6 +4,7 @@ set tutorial_link, "https://docs.google.com/document/d/1F-NhQ5fdi5CnAyEqwNE_qWR0
 define_global han, "Han"
 require "cosmic"
 require_after "yakuman_13_han"
+require_after "riichi_fix_rules_tabs"
 apply set_append, "default_mods", [
   "kontsu",
   "yaku/kontsu_yaku",
@@ -11,6 +12,9 @@ apply set_append, "default_mods", [
   "yaku/fuunburi",
   "yaku/uumensai_cosmic",
   "cosmic_calls",
+  # add back chiitoitsu, but it's open chiitoi worth 1 han
+  # +1 bonus for closed is found in cosmic mod
+  %{name: "lib/yaku/chiitoitsu", config: %{kansai: false, name: "Chiitoitsu", value: 1}},
   "yaku/tsubame_gaeshi",
   "yaku/kanburi",
   %{name: "lib/yaku/isshoku_sanjun", config: %{san_value: 2, yon_value: 1, yon_han: "★", closed_bonus: 1}},

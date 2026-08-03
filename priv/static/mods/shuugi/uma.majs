@@ -9,7 +9,7 @@ define_const uma_2nd, @uma_2nd_base
 define_const uma_3rd, @uma_3rd_base
 define_const uma_4th, @uma_4th_base
 
-def apply_uma do
+def apply_uma, append: true do
   as everyone do
     cond do
       placement(1) -> shuugi += @uma_1st_base

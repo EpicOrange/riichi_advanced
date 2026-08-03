@@ -3,7 +3,7 @@ defmodule RiichiAdvanced.YakuTest.VietnameseScoring do
   alias RiichiAdvanced.TestUtils, as: TestUtils
   
   test "vietnamese - 9 tile liability" do
-    TestUtils.test_yaku_advanced("vietnamese", [], """
+    TestUtils.test_yaku_advanced("vietnamese", [], [], """
     {
       "starting_hand": {
         "east": ["0z", "0z", "0j", "6z", "6z", "6z", "7z", "7z", "7z", "1p", "1p", "2z", "2z"],
@@ -48,7 +48,7 @@ defmodule RiichiAdvanced.YakuTest.VietnameseScoring do
   end
   
   test "vietnamese - daisangen liability" do
-    TestUtils.test_yaku_advanced("vietnamese", [], """
+    TestUtils.test_yaku_advanced("vietnamese", [], [], """
     {
       "starting_hand": {
         "east": ["1s", "2m", "3s", "4s", "5s", "6s", "7s", "8s", "8s", "1p", "1p", "2z", "2z"],
@@ -90,7 +90,7 @@ defmodule RiichiAdvanced.YakuTest.VietnameseScoring do
   end
 
   test "vietnamese - nfnl liability" do
-    TestUtils.test_yaku_advanced("vietnamese", [], """
+    TestUtils.test_yaku_advanced("vietnamese", [], [], """
     {
       "starting_hand": {
         "east": ["0z", "1z", "0z", "6z", "2z", "6z", "7z", "3z", "7z", "9m", "9m", "4z", "4z"],
@@ -120,7 +120,7 @@ defmodule RiichiAdvanced.YakuTest.VietnameseScoring do
   end
 
   test "vietnamese - robbing a bounce" do
-    TestUtils.test_yaku_advanced("vietnamese", ["yaku/viet_rob_bounce"], """
+    TestUtils.test_yaku_advanced("vietnamese", ["yaku/viet_rob_bounce"], [], """
     {
       "starting_hand": {
         "east": ["8j", "2m", "3m", "4p", "5p", "6p", "7p", "8p", "9p", "1z", "1z", "2p", "7m"],

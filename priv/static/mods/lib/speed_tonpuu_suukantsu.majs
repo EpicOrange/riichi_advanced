@@ -14,6 +14,7 @@ define_button suukantsu,
   display_name: "Suukantsu",
   show_when: our_turn and has_draw and status("kan") and match(["calls"], ~m"(daiminkan ankan kakan):4, pair:-1")
   do
+    unset_status_all("pao") # special win, doesn't count as pao
     big_text("Tsumo")
     set_status("suukantsu_rinshan")
     pause(1000)

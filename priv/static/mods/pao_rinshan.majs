@@ -22,12 +22,13 @@ on after_call do
 end
 
 on before_turn_change do
-  if status("rinshan_pao_eligible") do
-    unset_status("rinshan_pao_eligible")
-    if status("double_pao") do
-      unset_status("double_pao")
-    else
-      unset_status("pao")
+  as everyone do
+    if status("rinshan_pao_eligible") do
+      if status("double_pao") do
+        unset_status("double_pao")
+      else
+        unset_status("pao")
+      end
     end
   end
 end

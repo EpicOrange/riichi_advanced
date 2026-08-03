@@ -3,7 +3,7 @@ defmodule RiichiAdvanced.YakuTest.SichuanYaku do
   alias RiichiAdvanced.TestUtils, as: TestUtils
 
   test "sichuan - declare void suit and win" do
-    TestUtils.test_yaku_advanced("sichuan", ["sichuan_no_charleston"], """
+    TestUtils.test_yaku_advanced("sichuan", ["sichuan_no_charleston"], [], """
     {
       "starting_hand": {
         "east": ["2m", "3m", "4m", "4m", "5m", "6m", "2p", "3p", "4p", "7p", "7p", "7p", "6m"],
@@ -31,7 +31,7 @@ defmodule RiichiAdvanced.YakuTest.SichuanYaku do
   end
 
   test "sichuan - root" do
-    TestUtils.test_yaku_advanced("sichuan", ["sichuan_no_charleston"], """
+    TestUtils.test_yaku_advanced("sichuan", ["sichuan_no_charleston"], [], """
     {
       "starting_hand": {
         "east": ["2m", "3m", "4m", "4m", "5m", "6m", "6p", "7p", "7p", "7p", "7p", "8p", "9p"],
@@ -59,7 +59,7 @@ defmodule RiichiAdvanced.YakuTest.SichuanYaku do
   end
 
   test "sichuan - root x2" do
-    TestUtils.test_yaku_advanced("sichuan", ["sichuan_no_charleston"], """
+    TestUtils.test_yaku_advanced("sichuan", ["sichuan_no_charleston"], [], """
     {
       "starting_hand": {
         "east": ["2m", "3m", "3m", "3m", "3m", "4m", "5m", "7p", "7p", "7p", "7p", "8p", "9p"],
@@ -87,7 +87,7 @@ defmodule RiichiAdvanced.YakuTest.SichuanYaku do
   end
 
   test "sichuan - root x4" do
-    TestUtils.test_yaku_advanced("sichuan", ["sichuan_no_charleston"], """
+    TestUtils.test_yaku_advanced("sichuan", ["sichuan_no_charleston"], [], """
     {
       "starting_hand": {
         "east": ["9m", "9m", "9m", "5m", "2s", "2s", "2s", "3s", "3s", "3s", "4s", "4s", "4s"],
@@ -127,7 +127,7 @@ defmodule RiichiAdvanced.YakuTest.SichuanYaku do
   end
 
   test "sichuan - all triplets" do
-    TestUtils.test_yaku_advanced("sichuan", ["sichuan_no_charleston"], """
+    TestUtils.test_yaku_advanced("sichuan", ["sichuan_no_charleston"], [], """
     {
       "starting_hand": {
         "east": ["2m", "2m", "2m", "3m", "3m", "3m", "7p", "7p", "7p", "8p", "8p", "8p", "9p"],
@@ -155,7 +155,7 @@ defmodule RiichiAdvanced.YakuTest.SichuanYaku do
   end
 
   test "sichuan - full flush" do
-    TestUtils.test_yaku_advanced("sichuan", ["sichuan_no_charleston"], """
+    TestUtils.test_yaku_advanced("sichuan", ["sichuan_no_charleston"], [], """
     {
       "starting_hand": {
         "east": ["2m", "2m", "2m", "3m", "4m", "5m", "7m", "7m", "7m", "8m", "8m", "8m", "9m"],
@@ -183,7 +183,7 @@ defmodule RiichiAdvanced.YakuTest.SichuanYaku do
   end
 
   test "sichuan - seven pairs (with repeat)" do
-    TestUtils.test_yaku_advanced("sichuan", ["sichuan_no_charleston"], """
+    TestUtils.test_yaku_advanced("sichuan", ["sichuan_no_charleston"], [], """
     {
       "starting_hand": {
         "east": ["2m", "2m", "2m", "2m", "3m", "3m", "5m", "5m", "7p", "7p", "8p", "8p", "9p"],
@@ -211,7 +211,7 @@ defmodule RiichiAdvanced.YakuTest.SichuanYaku do
   end
 
   test "sichuan - golden single wait" do
-    TestUtils.test_yaku_advanced("sichuan", ["sichuan_no_charleston"], """
+    TestUtils.test_yaku_advanced("sichuan", ["sichuan_no_charleston"], [], """
     {
       "starting_hand": {
         "east": ["2m", "2m", "2m", "2m", "3m", "3m", "5m", "5m", "7p", "7p", "7p", "8p", "1p"],
@@ -249,7 +249,7 @@ defmodule RiichiAdvanced.YakuTest.SichuanYaku do
   end
 
   test "sichuan - rinshan" do
-    TestUtils.test_yaku_advanced("sichuan", ["sichuan_no_charleston"], """
+    TestUtils.test_yaku_advanced("sichuan", ["sichuan_no_charleston"], [], """
     {
       "starting_hand": {
         "east": ["2m", "2m", "2m", "2m", "3m", "4m", "5m", "6m", "7p", "7p", "8p", "8p", "9p"],
@@ -276,7 +276,7 @@ defmodule RiichiAdvanced.YakuTest.SichuanYaku do
   end
 
   test "sichuan - chankan" do
-    TestUtils.test_yaku_advanced("sichuan", ["sichuan_no_charleston"], """
+    TestUtils.test_yaku_advanced("sichuan", ["sichuan_no_charleston"], [], """
     {
       "starting_hand": {
         "east": ["2m", "2m", "2m", "3m", "3m", "4m", "4m", "7p", "8p", "9p", "7m", "8m", "1m"],
@@ -308,7 +308,7 @@ defmodule RiichiAdvanced.YakuTest.SichuanYaku do
   end
 
   test "sichuan - kanburi" do
-    TestUtils.test_yaku_advanced("sichuan", ["sichuan_no_charleston"], """
+    TestUtils.test_yaku_advanced("sichuan", ["sichuan_no_charleston"], [], """
     {
       "starting_hand": {
         "east": ["2m", "2m", "2m", "3m", "3m", "4m", "4m", "7p", "8p", "9p", "6m", "7m", "8m"],
@@ -337,7 +337,7 @@ defmodule RiichiAdvanced.YakuTest.SichuanYaku do
   end
 
   test "sichuan - under the sea" do
-    TestUtils.test_yaku_advanced("sichuan", ["sichuan_no_charleston"], """
+    TestUtils.test_yaku_advanced("sichuan", ["sichuan_no_charleston"], [], """
     {
       "starting_hand": {
         "east": ["5p","9s","2p","5m","7p","9m","4m","4s","3p","7m","5s","9s","6s"],

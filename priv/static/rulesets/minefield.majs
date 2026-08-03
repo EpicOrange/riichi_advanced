@@ -4,6 +4,7 @@ define_base_ruleset riichi
 require "yaku/riichi", %{bet: 1000, drawless: false, double_value: 2}
 require "tobi", %{below: 1000}
 require "min_han", %{min: "Mangan"}
+require_after "riichi_fix_rules_tabs"
 define "minefield"
 
 set starting_tiles, 34

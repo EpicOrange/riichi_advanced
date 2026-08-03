@@ -77,7 +77,7 @@ defmodule RiichiAdvanced.SimpleParseTest do
         mod_specs = mod_specs ++ [mod.spec]
         # IO.inspect(mod_specs)
         try do
-          ruleset_json = ModState.append_mods(mod_state, mod_specs) |> ModState.extract_json()
+          ruleset_json = ModState.prepend_mods(mod_state, mod_specs) |> ModState.extract_json()
           assert ruleset_json != nil, "Failed to apply mods #{inspect(mod_specs)} to ruleset #{ruleset})"
         rescue
           _ ->
@@ -109,7 +109,7 @@ defmodule RiichiAdvanced.SimpleParseTest do
           name -> name
         end)
         ruleset_json = ModState.load_ruleset(ruleset)
-        |> ModState.append_mods(mod_specs)
+        |> ModState.prepend_mods(mod_specs)
         |> ModState.extract_json()
         assert ruleset_json != nil, "Failed to apply mods #{inspect(mod_specs)} to ruleset #{ruleset})"
       else

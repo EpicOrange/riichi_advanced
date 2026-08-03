@@ -570,10 +570,10 @@ defmodule RiichiAdvancedWeb.ScoringTestLive do
       |> JQ.query_string_with_string!(ModLoader.convert_to_jq(socket.assigns.config))
       {:ok, rules_ref} = Rules.load_rules(ruleset_json, ruleset)
 
-      IO.puts("Dropping old rules_ref (length #{String.length(Rules.get(socket.assigns.rules_ref, :ruleset_json, "{}"))})")
+      # IO.puts("Dropping old rules_ref (length #{String.length(Rules.get(socket.assigns.rules_ref, :ruleset_json, "{}"))})")
       if socket.assigns.rules_ref != nil do :ets.delete(socket.assigns.rules_ref) end
       socket = assign(socket, :rules_ref, rules_ref)
-      IO.puts("Adding new rules_ref (length #{String.length(Rules.get(socket.assigns.rules_ref, :ruleset_json, "{}"))})")
+      # IO.puts("Adding new rules_ref (length #{String.length(Rules.get(socket.assigns.rules_ref, :ruleset_json, "{}"))})")
 
       wall = Rules.get(rules_ref, "wall", [])
       socket = assign(socket, :tiles, Enum.uniq(wall))

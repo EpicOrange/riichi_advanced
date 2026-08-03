@@ -4,7 +4,7 @@ on after_initialization do
      %{"1st": @oka_ante_gain_base, "2nd": @oka_ante_loss_base, "3rd": @oka_ante_loss_base, "4th": @oka_ante_loss_base})
 end
 
-def apply_oka do
+def apply_oka, append: true do
   as everyone do
     add_score(@oka_ante_loss_base)
     if placement(1) do add_score(@oka_ante_gain_base) end

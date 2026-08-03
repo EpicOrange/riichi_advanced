@@ -5,7 +5,7 @@ defmodule RiichiAdvanced.YakuTest.FuzhouYaku do
   @base {"Base Points", [10, ""]}
 
   test "fuzhou - chicken hand no flowers" do
-    TestUtils.test_yaku_advanced("fuzhou", [], """
+    TestUtils.test_yaku_advanced("fuzhou", [], [], """
     {
       "starting_hand": {
         "east": ["3m", "3m", "3m", "5m", "6m", "7m", "8m", "8m", "3s", "4s", "4p", "5p", "6p", "7p", "8p", "9p"],
@@ -32,7 +32,7 @@ defmodule RiichiAdvanced.YakuTest.FuzhouYaku do
   end
 
   test "fuzhou - only one flower" do
-    TestUtils.test_yaku_advanced("fuzhou", [], """
+    TestUtils.test_yaku_advanced("fuzhou", [], [], """
     {
       "starting_hand": {
         "east": ["3m", "3m", "3m", "5m", "6m", "7m", "8m", "8m", "3f", "4s", "4p", "5p", "6p", "7p", "8p", "9p"],
@@ -60,7 +60,7 @@ defmodule RiichiAdvanced.YakuTest.FuzhouYaku do
   end
 
   test "fuzhou - flower jin as jin scores gold, not flower" do
-    TestUtils.test_yaku_advanced("fuzhou", ["discardable_flowers"], """
+    TestUtils.test_yaku_advanced("fuzhou", ["discardable_flowers"], [], """
     {
       "starting_hand": {
         "east": ["3m", "3m", "3m", "5m", "6m", "7m", "8m", "8m", "2s", "5s", "4p", "5p", "6p", "7p", "8p", "9p"],
@@ -87,7 +87,7 @@ defmodule RiichiAdvanced.YakuTest.FuzhouYaku do
   end
 
   test "fuzhou - flower jin as flower scores both gold and flower" do
-    TestUtils.test_yaku_advanced("fuzhou", ["discardable_flowers"], """
+    TestUtils.test_yaku_advanced("fuzhou", ["discardable_flowers"], [], """
     {
       "starting_hand": {
         "east": ["1m", "1m", "1m", "5m", "6m", "7m", "8m", "8m", "2s", "4s", "4p", "5p", "6p", "7p", "8p", "9p"],
@@ -115,7 +115,7 @@ defmodule RiichiAdvanced.YakuTest.FuzhouYaku do
   end
 
   test "fuzhou - dealer continuation" do
-    TestUtils.test_yaku_advanced("fuzhou", [], """
+    TestUtils.test_yaku_advanced("fuzhou", [], [], """
     {
       "starting_hand": {
         "east": ["3m", "3m", "3m", "5m", "6m", "7m", "8m", "8m", "3s", "4s", "4p", "5p", "6p", "7p", "8p", "9p"],
@@ -143,7 +143,7 @@ defmodule RiichiAdvanced.YakuTest.FuzhouYaku do
   end
 
   test "fuzhou - closed kong" do
-    TestUtils.test_yaku_advanced("fuzhou", [], """
+    TestUtils.test_yaku_advanced("fuzhou", [], [], """
     {
       "starting_hand": {
         "east": ["3m", "3m", "3m", "5m", "6m", "7m", "8m", "8m", "3s", "4s", "4p", "5p", "6p", "7p", "8p", "9p"],
@@ -171,7 +171,7 @@ defmodule RiichiAdvanced.YakuTest.FuzhouYaku do
   end
 
   test "fuzhou - open kong" do
-    TestUtils.test_yaku_advanced("fuzhou", [], """
+    TestUtils.test_yaku_advanced("fuzhou", [], [], """
     {
       "starting_hand": {
         "east": ["3m", "3m", "3m", "5m", "6m", "7m", "8m", "8m", "3s", "4s", "4p", "5p", "6p", "7p", "8p", "9p"],
@@ -201,7 +201,7 @@ defmodule RiichiAdvanced.YakuTest.FuzhouYaku do
   end
 
   test "fuzhou - open and closed kong" do
-    TestUtils.test_yaku_advanced("fuzhou", [], """
+    TestUtils.test_yaku_advanced("fuzhou", [], [], """
     {
       "starting_hand": {
         "east": ["3m", "3m", "3m", "5m", "5m", "8m", "8m", "8m", "3s", "4s", "4p", "5p", "6p", "7p", "8p", "9p"],
@@ -232,7 +232,7 @@ defmodule RiichiAdvanced.YakuTest.FuzhouYaku do
   end
 
   test "fuzhou - full bloom with flowers" do
-    TestUtils.test_yaku_advanced("fuzhou", [], """
+    TestUtils.test_yaku_advanced("fuzhou", [], [], """
     {
       "starting_hand": {
         "east": ["3m", "3m", "3m", "1f", "2f", "3f", "4f", "8m", "3s", "4s", "4p", "5p", "6p", "7p", "8p", "9p"],
@@ -263,7 +263,7 @@ defmodule RiichiAdvanced.YakuTest.FuzhouYaku do
   end
 
   test "fuzhou - full bloom with honors" do
-    TestUtils.test_yaku_advanced("fuzhou", [], """
+    TestUtils.test_yaku_advanced("fuzhou", [], [], """
     {
       "starting_hand": {
         "east": ["3m", "3m", "3m", "1z", "1z", "1z", "1z", "8m", "3s", "4s", "4p", "5p", "6p", "7p", "8p", "9p"],
@@ -294,7 +294,7 @@ defmodule RiichiAdvanced.YakuTest.FuzhouYaku do
   end
 
   test "fuzhou - all sequences" do
-    TestUtils.test_yaku_advanced("fuzhou", [], """
+    TestUtils.test_yaku_advanced("fuzhou", [], [], """
     {
       "starting_hand": {
         "east": ["2m", "3m", "4m", "5m", "6m", "7m", "8m", "8m", "3s", "4s", "4p", "5p", "6p", "7p", "8p", "9p"],
@@ -322,7 +322,7 @@ defmodule RiichiAdvanced.YakuTest.FuzhouYaku do
 
   # 333m 567m JJ 34s 456p 789p
   test "fuzhou - golden pair" do
-    TestUtils.test_yaku_advanced("fuzhou", [], """
+    TestUtils.test_yaku_advanced("fuzhou", [], [], """
     {
       "starting_hand": {
         "east": ["3m", "3m", "3m", "5m", "6m", "7m", "8m", "8m", "3s", "4s", "4p", "5p", "6p", "7p", "8p", "9p"],
@@ -349,7 +349,7 @@ defmodule RiichiAdvanced.YakuTest.FuzhouYaku do
   end
 
   test "fuzhou - golden dragon" do
-    TestUtils.test_yaku_advanced("fuzhou", [], """
+    TestUtils.test_yaku_advanced("fuzhou", [], [], """
     {
       "starting_hand": {
         "east": ["3m", "3m", "5m", "6m", "7m", "8m", "8m", "8m", "3s", "4s", "4p", "5p", "6p", "7p", "8p", "9p"],
@@ -377,7 +377,7 @@ defmodule RiichiAdvanced.YakuTest.FuzhouYaku do
   end
 
   test "fuzhou - golden pair tanki tsumo" do
-    TestUtils.test_yaku_advanced("fuzhou", [], """
+    TestUtils.test_yaku_advanced("fuzhou", [], [], """
     {
       "starting_hand": {
         "east": ["3m", "3m", "3m", "6m", "6m", "7m", "8m", "2s", "3s", "4s", "4p", "5p", "6p", "7p", "8p", "9p"],
@@ -409,7 +409,7 @@ defmodule RiichiAdvanced.YakuTest.FuzhouYaku do
     # waits on 3m or 8m@jin
     # if 3m, then the two existing jin in hand become 4m and 5m, creating all sequences
     # if 8m, then it's a golden dragon OR it can do the above, but adding three gold knockdown
-    TestUtils.test_yaku_advanced("fuzhou", [], """
+    TestUtils.test_yaku_advanced("fuzhou", [], [], """
     {
       "starting_hand": {
         "east": ["3m", "3m", "5m", "5m", "6m", "7m", "8m", "2s", "3s", "4s", "4p", "5p", "6p", "7p", "8p", "9p"],
@@ -439,7 +439,7 @@ defmodule RiichiAdvanced.YakuTest.FuzhouYaku do
   end
 
   test "fuzhou - three gold knockdown" do
-    TestUtils.test_yaku_advanced("fuzhou", [], """
+    TestUtils.test_yaku_advanced("fuzhou", [], [], """
     {
       "starting_hand": {
         "east": ["3m", "9m", "3m", "5m", "6m", "9m", "8m", "8m", "3s", "4s", "4p", "5p", "9m", "7p", "8p", "9p"],
@@ -466,7 +466,7 @@ defmodule RiichiAdvanced.YakuTest.FuzhouYaku do
   end
 
   test "fuzhou - blessing of heaven" do
-    TestUtils.test_yaku_advanced("fuzhou", [], """
+    TestUtils.test_yaku_advanced("fuzhou", [], [], """
     {
       "starting_hand": {
         "east": ["3m", "3m", "3m", "5m", "6m", "7m", "8m", "8m", "3s", "4s", "4p", "5p", "6p", "7p", "8p", "9p"],
@@ -491,7 +491,7 @@ defmodule RiichiAdvanced.YakuTest.FuzhouYaku do
   end
 
   test "fuzhou - blessing of earth" do
-    TestUtils.test_yaku_advanced("fuzhou", [], """
+    TestUtils.test_yaku_advanced("fuzhou", [], [], """
     {
       "starting_hand": {
         "east": ["2m", "4m", "7m", "2p", "3p", "4p", "6p", "7p", "8p", "9p", "2s", "4s", "5s", "6s", "7s", "8s"],
@@ -517,7 +517,7 @@ defmodule RiichiAdvanced.YakuTest.FuzhouYaku do
   end
 
   test "fuzhou - robbing the gold" do
-    TestUtils.test_yaku_advanced("fuzhou", [], """
+    TestUtils.test_yaku_advanced("fuzhou", [], [], """
     {
       "starting_hand": {
         "east": ["3m", "3m", "3m", "5m", "6m", "7m", "8m", "8m", "3s", "4s", "4p", "5p", "6p", "7p", "8p", "9p"],
@@ -537,7 +537,7 @@ defmodule RiichiAdvanced.YakuTest.FuzhouYaku do
   end
 
   test "fuzhou - robbing the gold as north" do
-    TestUtils.test_yaku_advanced("fuzhou", [], """
+    TestUtils.test_yaku_advanced("fuzhou", [], [], """
     {
       "starting_hand": {
         "east": ["2m", "4m", "7m", "2p", "3p", "4p", "6p", "7p", "8p", "9p", "2s", "4s", "5s", "6s", "7s", "8s"],

@@ -3,8 +3,8 @@ on after_initialization do
   add_rule("Rules", "Fan", "- (Four Fei Win) Your starting hand contains four Fei Jokers, which counts as an immediate win.")
 end
 
-define_const four_fei_win, ~m"nojoker, 2y:4"
-apply set_append, "win_definition", +@four_fei_win
+define_match four_fei_win, ~m"nojoker, 2y:4"
+apply set_append, "win_definition", ["four_fei_win"]
 apply set_append, "score_calculation.yaku_lists", ["four_fei"]
 define_yaku four_fei, "Four Fei", [1, "Limit"], status("match_start") and fei >= 4
 define_yaku_precedence "four_fei", ["yaku", "limit"]

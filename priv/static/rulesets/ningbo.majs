@@ -28,7 +28,7 @@ require "yaku/chankan", %{name: "Robbing a Kong", value: 5, han: "×", scoring_k
 require "default_flowers", %{auto_flower_by_default: true, undiscardable: true, eight_value: 10, win_on: "8 flowers"}
 require "yaku/honitsu", %{hon_name: "Half Flush", hon_value: 2, chin_name: "Pure Flush", chin_value: 4}
 require "yaku/toitoi", %{name: "All Triplets", value: 2}
-require "yaku/rinshan", %{value: 2, rinshan_name: "After a Kong"}
+require "yaku/rinshan", %{value: 2, name: "After a Kong"}
 replace_yaku "yaku", "After a Kong", [1, "Tai", 2, "×"]
 require "yaku/tsumo", %{name: "Self Draw", value: 1}
 require "yaku/yakuhai", %{value: 1}

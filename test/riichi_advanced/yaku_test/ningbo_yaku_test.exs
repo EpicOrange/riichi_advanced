@@ -3,7 +3,7 @@ defmodule RiichiAdvanced.YakuTest.NingboYaku do
   alias RiichiAdvanced.TestUtils, as: TestUtils
 
   test "ningbo - chicken hand can't win" do
-    TestUtils.test_yaku_advanced("ningbo", [], """
+    TestUtils.test_yaku_advanced("ningbo", [], [], """
     {
       "starting_hand": {
         "east": ["3m", "3m", "3m", "5m", "6m", "7m", "8m", "8m", "3s", "4s", "4p", "5p", "6p"],
@@ -26,7 +26,7 @@ defmodule RiichiAdvanced.YakuTest.NingboYaku do
 
   test "ningbo - 3 tai can't win" do
     # all triplets and no baida
-    TestUtils.test_yaku_advanced("ningbo", [], """
+    TestUtils.test_yaku_advanced("ningbo", [], [], """
     {
       "starting_hand": {
         "east": ["3m", "3m", "3m", "5m", "5m", "5m", "8m", "8m", "8m", "4s", "4s", "5s", "5s"],
@@ -49,7 +49,7 @@ defmodule RiichiAdvanced.YakuTest.NingboYaku do
 
   test "ningbo - self draw single wait all triplets" do
     # all triplets and single wait
-    TestUtils.test_yaku_advanced("ningbo", [], """
+    TestUtils.test_yaku_advanced("ningbo", [], [], """
     {
       "starting_hand": {
         "east": ["3m", "3m", "3m", "5m", "5m", "5m", "8m", "8m", "8m", "4s", "4s", "5s", "5s"],
@@ -78,7 +78,7 @@ defmodule RiichiAdvanced.YakuTest.NingboYaku do
   end
 
   test "ningbo - single wait no baida" do
-    TestUtils.test_yaku_advanced("ningbo", [], """
+    TestUtils.test_yaku_advanced("ningbo", [], [], """
     {
       "starting_hand": {
         "east": ["3m", "3m", "3m", "5m", "5m", "5m", "8m", "8m", "8m", "4s", "4s", "4s", "5s"],
@@ -105,7 +105,7 @@ defmodule RiichiAdvanced.YakuTest.NingboYaku do
   end
 
   test "ningbo - closed wait no baida" do
-    TestUtils.test_yaku_advanced("ningbo", [], """
+    TestUtils.test_yaku_advanced("ningbo", [], [], """
     {
       "starting_hand": {
         "east": ["3m", "3m", "3m", "5m", "5m", "5m", "8m", "8m", "8m", "1z", "1z", "4m", "6m"],
@@ -132,7 +132,7 @@ defmodule RiichiAdvanced.YakuTest.NingboYaku do
   end
 
   test "ningbo - edge wait no baida" do
-    TestUtils.test_yaku_advanced("ningbo", [], """
+    TestUtils.test_yaku_advanced("ningbo", [], [], """
     {
       "starting_hand": {
         "east": ["3m", "3m", "3m", "5m", "5m", "5m", "8m", "8m", "8m", "1z", "1z", "1m", "2m"],
@@ -159,7 +159,7 @@ defmodule RiichiAdvanced.YakuTest.NingboYaku do
   end
 
   test "ningbo - single wait win on baida" do
-    TestUtils.test_yaku_advanced("ningbo", [], """
+    TestUtils.test_yaku_advanced("ningbo", [], [], """
     {
       "starting_hand": {
         "east": ["3m", "3m", "3m", "5m", "5m", "5m", "8m", "8m", "8m", "4s", "4s", "4s", "5s"],
@@ -186,7 +186,7 @@ defmodule RiichiAdvanced.YakuTest.NingboYaku do
   end
 
   test "ningbo - closed wait win on baida" do
-    TestUtils.test_yaku_advanced("ningbo", [], """
+    TestUtils.test_yaku_advanced("ningbo", [], [], """
     {
       "starting_hand": {
         "east": ["3m", "3m", "3m", "4m", "4m", "4m", "8m", "8m", "8m", "1z", "1z", "4m", "6m"],
@@ -213,7 +213,7 @@ defmodule RiichiAdvanced.YakuTest.NingboYaku do
   end
 
   test "ningbo - edge wait win on baida" do
-    TestUtils.test_yaku_advanced("ningbo", [], """
+    TestUtils.test_yaku_advanced("ningbo", [], [], """
     {
       "starting_hand": {
         "east": ["3m", "3m", "3m", "5m", "5m", "5m", "8m", "8m", "8m", "8m", "9m", "1z", "1z"],
@@ -240,7 +240,7 @@ defmodule RiichiAdvanced.YakuTest.NingboYaku do
   end
 
   test "ningbo - round and seat winds" do
-    TestUtils.test_yaku_advanced("ningbo", [], """
+    TestUtils.test_yaku_advanced("ningbo", [], [], """
     {
       "starting_hand": {
         "east": ["1m", "2m", "3m", "3m", "3m", "5m", "5m", "5m", "8m", "8m", "8m", "1z", "1z"],
@@ -267,7 +267,7 @@ defmodule RiichiAdvanced.YakuTest.NingboYaku do
   end
 
   test "ningbo - white dragon" do
-    TestUtils.test_yaku_advanced("ningbo", [], """
+    TestUtils.test_yaku_advanced("ningbo", [], [], """
     {
       "starting_hand": {
         "east": ["3m", "3m", "3m", "5m", "5m", "5m", "0z", "0z", "0z", "4s", "4s", "5s", "5s"],
@@ -294,7 +294,7 @@ defmodule RiichiAdvanced.YakuTest.NingboYaku do
   end
 
   test "ningbo - half flush" do
-    TestUtils.test_yaku_advanced("ningbo", [], """
+    TestUtils.test_yaku_advanced("ningbo", [], [], """
     {
       "starting_hand": {
         "east": ["1m", "1m", "3m", "3m", "3m", "5m", "5m", "5m", "8m", "8m", "8m", "7z", "7z"],
@@ -321,7 +321,7 @@ defmodule RiichiAdvanced.YakuTest.NingboYaku do
   end
 
   test "ningbo - pure flush" do
-    TestUtils.test_yaku_advanced("ningbo", [], """
+    TestUtils.test_yaku_advanced("ningbo", [], [], """
     {
       "starting_hand": {
         "east": ["1m", "1m", "3m", "3m", "3m", "5m", "5m", "5m", "8m", "8m", "8m", "9m", "9m"],
@@ -348,7 +348,7 @@ defmodule RiichiAdvanced.YakuTest.NingboYaku do
   end
 
   test "ningbo - after a kong" do
-    TestUtils.test_yaku_advanced("ningbo", [], """
+    TestUtils.test_yaku_advanced("ningbo", [], [], """
     {
       "starting_hand": {
         "east": ["6m", "7m", "8m", "5p", "6p", "7p", "8p", "9p", "9p", "9p", "2m", "2m", "2m"],
@@ -376,7 +376,7 @@ defmodule RiichiAdvanced.YakuTest.NingboYaku do
   end
 
   test "ningbo - after a kong baida reuse" do
-    TestUtils.test_yaku_advanced("ningbo", [], """
+    TestUtils.test_yaku_advanced("ningbo", [], [], """
     {
       "starting_hand": {
         "east": ["6m", "7m", "8m", "8p", "9p", "9p", "9p", "5s", "6s", "7s", "2m", "2m", "2m"],
@@ -404,7 +404,7 @@ defmodule RiichiAdvanced.YakuTest.NingboYaku do
   end
 
   test "ningbo - baida pair win" do
-    TestUtils.test_yaku_advanced("ningbo", [], """
+    TestUtils.test_yaku_advanced("ningbo", [], [], """
     {
       "starting_hand": {
         "east": ["6m", "7m", "8m", "7p", "9p", "9p", "9p", "5s", "6s", "7s", "2m", "2m", "2m"],
@@ -433,7 +433,7 @@ defmodule RiichiAdvanced.YakuTest.NingboYaku do
   end
 
   test "ningbo - baida reuse counts towards 4 han minimum" do
-    TestUtils.test_yaku_advanced("ningbo", [], """
+    TestUtils.test_yaku_advanced("ningbo", [], [], """
     {
       "starting_hand": {
         "east": ["6m", "7m", "8m", "7p", "9p", "9p", "9p", "5s", "6s", "7s", "2m", "2m", "2m"],
@@ -462,7 +462,7 @@ defmodule RiichiAdvanced.YakuTest.NingboYaku do
   end
 
   test "ningbo - all honours" do
-    TestUtils.test_yaku_advanced("ningbo", [], """
+    TestUtils.test_yaku_advanced("ningbo", [], [], """
     {
       "starting_hand": {
         "east": ["1z", "1z", "1z", "2z", "2z", "0z", "0z", "0z", "6z", "6z", "6z", "7z", "7z"],
@@ -489,7 +489,7 @@ defmodule RiichiAdvanced.YakuTest.NingboYaku do
   end
 
   test "ningbo - blessing of heaven" do
-    TestUtils.test_yaku_advanced("ningbo", [], """
+    TestUtils.test_yaku_advanced("ningbo", [], [], """
     {
       "starting_hand": {
         "east": ["3m", "3m", "3m", "5m", "6m", "7m", "8m", "8m", "3s", "4s", "4p", "5p", "6p"],
@@ -515,7 +515,7 @@ defmodule RiichiAdvanced.YakuTest.NingboYaku do
   end
 
   test "ningbo - blessing of earth" do
-    TestUtils.test_yaku_advanced("ningbo", [], """
+    TestUtils.test_yaku_advanced("ningbo", [], [], """
     {
       "starting_hand": {
         "east": ["2m", "4m", "7m", "2p", "3p", "4p", "6p", "7p", "8p", "9p", "2s", "4s", "6s"],
@@ -541,7 +541,7 @@ defmodule RiichiAdvanced.YakuTest.NingboYaku do
   end
 
   test "ningbo - robbing a kong" do
-    TestUtils.test_yaku_advanced("ningbo", [], """
+    TestUtils.test_yaku_advanced("ningbo", [], [], """
     {
       "starting_hand": {
         "east": ["6m", "7m", "8m", "1z", "6p", "7p", "8p", "9p", "9p", "9p", "2m", "2m", "2m"],
@@ -572,7 +572,7 @@ defmodule RiichiAdvanced.YakuTest.NingboYaku do
   end
 
   test "ningbo - three meld penalty" do
-    TestUtils.test_yaku_advanced("ningbo", [], """
+    TestUtils.test_yaku_advanced("ningbo", [], [], """
     {
       "starting_hand": {
         "east": ["6m", "6m", "8m", "8m", "6p", "6p", "8p", "2z", "3z", "4z", "2m", "2m", "2m"],
@@ -609,7 +609,7 @@ defmodule RiichiAdvanced.YakuTest.NingboYaku do
   end
 
   test "ningbo - eight flowers" do
-    TestUtils.test_yaku_advanced("ningbo", [], """
+    TestUtils.test_yaku_advanced("ningbo", [], [], """
     {
       "starting_hand": {
         "east": ["3m", "3m", "3m", "5m", "6m", "7m", "8m", "8m", "3s", "4s", "4p", "5p", "6p"],
@@ -645,7 +645,7 @@ defmodule RiichiAdvanced.YakuTest.NingboYaku do
 
   # # this test takes too long
   # test "ningbo - last tile" do
-  #   TestUtils.test_yaku_advanced("ningbo", ["show_waits"], """
+  #   TestUtils.test_yaku_advanced("ningbo", ["show_waits"], [], """
   #   {
   #     "starting_hand": {
   #       "east": ["6m","3m","1z","3m","0z","1g","7p","2m","2p","5s","3p","9m","8s"],

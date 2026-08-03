@@ -186,6 +186,7 @@ defmodule RiichiAdvanced.ModLoader.ModState do
   end
 
   # these are reversed because the respective fields are stacks
+  # you pretty much only want to use prepend_mods, because stored mods are almost always require_after mods
   def append_mods(state, mods), do: %{state | mods: Enum.reverse(mods) ++ state.mods}
   def prepend_mods(state, mods), do: %{state | mods: state.mods ++ Enum.reverse(mods)}
   def append_jq(state, jq), do: %{state | ruleset_jq: [jq | state.ruleset_jq]}

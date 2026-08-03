@@ -19,14 +19,14 @@ defmodule RiichiAdvanced.RulesetsTest do
   end
 
   def test_ruleset_mods_individually(ruleset) do
-    %{game_state_pid: game_state_pid} = TestUtils.initialize_test_state(ruleset, [], "")
+    %{game_state_pid: game_state_pid} = TestUtils.initialize_test_state(ruleset, [])
     rules_ref = GenServer.call(game_state_pid, :get_state).rules_ref
     Rules.get(rules_ref, "available_mods", %{})
     |> Enum.filter(&is_map/1)
     |> Enum.map(&add_default_mod_config/1)
     |> Task.async_stream(fn mod ->
       try do
-        %{game_state_pid: game_state_pid} = TestUtils.initialize_test_state("riichi", [mod], "")
+        %{game_state_pid: game_state_pid} = TestUtils.initialize_test_state("riichi", [mod])
         monitor_ref = Process.monitor(game_state_pid)
         # make sure it's terminated before starting the next one
         # or we get emfile (too many open files) errors
@@ -48,7 +48,7 @@ defmodule RiichiAdvanced.RulesetsTest do
   end
 
   def test_ruleset_default_mods(ruleset) do
-    %{game_state_pid: game_state_pid} = TestUtils.initialize_test_state(ruleset, [], "")
+    %{game_state_pid: game_state_pid} = TestUtils.initialize_test_state(ruleset, [])
     rules_ref = GenServer.call(game_state_pid, :get_state).rules_ref
     monitor_ref = Process.monitor(game_state_pid)
     available_mods = Rules.get(rules_ref, "available_mods", %{})
@@ -66,7 +66,7 @@ defmodule RiichiAdvanced.RulesetsTest do
       %{"name" => id, "config" => config} -> %{name: id, config: config}
     end)
     try do
-      TestUtils.initialize_test_state("riichi", mods, "")
+      TestUtils.initialize_test_state("riichi", mods)
     rescue
       err ->
         Logger.error("Failed to apply mods to ruleset #{inspect(ruleset)}: #{inspect(mods)}")
@@ -86,7 +86,7 @@ defmodule RiichiAdvanced.RulesetsTest do
     for {ruleset, _, _} <- Constants.available_rulesets do
       try do
         # IO.inspect(ruleset, label: "ruleset")
-        TestUtils.initialize_test_state(ruleset, [], "")
+        TestUtils.initialize_test_state(ruleset, [])
       rescue
         err ->
           Logger.error("Failed to load #{ruleset}")

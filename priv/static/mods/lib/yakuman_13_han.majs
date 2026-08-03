@@ -9,3 +9,7 @@ replace all, "meta_yakuman", [3, "★"], [39, "Han"]
 replace all, "meta_yakuman", [4, "★"], [52, "Han"]
 # remove existing yaku precedence that yakuman has on regular yaku
 apply delete_key, "yaku_precedence", "yakuman"
+
+on after_initialization do
+  add_rule("Yakuman", "Yakuman is 13 Han", "(Cosmic Riichi) All yakuman is converted to 13 han. Double yakuman is 26 han, etc.", -10)
+end

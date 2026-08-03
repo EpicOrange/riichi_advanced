@@ -201,7 +201,7 @@ config_mod "lib/min_han", name: "min", values: [1, 2, 3, 4, "Mangan", "Yakuman"]
 config_mod "lib/min_han", name: "han", values: ["Han"], default: "Han"
 define_mod no_riichi_ankan, deps: ["lib/yaku/riichi"], conflicts: ["yes_riichi_ankan"], name: "No Riichi Ankan", desc: "Disallow any concealed kan while in riichi, not just ones that change your waits."
 define_mod yes_riichi_ankan, deps: ["lib/yaku/riichi"], conflicts: ["no_riichi_ankan"], name: "Yes Riichi Ankan", desc: "Allow any concealed kan while in riichi, even ones that change your waits."
-define_mod no_fifth_tile_tenpai, deps: ["lib/yaku/riichi"], name: "No Fifth Tile Tenpai", desc: "At exhaustive draw, you are not considered tenpai if all four tiles of each wait is in hand: for example, 123456789m1111p. You may still declare riichi with such a hand, however."
+define_mod "lib/no_fifth_tile_tenpai", deps: ["lib/yaku/riichi"], name: "No Fifth Tile Tenpai", desc: "At exhaustive draw, you are not considered tenpai if all four tiles of each wait is in hand: for example, 123456789m1111p. You may still declare riichi with such a hand, however."
 define_mod kokushi_ankan_chankan, name: "Kokushi Chankan", desc: "Allow robbing ankans if in tenpai for kokushi musou."
 define_mod first_gets_riichi_sticks, deps: ["lib/yaku/riichi"], name: "First Gets Riichi Sticks", desc: "At the end of the game, all leftover riichi sticks on the table are given to first place. (Otherwise they are lost.)"
 define_mod starting_score, order: -2, name: "Starting Points", desc: "Number of points each player starts with. You can also set this by writing the following in the Config tab: \"initial_score\": 100000"
@@ -477,7 +477,6 @@ set default_mods, [
   %{name: "uma", config: %{_1st: 10, _2nd: 5, _3rd: -5, _4th: -10}},
   "lib/kuikae_nashi",
   "double_wind_4_fu",
-  "lib/pao_base",
   "lib/pao_standard",
   "kokushi_ankan_chankan",
   "lib/agarirenchan",
@@ -520,8 +519,8 @@ set default_mods, [
   %{name: "lib/yaku/suukantsu", config: %{list: "yakuman", han: "★", value: 1}},
   %{name: "lib/min_han", config: %{han: "Han", min: 1}},
   "cancellable_riichi",
+  "shiny_dora",
   %{name: "aka", config: %{man: 1, pin: 1, sou: 1}},
-  "lib/riichi_fix_rules_tabs"
 ]
 
 define_preset "Mahjong Soul", [

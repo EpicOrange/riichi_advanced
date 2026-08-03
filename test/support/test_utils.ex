@@ -12,12 +12,12 @@ defmodule RiichiAdvanced.TestUtils do
   # @suppress_io true
   @suppress_io false
 
-  def initialize_test_state(ruleset, mods, config \\ nil)
-  def initialize_test_state(_ruleset, nil, _config) do
+  def initialize_test_state(ruleset, mods, excluded_mods \\ [], config \\ "{}")
+  def initialize_test_state(_ruleset, nil, _excluded_mods, _config) do
     IO.puts("initialize_test_state: You passed in `nil` instead of a mod list! Check if you are using an undefined module attribute like @zan_mods.")
   end
-  def initialize_test_state(ruleset, mods, config) do
-    rules_ref = Rules.load_default_ruleset(ruleset, mods, config)
+  def initialize_test_state(ruleset, mods, excluded_mods, config) do
+    rules_ref = Rules.load_default_ruleset(ruleset, mods, excluded_mods, config)
     # IO.inspect(Rules.get(rules_ref, "score_calculation"), limit: :infinity)
     room_code = Ecto.UUID.generate()
     args = [room_code: room_code, ruleset: ruleset, mods: mods, config: config, rules_ref: rules_ref, name: Utils.via_registry("game", ruleset, room_code)]
@@ -57,11 +57,11 @@ defmodule RiichiAdvanced.TestUtils do
     end
   end
 
-  def test_yaku_advanced(ruleset, mods, config, events, expected_winners \\ %{}, expected_state \\ %{}) do
+  def test_yaku_advanced(ruleset, mods, excluded_mods, config, events, expected_winners \\ %{}, expected_state \\ %{}) do
     if Debug.debug() == true do
       assert false, "Debug.debug is on!"
     end
-    test_state = initialize_test_state(ruleset, mods, config)
+    test_state = initialize_test_state(ruleset, mods, excluded_mods, config)
     GenServer.cast(test_state.game_state_pid, :sort_hands)
 
     test_state = for event <- verify_events(events), reduce: test_state do

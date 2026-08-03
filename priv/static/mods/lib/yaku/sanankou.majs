@@ -12,6 +12,7 @@ default suu_tanki_list, !suu_list
 default suu_tanki_name, "Suuankou Tanki"
 default suu_tanki_value, 0
 default suu_tanki_han, !han
+default suu_tsumo_only, false
 
 on before_scoring do add_attr(["winning_tile"], ["_winning_tile"]) end
 
@@ -26,7 +27,7 @@ if !san_value > 0 do
     """
   define_match sanankou_ron, ~m"""
     exhaustive, (pon daiminkan kakan):-1, koutsu:3, (any@winning_tile):0, mentsu:1, pair:1 |
-                (pon daiminkan kakan):-2, koutsu:4, (any@winning_tile):0, pair:1
+    exhaustive, (pon daiminkan kakan):-2, koutsu:4, (any@winning_tile):0, pair:1
     """
   define_yaku !san_list, !san_name, [!san_value, !san_han],
        (won_by_draw and match(["hand", "calls", "winning_tile"], ["sanankou_tsumo"]))
@@ -43,13 +44,18 @@ if !suu_value > 0 do
     end
   end
   define_match suuankou_tsumo, ~m"(pon daiminkan kakan):-1, koutsu:4, pair:1"
-  define_match suuankou_ron, ~m"(pon daiminkan kakan):-1, koutsu:4, (any@winning_tile):0, pair:1"
+  define_match suuankou_ron, ~m"exhaustive, (pon daiminkan kakan):-1, koutsu:4, (any@winning_tile):0, pair:1"
   if !suu_tanki_value > 0 do
-    define_yaku !suu_list, !suu_name, [!suu_value, !suu_han],
-      won_by_draw and match(["hand", "calls", "winning_tile"], ["suuankou_tsumo"])
+    # suuankou tanki
     define_yaku !suu_tanki_list, !suu_tanki_name, [!suu_tanki_value, !suu_tanki_han],
       match(["hand", "calls"], ~m"(pon daiminkan kakan):-1, koutsu:4"), [!san_name, !suu_name]
+  end
+  if !suu_tsumo_only or !suu_tanki_value > 0 do
+    # suuankou tsumo only
+    define_yaku !suu_list, !suu_name, [!suu_value, !suu_han],
+      won_by_draw and match(["hand", "calls", "winning_tile"], ["suuankou_tsumo"])
   else
+    # suuankou tsumo or ron
     define_yaku !suu_list, !suu_name, [!suu_value, !suu_han],
          (won_by_draw and match(["hand", "calls", "winning_tile"], ["suuankou_tsumo"]))
       or (not_won_by_draw and match(["hand", "calls", "winning_tile"], ["suuankou_ron"])), [!san_name]

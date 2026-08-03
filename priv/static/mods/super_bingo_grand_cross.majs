@@ -1,4 +1,5 @@
 require "grand_cross"
+default add_gold_pei, true
 
 on after_initialization do
   add_rule("Rules", "Grand Cross", "(Super Bingo) Grand Cross is instead worth 1 han.")

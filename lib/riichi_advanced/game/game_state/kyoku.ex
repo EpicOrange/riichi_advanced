@@ -44,7 +44,6 @@ defmodule RiichiAdvanced.GameState.Kyoku do
         {state, delta_scores, delta_scores_reason} = Scoring.adjudicate_win_scoring(state)
         state = Map.put(state, :delta_scores, delta_scores)
         state = Map.put(state, :delta_scores_reason, delta_scores_reason)
-
         state = if Rules.get(state.rules_ref, "bloody_end", false) and state.round_result != :continue do
           push_message(state, [%{text: "Game ended after three winners"}])
 
@@ -487,7 +486,7 @@ defmodule RiichiAdvanced.GameState.Kyoku do
         # flag to check if after_win has been called for this winner
         needs_after_win: true,
       })
-    state = Map.update!(state, :winners, &Map.put(&1, seat, Map.merge(winner, &1[seat])))
+    state = Map.update!(state, :winners, &Map.put(&1, seat, winner))
     state
   end
 end

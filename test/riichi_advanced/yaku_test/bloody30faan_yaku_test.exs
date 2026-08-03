@@ -8,7 +8,7 @@ defmodule RiichiAdvanced.YakuTest.Bloody30FaanYaku do
   @no_honors {"No Honors or Flowers", [2, "Faan"]}
 
   test "b30fj - flower" do
-    TestUtils.test_yaku_advanced("bloody30faan", [], """
+    TestUtils.test_yaku_advanced("bloody30faan", [], [], """
     {
       "starting_hand": {
         "east": ["1m", "2m", "3m", "5m", "6m", "7m", "16j", "7p", "8p", "4s", "4s", "4s", "1z"],
@@ -32,7 +32,7 @@ defmodule RiichiAdvanced.YakuTest.Bloody30FaanYaku do
   end
 
   test "b30fj - no honors or flowers" do
-    TestUtils.test_yaku_advanced("bloody30faan", [], """
+    TestUtils.test_yaku_advanced("bloody30faan", [], [], """
     {
       "starting_hand": {
         "east": ["1m", "2m", "3m", "5m", "6m", "7m", "6j", "7p", "8p", "4s", "4s", "4s", "17j"],
@@ -54,7 +54,7 @@ defmodule RiichiAdvanced.YakuTest.Bloody30FaanYaku do
   end
 
   test "b30fj - no jokers" do
-    TestUtils.test_yaku_advanced("bloody30faan", [], """
+    TestUtils.test_yaku_advanced("bloody30faan", [], [], """
     {
       "starting_hand": {
         "east": ["1m", "2m", "3m", "5m", "6m", "7m", "6p", "7p", "8p", "4s", "4s", "4s", "9s"],
@@ -76,7 +76,7 @@ defmodule RiichiAdvanced.YakuTest.Bloody30FaanYaku do
   end
 
   test "b30fj - terminal sequences" do
-    TestUtils.test_yaku_advanced("bloody30faan", [], """
+    TestUtils.test_yaku_advanced("bloody30faan", [], [], """
     {
       "starting_hand": {
         "east": ["1m", "2m", "3m", "5m", "6m", "7m", "8m", "9m", "3p", "3p", "5s", "5s", "6j"],
@@ -98,7 +98,7 @@ defmodule RiichiAdvanced.YakuTest.Bloody30FaanYaku do
   end
 
   test "b30fj - double terminal sequences" do
-    TestUtils.test_yaku_advanced("bloody30faan", [], """
+    TestUtils.test_yaku_advanced("bloody30faan", [], [], """
     {
       "starting_hand": {
         "east": ["1m", "2m", "3m", "7m", "8m", "9m", "1p", "2p", "7p", "9p", "5s", "5s", "6j"],
@@ -120,7 +120,7 @@ defmodule RiichiAdvanced.YakuTest.Bloody30FaanYaku do
   end
 
   test "b30fj - pure double terminal sequences" do
-    TestUtils.test_yaku_advanced("bloody30faan", [], """
+    TestUtils.test_yaku_advanced("bloody30faan", [], [], """
     {
       "starting_hand": {
         "east": ["1m", "2m", "3m", "1m", "2m", "7m", "8m", "9m", "7m", "9m", "6p", "6p", "18j"],
@@ -147,7 +147,7 @@ defmodule RiichiAdvanced.YakuTest.Bloody30FaanYaku do
   end
 
   test "b30fj - one voided suit" do
-    TestUtils.test_yaku_advanced("bloody30faan", [], """
+    TestUtils.test_yaku_advanced("bloody30faan", [], [], """
     {
       "starting_hand": {
         "east": ["1m", "2m", "3m", "5m", "6m", "3p", "3p", "5p", "5p", "6j", "7p", "8p", "9p"],
@@ -169,7 +169,7 @@ defmodule RiichiAdvanced.YakuTest.Bloody30FaanYaku do
   end
 
   test "b30fj - open nine gates" do
-    TestUtils.test_yaku_advanced("bloody30faan", [], """
+    TestUtils.test_yaku_advanced("bloody30faan", [], [], """
     {
       "starting_hand": {
         "east": ["1m", "1m", "1z", "2m", "2m", "4m", "5m", "6m", "7m", "18j", "9m", "9m", "9m"],
@@ -194,7 +194,7 @@ defmodule RiichiAdvanced.YakuTest.Bloody30FaanYaku do
   end
 
   test "b30fj - daiminkan is open kong" do
-    TestUtils.test_yaku_advanced("bloody30faan", [], """
+    TestUtils.test_yaku_advanced("bloody30faan", [], [], """
     {
       "starting_hand": {
         "east": ["3m", "3m", "3m", "5m", "6m", "3p", "4p", "4p", "5p", "6j", "7s", "8s", "9s"],
@@ -220,7 +220,7 @@ defmodule RiichiAdvanced.YakuTest.Bloody30FaanYaku do
   end
 
   test "b30fj - kakan is open kong" do
-    TestUtils.test_yaku_advanced("bloody30faan", [], """
+    TestUtils.test_yaku_advanced("bloody30faan", [], [], """
     {
       "starting_hand": {
         "east": ["3m", "3m", "1z", "5m", "6m", "3p", "4p", "4p", "5p", "6j", "7s", "8s", "9s"],
@@ -251,7 +251,7 @@ defmodule RiichiAdvanced.YakuTest.Bloody30FaanYaku do
   end
 
   test "b30fj - ankan is closed kong" do
-    TestUtils.test_yaku_advanced("bloody30faan", [], """
+    TestUtils.test_yaku_advanced("bloody30faan", [], [], """
     {
       "starting_hand": {
         "east": ["3m", "3m", "3m", "5m", "6m", "3p", "4p", "4p", "5p", "6j", "7s", "8s", "9s"],
@@ -275,7 +275,7 @@ defmodule RiichiAdvanced.YakuTest.Bloody30FaanYaku do
   end
 
   test "b30fj - two shifted triplets" do
-    TestUtils.test_yaku_advanced("bloody30faan", [], """
+    TestUtils.test_yaku_advanced("bloody30faan", [], [], """
     {
       "starting_hand": {
         "east": ["3m", "3m", "3m", "4m", "4m", "3p", "4p", "4p", "5p", "6j", "7s", "8s", "9s"],
@@ -299,7 +299,7 @@ defmodule RiichiAdvanced.YakuTest.Bloody30FaanYaku do
   # TODO more tests
 
   test "b30fj - knitted straight" do
-    TestUtils.test_yaku_advanced("bloody30faan", [], """
+    TestUtils.test_yaku_advanced("bloody30faan", [], [], """
     {
       "starting_hand": {
         "east": ["1m", "4m", "18j", "2p", "5p", "8p", "3s", "6s", "9s", "1z", "2z", "3z", "7z"],

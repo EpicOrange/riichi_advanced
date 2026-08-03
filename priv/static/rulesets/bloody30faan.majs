@@ -34,13 +34,12 @@ require "yaku/chanta", %{chanta_name: "Mixed Outside Hand", chanta_value: 5, jun
 require "yaku/honroutou", %{chin_name: "Pure Terminals", chin_value: 30, hon_name: "Mixed Terminals", hon_value: 10}
 require "yaku/uumensai", %{name: "All Types", value: 5}
 require "yaku/honitsu", %{chin_name: "Full Flush", chin_value: 10, hon_name: "Mixed Flush", hon_value: 5}
-require "yaku/chuurenpoutou", %{name: "Nine Gates", value: 30, must_wait_9: false}
+require "yaku/chuurenpoutou", %{name: "Nine Gates", value: 30}
 require "yaku/ryankantsu", %{name: "Two Kongs", value: 5}
 require "yaku/sankantsu", %{name: "Three Kongs", value: 15}
 require "yaku/suukantsu", %{name: "Four Kongs", value: 30}
 require "yaku/ryanankou", %{name: "Two Concealed Triplets", value: 2}
-require "yaku/sanankou", %{name: "Three Concealed Triplets", value: 8}
-require "yaku/suuankou", %{name: "Four Concealed Triplets", value: 15}
+require "yaku/sanankou", %{san_name: "Three Concealed Triplets", san_value: 8, suu_name: "Four Concealed Triplets", suu_value: 15}
 require "yaku/sanrenkou", %{san_name: "Three Pure Shifted Triplets", san_value: 10, suu_name: "Four Pure Shifted Triplets", suu_value: 20}
 require "yaku/sanshoku_shoudoukou", %{name: "Small Triple Triplets", value: 5}
 require "yaku/sanshoku_doukou", %{name: "Triple Triplets", value: 10}
@@ -146,7 +145,7 @@ define_set knit9, ~s"3m|6m|9m|3p|6p|9p|3s|6s|9s|1z|2z|3z|4z|0z|6z|7z"
 #   define_set knit2, ~s"0|3|6|12|15|18|21|24|27|1z|2z|3z|4z|0z|6z|7z"
 # turns out to make it really hard for the smt solver to solve even one joker, so don't do it
 
-define_const knitted_tenpai, ~m"""
+define_match knitted_tenpai, ~m"""
     unique, knit1:12, knit1:1
   | unique, knit2:12, knit2:1
   | unique, knit3:12, knit3:1
@@ -157,7 +156,7 @@ define_const knitted_tenpai, ~m"""
   | unique, knit8:12, knit8:1
   | unique, knit9:12, knit9:1
   """
-define_const knitted_win, ~m"""
+define_match knitted_win, ~m"""
     (unique knit1):13, knit1:1, restart, pair:1, restart, manzu:1, pinzu:1, souzu:1, (1z 2z 3z 4z):1, (0z 6z 7z):1
   | (unique knit2):13, knit2:1, restart, pair:1, restart, manzu:1, pinzu:1, souzu:1, (1z 2z 3z 4z):1, (0z 6z 7z):1
   | (unique knit3):13, knit3:1, restart, pair:1, restart, manzu:1, pinzu:1, souzu:1, (1z 2z 3z 4z):1, (0z 6z 7z):1
@@ -168,8 +167,8 @@ define_const knitted_win, ~m"""
   | (unique knit8):13, knit8:1, restart, pair:1, restart, manzu:1, pinzu:1, souzu:1, (1z 2z 3z 4z):1, (0z 6z 7z):1
   | (unique knit9):13, knit9:1, restart, pair:1, restart, manzu:1, pinzu:1, souzu:1, (1z 2z 3z 4z):1, (0z 6z 7z):1
   """
-apply set_append, "tenpai_definition", +@knitted_tenpai
-apply set_append, "win_definition", +@knitted_win
+apply set_append, "tenpai_definition", ["knitted_tenpai"]
+apply set_append, "win_definition", ["knitted_win"]
 
 define_match joker_tanki_tenpai, ~m"""
     exhaustive, (10j 12j):1, mentsu:4

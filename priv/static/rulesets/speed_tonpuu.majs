@@ -7,19 +7,22 @@ require "speed_tonpuu_dora"
 require "speed_tonpuu_pocchi"
 require "suukaikan"
 require_after "speed_tonpuu_suukantsu"
+require_after "riichi_fix_rules_tabs"
+apply subtract, "default_mods", [
+  %{name: "honba", config: %{value: 100}},
+  %{name: "lib/yaku/riichi", config: %{bet: 1000, double_value: 2, drawless: true}},
+  %{name: "uma", config: %{_1st: 10, _2nd: 5, _3rd: -5, _4th: -10}},
+  %{name: "nagashi", config: %{counts_as: "draw", is: "Mangan"}},
+]
+apply set_prepend, "default_mods", [
+  %{name: "lib/yaku/riichi", config: %{bet: 1000, drawless: false, double_value: 2}},
+]
 apply set_append, "default_mods", [
   %{name: "honba", config: %{value: 500}},
-  %{name: "lib/yaku/riichi", config: %{bet: 1000, drawless: false, double_value: 2}},
   %{name: "oka", config: %{ante: 4}},
   %{name: "uma", config: %{_4th: -10, _3rd: -4, _2nd: 4, _1st: 10}},
-  %{name: "lib/tobi", config: %{below: 0}},
   %{name: "nagashi", config: %{is: "Haneman", counts_as: "tsumo"}},
   %{name: "called_game", config: %{above: 54999, chips: 1}},
-  %{name: "suufon_renda", config: %{name: "Suufon Renda"}},
-  "suucha_riichi",
-  %{name: "kyuushu_kyuuhai", config: %{name: "Kyuushu Kyuuhai"}},
-  "lib/agarirenchan",
-  "tenpairenchan",
   %{name: "agariyame", config: %{round: "every", first_place_only: false, may_choose: true}},
   %{name: "tenpaiyame", config: %{round: "every", first_place_only: false, may_choose: true}},
   "kiriage_mangan",
@@ -33,7 +36,7 @@ apply set_append, "default_mods", [
   "yaku/shiisanuushi",
   "lib/pao_suukantsu",
   "pao_rinshan",
-  %{name: "yaku/riichi_renhou", config: %{is: "Yakuman"}},
+  %{name: "lib/yaku/riichi_renhou", config: %{is: "Yakuman"}},
   %{name: "lib/shuugi", config: %{worth: 5000, pao_pays_all: true, starting_shuugi: 100}},
   %{name: "shuugi/ippatsu", config: %{chips: 1}},
   %{name: "shuugi/ura", config: %{chips: 1}},

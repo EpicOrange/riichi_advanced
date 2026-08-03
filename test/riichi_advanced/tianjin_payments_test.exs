@@ -3,7 +3,7 @@ defmodule RiichiAdvanced.TianjinPaymentsTest do
   alias RiichiAdvanced.TestUtils, as: TestUtils
 
   test "tianjin - dealer pays x2 from challenge" do
-    TestUtils.test_yaku_advanced("tianjin", [], """
+    TestUtils.test_yaku_advanced("tianjin", [], [], """
     {
       "starting_hand": {
         "east": ["2m", "4m", "7m", "2p", "3p", "4p", "6p", "7p", "8p", "9p", "2s", "4s", "6s"],
@@ -31,7 +31,7 @@ defmodule RiichiAdvanced.TianjinPaymentsTest do
   end
 
   test "tianjin - dealer challenge but someone else won" do
-    TestUtils.test_yaku_advanced("tianjin", [], """
+    TestUtils.test_yaku_advanced("tianjin", [], [], """
     {
       "starting_hand": {
         "east": ["2m", "4m", "7m", "2p", "3p", "4p", "6p", "7p", "8p", "9p", "2s", "4s", "6s"],
@@ -59,7 +59,7 @@ defmodule RiichiAdvanced.TianjinPaymentsTest do
   end
 
   test "tianjin - dealer challenge with double down but someone else won" do
-    TestUtils.test_yaku_advanced("tianjin", [], """
+    TestUtils.test_yaku_advanced("tianjin", [], [], """
     {
       "starting_hand": {
         "east": ["2m", "4m", "7m", "2p", "3p", "4p", "6p", "7p", "8p", "9p", "2s", "4s", "6s"],
@@ -87,7 +87,7 @@ defmodule RiichiAdvanced.TianjinPaymentsTest do
   end
 
   test "tianjin - dealer pays x4 from 2x challenge" do
-    TestUtils.test_yaku_advanced("tianjin", [], """
+    TestUtils.test_yaku_advanced("tianjin", [], [], """
     {
       "starting_hand": {
         "east": ["2m", "4m", "7m", "2p", "3p", "4p", "6p", "7p", "8p", "9p", "2s", "4s", "6s"],
@@ -115,7 +115,7 @@ defmodule RiichiAdvanced.TianjinPaymentsTest do
   end
 
   test "tianjin - dealer pays x8" do
-    TestUtils.test_yaku_advanced("tianjin", [], """
+    TestUtils.test_yaku_advanced("tianjin", [], [], """
     {
       "starting_hand": {
         "east": ["2m", "4m", "7m", "2p", "3p", "4p", "6p", "7p", "8p", "9p", "2s", "4s", "6s"],
@@ -143,7 +143,7 @@ defmodule RiichiAdvanced.TianjinPaymentsTest do
   end
 
   test "tianjin - double down doubles win payments" do
-    TestUtils.test_yaku_advanced("tianjin", [], """
+    TestUtils.test_yaku_advanced("tianjin", [], [], """
     {
       "starting_hand": {
         "east": ["3m", "3m", "3m", "5m", "6m", "7m", "8m", "8m", "3s", "5s", "4p", "5p", "6p"],
@@ -170,7 +170,7 @@ defmodule RiichiAdvanced.TianjinPaymentsTest do
   end
 
   test "tianjin - double down with additional challenges" do
-    TestUtils.test_yaku_advanced("tianjin", [], """
+    TestUtils.test_yaku_advanced("tianjin", [], [], """
     {
       "starting_hand": {
         "east": ["3m", "3m", "3m", "5m", "6m", "7m", "8m", "8m", "3s", "5s", "4p", "5p", "6p"],
@@ -197,7 +197,7 @@ defmodule RiichiAdvanced.TianjinPaymentsTest do
   end
 
   test "tianjin - daiminkan payment" do
-    TestUtils.test_yaku_advanced("tianjin", [], """
+    TestUtils.test_yaku_advanced("tianjin", [], [], """
     {
       "starting_hand": {
         "east": ["3m", "3m", "1p", "2p", "3p", "4p", "6p", "7p", "8p", "9p", "5s", "5s", "5s"],
@@ -222,7 +222,7 @@ defmodule RiichiAdvanced.TianjinPaymentsTest do
   end
 
   test "tianjin - ankan payment" do
-    TestUtils.test_yaku_advanced("tianjin", [], """
+    TestUtils.test_yaku_advanced("tianjin", [], [], """
     {
       "starting_hand": {
         "east": ["3m", "3m", "1p", "2p", "3p", "4p", "6p", "7p", "8p", "9p", "5s", "5s", "5s"],
@@ -245,7 +245,7 @@ defmodule RiichiAdvanced.TianjinPaymentsTest do
   end
 
   test "tianjin - kakan payment" do
-    TestUtils.test_yaku_advanced("tianjin", [], """
+    TestUtils.test_yaku_advanced("tianjin", [], [], """
     {
       "starting_hand": {
         "east": ["3m", "3m", "1p", "2p", "3p", "4p", "6p", "7p", "8p", "9p", "5s", "5s", "5s"],
@@ -274,7 +274,7 @@ defmodule RiichiAdvanced.TianjinPaymentsTest do
   end
 
   test "tianjin - double down daiminkan payment" do
-    TestUtils.test_yaku_advanced("tianjin", [], """
+    TestUtils.test_yaku_advanced("tianjin", [], [], """
     {
       "starting_hand": {
         "east": ["3m", "3m", "1p", "2p", "3p", "4p", "6p", "7p", "8p", "9p", "5s", "5s", "5s"],
@@ -299,7 +299,7 @@ defmodule RiichiAdvanced.TianjinPaymentsTest do
   end
 
   test "tianjin - double down ankan payment" do
-    TestUtils.test_yaku_advanced("tianjin", [], """
+    TestUtils.test_yaku_advanced("tianjin", [], [], """
     {
       "starting_hand": {
         "east": ["3m", "3m", "1p", "2p", "3p", "4p", "6p", "7p", "8p", "9p", "5s", "5s", "5s"],
@@ -322,7 +322,7 @@ defmodule RiichiAdvanced.TianjinPaymentsTest do
   end
 
   test "tianjin - double down kakan payment" do
-    TestUtils.test_yaku_advanced("tianjin", [], """
+    TestUtils.test_yaku_advanced("tianjin", [], [], """
     {
       "starting_hand": {
         "east": ["3m", "3m", "1p", "2p", "3p", "4p", "6p", "7p", "8p", "9p", "5s", "5s", "5s"],
@@ -351,7 +351,7 @@ defmodule RiichiAdvanced.TianjinPaymentsTest do
   end
 
   test "tianjin - chasing the dealer" do
-    TestUtils.test_yaku_advanced("tianjin", [], """
+    TestUtils.test_yaku_advanced("tianjin", [], [], """
     {
       "starting_hand": {
         "east": ["3m", "3m", "1p", "2p", "3p", "4p", "6p", "7p", "8p", "9p", "5s", "5s", "5s"],
@@ -377,7 +377,7 @@ defmodule RiichiAdvanced.TianjinPaymentsTest do
   end
 
   test "tianjin - double down chasing the dealer" do
-    TestUtils.test_yaku_advanced("tianjin", [], """
+    TestUtils.test_yaku_advanced("tianjin", [], [], """
     {
       "starting_hand": {
         "east": ["3m", "3m", "1p", "2p", "3p", "4p", "6p", "7p", "8p", "9p", "5s", "5s", "5s"],

@@ -360,6 +360,7 @@ define_yaku meta_yaku, "Sandoukon", [1, "Han"], @closed_hand and has_existing_ya
 
 define_yaku_precedence "Yondoukon", ["Sandoukon"]
 define_yaku_precedence "Sandoukon", ["Ryandoukon"]
+define_yaku_precedence "Ryandoukon", ["Chiitoitsu"]
 define_yaku_precedence "Kokushi Musou", ["Mixed Winds", "Mini-Sangen"]
 define_yaku_precedence "Kokushi Musou Juusan Menmachi", ["Mixed Winds", "Mini-Sangen"]
 

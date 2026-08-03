@@ -2,23 +2,8 @@ defmodule RiichiAdvanced.CosmicMechanicsTest do
   use ExUnit.Case, async: true
   alias RiichiAdvanced.TestUtils, as: TestUtils
 
-  @cosmic_mods [
-    "lib/yaku/riichi",
-    "lib/yaku/ippatsu",
-    "kontsu",
-    "yaku/kontsu_yaku",
-    "yaku/chanfuun",
-    "yaku/fuunburi",
-    "yaku/uumensai_cosmic",
-    "cosmic_calls",
-    "yaku/tsubame_gaeshi",
-    "yaku/kanburi",
-    "lib/yaku/riichi_isshoku_sanjun",
-    "lib/yaku/riichi_isshoku_yonjun",
-  ]
-
   test "cosmic - sequences wrap" do
-    TestUtils.test_yaku_advanced("cosmic", @cosmic_mods, """
+    TestUtils.test_yaku_advanced("cosmic", [], [], """
     {
       "starting_hand": {
         "east": ["9m", "1m", "2m", "8p", "9p", "1p", "1s", "2s", "3s", "7z", "7z", "7z", "6p"],
@@ -41,7 +26,7 @@ defmodule RiichiAdvanced.CosmicMechanicsTest do
   end
 
   test "cosmic - mini-sangen is not enough han" do
-    TestUtils.test_yaku_advanced("cosmic", [%{name: "lib/min_han", config: %{min: 1, han: "Han"}} | @cosmic_mods], """
+    TestUtils.test_yaku_advanced("cosmic", [], [], """
     {
       "starting_hand": {
         "east": ["9m", "1m", "2m", "8p", "9p", "1p", "1s", "2s", "3s", "5z", "6z", "7z", "6p"],

@@ -25,9 +25,10 @@ require "ron", %{scoring_key: "win"}
 require "tsumo", %{scoring_key: "win"}
 require "yaku/rinshan", %{list: "mult", name: "After a Kong", value: 2, han: "×"}
 require "yaku/iiankou", %{name: "Concealed Pung", value: 1}
-require "yaku/ryanankou", %{name: "Two Concealed Pungs", value: 2, override: "Concealed Pung"}
-require "yaku/sanankou", %{name: "Three Concealed Pungs", value: 4, override: "Two Concealed Pungs"}
-require "yaku/suuankou", %{list: "special_yaku", name: "Four Concealed Pungs", value: 100, override: "Three Concealed Pungs"}
+require "yaku/ryanankou", %{name: "Two Concealed Pungs", value: 2}
+require "yaku/sanankou", %{san_name: "Three Concealed Pungs", san_value: 4, suu_list: "special_yaku", suu_name: "Four Concealed Pungs", suu_value: 100}
+define_yaku_precedence "Two Concealed Pungs", ["Concealed Pung"]
+define_yaku_precedence "Three Concealed Pungs", ["Two Concealed Pungs"]
 require "yaku/sanrenkou", %{san_list: "special_yaku", san_name: "Three Consecutive Pungs", san_value: 100, closed_only: true}
 require "yaku/tenhou", %{
   tenhou_list: "special_yaku", tenhou_name: "Heavenly Win", tenhou_value: 200,
@@ -104,12 +105,12 @@ end
 define_set majority, ~s"any@m"
 define_set majority_pair, ~s"0@m 0@m"
 define_set majority_mentsu, ~s"0@m 0@m 0@m|0@m 1@m 2@m"
-define_const standard_tenpai, ~m"""
+define_match standard_tenpai, ~m"""
   exhaustive, majority_mentsu:2, majority:0, mentsu:1, taatsu:1, pair:1 |
   exhaustive, majority_mentsu:1, majority_pair:1, majority:0, mentsu:1, taatsu:1 |
   exhaustive, majority_mentsu:2, majority:0, mentsu:2
   """
-define_const chiitoitsu_tenpai, ~m"majority_pair:3, majority:0, pair:3"
+define_match chiitoitsu_tenpai, ~m"majority_pair:3, majority:0, pair:3"
 
 # for wins, need to ensure that we can win with with 7 tiles of majority suit, using winning tile as 8th
 # 7 tiles means one of: mentsu+pair+taatsu or quad+pair+tanki or 3 pairs+tanki

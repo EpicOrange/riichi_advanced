@@ -2,62 +2,8 @@ defmodule RiichiAdvanced.YakuTest.ZanYaku do
   use ExUnit.Case, async: true
   alias RiichiAdvanced.TestUtils, as: TestUtils
 
-  @zan_mods [
-    %{name: "honba", config: %{value: 1000}},
-    %{name: "nagashi", config: %{is: "Yakuman", counts_as: "draw"}},
-    %{name: "lib/tobi", config: %{below: 1}},
-    %{name: "lib/yaku/riichi", config: %{bet: 1000, drawless: true, double_value: 2}},
-    %{name: "uma", config: %{_1st: 30, _2nd: 10, _3rd: -10, _4th: -30}},
-    "lib/agarirenchan",
-    "tenpairenchan",
-    %{name: "tenpaiyame", config: %{first_place_only: true, may_choose: false, round: "all_last"}},
-    "lib/kuikae_nashi",
-    "double_wind_4_fu",
-    "kokushi_ankan_chankan",
-    "first_gets_riichi_sticks",
-    %{name: "sanma_no_tsumo_loss", config: %{"method" => "half"}},
-    %{name: "suufon_renda", config: %{name: "Suufon Renda"}},
-    "suucha_riichi",
-    "sanchahou",
-    %{name: "kyuushu_kyuuhai", config: %{name: "Kyuushu Kyuuhai"}},
-    # %{name: "dora", config: %{start_indicators: 1}},
-    # "ura",
-    # "kandora",
-    "yaku/open_riichi",
-    %{name: "lib/yaku/sanrenkou", config: %{
-      san_name: "Sanrenkou", san_value: 2,
-      suu_list: "yakuman", suu_name: "Suurenkou", suu_value: 1, suu_han: "★"
-    }},
-    %{name: "lib/yaku/sanpuukou", config: %{
-      dai_name: "Sanpuukou", dai_value: 2,
-    }},
-    %{name: "lib/yaku/riichi_renhou", config: %{is: "Yakuman"}},
-    "show_waits",
-    "sanma_pei_yakuhai",
-    "lib/yaku/kansai_chiitoitsu",
-    "lib/pao_standard",
-    %{name: "lib/shuugi", config: %{worth: 1000, starting_shuugi: 0, pao_pays_all: true}},
-    %{name: "shuugi/ippatsu", config: %{chips: 1}},
-    %{name: "shuugi/ura", config: %{chips: 1}},
-    %{name: "shuugi/yakuman", config: %{ron_chips: 5, tsumo_chips: 5, per_yakuman: false, allow_kazoe: false}},
-    %{name: "lib/min_han", config: %{min: 1, han: "Han"}},
-    # "cancellable_riichi",
-    "lib/yaku/ippatsu",
-    %{name: "shiro_pocchi", config: %{ippatsu_only: false}},
-    %{name: "aka", config: %{man: 4, pin: 4, sou: 4}},
-    %{name: "shuugi/aka", config: %{chips: 1, closed_only: false}},
-    "shiny_dora",
-    "lib/kansai_flowers",
-    "kansai_no_100_sticks",
-    "kansai_40_fu",
-    "kansai_shuugi",
-    "lib/zan_scoring",
-    "lib/kansai_draw",
-    "kansai_no_furiten_riichi"
-  ]
-
   test "zan - open double riichi is 3 han if dealt in by a riichi player" do
-    TestUtils.test_yaku_advanced("zan", @zan_mods, """
+    TestUtils.test_yaku_advanced("zan", [], [], """
     {
       "starting_hand": {
         "east": ["2p", "3p", "4p", "7p", "8p", "9p", "1s", "2s", "3s", "4z", "4z", "8s", "8s"],
@@ -80,7 +26,7 @@ defmodule RiichiAdvanced.YakuTest.ZanYaku do
   end
 
   test "zan - open double riichi is yakuman if dealt in by a non-riichi player" do
-    TestUtils.test_yaku_advanced("zan", @zan_mods, """
+    TestUtils.test_yaku_advanced("zan", [], [], """
     {
       "starting_hand": {
         "east": ["2p", "3p", "4p", "7p", "8p", "9p", "1s", "2s", "3s", "4z", "4z", "8s", "8s"],
@@ -102,7 +48,7 @@ defmodule RiichiAdvanced.YakuTest.ZanYaku do
   end
 
   test "zan - sanrenkou" do
-    TestUtils.test_yaku_advanced("zan", @zan_mods, """
+    TestUtils.test_yaku_advanced("zan", [], [], """
     {
       "starting_hand": {
         "east": ["0p", "0p", "0p", "6p", "6p", "6p", "7p", "7p", "7p", "4z", "4z", "8s", "8s"],
@@ -123,7 +69,7 @@ defmodule RiichiAdvanced.YakuTest.ZanYaku do
   end
 
   test "zan - sanpuukou" do
-    TestUtils.test_yaku_advanced("zan", @zan_mods, """
+    TestUtils.test_yaku_advanced("zan", [], [], """
     {
       "starting_hand": {
         "east": ["2z", "2z", "2z", "3z", "3z", "3z", "4z", "4z", "4z", "5z", "5z", "8s", "8s"],
@@ -144,7 +90,7 @@ defmodule RiichiAdvanced.YakuTest.ZanYaku do
   end
 
   test "zan - suurenkou" do
-    TestUtils.test_yaku_advanced("zan", @zan_mods, """
+    TestUtils.test_yaku_advanced("zan", [], [], """
     {
       "starting_hand": {
         "east": ["4p", "4p", "4p", "0p", "0p", "0p", "6p", "6p", "6p", "7p", "7p", "8s", "8s"],
@@ -165,7 +111,7 @@ defmodule RiichiAdvanced.YakuTest.ZanYaku do
   end
   
   test "zan - renhou suurenkou" do
-    TestUtils.test_yaku_advanced("zan", @zan_mods, """
+    TestUtils.test_yaku_advanced("zan", [], [], """
     {
       "starting_hand": {
         "east": ["1p", "2p", "3p", "2p", "3p", "4p", "3s", "4s", "0s", "1z", "1z", "1z", "4z"],
@@ -185,7 +131,7 @@ defmodule RiichiAdvanced.YakuTest.ZanYaku do
   end
 
   test "zan - pinfu" do
-    TestUtils.test_yaku_advanced("zan", @zan_mods, """
+    TestUtils.test_yaku_advanced("zan", [], [], """
     {
       "starting_hand": {
         "east": ["2p", "3p", "4p", "7p", "8p", "9p", "1s", "2s", "3s", "3z", "3z", "6s", "7s"],
@@ -207,7 +153,7 @@ defmodule RiichiAdvanced.YakuTest.ZanYaku do
   end
 
   test "zan - north wind pair denies pinfu" do
-    TestUtils.test_yaku_advanced("zan", @zan_mods, """
+    TestUtils.test_yaku_advanced("zan", [], [], """
     {
       "starting_hand": {
         "east": ["2p", "3p", "4p", "7p", "8p", "9p", "1s", "2s", "3s", "4z", "4z", "6s", "7s"],
@@ -229,7 +175,7 @@ defmodule RiichiAdvanced.YakuTest.ZanYaku do
   end
 
   test "zan - shousharin" do
-    TestUtils.test_yaku_advanced("zan", @zan_mods, """
+    TestUtils.test_yaku_advanced("zan", [], [], """
     {
       "starting_hand": {
         "east": ["3p", "3p", "4p", "4p", "0p", "0p", "6p", "6p", "7p", "7p", "7p", "7p", "1z"],
@@ -250,7 +196,7 @@ defmodule RiichiAdvanced.YakuTest.ZanYaku do
   end
 
   test "zan - daisharin" do
-    TestUtils.test_yaku_advanced("zan", @zan_mods, """
+    TestUtils.test_yaku_advanced("zan", [], [], """
     {
       "starting_hand": {
         "east": ["3p", "3p", "4p", "4p", "0p", "0p", "6p", "6p", "7p", "7p", "7p", "7p", "9p"],
@@ -271,7 +217,7 @@ defmodule RiichiAdvanced.YakuTest.ZanYaku do
   end
 
   test "zan - manzu honitsu" do
-    TestUtils.test_yaku_advanced("zan", @zan_mods, """
+    TestUtils.test_yaku_advanced("zan", [], [], """
     {
       "starting_hand": {
         "east": ["1m", "1m", "1m", "1m", "9m", "9m", "9m", "9m", "1z", "1z", "2z", "2z", "3z"],

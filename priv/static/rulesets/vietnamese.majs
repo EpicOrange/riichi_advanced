@@ -32,9 +32,9 @@ require "yaku/toitoi", %{name: "All Sets", value: 3}
 require "yaku/honroutou", %{chin_name: "All Terminals", chin_value: 4, hon_name: "All Terminals and Honors", hon_value: 1, chin_han: "Mủn", hon_han: "Mủn"}
 require "yaku/shousangen", %{dai_name: "Big Three Dragons", dai_value: 9, shou_name: "Little Three Dragons", shou_value: 1, dai_han: "Phán", shou_han: "Mủn"}
 require "yaku/kokushi", %{name: "Thirteen Orphans", value: 13}
-require "yaku/suuankou", %{name: "Four Closed Sets", value: 3, han: "Mủn"}
+require "yaku/sanankou", %{suu_name: "Four Closed Sets", suu_value: 3, suu_han: "Mủn"}
 require "yaku/suukantsu", %{name: "Four Quads", value: 4, han: "Mủn"}
-require "yaku/chuurenpoutou", %{name: "Nine Gates", value: 3, han: "Mủn", must_wait_9: false}
+require "yaku/chuurenpoutou", %{name: "Nine Gates", value: 3, han: "Mủn"}
 require "yaku/tsuuiisou", %{name: "All Honors", value: 4, han: "Mủn"}
 require "yaku/shousuushii", %{dai_name: "Big Four Winds", dai_value: 8, shou_name: "Little Four Winds", shou_value: 4, dai_han: "Mủn", shou_han: "Mủn"}
 require "yaku/tenhou", %{chiihou_name: "Blessing of Earth", chiihou_value: 2, renhou_name: "Blessing of Man", renhou_value: 2, tenhou_name: "Blessing of Heaven", tenhou_value: 2, chiihou_han: "Mủn", tenhou_han: "Mủn", renhou_han: "Mủn"}

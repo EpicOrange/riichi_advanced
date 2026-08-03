@@ -3,7 +3,7 @@ defmodule RiichiAdvanced.ZungJungScoringTest do
   alias RiichiAdvanced.TestUtils, as: TestUtils
 
   test "zung jung - head bump" do
-    TestUtils.test_yaku_advanced("zung_jung", [], """
+    TestUtils.test_yaku_advanced("zung_jung", [], [], """
     {
       "starting_hand": {
         "east": ["1m", "4m", "7m", "2p", "5p", "8p", "3s", "6s", "9s", "3p", "3p", "3p", "4z"],
@@ -27,7 +27,7 @@ defmodule RiichiAdvanced.ZungJungScoringTest do
   end
 
   test "zung jung - shimocha is responsible for toimen's deal-in" do
-    TestUtils.test_yaku_advanced("zung_jung", [], """
+    TestUtils.test_yaku_advanced("zung_jung", [], [], """
     {
       "starting_hand": {
         "east": ["1m", "4m", "7m", "2p", "5p", "8p", "3s", "6s", "9s", "3p", "3p", "3p", "4z"],
@@ -52,7 +52,7 @@ defmodule RiichiAdvanced.ZungJungScoringTest do
   end
 
   test "zung jung - shimocha is responsible for kamicha's deal-in" do
-    TestUtils.test_yaku_advanced("zung_jung", [], """
+    TestUtils.test_yaku_advanced("zung_jung", [], [], """
     {
       "starting_hand": {
         "east": ["1m", "4m", "7m", "2p", "5p", "8p", "3s", "6s", "9s", "3p", "3p", "3p", "4z"],
@@ -78,7 +78,7 @@ defmodule RiichiAdvanced.ZungJungScoringTest do
   end
 
   test "zung jung - toimen is responsible for kamicha's deal-in" do
-    TestUtils.test_yaku_advanced("zung_jung", [], """
+    TestUtils.test_yaku_advanced("zung_jung", [], [], """
     {
       "starting_hand": {
         "east": ["1m", "4m", "7m", "2p", "5p", "8p", "3s", "6s", "9s", "3p", "3p", "3p", "4z"],
@@ -104,7 +104,7 @@ defmodule RiichiAdvanced.ZungJungScoringTest do
   end
 
   test "zung jung - no one is responsible for kamicha's deal-in" do
-    TestUtils.test_yaku_advanced("zung_jung", [], """
+    TestUtils.test_yaku_advanced("zung_jung", [], [], """
     {
       "starting_hand": {
         "east": ["1m", "4m", "7m", "2p", "5p", "8p", "3s", "6s", "9s", "3p", "3p", "3p", "4z"],
@@ -130,7 +130,7 @@ defmodule RiichiAdvanced.ZungJungScoringTest do
   end
 
   test "zung jung - compound limit hand cap at 320 pts" do
-    TestUtils.test_yaku_advanced("zung_jung", [], """
+    TestUtils.test_yaku_advanced("zung_jung", [], [], """
     {
       "starting_hand": {
         "east": ["6p", "6p", "6p", "7p", "7p", "7p", "8p", "8p", "8p", "9p", "9p", "9p", "5p"],
@@ -158,7 +158,7 @@ defmodule RiichiAdvanced.ZungJungScoringTest do
   end
 
   test "zung jung - responsibility with different waits" do
-    TestUtils.test_yaku_advanced("zung_jung", [], """
+    TestUtils.test_yaku_advanced("zung_jung", [], [], """
     {
       "starting_hand": {
         "east": ["1m", "4m", "7m", "2p", "5p", "8p", "3s", "6s", "9s", "3p", "3p", "3p", "4z"],

@@ -3,7 +3,7 @@ defmodule RiichiAdvanced.YakuTest.VietnameseYaku do
   alias RiichiAdvanced.TestUtils, as: TestUtils
 
   test "vietnamese - discarded flower acts as joker for tenpai players" do
-    TestUtils.test_yaku_advanced("vietnamese", [], """
+    TestUtils.test_yaku_advanced("vietnamese", [], [], """
     {
       "starting_hand": {
         "east": ["2m", "0j", "4m", "4m", "5m", "6m", "7p", "7p", "7p", "0z", "0z", "1z", "1z"],
@@ -33,7 +33,7 @@ defmodule RiichiAdvanced.YakuTest.VietnameseYaku do
   end
 
   test "vietnamese - true nfnl" do
-    TestUtils.test_yaku_advanced("vietnamese", [], """
+    TestUtils.test_yaku_advanced("vietnamese", [], [], """
     {
       "starting_hand": {
         "east": ["2m", "3m", "4m", "4m", "5m", "6m", "7p", "7p", "7p", "5s", "5s", "6s", "6s"],
@@ -59,7 +59,7 @@ defmodule RiichiAdvanced.YakuTest.VietnameseYaku do
   end
 
   test "vietnamese - true nfnl cannot win on flower" do
-    TestUtils.test_yaku_advanced("vietnamese", [], """
+    TestUtils.test_yaku_advanced("vietnamese", [], [], """
     {
       "starting_hand": {
         "east": ["2m", "3m", "4m", "4m", "5m", "6m", "7p", "7p", "7p", "5s", "5s", "6s", "6s"],
@@ -85,7 +85,7 @@ defmodule RiichiAdvanced.YakuTest.VietnameseYaku do
   end
 
   test "vietnamese - true nfnl scores first 2 discarded jokers" do
-    TestUtils.test_yaku_advanced("vietnamese", [], """
+    TestUtils.test_yaku_advanced("vietnamese", [], [], """
     {
       "starting_hand": {
         "east": ["0j", "3m", "4m", "4m", "5m", "6m", "7p", "7p", "7p", "5s", "5s", "6s", "6s"],
@@ -120,7 +120,7 @@ defmodule RiichiAdvanced.YakuTest.VietnameseYaku do
   end
 
   test "vietnamese - true nfnl scores with discarding jokers" do
-    TestUtils.test_yaku_advanced("vietnamese", [], """
+    TestUtils.test_yaku_advanced("vietnamese", [], [], """
     {
       "starting_hand": {
         "east": ["0j", "3m", "4m", "4m", "5m", "6m", "7p", "7p", "7p", "5s", "5s", "6s", "6s"],
@@ -157,7 +157,7 @@ defmodule RiichiAdvanced.YakuTest.VietnameseYaku do
   end
   
   test "vietnamese - true nfnl chankan" do
-    TestUtils.test_yaku_advanced("vietnamese", [], """
+    TestUtils.test_yaku_advanced("vietnamese", [], [], """
     {
       "starting_hand": {
         "east": ["0j", "3m", "4m", "4m", "5m", "6m", "7p", "7p", "7p", "5s", "6s", "6s", "6s"],
@@ -198,7 +198,7 @@ defmodule RiichiAdvanced.YakuTest.VietnameseYaku do
   end
 
   test "vietnamese - true nfnl early tsumo" do
-    TestUtils.test_yaku_advanced("vietnamese", [], """
+    TestUtils.test_yaku_advanced("vietnamese", [], [], """
     {
       "starting_hand": {
         "east": ["0j", "3m", "4m", "4m", "5m", "6m", "7p", "7p", "7p", "5s", "6s", "6s", "6s"],
@@ -229,7 +229,7 @@ defmodule RiichiAdvanced.YakuTest.VietnameseYaku do
     })
   end
   test "vietnamese - true nfnl not invalidated by forced number tile discard" do
-    TestUtils.test_yaku_advanced("vietnamese", [], """
+    TestUtils.test_yaku_advanced("vietnamese", [], [], """
     {
       "starting_hand": {
         "east": ["3m", "3m", "4m", "4m", "5m", "6m", "7p", "7p", "7p", "5s", "6s", "6s", "6s"],
@@ -260,7 +260,7 @@ defmodule RiichiAdvanced.YakuTest.VietnameseYaku do
   end
 
   test "vietnamese - true nfnl is invalidated by unforced number tile discard" do
-    TestUtils.test_yaku_advanced("vietnamese", [], """
+    TestUtils.test_yaku_advanced("vietnamese", [], [], """
     {
       "starting_hand": {
         "east": ["8j", "3m", "4m", "4m", "5m", "6m", "7p", "7p", "7p", "5s", "6s", "6s", "6s"],
@@ -290,7 +290,7 @@ defmodule RiichiAdvanced.YakuTest.VietnameseYaku do
   end
 
   test "vietnamese - true nfnl cannot have honors" do
-    TestUtils.test_yaku_advanced("vietnamese", [], """
+    TestUtils.test_yaku_advanced("vietnamese", [], [], """
     {
       "starting_hand": {
         "east": ["0j", "3m", "4m", "4m", "5m", "6m", "7z", "7z", "7z", "5s", "6s", "6s", "6s"],
@@ -320,7 +320,7 @@ defmodule RiichiAdvanced.YakuTest.VietnameseYaku do
   end
 
   test "vietnamese - discarding flowers/jokers" do
-    TestUtils.test_yaku_advanced("vietnamese", [], """
+    TestUtils.test_yaku_advanced("vietnamese", [], [], """
     {
       "starting_hand": {
         "east": ["0j", "3m", "4m", "4m", "5m", "9m", "7p", "7p", "7p", "5s", "6s", "6s", "6s"],
@@ -354,7 +354,7 @@ defmodule RiichiAdvanced.YakuTest.VietnameseYaku do
   end
 
   test "vietnamese - discarding flowers can start with a single flower if dealer" do
-    TestUtils.test_yaku_advanced("vietnamese", [], """
+    TestUtils.test_yaku_advanced("vietnamese", [], [], """
     {
       "starting_hand": {
         "east": ["1g", "3m", "4m", "4m", "5m", "9m", "7p", "7p", "7p", "5s", "6s", "6s", "6s"],
@@ -388,7 +388,7 @@ defmodule RiichiAdvanced.YakuTest.VietnameseYaku do
   end
 
   test "vietnamese - discarding flowers/jokers doesn't award extra points for 1 extra flower/joker" do
-    TestUtils.test_yaku_advanced("vietnamese", [], """
+    TestUtils.test_yaku_advanced("vietnamese", [], [], """
     {
       "starting_hand": {
         "east": ["0j", "3m", "4m", "4m", "2j", "9m", "7p", "7p", "7p", "5s", "6s", "6s", "6s"],
@@ -426,7 +426,7 @@ defmodule RiichiAdvanced.YakuTest.VietnameseYaku do
   end
 
   test "vietnamese - discarding flowers/jokers awards extra points for 2 extra flower/jokers" do
-    TestUtils.test_yaku_advanced("vietnamese", [], """
+    TestUtils.test_yaku_advanced("vietnamese", [], [], """
     {
       "starting_hand": {
         "east": ["0j", "3m", "4m", "4m", "2j", "9m", "7p", "7p", "6j", "5s", "6s", "6s", "6s"],
@@ -468,7 +468,7 @@ defmodule RiichiAdvanced.YakuTest.VietnameseYaku do
   end
 
   test "vietnamese - discarding flowers" do
-    TestUtils.test_yaku_advanced("vietnamese", [], """
+    TestUtils.test_yaku_advanced("vietnamese", [], [], """
     {
       "starting_hand": {
         "east": ["2m", "3m", "4m", "4m", "7m", "9m", "7p", "7p", "4s", "5s", "6s", "6s", "6s"],
@@ -501,7 +501,7 @@ defmodule RiichiAdvanced.YakuTest.VietnameseYaku do
   end
 
   test "vietnamese - discarding flowers cannot discard jokers" do
-    TestUtils.test_yaku_advanced("vietnamese", [], """
+    TestUtils.test_yaku_advanced("vietnamese", [], [], """
     {
       "starting_hand": {
         "east": ["2m", "3m", "4m", "4m", "7m", "9m", "7p", "7p", "4s", "5s", "6s", "6s", "6s"],
@@ -537,7 +537,7 @@ defmodule RiichiAdvanced.YakuTest.VietnameseYaku do
   end
 
   test "vietnamese - discarding flowers can discard honors" do
-    TestUtils.test_yaku_advanced("vietnamese", [], """
+    TestUtils.test_yaku_advanced("vietnamese", [], [], """
     {
       "starting_hand": {
         "east": ["2m", "3m", "4m", "4m", "7m", "9m", "7p", "7p", "4s", "5s", "6s", "6s", "6s"],
@@ -578,7 +578,7 @@ defmodule RiichiAdvanced.YakuTest.VietnameseYaku do
   end
 
   test "vietnamese - discarding flowers not cancelled by discarding number tile after declining win" do
-    TestUtils.test_yaku_advanced("vietnamese", [], """
+    TestUtils.test_yaku_advanced("vietnamese", [], [], """
     {
       "starting_hand": {
         "east": ["2m", "3m", "4m", "4m", "7m", "9m", "7p", "7p", "4s", "5s", "6s", "6s", "6s"],
@@ -619,7 +619,7 @@ defmodule RiichiAdvanced.YakuTest.VietnameseYaku do
   end
 
   test "vietnamese - discarding blue jokers counts 2j as a blue joker" do
-    TestUtils.test_yaku_advanced("vietnamese", [], """
+    TestUtils.test_yaku_advanced("vietnamese", [], [], """
     {
       "starting_hand": {
         "east": ["2j", "3m", "4m", "4m", "7m", "9m", "7p", "7p", "8j", "5s", "6s", "6z", "6z"],
@@ -652,7 +652,7 @@ defmodule RiichiAdvanced.YakuTest.VietnameseYaku do
   end
 
   test "vietnamese - discarding blue jokers can discard non-jokers" do
-    TestUtils.test_yaku_advanced("vietnamese", [], """
+    TestUtils.test_yaku_advanced("vietnamese", [], [], """
     {
       "starting_hand": {
         "east": ["6j", "3m", "4m", "4m", "7m", "9m", "7p", "7p", "8j", "5s", "6s", "6z", "6z"],
@@ -693,7 +693,7 @@ defmodule RiichiAdvanced.YakuTest.VietnameseYaku do
   end
 
   test "vietnamese - discarding blue jokers cannot discard flowers" do
-    TestUtils.test_yaku_advanced("vietnamese", [], """
+    TestUtils.test_yaku_advanced("vietnamese", [], [], """
     {
       "starting_hand": {
         "east": ["6j", "3m", "4m", "4m", "7m", "9m", "7p", "7p", "8j", "5s", "6s", "7j", "6z"],
@@ -725,7 +725,7 @@ defmodule RiichiAdvanced.YakuTest.VietnameseYaku do
   end
 
   test "vietnamese - discarding blue jokers cannot discard red jokers" do
-    TestUtils.test_yaku_advanced("vietnamese", [], """
+    TestUtils.test_yaku_advanced("vietnamese", [], [], """
     {
       "starting_hand": {
         "east": ["6j", "3m", "4m", "4m", "7m", "9m", "7p", "7p", "8j", "5s", "6s", "7j", "6z"],
@@ -757,7 +757,7 @@ defmodule RiichiAdvanced.YakuTest.VietnameseYaku do
   end
 
   test "vietnamese - progressive counting with three 3-phán hands" do
-    TestUtils.test_yaku_advanced("vietnamese", [], """
+    TestUtils.test_yaku_advanced("vietnamese", [], [], """
     {
       "starting_hand": {
         "east": ["2m", "2m", "4m", "4m", "6m", "6m", "8m", "8m", "1z", "2z", "3z", "4z", "6z"],
@@ -803,7 +803,7 @@ defmodule RiichiAdvanced.YakuTest.VietnameseYaku do
   end
 
   test "vietnamese - progressive counting with big three dragons" do
-    TestUtils.test_yaku_advanced("vietnamese", [], """
+    TestUtils.test_yaku_advanced("vietnamese", [], [], """
     {
       "starting_hand": {
         "east": ["0z", "0z", "0j", "6z", "6z", "6z", "7z", "7z", "7z", "1p", "1p", "2z", "2z"],
@@ -836,7 +836,7 @@ defmodule RiichiAdvanced.YakuTest.VietnameseYaku do
   end
   
   test "vietnamese - all runs must not have value pair" do
-    TestUtils.test_yaku_advanced("vietnamese", [], """
+    TestUtils.test_yaku_advanced("vietnamese", [], [], """
     {
       "starting_hand": {
         "east": ["1m", "4m", "7m", "2p", "5p", "8p", "3s", "7s", "9s", "1z", "8s", "3z", "4z"],
@@ -861,7 +861,7 @@ defmodule RiichiAdvanced.YakuTest.VietnameseYaku do
   end
   
   test "vietnamese - all runs can have non-value pair" do
-    TestUtils.test_yaku_advanced("vietnamese", [], """
+    TestUtils.test_yaku_advanced("vietnamese", [], [], """
     {
       "starting_hand": {
         "east": ["1m", "4m", "7m", "2p", "5p", "8p", "3s", "7s", "9s", "1z", "8s", "3z", "4z"],
@@ -886,7 +886,7 @@ defmodule RiichiAdvanced.YakuTest.VietnameseYaku do
   end
 
   test "vietnamese - single wait fully closed bonus on joker tanki" do
-    TestUtils.test_yaku_advanced("vietnamese", [], """
+    TestUtils.test_yaku_advanced("vietnamese", [], [], """
     {
       "starting_hand": {
         "east": ["2m", "4m", "7m", "2p", "5p", "8p", "3s", "7s", "9s", "1z", "8s", "3z", "4z"],
@@ -915,7 +915,7 @@ defmodule RiichiAdvanced.YakuTest.VietnameseYaku do
   end
 
   test "vietnamese - many jokers seven pairs" do
-    TestUtils.test_yaku_advanced("vietnamese", [%{name: "viet_more_jokers", config: %{sets: 32}}], """
+    TestUtils.test_yaku_advanced("vietnamese", [%{name: "viet_more_jokers", config: %{sets: 32}}], [], """
     {
       "starting_hand": {
         "east": ["1m", "2m", "3m", "5m", "6m", "7m", "3p", "4p", "5p", "1s", "2s", "3s", "5j"],
@@ -934,13 +934,13 @@ defmodule RiichiAdvanced.YakuTest.VietnameseYaku do
       %{"type" => "buttons_pressed", "buttons" => [nil, %{"button" => "ron"}, nil, nil]}
     ], %{
       south: %{
-        yaku: [{"Blessing of Earth", [2, "Mủn"]}, {"No Jokers Bonus", [1, "Mủn"]}, {"Seven Pairs", [1, "Mủn"]}],
+        yaku: [{"Blessing of Earth", [2, "Mủn"]}, {"Seven Pairs", [1, "Mủn"]}],
       }
     })
   end
 
   test "vietnamese - many jokers mosquito hand tenhou" do
-    TestUtils.test_yaku_advanced("vietnamese", [%{name: "viet_more_jokers", config: %{sets: 32}}], """
+    TestUtils.test_yaku_advanced("vietnamese", [%{name: "viet_more_jokers", config: %{sets: 32}}], [], """
     {
       "starting_hand": {
         "east": ["1m", "2m", "3m", "5m", "6m", "7m", "3p", "4p", "5p", "1s", "2s", "3s", "5j"],
@@ -965,7 +965,7 @@ defmodule RiichiAdvanced.YakuTest.VietnameseYaku do
 
   # # this times out
   # test "vietnamese - entire hand is jokers tenhou" do
-  #   TestUtils.test_yaku_advanced("vietnamese", [%{name: "viet_more_jokers", config: %{sets: 32}}], """
+  #   TestUtils.test_yaku_advanced("vietnamese", [%{name: "viet_more_jokers", config: %{sets: 32}}], [], """
   #   {
   #     "starting_hand": {
   #       "east": ["0j", "2j", "8j", "00j", "02j", "6j", "50j", "52j", "7j", "80j", "82j", "08j", "5j"],
@@ -989,7 +989,7 @@ defmodule RiichiAdvanced.YakuTest.VietnameseYaku do
   # end
 
   # test "vietnamese - entire hand is jokers not tenhou" do
-  #   TestUtils.test_yaku_advanced("vietnamese", [%{name: "viet_more_jokers", config: %{sets: 32}}], """
+  #   TestUtils.test_yaku_advanced("vietnamese", [%{name: "viet_more_jokers", config: %{sets: 32}}], [], """
   #   {
   #     "starting_hand": {
   #       "east": ["4m", "6m", "6p", "6p", "2s", "4s", "8s", "8s", "6z", "6z", "2z", "3z", "4z"],

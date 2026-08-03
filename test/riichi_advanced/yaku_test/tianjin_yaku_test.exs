@@ -5,7 +5,7 @@ defmodule RiichiAdvanced.YakuTest.TianjinYaku do
   @base {"Base", [1, "Fan"]}
 
   test "tianjin - pure hand" do
-    TestUtils.test_yaku_advanced("tianjin", [], """
+    TestUtils.test_yaku_advanced("tianjin", [], [], """
     {
       "starting_hand": {
         "east": ["3m", "3m", "3m", "5m", "6m", "7m", "8m", "8m", "3s", "4s", "4p", "5p", "6p"],
@@ -36,7 +36,7 @@ defmodule RiichiAdvanced.YakuTest.TianjinYaku do
   end
 
   test "tianjin - not pure hand can't win" do
-    TestUtils.test_yaku_advanced("tianjin", [], """
+    TestUtils.test_yaku_advanced("tianjin", [], [], """
     {
       "starting_hand": {
         "east": ["3m", "3m", "3m", "5m", "6m", "7m", "8m", "8m", "3s", "4s", "4p", "5p", "6p"],
@@ -62,7 +62,7 @@ defmodule RiichiAdvanced.YakuTest.TianjinYaku do
   end
 
   test "tianjin - wild card single wait" do
-    TestUtils.test_yaku_advanced("tianjin", [], """
+    TestUtils.test_yaku_advanced("tianjin", [], [], """
     {
       "starting_hand": {
         "east": ["3m", "3m", "3m", "5m", "6m", "7m", "8m", "8m", "8m", "4s", "4p", "5p", "6p"],
@@ -93,7 +93,7 @@ defmodule RiichiAdvanced.YakuTest.TianjinYaku do
   end
 
   test "tianjin - double wild card set wait" do
-    TestUtils.test_yaku_advanced("tianjin", [], """
+    TestUtils.test_yaku_advanced("tianjin", [], [], """
     {
       "starting_hand": {
         "east": ["3m", "3m", "3m", "5m", "6m", "7m", "8m", "8m", "3s", "4s", "4p", "5p", "6p"],
@@ -125,7 +125,7 @@ defmodule RiichiAdvanced.YakuTest.TianjinYaku do
   end
 
   test "tianjin - capturing the five" do
-    TestUtils.test_yaku_advanced("tianjin", [], """
+    TestUtils.test_yaku_advanced("tianjin", [], [], """
     {
       "starting_hand": {
         "east": ["3m", "3m", "3m", "4m", "6m", "6m", "7m", "8m", "8m", "8m", "4p", "5p", "6p"],
@@ -156,7 +156,7 @@ defmodule RiichiAdvanced.YakuTest.TianjinYaku do
   end
 
   test "tianjin - dragon" do
-    TestUtils.test_yaku_advanced("tianjin", [], """
+    TestUtils.test_yaku_advanced("tianjin", [], [], """
     {
       "starting_hand": {
         "east": ["3m", "3m", "1p", "2p", "3p", "4p", "6p", "7p", "8p", "9p", "4s", "5s", "6s"],
@@ -187,7 +187,7 @@ defmodule RiichiAdvanced.YakuTest.TianjinYaku do
   end
 
   test "tianjin - dragon after daiminkan" do
-    TestUtils.test_yaku_advanced("tianjin", [], """
+    TestUtils.test_yaku_advanced("tianjin", [], [], """
     {
       "starting_hand": {
         "east": ["3m", "3m", "1p", "2p", "3p", "4p", "6p", "7p", "8p", "9p", "5s", "5s", "5s"],
@@ -217,7 +217,7 @@ defmodule RiichiAdvanced.YakuTest.TianjinYaku do
   end
 
   test "tianjin - dragon after ankan" do
-    TestUtils.test_yaku_advanced("tianjin", [], """
+    TestUtils.test_yaku_advanced("tianjin", [], [], """
     {
       "starting_hand": {
         "east": ["3m", "3m", "1p", "2p", "3p", "4p", "6p", "7p", "8p", "9p", "5s", "5s", "5s"],
@@ -249,7 +249,7 @@ defmodule RiichiAdvanced.YakuTest.TianjinYaku do
   end
 
   test "tianjin - heavenly hand with wild" do
-    TestUtils.test_yaku_advanced("tianjin", [], """
+    TestUtils.test_yaku_advanced("tianjin", [], [], """
     {
       "starting_hand": {
         "east": ["3m", "3m", "3m", "5m", "6m", "7m", "8m", "8m", "3s", "5s", "4p", "5p", "6p"],
@@ -276,7 +276,7 @@ defmodule RiichiAdvanced.YakuTest.TianjinYaku do
   end
 
   test "tianjin - heavenly hand without wild" do
-    TestUtils.test_yaku_advanced("tianjin", [], """
+    TestUtils.test_yaku_advanced("tianjin", [], [], """
     {
       "starting_hand": {
         "east": ["3m", "3m", "3m", "5m", "6m", "7m", "8m", "8m", "3s", "5s", "4p", "5p", "6p"],
@@ -303,7 +303,7 @@ defmodule RiichiAdvanced.YakuTest.TianjinYaku do
   end
 
   test "tianjin - earthly hand with wild" do
-    TestUtils.test_yaku_advanced("tianjin", [], """
+    TestUtils.test_yaku_advanced("tianjin", [], [], """
     {
       "starting_hand": {
         "east": ["2m", "4m", "7m", "2p", "3p", "4p", "6p", "7p", "8p", "9p", "2s", "4s", "6s"],
@@ -331,7 +331,7 @@ defmodule RiichiAdvanced.YakuTest.TianjinYaku do
   end
 
   test "tianjin - earthly hand without wild" do
-    TestUtils.test_yaku_advanced("tianjin", [], """
+    TestUtils.test_yaku_advanced("tianjin", [], [], """
     {
       "starting_hand": {
         "east": ["2m", "4m", "7m", "2p", "3p", "4p", "6p", "7p", "8p", "9p", "2s", "4s", "6s"],

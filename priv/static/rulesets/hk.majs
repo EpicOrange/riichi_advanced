@@ -33,10 +33,10 @@ require "yaku/ittsuu", %{name: "Pure Straight", value: 8}
 require "yaku/pinghu", %{name: "All Sequences", value: 1, no_value_pair: false}
 require "yaku/toitoi", %{name: "All Triplets", value: 3}
 require "yaku/haitei", %{haitei_name: "Final Tile", haitei_value: 1, houtei_name: "Final Tile", houtei_value: 1}
-require "yaku/suuankou", %{name: "Four Concealed Triplets", value: 8}
+require "yaku/sanankou", %{suu_name: "Four Concealed Triplets", suu_value: 8}
 require "yaku/suukantsu", %{name: "Four Kongs", value: 13}
 require "yaku/kokushi", %{name: "Thirteen Orphans", value: 13}
-require "yaku/chuurenpoutou", %{name: "Nine Gates", value: 13, must_wait_9: false}
+require "yaku/chuurenpoutou", %{name: "Nine Gates", value: 13}
 require "yaku/tsuuiisou", %{name: "All Honours", value: 10}
 require "yaku/shousangen", %{dai_name: "Big Three Dragons", dai_value: 8, shou_name: "Little Three Dragons", shou_value: 5}
 require "yaku/shousuushii", %{dai_name: "Big Four Winds", dai_value: 13, shou_name: "Little Four Winds", shou_value: 6}
@@ -154,4 +154,9 @@ define_mod "lib/head_bump", name: "Head Bump", desc: "Enable head bump. In case 
 define_mod hk_seven_pairs, name: "Seven Pairs", desc: "Add seven pairs as a possible winning hand, worth 4 fan."
 define_mod hk_repeat_on_draw, name: "Repeat On Draw", desc: "If the round ends in a draw, the round repeats."
 
-set default_mods, ["hk_payment", "hk_three_point_minimum", "seven_flower_win", "pao_12_tile"]
+set default_mods, [
+  %{name: "hk_payment", config: %{discarder_pays: 2, nondiscarders_pay: 1, self_pick_pay: 0}},
+  "hk_three_point_minimum",
+  %{name: "seven_flower_win", config: %{win_on: "7 flowers", seven_value: 3, eight_value: 8}},
+  "pao_12_tile"
+]

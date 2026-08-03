@@ -25,7 +25,7 @@ require "yaku/pinghu", %{name: "All Sequences", value: 5, no_value_pair: false}
 require "yaku/menzenchin", %{name: "Concealed Hand", value: 5}
 require "yaku/tanyao", %{name: "No Terminals", value: 5}
 require "yaku/honitsu", %{chin_name: "Pure One-Suit", chin_value: 80, hon_name: "Mixed One-Suit", hon_value: 40}
-require "yaku/chuurenpoutou", %{list: "listed_limit_hand", name: "Nine Gates", value: 480, must_wait_9: true}
+require "yaku/chuurenpoutou", %{junsei_list: "listed_limit_hand", junsei_name: "Nine Gates", junsei_value: 480}
 require "yaku/yakuhai", %{round_wind_name: "", value: 10}
 require "yaku/shousangen", %{dai_name: "Big Three Dragons", dai_value: 130, shou_name: "Small Three Dragons", shou_value: 40}
 require "yaku/sanpuukou", %{dai_name: "Big Three Winds", dai_value: 120, shou_name: "Small Three Winds", shou_value: 30}
@@ -33,14 +33,12 @@ require "yaku/shousuushii", %{dai_name: "Big Four Winds", dai_value: 400, shou_n
 require "yaku/tsuuiisou", %{list: "listed_limit_hand", name: "All Honors", value: 320}
 require "yaku/toitoi", %{name: "All Triplets", value: 30}
 require "yaku/ryanankou", %{name: "Two Concealed Triplets", value: 5}
-require "yaku/sanankou", %{name: "Three Concealed Triplets", value: 30}
-require "yaku/suuankou", %{name: "Four Concealed Triplets", value: 125}
+require "yaku/sanankou", %{san_name: "Three Concealed Triplets", san_value: 30, suu_name: "Four Concealed Triplets", suu_value: 125}
 require "yaku/iikantsu", %{name: "One Kong", value: 5}
 require "yaku/ryankantsu", %{name: "Two Kong", value: 20}
 require "yaku/sankantsu", %{name: "Three Kong", value: 120}
 require "yaku/suukantsu", %{list: "listed_limit_hand", name: "Four Kong", value: 480}
-require "yaku/iipeikou", %{name: "Two Identical Sequences", value: 10}
-require "yaku/ryanpeikou", %{name: "Two Identical Sequences Twice", value: 60}
+require "yaku/iipeikou", %{ii_name: "Two Identical Sequences", ii_value: 10, ryan_name: "Two Identical Sequences Twice", ryan_value: 60, closed_only: false}
 require "yaku/isshoku_sanjun", %{san_name: "Three Identical Sequences", san_value: 120, yon_list: "listed_limit_hand", yon_name: "Four Identical Sequences", yon_value: 480}
 require "yaku/sanshoku_doujun", %{name: "Three Similar Sequences", value: 35}
 require "yaku/sanshoku_shoudoukou", %{name: "Small Three Similar Triplets", value: 30}

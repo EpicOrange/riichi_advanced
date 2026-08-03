@@ -388,12 +388,12 @@ end
 # finally done populating the wall with galaxy tiles
 
 # milky way
-define_const milky_way_tenpai, ~m"nojoker, galaxy_tile:13"
-define_const milky_way_tenpai_14, ~m"nojoker, galaxy_tile:13"
-define_const milky_way_win, ~m"nojoker, galaxy_tile:14"
-apply set_append, "tenpai_definition", +@milky_way_tenpai
-apply set_append, "tenpai_14_definition", +@milky_way_tenpai_14
-apply set_append, "win_definition", +@milky_way_win
+define_match milky_way_tenpai, ~m"nojoker, galaxy_tile:13"
+define_match milky_way_tenpai_14, ~m"nojoker, galaxy_tile:13"
+define_match milky_way_win, ~m"nojoker, galaxy_tile:14"
+apply set_append, "tenpai_definition", ["milky_way_tenpai"]
+apply set_append, "tenpai_14_definition", ["milky_way_tenpai_14"]
+apply set_append, "win_definition", ["milky_way_win"]
 define_yaku yakuman, "Milky Way", [1, "★"], non_galaxy_jokers == 0
 
 # ankans are displayed all-face-up

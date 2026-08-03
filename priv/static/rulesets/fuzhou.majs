@@ -84,10 +84,10 @@ on after_initialization do
 end
 
 # # we don't use this since jokers are expensive with 5 possible mentsu, see below
-# define_const standard_tenpai, ~m"exhaustive, mentsu:4, taatsu:1, pair:1 | exhaustive, mentsu:5"
-# define_const standard_win, ~m"exhaustive, mentsu:5, pair:1"
-# apply set_append, "tenpai_definition", +@standard_tenpai
-# apply set_append, "win_definition", +@standard_win
+# define_match standard_tenpai, ~m"exhaustive, mentsu:4, taatsu:1, pair:1 | exhaustive, mentsu:5"
+# define_match standard_win, ~m"exhaustive, mentsu:5, pair:1"
+# apply set_append, "tenpai_definition", ["standard_tenpai"]
+# apply set_append, "win_definition", ["standard_win"]
 
 # optimization so we don't have to actually calculate jokers to match hands with them
 # based on goal reduction theory: https://injusticejudge.com/2026/07/22/joker-theory

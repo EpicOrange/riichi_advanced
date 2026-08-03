@@ -81,7 +81,12 @@ set custom_style, %{
   }
 }
 
-set default_mods, ["american/am_num_jokers_flowers", "american/am_card_nmjl_2026", "american/show_nearest_american_hand", "show_waits"]
+set default_mods, [
+  %{name: "american/am_num_jokers_flowers", config: %{jokers: 8, flowers: 8}},
+  "american/am_card_nmjl_2026",
+  "american/show_nearest_american_hand",
+  "show_waits",
+]
 
 define_mod_category "Table Rules"
 define_mod "american/zombie_blanks", name: "Zombie Blanks", desc: "Adds some \"Zombie Blanks\" to the wall, which may be swapped out for already-discarded tiles."

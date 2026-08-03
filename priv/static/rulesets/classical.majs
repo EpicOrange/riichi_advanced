@@ -35,11 +35,10 @@ require "yaku/honroutou", %{chin_name: "All Terminals", chin_value: 1, hon_name:
 require "yaku/toitoi", %{name: "All Triplets", value: 1}
 require "yaku/chanta", %{chanta_name: "Outside Hand", chanta_value: 1}
 require "yaku/haitei", %{haitei_name: "Last Tile Draw", haitei_value: 1, houtei_name: "Last Tile Discard", houtei_value: 1}
-require "yaku/sanankou", %{name: "Three Concealed Triplets", value: 1}
-require "yaku/suuankou", %{list: "yakuman", name: "Four Concealed Triplets", value: 1, han: "Limit"}
+require "yaku/sanankou", %{san_name: "Three Concealed Triplets", san_value: 1, suu_list: "yakuman", suu_name: "Four Concealed Triplets", suu_value: 1, suu_han: "Limit"}
 require "yaku/suukantsu", %{list: "yakuman", name: "Four Kongs", value: 1, han: "Limit"}
 require "yaku/kokushi", %{list: "yakuman", name: "Thirteen Orphans", value: 1, han: "Limit"}
-require "yaku/chuurenpoutou", %{list: "yakuman", name: "Nine Gates", value: 1, han: "Limit", must_wait_9: false}
+require "yaku/chuurenpoutou", %{list: "yakuman", name: "Nine Gates", value: 1, han: "Limit"}
 require "yaku/tsuuiisou", %{list: "yakuman", name: "All Honors", value: 1, han: "Limit"}
 require "yaku/shousangen", %{dai_name: "Big Three Dragons", dai_value: 1, shou_name: "Little Three Dragons", shou_value: 3, dai_han: "Limit", dai_list: "yakuman"}
 require "yaku/shousuushii", %{dai_name: "Big Four Winds", dai_value: 1, shou_name: "Little Four Winds", shou_value: 1, dai_han: "Limit", dai_list: "yakuman", shou_han: "Limit", shou_list: "yakuman"}
