@@ -391,31 +391,77 @@ The prefix `+@` solves this by "splatting" the constant. That is, whenever the s
 
 You can splat conditions and even do-blocks, since both are represented internally as arrays.
 
+# Modding language
+
+There is a module system in place that lets you `require` desired functionality. All `require`able mods are located within `/priv/static/mods/lib/`.
+
+Mods can be configured with variables, and there are a number of ways to pass variables.
+
 ## Variables
 
-The user of a .majs mod (e.g. a ruleset) can pass variables into it. For instance, the Tobi mod accepts a `below` variable specifying the minimum score a player can have.
+The user of a .majs mod (e.g. a ruleset) can pass variables into it. For instance, the `tobi` mod accepts a `below` variable specifying the minimum score a player can have.
 
-Variables are referenced by prepending with `!`. Here's the Tobi mod:
+Variables are referenced by prepending with `!`. Here's the entirety of said `tobi` mod:
 
 ```elixir
 apply set, "score_calculation.tobi", !below
 ```
 
-For security reasons, variables cannot contain uppercase letters.
+So it sets the path `score_calculation.tobi` to whatever value is passed in.
 
-### `default`
+For security reasons, variables cannot contain uppercase letters. In addition, variables may only hold 4 values:
 
-If you are expecting a variable but don't want to supply it unless it differs from a default value, you can include the following toplevel command:
+- booleans (`true`, `false`)
+- numbers (`1`, `1.5`)
+- strings (`"Han"`, `"Kong"`)
+- other variables (`!foo`)
+
+## `define_global`: Global variables
+
+You can define a variable globally by using
+
+```elixir
+define_global ron_name, "Hu"
+define_global han, "Fan"
+```
+
+This is a global assignment, which means it will be available from this ruleset onward. It is possible to override globals by specifying a new value, but this is discouraged. For local variables, see `require` below.
+
+## `require`: Include a library module
+
+A fixed library of MahjongScript files can be found under `/priv/static/mods/lib/`. Only these files can be referenced by `require`. You can do so with
+
+```elixir
+require "value_honors"
+```
+
+In the above example, the effect is identical to copying the contents of `value_honors.majs` onto that line. Because of this, all variables accessible there are technically accessible in the library script. Regardless of how many times a library is `require`d, each library file will only be used once, at the first `require` statement. Because of this, library scripts will avoid the use of variables, since their resolution would otherwise be dependent on mod loading order.
+
+All `require` statements should be placed at the top of a file. If your ruleset ever `require`s a library module twice, only the first will have any effect. This lets you `require` modules that depend on the same module without code duplication.
+
+You can also configure the mod with variables, and often mods will require this of you:
+
+```elixir
+require "yaku/rinshan", %{rinshan_name: "After a Kong", value: 2}
+```
+
+These define local variables available in the required mod. If many mods require the same value, such as `!han` which is used to define the scoring denomination for many yaku mods, use `define_global` (explained above) to supply this value without doing so for every individual mod.
+
+Note: It is possible to use something like `define_mod "lib/tobi"` in a ruleset to declare a library script as a player-toggleable mod.
+
+### `default` (Optional parameters)
+
+Within a mod, you can make a parameter optional by including the following toplevel command:
 
 ```elixir
 apply below, 0
 ```
 
-This will default the variable `!below` to 0 unless otherwise specified. You can only set the following as defaults: booleans, numbers, strings, and other variables.
+This will default the variable `!below` to 0 unless otherwise specified. Like with all variables, you can only set the following as defaults: booleans, numbers, strings, and other variables.
 
 ## Toplevel `if` (Conditional compilation)
 
-You can also write conditionals at the top-level, for example:
+Mods can write conditionals (`if`, `unless`, `cond`) at the top-level, for example:
 
 ```elixir
 if !min == "Mangan" do
@@ -443,23 +489,46 @@ This runs the commands inside the if the variable `min` is set to `"Mangan"`. Yo
 
 ## `define` (C `#ifdef`-like functionality)
 
-This is meant to be used when multiple mods define the same things, but you only want it to be defined once. Here's the basic example:
+This is meant to be used in mods that want to define extra functionality only if certain other mods have been loaded before it. For example, in Galaxy Mahjong, one copy of every tile in-game is replaced with a cyan 'galaxy' variant. This mod supports the use of the `ten` mod, which adds a 10th tile of every suit, and also the `star_suit` mod, which adds a fourth suit. It does this by checking `defined(key)`:
+
+```elixir
+if defined("ten") do
+  replace 1, "wall", "10m", "110m"
+  replace 1, "wall", "10p", "110p"
+  replace 1, "wall", "10s", "110s"
+  if defined("star_suit") do
+    replace 1, "wall", "10t", "110t"
+  end
+end
+```
+
+This works because the `ten` mod includes
+
+```elixir
+define "ten"
+```
+
+and the `star_suit` mod includes
+
+```elixir
+define "star_suit"
+```
+
+thus marking that certain keys are available when checking `defined("ten")`. (The fact that the filename is the same as the key is coincidental.)
+
+Another use of conditional compilation is when multiple user-selectable mods define the same things, but you only want it to be defined once. Here's the basic example:
 
 ```elixir
 unless defined("pao") do
   define "pao"
-
   on before_win do
     ...
   end
   ...
-
 end
 ```
 
-Essentially this means that only the first mod that hits this top-level conditional will evaluate the commands inside of it, since `"pao"` will be set thereafter.
-
-These `define`s only work for MahjongScript mods, so if you put `define`s in a `majs` ruleset, they will not transfer to mods. If you want to condition mod evaluation based on stuff in a ruleset, you will probably want to define a variable instead.
+Essentially this means that only the first mod that hits this top-level conditional will evaluate the commands inside of it, since `"pao"` will be set thereafter. This is reminscent of C preprocessor defines, where certain headers only get evaluated once.
 
 # Command Reference
 
@@ -483,6 +552,12 @@ def my_function_name do
 
   as everyone do
     action6
+  end
+
+  cond do
+    cond1 -> action1
+    cond2 -> action2
+    cond3 -> action3
   end
 end
 ```
@@ -823,18 +898,6 @@ define_preset "Mahjong Soul", [
   ...
 ]
 ```
-
-### (advanced) `require`: Include a library module
-
-A fixed library of MahjongScript files can be found in `/priv/static/mods/lib/*.majs`. Only these files can be referenced by `require`. You can do so with
-
-    require "value_honors"
-
-In the above example, the effect is identical to copying the contents of `value_honors.majs` onto that line. Because of this, all variables accessible there are technically accessible in the library script. Regardless of how many times a library is `require`d, each library file will only be used once, at the first `require` statement. Because of this, library scripts will avoid the use of variables, since their resolution would otherwise be dependent on mod loading order.
-
-For security, `require` only allows names composed of letters, numbers, and `_`, and cannot be used in library scripts.
-
-It is possible to use `define_mod` in a ruleset to declare a library script as a mod, but this is discouraged as library scripts are meant for use by mods themselves.
 
 # All commands
 

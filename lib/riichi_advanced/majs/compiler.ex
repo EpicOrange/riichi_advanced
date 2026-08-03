@@ -64,6 +64,7 @@ defmodule RiichiAdvanced.Compiler do
       libs: MapSet.new(),
       vars: [],
       defines: MapSet.new(),
+      globals: %{},
     ]
   end
 
@@ -1156,15 +1157,32 @@ defmodule RiichiAdvanced.Compiler do
         end
       {"define", _pos, [name | _]} ->
         {:ok, {".", update_in(defs.defines, &MapSet.put(&1, Validator.sanitize_string(name)))}}
-      {"require", [line: line, column: column], [name | _]} ->
-        with {:ok, name} <- Validator.validate_lib(name) do
+      {"require", [line: line, column: column], [name | opts]} ->
+        config = case opts do
+          [] -> {:ok, %{}}
+          [{:%{}, _, opts}] -> 
+            for {name, value} <- opts, reduce: {:ok, []} do
+              {:ok, acc} ->
+                with {:ok, %Variable{name: name}} <- Validator.validate_variable(name),
+                     {:ok, value} <- Validator.validate_variable_value(name, value) do
+                  {:ok, [{name, value} | acc]}
+                end
+              err -> err
+            end
+          _ -> {:error, "Compiler.compile: at line #{line}:#{column}, require command expects a map of configs %{var: \"value\"}, got: #{inspect(opts)}`"}
+        end
+        with {:ok, config} <- config,
+             {:ok, name} <- Validator.validate_lib(name) do
           if name not in defs.libs do
             defs = update_in(defs.libs, &MapSet.put(&1, name))
             case File.read(Application.app_dir(:riichi_advanced, "/priv/static/mods/lib/#{name}.majs")) do
               {:ok, majs} ->
                 with {:ok, ast} <- Parser.parse(majs),
                      {:ok, {jq, defs}} <- compile_jq_defs(ast, defs, depth + 1) do
-                  {:ok, {"(" <> jq <> ")", defs}}
+                  config = for {name, val} <- config, reduce: [] do
+                    acc -> ["(#{Jason.encode!(val)}) as $#{name}\n|" | acc]
+                  end
+                  {:ok, {"(" <> Enum.join(config) <> jq <> ")", defs}}
                 end
               {:error, _err}  ->
                 IO.puts("WARNING: at line #{line}:#{column}, could not find mod lib/#{name}!")
@@ -1172,12 +1190,19 @@ defmodule RiichiAdvanced.Compiler do
             end
           else {:ok, {".", defs}} end
         end
+      {"require", [line: line, column: column], args} -> {:error, "Compiler.compile: at line #{line}:#{column}, require command expects a library name optionally followed by a map of configs %{var: \"value\"}, got: #{inspect(args)}`"}
       {"default", _pos, [{name, _, nil}, default]} ->
         with {:ok, %Variable{name: name}} <- Validator.validate_variable(name),
              {:ok, default} <- Validator.validate_variable_value(name, default) do
           {:ok, {".", update_in(defs.vars, &[{name, default} | &1])}}
         end
-      {"default", [line: line, column: column], args} -> {:error, "Compiler.compile: at line #{line}:#{column}, default command expects a variable name followed by a default value, got: #{inspect(args)}`"}
+      {"default", [line: line, column: column], args} -> {:error, "Compiler.compile: at line #{line}:#{column}, default command expects a variable name followed by a default value (boolean, number, string, or variable), got: #{inspect(args)}`"}
+      {"define_global", _pos, [{name, _, nil}, value]} ->
+        with {:ok, %Variable{name: name}} <- Validator.validate_variable(name),
+             {:ok, value} <- Validator.validate_variable_value(name, value) do
+          {:ok, {".", update_in(defs.globals, &Map.put(&1, name, value))}}
+        end
+      {"define_global", [line: line, column: column], args} -> {:error, "Compiler.compile: at line #{line}:#{column}, define_global command expects a variable name followed by a value (boolean, number, string, or variable), got: #{inspect(args)}`"}
       {cmd, [line: line, column: column], [name | args]} when is_binary(cmd) ->
         name = case name do
           name when is_binary(name) or is_integer(name) -> Validator.validate_json(name)

@@ -1,3 +1,4 @@
+
 on after_initialization do
   add_rule("Tiles", "Base Tiles", "By default, Hefei mahjong uses the following 84 tiles:", -100)
   add_rule("Tiles", "Base Tiles", "- Four each of the 2 to 8 of circles %{pinzu}", %{pinzu: ~t"2345678p"})

@@ -1147,9 +1147,9 @@ defmodule RiichiAdvanced.Constants do
     "taiwanese" => %{ruleset: "taiwanese", mods: ["taiwanese_rules"]},
     "singaporean" => %{ruleset: "singaporean", mods: ["singaporean_rules"]},
     "ningbo" => %{ruleset: "ningbo", mods: ["ningbo_rules"]},
-    "hefei" => %{
-      display_name: "Hefei Mahjong",
-      tutorial_link: "https://baike.baidu.com/item/%E5%90%88%E8%82%A5%E9%BA%BB%E5%B0%86/10108229",
+    "fuzhou" => %{
+      display_name: "Fuzhou",
+      tutorial_link: "https://github.com/EpicOrange/riichi_advanced/blob/main/documentation/fuzhou.md",
       globals: %{
         pon_name: "",
         kan_name: "",
@@ -1157,31 +1157,19 @@ defmodule RiichiAdvanced.Constants do
         ron_name: "Hu",
         chankan_name: "Hu",
         tsumo_name: "Zimo",
-        han: "嘴",
+        han: "",
       },
       mods: [
         "base",
         "standard_wall", "framed_5z",
         "global_mods", "default_auto_buttons",
-        %{name: "kan", config: %{hide_ankans: true, ankan_only: true}},
-        %{name: "ron", config: %{scoring_key: "win"}},
-        %{name: "tsumo", config: %{scoring_key: "win"}},
-        "standard_win",
-        %{name: "yaku/chiitoitsu", config: %{rules_tab: "10 嘴", list: "special_yaku", name: "Seven Pairs", value: 10}},
-        %{name: "yaku/rinshan", config: %{list: "mult", rinshan_name: "After a Kong", value: 2, han: "×"}},
-        %{name: "yaku/iiankou", config: %{name: "Concealed Pung", value: 1}},
-        %{name: "yaku/ryanankou", config: %{name: "Two Concealed Pungs", value: 2, override: "Concealed Pung"}},
-        %{name: "yaku/sanankou", config: %{name: "Three Concealed Pungs", value: 4, override: "Two Concealed Pungs"}},
-        %{name: "yaku/suuankou", config: %{list: "special_yaku", name: "Four Concealed Pungs", value: 100, override: "Three Concealed Pungs"}},
-        %{name: "yaku/sanrenkou", config: %{san_list: "special_yaku", san_name: "Three Consecutive Pungs", san_value: 100, closed_only: true}},
-        %{name: "yaku/tenhou", config: %{
-          tenhou_list: "special_yaku", tenhou_name: "Heavenly Win", tenhou_value: 200,
-          chiihou_list: "special_yaku", chiihou_name: "Earthly Win", chiihou_value: 150,
-          renhou_list: "special_yaku", renhou_name: "Earthly Win", renhou_value: 150, # it's also earthly win
-          chiihou_is_tsumo: true, calls_invalidate: false,
-        }},
-        "hefei",
-        "hefei_rules",
+        %{name: "default_flowers", config: %{undiscardable: true, auto_flower_by_default: true, matching_flower_value: 1, four_flowers_value: 2}},
+
+
+        # %{name: "kan", config: %{hide_ankans: true, ankan_only: true}},
+        # %{name: "ron", config: %{scoring_key: "win"}},
+        # %{name: "tsumo", config: %{scoring_key: "win"}},
+        # "standard_win",
       ]
     },
   }

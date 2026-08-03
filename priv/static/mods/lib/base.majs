@@ -1,0 +1,45 @@
+on after_initialization do
+  add_rule_tab("Rules")
+  add_rule_tab("Tiles")
+  add_rule_tab("Patterns")
+  add_rule_tab("1 $han", %{han: !han})
+  add_rule_tab("2 $han", %{han: !han})
+  add_rule_tab("3 $han", %{han: !han})
+  add_rule_tab("4 $han", %{han: !han})
+  add_rule_tab("5 $han", %{han: !han})
+  add_rule_tab("5+ $han", %{han: !han})
+  add_rule_tab("6 $han", %{han: !han})
+  add_rule_tab("7 $han", %{han: !han})
+  add_rule_tab("8 $han", %{han: !han})
+  add_rule_tab("9 $han", %{han: !han})
+  add_rule_tab("10 $han", %{han: !han})
+  add_rule_tab("11 $han", %{han: !han})
+  add_rule_tab("12 $han", %{han: !han})
+  add_rule_tab("13 $han", %{han: !han})
+  add_rule_tab("16 $han", %{han: !han})
+  add_rule_tab("24+ $han", %{han: !han})
+  add_rule_tab("Limit")
+  add_rule_tab("Yakuman")
+  add_rule_tab("Shuugi")
+  add_rule("Rules", "Win Condition", "You may win with one of the following:", -100)
+end
+
+on after_call do set_status("call_made") end
+on before_turn_change do unset_status_all("call_made") end
+
+on after_start do set_status_all("discards_empty") end
+define_play_effect any do unset_status("discards_empty") end
+
+define_const can_draw_condition, status_missing("match_start", "initial_flowers")
+on after_turn_change do
+  if no_tiles_remaining do
+    pause(1000)
+    ryuukyoku
+  else
+    if @can_draw_condition do draw end
+  end
+end
+
+set starting_tiles, 13
+set max_rounds, 16
+set four_rows_discards, true

@@ -1,0 +1,39 @@
+default san_list, "yaku"
+default san_name, ""
+default san_value, 0
+default san_han, !han
+default suu_list, "yaku"
+default suu_name, ""
+default suu_value, 0
+default suu_han, !han
+default closed_only, false
+
+if !san_value > 0 do
+  on after_initialization do
+    add_rule("$value $han", "$name", "%{value} %{han} if your hand has three triplets of the same suit in sequence, like 222 333 444.", %{value: !san_value, han: !san_han, name: !san_name})
+    update_rule("$value $han", "$name", "%{example_hand}", %{value: !san_value, han: !san_han, name: !san_name, example_hand: ~t"3334441s777z 1x55s1x 1s"})
+  end
+  define_set sanrenkou, ~s"0 0 0, 1 1 1, 2 2 2"
+  if !closed_only do
+    define_yaku !san_list, !san_name, [!san_value, !san_han],
+      match(["hand", "calls", "winning_tile"], ~m"sanrenkou:1, (any@winning_tile):0, mentsu:1, pair:1")
+      or (won_by_draw and match(["hand", "calls", "winning_tile"], ~m"sanrenkou:1, mentsu:1, pair:1"))
+  else
+    define_yaku !san_list, !san_name, [!san_value, !san_han], match(["hand", "calls", "winning_tile"], ~m"sanrenkou:1, mentsu:1, pair:1")
+  end
+end
+
+if !suu_value > 0 do
+  on after_initialization do
+    add_rule("$value $han", "$name", "%{value} %{han} if your hand has four triplets of the same suit in sequence, like 222 333 444 555.", %{value: !suu_value, han: !suu_han, name: !suu_name})
+    update_rule("$value $han", "$name", "%{example_hand}", %{value: !suu_value, han: !suu_han, name: !suu_name, example_hand: ~t"333444555p1s 6P666p 1s"})
+  end
+  define_set suurenkou, ~s"0 0 0, 1 1 1, 2 2 2, 3 3 3"
+  if !closed_only do
+    define_yaku !san_list, !san_name, [!san_value, !san_han],
+      match(["hand", "calls", "winning_tile"], ~m"suurenkou:1, (any@winning_tile):0, pair:1")
+      or (won_by_draw and match(["hand", "calls", "winning_tile"], ~m"suurenkou:1, pair:1"))
+  else
+    define_yaku !suu_list, !suu_name, [!suu_value, !suu_han], match(["hand", "calls", "winning_tile"], ~m"suurenkou:1, pair:1"), [!san_name]
+  end
+end

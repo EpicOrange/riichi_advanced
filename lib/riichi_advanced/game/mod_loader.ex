@@ -147,7 +147,7 @@ defmodule RiichiAdvanced.ModLoader.ModState do
           "(#{Enum.join(vars) <> jq}\n) as $_result\n|\n$_result"
         end)
         
-        global_jq = for {name, val} <- state.globals, ModLoader.is_jq_var?(name), do: "(#{Jason.encode!(val)}) as $#{name}"
+        global_jq = for {name, val} <- Map.merge(state.globals, defs.globals), ModLoader.is_jq_var?(name), do: "(#{Jason.encode!(val)}) as $#{name}"
         boilerplate = [Compiler.header() <> if Enum.empty?(mods) do "." else "\n.enabled_mods += #{Jason.encode!(mods)}" end]
         mod_jq = Enum.join(boilerplate ++ global_jq ++ mod_contents, "\n|")
         state = %{state | ruleset_json: JQ.query_string_with_string!(state.ruleset_json, mod_jq), mods: state.mods ++ mods, defines: defs.defines}
@@ -247,6 +247,7 @@ defmodule RiichiAdvanced.ModLoader do
         with {:ok, ast} <- Parser.parse(majs),
              {:ok, {jq, defs}} <- Compiler.compile_jq_defs(ast, defs) do
           # IO.inspect(jq, label: "jq", limit: :infinity)
+          # IO.inspect(defs, label: "defs", limit: :infinity)
           {jq, defs}
         else
           {:error, msg} ->
@@ -259,8 +260,10 @@ defmodule RiichiAdvanced.ModLoader do
     end
   end
   def convert_to_jq(majs) do
-    {jq, _defs} = convert_to_jq_defs(majs, %Defs{})
-    jq
+    {jq, defs} = convert_to_jq_defs(majs, %Defs{})
+    global_jq = for {name, val} <- defs.globals, is_jq_var?(name), do: "(#{Jason.encode!(val)}) as $#{name}\n|"
+    vars_jq = for {name, val} <- Enum.reverse(defs.vars), is_jq_var?(name), do: "(#{Jason.encode!(val)}) as $#{name}\n|"
+    Enum.join(global_jq ++ vars_jq ++ [jq])
   end
 
   def read_ruleset_json(ruleset) do

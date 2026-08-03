@@ -1,5 +1,42 @@
+set display_name, "Hefei Mahjong"
+set tutorial_link, "https://baike.baidu.com/item/%E5%90%88%E8%82%A5%E9%BA%BB%E5%B0%86/10108229"
+
 require "renchan"
 require "standard_sets"
+require "hefei_rules"
+
+define_global pon_name, ""
+define_global kan_name, ""
+define_global ankan_name, "Kong"
+define_global ron_name, "Hu"
+define_global chankan_name, "Hu"
+define_global tsumo_name, "Zimo"
+define_global han, "嘴"
+
+require "base"
+require "standard_wall"
+require "framed_5z"
+require "global_mods"
+require "default_auto_buttons"
+require "standard_win"
+require "yaku/chiitoitsu", %{rules_tab: "10 嘴", list: "special_yaku", name: "Seven Pairs", value: 10}
+require "kan", %{hide_ankans: true, ankan_only: true}
+require "ron", %{scoring_key: "win"}
+require "tsumo", %{scoring_key: "win"}
+require "yaku/rinshan", %{list: "mult", rinshan_name: "After a Kong", value: 2, han: "×"}
+require "yaku/iiankou", %{name: "Concealed Pung", value: 1}
+require "yaku/ryanankou", %{name: "Two Concealed Pungs", value: 2, override: "Concealed Pung"}
+require "yaku/sanankou", %{name: "Three Concealed Pungs", value: 4, override: "Two Concealed Pungs"}
+require "yaku/suuankou", %{list: "special_yaku", name: "Four Concealed Pungs", value: 100, override: "Three Concealed Pungs"}
+require "yaku/sanrenkou", %{san_list: "special_yaku", san_name: "Three Consecutive Pungs", san_value: 100, closed_only: true}
+require "yaku/tenhou", %{
+  tenhou_list: "special_yaku", tenhou_name: "Heavenly Win", tenhou_value: 200,
+  chiihou_list: "special_yaku", chiihou_name: "Earthly Win", chiihou_value: 150,
+  renhou_list: "special_yaku", renhou_name: "Earthly Win", renhou_value: 150, # it's also earthly win
+  chiihou_is_tsumo: true, calls_invalidate: false,
+}
+
+
 
 set interruptible_actions, ["play_tile", "draw", "call", "self_call", "upgrade_call"]
 set initial_score, 0

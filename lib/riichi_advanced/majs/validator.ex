@@ -147,7 +147,7 @@ defmodule RiichiAdvanced.Validator do
   end
   def validate_variable(name), do: {:error, "non-string variable name: #{inspect(name)}"}
 
-  @valid_lib_regex ~r/^[a-z_][a-z0-9_]*$/
+  @valid_lib_regex ~r/^[a-z_][a-z0-9_\/]*$/
   def validate_lib(name) when is_binary(name) do
     if Regex.match?(@valid_lib_regex, name) do
       {:ok, name}
@@ -157,6 +157,7 @@ defmodule RiichiAdvanced.Validator do
   end
   def validate_lib(name), do: {:error, "non-string lib name: #{inspect(name)}"}
 
+  # only booleans, numbers, strings, or other variables
   def validate_variable_value(_name, true), do: {:ok, true}
   def validate_variable_value(_name, false), do: {:ok, false}
   def validate_variable_value(_name, value) when is_number(value), do: {:ok, value}

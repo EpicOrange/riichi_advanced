@@ -1,0 +1,63 @@
+default tenhou_list, "yaku"
+default tenhou_name, ""
+default tenhou_value, 0
+default tenhou_han, !han
+default chiihou_list, "yaku"
+default chiihou_name, ""
+default chiihou_value, 0
+default chiihou_han, !han
+default chiihou_is_tsumo, false
+default renhou_list, "yaku"
+default renhou_name, ""
+default renhou_value, 0
+default renhou_han, !han
+default calls_invalidate, true
+
+on after_initialization do
+  if !calls_invalidate do
+    add_rule("$value $han", "$name", "%{value} %{han} if as dealer, you win with your initial draw. Calls invalidate.", %{value: !tenhou_value, han: !tenhou_han, name: !tenhou_name})
+    if !chiihou_is_tsumo do
+      add_rule("$value $han", "$name", "%{value} %{han} if as a non-dealer, you win with your initial draw. Calls invalidate.", %{value: !chiihou_value, han: !chiihou_han, name: !chiihou_name})
+    else
+      add_rule("$value $han", "$name", "%{value} %{han} if you win on the dealer's first discard. Calls invalidate.", %{value: !chiihou_value, han: !chiihou_han, name: !chiihou_name})
+    end
+    if !renhou_value > 0 do
+      add_rule("$value $han", "$name", "%{value} %{han} if you win on someone's discard, before your first draw. Calls invalidate.", %{value: !renhou_value, han: !renhou_han, name: !renhou_name})
+    end
+  else
+    add_rule("$value $han", "$name", "%{value} %{han} if as dealer, you win with your initial draw. Calls do not invalidate this.", %{value: !tenhou_value, han: !tenhou_han, name: !tenhou_name})
+    if !chiihou_is_tsumo do
+      add_rule("$value $han", "$name", "%{value} %{han} if as a non-dealer, you win with your initial draw. Calls do not invalidate this.", %{value: !chiihou_value, han: !chiihou_han, name: !chiihou_name})
+    else
+      add_rule("$value $han", "$name", "%{value} %{han} if you win on the dealer's first discard. Calls do not invalidate this.", %{value: !chiihou_value, han: !chiihou_han, name: !chiihou_name})
+    end
+    if !renhou_value > 0 do
+      add_rule("$value $han", "$name", "%{value} %{han} if you win on someone's discard, before your first draw. Calls do not invalidate this.", %{value: !renhou_value, han: !renhou_han, name: !renhou_name})
+    end
+  end
+  rename_rule_tab("15 嘴", "Special")
+  rename_rule_tab("40 嘴", "Special")
+  rename_rule_tab("100 嘴", "Special")
+  rename_rule_tab("150 嘴", "Special")
+  rename_rule_tab("200 嘴", "Special")
+end
+
+on after_start do set_status_all("first_turn") end
+define_play_effect any, unset_status("first_turn")
+on before_turn_change do if status_missing("match_start", "initial_flowers") do unset_status("first_turn") end end
+on before_call do if !calls_invalidate and status_missing("match_start", "initial_flowers") do unset_status_all("first_turn") end end
+
+define_yaku !tenhou_list, !tenhou_name, [!tenhou_value, !tenhou_han], status("first_turn") and won_by_draw and seat_is("east")
+if !chiihou_is_tsumo do
+  # win on first tsumo while not being east
+  define_yaku !chiihou_list, !chiihou_name, [!chiihou_value, !chiihou_han], status("first_turn") and won_by_draw and not_seat_is("east")
+else
+  # win on east's first discard without any calls before it
+  define_yaku !chiihou_list, !chiihou_name, [!chiihou_value, !chiihou_han], current_turn_is("east") and status("first_turn") and won_by_discard
+end
+if !renhou_value > 0 do
+  define_yaku !renhou_list, !renhou_name, [!renhou_value, !renhou_han], status("first_turn") and won_by_discard
+  unless equals(!chiihou_name, !renhou_name) do
+    define_yaku_precedence !chiihou_name, [!renhou_name]
+  end
+end
