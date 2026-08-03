@@ -854,7 +854,7 @@ defmodule RiichiAdvanced.Constants do
         %{name: "yaku/tanyao", config: %{name: "All Simples", value: 1}},
         %{name: "yaku/honroutou", config: %{
           hon_name: "All Terminals and Honors", hon_value: 1,
-          chin_name: "All Terminals", chin_value: 1, chin_han: "Limit"
+          chin_list: "yakuman", chin_name: "All Terminals", chin_value: 1, chin_han: "Limit"
         }},
         %{name: "yaku/toitoi", config: %{name: "All Triplets", value: 1}},
         %{name: "yaku/chanta", config: %{chanta_name: "Outside Hand", chanta_value: 1}},
@@ -911,7 +911,7 @@ defmodule RiichiAdvanced.Constants do
         "standard_wall", "framed_5z",
         "default_auto_buttons",
         "chii", "pon", "kan", "ron", "tsumo",
-        %{name: "default_flowers", config: %{draw_after_flower_phase: false, matching_flower_value: 1, four_flowers_value: 1, four_flowers_han: "Mủn"}},
+        %{name: "default_flowers", config: %{matching_flower_value: 1, four_flowers_value: 1, four_flowers_han: "Mủn"}},
         "standard_win",
         %{name: "yaku/yakuhai", config: %{triplet_value: 1, round_wind_name: "Prevalent Wind"}},
         %{name: "yaku/menzentsumo", config: %{name: "Fully Closed Hand", value: 1}},

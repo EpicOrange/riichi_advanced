@@ -22,6 +22,7 @@ defmodule RiichiAdvanced.ModLoader.ModState do
     mods: [],
     post_mods: [], # this just stores mods for later processing, they haven't been applied yet
     globals: %{},
+    defines: MapSet.new(),
   ]
   # def get_ruleset_json(ruleset, room_code \\ nil, apply_mods? \\ false, visited \\ [], prev_query \\ ".", prev_mods \\ [], globals \\ %{}, orig_ruleset \\ nil) do
 
@@ -134,7 +135,7 @@ defmodule RiichiAdvanced.ModLoader.ModState do
         end
 
         # collect all new jqs in reverse order
-        {jqs_vars, _defs} = for mod <- mods, reduce: {[], %Defs{}} do
+        {jqs_vars, defs} = for mod <- mods, reduce: {[], %Defs{defines: state.defines}} do
           {jqs_vars, defs} ->
             {jq, defs} = ModLoader.read_mod(mod, defs)
             {[{jq, defs.vars} | jqs_vars], %{defs | vars: []}}
@@ -152,7 +153,7 @@ defmodule RiichiAdvanced.ModLoader.ModState do
         global_jq = for {name, val} <- state.globals, ModLoader.is_jq_var?(name), do: "(#{Jason.encode!(val)}) as $#{name}"
         boilerplate = [Compiler.header() <> if Enum.empty?(mods) do "." else "\n.enabled_mods += #{Jason.encode!(mods)}" end]
         mod_jq = Enum.join(boilerplate ++ global_jq ++ mod_contents, "\n|")
-        state = %{state | ruleset_json: JQ.query_string_with_string!(state.ruleset_json, mod_jq), mods: state.mods ++ mods}
+        state = %{state | ruleset_json: JQ.query_string_with_string!(state.ruleset_json, mod_jq), mods: state.mods ++ mods, defines: defs.defines}
 
         # IO.puts(mod_jq)
         if Debug.print_mods() do

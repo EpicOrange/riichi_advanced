@@ -285,7 +285,7 @@ defmodule RiichiAdvanced.YakuTest.Bloody30FaanYaku do
         "west": ["1m", "4m", "7m", "2p", "5p", "8p", "3s", "6s", "9s", "1z", "2z", "3z", "4z"],
         "north": ["1m", "4m", "7m", "2p", "5p", "8p", "3s", "6s", "9s", "1z", "2z", "3z", "4z"]
       },
-      "starting_draws": ["3m", "4m"]
+      "starting_draws": ["1z", "4m"]
     }
     """, [
       %{"type" => "discard", "tile" => "1z", "player" => 0, "tsumogiri" => true},

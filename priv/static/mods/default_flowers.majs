@@ -1,4 +1,4 @@
-default draw_after_flower_phase, true
+default draw_after_flower_phase, false
 default auto_flower_by_default, false
 default undiscardable, false
 default matching_flower_value, 0
