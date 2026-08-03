@@ -313,17 +313,23 @@ defmodule RiichiAdvanced.GameState.Actions do
       tiles = if "call" in style or "call_sideways" in style do call_choice else call_choice ++ [called_tile] end
       for style_spec <- style do
         case style_spec do
-          "call"                                  -> called_tile
-          "call_sideways"                         -> called_tile |> Utils.add_attr(["_sideways"])
-          ix when is_integer(ix)                  -> Enum.at(tiles, ix)
-          ["sideways", ix] when is_integer(ix)    -> Enum.at(tiles, ix) |> Utils.add_attr(["_sideways"])
-          ["1x", ix] when is_integer(ix)          -> Enum.at(tiles, ix) |> Utils.add_attr(["_facedown"])
-          ["1x", "call"]                          -> called_tile |> Utils.add_attr(["_facedown"])
-          ["1x", tile]                            -> Utils.to_tile(tile) |> Utils.add_attr(["_facedown"])
-          ["1x_sideways", ix] when is_integer(ix) -> Enum.at(tiles, ix) |> Utils.add_attr(["_facedown", "_sideways"])
-          ["1x_sideways", "call"]                 -> called_tile |> Utils.add_attr(["_facedown", "_sideways"])
-          ["1x_sideways", tile]                   -> Utils.to_tile(tile) |> Utils.add_attr(["_facedown", "_sideways"])
-          tile                                    -> Utils.to_tile(tile)
+          "call"                                           -> called_tile
+          "call_sideways"                                  -> called_tile |> Utils.add_attr(["_sideways"])
+          ix when is_integer(ix)                           -> Enum.at(tiles, ix)
+          [ix, attrs] when is_integer(ix)                  -> Enum.at(tiles, ix) |> Utils.add_attr(attrs)
+          ["sideways", ix] when is_integer(ix)             -> Enum.at(tiles, ix) |> Utils.add_attr(["_sideways"])
+          ["sideways", [ix, attrs]] when is_integer(ix)    -> Enum.at(tiles, ix) |> Utils.add_attr(["_sideways" | List.wrap(attrs)])
+          ["sideways", "call"]                             -> called_tile |> Utils.add_attr(["_sideways"])
+          ["sideways", tile]                               -> Utils.to_tile(tile) |> Utils.add_attr(["_sideways"])
+          ["1x", ix] when is_integer(ix)                   -> Enum.at(tiles, ix) |> Utils.add_attr(["_facedown"])
+          ["1x", [ix, attrs]] when is_integer(ix)          -> Enum.at(tiles, ix) |> Utils.add_attr(["_facedown" | List.wrap(attrs)]) |> IO.inspect()
+          ["1x", "call"]                                   -> called_tile |> Utils.add_attr(["_facedown"])
+          ["1x", tile]                                     -> Utils.to_tile(tile) |> Utils.add_attr(["_facedown"])
+          ["1x_sideways", ix] when is_integer(ix)          -> Enum.at(tiles, ix) |> Utils.add_attr(["_facedown", "_sideways"])
+          ["1x_sideways", [ix, attrs]] when is_integer(ix) -> Enum.at(tiles, ix) |> Utils.add_attr(["_facedown", "_sideways" | List.wrap(attrs)])
+          ["1x_sideways", "call"]                          -> called_tile |> Utils.add_attr(["_facedown", "_sideways"])
+          ["1x_sideways", tile]                            -> Utils.to_tile(tile) |> Utils.add_attr(["_facedown", "_sideways"])
+          tile                                             -> Utils.to_tile(tile)
         end
       end
     else call_choice end
