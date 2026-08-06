@@ -226,7 +226,7 @@ The following ten rare yaku are considered __yakuman__, which immediately gives 
 - __Shousuushii__: You have three wind triplets and a wind pair. Yakuman.
 - __Tenhou/Chiihou__: You win off your first draw, with no intervening calls between the start of the round and your draw. Yakuman.
 - __Tsuuiisou__: Your hand consists only of honor tiles. Yakuman.
-- __Ryuuiisou__: Your hand consists only of all-green tiles: ![](2s.svg)![](3s.svg)![](4s.svg)![](6s.svg)![](8s.svg)![](6z.svg). Yakuman.
+- __Ryuuiisou__: Your hand consists only of all-green tiles: ![](tiles/2s.svg)![](tiles/3s.svg)![](tiles/4s.svg)![](tiles/6s.svg)![](tiles/8s.svg)![](tiles/6z.svg). Yakuman.
 - __Chinroutou__: Your hand consists only of 1 and 9. Yakuman.
 - __Chuurenpoutou__: Your final hand (including winning tile) looks like ![](tiles/1p.svg)![](tiles/1p.svg)![](tiles/1p.svg)![](tiles/2p.svg)![](tiles/3p.svg)![](tiles/4p.svg)![](tiles/5p.svg)![](tiles/6p.svg)![](tiles/7p.svg)![](tiles/8p.svg)![](tiles/9p.svg)![](tiles/9p.svg)![](tiles/9p.svg) of any suit, plus one additional tile of that suit. Yakuman.
 
