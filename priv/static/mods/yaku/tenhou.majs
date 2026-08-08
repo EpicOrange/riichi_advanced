@@ -16,11 +16,13 @@ on after_call do if not_last_call_is("flower", "start_flower") do unset_status_a
 
 define_yaku !tenhou_list, !tenhou_name, [!tenhou_value, !tenhou_han], status("first_turn") and won_by_draw and seat_is("east")
 if !chiihou_is_tsumo do
+  # win on first tsumo while not being east
   define_yaku !chiihou_list, !chiihou_name, [!chiihou_value, !chiihou_han], status("first_turn") and won_by_draw and not_seat_is("east")
 else
-  define_yaku !chiihou_list, !chiihou_name, [!chiihou_value, !chiihou_han], status_missing("first_turn", as: "east") and status("first_turn") and won_by_discard
+  # win on east's first discard without any calls before it
+  define_yaku !chiihou_list, !chiihou_name, [!chiihou_value, !chiihou_han], current_turn_is("east") and status("first_turn") and won_by_discard
 end
 if !renhou_value > 0 do
-  define_yaku !renhou_list, !renhou_name, [!renhou_value, !renhou_han], print_status and status("first_turn") and won_by_discard
+  define_yaku !renhou_list, !renhou_name, [!renhou_value, !renhou_han], status("first_turn") and won_by_discard
   define_yaku_precedence !chiihou_name, [!renhou_name]
 end

@@ -71,7 +71,7 @@ defmodule RiichiAdvanced.GameState.JokerSolver do
     # re-add the obvious jokers back into each assignment
     # also returns Stream.new([[obvious_joker_assignment]]) if stream was empty
     |> Stream.transform(fn -> true end,
-        fn joker_assignment, empty? -> {[Map.merge(obvious_joker_assignment, joker_assignment)], false} end,
+        fn joker_assignment, _empty? -> {[Map.merge(obvious_joker_assignment, joker_assignment)], false} end,
         fn empty? -> {if empty? do [obvious_joker_assignment] else [] end, nil} end
       )
     ret

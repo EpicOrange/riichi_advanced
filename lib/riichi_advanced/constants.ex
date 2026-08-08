@@ -961,7 +961,7 @@ defmodule RiichiAdvanced.Constants do
           four_flowers_value: 1, four_flowers_han: "Mủn"
         }}, 
         "standard_win",
-        %{name: "yaku/yakuhai", config: %{list: "yaku", value: 1, round_wind_name: "Round Wind"}},
+        %{name: "yaku/yakuhai", config: %{list: "yaku", value: 1, round_wind_name: "Prevalent Wind"}},
         %{name: "yaku/menzentsumo", config: %{list: "yaku", name: "Fully Closed Hand", value: 1}},
         %{name: "yaku/chankan", config: %{list: "yaku", name: "Robbing a Quad", value: 1, scoring_key: "ron"}},
         %{name: "yaku/rinshan", config: %{
