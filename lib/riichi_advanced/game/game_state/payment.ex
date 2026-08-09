@@ -58,12 +58,14 @@ defmodule RiichiAdvanced.GameState.Payment do
     for %{from: from, to: to} = txn <- txns, reduce: %{} do
       ledger when omit_pot_payments and from == nil -> ledger
       ledger ->
-        txn_name = case Utils.get_relative_seat(from, to) do
-          :self     -> "From self"
-          :shimocha -> "From right"
-          :toimen   -> "From across"
-          :kamicha  -> "From left"
-        end
+        txn_name = if from != nil do
+          case Utils.get_relative_seat(from, to) do
+            :self     -> "From self"
+            :shimocha -> "From right"
+            :toimen   -> "From across"
+            :kamicha  -> "From left"
+          end
+        else "" end
         txn = Map.put(txn, :name, txn_name)
         txn2 = invert_txn(txn)
         ledger

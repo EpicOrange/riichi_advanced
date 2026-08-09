@@ -261,6 +261,7 @@ defmodule RiichiAdvanced.GameState.Kyoku do
         Map.put(state, :visible_screen, :scores)
       end
       state = start_timer(state)
+      state
     else state end
     state
   end

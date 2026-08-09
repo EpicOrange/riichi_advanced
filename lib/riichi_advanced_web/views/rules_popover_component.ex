@@ -1,5 +1,4 @@
 defmodule RiichiAdvancedWeb.RulesPopoverComponent do
-  alias RiichiAdvanced.Riichi, as: Riichi
   use RiichiAdvancedWeb, :live_component
   use Gettext, backend: RiichiAdvancedWeb.Gettext
   import RiichiAdvancedWeb.Translations
