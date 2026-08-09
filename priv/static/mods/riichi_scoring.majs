@@ -84,16 +84,38 @@ def apply_tsumo_scoring do
   end
 end
 
+define_scoring ron do
+  total = 0
+  if points2 > 0 do points2 = points2 :: "★" else points = points :: "Han" end
+  calculate_base_score
+  apply_ron_scoring
+  if mod(total, 100) > 0 do
+    total = round_up(total, 100) :: "Round up"
+  end
+  finalize_score
+end
+
+define_scoring tsumo do
+  total = 0
+  if points2 > 0 do points2 = points2 :: "★" else points = points :: "Han" end
+  calculate_base_score
+  apply_tsumo_scoring
+  if mod(total, 100) > 0 do
+    total = round_up(total, 100) :: "Round up"
+  end
+  finalize_score
+end
+
 define_const honba_mult, 3
 def finalize_score do
-  set_counter_all("before_modifiers", "total")
-  as winners do
-    riichi_stick_payment = pot
-    if riichi_stick_payment > 0 do
-      total += riichi_stick_payment :: "Riichi sticks"
-      riichi_stick_payment *= -1
-      add_to_pot("riichi_stick_payment")
+  if display_total == 0 do
+    # store total winnings without honba, for display
+    cond do
+      won_by_draw and seat_is("east", as: "winner") -> display_total = total * 3
+      won_by_draw and seat_is("east") -> display_total = total * 2
+      true -> display_total = total
     end
+    set_counter_all("display_total", "display_total")
   end
   if honba > 0 do
     if won_by_draw do
@@ -104,26 +126,15 @@ def finalize_score do
   end
 end
 
-define_scoring ron do
-  total = 0
-  if points2 > 0 do points2 = points2 :: "★" else points = points :: "Han" end
-  calculate_base_score; if total > 0 do apply_ron_scoring end
-  if total < 4000 or (total < 2000 and not (seat_is("east", as: "winner") or seat_is("east"))) do
-    total = round_up(total, 100) :: "Round up"
-  end
-  finalize_score
-end
-
-define_scoring tsumo do
-  total = 0
-  if points2 > 0 do points2 = points2 :: "★" else points = points :: "Han" end
-  calculate_base_score; if total > 0 do apply_tsumo_scoring end
-  if total < 4000 or (total < 2000 and not (seat_is("east", as: "winner") or seat_is("east"))) do
-    total = round_up(total, 100) :: "Round up"
-  end
-  finalize_score
-end
-
 on after_win do
-  modify_winner("score", "before_modifiers")
+  modify_winner("score", "display_total") # before honba and riichi sticks
+  # gather riichi sticks for the first winner
+  as winners do
+    riichi_stick_payment = pot
+    if riichi_stick_payment > 0 do
+      total += riichi_stick_payment :: "Riichi sticks"
+      riichi_stick_payment *= -1
+      add_to_pot("riichi_stick_payment") # zero out pot
+    end
+  end
 end
