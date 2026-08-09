@@ -194,7 +194,7 @@ defmodule RiichiAdvancedWeb.ScoreWindowComponent do
       {:self,     :kamicha } -> ["u2k"]
       {:self,     :self    } -> ["self"]
       _                      -> []
-    end end)
+    end end) |> Enum.uniq()
   end
 
   def display_op(op) do
