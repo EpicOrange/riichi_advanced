@@ -38,6 +38,15 @@ defmodule RiichiAdvancedWeb.ScoringTestLive do
       txns: [],
       kyoku: 0,
       next_dealer: nil,
+      rules_text: %{},
+      rules_text_order: [],
+      game_active: true,
+      turn: :east,
+      actions: [],
+      wall: [],
+      wall_index: 0,
+      interruptible_actions: %{},
+      marking: Map.new([:east, :south, :west, :north], fn seat -> {seat, %{}} end),
     })
     |> assign(:ruleset, nil)
     |> assign(:ruleset_json, nil)
@@ -145,6 +154,7 @@ defmodule RiichiAdvancedWeb.ScoringTestLive do
           next_dealer={@state.next_dealer}
           rules_ref={@rules_ref}
           />
+        <.live_component module={RiichiAdvancedWeb.RulesPopoverComponent} id="rules-popover" rules_text={@rules_text} rules_text_order={@rules_text_order} lang={@lang} />
       </div>
       <div class="top-right-container">
         <.live_component module={RiichiAdvancedWeb.MenuButtonsComponent} id="menu-buttons" lang={@lang} />
@@ -195,6 +205,14 @@ defmodule RiichiAdvancedWeb.ScoringTestLive do
     |> assign(:call_selection_ixs, [])
     |> assign(:call_buttons, %{})
     |> assign(:selected_call_button, nil)
+
+    # run after_initialization to populate rules
+    state = socket.assigns.state
+    |> Map.put(:rules_ref, rules_ref)
+    |> Actions.trigger_event("after_initialization", %{seat: :east})
+    socket = assign(socket, :rules_text, state.rules_text)
+    socket = assign(socket, :rules_text_order, state.rules_text_order)
+    
     socket
   end
   def switch_to_ruleset(socket, _ruleset), do: socket
