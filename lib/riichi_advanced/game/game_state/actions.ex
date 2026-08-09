@@ -836,7 +836,9 @@ defmodule RiichiAdvanced.GameState.Actions do
     # - ones that we pay (from = seat)
     # - or ones that generate points for us (from = nil, to = seat)
     # find the first such txn
-    ix = Enum.find_index(state.txns, &(context.seat == &1.to and &1.from == nil) or context.seat == &1.from)
+    prev_seat = Map.get(context, :prev_seat, context.seat)
+    to_self = prev_seat == context.seat
+    ix = Enum.find_index(state.txns, &(to_self and &1.from == nil and &1.to == context.seat) or (not to_self and &1.from == context.seat and &1.to == prev_seat))
 
     # then, update that txn with the new line item
     state = if ix != nil do
@@ -845,7 +847,7 @@ defmodule RiichiAdvanced.GameState.Actions do
       ))
     else
       # if we didn't find a txn, add a new one based on seat and prev_seat
-      if context.prev_seat == nil or context.prev_seat == context.seat do
+      if to_self do
         # add one that's (from = nil, to = seat)
         new_txn = %Transaction{name: display_name, from: nil, to: context.seat, line_items: [line_item]}
         update_in(state.txns, &[new_txn | &1])
@@ -1264,7 +1266,8 @@ defmodule RiichiAdvanced.GameState.Actions do
           IO.inspect(state.tags, charlists: :as_lists)
           state
         "print_txns"         ->
-          IO.inspect(state.txns, charlists: :as_lists)
+          IO.inspect(state.txns, charlists: :as_lists, limit: :infinity)
+          # IO.inspect(state.txns, charlists: :as_lists)
           state
         "push_message"          ->
           if not silent do

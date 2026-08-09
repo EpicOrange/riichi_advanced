@@ -7,6 +7,14 @@ on after_initialization do
   end
 end
 
+# do a nagashi check before the ryuukyoku check in after_turn_change
+on after_turn_change, prepend: true do
+  if no_tiles_remaining and anyone_status("nagashi") do
+    pause(1000)
+    ryuukyoku("", "nagashi")
+  end
+end
+
 # start with nagashi set
 on after_start do
   set_status_all("nagashi")
@@ -29,72 +37,89 @@ on before_abortive_draw do
   unset_status_all("nagashi")
 end
 
-# run nagashi as a tsumo win
+apply append, "score_calculation.yaku_lists", "nagashi"
+cond do
+  equals(!is, "Mangan")    -> define_yaku nagashi, "Nagashi", [5, "Han"], ended_by_exhaustive_draw, ["yaku", "meta_yaku", "extra_yaku", "yakuman", "meta_yakuman"]
+  equals(!is, "Haneman")   -> define_yaku nagashi, "Nagashi", [6, "Han"], ended_by_exhaustive_draw, ["yaku", "meta_yaku", "extra_yaku", "yakuman", "meta_yakuman"]
+  equals(!is, "Baiman")    -> define_yaku nagashi, "Nagashi", [8, "Han"], ended_by_exhaustive_draw, ["yaku", "meta_yaku", "extra_yaku", "yakuman", "meta_yakuman"]
+  equals(!is, "Sanbaiman") -> define_yaku nagashi, "Nagashi", [11, "Han"], ended_by_exhaustive_draw, ["yaku", "meta_yaku", "extra_yaku", "yakuman", "meta_yakuman"]
+  true                     -> define_yaku nagashi, "Nagashi", [1, "★"], ended_by_exhaustive_draw, ["yaku", "meta_yaku", "extra_yaku", "yakuman", "meta_yakuman"]
+end
+
+# run nagashi as a tsumo win or as a normal exhaustive draw
+define_scoring nagashi do execute_nagashi end
+on before_scoring do
+  if not_equals(!counts_as, "tsumo") and anyone_status("nagashi") do
+    make_responsible_for("others")
+  end
+end
 on before_exhaustive_draw do
   if equals(!counts_as, "tsumo") and anyone_status("nagashi") do
+    fu = 30
     win_by_draw("nagashi")
   end
 end
-define_scoring nagashi do
-  execute_nagashi
-end
 
-on after_scoring, prepend: true do
-  # unset tenpai so tenpai payments don't go through
-  unset_status_all("tenpai")
-  # run nagashi as an exhaustive draw
-  unless equals(!counts_as, "tsumo") do
-    if ended_by_exhaustive_draw do
-      as everyone do
-        if status("nagashi") do
-          execute_nagashi
+# do not setup tenpai so tenpai payments don't go through
+def setup_noten_payments do unset_status_all("tenpai") end
+
+
+def nagashi_calculate_base do
+  cond do
+    equals(!is, "Mangan")    -> total = 2000 :: "Mangan base"
+    equals(!is, "Haneman")   -> total = 3000 :: "Haneman base"
+    equals(!is, "Baiman")    -> total = 4000 :: "Baiman base"
+    equals(!is, "Sanbaiman") -> total = 6000 :: "Sanbaiman base"
+    true                     -> total = 8000 :: "Yakuman base"
+  end
+end
+def execute_nagashi do
+  # TODO remove
+  as north do unset_status("nagashi") end
+  as west do unset_status("nagashi") end
+
+  as everyone do
+    if status("nagashi") do
+      if seat_is("east") do
+        as others do
+          nagashi_calculate_base
+          total *= 2 :: "Nagashi dealer payment"
+          nagashi_count_honba
+        end
+      else
+        as others do
+          nagashi_calculate_base
+          if seat_is("east") do
+            total *= 2 :: "Nagashi dealer payment"
+          else
+            total *= 1 :: "Nagashi nondealer payment"
+          end
+          nagashi_count_honba
         end
       end
     end
+    # print_txns
   end
 end
 
-# pay out for nagashi
-# TODO note for future sakicards implementation:
-# - if kanbara satomi is in play, the player whose wall the last dora indicator is on loses double points
-# - logic for double 1500 payments is "always pay to your right, unless right is also paying"
-def execute_nagashi do
-  set_scoring_header("Nagashi $is", %{is: !is})
-  # clear tenpai payments
-  if status("nagashi") do
-    cond do
-      equals(!is, "Mangan")    -> base_payment = 2000
-      equals(!is, "Haneman")   -> base_payment = 3000
-      equals(!is, "Baiman")    -> base_payment = 4000
-      equals(!is, "Sanbaiman") -> base_payment = 6000
-      true                     -> base_payment = 8000
-    end
+if equals(!counts_as, "tsumo") do
+  def nagashi_count_honba do
     if equals(!counts_as, "tsumo") do
       # honba is counted
-      base_payment += @honba_value * honba
+      total += @honba_value * honba :: "Honba"
       # take riichi bets too
       riichi_bets = pot
-      total += riichi_bets
+      total += riichi_bets :: "Honba"
+      riichi_bets *= -1
+      add_to_pot("riichi_bets")
     end
-    if seat_is("east") do
-      # do payout for each other player
-      as others do
-        payment = base_payment * 2
-        modify_payout("self", "payment", "subtract")
-        modify_payout("prev_seat", "payment", "add")
-      end
-    else
-      # do payout for each other player
-      as others do
-        if seat_is("east") do
-          payment = base_payment * 2
-          modify_payout("self", "payment", "subtract")
-          modify_payout("prev_seat", "payment", "add")
-        else
-          modify_payout("self", "base_payment", "subtract")
-          modify_payout("prev_seat", "base_payment", "add")
-        end
-      end
-    end
+  end
+else
+  def nagashi_count_honba do end
+end
+
+on after_scoring do
+  if anyone_status("nagashi") do
+    set_scoring_header("Nagashi $is", %{is: !is})
   end
 end
