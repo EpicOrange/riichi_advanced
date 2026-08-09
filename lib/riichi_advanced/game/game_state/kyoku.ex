@@ -222,43 +222,46 @@ defmodule RiichiAdvanced.GameState.Kyoku do
     # reset animation
     state = update_all_players(state, fn _seat, player -> %{ player | last_discard: nil } end)
 
-    # if scoring key is not nil, then run that now before we score
-    state = if scoring_key != nil do
-      # make everyone responsible for everyone else
-      state = for recipient <- state.available_seats,
-                  payer <- state.available_seats,
-                  recipient != payer,
-                  reduce: state do
-        state -> update_in(state.players[recipient].responsibilities, &Map.put(&1, payer, []))
+    # continue only if we didn't call any win action in before_exhaustive_draw
+    state = if state.round_result == :exhaustive_draw do
+      # if scoring key is not nil, then run that now before we score
+      state = if scoring_key != nil do
+        # make everyone responsible for everyone else
+        state = for recipient <- state.available_seats,
+                    payer <- state.available_seats,
+                    recipient != payer,
+                    reduce: state do
+          state -> update_in(state.players[recipient].responsibilities, &Map.put(&1, payer, []))
+        end
+        cxt = %{
+          seat: state.turn,
+          yaku: [],
+          scoring_key: scoring_key,
+        }
+        scoring_logic_actions = Rules.get(state.rules_ref, "scoring_logic", %{}) |> Map.get(cxt.scoring_key, [])
+        Actions.run_actions(state, scoring_logic_actions, cxt)
+      else state end
+
+      state = Map.put(state, :game_active, false)
+
+      {state, delta_scores, delta_scores_reason} = Scoring.adjudicate_draw_scoring(state)
+      state = Map.put(state, :delta_scores, delta_scores)
+      state = Map.put(state, :delta_scores_reason, if draw_name do draw_name else delta_scores_reason end)
+      dealer = Riichi.get_east_player_seat(state.kyoku, state.available_seats)
+      state = Map.put(state, :next_dealer, Utils.next_turn(dealer))
+
+      # run after_scoring actions
+      state = Actions.trigger_event(state, "after_scoring", %{seat: state.turn})
+
+      state = if state.winner_index < map_size(state.winners) do
+        # in sichuan you get winners for tenpai players at draw, so show winner screen if needed
+        Map.put(state, :visible_screen, :winner)
+      else
+        # otherwise show score exchange screen as normal
+        Map.put(state, :visible_screen, :scores)
       end
-      cxt = %{
-        seat: state.turn,
-        yaku: [],
-        scoring_key: scoring_key,
-      }
-      scoring_logic_actions = Rules.get(state.rules_ref, "scoring_logic", %{}) |> Map.get(cxt.scoring_key, [])
-      Actions.run_actions(state, scoring_logic_actions, cxt)
+      state = start_timer(state)
     else state end
-
-    state = Map.put(state, :game_active, false)
-
-    {state, delta_scores, delta_scores_reason} = Scoring.adjudicate_draw_scoring(state)
-    state = Map.put(state, :delta_scores, delta_scores)
-    state = Map.put(state, :delta_scores_reason, if draw_name do draw_name else delta_scores_reason end)
-    dealer = Riichi.get_east_player_seat(state.kyoku, state.available_seats)
-    state = Map.put(state, :next_dealer, Utils.next_turn(dealer))
-
-    # run after_scoring actions
-    state = Actions.trigger_event(state, "after_scoring", %{seat: state.turn})
-
-    state = if state.winner_index < map_size(state.winners) do
-      # in sichuan you get winners for tenpai players at draw, so show winner screen if needed
-      Map.put(state, :visible_screen, :winner)
-    else
-      # otherwise show score exchange screen as normal
-      Map.put(state, :visible_screen, :scores)
-    end
-    state = start_timer(state)
     state
   end
 

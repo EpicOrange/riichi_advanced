@@ -58,6 +58,13 @@ defmodule RiichiAdvanced.GameState.Payment do
     for %{from: from, to: to} = txn <- txns, reduce: %{} do
       ledger when omit_pot_payments and from == nil -> ledger
       ledger ->
+        txn_name = case Utils.get_relative_seat(from, to) do
+          :self     -> "From self"
+          :shimocha -> "From right"
+          :toimen   -> "From across"
+          :kamicha  -> "From left"
+        end
+        txn = Map.put(txn, :name, txn_name)
         txn2 = invert_txn(txn)
         ledger
         |> Map.update(to, [txn], &[txn | &1])
@@ -140,6 +147,7 @@ defmodule RiichiAdvanced.GameState.Payment do
             # add cxt as a winner object before evaluating scoring_logic
             state = update_in(state, [Access.key(:winners, %{}), Access.key(seat, %{})], &Map.merge(cxt, &1))
             |> Actions.run_actions(scoring_logic_actions, cxt)
+            state
           else
             IO.puts("[WARNING] scoring_logic[#{inspect(cxt.scoring_key)}] is empty!")
             state

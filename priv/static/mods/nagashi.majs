@@ -7,11 +7,12 @@ on after_initialization do
   end
 end
 
-# do a nagashi check before the ryuukyoku check in after_turn_change
-on after_turn_change, prepend: true do
-  if no_tiles_remaining and anyone_status("nagashi") do
-    pause(1000)
+# replace ryuukyoku in after_turn_change
+replace 1, "after_turn_change", ryuukyoku("Ryuukyoku", "ryuukyoku") do
+  if anyone_status("nagashi") do
     ryuukyoku("", "nagashi")
+  else
+    ryuukyoku("Ryuukyoku", "ryuukyoku")
   end
 end
 
@@ -37,32 +38,47 @@ on before_abortive_draw do
   unset_status_all("nagashi")
 end
 
-apply append, "score_calculation.yaku_lists", "nagashi"
-cond do
-  equals(!is, "Mangan")    -> define_yaku nagashi, "Nagashi", [5, "Han"], ended_by_exhaustive_draw, ["yaku", "meta_yaku", "extra_yaku", "yakuman", "meta_yakuman"]
-  equals(!is, "Haneman")   -> define_yaku nagashi, "Nagashi", [6, "Han"], ended_by_exhaustive_draw, ["yaku", "meta_yaku", "extra_yaku", "yakuman", "meta_yakuman"]
-  equals(!is, "Baiman")    -> define_yaku nagashi, "Nagashi", [8, "Han"], ended_by_exhaustive_draw, ["yaku", "meta_yaku", "extra_yaku", "yakuman", "meta_yakuman"]
-  equals(!is, "Sanbaiman") -> define_yaku nagashi, "Nagashi", [11, "Han"], ended_by_exhaustive_draw, ["yaku", "meta_yaku", "extra_yaku", "yakuman", "meta_yakuman"]
-  true                     -> define_yaku nagashi, "Nagashi", [1, "★"], ended_by_exhaustive_draw, ["yaku", "meta_yaku", "extra_yaku", "yakuman", "meta_yakuman"]
+if equals(!counts_as, "tsumo") do
+  # nagashi becomes a yaku
+  apply append, "score_calculation.yaku_lists", "nagashi"
+  cond do
+    equals(!is, "Mangan")    -> define_yaku nagashi, "Nagashi Mangan", [5, "Han"], won_by_draw and status("nagashi"), ["yaku", "meta_yaku", "extra_yaku", "yakuman", "meta_yakuman"]
+    equals(!is, "Haneman")   -> define_yaku nagashi, "Nagashi Haneman", [6, "Han"], won_by_draw and status("nagashi"), ["yaku", "meta_yaku", "extra_yaku", "yakuman", "meta_yakuman"]
+    equals(!is, "Baiman")    -> define_yaku nagashi, "Nagashi Baiman", [8, "Han"], won_by_draw and status("nagashi"), ["yaku", "meta_yaku", "extra_yaku", "yakuman", "meta_yakuman"]
+    equals(!is, "Sanbaiman") -> define_yaku nagashi, "Nagashi Sanbaiman", [11, "Han"], won_by_draw and status("nagashi"), ["yaku", "meta_yaku", "extra_yaku", "yakuman", "meta_yakuman"]
+    true                     -> define_yaku nagashi, "Nagashi Yakuman", [1, "★"], won_by_draw and status("nagashi"), ["yaku", "meta_yaku", "extra_yaku", "yakuman", "meta_yakuman"]
+  end
 end
 
-# run nagashi as a tsumo win or as a normal exhaustive draw
-define_scoring nagashi do execute_nagashi end
+# run nagashi as a tsumo win
 on before_scoring do
   if not_equals(!counts_as, "tsumo") and anyone_status("nagashi") do
     make_responsible_for("others")
   end
 end
 on before_exhaustive_draw do
-  if equals(!counts_as, "tsumo") and anyone_status("nagashi") do
-    fu = 30
-    win_by_draw("nagashi")
+  if anyone_status("nagashi") do
+    if equals(!counts_as, "tsumo") do
+      as everyone do
+        if status("nagashi") do
+          fu = 30
+          win_by_draw("tsumo")
+        end
+      end
+    else
+      execute_nagashi
+    end
   end
 end
 
-# do not setup tenpai so tenpai payments don't go through
-def setup_noten_payments do unset_status_all("tenpai") end
-
+# if nagashi, don't let tenpai payments go through
+def setup_noten_payments, append: true do
+  if anyone_status("nagashi") do
+    set_counter_all("tenpai_count", 0)
+    set_counter_all("noten_payment", 0)
+    set_counter_all("noten_penalty", 0)
+  end
+end
 
 def nagashi_calculate_base do
   cond do
@@ -74,10 +90,6 @@ def nagashi_calculate_base do
   end
 end
 def execute_nagashi do
-  # TODO remove
-  as north do unset_status("nagashi") end
-  as west do unset_status("nagashi") end
-
   as everyone do
     if status("nagashi") do
       if seat_is("east") do
@@ -98,7 +110,6 @@ def execute_nagashi do
         end
       end
     end
-    # print_txns
   end
 end
 
