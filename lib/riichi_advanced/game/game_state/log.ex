@@ -197,11 +197,12 @@ defmodule RiichiAdvanced.GameState.Log do
         |> Enum.with_index()
         |> Enum.map(&format_event/1),
       result: for {seat, winner} <- state.winners do
+        hand = state.players[seat].hand ++ Enum.flat_map(state.players[seat].calls, &Utils.call_to_tiles/1) ++ [winner.winning_tile]
         %{
           seat: to_seat(seat),
           pao: to_seat(winner.player.responsibilities |> Map.keys() |> Enum.at(0)), # TODO this is not a thing anymore
           won_from: if winner.win_source == :draw do nil else to_seat(state.turn) end,
-          hand: state.players[seat].hand ++ Enum.flat_map(state.players[seat].calls, &Utils.call_to_tiles/1) ++ winner.winning_tile,
+          hand: Utils.strip_attrs(hand),
           tile: winner.winning_tile,
           yaku: Enum.map(winner.yaku, fn {name, value} -> [name, value] end),
           yakuman: Enum.map(Map.get(winner, :yakuman, []), fn {name, value} -> [name, value] end),
