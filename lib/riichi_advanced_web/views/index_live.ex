@@ -75,6 +75,7 @@ defmodule RiichiAdvancedWeb.IndexLive do
         <button phx-click="goto_about"><%= t(@lang, "About") %></button>
         <button><a href="https://github.com/EpicOrange/riichi_advanced" target="_blank"><%= t(@lang, "Source") %></a></button>
         <button><a href="https://discord.gg/5QQHmZQavP" target="_blank"><%= t(@lang, "Discord") %></a></button>
+        <button phx-click="goto_scoringtest"><%= t(@lang, "Scorer") %></button>
         <button phx-click="goto_logs"><%= t(@lang, "Logs") %></button>
       </div>
       <div class="top-right-container">
@@ -96,6 +97,7 @@ defmodule RiichiAdvancedWeb.IndexLive do
 
   def handle_event("change_ruleset", %{"ruleset" => ruleset}, socket) do
     socket = assign(socket, :ruleset, ruleset)
+    socket = push_patch(socket, to: ~p"/?nickname=#{socket.assigns.nickname}&lang=#{socket.assigns.lang}&ruleset=#{ruleset}")
     {:noreply, socket}
   end
 
@@ -152,6 +154,11 @@ defmodule RiichiAdvancedWeb.IndexLive do
     {:noreply, socket}
   end
   
+  def handle_event("goto_scoringtest", _assigns, socket) do
+    socket = push_navigate(socket, to: ~p"/scoringtest?ruleset=#{socket.assigns.ruleset}&lang=#{socket.assigns.lang}")
+    {:noreply, socket}
+  end
+  
   def handle_event("goto_logs", _assigns, socket) do
     socket = push_navigate(socket, to: ~p"/log?nickname=#{socket.assigns.nickname}&lang=#{socket.assigns.lang}")
     {:noreply, socket}
@@ -172,6 +179,10 @@ defmodule RiichiAdvancedWeb.IndexLive do
 
   def handle_info({:set_room_code, room_code}, socket) do
     socket = assign(socket, :room_code, room_code)
+    {:noreply, socket}
+  end
+
+  def handle_params(params, _uri, socket) do
     {:noreply, socket}
   end
 
