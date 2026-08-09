@@ -211,7 +211,7 @@ defmodule RiichiAdvanced.GameState.Kyoku do
     state
   end
 
-  def exhaustive_draw(state, draw_name) do
+  def exhaustive_draw(state, draw_name, scoring_key) do
     state = Map.put(state, :round_result, :exhaustive_draw)
 
     push_message(state, [%{text: "Game ended by exhaustive draw"}])
@@ -221,6 +221,24 @@ defmodule RiichiAdvanced.GameState.Kyoku do
 
     # reset animation
     state = update_all_players(state, fn _seat, player -> %{ player | last_discard: nil } end)
+
+    # if scoring key is not nil, then run that now before we score
+    state = if scoring_key != nil do
+      # make everyone responsible for everyone else
+      state = for recipient <- state.available_seats,
+                  payer <- state.available_seats,
+                  recipient != payer,
+                  reduce: state do
+        state -> update_in(state.players[recipient].responsibilities, &Map.put(&1, payer, []))
+      end
+      cxt = %{
+        seat: state.turn,
+        yaku: [],
+        scoring_key: scoring_key,
+      }
+      scoring_logic_actions = Rules.get(state.rules_ref, "scoring_logic", %{}) |> Map.get(cxt.scoring_key, [])
+      Actions.run_actions(state, scoring_logic_actions, cxt)
+    else state end
 
     state = Map.put(state, :game_active, false)
 

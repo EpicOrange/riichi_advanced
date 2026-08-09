@@ -832,24 +832,28 @@ defmodule RiichiAdvanced.GameState.Actions do
       reason: display_name
     }
 
-    # we update the latest txn for which context.seat
-    # if context.seat is a winner, search the first txn where they win
-    # otherwise, search for the first txn where they're paying
-    # depending on whether context.seat is a winner, 
-    is_winner = context.seat in state.winner_seats
-    ix = Enum.find_index(state.txns, if is_winner do 
-      &context.seat == &1.to and &1.from == nil
-    else
-      &context.seat == &1.from
-    end)
+    # best way to describe this is, we only care about 2 types of txns:
+    # - ones that we pay (from = seat)
+    # - or ones that generate points for us (from = nil, to = seat)
+    # find the first such txn
+    ix = Enum.find_index(state.txns, &(context.seat == &1.to and &1.from == nil) or context.seat == &1.from)
+
+    # then, update that txn with the new line item
     state = if ix != nil do
       update_in(state.txns, &List.update_at(&1, ix,
         fn txn -> %{txn | line_items: [line_item | txn.line_items]} end
       ))
     else
-      # add a new txn towards themselves
-      new_txn = %Transaction{name: display_name, from: nil, to: context.seat, line_items: [line_item]}
-      update_in(state.txns, &[new_txn | &1])
+      # if we didn't find a txn, add a new one based on seat and prev_seat
+      if context.prev_seat == nil or context.prev_seat == context.seat do
+        # add one that's (from = nil, to = seat)
+        new_txn = %Transaction{name: display_name, from: nil, to: context.seat, line_items: [line_item]}
+        update_in(state.txns, &[new_txn | &1])
+      else
+        # add one that's (from = seat, to = prev_seat)
+        new_txn = %Transaction{name: display_name, from: context.seat, to: context.prev_seat, line_items: [line_item]}
+        update_in(state.txns, &[new_txn | &1])
+      end
     end
     state
   end
@@ -1385,7 +1389,7 @@ defmodule RiichiAdvanced.GameState.Actions do
         "win_by_call"           -> Kyoku.win(state, context.seat, :call, Enum.at(opts, 0, "win"))
         "win_by_draw"           -> Kyoku.win(state, context.seat, :draw, Enum.at(opts, 0, "win"))
         "win_by_second_visible_discard" -> Kyoku.win(state, context.seat, :second_discard, Enum.at(opts, 0, nil))
-        "ryuukyoku"             -> Kyoku.exhaustive_draw(state, Enum.at(opts, 0, nil))
+        "ryuukyoku"             -> Kyoku.exhaustive_draw(state, Enum.at(opts, 0, nil), Enum.at(opts, 1, nil))
         "abortive_draw"         -> Kyoku.abortive_draw(state, Enum.at(opts, 0, nil))
         "set_status"            -> update_player(state, context.seat, fn player -> %{ player | status: MapSet.union(player.status, MapSet.new(opts)) } end)
         "unset_status"          -> update_player(state, context.seat, fn player -> %{ player | status: MapSet.difference(player.status, MapSet.new(opts)) } end)
@@ -2020,7 +2024,7 @@ defmodule RiichiAdvanced.GameState.Actions do
           # = make `seats` responsible for `yaku` if we win
           # player.responsibilities: an entry %{seat => [yaku]} means if this player wins, `seat` must pay for `yaku`
           # alternatively %{seat => ["all"]} means paying for all yaku,
-          # and %{seat1 => ["all"], seat2 => ["Daisangen"]} means seat1 pays for all except Daisangen
+          # and %{seat1 => ["remaining"], seat2 => ["Daisangen"]} means seat1 pays for all except Daisangen
           seats_spec = Enum.at(opts, 0, "self")
           yaku = List.wrap(Enum.at(opts, 1, "all"))
           # IO.puts("make_responsible_for: making #{seats_spec} = #{inspect(Conditions.from_seats_spec(state, context, seats_spec))} responsible for #{context.seat}'s yaku: #{inspect(yaku)}")

@@ -244,49 +244,6 @@ def check_tenpai do
   end
 end
 
-# noten payments
-# TODO note for future sakicards implementation:
-# - if kanbara satomi is in play, the player whose wall the last dora indicator is on loses double points
-#   + special logic for doubled 1500 payments is: if shimocha is tenpai, double payment to shimocha, otherwise double payment to kamicha
-# - ikeda kana triples noten payments
-def noten_payments do
-  # first check tenpai, and reveal tenpai hands
-  as everyone do
-    check_tenpai
-    if status("tenpai") do reveal_hand end
-  end
-  # determine how much each player pays
-  tenpai_count = 0
-  if status("tenpai") do tenpai_count += 1 end
-  if shimocha_exists and status("tenpai", as: "shimocha") do tenpai_count += 1 end
-  if toimen_exists and status("tenpai", as: "toimen") do tenpai_count += 1 end
-  if kamicha_exists and status("tenpai", as: "kamicha") do tenpai_count += 1 end
-  n = num_players
-  if n == 4 and tenpai_count == 1 do tenpai_points = 3000; noten_points = -1000 end
-  if n == 4 and tenpai_count == 2 do tenpai_points = 1500; noten_points = -1500 end
-  if n == 4 and tenpai_count == 3 do tenpai_points = 1000; noten_points = -3000 end
-  if n == 3 and tenpai_count == 1 do tenpai_points = 1000; noten_points = -2000 end
-  if n == 3 and tenpai_count == 2 do tenpai_points = 2000; noten_points = -1000 end
-  if n == 2 and tenpai_count == 1 do tenpai_points = 1000; noten_points = -1000 end
-  set_counter_all("tenpai_points", "tenpai_points")
-  set_counter_all("noten_points", "noten_points")
-  as everyone do
-    if status("tenpai") do
-      modify_payout("self", "tenpai_points")
-    else
-      modify_payout("self", "noten_points")
-    end
-  end
-end
-on after_scoring do
-  if points2 > 0 do
-    modify_winner("point_name", "★")
-  end
-  if ended_by_exhaustive_draw do
-    noten_payments
-  end
-end
-
 define_const calls_fu, %{pon: 2}
 define_const winning_groups_fu, [
   # kanchan
@@ -455,7 +412,7 @@ end
 on after_turn_change do
   if no_tiles_remaining do
     pause(1000)
-    ryuukyoku
+    ryuukyoku("Ryuukyoku", "ryuukyoku")
   else
     if not_game_start do
       discard_passed

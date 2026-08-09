@@ -318,6 +318,15 @@ defmodule RiichiAdvanced.GameState.Scoring do
     score_rules = Rules.get(state.rules_ref, "score_calculation", %{})
     delta_scores = Map.new(state.players, fn {seat, _player} -> {seat, 0} end)
 
+    delta_scores =
+      if not Enum.empty?(state.txns) do
+        # obtain delta scores through state.txns
+        totals_by_seat = Payment.consolidate_txns(state.txns) |> Map.new(fn {seat, txn} -> {seat, Payment.get_txn_result(txn)} end)
+        for seat <- state.available_seats, into: %{} do
+          {seat, Map.get(totals_by_seat, seat, 0)}
+        end
+      else delta_scores end
+
     # handle hanada kirame's scoring quirk
     {state, delta_scores} = hanada_kirame_score_protection(state, delta_scores)
 
