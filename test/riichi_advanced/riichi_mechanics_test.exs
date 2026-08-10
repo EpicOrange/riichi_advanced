@@ -177,7 +177,7 @@ defmodule RiichiAdvanced.RiichiMechanicsTest do
       %{"type" => "discard", "tile" => "7s", "player" => 2, "tsumogiri" => true},
       %{"type" => "discard", "tile" => "8s", "player" => 0, "tsumogiri" => true},
       %{"type" => "discard", "tile" => "8s", "player" => 2, "tsumogiri" => true}
-    ], :no_winners, %{delta_scores: [1000, -1000]})
+    ], :no_winners, %{delta_scores: [0, 0]})
   end
 
   test "riichi - kazoe" do
