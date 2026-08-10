@@ -309,6 +309,7 @@ end
 on after_charleston do
   unset_status_all("charleston_left", "charleston_across", "charleston_right")
   set_status_all("round_start")
+  recalculate_buttons
 end
 
 define_button charleston_left,
