@@ -161,7 +161,7 @@ defmodule RiichiAdvanced.GameState.Marking do
         "not_joker"         -> not TileBehavior.is_joker?(tile, state.players[marking_player].tile_behavior)
         "call_has_joker"    -> Enum.any?(Utils.call_to_tiles(tile), &TileBehavior.is_joker?(&1, state.players[marking_player].tile_behavior))
         "not_riichi"        -> "riichi" not in state.players[marking_player].status or index >= length(state.players[marking_player].hand)
-        "can_discard"       -> index in state.players[marking_player].cache.playable_indices
+        "can_discard"       -> index in state.players[marking_player].cache.playable_indices or is_playable?(state, seat, tile, true)
         "last_discard"      ->
           case source do
             :discard ->

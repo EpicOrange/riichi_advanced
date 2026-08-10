@@ -269,6 +269,7 @@ on before_win do
   set_counter_all("jokers", "jokers")
 end
 
+define_play_restriction "1j", status("match_start")
 define_play_restriction "any", anyone_status("declare_shimocha_dead") or anyone_status("declare_toimen_dead") or anyone_status("declare_kamicha_dead")
 define_play_restriction "any", status("dead_hand")
 
@@ -344,15 +345,19 @@ on after_turn_change do
   end
 end
 
-on after_start do
-  set_status_all("match_start", "first_charleston", "charleston_right", "heavenly_available")
-  set_tile_alias_all(["1j"], [["1j", "_unpassable"], "any"])
-  set_tile_alias_all(["2f", "3f", "4f", "1g", "2g", "3g", "4g"], ["1f"])
+def count_passables do
   # compute how many tiles in each player's hand are passable
   as everyone do
     set_counter("passables", "count_matches", ["hand", "draw"], ~m"any:1")
     subtract_counter("passables", "count_matches", ["hand", "draw"], ~m"(any@unpassable):1")
   end
+end
+
+on after_start do
+  set_status_all("match_start", "first_charleston", "charleston_right", "heavenly_available")
+  set_tile_alias_all(["1j"], [["1j", "_unpassable"], "any"])
+  set_tile_alias_all(["2f", "3f", "4f", "1g", "2g", "3g", "4g"], ["1f"])
+  count_passables
 end
 
 on after_charleston do
@@ -390,6 +395,7 @@ on after_charleston do
     push_system_message("Select any number of the upside-down tiles to blind-pass that many tiles")
     set_status_all("blind_pass_right")
   end
+  count_passables
 end
 
 
@@ -400,7 +406,7 @@ define_button charleston_left,
   unskippable: true,
   cancellable: false
   do
-    mark [["hand", 3, ["self", "not_joker"]]] do
+    mark [["hand", 3, ["self", "can_discard"]]] do
       unset_status("charleston_left", "heavenly_available")
       merge_draw
       sort_hand
@@ -409,6 +415,7 @@ define_button charleston_left,
     charleston_left
     if status("first_charleston") do unset_status("first_charleston"); set_status("decide_charleston") end
     if status("second_charleston") do set_status("charleston_across") end
+    recalculate_buttons
   end
 
 define_button charleston_across,
@@ -417,7 +424,7 @@ define_button charleston_across,
   unskippable: true,
   cancellable: false
   do
-    mark [["hand", 3, ["self", "not_joker"]]] do
+    mark [["hand", 3, ["self", "can_discard"]]] do
       unset_status("charleston_across", "heavenly_available")
       merge_draw
       sort_hand
@@ -426,6 +433,7 @@ define_button charleston_across,
     if status("first_charleston") do set_status("charleston_left") end
     if status("second_charleston") do set_status("charleston_right") end
     set_status("start_blind_pass")
+    recalculate_buttons
   end
 
 define_button charleston_right,
@@ -434,7 +442,7 @@ define_button charleston_right,
   unskippable: true,
   cancellable: false
   do
-    mark [["hand", 3, ["self", "not_joker"]]] do
+    mark [["hand", 3, ["self", "can_discard"]]] do
       unset_status("charleston_right", "heavenly_available")
       merge_draw
       sort_hand
@@ -443,19 +451,20 @@ define_button charleston_right,
     charleston_right
     if status("first_charleston") do set_status("charleston_across") end
     if status("second_charleston") do unset_status("second_charleston"); set_status("final_charleston") end
+    recalculate_buttons
   end
 
 define_button continue_charleston,
   display_name: "Continue Charleston",
-  show_when: passables >= 3 and status("decide_charleston") and not_anyone_status("first_charleston"),
+  show_when: passables >= 3 and status("decide_charleston"),
   unskippable: true
   do
     unset_status("decide_charleston")
     set_status("second_charleston", "charleston_left")
     if not_anyone_status("decide_charleston") and not_anyone_status("final_charleston") do
       set_status_all("second_charleston", "charleston_left")
-      recalculate_buttons
     end
+    recalculate_buttons
   end
 
 define_button skip_charleston,
@@ -538,9 +547,8 @@ define_button charleston_across_0,
   do
     unset_status("final_charleston", "charleston_across_0")
     if not_anyone_status("final_charleston") do
-      unset_status_all("match_start")
+      start_match
     end
-    recalculate_buttons
   end
 
 define_button charleston_across_1,
@@ -549,12 +557,12 @@ define_button charleston_across_1,
   unskippable: true,
   cancellable: false
   do
-    mark [["hand", 1, ["self", "not_joker"]]] do
+    mark [["hand", 1, ["self", "can_discard"]]] do
       unset_status("charleston_across_1")
     end
     charleston_across
     unset_status("final_charleston")
-    if not_anyone_status("final_charleston") do unset_status_all("match_start") end
+    if not_anyone_status("final_charleston") do start_match end
   end
 
 define_button charleston_across_2,
@@ -563,12 +571,12 @@ define_button charleston_across_2,
   unskippable: true,
   cancellable: false
   do
-    mark [["hand", 2, ["self", "not_joker"]]] do
+    mark [["hand", 2, ["self", "can_discard"]]] do
       unset_status("charleston_across_2")
     end
     charleston_across
     unset_status("final_charleston")
-    if not_anyone_status("final_charleston") do unset_status_all("match_start") end
+    if not_anyone_status("final_charleston") do start_match end
   end
 
 define_button charleston_across_3,
@@ -577,12 +585,12 @@ define_button charleston_across_3,
   unskippable: true,
   cancellable: false
   do
-    mark [["hand", 3, ["self", "not_joker"]]] do
+    mark [["hand", 3, ["self", "can_discard"]]] do
       unset_status("charleston_across_3")
     end
     charleston_across
     unset_status("final_charleston")
-    if not_anyone_status("final_charleston") do unset_status_all("match_start") end
+    if not_anyone_status("final_charleston") do start_match end
   end
 
 # TODO: check that this button behaves the way it should. this button is here for any variants where a player has so many unpassable tiles (e.g. jokers, blanks, flowers in older NMJL rules) that they are unable to pass three tiles during the Charleston.
@@ -599,6 +607,13 @@ define_button abort_during_charleston,
     abortive_draw("Throw in all tiles and start again")
   end
 
+def start_match do
+  unset_status_all("match_start")
+  recalculate_buttons
+end
+
+define_const flowers, ["1f", "2f", "3f", "4f", "1g", "2g", "3g", "4g"]
+
 # the prefixes 1_, 2_, 3_ are just to put the buttons in the correct order when shown
 # but otherwise you refer to them as am_pung, etc. due to the call_name field
 define_button "1_am_pung",
@@ -609,8 +624,7 @@ define_button "1_am_pung",
   call_name: "am_pung",
   call_conditions: hand_length_at_least(3)
     and not_called_tile_contains(["1j"], 1)
-    # forgot what this last check is for
-    and call_contains(["1m","2m","3m","4m","5m","6m","7m","8m","9m","1p","2p","3p","4p","5p","6p","7p","8p","9p","1s","2s","3s","4s","5s","6s","7s","8s","9s","1z","2z","3z","4z","0z","6z","7z","1f","2f","3f","4f","1g","2g","3g","4g"], 1)
+    and (call_contains([+@flowers], 3) or not_call_contains([+@flowers], 1))
   do
     big_text("Pung")
     call
@@ -625,7 +639,7 @@ define_button "2_am_kong",
   call_name: "am_kong",
   call_conditions: hand_length_at_least(4)
     and not_called_tile_contains(["1j"], 1)
-    and call_contains(["1m","2m","3m","4m","5m","6m","7m","8m","9m","1p","2p","3p","4p","5p","6p","7p","8p","9p","1s","2s","3s","4s","5s","6s","7s","8s","9s","1z","2z","3z","4z","0z","6z","7z","1f","2f","3f","4f","1g","2g","3g","4g"], 1)
+    and (call_contains([+@flowers], 4) or not_call_contains([+@flowers], 1))
   do
     big_text("Kong")
     call
@@ -640,7 +654,7 @@ define_button "3_am_quint",
   call_name: "am_quint",
   call_conditions: hand_length_at_least(5)
     and not_called_tile_contains(["1j"], 1)
-    and call_contains(["1m","2m","3m","4m","5m","6m","7m","8m","9m","1p","2p","3p","4p","5p","6p","7p","8p","9p","1s","2s","3s","4s","5s","6s","7s","8s","9s","1z","2z","3z","4z","0z","6z","7z","1f","2f","3f","4f","1g","2g","3g","4g"], 1)
+    and (call_contains([+@flowers], 5) or not_call_contains([+@flowers], 1))
   do
     big_text("Quint")
     call
