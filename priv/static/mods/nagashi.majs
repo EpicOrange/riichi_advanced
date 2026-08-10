@@ -52,7 +52,7 @@ end
 
 # run nagashi as a tsumo win
 on before_scoring do
-  if not_equals(!counts_as, "tsumo") and anyone_status("nagashi") do
+  if equals(!counts_as, "tsumo") and anyone_status("nagashi") do
     make_responsible_for("others")
   end
 end
