@@ -403,6 +403,16 @@ apply set, "score_calculation.tobi", !below
 
 For security reasons, variables cannot contain uppercase letters.
 
+### `default`
+
+If you are expecting a variable but don't want to supply it unless it differs from a default value, you can include the following toplevel command:
+
+```elixir
+apply below, 0
+```
+
+This will default the variable `!below` to 0 unless otherwise specified. You can only set the following as defaults: booleans, numbers, strings, and other variables.
+
 ## Toplevel `if` (Conditional compilation)
 
 You can also write conditionals at the top-level, for example:

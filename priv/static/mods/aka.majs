@@ -5,7 +5,8 @@ end
 replace !man, "wall", "5m", "0m"
 replace !pin, "wall", "5p", "0p"
 replace !sou, "wall", "5s", "0s"
-replace !man, "wall", "5t", "0t" # just reuse !man, keep it simple
+default star, !man # just reuse !man, keep it simple
+replace !star, "wall", "5t", "0t"
 
 on after_start do
   set_tile_alias_all(["0m"], ["5m"])

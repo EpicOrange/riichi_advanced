@@ -59,6 +59,14 @@ defmodule RiichiAdvanced.Compiler do
   alias RiichiAdvanced.Validator
   use RiichiAdvanced.ValidatorStrings
 
+  defmodule Defs do
+    defstruct [
+      libs: MapSet.new(),
+      vars: [],
+      defines: MapSet.new(),
+    ]
+  end
+
   defp compile_comparison(condition_name, [line, column], l, r) do
     with {:ok, l} <- compile_expr(l, line, column),
          {:ok, r} <- compile_expr(r, line, column) do
@@ -1028,7 +1036,7 @@ defmodule RiichiAdvanced.Compiler do
     case condition do
       {"true", _, _} -> {:ok, "true"}
       {"false", _, _} -> {:ok, "false"}
-      {"defined", _, [name | _]} -> {:ok, if MapSet.member?(defs, name) do "true" else "false" end}
+      {"defined", _, [name | _]} -> {:ok, if MapSet.member?(defs.defines, name) do "true" else "false" end}
       {"equals", [line: line, column: column], [l, r]} ->
         with {:ok, l} <- compile_toplevel_constant(l, line, column),
              {:ok, r} <- compile_toplevel_constant(r, line, column),
@@ -1144,11 +1152,12 @@ defmodule RiichiAdvanced.Compiler do
             err -> err
           end
         end
-      {"define", _pos, [name | _]} -> {:ok, {".", MapSet.put(defs, name)}}
-      {"require", _pos, [name | _]} ->
+      {"define", _pos, [name | _]} ->
+        {:ok, {".", update_in(defs.defines, &MapSet.put(&1, Validator.sanitize_string(name)))}}
+      {"require", [line: line, column: column], [name | _]} ->
         with {:ok, name} <- Validator.validate_lib(name) do
-          if "lib_#{name}" not in defs do
-            defs = MapSet.put(defs, "lib_#{name}")
+          if name not in defs.libs do
+            defs = update_in(defs.libs, &MapSet.put(&1, name))
             case File.read(Application.app_dir(:riichi_advanced, "/priv/static/mods/lib/#{name}.majs")) do
               {:ok, majs} ->
                 with {:ok, ast} <- Parser.parse(majs),
@@ -1156,11 +1165,17 @@ defmodule RiichiAdvanced.Compiler do
                   {:ok, {"(" <> jq <> ")", defs}}
                 end
               {:error, _err}  ->
-                IO.puts("WARNING: Could not find mod lib/#{name}!")
+                IO.puts("WARNING: at line #{line}:#{column}, could not find mod lib/#{name}!")
                 {:ok, {".", defs}}
             end
           else {:ok, {".", defs}} end
         end
+      {"default", _pos, [{name, _, nil}, default]} ->
+        with {:ok, %Variable{name: name}} <- Validator.validate_variable(name),
+             {:ok, default} <- Validator.validate_variable_value(name, default) do
+          {:ok, {".", update_in(defs.vars, &[{name, default} | &1])}}
+        end
+      {"default", [line: line, column: column], args} -> {:error, "Compiler.compile: at line #{line}:#{column}, default command expects a variable name followed by a default value, got: #{inspect(args)}`"}
       {cmd, [line: line, column: column], [name | args]} when is_binary(cmd) ->
         name = case name do
           name when is_binary(name) or is_integer(name) -> Validator.validate_json(name)
@@ -1202,7 +1217,10 @@ defmodule RiichiAdvanced.Compiler do
         end
         |> case do
           {:ok, {rets, defs}}    ->
-            ret = rets |> Enum.reverse() |> Enum.map_join("\n|", &"(" <> &1 <> ")")
+            ret = rets
+            |> Enum.reject(& &1 == ".")
+            |> Enum.reverse()
+            |> Enum.map_join("\n|", &"(" <> &1 <> ")")
             {:ok, {ret, defs}}
           {:error, msg} -> {:error, msg}
         end
@@ -1236,7 +1254,7 @@ defmodule RiichiAdvanced.Compiler do
   """
   def header(), do: @header
 
-  def compile_jq_defs(ast, defs \\ MapSet.new(), depth \\ 0) do
+  def compile_jq_defs(ast, defs \\ %Defs{}, depth \\ 0) do
     case ast do
       _ when depth > 1 -> {:error, "Compiler.compile: exceeded max require depth of 1}"}
       {:__block__, _pos, []} -> {:ok, {".", defs}}

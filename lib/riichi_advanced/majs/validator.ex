@@ -137,8 +137,9 @@ defmodule RiichiAdvanced.Validator do
   def validate_constant(name, _splatted), do: {:error, "non-string constant name: #{inspect(name)}"}
 
   @valid_variable_regex ~r/^[a-z_][a-z0-9_]*$/
+  @jq_keywords ~w"true false null and or not if then elif else end as def try catch label import include reduce foreach"
   def validate_variable(name) when is_binary(name) do
-    if Regex.match?(@valid_variable_regex, name) do
+    if Regex.match?(@valid_variable_regex, name) and name not in @jq_keywords do
       {:ok, %RiichiAdvanced.Compiler.Variable{name: name}}
     else
       {:error, "invalid variable name: #{inspect(name)}"}
@@ -155,5 +156,15 @@ defmodule RiichiAdvanced.Validator do
     end
   end
   def validate_lib(name), do: {:error, "non-string lib name: #{inspect(name)}"}
+
+  def validate_variable_value(_name, true), do: {:ok, true}
+  def validate_variable_value(_name, false), do: {:ok, false}
+  def validate_variable_value(_name, value) when is_number(value), do: {:ok, value}
+  def validate_variable_value(_name, value) when is_binary(value), do: {:ok, sanitize_string(value)}
+  def validate_variable_value(_name, {:!, _, [{name, _, nil}]}) when is_binary(name), do: validate_variable(sanitize_string(name))
+  def validate_variable_value(name, value) do
+    # IO.inspect(Process.info(self(), :current_stacktrace))
+    {:error, "expected `default #{name}, (default)` to set as default a boolean, number, string, or variable, instead got: #{inspect(value)}"}
+  end
 
 end
