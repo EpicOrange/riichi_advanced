@@ -33,10 +33,6 @@ config :riichi_advanced, RiichiAdvancedWeb.Endpoint,
 # # at the `config/runtime.exs`.
 # config :riichi_advanced, RiichiAdvanced.Mailer, adapter: Swoosh.Adapters.Local
 
-# Don't use emails
-config :riichi_advanced, RiichiAdvanced.Mailer, adapter: Swoosh.Adapters.Test
-config :swoosh, :api_client, false
-
 # Configure esbuild (the version is required)
 config :esbuild,
   version: "0.17.11",
@@ -58,9 +54,6 @@ config :phoenix, :json_library, Jason
 # Import environment specific config. This must remain at the bottom
 # of this file so it overrides the configuration defined above.
 import_config "#{config_env()}.exs"
-
-config :porcelain, goon_warn_if_missing: false
-config :porcelain, driver: Porcelain.Driver.Basic
 
 config :logger, LoggerFileBackend,
   path: "log/error.log",

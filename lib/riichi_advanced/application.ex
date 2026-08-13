@@ -9,8 +9,6 @@ defmodule RiichiAdvanced.Application do
   def start(_type, _args) do
     LoggerBackends.add(LoggerFileBackend)
     children = [
-      RiichiAdvancedWeb.Telemetry,
-      # RiichiAdvanced.Repo,
       {Registry, keys: :unique, name: :game_registry},
       {RiichiAdvanced.Cache, []},
       {RiichiAdvanced.Cache.Memo, []},
@@ -20,10 +18,6 @@ defmodule RiichiAdvanced.Application do
       Supervisor.child_spec({RiichiAdvanced.SessionSupervisor, name: RiichiAdvanced.MessagesSessionSupervisor}, id: :messages_session_supervisor),
       {DNSCluster, query: Application.get_env(:riichi_advanced, :dns_cluster_query) || :ignore},
       {Phoenix.PubSub, name: RiichiAdvanced.PubSub},
-      # Start the Finch HTTP client for sending emails
-      # {Finch, name: RiichiAdvanced.Finch},
-      # Start a worker by calling: RiichiAdvanced.Worker.start_link(arg)
-      # {RiichiAdvanced.Worker, arg},
       # storage for plug-attack
       {PlugAttack.Storage.Ets, name: RiichiAdvancedWeb.PlugAttack.Storage, clean_period: 60_000},
       # Start to serve requests, typically the last entry

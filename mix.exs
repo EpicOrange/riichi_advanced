@@ -36,32 +36,17 @@ defmodule RiichiAdvanced.MixProject do
       # even though we don't use the actual database,
       # we still use Ecto.UUID.generate() some places
       {:phoenix_ecto, "~> 4.5"},
-      # {:ecto_sql, "~> 3.10"},
-      {:postgrex, ">= 0.0.0"},
-      {:phoenix_html, "~> 4.1"},
       {:phoenix_live_reload, "~> 1.2", only: :dev},
-      # TODO bump on release to {:phoenix_live_view, "~> 1.0.0"},
       {:phoenix_live_view, "~> 1.0.1"},
-      {:floki, ">= 0.30.0", only: :test},
-      {:phoenix_live_dashboard, "~> 0.8.3"},
+      # {:phoenix_live_dashboard, "~> 0.8.3"},
       {:esbuild, "~> 0.8"},
-      {:swoosh, "~> 1.5"},
-      {:finch, "~> 0.13"},
-      {:telemetry_metrics, "~> 1.0"},
-      {:telemetry_poller, "~> 1.0"},
       {:gettext, "~> 0.20"},
       {:jason, "~> 1.2"},
       {:dns_cluster, "~> 0.1.1"},
       {:bandit, "~> 1.5"},
       {:debounce, "~> 1.0.0"},
       {:mutex, "~> 2.0.0"},
-      {:hackney, "~> 1.9"},
       {:decimal, "~> 2.0"},
-      {:nimble_parsec, "~> 1.4.0"},
-      {:porcelain, github: "walkr/porcelain"}, # now unused
-      {:temp, "~> 0.4"},
-      {:diff_match_patch, github: "pzingg/diff_match_patch"},
-      {:diffy, "~> 1.1"},
       {:logger_file_backend, "~> 0.0.10"},
       {:logger_backends, "~> 1.0"},
       {:nebulex, "~> 3.0"},
@@ -72,6 +57,14 @@ defmodule RiichiAdvanced.MixProject do
       {:mix_audit, "~> 2.1", only: [:dev, :test], runtime: false},
       {:ex_cmd, "~> 0.18.0"},
       {:rustler, "~> 0.37.3", runtime: false},
+      
+      # deps for ex_jq (vendored)
+      {:temp, "~> 0.4"},
+      # deps for ex_smt (vendored)
+      {:nimble_parsec, "~> 1.4.0"}, # ex_smt dep
+      # deps for delta (vendored)
+      # {:diff_match_patch, github: "pzingg/diff_match_patch"},
+      {:diffy, "~> 1.1"},
     ]
   end
 
