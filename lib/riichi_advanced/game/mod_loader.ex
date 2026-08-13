@@ -119,7 +119,7 @@ defmodule RiichiAdvanced.ModLoader.ModState do
   def apply_new_mods(state, []), do: state
   def apply_new_mods(state, mods) do
     all_mods = state.mods ++ mods
-    state = case RiichiAdvanced.Cache.get({:cache_modloader, state.ruleset, all_mods}) do
+    case RiichiAdvanced.Cache.get({:cache_modloader, state.ruleset, all_mods}) do
       {:ok, nil} ->
         # IO.puts("Cache miss for ruleset #{state.ruleset}: #{length(all_mods)} mods #{inspect(all_mods, limit: :infinity)}")
         # check for duplicates

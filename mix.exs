@@ -40,30 +40,31 @@ defmodule RiichiAdvanced.MixProject do
       {:phoenix_live_view, "~> 1.0.1"},
       # {:phoenix_live_dashboard, "~> 0.8.3"},
       {:esbuild, "~> 0.8"},
-      {:gettext, "~> 0.20"},
       {:jason, "~> 1.2"},
-      {:dns_cluster, "~> 0.1.1"},
+      {:dns_cluster, "~> 0.2"},
       {:bandit, "~> 1.5"},
+
+      # riichi-advanced-specific
       {:debounce, "~> 1.0.0"},
-      {:mutex, "~> 2.0.0"},
-      {:decimal, "~> 2.0"},
-      {:logger_file_backend, "~> 0.0.10"},
+      {:decimal, "~> 3.0"},
+      {:decorator, "~> 1.4"},
+      {:ex_cmd, "~> 0.18.0"},
+      {:gettext, "~> 1.0"},
       {:logger_backends, "~> 1.0"},
+      {:logger_file_backend, "~> 0.0.10"},
+      {:mix_audit, "~> 2.1", only: [:dev, :test], runtime: false},
+      {:mutex, "~> 4.0"},
       {:nebulex, "~> 3.0"},
       {:nebulex_local, "~> 3.0"},
-      {:decorator, "~> 1.4"},
       {:plug_attack, "~> 0.4.2"},
+      {:rustler, "~> 0.38.0", runtime: false},
       {:sobelow, "~> 0.13", only: [:dev, :test], runtime: false},
-      {:mix_audit, "~> 2.1", only: [:dev, :test], runtime: false},
-      {:ex_cmd, "~> 0.18.0"},
-      {:rustler, "~> 0.37.3", runtime: false},
       
       # deps for ex_jq (vendored)
       {:temp, "~> 0.4"},
       # deps for ex_smt (vendored)
       {:nimble_parsec, "~> 1.4.0"}, # ex_smt dep
       # deps for delta (vendored)
-      # {:diff_match_patch, github: "pzingg/diff_match_patch"},
       {:diffy, "~> 1.1"},
     ]
   end

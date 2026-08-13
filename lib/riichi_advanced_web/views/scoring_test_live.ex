@@ -7,7 +7,6 @@ defmodule RiichiAdvancedWeb.ScoringTestLive do
   alias RiichiAdvanced.GameState.Player, as: Player
   alias RiichiAdvanced.GameState.Rules, as: Rules
   alias RiichiAdvanced.GameState.Scoring, as: Scoring
-  alias RiichiAdvanced.GameState.TileBehavior, as: TileBehavior
   alias RiichiAdvanced.ModLoader, as: ModLoader
   alias RiichiAdvanced.ModLoader.ModState, as: ModState
   alias RiichiAdvanced.RoomState, as: RoomState
