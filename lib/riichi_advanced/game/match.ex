@@ -1426,4 +1426,203 @@ defmodule RiichiAdvanced.Match do
     not Utils.has_matching_tile?([tile], get_unneeded_tiles_v2(hand, calls, match_definitions, tile_behavior))
   end
 
+  def prepend_group(hand, calls, group, win_definitions, tile_behavior) do
+    # return hand, but reordered so that all `group` are at the front (after existing prepended groups)
+    # if no `group`s exist, return hand unchanged
+    # hand is expected to be tenpai for N sets and a pair
+
+    # split at the last :separator in hand
+    # we will only arrange the contents of the hand after that
+    ix = Enum.find_index(Enum.reverse(hand), & &1 == :separator)
+    {prearranged, hand} = if ix == nil do {[], hand} else Enum.split(hand, length(hand) - ix) end
+    prearranged_as_calls = prearranged
+    |> Utils.split_on(:separator)
+    |> Enum.reject(&Enum.empty?/1)
+    |> Enum.map(&{"", &1})
+    calls = calls ++ prearranged_as_calls
+
+    # add "dismantle_calls" in case `group` contains multiple sets
+    win_definitions = Enum.map(win_definitions, &["dismantle_calls" | &1])
+
+    hand_groups = MatchOld.extract_groups(hand, group, tile_behavior)
+
+    # `hand_groups` is sorted starting with greatest number of groups
+    # if we have {hand, [group1, group2, group3]} and it matches,
+    # then {hand ++ group1, [group2, group3]} also obviously matches
+    # use this to reduce the number of calls to `match_hand`
+
+    # also, we want to remove a maximal number of groups that matches
+    # so if we ever find a matching solution with e.g. 3 groups,
+    # drop all `hand_groups` with less than 3 groups
+
+    {hand_groups, _cache, _max_groups} = for {hand, groups} <- hand_groups, reduce: {[], [], 0} do
+      # {return value, groups that match, the largest number of groups in cache}
+      {acc, cache, max_groups} ->
+        groups_set = MapSet.new(groups)
+        num_groups = MapSet.size(groups_set)
+        cond do
+          # ignore if num of groups is less than highest seen so far
+          num_groups < max_groups -> {acc, cache, max_groups}
+          # check cache to see if a larger set of groups matched; if so, this obviously matches
+          Enum.any?(cache, &MapSet.subset?(groups_set, &1)) -> {[{hand, groups} | acc], cache, max_groups}
+          # otherwise call the match function to see if these groups match
+          match_hand(hand, calls ++ Enum.map(groups, &{"", &1}), win_definitions, tile_behavior) ->
+            {[{hand, groups} | acc], [groups_set | cache], max(num_groups, max_groups)}
+          true -> {acc, cache, max_groups}
+        end
+    end
+    hand_groups
+    |> Enum.map(fn {hand, groups} ->
+      new_groups = groups
+      |> Enum.sort_by(fn [t | _] -> Constants.sort_value(t) end)
+      |> Enum.map(& &1 ++ [:separator]) # add a spacing marker after each group
+      |> Enum.concat()
+      prearranged ++ new_groups ++ hand
+    end)
+    |> then(& &1 ++ [prearranged ++ hand]) # append original hand
+  end
+  def prepend_group_all(hands, calls, group, win_definitions, tile_behavior) do
+    hands = Enum.flat_map(hands, &prepend_group(&1, calls, group, win_definitions, tile_behavior))
+    if Enum.empty?(hands) do [] else
+      num_ungrouped_tiles = Enum.map(hands, &Utils.split_on(&1, :separator) |> Enum.at(-1) |> length())
+      min_ungrouped_tiles = Enum.min(num_ungrouped_tiles)
+      hands
+      |> Enum.zip(num_ungrouped_tiles)
+      |> Enum.filter(fn {_hand, num} -> num == min_ungrouped_tiles end)
+      |> Enum.map(fn {hand, _num} -> hand end)
+    end
+  end
+
+  def separate_standard_winner_hand(smt_hand, smt_calls, calls, tile_behavior, joker_assignment, win_definitions) do
+    # check if rust should handle things
+    tiles_in_hand = Utils.strip_attrs(smt_hand ++ smt_calls)
+    hash = tiles_in_hand |> Enum.map(&Constants.to_prime/1) |> Enum.product()
+    use_rust = hash <= @u256_max
+    if use_rust do
+      ret = _separate_standard_winner_hand(
+        {smt_hand, calls},
+        tile_behavior.attrs |> Enum.to_list() |> Enum.sort(),
+        tile_behavior.aliases |> TileBehavior.remove_alias_mapsets(),
+        tile_behavior.ordering,
+        joker_assignment,
+        win_definitions
+      )
+      # profile()
+      ret
+    else
+      IO.puts("Warning: falling back to elixir separate_standard_winner_hand for hand #{inspect(smt_hand)} / #{inspect(calls)} with hash #{hash}")
+      # t = System.os_time(:millisecond)
+      ret = __separate_standard_winner_hand(smt_hand, smt_calls, calls, tile_behavior, joker_assignment, win_definitions)
+      # delta = System.os_time(:millisecond) - t
+      # if delta > 10 do
+      #   IO.puts("match_hand_v3: #{inspect(delta)} ms")
+      # end
+      ret
+    end
+  end
+  def _separate_standard_winner_hand({smt_hand, calls}, all_attrs, elixir_aliases, ordering, joker_assignment, win_definitions) do
+    __separate_standard_winner_hand(smt_hand, Enum.flat_map(calls, &Utils.call_to_tiles/1), calls, %TileBehavior{
+      attrs: all_attrs |> MapSet.new(),
+      aliases: elixir_aliases |> TileBehavior.restore_alias_mapsets(),
+      ordering: ordering,
+    }, joker_assignment, win_definitions)
+  end
+  def __separate_standard_winner_hand(smt_hand, smt_calls, calls, tile_behavior, joker_assignment, win_definitions) do
+    # replace all hand jokers with their assigned values
+    assigned_hand = smt_hand
+    |> Enum.with_index()
+    |> Enum.map(fn {tile, i} -> case Map.get(joker_assignment, i, nil) do
+      nil -> tile
+      ret -> ret |> Utils.add_attr(["joker#{i}"])
+    end end)
+    assigned_calls = smt_calls
+    |> Enum.concat()
+    |> Enum.with_index()
+    |> Enum.map(fn {tile, i} -> case Map.get(joker_assignment, i - length(assigned_hand), nil) do
+      nil -> tile
+      ret -> ret |> Utils.add_attr(["joker#{i}"])
+    end end)
+    # make a reverse joker_assignment so we can recover the orig tiles
+    # guaranteed to be injective due to the joker#{i} attr we just added
+    smt_call_tiles = Enum.concat(smt_calls)
+    undo_joker_map = Map.new(joker_assignment, fn
+      {i, _tile} when i <= length(smt_hand) -> {Enum.at(assigned_hand, i), Enum.at(smt_hand, i)}
+      {i, _tile} -> {Enum.at(assigned_calls, i), Enum.at(smt_call_tiles, i - length(smt_hand))}
+    end)
+    # restrict aliases to be exactly the joker assignment
+    tile_behavior = TileBehavior.from_joker_assignment(tile_behavior, smt_hand ++ smt_call_tiles, joker_assignment)
+
+    # check if the win definition ever mentions offsets of at least 10
+    # e.g. [["exhaustive", [[[0, 0]], 1], [[[0, 10, 20], [0, 1, 2], [0, 0, 0]], 4]]]
+    use_kontsu_knitted =
+      for win_definition <- win_definitions,
+          [groups, _count] <- win_definition,
+          group <- groups,
+          is_list(group),
+          offset <- group,
+          is_number(offset),
+          offset >= 10,
+          reduce: false do
+        _ -> true
+      end
+
+    # separate sets in this hand
+    # (very slow if jokers exist at all...)
+    {winning_tile, input_hand} = List.pop_at(assigned_hand, -1)
+    separated_hands = [input_hand ++ [winning_tile]]
+    |> prepend_group_all(calls, [0, 0, 0, 1, 1, 1, 2, 2, 2], win_definitions, tile_behavior)
+    |> prepend_group_all(calls, [0, 0, 1, 1, 2, 2], win_definitions, tile_behavior) # TODO not correct for 7 pair hands
+    |> prepend_group_all(calls, [0, 1, 2], win_definitions, tile_behavior)
+    |> prepend_group_all(calls, [0, 0, 0], win_definitions, tile_behavior)
+    separated_hands = if use_kontsu_knitted do
+      separated_hands
+      |> prepend_group_all(calls, [0, 10, 20], win_definitions, tile_behavior)
+      |> prepend_group_all(calls, [0, 11, 21], win_definitions, tile_behavior)
+    else
+      separated_hands
+      |> prepend_group_all(calls, [0, 0], win_definitions, tile_behavior)
+    end
+    # result should look like [shuntsu, koutsu, kontsu, toitsu, ungrouped] with each set separated by :separator
+    # we could return that, but here we rearrange the order of those groups
+    #   to be as close to the original hand as possible
+
+    # take the first hand
+    separated_hand = Enum.at(separated_hands, 0, input_hand)
+    # delete last instance of winning tile
+    |> Enum.reverse()
+    |> List.delete(winning_tile)
+    |> Enum.reverse()
+    groups = Utils.split_on(separated_hand, :separator)
+    |> Enum.map(&Utils.sort_tiles/1)
+    {groups, [ungrouped]} = Enum.split(groups, -1)
+    num_sets = length(groups) + length(calls)
+    ordered_hand = Utils.sort_tiles(assigned_hand -- ungrouped, joker_assignment)
+    {separated_hand, _leftover_groups, leftover_tiles} =
+      for _ <- 1..num_sets//1, reduce: {[], groups, ordered_hand} do
+        {result, groups, [tile | hand]} ->
+          case Enum.find_index(groups, &Enum.at(&1, 0) == tile) do
+            nil -> {result, groups, hand}
+            ix  ->
+              {group, groups} = List.pop_at(groups, ix)
+              {[group | result], groups, [tile | hand] -- group}
+          end
+        acc -> acc
+      end
+    # append the ungrouped part
+    # then replace the resulting spacing markers with actual spaces
+    separated_hand = [
+      Utils.sort_tiles(leftover_tiles -- [winning_tile], joker_assignment),
+      Utils.sort_tiles(ungrouped, joker_assignment)
+      | separated_hand
+    ]
+    |> Enum.reverse()
+    |> Enum.reject(&Enum.empty?/1)
+    |> Enum.intersperse([:"7x"])
+    |> Enum.concat()
+    # then use the reverse joker mapping, to get the original jokers in this rearrangement
+    |> Enum.map(&Map.get(undo_joker_map, &1, &1))
+
+    separated_hand
+  end
+
 end

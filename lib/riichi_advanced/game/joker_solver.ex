@@ -71,7 +71,8 @@ defmodule RiichiAdvanced.GameState.JokerSolver do
     else Stream.concat([[%{}]]) end
     # re-add the obvious jokers back into each assignment
     # also returns Stream.new([[obvious_joker_assignment]]) if stream was empty
-    |> Stream.transform(fn -> true end,
+    |> Stream.transform(
+        fn -> true end,
         fn joker_assignment, _empty? -> {[Map.merge(obvious_joker_assignment, joker_assignment)], false} end,
         fn empty? -> {if empty? do [obvious_joker_assignment] else [] end, nil} end
       )
@@ -115,12 +116,6 @@ defmodule RiichiAdvanced.GameState.JokerSolver do
     } = cxt
     score_rules = Rules.get(state.rules_ref, "score_calculation", %{})
     highest_scoring_yaku_only = Map.get(score_rules, "highest_scoring_yaku_only", false)
-
-    # replace 5z in joker assignment with 0z if 0z is present in the game
-    # TODO remove this once the framed_5z mod is applied to every relevant ruleset
-    # joker_assignment = if Map.has_key?(tile_behavior.tile_freqs, :"0z") do
-    #   Map.new(joker_assignment, fn {ix, tile} -> {ix, if tile == :"5z" do :"0z" else tile end} end)
-    # else joker_assignment end
 
     # use the joker assignment to obtain winner's {hand, calls} with jokers replaced by their assignments
     {assigned_hand, assigned_calls, _assigned_winning_hand, assigned_winning_tile} = apply_joker_assignment(state.players[seat].hand, state.players[seat].calls, winning_tile, joker_assignment)
