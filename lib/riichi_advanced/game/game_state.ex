@@ -379,7 +379,7 @@ defmodule RiichiAdvanced.GameState do
     # cache mods if that was successful
     if not Enum.empty?(mods) do
       # IO.puts("Caching mods for room #{state.room_code} ruleset #{state.ruleset}: #{inspect(mods, limit: :infinity)}")
-      RiichiAdvanced.ETSCache.put({state.ruleset, state.room_code}, mods, :cache_mods)
+      RiichiAdvanced.Cache.put({:cache_mods, state.ruleset, state.room_code}, mods)
     end
 
     # apply config

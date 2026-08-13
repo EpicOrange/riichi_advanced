@@ -125,7 +125,7 @@ defmodule RiichiAdvanced.GameState.Scoring do
   end
 
   # this is a memoized version of score_yaku, it returns a list not a stream
-  @decorate cacheable(cache: RiichiAdvanced.Cache, key: {:score_yaku_cached, state, yaku_list_names, seat, winning_tile, win_source}, opts: [ttl: :timer.seconds(10)])
+  @decorate cacheable(cache: RiichiAdvanced.Cache.Memo, key: {:score_yaku_cached, state, yaku_list_names, seat, winning_tile, win_source}, opts: [ttl: :timer.seconds(10)])
   def score_yaku_cached(state, yaku_list_names, seat, winning_tile, win_source) do
     score_yaku(state, yaku_list_names, seat, winning_tile, win_source)
     |> Enum.to_list()

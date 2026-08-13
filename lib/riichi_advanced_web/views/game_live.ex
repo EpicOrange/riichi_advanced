@@ -55,14 +55,8 @@ defmodule RiichiAdvancedWeb.GameLive do
       assign(socket, :room_code, Ecto.UUID.generate())
     else socket end
 
-    last_mods = case RiichiAdvanced.ETSCache.get({socket.assigns.ruleset, socket.assigns.room_code}, [], :cache_mods) do
-      [mods] -> mods
-      []     -> []
-    end
-    last_config = case RiichiAdvanced.ETSCache.get({socket.assigns.ruleset, socket.assigns.room_code}, nil, :cache_configs) do
-      [config] -> config
-      _        -> nil
-    end
+    {:ok, last_mods} = RiichiAdvanced.Cache.get({:cache_mods, socket.assigns.ruleset, socket.assigns.room_code}, [])
+    {:ok, last_config} = RiichiAdvanced.Cache.get({:cache_configs, socket.assigns.ruleset, socket.assigns.room_code}, nil)
 
     # liveviews mount twice; we only want to init a new player on the second mount
     # also do not init anything if the node is currently draining for cutover
@@ -480,12 +474,10 @@ defmodule RiichiAdvancedWeb.GameLive do
       {sequence_json, return_to_editor} = 
         case File.read(Application.app_dir(:riichi_advanced, "/priv/static/tutorials/#{socket.assigns.tutorial_sequence_name}.json")) do
           {:ok, sequence_json} -> {sequence_json, false}
+          # try loading custom ruleset from cache
           {:error, _err}       ->
-            # try loading custom ruleset from cache
-            case RiichiAdvanced.ETSCache.get({socket.assigns.ruleset, socket.assigns.tutorial_sequence_name}, [], :cache_sequences) do
-              [sequence_json] -> {sequence_json, true}
-              _ -> {"{}", true}
-            end
+            {:ok, sequence_json} = RiichiAdvanced.Cache.get({:cache_sequences, socket.assigns.ruleset, socket.assigns.tutorial_sequence_name}, "{}")
+            {sequence_json, true}
         end
 
       socket = assign(socket, :return_to_editor, return_to_editor)

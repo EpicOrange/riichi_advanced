@@ -67,8 +67,15 @@ config :logger, LoggerFileBackend,
   level: :error,
   truncate: :infinity # don't set this in prod
 
-# cache
 config :riichi_advanced, RiichiAdvanced.Cache,
-  limit: 1_000_000,
-  stats: true,
-  telemetry: false
+  gc_interval: :timer.hours(24),
+  max_size: 10000,
+  allocated_memory: 1000000000, # 1 GB
+  gc_memory_check_interval: :timer.minutes(5)
+
+config :riichi_advanced, RiichiAdvanced.Cache.Memo,
+  gc_interval: :timer.minutes(1),
+  max_size: 1000000,
+  allocated_memory: 1000000000, # 1 GB
+  gc_memory_check_interval: :timer.seconds(10)
+

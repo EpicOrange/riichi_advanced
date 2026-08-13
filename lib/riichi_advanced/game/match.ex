@@ -555,7 +555,7 @@ defmodule RiichiAdvanced.Match do
       _ -> nil
     end
   end
-  # @decorate cacheable(cache: RiichiAdvanced.Cache, key: {:apply_offsets, base_tile, offsets, ordering, uuid})
+  # @decorate cacheable(cache: RiichiAdvanced.Cache.Memo, key: {:apply_offsets, base_tile, offsets, ordering, uuid})
   def apply_offsets(base_tile, offsets, ordering), do: _apply_offsets(Utils.strip_attrs(base_tile), offsets, ordering, 0, [])
   def _apply_offsets(_base_tile, [], _ordering, n, []) when abs(n) > 100 do
     IO.puts("Infinite loop detected")
@@ -652,7 +652,7 @@ defmodule RiichiAdvanced.Match do
   # "daiminkan": ["daiminkan"]
   # "kakan": ["kakan"]
 
-  @decorate cacheable(cache: RiichiAdvanced.Cache, key: {:generate_groups, group, tile_behavior.uuid}, opts: [ttl: :timer.seconds(10)])
+  @decorate cacheable(cache: RiichiAdvanced.Cache.Memo, key: {:generate_groups, group, tile_behavior.uuid}, opts: [ttl: :timer.seconds(10)])
   def generate_groups(group, tile_behavior, nojoker) do
     _generate_groups(
       group,
@@ -1270,7 +1270,7 @@ defmodule RiichiAdvanced.Match do
       tile_freqs: Map.new(game_tiles, &{&1, 4}),
     })
   end
-  # @decorate cacheable(cache: RiichiAdvanced.Cache, key: {:get_waits_v3, hand, calls, match_definitions, TileBehavior.hash(tile_behavior)})
+  # @decorate cacheable(cache: RiichiAdvanced.Cache.Memo, key: {:get_waits_v3, hand, calls, match_definitions, TileBehavior.hash(tile_behavior)})
   defp __get_waits_v3(hand, calls, match_definitions, tile_behavior) do
     # basic strategy is to add a custom joker 1x
     # it will start as "all tiles" and progressively split its aliases in half,
@@ -1302,7 +1302,7 @@ defmodule RiichiAdvanced.Match do
     get_waits_v3(hand, calls, match_definitions, tile_behavior)
   end
 
-  # @decorate cacheable(cache: RiichiAdvanced.Cache, key: {:get_waits_and_ukeire_v2, hand, calls, match_definitions, visible_tiles, tile_behavior.uuid}, opts: [ttl: :timer.seconds(10)])
+  # @decorate cacheable(cache: RiichiAdvanced.Cache.Memo, key: {:get_waits_and_ukeire_v2, hand, calls, match_definitions, visible_tiles, tile_behavior.uuid}, opts: [ttl: :timer.seconds(10)])
   defp get_waits_and_ukeire_v2(hand, calls, match_definitions, visible_tiles, tile_behavior) do
     waits = get_waits_v3(hand, calls, match_definitions, tile_behavior)
     freqs = Utils.inverse_frequencies(visible_tiles, tile_behavior)
@@ -1317,7 +1317,7 @@ defmodule RiichiAdvanced.Match do
   # given a 14-tile hand, and match definitions for 13-tile hands,
   # return all the (unique) tiles that are not needed to match the definitions
   @u256_max 115792089237316195423570985008687907853269984665640564039457584007913129639935
-  @decorate cacheable(cache: RiichiAdvanced.Cache, key: {:get_unneeded_tiles_v2, hand, calls, match_definitions, tile_behavior.uuid}, opts: [ttl: :timer.seconds(10)])
+  @decorate cacheable(cache: RiichiAdvanced.Cache.Memo, key: {:get_unneeded_tiles_v2, hand, calls, match_definitions, tile_behavior.uuid}, opts: [ttl: :timer.seconds(10)])
   def get_unneeded_tiles_v2(hand, calls, match_definitions, tile_behavior) do
     # check if rust should handle things
     tiles_in_hand = Utils.strip_attrs(hand ++ Enum.flat_map(calls, &Utils.call_to_tiles/1))
@@ -1353,7 +1353,7 @@ defmodule RiichiAdvanced.Match do
 
   # given a 14-tile hand, and match definitions for 13-tile hands,
   # return all the (unique) tiles that are not needed to match the definitions
-  # @decorate cacheable(cache: RiichiAdvanced.Cache, key: {:get_unneeded_tiles_v1, hand, calls, match_definitions, TileBehavior.hash(tile_behavior)})
+  # @decorate cacheable(cache: RiichiAdvanced.Cache.Memo, key: {:get_unneeded_tiles_v1, hand, calls, match_definitions, TileBehavior.hash(tile_behavior)})
   def get_unneeded_tiles_v1(hand, calls, match_definitions, tile_behavior) do
     # t = System.os_time(:millisecond)
     ret = if not Enum.empty?(match_definitions) do

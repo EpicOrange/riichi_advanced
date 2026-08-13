@@ -19,7 +19,8 @@ defmodule RiichiAdvanced.Admin do
         # pull games from dst to us
         GenServer.cast({RiichiAdvanced.Admin, dst}, {:migrate, node()})
         # flush our own caches
-        GenServer.cast(RiichiAdvanced.ETSCache, :flush_caches)
+        RiichiAdvanced.Cache.delete_all()
+        RiichiAdvanced.Cache.Memo.delete_all()
       _     -> :ok
     end
     {:ok, %{}}

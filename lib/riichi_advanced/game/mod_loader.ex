@@ -30,26 +30,23 @@ defmodule RiichiAdvanced.ModLoader.ModState do
     # IO.puts("Fetching ruleset #{ruleset}")
 
     if ruleset == "custom" and room_code != nil do
-      ruleset_json = case RiichiAdvanced.ETSCache.get(room_code, ["{}"], :cache_rulesets) do
-        [ruleset_json_or_majs] ->
-          case Jason.decode(ruleset_json_or_majs) do
-            {:ok, _}    -> ruleset_json_or_majs
-            {:error, _} -> JQ.query_string_with_string!("{}", ModLoader.convert_to_jq(ruleset_json_or_majs))
-          end
-        _ -> "{}"
+      {:ok, ruleset_json_or_majs} = RiichiAdvanced.Cache.get({:cache_rulesets, room_code}, "{}")
+      ruleset_json = case Jason.decode(ruleset_json_or_majs) do
+        {:ok, _}    -> ruleset_json_or_majs
+        {:error, _} -> JQ.query_string_with_string!("{}", ModLoader.convert_to_jq(ruleset_json_or_majs))
       end
       %ModState{ruleset_json: ruleset_json, base_ruleset: "custom"}
     else
-      case RiichiAdvanced.ETSCache.get({ruleset, []}, [], :cache_modloader) do
-        [state] ->
-          # IO.puts("Cache hit: #{inspect({ruleset, []})}")
-          state
-        _       ->
+      case RiichiAdvanced.Cache.get({:cache_modloader, ruleset, []}) do
+        {:ok, nil} ->
           # IO.puts("Cache miss: #{inspect({ruleset, []})}")
           state = load_ruleset_rec(%ModState{ruleset: ruleset}, ruleset)
           if not Debug.skip_ruleset_caching() do
-            RiichiAdvanced.ETSCache.put({ruleset, []}, state, :cache_modloader)
+            RiichiAdvanced.Cache.put({:cache_modloader, ruleset, []}, state)
           end
+          state
+        {:ok, state} ->
+          # IO.puts("Cache hit: #{inspect({ruleset, []})}")
           state
       end
     end
@@ -122,11 +119,8 @@ defmodule RiichiAdvanced.ModLoader.ModState do
   def apply_new_mods(state, []), do: state
   def apply_new_mods(state, mods) do
     all_mods = state.mods ++ mods
-    case RiichiAdvanced.ETSCache.get({state.ruleset, all_mods}, [], :cache_modloader) do
-      [state] ->
-        # IO.puts("Cache hit for ruleset #{state.ruleset}: #{length(all_mods)} mods #{inspect(all_mods, limit: :infinity)}")
-        state
-      _ ->
+    state = case RiichiAdvanced.Cache.get({:cache_modloader, state.ruleset, all_mods}) do
+      {:ok, nil} ->
         # IO.puts("Cache miss for ruleset #{state.ruleset}: #{length(all_mods)} mods #{inspect(all_mods, limit: :infinity)}")
         # check for duplicates
         duplicates = all_mods -- Enum.uniq(all_mods)
@@ -168,8 +162,11 @@ defmodule RiichiAdvanced.ModLoader.ModState do
         # cache and return
         if not Debug.skip_ruleset_caching() do
           # IO.puts("Caching mods for ruleset #{state.ruleset}: #{length(all_mods)} mods #{inspect(all_mods, limit: :infinity)}")
-          RiichiAdvanced.ETSCache.put({state.ruleset, all_mods}, state, :cache_modloader)
+          RiichiAdvanced.Cache.put({:cache_modloader, state.ruleset, all_mods}, state)
         end
+        state
+      {:ok, state} ->
+        # IO.puts("Cache hit for ruleset #{state.ruleset}: #{length(all_mods)} mods #{inspect(all_mods, limit: :infinity)}")
         state
     end
   end
@@ -330,10 +327,8 @@ defmodule RiichiAdvanced.ModLoader do
   def default_config, do: @default_config
 
   def get_config_majs(ruleset, room_code) do
-    case RiichiAdvanced.ETSCache.get({ruleset, room_code}, nil, :cache_configs) do
-      [config_majs] -> config_majs
-      _ -> @default_config
-    end
+    {:ok, config} = RiichiAdvanced.Cache.get({:cache_configs, ruleset, room_code}, @default_config)
+    config
   end
 
   def strip_comments(json) do

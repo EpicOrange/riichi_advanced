@@ -104,17 +104,12 @@ defmodule RiichiAdvanced.RoomState do
     [{exit_monitor, _}] = Utils.registry_lookup("exit_monitor_room", state.ruleset, state.room_code)
 
     # read in the last cached ruleset
-    ruleset_json = case RiichiAdvanced.ETSCache.get(state.room_code, nil, :cache_rulesets) do
-      [ruleset_json_or_majs] -> ruleset_json_or_majs
-      _ ->
-        if state.ruleset == "config" do
-          Room.initial_textarea()
-        else
-          ModState.load_ruleset(state.ruleset, state.room_code).ruleset_json
-        end
-    end
 
-    config_majs = ModLoader.get_config_majs(state.ruleset, state.room_code)
+    ruleset_json = case RiichiAdvanced.Cache.get({:cache_rulesets, state.room_code}) do
+      {:ok, nil} when state.ruleset == "custom" -> Room.initial_textarea()
+      {:ok, nil} -> ModState.load_ruleset(state.ruleset, state.room_code).ruleset_json
+      {:ok, ruleset_json_or_majs} when ruleset_json_or_majs != nil -> ruleset_json_or_majs
+    end
 
     # parse the ruleset now, in order to get the list of eligible mods
     state = if state.ruleset != "custom" do
@@ -126,9 +121,9 @@ defmodule RiichiAdvanced.RoomState do
     rules_ref = state.rules_ref
 
     # we start with default_mods, but if we're coming back to this screen, load the last mod setup instead
-    starting_mods = case RiichiAdvanced.ETSCache.get({state.ruleset, state.room_code}, [], :cache_mods) do
-      [mods] -> mods
-      []     -> Rules.get(rules_ref, "default_mods", [])
+    starting_mods = case RiichiAdvanced.Cache.get({:cache_mods, state.ruleset, state.room_code}) do
+      {:ok, nil}  -> Rules.get(rules_ref, "default_mods", [])
+      {:ok, mods} -> mods
     end
     {mods, categories} = Rules.parse_available_mods(Rules.get(rules_ref, "available_mods", []), starting_mods)
     presets = Rules.get(rules_ref, "available_presets", [])
@@ -144,6 +139,8 @@ defmodule RiichiAdvanced.RoomState do
     # replace ruleset_json with default if ruleset doesn't exist
     # because modloader gives "{}" if ruleset doesn't exist
     ruleset_json = if String.trim(ruleset_json) == "{}" do Room.initial_textarea() else ruleset_json end
+
+    config_majs = ModLoader.get_config_majs(state.ruleset, state.room_code)
 
     # put params and process ids into state
     state = Map.merge(state, %Room{
@@ -505,9 +502,9 @@ defmodule RiichiAdvanced.RoomState do
     # check for 4MB limit, and save if within limit
     state = if byte_size(config) <= 4 * 1024 * 1024 do
       if state.ruleset == "custom" do
-        RiichiAdvanced.ETSCache.put(state.room_code, config, :cache_rulesets)
+        RiichiAdvanced.Cache.put({:cache_rulesets, state.room_code}, config)
       else
-        RiichiAdvanced.ETSCache.put({state.ruleset, state.room_code}, config, :cache_configs)
+        RiichiAdvanced.Cache.put({:cache_configs, state.ruleset, state.room_code}, config)
       end
       state
     else

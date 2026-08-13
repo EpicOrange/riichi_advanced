@@ -843,34 +843,34 @@ defmodule RiichiAdvanced.SMT do
 
   # now with streaming, without losing memoization, and without sending multiple queries at once to the single z3 process
   def match_hand_smt_v4(mutex, solver_pid, hand, calls, match_definitions, tile_behavior) do
-    cache_key = {:match_hand_smt_v4, hand, calls, match_definitions, TileBehavior.hash(tile_behavior)}
-    if value = RiichiAdvanced.Cache.get(cache_key) do
-      Stream.concat([value])
-    else
-      if nil in hand do
-        IO.puts("[WARNING] match_hand_smt_v4 was passed a hand with a nil tile. Stack trace:")
-        IO.inspect(Process.info(self(), :current_stacktrace))
-      end
-      {:ok, solutions_agent} = Agent.start_link(fn -> [] end)
-      _match_hand_smt_v4(mutex, solver_pid, hand, calls, match_definitions, tile_behavior)
-      |> Stream.concat([:end_stream])
-      |> Stream.flat_map(fn
-        :end_stream ->
-          try do
-            # assuming order of solutions do not matter (it's reversed)
-            solutions = Agent.get(solutions_agent, & &1)
-            if Debug.print_wins() do
-              IO.puts("#{inspect(length(solutions))} joker assignments: #{inspect(solutions)}")
+    cache_key = {:cache_match_hand_smt_v4, hand, calls, match_definitions, TileBehavior.hash(tile_behavior)}
+    case RiichiAdvanced.Cache.Memo.get(cache_key) do
+      {:ok, nil} ->
+        if nil in hand do
+          IO.puts("[WARNING] match_hand_smt_v4 was passed a hand with a nil tile. Stack trace:")
+          IO.inspect(Process.info(self(), :current_stacktrace))
+        end
+        {:ok, solutions_agent} = Agent.start_link(fn -> [] end)
+        _match_hand_smt_v4(mutex, solver_pid, hand, calls, match_definitions, tile_behavior)
+        |> Stream.concat([:end_stream])
+        |> Stream.flat_map(fn
+          :end_stream ->
+            try do
+              # assuming order of solutions do not matter (it's reversed)
+              solutions = Agent.get(solutions_agent, & &1)
+              if Debug.print_wins() do
+                IO.puts("#{inspect(length(solutions))} joker assignments: #{inspect(solutions)}")
+              end
+              RiichiAdvanced.Cache.Memo.put(cache_key, solutions)
+            after
+              Agent.stop(solutions_agent)
             end
-            RiichiAdvanced.Cache.put(cache_key, solutions)
-          after
-            Agent.stop(solutions_agent)
-          end
-          []
-        solution ->
-          Agent.update(solutions_agent, &[solution | &1])
-          [solution]
-      end)
+            []
+          solution ->
+            Agent.update(solutions_agent, &[solution | &1])
+            [solution]
+        end)
+      {:ok, value} -> Stream.concat([value])
     end
   end
 

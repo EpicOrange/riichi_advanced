@@ -459,7 +459,7 @@ defmodule RiichiAdvanced.Utils do
     end)
   end
 
-  # @decorate cacheable(cache: RiichiAdvanced.Cache, key: {:inverse_frequencies, visible_tiles, TileBehavior.hash(tile_behavior)})
+  # @decorate cacheable(cache: RiichiAdvanced.Cache.Memo, key: {:inverse_frequencies, visible_tiles, TileBehavior.hash(tile_behavior)})
   def inverse_frequencies(visible_tiles, tile_behavior) do
     freqs = if is_map(visible_tiles) do visible_tiles else
       # keep only attrs that appear in the original wall before taking frequencies

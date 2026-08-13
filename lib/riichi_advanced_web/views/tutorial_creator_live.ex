@@ -40,12 +40,7 @@ defmodule RiichiAdvancedWeb.TutorialCreatorLive do
     |> assign(:lang, Map.get(params, "lang", "en"))
     |> assign(:loading, false)
 
-    sequence_json = if socket.assigns.tutorial_id != nil do
-      case RiichiAdvanced.ETSCache.get({socket.assigns.ruleset, socket.assigns.tutorial_id}, [], :cache_sequences) do
-        [sequence_json] -> sequence_json
-        _ -> @initial_sequence_json
-      end
-    else @initial_sequence_json end
+    {:ok, sequence_json} = RiichiAdvanced.Cache.get({:cache_sequences, socket.assigns.ruleset, socket.assigns.tutorial_id}, @initial_sequence_json)
     socket = assign(socket, :sequence_json, sequence_json)
 
     messages_init = RiichiAdvanced.MessagesState.link_player_socket(socket.root_pid, socket.assigns.session_id)
@@ -127,7 +122,7 @@ defmodule RiichiAdvancedWeb.TutorialCreatorLive do
     # 2MB char limit on sequence_json
     if sequence_json != nil and byte_size(sequence_json) <= 2 * 1024 * 1024 do
       uuid = Ecto.UUID.generate()
-      RiichiAdvanced.ETSCache.put({ruleset, uuid}, sequence_json, :cache_sequences)
+      RiichiAdvanced.Cache.put({:cache_sequences, ruleset, uuid}, sequence_json)
       socket = push_navigate(socket, to: ~p"/tutorial/#{ruleset}/#{uuid}?seat=#{seat}&nickname=#{socket.assigns.nickname}&lang=#{socket.assigns.lang}")
       {:noreply, socket}
     else {:noreply, socket} end

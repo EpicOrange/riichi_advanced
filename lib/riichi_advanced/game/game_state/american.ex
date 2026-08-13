@@ -158,7 +158,7 @@ defmodule RiichiAdvanced.GameState.American do
     else ret end
   end
 
-  @decorate cacheable(cache: RiichiAdvanced.Cache, key: {:translate_american_match_definitions, am_match_definitions}, opts: [ttl: :timer.seconds(10)])
+  @decorate cacheable(cache: RiichiAdvanced.Cache.Memo, key: {:translate_american_match_definitions, am_match_definitions}, opts: [ttl: :timer.seconds(10)])
   def translate_american_match_definitions(am_match_definitions) do
     for am_match_definition <- List.wrap(am_match_definitions) do
       # e.g. "FF 2024a 2222b 2222c" becomes
