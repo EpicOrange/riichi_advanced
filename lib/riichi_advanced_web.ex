@@ -83,8 +83,8 @@ defmodule RiichiAdvancedWeb do
     quote do
       # HTML escaping functionality
       import Phoenix.HTML
-      # Core UI components and translation
-      import RiichiAdvancedWeb.CoreComponents
+      
+      # Translation
       use Gettext, backend: RiichiAdvancedWeb.Gettext
 
       # Shortcut for generating JS commands

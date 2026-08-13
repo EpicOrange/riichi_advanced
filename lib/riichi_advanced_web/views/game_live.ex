@@ -331,7 +331,7 @@ defmodule RiichiAdvancedWeb.GameLive do
       <div class="display-am-hand-container" :if={Rules.get(@state.rules_ref, "show_nearest_american_hand", false)}>
         <% open_definitions = Rules.get(@state.rules_ref, "open_win_definition", []) %>
         <%= for {am_match_definition, _shanten, arranged_hand} <- @state.players[@seat].cache.closest_american_hands do %>
-          <div class="display-am-hand" :if={arranged_hand})>
+          <div class="display-am-hand" :if={arranged_hand}>
             <%= for tile <- arranged_hand do %>
               <div class={Utils.get_tile_class(tile)}></div>
             <% end %>

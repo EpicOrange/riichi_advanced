@@ -11,7 +11,8 @@ defmodule RiichiAdvancedWeb.Endpoint do
     # not a big deal though, it's not like we care about impersonation rn
     signing_salt: "sHBZn5OF",
     same_site: "Lax",
-    max_age: 2592000 # 30 days
+    max_age: 2592000, # 30 days
+    secure: true,
   ]
 
   socket "/live", Phoenix.LiveView.Socket,
