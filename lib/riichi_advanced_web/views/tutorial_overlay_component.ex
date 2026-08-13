@@ -32,20 +32,17 @@ defmodule RiichiAdvancedWeb.TutorialOverlayComponent do
         events = if not is_list(Enum.at(events, 0)) do [events] else events end
         next_scenes = List.wrap(Enum.at(opts, 1, List.duplicate(:resume, length(events))))
         socket.assigns.force_event.(next_scenes, events, true)
-        socket
-        |> assign(:deferred_actions, actions)
+        socket |> assign(:deferred_actions, actions)
       "await_event" ->
         events = Enum.at(opts, 0, %{})
         events = if not is_list(Enum.at(events, 0)) do [events] else events end
         next_scenes = List.wrap(Enum.at(opts, 1, List.duplicate(:resume, length(events))))
         socket.assigns.force_event.(next_scenes, events, false)
-        socket
-        |> assign(:deferred_actions, actions)
+        socket |> assign(:deferred_actions, actions)
       "await_click" ->
         next_scene = Enum.at(opts, 0, :resume)
         socket.assigns.await_click.(next_scene)
-        socket
-        |> assign(:deferred_actions, actions)
+        socket |> assign(:deferred_actions, actions)
       "pause" ->
         GenServer.cast(socket.assigns.game_state, :pause)
         socket
@@ -116,10 +113,8 @@ defmodule RiichiAdvancedWeb.TutorialOverlayComponent do
     |> Enum.reduce(socket, fn {key, value}, acc_socket -> assign(acc_socket, key, value) end)
 
     actions = Map.get(assigns, :actions, [])
-    context_actions = if actions == :resume do socket.assigns.deferred_context_actions else [{%{}, actions}] end
-    socket = for {_context, actions} <- context_actions, reduce: socket do
-      socket -> run_actions(socket, actions)
-    end
+    actions = if actions == :resume do socket.assigns.deferred_actions else actions end
+    socket = run_actions(socket, actions)
 
     {:ok, socket}
   end
