@@ -32,12 +32,12 @@ defmodule RiichiAdvanced.MixProject do
   # Type `mix help deps` for examples and options.
   defp deps do
     [
-      {:phoenix, "~> 1.7.18"},
+      {:phoenix, "~> 1.8"},
       # even though we don't use the actual database,
       # we still use Ecto.UUID.generate() some places
-      {:phoenix_ecto, "~> 4.5"},
+      {:phoenix_ecto, "~> 4.7"},
       {:phoenix_live_reload, "~> 1.2", only: :dev},
-      {:phoenix_live_view, "~> 1.0.1"},
+      {:phoenix_live_view, "~> 1.2"},
       # {:phoenix_live_dashboard, "~> 0.8.3"},
       {:esbuild, "~> 0.8"},
       {:jason, "~> 1.2"},
@@ -66,6 +66,7 @@ defmodule RiichiAdvanced.MixProject do
       {:nimble_parsec, "~> 1.4.0"}, # ex_smt dep
       # deps for delta (vendored)
       {:diffy, "~> 1.1"},
+      {:diff_match_patch, github: "pzingg/diff_match_patch"}, # for Dmp.Diff.cleanup_semantic()
     ]
   end
 
