@@ -2157,6 +2157,7 @@ div.visible-waits.spaced {
   row-gap: calc(0.5 * var(--tile-size));
 }
 @keyframes showWaitsLoading {
+  0% { opacity: 0 }
   90% { opacity: 0 }
   100% { opacity: 1 }
 }
@@ -4727,4 +4728,31 @@ div.scoringtest-container div.yaku-container > div.yaku-inner-container {
     color: white;
     padding: 0;
   }
+}
+
+/* banner that appears when connection is lost (or on crash) */
+div.reconnect-banner::before {
+  background: var(--bg-color);
+  color: white;
+  position: fixed;
+  inset: 0 0 auto 0;
+  padding: 0.5rem;
+  text-align: center;
+  z-index: 1000;
+  pointer-events: none;
+  animation: reconnectBanner 1s linear forwards;
+}
+@keyframes reconnectBanner {
+  0% { opacity: 0 }
+  90% { opacity: 0 }
+  100% { opacity: 1 }
+}
+div.reconnect-banner { display: none; }
+div.phx-loading div.reconnect-banner {
+  display: block;
+  &::before { content: "Connecting..."; }
+}
+div.phx-error div.reconnect-banner {
+  display: block;
+  &::before { content: "Game has crashed, restarting..."; }
 }
