@@ -1502,7 +1502,6 @@ defmodule RiichiAdvanced.Match do
       ret = _separate_standard_winner_hand(
         {smt_hand, calls},
         tile_behavior.attrs |> Enum.to_list() |> Enum.sort(),
-        tile_behavior.aliases |> TileBehavior.remove_alias_mapsets(),
         tile_behavior.ordering,
         joker_assignment,
         win_definitions
@@ -1520,10 +1519,9 @@ defmodule RiichiAdvanced.Match do
       ret
     end
   end
-  def _separate_standard_winner_hand({smt_hand, calls}, all_attrs, elixir_aliases, ordering, joker_assignment, win_definitions) do
+  def _separate_standard_winner_hand({smt_hand, calls}, all_attrs, ordering, joker_assignment, win_definitions) do
     __separate_standard_winner_hand(smt_hand, Enum.flat_map(calls, &Utils.call_to_tiles/1), calls, %TileBehavior{
       attrs: all_attrs |> MapSet.new(),
-      aliases: elixir_aliases |> TileBehavior.restore_alias_mapsets(),
       ordering: ordering,
     }, joker_assignment, win_definitions)
   end

@@ -20,5 +20,6 @@ mod match_dfs;
 mod match_bipartite;
 mod match_blossom;
 mod match_exact;
+mod arrange;
 
 rustler::init!("Elixir.RiichiAdvanced.Match");

@@ -1,5 +1,5 @@
 use crate::tile_table::*;
-use std::{collections::{HashMap, HashSet}, fmt, iter::once, ops::{Div, MulAssign, Rem}};
+use std::{collections::{HashMap, HashSet}, fmt, iter::once, ops::{Div, DivAssign, MulAssign, Rem}};
 use num_bigint::{BigUint, Sign};
 use ruint::aliases::U256;
 use rustler::{Atom, BigInt, Decoder, Encoder, Env, Error, NifResult, NifStruct, Term};
@@ -46,6 +46,16 @@ impl Div<Hash> for Hash {
   type Output = Hash;
   fn div(self, rhs: Hash) -> Hash {
     Hash(self.0 / rhs.0)
+  }
+}
+impl DivAssign<Prime> for Hash {
+  fn div_assign(&mut self, rhs: Prime) {
+    self.0 /= U256::from(rhs)
+  }
+}
+impl DivAssign<Hash> for Hash {
+  fn div_assign(&mut self, rhs: Hash) {
+    self.0 /= rhs.0
   }
 }
 impl Rem<Prime> for Hash {

@@ -1,3 +1,4 @@
+use smallvec::smallvec;
 use std::collections::HashSet;
 use std::iter::{empty, once};
 use std::rc::Rc;
@@ -15,7 +16,7 @@ use crate::offsets::{__generate_groups, get_base_tiles};
 use crate::profile::{PROFILE_MATCH, CALL_COUNT, MAX_NANOS, TOTAL_NANOS};
 use crate::tile_table::TILE_TABLE;
 use crate::tileset::_subtract_check_attrs_exhaustive;
-use crate::types::{ANY_PRIME, BaseTileVec, ElixirAliases, ElixirHand, ElixirHandCalls, ElixirTile, ElixirTileOrdering, FIXED_OFFSETS, Hands, HandsIterator, MatchDefinition, MatchDefinitionElem, MatchDefinitions, MatchGroup, MatchInfo, MatchOffset, RemovableGroup, Tile};
+use crate::types::{ANY_PRIME, BaseTileVec, ElixirAliases, ElixirHand, ElixirHandCalls, ElixirTile, ElixirTileOrdering, FIXED_OFFSETS, Hands, HandsIterator, MatchDefinition, MatchDefinitionElem, MatchDefinitions, MatchGroup, MatchInfo, MatchOffset, RemovableGroup, Tile, TileSet};
 use crate::utils::remove_indices;
 
 // this is used a lot, especially for determining and processing calls
@@ -377,27 +378,6 @@ pub fn _remove_group(
   debug: bool, exhaustive: bool, nojoker: bool,
   base_tiles: Option<Vec<ElixirTile>>,
 ) -> Vec<ElixirHand> {
-  __remove_group(
-    hand, group,
-    all_attrs,
-    &elixir_aliases,
-    &ordering,
-    debug,
-    exhaustive,
-    nojoker,
-    &base_tiles,
-  )
-} 
-
-#[inline]
-fn __remove_group<'a>(
-  hand: ElixirHand, group: MatchGroup, 
-  all_attrs: Vec<String>,
-  elixir_aliases: &'a ElixirAliases,
-  ordering: &'a ElixirTileOrdering,
-  debug: bool, exhaustive: bool, mut nojoker: bool,
-  base_tiles: &'a Option<Vec<ElixirTile>>,
-) -> Vec<ElixirHand> {
   // special case: if we are trying to remove the empty group,
   // simply return hand in a singleton vec
   if let MatchGroup::Offsets(os) = &group {
@@ -406,20 +386,39 @@ fn __remove_group<'a>(
     }
   }
   // otherwise do all the prep work
-  let hand_calls = (hand, vec!());
+  let hand_calls = (hand.clone(), vec!());
   let match_info = prepare_tiles(
     &hand_calls,
     all_attrs,
-    elixir_aliases,
-    ordering,
+    &elixir_aliases,
+    &ordering,
   );
   let base_tiles: BaseTileVec = match base_tiles {
-    Some(base_tiles) => encode_tiles(base_tiles, &match_info.all_attrs).collect(),
+    Some(base_tiles) => encode_tiles(&base_tiles, &match_info.all_attrs).collect(),
     None => {
       let match_definition = vec!(MatchDefinitionElem::Group(vec!(group.clone()), 1));
       get_base_tiles(&match_info, &match_definition)
     }
   };
+
+  __remove_group(
+    match_info.initial_hands[0].clone(), group,
+    &match_info,
+    debug,
+    exhaustive,
+    nojoker,
+    base_tiles,
+  ).into_iter().map(|hand| decode(&hand, &match_info.all_attrs)).collect()
+} 
+
+#[inline]
+pub fn __remove_group(
+  hand: TileSet, group: MatchGroup, 
+  match_info: &MatchInfo,
+  debug: bool, exhaustive: bool, mut nojoker: bool,
+  base_tiles: BaseTileVec,
+) -> Vec<TileSet> {
+  if hand.attrs.is_empty() { return vec!(); }
 
   // reify all groups into removable groups
   let mut base_tiles_iter = base_tiles.into_iter();
@@ -445,15 +444,70 @@ fn __remove_group<'a>(
     }));
   }
 
-  let mut ret: Vec<ElixirHand> = vec!();
+  let mut ret: Vec<TileSet> = vec!();
   for group in reified_groups_iter {
-    let mut result = _elim_group(match_info.initial_hands.clone(), &group, &match_info.aliases, &match_info.mapping, &match_info.joker_tiles, exhaustive);
+    let mut result = _elim_group(smallvec!(hand.clone()), &group, &match_info.aliases, &match_info.mapping, &match_info.joker_tiles, exhaustive);
     if let Some(hands) = result.next() {
-      ret.push(decode(&hands[0], &match_info.all_attrs));
+      ret.push(hands[0].clone());
       if !exhaustive {
         return ret;
       } else {
-        ret.extend(result.map(|hands| decode(&hands[0], &match_info.all_attrs)));
+        ret.extend(result.map(|hands| hands[0].clone()));
+      }
+    }
+  }
+
+  if debug {
+    println!("result was {:?}", ret);
+  }
+
+  ret
+}
+
+
+// same as __remove_group, but it returns the RemovableGroup that was removed
+// TODO make this return an iterator instead
+pub fn __pop_group(
+  hand: TileSet, group: MatchGroup, 
+  match_info: &MatchInfo,
+  debug: bool, exhaustive: bool, mut nojoker: bool,
+  base_tiles: BaseTileVec,
+) -> Vec<(TileSet, RemovableGroup)> {
+  if hand.attrs.is_empty() { return vec!(); }
+
+  // reify all groups into removable groups
+  let mut base_tiles_iter = base_tiles.into_iter();
+  let mut reified_groups_iter = __generate_groups(
+    group,
+    &mut base_tiles_iter,
+    &match_info.all_attrs,
+    &match_info.joker_tiles,
+    &match_info.ordering,
+    &mut nojoker,
+  );
+
+  if debug {
+    // println!("Hand tiles: {0:?}", match_info.initial_hands.iter().collect::<Vec<_>>());
+    // println!("Relevant tiles: {0:?}", match_info.relevant_tiles.iter().collect::<Vec<_>>());
+    reified_groups_iter = Box::new(reified_groups_iter.inspect(|group| {
+      println!("Reified group: {:?} into the groups:", &group);
+      match group {
+        RemovableGroup::CallName(name) => println!("- \"{0:?}\"", name),
+        RemovableGroup::Group(group) => println!("- {0:?}", decode(group, &match_info.all_attrs)),
+        RemovableGroup::Multigroup(subgroups) => println!("- {0:?}", subgroups.iter().map(|subgroup| decode(subgroup, &match_info.all_attrs)).collect::<Vec<_>>()),
+      }
+    }));
+  }
+
+  let mut ret: Vec<(TileSet, RemovableGroup)> = vec!();
+  for group in reified_groups_iter {
+    let mut result = _elim_group(smallvec!(hand.clone()), &group, &match_info.aliases, &match_info.mapping, &match_info.joker_tiles, exhaustive);
+    if let Some(hands) = result.next() {
+      ret.push((hands[0].clone(), group.clone()));
+      if !exhaustive {
+        return ret;
+      } else {
+        ret.extend(result.map(|hands| (hands[0].clone(), group.clone())));
       }
     }
   }
