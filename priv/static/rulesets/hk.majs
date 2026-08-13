@@ -26,52 +26,80 @@ set score_calculation, %{
 }
 
 on before_win do
-  if won_by_draw do
-    # make non-winners responsible for all yaku
-    make_responsible_for("others")
-  else
-    if won_by_discard do
-      make_responsible_for("last_discarder")
-    else
-      make_responsible_for("last_caller")
-    end
+  cond do
+    won_by_draw -> make_responsible_for("others")
+    won_by_discard -> make_responsible_for("last_discarder")
+    won_by_call -> make_responsible_for("last_caller")
+  end
+end
+
+def convert_fan do
+  fan_count = points :: "Fan"
+  cond do
+    counter_at_least("fan_count", 13) -> base_score = 384 :: "13+ Fan"
+    counter_equals("fan_count", 12)   -> base_score = 256 :: "12 Fan"
+    counter_equals("fan_count", 11)   -> base_score = 192 :: "11 Fan"
+    counter_equals("fan_count", 10)   -> base_score = 128 :: "10 Fan"
+    counter_equals("fan_count", 9)    -> base_score = 96 :: "9 Fan"
+    counter_equals("fan_count", 8)    -> base_score = 64 :: "8 Fan"
+    counter_equals("fan_count", 7)    -> base_score = 48 :: "7 Fan"
+    counter_equals("fan_count", 6)    -> base_score = 32 :: "6 Fan"
+    counter_equals("fan_count", 5)    -> base_score = 24 :: "5 Fan"
+    counter_equals("fan_count", 4)    -> base_score = 16 :: "4 Fan"
+    counter_equals("fan_count", 3)    -> base_score = 8 :: "3 Fan"
+    counter_equals("fan_count", 2)    -> base_score = 4 :: "2 Fan"
+    counter_equals("fan_count", 1)    -> base_score = 2 :: "1 Fan"
+    true                              -> base_score = 1 :: "0 Fan"
+  end
+  set_counter_all("base_score", "base_score")
+  total = base_score
+end
+
+def apply_score_modifiers do
+  cond do
+    won_by_draw -> total *= 1 :: "Self-pick payment"
+    won_by_discard and seat_is("last_discarder") -> total *= 2 :: "Discarder payment"
+    won_by_call and seat_is("last_caller") -> total *= 2 :: "Discarder payment"
   end
 end
 
 define_scoring win do
-  fan_count = points :: "Fan"
-  cond do
-    counter_at_least("fan_count", 13) -> total = 384 :: "13+ Fan"
-    counter_equals("fan_count", 12)   -> total = 256 :: "12 Fan"
-    counter_equals("fan_count", 11)   -> total = 192 :: "11 Fan"
-    counter_equals("fan_count", 10)   -> total = 128 :: "10 Fan"
-    counter_equals("fan_count", 9)    -> total = 96 :: "9 Fan"
-    counter_equals("fan_count", 8)    -> total = 64 :: "8 Fan"
-    counter_equals("fan_count", 7)    -> total = 48 :: "7 Fan"
-    counter_equals("fan_count", 6)    -> total = 32 :: "6 Fan"
-    counter_equals("fan_count", 5)    -> total = 24 :: "5 Fan"
-    counter_equals("fan_count", 4)    -> total = 16 :: "4 Fan"
-    counter_equals("fan_count", 3)    -> total = 8 :: "3 Fan"
-    counter_equals("fan_count", 2)    -> total = 4 :: "2 Fan"
-    counter_equals("fan_count", 1)    -> total = 2 :: "1 Fan"
-    true                              -> total = 1 :: "0 Fan"
-  end
-  if won_by_discard do
-    total *= 1 :: "Win by Discard"
-  else
-    if won_by_call do
-      total *= 2 :: "Win by Robbing Kong"
-    else
-      total *= 1 :: "Win by Self-draw"
-    end
-  end
-  modify_winner("score", "total")
+  convert_fan
+  apply_score_modifiers
+end
+
+on after_win do
+  modify_winner("score", "base_score")
+end
+
+on after_initialization do
+  add_rule("Rules", "Scoring", """
+    The scoring table is as follows:
+    • 0 Fan = 1
+    • 1 Fan = 2
+    • 2 Fan = 4
+    • 3 Fan = 8
+    • 4 Fan = 16
+    • 5 Fan = 24
+    • 6 Fan = 32
+    • 7 Fan = 48
+    • 8 Fan = 64
+    • 9 Fan = 96
+    • 10 Fan = 128
+    • 11 Fan = 192
+    • 12 Fan = 256
+    • 13+ Fan = 384
+    """, 0)
 end
 
 apply set_append, "interruptible_actions", ["play_tile", "draw"]
 
 # mods
 define_mod_category "Rules"
+define_mod hk_payment, name: "Payment", desc: "By default, discarders pay 2x, nondiscarders pay 0x, and everyone pays 1x on self-pick."
+config_mod hk_payment, name: "discarder_pays", values: [0, 1, 2, 3, 4, 5, 6, 7, 8], default: 2
+config_mod hk_payment, name: "nondiscarders_pay", values: [0, 1, 2, 3, 4, 5, 6, 7, 8], default: 0
+config_mod hk_payment, name: "self_pick_pay", values: [0, 1, 2, 3, 4, 5, 6, 7, 8], default: 1
 define_mod hk_three_point_minimum, name: "Three Fan Minimum", desc: "Only allow wins worth 3+ fan."
 define_mod seven_flower_win, name: "Seven Flower Bonus", conflicts: ["remove_flowers"], desc: "Adds bonuses for obtaining 7 or 8 flowers. You can also allow instant win upon obtaining 7 or 8 flowers."
 config_mod seven_flower_win, name: "win_on", values: ["7 flowers", "8 flowers", "none"]
@@ -80,7 +108,6 @@ define_mod hk_flowers_open_hand, name: "Flowers Open Hand", desc: "A hand with f
 define_mod remove_flowers, name: "Remove Flowers", conflicts: ["seven_flower_win"], desc: "Remove all eight flowers from the wall."
 define_mod head_bump, name: "Head Bump", desc: "Enable head bump. In case of multiple hu, only the person closest in turn order gets the win."
 define_mod hk_seven_pairs, name: "Seven Pairs", desc: "Add seven pairs as a possible winning hand, worth 4 fan."
-define_mod hk_everyone_pays, name: "Everyone Pays On Discard", desc: "Discarder pays 2x hand value, other players pay 1x."
 define_mod hk_repeat_on_draw, name: "Repeat On Draw", desc: "If the round ends in a draw, the round repeats."
 
-set default_mods, ["hk_three_point_minimum", "seven_flower_win", "pao_12_tile"]
+set default_mods, ["hk_payment", "hk_three_point_minimum", "seven_flower_win", "pao_12_tile"]

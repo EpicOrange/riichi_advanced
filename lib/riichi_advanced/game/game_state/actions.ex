@@ -1307,7 +1307,7 @@ defmodule RiichiAdvanced.GameState.Actions do
             state
           else state end
           update_in(state.rules_text[tab], &Map.update(&1, id,
-            {[text], map_var_amounts(state, context, vars), if priority == nil do 0 else priority end},
+            {[text], map_var_amounts(state, context, vars), if priority == nil do 1000 else priority end},
             fn {orig_text, orig_vars, orig_priority} -> {
                 orig_text ++ [text],
                 Map.merge(orig_vars, map_var_amounts(state, context, vars)),
@@ -2002,7 +2002,14 @@ defmodule RiichiAdvanced.GameState.Actions do
               :prepend  -> value <> prev_value
               :append   -> prev_value <> value
             end end)
-          else state end
+          else
+            cond do
+              key == nil -> IO.puts("WARNING: Failed to modify_winner, since key #{inspect(key)} is nil")
+              method == nil -> IO.puts("WARNING: Failed to modify_winner, since method #{inspect(method)} is nil")
+              context.seat not in state.winner_seats -> IO.puts("WARNING: Failed to modify_winner, since context.seat #{inspect(context.seat)} is not in state.winner_seats #{inspect(state.winner_seats)}")
+            end
+            state
+          end
         "modify_payout"   ->
           if not Enum.empty?(state.delta_scores) do
             seats = Conditions.from_seats_spec(state, context, Enum.at(opts, 0, "self"))

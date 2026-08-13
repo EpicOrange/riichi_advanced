@@ -67,6 +67,8 @@ defmodule RiichiAdvancedWeb.ScoringTestLive do
     |> assign(:call_buttons, %{})
     |> assign(:selected_call_button, nil)
     |> assign(:rules_ref, nil)
+    |> assign(:rules_text, %{})
+    |> assign(:rules_text_order, [])
     # |> assign(:hand, [:"4m", :"2m", :"3m", :"4p", :"4p", :"4p", :"5p", :"6p", :"7p", :"3s", :"4s", :"2s", :"2s", :"2s"])
 
     if connected?(socket) do
@@ -217,17 +219,6 @@ defmodule RiichiAdvancedWeb.ScoringTestLive do
     |> assign(:call_buttons, %{})
     |> assign(:selected_call_button, nil)
 
-    state = socket.assigns.state
-    |> Map.put(:rules_ref, rules_ref)
-    |> Map.put(:rules_text, %{})
-    |> Map.put(:rules_text_order, [])
-    |> Map.put(:players, Map.new([:east, :south, :west, :north], fn seat -> {seat, %Player{}} end))
-    |> Actions.trigger_event("after_initialization", %{seat: :east}) # to populate rules
-    |> Actions.trigger_event("after_start", %{seat: :east}) # to populate tile alliases
-    socket = assign(socket, :state, state)
-    socket = assign(socket, :rules_text, state.rules_text)
-    socket = assign(socket, :rules_text_order, state.rules_text_order)
-    
     socket
   end
   def switch_to_ruleset(socket, _ruleset), do: socket
@@ -338,9 +329,11 @@ defmodule RiichiAdvancedWeb.ScoringTestLive do
       _ -> nil
     end
     state = Kyoku.calculate_winner_details_v2(state, :east, win_source, scoring_key)
-    state = update_in(state.winners.east.yaku, & &1 ++ selected_yaku)
-    state = if minipoints > 0 do update_in(state.winners.east.minipoints, fn _ -> minipoints end) else state end
+    state = update_in(state.winners.east.yaku, & &1 ++ selected_yaku) # add manually selected yaku
+    state = if minipoints > 0 do update_in(state.winners.east.minipoints, fn _ -> minipoints end) else state end # add manually selected fu
     {state, delta_scores, delta_scores_reason} = Scoring.adjudicate_win_scoring(state)
+    winner = state.winners.east
+    state = Actions.trigger_event(state, "after_win", %{winner | seat: winner.winner_seat})
     state
     |> Map.put(:delta_scores, delta_scores)
     |> Map.put(:delta_scores_reason, delta_scores_reason)
@@ -539,7 +532,19 @@ defmodule RiichiAdvancedWeb.ScoringTestLive do
       end)
       socket = assign(socket, :call_buttons, call_buttons)
 
-      {:noreply, retrieve_yaku_lists(socket)}
+      socket = retrieve_yaku_lists(socket)
+
+      state = socket.assigns.state
+      |> Map.put(:rules_ref, rules_ref)
+      |> Map.put(:rules_text, %{})
+      |> Map.put(:rules_text_order, [])
+      |> Map.put(:players, Map.new([:east, :south, :west, :north], fn seat -> {seat, %Player{}} end))
+      |> Actions.trigger_event("after_initialization", %{seat: :east}) # to populate rules tabs
+      |> Actions.trigger_event("after_start", %{seat: :east}) # to populate tile alliases
+      socket = assign(socket, :state, state)
+      socket = assign(socket, :rules_text, state.rules_text)
+      socket = assign(socket, :rules_text_order, state.rules_text_order)
+      {:noreply, socket}
     else {:noreply, socket} end
   end
   def handle_async(:put_state, {:ok, state}, socket) do
@@ -549,7 +554,7 @@ defmodule RiichiAdvancedWeb.ScoringTestLive do
     {:noreply, socket}
   end
   def handle_async(id, result, socket) do
-    IO.inspect({id, result})
+    IO.inspect({id, result}, label: "handle_async")
     {:noreply, socket}
   end
 

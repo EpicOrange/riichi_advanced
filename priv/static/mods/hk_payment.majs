@@ -1,0 +1,42 @@
+default discarder_pays, 2
+default nondiscarders_pay, 0
+default self_pick_pay, 1
+
+on before_win do
+  clear_responsibilities
+  cond do
+    won_by_draw and !self_pick_pay > 0 -> make_responsible_for("others")
+    won_by_discard and !nondiscarders_pay > 0 -> make_responsible_for("others")
+    won_by_discard -> make_responsible_for("last_discarder")
+    won_by_call and !nondiscarders_pay -> make_responsible_for("others")
+    won_by_call -> make_responsible_for("last_caller")
+  end
+end
+
+def apply_score_modifiers do
+  cond do
+    won_by_draw -> total *= !self_pick_pay :: "Self-pick payment"
+    won_by_discard and seat_is("last_discarder") -> total *= !discarder_pays :: "Discarder payment"
+    won_by_call and seat_is("last_caller") -> total *= !discarder_pays :: "Discarder payment"
+    true -> total *= !nondiscarders_pay :: "Nondiscarder payment"
+  end
+end
+
+on after_initialization do
+  if !self_pick_pay > 0 do
+    add_rule("Rules", "Payment", "If won by self-pick, all players pay %{self_pick_pay}x.", %{self_pick_pay: !self_pick_pay}, 1)
+  else
+    add_rule("Rules", "Payment", "If won by self-pick, there is no payment.", 1)
+  end
+  if !discarder_pays > 0 do
+    if !nondiscarders_pay > 0 do
+      add_rule("Rules", "Payment", "If won by discard, the discarder pays %{discarder_pays}x and all nondiscarders pay %{nondiscarders_pay}x.", %{discarder_pays: !discarder_pays, nondiscarders_pay: !nondiscarders_pay}, 1)
+    else
+      add_rule("Rules", "Payment", "If won by discard, the discarder pays %{discarder_pays}x.", %{discarder_pays: !discarder_pays, nondiscarders_pay: !nondiscarders_pay}, 1)
+    end
+  else
+    if !nondiscarders_pay > 0 do
+      add_rule("Rules", "Payment", "If won by discard, the discarder pays nothing and non-discarders pay %{nondiscarders_pay}x.", %{nondiscarders_pay: !nondiscarders_pay}, 1)
+    end
+  end
+end
