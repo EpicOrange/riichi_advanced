@@ -35,7 +35,6 @@ defmodule RiichiAdvanced.CosmicScoringTest do
     ], %{
       east: %{
         yaku: [{"Hatsu", [1, "Han"]}, {"Rinshan", [1, "Han"]}, {"Round Wind", [1, "Han"]}, {"Seat Wind", [1, "Han"]}, {"Suuankou", [13, "Han"]}, {"Tsumo", [1, "Han"]}],
-        yaku2: [],
         minipoints: 70,
         score: 72000
       }
@@ -60,7 +59,6 @@ defmodule RiichiAdvanced.CosmicScoringTest do
     ], %{
       east: %{
         yaku: [{"Rinshan", [1, "Han"]}, {"Round Wind", [1, "Han"]}, {"Seat Wind", [1, "Han"]}, {"Suuankou", [13, "Han"]}, {"Tsumo", [1, "Han"]}],
-        yaku2: [],
         minipoints: 70,
         score: 48000
       }

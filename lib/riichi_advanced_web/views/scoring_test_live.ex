@@ -55,7 +55,6 @@ defmodule RiichiAdvancedWeb.ScoringTestLive do
     |> assign(:yaku, [])
     |> assign(:yaku_list_names, [])
     |> assign(:yaku_lists, [])
-    |> assign(:yaku2_lists, [])
     |> assign(:extra_yaku_lists, [])
     |> assign(:minipoint_name, "Fu")
     |> assign(:minipoints, 0)
@@ -266,7 +265,6 @@ defmodule RiichiAdvancedWeb.ScoringTestLive do
     score_rules = Rules.get(rules_ref, "score_calculation", %{})
     point_names = %{
       "yaku_lists" => Map.get(score_rules, "point_name", ""),
-      "yaku2_lists" => Map.get(score_rules, "point2_name", ""),
       "extra_yaku_lists" => Map.get(score_rules, "point_name", ""),
     }
     prev_selections = socket.assigns.yaku
@@ -285,13 +283,11 @@ defmodule RiichiAdvancedWeb.ScoringTestLive do
       } end)
     end
     yaku_lists = Map.get(score_rules, "yaku_lists", [])
-    yaku2_lists = Map.get(score_rules, "yaku2_lists", [])
     extra_yaku_lists = Map.get(score_rules, "extra_yaku_lists", [])
-    yaku_list_names = yaku_lists ++ yaku2_lists ++ extra_yaku_lists
+    yaku_list_names = yaku_lists ++ extra_yaku_lists
 
     socket = socket
     |> assign(:yaku_lists, yaku_lists)
-    |> assign(:yaku2_lists, yaku2_lists)
     |> assign(:extra_yaku_lists, extra_yaku_lists)
     |> assign(:yaku_list_names, yaku_list_names)
     |> assign(:yaku, 

@@ -205,13 +205,9 @@ defmodule RiichiAdvanced.GameState.Kyoku do
       # send message that prints out yaku and displayed score
       push_message(state, player_prefix(state, context.seat) ++ [
         %{text: "scored a %{score}-point hand", vars: %{score: context.displayed_score}},
-      ] ++ if not Enum.empty?(context.yaku) or not Enum.empty?(context.yaku2) do
-             [%{text: "with yaku:"}]
-             ++ Utils.print_yaku(context.yaku)
-             ++ if Enum.empty?(context.yaku) or Enum.empty?(context.yaku2) do [] else [%{text: " / "}] end
-             ++ Utils.print_yaku(context.yaku2)
-           else [] end
-      )
+      ] ++ if not Enum.empty?(context.yaku) do
+        [%{text: "with yaku:"}] ++ Utils.print_yaku(context.yaku)
+      else [] end)
 
       state = put_in(state.winners[seat].needs_after_win, false)
       state
@@ -415,7 +411,7 @@ defmodule RiichiAdvanced.GameState.Kyoku do
     score = if Rules.get(state.rules_ref, "scoring_logic", nil) != nil do
       state.txns |> Enum.filter(& &1.to == seat) |> Payment.consolidate_txns(true) |> Map.get(seat, %Transaction{}) |> Payment.get_txn_result()
     else
-      {score, _points, _points2, _score_name} = ScoringOld.score_yaku(state, seat, cxt.yaku, cxt.yaku2, is_dealer, win_source == :draw, cxt.minipoints)
+      {score, _points, _points2, _score_name} = ScoringOld.score_yaku(state, seat, cxt.yaku, [], is_dealer, win_source == :draw, cxt.minipoints)
       score
     end
 
@@ -450,7 +446,7 @@ defmodule RiichiAdvanced.GameState.Kyoku do
       %{
         seat: seat,
         player: state.players[seat],
-        existing_yaku: cxt.yaku ++ cxt.yaku2,
+        existing_yaku: cxt.yaku,
         score: score,
         displayed_score: score,
         score_denomination: Map.get(score_rules, "score_denomination", ""),

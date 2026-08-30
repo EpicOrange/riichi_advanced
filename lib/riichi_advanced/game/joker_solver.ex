@@ -112,8 +112,8 @@ defmodule RiichiAdvanced.GameState.JokerSolver do
 
   def get_highest_scoring_evaluation(evaluations, get_worst_instead \\ false) do
     Enum.max_by(evaluations,
-      fn %{score: score, points: points, points2: points2, minipoints: minipoints, yaku: yaku, yaku2: yaku2} ->
-        {score, points, points2, minipoints, -length(yaku), -length(yaku2)}
+      fn %{score: score, points: points, points2: points2, minipoints: minipoints, yaku: yaku} ->
+        {score, points, points2, minipoints, -length(yaku)}
         # |> IO.inspect(label: inspect(yaku))
       end,
       if get_worst_instead do &<=/2 else &>=/2 end,

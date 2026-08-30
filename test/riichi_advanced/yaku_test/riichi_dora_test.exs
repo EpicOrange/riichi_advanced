@@ -22,7 +22,6 @@ defmodule RiichiAdvanced.YakuTest.RiichiDoraTest do
     ], %{
       east: %{
         yaku: [{"Double Riichi", [2, "Han"]}, {"Tanyao", [1, "Han"]}, {"Dora", [3, "Han"]}],
-        yaku2: [],
         minipoints: 40
       }
     })
@@ -48,7 +47,6 @@ defmodule RiichiAdvanced.YakuTest.RiichiDoraTest do
     ], %{
       east: %{
         yaku: [{"Double Riichi", [2, "Han"]}, {"Tanyao", [1, "Han"]}, {"Dora", [3, "Han"]}],
-        yaku2: [],
         minipoints: 40
       }
     })
@@ -74,7 +72,6 @@ defmodule RiichiAdvanced.YakuTest.RiichiDoraTest do
     ], %{
       east: %{
         yaku: [{"Double Riichi", [2, "Han"]}, {"Tanyao", [1, "Han"]}, {"Aka", [2, "Han"]}],
-        yaku2: [],
         minipoints: 40
       }
     })
@@ -100,7 +97,6 @@ defmodule RiichiAdvanced.YakuTest.RiichiDoraTest do
     ], %{
       east: %{
         yaku: [{"Double Riichi", [2, "Han"]}, {"Tanyao", [1, "Han"]}, {"Dora", [1, "Han"]}, {"Aka", [14, "Han"]}],
-        yaku2: [],
         minipoints: 40
       }
     })
@@ -126,7 +122,6 @@ defmodule RiichiAdvanced.YakuTest.RiichiDoraTest do
     ], %{
       east: %{
         yaku: [{"Double Riichi", [2, "Han"]}, {"Tanyao", [1, "Han"]}, {"Aka", [2, "Han"]}, {"Ura", [2, "Han"]}],
-        yaku2: [],
         minipoints: 40
       }
     })
@@ -152,7 +147,6 @@ defmodule RiichiAdvanced.YakuTest.RiichiDoraTest do
     ], %{
       east: %{
         yaku: [{"Double Riichi", [2, "Han"]}, {"Tanyao", [1, "Han"]}, {"Dora", [1, "Han"]}, {"Aka", [2, "Han"]}],
-        yaku2: [],
         minipoints: 40
       }
     })
@@ -180,7 +174,6 @@ defmodule RiichiAdvanced.YakuTest.RiichiDoraTest do
     ], %{
       east: %{
         yaku: [{"Tsumo", [1, "Han"]}],
-        yaku2: [],
         minipoints: 40
       }
     })

@@ -42,87 +42,58 @@ defmodule RiichiAdvanced.GameState.Scoring do
     end |> Enum.to_list()
   end
 
-  def get_yaku(state, yaku_list, yaku_list_name, seat, winning_tile, win_source, minipoints, existing_yaku \\ []) do
+
+
+  # returns {yaku, minipoints}
+  def get_yaku(state, seat, winning_tile, win_source) do
+    minipoints = Map.get(state.players[seat].counters, "fu", 0)
+    yaku = _get_yaku(state, seat, winning_tile, win_source, minipoints)
+    {yaku, minipoints}
+  end
+
+  defp _get_yaku(state, seat, winning_tile, win_source, minipoints) do
+    yakus = Rules.get(state.rules_ref, :yaku, [])
+    if Debug.debug_yaku() do
+      IO.puts("Checking yaku in the following order: #{inspect(Enum.map(yakus, & &1["display_name"]), limit: :infinity)}")
+    end
     context = %{
       seat: seat,
       winning_tile: winning_tile,
       win_source: win_source,
       minipoints: minipoints,
-      existing_yaku: existing_yaku
+      existing_yaku: []
     }
-
-    score_rules = Rules.get(state.rules_ref, "score_calculation", %{})
-    default_unit = score_rules["point_name"]
-    default_value = fn value -> if not is_list(value) do
-      [Actions.interpret_amount(state, context, value), default_unit]
-    else value end end
-
-    if Debug.debug_yaku() do
-      IO.puts("Going thru list #{yaku_list_name}: #{inspect(Enum.map(yaku_list, & &1["display_name"]), limit: :infinity)}")
-    end
-
-    yaku_precedence = Rules.get(state.rules_ref, "yaku_precedence", %{})
-    existing_yaku_names = MapSet.new(existing_yaku, fn {name, value} -> {Map.get(yaku_precedence, name, []), Enum.drop_every(default_value.(value), 2)} end)
-    new_yaku = for %{"display_name" => name, "when" => cond_spec, "value" => value} = yaku <- yaku_list, reduce: {[], existing_yaku_names} do
-      {acc, skip} ->
-        value = default_value.(value)
-        denominations = Enum.drop_every(value, 2)
-        if {name, denominations} not in skip
-            and {[name, value], denominations} not in skip
-            and Conditions.check_cnf_condition(state, cond_spec, context) do
-          new_skip = Map.get(yaku_precedence, name, [])
-          |> MapSet.new(&{&1, denominations})
-          {[%{yaku | "value" => value} | acc], MapSet.union(skip, new_skip)}
-        else {acc, skip} end
-    end
-    |> elem(0)
-    |> Enum.map(fn %{"display_name" => name, "value" => value} ->
-      value = value
-      |> Enum.chunk_every(2)
-      |> Enum.flat_map(fn [amt, type] -> [Actions.interpret_amount(state, context, amt) |> Utils.try_integer(), type] end)
-      {name, value}
-    end)
-    eligible_yaku = dedup_yaku(existing_yaku ++ new_yaku)
-    eligible_yaku = case Rules.get(state.rules_ref, "yaku_precedence") do
-      nil -> eligible_yaku
-      yaku_precedence ->
-        excluded_yaku = Enum.flat_map(new_yaku, fn {name, _value} -> Map.get(yaku_precedence, name, []) end)
-        excluded_yaku = if Enum.empty?(new_yaku) do [] else Map.get(yaku_precedence, yaku_list_name, []) end ++ excluded_yaku
-        if Debug.debug_yaku_precedence() and Enum.any?(eligible_yaku, fn {name, _value} -> name in excluded_yaku end) do
-          used_precedence = Enum.filter(yaku_precedence, fn {from, _to} -> Enum.any?(eligible_yaku, fn {name, _value} -> from == name end) or from == yaku_list_name end) |> Map.new()
-          ret = Enum.reject(eligible_yaku, fn {name, value} -> Enum.any?(excluded_yaku, &Enum.member?([name | List.wrap(value)], &1)) end)
-          IO.puts("Excluding yaku\n- #{inspect(excluded_yaku)}\nfrom\n- #{inspect(eligible_yaku)}\ndue to precedence:\n- #{inspect(used_precedence)}\nleaving:\n- #{inspect(ret)}")
-        end
-        Enum.reject(eligible_yaku, fn {name, value} -> Enum.any?(excluded_yaku, &Enum.member?([name | List.wrap(value)], &1)) end)
-    end
-    eligible_yaku
-  end
-
-  def get_yaku_from_lists(state, yaku_list_names, seat, winning_tile, win_source) do
-    # returns {yaku, minipoints}
-    score_rules = Rules.get(state.rules_ref, "score_calculation", %{})
-    declare_only_yaku_list_names = Map.get(score_rules, "declare_only_yaku_lists", [])
-    if Debug.debug_yaku() do
-      IO.puts("Checking the following yaku lists: #{inspect(yaku_list_names)}")
-    end
-    for yaku_list_name <- yaku_list_names, reduce: {[], 0} do
-      {yaku, minipoints} ->
-        if Rules.has_key?(state.rules_ref, yaku_list_name) do
-          yaku_list = if yaku_list_name in declare_only_yaku_list_names do
-            declared_yaku = state.players[seat].declared_yaku
-            Enum.filter(Rules.get(state.rules_ref, yaku_list_name, []), fn yaku_obj -> yaku_obj["display_name"] in declared_yaku end)
-          else Rules.get(state.rules_ref, yaku_list_name, []) end
-          minipoints = Map.get(state.players[seat].counters, "fu", 0)
-          yaku = get_yaku(state, yaku_list, yaku_list_name, seat, winning_tile, win_source, minipoints, yaku)
-          {yaku, minipoints}
+    yaku_skip_map = Rules.get(state.rules_ref, :yaku_skip_map, [])
+    {acc, _skips} = for yaku <- yakus, reduce: {[], MapSet.new()} do
+      {acc, skips} ->
+        if yaku.key not in skips do
+          if Debug.debug_yaku_precedence() do
+            IO.puts("Evaluating yaku #{yaku["display_name"]}")
+          end
+          if Conditions.check_cnf_condition(state, yaku["when"], Map.put(context, :existing_yaku, acc)) do
+            new_skips = MapSet.union(skips, Map.get(yaku_skip_map, yaku.key, MapSet.new()))
+            %{"display_name" => name, "value" => value} = yaku
+            if yaku.key in new_skips do
+              {acc, new_skips} # we override ourselves
+            else
+              value = value
+              |> Enum.chunk_every(2)
+              |> Enum.flat_map(fn [amt, type] -> [Actions.interpret_amount(state, context, amt) |> Utils.try_integer(), type] end)
+              {[{name, value} | acc], new_skips}
+            end
+          else {acc, skips} end
         else
-          {yaku, minipoints}
+          if Debug.debug_yaku_precedence() do
+            IO.puts("Skipped yaku with key #{inspect(yaku.key)} due to precedence (current yaku: #{Enum.map_join(acc, ",", & &1["display_name"])})")
+          end
+          {acc, skips}
         end
     end
+    acc
   end
 
-  def seat_scores_points(state, yaku_list_names, point_name, min_points, min_minipoints, seat, winning_tiles, win_source) do
-    score_yaku(state, yaku_list_names, seat, winning_tiles, win_source)
+  def seat_scores_points(state, point_name, min_points, min_minipoints, seat, winning_tiles, win_source) do
+    score_yaku(state, seat, winning_tiles, win_source)
     |> Enum.any?(fn {yaku, minipoints} ->
       minipoints >= min_minipoints && case min_points do
         :declared ->
@@ -137,16 +108,9 @@ defmodule RiichiAdvanced.GameState.Scoring do
     end)
   end
 
-  # this is a memoized version of score_yaku, it returns a list not a stream
-  @decorate cacheable(cache: RiichiAdvanced.Cache.Memo, key: {:score_yaku_cached, state, yaku_list_names, seat, winning_tiles, win_source}, opts: [ttl: :timer.seconds(10)])
-  def score_yaku_cached(state, yaku_list_names, seat, winning_tiles, win_source) do
-    score_yaku(state, yaku_list_names, seat, winning_tiles, win_source)
-    |> Enum.to_list()
-  end
-
-  def score_yaku(state, yaku_list_names, seat, winning_tiles, win_source) do
+  def score_yaku(state, seat, winning_tiles, win_source) do
     lazy_map_state_cxts(state, seat, winning_tiles, win_source, fn state, cxt ->
-      get_yaku_from_lists(state, yaku_list_names, seat, cxt.assigned_winning_tile, win_source)
+      get_yaku(state, seat, cxt.assigned_winning_tile, win_source)
     end)
   end
 
@@ -265,22 +229,16 @@ defmodule RiichiAdvanced.GameState.Scoring do
     score_rules = Rules.get(state.rules_ref, "score_calculation", %{})
 
     # obtain yaku and minipoints from this state
-    {yaku, minipoints} = Scoring.get_yaku_from_lists(state, Map.get(score_rules, "yaku_lists", []), seat, assigned_winning_tile, win_source)
-    {yaku2, _minipoints} = if Map.has_key?(score_rules, "yaku2_lists") do
-      Scoring.get_yaku_from_lists(state, Map.get(score_rules, "yaku2_lists", []), seat, assigned_winning_tile, win_source)
-    else {[], 0} end
+    {yaku, minipoints} = Scoring.get_yaku(state, seat, assigned_winning_tile, win_source)
     if Debug.print_wins() do
       assigned_winning_hand = state.players[seat].cache.winning_hand
-      IO.puts("checking assignment, hand: #{inspect(assigned_winning_hand)}, tile: #{inspect(winning_tile)}, yaku: #{inspect(yaku)}, yaku2: #{inspect(yaku2)}")
+      IO.puts("checking assignment, hand: #{inspect(assigned_winning_hand)}, tile: #{inspect(winning_tile)}, yaku: #{inspect(yaku)}")
     end
 
     highest_scoring_yaku_only = Map.get(score_rules, "highest_scoring_yaku_only", false)
     yaku = if not Enum.empty?(yaku) and highest_scoring_yaku_only do [Enum.max_by(yaku, fn {_name, value} -> value end)] else yaku end
-    yaku2 = if not Enum.empty?(yaku2) and highest_scoring_yaku_only do [Enum.max_by(yaku2, fn {_name, value} -> value end)] else yaku2 end
     yaku = Enum.map(yaku, fn {name, value} -> {translate(state, name), value} end) |> Scoring.dedup_yaku()
-    yaku2 = Enum.map(yaku2, fn {name, value} -> {translate(state, name), value} end) |> Scoring.dedup_yaku()
-
-    points = Enum.map(yaku ++ yaku2, fn {_name, value} -> value end) |> Enum.reduce([], &Scoring.add_yaku_values/2)
+    points = Enum.map(yaku, fn {_name, value} -> value end) |> Enum.reduce([], &Scoring.add_yaku_values/2)
 
     # put back hand/calls/winning tile
     state = state
@@ -289,7 +247,6 @@ defmodule RiichiAdvanced.GameState.Scoring do
 
     cxt = Map.merge(cxt, %{
       yaku: yaku,
-      yaku2: yaku2,
       minipoints: minipoints,
       points: Utils.get_from_points_list(points, score_rules["point_name"]),
       points2: Utils.get_from_points_list(points, score_rules["point2_name"]),

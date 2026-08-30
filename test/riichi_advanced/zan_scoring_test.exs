@@ -74,8 +74,7 @@ defmodule RiichiAdvanced.ZanScoringTest do
       %{"type" => "buttons_pressed", "buttons" => [%{"button" => "tsumo"}, nil, nil]}
     ], %{
       east: %{
-        yaku: [{"Tsumo", [1, "Han"]}],
-        yaku2: []
+        yaku: [{"Tsumo", [1, "Han"]}]
       }
     }, %{delta_scores: [2000, -1000, -1000], shuugi: [0, 0, 0]})
   end
@@ -97,8 +96,7 @@ defmodule RiichiAdvanced.ZanScoringTest do
       %{"type" => "buttons_pressed", "buttons" => [%{"button" => "tsumo"}, nil, nil]}
     ], %{
       east: %{
-        yaku: [{"Tsumo", [1, "Han"]}, {"Pinfu", [1, "Han"]}],
-        yaku2: []
+        yaku: [{"Tsumo", [1, "Han"]}, {"Pinfu", [1, "Han"]}]
       }
     }, %{delta_scores: [4000, -2000, -2000], shuugi: [0, 0, 0]})
   end
@@ -120,8 +118,7 @@ defmodule RiichiAdvanced.ZanScoringTest do
       %{"type" => "buttons_pressed", "buttons" => [%{"button" => "tsumo"}, nil, nil]}
     ], %{
       east: %{
-        yaku: [{"Tsumo", [1, "Han"]}, {"Pinfu", [1, "Han"]}, {"Aka", [1, "Han", 1, "⛀"]}],
-        yaku2: []
+        yaku: [{"Tsumo", [1, "Han"]}, {"Pinfu", [1, "Han"]}, {"Aka", [1, "Han", 1, "⛀"]}]
       }
     }, %{delta_scores: [6000, -3000, -3000], shuugi: [2, -1, -1]})
   end
@@ -143,8 +140,7 @@ defmodule RiichiAdvanced.ZanScoringTest do
       %{"type" => "buttons_pressed", "buttons" => [%{"button" => "tsumo"}, nil, nil]}
     ], %{
       east: %{
-        yaku: [{"Tsumo", [1, "Han"]}, {"Pinfu", [1, "Han"]}, {"Aka", [2, "Han", 2, "⛀"]}],
-        yaku2: []
+        yaku: [{"Tsumo", [1, "Han"]}, {"Pinfu", [1, "Han"]}, {"Aka", [2, "Han", 2, "⛀"]}]
       }
     }, %{delta_scores: [12000, -6000, -6000], shuugi: [4, -2, -2]})
   end
@@ -165,8 +161,7 @@ defmodule RiichiAdvanced.ZanScoringTest do
       %{"type" => "buttons_pressed", "buttons" => [%{"button" => "ron"}, nil, nil]}
     ], %{
       east: %{
-        yaku: [{"Pinfu", [1, "Han"]}],
-        yaku2: []
+        yaku: [{"Pinfu", [1, "Han"]}]
       }
     }, %{delta_scores: [2000, -2000, 0], shuugi: [0, 0, 0]})
   end
@@ -187,8 +182,7 @@ defmodule RiichiAdvanced.ZanScoringTest do
       %{"type" => "buttons_pressed", "buttons" => [%{"button" => "ron"}, nil, nil]}
     ], %{
       east: %{
-        yaku: [{"Aka", [1, "Han", 1, "⛀"]}, {"Pinfu", [1, "Han"]}],
-        yaku2: []
+        yaku: [{"Aka", [1, "Han", 1, "⛀"]}, {"Pinfu", [1, "Han"]}]
       }
     }, %{delta_scores: [3000, -3000, 0], shuugi: [1, -1, 0]})
   end
@@ -209,8 +203,7 @@ defmodule RiichiAdvanced.ZanScoringTest do
       %{"type" => "buttons_pressed", "buttons" => [%{"button" => "ron"}, nil, nil]}
     ], %{
       east: %{
-        yaku: [{"Aka", [1, "Han", 1, "⛀"]}, {"Tanyao", [1, "Han"]}, {"Pinfu", [1, "Han"]}],
-        yaku2: []
+        yaku: [{"Aka", [1, "Han", 1, "⛀"]}, {"Tanyao", [1, "Han"]}, {"Pinfu", [1, "Han"]}]
       }
     }, %{delta_scores: [6000, -6000, 0], shuugi: [1, -1, 0]})
   end
@@ -231,8 +224,7 @@ defmodule RiichiAdvanced.ZanScoringTest do
       %{"type" => "buttons_pressed", "buttons" => [%{"button" => "ron"}, nil, nil]}
     ], %{
       east: %{
-        yaku: [{"Aka", [2, "Han", 2, "⛀"]}, {"Tanyao", [1, "Han"]}, {"Pinfu", [1, "Han"]}],
-        yaku2: []
+        yaku: [{"Aka", [2, "Han", 2, "⛀"]}, {"Tanyao", [1, "Han"]}, {"Pinfu", [1, "Han"]}]
       }
     }, %{delta_scores: [12000, -12000, 0], shuugi: [2, -2, 0]})
   end
@@ -255,8 +247,7 @@ defmodule RiichiAdvanced.ZanScoringTest do
       %{"type" => "buttons_pressed", "buttons" => [nil, %{"button" => "tsumo"}, nil]}
     ], %{
       south: %{
-        yaku: [{"Tsumo", [1, "Han"]}],
-        yaku2: []
+        yaku: [{"Tsumo", [1, "Han"]}]
       }
     }, %{delta_scores: [-1000, 2000, -1000], shuugi: [0, 0, 0]})
   end
@@ -279,8 +270,7 @@ defmodule RiichiAdvanced.ZanScoringTest do
       %{"type" => "buttons_pressed", "buttons" => [nil, %{"button" => "tsumo"}, nil]}
     ], %{
       south: %{
-        yaku: [{"Tsumo", [1, "Han"]}, {"Pinfu", [1, "Han"]}],
-        yaku2: []
+        yaku: [{"Tsumo", [1, "Han"]}, {"Pinfu", [1, "Han"]}]
       }
     }, %{delta_scores: [-1000, 2000, -1000], shuugi: [0, 0, 0]})
   end
@@ -303,8 +293,7 @@ defmodule RiichiAdvanced.ZanScoringTest do
       %{"type" => "buttons_pressed", "buttons" => [nil, %{"button" => "tsumo"}, nil]}
     ], %{
       south: %{
-        yaku: [{"Tsumo", [1, "Han"]}, {"Pinfu", [1, "Han"]}, {"Aka", [1, "Han", 1, "⛀"]}],
-        yaku2: []
+        yaku: [{"Tsumo", [1, "Han"]}, {"Pinfu", [1, "Han"]}, {"Aka", [1, "Han", 1, "⛀"]}]
       }
     }, %{delta_scores: [-3000, 4000, -1000], shuugi: [-1, 2, -1]})
   end
@@ -327,8 +316,7 @@ defmodule RiichiAdvanced.ZanScoringTest do
       %{"type" => "buttons_pressed", "buttons" => [nil, %{"button" => "tsumo"}, nil]}
     ], %{
       south: %{
-        yaku: [{"Tsumo", [1, "Han"]}, {"Pinfu", [1, "Han"]}, {"Aka", [2, "Han", 2, "⛀"]}],
-        yaku2: []
+        yaku: [{"Tsumo", [1, "Han"]}, {"Pinfu", [1, "Han"]}, {"Aka", [2, "Han", 2, "⛀"]}]
       }
     }, %{delta_scores: [-5000, 8000, -3000], shuugi: [-2, 4, -2]})
   end
@@ -350,8 +338,7 @@ defmodule RiichiAdvanced.ZanScoringTest do
       %{"type" => "buttons_pressed", "buttons" => [nil, %{"button" => "ron"}, nil]}
     ], %{
       south: %{
-        yaku: [{"Pinfu", [1, "Han"]}],
-        yaku2: []
+        yaku: [{"Pinfu", [1, "Han"]}]
       }
     }, %{delta_scores: [0, 1000, -1000], shuugi: [0, 0, 0]})
   end
@@ -373,8 +360,7 @@ defmodule RiichiAdvanced.ZanScoringTest do
       %{"type" => "buttons_pressed", "buttons" => [nil, %{"button" => "ron"}, nil]}
     ], %{
       south: %{
-        yaku: [{"Aka", [1, "Han", 1, "⛀"]}, {"Pinfu", [1, "Han"]}],
-        yaku2: []
+        yaku: [{"Aka", [1, "Han", 1, "⛀"]}, {"Pinfu", [1, "Han"]}]
       }
     }, %{delta_scores: [0, 2000, -2000], shuugi: [0, 1, -1]})
   end
@@ -396,8 +382,7 @@ defmodule RiichiAdvanced.ZanScoringTest do
       %{"type" => "buttons_pressed", "buttons" => [nil, %{"button" => "ron"}, nil]}
     ], %{
       south: %{
-        yaku: [{"Aka", [1, "Han", 1, "⛀"]}, {"Tanyao", [1, "Han"]}, {"Pinfu", [1, "Han"]}],
-        yaku2: []
+        yaku: [{"Aka", [1, "Han", 1, "⛀"]}, {"Tanyao", [1, "Han"]}, {"Pinfu", [1, "Han"]}]
       }
     }, %{delta_scores: [0, 4000, -4000], shuugi: [0, 1, -1]})
   end
@@ -419,8 +404,7 @@ defmodule RiichiAdvanced.ZanScoringTest do
       %{"type" => "buttons_pressed", "buttons" => [nil, %{"button" => "ron"}, nil]}
     ], %{
       south: %{
-        yaku: [{"Aka", [2, "Han", 2, "⛀"]}, {"Tanyao", [1, "Han"]}, {"Pinfu", [1, "Han"]}],
-        yaku2: []
+        yaku: [{"Aka", [2, "Han", 2, "⛀"]}, {"Tanyao", [1, "Han"]}, {"Pinfu", [1, "Han"]}]
       }
     }, %{delta_scores: [0, 8000, -8000], shuugi: [0, 2, -2]})
   end
@@ -442,8 +426,7 @@ defmodule RiichiAdvanced.ZanScoringTest do
       %{"type" => "buttons_pressed", "buttons" => [%{"button" => "ron"}, nil, nil]}
     ], %{
       east: %{
-        yaku: [{"Double Riichi", [2, "Han"]}, {"Ippatsu", [1, "Han", 1, "⛀"]}, {"Pinfu", [1, "Han"]}],
-        yaku2: []
+        yaku: [{"Double Riichi", [2, "Han"]}, {"Ippatsu", [1, "Han", 1, "⛀"]}, {"Pinfu", [1, "Han"]}]
       }
     }, %{delta_scores: [13000, -12000, 0], shuugi: [1, -1, 0]})
   end
@@ -506,8 +489,7 @@ defmodule RiichiAdvanced.ZanScoringTest do
       %{"type" => "buttons_pressed", "buttons" => [nil, %{"button" => "ron"}, nil]}
     ], %{
       south: %{
-        yaku: [{"Dora", [3, "Han"]}, {"Round Wind", [1, "Han"]}],
-        yaku2: []
+        yaku: [{"Dora", [3, "Han"]}, {"Round Wind", [1, "Han"]}]
       }
       # finishing at 50000/58000/42000 means 0/8/-8 chips
     }, %{delta_scores: [0, 8000, -8000], shuugi: [0, 8, -8]})

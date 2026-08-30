@@ -79,7 +79,7 @@ defmodule RiichiAdvanced.TestUtils do
       expected_winner
       |> Enum.map(fn {k, v} ->
           {expected, actual} = {v, Map.get(winner, k)}
-          if k in [:yaku, :yaku2] do
+          if k == :yaku do
             {k, MapSet.new(expected), MapSet.new(actual)}
           else
             {k, expected, actual}
@@ -287,14 +287,12 @@ defmodule RiichiAdvanced.TestUtils do
   #   hand: ["2m", "2m", "2p", "2p", "2p", "2p", "2s", "2s", "2s", "2s", "7z", "7z", "7z", "7z"],
   #   win_button: "ron",
   #   yaku: [],
-  #   yaku2: []
   # )
   def test_win(ruleset, mods, test_spec) do
     win_button = Keyword.get(test_spec, :win_button, "ron")
     outcome = %{
       north: %{
         yaku: Keyword.get(test_spec, :yaku, []),
-        yaku2: Keyword.get(test_spec, :yaku2, [])
       }
     }
     post_events = [

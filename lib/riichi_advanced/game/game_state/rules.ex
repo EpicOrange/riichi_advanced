@@ -46,6 +46,96 @@ defmodule RiichiAdvanced.GameState.Rules do
     {:ok, rules}
   end
 
+  defp toposort_yaku(yaku_lists, yaku_precedence, default_unit) do
+    # use this to handle values without units (old value format)
+    default_value = fn value -> if not is_list(value) do [value, default_unit] else value end end
+
+    yakus = yaku_lists
+    |> Enum.flat_map(fn {list_name, yaku_list} -> Enum.map(yaku_list, &Map.put(&1, :list_name, list_name)) end)
+    |> Enum.map(&Map.update(&1, "value", [0, ""], default_value))
+    |> Enum.map(&Map.put(&1, :key, {&1["display_name"], Enum.drop_every(&1["value"], 2)}))
+    |> Enum.map(&Map.put(&1, :value_num, &1["value"] |> Enum.at(0, 0)))
+    |> Enum.with_index()
+    |> Enum.map(fn {yaku, ix} -> yaku |> Map.put(:ix, ix) end)
+
+    # IO.inspect(Enum.map(yakus, &{&1.ix, &1["display_name"]}), limit: :infinity)
+
+    yaku_map = %{}
+    |> Map.merge(Enum.group_by(yakus, &Map.get(&1, :key)))
+    |> Map.merge(Enum.group_by(yakus, &Map.get(&1, :list_name)))
+    |> Map.merge(Enum.group_by(yakus, &Map.get(&1, :value_num)))
+    |> Map.merge(Enum.group_by(yakus, &Map.get(&1, "value")))
+    |> Map.merge(Enum.group_by(yakus, &Map.get(&1, "display_name")))
+
+    # do a pass over yakus to capture dependencies
+    # calculate dependent yaku by seeing if any conditions are dependent on other yaku
+    # i.e. "has_existing_yaku", "has_no_yaku", "has_points" (plus their negations) only
+    # yaku_deps: %{yakuX ix => [dependent yaku.keys that require evaluating yakuX first]}
+    yaku_deps = for yaku <- yakus, reduce: %{} do
+      acc ->
+        dep_ixs = yaku["when"]
+        |> List.flatten()
+        |> Enum.flat_map(fn
+          %{"name" => "has_existing_yaku",     "opts" => opts} -> Enum.flat_map(opts, &Map.get(yaku_map, &1, []) |> Enum.map(fn yaku -> yaku.ix end))
+          %{"name" => "not_has_existing_yaku", "opts" => opts} -> Enum.flat_map(opts, &Map.get(yaku_map, &1, []) |> Enum.map(fn yaku -> yaku.ix end))
+          "has_no_yaku"                 -> Enum.map(yakus, & &1.ix)
+          "not_has_no_yaku"             -> Enum.map(yakus, & &1.ix)
+          %{"name" => "has_points"}     -> Enum.map(yakus, & &1.ix)
+          %{"name" => "not_has_points"} -> Enum.map(yakus, & &1.ix)
+          _ -> []
+        end)
+        for dep_ix <- dep_ixs, reduce: acc do
+          acc -> Map.update(acc, dep_ix, [yaku.key], &[yaku.key | &1])
+        end
+    end
+
+    # IO.inspect(yaku_deps, limit: :infinity, label: "yaku_deps")
+
+    # actually perform toposort
+    {toposorted, _visited} = for yaku <- yakus, reduce: {[], MapSet.new()} do
+      {acc, visited} -> _toposort_yaku(yaku, yaku_deps, yaku_map, yaku_precedence, acc, visited)
+    end
+    
+    # IO.inspect(Enum.map(acc, &{&1.ix, &1["display_name"]}), limit: :infinity)
+
+    skip_map = for {prec_from, precs_to} <- yaku_precedence,
+                   yaku <- Map.get(yaku_map, prec_from, []),
+                   yaku2 <- Enum.flat_map(precs_to, &Map.get(yaku_map, &1, [])),
+                   reduce: %{} do
+      acc -> Map.update(acc, yaku.key, MapSet.new([yaku2.key]), &MapSet.put(&1, yaku2.key))
+    end
+
+    # take transitive closure of skip_map by traversing it in backwards topological order
+    skip_map = for %{key: key} <- Enum.reverse(toposorted), reduce: skip_map do
+      skip_map when is_map_key(skip_map, key) ->
+        for key2 <- Map.get(skip_map, key, MapSet.new()), reduce: skip_map do
+          skip_map -> Map.update!(skip_map, key, &MapSet.union(&1, Map.get(skip_map, key2, MapSet.new())))
+        end
+      skip_map -> skip_map
+    end
+
+    # IO.inspect(skip_map, limit: :infinity, label: "skip_map")
+
+    {toposorted, skip_map}
+  end
+
+  defp _toposort_yaku(yaku, yaku_deps, yaku_map, yaku_precedence, acc, visited) do
+    if yaku.ix in visited do {acc, visited} else
+      # look up dependent_yaku using ix
+      dependent_yaku = Map.get(yaku_deps, yaku.ix, [])
+      |> Enum.flat_map(&Map.get(yaku_map, &1, []))
+
+      # look up overridden_yaku using a variety of keys
+      overridden_yaku = Enum.flat_map([:key, :list_name, :value_num, "value", "display_name"], &Map.get(yaku_precedence, Map.get(yaku, &1), []))
+      |> Enum.flat_map(&Map.get(yaku_map, &1, []))
+
+      {acc, visited} = for yaku2 <- dependent_yaku ++ overridden_yaku, yaku.ix != yaku2.ix, reduce: {acc, MapSet.put(visited, yaku.ix)} do
+        {acc, visited} -> _toposort_yaku(yaku2, yaku_deps, yaku_map, yaku_precedence, acc, visited)
+      end
+      {[yaku | acc], visited}
+    end
+  end
+
   def load_rules(ruleset_json, ruleset \\ "unknown") do
     with {:ok, rules} <- decode_ruleset_json(ruleset_json, ruleset),
          {:ok, rules} <- replace_constants(rules),
@@ -60,30 +150,14 @@ defmodule RiichiAdvanced.GameState.Rules do
       # add the json
       :ets.insert(rules_ref, {:ruleset_json_unformatted, ruleset_json})
 
-      # yaku list names in yaku_precedence add all yaku of specified yaku lists
-      yaku_precedence = get(rules_ref, "yaku_precedence")
+      # then toposort all yaku by precedence
       score_rules = get(rules_ref, "score_calculation")
-      if yaku_precedence != nil and score_rules != nil do
-        yaku_list_names =
-             Map.get(score_rules, "yaku_lists", [])
-          ++ Map.get(score_rules, "yaku2_lists", [])
-          ++ Map.get(score_rules, "extra_yaku_lists", [])
-        # yaku list => names of yaku in that list
-        yaku_name_map = for yaku_list_name <- yaku_list_names, into: %{} do
-          yaku_list = get(rules_ref, yaku_list_name, [])
-          {yaku_list_name, Enum.map(yaku_list, & &1["display_name"]) |> Enum.uniq()}
-        end
-        yaku_precedence =
-          for {name, overrides} <- yaku_precedence,
-              override <- overrides,
-              Enum.member?(yaku_list_names, override),
-              reduce: yaku_precedence do
-          yaku_precedence ->
-            overrides_to_add = Map.get(yaku_name_map, override, [])
-            Map.update(yaku_precedence, name, overrides_to_add, &overrides_to_add ++ &1)
-        end
-        :ets.insert(rules_ref, {"yaku_precedence", yaku_precedence})
-      end
+      yaku_lists = Map.get(score_rules, "yaku_lists", []) -- Map.get(score_rules, "extra_yaku_lists", [])
+      {toposorted_yaku, skip_map} = yaku_lists
+      |> Enum.map(&{&1, get(rules_ref, &1, [])})
+      |> toposort_yaku(get(rules_ref, "yaku_precedence", %{}), score_rules["point_name"])
+      :ets.insert(rules_ref, {:yaku, toposorted_yaku})
+      :ets.insert(rules_ref, {:yaku_skip_map, skip_map})
 
       # generate shanten definitions if they don't exist
       shantens = [:win, :tenpai, :iishanten, :ryanshanten, :sanshanten, :suushanten, :uushanten, :roushanten]

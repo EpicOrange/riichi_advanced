@@ -51,12 +51,6 @@ defmodule RiichiAdvancedWeb.WinWindowComponent do
                 <div class="han-counter"><%= display_points(@lang, points) %></div>
               </div>
             <% end %>
-            <%= for {name, points} <- @winner.yaku2 do %>
-              <div class="yaku">
-                <div class={["yaku-text", String.length(name) >= 12 && "small", String.length(name) >= 20 && "tiny"]}><%= dt(@lang, name) %></div>
-                <div class="han-counter"><%= display_points(@lang, points) %></div>
-              </div>
-            <% end %>
           </div>
           <div class="score-display">
             <%= if Map.has_key?(@winner, :total_points) do %>

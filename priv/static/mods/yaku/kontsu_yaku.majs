@@ -358,18 +358,13 @@ define_yaku yakuman, "Yondoukon", [1, "★"], match(["hand", "calls", "winning_t
 define_yaku meta_yaku, "Toikon", [1, "Han"], @closed_hand and has_existing_yaku("Toikon")
 define_yaku meta_yaku, "Sandoukon", [1, "Han"], @closed_hand and has_existing_yaku("Sandoukon")
 
-define_yaku_precedence "Yondoukon", ["Sandoukon", "Round Wind", "Seat Wind", "Toitoi", "Sanankou", "Sanshoku Doukou", "Isshoku Yonjun"]
-define_yaku_precedence "Sandoukon", ["Ryandoukon", "Isshoku Sanjun"]
+define_yaku_precedence "Yondoukon", ["Sandoukon"]
+define_yaku_precedence "Sandoukon", ["Ryandoukon"]
 define_yaku_precedence "Kokushi Musou", ["Mixed Winds", "Mini-Sangen"]
 define_yaku_precedence "Kokushi Musou Juusan Menmachi", ["Mixed Winds", "Mini-Sangen"]
 
 # now forbid certain yaku based on max_triplets and max_kontsu
-define_yaku meta_yaku, "_no_triplets", [0, "Han"], max_triplets == 0
-define_yaku meta_yaku, "_one_triplet", [0, "Han"], max_triplets <= 1
-define_yaku meta_yaku, "_no_kontsu", [0, "Han"], max_kontsu == 0
-define_yaku meta_yaku, "_one_kontsu", [0, "Han"], max_kontsu <= 1
-
-define_yaku_precedence "_no_triplets", ["_no_triplets", "Haku", "Hatsu", "Chun", "Round Wind", "Seat Wind"]
-define_yaku_precedence "_one_triplet", ["_one_triplet", "Toitoi", "Sanshoku Doukou", "Sanankou", "Suuankou", "Suuankou Tanki", "Shousuushii", "Daisuushii", "Daisangen"]
-define_yaku_precedence "_no_kontsu", ["_no_kontsu", "Mini-Sangen", "Mixed Winds"]
-define_yaku_precedence "_one_kontsu", ["_one_kontsu", "Toikon", "Sandoukon", "Yondoukon"]
+define_yaku meta_yaku, "_no_triplets", [0, "Han"], max_triplets == 0, ["_no_triplets", "Haku", "Hatsu", "Chun", "Round Wind", "Seat Wind"]
+define_yaku meta_yaku, "_one_triplet", [0, "Han"], max_triplets <= 1, ["_one_triplet", "Toitoi", "Sanshoku Doukou", "Sanankou", "Suuankou", "Suuankou Tanki", "Shousuushii", "Daisuushii", "Daisangen", "Isshoku Yonjun"]
+define_yaku meta_yaku, "_no_kontsu", [0, "Han"], max_kontsu == 0, ["_no_kontsu", "Mini-Sangen", "Mixed Winds"]
+define_yaku meta_yaku, "_one_kontsu", [0, "Han"], max_kontsu <= 1, ["_one_kontsu", "Toikon", "Sandoukon", "Yondoukon"]

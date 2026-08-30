@@ -24,7 +24,6 @@ defmodule RiichiAdvanced.YakuTest.RiichiLocalYaku do
     ], %{
       east: %{
         yaku: [{"Sanankou", [2, "Han"]}, {"Tanyao", [1, "Han"]}, {"Ketsupaihou", [1, "Han"]}],
-        yaku2: [],
         minipoints: 50,
         score: 12000
       }
@@ -55,7 +54,6 @@ defmodule RiichiAdvanced.YakuTest.RiichiLocalYaku do
     ], %{
       east: %{
         yaku: [{"Sanankou", [2, "Han"]}, {"Tanyao", [1, "Han"]}, {"Chinchii Toushii", [4, "Han"]}],
-        yaku2: [],
         minipoints: 50,
         score: 18000
       }
@@ -80,7 +78,6 @@ defmodule RiichiAdvanced.YakuTest.RiichiLocalYaku do
     ], %{
       east: %{
         yaku: [{"Rentsuu Honitsu", [5, "Han"]}],
-        yaku2: [],
         minipoints: 50,
         score: 12000
       }
@@ -106,7 +103,6 @@ defmodule RiichiAdvanced.YakuTest.RiichiLocalYaku do
     ], %{
       east: %{
         yaku: [{"Dorahairi Chinroutou Chiitoitsu", [5, "Han"]}],
-        yaku2: [],
         minipoints: 25,
         score: 12000
       }

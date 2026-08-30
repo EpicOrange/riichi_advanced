@@ -1060,7 +1060,6 @@ defmodule RiichiAdvanced.GameState do
   end
 
   def calculate_wait_label(state, seat, wait, discard, index) do
-    yaku_lists = Conditions.get_yaku_lists(state)
     point_name = Rules.get(state.rules_ref, "score_calculation")["point_name"]
     point2_name = Rules.get(state.rules_ref, "score_calculation")["point2_name"]
     min_han = Rules.get(state.rules_ref, "constants", %{}) |> Map.get("min_points", 0)
@@ -1071,8 +1070,8 @@ defmodule RiichiAdvanced.GameState do
       |> Actions.advance_turn()
     else state end
     get_score = fn state, win_source ->
-      Scoring.seat_scores_points(state, yaku_lists, point_name, min_han, 0, seat, [wait], win_source)
-      or Scoring.seat_scores_points(state, yaku_lists, point2_name, min_han, 0, seat, [wait], win_source)
+      Scoring.seat_scores_points(state, point_name, min_han, 0, seat, [wait], win_source)
+      or Scoring.seat_scores_points(state, point2_name, min_han, 0, seat, [wait], win_source)
     end
     cond do
       min_han > 0 and get_score.(update_winning_tile(state, state.turn, :discard, fn _ -> wait end), :discard) -> nil
@@ -1126,7 +1125,6 @@ defmodule RiichiAdvanced.GameState do
   def get_best_minefield_hand(state, seat, tenpai_definitions, hand_length, tiles, max_results \\ 100) do
     # returns {yakuman, han, minipoints, hand}
     tile_behavior = state.players[seat].tile_behavior
-    score_rules = Rules.get(state.rules_ref, "score_calculation", %{})
     {tiles_in_hand, initial_hands, tile_behavior} = Match.prepare_tiles([tiles], tenpai_definitions, tile_behavior)
     doras = get_doras(state)
     Enum.flat_map(tenpai_definitions, &Match.__remove_match_definition({tiles_in_hand, initial_hands, tile_behavior}, &1, true))
@@ -1139,11 +1137,11 @@ defmodule RiichiAdvanced.GameState do
       state = Actions.trigger_event(state, "before_win", %{seat: seat, win_source: :discard, silent: true})
       # run before_scoring actions
       state = Actions.trigger_event(state, "before_scoring", %{seat: seat, win_source: :discard, silent: true})
-      {yaku, minipoints} = Scoring.get_yaku_from_lists(state, Map.get(score_rules, "yaku_lists", []), seat, :any, :discard)
-      {yaku2, _minipoints} = Scoring.get_yaku_from_lists(state, Map.get(score_rules, "yaku2_lists", []), seat, :any, :discard)
-      # IO.inspect({yaku, yaku2, hand})
-      han = Enum.map(yaku, fn {_name, value} -> value end) |> Enum.reduce([], &Scoring.add_yaku_values/2)
-      yakuman = Enum.map(yaku2, fn {_name, value} -> value end) |> Enum.reduce([], &Scoring.add_yaku_values/2)
+      {yaku, minipoints} = Scoring.get_yaku(state, seat, :any, :discard)
+      # IO.inspect({yaku, hand})
+      {han, yakuman} = Enum.split_with(yaku, fn {_name, value} -> Enum.at(value, 1) == "Han" end)
+      han = Enum.map(han, fn {_name, value} -> value end) |> Enum.reduce([], &Scoring.add_yaku_values/2)
+      yakuman = Enum.map(yakuman, fn {_name, value} -> value end) |> Enum.reduce([], &Scoring.add_yaku_values/2)
       {yakuman, han, minipoints, hand}
     end)
     |> Enum.max(&>=/2, fn ->

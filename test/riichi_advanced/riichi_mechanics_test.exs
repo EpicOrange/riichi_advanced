@@ -33,7 +33,6 @@ defmodule RiichiAdvanced.RiichiMechanicsTest do
     ], %{
       south: %{
         yaku: [{"Sanankou", [2, "Han"]}, {"Toitoi", [2, "Han"]}],
-        yaku2: [],
         minipoints: 50
       }
     })

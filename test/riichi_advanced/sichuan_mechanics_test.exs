@@ -306,8 +306,7 @@ defmodule RiichiAdvanced.SichuanMechanicsTest do
       %{"type" => "buttons_pressed", "buttons" => [nil, nil, nil, %{"button" => "chankan"}]}
     ], %{
       north: %{
-        yaku: [{"Robbing The Kong", [1, "Fan"]}],
-        yaku2: []
+        yaku: [{"Robbing The Kong", [1, "Fan"]}]
       }
     }, %{scores: [-2, 0, 0, 2]})
   end
@@ -341,8 +340,7 @@ defmodule RiichiAdvanced.SichuanMechanicsTest do
       %{"type" => "buttons_pressed", "buttons" => [nil, nil, nil, %{"button" => "ron"}]}
     ], %{
       north: %{
-        yaku: [{"Shoot After Kong", [1, "Fan"]}],
-        yaku2: []
+        yaku: [{"Shoot After Kong", [1, "Fan"]}]
       }
     }, %{scores: [-2, 0, 0, 2]})
   end

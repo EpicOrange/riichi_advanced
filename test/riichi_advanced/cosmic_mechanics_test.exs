@@ -35,7 +35,6 @@ defmodule RiichiAdvanced.CosmicMechanicsTest do
     ], %{
       east: %{
         yaku: [{"Chun", [1, "Han"]}],
-        yaku2: [],
         minipoints: 40
       }
     })
