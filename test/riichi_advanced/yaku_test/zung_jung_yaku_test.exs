@@ -1356,9 +1356,9 @@ defmodule RiichiAdvanced.YakuTest.ZungJungYaku do
       %{"type" => "buttons_pressed", "buttons" => [nil, %{"button" => "ron"}, nil, nil]}
     ], %{
       south: %{
-        yaku: [{"Seven Pairs", [30, "pts"]}]
+        yaku: [{"Concealed Hand", [5, "pts"]}, {"Seven Pairs", [30, "pts"]}]
       }
-    }, %{delta_scores: [-40, 90, -25, -25]})
+    }, %{delta_scores: [-55, 105, -25, -25]})
   end
 
   test "zung jung - seven pairs with duplicate" do
@@ -1378,9 +1378,9 @@ defmodule RiichiAdvanced.YakuTest.ZungJungYaku do
       %{"type" => "buttons_pressed", "buttons" => [nil, %{"button" => "ron"}, nil, nil]}
     ], %{
       south: %{
-        yaku: [{"Seven Pairs", [30, "pts"]}]
+        yaku: [{"Concealed Hand", [5, "pts"]}, {"Seven Pairs", [30, "pts"]}]
       }
-    }, %{delta_scores: [-40, 90, -25, -25]})
+    }, %{delta_scores: [-55, 105, -25, -25]})
   end
 
   test "zung jung - two kong is not seven pairs" do
