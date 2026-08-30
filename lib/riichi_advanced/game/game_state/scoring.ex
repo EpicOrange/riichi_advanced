@@ -64,13 +64,30 @@ defmodule RiichiAdvanced.GameState.Scoring do
       existing_yaku: []
     }
     yaku_skip_map = Rules.get(state.rules_ref, :yaku_skip_map, [])
-    {acc, _skips} = for yaku <- yakus, reduce: {[], MapSet.new()} do
-      {acc, skips} ->
+    {acc, _skips, _clause_cache} = for yaku <- yakus, reduce: {[], MapSet.new(), %{}} do
+      {acc, skips, clause_cache} ->
         if yaku.key not in skips do
           if Debug.debug_yaku_precedence() do
             IO.puts("Evaluating yaku #{yaku["display_name"]}")
           end
-          if Conditions.check_cnf_condition(state, yaku["when"], Map.put(context, :existing_yaku, acc)) do
+          {cond_spec, allowed_falses} = case yaku["when"] do
+            [n | cond_spec] when is_integer(n) -> {cond_spec, length(cond_spec) - n}
+            cond_spec -> {cond_spec, 0}
+          end
+          {num_falses, clause_cache} = Enum.reduce_while(cond_spec, {0, clause_cache}, fn
+            _clause, {num_falses, clause_cache} when num_falses > allowed_falses -> {:halt, {num_falses, clause_cache}}
+            clause, {num_falses, clause_cache} -> case Map.get(clause_cache, clause, nil) do
+              nil ->
+                if Conditions.check_dnf_condition(state, clause, Map.put(context, :existing_yaku, acc)) do
+                  {:cont, {num_falses, Map.put(clause_cache, clause, true)}}
+                else
+                  {:cont, {num_falses + 1, Map.put(clause_cache, clause, false)}}
+                end
+              false -> {:cont, {num_falses + 1, clause_cache}}
+              true -> {:cont, {num_falses, clause_cache}}
+            end
+          end)
+          if num_falses <= allowed_falses do
             new_skips = MapSet.union(skips, Map.get(yaku_skip_map, yaku.key, MapSet.new()))
             %{"display_name" => name, "value" => value} = yaku
             if yaku.key in new_skips do
@@ -79,14 +96,14 @@ defmodule RiichiAdvanced.GameState.Scoring do
               value = value
               |> Enum.chunk_every(2)
               |> Enum.flat_map(fn [amt, type] -> [Actions.interpret_amount(state, context, amt) |> Utils.try_integer(), type] end)
-              {[{name, value} | acc], new_skips}
+              {[{name, value} | acc], new_skips, clause_cache}
             end
-          else {acc, skips} end
+          else {acc, skips, clause_cache} end
         else
           if Debug.debug_yaku_precedence() do
             IO.puts("Skipped yaku with key #{inspect(yaku.key)} due to precedence (current yaku: #{Enum.map_join(acc, ",", & &1["display_name"])})")
           end
-          {acc, skips}
+          {acc, skips, clause_cache}
         end
     end
     acc

@@ -87,23 +87,20 @@ apply prepend, "buttons.tsumo.actions" do pao_text end
 
 # progressive counting
 
-define_yaku progressive, "_has_Mủn", [0, "Mủn"], has_points(1, "Mủn")
-define_yaku meta_yaku, "Progressive Counting", [3, "Phán"], has_existing_yaku("_has_Mủn", "All Sets")
-define_yaku meta_yaku, "Progressive Counting", [3, "Phán"], has_existing_yaku("_has_Mủn", "All Called")
+define_yaku meta_yaku, "Progressive Counting", [3, "Phán"], has_points(1, "Mủn") and has_existing_yaku("All Sets")
+define_yaku meta_yaku, "Progressive Counting", [3, "Phán"], has_points(1, "Mủn") and has_existing_yaku("All Called")
 define_yaku meta_yaku, "Progressive Counting", [3, "Phán"],
-  has_existing_yaku("_has_Mủn", "Half Flush")
+  (has_points(1, "Mủn") and has_existing_yaku("Half Flush"))
   or has_existing_yaku("Half Flush", "All Sets", "All Called")
 define_yaku meta_yaku, "Progressive Counting", [3, "Phán"],
-  has_existing_yaku("_has_Mủn", "Big Three Dragons")
+  (has_points(1, "Mủn") and has_existing_yaku("Big Three Dragons"))
   or (has_existing_yaku("Big Three Dragons")
   and at_least(2, has_existing_yaku("Half Flush"), has_existing_yaku("All Sets"), has_existing_yaku("All Called")))
 define_yaku meta_yaku, "Progressive Counting", [3, "Phán"],
-  has_existing_yaku("_has_Mủn", "Single Wait", "All Runs", "Fully Closed Hand")
+  (has_points(1, "Mủn") and has_existing_yaku("Single Wait", "All Runs", "Fully Closed Hand"))
   or (has_existing_yaku("Single Wait", "All Runs", "Fully Closed Hand")
   and at_least(3, has_existing_yaku("Half Flush"), has_existing_yaku("All Sets"), has_existing_yaku("All Called"), has_existing_yaku("Big Three Dragons")))
 define_yaku_precedence "Progressive Counting", ["Small No Jokers Bonus"]
-# clear temporary marker yaku
-define_yaku meta_yaku, "_clear_has_Mủn", [0, "Mủn"], has_existing_yaku("_has_Mủn"), ["_has_Mủn", "_clear_has_Mủn"]
 
 def get_base_score do
   cond do
