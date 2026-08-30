@@ -119,7 +119,7 @@ defmodule RiichiAdvanced.YakuTest.VietnameseYaku do
     })
   end
 
-  test "vietnamese - true nfnl scores with throwing jokers" do
+  test "vietnamese - true nfnl scores with discarding jokers" do
     TestUtils.test_yaku_advanced("vietnamese", [], """
     {
       "starting_hand": {
@@ -149,7 +149,7 @@ defmodule RiichiAdvanced.YakuTest.VietnameseYaku do
     ], %{
       east: %{
         yaku: [
-          {"Throwing Flowers/Jokers", [1, "Mủn"]},
+          {"Discarding Flowers/Jokers", [1, "Mủn"]},
           {"True No Flowers, No Leaves", [1, "Mủn"]},
         ],
       }
@@ -319,7 +319,7 @@ defmodule RiichiAdvanced.YakuTest.VietnameseYaku do
     })
   end
 
-  test "vietnamese - throwing flowers/jokers" do
+  test "vietnamese - discarding flowers/jokers" do
     TestUtils.test_yaku_advanced("vietnamese", [], """
     {
       "starting_hand": {
@@ -348,12 +348,12 @@ defmodule RiichiAdvanced.YakuTest.VietnameseYaku do
       %{"type" => "buttons_pressed", "buttons" => [%{"button" => "nfnl1"}, nil, nil, nil]}
     ], %{
       east: %{
-        yaku: [{"Throwing Flowers/Jokers", [1, "Mủn"]}],
+        yaku: [{"Discarding Flowers/Jokers", [1, "Mủn"]}],
       }
     })
   end
 
-  test "vietnamese - throwing flowers can start with a single flower if dealer" do
+  test "vietnamese - discarding flowers can start with a single flower if dealer" do
     TestUtils.test_yaku_advanced("vietnamese", [], """
     {
       "starting_hand": {
@@ -382,12 +382,12 @@ defmodule RiichiAdvanced.YakuTest.VietnameseYaku do
       %{"type" => "buttons_pressed", "buttons" => [%{"button" => "nfnl1"}, nil, nil, nil]}
     ], %{
       east: %{
-        yaku: [{"Throwing Flowers/Jokers", [1, "Mủn"]}],
+        yaku: [{"Discarding Flowers/Jokers", [1, "Mủn"]}],
       }
     })
   end
 
-  test "vietnamese - throwing flowers/jokers doesn't award extra points for 1 extra flower/joker" do
+  test "vietnamese - discarding flowers/jokers doesn't award extra points for 1 extra flower/joker" do
     TestUtils.test_yaku_advanced("vietnamese", [], """
     {
       "starting_hand": {
@@ -420,12 +420,12 @@ defmodule RiichiAdvanced.YakuTest.VietnameseYaku do
       %{"type" => "buttons_pressed", "buttons" => [%{"button" => "nfnl1"}, nil, nil, nil]}
     ], %{
       east: %{
-        yaku: [{"Throwing Flowers/Jokers", [1, "Mủn"]}],
+        yaku: [{"Discarding Flowers/Jokers", [1, "Mủn"]}],
       }
     })
   end
 
-  test "vietnamese - throwing flowers/jokers awards extra points for 2 extra flower/jokers" do
+  test "vietnamese - discarding flowers/jokers awards extra points for 2 extra flower/jokers" do
     TestUtils.test_yaku_advanced("vietnamese", [], """
     {
       "starting_hand": {
@@ -462,12 +462,12 @@ defmodule RiichiAdvanced.YakuTest.VietnameseYaku do
       %{"type" => "buttons_pressed", "buttons" => [%{"button" => "nfnl1"}, nil, nil, nil]}
     ], %{
       east: %{
-        yaku: [{"Throwing Flowers/Jokers", [2, "Mủn"]}],
+        yaku: [{"Discarding Flowers/Jokers", [2, "Mủn"]}],
       }
     })
   end
 
-  test "vietnamese - throwing flowers" do
+  test "vietnamese - discarding flowers" do
     TestUtils.test_yaku_advanced("vietnamese", [], """
     {
       "starting_hand": {
@@ -495,12 +495,12 @@ defmodule RiichiAdvanced.YakuTest.VietnameseYaku do
       %{"type" => "buttons_pressed", "buttons" => [%{"button" => "nfnl2"}, nil, nil, nil]}
     ], %{
       east: %{
-        yaku: [{"Throwing Flowers", [1, "Mủn"]}],
+        yaku: [{"Discarding Flowers", [1, "Mủn"]}],
       }
     })
   end
 
-  test "vietnamese - throwing flowers cancelled by discarding something else after declining win" do
+  test "vietnamese - discarding flowers cannot discard jokers" do
     TestUtils.test_yaku_advanced("vietnamese", [], """
     {
       "starting_hand": {
@@ -509,7 +509,7 @@ defmodule RiichiAdvanced.YakuTest.VietnameseYaku do
         "west": ["1m", "4m", "7m", "2p", "5p", "8p", "3s", "7s", "9s", "0z", "2z", "3z", "4z"],
         "north": ["1m", "3m", "7m", "2p", "5p", "8p", "3s", "7s", "9s", "0z", "2z", "4s", "5s"]
       },
-      "starting_draws": ["1f", "4s", "2s", "3p", "2f", "4s", "5s", "5s", "3f", "8s", "8s", "8s", "9m", "9m", "0z", "0z", "4g", "9p"]
+      "starting_draws": ["1f", "4s", "2s", "3p", "2f", "4s", "5s", "5s", "3f", "8s", "8s", "8s", "2j", "9m", "0z", "0z", "4g"]
     }
     """, [
       %{"type" => "buttons_pressed", "buttons" => [%{"button" => "start_no_flower"}, nil, nil, nil]},
@@ -528,25 +528,106 @@ defmodule RiichiAdvanced.YakuTest.VietnameseYaku do
       %{"type" => "discard", "tile" => "8s", "player" => 1, "tsumogiri" => true},
       %{"type" => "discard", "tile" => "8s", "player" => 2, "tsumogiri" => true},
       %{"type" => "discard", "tile" => "8s", "player" => 3, "tsumogiri" => true},
-      %{"type" => "discard", "tile" => "9m", "player" => 0, "tsumogiri" => true},
+      %{"type" => "discard", "tile" => "2j", "player" => 0, "tsumogiri" => true}, # offending discard
       %{"type" => "discard", "tile" => "9m", "player" => 1, "tsumogiri" => true},
       %{"type" => "discard", "tile" => "0z", "player" => 2, "tsumogiri" => true},
       %{"type" => "discard", "tile" => "0z", "player" => 3, "tsumogiri" => true},
       %{"type" => "discard", "tile" => "4g", "player" => 0, "tsumogiri" => true},
-      %{"type" => "discard", "tile" => "9p", "player" => 1, "tsumogiri" => true},
     ], :no_winners)
   end
 
-  test "vietnamese - throwing blue jokers counts 2j as a blue joker" do
+  test "vietnamese - discarding flowers can discard honors" do
     TestUtils.test_yaku_advanced("vietnamese", [], """
     {
       "starting_hand": {
-        "east": ["2j", "3m", "4m", "4m", "7m", "9m", "7p", "7p", "8j", "5s", "6s", "7j", "6z"],
+        "east": ["2m", "3m", "4m", "4m", "7m", "9m", "7p", "7p", "4s", "5s", "6s", "6s", "6s"],
+        "south": ["1m", "4m", "7m", "2p", "5p", "8p", "3s", "7s", "9s", "1z", "2z", "3z", "4z"],
+        "west": ["1m", "4m", "7m", "2p", "5p", "8p", "3s", "7s", "9s", "0z", "2z", "3z", "4z"],
+        "north": ["1m", "3m", "7m", "2p", "5p", "8p", "3s", "7s", "9s", "0z", "2z", "4s", "5s"]
+      },
+      "starting_draws": ["1f", "4s", "2s", "3p", "2f", "4s", "5s", "5s", "3f", "8s", "8s", "8s", "2z", "9m", "0z", "0z", "4g"]
+    }
+    """, [
+      %{"type" => "buttons_pressed", "buttons" => [%{"button" => "start_no_flower"}, nil, nil, nil]},
+      %{"type" => "buttons_pressed", "buttons" => [nil, %{"button" => "start_no_flower"}, nil, nil]},
+      %{"type" => "buttons_pressed", "buttons" => [nil, nil, %{"button" => "start_no_flower"}, nil]},
+      %{"type" => "buttons_pressed", "buttons" => [nil, nil, nil, %{"button" => "start_no_flower"}]},
+      %{"type" => "discard", "tile" => "1f", "player" => 0, "tsumogiri" => true},
+      %{"type" => "discard", "tile" => "4s", "player" => 1, "tsumogiri" => true},
+      %{"type" => "discard", "tile" => "2s", "player" => 2, "tsumogiri" => true},
+      %{"type" => "discard", "tile" => "3p", "player" => 3, "tsumogiri" => true},
+      %{"type" => "discard", "tile" => "2f", "player" => 0, "tsumogiri" => true},
+      %{"type" => "discard", "tile" => "4s", "player" => 1, "tsumogiri" => true},
+      %{"type" => "discard", "tile" => "5s", "player" => 2, "tsumogiri" => true},
+      %{"type" => "discard", "tile" => "5s", "player" => 3, "tsumogiri" => true},
+      %{"type" => "discard", "tile" => "3f", "player" => 0, "tsumogiri" => true},
+      %{"type" => "discard", "tile" => "8s", "player" => 1, "tsumogiri" => true},
+      %{"type" => "discard", "tile" => "8s", "player" => 2, "tsumogiri" => true},
+      %{"type" => "discard", "tile" => "8s", "player" => 3, "tsumogiri" => true},
+      %{"type" => "discard", "tile" => "2z", "player" => 0, "tsumogiri" => true}, # ok
+      %{"type" => "discard", "tile" => "9m", "player" => 1, "tsumogiri" => true},
+      %{"type" => "discard", "tile" => "0z", "player" => 2, "tsumogiri" => true},
+      %{"type" => "discard", "tile" => "0z", "player" => 3, "tsumogiri" => true},
+      %{"type" => "discard", "tile" => "4g", "player" => 0, "tsumogiri" => true},
+      %{"type" => "buttons_pressed", "buttons" => [%{"button" => "nfnl2"}, nil, nil, nil]},
+    ], %{
+      east: %{
+        yaku: [{"Discarding Flowers", [2, "Mủn"]}],
+      }
+    })
+  end
+
+  test "vietnamese - discarding flowers not cancelled by discarding number tile after declining win" do
+    TestUtils.test_yaku_advanced("vietnamese", [], """
+    {
+      "starting_hand": {
+        "east": ["2m", "3m", "4m", "4m", "7m", "9m", "7p", "7p", "4s", "5s", "6s", "6s", "6s"],
+        "south": ["1m", "4m", "7m", "2p", "5p", "8p", "3s", "7s", "9s", "1z", "2z", "3z", "4z"],
+        "west": ["1m", "4m", "7m", "2p", "5p", "8p", "3s", "7s", "9s", "0z", "2z", "3z", "4z"],
+        "north": ["1m", "3m", "7m", "2p", "5p", "8p", "3s", "7s", "9s", "0z", "2z", "4s", "5s"]
+      },
+      "starting_draws": ["1f", "4s", "2s", "3p", "2f", "4s", "5s", "5s", "3f", "8s", "8s", "8s", "9m", "9m", "0z", "0z", "4g"]
+    }
+    """, [
+      %{"type" => "buttons_pressed", "buttons" => [%{"button" => "start_no_flower"}, nil, nil, nil]},
+      %{"type" => "buttons_pressed", "buttons" => [nil, %{"button" => "start_no_flower"}, nil, nil]},
+      %{"type" => "buttons_pressed", "buttons" => [nil, nil, %{"button" => "start_no_flower"}, nil]},
+      %{"type" => "buttons_pressed", "buttons" => [nil, nil, nil, %{"button" => "start_no_flower"}]},
+      %{"type" => "discard", "tile" => "1f", "player" => 0, "tsumogiri" => true},
+      %{"type" => "discard", "tile" => "4s", "player" => 1, "tsumogiri" => true},
+      %{"type" => "discard", "tile" => "2s", "player" => 2, "tsumogiri" => true},
+      %{"type" => "discard", "tile" => "3p", "player" => 3, "tsumogiri" => true},
+      %{"type" => "discard", "tile" => "2f", "player" => 0, "tsumogiri" => true},
+      %{"type" => "discard", "tile" => "4s", "player" => 1, "tsumogiri" => true},
+      %{"type" => "discard", "tile" => "5s", "player" => 2, "tsumogiri" => true},
+      %{"type" => "discard", "tile" => "5s", "player" => 3, "tsumogiri" => true},
+      %{"type" => "discard", "tile" => "3f", "player" => 0, "tsumogiri" => true},
+      %{"type" => "discard", "tile" => "8s", "player" => 1, "tsumogiri" => true},
+      %{"type" => "discard", "tile" => "8s", "player" => 2, "tsumogiri" => true},
+      %{"type" => "discard", "tile" => "8s", "player" => 3, "tsumogiri" => true},
+      %{"type" => "discard", "tile" => "9m", "player" => 0, "tsumogiri" => true}, # ok
+      %{"type" => "discard", "tile" => "9m", "player" => 1, "tsumogiri" => true},
+      %{"type" => "discard", "tile" => "0z", "player" => 2, "tsumogiri" => true},
+      %{"type" => "discard", "tile" => "0z", "player" => 3, "tsumogiri" => true},
+      %{"type" => "discard", "tile" => "4g", "player" => 0, "tsumogiri" => true},
+      %{"type" => "buttons_pressed", "buttons" => [%{"button" => "nfnl2"}, nil, nil, nil]},
+    ], %{
+      east: %{
+        yaku: [{"Discarding Flowers", [2, "Mủn"]}],
+      }
+    })
+  end
+
+  test "vietnamese - discarding blue jokers counts 2j as a blue joker" do
+    TestUtils.test_yaku_advanced("vietnamese", [], """
+    {
+      "starting_hand": {
+        "east": ["2j", "3m", "4m", "4m", "7m", "9m", "7p", "7p", "8j", "5s", "6s", "6z", "6z"],
         "south": ["1m", "4m", "7m", "2p", "5p", "8p", "3s", "7s", "9s", "1z", "2z", "3z", "4z"],
         "west": ["1m", "4m", "7m", "2p", "5p", "8p", "3s", "7s", "9s", "0z", "2z", "3z", "4z"],
         "north": ["1m", "3m", "7m", "2p", "5p", "8p", "3s", "7s", "9s", "0z", "2z", "4s", "4s"]
       },
-      "starting_draws": ["1p", "4s", "2s", "3p", "1p", "4s", "5s", "5s", "1p", "8s"]
+      "starting_draws": ["1p", "4s", "2s", "3p", "1p", "4s", "5s", "5s", "7j"]
     }
     """, [
       %{"type" => "buttons_pressed", "buttons" => [%{"button" => "start_no_flower"}, nil, nil, nil]},
@@ -565,9 +646,114 @@ defmodule RiichiAdvanced.YakuTest.VietnameseYaku do
       %{"type" => "buttons_pressed", "buttons" => [%{"button" => "nfnl2"}, nil, nil, nil]}
     ], %{
       east: %{
-        yaku: [{"Throwing Blue Jokers", [1, "Mủn"]}],
+        yaku: [{"Discarding Blue Jokers", [1, "Mủn"]}],
       }
     })
+  end
+
+  test "vietnamese - discarding blue jokers can discard non-jokers" do
+    TestUtils.test_yaku_advanced("vietnamese", [], """
+    {
+      "starting_hand": {
+        "east": ["6j", "3m", "4m", "4m", "7m", "9m", "7p", "7p", "8j", "5s", "6s", "6z", "6z"],
+        "south": ["1m", "4m", "7m", "2p", "5p", "8p", "3s", "7s", "9s", "1z", "2z", "3z", "4z"],
+        "west": ["1m", "4m", "7m", "2p", "5p", "8p", "3s", "7s", "9s", "0z", "2z", "3z", "4z"],
+        "north": ["1m", "3m", "7m", "2p", "5p", "8p", "3s", "7s", "9s", "0z", "2z", "4s", "4s"]
+      },
+      "starting_draws": ["1p", "4s", "2s", "3p", "1p", "4s", "5s", "5s", "2s", "6s", "7s", "8s", "2z", "6s", "7s", "8s", "7j"]
+    }
+    """, [
+      %{"type" => "buttons_pressed", "buttons" => [%{"button" => "start_no_flower"}, nil, nil, nil]},
+      %{"type" => "buttons_pressed", "buttons" => [nil, %{"button" => "start_no_flower"}, nil, nil]},
+      %{"type" => "buttons_pressed", "buttons" => [nil, nil, %{"button" => "start_no_flower"}, nil]},
+      %{"type" => "buttons_pressed", "buttons" => [nil, nil, nil, %{"button" => "start_no_flower"}]},
+      %{"type" => "discard", "tile" => "6j", "player" => 0, "tsumogiri" => false},
+      %{"type" => "discard", "tile" => "4s", "player" => 1, "tsumogiri" => true},
+      %{"type" => "discard", "tile" => "2s", "player" => 2, "tsumogiri" => true},
+      %{"type" => "discard", "tile" => "3p", "player" => 3, "tsumogiri" => true},
+      %{"type" => "discard", "tile" => "8j", "player" => 0, "tsumogiri" => false},
+      %{"type" => "discard", "tile" => "4s", "player" => 1, "tsumogiri" => true},
+      %{"type" => "discard", "tile" => "5s", "player" => 2, "tsumogiri" => true},
+      %{"type" => "discard", "tile" => "5s", "player" => 3, "tsumogiri" => true},
+      %{"type" => "discard", "tile" => "2s", "player" => 0, "tsumogiri" => true}, # ok
+      %{"type" => "discard", "tile" => "6s", "player" => 1, "tsumogiri" => true},
+      %{"type" => "discard", "tile" => "7s", "player" => 2, "tsumogiri" => true},
+      %{"type" => "discard", "tile" => "8s", "player" => 3, "tsumogiri" => true},
+      %{"type" => "discard", "tile" => "2z", "player" => 0, "tsumogiri" => true}, # ok
+      %{"type" => "discard", "tile" => "6s", "player" => 1, "tsumogiri" => true},
+      %{"type" => "discard", "tile" => "7s", "player" => 2, "tsumogiri" => true},
+      %{"type" => "discard", "tile" => "8s", "player" => 3, "tsumogiri" => true},
+      %{"type" => "discard", "tile" => "7j", "player" => 0, "tsumogiri" => true},
+      %{"type" => "buttons_pressed", "buttons" => [%{"button" => "nfnl2"}, nil, nil, nil]}
+    ], %{
+      east: %{
+        yaku: [{"Discarding Blue Jokers", [1, "Mủn"]}],
+      }
+    })
+  end
+
+  test "vietnamese - discarding blue jokers cannot discard flowers" do
+    TestUtils.test_yaku_advanced("vietnamese", [], """
+    {
+      "starting_hand": {
+        "east": ["6j", "3m", "4m", "4m", "7m", "9m", "7p", "7p", "8j", "5s", "6s", "7j", "6z"],
+        "south": ["1m", "4m", "7m", "2p", "5p", "8p", "3s", "7s", "9s", "1z", "2z", "3z", "4z"],
+        "west": ["1m", "4m", "7m", "2p", "5p", "8p", "3s", "7s", "9s", "0z", "2z", "3z", "4z"],
+        "north": ["1m", "3m", "7m", "2p", "5p", "8p", "3s", "7s", "9s", "0z", "2z", "4s", "4s"]
+      },
+      "starting_draws": ["1p", "4s", "2s", "3p", "1p", "4s", "5s", "5s", "1f", "6s", "7s", "8s", "7j"]
+    }
+    """, [
+      %{"type" => "buttons_pressed", "buttons" => [%{"button" => "start_no_flower"}, nil, nil, nil]},
+      %{"type" => "buttons_pressed", "buttons" => [nil, %{"button" => "start_no_flower"}, nil, nil]},
+      %{"type" => "buttons_pressed", "buttons" => [nil, nil, %{"button" => "start_no_flower"}, nil]},
+      %{"type" => "buttons_pressed", "buttons" => [nil, nil, nil, %{"button" => "start_no_flower"}]},
+      %{"type" => "discard", "tile" => "6j", "player" => 0, "tsumogiri" => false},
+      %{"type" => "discard", "tile" => "4s", "player" => 1, "tsumogiri" => true},
+      %{"type" => "discard", "tile" => "2s", "player" => 2, "tsumogiri" => true},
+      %{"type" => "discard", "tile" => "3p", "player" => 3, "tsumogiri" => true},
+      %{"type" => "discard", "tile" => "8j", "player" => 0, "tsumogiri" => false},
+      %{"type" => "discard", "tile" => "4s", "player" => 1, "tsumogiri" => true},
+      %{"type" => "discard", "tile" => "5s", "player" => 2, "tsumogiri" => true},
+      %{"type" => "discard", "tile" => "5s", "player" => 3, "tsumogiri" => true},
+      %{"type" => "discard", "tile" => "1f", "player" => 0, "tsumogiri" => true}, # offending discard
+      %{"type" => "discard", "tile" => "6s", "player" => 1, "tsumogiri" => true},
+      %{"type" => "discard", "tile" => "7s", "player" => 2, "tsumogiri" => true},
+      %{"type" => "discard", "tile" => "8s", "player" => 3, "tsumogiri" => true},
+      %{"type" => "discard", "tile" => "7j", "player" => 0, "tsumogiri" => true},
+    ], :no_winners)
+  end
+
+  test "vietnamese - discarding blue jokers cannot discard red jokers" do
+    TestUtils.test_yaku_advanced("vietnamese", [], """
+    {
+      "starting_hand": {
+        "east": ["6j", "3m", "4m", "4m", "7m", "9m", "7p", "7p", "8j", "5s", "6s", "7j", "6z"],
+        "south": ["1m", "4m", "7m", "2p", "5p", "8p", "3s", "7s", "9s", "1z", "2z", "3z", "4z"],
+        "west": ["1m", "4m", "7m", "2p", "5p", "8p", "3s", "7s", "9s", "0z", "2z", "3z", "4z"],
+        "north": ["1m", "3m", "7m", "2p", "5p", "8p", "3s", "7s", "9s", "0z", "2z", "4s", "4s"]
+      },
+      "starting_draws": ["1p", "4s", "2s", "3p", "1p", "4s", "5s", "5s", "5j", "6s", "7s", "8s", "7j"]
+    }
+    """, [
+      %{"type" => "buttons_pressed", "buttons" => [%{"button" => "start_no_flower"}, nil, nil, nil]},
+      %{"type" => "buttons_pressed", "buttons" => [nil, %{"button" => "start_no_flower"}, nil, nil]},
+      %{"type" => "buttons_pressed", "buttons" => [nil, nil, %{"button" => "start_no_flower"}, nil]},
+      %{"type" => "buttons_pressed", "buttons" => [nil, nil, nil, %{"button" => "start_no_flower"}]},
+      %{"type" => "discard", "tile" => "6j", "player" => 0, "tsumogiri" => false},
+      %{"type" => "discard", "tile" => "4s", "player" => 1, "tsumogiri" => true},
+      %{"type" => "discard", "tile" => "2s", "player" => 2, "tsumogiri" => true},
+      %{"type" => "discard", "tile" => "3p", "player" => 3, "tsumogiri" => true},
+      %{"type" => "discard", "tile" => "8j", "player" => 0, "tsumogiri" => false},
+      %{"type" => "discard", "tile" => "4s", "player" => 1, "tsumogiri" => true},
+      %{"type" => "discard", "tile" => "5s", "player" => 2, "tsumogiri" => true},
+      %{"type" => "discard", "tile" => "5s", "player" => 3, "tsumogiri" => true},
+      %{"type" => "discard", "tile" => "5j", "player" => 0, "tsumogiri" => true}, # offending discard
+      %{"type" => "discard", "tile" => "6s", "player" => 1, "tsumogiri" => true},
+      %{"type" => "discard", "tile" => "7s", "player" => 2, "tsumogiri" => true},
+      %{"type" => "discard", "tile" => "8s", "player" => 3, "tsumogiri" => true},
+      %{"type" => "discard", "tile" => "7j", "player" => 0, "tsumogiri" => true},
+    ], :no_winners)
   end
 
   test "vietnamese - progressive counting with three 3-phán hands" do
@@ -772,7 +958,7 @@ defmodule RiichiAdvanced.YakuTest.VietnameseYaku do
       %{"type" => "buttons_pressed", "buttons" => [%{"button" => "tsumo"}, nil, nil, nil]}
     ], %{
       east: %{
-        yaku: [{"All Runs", [1, "Phán"]}, {"Blessing of Heaven", [2, "Mủn"]}, {"Progressive Counting", [3, "Phán"]}, {"Single Wait Fully Closed Bonus", [1, "Mủn"]}],
+        yaku: [{"All Runs", [1, "Phán"]}, {"Blessing of Heaven", [2, "Mủn"]}, {"Single Wait Fully Closed Bonus", [1, "Mủn"]}],
       }
     })
   end

@@ -91,11 +91,10 @@ define_const pc1, has_existing_yaku("All Sets")
 define_const pc2, has_existing_yaku("All Called")
 define_const pc3, has_existing_yaku("Half Flush")
 define_const pc4, has_existing_yaku("Single Wait", "All Runs", "Fully Closed Hand")
-define_const pc5, has_existing_yaku("Big Three Dragons")
-define_yaku meta_yaku, "Progressive Counting", [3, "Phán"], at_least(3, @pc1, @pc2, @pc3, @pc4, @pc5)
-define_yaku meta_yaku, "Progressive Counting", [3, "Phán"], at_least(4, @pc1, @pc2, @pc3, @pc4, @pc5)
-define_yaku meta_yaku, "Progressive Counting", [3, "Phán"], at_least(5, @pc1, @pc2, @pc3, @pc4, @pc5)
-define_yaku_precedence "Progressive Counting", ["Small No Jokers Bonus", "No Jokers Bonus"]
+define_const pc567, has_existing_yaku("Big Three Dragons") # counts thrice
+define_yaku meta_yaku, "Progressive Counting", [3, "Phán"], at_least(3, @pc1, @pc2, @pc3, @pc4, @pc567, @pc567, @pc567)
+define_yaku meta_yaku, "Progressive Counting", [3, "Phán"], at_least(4, @pc1, @pc2, @pc3, @pc4, @pc567, @pc567, @pc567)
+define_yaku meta_yaku, "Progressive Counting", [3, "Phán"], at_least(5, @pc1, @pc2, @pc3, @pc4, @pc567, @pc567, @pc567)
 
 def get_base_score do
   cond do
