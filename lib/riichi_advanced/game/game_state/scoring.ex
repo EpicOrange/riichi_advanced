@@ -37,9 +37,12 @@ defmodule RiichiAdvanced.GameState.Scoring do
   end
 
   def dedup_yaku(yaku) do
-    for {name, value} <- yaku, reduce: %{} do
-      acc -> Map.update(acc, name, value, &add_yaku_values(&1, value))
-    end |> Enum.to_list()
+    {acc, order} = for {name, value} <- yaku, reduce: {%{}, []} do
+      {acc, order} -> {Map.update(acc, name, value, &add_yaku_values(&1, value)), [name | order]}
+    end
+    order
+    |> Enum.reverse()
+    |> Enum.map(&{&1, Map.get(acc, &1)})
   end
 
 
@@ -115,6 +118,7 @@ defmodule RiichiAdvanced.GameState.Scoring do
     acc
     |> Enum.zip(existing_yaku)
     |> Enum.reject(fn {yaku, _ret} -> yaku.key in all_skipped_keys end)
+    |> Enum.sort_by(fn {yaku, _ret} -> yaku.ix end)
     |> Enum.map(fn {_yaku, ret} -> ret end)
   end
 
