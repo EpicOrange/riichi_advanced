@@ -25,16 +25,16 @@ defmodule RiichiAdvanced.YakuTest.ZanYaku do
     # "kandora",
     "yaku/open_riichi",
     %{name: "lib/yaku/sanrenkou", config: %{
-      san_list: "yaku", san_name: "Sanrenkou", san_value: 2, san_han: "Han",
+      san_name: "Sanrenkou", san_value: 2,
       suu_list: "yakuman", suu_name: "Suurenkou", suu_value: 1, suu_han: "★"
     }},
     %{name: "lib/yaku/sanpuukou", config: %{
-      shou_list: "", shou_name: "", shou_value: 0, shou_han: "",
-      dai_list: "yaku", dai_name: "Sanpuukou", dai_value: 2, dai_han: "Han"
+      dai_name: "Sanpuukou", dai_value: 2,
     }},
     %{name: "yaku/riichi_renhou", config: %{is: "Yakuman"}},
     "show_waits",
     "sanma_pei_yakuhai",
+    "lib/yaku/kansai_chiitoitsu",
     "lib/pao_standard",
     %{name: "lib/shuugi", config: %{worth: 1000, starting_shuugi: 0, pao_pays_all: true}},
     %{name: "shuugi/ippatsu", config: %{chips: 1}},

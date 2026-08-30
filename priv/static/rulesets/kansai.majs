@@ -2,11 +2,14 @@ define_base_ruleset sanma
 set display_name, "Kansai Sanma"
 set tutorial_link, "https://github.com/EpicOrange/riichi_advanced/blob/main/documentation/kansai.md"
 require "renchan"
-require "yaku/sanrenkou", %{san_name: "Sanrenkou", san_value: 2}
-require "yaku/riichi_suurenkou"
-require "yaku/sanpuukou", %{dai_name: "Sanpuukou", dai_value: 2}
-require "yaku/kansai_chiitoitsu"
-apply set_append, "default_mods", [%{name: "lib/tobi", config: %{below: 0}}, "sanma_pei_yakuhai"]
+apply set_append, "default_mods", [
+  %{name: "lib/tobi", config: %{below: 0}},
+  "sanma_pei_yakuhai",
+  %{name: "lib/yaku/sanrenkou", config: %{san_name: "Sanrenkou", san_value: 2}},
+  "lib/yaku/riichi_suurenkou",
+  %{name: "lib/yaku/sanpuukou", config: %{dai_name: "Sanpuukou", dai_value: 2}},
+  "lib/yaku/kansai_chiitoitsu",
+]
 
 define_yaku yakuman, "Manzu Chinitsu", [1, "★"], winning_hand_consists_of(["1m","2m","3m","4m","5m","6m","7m","8m","9m"]), ["Chinitsu"]
 define_yaku meta_yaku, "Honitsu Chiitoitsu", [6, "Han"], has_existing_yaku("Honitsu", "Chiitoitsu"), ["Honitsu", "Chiitoitsu"]
