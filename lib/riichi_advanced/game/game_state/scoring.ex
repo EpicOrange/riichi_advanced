@@ -83,6 +83,7 @@ defmodule RiichiAdvanced.GameState.Scoring do
           if result do
             new_skips = MapSet.union(skips, Map.get(yaku_skip_map, yaku.key, MapSet.new()))
             %{"display_name" => name, "value" => value} = yaku
+            if name in Debug.debug_specific_yaku() do IO.puts("Yaku #{inspect(yaku.key)}: passed all checks") end
             if yaku.key in new_skips do
               {acc, existing_yaku, new_skips, clause_cache} # we override ourselves
             else
@@ -91,10 +92,15 @@ defmodule RiichiAdvanced.GameState.Scoring do
               |> Enum.flat_map(fn [amt, type] -> [Actions.interpret_amount(state, context, amt) |> Utils.try_integer(), type] end)
               {[yaku | acc], [{name, value} | existing_yaku], new_skips, clause_cache}
             end
-          else {acc, existing_yaku, skips, clause_cache} end
+          else
+            if yaku["display_name"] in Debug.debug_specific_yaku() do
+              IO.inspect(clause_cache, label: "Yaku #{inspect(yaku.key)}: failed check, clause cache:", limit: :infinity)
+            end
+            {acc, existing_yaku, skips, clause_cache}
+          end
         else
-          if Debug.debug_yaku_precedence() do
-            IO.puts("Skipped yaku with key #{inspect(yaku.key)} due to precedence (current yaku: #{Enum.map_join(acc, ",", &Map.get(&1, "display_name"))})")
+          if yaku["display_name"] in Debug.debug_specific_yaku() or Debug.debug_yaku_precedence() do
+            IO.puts("Yaku #{inspect(yaku.key)}: skipped due to precedence (current yaku: #{Enum.map_join(acc, ",", &Map.get(&1, "display_name"))})")
           end
           {acc, existing_yaku, skips, clause_cache}
         end
