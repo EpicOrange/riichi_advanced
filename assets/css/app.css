@@ -2151,6 +2151,7 @@ div.visible-waits-container {
   justify-content: center;
   align-items: flex-end;
   z-index: 100;
+  pointer-events: none;
 }
 div.visible-waits {
   background: #0000007F;
