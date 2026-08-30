@@ -247,7 +247,7 @@ defmodule RiichiAdvanced.YakuTest.HochiRulesScoringTest do
   end
 
   test "hochi - double ron takes back riichi bets" do
-    TestUtils.test_yaku_advanced("hochi_rules", [%{name: "lib/yaku/riichi", config: %{bet: 1000, drawless: false}}], """
+    TestUtils.test_yaku_advanced("hochi_rules", [%{name: "lib/yaku/riichi", config: %{bet: 1000, drawless: false, double_value: 2}}], """
     {
       "starting_hand": {
         "east": ["2m", "3m", "4m", "5m", "5m", "6m", "7m", "6p", "7p", "8p", "8s", "8s", "8s"],
@@ -282,7 +282,7 @@ defmodule RiichiAdvanced.YakuTest.HochiRulesScoringTest do
   end
 
   test "hochi - double ron takes back riichi bets and splits any remainder" do
-    TestUtils.test_yaku_advanced("hochi_rules", [%{name: "lib/yaku/riichi", config: %{bet: 1000, drawless: false}}], """
+    TestUtils.test_yaku_advanced("hochi_rules", [%{name: "lib/yaku/riichi", config: %{bet: 1000, drawless: false, double_value: 2}}], """
     {
       "starting_hand": {
         "east": ["2m", "3m", "4m", "5m", "5m", "6m", "7m", "6p", "7p", "8p", "8s", "8s", "8s"],

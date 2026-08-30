@@ -9,7 +9,7 @@ require "suukaikan"
 require_after "speed_tonpuu_suukantsu"
 apply set_append, "default_mods", [
   %{name: "honba", config: %{value: 500}},
-  %{name: "lib/yaku/riichi", config: %{bet: 1000, drawless: false}},
+  %{name: "lib/yaku/riichi", config: %{bet: 1000, drawless: false, double_value: 2}},
   %{name: "oka", config: %{ante: 4}},
   %{name: "uma", config: %{_4th: -10, _3rd: -4, _2nd: 4, _1st: 10}},
   %{name: "lib/tobi", config: %{below: 0}},

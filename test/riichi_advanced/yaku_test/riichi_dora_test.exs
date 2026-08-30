@@ -3,7 +3,8 @@ defmodule RiichiAdvanced.YakuTest.RiichiDoraTest do
   alias RiichiAdvanced.TestUtils, as: TestUtils
 
   test "riichi - dora 3" do
-    TestUtils.test_yaku_advanced("riichi", [%{name: "lib/yaku/riichi", config: %{"bet" => 1000, "drawless" => false}}, %{name: "dora", config: %{"start_indicators" => 1}}], """
+    TestUtils.test_yaku_advanced("riichi", [%{name: "lib/yaku/riichi", config: %{"bet" => 1000, "drawless" => false, "double_value" => 2}
+}, %{name: "dora", config: %{"start_indicators" => 1}}], """
     {
       "starting_hand": {
         "east": ["2m", "3m", "4m", "4m", "5m", "6m", "7p", "7p", "7p", "8s", "8s", "8s", "6p"],
@@ -28,7 +29,8 @@ defmodule RiichiAdvanced.YakuTest.RiichiDoraTest do
   end
 
   test "riichi - dora 3 with jokers" do
-    TestUtils.test_yaku_advanced("riichi", [%{name: "lib/yaku/riichi", config: %{"bet" => 1000, "drawless" => false}}, %{name: "dora", config: %{"start_indicators" => 1}}, "jokers/vietnamese"], """
+    TestUtils.test_yaku_advanced("riichi", [%{name: "lib/yaku/riichi", config: %{"bet" => 1000, "drawless" => false, "double_value" => 2}
+}, %{name: "dora", config: %{"start_indicators" => 1}}, "jokers/vietnamese"], """
     {
       "starting_hand": {
         "east": ["0j", "3m", "4m", "4m", "5m", "6m", "7p", "7p", "7p", "8s", "8s", "8s", "5p"],
@@ -53,7 +55,8 @@ defmodule RiichiAdvanced.YakuTest.RiichiDoraTest do
   end
 
   test "riichi - aka 2 with jokers" do
-    TestUtils.test_yaku_advanced("riichi", [%{name: "lib/yaku/riichi", config: %{"bet" => 1000, "drawless" => false}}, %{name: "aka", config: %{"man" => 1, "pin" => 1, "sou" => 1}}, "jokers/vietnamese"], """
+    TestUtils.test_yaku_advanced("riichi", [%{name: "lib/yaku/riichi", config: %{"bet" => 1000, "drawless" => false, "double_value" => 2}
+}, %{name: "aka", config: %{"man" => 1, "pin" => 1, "sou" => 1}}, "jokers/vietnamese"], """
     {
       "starting_hand": {
         "east": ["0j", "3m", "4m", "4m", "0m", "6m", "7p", "7p", "7p", "8s", "8s", "8s", "0p"],
@@ -78,7 +81,8 @@ defmodule RiichiAdvanced.YakuTest.RiichiDoraTest do
   end
 
   test "riichi - it's all aka is also dora" do
-    TestUtils.test_yaku_advanced("riichi", [%{name: "lib/yaku/riichi", config: %{"bet" => 1000, "drawless" => false}}, %{name: "dora", config: %{"start_indicators" => 1}}, %{name: "aka", config: %{"man" => 1, "pin" => 1, "sou" => 1}}, "its_all_aka"], """
+    TestUtils.test_yaku_advanced("riichi", [%{name: "lib/yaku/riichi", config: %{"bet" => 1000, "drawless" => false, "double_value" => 2}
+}, %{name: "dora", config: %{"start_indicators" => 1}}, %{name: "aka", config: %{"man" => 1, "pin" => 1, "sou" => 1}}, "its_all_aka"], """
     {
       "starting_hand": {
         "east": ["02m", "03m", "04m", "04m", "05m", "06m", "07p", "07p", "07p", "08s", "08s", "08s", "06p"],
@@ -103,7 +107,8 @@ defmodule RiichiAdvanced.YakuTest.RiichiDoraTest do
   end
 
   test "riichi - ura 2 with aka and jokers" do
-    TestUtils.test_yaku_advanced("riichi", [%{name: "lib/yaku/riichi", config: %{"bet" => 1000, "drawless" => false}}, %{name: "dora", config: %{"start_indicators" => 1}}, %{name: "aka", config: %{"man" => 1, "pin" => 1, "sou" => 1}}, "ura", "jokers/vietnamese"], """
+    TestUtils.test_yaku_advanced("riichi", [%{name: "lib/yaku/riichi", config: %{"bet" => 1000, "drawless" => false, "double_value" => 2}
+}, %{name: "dora", config: %{"start_indicators" => 1}}, %{name: "aka", config: %{"man" => 1, "pin" => 1, "sou" => 1}}, "ura", "jokers/vietnamese"], """
     {
       "starting_hand": {
         "east": ["0j", "3m", "4m", "4m", "0m", "6m", "7p", "7p", "7p", "8s", "8s", "8s", "0p"],
@@ -128,7 +133,8 @@ defmodule RiichiAdvanced.YakuTest.RiichiDoraTest do
   end
 
   test "riichi - aka is also dora" do
-    TestUtils.test_yaku_advanced("riichi", [%{name: "lib/yaku/riichi", config: %{"bet" => 1000, "drawless" => false}}, %{name: "dora", config: %{"start_indicators" => 1}}, %{name: "aka", config: %{"man" => 1, "pin" => 1, "sou" => 1}}], """
+    TestUtils.test_yaku_advanced("riichi", [%{name: "lib/yaku/riichi", config: %{"bet" => 1000, "drawless" => false, "double_value" => 2}
+}, %{name: "dora", config: %{"start_indicators" => 1}}, %{name: "aka", config: %{"man" => 1, "pin" => 1, "sou" => 1}}], """
     {
       "starting_hand": {
         "east": ["2m", "3m", "4m", "4m", "0m", "6m", "7p", "7p", "7p", "8s", "8s", "8s", "0p"],

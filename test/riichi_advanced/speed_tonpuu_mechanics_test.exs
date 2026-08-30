@@ -4,7 +4,7 @@ defmodule RiichiAdvanced.YakuTest.SpeedTonpuuMechanics do
 
   @speed_tonpuu_mods [
     %{name: "honba", config: %{value: 100}},
-    %{name: "lib/yaku/riichi", config: %{bet: 1000, drawless: false}},
+    %{name: "lib/yaku/riichi", config: %{bet: 1000, drawless: false, double_value: 2}},
     "yaku/ippatsu",
     "lib/kuikae_nashi",
     %{name: "lib/min_han", config: %{min: 1, han: "Han"}},

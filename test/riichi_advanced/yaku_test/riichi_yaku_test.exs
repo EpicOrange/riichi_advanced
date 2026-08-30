@@ -3,7 +3,8 @@ defmodule RiichiAdvanced.YakuTest.RiichiYaku do
   alias RiichiAdvanced.TestUtils, as: TestUtils
 
   test "riichi - double riichi ippatsu" do
-    TestUtils.test_yaku_advanced("riichi", [%{name: "lib/yaku/riichi", config: %{"bet" => 1000, "drawless" => false}}, "yaku/ippatsu"], """
+    TestUtils.test_yaku_advanced("riichi", [%{name: "lib/yaku/riichi", config: %{"bet" => 1000, "drawless" => false, "double_value" => 2}
+}, "yaku/ippatsu"], """
     {
       "starting_hand": {
         "east": ["2m", "3m", "4m", "4m", "5m", "6m", "7p", "7p", "7p", "8s", "8s", "8s", "6p"],
@@ -27,7 +28,8 @@ defmodule RiichiAdvanced.YakuTest.RiichiYaku do
   end
 
   test "riichi - double riichi ippatsu tsumo" do
-    TestUtils.test_yaku_advanced("riichi", [%{name: "lib/yaku/riichi", config: %{"bet" => 1000, "drawless" => false}}, "yaku/ippatsu"], """
+    TestUtils.test_yaku_advanced("riichi", [%{name: "lib/yaku/riichi", config: %{"bet" => 1000, "drawless" => false, "double_value" => 2}
+}, "yaku/ippatsu"], """
     {
       "starting_hand": {
         "east": ["2m", "3m", "4m", "4m", "5m", "6m", "7p", "7p", "7p", "8s", "8s", "8s", "6p"],
@@ -53,7 +55,8 @@ defmodule RiichiAdvanced.YakuTest.RiichiYaku do
   end
  
   test "riichi - ippatsu shouldn't be awarded if riichi tile gets called" do
-    TestUtils.test_yaku_advanced("riichi", [%{name: "lib/yaku/riichi", config: %{"bet" => 1000, "drawless" => false}}, "yaku/ippatsu"], """
+    TestUtils.test_yaku_advanced("riichi", [%{name: "lib/yaku/riichi", config: %{"bet" => 1000, "drawless" => false, "double_value" => 2}
+}, "yaku/ippatsu"], """
     {
       "starting_hand": {
         "east": ["2m", "3m", "4m", "4m", "5m", "6m", "7p", "7p", "7p", "8s", "8s", "8s", "6p"],

@@ -6,7 +6,7 @@ defmodule RiichiAdvanced.YakuTest.KansaiYaku do
     %{name: "honba", config: %{value: 100}},
     %{name: "nagashi", config: %{is: "Mangan", counts_as: "draw"}},
     %{name: "lib/tobi", config: %{below: 1}},
-    %{name: "lib/yaku/riichi", config: %{bet: 1000, drawless: false}},
+    %{name: "lib/yaku/riichi", config: %{bet: 1000, drawless: false, double_value: 2}},
     %{name: "uma", config: %{_1st: 10, _2nd: 5, _3rd: -5, _4th: -10}},
     "lib/agarirenchan",
     "tenpairenchan",

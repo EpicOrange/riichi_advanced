@@ -651,7 +651,7 @@ set default_mods, [
 
 define_preset "Mahjong Soul", [
   %{name: "honba", config: %{value: 100}},
-  %{name: "lib/yaku/riichi", config: %{bet: 1000, drawless: false}},
+  %{name: "lib/yaku/riichi", config: %{bet: 1000, drawless: false, double_value: 2}},
   %{name: "nagashi", config: %{is: "Mangan", counts_as: "draw"}},
   %{name: "lib/tobi", config: %{below: 0}},
   %{name: "uma", config: %{_1st: 15, _2nd: 5, _3rd: -5, _4th: -15}},
@@ -681,7 +681,7 @@ define_preset "Mahjong Soul", [
 ]
 define_preset "tenhou.net", [
   %{name: "honba", config: %{value: 100}},
-  %{name: "lib/yaku/riichi", config: %{bet: 1000, drawless: false}},
+  %{name: "lib/yaku/riichi", config: %{bet: 1000, drawless: false, double_value: 2}},
   %{name: "nagashi", config: %{is: "Mangan", counts_as: "draw"}},
   %{name: "lib/tobi", config: %{below: 0}},
   %{name: "uma", config: %{_1st: 20, _2nd: 10, _3rd: -10, _4th: -20}},
@@ -712,7 +712,7 @@ define_preset "tenhou.net", [
 ]
 define_preset "Riichi City", [
   %{name: "honba", config: %{value: 100}},
-  %{name: "lib/yaku/riichi", config: %{bet: 1000, drawless: false}},
+  %{name: "lib/yaku/riichi", config: %{bet: 1000, drawless: false, double_value: 2}},
   %{name: "nagashi", config: %{is: "Mangan", counts_as: "draw"}},
   %{name: "lib/tobi", config: %{below: 0}},
   %{name: "uma", config: %{_1st: 30, _2nd: 10, _3rd: -10, _4th: -30}},
@@ -745,7 +745,7 @@ define_preset "Riichi City", [
 # amatsuki rules seem to be a clone of mahjong soul rules
 define_preset "Amatsuki Mahjong", [
   %{name: "honba", config: %{value: 100}},
-  %{name: "lib/yaku/riichi", config: %{bet: 1000, drawless: false}},
+  %{name: "lib/yaku/riichi", config: %{bet: 1000, drawless: false, double_value: 2}},
   %{name: "nagashi", config: %{is: "Mangan", counts_as: "draw"}},
   %{name: "lib/tobi", config: %{below: 0}},
   %{name: "uma", config: %{_1st: 10, _2nd: 5, _3rd: -5, _4th: -10}},
@@ -775,7 +775,7 @@ define_preset "Amatsuki Mahjong", [
 ]
 define_preset "WRC 2022", [
   %{name: "honba", config: %{value: 100}},
-  %{name: "lib/yaku/riichi", config: %{bet: 1000, drawless: false}},
+  %{name: "lib/yaku/riichi", config: %{bet: 1000, drawless: false, double_value: 2}},
   %{name: "uma", config: %{_1st: 15, _2nd: 5, _3rd: -5, _4th: -15}},
   "lib/agarirenchan",
   "tenpairenchan",
@@ -799,7 +799,7 @@ define_preset "WRC 2022", [
 ]
 define_preset "WRC 2025", [
   %{name: "honba", config: %{value: 100}},
-  %{name: "lib/yaku/riichi", config: %{bet: 1000, drawless: true}},
+  %{name: "lib/yaku/riichi", config: %{bet: 1000, drawless: true, double_value: 2}},
   %{name: "uma", config: %{_1st: 15, _2nd: 5, _3rd: -5, _4th: -15}},
   "lib/agarirenchan",
   "tenpairenchan",
@@ -822,7 +822,7 @@ define_preset "WRC 2025", [
 ]
 define_preset "M.League", [
   %{name: "honba", config: %{value: 100}},
-  %{name: "lib/yaku/riichi", config: %{bet: 1000, drawless: false}},
+  %{name: "lib/yaku/riichi", config: %{bet: 1000, drawless: false, double_value: 2}},
   %{name: "nagashi", config: %{is: "Mangan", counts_as: "draw"}},
   %{name: "uma", config: %{_1st: 30, _2nd: 10, _3rd: -10, _4th: -30}},
   %{name: "oka", config: %{ante: 5}},
@@ -851,7 +851,7 @@ define_preset "Just Like Modded Minecraft", [
   %{name: "starting_score", config: %{points: 25000}},
   %{name: "honba", config: %{value: 500}},
   %{name: "lib/tobi", config: %{below: 0}},
-  %{name: "lib/yaku/riichi", config: %{bet: 1000, drawless: true}},
+  %{name: "lib/yaku/riichi", config: %{bet: 1000, drawless: true, double_value: 2}},
   "fifth_tile",
   %{name: "washizu", config: %{transparents: 1}},
   %{name: "nagashi", config: %{is: "Yakuman", counts_as: "draw"}},

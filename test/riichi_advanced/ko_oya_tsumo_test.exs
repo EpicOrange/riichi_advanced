@@ -7,7 +7,8 @@ defmodule RiichiAdvanced.KoOyaTsumoTest do
 
   @default_riichi_mods [
     %{name: "honba", config: %{"value" => 100}},
-    %{name: "lib/yaku/riichi", config: %{"bet" => 1000, "drawless" => false}},
+    %{name: "lib/yaku/riichi", config: %{"bet" => 1000, "drawless" => false, "double_value" => 2}
+},
     %{name: "nagashi", config: %{"is" => "Mangan", counts_as: "draw"}},
     %{name: "lib/tobi", config: %{"below" => 0}},
     %{

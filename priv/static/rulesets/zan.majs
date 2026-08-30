@@ -5,7 +5,7 @@ apply set_append, "default_mods", [
   %{name: "honba", config: %{value: 1000}},
   %{name: "nagashi", config: %{is: "Yakuman", counts_as: "draw"}},
   %{name: "lib/tobi", config: %{below: 1}},
-  %{name: "lib/yaku/riichi", config: %{bet: 1000, drawless: true}},
+  %{name: "lib/yaku/riichi", config: %{bet: 1000, drawless: true, double_value: 2}},
   %{name: "uma", config: %{_4th: -30, _3rd: -10, _2nd: 10, _1st: 30}},
   "lib/agarirenchan",
   "tenpairenchan",

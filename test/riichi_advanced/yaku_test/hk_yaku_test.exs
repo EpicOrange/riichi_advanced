@@ -177,7 +177,7 @@ defmodule RiichiAdvanced.YakuTest.HKOSYaku do
   end
 
   test "hk - seven flowers automatically wins" do
-    TestUtils.test_yaku_advanced("hk", [%{name: "seven_flower_win", config: %{win_on: "7 flowers"}}], """
+    TestUtils.test_yaku_advanced("hk", [%{name: "seven_flower_win", config: %{win_on: "7 flowers", seven_value: 3, eight_value: 8}}], """
     {
       "starting_hand": {
         "east": ["1m", "2m", "3m", "5m", "5m", "5m", "7m", "8m", "9m", "8s", "6p", "6p", "4g"],
@@ -215,7 +215,7 @@ defmodule RiichiAdvanced.YakuTest.HKOSYaku do
   end
 
   test "hk - eight flowers automatically wins" do
-    TestUtils.test_yaku_advanced("hk", [%{name: "seven_flower_win", config: %{win_on: "8 flowers"}}], """
+    TestUtils.test_yaku_advanced("hk", [%{name: "seven_flower_win", config: %{win_on: "8 flowers", seven_value: 3, eight_value: 8}}], """
     {
       "starting_hand": {
         "east": ["1m", "2m", "3m", "5m", "5m", "5m", "7m", "8m", "9m", "8s", "6p", "6p", "4g"],
