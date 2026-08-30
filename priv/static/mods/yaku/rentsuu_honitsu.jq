@@ -25,7 +25,7 @@
 ]
 |
 .yaku_precedence += {
-  "Rentsuu Honitsu": [1, 2, 3, 4]
+  "Rentsuu Honitsu": [[1, "Han"], [2, "Han"], [3, "Han"], [4, "Han"]]
 }
 |
 if .score_calculation.yaku_lists | any(index("yaku_rentsuu_honitsu")) then . else

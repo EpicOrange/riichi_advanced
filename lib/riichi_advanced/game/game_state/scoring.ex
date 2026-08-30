@@ -45,13 +45,13 @@ defmodule RiichiAdvanced.GameState.Scoring do
 
 
   # returns {yaku, minipoints}
-  def get_yaku(state, seat, winning_tile, win_source) do
+  def get_yaku(state, seat, winning_tile, win_source, exclude_extra_yaku? \\ false) do
     minipoints = Map.get(state.players[seat].counters, "fu", 0)
-    yaku = _get_yaku(state, seat, winning_tile, win_source, minipoints)
+    yaku = _get_yaku(state, seat, winning_tile, win_source, minipoints, exclude_extra_yaku?)
     {yaku, minipoints}
   end
 
-  defp _get_yaku(state, seat, winning_tile, win_source, minipoints) do
+  defp _get_yaku(state, seat, winning_tile, win_source, minipoints, exclude_extra_yaku?) do
     yakus = Rules.get(state.rules_ref, :yaku, [])
     if Debug.debug_yaku() do
       IO.puts("Checking yaku in the following order: #{inspect(Enum.map(yakus, & &1["display_name"]), limit: :infinity)}")
@@ -64,9 +64,13 @@ defmodule RiichiAdvanced.GameState.Scoring do
       existing_yaku: []
     }
     yaku_skip_map = Rules.get(state.rules_ref, :yaku_skip_map, [])
-    {acc, _skips, _clause_cache} = for yaku <- yakus, reduce: {[], MapSet.new(), %{}} do
-      {acc, skips, clause_cache} ->
-        if yaku.key not in skips do
+    excluded_lists = if exclude_extra_yaku? do
+      Rules.get(state.rules_ref, "score_calculation", %{})
+      |> Map.get("extra_yaku_lists", [])
+    else [] end
+    {acc, existing_yaku, _skips, _clause_cache} = for yaku <- yakus, reduce: {[], [], MapSet.new(), %{}} do
+      {acc, existing_yaku, skips, clause_cache} ->
+        if yaku.key not in skips and yaku.list_name not in excluded_lists do
           if Debug.debug_yaku_precedence() do
             IO.puts("Evaluating yaku #{yaku["display_name"]}")
           end
@@ -78,7 +82,7 @@ defmodule RiichiAdvanced.GameState.Scoring do
             _clause, {num_falses, clause_cache} when num_falses > allowed_falses -> {:halt, {num_falses, clause_cache}}
             clause, {num_falses, clause_cache} -> case Map.get(clause_cache, clause, nil) do
               nil ->
-                if Conditions.check_dnf_condition(state, clause, Map.put(context, :existing_yaku, acc)) do
+                if Conditions.check_dnf_condition(state, clause, Map.put(context, :existing_yaku, existing_yaku)) do
                   {:cont, {num_falses, Map.put(clause_cache, clause, true)}}
                 else
                   {:cont, {num_falses + 1, Map.put(clause_cache, clause, false)}}
@@ -96,21 +100,26 @@ defmodule RiichiAdvanced.GameState.Scoring do
               value = value
               |> Enum.chunk_every(2)
               |> Enum.flat_map(fn [amt, type] -> [Actions.interpret_amount(state, context, amt) |> Utils.try_integer(), type] end)
-              {[{name, value} | acc], new_skips, clause_cache}
+              {[yaku | acc], [{name, value} | existing_yaku], new_skips, clause_cache}
             end
-          else {acc, skips, clause_cache} end
+          else {acc, existing_yaku, skips, clause_cache} end
         else
           if Debug.debug_yaku_precedence() do
-            IO.puts("Skipped yaku with key #{inspect(yaku.key)} due to precedence (current yaku: #{Enum.map_join(acc, ",", & &1["display_name"])})")
+            IO.puts("Skipped yaku with key #{inspect(yaku.key)} due to precedence (current yaku: #{Enum.map_join(acc, ",", &elem(&1, 0))})")
           end
-          {acc, skips, clause_cache}
+          {acc, existing_yaku, skips, clause_cache}
         end
     end
+    # since the graph might contain cycles, we need to do a second removal pass
+    all_skipped_keys = Enum.flat_map(acc, &Map.get(yaku_skip_map, &1.key, [])) |> MapSet.new()
     acc
+    |> Enum.zip(existing_yaku)
+    |> Enum.reject(fn {yaku, _ret} -> yaku.key in all_skipped_keys end)
+    |> Enum.map(fn {_yaku, ret} -> ret end)
   end
 
   def seat_scores_points(state, point_name, min_points, min_minipoints, seat, winning_tiles, win_source) do
-    score_yaku(state, seat, winning_tiles, win_source)
+    score_yaku(state, seat, winning_tiles, win_source, true)
     |> Enum.any?(fn {yaku, minipoints} ->
       minipoints >= min_minipoints && case min_points do
         :declared ->
@@ -125,9 +134,9 @@ defmodule RiichiAdvanced.GameState.Scoring do
     end)
   end
 
-  def score_yaku(state, seat, winning_tiles, win_source) do
+  def score_yaku(state, seat, winning_tiles, win_source, exclude_extra_yaku? \\ false) do
     lazy_map_state_cxts(state, seat, winning_tiles, win_source, fn state, cxt ->
-      get_yaku(state, seat, cxt.assigned_winning_tile, win_source)
+      get_yaku(state, seat, cxt.assigned_winning_tile, win_source, exclude_extra_yaku?)
     end)
   end
 

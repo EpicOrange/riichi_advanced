@@ -193,7 +193,7 @@ define_yaku nfnl, "True No Flowers, No Leaves", [1, "Mủn"],
   status("nfnl_eligible")
   and match(["hand", "calls", "winning_tile"], ["win"])
   and not_match(["hand", "calls", "winning_tile"], ["has_non_nfnl_tile"]),
-  ["No Jokers Mosquito Hand"]
+  ["progressive", "Small No Jokers Bonus", "No Jokers Bonus"]
 
 if defined("more_jokers") do
   replace_yaku nfnl, "True No Flowers, No Leaves", [2, "Mủn"]

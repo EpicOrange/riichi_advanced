@@ -51,4 +51,4 @@ define_yaku extra_yaku, "Aka", ["aka", "Han"], aka > 0
 define_yaku extra_yaku, "Ao", ["ao", "Han"], ao > 0
 define_yaku yaku, "Kin", ["kin", "Han"], kin > 0
 apply append, "score_calculation.yaku_lists", "all_stars" # goes after shuugi
-define_yaku all_stars, "Ultimate All-Stars", [1, "★"], aka == 3 and ao == 3 and kin == 1, ["Aka", "Ao", "Kin"]
+define_yaku all_stars, "Ultimate All-Stars", [1, "★"], aka == 3 and ao == 3 and kin == 1, [["Aka", ["Han"]], ["Ao", ["Han"]], ["Kin", ["Han"]]]

@@ -120,14 +120,14 @@ apply merge, "yaku_precedence", %{
   "Pure One-Suit": ["Mixed One-Suit"],
 
   "Big Three Dragons": ["Small Three Dragons"],
-  "Small Four Winds": ["Big Three Winds", "Small Three Winds"],
+  "Big Four Winds": ["Small Four Winds"],
+  "Small Four Winds": ["Big Three Winds"],
   "Big Three Winds": ["Small Three Winds"],
 
-  "Four Concealed Triplets": ["Three Concealed Triplets", "Two Concealed Triplets"],
+  "Four Concealed Triplets": ["Three Concealed Triplets"],
   "Three Concealed Triplets": ["Two Concealed Triplets"],
-  "Three Kong": ["Two Kong", "One Kong", "Seven Pairs"],
-  "Two Kong": ["One Kong", "Seven Pairs"],
-  "One Kong": ["Seven Pairs"],
+  "Three Kong": ["Two Kong"],
+  "Two Kong": ["One Kong"],
 
   "Three Identical Sequences": ["Two Identical Sequences Twice", "Two Identical Sequences", "Seven Pairs", "Three Consecutive Triplets"],
   "Two Identical Sequences Twice": ["Two Identical Sequences", "Seven Pairs"],
