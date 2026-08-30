@@ -84,7 +84,7 @@ defmodule RiichiAdvanced.GameState.Scoring do
             new_skips = MapSet.union(skips, Map.get(yaku_skip_map, yaku.key, MapSet.new()))
             %{"display_name" => name, "value" => value} = yaku
             if yaku.key in new_skips do
-              {acc, new_skips} # we override ourselves
+              {acc, existing_yaku, new_skips, clause_cache} # we override ourselves
             else
               value = value
               |> Enum.chunk_every(2)
@@ -94,7 +94,7 @@ defmodule RiichiAdvanced.GameState.Scoring do
           else {acc, existing_yaku, skips, clause_cache} end
         else
           if Debug.debug_yaku_precedence() do
-            IO.puts("Skipped yaku with key #{inspect(yaku.key)} due to precedence (current yaku: #{Enum.map_join(acc, ",", &elem(&1, 0))})")
+            IO.puts("Skipped yaku with key #{inspect(yaku.key)} due to precedence (current yaku: #{Enum.map_join(acc, ",", &Map.get(&1, "display_name"))})")
           end
           {acc, existing_yaku, skips, clause_cache}
         end
