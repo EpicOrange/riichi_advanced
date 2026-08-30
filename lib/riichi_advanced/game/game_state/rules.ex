@@ -366,14 +366,20 @@ defmodule RiichiAdvanced.GameState.Rules do
       config: Map.get(mod, "config", [])
            |> Map.new(&Map.pop(&1, "name"))
            |> Map.new(fn {config_name, config} ->
-                default = if starting_mods[mod["id"]] != nil do
-                  # load the previous config's value as the default
-                  old_config = starting_mods[mod["id"]]
-                  old_config[config_name]
-                else
-                  Map.get(config, "default", Enum.at(config["values"], 0))
-                end
+                default = get_in(starting_mods[mod["id"]][config_name])
+                default = if default == nil do Map.get(config, "default", Enum.at(config["values"], 0)) else default end
                 config = Map.put(config, :value, default)
+                config = if default != nil do
+                  config = Map.put(config, "default", default)
+                  # add given config's value to the list of allowable values if it isn't already in there
+                  if default not in config["values"] do
+                    values = case config["values"] do
+                      [_] -> [default] # for hidden config, replace it
+                      values -> [default | values]
+                    end
+                    Map.put(config, "values", values)
+                  else config end
+                else config end
                 {config_name, config}
               end),
       order: Map.get(mod, "order", 0), # TODO replace this with "load_after" array, and do toposort on the result
