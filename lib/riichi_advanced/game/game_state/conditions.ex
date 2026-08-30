@@ -776,7 +776,7 @@ defmodule RiichiAdvanced.GameState.Conditions do
       [n | cond_spec] when is_integer(n) -> {cond_spec, n}
       cond_spec when is_list(cond_spec) -> {cond_spec, :infinity}
     end
-    case Map.get(clause_cache, {:dnf, cond_spec, context.key}, nil) do
+    case Map.get(clause_cache, {:dnf, clause, context.key}, nil) do
       nil ->
         {num_trues, clause_cache} = Enum.reduce_while(cond_spec, {0, clause_cache},
           fn clause, {num_trues, clause_cache} ->
@@ -787,7 +787,7 @@ defmodule RiichiAdvanced.GameState.Conditions do
             end
           end)
         result = 1 <= num_trues && num_trues <= allowed_trues
-        clause_cache = Map.put(clause_cache, {:dnf, cond_spec, context.key}, result)
+        clause_cache = Map.put(clause_cache, {:dnf, clause, context.key}, result)
         {result, clause_cache}
       b -> {b, clause_cache}
     end
@@ -833,11 +833,16 @@ defmodule RiichiAdvanced.GameState.Conditions do
       [n | cond_spec] when is_integer(n) -> {cond_spec, length(cond_spec) - n}
       cond_spec when is_list(cond_spec) -> {cond_spec, 0}
     end
-    {result, clause_cache, debug_clause} = case Map.get(clause_cache, {:cnf, cond_spec, context.key}, nil) do
+    {result, clause_cache, debug_clause} = case Map.get(clause_cache, {:cnf, clause, context.key}, nil) do
       nil ->
         {num_falses, clause_cache, debug_clause} = Enum.reduce_while(cond_spec, {0, clause_cache, nil},
           fn clause, {num_falses, clause_cache, _} ->
-            {result, clause_cache} = cached_check_dnf_condition(state, clause, context, clause_cache)
+            {result, clause_cache} = if allowed_falses > 0 do
+              # at_least expressions evaluate its arguments as cnf
+              cached_check_cnf_condition(state, clause, context, clause_cache)
+            else
+              cached_check_dnf_condition(state, clause, context, clause_cache)
+            end
             case result do
               false -> {if num_falses >= allowed_falses do :halt else :cont end, {num_falses + 1, clause_cache, clause}}
               true ->  {:cont, {num_falses, clause_cache, nil}}
@@ -846,7 +851,7 @@ defmodule RiichiAdvanced.GameState.Conditions do
         result = num_falses <= allowed_falses
         clause_cache = if not toplevel do
           # don't cache the whole toplevel CNF condition
-          Map.put(clause_cache, {:cnf, cond_spec, context.key}, result)
+          Map.put(clause_cache, {:cnf, clause, context.key}, result)
         else clause_cache end
         {result, clause_cache, debug_clause}
       b -> {b, clause_cache, cond_spec}

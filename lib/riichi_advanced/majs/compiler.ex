@@ -141,34 +141,34 @@ defmodule RiichiAdvanced.Compiler do
     end
   end
 
-  defp _compile_condition_list(condition, line, column, conj) do
+  defp _compile_condition_list(condition, line, column, conj, toplevel \\ true) do
     case condition do
       {"at_least", [line: line, column: column], args} ->
         case args do
           [n | conds] when is_number(n) ->
-            with {:ok, compiled_args} <- conds |> Enum.map(&_compile_condition_list(&1, line, column, true)) |> Utils.sequence() do
-              ret = compiled_args |> Enum.map(&List.wrap/1) |> Enum.concat()
-              {:ok, if conj do [n | ret] else [[n | ret]] end}
+            with {:ok, compiled_args} <- conds |> Enum.map(&_compile_condition_list(&1, line, column, true, false)) |> Utils.sequence() do
+              ret = Enum.flat_map(compiled_args, &List.wrap/1)
+              {:ok, if conj do (if toplevel do [n | ret] else [[[n | ret]]] end) else [[n | ret]] end}
             end
           _ -> {:error, "at_least(n, conditions) expects a number as the first argument, got #{inspect(Enum.at(args, 0))}"}
         end
       {"at_most", [line: line, column: column], args} ->
         case args do
           [n | conds] when is_number(n) ->
-            with {:ok, compiled_args} <- conds |> Enum.map(&_compile_condition_list(&1, line, column, true)) |> Utils.sequence() do
-              ret = compiled_args |> Enum.map(&List.wrap/1) |> Enum.concat()
-              {:ok, if conj do [[n | ret]] else [n | ret] end}
+            with {:ok, compiled_args} <- conds |> Enum.map(&_compile_condition_list(&1, line, column, true, false)) |> Utils.sequence() do
+              ret = Enum.flat_map(compiled_args, &List.wrap/1)
+              {:ok, if conj do [[n | ret]] else [[[n | ret]]] end}
             end
           _ -> {:error, "at_least(n, conditions) expects a number as the first argument, got #{inspect(Enum.at(args, 0))}"}
         end
       {:and, [line: line, column: column], args} ->
-        with {:ok, compiled_args} <- args |> Enum.map(&_compile_condition_list(&1, line, column, true)) |> Utils.sequence() do
-          ret = compiled_args |> Enum.map(&List.wrap/1) |> Enum.concat()
+        with {:ok, compiled_args} <- args |> Enum.map(&_compile_condition_list(&1, line, column, true, false)) |> Utils.sequence() do
+          ret = Enum.flat_map(compiled_args, &List.wrap/1)
           {:ok, if conj do ret else [ret] end}
         end
       {:or, [line: line, column: column], args} ->
-        with {:ok, compiled_args} <- args |> Enum.map(&_compile_condition_list(&1, line, column, false)) |> Utils.sequence() do
-          ret = compiled_args |> Enum.map(&List.wrap/1) |> Enum.concat()
+        with {:ok, compiled_args} <- args |> Enum.map(&_compile_condition_list(&1, line, column, false, false)) |> Utils.sequence() do
+          ret = Enum.flat_map(compiled_args, &List.wrap/1)
           {:ok, if conj do [ret] else ret end}
         end
       _ -> compile_condition(condition, line, column)

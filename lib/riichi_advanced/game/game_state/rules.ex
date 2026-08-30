@@ -144,7 +144,10 @@ defmodule RiichiAdvanced.GameState.Rules do
   def load_rules(ruleset_json, ruleset \\ "unknown") do
     with {:ok, rules} <- decode_ruleset_json(ruleset_json, ruleset),
          {:ok, rules} <- replace_constants(rules),
+         {:ok, rules} <- replace_constants(rules),
+         {:ok, rules} <- replace_constants(rules),
          {:ok, rules} <- check_rules(rules) do
+      # IO.inspect(rules["meta_yaku"] |> Enum.find(fn f -> f["display_name"] == "debug" end))
       # store rules in an anonymous ETS table
       # this is cleaned up once the creating process (GameState) dies
       rules_ref = :ets.new(nil, [:set, :public, read_concurrency: true]) 
