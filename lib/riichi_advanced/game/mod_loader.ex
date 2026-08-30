@@ -247,7 +247,7 @@ defmodule RiichiAdvanced.ModLoader.ModState do
     encoded_mods = mods
     # |> IO.inspect(limit: :infinity)
     |> Enum.map(fn
-      %{config: config} = mod -> %{ mod | config: Map.new(config) }
+      %{config: config} = mod -> %{ mod | config: ModLoader.normalize_config(config) }
       mod -> mod
     end)
     |> Jason.encode!()
@@ -371,10 +371,14 @@ defmodule RiichiAdvanced.ModLoader do
     end
   end
 
+  def normalize_config(config) do
+    Map.new(config, fn {k, v} -> {if is_atom(k) do Atom.to_string(k) else k end, v} end)
+  end
+
   def get_mod_name_config(mod) do
     case mod do
-      %{"name" => name, "config" => config} -> {name, Map.new(config)}
-      %{name: name, config: config}         -> {name, Map.new(config)}
+      %{"name" => name, "config" => config} -> {name, normalize_config(config)}
+      %{name: name, config: config}         -> {name, normalize_config(config)}
       name when is_binary(name)             -> {name, %{}}
     end
   end
