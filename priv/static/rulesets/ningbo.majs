@@ -3,7 +3,7 @@ set tutorial_link, "https://mahjongpros.com/blogs/how-to-play/beginners-guide-to
 
 require "value_honors"
 require "standard_sets"
-require "hefei_rules"
+require "ningbo_rules"
 
 define_global pon_name, "Pon"
 define_global kan_name, "Kong"

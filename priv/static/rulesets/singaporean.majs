@@ -1,0 +1,243 @@
+
+# TODO SUMMARY (2025-01-31):
+# * Implement the various Pao rules.
+# * Figure out how to implement the existence of the two limit scores. The only way to get the 10 Limit is to get daisangen/daisuushii; all other hands are capped at 5. I think this can be done with something similar to the way yakuman are implemented, or how I implemented something like this in Zung Jung.
+# * Three Lesser Scholars isn't scored for some reason?
+# * Apparently chankan isn't working. Unclear whether this is `singapore.json`-specific or whether it's global to all variants.
+# * Check whether all bugs below still exist. If yes, fix.
+# POTENTIAL BUGS TO CHECK FOR:
+# * [Should be fixed; see commits 3ee4b60, 96c5e56, and 1c4f01a] Flower replacement can't be discarded normally for some reason. Dunno why.
+# * [FIXED, I think] Apparently Ping Hu requires multiple waits, EXCEPT if it's a win by self-draw, EXCEPT that Ping Hu cannot be awarded for fully-melded hands (even if self-drawn).
+# * [FIXED, I think] Apparently Ping Hu also can't have the pair be yakuhai.
+# * [FIXED, I think] Apparently 111m999m111p11s33z, won on discarded 3m, was scored for Thirteen Orphans and Hidden Treasure.
+# * [FIXED, I think] East should have the option to ankan on their starting turn, but currently doesn't? [This is because ankans are only allowed when we have a draw, but we merge our draw into our hand after declaring "No Flowers".]
+# * [FIXED, I think] Heavenly Hand is apparently scored wrong (can be scored after call(s), can be scored by someone other than East).
+# * [FIXED] Add pauses after instant payments. Add `big_text` for instant payments.
+
+set display_name, "Singaporean"
+set tutorial_link, "https://mahjongpros.com/blogs/how-to-play/beginners-guide-to-singaporean-mahjong"
+
+define_global han, "Tai"
+define_global ankan_name, "Concealed Kong"
+define_global chankan_name, "Hu"
+define_global chii_name, "Chow"
+define_global flower_name, "Flower"
+define_global kan_name, "Kong"
+define_global pon_name, "Pong"
+define_global ron_name, "Hu"
+define_global tsumo_name, "Zimo"
+
+require "value_honors"
+require "standard_sets"
+require "singaporean_rules"
+
+require "base"
+require "global_mods"
+require "default_auto_buttons"
+require "standard_wall"
+require "framed_5z"
+require "default_flowers", %{four_flowers_value: 2, auto_flower_by_default: true, matching_flower_value: 1, undiscardable: true, win_on: "8 flowers", seven_value: 5, eight_value: 10}
+
+# animal tiles, 1 tai yaku for having each, 5 tai for having all 4
+define_const all_animals, ["1a", "2a", "3a", "4a"]
+apply append, "wall", +@all_animals
+apply append, "constants.all_flowers", ["1a", "2a", "3a", "4a"]
+apply append, "set_definitions.any_flower", ~s"1a|2a|3a|4a"
+apply set_merge, "custom_style.tile_indices", %{
+  "1a": "Cat",
+  "2a": "Rat",
+  "3a": "Chicken",
+  "4a": "Centipede",
+}
+
+require "chii"
+require "pon"
+require "kan", %{hide_ankans: true}
+require "ron", %{scoring_key: "win"}
+require "tsumo", %{scoring_key: "win"}
+require "yaku/chankan", %{name: "Robbing a Kong", value: 1, scoring_key: "win"}
+require "standard_win" # also need chiitoi and kokushi
+require "yaku/yakuhai", %{round_wind_name: "Prevailing Wind", value: 1}
+require "yaku/menzentsumo", %{name: "Fully Concealed Hand", value: 1}
+require "yaku/haitei", %{haitei_name: "Final Tile", haitei_value: 1, houtei_name: "Final Tile", houtei_value: 1}
+require "yaku/rinshan", %{value: 1, flower_name: "After a Flower", rinshan_name: "After a Kong", double_name: "Kong on Kong", double_value: 5}
+require "yaku/chankan", %{name: "Robbing a Kong", value: 1, scoring_key: "win"}
+require "yaku/honitsu", %{chin_name: "Full Flush", chin_value: 4, hon_name: "Half Flush", hon_value: 2}
+require "yaku/toitoi", %{name: "All Triplets", value: 2}
+require "yaku/shousangen", %{dai_name: "Three Great Scholars", dai_value: 10, shou_name: "Three Lesser Scholars", shou_value: 3}
+require "yaku/honroutou", %{chin_name: "All Terminals", chin_value: 5, hon_name: "All Terminals Or Honors", hon_value: 4}
+require "yaku/shousuushii", %{dai_name: "Four Great Blessings", dai_value: 10, shou_name: "Four Lesser Blessings", shou_value: 4}
+require "yaku/tsuuiisou", %{name: "All Honours", value: 5}
+require "yaku/suuankou", %{name: "Hidden Treasure", value: 5, tsumo_only: true}
+require "yaku/kokushi", %{name: "Thirteen Orphans", value: 5, rules_tab: "5 Tai"}
+# TODO import ryuuiisou instead of defining it here
+define_yaku yaku, "All Green", [1, "★"], winning_hand_consists_of("2s","3s","4s","6s","8s","6z")
+require "yaku/chuurenpoutou", %{name: "Nine Gates", value: 13, must_wait_9: false}
+require "yaku/suukantsu", %{name: "Eighteen Arhats", value: 5}
+require "yaku/tenhou", %{chiihou_name: "Earthly Hand", chiihou_value: 5, tenhou_name: "Heavenly Hand", tenhou_value: 5}
+require "pao_standard"
+
+on before_win do
+  add_counter("flowers", "count_matches", ["flowers"], ["any_flower"])
+end
+define_yaku yaku, "Little Ping Hu", [1, "Tai"],
+  match(["hand", "calls", "winning_tile"], ~m"exhaustive, shuntsu:4, value_pair:-1, pair:1")
+  and wait_count_at_least(2, ["win"])
+define_yaku yaku, "Big Ping Hu", [4, "Tai"], has_existing_yaku("Little Ping Hu") and flowers == 0
+
+apply set_merge, "yaku_precedence", %{
+  "All Animals": ["Animal Tiles"],
+  "Big Ping Hu": ["Little Ping Hu"],
+  "Three Lesser Scholars": ["White Dragon", "Green Dragon", "Red Dragon"],
+  "Full Flush": ["Half Flush"],
+  "All Terminals Or Honors": ["White Dragon", "Green Dragon", "Red Dragon", "Prevailing Wind", "Seat Wind"],
+  "Four Lesser Blessings": ["Prevailing Wind", "Seat Wind", "Half Flush"],
+  "Seven Flowers": ["All Flowers", "All Seasons"],
+  "Eight Flowers": ["Seven Flowers", "All Flowers", "All Seasons"],
+  "Hidden Treasure": ["Triplets Hand"],
+  "All Green": ["Half Flush", "Full Flush"],
+  "Three Great Scholars": ["Three Lesser Scholars", "White Dragon", "Green Dragon", "Red Dragon"],
+  "Four Great Blessings": ["Four Lesser Blessings", "Prevailing Wind", "Seat Wind", "Half Flush"]
+}
+
+set score_calculation, %{
+  yaku_lists: ["yaku"],
+  point_name: "Tai",
+  win_by_discard_label: "Hu",
+  win_by_draw_label: "Zimo",
+  win_by_discard_name: "Hu",
+  win_by_draw_name: "Zimo",
+  exhaustive_draw_name: "Draw",
+}
+
+def pay_other_players do
+  if shimocha_exists do add_score("$amt"); subtract_score("$amt", "shimocha"); big_text("  -$amt  ",  %{amt: "$amt"}, as: "shimocha") end
+  if toimen_exists do add_score("$amt"); subtract_score("$amt", "toimen"); big_text("  -$amt  ",  %{amt: "$amt"}, as: "toimen") end
+  if kamicha_exists do add_score("$amt"); subtract_score("$amt", "kamicha"); big_text("  -$amt  ",  %{amt: "$amt"}, as: "kamicha") end
+  pause(1000)
+end
+
+def pay_4_seat_flower do
+  big_text("Flower Bitten")
+  push_message("is paid 4 from all players for having both their seat flower and their seat season in their starting hand")
+  pay_other_players(%{amt: 4})
+end
+def pay_2_seat_flower do
+  big_text("Flower Bitten")
+  push_message("is paid 2 from all players for having both their seat flower and their seat season")
+  pay_other_players(%{amt: 2})
+end
+
+apply prepend, "buttons.start_flower.actions" do
+  cond do
+    match(["call_choice"], ~m"(1a 2a):1") and match(["flowers"], ~m"(unique 1a 2a):2") ->
+      big_text("Bitten")
+      push_message("is paid 4 from all players for having both the cat and the mouse in their starting hand")
+      pay_other_players(%{amt: 4})
+    match(["call_choice"], ~m"(3a 4a):1") and match(["flowers"], ~m"(unique 3a 4a):2") ->
+      big_text("Bitten")
+      push_message("is paid 4 from all players for having both the chicken and the centipede in their starting hand")
+      pay_other_players(%{amt: 4})
+    seat_is("east") and match(["call_choice"], ~m"(1f 1g):1") and match(["flowers"], ~m"(unique 1f 1g):2") -> pay_4_seat_flower
+    seat_is("south") and match(["call_choice"], ~m"(2f 2g):1") and match(["flowers"], ~m"(unique 2f 2g):2") -> pay_4_seat_flower
+    seat_is("west") and match(["call_choice"], ~m"(3f 3g):1") and match(["flowers"], ~m"(unique 3f 3g):2") -> pay_4_seat_flower
+    seat_is("north") and match(["call_choice"], ~m"(4f 4g):1") and match(["flowers"], ~m"(unique 4f 4g):2") -> pay_4_seat_flower
+    match(["call_choice"], ~m"(1f 2f 3f 4f):1") -> if match(["flowers"], ~m"(unique 1f 2f 3f 4f):4") do
+      big_text("All Flowers")
+      push_message("is paid an extra 4 from all players for having all flowers in their starting hand")
+      pay_other_players(%{amt: 4})
+    end
+    match(["call_choice"], ~m"(1g 2g 3g 4g):1") -> if match(["flowers"], ~m"(unique 1g 2g 3g 4g):4") do
+      big_text("All Seasons")
+      push_message("is paid an extra 4 from all players for having all seasons in their starting hand")
+      pay_other_players(%{amt: 4})
+    end
+    match(["call_choice"], ~m"(1a 2a 3a 4a):1") -> if match(["flowers"], ~m"(unique 1a 2a 3a 4a):4") do
+      big_text("All Animals")
+      push_message("is paid an extra 4 from all players for having all animals in their starting hand")
+      pay_other_players(%{amt: 4})
+    end
+  end
+end
+
+apply prepend, "buttons.flower.actions" do
+  cond do
+    match(["call_choice"], ~m"(1a 2a):1") and match(["flowers"], ~m"(unique 1a 2a):2") ->
+      big_text("Bitten")
+      push_message("is paid 2 from all players for having both the cat and the mouse")
+      pay_other_players(%{amt: 2})
+    match(["call_choice"], ~m"(3a 4a):1") and match(["flowers"], ~m"(unique 3a 4a):2") ->
+      big_text("Bitten")
+      push_message("is paid 2 from all players for having both the chicken and the centipede")
+      pay_other_players(%{amt: 2})
+    seat_is("east") and match(["call_choice"], ~m"(1f 1g):1") and match(["flowers"], ~m"(unique 1f 1g):2") -> pay_2_seat_flower
+    seat_is("south") and match(["call_choice"], ~m"(2f 2g):1") and match(["flowers"], ~m"(unique 2f 2g):2") -> pay_2_seat_flower
+    seat_is("west") and match(["call_choice"], ~m"(3f 3g):1") and match(["flowers"], ~m"(unique 3f 3g):2") -> pay_2_seat_flower
+    seat_is("north") and match(["call_choice"], ~m"(4f 4g):1") and match(["flowers"], ~m"(unique 4f 4g):2") -> pay_2_seat_flower
+    match(["call_choice"], ~m"(1f 2f 3f 4f):1") -> if match(["flowers"], ~m"(unique 1f 2f 3f 4f):4") do
+      big_text("All Flowers")
+      push_message("is paid an extra 2 from all players for having all flowers")
+      pay_other_players(%{amt: 2})
+    end
+    match(["call_choice"], ~m"(1g 2g 3g 4g):1") -> if match(["flowers"], ~m"(unique 1g 2g 3g 4g):4") do
+      big_text("All Seasons")
+      push_message("is paid an extra 2 from all players for having all seasons")
+      pay_other_players(%{amt: 2})
+    end
+    match(["call_choice"], ~m"(1a 2a 3a 4a):1") -> if match(["flowers"], ~m"(unique 1a 2a 3a 4a):4") do
+      big_text("All Animals")
+      push_message("is paid an extra 2 from all players for having all animals")
+      pay_other_players(%{amt: 2})
+    end
+  end
+end
+
+apply append, "buttons.daiminkan.actions" do
+  push_message("is paid 100 from the discarder for calling kong")
+  add_score(1); subtract_score(1, "last_discarder"); big_text("  -1  ", as: "last_discarder")
+end
+
+apply append, "buttons.ankan.actions" do
+  push_message("is paid 2 from all players for making a concealed kong")
+  pay_other_players(%{amt: 2})
+end
+
+apply append, "buttons.kakan.actions" do
+  push_message("is paid 1 from all players for making an added kong")
+  pay_other_players(%{amt: 1})
+end
+
+apply append, "buttons.ron.show_when", has_yaku_with_discard(2, "Tai")
+apply append, "buttons.chankan.show_when", has_yaku_with_call(2, "Tai")
+apply append, "buttons.tsumo.show_when", has_yaku_with_hand(2, "Tai")
+
+set interruptible_actions, ["play_tile", "draw", "advance_turn", "call", "self_call", "upgrade_call"]
+set initial_score, 0
+set starting_tiles, 13
+set initial_dead_wall_length, 30
+set four_rows_discards, true
+set max_rounds, 16
+
+on before_win do
+  cond do
+    won_by_draw -> make_responsible_for("others")
+    won_by_discard -> make_responsible_for("last_discarder")
+    won_by_call -> make_responsible_for("last_caller")
+  end
+end
+
+define_scoring win do
+  total = points :: "Tai"
+  cond do
+    total >= 10 -> total = 32 :: "10 Tai (double limit)"; modify_winner("score", 10)
+    total >= 5 -> total = 16 :: "5 Tai (limit)"; modify_winner("score", 5)
+    total == 4 -> total = 8 :: "4 Tai payment"
+    total == 3 -> total = 4 :: "3 Tai payment"
+    total == 2 -> total = 2 :: "2 Tai payment"
+  end
+  cond do
+    won_by_draw -> total *= 2 :: "Self-pick payment"
+    won_by_discard and seat_is("last_discarder") -> total *= 2 :: "Discarder payment"
+    won_by_call and seat_is("last_caller") -> total *= 2 :: "Discarder payment"
+  end
+end
