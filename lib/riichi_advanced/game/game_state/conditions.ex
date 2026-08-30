@@ -854,9 +854,10 @@ defmodule RiichiAdvanced.GameState.Conditions do
     if debug_label != nil do
       if result do
         IO.puts("#{debug_label}: passed all conditions")
+        # IO.inspect(clause_cache, limit: :infinity, label: "clause_cache")
       else
         IO.puts("#{debug_label}: failed condition #{inspect(debug_clause)}")
-        IO.inspect(clause_cache, limit: :infinity, label: "clause_cache")
+        # IO.inspect(clause_cache, limit: :infinity, label: "clause_cache")
       end
     end
     {result, clause_cache}

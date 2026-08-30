@@ -561,8 +561,6 @@ defmodule RiichiAdvanced.Constants do
     "taiwanese" => %{ruleset: "taiwanese", mods: ["taiwanese_rules"]},
     # singaporean is .json
     "singaporean" => %{ruleset: "singaporean", mods: ["singaporean_rules"]},
-    # ningbo is .json
-    "ningbo" => %{ruleset: "ningbo", mods: ["ningbo_rules"]},
 
     "nojokersmahjongleague" => %{
       display_name: "No Jokers Mahjong League 2024",

@@ -216,7 +216,7 @@ defmodule RiichiAdvanced.YakuTest.NingboYaku do
     TestUtils.test_yaku_advanced("ningbo", [], """
     {
       "starting_hand": {
-        "east": ["3m", "3m", "3m", "5m", "5m", "5m", "8m", "8m", "8m", "1z", "1z", "8m", "9m"],
+        "east": ["3m", "3m", "3m", "5m", "5m", "5m", "8m", "8m", "8m", "8m", "9m", "1z", "1z"],
         "south": ["2m", "4m", "7m", "2p", "3p", "4p", "6p", "7p", "8p", "9p", "2s", "4s", "6s"],
         "west": ["2m", "4m", "7m", "2p", "3p", "4p", "6p", "7p", "8p", "9p", "2s", "4s", "6s"],
         "north": ["2m", "4m", "7m", "2p", "3p", "4p", "6p", "7p", "8p", "9p", "2s", "4s", "6s"]
@@ -243,7 +243,7 @@ defmodule RiichiAdvanced.YakuTest.NingboYaku do
     TestUtils.test_yaku_advanced("ningbo", [], """
     {
       "starting_hand": {
-        "east": ["3m", "3m", "3m", "5m", "5m", "5m", "8m", "8m", "8m", "1z", "1z", "1m", "2m"],
+        "east": ["1m", "2m", "3m", "3m", "3m", "5m", "5m", "5m", "8m", "8m", "8m", "1z", "1z"],
         "south": ["2m", "4m", "7m", "2p", "3p", "4p", "6p", "7p", "8p", "9p", "2s", "4s", "6s"],
         "west": ["2m", "4m", "7m", "2p", "3p", "4p", "6p", "7p", "8p", "9p", "2s", "4s", "6s"],
         "north": ["2m", "4m", "7m", "2p", "3p", "4p", "6p", "7p", "8p", "9p", "2s", "4s", "6s"]
@@ -566,7 +566,7 @@ defmodule RiichiAdvanced.YakuTest.NingboYaku do
       %{"type" => "buttons_pressed", "buttons" => [%{"button" => "chankan"}, nil, nil, nil]}
     ], %{
       east: %{
-        yaku: [{"No Baida", [1, "Tai"]}, {"Robbing a Kong", [0, "Tai", 5, "×"]}]
+        yaku: [{"No Baida", [1, "Tai"]}, {"Robbing a Kong", [5, "×"]}]
       }
     })
   end

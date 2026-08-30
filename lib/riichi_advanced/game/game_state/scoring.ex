@@ -52,6 +52,7 @@ defmodule RiichiAdvanced.GameState.Scoring do
     minipoints = Map.get(state.players[seat].counters, "fu", 0)
     yaku = _get_yaku(state, seat, winning_tile, win_source, minipoints, exclude_extra_yaku?)
     {yaku, minipoints}
+    # |> IO.inspect(label: inspect(winning_tile))
   end
 
   defp _get_yaku(state, seat, winning_tile, win_source, minipoints, exclude_extra_yaku?) do

@@ -1,7 +1,7 @@
 require "value_honors"
 default list, "yaku"
 default value, 0
-default round_wind_name, ""
+default round_wind_name, "Round Wind"
 
 on after_initialization do
   add_rule("$value $han", "Value Triplets", "%{value} %{han} for each of the following triplets in your hand:", %{value: !value, han: !han})

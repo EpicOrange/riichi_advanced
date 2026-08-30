@@ -1,0 +1,169 @@
+set display_name, "Ningbo Mahjong"
+set tutorial_link, "https://mahjongpros.com/blogs/how-to-play/beginners-guide-to-ningbo-mahjong-rules"
+
+require "value_honors"
+require "standard_sets"
+require "hefei_rules"
+
+define_global pon_name, "Pon"
+define_global kan_name, "Kong"
+define_global ankan_name, "Kong"
+define_global flower_name, "Hua"
+define_global ron_name, "Hu"
+define_global chankan_name, "Hu"
+define_global tsumo_name, "Zimo"
+define_global han, "Tai"
+
+require "base"
+require "standard_wall"
+require "framed_5z"
+require "global_mods"
+require "default_auto_buttons"
+require "standard_win"
+require "pon"
+require "kan", %{hide_ankans: true}
+require "ron", %{scoring_key: "win"}
+require "tsumo", %{scoring_key: "win"}
+require "yaku/chankan", %{name: "Robbing a Kong", value: 5, han: "×", scoring_key: "win"}
+require "default_flowers", %{auto_flower_by_default: true, undiscardable: true, eight_value: 10, win_on: "8 flowers"}
+require "yaku/honitsu", %{hon_name: "Half Flush", hon_value: 2, chin_name: "Pure Flush", chin_value: 4}
+require "yaku/toitoi", %{name: "All Triplets", value: 2}
+require "yaku/rinshan", %{value: 2, rinshan_name: "After a Kong"}
+replace_yaku "yaku", "After a Kong", [1, "Tai", 2, "×"]
+require "yaku/tsumo", %{name: "Self Draw", value: 1}
+require "yaku/yakuhai", %{value: 1}
+require "yaku/tsuuiisou", %{name: "All Honours", value: 10}
+require "yaku/tenhou", %{chiihou_is_tsumo: false, chiihou_name: "Blessing of Earth", chiihou_value: 10, tenhou_name: "Blessing of Heaven", tenhou_value: 10}
+
+define_set tanki, ~s"0@winning_tile 0"
+define_set kanchan, ~s"0 1@winning_tile 2"
+define_set penchan, ~s"0@terminal 1 2@winning_tile|0@winning_tile 1 2@terminal"
+define_match edge_wait, ~m"exhaustive, penchan:1, mentsu:3, pair:1"
+define_match closed_wait, ~m"exhaustive, kanchan:1, mentsu:3, pair:1"
+define_match single_wait, ~m"exhaustive, tanki:1, mentsu:4"
+define_yaku yaku, "Edge Wait", [1, "Tai"], match(["hand", "calls", "winning_tile"], ["edge_wait"]), ["Single Wait"]
+define_yaku yaku, "Closed Wait", [1, "Tai"], match(["hand", "calls", "winning_tile"], ["closed_wait"])
+define_yaku yaku, "Single Wait", [1, "Tai"], match(["hand", "calls", "winning_tile"], ["single_wait"]), ["Closed Wait"]
+
+define_set last_tile_3, ~s"0@winning_tile 0 0"
+define_set last_tile_4, ~s"0@winning_tile 0 0 0"
+define_yaku yaku, "Last Tile", [4, "Tai"],
+         (won_by_draw and match(["all_ponds", "all_call_tiles"], ~m"last_tile_3:1"))
+  or (not_won_by_draw and match(["all_ponds", "all_call_tiles"], ~m"last_tile_4:1"))
+
+define_yaku yaku, "Three Meld Penalty", [5, "×"],
+  calls_from_shimocha >= 3 or
+  calls_from_toimen >= 3 or
+  calls_from_kamicha >= 3
+
+define_yaku_precedence "All Honours", ["All Triplets", "Half Flush"]
+define_yaku_precedence "Blessing of Heaven", ["Self Draw"]
+
+set score_calculation, %{
+  yaku_lists: ["yaku", "yaku_multiplier"],
+  point_name: "Tai",
+  point2_name: "×",
+  right_display: "points2",
+  score_denomination: "",
+  agarirenchan: true,
+  win_by_discard_label: "Hu",
+  win_by_discard_name: "Hu",
+  win_by_draw_label: "Zimo",
+  win_by_draw_name: "Zimo",
+  exhaustive_draw_name: "Draw",
+}
+
+def flip_baida do
+  tag_tiles("baida", [-2])
+  tag_dora("baida", -2)
+  reveal_tile(-2)
+  add_attr([-2], ["_skip_draw", "_hidden"])
+  add_attr_tagged("baida", ["_dora", "baida"])
+  set_tile_alias_all([["any", "baida"]], [["any", "is_baida"]])
+end
+on after_start do flip_baida end
+
+on after_call do
+  # can't use e.g. shimocha_discarded or else flower calls will increment counter
+  if seat_is("callee", as: "shimocha") do calls_from_shimocha += 1 end
+  if seat_is("callee", as: "toimen") do calls_from_toimen += 1 end
+  if seat_is("callee", as: "kamicha") do calls_from_kamicha += 1 end
+end
+
+on before_win do
+  cond do
+    calls_from_shimocha >= 3 -> make_responsible_for("shimocha", "all")
+    calls_from_toimen >= 3 -> make_responsible_for("toimen", "all")
+    calls_from_kamicha >= 3 -> make_responsible_for("kamicha", "all")
+  end
+end
+
+define_const baida, [%{"tile": "any", "attrs": ["baida"]}]
+apply set, "buttons.daiminkan.call_conditions", not_call_contains(@baida, 1)
+apply set, "buttons.kakan.call_conditions", not_call_contains(@baida, 1)
+apply set, "buttons.pon.call_conditions", not_call_contains(@baida, 1)
+
+apply set, "buttons.daiminkan.call_priority_list", not_call_choice_contains(@baida, 1)
+apply set, "buttons.pon.call_priority_list", not_call_choice_contains(@baida, 1)
+
+apply set, "buttons.ankan.call_conditions",
+  (not_call_contains(@baida, 1) or call_contains(@baida, 4))
+  and not_call_contains(["1f","2f","3f","4f","1g","2g","3g","4g"], 4)
+
+apply append, "buttons.ron.show_when", 
+  has_yaku_with_discard(4, "Tai")
+  or (has_yaku_with_discard(2, "Tai") and has_yaku_with_discard(2, "×"))
+  or (has_yaku_with_discard(1, "Tai") and has_yaku_with_discard(4, "×"))
+
+apply append, "buttons.chankan.show_when", 
+  has_yaku_with_call(4, "Tai")
+  or (has_yaku_with_call(2, "Tai") and has_yaku_with_call(2, "×"))
+  or (has_yaku_with_call(1, "Tai") and has_yaku_with_call(4, "×"))
+
+apply append, "buttons.tsumo.show_when", 
+  has_yaku_with_hand(4, "Tai")
+  or (has_yaku_with_hand(2, "Tai") and has_yaku_with_hand(2, "×"))
+  or (has_yaku_with_hand(1, "Tai") and has_yaku_with_hand(4, "×"))
+
+set dora_indicators, %{
+  "1m": ["1m", "2m"], "2m": ["2m", "3m"], "3m": ["3m", "4m"], "4m": ["4m", "5m"], "5m": ["5m", "6m"], "6m": ["6m", "7m"], "7m": ["7m", "8m"], "8m": ["8m", "9m"], "9m": ["9m", "1m"], "0m": ["5m", "6m"],
+  "1p": ["1p", "2p"], "2p": ["2p", "3p"], "3p": ["3p", "4p"], "4p": ["4p", "5p"], "5p": ["5p", "6p"], "6p": ["6p", "7p"], "7p": ["7p", "8p"], "8p": ["8p", "9p"], "9p": ["9p", "1p"], "0p": ["5p", "6p"],
+  "1s": ["1s", "2s"], "2s": ["2s", "3s"], "3s": ["3s", "4s"], "4s": ["4s", "5s"], "5s": ["5s", "6s"], "6s": ["6s", "7s"], "7s": ["7s", "8s"], "8s": ["8s", "9s"], "9s": ["9s", "1s"], "0s": ["5s", "6s"],
+  "1z": ["1z", "2z"], "2z": ["2z", "3z"], "3z": ["3z", "4z"], "4z": ["4z", "1z"], "0z": ["0z", "6z"], "6z": ["6z", "7z"],  "7z": ["7z", "0z"],
+  "1f": ["1f", "2f", "3f", "4f", "1g", "2g", "3g", "4g"],
+  "2f": ["1f", "2f", "3f", "4f", "1g", "2g", "3g", "4g"],
+  "3f": ["1f", "2f", "3f", "4f", "1g", "2g", "3g", "4g"],
+  "4f": ["1f", "2f", "3f", "4f", "1g", "2g", "3g", "4g"],
+  "1g": ["1f", "2f", "3f", "4f", "1g", "2g", "3g", "4g"],
+  "2g": ["1f", "2f", "3f", "4f", "1g", "2g", "3g", "4g"],
+  "3g": ["1f", "2f", "3f", "4f", "1g", "2g", "3g", "4g"],
+  "4g": ["1f", "2f", "3f", "4f", "1g", "2g", "3g", "4g"],
+}
+
+set interruptible_actions, ["play_tile", "draw", "call", "self_call", "upgrade_call"]
+set initial_score, 0
+set starting_tiles, 13
+set max_rounds, 16
+set display_honba, true
+set display_wall, true
+set initial_dead_wall_length, 14
+
+# welcome to the baida zone
+define_set baida, ~s"any@is_baida"
+define_set baida_pair, ~s"0@is_baida, 0@is_baida"
+define_set baida_reuse, ~s"0@is_baida, 0@baida"
+define_set baida_pair_win, ~s"0@is_baida&winning_tile, 0@is_baida"
+on before_scoring do
+  add_counter("baida_reuse", "count_matches", ["orig_hand", "hand", "orig_winning_tile", "winning_tile"], ~m"nojoker, baida_reuse:1")
+end
+define_yaku yaku, "No Baida", [1, "Tai"], not_match(["hand", "calls", "winning_tile"], ~m"baida:1")
+define_yaku yaku, "Win On Baida", [1, "Tai"], match(["winning_tile"], ~m"baida:1")
+define_yaku yaku, "Baida Reuse", ["baida_reuse", "Tai"], baida_reuse >= 1
+define_yaku yaku, "Baida Pair Win", [1, "Tai"], won_by_draw and match(["hand", "calls", "winning_tile"], ~m"nojoker, baida_pair_win:1")
+
+define_scoring win do
+  total = points :: "Tai"
+  if points2 > 0 do
+    total *= points2 :: "×"
+  end
+end
