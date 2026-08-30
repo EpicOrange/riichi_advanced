@@ -35,9 +35,6 @@ require "yaku/yakuhai", %{value: 1}
 require "yaku/tsuuiisou", %{name: "All Honours", value: 10}
 require "yaku/tenhou", %{chiihou_is_tsumo: false, chiihou_name: "Blessing of Earth", chiihou_value: 10, tenhou_name: "Blessing of Heaven", tenhou_value: 10}
 
-define_set tanki, ~s"0@winning_tile 0"
-define_set kanchan, ~s"0 1@winning_tile 2"
-define_set penchan, ~s"0@terminal 1 2@winning_tile|0@winning_tile 1 2@terminal"
 define_match edge_wait, ~m"exhaustive, penchan:1, mentsu:3, pair:1"
 define_match closed_wait, ~m"exhaustive, kanchan:1, mentsu:3, pair:1"
 define_match single_wait, ~m"exhaustive, tanki:1, mentsu:4"

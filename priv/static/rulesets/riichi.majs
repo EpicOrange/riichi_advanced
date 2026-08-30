@@ -485,6 +485,7 @@ define_mod_category "Yaku"
 define_mod "lib/yaku/riichi", order: -1, name: "Riichi", desc: "Enable riichi declarations. When you are tenpai with at least 1000 points (and it is not your last discard), you may declare riichi before discarding. If the discard passes, you automatically bet 1000 and can no longer change your hand. If you win under this condition, you get the riichi yaku (1 han). If you riichi on your first discard (calls invalidate), this is called Double Riichi and worth 2 han."
 config_mod "lib/yaku/riichi", name: "bet", values: [0,1000,2000,3000,4000,5000], default: 1000
 config_mod "lib/yaku/riichi", name: "drawless", values: [false, true], default: false
+config_mod "lib/yaku/riichi", name: "double_value", values: [2]
 define_mod "yaku/ippatsu", order: 2, name: "Ippatsu", deps: ["lib/yaku/riichi"], desc: "Enables ippatsu. \"One-shot\". 1 han if you win before or during your next draw after riichi. Calls invalidate."
 define_mod "yaku/nippatsu", order: 2, name: "Nippatsu", deps: ["lib/yaku/riichi"], desc: "Enables nippatsu. 1 han if you win during the second go-around after riichi ippatsu. Calls invalidate."
 define_mod "yaku/tsubame_gaeshi", name: "Tsubame Gaeshi", deps: ["lib/yaku/riichi"], desc: "Local yaku. \"Swallow Reversal\". 1 han if you win off a riichi declaration discard."

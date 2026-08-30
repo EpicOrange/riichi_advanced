@@ -774,7 +774,7 @@ defmodule RiichiAdvanced.GameState.Conditions do
   def cached_check_dnf_condition(state, clause, context, clause_cache) when is_list(clause) do
     {cond_spec, allowed_trues} = case clause do
       [n | cond_spec] when is_integer(n) -> {cond_spec, n}
-      cond_spec when is_list(cond_spec) -> {cond_spec, length(cond_spec)}
+      cond_spec when is_list(cond_spec) -> {cond_spec, :infinity}
     end
     case Map.get(clause_cache, {:dnf, cond_spec, context.key}, nil) do
       nil ->
@@ -782,7 +782,7 @@ defmodule RiichiAdvanced.GameState.Conditions do
           fn clause, {num_trues, clause_cache} ->
             {result, clause_cache} = cached_check_cnf_condition(state, clause, context, clause_cache, nil, false)
             case result do
-              true ->  {if num_trues >= allowed_trues do :halt else :cont end, {num_trues + 1, clause_cache}}
+              true ->  {if num_trues >= allowed_trues or allowed_trues == :infinity do :halt else :cont end, {num_trues + 1, clause_cache}}
               false -> {:cont, {num_trues, clause_cache}}
             end
           end)

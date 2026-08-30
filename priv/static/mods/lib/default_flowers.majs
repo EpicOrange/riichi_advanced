@@ -199,17 +199,41 @@ cond do
     end
 end
 
-define_button flower_win,
-  display_name: "Zimo",
+define_button flower_tsumo,
+  display_name: !tsumo_name,
   show_when: our_turn
     and has_draw
-    and match(["draw"], ~m"unique, (1f 2f 3f 4f 1g 2g 3g 4g):1")
-    and (
-        (equals(!win_on, "7 flowers") and match(["flowers"], ~m"unique, (1f 2f 3f 4f 1g 2g 3g 4g):6"))
-     or (equals(!win_on, "8 flowers") and match(["flowers"], ~m"unique, (1f 2f 3f 4f 1g 2g 3g 4g):7"))
-    )
+    and match(["draw"], ~m"unique, any_flower:1")
+    and ((equals(!win_on, "7 flowers") and match(["flowers"], ~m"unique, any_flower:6"))
+     or (equals(!win_on, "8 flowers") and match(["flowers"], ~m"unique, any_flower:7")))
   do
-    big_text("Zimo")
+    big_text(!tsumo_name)
+    pause(1000)
+    reveal_hand
+    win_by_draw
+  end
+
+define_button flower_chankan,
+  display_name: !ron_name,
+  show_when: not_our_turn
+    and match(["last_called_tile"], ~m"unique, any_flower:1")
+    and ((equals(!win_on, "7 flowers") and match(["flowers"], ~m"unique, any_flower:6"))
+     or (equals(!win_on, "8 flowers") and match(["flowers"], ~m"unique, any_flower:7")))
+  do
+    big_text(!ron_name)
+    pause(1000)
+    reveal_hand
+    win_by_draw
+  end
+
+define_button flower_ron,
+  display_name: !ron_name,
+  show_when: not_our_turn
+    and match(["last_discard"], ~m"unique, any_flower:1")
+    and ((equals(!win_on, "7 flowers") and match(["flowers"], ~m"unique, any_flower:6"))
+     or (equals(!win_on, "8 flowers") and match(["flowers"], ~m"unique, any_flower:7")))
+  do
+    big_text(!ron_name)
     pause(1000)
     reveal_hand
     win_by_draw

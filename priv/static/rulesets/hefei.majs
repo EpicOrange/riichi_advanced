@@ -281,6 +281,7 @@ on after_start do if honba == 0 do add_honba(1) end end
 # makes it impossible to discard the last four draws. passing the turn during this is done with the "No Win" button
 define_play_restriction any, status("sea_floor")
 apply append, "buttons.ankan.show_when", tiles_remaining(5)
+apply append, "buttons.kakan.show_when", tiles_remaining(5)
 define_button sea_floor_no_win,
   display_name: "Sea Floor - No Win",
   show_when: our_turn

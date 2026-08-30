@@ -1,21 +1,39 @@
 # must apply this mod after chii/pon/kan/ron/chankan/tsumo mods, as this modifies those buttons
 default bet, 1000
+default name, "Riichi"
+default value, 1
+default double_name, "Double Riichi"
+default double_value, 0
+default closed_only, true
 default drawless, false
 
 define_const riichi_bet, !bet
 
 on after_initialization do
-  add_rule("Rules", "Riichi", "If you can, you may discard into tenpai (ready hand) by declaring 'riichi' to lock your hand. If your discard passes, you bet %{bet} points. If you win, you are awarded Riichi (1 han yaku). If you declared riichi on your very first discard, then you are instead awarded double riichi (2 han). Calls before the riichi declaration invalidate double riichi.", %{bet: @riichi_bet})
-  add_rule("1 Han", "Riichi", "1 Han for winning after declaring riichi.")
+  if @riichi_bet > 0 do
+    if !double_value > 0 do
+      add_rule("Rules", !name, "If you can, you may discard into tenpai (ready hand) by declaring $name to lock your hand. If your discard passes, you bet %{bet} points. If you win, you are awarded $name ($value $han). If you declared $name on your very first discard, then you are instead awarded $double_name ($double_value $han). Calls before the riichi declaration invalidate $double_name.", %{bet: @riichi_bet, name: !name, value: !value, double_name: !double_name, double_value: !double_value, han: !han})
+    else
+      add_rule("Rules", !name, "If you can, you may discard into tenpai (ready hand) by declaring $name to lock your hand. If your discard passes, you bet %{bet} points. If you win, you are awarded $name ($value $han).", %{bet: @riichi_bet, name: !name, value: !value, han: !han})
+    end
+  else
+    if !double_value > 0 do
+      add_rule("Rules", !name, "If you can, you may discard into tenpai (ready hand) by declaring $name to lock your hand. If you win, you are awarded $name ($value $han). If you declared $name on your very first discard, then you are instead awarded $double_name ($double_value $han). Calls before the riichi declaration invalidate $double_name.", %{name: !name, value: !value, double_name: !double_name, double_value: !double_value, han: !han})
+    else
+      add_rule("Rules", !name, "If you can, you may discard into tenpai (ready hand) by declaring $name to lock your hand. If you win, you are awarded $name ($value $han).", %{name: !name, value: !value, han: !han})
+    end
+  end
+  add_rule("$value $han", !name, "$value $han for winning after declaring $name.", %{value: !value, han: !han})
+  add_rule("$value $han", !double_name, "$value $han for winning after declaring $name.", %{value: !double_value, han: !han})
   add_rule("Rules", "No Ippatsu", "Winning in the first go-around after your riichi declaration does not award Ippatsu.")
 end
 
 apply set_prepend, "score_calculation.yaku_lists", ["riichi_yaku"]
 define_yaku_precedence "yakuman", ["riichi_yaku"]
 
-define_yaku riichi_yaku, "Riichi", [1, "Han"], status("riichi")
-define_yaku riichi_yaku, "Double Riichi", [2, "Han"], status("double_riichi")
-define_yaku_precedence "Double Riichi", ["Riichi"]
+define_yaku riichi_yaku, !name, [!value, !han], status("riichi")
+define_yaku riichi_yaku, !double_name, [!double_value, !han], status("double_riichi")
+define_yaku_precedence !double_name, [!name]
 
 define_match chiitoitsu_tenpai_14, ~m"(nojoker quad):-1, (nojoker koutsu):-2, pair:6"
 define_match tenpai_14, "standard_tenpai", "chiitoitsu_tenpai_14", "kokushi_tenpai"
@@ -24,21 +42,24 @@ set display_riichi_sticks, true
 
 apply set, "score_calculation.riichi_value", @riichi_bet
 
+apply initialize, "constants.closed_hand", has_no_call_named("chii", "pon", "daiminkan", "kakan")
 define_button riichi,
-  display_name: "Riichi",
+  display_name: !name,
   show_when: our_turn
     and has_draw
     and status_missing("riichi")
     and has_score("riichi_value")
     and (!drawless or next_draw_possible)
-    and @closed_hand
+    and (not !closed_only or @closed_hand)
     and match(["hand", "calls", "draw"], ["tenpai_14"])
   do
-    big_text("Riichi")
+    big_text(!name)
     set_status("riichi", "just_reached")
-    push_message("declared riichi")
     if status("discards_empty") and no_calls_yet do
       set_status("double_riichi")
+      push_message("declared $riichi", %{riichi: !double_name})
+    else
+      push_message("declared $riichi", %{riichi: !name})
     end
   end
 

@@ -1,0 +1,257 @@
+set display_name, "Taiwanese"
+set tutorial_link, "https://mahjongpros.com/blogs/how-to-play/beginners-guide-to-taiwanese-mahjong"
+
+define_global han, "Tai"
+define_global ankan_name, "Self Kong"
+define_global chii_name, "Chow"
+define_global pon_name, "Pung"
+define_global kan_name, "Kong"
+define_global flower_name, "Flower"
+define_global ron_name, "Hu"
+define_global tsumo_name, "Zimo"
+
+require "value_honors"
+require "standard_sets"
+require "base"
+require "standard_wall"
+require "framed_5z"
+require "global_mods"
+require "default_auto_buttons"
+require "chii"
+require "pon"
+require "kan", %{hide_ankans: false, replace_from_dead_wall: true, shift_dead_wall: true}
+require "ron", %{scoring_key: "win"}
+require "tsumo", %{scoring_key: "win"}
+require "agarirenchan"
+require "head_bump"
+require "default_flowers", %{draw_after_flower_phase: true, auto_flower_by_default: true, replace_from_dead_wall: true, shift_dead_wall: true, win_on: "8 flowers"}
+
+define_set manzu, ~s"1m|2m|3m|4m|5m|6m|7m|8m|9m"
+define_set pinzu, ~s"1p|2p|3p|4p|5p|6p|7p|8p|9p"
+define_set souzu, ~s"1s|2s|3s|4s|5s|6s|7s|8s|9s"
+# "manzu_3": [[["1m","2m","3m","4m","5m","6m","7m","8m","9m"],["1m","2m","3m","4m","5m","6m","7m","8m","9m"],["1m","2m","3m","4m","5m","6m","7m","8m","9m"]]],
+# "pinzu_3": [[["1p","2p","3p","4p","5p","6p","7p","8p","9p"],["1p","2p","3p","4p","5p","6p","7p","8p","9p"],["1p","2p","3p","4p","5p","6p","7p","8p","9p"]]],
+# "souzu_3": [[["1s","2s","3s","4s","5s","6s","7s","8s","9s"],["1s","2s","3s","4s","5s","6s","7s","8s","9s"],["1s","2s","3s","4s","5s","6s","7s","8s","9s"]]]
+
+define_match tenpai, ~m"""
+    exhaustive, mentsu:4, taatsu:1, pair:1
+  | exhaustive, mentsu:5
+  | koutsu:1, pair:6
+  | pair:8
+  """
+define_match win, ~m"exhaustive, mentsu:5, pair:1 | exhaustive, koutsu:1, pair:7"
+
+define_match ryanankou_tsumo, ~m"""
+    (pon daiminkan kakan):-1, koutsu:2, mentsu:3, pair:1
+  | (pon daiminkan kakan):-2, koutsu:3, mentsu:2, pair:1
+  | (pon daiminkan kakan):-3, koutsu:4, mentsu:1, pair:1
+  | (pon daiminkan kakan):-4, koutsu:5, pair:1
+  """
+define_match ryanankou_ron, ~m"""
+    exhaustive, (pon daiminkan kakan):-1, koutsu:2, (any@winning_tile):0, mentsu:3, pair:1
+  | exhaustive, (pon daiminkan kakan):-2, koutsu:3, (any@winning_tile):0, mentsu:2, pair:1
+  | exhaustive, (pon daiminkan kakan):-3, koutsu:4, (any@winning_tile):0, mentsu:1, pair:1
+  | exhaustive, (pon daiminkan kakan):-4, koutsu:5, (any@winning_tile):0, pair:1
+  """
+
+define_match sanankou_tsumo, ~m"""
+    (pon daiminkan kakan):-1, koutsu:3, mentsu:2, pair:1
+  | (pon daiminkan kakan):-2, koutsu:4, mentsu:1, pair:1
+  | (pon daiminkan kakan):-3, koutsu:5, pair:1
+  """
+define_match sanankou_ron, ~m"""
+    exhaustive, (pon daiminkan kakan):-1, koutsu:3, (any@winning_tile):0, mentsu:2, pair:1
+  | exhaustive, (pon daiminkan kakan):-2, koutsu:4, (any@winning_tile):0, mentsu:1, pair:1
+  | exhaustive, (pon daiminkan kakan):-3, koutsu:5, (any@winning_tile):0, pair:1
+  """
+
+define_match suuankou_tsumo, ~m"""
+    (pon daiminkan kakan):-1, koutsu:4, mentsu:1, pair:1
+  | (pon daiminkan kakan):-2, koutsu:5, pair:1
+  """
+define_match suuankou_ron, ~m"""
+    exhaustive, (pon daiminkan kakan):-1, koutsu:4, (any@winning_tile):0, mentsu:1, pair:1
+  | exhaustive, (pon daiminkan kakan):-2, koutsu:5, (any@winning_tile):0, pair:1
+  """
+
+define_match uuankou_tsumo, ~m"(pon daiminkan kakan):-1, koutsu:5, pair:1"
+define_match uuankou_ron, ~m"exhaustive, (pon daiminkan kakan):-1, koutsu:5, (any@winning_tile):0, pair:1"
+
+define_match all_flowers, ~m"(unique 1f 2f 3f 4f):4"
+define_match all_seasons, ~m"(unique 1g 2g 3g 4g):4"
+define_match any_flower, ~m"(1f 2f 3f 4f 1g 2g 3g 4g):1"
+define_match eight_flowers, ~m"(unique 1f 2f 3f 4f 1g 2g 3g 4g):8"
+define_match little_three_dragons, ~m"unique, (haku hatsu chun):2, (haku_pair hatsu_pair chun_pair):1"
+define_match big_three_dragons, ~m"unique, (haku hatsu chun):3"
+define_match little_three_winds, ~m"unique, (ton nan shaa pei):2, (ton_pair nan_pair shaa_pair pei_pair):1"
+define_match big_three_winds, ~m"unique, (ton nan shaa pei):3"
+define_match little_four_winds, ~m"unique, (ton nan shaa pei):3, (ton_pair nan_pair shaa_pair pei_pair):1"
+define_match big_four_winds, ~m"unique, (ton nan shaa pei):4"
+define_match edge_wait, ~m"exhaustive, penchan:1, mentsu:4, pair:1"
+define_match closed_wait, ~m"exhaustive, kanchan:1, mentsu:4, pair:1"
+define_match single_wait, ~m"exhaustive, tanki:1, mentsu:5"
+define_match full_straight, ~m"exhaustive, ittsuu:1, mentsu:2, pair:1"
+
+# Dealer
+define_yaku yaku, "Dealer", [1, "Tai"], seat_is("east")
+# Flowers
+on before_win do
+  set_counter("flowers", "count_matches", ["flowers"], ["any_flower"])
+end
+define_yaku yaku, "No Flowers", [1, "Tai"], flowers == 0, ["Flowers"]
+define_yaku yaku, "Flowers", ["flowers", "Tai"], flowers >= 1
+define_yaku flower_win, "Seven Flowers Robbing Eighth", [20, "Tai"], won_by_call and match(["flowers", "last_called_tile"], ["eight_flowers"]), ["yaku"]
+define_yaku flower_win, "Eight Flowers", [30, "Tai"], match(["hand", "draw", "flowers"], ["eight_flowers"]), ["Seven Flowers Robbing Eighth"]
+# Winning methods
+define_yaku yaku, "Ting", [0, "Tai"], status("riichi") # 0 han just for yaku ordering, we add to it with riichi mod
+define_yaku yaku, "Ready Hand", [0, "Tai"], status("double_riichi"), ["Ting"]
+define_yaku yaku, "Self Draw", [1, "Tai"], won_by_draw
+define_yaku yaku, "Concealed Hand", [1, "Tai"], has_no_call_named("chii", "pon", "daiminkan", "kakan")
+define_yaku yaku, "Fully Concealed Hand", [3, "Tai"], has_existing_yaku("Concealed Hand", "Self Draw"), ["Concealed Hand", "Self Draw"]
+define_yaku yaku, "All Revealed", [10, "Tai"], match(["calls"], ~m"(chii pon daiminkan ankan kakan):5")
+define_yaku yaku, "Last Tile (draw)", [1, "Tai"], no_tiles_remaining and won_by_draw
+define_yaku yaku, "Last Tile (discard)", [1, "Tai"], no_tiles_remaining and not_won_by_draw
+define_yaku yaku, "Robbing a Kong", [1, "Tai"], won_by_call and caller_status("kan")
+define_yaku yaku, "Closed Wait", [2, "Tai"], match(["hand", "calls"], ["closed_wait"])
+define_yaku yaku, "Single Wait", [2, "Tai"], match(["hand", "calls"], ["single_wait"])
+# TODO these shouldn't count called tiles
+define_yaku yaku, "Within Ten Discards", [5, "Tai"], tiles_remaining(54)
+define_yaku yaku, "Within Five Discards", [10, "Tai"], tiles_remaining(59), ["Within Ten Discards"]
+# Suit-based hands
+require "yaku/honitsu", %{chin_name: "Full Flush", chin_value: 40, hon_name: "Half Flush", hon_value: 10}
+define_yaku yaku, "White Dragon", [1, "Tai"], match(["hand", "calls", "winning_tile"], ~m"haku:1")
+define_yaku yaku, "Green Dragon", [1, "Tai"], match(["hand", "calls", "winning_tile"], ~m"hatsu:1")
+define_yaku yaku, "Red Dragon", [1, "Tai"], match(["hand", "calls", "winning_tile"], ~m"chun:1")
+define_yaku yaku, "Wind Triplets", [1, "Tai"], match(["hand", "calls", "winning_tile"], ~m"ton:1")
+define_yaku yaku, "Wind Triplets", [1, "Tai"], match(["hand", "calls", "winning_tile"], ~m"nan:1")
+define_yaku yaku, "Wind Triplets", [1, "Tai"], match(["hand", "calls", "winning_tile"], ~m"shaa:1")
+define_yaku yaku, "Wind Triplets", [1, "Tai"], match(["hand", "calls", "winning_tile"], ~m"pei:1")
+define_yaku yaku, "No Honors", [1, "Tai"], not_match(["hand", "calls", "winning_tile"], ~m"jihai:1")
+define_yaku yaku, "No Honors or Flowers", [3, "Tai"], has_existing_yaku("No Honors", "No Flowers"), ["No Honors", "No Flowers"]
+define_yaku yaku, "Little Three Winds", [5, "Tai"], match(["hand", "calls", "winning_tile"], ["little_three_winds"])
+define_yaku yaku, "Little Three Dragons", [10, "Tai"], match(["hand", "calls", "winning_tile"], ["little_three_dragons"])
+define_yaku yaku, "Big Three Winds", [10, "Tai"], match(["hand", "calls", "winning_tile"], ["big_three_winds"]), ["Little Three Winds"]
+define_yaku yaku, "Big Three Dragons", [30, "Tai"], match(["hand", "calls", "winning_tile"], ["big_three_dragons"]), ["Little Three Dragons"]
+define_yaku yaku, "Little Four Winds", [30, "Tai"], match(["hand", "calls", "winning_tile"], ["little_four_winds"]), ["Big Three Winds"]
+define_yaku yaku, "Big Four Winds", [40, "Tai"], match(["hand", "calls", "winning_tile"], ["big_four_winds"]), ["Little Four Winds"]
+# Triplet hands
+define_yaku yaku, "All Triplets", [10, "Tai"], match(["hand", "calls", "winning_tile"], ~m"koutsu:5, pair:1")
+on before_win do
+  set_counter("minkans", "count_matches", ["calls"], ~m"(daiminkan kakan):1")
+  set_counter("ankans", "count_matches", ["calls"], ~m"ankan:1")
+end
+define_yaku yaku, "Open Kongs", ["minkans", "Tai"], minkans >= 1
+define_yaku yaku, "Concealed Kongs", ["ankans", "Tai"], ankans >= 1
+define_yaku yaku, "Two Concealed Triplets", [2, "Tai"], (won_by_draw and match(["hand", "calls", "winning_tile"], ["ryanankou_tsumo"])) or (not_won_by_draw and match(["hand", "calls", "winning_tile"], ["ryanankou_ron"]))
+define_yaku yaku, "Three Concealed Triplets", [5, "Tai"], (won_by_draw and match(["hand", "calls", "winning_tile"], ["sanankou_tsumo"])) or (not_won_by_draw and match(["hand", "calls", "winning_tile"], ["sanankou_ron"])), ["Two Concealed Triplets"]
+define_yaku yaku, "Four Concealed Triplets", [10, "Tai"], (won_by_draw and match(["hand", "calls", "winning_tile"], ["suuankou_tsumo"])) or (not_won_by_draw and match(["hand", "calls", "winning_tile"], ["suuankou_ron"])), ["Three Concealed Triplets"]
+define_yaku yaku, "Five Concealed Triplets", [40, "Tai"], (won_by_draw and match(["hand", "calls", "winning_tile"], ["uuankou_tsumo"])) or (not_won_by_draw and match(["hand", "calls", "winning_tile"], ["uunankou_ron"])), ["Four Concealed Triplets"]
+# Sequence hands
+define_yaku yaku, "All Sequences", [3, "Tai"], match(["hand", "calls", "winning_tile"], ~m"shuntsu:5, pair:1")
+define_yaku yaku, "All Sequences (full)", [10, "Tai"], has_existing_yaku("All Sequences", "No Honors or Flowers"), ["All Triplets", "All Sequences", "No Honors or Flowers"]
+define_yaku yaku, "Closed Straight", [5, "Tai"], match(["hand", "winning_tile"], ["ittsuu"]), ["Open Straight"]
+define_yaku yaku, "Open Straight", [10, "Tai"], match(["hand", "calls", "winning_tile"], ["ittsuu"])
+# Others
+define_yaku yaku, "Seven Pairs", [30, "Tai"], match(["hand", "calls", "winning_tile"], ~m"exhaustive, koutsu:1, pair:7")
+require "yaku/tenhou", %{chiihou_is_tsumo: false, chiihou_name: "Blessing of Earth", chiihou_value: 40, tenhou_name: "Blessing of Heaven", tenhou_value: 40}
+
+set score_calculation, %{
+  yaku_lists: ["yaku", "flower_win"],
+  pao_eligible_yaku: ["Big Four Winds", "Little Four Winds", "Big Three Dragons", "Little Three Dragons"],
+  agarirenchan: true,
+  tenpairenchan: true,
+  pao_pays_all_yaku: true,
+  split_pao_ron: false,
+  point_name: "Tai",
+  win_by_discard_label: "Hu",
+  win_by_draw_label: "Zimo",
+  win_by_discard_name: "Hu",
+  win_by_discard_name_2: "Double Hu",
+  win_by_discard_name_3: "Triple Hu",
+  win_by_draw_name: "Zimo",
+  win_with_pao_name: "Pao",
+  exhaustive_draw_name: "Draw"
+}
+
+on before_win do
+  cond do
+    won_by_draw -> make_responsible_for("others")
+    won_by_discard -> make_responsible_for("last_discarder")
+    won_by_call -> make_responsible_for("last_caller")
+  end
+end
+
+define_scoring win do
+  total = points :: "Tai"
+  cond do
+    seat_is("east", as: "winner") -> total += honba * 2 :: "Dealer Streak Bonus"
+    seat_is("east") -> total += (honba * 2) + 1 :: "Dealer Streak Penalty"
+  end
+end
+
+# players may skip last draw
+apply append, "constants.can_draw_condition", tiles_remaining(5)
+# 
+on before_turn_change do
+  if everyone_status("last_draw") do ryuukyoku end
+end
+on after_turn_change do
+  if not_tiles_remaining(5) do
+    if status_missing("last_draw") do
+      set_status("last_draw")
+    end
+  end
+end
+define_play_restriction any, not_has_draw and status("last_draw")
+apply append, "buttons.ankan.show_when", tiles_remaining(5)
+apply append, "buttons.kakan.show_when", tiles_remaining(5)
+define_button last_tile_draw,
+  display_name: "Draw last tile",
+  show_when: our_turn and not_has_draw and not_just_discarded and status("last_draw"),
+  unskippable: true
+  do
+    draw
+  end
+define_button last_tile_skip,
+  display_name: "Skip last draw",
+  show_when: our_turn and not_has_draw and not_just_discarded and status("last_draw"),
+  unskippable: true
+  do
+    big_text("Skip")
+    advance_turn
+  end
+
+set tsumogiri_bots, true
+
+require "yaku/riichi", %{name: "Ting", bet: 0, drawless: true, double_name: "Ready Hand", double_value: 10}
+set display_riichi_sticks, false
+define_match tenpai_14, ~m"""
+    exhaustive, mentsu:4, taatsu:1, pair:1
+  | exhaustive, mentsu:5
+  | koutsu:1, pair:6
+  | pair:8
+  """
+
+on after_call do
+  as caller do
+    cond do
+      match(["last_call"], ~m"(haku hatsu chun):1") -> if match(["calls"], ~m"haku:1, hatsu:1, chun:1") do make_responsible_for("callee", "all", as: "last_seat") end
+      match(["last_call"], ~m"(ton nan shaa pei):1") -> if match(["calls"], ~m"ton:1, nan:1, shaa:1, pei:1") do make_responsible_for("callee", "all", as: "last_seat") end
+      match(["last_call"], ~m"manzu:1") -> if match(["calls"], ~m"manzu:4") do make_responsible_for("callee", "all", as: "last_seat") end
+      match(["last_call"], ~m"pinzu:1") -> if match(["calls"], ~m"pinzu:4") do make_responsible_for("callee", "all", as: "last_seat") end
+      match(["last_call"], ~m"souzu:1") -> if match(["calls"], ~m"souzu:4") do make_responsible_for("callee", "all", as: "last_seat") end
+    end
+  end
+end
+
+on before_exhaustive_draw do add_honba end
+
+set interruptible_actions, ["play_tile", "draw", "advance_turn", "upgrade_call"]
+set display_honba, true
+set display_wall, true
+set initial_score, 0
+set initial_dead_wall_length, 16
+set starting_tiles, 16
+set max_rounds, 16
+
+define_mod reset_honba_on_draw, name: "Draws Reset Dealer Bonus", desc: "Reset the dealer continuation bonus on exhaustive draws. (The default behavior is to increase the bonus on a draw.)"

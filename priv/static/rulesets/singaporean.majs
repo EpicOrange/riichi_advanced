@@ -219,11 +219,7 @@ set four_rows_discards, true
 set max_rounds, 16
 
 on before_win do
-  cond do
-    won_by_draw -> make_responsible_for("others")
-    won_by_discard -> make_responsible_for("last_discarder")
-    won_by_call -> make_responsible_for("last_caller")
-  end
+  make_responsible_for("others")
 end
 
 define_scoring win do
