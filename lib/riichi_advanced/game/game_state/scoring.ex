@@ -77,24 +77,9 @@ defmodule RiichiAdvanced.GameState.Scoring do
           if Debug.debug_yaku_precedence() do
             IO.puts("Evaluating yaku #{yaku["display_name"]}")
           end
-          {cond_spec, allowed_falses} = case yaku["when"] do
-            [n | cond_spec] when is_integer(n) -> {cond_spec, length(cond_spec) - n}
-            cond_spec -> {cond_spec, 0}
-          end
-          {num_falses, clause_cache} = Enum.reduce_while(cond_spec, {0, clause_cache}, fn
-            _clause, {num_falses, clause_cache} when num_falses > allowed_falses -> {:halt, {num_falses, clause_cache}}
-            clause, {num_falses, clause_cache} -> case Map.get(clause_cache, clause, nil) do
-              nil ->
-                if Conditions.check_dnf_condition(state, clause, Map.put(context, :existing_yaku, existing_yaku)) do
-                  {:cont, {num_falses, Map.put(clause_cache, clause, true)}}
-                else
-                  {:cont, {num_falses + 1, Map.put(clause_cache, clause, false)}}
-                end
-              false -> {:cont, {num_falses + 1, clause_cache}}
-              true -> {:cont, {num_falses, clause_cache}}
-            end
-          end)
-          if num_falses <= allowed_falses do
+          context = Map.put(context, :existing_yaku, existing_yaku)
+          {result, clause_cache} = Conditions.cached_check_cnf_condition(state, yaku["when"], context, clause_cache)
+          if result do
             new_skips = MapSet.union(skips, Map.get(yaku_skip_map, yaku.key, MapSet.new()))
             %{"display_name" => name, "value" => value} = yaku
             if yaku.key in new_skips do

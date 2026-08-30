@@ -12,6 +12,7 @@ defmodule RiichiAdvanced.GameState.Conditions do
   alias RiichiAdvanced.Riichi, as: Riichi
   alias RiichiAdvanced.Utils, as: Utils
   import RiichiAdvanced.GameState
+  require Logger
 
   def get_hand_calls_spec(state, context, hand_calls_spec) do
     last_call_action = get_last_call_action(state)
@@ -744,7 +745,7 @@ defmodule RiichiAdvanced.GameState.Conditions do
         end
       is_boolean(cond_spec) -> cond_spec
       true                  ->
-        IO.puts "Unhandled condition clause #{inspect(cond_spec)}"
+        Logger.error("Unhandled condition clause #{inspect(cond_spec)}")
         true
     end
   end
@@ -764,9 +765,132 @@ defmodule RiichiAdvanced.GameState.Conditions do
         end
       is_boolean(cond_spec) -> cond_spec
       true                  ->
-        IO.puts "Unhandled condition clause #{inspect(cond_spec)}"
+        Logger.error("Unhandled condition clause #{inspect(cond_spec)}")
         true
     end
+  end
+
+  def cached_check_dnf_condition(state, clause, context \\ %{}, clause_cache \\ %{})
+  def cached_check_dnf_condition(state, clause, context, clause_cache) when is_list(clause) do
+    {cond_spec, allowed_trues} = case clause do
+      [n | cond_spec] when is_integer(n) -> {cond_spec, n}
+      cond_spec when is_list(cond_spec) -> {cond_spec, length(cond_spec)}
+    end
+    case Map.get(clause_cache, {:dnf, cond_spec, context.key}, nil) do
+      nil ->
+        {num_trues, clause_cache} = Enum.reduce_while(cond_spec, {0, clause_cache},
+          fn clause, {num_trues, clause_cache} ->
+            {result, clause_cache} = cached_check_cnf_condition(state, clause, context, clause_cache, nil, false)
+            case result do
+              true ->  {if num_trues >= allowed_trues do :halt else :cont end, {num_trues + 1, clause_cache}}
+              false -> {:cont, {num_trues, clause_cache}}
+            end
+          end)
+        result = 1 <= num_trues && num_trues <= allowed_trues
+        clause_cache = Map.put(clause_cache, {:dnf, cond_spec, context.key}, result)
+        {result, clause_cache}
+      b -> {b, clause_cache}
+    end
+  end
+  def cached_check_dnf_condition(_state, true, _context, clause_cache), do: {true, clause_cache}
+  def cached_check_dnf_condition(_state, false, _context, clause_cache), do: {false, clause_cache}
+  def cached_check_dnf_condition(state, clause, context, clause_cache) when is_binary(clause) do
+    negated = String.starts_with?(clause, "not_")
+    clause = if negated do String.replace_leading(clause, "not_", "") else clause end
+    case Map.get(clause_cache, {:cnf, clause, context.key}, nil) do
+      nil ->
+        result = check_condition(state, clause, context)
+        clause_cache = Map.put(clause_cache, {:cnf, clause, context.key}, result)
+        {if negated do not result else result end, clause_cache}
+      b when negated -> {not b, clause_cache}
+      b -> {b, clause_cache}
+    end
+  end
+  def cached_check_dnf_condition(state, clause, context, clause_cache) when is_map(clause) do
+    negated = String.starts_with?(clause["name"], "not_")
+    clause = if negated do Map.put(clause, "name", String.replace_leading(clause["name"], "not_", "")) else clause end
+    case Map.get(clause_cache, {:cnf, clause, context.key}, nil) do
+      nil ->
+        new_context = if Map.has_key?(clause, "as") do %{context | seat: from_seat_spec(state, context, clause["as"])} else context end
+        result = check_condition(state, clause["name"], new_context, clause["opts"])
+        clause_cache = Map.put(clause_cache, {:cnf, clause, context.key}, result) # use old context
+        {if negated do not result else result end, clause_cache}
+      b when negated -> {not b, clause_cache}
+      b -> {b, clause_cache}
+    end
+  end
+  def cached_check_dnf_condition(_state, clause, _context, clause_cache) do
+    Logger.error("Unhandled condition clause #{inspect(clause)}")
+    {true, clause_cache}
+  end
+
+  def cached_check_cnf_condition(state, clause, context \\ %{}, clause_cache \\ %{}, debug_label \\ nil, toplevel \\ true)
+  def cached_check_cnf_condition(state, clause, context, clause_cache, debug_label, toplevel) when is_list(clause) do
+    context = if toplevel do
+      Map.put(context, :key, Map.take(context, [:seat, :calls_spec]))
+    else context end
+    {cond_spec, allowed_falses} = case clause do
+      [n | cond_spec] when is_integer(n) -> {cond_spec, length(cond_spec) - n}
+      cond_spec when is_list(cond_spec) -> {cond_spec, 0}
+    end
+    {result, clause_cache, debug_clause} = case Map.get(clause_cache, {:cnf, cond_spec, context.key}, nil) do
+      nil ->
+        {num_falses, clause_cache, debug_clause} = Enum.reduce_while(cond_spec, {0, clause_cache, nil},
+          fn clause, {num_falses, clause_cache, _} ->
+            {result, clause_cache} = cached_check_dnf_condition(state, clause, context, clause_cache)
+            case result do
+              false -> {if num_falses >= allowed_falses do :halt else :cont end, {num_falses + 1, clause_cache, clause}}
+              true ->  {:cont, {num_falses, clause_cache, nil}}
+            end
+          end)
+        result = num_falses <= allowed_falses
+        clause_cache = if not toplevel do
+          # don't cache the whole toplevel CNF condition
+          Map.put(clause_cache, {:cnf, cond_spec, context.key}, result)
+        else clause_cache end
+        {result, clause_cache, debug_clause}
+      b -> {b, clause_cache, cond_spec}
+    end
+    if debug_label != nil do
+      if result do
+        IO.puts("#{debug_label}: passed all conditions")
+      else
+        IO.puts("#{debug_label}: failed condition #{inspect(debug_clause)}")
+        IO.inspect(clause_cache, limit: :infinity, label: "clause_cache")
+      end
+    end
+    {result, clause_cache}
+  end
+  def cached_check_cnf_condition(_state, true, _context, clause_cache, _debug_label, _toplevel), do: {true, clause_cache}
+  def cached_check_cnf_condition(_state, false, _context, clause_cache, _debug_label, _toplevel), do: {false, clause_cache}
+  def cached_check_cnf_condition(state, clause, context, clause_cache, _debug_label, _toplevel) when is_binary(clause) do
+    negated = String.starts_with?(clause, "not_")
+    clause = if negated do String.replace_leading(clause, "not_", "") else clause end
+    case Map.get(clause_cache, {:cnf, clause, context.key}, nil) do
+      nil ->
+        result = check_condition(state, clause, context)
+        clause_cache = Map.put(clause_cache, {:cnf, clause, context.key}, result)
+        {if negated do not result else result end, clause_cache}
+      b when negated -> {not b, clause_cache}
+      b -> {b, clause_cache}
+    end
+  end
+  def cached_check_cnf_condition(state, clause, context, clause_cache, _debug_label, _toplevel) when is_map(clause) do
+    negated = String.starts_with?(clause["name"], "not_")
+    clause = if negated do Map.put(clause, "name", String.replace_leading(clause["name"], "not_", "")) else clause end
+    case Map.get(clause_cache, {:cnf, clause, context.key}, nil) do
+      nil ->
+        new_context = if Map.has_key?(clause, "as") do %{context | seat: from_seat_spec(state, context, clause["as"])} else context end
+        result = check_condition(state, clause["name"], new_context, clause["opts"])
+        clause_cache = Map.put(clause_cache, {:cnf, clause, context.key}, result) # use old context
+        {if negated do not result else result end, clause_cache}
+      b when negated -> {not b, clause_cache}
+      b -> {b, clause_cache}
+    end
+  end
+  def cached_check_cnf_condition(_state, clause, _context, clause_cache, _debug_label, _toplevel) do
+    Logger.error("Unhandled condition clause #{inspect(clause)}")
+    {true, clause_cache}
   end
 
 end

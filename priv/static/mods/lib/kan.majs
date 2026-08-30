@@ -110,3 +110,5 @@ if !hide_ankans do
   on before_exhaustive_draw do flip_all_calls_faceup end
   on before_abortive_draw do flip_all_calls_faceup end
 end
+
+apply append, "interruptible_actions", ["play_tile"]

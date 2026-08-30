@@ -10,6 +10,7 @@ defmodule RiichiAdvanced.GameState.Buttons do
   alias RiichiAdvanced.Riichi, as: Riichi
   alias RiichiAdvanced.Utils, as: Utils
   import RiichiAdvanced.GameState
+  require Logger
 
   def to_buttons(state, seat, button_choices) do
     buttons = Rules.get(state.rules_ref, "buttons", %{})
@@ -120,32 +121,31 @@ defmodule RiichiAdvanced.GameState.Buttons do
             # don't regenerate buttons if the player already made a choice that hasn't been adjudicated yet
             {state, new_button_choices}
           else
-            button_choices = buttons
-            |> Enum.filter(fn {name, button} ->
-              calls_spec = Map.get(button, "call", [])
-              upgrades = Map.get(button, "upgrades", nil)
-              show_when = Map.get(button, "show_when", [])
-              if show_when == [] do
-                IO.puts("Warning: button #{name} has an empty show_when key (button definition: #{inspect(button)})")
-              end
-
-              if Debug.debug_buttons() do
-                IO.puts("recalculate_buttons: at #{inspect(System.os_time(:millisecond) - t)} ms, checking #{name} for #{seat}")
-              end
-              Map.get(button, "interrupt_level", 100) >= interrupt_level and 
-                if name in Map.get(Debug.debug_specific_buttons(), seat, []) do
-                  case Enum.find(show_when, &not Conditions.check_cnf_condition(state, [&1], %{seat: seat, call_name: name, calls_spec: calls_spec, upgrade_name: upgrades})) do
-                    nil ->
-                      IO.puts("Button #{name} for player #{seat}: passed all conditions")
-                      true
-                    condition ->
-                      IO.puts("Button #{name} for player #{seat}: failed condition #{inspect(condition)}")
-                      false
+            {button_choices, _clause_cache} = for {name, button} <- buttons, reduce: {[], %{}} do
+              {acc, clause_cache} ->
+                if Map.get(button, "interrupt_level", 100) >= interrupt_level do
+                  show_when = Map.get(button, "show_when", [])
+                  if show_when == [] do
+                    Logger.error("Warning: button #{name} has an empty show_when key (button definition: #{inspect(button)})")
                   end
-                else
-                  Conditions.check_cnf_condition(state, show_when, %{seat: seat, call_name: name, calls_spec: calls_spec, upgrade_name: upgrades})
-                end
-            end)
+                  if Debug.debug_buttons() do
+                    IO.puts("recalculate_buttons: at #{inspect(System.os_time(:millisecond) - t)} ms, checking #{name} for #{seat}")
+                  end
+                  context = %{
+                    seat: seat,
+                    call_name: name,
+                    calls_spec: Map.get(button, "call", []),
+                    upgrade_name: Map.get(button, "upgrades", nil),
+                  }
+                  debug_label = if name in Map.get(Debug.debug_specific_buttons(), seat, []) do
+                    "Button #{name} for player #{seat}"
+                  else nil end
+                  {result, clause_cache} = Conditions.cached_check_cnf_condition(state, show_when, context, clause_cache, debug_label)
+                  if result do
+                    {[{name, button} | acc], clause_cache}
+                  else {acc, clause_cache} end
+                else {acc, clause_cache} end
+            end
             {state, button_choices} = for {name, button} <- button_choices, reduce: {state, []} do
               {state, button_choices} ->
                 {state, spec} = make_button_choices(state, seat, name, button)

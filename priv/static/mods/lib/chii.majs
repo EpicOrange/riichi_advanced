@@ -16,4 +16,4 @@ define_button chii,
     change_turn("self")
   end
 
-apply append, "interruptible_actions", "call"
+apply append, "interruptible_actions", ["play_tile"]
