@@ -1,0 +1,15 @@
+compiled instantiations: closed=755 open=655
+
+call gate                          wins  draws   win %  avg exposures
+----------------------------------------------------------------------
+current (13 - matched <= 3)          54    146   27.0%           0.98
+fixed denom, needs <= 3              50    150   25.0%           0.70
+fixed denom, needs <= 5              86    114   43.0%           1.65
+fixed denom, needs <= 7             115     85   57.5%           2.15
+always call when useful             126     74   63.0%           2.30
+
+real	3m47.070s
+user	3m47.039s
+sys	0m0.012s
+
+[exited with code 0]

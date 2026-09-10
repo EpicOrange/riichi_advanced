@@ -1,0 +1,29 @@
+card hands: closed=80 open=60
+modelled: closed=79 open=59  (unmodelled: ['222a 0000a 222b 1111b'])
+instantiations: closed=1314 open=1086
+
+=== 'shanten' (13 - matched) at deal, closed hand, N=4000 ===
+  shanten 2:     1  (  0.0%)   cumulative <= 2:   0.0%
+  shanten 3:     6  (  0.1%)   cumulative <= 3:   0.2%
+  shanten 4:    56  (  1.4%)   cumulative <= 4:   1.6%
+  shanten 5:   312  (  7.8%)   cumulative <= 5:   9.4%
+  shanten 6:  1145  ( 28.6%)   cumulative <= 6:  38.0%
+  shanten 7:  1713  ( 42.8%)   cumulative <= 7:  80.8%
+  shanten 8:   727  ( 18.2%)   cumulative <= 8:  99.0%
+  shanten 9:    40  (  1.0%)   cumulative <= 9: 100.0%
+
+P(shanten <= 3) at deal (the ai_player.ex:142 call gate) = 0.17%
+
+=== after N exposures (concealed hand shrinks by 3 each) ===
+The metric hardcodes 13, but pairing_r only indexes CONCEALED tiles,
+so map_size(pairing_r) <= len(concealed hand). Hard floor on 'shanten':
+  0 exposure(s): concealed=13 tiles -> shanten >= 0
+  1 exposure(s): concealed=10 tiles -> shanten >= 3
+  2 exposure(s): concealed= 7 tiles -> shanten >= 6   <-- gate `shanten <= 3` UNREACHABLE
+  3 exposure(s): concealed= 4 tiles -> shanten >= 9   <-- gate `shanten <= 3` UNREACHABLE
+  4 exposure(s): concealed= 1 tiles -> shanten >= 12   <-- gate `shanten <= 3` UNREACHABLE
+
+=== empirical shanten with exposures (open card, best case) ===
+  0 exposure(s): min=4 median=7 P(shanten<=3)=0.0%
+  1 exposure(s): min=5 median=8 P(shanten<=3)=0.0%
+  2 exposure(s): min=6 median=9 P(shanten<=3)=0.0%
