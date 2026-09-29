@@ -1,0 +1,117 @@
+# 1
+define_yaku_precedence "Nine Gates", ["Concealed Hand"]
+define_yaku_precedence "Seven Shifted Pairs", ["Concealed Hand"]
+define_yaku_precedence "Thirteen Orphans", ["Concealed Hand"]
+define_yaku_precedence "Four Concealed Pungs", ["Concealed Hand"]
+define_yaku_precedence "Seven Pairs", ["Concealed Hand"]
+define_yaku_precedence "Greater Honors and Knitted Tiles", ["Concealed Hand"]
+define_yaku_precedence "Lesser Honors and Knitted Tiles", ["Concealed Hand"]
+# 3
+define_yaku_precedence "Reversible Tiles", ["One Voided Suit"]
+# 4
+define_yaku_precedence "Four Kongs", ["Three Kongs"]
+define_yaku_precedence "Three Kongs", ["Two Concealed Kongs", "Melded and Concealed Kongs", "Two Melded Kongs"]
+define_yaku_precedence "Two Concealed Kongs", ["Concealed Kong", "Two Concealed Pungs"]
+define_yaku_precedence "Melded and Concealed Kongs", ["Concealed Kong", "Melded Kong"]
+define_yaku_precedence "Two Melded Kongs", ["Melded Kong"]
+define_yaku_precedence "Four Concealed Pungs", ["Three Concealed Pungs"]
+define_yaku_precedence "Three Concealed Pungs", ["Two Concealed Pungs"]
+# 5
+define_yaku meta_yaku, "Two Terminal Chows", [-1, "Fan"], has_existing_yaku("All Chows", ["Pure Double Chow", 1], ["Mixed Double Chow", 1], ["Two Terminal Chows", 1])
+define_yaku meta_yaku, "Short Straight", [-1, "Fan"], has_existing_yaku("All Chows", ["Pure Double Chow", 1], ["Mixed Double Chow", 1], ["Short Straight", 1])
+define_yaku meta_yaku, "Short Straight", [-1, "Fan"], has_existing_yaku("All Chows", ["Pure Double Chow", 1], ["Two Terminal Chows", 1], ["Short Straight", 1])
+define_yaku meta_yaku, "Short Straight", [-1, "Fan"], has_existing_yaku("All Chows", ["Mixed Double Chow", 1], ["Two Terminal Chows", 1], ["Short Straight", 1])
+define_yaku meta_yaku, "Two Terminal Chows", [-1, "Fan"], has_existing_yaku("All Chows", "Mixed Double Chow", ["Two Terminal Chows", 2])
+# 6
+define_yaku meta_yaku, "Pure Double Chow", [-1, "Fan"], not_has_existing_yaku("All Chows") and has_existing_yaku(["Pure Double Chow", 1], ["Mixed Double Chow", 1])
+define_yaku meta_yaku, "Pure Double Chow", [-1, "Fan"], not_has_existing_yaku("All Chows") and has_existing_yaku(["Pure Double Chow", 1], ["Two Terminal Chows", 1])
+define_yaku meta_yaku, "Pure Double Chow", [-1, "Fan"], not_has_existing_yaku("All Chows") and has_existing_yaku(["Pure Double Chow", 1], ["Short Straight", 1])
+define_yaku meta_yaku, "Mixed Double Chow", [-1, "Fan"], not_has_existing_yaku("All Chows") and has_existing_yaku(["Mixed Double Chow", 1], ["Two Terminal Chows", 1])
+define_yaku meta_yaku, "Mixed Double Chow", [-1, "Fan"], not_has_existing_yaku("All Chows") and has_existing_yaku(["Mixed Double Chow", 1], ["Short Straight", 1])
+define_yaku meta_yaku, "Two Terminal Chows", [-1, "Fan"], not_has_existing_yaku("All Chows") and has_existing_yaku(["Two Terminal Chows", 1], ["Short Straight", 1])
+# 7
+define_yaku meta_yaku, "Pure Double Chow", [-1, "Fan"], has_existing_yaku("Pure Triple Chow", ["Pure Double Chow", 1], ["Mixed Double Chow", 1])
+define_yaku meta_yaku, "Pure Double Chow", [-1, "Fan"], has_existing_yaku("Pure Triple Chow", ["Pure Double Chow", 1], ["Two Terminal Chows", 1])
+define_yaku meta_yaku, "Pure Double Chow", [-1, "Fan"], has_existing_yaku("Pure Triple Chow", ["Pure Double Chow", 1], ["Short Straight", 1])
+define_yaku meta_yaku, "Mixed Double Chow", [-1, "Fan"], has_existing_yaku("Pure Triple Chow", ["Mixed Double Chow", 1], ["Two Terminal Chows", 1])
+define_yaku meta_yaku, "Mixed Double Chow", [-1, "Fan"], has_existing_yaku("Pure Triple Chow", ["Mixed Double Chow", 1], ["Short Straight", 1])
+define_yaku meta_yaku, "Two Terminal Chows", [-1, "Fan"], has_existing_yaku("Pure Triple Chow", ["Two Terminal Chows", 1], ["Short Straight", 1])
+define_yaku meta_yaku, "Pure Double Chow", [-1, "Fan"], has_existing_yaku("Pure Straight", ["Pure Double Chow", 1], ["Mixed Double Chow", 1])
+define_yaku meta_yaku, "Pure Double Chow", [-1, "Fan"], has_existing_yaku("Pure Straight", ["Pure Double Chow", 1], ["Two Terminal Chows", 1])
+define_yaku meta_yaku, "Pure Double Chow", [-1, "Fan"], has_existing_yaku("Pure Straight", ["Pure Double Chow", 1], ["Short Straight", 1])
+define_yaku meta_yaku, "Mixed Double Chow", [-1, "Fan"], has_existing_yaku("Pure Straight", ["Mixed Double Chow", 1], ["Two Terminal Chows", 1])
+define_yaku meta_yaku, "Mixed Double Chow", [-1, "Fan"], has_existing_yaku("Pure Straight", ["Mixed Double Chow", 1], ["Short Straight", 1])
+define_yaku meta_yaku, "Two Terminal Chows", [-1, "Fan"], has_existing_yaku("Pure Straight", ["Two Terminal Chows", 1], ["Short Straight", 1])
+define_yaku meta_yaku, "Pure Double Chow", [-1, "Fan"], has_existing_yaku("Pure Shifted Chows", ["Pure Double Chow", 1], ["Mixed Double Chow", 1])
+define_yaku meta_yaku, "Pure Double Chow", [-1, "Fan"], has_existing_yaku("Pure Shifted Chows", ["Pure Double Chow", 1], ["Two Terminal Chows", 1])
+define_yaku meta_yaku, "Pure Double Chow", [-1, "Fan"], has_existing_yaku("Pure Shifted Chows", ["Pure Double Chow", 1], ["Short Straight", 1])
+define_yaku meta_yaku, "Mixed Double Chow", [-1, "Fan"], has_existing_yaku("Pure Shifted Chows", ["Mixed Double Chow", 1], ["Two Terminal Chows", 1])
+define_yaku meta_yaku, "Mixed Double Chow", [-1, "Fan"], has_existing_yaku("Pure Shifted Chows", ["Mixed Double Chow", 1], ["Short Straight", 1])
+define_yaku meta_yaku, "Two Terminal Chows", [-1, "Fan"], has_existing_yaku("Pure Shifted Chows", ["Two Terminal Chows", 1], ["Short Straight", 1])
+define_yaku meta_yaku, "Pure Double Chow", [-1, "Fan"], has_existing_yaku("Mixed Straight", ["Pure Double Chow", 1], ["Mixed Double Chow", 1])
+define_yaku meta_yaku, "Pure Double Chow", [-1, "Fan"], has_existing_yaku("Mixed Straight", ["Pure Double Chow", 1], ["Two Terminal Chows", 1])
+define_yaku meta_yaku, "Pure Double Chow", [-1, "Fan"], has_existing_yaku("Mixed Straight", ["Pure Double Chow", 1], ["Short Straight", 1])
+define_yaku meta_yaku, "Mixed Double Chow", [-1, "Fan"], has_existing_yaku("Mixed Straight", ["Mixed Double Chow", 1], ["Two Terminal Chows", 1])
+define_yaku meta_yaku, "Mixed Double Chow", [-1, "Fan"], has_existing_yaku("Mixed Straight", ["Mixed Double Chow", 1], ["Short Straight", 1])
+define_yaku meta_yaku, "Two Terminal Chows", [-1, "Fan"], has_existing_yaku("Mixed Straight", ["Two Terminal Chows", 1], ["Short Straight", 1])
+define_yaku meta_yaku, "Pure Double Chow", [-1, "Fan"], has_existing_yaku("Mixed Triple Chow", ["Pure Double Chow", 1], ["Mixed Double Chow", 1])
+define_yaku meta_yaku, "Pure Double Chow", [-1, "Fan"], has_existing_yaku("Mixed Triple Chow", ["Pure Double Chow", 1], ["Two Terminal Chows", 1])
+define_yaku meta_yaku, "Pure Double Chow", [-1, "Fan"], has_existing_yaku("Mixed Triple Chow", ["Pure Double Chow", 1], ["Short Straight", 1])
+define_yaku meta_yaku, "Mixed Double Chow", [-1, "Fan"], has_existing_yaku("Mixed Triple Chow", ["Mixed Double Chow", 1], ["Two Terminal Chows", 1])
+define_yaku meta_yaku, "Mixed Double Chow", [-1, "Fan"], has_existing_yaku("Mixed Triple Chow", ["Mixed Double Chow", 1], ["Short Straight", 1])
+define_yaku meta_yaku, "Two Terminal Chows", [-1, "Fan"], has_existing_yaku("Mixed Triple Chow", ["Two Terminal Chows", 1], ["Short Straight", 1])
+define_yaku meta_yaku, "Pure Double Chow", [-1, "Fan"], has_existing_yaku("Mixed Shifted Chows", ["Pure Double Chow", 1], ["Mixed Double Chow", 1])
+define_yaku meta_yaku, "Pure Double Chow", [-1, "Fan"], has_existing_yaku("Mixed Shifted Chows", ["Pure Double Chow", 1], ["Two Terminal Chows", 1])
+define_yaku meta_yaku, "Pure Double Chow", [-1, "Fan"], has_existing_yaku("Mixed Shifted Chows", ["Pure Double Chow", 1], ["Short Straight", 1])
+define_yaku meta_yaku, "Mixed Double Chow", [-1, "Fan"], has_existing_yaku("Mixed Shifted Chows", ["Mixed Double Chow", 1], ["Two Terminal Chows", 1])
+define_yaku meta_yaku, "Mixed Double Chow", [-1, "Fan"], has_existing_yaku("Mixed Shifted Chows", ["Mixed Double Chow", 1], ["Short Straight", 1])
+define_yaku meta_yaku, "Two Terminal Chows", [-1, "Fan"], has_existing_yaku("Mixed Shifted Chows", ["Two Terminal Chows", 1], ["Short Straight", 1])
+# 8
+define_yaku_precedence "Pure Terminal Chows", ["Pure Double Chow", "Mixed Double Chow", "Two Terminal Chows", "Short Straight"]
+define_yaku_precedence "Quadruple Chow", ["Pure Double Chow", "Mixed Double Chow", "Two Terminal Chows", "Short Straight"]
+define_yaku_precedence "Four Pure Shifted Chows", ["Pure Double Chow", "Mixed Double Chow", "Two Terminal Chows", "Short Straight"]
+define_yaku_precedence "Three-Suited Terminal Chows", ["Pure Double Chow", "Mixed Double Chow", "Two Terminal Chows", "Short Straight"]
+# 9
+define_yaku_precedence "Seven Pairs", ["Seven Shifted Pairs", "Pure Terminal Chows", "Quadruple Chow", "Three-Suited Terminal Chows", "Out with Replacement Tile", "Robbing The Kong", "Outside Hand", "Fully Concealed Hand", "Last Tile", "Concealed Hand", "Pure Double Chow", "Mixed Double Chow", "Short Straight", "Two Terminal Chows", "Edge Wait", "Closed Wait", "Single Wait"]
+# 10
+define_yaku_precedence "Big Four Winds", ["Seat Wind", "Prevalent Wind"]
+define_yaku_precedence "Big Three Winds", ["Pung of Honors"]
+define_yaku_precedence "Little Three Dragons", ["Pung of Honors", "White Dragon", "Green Dragon", "Red Dragon"]
+define_yaku_precedence "All Honors", ["Pung of Honors"]
+define_yaku_precedence "All Terminals", ["Pung of Terminals"]
+define_yaku_precedence "All Terminals and Honors", ["Pung of Honors", "Pung of Terminals"]
+# 11
+define_yaku_precedence "Edge Wait", ["Closed Wait"]
+define_yaku_precedence "Closed Wait", ["Single Wait"]
+# 12
+define_yaku_precedence "All Pungs", ["All Honors, All Terminals and Honors, and All Terminals"]
+# 13
+define_yaku_precedence "All Green", ["Half Flush"]
+# 14
+define_yaku_precedence "All Terminals", ["Double Pung"]
+# 15
+define_match won_258, ~m"(2m@winning_tile 5m@winning_tile 8m@winning_tile 2p@winning_tile 5p@winning_tile 8p@winning_tile 2s@winning_tile 5s@winning_tile 8s@winning_tile):1"
+define_yaku meta_yaku, "_no_terminals", [0, "Fan"], has_existing_yaku("Nine Gates") and not_match(["winning_tile"], ["won_258"]), ["Pung of Terminals", "_no_terminals"]
+
+on after_initialization do
+  delete_rule("Rules", "Non-Repeat Principle")
+  delete_rule("Rules", "Exclusionary Rule")
+  add_rule("Rules", "Mahjong International League Scoring", """
+  From less niche to more niche:
+  1. Fan guaranteeing a concealed hand cannot score Concealed Hand (2 han) or Fully Concealed Hand (4 fan).
+  2. Waiting on any 2+ tiles, including "fifth tile" waits, invalidates Edge/Closed/Single Wait (1 fan).
+  3. Any fan that need 3+ honor sets or 4+ same-suit sets also scores One Voided Suit (1 fan). Reversible Tiles (8 fan) cannot score with One Voided Suit (1 fan).
+  4. Only one Kong-based fan and one Concealed Pung-based fan can be scored, but Two Concealed Kongs (6 fan) overrides Two Concealed Pungs (2 fan).
+  5. All Chows (2 fan) can score max 3 fan from Pure Double Chow (1 fan), Mixed Double Chow (1 fan), Two Terminal Chows (1 fan), and Short Straight (1 fan).
+  6. Otherwise, max 2 fan can be scored from those.
+  7. Fan that use three chows can only score with max 1 fan from those.
+  8. Fan that use four chows cannot score any of those fan.
+  9. Seven Pairs (24 fan) cannot score with fan utilizing chows/pungs/kongs, or with any of: Seven Shifted Pairs (88 fan), Out with Replacement Tile (8 fan), Robbing The Kong (8 fan), Outside Hand (4 fan), Last Tile (4 fan), or Single Wait (1 fan).
+  10. Fan that require terminal pungs do not score Pung of Terminals (1 fan). Fan that require honor pungs do not score Pung of Honors (1 fan). Big Four Winds (88 fan) does not score with Seat Wind (2 fan) or Prevalent Wind (2 fan). Big Three Dragons (88 fan) and Little Three Dragons (64 fan) do not score with Dragon Pung (2 fan).
+  11. Knitted Straight (12 fan) can be included in a standard hand to score All Chows (2 fan). If the final wait coincides with the knitted straight's final wait, it does not invalidate Edge/Closed/Single Wait (1 fan).
+  12. All Pungs (6 fan) cannot be scored with All Honors (64 fan), All Terminals and Honors (32 fan), and All Terminals (64 fan).
+  13. All Green (88 fan) can score with Full Flush (24 fan) but not Half Flush (6 fan).
+  14. All Terminals (64 fan) can score with Triple Pung (16 fan) but not Double Pung (2 fan).
+  15. Nine Gates (88 fan) cannot score with Pung of Terminals (1 fan) unless won on a 2, 5, or 8.
+  """, -1)
+end

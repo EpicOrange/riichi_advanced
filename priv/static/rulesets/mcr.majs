@@ -142,7 +142,7 @@ define_yaku yaku, "Four Pure Shifted Pungs", [48, "Fan"], match(["hand", "calls"
 # 32
 define_set four_shifted_chows, ~s"0 1 2, 1 2 3, 2 3 4, 3 4 5|0 1 2, 2 3 4, 4 5 6, 6 7 8"
 define_yaku yaku, "Four Pure Shifted Chows", [32, "Fan"], match(["hand", "calls", "winning_tile"], ~m"exhaustive, four_shifted_chows:1, pair:1")
-define_yaku yaku, "Three Kongs", [32, "Fan"], match(["calls"], ~m"(daiminkan ankan kakan):3"), ["Two Kongs"]
+define_yaku yaku, "Three Kongs", [32, "Fan"], match(["calls"], ~m"(daiminkan ankan kakan):3"), ["Melded and Concealed Kongs"]
 define_yaku yaku, "All Terminals and Honors", [32, "Fan"], winning_hand_consists_of("1m","9m","1p","9p","1s","9s","1z","2z","3z","4z","5z","6z","7z")
 
 # 24
@@ -220,7 +220,7 @@ define_yaku yaku, "All Types", [6, "Fan"], match(["hand", "calls", "winning_tile
   """)
 define_yaku yaku, "Melded Hand", [6, "Fan"], not_won_by_draw and match(["calls"], ~m"(chii pon daiminkan kakan):4")
 define_yaku yaku, "Two Dragon Pungs", [6, "Fan"], match(["hand", "calls", "winning_tile"], ~m"unique, (haku hatsu chun):2")
-define_yaku yaku, "Two Kongs", [6, "Fan"], match(["calls"], ~m"ankan:1, (daiminkan kakan):1")
+define_yaku yaku, "Melded and Concealed Kongs", [6, "Fan"], match(["calls"], ~m"ankan:1, (daiminkan kakan):1")
 
 # 4
 define_yaku yaku, "Outside Hand", [4, "Fan"], match(["hand", "calls", "winning_tile"], ~m"exhaustive, (yaochuu_l yaochuu_r yaochuu_t):4, yaochuu_pair:1")
@@ -319,7 +319,7 @@ define_yaku_precedence "Quadruple Chow", ["Pure Triple Chow", "Tile Hog", "Seven
 define_yaku_precedence "Four Pure Shifted Pungs", ["Pure Shifted Pungs", "All Pungs"]
 # 32
 define_yaku_precedence "Four Pure Shifted Chows", ["Pure Shifted Chows", "Short Straight", "Two Terminal Chows", "All Chows", "One Voided Suit"]
-define_yaku_precedence "Three Kongs", ["Two Concealed Kongs", "Two Kongs", "Two Melded Kongs", "Concealed Kong", "Melded Kong"]
+define_yaku_precedence "Three Kongs", ["Two Concealed Kongs", "Melded and Concealed Kongs", "Two Melded Kongs", "Concealed Kong", "Melded Kong"]
 define_yaku_precedence "All Terminals and Honors", ["Pungs of Terminals", "Pung of Terminals", "Pungs of Honors", "Pung of Honors", "Outside Hand", "All Pungs"]
 # 24
 define_yaku_precedence "Seven Pairs", ["Concealed Hand", "Single Wait", "All Even Pungs"]
@@ -361,7 +361,7 @@ define_yaku_precedence "Mixed Shifted Chows", []
 define_yaku_precedence "All Types", []
 define_yaku_precedence "Melded Hand", ["Single Wait"]
 define_yaku_precedence "Two Dragon Pungs", ["White Dragon", "Green Dragon", "Red Dragon"]
-define_yaku_precedence "Two Kongs", ["Melded Kong", "Concealed Kong"]
+define_yaku_precedence "Melded and Concealed Kongs", ["Melded Kong", "Concealed Kong"]
 # 4
 define_yaku_precedence "Outside Hand", []
 define_yaku_precedence "Fully Concealed Hand", ["Self-Drawn", "Concealed Hand"]
@@ -512,7 +512,7 @@ on after_initialization do
   add_rule("4 Fan", "Outside Hand", "%{example_hand}", %{example_hand: ~t"123m78999p11s666z 1s"})
   add_rule("4 Fan", "Two Melded Kongs", "You have two melded kongs. A melded kong is one formed by calling the fourth tile with three copies in hand, or by adding a drawn fourth tile to an existing called triplet.")
   add_rule("4 Fan", "Two Melded Kongs", "%{example_hand}", %{example_hand: ~t"67m22z 3m33M3m 5S555s 23p4P 8m"})
-  add_rule("4 Fan", "Two Melded Kongs", "If one of your kongs is concealed, you are instead awarded Two Kongs (6 Fan). If both are concealed, you are instead awarded Two Concealed Kongs (8 Fan).")
+  add_rule("4 Fan", "Two Melded Kongs", "If one of your kongs is concealed, you are instead awarded Melded and Concealed Kongs (6 Fan). If both are concealed, you are instead awarded Two Concealed Kongs (8 Fan).")
   # 6 Fan
   add_rule("6 Fan", "Mixed Shifted Chows", "You have something like 123 234 345, with each sequence being in a different suit.")
   add_rule("6 Fan", "Mixed Shifted Chows", "%{example_hand}", %{example_hand: ~t"345m567p456s0077z 7z"})
@@ -527,9 +527,9 @@ on after_initialization do
   add_rule("6 Fan", "Melded Hand", "%{example_hand}", %{example_hand: ~t"1m 2P34p 3M33m 2p3P4p 7z7Z7z 1m"})
   add_rule("6 Fan", "Two Dragon Pungs", "You have two dragon triplets.")
   add_rule("6 Fan", "Two Dragon Pungs", "%{example_hand}", %{example_hand: ~t"333567m234s00777z 0z"})
-  add_rule("6 Fan", "Two Kongs", "You have two kongs, one melded and one concealed. A melded kong is one formed by calling the fourth tile with three copies in hand, or by adding a drawn fourth tile to an existing called triplet. A concealed kong is formed by having four copies in hand, and declaring them facedown on your turn.")
-  add_rule("6 Fan", "Two Kongs", "%{example_hand}", %{example_hand: ~t"111m34s22z 1111x 6p66P6p 5s"})
-  add_rule("6 Fan", "Two Kongs", "Two melded kongs instead awards Two Melded Kongs (4 Fan), and two concealed awards Two Concealed Kongs (8 Fan).")
+  add_rule("6 Fan", "Melded and Concealed Kongs", "You have two kongs, one melded and one concealed. A melded kong is one formed by calling the fourth tile with three copies in hand, or by adding a drawn fourth tile to an existing called triplet. A concealed kong is formed by having four copies in hand, and declaring them facedown on your turn.")
+  add_rule("6 Fan", "Melded and Concealed Kongs", "%{example_hand}", %{example_hand: ~t"111m34s22z 1111x 6p66P6p 5s"})
+  add_rule("6 Fan", "Melded and Concealed Kongs", "Two melded kongs instead awards Two Melded Kongs (4 Fan), and two concealed awards Two Concealed Kongs (8 Fan).")
   # 8 Fan
   add_rule("8 Fan", "Mixed Triple Chow", "You have three of the same sequence in different suits.")
   add_rule("8 Fan", "Mixed Triple Chow", "%{example_hand}", %{example_hand: ~t"234m234p23477s44z 4z"})
@@ -562,7 +562,7 @@ on after_initialization do
   add_rule("8 Fan", "Reversible Tiles", "%{example_hand}", %{example_hand: ~t"123345p88s00z 4S56s 8s"})
   add_rule("8 Fan", "Mixed Shifted Pungs", "You have consecutive triplets in the pattern 111 222 333 in different suits.")
   add_rule("8 Fan", "Mixed Shifted Pungs", "%{example_hand}", %{example_hand: ~t"222m333p444s3z 3M45m 3z"})
-  add_rule("8 Fan", "Out with Replacement Tile", "Win with the replacement tile drawn after calling a flower or kong. Does not stack with Self-Drawn (1 Fan), but does stack with Fully Concealed Hand (4 Fan).")
+  add_rule("8 Fan", "Out with Replacement Tile", "Win with the replacement tile drawn after calling a kong (not a flower). Does not stack with Self-Drawn (1 Fan), but does stack with Fully Concealed Hand (4 Fan).")
   add_rule("8 Fan", "Robbing The Kong", "Win off the tile someone tried to add to a pung.")
   add_rule("8 Fan", "Last Tile Claim", "Win off the last discard.")
   add_rule("8 Fan", "Last Tile Draw", "Win off the last draw.")
@@ -666,6 +666,7 @@ set max_rounds, 16
 # mods
 
 define_mod_category "MCR"
+define_mod "mcr_mil_rules", name: "MIL rules", desc: "Adds the Mahjong International League rules regarding which fan can be scored with which. A guide is added to the Rules tab."
 define_mod "lib/tonpuu", name: "East Round Only", desc: "Play only the East Round (4 hands), instead of all four rounds (16 hands)"
 define_mod "lib/no_flowers", name: "No Flowers", desc: "Remove flowers from the game."
 define_mod mcr_chicken_hand_challenge, name: "Chicken Hand Challenge", desc: "Makes everything worth 0 Fan except for flowers and Chicken Hand."
