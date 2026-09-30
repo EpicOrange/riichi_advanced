@@ -1276,14 +1276,6 @@ To set the value of riichi sticks and honba counters respectively, set:
 
 `"riichi_value"` otherwise defaults to 1000 and `"honba_value"` to 0.
 
-The following key determines the behavior of pao (activated by the `make_responsible_for` action):
-
-    apply append, score_calculation, {
-      "split_pao_ron": true,
-    }
-
-`"split_pao_ron"` is true if ron payments are to be split in half (the deal-in player pays half, and the pao player pays half plus honba). In the extremely rare case that one player deals into another player's yakuman and the two other players should pay pao, the ron payment is split three ways.
-
 ### Payment-related statuses
 
 There are a number of statuses you can set on players that can modify their scoring, and most of them are due to Sakicard abilities. The eventual goal is to replace most of them with the following two counters:

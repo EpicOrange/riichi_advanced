@@ -57,7 +57,6 @@ set score_calculation, %{
   point2_name: "×",
   right_display: "points2",
   score_denomination: "",
-  agarirenchan: true,
   win_by_discard_label: "Hu",
   win_by_discard_name: "Hu",
   win_by_draw_label: "Zimo",

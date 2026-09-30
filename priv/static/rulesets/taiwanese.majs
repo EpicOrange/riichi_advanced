@@ -159,10 +159,6 @@ require "yaku/tenhou", %{chiihou_is_tsumo: false, chiihou_name: "Blessing of Ear
 
 set score_calculation, %{
   yaku_lists: ["yaku", "flower_win"],
-  agarirenchan: true,
-  tenpairenchan: true,
-  pao_pays_all_yaku: true,
-  split_pao_ron: false,
   point_name: "Tai",
   win_by_discard_label: "Hu",
   win_by_draw_label: "Zimo",

@@ -284,7 +284,7 @@ defmodule RiichiAdvanced.GameState.ScoringOld do
             complete_pao = "all" in pao_yaku_list
             {pao_yaku, yaku} = if complete_pao do {winner.yaku, []} else Enum.split_with(yaku, fn {name, _value} -> name in pao_yaku_list end) end
             {pao_yaku2, yaku2} = if complete_pao do {winner.yaku2, []} else Enum.split_with(yaku2, fn {name, _value} -> name in pao_yaku_list end) end
-            if payer != nil and Map.get(score_rules, "split_pao_ron", true) do
+            if payer != nil do
               [{payer, {yaku ++ pao_yaku, yaku2 ++ pao_yaku2, shares, mult, penalty}}, {seat, {pao_yaku, pao_yaku2, 1, discarder_multiplier, penalty}} | liabilities]
             else
               [{payer, {yaku, yaku2, shares, mult, penalty}}, {seat, {pao_yaku, pao_yaku2, 1, discarder_multiplier, penalty}} | liabilities]

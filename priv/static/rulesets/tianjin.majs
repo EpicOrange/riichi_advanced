@@ -172,7 +172,6 @@ set score_calculation, %{
   extra_yaku_lists: ["bonus_yaku"],
   point_name: "Fan",
   point2_name: "×",
-  agarirenchan: true,
   win_by_draw_label: "Zimo",
   win_by_draw_name: "Zimo",
   exhaustive_draw_name: "Draw"

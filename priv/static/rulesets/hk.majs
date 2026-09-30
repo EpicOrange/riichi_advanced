@@ -56,8 +56,6 @@ define_yaku_precedence "Blessing of Man", ["Concealed Hand"]
 
 set score_calculation, %{
   yaku_lists: ["yaku"],
-  agarirenchan: true,
-  split_pao_ron: false,
   point_name: "Fan",
   win_by_discard_label: "Hu",
   win_by_draw_label: "Zimo",
