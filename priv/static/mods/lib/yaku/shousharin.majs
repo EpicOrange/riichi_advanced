@@ -23,27 +23,39 @@ default dai_manzu_han, "★"
 on after_initialization do
   if equals(!pin, "shousharin only") or equals(!pin, "(shou/dai)sharin") do
     add_rule("$value $han", !shou_pinzu_name, "Your closed winning hand is 11223344556677 or 33445566778899 of circles.", %{value: !shou_pinzu_value, han: !shou_pinzu_han}, 113)
-    update_rule("$value $han", !shou_pinzu_name, "%{example_hand}", %{value: !shou_pinzu_value, han: !shou_pinzu_han, example_hand: ~t"1122334455667p3x 7p"})
+    update_rule("$value $han", !shou_pinzu_name, "%{example_hand}", %{value: !shou_pinzu_value, han: !shou_pinzu_han, example_hand: ~t"1122334455667p 7p"})
   end
   if equals(!sou, "shouchikurin only") or equals(!sou, "(shou/dai)chikurin") do
     add_rule("$value $han", !shou_souzu_name, "Your closed winning hand is 11223344556677 or 33445566778899 of bamboo.", %{value: !shou_souzu_value, han: !shou_souzu_han}, 113)
-    update_rule("$value $han", !shou_souzu_name, "%{example_hand}", %{value: !shou_souzu_value, han: !shou_souzu_han, example_hand: ~t"1122334455667s3x 7s"})
+    update_rule("$value $han", !shou_souzu_name, "%{example_hand}", %{value: !shou_souzu_value, han: !shou_souzu_han, example_hand: ~t"1122334455667s 7s"})
   end
   if equals(!man, "shousuurin only") or equals(!man, "(shou/dai)suurin") do
     add_rule("$value $han", !shou_manzu_name, "Your closed winning hand is 11223344556677 or 33445566778899 of characters.", %{value: !shou_manzu_value, han: !shou_manzu_han}, 113)
-    update_rule("$value $han", !shou_manzu_name, "%{example_hand}", %{value: !shou_manzu_value, han: !shou_manzu_han, example_hand: ~t"1122334455667m3x 7m"})
+    update_rule("$value $han", !shou_manzu_name, "%{example_hand}", %{value: !shou_manzu_value, han: !shou_manzu_han, example_hand: ~t"1122334455667m 7m"})
   end
   if equals(!pin, "daisharin only") or equals(!pin, "(shou/dai)sharin") do
-    add_rule("$value $han", !dai_pinzu_name, "\"Big Wheels\". Your closed winning hand is 22334455667788 of circles.", %{value: !dai_pinzu_value, han: !dai_pinzu_han}, 113)
-    update_rule("$value $han", !dai_pinzu_name, "%{example_hand}", %{value: !dai_pinzu_value, han: !dai_pinzu_han, example_hand: ~t"2233445566778p3x 8p"})
+    if equals(!dai_pinzu_name, "Daisharin") do
+      add_rule("$value $han", !dai_pinzu_name, "\"Big Wheels\". Your closed winning hand is 22334455667788 of circles.", %{value: !dai_pinzu_value, han: !dai_pinzu_han}, 113)
+    else
+      add_rule("$value $han", !dai_pinzu_name, "Your closed winning hand is 22334455667788 of circles.", %{value: !dai_pinzu_value, han: !dai_pinzu_han}, 113)
+    end
+    update_rule("$value $han", !dai_pinzu_name, "%{example_hand}", %{value: !dai_pinzu_value, han: !dai_pinzu_han, example_hand: ~t"2233445566778p 8p"})
   end
   if equals(!sou, "daichikurin only") or equals(!sou, "(shou/dai)chikurin") do
-    add_rule("$value $han", !dai_souzu_name, "\"Bamboo Forest\". Your closed winning hand is 22334455667788 of bamboo.", %{value: !dai_souzu_value, han: !dai_souzu_han}, 113)
-    update_rule("$value $han", !dai_souzu_name, "%{example_hand}", %{value: !dai_souzu_value, han: !dai_souzu_han, example_hand: ~t"2233445566778s3x 8s"})
+    if equals(!dai_souzu_name, "Daichikurin") do
+      add_rule("$value $han", !dai_souzu_name, "\"Bamboo Forest\". Your closed winning hand is 22334455667788 of bamboo.", %{value: !dai_souzu_value, han: !dai_souzu_han}, 113)
+    else
+      add_rule("$value $han", !dai_souzu_name, "Your closed winning hand is 22334455667788 of bamboo.", %{value: !dai_souzu_value, han: !dai_souzu_han}, 113)
+    end
+    update_rule("$value $han", !dai_souzu_name, "%{example_hand}", %{value: !dai_souzu_value, han: !dai_souzu_han, example_hand: ~t"2233445566778s 8s"})
   end
   if equals(!man, "daisuurin only") or equals(!man, "(shou/dai)suurin") do
-    add_rule("$value $han", !dai_manzu_name, "\"Numerous Numbers\". Your closed winning hand is 22334455667788 of characters.", %{value: !dai_manzu_value, han: !dai_manzu_han}, 113)
-    update_rule("$value $han", !dai_manzu_name, "%{example_hand}", %{value: !dai_manzu_value, han: !dai_manzu_han, example_hand: ~t"2233445566778m3x 8m"})
+    if equals(!dai_manzu_name, "Daisuurin") do
+      add_rule("$value $han", !dai_manzu_name, "\"Numerous Numbers\". Your closed winning hand is 22334455667788 of characters.", %{value: !dai_manzu_value, han: !dai_manzu_han}, 113)
+    else
+      add_rule("$value $han", !dai_manzu_name, "Your closed winning hand is 22334455667788 of characters.", %{value: !dai_manzu_value, han: !dai_manzu_han}, 113)
+    end
+    update_rule("$value $han", !dai_manzu_name, "%{example_hand}", %{value: !dai_manzu_value, han: !dai_manzu_han, example_hand: ~t"2233445566778m 8m"})
   end
 end
 

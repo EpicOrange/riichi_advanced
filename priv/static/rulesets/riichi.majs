@@ -388,7 +388,7 @@ define_mod "lib/yaku/shiisanpuutaa", name: "Shiisanpuutaa", desc: "Local yakuman
 define_mod "yaku/shiisanuushi", name: "Shiisanuushi", desc: "Local yakuman. \"Thirteen Independent\". If you start with 14 disconnected tiles, it's yakuman. Calls invalidate."
 define_mod "lib/yaku/riichi_suurenkou", name: "Suurenkou", desc: "Local yakuman. \"Four Consecutive Triplets\". If you have four triplets of the same suit of increasing number, like 111 222 333 444, it's yakuman. Pao is applied if the fourth triplet is called."
 define_mod "yaku/suuchoupaikou", name: "Suuchoupaikou", desc: "Local yakuman. \"Four Skipped Tile Triplets\". If you have four triplets of the same suit whose numbers step by 2, like 111 333 555 777, it's yakuman. Pao is applied if the fourth triplet is called."
-define_mod "lib/yaku/shousharin", name: "Shousharin etc.", desc: "Local yakuman. If your hand is closed and your winning hand is 11223344556677 or 33445566778899 in one suit, it's yakuman."
+define_mod "lib/yaku/shousharin", name: "Shou/Daisharin etc.", desc: "Local yakuman. If your hand is closed and your winning hand is 11223344556677 or 33445566778899 in one suit, it's yakuman."
 config_mod "lib/yaku/shousharin", name: "pin", values: ["(shou/dai)sharin", "daisharin only", "shousharin only"], default: "(shou/dai)sharin"
 config_mod "lib/yaku/shousharin", name: "sou", values: ["(shou/dai)chikurin", "daichikurin only", "shouchikurin only"], default: "(shou/dai)chikurin"
 config_mod "lib/yaku/shousharin", name: "man", values: ["(shou/dai)suurin", "daisuurin only", "shousuurin only"], default: "(shou/dai)suurin"
