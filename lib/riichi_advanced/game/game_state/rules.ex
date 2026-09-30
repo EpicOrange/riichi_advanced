@@ -173,6 +173,10 @@ defmodule RiichiAdvanced.GameState.Rules do
       {:ok, rules}
     end
   end
+  defp read_rules_from_json!(ruleset_json, ruleset) do
+    {:ok, rules} = read_rules_from_json(ruleset_json, ruleset)
+    rules
+  end
 
   @nojoker_scaling   %{"1" => 8, "2" => 32}
   @concealed_scaling %{"1" => 2, "2" => 8, "3" => 18, "4" => 32, "5" => 50, "6" => 72}
@@ -479,9 +483,10 @@ defmodule RiichiAdvanced.GameState.Rules do
         base_ruleset_state = ModState.load_ruleset(ruleset)
         default_mods = base_ruleset_state
         |> ModState.apply_mods()
-        |> ModState.append_jq({nil, "(.default_mods? // [])"})
+        |> ModState.append_jq({nil, "with_entries(select(.key == \"default_mods\" or .key == \"constants\"))"})
         |> ModState.extract_json(no_cache: true)
-        |> Jason.decode!()
+        |> read_rules_from_json!(ruleset)
+        |> Map.get("default_mods", [])
         |> Enum.reject(fn mod -> ModLoader.get_mod_name(mod) in forbidden_mods or mod in forbidden_mods end)
         # |> IO.inspect(limit: :infinity, label: "default_mods")
         # IO.inspect(forbidden_mods, label: "forbidden_mods")

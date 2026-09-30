@@ -976,12 +976,12 @@ defmodule RiichiAdvanced.Compiler do
          {:ok, names} <- Enum.map(names, &Jason.encode/1) |> Utils.sequence() do
       arr = "[#{Enum.join(names, ",")}]"
       {:ok, ~s"""
-      .available_mods |= map(select(if type == "object" then .name else . end | IN(#{arr}) | not))
+      .available_mods |= ((. // []) | map(select(if type == "object" then .name else . end | IN(#{arr}) | not)))
       |
-      .default_mods |= map(select(if type == "object" then .name else . end | IN([#{arr}]) | not))
+      .default_mods |= ((. // []) | map(select(if type == "object" then .name else . end | IN([#{arr}]) | not)))
       |
       if has("available_presets") then
-        .available_presets[].enabled_mods |= map(select(if type == "object" then .name else . end | IN(#{arr}) | not))
+        .available_presets[].enabled_mods |= ((. // []) | map(select(if type == "object" then .name else . end | IN(#{arr}) | not)))
       else . end
       """}
     end
