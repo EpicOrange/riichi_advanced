@@ -10,6 +10,9 @@ require "super_bingo_tictactoe"
 require "super_bingo_tulips"
 require_after "super_bingo_yaku"
 require_after "riichi_fix_rules_tabs"
+apply subtract, "default_mods", [
+  %{name: "lib/yaku/chiitoitsu", config: %{kansai: false, name: "Chiitoitsu", value: 2}},
+]
 apply set_append, "default_mods", [
   %{name: "honba", config: %{value: 1000}},
   %{name: "lib/tobi", config: %{below: 1}},
@@ -17,6 +20,7 @@ apply set_append, "default_mods", [
   %{name: "kin", config: %{pin: 1, sou: 1, man: 0}},
   %{name: "shiro_pocchi", config: %{ippatsu_only: false}},
   "yaku/open_riichi",
+  %{name: "lib/yaku/chiitoitsu", config: %{kansai: true, name: "Chiitoitsu", value: 2}},
   %{name: "shuugi/kin", config: %{chips: 1, closed_only: false}},
   %{name: "shuugi/ura", config: %{chips: 1}},
   %{name: "shuugi/yakuman", config: %{allow_kazoe: false, per_yakuman: true, ron_chips: 50, tsumo_chips: 50}}
