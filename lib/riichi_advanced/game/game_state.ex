@@ -398,7 +398,7 @@ defmodule RiichiAdvanced.GameState do
         mods = Map.get(state, :mods, [])
         ruleset_json = ModState.load_ruleset(state.ruleset)
         |> ModState.prepend_mods(mods)
-        |> ModState.extract_json()
+        |> ModState.extract_json(no_cache: true)
 
         # cache mods if that was successful
         if not Enum.empty?(mods) do
