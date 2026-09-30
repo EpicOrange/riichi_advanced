@@ -1793,7 +1793,7 @@ defmodule RiichiAdvanced.GameState do
               last_discard_action = get_last_discard_action(state)
               last_discard = if last_discard_action != nil do Map.get(last_discard_action, :tile, nil) else nil end
               last_discarder_status = if last_discard_action != nil do state.players[last_discard_action.seat].status else nil end
-              if is_pid(Map.get(state, seat)) and has_buttons do
+              if is_pid(Map.get(state, seat)) do
                 cond do
                   has_marking_ui -> notify_ai_marking(state, seat)
                   has_call_buttons -> notify_ai_call_buttons(state, seat)
@@ -1828,6 +1828,7 @@ defmodule RiichiAdvanced.GameState do
                       open_am_match_definitions: [],
                     }
                     send(Map.get(state, seat), {:buttons, params})
+                  true -> state
                 end
               end
             # end
