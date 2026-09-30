@@ -140,13 +140,15 @@ defmodule RiichiAdvanced.AIPlayer do
     hand_length = length(player.hand)
 
     # get shanten towards all hands
-    shanten = closest_american_hands
+    shantens = closest_american_hands
     |> Enum.map(fn {_am_match_definition, pairing_r, _arranged_hand} -> hand_length - map_size(pairing_r) end)
-    |> Enum.min(&<=/2, fn -> :infinity end)
-    if shanten <= 3 do
+    |> Enum.sort()
+    best_shanten = Enum.at(shantens, 0, 100)
+    second_best_shanten = Enum.at(shantens, 1, 100)
+    if best_shanten <= 3 or second_best_shanten - best_shanten >= 2 do
       closest_american_hands
       # then get all hands of that shanten
-      |> Enum.filter(fn {_am_match_definition, pairing_r, _arranged_hand} -> shanten == (hand_length - map_size(pairing_r)) end)
+      |> Enum.filter(fn {_am_match_definition, pairing_r, _arranged_hand} -> best_shanten == (hand_length - map_size(pairing_r)) end)
       # filter for open hands only (might be none if a concealed hand is closer)
       |> Enum.filter(fn {am_match_definition, _pairing_r, _arranged_hand} -> am_match_definition in open_am_match_definitions end)
       # out of those hands, see if there's any hands for which the last discard would be helpful
