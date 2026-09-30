@@ -391,6 +391,7 @@ defmodule RiichiAdvanced.AIPlayer do
             "mahjong_draw" in player.buttons and Match.match_hand(player.hand ++ player.draw, player.calls, state.shanten_definitions.win, player.tile_behavior) -> "mahjong_draw"
             "mahjong_heavenly" in player.buttons and Match.match_hand(player.hand ++ player.draw, player.calls, state.shanten_definitions.win, player.tile_behavior) -> "mahjong_draw"
             "am_joker_swap" in player.buttons -> "am_joker_swap"
+            "am_blank_swap" in player.buttons -> "am_blank_swap"
             "4_am_sextet" in player.buttons -> case choose_american_call(params, 6) do
               6 -> "4_am_sextet"
               5 -> "3_am_quint"
