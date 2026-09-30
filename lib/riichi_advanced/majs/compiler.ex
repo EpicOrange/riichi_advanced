@@ -1003,16 +1003,18 @@ defmodule RiichiAdvanced.Compiler do
   end
 
   defp compile_command("define_scoring", name, args, line, column) do
-    body = case args do
-      {:__block__, [], _nodes} -> compile_action_list(args, line, column)
-      _ -> case compile_action(args, line, column) do
-        {:ok, action} -> {:ok, [action]}
-        _ -> {:error, "Compiler.compile: at line #{line}:#{column}, `define_scoring` command expects a do block or an action, got #{inspect(args)}"}
-      end
+    {effect, args} = case args do
+      [[{"append", append}],   [do: args]] when append == true  -> {:append, args}
+      [[{"prepend", prepend}], [do: args]] when prepend == true -> {:prepend, args}
+      args -> {:set, args}
     end
-    with {:ok, body} <- body,
-         {:ok, body} <- Jason.encode(body) do
-      {:ok, ".scoring_logic[#{name}] += #{body}"}
+    with {:ok, actions} <- compile_action_list(args, line, column),
+         {:ok, actions} <- Jason.encode(actions) do
+      case effect do
+        :append  -> {:ok, ".scoring_logic[#{name}] |= . + #{actions}"}
+        :prepend -> {:ok, ".scoring_logic[#{name}] |= #{actions} + ."}
+        _        -> {:ok, ".scoring_logic[#{name}] = #{actions}"}
+      end
     end
   end
 
