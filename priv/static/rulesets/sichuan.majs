@@ -186,6 +186,7 @@ on before_exhaustive_draw do
     if status_missing("won") do
       if match(["hand", "calls"], ["tenpai"]) do
         set_status("tenpai_at_draw")
+        reveal_hand
       else
         set_status("noten_at_draw")
       end
@@ -237,8 +238,10 @@ on before_win do
   unless status("do_noten_payments") do
     if won_by_draw do
       as others do
-        as prev_seat do
-          make_responsible_for("prev_seat", "all")
+        unless status("won") do
+          as prev_seat do
+            make_responsible_for("prev_seat", "all")
+          end
         end
       end
     else
@@ -249,6 +252,9 @@ on before_win do
       end
     end
   end
+end
+on after_win do
+  clear_responsibilities(as: "all")
 end
 
 define_scoring win do
@@ -283,7 +289,6 @@ def before_bloody_end do
     end
   end
   as everyone do
-    reveal_hand
     # return kong payments if not tenpai
     if not match(["hand", "calls"], ["tenpai"])
        and (owes_shimocha > 0
