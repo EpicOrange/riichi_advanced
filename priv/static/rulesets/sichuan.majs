@@ -186,8 +186,7 @@ on after_scoring do
     if status("ended_by_draw") do
       before_bloody_end
     else
-      winners = winners + 1
-      if winners >= 3 do
+      if num_winners >= 3 do
         before_bloody_end
       end
     end
@@ -503,6 +502,10 @@ def discard_passed do
   end
 end
 
+# need to unset kan for everyone after a win
+# this is because if you call kong and subsequently deal in,
+# you don't get the kong payout (kong still goes through though)
+on after_win do as everyone do unset_status("kan", "double_kan") end end
 
 define_button daiminkan,
   display_name: "Kong",

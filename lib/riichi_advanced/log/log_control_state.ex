@@ -88,6 +88,7 @@ defmodule RiichiAdvanced.LogControlState do
     north = :north in state.game_state.available_seats
     IO.puts("===")
     IO.inspect({"current turn", state.game_state.turn})
+    IO.inspect({"game active?", state.game_state.game_active})
     IO.inspect({"east's hand", state.game_state.players.east.hand, state.game_state.players.east.draw})
     if south, do: IO.inspect({"south's hand", state.game_state.players.south.hand, state.game_state.players.south.draw})
     IO.inspect({"west's hand", state.game_state.players.west.hand, state.game_state.players.west.draw})

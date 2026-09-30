@@ -526,6 +526,7 @@ defmodule RiichiAdvanced.GameState.Actions do
     "num_matching_revealed_tiles_all",
     "num_matching_melded_tiles_all",
     "num_players",
+    "num_winners",
     "current_score",
     "half_score",
     "100_times_tile_number",
@@ -593,6 +594,7 @@ defmodule RiichiAdvanced.GameState.Actions do
           |> Enum.count(&Riichi.tile_matches(opts, %{tile: &1}))
         end |> Enum.sum()
       ["num_players" | _opts] -> length(state.available_seats)
+      ["num_winners" | _opts] -> length(state.winner_seats)
       ["current_score" | _opts] -> state.players[context.seat].score
       ["half_score" | _opts] -> Utils.half_score_rounded_up(state.players[context.seat].score)
       ["100_times_tile_number" | _opts] ->
@@ -2280,6 +2282,7 @@ defmodule RiichiAdvanced.GameState.Actions do
         # IO.puts("buttons_before: #{inspect(buttons_before)}")
         # IO.puts("buttons_after: #{inspect(buttons_after)}")
         if buttons_before == buttons_after or Buttons.no_buttons_remaining?(state) do
+          state = schedule_actions_before(state, context.seat, context_actions)
           state = for {context, actions} <- context_actions, reduce: state do
             state -> _run_actions(state, actions, context)
           end
@@ -2381,6 +2384,8 @@ defmodule RiichiAdvanced.GameState.Actions do
   defp adjudicate_actions(state) do
     lock = Mutex.await(state.mutex, __MODULE__)
 
+    # IO.puts("===")
+    # Enum.each(state.players, fn {seat, player} -> IO.inspect(player.choice, label: "#{seat} choice") end)
     # Enum.each(state.players, fn {seat, player} -> IO.inspect(player.deferred_context_actions, label: "#{seat} defers") end)
 
     if Debug.debug_actions() do
@@ -2466,7 +2471,13 @@ defmodule RiichiAdvanced.GameState.Actions do
     state = if Enum.any?(state.players, fn {_seat, player} -> player.choice != nil end) do
       state = adjudicate_actions(state)
       state
-    else state end
+    else
+      # we want to call after_win for each winning player but only after all actions have been run
+      # that way, in case of multi ron, num_winners is correct for each call to after_win
+      state = Kyoku.check_after_win(state)
+      
+      state
+    end
 
     # ensure playable_indices is populated for the current player
     # this also notifies ai marking once :set_playable_indices is received

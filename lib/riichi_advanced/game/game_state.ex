@@ -1240,10 +1240,6 @@ defmodule RiichiAdvanced.GameState do
   end
 
   def broadcast_state_change(state, postprocess \\ false) do
-    state = if state.round_result == :win do
-      seat = Enum.at(state.winner_seats, state.winner_index)
-      Kyoku.process_new_winner(state, seat)
-    else state end
     if postprocess do send_async_tasks(state) end
     # IO.puts("broadcast_state_change called")
     RiichiAdvancedWeb.Endpoint.broadcast(state.ruleset <> ":" <> state.room_code, "state_updated", %{"state" => state})
@@ -1639,16 +1635,20 @@ defmodule RiichiAdvanced.GameState do
   end
   def handle_cast(:unpause, state) do
     state = Map.put(state, :game_active, true)
+    state = Buttons.recalculate_buttons(state)
     notify_ai(state)
     {:noreply, state}
   end
   def handle_cast({:unpause, seat}, state) do
+    seat = if seat == nil do state.turn else seat end
     actions = state.players[seat].deferred_context_actions
     if Debug.debug_actions() do
       IO.puts("Unpausing with #{length(actions)} deferred_context_actions")
     end
     state = Map.put(state, :game_active, true)
     state = Actions.run_deferred_actions(state, seat)
+    state = Kyoku.check_after_win(state)
+    state = Buttons.recalculate_buttons(state)
     state = broadcast_state_change(state)
     notify_ai(state)
     {:noreply, state}
@@ -1969,7 +1969,7 @@ defmodule RiichiAdvanced.GameState do
 
   def handle_cast(:tick_timer, state) do
     state = cond do
-      state.log_loading_mode    -> Kyoku.timer_finished(state)
+      state.log_loading_mode -> Kyoku.timer_finished(state)
       state.timer == :cancelled -> Map.put(state, :timer, 0)
       state.timer <= 0 or Enum.all?(state.players, fn {_seat, player} -> player.ready end) ->
         state = Map.put(state, :timer, 0)

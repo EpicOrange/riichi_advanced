@@ -31,6 +31,13 @@ if !hide_winning_hands do
       reveal_hand
     end
   end
+  on after_win do
+    if num_winners == num_players - 1 do
+      as winners do
+        reveal_hand
+      end
+    end
+  end
 end
 
 # noten payments are always 1000

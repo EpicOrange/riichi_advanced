@@ -49,7 +49,7 @@ set score_calculation, %{
 define_const can_draw_condition, true # set by "base" mod, but we don't have flowers
 define_const ryuukyoku, ryuukyoku("Ryuukyoku", "ryuukyoku")
 
-set interruptible_actions, ["play_tile", "advance_turn", "draw", "self_call", "upgrade_call"]
+set interruptible_actions, ["play_tile", "advance_turn", "draw", "self_call"]
 set display_wall, true
 set initial_score, 25000
 set initial_dead_wall_length, 14

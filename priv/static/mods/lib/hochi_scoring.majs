@@ -85,20 +85,9 @@ def finalize_score, prepend: true do
   end
 end
 
-def check_multiple_ron do
-  num_winners += 1
-  set_counter_all("num_winners", "num_winners")
-  if num_winners > 1 do
-    set_status("win_half", as: "prev_seat")
-  end
-end
-
-apply prepend, "buttons.ron.actions" do check_multiple_ron end
-apply prepend, "buttons.chankan.actions" do check_multiple_ron end
-
 def apply_ron_scoring, append: true do
   # in the event of multiple ron, only get half
-  if status("win_half", as: "winner") do
+  if num_winners > 1 do
     total /= 2 :: "Partial head bump"
   end
 end

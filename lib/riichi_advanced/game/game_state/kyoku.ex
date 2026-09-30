@@ -21,10 +21,13 @@ defmodule RiichiAdvanced.GameState.Kyoku do
     state = Map.put(state, :timer, Rules.get(state.rules_ref, "win_timer", 30))
     state = update_all_players(state, fn seat, player -> %{ player | ready: is_pid(Map.get(state, seat)) } end)
     
-    if state.log_loading_mode do
-      GenServer.cast(self(), :tick_timer)
-    else
-      Debounce.apply(state.timer_debouncer)
+    state = cond do
+      state.log_loading_mode ->
+        GenServer.cast(self(), :tick_timer)
+        state
+      true ->
+        Debounce.apply(state.timer_debouncer)
+        state
     end
     state
   end
@@ -32,7 +35,7 @@ defmodule RiichiAdvanced.GameState.Kyoku do
   def timer_finished(state) do
     cond do
       state.visible_screen == :winner and state.winner_index + 1 < map_size(state.winners) -> # need to see next winner screen
-        # show the next winner and reset timer
+        # show the next winner
         state = Map.update!(state, :winner_index, & &1 + 1)
         state = start_timer(state)
         state
@@ -66,33 +69,62 @@ defmodule RiichiAdvanced.GameState.Kyoku do
       and state.round_result not in [:exhaustive_draw, :abortive_draw, :end_game]
   end
 
-  def calculate_delta_scores(state) do
-    {state, context} = cond do
-      state.round_result == :win ->
-        {state, delta_scores, delta_scores_reason} = Scoring.adjudicate_win_scoring(state)
-        state = Map.put(state, :delta_scores, delta_scores)
-        state = Map.put(state, :delta_scores_reason, delta_scores_reason)
-        context = state.winners[Enum.at(state.winner_seats, state.winner_index)]
-        {state, context}
-      not should_continue_round?(state) -> # draw
-        {state, delta_scores, delta_scores_reason} = Scoring.adjudicate_draw_scoring(state)
-        state = Map.put(state, :delta_scores, delta_scores)
-        state = Map.put(state, :delta_scores_reason, delta_scores_reason)
-        {state, %{seat: state.turn}}
-      true -> {state, %{seat: state.turn}}
+  def calculate_delta_scores(state) when state.round_result == :win do
+    winners = Enum.sort_by(state.winners, fn {seat, _winner} -> Utils.atamahane_order(state.turn, seat) end)
+    state = for {seat, winner} <- winners, state.winners[seat].needs_after_win, reduce: state do
+      state ->
+        context = Map.put(winner, :winner_seat, seat)
+        state = Actions.trigger_event(state, "after_win", context)
+
+        # send message that prints out yaku and displayed score
+        push_message(state, player_prefix(state, context.seat) ++ [
+          %{text: "scored a %{score}-point hand", vars: %{score: context.displayed_score}},
+        ] ++ if not Enum.empty?(context.yaku) and state.players[seat].hand_revealed do
+          [%{text: "with yaku:"}] ++ Utils.print_yaku(context.yaku)
+        else [] end)
+
+        state = put_in(state.winners[seat].needs_after_win, false)
+        state
     end
 
+    {state, delta_scores, delta_scores_reason} = Scoring.adjudicate_win_scoring(state)
+    state = Map.put(state, :delta_scores, delta_scores)
+    state = Map.put(state, :delta_scores_reason, delta_scores_reason)
+
     # run after_scoring actions
-    state = Actions.trigger_event(state, "after_scoring", context)
+    state = for {_seat, winner} <- state.winners, not Map.has_key?(winner, :processed), reduce: state do
+      state -> Actions.trigger_event(state, "after_scoring", winner)
+    end
     state
   end
+  def calculate_delta_scores(state) do
+    state = Map.put(state, :delta_scores, %{})
+    if not should_continue_round?(state) do
+      {state, delta_scores, delta_scores_reason} = Scoring.adjudicate_draw_scoring(state)
+      state = Map.put(state, :delta_scores, delta_scores)
+      state = Map.put(state, :delta_scores_reason, delta_scores_reason)
+      # run after_scoring actions
+      state = Actions.trigger_event(state, "after_scoring", %{seat: state.turn})
+      state
+    else
+      # run after_scoring actions
+      state = Actions.trigger_event(state, "after_scoring", %{seat: state.turn})
+      state
+    end
+  end
 
+  def finish_viewing_score_screen(state) when not state.log_seeking_mode and state.winner_index < length(state.winners) do
+    # need to view yaku, go to winner screen
+    state = Map.put(state, :visible_screen, :winner)
+    state
+  end
   def finish_viewing_score_screen(state) do
-    # clear pot
-    # but only if ezaki hitomi hasn't cleared it already and set it to their bet
-    state = if state.round_result == :win and not Enum.any?(state.players, fn {_seat, player} -> "ezaki_hitomi_bet_instead" in player.status end) do
-      Map.put(state, :pot, 0)
-    else state end
+    # # clear pot
+    # # but only if ezaki hitomi hasn't cleared it already and set it to their bet
+    # state = if state.round_result == :win and not Enum.any?(state.players, fn {_seat, player} -> "ezaki_hitomi_bet_instead" in player.status end) do
+    #   IO.inspect("Clearing pot")
+    #   Map.put(state, :pot, 0)
+    # else state end
 
     # apply delta scores
     state = update_all_players(state, fn seat, player -> %{ player | score: player.score + state.delta_scores[seat] } end)
@@ -100,8 +132,9 @@ defmodule RiichiAdvanced.GameState.Kyoku do
     # run before_start actions
     # we need to run it here instead of in initialize_new_round
     # so that it can impact e.g. tobi calculations and log
+    should_end_game? = should_end_game?(state)
     do_next_round? = not should_continue_round?(state)
-    state = if do_next_round? do
+    state = if do_next_round? and not should_end_game? do
       Actions.trigger_event(state, "before_start", %{seat: state.turn})
     else state end
 
@@ -114,8 +147,8 @@ defmodule RiichiAdvanced.GameState.Kyoku do
     |> Log.finalize_kyoku()
 
     # finish or initialize new round if needed
-    state = if do_next_round? do
-      if should_end_game?(state) do
+    state = if do_next_round? or should_end_game? do
+      if should_end_game? do
         finalize_game(state)
       else
         if not state.log_seeking_mode do
@@ -153,6 +186,7 @@ defmodule RiichiAdvanced.GameState.Kyoku do
       # trigger before_continue actions
       state = Actions.trigger_event(state, "before_continue", %{seat: state.turn})
 
+      state = Actions.resume_deferred_actions(state)
       state = Buttons.recalculate_buttons(state)
       notify_ai(state)
       state
@@ -191,39 +225,28 @@ defmodule RiichiAdvanced.GameState.Kyoku do
       }
     }])
 
-    Map.put(state, :round_result, :win)
-
-    state = if should_continue_round?(state) and not state.players[seat].hand_revealed do
-      state = calculate_delta_scores(state)
+    bloody_end? = Rules.get(state.rules_ref, "bloody_end", false)
+    hand_hidden? = not state.players[seat].hand_revealed
+    not_enough_winners? = length(state.available_seats) - length(state.winner_seats) > 1
+    state = if bloody_end? and hand_hidden? and not_enough_winners? do
       Map.put(state, :visible_screen, :scores)
     else
       Map.put(state, :visible_screen, :winner)
     end
-
+    # calculate_delta_scores is run by adjudicate_actions
+    # this is so we can support double ron by calling win twice,
+    #   then calculate_delta_scores once
     state = start_timer(state)
 
     state
   end
 
-  # runs after_win and then broadcasts a message about the yaku
-  def process_new_winner(state, seat) do
-    if get_in(state.winners[seat].needs_after_win) == true do
-      # we just triggered a win (or nonterminating bloody end win),
-      # run after_win and push a message for the winner we're currently viewing
-      context = state.winners[seat]
-      state = Actions.trigger_event(state, "after_win", Map.put(context, :winner_seat, seat))
-
-      # calculate the delta scores now
-      state = calculate_delta_scores(state)
-      
-      # send message that prints out yaku and displayed score
-      push_message(state, player_prefix(state, context.seat) ++ [
-        %{text: "scored a %{score}-point hand", vars: %{score: context.displayed_score}},
-      ] ++ if not Enum.empty?(context.yaku) and state.players[seat].hand_revealed do
-        [%{text: "with yaku:"}] ++ Utils.print_yaku(context.yaku)
-      else [] end)
-      state = update_in(state.winners[seat], &Map.put(&1, :processed, true))
-      state = put_in(state.winners[seat].needs_after_win, false)
+  def check_after_win(state) do
+    if state.round_result == :win do
+      prev_active = state.game_active
+      state = Map.put(state, :game_active, true)
+      state = calculate_delta_scores(state) # this calls after_win
+      state = Map.put(state, :game_active, prev_active)
       state
     else state end
   end
@@ -263,7 +286,6 @@ defmodule RiichiAdvanced.GameState.Kyoku do
 
       dealer = Riichi.get_east_player_seat(state.kyoku, state.available_seats)
       state = Map.put(state, :next_dealer, Utils.next_turn(dealer))
-      state = calculate_delta_scores(state)
 
       state = if state.winner_index < map_size(state.winners) do
         # with bloody end rules enabled, winners might not have been shown
@@ -273,6 +295,7 @@ defmodule RiichiAdvanced.GameState.Kyoku do
         # otherwise show score exchange screen as normal
         Map.put(state, :visible_screen, :scores)
       end
+      state = calculate_delta_scores(state)
       state = start_timer(state)
       state
     else state end
@@ -303,6 +326,7 @@ defmodule RiichiAdvanced.GameState.Kyoku do
     state = Actions.trigger_event(state, "after_scoring", %{seat: state.turn})
 
     state = Map.put(state, :visible_screen, :scores)
+    state = calculate_delta_scores(state)
     state = start_timer(state)
 
     state

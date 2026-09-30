@@ -82,6 +82,7 @@ defmodule RiichiAdvanced.TestUtils do
     end
 
     state = GenServer.call(test_state.game_state_pid, :get_state)
+    # IO.inspect(Rules.get(state.rules_ref, "enabled_mods"), limit: :infinity)
     GenServer.cast(test_state.game_state_pid, :terminate_game)
 
     check_winner = fn seat, expected_winner ->
@@ -115,6 +116,9 @@ defmodule RiichiAdvanced.TestUtils do
         # RiichiAdvanced.LogControlState.print_game_state(%{game_state: state})
         assert Enum.all?(buttons, fn {_seat, buttons} -> Enum.empty?(buttons) end)
       _ ->
+        if not Enum.empty?(expected_winners) do
+          assert MapSet.new(state.winner_seats) == MapSet.new(Map.keys(expected_winners))
+        end
         for {seat, expected_winner} <- expected_winners do
           if not Enum.all?(state.players, fn {_seat, player} -> Enum.empty?(player.buttons) end) do
             IO.puts("note: final buttons are #{inspect(Map.new(state.players, fn {seat, player} -> {seat, player.buttons} end))}")

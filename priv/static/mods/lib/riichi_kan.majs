@@ -125,7 +125,7 @@ apply merge, "constants.calls_fu", %{
   kakan: 8
 }
 
-apply set_append, "interruptible_actions", ["self_call"]
+apply set_append, "interruptible_actions", ["self_call", "upgrade_call"]
 
 # # disabled in favor of individual mods
 # on after_initialization do
