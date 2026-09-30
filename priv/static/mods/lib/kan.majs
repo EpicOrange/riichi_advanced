@@ -109,7 +109,7 @@ end
 
 if !hide_ankans do
   on after_initialization do
-    add_rule("Rules", !kan_name, "%{ankan} are hidden: its identity stays hidden until the end of the round.", %{ankan: !ankan_name})
+    add_rule("Rules", !kan_name, "%{ankan} are hidden: its tiles are not visible for the rest of the table until the end of the round.", %{ankan: !ankan_name})
   end
   apply initialize, "buttons.ankan.call_style", %{self: [["1x", 0], ["1x", 1], ["1x", 2], ["1x", 3]]}
   on before_win do flip_all_calls_faceup end

@@ -20,7 +20,7 @@ require "global_mods"
 require "default_auto_buttons"
 require "chii"
 require "pon"
-require "kan", %{hide_ankans: true, replace_from_dead_wall: true, shift_dead_wall: true}
+require "kan", %{ankan_name: !ankan_name, hide_ankans: true, replace_from_dead_wall: true, shift_dead_wall: true}
 require "ron", %{scoring_key: "win"}
 require "tsumo", %{scoring_key: "win"}
 require "agarirenchan"
@@ -29,12 +29,14 @@ require "temporary_furiten"
 require "head_bump" # probably, right?
 
 on after_initialization do
+  delete_rule("Rules", "Win Condition")
   add_rule("Rules", "Win Condition", """
   To win, you must have four sets (sequences or triplets) and a pair, but you must also satisfy ALL of the following:
-  - Must be open (you have called a tile from someone else)
-  - Must have all three suits
-  - Cannot be duanyao (no terminal or honor tiles)
-  - Cannot be pinghu (all sequences with non-dragon pair)
+  - Must use all three suits
+  - Must be open (you must call, concealed Gang doesn't count)
+  - Cannot be duanyao (so you need a terminal or honor tile)
+  - Cannot be pinghu (can't be all sequences with non-dragon pair)
+  To summarize the last three in Riichi terms: avoid mentanpin.
   """, -50)
   add_rule("Tiles", "Base Tiles", "Shenyang mahjong uses the following 136 tiles:", -100)
   add_rule("Tiles", "Base Tiles", "- Four each of the 1 to 9 of circles %{pinzu}", %{pinzu: ~t"123456789p"})
@@ -45,14 +47,14 @@ on after_initialization do
   add_rule("1 Fan", "Single Wait", "1 Fan if you are only waiting on one kind of tile.")
   add_rule("1 Fan", "Single Wait", "%{example_hand}", %{example_hand: ~t"234m678999p1233s 3s"})
   add_rule("1 Fan", "Single Wait", "Note that a double wait, such as %{t2} waiting on %{t3}, does not count. You can only have a single wait.", %{t2: ~t"1234s", t3: ~t"14s"})
-  add_rule("Rules", "Dragons", "Before your first discard, you may declare any %{dragons} in hand as a set. Each is worth 2 Fan. You may not declare this after your first discard.", %{dragons: ~t"067z"})
-  add_rule("Rules", "Winds", "Before your first discard, you may declare any %{winds} in hand as a set, drawing a replacement tile as if you called Angang. Each is worth 2 Fan. You may not declare this after your first discard.", %{winds: ~t"1234z"})
+  add_rule("Rules", "Dragons", "(Shenyang) Before your first discard, you may declare the tiles %{dragons} in hand as a set. Each is worth 2 Fan. This doesn't count as opening your hand for the win requirement. You may not declare this after your first discard.", %{dragons: ~t"067z"})
+  add_rule("Rules", "Winds", "(Shenyang) Before your first discard, you may declare the tiles %{winds} in hand as a set, drawing a replacement tile as if you called Angang. Each is worth 2 Fan. You may not declare this after your first discard.", %{winds: ~t"1234z"})
   add_rule("1 Fan", "Gang", "1 Fan for each Gang you declare.")
   add_rule("2 Fan", "Dragons", "2 Fan for each %{dragons} you declare before your first discard.", %{dragons: ~t"067z"})
   add_rule("2 Fan", "Winds", "2 Fan for each %{winds} you declare before your first discard.", %{winds: ~t"1234z"})
-  add_rule("Rules", "Haidilaoyue", "When there are only four tiles left to draw, each player draws without discarding to see if they win. 2 Fan is awarded for winning during this phase.")
-  add_rule("2 Fan", "Haidilaoyue", "When there are only four tiles left to draw, each player draws without discarding to see if they win. 2 Fan is awarded for winning during this phase.")
-  add_rule("Rules", "Calling restriction", "You can only call a fourth set if it confirms an all-triplets hand.")
+  add_rule("Rules", "Haidilaoyue", "(Shenyang) When there are only four tiles left to draw, each player draws without discarding to see if they win. 2 Fan is awarded for winning during this phase.")
+  add_rule("2 Fan", "Haidilaoyue", "(Shenyang) When there are only four tiles left to draw, each player draws without discarding to see if they win. 2 Fan is awarded for winning during this phase.")
+  add_rule("Rules", "Calling restriction", "(Shenyang) You can only call a fourth set if it confirms an all-triplets hand.")
 end
 
 define_set manzu, ~s"1m|2m|3m|4m|5m|6m|7m|8m|9m"
