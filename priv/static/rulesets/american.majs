@@ -131,11 +131,11 @@ define_mod_category "Other"
 define_mod "american/show_nearest_american_hand", name: "Show Nearest Hands", desc: "Add some UI that shows nearest hands."
 
 set score_calculation, %{
-  yaku_lists: ["yaku"],
+  yaku_lists: ["yaku", "extra_yaku"],
   use_smt: false,
-  highest_scoring_yaku_only: true,
   arrange_american_yaku: true,
   point_name: "Pts",
+  point2_name: "×",
   win_by_discard_label: "Discard",
   win_by_draw_label: "Draw",
   win_by_discard_name: "Mah Jongg",
@@ -143,8 +143,13 @@ set score_calculation, %{
   exhaustive_draw_name: "Draw"
 }
 
+define_yaku extra_yaku, "Heavenly", [2, "×"], status("heavenly_available")
+define_yaku extra_yaku, "Jokerless", [2, "×"], jokers == 0 and not_match(["hand", "call_tiles", "winning_tile"], ~m"nojoker, 1j:1")
+
 define_scoring win do
   total = points :: "Pts"
+  if has_existing_yaku("Heavenly") do total *= 2 :: "Heavenly hand" end
+  if has_existing_yaku("Jokerless") do total *= 2 :: "Jokerless hand" end
   set_counter_all("hand_score", "total")
   if won_by_draw do
     total *= 2 :: "Self Draw"
@@ -152,14 +157,6 @@ define_scoring win do
     if seat_is("last_discarder") do
       total *= 2 :: "Discarder penalty"
     end
-  end
-  # heavenly bonus
-  if status("heavenly_available", as: "winner") do
-    total *= 2 :: "Heavenly hand"
-  end
-  # jokerless hand bonus
-  if jokers == 0 and not_match(["hand", "call_tiles", "winning_tile"], "singles_win", as: "winner") do
-    total *= 2 :: "Jokerless hand"
   end
 end
 
@@ -575,21 +572,11 @@ define_button am_joker_swap,
     recalculate_buttons
   end
 
-define_button mahjong_heavenly,
-  display_name: "Mah Jongg",
-  show_when: status("heavenly_available") and our_turn and has_draw and has_yaku_with_hand,
-  precedence_over: ["1_am_pung", "2_am_kong", "3_am_quint", "4_am_sextet", "abort_during_charleston"]
-  do
-    big_text("Mah Jongg")
-    pause(1000)
-    reveal_hand
-    win_by_draw("win")
-  end
-
 define_button mahjong_draw,
   display_name: "Mah Jongg",
-  show_when: status_missing("match_start", "dead_hand") and our_turn and has_draw and has_yaku_with_hand,
-  precedence_over: ["1_am_pung", "2_am_kong", "3_am_quint", "4_am_sextet"]
+  show_when: status_missing("dead_hand") and our_turn and has_draw and has_yaku_with_hand,
+  precedence_over: ["1_am_pung", "2_am_kong", "3_am_quint", "4_am_sextet", "abort_during_charleston"],
+  unskippable: status("heavenly_available")
   do
     big_text("Mah Jongg")
     pause(1000)
@@ -714,14 +701,13 @@ define_auto_button _2_auto_ron,
   do
     if buttons_include("mahjong_discard") do press_button("mahjong_discard") end
     if buttons_include("mahjong_draw") do press_button("mahjong_draw") end
-    if buttons_include("mahjong_heavenly") do press_button("mahjong_heavenly") end
   end
 
 define_auto_button _3_auto_no_call,
   display_name: "C",
   desc: "Skip all calls except Mah Jongg."
   do
-    if not_our_turn and buttons_include("skip") and buttons_exclude("mahjong_discard", "mahjong_heavenly", "am_joker_swap") do
+    if not_our_turn and buttons_include("skip") and buttons_exclude("mahjong_discard", "am_joker_swap") do
       press_button("skip")
     end
   end
@@ -732,7 +718,7 @@ define_auto_button _4_auto_no_call,
   enabled_at_start: true,
   persistent: true
   do
-    if not_our_turn and buttons_include("skip") and buttons_exclude("mahjong_discard", "mahjong_heavenly", "am_joker_swap")
+    if not_our_turn and buttons_include("skip") and buttons_exclude("mahjong_discard", "am_joker_swap")
         and (not_match(["hand"], ~m"nojoker, (1f 2f 3f 4f 1g 2g 3g 4g):1") or not_match(["last_discard"], ~m"nojoker, (1f 2f 3f 4f 1g 2g 3g 4g):1"))
         and not_match(["last_discard", "hand_any"], ~m"nojoker, pair:1") do
       press_button("skip")
@@ -745,7 +731,7 @@ define_auto_button _5_auto_no_dead_call,
   enabled_at_start: true,
   persistent: true
   do
-    if not_our_turn and buttons_include("skip") and buttons_exclude("mahjong_discard", "mahjong_heavenly", "am_joker_swap") and all_calls_deaden_hand do
+    if not_our_turn and buttons_include("skip") and buttons_exclude("mahjong_discard", "am_joker_swap") and all_calls_deaden_hand do
       press_button("skip")
     end
   end
@@ -754,7 +740,7 @@ define_auto_button _6_auto_discard,
   display_name: "D",
   desc: "Automatically discard your drawn tile."
   do
-    if our_turn and has_draw and buttons_exclude("am_joker_swap", "mahjong_draw", "mahjong_heavenly") do
+    if our_turn and has_draw and buttons_exclude("am_joker_swap", "mahjong_draw") do
       discard_draw
     end
   end
@@ -764,7 +750,7 @@ define_auto_button _7_auto_discard_nonmatching,
   desc: "Automatically discard your drawn tile if it doesn't match any of your hand tiles."
   do
     if has_draw
-        and buttons_exclude("am_joker_swap", "mahjong_draw", "mahjong_heavenly", "am_blank_swap")
+        and buttons_exclude("am_joker_swap", "mahjong_draw", "am_blank_swap")
         and (not_match(["hand"], ~m"nojoker, (1f 2f 3f 4f 1g 2g 3g 4g):1") or not_match(["draw"], ~m"nojoker, (1f 2f 3f 4f 1g 2g 3g 4g):1"))
         and not_match(["draw"], ~m"nojoker, 1j:1")
         and not_match(["draw", "hand_any"], ~m"nojoker, pair:1") do

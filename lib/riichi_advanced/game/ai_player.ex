@@ -405,7 +405,7 @@ defmodule RiichiAdvanced.AIPlayer do
     end
   end
 
-  @slow_buttons ["chii", "pon", "daiminkan", "ron", "hu", "mahjong_discard", "mahjong_draw", "mahjong_heavenly", "4_am_sextet", "3_am_quint", "2_am_kong", "1_am_pung"]
+  @slow_buttons ["chii", "pon", "daiminkan", "ron", "hu", "mahjong_discard", "mahjong_draw", "4_am_sextet", "3_am_quint", "2_am_kong", "1_am_pung"]
   def handle_info({:buttons, params}, state) do
     t = System.os_time(:millisecond)
     %{
@@ -458,7 +458,6 @@ defmodule RiichiAdvanced.AIPlayer do
               if best_shanten <= 4 do "skip_charleston" else "continue_charleston" end
             "mahjong_discard" in player.buttons and Match.match_hand(player.hand ++ [last_discard], player.calls, state.shanten_definitions.win, player.tile_behavior) -> "mahjong_discard"
             "mahjong_draw" in player.buttons and Match.match_hand(player.hand ++ player.draw, player.calls, state.shanten_definitions.win, player.tile_behavior) -> "mahjong_draw"
-            "mahjong_heavenly" in player.buttons and Match.match_hand(player.hand ++ player.draw, player.calls, state.shanten_definitions.win, player.tile_behavior) -> "mahjong_draw"
             "am_joker_swap" in player.buttons -> "am_joker_swap"
             "am_blank_swap" in player.buttons -> "am_blank_swap"
             true ->

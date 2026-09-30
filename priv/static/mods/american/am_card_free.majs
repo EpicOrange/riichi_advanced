@@ -121,6 +121,5 @@ define_const win_con_discard, match(["hand", "call_tiles", "last_discard"], ["dr
     or (match(["hand", "call_tiles", "last_discard"], ["consecutive_run_56_true"]) and not_match(["hand", "call_tiles", "last_discard"], ["consecutive_run_56_false"]))
   ))
 
-apply append, "buttons.mahjong_heavenly.show_when", +@win_con_draw
 apply append, "buttons.mahjong_draw.show_when", +@win_con_draw
 apply append, "buttons.mahjong_discard.show_when", +@win_con_discard

@@ -198,30 +198,6 @@ defmodule RiichiAdvanced.GameState.Rules do
     :ets.insert(rules_ref, {:yaku_by_key, Enum.group_by(toposorted_yaku, & &1.key)})
     :ets.insert(rules_ref, {:yaku_skip_map, skip_map})
 
-    # generate shanten definitions if they don't exist
-    shantens = [:win, :tenpai, :iishanten, :ryanshanten, :sanshanten, :suushanten, :uushanten, :roushanten]
-    shanten_definitions = Map.new(shantens, fn shanten -> {shanten, translate_match_definitions(rules_ref, Map.get(rules, Atom.to_string(shanten) <> "_definition", []))} end)
-    shanten_definitions = for {from, to} <- Enum.zip(Enum.drop(shantens, -1), Enum.drop(shantens, 1)), Enum.empty?(shanten_definitions[to]), reduce: shanten_definitions do
-      shanten_definitions ->
-        # IO.puts("Generating #{to} definitions")
-        if length(shanten_definitions[from]) < 100 do
-          next_definitions = MatchOld.compute_almost_match_definitions(shanten_definitions[from])
-          if length(next_definitions) > 2 * length(shanten_definitions[from]) do
-            # use "almost" keyword instead
-            next_definitions = Enum.map(shanten_definitions[from], &["almost" | &1])
-            Map.put(shanten_definitions, to, next_definitions)
-          else
-            Map.put(shanten_definitions, to, next_definitions)
-          end
-        else
-          Map.put(shanten_definitions, to, [])
-        end
-    end
-    :ets.insert(rules_ref, {:shanten_definitions, shanten_definitions})
-    # IO.inspect(shanten_definitions, limit: :infinity, charlists: :as_lists)
-    # IO.inspect(Map.new(shanten_definitions, fn {shanten, definition} -> {shanten, length(definition)} end))
-    # IO.inspect(shanten_definitions.ryanshanten, limit: :infinity, charlists: :as_lists)
-
     # get all attributes used in the entire ruleset
     all_attrs = rules
     |> Enum.map(fn {_k, v} -> v end)
@@ -272,6 +248,38 @@ defmodule RiichiAdvanced.GameState.Rules do
       concealed: Map.get(rules, "concealed_scaling", @concealed_scaling) |> Map.new(fn {k, v} -> {String.to_integer(k), v} end),
       exposable: Map.get(rules, "exposable_scaling", @exposable_scaling) |> Map.new(fn {k, v} -> {String.to_integer(k), v} end),
     }})
+
+    am_win_definitions = am_yaku
+    |> Map.values()
+    |> Enum.flat_map(& &1.am_match_definitions)
+    |> American.translate_american_match_definitions()
+    win_definitions = Map.get(rules, "win_definition", []) ++ am_win_definitions
+    rules = Map.put(rules, "win_definition", win_definitions)
+    :ets.insert(rules_ref, {"win_definition", win_definitions})
+
+    # generate shanten definitions if they don't exist
+    shantens = [:win, :tenpai, :iishanten, :ryanshanten, :sanshanten, :suushanten, :uushanten, :roushanten]
+    shanten_definitions = Map.new(shantens, fn shanten -> {shanten, translate_match_definitions(rules_ref, Map.get(rules, Atom.to_string(shanten) <> "_definition", []))} end)
+    shanten_definitions = for {from, to} <- Enum.zip(Enum.drop(shantens, -1), Enum.drop(shantens, 1)), Enum.empty?(shanten_definitions[to]), reduce: shanten_definitions do
+      shanten_definitions ->
+        # IO.puts("Generating #{to} definitions")
+        if length(shanten_definitions[from]) < 100 do
+          next_definitions = MatchOld.compute_almost_match_definitions(shanten_definitions[from])
+          if length(next_definitions) > 2 * length(shanten_definitions[from]) do
+            # use "almost" keyword instead
+            next_definitions = Enum.map(shanten_definitions[from], &["almost" | &1])
+            Map.put(shanten_definitions, to, next_definitions)
+          else
+            Map.put(shanten_definitions, to, next_definitions)
+          end
+        else
+          Map.put(shanten_definitions, to, [])
+        end
+    end
+    :ets.insert(rules_ref, {:shanten_definitions, shanten_definitions})
+    # IO.inspect(shanten_definitions, limit: :infinity, charlists: :as_lists)
+    # IO.inspect(Map.new(shanten_definitions, fn {shanten, definition} -> {shanten, length(definition)} end))
+    # IO.inspect(shanten_definitions.ryanshanten, limit: :infinity, charlists: :as_lists)
 
   end
 
