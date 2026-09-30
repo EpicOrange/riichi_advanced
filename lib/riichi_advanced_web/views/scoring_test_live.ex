@@ -468,12 +468,13 @@ defmodule RiichiAdvancedWeb.ScoringTestLive do
     call = Utils.remove_attr(call, ["_sideways", "_facedown"])
     call_size = call_repr_size(length(call))
     call = Enum.take(call, call_size)
-    hand_length = socket.assigns.hand_length + call_size
-    hand = case Enum.split(socket.assigns.hand, hand_length) do
-      {hand, []} -> hand ++ call
-      {hand, [winning_tile | _]} -> Enum.take(hand, hand_length) ++ call ++ [winning_tile]
-    end
+    
+    hand_length = socket.assigns.hand_length
+    {hand, winning_tiles} = Enum.split(socket.assigns.hand, hand_length)
+    hand = hand ++ call ++ Enum.take(winning_tiles, 1)
     calls = List.delete_at(socket.assigns.calls, ix)
+
+    hand_length = socket.assigns.hand_length + call_size
     hand_str = if length(hand) > hand_length do
       Utils.serialize_hand(Enum.take(hand, hand_length), calls, Enum.at(hand, hand_length))
     else Utils.serialize_hand(hand, calls) end
