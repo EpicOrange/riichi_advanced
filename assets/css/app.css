@@ -2273,8 +2273,8 @@ div.display-am-hand-hover::before {
 div.display-am-hand-container {
   position: absolute;
   display: none;
-  width: calc(100% - 4.25 * var(--tile-size));
-  left: calc(1.875 * var(--tile-size));
+  width: calc(100% - 2.5 * var(--tile-size));
+  left: calc(1 * var(--tile-size));
   bottom: calc(2.375 * var(--tile-size));
   background: #0000007F;
   font-size: calc(0.4 * var(--tile-size));
