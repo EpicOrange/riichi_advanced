@@ -114,8 +114,8 @@ def calculate_fu do
       add_original_hand
 
       # chiitoitsu
-      add(@chiitoitsu_tsumo_fu, not_won_by_draw and @closed_hand and minipoints_equals(0) and match(["hand", "calls", "winning_tile"], ~m"pair:7"))
-      add(@chiitoitsu_ron_fu, not(not_won_by_draw and @closed_hand) and minipoints_equals(0) and match(["hand", "calls", "winning_tile"], ~m"pair:7"))
+      add(@chiitoitsu_tsumo_fu, won_by_draw and @closed_hand and minipoints_equals(0) and match(["hand", "calls", "winning_tile"], ~m"pair:7"))
+      add(@chiitoitsu_ron_fu, minipoints_equals(0) and match(["hand", "calls", "winning_tile"], ~m"pair:7"))
 
       # kokushi
       add(40, not_won_by_draw and @closed_hand and minipoints_equals(0) and match(["hand", "calls", "winning_tile"], ["kokushi_win"]))

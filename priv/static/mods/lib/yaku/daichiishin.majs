@@ -1,0 +1,11 @@
+default list, "yaku"
+default name, "Daichiishin"
+default value, 1
+
+on after_initialization do
+  add_rule("$value $han", !name, "%{value} %{han} if your hand consists of one pair of each of the seven honor tiles.", %{value: !value, han: !han})
+  update_rule("$value $han", !name, "%{example_hand}", %{value: !value, han: !han, example_hand: ~t"1122334455677z 6z"})
+end
+
+define_set each_honor, ~s"1z 2z 3z 4z 5z 6z 7z"
+define_yaku !list, !name, [!value, !han], match(["hand", "calls", "winning_tile"], ~m"each_honor:2"), ["Honroutou", "Chinroutou"]

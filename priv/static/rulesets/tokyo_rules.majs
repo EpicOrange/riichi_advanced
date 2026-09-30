@@ -143,19 +143,9 @@ apply append, "default_mods", [
   "lib/yaku/chinchii_toushii",
   %{name: "lib/yaku/rentsuu_honitsu", config: %{list: "yakuman", value: 1, han: "★", is_mangan: false}},
   %{name: "lib/yaku/dorahairi_chinroutou_chiitoitsu", config: %{list: "yakuman", value: 1, han: "★", is_mangan: false}},
+  %{name: "lib/yaku/daichiishin", config: %{list: "yakuman", value: 1, han: "★"}},
   "no_riichi_ankan",
 ]
-
-# - each yaku needs:
-#   - convert mod to lib/yaku/*.majs
-#   - add default vars to mod
-#   - add example hand to mod
-#   - default mod declaration with config
-#   - update riichi.majs local yaku config
-#   - yaku test(s)
-
-# - dorahairi chinroutou chiitoitsu is shoumangan
-# - daichiishin is shoumangan
 
 on after_initialization do
   add_rule_tab("1 Han")
