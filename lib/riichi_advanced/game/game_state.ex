@@ -864,13 +864,13 @@ defmodule RiichiAdvanced.GameState do
 
     # # debug version
     # if tile == nil do
-    #   IO.puts("#{seat} cannot play tile #{tile} because it is nil")
+    #   IO.puts("#{seat} cannot play tile #{inspect(tile)} because it is nil")
     #   false
     # else if not ignore_buttons? and has_unskippable_button?(state, seat) do
-    #   IO.puts("#{seat} cannot play tile #{tile} because they have an unskippable button")
+    #   IO.puts("#{seat} cannot play tile #{inspect(tile)} because they have an unskippable button")
     #   false
     # else if Utils.has_attr?(tile, ["no_discard"]) do
-    #   IO.puts("#{seat} cannot play tile #{tile} because it is no_discard")
+    #   IO.puts("#{seat} cannot play tile #{inspect(tile)} because it is no_discard")
     #   false
     # else if Rules.has_key?(state.rules_ref, "play_restrictions") do
     #   ret = Enum.find(Rules.get(state.rules_ref, "play_restrictions"), fn [tile_spec, cond_spec] ->
@@ -2178,14 +2178,6 @@ defmodule RiichiAdvanced.GameState do
     state = state
     |> update_player(seat, &%{ &1 | cache: %{ &1.cache | closest_american_hands: closest_american_hands } })
     |> Map.put(:calculate_closest_american_hands_pid, nil)
-
-    # some conditions (namely "is_tenpai_american") might have changed based on closest american hands, so recalculate buttons
-    # of course, only calculate this if the match has started
-    state = if Enum.all?(state.players, fn {_seat, player} -> "match_start" not in player.status end) do
-      Buttons.recalculate_buttons(state)
-    else state end
-    # note that this races the AI: the AI might act before closest_american_hands is calculated, so they may miss buttons that should be there
-    # TODO maybe fix this by pausing the game at the start of this particular async calculation, and unpausing after
     state = broadcast_state_change(state, false)
     {:noreply, state}
   end

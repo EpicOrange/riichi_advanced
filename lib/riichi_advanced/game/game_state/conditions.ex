@@ -696,12 +696,6 @@ defmodule RiichiAdvanced.GameState.Conditions do
         end
       "is_ai"               -> is_pid(Map.get(state, context.seat))
       "num_players"         -> length(state.available_seats) in opts
-      "is_tenpai_american"  ->
-        done_calculating = state.calculate_closest_american_hands_pid == nil
-        player = state.players[context.seat]
-        done_calculating and Enum.any?(player.cache.closest_american_hands, fn {_am_match_definition, pairing_r, _arranged_hand} ->
-          map_size(pairing_r) >= length(player.hand ++ player.draw)
-        end)
       "can_discard_after_call" ->
         # simulate the call
         # TODO need to call upgrade_call instead, in the case of upgrade calls

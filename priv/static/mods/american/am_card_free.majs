@@ -75,10 +75,6 @@ define_yaku yaku, "Suit", 5,
   or winning_hand_consists_of("1s","2s","3s","4s","5s","6s","7s","8s","9s","1z","2z","3z","4z","6z")
 define_yaku yaku, "Concealed", 10, has_no_call_named("am_pung", "am_kong", "am_quint")
 
-apply delete, "buttons.mahjong_heavenly.show_when", "is_tenpai_american"
-apply delete, "buttons.mahjong_draw.show_when", "is_tenpai_american"
-apply delete, "buttons.mahjong_discard.show_when", "is_tenpai_american"
-
 # the empty match always matches
 set open_win_definition, ~m""
 set win_definition, ~m""
@@ -128,6 +124,3 @@ define_const win_con_discard, match(["hand", "call_tiles", "last_discard"], ["dr
 apply append, "buttons.mahjong_heavenly.show_when", +@win_con_draw
 apply append, "buttons.mahjong_draw.show_when", +@win_con_draw
 apply append, "buttons.mahjong_discard.show_when", +@win_con_discard
-replace all, "buttons.mahjong_heavenly.show_when", "is_tenpai_american", "true"
-replace all, "buttons.mahjong_discard.show_when", "is_tenpai_american", "true"
-replace all, "buttons.mahjong_draw.show_when", "is_tenpai_american", "true"

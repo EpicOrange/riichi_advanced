@@ -318,10 +318,10 @@ defmodule RiichiAdvanced.GameState.American do
                       new_hand = Enum.find_value(groups, fn group ->
                         # calls were taken care of above, so we can just focus on hand
                         # we need to turn atoms into strings to make a group that Match likes
-                        group = if is_atom(group) do
-                          Atom.to_string(group)
-                        else
-                          Enum.map(group, &Atom.to_string/1)
+                        group = cond do
+                          is_list(group) -> Enum.map(group, &Atom.to_string/1)
+                          is_atom(group) -> Atom.to_string(group)
+                          true           -> group
                         end
                         # this is amerijong so any given removal
                         #   can't really preclude other removal possibilities

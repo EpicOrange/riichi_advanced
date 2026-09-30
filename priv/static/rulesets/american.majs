@@ -703,7 +703,7 @@ define_button am_joker_swap,
 
 define_button mahjong_heavenly,
   display_name: "Mah Jongg",
-  show_when: status("heavenly_available", "charleston_left") and our_turn and is_tenpai_american and match(["hand", "call_tiles", "draw"], ["win"]),
+  show_when: status("heavenly_available", "charleston_left") and our_turn and match(["hand", "call_tiles", "draw"], ["win"]),
   precedence_over: ["am_pung", "am_kong", "am_quint", "am_sextet", "abort_during_charleston"]
   do
     big_text("Mah Jongg")
@@ -714,7 +714,7 @@ define_button mahjong_heavenly,
 
 define_button mahjong_draw,
   display_name: "Mah Jongg",
-  show_when: status_missing("match_start", "dead_hand") and our_turn and has_draw and is_tenpai_american
+  show_when: status_missing("match_start", "dead_hand") and our_turn and has_draw
       and (match(["hand", "call_tiles", "draw"], ["open_win"]) or (has_no_call_named("am_pung", "am_kong", "am_quint", "am_sextet") and match(["hand", "call_tiles", "draw"], ["win"]))),
   precedence_over: ["am_pung", "am_kong", "am_quint", "am_sextet"]
   do
@@ -726,7 +726,7 @@ define_button mahjong_draw,
 
 define_button mahjong_discard,
   display_name: "Mah Jongg",
-  show_when: status_missing("match_start", "dead_hand") and not_our_turn and not_just_discarded and someone_else_just_discarded and is_tenpai_american
+  show_when: status_missing("match_start", "dead_hand") and not_our_turn and not_just_discarded and someone_else_just_discarded
       and not_match(["last_discard"], ~m"1j:1")
       and (match(["hand", "call_tiles", "last_discard"], ["open_win"]) or (has_no_call_named("am_pung", "am_kong", "am_quint", "am_sextet") and match(["hand", "call_tiles", "last_discard"], ["win"]))),
   precedence_over: ["am_pung", "am_kong", "am_quint", "am_sextet", "mahjong_discard"]
