@@ -35,14 +35,14 @@ defmodule RiichiAdvanced.GameState.American do
           t = String.first(group)
           cond do
             # unsuited groups include F (flowers), Z (winds), 0 (5z), and any wind group (NNN, NEWS, EW, etc)
-            # the rest (1-9, D (dragons), X (relative)) are suited
-            t in ["F", "Z", "0", "G", "R", "N", "E", "W", "S", "J"] ->
+            # the rest (1-9, D (dragons), X (relative)) are suited, requiring "a" "b" or "c" as a suffix
+            # also D (dragons) without a suffix is considered an any-suit dragon
+            t in ["F", "0", "G", "R", "N", "E", "W", "S", "J"] ->
               # unsuited group
               groups = for {c, freq} <- group |> String.graphemes() |> Enum.frequencies() do
                 case c do
                   "F" -> [[["1f","2f","3f","4f","1g","2g","3g","4g"], freq]]
                   # below we use List.duplicate so that they can match calls
-                  "Z" -> [[[List.duplicate("1z", freq),List.duplicate("2z", freq),List.duplicate("3z", freq),List.duplicate("4z", freq)], 1]]
                   "0" -> [[[List.duplicate("0z", freq)], 1]]
                   "G" -> [[[List.duplicate("6z", freq)], 1]]
                   "R" -> [[[List.duplicate("7z", freq)], 1]]
@@ -55,9 +55,9 @@ defmodule RiichiAdvanced.GameState.American do
                     IO.inspect("Unknown character #{inspect(c)} in unsuited group #{inspect(group)}")
                     []
                 end
-              end |> Enum.concat()            
+              end |> Enum.concat()
               result ++ Enum.map(groups, &{:unsuited, &1})
-            t in ["1", "2", "3", "4", "5", "6", "7", "8", "9", "D"] ->
+            t in ["1", "2", "3", "4", "5", "6", "7", "8", "9", "D", "Z"] ->
               suit = case String.last(group) do
                 "a" -> :a
                 "b" -> :b
@@ -65,8 +65,13 @@ defmodule RiichiAdvanced.GameState.American do
                 _   -> nil
               end
               if suit == nil do
-                tiles = group |> String.graphemes()
-                result ++ [{:unsuited, [[tiles], 1]}]
+                freq = String.length(group)
+                tiles = case t do
+                  "D" -> [List.duplicate("0z", freq), List.duplicate("6z", freq), List.duplicate("7z", freq)]
+                  "Z" -> [List.duplicate("1z", freq), List.duplicate("2z", freq), List.duplicate("3z", freq), List.duplicate("4z", freq)]
+                  _   -> [List.duplicate(t <> "m", freq), List.duplicate(t <> "p", freq), List.duplicate(t <> "s", freq)]
+                end
+                result ++ [{:unsuited, [tiles, 1]}]
               else
                 tiles = group |> String.graphemes() |> Enum.drop(-1)
                 result ++ [{suit, tiles}]
