@@ -139,8 +139,8 @@ defmodule RiichiAdvanced.AIPlayer do
     # |> IO.inspect(label: "pairing_r")
 
     ret = playables
-    # filter out jokers
-    |> Enum.reject(fn {tile, _i} -> tile == :"1j" end)
+    # filter out jokers and blind pass tiles
+    |> Enum.reject(fn {tile, _i} -> Utils.strip_attrs(tile) in [:"1j", :"1x"] end)
     # take least-useful tile, then last-most tile (usually drawn tile)
     |> Enum.min_by(fn {_tile, i} -> {usages[i], -i} end, &<=/2, fn -> nil end)
     if Debug.debug_ai() and ret != nil do
