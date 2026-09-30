@@ -55,7 +55,6 @@ defmodule RiichiAdvanced.LogWalker do
   def handle_cast({:walk_kyoku, kyoku_index, kyoku_log}, state) do
     # initialize this kyoku
     GenServer.cast(state.game_state_pid, {:initialize_game, kyoku_log})
-    GenServer.cast(state.game_state_pid, :sort_hands)
     state = Map.put(state, :game_state, GenServer.call(state.game_state_pid, :get_state))
     state = put_in(state.game_states[kyoku_index], %{-1 => state.game_state})
     IO.puts("Walking kyoku #{kyoku_index}")

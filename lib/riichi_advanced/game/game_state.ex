@@ -2134,7 +2134,7 @@ defmodule RiichiAdvanced.GameState do
       self = self()
       {:ok, pid} = Task.start(fn ->
         for seat <- seats do
-          player = state.players[seat]
+          # player = state.players[seat]
           use_difficulty? = true # "match_start" not in player.status
           closest_american_hands = American.calculate_closest_american_hands(state, seat, 5, use_difficulty?)
           GenServer.cast(self, {:set_closest_american_hands, seat, closest_american_hands})

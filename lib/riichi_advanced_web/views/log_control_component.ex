@@ -148,7 +148,7 @@ defmodule RiichiAdvancedWeb.LogControlComponent do
     end
     socket = assign(socket, :state, state)
     # mark isn't a visible action, so we keep going
-    if curr_event["type"] == "mark" do
+    if curr_event["type"] in ["mark", "unmark", "confirm_mark"] do
       advance_state(socket)
     else socket end
   end

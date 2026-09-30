@@ -978,20 +978,22 @@ defmodule RiichiAdvanced.GameState.Actions do
   defp do_charleston(state, dir, seat, marked_objects) do
     marked = Marking.get_marked(marked_objects, :hand)
     {_, hand_seat, _} = Enum.at(marked, 0)
-    {hand_tiles, hand_indices} = marked
-    |> Enum.map(fn {tile, _seat, ix} -> {tile, ix} end)
+    {hand_indices, hand_tiles} = marked
+    |> Enum.map(fn {tile, _seat, ix} -> {ix, tile} end)
+    |> Enum.sort(:desc)
     |> Enum.unzip()
-    # remove specified tiles from hand
-    state = for ix <- Enum.sort(hand_indices, :desc), reduce: state do
+    # IO.inspect({"marked", marked_objects, "hand", state.players[hand_seat].hand, "draw", state.players[hand_seat].draw, "removing", hand_tiles, hand_indices}, charlists: :as_lists)
+    # remove specified tiles from hand, and nuke playable_indices
+    state = for ix <- hand_indices, reduce: state do
       state ->
         hand_length = length(state.players[hand_seat].hand)
         if ix < hand_length do
-          update_player(state, hand_seat, &%{ &1 | hand: List.delete_at(&1.hand, ix) })
+          update_player(state, hand_seat, &%{ &1 | hand: List.delete_at(&1.hand, ix), cache: %{ &1.cache | playable_indices: [] } })
         else
-          update_player(state, hand_seat, &%{ &1 | draw: List.delete_at(&1.draw, ix - hand_length) })
+          update_player(state, hand_seat, &%{ &1 | draw: List.delete_at(&1.draw, ix - hand_length), cache: %{ &1.cache | playable_indices: [] } })
         end
     end
-    # send them according to dir
+    # send the tiles we saved according to dir
     state = update_player(state, Utils.get_seat(hand_seat, dir), &%{ &1 | hand: &1.hand ++ Utils.remove_attr(&1.draw, ["_draw"]), draw: hand_tiles, status: MapSet.put(&1.status, "_charleston_completed") })
     state = Marking.mark_done(state, seat)
 

@@ -98,6 +98,7 @@ defmodule RiichiAdvanced.GameState.Kyoku do
         state = if not state.log_seeking_mode and state.forced_events == nil and not Rules.get(state.rules_ref, "no_log", false) do
           IO.puts("Logging game #{state.ref}")
           Log.output_to_file(state)
+          state
         else state end
         |> Log.finalize_kyoku()
 

@@ -90,6 +90,15 @@ defmodule RiichiAdvanced.GameState.Log do
     update_in(state.log_state.log, &List.update_at(&1, 0, fun))
   end
 
+  def remove_last_mark_action(state, marking_player, params) do
+    seat = to_seat(marking_player)
+    if Debug.debug_log() do IO.puts("Logging #{length(state.log_state.log)} (remove_last_mark_action)") end
+    ix = Enum.find_index(state.log_state.log, fn event -> event.event_type == :mark && event.seat == seat && event.params == params end)
+    if ix != nil do
+      update_in(state.log_state.log, &List.delete_at(&1, ix))
+    else state end
+  end
+
   def add_call_choices(state, seat, call_name, call_choices) do
     if Debug.debug_log() do IO.inspect({seat, call_name, call_choices}, label: "Logging #{length(state.log_state.log)} (add_call_choices)") end
     possible_calls = for {called_tile, choices} <- call_choices do
