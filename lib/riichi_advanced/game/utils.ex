@@ -68,7 +68,8 @@ defmodule RiichiAdvanced.Utils do
   end
   def has_attr?(tiles, attrs) when is_list(tiles), do: Enum.any?(tiles, &has_attr?(&1, attrs))
   def has_attr?(tiles, attrs) when is_struct(tiles, MapSet), do: MapSet.new(tiles, &has_attr?(&1, attrs))
-  def has_attr?(_, attrs), do: Enum.empty?(attrs)
+  def has_attr?(_, []), do: true
+  def has_attr?(_, _), do: false
 
   def strip_attrs(tile, mode \\ nil)
   def strip_attrs({tile, _attrs}, nil), do: tile
