@@ -25,25 +25,27 @@ Hooks.SortableHand = {
     // so we manually orchestrate the firing of hover events, instead of using phx-hove
     this.dragging = false;
     const eventName = this.el.id.includes("calls") ? "hover_call" : "hover_tile";
-    for (let i = 0; i < this.el.childElementCount; i++) {
-      const child = this.el.children[i];
-      if (child.nodeName !== "DIV") continue;
-      child.addEventListener("mouseenter", () => {
-        if (!this.dragging) this.pushEvent(eventName, {index: i});
-      });
-    }
-    this.el.addEventListener("mouseleave", () => {
-      if (!this.dragging) this.pushEvent("hover_off", {});
-    });
+    this.el.addEventListener("mouseenter", e => {
+      if (this.dragging) return;
+      if (!e.target.classList.contains("tile")) return;
+      const ix = e.target.attributes.getNamedItem("data-id");
+      if (ix === null) {console.log(e.target.attributes); return;}
+      this.pushEventTo(e.target, eventName, {index: +ix.value});
+    }, true);
+    this.el.addEventListener("mouseleave", e => {
+      if (this.dragging) return;
+      if (!e.target.classList.contains("tile")) return;
+      const ix = e.target.attributes.getNamedItem("data-id");
+      if (ix === null) {console.log(e.target.attributes); return;}
+      this.pushEventTo(e.target, "hover_off", {index: +ix.value});
+    }, true);
 
-    // tiles in hand
     new Sortable(this.el, {
       animation: 150,
-      delay: 100,
+      delay: 0,
       dragClass: "drag-item",
       ghostClass: "drag-ghost",
-      fallbackTolerance: 5,
-      filter: ".undraggable",
+      fallbackTolerance: 10,
       forceFallback: true,
       sort: true,
       onStart: e => {
@@ -58,7 +60,7 @@ Hooks.SortableHand = {
           let params = {old: e.oldIndex, new: e.newIndex, ...e.item.dataset}
           this.pushEventTo(this.el, "reposition", params)
         } else {
-          this.pushEventTo(this.el, "play_dragged_tile", {index: e.oldIndex})
+          this.pushEventTo(this.el, "play_dragged_tile", {index: e.oldDraggableIndex})
         }
         this.dragging = false;
       },
@@ -73,7 +75,7 @@ function getCancellableClickTarget(elem) {
 }
 function getHoverTarget(elem) {
   if (!elem) return null;
-  if (elem.attributes.hasOwnProperty("phx-hover")) return elem;
+  if (elem.attributes.hasOwnProperty("phx-value-index")) return elem;
   return getHoverTarget(elem.parentElement);
 }
 function shouldIgnoreDoubleOrRightClick(elem) {
@@ -85,7 +87,7 @@ function shouldIgnoreDoubleOrRightClick(elem) {
 }
 
 window.mouseDownElement = null;
-window.hoverElement = null;
+// window.hoverElement = null;
 window.ignoreDoubleClick = false;
 function addCancellableClickListeners() {
   this.el.addEventListener('mousedown', e => {
@@ -128,36 +130,36 @@ function addCancellableClickListeners() {
       this.pushEvent("right_clicked", {"tag_name": e.target.tagName, "classes": [...e.target.classList]});
     }
   });
-  this.el.addEventListener('mousemove', e => {
-    var target = getHoverTarget(e.target);
-    if (target !== null) {
-      if (window.hoverElement !== target) {
-        var params = {};
-        for (let attr of target.attributes) {
-          if (attr.name.startsWith("phx-value-")) {
-            var key = attr.name.substring(10);
-            params[key] = attr.value;
-          }
-        }
-        if (target.attributes.hasOwnProperty("phx-target")) {
-          this.pushEventTo(target.getAttribute("phx-target"), target.getAttribute("phx-hover"), params);
-        } else {
-          this.pushEvent(target.getAttribute("phx-hover"), params);
-        }
-      }
-      window.hoverElement = target;
-    } else {
-      if (window.hoverElement !== null && window.hoverElement.attributes.hasOwnProperty("phx-hover-off")) {
-        target = window.hoverElement;
-        if (target.attributes.hasOwnProperty("phx-target")) {
-          this.pushEventTo(target.getAttribute("phx-target"), target.getAttribute("phx-hover-off"), params);
-        } else {
-          this.pushEvent(target.getAttribute("phx-hover-off"), params);
-        }
-      }
-      window.hoverElement = null;
-    }
-  });
+  // this.el.addEventListener('mousemove', e => {
+  //   var target = getHoverTarget(e.target);
+  //   if (target !== null) {
+  //     if (window.hoverElement !== target) {
+  //       var params = {};
+  //       for (let attr of target.attributes) {
+  //         if (attr.name.startsWith("phx-value-")) {
+  //           var key = attr.name.substring(10);
+  //           params[key] = attr.value;
+  //         }
+  //       }
+  //       if (target.attributes.hasOwnProperty("phx-target")) {
+  //         this.pushEventTo(target.getAttribute("phx-target"), target.getAttribute("phx-hover"), params);
+  //       } else {
+  //         this.pushEvent(target.getAttribute("phx-hover"), params);
+  //       }
+  //     }
+  //     window.hoverElement = target;
+  //   } else {
+  //     if (window.hoverElement !== null && window.hoverElement.attributes.hasOwnProperty("phx-hover-off")) {
+  //       target = window.hoverElement;
+  //       if (target.attributes.hasOwnProperty("phx-target")) {
+  //         this.pushEventTo(target.getAttribute("phx-target"), target.getAttribute("phx-hover-off"), params);
+  //       } else {
+  //         this.pushEvent(target.getAttribute("phx-hover-off"), params);
+  //       }
+  //     }
+  //     window.hoverElement = null;
+  //   }
+  // });
 }
 Hooks.ClickListener = {
   mounted() {
