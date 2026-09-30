@@ -579,7 +579,7 @@ defmodule RiichiAdvancedWeb.ScoringTestLive do
       # IO.puts("Adding new rules_ref (length #{String.length(Rules.get(socket.assigns.rules_ref, :ruleset_json, "{}"))})")
 
       wall = Rules.get(rules_ref, "wall", [])
-      socket = assign(socket, :tiles, Enum.uniq(wall))
+      socket = assign(socket, :tiles, Utils.sort_tiles(Enum.uniq(Enum.map(wall, &Utils.to_tile/1))))
       call_buttons = Rules.get(rules_ref, "buttons", [])
       |> Enum.filter(fn {_name, button} -> Map.has_key?(button, "call") end)
       call_button_display_names = call_buttons
