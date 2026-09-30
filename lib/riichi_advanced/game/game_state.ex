@@ -410,10 +410,13 @@ defmodule RiichiAdvanced.GameState do
           try do
             ruleset_json = ModLoader.strip_comments(ruleset_json)
             {query, defs} = ModLoader.convert_to_jq_defs(ModLoader.strip_comments(state.config))
+            mods = (Enum.reverse(defs.post_mods) ++ Enum.reverse(defs.mods))
+            |> Enum.uniq()
+            |> Enum.take(-10)
             ModState.extract_json(%ModState{
               ruleset_json: ruleset_json,
               ruleset_jq: [{"config", query}],
-              mods: Enum.reverse(defs.post_mods) ++ Enum.reverse(defs.mods)
+              mods: mods
             })
           rescue
             err ->
