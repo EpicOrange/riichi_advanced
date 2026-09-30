@@ -1299,12 +1299,12 @@ defmodule RiichiAdvanced.GameState.Actions do
           else state end
         "add_rule"             ->
           tab = Enum.at(opts, 0, "Rules")
-          id = Enum.at(opts, 1, "")
+          id = translate(state, Enum.at(opts, 1, ""))
           text = Enum.at(opts, 2, "")
           {tab, id, text, vars, priority} = if is_map(Enum.at(opts, 3)) do
             vars = Enum.at(opts, 3, %{})
             tab = String.trim(interpolate_string(state, context, tab, vars))
-            id = String.trim(interpolate_string(state, context, id, vars))
+            id = translate(state, String.trim(interpolate_string(state, context, id, vars)))
             text = interpolate_string(state, context, text, vars)
             priority = Enum.at(opts, 4, nil)
             {tab, id, text, vars, priority}
@@ -1324,12 +1324,12 @@ defmodule RiichiAdvanced.GameState.Actions do
           )
         "update_rule"             ->
           tab = Enum.at(opts, 0, "Rules")
-          id = Enum.at(opts, 1, "")
+          id = translate(state, Enum.at(opts, 1, ""))
           text = Enum.at(opts, 2, "")
           {tab, id, text, vars, priority} = if is_map(Enum.at(opts, 3)) do
             vars = Enum.at(opts, 3, %{})
             tab = String.trim(interpolate_string(state, context, tab, vars))
-            id = String.trim(interpolate_string(state, context, id, vars))
+            id = translate(state, String.trim(interpolate_string(state, context, id, vars)))
             text = interpolate_string(state, context, text, vars)
             priority = Enum.at(opts, 4, nil)
             {tab, id, text, vars, priority}
@@ -1345,14 +1345,14 @@ defmodule RiichiAdvanced.GameState.Actions do
           else state end
         "move_rule"             ->
           from_tab = Enum.at(opts, 0, "Rules")
-          from_id = Enum.at(opts, 1, "")
+          from_id = translate(state, Enum.at(opts, 1, ""))
           to_tab = Enum.at(opts, 2, "Rules")
-          to_id = Enum.at(opts, 3, from_id)
+          to_id = translate(state, Enum.at(opts, 3, from_id))
           vars = Enum.at(opts, 4, %{})
           from_tab = String.trim(interpolate_string(state, context, from_tab, vars))
-          from_id = String.trim(interpolate_string(state, context, from_id, vars))
+          from_id = translate(state, String.trim(interpolate_string(state, context, from_id, vars)))
           to_tab = String.trim(interpolate_string(state, context, to_tab, vars))
-          to_id = String.trim(interpolate_string(state, context, to_id, vars))
+          to_id = translate(state, String.trim(interpolate_string(state, context, to_id, vars)))
           {rule, state} = pop_in(state.rules_text[from_tab][from_id])
           if rule != nil do
             state = update_in(state.rules_text, fn tabs -> Map.update(tabs, to_tab, Map.new([{to_id, rule}]), &Map.put(&1, to_id, rule)) end)
@@ -1363,11 +1363,11 @@ defmodule RiichiAdvanced.GameState.Actions do
           else state end
         "delete_rule"             ->
           tab = Enum.at(opts, 0, "Rules")
-          id = Enum.at(opts, 1, "")
+          id = translate(state, Enum.at(opts, 1, ""))
           {tab, id} = if is_map(Enum.at(opts, 2)) do
             vars = Enum.at(opts, 2, %{})
             tab = String.trim(interpolate_string(state, context, tab, vars))
-            id = String.trim(interpolate_string(state, context, id, vars))
+            id = translate(state, String.trim(interpolate_string(state, context, id, vars)))
             {tab, id}
           else {tab, id} end
           if Map.has_key?(state.rules_text, tab) and Map.has_key?(state.rules_text[tab], id) do
