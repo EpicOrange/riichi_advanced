@@ -438,30 +438,6 @@ defmodule RiichiAdvanced.YakuTest.TokyoRulesYaku do
     })
   end
 
-  test "tokyo - uushin tsuukan" do
-    TestUtils.test_yaku_advanced("tokyo_rules", [], [], """
-    {
-      "starting_hand": {
-        "east": ["1p", "2p", "3p", "4p", "6p", "7p", "8p", "9p", "3s", "3s", "4z", "4z", "4z"],
-        "south": ["1m", "6m", "7m", "2p", "5p", "8p", "2s", "5s", "7s", "8s", "9s", "3m", "4m"],
-        "west": ["1m", "6m", "7m", "2p", "5p", "8p", "3s", "5s", "7s", "8s", "9s", "3m", "4m"],
-        "north": ["5m", "6m", "8m", "4p", "8p", "9p", "3s", "5s", "7s", "8s", "9s", "3m", "4m"]
-      },
-      "starting_draws": ["6z", "5p"]
-    }
-    """, [
-      %{"type" => "discard", "tile" => "6z", "player" => 0, "tsumogiri" => true},
-      %{"type" => "discard", "tile" => "5p", "player" => 1, "tsumogiri" => true},
-      %{"type" => "buttons_pressed", "buttons" => [%{"button" => "ron"}, nil, nil, nil]},
-    ], %{
-      east: %{
-        yaku: [{"Ittsuu", [3, "Han"]}, {"Uushin Tsuukan", [1, "Han"]}],
-        minipoints: 40,
-        score: 3840
-      }
-    })
-  end
-
   test "tokyo - ryandoukou" do
     TestUtils.test_yaku_advanced("tokyo_rules", [], [], """
     {
@@ -488,6 +464,143 @@ defmodule RiichiAdvanced.YakuTest.TokyoRulesYaku do
         yaku: [{"Toitoi", [2, "Han"]}, {"Tanyao", [1, "Han"]}, {"Ryandoukou", [2, "Han"]}],
         minipoints: 34,
         score: 6000
+      }
+    })
+  end
+
+  test "tokyo - uushin tsuukan" do
+    TestUtils.test_yaku_advanced("tokyo_rules", [], [], """
+    {
+      "starting_hand": {
+        "east": ["1p", "2p", "3p", "4p", "6p", "7p", "8p", "9p", "3s", "3s", "4z", "4z", "4z"],
+        "south": ["1m", "6m", "7m", "2p", "5p", "8p", "2s", "5s", "7s", "8s", "9s", "3m", "4m"],
+        "west": ["1m", "6m", "7m", "2p", "5p", "8p", "3s", "5s", "7s", "8s", "9s", "3m", "4m"],
+        "north": ["5m", "6m", "8m", "4p", "8p", "9p", "3s", "5s", "7s", "8s", "9s", "3m", "4m"]
+      },
+      "starting_draws": ["6z", "5p"]
+    }
+    """, [
+      %{"type" => "discard", "tile" => "6z", "player" => 0, "tsumogiri" => true},
+      %{"type" => "discard", "tile" => "5p", "player" => 1, "tsumogiri" => true},
+      %{"type" => "buttons_pressed", "buttons" => [%{"button" => "ron"}, nil, nil, nil]},
+    ], %{
+      east: %{
+        yaku: [{"Ittsuu", [3, "Han"]}, {"Uushin Tsuukan", [1, "Han"]}],
+        minipoints: 40,
+        score: 3840
+      }
+    })
+  end
+
+  test "tokyo - iipin mouyue" do
+    draws = List.duplicate("5p", 70) |> List.replace_at(1, "7m") |> List.replace_at(69, "1p")
+    TestUtils.test_yaku_advanced("tokyo_rules", [], [], """
+    {
+      "starting_hand": {
+        "east": ["1m", "2m", "3m", "7m", "7m", "3p", "4p", "5p", "5p", "5p", "1z", "1p", "1p"],
+        "south": ["1m", "6m", "7m", "2p", "6p", "8p", "2s", "5s", "7s", "8s", "9s", "2m", "4m"],
+        "west": ["1m", "6m", "7m", "2p", "6p", "9p", "3s", "5s", "7s", "8s", "9s", "2m", "4m"],
+        "north": ["5m", "6m", "8m", "4p", "8p", "9p", "3s", "5s", "7s", "8s", "9s", "2m", "4m"]
+      },
+      "starting_draws": [#{draws |> Enum.map(&"\"" <> &1 <> "\"") |> Enum.intersperse(", ") |> Enum.join()}]
+    }
+    """, [
+      %{"type" => "discard", "tile" => "5p", "player" => 0, "tsumogiri" => true},
+      %{"type" => "discard", "tile" => "7m", "player" => 1, "tsumogiri" => true},
+      %{"type" => "buttons_pressed", "buttons" => [%{"button" => "pon"}, nil, nil, nil]},
+      %{"type" => "discard", "tile" => "1z", "player" => 0, "tsumogiri" => false}
+    ] ++ Enum.take(Stream.cycle([
+      %{"type" => "discard", "tile" => "5p", "player" => 1, "tsumogiri" => true},
+      %{"type" => "discard", "tile" => "5p", "player" => 2, "tsumogiri" => true},
+      %{"type" => "discard", "tile" => "5p", "player" => 3, "tsumogiri" => true},
+      %{"type" => "discard", "tile" => "5p", "player" => 0, "tsumogiri" => true},
+    ]), 67) ++ [
+      %{"type" => "buttons_pressed", "buttons" => [%{"button" => "tsumo"}, nil, nil, nil]},
+    ], %{
+      east: %{
+        yaku: [{"Iipin Mouyue", [4, "Han"]}],
+        minipoints: 32
+      }
+    })
+  end
+
+  test "tokyo - uupin kaihou" do
+    TestUtils.test_yaku_advanced("tokyo_rules", [], [], """
+    {
+      "starting_hand": {
+        "east": ["1m", "2m", "3m", "7m", "7m", "2p", "2p", "2p", "5p", "5p", "7p", "7p", "7p"],
+        "south": ["1m", "6m", "7m", "1p", "6p", "8p", "2s", "5s", "7s", "8s", "9s", "2m", "4m"],
+        "west": ["1m", "6m", "7m", "1p", "6p", "9p", "3s", "5s", "7s", "8s", "9s", "2m", "4m"],
+        "north": ["5m", "6m", "8m", "4p", "8p", "9p", "3s", "5s", "7s", "8s", "9s", "2m", "4m"]
+      },
+      "starting_draws": ["1z", "7p"],
+      "starting_dead_wall": ["5p"]
+    }
+    """, [
+      %{"type" => "discard", "tile" => "1z", "player" => 0, "tsumogiri" => true},
+      %{"type" => "discard", "tile" => "7p", "player" => 1, "tsumogiri" => true},
+      %{"type" => "buttons_pressed", "buttons" => [%{"button" => "daiminkan"}, nil, nil, nil]},
+      %{"type" => "buttons_pressed", "buttons" => [%{"button" => "tsumo"}, nil, nil, nil]},
+    ], %{
+      east: %{
+        yaku: [{"Uupin Kaihou", [4, "Han"]}],
+        minipoints: 38
+      }
+    })
+  end
+
+  test "tokyo - ryansou chankan" do
+    TestUtils.test_yaku_advanced("tokyo_rules", [], [], """
+    {
+      "starting_hand": {
+        "east": ["1m", "2m", "3m", "1s", "1s", "2p", "2p", "2p", "3s", "3s", "3s", "4s", "2z"],
+        "south": ["1m", "6m", "7m", "1p", "6p", "8p", "1s", "5s", "7s", "8s", "9s", "2s", "2s"],
+        "west": ["1m", "6m", "7m", "1p", "6p", "9p", "4s", "5s", "7s", "8s", "9s", "2m", "4m"],
+        "north": ["5m", "6m", "8m", "4p", "8p", "9p", "4s", "5s", "7s", "8s", "9s", "2m", "4m"]
+      },
+      "starting_draws": ["2s", "2s"],
+      "starting_dead_wall": ["2z"]
+    }
+    """, [
+      %{"type" => "discard", "tile" => "2s", "player" => 0, "tsumogiri" => true},
+      %{"type" => "buttons_pressed", "buttons" => [nil, %{"button" => "pon"}, nil, nil]},
+      %{"type" => "discard", "tile" => "1s", "player" => 1, "tsumogiri" => false},
+      %{"type" => "buttons_pressed", "buttons" => [%{"button" => "pon"}, nil, nil, nil]},
+      %{"type" => "discard", "tile" => "2z", "player" => 0, "tsumogiri" => false},
+      %{"type" => "buttons_pressed", "buttons" => [nil, %{"button" => "kakan"}, nil, nil]},
+      %{"type" => "buttons_pressed", "buttons" => [%{"button" => "chankan"}, nil, nil, nil]},
+    ], %{
+      east: %{
+        yaku: [{"Ryansou Chankan", [4, "Han"]}],
+        minipoints: 28
+      }
+    })
+  end
+
+  test "tokyo - chinchii toushii" do
+    TestUtils.test_yaku_advanced("tokyo_rules", [], [], """
+    {
+      "starting_hand": {
+        "east": ["1m", "2m", "3m", "1s", "1s", "2p", "2p", "2p", "3s", "3s", "5s", "7s", "2z"],
+        "south": ["1m", "6m", "7m", "1p", "6p", "8p", "1s", "5s", "7s", "8s", "9s", "6s", "6s"],
+        "west": ["1m", "6m", "7m", "1p", "6p", "9p", "4s", "5s", "7s", "8s", "9s", "2m", "4m"],
+        "north": ["5m", "6m", "8m", "4p", "8p", "9p", "3s", "4s", "7s", "8s", "9s", "2m", "4m"]
+      },
+      "starting_draws": ["6s", "6s"],
+      "starting_dead_wall": ["2z"]
+    }
+    """, [
+      %{"type" => "discard", "tile" => "6s", "player" => 0, "tsumogiri" => true},
+      %{"type" => "buttons_pressed", "buttons" => [nil, %{"button" => "pon"}, nil, nil]},
+      %{"type" => "discard", "tile" => "1s", "player" => 1, "tsumogiri" => false},
+      %{"type" => "buttons_pressed", "buttons" => [%{"button" => "pon"}, nil, nil, nil]},
+      %{"type" => "discard", "tile" => "2z", "player" => 0, "tsumogiri" => false},
+      %{"type" => "buttons_pressed", "buttons" => [nil, %{"button" => "kakan"}, nil, nil]},
+      %{"type" => "buttons_pressed", "buttons" => [%{"button" => "chankan"}, nil, nil, nil]},
+    ], %{
+      east: %{
+        yaku: [{"Chinchii Toushii", [4, "Han"]}],
+        minipoints: 30
       }
     })
   end

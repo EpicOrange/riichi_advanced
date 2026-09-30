@@ -1,0 +1,14 @@
+default list, "yaku"
+default name, "Chinchii Toushii"
+default value, 4
+
+on after_initialization do
+  if equals(!name, "Chinchii Toushii") do
+    add_rule("$value $han", !name, "\"Golden Rooster Steals Food\". 4 han instead of the usual 2 han if you win ketsupaihou by chankan -- that is, you robbed a kan with an edge or middle wait.", %{value: !value, han: !han}, 104)
+  else
+    add_rule("$value $han", !name, "4 han instead of the usual 2 han if you win ketsupaihou by chankan -- that is, you robbed a kan with an edge or middle wait.", %{value: !value, han: !han}, 104)
+  end
+  update_rule("$value $han", !name, "%{example_hand}", %{example_hand: ~t"12999p11345s567m 3m"})
+end
+
+define_yaku !list, !name, [!value, !han], has_existing_yaku("Chankan", "Ketsupaihou"), ["Chankan", "Ketsupaihou"]

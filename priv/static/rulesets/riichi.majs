@@ -369,13 +369,13 @@ define_mod "yaku/ittsuu_chanta", name: "Ittsuu Chanta", desc: "Local yaku. 2 han
 define_mod "yaku/tanfonhou", name: "Tanfonhou", desc: "Local yaku. \"Win Without Red\". 2 han if your hand contains no red. This means you can have only 248p (2,4,8 circles), 23468s (2,3,4,6,8 bamboo), and any honors except red dragon. 5 han instead if no honor tiles (chintanfon). +1 han if closed."
 define_mod "yaku/chinpeikou", name: "Chinpeikou", desc: "Local yaku. 3 han on top of ryanpeikou if your ryanpeikou sequences are all the same numbers (may be different suits), like 112233 112233. No restriction on the pair, so you can have an honor pair (despite 'chin' being in the name)."
 # 4 han
-define_mod "yaku/chinchii_toushii", deps: ["lib/yaku/ketsupaihou"], name: "Chinchii Toushii", desc: "Local yaku. \"Golden Rooster Steals Food\". 4 han instead of the usual 2 han if you win ketsupaihou by chankan."
+define_mod "yaku/chinchii_toushii", deps: ["lib/yaku/chankan", "lib/yaku/ketsupaihou"], name: "Chinchii Toushii", desc: "Local yaku. \"Golden Rooster Steals Food\". 4 han instead of the usual 2 han if you win ketsupaihou by chankan."
 define_mod_category "Mangan"
 define_mod "yaku/kinkei_dokuritsu", name: "Kinkei Dokuritsu", desc: "Local yaku. \"Golden Rooster Standing Alone\". Mangan if you are waiting on 1s (1 bamboo, the bird tile) with four calls. Can be open or closed."
 define_mod "yaku/touchao_hanchanshue", name: "Touchao Hanchanshue", desc: "Local yaku. \"Fishing Alone in the Cold River Snow\". Mangan if you are waiting on 5z (white dragon) with four calls (open or closed)."
-define_mod "yaku/uupin_kaihou", name: "Uupin Kaihou", desc: "Local yaku. \"Gathering a Plum Blossom from the Roof\". Mangan if you win with rinshan on the 5p (5 circles)."
-define_mod "yaku/ryanzou_chankan", name: "Ryanzou Chankan", desc: "Local yaku. \"Scratching a Carrying Pole\". Mangan if you win with chankan on the 2s (2 bamboo)."
-define_mod "yaku/iipin_mouyue", name: "Iipin Mouyue", desc: "Local yaku. \"Plucking the Moon from the Bottom of the Sea\". Mangan if you win with haitei (not houtei) on the 1p (1 circles)."
+define_mod "lib/yaku/uupin_kaihou", name: "Uupin Kaihou", desc: "Local yaku. \"Gathering a Plum Blossom from the Roof\". Mangan if you win with rinshan on the 5p (5 circles)."
+define_mod "lib/yaku/ryansou_chankan", name: "Ryanzou Chankan", desc: "Local yaku. \"Scratching a Carrying Pole\". Mangan if you win with chankan on the 2s (2 bamboo)."
+define_mod "lib/yaku/iipin_mouyue", name: "Iipin Mouyue", desc: "Local yaku. \"Plucking the Moon from the Bottom of the Sea\". Mangan if you win with haitei (not houtei) on the 1p (1 circles)."
 define_mod "yaku/chuupin_raoyui", name: "Chuupin Raoyui", desc: "Local yaku. \"Catching Fish from the Bottom of the River\". Mangan if you win with houtei (not haitei) on the 9p (9 circles)."
 define_mod "yaku/shanron_chonchu", name: "Shanron Chonchu", desc: "Local yaku. \"Two Dragons Fighting Over Pearls\". Mangan if you have kyandonhou (two mixed double sequences) in manzu and souzu, plus a pinzu pair. For the manzu and souzu suits, your two sequences in that suit should not overlap."
 define_mod "yaku/chiishin_uushii", name: "Chiishin Uushii", desc: "Local yaku. \"Seven Stars Disconnected\". Mangan if you have one of every honor tile, plus 7 of 9 tiles in different suji (e.g. 14m25p369s)."
@@ -978,9 +978,9 @@ define_preset "Just Like Modded Minecraft", [
   %{name: "lib/yaku/riichi_renhou", config: %{is: "Yakuman"}},
   "yaku/kinkei_dokuritsu",
   "yaku/touchao_hanchanshue",
-  "yaku/uupin_kaihou",
-  "yaku/ryanzou_chankan",
-  "yaku/iipin_mouyue",
+  "lib/yaku/uupin_kaihou",
+  "lib/yaku/ryansou_chankan",
+  "lib/yaku/iipin_mouyue",
   "yaku/chuupin_raoyui",
   "yaku/shanron_chonchu",
   "yaku/chiishin_uushii",

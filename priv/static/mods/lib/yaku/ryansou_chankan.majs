@@ -1,0 +1,19 @@
+default list, "yaku"
+default name, "Ryansou Chankan"
+default value, 4 # ignored if is_mangan is true
+default is_mangan, true
+
+if !is_mangan do
+  on after_initialization do
+    add_rule("Mangan", !name, "\"Scratching a Carrying Pole\". Mangan if you win with chankan on the 2s (2 bamboo).", 105)
+    update_rule("Mangan", !name, "%{example_hand}", %{example_hand: ~t"456m340p1367899s 2s"})
+  end
+  define_yaku !list, !name, [5, !han], won_by_call and match(["winning_tile"], ~m"2s:1") and not_has_points(5), ["Chankan"]
+  define_yaku_precedence !name, [[1, !han], [2, !han], [3, !han], [4, !han]]
+else
+  on after_initialization do
+    add_rule("$value $han", !name, "\"Scratching a Carrying Pole\". %{value} %{han} if you win with chankan on the 2s (2 bamboo).", %{value: !value, han: !han}, 105)
+    update_rule("$value $han", !name, "%{example_hand}", %{value: !value, han: !han, example_hand: ~t"456m340p1367899s 2s"})
+  end
+  define_yaku !list, !name, [!value, !han], won_by_call and match(["winning_tile"], ~m"2s:1"), ["Chankan"]
+end

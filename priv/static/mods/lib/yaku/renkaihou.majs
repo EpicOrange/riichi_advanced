@@ -15,11 +15,3 @@ on after_initialization do
 end
 
 define_yaku yaku, !name, [!value, !han], status("double_kan"), ["Rinshan"]
-
-def discard_passed, append: true do
-  as others do unset_status("double_kan") end
-end
-
-def do_kan_draw, prepend: true do
-  if status("kan") do set_status("double_kan") end
-end

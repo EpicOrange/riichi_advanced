@@ -138,6 +138,10 @@ apply append, "default_mods", [
   %{name: "lib/yaku/otakaze_sankou", config: %{value: 3}},
   "lib/yaku/ryandoukou",
   "lib/yaku/uushin_tsuukan",
+  %{name: "lib/yaku/iipin_mouyue", config: %{value: 4, is_mangan: false}},
+  %{name: "lib/yaku/uupin_kaihou", config: %{value: 4, is_mangan: false}},
+  %{name: "lib/yaku/ryansou_chankan", config: %{value: 4, is_mangan: false}},
+  "lib/yaku/chinchii_toushii",
   "no_riichi_ankan",
 ]
 
@@ -149,12 +153,6 @@ apply append, "default_mods", [
 #   - update riichi.majs local yaku config
 #   - yaku test(s)
 
-# - ryandoukou, is 2 han plus toitoi
-# - iipin mouyue is 4 han
-# - uupin kaihou is 4 han
-# - ryansou chankan is 4 han
-# - chinchii toushii is 4 han
-# - 
 # - isshoku yonjun is shoumangan
 # - rentsuu honitsu is shoumangan
 # - dorahairi chinroutou chiitoitsu is shoumangan

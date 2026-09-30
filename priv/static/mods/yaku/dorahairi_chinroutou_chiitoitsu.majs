@@ -12,4 +12,4 @@ end
 
 define_yaku yaku_dorahairi_chinroutou_chiitoitsu, "Dorahairi Chinroutou Chiitoitsu", [5, "Han"],
   not_has_points(5) and winning_hand_consists_of("1m", "9m", "1p", "9p", "1s", "9s", %{tile: "any", attrs: ["dorahairi_dora"]}),
-  [1, 2, 3, 4]
+  [[1, !han], [2, !han], [3, !han], [4, !han]]

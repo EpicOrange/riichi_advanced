@@ -5,7 +5,7 @@ end
 
 def discard_passed, prepend: true do
   as others do
-    unset_status("kan")
+    unset_status("kan", "double_kan")
   end
 end
 
@@ -38,6 +38,9 @@ define_button daiminkan,
   }
   do
     big_text("Kan")
+    if status("kan") do
+      set_status("double_kan")
+    end
     set_status("kan")
     call
     change_turn("self")
@@ -57,6 +60,9 @@ define_button ankan,
   call_style: %{self: [["1x", 2], 0, 1, ["1x", 3]]}
   do
     big_text("Kan")
+    if status("kan") do
+      set_status("double_kan")
+    end
     set_status("kan")
     self_call
     do_kan_draw
@@ -81,6 +87,9 @@ define_button kakan,
   }
   do
     big_text("Kan")
+    if status("kan") do
+      set_status("double_kan")
+    end
     set_status("kan", "can_chankan")
     upgrade_call
     unset_status("can_chankan")
@@ -106,7 +115,7 @@ define_button chankan,
   end
 
 on before_turn_change do
-  unset_status("kan")
+  unset_status("kan", "double_kan")
 end
 
 apply merge, "constants.calls_fu", %{
