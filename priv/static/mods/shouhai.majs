@@ -49,8 +49,10 @@ define_match suushanten, ~m"""
 define_match uushanten, ~m"any:1"
 
 on before_win do
+  move_tiles("draw", "aside")
   uninterruptible_draw(1, ["4x", "hidden"])
-  merge_draw
+  move_tiles("draw", "hand")
+  move_tiles("aside", "draw")
   set_tile_alias(["4x"], ["any"])
 end
 
