@@ -1,4 +1,4 @@
-defmodule RiichiAdvanced.DebugTest do
+defmodule RiichiAdvanced.RegressionTest do
   use ExUnit.Case, async: true
   alias RiichiAdvanced.TestUtils
 
