@@ -1,5 +1,35 @@
 
 # Changelog
+- __16 Oct 2026__: v1.5.3:
+  + Added B30FJ chicken hand challenge mod
+  + Added MCR "MIL Rules" mod
+  + Added `manzu_only` toggle to chuurenpoutou
+  + Added global "Change AI Speed" mod
+  + Added more yaku to Tokyo Rules: sanrenkou, renkaihou, choupaihou etc, otakaze sankou, uushin tsuukan
+  + Added tile notation import/export to scorer
+  + Added toggles to shousharin/daisharin mod to allow disabling certain suits
+  + Changed Amerijong charleston choice UI to not combine the hand with just-obtained tiles until after the choice
+  + Changed Vietnamese AI to always call if possible
+  + Changed Vietnamese Seven Pairs to require self-draw by default
+  + Changed minefield AI to run faster via rust backend
+  + Fixed AI getting stuck or looping due to call button choices (hopefully)
+  + Fixed HKOS not paying out points upon a self-pick win
+  + Fixed Show Waits showing nonexistent tiles and incorrect tile counts
+  + Fixed Throwing Flowers/Jokers allowing honor tiles in Vietnamese
+  + Fixed Vietnamese flowers from being discardable even after replacing flowers/jokers
+  + Fixed Amerijong not allowing joker swaps with flower calls
+  + Fixed Amerijong not allowing kong, quint, sextet when calling flowers
+  + Fixed ankans and flower calls not behaving well in scorer
+  + Fixed cache issue where reading default mods results in a crash
+  + Fixed certain valid riichi discards being grayed out when a joker matching that discard is in hand
+  + Fixed jokers being bounceable via jokers in Vietnamese
+  + Fixed misc mods in riichi being mixed with the Shuugi category
+  + Fixed mod dropdowns toggling the mod off if you press the top or bottom edge
+  + Fixed seat shuffling not working at all sometimes
+  + Fixed stuck state when pause actions race against round end checks
+  + Fixed various issues preventing some yaku from being scored
+  + Fixed weird wrapping hand visuals for mobile
+  + Fixed winning hand hover-over showing mixed triplet arrangements outside cosmic riichi
 - __2 Sep 2026__: v1.5.2:
   + Added 1952 Hochi rules ruleset
   + Added MCR chicken hand challenge mod (untested)
