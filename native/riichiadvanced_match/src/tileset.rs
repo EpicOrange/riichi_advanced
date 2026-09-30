@@ -235,11 +235,8 @@ pub fn __subtract(
       return None;
     }
   }
-  let divides = gcd == group_hash;
 
-  // if divides, no need to use jokers
-  // otherwise, use jokers, but if not exhaustive, prioritize nonjokers-only if possible
-  let nojoker = nojoker || divides;
+  // whether or not it divides, prioritize nonjokers-only if possible
   match _subtract_check_attrs(&hand_attrs[0..num_nonjokers], group_attrs, &empty_aliases) {
     Some(mut indices) => {
       let mut hand = TileSet{
@@ -253,7 +250,7 @@ pub fn __subtract(
       remove_tileset_indices(&mut hand, indices, joker_tiles);
       Some(hand)
     },
-    None if nojoker => None,
+    None if num_nonjokers == hand_attrs.len() => None, // don't need to rerun with jokers if no jokers exist
     None => match _subtract_check_attrs(&hand_attrs, group_attrs, aliases) {
       Some(mut indices) => {
         let mut hand = TileSet{
