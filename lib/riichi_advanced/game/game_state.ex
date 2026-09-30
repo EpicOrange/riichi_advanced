@@ -834,13 +834,14 @@ defmodule RiichiAdvanced.GameState do
     |> Map.merge(Rules.get(state.rules_ref, "interrupt_levels", %{}))
     state = Map.put(state, :interruptible_actions, interruptible_actions)
 
+    # ensure playable_indices is populated after the after_start actions
+    # but before recalculating buttons (marking restrictions might depend on playable_indices)
+    state = broadcast_state_change(state, true)
+
     # recalculate buttons at the start of the game
     state = Buttons.recalculate_buttons(state)
 
     notify_ai_new_round(state)
-
-    # ensure playable_indices is populated after the after_start actions
-    state = broadcast_state_change(state, true)
 
     # IO.puts("initialize_new_round: #{inspect(System.os_time(:millisecond) - t)} ms")
 
