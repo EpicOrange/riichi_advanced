@@ -117,8 +117,8 @@ defmodule RiichiAdvancedWeb.RoomLive do
             <% end %>
           </label>
           <div class="room-header-right">
-            <%= if @state.tutorial_link != nil do %>
-              <a class="tutorial-link" href={@state.tutorial_link} target="_blank">
+            <div class="tutorial-container">
+              <a class="rules-link" href={@state.tutorial_link} target="_blank" :if={@state.tutorial_link != nil}>
                 <%= if @ruleset == "custom" do %>
                   <%= t(@lang, "Documentation") %>
                 <% else %>
@@ -128,7 +128,13 @@ defmodule RiichiAdvancedWeb.RoomLive do
                   <path stroke="white" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 19V4a1 1 0 0 1 1-1h12a1 1 0 0 1 1 1v13H7a2 2 0 0 0-2 2Zm0 0a2 2 0 0 0 2 2h12M9 3v14m7 0v4"/>
                 </svg>
               </a>
-            <% end %>
+              <a class="tutorials-link" href={~p"/tutorial/#{@ruleset}?nickname=#{@nickname}&lang=#{@lang}"} target="_blank" :if={@ruleset != "custom"}>
+                <%= t(@lang, "Tutorials") %>
+                <svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" fill="none" viewBox="0 0 24 24">
+                  <path stroke="white" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 19V4a1 1 0 0 1 1-1h12a1 1 0 0 1 1 1v13H7a2 2 0 0 0-2 2Zm0 0a2 2 0 0 0 2 2h12M9 3v14m7 0v4"/>
+                </svg>
+              </a>
+            </div>
             <label for="room-settings-toggle" class="room-settings-toggle">
               <%= t(@lang, "Room settings") %>
               <svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" fill="none" viewBox="0 0 24 24">
