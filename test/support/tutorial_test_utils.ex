@@ -3,6 +3,7 @@ defmodule RiichiAdvanced.TutorialTestUtils do
   alias RiichiAdvanced.GameState.Log
   alias RiichiAdvanced.LogControlState, as: LogControl
   alias RiichiAdvanced.TestUtils
+  alias RiichiAdvanced.Utils
   alias RiichiAdvancedWeb.GameLive.Tutorial
   import ExUnit.Assertions
 
@@ -48,6 +49,12 @@ defmodule RiichiAdvanced.TutorialTestUtils do
             buttons = List.duplicate(nil, 4) |> List.replace_at(seat_index, %{"button" => button_name})
             log_event = %{"type" => "buttons_pressed", "buttons" => buttons}
             fn -> LogControl.send_button_press(test_state, true, log_event, true) end
+          ["press_call_button", ^seat_str, "cancel"] ->
+            fn -> GenServer.cast(test_state.game_state_pid, {:cancel_call_buttons, seat}) end
+          ["press_call_button", ^seat_str, call_choice, called_tile] ->
+            call_choice = Enum.map(call_choice, &Utils.to_tile/1)
+            called_tile = Utils.to_tile(called_tile)
+            fn -> GenServer.cast(test_state.game_state_pid, {:press_call_button, seat, call_choice, called_tile}) end
           ["mark", ^seat_str, mark_seat, ix, source] ->
             log_event = %{
               "type" => "mark",
