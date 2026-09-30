@@ -84,7 +84,7 @@ set custom_style, %{
 
 set default_mods, [
   %{name: "american/am_num_jokers_flowers", config: %{jokers: 8, flowers: 8}},
-  "american/am_card_nmjl_2026",
+  %{name: "american/am_card_nmjl", config: %{year: 2026}},
   "american/show_nearest_american_hand",
   "show_waits",
   "four_rows_discards",
@@ -102,20 +102,8 @@ define_mod "american/no_charleston", name: "No Charleston", desc: "Disables the 
 define_mod "american/atomic", name: "Atomic (beta)", desc: "After the Charleston, you may declare Atomic to enable winning with 7 pairs."
 config_mod "american/atomic", name: "points", values: [25, 50, 75, 100, 125, 150], default: 50
 define_mod_category "Card"
-define_mod "american/am_card_nmjl_2013", name: "NMJL 2013 Card", desc: "Play with the NMJL 2013 Card.", conflicts: ["Card"]
-define_mod "american/am_card_nmjl_2014", name: "NMJL 2014 Card", desc: "Play with the NMJL 2014 Card.", conflicts: ["Card"]
-define_mod "american/am_card_nmjl_2015", name: "NMJL 2015 Card", desc: "Play with the NMJL 2015 Card.", conflicts: ["Card"]
-define_mod "american/am_card_nmjl_2016", name: "NMJL 2016 Card", desc: "Play with the NMJL 2016 Card.", conflicts: ["Card"]
-define_mod "american/am_card_nmjl_2017", name: "NMJL 2017 Card", desc: "Play with the NMJL 2017 Card.", conflicts: ["Card"]
-define_mod "american/am_card_nmjl_2018", name: "NMJL 2018 Card", desc: "Play with the NMJL 2018 Card.", conflicts: ["Card"]
-define_mod "american/am_card_nmjl_2019", name: "NMJL 2019 Card", desc: "Play with the NMJL 2019 Card.", conflicts: ["Card"]
-define_mod "american/am_card_nmjl_2020", name: "NMJL 2020 Card", desc: "Play with the NMJL 2020 Card.", conflicts: ["Card"]
-define_mod "american/am_card_nmjl_2021", name: "NMJL 2021 Card", desc: "Play with the NMJL 2021 Card.", conflicts: ["Card"]
-define_mod "american/am_card_nmjl_2022", name: "NMJL 2022 Card", desc: "Play with the NMJL 2022 Card.", conflicts: ["Card"]
-define_mod "american/am_card_nmjl_2023", name: "NMJL 2023 Card", desc: "Play with the NMJL 2023 Card.", conflicts: ["Card"]
-define_mod "american/am_card_nmjl_2024", name: "NMJL 2024 Card", desc: "Play with the NMJL 2024 Card.", conflicts: ["Card"]
-define_mod "american/am_card_nmjl_2025", name: "NMJL 2025 Card", desc: "Play with the NMJL 2025 Card.", conflicts: ["Card"]
-define_mod "american/am_card_nmjl_2026", name: "NMJL 2026 Card", desc: "Play with the NMJL 2026 Card.", conflicts: ["Card"]
+define_mod "american/am_card_nmjl", name: "NMJL Card", desc: "Play with the NMJL Card.", conflicts: ["Card"]
+config_mod "american/am_card_nmjl", name: "year", values: [2026, 2025, 2024, 2023, 2022, 2021, 2020, 2019, 2018, 2017, 2016, 2015, 2014, 2013], default: 2026
 # define_mod "american/WIP_am_card_network_2025", name: "Network 2025 Card (WIP)", desc: "Play with the Mah Jongg Network 2025 Card. Not fully implemented yet.", conflicts: ["Card"]
 # define_mod "american/WIP_am_card_network_jr_2025", name: "Network Jr 2025 Card (WIP)", desc: "Play with the Mah Jongg Network Jr 2025 Card. Not fully implemented yet.", conflicts: ["Card"]
 define_mod "american/am_card_press_2026", name: "Press 2026 Card", desc: "Play with the Mahjong Press 2026 Card.", conflicts: ["Card"]

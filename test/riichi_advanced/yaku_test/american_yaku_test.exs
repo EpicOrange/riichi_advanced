@@ -2,9 +2,9 @@ defmodule RiichiAdvanced.YakuTest.AmericanYaku do
   use ExUnit.Case, async: true
   alias RiichiAdvanced.TestUtils, as: TestUtils
 
-  @nmjl_2024 ["american/no_charleston", "american/am_card_nmjl_2024"]
-  @nmjl_2025 ["american/no_charleston", "american/am_card_nmjl_2025"]
-  @nmjl_2026 ["american/no_charleston", "american/am_card_nmjl_2026"]
+  @nmjl_2024 ["american/no_charleston", %{name: "american/am_card_nmjl", config: %{year: 2024}}]
+  @nmjl_2025 ["american/no_charleston", %{name: "american/am_card_nmjl", config: %{year: 2025}}]
+  @nmjl_2026 ["american/no_charleston", %{name: "american/am_card_nmjl", config: %{year: 2026}}]
   @am_aliases %{
     any: %{[] => MapSet.new([:"1j"])},
     "1f": %{[] => MapSet.new([:"1g", :"2f", :"2g", :"3f", :"3g", :"4f", :"4g"])}

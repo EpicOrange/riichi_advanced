@@ -1,5 +1,5 @@
 define_yaku yaku, "2021 #1", [25, "Pts"], @uniq and match(["hand", "call_tiles", "winning_tile"], ~a"FF 2021a 2222b 1111c")
-define_yaku yaku, "2021 #2", [25, "Pts"], @uniq and match(["hand", "call_tiles", "winning_tile"], ~a"222a 0000a 222b 1111b")
+define_yaku yaku, "2021 #2", [25, "Pts"], @uniq and match(["hand", "call_tiles", "winning_tile"], ~a"222a 0000 222b 1111b")
 define_yaku yaku, "2021 #3", [30, "Pts"], @uniq and match(["hand", "call_tiles", "winning_tile"], ~a"FFFF 2222a 0000 21a")
 define_yaku yaku, "2021 #4", [30, "Pts"], @uniq and @concealed and match(["hand", "call_tiles", "winning_tile"], ~a"NNN EE 2021a WW SSS")
 define_yaku yaku, "2468 #1", [25, "Pts"], @uniq and match(["hand", "call_tiles", "winning_tile"], ~a"22a 444a FFFF 666a 88a")
