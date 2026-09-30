@@ -15,41 +15,49 @@
 //     import "some-package"
 //
 
-let Hooks = {}
+let Hooks = {};
+
+function getSortableHoverTarget(elem) {
+  if (!elem) return null;
+  const isTile = elem.classList.contains("tile");
+  const isCall = elem.classList.contains("call");
+  if ((isTile || isCall) && elem.attributes.hasOwnProperty("data-id")) return elem;
+  return getHoverTarget(elem.parentElement);
+}
 
 // sortable.js
+window.dragging = false;
 import Sortable from "sortablejs";
 Hooks.SortableHand = {
   mounted() {
     // need to not let the liveview send hover diffs while dragging
     // so we manually orchestrate the firing of hover events, instead of using phx-hove
-    this.dragging = false;
-    const eventName = this.el.id.includes("calls") ? "hover_call" : "hover_tile";
     this.el.addEventListener("mouseenter", e => {
-      if (this.dragging) return;
-      if (!e.target.classList.contains("tile")) return;
-      const ix = e.target.attributes.getNamedItem("data-id");
-      if (ix === null) {console.log(e.target.attributes); return;}
-      this.pushEventTo(e.target, eventName, {index: +ix.value});
+      if (window.dragging) return;
+      const target = getSortableHoverTarget(e.target);
+      if (target === null) return;
+      const ix = target.attributes.getNamedItem("data-id");
+      this.pushEventTo(target, target.classList.contains("tile") ? "hover_tile" : "hover_call", {index: +ix.value});
     }, true);
     this.el.addEventListener("mouseleave", e => {
-      if (this.dragging) return;
-      if (!e.target.classList.contains("tile")) return;
-      const ix = e.target.attributes.getNamedItem("data-id");
-      if (ix === null) {console.log(e.target.attributes); return;}
-      this.pushEventTo(e.target, "hover_off", {index: +ix.value});
+      if (window.dragging) return;
+      const target = getSortableHoverTarget(e.target);
+      if (target === null) return;
+      const ix = target.attributes.getNamedItem("data-id");
+      this.pushEventTo(target, "hover_off", {index: +ix.value});
     }, true);
 
     new Sortable(this.el, {
       animation: 150,
       delay: 0,
       dragClass: "drag-item",
+      filter: ".call",
       ghostClass: "drag-ghost",
       fallbackTolerance: 10,
       forceFallback: true,
       sort: true,
       onStart: e => {
-        this.dragging = true;
+        window.dragging = true;
         window.mouseDownElement = null;
       },
       onEnd: e => {
@@ -62,7 +70,7 @@ Hooks.SortableHand = {
         } else {
           this.pushEventTo(this.el, "play_dragged_tile", {index: e.oldDraggableIndex})
         }
-        this.dragging = false;
+        window.dragging = false;
       },
     });
   }

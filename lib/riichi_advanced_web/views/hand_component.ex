@@ -88,21 +88,21 @@ defmodule RiichiAdvancedWeb.HandComponent do
           <% end %>
         </div>
       <% end %>
-      <div class="calls">
+      <div class="calls" phx-hook="SortableHand" id={@id <> " calls"}>
         <%= if not Enum.empty?(@marking) and @viewer != :spectator do %>
           <%= for {{_name, call}, i} <- prepare_calls(assigns) do %>
             <div class="dead-hand-button inactive" :if={@dead_hand_buttons and i == 0 and @seat != @viewer and @viewer != :spectator}></div>
             <%= cond do %>
               <% GenServer.call(@game_state, {:can_mark?, @viewer, @seat, i, :calls}) -> %>
-                <div class="call" phx-hover="hover_call" phx-hover-off="hover_off" phx-cancellable-click="mark_call" phx-target={@myself} phx-value-index={i} data-id={i}>
+                <div class="call" phx-cancellable-click="mark_call" phx-target={@myself} phx-value-index={i} data-id={i}>
                   <div class={Utils.get_tile_class(tile, i+100, assigns, ["markable"])} :for={tile <- call}><%= raw debug_tile(tile) %></div>
                 </div>
               <% GenServer.call(@game_state, {:is_marked?, @viewer, @seat, i, :calls}) -> %>
-                <div class="call" phx-hover="hover_call" phx-hover-off="hover_off" phx-cancellable-click="unmark_call" phx-target={@myself} phx-value-index={i} data-id={i}>
+                <div class="call" phx-cancellable-click="unmark_call" phx-target={@myself} phx-value-index={i} data-id={i}>
                   <div class={Utils.get_tile_class(tile, i+100, assigns, ["marked"])} :for={tile <- call}><%= raw debug_tile(tile) %></div>
                 </div>
               <% true -> %>
-                <div class="call" phx-hover="hover_call" phx-hover-off="hover_off" phx-target={@myself} phx-value-index={i} data-id={i}>
+                <div class="call" phx-target={@myself} phx-value-index={i} data-id={i}>
                   <div class={Utils.get_tile_class(tile, i+100, assigns)} :for={tile <- call}><%= raw debug_tile(tile) %></div>
                 </div>
             <% end %>
@@ -110,8 +110,8 @@ defmodule RiichiAdvancedWeb.HandComponent do
         <% else %>
           <%= for {{_name, call}, i} <- prepare_calls(assigns) do %>
             <div class={["dead-hand-button", (not @your_turn? || @dead_hand?) && "inactive"]} phx-cancellable-click="declare_dead_hand" phx-value-seat={@seat} :if={@dead_hand_buttons and i == 0 and @seat != @viewer and @viewer != :spectator}></div>
-            <div class={["call", @just_called == i && "just-called", @just_upgraded == i && "just-upgraded"]} phx-hover="hover_call" phx-hover-off="hover_off" phx-target={@myself} phx-value-index={i}>
-              <div class={Utils.get_tile_class(tile, i+100, assigns)} :for={tile <- call} data-id={i}><%= raw debug_tile(tile) %></div>
+            <div class={["call", @just_called == i && "just-called", @just_upgraded == i && "just-upgraded"]} data-id={i}>
+              <div class={Utils.get_tile_class(tile, i+100, assigns)} :for={tile <- call}><%= raw debug_tile(tile) %></div>
             </div>
           <% end %>
         <% end %>
@@ -132,7 +132,7 @@ defmodule RiichiAdvancedWeb.HandComponent do
           <% end %>
         </div>
       </div>
-      <div class="calls flowers">
+      <div class="calls flowers" phx-hook="SortableHand" id={@id <> " flowers"}>
         <%= for {{_name, call}, i} <- prepare_flowers(assigns) do %>
           <div class={Utils.get_tile_class(tile, i, assigns)} data-id={i} :for={tile <- call}><%= raw debug_tile(tile) %></div>
         <% end %>
