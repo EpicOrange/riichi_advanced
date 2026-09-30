@@ -1,0 +1,8 @@
+on before_conclusion, prepend: true do
+  push_system_message("Final scores:")
+  as east do
+    as everyone do
+      push_message(": %{score}", %{score: "current_score"})
+    end
+  end
+end
