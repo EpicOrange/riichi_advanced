@@ -1090,9 +1090,9 @@ defmodule RiichiAdvanced.GameState do
       or Scoring.seat_scores_points(state, point2_name, min_han, 0, seat, [wait], win_source)
     end
     cond do
-      min_han > 0 and get_score.(update_winning_tile(state, state.turn, :discard, fn _ -> wait end), :discard) -> nil
       "furiten" in state.players[seat].status -> "Furiten" # hardcoded version of "Self-Draw" for riichi
       "atozuke" in state.players[seat].status -> "Atozuke" # hardcoded version of "Self-Draw" for riichi
+      min_han > 0 and get_score.(update_winning_tile(state, state.turn, :discard, fn _ -> wait end), :discard) -> nil
       min_han > 0 and get_score.(update_winning_tile(state, seat, :draw, fn _ -> wait end), :draw) -> "Self-Draw"
       min_han > 0 -> if min_han > 1 do "Min #{min_han}" else "No Yaku" end
       true -> nil
