@@ -86,5 +86,5 @@ define_play_restriction not_flower_or_joker, status("force_nfnl") and match(["ha
 apply append, "buttons.flower.show_when", status_missing("force_nfnl")
 
 # 2) replacing a flower forces flower replacements from then on
-define_play_restriction flower_or_joker, has_call_named("flower", "start_flower")
-apply set, "buttons.flower.unskippable", has_call_named("flower", "start_flower")
+define_play_restriction flower_or_joker, not_has_no_call_named("flower", "start_flower")
+apply set, "buttons.flower.unskippable", not_has_no_call_named("flower", "start_flower")
