@@ -568,23 +568,26 @@ defmodule RiichiAdvanced.GameState.American do
     |> Keyword.values()
     |> Enum.frequencies()
     # calculate concealed shanten
-    {_, shanten} = for {tile, num} <- groups, reduce: {tile_freqs, 0} do
-      {tile_freqs, shanten} ->
+    {_, _, shanten} = for {tile, num} <- groups, reduce: {tile_freqs, false, 0} do
+      {tile_freqs, skipped, shanten} ->
         amt = Map.get(tile_freqs, tile, 0)
         used = min(num, amt)
         needed = num - used
         concealed = concealed? or num <= 2
-        # if we can complete it by calling then we don't need all of it
-        concealed_shanten = if concealed do needed else needed - 1 end
-        metric = if concealed do
-          # 1 => 10 + 5, 2 => 20 + 10, 3 => 30 + 15, ...
-          10 * concealed_shanten * (1 + 5 * concealed_shanten)
+        # the first concealed tile is treated as exposed (tracked by 'skipped')
+        # if exposed, we can complete it by calling, so we don't need all of it
+        concealed_shanten = if concealed and skipped do needed else needed - 1 end
+        metric = if concealed and skipped do
+          # concealed
+          # 1 => 3 * 3, 2 => 6 * 5, 3 => 9 * 7, ...
+          10 * 3 * concealed_shanten * (1 + 2 * concealed_shanten)
         else
-          # 1 => 10 + 0, 2 => 20 + 5, 3 => 30 + 10, ...
-          10 * concealed_shanten * (1 + 5 * (concealed_shanten - 1))
+          # exposed
+          # 1 => 2 * 4, 2 => 4 * 7, 3 => 6 * 10, ...
+          10 * 2 * concealed_shanten * (1 + 3 * concealed_shanten)
         end
         # IO.inspect({tile_freqs, tile, num, used, needed, metric})
-        {Map.put(tile_freqs, tile, amt - used), shanten + metric}
+        {Map.put(tile_freqs, tile, amt - used), concealed, shanten + metric}
     end
     # IO.puts("#{am_match_definition} | counts: #{inspect(tile_freqs)}, groups: #{inspect(groups)}, shanten: #{inspect(shanten)}")
     shanten
