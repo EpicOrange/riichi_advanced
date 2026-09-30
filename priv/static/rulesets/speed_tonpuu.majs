@@ -1,7 +1,6 @@
 define_base_ruleset riichi
 set display_name, "Speed Tonpuu"
 set tutorial_link, "https://peterish.com/riichi-docs/speed-tonpuu-rules"
-require "tonpuu"
 require "yaku/kansai_chiitoitsu"
 require "speed_tonpuu_dora"
 require "speed_tonpuu_pocchi"
@@ -26,6 +25,7 @@ apply set_append, "default_mods", [
   %{name: "called_game", config: %{above: 54999, chips: 1}},
   %{name: "agariyame", config: %{round: "every", first_place_only: false, may_choose: true}},
   %{name: "tenpaiyame", config: %{round: "every", first_place_only: false, may_choose: true}},
+  "lib/tonpuu",
   "kiriage_mangan",
   "lib/double_round_wind",
   %{name: "kandora", config: %{immediate: true}},
