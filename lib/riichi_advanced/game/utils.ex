@@ -314,6 +314,7 @@ defmodule RiichiAdvanced.Utils do
     inactive = has_attr?(tile, ["inactive"])
     hidden = has_attr?(tile, ["hidden"]) and not Map.get(assigns, :reveal_hidden_tiles, false)
     dora = has_attr?(tile, ["dora"])
+    shadow = has_attr?(tile, ["shadow"])
     highlight = has_attr?(tile, ["highlight"])
     last_sideways = has_attr?(tile, ["last_sideways"])
     reversed = transparent and id == :"1x"
@@ -356,6 +357,7 @@ defmodule RiichiAdvanced.Utils do
       inactive && "inactive",
       hidden && "hidden",
       dora && "dora",
+      (shadow and not dora) && "dora shadow",
       highlight && "highlight",
       last_sideways && "last-sideways",
       reversed && "reversed",

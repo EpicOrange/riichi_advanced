@@ -2101,13 +2101,15 @@ defmodule RiichiAdvanced.GameState.Actions do
             point_name = score_rules["point_name"]
             point2_name = score_rules["point2_name"]
             # update total_points if points or points2 changed
-            state = case key do
-              :points -> update_in(state.winners[seat].total_points, &Scoring.update_yaku_amount(&1, point_name, new_amt))
-              :points2 -> update_in(state.winners[seat].total_points, &Scoring.update_yaku_amount(&1, point2_name, new_amt))
-              :point_name -> update_in(state.winners[seat].total_points, &Scoring.update_yaku_unit(&1, point_name, new_amt))
-              :point2_name -> update_in(state.winners[seat].total_points, &Scoring.update_yaku_unit(&1, point2_name, new_amt))
-              _ -> state
-            end
+            state = if Map.has_key?(state.winners[seat], :total_points) do
+              case key do
+                :points -> update_in(state.winners[seat].total_points, &Scoring.update_yaku_amount(&1, point_name, new_amt))
+                :points2 -> update_in(state.winners[seat].total_points, &Scoring.update_yaku_amount(&1, point2_name, new_amt))
+                :point_name -> update_in(state.winners[seat].total_points, &Scoring.update_yaku_unit(&1, point_name, new_amt))
+                :point2_name -> update_in(state.winners[seat].total_points, &Scoring.update_yaku_unit(&1, point2_name, new_amt))
+                _ -> state
+              end
+            else state end
             # also update right_display if it changed
             state = if score_rules["right_display"] == Enum.at(opts, 0, nil) do
               case score_rules["right_display"] do

@@ -1,9 +1,55 @@
-set shiny_dora, true
-
 on after_start do
   add_attr_tagged("dora", "_dora")
 end
 
 def flip_dora, append: true do
   add_attr_tagged("dora", "_dora")
+end
+
+# reveal ura after riichi win
+on before_win do
+  if tile_revealed(-5) do tag_dora("ura", -5) end
+  if tile_revealed(-7) do tag_dora("ura", -7) end
+  if tile_revealed(-9) do tag_dora("ura", -9) end
+  if tile_revealed(-11) do tag_dora("ura", -11) end
+  if tile_revealed(-13) do tag_dora("ura", -13) end
+  if tile_revealed(-15) do tag_dora("ura", -15) end
+  if tile_revealed(-17) do tag_dora("ura", -17) end
+  add_attr_tagged("ura", "_dora")
+end
+
+
+
+# same deal for shadow dora
+
+if defined("shadow_dora") do
+  on after_start do
+    add_attr_tagged("shadow", "_shadow")
+  end
+
+  def flip_dora, append: true do
+    add_attr_tagged("shadow", "_shadow")
+  end
+
+  on after_start do
+    if tile_revealed(-6) do tag_tiles("shadow_dora", -6) end
+    if tile_revealed(-8) do tag_tiles("shadow_dora", -8) end
+    if tile_revealed(-10) do tag_tiles("shadow_dora", -10) end
+    if tile_revealed(-12) do tag_tiles("shadow_dora", -12) end
+    if tile_revealed(-14) do tag_tiles("shadow_dora", -14) end
+    if tile_revealed(-16) do tag_tiles("shadow_dora", -16) end
+    if tile_revealed(-18) do tag_tiles("shadow_dora", -18) end
+    add_attr_tagged("shadow_dora", "_shadow")
+  end
+
+  on before_win do
+    if tile_revealed(-5) do tag_tiles("shadow_ura", -5) end
+    if tile_revealed(-7) do tag_tiles("shadow_ura", -7) end
+    if tile_revealed(-9) do tag_tiles("shadow_ura", -9) end
+    if tile_revealed(-11) do tag_tiles("shadow_ura", -11) end
+    if tile_revealed(-13) do tag_tiles("shadow_ura", -13) end
+    if tile_revealed(-15) do tag_tiles("shadow_ura", -15) end
+    if tile_revealed(-17) do tag_tiles("shadow_ura", -17) end
+    add_attr_tagged("shadow_ura", "_shadow")
+  end
 end

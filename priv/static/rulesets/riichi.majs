@@ -167,6 +167,7 @@ define_mod_category "Dora"
 define_mod dora, name: "Dora", desc: "Enables dora."
 config_mod dora, name: "start_indicators", values: [1,2,3,4,5]
 define_mod ura, deps: ["dora"], name: "Ura", desc: "Enables ura dora."
+define_mod shadow_dora, deps: ["dora"], order: 1, name: "Shadow Dora", desc: "Enables shadow dora. This doubles the value of regular dora, but the dora indicator becomes shadow dora, which is worth negative 1 Han. This will not put your score below 1 Han."
 define_mod aka, order: 3, conflicts: ["chinitsu"], name: "Aka", desc: "Enables aka dora (red fives), worth 1 han each."
 config_mod aka, name: "man", values: [0,1,2,3,4], default: 1
 config_mod aka, name: "pin", values: [0,1,2,3,4], default: 1

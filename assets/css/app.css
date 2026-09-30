@@ -1115,18 +1115,28 @@ div.hand.shimocha div.tile.dora:not(.\31 x):not(.selected) {
   clip-path: rect(0 100% 100% calc(var(--tile-width) / -4) round var(--border-radius));
   overflow: visible;
 }
-div.tile.dora:not(.\31 x):not(.selected)::before {
-  content: "";
-  position: absolute;
-  top: 0;
-  left: 0;
-  animation: doraShine 3s infinite;
-  animation-delay: var(--dora-anim-delay, 0ms);
-  width: 400%;
-  height: 400%;
-  background: 
-    linear-gradient(0deg, transparent 25%, #ffffff7f 35%, transparent 45%),
-    linear-gradient(0deg, transparent 45%, #ffffff7f 65%, transparent 85%);
+div.tile.dora:not(.\31 x):not(.selected) {
+  &::before {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 0;
+    animation: doraShine 3s infinite;
+    animation-delay: 0s;
+    width: 400%;
+    height: 400%;
+    background:
+      linear-gradient(0deg, transparent 25%, #ffffff7f 35%, transparent 45%),
+      linear-gradient(0deg, transparent 45%, #ffffff7f 65%, transparent 85%);
+  }
+  &.shadow::before {
+    background:
+      linear-gradient(0deg, transparent 15%, #2f2f2f3f 35%, transparent 45%),
+      linear-gradient(0deg, transparent 45%, #2f2f2f3f 65%, transparent 95%);
+  }
+}
+div.revealed-tiles > div.tile.dora:not(.\31 x):not(.selected)::before {
+  animation: none;
 }
 div.tile.sideways + div.tile.sideways {
   margin-right: calc(-1 * var(--tile-height));
