@@ -112,6 +112,9 @@ defmodule RiichiAdvanced.TestUtils do
         assert Enum.all?(buttons, fn {_seat, buttons} -> Enum.empty?(buttons) end)
       _ ->
         for {seat, expected_winner} <- expected_winners do
+          if not Enum.all?(state.players, fn {_seat, player} -> Enum.empty?(player.buttons) end) do
+            IO.puts("note: final buttons are #{inspect(Map.new(state.players, fn {seat, player} -> {seat, player.buttons} end))}")
+          end
           assert seat in state.winner_seats
           errs = Enum.map(List.wrap(expected_winner), &check_winner.(seat, &1))
           if [] not in errs do

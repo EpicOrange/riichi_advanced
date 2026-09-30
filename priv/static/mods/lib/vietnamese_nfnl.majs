@@ -38,7 +38,7 @@ define_button nfnl0,
   show_when: status_missing("initial_flowers")
     and +@true_nfnl
     and +@has_win_button,
-  precedence_over: ["chii", "pon", "daiminkan", "ron", "chankan", "nfnl0", "nfnl1"]
+  precedence_over: ["chii", "pon", "daiminkan", "ron", "chankan", "nfnl0", "nfnl1", "nfnl2"]
   do
     if our_turn do big_text("Chỉ Mó") else big_text("Ù") end
     pause(1000)
@@ -63,7 +63,7 @@ define_button nfnl1,
     and ((our_turn and has_draw and not_match(["draw"], ["any_flower_joker_honor"]))
       or (not_our_turn and someone_else_just_discarded and not_match(["last_discard"], ["any_flower_joker_honor"]))
       or (not_our_turn and someone_else_just_called and status("can_chankan", as: "caller") and not_match(["last_called_tile"], ["any_flower_joker_honor"]))),
-  precedence_over: ["chii", "pon", "daiminkan", "ron", "chankan", "nfnl0", "nfnl1"]
+  precedence_over: ["chii", "pon", "daiminkan", "ron", "chankan", "nfnl0", "nfnl1", "nfnl2"]
   do
     big_text("No Flowers, No Leaves")
     pause(1000)
@@ -83,7 +83,8 @@ define_button nfnl2,
     and status("nfnl_eligible")
     and ((status("discarding_flowers_eligible") and flowers_discarded >= 3)
       or (status("discarding_blue_jokers_eligible") and blue_jokers_discarded >= 3)
-    and not_match(["hand", "calls", "flowers", "jokers"], ~m"(any_flower any_joker):1"))
+    and not_match(["hand", "calls", "flowers", "jokers"], ~m"(any_flower any_joker):1")),
+  precedence_over: ["chii", "pon", "daiminkan", "ron", "chankan", "nfnl0", "nfnl1", "nfnl2"]
   do
     big_text("No Flowers, No Leaves")
     pause(1000)
