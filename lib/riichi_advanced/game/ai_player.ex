@@ -549,7 +549,7 @@ defmodule RiichiAdvanced.AIPlayer do
         "reveal" in player.buttons -> if "riichi" in last_discarder_status do "reveal" else "reveal_skip" end
         "lock_skip" in player.buttons -> "lock_skip"
         "skip" in player.buttons and state.seat != turn -> "skip"
-        true -> Enum.random(player.buttons)
+        true -> Enum.random(player.buttons -- ["kyuushu_kyuuhai"])
       end
       if Debug.debug_ai() do
         IO.puts(" >> #{state.seat}: It's my turn to press buttons! #{inspect(player.buttons)} / chose: #{button_name}")
