@@ -257,7 +257,7 @@ defmodule RiichiAdvancedWeb.GameComponents do
               <%= yaku.display_name %>
               (<%= yaku.value %> <span class="display-am-hand-type"><%= if yaku.concealed do %>c<% else %>x<% end %></span>)
             </div>
-            <div class="display-am-hand-difficulty" :if={RiichiAdvanced.GameState.Debug.debug_am_difficulty()}>
+            <div class="display-am-hand-difficulty" :if={RiichiAdvanced.GameState.Debug.debug_am_difficulty() or Rules.get(@state.rules_ref, "debug_am_difficulty", false)}>
               (difficulty <%= difficulty %>)
             </div>
           </div>
