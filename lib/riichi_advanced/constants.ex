@@ -560,10 +560,6 @@ defmodule RiichiAdvanced.Constants do
   end
 
   @modpacks %{
-    # TODO migrate these
-    # taiwanese is .json
-    "taiwanese" => %{ruleset: "taiwanese", mods: ["taiwanese_rules"]},
-
     "nojokersmahjongleague" => %{
       display_name: "No Jokers Mahjong League 2024",
       tutorial_link: "https://docs.google.com/document/d/1APpd-YBnsKKssGmyLQiCp90Wk-06SlIScV1sKpJUbQo",
@@ -574,8 +570,8 @@ defmodule RiichiAdvanced.Constants do
     "aka_test" => %{
       display_name: "Kansai Sanma",
       tutorial_link: "https://github.com/EpicOrange/riichi_advanced/blob/main/documentation/kansai.md",
-      ruleset: "riichi",
-      mods: ["sanma", %{name: "aka", config: %{"man" => 1, "pin" => 1, "sou" => 1}}],
+      ruleset: "sanma",
+      mods: [%{name: "aka", config: %{"man" => 1, "pin" => 1, "sou" => 1}}],
       default_mods: [%{name: "lib/tobi", config: %{below: 0}}],
     },
     "speed" => %{
@@ -595,13 +591,13 @@ defmodule RiichiAdvanced.Constants do
         han: "Han",
       },
       mods: [
-        "base", "standard_wall", "global_mods", "default_auto_buttons",
-        "chii", "pon", %{name: "kan", config: %{replace_from_dead_wall: false, hide_ankans: false}},
-        %{name: "ron", config: %{scoring_key: "win"}},
-        %{name: "tsumo", config: %{scoring_key: "win"}},
-        "standard_win",
-        "head_bump",
-        %{name: "yaku/yakuhai", config: %{triplet_value: 10}}, # no prevalent wind
+        "lib/base", "lib/standard_wall", "lib/global_mods", "lib/default_auto_buttons",
+        "lib/chii", "lib/pon", %{name: "lib/kan", config: %{replace_from_dead_wall: false, hide_ankans: false}},
+        %{name: "lib/ron", config: %{scoring_key: "win"}},
+        %{name: "lib/tsumo", config: %{scoring_key: "win"}},
+        "lib/standard_win",
+        "lib/head_bump",
+        %{name: "lib/yaku/yakuhai", config: %{triplet_value: 10}}, # no prevalent wind
       ],
     },
   }

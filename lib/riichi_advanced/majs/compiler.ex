@@ -65,7 +65,7 @@ defmodule RiichiAdvanced.Compiler do
       defines: MapSet.new(),
       globals: %{},
       vars: [],      # reversed
-      mods: [],      # reversed
+      requires: [],  # reversed
       post_mods: [], # reversed
       base_ruleset: nil,
     ]
@@ -974,12 +974,15 @@ defmodule RiichiAdvanced.Compiler do
     with {:ok, names} <- names,
          {:ok, names} <- Validator.validate_json(names),
          {:ok, names} <- Enum.map(names, &Jason.encode/1) |> Utils.sequence() do
+      arr = "[#{Enum.join(names, ",")}]"
       {:ok, ~s"""
-      .available_mods |= map(select(type != "object" or (.id | IN(#{Enum.join(names, ",")}) | not)))
+      .available_mods |= map(select(if type == "object" then .name else . end | IN(#{arr}) | not))
       |
-      .default_mods -= [#{Enum.join(names, ",")}]
+      .default_mods |= map(select(if type == "object" then .name else . end | IN([#{arr}]) | not))
       |
-      if has("available_presets") then (.available_presets[].enabled_mods -= [#{Enum.join(names, ",")}]) else . end
+      if has("available_presets") then
+        .available_presets[].enabled_mods |= map(select(if type == "object" then .name else . end | IN(#{arr}) | not))
+      else . end
       """}
     end
   end
@@ -1171,9 +1174,11 @@ defmodule RiichiAdvanced.Compiler do
       {"define", _pos, [name | _]} ->
         {:ok, {".", update_in(defs.defines, &MapSet.put(&1, Validator.sanitize_string(name)))}}
       {"require", _pos, [name | opts]} ->
+        require_name = "lib/" <> name
+        wrapped_call = "_once(\"#{require_name}\"; require_#{String.replace(require_name, "/", "_")})"
         with {:ok, name} <- Validator.validate_lib(name) do
           if name in defs.libs do
-            {:ok, {".", defs}}
+            {:ok, {wrapped_call, defs}}
           else
             config = case opts do
               [] -> {:ok, %{}}
@@ -1190,16 +1195,15 @@ defmodule RiichiAdvanced.Compiler do
             end
             with {:ok, config} <- config do
               lib = if Enum.empty?(config) do name else %{name: name, config: config} end
-              {:ok, {".", %{defs | mods: [lib | defs.mods], libs: MapSet.put(defs.libs, name)}}}
+              {:ok, {wrapped_call, %{defs | requires: [lib | defs.requires], libs: MapSet.put(defs.libs, name)}}}
             end
           end
         end
       {"require", [line: line, column: column], args} -> {:error, "Compiler.compile: at line #{line}:#{column}, require command expects a library name optionally followed by a map of configs %{var: \"value\"}, got: #{inspect(args)}`"}
       {"require_after", _pos, [name | opts]} ->
-        require_call = "require_lib_" <> String.replace(name, "/", "_")
         with {:ok, name} <- Validator.validate_lib(name) do
           if name in defs.libs do
-            {:ok, {require_call, defs}}
+            {:ok, {".", defs}}
           else
             config = case opts do
               [] -> {:ok, %{}}
@@ -1216,7 +1220,7 @@ defmodule RiichiAdvanced.Compiler do
             end
             with {:ok, config} <- config do
               lib = if Enum.empty?(config) do name else %{name: name, config: config} end
-              {:ok, {require_call, %{defs | post_mods: [lib | defs.post_mods], libs: MapSet.put(defs.libs, name)}}}
+              {:ok, {".", %{defs | post_mods: [lib | defs.post_mods], libs: MapSet.put(defs.libs, name)}}}
             end
           end
         end
@@ -1312,6 +1316,10 @@ defmodule RiichiAdvanced.Compiler do
     else [.] end;
   def _safe_append(l; r):
     (l | _ensure_list) + (r | _ensure_list);
+  def _once($name; call):
+    if IN($name; (.enabled_mods // [])[] | if type == "object" then .name else . end) then . else call end;
+  def _uniq_mods:
+    to_entries | group_by(.value | if type == "object" then .name else . end) | map(.[0]) | sort_by(.key) | map(.value);
   """
   def header(), do: @header
 
