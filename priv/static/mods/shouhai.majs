@@ -53,3 +53,5 @@ on before_win do
   merge_draw
   set_tile_alias(["4x"], ["any"])
 end
+
+define_match tenpai_14, "tenpai"
