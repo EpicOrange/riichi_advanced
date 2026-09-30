@@ -160,7 +160,7 @@ on before_turn_change do
 end
 
 on after_turn_change do
-  if status("won") do
+  if is_winner do
     advance_turn
   else
     if no_tiles_remaining do
@@ -200,7 +200,7 @@ on before_win do
   unless status("ended_by_draw") do
     if won_by_draw do
       as others do
-        unless status("won") do
+        unless is_winner do
           as prev_seat do
             make_responsible_for("prev_seat", "all")
           end
@@ -213,11 +213,6 @@ on before_win do
         make_responsible_for("last_caller", "all")
       end
     end
-  end
-end
-on before_scoring do
-  if status("tenpai_at_draw") do
-    modify_winner("winning_tile_text", "Best")
   end
 end
 on after_win do as everyone do clear_responsibilities end end
@@ -274,7 +269,7 @@ on before_exhaustive_draw do
         reveal_hand
         set_status("void_penalty")
       else
-        if status_missing("won") do
+        unless is_winner do
           if match(["hand", "calls"], ["tenpai"]) do
             reveal_hand
             set_status("tenpai_at_draw")
@@ -301,6 +296,8 @@ on before_exhaustive_draw do
         draw(1, "4x")
         set_tile_alias(["4x"], ["any"])
         win_by_draw("win")
+        modify_winner("winning_tile_text", "Best")
+        replace_winning_hand_jokers
       end
     end
   end
@@ -438,10 +435,10 @@ define_const no_voided_calls,
 define_button pon,
   display_name: "Pong",
   show_when: not_our_turn
-    and status_missing("won")
     and not_no_tiles_remaining
     and someone_else_just_discarded
-    and call_available,
+    and call_available
+    and not_is_winner,
   precedence_over: ["chii"],
   call: [[0, 0]],
   call_style: %{
@@ -457,7 +454,7 @@ define_button pon,
   end
 
 def do_kong_payment_single do
-  unless status("won", as: "$seat") do
+  unless is_winner(as: "$seat") do
     add_score("$score")
     as "$seat" do
       subtract_score("$score")
@@ -510,10 +507,10 @@ end
 define_button daiminkan,
   display_name: "Kong",
   show_when: not_our_turn
-    and status_missing("won")
     and not_no_tiles_remaining
     and someone_else_just_discarded
-    and call_available,
+    and call_available
+    and not_is_winner,
   precedence_over: ["pon"],
   call: [[0, 0, 0]],
   call_style: %{
@@ -533,11 +530,12 @@ define_button daiminkan,
 define_button ankan,
   display_name: "Concealed Kong",
   show_when: our_turn
-    and status_missing("won", "round_start")
+    and status_missing("round_start")
     and not_no_tiles_remaining
     and not_just_discarded
     and not_just_called
-    and self_call_available,
+    and self_call_available
+    and not_is_winner,
   precedence_over: ["pon"],
   call: [[0, 0, 0]],
   call_style: %{self: [["1x", 2], 0, 1, ["1x", 3]]},
@@ -552,11 +550,12 @@ define_button ankan,
 define_button kakan,
   display_name: "Kong",
   show_when: our_turn
-    and status_missing("won", "round_start")
+    and status_missing("round_start")
     and not_no_tiles_remaining
     and not_just_discarded
     and not_just_called
-    and can_upgrade_call,
+    and can_upgrade_call
+    and not_is_winner,
   precedence_over: ["pon"],
   call: [[0, 0, 0]],
   upgrades: "pon",
@@ -577,8 +576,8 @@ define_button kakan,
 define_button ron,
   display_name: "Hu",
   show_when: not_our_turn
-    and status_missing("won")
     and someone_else_just_discarded
+    and not_is_winner
     and match(["hand", "calls"], ["tenpai"])
     and match(["hand", "calls", "last_discard"], ["win"])
     and ((status("void_manzu") and not_match(["hand", "calls", "last_discard"], ~m"manzu:1"))
@@ -589,7 +588,6 @@ define_button ron,
   do
     big_text("Hu")
     pause(1000)
-    set_status("won")
     reveal_hand
     win_by_discard("win")
   end
@@ -597,8 +595,8 @@ define_button ron,
 define_button chankan,
   display_name: "Hu",
   show_when: not_our_turn
-    and status_missing("won")
     and someone_else_just_called
+    and not_is_winner
     and last_call_is("kakan")
     and match(["hand", "calls"], ["tenpai"])
     and match(["hand", "calls", "last_called_tile"], ["win"])
@@ -610,7 +608,6 @@ define_button chankan,
   do
     big_text("Hu")
     pause(1000)
-    set_status("won")
     reveal_hand
     win_by_call("win")
   end
@@ -618,7 +615,8 @@ define_button chankan,
 define_button tsumo,
   display_name: "Zimo",
   show_when: our_turn
-    and status_missing("won", "round_start")
+    and status_missing("round_start")
+    and not_is_winner
     and match(["hand", "calls"], ["tenpai"])
     and match(["hand", "calls", "draw"], ["win"])
     and ((status("void_manzu") and not_match(["hand", "calls", "draw"], ~m"manzu:1"))
@@ -628,7 +626,6 @@ define_button tsumo,
   do
     big_text("Zimo")
     pause(1000)
-    set_status("won")
     reveal_hand
     win_by_draw("win")
   end

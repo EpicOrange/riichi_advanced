@@ -21,6 +21,10 @@ defmodule RiichiAdvanced.GameState.Actions do
   require Logger
   import RiichiAdvanced.GameState
 
+  def trigger_event(state, event_name, _context) when state.event_depth >= 20 do
+    Logger.error("Event depth exceeded 20, last event was: #{event_name}")
+    state
+  end
   def trigger_event(state, event_name, context) do
     case Rules.get(state.rules_ref, event_name) do
       nil -> state
@@ -32,7 +36,10 @@ defmodule RiichiAdvanced.GameState.Actions do
             IO.puts("Triggered event #{event_name} for seat #{context.seat}")
           end
         end
-        run_actions(state, event["actions"], context)
+        state = %{state | event_depth: state.event_depth + 1}
+        state = run_actions(state, event["actions"], context)
+        state = %{state | event_depth: state.event_depth - 1}
+        state
     end
   end
 
@@ -639,6 +646,7 @@ defmodule RiichiAdvanced.GameState.Actions do
         end
       ["dice" | _opts] -> Enum.sum(state.dice)
       ["pot" | _opts] -> state.pot
+      ["kyoku" | _opts] -> state.kyoku
       ["honba" | _opts] -> state.honba
       ["riichi_value" | _opts] -> Rules.get(state.rules_ref, "score_calculation", %{}) |> Map.get("riichi_value", 0)
       ["honba_value" | _opts] -> Rules.get(state.rules_ref, "score_calculation", %{}) |> Map.get("honba_value", 0)
@@ -1489,7 +1497,7 @@ defmodule RiichiAdvanced.GameState.Actions do
         "win_by_discard"        -> Kyoku.win(state, context.seat, :discard, Enum.at(opts, 0, "win"))
         "win_by_call"           -> Kyoku.win(state, context.seat, :call, Enum.at(opts, 0, "win"))
         "win_by_draw"           -> Kyoku.win(state, context.seat, :draw, Enum.at(opts, 0, "win"))
-        "win_by_second_visible_discard" -> Kyoku.win(state, context.seat, :second_discard, Enum.at(opts, 0, nil))
+        "win_by_second_visible_discard" -> Kyoku.win(state, context.seat, :second_discard, Enum.at(opts, 0, "win"))
         "ryuukyoku"             -> Kyoku.exhaustive_draw(state, Enum.at(opts, 0, nil), Enum.at(opts, 1, nil))
         "abortive_draw"         -> Kyoku.abortive_draw(state, Enum.at(opts, 0, nil))
         "set_status"            -> update_player(state, context.seat, fn player -> %{ player | status: MapSet.union(player.status, MapSet.new(opts)) } end)
@@ -2075,7 +2083,7 @@ defmodule RiichiAdvanced.GameState.Actions do
             _          -> :set
           end
           seat = if context.seat not in state.winner_seats do
-            Enum.at(state.winner_seats, state.winner_index)
+            Enum.at(state.winner_seats, -1)
           else context.seat end
           if key != nil and method != nil and seat in state.winner_seats do
             value = case type do
@@ -2181,6 +2189,7 @@ defmodule RiichiAdvanced.GameState.Actions do
                 {seat, yakus}
               end
             end
+            |> Map.reject(fn {_seat, yakus} -> Enum.empty?(yakus) end)
           end)
         # WIP new scoring methods
         "declare_payment" ->

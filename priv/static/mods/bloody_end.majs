@@ -1,0 +1,38 @@
+default hide_winning_hands, true
+
+set bloody_end, true
+apply set, "score_calculation.bloody_end_name", "Bloody End"
+
+# winners shouldn't have to pay for tsumo
+on before_win do
+  if won_by_draw do
+    as others do
+      if is_winner do
+        clear_responsibilities("prev_seat")
+      end
+    end
+  end
+end
+
+if !hide_winning_hands do
+  # don't show hand when we win
+  replace 1, "buttons.ron.actions", "reveal_hand", "noop"
+  replace 1, "buttons.tsumo.actions", "reveal_hand", "noop"
+  # show winning hands at the end
+  on before_exhaustive_draw do
+    as winners do
+      reveal_hand
+    end
+  end
+end
+
+# noten payments are always 1000
+# (setup_noten_payments is defined in riichi_scoring)
+def setup_noten_payments, append: true do
+  if noten_payment > 0 do
+    noten_penalty = 1000 * tenpai_count
+    noten_payment = 1000
+    set_counter_all("noten_payment", "noten_payment")
+    set_counter_all("noten_penalty", "noten_penalty")
+  end
+end

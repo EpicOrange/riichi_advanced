@@ -47,13 +47,21 @@ def discard_passed do end
 define_scoring ryuukyoku do end
 define_const ryuukyoku, ryuukyoku("Exhaustive Draw", "ryuukyoku")
 on after_turn_change do
-  if no_tiles_remaining do
-    pause(1000)
-    @ryuukyoku
+  if is_winner do
+    advance_turn
   else
-    if not_game_start do discard_passed end
-    if @can_draw_condition do draw end
+    if no_tiles_remaining do
+      pause(1000)
+      @ryuukyoku
+    else
+      if not_game_start do discard_passed end
+      if @can_draw_condition do draw end
+    end
   end
+end
+
+on before_continue do
+  advance_turn
 end
 
 set starting_tiles, 13

@@ -13,7 +13,8 @@ define_button chankan,
     and someone_else_just_called
     and status("can_chankan", as: "caller")
     and status_missing("initial_flowers") # for default_flowers mod
-    and match(["hand", "calls", "last_called_tile"], ["win"]),
+    and match(["hand", "calls", "last_called_tile"], ["win"])
+    and not_is_winner, # for bloody end mod
   precedence_over: ["chii", "pon", "daiminkan"]
   do
     big_text(!chankan_name)

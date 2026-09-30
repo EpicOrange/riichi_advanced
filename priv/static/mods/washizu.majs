@@ -38,12 +38,8 @@ apply merge, "score_calculation", %{
   honba_value: 10
 }
 apply divide, "initial_score", 10
-define_scoring ron do
-  total /= 10 :: "Washizu"
-end
-define_scoring tsumo do
-  total /= 10 :: "Washizu"
-end
+define_scoring ron, append: true do total /= 10 :: "Washizu" end
+define_scoring tsumo, append: true do total /= 10 :: "Washizu" end
 on after_win do
   display_total /= 10
   modify_winner("score", "display_total")

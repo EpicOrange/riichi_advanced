@@ -262,6 +262,7 @@ defmodule RiichiAdvanced.GameState do
       timer: 0,
       log_loading_mode: false, # disables pause and doesn't notify players/ai on state change
       log_seeking_mode: false, # disables round change on round end
+      event_depth: 0, # max 20
 
       # persistent game state (not reset on new round)
       ref: "",
@@ -1046,6 +1047,9 @@ defmodule RiichiAdvanced.GameState do
       update_in(state.players[last_call_action.seat].calls, fn calls ->
         {name, call} = Enum.at(calls, -1)
         ix = Enum.find_index(call, &Utils.same_tile(&1, last_call_action.called_tile))
+        if ix == nil do
+          Logger.error("Tried to update winning called tile #{inspect(last_call_action.called_tile)} in call #{inspect(call)}, but none found")
+        end
         updated_call = List.update_at(call, ix, fun)
         List.replace_at(calls, -1, {name, updated_call})
       end)
@@ -1236,7 +1240,7 @@ defmodule RiichiAdvanced.GameState do
   end
 
   def broadcast_state_change(state, postprocess \\ false) do
-    state = if state.round_result == :win or state.round_result == :continue do
+    state = if state.round_result == :win do
       seat = Enum.at(state.winner_seats, state.winner_index)
       Kyoku.process_new_winner(state, seat)
     else state end

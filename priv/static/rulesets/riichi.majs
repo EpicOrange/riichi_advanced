@@ -139,10 +139,8 @@ define_mod_category "Endgames"
 define_mod "lib/tonpuu", name: "Tonpuu", desc: "Limit the game to the East round only."
 define_mod "lib/tobi", name: "Tobi", order: -1, desc: "Enable busting. Once anyone's points is reduced below zero (or the specified value), the game ends."
 config_mod "lib/tobi", name: "below", values: [0, 1, 1000, 1001]
-config_mod "lib/tobi", name: "chips", values: [1, 2, 3, 4, 5, 10]
 define_mod called_game, conflicts: ["washizu"], name: "Called Game", order: -1, desc: "Enable called game. Once anyone's points reaches above 54999 (or the specified value), the game ends."
 config_mod called_game, name: "above", values: [49999, 50000, 54999, 55000], default: 54999
-config_mod called_game, name: "chips", values: [1, 2, 3, 4, 5, 10]
 define_mod "lib/agarirenchan", name: "Agarirenchan", desc: "A round repeats if the dealer wins."
 define_mod tenpairenchan, name: "Tenpairenchan", desc: "A round repeats if the dealer is tenpai at draw."
 define_mod agariyame, deps: ["lib/agarirenchan"], name: "Agariyame", desc: "All Last doesn't repeat if the dealer is first place and wins."
@@ -405,8 +403,11 @@ define_mod chinitsu, order: -2, conflicts: ["aka", "aka1", "aka3", "aka7", "aka9
 define_mod washizu, order: 3.5, conflicts: ["called_game"], name: "Washizu", desc: "Each tile in the wall is transparent and visible to all, except for one copy. Unflipped dora indicators are not visible."
 config_mod washizu, name: "transparents", values: [1,2,3,4], default: 3
 define_mod yami, name: "Yami", desc: "You may bet 1000 points to discard facedown. Others can bet 2000 points to force it faceup, but you can bet a further 4000 points to keep it facedown."
+define_mod bloody_end, name: "Bloody End", desc: "Each round only ends after three winners. If the wall is exhausted, it counts as a draw, and noten players pay tenpai players 1000 points."
+config_mod bloody_end, name: "hide_winning_hands", values: [false, true], default: true
 define_mod "lib/grand_cross", order: -2, conflicts: ["super_bingo_grand_cross"], name: "Grand Cross", desc: "You may declare NEWS (one of each wind) as a concealed kan worth 16 fu."
 define_mod nobekan, order: -2, name: "Nobekan", desc: "You may kan a sequence of four number tiles."
+define_mod charleston, order: 5, name: "Charleston", desc: "At the beginning of each hand, each player chooses three tiles to swap with other players."
 define_mod calls_are_forced, conflicts: ["chombo"], name: "Calls Are Forced", desc: "Forces you to make all available calls, including riichi (if enabled). You still get to choose if multiple calls are available."
 define_mod chombo, conflicts: ["calls_are_forced"], name: "Chombo", desc: "The tsumo and ron buttons are enabled on every draw and discard. If you make an incorrect win call, your hand is dead and you cannot make a win call for the remainder of the round."
 define_mod riichi_en, name: "English Yaku Names", desc: "Display English yaku names. (e.g. Tanyao -> All Simples)"
@@ -500,46 +501,40 @@ define_preset "Mahjong Soul", "4-Player South", [
   "shiny_dora",
   "first_gets_riichi_sticks"
 ]
-# define_preset "Mahjong Soul", "Battle of Asura", [
-#   # TODO:
-#   # - bloody end (wins calculated in real time)
-#   # - tsumo loss (winners don't pay)
-#   # - no honba at all
-#   # - noten payment is flat 1000 to all tenpai players
-#   # - winners don't earn noten payments (?)
-#   # - chankan doesn't cancel the kan (since it's bloody rules)
-#   # - chankan doesn't cancel suukaikan (win, then immediately abortive draw)
-#   # - if you are < 1000 pts after losing points, you must take back your riichi stick and exit riichi
-#   # - no pao
-#   +@standard_riichi_yaku,
-#   %{name: "nagashi", config: %{is: "Mangan", counts_as: "draw"}},
-#   %{name: "lib/tobi", config: %{below: 0}},
-#   %{name: "uma", config: %{_1st: 15, _2nd: 5, _3rd: -5, _4th: -15}},
-#   "lib/agarirenchan",
-#   "tenpairenchan",
-#   %{name: "agariyame", config: %{first_place_only: true, may_choose: false, round: "all_last"}},
-#   %{name: "tenpaiyame", config: %{first_place_only: true, may_choose: false, round: "all_last"}},
-#   "lib/tonpuu",
-#   "lib/kuikae_nashi",
-#   "double_wind_4_fu",
-#   "lib/riichi_furiten",
-#   "kokushi_ankan_chankan",
-#   %{name: "suufon_renda", config: %{name: "Suufon Renda"}},
-#   "suucha_riichi",
-#   "lib/suukaikan",
-#   %{name: "kyuushu_kyuuhai", config: %{name: "Kyuushu Kyuuhai"}},
-#   %{name: "dora", config: %{start_indicators: 1}},
-#   "ura",
-#   "kandora",
-#   "charleston",
-#   %{name: "bloody_end", config: %{hide_winning_hands: true, noten_payment: 1000}},
-#   "show_waits",
-#   %{name: "lib/min_han", config: %{min: 1, han: "Han"}},
-#   "cancellable_riichi",
-#   %{name: "aka", config: %{man: 1, pin: 1, sou: 1}},
-#   "shiny_dora",
-#   "first_gets_riichi_sticks"
-# ]
+define_preset "Mahjong Soul", "Battle of Asura", [
+  # TODO:
+  # - chankan doesn't cancel the kan (since it's bloody rules)
+  # - chankan doesn't cancel suukaikan (win, then immediately abortive draw)
+  # - if you are < 1000 pts after losing points, you must take back your riichi stick and exit riichi
+  +@standard_riichi_yaku,
+  %{name: "nagashi", config: %{is: "Mangan", counts_as: "draw"}},
+  %{name: "lib/tobi", config: %{below: 0}},
+  %{name: "uma", config: %{_1st: 15, _2nd: 5, _3rd: -5, _4th: -15}},
+  "lib/agarirenchan",
+  "tenpairenchan",
+  %{name: "agariyame", config: %{first_place_only: true, may_choose: false, round: "all_last"}},
+  %{name: "tenpaiyame", config: %{first_place_only: true, may_choose: false, round: "all_last"}},
+  "lib/tonpuu",
+  "lib/kuikae_nashi",
+  "double_wind_4_fu",
+  "lib/riichi_furiten",
+  "kokushi_ankan_chankan",
+  %{name: "suufon_renda", config: %{name: "Suufon Renda"}},
+  "suucha_riichi",
+  "lib/suukaikan",
+  %{name: "kyuushu_kyuuhai", config: %{name: "Kyuushu Kyuuhai"}},
+  %{name: "dora", config: %{start_indicators: 1}},
+  "ura",
+  "kandora",
+  "charleston",
+  %{name: "bloody_end", config: %{hide_winning_hands: true, noten_payment: 1000}},
+  "show_waits",
+  %{name: "lib/min_han", config: %{min: 1, han: "Han"}},
+  "cancellable_riichi",
+  %{name: "aka", config: %{man: 1, pin: 1, sou: 1}},
+  "shiny_dora",
+  "first_gets_riichi_sticks"
+]
 define_preset "Mahjong Soul", "Battle of Darkness", [
   # TODO:
   # - concealed tile should not trigger furiten

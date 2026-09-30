@@ -20,6 +20,7 @@ define_button chii,
     and not_no_tiles_remaining
     and kamicha_discarded
     and status_missing("initial_flowers") # for default_flowers mod
+    and not_is_winner # for bloody end mod
     and call_available,
   call: [[-2, -1], [-1, 1], [1, 2]],
   call_style: @chii_call_style

@@ -4,7 +4,7 @@ def pao_text do
   if status_missing("shown_pao_text") do
     set_status("shown_pao_text")
     as others do
-      if is_responsible_for("prev_seat") do
+      if status("pao") and is_responsible_for("prev_seat") do
         big_text("Pao")
       end
     end
@@ -27,6 +27,14 @@ end
 on before_win do
   set_counter_all("pao_han", "pao_han")
   set_counter_all("pao_yakuman", "pao_yakuman")
+end
+on after_win do
+  # need to unset pao counters
+  # (so if bloody end is on, later winners aren't respsonsible for any pao)
+  # (TODO this might not be the correct behavior)
+  set_counter_all("pao_han", 0)
+  set_counter_all("pao_yakuman", 0)
+  as everyone do clear_responsibilities end
 end
 
 define_scoring pao_tsumo do

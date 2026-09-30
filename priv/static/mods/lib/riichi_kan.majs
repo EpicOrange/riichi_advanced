@@ -105,7 +105,8 @@ define_button chankan,
     and status_missing("furiten", "just_reached")
     and +@can_chankan
     and match(["hand", "calls"], ["tenpai"])
-    and match(["hand", "calls", "last_called_tile"], ["win"]),
+    and match(["hand", "calls", "last_called_tile"], ["win"])
+    and not_is_winner, # for bloody end mod
   precedence_over: ["chii", "pon", "daiminkan"]
   do
     big_text("Ron")

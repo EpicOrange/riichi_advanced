@@ -301,10 +301,10 @@ defmodule RiichiAdvanced.GameState.Scoring do
     denoms = [score_rules["point_name"], score_rules["point2_name"], score_rules["shuugi_name"]]
     yaku = Enum.map(yaku, fn {name, value} -> {translate(state, name), value} end)
     |> dedup_yaku()
-    |> Enum.map(fn {name, value} -> {name, Utils.sort_points_list_by_denom(value, denoms)} end)
+    |> Enum.map(fn {name, value} -> {name, Utils.sort_points_list_by_denominations(value, denoms)} end)
     points = Enum.map(yaku, fn {_name, value} -> value end)
     |> Enum.reduce([], &add_yaku_values/2)
-    |> Utils.sort_points_list_by_denom(denoms)
+    |> Utils.sort_points_list_by_denominations(denoms)
     # put back hand/calls/winning tile
     state = state
     |> update_player(seat, &%{ &1 | hand: &1.cache.orig_hand, calls: &1.cache.orig_calls })
@@ -434,6 +434,7 @@ defmodule RiichiAdvanced.GameState.Scoring do
       map_size(winners) == 1       -> Map.get(score_rules, "win_by_discard_name", "Win by Discard")
       map_size(winners) == 2       -> Map.get(score_rules, "win_by_discard_name_2", Map.get(score_rules, "win_by_discard_name", "Win by Discard"))
       map_size(winners) == 3       -> Map.get(score_rules, "win_by_discard_name_3", Map.get(score_rules, "win_by_discard_name", "Win by Discard"))
+      true                         -> nil
     end
 
     {state, delta_scores, delta_scores_reason}
@@ -455,7 +456,11 @@ defmodule RiichiAdvanced.GameState.Scoring do
     # handle hanada kirame's scoring quirk
     {state, delta_scores} = hanada_kirame_score_protection(state, delta_scores)
 
-    delta_scores_reason = Map.get(score_rules, "exhaustive_draw_name", "Draw")
+    delta_scores_reason = if Rules.get(state.rules_ref, "bloody_end", false) and length(state.available_seats) - length(state.winner_seats) <= 1 do
+      Map.get(score_rules, "bloody_end_name", "Bloody End")
+    else
+      Map.get(score_rules, "exhaustive_draw_name", "Draw")
+    end
 
     {state, delta_scores, delta_scores_reason}
   end

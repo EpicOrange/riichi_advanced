@@ -8,4 +8,5 @@ def check_tenpai do
 end
 
 on after_start do check_tenpai end
-define_play_effect any do check_tenpai end
+on before_turn_change do check_tenpai end
+on after_turn_change do check_tenpai end
