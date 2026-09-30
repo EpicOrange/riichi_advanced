@@ -21,14 +21,14 @@ on after_initialization do
     """, %{hoa: ~t"9j", red_jokers: "45j", blue_jokers: ~t"0678j", all_jokers: ~t"0245678j", hop: ~t"2j"}, -90)
 end
 
-define_match has_non_nfnl_tile, ~m"nojoker, (any_flower any_joker):1"
-define_match has_non_nfnl1_tile, ~m"nojoker, (any_flower any_joker 1z 2z 3z 4z 0z 6z 7z):1"
+define_match any_flower_joker, ~m"nojoker, (any_flower any_joker):1"
+define_match any_flower_joker_honor, ~m"nojoker, (any_flower any_joker 1z 2z 3z 4z 0z 6z 7z):1"
 
 # True NFNL: replace regular win buttons with a button that says "No Flowers, No Leaves"
 define_const true_nfnl,
   status("nfnl_eligible")
-  and (flowers_jokers_discarded < 3 or not_our_turn or not_has_draw or match(["draw"], ["has_non_nfnl_tile"]))
-  and not_match(["hand", "draw", "calls", "flowers", "jokers"], ["has_non_nfnl_tile"])
+  and (flowers_jokers_discarded < 3 or not_our_turn or not_has_draw or match(["draw"], ["any_flower_joker"]))
+  and not_match(["hand", "draw", "calls", "flowers", "jokers"], ["any_flower_joker"])
 define_const has_win_button,
   (not_our_turn and someone_else_just_discarded and not_match(["last_discard"], ["any_flower", "any_joker"]) and match(["hand", "calls", "last_discard"], ["win"]))
   or (not_our_turn and someone_else_just_called and not_match(["last_called_tile"], ["any_flower", "any_joker"]) and status("can_chankan", as: "caller") and match(["hand", "calls", "last_called_tile"], ["win"]))
@@ -59,10 +59,10 @@ define_button nfnl1,
   show_when: status_missing("initial_flowers")
     and status("nfnl_eligible", "discarding_flowers_jokers_eligible")
     and flowers_jokers_discarded >= 3
-    and not_match(["hand", "draw", "calls", "flowers", "jokers"], ["has_non_nfnl1_tile"])
-    and ((our_turn and has_draw and not_match(["draw"], ["has_non_nfnl1_tile"]))
-      or (not_our_turn and someone_else_just_discarded and not_match(["last_discard"], ["has_non_nfnl1_tile"]))
-      or (not_our_turn and someone_else_just_called and status("can_chankan", as: "caller") and not_match(["last_called_tile"], ["has_non_nfnl1_tile"]))),
+    and not_match(["hand", "draw", "calls", "flowers", "jokers"], ["any_flower_joker_honor"])
+    and ((our_turn and has_draw and not_match(["draw"], ["any_flower_joker_honor"]))
+      or (not_our_turn and someone_else_just_discarded and not_match(["last_discard"], ["any_flower_joker_honor"]))
+      or (not_our_turn and someone_else_just_called and status("can_chankan", as: "caller") and not_match(["last_called_tile"], ["any_flower_joker_honor"]))),
   precedence_over: ["chii", "pon", "daiminkan", "ron", "chankan", "nfnl0", "nfnl1"]
   do
     big_text("No Flowers, No Leaves")
@@ -100,13 +100,15 @@ on after_call do
   end
 end
 define_play_effect not_flower_or_joker do
-  if match(["hand"], ~m"(any_flower any_joker):1") do
+  if match(["hand"], ["any_flower_joker"]) do
     # on the first discard, dealer is permitted to discard a flower/joker from hand
     unless seat_is("east") and status("first_turn") do
       unset_status("nfnl_eligible")
     end
   end
 end
+# can only discard flowers if eligible for NFNL
+define_play_restriction flower_or_joker, status_missing("nfnl_eligible")
 
 define_auto_button _6_auto_forced_flower,
   display_name: "FF",
@@ -147,7 +149,7 @@ on before_turn_change do
   end
 end
 define_play_effect not_flower_or_joker do
-  if match(["hand", "draw"], ["has_non_nfnl_tile"]) do unset_status("nfnl_eligible") end
+  if match(["hand", "draw"], ["any_flower_joker"]) do unset_status("nfnl_eligible") end
 end
 define_play_effect flower do
   unset_status("discarding_blue_jokers_eligible")
@@ -194,24 +196,24 @@ define_yaku nfnl, "Discarding Flowers/Jokers", ["discarding_flowers_jokers_value
   status("nfnl_eligible", "discarding_flowers_jokers_eligible")
   and not just_discarded
   and discarding_flowers_jokers_value > 0
-  and not_match(["hand", "calls", "winning_tile"], ["has_non_nfnl_tile"]),
+  and not_match(["hand", "calls", "winning_tile"], ["any_flower_joker"]),
   ["yaku", "progressive", "meta_yaku"]
 define_yaku nfnl, "Discarding Flowers", ["discarding_flowers_value", "Mủn"],
   status("nfnl_eligible", "discarding_flowers_eligible")
   and our_turn and just_discarded
   and discarding_flowers_value > 0
-  and not_match(["hand", "calls", "flowers", "jokers"], ~m"nojoker, (any_flower any_joker):1"),
+  and not_match(["hand", "calls", "flowers", "jokers"], ["any_flower_joker"]),
   ["yaku", "progressive", "meta_yaku"]
 define_yaku nfnl, "Discarding Blue Jokers", ["discarding_blue_jokers_value", "Mủn"],
   status("nfnl_eligible", "discarding_blue_jokers_eligible")
   and our_turn and just_discarded
   and discarding_blue_jokers_value > 0
-  and not_match(["hand", "calls", "flowers", "jokers"], ~m"nojoker, (any_flower any_joker):1"),
+  and not_match(["hand", "calls", "flowers", "jokers"], ["any_flower_joker"]),
   ["yaku", "progressive", "meta_yaku"]
 define_yaku nfnl, "True No Flowers, No Leaves", [1, "Mủn"],
   status("nfnl_eligible")
   and match(["hand", "calls", "winning_tile"], ["win"])
-  and not_match(["hand", "calls", "winning_tile"], ["has_non_nfnl_tile"]),
+  and not_match(["hand", "calls", "winning_tile"], ["any_flower_joker"]),
   ["Small No Jokers Bonus", "No Jokers Bonus"]
 
 if defined("more_jokers") do
@@ -219,7 +221,7 @@ if defined("more_jokers") do
 end
 
 on before_win do
-  if status("nfnl_eligible") and not_match(["hand", "draw", "calls", "flowers", "jokers"], ["has_non_nfnl_tile"]) and match(["hand", "calls", "winning_tile"], ["win"]) do
+  if status("nfnl_eligible") and not_match(["hand", "draw", "calls", "flowers", "jokers"], ["any_flower_joker"]) and match(["hand", "calls", "winning_tile"], ["win"]) do
     # winning true NFNL while having discarded only 1-2 jokers gives you their value
     if jokers_discarded <= 2 do
       calculate_joker_values
