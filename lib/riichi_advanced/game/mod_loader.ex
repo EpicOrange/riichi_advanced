@@ -416,7 +416,7 @@ defmodule RiichiAdvanced.ModLoader do
   def is_jq_var?(key) when is_atom(key), do: Regex.match?(~r/^[a-zA-Z_][a-zA-Z0-9_]*$/, Atom.to_string(key))
   def is_jq_var?(_key), do: false
 
-  def convert_to_jq_defs(majs, defs) do
+  def convert_to_jq_defs(majs, defs \\ %Defs{}) do
     # first check that it's not actually json
     case Jason.decode(majs) do
       {:ok, json}    -> {". * " <> Jason.encode!(json), defs} # just merge the json (reencoding to ensure it's safe)
@@ -439,7 +439,7 @@ defmodule RiichiAdvanced.ModLoader do
   end
 
   def convert_to_jq(majs) do
-    {jq, _defs} = convert_to_jq_defs(majs, %Defs{})
+    {jq, _defs} = convert_to_jq_defs(majs)
     jq
   end
 

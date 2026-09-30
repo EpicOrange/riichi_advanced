@@ -409,8 +409,12 @@ defmodule RiichiAdvanced.GameState do
         ruleset_json = if state.config != nil do
           try do
             ruleset_json = ModLoader.strip_comments(ruleset_json)
-            query = ModLoader.convert_to_jq(ModLoader.strip_comments(state.config))
-            JQ.query_string_with_string!(ruleset_json, query)
+            {query, defs} = ModLoader.convert_to_jq_defs(ModLoader.strip_comments(state.config))
+            ModState.extract_json(%ModState{
+              ruleset_json: ruleset_json,
+              ruleset_jq: [{"config", query}],
+              mods: Enum.reverse(defs.post_mods) ++ Enum.reverse(defs.mods)
+            })
           rescue
             err ->
               IO.puts("Failed to load config:\n#{state.config}\nError was #{inspect(err)}")
