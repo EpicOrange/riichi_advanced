@@ -1,6 +1,6 @@
 default list, "yaku"
 default name, "Iipin Mouyue"
-default value, 4 # ignored if is_mangan is true
+default value, 5 # ignored if is_mangan is true
 default is_mangan, true
 
 if !is_mangan do
