@@ -544,11 +544,11 @@ defmodule RiichiAdvancedWeb.GameLive do
         GenServer.cast(messages_init.messages_state, {:add_message, [
           if socket.assigns.state.mods != nil and not Enum.empty?(socket.assigns.state.mods) do
             %{
-              text: "Entered a %{ruleset} game, room code %{room_code} with mods %{mods}",
+              text: "Entered a %{ruleset} game (with %{mods} mods), room code %{room_code}",
               vars: %{
                 ruleset: {:text, socket.assigns.ruleset, %{bold: true}},
+                mods: {:text, Integer.to_string(length(socket.assigns.state.mods)), %{bold: true}},
                 room_code: {:text, socket.assigns.room_code, %{bold: true}},
-                mods: {:text, Enum.map_join(socket.assigns.state.mods, ", ", &ModLoader.get_mod_name/1), %{bold: true}}
               }
             }
           else
