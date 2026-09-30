@@ -119,6 +119,7 @@ defmodule RiichiAdvancedWeb.GameLive do
   alias RiichiAdvanced.GameState.Rules
   alias RiichiAdvanced.Match
   alias RiichiAdvanced.ModLoader
+  alias RiichiAdvanced.ModLoader.ModState
   alias RiichiAdvanced.Utils
   alias RiichiAdvancedWeb.GameLive.InteractionState
   alias RiichiAdvancedWeb.GameLive.Tutorial
@@ -168,8 +169,22 @@ defmodule RiichiAdvancedWeb.GameLive do
           {:ok, last_config} = RiichiAdvanced.Cache.get({:cache_configs, socket.assigns.ruleset, socket.assigns.room_code}, nil)
           {last_mods, last_config}
         %{sequence: sequence} ->
-          # fetch tutorial's mods/configs instead
-          mods = Map.get(sequence, "mods", [])
+          # first load default mods
+          {:ok, rules_ref} = ModState.load_ruleset(socket.assigns.ruleset)
+          |> ModState.extract_json()
+          |> Rules.load_rules(socket.assigns.ruleset)
+          default_mods = Rules.get(rules_ref, "default_mods", [])
+          # then add or remove mods as specified in the tutorial sequence
+          added_mods = Map.get(sequence, "mods", [])
+          removed_mods = Map.get(sequence, "removed_mods", [])
+          |> MapSet.new(fn
+            %{"name" => name} -> name
+            name -> name
+          end)
+          mods = Enum.reject(default_mods ++ added_mods, fn
+            %{"name" => name} -> name in removed_mods
+            name -> name in removed_mods
+          end)
           |> Enum.map(&case &1 do
             %{"name" => name, "config" => config} -> %{name: name, config: config}
             mod -> mod
