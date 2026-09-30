@@ -316,7 +316,7 @@ defmodule RiichiAdvanced.GameState.Scoring do
           push_message(state, player_prefix(state, hanada_kirame_seat) ++ [%{text: "stays at zero points, and receives 8000 points from first place (Hanada Kirame)"}])
           scores = Enum.map(state.players, fn {seat, player} -> {seat, player.score + delta_scores[seat]} end)
           {first_seat, _} = Enum.max_by(scores, fn {_seat, score} -> score end)
-          state = update_player(state, hanada_kirame_seat, fn player -> %{ player | status: player.status ++ ["hanada-kirame_exhausted"] } end)
+          state = update_player(state, hanada_kirame_seat, fn player -> %{ player | status: MapSet.put(player.status, "hanada-kirame_exhausted") } end)
           delta_scores = delta_scores
           |> Map.put(hanada_kirame_seat, 8000 - hanada_kirame.score)
           |> Map.update!(first_seat, & &1 - 8000)
