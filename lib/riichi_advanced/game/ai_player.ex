@@ -129,16 +129,15 @@ defmodule RiichiAdvanced.AIPlayer do
 
     # rank playables by how often they appear in closest hands
     # we will discard the tile that appears the least, weighting early appearences
-    # with a larger multiplier 1.2^n where the last hand is *1.2, second last is *1.44, etc
+    # with a larger multiplier 1.5^n where the last hand is *1.5, second last is *2.25, etc
     usages = for %{pairing_r: pairing_r} <- closest_american_hands, reduce: Map.new(playables, fn {_tile, i} -> {i, 0} end) do
       usages -> usages
-        |> Map.new(fn {k, v} -> {k, v * 1.2} end)
+        |> Map.new(fn {k, v} -> {k, v * 1.5} end)
         |> Map.merge(Map.keys(pairing_r) |> Enum.frequencies(), fn _k, v1, v2 -> v1 + v2 end)
     end
-    # jokers are weighted double
-    # this is so if the top move is a jokerless hand we might consider dropping jokers
+    # jokers are weighted double so if the top move is a jokerless hand we might consider dropping jokers
     |> Map.new(fn {i, n} -> {i, if i in joker_indices do n * 2 else n end} end)
-    # |> IO.inspect(label: "usages")
+    # |> IO.inspect(label: "usages for #{state.seat}")
 
     # closest_american_hands
     # |> Enum.map(&{&1.am_match_definition, &1.pairing_r})
@@ -314,13 +313,18 @@ defmodule RiichiAdvanced.AIPlayer do
           {{tile, index}, shanten} = cond do
             state.tsumogiri_bot -> {Enum.at(playables, -1), :infinity} # tsumogiri
             state.ruleset == "american" ->
-              case choose_american_discard(state, playables, closest_american_hands) do
-                {nil, _} ->
-                  if Debug.debug_ai() do
-                    IO.puts(" >> #{state.seat}: Couldn't find a tile to discard! Doing tsumogiri instead")
-                  end
-                  {Enum.at(playables, -1), :infinity} # tsumogiri, or last playable tile
-                t -> t
+              if Enum.empty?(params.closest_american_hands) do
+                :timer.apply_after(100, GenServer, :cast, [state.game_state, :notify_ai])
+                {{nil, -1}, :infinity}
+              else
+                case choose_american_discard(state, playables, closest_american_hands) do
+                  {nil, _} ->
+                    if Debug.debug_ai() do
+                      IO.puts(" >> #{state.seat}: Couldn't find a tile to discard! Doing tsumogiri instead")
+                    end
+                    {Enum.at(playables, -1), :infinity} # tsumogiri, or last playable tile
+                  t -> t
+                end
               end
             true ->
               case choose_discard(state, playables, visible_tiles) do
@@ -345,25 +349,26 @@ defmodule RiichiAdvanced.AIPlayer do
               IO.puts(" >> #{state.seat}: Took #{System.os_time(:millisecond) - t} ms to come to a decision")
             end
           end
-
-          # if we're about to discard a joker/flower, call it instead
-          tile = Utils.strip_attrs(tile)
-          button_name = cond do
-            "flower" in player.buttons -> "flower"
-            "joker" in player.buttons -> "joker"
-            true -> nil
-          end
-          choice = if button_name != nil do
-            {:call, choices} = player.button_choices[button_name]
-            Enum.find(choices[nil], fn [choice] -> Utils.same_tile(choice, tile) end)
-          else nil end
-          state = if choice != nil do
-            GenServer.cast(state.game_state, {:press_button, state.seat, button_name})
-            Map.put(state, :preselected_flower, tile)
-          else
-            GenServer.cast(state.game_state, {:play_tile, state.seat, index})
-            state
-          end
+          state = if tile != nil do
+            # if we're about to discard a joker/flower, call it instead
+            tile = Utils.strip_attrs(tile)
+            button_name = cond do
+              "flower" in player.buttons -> "flower"
+              "joker" in player.buttons -> "joker"
+              true -> nil
+            end
+            choice = if button_name != nil do
+              {:call, choices} = player.button_choices[button_name]
+              Enum.find(choices[nil], fn [choice] -> Utils.same_tile(choice, tile) end)
+            else nil end
+            state = if choice != nil do
+              GenServer.cast(state.game_state, {:press_button, state.seat, button_name})
+              Map.put(state, :preselected_flower, tile)
+            else
+              GenServer.cast(state.game_state, {:play_tile, state.seat, index})
+              state
+            end
+          else state end
           {:noreply, state}
         else
           if Debug.debug_ai() do
