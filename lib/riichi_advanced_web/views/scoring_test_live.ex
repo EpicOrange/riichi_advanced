@@ -386,6 +386,11 @@ defmodule RiichiAdvancedWeb.ScoringTestLive do
     {:noreply, socket}
   end
 
+  # how many hand tiles should a length n call represent?
+  def call_repr_size(1), do: 0
+  def call_repr_size(2), do: 2
+  def call_repr_size(_), do: 3
+
   # for hand selection component
   def handle_event("add_hand_tile", %{"tile" => serialized_tile}, socket) do
     [tile | attrs] = String.split(serialized_tile, "#")
@@ -423,7 +428,7 @@ defmodule RiichiAdvancedWeb.ScoringTestLive do
         [called_tile | call_choice]
       else new_call_tiles end
       new_call = {socket.assigns.selected_call_button, new_call_tiles}
-      hand_length = socket.assigns.hand_length - min(3, call_length)
+      hand_length = socket.assigns.hand_length - call_repr_size(call_length)
       hand = socket.assigns.hand -- call_tiles
       calls = [new_call | socket.assigns.calls]
       hand_str = if length(hand) > hand_length do
@@ -461,8 +466,8 @@ defmodule RiichiAdvancedWeb.ScoringTestLive do
     {ix, _} = Integer.parse(index)
     {_name, call} = Enum.at(socket.assigns.calls, ix, {nil, []})
     call = Utils.remove_attr(call, ["_sideways", "_facedown"])
-    call_size = length(call)
-    hand_length = socket.assigns.hand_length + min(3, call_size)
+    call_size = call_repr_size(length(call))
+    hand_length = socket.assigns.hand_length + call_size
     hand = case Enum.split(socket.assigns.hand, hand_length - call_size) do
       {hand, []} -> hand ++ call
       {hand, [winning_tile | _]} -> Enum.take(hand, hand_length) ++ call ++ [winning_tile]
@@ -551,7 +556,7 @@ defmodule RiichiAdvancedWeb.ScoringTestLive do
         hand_str = Map.get(assigns, "hand_str")
         {hand, calls, winning_tile} = Utils.deserialize_hand(hand_str, socket.assigns.rules_ref)
         hand_length = min(17, Rules.get(socket.assigns.rules_ref, "starting_tiles", 13))
-        hand_length = hand_length - Enum.sum(Enum.map(calls, &min(3, length(elem(&1, 1)))))
+        hand_length = hand_length - Enum.sum(Enum.map(calls, &call_repr_size(length(elem(&1, 1)))))
         hand = Enum.take(hand, hand_length) ++ if winning_tile != nil do [winning_tile] else [] end
         socket = socket
         |> assign(:hand, hand)
