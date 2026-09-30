@@ -12,15 +12,15 @@ defmodule RiichiAdvanced.TestUtils do
   # @suppress_io true
   @suppress_io false
 
-  def initialize_test_state(ruleset, mods, excluded_mods \\ [], config \\ "{}")
-  def initialize_test_state(_ruleset, nil, _excluded_mods, _config) do
+  def initialize_test_state(ruleset, mods, excluded_mods \\ [], config \\ "{}", init_actions \\ [])
+  def initialize_test_state(_ruleset, nil, _excluded_mods, _config, _init_actions) do
     IO.puts("initialize_test_state: You passed in `nil` instead of a mod list! Check if you are using an undefined module attribute like @zan_mods.")
   end
-  def initialize_test_state(ruleset, mods, excluded_mods, config) do
+  def initialize_test_state(ruleset, mods, excluded_mods, config, init_actions) do
     rules_ref = Rules.load_default_ruleset(ruleset, mods, excluded_mods, config)
     # IO.inspect(Rules.get(rules_ref, "score_calculation"), limit: :infinity)
     room_code = Ecto.UUID.generate()
-    args = [room_code: room_code, ruleset: ruleset, mods: mods, config: config, rules_ref: rules_ref, name: Utils.via_registry("game", ruleset, room_code)]
+    args = [room_code: room_code, ruleset: ruleset, mods: mods, config: config, init_actions: init_actions, rules_ref: rules_ref, name: Utils.via_registry("game", ruleset, room_code)]
     game_spec = Supervisor.child_spec(%{
       id: {RiichiAdvanced.GameSupervisor, ruleset, room_code},
       start: {RiichiAdvanced.GameSupervisor, :start_link, [args]}
@@ -39,9 +39,11 @@ defmodule RiichiAdvanced.TestUtils do
     :ets.give_away(rules_ref, game_state, :no_extra_info)
 
     # activate game
-    GenServer.call(game_state, {:put_log_loading_mode, true})
-    GenServer.call(game_state, {:put_log_seeking_mode, true})
-    GenServer.cast(game_state, :initialize_test)
+    if Enum.empty?(init_actions) do
+      GenServer.call(game_state, {:put_log_loading_mode, true}) # ai should not act
+      GenServer.call(game_state, {:put_log_seeking_mode, true}) # don't do pauses and such
+      GenServer.cast(game_state, :initialize_test)
+    end
     %LogControl.LogControl{
       ruleset: ruleset,
       room_code: room_code,
@@ -73,6 +75,8 @@ defmodule RiichiAdvanced.TestUtils do
         "discard"         -> LogControl.send_discard(test_state, true, event)
         "buttons_pressed" -> LogControl.send_button_press(test_state, true, event)
         "mark"            -> LogControl.send_mark(test_state, true, event)
+        "unmark"          -> LogControl.send_unmark(test_state, true, event)
+        "confirm_mark"    -> LogControl.send_confirm_mark(test_state, true, event)
         _                 -> test_state
       end
     end

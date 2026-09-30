@@ -41,14 +41,14 @@
       ["add_object", "text", {"size": 0.4, "width": 5, "x": 9.125, "y": 7.5,
         "text": "Declared flowers are worth 1 Fan, but do not count towards the required 8 Fan. Try declaring a flower now.\n(Click to continue)"
       }],
-      ["add_object", "focus", {"width": 1.5, "x": 12.125, "y": "buttons"}],
+      ["add_object", "focus", {"width": 2.5, "x": 12.625, "y": "buttons"}],
       ["force_event", ["press_button", "west", "start_flower"]],
       ["clear_objects"],
       ["sleep", 500],
       ["add_object", "text", {"size": 0.4, "width": 5, "x": 9.125, "y": 7.5,
-        "text": "Now that you are out of flowers, press Pass to pass the turn."
+        "text": "Now that you are out of flowers, press No Flowers to pass the turn. (IRL you would say \"Pass\")."
       }],
-      ["add_object", "focus", {"width": 1.5, "x": 14, "y": "buttons"}],
+      ["add_object", "focus", {"width": 2.25, "x": 13, "y": "buttons"}],
       ["force_event", ["press_button", "west", "start_no_flower"]],
       ["await_event", ["press_button", "north", "start_no_flower"]],
       ["clear_objects"],
@@ -69,7 +69,7 @@
       ["await_event", ["play_tile", "south", 13]],
       ["sleep", 500],
       ["add_object", "text", {"size": 0.4, "width": 5, "x": 9.125, "y": 7.5,
-        "text": "The player to our left has discarded a 6 of bamboo, which we'll need for Mixed Shifted, so go ahead and call it! In MCR, there is very little downside to calling tiles."
+        "text": "The player to our left has discarded a 6 of bamboo, which we'll need for Mixed Shifted, so go ahead and call it! In MCR, there are very few downsides to calling tiles."
       }],
       ["add_object", "focus", {"width": 1.25, "x": 12.25, "y": "buttons"}],
       ["force_event", ["press_button", "west", "chii"]],
@@ -86,7 +86,7 @@
       ["add_object", "text", {"size": 0.4, "width": 5, "x": 9.125, "y": 7.5,
         "text": "You drew a flower! When you draw a flower in the middle of a game, you can either declare them (like at the start of the round) or discard them (to avoid dealing a dangerous tile).\n(Click to continue)"
       }],
-      ["add_object", "focus", {"width": 0.75, "hand_index": 10.5}],
+      ["add_object", "focus", {"width": 0.75, "hand_index": 10.375}],
       ["await_click"],
       ["clear_objects"],
       ["add_object", "text", {"size": 0.4, "width": 5, "x": 9.125, "y": 7.5,

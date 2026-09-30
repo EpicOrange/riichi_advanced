@@ -616,7 +616,7 @@ defmodule RiichiAdvanced.Constants do
       {"space_basics", "Intro to space mahjong", :east}
     ],
     "cosmic" => [
-      {"cosmic_basics", "Intro to cosmic mahjong", :west}
+      {"cosmic_basics", "Intro to cosmic riichi", :west}
     ],
     "galaxy" => [
       {"galaxy_basics", "Intro to galaxy mahjong", :west},

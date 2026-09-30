@@ -28,16 +28,16 @@ defmodule RiichiAdvancedWeb.TutorialOverlayComponent do
         |> assign(:objects, [])
         |> assign(:focuses, [])
       "force_event" ->
-        events = Enum.at(opts, 0, %{})
+        events = Enum.at(opts, 0, [])
         events = if not is_list(Enum.at(events, 0)) do [events] else events end
         next_scenes = List.wrap(Enum.at(opts, 1, List.duplicate(:resume, length(events))))
-        socket.assigns.force_event.(next_scenes, events, true)
+        socket.assigns.force_event.(next_scenes, events, true) # blocking
         socket |> assign(:deferred_actions, actions)
       "await_event" ->
-        events = Enum.at(opts, 0, %{})
+        events = Enum.at(opts, 0, [])
         events = if not is_list(Enum.at(events, 0)) do [events] else events end
         next_scenes = List.wrap(Enum.at(opts, 1, List.duplicate(:resume, length(events))))
-        socket.assigns.force_event.(next_scenes, events, false)
+        socket.assigns.force_event.(next_scenes, events, false) # not blocking
         socket |> assign(:deferred_actions, actions)
       "await_click" ->
         next_scene = Enum.at(opts, 0, :resume)

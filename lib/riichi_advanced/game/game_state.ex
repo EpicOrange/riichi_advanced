@@ -1275,6 +1275,31 @@ defmodule RiichiAdvanced.GameState do
     end
   end
 
+  def check_forced_events(state, event, callback) do
+    if not state.block_events or state.forced_events == nil or event in state.forced_events do
+      finalize = fn state ->
+        if state.forced_events != nil and event in state.forced_events do
+          state
+          |> Map.put(:block_events, true)
+          |> Map.put(:forced_events, [])
+          |> Map.put(:last_event, event)
+        else
+          if Debug.debug_tutorial() do
+            IO.puts("Allowed #{inspect(event)}; waiting for #{inspect(state.forced_events)}")
+          end
+          state
+        end
+      end
+      callback.(state, finalize)
+      |> broadcast_state_change()
+    else
+      if Debug.debug_tutorial() do
+        IO.puts("Blocked #{inspect(event)}; waiting for #{inspect(state.forced_events)}")
+      end
+      state
+    end
+  end
+
   def handle_call({:link_player_socket, session_id, seat, spectator, nickname}, {from_pid, _}, state) do
     # make it call :delete_player if the pid goes down
     identifier = if spectator do session_id else seat end
@@ -1435,6 +1460,7 @@ defmodule RiichiAdvanced.GameState do
     notify_ai(state)
     {:reply, :ok, state}
   end
+  def handle_call(:get_forced_events, _from, state), do: {:reply, state.forced_events, state}
 
   def handle_cast({:initialize_game, log}, state) do
     # run before_start actions
@@ -1478,7 +1504,7 @@ defmodule RiichiAdvanced.GameState do
 
   def handle_cast({:fill_empty_seats_with_ai, disconnected?}, state) do
     tsumogiri_bot = Rules.get(state.rules_ref, "tsumogiri_bots", Debug.debug_tsumogiri_bots())
-    state = if not state.log_seeking_mode do
+    state = if not state.log_seeking_mode or state.forced_events != nil do
       state = for dir <- state.available_seats, Map.get(state, dir) == nil, disconnected? or not Map.has_key?(state.reserved_seats, dir), reduce: state do
         state ->
           {:ok, ai_pid} = DynamicSupervisor.start_child(state.ai_supervisor, %{
@@ -1630,89 +1656,42 @@ defmodule RiichiAdvanced.GameState do
   end
 
   def handle_cast({:play_tile, seat, index}, state) do
-    event = ["play_tile", Atom.to_string(seat), index]
-    if not state.block_events or state.forced_events == nil or event in state.forced_events do
+    state = check_forced_events(state, ["play_tile", Atom.to_string(seat), index], fn state, finalize ->
       tile = Enum.at(state.players[seat].hand ++ state.players[seat].draw, index)
       can_discard = Actions.can_discard(state, seat)
       playable = is_playable?(state, seat, tile)
       # if not can_discard or not playable do
       #   IO.puts("#{seat} tried to play an unplayable tile: #{inspect{tile}}")
       # end
-      state = if can_discard and playable and (state.play_tile_debounce[seat] == false or state.log_loading_mode) do
+      if can_discard and playable and (state.play_tile_debounce[seat] == false or state.log_loading_mode) do
         state = Actions.temp_disable_play_tile(state, seat)
         # assume we're skipping our button choices
         state = update_player(state, seat, &%{ &1 | buttons: [], button_choices: %{}, call_buttons: %{}, choice: nil })
         actions = [["play_tile", tile, index], ["check_discard_passed"], ["advance_turn"]]
-        state = Actions.submit_actions(state, seat, "play_tile", actions)
-        state = if state.forced_events != nil and event in state.forced_events do
-          state
-          |> Map.put(:block_events, true)
-          |> Map.put(:forced_events, [])
-          |> Map.put(:last_event, event)
-          |> broadcast_state_change()
-        else
-          if Debug.debug_tutorial() do
-            IO.inspect("Allowed #{inspect(event)}; waiting for #{inspect(state.forced_events)}")
-          end
-          state
-        end
-        state
+        Actions.submit_actions(state, seat, "play_tile", actions)
+        |> finalize.()
       else state end
-      {:noreply, state}
-    else
-      if Debug.debug_tutorial() do
-        IO.inspect("Blocked #{inspect(event)}; waiting for #{inspect(state.forced_events)}")
-      end
-      {:noreply, state}
-    end
+    end)
+    {:noreply, state}
   end
 
   def handle_cast({:press_button, seat, button_name}, state) do
-    event = ["press_button", Atom.to_string(seat), button_name]
-    if not state.block_events or state.forced_events == nil or event in state.forced_events do
-      state = Buttons.press_button(state, seat, button_name)
-      state = if state.forced_events != nil and event in state.forced_events do
-        if Debug.debug_tutorial() do
-          IO.inspect("Allowed #{inspect(event)}; waiting for #{inspect(state.forced_events)}")
-        end
-        state
-        |> Map.put(:block_events, true)
-        |> Map.put(:forced_events, [])
-        |> Map.put(:last_event, event)
-        |> broadcast_state_change()
+    state = check_forced_events(state, ["press_button", Atom.to_string(seat), button_name], fn state, finalize ->
+      if Enum.member?(state.players[seat].buttons, button_name) do
+        Buttons.press_button(state, seat, button_name)
+        |> finalize.()
       else state end
-      {:noreply, state}
-    else
-      if Debug.debug_tutorial() do
-        IO.inspect("Blocked #{inspect(event)}; waiting for #{inspect(state.forced_events)}")
-      end
-      {:noreply, state}
-    end
+    end)
+    {:noreply, state}
   end
 
   def handle_cast({:press_call_button, seat, call_choice, called_tile}, state) do
     event = ["press_call_button", Atom.to_string(seat), Enum.map(call_choice, &Utils.tile_to_string/1), Utils.tile_to_string(called_tile)]
-    if not state.block_events or state.forced_events == nil or event in state.forced_events do
-      state = Buttons.press_call_button(state, seat, call_choice, called_tile)
-      state = if state.forced_events != nil and event in state.forced_events do
-        state
-        |> Map.put(:block_events, true)
-        |> Map.put(:forced_events, [])
-        |> Map.put(:last_event, event)
-        |> broadcast_state_change()
-      else
-        if Debug.debug_tutorial() do
-          IO.inspect("Allowed #{inspect(event)}; waiting for #{inspect(state.forced_events)}")
-        end
-        state
-      end
-      {:noreply, state}
-    else
-      if Debug.debug_tutorial() do
-        IO.inspect("Blocked #{inspect(event)}; waiting for #{inspect(state.forced_events)}")
-      end
-      {:noreply, state}
-    end
+    state = check_forced_events(state, event, fn state, finalize ->
+      Buttons.press_call_button(state, seat, call_choice, called_tile)
+      |> finalize.()
+    end)
+    {:noreply, state}
   end
   
   def handle_cast({:press_first_call_button, seat, button_name}, state) do
@@ -1755,32 +1734,14 @@ defmodule RiichiAdvanced.GameState do
 
   def handle_cast({:cancel_call_buttons, seat}, state) do
     event = ["press_call_button", Atom.to_string(seat), "cancel"]
-    if state.forced_events == nil or event in state.forced_events do
+    state = check_forced_events(state, event, fn state, finalize ->
+
       # go back to button clicking phase
       state = update_player(state, seat, fn player -> %{ player | buttons: Buttons.to_buttons(state, seat, player.button_choices), call_buttons: %{}, deferred_context_actions: [], choice: nil } end)
-
-      # tutorial stuff
-      state = if state.forced_events != nil and event in state.forced_events do
-        state
-        |> Map.put(:block_events, true)
-        |> Map.put(:forced_events, [])
-        |> Map.put(:last_event, event)
-      else
-        if Debug.debug_tutorial() do
-          IO.inspect("Allowed #{inspect(event)}; waiting for #{inspect(state.forced_events)}")
-        end
-        state
-      end
-
       notify_ai(state)
-      state = broadcast_state_change(state)
-      {:noreply, state}
-    else
-      if Debug.debug_tutorial() do
-        IO.inspect("Blocked #{inspect(event)}; waiting for #{inspect(state.forced_events)}")
-      end
-      {:noreply, state}
-    end
+      state |> finalize.()
+    end)
+    {:noreply, state}
   end
 
   def handle_cast(:notify_ai, state) do
@@ -2035,68 +1996,84 @@ defmodule RiichiAdvanced.GameState do
   end
 
   def handle_cast({:mark_tile, marking_player, seat, index, source}, state) do
-    state = Marking.mark_tile(state, marking_player, seat, index, source)
-    state = Marking.adjudicate_marking(state)
-    if Marking.needs_marking?(state, marking_player) do
-      notify_ai_marking(state, marking_player)
-    end
-    state = broadcast_state_change(state)
+    event = ["mark", Atom.to_string(marking_player), Atom.to_string(seat), index, Atom.to_string(source)]
+    state = check_forced_events(state, event, fn state, finalize ->
+      if Marking.needs_marking?(state, marking_player) do
+        state = Marking.mark_tile(state, marking_player, seat, index, source)
+        state = Marking.adjudicate_marking(state)
+        if Marking.needs_marking?(state, marking_player) do
+          notify_ai_marking(state, marking_player)
+        end
+        state |> finalize.()
+      else state end
+    end)
     {:noreply, state}
   end
 
   def handle_cast({:unmark_tile, marking_player, seat, index, source}, state) do
-    state = Marking.unmark_tile(state, marking_player, seat, index, source)
-    notify_ai_marking(state, marking_player)
-    state = broadcast_state_change(state)
+    event = ["unmark", Atom.to_string(marking_player), Atom.to_string(seat), Atom.to_string(source), index]
+    state = check_forced_events(state, event, fn state, finalize ->
+      state = Marking.unmark_tile(state, marking_player, seat, index, source)
+      notify_ai_marking(state, marking_player)
+      state |> finalize.()
+    end)
     {:noreply, state}
   end
 
   def handle_cast({:confirm_marked_objects, marking_player}, state) do
-    state = Marking.confirm_marked_objects(state, marking_player)
-    state = Marking.adjudicate_marking(state)
-    state = broadcast_state_change(state)
+    event = ["confirm_mark", Atom.to_string(marking_player)]
+    state = check_forced_events(state, event, fn state, finalize ->
+      Marking.confirm_marked_objects(state, marking_player)
+      |> Marking.adjudicate_marking()
+      |> finalize.()
+    end)
     {:noreply, state}
   end
 
   def handle_cast({:clear_marked_objects, marking_player}, state) do
-    state = Marking.clear_marked_objects(state, marking_player)
-    notify_ai_marking(state, marking_player)
-    state = broadcast_state_change(state)
+    event = ["clear_mark", Atom.to_string(marking_player)]
+    state = check_forced_events(state, event, fn state, finalize ->
+      state = Marking.clear_marked_objects(state, marking_player)
+      notify_ai_marking(state, marking_player)
+      state |> finalize.()
+    end)
     {:noreply, state}
   end
 
   def handle_cast({:reset_marking, seat}, state) do
-    # run cancel actions
-    state = case Marking.get_mark_infos(state.marking[seat], :cancel_actions) do
-      [{:cancel_actions, cancel_actions}] -> 
-        if Debug.debug_actions() do
-          IO.puts("Running cancel actions for #{seat}: #{inspect(cancel_actions)}")
-        end
-        Actions.run_actions(state, cancel_actions, %{seat: seat})
-      _ -> state
-    end
+    event = ["cancel_mark", Atom.to_string(seat)]
+    state = check_forced_events(state, event, fn state, finalize ->
+      # run cancel actions
+      state = case Marking.get_mark_infos(state.marking[seat], :cancel_actions) do
+        [{:cancel_actions, cancel_actions}] -> 
+          if Debug.debug_actions() do
+            IO.puts("Running cancel actions for #{seat}: #{inspect(cancel_actions)}")
+          end
+          Actions.run_actions(state, cancel_actions, %{seat: seat})
+        _ -> state
+      end
 
-    state = Marking.reset_marking(state, seat)
+      state = Marking.reset_marking(state, seat)
 
-    # go back to button clicking phase
-    state = Buttons.recalculate_buttons(state)
-    state = update_player(state, seat, fn player -> %{ player | deferred_context_actions: [] } end)
-    notify_ai(state)
-
-    state = broadcast_state_change(state)
+      # go back to button clicking phase
+      state = Buttons.recalculate_buttons(state)
+      state = update_player(state, seat, fn player -> %{ player | deferred_context_actions: [] } end)
+      notify_ai(state)
+      state |> finalize.()
+    end)
     {:noreply, state}
   end
 
-  # for log replays only
-  def handle_cast({:put_marking, seat, marking}, state) do
-    state = put_in(state.marking[seat], Log.decode_marking(marking))
-    state = Marking.adjudicate_marking(state)
-    if Marking.needs_marking?(state, seat) do
-      notify_ai_marking(state, seat)
-    end
-    state = broadcast_state_change(state)
-    {:noreply, state}
-  end
+  # # for log replays only
+  # def handle_cast({:put_marking, seat, marking}, state) do
+  #   state = put_in(state.marking[seat], Log.decode_marking(marking))
+  #   state = Marking.adjudicate_marking(state)
+  #   if Marking.needs_marking?(state, seat) do
+  #     notify_ai_marking(state, seat)
+  #   end
+  #   state = broadcast_state_change(state)
+  #   {:noreply, state}
+  # end
 
   def handle_cast({:declare_yaku, seat, yakus}, state) do
     state = update_player(state, seat, &%{ &1 | declared_yaku: yakus })

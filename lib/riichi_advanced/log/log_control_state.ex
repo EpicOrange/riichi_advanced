@@ -118,28 +118,45 @@ defmodule RiichiAdvanced.LogControlState do
     IO.inspect({"marking", state.game_state.marking})
   end
 
-  def skip_buttons(state) do
-    for {seat, player} <- state.game_state.players, "skip" in player.buttons do
+  def skip_buttons(state, except_this_seat \\ nil) do
+    for {seat, player} <- state.game_state.players, seat != except_this_seat, "skip" in player.buttons do
       GenServer.cast(state.game_state_pid, {:press_button, seat, "skip"})
+    end
+  end
+
+  defp figure_out_hand_tile_ix(_state, _seat, nil, nil, _tsumogiri?), do: {nil, nil}
+  defp figure_out_hand_tile_ix(state, seat, nil, ix, _tsumogiri?) do
+    hand = state.game_state.players[seat].hand
+    draw = state.game_state.players[seat].draw
+    hand_length = length(hand)
+    tile = if ix < hand_length do Enum.at(hand, ix) else Enum.at(draw, ix - hand_length) end
+    {tile, ix}
+  end
+  defp figure_out_hand_tile_ix(state, seat, tile, nil, tsumogiri?) do
+    hand = state.game_state.players[seat].hand
+    draw = state.game_state.players[seat].draw
+    tile = tile |> Utils.to_tile()
+    if tsumogiri? do
+      ret = case Enum.find_index(draw, &Utils.same_tile(&1, tile)) do
+        nil -> Enum.find_index(hand, &Utils.same_tile(&1, tile))
+        ix  -> length(hand) + ix
+      end
+      {tile, ret}
+    else
+      {tile, Enum.find_index(hand, &Utils.same_tile(&1, tile))}
     end
   end
 
   def send_discard(state, skip_anim, discard_event) do
     state = Map.put(state, :game_state, GenServer.call(state.game_state_pid, :get_state, 300000))
     seat = Log.from_seat(discard_event["player"])
-    hand = state.game_state.players[seat].hand
-    draw = state.game_state.players[seat].draw
-    tile = discard_event["tile"] |> Utils.to_tile()
-    ix = if discard_event["tsumogiri"] do
-      ret = Enum.find_index(draw, &Utils.same_tile(&1, tile))
-      if ret != nil do length(hand) + ret else nil end
-    else
-      Enum.find_index(hand, &Utils.same_tile(&1, tile))
-    end
+    {tile, ix} = {Map.get(discard_event, "tile", nil), Map.get(discard_event, "ix", nil)}
+    {tile, ix} = figure_out_hand_tile_ix(state, seat, tile, ix, discard_event["tsumogiri"])
+
     # check that this tile is playable
     is_playable = ix in state.game_state.players[seat].cache.playable_indices
     {state, ix} = if not is_playable or state.game_state.turn != seat do
-      # send button press "skip" events to all players with buttons and try again
+      # send button press "skip" events to all players with buttons (except current turn player) and try again
       skip_buttons(state)
       state = Map.put(state, :game_state, GenServer.call(state.game_state_pid, :get_state, 300000))
       hand = state.game_state.players[seat].hand
@@ -184,7 +201,7 @@ defmodule RiichiAdvanced.LogControlState do
     end
   end
 
-  def send_button_press(state, skip_anim, button_press_event) do
+  def send_button_press(state, skip_anim, button_press_event, quiet \\ false) do
     state = Map.put(state, :game_state, GenServer.call(state.game_state_pid, :get_state, 300000))
     prev_mode = GenServer.call(state.game_state_pid, {:put_log_loading_mode, skip_anim})
 
@@ -201,7 +218,7 @@ defmodule RiichiAdvanced.LogControlState do
               Map.put(state, :game_state, GenServer.call(state.game_state_pid, :get_state, 300000))
             else state end
         end
-        if button not in state.game_state.players[seat].buttons do
+        if not quiet and button not in state.game_state.players[seat].buttons do
           IO.puts("log warning: Tried to press nonexistent button #{button} for #{seat}")
           print_game_state(state)
         end
@@ -233,12 +250,69 @@ defmodule RiichiAdvanced.LogControlState do
   end
 
   def send_mark(state, skip_anim, mark_event) do
-    seat = Log.from_seat(mark_event["player"])
-    marking = mark_event["marking"]
+    marking_player = Log.from_seat(mark_event["player"])
+    source = String.to_existing_atom(mark_event["source"])
+    mark_seat = Log.from_seat(mark_event["seat"])
+    ix = mark_event["ix"]
+    ix = if ix == nil do
+      if source == :calls do
+        [call_name, call_tiles] = mark_event["call"] # ["pon", ["1p", "0j", "1p"]]
+        normalize = fn call -> call |> Enum.map(&Utils.to_tile/1) |> Utils.strip_attrs() |> Utils.sort_tiles() end
+        call_tiles = normalize.(call_tiles)
+        calls = state.game_state.players[mark_seat].calls
+        Enum.find_index(calls, fn {name, tiles} -> name == call_name && normalize.(tiles) == call_tiles end)
+      else
+        tile = mark_event["tile"] |> Utils.to_tile()
+        {_tile, ix} = figure_out_hand_tile_ix(state, mark_seat, tile, ix, true)
+        ix
+      end
+    else ix end
     state = Map.put(state, :game_state, GenServer.call(state.game_state_pid, :get_state, 300000))
     prev_mode = GenServer.call(state.game_state_pid, {:put_log_loading_mode, skip_anim})
 
-    GenServer.cast(state.game_state_pid, {:put_marking, seat, marking})
+    GenServer.cast(state.game_state_pid, {:mark_tile, marking_player, mark_seat, ix, source})
+
+    state = Map.put(state, :game_state, GenServer.call(state.game_state_pid, :get_state, 300000))
+    GenServer.cast(state.game_state_pid, :sort_hands)
+    GenServer.call(state.game_state_pid, {:put_log_loading_mode, prev_mode})
+    state
+  end
+
+  def send_unmark(state, skip_anim, mark_event) do
+    marking_player = Log.from_seat(mark_event["player"])
+    source = String.to_existing_atom(mark_event["source"])
+    mark_seat = Log.from_seat(mark_event["seat"])
+    ix = mark_event["ix"]
+    ix = if ix == nil do
+      if source == :calls do
+        [call_name, call_tiles] = mark_event["call"] # ["pon", ["1p", "0j", "1p"]]
+        normalize = fn call -> call |> Enum.map(&Utils.to_tile/1) |> Utils.strip_attrs() |> Utils.sort_tiles() end
+        call_tiles = normalize.(call_tiles)
+        calls = state.game_state.players[mark_seat].calls
+        Enum.find_index(calls, fn {name, tiles} -> name == call_name && normalize.(tiles) == call_tiles end)
+      else
+        tile = mark_event["tile"] |> Utils.to_tile()
+        {_tile, ix} = figure_out_hand_tile_ix(state, mark_seat, tile, ix, true)
+        ix
+      end
+    else ix end
+    state = Map.put(state, :game_state, GenServer.call(state.game_state_pid, :get_state, 300000))
+    prev_mode = GenServer.call(state.game_state_pid, {:put_log_loading_mode, skip_anim})
+
+    GenServer.cast(state.game_state_pid, {:unmark_tile, marking_player, mark_seat, ix, source})
+
+    state = Map.put(state, :game_state, GenServer.call(state.game_state_pid, :get_state, 300000))
+    GenServer.cast(state.game_state_pid, :sort_hands)
+    GenServer.call(state.game_state_pid, {:put_log_loading_mode, prev_mode})
+    state
+  end
+
+  def send_confirm_mark(state, skip_anim, confirm_mark_event) do
+    marking_player = Log.from_seat(confirm_mark_event["player"])
+    state = Map.put(state, :game_state, GenServer.call(state.game_state_pid, :get_state, 300000))
+    prev_mode = GenServer.call(state.game_state_pid, {:put_log_loading_mode, skip_anim})
+
+    GenServer.cast(state.game_state_pid, {:confirm_marked_objects, marking_player})
 
     state = Map.put(state, :game_state, GenServer.call(state.game_state_pid, :get_state, 300000))
     GenServer.cast(state.game_state_pid, :sort_hands)
@@ -260,6 +334,16 @@ defmodule RiichiAdvanced.LogControlState do
 
   def handle_call({:send_mark, skip_anim, mark_event}, _from, state) do
     state = send_mark(state, skip_anim, mark_event)
+    {:reply, state.game_state, state}
+  end
+
+  def handle_call({:send_unmark, skip_anim, mark_event}, _from, state) do
+    state = send_unmark(state, skip_anim, mark_event)
+    {:reply, state.game_state, state}
+  end
+
+  def handle_call({:send_confirm_mark, skip_anim, mark_event}, _from, state) do
+    state = send_confirm_mark(state, skip_anim, mark_event)
     {:reply, state.game_state, state}
   end
 

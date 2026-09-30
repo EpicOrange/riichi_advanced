@@ -292,7 +292,8 @@ defmodule RiichiAdvanced.GameState.Actions do
       update_player(state, prev_turn, &%{ &1 | deferred_context_actions: [] })
     else state end
 
-    # IO.puts("Changing turn from #{prev_turn} to #{seat}")
+    # IO.puts("Changing turn from #{prev_turn} to #{seat} (via_action: #{via_action})")
+    # IO.inspect(Process.info(self(), :current_stacktrace))
 
     # run before_turn_change, unless this turn change was triggered by an action
     state = if state.game_active and not via_action and prev_turn != nil and seat != prev_turn do
@@ -2333,7 +2334,6 @@ defmodule RiichiAdvanced.GameState.Actions do
           run_deferred_actions(state, seat)
         else state end
         state = if not Enum.empty?(state.marking[seat]) and Marking.is_done?(state, seat) do
-          state = Log.log(state, seat, :mark, %{marking: Log.encode_marking(state.marking[seat])})
           Marking.reset_marking(state, seat)
         else state end
         state
@@ -2360,6 +2360,8 @@ defmodule RiichiAdvanced.GameState.Actions do
   end
   defp adjudicate_actions(state) do
     lock = Mutex.await(state.mutex, __MODULE__)
+
+    # Enum.each(state.players, fn {seat, player} -> IO.inspect(player.deferred_context_actions, label: "#{seat} defers") end)
 
     if Debug.debug_actions() do
       IO.puts("\nAdjudicating actions! Choices: #{inspect(Map.new(state.players, fn {seat, player} -> {seat, player.choice} end))}")

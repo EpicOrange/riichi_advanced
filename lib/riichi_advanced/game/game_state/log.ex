@@ -18,7 +18,6 @@ end
 
 defmodule RiichiAdvanced.GameState.Log do
   alias RiichiAdvanced.GameState.Debug, as: Debug
-  alias RiichiAdvanced.GameState.Marking, as: Marking
   alias RiichiAdvanced.GameState.Rules, as: Rules
   alias RiichiAdvanced.Utils, as: Utils
 
@@ -135,48 +134,48 @@ defmodule RiichiAdvanced.GameState.Log do
   #   modify_last_button_press(state, fn event -> %{ event | params: Map.update!(event.params, :buttons, &List.replace_at(&1, to_seat(seat), nil)) } end, nil)
   # end
 
-  def encode_marking(marking) do
-    # [
-    #   done: true,
-    #   hand: %{
-    #     needed: 3,
-    #     restrictions: ["self"],
-    #     marked: [{:"9s", :east, 12}, {:"7s", :east, 11}, {:"2s", :east, 10}]
-    #   }
-    # ]
-    for {kw, val} <- marking do
-      if kw in Marking.special_keys() do
-        [Atom.to_string(kw), val]
-      else
-        val = Map.update!(val, :marked, &Enum.map(&1, fn {t, s, i} -> [t, Atom.to_string(s), i] end))
-        |> Map.new(fn {k, v} -> {Atom.to_string(k), v} end)
-        [Atom.to_string(kw), val]
-      end
-    end
-  end
+  # def encode_marking(marking) do
+  #   # [
+  #   #   done: true,
+  #   #   hand: %{
+  #   #     needed: 3,
+  #   #     restrictions: ["self"],
+  #   #     marked: [{:"9s", :east, 12}, {:"7s", :east, 11}, {:"2s", :east, 10}]
+  #   #   }
+  #   # ]
+  #   for {kw, val} <- marking do
+  #     if kw in Marking.special_keys() do
+  #       [Atom.to_string(kw), val]
+  #     else
+  #       val = Map.update!(val, :marked, &Enum.map(&1, fn {t, s, i} -> [t, Atom.to_string(s), i] end))
+  #       |> Map.new(fn {k, v} -> {Atom.to_string(k), v} end)
+  #       [Atom.to_string(kw), val]
+  #     end
+  #   end
+  # end
 
-  def decode_marking(marking) do
-    # [
-    #   ["done", true],
-    #   ["hand", %{
-    #     "marked" => [["9s", "east", 12], ["7s", "east", 11], ["5s", "east", 10]],
-    #     "needed" => 3,
-    #     "restrictions" => ["self"]
-    #   }]
-    # ]
-    for [kw, val] <- marking do
-      if kw in Enum.map(Marking.special_keys(), &Atom.to_string/1) do
-        {String.to_existing_atom(kw), val}
-      else
-        val = Map.new(val, fn {k, v} -> {String.to_existing_atom(k), v} end)
-        val = case kw do
-          "hand" -> Map.update!(val, :marked, &Enum.map(&1, fn [t, s, i] -> {Utils.to_tile(t), String.to_existing_atom(s), i} end))
-          "calls" -> Map.update!(val, :marked, &Enum.map(&1, fn [[name, call], s, i] -> {{name, Enum.map(call, fn t -> Utils.to_tile(t) end)}, String.to_existing_atom(s), i} end))
-        end
-        {String.to_existing_atom(kw), val}
-      end
-    end
-  end
+  # def decode_marking(marking) do
+  #   # [
+  #   #   ["done", true],
+  #   #   ["hand", %{
+  #   #     "marked" => [["9s", "east", 12], ["7s", "east", 11], ["5s", "east", 10]],
+  #   #     "needed" => 3,
+  #   #     "restrictions" => ["self"]
+  #   #   }]
+  #   # ]
+  #   for [kw, val] <- marking do
+  #     if kw in Enum.map(Marking.special_keys(), &Atom.to_string/1) do
+  #       {String.to_existing_atom(kw), val}
+  #     else
+  #       val = Map.new(val, fn {k, v} -> {String.to_existing_atom(k), v} end)
+  #       val = case kw do
+  #         "hand" -> Map.update!(val, :marked, &Enum.map(&1, fn [t, s, i] -> {Utils.to_tile(t), String.to_existing_atom(s), i} end))
+  #         "calls" -> Map.update!(val, :marked, &Enum.map(&1, fn [[name, call], s, i] -> {{name, Enum.map(call, fn t -> Utils.to_tile(t) end)}, String.to_existing_atom(s), i} end))
+  #       end
+  #       {String.to_existing_atom(kw), val}
+  #     end
+  #   end
+  # end
 
   def finalize_kyoku(state) do
     score_rules = Rules.get(state.rules_ref, "score_calculation", %{})

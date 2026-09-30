@@ -58,7 +58,7 @@ defmodule RiichiAdvancedWeb.LogControlComponent do
     if skip do
       # only proceed if the current event is something we care about
       curr_event = get_current_event(socket)
-      if curr_event != nil and curr_event["type"] not in ["discard", "buttons_pressed", "mark"] do
+      if curr_event != nil and curr_event["type"] not in ["discard", "buttons_pressed", "mark", "unmark", "confirm_mark"] do
         advance(socket, false)
       else socket end
     else
@@ -73,7 +73,7 @@ defmodule RiichiAdvancedWeb.LogControlComponent do
     if skip do
       # only proceed if the current event is something we care about
       curr_event = get_current_event(socket)
-      if curr_event != nil and curr_event["type"] not in ["discard", "buttons_pressed", "mark"] do
+      if curr_event != nil and curr_event["type"] not in ["discard", "buttons_pressed", "mark", "unmark", "confirm_mark"] do
         rewind(socket, false)
       else socket end
     else
@@ -141,6 +141,8 @@ defmodule RiichiAdvancedWeb.LogControlComponent do
         "discard"         -> GenServer.call(socket.assigns.log_control_state, {:send_discard, false, curr_event})
         "buttons_pressed" -> GenServer.call(socket.assigns.log_control_state, {:send_button_press, false, curr_event})
         "mark"            -> GenServer.call(socket.assigns.log_control_state, {:send_mark, false, curr_event})
+        "unmark"          -> GenServer.call(socket.assigns.log_control_state, {:send_unmark, false, curr_event})
+        "confirm_mark"    -> GenServer.call(socket.assigns.log_control_state, {:send_confirm_mark, false, curr_event})
         _                 -> socket.assigns.state
       end
     end

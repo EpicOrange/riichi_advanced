@@ -65,6 +65,8 @@ defmodule RiichiAdvanced.LogWalker do
           "discard"         -> LogControl.send_discard(state, true, event)
           "buttons_pressed" -> LogControl.send_button_press(state, true, event)
           "mark"            -> LogControl.send_mark(state, true, event)
+          "unmark"          -> LogControl.send_unmark(state, true, event)
+          "confirm_mark"    -> LogControl.send_confirm_mark(state, true, event)
           _                 -> state
         end
         state = put_in(state.game_states[kyoku_index][event["index"]], state.game_state)

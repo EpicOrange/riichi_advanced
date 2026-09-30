@@ -95,11 +95,11 @@ defmodule RiichiAdvanced.GameState.Kyoku do
         else state end
 
         # log game, unless we are viewing a log or if this is a tutorial
-        if not state.log_seeking_mode and state.forced_events == nil do
+        state = if not state.log_seeking_mode and state.forced_events == nil do
           IO.puts("Logging game #{state.ref}")
           Log.output_to_file(state)
-        end
-        state = Log.finalize_kyoku(state)
+        else state end
+        |> Log.finalize_kyoku()
 
         # finish or initialize new round if needed, otherwise continue
         state = if state.round_result != :continue do

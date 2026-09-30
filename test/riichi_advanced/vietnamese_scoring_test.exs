@@ -142,11 +142,8 @@ defmodule RiichiAdvanced.YakuTest.VietnameseScoring do
       %{"type" => "discard", "tile" => "7m", "player" => 1, "tsumogiri" => true},
       %{"type" => "discard", "tile" => "7m", "player" => 2, "tsumogiri" => true},
       %{"type" => "buttons_pressed", "buttons" => [nil, nil, nil, %{"button" => "joker_swap"}]},
-      %{"type" => "mark", "player" => 3, "marking" => [
-        ["done", true],
-        ["hand", %{"needed" => 1, "marked" => [["1p", "north", 10]], "restrictions" => []}],
-        ["calls", %{"needed" => 1, "marked" => [[["pon", [:"1p", :"0j", :"1p"]], "north", 0]], "restrictions" => []}],
-      ]},
+      %{"type" => "mark", "player" => 3, "source" => "hand", "seat" => 3, "tile" => "1p"},
+      %{"type" => "mark", "player" => 3, "source" => "calls", "seat" => 3, "call" => ["pon", ["1p", "0j", "1p"]]},
       %{"type" => "buttons_pressed", "buttons" => [%{"button" => "rob_bounce"}, nil, nil, nil]},
     ], %{
       east: %{

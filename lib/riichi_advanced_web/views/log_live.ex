@@ -1,9 +1,11 @@
 defmodule RiichiAdvancedWeb.LogLive do
   alias RiichiAdvanced.GameState.Choice
   alias RiichiAdvanced.GameState.Game
+  alias RiichiAdvanced.GameState.Rules
   alias RiichiAdvanced.ModLoader
   alias RiichiAdvanced.Utils
   alias RiichiAdvancedWeb.GameLive.InteractionState
+  alias RiichiAdvancedWeb.GameLive.Tutorial
   use RiichiAdvancedWeb, :live_view
   use Gettext, backend: RiichiAdvancedWeb.Gettext
   import RiichiAdvancedWeb.GameComponents
@@ -106,6 +108,14 @@ defmodule RiichiAdvancedWeb.LogLive do
     else
       {:ok, socket}
     end
+  end
+
+  def update_tutorial_state(socket, f) do
+    assign(socket, :tutorial_state, f.(socket.assigns.tutorial_state))
+  end
+
+  def update_interaction_state(socket, f) do
+    assign(socket, :interaction_state, f.(socket.assigns.interaction_state))
   end
 
   def render(assigns) do
@@ -214,7 +224,54 @@ defmodule RiichiAdvancedWeb.LogLive do
     {:noreply, socket}
   end
 
+  def handle_event("toggle_next_dealer", _assigns, socket) do
+    status = socket.assigns.state.players[socket.assigns.seat].status
+    GenServer.cast(socket.assigns.game_state, {:toggle_next_dealer, socket.assigns.seat, "renchan" in status})
+    {:noreply, socket}
+  end
+
+  def handle_event("hover_button", %{"name" => name}, socket) do
+    player = socket.assigns.state.players[socket.assigns.viewer]
+    {called_tile, call_choice} = case Map.get(player.button_choices, name, nil) do
+      {:call, choices} ->
+        if choices != nil do
+          choices = choices
+          |> Enum.filter(fn {_called_tile, call_choice} -> not Enum.empty?(call_choice) end)
+          case choices do
+            [{called_tile, [call_choice]}] -> {called_tile, call_choice}
+            _                              -> {nil, nil}
+          end
+        else {nil, nil} end
+      _ -> {nil, nil}
+    end
+    socket = update_interaction_state(socket, &%{&1 | hovered_called_tile: called_tile})
+    buttons = Rules.get(socket.assigns.state.rules_ref, "buttons", %{})
+    is_upgrade = get_in(buttons[name]["upgrades"]) != nil
+    socket = update_interaction_state(socket, &%{&1 | hovered_call_choice: if is_upgrade do nil else call_choice end})
+    {:noreply, socket}
+  end
+
+  def handle_event("hover_off", _assigns, socket) do
+    socket = update_interaction_state(socket, &%{&1 | hovered_called_tile: nil, hovered_call_choice: nil})
+    {:noreply, socket}
+  end
+
+  def handle_event("declare_dead_hand", %{"seat" => seat}, socket) do
+    if socket.assigns.seat == socket.assigns.state.turn do
+      dead_seat = case seat do
+        "east"  -> :east
+        "south" -> :south
+        "west"  -> :west
+        "north" -> :north
+      end
+      GenServer.cast(socket.assigns.game_state, {:declare_dead_hand, socket.assigns.seat, dead_seat})
+    end
+    {:noreply, socket}
+  end
+
   def handle_event("change_language", %{"lang" => lang}, socket), do: {:noreply, assign(socket, :lang, lang)}
+
+  def handle_event("tutorial_overlay_clicked", _assigns, socket), do: {:noreply, update_tutorial_state(socket, &Tutorial.handle_click(&1))}
 
   def handle_event(_event, _assigns, socket) do
     {:noreply, socket}
@@ -341,6 +398,17 @@ defmodule RiichiAdvancedWeb.LogLive do
     send_update(RiichiAdvancedWeb.PondComponent, id: "pond #{relative_seat}", just_discarded: false)
     {:noreply, socket}
   end
+
+  def handle_info({:play_tile, _index, _force?}, socket), do: {:noreply, socket}
+  def handle_info({:mark_tile, _seat, _index, _source}, socket), do: {:noreply, socket}
+  def handle_info({:unmark_tile, _seat, _index, _source}, socket), do: {:noreply, socket}
+  def handle_info({:hover, _index}, socket), do: {:noreply, socket}
+  def handle_info({:hover_off, _index}, socket), do: {:noreply, socket}
+  def handle_info({:reindex_hand, _from, _to}, socket), do: {:noreply, socket}
+  def handle_info({:play_scene, _next_scene}, socket), do: {:noreply, socket}
+  def handle_info({:await_click, _next_scene}, socket), do: {:noreply, socket}
+  def handle_info({:force_event, _next_scenes, _events, _blocking?}, socket), do: {:noreply, socket}
+  def handle_info({:set_visible_waits, _hand, _tile, _waits}, socket), do: {:noreply, socket}
 
   def handle_info(data, socket) do
     IO.puts("unhandled handle_info data:")

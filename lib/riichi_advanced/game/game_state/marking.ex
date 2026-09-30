@@ -67,7 +67,7 @@ defmodule RiichiAdvanced.GameState.Marking do
   end
 
   def needs_marking?(state, seat) do
-    not has_confirmed?(state, seat) or not has_marked_enough?(state, seat)
+    Map.has_key?(state.marking, seat) and (not has_confirmed?(state, seat) or not has_marked_enough?(state, seat))
   end
 
   def get_object(state, seat, index, source) do
@@ -226,9 +226,14 @@ defmodule RiichiAdvanced.GameState.Marking do
       |> Enum.find_index(fn {src, mark_info} -> src == source and _can_mark?(state, marking_player, seat, index, source, mark_info) end)
       not_already_marked = valid_mark_info_ix != nil and not Enum.any?(state.marking[marking_player] |> Enum.at(valid_mark_info_ix) |> elem(1) |> Map.get(:marked), fn {_, _, i} -> index == i end)
       if not_already_marked do
-        update_in(state.marking[marking_player], &List.update_at(&1, valid_mark_info_ix, fn {src, mark_info} ->
-          {src, update_in(mark_info.marked, fn marked -> marked ++ [{get_object(state, seat, index, source), seat, index}] end)}
+        obj = get_object(state, seat, index, source)
+        state = update_in(state.marking[marking_player], &List.update_at(&1, valid_mark_info_ix, fn {src, mark_info} ->
+          {src, update_in(mark_info.marked, fn marked -> marked ++ [{obj, seat, index}] end)}
         end))
+        key = if source == :calls do :call else :tile end
+        params = %{source: source, seat: Log.to_seat(seat)} |> Map.put(key, obj)
+        state = Log.log(state, marking_player, :mark, params)
+        state
       else state end
     else state end
   end
@@ -237,15 +242,21 @@ defmodule RiichiAdvanced.GameState.Marking do
     if not Enum.empty?(state.marking[marking_player]) and not has_confirmed?(state, marking_player) do
       valid_mark_info_ix = state.marking[marking_player]
       |> Enum.find_index(fn {src, mark_info} -> src == source and _can_mark?(state, marking_player, seat, index, source, mark_info) end)
-      update_in(state.marking[marking_player], &List.update_at(&1, valid_mark_info_ix, fn {src, mark_info} ->
-        {src, update_in(mark_info.marked, fn marked -> marked -- [{get_object(state, seat, index, source), seat, index}] end)}
+      obj = get_object(state, seat, index, source)
+      state = update_in(state.marking[marking_player], &List.update_at(&1, valid_mark_info_ix, fn {src, mark_info} ->
+        {src, update_in(mark_info.marked, fn marked -> marked -- [{obj, seat, index}] end)}
       end))
+      key = if source == :calls do :call else :tile end
+      params = %{source: source, seat: seat} |> Map.put(key, obj)
+      state = Log.log(state, marking_player, :unmark, params)
+      state
     else state end
   end
 
   def confirm_marked_objects(state, marking_player) do
     if not has_confirmed?(state, marking_player) and has_marked_enough?(state, marking_player) do
       update_in(state.marking[marking_player], &Keyword.put(&1, :needs_confirm, false))
+      |> Log.log(marking_player, :confirm_mark, %{})
     else state end
   end
 
@@ -274,8 +285,6 @@ defmodule RiichiAdvanced.GameState.Marking do
           state = Actions.run_deferred_actions(state, seat)
           # only reset marking once the mark action marks it done
           if is_done?(state, seat) do
-            state = Log.log(state, seat, :mark, %{marking: Log.encode_marking(state.marking[seat])})
-
             # run post-mark actions
             # remember that some other action must have run to set :done
             # in order for this to run at all

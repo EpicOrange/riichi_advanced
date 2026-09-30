@@ -62,6 +62,7 @@ defmodule RiichiAdvancedWeb.GameLive.Tutorial do
 
     %Tutorial{
       sequence: sequence,
+      sequence_name: sequence_name,
       return_to_editor: return_to_editor,
     }
   end
@@ -548,23 +549,40 @@ defmodule RiichiAdvancedWeb.GameLive do
         # subscribe to message updates
         Phoenix.PubSub.subscribe(RiichiAdvanced.PubSub, "messages:" <> socket.assigns.session_id)
         GenServer.cast(messages_init.messages_state, {:add_message, [
-          if socket.assigns.state.mods != nil and not Enum.empty?(socket.assigns.state.mods) do
-            %{
-              text: "Entered a %{ruleset} game (with %{mods} mods), room code %{room_code}",
-              vars: %{
-                ruleset: {:text, socket.assigns.ruleset, %{bold: true}},
-                mods: {:text, Integer.to_string(length(socket.assigns.state.mods)), %{bold: true}},
-                room_code: {:text, socket.assigns.room_code, %{bold: true}},
+          cond do
+            String.length(socket.assigns.room_code) < 20 and socket.assigns.state.mods != nil and not Enum.empty?(socket.assigns.state.mods) ->
+              %{
+                text: "Entered a %{ruleset} game (with %{mods} mods), room code %{room_code}",
+                vars: %{
+                  ruleset: {:text, socket.assigns.ruleset, %{bold: true}},
+                  mods: {:text, Integer.to_string(length(socket.assigns.state.mods)), %{bold: true}},
+                  room_code: {:text, socket.assigns.room_code, %{bold: true}},
+                }
               }
-            }
-          else
-            %{
-              text: "Entered a %{ruleset} game, room code %{room_code}",
-              vars: %{
-                ruleset: {:text, socket.assigns.ruleset, %{bold: true}},
-                room_code: {:text, socket.assigns.room_code, %{bold: true}}
+            String.length(socket.assigns.room_code) < 20 ->
+              %{
+                text: "Entered a %{ruleset} game, room code %{room_code}",
+                vars: %{
+                  ruleset: {:text, socket.assigns.ruleset, %{bold: true}},
+                  room_code: {:text, socket.assigns.room_code, %{bold: true}}
+                }
               }
-            }
+            socket.assigns.state.forced_events != nil ->
+              %{
+                text: "Viewing tutorial for %{ruleset}",
+                vars: %{
+                  ruleset: {:text, socket.assigns.ruleset, %{bold: true}},
+                  room_code: {:text, socket.assigns.room_code, %{bold: true}}
+                }
+              }
+            true ->
+              %{
+                text: "Viewing log for %{ruleset}",
+                vars: %{
+                  ruleset: {:text, socket.assigns.ruleset, %{bold: true}},
+                  room_code: {:text, socket.assigns.room_code, %{bold: true}}
+                }
+              }
           end
         ]})
         socket

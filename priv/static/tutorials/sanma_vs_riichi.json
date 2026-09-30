@@ -1,4 +1,5 @@
 {
+  "mods": ["cancellable_riichi"],
   "removed_mods": ["dora", "ura", "kandora", "kyuushu_kyuuhai"],
   "config": {
     "starting_hand": {
@@ -63,7 +64,7 @@
         "text": "The replacement tile gives us three sets and a pair, so we're tenpai. Now declare riichi on the 9 of bamboo!"
       }],
       ["force_event", ["press_button", "south", "riichi"]],
-      ["force_event", ["play_tile", "south", 12]],
+      ["force_event", ["mark", "south", "south", 12, "hand"]],
       ["clear_objects"],
       ["await_event", ["play_tile", "west", 13]],
       ["force_event", ["press_button", "south", "ron"]],
