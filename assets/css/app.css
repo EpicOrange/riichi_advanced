@@ -262,7 +262,7 @@ input[type="number"]::-webkit-outer-spin-button {
 }
 
 /* hands */
-div.hand, div.tiles, div.calls, div.flowers, div.call, div.draws, div.buttons, div.call-buttons, button.call-button {
+div.hand, div.tiles, div.calls, div.flowers, div.call, div.buttons, div.call-buttons, button.call-button {
   display: flex;
   flex-direction: row;
   justify-content: flex-start;
@@ -278,8 +278,8 @@ div.call {
   align-items: flex-end;
 }
 div.self { z-index: 10; } /* your stuff goes above other people's stuff */
-div.hand, div.draws { z-index: 20; } /* so if they overlap with calls, the hand goes on top */
-div.hand.self, div.draws.self { z-index: 30; } /* your stuff goes above other people's stuff */
+div.hand { z-index: 20; } /* so if they overlap with calls, the hand goes on top */
+div.hand.self { z-index: 30; } /* your stuff goes above other people's stuff */
 div.tiles, div.call.aside {
   flex-flow: row wrap-reverse;
   row-gap: calc(0.25 * var(--tile-size));
@@ -356,7 +356,7 @@ div.shimocha div.calls > div:nth-child(21) { z-index: -4; }
 div.shimocha div.calls > div:nth-child(22) { z-index: -3; }
 div.shimocha div.calls > div:nth-child(23) { z-index: -2; }
 div.shimocha div.calls > div:nth-child(24) { z-index: -1; }
-div.call, div.draws {
+div.call, div.draws-separator {
   margin-left: calc(0.375 * var(--tile-size));
 }
 div.winning-tile-container {
@@ -374,8 +374,7 @@ div.winning-tile-text {
 div.hand.self {
   bottom: 0;
 }
-div.hand.self > div.tiles > div.tile,
-div.hand.self > div.draws > div.tile {
+div.hand.self > div.tiles > div.tile {
   cursor: pointer;
 }
 div.hand.shimocha {
@@ -645,7 +644,7 @@ div.pond.kamicha {
   }
   input.mobile-zoom-checkbox:not(:checked) ~ div.hand.self > div.tiles {
     margin-left: 0;
-    max-width: calc(14 * 0.75 * var(--tile-size));
+    max-width: calc(15 * 0.75 * var(--tile-size));
     /* trick to indent second and possibly third row of hand tiles */
     & > :nth-child(-n+14) { order: 1; }
     &::before { content: ""; order: 2; flex-basis: 0; height: 0; }
@@ -1641,14 +1640,12 @@ div.tile:not(.flat) {
   box-shadow: 0 calc(var(--tile-height) / -8) 0 0 var(--tile-front-side),
               0 calc(var(--tile-height) / -4) 0 0 var(--tile-back-side);
 }
-div.hand.self div.tiles > div.tile.selected,
-div.hand.self div.draws > div.tile.selected {
+div.hand.self div.tiles > div.tile.selected {
   /* this is here to override the translateZ(0) */
   transform: translateY(calc(-0.25 * var(--tile-size)));
   position: relative;
 }
-div.hand.self div.tiles > div.tile.selected::before,
-div.hand.self div.draws > div.tile.selected::before {
+div.hand.self div.tiles > div.tile.selected::before {
   /* add a clickable area under the tile */
   content: "";
   position: absolute;
@@ -1834,7 +1831,7 @@ div.tile.played {
   }
   100% {}
 }
-div.hand.just-drew > div.draws > div.tile {
+div.hand.just-drew div.tiles > div.draws-separator ~ div.tile {
   animation: slideLeft 0.2s ease forwards;
 }
 

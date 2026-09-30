@@ -49,8 +49,7 @@ defmodule RiichiAdvancedWeb.HandComponent do
                 <% end %>
               <% end %>
             <% end %>
-          </div>
-          <div class="draws" :if={not Enum.empty?(@draw)}>
+            <div class="draws-separator" :if={not Enum.empty?(@draw)}></div>
             <%= for {tile, i} <- prepare_draw(assigns) do %>
               <%= if GenServer.call(@game_state, {:can_mark?, @viewer, @seat, i, :hand}) do %>
                 <div class={Utils.get_tile_class(tile, i, assigns, ["markable"])} phx-cancellable-click="mark_tile" phx-hover="hover_tile" phx-hover-off="hover_off" phx-target={@myself} phx-value-index={i}><%= raw debug_tile(tile) %></div>
@@ -77,8 +76,7 @@ defmodule RiichiAdvancedWeb.HandComponent do
                 <% end %>
               <% end %>
             <% end %>
-          </div>
-          <div class="draws" :if={not Enum.empty?(@draw)}>
+            <div class="draws-separator" :if={not Enum.empty?(@draw)}></div>
             <%= for {tile, i} <- prepare_draw(assigns) do %>
               <%= if not @your_turn? or i in @playable_indices do %>
                 <div phx-cancellable-click="play_tile" phx-hover="hover_tile" phx-hover-off="hover_off" phx-target={@myself} phx-value-index={i} class={Utils.get_tile_class(tile, i, assigns, [], true)}><%= raw debug_tile(tile) %></div>
@@ -93,8 +91,7 @@ defmodule RiichiAdvancedWeb.HandComponent do
           <%= for {i, tile, removed, highlight} <- prepare_hand(assigns) do %>
             <div class={Utils.get_tile_class(tile, i, assigns, [removed && "removed", highlight && "highlight"], true)} data-id={i}><%= raw debug_tile(tile) %></div>
           <% end %>
-        </div>
-        <div class="draws" :if={not Enum.empty?(@draw)}>
+          <div class="draws-separator" :if={not Enum.empty?(@draw)}></div>
           <%= for {tile, i} <- prepare_draw(assigns) do %>
             <div class={Utils.get_tile_class(tile, i, assigns, [], true)}><%= raw debug_tile(tile) %></div>
           <% end %>
