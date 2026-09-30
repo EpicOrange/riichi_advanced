@@ -109,6 +109,7 @@ pub fn __get_waits_v3(
     .unwrap_or(&HashMap::new())
     .values()
     .flatten()
+    .filter(|t| t.0 != ANY_PRIME)
     .cloned()
     .collect();
   any_jokers.sort_unstable();
