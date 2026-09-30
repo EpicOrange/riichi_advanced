@@ -438,4 +438,28 @@ defmodule RiichiAdvanced.YakuTest.TokyoRulesYaku do
     })
   end
 
+  test "tokyo - uushin tsuukan" do
+    TestUtils.test_yaku_advanced("tokyo_rules", [], [], """
+    {
+      "starting_hand": {
+        "east": ["1p", "2p", "3p", "4p", "6p", "7p", "8p", "9p", "3s", "3s", "4z", "4z", "4z"],
+        "south": ["1m", "6m", "7m", "2p", "5p", "8p", "2s", "5s", "7s", "8s", "9s", "3m", "4m"],
+        "west": ["1m", "6m", "7m", "2p", "5p", "8p", "3s", "5s", "7s", "8s", "9s", "3m", "4m"],
+        "north": ["5m", "6m", "8m", "4p", "8p", "9p", "3s", "5s", "7s", "8s", "9s", "3m", "4m"]
+      },
+      "starting_draws": ["6z", "5p"]
+    }
+    """, [
+      %{"type" => "discard", "tile" => "6z", "player" => 0, "tsumogiri" => true},
+      %{"type" => "discard", "tile" => "5p", "player" => 1, "tsumogiri" => true},
+      %{"type" => "buttons_pressed", "buttons" => [%{"button" => "ron"}, nil, nil, nil]},
+    ], %{
+      east: %{
+        yaku: [{"Ittsuu", [3, "Han"]}, {"Uushin Tsuukan", [1, "Han"]}],
+        minipoints: 40,
+        score: 3840
+      }
+    })
+  end
+
 end

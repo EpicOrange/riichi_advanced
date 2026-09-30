@@ -1,0 +1,15 @@
+default list, "yaku"
+default name, "Uushin Tsuukan"
+default value, 1
+
+on after_initialization do
+  if equals(!name, "Uushin Tsuukan") do
+    add_rule("$value $han", !name, "\"Five-Heart Straight\". %{value} %{han} on top of ittsuu if the winning tile is the five needed for ittsuu.", %{value: !value, han: !han}, 101)
+  else
+    add_rule("$value $han", !name, "%{value} %{han} on top of ittsuu if the winning tile is the five needed for ittsuu.", %{value: !value, han: !han}, 101)
+  end
+  update_rule("$value $han", !name, "%{example_hand}", %{value: !value, han: !han, example_hand: ~t"123m 46m 789m 22p 333z 5m"})
+end
+
+define_set uushin_tsuukan, ~s"0 1 2 3 4@winning_tile 5 6 7 8"
+define_yaku yaku, !name, [!value, !han], match(["hand", "calls", "winning_tile"], ~m"uushin_tsuukan:1, mentsu:1, pair:1")
