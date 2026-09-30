@@ -64,59 +64,6 @@ define_match win,
   ~a"11a 357a 99a 11b 357b 99b", # concealed
   ~a"FF 2026a 2026b 2026c" # concealed
 
-define_match open_win,
-  # 2026
-  ~a"222a 000 2222b 6666b",
-  ~a"2026a DDDa 2222b|6666b DDDb",
-  ~a"FFF 2026a 222b 6666c",
-  ~a"22a 00 222b 666b NEWS",
-  # 2468
-  ~a"222a 444a 6666a 8888a", ~a"222a 444a 6666b 8888b",
-  ~a"FF 2222a 44b 66b 8888a",
-  ~a"EE 22a 444a 666a 88a WW",
-  ~a"2222a DDDa 8888b DDDb",
-  ~a"FFF 22a 44a 666a 8888a",
-  ~a"2468a 2222b Db 2222c Dc", ~a"2468a 4444b Db 4444c Dc", ~a"2468a 6666b Db 6666c Dc", ~a"2468a 8888b Db 8888c Dc",
-  ~a"FFF 2468a FFF 2222b|4444b|6666b|8888b",
-  # Any Like Numbers
-  ~a"XXXX0a FFFFFF XXXX0c",
-  ~a"XXXX0a Da XXX0b Db XXXX0c Dc",
-  ~a"FF XXXX0a XX0b XXXX0c DDa",
-  # Quints
-  ~a"XXXXX0a XXXX0b XXXXX0c",
-  ~a"FF XXXXX0a XX1a XXXXX2a",
-  ~a"XXXXX0a XXXXX1a|XXXXX2a|XXXXX3a|XXXXX4a|XXXXX5a|XXXXX6a|XXXXX7a|XXXXX8a DDDDb",
-  # Consecutive Run
-  ~a"11a 222a 33a 444a 5555a", ~a"55a 666a 77a 888a 9999a",
-  ~a"FFF XXXX0a X1a X2a X3a XXXX4a", ~a"FFF XXXX0a X1b X2b X3b XXXX4a",
-  ~a"XX0a XX1a XXX0b XXX1b XXXX2c",
-  ~a"XXX0a XXX1a XXXX2a XXXX3a", ~a"XXX0a XXX1a XXXX2b XXXX3b",
-  ~a"FF XX0a XX1a XXX2a DDDDa", ~a"FF XX0a XX1b XXX2a DDDDb",
-  ~a"XXXX0a FFFFFF XXXX1a",
-  ~a"FF XXXX0a XXXX1a XXXX2a", ~a"FF XXXX0a XXXX1b XXXX2c",
-  # 13579
-  ~a"11a 333a 55a 777a 9999a", ~a"11a 333a 55b 777c 9999c",
-  ~a"111a 333a 3333b 5555b", ~a"555a 777a 7777b 9999b",
-  ~a"NN 1111a 33a 5555a SS", ~a"NN 5555a 77a 9999a SS",
-  ~a"113579a 1111b 1111c", ~a"133579a 3333b 3333c", ~a"135579a 5555b 5555c", ~a"135779a 7777b 7777c", ~a"135799a 9999b 9999c",
-  ~a"FFF 11a 33a 555a DDDDa", ~a"FFF 55a 77a 999a DDDDa",
-  ~a"11a 33a 111b 333b 5555c", ~a"55a 77a 555b 777b 9999c",
-  ~a"1111a 33a 55a 77a 9999a", ~a"1111a 33b 55b 77b 9999a",
-  # Winds and Dragons
-  ~a"NNNN EEE WWW SSSS", ~a"NNN EEEE WWWW SSS",
-  ~a"X0a X1a X2a X3a DDDb DDDc DDDDa", ~a"X0a X1a X2a X3a DDDa DDDb DDDDc",
-  ~a"NNN 1111b 1111c SSS", ~a"NNN 3333b 3333c SSS", ~a"NNN 5555b 5555c SSS", ~a"NNN 7777b 7777c SSS", ~a"NNN 9999b 9999c SSS",
-  ~a"EEE 2222b 2222c WWW", ~a"EEE 4444b 4444c WWW", ~a"EEE 6666b 6666c WWW", ~a"EEE 8888b 8888c WWW",
-  ~a"FFF ZZZZ FFF DDDD",
-  ~a"1a N 2a EE 3a WWW 4a SSSS",
-  ~a"FF NNNN SSSS DDa DDb", ~a"FF EEEE WWWW DDa DDb",
-  # 369
-  ~a"333a 666a 6666b 9999b", ~a"333a 666a 6666b 9999c",
-  ~a"33a 66a 333b 666b 9999c",
-  ~a"FFF 33a 666a 99a DDDDa", ~a"FFF 33a 666a 99a DDDDb",
-  ~a"33a 66a 666b 999b NEWS",
-  ~a"FF 3369a 3333b 3333c", ~a"FF 3669a 6666b 6666c", ~a"FF 3699a 9999b 9999c"
-
 define_match singles_win,
   ~a"NN EE WW SS X0a Da X0b Db X0c Dc",
   ~a"2a 4a 66a 88a 2a 4a 66b 88b 88c",
@@ -124,7 +71,6 @@ define_match singles_win,
   ~a"XX0a XX1a XX2a XX3a XX4a XX5a XX6a",
   ~a"11a 357a 99a 11b 357b 99b",
   ~a"FF 2026a 2026b 2026c"
-
 
 define_yaku yaku, "2026 #1", [25, "Pts"], match(["hand", "call_tiles", "winning_tile"], [~a"222a 000 2222b 6666b"])
 define_yaku yaku, "2026 #2", [25, "Pts"], match(["hand", "call_tiles", "winning_tile"], [~a"2026a DDDa 2222b|6666b DDDb"])

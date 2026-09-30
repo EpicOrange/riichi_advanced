@@ -1912,7 +1912,9 @@ defmodule RiichiAdvanced.GameState do
       if state.game_active do
         call_choices = state.players[seat].call_buttons
         if is_pid(Map.get(state, seat)) and not Enum.empty?(call_choices) and not Enum.empty?(call_choices |> Map.values() |> Enum.concat()) do
-          # IO.puts("Notifying #{seat} AI about their call buttons: #{inspect(state.players[seat].call_buttons)}")
+          if Debug.debug_ai() do
+            IO.puts("Notifying #{seat} AI about their call buttons: #{inspect(state.players[seat].call_buttons)}")
+          end
           state = update_player(state, seat, fn player -> %{ player | ai_thinking: true } end)
           state = broadcast_state_change(state)
           send(Map.get(state, seat), {:call_buttons, %{player: state.players[seat]}})

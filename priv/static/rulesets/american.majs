@@ -581,8 +581,7 @@ define_button mahjong_heavenly,
 
 define_button mahjong_draw,
   display_name: "Mah Jongg",
-  show_when: status_missing("match_start", "dead_hand") and our_turn and has_draw
-      and (match(["hand", "call_tiles", "draw"], ["open_win"]) or (has_no_call_named("am_pung", "am_kong", "am_quint", "am_sextet") and match(["hand", "call_tiles", "draw"], ["win"]))),
+  show_when: status_missing("match_start", "dead_hand") and our_turn and has_draw and has_yaku_with_discard(1),
   precedence_over: ["am_pung", "am_kong", "am_quint", "am_sextet"]
   do
     big_text("Mah Jongg")
@@ -595,7 +594,7 @@ define_button mahjong_discard,
   display_name: "Mah Jongg",
   show_when: status_missing("match_start", "dead_hand") and not_our_turn and not_just_discarded and someone_else_just_discarded
       and not_match(["last_discard"], ~m"1j:1")
-      and (match(["hand", "call_tiles", "last_discard"], ["open_win"]) or (has_no_call_named("am_pung", "am_kong", "am_quint", "am_sextet") and match(["hand", "call_tiles", "last_discard"], ["win"]))),
+      and has_yaku_with_hand(1),
   precedence_over: ["am_pung", "am_kong", "am_quint", "am_sextet", "mahjong_discard"]
   do
     big_text("Mah Jongg")
