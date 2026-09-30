@@ -196,7 +196,7 @@ define_yaku meta_yaku, "Single Wait Fully Closed Bonus", [1, "Mủn"], has_exist
 define_yaku_precedence "Big Three Dragons", ["White Dragon", "Green Dragon", "Red Dragon"]
 define_yaku_precedence "Nine Gates", ["Full Flush"]
 define_yaku_precedence "Four Quads", ["Quad", "Four Concealed Triplets"]
-define_yaku_precedence "Little Four Winds", ["Round Wind", "Seat Wind"]
+define_yaku_precedence "Little Four Winds", ["Prevalent Wind", "Seat Wind", "Half Flush", "All Terminals and Honors"]
 define_yaku_precedence "Big Four Winds", ["Little Four Winds"]
 define_yaku_precedence "All Terminals and Honors", ["All Sets"]
 
