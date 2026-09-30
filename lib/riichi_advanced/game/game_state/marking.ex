@@ -181,8 +181,8 @@ defmodule RiichiAdvanced.GameState.Marking do
           restriction = if negated do String.slice(restriction, 4..-1//1) else restriction end
           if Utils.is_tile(restriction) do
             tiles = case tile do
-              # could also be a tile with attributes, so we check with is_tile
-              {name, call} -> if Utils.is_tile(tile) do [tile] else Utils.call_to_tiles(tile) end
+              # probably a call, but could also be a tile with attributes, so we check with is_tile
+              {_, _} -> if Utils.is_tile(tile) do [tile] else Utils.call_to_tiles(tile) end
               _ -> [tile]
             end
             negated != Utils.has_matching_tile?(tiles, [Utils.to_tile(restriction)])

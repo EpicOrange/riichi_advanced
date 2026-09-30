@@ -108,7 +108,7 @@ defmodule RiichiAdvanced.GameState.Conditions do
             state.players
             |> Enum.flat_map(fn {_seat, player} ->
               player.calls
-              |> Enum.filter(fn {name, call} -> Utils.has_matching_tile?(call, [:"1j"]) end)
+              |> Enum.filter(fn {_name, call} -> Utils.has_matching_tile?(call, [:"1j"]) end)
               |> Enum.map(&Utils.get_joker_meld_tile(&1, player.tile_behavior))
             end)
             |> Enum.reject(&is_nil/1)

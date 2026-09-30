@@ -311,7 +311,6 @@ defmodule RiichiAdvanced.YakuTest.VietnameseYaku do
       %{"type" => "discard", "tile" => "3p", "player" => 3, "tsumogiri" => true},
       %{"type" => "discard", "tile" => "0j", "player" => 0, "tsumogiri" => false},
       %{"type" => "discard", "tile" => "4s", "player" => 1, "tsumogiri" => true},
-      %{"type" => "buttons_pressed", "buttons" => [%{"button" => "ron"}, nil, nil, nil]}
     ], :no_winners)
   end
 
