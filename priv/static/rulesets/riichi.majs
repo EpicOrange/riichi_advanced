@@ -505,7 +505,7 @@ define_preset "Mahjong Soul", "Battle of Asura", [
   # TODO:
   # - chankan doesn't cancel the kan (since it's bloody rules)
   # - chankan doesn't cancel suukaikan (win, then immediately abortive draw)
-  # - if you are < 1000 pts after losing points, you must take back your riichi stick and exit riichi
+  # - dealing in with riichi tile prevents riichi if below 1000 points
   +@standard_riichi_yaku,
   %{name: "nagashi", config: %{is: "Mangan", counts_as: "draw"}},
   %{name: "lib/tobi", config: %{below: 0}},

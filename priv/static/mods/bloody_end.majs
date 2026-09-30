@@ -14,6 +14,13 @@ on before_win do
   end
 end
 
+on before_continue do
+  as everyone do
+    take_back_riichi_stick
+    subtract_from_pot("pot") # clear pot
+  end
+end
+
 if !hide_winning_hands do
   # don't show hand when we win
   replace 1, "buttons.ron.actions", "reveal_hand", "noop"

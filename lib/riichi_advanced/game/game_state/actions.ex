@@ -1560,6 +1560,13 @@ defmodule RiichiAdvanced.GameState.Actions do
           state
           |> Map.update!(:pot, & &1 + Enum.at(opts, 0, 1) * riichi_value)
           |> update_player(context.seat, &%{ &1 | riichi_stick: true, cache: %{ &1.cache | riichi_discard_indices: riichi_discard_indices } })
+        "take_back_riichi_stick" ->
+          if state.players[context.seat].riichi_stick do
+            riichi_value = Rules.get(state.rules_ref, "score_calculation", %{}) |> Map.get("riichi_value", 0)
+            state
+            |> Map.update!(:pot, & &1 - Enum.at(opts, 0, 1) * riichi_value)
+            |> update_player(context.seat, &%{ &1 | riichi_stick: false })
+          else state end
         "bet_points"            ->
           amount = interpret_amount(state, context, opts)
           state

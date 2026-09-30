@@ -194,6 +194,7 @@ defmodule RiichiAdvanced.GameState.Kyoku do
     Map.put(state, :round_result, :win)
 
     state = if should_continue_round?(state) and not state.players[seat].hand_revealed do
+      state = calculate_delta_scores(state)
       Map.put(state, :visible_screen, :scores)
     else
       Map.put(state, :visible_screen, :winner)
