@@ -68,7 +68,7 @@ defmodule RiichiAdvanced.GameState.Scoring do
       winning_tile: winning_tile,
       win_source: win_source,
       minipoints: minipoints,
-      existing_yaku: []
+      yaku: []
     }
     yaku_skip_map = Rules.get(state.rules_ref, :yaku_skip_map, [])
     excluded_lists = if exclude_extra_yaku? do
@@ -84,7 +84,7 @@ defmodule RiichiAdvanced.GameState.Scoring do
           if Debug.debug_yaku_precedence() do
             IO.puts("Evaluating yaku #{yaku["display_name"]}")
           end
-          context = Map.put(context, :existing_yaku, existing_yaku)
+          context = Map.put(context, :yaku, existing_yaku)
           debug_label = if debug do "Debugging yaku #{yaku["display_name"]}" else nil end
           {result, clause_cache} = Conditions.cached_check_cnf_condition(state, yaku["when"], context, clause_cache, debug_label)
           # result = Conditions.check_cnf_condition(state, yaku["when"], context)

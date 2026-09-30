@@ -427,11 +427,11 @@ defmodule RiichiAdvanced.GameState.Conditions do
         Enum.all?(winning_hand, &Utils.has_matching_tile?(Enum.concat([&1], Map.get(tile_mappings, &1, [])), tiles))
       "all_saki_cards_drafted"   -> Map.has_key?(state, :saki) and Saki.check_if_all_drafted(state)
       "has_existing_yaku"        ->
-        existing_yaku = Scoring.dedup_yaku(context.existing_yaku)
+        yaku = Scoring.dedup_yaku(context.yaku)
         by_name = Enum.all?(opts, fn
-          [name, [_ | _] = value] -> Enum.any?(existing_yaku, fn {name2, value2} -> name == name2 and value == value2 or (is_list(value2) and value in value2) end)
-          [name, value]       -> Enum.any?(existing_yaku, fn {name2, [value2 | _]} -> name == name2 and value == value2 end)
-          name_or_value -> Enum.any?(existing_yaku, fn {name, value} -> name_or_value == name or name_or_value == value or (is_list(value) and name_or_value in value) end)
+          [name, [_ | _] = value] -> Enum.any?(yaku, fn {name2, value2} -> name == name2 and value == value2 or (is_list(value2) and value in value2) end)
+          [name, value]       -> Enum.any?(yaku, fn {name2, [value2 | _]} -> name == name2 and value == value2 end)
+          name_or_value -> Enum.any?(yaku, fn {name, value} -> name_or_value == name or name_or_value == value or (is_list(value) and name_or_value in value) end)
         end)
         by_name or (
           # by_list
@@ -441,7 +441,7 @@ defmodule RiichiAdvanced.GameState.Conditions do
           if Enum.empty?(lists) do false else
             # true if any of the existing yaku matches a yaku in lists
             yaku_by_key = Rules.get(state.rules_ref, :yaku_by_key, %{})
-            Enum.any?(existing_yaku, fn {name, value} ->
+            Enum.any?(yaku, fn {name, value} ->
               possible_denominations = Enum.drop_every(value, 2)
               possible_denominations = [possible_denominations | Enum.map(possible_denominations, &[&1])]
               Enum.any?(possible_denominations, fn denomination ->
@@ -450,9 +450,9 @@ defmodule RiichiAdvanced.GameState.Conditions do
             end)
           end
         )
-      "has_no_yaku"             -> Enum.empty?(context.existing_yaku)
+      "has_no_yaku"             -> Enum.empty?(context.yaku)
       "has_points"              ->
-        totals = context.existing_yaku
+        totals = context.yaku
         |> Enum.map(fn {_name, value} -> value end)
         |> Enum.reduce([], &Scoring.add_yaku_values/2)
         denomination = Enum.at(opts, 1, nil)
