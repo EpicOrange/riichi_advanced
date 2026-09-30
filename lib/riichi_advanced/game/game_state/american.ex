@@ -484,9 +484,11 @@ defmodule RiichiAdvanced.GameState.American do
                 |> Enum.take(num_ignores)
                 |> Enum.reduce(groups, &List.replace_at(&2, &1, :ignore))
               else
-                groups
-                |> Enum.reject(& &1 in MatchOld.group_keywords())
-                |> Enum.max_by(&Map.get(tiles_freqs, &1 |> List.wrap() |> List.flatten() |> Enum.at(0) |> Utils.to_tile(), 0))
+                groups = Enum.reject(groups, & &1 in MatchOld.group_keywords())
+                if "1f" in groups do :"1f" else
+                  # prefer choosing the tile that is already in hand
+                  Enum.max_by(groups, &Map.get(tiles_freqs, &1 |> List.wrap() |> List.flatten() |> Enum.at(0) |> Utils.to_tile(), 0))
+                end
                 |> List.duplicate(num)
                 |> List.flatten()
               end
