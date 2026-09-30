@@ -2487,17 +2487,19 @@ defmodule RiichiAdvanced.GameState.Actions do
     # each item should be a CNF condition
     # calls that satisfy the first condition are given priority over calls that don't
     # calls that satisfy the second condition are given priority over calls that don't
-    # etc. if there are still multiple of the same call then it reverts to "first in turn order"
+    # etc.
+    # if there are still multiple of the same call then it reverts to "first in turn order"
     conflicting_players = ordered_seats
     |> Enum.map(fn seat -> {seat, state.players[seat].choice} end)
     |> Enum.filter(fn {_seat, choice} -> choice != nil and get_in(buttons[choice.name]["call_priority_list"]) != nil end)
-    |> Enum.map(fn {seat, choice} -> %{choice => [seat]} end)
+    |> Enum.map(fn {seat, choice} -> %{choice.name => [seat]} end)
     |> Enum.reduce(%{}, fn m, acc -> Map.merge(m, acc, fn _k, l, r -> l ++ r end) end)
-    state = for {choice, seats} <- conflicting_players, reduce: state do
+    state = for {choice_name, seats} <- conflicting_players, reduce: state do
       state ->
-        priority_list = buttons[choice.name]["call_priority_list"]
+        priority_list = buttons[choice_name]["call_priority_list"]
         winning_seat = seats
         |> Enum.sort_by(fn seat ->
+          choice = state.players[seat].choice
           context = %{seat: seat, choice: choice}
           ix = Enum.find_index(priority_list, fn conditions -> Conditions.check_cnf_condition(state, conditions, context) end)
           if ix == nil do :infinity else ix end
@@ -2506,7 +2508,7 @@ defmodule RiichiAdvanced.GameState.Actions do
         update_all_players(state, fn dir, player ->
           if dir in (seats -- [winning_seat]) do
             if Debug.debug_actions() do
-              IO.puts("Superceding choice for #{dir} due to existing #{inspect(choice)} having higher call priority")
+              IO.puts("Superceding choice for #{dir} due to existing #{inspect(player.choice)} having higher call priority")
             end
             %{ player | choice: %Choice{ name: "skip" }, buttons: [] }
           else player end
