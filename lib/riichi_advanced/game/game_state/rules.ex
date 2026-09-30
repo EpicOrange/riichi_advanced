@@ -347,7 +347,6 @@ defmodule RiichiAdvanced.GameState.Rules do
     |> Enum.map(&ModLoader.get_mod_name_config/1)
     |> Enum.filter(fn {mod_name, _config} -> mod_name in available_mods end)
     |> Map.new()
-
     mods = Map.new(mods, fn mod -> {mod["id"], %{
       enabled: Map.has_key?(starting_mods, mod["id"]),
       index: mod["index"],
@@ -356,6 +355,7 @@ defmodule RiichiAdvanced.GameState.Rules do
       category: mod["category"],
       config: Map.get(mod, "config", [])
            |> Map.new(&Map.pop(&1, "name"))
+           |> then(&Map.merge(Map.get(starting_mods, mod["id"], %{}) |> Map.new(fn {name, value} -> {name, %{"values" => [value]}} end), &1))
            |> Map.new(fn {config_name, config} ->
                 default = get_in(starting_mods[mod["id"]][config_name])
                 default = if default == nil do Map.get(config, "default", Enum.at(config["values"], 0)) else default end

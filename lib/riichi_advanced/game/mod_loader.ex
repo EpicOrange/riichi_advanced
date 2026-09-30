@@ -361,6 +361,7 @@ defmodule RiichiAdvanced.ModLoader.ModState do
           IO.puts("Debugging mod #{name}")
           IO.inspect(defs.defines, label: "Defines are", limit: :infinity)
           IO.inspect(defs.globals, label: "Globals are", limit: :infinity)
+          IO.inspect(config, label: "Config is", limit: :infinity)
           IO.inspect(vars, label: "Defaults are", limit: :infinity)
           IO.puts("jq emitted is:")
           IO.puts(jq)
