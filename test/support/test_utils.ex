@@ -259,14 +259,13 @@ defmodule RiichiAdvanced.TestUtils do
   defp interpret_calls(calls) when is_list(calls), do: Enum.map(calls, &interpret_call/1)
   defp interpret_calls(calls) when is_binary(calls), do: interpret_calls(String.split(calls, " ", trim: true))
   defp test_generic(ruleset, mods, excluded_mods, test_spec) do
+    rules_ref = get_rules!(ruleset, mods)
     hand = Keyword.get(test_spec, :hand, [])
     [hand | calls] = if is_list(Enum.at(hand, 0)) do hand else [hand] end
-    {hand, [winning_tile]} = Enum.split(hand, -1)
-    rules_ref = get_rules!(ruleset, mods)
     wall = Rules.get(rules_ref, "wall", [])
-    unused = wall -- hand
-    non_furiten_tile = if winning_tile == :"1z" do :"2z" else :"1z" end
-    starting_draws = Enum.take(unused, 3) ++ [non_furiten_tile] ++ Enum.take(Enum.drop(unused, 3), 2) ++ [winning_tile, winning_tile]
+    unused = wall -- Enum.map(hand -- Enum.flat_map(calls, &Utils.call_to_tiles/1), &Atom.to_string/1)
+    {hand, [winning_tile]} = Enum.split(hand, -1)
+    starting_draws = Enum.take(unused, 6) ++ [winning_tile]
     config = """
     {
       "starting_hand": {

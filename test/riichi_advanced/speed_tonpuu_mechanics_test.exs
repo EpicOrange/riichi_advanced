@@ -32,7 +32,7 @@ defmodule RiichiAdvanced.YakuTest.SpeedTonpuuMechanics do
     {
       "starting_hand": {
         "east": ["2m", "3m", "4m", "4m", "5m", "6m", "27p", "7p", "7p", "8s", "8s", "8s", "5p"],
-        "south": ["1m", "2m", "7m", "2p", "5p", "8p", "3s", "6s", "9s", "1z", "2z", "3z", "4z"],
+        "south": ["1m", "2m", "7m", "2p", "4p", "8p", "3s", "6s", "9s", "1z", "2z", "3z", "4z"],
         "west": ["1m", "2m", "7m", "2p", "6p", "8p", "3s", "6s", "9s", "1z", "2z", "3z", "4z"],
         "north": ["1m", "2m", "7m", "2p", "6p", "8p", "3s", "6s", "9s", "1z", "2z", "3z", "4z"]
       },
@@ -82,7 +82,7 @@ defmodule RiichiAdvanced.YakuTest.SpeedTonpuuMechanics do
     {
       "starting_hand": {
         "east": ["2m", "3m", "4m", "4m", "5m", "6m", "7p", "7p", "7p", "8s", "8s", "8s", "5p"],
-        "south": ["1m", "2m", "7m", "2p", "5p", "8p", "3s", "6s", "9s", "1z", "2z", "3z", "4z"],
+        "south": ["1m", "2m", "7m", "2p", "4p", "8p", "3s", "6s", "9s", "1z", "2z", "3z", "4z"],
         "west": ["1m", "2m", "7m", "2p", "6p", "8p", "3s", "6s", "9s", "1z", "2z", "3z", "4z"],
         "north": ["1m", "2m", "7m", "2p", "6p", "8p", "3s", "6s", "9s", "1z", "2z", "3z", "4z"]
       },
@@ -106,17 +106,17 @@ defmodule RiichiAdvanced.YakuTest.SpeedTonpuuMechanics do
     TestUtils.test_yaku_advanced("speed_tonpuu", [], [], """
     {
       "starting_hand": {
-        "east": ["2m", "3m", "4m", "4m", "5m", "6m", "35p", "7p", "7p", "7p", "1z", "1z", "2z"],
+        "east": ["2m", "3m", "4m", "4m", "5m", "6m", "3p", "7p", "7p", "7p", "1z", "1z", "2z"],
         "south": ["1m", "2m", "7m", "2p", "6p", "8p", "3s", "6s", "9s", "1z", "2z", "3z", "4z"],
         "west": ["1m", "2m", "7m", "2p", "6p", "8p", "3s", "6s", "9s", "5z", "2z", "3z", "4z"],
         "north": ["1m", "2m", "7m", "2p", "6p", "8p", "3s", "6s", "9s", "5z", "6z", "3z", "7z"]
       },
-      "starting_draws": ["5p", "5p"],
+      "starting_draws": ["4p", "35p"],
       "starting_dead_wall": ["2z", "7z", "4z", "3z", "7z", "5z"]
     }
     """, [
       %{"type" => "discard", "tile" => "2z", "player" => 0, "tsumogiri" => false},
-      %{"type" => "discard", "tile" => "5p", "player" => 1, "tsumogiri" => true},
+      %{"type" => "discard", "tile" => "35p", "player" => 1, "tsumogiri" => true},
       %{"type" => "buttons_pressed", "buttons" => [%{"button" => "ron"}, nil, nil, nil]}
     ], %{
       east: %{
@@ -154,35 +154,35 @@ defmodule RiichiAdvanced.YakuTest.SpeedTonpuuMechanics do
     TestUtils.test_yaku_advanced("speed_tonpuu", [], [], """
     {
       "starting_hand": {
-        "east": ["2p", "2p", "3p", "3p", "4p", "4p", "5p", "5p", "6p", "6p", "7p", "7p", "8p"],
-        "south": ["1m", "2m", "3m", "4m", "5m", "7m", "3s", "6s", "9s", "1z", "2z", "3z", "4z"],
+        "east": ["2p", "2p", "3p", "3p", "4p", "4p", "5p", "6p", "6p", "7p", "7p", "8p", "8p"],
+        "south": ["1m", "2m", "3m", "4m", "4m", "7m", "3s", "6s", "9s", "1z", "2z", "3z", "4z"],
         "west": ["1m", "2m", "3m", "4m", "5m", "7m", "3s", "6s", "9s", "1z", "2z", "3z", "4z"],
         "north": ["1m", "2m", "3m", "4m", "5m", "7m", "3s", "6s", "9s", "1z", "2z", "7z", "4z"]
       },
-      "starting_draws": ["3z", "8p"],
+      "starting_draws": ["3z", "05p"],
       "starting_dead_wall": ["2z", "7z", "4z", "3z", "7z", "5z"]
     }
     """, [
       %{"type" => "buttons_pressed", "buttons" => [%{"button" => "riichi"}, nil, nil, nil]},
       %{"type" => "discard", "tile" => "3z", "player" => 0, "tsumogiri" => true},
-      %{"type" => "discard", "tile" => "8p", "player" => 1, "tsumogiri" => true},
+      %{"type" => "discard", "tile" => "05p", "player" => 1, "tsumogiri" => true},
       %{"type" => "buttons_pressed", "buttons" => [%{"button" => "ron"}, nil, nil, nil]}
     ], %{
       east: %{
-        yaku: [{"Double Riichi", [2, "Han"]}, {"Ippatsu", [1, "Han", 1, "⛀"]}, {"Pinfu", [1, "Han"]}, {"Tanyao", [1, "Han"]}, {"Ryanpeikou", [3, "Han"]}, {"Chinitsu", [6, "Han"]}],
+        yaku: [{"Double Riichi", [2, "Han"]}, {"Ippatsu", [1, "Han", 1, "⛀"]}, {"Pinfu", [1, "Han"]}, {"Tanyao", [1, "Han"]}, {"Ryanpeikou", [3, "Han"]}, {"Chinitsu", [6, "Han"]}, {"Red Five", [1, "Han", 1, "⛀"]}],
         minipoints: 30,
         score: 48000
       }
-    }, %{shuugi: [111, 89, 100, 100]})
+    }, %{shuugi: [112, 88, 100, 100]})
   end
 
   test "speed tonpuu - shuugi per yakuman count" do
     TestUtils.test_yaku_advanced("speed_tonpuu", [], [], """
     {
       "starting_hand": {
-        "east": ["5m", "5m", "5m", "7m", "7m", "7m", "2p", "2p", "7s", "7s", "1s", "1s", "1s"],
+        "east": ["3m", "3m", "3m", "7m", "7m", "7m", "2p", "2p", "7s", "7s", "1s", "1s", "1s"],
         "south": ["1m", "4m", "8m", "3p", "5p", "8p", "3s", "6s", "9s", "1z", "2z", "3z", "4z"],
-        "west": ["1m", "4m", "8m", "3p", "5p", "8p", "3s", "6s", "9s", "1z", "2z", "3z", "4z"],
+        "west": ["1m", "4m", "8m", "3p", "6p", "8p", "3s", "6s", "9s", "1z", "2z", "3z", "4z"],
         "north": ["1m", "4m", "8m", "3p", "6p", "8p", "3s", "6s", "9s", "1z", "2z", "3z", "4z"]
       },
       "starting_draws": ["2p"]
@@ -202,21 +202,21 @@ defmodule RiichiAdvanced.YakuTest.SpeedTonpuuMechanics do
       "starting_hand": {
         "east": ["1z", "1z", "1z", "2z", "2z", "2z", "3z", "3z", "3z", "4z", "4z", "4z", "27p"],
         "south": ["1m", "9m", "1p", "9p", "1s", "2s", "3s", "9s", "5z", "6z", "7z", "7z", "7z"],
-        "west": ["1m", "4m", "7m", "2p", "5p", "8p", "3s", "4s", "5s", "6s", "7s", "8s", "9s"],
+        "west": ["1m", "4m", "7m", "2p", "4p", "8p", "3s", "4s", "5s", "6s", "7s", "8s", "9s"],
         "north": ["1m", "4m", "7m", "2p", "5p", "8p", "3s", "4s", "5s", "6s", "7s", "8s", "9s"]
       },
       "starting_draws": ["1z", "2z", "3z", "4z"],
-      "starting_dead_wall": ["5m", "5m", "5m", "7p"]
+      "starting_dead_wall": ["3m", "3m", "3m", "7p"]
     }
     """, [
       %{"type" => "buttons_pressed", "buttons" => [%{"button" => "ankan"}, nil, nil, nil]},
-      %{"type" => "discard", "tile" => "5m", "player" => 0, "tsumogiri" => true},
+      %{"type" => "discard", "tile" => "3m", "player" => 0, "tsumogiri" => true},
       %{"type" => "discard", "tile" => "2z", "player" => 1, "tsumogiri" => true},
       %{"type" => "buttons_pressed", "buttons" => [%{"button" => "daiminkan"}, nil, nil, nil]},
-      %{"type" => "discard", "tile" => "5m", "player" => 0, "tsumogiri" => true},
+      %{"type" => "discard", "tile" => "3m", "player" => 0, "tsumogiri" => true},
       %{"type" => "discard", "tile" => "3z", "player" => 1, "tsumogiri" => true},
       %{"type" => "buttons_pressed", "buttons" => [%{"button" => "daiminkan"}, nil, nil, nil]},
-      %{"type" => "discard", "tile" => "5m", "player" => 0, "tsumogiri" => true},
+      %{"type" => "discard", "tile" => "3m", "player" => 0, "tsumogiri" => true},
       %{"type" => "discard", "tile" => "4z", "player" => 1, "tsumogiri" => true},
       %{"type" => "buttons_pressed", "buttons" => [%{"button" => "daiminkan"}, nil, nil, nil]},
       %{"type" => "buttons_pressed", "buttons" => [%{"button" => "tsumo"}, nil, nil, nil]}
@@ -233,21 +233,21 @@ defmodule RiichiAdvanced.YakuTest.SpeedTonpuuMechanics do
       "starting_hand": {
         "east": ["1z", "1z", "1z", "2z", "2z", "2z", "3z", "3z", "3z", "4z", "4z", "6m", "27p"],
         "south": ["1m", "9m", "1p", "9p", "1s", "2s", "3s", "9s", "5z", "6z", "7z", "7z", "7z"],
-        "west": ["1m", "4m", "7m", "2p", "5p", "8p", "3s", "4s", "5s", "6s", "7s", "8s", "9s"],
-        "north": ["1m", "4m", "7m", "2p", "5p", "8p", "3s", "4s", "5s", "6s", "7s", "8s", "9s"]
+        "west": ["1m", "4m", "7m", "2p", "4p", "8p", "3s", "4s", "5s", "6s", "7s", "8s", "9s"],
+        "north": ["1m", "4m", "7m", "2p", "4p", "8p", "3s", "4s", "5s", "6s", "7s", "8s", "9s"]
       },
       "starting_draws": ["1z", "2z", "3z", "4z", "2m", "3m", "4m", "4z"],
-      "starting_dead_wall": ["5m", "5m", "5m", "7p"]
+      "starting_dead_wall": ["3m", "3m", "3m", "7p"]
     }
     """, [
       %{"type" => "buttons_pressed", "buttons" => [%{"button" => "ankan"}, nil, nil, nil]},
-      %{"type" => "discard", "tile" => "5m", "player" => 0, "tsumogiri" => true},
+      %{"type" => "discard", "tile" => "3m", "player" => 0, "tsumogiri" => true},
       %{"type" => "discard", "tile" => "2z", "player" => 1, "tsumogiri" => true},
       %{"type" => "buttons_pressed", "buttons" => [%{"button" => "daiminkan"}, nil, nil, nil]},
-      %{"type" => "discard", "tile" => "5m", "player" => 0, "tsumogiri" => true},
+      %{"type" => "discard", "tile" => "3m", "player" => 0, "tsumogiri" => true},
       %{"type" => "discard", "tile" => "3z", "player" => 1, "tsumogiri" => true},
       %{"type" => "buttons_pressed", "buttons" => [%{"button" => "daiminkan"}, nil, nil, nil]},
-      %{"type" => "discard", "tile" => "5m", "player" => 0, "tsumogiri" => true},
+      %{"type" => "discard", "tile" => "3m", "player" => 0, "tsumogiri" => true},
       %{"type" => "discard", "tile" => "4z", "player" => 1, "tsumogiri" => true},
       %{"type" => "buttons_pressed", "buttons" => [%{"button" => "pon"}, nil, nil, nil]},
       %{"type" => "discard", "tile" => "6m", "player" => 0, "tsumogiri" => false},
@@ -269,21 +269,21 @@ defmodule RiichiAdvanced.YakuTest.SpeedTonpuuMechanics do
       "starting_hand": {
         "east": ["1z", "1z", "1z", "2z", "2z", "2z", "3z", "3z", "3z", "4z", "4z", "6m", "27p"],
         "south": ["1m", "9m", "1p", "9p", "1s", "2s", "3s", "9s", "5z", "6z", "7z", "7z", "7z"],
-        "west": ["1m", "4m", "7m", "2p", "5p", "8p", "3s", "4s", "5s", "6s", "7s", "8s", "9s"],
+        "west": ["1m", "4m", "7m", "2p", "4p", "8p", "3s", "4s", "5s", "6s", "7s", "8s", "9s"],
         "north": ["1m", "4m", "7m", "2p", "5p", "8p", "3s", "4s", "5s", "6s", "7s", "8s", "9s"]
       },
       "starting_draws": ["1z", "2z", "3z", "4z", "2m", "3m", "4m", "4z"],
-      "starting_dead_wall": ["5m", "5m", "5m", "6p"]
+      "starting_dead_wall": ["3m", "3m", "3m", "6p"]
     }
     """, [
       %{"type" => "buttons_pressed", "buttons" => [%{"button" => "ankan"}, nil, nil, nil]},
-      %{"type" => "discard", "tile" => "5m", "player" => 0, "tsumogiri" => true},
+      %{"type" => "discard", "tile" => "3m", "player" => 0, "tsumogiri" => true},
       %{"type" => "discard", "tile" => "2z", "player" => 1, "tsumogiri" => true},
       %{"type" => "buttons_pressed", "buttons" => [%{"button" => "daiminkan"}, nil, nil, nil]},
-      %{"type" => "discard", "tile" => "5m", "player" => 0, "tsumogiri" => true},
+      %{"type" => "discard", "tile" => "3m", "player" => 0, "tsumogiri" => true},
       %{"type" => "discard", "tile" => "3z", "player" => 1, "tsumogiri" => true},
       %{"type" => "buttons_pressed", "buttons" => [%{"button" => "daiminkan"}, nil, nil, nil]},
-      %{"type" => "discard", "tile" => "5m", "player" => 0, "tsumogiri" => true},
+      %{"type" => "discard", "tile" => "3m", "player" => 0, "tsumogiri" => true},
       %{"type" => "discard", "tile" => "4z", "player" => 1, "tsumogiri" => true},
       %{"type" => "buttons_pressed", "buttons" => [%{"button" => "pon"}, nil, nil, nil]},
       %{"type" => "discard", "tile" => "6m", "player" => 0, "tsumogiri" => false},
@@ -355,17 +355,19 @@ defmodule RiichiAdvanced.YakuTest.SpeedTonpuuMechanics do
     TestUtils.test_yaku_advanced("speed_tonpuu", [], [], """
     {
       "starting_hand": {
-        "east": ["2m", "3m", "4m", "4m", "5m", "6m", "35p", "5p", "1p", "8s", "8s", "8s", "7z"],
+        "east": ["2m", "3m", "4m", "4m", "5m", "6m", "35p", "6p", "1p", "8s", "8s", "8s", "7z"],
         "south": ["1m", "4m", "7m", "2p", "4p", "8p", "3s", "6s", "9s", "1z", "2z", "3z", "4z"],
         "west": ["1m", "4m", "7m", "2p", "4p", "8p", "3s", "6s", "9s", "1z", "2z", "3z", "4z"],
         "north": ["1m", "3m", "7m", "2p", "4p", "8p", "3s", "6s", "9s", "1z", "2z", "3z", "4z"]
       },
-      "starting_draws": ["3p", "5p", "1p", "1p", "1p", ["56z", "green"]]
+      "starting_draws": ["3p", "1s", "1s", "4p", "1p", "1p", "1p", ["56z", "green"]]
     }
     """, [
       %{"type" => "discard", "tile" => "3p", "player" => 0, "tsumogiri" => true},
-      %{"type" => "discard", "tile" => "5p", "player" => 1, "tsumogiri" => true},
-      %{"type" => "buttons_pressed", "buttons" => [%{"button" => "pon"}, nil, nil, nil]},
+      %{"type" => "discard", "tile" => "1s", "player" => 1, "tsumogiri" => true},
+      %{"type" => "discard", "tile" => "1s", "player" => 2, "tsumogiri" => true},
+      %{"type" => "discard", "tile" => "4p", "player" => 3, "tsumogiri" => true},
+      %{"type" => "buttons_pressed", "buttons" => [%{"button" => "chii"}, nil, nil, nil]},
       %{"type" => "discard", "tile" => "1p", "player" => 0, "tsumogiri" => false},
       %{"type" => "discard", "tile" => "1p", "player" => 1, "tsumogiri" => true},
       %{"type" => "discard", "tile" => "1p", "player" => 2, "tsumogiri" => true},
@@ -374,7 +376,7 @@ defmodule RiichiAdvanced.YakuTest.SpeedTonpuuMechanics do
     ], %{
       east: %{
         yaku: [{"Gold Five", [1, "Han", 1, "⛀"]}, {"Shiro Pocchi", [1, "⛀"]}],
-        minipoints: 40
+        minipoints: 30
       }
     }, %{shuugi: [106, 98, 98, 98]})
   end
@@ -410,17 +412,19 @@ defmodule RiichiAdvanced.YakuTest.SpeedTonpuuMechanics do
     TestUtils.test_yaku_advanced("speed_tonpuu", [], [], """
     {
       "starting_hand": {
-        "east": ["2m", "3m", "4m", "4m", "5m", "6m", "35p", "5p", "1p", "8s", "8s", "8s", "7z"],
+        "east": ["2m", "3m", "4m", "4m", "5m", "6m", "35p", "6p", "1p", "8s", "8s", "8s", "7z"],
         "south": ["1m", "9m", "1p", "9p", "1s", "9s", "1z", "2z", "3z", "4z", "5z", "7z", "7z"],
         "west": ["1m", "4m", "7m", "2p", "4p", "8p", "3s", "6s", "9s", "1z", "2z", "3z", "4z"],
         "north": ["1m", "3m", "7m", "2p", "4p", "8p", "3s", "6s", "9s", "1z", "2z", "3z", "4z"]
       },
-      "starting_draws": ["3p", "5p", "1p", "1p", "2p", ["56z", "green"]]
+      "starting_draws": ["3p", "1s", "1s", "4p", "1p", "1p", "2p", ["56z", "green"]]
     }
     """, [
       %{"type" => "discard", "tile" => "3p", "player" => 0, "tsumogiri" => true},
-      %{"type" => "discard", "tile" => "5p", "player" => 1, "tsumogiri" => true},
-      %{"type" => "buttons_pressed", "buttons" => [%{"button" => "pon"}, nil, nil, nil]},
+      %{"type" => "discard", "tile" => "1s", "player" => 1, "tsumogiri" => true},
+      %{"type" => "discard", "tile" => "1s", "player" => 2, "tsumogiri" => true},
+      %{"type" => "discard", "tile" => "4p", "player" => 3, "tsumogiri" => true},
+      %{"type" => "buttons_pressed", "buttons" => [%{"button" => "chii"}, nil, nil, nil]},
       %{"type" => "discard", "tile" => "1p", "player" => 0, "tsumogiri" => false},
       %{"type" => "discard", "tile" => "1p", "player" => 1, "tsumogiri" => true},
       %{"type" => "discard", "tile" => "1p", "player" => 2, "tsumogiri" => true},

@@ -16,7 +16,7 @@ defmodule RiichiAdvanced.YakuTest.Bloody30FaanYaku do
         "west": ["1m", "4m", "7m", "2p", "5p", "8p", "3s", "6s", "9s", "1z", "2z", "3z", "4z"],
         "north": ["1m", "3m", "7m", "2p", "5p", "8p", "3s", "6s", "9s", "1z", "2z", "3z", "4z"]
       },
-      "starting_draws": ["18j", "3m"],
+      "starting_draws": ["18j", "3m", "8s"],
       "starting_dead_wall": ["2m"]
     }
     """, [
@@ -40,7 +40,7 @@ defmodule RiichiAdvanced.YakuTest.Bloody30FaanYaku do
         "west": ["1m", "4m", "7m", "2p", "5p", "8p", "3s", "6s", "9s", "1z", "2z", "3z", "4z"],
         "north": ["1m", "3m", "7m", "2p", "5p", "8p", "3s", "6s", "9s", "1z", "2z", "3z", "4z"]
       },
-      "starting_draws": ["2m", "9s"]
+      "starting_draws": ["2m", "9s", "8s"]
     }
     """, [
       %{"type" => "discard", "tile" => "2m", "player" => 0, "tsumogiri" => true},
@@ -62,7 +62,7 @@ defmodule RiichiAdvanced.YakuTest.Bloody30FaanYaku do
         "west": ["1m", "4m", "7m", "2p", "5p", "8p", "3s", "6s", "9s", "1z", "2z", "3z", "4z"],
         "north": ["1m", "3m", "7m", "2p", "5p", "8p", "3s", "6s", "9s", "1z", "2z", "3z", "4z"]
       },
-      "starting_draws": ["2m", "9s"]
+      "starting_draws": ["2m", "9s", "8s"]
     }
     """, [
       %{"type" => "discard", "tile" => "2m", "player" => 0, "tsumogiri" => true},
@@ -84,7 +84,7 @@ defmodule RiichiAdvanced.YakuTest.Bloody30FaanYaku do
         "west": ["1m", "4m", "7m", "2p", "5p", "8p", "3s", "6s", "9s", "1z", "2z", "3z", "4z"],
         "north": ["1m", "3m", "6m", "2p", "5p", "8p", "3s", "6s", "9s", "1z", "2z", "3z", "4z"]
       },
-      "starting_draws": ["2m", "7m"]
+      "starting_draws": ["2m", "7m", "8s"]
     }
     """, [
       %{"type" => "discard", "tile" => "2m", "player" => 0, "tsumogiri" => true},
@@ -106,7 +106,7 @@ defmodule RiichiAdvanced.YakuTest.Bloody30FaanYaku do
         "west": ["1m", "4m", "7m", "2p", "5p", "8p", "3s", "6s", "9s", "1z", "2z", "3z", "4z"],
         "north": ["1m", "3m", "6m", "2p", "5p", "8p", "3s", "6s", "9s", "1z", "2z", "3z", "4z"]
       },
-      "starting_draws": ["2m", "3p"]
+      "starting_draws": ["2m", "3p", "8s"]
     }
     """, [
       %{"type" => "discard", "tile" => "2m", "player" => 0, "tsumogiri" => true},
@@ -128,7 +128,7 @@ defmodule RiichiAdvanced.YakuTest.Bloody30FaanYaku do
         "west": ["1m", "4m", "7m", "2p", "5p", "8p", "3s", "6s", "9s", "1z", "2z", "3z", "4z"],
         "north": ["1m", "3m", "6m", "2p", "5p", "8p", "3s", "6s", "9s", "1z", "2z", "3z", "4z"]
       },
-      "starting_draws": ["2m", "3m"]
+      "starting_draws": ["2m", "3m", "8s"]
     }
     """, [
       %{"type" => "discard", "tile" => "2m", "player" => 0, "tsumogiri" => true},
@@ -155,7 +155,7 @@ defmodule RiichiAdvanced.YakuTest.Bloody30FaanYaku do
         "west": ["1m", "4m", "7m", "2p", "5p", "8p", "3s", "6s", "9s", "1z", "2z", "3z", "4z"],
         "north": ["1m", "3m", "7m", "2p", "5p", "8p", "3s", "6s", "9s", "1z", "2z", "3z", "4z"]
       },
-      "starting_draws": ["2m", "7m"]
+      "starting_draws": ["2m", "7m", "8s"]
     }
     """, [
       %{"type" => "discard", "tile" => "2m", "player" => 0, "tsumogiri" => true},
@@ -177,7 +177,7 @@ defmodule RiichiAdvanced.YakuTest.Bloody30FaanYaku do
         "west": ["1p", "2p", "4p", "7p", "5p", "8p", "3s", "6s", "9s", "1z", "2z", "3z", "4z"],
         "north": ["1p", "2p", "3p", "7p", "5p", "8p", "3s", "6s", "9s", "1z", "2z", "3z", "4z"]
       },
-      "starting_draws": ["2m", "1m", "3m"]
+      "starting_draws": ["2m", "1m", "3m", "8s"]
     }
     """, [
       %{"type" => "discard", "tile" => "2m", "player" => 0, "tsumogiri" => true},
@@ -202,7 +202,7 @@ defmodule RiichiAdvanced.YakuTest.Bloody30FaanYaku do
         "west": ["1m", "4m", "7m", "2p", "5p", "8p", "3s", "6s", "9s", "1z", "2z", "3z", "4z"],
         "north": ["1m", "4m", "7m", "2p", "5p", "8p", "3s", "6s", "9s", "1z", "2z", "3z", "4z"]
       },
-      "starting_draws": ["2m", "3m", "4m"],
+      "starting_draws": ["2m", "3m", "4m", "8s"],
       "starting_dead_wall": ["1z"]
     }
     """, [
@@ -228,7 +228,7 @@ defmodule RiichiAdvanced.YakuTest.Bloody30FaanYaku do
         "west": ["1m", "4m", "7m", "2p", "5p", "8p", "3s", "6s", "9s", "1z", "2z", "3z", "4z"],
         "north": ["1m", "4m", "7m", "2p", "5p", "8p", "3s", "6s", "9s", "1z", "2z", "3z", "4z"]
       },
-      "starting_draws": ["2m", "3m", "4m", "5m", "6m", "3m", "4m"],
+      "starting_draws": ["2m", "3m", "4m", "5m", "6m", "3m", "4m", "8s"],
       "starting_dead_wall": ["1z"]
     }
     """, [
@@ -259,7 +259,7 @@ defmodule RiichiAdvanced.YakuTest.Bloody30FaanYaku do
         "west": ["1m", "4m", "7m", "2p", "5p", "8p", "3s", "6s", "9s", "1z", "2z", "3z", "4z"],
         "north": ["1m", "4m", "7m", "2p", "5p", "8p", "3s", "6s", "9s", "1z", "2z", "3z", "4z"]
       },
-      "starting_draws": ["3m", "4m"],
+      "starting_draws": ["3m", "4m", "8s"],
       "starting_dead_wall": ["1z"]
     }
     """, [
@@ -283,7 +283,7 @@ defmodule RiichiAdvanced.YakuTest.Bloody30FaanYaku do
         "west": ["1m", "2m", "7m", "2p", "5p", "8p", "3s", "6s", "9s", "1z", "2z", "3z", "4z"],
         "north": ["1m", "4m", "7m", "2p", "5p", "8p", "3s", "6s", "9s", "1z", "2z", "3z", "4z"]
       },
-      "starting_draws": ["1z", "4m"]
+      "starting_draws": ["1z", "4m", "8s"]
     }
     """, [
       %{"type" => "discard", "tile" => "1z", "player" => 0, "tsumogiri" => true},
@@ -307,7 +307,7 @@ defmodule RiichiAdvanced.YakuTest.Bloody30FaanYaku do
         "west": ["1m", "4m", "7m", "2p", "5p", "8p", "3s", "6s", "9s", "1z", "2z", "3z", "4z"],
         "north": ["1m", "3m", "7m", "2p", "5p", "8p", "3s", "6s", "9s", "1z", "2z", "3z", "4z"]
       },
-      "starting_draws": ["2m", "7z"]
+      "starting_draws": ["2m", "7z", "8s"]
     }
     """, [
       %{"type" => "discard", "tile" => "2m", "player" => 0, "tsumogiri" => true},

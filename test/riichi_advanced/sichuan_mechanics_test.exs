@@ -488,10 +488,10 @@ defmodule RiichiAdvanced.SichuanMechanicsTest do
       "starting_hand": {
         "east": ["3s","4s","5s","6s","7s","1s","2s","3s","4s","5s","6s","9s","9s"],
         "south": ["1m","2s","9m","9p","8s","3s","8s","8m","5p","3s","3m","3p","7m"],
-        "west": ["1m","7s","6s","3p","4m","8s","4s","9s","9s","4p","7s","7s","1m"],
+        "west": ["1m","7s","6p","3p","4m","8s","4p","9s","9s","4p","7s","7s","1m"],
         "north": ["6p","8p","8m","5m","6p","6s","8s","7p","6m","1m","2p","1s","4p"]
       },
-      "starting_draws": ["8m","4s","2s","7s","3m","5s","4m","1p","2m","8p","2p","3s","7m","1s","5m","9p","9m","4m","6m","1p","9m","6p","4m","7m","5p","4p","8m","5m","2m","5p","4s","2p","6s","9p","1p","5s","7p","3m","6m","2m","9p","7p","9m","1s","2s","8p","2p","2m","5s","5m","1p","3m","8p","6m","7m","3p"]
+      "starting_draws": ["8m","4s","2s","7p","3m","5s","4m","1p","2m","8p","2p","3p","7m","1s","5m","9p","9m","4m","6m","1p","9m","6p","4m","7m","5p","4p","8m","5m","2m","5p","4s","2p","6s","9p","1p","5p","7p","3m","6m","2m","9p","7p","9m","1s","2s","8p","2p","2m","5s","5m","1p","3m","8p","6m","7m","3p"]
     }
     """, [
       %{"buttons" => [%{"button" => "void_manzu"}, %{"button" => "void_pinzu"}, %{"button" => "void_pinzu"}, %{"button" => "void_manzu"}], "type" => "buttons_pressed"},
@@ -564,10 +564,10 @@ defmodule RiichiAdvanced.SichuanMechanicsTest do
       "starting_hand": {
         "east": ["3p","4p","4p","4p","2s","2s","2s","5s","5s","5s","9s","9s","9s"],
         "south": ["1m","2s","9m","9p","8s","3s","8s","8m","5p","3s","3m","3p","7m"],
-        "west": ["1m","7s","6s","3p","4m","8s","4s","9s","9s","4p","7s","7s","1m"],
+        "west": ["1m","7s","6s","3p","4m","8s","4s","9s","6p","3s","7s","7s","1m"],
         "north": ["6p","8p","8m","5m","6p","6s","8s","7p","6m","1m","2p","1s","4p"]
       },
-      "starting_draws": ["8m","4s","2s","7s","3m","5s","4m","1p","2m","8p","2p","3s","7m","1s","5m","9p","9m","4m","6m","1p","9m","6p","4m","7m","5p","4p","8m","5m","2m","5p","4s","2p","6s","9p","1p","5s","7p","3m","6m","2m","9p","7p","9m","1s","2s","8p","2p","2m","5s","5m","1p","3m","8p","6m","7m","3p"]
+      "starting_draws": ["8m","4s","3s","7p","3m","5s","4m","1p","2m","8p","2p","7s","7m","1s","5m","9p","9m","4m","6m","1p","9m","6p","4m","7m","5p","1s","8m","5m","2m","5p","4s","2p","6s","9p","1p","5p","7p","3m","6m","2m","9p","7p","9m","1s","4s","8p","2p","2m","6s","5m","1p","3m","8p","6m","7m","3p"]
     }
     """, [
       %{"buttons" => [%{"button" => "void_manzu"}, %{"button" => "void_pinzu"}, %{"button" => "void_pinzu"}, %{"button" => "void_manzu"}], "type" => "buttons_pressed"},
@@ -577,7 +577,7 @@ defmodule RiichiAdvanced.SichuanMechanicsTest do
       %{"player" => 3, "tile" => "1m", "tsumogiri" => false, "type" => "discard"},
       %{"player" => 0, "tile" => "3m", "tsumogiri" => true, "type" => "discard"},
       %{"player" => 1, "tile" => "3p", "tsumogiri" => false, "type" => "discard"},
-      %{"player" => 2, "tile" => "4p", "tsumogiri" => false, "type" => "discard"},
+      %{"player" => 2, "tile" => "3s", "tsumogiri" => false, "type" => "discard"},
       %{"player" => 3, "tile" => "8m", "tsumogiri" => false, "type" => "discard"},
       %{"player" => 0, "tile" => "2m", "tsumogiri" => true, "type" => "discard"},
       %{"player" => 1, "tile" => "8p", "tsumogiri" => true, "type" => "discard"},
@@ -589,14 +589,14 @@ defmodule RiichiAdvanced.SichuanMechanicsTest do
       %{"player" => 3, "tile" => "5m", "tsumogiri" => false, "type" => "discard"},
       %{"player" => 0, "tile" => "9m", "tsumogiri" => true, "type" => "discard"},
       %{"player" => 1, "tile" => "1m", "tsumogiri" => false, "type" => "discard"},
-      %{"player" => 2, "tile" => "9s", "tsumogiri" => false, "type" => "discard"},
+      %{"player" => 2, "tile" => "6p", "tsumogiri" => false, "type" => "discard"},
       %{"player" => 3, "tile" => "1p", "tsumogiri" => false, "type" => "discard"},
       %{"player" => 0, "tile" => "9m", "tsumogiri" => true, "type" => "discard"},
       %{"player" => 1, "tile" => "6p", "tsumogiri" => true, "type" => "discard"},
       %{"player" => 2, "tile" => "1m", "tsumogiri" => false, "type" => "discard"},
       %{"player" => 3, "tile" => "7m", "tsumogiri" => true, "type" => "discard"},
       %{"player" => 0, "tile" => "5p", "tsumogiri" => true, "type" => "discard"},
-      %{"player" => 1, "tile" => "4p", "tsumogiri" => true, "type" => "discard"},
+      %{"player" => 1, "tile" => "1s", "tsumogiri" => true, "type" => "discard"},
       %{"player" => 2, "tile" => "1m", "tsumogiri" => false, "type" => "discard"},
       %{"player" => 3, "tile" => "5m", "tsumogiri" => true, "type" => "discard"},
       %{"buttons" => [nil, %{"button" => "ron"}, nil, nil], "type" => "buttons_pressed"},
@@ -610,13 +610,13 @@ defmodule RiichiAdvanced.SichuanMechanicsTest do
       %{"player" => 2, "tile" => "8m", "tsumogiri" => false, "type" => "discard"},
       %{"player" => 3, "tile" => "1p", "tsumogiri" => false, "type" => "discard"},
       %{"player" => 0, "tile" => "3m", "tsumogiri" => true, "type" => "discard"},
-      %{"player" => 2, "tile" => "2s", "tsumogiri" => false, "type" => "discard"},
+      %{"player" => 2, "tile" => "3s", "tsumogiri" => false, "type" => "discard"},
       %{"player" => 3, "tile" => "2m", "tsumogiri" => true, "type" => "discard"},
       %{"player" => 0, "tile" => "9p", "tsumogiri" => true, "type" => "discard"},
       %{"player" => 2, "tile" => "7p", "tsumogiri" => true, "type" => "discard"},
       %{"player" => 3, "tile" => "9m", "tsumogiri" => true, "type" => "discard"},
       %{"player" => 0, "tile" => "1s", "tsumogiri" => true, "type" => "discard"},
-      %{"player" => 2, "tile" => "2s", "tsumogiri" => true, "type" => "discard"},
+      %{"player" => 2, "tile" => "4s", "tsumogiri" => true, "type" => "discard"},
       %{"player" => 3, "tile" => "8p", "tsumogiri" => true, "type" => "discard"},
       %{"player" => 0, "tile" => "2p", "tsumogiri" => true, "type" => "discard"},
       %{"player" => 2, "tile" => "7s", "tsumogiri" => false, "type" => "discard"},
