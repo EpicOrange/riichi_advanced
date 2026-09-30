@@ -113,6 +113,7 @@ define_button sea_floor_no_win,
     unset_status("sea_floor") # prevent button popping up again
     advance_turn
   end
+define_yaku yaku, "Haidilaoyue", [1, "Fan"], status("sea_floor")
 
 apply initialize, "constants.closed_hand", has_no_call_named("chii", "pon", "daiminkan", "kakan")
 
