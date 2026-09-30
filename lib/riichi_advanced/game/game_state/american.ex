@@ -51,6 +51,17 @@ defmodule RiichiAdvanced.GameState.American do
                   "W" -> [[[List.duplicate("3z", freq)], 1]]
                   "S" -> [[[List.duplicate("2z", freq)], 1]]
                   "J" -> [[[List.duplicate("1j", freq)], 1]]
+                  # note: the hopcroft-karp matcher might greedily fill AAAA before other things
+                  # until that's dealt with, AAA, AAAm, AAAAp (and such) will not work well
+                  # "A" -> case String.last(group) do
+                  #     "m" -> [[Enum.map(["1m","2m","3m","4m","5m","6m","7m","8m","9m"], &List.duplicate(&1, freq)), 1]]
+                  #     "p" -> [[Enum.map(["1p","2p","3p","4p","5p","6p","7p","8p","9p"], &List.duplicate(&1, freq)), 1]]
+                  #     "s" -> [[Enum.map(["1s","2s","3s","4s","5s","6s","7s","8s","9s"], &List.duplicate(&1, freq)), 1]]
+                  #     "w" -> [[Enum.map(["1z","2z","3z","4z"], &List.duplicate(&1, freq)), 1]]
+                  #     "d" -> [[Enum.map(["0z","6z","7z"], &List.duplicate(&1, freq)), 1]]
+                  #     "z" -> [[Enum.map(["1z","2z","3z","4z","0z","6z","7z"], &List.duplicate(&1, freq)), 1]]
+                  #     _   -> [[Enum.map(["1m","2m","3m","4m","5m","6m","7m","8m","9m","1p","2p","3p","4p","5p","6p","7p","8p","9p","1s","2s","3s","4s","5s","6s","7s","8s","9s","1z","2z","3z","4z","0z","6z","7z","1f","1j"], &List.duplicate(&1, freq)), 1]]
+                  #   end
                   _   -> 
                     IO.inspect("Unknown character #{inspect(c)} in unsuited group #{inspect(group)}")
                     []
@@ -490,9 +501,12 @@ defmodule RiichiAdvanced.GameState.American do
                 |> Enum.reduce(groups, &List.replace_at(&2, &1, :ignore))
               else
                 groups = Enum.reject(groups, & &1 in MatchOld.group_keywords())
-                if "1f" in groups do :"1f" else
-                  # prefer choosing the tile that is already in hand
-                  Enum.max_by(groups, &Map.get(tiles_freqs, &1 |> List.wrap() |> List.flatten() |> Enum.at(0) |> Utils.to_tile(), 0))
+                cond do
+                  "1j" in groups -> :"1j"
+                  "1f" in groups -> :"1f"
+                  true ->
+                    # prefer choosing the tile that is already in hand
+                    Enum.max_by(groups, &Map.get(tiles_freqs, &1 |> List.wrap() |> List.flatten() |> Enum.at(0) |> Utils.to_tile(), 0))
                 end
                 |> List.duplicate(num)
                 |> List.flatten()
