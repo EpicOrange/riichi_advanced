@@ -47,6 +47,15 @@ def calculate_dora do
   if tile_revealed(-14) do add_counter("dora", "count_dora", -14, ["hand", "calls", "flowers", "winning_tile"]) end
   if tile_revealed(-16) do add_counter("dora", "count_dora", -16, ["hand", "calls", "flowers", "winning_tile"]) end
   if tile_revealed(-18) do add_counter("dora", "count_dora", -18, ["hand", "calls", "flowers", "winning_tile"]) end
+  if tile_revealed(-20) do add_counter("dora", "count_dora", -20, ["hand", "calls", "flowers", "winning_tile"]) end
+  if tile_revealed(-22) do add_counter("dora", "count_dora", -22, ["hand", "calls", "flowers", "winning_tile"]) end
+  if tile_revealed(-24) do add_counter("dora", "count_dora", -24, ["hand", "calls", "flowers", "winning_tile"]) end
+  if tile_revealed(-26) do add_counter("dora", "count_dora", -26, ["hand", "calls", "flowers", "winning_tile"]) end
+  if tile_revealed(-28) do add_counter("dora", "count_dora", -28, ["hand", "calls", "flowers", "winning_tile"]) end
+  if tile_revealed(-30) do add_counter("dora", "count_dora", -30, ["hand", "calls", "flowers", "winning_tile"]) end
+  if tile_revealed(-32) do add_counter("dora", "count_dora", -32, ["hand", "calls", "flowers", "winning_tile"]) end
+  if tile_revealed(-34) do add_counter("dora", "count_dora", -34, ["hand", "calls", "flowers", "winning_tile"]) end
+  if tile_revealed(-36) do add_counter("dora", "count_dora", -36, ["hand", "calls", "flowers", "winning_tile"]) end
 end
 
 on before_win do calculate_dora end
@@ -63,4 +72,13 @@ on after_start do
   if tile_revealed(-14) do tag_dora("dora", -14) end
   if tile_revealed(-16) do tag_dora("dora", -16) end
   if tile_revealed(-18) do tag_dora("dora", -18) end
+  if tile_revealed(-20) do tag_dora("dora", -20) end
+  if tile_revealed(-22) do tag_dora("dora", -22) end
+  if tile_revealed(-24) do tag_dora("dora", -24) end
+  if tile_revealed(-26) do tag_dora("dora", -26) end
+  if tile_revealed(-28) do tag_dora("dora", -28) end
+  if tile_revealed(-30) do tag_dora("dora", -30) end
+  if tile_revealed(-32) do tag_dora("dora", -32) end
+  if tile_revealed(-34) do tag_dora("dora", -34) end
+  if tile_revealed(-36) do tag_dora("dora", -36) end
 end

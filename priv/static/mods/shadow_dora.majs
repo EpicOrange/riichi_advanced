@@ -31,6 +31,15 @@ def calculate_dora, append: true do
   calculate_shadow_dora(%{indicator: -14})
   calculate_shadow_dora(%{indicator: -16})
   calculate_shadow_dora(%{indicator: -18})
+  calculate_shadow_dora(%{indicator: -20})
+  calculate_shadow_dora(%{indicator: -22})
+  calculate_shadow_dora(%{indicator: -24})
+  calculate_shadow_dora(%{indicator: -26})
+  calculate_shadow_dora(%{indicator: -28})
+  calculate_shadow_dora(%{indicator: -30})
+  calculate_shadow_dora(%{indicator: -32})
+  calculate_shadow_dora(%{indicator: -34})
+  calculate_shadow_dora(%{indicator: -36})
   calculate_shadow_ura(%{indicator: -5})
   calculate_shadow_ura(%{indicator: -7})
   calculate_shadow_ura(%{indicator: -9})
@@ -38,6 +47,15 @@ def calculate_dora, append: true do
   calculate_shadow_ura(%{indicator: -13})
   calculate_shadow_ura(%{indicator: -15})
   calculate_shadow_ura(%{indicator: -17})
+  calculate_shadow_ura(%{indicator: -19})
+  calculate_shadow_ura(%{indicator: -21})
+  calculate_shadow_ura(%{indicator: -23})
+  calculate_shadow_ura(%{indicator: -25})
+  calculate_shadow_ura(%{indicator: -27})
+  calculate_shadow_ura(%{indicator: -29})
+  calculate_shadow_ura(%{indicator: -31})
+  calculate_shadow_ura(%{indicator: -33})
+  calculate_shadow_ura(%{indicator: -35})
 end
 
 define_yaku extra_yaku, "Shadow Dora", ["shadow_dora", "Han"], shadow_dora <= -1
@@ -47,16 +65,4 @@ define_yaku extra_yaku, "Shadow Ura", ["shadow_ura", "Han"], shadow_ura <= -1
 def cap_negative_points do if points < 1 do points = 1; modify_winner("points", 1) end end
 define_scoring ron, prepend: true do cap_negative_points end
 define_scoring tsumo, prepend: true do cap_negative_points end
-
-# make shadow dora/ura shine black
-on before_scoring do
-  if tile_revealed(-5) do tag_dora("ura", -5) end
-  if tile_revealed(-7) do tag_dora("ura", -7) end
-  if tile_revealed(-9) do tag_dora("ura", -9) end
-  if tile_revealed(-11) do tag_dora("ura", -11) end
-  if tile_revealed(-13) do tag_dora("ura", -13) end
-  if tile_revealed(-15) do tag_dora("ura", -15) end
-  if tile_revealed(-17) do tag_dora("ura", -17) end
-  add_attr_tagged("ura", "_dora")
-end
 

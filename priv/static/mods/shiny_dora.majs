@@ -15,6 +15,15 @@ on before_win do
   if tile_revealed(-13) do tag_dora("ura", -13) end
   if tile_revealed(-15) do tag_dora("ura", -15) end
   if tile_revealed(-17) do tag_dora("ura", -17) end
+  if tile_revealed(-19) do tag_dora("ura", -19) end
+  if tile_revealed(-21) do tag_dora("ura", -21) end
+  if tile_revealed(-23) do tag_dora("ura", -23) end
+  if tile_revealed(-25) do tag_dora("ura", -25) end
+  if tile_revealed(-27) do tag_dora("ura", -27) end
+  if tile_revealed(-29) do tag_dora("ura", -29) end
+  if tile_revealed(-31) do tag_dora("ura", -31) end
+  if tile_revealed(-33) do tag_dora("ura", -33) end
+  if tile_revealed(-35) do tag_dora("ura", -35) end
   add_attr_tagged("ura", "_dora")
 end
 
@@ -39,6 +48,15 @@ if defined("shadow_dora") do
     if tile_revealed(-14) do tag_tiles("shadow_dora", -14) end
     if tile_revealed(-16) do tag_tiles("shadow_dora", -16) end
     if tile_revealed(-18) do tag_tiles("shadow_dora", -18) end
+    if tile_revealed(-20) do tag_tiles("shadow_dora", -20) end
+    if tile_revealed(-22) do tag_tiles("shadow_dora", -22) end
+    if tile_revealed(-24) do tag_tiles("shadow_dora", -24) end
+    if tile_revealed(-26) do tag_tiles("shadow_dora", -26) end
+    if tile_revealed(-28) do tag_tiles("shadow_dora", -28) end
+    if tile_revealed(-30) do tag_tiles("shadow_dora", -30) end
+    if tile_revealed(-32) do tag_tiles("shadow_dora", -32) end
+    if tile_revealed(-34) do tag_tiles("shadow_dora", -34) end
+    if tile_revealed(-36) do tag_tiles("shadow_dora", -36) end
     add_attr_tagged("shadow_dora", "_shadow")
   end
 
@@ -50,6 +68,15 @@ if defined("shadow_dora") do
     if tile_revealed(-13) do tag_tiles("shadow_ura", -13) end
     if tile_revealed(-15) do tag_tiles("shadow_ura", -15) end
     if tile_revealed(-17) do tag_tiles("shadow_ura", -17) end
+    if tile_revealed(-19) do tag_tiles("shadow_ura", -19) end
+    if tile_revealed(-21) do tag_tiles("shadow_ura", -21) end
+    if tile_revealed(-23) do tag_tiles("shadow_ura", -23) end
+    if tile_revealed(-25) do tag_tiles("shadow_ura", -25) end
+    if tile_revealed(-27) do tag_tiles("shadow_ura", -27) end
+    if tile_revealed(-29) do tag_tiles("shadow_ura", -29) end
+    if tile_revealed(-31) do tag_tiles("shadow_ura", -31) end
+    if tile_revealed(-33) do tag_tiles("shadow_ura", -33) end
+    if tile_revealed(-35) do tag_tiles("shadow_ura", -35) end
     add_attr_tagged("shadow_ura", "_shadow")
   end
 end

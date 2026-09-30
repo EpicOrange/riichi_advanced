@@ -5,41 +5,59 @@ end
 def reveal_ura do
   if status("riichi") and status_missing("ura_revealed") do
     set_status_all("ura_revealed")
-    if tile_revealed(-6) do # yonma dora indicator
-      if tile_not_revealed(-6) do reveal_tile("1x") end
+    if tile_revealed(-6) do # yonma
       if tile_not_revealed(-8) do reveal_tile("1x") end
-      if tile_not_revealed(-10) do reveal_tile("1x") end
-      if tile_not_revealed(-12) do reveal_tile("1x") end
-      if tile_not_revealed(-14) do reveal_tile("1x") end
-      reveal_tile("3x")
-      if tile_revealed(-6) do reveal_tile(-5) end
-      if tile_revealed(-8) do reveal_tile(-7) end
-      if tile_revealed(-10) do reveal_tile(-9) end
-      if tile_revealed(-12) do reveal_tile(-11) end
-      if tile_revealed(-14) do reveal_tile(-13) end
-      if tile_not_revealed(-5) do reveal_tile("1x") end
-      if tile_not_revealed(-7) do reveal_tile("1x") end
-      if tile_not_revealed(-9) do reveal_tile("1x") end
-      if tile_not_revealed(-11) do reveal_tile("1x") end
-      if tile_not_revealed(-13) do reveal_tile("1x") end
-    else
-      if tile_not_revealed(-10) do reveal_tile("1x") end
-      if tile_not_revealed(-12) do reveal_tile("1x") end
-      if tile_not_revealed(-14) do reveal_tile("1x") end
-      if tile_not_revealed(-16) do reveal_tile("1x") end
-      if tile_not_revealed(-18) do reveal_tile("1x") end
-      reveal_tile("3x")
-      if tile_revealed(-10) do reveal_tile(-9) end
-      if tile_revealed(-12) do reveal_tile(-11) end
-      if tile_revealed(-14) do reveal_tile(-13) end
-      if tile_revealed(-16) do reveal_tile(-15) end
-      if tile_revealed(-18) do reveal_tile(-17) end
-      if tile_not_revealed(-9) do reveal_tile("1x") end
-      if tile_not_revealed(-11) do reveal_tile("1x") end
-      if tile_not_revealed(-13) do reveal_tile("1x") end
-      if tile_not_revealed(-15) do reveal_tile("1x") end
-      if tile_not_revealed(-17) do reveal_tile("1x") end
     end
+    if tile_not_revealed(-10) do reveal_tile("1x") end
+    if tile_not_revealed(-12) do reveal_tile("1x") end
+    if tile_not_revealed(-14) do reveal_tile("1x") end
+    if tile_not_revealed(-16) do reveal_tile("1x") end
+    if tile_not_revealed(-18) do reveal_tile("1x") end
+    if tile_not_revealed(-20) do reveal_tile("1x") end
+    if tile_not_revealed(-22) do reveal_tile("1x") end
+    if tile_not_revealed(-24) do reveal_tile("1x") end
+    if tile_not_revealed(-26) do reveal_tile("1x") end
+    if tile_not_revealed(-28) do reveal_tile("1x") end
+    if tile_not_revealed(-30) do reveal_tile("1x") end
+    if tile_not_revealed(-32) do reveal_tile("1x") end
+    if tile_not_revealed(-34) do reveal_tile("1x") end
+    if tile_not_revealed(-36) do reveal_tile("1x") end
+    reveal_tile("3x")
+    if tile_revealed(-6) do # yonma
+      reveal_tile(-5)
+      if tile_revealed(-8) do reveal_tile(-7) end
+    end
+    if tile_revealed(-10) do reveal_tile(-9) end
+    if tile_revealed(-12) do reveal_tile(-11) end
+    if tile_revealed(-14) do reveal_tile(-13) end
+    if tile_revealed(-16) do reveal_tile(-15) end
+    if tile_revealed(-18) do reveal_tile(-17) end
+    if tile_revealed(-20) do reveal_tile(-19) end
+    if tile_revealed(-22) do reveal_tile(-21) end
+    if tile_revealed(-24) do reveal_tile(-23) end
+    if tile_revealed(-26) do reveal_tile(-25) end
+    if tile_revealed(-28) do reveal_tile(-27) end
+    if tile_revealed(-30) do reveal_tile(-29) end
+    if tile_revealed(-32) do reveal_tile(-31) end
+    if tile_revealed(-34) do reveal_tile(-33) end
+    if tile_revealed(-36) do reveal_tile(-35) end
+    if tile_revealed(-6) do # yonma
+      if tile_not_revealed(-7) do reveal_tile("1x") end
+    end
+    if tile_not_revealed(-9) do reveal_tile("1x") end
+    if tile_not_revealed(-11) do reveal_tile("1x") end
+    if tile_not_revealed(-13) do reveal_tile("1x") end
+    if tile_not_revealed(-15) do reveal_tile("1x") end
+    if tile_not_revealed(-17) do reveal_tile("1x") end
+    if tile_not_revealed(-19) do reveal_tile("1x") end
+    if tile_not_revealed(-21) do reveal_tile("1x") end
+    if tile_not_revealed(-23) do reveal_tile("1x") end
+    if tile_not_revealed(-25) do reveal_tile("1x") end
+    if tile_not_revealed(-27) do reveal_tile("1x") end
+    if tile_not_revealed(-29) do reveal_tile("1x") end
+    if tile_not_revealed(-31) do reveal_tile("1x") end
+    if tile_not_revealed(-33) do reveal_tile("1x") end
+    if tile_not_revealed(-35) do reveal_tile("1x") end
   end
 end
 
@@ -55,6 +73,15 @@ def calculate_dora, append: true do
   if tile_revealed(-13) do add_counter("ura", "count_dora", -13, ["hand", "calls", "flowers", "winning_tile"]) end
   if tile_revealed(-15) do add_counter("ura", "count_dora", -15, ["hand", "calls", "flowers", "winning_tile"]) end
   if tile_revealed(-17) do add_counter("ura", "count_dora", -17, ["hand", "calls", "flowers", "winning_tile"]) end
+  if tile_revealed(-19) do add_counter("ura", "count_dora", -19, ["hand", "calls", "flowers", "winning_tile"]) end
+  if tile_revealed(-21) do add_counter("ura", "count_dora", -21, ["hand", "calls", "flowers", "winning_tile"]) end
+  if tile_revealed(-23) do add_counter("ura", "count_dora", -23, ["hand", "calls", "flowers", "winning_tile"]) end
+  if tile_revealed(-25) do add_counter("ura", "count_dora", -25, ["hand", "calls", "flowers", "winning_tile"]) end
+  if tile_revealed(-27) do add_counter("ura", "count_dora", -27, ["hand", "calls", "flowers", "winning_tile"]) end
+  if tile_revealed(-29) do add_counter("ura", "count_dora", -29, ["hand", "calls", "flowers", "winning_tile"]) end
+  if tile_revealed(-31) do add_counter("ura", "count_dora", -31, ["hand", "calls", "flowers", "winning_tile"]) end
+  if tile_revealed(-33) do add_counter("ura", "count_dora", -33, ["hand", "calls", "flowers", "winning_tile"]) end
+  if tile_revealed(-35) do add_counter("ura", "count_dora", -35, ["hand", "calls", "flowers", "winning_tile"]) end
 end
 
 # add ura yaku

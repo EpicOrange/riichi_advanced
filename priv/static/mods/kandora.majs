@@ -1,3 +1,4 @@
+default max_indicators, 4
 default immediate, false
 
 def after_initialization do
@@ -9,6 +10,15 @@ def after_initialization do
 end
 
 def flip_dora do
+  if tile_revealed(-34) and tile_not_revealed(-36) do reveal_tile(-36); tag_dora("dora", -36) end
+  if tile_revealed(-32) and tile_not_revealed(-34) do reveal_tile(-34); tag_dora("dora", -34) end
+  if tile_revealed(-30) and tile_not_revealed(-32) do reveal_tile(-32); tag_dora("dora", -32) end
+  if tile_revealed(-28) and tile_not_revealed(-30) do reveal_tile(-30); tag_dora("dora", -30) end
+  if tile_revealed(-26) and tile_not_revealed(-28) do reveal_tile(-28); tag_dora("dora", -28) end
+  if tile_revealed(-24) and tile_not_revealed(-26) do reveal_tile(-26); tag_dora("dora", -26) end
+  if tile_revealed(-22) and tile_not_revealed(-24) do reveal_tile(-24); tag_dora("dora", -24) end
+  if tile_revealed(-20) and tile_not_revealed(-22) do reveal_tile(-22); tag_dora("dora", -22) end
+  if tile_revealed(-18) and tile_not_revealed(-20) do reveal_tile(-20); tag_dora("dora", -20) end
   if tile_revealed(-16) and tile_not_revealed(-18) do reveal_tile(-18); tag_dora("dora", -18) end
   if tile_revealed(-14) and tile_not_revealed(-16) do reveal_tile(-16); tag_dora("dora", -16) end
   if tile_revealed(-12) and tile_not_revealed(-14) do reveal_tile(-14); tag_dora("dora", -14) end
