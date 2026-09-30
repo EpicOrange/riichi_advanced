@@ -117,33 +117,22 @@ apply prepend, "buttons.tsumo.actions" do unset_status("nfnl_eligible") end
 
 # discarding flowers variations
 on after_start do
-  set_status_all("discarding_flowers_jokers_eligible")
-  set_status_all("discarding_flowers_eligible")
-  set_status_all("discarding_blue_jokers_eligible")
+  set_status_all("discarding_flowers_jokers_eligible", "discarding_flowers_eligible", "discarding_blue_jokers_eligible")
 end
 on before_turn_change do
   if status_missing("nfnl_eligible") do
-    unset_status("discarding_flowers_jokers_eligible")
-    unset_status("discarding_flowers_eligible")
-    unset_status("discarding_blue_jokers_eligible")
+    unset_status("discarding_flowers_jokers_eligible", "discarding_flowers_eligible", "discarding_blue_jokers_eligible")
   end
 end
+define_play_effect not_flower_or_joker do
+  if match(["hand", "draw"], ["has_non_nfnl_tile"]) do unset_status("nfnl_eligible") end
+end
+define_play_effect flower do
+  unset_status("discarding_blue_jokers_eligible")
+  flowers_discarded += 1
+  flowers_jokers_discarded += 1
+end
 define_play_effect joker do unset_status("discarding_flowers_eligible") end
-define_play_effect manzu do
-  unset_status("discarding_flowers_jokers_eligible")
-  if match(["hand", "draw"], ["has_non_nfnl_tile"]) do unset_status("nfnl_eligible") end
-end
-define_play_effect pinzu do
-  unset_status("discarding_flowers_jokers_eligible")
-  if match(["hand", "draw"], ["has_non_nfnl_tile"]) do unset_status("nfnl_eligible") end
-end
-define_play_effect souzu do
-  unset_status("discarding_flowers_jokers_eligible")
-  if match(["hand", "draw"], ["has_non_nfnl_tile"]) do unset_status("nfnl_eligible") end
-end
-# define_play_effect jihai do if match(["hand", "draw"], ~m"(any_flower any_joker):1") do unset_status("nfnl_eligible") end end
-define_play_effect "flower" do flowers_discarded += 1; flowers_jokers_discarded += 1 end
-
 def joker_discard do
   if jokers_discarded < 2 do set_status("$status") end
   jokers_discarded += 1
