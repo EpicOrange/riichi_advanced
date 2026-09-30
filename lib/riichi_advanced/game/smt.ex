@@ -833,10 +833,13 @@ defmodule RiichiAdvanced.SMT do
 
     # we can trivially solve for the identity of a joker in a triplet/quad/etc
     optimization_call_jokers = for {call, i} <- calls, {_tile, ix} <- Enum.with_index(call), Map.get(call_i_to_ix, i)+ix in joker_ixs do
-      tile = Utils.get_joker_meld_tile({"", call}, tile_behavior)
-      if tile != nil do
-        "(assert (= joker#{Map.get(call_i_to_ix, i)+ix} #{to_smt_tile(tile, encoding)}))\n"
-      else "" end
+      # see if all nonjokers are equal
+      case Enum.reject(call, &Utils.has_matching_tile?([&1], jokers)) do
+        [tile | rest] -> if Enum.all?(rest, &Utils.same_tile(&1, tile, tile_behavior)) do
+          "(assert (= joker#{Map.get(call_i_to_ix, i)+ix} #{to_smt_tile(tile, encoding)}))\n"
+        else "" end
+        _ -> ""
+      end
     end |> Enum.join()
 
     # if your hand has 2+ identical jokers {a, b, c...}
