@@ -43,6 +43,7 @@ end
 # ditto but for golden chun
 on before_scoring do
   add_counter("golden_chuns", "count_matches", ["hand", "calls", "winning_tile"], ~m"nojoker, any@golden:1")
+  golden_chun_shuugi = golden_chuns * @golden_chun_shuugi
   if golden_chuns > 0 do set_status("golden_chun") end
 end
 
@@ -58,15 +59,17 @@ apply append, "buttons.ankan.call_conditions", not_call_contains(["37z"]) or cal
 
 if defined("shuugi") do
   # golden chun used as a five is worth 2 chips
+  define_const golden_chun_shuugi, 2
+  
   on after_initialization do
-    add_rule("Shuugi", "Golden Chun", "(Golden Chun) Winning with a hand that uses the golden chun as a five adds 2 shuugi to the payment.")
+    add_rule("Shuugi", "Golden Chun", "(Golden Chun) Winning with a hand that uses the golden chun %{golden_chun} as a five adds %{chips} shuugi to the payment.", %{golden_chun: ~T"37z", chips: @golden_chun_shuugi})
   end
-  define_yaku shuugi, "Kin", ["golden_chuns", "⛀"], golden_chuns >= 1
+  define_yaku shuugi, "Kin", [@golden_chun_shuugi, "⛀"], golden_chun_shuugi >= 1
   def announce_shuugi_payment, prepend: true do
     if won_by_draw do
-      if status("golden_chun") do push_system_message("Everyone pays 2 chips for golden chun used as a five (golden chun)") end
+      if status("golden_chun") do push_system_message("Everyone pays %{chips} chips for golden chun used as a five (golden chun)", %{chips: @golden_chun_shuugi}) end
     else
-      if status("golden_chun") do push_system_message("Discarder pays 2 chips for golden chun used as a five (golden chun)") end
+      if status("golden_chun") do push_system_message("Discarder pays %{chips} chips for golden chun used as a five (golden chun)", %{chips: @golden_chun_shuugi}) end
     end
   end
 end
