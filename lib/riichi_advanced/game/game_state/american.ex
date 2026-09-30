@@ -133,7 +133,7 @@ defmodule RiichiAdvanced.GameState.American do
 
     nojokers = if Enum.empty?(nojokers) do [] else ["nojoker"] ++ nojokers end
 
-    # add "nojokers" for unique groups as well
+    # add "nojoker" for unique groups as well
     use_jokers = Enum.map(use_jokers, fn [groups, num] ->
       cond do
         is_list(groups) and "unique" in groups ->
@@ -181,8 +181,7 @@ defmodule RiichiAdvanced.GameState.American do
           ++ translate_american_match_definitions_suits(choice.b, sb)
           ++ translate_american_match_definitions_suits(choice.c, sc)
         {offsets, nonoffsets} = Enum.split_with(parsed_groups, &Enum.any?(&1, fn t -> MatchOld.is_offset(t) end))
-        offsets = Enum.concat(offsets)
-        offsets = if Enum.empty?(offsets) do [] else [[["unique" | offsets], length(offsets)]] end
+        offsets = Enum.map(offsets, fn g -> if Enum.empty?(g) do [] else [["unique" | g], length(g)] end end)
         nonoffsets = Enum.map(nonoffsets, fn g -> [[g], 1] end)
         [offsets ++ nonoffsets ++ choice.unsuited]
       end
