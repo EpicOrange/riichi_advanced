@@ -694,7 +694,7 @@ define_button "3_am_quint",
 
 define_button am_joker_swap,
   display_name: "Swap for exposed joker",
-  show_when: status_missing("match_start", "dead_hand") and our_turn and not_just_discarded and match(["hand_draw_nonjoker_any", "anyone_joker_meld_tiles"], ~m"pair:1")
+  show_when: status_missing("match_start", "dead_hand") and our_turn and not_just_discarded and match(["hand_draw_nonjoker_any", "anyone_joker_meld_tiles"], ~m"1j:0, pair:1")
   do
     big_text("Swap")
     mark [["call", 1, ["call_has_joker", "match_call_to_marked_hand"]],
