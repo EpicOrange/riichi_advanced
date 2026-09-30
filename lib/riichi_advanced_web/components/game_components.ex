@@ -145,7 +145,7 @@ defmodule RiichiAdvancedWeb.GameComponents do
               <% end %>
             <% else %>
               <%= for button <- @state.players[@seat].buttons, button_display_name <- [dt(@lang, get_button_name(@state.rules_ref, button))] do %>
-                <button class={["button", String.length(button_display_name) >= 40 && "small-text"]} phx-cancellable-click="button_clicked" phx-hover="hover_button" phx-hover-off="hover_off" phx-value-name={button}><%= button_display_name %></button>
+                <button class={["button", String.length(button_display_name) >= 40 && "small-text"]} phx-cancellable-click="button_clicked" phx-hover="hover_button" phx-hover-off="hover_off_button" phx-value-name={button}><%= button_display_name %></button>
               <% end %>
             <% end %>
           <% end %>
@@ -239,7 +239,7 @@ defmodule RiichiAdvancedWeb.GameComponents do
         drawn_reserved_tiles={@state.drawn_reserved_tiles}
         available_seats={@state.available_seats}
         :if={Rules.get(@state.rules_ref, "display_wall", false)} />
-      <div class={["big-text"]} :if={@loading && Rules.has_key?(@state.rules_ref, "show_waits")}><%= t(@lang, "Loading...") %></div>
+      <div class="big-text" :if={@loading}><%= t(@lang, "Loading...") %></div>
       <div class="auto-buttons game-bottom-element">
         <%= for {{name, desc, checked, _}, i} <- Enum.with_index(@state.players[@seat].auto_buttons) do %>
           <input id={"auto-button-" <> name} type="checkbox" class="auto-button" phx-click="auto_button_toggled" phx-value-name={name} phx-value-enabled={if checked do "true" else "false" end} checked={checked}>
@@ -282,15 +282,20 @@ defmodule RiichiAdvancedWeb.GameComponents do
           <% end %>
         </div>
       <% end %>
-      <%= if @interaction_state.visible_waits != nil and @interaction_state.show_waits_index != nil and Rules.has_key?(@state.rules_ref, "show_waits") do %>
-        <%= if Map.get(@interaction_state.visible_waits, @interaction_state.show_waits_index, :loading) == :loading do %>
+      <%= if Rules.has_key?(@state.rules_ref, "show_waits") do %>
+        <% waits = if @interaction_state.hovered_hand != nil and is_map(@interaction_state.visible_opponent_waits) do
+             Map.get(@interaction_state.visible_opponent_waits, @interaction_state.hovered_hand, :loading)
+           else [] end %>
+        <% waits = if waits == [] and is_map(@interaction_state.visible_waits) do
+             Map.get(@interaction_state.visible_waits, @interaction_state.show_waits_index, :loading)
+           else waits end %>
+        <%= if waits == :loading do %>
           <div class="visible-waits-container">
             <div class="visible-waits visible-waits-loading">
               Calculating waits...
             </div>
           </div>
         <% else %>
-          <% waits = Map.get(@interaction_state.visible_waits, @interaction_state.show_waits_index, []) %>
           <div class="visible-waits-container" :if={not Enum.empty?(waits)}>
             <% has_label = Enum.any?(waits, fn {_wait, _num, label} -> label != nil end) %>
             <div class={["visible-waits"] ++ if has_label do ["spaced"] else [] end}>

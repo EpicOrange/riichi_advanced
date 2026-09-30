@@ -1107,7 +1107,8 @@ defmodule RiichiAdvanced.GameState do
 
   def get_visible_waits(state, seat, index) do
     player = state.players[seat]
-    hand = List.delete_at(player.hand ++ player.draw, index)
+    hand = player.hand ++ player.draw
+    hand = if index != nil do List.delete_at(hand, index) else hand end
     calls = player.calls
     win_definitions = Rules.translate_match_definitions(state.rules_ref, Rules.get(state.rules_ref, "show_waits", %{}) |> Map.get("win_definitions", []))
     tile_behavior = player.tile_behavior
@@ -1120,7 +1121,7 @@ defmodule RiichiAdvanced.GameState do
   def get_visible_wait_labels(state, seat, index, visible_waits) do
     player = state.players[seat]
     hand = player.hand ++ player.draw
-    discard = Enum.at(hand, index)
+    discard = if index != nil do Enum.at(hand, index, nil) else nil end
     visible_waits
     |> Enum.map(fn {wait, ukeire, _} -> {wait, ukeire, calculate_wait_label(state, seat, wait, discard, index)} end)
   end
@@ -1998,19 +1999,19 @@ defmodule RiichiAdvanced.GameState do
       end
       {:ok, pid} = Task.start(fn ->
         hand = state.players[seat].hand ++ state.players[seat].draw
-        tile = Enum.at(hand, index)
+        tile = if index != nil do Enum.at(hand, index) else nil end
         waits = cond do
           index == nil -> get_visible_waits(state, seat, nil)
           is_playable?(state, seat, tile) -> get_visible_waits(state, seat, index)
           true -> %{}
         end
-        # since this is called so often we don't want to broadcast_state_change
+                # since this is called so often we don't want to broadcast_state_change
         # so as an optimization we use send() to send it to the caller
         # we will send %{tile => waits} but caller translates and saves %{index => waits}
-        send(from, {:set_visible_waits, hand, tile, waits})
+        send(from, {:set_visible_waits, seat, hand, tile, waits})
         # then calculate labels for it
         waits = get_visible_wait_labels(state, seat, index, waits)
-        send(from, {:set_visible_waits, hand, tile, waits})
+        send(from, {:set_visible_waits, seat, hand, tile, waits})
       end)
       state = state
       |> Map.put(:get_visible_waits_pid, pid)

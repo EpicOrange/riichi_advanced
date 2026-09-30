@@ -10,6 +10,8 @@ defmodule RiichiAdvancedWeb.GameLive.InteractionState do
     hide_buttons: false, # used to hide buttons on the client side after clicking one
     visible_waits: nil,
     visible_waits_hand: nil,
+    visible_opponent_waits: %{},
+    visible_opponent_waits_hand: %{},
     show_waits_index: nil
   ]
 end
@@ -305,6 +307,29 @@ defmodule RiichiAdvancedWeb.GameLive do
       end
     else socket end
   end
+  defp get_visible_opponent_waits(socket, seat) do
+    player = socket.assigns.state.players[seat]
+    visible_hand? = socket.assigns.viewer == seat or player.hand_revealed or socket.assigns.state.log_seeking_mode
+    no_draws? = Enum.empty?(player.draw)
+    if visible_hand? and no_draws? do
+      hand = player.hand ++ player.draw
+      socket = if hand != socket.assigns.interaction_state.visible_opponent_waits_hand[seat] do
+        update_interaction_state(socket, &%{&1 | visible_opponent_waits: Map.delete(&1.visible_opponent_waits, seat), visible_opponent_waits_hand: Map.delete(&1.visible_opponent_waits_hand, seat)})
+      else socket end
+      visible_opponent_waits = socket.assigns.interaction_state.visible_opponent_waits || %{}
+      if not Map.has_key?(visible_opponent_waits, seat) do
+        # first check if they even need this tile
+        tenpai_definitions = Rules.get(socket.assigns.state.rules_ref, :shanten_definitions, %{}) |> Map.get(:tenpai, [])
+        if Enum.empty?(tenpai_definitions) || not Match.match_hand(hand, player.calls, tenpai_definitions, player.tile_behavior) do
+          update_interaction_state(socket, &%{&1 | visible_opponent_waits: Map.put(visible_opponent_waits, seat, [])})
+        else
+          # async call; gets handled below in :set_visible_waits
+          GenServer.cast(socket.assigns.game_state, {:get_visible_waits, self(), seat, nil})
+          update_interaction_state(socket, &%{&1 | visible_opponent_waits: Map.put(visible_opponent_waits, seat, :loading)})
+        end
+      else socket end
+    else socket end
+  end
 
   defp navigate_back(socket) do
     cond do
@@ -431,13 +456,17 @@ defmodule RiichiAdvancedWeb.GameLive do
     {:noreply, socket}
   end
 
-  def handle_event("hover_off", _assigns, socket) do
+  def handle_event("hover_off_button", _assigns, socket) do
     socket = update_interaction_state(socket, &%{&1 | hovered_called_tile: nil, hovered_call_choice: nil})
     {:noreply, socket}
   end
 
   def handle_event("hover_hand", %{"seat" => seat}, socket) do
-    socket = update_interaction_state(socket, &%{&1 | hovered_hand: String.to_existing_atom(seat)})
+    seat = String.to_existing_atom(seat)
+    socket = if seat != socket.assigns.seat do
+      get_visible_opponent_waits(socket, seat)
+    else socket end
+    socket = update_interaction_state(socket, &%{&1 | hovered_hand: seat})
     {:noreply, socket}
   end
 
@@ -704,18 +733,29 @@ defmodule RiichiAdvancedWeb.GameLive do
   # tile is the tile that, when removed, yields the waits
   # waits is something like [{:"0s", 2, "Self-Draw"}, {:"5s", 0, "Self-Draw"}, {:"35s", 1, nil}]
   # assign that array to each index in hand equal to tile
-  def handle_info({:set_visible_waits, hand, tile, waits}, socket) do
-    socket = if hand != socket.assigns.interaction_state.visible_waits_hand do
-      # IO.puts("Resetting waits because #{inspect(hand)} != cached #{inspect(socket.assigns.interaction_state.visible_waits_hand)}")
-      update_interaction_state(socket, &%{&1 | visible_waits: %{}, visible_waits_hand: hand})
-    else socket end
-    new_visible_waits = hand
-    |> Enum.with_index()
-    |> Enum.filter(fn {t, _i} -> t == tile end)
-    |> Enum.map(fn {_t, i} -> i end)
-    |> Enum.reduce(socket.assigns.interaction_state.visible_waits, &Map.put(&2, &1, waits))
-    socket = update_interaction_state(socket, &%{&1 | visible_waits: new_visible_waits})
-    {:noreply, socket}
+  def handle_info({:set_visible_waits, seat, hand, tile, waits}, socket) do
+    if seat == socket.assigns.seat do
+      IO.inspect({"asf", seat, hand, tile, waits})
+      # our own hand's waits
+      socket = if hand != socket.assigns.interaction_state.visible_waits_hand do
+        # IO.puts("Resetting waits because #{inspect(hand)} != cached #{inspect(socket.assigns.interaction_state.visible_waits_hand)}")
+        update_interaction_state(socket, &%{&1 | visible_waits: %{}, visible_waits_hand: hand})
+      else socket end
+      new_visible_waits = hand
+      |> Enum.with_index()
+      |> Enum.filter(fn {t, _i} -> t == tile end)
+      |> Enum.map(fn {_t, i} -> i end)
+      |> Enum.reduce(socket.assigns.interaction_state.visible_waits, &Map.put(&2, &1, waits))
+      socket = update_interaction_state(socket, &%{&1 | visible_waits: new_visible_waits})
+      {:noreply, socket}
+    else
+      # opponent hand's waits
+      socket = update_interaction_state(socket, &%{&1 |
+        visible_opponent_waits: Map.put(&1.visible_opponent_waits, seat, waits),
+        visible_opponent_waits_hand: Map.put(&1.visible_opponent_waits_hand, seat, hand),
+      })
+      {:noreply, socket}
+    end
   end
 
   def handle_info(data, socket) do
