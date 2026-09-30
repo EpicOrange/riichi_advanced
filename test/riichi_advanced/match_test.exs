@@ -4,7 +4,7 @@ defmodule RiichiAdvanced.MatchTest do
 
   @ruleset "riichi"
   @mods [
-    "lib/yaku/kansai_chiitoitsu",
+    %{name: "lib/yaku/chiitoitsu", config: %{kansai: false, name: "Chiitoitsu", value: 2}},
     %{name: "dora", config: %{start_indicators: 0}},
     %{name: "aka", config: %{man: 1, pin: 1, sou: 1}},
     %{name: "aka9", config: %{man: 1, pin: 1, sou: 1}},
@@ -12,8 +12,11 @@ defmodule RiichiAdvanced.MatchTest do
     "lib/yaku/dorahairi_chinroutou_chiitoitsu",
     "shiny_dora",
   ]
+  @excluded_mods [
+    %{name: "lib/yaku/chiitoitsu", config: %{kansai: true, name: "Chiitoitsu", value: 2}},
+  ]
   setup do
-    test_state = TestUtils.initialize_test_state(@ruleset, @mods)
+    test_state = TestUtils.initialize_test_state(@ruleset, @mods, @excluded_mods)
     GenServer.cast(test_state.game_state_pid, :sort_hands)
     state = GenServer.call(test_state.game_state_pid, :get_state)
     on_exit(fn -> GenServer.cast(test_state.game_state_pid, :terminate_game) end)

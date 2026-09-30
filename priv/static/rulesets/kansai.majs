@@ -4,12 +4,15 @@ set tutorial_link, "https://github.com/EpicOrange/riichi_advanced/blob/main/docu
 require "renchan"
 require_after "riichi_fix_rules_tabs"
 
+apply subtract, "default_mods", [
+  %{name: "lib/yaku/chiitoitsu", config: %{kansai: false, name: "Chiitoitsu", value: 2}},
+]
 apply set_append, "default_mods", [
   "sanma_pei_yakuhai",
   %{name: "lib/yaku/sanrenkou", config: %{san_name: "Sanrenkou", san_value: 2}},
   "lib/yaku/riichi_suurenkou",
   %{name: "lib/yaku/sanpuukou", config: %{dai_name: "Sanpuukou", dai_value: 2}},
-  "lib/yaku/kansai_chiitoitsu",
+  %{name: "lib/yaku/chiitoitsu", config: %{kansai: true, name: "Chiitoitsu", value: 2}},
   "lib/kansai_draw",
   "lib/kansai_flowers",
   "kansai_no_furiten_riichi",
