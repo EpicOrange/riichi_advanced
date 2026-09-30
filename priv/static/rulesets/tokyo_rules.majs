@@ -1,3 +1,7 @@
+# remaining TODOs:
+# - need reroll dice until you get a 1 or 6, and ante 300 for every reroll
+# - finish implementing partial_furiten mod
+
 define_base_ruleset riichi
 set display_name, "Tokyo Rules (c. 1957)"
 set tutorial_link, "https://riichi.wiki/Tokyo_rules"
@@ -22,8 +26,14 @@ on after_initialization do
   add_rule("Rules", "Fu", "(Tokyo Rules) Fu is not rounded.")
   add_rule("Rules", "Scoring", "Scores are rounded to the nearest 10, maxing out at 1000 points (considered kazumangan, 4000/6000). Having 7+ han qualifies you for hanemangan (8000/12000). Some hands are shoumangan (6000/9000). Hands that are yakuman in riichi are daimangan (12000/18000), with the exception of chuurenpoutou, which is choumangan (16000/24000)")
   add_rule("Rules", "Minimum Han", "Winning requires a minimum of 1 han.")
-  add_rule("Rules", "Zoroba (unimplemented)", "Each 1 or 6 die rolled in the beginning adds 1 han to the winning hand. It is guaranteed that one of the dice is a 1 or 6. This does not count towards the 1 han minimum.")
+  add_rule("Rules", "Zoroba", "Each 1 or 6 die rolled in the beginning adds 1 han to the winning hand. If they add to 7, an additional 1 han is added. This does not count towards the 1 han minimum.")
+  add_rule("Rules", "Zoroba", "(Unimplemented) If neither die is 1 or 6, then they are rerolled until a 1 or 6 is obtained. Each reroll also increases this round's win score by 300.")
 end
+
+# zoroba
+define_yaku extra_yaku, "Zoroba", [1, "Han"], dice_equals(7)
+define_yaku extra_yaku, "Zoroba", [1, "Han"], die1_equals(1, 6)
+define_yaku extra_yaku, "Zoroba", [1, "Han"], die2_equals(1, 6)
 
 # yaku differences are:
 # - no ippatsu
@@ -63,12 +73,6 @@ end
 # - rentsuu honitsu is shoumangan
 # - dorahairi chinroutou chiitoitsu is shoumangan
 # - daichiishin is shoumangan
-
-# TODO:
-# - furiten should also forbid ryanmen and nobetan waits
-# - zoroba rules with the dice
-
-
 
 apply subtract, "default_mods", [
   "lib/yaku/ippatsu",
