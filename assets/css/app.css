@@ -1974,7 +1974,7 @@ div.hand-piano-container {
   bottom: calc(-4.5 * var(--tile-size));
   left: calc(-0.375 * var(--tile-size));
   right: calc(-0.5 * var(--tile-size));
-  z-index: -1;
+  z-index: 1;
   display: none;
   overflow: hidden;
 }
@@ -2105,11 +2105,16 @@ div.hand-piano-container > div.hand-piano-key {
     &::after {
       border-right: calc(0.05 * var(--tile-size)) solid var(--border-color);
     }
+    &:has(+ .hand-piano-key + .inactive)::after {
+      width: calc(0.6025 * var(--tile-size));
+      border-right: calc(var(--border-width) - 0.001 * var(--tile-size)) solid var(--border-color);
+    }
   }
   &.inactive {
     cursor: default;
     opacity: 0.7;
     filter: brightness(60%);
+    z-index: -1;
   }
   &:nth-child(2n).markable, &:nth-child(2n).marked {
     --border-color: var(--tile-back-side);
