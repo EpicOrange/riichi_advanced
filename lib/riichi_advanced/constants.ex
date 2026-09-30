@@ -470,7 +470,7 @@ defmodule RiichiAdvanced.Constants do
 
   def ai_names, do: @ai_names
 
-  @available_rulesets [
+  @available_riichi_rulesets [
     {"riichi",       "Riichi", "The classic riichi ruleset, now with an assortment of mods to pick and choose at your liking."},
     {"sanma",        "Sanma", "Three-player Riichi."},
     {"space",        "Space Mahjong", "Riichi, but sequences can wrap (891, 912), and you can make sequences from winds and dragons. In addition, you can chii from any direction, and form open kokushi (3 han)."},
@@ -486,6 +486,8 @@ defmodule RiichiAdvanced.Constants do
     {"arushiiaru",   "Arushiiaru", "Predecessor of Riichi mahjong, which is basically the same thing except scores are 4 times smaller and max out at 2000 (Mangan)."},
     {"hochi_rules",  "Hochi Rules", "The oldest written ruleset for Riichi, featuring 300 point riichi bets and no fu rounding."},
     {"tokyo_rules",  "Tokyo Rules (beta)", "Tokyo rules introduces the 1 han minimum, with 100 point riichi bets, dora, and dice providing bonus han."},
+  ]
+  @available_other_rulesets [
     {"hk",           "Hong Kong", "Hong Kong Old Style mahjong. Three point minimum, everyone pays for a win, and win instantly if you have seven flowers."},
     {"sichuan",      "Sichuan Bloody", "Sichuan Bloody mahjong. Trade tiles, void a suit, and play until three players win (bloody end rules)."},
     {"mcr",          "MCR", "Mahjong Competition Rules. Has a scoring system of a different kind of complexity than Riichi."},
@@ -516,7 +518,9 @@ defmodule RiichiAdvanced.Constants do
     {"australian",   "Australian", "No description provided.", "https://balsallcommonu3a.org/Downloads/Mahjong%20Rules%20November%202016.pdf"},
   ]
 
-  def available_rulesets, do: @available_rulesets
+  def available_riichi_rulesets, do: @available_riichi_rulesets
+  def available_other_rulesets, do: @available_other_rulesets
+  def available_rulesets, do: @available_riichi_rulesets ++ @available_other_rulesets
   def unimplemented_rulesets, do: @unimplemented_rulesets
 
   # convert modpack definitions to majs headers

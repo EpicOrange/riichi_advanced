@@ -3742,23 +3742,34 @@ div#container > div.index-bottom-buttons {
   bottom: 0;
 }
 div#container > div.index-bottom-buttons > button {
-  font-size: calc(0.5 * var(--tile-size));
+  font-size: calc(0.67 * var(--tile-size));
 }
 div#container > form {
   position: absolute;
-  width: calc(100% - 3 * var(--tile-size));
-  height: calc(7.5 * var(--tile-size));
-  top: calc(50% - 1.5 * var(--tile-size));
-  left: calc(1 * var(--tile-size));
-  padding: calc(0.5 * var(--tile-size));
-  border-radius: calc(0.25 * var(--tile-size));
-  background: #609060;
+  width: calc(16.75 * var(--tile-size));
+  height: calc(8.25 * var(--tile-size));
+  padding: calc(0.125 * var(--tile-size));
+  top: calc(50% - 1.75 * var(--tile-size));
+  left: calc(-0.5 * var(--tile-size));
   color: white;
   font-size: calc(0.5 * var(--tile-size));
   z-index: 2;
+
   display: flex;
   flex-direction: column;
   align-items: space-around;
+  gap: 0;
+}
+div#container > form::before {
+  content: "";
+  position: absolute;
+  width: calc(16.5 * var(--tile-size));
+  height: calc(8.5 * var(--tile-size));
+  top: 0;
+  left: calc(0.25 * var(--tile-size));
+  border-radius: calc(0.25 * var(--tile-size));
+  z-index: -1;
+  background: #609060;
 }
 div#container > form.ruleset-selection-form input, div#container > form.ruleset-selection-form button {
   font-size: calc(0.75 * var(--tile-size));
@@ -3768,35 +3779,64 @@ div#container > form.ruleset-selection-form > div.form-error {
   color: white;
 }
 div#container > form.ruleset-selection-form > input.nickname-input {
-  margin: calc(0.5 * var(--tile-size));
+  width: calc(15.375 * var(--tile-size));
+  margin-left: calc(0.5 * var(--tile-size));
   font-size: calc(0.75 * var(--tile-size));
-  height: 1em;
-  margin-bottom: 0;
+  height: 1.5em;
+}
+/* enter buttons for index and lobby */
+div#container div.enter-buttons {
+  width: calc(15.75 * var(--tile-size));
+  margin: calc(0.25 * var(--tile-size));
+  margin-left: calc(0.5 * var(--tile-size));
+  margin-bottom: calc(0.25 * var(--tile-size));
+  display: flex;
+  flex-flow: row nowrap;
+  justify-content: stretch;
+  column-gap: calc(0.25 * var(--tile-size));
+}
+div#container div.enter-buttons > button {
+  font-size: calc(0.8 * var(--tile-size));
+  flex-grow: 1;
 }
 div#container > form.ruleset-selection-form > div.ruleset-selection {
+  display: flex;
+  flex-flow: row wrap;
+  justify-content: center;
+  align-items: flex-start;
   line-height: 1;
   text-align: center;
   flex-grow: 1;
   color: white;
   font-size: calc(0.55 * var(--tile-size));
   overflow-y: auto;
+  padding: 0 calc(0.25 * var(--tile-size));
   scrollbar-color: var(--bg-color) transparent;
   scrollbar-gutter: stable;
-}
-div#container > form.ruleset-selection-form > div.ruleset-selection > label {
-  font-size: calc(0.55 * var(--tile-size));
-  padding: calc(0.15 * var(--tile-size));
-}
-div#container > form.ruleset-selection-form > div.ruleset-selection > label > a {
-  text-decoration: none;
-  color: white;
-  font-size: calc(0.55 * var(--tile-size));
-}
-div#container > form.ruleset-selection-form > div.ruleset-selection > input[disabled] + label {
-  opacity: 0.4;
-}
-div#container > form.ruleset-selection-form > div.ruleset-selection > input[disabled] + label {
-  opacity: 0.4;
+  column-gap: 1%;
+  & > div.ruleset-box {
+    display: flex;
+    flex-flow: row wrap;
+    justify-content: center;
+    align-items: center;
+    gap: calc(0.0625 * var(--tile-size));
+    &.riichi-ruleset-selection { flex-basis: 50%; text-align: right; justify-content: flex-end; }
+    &.other-ruleset-selection { flex-basis: 47.5%; text-align: left; justify-content: flex-start; }
+    &.unimplemented-selection {
+      margin-left: calc(0.75 * var(--tile-size)); 
+      padding: 0 calc(0.5 * var(--tile-size));
+    }
+    & > label {
+      font-size: calc(0.67 * var(--tile-size));
+      padding: calc(0.15 * var(--tile-size));
+    }
+    & > label > a {
+      text-decoration: none;
+      color: white;
+      font-size: calc(0.67 * var(--tile-size));
+    }
+    & > input[disabled] + label { opacity: 0.4; }
+  }
 }
 div#container > form.log-selection-form {
   display: flex;
@@ -3843,18 +3883,6 @@ div#container > form.about-page > ul.beta-testers {
 }
 div#container > form.about-page > ul.beta-testers > li { padding: 0.1em 0.25em; }
 div#container > form.about-page > ul.beta-testers > li:nth-child(2n) { transform: translateY(-0.25em); }
-/* enter buttons for index and lobby */
-div#container div.enter-buttons {
-  width: 100%;
-  display: flex;
-  flex-flow: row nowrap;
-  justify-content: stretch;
-  margin-top: calc(0.5 * var(--tile-size));
-}
-div#container div.enter-buttons > button {
-  font-size: calc(0.6 * var(--tile-size));
-  flex-grow: 1;
-}
 
 /* room code modal */
 div.room-code-modal {
@@ -4318,11 +4346,11 @@ div#container > input.expand-checkbox + label {
   transition: top 0.5s, right 0.5s;
 }
 div#container > input.expand-checkbox.for-rulesets + label {
-  right: calc(0.5 * var(--tile-size));
+  right: calc(-0.5 * var(--tile-size));
   top: calc(6 * var(--tile-size));
 }
 div#container > input.expand-checkbox.for-rulesets:checked + label {
-  top: calc(0.5 * var(--tile-size));
+  top: calc(-0.5 * var(--tile-size));
 }
 div#container > input.expand-checkbox + label::before { content: "+"; }
 div#container > input.expand-checkbox:checked + label::before { content: "–"; }
@@ -4330,10 +4358,14 @@ div#container > form,
 div#container > div.mods,
 div#container > div.custom-json {
   transition: width 0.5s, height 0.5s, top 0.5s, left 0.5s;
+  &::before { transition: width 0.5s, height 0.5s, top 0.5s, left 0.5s; }
 }
 div#container > input.expand-checkbox:checked ~ form {
-  height: calc(13 * var(--tile-size));
-  top: calc(50% - 7 * var(--tile-size));
+  height: calc(14.75 * var(--tile-size));
+  top: calc(50% - 8.25 * var(--tile-size));
+  &::before {
+    height: calc(15 * var(--tile-size));
+  }
 }
 div#container > input.expand-checkbox:checked ~ div.mods,
 div#container > input.expand-checkbox:checked ~ div.custom-json {

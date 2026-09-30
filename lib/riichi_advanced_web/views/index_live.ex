@@ -25,7 +25,8 @@ defmodule RiichiAdvancedWeb.IndexLive do
       GenServer.cast(messages_init.messages_state, {:add_message, %{text: "Welcome to Riichi Advanced!"}})
       socket
     else socket end
-    socket = assign(socket, :rulesets, Constants.available_rulesets())
+    socket = assign(socket, :riichi_rulesets, Constants.available_riichi_rulesets())
+    socket = assign(socket, :other_rulesets, Constants.available_other_rulesets())
     socket = assign(socket, :unimplemented_rulesets, Constants.unimplemented_rulesets())
     {:ok, socket}
   end
@@ -43,16 +44,25 @@ defmodule RiichiAdvancedWeb.IndexLive do
       <label for="expand-checkbox"/>
       <form class="ruleset-selection-form" phx-submit="redirect">
         <div class="ruleset-selection">
-          <%= for {{ruleset, name, desc}, i} <- Enum.with_index(@rulesets) do %>
-            <input type="radio" id={ruleset} name="ruleset" value={ruleset} checked={ruleset == @ruleset} phx-change="change_ruleset">
-            <label for={ruleset} title={dt(@lang, desc)} data-name={dt(@lang, name)} tabindex={i}><%= dt(@lang, name) %></label>
-          <% end %>
-          <br/>
-          <%= t(@lang, "To be implemented:") %>
-          <%= for {{ruleset, name, desc, link}, i} <- Enum.with_index(@unimplemented_rulesets) do %>
-            <input type="radio" id={ruleset} name="ruleset" value={ruleset} disabled>
-            <label for={ruleset} title={dt(@lang, desc)} data-name={dt(@lang, name)} tabindex={i}><a href={link} target="_blank"><%= dt(@lang, name) %></a></label>
-          <% end %>
+          <div class="ruleset-box riichi-ruleset-selection">
+            <%= for {{ruleset, name, desc}, i} <- Enum.with_index(@riichi_rulesets) do %>
+              <input type="radio" id={ruleset} name="ruleset" value={ruleset} checked={ruleset == @ruleset} phx-change="change_ruleset">
+              <label for={ruleset} title={dt(@lang, desc)} data-name={dt(@lang, name)} tabindex={i}><%= dt(@lang, name) %></label>
+            <% end %>
+          </div>
+          <div class="ruleset-box other-ruleset-selection">
+            <%= for {{ruleset, name, desc}, i} <- Enum.with_index(@other_rulesets) do %>
+              <input type="radio" id={ruleset} name="ruleset" value={ruleset} checked={ruleset == @ruleset} phx-change="change_ruleset">
+              <label for={ruleset} title={dt(@lang, desc)} data-name={dt(@lang, name)} tabindex={i}><%= dt(@lang, name) %></label>
+            <% end %>
+          </div>
+          <div class="ruleset-box unimplemented-selection">
+            <b><%= t(@lang, "To be implemented:") %></b>
+            <%= for {{ruleset, name, desc, link}, i} <- Enum.with_index(@unimplemented_rulesets) do %>
+              <input type="radio" id={ruleset} name="ruleset" value={ruleset} disabled>
+              <label for={ruleset} title={dt(@lang, desc)} data-name={dt(@lang, name)} tabindex={i}><a href={link} target="_blank"><%= dt(@lang, name) %></a></label>
+            <% end %>
+          </div>
         </div>
         <input class="nickname-input" type="text" name="nickname" placeholder={t(@lang, "Nickname (optional)")} value={@nickname || ""} />
         <div class="enter-buttons">
