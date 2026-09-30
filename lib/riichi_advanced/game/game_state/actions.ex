@@ -164,21 +164,28 @@ defmodule RiichiAdvanced.GameState.Actions do
             length(state.wall) >= 1 ->
               # move the last tile of the wall to the dead wall
               # then draw the last tile of the dead wall
+              # TODO might be kind of expensive to take wall length every turn?
+              wall_parity = rem(length(state.wall), 2)
               {wall, [tile]} = cond do
-                rem(length(state.wall), 2) == 1 -> Enum.split(state.wall, -1)
-                length(state.wall) == 1         -> {[], state.wall}
-                true                            -> with {wall, [tile1, tile2]} <- Enum.split(state.wall, -2) do {wall ++ [tile2], [tile1]} end
+                wall_parity == 1        -> Enum.split(state.wall, -1)
+                length(state.wall) == 1 -> {[], state.wall}
+                true                    -> with {wall, [tile1, tile2]} <- Enum.split(state.wall, -2) do {wall ++ [tile2], [tile1]} end
               end
-              # IO.inspect({state.dead_wall_index, Enum.take(state.wall, -6), state.dead_wall, state.revealed_tiles, get_revealed_tiles(state)})
-              dead_wall = if rem(length(state.dead_wall), 2) == 0 do
+              # IO.inspect({wall_parity, length(state.wall), state.dead_wall_index, Enum.take(state.wall, -6), state.dead_wall, state.revealed_tiles, get_revealed_tiles(state)})
+              dead_wall_length = length(state.dead_wall)
+              dead_wall = if rem(dead_wall_length, 2) == 0 do
                 [tile | state.dead_wall]
               else List.insert_at(state.dead_wall, 1, tile) end
+              # shifted_pos = if even, -2; if odd, 0
+              # a revealed tile at Enum.at(wall, shifted_pos) needs to shift by ±1 due to the above draw method
+              shift_pos = if wall_parity == 0 do -2 else 0 end
+              shift_amt = if wall_parity == 0 do 1 else -1 end
               state
               |> Map.put(:wall, wall)
               |> Map.put(:dead_wall, dead_wall)
               |> draw_tile(seat, num, tile_spec, to_aside)
-              # also need to shift revealed tiles that are on the edge
-              |> Map.update!(:revealed_tiles, fn tiles -> Enum.map(tiles, &if is_integer(&1) and &1 < 0 and &1+state.dead_wall_index in [0, -1] do &1-rem(state.dead_wall_index, 2) else &1 end) end)
+              # also need to shift revealed tiles that are on the edge but only if they are in the wall (not dead wall)
+              |> Map.update!(:revealed_tiles, fn tiles -> Enum.map(tiles, &if is_integer(&1) and &1 < 0 and &1+dead_wall_length == shift_pos do &1+shift_amt else &1 end) end)
             true ->
               # both walls are exhausted, draw nothing
               IO.puts("#{seat} tried to draw a nil tile!")
