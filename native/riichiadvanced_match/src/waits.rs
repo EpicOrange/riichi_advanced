@@ -9,8 +9,9 @@ use crate::match_info::{prepare_tiles};
 use crate::offsets::get_base_tiles_from_defns;
 use crate::profile::{PROFILE_GET_WAITS, PROFILE_UNNEEDED_TILES, CALL_COUNT, MAX_NANOS, TOTAL_NANOS};
 use crate::tile_table::{TILE_TABLE, tile1x};
+use crate::tileset::remove_tileset_indices;
 use crate::types::{BitAttrs, ElixirAliases, ElixirHandCalls, ElixirTile, ElixirTileOrdering, MatchDefinitionElem, MatchDefinitions, MatchInfo, Tile};
-use crate::utils::{add_joker_to_aliases, remove_indices, remove_joker_from_aliases};
+use crate::utils::{add_joker_to_aliases, remove_joker_from_aliases};
 
 #[rustler::nif(schedule = "DirtyCpu")]
 fn _get_waits_v3(
@@ -232,25 +233,29 @@ pub fn __get_unneeded_tiles_v2(
       ret.extend(hands[0].attrs.iter());
     }
   }
+  // println!("ret starts as {:?}", decode_tiles(&ret.iter().cloned().collect::<Vec<_>>(), &match_info.all_attrs));
 
   // then try removing each tile in turn and see if the match succeeds without that tile
   let prev_hash = match_info.initial_hands[0].hash;
   for _ in 0..match_info.initial_hands[0].attrs.len() {
-    // println!("initial_hands is now {:?}", decode(&match_info.initial_hands[0], &match_info.all_attrs));
+    // println!("initial_hands is now {:?}", crate::encode::decode(&match_info.initial_hands[0], &match_info.all_attrs));
     // println!("ret is now {:?}", decode_tiles(&ret.iter().cloned().collect::<Vec<_>>(), &match_info.all_attrs));
     let tile = match_info.initial_hands[0].attrs.first().copied().unwrap();
     if ret.contains(&tile) {
+      // println!("skipping tile {:?}", crate::encode::decode_tile(tile, &match_info.all_attrs));
       match_info.initial_hands[0].attrs.rotate_left(1);
       continue;
     }
-
     // remove first element, we'll push it later to the back
     // (can't use swap_remove since this is basically a queue)
-    remove_indices(&mut match_info.initial_hands[0].attrs, smallvec!(0));
+    remove_tileset_indices(&mut match_info.initial_hands[0], smallvec!(0), &match_info.joker_tiles);
+
+    // println!("trying tile {:?}", crate::encode::decode_tile(tile, &match_info.all_attrs));
+    // println!("hand is now {:?}", crate::encode::decode(&match_info.initial_hands[0], &match_info.all_attrs));
 
     // check if it matches
     if __match_hand_v3(&match_info, &match_definitions) { ret.insert(tile); }
-
+    // else { println!("failed to match any match definition"); }
     // push the first element back in, but at the back
     match_info.initial_hands[0].hash = prev_hash;
     match_info.initial_hands[0].attrs.push(tile);
