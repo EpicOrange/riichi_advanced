@@ -958,6 +958,7 @@ define_preset "Just Like Modded Minecraft", [
   "yaku/junsei_ryuuiisou",
   "yaku/chousangen",
   "yaku/chousuushii",
+  %{name: "win_timer", config: %{seconds: 9999}},
   "show_waits",
   "golden_chun",
   "blue_dragon",

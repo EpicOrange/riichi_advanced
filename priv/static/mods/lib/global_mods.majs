@@ -1,9 +1,16 @@
 require "print_end_scores"
 
-define_mod_category "Other"
-define_mod show_waits, name: "Show Waits", category: "Other", desc: "Add some UI that shows waits."
-define_mod open_hands, name: "Open Hands", category: "Other", desc: "Everyone plays with tiles shown."
-define_mod four_rows_discards, name: "Four Rows Discards", category: "Other", desc: "Change the arrangement of the discard pond past the 18th discard to accommodate more discards."
-define_mod change_ai_speed, name: "Change AI Speed", category: "Other", desc: "Make the AI faster or slower (default 4)."
+define_mod_category "Global"
+define_mod show_waits, name: "Show Waits", desc: "Add some UI that shows waits."
+define_mod open_hands, name: "Open Hands", desc: "Everyone plays with tiles shown."
+define_mod four_rows_discards, name: "Four Rows Discards", desc: "Change the arrangement of the discard pond past the 18th discard to accommodate more discards."
+define_mod win_timer, name: "Win Timer", desc: "Change how long the win screen appears for (default 30 seconds)."
+config_mod win_timer, name: "seconds", values: [5, 10, 20, 30, 60, 9999], default: 30
+define_mod change_ai_speed, name: "Change AI Speed", desc: "Make the AI faster or slower (default 4)."
 config_mod change_ai_speed, name: "factor", values: [0.5, 1, 2, 4, 8, 16, 32], default: 4
+define_mod "lib/tablecloth_color", name: "Tablecloth Color", desc: "Change the tablecloth color from its default green. You can set this to any color by uncommenting the lines at the bottom of the Config tab."
+config_mod "lib/tablecloth_color", name: "color", values: ["pink", "crimson", "tan", "lightyellow", "goldenrod", "lightgreen", "darkgreen", "lightblue", "aliceblue", "navy", "mediumpurple", "darkmagenta", "lightgray", "darkgray", "white"], default: "darkgreen"
+define_mod "lib/tile_color", name: "Tile Color", desc: "Change the tile back color from its default orange. Also changes the theme of Riichi Advanced. You can set this to any color by uncommenting the lines at the bottom of the Config tab."
+config_mod "lib/tile_color", name: "color", values: ["pink", "crimson", "tan", "lightyellow", "goldenrod", "lightgreen", "darkgreen", "lightblue", "aliceblue", "navy", "mediumpurple", "darkmagenta", "lightgray", "darkgray", "white"], default: "goldenrod"
+config_mod "lib/tile_color", name: "side_color", values: ["(same)", "pink", "crimson", "tan", "lightyellow", "goldenrod", "lightgreen", "darkgreen", "lightblue", "aliceblue", "navy", "mediumpurple", "darkmagenta", "lightgray", "darkgray", "white"], default: "(same)"
 apply set_append, "default_mods", ["show_waits"]

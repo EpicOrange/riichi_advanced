@@ -1,0 +1,9 @@
+default color, "goldenrod"
+default side_color, "(same)"
+
+apply set, "custom_style.tile_back_color", !color
+if equals(!side_color, "(same)") do
+  apply set, "custom_style.tile_side_back_color", !color
+else
+  apply set, "custom_style.tile_side_back_color", !side_color
+end

@@ -1,0 +1,3 @@
+default seconds, 30
+
+set win_timer, !seconds

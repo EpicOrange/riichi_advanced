@@ -1,1 +1,3 @@
+default points, 25000
+
 set initial_score, !points

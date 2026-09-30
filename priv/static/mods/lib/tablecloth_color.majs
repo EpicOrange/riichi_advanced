@@ -1,0 +1,3 @@
+default color, "darkgreen"
+
+apply set, "custom_style.tablecloth_color", !color

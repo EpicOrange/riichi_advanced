@@ -451,13 +451,9 @@ defmodule RiichiAdvanced.ModLoader do
   # see documentation here: https://github.com/EpicOrange/riichi_advanced/blob/main/documentation/documentation.md
   # feel free to submit your mod to the repository by opening an issue or pull request!
 
-  # here are some useful toggles
+  # debug options: these are helpful to test out yaku and stuff
 
-  # set win_timer, 30 # how many seconds before win screen goes "next"
   # set tsumogiri_bots, true # make bots only discard their draws (if possible)
-
-  # these are are helpful to test out yaku and stuff
-
   # set debug_status, true # show statuses, counters, and buttons
   # set starting_hand, %{
   #   "east": ["1m", "9m", "1p", "9p", "1s", "9s", "1z", "2z", "3z", "4z", "5z", "6z", "7z"]
@@ -465,6 +461,11 @@ defmodule RiichiAdvanced.ModLoader do
   # set starting_draws, ["1z", "2z", "3z", "4z", "1z", "2z", "3z", "4z", "1z", "2z", "3z", "4z"]
   # set starting_dead_wall, ["5m", "4m"] # so the first kan draw is 5m. this goes backwards
   # set starting_round, 4 # start in south 1
+
+  # custom colors!
+
+  # require "tablecloth_color", %{color: "#3f3f8b"}
+  # require "tile_color", %{color: "#7f7fdc"}
   """
 
   def default_config, do: @default_config
