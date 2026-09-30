@@ -25,23 +25,34 @@ defmodule RiichiAdvancedWeb.WinWindowComponent do
                   <div class={Utils.get_tile_class(tile, i, assigns)} :for={tile <- call}><%= raw RiichiAdvancedWeb.HandComponent.debug_tile(tile) %></div>
                 </div>
               <% end %>
-              <div class="winning-tile-container">
+              <div class="winning-tile-container call">
                 <div class={Utils.get_tile_class(@winner.winning_tile, nil, assigns, ["winning-tile"])}><%= raw RiichiAdvancedWeb.HandComponent.debug_tile(@winner.winning_tile) %></div>
                 <div class="winning-tile-text"><%= dt(@lang, @winner.winning_tile_text) %></div>
               </div>
             </div>
             <div class="hand winning-hand separated-hand">
-              <div class={Utils.get_tile_class(tile, i, assigns)} :for={{tile, i} <- Enum.with_index(@winner.separated_hand)}><%= raw RiichiAdvancedWeb.HandComponent.debug_tile(tile) %></div>
+              <%= for {tile, i} <- Enum.with_index(@winner.separated_hand) do %>
+                <%= if Utils.has_attr?(tile, ["winning_tile"]) do %>
+                  <div class="winning-tile-container">
+                    <div class={Utils.get_tile_class(tile, i, assigns)}><%= raw RiichiAdvancedWeb.HandComponent.debug_tile(tile) %></div>
+                    <div class="winning-tile-text"><%= dt(@lang, @winner.winning_tile_text) %></div>
+                  </div>
+                <% else %>
+                  <div class={Utils.get_tile_class(tile, i, assigns)}><%= raw RiichiAdvancedWeb.HandComponent.debug_tile(tile) %></div>
+                <% end %>
+              <% end %>
               <%= for {{name, call}, i} <- Enum.with_index(process_calls(@winner.separated_calls)) do %>
                 <div class={["call", (name == "_flowers" and length(call) > 3) && "winning-flowers"]}>
                   <div class="flower-count" :if={name == "_flowers" and length(call) > 3}>&#215;<%= length(call) %></div>
                   <div class={Utils.get_tile_class(tile, i, assigns)} :for={tile <- call}><%= raw RiichiAdvancedWeb.HandComponent.debug_tile(tile) %></div>
                 </div>
               <% end %>
-              <div class="winning-tile-container">
-                <div class={Utils.get_tile_class(@winner.winning_tile, nil, assigns, ["winning-tile"])}><%= raw RiichiAdvancedWeb.HandComponent.debug_tile(@winner.winning_tile) %></div>
-                <div class="winning-tile-text"><%= dt(@lang, @winner.winning_tile_text) %></div>
-              </div>
+              <%= if not Enum.any?(@winner.separated_hand, &Utils.has_attr?(&1, ["winning_tile"])) do %>
+                <div class="winning-tile-container call">
+                  <div class={Utils.get_tile_class(@winner.winning_tile, nil, assigns, ["winning-tile"])}><%= raw RiichiAdvancedWeb.HandComponent.debug_tile(@winner.winning_tile) %></div>
+                  <div class="winning-tile-text"><%= dt(@lang, @winner.winning_tile_text) %></div>
+                </div>
+              <% end %>
             </div>
           </div>
           <div class="yakus">

@@ -356,7 +356,7 @@ div.shimocha div.calls > div:nth-child(21) { z-index: -4; }
 div.shimocha div.calls > div:nth-child(22) { z-index: -3; }
 div.shimocha div.calls > div:nth-child(23) { z-index: -2; }
 div.shimocha div.calls > div:nth-child(24) { z-index: -1; }
-div.call, div.draws, div.winning-tile-container {
+div.call, div.draws {
   margin-left: calc(0.375 * var(--tile-size));
 }
 div.winning-tile-container {

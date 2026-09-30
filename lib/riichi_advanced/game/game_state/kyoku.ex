@@ -331,12 +331,15 @@ defmodule RiichiAdvanced.GameState.Kyoku do
     winning_tile = Utils.strip_attrs(winning_tile)
     arranged_hand = American.arrange_american_hand(am_match_definitions, Utils.strip_attrs(orig_hand, :salient) ++ [winning_tile], orig_calls, tile_behavior)
     if arranged_hand != nil do
-      arranged_hand
+      arranged_hand = arranged_hand
       |> Enum.intersperse([:"7x"])
       |> Enum.concat()
+      winning_tile_ix = arranged_hand
       |> Enum.reverse()
-      |> then(&Match.try_remove_all_tiles(&1, [winning_tile], %{}, tile_behavior.attrs) |> Enum.at(0))
-      |> Enum.reverse()
+      |> Enum.find_index(&Utils.same_tile(winning_tile, &1))
+      winning_tile_ix = length(arranged_hand) - winning_tile_ix - 1
+      winning_tile = Utils.add_attr(winning_tile, ["_winning_tile"])
+      List.replace_at(arranged_hand, winning_tile_ix, winning_tile)
     else orig_hand end
   end
 
