@@ -340,7 +340,7 @@ defmodule RiichiAdvanced.GameState.American do
                         # if the match failed, we move onto the second phase:
                         # there are no more nonjokers to remove, so remove all jokers
                         # we removed i-1 nonjokers, so we need num-(i-1) jokers
-                        {:halt, Match.try_remove_all_tiles(hand, List.duplicate(:"1j", num-(i-1)), tile_behavior.aliases, tile_behavior.attrs) |> Enum.at(0)}
+                        {:halt, Match.try_remove_all_tiles(hand, List.duplicate(:"1j", num-(i-1)), %{}, tile_behavior.attrs) |> Enum.at(0)}
                       end
                     end)
                     if new_hand != nil do

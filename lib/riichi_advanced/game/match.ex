@@ -471,20 +471,71 @@ defmodule RiichiAdvanced.Match do
           same_id = t1 == t2 or t1 in (aliases |> Map.get(t2, %{}) |> Map.get(attrs2, MapSet.new()))
           same_id and Enum.all?(attrs2, &String.starts_with?(&1, "_") or &1 in attrs1 or ("_" <> &1) in attrs1)
         end) do [[]] else [] end
+      Enum.empty?(aliases) and Enum.all?(hand, &is_atom/1) and Enum.all?(tiles, &is_atom/1) ->
+        ret = hand -- tiles
+        if length(ret) == hand_length - tiles_length do [ret] else [] end
       true ->
-        # encode every tile into a TileSet
+        # check if rust should handle things
         hand_set = _encode(hand, all_attrs, MapSet.new())
         tiles_set = _encode(tiles, all_attrs, MapSet.new())
-        encoded_aliases = _encode_aliases(aliases, all_attrs, MapSet.new())
-        case subtract_check_attrs_exhaustive(hand_set.attrs, tiles_set.attrs, encoded_aliases) do
-          {:ok, ret} ->
-            Enum.map(ret, fn is ->
-              # IO.puts("Removing #{inspect(tiles)} from #{inspect(hand)} result is #{inspect(is, charlists: :as_lists)} becomes #{inspect(remove_indices(hand, is) |> Utils.remove_attr(["_hand", "_draw"]))}")
-              remove_indices(hand, is)
-            end)
-          _ -> []
+        # rust's mask size is u64, so can only support 64 tiles in hand
+        use_rust = hand_length <= 64 and tiles_length <= 64 and hand_set.hash <= @u256_max and tiles_set.hash <= @u256_max
+        if use_rust do
+          # encode every tile into a TileSet
+          encoded_aliases = _encode_aliases(aliases, all_attrs, MapSet.new())
+          case subtract_check_attrs_exhaustive(hand_set.attrs, tiles_set.attrs, encoded_aliases) do
+            {:ok, ret} ->
+              Enum.map(ret, fn is ->
+                # IO.puts("Removing #{inspect(tiles)} from #{inspect(hand)} result is #{inspect(is, charlists: :as_lists)} becomes #{inspect(remove_indices(hand, is) |> Utils.remove_attr(["_hand", "_draw"]))}")
+                remove_indices(hand, is)
+              end)
+            _ -> []
+          end
+        else
+          IO.puts("Falling back to old match engine for hand #{inspect(hand)} and tiles #{inspect(tiles)}")
+          # IO.inspect(Process.info(self(), :current_stacktrace))
+          mappings = for {tile1, attrs_aliases} <- aliases, {attrs, aliases2} <- attrs_aliases, tile2 <- aliases2, reduce: %{} do
+            ret ->
+              new_tiles = MapSet.new([Utils.add_attr(tile1, attrs)])
+              Map.update(ret, tile2, new_tiles, &MapSet.union(&1, new_tiles))
+          end
+          tile_behavior = %TileBehavior{aliases: aliases, mappings: mappings}
+          ___try_remove_all_tiles(hand, tiles, tile_behavior)
         end
     end
+  end
+  # we want to try not to remove :any if possible (important for american hands)
+  # the return value is acc, it tries not to remove :any
+  # acc2 is the case where we do remove :any for the first time
+  # return immediately if we remove a non-:any tile
+  # otherwise if we reach [] we return acc2 (i.e. we removed :any)
+  defp remove_tile(hand, tile, tile_behavior, acc \\ [], acc2 \\ nil)
+  defp remove_tile([], _tile, _tile_behavior, _acc, nil), do: []
+  defp remove_tile([], _tile, _tile_behavior, _acc, {acc, rest}), do: [Enum.reverse(acc, rest)]
+  defp remove_tile([t | rest], tile, tile_behavior, acc, acc2) do
+    do_remove = Utils.same_tile(t, tile, tile_behavior)
+    cond do
+      do_remove and t != :any -> [Enum.reverse(acc, rest)]
+      do_remove and acc2 == nil -> remove_tile(rest, tile, tile_behavior, [t | acc], {acc, rest})
+      true -> remove_tile(rest, tile, tile_behavior, [t | acc], acc2)
+    end
+  end
+  def ___try_remove_all_tiles(hand, [], _tile_behavior), do: [hand]
+  def ___try_remove_all_tiles(hand, [tile | tiles], tile_behavior) when tile_behavior == %{} do
+    [tile]
+    |> Enum.flat_map(&remove_tile(hand, &1, tile_behavior))
+    |> Enum.flat_map(&___try_remove_all_tiles(&1, tiles, tile_behavior))
+    |> Enum.uniq()
+  end
+  def ___try_remove_all_tiles(hand, [tile | tiles], tile_behavior) do
+    # remove all tiles, with the first result removing non-jokers over jokers or :any
+    tile
+    |> Utils.apply_tile_aliases(tile_behavior)
+    |> MapSet.to_list()
+    |> TileBehavior.sort_by_joker_power(tile_behavior)
+    |> Enum.flat_map(&remove_tile(hand, &1, tile_behavior))
+    |> Enum.flat_map(&___try_remove_all_tiles(&1, tiles, tile_behavior))
+    |> Enum.uniq()
   end
 
   def elim_group(_hands, [], _encoded_aliases, _encoded_mapping, _encoded_joker_tiles, _exhaustive) do
@@ -1183,20 +1234,20 @@ defmodule RiichiAdvanced.Match do
   end
 
   def remove_group(hand, group, tile_behavior, exhaustive \\ false, base_tiles \\ nil, debug \\ false) do
-    # IO.inspect({
-    #   hand, group,
-    #   tile_behavior.attrs |> Enum.to_list(),
-    #   tile_behavior.aliases |> TileBehavior.remove_alias_mapsets(), tile_behavior.ordering,
-    #   exhaustive, Enum.empty?(tile_behavior.mappings),
-    #   base_tiles
-    # })
-    _remove_group(
-      hand, group,
-      tile_behavior.attrs |> Enum.to_list(),
-      tile_behavior.aliases |> TileBehavior.remove_alias_mapsets(), tile_behavior.ordering,
-      debug, exhaustive, Enum.empty?(tile_behavior.mappings),
-      base_tiles
-    )
+    # check if rust should handle things
+    hash = Utils.strip_attrs(hand) |> Enum.map(&Constants.to_prime/1) |> Enum.product()
+    use_rust = hash <= @u256_max
+    if use_rust do
+      _remove_group(
+        hand, group,
+        tile_behavior.attrs |> Enum.to_list(),
+        tile_behavior.aliases |> TileBehavior.remove_alias_mapsets(), tile_behavior.ordering,
+        debug, exhaustive, Enum.empty?(tile_behavior.mappings),
+        base_tiles
+      )
+    else
+      __remove_group(hand, group, tile_behavior, exhaustive, Enum.empty?(tile_behavior.mappings), base_tiles)
+    end
   end
   def _remove_group(
     hand, group,

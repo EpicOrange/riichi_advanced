@@ -61,7 +61,7 @@ pub fn _check_equivalence(l: &Tile, r: &Tile, aliases: &Aliases) -> bool {
 }
 
 pub fn compute_attr_masks(ls: &[Tile], rs: &[Tile], aliases: &Aliases) -> (Masks, Mask) {
-  assert!(rs.len() <= Mask::BITS as usize, "mask size too small for given tiles");
+  assert!(rs.len() <= Mask::BITS as usize, "mask size too small for given tiles ({} > {})", rs.len(), Mask::BITS as usize);
   let mut masks: Masks = smallvec![(0,0); ls.len()];
   let mut col_mask: Mask = 0;
   for j in 0..ls.len() {
