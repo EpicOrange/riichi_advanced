@@ -467,14 +467,15 @@ defmodule RiichiAdvancedWeb.ScoringTestLive do
     {_name, call} = Enum.at(socket.assigns.calls, ix, {nil, []})
     call = Utils.remove_attr(call, ["_sideways", "_facedown"])
     call_size = call_repr_size(length(call))
+    call = Enum.take(call, call_size)
     hand_length = socket.assigns.hand_length + call_size
-    hand = case Enum.split(socket.assigns.hand, hand_length - call_size) do
+    hand = case Enum.split(socket.assigns.hand, hand_length) do
       {hand, []} -> hand ++ call
       {hand, [winning_tile | _]} -> Enum.take(hand, hand_length) ++ call ++ [winning_tile]
     end
     calls = List.delete_at(socket.assigns.calls, ix)
     hand_str = if length(hand) > hand_length do
-      Utils.serialize_hand(Enum.drop(hand, -1), calls, Enum.take(hand, -1))
+      Utils.serialize_hand(Enum.take(hand, hand_length), calls, Enum.at(hand, hand_length))
     else Utils.serialize_hand(hand, calls) end
     socket = socket
     |> assign(:hand_length, hand_length)
@@ -530,6 +531,21 @@ defmodule RiichiAdvancedWeb.ScoringTestLive do
     {:noreply, socket}
   end
   def handle_event("submit_hand", assigns, socket) do
+    # load the hand from hand_str if it differs
+    hand_str = Map.get(assigns, "hand_str")
+    socket = if hand_str != socket.assigns.hand_str do
+      {hand, calls, winning_tile} = Utils.deserialize_hand(hand_str, socket.assigns.rules_ref)
+      hand_length = min(17, Rules.get(socket.assigns.rules_ref, "starting_tiles", 13))
+      hand_length = hand_length - Enum.sum(Enum.map(calls, &call_repr_size(length(elem(&1, 1)))))
+      hand = Enum.take(hand, hand_length) ++ if winning_tile != nil do [winning_tile] else [] end
+      socket = socket
+      |> assign(:hand, hand)
+      |> assign(:calls, calls)
+      |> assign(:selected_call_button, nil)
+      |> assign(:call_selection_ixs, [])
+      |> assign(:hand_length, hand_length)
+      |> assign(:hand_str, hand_str)
+    else socket end
     cond do
       Map.has_key?(assigns, "ron") or Map.has_key?(assigns, "tsumo") ->
         # silent 4MB limit
@@ -552,20 +568,6 @@ defmodule RiichiAdvancedWeb.ScoringTestLive do
         else
           {:noreply, socket}
         end
-      Map.has_key?(assigns, "load") ->
-        hand_str = Map.get(assigns, "hand_str")
-        {hand, calls, winning_tile} = Utils.deserialize_hand(hand_str, socket.assigns.rules_ref)
-        hand_length = min(17, Rules.get(socket.assigns.rules_ref, "starting_tiles", 13))
-        hand_length = hand_length - Enum.sum(Enum.map(calls, &call_repr_size(length(elem(&1, 1)))))
-        hand = Enum.take(hand, hand_length) ++ if winning_tile != nil do [winning_tile] else [] end
-        socket = socket
-        |> assign(:hand, hand)
-        |> assign(:calls, calls)
-        |> assign(:selected_call_button, nil)
-        |> assign(:call_selection_ixs, [])
-        |> assign(:hand_length, hand_length)
-        |> assign(:hand_str, hand_str)
-        {:noreply, socket}
       true ->
         {:noreply, socket}
     end
