@@ -1,0 +1,10 @@
+def increment_turn do
+  turn += 1
+  push_message_hline("Turn $turn", %{turn: "turn"})
+end
+on after_turn_change do
+  if seat_is("east") do increment_turn end
+end
+on after_call do
+  if seat_is("east") and not_seat_is("east", as: "callee") do increment_turn end
+end

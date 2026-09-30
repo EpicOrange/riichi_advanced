@@ -108,6 +108,13 @@ main div.messages-container > div.messages {
   padding: calc(0.25 * var(--tile-size));
   box-sizing: border-box;
   & span.bold { font-weight: 800; }
+  & span.hr {
+    display: inline-flex;
+    flex-flow: row nowrap;
+    width: 100%;
+    vertical-align: center;
+    & > hr { height: 0; flex-grow: 1; }
+  }
 }
 main div.messages-outer-container button.clear-messages-button {
   position: fixed;

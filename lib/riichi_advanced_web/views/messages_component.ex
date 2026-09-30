@@ -21,9 +21,22 @@ defmodule RiichiAdvancedWeb.MessagesComponent do
           <%= for msg <- @messages do %>
             <span>
               <%= for m <- List.wrap(msg) |> Enum.flat_map(&preprocess(&1, @lang)) do %>
-                <span style={"color: #{Map.get(m, :color, "white")};"} class={[Map.get(m, :bold, false) && "bold"]}>
-                  <%= dt(@lang, m.text, Map.get(m, :vars, %{})) %>
-                </span>
+                <%= case m do %>
+                  <% %{hr: true, text: ""} -> %>
+                    <hr/>
+                  <% %{hr: true, text: text} -> %>
+                    <span class="hr">
+                      <hr/>
+                      <span>&nbsp;<%= dt(@lang, text, Map.get(m, :vars, %{})) %>&nbsp;</span>
+                      <hr/>
+                    </span>
+                  <% %{hr: true} -> %>
+                    <hr/>
+                  <% _ -> %>
+                    <span style={"color: #{Map.get(m, :color, "white")};"} class={[Map.get(m, :bold, false) && "bold"]}>
+                      <%= dt(@lang, m.text, Map.get(m, :vars, %{})) %>
+                    </span>
+                <% end %>
               <% end %>
             </span>
           <% end %>
@@ -41,7 +54,7 @@ defmodule RiichiAdvancedWeb.MessagesComponent do
 
   def handle_event("noop", _assigns, socket), do: {:noreply, socket}
 
-  def preprocess(message, lang) do
+  def preprocess(message, lang) when is_map(message) do
     # convert
     # %{text: "called %{call} on %{tile} with hand %{hand}", vars: %{call: "pon", tile: {:tile, :"7m"}, hand: {:hand, [:"8m", :"9m"]}}
     # to
@@ -67,6 +80,9 @@ defmodule RiichiAdvancedWeb.MessagesComponent do
                   {acc, "", %{}}
                 {:text, text, attrs} ->
                   acc = acc ++ [Map.merge(message, %{text: current, vars: current_vars}), Map.put(attrs, :text, text)]
+                  {acc, "", %{}}
+                :hr ->
+                  acc = acc ++ [:hr]
                   {acc, "", %{}}
                 nil ->
                   IO.puts("WARNING: tried to reference gettext interpolation variable #{var_name} but it was not provided")

@@ -1,3 +1,4 @@
+require "turn_counter"
 require "print_end_scores"
 
 define_mod_category "Global"
