@@ -175,7 +175,7 @@ defmodule RiichiAdvanced.AIPlayer do
     |> Enum.map(fn {_, _, hand} -> hand end)
     only_one_hand = case closest_american_hands do [_] -> true; _ -> false end
     if d <= 30 or only_one_hand do
-      closest_american_hands = closest_american_hands
+      closest_american_hands
       # since we're calling, filter for open hands only (might be none if a concealed hand is closer)
       |> Enum.reject(& &1.yaku.concealed)
       # out of those hands, see if there's any hands for which the last discard would be helpful
@@ -239,6 +239,7 @@ defmodule RiichiAdvanced.AIPlayer do
     |> Map.put(:minefield_tiles, nil)
     |> Map.put(:minefield_hand, nil)
     |> Map.put(:minefield_waits, nil)
+    |> Map.put(:amerijong_timeout, 0)
 
     ai_speed = Rules.get(state.rules_ref, "ai_speed", @ai_speed)
     ai_speed = if ai_speed == 0 do @ai_speed else ai_speed end
@@ -336,6 +337,18 @@ defmodule RiichiAdvanced.AIPlayer do
                 t -> t
               end
           end
+          {state, {tile, index}, shanten} = if tile == nil do
+            state = Map.update(state, :amerijong_timeout, 1, & &1 + 1)
+            if state.amerijong_timeout >= 3 do
+              # we tried 3 times to generate nearest hands and got empty every time
+              # just tsumogiri or last playable
+              if Debug.debug_ai() do
+                IO.puts(" >> #{state.seat}: Failed to find closest american hands, resorting to tsumogiri")
+              end
+              {state, Enum.at(playables, -1), :infinity}
+            else {state, {tile, index}, shanten} end
+          else {state, {tile, index}, shanten} end
+
           state = Map.put(state, :shanten, shanten)
           if Debug.debug_ai() do
             IO.puts(" >> #{state.seat}: It's my turn to play a tile! #{inspect(playables)} / chose: #{inspect(tile)}")
@@ -349,6 +362,7 @@ defmodule RiichiAdvanced.AIPlayer do
               IO.puts(" >> #{state.seat}: Took #{System.os_time(:millisecond) - t} ms to come to a decision")
             end
           end
+
           state = if tile != nil do
             # if we're about to discard a joker/flower, call it instead
             tile = Utils.strip_attrs(tile)
@@ -368,6 +382,8 @@ defmodule RiichiAdvanced.AIPlayer do
               GenServer.cast(state.game_state, {:play_tile, state.seat, index})
               state
             end
+            state = Map.put(state, :amerijong_timeout, 0)
+            state
           else state end
           {:noreply, state}
         else
