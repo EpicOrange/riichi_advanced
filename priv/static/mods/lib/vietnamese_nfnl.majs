@@ -104,9 +104,6 @@ define_play_effect not_flower_or_joker do
   end
 end
 
-# if ineligible for nfnl, can no longer discard flowers/jokers (and flower replacements are forced)
-define_play_restriction flower_or_joker, status_missing("nfnl_eligible")
-apply set, "buttons.flower.unskippable", status_missing("nfnl_eligible")
 define_auto_button _6_auto_forced_flower,
   display_name: "FF",
   desc: "Automatically declare all forced flower replacements (e.g. if you start with multiple flowers, or if you give up on No Flowers, No Leaves.)",
