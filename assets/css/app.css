@@ -653,7 +653,7 @@ div.pond.kamicha {
     opacity: 0.6;
     margin: 0;
     padding: 0;
-    z-index: 100;
+    z-index: 150;
     width: calc(1.5 * var(--tile-size));
     height: calc(1.5 * var(--tile-size));
   }
@@ -4462,14 +4462,17 @@ div.tutorial-overlay-objects.awaiting-click {
   pointer-events: initial;
 }
 div.tutorial-text {
+  --actual-x: var(--x);
+  --actual-y: var(--y);
+  --actual-width: var(--width);
   position: absolute;
-  width: calc(var(--width) * var(--tile-size));
-  left: calc(var(--x) * var(--tile-size));
-  top: calc(var(--y) * var(--tile-size));
+  width: calc(var(--actual-width) * var(--tile-size));
+  left: calc(var(--actual-x) * var(--tile-size));
+  top: calc(var(--actual-y) * var(--tile-size));
   color: black;
   background: var(--tile-front);
   border-radius: calc(0.5 * var(--tile-size));
-  font-size: calc(var(--size) * var(--tile-size));
+  font-size: calc(0.5 * var(--tile-size));
   padding: calc(0.25 * var(--tile-size));
   filter: drop-shadow(0 calc(var(--tile-size) / 16) 0 var(--tile-back-side));
   z-index: 1;
@@ -4488,6 +4491,12 @@ div.tutorial-focus.mobile { display: none; }
 @media (max-aspect-ratio: 6/5) {
   input.mobile-zoom-checkbox:not(:checked) ~ div.tutorial-overlay div.tutorial-focus.desktop { display: none; }
   input.mobile-zoom-checkbox:not(:checked) ~ div.tutorial-overlay div.tutorial-focus.mobile { display: block; }
+  input.mobile-zoom-checkbox:not(:checked) ~ div.tutorial-overlay div.tutorial-text {
+    font-size: calc(0.75 * var(--tile-size));
+    --actual-x: max(0, calc(var(--y) - 6.5));
+    --actual-y: max(0, calc(var(--y) - 8));
+    --actual-width: calc(var(--y) + 4);
+  }
 }
 
 /* tutorial select menu */
