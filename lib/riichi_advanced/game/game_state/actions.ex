@@ -2533,7 +2533,7 @@ defmodule RiichiAdvanced.GameState.Actions do
     end
 
     # check if nobody else needs to make choices
-    if Enum.all?(state.players, fn {_seat, player} -> player.choice != nil end) do
+    if Enum.all?(state.players, fn {_seat, player} -> player.choice != nil and Enum.empty?(player.call_buttons) end) do
       # if every action is skip, we need to resume deferred actions for all players
       # otherwise, adjudicate actions as normal
       if Enum.all?(state.players, fn {_seat, player} -> player.choice.name == "skip" end) do
