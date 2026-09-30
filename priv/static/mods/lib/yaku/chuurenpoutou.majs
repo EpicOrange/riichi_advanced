@@ -1,5 +1,6 @@
 require "standard_sets"
 
+default manzu_only, false
 default list, "yaku"
 default name, "Chuurenpoutou"
 default value, 0
@@ -7,6 +8,10 @@ default junsei_list, "yaku"
 default junsei_name, "Junsei Chuurenpoutou"
 default junsei_value, 0
 default junsei_han, !han
+
+if !manzu_only do
+  define_set chuurenpoutou, ~s"1m 1m 1m 2m 3m 4m 5m 6m 7m 8m 9m 9m 9m"
+end
 
 if !value > 0 do
   on after_initialization do
