@@ -550,7 +550,7 @@ defmodule RiichiAdvanced.AIPlayer do
       |> Enum.shuffle()
 
       has_minefield_hand = if length(player.hand) == 34 do
-        Map.get(state, :minefield_tiles, nil) == Utils.strip_attrs(player.hand)
+        Utils.strip_attrs(Map.get(state, :minefield_tiles, nil)) == Utils.strip_attrs(player.hand)
       else Map.has_key?(state, :minefield_hand) end
       {state, choices} = case state.ruleset do
         "minefield" ->
