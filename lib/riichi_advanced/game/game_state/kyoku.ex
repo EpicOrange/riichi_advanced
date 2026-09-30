@@ -332,7 +332,7 @@ defmodule RiichiAdvanced.GameState.Kyoku do
     arranged_hand = American.arrange_american_hand(am_match_definitions, Utils.strip_attrs(orig_hand, :salient) ++ [winning_tile], orig_calls, tile_behavior)
     if arranged_hand != nil do
       arranged_hand
-      |> Enum.intersperse([:"3x"])
+      |> Enum.intersperse([:"7x"])
       |> Enum.concat()
       |> Enum.reverse()
       |> then(&Match.try_remove_all_tiles(&1, [winning_tile], %{}, tile_behavior.attrs) |> Enum.at(0))
