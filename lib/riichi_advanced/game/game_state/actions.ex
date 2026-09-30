@@ -1849,7 +1849,7 @@ defmodule RiichiAdvanced.GameState.Actions do
               aliased_tiles = state.players[context.seat].tile_behavior.aliases |> Map.keys()
               visible_tiles ++ aliased_tiles
             _ -> [from_named_tile(state, context, &1)]
-          end) |> MapSet.new()
+          end) |> Utils.strip_attrs() |> MapSet.new()
           state = Map.update!(state, :tags, fn tags -> Map.update(tags, tag, tiles, &MapSet.union(&1, tiles)) end)
           state
         "tag_dora"              ->
@@ -1859,7 +1859,8 @@ defmodule RiichiAdvanced.GameState.Actions do
           dora_indicators_map = Rules.get(state.rules_ref, "dora_indicators", %{})
           doras = Map.get(dora_indicators_map, Utils.tile_to_string(dora_indicator), [])
           |> Enum.map(&Utils.to_tile/1)
-          state = Map.update!(state, :tags, fn tags -> Map.update(tags, tag, MapSet.new(doras), &MapSet.union(&1, MapSet.new(doras))) end)
+          |> MapSet.new()
+          state = Map.update!(state, :tags, fn tags -> Map.update(tags, tag, doras, &MapSet.union(&1, doras)) end)
           state
         "untag_tiles"           ->
           tag = Enum.at(opts, 0, "missing_tag")
@@ -1871,8 +1872,8 @@ defmodule RiichiAdvanced.GameState.Actions do
             "draw" -> state.players[context.seat].draw
             "all" -> state.players[context.seat].tile_behavior.tile_freqs |> Map.keys()
             _ -> [from_named_tile(state, context, &1)]
-          end)
-          state = Map.update!(state, :tags, fn tags -> Map.update(tags, tag, MapSet.new(tiles), &MapSet.difference(&1, MapSet.new(tiles))) end)
+          end) |> Utils.strip_attrs() |> MapSet.new()
+          state = Map.update!(state, :tags, fn tags -> Map.update(tags, tag, MapSet.new(), &MapSet.difference(&1, tiles)) end)
           state
         "untag"                 ->
           tag = Enum.at(opts, 0, "missing_tag")
