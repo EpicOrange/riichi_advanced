@@ -78,4 +78,4 @@ define_button start_flower,
   end
 
 # if you have declared flowers/jokers, cannot keep flowers in hand
-apply set, "buttons.flower.unskippable", status("nfnl_eligible")
+apply set, "buttons.flower.unskippable", status_missing("nfnl_eligible")
