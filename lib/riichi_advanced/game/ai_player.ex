@@ -8,7 +8,7 @@ defmodule RiichiAdvanced.AIPlayer do
   alias RiichiAdvanced.Utils, as: Utils
   use GenServer
 
-  @ai_speed 4
+  @ai_speed 4 # default
 
   def start_link(init_state) do
     GenServer.start_link(__MODULE__, init_state, name: init_state[:name])
@@ -199,6 +199,10 @@ defmodule RiichiAdvanced.AIPlayer do
     |> Map.put(:minefield_hand, nil)
     |> Map.put(:minefield_waits, nil)
 
+    ai_speed = Rules.get(state.rules_ref, "ai_speed", @ai_speed)
+    ai_speed = if ai_speed == 0 do @ai_speed else ai_speed end
+    state = Map.put(state, :ai_speed, ai_speed)
+
     # chinitsu needs match definitions so we don't chombo
     state = if state.ruleset == "chinitsu" do
       win = Rules.translate_match_definitions(state.rules_ref, "win", true)
@@ -292,7 +296,7 @@ defmodule RiichiAdvanced.AIPlayer do
             IO.puts(" >> #{state.seat}: It's my turn to play a tile! #{inspect(playables)} / chose: #{inspect(tile)}")
           end
           elapsed_time = System.os_time(:millisecond) - t
-          wait_time = trunc(1200 / @ai_speed)
+          wait_time = trunc(1200 / Map.get(state, :ai_speed, @ai_speed))
           if elapsed_time < wait_time do
             Process.sleep(wait_time - elapsed_time)
           else
@@ -464,7 +468,7 @@ defmodule RiichiAdvanced.AIPlayer do
         IO.puts(" >> #{state.seat}: It's my turn to press buttons! #{inspect(player.buttons)} / chose: #{button_name}")
       end
       elapsed_time = System.os_time(:millisecond) - t
-      wait_time = trunc(120 / @ai_speed)
+      wait_time = trunc(120 / Map.get(state, :ai_speed, @ai_speed))
       if button_name != "skip" do
         if elapsed_time < wait_time do
           Process.sleep(wait_time - elapsed_time)
@@ -505,14 +509,14 @@ defmodule RiichiAdvanced.AIPlayer do
         if Debug.debug_ai() do
           IO.puts(" >> #{state.seat}: It's my turn to press call buttons! #{inspect(player.call_buttons)} / chose: #{inspect(called_tile)} #{inspect(call_choice)}")
         end
-        Process.sleep(trunc(500 / @ai_speed))
+        Process.sleep(trunc(500 / Map.get(state, :ai_speed, @ai_speed)))
         GenServer.cast(state.game_state, {:press_call_button, state.seat, call_choice, called_tile})
       else
         [choice] = Enum.random(player.call_buttons["saki"])
         if Debug.debug_ai() do
           IO.puts(" >> #{state.seat}: It's my turn to choose a saki card! #{inspect(player.call_buttons)} / chose: #{inspect(choice)}")
         end
-        Process.sleep(trunc(500 / @ai_speed))
+        Process.sleep(trunc(500 / Map.get(state, :ai_speed, @ai_speed)))
         GenServer.cast(state.game_state, {:press_saki_card, state.seat, choice})
       end
       {:noreply, state}
@@ -537,7 +541,7 @@ defmodule RiichiAdvanced.AIPlayer do
         IO.puts(" >> #{state.seat}: It's my turn to mark tiles!")
       end
       # for each source, generate all possible choices and pick one of them
-      Process.sleep(trunc(500 / @ai_speed)) 
+      Process.sleep(trunc(500 / Map.get(state, :ai_speed, @ai_speed))) 
       choices = marked_objects
       |> Enum.reject(fn {source, mark_info} -> source in Marking.special_keys() or (mark_info != nil and length(mark_info.marked) >= mark_info.needed) end)
       |> Enum.flat_map(fn {source, _mark_info} -> get_mark_choices(source, players, revealed_tiles, scryed_tiles) end)

@@ -356,7 +356,6 @@ defmodule RiichiAdvanced.GameState.Rules do
       category: mod["category"],
       config: Map.get(mod, "config", [])
            |> Map.new(&Map.pop(&1, "name"))
-           |> then(&Map.merge(&1, Map.get(starting_mods, mod["id"], %{}) |> Map.new(fn {name, value} -> {name, %{"values" => [value]}} end)))
            |> Map.new(fn {config_name, config} ->
                 default = get_in(starting_mods[mod["id"]][config_name])
                 default = if default == nil do Map.get(config, "default", Enum.at(config["values"], 0)) else default end
