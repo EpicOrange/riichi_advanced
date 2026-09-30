@@ -10,8 +10,7 @@ defmodule RiichiAdvancedWeb.TipsComponent do
     "To join a private room, select the ruleset you're playing, and then press \"Join private room\" in the main menu and enter the room code of the room you want to join. Then hit Play.",
     "If you scroll down now, or during a game, you can see the JSON representation of the ruleset you're playing. Which you can modify and play in the Custom ruleset.",
     "You can double click or right click to discard your drawn tile or skip a call. (On mobile: double tap or long tap.)",
-    # TODO: fix logs first
-    # "When you start a game, it will send a message saying \"Log ID:\" followed by a code. You can use this code at (main menu) > Logs to view a replay of this game afterwards.",
+    "When you start a game, it will send a message saying \"Log ID:\" followed by a code. You can use this code at (main menu) > Logs to view a replay of this game afterwards.",
     "A game's log ID can also be found via the Copy Log button on the upper right.",
     "After a win, you can hover over (or tap) players and arrows in the point exchange screen to view a detailed summary of that transaction.",
     "Click/tap the rules tabs on the left to view the current rules in play.",
@@ -22,6 +21,12 @@ defmodule RiichiAdvancedWeb.TipsComponent do
     "Choosing a ruleset (in the Room Settings menu) simply applies a preset set of mods.",
     "Riichi Advanced attempts to be mobile-friendly and tries to support all major browsers. This isn't easy, so if you find something amiss, join the Discord!",
     "Riichi Advanced is open-source, and is currently hosted on GitHub.",
+    "If you want to play with every player showing their hands, enable the \"Open Hands\" mod in Room Settings.",
+    "If the AI is too fast or too slow, try toggling the \"Win Timer\" mod in Room Settings.",
+    "The endgame screen takes 30 seconds to advance. If you want it to take longer, toggle the \"Change AI Speed\" mod in Room Settings.",
+    "It is possible to customize the color of the table using the \"Tablecloth Color\" and \"Tile Color\" mods in Room Settings.",
+
+
     # can also add tips about specific rulesets
     # e.g. "In Space Mahjong, any three different winds form a sequence."
     # will need a mechanism to only show them in the Space Mahjong lobby though
@@ -41,7 +46,7 @@ defmodule RiichiAdvancedWeb.TipsComponent do
     ~H"""
     <div class="tips-component" phx-cancellable-click="tips_clicked" phx-target={@myself}>
       <%= if @root_pid != nil do %>
-        <%= dt(@lang, "Tip") %> <%= dt(@lang, Integer.to_string(@index + 1)) %>: <%= dt(@lang, Enum.at(@tips, @index)) %>
+        <%= dt(@lang, "Tip") %> <%= Integer.to_string(@index + 1) %>: <%= dt(@lang, Enum.at(@tips, @index)) %>
       <% end %>
     </div>
     """
