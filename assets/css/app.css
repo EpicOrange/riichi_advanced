@@ -13,31 +13,35 @@ body::after {
      to accommodate absolutely positioned elements */
   content: "";
   display: block;
-  height: calc(100vh + (6 * var(--tile-size)));
+  height: calc(100svh + (6 * var(--tile-size)));
 }
 /* landscape */
 @media (min-aspect-ratio: 6/5) {
-  html, body {
+  :root {
     /* 16 (table height)
       + 1 (table margin)
     + 1.5 (top margin)
     + 1.5 (bottom margin)
     = 20 */
-    --tile-size: calc(100vh / 20);
-  }
-  body > div {
-    margin: 0 calc(0.5 * var(--tile-size));
+    --tile-size: calc(100svh / 20);
   }
 }
 /* portrait (mobile) */
 @media (max-aspect-ratio: 6/5) {
-  html, body {
+  :root {
     /* 16 (table width/height)
       + 1 (table margin)
       + 1 (left margin)
       + 1 (right margin)
      = 19 */
-    --tile-size: min(calc(100vw / 19), calc(80vh / 19));
+    --tile-size: min(calc(100vw / 19), calc(80svh / 19));
+  }
+}
+
+/* pad the main container in landscape mode */
+@media (min-aspect-ratio: 6/5) {
+  body > div {
+    margin: 0 calc(0.5 * var(--tile-size));
   }
 }
 
@@ -131,10 +135,10 @@ main div.messages-container > div.messages {
 /* landscape */
 @media (min-aspect-ratio: 6/5) {
   main::before {
-    left: calc(-20vh + 0.5 * var(--tile-size));
+    left: calc(-20svh + 0.5 * var(--tile-size));
   }
   main div#container {
-    left: calc(-20vh + 1 * var(--tile-size));
+    left: calc(-20svh + 1 * var(--tile-size));
   }
   main div.messages-container {
     left: calc(100% + var(--tile-size));
@@ -146,7 +150,7 @@ main div.messages-container > div.messages {
     left: calc(-0.5 * var(--tile-size));
     top: calc(100% + 1.5 * var(--tile-size));
     width: calc(100% + var(--tile-size));
-    height: max(10rem, calc(100vh - 100%));
+    height: max(10rem, calc(100svh - 100%));
     flex-direction: column;
     justify-content: flex-start;
   }
@@ -2811,7 +2815,6 @@ div.yakus {
 /* wrap hack, supports 19 items */
 div.yakus::before { content: ""; height: 100%; order: 1; }
 div.yakus::after { content: ""; height: 100%; order: -1; } /* for space-evenly to work */
-div.yaku:nth-child(n+1):nth-last-child(-n+0),
 div.yaku:nth-child(n+2):nth-last-child(-n+1),
 div.yaku:nth-child(n+3):nth-last-child(-n+2),
 div.yaku:nth-child(n+4):nth-last-child(-n+3),
@@ -3302,9 +3305,9 @@ div.placement span.placement-score {
 /* ruleset textbox */
 div.ruleset {
   position: absolute;
-  top: calc(100vh + (2 * var(--tile-size)) + 1.2em);
-  left: calc(50% - min(90vw, 80vh) / 2);
-  width: min(90vw, 80vh);
+  top: calc(100svh + (2 * var(--tile-size)) + 1.2em);
+  left: calc(50% - min(90vw, 80svh) / 2);
+  width: min(90vw, 80svh);
   height: calc(20 * var(--tile-size));
   user-select: text;
 }
@@ -3316,7 +3319,7 @@ div.ruleset > div.ruleset-text {
 /* landscape */
 @media (min-aspect-ratio: 6/5) {
   div.ruleset {
-    width: calc(min(90vw, 80vh) + 0.5 * var(--tile-size) + min(50%, calc(40vw - 20% - 0.5 * var(--tile-size))));
+    width: calc(min(90vw, 80svh) + 0.5 * var(--tile-size) + min(50%, calc(40vw - 20% - 0.5 * var(--tile-size))));
   }
 }
 
