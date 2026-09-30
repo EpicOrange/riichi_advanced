@@ -293,7 +293,7 @@ defmodule RiichiAdvancedWeb.GameLive do
     visible_waits = socket.assigns.interaction_state.visible_waits || %{}
     if not Map.has_key?(visible_waits, index) do
       # first check if we even need this tile
-      tenpai_definitions = Rules.translate_match_definitions(socket.assigns.state.rules_ref, "tenpai", true)
+      tenpai_definitions = Rules.get(socket.assigns.state.rules_ref, :shanten_definitions, %{}) |> Map.get(:tenpai, [])
       if Enum.empty?(tenpai_definitions) || Match.needed_for_hand(hand, player.calls, Enum.at(hand, index), tenpai_definitions, player.tile_behavior) do
         update_interaction_state(socket, &%{&1 | visible_waits: Map.put(visible_waits, index, [])})
       else
@@ -485,7 +485,8 @@ defmodule RiichiAdvancedWeb.GameLive do
   end
 
   def handle_info({:hover, index}, socket) do
-    if index <= length(socket.assigns.state.players[socket.assigns.viewer].hand) do
+    player = socket.assigns.state.players[socket.assigns.viewer]
+    if index < (length(player.hand) + length(player.draw)) do
       socket = get_visible_waits(socket, index)
       socket = update_interaction_state(socket, &%{&1 | show_waits_index: index})
       {:noreply, socket}

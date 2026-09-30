@@ -1,2 +1,4 @@
-set show_waits, %{win_definitions: ["win"]}
+default win_definition, "win"
+
+set show_waits, %{win_definitions: [!win_definition]}
 
