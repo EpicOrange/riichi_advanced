@@ -295,9 +295,6 @@ defmodule RiichiAdvanced.GameState.Scoring do
       assigned_winning_hand = state.players[seat].cache.winning_hand
       IO.puts("checking assignment, hand: #{inspect(assigned_winning_hand)}, tile: #{inspect(winning_tile)}, yaku: #{inspect(yaku)}")
     end
-
-    highest_scoring_yaku_only = Map.get(score_rules, "highest_scoring_yaku_only", false)
-    yaku = if not Enum.empty?(yaku) and highest_scoring_yaku_only do [Enum.max_by(yaku, fn {_name, value} -> value end)] else yaku end
     denoms = [score_rules["point_name"], score_rules["point2_name"], score_rules["shuugi_name"]]
     yaku = Enum.map(yaku, fn {name, value} -> {translate(state, name), value} end)
     |> dedup_yaku()

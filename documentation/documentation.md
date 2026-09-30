@@ -1229,20 +1229,6 @@ If triple ron should be treated as an abortive draw, set:
       "triple_ron_draw": true
     }
 
-**Amerijong options**
-
-In American mahjong, winning hands are typically arranged using the definition of the hand on the card. To enable this, set:
-
-    apply append, score_calculation, {
-      "arrange_american_yaku": true
-    }
-
-If you want to only keep the highest-scoring yaku (for both `yaku` and `yaku2`), breaking ties arbitrarily, then set:
-
-    apply append, score_calculation, {
-      "highest_scoring_yaku_only": true
-    }
-
 ## Payments
 
 All of the above is to calculate the basic score of a hand, displayed when the hand wins. How are payouts calculated?

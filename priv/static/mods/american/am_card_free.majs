@@ -79,7 +79,6 @@ define_yaku yaku, "Concealed", 10, has_no_call_named("am_pung", "am_kong", "am_q
 set open_win_definition, ~m""
 set win_definition, ~m""
 apply set, "score_calculation.arrange_american_yaku", false
-apply set, "score_calculation.highest_scoring_yaku_only", false
 
 define_const win_con_draw, match(["hand", "call_tiles", "draw"], ["dragon_hand_win"])
     or ((
