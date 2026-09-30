@@ -350,6 +350,7 @@ defmodule RiichiAdvanced.AIPlayer do
     end
   end
 
+  @slow_buttons ["chii", "pon", "daiminkan", "ron", "hu", "mahjong_discard", "mahjong_draw", "mahjong_heavenly", "4_am_sextet", "3_am_quint", "2_am_kong", "1_am_pung"]
   def handle_info({:buttons, params}, state) do
     t = System.os_time(:millisecond)
     %{
@@ -476,7 +477,11 @@ defmodule RiichiAdvanced.AIPlayer do
         IO.puts(" >> #{state.seat}: It's my turn to press buttons! #{inspect(player.buttons)} / chose: #{button_name}")
       end
       elapsed_time = System.os_time(:millisecond) - t
-      wait_time = trunc(120 / Map.get(state, :ai_speed, @ai_speed))
+      wait_time = if button_name in @slow_buttons do
+        trunc(1200 / Map.get(state, :ai_speed, @ai_speed))
+      else
+        trunc(120 / Map.get(state, :ai_speed, @ai_speed))
+      end
       if button_name != "skip" do
         if elapsed_time < wait_time do
           Process.sleep(wait_time - elapsed_time)
