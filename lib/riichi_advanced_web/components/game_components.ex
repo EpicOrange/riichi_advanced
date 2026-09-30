@@ -246,9 +246,9 @@ defmodule RiichiAdvancedWeb.GameComponents do
           <label for={"auto-button-" <> name} title={desc} data-name={t(@lang, get_auto_button_name(@state.rules_ref, name))} tabindex={i}><%= Rules.get(@state.rules_ref, "auto_buttons", %{})[name]["display_name"] %></label>
         <% end %>
       </div>
-      <div class="display-am-hand-hover game-bottom-element" :if={Rules.get(@state.rules_ref, "show_nearest_american_hand", false)}></div>
-      <div class="display-am-hand-container" :if={Rules.get(@state.rules_ref, "show_nearest_american_hand", false)}>
-        <%= for %{am_match_definition: am_match_definition, arranged_hand: arranged_hand, difficulty: difficulty, yaku: yaku} <- @state.players[@seat].cache.closest_american_hands do %>
+      <div class="display-am-hand-hover game-bottom-element" phx-hover="hover_hand" phx-hover-off="hover_off_hand" phx-value-seat={@seat} :if={Rules.get(@state.rules_ref, "show_nearest_american_hand", false)}></div>
+      <div class="display-am-hand-container" :if={Rules.get(@state.rules_ref, "show_nearest_american_hand", false) and @interaction_state.hovered_hand != nil}>
+        <%= for %{am_match_definition: am_match_definition, arranged_hand: arranged_hand, difficulty: difficulty, yaku: yaku} <- @state.players[@interaction_state.hovered_hand].cache.closest_american_hands do %>
           <div class="display-am-hand" :if={arranged_hand}>
             <%= for tile <- arranged_hand do %>
               <div class={Utils.get_tile_class(tile)}></div>

@@ -4,6 +4,7 @@ defmodule RiichiAdvancedWeb.GameLive.InteractionState do
     selected_index: nil,
     hovered_called_tile: nil,
     hovered_call_choice: nil,
+    hovered_hand: nil,
     playable_indices: [],
     preplayed_index: nil,
     hide_buttons: false, # used to hide buttons on the client side after clicking one
@@ -432,6 +433,16 @@ defmodule RiichiAdvancedWeb.GameLive do
 
   def handle_event("hover_off", _assigns, socket) do
     socket = update_interaction_state(socket, &%{&1 | hovered_called_tile: nil, hovered_call_choice: nil})
+    {:noreply, socket}
+  end
+
+  def handle_event("hover_hand", %{"seat" => seat}, socket) do
+    socket = update_interaction_state(socket, &%{&1 | hovered_hand: String.to_existing_atom(seat)})
+    {:noreply, socket}
+  end
+
+  def handle_event("hover_off_hand", _assigns, socket) do
+    socket = update_interaction_state(socket, &%{&1 | hovered_hand: nil})
     {:noreply, socket}
   end
 

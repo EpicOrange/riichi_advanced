@@ -79,14 +79,25 @@ defmodule RiichiAdvancedWeb.HandComponent do
           </div>
         <% end %>
       <% else %>
-        <div class="tiles" phx-hook="SortableHand" id={@id}>
-          <%= for {i, tile, removed, highlight} <- prepare_hand(assigns) do %>
-            <div class={Utils.get_tile_class(tile, i, assigns, [removed && "removed", highlight && "highlight"], true)} data-id={i}><%= raw debug_tile(tile) %></div>
-          <% end %>
-          <%= for {tile, i} <- prepare_draw(assigns) do %>
-            <div class={Utils.get_tile_class(tile, i, assigns, ["draw"], true)} data-id={i}><%= raw debug_tile(tile) %></div>
-          <% end %>
-        </div>
+        <%= if @revealed? do %>
+          <div class="tiles" phx-hover="hover_hand" phx-hover-off="hover_off_hand" phx-value-seat={@seat}>
+            <%= for {i, tile, removed, highlight} <- prepare_hand(assigns) do %>
+              <div class={Utils.get_tile_class(tile, i, assigns, [removed && "removed", highlight && "highlight"], true)} data-id={i}><%= raw debug_tile(tile) %></div>
+            <% end %>
+            <%= for {tile, i} <- prepare_draw(assigns) do %>
+              <div class={Utils.get_tile_class(tile, i, assigns, ["draw"], true)} data-id={i}><%= raw debug_tile(tile) %></div>
+            <% end %>
+          </div>
+        <% else %>
+          <div class="tiles" id={@id}>
+            <%= for {i, tile, removed, highlight} <- prepare_hand(assigns) do %>
+              <div class={Utils.get_tile_class(tile, i, assigns, [removed && "removed", highlight && "highlight"], true)} data-id={i}><%= raw debug_tile(tile) %></div>
+            <% end %>
+            <%= for {tile, i} <- prepare_draw(assigns) do %>
+              <div class={Utils.get_tile_class(tile, i, assigns, ["draw"], true)} data-id={i}><%= raw debug_tile(tile) %></div>
+            <% end %>
+          </div>
+        <% end %>
       <% end %>
       <div class="calls" phx-hook="SortableHand" id={@id <> " calls"}>
         <%= if not Enum.empty?(@marking) and @viewer != :spectator do %>

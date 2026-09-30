@@ -2286,7 +2286,11 @@ div.display-am-hand-hover::before {
 }
 div.display-am-hand-container {
   position: absolute;
-  display: none;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  align-items: center;
+  row-gap: calc(1 * var(--tile-size));
   width: calc(100% - 2.5 * var(--tile-size));
   left: calc(1 * var(--tile-size));
   bottom: calc(2.375 * var(--tile-size));
@@ -2296,14 +2300,8 @@ div.display-am-hand-container {
   border-radius: calc(0.25 * var(--tile-size));
   padding: calc(0.25 * var(--tile-size));
   padding-top: calc(1 * var(--tile-size));
-}
-div.display-am-hand-hover:hover + div.display-am-hand-container {
-  display: flex;
-  flex-direction: column;
-  justify-content: flex-end;
-  align-items: center;
   z-index: 1000;
-  row-gap: calc(1 * var(--tile-size));
+  pointer-events: none;
 }
 div.display-am-hand {
   display: flex;

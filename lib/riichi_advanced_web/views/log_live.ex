@@ -256,6 +256,16 @@ defmodule RiichiAdvancedWeb.LogLive do
     {:noreply, socket}
   end
 
+  def handle_event("hover_hand", %{"seat" => seat}, socket) do
+    socket = update_interaction_state(socket, &%{&1 | hovered_hand: String.to_existing_atom(seat)})
+    {:noreply, socket}
+  end
+
+  def handle_event("hover_off_hand", _assigns, socket) do
+    socket = update_interaction_state(socket, &%{&1 | hovered_hand: nil})
+    {:noreply, socket}
+  end
+
   def handle_event("declare_dead_hand", %{"seat" => seat}, socket) do
     if socket.assigns.seat == socket.assigns.state.turn do
       dead_seat = case seat do

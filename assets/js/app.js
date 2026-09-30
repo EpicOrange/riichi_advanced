@@ -139,33 +139,38 @@ function addCancellableClickListeners() {
     }
   });
   this.el.addEventListener('mousemove', e => {
-    var target = getHoverTarget(e.target);
-    if (target !== null) {
-      if (window.hoverElement !== target) {
-        var params = {};
-        for (let attr of target.attributes) {
-          if (attr.name.startsWith("phx-value-")) {
-            var key = attr.name.substring(10);
-            params[key] = attr.value;
-          }
-        }
-        if (target.attributes.hasOwnProperty("phx-target")) {
-          this.pushEventTo(target.getAttribute("phx-target"), target.getAttribute("phx-hover"), params);
-        } else {
-          this.pushEvent(target.getAttribute("phx-hover"), params);
+    const old_target = window.hoverElement;
+    const target = getHoverTarget(e.target);
+    const target_changed = old_target !== target;
+    if (target_changed && old_target !== null && old_target.attributes.hasOwnProperty("phx-hover-off")) {
+      let params = {};
+      for (let attr of old_target.attributes) {
+        if (attr.name.startsWith("phx-value-")) {
+          let key = attr.name.substring(10);
+          params[key] = attr.value;
         }
       }
-      window.hoverElement = target;
-    } else {
-      if (window.hoverElement !== null && window.hoverElement.attributes.hasOwnProperty("phx-hover-off")) {
-        target = window.hoverElement;
-        if (target.attributes.hasOwnProperty("phx-target")) {
-          this.pushEventTo(target.getAttribute("phx-target"), target.getAttribute("phx-hover-off"), params);
-        } else {
-          this.pushEvent(target.getAttribute("phx-hover-off"), params);
-        }
+      if (old_target.attributes.hasOwnProperty("phx-target")) {
+        this.pushEventTo(old_target.getAttribute("phx-target"), old_target.getAttribute("phx-hover-off"), params);
+      } else {
+        this.pushEvent(old_target.getAttribute("phx-hover-off"), params);
       }
       window.hoverElement = null;
+    }
+    if (target !== null && target_changed) {
+      let params = {};
+      for (let attr of target.attributes) {
+        if (attr.name.startsWith("phx-value-")) {
+          let key = attr.name.substring(10);
+          params[key] = attr.value;
+        }
+      }
+      if (target.attributes.hasOwnProperty("phx-target")) {
+        this.pushEventTo(target.getAttribute("phx-target"), target.getAttribute("phx-hover"), params);
+      } else {
+        this.pushEvent(target.getAttribute("phx-hover"), params);
+      }
+      window.hoverElement = target;
     }
   });
 }
