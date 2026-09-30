@@ -19,7 +19,7 @@ set initial_score, 2000
 apply subtract, "default_mods", [
   # these are removed
   "lib/yaku/menzentsumo",
-  %{name: "lib/yaku/riichi", config: %{bet: 1000, drawless: false, double_value: 2}},
+  %{name: "lib/yaku/riichi", config: %{bet: 1000, drawless: true, double_value: 2}},
   "lib/yaku/ippatsu",
   %{name: "lib/yaku/iipeikou", config: %{ii_value: 1, ryan_value: 3}},
   %{name: "lib/yaku/chiitoitsu", config: %{kansai: false, name: "Chiitoitsu", value: 2} },
