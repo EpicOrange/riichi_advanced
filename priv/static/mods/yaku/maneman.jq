@@ -59,7 +59,5 @@ if .score_calculation.yaku_lists | any(index("maneman")) then . else
   .score_calculation.yaku_lists += ["maneman"]
 end
 |
-.score_calculation.pao_eligible_yaku += ["Maneman"]
-|
 # technically this mod conflicts with any pao mod because of this key
 .score_calculation.win_with_pao_name = "Maneshi Mangan"

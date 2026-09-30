@@ -18,6 +18,4 @@
   ["when", [{"name": "match", "opts": [["hand", "calls"], ["suuchoupaikou"]]}], [["as", "callee", [["make_responsible_for", "prev_seat", "all"]]]]]
 ]
 |
-.score_calculation.pao_eligible_yaku += ["Suuchoupaikou"]
-|
 .score_calculation.win_with_pao_name = "Sekinin Barai"

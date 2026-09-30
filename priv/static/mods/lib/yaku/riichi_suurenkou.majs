@@ -15,5 +15,4 @@ on after_call do
   end
 end
 
-apply set_append, "score_calculation.pao_eligible_yaku", ["Suurenkou"]
 apply set, "score_calculation.win_with_pao_name", ["Sekinin Barai"]
