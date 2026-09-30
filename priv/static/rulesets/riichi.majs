@@ -173,7 +173,7 @@ define_mod "lib/kuikae_nashi", name: "Kuikae Nashi", desc: "Disallow swap-callin
 define_mod kiriage_mangan, order: -1, name: "Kiriage Mangan", desc: "3 han 60 fu and 4 han 30 fu are worth mangan."
 define_mod "lib/head_bump", conflicts: ["sanchahou"], name: "Head Bump", desc: "Enable head bump. In case of multiple ron, only the person closest in turn order gets the win."
 define_mod double_wind_4_fu, name: "Double Wind 4 Fu", desc: "A pair of round+seat winds is worth 4 fu instead of 2 fu."
-define_mod double_round_wind, name: "Double Round Wind", desc: "Both East and West are round winds during East Round, and North and South during South Round. Similarly for West and North Rounds."
+define_mod "lib/double_round_wind", name: "Double Round Wind", desc: "Both East and West are round winds during East Round, and North and South during South Round. Similarly for West and North Rounds."
 define_mod "lib/pao_standard", name: "Sekinin Barai", desc: "If you deal the last dragon called for a daisangen hand, or the last wind called for a daisuushii hand, you are responsible for the yakuman payment if they tsumo, or half of the payment if they ron off someone else."
 define_mod "lib/pao_suukantsu", deps: ["lib/yaku/suukantsu"], name: "Suukantsu Pao", desc: "If you deal the last kan tile called for a suukantsu hand, you are responsible for the yakuman payment if they tsumo, or half the payment if they ron off someone else."
 define_mod pao_rinshan, name: "Rinshan Pao", desc: "If someone calls kan on your discard and wins off the kan draw, you are responsible for the full payment."
@@ -356,7 +356,7 @@ config_mod "lib/yaku/sanpuukou", name: "dai_value", values: [2]
 config_mod "lib/yaku/sanpuukou", name: "dai_han", values: ["Han"]
 define_mod "lib/yaku/otakaze_sankou", order: 1, name: "Otakaze Sankou", desc: "Local yaku. \"Three Guest Wind Triplets\". 2 han if you have three guest wind triplets. This requires the round wind to match your seat wind."
 config_mod "lib/yaku/otakaze_sankou", name: "value", values: [2]
-define_mod "yaku/renkaihou", deps: ["lib/yaku/rinshan"], name: "Renkaihou", desc: "Local yaku. \"Consecutive Blossom\". 2 han if you kan off the rinshan tile and win off of _that_ rinshan tile. Does not stack with rinshan."
+define_mod "lib/yaku/renkaihou", deps: ["lib/yaku/rinshan"], name: "Renkaihou", desc: "Local yaku. \"Consecutive Blossom\". 2 han if you kan off the rinshan tile and win off of _that_ rinshan tile. Does not stack with rinshan."
 define_mod "yaku/mondeikou", deps: ["aka"], name: "Mondeikou", desc: "Local yaku. If you have 4 aka, 2 han on top of aka. This counts as a yaku."
 # 3 han
 define_mod "lib/yaku/isshoku_sanjun", name: "Isshoku Sanjun", desc: "Local yaku. \"Pure Triple Sequences\". 2 han if you have three of the exact same sequence in one suit, like 123 123 123. Like iipeikou but three. +1 han if closed. Does not stack with iipeikou (123 123) or sanrenkou (111 222 333)."
@@ -958,14 +958,14 @@ define_preset "Just Like Modded Minecraft", [
   "yaku/kyandonhou",
   "yaku/ryandoukou",
   "yaku/shoutate",
-  "yaku/choupaikou",
+  "lib/yaku/choupaikou",
   "yaku/suuzuukou",
   %{name: "lib/yaku/sanpuukou", config: %{
     shou_name: "", shou_value: 0,
     dai_name: "Sanpuukou", dai_value: 2
   }},
   %{name: "lib/yaku/otakaze_sankou", config: %{value: 2}},
-  "yaku/renkaihou",
+  "lib/yaku/renkaihou",
   %{name: "lib/yaku/isshoku_sanjun", config: %{
     san_value: 2, san_closed_bonus: 1,
     # yon_list: "yakuman", yon_value: 1, yon_han: "★",
@@ -993,8 +993,7 @@ define_preset "Just Like Modded Minecraft", [
   "yaku/shiisanuushi",
   "lib/yaku/riichi_suurenkou",
   "yaku/suuchoupaikou",
-  "yaku/daisharin",
-  "yaku/shousharin",
+  "lib/yaku/shousharin",
   "lib/yaku/riichi_isshoku_yonjun",
   "yaku/hyakuman_goku",
   "yaku/kachoufuugetsu",
