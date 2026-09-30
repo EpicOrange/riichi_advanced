@@ -98,6 +98,7 @@ define_button flower,
     and not_just_discarded
     and status_missing("initial_flowers", "just_called")
     and match(["hand", "draw"], ["any_flower"]),
+  cancellable: true,
   unskippable: !undiscardable
   do
     big_text(!flower_name)

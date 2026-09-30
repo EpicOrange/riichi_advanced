@@ -6,7 +6,7 @@ end
 apply append, "constants.all_flowers", ["1k", "2k", "3k", "4k", "1q", "2q", "3q", "4q", "9j"]
 apply append, "constants.east_flowers", ["1k", "1q"]
 apply append, "constants.south_flowers", ["2k", "2q"]
-apply append, "constants.westt_flowers", ["3k", "3q"]
+apply append, "constants.west_flowers", ["3k", "3q"]
 apply append, "constants.north_flowers", ["4k", "4q"]
 
 apply append, "set_definitions.any_flower", ~s"1k|2k|3k|4k|1q|2q|3q|4q|9j"
@@ -22,11 +22,6 @@ apply set, "buttons.start_no_flower.show_when",
 # but then they have to discard it immediately
 define_play_restriction not_flower, status("first_turn") and match(["hand", "draw"], "any_flower")
 apply prepend, "buttons.flower.show_when", status_missing("first_turn")
-
-# flowers can only be discarded if you're going for nfnl
-define_play_restriction flower, status_missing("nfnl_eligible") and match(["hand", "draw"], "any_flower")
-# nonjoker/nonflower tiles can only be discarded if you're not going for nfnl
-define_play_restriction any, status("nfnl_eligible") and not_tiles_match(["tile"], ["flower", "joker"]) and match(["hand", "draw"], "any_flower")
 
 # flower yaku (seat flowers and seat season already defined by default_flowers mod)
 define_yaku yaku, "Seat King", [1, "Phán"], seat_is("east") and match(["flowers"], ~m"1k:1")
@@ -80,5 +75,16 @@ define_button start_flower,
     recalculate_buttons
   end
 
-# cannot keep flowers in hand ever. if nfnl you must discard; otherwise you must replace
-apply set, "buttons.flower.unskippable", status_missing("nfnl_eligible")
+# flowers must be discarded or replaced, cannot be kept in hand
+# 1) if you've previously discarded a flower/joker (status "forced_nfnl"), then all flowers must be discarded (for NFNL)
+# 2) if you've previously replaced a flower/joker (status "nfnl_eligible" missing), then all flowers must be replaced
+# 3) otherwise, you can do either
+
+# 1) discarding a flower forces flower discards from then on
+define_play_effect flower_or_joker do set_status("force_nfnl") end
+define_play_restriction not_flower_or_joker, status("force_nfnl") and match(["hand", "draw"], ["any_flower", "any_joker"])
+apply append, "buttons.flower.show_when", status_missing("force_nfnl")
+
+# 2) replacing a flower forces flower replacements from then on
+define_play_restriction flower_or_joker, has_call_named("flower", "start_flower")
+apply set, "buttons.flower.unskippable", has_call_named("flower", "start_flower")

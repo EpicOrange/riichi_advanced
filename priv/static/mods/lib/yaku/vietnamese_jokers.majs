@@ -68,7 +68,7 @@ on after_start do
   set_tile_alias_all(["8j"], ["1m","2m","3m","4m","5m","6m","7m","8m","9m"])
 end
 
-# cannot discard jokers after flower phase
+# cannot discard jokers after flower phase, unless going for nfnl
 define_play_restriction "0j", status_missing("initial_flowers", "nfnl_eligible")
 define_play_restriction "2j", status_missing("initial_flowers", "nfnl_eligible")
 define_play_restriction "4j", status_missing("initial_flowers", "nfnl_eligible")
@@ -110,7 +110,7 @@ define_button joker,
   show_when: our_turn
     and has_draw
     and not_just_discarded
-    and status_missing("initial_flowers", "just_called")
+    and status_missing("initial_flowers", "just_called", "force_nfnl")
     and match(["hand", "draw"], "any_joker")
   do
     big_text("Joker")
