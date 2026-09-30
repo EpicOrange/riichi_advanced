@@ -10,24 +10,25 @@ if !is_mangan do
     add_rule("Mangan", !name, "Mangan if you have honitsu with dragon yakuhai matching the suit: manzu with chun, pinzu with hatsu (not a typo), or souzu with haku (also not a typo).", 102)
     update_rule("Mangan", !name, "%{example_hand}", %{example_hand: ~t"222345567p2255z 2z"})
   end
-  unless equals(!han, "Han") do define_yaku_precedence !name, ["Haku", "Hatsu", "Chun", "Honitsu", [1, "Han"], [2, "Han"], [3, "Han"], [4, "Han"]] end
+  unless equals(!han, "Han") do define_yaku_precedence !name, [[1, "Han"], [2, "Han"], [3, "Han"], [4, "Han"]] end
 else
   on after_initialization do
     add_rule("value $han", !name, "%{value} %{han} if you have honitsu with dragon yakuhai matching the suit: manzu with chun, pinzu with hatsu (not a typo), or souzu with haku (also not a typo).", %{value: !value, han: !han}, 102)
     update_rule("$value $han", !name, "%{example_hand}", %{value: !value, han: !han, example_hand: ~t"222345567p2255z 2z"})
   end
-  unless equals(!han, "Han") do define_yaku_precedence !name, ["Haku", "Hatsu", "Chun", "Honitsu"] end
 end
 
 define_yaku !list, !name, [!value, !han],
-      winning_hand_consists_of("1m","2m","3m","4m","5m","6m","7m","8m","9m","1z","2z","3z","4z","5z","6z","7z","0z")
+      not_has_points(5)
+  and winning_hand_consists_of("1m","2m","3m","4m","5m","6m","7m","8m","9m","1z","2z","3z","4z","5z","6z","7z","0z")
   and match(["hand", "calls", "winning_tile"], ~m"exhaustive, chun:1, mentsu:3, pair:1")
-  and not_has_points(5)
 define_yaku !list, !name, [!value, !han],
-      winning_hand_consists_of("1p","2p","3p","4p","5p","6p","7p","8p","9p","1z","2z","3z","4z","5z","6z","7z","0z")
+      not_has_points(5)
+  and winning_hand_consists_of("1p","2p","3p","4p","5p","6p","7p","8p","9p","1z","2z","3z","4z","5z","6z","7z","0z")
   and match(["hand", "calls", "winning_tile"], ~m"exhaustive, haku:1, mentsu:3, pair:1")
-  and not_has_points(5)
 define_yaku !list, !name, [!value, !han],
-      winning_hand_consists_of("1s","2s","3s","4s","5s","6s","7s","8s","9s","1z","2z","3z","4z","5z","6z","7z","0z")
+      not_has_points(5)
+  and winning_hand_consists_of("1s","2s","3s","4s","5s","6s","7s","8s","9s","1z","2z","3z","4z","5z","6z","7z","0z")
   and match(["hand", "calls", "winning_tile"], ~m"exhaustive, hatsu:1, mentsu:3, pair:1")
-  and not_has_points(5)
+
+define_yaku_precedence !name, ["Haku", "Hatsu", "Chun", "Honitsu"]

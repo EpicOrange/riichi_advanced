@@ -1,0 +1,26 @@
+default list, "yaku"
+default name, "Dorahairi Chinroutou Chiitoitsu"
+default value, 5 # ignored if is_mangan is true
+default is_mangan, true
+
+if !is_mangan do
+  on after_initialization do
+    add_rule("Mangan", !name, "Mangan if you have chiitoitsu composed of each terminal tile with the seventh pair being dora.", 105)
+    update_rule("Mangan", !name, "%{example_hand}", %{example_hand: ~t"1199m1199p1199s8p@dora 8p@dora"})
+  end
+  unless equals(!han, "Han") do define_yaku_precedence !name, [[1, "Han"], [2, "Han"], [3, "Han"], [4, "Han"]] end
+else
+  on after_initialization do
+    add_rule("value $han", !name, "%{value} %{han} if you have chiitoitsu composed of each terminal tile with the seventh pair being dora.", %{value: !value, han: !han}, 105)
+    update_rule("$value $han", !name, "%{example_hand}", %{value: !value, han: !han, example_hand: ~t"1199m1199p1199s8p@dora 8p@dora"})
+  end
+end
+
+# tag all dora "dorahairi_dora" instead of "dora" (which would make it shiny)
+on before_win do
+  add_attr_tagged("dora", "dorahairi_dora")
+end
+
+define_yaku !list, !name, [!value, !han],
+  not_has_points(5) and winning_hand_consists_of("1m", "9m", "1p", "9p", "1s", "9s", %{tile: "any", attrs: ["dorahairi_dora"]}),
+  ["Chiitoitsu", "Dora"]

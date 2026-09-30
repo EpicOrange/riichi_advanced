@@ -628,4 +628,28 @@ defmodule RiichiAdvanced.YakuTest.TokyoRulesYaku do
     })
   end
 
+  test "tokyo - dorahairi chinroutou chiitoitsu" do
+    TestUtils.test_yaku_advanced("tokyo_rules", [%{name: "dora", config: %{"start_indicators" => 1}}], [], """
+    {
+      "starting_hand": {
+        "east": ["1m", "1m", "9m", "9m", "1p", "1p", "9p", "9p", "1s", "1s", "9s", "3s", "3s"],
+        "south": ["1m", "6m", "8m", "1p", "6p", "8p", "1s", "5s", "7s", "8s", "1z", "6s", "6s"],
+        "west": ["1m", "6m", "8m", "1p", "6p", "9p", "4s", "5s", "7s", "8s", "1z", "2m", "3m"],
+        "north": ["5m", "6m", "8m", "4p", "8p", "9p", "3s", "4s", "7s", "8s", "1z", "2m", "3m"]
+      },
+      "starting_draws": ["6s", "9s"],
+      "starting_dead_wall": ["2z", "1z", "4z", "3z", "2s", "5z"]
+    }
+    """, [
+      %{"type" => "discard", "tile" => "6s", "player" => 0, "tsumogiri" => true},
+      %{"type" => "discard", "tile" => "9s", "player" => 1, "tsumogiri" => true},
+      %{"type" => "buttons_pressed", "buttons" => [%{"button" => "ron"}, nil, nil, nil]},
+    ], %{
+      east: %{
+        yaku: [{"Dorahairi Chinroutou Chiitoitsu", [1, "★"]}],
+        minipoints: 40
+      }
+    })
+  end
+
 end

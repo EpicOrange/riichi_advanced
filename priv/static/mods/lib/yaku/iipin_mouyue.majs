@@ -8,7 +8,7 @@ if !is_mangan do
     add_rule("Mangan", !name, "\"Plucking the Moon from the Bottom of the Sea\". Mangan if you win with haitei (not houtei) on the 1p (1 circles).", 102)
     update_rule("Mangan", !name, "%{example_hand}", %{example_hand: ~t"12399m23777p789s 1p"})
   end
-  define_yaku !list, !name, [5, !han], won_by_draw and no_tiles_remaining and match(["winning_tile"], ~m"1p:1") and not_has_points(5), ["Haitei"]
+  define_yaku !list, !name, [5, !han], not_has_points(5) and won_by_draw and no_tiles_remaining and match(["winning_tile"], ~m"1p:1"), ["Haitei"]
   define_yaku_precedence !name, [[1, !han], [2, !han], [3, !han], [4, !han]]
 else
   on after_initialization do

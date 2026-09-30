@@ -8,7 +8,7 @@ if !is_mangan do
     add_rule("Mangan", !name, "\"Scratching a Carrying Pole\". Mangan if you win with chankan on the 2s (2 bamboo).", 105)
     update_rule("Mangan", !name, "%{example_hand}", %{example_hand: ~t"456m340p1367899s 2s"})
   end
-  define_yaku !list, !name, [5, !han], won_by_call and match(["winning_tile"], ~m"2s:1") and not_has_points(5), ["Chankan"]
+  define_yaku !list, !name, [5, !han], not_has_points(5) and won_by_call and match(["winning_tile"], ~m"2s:1"), ["Chankan"]
   define_yaku_precedence !name, [[1, !han], [2, !han], [3, !han], [4, !han]]
 else
   on after_initialization do
