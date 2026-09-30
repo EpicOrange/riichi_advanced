@@ -134,6 +134,7 @@ apply append, "default_mods", [
   %{name: "lib/yaku/isshoku_sanjun", config: %{san_value: 3, san_closed_bonus: 1}},
   %{name: "lib/yaku/sanrenkou", config: %{san_value: 3, san_han: "Han"}},
   %{name: "lib/yaku/renkaihou", config: %{value: 3}},
+  %{name: "lib/yaku/choupaikou", config: %{s_cpk_value: 0, s_spk_value: 0, s_csk_value: 0, cpk_value: 3, spk_value: 3, csk_value: 3}},
   "no_riichi_ankan",
 ]
 
@@ -142,9 +143,9 @@ apply append, "default_mods", [
 #   - add default vars to mod
 #   - add example hand to mod
 #   - default mod declaration with config
+#   - update riichi.majs local yaku config
 #   - yaku test(s)
 
-# - choupaikou/sujipaikou/chousankou is 3 han
 # - otakaze sankou is 3 han
 # - uushin tsuukan is 4 han
 # -

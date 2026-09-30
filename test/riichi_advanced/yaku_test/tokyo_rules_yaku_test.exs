@@ -232,4 +232,112 @@ defmodule RiichiAdvanced.YakuTest.TokyoRulesYaku do
     })
   end
 
+  test "tokyo - choupaikou" do
+    TestUtils.test_yaku_advanced("tokyo_rules", [], [], """
+    {
+      "starting_hand": {
+        "east": ["2m", "2m", "2m", "4m", "4m", "4m", "6m", "6m", "9m", "1p", "3p", "2z", "2z"],
+        "south": ["1m", "6m", "7m", "2p", "5p", "8p", "3s", "6s", "9s", "1z", "2z", "3z", "4z"],
+        "west": ["2m", "6m", "7m", "2p", "5p", "8p", "3s", "6s", "9s", "1z", "2z", "3z", "4z"],
+        "north": ["5m", "6m", "8m", "5p", "8p", "9p", "3s", "6s", "9s", "1z", "2z", "3z", "4z"]
+      },
+      "starting_draws": ["6z", "6m", "2p"]
+    }
+    """, [
+      %{"type" => "discard", "tile" => "6z", "player" => 0, "tsumogiri" => true},
+      %{"type" => "discard", "tile" => "6m", "player" => 1, "tsumogiri" => true},
+      %{"type" => "buttons_pressed", "buttons" => [%{"button" => "pon"}, nil, nil, nil]},
+      %{"type" => "discard", "tile" => "9m", "player" => 0, "tsumogiri" => false},
+      %{"type" => "discard", "tile" => "2p", "player" => 1, "tsumogiri" => true},
+      %{"type" => "buttons_pressed", "buttons" => [%{"button" => "ron"}, nil, nil, nil]},
+    ], %{
+      east: %{
+        yaku: [{"Choupaikou", [3, "Han"]}],
+        minipoints: 32,
+        score: 1540
+      }
+    })
+  end
+
+  test "tokyo - sujipaikou" do
+    TestUtils.test_yaku_advanced("tokyo_rules", [], [], """
+    {
+      "starting_hand": {
+        "east": ["1m", "1m", "1m", "4m", "4m", "4m", "7m", "7m", "9m", "1p", "3p", "2z", "2z"],
+        "south": ["1m", "6m", "7m", "2p", "5p", "8p", "3s", "6s", "9s", "1z", "2z", "3z", "4z"],
+        "west": ["2m", "6m", "7m", "2p", "5p", "8p", "3s", "6s", "9s", "1z", "2z", "3z", "4z"],
+        "north": ["5m", "6m", "8m", "5p", "8p", "9p", "3s", "6s", "9s", "1z", "2z", "3z", "4z"]
+      },
+      "starting_draws": ["6z", "7m", "2p"]
+    }
+    """, [
+      %{"type" => "discard", "tile" => "6z", "player" => 0, "tsumogiri" => true},
+      %{"type" => "discard", "tile" => "7m", "player" => 1, "tsumogiri" => true},
+      %{"type" => "buttons_pressed", "buttons" => [%{"button" => "pon"}, nil, nil, nil]},
+      %{"type" => "discard", "tile" => "9m", "player" => 0, "tsumogiri" => false},
+      %{"type" => "discard", "tile" => "2p", "player" => 1, "tsumogiri" => true},
+      %{"type" => "buttons_pressed", "buttons" => [%{"button" => "ron"}, nil, nil, nil]},
+    ], %{
+      east: %{
+        yaku: [{"Sujipaikou", [3, "Han"]}],
+        minipoints: 36,
+        score: 1730
+      }
+    })
+  end
+
+  test "tokyo - chousankou" do
+    TestUtils.test_yaku_advanced("tokyo_rules", [], [], """
+    {
+      "starting_hand": {
+        "east": ["1m", "1m", "1m", "5m", "5m", "5m", "7m", "9m", "9m", "1p", "3p", "2z", "2z"],
+        "south": ["1m", "6m", "7m", "2p", "5p", "8p", "3s", "6s", "9s", "1z", "2z", "3z", "4z"],
+        "west": ["2m", "6m", "7m", "2p", "5p", "8p", "3s", "6s", "9s", "1z", "2z", "3z", "4z"],
+        "north": ["5m", "6m", "8m", "5p", "8p", "9p", "3s", "6s", "9s", "1z", "2z", "3z", "4z"]
+      },
+      "starting_draws": ["6z", "9m", "2p"]
+    }
+    """, [
+      %{"type" => "discard", "tile" => "6z", "player" => 0, "tsumogiri" => true},
+      %{"type" => "discard", "tile" => "9m", "player" => 1, "tsumogiri" => true},
+      %{"type" => "buttons_pressed", "buttons" => [%{"button" => "pon"}, nil, nil, nil]},
+      %{"type" => "discard", "tile" => "7m", "player" => 0, "tsumogiri" => false},
+      %{"type" => "discard", "tile" => "2p", "player" => 1, "tsumogiri" => true},
+      %{"type" => "buttons_pressed", "buttons" => [%{"button" => "ron"}, nil, nil, nil]},
+    ], %{
+      east: %{
+        yaku: [{"Chousankou", [3, "Han"]}],
+        minipoints: 38,
+        score: 1820
+      }
+    })
+  end
+
+  test "tokyo - no sanshoku choupaikou" do
+    TestUtils.test_yaku_advanced("tokyo_rules", [], [], """
+    {
+      "starting_hand": {
+        "east": ["2m", "2m", "2m", "4p", "4p", "4p", "6s", "6s", "9s", "2p", "2p", "2z", "2z"],
+        "south": ["1m", "6m", "7m", "2p", "5p", "8p", "3s", "5s", "8s", "1z", "2z", "3z", "4z"],
+        "west": ["2m", "6m", "7m", "2p", "5p", "8p", "3s", "5s", "8s", "1z", "2z", "3z", "4z"],
+        "north": ["5m", "6m", "8m", "5p", "8p", "9p", "3s", "5s", "8s", "1z", "2z", "3z", "4z"]
+      },
+      "starting_draws": ["6z", "6s", "2p"]
+    }
+    """, [
+      %{"type" => "discard", "tile" => "6z", "player" => 0, "tsumogiri" => true},
+      %{"type" => "discard", "tile" => "6s", "player" => 1, "tsumogiri" => true},
+      %{"type" => "buttons_pressed", "buttons" => [%{"button" => "pon"}, nil, nil, nil]},
+      %{"type" => "discard", "tile" => "9s", "player" => 0, "tsumogiri" => false},
+      %{"type" => "discard", "tile" => "2p", "player" => 1, "tsumogiri" => true},
+      %{"type" => "buttons_pressed", "buttons" => [%{"button" => "ron"}, nil, nil, nil]},
+    ], %{
+      east: %{
+        yaku: [{"Toitoi", [2, "Han"]}],
+        minipoints: 32,
+        score: 770
+      }
+    })
+  end
+
 end

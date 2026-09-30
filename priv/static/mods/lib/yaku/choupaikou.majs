@@ -1,0 +1,49 @@
+require "standard_sets"
+
+default s_cpk_name, "Sanshoku Choupaikou"
+default s_spk_name, "Sanshoku Sujipaikou"
+default s_csk_name, "Sanshoku Chousankou"
+default cpk_name, "Choupaikou"
+default spk_name, "Sujipaikou"
+default csk_name, "Chousankou"
+default s_cpk_value, 1
+default s_spk_value, 1
+default s_csk_value, 1
+default cpk_value, 2
+default spk_value, 2
+default csk_value, 2
+default s_cpk_han, "Han"
+default s_spk_han, "Han"
+default s_csk_han, "Han"
+default cpk_han, "Han"
+default spk_han, "Han"
+default csk_han, "Han"
+
+on after_initialization do
+  add_rule("$value $han", !s_cpk_name, "Your hand has the pattern 111333555 in three different suits (doesn't have to start at 1).", %{value: !s_cpk_value, han: !s_cpk_han}, 101)
+  update_rule("$value $han", !s_cpk_name, "%{example_hand}", %{value: !s_cpk_value, han: !s_cpk_han, example_hand: ~t"222m444p66ss4445z 5z"})
+  add_rule("$value $han", !s_spk_name, "Your hand has the pattern 111444777 in three different suits (doesn't have to start at 1).", %{value: !s_spk_value, han: !s_spk_han}, 101)
+  update_rule("$value $han", !s_spk_name, "%{example_hand}", %{value: !s_spk_value, han: !s_spk_han, example_hand: ~t"222m555p88ss4445z 5z"})
+  add_rule("$value $han", !s_csk_name, "Your hand has the pattern 111555999 in three different suits.", %{value: !s_csk_value, han: !s_csk_han}, 101)
+  update_rule("$value $han", !s_csk_name, "%{example_hand}", %{value: !s_csk_value, han: !s_csk_han, example_hand: ~t"111m555p99ss4445z 5z"})
+  add_rule("$value $han", !cpk_name, "Your hand has the pattern 111333555 in the same suit (doesn't have to start at 1).", %{value: !cpk_value, han: !cpk_han}, 101)
+  update_rule("$value $han", !cpk_name, "%{example_hand}", %{value: !cpk_value, han: !cpk_han, example_hand: ~t"222444666m4569s 9s"})
+  add_rule("$value $han", !spk_name, "Your hand has the pattern 111444777 in the same suit (doesn't have to start at 1).", %{value: !spk_value, han: !spk_han}, 101)
+  update_rule("$value $han", !spk_name, "%{example_hand}", %{value: !spk_value, han: !spk_han, example_hand: ~t"222555888m4569s 9s"})
+  add_rule("$value $han", !csk_name, "Your hand has the pattern 111555999 in the same suit.", %{value: !csk_value, han: !csk_han}, 101)
+  update_rule("$value $han", !csk_name, "%{example_hand}", %{value: !csk_value, han: !csk_han, example_hand: ~t"111555999m4569s 9s"})
+end
+
+define_set "ssk_choupaikou", ~s"0 0 0, 12 12 12, 24 24 24|0 0 0, 22 22 22, 14 14 14"
+define_set "ssk_sujipaikou", ~s"0 0 0, 13 13 13, 26 26 26|0 0 0, 23 23 23, 16 16 16"
+define_set "ssk_chousankou", ~s"0 0 0, 14 14 14, 28 28 28|0 0 0, 24 24 24, 18 18 18"
+define_set "choupaikou", ~s"0 0 0, 2 2 2, 4 4 4"
+define_set "sujipaikou", ~s"0 0 0, 3 3 3, 6 6 6"
+define_set "chousankou", ~s"0 0 0, 4 4 4, 8 8 8"
+
+if !s_cpk_value > 0 do define_yaku yakuman, !s_cpk_name, [!s_cpk_value, !s_cpk_han], match(["hand", "calls", "winning_tile"], ~m"exhaustive, ssk_choupaikou:1, mentsu:1, pair:1") end
+if !s_spk_value > 0 do define_yaku yakuman, !s_spk_name, [!s_spk_value, !s_spk_han], match(["hand", "calls", "winning_tile"], ~m"exhaustive, ssk_sujipaikou:1, mentsu:1, pair:1") end
+if !s_csk_value > 0 do define_yaku yakuman, !s_csk_name, [!s_csk_value, !s_csk_han], match(["hand", "calls", "winning_tile"], ~m"exhaustive, ssk_chousankou:1, mentsu:1, pair:1") end
+if !cpk_value > 0 do define_yaku yakuman, !cpk_name, [!cpk_value, !cpk_han], match(["hand", "calls", "winning_tile"], ~m"exhaustive, choupaikou:1, mentsu:1, pair:1") end
+if !spk_value > 0 do define_yaku yakuman, !spk_name, [!spk_value, !spk_han], match(["hand", "calls", "winning_tile"], ~m"exhaustive, sujipaikou:1, mentsu:1, pair:1") end
+if !csk_value > 0 do define_yaku yakuman, !csk_name, [!csk_value, !csk_han], match(["hand", "calls", "winning_tile"], ~m"exhaustive, chousankou:1, mentsu:1, pair:1") end
