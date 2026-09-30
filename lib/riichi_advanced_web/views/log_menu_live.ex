@@ -91,6 +91,11 @@ defmodule RiichiAdvancedWeb.LogMenuLive do
     {:noreply, socket}
   end
 
+  def handle_event("goto_scoringtest", _assigns, socket) do
+    socket = push_navigate(socket, to: ~p"/scoringtest?ruleset=riichi&lang=#{socket.assigns.lang}")
+    {:noreply, socket}
+  end
+
   def handle_event("change_language", %{"lang" => lang}, socket), do: {:noreply, assign(socket, :lang, lang)}
 
   def handle_event(_event, _assigns, socket) do

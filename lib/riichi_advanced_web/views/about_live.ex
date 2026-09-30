@@ -102,7 +102,12 @@ defmodule RiichiAdvancedWeb.AboutLive do
     socket = push_navigate(socket, to: ~p"/?nickname=#{socket.assigns.nickname}&lang=#{socket.assigns.lang}")
     {:noreply, socket}
   end
-  
+
+  def handle_event("goto_scoringtest", _assigns, socket) do
+    socket = push_navigate(socket, to: ~p"/scoringtest?ruleset=riichi&lang=#{socket.assigns.lang}")
+    {:noreply, socket}
+  end
+
   def handle_event("goto_logs", _assigns, socket) do
     socket = push_navigate(socket, to: ~p"/log?nickname=#{socket.assigns.nickname}&lang=#{socket.assigns.lang}")
     {:noreply, socket}
