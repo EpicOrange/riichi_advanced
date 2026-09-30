@@ -104,13 +104,17 @@ define_play_effect not_flower_or_joker do
   end
 end
 
-# declaring any flowers/jokers disqualifies you
-# (prepend to avoid interrupts)
-apply prepend, "buttons.start_flower.actions" do unset_status("nfnl_eligible") end
-apply prepend, "buttons.start_joker.actions" do unset_status("nfnl_eligible") end
-apply prepend, "buttons.flower.actions" do unset_status("nfnl_eligible") end
-apply prepend, "buttons.joker.actions" do unset_status("nfnl_eligible") end
-# same with any standard win call
+# if ineligible for nfnl, can no longer discard flowers/jokers (and flower replacements are forced)
+define_play_restriction flower_or_joker, status_missing("nfnl_eligible")
+apply set, "buttons.flower.unskippable", status_missing("nfnl_eligible")
+
+# disqualify nfnl if you replace a flower/joker or call a set that includes a joker
+on before_call do
+  if call_contains([+@all_flowers, +@all_jokers]) do
+    unset_status("nfnl_eligible")
+  end
+end
+# any standard win call also disqualifies nfnl
 apply prepend, "buttons.ron.actions" do unset_status("nfnl_eligible") end
 apply prepend, "buttons.chankan.actions" do unset_status("nfnl_eligible") end
 apply prepend, "buttons.tsumo.actions" do unset_status("nfnl_eligible") end

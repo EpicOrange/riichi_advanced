@@ -74,7 +74,3 @@ define_button start_flower,
     draw(1, "opposite_end")
     recalculate_buttons
   end
-
-# replacing a flower forces flower replacements from then on
-define_play_restriction flower_or_joker, has_call_named("flower", "start_flower")
-apply set, "buttons.flower.unskippable", has_call_named("flower", "start_flower")

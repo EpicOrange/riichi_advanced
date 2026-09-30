@@ -2351,12 +2351,12 @@ defmodule RiichiAdvanced.GameState.Actions do
 
               # run before_call actions
               callee = state.turn
-              state = trigger_event(state, "before_call", %{seat: state.turn, callee: callee, caller: seat})
+              state = trigger_event(state, "before_call", %{seat: state.turn, callee: callee, caller: seat, choice: choice})
 
               state = run_actions(state, actions, %{seat: seat, choice: choice})
 
               # run after_call actions
-              state = trigger_event(state, "after_call", %{seat: state.turn, callee: callee, caller: seat})
+              state = trigger_event(state, "after_call", %{seat: state.turn, callee: callee, caller: seat, choice: choice})
 
               state
             {:mark, mark_spec, pre_actions, post_actions, cancel_actions} ->
