@@ -318,7 +318,7 @@ define_mod_category "Local Yaku"
 define_mod "yaku/nippatsu", order: 2, name: "Nippatsu", deps: ["lib/yaku/riichi"], desc: "Enables nippatsu. 1 han if you win during the second go-around after riichi ippatsu. Calls invalidate."
 define_mod "yaku/tsubame_gaeshi", name: "Tsubame Gaeshi", deps: ["lib/yaku/riichi"], desc: "Local yaku. \"Swallow Reversal\". 1 han if you win off a riichi declaration discard."
 define_mod "lib/yaku/shiiaru_raotai", name: "Shiiaru Raotai", desc: "Local yaku. \"Twelve Tiles Down\". 1 han if you win with four calls (and therefore on a single tile wait). Closed kans are permitted."
-define_mod "yaku/kanburi", name: "Kanburi", desc: "Local yaku. \"Shoot After Kan\". 1 han if you win off the tile discarded by a player who just called kan."
+define_mod "lib/yaku/kanburi", name: "Kanburi", desc: "Local yaku. \"Shoot After Kan\". 1 han if you win off the tile discarded by a player who just called kan."
 define_mod "yaku/honors_chiitoitsu", name: "Honors Chiitoitsu", desc: "Local yaku. 1 han on top of chiitoitsu if three of your pairs are dragons, or if four of your pairs are winds. If you have all seven honor pairs? Double yakuman."
 define_mod "lib/yaku/uushin_tsuukan", name: "Uushin Tsuukan", desc: "Local yaku. \"Five-Heart Straight\". 1 han on top of ittsuu if the winning tile is the five needed for ittsuu."
 define_mod "lib/yaku/ketsupaihou", name: "Ketsupaihou", desc: "Local yaku. \"Missing Tile\". 1 han if you have an edge (12, 89) or middle (24, 57) wait on a tile for which three are already publicly visible (so 12333 winning on 3 doesn't count)."
@@ -946,7 +946,7 @@ define_preset "Just Like Modded Minecraft", [
   %{name: "kandora", config: %{immediate: true}},
   "yaku/tsubame_gaeshi",
   "lib/yaku/shiiaru_raotai",
-  "yaku/kanburi",
+  "lib/yaku/kanburi",
   "yaku/honors_chiitoitsu",
   "lib/yaku/uushin_tsuukan",
   "lib/yaku/ketsupaihou",

@@ -1,0 +1,168 @@
+set display_name, "Shenyang"
+set tutorial_link, "https://peterish.com/riichi-docs/shenyang-mahjong-rules/"
+
+define_global han, "Fan"
+define_global ankan_name, "Angang"
+define_global chii_name, "Chi"
+define_global pon_name, "Peng"
+define_global kan_name, "Gang"
+define_global ron_name, "Hu"
+define_global tsumo_name, "Zimo"
+define_global chankan_name, "Hu"
+
+require "value_honors"
+require "standard_sets"
+
+require "base"
+require "standard_wall"
+require "framed_5z"
+require "global_mods"
+require "default_auto_buttons"
+require "chii"
+require "pon"
+require "kan", %{hide_ankans: false, replace_from_dead_wall: true, shift_dead_wall: true}
+require "ron", %{scoring_key: "win"}
+require "tsumo", %{scoring_key: "win"}
+require "agarirenchan"
+require "head_bump" # probably, right?
+
+on after_initialization do
+  add_rule("Rules", "Win Condition", """
+  To win, you must have four sets (sequences or triplets) and a pair, but you must also satisfy ALL of the following:
+  - Must be open (you have called a tile from someone else)
+  - Must have all three suits
+  - Cannot be duanyao (no terminal or honor tiles)
+  - Cannot be pinghu (all sequences with non-dragon pair)
+  """, -50)
+  add_rule("Tiles", "Base Tiles", "Shenyang mahjong uses the following 136 tiles:", -100)
+  add_rule("Tiles", "Base Tiles", "- Four each of the 1 to 9 of circles %{pinzu}", %{pinzu: ~t"123456789p"})
+  add_rule("Tiles", "Base Tiles", "- Four each of the 1 to 9 of bamboo %{souzu}", %{souzu: ~t"123456789s"})
+  add_rule("Tiles", "Base Tiles", "- Four each of the 1 to 9 of characters %{manzu}", %{manzu: ~t"123456789m"})
+  add_rule("Tiles", "Base Tiles", "- Four each of the four winds (East, South, West, North) %{winds}", %{winds: ~t"1234z"})
+  add_rule("Tiles", "Base Tiles", "- Four each of the three dragons (White, Green, Red) %{dragons}", %{dragons: ~t"067z"})
+  add_rule("1 Fan", "Single Wait", "1 Fan if you are only waiting on one kind of tile.")
+  add_rule("1 Fan", "Single Wait", "%{example_hand}", %{example_hand: ~t"234m678999p1233s 3s"})
+  add_rule("1 Fan", "Single Wait", "Note that a double wait, such as %{t2} waiting on %{t3}, does not count. You can only have a single wait.", %{t2: ~t"1234s", t3: ~t"14s"})
+  add_rule("Rules", "Dragons", "Before your first discard, you may declare any %{dragons} in hand as a set. Each is worth 2 Fan. You may not declare this after your first discard.", %{dragons: ~t"067z"})
+  add_rule("Rules", "Winds", "Before your first discard, you may declare any %{winds} in hand as a set, drawing a replacement tile as if you called Angang. Each is worth 2 Fan. You may not declare this after your first discard.", %{winds: ~t"1234z"})
+  add_rule("1 Fan", "Gang", "1 Fan for each Gang you declare.")
+  add_rule("2 Fan", "Dragons", "2 Fan for each %{dragons} you declare before your first discard.", %{dragons: ~t"067z"})
+  add_rule("2 Fan", "Winds", "2 Fan for each %{winds} you declare before your first discard.", %{winds: ~t"1234z"})
+end
+
+define_set manzu, ~s"1m|2m|3m|4m|5m|6m|7m|8m|9m"
+define_set pinzu, ~s"1p|2p|3p|4p|5p|6p|7p|8p|9p"
+define_set souzu, ~s"1s|2s|3s|4s|5s|6s|7s|8s|9s"
+
+define_match win, ~m"exhaustive, (chii pon daiminkan kakan):0, (koutsu dragons winds haku_pair hatsu_pair chun_pair):0, orphans_any:0, manzu:0, pinzu:0, souzu:0, mentsu:4, pair:1"
+
+on after_win do as everyone do unset_status("liuju_double") end end
+on before_exhaustive_draw do as everyone do set_status("liuju_double") end end
+apply set_append, "persistent_counters", "liuju_double"
+
+# kans shift two tiles
+apply append, "buttons.daiminkan.actions" do shift_tile_to_dead_wall(1) end
+apply append, "buttons.kakan.actions" do shift_tile_to_dead_wall(1) end
+apply append, "buttons.ankan.actions" do shift_tile_to_dead_wall(1) end
+# remove tenpai check, since we don't have a tenpai definition
+replace 1, "buttons.ron.show_when", %{name: "match", opts: [["hand", "calls"], ["tenpai"]]}, true
+replace 1, "buttons.tsumo.show_when", %{name: "match", opts: [["hand", "calls"], ["tenpai"]]}, true
+
+apply initialize, "constants.closed_hand", has_no_call_named("chii", "pon", "daiminkan", "kakan")
+
+on before_win do
+  cond do
+    won_by_draw -> make_responsible_for("others")
+    won_by_discard -> make_responsible_for("last_discarder")
+    won_by_call -> make_responsible_for("last_caller")
+  end
+end
+define_scoring win do
+  total = points :: "Fan"
+  total = 2 :: "Base"
+  total *= 2 ** points :: "Fan multiplier"
+  if seat_is("east") or seat_is("east", as: "winner") do
+    total *= 2 :: "Dealer"
+  end
+  if @closed_hand do
+    total *= 2 :: "No Calls Penalty"
+  end
+  if won_by_draw do
+    total *= 1 :: "Zimo"
+  else
+    total *= 2 :: "Hu"
+  end
+  if status("liuju_double") do
+    total *= 2 :: "Last round was drawn"
+  end
+end
+
+apply append, "set_definitions.mentsu", ["dragons", "winds"]
+
+define_button dragons,
+  display_name: "Dragons",
+  show_when: our_turn
+    and no_discards_yet
+    and self_call_available,
+  call: [["6z", "7z"]],
+  call_style: %{self: ["7z", "6z", "0z"]},
+  call_conditions: called_tile_contains(["0z"], 1)
+  do
+    big_text("Dragons")
+    self_call
+  end
+
+define_button winds,
+  display_name: "Winds",
+  show_when: our_turn
+    and no_discards_yet
+    and not_no_tiles_remaining
+    and not_just_discarded
+    and not_just_called
+    and self_call_available,
+  call: [["1z", "2z", "3z"]],
+  call_style: %{self: ["4z", "1z", "3z", "2z"]},
+  call_conditions: called_tile_contains(["4z"], 1)
+  do
+    big_text("Winds")
+    self_call
+    shift_tile_to_dead_wall(2)
+    draw(1, "opposite_end")
+  end
+
+define_yaku yaku, "Single Wait", [1, "Fan"], wait_count_at_most(1, "win")
+require "yaku/yakuhai", %{round_wind_name: "", seat_wind_name: "", value: 1}
+define_yaku yaku, "Gang", [1, "Fan"], match(["calls"], ~m"(daiminkan ankan kakan):1")
+define_yaku yaku, "Gang", [1, "Fan"], match(["calls"], ~m"(daiminkan ankan kakan):2")
+define_yaku yaku, "Gang", [1, "Fan"], match(["calls"], ~m"(daiminkan ankan kakan):3")
+define_yaku yaku, "Gang", [1, "Fan"], match(["calls"], ~m"(daiminkan ankan kakan):4")
+require "yaku/rinshan", %{name: "Gangshang Kaihua", value: 1}
+require "yaku/kanburi", %{name: "Gangshang Pao", value: 1}
+require "yaku/chankan", %{name: "Qianggang", value: 1}
+require "yaku/double_dice_roll", %{name: "Double Dice Roll", value: 1}
+require "yaku/toitoi", %{name: "Duiduihu", value: 3}
+define_yaku yaku, "Dragons", [2, "Fan"], match(["calls"], ~m"dragons:1")
+define_yaku yaku, "Dragons", [2, "Fan"], match(["calls"], ~m"dragons:2")
+define_yaku yaku, "Dragons", [2, "Fan"], match(["calls"], ~m"dragons:3")
+define_yaku yaku, "Dragons", [2, "Fan"], match(["calls"], ~m"dragons:4")
+define_yaku yaku, "Winds", [2, "Fan"], match(["calls"], ~m"winds:1")
+define_yaku yaku, "Winds", [2, "Fan"], match(["calls"], ~m"winds:2")
+define_yaku yaku, "Winds", [2, "Fan"], match(["calls"], ~m"winds:3")
+define_yaku yaku, "Winds", [2, "Fan"], match(["calls"], ~m"winds:4")
+
+set score_calculation, %{
+  yaku_lists: ["yaku"],
+  point_name: "Fan",
+  win_by_discard_label: "Hu",
+  win_by_draw_label: "Zimo",
+  win_by_discard_name: "Hu",
+  win_by_draw_name: "Zimo",
+  exhaustive_draw_name: "Liuju",
+}
+
+set interruptible_actions, ["play_tile", "draw", "advance_turn", "upgrade_call"]
+set display_wall, true
+set initial_score, 0
+set starting_tiles, 13
+set initial_dead_wall_length, 16
+set max_rounds, 4

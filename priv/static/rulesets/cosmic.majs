@@ -16,7 +16,7 @@ apply set_append, "default_mods", [
   # +1 bonus for closed is found in cosmic mod
   %{name: "lib/yaku/chiitoitsu", config: %{kansai: false, name: "Chiitoitsu", value: 1}},
   "yaku/tsubame_gaeshi",
-  "yaku/kanburi",
+  "lib/yaku/kanburi",
   %{name: "lib/yaku/isshoku_sanjun", config: %{san_value: 2, yon_list: "yakuman", yon_value: 1, yon_han: "★", san_closed_bonus: 1}},
 ]
 

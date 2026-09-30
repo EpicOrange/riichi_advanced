@@ -433,13 +433,15 @@ defmodule RiichiAdvanced.AIPlayer do
             "ankan" in player.buttons -> "ankan"
             true -> "skip"
           end
-        state.ruleset == "fuzhou" or state.ruleset == "vietnamese" or state.ruleset == "filipino" ->
+        state.ruleset in ["fuzhou", "vietnamese", "filipino", "shenyang"] ->
           cond do
             "ron" in player.buttons and Match.match_hand(player.hand ++ [last_discard], player.calls, state.shanten_definitions.win, player.tile_behavior) -> "ron"
             "tsumo" in player.buttons and Match.match_hand(player.hand ++ player.draw, player.calls, state.shanten_definitions.win, player.tile_behavior) -> "tsumo"
             "flower" in player.buttons -> "flower"
             "start_flower" in player.buttons -> "start_flower"
             "start_no_flower" in player.buttons -> "start_no_flower"
+            "dragons" in player.buttons -> "dragons"
+            "winds" in player.buttons -> "winds"
             "beauty" in player.buttons -> "beauty"
             "beauty_self" in player.buttons -> "beauty_self"
             "news" in player.buttons -> "news"
@@ -465,6 +467,8 @@ defmodule RiichiAdvanced.AIPlayer do
         "beauty_self" in player.buttons -> "beauty_self"
         # "news" in player.buttons -> "news"
         "news_self" in player.buttons -> "news_self"
+        "dragons" in player.buttons -> "dragons"
+        "winds" in player.buttons -> "winds"
         "ankan" in player.buttons -> "ankan"
         # "daiminkan" in player.buttons -> "daiminkan"
         # "pon" in player.buttons -> "pon"
