@@ -4141,11 +4141,16 @@ div.mods > div.mods-inner-container > div.mod-category-spacer {
   margin-left: -0.5em;
 }
 div.mods > div.mods-inner-container button.mod-menu-button {
-  font-size: 75%;
+  font-size: 85%;
 }
 div.mods > div.mods-inner-container div.mods-bottom-buttons {
+  font-size: 120%;
   width: 100%;
   text-align: center;
+  & > button.mod-menu-button {
+    padding: calc(0.0625 * var(--tile-size));
+    margin-bottom: calc(0.25 * var(--tile-size));
+  }
 }
 div.room div.config > textarea,
 div.room div.custom-json > textarea {

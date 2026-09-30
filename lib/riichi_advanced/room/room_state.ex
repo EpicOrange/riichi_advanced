@@ -295,14 +295,17 @@ defmodule RiichiAdvanced.RoomState do
     end
   end
 
-  def reset_mods_to_default(state) do
-    default_mods = Rules.get(state.rules_ref, "default_mods", [])
+  def import_mods(state, mods) do
     for {mod_name, _mod} <- state.mods, reduce: state do
       state ->
-        case Enum.find(default_mods, fn mod -> mod == mod_name or (is_map(mod) and mod.name == mod_name) end) do
+        case Enum.find(mods, fn mod -> mod == mod_name or (is_map(mod) and Map.get(mod, :name, Map.get(mod, "name")) == mod_name) end) do
           nil                           ->
             state = put_in(state.mods[mod_name].enabled, false)
             state = update_in(state.mods[mod_name].config, &Map.new(&1, fn {config_name, config} -> {config_name, Map.put(config, :value, Map.get(config, "default", Enum.at(config["values"], 0)))} end))
+            state
+          %{"name" => _name, "config" => default_config} ->
+            state = put_in(state.mods[mod_name].enabled, true)
+            state = update_in(state.mods[mod_name].config, &Map.new(&1, fn {config_name, config} -> {config_name, Map.put(config, :value, Map.get(default_config, config_name, Enum.at(config["values"], 0)))} end))
             state
           %{name: _name, config: default_config} ->
             state = put_in(state.mods[mod_name].enabled, true)
@@ -314,6 +317,11 @@ defmodule RiichiAdvanced.RoomState do
             state
         end
     end
+    |> broadcast_state_change()
+  end
+
+  def reset_mods_to_default(state) do
+    import_mods(state, Rules.get(state.rules_ref, "default_mods", []))
   end
 
   def randomize_mods(state) do
@@ -382,6 +390,10 @@ defmodule RiichiAdvanced.RoomState do
 
   def handle_call(:get_state, _from, state) do
     {:reply, state, state}
+  end
+
+  def handle_call(:export_mods, _from, state) do
+    {:reply, get_enabled_mods(state), state}
   end
 
   # collaborative textarea
@@ -568,6 +580,8 @@ defmodule RiichiAdvanced.RoomState do
     state = start_update_rules_task(state)
     {:noreply, state}
   end
+
+  def handle_cast({:import_mods, mods}, state), do: {:noreply, import_mods(state, mods)}
 
   def handle_cast({:get_up, session_id}, state) do
     state = update_seats(state, fn player -> if player == nil or player.id == session_id do nil else player end end)

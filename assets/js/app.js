@@ -280,12 +280,23 @@ Hooks.CollaborativeTextarea = {
   }
 }
 
-window.addEventListener("phx:play-sound", ev => {
-  var audio = new Audio(ev.detail.path);
+window.addEventListener("phx:play-sound", e => {
+  const audio = new Audio(e.detail.path);
   audio.play();
 });
-window.addEventListener("phx:copy-log", ev => {
-  navigator.clipboard.writeText(ev.detail.log);
+window.addEventListener("phx:copy-log", e => {
+  navigator.clipboard.writeText(e.detail.log);
+});
+Hooks.ImportModsButton = {
+  mounted() {
+    this.el.addEventListener("click", async e => {
+      const mods = await navigator.clipboard.readText();
+      this.pushEvent("import_mods", {mods: mods});
+    });
+  }
+}
+window.addEventListener("phx:export-mods", e => {
+  navigator.clipboard.writeText(e.detail.mods);
 });
 
 // Include phoenix_html to handle method=PUT/DELETE in forms and buttons.

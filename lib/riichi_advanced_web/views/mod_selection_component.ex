@@ -59,6 +59,9 @@ defmodule RiichiAdvancedWeb.ModSelectionComponent do
           <div class="mod-category-spacer"></div>
         <% end %>
         <div class="mods-bottom-buttons">
+          <button class="mod-menu-button" id="import-mods-button" phx-hook="ImportModsButton"><%= t(@lang, "Import mods from clipboard") %></button>
+          <button class="mod-menu-button" phx-cancellable-click="export_mods"><%= t(@lang, "Export mods to clipboard") %></button>
+          <br/>
           <button class="mod-menu-button" phx-cancellable-click="reset_mods_to_default"><%= t(@lang, "Reset mods to default") %></button>
           <button class="mod-menu-button" phx-cancellable-click="randomize_mods"><%= t(@lang, "Randomize mods") %></button>
         </div>
