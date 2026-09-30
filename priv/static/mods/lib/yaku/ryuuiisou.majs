@@ -5,7 +5,7 @@ default name, "Ryuuiisou"
 default value, 1
 
 on after_initialization do
-  add_rule("$value $han", !name, "%{value} %{han} if your hand consists of only all-green tiles (23468 bamboo and green dragon).", %{value: !value, han: !han})
+  add_rule("$value $han", !name, "%{value} %{han} if your hand only consists of %{tiles} (all green tiles)", %{tiles: ~t"23468s6z", value: !value, han: !han})
   update_rule("$value $han", !name, "%{example_hand}", %{value: !value, han: !han, example_hand: ~t"2234466888s 6Z66z 3s"})
 end
 

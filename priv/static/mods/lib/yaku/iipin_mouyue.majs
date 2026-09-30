@@ -5,14 +5,14 @@ default is_mangan, true
 
 if !is_mangan do
   on after_initialization do
-    add_rule("Mangan", !name, "\"Plucking the Moon from the Bottom of the Sea\". Mangan if you win with haitei (not houtei) on the 1p (1 circles).", 102)
+    add_rule("Mangan", !name, "\"Plucking the Moon from the Bottom of the Sea\". Mangan if you win with haitei (not houtei) on %{tile}.", %{tile: ~t"1p"}, 102)
     update_rule("Mangan", !name, "%{example_hand}", %{example_hand: ~t"12399m23777p789s 1p"})
   end
   define_yaku !list, !name, [5, !han], not_has_points(5) and won_by_draw and no_tiles_remaining and match(["winning_tile"], ~m"1p:1"), ["Haitei"]
   define_yaku_precedence !name, [[1, !han], [2, !han], [3, !han], [4, !han]]
 else
   on after_initialization do
-    add_rule("$value $han", !name, "\"Plucking the Moon from the Bottom of the Sea\". %{value} %{han} if you win with haitei (not houtei) on the 1p (1 circles).", %{value: !value, han: !han}, 102)
+    add_rule("$value $han", !name, "\"Plucking the Moon from the Bottom of the Sea\". %{value} %{han} if you win with haitei (not houtei) on %{tile}.", %{tile: ~t"1p", value: !value, han: !han}, 102)
     update_rule("$value $han", !name, "%{example_hand}", %{value: !value, han: !han, example_hand: ~t"12399m23777p789s 1p"})
   end
   define_yaku !list, !name, [!value, !han], won_by_draw and no_tiles_remaining and match(["winning_tile"], ~m"1p:1"), ["Haitei"]

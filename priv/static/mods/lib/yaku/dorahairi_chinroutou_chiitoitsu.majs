@@ -11,7 +11,7 @@ if !is_mangan do
   unless equals(!han, "Han") do define_yaku_precedence !name, [[1, "Han"], [2, "Han"], [3, "Han"], [4, "Han"]] end
 else
   on after_initialization do
-    add_rule("value $han", !name, "%{value} %{han} if you have chiitoitsu composed of each terminal tile with the seventh pair being dora.", %{value: !value, han: !han}, 105)
+    add_rule("$value $han", !name, "%{value} %{han} if you have chiitoitsu composed of each terminal tile with the seventh pair being dora.", %{value: !value, han: !han}, 105)
     update_rule("$value $han", !name, "%{example_hand}", %{value: !value, han: !han, example_hand: ~t"1199m1199p1199s8p@dora 8p@dora"})
   end
 end

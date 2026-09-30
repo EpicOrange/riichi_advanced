@@ -13,7 +13,7 @@ if !is_mangan do
   unless equals(!han, "Han") do define_yaku_precedence !name, [[1, "Han"], [2, "Han"], [3, "Han"], [4, "Han"]] end
 else
   on after_initialization do
-    add_rule("value $han", !name, "%{value} %{han} if you have honitsu with dragon yakuhai matching the suit: manzu with chun, pinzu with hatsu (not a typo), or souzu with haku (also not a typo).", %{value: !value, han: !han}, 102)
+    add_rule("$value $han", !name, "%{value} %{han} if you have honitsu with dragon yakuhai matching the suit: manzu with chun, pinzu with hatsu (not a typo), or souzu with haku (also not a typo).", %{value: !value, han: !han}, 102)
     update_rule("$value $han", !name, "%{example_hand}", %{value: !value, han: !han, example_hand: ~t"222345567p2255z 2z"})
   end
 end
