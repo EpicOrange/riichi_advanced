@@ -988,20 +988,35 @@ defmodule RiichiAdvanced.Compiler do
   end
 
   defp compile_command("define_preset", name, args, line, column) do
-    mods = case args do
-      [mods] -> {:ok, mods}
-      _ -> {:error, "Compiler.compile: at line #{line}:#{column}, `define_preset` command expects a list of mods, got #{inspect(args)}"}
+    subvariant_mods = case args do
+      [mods] -> {:ok, {nil, mods}}
+      [subvariant, mods] -> {:ok, {subvariant, mods}}
+      _ -> {:error, "Compiler.compile: at line #{line}:#{column}, `define_preset` command expects a list of mods, or a subvariant name and then a list of mods, got #{inspect(args)}"}
     end
-
-    with {:ok, mods} <- mods,
+    with {:ok, {subvariant, mods}} <- subvariant_mods,
+         {:ok, subvariant} <- Validator.validate_json(subvariant),
+         {:ok, subvariant} <- Jason.encode(subvariant),
          {:ok, mods} <- Validator.validate_json(mods),
          {:ok, mods} <- Jason.encode(mods) do
-      {:ok, ~s"""
-      .available_presets += [{
-        "display_name": #{name},
-        "enabled_mods": #{mods}
-      }]
-      """}
+      if subvariant != "null" do
+        {:ok, ~s"""
+        .available_presets |= ((. // [{
+          "display_name": #{name},
+          "subvariants": []
+        }]) | select(map(.display_name == #{name}))[0].subvariants += [{
+          "display_name": #{subvariant},
+          "enabled_mods": #{mods}
+        }])
+        """}
+      else
+        {:ok, ~s"""
+        .available_presets += [{
+          "display_name": #{name},
+          "enabled_mods": #{mods},
+          "subvariants": []
+        }]
+        """}
+      end
     end
   end
 

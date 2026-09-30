@@ -168,12 +168,26 @@ defmodule RiichiAdvancedWeb.RoomLive do
           <label for="config-tab" class="room-tab-title"><%= t(@lang, "Config") %></label>
           <div class="presets">
             <%= for {preset, i} <- Enum.with_index(@state.presets) do %>
-              <%= if i == @state.selected_preset_ix do %>
+              <%= if preset_selection_is?(@state, i) do %>
                 <input type="radio" id={"preset-#{i}"} name="presets" checked phx-click="set_preset" phx-value-index={i}>
               <% else %>
                 <input type="radio" id={"preset-#{i}"} name="presets" phx-click="set_preset" phx-value-index={i}>
               <% end %>
-              <label for={"preset-#{i}"} class="presets-title"><%= dt(@lang, preset["display_name"]) %></label>
+              <label for={"preset-#{i}"} class="presets-title"><%= dt(@lang, preset["display_name"]) %>
+                <%= if preset_selection_is?(@state, i) and not Enum.empty?(preset["subvariants"]) do %>
+                  <form class="preset-dropdown" phx-change="set_preset" phx-value-index={i}>
+                    <select name="preset_dropdown">
+                      <%= for {subvariant, j} <- Enum.with_index(preset["subvariants"]) do %>
+                        <%= if preset_selection_is?(@state, i, j) do %>
+                          <option value={j} selected><%= dt(@lang, to_string(subvariant["display_name"])) %></option>
+                        <% else %>
+                          <option value={j}><%= dt(@lang, to_string(subvariant["display_name"])) %></option>
+                        <% end %>
+                      <% end %>
+                    </select>
+                  </form>
+                <% end %>
+              </label>
             <% end %>
           </div>
           <.live_component module={RiichiAdvancedWeb.ModSelectionComponent} id="room-mods" lang={@lang} ruleset={@ruleset} mods={@state.mods} categories={@state.categories} />
@@ -234,6 +248,13 @@ defmodule RiichiAdvancedWeb.RoomLive do
     """
   end
 
+  def preset_selection_is?(state, k, l \\ nil) do
+    case state.selected_preset_ix do
+      {i, j} -> i == k and (l == nil or j == l)
+      _ -> false
+    end
+  end
+
   def handle_event("back", _assigns, socket) do
     socket = push_event(socket, "left-page", %{})
     socket = case socket.assigns.from do
@@ -280,8 +301,11 @@ defmodule RiichiAdvancedWeb.RoomLive do
     {:noreply, socket}
   end
 
-  def handle_event("set_preset", %{"index" => ix}, socket) do
+  def handle_event("set_preset", %{"index" => ix} = assigns, socket) do
     ix = String.to_integer(ix)
+    ix = if Map.has_key?(assigns, "preset_dropdown") do
+     {ix, String.to_integer(assigns["preset_dropdown"])}
+    else {ix, 0} end
     GenServer.cast(socket.assigns.room_state, {:set_preset, ix})
     {:noreply, socket}
   end

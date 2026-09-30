@@ -4171,7 +4171,6 @@ div.room > div.seats > div.player-slot > button {
   width: calc(1.2 * var(--tile-size));
   height: calc(1.2 * var(--tile-size));
 }
-div.room div.presets,
 div.mods,
 div.room div.config,
 div.room div.custom-json {
@@ -4188,7 +4187,8 @@ div.room div.presets {
   margin-bottom: calc(-0.5 * var(--tile-size));
   font-size: calc(0.75 * var(--tile-size));
 }
-div.mods > div.mods-inner-container {
+div.mods > div.mods-inner-container,
+div.room div.presets {
   display: flex;
   flex-flow: row wrap;
   row-gap: calc(0.0625 * var(--tile-size));
@@ -4255,7 +4255,7 @@ div.config {
   font-size: calc(0.25 * var(--tile-size));
 }
 /* individual mod config */
-label.mod {
+label.mod, label.presets-title {
   flex-shrink: 1;
   display: flex;
   flex-direction: row;
@@ -4266,8 +4266,9 @@ div.mods > div.mods-inner-container span.mod-config-name {
   margin: 0 calc(0.0625 * var(--tile-size));
 }
 /* dropdown */
-div.mods > div.mods-inner-container form.mod-config-dropdown {
-  margin: 0;
+div.mods > div.mods-inner-container form.mod-config-dropdown,
+div.presets form.preset-dropdown {
+  margin-left: calc(0.125 * var(--tile-size));
   display: flex;
   & > select {
     appearance: none;

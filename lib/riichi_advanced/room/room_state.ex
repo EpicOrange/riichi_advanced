@@ -218,10 +218,16 @@ defmodule RiichiAdvanced.RoomState do
     state = for {mod_name, mod} <- state.mods, mod.enabled, reduce: state do
       state -> toggle_mod(state, mod_name, false)
     end
-
     # enable mods in the preset
-    preset = Enum.at(state.presets, ix, Enum.at(state.presets, ix, 0))
-    enabled_mods = preset["enabled_mods"]
+    enabled_mods = case ix do
+      {i, j} ->
+        preset = state.presets |> Enum.at(i)
+        if not Enum.empty?(preset["subvariants"]) do
+          Enum.at(preset["subvariants"], j, %{})
+        else preset end
+      _ -> %{}
+    end
+    |> Map.get("enabled_mods", [])
     |> Enum.flat_map(&case &1 do
       %{"name" => _mod_name, "config" => _mod_config} -> [&1]
       mod_name when is_binary(mod_name) -> [%{"name" => mod_name, "config" => %{}}]
