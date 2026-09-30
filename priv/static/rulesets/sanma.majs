@@ -88,7 +88,8 @@ define_button flower,
 # pei auto button
 define_auto_button _5_auto_pei,
   display_name: "K",
-  desc: "Automatically declare pei."
+  desc: "Automatically declare pei.",
+  persistent: true
   do
     if buttons_include("flower") do
       press_button("flower")

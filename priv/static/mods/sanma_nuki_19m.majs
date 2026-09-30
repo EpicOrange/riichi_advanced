@@ -25,7 +25,8 @@ define_button nukidora,
 # pei auto button
 define_auto_button _5_auto_pei,
   display_name: "N",
-  desc: "Automatically declare nukidora."
+  desc: "Automatically declare nukidora.",
+  persistent: true
   do
     if buttons_include("flower") do
       press_button("flower")
