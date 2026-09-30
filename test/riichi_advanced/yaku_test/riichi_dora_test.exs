@@ -179,6 +179,92 @@ defmodule RiichiAdvanced.YakuTest.RiichiDoraTest do
     })
   end
 
+  test "riichi - ankan flips kandora" do
+    TestUtils.test_yaku_advanced("riichi", [%{name: "dora", config: %{"start_indicators" => 1}}, %{name: "kandora", config: %{immediate: false}}], [], """
+    {
+      "starting_hand": {
+        "east": ["1m", "2m", "3m", "0m", "5m", "5m", "7m", "8m", "9m", "1s", "1s", "7z", "7z"],
+        "south": ["1m", "2m", "7m", "2p", "5p", "8p", "3s", "6s", "8s", "1z", "2z", "3z", "4z"],
+        "west": ["1m", "2m", "7m", "2p", "5p", "8p", "3s", "6s", "9s", "1z", "2z", "3z", "4z"],
+        "north": ["1m", "2m", "7m", "2p", "5p", "8p", "3s", "6s", "9s", "1z", "2z", "3z", "4z"]
+      },
+      "starting_draws": ["5m", "7z"],
+      "starting_dead_wall": ["7s", "7z", "4z", "5z", "8m", "5z", "4m"]
+    }
+    """, [
+      %{"type" => "buttons_pressed", "buttons" => [%{"button" => "ankan"}, nil, nil, nil]},
+      %{"type" => "discard", "tile" => "7s", "player" => 0, "tsumogiri" => true},
+      %{"type" => "discard", "tile" => "7z", "player" => 1, "tsumogiri" => true},
+      %{"type" => "buttons_pressed", "buttons" => [%{"button" => "ron"}, nil, nil, nil]},
+    ], %{
+      east: %{
+        yaku: [{"Chun", [1, "Han"]}, {"Dora", [5, "Han"]}, {"Aka", [1, "Han"]}],
+        minipoints: 50
+      }
+    })
+  end
+
+  test "riichi - daiminkan flips kandora" do
+    TestUtils.test_yaku_advanced("riichi", [%{name: "dora", config: %{"start_indicators" => 1}}, %{name: "kandora", config: %{immediate: false}}], [], """
+    {
+      "starting_hand": {
+        "east": ["1m", "2m", "3m", "0m", "5m", "5m", "7m", "8m", "9m", "1s", "1s", "7z", "7z"],
+        "south": ["1m", "2m", "7m", "2p", "5p", "8p", "3s", "6s", "8s", "1z", "2z", "3z", "4z"],
+        "west": ["1m", "2m", "7m", "2p", "5p", "8p", "3s", "6s", "9s", "1z", "2z", "3z", "4z"],
+        "north": ["1m", "2m", "7m", "2p", "5p", "8p", "3s", "6s", "9s", "1z", "2z", "3z", "4z"]
+      },
+      "starting_draws": ["1z", "7z"],
+      "starting_dead_wall": ["7s", "7z", "4z", "5z", "8m", "5z", "4m"]
+    }
+    """, [
+      %{"type" => "discard", "tile" => "1z", "player" => 0, "tsumogiri" => true},
+      %{"type" => "discard", "tile" => "5m", "player" => 1, "tsumogiri" => true},
+      %{"type" => "buttons_pressed", "buttons" => [%{"button" => "daiminkan"}, nil, nil, nil]},
+      %{"type" => "discard", "tile" => "7s", "player" => 0, "tsumogiri" => false},
+      %{"type" => "discard", "tile" => "7z", "player" => 1, "tsumogiri" => true},
+      %{"type" => "buttons_pressed", "buttons" => [%{"button" => "ron"}, nil, nil, nil]},
+    ], %{
+      east: %{
+        yaku: [{"Chun", [1, "Han"]}, {"Dora", [1, "Han"]}, {"Aka", [1, "Han"]}],
+        minipoints: 40
+      }
+    })
+  end
+
+  test "riichi - kakan flips kandora" do
+    TestUtils.test_yaku_advanced("riichi", [%{name: "dora", config: %{"start_indicators" => 1}}, %{name: "kandora", config: %{immediate: false}}], [], """
+    {
+      "starting_hand": {
+        "east": ["1m", "2m", "3m", "0m", "5m", "2z", "7m", "8m", "9m", "1s", "1s", "7z", "7z"],
+        "south": ["1m", "2m", "7m", "2p", "5p", "8p", "3s", "6s", "8s", "1z", "2z", "3z", "4z"],
+        "west": ["1m", "2m", "7m", "2p", "5p", "8p", "3s", "6s", "9s", "1z", "2z", "3z", "4z"],
+        "north": ["1m", "2m", "7m", "2p", "5p", "8p", "3s", "6s", "9s", "1z", "2z", "3z", "4z"]
+      },
+      "starting_draws": ["1z", "5m", "6s", "7s", "8s", "5m", "6p", "7p", "8p", "7z"],
+      "starting_dead_wall": ["3z", "7z", "4z", "5z", "8m", "5z", "4m"]
+    }
+    """, [
+      %{"type" => "discard", "tile" => "1z", "player" => 0, "tsumogiri" => true},
+      %{"type" => "discard", "tile" => "5m", "player" => 1, "tsumogiri" => true},
+      %{"type" => "buttons_pressed", "buttons" => [%{"button" => "pon"}, nil, nil, nil]},
+      %{"type" => "discard", "tile" => "2z", "player" => 0, "tsumogiri" => false},
+      %{"type" => "discard", "tile" => "6s", "player" => 1, "tsumogiri" => true},
+      %{"type" => "discard", "tile" => "7s", "player" => 2, "tsumogiri" => true},
+      %{"type" => "discard", "tile" => "8s", "player" => 3, "tsumogiri" => true},
+      %{"type" => "buttons_pressed", "buttons" => [%{"button" => "kakan"}, nil, nil, nil]},
+      %{"type" => "discard", "tile" => "3z", "player" => 0, "tsumogiri" => true},
+      %{"type" => "discard", "tile" => "6p", "player" => 1, "tsumogiri" => true},
+      %{"type" => "discard", "tile" => "7p", "player" => 2, "tsumogiri" => true},
+      %{"type" => "discard", "tile" => "8p", "player" => 3, "tsumogiri" => true},
+      %{"type" => "buttons_pressed", "buttons" => [%{"button" => "tsumo"}, nil, nil, nil]},
+    ], %{
+      east: %{
+        yaku: [{"Chun", [1, "Han"]}, {"Dora", [5, "Han"]}, {"Aka", [1, "Han"]}],
+        minipoints: 40
+      }
+    })
+  end
+
   test "riichi - ankan rinshan flips kandora" do
     TestUtils.test_yaku_advanced("riichi", [%{name: "dora", config: %{"start_indicators" => 1}}, %{name: "kandora", config: %{immediate: false}}], [], """
     {
@@ -212,7 +298,7 @@ defmodule RiichiAdvanced.YakuTest.RiichiDoraTest do
         "north": ["1m", "2m", "7m", "2p", "5p", "8p", "3s", "6s", "9s", "1z", "2z", "3z", "4z"]
       },
       "starting_draws": ["1z", "5m"],
-      "starting_dead_wall": ["2s", "7z", "4z", "5z", "8m", "5z", "1s"]
+      "starting_dead_wall": ["2s", "7z", "4z", "5z", "8m", "5z", "4m"]
     }
     """, [
       %{"type" => "discard", "tile" => "1z", "player" => 0, "tsumogiri" => true},
@@ -237,7 +323,7 @@ defmodule RiichiAdvanced.YakuTest.RiichiDoraTest do
         "north": ["1m", "2m", "7m", "2p", "5p", "8p", "3s", "6s", "9s", "1z", "2z", "3z", "4z"]
       },
       "starting_draws": ["1z", "5m", "6s", "7s", "8s", "5m"],
-      "starting_dead_wall": ["2s", "7z", "4z", "5z", "8m", "5z", "1s"]
+      "starting_dead_wall": ["2s", "7z", "4z", "5z", "8m", "5z", "4m"]
     }
     """, [
       %{"type" => "discard", "tile" => "1z", "player" => 0, "tsumogiri" => true},
@@ -253,6 +339,34 @@ defmodule RiichiAdvanced.YakuTest.RiichiDoraTest do
       east: %{
         yaku: [{"Rinshan", [1, "Han"]}, {"Dora", [1, "Han"]}, {"Aka", [1, "Han"]}],
         minipoints: 40
+      }
+    })
+  end
+
+  test "riichi - ankan rinshan flips kan ura" do
+    TestUtils.test_yaku_advanced("riichi", [%{name: "dora", config: %{"start_indicators" => 1}}, "ura", %{name: "kandora", config: %{immediate: false}}], [], """
+    {
+      "starting_hand": {
+        "east": ["1m", "2m", "3m", "0m", "5m", "5m", "7m", "8m", "9m", "1s", "1s", "1s", "2s"],
+        "south": ["1m", "2m", "7m", "2p", "5p", "8p", "3s", "6s", "9s", "1z", "2z", "3z", "4z"],
+        "west": ["1m", "2m", "7m", "2p", "5p", "8p", "3s", "6s", "9s", "1z", "2z", "3z", "4z"],
+        "north": ["1m", "2m", "7m", "2p", "5p", "8p", "3s", "6s", "9s", "1z", "2z", "3z", "4z"]
+      },
+      "starting_draws": ["7s", "7s", "7s", "7s", "5m"],
+      "starting_dead_wall": ["2s", "7z", "4z", "5z", "5z", "8m", "5z", "4m"]
+    }
+    """, [
+      %{"type" => "buttons_pressed", "buttons" => [%{"button" => "riichi"}, nil, nil, nil]},
+      %{"type" => "discard", "tile" => "7s", "player" => 0, "tsumogiri" => true},
+      %{"type" => "discard", "tile" => "7s", "player" => 1, "tsumogiri" => true},
+      %{"type" => "discard", "tile" => "7s", "player" => 2, "tsumogiri" => true},
+      %{"type" => "discard", "tile" => "7s", "player" => 3, "tsumogiri" => true},
+      %{"type" => "buttons_pressed", "buttons" => [%{"button" => "ankan"}, nil, nil, nil]},
+      %{"type" => "buttons_pressed", "buttons" => [%{"button" => "tsumo"}, nil, nil, nil]},
+    ], %{
+      east: %{
+        yaku: [{"Double Riichi", [2, "Han"]}, {"Ippatsu", [1, "Han"]}, {"Tsumo", [1, "Han"]}, {"Rinshan", [1, "Han"]}, {"Ura", [5, "Han"]}, {"Aka", [1, "Han"]}],
+        minipoints: 50
       }
     })
   end

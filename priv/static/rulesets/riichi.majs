@@ -485,7 +485,7 @@ set default_mods, [
   %{name: "kyuushu_kyuuhai", config: %{name: "Kyuushu Kyuuhai"}},
   %{name: "dora", config: %{start_indicators: 1}},
   "ura",
-  "kandora",
+  %{name: "kandora", config: %{immediate: false}},
   "lib/yaku/menzentsumo",
   %{name: "lib/yaku/riichi", config: %{bet: 1000, double_value: 2, drawless: true}},
   "lib/yaku/ippatsu",

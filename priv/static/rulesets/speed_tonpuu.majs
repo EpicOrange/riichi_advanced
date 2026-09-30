@@ -13,7 +13,7 @@ apply subtract, "default_mods", [
   %{name: "lib/yaku/riichi", config: %{bet: 1000, double_value: 2, drawless: true}},
   %{name: "uma", config: %{_1st: 10, _2nd: 5, _3rd: -5, _4th: -10}},
   %{name: "nagashi", config: %{counts_as: "draw", is: "Mangan"}},
-  "kandora",
+  %{name: "kandora", config: %{immediate: false}},
 ]
 apply set_prepend, "default_mods", [
   %{name: "lib/yaku/riichi", config: %{bet: 1000, drawless: false, double_value: 2}},
