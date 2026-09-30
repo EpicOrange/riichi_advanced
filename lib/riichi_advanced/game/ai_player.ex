@@ -156,9 +156,9 @@ defmodule RiichiAdvanced.AIPlayer do
       |> Enum.flat_map(fn {_am_match_definition, _pairing_r, arranged_hand, _difficulty} ->
         arranged_hand
         |> Utils.strip_attrs()
-        |> Enum.chunk_by(&(&1 == :"3x"))
-        |> Enum.reject(& :"3x" in &1)
-        |> Enum.filter(& last_discard_stripped in &1)
+        |> Enum.chunk_by(&:"3x" == &1)
+        |> Enum.reject(&:"3x" in &1)
+        |> Enum.filter(&last_discard_stripped in &1)
         |> Enum.map(&length(&1))
       end)
       # filter for max_len
@@ -432,7 +432,7 @@ defmodule RiichiAdvanced.AIPlayer do
             "ankan" in player.buttons -> "ankan"
             true -> "skip"
           end
-        state.ruleset == "fuzhou" or state.ruleset == "vietnamese" ->
+        state.ruleset == "fuzhou" or state.ruleset == "vietnamese" or state.ruleset == "filipino" ->
           cond do
             "ron" in player.buttons and Match.match_hand(player.hand ++ [last_discard], player.calls, state.shanten_definitions.win, player.tile_behavior) -> "ron"
             "tsumo" in player.buttons and Match.match_hand(player.hand ++ player.draw, player.calls, state.shanten_definitions.win, player.tile_behavior) -> "tsumo"

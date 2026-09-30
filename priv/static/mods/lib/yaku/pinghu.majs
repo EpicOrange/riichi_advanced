@@ -1,5 +1,7 @@
 require "value_honors"
+
 default list, "yaku"
+default seventeen_tiles, false
 
 on after_initialization do
   add_rule("$value $han", "$name", "%{value} %{han} if all four of your sets are sequences.", %{value: !value, han: !han, name: !name})
@@ -13,7 +15,15 @@ define_set pair, ~s"0 0"
 define_set shuntsu, ~s"0 1 2"
 
 if !no_value_pair do
-  define_yaku !list, !name, [!value, !han], match(["hand", "calls", "winning_tile"], ~m"exhaustive, shuntsu:4, value_pair:-1, pair:1")
+  if !seventeen_tiles do
+    define_yaku !list, !name, [!value, !han], match(["hand", "calls", "winning_tile"], ~m"exhaustive, shuntsu:5, value_pair:-1, pair:1")
+  else
+    define_yaku !list, !name, [!value, !han], match(["hand", "calls", "winning_tile"], ~m"exhaustive, shuntsu:4, value_pair:-1, pair:1")
+  end
 else
-  define_yaku !list, !name, [!value, !han], match(["hand", "calls", "winning_tile"], ~m"exhaustive, shuntsu:4, pair:1")
+  if !seventeen_tiles do
+    define_yaku !list, !name, [!value, !han], match(["hand", "calls", "winning_tile"], ~m"exhaustive, shuntsu:5, pair:1")
+  else
+    define_yaku !list, !name, [!value, !han], match(["hand", "calls", "winning_tile"], ~m"exhaustive, shuntsu:4, pair:1")
+  end
 end

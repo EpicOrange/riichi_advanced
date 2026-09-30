@@ -1,10 +1,21 @@
 default list, "yaku"
 default name, "Shiiaru Raotai"
 default value, 1
+default seventeen_tiles, false
 
 on after_initialization do
-  add_rule("$value $han", !name, "\"Twelve Tiles Down\". Win with four calls (so your hand is just one tile waiting for a pair). Ankans are allowed.", %{value: !value, han: !han})
-  update_rule("$value $han", !name, "%{example_hand}", %{value: !value, han: !han, example_hand: ~t"6z 9s9S9s 2p2P2p 4P06p 1P23p 6z"})
+  if equals(!name, "Shiiaru Raotai") do
+    add_rule("$value $han", !name, "\"Twelve Tiles Down\". Win with four calls (so your hand is just one tile waiting for a pair). Ankans are allowed.", %{value: !value, han: !han})
+    update_rule("$value $han", !name, "%{example_hand}", %{value: !value, han: !han, example_hand: ~t"6z 9s9S9s 2p2P2p 4P06p 1P23p 6z"})
+  else
+    if !seventeen_tiles do
+      add_rule("$value $han", !name, "Win with five calls (so your hand is just one tile waiting for a pair).", %{value: !value, han: !han})
+      update_rule("$value $han", !name, "%{example_hand}", %{value: !value, han: !han, example_hand: ~t"6z 1M11m 9s9S9s 2p2P2p 4P06p 1P23p 6z"})
+    else
+      add_rule("$value $han", !name, "Win with four calls (so your hand is just one tile waiting for a pair).", %{value: !value, han: !han})
+      update_rule("$value $han", !name, "%{example_hand}", %{value: !value, han: !han, example_hand: ~t"6z 9s9S9s 2p2P2p 4P06p 1P23p 6z"})
+    end
+  end
 end
 
 define_yaku !list, !name, [!value, !han],

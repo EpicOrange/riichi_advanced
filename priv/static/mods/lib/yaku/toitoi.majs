@@ -3,10 +3,15 @@ require "standard_sets"
 default list, "yaku"
 default name, "Toitoi"
 default value, 1
+default seventeen_tiles, false
 
 on after_initialization do
   add_rule("$value $han", !name, "%{value} %{han} if all four of your sets are triplets.", %{value: !value, han: !han})
   update_rule("$value $han", !name, "%{example_hand}", %{value: !value, han: !han, example_hand: ~t"888m222p33s22z 1Z11z 3s"})
 end
 
-define_yaku !list, !name, [!value, !han], match(["hand", "calls", "winning_tile"], ~m"koutsu:4, pair:1")
+if !seventeen_tiles do
+  define_yaku !list, !name, [!value, !han], match(["hand", "calls", "winning_tile"], ~m"koutsu:5, pair:1")
+else
+  define_yaku !list, !name, [!value, !han], match(["hand", "calls", "winning_tile"], ~m"koutsu:4, pair:1")
+end

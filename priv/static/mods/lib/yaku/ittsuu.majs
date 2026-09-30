@@ -5,6 +5,7 @@ default name, "Ittsuu"
 default value, 1
 default closed_list, "meta_yaku"
 default closed_bonus, 0
+default seventeen_tiles, false
 
 on after_initialization do
   if !closed_bonus > 0 do
@@ -15,7 +16,11 @@ on after_initialization do
   update_rule("$value $han", !name, "%{example_hand}", %{value: !value, han: !han, example_hand: ~t"234p4567779s 123s 8s"})
 end
 
-define_yaku !list, !name, [!value, !han], match(["hand", "calls", "winning_tile"], ~m"exhaustive, ittsuu:1, mentsu:1, pair:1")
+if !seventeen_tiles do
+  define_yaku !list, !name, [!value, !han], match(["hand", "calls", "winning_tile"], ~m"exhaustive, ittsuu:1, mentsu:2, pair:1")
+else
+  define_yaku !list, !name, [!value, !han], match(["hand", "calls", "winning_tile"], ~m"exhaustive, ittsuu:1, mentsu:1, pair:1")
+end
 
 if !closed_bonus > 0 do
   apply initialize, "constants.closed_hand", has_no_call_named("chii", "pon", "daiminkan", "kakan")

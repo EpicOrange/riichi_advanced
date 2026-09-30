@@ -1,3 +1,5 @@
+default seventeen_tiles, false
+
 require "standard_sets"
 
 on after_initialization do
@@ -7,8 +9,13 @@ on after_initialization do
   add_rule("Rules", "Win Condition", "- Four sets (sequences or triplets) and a pair.", -100)
 end
 
-define_match standard_tenpai, ~m"exhaustive, mentsu:3, taatsu:1, pair:1 | exhaustive, mentsu:4"
-define_match standard_win, ~m"exhaustive, mentsu:4, pair:1"
+if !seventeen_tiles do
+  define_match standard_tenpai, ~m"exhaustive, mentsu:4, taatsu:1, pair:1 | exhaustive, mentsu:5"
+  define_match standard_win, ~m"exhaustive, mentsu:5, pair:1"
+else
+  define_match standard_tenpai, ~m"exhaustive, mentsu:3, taatsu:1, pair:1 | exhaustive, mentsu:4"
+  define_match standard_win, ~m"exhaustive, mentsu:4, pair:1"
+end
 
 apply set_append, "tenpai_definition", ["standard_tenpai"]
 apply set_append, "win_definition", ["standard_win"]

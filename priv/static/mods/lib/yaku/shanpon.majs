@@ -1,3 +1,8 @@
+default list, "yaku"
+default name, "Shanpon"
+default value, 1
+default seventeen_tiles, false
+
 on after_initialization do
   add_rule("$value $han", "$name", "%{value} %{han} if your final wait contains at least two pairs waiting for either one to become a triplet.", %{value: !value, han: !han, name: !name})
   add_rule("$value $han", "$name", "%{example_hand}", %{value: !value, han: !han, name: !name, example_hand: ~t"456m12344p23499s 9s"})
@@ -6,4 +11,8 @@ end
 define_set pair, ~s"0 0"
 define_set mentsu, ~s"0 0 0 | 0 1 2"
 
-define_yaku !list, !name, [!value, !han], match(["hand", "calls"], ~m"exhaustive, mentsu:3, pair:2")
+if !seventeen_tiles do
+  define_yaku !list, !name, [!value, !han], match(["hand", "calls"], ~m"exhaustive, mentsu:4, pair:2")
+else
+  define_yaku !list, !name, [!value, !han], match(["hand", "calls"], ~m"exhaustive, mentsu:3, pair:2")
+end

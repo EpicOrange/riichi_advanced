@@ -1,0 +1,137 @@
+set display_name, "Filipino"
+set tutorial_link, "https://mahjongpros.com/blogs/mahjong-rules-and-scoring-tables/official-filipino-mahjong-rules"
+
+define_global han, "$"
+define_global ankan_name, "Secret"
+define_global chii_name, "Chow"
+define_global pon_name, "Pung"
+define_global kan_name, "Kong"
+define_global flower_name, "Flower"
+define_global ron_name, "Tódas"
+define_global tsumo_name, "Búnot"
+
+require "value_honors"
+require "standard_sets"
+
+require "base"
+require "standard_wall"
+require "framed_5z"
+require "global_mods"
+require "default_auto_buttons"
+require "standard_win", %{seventeen_tiles: true}
+require "chii"
+require "pon"
+require "kan", %{ankan_name: "Secret", kakan_name: "Sagása", hide_ankans: true, replace_from_dead_wall: true, shift_dead_wall: false}
+require "ron", %{scoring_key: "win"}
+require "tsumo", %{scoring_key: "win"}
+require "agarirenchan"
+require "head_bump"
+require "default_flowers", %{undiscardable: true, draw_after_flower_phase: true, auto_flower_by_default: true, replace_from_dead_wall: true, shift_dead_wall: false}
+
+on after_initialization do
+  add_rule("Tiles", "Base Tiles", "By default, Filipino mahjong uses the following 136 tiles:", -100)
+  add_rule("Tiles", "Base Tiles", "- Four each of the 1 to 9 of circles %{pinzu}", %{pinzu: ~t"123456789p"})
+  add_rule("Tiles", "Base Tiles", "- Four each of the 1 to 9 of bamboo %{souzu}", %{souzu: ~t"123456789s"})
+  add_rule("Tiles", "Base Tiles", "- Four each of the 1 to 9 of characters %{manzu}", %{manzu: ~t"123456789m"})
+  add_rule("Tiles", "Base Tiles", "- Four each of the four winds (East, South, West, North) %{winds}", %{winds: ~t"1234z"})
+  add_rule("Tiles", "Base Tiles", "- Four each of the three dragons (White, Green, Red) %{dragons}", %{dragons: ~t"067z"})
+  add_rule("Tiles", "Base Tiles", "- Four flowers %{flowers}", %{flowers: ~t"1234f"})
+  add_rule("Tiles", "Base Tiles", "- Four seasons %{seasons}", %{seasons: ~t"1234g"})
+  add_rule("1 $", "Win", "Every win awards a base payment of 1 $.", -100)
+  add_rule("0.25 $", "Quick Win", "0.25 $ if you win before your sixth discard.")
+  add_rule("0.25 $", "Single Wait", "0.25 $ if your wait is a pair wait, edge wait, or middle wait.")
+  add_rule("0.25 $", "Single Wait", "%{example_hand}", %{example_hand: ~t"234m222678999p3s 3s"})
+  add_rule("0.25 $", "Single Wait", "%{example_hand}", %{example_hand: ~t"234m22678999p12s 3s"})
+  add_rule("0.25 $", "Single Wait", "%{example_hand}", %{example_hand: ~t"234m22678999p24s 3s"})
+  rename_rule_tab("0.25 $", "$0.25")
+  rename_rule_tab("0.5 $", "$0.50")
+  rename_rule_tab("1 $", "$1.00")
+  # reorder
+  rename_rule_tab("$0.25", "$0.25")
+  rename_rule_tab("$0.50", "$0.50")
+  rename_rule_tab("$1.00", "$1.00")
+end
+
+define_set any_flower, ~s"1z|2z|3z|4z|0z|6z|7z|1f|2f|3f|4f|1g|2g|3g|4g"
+define_const all_flowers, ~t"1234067z1234f1234g"
+
+define_yaku yaku, "Win", [1, "$"], true
+require "yaku/pinghu", %{name: "All Chows", value: 0.25, no_value_pair: false, seventeen_tiles: true}
+require "yaku/toitoi", %{name: "All Pungs", value: 0.25, seventeen_tiles: true}
+require "yaku/menzenchin", %{name: "Concealed Hand", value: 0.25, seventeen_tiles: true}
+require "yaku/shiiaru_raotai", %{name: "All Revealed", value: 0.25, seventeen_tiles: true}
+define_yaku yaku, "Quick Win", [0.25, "$"], num_discards <= 5
+require "yaku/ittsuu", %{name: "Pure Straight", value: 0.5, seventeen_tiles: true}
+require "yaku/honitsu", %{chin_name: "Full Flush", chin_value: 0.5}
+require "yaku/chiitoitsu", %{name: "Seven Pairs", value: 0.5, seventeen_tiles: true}
+require "yaku/shanpon", %{name: "Back to Back", value: 0.5, seventeen_tiles: true}
+define_match edge_wait, ~m"exhaustive, pair:1, mentsu:4, penchan:1"
+define_match closed_wait, ~m"exhaustive, pair:1, mentsu:4, kanchan:1"
+define_match single_wait, ~m"exhaustive, mentsu:5"
+define_yaku yaku, "Single Wait", [0.25, "$"], match(["hand", "calls"], ["edge_wait", "closed_wait", "single_wait"])
+
+# instant payments
+
+def pay_other_players do
+  add_score("$amt"); subtract_score("$amt", "shimocha"); big_text("  -$amt  ",  %{amt: "$amt"}, as: "shimocha")
+  add_score("$amt"); subtract_score("$amt", "toimen"); big_text("  -$amt  ",  %{amt: "$amt"}, as: "toimen")
+  add_score("$amt"); subtract_score("$amt", "kamicha"); big_text("  -$amt  ",  %{amt: "$amt"}, as: "kamicha")
+end
+def check_no_flowers do
+  if flowers == 0 do
+    # instantly get paid
+    push_message("is paid 0.25 $ from all players for having no flowers at start")
+    pay_other_players(%{amt: 0.25})
+  end
+end
+def check_13_flowers do
+  if flowers == 13 do
+    push_message("is paid 0.25 $ from all players for acquiring 13 flowers")
+    pay_other_players(%{amt: 0.25})
+  end
+end
+apply prepend, "buttons.start_flower.actions" do flowers += 1; check_13_flowers end
+apply prepend, "buttons.start_no_flower.actions" do check_no_flowers end
+apply prepend, "buttons.flower.actions" do flowers += 1; check_13_flowers end
+apply append, "buttons.daiminkan.actions" do
+  push_message("is paid 0.25 $ from the discarder for calling kong")
+  add_score(0.25); subtract_score(0.25, "last_discarder"); big_text("  -0.25  ", as: "last_discarder")
+end
+apply append, "buttons.kakan.actions" do
+  push_message("is paid 0.50 $ from all players for upgrading a pung into a kong")
+  pay_other_players(%{amt: 0.5})
+end
+apply append, "buttons.ankan.actions" do
+  push_message("is paid 0.50 $ from all players for declaring a secret")
+  pay_other_players(%{amt: 0.5})
+end
+
+set score_calculation, %{
+  yaku_lists: ["yaku"],
+  point_name: "$",
+  win_by_discard_label: "Tódas",
+  win_by_draw_label: "Búnot",
+  win_by_discard_name: "Tódas",
+  win_by_draw_name: "Búnot",
+  exhaustive_draw_name: "Draw",
+}
+
+on before_win do
+  make_responsible_for("others")
+end
+
+define_scoring win do
+  total = points :: "Base Payment"
+  cond do
+    won_by_draw -> total *= 2 :: "Búnot"
+    won_by_discard and seat_is("last_discarder") -> total *= 2 :: "Discarder payment"
+    won_by_call and seat_is("last_caller") -> total *= 2 :: "Discarder payment"
+  end
+end
+
+set interruptible_actions, ["play_tile", "draw", "advance_turn", "upgrade_call"]
+set display_wall, true
+set initial_score, 0
+set initial_dead_wall_length, 14
+set starting_tiles, 16
+set max_rounds, 4

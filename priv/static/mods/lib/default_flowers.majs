@@ -14,12 +14,12 @@ on after_initialization do
   """
   %{all_flowers}
   - Flower tiles must be declared and replaced by a draw from the back of the wall.
-  - A flower tile is worth %{value} %{han} if its number matches your seat (1=east, 2=south, 3=west, 4=north).\
   """, %{
     all_flowers: @all_flowers,
     value: !matching_flower_value, han: !matching_flower_han,
   })
   if !matching_flower_value > 0 do
+    add_rule("Rules", "Flowers", "- A flower tile is worth %{value} %{han} if its number matches your seat (1=east, 2=south, 3=west, 4=north).")
     cond do
       seat_is("east") -> add_rule("$value $han", "Flowers", "%{value} %{han} for each flower tile whose number matches your seat. Since your current seat is East, that would be the following flowers: %{flowers}", %{all_flowers: @all_flowers, value: !matching_flower_value, han: !matching_flower_han, flowers: @east_flowers})
       seat_is("south") -> add_rule("$value $han", "Flowers", "%{value} %{han} for each flower tile whose number matches your seat. Since your current seat is South, that would be the following flowers: %{flowers}", %{all_flowers: @all_flowers, value: !matching_flower_value, han: !matching_flower_han, flowers: @south_flowers})
@@ -32,11 +32,11 @@ on after_initialization do
   end
 end
 
-define_const all_flowers, ["1f", "2f", "3f", "4f", "1g", "2g", "3g", "4g"]
-define_const east_flowers, ["1f", "1g"]
-define_const south_flowers, ["2f", "2g"]
-define_const west_flowers, ["3f", "3g"]
-define_const north_flowers, ["4f", "4g"]
+define_const all_flowers, ~t"1234f1234g"
+define_const east_flowers, ~t"1f1g"
+define_const south_flowers, ~t"2f2g"
+define_const west_flowers, ~t"3f3g"
+define_const north_flowers, ~t"4f4g"
 apply append, "wall", +@all_flowers
 
 if !matching_flower_value > 0 do
