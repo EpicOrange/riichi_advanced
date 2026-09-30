@@ -15,7 +15,17 @@ defmodule RiichiAdvancedWeb.CornerInfoComponent do
   def render(assigns) do
     ~H"""
     <div class={@id}>
-      <%= @player.nickname %>
+      <%= if @player.nickname != nil do %>
+        <% nickname_length = String.length(@player.nickname) %>
+        <%= cond do %>
+          <% nickname_length <= 4 -> %><span class="nickname huge"><%= @player.nickname %></span>
+          <% nickname_length <= 8 -> %><span class="nickname large"><%= @player.nickname %></span>
+          <% nickname_length <= 16 -> %><span class="nickname"><%= @player.nickname %></span>
+          <% nickname_length <= 24 -> %><span class="nickname small"><%= @player.nickname %></span>
+          <% true -> %><span class="nickname tiny"><%= @player.nickname %></span>
+        <% end %>
+      <% end %>
+      
       <div class="round-marker" :if={@display_round_marker and @seat == :east}>
         <%= Utils.get_wind_name(if @always_east_round do :east else Riichi.get_round_wind(@kyoku, @num_players) end) %>
       </div>

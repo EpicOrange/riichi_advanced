@@ -550,6 +550,8 @@ defmodule RiichiAdvanced.GameState do
     end
   end
 
+  @log_nicknames ["A", "B", "C", "D"]
+
   def initialize_new_round(state, kyoku_log \\ nil) do
     # t = System.os_time(:millisecond)
     {state, hands, scores} = if kyoku_log == nil do
@@ -709,7 +711,7 @@ defmodule RiichiAdvanced.GameState do
       {state, hands, scores}
     else
       hands = Enum.zip(state.available_seats, kyoku_log["players"])
-      |> Map.new(fn {seat, player} -> {seat, player["haipai"] |> Enum.map(&Utils.to_tile/1)} end)
+      |> Map.new(fn {seat, player} -> {seat, player["haipai"] |> Enum.map(&Utils.to_tile/1) |> Utils.sort_tiles()} end)
       wall = Map.get(hands, :east, [])
           ++ Map.get(hands, :south, [])
           ++ Map.get(hands, :west, [])
@@ -751,6 +753,10 @@ defmodule RiichiAdvanced.GameState do
       |> Map.put(:pot, kyoku_log["riichi_sticks"] * 1000)
       |> Map.put(:honba, kyoku_log["honba"])
       |> Map.put(:dice, [kyoku_log["die1"], kyoku_log["die2"]])
+      # give each player a name A B C D
+      state = for {seat, nickname} <- Enum.zip(state.available_seats, @log_nicknames), reduce: state do
+        state -> update_in(state.players[seat].nickname, fn _ -> nickname end)
+      end
 
       {state, hands, scores}
     end

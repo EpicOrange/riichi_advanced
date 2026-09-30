@@ -954,6 +954,13 @@ div.corner-info:hover { z-index: 5; } /* hovered corner should cover other corne
 div.corner-info.shimocha { transform: rotate(270deg); }
 div.corner-info.toimen { transform: rotate(180deg); }
 div.corner-info.kamicha { transform: rotate(90deg); }
+div.corner-info > span.nickname {
+  display: inline-block;
+  &.huge { font-size: 150%; top: -20%; }
+  &.large { font-size: 125%; top: -10%; }
+  &.small { font-size: 75%; top: 10%; }
+  &.tiny { font-size: 50%; top: 20%; }
+}
 div.corner-info > div.round-marker {
   position: absolute;
   border-radius: calc(0.25 * var(--tile-size));
