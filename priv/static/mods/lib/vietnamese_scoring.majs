@@ -116,7 +116,7 @@ end
 def get_base_score do
   phan = mod(points, 6)
   mun = points2 + floor_div(points, 6)
-  mun = mun :: "Mủn"
+  if mun > 0 do mun = mun :: "Mủn" end
   phan = phan :: "Phán"
   cond do
     mun > 0 -> total = mun * 32 :: "Single"
