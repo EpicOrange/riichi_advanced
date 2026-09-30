@@ -174,7 +174,7 @@ defmodule RiichiAdvanced.GameState.Scoring do
   # note: the given state will have already called "before_win" and "before_scoring"
   # note: the given state has replaced the state's hand/calls/winning tile
   def lazy_map_state_cxts(state, seat, winning_tiles, win_source, f) do
-    %{hand: hand, tile_behavior: tile_behavior} = state.players[seat]
+    hand = state.players[seat].hand
     is_tenhou? = winning_tiles == nil or winning_tiles == [nil]
     if is_tenhou? do hand else winning_tiles end
     |> Enum.uniq()
