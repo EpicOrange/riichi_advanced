@@ -1,3 +1,8 @@
+# TODO since the joker solver doesn't support kanchan jokers yet,
+#   fu calculation will be broken if any other jokers are in hand
+#   because this joker never gets assigned an actual tile
+# example: 11m45567p46s11s(147)(31)j 3p
+
 on after_initialization do
   add_rule("Tiles", "Jokers", "- One %{31j} joker is added to the wall. This joker acts as any honor tile, but can also be used as the middle tile in any sequence.", %{"31j": ~T"31j"})
 end
@@ -10,7 +15,9 @@ apply merge, "dora_indicators", %{"31j": ["1z", "2z", "3z", "4z", "5z", "6z", "7
 apply append, "set_definitions.mentsu", ~s"0 31j 2"
 apply append, "constants.winning_groups_fu", [
   %{groups: ~s"0 31j 2"},
-  %{groups: ~s"0 31j@winning_tile 2", value: 2}
+  %{groups: ~s"0@winning_tile 31j 2", value: 2},
+  %{groups: ~s"0 31j@winning_tile 2", value: 2},
+  %{groups: ~s"0 31j 2@winning_tile", value: 2},
 ]
 apply append, "constants.groups_fu", [
   %{groups: ~s"0 31j 2"}
