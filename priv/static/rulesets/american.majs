@@ -764,7 +764,7 @@ define_auto_button _7_auto_discard_nonmatching,
   desc: "Automatically discard your drawn tile if it doesn't match any of your hand tiles."
   do
     if has_draw
-        and buttons_exclude("am_joker_swap", "mahjong_draw", "mahjong_heavenly")
+        and buttons_exclude("am_joker_swap", "mahjong_draw", "mahjong_heavenly", "am_blank_swap")
         and (not_match(["hand"], ~m"nojoker, (1f 2f 3f 4f 1g 2g 3g 4g):1") or not_match(["draw"], ~m"nojoker, (1f 2f 3f 4f 1g 2g 3g 4g):1"))
         and not_match(["draw"], ~m"nojoker, 1j:1")
         and not_match(["draw", "hand_any"], ~m"nojoker, pair:1") do
