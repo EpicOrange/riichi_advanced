@@ -8,14 +8,14 @@ defmodule RiichiAdvanced.SimpleParseTest do
     for ruleset_path <- Path.wildcard(Application.app_dir(:riichi_advanced, "/priv/static/rulesets/**.json")) do
       ruleset = Path.basename(ruleset_path, ".json")
       ruleset_json = ModState.load_ruleset(ruleset) |> ModState.extract_json()
-      assert ruleset_json not in [nil, "", "{}"]
+      assert ruleset_json not in [nil, "", "{}"], "Failing ruleset: #{ruleset_path}, got #{inspect(ruleset_json)}"
     end
   end
 
   test "parse all modpacks" do
     for modpack <- Map.keys(Constants.modpacks()) do
       ruleset_json = ModState.load_ruleset(modpack) |> ModState.extract_json()
-      assert ruleset_json not in [nil, "", "{}"]
+      assert ruleset_json not in [nil, "", "{}"], "Failing modpack: #{modpack}, got #{inspect(ruleset_json)}"
     end
   end
 
@@ -23,7 +23,7 @@ defmodule RiichiAdvanced.SimpleParseTest do
     for ruleset_path <- Path.wildcard(Application.app_dir(:riichi_advanced, "/priv/static/rulesets/**.majs")) do
       ruleset = Path.basename(ruleset_path, ".majs")
       ruleset_json = ModState.load_ruleset(ruleset) |> ModState.extract_json()
-      assert ruleset_json not in [nil, "", "{}"]
+      assert ruleset_json not in [nil, "", "{}"], "Failing majs: #{ruleset_path}, got #{inspect(ruleset_json)}"
     end
   end
 

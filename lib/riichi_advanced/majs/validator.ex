@@ -41,6 +41,7 @@ defmodule RiichiAdvanced.Validator do
   # def validate_json(%RiichiAdvanced.Compiler.Constant{name: name}), do: validate_constant(sanitize_string(name))
   # def validate_json(%RiichiAdvanced.Compiler.Variable{name: name}), do: validate_variable(sanitize_string(name))
   # def validate_json(ast) when is_map(ast), do: validate_map(ast) # this matches structs...
+  def validate_json({:%{}, [], []}), do: {:ok, []}
   def validate_json({:%{}, _pos, contents}), do: validate_map(contents)
   def validate_json(not_json) do
     # IO.inspect(Process.info(self(), :current_stacktrace))

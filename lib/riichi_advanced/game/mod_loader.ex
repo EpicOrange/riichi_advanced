@@ -49,7 +49,7 @@ defmodule RiichiAdvanced.ModLoader.ModState do
       end
       %ModState{ruleset_json: ruleset_json, base_ruleset: "custom", ruleset: "custom"}
     else
-      case RiichiAdvanced.Cache.get({:cache_modloader, ruleset, []}) do
+      case RiichiAdvanced.Cache.get({:cache_modloader_ruleset, ruleset, []}) do
         {:ok, nil} ->
           if Debug.debug_cache() do
             IO.puts("Cache miss: #{inspect({ruleset, []})}")
@@ -59,7 +59,7 @@ defmodule RiichiAdvanced.ModLoader.ModState do
             if Debug.debug_cache() do
               IO.puts("Caching ruleset #{state.ruleset}")
             end
-            RiichiAdvanced.Cache.put({:cache_modloader, ruleset, []}, state)
+            RiichiAdvanced.Cache.put({:cache_modloader_ruleset, ruleset, []}, state)
           end
           state
         {:ok, state} ->
@@ -160,6 +160,10 @@ defmodule RiichiAdvanced.ModLoader.ModState do
     end
   end
 
+  defp is_mod_applied?(state, mod) do
+    Enum.any?(state.applied_mods, & &1 == mod or ModLoader.get_mod_name(&1) == mod)
+  end
+
   # this takes a list of `require` mods and does three things
   # 1) adds each mod body as a function in state.headers
   # 2) calls the mod in state.ruleset_jq
@@ -168,7 +172,7 @@ defmodule RiichiAdvanced.ModLoader.ModState do
     %{ruleset_jq: prev_ruleset_jq, mods: prev_mods} = state
     state = for mod <- mods, reduce: state do
       state ->
-        if ModLoader.get_mod_name(mod) in state.applied_mods do
+        if is_mod_applied?(state, mod) do
           if Debug.print_mods() do
             IO.puts("Skipping required mod #{inspect(mod)} with defines #{inspect(state.defines)}")
           end
@@ -189,7 +193,7 @@ defmodule RiichiAdvanced.ModLoader.ModState do
           end
           |> Jason.encode!()
           header = "def require_#{String.replace(ModLoader.get_mod_name(mod), "/", "_")}: .enabled_mods += [#{encoded_mod}] | #{body};"
-          %{state | headers: [{mod, header} | state.headers], applied_mods: [ModLoader.get_mod_name(mod) | state.applied_mods]}
+          %{state | headers: [{mod, header} | state.headers], applied_mods: [mod | state.applied_mods]}
         end
     end
     %{state | ruleset_jq: prev_ruleset_jq, mods: prev_mods}
@@ -206,7 +210,7 @@ defmodule RiichiAdvanced.ModLoader.ModState do
   defp read_ruleset(ruleset, defs, acc, visited) do
     if ruleset in visited do acc else
       case File.read(Application.app_dir(:riichi_advanced, "/priv/static/rulesets/#{ruleset}.json")) do
-        {:ok, ruleset_json} -> [{"(. = #{ModLoader.strip_comments(ruleset_json)})", defs}]
+        {:ok, ruleset_json} -> [{"(. = #{ModLoader.strip_comments(ruleset_json)})", %{defs | base_ruleset: ruleset}}]
         {:error, _err} -> case File.read(Application.app_dir(:riichi_advanced, "/priv/static/rulesets/#{ruleset}.majs")) do
           {:ok, ruleset_majs} ->
             if Debug.print_mods() do
@@ -242,7 +246,7 @@ defmodule RiichiAdvanced.ModLoader.ModState do
       IO.puts("About to apply mods #{inspect(mods, limit: :infinity)}")
     end
     # check for duplicates
-    {duplicates, mods} = Enum.split_with(mods, &ModLoader.get_mod_name(&1) in state.applied_mods)
+    {duplicates, mods} = Enum.split_with(mods, &is_mod_applied?(state, &1))
     if not Enum.empty?(duplicates) do
       IO.puts("Warning: the following mods (for ruleset #{state.base_ruleset}) were included twice: #{inspect(Enum.to_list(duplicates))}")
     end
@@ -252,7 +256,7 @@ defmodule RiichiAdvanced.ModLoader.ModState do
       state ->
         # need to check if this mod has already been applied
         # the above check is just cosmetic, this one actually handles the recursive cases
-        if ModLoader.get_mod_name(mod) in state.applied_mods do
+        if is_mod_applied?(state, mod) do
           if Debug.print_mods() do
             IO.puts("Skipping mod #{inspect(mod)} with defines #{inspect(state.defines)}")
           end
@@ -263,7 +267,7 @@ defmodule RiichiAdvanced.ModLoader.ModState do
           end
           {jq, defs} = read_mod(mod, %Defs{globals: state.globals, defines: state.defines, libs: state.libs})
           %{state |
-            applied_mods: [ModLoader.get_mod_name(mod) | state.applied_mods],
+            applied_mods: [mod | state.applied_mods],
             globals: defs.globals,
             defines: defs.defines,
             libs: defs.libs,
