@@ -472,14 +472,14 @@ defmodule RiichiAdvancedWeb.GameLive do
     end
   end
 
-  def handle_info({:mark_tile, index, source}, socket) do
-    GenServer.cast(socket.assigns.game_state, {:mark_tile, socket.assigns.viewer, socket.assigns.seat, index, source})
+  def handle_info({:mark_tile, seat, index, source}, socket) do
+    GenServer.cast(socket.assigns.game_state, {:mark_tile, socket.assigns.viewer, seat, index, source})
     socket = update_interaction_state(socket, &%{&1 | selected_index: nil})
     {:noreply, socket}
   end
 
-  def handle_info({:unmark_tile, index, source}, socket) do
-    GenServer.cast(socket.assigns.game_state, {:unmark_tile, socket.assigns.viewer, socket.assigns.seat, index, source})
+  def handle_info({:unmark_tile, seat, index, source}, socket) do
+    GenServer.cast(socket.assigns.game_state, {:unmark_tile, socket.assigns.viewer, seat, index, source})
     socket = update_interaction_state(socket, &%{&1 | selected_index: nil})
     {:noreply, socket}
   end

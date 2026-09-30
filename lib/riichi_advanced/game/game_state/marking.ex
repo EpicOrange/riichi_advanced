@@ -142,9 +142,9 @@ defmodule RiichiAdvanced.GameState.Marking do
           |> Enum.filter(fn {src, _mark_info} -> src == :calls end)
           |> Enum.map(fn {_src, mark_info} -> mark_info.marked end)
           |> Enum.concat()
-          |> Enum.all?(fn {call, _, _} ->
-            call_tile = Utils.get_joker_meld_tile(call, state.players[marking_player].tile_behavior)
-            Utils.same_tile(tile, Utils.strip_attrs(call_tile), state.players[marking_player].tile_behavior)
+          |> Enum.all?(fn {call, seat, _} ->
+            call_tile = Utils.get_joker_meld_tile(call, state.players[seat].tile_behavior)
+            Utils.same_tile(tile, Utils.strip_attrs(call_tile), state.players[seat].tile_behavior)
           end)
         "match_call_to_marked_hand" ->
           call_tile = Utils.get_joker_meld_tile(tile, state.players[marking_player].tile_behavior)
@@ -152,8 +152,8 @@ defmodule RiichiAdvanced.GameState.Marking do
           |> Enum.filter(fn {src, _mark_info} -> src == :hand end)
           |> Enum.map(fn {_src, mark_info} -> mark_info.marked end)
           |> Enum.concat()
-          |> Enum.all?(fn {tile, _, _} ->
-            Utils.same_tile(call_tile, Utils.strip_attrs(tile), state.players[marking_player].tile_behavior)
+          |> Enum.all?(fn {tile, seat, _} ->
+            Utils.same_tile(call_tile, Utils.strip_attrs(tile), state.players[seat].tile_behavior)
           end)
         "self"              -> marking_player == seat
         "others"            -> marking_player != seat

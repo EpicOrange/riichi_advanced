@@ -64,8 +64,8 @@ defmodule RiichiAdvancedWeb.GameComponents do
         dead_hand_buttons={Rules.get(@state.rules_ref, "dead_hand_buttons", false)}
         dead_hand?={"dead_hand" in @state.players[seat].status}
         play_tile={&send(self(), {:play_tile, &1})}
-        mark_tile={&send(self(), {:mark_tile, &1, &2})}
-        unmark_tile={&send(self(), {:unmark_tile, &1, &2})}
+        mark_tile={&send(self(), {:mark_tile, seat, &1, &2})}
+        unmark_tile={&send(self(), {:unmark_tile, seat, &1, &2})}
         hover={&send(self(), {:hover, &1})}
         hover_off={fn -> send(self(), :hover_off) end}
         reindex_hand={&send(self(), {:reindex_hand, &1, &2})}
@@ -160,8 +160,8 @@ defmodule RiichiAdvancedWeb.GameComponents do
           your_turn?={@seat == @state.turn}
           playable_indices={@interaction_state.playable_indices}
           play_tile={&send(self(), {:play_tile, &1})}
-          mark_tile={&send(self(), {:mark_tile, &1, &2})}
-          unmark_tile={&send(self(), {:unmark_tile, &1, &2})}
+          mark_tile={&send(self(), {:mark_tile, @seat, &1, &2})}
+          unmark_tile={&send(self(), {:unmark_tile, @seat, &1, &2})}
           hover={&send(self(), {:hover, &1})}
           hover_off={fn -> send(self(), :hover_off) end}
           selected_index={@interaction_state.selected_index} />
