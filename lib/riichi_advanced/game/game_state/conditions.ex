@@ -55,8 +55,8 @@ defmodule RiichiAdvanced.GameState.Conditions do
             end
             [{hand ++ state.players[context.seat].cache.orig_hand ++ winning_tile, calls ++ Enum.reject(state.players[context.seat].cache.orig_calls, fn {call_name, _call} -> call_name in Riichi.flower_names() end)}]
           "last_call" -> if last_call_action != nil do [{hand, calls ++ [get_last_call(state)]}] else [{hand, calls}] end
-          "last_called_tile" -> if last_call_action != nil do [{hand ++ [last_call_action.called_tile], calls}] else [{hand, calls}] end
-          "last_discard" -> if last_discard_action != nil do [{hand ++ [last_discard_action.tile], calls}] else [{hand, calls}] end
+          "last_called_tile" -> if last_call_action != nil do [{hand ++ [Utils.add_attr(last_call_action.called_tile, ["called_tile"])], calls}] else [{hand, calls}] end
+          "last_discard" -> if last_discard_action != nil do [{hand ++ [Utils.add_attr(last_discard_action.tile, ["discard"])], calls}] else [{hand, calls}] end
           "second_last_visible_discard" ->
             if last_discard_action != nil do 
               visible_pond = state.players[last_discard_action.seat].pond

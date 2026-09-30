@@ -1017,7 +1017,7 @@ defmodule RiichiAdvanced.GameState.Actions do
         end
         {state, context, actions ++ [["_end_function"]]}
       else
-        IO.puts("Tried to call nonexistent function #{fn_name}!")
+        IO.puts("Tried to call nonexistent function #{fn_name}! (ruleset: #{state.ruleset})")
         {state, context, []}
       end
     else

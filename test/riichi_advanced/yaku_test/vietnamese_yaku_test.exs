@@ -312,11 +312,7 @@ defmodule RiichiAdvanced.YakuTest.VietnameseYaku do
       %{"type" => "discard", "tile" => "0j", "player" => 0, "tsumogiri" => false},
       %{"type" => "discard", "tile" => "4s", "player" => 1, "tsumogiri" => true},
       %{"type" => "buttons_pressed", "buttons" => [%{"button" => "ron"}, nil, nil, nil]}
-    ], %{
-      east: %{
-        yaku: [{"Red Dragon", [1, "Phán"]}],
-      }
-    })
+    ], :no_winners)
   end
 
   test "vietnamese - discarding flowers/jokers" do

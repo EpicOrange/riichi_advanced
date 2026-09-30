@@ -1,8 +1,12 @@
+require "standard_sets"
+
+default include_pons, false
+
 on after_initialization do
   add_rule("Rules", "Furiten", "(Temporary Furiten) If you discard your winning tile, or skip winning on someone else's discard, you cannot win off the same tile until your next draw. You can still win on other tiles, or by self-drawing your winning tile.")
 end
 
-on after_turn_change do
+on after_turn_change, prepend: true do
   # unset temporary furiten
   # can't check tenpai status rn, since tenpai_check would set it before turn change
   cond do
@@ -11,6 +15,18 @@ on after_turn_change do
     seat_is("west")  -> untag_tiles("west_furiten")
     seat_is("north") -> untag_tiles("north_furiten")
   end
+  if !include_pons do
+    cond do
+      seat_is("east")  -> untag_tiles("east_pon_furiten")
+      seat_is("south") -> untag_tiles("south_pon_furiten")
+      seat_is("west")  -> untag_tiles("west_pon_furiten")
+      seat_is("north") -> untag_tiles("north_pon_furiten")
+    end
+  end
+end
+
+if !include_pons do
+  define_set pon_set, ~s"0 0 0@discard"
 end
 
 def discard_passed, prepend: true do
@@ -22,6 +38,16 @@ def discard_passed, prepend: true do
         seat_is("south") -> tag_tiles("south_furiten", "last_discard")
         seat_is("west")  -> tag_tiles("west_furiten", "last_discard")
         seat_is("north") -> tag_tiles("north_furiten", "last_discard")
+      end
+    end
+    if !include_pons do
+      if match(["hand", "last_discard"], ~m"nojoker, pon_set:1") do
+        cond do
+          seat_is("east")  -> tag_tiles("east_pon_furiten", "last_discard")
+          seat_is("south") -> tag_tiles("south_pon_furiten", "last_discard")
+          seat_is("west")  -> tag_tiles("west_pon_furiten", "last_discard")
+          seat_is("north") -> tag_tiles("north_pon_furiten", "last_discard")
+        end
       end
     end
   end
@@ -39,3 +65,14 @@ apply prepend, "buttons.tsumo.show_when", not_seat_is("east") or not_tagged("eas
 apply prepend, "buttons.tsumo.show_when", not_seat_is("south") or not_tagged("south_furiten", "draw")
 apply prepend, "buttons.tsumo.show_when", not_seat_is("west") or not_tagged("west_furiten", "draw")
 apply prepend, "buttons.tsumo.show_when", not_seat_is("north") or not_tagged("north_furiten", "draw")
+
+if !include_pons do
+  apply prepend, "buttons.pon.show_when", not_seat_is("east") or not_tagged("east_pon_furiten", "last_discard")
+  apply prepend, "buttons.pon.show_when", not_seat_is("south") or not_tagged("south_pon_furiten", "last_discard")
+  apply prepend, "buttons.pon.show_when", not_seat_is("west") or not_tagged("west_pon_furiten", "last_discard")
+  apply prepend, "buttons.pon.show_when", not_seat_is("north") or not_tagged("north_pon_furiten", "last_discard")
+  apply prepend, "buttons.daiminkan.show_when", not_seat_is("east") or not_tagged("east_pon_furiten", "last_discard")
+  apply prepend, "buttons.daiminkan.show_when", not_seat_is("south") or not_tagged("south_pon_furiten", "last_discard")
+  apply prepend, "buttons.daiminkan.show_when", not_seat_is("west") or not_tagged("west_pon_furiten", "last_discard")
+  apply prepend, "buttons.daiminkan.show_when", not_seat_is("north") or not_tagged("north_pon_furiten", "last_discard")
+end
