@@ -193,7 +193,7 @@ defmodule RiichiAdvanced.GameState.Log do
       riichi_sticks: if Rules.get(state.rules_ref, "display_riichi_sticks", false) do Integer.floor_div(state.pot, Map.get(score_rules, "riichi_value", 1)) else 0 end,
       doras: for i <- -6..-14//-2 do Enum.at(state.dead_wall, i) end |> Enum.filter(& &1 != nil),
       uras: for i <- -5..-14//-2 do Enum.at(state.dead_wall, i) end |> Enum.filter(& &1 != nil),
-      kan_tiles: [-2, -1, -4, -3] |> Enum.map(&Enum.at(state.dead_wall, &1)),
+      kan_tiles: [-4, -3, -2, -1] |> Enum.map(&Enum.at(state.dead_wall, &1)),
       wall: state.wall |> Enum.drop(length(state.available_seats) * Rules.get(state.rules_ref, "starting_tiles", 0)),
       die1: state.dice |> Enum.at(0),
       die2: state.dice |> Enum.at(1),
