@@ -391,6 +391,23 @@ defmodule RiichiAdvancedWeb.ScoringTestLive do
     {:noreply, socket}
   end
 
+  def handle_event("import_mods", %{"mods" => mods_json}, socket) do
+    # silent 200kB limit
+    if byte_size(mods_json) <= 200 * 1024 do
+      case Jason.decode(mods_json) do
+        {:ok, mods} -> GenServer.cast(socket.assigns.room_state, {:import_mods, mods})
+        _ -> nil
+      end
+    end
+    {:noreply, socket}
+  end
+
+  def handle_event("export_mods", _assigns, socket) do
+    mods = GenServer.call(socket.assigns.room_state, :export_mods)
+    socket = push_event(socket, "export-mods", %{mods: Jason.encode!(mods)})
+    {:noreply, socket}
+  end
+
   # for hand selection component
   def handle_event("add_hand_tile", %{"tile" => serialized_tile}, socket) do
     [tile | attrs] = String.split(serialized_tile, "#")

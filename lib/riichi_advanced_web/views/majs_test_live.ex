@@ -146,6 +146,23 @@ defmodule RiichiAdvancedWeb.MajsTestLive do
     {:noreply, socket}
   end
 
+  def handle_event("import_mods", %{"mods" => mods_json}, socket) do
+    # silent 200kB limit
+    if byte_size(mods_json) <= 200 * 1024 do
+      case Jason.decode(mods_json) do
+        {:ok, mods} -> GenServer.cast(socket.assigns.room_state, {:import_mods, mods})
+        _ -> nil
+      end
+    end
+    {:noreply, socket}
+  end
+
+  def handle_event("export_mods", _assigns, socket) do
+    mods = GenServer.call(socket.assigns.room_state, :export_mods)
+    socket = push_event(socket, "export-mods", %{mods: Jason.encode!(mods)})
+    {:noreply, socket}
+  end
+
   def handle_event("convert_majs", %{"ruleset" => ruleset, "config" => config}, socket) do
     # silent 4MB limit
     if byte_size(config) <= 4 * 1024 * 1024 do
