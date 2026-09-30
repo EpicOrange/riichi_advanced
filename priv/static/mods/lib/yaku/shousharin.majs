@@ -1,0 +1,73 @@
+default pin, "(shou/dai)sharin"
+default sou, "(shou/dai)chikurin"
+default man, "(shou/dai)suurin"
+default shou_pinzu_name, "Shousharin"
+default shou_souzu_name, "Shouchikurin"
+default shou_manzu_name, "Shousuurin"
+default dai_pinzu_name, "Daisharin"
+default dai_souzu_name, "Daichikurin"
+default dai_manzu_name, "Daisuurin"
+default shou_pinzu_value, 1
+default shou_souzu_value, 1
+default shou_manzu_value, 1
+default dai_pinzu_value, 1
+default dai_souzu_value, 1
+default dai_manzu_value, 1
+default shou_pinzu_han, "★"
+default shou_souzu_han, "★"
+default shou_manzu_han, "★"
+default dai_pinzu_han, "★"
+default dai_souzu_han, "★"
+default dai_manzu_han, "★"
+
+on after_initialization do
+  if equals(!pin, "shousharin only") or equals(!pin, "(shou/dai)sharin") do
+    add_rule("$value $han", !shou_pinzu_name, "Your closed winning hand is 11223344556677 or 33445566778899 of circles.", %{value: !shou_pinzu_value, han: !shou_pinzu_han}, 113)
+    update_rule("$value $han", !shou_pinzu_name, "%{example_hand}", %{value: !shou_pinzu_value, han: !shou_pinzu_han, example_hand: ~t"1122334455667p3x 7p"})
+  end
+  if equals(!sou, "shouchikurin only") or equals(!sou, "(shou/dai)chikurin") do
+    add_rule("$value $han", !shou_souzu_name, "Your closed winning hand is 11223344556677 or 33445566778899 of bamboo.", %{value: !shou_souzu_value, han: !shou_souzu_han}, 113)
+    update_rule("$value $han", !shou_souzu_name, "%{example_hand}", %{value: !shou_souzu_value, han: !shou_souzu_han, example_hand: ~t"1122334455667s3x 7s"})
+  end
+  if equals(!man, "shousuurin only") or equals(!man, "(shou/dai)suurin") do
+    add_rule("$value $han", !shou_manzu_name, "Your closed winning hand is 11223344556677 or 33445566778899 of characters.", %{value: !shou_manzu_value, han: !shou_manzu_han}, 113)
+    update_rule("$value $han", !shou_manzu_name, "%{example_hand}", %{value: !shou_manzu_value, han: !shou_manzu_han, example_hand: ~t"1122334455667m3x 7m"})
+  end
+  if equals(!pin, "daisharin only") or equals(!pin, "(shou/dai)sharin") do
+    add_rule("$value $han", !dai_pinzu_name, "\"Big Wheels\". Your closed winning hand is 22334455667788 of circles.", %{value: !dai_pinzu_value, han: !dai_pinzu_han}, 113)
+    update_rule("$value $han", !dai_pinzu_name, "%{example_hand}", %{value: !dai_pinzu_value, han: !dai_pinzu_han, example_hand: ~t"2233445566778p3x 8p"})
+  end
+  if equals(!sou, "daichikurin only") or equals(!sou, "(shou/dai)chikurin") do
+    add_rule("$value $han", !dai_souzu_name, "\"Bamboo Forest\". Your closed winning hand is 22334455667788 of bamboo.", %{value: !dai_souzu_value, han: !dai_souzu_han}, 113)
+    update_rule("$value $han", !dai_souzu_name, "%{example_hand}", %{value: !dai_souzu_value, han: !dai_souzu_han, example_hand: ~t"2233445566778s3x 8s"})
+  end
+  if equals(!man, "daisuurin only") or equals(!man, "(shou/dai)suurin") do
+    add_rule("$value $han", !dai_manzu_name, "\"Numerous Numbers\". Your closed winning hand is 22334455667788 of characters.", %{value: !dai_manzu_value, han: !dai_manzu_han}, 113)
+    update_rule("$value $han", !dai_manzu_name, "%{example_hand}", %{value: !dai_manzu_value, han: !dai_manzu_han, example_hand: ~t"2233445566778m3x 8m"})
+  end
+end
+
+if equals(!pin, "shousharin only") or equals(!pin, "(shou/dai)sharin") do
+  define_set shousharin, ~s"1p 1p 2p 2p 3p 3p 4p 4p 5p 5p 6p 6p 7p 7p|3p 3p 4p 4p 5p 5p 6p 6p 7p 7p 8p 8p 9p 9p"
+  define_yaku yakuman, !shou_pinzu_name, [!shou_pinzu_value, !shou_pinzu_han], @closed_hand and match(["hand", "calls", "winning_tile"], ~m"shousharin:1")
+end
+if equals(!sou, "shouchikurin only") or equals(!sou, "(shou/dai)chikurin") do
+  define_set shouchikurin, ~s"1s 1s 2s 2s 3s 3s 4s 4s 5s 5s 6s 6s 7s 7s|3s 3s 4s 4s 5s 5s 6s 6s 7s 7s 8s 8s 9s 9s"
+  define_yaku yakuman, !shou_souzu_name, [!shou_souzu_value, !shou_souzu_han], @closed_hand and match(["hand", "calls", "winning_tile"], ~m"shouchikurin:1")
+end
+if equals(!man, "shousuurin only") or equals(!man, "(shou/dai)suurin") do
+  define_set shousuurin, ~s"1m 1m 2m 2m 3m 3m 4m 4m 5m 5m 6m 6m 7m 7m|3m 3m 4m 4m 5m 5m 6m 6m 7m 7m 8m 8m 9m 9m"
+  define_yaku yakuman, !shou_manzu_name, [!shou_manzu_value, !shou_manzu_han], @closed_hand and match(["hand", "calls", "winning_tile"], ~m"shousuurin:1")
+end
+if equals(!pin, "daisharin only") or equals(!pin, "(shou/dai)sharin") do
+  define_set daisharin, ~s"2p 2p 3p 3p 4p 4p 5p 5p 6p 6p 7p 7p 8p 8p"
+  define_yaku yakuman, !dai_pinzu_name, [!dai_pinzu_value, !dai_pinzu_han], @closed_hand and match(["hand", "calls", "winning_tile"], ~m"daisharin:1")
+end
+if equals(!sou, "daichikurin only") or equals(!sou, "(shou/dai)chikurin") do
+  define_set daichikurin, ~s"2s 2s 3s 3s 4s 4s 5s 5s 6s 6s 7s 7s 8s 8s"
+  define_yaku yakuman, !dai_souzu_name, [!dai_souzu_value, !dai_souzu_han], @closed_hand and match(["hand", "calls", "winning_tile"], ~m"daichikurin:1")
+end
+if equals(!man, "daisuurin only") or equals(!man, "(shou/dai)suurin") do
+  define_set daisuurin, ~s"2m 2m 3m 3m 4m 4m 5m 5m 6m 6m 7m 7m 8m 8m"
+  define_yaku yakuman, !dai_manzu_name, [!dai_manzu_value, !dai_manzu_han], @closed_hand and match(["hand", "calls", "winning_tile"], ~m"daisuurin:1")
+end
