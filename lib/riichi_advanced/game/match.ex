@@ -821,7 +821,7 @@ defmodule RiichiAdvanced.Match do
             #   IO.inspect(Process.info(self(), :current_stacktrace))
             # end
             reified_groups = generate_groups(group, tile_behavior, nojoker)
-            # IO.inspect(tile_behavior.all_tiles, label: inspect(group, charlists: :as_lists), charlists: :as_lists, limit: :infinity)
+            # IO.inspect(tile_behavior.tile_freqs, label: inspect(group, charlists: :as_lists), charlists: :as_lists, limit: :infinity)
             # IO.inspect(reified_groups, label: inspect(group, charlists: :as_lists), charlists: :as_lists, limit: :infinity)
             # IO.inspect(length(reified_groups), label: inspect(group, charlists: :as_lists), charlists: :as_lists, limit: :infinity)
             # if length(reified_groups) > 10 do
@@ -1309,7 +1309,10 @@ defmodule RiichiAdvanced.Match do
   # @decorate cacheable(cache: RiichiAdvanced.Cache.Memo, key: {:get_waits_and_ukeire_v2, hand, calls, match_definitions, visible_tiles, tile_behavior.uuid}, opts: [ttl: :timer.seconds(10)])
   defp get_waits_and_ukeire_v2(hand, calls, match_definitions, visible_tiles, tile_behavior) do
     waits = get_waits_v3(hand, calls, match_definitions, tile_behavior)
-    freqs = Utils.inverse_frequencies(visible_tiles, tile_behavior)
+    # make all attrs salient so we can subtract correctly
+    visible_tiles = Utils.to_salient_attrs(visible_tiles)
+    tile_freqs = Map.new(tile_behavior.tile_freqs, fn {k, v} -> {Utils.to_salient_attrs(k), v} end)
+    freqs = Utils.inverse_frequencies(visible_tiles, %{tile_behavior | tile_freqs: tile_freqs})
     Map.new(waits, &{&1, Map.get(freqs, &1, 0)})
   end
 

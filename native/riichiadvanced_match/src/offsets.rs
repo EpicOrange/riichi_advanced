@@ -6,7 +6,7 @@ use smallvec::{SmallVec, smallvec};
 use crate::encode::{encode_attrs, encode_tiles, has_attrs, to_tileset};
 use crate::tile_table::*;
 use crate::tileset::_check_equivalence;
-use crate::types::{ANY_PRIME, BaseTileVec, ElixirTile, FIXED_OFFSETS, GroupIterator, MatchDefinition, MatchDefinitions, MatchDefinitionElem, MatchGroup, MatchInfo, MatchOffset, OffsetVec, Prime, RemovableGroup, Tile, TileOrdering, TileOrderingMap, TileSet};
+use crate::types::{ANY_PRIME, BaseTileVec, ElixirTile, FIXED_OFFSETS, GroupIterator, MatchDefinition, MatchDefinitionElem, MatchGroup, MatchInfo, MatchOffset, OffsetVec, Prime, RemovableGroup, Tile, TileOrdering, TileOrderingMap, TileSet};
 use crate::primes::{is_jihai, is_manzu, is_pinzu, is_souzu, to_prime};
 
 // return true if changed
@@ -376,14 +376,6 @@ pub fn get_base_tiles(match_info: &MatchInfo, match_definition: &MatchDefinition
   //   that we can't otherwise encode, since it's not in hand
   let rev_offsets = gather_rev_offsets(match_definition);
   _get_base_tiles(match_info, &rev_offsets, true)
-}
-// returns a vec of base tiles with attributes
-// used for identifying waits with attributes
-pub fn get_base_tiles_from_defns(match_info: &MatchInfo, match_definitions: &MatchDefinitions) -> BaseTileVec {
-  let mut rev_offsets: OffsetVec = match_definitions.iter().flat_map(gather_rev_offsets).collect();
-  rev_offsets.sort_unstable();
-  rev_offsets.dedup();
-  _get_base_tiles(match_info, &rev_offsets, false)
 }
 
 #[inline]

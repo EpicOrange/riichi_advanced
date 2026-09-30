@@ -218,7 +218,15 @@ defmodule RiichiAdvanced.GameState.Rules do
     |> Utils.reduce_json(fn %{"attrs" => attrs}, acc -> attrs ++ acc; _, acc -> acc end)
     |> MapSet.new()
 
-    :ets.insert(rules_ref, {:all_attrs, all_attrs})
+    # get all attributes for tiles that appear in the wall (which uses a different notation)
+    wall_attrs = Map.get(rules, "wall", [])
+    |> Enum.flat_map(fn
+      [_tile | attrs] -> attrs
+      _ -> []
+    end)
+    |> MapSet.new()
+
+    :ets.insert(rules_ref, {:all_attrs, MapSet.union(all_attrs, wall_attrs)})
   end
 
   def get(rules_ref, key, default \\ nil)

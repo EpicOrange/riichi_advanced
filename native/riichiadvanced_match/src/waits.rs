@@ -1,16 +1,15 @@
 use smallvec::smallvec;
-use std::collections::HashSet;
+use std::collections::{HashMap, HashSet};
 use std::sync::atomic::Ordering;
 use std::time::Instant;
 
 use crate::encode::{decode_tiles, encode_tiles};
 use crate::r#match::{__match_hand_v3, __remove_match_definition};
 use crate::match_info::{prepare_tiles};
-use crate::offsets::get_base_tiles_from_defns;
 use crate::profile::{PROFILE_GET_WAITS, PROFILE_UNNEEDED_TILES, CALL_COUNT, MAX_NANOS, TOTAL_NANOS};
 use crate::tile_table::{TILE_TABLE, tile1x};
 use crate::tileset::remove_tileset_indices;
-use crate::types::{BitAttrs, ElixirAliases, ElixirHandCalls, ElixirTile, ElixirTileOrdering, MatchDefinitionElem, MatchDefinitions, MatchInfo, Tile};
+use crate::types::{ANY_PRIME, ElixirAliases, ElixirHandCalls, ElixirTile, ElixirTileOrdering, MatchDefinitionElem, MatchDefinitions, MatchInfo, Tile};
 use crate::utils::{add_joker_to_aliases, remove_joker_from_aliases};
 
 #[rustler::nif(schedule = "DirtyCpu")]
@@ -78,50 +77,53 @@ pub fn __get_waits_v3(
   not_waits.insert(joker);
   match_info.joker_tiles.insert(joker);
 
+  // println!("elixir_game_tiles={:?}", &elixir_game_tiles);
+  // add all nonjoker tiles as possible waits (we will add in jokers at the end)
   let mut possible_waits: Vec<Tile> =
     encode_tiles(&elixir_game_tiles, &match_info.all_attrs)
     .filter(|tile| !match_info.joker_tiles.contains(tile))
     .collect();
-  possible_waits.extend(get_base_tiles_from_defns(&match_info, &match_definitions).iter().filter(|tile| match_info.relevant_tiles.contains(tile)));
-
   possible_waits.sort_unstable();
   possible_waits.dedup();
+
+  // save aliases first
+  let aliases_backup = match_info.aliases.clone();
 
   // println!("possible_waits={:?}", decode_tiles(&possible_waits, &match_info.all_attrs));
   add_joker_to_aliases(&mut match_info.aliases, &mut match_info.mapping, joker, &possible_waits);
   // println!("starting aliases for 1x: {:?}", decode_tiles(match_info.mapping.get(&joker).unwrap(), &match_info.all_attrs));
   // println!("joker_tiles: {:?}", decode_tiles(&match_info.joker_tiles, &match_info.all_attrs));
 
-  // save aliases first
-  let aliases_backup = match_info.aliases.clone();
   // populate not_waits with the closure of non-wait tiles
   ___get_waits_v3(&mut match_info, &match_definitions, &mut not_waits, &possible_waits, &joker);
-  // take complement of not_waits and return
 
+  // take complement of not_waits
   possible_waits.retain(|tile| !not_waits.contains(tile));
-  
-  // dedup same-id tiles
-  // for tiles with same id diff attrs,
-  //   take the intersection of all attrs as the canonical base
-  let mut ret: Vec<Tile> = possible_waits
-    .chunk_by(|l, r| l.0 == r.0)
-    .map(|c| c.iter().fold((0, BitAttrs::MAX), |(_, a1), (p, a2)| (*p, a1 & a2)))
-    .collect();
 
-  // also add all joker tiles that map to something in ret
-  let mut ret_jokers: HashSet<Tile> = ret
+  // add all joker tiles that map to something in possible_waits
+  let ret_jokers: HashSet<Tile> = possible_waits
     .iter()
     .flat_map(|t| aliases_backup.get(&t.0)?.get(&t.1))
     .flatten()
     .copied()
     .collect();
-  ret_jokers.remove(&joker);
+  let mut any_jokers: Vec<Tile> = aliases_backup
+    .get(&ANY_PRIME)
+    .unwrap_or(&HashMap::new())
+    .values()
+    .flatten()
+    .cloned()
+    .collect();
+  any_jokers.sort_unstable();
+  any_jokers.dedup();
+  // println!("possible_waits: {:?}", &possible_waits);
+  // println!("elixir_aliases: {:?}", &elixir_aliases);
+  // println!("aliases_backup: {:?}", &aliases_backup);
+  // println!("ret_jokers: {:?}", &ret_jokers);
 
-  // println!("ret: {:?}", ret);
-  // println!("ret_jokers: {:?}", ret_jokers);
-
-  ret.extend(ret_jokers);
-  decode_tiles(&ret, &match_info.all_attrs)
+  possible_waits.extend(ret_jokers);
+  possible_waits.extend(any_jokers);
+  decode_tiles(&possible_waits, &match_info.all_attrs)
 }
 pub fn ___get_waits_v3(
   match_info: &mut MatchInfo,
