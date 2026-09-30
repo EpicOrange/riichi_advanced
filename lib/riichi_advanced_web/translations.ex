@@ -18,11 +18,11 @@ defmodule RiichiAdvancedWeb.Translations do
       # replace tile bindings with divs
       bindings = bindings
       |> Map.new(fn {k, v} ->
-        {k, Gettext.gettext(RiichiAdvancedWeb.Gettext, "default",
+        {k, Gettext.dgettext(RiichiAdvancedWeb.Gettext, "default",
           if is_list(v) do Enum.map_join(v, "", &tile_to_div/1) else v end)}
       end)
       # translate
-      ret = Gettext.gettext(RiichiAdvancedWeb.Gettext, "default", ident)
+      ret = Gettext.dgettext(RiichiAdvancedWeb.Gettext, "default", ident)
       # we have to replace bindings manually,
       # since gettext expects atom keys in bindings
       # but keys are user-provided, thus cannot be atoms

@@ -14,6 +14,15 @@ msgstr ""
 msgid "#{tile}"
 msgstr ""
 
+msgid "$0.25"
+msgstr ""
+
+msgid "$0.50"
+msgstr ""
+
+msgid "$1.00"
+msgstr ""
+
 msgid "$is"
 msgstr ""
 
@@ -24,6 +33,9 @@ msgid "$value $han"
 msgstr ""
 
 msgid "%{19m} can also be declared in the same manner as north winds."
+msgstr ""
+
+msgid "%{ankan} are hidden: its tiles are not visible for the rest of the table until the end of the round."
 msgstr ""
 
 msgid "%{example_hand2}"
@@ -107,7 +119,25 @@ msgstr ""
 msgid "%{value} %{han} for each flower tile whose number matches your seat. Since your current seat is West, that would be the following flowers: %{flowers}"
 msgstr ""
 
+msgid "%{value} %{han} for each of the following triplets (or kans) in your hand:"
+msgstr ""
+
+msgid "%{value} %{han} for having a three-color straight (%{example}, for example)."
+msgstr ""
+
+msgid "%{value} %{han} for having a three-color straight (%{example}, for example). +%{bonus} %{han} if closed."
+msgstr ""
+
+msgid "%{value} %{han} for winning after declaring %{name} on your first discard."
+msgstr ""
+
+msgid "%{value} %{han} for winning after declaring %{name}."
+msgstr ""
+
 msgid "%{value} %{han} if all four of your sets are sequences."
+msgstr ""
+
+msgid "%{value} %{han} if all four of your sets are triplets."
 msgstr ""
 
 msgid "%{value} %{han} if as a non-dealer, you win with your initial draw. Calls do not invalidate this."
@@ -122,16 +152,52 @@ msgstr ""
 msgid "%{value} %{han} if as dealer, you win with your initial draw. Calls invalidate."
 msgstr ""
 
+msgid "%{value} %{han} if every set/pair in your hand contains at least one terminal or honor tile."
+msgstr ""
+
+msgid "%{value} %{han} if every set/pair in your hand contains at least one terminal or honor tile. +%{bonus} %{han} if closed."
+msgstr ""
+
+msgid "%{value} %{han} if every set/pair in your hand contains at least one terminal tile."
+msgstr ""
+
+msgid "%{value} %{han} if every set/pair in your hand contains at least one terminal tile. +%{bonus} %{han} if closed."
+msgstr ""
+
 msgid "%{value} %{han} if the dice rolled doubles this round."
+msgstr ""
+
+msgid "%{value} %{han} if you called %{kan} four times."
 msgstr ""
 
 msgid "%{value} %{han} if you called %{kan} once."
 msgstr ""
 
+msgid "%{value} %{han} if you called %{kan} three times."
+msgstr ""
+
 msgid "%{value} %{han} if you called %{kan} twice."
 msgstr ""
 
+msgid "%{value} %{han} if you have a double sequence: two copies of the exact same sequence in one suit, like 123 123."
+msgstr ""
+
+msgid "%{value} %{han} if you have chiitoitsu composed of each terminal tile with the seventh pair being dora."
+msgstr ""
+
+msgid "%{value} %{han} if you have four concealed triplets, and won by completing your pair."
+msgstr ""
+
 msgid "%{value} %{han} if you have four concealed triplets. A triplet completed by a self-draw win counts as concealed."
+msgstr ""
+
+msgid "%{value} %{han} if you have four concealed triplets. A triplet completed by a self-draw win counts as concealed. A triplet completed by a discard does not count as concealed."
+msgstr ""
+
+msgid "%{value} %{han} if you have four of the exact same sequence in one suit, like 123 123 123 123."
+msgstr ""
+
+msgid "%{value} %{han} if you have honitsu with dragon yakuhai matching the suit: manzu with chun, pinzu with hatsu (not a typo), or souzu with haku (also not a typo)."
 msgstr ""
 
 msgid "%{value} %{han} if you have no calls (except %{ankan})."
@@ -140,7 +206,19 @@ msgstr ""
 msgid "%{value} %{han} if you have one concealed triplet. A triplet completed by a self-draw win counts as concealed."
 msgstr ""
 
+msgid "%{value} %{han} if you have three concealed triplets. A triplet completed by a self-draw win counts as concealed. A triplet completed by a discard does not count as concealed."
+msgstr ""
+
+msgid "%{value} %{han} if you have three of the exact same sequence in one suit, like 123 123 123."
+msgstr ""
+
+msgid "%{value} %{han} if you have triplets of all four winds."
+msgstr ""
+
 msgid "%{value} %{han} if you have triplets of all three dragons."
+msgstr ""
+
+msgid "%{value} %{han} if you have triplets of three different winds, and a pair of the fourth."
 msgstr ""
 
 msgid "%{value} %{han} if you have triplets of three different winds."
@@ -155,6 +233,18 @@ msgstr ""
 msgid "%{value} %{han} if you have two concealed triplets. A triplet completed by a self-draw win counts as concealed."
 msgstr ""
 
+msgid "%{value} %{han} if you have two double sequences, each being two copies of the exact same sequence in one suit, like 123 123. Cannot be scored as a seven pairs hand."
+msgstr ""
+
+msgid "%{value} %{han} if you have two double sequences, each being two copies of the exact same sequence in one suit, like 123 123. Cannot be scored together with seven pairs."
+msgstr ""
+
+msgid "%{value} %{han} if you win by drawing the last tile in the wall."
+msgstr ""
+
+msgid "%{value} %{han} if you win by self-draw without having called any tiles (except %{ankan})."
+msgstr ""
+
 msgid "%{value} %{han} if you win by self-draw."
 msgstr ""
 
@@ -167,10 +257,16 @@ msgstr ""
 msgid "%{value} %{han} if you win off a %{kan} replacement tile."
 msgstr ""
 
+msgid "%{value} %{han} if you win off a discard after the last tile in the wall is drawn."
+msgstr ""
+
 msgid "%{value} %{han} if you win off a flower replacement tile."
 msgstr ""
 
 msgid "%{value} %{han} if you win off a player adding a drawn tile to an existing %{pung} to form a %{kong}."
+msgstr ""
+
+msgid "%{value} %{han} if you win off the last draw or discard."
 msgstr ""
 
 msgid "%{value} %{han} if you win off the tile discarded by a player who just called kan."
@@ -188,13 +284,64 @@ msgstr ""
 msgid "%{value} %{han} if you win on the dealer's first discard. Calls invalidate."
 msgstr ""
 
+msgid "%{value} %{han} if you won by having 'thirteen orphans': one of each terminal and honor tile, with one of them forming a pair."
+msgstr ""
+
+msgid "%{value} %{han} if you won by having one of each terminal and honor tile on a 13-sided wait for a pair."
+msgstr ""
+
+msgid "%{value} %{han} if your final hand (excluding winning tile) has no calls and looks like 1112345678999 of any suit, a nine-sided wait."
+msgstr ""
+
+msgid "%{value} %{han} if your final hand (including winning tile) has no calls and looks like 1112345678999 of any suit, plus one additional tile of that suit."
+msgstr ""
+
 msgid "%{value} %{han} if your final wait contains at least two pairs waiting for either one to become a triplet."
+msgstr ""
+
+msgid "%{value} %{han} if your hand consists of one pair of each of the seven honor tiles."
+msgstr ""
+
+msgid "%{value} %{han} if your hand consists of only one suit plus honor tiles."
+msgstr ""
+
+msgid "%{value} %{han} if your hand consists of only one suit, no honor tiles."
+msgstr ""
+
+msgid "%{value} %{han} if your hand consists of seven pairs (no repeated pairs)."
+msgstr ""
+
+msgid "%{value} %{han} if your hand consists of seven pairs (repeated pairs OK)."
+msgstr ""
+
+msgid "%{value} %{han} if your hand consists only of 1 and 9 tiles."
+msgstr ""
+
+msgid "%{value} %{han} if your hand consists only of 1, 9, and honor tiles."
+msgstr ""
+
+msgid "%{value} %{han} if your hand consists only of 2-8 number tiles."
+msgstr ""
+
+msgid "%{value} %{han} if your hand consists only of honor tiles."
+msgstr ""
+
+msgid "%{value} %{han} if your hand contains the same number sequence in all three suits."
+msgstr ""
+
+msgid "%{value} %{han} if your hand contains the same number sequence in all three suits. +%{bonus} %{han} if closed."
 msgstr ""
 
 msgid "%{value} %{han} if your hand contains the same number triplet in all three suits."
 msgstr ""
 
 msgid "%{value} %{han} if your hand contains the same number triplet in two different suits, plus a pair in the third suit."
+msgstr ""
+
+msgid "%{value} %{han} if your hand contains the sequences 123 456 879 in one suit."
+msgstr ""
+
+msgid "%{value} %{han} if your hand contains the sequences 123 456 879 in one suit. +%{bonus} %{han} if closed."
 msgstr ""
 
 msgid "%{value} %{han} if your hand didn't earn any points."
@@ -207,6 +354,18 @@ msgid "%{value} %{han} if your hand has three triplets of the same suit in seque
 msgstr ""
 
 msgid "%{value} %{han} if your hand includes all 5 suits (character, circle, bamboo, wind, dragon)."
+msgstr ""
+
+msgid "%{value} %{han} if your hand is closed and only scores base fu (%{pinfu_ron} for ron and %{pinfu_tsumo} for tsumo). To achieve this, you must win off a double-sided sequence wait, with a closed all-sequence hand, with a non-yakuhai pair."
+msgstr ""
+
+msgid "%{value} %{han} if your hand only consists of %{tiles} (all green tiles)"
+msgstr ""
+
+msgid "%{value} %{han} if your hand only scores base fu (%{pinfu_ron} for ron and %{pinfu_tsumo} for tsumo). To achieve this, you must win off a double-sided sequence wait, with an all-sequence hand, with a non-yakuhai pair."
+msgstr ""
+
+msgid "%{value} %{han} on top of ittsuu if the winning tile is the five needed for ittsuu."
 msgstr ""
 
 msgid "&lt;disconnected&gt;"
@@ -375,6 +534,9 @@ msgid "(Kin) Each kin (gold) dora in a closed winning hand adds %{chips} shuugi 
 msgstr ""
 
 msgid "(Kin) Each kin (gold) dora in a winning hand adds %{chips} shuugi to the payment."
+msgstr ""
+
+msgid "(Kuitan Nashi) Your hand must be closed."
 msgstr ""
 
 msgid "(Lock) When another player reveals your concealed discard, you may bet 4000 additional points to negate the negation of your concealed discard. If this is done, then the tile is never revealed to the table, and this cannot be negated."
@@ -575,7 +737,22 @@ msgstr ""
 msgid "(ongoing)"
 msgstr ""
 
+msgid "(same)"
+msgstr ""
+
+msgid "(shou/dai)chikurin"
+msgstr ""
+
+msgid "(shou/dai)sharin"
+msgstr ""
+
+msgid "(shou/dai)suurin"
+msgstr ""
+
 msgid "(with AI)"
+msgstr ""
+
+msgid "+%{bonus} %{han} if your hand is closed (no calls besides ankan)."
 msgstr ""
 
 msgid "+1 Mủn if all four quads are concealed."
@@ -747,6 +924,9 @@ msgid "- A triplet of North Winds %{north_wind_triplet}"
 msgstr ""
 
 msgid "- A triplet of dragon tiles %{dragons}"
+msgstr ""
+
+msgid "- A triplet of winds matching the round marker %{round_winds}"
 msgstr ""
 
 msgid "- A triplet of winds matching your seat %{seat_winds}"
@@ -1097,6 +1277,9 @@ msgstr ""
 msgid "0.25 $ if your wait is for the a middle tile of a chow."
 msgstr ""
 
+msgid "0.5 $han"
+msgstr ""
+
 msgid "0.5 Han"
 msgstr ""
 
@@ -1107,6 +1290,9 @@ msgid "0.5 han is awarded for each mixed triplet of winds that contain both the 
 msgstr ""
 
 msgid "1 $"
+msgstr ""
+
+msgid "1 $han"
 msgstr ""
 
 msgid "1 Faan"
@@ -1319,6 +1505,9 @@ msgstr ""
 msgid "10"
 msgstr ""
 
+msgid "10 $han"
+msgstr ""
+
 msgid "10 Faan"
 msgstr ""
 
@@ -1388,6 +1577,9 @@ msgstr ""
 msgid "10 嘴 for winning with seven pairs."
 msgstr ""
 
+msgid "10+"
+msgstr ""
+
 msgid "100 嘴 for having for having only one suit in hand, with no honor tiles."
 msgstr ""
 
@@ -1406,6 +1598,9 @@ msgstr ""
 msgid "100 嘴 for winning with seven pairs, but two of your pairs are duplicated (you have two 4 of a kinds)."
 msgstr ""
 
+msgid "11 $han"
+msgstr ""
+
 msgid "11 Fan"
 msgstr ""
 
@@ -1415,13 +1610,22 @@ msgstr ""
 msgid "12"
 msgstr ""
 
+msgid "12 $han"
+msgstr ""
+
 msgid "12 Fan"
 msgstr ""
 
 msgid "12 Tile Pao"
 msgstr ""
 
+msgid "12+ Fan"
+msgstr ""
+
 msgid "123"
+msgstr ""
+
+msgid "13 $han"
 msgstr ""
 
 msgid "13 Fan"
@@ -1469,6 +1673,9 @@ msgstr ""
 msgid "150 嘴 for winning immediately with your initial hand and drawn tile, as a non-dealer."
 msgstr ""
 
+msgid "16 $han"
+msgstr ""
+
 msgid "16 Fan"
 msgstr ""
 
@@ -1488,6 +1695,9 @@ msgid "19"
 msgstr ""
 
 msgid "2"
+msgstr ""
+
+msgid "2 $han"
 msgstr ""
 
 msgid "2 Faan"
@@ -1539,6 +1749,12 @@ msgid "2 Fan → 4 pts"
 msgstr ""
 
 msgid "2 Han"
+msgstr ""
+
+msgid "2 Mủn"
+msgstr ""
+
+msgid "2 Phán"
 msgstr ""
 
 msgid "2 Tai"
@@ -1598,6 +1814,9 @@ msgstr ""
 msgid "2 嘴 for omitting one whole suit from your hand."
 msgstr ""
 
+msgid "2+ Han"
+msgstr ""
+
 msgid "20"
 msgstr ""
 
@@ -1655,6 +1874,9 @@ msgstr ""
 msgid "2026 #4 (30 pts)"
 msgstr ""
 
+msgid "24+ $han"
+msgstr ""
+
 msgid "24+ Fan"
 msgstr ""
 
@@ -1662,6 +1884,9 @@ msgid "25-29 Faan"
 msgstr ""
 
 msgid "258"
+msgstr ""
+
+msgid "3 $han"
 msgstr ""
 
 msgid "3 Fan"
@@ -1715,6 +1940,9 @@ msgstr ""
 msgid "3 han tsumo"
 msgstr ""
 
+msgid "3+ $han"
+msgstr ""
+
 msgid "3+ Fan → 8 pts"
 msgstr ""
 
@@ -1766,6 +1994,9 @@ msgstr ""
 msgid "37"
 msgstr ""
 
+msgid "4 $han"
+msgstr ""
+
 msgid "4 Fan"
 msgstr ""
 
@@ -1773,6 +2004,9 @@ msgid "4 Han"
 msgstr ""
 
 msgid "4 Mủn"
+msgstr ""
+
+msgid "4 Phán"
 msgstr ""
 
 msgid "4 Tai"
@@ -1794,6 +2028,9 @@ msgid "4 Tai payment"
 msgstr ""
 
 msgid "4 fan if your winning hand contains the sequences 123 456 789 of any suit."
+msgstr ""
+
+msgid "4 han instead of the usual 2 han if you win ketsupaihou by chankan -- that is, you robbed a kan with an edge or middle wait."
 msgstr ""
 
 msgid "4 嘴"
@@ -1836,6 +2073,9 @@ msgid "456"
 msgstr ""
 
 msgid "46"
+msgstr ""
+
+msgid "5 $han"
 msgstr ""
 
 msgid "5 Faan"
@@ -1884,6 +2124,12 @@ msgid "5 Fan"
 msgstr ""
 
 msgid "5 Han"
+msgstr ""
+
+msgid "5 Mủn"
+msgstr ""
+
+msgid "5 Phán"
 msgstr ""
 
 msgid "5 Tai"
@@ -1949,6 +2195,9 @@ msgstr ""
 msgid "5 han if your hand contains the same number triplet in all four suits. Stacks with toitoi."
 msgstr ""
 
+msgid "5+ $han"
+msgstr ""
+
 msgid "5-6 Faan"
 msgstr ""
 
@@ -1958,19 +2207,37 @@ msgstr ""
 msgid "50 嘴 for winning with seven pairs, but one of your pairs is duplicated (you have 4 of a kind)."
 msgstr ""
 
+msgid "6 $han"
+msgstr ""
+
 msgid "6 Fan"
+msgstr ""
+
+msgid "6 Mủn"
 msgstr ""
 
 msgid "6 han if your hand has four closed kontsu (mixed triplets) in hand, and you won by completing your pair."
 msgstr ""
 
+msgid "7 $han"
+msgstr ""
+
 msgid "7 Fan"
+msgstr ""
+
+msgid "7 Mủn"
+msgstr ""
+
+msgid "7 flowers"
 msgstr ""
 
 msgid "7-8 Faan"
 msgstr ""
 
 msgid "789"
+msgstr ""
+
+msgid "8 $han"
 msgstr ""
 
 msgid "8 Faan"
@@ -2001,6 +2268,9 @@ msgid "8 Fan"
 msgstr ""
 
 msgid "8 Mủn"
+msgstr ""
+
+msgid "9 $han"
 msgstr ""
 
 msgid "9 Fan"
@@ -2211,6 +2481,21 @@ msgid "Adds flower tiles to the game. Declaring flowers that match your seat is 
 msgstr ""
 
 msgid "Adds some \\\"Zombie Blanks\\\" to the wall, which may be swapped out for already-discarded tiles."
+msgstr ""
+
+msgid "Adds the 1 fan hand Two Identical Sequences where you have the same sequence twice (same numbers, same suit)."
+msgstr ""
+
+msgid "Adds the 3 fan hand Mixed Triple Sequence where you have the same number sequence in three different suits."
+msgstr ""
+
+msgid "Adds the 3 fan hand Pure Straight where you have 123 456 789 in one suit."
+msgstr ""
+
+msgid "Adds the 3 fan hand Three Identical Sequences where you have the same sequence three times (same numbers, same suit). Also adds Four Identical Sequences, which is a limit hand (13 fan)."
+msgstr ""
+
+msgid "Adds the 3 fan hand Three Kongs where you have three kongs."
 msgstr ""
 
 msgid "Adds the Chinese blue-framed white dragon as a fourth dragon tile (hakuban). Yaku treats it as an honor tile. Shousangen is reduced to 1 han (+2 from dragons) and Daisangen is reduced to 2 han (+3 from dragons). Adds Shousuugen (3 dragons + dragon pair) as yakuman and Daisuugen (4 dragons) as double yakuman."
@@ -2460,6 +2745,9 @@ msgid "Amatsuki Mahjong"
 msgstr ""
 
 msgid "Ambitions"
+msgstr ""
+
+msgid "American"
 msgstr ""
 
 msgid "American (NMJL)"
@@ -2951,6 +3239,9 @@ msgstr ""
 msgid "Chinitsu"
 msgstr ""
 
+msgid "Chinitsu Challenge"
+msgstr ""
+
 msgid "Chinpeikou"
 msgstr ""
 
@@ -2991,6 +3282,9 @@ msgid "Choose toimen"
 msgstr ""
 
 msgid "Choosing a ruleset (in the Room Settings menu) simply applies a preset set of mods."
+msgstr ""
+
+msgid "Chou"
 msgstr ""
 
 msgid "Choumangan"
@@ -3136,6 +3430,9 @@ msgid "DC"
 msgstr ""
 
 msgid "DD"
+msgstr ""
+
+msgid "Dai"
 msgstr ""
 
 msgid "Daichiishin"
@@ -4313,6 +4610,9 @@ msgstr ""
 msgid "Hand value"
 msgstr ""
 
+msgid "Hands"
+msgstr ""
+
 msgid "Haneman"
 msgstr ""
 
@@ -4370,6 +4670,9 @@ msgstr ""
 msgid "Hefei"
 msgstr ""
 
+msgid "Hefei Mahjong"
+msgstr ""
+
 msgid "Hell Wait"
 msgstr ""
 
@@ -4391,6 +4694,9 @@ msgstr ""
 msgid "Hochi Rules"
 msgstr ""
 
+msgid "Hochi Rules (c. 1952)"
+msgstr ""
+
 msgid "Honba"
 msgstr ""
 
@@ -4398,6 +4704,9 @@ msgid "Honba (pao)"
 msgstr ""
 
 msgid "Hong Kong"
+msgstr ""
+
+msgid "Hong Kong Old Style"
 msgstr ""
 
 msgid "Hong Kong Old Style mahjong. Three point minimum, everyone pays for a win, and win instantly if you have seven flowers."
@@ -4452,6 +4761,15 @@ msgstr ""
 msgid "If a player reaches the called game score, they receive 1 chip from every player."
 msgstr ""
 
+msgid "If a player starts with nine different kinds of terminals, they have the option to call an abortive draw. Any call (chii, pon, etc) invalidates this opportunity for all players."
+msgstr ""
+
+msgid "If a wind triplet matches both the round marker and your seat position, score both."
+msgstr ""
+
+msgid "If all four players discard the same wind tile as their first discard, the game ends in an abortive draw."
+msgstr ""
+
 msgid "If all four players have declared riichi (and the final discard passes), the game ends in an abortive draw."
 msgstr ""
 
@@ -4486,6 +4804,9 @@ msgid "If someone's exposed melds indicate that they have no possible winning ha
 msgstr ""
 
 msgid "If the AI is stuck or missing, clicking the center compass will try to unstuck them."
+msgstr ""
+
+msgid "If the AI is too fast or too slow, try toggling the \"Win Timer\" mod in Room Settings."
 msgstr ""
 
 msgid "If the dealer (East wind) is tenpai at exhaustive draw, the round repeats. If honba is enabled, this adds one honba."
@@ -4551,6 +4872,18 @@ msgstr ""
 msgid "If you can, you may discard into a ready hand by announcing Ting to lock your hand. If you win, you are awarded 1 Tai."
 msgstr ""
 
+msgid "If you can, you may discard into tenpai (ready hand) by declaring %{name} to lock your hand. If you win, you are awarded %{name} (%{value} %{han})."
+msgstr ""
+
+msgid "If you can, you may discard into tenpai (ready hand) by declaring %{name} to lock your hand. If you win, you are awarded %{name} (%{value} %{han}). If you declared %{name} on your very first discard, then you are instead awarded %{double_name} (%{double_value} %{han}). Calls before the %{name} declaration invalidate %{double_name}."
+msgstr ""
+
+msgid "If you can, you may discard into tenpai (ready hand) by declaring %{name} to lock your hand. If your discard passes, you bet %{bet} points. If you win, you are awarded %{name} (%{value} %{han})."
+msgstr ""
+
+msgid "If you can, you may discard into tenpai (ready hand) by declaring %{name} to lock your hand. If your discard passes, you bet %{bet} points. If you win, you are awarded %{name} (%{value} %{han}). If you declared %{name} on your very first discard, then you are instead awarded %{double_name} (%{double_value} %{han}). Calls before the %{name} declaration invalidate %{double_name}."
+msgstr ""
+
 msgid "If you complete a set of four flowers (%{t1}, %{t2}, %{t3}, or %{t4}) after the initial flower declaration round, then you are immediately paid 50 from each player."
 msgstr ""
 
@@ -4600,6 +4933,9 @@ msgid "If you scroll down now, or during a game, you can see the JSON representa
 msgstr ""
 
 msgid "If you use no more than 3 jokers it becomes 25 Faan, and if you use no more than one joker it's 30 Faan."
+msgstr ""
+
+msgid "If you want to play with every player showing their hands, enable the \"Open Hands\" mod in Room Settings."
 msgstr ""
 
 msgid "If you win by discard, everyone pays you the hand value but the discarder's payment is doubled. If you win by self-draw, all players pay double the hand value."
@@ -4719,6 +5055,9 @@ msgstr ""
 msgid "Intro to space mahjong"
 msgstr ""
 
+msgid "Invalid log id!"
+msgstr ""
+
 msgid "Ippatsu"
 msgstr ""
 
@@ -4742,6 +5081,9 @@ msgid "Issuing a challenge costs one of the two starting challenge tokens."
 msgstr ""
 
 msgid "It doesn't make sense to defend this early in MCR, so early flowers are always declared for a replacement tile. Do so now."
+msgstr ""
+
+msgid "It is possible to customize the color of the table using the \"Tablecloth Color\" and \"Tile Color\" mods in Room Settings.Confirm"
 msgstr ""
 
 msgid "It's All Aka?"
@@ -5224,6 +5566,9 @@ msgstr ""
 msgid "Locked Discards"
 msgstr ""
 
+msgid "Log %{log_id} does not exist!"
+msgstr ""
+
 msgid "Log ID:"
 msgstr ""
 
@@ -5335,6 +5680,12 @@ msgstr ""
 msgid "Mangan dealer tsumo"
 msgstr ""
 
+msgid "Mangan if you have chiitoitsu composed of each terminal tile with the seventh pair being dora."
+msgstr ""
+
+msgid "Mangan if you have honitsu with dragon yakuhai matching the suit: manzu with chun, pinzu with hatsu (not a typo), or souzu with haku (also not a typo)."
+msgstr ""
+
 msgid "Mangan if your hand was 1112345678999 in one suit, and you won via its nine-sided wait."
 msgstr ""
 
@@ -5444,6 +5795,9 @@ msgid "Mixed Terminals"
 msgstr ""
 
 msgid "Mixed Triple Chow"
+msgstr ""
+
+msgid "Mixed Triple Sequence"
 msgstr ""
 
 msgid "Mixed Winds"
@@ -5618,6 +5972,9 @@ msgid "Nine-Tile Straight"
 msgstr ""
 
 msgid "Ningbo"
+msgstr ""
+
+msgid "Ningbo Mahjong"
 msgstr ""
 
 msgid "Nippatsu"
@@ -6090,6 +6447,9 @@ msgstr ""
 msgid "Passing dealership"
 msgstr ""
 
+msgid "Patterns"
+msgstr ""
+
 msgid "Pay 1500 to decline the swap"
 msgstr ""
 
@@ -6509,7 +6869,7 @@ msgstr ""
 msgid "Riichi Advanced attempts to be mobile-friendly and tries to support all major browsers. This isn't easy, so if you find something amiss, join the Discord!"
 msgstr ""
 
-msgid "Riichi Advanced is open-source, and is currently hosted on GitHub.Confirm"
+msgid "Riichi Advanced is open-source, and is currently hosted on GitHub."
 msgstr ""
 
 #, fuzzy
@@ -6947,6 +7307,9 @@ msgstr ""
 msgid "Short Straight"
 msgstr ""
 
+msgid "Shou"
+msgstr ""
+
 msgid "Shou/Daisharin"
 msgstr ""
 
@@ -7171,6 +7534,9 @@ msgid "Super Bingo"
 msgstr ""
 
 msgid "Super Bingo (beta)"
+msgstr ""
+
+msgid "Super Bingo Sanma"
 msgstr ""
 
 msgid "Suuankon"
@@ -7401,6 +7767,9 @@ msgid "The dot joker %{thung} can be replaced for 2 Phán if you are the South p
 msgstr ""
 
 msgid "The dragon joker %{nguyen} can be replaced for 2 Phán if you are the West player, or 1 Phán otherwise."
+msgstr ""
+
+msgid "The endgame screen takes 30 seconds to advance. If you want it to take longer, toggle the \"Change AI Speed\" mod in Room Settings."
 msgstr ""
 
 msgid "The flower joker %{hoa} can be replaced for 2 Phán regardless of seat."
@@ -7634,6 +8003,9 @@ msgstr ""
 msgid "Tianjin"
 msgstr ""
 
+msgid "Tianjin Mahjong"
+msgstr ""
+
 msgid "Tile Color"
 msgstr ""
 
@@ -7686,6 +8058,9 @@ msgid "Toitoi"
 msgstr ""
 
 msgid "Tokyo Rules (beta)"
+msgstr ""
+
+msgid "Tokyo Rules (c. 1957)"
 msgstr ""
 
 msgid "Tokyo rules introduces the 1 han minimum, with 100 point riichi bets, dora, and dice providing bonus han."
@@ -8037,6 +8412,9 @@ msgstr ""
 msgid "Welcome to space mahjong! Let's get started by discarding this white dragon -- you'll soon see why."
 msgstr ""
 
+msgid "When any player discards a tile you can use to complete a triplet, you may call %{pon_name} to take that tile. Then it becomes your turn to discard."
+msgstr ""
+
 msgid "When any player discards a tile you can use to complete a triplet, you may call Pong to take that tile. Then it becomes your turn to discard."
 msgstr ""
 
@@ -8049,10 +8427,16 @@ msgstr ""
 msgid "When the gold tile is revealed, if it is your winning tile, you may instantly declare a win off it (Qiangjin)."
 msgstr ""
 
+msgid "When the player to your left discards a tile you can use to complete a 3 tile sequence, you may call %{chii_name} to take that tile instead of drawing."
+msgstr ""
+
 msgid "When the player to your left discards a tile you can use to complete a 3 tile sequence, you may call Chow to take that tile instead of drawing."
 msgstr ""
 
 msgid "When viewing the rules, you can hover/tap any tile to enlarge it."
+msgstr ""
+
+msgid "When you start a game, it will send a message saying \"Log ID:\" followed by a code. You can use this code at (main menu) > Logs to view a replay of this game afterwards."
 msgstr ""
 
 msgid "Wild Card Wait"
@@ -8107,6 +8491,12 @@ msgid "Win on Replacement Tile"
 msgstr ""
 
 msgid "Win on the fourth copy of a tile. The other three copies must be visible to all players (i.e. cannot be in your hand)."
+msgstr ""
+
+msgid "Win with five calls (so your hand is just one tile waiting for a pair)."
+msgstr ""
+
+msgid "Win with four calls (so your hand is just one tile waiting for a pair)."
 msgstr ""
 
 msgid "Win with the replacement tile drawn after calling a kong (not a flower). Does not stack with Self-Drawn (1 Fan), but does stack with Fully Concealed Hand (4 Fan)."
@@ -8249,6 +8639,9 @@ msgid "You are paid 2 points by each other player for declaring a concealed kong
 msgstr ""
 
 msgid "You are paid 2 points by the discarder for declaring an open kong."
+msgstr ""
+
+msgid "You called kan off on a kan replacement tile and won on _that_ tile."
 msgstr ""
 
 msgid "You can Kong this tile! As usual, calling kong gives you a replacement tile draw, and then it becomes your turn to discard. In Tianjin it is almost always beneficial to call Kong."
@@ -8548,6 +8941,9 @@ msgstr ""
 msgid "You have three wind triplets/kongs and a wind pair."
 msgstr ""
 
+msgid "You have triplets of three guest winds. This requires the round wind to match your seat wind."
+msgstr ""
+
 msgid "You have two concealed kongs. Concealed kongs are formed by drawing and declaring all four copies of a tile facedown."
 msgstr ""
 
@@ -8647,6 +9043,12 @@ msgstr ""
 msgid "You won with a seven-pair hand. Repeated pairs are allowed, and would award Tile Hog (2 Fan) per instance."
 msgstr ""
 
+msgid "You won with eight flowers."
+msgstr ""
+
+msgid "You won with seven flowers."
+msgstr ""
+
 msgid "You won with your first draw as non-dealer."
 msgstr ""
 
@@ -8657,6 +9059,24 @@ msgid "You're the first to play, so let's start by discarding this tile."
 msgstr ""
 
 msgid "You've also seen the 2x challenge button, which uses both challenge tokens at once, resulting in a 4x multiplier. Note that the dealer doesn't need tokens to Double Down."
+msgstr ""
+
+msgid "Your closed winning hand is 11223344556677 or 33445566778899 of bamboo."
+msgstr ""
+
+msgid "Your closed winning hand is 11223344556677 or 33445566778899 of characters."
+msgstr ""
+
+msgid "Your closed winning hand is 11223344556677 or 33445566778899 of circles."
+msgstr ""
+
+msgid "Your closed winning hand is 22334455667788 of bamboo."
+msgstr ""
+
+msgid "Your closed winning hand is 22334455667788 of characters."
+msgstr ""
+
+msgid "Your closed winning hand is 22334455667788 of circles."
 msgstr ""
 
 msgid "Your final score is multiplied by the number of times the dealership is kept without a nondealer winning. (min 1)"
@@ -8740,6 +9160,24 @@ msgstr ""
 msgid "Your hand has four closed triplets in hand, and you won by self-draw."
 msgstr ""
 
+msgid "Your hand has the pattern 111333555 in the same suit (doesn't have to start at 1)."
+msgstr ""
+
+msgid "Your hand has the pattern 111333555 in three different suits (doesn't have to start at 1)."
+msgstr ""
+
+msgid "Your hand has the pattern 111444777 in the same suit (doesn't have to start at 1)."
+msgstr ""
+
+msgid "Your hand has the pattern 111444777 in three different suits (doesn't have to start at 1)."
+msgstr ""
+
+msgid "Your hand has the pattern 111555999 in the same suit."
+msgstr ""
+
+msgid "Your hand has the pattern 111555999 in three different suits."
+msgstr ""
+
 msgid "Your hand is all honor tiles (ignoring flowers)."
 msgstr ""
 
@@ -8747,6 +9185,9 @@ msgid "Your hand is composed of tiles from the following (ignore flowers):"
 msgstr ""
 
 msgid "Your hand is concealed and is all one suit in the nine gates shape (1112345678999 + one extra tile)."
+msgstr ""
+
+msgid "Your hand must be closed."
 msgstr ""
 
 msgid "Your hand must score at least %{score} %{han} to win."
@@ -8765,6 +9206,9 @@ msgid "Your pair must not be a value pair (pair of dragons, round wind, or seat 
 msgstr ""
 
 msgid "Your standard hand (4 sets and a pair) includes five different kinds of groups. That is, you have five out of: pair, sequence, triplet, kontsu, kan, fuun."
+msgstr ""
+
+msgid "Your starting hand is made of 13 disconnected tiles, plus one forming a pair. Calls invalidate."
 msgstr ""
 
 msgid "Yumeno Maho"
@@ -8791,16 +9235,73 @@ msgstr ""
 msgid "Zung Jung"
 msgstr ""
 
+msgid "\\\"Bamboo Forest\\\". Your closed winning hand is 22334455667788 of bamboo."
+msgstr ""
+
+msgid "\\\"Big Wheels\\\". Your closed winning hand is 22334455667788 of circles."
+msgstr ""
+
+msgid "\\\"Consecutive Blossom\\\". You called kan off on a kan replacement tile and tsumoed _that_ rinshan tile. Does not stack with rinshan."
+msgstr ""
+
 msgid "\\\"Five Suits Collected\\\". Your standard hand (4 sets and a pair) includes all five suits (character, circle, bamboo, wind, dragon). Mixed triplets (kontsu) of winds and dragons can be used, but not mixed triplets of suited tiles."
+msgstr ""
+
+msgid "\\\"Five-Heart Straight\\\". %{value} %{han} on top of ittsuu if the winning tile is the five needed for ittsuu."
 msgstr ""
 
 msgid "\\\"Four Consecutive Triplets\\\". You have four triplets of the same suit of increasing number, like 111 222 333 444."
 msgstr ""
 
+msgid "\\\"Gathering a Plum Blossom from the Roof\\\". %{value} %{han} if you win with rinshan on %{tile}."
+msgstr ""
+
+msgid "\\\"Gathering a Plum Blossom from the Roof\\\". Mangan if you win with rinshan on %{tile}."
+msgstr ""
+
+msgid "\\\"Golden Rooster Steals Food\\\". 4 han instead of the usual 2 han if you win ketsupaihou by chankan -- that is, you robbed a kan with an edge or middle wait."
+msgstr ""
+
+msgid "\\\"Missing Tile\\\". Win with an edge or middle wait on a tile for which three copies are already publicly visible in discards. (Tiles in hand don't count.)"
+msgstr ""
+
+msgid "\\\"Numerous Numbers\\\". Your closed winning hand is 22334455667788 of characters."
+msgstr ""
+
+msgid "\\\"Plucking the Moon from the Bottom of the Sea\\\". %{value} %{han} if you win with haitei (not houtei) on %{tile}."
+msgstr ""
+
+msgid "\\\"Plucking the Moon from the Bottom of the Sea\\\". Mangan if you win with haitei (not houtei) on %{tile}."
+msgstr ""
+
 msgid "\\\"Pure Quadruple Sequences\\\". You have four of the exact same sequence in one suit, like 123m 123m 123m 123m. Like iipeikou but four."
 msgstr ""
 
+msgid "\\\"Pure Triple Sequences\\\". %{value} %{han} if you have three of the exact same sequence in one suit, like 123 123 123. Like iipeikou but three. +%{bonus} %{han} if closed. Does not stack with iipeikou (123 123) or sanrenkou (111 222 333)."
+msgstr ""
+
+msgid "\\\"Scratching a Carrying Pole\\\". %{value} %{han} if you win with chankan on %{tile}."
+msgstr ""
+
+msgid "\\\"Scratching a Carrying Pole\\\". Mangan if you win with chankan on %{tile}."
+msgstr ""
+
 msgid "\\\"Thirteen Independent\\\". Yakuman if you start with 14 disconnected tiles. Calls invalidate."
+msgstr ""
+
+msgid "\\\"Thirteen Unconnected\\\". Your starting hand is made of 13 disconnected tiles, plus one forming a pair. Calls invalidate."
+msgstr ""
+
+msgid "\\\"Three Guest Wind Triplets\\\". You have triplets of three guest winds. This requires the round wind to match your seat wind."
+msgstr ""
+
+msgid "\\\"Twelve Tiles Down\\\". Win with four calls (so your hand is just one tile waiting for a pair). Ankans are allowed."
+msgstr ""
+
+msgid "\\\"Twice Double Triplets\\\". The four sets in your hand form two pairs of double triplets. A double triplet is when you have two triplets of the same number in different suits, like 333m 333p."
+msgstr ""
+
+msgid "\\\"Twice Double Triplets\\\". The four sets in your hand form two pairs of double triplets. A double triplet is when you have two triplets of the same number in different suits, like 333m 333p. Stacks with toitoi."
 msgstr ""
 
 #, fuzzy
@@ -8832,6 +9333,9 @@ msgid "adds $diff chips to the payment for matching $diff tiles"
 msgstr ""
 
 msgid "advances to tier $tier for matching $diff distinct tiles"
+msgstr ""
+
+msgid "all_last"
 msgstr ""
 
 msgid "allow_kazoe"
@@ -9030,6 +9534,9 @@ msgstr ""
 msgid "golden_chun_shuugi"
 msgstr ""
 
+msgid "half"
+msgstr ""
+
 msgid "han"
 msgstr ""
 
@@ -9067,6 +9574,12 @@ msgid "has tsumo payments increased by 300 per 1000 bet (%{delta}) (Motouchi Nar
 msgstr ""
 
 msgid "however has $start_cages 8s (cages) in hand each protecting one bird from gunfire"
+msgstr ""
+
+msgid "ii_name"
+msgstr ""
+
+msgid "ii_value"
 msgstr ""
 
 msgid "immediate"
@@ -9282,6 +9795,9 @@ msgstr ""
 msgid "pin"
 msgstr ""
 
+msgid "pink"
+msgstr ""
+
 msgid "points"
 msgstr ""
 
@@ -9403,6 +9919,9 @@ msgstr ""
 msgid "true"
 msgstr ""
 
+msgid "tsumo"
+msgstr ""
+
 msgid "tsumo_chips"
 msgstr ""
 
@@ -9422,6 +9941,9 @@ msgid "was awarded %{payout} chips for placing third with %{points} points"
 msgstr ""
 
 msgid "west"
+msgstr ""
+
+msgid "win"
 msgstr ""
 
 msgid "win_on"
@@ -9455,10 +9977,19 @@ msgstr ""
 msgid "x2 fan multiplier if your winning hand contains the sequences 123 456 789 of the same suit as the wildcard. Stacks with Dragon."
 msgstr ""
 
+msgid "yaku"
+msgstr ""
+
+msgid "yakuman"
+msgstr ""
+
 msgid "yon_han"
 msgstr ""
 
 msgid "yon_list"
+msgstr ""
+
+msgid "yon_name"
 msgstr ""
 
 msgid "yon_value"

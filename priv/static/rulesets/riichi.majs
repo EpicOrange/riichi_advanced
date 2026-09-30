@@ -100,7 +100,7 @@ define_mod honba, name: "Honba", order: -1, desc: "Enables honba."
 config_mod honba, name: "value", values: [100, 500, 1000, 2000], default: 100
 define_mod nagashi, name: "Nagashi", order: -1, desc: "Enable nagashi mangan. When you discards are all terminals and honors at exhaustive draw, and none of your discards have been called, then you are paid mangan tsumo at draw."
 config_mod nagashi, name: "is", values: ["Mangan", "Haneman", "Baiman", "Sanbaiman", "Yakuman"]
-config_mod nagashi, name: "counts_as", values: ["tsumo", "draw"], default: "draw"
+config_mod nagashi, name: "counts_as", values: ["tsumo", "ryuukyoku"], default: "ryuukyoku"
 define_mod uma, name: "Uma", desc: "Enable uma. At the end of the game, points are awarded or deducted based on placement."
 config_mod uma, name: "_1st", values: [-30,-25,-20,-15,-10,-5,0,5,10,15,20,25,30], default: 10
 config_mod uma, name: "_2nd", values: [-30,-25,-20,-15,-10,-5,0,5,10,15,20,25,30], default: 5

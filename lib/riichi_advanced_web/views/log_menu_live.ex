@@ -71,12 +71,12 @@ defmodule RiichiAdvancedWeb.LogMenuLive do
         socket = push_navigate(socket, to: ~p"/log/#{log_id}?nickname=#{socket.assigns.nickname}&lang=#{socket.assigns.lang}")
         {:noreply, socket}
       else
-        socket = assign(socket, :error_message, "Log #{log_id} does not exist!")
+        socket = assign(socket, :error_message, t(socket.assigns.lang, "Log %{log_id} does not exist!", %{log_id: log_id}))
         socket = assign(socket, :log_id, log_id)
         {:noreply, socket}
       end
     else
-      socket = assign(socket, :error_message, "Invalid log id!")
+      socket = assign(socket, :error_message, t(socket.assigns.lang, "Invalid log id!"))
       {:noreply, socket}
     end
   end
