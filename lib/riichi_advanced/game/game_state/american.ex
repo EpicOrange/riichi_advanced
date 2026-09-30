@@ -312,10 +312,10 @@ defmodule RiichiAdvanced.GameState.American do
                             into: MapSet.new(), do: offset
           # we can then derive the base tiles to reify the match definition
           #   into something we can check the given hand/calls against
+          match_definition = match_definition
+          |> Enum.with_index()
+          |> Enum.sort_by(fn {[_groups, num], _i} -> num end)
           for base_tile <- MatchOld.collect_base_tiles(hand, calls, all_offsets, tile_behavior) do
-            match_definition = match_definition
-            |> Enum.with_index()
-            |> Enum.sort_by(fn {[_groups, num], _i} -> num end)
             for {[groups, num], orig_ix} <- match_definition, reduce: {hand, call_tiles, []} do
               {hand, calls, nil} -> {hand, calls, nil}
               {hand, calls, ret} ->
@@ -368,7 +368,7 @@ defmodule RiichiAdvanced.GameState.American do
                         # second phase: if the match failed, there are no more nonjokers to remove, so remove all jokers
                         # we removed i-1 nonjokers, so we need n-(i-1) jokers
                         n = length(List.wrap(Enum.at(groups, 0, []))) * num
-                        {:halt, Match.try_remove_all_tiles(hand, List.duplicate(:"1j", n-(i-1)), tile_behavior.aliases, tile_behavior.attrs) |> Enum.at(0)}
+                        {:halt, Match.try_remove_all_tiles(hand, List.duplicate(:"1j", n-(i-1)), anyless_tile_behavior.aliases, tile_behavior.attrs) |> Enum.at(0)}
                       end
                     end)
                     if new_hand != nil do
