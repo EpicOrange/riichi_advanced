@@ -110,7 +110,7 @@ define_button joker,
   show_when: our_turn
     and has_draw
     and not_just_discarded
-    and status_missing("initial_flowers", "just_called", "force_nfnl")
+    and status_missing("initial_flowers", "just_called")
     and match(["hand", "draw"], "any_joker")
   do
     big_text("Joker")

@@ -75,16 +75,6 @@ define_button start_flower,
     recalculate_buttons
   end
 
-# flowers must be discarded or replaced, cannot be kept in hand
-# 1) if you've previously discarded a flower/joker (status "forced_nfnl"), then all flowers must be discarded (for NFNL)
-# 2) if you've previously replaced a flower/joker (status "nfnl_eligible" missing), then all flowers must be replaced
-# 3) otherwise, you can do either
-
-# 1) discarding a flower forces flower discards from then on
-define_play_effect flower_or_joker do set_status("force_nfnl") end
-define_play_restriction not_flower_or_joker, status("force_nfnl") and match(["hand", "draw"], ["any_flower", "any_joker"])
-apply append, "buttons.flower.show_when", status_missing("force_nfnl")
-
-# 2) replacing a flower forces flower replacements from then on
+# replacing a flower forces flower replacements from then on
 define_play_restriction flower_or_joker, has_call_named("flower", "start_flower")
 apply set, "buttons.flower.unskippable", has_call_named("flower", "start_flower")
