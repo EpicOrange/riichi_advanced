@@ -390,7 +390,7 @@ defmodule RiichiAdvanced.ModLoader.ModState do
         end
         {name, config} = ModLoader.get_mod_name_config(mod)
         config = Map.new(config, fn {key, val} -> {if is_atom(key) do Atom.to_string(key) else key end, val} end)
-        {mod_contents, defs} = read_mod_jq_defs(name, defs)
+        {mod_contents, defs} = read_mod_jq_defs(name, %{defs | libs: MapSet.new()})
         defaults = Map.new(Enum.reverse(defs.vars))
         vars = Map.merge(defaults, config, fn _k, l, nil -> l; _k, _l, r -> r end)
         config_queries = for {key, val} <- vars,
