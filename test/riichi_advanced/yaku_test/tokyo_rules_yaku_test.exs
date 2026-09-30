@@ -149,8 +149,8 @@ defmodule RiichiAdvanced.YakuTest.TokyoRulesYaku do
       "starting_hand": {
         "east": ["2m", "2m", "2m", "3m", "3m", "3m", "4m", "4m", "4m", "2p", "3p", "5p", "5p"],
         "south": ["1m", "6m", "7m", "2p", "5p", "8p", "3s", "6s", "9s", "1z", "2z", "3z", "4z"],
-        "west": ["2m", "6m", "7m", "2p", "5p", "8p", "3s", "6s", "9s", "1z", "2z", "3z", "4z"],
-        "north": ["5m", "6m", "8m", "5p", "8p", "9p", "3s", "6s", "9s", "1z", "2z", "3z", "4z"]
+        "west": ["2m", "6m", "7m", "2p", "6p", "8p", "3s", "6s", "9s", "1z", "2z", "3z", "4z"],
+        "north": ["5m", "6m", "8m", "6p", "8p", "9p", "3s", "6s", "9s", "1z", "2z", "3z", "4z"]
       },
       "starting_draws": ["6z", "6z", "6z", "6z", "1p"]
     }
@@ -238,8 +238,8 @@ defmodule RiichiAdvanced.YakuTest.TokyoRulesYaku do
       "starting_hand": {
         "east": ["2m", "2m", "2m", "4m", "4m", "4m", "6m", "6m", "9m", "1p", "3p", "2z", "2z"],
         "south": ["1m", "6m", "7m", "2p", "5p", "8p", "3s", "6s", "9s", "1z", "2z", "3z", "4z"],
-        "west": ["2m", "6m", "7m", "2p", "5p", "8p", "3s", "6s", "9s", "1z", "2z", "3z", "4z"],
-        "north": ["5m", "6m", "8m", "5p", "8p", "9p", "3s", "6s", "9s", "1z", "2z", "3z", "4z"]
+        "west": ["2m", "3m", "7m", "2p", "5p", "8p", "3s", "6s", "9s", "1z", "2z", "3z", "4z"],
+        "north": ["5m", "7m", "8m", "5p", "8p", "9p", "3s", "6s", "9s", "1z", "3z", "3z", "4z"]
       },
       "starting_draws": ["6z", "6m", "2p"]
     }
@@ -265,8 +265,8 @@ defmodule RiichiAdvanced.YakuTest.TokyoRulesYaku do
       "starting_hand": {
         "east": ["1m", "1m", "1m", "4m", "4m", "4m", "7m", "7m", "9m", "1p", "3p", "2z", "2z"],
         "south": ["1m", "6m", "7m", "2p", "5p", "8p", "3s", "6s", "9s", "1z", "2z", "3z", "4z"],
-        "west": ["2m", "6m", "7m", "2p", "5p", "8p", "3s", "6s", "9s", "1z", "2z", "3z", "4z"],
-        "north": ["5m", "6m", "8m", "5p", "8p", "9p", "3s", "6s", "9s", "1z", "2z", "3z", "4z"]
+        "west": ["2m", "6m", "8m", "2p", "5p", "8p", "3s", "6s", "9s", "1z", "2z", "3z", "4z"],
+        "north": ["5m", "6m", "8m", "5p", "8p", "9p", "3s", "6s", "9s", "1z", "3z", "3z", "4z"]
       },
       "starting_draws": ["6z", "7m", "2p"]
     }
@@ -293,7 +293,7 @@ defmodule RiichiAdvanced.YakuTest.TokyoRulesYaku do
         "east": ["1m", "1m", "1m", "5m", "5m", "5m", "7m", "9m", "9m", "1p", "3p", "2z", "2z"],
         "south": ["1m", "6m", "7m", "2p", "5p", "8p", "3s", "6s", "9s", "1z", "2z", "3z", "4z"],
         "west": ["2m", "6m", "7m", "2p", "5p", "8p", "3s", "6s", "9s", "1z", "2z", "3z", "4z"],
-        "north": ["5m", "6m", "8m", "5p", "8p", "9p", "3s", "6s", "9s", "1z", "2z", "3z", "4z"]
+        "north": ["4m", "6m", "8m", "5p", "8p", "9p", "3s", "6s", "9s", "1z", "3z", "3z", "4z"]
       },
       "starting_draws": ["6z", "9m", "2p"]
     }
@@ -319,8 +319,8 @@ defmodule RiichiAdvanced.YakuTest.TokyoRulesYaku do
       "starting_hand": {
         "east": ["2m", "2m", "2m", "4p", "4p", "4p", "6s", "6s", "9s", "2p", "2p", "2z", "2z"],
         "south": ["1m", "6m", "7m", "2p", "5p", "8p", "3s", "5s", "8s", "1z", "2z", "3z", "4z"],
-        "west": ["2m", "6m", "7m", "2p", "5p", "8p", "3s", "5s", "8s", "1z", "2z", "3z", "4z"],
-        "north": ["5m", "6m", "8m", "5p", "8p", "9p", "3s", "5s", "8s", "1z", "2z", "3z", "4z"]
+        "west": ["2m", "6m", "7m", "3p", "5p", "8p", "3s", "5s", "8s", "1z", "2z", "3z", "4z"],
+        "north": ["5m", "6m", "8m", "5p", "8p", "9p", "3s", "5s", "8s", "1z", "3z", "3z", "4z"]
       },
       "starting_draws": ["6z", "6s", "2p"]
     }

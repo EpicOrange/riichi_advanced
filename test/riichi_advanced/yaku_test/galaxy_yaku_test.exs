@@ -9,7 +9,7 @@ defmodule RiichiAdvanced.YakuTest.GalaxyYaku do
         "east": ["2m", "3m", "14m", "14p", "5m", "6m", "7p", "7p", "17m", "5z", "16z", "1z", "14z"],
         "south": ["1m", "4m", "7m", "2p", "5p", "8p", "3s", "6s", "9s", "5z", "2z", "3z", "4z"],
         "west": ["1m", "4m", "7m", "2p", "5p", "8p", "3s", "6s", "9s", "5z", "2z", "3z", "4z"],
-        "north": ["1m", "3m", "7m", "2p", "5p", "8p", "3s", "6s", "9s", "1z", "2z", "3z", "4z"]
+        "north": ["1m", "3m", "7m", "2p", "4p", "8p", "3s", "6s", "9s", "1z", "2z", "3z", "4z"]
       },
       "starting_draws": ["3p", "1z"]
     }
@@ -32,7 +32,7 @@ defmodule RiichiAdvanced.YakuTest.GalaxyYaku do
         "east": ["2m", "3m", "4m", "4m", "5m", "6m", "7p", "7p", "7p", "8s", "8s", "15z", "16z"],
         "south": ["1m", "2m", "7m", "2p", "5p", "8p", "3s", "6s", "9s", "2z", "3z", "4z", "7z"],
         "west": ["1m", "2m", "7m", "2p", "5p", "8p", "3s", "6s", "9s", "2z", "3z", "4z", "7z"],
-        "north": ["1m", "3m", "7m", "2p", "5p", "8p", "3s", "6s", "9s", "2z", "3z", "4z", "7z"]
+        "north": ["1m", "3m", "7m", "2p", "4p", "8p", "3s", "6s", "9s", "2z", "3z", "4z", "7z"]
       },
       "starting_draws": ["1z", "17z"]
     }
@@ -61,7 +61,7 @@ defmodule RiichiAdvanced.YakuTest.GalaxyYaku do
         "east": ["2m", "3m", "4m", "4m", "5m", "6m", "7p", "7p", "7p", "8s", "8s", "12z", "13z"],
         "south": ["1m", "4m", "7m", "2p", "5p", "8p", "3s", "6s", "9s", "1z", "2z", "3z", "4z"],
         "west": ["1m", "3m", "7m", "2p", "5p", "8p", "3s", "6s", "9s", "1z", "2z", "3z", "4z"],
-        "north": ["1m", "3m", "7m", "2p", "5p", "8p", "3s", "6s", "9s", "1z", "2z", "3z", "4z"]
+        "north": ["1m", "3m", "7m", "2p", "4p", "8p", "3s", "6s", "9s", "1z", "2z", "3z", "4z"]
       },
       "starting_draws": ["5z", "14z"]
     }
@@ -84,7 +84,7 @@ defmodule RiichiAdvanced.YakuTest.GalaxyYaku do
         "east": ["2m", "3m", "4m", "4m", "5m", "6m", "7p", "7p", "7p", "8s", "8s", "12z", "13z"],
         "south": ["1m", "2m", "7m", "2p", "5p", "8p", "3s", "6s", "9s", "2z", "3z", "4z", "7z"],
         "west": ["1m", "2m", "7m", "2p", "5p", "8p", "3s", "6s", "9s", "2z", "3z", "4z", "7z"],
-        "north": ["1m", "3m", "7m", "2p", "5p", "8p", "3s", "6s", "9s", "2z", "3z", "4z", "7z"]
+        "north": ["1m", "3m", "7m", "2p", "4p", "8p", "3s", "6s", "9s", "2z", "3z", "4z", "7z"]
       },
       "starting_draws": ["14z", "1z"]
     }
@@ -101,7 +101,7 @@ defmodule RiichiAdvanced.YakuTest.GalaxyYaku do
         "east": ["1m", "4m", "7m", "2p", "5p", "8p", "3s", "6s", "9s", "1z", "2z", "3z", "4z"],
         "south": ["13m", "14m", "18m", "19m", "12p", "15p", "16p", "17p", "11s", "18s", "14s", "15z", "16z"],
         "west": ["1m", "4m", "7m", "2p", "5p", "8p", "3s", "6s", "9s", "1z", "2z", "3z", "4z"],
-        "north": ["1m", "3m", "7m", "2p", "5p", "8p", "3s", "6s", "9s", "1z", "2z", "3z", "4z"]
+        "north": ["1m", "3m", "7m", "2p", "4p", "8p", "3s", "6s", "9s", "1z", "2z", "3z", "4z"]
       },
       "starting_draws": ["9p", "19p"]
     }
@@ -123,7 +123,7 @@ defmodule RiichiAdvanced.YakuTest.GalaxyYaku do
         "east": ["2m", "12m", "6p", "16m", "4s", "14m", "7p", "7p", "9p", "8s", "8s", "1z", "1z"],
         "south": ["1m", "2m", "7m", "2p", "5p", "8p", "3s", "6s", "9s", "2z", "3z", "4z", "7z"],
         "west": ["1m", "2m", "7m", "2p", "5p", "8p", "3s", "6s", "9s", "2z", "3z", "4z", "7z"],
-        "north": ["1m", "3m", "7m", "2p", "5p", "8p", "3s", "6s", "9s", "2z", "3z", "4z", "7z"]
+        "north": ["1m", "3m", "7m", "2p", "4p", "8p", "3s", "6s", "9s", "2z", "3z", "4z", "7z"]
       },
       "starting_draws": ["14z", "9p"]
     }
@@ -148,7 +148,7 @@ defmodule RiichiAdvanced.YakuTest.GalaxyYaku do
   #       "east": ["12m", "13m", "14m", "16m", "18m", "16p", "18p", "12s", "13s", "14s", "16s", "18s", "16z"],
   #       "south": ["1m", "4m", "7m", "2p", "5p", "8p", "3s", "6s", "9s", "1z", "2z", "3z", "4z"],
   #       "west": ["1m", "4m", "7m", "2p", "5p", "8p", "3s", "6s", "9s", "1z", "2z", "3z", "4z"],
-  #       "north": ["1m", "3m", "7m", "2p", "5p", "8p", "3s", "6s", "9s", "1z", "2z", "3z", "4z"]
+  #       "north": ["1m", "3m", "7m", "2p", "4p", "8p", "3s", "6s", "9s", "1z", "2z", "3z", "4z"]
   #     },
   #     "starting_draws": ["17z"]
   #   }
@@ -170,7 +170,7 @@ defmodule RiichiAdvanced.YakuTest.GalaxyYaku do
   #       "east": ["11m", "19m", "11p", "19p", "11s", "19s", "11z", "12z", "13z", "14z", "15z", "16z", "17z"],
   #       "south": ["1m", "4m", "7m", "2p", "5p", "8p", "3s", "6s", "9s", "5z", "2z", "3z", "4z"],
   #       "west": ["1m", "4m", "7m", "2p", "5p", "8p", "3s", "6s", "9s", "1z", "2z", "3z", "4z"],
-  #       "north": ["1m", "3m", "7m", "2p", "5p", "8p", "3s", "6s", "9s", "1z", "2z", "3z", "4z"]
+  #       "north": ["1m", "3m", "7m", "2p", "4p", "8p", "3s", "6s", "9s", "1z", "2z", "3z", "4z"]
   #     },
   #     "starting_draws": ["1z"]
   #   }

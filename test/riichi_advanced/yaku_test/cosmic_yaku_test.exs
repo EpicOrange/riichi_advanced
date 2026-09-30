@@ -437,7 +437,7 @@ defmodule RiichiAdvanced.YakuTest.CosmicYaku do
     {
       "starting_hand": {
         "east": ["1m", "1p", "1s", "5m", "5p", "5s", "5z", "6z", "7z", "2z", "3z", "4z", "6p"],
-        "south": ["1m", "4m", "7m", "2p", "5p", "8p", "3s", "6s", "9s", "1z", "2z", "3z", "4z"],
+        "south": ["1m", "4m", "7m", "2p", "4p", "8p", "3s", "6s", "9s", "1z", "2z", "3z", "4z"],
         "west": ["1m", "4m", "7m", "2p", "5p", "8p", "3s", "6s", "9s", "1z", "2z", "3z", "4z"],
         "north": ["1m", "3m", "7m", "2p", "5p", "8p", "3s", "6s", "9s", "1z", "2z", "3z", "4z"]
       },
@@ -460,7 +460,7 @@ defmodule RiichiAdvanced.YakuTest.CosmicYaku do
     {
       "starting_hand": {
         "east": ["1m", "1p", "1s", "5m", "5p", "5s", "5z", "6z", "1z", "2z", "3z", "4z", "6p"],
-        "south": ["1m", "4m", "7m", "2p", "5p", "8p", "3s", "6s", "9s", "1z", "2z", "3z", "4z"],
+        "south": ["1m", "4m", "7m", "2p", "4p", "8p", "3s", "6s", "9s", "1z", "2z", "3z", "4z"],
         "west": ["1m", "4m", "7m", "2p", "5p", "8p", "3s", "6s", "9s", "1z", "2z", "3z", "4z"],
         "north": ["1m", "3m", "7m", "2p", "5p", "8p", "3s", "6s", "9s", "1z", "2z", "3z", "4z"]
       },
@@ -584,7 +584,7 @@ defmodule RiichiAdvanced.YakuTest.CosmicYaku do
     {
       "starting_hand": {
         "east": ["1m", "1p", "1s", "1m", "1p", "1s", "1m", "1p", "1s", "7z", "7z", "5p", "7p"],
-        "south": ["2m", "4m", "7m", "2p", "5p", "8p", "3s", "6s", "9s", "1z", "2z", "3z", "4z"],
+        "south": ["2m", "4m", "7m", "2p", "4p", "8p", "3s", "6s", "9s", "1z", "2z", "3z", "4z"],
         "west": ["2m", "4m", "7m", "2p", "5p", "8p", "3s", "6s", "9s", "1z", "2z", "3z", "4z"],
         "north": ["2m", "3m", "7m", "2p", "5p", "8p", "3s", "6s", "9s", "1z", "2z", "3z", "4z"]
       },
@@ -933,7 +933,7 @@ defmodule RiichiAdvanced.YakuTest.CosmicYaku do
     {
       "starting_hand": {
         "east": ["2s", "2p", "1z", "5p", "5p", "5p", "4s", "1z", "2z", "3z", "4z", "7z", "7z"],
-        "south": ["1m", "4m", "7m", "2p", "6p", "8p", "1s", "2s", "3s", "5s", "7s", "8s", "9s"],
+        "south": ["1m", "4m", "7m", "2p", "6p", "8p", "1s", "2s", "3s", "4s", "7s", "8s", "9s"],
         "west": ["1m", "4m", "7m", "2p", "6p", "8p", "1s", "2s", "3s", "5s", "7s", "8s", "9s"],
         "north": ["1m", "3m", "7m", "2p", "6p", "8p", "1s", "2s", "3s", "5s", "7s", "8s", "9s"]
       },

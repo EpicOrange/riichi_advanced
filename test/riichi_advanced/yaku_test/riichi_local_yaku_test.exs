@@ -11,12 +11,12 @@ defmodule RiichiAdvanced.YakuTest.RiichiLocalYaku do
         "west": ["2m", "4m", "7m", "2p", "5p", "8p", "3s", "6s", "9s", "1z", "2z", "3z", "4z"],
         "north": ["2m", "4m", "8m", "5p", "8p", "9p", "3s", "6s", "9s", "1z", "2z", "3z", "4z"]
       },
-      "starting_draws": ["2p", "3p", "3p", "3m", "3p", "2s", "4p", "5m"]
+      "starting_draws": ["2p", "3p", "4p", "3m", "3p", "2s", "4p", "5m"]
     }
     """, [
       %{"type" => "discard", "tile" => "2p", "player" => 0, "tsumogiri" => true},
       %{"type" => "discard", "tile" => "3p", "player" => 1, "tsumogiri" => true},
-      %{"type" => "discard", "tile" => "3p", "player" => 2, "tsumogiri" => true},
+      %{"type" => "discard", "tile" => "4p", "player" => 2, "tsumogiri" => true},
       %{"type" => "discard", "tile" => "3m", "player" => 3, "tsumogiri" => true},
       %{"type" => "buttons_pressed", "buttons" => [%{"button" => "chii"}, nil, nil, nil]},
       %{"type" => "discard", "tile" => "7z", "player" => 0, "tsumogiri" => false},

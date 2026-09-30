@@ -140,12 +140,12 @@ defmodule RiichiAdvanced.RiichiMechanicsTest do
         "east": ["1s", "2s", "3s", "4s", "5s", "6s", "4s", "5s", "6s", "9s", "9s", "9s", "9s"],
         "west": ["1s", "2s", "3s", "1s", "2s", "3s", "1s", "2s", "3s", "4s", "7s", "8s", "8s"]
       },
-      "starting_draws": ["4s", "5s", "5s", "6s", "6s", "7s", "7s", "7s", "8s", "8s"]
+      "starting_draws": ["4s", "5s", "0s", "6s", "6s", "7s", "7s", "7s", "8s", "8s"]
     }
     """, [
       %{"type" => "discard", "tile" => "4s", "player" => 0, "tsumogiri" => true},
       %{"type" => "discard", "tile" => "5s", "player" => 2, "tsumogiri" => true},
-      %{"type" => "discard", "tile" => "5s", "player" => 0, "tsumogiri" => true},
+      %{"type" => "discard", "tile" => "0s", "player" => 0, "tsumogiri" => true},
       %{"type" => "discard", "tile" => "6s", "player" => 2, "tsumogiri" => true},
       %{"type" => "discard", "tile" => "6s", "player" => 0, "tsumogiri" => true},
       %{"type" => "discard", "tile" => "7s", "player" => 2, "tsumogiri" => true},
@@ -163,12 +163,12 @@ defmodule RiichiAdvanced.RiichiMechanicsTest do
         "east": ["1s", "2s", "3s", "4s", "5s", "6s", "4s", "5s", "6s", "9s", "9s", "9s", "9s"],
         "west": ["1s", "2s", "3s", "1s", "2s", "3s", "1s", "2s", "3s", "4s", "7s", "8s", "8s"]
       },
-      "starting_draws": ["4s", "5s", "5s", "6s", "6s", "7s", "7s", "7s", "8s", "8s"]
+      "starting_draws": ["4s", "5s", "0s", "6s", "6s", "7s", "7s", "7s", "8s", "8s"]
     }
     """, [
       %{"type" => "discard", "tile" => "4s", "player" => 0, "tsumogiri" => true},
       %{"type" => "discard", "tile" => "5s", "player" => 2, "tsumogiri" => true},
-      %{"type" => "discard", "tile" => "5s", "player" => 0, "tsumogiri" => true},
+      %{"type" => "discard", "tile" => "0s", "player" => 0, "tsumogiri" => true},
       %{"type" => "discard", "tile" => "6s", "player" => 2, "tsumogiri" => true},
       %{"type" => "discard", "tile" => "6s", "player" => 0, "tsumogiri" => true},
       %{"type" => "discard", "tile" => "7s", "player" => 2, "tsumogiri" => true},

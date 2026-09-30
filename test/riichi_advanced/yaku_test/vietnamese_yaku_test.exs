@@ -656,7 +656,7 @@ defmodule RiichiAdvanced.YakuTest.VietnameseYaku do
     {
       "starting_hand": {
         "east": ["6j", "3m", "4m", "4m", "7m", "9m", "7p", "7p", "8j", "5s", "6s", "6z", "6z"],
-        "south": ["1m", "4m", "7m", "2p", "5p", "8p", "3s", "7s", "9s", "1z", "2z", "3z", "4z"],
+        "south": ["1m", "4m", "7m", "2p", "5p", "8p", "3s", "6s", "9s", "1z", "2z", "3z", "4z"],
         "west": ["1m", "4m", "7m", "2p", "5p", "8p", "3s", "7s", "9s", "0z", "2z", "3z", "4z"],
         "north": ["1m", "3m", "7m", "2p", "5p", "8p", "3s", "7s", "9s", "0z", "2z", "4s", "4s"]
       },
@@ -701,7 +701,7 @@ defmodule RiichiAdvanced.YakuTest.VietnameseYaku do
         "west": ["1m", "4m", "7m", "2p", "5p", "8p", "3s", "7s", "9s", "0z", "2z", "3z", "4z"],
         "north": ["1m", "3m", "7m", "2p", "5p", "8p", "3s", "7s", "9s", "0z", "2z", "4s", "4s"]
       },
-      "starting_draws": ["1p", "4s", "2s", "3p", "1p", "4s", "5s", "5s", "1f", "6s", "7s", "8s", "7j"]
+      "starting_draws": ["1p", "4s", "2s", "3p", "1p", "4s", "5s", "5s", "1f", "6s", "7s", "8s", "2j"]
     }
     """, [
       %{"type" => "buttons_pressed", "buttons" => [%{"button" => "start_no_flower"}, nil, nil, nil]},
@@ -720,7 +720,7 @@ defmodule RiichiAdvanced.YakuTest.VietnameseYaku do
       %{"type" => "discard", "tile" => "6s", "player" => 1, "tsumogiri" => true},
       %{"type" => "discard", "tile" => "7s", "player" => 2, "tsumogiri" => true},
       %{"type" => "discard", "tile" => "8s", "player" => 3, "tsumogiri" => true},
-      %{"type" => "discard", "tile" => "7j", "player" => 0, "tsumogiri" => true},
+      %{"type" => "discard", "tile" => "2j", "player" => 0, "tsumogiri" => true},
     ], :no_winners)
   end
 
@@ -728,8 +728,8 @@ defmodule RiichiAdvanced.YakuTest.VietnameseYaku do
     TestUtils.test_yaku_advanced("vietnamese", [], [], """
     {
       "starting_hand": {
-        "east": ["6j", "3m", "4m", "4m", "7m", "9m", "7p", "7p", "8j", "5s", "6s", "7j", "6z"],
-        "south": ["1m", "4m", "7m", "2p", "5p", "8p", "3s", "7s", "9s", "1z", "2z", "3z", "4z"],
+        "east": ["6j", "3m", "4m", "4m", "7m", "9m", "7p", "7p", "8j", "5s", "6s", "7s", "6z"],
+        "south": ["1m", "4m", "7m", "2p", "5p", "8p", "3s", "6s", "9s", "1z", "2z", "3z", "4z"],
         "west": ["1m", "4m", "7m", "2p", "5p", "8p", "3s", "7s", "9s", "0z", "2z", "3z", "4z"],
         "north": ["1m", "3m", "7m", "2p", "5p", "8p", "3s", "7s", "9s", "0z", "2z", "4s", "4s"]
       },

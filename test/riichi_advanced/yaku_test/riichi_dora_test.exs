@@ -213,8 +213,8 @@ defmodule RiichiAdvanced.YakuTest.RiichiDoraTest do
         "west": ["1m", "2m", "7m", "2p", "5p", "8p", "3s", "6s", "9s", "1z", "2z", "3z", "4z"],
         "north": ["1m", "2m", "7m", "2p", "5p", "8p", "3s", "6s", "9s", "1z", "2z", "3z", "4z"]
       },
-      "starting_draws": ["1z", "7z"],
-      "starting_dead_wall": ["7s", "7z", "4z", "5z", "8m", "5z", "4m"]
+      "starting_draws": ["1z", "5m", "7z"],
+      "starting_dead_wall": ["7s", "7z", "4z", "5z", "8m", "5z", "3m"]
     }
     """, [
       %{"type" => "discard", "tile" => "1z", "player" => 0, "tsumogiri" => true},
