@@ -72,13 +72,13 @@ defmodule RiichiAdvanced.GameState.Scoring do
     excluded_lists = if exclude_extra_yaku? do
       Rules.get(state.rules_ref, "score_calculation", %{})
       |> Map.get("extra_yaku_lists", [])
-      |> MapSet.new()
-    else MapSet.new() end
+      |> Map.new(&{&1, "excluded_lists"})
+    else %{} end
 
     {acc, existing_yaku, _skips, _clause_cache} = for yaku <- yakus, reduce: {[], [], excluded_lists, %{}} do
       {acc, existing_yaku, skips, clause_cache} ->
         debug = yaku["display_name"] in Debug.debug_specific_yaku()
-        if yaku.key not in skips and yaku.list_name not in skips do
+        unless Map.has_key?(skips, yaku.key) or Map.has_key?(skips, yaku.list_name) do
           if Debug.debug_yaku_precedence() do
             IO.puts("Evaluating yaku #{yaku["display_name"]}")
           end
@@ -87,17 +87,18 @@ defmodule RiichiAdvanced.GameState.Scoring do
           {result, clause_cache} = Conditions.cached_check_cnf_condition(state, yaku["when"], context, clause_cache, debug_label)
           # result = Conditions.check_cnf_condition(state, yaku["when"], context)
           if result do
-            new_skips = skips
-            |> MapSet.union(Map.get(yaku_skip_map, yaku.key, MapSet.new()))
-            |> MapSet.union(Map.get(yaku_skip_map, yaku.list_name, MapSet.new()))
             %{"display_name" => name, "value" => value} = yaku
+            new_skips = skips
+            |> Map.merge(Map.get(yaku_skip_map, yaku.key, MapSet.new()) |> Map.new(&{&1, name}))
+            |> Map.merge(Map.get(yaku_skip_map, yaku.list_name, MapSet.new()) |> Map.new(&{&1, name}))
             if debug do IO.puts("Yaku #{inspect(yaku.key)}: passed all checks") end
-            if yaku.key in new_skips or yaku.list_name in new_skips do
+            if Map.has_key?(new_skips, yaku.key) or Map.has_key?(new_skips, yaku.list_name) do
               {acc, existing_yaku, new_skips, clause_cache} # we override ourselves
             else
               value = value
               |> Enum.chunk_every(2)
               |> Enum.flat_map(fn [amt, type] -> [Actions.interpret_amount(state, context, amt) |> Utils.try_integer(), type] end)
+              if debug and yaku["value"] != value do IO.puts("Yaku #{name} value #{inspect(yaku["value"])} evaluated to #{inspect(value)}") end
               {[yaku | acc], [{name, value} | existing_yaku], new_skips, clause_cache}
             end
           else
@@ -117,20 +118,30 @@ defmodule RiichiAdvanced.GameState.Scoring do
           end
         else
           if yaku["display_name"] in Debug.debug_specific_yaku() or Debug.debug_yaku_precedence() do
-            if yaku.key in skips do
-              IO.puts("Yaku #{inspect(yaku.key)}: skipped due to precedence by name (current yaku: #{Enum.map_join(acc, ",", &Map.get(&1, "display_name"))})")
-            else # yaku.list_name in skips
-              IO.puts("Yaku #{inspect(yaku.key)}: skipped due to precedence by list #{inspect(yaku.list_name)} (current yaku: #{Enum.map_join(acc, ",", &Map.get(&1, "display_name"))})")
+            cond do
+              Map.has_key?(skips, yaku.key)       -> IO.puts("Yaku #{inspect(yaku.key)}: skipped due to precedence by key #{inspect(Map.get(skips, yaku.key))} (current yaku: #{Enum.map_join(acc, ",", &Map.get(&1, "display_name"))})")
+              Map.has_key?(skips, yaku.list_name) -> IO.puts("Yaku #{inspect(yaku.key)}: skipped due to precedence by list #{inspect(Map.get(skips, yaku.list_name))} (current yaku: #{Enum.map_join(acc, ",", &Map.get(&1, "display_name"))})")
             end
           end
           {acc, existing_yaku, skips, clause_cache}
         end
     end
     # since the graph might contain cycles, we need to do a second removal pass
-    all_skipped_keys = Enum.flat_map(acc, &Map.get(yaku_skip_map, &1.key, [])) |> MapSet.new()
-    acc
-    |> Enum.zip(existing_yaku)
-    |> Enum.reject(fn {yaku, _ret} -> yaku.key in all_skipped_keys end)
+    all_skipped_keys = Enum.flat_map(acc, &MapSet.union(Map.get(yaku_skip_map, &1.key, MapSet.new()), Map.get(yaku_skip_map, &1.list_name, MapSet.new()))) |> MapSet.new()
+    Enum.zip(acc, existing_yaku)
+    |> Enum.reject(fn {yaku, {name, value}} ->
+          has_key = yaku.key in all_skipped_keys
+          has_name = name in all_skipped_keys
+          has_value = value in all_skipped_keys or Enum.any?(value, & &1 in all_skipped_keys)
+          do_reject = has_key or has_name or has_value
+          debug = yaku["display_name"] in Debug.debug_specific_yaku()
+          if debug and do_reject do
+            if has_key do IO.puts("Yaku #{inspect(yaku.key)}: removed in second pass due to key #{inspect(yaku.key)} (prev yaku: #{Enum.map_join(acc, ",", &Map.get(&1, "display_name"))})") end
+            if has_name do IO.puts("Yaku #{inspect(yaku.key)}: removed in second pass due to name #{name} (prev yaku: #{Enum.map_join(acc, ",", &Map.get(&1, "display_name"))})") end
+            if has_value do IO.puts("Yaku #{inspect(yaku.key)}: removed in second pass due to value #{inspect(value)} (prev yaku: #{Enum.map_join(acc, ",", &Map.get(&1, "display_name"))})") end
+          end
+          do_reject
+        end)
     |> Enum.sort_by(fn {yaku, _ret} -> yaku.ix end)
     |> Enum.map(fn {_yaku, ret} -> ret end)
   end

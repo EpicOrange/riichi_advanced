@@ -14,7 +14,6 @@
     "value": [5, "Han"],
     "when": [
       {"name": "not_has_points", "opts": [5]},
-      {"name": "has_existing_yaku", "opts": ["Honitsu"]},
       [
         [{"name": "winning_hand_consists_of", "opts": ["1m","2m","3m","4m","5m","6m","7m","8m","9m","1z","2z","3z","4z","5z","6z","7z"]}, {"name": "has_existing_yaku", "opts": ["Chun"]}],
         [{"name": "winning_hand_consists_of", "opts": ["1p","2p","3p","4p","5p","6p","7p","8p","9p","1z","2z","3z","4z","5z","6z","7z"]}, {"name": "has_existing_yaku", "opts": ["Hatsu"]}],
