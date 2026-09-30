@@ -1,0 +1,33 @@
+def try_flip_wild do
+  load_revealed_tiles
+  reveal_tile("$pos")
+  copy_tiles(%{wall: ["$pos"]}, %{atop_wall: ["$atop"]})
+  add_attr(["$pos"], ["_skip_draw", "_hidden"])
+end
+def finalize_wild do
+  load_revealed_tiles
+  reveal_tile("$pos")
+  tag_tiles("wild", "$pos")
+  add_attr_tagged("wild", ["_dora", "wild"])
+  set_tile_alias_all([%{tile: "any", attrs: ["wild"]}], ["any"])
+end
+
+on after_start do
+  save_revealed_tiles
+  pos = -2
+  atop = -2
+  # try 8 times, give up otherwise
+  # the chance to draw 8 of the 36 flowers in the 144 tile wall is given by:
+  #   8C36 / 8C188 = about 8e-6
+  # which should be rare enough
+  try_flip_wild(%{pos: "pos", atop: "atop"})
+  if match(["revealed_tiles"], ["any_flower"]) do pos -= 2; atop -= 1; try_flip_wild(%{pos: "pos", atop: "atop"})
+  if match(["revealed_tiles"], ["any_flower"]) do pos -= 2; atop -= 1; try_flip_wild(%{pos: "pos", atop: "atop"})
+  if match(["revealed_tiles"], ["any_flower"]) do pos -= 2; atop -= 1; try_flip_wild(%{pos: "pos", atop: "atop"})
+  if match(["revealed_tiles"], ["any_flower"]) do pos -= 2; atop -= 1; try_flip_wild(%{pos: "pos", atop: "atop"})
+  if match(["revealed_tiles"], ["any_flower"]) do pos -= 2; atop -= 1; try_flip_wild(%{pos: "pos", atop: "atop"})
+  if match(["revealed_tiles"], ["any_flower"]) do pos -= 2; atop -= 1; try_flip_wild(%{pos: "pos", atop: "atop"})
+  if match(["revealed_tiles"], ["any_flower"]) do pos -= 2; atop -= 1; try_flip_wild(%{pos: "pos", atop: "atop"})
+  end end end end end end end
+  unless match(["revealed_tiles"], ["any_flower"]) do finalize_wild(%{pos: "pos", atop: "atop"}) end
+end

@@ -150,6 +150,7 @@ set max_rounds, 4
 define_mod_category "Filipino"
 define_mod "lib/yaku/double_dice_roll", name: "Double Dice Roll", desc: "If the dice rolls a double, the resulting payout is doubled."
 config_mod "lib/yaku/double_dice_roll", name: "scoring_key", values: ["win"]
+define_mod "lib/filipino_jokers", name: "Jokers", desc: "At the beginning of every round, tiles are flipped on the wall until a non-flower tile is flipped. The three other copies of that tile act as jokers (wildcards) for this round."
 define_mod filipino_visayan, name: "Visayan Rules", desc: "Play with the Visayan variant rules where you can declare dragon sequences and NEWS."
 
 apply set_append, "default_mods", ["lib/yaku/double_dice_roll"]

@@ -911,7 +911,7 @@ defmodule RiichiAdvanced.GameState do
     end
   end
   
-  def from_named_tile(state, context, tile_name) do
+  def from_named_tile(state, context \\ %{}, tile_name) do
     cond do
       tile_name == "tile" -> context.tile
       tile_name == "tile2" -> context.tile2
@@ -927,7 +927,7 @@ defmodule RiichiAdvanced.GameState do
           and Map.has_key?(context, :seat)
           and Map.has_key?(state.players[context.seat].counters, tile_name) ->
         Enum.at(state.dead_wall, state.players[context.seat].counters[tile_name])
-      is_integer(tile_name) -> Enum.at(state.dead_wall, tile_name)
+      is_integer(tile_name) -> Enum.at(state.dead_wall, tile_name, Enum.at(state.wall, tile_name + length(state.dead_wall)))
       is_atom(tile_name) -> tile_name
       true ->
         IO.puts("Unknown tile name #{inspect(tile_name)}")
@@ -955,16 +955,7 @@ defmodule RiichiAdvanced.GameState do
   end
 
   def get_revealed_tiles(state) do
-    for tile_spec <- state.revealed_tiles, reduce: [] do
-      result ->
-        cond do
-          is_integer(tile_spec)    -> [Enum.at(state.dead_wall, tile_spec, :"1x") | result]
-          Utils.is_tile(tile_spec) -> [Utils.to_tile(tile_spec) | result]
-          true                     ->
-            GenServer.cast(self(), {:show_error, "Unknown revealed tile spec: #{inspect(tile_spec)}"})
-            result
-        end
-    end |> Enum.reverse()
+    Enum.map(state.revealed_tiles, &from_named_tile(state, &1))
   end
 
   def get_scryed_tiles(state, seat) do

@@ -495,7 +495,7 @@ defmodule RiichiAdvanced.Constants do
     {"vietnamese",   "Vietnamese", "Mahjong with eight differently powerful joker tiles."},
     {"malaysian",    "Malaysian", "Three-player mahjong with 16 flowers, a unique joker tile, and instant payouts."},
     {"singaporean",  "Singaporean", "Mahjong with various instant payouts and various unique ways to get penalized by pao."},
-    {"filipino",     "Filipino (beta)", "16-tile mahjong where all honor tiles are flower tiles."},
+    {"filipino",     "Filipino", "16-tile mahjong where all honor tiles are flower tiles."},
     {"classical",    "Chinese Classical", "Mahjong but every pung and kong gives you points, and every hand pattern doubles your points."},
     {"fuzhou",       "Fuzhou", "16-tile mahjong with a version of dora that doesn't give you han, but becomes a unique winning condition by itself."},
     {"tianjin",      "Tianjin", "Mahjong except the dora indicator actually indicates joker tiles."},

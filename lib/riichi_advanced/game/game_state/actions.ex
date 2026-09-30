@@ -169,6 +169,7 @@ defmodule RiichiAdvanced.GameState.Actions do
                 length(state.wall) == 1         -> {[], state.wall}
                 true                            -> with {wall, [tile1, tile2]} <- Enum.split(state.wall, -2) do {wall ++ [tile2], [tile1]} end
               end
+              # IO.inspect({state.dead_wall_index, Enum.take(state.wall, -6), state.dead_wall, state.revealed_tiles, get_revealed_tiles(state)})
               dead_wall = if rem(length(state.dead_wall), 2) == 0 do
                 [tile | state.dead_wall]
               else List.insert_at(state.dead_wall, 1, tile) end
@@ -176,6 +177,8 @@ defmodule RiichiAdvanced.GameState.Actions do
               |> Map.put(:wall, wall)
               |> Map.put(:dead_wall, dead_wall)
               |> draw_tile(seat, num, tile_spec, to_aside)
+              # also need to shift revealed tiles that are on the edge
+              |> Map.update!(:revealed_tiles, fn tiles -> Enum.map(tiles, &if is_integer(&1) and &1 < 0 and &1+state.dead_wall_index in [0, -1] do &1-rem(state.dead_wall_index, 2) else &1 end) end)
             true ->
               # both walls are exhausted, draw nothing
               IO.puts("#{seat} tried to draw a nil tile!")
@@ -1007,7 +1010,7 @@ defmodule RiichiAdvanced.GameState.Actions do
 
   defp call_function(state, context, fn_name, args) do
     if length(Map.get(context, :call_stack, [])) < 10 do
-      args = Map.new(args, fn {name, value} -> {"$" <> name, value} end)
+      args = Map.new(args, fn {name, value} -> {"$" <> name, Map.get(state.players[context.seat].counters, value, value)} end)
       context = Map.update(context, :call_stack, [[fn_name | args]], &[[fn_name | args] | &1])
       actions = Rules.get(state.rules_ref, "functions", %{}) |> Map.get(fn_name)
       if actions != nil do
@@ -1044,6 +1047,7 @@ defmodule RiichiAdvanced.GameState.Actions do
           "calls" -> update_player(state, seat, &%{ &1 | calls: List.delete_at(&1.calls, ix) })
           "aside" -> update_player(state, seat, &%{ &1 | aside: List.delete_at(&1.aside, ix) })
           "discard" -> update_player(state, seat, &%{ &1 | pond: List.replace_at(&1.pond, ix, :"2x") })
+          "wall" -> Map.update!(state, :wall, &List.replace_at(&1, ix, :"2x"))
           "dead_wall" -> Map.update!(state, :dead_wall, &List.replace_at(&1, ix, :"2x"))
           "atop_wall" -> Map.update!(state, :atop_wall, &Map.delete(&1, ix))
         end
@@ -1058,6 +1062,7 @@ defmodule RiichiAdvanced.GameState.Actions do
           "calls" -> update_player(state, seat, &%{ &1 | calls: &1.calls ++ [tile] })
           "aside" -> update_player(state, seat, &%{ &1 | aside: &1.aside ++ [tile] })
           "discard" -> update_player(state, seat, &%{ &1 | pond: &1.pond ++ [tile], discards: &1.discards ++ [tile] })
+          "wall" -> Map.update!(state, :wall, &List.replace_at(&1, destination_ix, tile))
           "dead_wall" -> Map.update!(state, :dead_wall, &List.replace_at(&1, destination_ix, tile))
           "atop_wall" -> Map.update!(state, :atop_wall, &Map.update(&1, destination_ix, tile, fn _prev_tile -> tile end))
         end
@@ -1084,6 +1089,7 @@ defmodule RiichiAdvanced.GameState.Actions do
         {"discard", false} -> state.players[seat].pond |> Enum.with_index() |> Enum.map(fn {tile, ix} -> {tile, seat, ix} end)
         {"revealed_tile", false} -> [] # unimplemented
         {"scry", false} -> [] # unimplemented
+        {"wall", false} -> flags |> Enum.filter(&is_integer/1) |> Enum.map(fn ix -> {Enum.at(state.wall, ix, nil), nil, ix} end)
         {"dead_wall", false} -> flags |> Enum.filter(&is_integer/1) |> Enum.map(fn ix -> {Enum.at(state.dead_wall, ix, nil), nil, ix} end)
         {"atop_wall", false} -> flags |> Enum.filter(&is_integer/1) |> Enum.map(fn ix -> {Map.get(state.atop_wall, ix, nil), nil, ix} end)
         {"hand", true} -> Marking.get_marked(marked_objects, :hand)
@@ -1093,6 +1099,7 @@ defmodule RiichiAdvanced.GameState.Actions do
         {"discard", true} -> Marking.get_marked(marked_objects, :discard)
         {"revealed_tile", true} -> Marking.get_marked(marked_objects, :revealed_tile)
         {"scry", true} -> Marking.get_marked(marked_objects, :scry)
+        {"wall", true} -> [] # unimplemented
         {"dead_wall", true} -> [] # unimplemented
         {"atop_wall", true} -> [] # unimplemented
         {"delete", false}   -> []
