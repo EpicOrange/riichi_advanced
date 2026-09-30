@@ -1,0 +1,92 @@
+on after_initialization do
+  add_rule("Rules", "Ambitions", "- Declaring a beauty %{beauty} at the start of the round ($0.50 from all)", %{beauty: ~t"760z"})
+  add_rule("Rules", "Ambitions", "- Declaring NEWS %{news} at the start of the round ($0.50 from all)", %{news: ~t"4132z"})
+  add_rule("Rules", "Beauty", "Before your first discard, you may declare any %{beauty} as a Beauty, either by having it in hand or by taking from a player's discard. Doing so awards $0.50 from all players. You may not declare a Beauty after your first discard.", %{beauty: ~t"760z"})
+  add_rule("Rules", "NEWS", "Before your first discard, you may declare %{news} as NEWS. Doing so awards $0.50 from all players. You may not declare a Beauty after your first discard.", %{news: ~t"4132z"})
+end
+
+apply append, "set_definitions.mentsu", ["beauty", "beauty_self", "news", "news_self"]
+
+define_set any_flower, ~s"1f|2f|3f|4f|1g|2g|3g|4g"
+define_const all_flowers, ~t"1234f1234g"
+define_const closed_hand, has_no_call_named("chii", "pon", "daiminkan", "kakan", "beauty", "news")
+
+define_button beauty,
+  display_name: "Beauty",
+  show_when: not_our_turn
+    and no_discards_yet
+    and not_no_tiles_remaining
+    and someone_else_just_discarded
+    and status_missing("initial_flowers") # for default_flowers mod
+    and call_available,
+  call: [["6z", "7z"], ["0z", "7z"], ["6z", "0z"]],
+  call_style: %{
+    kamicha: ["7z", "6z", "0z"],
+    toimen: ["7z", "6z", "0z"],
+    shimocha: ["7z", "6z", "0z"],
+  },
+  call_conditions: call_contains(["0z"], 1) and call_contains(["6z"], 1) and call_contains(["7z"], 1)
+  do
+    big_text("Beauty")
+    call
+    push_message("is paid 0.5 $ from all players for declaring a beauty")
+    pay_other_players(%{amt: 0.5})
+  end
+define_button beauty_self,
+  display_name: "Beauty",
+  msg_name: "beauty",
+  show_when: our_turn
+    and no_discards_yet
+    and status_missing("initial_flowers") # for default_flowers mod
+    and self_call_available,
+  call: [["6z", "7z"]],
+  call_style: %{self: ["7z", "6z", "0z"]},
+  call_conditions: called_tile_contains(["0z"], 1)
+  do
+    big_text("Beauty")
+    self_call
+    push_message("is paid 0.5 $ from all players for declaring a beauty")
+    pay_other_players(%{amt: 0.5})
+  end
+define_button news,
+  display_name: "NEWS",
+  show_when: not_our_turn
+    and no_discards_yet
+    and not_no_tiles_remaining
+    and someone_else_just_discarded
+    and status_missing("initial_flowers") # for default_flowers mod
+    and call_available,
+  call: [["1z", "2z", "3z"], ["1z", "2z", "4z"], ["1z", "3z", "4z"], ["2z", "3z", "4z"]],
+  call_style: %{
+    kamicha: ["4z", "1z", "3z", "2z"],
+    toimen: ["4z", "1z", "3z", "2z"],
+    shimocha: ["4z", "1z", "3z", "2z"],
+  },
+  call_conditions: call_contains(["1z"], 1) and call_contains(["2z"], 1) and call_contains(["3z"], 1) and call_contains(["4z"], 1)
+  do
+    big_text("NEWS")
+    call
+    push_message("is paid 0.5 $ from all players for declaring NEWS")
+    pay_other_players(%{amt: 0.5})
+    draw(1, "opposite_end")
+  end
+define_button news_self,
+  display_name: "NEWS",
+  msg_name: "news",
+  show_when: our_turn
+    and no_discards_yet
+    and not_no_tiles_remaining
+    and not_just_discarded
+    and not_just_called
+    and status_missing("initial_flowers") # for default_flowers mod
+    and self_call_available,
+  call: [["1z", "2z", "3z"]],
+  call_style: %{self: ["4z", "1z", "3z", "2z"]},
+  call_conditions: called_tile_contains(["4z"], 1)
+  do
+    big_text("NEWS")
+    self_call
+    push_message("is paid 0.5 $ from all players for declaring NEWS")
+    pay_other_players(%{amt: 0.5})
+    draw(1, "opposite_end")
+  end

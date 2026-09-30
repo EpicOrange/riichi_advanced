@@ -30,13 +30,13 @@ require "default_flowers", %{undiscardable: true, draw_after_flower_phase: true,
 
 on after_initialization do
   add_rule("Rules", "Ambitions", """
-    Certain actions ("ambitions") award instant payment when achieved. These are:
-    - Declaring a kang ($0.25 from discarder)
-    - Declaring sagása ($0.25 from all)
-    - Declaring a secret ($0.50 from all)
-    - Having no flowers at the start of the game ($0.25 from all)
-    - Having no flowers when you win ($0.25 from all)
-    - Setting aside a 13th flower ($0.25 from all)
+  Certain actions ("ambitions") award instant payment when achieved. These are:
+  - Declaring a kang ($0.25 from discarder)
+  - Declaring sagása ($0.25 from all)
+  - Declaring a secret ($0.50 from all)
+  - Having no flowers at the start of the game ($0.25 from all)
+  - Having no flowers when you win ($0.25 from all)
+  - Setting aside a 13th flower ($0.25 from all)
   """, -50)
   add_rule("Tiles", "Base Tiles", "By default, Filipino mahjong uses the following 136 tiles:", -100)
   add_rule("Tiles", "Base Tiles", "- Four each of the 1 to 9 of circles %{pinzu}", %{pinzu: ~t"123456789p"})
@@ -146,3 +146,6 @@ set display_wall, true
 set initial_score, 0
 set starting_tiles, 16
 set max_rounds, 4
+
+define_mod_category "Visayan"
+define_mod filipino_visayan, name: "Visayan Rules", desc: "Play with the Visayan variant rules where you can declare dragon sequences and NEWS."
