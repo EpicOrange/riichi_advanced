@@ -48,8 +48,6 @@ end
 
 # handle pao
 
-apply append, "constants.pao_yaku", ["Daisuugen"]
-
 on after_call do
   if last_call_is("pon", "daiminkan") do
     as caller do

@@ -6,8 +6,6 @@ on after_initialization do
   add_rule("Rules", "Sekinin Barai (Pao)", "If you deal the last dragon called for a daisangen hand, or the last wind called for a daisuushii hand, you are responsible for that single yakuman payment if they tsumo, or half of the yakuman payment if they ron off someone else.")
 end
 
-apply append, "constants.pao_yaku", ["Daisangen", "Daisuushii"]
-
 on after_call do
   if last_call_is("pon", "daiminkan") do
     as caller do

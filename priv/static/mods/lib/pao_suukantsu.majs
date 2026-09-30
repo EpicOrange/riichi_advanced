@@ -18,5 +18,3 @@ on after_call do
   end
 end
 
-apply append, "constants.pao_yaku", ["Suukantsu"]
-

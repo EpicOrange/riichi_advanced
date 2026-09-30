@@ -1,7 +1,6 @@
 define_base_ruleset kansai
 set display_name, "Zan Sanma"
 set tutorial_link, "https://github.com/EpicOrange/riichi_advanced/blob/main/documentation/Zansanma.md"
-require_after "riichi_fix_rules_tabs"
 
 apply subtract, "default_mods", [
   %{name: "honba", config: %{value: 100}},

@@ -8,7 +8,6 @@ require "shuugi", %{worth: 10, pao_pays_all: true, starting_shuugi: 1000}
 require "super_bingo_tictactoe"
 require "super_bingo_tulips"
 require_after "super_bingo_yaku"
-require_after "riichi_fix_rules_tabs"
 apply subtract, "default_mods", [
   %{name: "lib/yaku/chiitoitsu", config: %{kansai: false, name: "Chiitoitsu", value: 2}},
 ]

@@ -4,7 +4,6 @@ set tutorial_link, "https://docs.google.com/document/d/1F-NhQ5fdi5CnAyEqwNE_qWR0
 define_global han, "Han"
 require "cosmic"
 require_after "yakuman_13_han"
-require_after "riichi_fix_rules_tabs"
 
 define "fractional_han" # this is just to modify the kiriage mangan mod
 

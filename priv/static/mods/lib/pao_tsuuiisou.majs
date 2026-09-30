@@ -4,8 +4,6 @@ on after_initialization do
   update_rule("Rules", "Sekinin Barai (Pao)", "(Tsuuiisou Pao) Discarding a tile that is called by another player to form their fourth honor triplet counts, but only if the winner wins tsuuiisou by self-draw.")
 end
 
-apply append, "constants.pao_yaku", ["Tsuuiisou"]
-
 on after_call do
   if last_call_is("pon", "daiminkan") do
     as caller do

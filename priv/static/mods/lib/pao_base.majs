@@ -15,8 +15,6 @@ apply prepend, "buttons.ron.actions" do pao_text end
 apply prepend, "buttons.chankan.actions" do pao_text end
 apply prepend, "buttons.tsumo.actions" do pao_text end
 
-define_const pao_yaku, []
-
 def apply_rinshan_pao_scoring do
   # same as normal ron scoring, just named "Pao dealer tsumo"
   if seat_is("east", as: "winner") do

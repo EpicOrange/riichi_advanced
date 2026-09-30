@@ -9,7 +9,6 @@ require "pao_standard"
 require "pao_suukantsu"
 require "pao_tsuuiisou"
 require "pao_chinroutou"
-require "min_han", %{min: 1}
 require "discard_furiten"
 require "temporary_furiten"
 require_after "tokyo_scoring"
@@ -87,7 +86,6 @@ apply subtract, "default_mods", [
   %{name: "lib/yaku/kokushi", config: %{han: "★", juusan_han: "★", juusan_list: "yakuman", juusan_value: 2, list: "yakuman", value: 1}},
   %{name: "lib/yaku/shousuushii", config: %{dai_han: "★", dai_list: "yakuman", dai_value: 2, shou_han: "★", shou_list: "yakuman", shou_value: 1}},
   %{name: "lib/yaku/suukantsu", config: %{han: "★", value: 1}},
-  %{name: "lib/yaku/riichi_renhou", config: %{is: "Yakuman"}},
   "honba",
   "dora", "ura", "kandora", "aka",
   "nagashi",

@@ -3,9 +3,7 @@ set display_name, "Speed Tonpuu"
 set tutorial_link, "https://peterish.com/riichi-docs/speed-tonpuu-rules"
 require "speed_tonpuu_dora"
 require "speed_tonpuu_pocchi"
-require "suukaikan"
 require_after "speed_tonpuu_suukantsu"
-require_after "riichi_fix_rules_tabs"
 apply subtract, "default_mods", [
   %{name: "honba", config: %{value: 100}},
   %{name: "lib/yaku/riichi", config: %{bet: 1000, double_value: 2, drawless: true}},
@@ -28,6 +26,7 @@ apply set_append, "default_mods", [
   "lib/tonpuu",
   "kiriage_mangan",
   "lib/double_round_wind",
+  "lib/suukaikan",
   %{name: "kandora", config: %{immediate: true}},
   "yaku/open_riichi",
   "kokushi_ankan_chankan",

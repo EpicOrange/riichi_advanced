@@ -41,5 +41,3 @@ on before_win do
     end
   end
 end
-
-apply append, "constants.pao_yaku", ["all"]

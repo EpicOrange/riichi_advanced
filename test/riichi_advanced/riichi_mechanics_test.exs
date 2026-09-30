@@ -230,7 +230,7 @@ defmodule RiichiAdvanced.RiichiMechanicsTest do
   end
 
   test "riichi - kazoe with yakuman only" do
-    TestUtils.test_yaku_advanced("riichi", ["no_kazoe_yakuman", %{name: "lib/min_han", config: %{min: "Yakuman", han: "Han"}}], [], """
+    TestUtils.test_yaku_advanced("riichi", ["no_kazoe_yakuman", %{name: "lib/min_han", config: %{min: "Yakuman", han: "Han"}}], ["lib/min_han"], """
     {
       "starting_hand": {
         "east": ["2p", "2p", "3p", "3p", "4p", "4p", "5p", "5p", "6p", "6p", "7p", "7p", "8p"],

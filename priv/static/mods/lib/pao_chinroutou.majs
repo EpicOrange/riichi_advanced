@@ -4,8 +4,6 @@ on after_initialization do
   update_rule("Rules", "Sekinin Barai (Pao)", "(Chinroutou Pao) Discarding a tile that is called by another player to form their fourth terminal triplet counts, but only if the winner wins tsuuiisou by self-draw.")
 end
 
-apply append, "constants.pao_yaku", ["Chinroutou"]
-
 define_set terminals, ~s"1m 1m 1m|9m 9m 9m|1p 1p 1p|9p 9p 9p|1s 1s 1s|9s 9s 9s"
 
 on after_call do

@@ -1,4 +1,4 @@
-require_after "global_mods"
+require "global_mods"
 
 set display_name, "American"
 set tutorial_link, "https://github.com/EpicOrange/riichi_advanced/blob/main/documentation/american.md"

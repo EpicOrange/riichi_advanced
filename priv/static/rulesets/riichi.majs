@@ -160,7 +160,7 @@ define_mod suufon_renda, name: "Suufon Renda", desc: "Enable 4 wind abortive dra
 config_mod suufon_renda, name: "name", values: ["Suufon Renda"]
 define_mod suucha_riichi, name: "Suucha Riichi", deps: ["lib/yaku/riichi"], desc: "Enable 4 riichi abortive draw."
 define_mod "lib/suukaikan", name: "Suukaikan", desc: "Enable 4 kan abortive draw."
-define_mod sanchahou, conflicts: ["head_bump"], name: "Sanchahou", desc: "Enable triple ron abortive draw."
+define_mod sanchahou, conflicts: ["lib/head_bump"], name: "Sanchahou", desc: "Enable triple ron abortive draw."
 define_mod kyuushu_kyuuhai, name: "Kyuushu Kyuuhai", desc: "Enable 9 distinct terminal/honor abortive draw."
 config_mod kyuushu_kyuuhai, name: "name", values: ["Kyuushu Kyuuhai"]
 define_mod_category "Dora"
