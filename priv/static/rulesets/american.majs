@@ -1,3 +1,5 @@
+require_after "global_mods"
+
 set display_name, "American"
 set tutorial_link, "https://github.com/EpicOrange/riichi_advanced/blob/main/documentation/american.md"
 set wall, ["1m", "1m", "1m", "1m",
@@ -85,6 +87,7 @@ set default_mods, [
   "american/am_card_nmjl_2026",
   "american/show_nearest_american_hand",
   "show_waits",
+  "four_rows_discards",
 ]
 
 define_mod_category "Table Rules"
@@ -124,10 +127,8 @@ define_mod "american/am_card_MahjLife", name: "MahjLife Card", desc: "Play with 
 # define_mod "american/WIP_am_card_MahjForAll_Evergreen", name: "MahjForAll Evergreen Card (beta)", desc: "Play with the free MahjForAll Evergreen Card. Six hands are not yet implemented.", conflicts: ["Card"]
 define_mod "american/BETA_am_card_AMJForEveryone", name: "AMJFE Card (beta)", desc: "Play with the free American Mah Jongg for Everyone Card. The 75-point hand is not yet implemented.", conflicts: ["Card"]
 define_mod "american/am_card_free", name: "Card-Free (beta)", desc: "Play with card-free rules: your hand must consist of two types of melds only, and these melds must match one of the following patterns: Any Like Numbers, NEWS, NS, EW, 369, 2468, 135, 357, 579, or Consecutive Run.", conflicts: ["Card"]
-define_mod_category "Miscellaneous"
-define_mod "show_waits", name: "Show Waits", desc: "Add some UI that shows waits."
+define_mod_category "Other"
 define_mod "american/show_nearest_american_hand", name: "Show Nearest Hands", desc: "Add some UI that shows nearest hands."
-define_mod "open_hands", name: "Open Hands", desc: "Everyone plays with tiles shown."
 
 define_set pair, ~s"0 0"
 define_match open_win,
@@ -903,6 +904,5 @@ set interruptible_actions, ["play_tile", "draw"]
 set initial_score, 0
 set starting_tiles, 13
 set initial_dead_wall_length, 0
-set four_rows_discards, true
 set dead_hand_buttons, true
 set max_rounds, 8
