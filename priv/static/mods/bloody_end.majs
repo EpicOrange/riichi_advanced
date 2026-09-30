@@ -14,6 +14,8 @@ on before_win do
   end
 end
 
+# TODO should winners be responsible for nagashi mangan?
+
 on before_continue do
   as everyone do
     take_back_riichi_stick
@@ -32,6 +34,9 @@ if !hide_winning_hands do
     end
   end
   on after_win do
+    if not_anyone_status("first_winner") do
+      set_status("first_winner", as: "winner") # will be next dealer
+    end
     if num_winners == num_players - 1 do
       as winners do
         reveal_hand
@@ -48,5 +53,37 @@ def setup_noten_payments, append: true do
     noten_payment = 1000
     set_counter_all("noten_payment", "noten_payment")
     set_counter_all("noten_penalty", "noten_penalty")
+  end
+end
+
+on after_scoring do
+  # deny kan payments after a win
+  unset_status_all("kan", "daiminkan", "kakan", "ankan")
+end
+
+# the below is to change the dealer to the first winner
+
+on after_scoring do
+  as east do
+    if status("ended_by_draw") do
+      before_bloody_end
+    else
+      if num_winners >= 3 do
+        before_bloody_end
+      end
+    end
+  end
+end
+
+def before_bloody_end do
+  if anyone_status("first_winner") do
+    # change dealership to first winner
+    as everyone do
+      if status("first_winner") do
+        change_dealership("self")
+      end
+    end
+  else
+    change_dealership("self")
   end
 end

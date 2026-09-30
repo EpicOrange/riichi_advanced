@@ -2,6 +2,9 @@ default list, "yaku"
 default name, "Seven Pairs"
 default value, 0
 default kansai, true
+default kansai_list, "yaku"
+default kansai_name, 0
+default kansai_value, 0
 default seventeen_tiles, false
 default seventeen_tiles_chow, false
 
@@ -45,4 +48,8 @@ apply set_append, "win_definition", ["chiitoitsu_win"]
 
 if !value > 0 do
   define_yaku !list, !name, [!value, !han], match(["hand", "calls", "winning_tile"], ["chiitoitsu_win"])
+end
+if !kansai_value > 0 do
+  define_match kansai_chiitoitsu, ~m"quad:1, pair:5"
+  define_yaku !kansai_list, !kansai_name, [!kansai_value, !han], has_existing_yaku(!name) and match(["hand", "calls", "winning_tile"], ["kansai_chiitoitsu"]), [!name]
 end

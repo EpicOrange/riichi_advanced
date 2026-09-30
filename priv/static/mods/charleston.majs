@@ -1,9 +1,17 @@
+default same_suit, false
+
 on after_start do
   cond do
     mod(kyoku, 3) == 1 -> set_status_all("charleston_right")
     mod(kyoku, 3) == 2 -> set_status_all("charleston_left")
     true -> set_status_all("charleston_across")
   end
+end
+
+if !same_suit do
+  define_const charleston_restriction, ["self", "match_suit"]
+else
+  define_const charleston_restriction, ["self"]
 end
 
 define_button charleston_left,
@@ -13,7 +21,7 @@ define_button charleston_left,
   cancellable: false,
   needs_confirm: true
   do
-    mark [["hand", 3, ["self"]]] do
+    mark [["hand", 3, @charleston_restriction]] do
       unset_status("charleston_left")
     end
     charleston_left
@@ -27,8 +35,8 @@ define_button charleston_across,
   cancellable: false,
   needs_confirm: true
   do
-    mark [["hand", 3, ["self"]]] do
-      unset_status("charleston_across", "heavenly_available")
+    mark [["hand", 3, @charleston_restriction]] do
+      unset_status("charleston_across")
     end
     charleston_across
     recalculate_buttons
@@ -41,12 +49,18 @@ define_button charleston_right,
   cancellable: false,
   needs_confirm: true
   do
-    mark [["hand", 3, ["self"]]] do
-      unset_status("charleston_right", "heavenly_available")
+    mark [["hand", 3, @charleston_restriction]] do
+      unset_status("charleston_right")
     end
     charleston_right
     recalculate_buttons
   end
+
+if !same_suit do
+  apply set, "buttons.charleston_left.display_name", "Select 3 same-suit tiles to pass left"
+  apply set, "buttons.charleston_across.display_name", "Select 3 same-suit tiles to pass across"
+  apply set, "buttons.charleston_right.display_name", "Select 3 same-suit tiles to pass right"
+end
 
 apply append, "buttons.tsumo.show_when", status_missing("charleston_right", "charleston_left", "charleston_across")
 apply append, "buttons.ankan.show_when", status_missing("charleston_right", "charleston_left", "charleston_across")

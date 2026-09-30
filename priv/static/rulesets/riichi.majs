@@ -385,6 +385,8 @@ define_mod "shuugi/placement_only_battle", order: 5, name: "Placement-Only Battl
 define_mod "shuugi/arisu", order: 5, name: "Arisu", deps: ["lib/shuugi", "dora"], desc: "After a concealed win, flip tiles on the wall starting from the visible dora indicator, and gain chips for each matching tile. Repeat until you get no match. Not recommended with joker mods, since it will flip tiles forever."
 define_mod "shuugi/golden_chun", order: 6, name: "Golden Chun", deps: ["lib/shuugi", "golden_chun"], desc: "Modifies the shuugi values of aka hatsu and golden chun in the Golden Chun mod."
 config_mod "shuugi/golden_chun", name: "golden_chun_shuugi", values: [0, 1, 2, 3, 4, 5], default: 2
+define_mod_category "Alternative Yaku"
+define_mod sichuan_scoring, name: "Sichuan Scoring", desc: "Adds all the Sichuan yaku."
 define_mod_category "Misc"
 define_mod cancellable_riichi, order: 1, deps: ["lib/yaku/riichi"], name: "Cancellable Riichi", desc: "Riichi declarations happen only after you confirm by discarding a tile."
 define_mod ten, order: 3, name: "Ten", desc: "Adds 10m, 10p, and 10s. Changes dora accordingly (if dora is enabled). Tanyao now allows nines, and chanta/junchan/honroutou require tens instead. 13 Orphans now requires the ten instead of the nine of each suit. Ittsuu allows 23456789T."
@@ -402,12 +404,22 @@ define_mod shouhai, order: 3, name: "Shouhai", desc: "Reduces tiles in hand from
 define_mod chinitsu, order: -2, conflicts: ["aka", "aka1", "aka3", "aka7", "aka9", "yaku/mondeikou", "lib/galaxy", "fifth_tile", "shiro_pocchi", "golden_chun", "blue_dragon", "star_suit", "lib/yaku/uumensai"], name: "Chinitsu", desc: "Replace the wall with 16 copies of each bamboo tile. Includes 10s if Ten is enabled."
 define_mod washizu, order: 3.5, conflicts: ["called_game"], name: "Washizu", desc: "Each tile in the wall is transparent and visible to all, except for one copy. Unflipped dora indicators are not visible."
 config_mod washizu, name: "transparents", values: [1,2,3,4], default: 3
+define_mod "lib/fixed_fu", name: "Fixed Fu", desc: "Fix fu at a constant value for every hand."
+config_mod "lib/fixed_fu", name: "fu", values: [0, 10, 20, 30, 40, 50, 60, 70, 80, 90, 100, 110], default: 30
 define_mod yami, name: "Yami", desc: "You may bet 1000 points to discard facedown. Others can bet 2000 points to force it faceup, but you can bet a further 4000 points to keep it facedown."
 define_mod bloody_end, name: "Bloody End", desc: "Each round only ends after three winners. If the wall is exhausted, it counts as a draw, and noten players pay tenpai players 1000 points."
 config_mod bloody_end, name: "hide_winning_hands", values: [false, true], default: true
+define_mod instant_kan_payments, name: "Instant Kan Payments", desc: "Enables instant payments when declaring kan."
+config_mod instant_kan_payments, name: "daiminkan", values: [0, 300, 500, 1000, 2000, 4000], default: 1000
+config_mod instant_kan_payments, name: "kakan", values: [0, 300, 500, 1000, 2000, 4000], default: 1000
+config_mod instant_kan_payments, name: "ankan", values: [0, 300, 500, 1000, 2000, 4000], default: 2000
+define_mod voided_suit, name: "Voided Suit", desc: "At the beginning of every round, you must choose a suit to void."
+config_mod voided_suit, name: "void_penalty", values: [0, 1000, 2000, 4000, 8000, 16000, 32000], default: 4000
+define_mod score_takame_at_draw, name: "Win At Draw", desc: "Upon an exhaustive draw, every tenpai player wins by self-draw on their most valuable wait."
 define_mod "lib/grand_cross", order: -2, conflicts: ["super_bingo_grand_cross"], name: "Grand Cross", desc: "You may declare NEWS (one of each wind) as a concealed kan worth 16 fu."
 define_mod nobekan, order: -2, name: "Nobekan", desc: "You may kan a sequence of four number tiles."
 define_mod charleston, order: 5, name: "Charleston", desc: "At the beginning of each hand, each player chooses three tiles to swap with other players."
+config_mod charleston, name: "same_suit", values: [false, true], default: false
 define_mod calls_are_forced, conflicts: ["chombo"], name: "Calls Are Forced", desc: "Forces you to make all available calls, including riichi (if enabled). You still get to choose if multiple calls are available."
 define_mod chombo, conflicts: ["calls_are_forced"], name: "Chombo", desc: "The tsumo and ron buttons are enabled on every draw and discard. If you make an incorrect win call, your hand is dead and you cannot make a win call for the remainder of the round."
 define_mod riichi_en, name: "English Yaku Names", desc: "Display English yaku names. (e.g. Tanyao -> All Simples)"
@@ -514,6 +526,7 @@ define_preset "Mahjong Soul", "Battle of Asura", [
   "tenpairenchan",
   %{name: "agariyame", config: %{first_place_only: true, may_choose: false, round: "all_last"}},
   %{name: "tenpaiyame", config: %{first_place_only: true, may_choose: false, round: "all_last"}},
+  %{name: "starting_score", config: %{points: 25000}},
   "lib/tonpuu",
   "lib/kuikae_nashi",
   "double_wind_4_fu",
@@ -526,7 +539,7 @@ define_preset "Mahjong Soul", "Battle of Asura", [
   %{name: "dora", config: %{start_indicators: 1}},
   "ura",
   "kandora",
-  "charleston",
+  %{name: "charleston", config: %{same_suit: false}},
   %{name: "bloody_end", config: %{hide_winning_hands: true, noten_payment: 1000}},
   "show_waits",
   %{name: "lib/min_han", config: %{min: 1, han: "Han"}},
@@ -535,12 +548,36 @@ define_preset "Mahjong Soul", "Battle of Asura", [
   "shiny_dora",
   "first_gets_riichi_sticks"
 ]
+define_preset "Mahjong Soul", "Bloodshed Skirmish", [
+  # TODO:
+  # - chankan cancels the kan (and the point payment), the tile is lost
+  # - void penalty is 4000 to all EXCEPT if someone is tenpai for 5+ Han,
+  #     in which case they pay whatever that player's hand is worth
+  # - tsumo adds 1000 on top
+  # - another set of yaku
+  # - on tsumo, winning tile is shown, but not winning hand
+  # - no renchan, next dealer = the winner
+  %{name: "lib/tobi", config: %{below: 0}},
+  %{name: "starting_score", config: %{points: 50000}},
+  "lib/tonpuu",
+  "no_honors",
+  %{name: "charleston", config: %{same_suit: true}},
+  %{name: "bloody_end", config: %{hide_winning_hands: true, noten_payment: 0}},
+  %{name: "instant_kan_payments", config: %{daiminkan: 1000, kakan: 1000, ankan: 2000}},
+  %{name: "voided_suit", config: %{void_penalty: 4000}},
+  "score_takame_at_draw",
+  "show_waits",
+  %{name: "lib/fixed_fu", config: %{"fu" => 0}},
+  "sichuan_scoring",
+  "four_rows_discards",
+]
 define_preset "Mahjong Soul", "Battle of Darkness", [
   # TODO:
   # - concealed tile should not trigger furiten
   # - cannot riichi concealed under 2000 points (you need 1000+1000 points)
   # - if multiple ppl reveal simultaneously, only the player next in atamahane order pays
   # - concealed non-terminal/honor tiles don't invalidate nagashi
+  # - winner becomes next dealer, does not rotate on draw
   +@standard_riichi_yaku,
   %{name: "honba", config: %{value: 100}},
   %{name: "nagashi", config: %{is: "Mangan", counts_as: "draw"}},
@@ -571,50 +608,6 @@ define_preset "Mahjong Soul", "Battle of Darkness", [
   "shiny_dora",
   "first_gets_riichi_sticks"
 ]
-# define_preset "Mahjong Soul", "Bloodshed Skirmish", [
-#   # TODO:
-#   # - tonpuu
-#   # - no dora
-#   # - no riichi yaku
-#   # - winning hands are not shown, but the yaku is shown and it is scored
-#   # - ankan is instant 2000 points from every player
-#   # - daiminkan is instant 2000 points from discarding player
-#   # - shouminkan is instant 1000 points from every player, but only if it's from draw
-#   # - these kan payments are returned if not tenpai at draw
-#   # - chankan cancels the kan (and the point payment), the tile is lost
-#   # - void penalty is 4000 to all EXCEPT if someone is tenpai for 5+ Han,
-#   #     in which case they pay whatever that player's hand is worth
-#   # - 1-6 Han is 1000, 2000, 4000, 8000, 16000, 32000 (max)
-#   # - tsumo adds 1000 on top
-#   +@standard_riichi_yaku,
-#   %{name: "honba", config: %{value: 100}},
-#   %{name: "nagashi", config: %{is: "Mangan", counts_as: "draw"}},
-#   %{name: "lib/tobi", config: %{below: 0}},
-#   %{name: "uma", config: %{_1st: 15, _2nd: 5, _3rd: -5, _4th: -15}},
-#   "lib/agarirenchan",
-#   "tenpairenchan",
-#   %{name: "agariyame", config: %{first_place_only: true, may_choose: false, round: "all_last"}},
-#   %{name: "tenpaiyame", config: %{first_place_only: true, may_choose: false, round: "all_last"}},
-#   %{name: "sudden_death", config: %{goal: 30000}},
-#   "lib/kuikae_nashi",
-#   "double_wind_4_fu",
-#   "lib/riichi_furiten",
-#   "lib/pao_standard",
-#   "kokushi_ankan_chankan",
-#   %{name: "suufon_renda", config: %{name: "Suufon Renda"}},
-#   "suucha_riichi",
-#   "lib/suukaikan",
-#   %{name: "kyuushu_kyuuhai", config: %{name: "Kyuushu Kyuuhai"}},
-#   %{name: "dora", config: %{start_indicators: 1}},
-#   "ura",
-#   "kandora",
-#   "show_waits",
-#   %{name: "lib/min_han", config: %{min: 1, han: "Han"}},
-#   "cancellable_riichi",
-#   %{name: "aka", config: %{man: 1, pin: 1, sou: 1}},
-#   "shiny_dora",
-#   "first_gets_riichi_sticks"
-# ]
 # define_preset "Mahjong Soul", "Limitless Asura", [
 #   # TODO:
 #   # - charleston at start, but which direction?

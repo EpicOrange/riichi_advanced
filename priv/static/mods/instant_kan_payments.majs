@@ -1,0 +1,82 @@
+default daiminkan, 1000
+default kakan, 1000
+default ankan, 2000
+
+def do_kong_payment_single do
+  unless is_winner(as: "$seat") do
+    add_score("$score")
+    as "$seat" do
+      subtract_score("$score")
+      big_text("  -$score  ", %{score: "$score"})
+    end
+    # scuffed string comparison technique
+    set_status("$seat")
+    cond do
+      status("shimocha") -> owes_shimocha += "$score"
+      status("toimen")   -> owes_toimen   += "$score"
+      status("kamicha")  -> owes_kamicha  += "$score"
+    end
+    unset_status("$seat")
+  end
+end
+
+def do_kong_payment do
+  do_kong_payment_single(score: "$score", seat: "shimocha")
+  do_kong_payment_single(score: "$score", seat: "toimen")
+  do_kong_payment_single(score: "$score", seat: "kamicha")
+end
+
+# instant kong payments
+define_set kakan_tile, ~s"any@kakan"
+def discard_passed, append: true do
+  as others do
+    if status("kan") do
+      unset_status("kan")
+      if status("kakan") do
+        if match(["hand"], ~m"kakan_tile:1") do
+          push_system_message("No kong payment is awarded since the added tile came from hand, not draw")
+          remove_attr_hand("_kakan")
+        else
+          do_kong_payment(score: !kakan)
+        end
+        unset_status("kakan")
+      end
+      if status("ankan") do
+        do_kong_payment(score: !ankan)
+        unset_status("ankan")
+      end
+      if status("daiminkan") do
+        do_kong_payment_single(score: !daiminkan, seat: "callee")
+        unset_status("daiminkan")
+      end
+    end
+  end
+end
+
+# returning instant kan payments if not tenpai
+define_scoring ryuukyoku do
+  as everyone do
+    if (status_missing("tenpai") or status("void_penalty")) and (owes_shimocha > 0 or owes_toimen > 0 or owes_kamicha > 0) do
+      set_status("owes_kong_payments")
+      push_message("must return kong payments due to not being ready at the end of the round")
+    end
+    as others do
+      as prev_seat do
+        total = 0
+        # return kong payments
+        if status("owes_kong_payments") do
+          cond do
+            seat_is("prev_seat", as: "shimocha") -> if owes_shimocha > 0 do total += owes_shimocha :: "Kong payment return" end
+            seat_is("prev_seat", as: "toimen") -> if owes_toimen > 0 do total += owes_toimen :: "Kong payment return" end
+            seat_is("prev_seat", as: "kamicha") -> if owes_kamicha > 0 do total += owes_kamicha :: "Kong payment return" end
+          end
+        end
+      end
+    end
+  end
+end
+
+# need to unset kan for everyone after a win
+# this is because if you call kong and subsequently deal in,
+# you don't get the kong payout (kong call still goes through though)
+on after_win do as everyone do unset_status("kan", "double_kan") end end

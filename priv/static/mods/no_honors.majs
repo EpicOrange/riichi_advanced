@@ -1,0 +1,14 @@
+on after_initialization do
+  add_rule("Tiles", "No Honors", "All honor tiles are actually removed from the wall.", -99)
+end
+
+apply subtract, "wall", [
+  "1z","2z","3z","4z","5z","6z","7z","0z",
+  "1z","2z","3z","4z","5z","6z","7z","0z",
+  "1z","2z","3z","4z","5z","6z","7z","0z",
+  "1z","2z","3z","4z","5z","6z","7z","0z",
+  "11z","12z","13z","14z","15z","16z","17z","10z",
+  "11z","12z","13z","14z","15z","16z","17z","10z",
+  "11z","12z","13z","14z","15z","16z","17z","10z",
+  "11z","12z","13z","14z","15z","16z","17z","10z",
+]

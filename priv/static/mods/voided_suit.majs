@@ -1,0 +1,125 @@
+default void_penalty, 4000
+
+on after_initialization do
+  add_rule("Rules", "Voided Suit", "TODO")
+end
+
+on after_start do
+  set_status_all("choose_void")
+end
+
+define_button void_manzu,
+  display_name: "No Chars",
+  show_when: status("choose_void") and status_missing("charleston_left", "charleston_across", "charleston_right"),
+  unskippable: true,
+  cancellable: false
+  do
+    big_text("No Chars")
+    set_status("void_manzu")
+    if seat_is("east") do reveal_tile("1z") end
+    if seat_is("south") do reveal_tile("2z") end
+    if seat_is("west") do reveal_tile("3z") end
+    if seat_is("north") do reveal_tile("4z") end
+    reveal_tile("1m")
+    reveal_tile("3x")
+    unset_status("choose_void")
+    move_tiles("draw", "hand")
+    recalculate_buttons
+  end
+
+define_button void_pinzu,
+  display_name: "No Dots",
+  show_when: status("choose_void") and status_missing("charleston_left", "charleston_across", "charleston_right"),
+  unskippable: true,
+  cancellable: false
+  do
+    big_text("No Dots")
+    set_status("void_pinzu")
+    if seat_is("east") do reveal_tile("1z") end
+    if seat_is("south") do reveal_tile("2z") end
+    if seat_is("west") do reveal_tile("3z") end
+    if seat_is("north") do reveal_tile("4z") end
+    reveal_tile("1p")
+    reveal_tile("3x")
+    unset_status("choose_void")
+    move_tiles("draw", "hand")
+    recalculate_buttons
+  end
+
+define_button void_souzu,
+  display_name: "No Bams",
+  show_when: status("choose_void") and status_missing("charleston_left", "charleston_across", "charleston_right"),
+  unskippable: true,
+  cancellable: false
+  do
+    big_text("No Bams")
+    set_status("void_souzu")
+    if seat_is("east") do reveal_tile("1z") end
+    if seat_is("south") do reveal_tile("2z") end
+    if seat_is("west") do reveal_tile("3z") end
+    if seat_is("north") do reveal_tile("4z") end
+    reveal_tile("1s")
+    reveal_tile("3x")
+    unset_status("choose_void")
+    move_tiles("draw", "hand")
+    recalculate_buttons
+  end
+
+define_const no_voided_calls,
+     (status("void_manzu") and not_call_contains(["1m", "2m", "3m", "4m", "5m", "6m", "7m", "8m", "9m", "10m"], 1))
+  or (status("void_pinzu") and not_call_contains(["1p", "2p", "3p", "4p", "5p", "6p", "7p", "8p", "9p", "10p"], 1))
+  or (status("void_souzu") and not_call_contains(["1s", "2s", "3s", "4s", "5s", "6s", "7s", "8s", "9s", "10s"], 1))
+  or (status("void_stars") and not_call_contains(["1t", "2t", "3t", "4t", "5t", "6t", "7t", "8t", "9t", "10t"], 1))
+
+apply set_append, "buttons.chii.call_conditions", [@no_voided_calls]
+apply set_append, "buttons.pon.call_conditions", [@no_voided_calls]
+apply set_append, "buttons.daiminkan.call_conditions", [@no_voided_calls]
+apply set_append, "buttons.kakan.call_conditions", [@no_voided_calls]
+apply set_append, "buttons.ankan.call_conditions", [@no_voided_calls]
+
+define_set manzu, ~s"1m|2m|3m|4m|5m|6m|7m|8m|9m|10m"
+define_set pinzu, ~s"1p|2p|3p|4p|5p|6p|7p|8p|9p|10p"
+define_set souzu, ~s"1s|2s|3s|4s|5s|6s|7s|8s|9s|10s"
+define_set stars, ~s"1t|2t|3t|4t|5t|6t|7t|8t|9t|10t"
+define_auto_button _5_auto_discard_void,
+  display_name: "V",
+  desc: "Automatically discard your drawn tile if it's of your voided suit.",
+  enabled_at_start: true
+  do
+    if    (status("void_manzu") and match(["draw"], ~m"manzu:1"))
+       or (status("void_pinzu") and match(["draw"], ~m"pinzu:1"))
+       or (status("void_souzu") and match(["draw"], ~m"souzu:1"))
+       or (status("void_stars") and match(["draw"], ~m"stars:1")) do
+      discard_draw
+    end
+  end
+
+# check for void penalty
+on before_exhaustive_draw do
+  as everyone do
+    if     (status("void_manzu") and match(["hand", "calls"], ~m"nojoker, manzu:1") and match(["discards"], ~m"(pinzu souzu):1"))
+        or (status("void_pinzu") and match(["hand", "calls"], ~m"nojoker, pinzu:1") and match(["discards"], ~m"(manzu souzu):1"))
+        or (status("void_souzu") and match(["hand", "calls"], ~m"nojoker, souzu:1") and match(["discards"], ~m"(manzu pinzu):1")) do
+      reveal_hand
+      set_status("void_penalty")
+    end
+  end
+end
+
+# apply void penalty
+define_scoring ryuukyoku do
+  as everyone do
+    if status("void_penalty") do
+      push_message("must pay %{penalty} to each player for having voided tiles in hand at the end of the round", %{penalty: !void_penalty})
+    end
+    as others do
+      as prev_seat do
+        total = 0
+        # apply void penalty
+        if status("void_penalty") do
+          total += !void_penalty :: "Voided Tile Penalty"
+        end
+      end
+    end
+  end
+end

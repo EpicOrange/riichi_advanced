@@ -1,0 +1,87 @@
+define "sichuan"
+
+def calculate_fu do end # disable fu
+def apply_ron_scoring do end # disable ron bonus
+def apply_tsumo_scoring do
+  total += 1000 :: "Self-Draw Bonus"
+end
+def calculate_base_score do
+  print_counters
+  total = points - 1 :: "Han - 1"
+  total = 2 ** total :: "Multiplier"
+  total *= 1000 :: "Base Score"
+  base_score = total # save base_score for mods to use
+  print_counters
+end
+
+apply merge, "score_calculation", %{
+  yaku_lists: ["yaku", "meta_yaku"],
+  extra_yaku_lists: ["extra_yaku"],
+  right_display: "none"
+}
+
+# all sichuan yaku!
+# TODO only the highest value one should be scored
+on after_initialization do
+  add_rule("$value $han", "Yakuless Win", "%{value} %{han} if you no other yaku.", %{value: 1, han: !han})
+  update_rule("$value $han", "Yakuless Win", "%{example_hand}", %{value: 1, han: !han, example_hand: ~t"12345p34588999s 3p"})
+end
+define_yaku yaku, "Yakuless Win", [1, "Han"], not_has_existing_yaku("yaku", "meta_yaku")
+require "yaku/toitoi", %{name: "All Triplets", value: 2}
+require "yaku/honitsu", %{chin_name: "Full Flush", chin_value: 3}
+require "yaku/chiitoitsu", %{name: "Seven Pairs", value: 3, kansai: true, kansai_list: "meta_yaku", kansai_name: "Seven Pairs With One Duplicate", kansai_value: 4}
+require "yaku/chanta", %{jun_name: "Terminals In All Sets", jun_value: 3}
+require "yaku/shiiaru_raotai", %{name: "Single Wait After 4 Triplets", value: 3}
+on after_initialization do
+  add_rule("$value $han", "2/5/8 Triplets", "%{value} %{han} if you have all triplets of only the 2, 5, 8 tiles.", %{value: 4, han: !han})
+  update_rule("$value $han", "2/5/8 Triplets", "%{example_hand}", %{value: 4, han: !han, example_hand: ~t"222m888p2255s 8M88m 5s"})
+end
+define_yaku yaku, "2/5/8 Triplets", [4, "Han"], has_existing_yaku("All Triplets") and winning_hand_consists_of("2m","5m","8m","2p","5p","8p","2s","5s","8s")
+require "yaku/tenhou", %{
+  tenhou_name: "Blessing of Heaven", tenhou_value: 6,
+  chiihou_name: "Blessing of Earth", chiihou_value: 6,
+}
+require "yaku/suukantsu", %{name: "Four Quads", value: 6}
+
+# these replace the above, again the highest one is scored
+on after_initialization do
+  add_rule("$value $han", "Pure Triplets", "%{value} %{han} if you have Full Flush with All Triplets.", %{value: 4, han: !han})
+  update_rule("$value $han", "Pure Triplets", "%{example_hand}", %{value: 4, han: !han, example_hand: ~t"2224445588p 5p5P5p 8p"})
+  add_rule("$value $han", "Pure Seven Pairs", "%{value} %{han} if you have Full Flush with Seven Pairs.", %{value: 5, han: !han})
+  update_rule("$value $han", "Pure Seven Pairs", "%{example_hand}", %{value: 5, han: !han, example_hand: ~t"1224455668899p 1p"})
+  add_rule("$value $han", "All Terminals", "%{value} %{han} if you have Full Flush with Terminals In All Sets.", %{value: 5, han: !han})
+  update_rule("$value $han", "All Terminals", "%{example_hand}", %{value: 5, han: !han, example_hand: ~t"11123789m78899s 7s"})
+  add_rule("$value $han", "Pure Single Wait After 4 Triplets", "%{value} %{han} if you have Full Flush with Single Wait After 4 Triplets.", %{value: 5, han: !han})
+  update_rule("$value $han", "Pure Single Wait After 4 Triplets", "%{example_hand}", %{value: 5, han: !han, example_hand: ~t"6m 9m9M9m 2m2M2m 4M06m 1M23m 6m"})
+  add_rule("$value $han", "Pure Seven Pairs With One Duplicate", "%{value} %{han} if you have Full Flush with Seven Pairs with One Duplicate.", %{value: 6, han: !han})
+  update_rule("$value $han", "Pure Seven Pairs With One Duplicate", "%{example_hand}", %{value: 6, han: !han, example_hand: ~t"1224455669999p 1p"})
+  add_rule("$value $han", "Pure Four Quads", "%{value} %{han} if you have Full Flush with Four Quads.", %{value: 6, han: !han})
+  update_rule("$value $han", "Pure Four Quads", "%{example_hand}", %{value: 6, han: !han, example_hand: ~t"3p 5p5P55p 8P888p 222p2P 1x44p1x 3p"})
+end
+define_yaku meta_yaku, "Pure Triplets", [4, "Han"], has_existing_yaku("Full Flush", "All Triplets"), ["Full Flush", "All Triplets"]
+define_yaku meta_yaku, "Pure Seven Pairs", [5, "Han"], has_existing_yaku("Full Flush", "Seven Pairs"), ["Full Flush", "Seven Pairs"]
+define_yaku meta_yaku, "All Terminals", [5, "Han"], has_existing_yaku("Full Flush", "Terminals In All Sets"), ["Full Flush", "Terminals In All Sets"]
+define_yaku meta_yaku, "Pure Single Wait After 4 Triplets", [5, "Han"], has_existing_yaku("Full Flush", "Single Wait After 4 Triplets"), ["Full Flush", "Single Wait After 4 Triplets"]
+define_yaku meta_yaku, "Pure Seven Pairs With One Duplicate", [6, "Han"], has_existing_yaku("Full Flush", "Seven Pairs with One Duplicate"), ["Full Flush", "Seven Pairs with One Duplicate"]
+define_yaku meta_yaku, "Pure Four Quads", [6, "Han"], has_existing_yaku("Full Flush", "Four Quads"), ["Full Flush", "Four Quads", "Root"]
+
+# count roots
+on before_win do
+  # use add_counter to be compatible with other aka mods
+  root = 0
+  add_counter("root", "count_matches", ["hand", "call_tiles", "winning_tile"], ~m"quad:1")
+end
+
+# these can be scored alongside any of the above
+on after_initialization do
+  add_rule("$value $han", "Root", "%{value} %{han} if you have 4 of the same tile in your winning hand, regardless of how it's arranged. Can be scored multiple times.", %{value: 1, han: !han})
+  update_rule("$value $han", "Root", "%{example_hand}", %{value: 1, han: !han, example_hand: ~t"456789p12378s 8P88p 9s"})
+end
+define_yaku extra_yaku, "Root", ["root", "Han"], root >= 1
+require "yaku/rinshan", %{list: "extra_yaku", name: "After a Kan", value: 1}
+require "yaku/kanburi", %{list: "extra_yaku", name: "Dealing Into Win After Kan", value: 1}
+require "yaku/chankan", %{list: "extra_yaku", name: "Robbing a Kan", value: 1}
+require "yaku/haitei", %{
+  haitei_list: "extra_yaku", haitei_name: "Under the Sea", haitei_value: 1,
+  houtei_list: "extra_yaku", houtei_name: "Under the Sea", houtei_value: 1
+}

@@ -1,0 +1,28 @@
+on before_exhaustive_draw do
+  # `win_by_draw("win")` below will retrigger this event, so add a reentry check
+  if status_missing("ended_by_draw") do
+    set_status_all("ended_by_draw")
+    as everyone do
+      # now actually declare wins for tenpai players (who haven't won yet)
+      as everyone do
+        if status("tenpai") and not_is_winner do
+          # make noten players responsible for this tenpai player's "win"
+          as others do
+            if status_missing("tenpai") do
+              make_responsible_for("prev_seat", "all", as: "prev_seat")
+            else
+              clear_responsibilities
+            end
+          end
+          # have them draw an invisible joker and win
+          change_turn("self")
+          draw(1, "4x")
+          set_tile_alias(["4x"], ["any"])
+          win_by_draw("tsumo")
+          modify_winner("winning_tile_text", "Best")
+          replace_winning_hand_jokers
+        end
+      end
+    end
+  end
+end

@@ -1,2 +1,10 @@
 default fu, 30
+
 on before_scoring do fu = !fu end
+
+if equals(!fu, 0) do
+  # remove fu
+  on after_initialization do
+    delete_rule("Rules", "Fu")
+  end
+end
