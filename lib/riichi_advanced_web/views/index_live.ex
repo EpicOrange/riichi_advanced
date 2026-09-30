@@ -57,7 +57,7 @@ defmodule RiichiAdvancedWeb.IndexLive do
         <input class="nickname-input" type="text" name="nickname" placeholder={t(@lang, "Nickname (optional)")} value={@nickname || ""} />
         <div class="enter-buttons">
           <button name="play" type="submit"><%= t(@lang, "Play") %></button>
-          <button name="learn" type="submit" :if={not @show_room_code_buttons}><%= t(@lang, "Learn") %></button>
+          <button name="tutorial" type="submit" :if={not @show_room_code_buttons}><%= t(@lang, "Tutorial") %></button>
           <button type="button" phx-cancellable-click="toggle_show_room_code">
             <%= if @show_room_code_buttons do %>
               <%= t(@lang, "Close") %>
