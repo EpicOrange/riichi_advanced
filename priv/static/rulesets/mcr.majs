@@ -20,6 +20,7 @@ require "pon"
 require "kan", %{hide_ankans: true}
 require "ron"
 require "tsumo"
+require "yaku/chankan"
 require "riichi_call_style"
 require "standard_win"
 require "yaku/chiitoitsu", %{name: "Seven Pairs", value: 24}
@@ -564,6 +565,7 @@ on after_initialization do
   add_rule("8 Fan", "Mixed Shifted Pungs", "You have consecutive triplets in the pattern 111 222 333 in different suits.")
   add_rule("8 Fan", "Mixed Shifted Pungs", "%{example_hand}", %{example_hand: ~t"222m333p444s3z 3M45m 3z"})
   add_rule("8 Fan", "Out with Replacement Tile", "Win with the replacement tile drawn after calling a kong (not a flower). Does not stack with Self-Drawn (1 Fan), but does stack with Fully Concealed Hand (4 Fan).")
+  delete_rule("1 Fan", "Chankan") # rule added by yaku/chankan mod
   add_rule("8 Fan", "Robbing The Kong", "Win off the tile someone tried to add to a pung.")
   add_rule("8 Fan", "Last Tile Claim", "Win off the last discard.")
   add_rule("8 Fan", "Last Tile Draw", "Win off the last draw.")
