@@ -1535,6 +1535,8 @@ defmodule RiichiAdvanced.GameState do
 
   def handle_cast(:sort_hands, state) do
     state = update_all_players(state, fn _seat, player -> %{ player | hand: Utils.sort_tiles(player.hand) } end)
+    # need to recalculate playable indices
+    GenServer.cast(self(), :calculate_playable_indices)
     {:noreply, state}
   end
 

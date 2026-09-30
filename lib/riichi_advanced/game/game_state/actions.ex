@@ -298,7 +298,8 @@ defmodule RiichiAdvanced.GameState.Actions do
 
       # sort hands if debug mode is on
       state = if Debug.debug() do
-        update_all_players(state, fn _seat, player -> %{ player | hand: Utils.sort_tiles(player.hand) } end)
+        GenServer.cast(self(), :sort_hands)
+        state
       else state end
 
       state = Map.put(state, :awaiting_discard, true)
