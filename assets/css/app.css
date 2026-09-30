@@ -616,13 +616,13 @@ div.pond.kamicha {
   input.mobile-zoom-checkbox + label {
     background: none;
     position: absolute;
-    left: calc(0.8 * var(--tile-size));
-    bottom: calc(2 * var(--tile-size));
+    left: calc(1 * var(--tile-size));
+    bottom: calc(4 * var(--tile-size));
     border-radius: calc(0.125 * var(--tile-size));
     opacity: 0.6;
     margin: 0;
     padding: 0;
-    z-index: 1000;
+    z-index: 10000;
     width: calc(1.5 * var(--tile-size));
     height: calc(1.5 * var(--tile-size));
   }
