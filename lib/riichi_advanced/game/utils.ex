@@ -643,51 +643,44 @@ defmodule RiichiAdvanced.Utils do
   @call_dirs [":", ">", "^", "<"]
   @call_seats [:self, :shimocha, :toimen, :kamicha]
   def deserialize_hand(hand, rules_ref) when is_binary(hand) do
-    case String.split(hand, " ", trim: true) do
-      [] -> {[], [], nil}
-      [hand | calls] ->
-        # hand might be first call
-        {hand, calls} = if String.contains?(hand, @call_dirs) do
-          {"", [hand | calls]}
-        else {hand, calls} end
-        # last call might be winning tile
-        {calls, winning_tile} = case Enum.reverse(calls) do
-          [] -> {[], nil}
-          [last_call | other_calls] = calls ->
-            if String.contains?(last_call, @call_dirs) do
-              {calls, nil}
-            else
-              {other_calls, _deserialize_hand(last_call) |> Enum.at(0)}
-            end
-        end
+    hand = String.split(hand, " ", trim: true)
+    # merge any calls without a direction into hand
+    {hand, calls} = Enum.split_with(hand, &not String.contains?(&1, @call_dirs))
+    # last hand is winning tile
+    
+    {hand, winning_tile} = if length(hand) >= 2 do
+      {hand, winning_tile} = Enum.split(hand, -1)
+      winning_tile = _deserialize_hand(winning_tile |> Enum.at(0)) |> Enum.at(0)
+      {hand, winning_tile}
+    else {hand, nil} end
+    hand = Enum.join(hand)
 
-        buttons = Rules.get(rules_ref, "buttons", %{})
-        hand = _deserialize_hand(hand)
-        calls = for name_call <- calls do
-          delimiter_ix = Enum.find_index(@call_dirs, &String.contains?(name_call, &1))
-          if delimiter_ix != nil do
-            delimiter = Enum.at(@call_dirs, delimiter_ix)
-            seat = Enum.at(@call_seats, delimiter_ix) |> Atom.to_string()
-            case String.split(name_call, delimiter, trim: true) do
-              [name, call] ->
-                [called_tile | call_choice] = _deserialize_hand(call)
-                ret = Map.get(buttons[name], "call_style", %{})
-                |> Map.get(seat, 0..length(call_choice))
-                |> style_call(call_choice, called_tile)
-                [{name, ret}]
-              _ -> 
-                Logger.error("parse_hand_notation: failed to parse call #{inspect(name_call)}")
-                []
-            end
-          else [] end
+    buttons = Rules.get(rules_ref, "buttons", %{})
+    hand = _deserialize_hand(hand)
+    calls = for name_call <- calls do
+      delimiter_ix = Enum.find_index(@call_dirs, &String.contains?(name_call, &1))
+      if delimiter_ix != nil do
+        delimiter = Enum.at(@call_dirs, delimiter_ix)
+        seat = Enum.at(@call_seats, delimiter_ix) |> Atom.to_string()
+        case String.split(name_call, delimiter, trim: true) do
+          [name, call] ->
+            [called_tile | call_choice] = _deserialize_hand(call)
+            ret = Map.get(buttons[name], "call_style", %{})
+            |> Map.get(seat, 0..length(call_choice))
+            |> style_call(call_choice, called_tile)
+            [{name, ret}]
+          _ -> 
+            Logger.error("parse_hand_notation: failed to parse call #{inspect(name_call)}")
+            []
         end
-        |> Enum.concat()
-        {hand, calls, winning_tile}
+      else [] end
     end
+    |> Enum.concat()
+    {hand, calls, winning_tile}
   end
   defp _deserialize_hand(hand) do
     {acc, _suit} = hand
-    |> String.split(["(", ")"], trim: true)
+    |> String.split(["(", ")"], trim: false)
     |> Enum.map_every(2, &String.graphemes/1) # even indices are numeric, take each as a grapheme
     |> List.flatten()
     |> Enum.reverse()
