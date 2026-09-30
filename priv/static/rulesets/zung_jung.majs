@@ -73,6 +73,7 @@ on after_initialization do
   rename_rule_tab("125 pts", "Patterns")
   rename_rule_tab("130 pts", "Patterns")
   rename_rule_tab("155 pts", "Patterns")
+  rename_rule_tab("160 pts", "Patterns")
   rename_rule_tab("200 pts", "Patterns")
   rename_rule_tab("320 pts", "Limit")
   rename_rule_tab("400 pts", "Limit")
