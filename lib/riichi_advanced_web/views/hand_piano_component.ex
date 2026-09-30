@@ -1,8 +1,10 @@
 defmodule RiichiAdvancedWeb.HandPianoComponent do
+  alias RiichiAdvanced.Utils
   use RiichiAdvancedWeb, :live_component
 
   def mount(socket) do
     socket = socket
+    |> assign(:hand, [])
     |> assign(:num_hand_keys, 0)
     |> assign(:num_draw_keys, 0)
     |> assign(:selected_index, nil)
@@ -17,7 +19,7 @@ defmodule RiichiAdvancedWeb.HandPianoComponent do
     ~H"""
     <div class="hand-piano-container">
       <%= if not Enum.empty?(@marking) do %>
-        <%= for {i, can_mark, is_marked} <- prepare_keys(assigns) do %>
+        <%= for {i, can_mark, is_marked} <- prepare_mark_keys(assigns) do %>
           <%= cond do %>
             <% is_marked -> %>
               <div class={["hand-piano-key", "marked", "selected", i >= @num_hand_keys && "draw"]} phx-cancellable-click="unmark_tile" phx-hover="hover_tile" phx-hover-off="hover_off" phx-target={@myself} phx-value-index={i}></div>
@@ -28,7 +30,7 @@ defmodule RiichiAdvancedWeb.HandPianoComponent do
           <% end %>
         <% end %>
       <% else %>
-        <%= for i <- 0..(@num_hand_keys+@num_draw_keys-1)//1 do %>
+        <%= for i <- prepare_keys(@hand) do %>
           <%= if not @your_turn? or i in @playable_indices do %>
             <div class={["hand-piano-key", @selected_index == i && "selected", i >= @num_hand_keys && "draw"]} phx-cancellable-click="play_tile" phx-hover="hover_tile" phx-hover-off="hover_off" phx-target={@myself} phx-value-index={i}></div>
           <% else %>
@@ -72,13 +74,23 @@ defmodule RiichiAdvancedWeb.HandPianoComponent do
     {:noreply, socket}
   end
 
-  def prepare_keys(assigns) do
+  def prepare_keys(hand) do
+    hand
+    |> Enum.with_index()
+    |> Enum.reject(fn {tile, _i} -> Utils.strip_attrs(tile) == :"4x" or Utils.has_attr?(tile, "hidden") end)
+    |> Enum.map(fn {tile, i} -> i end)
+  end
+
+  def prepare_mark_keys(assigns) do
     # just return 0..@num_keys
     # we need to pass in assigns so that marking changes will update keys
-    0..(assigns.num_hand_keys + assigns.num_draw_keys - 1)
-    |> Enum.map(&{&1, 
-      GenServer.call(assigns.game_state, {:can_mark?, assigns.viewer, assigns.seat, &1, :hand}),
-      GenServer.call(assigns.game_state, {:is_marked?, assigns.viewer, assigns.seat, &1, :hand})
-    })
+    assigns.hand
+    |> Enum.with_index()
+    |> Enum.reject(fn {tile, _i} -> Utils.strip_attrs(tile) == :"4x" or Utils.has_attr?(tile, "hidden") end)
+    |> Enum.map(fn {tile, i} -> {
+      i,
+      GenServer.call(assigns.game_state, {:can_mark?, assigns.viewer, assigns.seat, tile, :hand}),
+      GenServer.call(assigns.game_state, {:is_marked?, assigns.viewer, assigns.seat, tile, :hand})
+    } end)
   end
 end

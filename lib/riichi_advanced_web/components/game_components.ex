@@ -152,6 +152,7 @@ defmodule RiichiAdvancedWeb.GameComponents do
         </div>
         <.live_component module={RiichiAdvancedWeb.HandPianoComponent}
           id="hand-piano-component"
+          hand={@state.players[@seat].hand ++ @state.players[@seat].draw}
           num_hand_keys={length(@state.players[@seat].hand)}
           num_draw_keys={length(@state.players[@seat].draw)}
           game_state={@game_state}
