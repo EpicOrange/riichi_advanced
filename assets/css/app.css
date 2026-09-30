@@ -1821,12 +1821,12 @@ div.tile.\31 x.sideways:not(.flat) {
               0 calc(var(--tile-height) / -8) 0 0 var(--tile-front-side);
 }
 div.hand.self div.tile.\31 x:not(.flat),
-div.pond.self div.tile.\31 x:not(.flat) {
+div.pond.self div.tile.\31 x:not(.flat),
+div.pond.self div.tile.facedown:not(.flat) {
   box-shadow: 0 calc(var(--tile-height) / 8) 0 0 var(--tile-back-side),
               0 calc(var(--tile-height) / 4) 0 0 var(--tile-front-side);
 }
-div.hand.self div.tile.facedown:not(.flat),
-div.pond.self div.tile.facedown:not(.flat) {
+div.hand.self div.tile.facedown:not(.flat) {
   box-shadow: 0 calc(var(--tile-height) / -8) 0 0 var(--tile-back-side),
               0 calc(var(--tile-height) / -4) 0 0 var(--tile-front-side);
 }
