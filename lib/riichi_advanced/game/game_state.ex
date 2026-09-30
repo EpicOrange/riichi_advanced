@@ -1211,6 +1211,17 @@ defmodule RiichiAdvanced.GameState do
     if state.ruleset == "american" do GenServer.cast(self(), :calculate_closest_american_hands) end
   end
 
+  def async_calculate_playable_indices(state) do
+    if state.calculate_playable_indices_pids[state.turn] do
+      Process.exit(state.calculate_playable_indices_pids[state.turn], :kill)
+    end
+    self = self()
+    Task.start(fn ->
+      player = state.players[state.turn]
+      GenServer.cast(self, {:set_playable_indices, state.turn, for {tile, ix} <- Enum.with_index(player.hand ++ player.draw), is_playable?(state, state.turn, tile) do ix end})
+    end)
+  end
+
   def broadcast_state_change(state, postprocess \\ false) do
     state = if state.round_result == :win or state.round_result == :continue do
       seat = Enum.at(state.winner_seats, state.winner_index)
@@ -1535,8 +1546,12 @@ defmodule RiichiAdvanced.GameState do
 
   def handle_cast(:sort_hands, state) do
     state = update_all_players(state, fn _seat, player -> %{ player | hand: Utils.sort_tiles(player.hand) } end)
-    # need to recalculate playable indices
-    GenServer.cast(self(), :calculate_playable_indices)
+
+    # if not in log loading mode, recalculate playable indices
+    if not state.log_loading_mode do
+      {:ok, _pid} = async_calculate_playable_indices(state)
+    end
+
     {:noreply, state}
   end
 
@@ -2095,14 +2110,7 @@ defmodule RiichiAdvanced.GameState do
   end
 
   def handle_cast(:calculate_playable_indices, state) do
-    if state.calculate_playable_indices_pids[state.turn] do
-      Process.exit(state.calculate_playable_indices_pids[state.turn], :kill)
-    end
-    self = self()
-    {:ok, pid} = Task.start(fn ->
-      player = state.players[state.turn]
-      GenServer.cast(self, {:set_playable_indices, state.turn, for {tile, ix} <- Enum.with_index(player.hand ++ player.draw), is_playable?(state, state.turn, tile) do ix end})
-    end)
+    {:ok, pid} = async_calculate_playable_indices(state)
     # set interim playable indices to include every tile
     state = state
     |> update_player(state.turn, &%{ &1 | cache: %{ &1.cache | playable_indices: Enum.with_index(&1.hand ++ &1.draw) |> Enum.map(fn {_, i} -> i end) } })
