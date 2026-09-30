@@ -242,7 +242,7 @@ defmodule RiichiAdvanced.AIPlayer do
     |> Map.put(:amerijong_timeout, 0)
 
     ai_speed = Rules.get(state.rules_ref, "ai_speed", @ai_speed)
-    ai_speed = if ai_speed == 0 do @ai_speed else ai_speed end
+    ai_speed = if ai_speed > 0 and ai_speed <= 32 do ai_speed else @ai_speed end
     state = Map.put(state, :ai_speed, ai_speed)
 
     # chinitsu needs match definitions so we don't chombo

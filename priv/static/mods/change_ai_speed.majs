@@ -1,1 +1,3 @@
+default factor, 4
+
 set ai_speed, !factor
