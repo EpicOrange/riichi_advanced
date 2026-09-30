@@ -53,10 +53,10 @@ defmodule RiichiAdvancedWeb.ScoreWindowComponent do
               <thead><tr>
                 <th colspan="6"><%= key_title(@players, @seat, key) %>
                   <div class="score-ledger-mini">
-                    <span class={["mini-self" | if mini_highlight?(key, :self) do ["selected"] else [] end]}></span>
-                    <span class={["mini-shimocha" | if mini_highlight?(key, :shimocha) do ["selected"] else [] end]}></span>
-                    <span class={["mini-toimen" | if mini_highlight?(key, :toimen) do ["selected"] else [] end]}></span>
-                    <span class={["mini-kamicha" | if mini_highlight?(key, :kamicha) do ["selected"] else [] end]}></span>
+                    <span class={["mini-self" | if mini_highlight?(key, :self) do ["selected"] else [] end]} :if={Utils.get_seat(@seat, :self) in @available_seats}></span>
+                    <span class={["mini-shimocha" | if mini_highlight?(key, :shimocha) do ["selected"] else [] end]} :if={Utils.get_seat(@seat, :shimocha) in @available_seats}></span>
+                    <span class={["mini-toimen" | if mini_highlight?(key, :toimen) do ["selected"] else [] end]} :if={Utils.get_seat(@seat, :toimen) in @available_seats}></span>
+                    <span class={["mini-kamicha" | if mini_highlight?(key, :kamicha) do ["selected"] else [] end]} :if={Utils.get_seat(@seat, :kamicha) in @available_seats}></span>
                   </div>
                 </th>
               </tr></thead>
