@@ -24,8 +24,8 @@ def flip_after_kan do
 end
 
 # dora flip on discard/call
-on before_turn_change do flip_after_kan end
-on before_call do flip_after_kan end
+on before_turn_change, prepend: true do flip_after_kan end
+on before_call, prepend: true do flip_after_kan end
 # dora flip on win
 if !immediate do on before_win, prepend: true do flip_after_kan end end
 
