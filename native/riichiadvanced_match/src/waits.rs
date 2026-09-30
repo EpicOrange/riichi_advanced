@@ -86,6 +86,18 @@ pub fn __get_waits_v3(
   possible_waits.sort_unstable();
   possible_waits.dedup();
 
+  // we also need to include nonjoker tiles that all existing jokers might map to, but aren't in the wall
+  // call these hidden possible waits
+  // e.g. if all four 5-pins are aka, leaving zero non-aka 5-pin, we want to show non-aka 5-pin as a possible wait
+  let mut hidden_possible_waits: HashSet<Tile> = HashSet::new();
+  for tile in match_info.aliases.iter().flat_map(|(k, vs)| vs.keys().map(|v| (*k, *v))) {
+    // only add hidden waits
+    if let Err(i) = possible_waits.binary_search(&tile) {
+      possible_waits.insert(i, tile);
+      hidden_possible_waits.insert(tile);
+    } else { continue };
+  }
+
   // save aliases first
   let aliases_backup = match_info.aliases.clone();
 
@@ -123,6 +135,7 @@ pub fn __get_waits_v3(
 
   possible_waits.extend(ret_jokers);
   possible_waits.extend(any_jokers);
+  possible_waits.retain(|t| !hidden_possible_waits.contains(t));
   decode_tiles(&possible_waits, &match_info.all_attrs)
 }
 pub fn ___get_waits_v3(
