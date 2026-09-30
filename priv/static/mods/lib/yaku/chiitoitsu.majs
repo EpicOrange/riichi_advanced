@@ -3,6 +3,7 @@ default name, "Seven Pairs"
 default value, 0
 default kansai, true
 default seventeen_tiles, false
+default seventeen_tiles_chow, false
 
 on after_initialization do
   unless rule_exists("Rules", "Win Condition") do
@@ -25,6 +26,9 @@ end
 
 define_set pair, ~s"0 0"
 cond do
+  !seventeen_tiles_chow ->
+    define_match chiitoitsu_tenpai, ~m"mentsu:1, pair:6 | pair:8"
+    define_match chiitoitsu_win, ~m"mentsu:1, pair:7"
   !seventeen_tiles ->
     define_match chiitoitsu_tenpai, ~m"koutsu:1, pair:6 | pair:8"
     define_match chiitoitsu_win, ~m"koutsu:1, pair:7"
