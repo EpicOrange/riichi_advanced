@@ -443,7 +443,7 @@ defmodule RiichiAdvanced.GameState.Actions do
     end
   end
 
-  defp upgrade_call(state, seat, button_name, call_choice, called_tile, silent \\ false) do
+  def upgrade_call(state, seat, button_name, call_choice, called_tile, silent \\ false) do
     # find the index of the call whose tiles match call_choice
     tile_behavior = state.players[seat].tile_behavior
     index = state.players[seat].calls
