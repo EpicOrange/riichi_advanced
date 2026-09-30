@@ -275,7 +275,6 @@ div.hand {
   width: calc(100% - 2 * var(--tile-size));
 }
 div.call {
-
   align-items: flex-end;
 }
 div.self { z-index: 10; } /* your stuff goes above other people's stuff */
@@ -646,13 +645,13 @@ div.pond.kamicha {
   }
   input.mobile-zoom-checkbox:not(:checked) ~ div.hand.self > div.tiles {
     margin-left: 0;
-    max-width: calc(13.01 * 0.75 * var(--tile-size));
+    max-width: calc(14 * 0.75 * var(--tile-size));
     /* trick to indent second and possibly third row of hand tiles */
-    & > :nth-child(-n+13) { order: 1; }
-    &::before { content: ""; order: 2; flex-basis: calc(2 * 0.75 * var(--tile-size)); height: 0; }
-    & > :nth-child(n+14):nth-child(-n+24) { order: 3; }
-    &::after { content: ""; order: 4; flex-basis: calc(2 * 0.75 * var(--tile-size)); height: 0; }
-    & > :nth-child(n+25) { order: 5; }
+    & > :nth-child(-n+14) { order: 1; }
+    &::before { content: ""; order: 2; flex-basis: 0; height: 0; }
+    & > :nth-child(n+15):nth-child(-n+25) { order: 3; }
+    &::after { content: ""; order: 4; flex-basis: 0; height: 0; }
+    & > :nth-child(n+26) { order: 5; }
   }
   input.mobile-zoom-checkbox:not(:checked) ~ div.hand.self > div.calls {
     transform: scale(calc(1 / var(--mobile-scale-factor)));
