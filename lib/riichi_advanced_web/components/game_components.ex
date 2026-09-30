@@ -254,7 +254,7 @@ defmodule RiichiAdvancedWeb.GameComponents do
               <div class={Utils.get_tile_class(tile)}></div>
             <% end %>
             <div class="display-am-hand-info">
-              <%= yaku.display_name %>
+              <%= dt(@lang, yaku.display_name) %>
               (<%= yaku.value %> <span class="display-am-hand-type"><%= if yaku.concealed do %>c<% else %>x<% end %></span>)
             </div>
             <div class="display-am-hand-difficulty" :if={RiichiAdvanced.GameState.Debug.debug_am_difficulty() or Rules.get(@state.rules_ref, "debug_am_difficulty", false)}>
@@ -283,7 +283,7 @@ defmodule RiichiAdvancedWeb.GameComponents do
         </div>
       <% end %>
       <%= if Rules.has_key?(@state.rules_ref, "show_waits") do %>
-        <% waits = if @interaction_state.hovered_hand != nil and is_map(@interaction_state.visible_opponent_waits) do
+        <% waits = if @interaction_state.hovered_hand != nil and @interaction_state.hovered_hand != @seat and is_map(@interaction_state.visible_opponent_waits) do
              Map.get(@interaction_state.visible_opponent_waits, @interaction_state.hovered_hand, :loading)
            else
              if @interaction_state.show_waits_index != nil and is_map(@interaction_state.visible_waits) do
@@ -293,7 +293,7 @@ defmodule RiichiAdvancedWeb.GameComponents do
         <%= if waits == :loading do %>
           <div class="visible-waits-container">
             <div class="visible-waits visible-waits-loading">
-              Calculating waits...
+              <%= t(@lang, "Calculating waits...") %>
             </div>
           </div>
         <% else %>
