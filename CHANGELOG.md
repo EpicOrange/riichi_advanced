@@ -1,5 +1,37 @@
 
 # Changelog
+- __14 Nov 2026__: v1.5.4:
+  + Added `m`,`p`,`s` suffixes to Amerijong spec
+  + Added end-of-game score printout in message box
+  + Added fast flower declarations in vietnamese
+  + Added Filipino mahjong (with toggleable Visayan variant)
+  + Added most of Tokyo Rules, save for bazoro
+  + Added Shenyang mahjong
+  + Added temporary furiten to all variants that require it
+  + Changed Amerijong nearest hands to favor easier melds over harder melds (except during charleston)
+  + Changed Amerijong winning hand hover to place the winning tile into the hand
+  + Fixed aka hatsu from golden chun mod not awarding shuugi with aka shuugi mod
+  + Fixed Amerijong AI calling behavior, including zombie blanks
+  + Fixed Amerijong joker swaps and flower calls
+  + Fixed button softlock in Amerijong
+  + Fixed chankan not working in MCR
+  + Fixed crash when loading tutorials
+  + Fixed kakan not flipping kandora
+  + Fixed kakan not working with red fives
+  + Fixed logs emitting dead wall tiles in the wrong order (thanks GRBaset!)
+  + Fixed logs not encoding marked calls correctly
+  + Fixed Minefield AI breaking when it sees dora
+  + Fixed mobile piano keys not being able to unmark tiles
+  + Fixed multiple akadora in a call only counting as one akadora
+  + Fixed pon not overriding chii in some cases
+  + Fixed rules tabs in all variants
+  + Fixed shouhai fu calculation
+  + Fixed shouhai riichi button
+  + Fixed show waits only marking some waits as furiten
+  + Fixed vietnamese flower and joker discardability
+  + Fixed vietnamese score display showing more than 6 phán
+  + Fixed vietnamese softlock issues
+  + Fixed wait-count yaku from counting jokers
 - __16 Oct 2026__: v1.5.3:
   + Added B30FJ chicken hand challenge mod
   + Added MCR "MIL Rules" mod

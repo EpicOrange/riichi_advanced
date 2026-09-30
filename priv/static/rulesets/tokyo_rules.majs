@@ -1,6 +1,5 @@
 # remaining TODOs:
 # - need reroll dice until you get a 1 or 6, and ante 300 for every reroll
-# - finish implementing partial_furiten mod
 
 define_base_ruleset riichi
 set display_name, "Tokyo Rules (c. 1957)"
