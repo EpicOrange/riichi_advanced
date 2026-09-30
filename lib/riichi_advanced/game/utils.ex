@@ -374,7 +374,7 @@ defmodule RiichiAdvanced.Utils do
     non_joker_tiles = Enum.reject(tiles, &has_matching_tile?([&1], joker_tiles))
     has_joker = length(non_joker_tiles) < length(tiles)
     has_nonjoker = length(non_joker_tiles) > 0
-    default_tile = nil #Enum.at(non_joker_tiles, -1, Enum.at(tiles, 0))
+    default_tile = Enum.at(non_joker_tiles, -1, Enum.at(tiles, 0))
     if has_joker and has_nonjoker do
       [tile | rest] = non_joker_tiles
       tile = strip_attrs(tile)
