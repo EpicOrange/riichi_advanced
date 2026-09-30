@@ -33,7 +33,7 @@ else
 end
 
 # track aka hatsu count and set aka hatsu status for aka mod
-on before_win do
+on before_win, prepend: true do
   add_counter("aka", "count_matches", ["hand", "calls", "winning_tile"], ~m"nojoker, 06z:1")
   if aka > 0 do set_status("aka_h") end
 end
