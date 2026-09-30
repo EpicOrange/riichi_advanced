@@ -4599,7 +4599,7 @@ div.scoringtest-container div.yaku-outer-container,
 div.scoringtest-container div.mods-container,
 div.scoringtest-container div.config-container {
   width: 100%;
-  height: calc(100% - 3 * var(--tile-size));
+  height: calc(100% - 3.5 * var(--tile-size));
   border-radius: calc(0.25 * var(--tile-size));
   padding: calc(0.5 * var(--tile-size));
   background: #609060;
