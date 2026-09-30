@@ -140,6 +140,7 @@ pub fn __get_waits_v3(
   // println!("elixir_aliases: {:?}", &elixir_aliases);
   // println!("aliases_backup: {:?}", &aliases_backup);
   // println!("ret_jokers: {:?}", &decode_tiles(&ret_jokers, &match_info.all_attrs));
+  // println!("any_jokers: {:?}", &decode_tiles(&any_jokers, &match_info.all_attrs));
 
   possible_waits.extend(ret_jokers);
   possible_waits.extend(any_jokers);
@@ -174,9 +175,6 @@ pub fn ___get_waits_v3(
   //   // __remove_match_definition(match_info, match_definition).next().is_some()
   //   __match_hand_v3(match_info, &vec!(match_definition.clone()))
   // });
-  let mut match_definitions_base = match_definitions.clone();
-  match_definitions_base.truncate(1);
-  let match_definitions = &match_definitions_base;
   let current_tiles_includes_wait = __match_hand_v3(match_info, match_definitions);
 
   // if all nonwaits, mark current_tiles and return, as we're done
