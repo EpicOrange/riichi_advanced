@@ -371,7 +371,7 @@ defmodule RiichiAdvanced.Utils do
   # get the principal tile from a meld consisting of all one tile and jokers
   def _get_joker_meld_tile(tiles, joker_tiles, tile_behavior) do
     if tile_behavior.aliases |> Map.get(:"1f", %{}) |> Map.get([], MapSet.new()) |> Enum.to_list() |> has_matching_tile?(tiles) do
-      # special case for amerijong, where you meld jokers
+      # special case for amerijong, where you meld flowers treating them all the same
       :"1f"
     else
       # don't pass tile_behavior to has_matching_tile?/3 here

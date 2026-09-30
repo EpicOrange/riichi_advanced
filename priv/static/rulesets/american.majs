@@ -697,9 +697,10 @@ define_button am_joker_swap,
   show_when: status_missing("match_start", "dead_hand") and our_turn and not_just_discarded and match(["hand_draw_nonjoker_any", "anyone_joker_meld_tiles"], ~m"pair:1")
   do
     big_text("Swap")
-    mark [["call", 1, ["call_has_joker", "match_call_to_marked_hand"]],
-          ["hand", 1, ["self", "not_1j", "match_hand_to_marked_call"]]]
+    mark [["call", 1, ["1j", "match_call_to_marked_hand"]],
+          ["hand", 1, ["self", "not_1j", "not_5z", "match_hand_to_marked_call"]]]
     swap_out_joker(["1j"])
+    recalculate_buttons
   end
 
 define_button mahjong_heavenly,

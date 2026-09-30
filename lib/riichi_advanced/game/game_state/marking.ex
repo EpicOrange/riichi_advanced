@@ -180,7 +180,12 @@ defmodule RiichiAdvanced.GameState.Marking do
           negated = is_binary(restriction) and String.starts_with?(restriction, "not_")
           restriction = if negated do String.slice(restriction, 4..-1//1) else restriction end
           if Utils.is_tile(restriction) do
-            negated != Utils.same_tile(tile, Utils.to_tile(restriction))
+            tiles = case tile do
+              # could also be a tile with attributes, so we check with is_tile
+              {name, call} -> if Utils.is_tile(tile) do [tile] else Utils.call_to_tiles(tile) end
+              _ -> [tile]
+            end
+            negated != Utils.has_matching_tile?(tiles, [Utils.to_tile(restriction)])
           else
             GenServer.cast(self(), {:show_error, "Unknown restriction: #{inspect(restriction)}"})
             true
