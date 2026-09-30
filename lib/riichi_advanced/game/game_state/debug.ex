@@ -13,7 +13,7 @@ defmodule RiichiAdvanced.GameState.Debug do
   @debug_actions false
   @debug_buttons false
   @debug_specific_buttons %{east: [], south: [], west: [], north: []}
-  @debug_conditions true
+  @debug_conditions false
   @debug_ai false
   @debug_log false
   @debug_tutorial false

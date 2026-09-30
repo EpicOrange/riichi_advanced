@@ -49,7 +49,7 @@ defmodule RiichiAdvanced.RulesetsTest do
 
   def test_ruleset_default_mods(ruleset) do
     %{game_state_pid: game_state_pid} = TestUtils.initialize_test_state(ruleset, [])
-    rules_ref = GenServer.call(game_state_pid, :get_state).rules_ref
+    rules_ref = GenServer.call(game_state_pid, :get_state, 30000).rules_ref
     monitor_ref = Process.monitor(game_state_pid)
     available_mods = Rules.get(rules_ref, "available_mods", %{})
     |> Enum.filter(&is_map/1)
