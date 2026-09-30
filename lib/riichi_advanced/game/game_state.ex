@@ -1787,7 +1787,7 @@ defmodule RiichiAdvanced.GameState do
             #   end
             # else
               # otherwise, tell ai to press a button of their choice
-              has_buttons = not Enum.empty?(state.players[seat].buttons)
+              has_buttons = not Enum.empty?(state.players[seat].buttons) and state.players[seat].choice == nil
               has_call_buttons = not Enum.empty?(state.players[seat].call_buttons)
               has_marking_ui = not Enum.empty?(state.marking[seat])
               last_discard_action = get_last_discard_action(state)
