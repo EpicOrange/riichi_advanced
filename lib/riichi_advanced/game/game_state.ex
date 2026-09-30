@@ -1119,18 +1119,18 @@ defmodule RiichiAdvanced.GameState do
   end
 
   def get_open_riichi_hands(state) do
-    if state.ruleset == "american" do
-      # avoid helping anyone 3-shanten or better
-      state.players
-      |> Enum.filter(fn {_seat, player} ->
-        hand_length = length(player.hand)
-        player.cache.closest_american_hands
-        |> Enum.any?(&hand_length - map_size(&1.pairing_r) <= 3)
-      end)
-    else
+    # if state.ruleset == "american" do
+    #   # avoid helping anyone 3-shanten or better
+    #   state.players
+    #   |> Enum.filter(fn {_seat, player} ->
+    #     hand_length = length(player.hand)
+    #     player.cache.closest_american_hands
+    #     |> Enum.any?(&hand_length - map_size(&1.pairing_r) <= 3)
+    #   end)
+    # else
       state.players
       |> Enum.filter(fn {_seat, player} -> player.hand_revealed end)
-    end
+    # end
     |> Enum.map(fn {_seat, player} -> {player.hand, player.calls, player.tile_behavior} end)
   end
 
@@ -2164,6 +2164,7 @@ defmodule RiichiAdvanced.GameState do
     state = state
     |> update_player(seat, &%{ &1 | cache: %{ &1.cache | closest_american_hands: closest_american_hands } })
     |> Map.put(:calculate_closest_american_hands_pid, nil)
+    # IO.puts("Calculated closest american hands for #{seat}")
     state = broadcast_state_change(state, false)
     {:noreply, state}
   end

@@ -105,9 +105,12 @@ defmodule RiichiAdvanced.AIPlayer do
 
   defp choose_american_discard(state, playables, closest_american_hands) do
     # get shanten
-    hand_length = length(state.player.hand)
-    hand_length = hand_length + length(state.player.draw |> Enum.reject(&Utils.strip_attrs(&1) == :"1x"))
-    hand_length = hand_length + length(state.player.calls |> Enum.flat_map(&Utils.call_to_tiles/1))
+    hand = Utils.strip_attrs(state.player.hand ++ state.player.draw)
+    hand_length = length(hand) + length(state.player.calls |> Enum.flat_map(&Utils.call_to_tiles/1))
+    joker_indices = Utils.strip_attrs(state.player.hand ++ state.player.draw)
+    |> Enum.with_index()
+    |> Enum.filter(fn {t, _i} -> t == :"1j" end)
+    |> Enum.map(fn {_t, i} -> i end)
     shanten = closest_american_hands
     |> Enum.map(&hand_length - map_size(&1.pairing_r))
     |> Enum.min(&<=/2, fn -> :infinity end)
@@ -132,6 +135,9 @@ defmodule RiichiAdvanced.AIPlayer do
         |> Map.new(fn {k, v} -> {k, v * 2} end)
         |> Map.merge(Map.keys(pairing_r) |> Enum.frequencies(), fn _k, v1, v2 -> v1 + v2 end)
     end
+    # jokers are weighted double
+    # this is so if the top move is a jokerless hand we might consider dropping jokers
+    |> Map.new(fn {i, n} -> {i, if i in joker_indices do n * 2 else n end} end)
     # |> IO.inspect(label: "usages")
 
     # closest_american_hands
@@ -139,8 +145,8 @@ defmodule RiichiAdvanced.AIPlayer do
     # |> IO.inspect(label: "pairing_r")
 
     ret = playables
-    # filter out jokers and blind pass tiles
-    |> Enum.reject(fn {tile, _i} -> Utils.strip_attrs(tile) in [:"1j", :"1x"] end)
+    # remove blind pass tiles
+    |> Enum.reject(fn {tile, _i} -> Utils.strip_attrs(tile) == :"1x" end)
     # take least-useful tile, then last-most tile (usually drawn tile)
     |> Enum.min_by(fn {_tile, i} -> {usages[i], -i} end, &<=/2, fn -> nil end)
     if Debug.debug_ai() and ret != nil do
@@ -163,7 +169,7 @@ defmodule RiichiAdvanced.AIPlayer do
     {difficulty, best_shanten} = closest_american_hands
     |> Enum.map(&{-&1.difficulty, hand_length - map_size(&1.pairing_r)})
     |> Enum.min(&<=/2, fn -> {100, 100} end)
-    if best_shanten <= 3 or (best_shanten <= 6 and difficulty <= 30) do
+    if (best_shanten <= 3 and difficulty <= 15) or (best_shanten <= 6 and difficulty <= 30) do
       closest_american_hands
       # then get all hands of that shanten
       |> Enum.filter(&best_shanten == (hand_length - map_size(&1.pairing_r)))
@@ -278,9 +284,8 @@ defmodule RiichiAdvanced.AIPlayer do
         end
 
         playables = if Enum.empty?(non_voided_playables) do playables else non_voided_playables end
-
         # if anyone is open riichi, don't deal into them
-        playables = if not Enum.empty?(open_riichis) do
+        playables = if not state.tsumogiri_bot and not Enum.empty?(open_riichis) do
           danger_tiles = for {hand, calls, tile_behavior} <- open_riichis, into: MapSet.new() do
             Match.get_waits(hand, calls, state.shanten_definitions.win, tile_behavior)
             |> MapSet.new()
