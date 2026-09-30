@@ -773,11 +773,9 @@ Colors are specified as CSS color strings like `"#808080"` or `"lightblue"`. Exa
 - `remove_attr_hand(attr1, attr2, ...)`: Remove the given attributes from all tiles in the current player's hand.
 - `remove_attr_all(attr1, attr2, ...)`: Remove the given attributes from all tiles owned by the current player (hand, draw, aside, but not calls)
 - `remove_attr_tagged(tag, [attr1, ...])`: Remove the given attributes from all instances of the tagged tiles. (includes wall)
-- `tag_tiles(tag_name, tiles)`: Globally tag the given tile(s) with the given tag name.
-- `tag_drawn_tile(tag_name)`: Globally tag the current player's drawn tile with the given tag name.
-- `tag_last_discard(tag_name)`: Globally tag the current player's last discard with the given tag name.
+- `tag_tiles(tag_name, tiles)`: Globally tag the given tile(s) with the given tag name. The following values are valid for `"tiles"`: `"last_discard"`, `"draw"`, `"last_discard"`, `"scryed_tiles"`, `"last_scryed_tile"`, `"all"`, or the name of a single tile like `"2p"`. You can also specify a list like `["1p", "2p", "3p", "last_discard"]`.
 - `tag_dora(tag_name, dora_indicator)`: Globally tag the dora indicated by the given dora_indicator tile, using the toplevel `"dora_indicators"` key as reference.
-- `untag(tag_name)`: Untag all tiles tagged with the given tag name.
+- `untag_tiles(tag_name, tiles)`: Untag all tiles tagged with the given tag name. If `tiles` is given (see `tag_tiles` above), only untag those tiles, otherwise defaults to `"all"`.
 - `convert_last_discard(tile)`: Turn the last discard into the given tile.
 - `flip_own_calls_faceup`: Flip the current player's calls faceup. Mostly used to flip all concealed kongs faceup for variants that hide them.
 - `flip_all_calls_faceup`: Flip all calls faceup. Mostly used to flip all concealed kongs faceup for variants that hide them.

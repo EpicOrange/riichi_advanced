@@ -1841,7 +1841,9 @@ defmodule RiichiAdvanced.GameState.Actions do
           tiles = List.wrap(Enum.at(opts, 1, [:"1x"]))
           |> Enum.flat_map(&case &1 do
             "last_discard" -> if get_last_discard_action(state) != nil do [get_last_discard_action(state).tile] else [] end
+            "scryed_tiles" -> get_scryed_tiles(state, context.seat)
             "last_scryed_tile" -> Enum.take(get_scryed_tiles(state, context.seat), -1)
+            "draw" -> state.players[context.seat].draw
             "all" ->
               visible_tiles = state.players[context.seat].tile_behavior.tile_freqs |> Map.keys()
               aliased_tiles = state.players[context.seat].tile_behavior.aliases |> Map.keys()
@@ -1849,17 +1851,6 @@ defmodule RiichiAdvanced.GameState.Actions do
             _ -> [from_named_tile(state, context, &1)]
           end) |> MapSet.new()
           state = Map.update!(state, :tags, fn tags -> Map.update(tags, tag, tiles, &MapSet.union(&1, tiles)) end)
-          state
-        "tag_drawn_tile"        ->
-          tag = Enum.at(opts, 0, "missing_tag")
-          tile = Enum.at(state.players[context.seat].draw, 0, :"1x")
-          state = Map.update!(state, :tags, fn tags -> Map.update(tags, tag, MapSet.new([tile]), &MapSet.put(&1, tile)) end)
-          state
-        "tag_last_discard"      ->
-          tag = Enum.at(opts, 0, "missing_tag")
-          tile = get_last_discard_action(state).tile
-          state = put_in(state.tags[tag], tile)
-          state = Map.update!(state, :tags, fn tags -> Map.update(tags, tag, MapSet.new([tile]), &MapSet.put(&1, tile)) end)
           state
         "tag_dora"              ->
           tag = Enum.at(opts, 0, "missing_tag")
@@ -1872,11 +1863,12 @@ defmodule RiichiAdvanced.GameState.Actions do
           state
         "untag_tiles"           ->
           tag = Enum.at(opts, 0, "missing_tag")
-          tiles = List.wrap(Enum.at(opts, 1, [:"1x"]))
+          tiles = List.wrap(Enum.at(opts, 1, ["all"]))
           |> Enum.flat_map(&case &1 do
             "last_discard" -> if get_last_discard_action(state) != nil do [get_last_discard_action(state).tile] else [] end
             "scryed_tiles" -> get_scryed_tiles(state, context.seat)
             "last_scryed_tile" -> Enum.take(get_scryed_tiles(state, context.seat), -1)
+            "draw" -> state.players[context.seat].draw
             "all" -> state.players[context.seat].tile_behavior.tile_freqs |> Map.keys()
             _ -> [from_named_tile(state, context, &1)]
           end)
