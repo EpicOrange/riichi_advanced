@@ -82,7 +82,7 @@ pub fn __get_waits_v3(
     encode_tiles(&elixir_game_tiles, &match_info.all_attrs)
     .filter(|tile| !match_info.joker_tiles.contains(tile))
     .collect();
-  possible_waits.extend(get_base_tiles_from_defns(&match_info, &match_definitions));
+  possible_waits.extend(get_base_tiles_from_defns(&match_info, &match_definitions).iter().filter(|tile| match_info.relevant_tiles.contains(tile)));
 
   possible_waits.sort_unstable();
   possible_waits.dedup();

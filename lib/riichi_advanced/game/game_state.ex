@@ -143,6 +143,7 @@ defmodule RiichiAdvanced.GameState do
       attrs = Enum.flat_map(MapSet.union(from_tiles, to_tiles), fn {_tile, attrs} -> attrs; _ -> [] end)
       |> Enum.map(&String.replace_leading(&1, "_", ""))
       all_tiles = MapSet.union(tile_behavior.all_tiles, to_tiles)
+      |> MapSet.delete(:any)
       %{tile_behavior |
         aliases: aliases,
         mappings: mappings,
@@ -777,7 +778,7 @@ defmodule RiichiAdvanced.GameState do
         counters: Enum.filter(&2.counters, fn {counter, _amt} -> counter in persistent_counters end) |> Map.new(),
         tile_behavior: %TileBehavior{
           tile_freqs: tile_freqs,
-          all_tiles: MapSet.new(Map.keys(tile_freqs)),
+          all_tiles: MapSet.new(Map.keys(tile_freqs)) |> MapSet.delete(:any),
           attrs: Rules.get(state.rules_ref, :all_attrs, []),
         }
       })
