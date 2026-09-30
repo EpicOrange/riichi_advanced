@@ -75,7 +75,7 @@ function getCancellableClickTarget(elem) {
 }
 function getHoverTarget(elem) {
   if (!elem) return null;
-  if (elem.attributes.hasOwnProperty("phx-value-index")) return elem;
+  if (elem.attributes.hasOwnProperty("phx-hover")) return elem;
   return getHoverTarget(elem.parentElement);
 }
 function shouldIgnoreDoubleOrRightClick(elem) {
@@ -87,7 +87,7 @@ function shouldIgnoreDoubleOrRightClick(elem) {
 }
 
 window.mouseDownElement = null;
-// window.hoverElement = null;
+window.hoverElement = null;
 window.ignoreDoubleClick = false;
 function addCancellableClickListeners() {
   this.el.addEventListener('mousedown', e => {
@@ -130,36 +130,36 @@ function addCancellableClickListeners() {
       this.pushEvent("right_clicked", {"tag_name": e.target.tagName, "classes": [...e.target.classList]});
     }
   });
-  // this.el.addEventListener('mousemove', e => {
-  //   var target = getHoverTarget(e.target);
-  //   if (target !== null) {
-  //     if (window.hoverElement !== target) {
-  //       var params = {};
-  //       for (let attr of target.attributes) {
-  //         if (attr.name.startsWith("phx-value-")) {
-  //           var key = attr.name.substring(10);
-  //           params[key] = attr.value;
-  //         }
-  //       }
-  //       if (target.attributes.hasOwnProperty("phx-target")) {
-  //         this.pushEventTo(target.getAttribute("phx-target"), target.getAttribute("phx-hover"), params);
-  //       } else {
-  //         this.pushEvent(target.getAttribute("phx-hover"), params);
-  //       }
-  //     }
-  //     window.hoverElement = target;
-  //   } else {
-  //     if (window.hoverElement !== null && window.hoverElement.attributes.hasOwnProperty("phx-hover-off")) {
-  //       target = window.hoverElement;
-  //       if (target.attributes.hasOwnProperty("phx-target")) {
-  //         this.pushEventTo(target.getAttribute("phx-target"), target.getAttribute("phx-hover-off"), params);
-  //       } else {
-  //         this.pushEvent(target.getAttribute("phx-hover-off"), params);
-  //       }
-  //     }
-  //     window.hoverElement = null;
-  //   }
-  // });
+  this.el.addEventListener('mousemove', e => {
+    var target = getHoverTarget(e.target);
+    if (target !== null) {
+      if (window.hoverElement !== target) {
+        var params = {};
+        for (let attr of target.attributes) {
+          if (attr.name.startsWith("phx-value-")) {
+            var key = attr.name.substring(10);
+            params[key] = attr.value;
+          }
+        }
+        if (target.attributes.hasOwnProperty("phx-target")) {
+          this.pushEventTo(target.getAttribute("phx-target"), target.getAttribute("phx-hover"), params);
+        } else {
+          this.pushEvent(target.getAttribute("phx-hover"), params);
+        }
+      }
+      window.hoverElement = target;
+    } else {
+      if (window.hoverElement !== null && window.hoverElement.attributes.hasOwnProperty("phx-hover-off")) {
+        target = window.hoverElement;
+        if (target.attributes.hasOwnProperty("phx-target")) {
+          this.pushEventTo(target.getAttribute("phx-target"), target.getAttribute("phx-hover-off"), params);
+        } else {
+          this.pushEvent(target.getAttribute("phx-hover-off"), params);
+        }
+      }
+      window.hoverElement = null;
+    }
+  });
 }
 Hooks.ClickListener = {
   mounted() {
