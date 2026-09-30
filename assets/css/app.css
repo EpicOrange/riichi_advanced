@@ -2099,9 +2099,16 @@ div.hand-piano-container > div.hand-piano-key {
     &::after {
       border-right: calc(0.05 * var(--tile-size)) solid var(--border-color);
     }
-    &:has(+ .hand-piano-key + .inactive)::after {
+    &:has(+ .hand-piano-key + .inactive)::after,
+    &:last-child::after,
+    &:nth-last-child(2)::after {
       width: calc(0.6025 * var(--tile-size));
       border-right: calc(var(--border-width) - 0.001 * var(--tile-size)) solid var(--border-color);
+    }
+    &.draw:has(+ .hand-piano-key + .inactive)::after,
+    &.draw:last-child::after,
+    &.draw:nth-last-child(2)::after {
+      width: calc(1.205 * var(--tile-size));
     }
   }
   &.inactive {
