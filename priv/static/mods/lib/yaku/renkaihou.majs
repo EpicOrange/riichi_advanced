@@ -1,0 +1,25 @@
+# note that the rinshan mod has options for double kan bonus,
+# this mod is only if you want them to be two separate yaku on the yaku select screen
+
+default list, "yaku"
+default name, "Renkaihou"
+default value, 2
+
+on after_initialization do
+  if equals(!name, "Renkaihou") do
+    add_rule("$value $han", !name, "\"Consecutive Blossom\". You called kan off on a kan replacement tile and tsumoed _that_ rinshan tile. Does not stack with rinshan.", %{value: !value, han: !han}, 102)
+  else
+    add_rule("$value $han", !name, "You called kan off on a kan replacement tile and won on _that_ tile.", %{value: !value, han: !han}, 102)
+  end
+  # update_rule("$value $han", !name, "%{example_hand}", %{value: !value, han: !han, example_hand: ~t"88p789s11z 333p3P 7s77S7s 1z"})
+end
+
+define_yaku yaku, !name, [!value, !han], status("double_kan"), ["Rinshan"]
+
+def discard_passed, append: true do
+  as others do unset_status("double_kan") end
+end
+
+def do_kan_draw, prepend: true do
+  if status("kan") do set_status("double_kan") end
+end

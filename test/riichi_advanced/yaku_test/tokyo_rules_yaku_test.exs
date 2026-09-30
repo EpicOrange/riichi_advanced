@@ -169,7 +169,6 @@ defmodule RiichiAdvanced.YakuTest.TokyoRulesYaku do
     })
   end
 
-
   test "tokyo - sanrenkou open" do
     TestUtils.test_yaku_advanced("tokyo_rules", [], [], """
     {
@@ -195,6 +194,40 @@ defmodule RiichiAdvanced.YakuTest.TokyoRulesYaku do
         yaku: [{"Sanrenkou", [3, "Han"]}],
         minipoints: 34,
         score: 1630
+      }
+    })
+  end
+
+  test "tokyo - renkaihou" do
+    TestUtils.test_yaku_advanced("tokyo_rules", [], [], """
+    {
+      "starting_hand": {
+        "east": ["1m", "2m", "3m", "4m", "4m", "4m", "1p", "2p", "2p", "4p", "4p", "2z", "5z"],
+        "south": ["1m", "6m", "7m", "2p", "5p", "8p", "3s", "6s", "9s", "1z", "2z", "3z", "4z"],
+        "west": ["2m", "6m", "7m", "2p", "5p", "8p", "3s", "6s", "9s", "1z", "2z", "3z", "4z"],
+        "north": ["5m", "6m", "8m", "5p", "8p", "9p", "3s", "6s", "9s", "1z", "2z", "3z", "4z"]
+      },
+      "starting_draws": ["6z", "4p", "2s", "2s", "2s", "3p", "4m"],
+      "starting_dead_wall": ["4p", "5z"]
+    }
+    """, [
+      %{"type" => "discard", "tile" => "6z", "player" => 0, "tsumogiri" => true},
+      %{"type" => "discard", "tile" => "4p", "player" => 1, "tsumogiri" => true},
+      %{"type" => "buttons_pressed", "buttons" => [%{"button" => "pon"}, nil, nil, nil]},
+      %{"type" => "discard", "tile" => "2z", "player" => 0, "tsumogiri" => false},
+      %{"type" => "discard", "tile" => "2s", "player" => 1, "tsumogiri" => true},
+      %{"type" => "discard", "tile" => "2s", "player" => 2, "tsumogiri" => true},
+      %{"type" => "discard", "tile" => "2s", "player" => 3, "tsumogiri" => true},
+      %{"type" => "discard", "tile" => "2p", "player" => 0, "tsumogiri" => false},
+      %{"type" => "discard", "tile" => "4m", "player" => 1, "tsumogiri" => true},
+      %{"type" => "buttons_pressed", "buttons" => [%{"button" => "daiminkan"}, nil, nil, nil]},
+      %{"type" => "buttons_pressed", "buttons" => [%{"button" => "kakan"}, nil, nil, nil]},
+      %{"type" => "buttons_pressed", "buttons" => [%{"button" => "tsumo"}, nil, nil, nil]},
+    ], %{
+      east: %{
+        yaku: [{"Renkaihou", [3, "Han"]}],
+        minipoints: 42,
+        score: 2010
       }
     })
   end
