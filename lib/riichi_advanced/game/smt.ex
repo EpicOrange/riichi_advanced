@@ -115,6 +115,9 @@ defmodule RiichiAdvanced.SMT do
             query = "(get-value (#{Enum.join(Enum.map(joker_ixs, fn i -> "joker#{i}" end), " ")}))\n"
             smt = Enum.join(contra ++ ["(check-sat)\n", query])
             if Debug.print_smt() do
+              if not Enum.empty?(last_assignments) do
+                IO.puts("; contradicting assignments #{inspect(last_assignments)}")
+              end
               IO.puts(smt)
             end
             {:ok, response} = GenServer.call(solver_pid, {:query, smt, false}, 60000)
@@ -173,7 +176,9 @@ defmodule RiichiAdvanced.SMT do
                   end
                 end) end))
                 {ret, {lock, final_assignments, true}}
-              [:unsat | _] -> {:halt, {lock, last_assignments, true}}
+              [:unsat | _] ->
+                if Debug.print_smt() do IO.puts("; unsat") end
+                {:halt, {lock, last_assignments, true}}
             end
         end
       end,

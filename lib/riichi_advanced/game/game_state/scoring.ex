@@ -205,9 +205,12 @@ defmodule RiichiAdvanced.GameState.Scoring do
         winning_tile -> winning_tile
       end
 
+      # it's possible that before_win modifies hand or tile behavior (e.g. shouhai mod), so fetch them again
+      %{hand: hand, calls: calls, tile_behavior: tile_behavior} = state.players[seat]
+
       # obtain smt_hand and smt_calls after before_win runs
       #   because we may have run actions to modify the hand (e.g. by adding attributes)
-      {smt_hand, smt_calls} = JokerSolver.get_smt_hand_calls(state.players[seat].hand, state.players[seat].calls, winning_tile)
+      {smt_hand, smt_calls} = JokerSolver.get_smt_hand_calls(hand, calls, winning_tile)
       # |> IO.inspect(label: inspect(win_source), limit: :infinity)
 
       # now calculate joker assignments

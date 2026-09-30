@@ -65,7 +65,9 @@ defmodule RiichiAdvanced.GameState.JokerSolver do
     use_smt = Rules.get(rules_ref, "score_calculation", %{}) |> Map.get("use_smt", true)
     if use_smt and Enum.any?(Enum.uniq(smt_hand ++ Enum.concat(smt_calls)), &TileBehavior.is_joker?(&1, tile_behavior)) do
       # obtain all joker assignments (as a stream)
-      RiichiAdvanced.SMT.match_hand_smt_v4(mutex, smt_solver, smt_hand, smt_calls, Rules.translate_match_definitions(rules_ref, ["win"]), tile_behavior)
+      match_definitions = Rules.translate_match_definitions(rules_ref, ["smt_win"], true)
+      match_definitions = if Enum.empty?(match_definitions) do Rules.translate_match_definitions(rules_ref, ["win"]) else match_definitions end
+      RiichiAdvanced.SMT.match_hand_smt_v4(mutex, smt_solver, smt_hand, smt_calls, match_definitions, tile_behavior)
     else Stream.concat([]) end
     # re-add the obvious jokers back into each assignment
     # also returns Stream.new([[obvious_joker_assignment]]) if stream was empty

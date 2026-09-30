@@ -55,3 +55,10 @@ on before_win do
 end
 
 define_match tenpai_14, "tenpai"
+
+# if it exists, "smt_win" is used by joker solver instead of "win" to solve for jokers
+define_match smt_win, ~m"""
+    exhaustive, mentsu:4, pair:1
+  | quad:-1, pair:7
+  | unique, dismantle_calls, orphans_any:13, orphans_any:1
+  """
