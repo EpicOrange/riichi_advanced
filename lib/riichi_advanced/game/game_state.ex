@@ -299,7 +299,7 @@ defmodule RiichiAdvanced.GameState do
       drawn_reserved_tiles: [],
       named_scryed_tiles: [],
       tags: %{},
-      marking: Map.new([:east, :south, :west, :north], fn seat -> {seat, %{}} end),
+      marking: Map.new([:east, :south, :west, :north], fn seat -> {seat, []} end),
       txns: [],
     ]
   end
@@ -1735,7 +1735,6 @@ defmodule RiichiAdvanced.GameState do
   def handle_cast({:cancel_call_buttons, seat}, state) do
     event = ["press_call_button", Atom.to_string(seat), "cancel"]
     state = check_forced_events(state, event, fn state, finalize ->
-
       # go back to button clicking phase
       state = update_player(state, seat, fn player -> %{ player | buttons: Buttons.to_buttons(state, seat, player.button_choices), call_buttons: %{}, deferred_context_actions: [], choice: nil } end)
       notify_ai(state)

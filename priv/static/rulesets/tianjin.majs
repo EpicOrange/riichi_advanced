@@ -285,7 +285,7 @@ define_button pon,
     and not_no_tiles_remaining
     and someone_else_just_discarded
     and call_available,
-  call: [[0, 0]],
+  call: [[0, 0], [0, "any@wild"], ["any@wild", "any@wild"]],
   call_style: %{
     kamicha: ["call_sideways", 0, 1],
     toimen: [0, "call_sideways", 1],
@@ -304,9 +304,9 @@ define_button daiminkan,
     and not_no_tiles_remaining
     and someone_else_just_discarded
     and call_available,
+  call: [[0, 0, 0], [0, 0, "any@wild"], [0, "any@wild", "any@wild"], ["any@wild", "any@wild", "any@wild"]],
   call_conditions: not_call_contains([%{tile: "any", attrs: ["wild"]}], 1),
-  precedence_over: ["pon"],
-  call: [[0, 0, 0]]
+  precedence_over: ["pon"]
   do
     big_text("Kong")
     call
@@ -324,7 +324,7 @@ define_button ankan,
     and not_just_discarded
     and not_just_called
     and self_call_available,
-  call: [[0, 0, 0]],
+  call: [[0, 0, 0], [0, 0, "any@wild"], [0, "any@wild", "any@wild"], ["any@wild", "any@wild", "any@wild"]],
   call_style: %{self: [["1x", 2], 0, 1, ["1x", 3]]},
   call_conditions: call_contains([%{tile: "any", attrs: ["wild"]}], 4)
     or not_call_contains([%{tile: "any", attrs: ["wild"]}], 1)
@@ -352,7 +352,7 @@ define_button kakan,
     and not_just_discarded
     and not_just_called
     and can_upgrade_call,
-  call: [[0, 0, 0]],
+  call: [[0, 0, 0], [0, 0, "any@wild"], [0, "any@wild", "any@wild"], ["any@wild", "any@wild", "any@wild"]],
   upgrades: "pon",
   call_conditions: not_call_contains([%{tile: "any", attrs: ["wild"]}], 1)
   do
@@ -452,4 +452,6 @@ on after_initialization do
   add_rule("Win Patterns", "Earthly Hand", "×4 fan multiplier if you are not the dealer and you won with the tiles initially drawn. Does not contribute towards Multiple Patterns.")
   add_rule("Win Patterns", "Multiple Patterns", "+1 fan for each pattern if you won with 2 or more win patterns. Does not contribute towards the 2 fan minimum.")
   update_rule("Win Patterns", "Multiple Patterns", "%{example_hand}", %{example_hand: ~t"1234m6m@_dora789m234p88s 5m@dora"})
+  delete_rule("4 ×", "Earthly Hand")
+  delete_rule("6 ×", "Heavenly Hand")
 end

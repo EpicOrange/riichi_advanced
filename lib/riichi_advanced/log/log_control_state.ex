@@ -214,7 +214,7 @@ defmodule RiichiAdvanced.LogControlState do
             if button not in state.game_state.players[seat].buttons do
               # IO.inspect("Tried to press nonexistent button #{button}, skipping instead")
               # we do need to skip, e.g. calling ankan but we have to skip chii first
-              skip_buttons(state)
+              skip_buttons(state, seat)
               Map.put(state, :game_state, GenServer.call(state.game_state_pid, :get_state, 300000))
             else state end
         end

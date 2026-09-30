@@ -3,8 +3,8 @@
     "starting_hand": {
       "east": ["1m", "2s", "2s", "1p", "5p", "7p", "2s", "3s", "7s", "1z", "2z", "4z", "5z"],
       "south": ["3p", "3m", "4m", "5m", "9m", "2s", "4s", "4s", "5s", "5s", "3z", "3z", "3z"],
-      "west": ["2m", "3m", "8m", "8m", "1p", "1p", "1p", "1s", "2s", "3s", "7s", "8s", "8s"],
-      "north": ["1m", "1m", "1m", "2m", "3m", "8m", "8m", "1s", "2s", "3s", "7s", "8s", "8s"]
+      "west": ["2m", "3m", "8m", "8m", "1p", "1p", "1p", "1s", "2s", "4s", "7s", "8s", "8s"],
+      "north": ["1m", "1m", "1m", "2m", "3m", "8m", "8m", "1s", "2s", "5s", "7s", "8s", "8s"]
     },
     "starting_draws": ["3s", "4s", "3z", "6m", "7s", "9p", "3m", "5m"],
     "starting_dice": [1, 1],
@@ -107,7 +107,7 @@
       ["await_click"],
       ["clear_objects"],
       ["add_object", "text", {"size": 0.4, "width": 5, "x": 4.125, "y": 7.5,
-        "text": "Our Kong replacement tile is a 6 of characters. Since we have a wildcard in hand, we can either discard it and wait on 1, 2, 3, 4, or 5 bamboo, or we could discard 2 bamboo to wait on any character tile except 9.\n(Click to continue)"
+        "text": "Our Kong replacement tile is a 6 of characters. Since we have a wildcard in hand, we can either discard the 6 and wait on 1, 2, 3, 4, or 5 bamboo, or we could discard 2 bamboo to wait on any character tile except 9.\n(Click to continue)"
       }],
       ["await_click"],
       ["clear_objects"],
@@ -135,7 +135,7 @@
       ["add_object", "text", {"size": 0.4, "width": 5, "x": 4.125, "y": 7.5,
         "text": "Instead, we have drawn the winning tile ourselves! Declare Zimo to win!"
       }],
-      ["add_object", "focus", {"width": 0.75, "hand_index": 10.5}],
+      ["add_object", "focus", {"width": 0.75, "hand_index": 10.375}],
       ["add_object", "focus", {"width": 1.5, "x": 12, "y": "buttons"}],
       ["force_event", ["press_button", "south", "tsumo"]],
       ["clear_objects"],

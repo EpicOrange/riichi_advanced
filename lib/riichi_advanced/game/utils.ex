@@ -10,7 +10,14 @@ defmodule RiichiAdvanced.Utils do
       [tile_spec | attrs] -> {Constants.to_tile()[tile_spec], attrs}
       %{"tile" => tile_spec, "attrs" => attrs} -> {Constants.to_tile()[tile_spec], attrs}
       {tile_spec, attrs} -> {Constants.to_tile()[tile_spec], attrs}
-      _ -> Constants.to_tile()[tile_spec]
+      _ ->
+        if is_binary(tile_spec) and String.contains?(tile_spec, "@") do
+          case String.split(tile_spec, "@") |> Enum.map(&String.trim/1) do
+            [id] -> to_tile(id)
+            [id, attrs] -> to_tile([id | String.split(attrs, "&")])
+            _ -> {:error, "expected no more than one @ in tile spec #{tile_spec}"}
+          end
+        else Constants.to_tile()[tile_spec] end
     end
   end
 
@@ -19,7 +26,10 @@ defmodule RiichiAdvanced.Utils do
       [tile_spec | _attrs] -> Map.has_key?(Constants.to_tile(), tile_spec)
       %{"tile" => tile_spec, "attrs" => _attrs} -> Map.has_key?(Constants.to_tile(), tile_spec)
       {tile_spec, attrs} when is_list(attrs) -> Map.has_key?(Constants.to_tile(), tile_spec)
-      _ -> Map.has_key?(Constants.to_tile(), tile_spec)
+      _ -> 
+        if is_binary(tile_spec) and String.contains?(tile_spec, "@") do
+          String.split(tile_spec, "@") |> Enum.map(&String.trim/1) |> Enum.at(0) |> is_tile()
+        else Map.has_key?(Constants.to_tile(), tile_spec) end
     end
   end
 

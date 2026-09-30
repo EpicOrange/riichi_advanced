@@ -44,7 +44,7 @@ defmodule RiichiAdvancedWeb.TutorialMenuLive do
       wall: [],
       wall_index: 0,
       interruptible_actions: %{},
-      marking: Map.new([:east, :south, :west, :north], fn seat -> {seat, %{}} end),
+      marking: Map.new([:east, :south, :west, :north], fn seat -> {seat, []} end),
       mutex: nil,
       smt_solver: nil,
     })

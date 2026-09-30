@@ -433,6 +433,7 @@ defmodule RiichiAdvanced.AIPlayer do
           "start_flower" in player.buttons -> "start_flower"
           "start_no_flower" in player.buttons -> "start_no_flower"
           "extra_turn" in player.buttons -> "extra_turn"
+          "start_pass" in player.buttons -> "start_pass"
           true -> Enum.random(player.buttons)
         end
         "void_manzu" in player.buttons ->
