@@ -468,7 +468,8 @@ defmodule RiichiAdvanced.Match do
         if Enum.all?(Enum.zip(hand, tiles), fn {t1, t2} ->
           {t1, attrs1} = Utils.to_attr_tile(t1)
           {t2, attrs2} = Utils.to_attr_tile(t2)
-          t1 == t2 and Enum.all?(attrs2, &String.starts_with?(&1, "_") or &1 in attrs1 or ("_" <> &1) in attrs1)
+          same_id = t1 == t2 or t1 in (aliases |> Map.get(t2, %{}) |> Map.get(attrs2, MapSet.new()))
+          same_id and Enum.all?(attrs2, &String.starts_with?(&1, "_") or &1 in attrs1 or ("_" <> &1) in attrs1)
         end) do [[]] else [] end
       true ->
         # encode every tile into a TileSet
