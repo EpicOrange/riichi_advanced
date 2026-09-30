@@ -32,4 +32,32 @@ defmodule RiichiAdvanced.RegressionTest do
     })
   end
 
+  test "riichi - suucha riichi deal-in is not a draw" do
+    TestUtils.test_yaku_advanced("riichi", ["suucha_riichi"], [], """
+    {
+      "starting_hand": {
+        "east": ["1m", "2m", "3m", "2p", "3p", "4p", "2s", "3s", "4s", "6s", "7s", "8s", "1z"],
+        "south": ["1m", "2m", "3m", "2p", "3p", "4p", "2s", "3s", "4s", "6s", "7s", "8s", "2z"],
+        "west": ["1m", "2m", "3m", "2p", "3p", "4p", "2s", "3s", "4s", "6s", "7s", "8s", "3z"],
+        "north": ["1m", "2m", "3m", "2p", "3p", "4p", "2s", "3s", "4s", "6s", "7s", "8s", "4z"]
+      },
+      "starting_draws": ["7z", "7z", "7z", "1z"]
+    }
+    """, [
+      %{"type" => "buttons_pressed", "buttons" => [%{"button" => "riichi"}, nil, nil, nil]},
+      %{"type" => "discard", "tile" => "7z", "player" => 0, "tsumogiri" => true},
+      %{"type" => "buttons_pressed", "buttons" => [nil, %{"button" => "riichi"}, nil, nil]},
+      %{"type" => "discard", "tile" => "7z", "player" => 1, "tsumogiri" => true},
+      %{"type" => "buttons_pressed", "buttons" => [nil, nil, %{"button" => "riichi"}, nil]},
+      %{"type" => "discard", "tile" => "7z", "player" => 2, "tsumogiri" => true},
+      %{"type" => "buttons_pressed", "buttons" => [nil, nil, nil, %{"button" => "riichi"}]},
+      %{"type" => "discard", "tile" => "1z", "player" => 3, "tsumogiri" => true},
+      %{"type" => "buttons_pressed", "buttons" => [%{"button" => "ron"}, nil, nil, nil]},
+    ], %{
+      east: %{
+        yaku: [{"Double Riichi", [2, "Han"]}, {"Ippatsu", [1, "Han"]}],
+      }
+    })
+  end
+
 end
