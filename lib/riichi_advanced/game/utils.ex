@@ -619,7 +619,7 @@ defmodule RiichiAdvanced.Utils do
     else "" end
     hand <> calls <> winning_tile
   end
-  def _serialize_hand(hand) do
+  defp _serialize_hand(hand) do
     # separate hand into suits and parenthesize anything that has more than one digit, or has attrs
     Enum.group_by(hand, fn
       {id, _attrs} -> Atom.to_string(id) |> String.last()
@@ -627,14 +627,18 @@ defmodule RiichiAdvanced.Utils do
     end)
     |> Enum.map(fn {suit, tiles} ->
       Enum.map_join(tiles, fn
-        {id, []} when length(id) > 1 -> "(#{Atom.to_string(id) |> String.replace_suffix(suit, "")})"
-        {id, []} -> Atom.to_string(id) |> String.replace_suffix(suit, "")
-        {id, attrs} -> "(#{Atom.to_string(id) |> String.replace_suffix(suit, "")}@#{Enum.join(attrs, "&")})"
-        id when length(id) > 1 -> "(#{Atom.to_string(id) |> String.replace_suffix(suit, "")})"
-        id -> Atom.to_string(id) |> String.replace_suffix(suit, "")
+        {id, []} when length(id) > 1 -> "(#{serialize_tile(id, suit)})"
+        {id, []} -> serialize_tile(id, suit)
+        {id, attrs} -> "(#{serialize_tile(id, suit)}@#{Enum.join(attrs, "&")})"
+        id when length(id) > 1 -> "(#{serialize_tile(id, suit)})"
+        id -> serialize_tile(id, suit)
       end) <> suit
     end)
     |> Enum.join()
+  end
+  defp serialize_tile(id, suit) do
+    t = Atom.to_string(id) |> String.replace_suffix(suit, "")
+    if String.length(t) == 1 do t else "(#{t})" end
   end
 
   # parse the hand: a sequence of numbers or paren clauses 12(34@attr1&attr2)567m
