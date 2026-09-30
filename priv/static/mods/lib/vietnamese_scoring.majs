@@ -105,27 +105,19 @@ define_yaku meta_yaku, "Progressive Counting", [3, "Phán"], at_least(5, +@pc_ph
 define_yaku meta_yaku, "Progressive Counting", [3, "Phán"], +@pc_mun and at_least(4, +@pc_phan)
 define_yaku meta_yaku, "Progressive Counting", [3, "Phán"], +@pc_mun and at_least(5, +@pc_phan)
 
+# convert multiples of 6 phán to 1 mủn
+on after_win do
+  phan = mod(points, 6)
+  mun = points2 + floor_div(points, 6)
+  modify_winner("points", "phan")
+  modify_winner("points2", "mun")
+end
+
 def get_base_score do
-  cond do
-    points < 6 and points2 <= 0 -> phan = points :: "Phán"
-    points <= 0 and points2 > 0 -> mun = points2 :: "Mủn"
-    points >= 6 and points2 <= 0 ->
-      phan = points :: "Phán"
-      if phan >= 6 do
-        mun = floor_div(phan, 6) :: "Mủn equiv."
-        phan -= mun * 6
-      end
-      if phan > 0 do phan = phan :: "Phán rem." end
-    true ->
-      phan = points :: "Phán"
-      if phan >= 6 do
-        mun = floor_div(phan, 6) :: "Mủn equiv."
-        phan -= mun * 6
-        mun += points2 :: "Mủn total"
-      else
-        mun = points2 :: "Mủn"
-      end
-  end
+  phan = mod(points, 6)
+  mun = points2 + floor_div(points, 6)
+  mun = mun :: "Mủn"
+  phan = phan :: "Phán"
   cond do
     mun > 0 -> total = mun * 32 :: "Single"
     phan <= 0 -> total = 0 :: "Single (0 Phán)"
