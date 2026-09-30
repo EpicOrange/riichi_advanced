@@ -333,14 +333,14 @@ defmodule RiichiAdvanced.GameState.American do
                         # |> IO.inspect(label: "hand after removing #{inspect(group)} from #{inspect(hand)}")
                       end)
                       if new_hand != nil do
-                        # if the match succeeded, keep removing unti we remove num-1 groups
+                        # if the match succeeded, keep removing until we remove num-1 groups
                         # num-1 because we only need num-1 separators to split the hand into num groups
                         {:cont, new_hand}
                       else
-                        # if the match failed, we move onto the second phase:
-                        # there are no more nonjokers to remove, so remove all jokers
-                        # we removed i-1 nonjokers, so we need num-(i-1) jokers
-                        {:halt, Match.try_remove_all_tiles(hand, List.duplicate(:"1j", num-(i-1)), %{}, tile_behavior.attrs) |> Enum.at(0)}
+                        # second phase: if the match failed, there are no more nonjokers to remove, so remove all jokers
+                        # we removed i-1 nonjokers, so we need n-(i-1) jokers
+                        n = length(List.wrap(Enum.at(groups, 0, []))) * num
+                        {:halt, Match.try_remove_all_tiles(hand, List.duplicate(:"1j", n-(i-1)), tile_behavior.aliases, tile_behavior.attrs) |> Enum.at(0)}
                       end
                     end)
                     if new_hand != nil do
