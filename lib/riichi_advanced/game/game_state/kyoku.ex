@@ -446,12 +446,8 @@ defmodule RiichiAdvanced.GameState.Kyoku do
 
     score_rules = Rules.get(state.rules_ref, "score_calculation", %{})
     winner = cxt
-    |> Map.merge(state.winners[seat])
     |> Map.merge(%{
-        seat: seat,
-        player: state.players[seat],
-        yaku: cxt.yaku,
-        score: score,
+        # things that modify_winner modifies should be overwritten by current winner object
         displayed_score: score,
         score_denomination: Map.get(score_rules, "score_denomination", ""),
         point_name: Map.get(score_rules, "point_name", ""),
@@ -481,6 +477,13 @@ defmodule RiichiAdvanced.GameState.Kyoku do
           :discard        -> Map.get(score_rules, "win_by_discard_label", "")
           :call           -> Map.get(score_rules, "win_by_discard_label", "")
         end,
+      })
+    |> Map.merge(state.winners[seat])
+    |> Map.merge(%{
+        seat: seat,
+        player: state.players[seat],
+        yaku: cxt.yaku,
+        score: score,
         opponents: opponents,
         # hand to show in the yaku screen
         arranged_hand: arranged_hand,

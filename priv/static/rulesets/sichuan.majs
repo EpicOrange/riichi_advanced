@@ -98,12 +98,12 @@ on after_initialization do
   add_rule("Tiles", "Tiles", "Sichuan Bloody Rules uses only the 108 suited tiles:", -100)
   add_rule("Tiles", "Tiles", "- Four each of the 1 to 9 of Dots %{pinzu}", %{pinzu: ["1p", "2p", "3p", "4p", "5p", "6p", "7p", "8p", "9p"]})
   add_rule("Tiles", "Tiles", "- Four each of the 1 to 9 of Bams %{souzu}", %{souzu: ["1s", "2s", "3s", "4s", "5s", "6s", "7s", "8s", "9s"]})
-  add_rule("Tiles", "Tiles", "- Four each of the 1 to 9 of Craks %{manzu}", %{manzu: ["1m", "2m", "3m", "4m", "5m", "6m", "7m", "8m", "9m"]})
+  add_rule("Tiles", "Tiles", "- Four each of the 1 to 9 of Chars %{manzu}", %{manzu: ["1m", "2m", "3m", "4m", "5m", "6m", "7m", "8m", "9m"]})
   add_rule("Rules", "Win Condition", "You may win with one of the following:", -100)
   add_rule("Rules", "Win Condition", "- Four sets (sequences or triplets) and a pair.", -100)
   add_rule("Rules", "Win Condition", "- (Seven Pairs) Seven distinct pairs.", -100)
   add_rule("Rules", "Charleston", "At the start of the game, before declaring your voided suit, you must select three tiles to pass to another player (determined by the dice).")
-  add_rule("Rules", "Voided Suit", "At the start of the game, you must declare a voided suit (one of Bams, Craks, Dots).")
+  add_rule("Rules", "Voided Suit", "At the start of the game, you must declare a voided suit (one of Bams, Chars, Dots).")
   add_rule("Rules", "Voided Suit", "You may not win if any tiles of the voided suit are in your hand.")
   add_rule("Rules", "Voided Suit", "You must pay a 16 point penalty to everyone if you have any tiles of the voided suit in hand, and at least one tile of a different suit in your discards.")
   add_rule("Rules", "Voided Suit", "Voided suits for each player are shown at the top left of the screen.")
@@ -165,7 +165,7 @@ on after_turn_change do
   else
     if no_tiles_remaining do
       pause(1000)
-      ryuukyoku
+      ryuukyoku("Draw", "ryuukyoku")
     else
       if not_anyone_status("round_start") do
         discard_passed
@@ -177,46 +177,6 @@ end
 
 on before_continue do
   advance_turn
-end
-
-on before_exhaustive_draw do
-  set_status_all("ended_by_draw")
-  # for every non-winner, mark them as tenpai or noten at draw
-  as everyone do
-    if status_missing("won") do
-      if match(["hand", "calls"], ["tenpai"]) do
-        set_status("tenpai_at_draw")
-        reveal_hand
-      else
-        set_status("noten_at_draw")
-      end
-    end
-  end
-
-  # make noten players responsible for tenpai players winning
-  as everyone do
-    if status("noten_at_draw") do
-      as everyone do
-        if status("tenpai_at_draw") do
-          make_responsible_for("prev_seat", "all")
-        end
-      end
-    end
-  end
-  # now actually declare wins for tenpai players
-  # `win_by_draw("win")` will retrigger this event, so add a reentry check
-  if status_missing("do_noten_payments") do
-    set_status_all("do_noten_payments")
-    set_tile_alias_all(["4x"], ["any"])
-    as everyone do
-      if status("tenpai_at_draw") do
-        # have them draw an invisible joker and win
-        change_turn("self")
-        draw(1, "4x")
-        win_by_draw("win")
-      end
-    end
-  end
 end
 
 on after_scoring do
@@ -235,7 +195,9 @@ on after_scoring do
 end
 
 on before_win do
-  unless status("do_noten_payments") do
+  # set responsibilities depending on win method
+  # unless the win was triggered at ryuukyoku
+  unless status("ended_by_draw") do
     if won_by_draw do
       as others do
         unless status("won") do
@@ -253,11 +215,15 @@ on before_win do
     end
   end
 end
-on after_win do
-  clear_responsibilities(as: "all")
+on before_scoring do
+  if status("tenpai_at_draw") do
+    modify_winner("winning_tile_text", "Best")
+  end
 end
+on after_win do as everyone do clear_responsibilities end end
 
 define_scoring win do
+  # print("define_scoring win")
   total = points :: "Fan"
   total = 0
   cond do
@@ -266,10 +232,17 @@ define_scoring win do
     points >= 1 -> total = 2 :: "1 Fan → 2 pts"
     true        -> total = 1 :: "0 Fan → 1 pts"
   end
-  if status("do_noten_payments") do
-    modify_winner("score_name", "Draw")
-  else
-    if won_by_draw do total += 1 :: "Self-draw bonus" end
+  if won_by_draw do
+    if status("tenpai_at_draw", as: "winner") do
+      as winner do
+        # upon exhaustive draw, every tenpai player scores takame
+        # so label the takame wait as "Best"
+        # also replace jokers with their values (namely the 4x joker we use)
+        replace_winning_hand_jokers
+      end
+    else
+      total += 1 :: "Self-draw bonus"
+    end
   end
   set_counter_all("total", "total")
   modify_winner("score", total)
@@ -279,46 +252,85 @@ define_scoring win do
 end
 
 def before_bloody_end do
-  if status("ended_by_draw") do
-    as winners do
-      # upon exhaustive draw, every tenpai player scores takame
-      # so label the takame wait as "Best"
-      modify_winner("winning_tile_text", "Best")
-      # also replace jokers with their values (namely the 4x joker we use)
-      replace_winning_hand_jokers # TODO remove this action
+  # change dealership to first winner
+  as everyone do
+    if status("first_winner") do
+      change_dealership("self")
     end
   end
-  as everyone do
-    # return kong payments if not tenpai
-    if not match(["hand", "calls"], ["tenpai"])
-       and (owes_shimocha > 0
-         or owes_toimen > 0
-         or owes_kamicha > 0) do
-      # check: they are allowed to have tenpai with voided tiles to keep kong payments?
-      push_message("must return kong payments due to not being ready at the end of the round")
-      modify_payout("shimocha", "owes_shimocha", "add")
-      modify_payout("toimen", "owes_toimen", "add")
-      modify_payout("kamicha", "owes_kamicha", "add")
-      modify_payout("self", "owes_shimocha", "subtract")
-      modify_payout("self", "owes_toimen", "subtract")
-      modify_payout("self", "owes_kamicha", "subtract")
-    end
-    # apply void penalty
-    if     (status("void_manzu") and match(["hand", "calls"], ~m"manzu:1") and match(["discards"], ~m"(pinzu souzu):1"))
-        or (status("void_pinzu") and match(["hand", "calls"], ~m"pinzu:1") and match(["discards"], ~m"(manzu souzu):1"))
-        or (status("void_souzu") and match(["hand", "calls"], ~m"souzu:1") and match(["discards"], ~m"(manzu pinzu):1")) do
-      # pay 16 to each player
-      set_scoring_header("Void Penalty")
-      push_message("must pay 16 to each player for having voided tiles in hand")
-      modify_payout("self", -48)
-      modify_payout("shimocha", 16)
-      modify_payout("toimen", 16)
-      modify_payout("kamicha", 16)
-    end
-    # change dealership to first winner
+end
+
+on before_exhaustive_draw do
+  # `win_by_draw("win")` below will retrigger this event, so add a reentry check
+  if status_missing("ended_by_draw") do
+    # print("before_exhaustive_draw")
+    set_status_all("ended_by_draw")
+    # for every non-winner, mark them as tenpai or noten at draw
     as everyone do
-      if status("first_winner") do
-        change_dealership("self")
+      # check for void penalty
+      if     (status("void_manzu") and match(["hand", "calls"], ~m"nojoker, manzu:1") and match(["discards"], ~m"(pinzu souzu):1"))
+          or (status("void_pinzu") and match(["hand", "calls"], ~m"nojoker, pinzu:1") and match(["discards"], ~m"(manzu souzu):1"))
+          or (status("void_souzu") and match(["hand", "calls"], ~m"nojoker, souzu:1") and match(["discards"], ~m"(manzu pinzu):1")) do
+        reveal_hand
+        set_status("void_penalty")
+      else
+        if status_missing("won") do
+          if match(["hand", "calls"], ["tenpai"]) do
+            reveal_hand
+            set_status("tenpai_at_draw")
+          else
+            set_status("noten_at_draw")
+          end
+        end
+      end
+    end
+
+    # now actually declare wins for tenpai players
+    as everyone do
+      if status("tenpai_at_draw") do
+        # make noten players responsible for this tenpai player's "win"
+        as others do
+          if status("noten_at_draw") do
+            make_responsible_for("prev_seat", "all", as: "prev_seat")
+          else
+            clear_responsibilities
+          end
+        end
+        # have them draw an invisible joker and win
+        change_turn("self")
+        draw(1, "4x")
+        set_tile_alias(["4x"], ["any"])
+        win_by_draw("win")
+      end
+    end
+  end
+end
+
+define_scoring ryuukyoku do
+  # print("define_scoring ryuukyoku")
+  as everyone do
+    if status("void_penalty") do
+      push_message("must pay 16 to each player for having voided tiles in hand at the end of the round")
+    end
+    if (status("noten_at_draw") or status("void_penalty")) and (owes_shimocha > 0 or owes_toimen > 0 or owes_kamicha > 0) do
+      set_status("owes_kong_payments")
+      push_message("must return kong payments due to not being ready at the end of the round")
+    end
+    as others do
+      as prev_seat do
+        total = 0
+        # apply void penalty
+        if status("void_penalty") do
+          total += 16 :: "Voided Tile Penalty"
+        end
+        # return kong payments
+        if status("owes_kong_payments") do
+          cond do
+            seat_is("prev_seat", as: "shimocha") -> if owes_shimocha > 0 do total += owes_shimocha :: "Kong payment return" end
+            seat_is("prev_seat", as: "toimen") -> if owes_toimen > 0 do total += owes_toimen :: "Kong payment return" end
+            seat_is("prev_seat", as: "kamicha") -> if owes_kamicha > 0 do total += owes_kamicha :: "Kong payment return" end
+          end
+        end
       end
     end
   end
@@ -360,14 +372,13 @@ define_button charleston_right,
     charleston_right
   end
 
-# TODO: rewrite these void buttons so that the void suits appear in standard order, rather than in order of who pressed the buttons first
 define_button void_manzu,
-  display_name: "No Craks",
+  display_name: "No Chars",
   show_when: status("round_start"),
   unskippable: true,
   cancellable: false
   do
-    big_text("No Craks")
+    big_text("No Chars")
     set_status("void_manzu")
     if seat_is("east") do reveal_tile("1z") end
     if seat_is("south") do reveal_tile("2z") end
@@ -454,15 +465,10 @@ def do_kong_payment_single do
     end
     # scuffed string comparison technique
     set_status("$seat")
-      # TODO: modify these to add chat messages explaining instant kong payments
-    if status("shimocha") do
-      owes_shimocha = owes_shimocha + "$score"
-      end
-    if status("toimen") do
-      owes_toimen = owes_toimen + "$score"
-    end
-    if status("kamicha") do
-      owes_kamicha = owes_kamicha + "$score"
+    cond do
+      status("shimocha") -> owes_shimocha += "$score"
+      status("toimen")   -> owes_toimen   += "$score"
+      status("kamicha")  -> owes_kamicha  += "$score"
     end
     unset_status("$seat")
   end
@@ -474,6 +480,7 @@ def do_kong_payment do
   do_kong_payment_single(score: "$score", seat: "kamicha")
 end
 
+define_set kakan_tile, ~s"any@kakan"
 def discard_passed do
   as others do
     if status("kan") do
@@ -542,7 +549,6 @@ define_button ankan,
     draw
   end
 
-define_set kakan_tile, ~s"any@kakan"
 define_button kakan,
   display_name: "Kong",
   show_when: our_turn
