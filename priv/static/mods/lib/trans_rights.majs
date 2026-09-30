@@ -1,0 +1,97 @@
+# trans rights
+
+replace all, "wall", "1m", ["41m", "transrights"]
+replace all, "wall", "2m", ["42m", "transrights"]
+replace all, "wall", "3m", ["43m", "transrights"]
+replace all, "wall", "4m", ["44m", "transrights"]
+replace all, "wall", "5m", ["45m", "transrights"]
+replace all, "wall", "6m", ["46m", "transrights"]
+replace all, "wall", "7m", ["47m", "transrights"]
+replace all, "wall", "8m", ["48m", "transrights"]
+replace all, "wall", "9m", ["49m", "transrights"]
+replace all, "wall", "1p", ["41p", "transrights"]
+replace all, "wall", "2p", ["42p", "transrights"]
+replace all, "wall", "3p", ["43p", "transrights"]
+replace all, "wall", "4p", ["44p", "transrights"]
+replace all, "wall", "5p", ["45p", "transrights"]
+replace all, "wall", "6p", ["46p", "transrights"]
+replace all, "wall", "7p", ["47p", "transrights"]
+replace all, "wall", "8p", ["48p", "transrights"]
+replace all, "wall", "9p", ["49p", "transrights"]
+replace all, "wall", "1s", ["41s", "transrights"]
+replace all, "wall", "2s", ["42s", "transrights"]
+replace all, "wall", "3s", ["43s", "transrights"]
+replace all, "wall", "4s", ["44s", "transrights"]
+replace all, "wall", "5s", ["45s", "transrights"]
+replace all, "wall", "6s", ["46s", "transrights"]
+replace all, "wall", "7s", ["47s", "transrights"]
+replace all, "wall", "8s", ["48s", "transrights"]
+replace all, "wall", "9s", ["49s", "transrights"]
+replace all, "wall", "1z", ["41z", "transrights"]
+replace all, "wall", "2z", ["42z", "transrights"]
+replace all, "wall", "3z", ["43z", "transrights"]
+replace all, "wall", "4z", ["44z", "transrights"]
+replace all, "wall", "5z", ["45z", "transrights"]
+replace all, "wall", "6z", ["46z", "transrights"]
+replace all, "wall", "7z", ["47z", "transrights"]
+replace all, "wall", "0z", ["40z", "transrights"]
+replace all, "wall", "8z", ["48z", "transrights"]
+
+on after_start do
+  set_tile_alias_all([["41m", "transrights"]], ["1m"])
+  set_tile_alias_all([["42m", "transrights"]], ["2m"])
+  set_tile_alias_all([["43m", "transrights"]], ["3m"])
+  set_tile_alias_all([["44m", "transrights"]], ["4m"])
+  set_tile_alias_all([["45m", "transrights"]], ["5m"])
+  set_tile_alias_all([["46m", "transrights"]], ["6m"])
+  set_tile_alias_all([["47m", "transrights"]], ["7m"])
+  set_tile_alias_all([["48m", "transrights"]], ["8m"])
+  set_tile_alias_all([["49m", "transrights"]], ["9m"])
+  set_tile_alias_all([["41p", "transrights"]], ["1p"])
+  set_tile_alias_all([["42p", "transrights"]], ["2p"])
+  set_tile_alias_all([["43p", "transrights"]], ["3p"])
+  set_tile_alias_all([["44p", "transrights"]], ["4p"])
+  set_tile_alias_all([["45p", "transrights"]], ["5p"])
+  set_tile_alias_all([["46p", "transrights"]], ["6p"])
+  set_tile_alias_all([["47p", "transrights"]], ["7p"])
+  set_tile_alias_all([["48p", "transrights"]], ["8p"])
+  set_tile_alias_all([["49p", "transrights"]], ["9p"])
+  set_tile_alias_all([["41s", "transrights"]], ["1s"])
+  set_tile_alias_all([["42s", "transrights"]], ["2s"])
+  set_tile_alias_all([["43s", "transrights"]], ["3s"])
+  set_tile_alias_all([["44s", "transrights"]], ["4s"])
+  set_tile_alias_all([["45s", "transrights"]], ["5s"])
+  set_tile_alias_all([["46s", "transrights"]], ["6s"])
+  set_tile_alias_all([["47s", "transrights"]], ["7s"])
+  set_tile_alias_all([["48s", "transrights"]], ["8s"])
+  set_tile_alias_all([["49s", "transrights"]], ["9s"])
+  set_tile_alias_all([["41z", "transrights"]], ["1z"])
+  set_tile_alias_all([["42z", "transrights"]], ["2z"])
+  set_tile_alias_all([["43z", "transrights"]], ["3z"])
+  set_tile_alias_all([["44z", "transrights"]], ["4z"])
+  set_tile_alias_all([["45z", "transrights"]], ["5z"])
+  set_tile_alias_all([["46z", "transrights"]], ["6z"])
+  set_tile_alias_all([["47z", "transrights"]], ["7z"])
+  set_tile_alias_all([["40z", "transrights"]], ["0z"])
+  set_tile_alias_all([["48z", "transrights"]], ["8z"])
+end
+
+apply merge, "dora_indicators", %{
+  "41m": ["42m"], "42m": ["43m"], "43m": ["44m"], "44m": ["45m"], "45m": ["46m"], "46m": ["47m"], "47m": ["48m"], "48m": ["49m"], "49m": ["41m"],
+  "41p": ["42p"], "42p": ["43p"], "43p": ["44p"], "44p": ["45p"], "45p": ["46p"], "46p": ["47p"], "47p": ["48p"], "48p": ["49p"], "49p": ["41p"],
+  "41s": ["42s"], "42s": ["43s"], "43s": ["44s"], "44s": ["45s"], "45s": ["46s"], "46s": ["47s"], "47s": ["48s"], "48s": ["49s"], "49s": ["41s"],
+  "41z": ["42z"], "42z": ["43z"], "43z": ["44z"], "44z": ["41z"], "45z": ["46z"], "46z": ["47z"], "47z": ["45z"],
+}
+
+apply merge, "score_calculation", %{
+  win_by_discard_name: "Trans Rights",
+  win_by_discard_name_2: "Double Trans Rights",
+  win_by_discard_name_3: "Triple Trans Rights",
+  win_by_draw_name: "Trans Rights",
+}
+
+apply merge, "custom_style", %{
+  tile_back_color: "pink",
+  tile_back_side_color: "pink",
+  tablecloth_color: "lightblue",
+}

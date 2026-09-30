@@ -45,7 +45,7 @@ defmodule RiichiAdvanced.GameState.Buttons do
             |> Enum.map(fn call_tiles ->
                  Riichi.make_calls(button["call"], call_tiles, tile_behavior, hand ++ draw)
                end)
-            |> Enum.flat_map(&Enum.map(&1, fn {called_tile, call_choice} -> %{Utils.strip_attrs(called_tile) => call_choice} end))
+            |> Enum.flat_map(&Enum.map(&1, fn {called_tile, call_choice} -> %{Utils.strip_attrs(called_tile, :invisible) => call_choice} end))
             |> Enum.reduce(%{}, fn call_choices, acc -> Map.merge(call_choices, acc, fn k, l, r -> Enum.uniq_by(l ++ r, &MapSet.new(Utils.strip_attrs([k | &1]))) end) end)
             |> Enum.uniq_by(fn {k, ccs} -> Enum.map(ccs, fn cc -> MapSet.new(Utils.strip_attrs([k | cc])) end) end)
             |> Map.new()

@@ -295,7 +295,7 @@ defmodule RiichiAdvanced.Utils do
     "red", "blue", "cyan", "gold",
     "orange", "yellow", "green", "lightblue", "purple",
     "gray", "grey", "lightgray", "lightgrey",
-    "brown", "pink", "black", "white", "rainbow"
+    "brown", "pink", "black", "white", "rainbow", "transrights"
   ]
 
   def get_tile_class(tile, i \\ -1, assigns \\ %{}, extra_classes \\ [], animate_played \\ false) do

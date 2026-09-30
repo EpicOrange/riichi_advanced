@@ -1624,6 +1624,20 @@ div.tile.rainbow {
     rgba(255, 0, 0, 1) calc(1 * var(--tile-size))
   );
 }
+div.tile.transrights {
+  background-image: url("/images/tiles.png"), repeating-linear-gradient(
+    180deg,
+    rgba(91, 206, 250, 1) 0%,
+    rgba(91, 206, 250, 1) calc(0.05 * var(--tile-size)),
+    rgba(245, 169, 184, 1) calc(0.2 * var(--tile-size)),
+    rgba(245, 169, 184, 1) calc(0.35 * var(--tile-size)),
+    rgba(224, 224, 224, 1) calc(0.5 * var(--tile-size)),
+    rgba(245, 169, 184, 1) calc(0.65 * var(--tile-size)),
+    rgba(245, 169, 184, 1) calc(0.8 * var(--tile-size)),
+    rgba(91, 206, 250, 1) calc(0.95 * var(--tile-size)),
+    rgba(91, 206, 250, 1) calc(1 * var(--tile-size))
+  );
+}
 /* tile animations */
 @keyframes rainbowAnim {
   100% {
