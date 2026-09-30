@@ -9,9 +9,10 @@ apply append, "constants.south_flowers", ["2k", "2q"]
 apply append, "constants.westt_flowers", ["3k", "3q"]
 apply append, "constants.north_flowers", ["4k", "4q"]
 
-# dealer can declare no_flower at 0-1 flowers
 apply append, "set_definitions.any_flower", ~s"1k|2k|3k|4k|1q|2q|3q|4q|9j"
 define_match any_flower, ~m"nojoker, any_flower:1"
+
+# dealer can declare no_flower at 0-1 flowers
 apply set, "buttons.start_no_flower.show_when",
   status("initial_flowers")
   and our_turn
@@ -24,6 +25,8 @@ apply prepend, "buttons.flower.show_when", status_missing("first_turn")
 
 # flowers can only be discarded if you're going for nfnl
 define_play_restriction flower, status_missing("nfnl_eligible") and match(["hand", "draw"], "any_flower")
+# nonjoker/nonflower tiles can only be discarded if you're not going for nfnl
+define_play_restriction any, status("nfnl_eligible") and not_tiles_match(["tile"], ["flower", "joker"]) and match(["hand", "draw"], "any_flower")
 
 # flower yaku (seat flowers and seat season already defined by default_flowers mod)
 define_yaku yaku, "Seat King", [1, "Phán"], seat_is("east") and match(["flowers"], ~m"1k:1")
@@ -77,5 +80,5 @@ define_button start_flower,
     recalculate_buttons
   end
 
-# if you have declared flowers/jokers, cannot keep flowers in hand
+# cannot keep flowers in hand ever. if nfnl you must discard; otherwise you must replace
 apply set, "buttons.flower.unskippable", status_missing("nfnl_eligible")
