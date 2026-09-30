@@ -28,11 +28,11 @@ define_match any_flower_joker_honor, ~m"nojoker, (any_flower any_joker 1z 2z 3z 
 define_const true_nfnl,
   status("nfnl_eligible")
   and (flowers_jokers_discarded < 3 or not_our_turn or not_has_draw or match(["draw"], ["any_flower_joker"]))
-  and not_match(["hand", "draw", "calls", "flowers", "jokers"], ["any_flower_joker"])
+  and not_match(["hand", "draw", "calls", "flowers", "jokers"], ["any_flower_joker_honor"])
 define_const has_win_button,
-  (not_our_turn and someone_else_just_discarded and not_match(["last_discard"], ["any_flower", "any_joker"]) and match(["hand", "calls", "last_discard"], ["win"]))
-  or (not_our_turn and someone_else_just_called and not_match(["last_called_tile"], ["any_flower", "any_joker"]) and status("can_chankan", as: "caller") and match(["hand", "calls", "last_called_tile"], ["win"]))
-  or (our_turn and not_match(["draw"], ["any_flower", "any_joker"]) and match(["hand", "calls", "draw", "flowers"], ["win"]))
+  (not_our_turn and someone_else_just_discarded and not_match(["last_discard"], ["any_flower_joker"]) and match(["hand", "calls", "last_discard"], ["win"]))
+  or (not_our_turn and someone_else_just_called and not_match(["last_called_tile"], ["any_flower_joker"]) and status("can_chankan", as: "caller") and match(["hand", "calls", "last_called_tile"], ["win"]))
+  or (our_turn and not_match(["draw"], ["any_flower_joker"]) and match(["hand", "calls", "draw", "flowers"], ["win"]))
 define_button nfnl0,
   display_name: "No Flowers, No Leaves",
   show_when: status_missing("initial_flowers")
