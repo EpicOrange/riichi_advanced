@@ -119,6 +119,7 @@ defmodule RiichiAdvanced.Utils do
   end
   def apply_tile_aliases(tile, tile_behavior) do
     Map.get(tile_behavior.mappings, tile, MapSet.new())
+    |> MapSet.union(Map.get(tile_behavior.mappings, strip_attrs(tile), MapSet.new()))
     |> MapSet.put(tile)
     # every joker is connected to any-tile jokers
     # |> MapSet.union(MapSet.new(Map.get(tile_behavior.mappings, :any, %{}) |> Map.values() |> Enum.concat()))

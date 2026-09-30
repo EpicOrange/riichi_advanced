@@ -462,7 +462,7 @@ defmodule RiichiAdvanced.Match do
       tiles_length == 0 -> [hand]
       hand_length < tiles_length -> [] # otherwise we'd be trying to remove more tiles than we have altogether
       Enum.empty?(aliases) and hand_length == tiles_length ->
-        # sort and compare pairwise, but apply aliases
+        # we can simply sort and compare pairwise
         hand = Enum.sort(hand)
         tiles = Enum.sort(tiles)
         if Enum.all?(Enum.zip(hand, tiles), fn {t1, t2} ->
@@ -472,7 +472,7 @@ defmodule RiichiAdvanced.Match do
           same_id and Enum.all?(attrs2, &String.starts_with?(&1, "_") or &1 in attrs1 or ("_" <> &1) in attrs1)
         end) do [[]] else [] end
       hand_length == tiles_length ->
-        # we can simply sort and compare pairwise
+        # sort and compare pairwise, but use same_tile so we're aware of aliases
         hand = Enum.sort(hand)
         tiles = Enum.sort(tiles)
         mappings = for {tile1, attrs_aliases} <- aliases, {attrs, aliases2} <- attrs_aliases, tile2 <- aliases2, reduce: %{} do
