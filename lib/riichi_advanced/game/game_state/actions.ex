@@ -2478,7 +2478,7 @@ defmodule RiichiAdvanced.GameState.Actions do
                   true -> :ok
                 end
               end
-              %{ player | choice: %Choice{ name: "skip" }, buttons: [] }
+              %{ player | choice: %Choice{ name: "skip" }, buttons: [], button_choices: %{} }
             else player end
           end)
         else state end
@@ -2514,7 +2514,7 @@ defmodule RiichiAdvanced.GameState.Actions do
             if Debug.debug_actions() do
               IO.puts("Superceding choice for #{dir} due to existing #{inspect(player.choice)} having higher call priority")
             end
-            %{ player | choice: %Choice{ name: "skip" }, buttons: [] }
+            %{ player | choice: %Choice{ name: "skip" }, buttons: [], button_choices: %{} }
           else player end
         end)
     end
