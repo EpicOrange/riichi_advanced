@@ -144,7 +144,7 @@ defmodule RiichiAdvanced.YakuTest.RiichiLocalYaku do
   end
 
   test "riichi - chinchii toushii" do
-    TestUtils.test_yaku_advanced("riichi", ["lib/yaku/ketsupaihou", "yaku/chinchii_toushii"], [], """
+    TestUtils.test_yaku_advanced("riichi", ["lib/yaku/ketsupaihou", "lib/yaku/chinchii_toushii"], [], """
     {
       "starting_hand": {
         "east": ["3m", "3m", "3m", "7p", "7p", "7p", "2s", "2s", "2s", "4p", "6z", "5m", "5m"],
@@ -174,7 +174,7 @@ defmodule RiichiAdvanced.YakuTest.RiichiLocalYaku do
   end
 
   test "riichi - rentsuu honitsu" do
-    TestUtils.test_yaku_advanced("riichi", ["yaku/rentsuu_honitsu"], [], """
+    TestUtils.test_yaku_advanced("riichi", ["lib/yaku/rentsuu_honitsu"], [], """
     {
       "starting_hand": {
         "east": ["3m", "3m", "3m", "4m", "5m", "6m", "7m", "7m", "8m", "8m", "8m", "7z", "7z"],
@@ -198,7 +198,7 @@ defmodule RiichiAdvanced.YakuTest.RiichiLocalYaku do
   end
 
   test "riichi - dorahairi chinroutou chiitoitsu" do
-    TestUtils.test_yaku_advanced("riichi", [%{name: "dora", config: %{"start_indicators" => 1}}, "yaku/dorahairi_chinroutou_chiitoitsu"], [], """
+    TestUtils.test_yaku_advanced("riichi", [%{name: "dora", config: %{"start_indicators" => 1}}, "lib/yaku/dorahairi_chinroutou_chiitoitsu"], [], """
     {
       "starting_hand": {
         "east": ["1m", "1m", "9m", "9m", "1p", "1p", "7m", "7m", "9p", "9p", "1s", "1s", "9s"],

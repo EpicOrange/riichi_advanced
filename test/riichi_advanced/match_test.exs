@@ -9,7 +9,7 @@ defmodule RiichiAdvanced.MatchTest do
     %{name: "aka", config: %{man: 1, pin: 1, sou: 1}},
     %{name: "aka9", config: %{man: 1, pin: 1, sou: 1}},
     "jokers/147",
-    "yaku/dorahairi_chinroutou_chiitoitsu",
+    "lib/yaku/dorahairi_chinroutou_chiitoitsu",
     "shiny_dora",
   ]
   setup do
