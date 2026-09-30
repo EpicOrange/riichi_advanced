@@ -4,6 +4,7 @@ defmodule RiichiAdvancedWeb.RoomCodeComponent do
 
   def mount(socket) do
     socket = assign(socket, :room_code, [])
+    socket = assign(socket, :room_code_error, nil)
     {:ok, socket}
   end
 
@@ -15,8 +16,13 @@ defmodule RiichiAdvancedWeb.RoomCodeComponent do
         <div class={["tile", Enum.at(@room_code, 0) || "1x"]}></div>
         <div class={["tile", Enum.at(@room_code, 1) || "1x"]}></div>
         <div class={["tile", Enum.at(@room_code, 2) || "1x"]}></div>
-        <%= t(@lang, "for ruleset:") %>
-        <%= t(@lang, @ruleset) %>
+        <span class="room-code-error-display" :if={@room_code_error != nil}>
+          <%= case @room_code_error do %>
+          <%   :room_loading -> %><%= t(@lang, "Loading...") %>
+          <%   :room_not_found -> %><%= t(@lang, "Room not found!") %>
+          <%   _ -> %>
+          <% end %>
+        </span>
       </div>
       <br>
       <div class="room-code-buttons">
@@ -66,12 +72,14 @@ defmodule RiichiAdvancedWeb.RoomCodeComponent do
 
   def handle_event("enter_room_code", %{"tile" => tile}, socket) do
     socket = assign(socket, :room_code, Enum.take(socket.assigns.room_code ++ [tile], 3))
+    socket = assign(socket, :room_code_error, nil)
     socket.assigns.set_room_code.(socket.assigns.room_code)
     {:noreply, socket}
   end
 
   def handle_event("enter_room_code", _assigns, socket) do
     socket = assign(socket, :room_code, Enum.drop(socket.assigns.room_code, -1))
+    socket = assign(socket, :room_code_error, nil)
     socket.assigns.set_room_code.(socket.assigns.room_code)
     {:noreply, socket}
   end

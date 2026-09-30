@@ -112,7 +112,21 @@ defmodule RiichiAdvancedWeb.IndexLive do
         socket = if length(socket.assigns.room_code) == 3 do
           # enter private room, or create a new room
           room_code = Enum.join(socket.assigns.room_code, ",")
-          push_navigate(socket, to: ~p"/room/#{ruleset}/#{room_code}?nickname=#{nickname}&from=home")
+          case Registry.lookup(:game_registry, Utils.to_registry_name("room", ruleset, room_code)) do
+            [_ | _] -> push_navigate(socket, to: ~p"/room/#{ruleset}/#{room_code}?nickname=#{nickname}&from=home")
+            _ ->
+              # try every ruleset
+              ruleset = Constants.available_rulesets()
+              |> Enum.map(&elem(&1, 0))
+              |> Enum.find(&not Enum.empty?(Registry.lookup(:game_registry, Utils.to_registry_name("room", &1, room_code))))
+              if ruleset != nil do
+                send_update(RiichiAdvancedWeb.RoomCodeComponent, id: "room-code", room_code_error: :room_loading)
+                push_navigate(socket, to: ~p"/room/#{ruleset}/#{room_code}?nickname=#{nickname}&from=home")
+              else
+                send_update(RiichiAdvancedWeb.RoomCodeComponent, id: "room-code", room_code_error: :room_not_found)
+                socket
+              end
+          end
         else socket end
         {:noreply, socket}
       else

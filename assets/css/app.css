@@ -3857,6 +3857,12 @@ div.room-code-modal > div.room-code-buttons > button {
   padding: 0;
   margin: 0;
 }
+div.room-code-modal > span.room-code-error-display {
+  display: inline-block;
+  color: pink;
+  height: calc(1 * var(--tile-size));
+  margin: calc(0.5 * var(--tile-size));
+}
 
 
 /* lobby screen */
