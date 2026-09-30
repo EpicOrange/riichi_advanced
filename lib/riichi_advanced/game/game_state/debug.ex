@@ -22,6 +22,7 @@ defmodule RiichiAdvanced.GameState.Debug do
   @debug_yaku_precedence false
   @debug_cache false
   @debug_specific_mods []
+  @debug_am_difficulty false
   @print_mods false
   @print_jq false
   @print_smt false
@@ -50,6 +51,7 @@ defmodule RiichiAdvanced.GameState.Debug do
   def debug_yaku_precedence, do: Process.get(:ignore_type_error, @debug_yaku_precedence)
   def debug_cache, do: Process.get(:ignore_type_error, @debug_cache)
   def debug_specific_mods, do: Process.get(:ignore_type_error, @debug_specific_mods)
+  def debug_am_difficulty, do: Process.get(:ignore_type_error, @debug_am_difficulty)
   def print_mods, do: Process.get(:ignore_type_error, @print_mods)
   def print_jq, do: Process.get(:ignore_type_error, @print_jq)
   def print_smt, do: Process.get(:ignore_type_error, @print_smt)

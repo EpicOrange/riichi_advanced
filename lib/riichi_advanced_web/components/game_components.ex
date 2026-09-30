@@ -246,7 +246,7 @@ defmodule RiichiAdvancedWeb.GameComponents do
       <div class="display-am-hand-hover game-bottom-element" :if={Rules.get(@state.rules_ref, "show_nearest_american_hand", false)}></div>
       <div class="display-am-hand-container" :if={Rules.get(@state.rules_ref, "show_nearest_american_hand", false)}>
         <% open_definitions = Rules.get(@state.rules_ref, "open_win_definition", []) %>
-        <%= for {am_match_definition, _shanten, arranged_hand} <- @state.players[@seat].cache.closest_american_hands do %>
+        <%= for {am_match_definition, _shanten, arranged_hand, difficulty} <- @state.players[@seat].cache.closest_american_hands do %>
           <div class="display-am-hand" :if={arranged_hand}>
             <%= for tile <- arranged_hand do %>
               <div class={Utils.get_tile_class(tile)}></div>
@@ -256,6 +256,9 @@ defmodule RiichiAdvancedWeb.GameComponents do
             <% else %>
               <div class="display-am-hand-type"><%= t(@lang, "c") %></div>
             <% end %>
+            <div class="display-am-hand-difficulty" :if={RiichiAdvanced.GameState.Debug.debug_am_difficulty()}>
+              <%= Utils.try_integer(difficulty / 10) %>
+            </div>
           </div>
         <% end %>
       </div>

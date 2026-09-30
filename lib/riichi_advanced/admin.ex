@@ -136,10 +136,11 @@ defmodule RiichiAdvanced.Admin do
     |> Enum.map(&American.instantiate_match_definition(&1, @am_wall, [], :"1p", %TileBehavior{}))
     |> Enum.map(fn
       nil -> []
-      {a, b} -> Utils.sort_tiles(a ++ b)
+      {a, b} -> Utils.sort_tiles(Enum.concat(a ++ b))
     end)
     |> Enum.map(&Utils.hand_to_string/1)
     |> Enum.map(fn
+      <<"111111f" <> rest>> -> "1234f12g" <> rest
       <<"11111f" <> rest>> -> "1234f1g" <> rest
       <<"1111f" <> rest>> -> "1234f" <> rest
       <<"111f" <> rest>> -> "123f" <> rest
