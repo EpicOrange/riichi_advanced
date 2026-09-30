@@ -254,6 +254,7 @@ defmodule RiichiAdvanced.GameState.American do
   end
   def arrange_american_hand(am_match_definitions, hand, calls, tile_behavior) do
     call_tiles = Enum.map(calls, &Utils.call_to_tiles/1)
+    anyless_tile_behavior = %{ tile_behavior | attrs: MapSet.put(tile_behavior.attrs, "inactive"), aliases: Map.delete(tile_behavior.aliases, :any), uuid: Ecto.UUID.generate() }
 
     # old precalculations
     # available_tiles = Enum.reduce(call_tiles, MapSet.new(Utils.strip_attrs(hand)), &MapSet.union(&2, MapSet.new(Utils.strip_attrs(&1)))) |> MapSet.delete(:"1j")
@@ -304,7 +305,7 @@ defmodule RiichiAdvanced.GameState.American do
         end)
 
         # calculate which base tiles will make the offsets in match_definition match the hand
-        arrangements = Enum.flat_map(match_definitions, fn match_definition ->
+        Enum.flat_map(match_definitions, fn match_definition ->
           all_offsets = for [groups, _num] <- Enum.filter(match_definition, &is_list/1),
                             group <- Enum.reject(groups, & &1 in MatchOld.group_keywords()),
                             offset <- (if is_list(group) do group else [group] end),
@@ -312,7 +313,10 @@ defmodule RiichiAdvanced.GameState.American do
           # we can then derive the base tiles to reify the match definition
           #   into something we can check the given hand/calls against
           for base_tile <- MatchOld.collect_base_tiles(hand, calls, all_offsets, tile_behavior) do
-            for [groups, num] <- match_definition, reduce: {hand, call_tiles, []} do
+            match_definition = match_definition
+            |> Enum.with_index()
+            |> Enum.sort_by(fn {[_groups, num], _i} -> num end)
+            for {[groups, num], orig_ix} <- match_definition, reduce: {hand, call_tiles, []} do
               {hand, calls, nil} -> {hand, calls, nil}
               {hand, calls, ret} ->
                 # apply offsets to the group using the base tile
@@ -339,7 +343,6 @@ defmodule RiichiAdvanced.GameState.American do
                     # then we're left with the remaining tiles, so we remove that number of jokers
                     new_hand = Enum.reduce_while(1..num, hand, fn i, hand ->
                       # first phase: remove a nonjoker group
-                      anyless_tile_behavior = %{ tile_behavior | attrs: MapSet.put(tile_behavior.attrs, "inactive"), aliases: Map.delete(tile_behavior.aliases, :any), uuid: Ecto.UUID.generate() }
                       new_hand = Enum.find_value(groups, fn group ->
                         # calls were taken care of above, so we can just focus on hand
                         # we need to turn atoms into strings to make a group that Match likes
@@ -379,7 +382,6 @@ defmodule RiichiAdvanced.GameState.American do
                       #   IO.inspect(new_hand, label: "got new_hand")
                       #   IO.inspect(new_group, label: "therefore new_group is")
                       # end
-                      
                       new_group = case {groups, num} do
                         # first case: groups that are just a collection of diff tiles, gets rearranged to match the defn
                         {[group], 1} -> arrange_american_group(if is_list(group) do group else [group] end, new_group, tile_behavior)
@@ -387,8 +389,8 @@ defmodule RiichiAdvanced.GameState.American do
                         # this is just to sort the greyed-out inactive tiles onto one side
                         _            -> Utils.sort_tiles(new_group)
                       end
-                      # add new_group to accumFulator
-                      {new_hand, calls, [new_group | ret]}
+                      # add new_group to accumulator
+                      {new_hand, calls, [{new_group, num, orig_ix} | ret]}
                     else
                       # if am_match_definition == "11a 222a 33a 444a 5555a" do
                       #   IO.puts("Failed to complete #{am_match_definition} for #{inspect(hand)} / #{inspect(calls)}")
@@ -402,9 +404,27 @@ defmodule RiichiAdvanced.GameState.American do
         end)
         # we don't check for empty hand after removing specified tiles, since this procedure is used with larger hands
         # just to see if such a hand can be arranged with the given tiles (i.e. dead hand checking)
-        case Enum.find(arrangements, fn {_hand, calls, ret} -> Enum.empty?(calls) and ret != nil end) do
-          nil                  -> nil
-          {_hand, _calls, ret} -> Enum.reverse(ret)
+        |> Enum.reject(fn {_hand, _calls, ret} -> ret == nil or not Enum.empty?(calls) end) 
+        |> Enum.min_by(fn {_hand, _calls, ret} ->
+          # try to minimize "inactive" tiles in jokerless groups
+          ret
+          |> Enum.filter(fn {_group, orig_num, _orig_ix} -> orig_num <= 2 end)
+          |> Enum.map(fn {group, _orig_num, _orig_ix} -> Enum.count(group, &Utils.has_attr?(&1, "inactive")) end)
+          |> Enum.sum()
+        end, &<=/2, fn -> nil end) 
+        |> case do
+          nil -> nil
+          {hand, _calls, ret} ->
+            # try to distribute remaining jokers such that each group gets roughly the same number of jokers assigned
+            ret = ret
+            |> Enum.sort_by(fn {_group, _orig_num, orig_ix} -> orig_ix end)
+            |> Enum.map(fn {group, orig_num, orig_ix} -> {orig_num - length(group), orig_num, group, orig_ix} end)
+            for joker <- hand, Utils.strip_attrs(joker) == :"1j", reduce: ret do
+              ret ->
+                {r, n, g, i} = Enum.max(ret)
+                if r <= 0 do ret else List.replace_at(ret, i, {r-1, n, g ++ [joker], i}) end
+            end
+            |> Enum.map(fn {_remaining, _orig_num, group, _orig_ix} -> group end)
         end
       hand -> hand
     end
@@ -638,6 +658,10 @@ defmodule RiichiAdvanced.GameState.American do
     tile_behavior = state.players[seat].tile_behavior
     
     hand = Utils.strip_attrs(hand ++ draw)
+    indexed_hand = Enum.with_index(hand)
+    {indexed_hand_joker, indexed_hand_nojoker} = Enum.split_with(indexed_hand, fn {tile, _j} -> tile == :"1j" end)
+    joker_indices = MapSet.new(indexed_hand_joker, fn {_tile, i} -> i end)
+    hand_freqs = Enum.frequencies(hand)
 
     # t = System.os_time(:millisecond)
     am_yaku = Rules.get(state.rules_ref, :am_yaku, %{})
@@ -657,6 +681,7 @@ defmodule RiichiAdvanced.GameState.American do
             {matching_groups_joker, matching_groups_nojoker} ->
               matching_hand_joker = Enum.concat(matching_groups_joker)
               matching_hand_nojoker = Enum.concat(matching_groups_nojoker)
+              nojoker_start_i = length(matching_hand_joker)
               matching_hand = matching_hand_joker ++ matching_hand_nojoker
               # matching_hand_joker might include tiles with attr "call"
               matching_hand_joker = Utils.strip_attrs(matching_hand_joker)
@@ -669,17 +694,71 @@ defmodule RiichiAdvanced.GameState.American do
               edge_cache = for tile <- Enum.uniq(matching_hand_nojoker), tile2 <- Enum.uniq(hand), tile2 != :"1j", not Map.has_key?(edge_cache, {tile2, tile, false}), reduce: edge_cache do
                 edge_cache -> Map.put(edge_cache, {tile2, tile, false}, Utils.same_tile(tile2, tile, %{ tile_behavior | aliases: Map.delete(tile_behavior.aliases, :any), uuid: Ecto.UUID.generate() }))
               end
+              # fmt_pairing = &Enum.map(&1, fn {i, j} -> {i, Enum.at(matching_hand, i), j, Enum.at(hand, j)} end)
+              # fmt_pairing_r = &Enum.map(&1, fn {i, j} -> {i, Enum.at(hand, i), j, Enum.at(matching_hand, j)} end)
 
               # build adj graph from these cached edges
               # and use hopcroft-karp to find maximum matching
-              adj_joker = Map.new(Enum.with_index(matching_hand_joker), fn {tile, i} -> {i, for {tile2, j} <- Enum.with_index(hand), Map.get(edge_cache, {tile2, tile, true}) do j end} end)
-              adj_nojoker = Map.new(Enum.with_index(matching_hand_nojoker), fn {tile, i} -> {length(matching_hand_joker) + i, for {tile2, j} <- Enum.with_index(hand), Map.get(edge_cache, {tile2, tile, false}) do j end} end)
-              {new_pairing, new_pairing_r} = Map.merge(adj_joker, adj_nojoker)
-              |> Utils.maximum_bipartite_matching()
+
+              # first fill nojoker slots
+              adj_nojoker = Map.new(Enum.with_index(matching_hand_nojoker), fn {tile, i} -> {nojoker_start_i + i, for {tile2, j} <- indexed_hand_nojoker, Map.get(edge_cache, {tile2, tile, false}) do j end} end)
+              {new_pairing_nonjoker, _new_pairing_nonjoker_r} = Utils.maximum_bipartite_matching(adj_nojoker)
+
+              # then fill joker slots (but with nonjokers)
+              adj_joker = Map.new(Enum.with_index(matching_hand_joker), fn {tile, i} -> {i, for {tile2, j} <- indexed_hand_nojoker, Map.get(edge_cache, {tile2, tile, true}) do j end} end)
+              {new_pairing_joker, _new_pairing_joker_r} = Utils.maximum_bipartite_matching(adj_joker)
+              new_pairing = Map.merge(new_pairing_nonjoker, new_pairing_joker)
 
               # keep the best matching
-              pairing = elem(acc, 0)
-              acc = if map_size(new_pairing) > map_size(pairing) do
+              # take the indices (of hand) that are matched with a slot
+              # remove the indices corresponding to jokers in hand
+              # then compare that with new_pairing
+              {best_matching_slots, best_matching_indices} = elem(acc, 0)
+              |> Enum.reject(fn {_i, j} -> j in joker_indices end)
+              |> Enum.unzip()
+              better_pairing? = cond do
+                map_size(new_pairing) == length(best_matching_indices) ->
+                  # tiebreaker is number of matched nonjoker slots
+                  map_size(new_pairing_nonjoker) > Enum.count(best_matching_slots, & &1 >= nojoker_start_i)
+                map_size(new_pairing) > length(best_matching_indices) -> true
+                true -> false
+              end
+              acc = if better_pairing? do
+                # if seat == :east do IO.inspect({fmt_pairing.(new_pairing), fmt_pairing.(new_pairing_nonjoker)}) end
+                # then we distribute jokers among remaining joker slots in matching_hand_joker
+                # (joker slots are 0..nojoker_start_i-1)
+                # try to distribute such that each group gets roughly the same number of jokers assigned
+                joker_slots_remaining = if nojoker_start_i > 0 do
+                  matching_hand_joker
+                  |> Enum.with_index()
+                  |> Enum.reject(fn {_tile, i} -> Map.has_key?(new_pairing, i) end)
+                  |> Enum.group_by(fn {tile, _i} -> tile end, fn {_tile, i} -> i end)
+                  |> Enum.map(fn {tile, is} -> {length(is), Map.get(hand_freqs, tile, 0), is} end)
+                  |> Enum.sort(:desc)
+                else [] end
+
+                {joker_fill_pairing, _} = for {_, j} <- indexed_hand_joker, reduce: {%{}, joker_slots_remaining} do
+                  {joker_pairing, []} -> {joker_pairing, []}
+                  {joker_pairing, [{l, f, [i | is]} | rest] = joker_slots_remaining} ->
+                    {i, joker_slots_remaining} = case rest do
+                      [] -> if l <= 1 do {i, rest} else {i, [{l-1, f, is} | rest]} end
+                      [{l2, _, _} | _] ->
+                        if l < l2 do
+                          # need to sort again
+                          [{l, f, [i | is]} | rest] = Enum.sort(joker_slots_remaining, :desc)
+                          if l <= 1 do {i, rest} else {i, [{l-1, f, is} | rest]} end
+                        else
+                          if l <= 1 do {i, rest} else {i, [{l-1, f, is} | rest]} end
+                        end
+                    end
+                    if i != nil do
+                      {Map.put(joker_pairing, i, j), joker_slots_remaining}
+                    else {joker_pairing, joker_slots_remaining} end
+                end
+                # if seat == :east do IO.inspect({fmt_pairing.(new_pairing), fmt_pairing.(joker_fill_pairing)}) end
+                new_pairing = Map.merge(new_pairing, joker_fill_pairing)
+                new_pairing_r = Map.new(new_pairing, fn {i, j} -> {j, i} end)
+
                 # get matched and missing tiles for later use
                 missing_tiles = Enum.map(Enum.to_list(0..length(matching_hand)-1) -- Map.keys(new_pairing), fn j -> Enum.at(matching_hand, j) end)
                 # callable_missing_tiles is used by ai players to check callability 
@@ -694,11 +773,13 @@ defmodule RiichiAdvanced.GameState.American do
                   groups = Enum.map(groups, fn {tile, num} -> List.duplicate(tile, num) end)
                   score_hand_difficulty(am_match_definition, matched_tiles, missing_tiles, calls, groups, tile_behavior, yaku.concealed, Rules.get(state.rules_ref, :am_difficulty_scaling))
                 else 0 end
+                # if seat == :east do IO.inspect({fmt_pairing.(new_pairing), fmt_pairing_r.(new_pairing_r), new_pairing_r}, limit: :infinity, charlists: :as_lists) end
                 {new_pairing, new_pairing_r, missing_tiles, callable_missing_tiles, difficulty}
               else acc end
               {edge_cache, acc}
           end
         end
+        # if seat == :east do IO.inspect({pairing_r}, charlists: :as_lists) end
         # if am_match_definition in Debug.debug_am_match_definitions() do
         #   IO.inspect({hand, calls, pairing_r})
         # end
