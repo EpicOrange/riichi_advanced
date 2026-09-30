@@ -1,4 +1,4 @@
-set display_name, "Tianwild Mahjong"
+set display_name, "Tianjin Mahjong"
 set tutorial_link, "https://mahjongpros.com/blogs/how-to-play/beginners-guide-to-tianwild-mahjong"
 define_global han, "Fan"
 require "base"

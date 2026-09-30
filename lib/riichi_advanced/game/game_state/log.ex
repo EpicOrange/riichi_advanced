@@ -188,6 +188,8 @@ defmodule RiichiAdvanced.GameState.Log do
       players: Enum.map(state.available_seats, fn dir -> %{
         points: state.players[dir].start_score,
         haipai: state.haipai[dir]
+        # don't save nicknames, since those are user-supplied
+        # and we don't want to write unsanitized user input to disk
       } end),
       kyoku: state.kyoku,
       honba: if Rules.get(state.rules_ref, "display_riichi_sticks", false) do state.honba else 0 end,

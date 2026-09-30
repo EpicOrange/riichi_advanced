@@ -213,8 +213,9 @@ defmodule RiichiAdvanced.LogControlState do
           state ->
             if button not in state.game_state.players[seat].buttons do
               # IO.inspect("Tried to press nonexistent button #{button}, skipping instead")
-              # we do need to skip, e.g. calling ankan but we have to skip chii first
-              skip_buttons(state, seat)
+              # in tutorials we shouldn't skip ourselves
+              # e.g. if we need to skip chii to ankan, we might skip ankan as well
+              skip_buttons(state, if state.game_state.forced_events != nil do seat else nil end)
               Map.put(state, :game_state, GenServer.call(state.game_state_pid, :get_state, 300000))
             else state end
         end
@@ -230,13 +231,12 @@ defmodule RiichiAdvanced.LogControlState do
     for {button_data, seat_num} <- Enum.with_index(button_press_event["buttons"]) do
       seat = Log.from_seat(seat_num)
       case button_data do
-        %{"call_choice" => call_choice, "called_tile" => called_tile} ->
-          call_choice = Enum.map(call_choice, &Utils.to_tile/1)
-          called_tile = Utils.to_tile(called_tile)
-          GenServer.cast(state.game_state_pid, {:press_call_button, seat, call_choice, called_tile})
         %{"call_choice" => call_choice} ->
           call_choice = Enum.map(call_choice, &Utils.to_tile/1)
-          GenServer.cast(state.game_state_pid, {:press_call_button, seat, call_choice, nil})
+          called_tile = if Map.has_key?(button_data, "called_tile") do
+            Utils.to_tile(button_data["called_tile"])
+          else nil end
+          GenServer.cast(state.game_state_pid, {:press_call_button, seat, call_choice, called_tile})
         %{"choice" => choice} ->
           GenServer.cast(state.game_state_pid, {:press_saki_card, seat, choice})
         _ -> :ok

@@ -1,5 +1,5 @@
 define_base_ruleset riichi
 set display_name, "Galaxy Mahjong"
 set tutorial_link, "https://github.com/EpicOrange/riichi_advanced/blob/main/documentation/galaxy.md"
-require "galaxy"
+require_after "galaxy"
 require_after "riichi_fix_rules_tabs"

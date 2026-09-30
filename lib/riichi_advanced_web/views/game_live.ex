@@ -324,7 +324,8 @@ defmodule RiichiAdvancedWeb.GameLive do
 
   def handle_event("double_clicked", %{"classes" => classes}, socket) do
     ignore_click = "tile" in classes
-    socket = if not ignore_click do
+    # don't discard/skip if it's a tutorial, since tutorials need a lot of clicking and we don't want to skip things
+    socket = if not ignore_click and socket.assigns.tutorial_state == nil do
       skip_or_discard_draw(socket)
     else socket end
     {:noreply, socket}
@@ -332,7 +333,8 @@ defmodule RiichiAdvancedWeb.GameLive do
 
   def handle_event("right_clicked", %{"classes" => classes}, socket) do
     ignore_click = "tile" in classes
-    socket = if not ignore_click do
+    # don't discard/skip if it's a tutorial, since they might long press and we don't want to skip things
+    socket = if not ignore_click and socket.assigns.tutorial_state == nil do
       skip_or_discard_draw(socket)
     else socket end
     {:noreply, socket}

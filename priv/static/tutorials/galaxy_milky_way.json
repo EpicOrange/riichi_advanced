@@ -1,4 +1,5 @@
 {
+  "mods": ["cancellable_riichi"],
   "removed_mods": ["dora", "ura", "kandora", "kyuushu_kyuuhai"],
   "config": {
     "starting_hand": {
@@ -32,11 +33,11 @@
       ["add_object", "text", {"size": 0.4, "width": 4, "x": 12, "y": 4.5,
         "text": "Sorry for the trick question! Galaxy mahjong adds a new win condition: having an entire hand of galaxy tiles. So if you discard the 4 of bamboo, you will wait on any galaxy tile. Let's see what that looks like!"
       }],
-      ["force_event", ["play_tile", "south", 13]],
+      ["force_event", ["mark", "south", "south", 13, "hand"]],
       ["clear_objects"],
       ["sleep", 2500],
       ["add_object", "text", {"size": 0.4, "width": 5, "x": 9.125, "y": 8.5,
-        "text": "Press Ron."
+        "text": "Press Ron. (This may take some time to appear.)"
       }],
       ["await_event", ["play_tile", "west", 13]],
       ["force_event", ["press_button", "south", "ron"]],
@@ -45,15 +46,10 @@
       ["add_object", "text", {"size": 0.4, "width": 5, "x": 9.125, "y": 5.5,
         "text": "Winning this way awards the Milky Way yakuman! That's the only yaku galaxy mahjong adds.\n(Click to continue)"
       }],
+      ["keep_playing"],
       ["await_click"],
       ["clear_objects"],
-      ["sleep", 2000],
-      ["add_object", "focus", {"width": 0, "x": 0, "y": 0}],
-      ["add_object", "text", {"size": 0.4, "width": 5, "x": 10, "y": 6,
-        "text": "Click to return to the list of tutorials."
-      }],
-      ["await_click"],
-      ["exit"]
+      ["keep_playing"]
     ]
   }
 }

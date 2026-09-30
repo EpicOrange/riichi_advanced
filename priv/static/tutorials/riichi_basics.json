@@ -3,17 +3,17 @@
   "config": {
     "starting_hand": {
       "east": ["2p", "3p", "4p", "4p", "5p", "6p", "7p", "7p", "7p", "8s", "8s", "8s", "1z"],
-      "south": ["1m", "2m", "3m", "2p", "3p", "8p", "8p", "1s", "2s", "3s", "7s", "8s", "8s"],
-      "west": ["1m", "2m", "3m", "2p", "3p", "8p", "8p", "1s", "2s", "3s", "7s", "8s", "8s"],
-      "north": ["1m", "2m", "3m", "2p", "3p", "8p", "8p", "1s", "2s", "3s", "7s", "8s", "8s"]
+      "south": ["2m", "3m", "4m", "2p", "3p", "8p", "1s", "1s", "2s", "3s", "5s", "7s", "9s"],
+      "west": ["1m", "2m", "3m", "2p", "3p", "8p", "9p", "1s", "2s", "3s", "5s", "7s", "9s"],
+      "north": ["1m", "2m", "3m", "2p", "3p", "8p", "9p", "1s", "2s", "3s", "5s", "7s", "9s"]
     },
     "starting_draws": ["4s", "1z", "2z", "3z", "1m", "9p", "9p", "1m", "4s"],
     "tsumogiri_bots": true
   },
   "scenes": {
     "start": [
-      ["add_object", "text", {"size": 0.4, "width": 5, "x": 9.125, "y": 10.5,
-        "text": "Welcome to Riichi Advanced!\nYou're the first to play, so let's start by discarding this tile.\n(Click the tile to discard it.)"
+      ["add_object", "text", {"size": 0.4, "width": 5, "x": 9.125, "y": 9.5,
+        "text": "Welcome to Riichi Advanced!\nYou're the first to play, so let's start by discarding this tile.\n(Click the tile twice, or drag it away, to discard it.)"
       }],
       ["add_object", "focus", {"width": 0.75, "hand_index": 12}],
       ["force_event", ["play_tile", "east", 12]],
@@ -52,8 +52,8 @@
       ["await_click"],
       ["clear_objects"],
       ["add_object", "focus", {"width": 0.75, "draw_index": 13}],
-      ["add_object", "text", {"size": 0.4, "width": 5, "x": 10.25, "y": 12.25,
-        "text": "Go ahead and discard the 1 of characters."
+      ["add_object", "text", {"size": 0.4, "width": 5, "x": 10.25, "y": 9.25,
+        "text": "Go ahead and discard the 1 of characters. Note that you can also double click (mobile: double tap) to discard the drawn tile. You can also right click (mobile: hold down) to discard the drawn tile."
       }],
       ["force_event", ["play_tile", "east", 13]],
       ["clear_objects"],
@@ -70,9 +70,8 @@
       ["force_event", ["press_button", "east", "tsumo"]],
       ["clear_objects"],
       ["sleep", 2000],
-      ["add_object", "focus", {"width": 0, "x": 0, "y": 0}],
       ["add_object", "text", {"size": 0.4, "width": 5, "x": 10, "y": 6,
-        "text": "If you wish, you may keep playing (with bots) after this screen.\n(Click to continue.)"
+        "text": "You can continue playing (with the bots) if you wish. To exit, click Back on the top right.\n(Click to continue.)"
       }],
       ["keep_playing"],
       ["await_click"],

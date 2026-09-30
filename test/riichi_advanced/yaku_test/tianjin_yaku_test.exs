@@ -115,7 +115,8 @@ defmodule RiichiAdvanced.YakuTest.TianjinYaku do
       %{"type" => "discard", "tile" => "6m", "player" => 1, "tsumogiri" => true},
       %{"type" => "discard", "tile" => "1p", "player" => 2, "tsumogiri" => true},
       %{"type" => "discard", "tile" => "1p", "player" => 3, "tsumogiri" => true},
-      %{"type" => "buttons_pressed", "buttons" => [%{"button" => "tsumo"}, nil, nil, nil]}
+      %{"type" => "buttons_pressed", "buttons" => [%{"button" => "skip"}, nil, nil, nil]},
+      %{"type" => "buttons_pressed", "buttons" => [%{"button" => "tsumo"}, nil, nil, nil]},
     ], %{
       east: [
         %{ yaku: [{"Wild Card Wait", [2, "Fan"]}] },
@@ -322,7 +323,8 @@ defmodule RiichiAdvanced.YakuTest.TianjinYaku do
       %{"type" => "buttons_pressed", "buttons" => [nil, nil, %{"button" => "start_pass"}, nil]},
       %{"type" => "buttons_pressed", "buttons" => [nil, nil, nil, %{"button" => "start_pass"}]},
       %{"type" => "discard", "tile" => "6m", "player" => 0, "tsumogiri" => true},
-      %{"type" => "buttons_pressed", "buttons" => [nil, %{"button" => "tsumo"}, nil, nil]}
+      %{"type" => "buttons_pressed", "buttons" => [nil, %{"button" => "skip"}, nil, nil]},
+      %{"type" => "buttons_pressed", "buttons" => [nil, %{"button" => "tsumo"}, nil, nil]},
     ], %{
       south: %{
         yaku: [@base, {"Earthly Hand", [4, "×"]}]

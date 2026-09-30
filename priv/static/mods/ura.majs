@@ -44,7 +44,7 @@ def reveal_ura do
 end
 
 # reveal ura after riichi win
-on before_win do reveal_ura end
+on before_win, prepend: true do reveal_ura end
 
 def calculate_dora, append: true do
   ura = 0 

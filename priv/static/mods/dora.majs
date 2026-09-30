@@ -1,3 +1,5 @@
+default start_indicators, 1
+
 define "dora"
 
 on after_initialization do

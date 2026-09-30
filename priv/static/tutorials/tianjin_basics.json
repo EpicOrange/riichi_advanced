@@ -1,10 +1,10 @@
 {
   "config": {
     "starting_hand": {
-      "east": ["1m", "2s", "2s", "1p", "5p", "7p", "2s", "3s", "7s", "1z", "2z", "4z", "5z"],
+      "east": ["1m", "2s", "2s", "1p", "5p", "7p", "2s", "3s", "7s", "1z", "2z", "4z", "0z"],
       "south": ["3p", "3m", "4m", "5m", "9m", "2s", "4s", "4s", "5s", "5s", "3z", "3z", "3z"],
-      "west": ["2m", "3m", "8m", "8m", "1p", "1p", "1p", "1s", "2s", "4s", "7s", "8s", "8s"],
-      "north": ["1m", "1m", "1m", "2m", "3m", "8m", "8m", "1s", "2s", "5s", "7s", "8s", "8s"]
+      "west": ["2m", "3m", "8m", "8m", "1p", "1p", "1p", "1s", "1s", "4s", "7s", "8s", "8s"],
+      "north": ["1m", "1m", "1m", "2m", "3m", "8m", "8m", "1s", "1s", "5s", "7s", "8s", "8s"]
     },
     "starting_draws": ["3s", "4s", "3z", "6m", "7s", "9p", "3m", "5m"],
     "starting_dice": [1, 1],
@@ -20,13 +20,23 @@
   // - You draw your tile, tsumo
   "scenes": {
     "start": [
-      ["add_object", "text", {"size": 0.4, "width": 5, "x": 9.125, "y": 8.5,
-        "text": "Welcome to Tianjin Mahjong! This variant features wildcard tiles called Hun'er, of which there are 7 per game: 3 copies of what would be the dora indicator in Riichi (shown on upper left), and 4 copies of the 'dora' it indicates. All 7 tiles are considered Hun'er, and can be used as any tile.\n(Click to continue)"
+      ["add_object", "text", {"size": 0.4, "width": 5, "x": 9.125, "y": 7.5,
+        "text": "Welcome to Tianjin Mahjong! This variant features wildcard tiles called Hun'er, of which there are 7 per game."
       }],
       ["await_click"],
       ["clear_objects"],
       ["add_object", "text", {"size": 0.4, "width": 5, "x": 9.125, "y": 7.5,
-        "text": "The very first thing you do (before seeing your hand!) is to up the ante by issuing challenges against the dealer (East player). The dealer may do the same.\nIssuing a challenge against the dealer means the dealer pays 2x when you win, but you pay them 2x if they win. This only affects wins that involve the dealer.\n(Click to continue)"
+        "text": "The 7 Hun'er are 3+4 tiles: the 3 copies of what would be the dora indicator in Riichi (shown on upper left), and 4 copies of the next tile (like Riichi dora). All 7 tiles are considered Hun'er, and can be used as a wildcard tile.\n(Click to continue)"
+      }],
+      ["await_click"],
+      ["clear_objects"],
+      ["add_object", "text", {"size": 0.4, "width": 5, "x": 9.125, "y": 7.5,
+        "text": "The very first thing you do (before seeing your hand!) is to up the ante by issuing challenges against the dealer (East player). (The dealer may do the same against all other players, but it is called Double Down.)\n(Click to continue)"
+      }],
+      ["await_click"],
+      ["clear_objects"],
+      ["add_object", "text", {"size": 0.4, "width": 5, "x": 9.125, "y": 7.5,
+        "text": "Issuing a challenge against the dealer means the dealer pays 2x when you win, but you pay them 2x if they win. This only affects wins that involve the dealer.\n(Click to continue)"
       }],
       ["force_event", ["press_button", "east", "start_pass"]],
       ["await_click"],
@@ -38,7 +48,7 @@
       ["force_event", ["press_button", "south", "start_challenge_dealer"]],
       ["clear_objects"],
       ["add_object", "text", {"size": 0.4, "width": 5, "x": 9.125, "y": 7.5,
-        "text": "Note that issuing a challenge costs one challenge token. You only get two per game.\nYou've also seen the 2x challenge button, which uses both challenge tokens at once, resulting in a 4x multiplier.\n(Click to continue)"
+        "text": "Note that issuing a challenge costs one challenge token. You only get two per game.\nYou've also seen the 2x challenge button, which uses both challenge tokens at once, resulting in a 4x multiplier. Note that the dealer doesn't need tokens to Double Down.\n(Click to continue)"
       }],
       ["add_object", "focus", {"width": 1.5, "x": 1.625, "y": 16.5}],
       ["await_click"],
@@ -78,7 +88,7 @@
       ["await_event", ["play_tile", "east", 13]],
       ["sleep", 1000],
       ["add_object", "text", {"size": 0.4, "width": 5, "x": 9.125, "y": 5.5,
-        "text": "Although the player to our left discarded a 3 of bamboo, it cannot be called to complete our 234, because in Tianjin Mahjong you can only call triplets (Pung) or quads (Kong), not sequences.\nThis kind of makes sense because it is very easy to make sequences by using wildcards, so calling for sequences would make games go too quickly.\n(Click to continue)"
+        "text": "Although the player to our left discarded a 3 of bamboo, it cannot be called to complete our 234, because in Tianjin Mahjong you can only call triplets (Pung) or quads (Kong), not sequences.\n(Click to continue)"
       }],
       ["add_object", "focus", {"width": 0.75, "x": 5.625, "y": 6.375}],
       ["add_object", "focus", {"width": 1, "hand_index": 5.5}],
@@ -153,8 +163,10 @@
       ["add_object", "text", {"size": 0.4, "width": 5, "x": 4.125, "y": 7.5,
         "text": "That's pretty much it for the basics, press Back on the upper right to return to the list of tutorials!\n(Click to continue)"
       }],
+      ["keep_playing"],
       ["await_click"],
-      ["clear_objects"]
+      ["clear_objects"],
+      ["keep_playing"]
     ]
   }
 }

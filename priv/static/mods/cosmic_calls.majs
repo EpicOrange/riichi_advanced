@@ -107,9 +107,9 @@ define_button daiminfuun,
   precedence_over: ["ton", "chii", "chon", "chon_honors", "daiminfuun"],
   call: [[1, 2, 3]],
   call_style: %{
-    kamicha: ["call_sideways", 0, 1],
-    toimen: [0, "call_sideways", 1],
-    shimocha: [0, 1, "call_sideways"]
+    kamicha: ["call_sideways", 0, 1, 2],
+    toimen: [0, "call_sideways", 1, 2],
+    shimocha: [0, 1, 2, "call_sideways"]
   }
   do
     big_text("Fuun")

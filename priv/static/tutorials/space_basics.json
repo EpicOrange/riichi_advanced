@@ -76,14 +76,10 @@
       ["add_object", "text", {"size": 0.4, "width": 5, "x": 10, "y": 6,
         "text": "Space mahjong is implemented as a riichi mod, so you're actually just playing a modified riichi right now. This also means that here on Riichi Advanced, you can combine space mahjong with any riichi variant!\n(Click to continue)"
       }],
+      ["keep_playing"],
       ["await_click"],
       ["clear_objects"],
-      ["add_object", "focus", {"width": 0, "x": 0, "y": 0}],
-      ["add_object", "text", {"size": 0.4, "width": 5, "x": 10, "y": 6,
-        "text": "Click to return to the list of tutorials."
-      }],
-      ["await_click"],
-      ["exit"]
+      ["keep_playing"]
     ]
   }
 }

@@ -1,5 +1,6 @@
 {
-  "removed_mods": ["dora", "ura", "kandora", "kyuushu_kyuuhai"],
+  "mods": ["cancellable_riichi"],
+  "removed_mods": ["kandora", "kyuushu_kyuuhai"],
   "config": {
     "starting_hand": {
       "east": ["1m", "2m", "4m", "1p", "3p", "7p", "8p", "9p", "1s", "2s", "6s", "3z", "4z"],
@@ -87,7 +88,7 @@
       ["add_object", "text", {"size": 0.4, "width": 5, "x": 9.125, "y": 8.5,
         "text": "If you hover over your 9 bamboos, you can see that your wait is not only the 4 bamboo, but also any galaxy four! Let's discard a 9 bamboo."
       }],
-      ["force_event", [["play_tile", "west", 7], ["play_tile", "west", 8]]],
+      ["force_event", [["mark", "west", "west", 7, "hand"], ["mark", "west", "west", 8, "hand"]]],
       ["clear_objects"],
       ["await_event", ["play_tile", "north", 13]],
       ["sleep", 200],
@@ -104,29 +105,24 @@
       ["await_click"],
       ["clear_objects"],
       ["add_object", "text", {"size": 0.4, "width": 5, "x": 9.125, "y": 7.5,
-        "text": "The dora indicator is a galaxy white dragon. Since galaxy dragons are dragon wildcards, they indicate all other dragons as dora, including your two actual white dragons.\n(Click to continue)"
+        "text": "The uradora indicator is a galaxy white dragon. Since galaxy dragons are dragon wildcards, they indicate all other dragons as uradora, including your two actual white dragons.\n(Click to continue)"
       }],
       ["add_object", "focus", {"width": 1, "x": 12, "y": 2.75}],
       ["await_click"],
       ["clear_objects"],
       ["add_object", "text", {"size": 0.4, "width": 5, "x": 9.125, "y": 7.5,
-        "text": "The ura indicator is a galaxy eight circles, which similarly indicates all nines as dora, including your nine of bamboo.\n(Click to continue)"
+        "text": "The dora indicator is a galaxy eight circles, which similarly indicates all nines as dora, including your nine of bamboo.\n(Click to continue)"
       }],
       ["add_object", "focus", {"width": 0.75, "x": 8.625, "y": 2.75}],
       ["await_click"],
       ["clear_objects"],
       ["add_object", "text", {"size": 0.4, "width": 5, "x": 9.125, "y": 7.5,
-        "text": "That's about all there is to galaxy mahjong!\n(Click to continue)"
+        "text": "That's about all there is to galaxy mahjong! Feel free to keep playing with the bots.\n(Click to continue)"
       }],
+      ["keep_playing"],
       ["await_click"],
       ["clear_objects"],
-      ["sleep", 2000],
-      ["add_object", "focus", {"width": 0, "x": 0, "y": 0}],
-      ["add_object", "text", {"size": 0.4, "width": 5, "x": 10, "y": 6,
-        "text": "Click to return to the list of tutorials."
-      }],
-      ["await_click"],
-      ["exit"]
+      ["keep_playing"]
     ]
   }
 }

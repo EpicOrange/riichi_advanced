@@ -2,10 +2,10 @@
   "removed_mods": ["dora", "ura", "kandora", "kyuushu_kyuuhai"],
   "config": {
     "starting_hand": {
-      "east": ["1m", "2m", "3m", "2p", "3p", "8p", "8p", "1s", "2s", "3s", "7s", "8s", "8s"],
-      "south": ["1m", "2m", "3m", "2p", "3p", "8p", "8p", "1s", "2s", "3s", "7s", "8s", "8s"],
+      "east": ["1m", "2m", "3m", "2p", "3p", "8p", "8p", "1s", "2s", "4s", "7s", "8s", "9s"],
+      "south": ["1m", "2m", "3m", "2p", "3p", "8p", "9p", "1s", "4s", "6s", "7s", "8s", "9s"],
       "west": ["1m", "5m", "7m", "1p", "2s", "2s", "2s", "3s", "7s", "1z", "2z", "4z", "5z"],
-      "north": ["1m", "2m", "3m", "2p", "3p", "8p", "8p", "1s", "2s", "3s", "7s", "8s", "8s"]
+      "north": ["2m", "3m", "2p", "3p", "8p", "9p", "4s", "5s", "5s", "7s", "8s", "9s", "6z"]
     },
     "starting_draws": ["5z", "3s", "8m", "1s", "7p", "4s", "9m", "3s", "6p", "2m", "9m", "3s", "1m", "1s", "3z", "6z"],
     "starting_dead_wall": ["7z"],
@@ -170,6 +170,7 @@
       ["add_object", "text", {"size": 0.4, "width": 8, "x": 4, "y": 5.5,
         "text": "In addition, all yakuman now award 13 or 26 han, and having 18+ han awards haneyakuman (12000-24000). By the way, if you were wondering what score you get for having 1.5 han, guess you'll just have to play to find out!\n(Click to continue)"
       }],
+      ["keep_playing"],
       ["await_click"],
       ["clear_objects"],
       ["keep_playing"]

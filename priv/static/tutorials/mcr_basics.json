@@ -6,7 +6,7 @@
       "west": ["1m", "2m", "3m", "4m", "2p", "3p", "5p", "7p", "8p", "9p", "4s", "5s", "4g"],
       "north": ["1m", "1m", "1m", "2m", "3m", "8m", "8m", "1s", "2s", "3s", "7s", "8s", "8s"]
     },
-    "starting_draws": ["2z", "6s", "2m", "5z", "2z", "2f", "4m"],
+    "starting_draws": ["2z", "6s", "2m", "0z", "2z", "2f", "4m"],
     "starting_dead_wall": ["1z", "4z", "3z", "4p", "4z"],
     "tsumogiri_bots": true,
     "win_timer": 300
@@ -144,10 +144,12 @@
       ["await_click"],
       ["clear_objects"],
       ["add_object", "text", {"size": 0.4, "width": 5, "x": 4.125, "y": 7.5,
-        "text": "Click the tabs on the left to see more patterns, or press Back on the upper right to return to the list of tutorials.\n(Click to continue)"
+        "text": "Click the tabs on the left to see more patterns, or press Back on the upper right to return to the list of tutorials. You can keep playing with bots if you wish.\n(Click to continue)"
       }],
+      ["keep_playing"],
       ["await_click"],
-      ["clear_objects"]
+      ["clear_objects"],
+      ["keep_playing"]
     ]
   }
 }

@@ -1275,8 +1275,11 @@ defmodule RiichiAdvanced.GameState do
     end
   end
 
+  def check_forced_events(state, _event, callback) when state.forced_events == nil do
+    callback.(state, & &1) |> broadcast_state_change()
+  end
   def check_forced_events(state, event, callback) do
-    if not state.block_events or state.forced_events == nil or event in state.forced_events do
+    if not state.block_events or event in state.forced_events do
       finalize = fn state ->
         if state.forced_events != nil and event in state.forced_events do
           state
