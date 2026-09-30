@@ -560,18 +560,18 @@ defmodule RiichiAdvanced.GameState.Conditions do
         Utils.count_tiles(called_tiles, tiles) >= count
       "tag_exists"          -> Enum.all?(opts, &Map.has_key?(state.tags, &1))
       "tagged"              ->
-        tag = Enum.at(opts, 1, "missing_tag")
+        tag = Enum.at(opts, 0, "missing_tag")
         case state.tags[tag] do
           nil -> false
           tagged_tiles ->
-            targets = case Enum.at(opts, 0, "tile") do
+            targets = List.wrap(Enum.at(opts, 1, ["tile"]))
+            |> Enum.flat_map(&case &1 do
               "last_discard" -> if last_discard_action != nil do [last_discard_action.tile] else [] end
-              tile -> if Utils.is_tile(tile) do
-                  [Utils.to_tile(tile)]
-                else
-                  [context.tile]
-                end
-            end
+              "last_called_tile" -> if last_call_action != nil do [last_call_action.called_tile] else [] end
+              "draw" -> state.players[context.seat].draw
+              "tile" -> [context.tile]
+              _ -> [from_named_tile(state, context, &1)]
+            end)
             tile_behavior = state.players[context.seat].tile_behavior
             Enum.any?(targets, fn target -> Utils.has_matching_tile?([target], tagged_tiles, tile_behavior) end)
         end

@@ -920,7 +920,7 @@ Prepend `"not_"` to any of the condition names to negate it.
 - `called_tile_contains([tile1, tile2, ...], num)`: For call buttons only. The called tile contains at least `num` of any of the given tiles. (only num=1 is valid)
 - `call_choice_contains([tile1, tile2, ...], num)`: For call buttons only. The tiles used to call contains at least `num` of any of the given tiles.
 - `tag_exists(tag1, tag2, ...)`: All of the given tags exist.
-- `tagged(tile, tag_name)`: The given tile is tagged with the given `tag_name`. Valid values for `tile` are: `"last_discard"`, `"tile"`, where the last one uses the tile in context (and therefore is only valid in places like `play_restrictions`)
+- `tagged(tag_name, tile)`: The given tile is tagged with the given `tag_name`. Valid values for `tile` are: `"last_discard"`, `"last_called_tile"`, `"draw"`, or `"tile"` (last one uses the tile in context, only valid in places like `play_restrictions`)
 - `has_hell_wait(match_spec1, match_spec2, ...)`: The current player is waiting on a single out, where a winning hand is defined by the given match definitions.
 - `third_row_discard`: The current player has at least 12 tiles in their pond.
 - `tiles_in_hand(num)`: The current player has `num` tiles in hand.
