@@ -131,7 +131,8 @@ fn _separate_standard_winner_hand(
       }
     }
   }
-  // rejoker the unjokered tiles in result, also sort each group in result
+  // rejoker the unjokered tiles in result
+  // (don't sort, since the hand is already reordered so that the jokers are in the right places)
   for group in result.iter_mut() {
     for tile in group.attrs.iter_mut() {
       if let Some(is) = origin_map.get_mut(tile) {
@@ -151,7 +152,6 @@ fn _separate_standard_winner_hand(
         }
       }
     }
-    group.attrs.sort_unstable();
 
     // for kanchan jokers, always display them as the second tile
     if let Some(kanchan_prime) = TILE_TABLE.get("31j") {
