@@ -22,6 +22,7 @@ if (.buttons | has("riichi")) then
     ["enable_auto_button", "_4_auto_discard"],
     ["register_last_discard"],
     ["unset_status", "discards_empty"],
+    ["set_status", "tenpai"],
     ["recalculate_buttons"],
     ["advance_turn"]
   ]
