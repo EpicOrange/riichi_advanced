@@ -195,7 +195,7 @@
       {"name": "hand_length_at_least", "opts": [6]},
       {"name": "not_called_tile_contains", "opts": [["1j"], 1]},
       [
-        {"name": "call_contains", "opts": [["1f", "2f", "3f", "4f", "1g", "2g", "3g", "4g"], 6]},
+        {"name": "call_contains", "opts": [["1f", "2f", "3f", "4f", "1g", "2g", "3g", "4g", "1j"], 6]},
         {"name": "not_call_contains", "opts": [["1f", "2f", "3f", "4f", "1g", "2g", "3g", "4g"], 1]}
       ]
     ],
@@ -203,16 +203,3 @@
     "actions": [["big_text", "Sextet"], ["call"], ["change_turn", "self"]],
     "precedence_over": ["am_pung", "am_kong", "am_quint", "am_sextet"]
 }
-|
-# Other calls still have precedence over Sextets
-if .buttons."1_am_pung" then .buttons."1_am_pung"."precedence_over" += ["am_sextet"] else . end
-|
-if .buttons."2_am_kong" then .buttons."2_am_kong"."precedence_over" += ["am_sextet"] else . end
-|
-if .buttons."3_am_quint" then .buttons."3_am_quint"."precedence_over" += ["am_sextet"] else . end
-|
-if .buttons."mahjong_heavenly" then .buttons."mahjong_heavenly"."precedence_over" += ["am_sextet"] else . end
-|
-if .buttons."mahjong_draw" then .buttons."mahjong_draw"."precedence_over" += ["am_sextet"] else . end
-|
-if .buttons."mahjong_discard" then .buttons."mahjong_discard"."precedence_over" += ["am_sextet"] else . end

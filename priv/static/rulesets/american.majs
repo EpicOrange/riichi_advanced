@@ -655,7 +655,7 @@ define_button "1_am_pung",
   call_name: "am_pung",
   call_conditions: hand_length_at_least(3)
     and not_called_tile_contains(["1j"], 1)
-    and (call_contains([+@flowers], 3) or not_call_contains([+@flowers], 1))
+    and (call_contains([+@flowers, "1j"], 3) or not_call_contains([+@flowers], 1))
   do
     big_text("Pung")
     call
@@ -670,7 +670,7 @@ define_button "2_am_kong",
   call_name: "am_kong",
   call_conditions: hand_length_at_least(4)
     and not_called_tile_contains(["1j"], 1)
-    and (call_contains([+@flowers], 4) or not_call_contains([+@flowers], 1))
+    and (call_contains([+@flowers, "1j"], 4) or not_call_contains([+@flowers], 1))
   do
     big_text("Kong")
     call
@@ -685,7 +685,7 @@ define_button "3_am_quint",
   call_name: "am_quint",
   call_conditions: hand_length_at_least(5)
     and not_called_tile_contains(["1j"], 1)
-    and (call_contains([+@flowers], 5) or not_call_contains([+@flowers], 1))
+    and (call_contains([+@flowers, "1j"], 5) or not_call_contains([+@flowers], 1))
   do
     big_text("Quint")
     call
