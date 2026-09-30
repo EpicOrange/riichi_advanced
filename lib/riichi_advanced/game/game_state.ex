@@ -1485,14 +1485,17 @@ defmodule RiichiAdvanced.GameState do
   def handle_cast({:init_player, session_id, seat}, state) do
     {seat, spectator} = cond do
       seat == "spectator" -> {:east, true}
+      # if our session already reserved a seat, force that seat
       :east in state.available_seats  and Map.get(state, :east)  != nil and Map.get(state.reserved_seats, :east, nil) == session_id -> {:east, false}
       :south in state.available_seats and Map.get(state, :south) != nil and Map.get(state.reserved_seats, :south, nil) == session_id -> {:south, false}
       :west in state.available_seats  and Map.get(state, :west)  != nil and Map.get(state.reserved_seats, :west, nil) == session_id -> {:west, false}
       :north in state.available_seats and Map.get(state, :north) != nil and Map.get(state.reserved_seats, :north, nil) == session_id -> {:north, false}
+      # otherwise, fill seat based on seat param
       :east in state.available_seats  and seat == "east"  and (Map.get(state, :east)  == nil or is_pid(Map.get(state, :east)))  and Map.get(state.reserved_seats, :east,  nil) in [nil, session_id] -> {:east, false}
       :south in state.available_seats and seat == "south" and (Map.get(state, :south) == nil or is_pid(Map.get(state, :south))) and Map.get(state.reserved_seats, :south, nil) in [nil, session_id] -> {:south, false}
       :west in state.available_seats  and seat == "west"  and (Map.get(state, :west)  == nil or is_pid(Map.get(state, :west)))  and Map.get(state.reserved_seats, :west,  nil) in [nil, session_id] -> {:west, false}
       :north in state.available_seats and seat == "north" and (Map.get(state, :north) == nil or is_pid(Map.get(state, :north))) and Map.get(state.reserved_seats, :north, nil) in [nil, session_id] -> {:north, false}
+      # otherwise, fill next available seat
       :east in state.available_seats  and (Map.get(state, :east) == nil  or is_pid(Map.get(state, :east)))  and Map.get(state.reserved_seats, :east,  nil) in [nil, session_id] -> {:east, false}
       :south in state.available_seats and (Map.get(state, :south) == nil or is_pid(Map.get(state, :south))) and Map.get(state.reserved_seats, :south, nil) in [nil, session_id] -> {:south, false}
       :west in state.available_seats  and (Map.get(state, :west) == nil  or is_pid(Map.get(state, :west)))  and Map.get(state.reserved_seats, :west,  nil) in [nil, session_id] -> {:west, false}

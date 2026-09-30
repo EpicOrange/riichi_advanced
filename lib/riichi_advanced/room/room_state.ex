@@ -603,11 +603,17 @@ defmodule RiichiAdvanced.RoomState do
     seat_map = if state.shuffle do Enum.shuffle(state.available_seats) else state.available_seats end
     |> Enum.zip(state.available_seats)
     |> Map.new()
-    state = Map.update!(state, :seats, &Map.new(&1, fn {seat, player} -> {seat_map[seat], player} end))
+    state = Map.update!(state, :seats, &Map.new(&1, fn
+      {seat, nil}    -> {seat_map[seat], nil}
+      {seat, player} -> {seat_map[seat], %{player | seat: seat_map[seat]}}
+    end))
+
+    # before starting the game supervisor, room_live needs to know about updated state.seats (in order to push the correct seat param)
+    state = broadcast_state_change(state)
 
     reserved_seats = Map.new(state.players, fn {_id, player} -> {seat_map[player.seat], player.session_id} end)
     init_actions = [["vacate_room"]] ++ Enum.flat_map(state.players, fn {_id, player} -> [
-      ["init_player", player.session_id, Atom.to_string(player.seat)],
+      ["init_player", player.session_id, Atom.to_string(seat_map[player.seat])],
       ["fetch_messages", player.session_id]
     ] end) ++ [["initialize_game"]]
     args = [room_code: state.room_code, ruleset: state.ruleset, mods: mods, config: config, private: state.private, reserved_seats: reserved_seats, init_actions: init_actions, name: Utils.via_registry("game", state.ruleset, state.room_code)]
