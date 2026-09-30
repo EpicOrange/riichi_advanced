@@ -247,19 +247,17 @@ defmodule RiichiAdvancedWeb.GameComponents do
       </div>
       <div class="display-am-hand-hover game-bottom-element" :if={Rules.get(@state.rules_ref, "show_nearest_american_hand", false)}></div>
       <div class="display-am-hand-container" :if={Rules.get(@state.rules_ref, "show_nearest_american_hand", false)}>
-        <% open_definitions = Rules.get(@state.rules_ref, "open_win_definition", []) %>
-        <%= for %{am_match_definition: am_match_definition, arranged_hand: arranged_hand, difficulty: difficulty} <- @state.players[@seat].cache.closest_american_hands do %>
+        <%= for %{am_match_definition: am_match_definition, arranged_hand: arranged_hand, difficulty: difficulty, yaku: yaku} <- @state.players[@seat].cache.closest_american_hands do %>
           <div class="display-am-hand" :if={arranged_hand}>
             <%= for tile <- arranged_hand do %>
               <div class={Utils.get_tile_class(tile)}></div>
             <% end %>
-            <%= if am_match_definition in open_definitions do %>
-              <div class="display-am-hand-type"><%= t(@lang, "x") %></div>
-            <% else %>
-              <div class="display-am-hand-type"><%= t(@lang, "c") %></div>
-            <% end %>
+            <div class="display-am-hand-info">
+              <%= yaku.display_name %>
+              (<%= yaku.value %> <span class="display-am-hand-type"><%= if yaku.concealed do %>c<% else %>x<% end %></span>)
+            </div>
             <div class="display-am-hand-difficulty" :if={RiichiAdvanced.GameState.Debug.debug_am_difficulty()}>
-              <%= Utils.try_integer(difficulty / 10) %>
+              difficulty <%= Utils.try_integer(difficulty / 10) %>
             </div>
           </div>
         <% end %>
