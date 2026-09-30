@@ -54,7 +54,6 @@ Hooks.SortableHand = {
         const {clientX, clientY} = e.originalEvent.changedTouches?.[0] || e.originalEvent;
         // just check cursor position to see if we landed in this element
         const elems = document.elementsFromPoint(clientX, clientY);
-        console.log("onEnd", e, elems);
         if (elems.includes(this.el)) {
           let params = {old: e.oldIndex, new: e.newIndex, ...e.item.dataset}
           this.pushEventTo(this.el, "reposition", params)
