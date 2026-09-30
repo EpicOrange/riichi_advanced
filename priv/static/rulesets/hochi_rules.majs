@@ -21,7 +21,6 @@ set initial_score, 5000
 # open pinfu is 20 fu, pinfu tsumo is 22 fu
 define_const closed_tsumo_20_fu, false
 define_const open_30_fu, false
-define_const chiitoitsu_fu, 30
 
 # yaku differences are:
 # - no ippatsu, iipeikou, ryanpeikou, ryuuiisou

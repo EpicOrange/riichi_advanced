@@ -2,7 +2,6 @@ default list, "yaku"
 default name, "Seven Pairs"
 default value, 0
 default kansai, true
-default chiitoitsu_fu, 25
 
 on after_initialization do
   unless rule_exists("Rules", "Win Condition") do
