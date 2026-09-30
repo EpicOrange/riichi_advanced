@@ -456,7 +456,9 @@ pub struct MatchInfo {
 
 // dfs match
 pub type PathItem = RemovableGroup;
-pub type AccItem = (Hands, usize, Vec<PathItem>);
+pub type DFSPath = Vec<PathItem>;
+
+pub type AccItem = (Hands, usize, DFSPath);
 pub type AccIterator<'a> = Box<dyn Iterator<Item = AccItem> + 'a>;
 
 // elim match

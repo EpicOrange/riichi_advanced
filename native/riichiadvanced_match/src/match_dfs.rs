@@ -1,6 +1,7 @@
+use ruint::aliases::U256;
 use smallvec::{SmallVec, smallvec};
 use std::cell::RefCell;
-use std::collections::{HashMap, BTreeMap, HashSet};
+use std::collections::{BTreeMap, HashMap};
 use std::iter::{empty, once};
 use std::rc::Rc;
 use num::abs;
@@ -10,7 +11,8 @@ use crate::match_elim::elim_group_iter;
 use crate::offsets::{__generate_groups};
 use crate::primes::{is_manzu, is_pinzu, is_souzu, to_prime};
 use crate::tile_table::{tile1m, tile1p, tile1s, tile1x};
-use crate::types::{AccItem, AccIterator, BaseTileVec, FIXED_OFFSETS, HandsIterator, MatchGroup, MatchInfo, MatchOffset, PathItem, RemovableGroup};
+use crate::tileset::move_jokers_to_end;
+use crate::types::{AccItem, AccIterator, BaseTileVec, DFSPath, FIXED_OFFSETS, HandsIterator, Hash, MatchGroup, MatchInfo, MatchOffset, PathItem, RemovableGroup};
 
 #[inline]
 pub fn perform_dfs_match<'a>(
@@ -55,9 +57,8 @@ fn reify_groups(
   let mut reified_bank_r: HashMap<RemovableGroup, usize> = HashMap::new();
   let mut ret: HashMap<Rc<BaseTileVec>, Rc<BTreeMap<usize, Rc<Vec<RemovableGroup>>>>> = HashMap::new();
   if debug {
-    // println!("\nHand tiles: {0:?}", match_info.tiles_in_hand.iter().collect::<Vec<_>>());
-    // println!("Base tiles: {0:?}", base_tiles.iter().collect::<Vec<_>>());
-    // println!("Relevant tiles: {0:?}", match_info.relevant_tiles.iter().collect::<Vec<_>>());
+    // println!("Base tiles: {0:?}", decode_tiles(base_tiles.iter(), &match_info.all_attrs));
+    // println!("Relevant tiles: {0:?}", decode_tiles(match_info.relevant_tiles.iter(), &match_info.all_attrs));
   }
   let mut separate_suits = false;
   for group in groups.iter() {
@@ -178,7 +179,7 @@ fn dfs_match<'a>(
   debug: bool, exhaustive: bool, unique: bool, nojoker: bool,
 ) -> AccIterator<'a> {
   let actual_num = if num == 0 { 1 } else { abs(num) };
-  let visited: Rc<RefCell<HashSet<Vec<PathItem>>>> = Rc::new(RefCell::new(HashSet::new()));
+  let visited: Rc<RefCell<HashMap<DFSPath, Hash>>> = Rc::new(RefCell::new(HashMap::new()));
   (0..actual_num).fold(Box::new(once(acc)), move |mut acc, i| -> AccIterator<'a> {
     acc = if exhaustive { acc } else { Box::new(acc.take(1)) };
     let visited = visited.clone();
@@ -198,7 +199,7 @@ fn dfs_match<'a>(
 fn _dfs_match<'a>(
     (hands, ignore_ix, path): AccItem,
     match_info: &'a MatchInfo,
-    visited: Rc<RefCell<HashSet<Vec<PathItem>>>>,
+    visited: Rc<RefCell<HashMap<DFSPath, Hash>>>,
     reified: Rc<BTreeMap<usize, Rc<Vec<RemovableGroup>>>>,
     debug: bool, exhaustive: bool, unique: bool, nojoker: bool,
     i: i8, num: i8,
@@ -238,7 +239,8 @@ fn _dfs_match<'a>(
     let visited = visited.clone();
     let (j, group) = groups[k].clone();
     let mut path = path.clone();
-    if is_visited(&path, &group, visited.clone()) {
+    let (_, joker_hash) = move_jokers_to_end(&mut hands[0].attrs.clone(), &match_info.joker_tiles);
+    if is_visited(&path, joker_hash, &group, visited.clone()) {
       if debug {
         let mut key = path.clone();
         key.sort_unstable();
@@ -270,9 +272,11 @@ fn _dfs_match<'a>(
         if path.len() <= 4 && i < actual_num - 1 { // no need to store paths for the last iteration
           let mut key = path.clone();
           key.sort_unstable();
-          visited.borrow_mut().insert(key.clone());
+          visited.borrow_mut().entry(key.clone())
+            .and_modify(|existing_hash| *existing_hash = Hash::gcd(*existing_hash, joker_hash))
+            .or_insert(joker_hash);
           // if debug {
-          //   println!("We'll skip paths containing {} from now on (visited size: {})", 
+          //   println!("We'll skip paths containing {} (with joker hash {joker_hash}) from now on (visited size: {})", 
           //     key.iter().map(|group| print_group(&group, &match_info.all_attrs, nojoker)).collect::<Vec<_>>().join(", "),
           //     visited.borrow().len());
           // }
@@ -284,7 +288,7 @@ fn _dfs_match<'a>(
 }
 
 // if len <= 4, tries to take the power set of path (containing item) and sees if any is in visited
-fn is_visited(path: &[PathItem], last_item: &PathItem, visited: Rc<RefCell<HashSet<Vec<PathItem>>>>) -> bool {
+fn is_visited(path: &DFSPath, joker_hash: Hash, last_item: &PathItem, visited: Rc<RefCell<HashMap<DFSPath, Hash>>>) -> bool {
   let len = path.len();
   if len >= 30 { false }
   else if len <= 4 {
@@ -295,13 +299,18 @@ fn is_visited(path: &[PathItem], last_item: &PathItem, visited: Rc<RefCell<HashS
         .collect();
       key.sort_unstable();
       key.push(last_item.clone());
-      if vis.contains(&key) { return true; }
+      if let Some(cached_joker_hash) = vis.get(&key) {
+        // return true if we have all jokers mentioned in this cache entry
+        if *cached_joker_hash % joker_hash == Hash(U256::ZERO) {
+          return true;
+        } // otherwise, keep going
+      } else { return false; }
     }
     false
   } else {
     let mut key = path.to_vec();
     key.sort_unstable();
     key.push(last_item.clone());
-    visited.borrow().contains(&key)
+    visited.borrow().contains_key(&key)
   }
 }

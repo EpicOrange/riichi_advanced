@@ -142,8 +142,9 @@ pub fn remove_tileset_indices(hand: &mut TileSet, ixs: IndexVec, joker_tiles: &H
 }
 
 // modifies attrs to put joker tiles at the end
-// returns index of first joker, which is equal to the number of nonjokers
-// also returns product of all jokers' primes
+// returns (a, b) where
+// a = index of first joker, which is equal to the number of nonjokers
+// b = product of all jokers' primes
 pub fn move_jokers_to_end(attrs: &mut [Tile], joker_tiles: &HashSet<Tile>) -> (usize, Hash) {
   let hand_len = attrs.len();
   if hand_len == 0 { return (0, Hash(U256::ONE)); }

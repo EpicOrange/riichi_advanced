@@ -88,9 +88,11 @@ pub fn __get_waits_v3(
 
   // we also need to include nonjoker tiles that all existing jokers might map to, but aren't in the wall
   // call these hidden possible waits
+  // they will be used to calculate joker waits but will not show up in the returned waits themselves
   // e.g. if all four 5-pins are aka, leaving zero non-aka 5-pin, we want to show non-aka 5-pin as a possible wait
   let mut hidden_possible_waits: HashSet<Tile> = HashSet::new();
   for tile in match_info.aliases.iter().flat_map(|(k, vs)| vs.keys().map(|v| (*k, *v))) {
+    if tile.0 == ANY_PRIME { continue; }
     // only add hidden waits
     if let Err(i) = possible_waits.binary_search(&tile) {
       possible_waits.insert(i, tile);
@@ -98,28 +100,11 @@ pub fn __get_waits_v3(
     } else { continue };
   }
 
-  // save aliases first
+  // save aliases so we can retrieve jokers later
   let aliases_backup = match_info.aliases.clone();
 
-  // println!("possible_waits={:?}", decode_tiles(&possible_waits, &match_info.all_attrs));
-  add_joker_to_aliases(&mut match_info.aliases, &mut match_info.mapping, joker, &possible_waits);
-  // println!("starting aliases for 1x: {:?}", decode_tiles(match_info.mapping.get(&joker).unwrap(), &match_info.all_attrs));
-  // println!("joker_tiles: {:?}", decode_tiles(&match_info.joker_tiles, &match_info.all_attrs));
-
-  // populate not_waits with the closure of non-wait tiles
-  ___get_waits_v3(&mut match_info, &match_definitions, &mut not_waits, &possible_waits, &joker);
-
-  // take complement of not_waits
-  possible_waits.retain(|tile| !not_waits.contains(tile));
-
-  // add all joker tiles that map to something in possible_waits
-  let ret_jokers: HashSet<Tile> = possible_waits
-    .iter()
-    .flat_map(|t| aliases_backup.get(&t.0)?.get(&t.1))
-    .flatten()
-    .copied()
-    .collect();
-  let mut any_jokers: Vec<Tile> = aliases_backup
+  // since any-tile jokers are always a wait, ignore them (we'll add them at the end)
+  let mut any_jokers: Vec<Tile> = match_info.aliases
     .get(&ANY_PRIME)
     .unwrap_or(&HashMap::new())
     .values()
@@ -128,14 +113,38 @@ pub fn __get_waits_v3(
     .collect();
   any_jokers.sort_unstable();
   any_jokers.dedup();
-  // println!("possible_waits: {:?}", &possible_waits);
+  not_waits.extend(any_jokers.clone());
+
+  // println!("attrs={:?}", match_info.all_attrs);
+  // println!("possible_waits={:?}", decode_tiles(&possible_waits, &match_info.all_attrs));
+  add_joker_to_aliases(&mut match_info.aliases, &mut match_info.mapping, joker, &possible_waits);
+  // println!("starting aliases for 1x: {:?}", decode_tiles(match_info.mapping.get(&joker).unwrap(), &match_info.all_attrs));
+  // println!("joker_tiles: {:?}", decode_tiles(&match_info.joker_tiles, &match_info.all_attrs));
+
+  // populate not_waits with the closure of non-wait tiles
+  ___get_waits_v3(&mut match_info, &match_definitions, &mut not_waits, &possible_waits, &joker);
+  // println!("not_waits={:?}", decode_tiles(&not_waits, &match_info.all_attrs));
+  // println!("hidden_possible_waits={:?}", decode_tiles(&hidden_possible_waits, &match_info.all_attrs));
+
+  // take complement of not_waits
+  possible_waits.retain(|tile| !not_waits.contains(tile));
+  // println!("possible waits not in not_waits: {:?}", &decode_tiles(&possible_waits, &match_info.all_attrs));
+
+  // add all joker tiles that map to something in possible_waits
+  let ret_jokers: HashSet<Tile> = possible_waits
+    .iter()
+    .flat_map(|t| aliases_backup.get(&t.0)?.get(&t.1))
+    .flatten()
+    .copied()
+    .collect();
   // println!("elixir_aliases: {:?}", &elixir_aliases);
   // println!("aliases_backup: {:?}", &aliases_backup);
-  // println!("ret_jokers: {:?}", &ret_jokers);
+  // println!("ret_jokers: {:?}", &decode_tiles(&ret_jokers, &match_info.all_attrs));
 
   possible_waits.extend(ret_jokers);
   possible_waits.extend(any_jokers);
   possible_waits.retain(|t| !hidden_possible_waits.contains(t));
+  // println!("returning waits: {:?}", &decode_tiles(&possible_waits, &match_info.all_attrs));
   decode_tiles(&possible_waits, &match_info.all_attrs)
 }
 pub fn ___get_waits_v3(
@@ -153,19 +162,28 @@ pub fn ___get_waits_v3(
   // println!("current aliases for 1x: {:?}", decode_tiles(match_info.mapping.get(joker).unwrap(), &match_info.all_attrs));
 
   // test with current aliases (only need to match 1 to succeed)
-  // println!("before removing: {:?}", match_info.initial_hands.iter().map(|t| decode(t, &match_info.all_attrs)).collect::<Vec<_>>());
-  let all_nonwaits = match_definitions.iter().all(|match_definition| {
-    // println!("after removing: {:?}", __remove_match_definition(match_info, match_definition).map(|ts| ts.iter().map(|t| decode(t, &match_info.all_attrs)).collect::<Vec<_>>()).collect::<Vec<_>>());
-    __remove_match_definition(match_info, match_definition).next().is_none()
-  });
+  // println!("before removing: {:?}", match_info.initial_hands.iter().map(|t| crate::encode::decode(t, &match_info.all_attrs)).collect::<Vec<_>>());
+  // let current_tiles_includes_wait = match_definitions.iter().any(|match_definition| {
+  //   // println!("\nafter removing group1 {match_definition:?}: {:?}", __remove_match_definition(match_info, match_definition).map(|ts| ts.iter().map(|t| crate::encode::decode(t, &match_info.all_attrs)).collect::<Vec<_>>()).collect::<Vec<_>>().len());
+  //   // println!("\nafter removing group2 {match_definition:?}: {:?}", __remove_match_definition(match_info, match_definition).map(|ts| ts.iter().map(|t| crate::encode::decode(t, &match_info.all_attrs)).collect::<Vec<_>>()).collect::<Vec<_>>().len());
+  //   // println!("\nafter removing group3 {match_definition:?}: {:?}", __remove_match_definition(match_info, match_definition).map(|ts| ts.iter().map(|t| crate::encode::decode(t, &match_info.all_attrs)).collect::<Vec<_>>()).collect::<Vec<_>>().len());
+  //   // println!("\nafter removing.next() 1: {:?}", __remove_match_definition(match_info, match_definition).next());
+  //   // println!("\nafter removing.next() 2: {:?}", __remove_match_definition(match_info, match_definition).next());
+  //   // println!("\nafter removing.next() 3: {:?}", __remove_match_definition(match_info, match_definition).next());
+  //   // println!("after removing result: {:?}", __match_hand_v3(match_info, &vec!(match_definition.clone())));
+  //   // __remove_match_definition(match_info, match_definition).next().is_some()
+  //   __match_hand_v3(match_info, &vec!(match_definition.clone()))
+  // });
+  let mut match_definitions_base = match_definitions.clone();
+  match_definitions_base.truncate(1);
+  let match_definitions = &match_definitions_base;
+  let current_tiles_includes_wait = __match_hand_v3(match_info, match_definitions);
 
   // if all nonwaits, mark current_tiles and return, as we're done
   // (no need to remove any aliases)
-  if all_nonwaits {
-    // println!("Not waits: {:?}", current_tiles);
-    for &tile in current_tiles {
-      not_waits.insert(tile);
-    }
+  if !current_tiles_includes_wait {
+    // println!("All not waits: {:?}", decode_tiles(current_tiles, &match_info.all_attrs));
+    for &tile in current_tiles { not_waits.insert(tile); }
     return;
   }
 
