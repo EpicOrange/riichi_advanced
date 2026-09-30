@@ -1,5 +1,9 @@
 on after_initialization do
-  add_rule("Tiles", "Washizu", "Each tile in the wall is transparent and visible to all (e.g. %{transparent_8m}), except for one copy. Unflipped dora indicators are not visible.", %{transparent_8m: ~t"8s@transparent"})
+  if !transparents == 1 do
+    add_rule("Tiles", "Washizu", "For every type of tile in the wall, a single copy of each one is now transparent, and visible to all (e.g. %{transparent_8m}). Unflipped dora indicators are not visible.", %{transparent_8m: ~t"8s@transparent"})
+  else
+    add_rule("Tiles", "Washizu", "For every type of tile in the wall, %{num} copies of each one are now transparent, and visible to all (e.g. %{transparent_8m}). Unflipped dora indicators are not visible.", %{transparent_8m: ~t"8s@transparent", num: !transparents})
+  end
   add_rule("Rules", "Washizu", "Points are replaced with blood. So 1000 points are now 100 ccs of blood.")
 end
 

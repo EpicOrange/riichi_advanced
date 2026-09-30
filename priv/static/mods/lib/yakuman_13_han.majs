@@ -12,4 +12,9 @@ apply delete_key, "yaku_precedence", "yakuman"
 
 on after_initialization do
   add_rule("Yakuman", "Yakuman is 13 Han", "(Cosmic Riichi) All yakuman is converted to 13 han. Double yakuman is 26 han, etc.", -10)
+  update_rule("Yakuman", "Yakuman is 13 Han", "- 13-17 han is yakuman (32000, 8000/16000).")
+  update_rule("Yakuman", "Yakuman is 13 Han", "- 18-25 han is haneyakuman (48000, 12000/24000).")
+  update_rule("Yakuman", "Yakuman is 13 Han", "- 26-38 han is double yakuman (64000, 16000/32000).")
+  update_rule("Yakuman", "Yakuman is 13 Han", "- 39-51 han is triple yakuman (96000, 24000/48000).")
+  update_rule("Yakuman", "Yakuman is 13 Han", "- and so on.")
 end

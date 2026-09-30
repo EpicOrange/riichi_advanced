@@ -1,4 +1,4 @@
-.after_initialization.actions += [["add_rule", "Yakuman", "Paarenchan", "The eighth consecutive dealer win is worth yakuman. Exhaustive and abortive draws break the streak. After 5 wins, the minimum han required for the dealer becomes 2 han.", 113]]
+.after_initialization.actions += [["add_rule", "Yakuman", "Paarenchan", "The eighth consecutive dealer win is worth yakuman. Exhaustive and abortive draws break the streak. After 5 wins, the dealer's minimum han raises to 2 han. (Other players still only need 1 han.)", 113]]
 |
 def ryanhan_shibari($check):
   [

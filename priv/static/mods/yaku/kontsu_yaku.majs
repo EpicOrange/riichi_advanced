@@ -1,4 +1,6 @@
 on after_initialization do
+  add_rule("0.5 Han", "Fractional Han", "(Cosmic Riichi) Half han can be awarded, with the corresponding score determined by the standard han/fu formula. (Each half han multiplies the score by 1.414, the square root of 2.) Mangan is achieved at 3.5 han 50 fu.", -100)
+  update_rule("0.5 Han", "Fractional Han", "Note that 0.5 han is not enough to satisfy the 1 han minimum by itself.")
   add_rule("0.5 Han", "Mini-Sangen", "0.5 han is awarded for each mixed triplet of dragons.")
   update_rule("0.5 Han", "Mini-Sangen", "%{mixed_triplet}", %{mixed_triplet: ~t"567z"})
   add_rule("0.5 Han", "Mixed Winds", "0.5 han is awarded for each mixed triplet of winds that contain both the round wind and the seat wind.")

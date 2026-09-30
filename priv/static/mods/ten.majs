@@ -29,11 +29,13 @@ end
 # add rules text
 if defined("star_suit") do
   on after_initialization do
-    add_rule("Tiles", "Ten", "There are four copies of the 10 of each suit: %{tens}", %{tens: ~T"10m 10p 10s 10t"})
+    add_rule("Tiles", "Ten", "Each suit now runs from one to ten: %{tens}", %{tens: ~T"10m 10p 10s 10t"})
+    add_rule("Tiles", "Ten", "These tiles are considered terminals, so the nines %{nines} are no longer terminals.", %{nines: ~t"9m9p9s9t"})
   end
 else
   on after_initialization do
-    add_rule("Tiles", "Ten", "There are four copies of the 10 of each suit: %{tens}", %{tens: ~T"10m 10p 10s"})
+    add_rule("Tiles", "Ten", "Each suit now runs from one to ten: %{tens}", %{tens: ~T"10m 10p 10s"})
+    add_rule("Tiles", "Ten", "These tiles are considered terminals, so the nines %{nines} are no longer terminals.", %{nines: ~t"9m9p9s"})
   end
 end
 
