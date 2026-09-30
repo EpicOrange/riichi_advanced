@@ -2159,6 +2159,9 @@ div.hand-piano-container > div.hand-piano-key {
     & ~ .game-bottom-element {
       transform: translateY(calc(4 * var(--tile-size)));
     }
+    & ~ .messages-outer-container {
+      margin-top: calc(4 * var(--tile-size));
+    }
     & ~ div.hand-piano-container {
       display: flex;
       flex-flow: row nowrap;
