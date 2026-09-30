@@ -89,8 +89,8 @@ defmodule RiichiAdvancedWeb.HandPianoComponent do
     |> Enum.reject(fn {tile, _i} -> Utils.strip_attrs(tile) == :"4x" or Utils.has_attr?(tile, "hidden") end)
     |> Enum.map(fn {tile, i} -> {
       i,
-      GenServer.call(assigns.game_state, {:can_mark?, assigns.viewer, assigns.seat, tile, :hand}),
-      GenServer.call(assigns.game_state, {:is_marked?, assigns.viewer, assigns.seat, tile, :hand})
+      GenServer.call(assigns.game_state, {:can_mark?, assigns.viewer, assigns.seat, i, :hand}),
+      GenServer.call(assigns.game_state, {:is_marked?, assigns.viewer, assigns.seat, i, :hand})
     } end)
   end
 end

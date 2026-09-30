@@ -72,7 +72,7 @@ defmodule RiichiAdvanced.GameState.Marking do
 
   def get_object(state, seat, index, source) do
     case source do
-      :hand          -> state.players[seat].hand ++ state.players[seat].draw |> Enum.at(index)
+      :hand          -> (state.players[seat].hand ++ state.players[seat].draw) |> Enum.at(index)
       :calls         -> state.players[seat].calls |> Enum.at(index)
       :aside         -> state.players[seat].aside |> Enum.at(index)
       :discard       -> state.players[seat].pond |> Enum.at(index)
