@@ -2,7 +2,7 @@ on after_initialization do
   add_rule("Rules", "Ambitions", "- Declaring a beauty %{beauty} at the start of the round ($0.50 from all)", %{beauty: ~t"760z"})
   add_rule("Rules", "Ambitions", "- Declaring NEWS %{news} at the start of the round ($0.50 from all)", %{news: ~t"4132z"})
   add_rule("Rules", "Beauty", "Before your first discard, you may declare any %{beauty} as a Beauty, either by having it in hand or by taking from a player's discard. Doing so awards $0.50 from all players. You may not declare a Beauty after your first discard.", %{beauty: ~t"760z"})
-  add_rule("Rules", "NEWS", "Before your first discard, you may declare %{news} as NEWS. Doing so awards $0.50 from all players. You may not declare a Beauty after your first discard.", %{news: ~t"4132z"})
+  add_rule("Rules", "NEWS", "Before your first discard, you may declare %{news} as NEWS. Doing so awards $0.50 from all players, and you draw a gift (replacement tile) from the back of the wall. You may not declare NEWS after your first discard.", %{news: ~t"4132z"})
 end
 
 apply append, "set_definitions.mentsu", ["beauty", "beauty_self", "news", "news_self"]

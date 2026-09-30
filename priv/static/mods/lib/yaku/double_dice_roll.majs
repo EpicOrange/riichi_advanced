@@ -1,0 +1,31 @@
+default list, "yaku"
+default name, "Double Dice Roll"
+default value, 1
+default scoring_key, ""
+
+if equals(!scoring_key, "") do
+  on after_initialization do
+    add_rule("$value $han", "$name", "%{value} %{han} if the dice rolled doubles this round.", %{value: !value, han: !han, name: !name})
+  end
+  define_yaku !list, !name, [!value, !han],
+       (die1_equals(1) and die2_equals(1))
+    or (die1_equals(2) and die2_equals(2))
+    or (die1_equals(3) and die2_equals(3))
+    or (die1_equals(4) and die2_equals(4))
+    or (die1_equals(5) and die2_equals(5))
+    or (die1_equals(6) and die2_equals(6))
+else
+  on after_initialization do
+    add_rule("Rules", "Double Dice Roll", "If the dice rolled doubles this round, the resulting payment this round is doubled.")
+  end
+  define_scoring !scoring_key do
+    if     (die1_equals(1) and die2_equals(1))
+        or (die1_equals(2) and die2_equals(2))
+        or (die1_equals(3) and die2_equals(3))
+        or (die1_equals(4) and die2_equals(4))
+        or (die1_equals(5) and die2_equals(5))
+        or (die1_equals(6) and die2_equals(6)) do
+      total *= 2 :: "Double dice roll"
+    end
+  end
+end

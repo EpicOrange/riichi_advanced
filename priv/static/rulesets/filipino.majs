@@ -147,5 +147,9 @@ set initial_score, 0
 set starting_tiles, 16
 set max_rounds, 4
 
-define_mod_category "Visayan"
+define_mod_category "Filipino"
+define_mod "lib/yaku/double_dice_roll", name: "Double Dice Roll", desc: "If the dice rolls a double, the resulting payout is doubled."
+config_mod "lib/yaku/double_dice_roll", name: "scoring_key", values: ["win"]
 define_mod filipino_visayan, name: "Visayan Rules", desc: "Play with the Visayan variant rules where you can declare dragon sequences and NEWS."
+
+apply set_append, "default_mods", ["lib/yaku/double_dice_roll"]
