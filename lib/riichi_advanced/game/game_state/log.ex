@@ -4,12 +4,14 @@ defimpl Jason.Encoder, for: Tuple do
   alias RiichiAdvanced.Utils, as: Utils
   
   def encode(data, opts) when is_tuple(data) do
-    # turn e.g. {:"3p", ["_hand"]} into its json version, "3p"
-    case Utils.to_tile(data) do
-      # {tile_id, attrs} -> Jason.Encode.map(%{"tile" => Atom.to_string(tile_id), "attrs" => attrs}, opts)
-      # _                -> Jason.Encode.atom(data, opts)
-      {tile_id, _attrs} -> Jason.Encode.atom(tile_id, opts)
-      _                 -> Jason.Encode.atom(data, opts)
+    # :"3p" => "3p"
+    # {:"3p", ["_hand"]} => "3p"
+    # {"pon", [:"2s", :"0j", {:"2s", ["_discard", "_draw"]}]} => ["pon", ["2s", "0j", "2s"]]
+    case data do
+      tile when is_atom(tile) -> Jason.Encode.atom(tile, opts)
+      {tile, _attrs} when is_atom(tile) -> Jason.Encode.atom(tile, opts)
+      {name, call} -> Jason.Encode.list([name, call], opts)
+      _ -> Jason.Encode.value(data, opts)
     end
   end
 end
