@@ -427,10 +427,7 @@ defmodule RiichiAdvanced.GameState.Conditions do
         by_name = Enum.all?(opts, fn
           [name, [_ | _] = value] -> Enum.any?(existing_yaku, fn {name2, value2} -> name == name2 and value == value2 end)
           [name, value]       -> Enum.any?(existing_yaku, fn {name2, [value2 | _]} -> name == name2 and value == value2 end)
-          name_or_value -> Enum.any?(existing_yaku, fn
-            {name, [points | _] = value} -> name_or_value == name or name_or_value == value or name_or_value == points
-            {name, value}       -> name_or_value == name or name_or_value == value
-          end)
+          name_or_value -> Enum.any?(existing_yaku, fn {name, value} -> name_or_value == name or name_or_value == value or name_or_value in value end)
         end)
         by_name or (
           # by_list
