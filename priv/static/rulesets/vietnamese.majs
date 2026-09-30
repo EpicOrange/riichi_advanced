@@ -230,8 +230,8 @@ config_mod kyuushu_kyuuhai, name: "name", values: ["Nine Terminals Draw"]
 
 define_mod_category "Hand Patterns"
 define_mod "yaku/viet_rob_bounce", name: "Robbing a Bounce", desc: "1 phán if someone else uses a tile you're waiting for to bounce a joker."
-define_mod "yaku/viet_no_seven_pairs", name: "No Seven Pairs", conflicts: ["viet_tsumo_seven_pairs"], desc: "Removes seven pairs as a winning hand. (Useful when playing with more than 8 jokers.)"
-define_mod "yaku/viet_tsumo_seven_pairs", name: "Self-Draw Seven Pairs", conflicts: ["viet_no_seven_pairs"], desc: "Adds the requirement that Seven Pairs is completed by self-draw. (Useful when playing with more than 8 jokers.)"
+define_mod "yaku/viet_no_seven_pairs", name: "No Seven Pairs", conflicts: ["yaku/viet_tsumo_seven_pairs"], desc: "Removes seven pairs as a winning hand. (Useful when playing with more than 8 jokers.)"
+define_mod "yaku/viet_tsumo_seven_pairs", name: "Self-Draw Seven Pairs", conflicts: ["yaku/viet_no_seven_pairs"], desc: "Adds the requirement that Seven Pairs is completed by self-draw. (Useful when playing with more than 8 jokers.)"
 define_mod "yaku/shanpon", name: "Double Triplet Wait", desc: "1 phán if your winning hand has two pairs waiting for either one to become a triplet."
 config_mod "yaku/shanpon", name: "value", values: [1]
 config_mod "yaku/shanpon", name: "han", values: ["Phán"]
