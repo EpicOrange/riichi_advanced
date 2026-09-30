@@ -370,17 +370,22 @@ defmodule RiichiAdvanced.Utils do
 
   # get the principal tile from a meld consisting of all one tile and jokers
   def _get_joker_meld_tile(tiles, joker_tiles, tile_behavior) do
-    # don't pass tile_behavior to has_matching_tile?/3 here
-    # so that we only get exact matches for the joker tile
-    non_joker_tiles = Enum.reject(tiles, &has_matching_tile?([&1], joker_tiles))
-    has_joker = length(non_joker_tiles) < length(tiles)
-    has_nonjoker = length(non_joker_tiles) > 0
-    default_tile = Enum.at(non_joker_tiles, -1, Enum.at(tiles, 0))
-    if has_joker and has_nonjoker do
-      [tile | rest] = non_joker_tiles
-      tile = strip_attrs(tile)
-      if Enum.all?(rest, &same_tile(&1, tile, tile_behavior)) do tile else default_tile end
-    else default_tile end
+    if tile_behavior.aliases |> Map.get(:"1f", %{}) |> Map.get([], MapSet.new()) |> Enum.to_list() |> has_matching_tile?(tiles) do
+      # special case for amerijong, where you meld jokers
+      :"1f"
+    else
+      # don't pass tile_behavior to has_matching_tile?/3 here
+      # so that we only get exact matches for the joker tile
+      non_joker_tiles = Enum.reject(tiles, &has_matching_tile?([&1], joker_tiles))
+      has_joker = length(non_joker_tiles) < length(tiles)
+      has_nonjoker = length(non_joker_tiles) > 0
+      default_tile = Enum.at(non_joker_tiles, -1, Enum.at(tiles, 0))
+      if has_joker and has_nonjoker do
+        [tile | rest] = non_joker_tiles
+        tile = strip_attrs(tile)
+        if Enum.all?(rest, &same_tile(&1, tile, tile_behavior)) do tile else default_tile end
+      else default_tile end
+    end
   end
   def get_joker_meld_tile(call, tile_behavior) do
     _get_joker_meld_tile(call_to_tiles(call), Map.keys(tile_behavior.mappings), tile_behavior)
