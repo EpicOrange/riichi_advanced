@@ -1,5 +1,6 @@
 defmodule RiichiAdvanced.GameState.Rules do
   alias RiichiAdvanced.GameState.American
+  alias RiichiAdvanced.GameState.American.AmericanYaku
   alias RiichiAdvanced.GameState.Debug
   alias RiichiAdvanced.MatchOld
   alias RiichiAdvanced.ModLoader
@@ -230,8 +231,35 @@ defmodule RiichiAdvanced.GameState.Rules do
       _ -> []
     end)
     |> MapSet.new()
-
     :ets.insert(rules_ref, {:all_attrs, MapSet.union(all_attrs, wall_attrs)})
+
+    # if any american mahjong hands exist, precalculate some facts about each hand
+    # (whether it's exposed, concealed, or singles only concealed)
+    # (also its yaku name and score)
+    am_yaku = for %{"when" => condition, :value_num => value, "display_name" => display_name} <- toposorted_yaku do
+      ret = %AmericanYaku{
+        display_name: display_name,
+        value: value,
+        singles: String.contains?(display_name, "Singles and Pairs"),
+      }
+      for c <- List.flatten(condition), reduce: ret do
+        nil -> nil
+        ret ->
+          case c do
+            %{"name" => "has_no_call_named"} -> %{ret | concealed: true}
+            %{"name" => "not_has_calls"} -> %{ret | concealed: true}
+            %{"name" => "match", "opts" => [_, defs]} ->
+              defs = Enum.filter(defs, &American.is_american_match_definition?/1)
+              %{ret | am_match_definitions: defs}
+            _ -> ret
+          end
+      end
+    end
+    |> Enum.reject(&is_nil/1)
+    |> Enum.reject(&Enum.empty?(&1.am_match_definitions))
+    |> Enum.flat_map(fn yaku -> Enum.map(yaku.am_match_definitions, &{&1, yaku}) end)
+    |> Map.new()
+    :ets.insert(rules_ref, {:am_yaku, am_yaku})
   end
 
   def get(rules_ref, key, default \\ nil)

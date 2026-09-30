@@ -608,10 +608,11 @@ defmodule RiichiAdvanced.GameState.American do
       arranged_hand: [],
       missing_tiles: [],
       difficulty: 0,
+      yaku: %AmericanYaku{}
     ]
   end
 
-  def compute_closest_american_hands(state, seat, am_match_definitions, num, use_difficulty? \\ true) do
+  def compute_closest_american_hands(state, seat, num, use_difficulty? \\ true) do
     hand = state.players[seat].hand
     draw = state.players[seat].draw
     calls = state.players[seat].calls
@@ -620,11 +621,13 @@ defmodule RiichiAdvanced.GameState.American do
     hand = Utils.strip_attrs(hand ++ draw)
 
     # t = System.os_time(:millisecond)
-    am_match_definitions = if not Enum.empty?(Debug.debug_am_match_definitions()) do
-      Enum.map(Debug.debug_am_match_definitions(), &{&1, false})
-    else am_match_definitions end
+    am_yaku = Rules.get(state.rules_ref, :am_yaku, %{})
+    am_yaku = if Enum.empty?(calls) do am_yaku else Map.filter(am_yaku, fn {_, yaku} -> yaku.concealed end) end
+    am_yaku = if not Enum.empty?(Debug.debug_am_match_definitions()) do
+      Map.take(am_yaku, Debug.debug_am_match_definitions())
+    else am_yaku end
 
-    ret = for {am_match_definition, concealed?} <- am_match_definitions do
+    ret = for {am_match_definition, yaku} <- am_yaku do
       Task.async(fn ->
         # pairing = index map from am_match_definition to our hand
         # pairing_r = index map from our hand to am_match_definition
@@ -666,7 +669,7 @@ defmodule RiichiAdvanced.GameState.American do
                   |> Enum.map(&Utils.strip_attrs/1)
                   |> Enum.map(&{Enum.at(&1, 0), length(&1)})
                   groups = Enum.map(matching_hand_nojoker, &{&1, 1}) ++ groups
-                  score_hand_difficulty(am_match_definition, matched_tiles, missing_tiles, groups, concealed?)
+                  score_hand_difficulty(am_match_definition, matched_tiles, missing_tiles, groups, yaku.concealed)
                 else 0 end
                 {new_pairing, new_pairing_r, missing_tiles, difficulty}
               else acc end
@@ -681,6 +684,7 @@ defmodule RiichiAdvanced.GameState.American do
           pairing_r: pairing_r,
           missing_tiles: missing_tiles,
           difficulty: difficulty,
+          yaku: yaku,
         }
       end)
     end

@@ -160,7 +160,7 @@ defmodule RiichiAdvanced.AIPlayer do
       # then get all hands of that shanten
       |> Enum.filter(&best_shanten == (hand_length - map_size(&1.pairing_r)))
       # filter for open hands only (might be none if a concealed hand is closer)
-      |> Enum.filter(& &1.am_match_definition in open_am_match_definitions)
+      |> Enum.reject(& &1.yaku.concealed)
       # out of those hands, see if there's any hands for which the last discard would be helpful
       # we just look at arranged_hand and see which tiles have the "inactive" attribute (TODO: or is a joker)
       |> Enum.filter(&last_discard_with_inactive in &1.arranged_hand)
