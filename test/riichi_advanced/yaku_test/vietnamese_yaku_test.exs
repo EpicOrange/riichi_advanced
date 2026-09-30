@@ -194,7 +194,7 @@ defmodule RiichiAdvanced.YakuTest.VietnameseYaku do
           {"Anything Joker (縂)", [3, "Phán"]}
         ],
       }
-    })
+    }, %{delta_scores: [206, -56, -56, -94]})
   end
 
   test "vietnamese - true nfnl early tsumo" do

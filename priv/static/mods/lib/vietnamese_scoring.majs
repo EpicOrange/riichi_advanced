@@ -1,6 +1,23 @@
 
 on before_scoring do
-  make_responsible_for("others")
+  cond do
+    # pao
+    not_status_missing("chinitsu_pao", "tsuuiisou_pao", "chinroutou_pao", "daisangen_pao", "daisuushii_pao") ->
+      # currently only designates one pao player since we assume only one pao is active
+      # obviously it's possible to have more, we should handle it, but i'm too lazy to write this
+      make_responsible_for("prev_seat", "all")
+      clear_responsibilities(as: "others")
+    won_by_call ->
+      as others do
+        # only the caller is responsible for "Robbing a Quad"
+        if seat_is("last_caller") do
+          make_responsible_for("prev_seat", ["remaining", "Robbing a Quad"], as: "prev_seat")
+        else
+          make_responsible_for("prev_seat", "remaining", as: "prev_seat")
+        end
+      end
+    true -> make_responsible_for("others", "all")
+  end
 end
 
 # pao / liabilities
@@ -54,19 +71,6 @@ on after_call do
       if match(["last_call"], ~m"(ton nan shaa pei):1") do unset_status("pao", as: "all"); set_status("pao", "daisuushii_pao", as: "callee") end
     else
       if match(["calls"], ~m"(ton nan shaa pei):3") do set_status("danger_daisuushii") end
-    end
-  end
-end
-
-
-
-on before_win do
-  as others do
-    # currently only designates one pao player since we assume only one pao is active
-    # obviously it's possible to have more, we should handle it, but i'm too lazy to write this
-    if not_status_missing("chinitsu_pao", "tsuuiisou_pao", "chinroutou_pao", "daisangen_pao", "daisuushii_pao") do
-      make_responsible_for("prev_seat", "all")
-      clear_responsibilities(as: "others")
     end
   end
 end

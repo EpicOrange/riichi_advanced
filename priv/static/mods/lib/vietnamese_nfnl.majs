@@ -235,6 +235,5 @@ on before_win do
       if status_missing("discarded_4j") do nguyen_value = 0 end
       if status_missing("discarded_2j") do hop_value = 0 end
     end
-    make_responsible_for("others")
   end
 end
