@@ -4777,7 +4777,7 @@ msgstr ""
 msgid "If the AI is stuck or missing, clicking the center compass will try to unstuck them."
 msgstr ""
 
-msgid "If the AI is too fast or too slow, try toggling the \"Win Timer\" mod in Room Settings."
+msgid "If the AI is too fast or too slow, try toggling the \"Change AI Speed\" mod in Room Settings."
 msgstr ""
 
 msgid "If the dealer (East wind) is tenpai at exhaustive draw, the round repeats. If honba is enabled, this adds one honba."
@@ -7723,7 +7723,7 @@ msgstr ""
 msgid "The dragon joker %{nguyen} can be replaced for 2 Phán if you are the West player, or 1 Phán otherwise."
 msgstr ""
 
-msgid "The endgame screen takes 30 seconds to advance. If you want it to take longer, toggle the \"Change AI Speed\" mod in Room Settings."
+msgid "The endgame screen takes 30 seconds to advance. If you want it to take longer, toggle the \"Win Timer\" mod in Room Settings."
 msgstr ""
 
 msgid "The flower joker %{hoa} can be replaced for 2 Phán regardless of seat."

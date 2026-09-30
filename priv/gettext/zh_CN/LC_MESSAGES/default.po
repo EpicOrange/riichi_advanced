@@ -4777,8 +4777,8 @@ msgstr "若某人的副露显示其不可能和牌（例如其只能以手中一
 msgid "If the AI is stuck or missing, clicking the center compass will try to unstuck them."
 msgstr "若 AI 卡住或消失，点击中央的罗盘会尝试让其恢复。"
 
-msgid "If the AI is too fast or too slow, try toggling the \"Win Timer\" mod in Room Settings."
-msgstr "若 AI 太快或太慢，请尝试切换房间设定中的「和牌计时器」mod。"
+msgid "If the AI is too fast or too slow, try toggling the \"Change AI Speed\" mod in Room Settings."
+msgstr "若 AI 太快或太慢，请尝试切换房间设定中的「变更 AI 速度」mod。"
 
 msgid "If the dealer (East wind) is tenpai at exhaustive draw, the round repeats. If honba is enabled, this adds one honba."
 msgstr "若庄家（东风）在流局时听牌，则该局连庄。若启用本场，则增加一根本场棒。"
@@ -7723,8 +7723,8 @@ msgstr "筒子王牌 %{thung} 若你为南家，可换取 2 番；否则换取 1
 msgid "The dragon joker %{nguyen} can be replaced for 2 Phán if you are the West player, or 1 Phán otherwise."
 msgstr "三元牌王牌 %{nguyen} 若你为西家，可换取 2 番；否则换取 1 番。"
 
-msgid "The endgame screen takes 30 seconds to advance. If you want it to take longer, toggle the \"Change AI Speed\" mod in Room Settings."
-msgstr "终局画面需要 30 秒才会前进。若你想让它更久，请切换房间设定中的「变更 AI 速度」mod。"
+msgid "The endgame screen takes 30 seconds to advance. If you want it to take longer, toggle the \"Win Timer\" mod in Room Settings."
+msgstr "终局画面需要 30 秒才会前进。若你想让它更久，请切换房间设定中的「和牌计时器」mod。"
 
 msgid "The flower joker %{hoa} can be replaced for 2 Phán regardless of seat."
 msgstr "花王牌 %{hoa} 不论座位，皆可换取 2 番。"

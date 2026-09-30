@@ -22,8 +22,8 @@ defmodule RiichiAdvancedWeb.TipsComponent do
     "Riichi Advanced attempts to be mobile-friendly and tries to support all major browsers. This isn't easy, so if you find something amiss, join the Discord!",
     "Riichi Advanced is open-source, and is currently hosted on GitHub.",
     "If you want to play with every player showing their hands, enable the \"Open Hands\" mod in Room Settings.",
-    "If the AI is too fast or too slow, try toggling the \"Win Timer\" mod in Room Settings.",
-    "The endgame screen takes 30 seconds to advance. If you want it to take longer, toggle the \"Change AI Speed\" mod in Room Settings.",
+    "If the AI is too fast or too slow, try toggling the \"Change AI Speed\" mod in Room Settings.",
+    "The endgame screen takes 30 seconds to advance. If you want it to take longer, toggle the \"Win Timer\" mod in Room Settings.",
     "It is possible to customize the color of the table using the \"Tablecloth Color\" and \"Tile Color\" mods in Room Settings.",
 
 

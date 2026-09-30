@@ -4777,8 +4777,8 @@ msgstr "誰かの公開された面子が、和了可能な手牌がないこと
 msgid "If the AI is stuck or missing, clicking the center compass will try to unstuck them."
 msgstr "AIがスタックしているか見つからない場合、中央のコンパスをクリックするとスタックを解除しようとします。"
 
-msgid "If the AI is too fast or too slow, try toggling the \"Win Timer\" mod in Room Settings."
-msgstr "AIが速すぎるか遅すぎる場合、ルーム設定の「Win Timer」modを切り替えてみてください。"
+msgid "If the AI is too fast or too slow, try toggling the \"Change AI Speed\" mod in Room Settings."
+msgstr "AIが速すぎるか遅すぎる場合、ルーム設定の「AI速度を変更」modを切り替えてみてください。"
 
 msgid "If the dealer (East wind) is tenpai at exhaustive draw, the round repeats. If honba is enabled, this adds one honba."
 msgstr "親（東風）が荒牌流局時に聴牌している場合、局が連荘されます。本場が有効な場合、本場が1つ追加されます。"
@@ -7723,8 +7723,8 @@ msgstr "筒子ジョーカー %{thung} は、南家である場合は2翻で、�
 msgid "The dragon joker %{nguyen} can be replaced for 2 Phán if you are the West player, or 1 Phán otherwise."
 msgstr "三元牌ジョーカー %{nguyen} は、西家である場合は2翻で、それ以外は1翻で交換できます。"
 
-msgid "The endgame screen takes 30 seconds to advance. If you want it to take longer, toggle the \"Change AI Speed\" mod in Room Settings."
-msgstr "終局画面が進むのに30秒かかります。より長くしたい場合は、ルーム設定で「Change AI Speed」modを切り替えてください。"
+msgid "The endgame screen takes 30 seconds to advance. If you want it to take longer, toggle the \"Win Timer\" mod in Room Settings."
+msgstr "終局画面が進むのに30秒かかります。より長くしたい場合は、ルーム設定で「和了タイマー」modを切り替えてください。"
 
 msgid "The flower joker %{hoa} can be replaced for 2 Phán regardless of seat."
 msgstr "花ジョーカー %{hoa} は、席に関係なく2翻で交換できます。"
