@@ -10,6 +10,8 @@ use crate::primes::to_prime;
 use crate::tile_table::{TILE_TABLE, tile7x};
 use crate::types::{BaseTileVec, ElixirHandCalls, ElixirTile, ElixirTileOrdering, Hands, MatchDefinitionElem, MatchDefinitions, MatchGroup, MatchInfo, MatchOffset, RemovableGroup, Tile, TileSet};
 
+const FLOWER_CALL_NAMES: [&str; 4] = ["flower", "start_flower", "joker", "start_joker"];
+
 #[rustler::nif(schedule = "DirtyCpu")]
 fn _separate_standard_winner_hand(
     hand_calls: ElixirHandCalls,
@@ -31,7 +33,10 @@ fn _separate_standard_winner_hand(
 
   // make a flattened hand that joker_assignment can make use of
   let mut flattened_elixir_hand: Vec<ElixirTile> = hand;
-  for (_, call) in calls { flattened_elixir_hand.extend(call); }
+  for (name, call) in calls {
+    if FLOWER_CALL_NAMES.contains(&name.as_str()) { continue; }
+    flattened_elixir_hand.extend(call);
+  }
   let flattened_hand: Vec<Tile> = encode_tiles(&flattened_elixir_hand, &match_info.all_attrs).collect();
 
   // construct aliases/mapping to be precisely the joker assignment
