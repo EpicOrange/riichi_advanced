@@ -242,6 +242,7 @@ defmodule RiichiAdvanced.GameState do
       north: nil,
       messages_states: Map.new([:east, :south, :west, :north], fn seat -> {seat, nil} end),
       calculate_playable_indices_pids: Map.new([:east, :south, :west, :north], fn seat -> {seat, nil} end),
+      get_visible_waits_pid: nil,
       calculate_closest_american_hands_pid: nil,
       get_best_minefield_hand_pid: nil,
       # remember to edit :put_state if you change anything above
@@ -1100,18 +1101,23 @@ defmodule RiichiAdvanced.GameState do
   end
 
   def get_visible_waits(state, seat, index) do
-    hand = state.players[seat].hand ++ state.players[seat].draw
-    {discard, hand} = if index != nil do
-      List.pop_at(hand, index)
-    else {nil, hand} end
-    calls = state.players[seat].calls
+    player = state.players[seat]
+    hand = List.delete_at(player.hand ++ player.draw, index)
+    calls = player.calls
     win_definitions = Rules.translate_match_definitions(state.rules_ref, Rules.get(state.rules_ref, "show_waits", %{}) |> Map.get("win_definitions", []))
-    tile_behavior = state.players[seat].tile_behavior
+    tile_behavior = player.tile_behavior
     visible_tiles = get_visible_tiles(state, seat)
     Match.get_waits_and_ukeire(hand, calls, win_definitions, visible_tiles, tile_behavior)
     |> Enum.uniq_by(fn {wait, _ukeire} -> Utils.strip_attrs(wait, :invisible) end)
     |> Enum.sort_by(fn {wait, _ukeire} -> Constants.sort_value(wait) end)
-    |> Enum.map(fn {wait, ukeire} -> {wait, ukeire, calculate_wait_label(state, seat, wait, discard, index)} end)
+    |> Enum.map(fn {wait, ukeire} -> {wait, ukeire, nil} end)
+  end
+  def get_visible_wait_labels(state, seat, index, visible_waits) do
+    player = state.players[seat]
+    hand = player.hand ++ player.draw
+    discard = Enum.at(hand, index)
+    visible_waits
+    |> Enum.map(fn {wait, ukeire, _} -> {wait, ukeire, calculate_wait_label(state, seat, wait, discard, index)} end)
   end
 
   def get_open_riichi_hands(state) do
@@ -1257,6 +1263,9 @@ defmodule RiichiAdvanced.GameState do
       if state.calculate_playable_indices_pids[seat] do
         Process.exit(state.calculate_playable_indices_pids[seat], :kill)
       end
+    end
+    if state.get_visible_waits_pid do
+      Process.exit(state.get_visible_waits_pid, :kill)
     end
     if state.calculate_closest_american_hands_pid do
       Process.exit(state.calculate_closest_american_hands_pid, :kill)
@@ -2016,7 +2025,10 @@ defmodule RiichiAdvanced.GameState do
 
   def handle_cast({:get_visible_waits, from, seat, index}, state) do
     if Rules.has_key?(state.rules_ref, "show_waits") do
-      Task.start(fn ->
+      if state.get_visible_waits_pid do
+        Process.exit(state.get_visible_waits_pid, :kill)
+      end
+      {:ok, pid} = Task.start(fn ->
         hand = state.players[seat].hand ++ state.players[seat].draw
         tile = Enum.at(hand, index)
         waits = cond do
@@ -2028,9 +2040,16 @@ defmodule RiichiAdvanced.GameState do
         # so as an optimization we use send() to send it to the caller
         # we will send %{tile => waits} but caller translates and saves %{index => waits}
         send(from, {:set_visible_waits, hand, tile, waits})
+        # then calculate labels for it
+        waits = get_visible_wait_labels(state, seat, index, waits)
+        send(from, {:set_visible_waits, hand, tile, waits})
       end)
+      state = state
+      |> Map.put(:get_visible_waits_pid, pid)
+      {:noreply, state}
+    else
+      {:noreply, state}
     end
-    {:noreply, state}
   end
 
   def handle_cast({:mark_tile, marking_player, seat, index, source}, state) do
