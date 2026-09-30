@@ -253,8 +253,10 @@ defmodule RiichiAdvanced.GameState.Actions do
         GenServer.cast(self(), :calculate_playable_indices)
 
         # update closest american hands
-        if state.ruleset == "american" do GenServer.cast(self(), :calculate_closest_american_hands) end
-        
+        state = if state.ruleset == "american" do
+          GenServer.cast(self(), {:calculate_closest_american_hands, [seat]})
+          update_player(state, seat, &%{ &1 | cache: %{ &1.cache | closest_american_hands: [] } })
+        else state end
         state
       end
     end
@@ -432,6 +434,11 @@ defmodule RiichiAdvanced.GameState.Actions do
         end
 
         state = update_player(state, seat, &%{ &1 | call_buttons: %{} })
+
+        state = if state.ruleset == "american" do
+          GenServer.cast(self(), {:calculate_closest_american_hands, [seat]})
+          update_player(state, seat, &%{ &1 | cache: %{ &1.cache | closest_american_hands: [] } })
+        else state end
         state
     end
   end

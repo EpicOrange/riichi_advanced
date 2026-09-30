@@ -387,11 +387,11 @@ defmodule RiichiAdvanced.GameState.American do
                         # this is just to sort the greyed-out inactive tiles onto one side
                         _            -> Utils.sort_tiles(new_group)
                       end
-                      # add new_group to accumulator
+                      # add new_group to accumFulator
                       {new_hand, calls, [new_group | ret]}
                     else
-                      # if am_match_definition == "NN EEE 2024a WWW SS" do
-                        # IO.puts("Failed to complete #{am_match_definition} for #{inspect(hand)} / #{inspect(calls)}")
+                      # if am_match_definition == "11a 222a 33a 444a 5555a" do
+                      #   IO.puts("Failed to complete #{am_match_definition} for #{inspect(hand)} / #{inspect(calls)}")
                       # end
                       {[], [], nil}
                     end
@@ -562,14 +562,27 @@ defmodule RiichiAdvanced.GameState.American do
     if Enum.empty?(flattened) or nil in flattened do nil else {joker, nojoker} end
   end
 
-  def score_hand_difficulty(_am_match_definition, matched_tiles, _missing_tiles, groups, concealed?) do
+  def score_hand_difficulty(_am_match_definition, matched_tiles, _missing_tiles, calls, groups, tile_behavior, concealed?) do
     {_joker_matched_tiles, hand_matched_tiles} = Keyword.split(matched_tiles, [:"1j"])
     tile_freqs = hand_matched_tiles
     |> Keyword.values()
     |> Enum.frequencies()
+
+    # remove groups already matched by calls
+    groups = for {_name, call} <- calls, reduce: groups do
+      [] -> []
+      groups ->
+        call_as_group = Utils.replace_jokers(call, [:"1j"], tile_behavior) |> Utils.strip_attrs()
+        case Enum.find_index(groups, &Match.try_remove_all_tiles(&1, call_as_group, tile_behavior.aliases, tile_behavior.attrs) == [[]]) do
+          nil -> [] # this instance does not use one of our calls, discard it
+          i   -> List.delete_at(groups, i)
+        end
+    end
+
     # calculate concealed shanten
-    {_, _, shanten} = for {tile, num} <- groups, reduce: {tile_freqs, false, 0} do
+    {_, _, shanten} = for group <- groups, reduce: {tile_freqs, false, 0} do
       {tile_freqs, skipped, shanten} ->
+        {tile, num} = {Enum.at(group, 0), length(group)}
         amt = Map.get(tile_freqs, tile, 0)
         used = min(num, amt)
         needed = num - used
@@ -610,12 +623,13 @@ defmodule RiichiAdvanced.GameState.American do
       pairing_r: %{},
       arranged_hand: [],
       missing_tiles: [],
+      callable_missing_tiles: MapSet.new(),
       difficulty: 0,
       yaku: %AmericanYaku{}
     ]
   end
 
-  def compute_closest_american_hands(state, seat, num, use_difficulty? \\ true) do
+  def calculate_closest_american_hands(state, seat, num, use_difficulty? \\ true) do
     hand = state.players[seat].hand
     draw = state.players[seat].draw
     calls = state.players[seat].calls
@@ -625,7 +639,7 @@ defmodule RiichiAdvanced.GameState.American do
 
     # t = System.os_time(:millisecond)
     am_yaku = Rules.get(state.rules_ref, :am_yaku, %{})
-    am_yaku = if Enum.empty?(calls) do am_yaku else Map.filter(am_yaku, fn {_, yaku} -> yaku.concealed end) end
+    am_yaku = if Enum.empty?(calls) do am_yaku else Map.reject(am_yaku, fn {_, yaku} -> yaku.concealed end) end
     am_yaku = if not Enum.empty?(Debug.debug_am_match_definitions()) do
       Map.take(am_yaku, Debug.debug_am_match_definitions())
     else am_yaku end
@@ -635,14 +649,14 @@ defmodule RiichiAdvanced.GameState.American do
         # pairing = index map from am_match_definition to our hand
         # pairing_r = index map from our hand to am_match_definition
         # missing_tiles = all tiles in am_match_definition that aren't in our hand
-        {_edge_cache, {_pairing, pairing_r, missing_tiles, difficulty}} = for match_definition <- translate_american_match_definitions([am_match_definition]), base_tile <- MatchOld.collect_base_tiles(hand, calls, List.flatten(match_definition), tile_behavior), reduce: {%{}, {%{}, %{}, [], 100}} do
+        {_edge_cache, {_pairing, pairing_r, missing_tiles, callable_missing_tiles, difficulty}} = for match_definition <- translate_american_match_definitions([am_match_definition]), base_tile <- MatchOld.collect_base_tiles(hand, calls, List.flatten(match_definition), tile_behavior), reduce: {%{}, {%{}, %{}, [], MapSet.new(), 100}} do
           {edge_cache, acc} -> case instantiate_match_definition(match_definition, hand, calls, base_tile, tile_behavior) do
             nil -> {edge_cache, acc}
             {matching_groups_joker, matching_groups_nojoker} ->
-              # matching_hand_joker might include tiles with attr "call"
               matching_hand_joker = Enum.concat(matching_groups_joker)
               matching_hand_nojoker = Enum.concat(matching_groups_nojoker)
               matching_hand = matching_hand_joker ++ matching_hand_nojoker
+              # matching_hand_joker might include tiles with attr "call"
               matching_hand_joker = Utils.strip_attrs(matching_hand_joker)
               # model the problem as a maximum matching problem on bipartite graph (indices of hand and indices of matching_hand)
               # an edge exists if corresponding tiles are the same (according to Utils.same_tile)
@@ -666,15 +680,19 @@ defmodule RiichiAdvanced.GameState.American do
               acc = if map_size(new_pairing) > map_size(pairing) do
                 # get matched and missing tiles for later use
                 missing_tiles = Enum.map(Enum.to_list(0..length(matching_hand)-1) -- Map.keys(new_pairing), fn j -> Enum.at(matching_hand, j) end)
+                # callable_missing_tiles is used by ai players to check callability 
+                callable_missing_tiles = if yaku.concealed do MapSet.new() else MapSet.intersection(MapSet.new(matching_hand_joker), MapSet.new(missing_tiles)) end
+                # callable_missing_tiles = matching_hand_joker
                 difficulty = if use_difficulty? do
                   matched_tiles = Enum.map(new_pairing_r, fn {i, j} -> {Enum.at(hand, i), Enum.at(matching_hand, j)} end)
                   groups = matching_groups_joker
                   |> Enum.map(&Utils.strip_attrs/1)
                   |> Enum.map(&{Enum.at(&1, 0), length(&1)})
                   groups = Enum.map(matching_hand_nojoker, &{&1, 1}) ++ groups
-                  score_hand_difficulty(am_match_definition, matched_tiles, missing_tiles, groups, yaku.concealed)
+                  groups = Enum.map(groups, fn {tile, num} -> List.duplicate(tile, num) end)
+                  score_hand_difficulty(am_match_definition, matched_tiles, missing_tiles, calls, groups, tile_behavior, yaku.concealed)
                 else 0 end
-                {new_pairing, new_pairing_r, missing_tiles, difficulty}
+                {new_pairing, new_pairing_r, missing_tiles, callable_missing_tiles, difficulty}
               else acc end
               {edge_cache, acc}
           end
@@ -686,6 +704,7 @@ defmodule RiichiAdvanced.GameState.American do
           am_match_definition: am_match_definition,
           pairing_r: pairing_r,
           missing_tiles: missing_tiles,
+          callable_missing_tiles: callable_missing_tiles,
           difficulty: difficulty,
           yaku: yaku,
         }
@@ -723,7 +742,7 @@ defmodule RiichiAdvanced.GameState.American do
       end
       arranged_hand = arrange_american_hand([am_match_definition], fixed_hand, calls, tile_behavior)
       if arranged_hand == nil do
-        # if seat == :east do
+        # if seat == :south do
         #   IO.puts("Failed to arrange #{inspect(hand)} => #{inspect(fixed_hand)} / #{inspect(Enum.map(calls, &Utils.call_to_tiles/1))} into #{am_match_definition}")
         # end
         nil
@@ -741,7 +760,7 @@ defmodule RiichiAdvanced.GameState.American do
 
     # elapsed_time = System.os_time(:millisecond) - t
     # if elapsed_time > 10 do
-    #   IO.puts("compute_closest_american_hands: #{inspect(elapsed_time)} ms")
+    #   IO.puts("calculate_closest_american_hands: #{inspect(elapsed_time)} ms")
     # end
 
     ret

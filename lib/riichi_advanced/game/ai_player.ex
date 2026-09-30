@@ -1,11 +1,11 @@
 defmodule RiichiAdvanced.AIPlayer do
-  alias RiichiAdvanced.GameState.Debug, as: Debug
-  alias RiichiAdvanced.GameState.Marking, as: Marking
-  alias RiichiAdvanced.GameState.Rules, as: Rules
-  alias RiichiAdvanced.GameState.TileBehavior, as: TileBehavior
-  alias RiichiAdvanced.Match, as: Match
-  alias RiichiAdvanced.Riichi, as: Riichi
-  alias RiichiAdvanced.Utils, as: Utils
+  alias RiichiAdvanced.GameState.Debug
+  alias RiichiAdvanced.GameState.Marking
+  alias RiichiAdvanced.GameState.Rules
+  alias RiichiAdvanced.GameState.TileBehavior
+  alias RiichiAdvanced.Match
+  alias RiichiAdvanced.Riichi
+  alias RiichiAdvanced.Utils
   use GenServer
 
   @ai_speed 4 # default
@@ -106,6 +106,8 @@ defmodule RiichiAdvanced.AIPlayer do
   defp choose_american_discard(state, playables, closest_american_hands) do
     # get shanten
     hand_length = length(state.player.hand)
+    hand_length = hand_length + length(state.player.draw |> Enum.reject(&Utils.strip_attrs(&1) == :"1x"))
+    hand_length = hand_length + length(state.player.calls |> Enum.flat_map(&Utils.call_to_tiles/1))
     shanten = closest_american_hands
     |> Enum.map(&hand_length - map_size(&1.pairing_r))
     |> Enum.min(&<=/2, fn -> :infinity end)
@@ -115,23 +117,32 @@ defmodule RiichiAdvanced.AIPlayer do
     # sort by difficulty
     |> Enum.sort_by(& &1.difficulty)
 
-    # closest_american_hands
-    # |> Map.new(&{&1.am_match_definition, &1.difficulty})
-    # |> IO.inspect(label: "#{state.seat}: #{shanten}-shanten hands")
-    
+    if Debug.debug_ai() do
+      closest_american_hands
+      |> Map.new(&{&1.am_match_definition, &1.difficulty})
+      |> IO.inspect(label: "#{state.seat}: #{shanten}-shanten hands")
+      IO.puts("#{state.seat}: #{inspect(state.player.hand)} #{inspect(state.player.draw)}")
+    end
+
     # rank playables by how often they appear in closest hands
-    # with a multiplier 2^n where the last hand is *1, second last is *2, etc
+    # we will discard the tile that appears the least, weighting early appearences
+    # with a larger multiplier 2^n where the last hand is *1, second last is *2, etc
     usages = for %{pairing_r: pairing_r} <- closest_american_hands, reduce: Map.new(playables, fn {_tile, i} -> {i, 0} end) do
       usages -> usages
         |> Map.new(fn {k, v} -> {k, v * 2} end)
         |> Map.merge(Map.keys(pairing_r) |> Enum.frequencies(), fn _k, v1, v2 -> v1 + v2 end)
     end
+    # |> IO.inspect(label: "usages")
+
+    # closest_american_hands
+    # |> Enum.map(&{&1.am_match_definition, &1.pairing_r})
+    # |> IO.inspect(label: "pairing_r")
 
     ret = playables
     # filter out jokers
     |> Enum.reject(fn {tile, _i} -> tile == :"1j" end)
-    # take least-useful tile
-    |> Enum.min_by(fn {_tile, i} -> usages[i] end, &<=/2, fn -> nil end)
+    # take least-useful tile, then last-most tile (usually drawn tile)
+    |> Enum.min_by(fn {_tile, i} -> {usages[i], -i} end, &<=/2, fn -> nil end)
     if Debug.debug_ai() and ret != nil do
       IO.puts(" >> #{state.seat}: I'm currently #{shanten}-shanten!")
     end
@@ -143,40 +154,47 @@ defmodule RiichiAdvanced.AIPlayer do
       player: player,
       last_discard: last_discard,
       closest_american_hands: closest_american_hands,
-      open_am_match_definitions: open_am_match_definitions
     } = params
+    if Enum.empty?(closest_american_hands) do
+      nil
+    else
+      last_discard_stripped = Utils.strip_attrs(last_discard)
+      last_discard_stripped = if last_discard_stripped in [:"1f", :"2f", :"3f", :"4f", :"1g", :"2g", :"3g", :"4g"] do :"1f" else last_discard_stripped end
+      hand_length = length(player.hand)
 
-    last_discard_stripped = Utils.strip_attrs(last_discard)
-    last_discard_stripped = if last_discard_stripped in [:"1f", :"2f", :"3f", :"4f", :"1g", :"2g", :"3g", :"4g"] do :"1f" else last_discard_stripped end
-    last_discard_with_inactive = Utils.add_attr(last_discard_stripped, ["inactive"])
-    hand_length = length(player.hand)
-
-    # get shanten towards all hands
-    {difficulty, best_shanten} = closest_american_hands
-    |> Enum.map(&{-&1.difficulty, hand_length - map_size(&1.pairing_r)})
-    |> Enum.min(&<=/2, fn -> {100, 100} end)
-    if best_shanten <= 3 or (best_shanten <= 6 and difficulty <= 30) do
-      closest_american_hands
-      # then get all hands of that shanten
-      |> Enum.filter(&best_shanten == (hand_length - map_size(&1.pairing_r)))
-      # filter for open hands only (might be none if a concealed hand is closer)
-      |> Enum.reject(& &1.yaku.concealed)
-      # out of those hands, see if there's any hands for which the last discard would be helpful
-      # we just look at arranged_hand and see which tiles have the "inactive" attribute (TODO: or is a joker)
-      |> Enum.filter(&last_discard_with_inactive in &1.arranged_hand)
-      # check each hand to see if it's a pung, kong, quint, or sextet
-      |> Enum.flat_map(fn hand -> hand.arranged_hand
-        |> Utils.strip_attrs()
-        |> Enum.chunk_by(&:"3x" == &1)
-        |> Enum.reject(&:"3x" in &1)
-        |> Enum.filter(&last_discard_stripped in &1)
-        |> Enum.map(&length(&1))
-      end)
-      # filter for max_len
-      |> Enum.filter(& &1 <= max_len)
-      # take max, or return 0 if empty
-      |> Enum.max(&>=/2, fn -> 0 end)
-    else 0 end
+      # get shanten towards all hands
+      {difficulty, best_shanten} = closest_american_hands
+      |> Enum.map(&{-&1.difficulty, hand_length - map_size(&1.pairing_r)})
+      |> Enum.min(&<=/2, fn -> {100, 100} end)
+      if best_shanten <= 3 or (best_shanten <= 6 and difficulty <= 30) do
+        closest_american_hands
+        # then get all hands of that shanten
+        |> Enum.filter(&best_shanten == (hand_length - map_size(&1.pairing_r)))
+        # filter for open hands only (might be none if a concealed hand is closer)
+        |> Enum.reject(& &1.yaku.concealed)
+        # out of those hands, see if there's any hands for which the last discard would be helpful
+        # that's why we calculate callable_missing_tiles
+        |> Enum.filter(&Utils.has_matching_tile?(&1.callable_missing_tiles, [last_discard_stripped], player.tile_behavior))
+        |> then(fn x ->
+          if Debug.debug_ai() and not Enum.empty?(x) do
+            IO.inspect(Enum.map(x, & {&1.am_match_definition, &1.callable_missing_tiles}), label: "#{params.seat} calling #{inspect(last_discard_stripped)} for hands")
+          end
+          x
+        end)
+        # check each hand to see if it's a pung, kong, quint, or sextet
+        |> Enum.flat_map(fn hand -> hand.arranged_hand
+          |> Utils.strip_attrs()
+          |> Enum.chunk_by(&:"3x" == &1)
+          |> Enum.reject(&:"3x" in &1)
+          |> Enum.filter(&last_discard_stripped in &1)
+          |> Enum.map(&length(&1))
+        end)
+        # filter for max_len
+        |> Enum.filter(& &1 <= max_len)
+        # take max, or return nil if empty
+        |> Enum.max(&>=/2, fn -> nil end)
+      else nil end
+    end
   end
 
   defp get_mark_choices(source, players, revealed_tiles, scryed_tiles) do

@@ -1213,7 +1213,7 @@ defmodule RiichiAdvanced.GameState do
     end
     
     # async populate closest_american_hands for all players
-    if state.ruleset == "american" do GenServer.cast(self(), :calculate_closest_american_hands) end
+    if state.ruleset == "american" do GenServer.cast(self(), {:calculate_closest_american_hands, state.available_seats}) end
   end
 
   def async_calculate_playable_indices(state) do
@@ -1789,13 +1789,18 @@ defmodule RiichiAdvanced.GameState do
         if Buttons.no_buttons_remaining?(state) do
           if is_pid(Map.get(state, state.turn)) do
             # IO.puts("Notifying #{state.turn} AI that it's their turn")
-            params = %{
-              player: state.players[state.turn],
-              open_riichis: get_open_riichi_hands(state),
-              visible_tiles: get_visible_tiles(state, state.turn),
-              closest_american_hands: state.players[state.turn].cache.closest_american_hands,
-            }
-            send(Map.get(state, state.turn), {:your_turn, params})
+            closest_american_hands = state.players[state.turn].cache.closest_american_hands
+            # need to make sure the latest hand calculation is complete
+            if not Enum.empty?(closest_american_hands) or state.calculate_closest_american_hands_pid == nil do
+              params = %{
+                seat: state.turn,
+                player: state.players[state.turn],
+                open_riichis: get_open_riichi_hands(state),
+                visible_tiles: get_visible_tiles(state, state.turn),
+                closest_american_hands: closest_american_hands
+              }
+              send(Map.get(state, state.turn), {:your_turn, params})
+            end
           end
         else
           for seat <- state.available_seats, is_pid(Map.get(state, seat)) do
@@ -1825,23 +1830,21 @@ defmodule RiichiAdvanced.GameState do
                   has_buttons and state.ruleset == "american" ->
                     # IO.puts("Notifying #{seat} AI about their buttons: #{inspect(state.players[seat].buttons)}")
                     # we want to delay so we can calculate closest american hands before continuing
-                    self = self()
                     Task.start(fn ->
-                      use_difficulty? = "match_start" not in state.players[seat].status
-                      closest_american_hands = American.compute_closest_american_hands(state, seat, 5, use_difficulty?)
-                      GenServer.cast(self, {:set_closest_american_hands, seat, closest_american_hands})
                       params = %{
+                        seat: seat,
                         player: state.players[seat],
                         turn: state.turn,
                         last_discard: last_discard,
                         last_discarder_status: last_discarder_status,
-                        closest_american_hands: closest_american_hands,
+                        closest_american_hands: state.players[seat].cache.closest_american_hands,
                       }
                       send(Map.get(state, seat), {:buttons, params})
                     end)
                   has_buttons ->
                     # non-american game, has buttons
                     params = %{
+                      seat: seat,
                       player: state.players[seat],
                       turn: state.turn,
                       last_discard: last_discard,
@@ -1885,6 +1888,7 @@ defmodule RiichiAdvanced.GameState do
           state = update_player(state, seat, fn player -> %{ player | ai_thinking: true } end)
           state = broadcast_state_change(state)
           params = %{
+            seat: seat,
             player: state.players[seat],
             players: state.players,
             visible_tiles: get_visible_tiles(state, seat),
@@ -1944,6 +1948,7 @@ defmodule RiichiAdvanced.GameState do
           state = update_player(state, seat, fn player -> %{ player | ai_thinking: true } end)
           state = broadcast_state_change(state)
           params = %{
+            seat: seat,
             player: state.players[seat],
             open_riichis: get_open_riichi_hands(state),
             visible_tiles: get_visible_tiles(state, seat),
@@ -2140,7 +2145,7 @@ defmodule RiichiAdvanced.GameState do
     {:noreply, state}
   end
 
-  def handle_cast(:calculate_closest_american_hands, state) do
+  def handle_cast({:calculate_closest_american_hands, seats}, state) do
     win_definition = Rules.get(state.rules_ref, "win_definition", [])
     # the am_card_free mod sets win_definition to the empty one, because it uses an alternate wincon
     # in which case we don't calculate closest hands
@@ -2150,11 +2155,12 @@ defmodule RiichiAdvanced.GameState do
       end
       self = self()
       {:ok, pid} = Task.start(fn ->
-        for seat <- state.available_seats do
-          use_difficulty? = "match_start" not in state.players[seat].status
-          closest_american_hands = American.compute_closest_american_hands(state, seat, 5, use_difficulty?)
+        for seat <- seats do
+          player = state.players[seat]
+          use_difficulty? = "match_start" not in player.status
+          closest_american_hands = American.calculate_closest_american_hands(state, seat, 5, use_difficulty?)
           GenServer.cast(self, {:set_closest_american_hands, seat, closest_american_hands})
-          # IO.puts("done calculating closest american hands")
+          # IO.inspect(closest_american_hands |> Enum.map(& &1.pairing_r), label: "#{inspect(player.hand)} #{inspect(player.draw)}\n#{inspect(player.calls)}\ndone calculating closest american hands for seat #{seat}")
         end
       end)
       state = state

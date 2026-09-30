@@ -249,7 +249,7 @@ defmodule RiichiAdvanced.GameState.Rules do
             %{"name" => "has_no_call_named"} -> %{ret | concealed: true}
             %{"name" => "not_has_calls"} -> %{ret | concealed: true}
             %{"name" => "match", "opts" => [_, defs]} ->
-              defs = Enum.filter(defs, &American.is_american_match_definition?/1)
+              defs = Enum.filter(List.wrap(defs), &American.is_american_match_definition?/1)
               %{ret | am_match_definitions: defs}
             _ -> ret
           end

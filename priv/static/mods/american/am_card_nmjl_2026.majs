@@ -3,7 +3,7 @@ define_match win,
   ~a"222a 000 2222b 6666b",
   ~a"2026a DDDa 2222b|6666b DDDb",
   ~a"FFF 2026a 222b 6666c",
-  ~a"22a 00 222b 666b NEWS", # (apparently this one is exposed, not concealed)
+  ~a"22a 00 222b 666b NEWS",
   # 2468
   ~a"222a 444a 6666a 8888a", ~a"222a 444a 6666b 8888b",
   ~a"FF 2222a 44b 66b 8888a",
@@ -69,7 +69,7 @@ define_match open_win,
   ~a"222a 000 2222b 6666b",
   ~a"2026a DDDa 2222b|6666b DDDb",
   ~a"FFF 2026a 222b 6666c",
-  ~a"22a 00 222b 666b NEWS", # (apparently this one is exposed, not concealed)
+  ~a"22a 00 222b 666b NEWS",
   # 2468
   ~a"222a 444a 6666a 8888a", ~a"222a 444a 6666b 8888b",
   ~a"FF 2222a 44b 66b 8888a",
