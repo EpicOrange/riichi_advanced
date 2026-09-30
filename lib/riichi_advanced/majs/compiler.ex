@@ -1196,9 +1196,10 @@ defmodule RiichiAdvanced.Compiler do
         end
       {"require", [line: line, column: column], args} -> {:error, "Compiler.compile: at line #{line}:#{column}, require command expects a library name optionally followed by a map of configs %{var: \"value\"}, got: #{inspect(args)}`"}
       {"require_after", _pos, [name | opts]} ->
+        require_call = "require_lib_" <> String.replace(name, "/", "_")
         with {:ok, name} <- Validator.validate_lib(name) do
           if name in defs.libs do
-            {:ok, {".", defs}}
+            {:ok, {require_call, defs}}
           else
             config = case opts do
               [] -> {:ok, %{}}
@@ -1215,7 +1216,7 @@ defmodule RiichiAdvanced.Compiler do
             end
             with {:ok, config} <- config do
               lib = if Enum.empty?(config) do name else %{name: name, config: config} end
-              {:ok, {".", %{defs | post_mods: [lib | defs.post_mods], libs: MapSet.put(defs.libs, name)}}}
+              {:ok, {require_call, %{defs | post_mods: [lib | defs.post_mods], libs: MapSet.put(defs.libs, name)}}}
             end
           end
         end
@@ -1324,10 +1325,9 @@ defmodule RiichiAdvanced.Compiler do
           [line: line, column: column] -> {line, column}
           _ -> {0, 0}
         end
-        header = if depth == 0 do @header else "" end
         case compile_jq_toplevel(nodes, line, column, defs, depth) do
           {:ok, {"", defs}} ->  {:ok, {".", defs}}
-          {:ok, {ret, defs}} -> {:ok, {header <> ret, defs}}
+          {:ok, {ret, defs}} -> {:ok, {ret, defs}}
           {:error, msg}      -> {:error, msg}
         end
       {_name, _pos, _actions} -> compile_jq_defs({:__block__, [], [ast]}, defs, depth)

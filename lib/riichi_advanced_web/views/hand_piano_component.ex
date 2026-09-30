@@ -28,7 +28,7 @@ defmodule RiichiAdvancedWeb.HandPianoComponent do
           <% end %>
         <% end %>
       <% else %>
-        <%= for i <- 0..(@num_hand_keys+@num_draw_keys-1) do %>
+        <%= for i <- 0..(@num_hand_keys+@num_draw_keys-1)//1 do %>
           <%= if not @your_turn? or i in @playable_indices do %>
             <div class={["hand-piano-key", @selected_index == i && "selected", i >= @num_hand_keys && "draw"]} phx-cancellable-click="play_tile" phx-hover="hover_tile" phx-hover-off="hover_off" phx-target={@myself} phx-value-index={i}></div>
           <% else %>
