@@ -189,7 +189,7 @@ define_yaku yaku, "Quad", [1, "Phán"], match(["calls"], ~m"(daiminkan ankan kak
 define_yaku yaku, "Quad", [1, "Phán"], match(["calls"], ~m"(daiminkan ankan kakan):3")
 define_yaku yaku, "All Called", [3, "Phán"], not_won_by_draw and match(["calls"], ~m"(chii pon daiminkan ankan kakan):4")
 
-# bonsues
+# bonuses
 define_yaku meta_yaku, "Small No Jokers Bonus", [1, "Phán"], status_missing("has_joker") and has_existing_yaku("All Sets") and not_has_existing_yaku("No Jokers Bonus")
 define_yaku meta_yaku, "No Jokers Bonus", [1, "Mủn"], status_missing("has_joker") and (has_existing_yaku("Mủn") or has_existing_yaku([9, "Phán"]) or has_existing_yaku([13, "Phán"]))
 define_yaku meta_yaku, "Single Wait Fully Closed Bonus", [1, "Mủn"], has_existing_yaku("Fully Closed Hand") and (has_existing_yaku("Single Wait") or has_existing_yaku("Pair Wait")) and has_points(2, "Mủn"), ["Fully Closed Hand", "Single Wait", "Pair Wait"]

@@ -796,7 +796,7 @@ defmodule RiichiAdvanced.YakuTest.VietnameseYaku do
           {"All Sets", [3, "Phán"]},
           {"Half Flush", [3, "Phán"]},
           {"Progressive Counting", [3, "Phán"]},
-          {"No Jokers Bonus", [1, "Mủn"]},
+          {"Small No Jokers Bonus", [1, "Phán"]},
         ],
       }
     })

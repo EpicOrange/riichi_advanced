@@ -53,6 +53,10 @@ defmodule RiichiAdvanced.GameState.Rules do
     yaku_map = %{}
     |> Map.merge(Enum.group_by(yakus, &Map.get(&1, :key)), fn _k, l, r -> l ++ r end)
     |> Map.merge(Enum.group_by(yakus, &Map.get(&1, :value_num)), fn _k, l, r -> l ++ r end)
+    |> Map.merge(Enum.group_by(yakus, &Map.get(&1, :value_denominations) |> Enum.at(0)), fn _k, l, r -> l ++ r end)
+    |> Map.merge(Enum.group_by(yakus, &Map.get(&1, :value_denominations) |> Enum.at(1)), fn _k, l, r -> l ++ r end)
+    |> Map.merge(Enum.group_by(yakus, &Map.get(&1, :value_denominations) |> Enum.at(2)), fn _k, l, r -> l ++ r end)
+    |> Map.drop([nil])
     |> Map.merge(Enum.group_by(yakus, &Map.get(&1, "value")), fn _k, l, r -> l ++ r end)
     |> Map.merge(Enum.group_by(yakus, &Map.get(&1, "display_name")), fn _k, l, r -> l ++ r end)
     # |> Map.merge(Enum.group_by(yakus, &Map.get(&1, :list_name)), fn _k, l, r -> l ++ r end) # handle yaku lists differently
@@ -178,7 +182,8 @@ defmodule RiichiAdvanced.GameState.Rules do
     |> Enum.map(&{&1, get(rules_ref, &1, [])})
     |> Enum.flat_map(fn {list_name, yaku_list} -> Enum.map(yaku_list, &Map.put(&1, :list_name, list_name)) end)
     |> Enum.map(&Map.update(&1, "value", [0, ""], default_value))
-    |> Enum.map(&Map.put(&1, :key, [&1["display_name"], Enum.drop_every(&1["value"], 2)]))
+    |> Enum.map(&Map.put(&1, :value_denominations, Enum.drop_every(&1["value"], 2)))
+    |> Enum.map(&Map.put(&1, :key, [&1["display_name"], &1.value_denominations]))
     |> Enum.map(&Map.put(&1, :value_num, &1["value"] |> Enum.at(0, 0)))
     |> Enum.with_index()
     |> Enum.map(fn {yaku, ix} -> yaku |> Map.put(:ix, ix) end)

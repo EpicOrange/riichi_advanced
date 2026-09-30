@@ -18,7 +18,7 @@ defmodule RiichiAdvanced.Utils do
     case tile_spec do
       [tile_spec | _attrs] -> Map.has_key?(Constants.to_tile(), tile_spec)
       %{"tile" => tile_spec, "attrs" => _attrs} -> Map.has_key?(Constants.to_tile(), tile_spec)
-      {tile_spec, attrs} -> Map.has_key?(Constants.to_tile(), tile_spec) and is_list(attrs)
+      {tile_spec, attrs} when is_list(attrs) -> Map.has_key?(Constants.to_tile(), tile_spec)
       _ -> Map.has_key?(Constants.to_tile(), tile_spec)
     end
   end
