@@ -15,6 +15,7 @@ on after_initialization do
   rename_rule_tab("2 Han", "2+ Han")
   rename_rule_tab("3 Han", "2+ Han")
   rename_rule_tab("4 Han", "2+ Han")
+  rename_rule_tab("3+ Han", "2+ Han")
   rename_rule_tab("Shoumangan", "Shoumangan")
   rename_rule_tab("Daimangan", "Daimangan")
   rename_rule_tab("Choumangan", "Choumangan")
@@ -54,9 +55,9 @@ def calculate_base_score do
       total = minipoints :: "Fu"
       total *= han_mult :: "Base"
       if total >= 1000 do
-        total = 1000 :: "Shoumangan limit"
+        total = 1000 :: "Kazumangan limit"
+        modify_winner("score_name", "Kazumangan")
       end
-      modify_winner("score_name", "Kazumangan")
   end
   base_score = total # save base_score for mods to use
 end

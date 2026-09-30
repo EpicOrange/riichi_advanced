@@ -89,6 +89,7 @@ defmodule RiichiAdvanced.GameState.Payment do
   end
   
   # populates a new entry in state.txns using scoring_logic
+  # also initializes state.winners[cxt.seat] to cxt, which is then modified via scoring_logic actions
   def run_scoring_logic(state, cxt) when is_map_key(cxt, :scoring_key) and cxt.scoring_key != nil do
     winner_seat = cxt.seat
 

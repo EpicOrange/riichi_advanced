@@ -386,7 +386,8 @@ defmodule RiichiAdvanced.GameState.Kyoku do
       end
       cxt = Map.put(cxt, :scoring_key, scoring_key)
       # make a new txn in state.txns by running scoring_logic
-      # this might run the modify_winner action, which is why we place a fake winner object first
+      # also uses cxt to initialize state.winners[cxt.seat],
+      # which is then modified via scoring_logic actions
       state = Payment.run_scoring_logic(state, cxt)
       {state, cxt}
     end)
@@ -441,7 +442,7 @@ defmodule RiichiAdvanced.GameState.Kyoku do
     end
 
     score_rules = Rules.get(state.rules_ref, "score_calculation", %{})
-    winner = Map.merge(cxt,
+    winner = Map.merge(get_in(state.winners[seat]), # set by Payment.run_scoring_logic
       %{
         seat: seat,
         player: state.players[seat],
@@ -486,7 +487,7 @@ defmodule RiichiAdvanced.GameState.Kyoku do
         # flag to check if after_win has been called for this winner
         needs_after_win: true,
       })
-    state = Map.update!(state, :winners, &Map.put(&1, seat, winner))
+    state = update_in(state.winners, &Map.put(&1, seat, winner))
     state
   end
 end

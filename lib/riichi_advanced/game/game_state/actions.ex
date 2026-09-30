@@ -2033,17 +2033,20 @@ defmodule RiichiAdvanced.GameState.Actions do
               :number -> interpret_amount(state, context, Enum.at(opts, 1, 0))
               :string -> Enum.at(opts, 1, "")
             end
-            state = update_in(state.winners[seat][key], fn prev_value -> case method do
-              :set      -> value
-              :add      -> prev_value + value
-              :subtract -> prev_value - value
-              :multiply -> prev_value * value
-              :divide   -> Integer.floor_div(prev_value, value)
-              :min      -> min(prev_value, value)
-              :max      -> max(prev_value, value)
-              :prepend  -> value <> prev_value
-              :append   -> prev_value <> value
-            end end)
+            state = if method == :set do
+              put_in(state.winners[seat][key], value)
+            else
+              update_in(state.winners[seat][key], fn prev_value -> case method do
+                :add      -> prev_value + value
+                :subtract -> prev_value - value
+                :multiply -> prev_value * value
+                :divide   -> Integer.floor_div(prev_value, value)
+                :min      -> min(prev_value, value)
+                :max      -> max(prev_value, value)
+                :prepend  -> value <> prev_value
+                :append   -> prev_value <> value
+              end end)
+            end
             new_amt = state.winners[seat][key]
             score_rules = Rules.get(state.rules_ref, "score_calculation", %{})
             point_name = score_rules["point_name"]
@@ -2057,7 +2060,7 @@ defmodule RiichiAdvanced.GameState.Actions do
               _ -> state
             end
             # also update right_display if it changed
-            if score_rules["right_display"] == Enum.at(opts, 0, nil) do
+            state = if score_rules["right_display"] == Enum.at(opts, 0, nil) do
               case score_rules["right_display"] do
                 "points"       -> put_in(state.winners[seat].right_display, new_amt)
                 "points2"      -> put_in(state.winners[seat].right_display, new_amt)
