@@ -162,6 +162,10 @@ end
 # for kiriage mod to modify
 define_const mangan_4_han_fu, 40
 define_const mangan_3_han_fu, 70
+# (fractional han is from cosmic riichi)
+define_const mangan_4_5_han_fu, 30
+define_const mangan_3_5_han_fu, 50
+define_const mangan_2_5_han_fu, 90
 
 def calculate_base_score do
   cond do
@@ -184,11 +188,23 @@ def calculate_base_score do
     points >= 5 ->
       total = 2000 :: "Mangan base"
       modify_winner("score_name", "Mangan")
+    points >= 4.5 and minipoints >= @mangan_4_5_han_fu ->
+      total = minipoints :: "Fu"
+      total = 2000 :: "Mangan base"
+      modify_winner("score_name", "Mangan")
     points >= 4 and minipoints >= @mangan_4_han_fu ->
       total = minipoints :: "Fu"
       total = 2000 :: "Mangan base"
       modify_winner("score_name", "Mangan")
+    points >= 3.5 and minipoints >= @mangan_3_5_han_fu ->
+      total = minipoints :: "Fu"
+      total = 2000 :: "Mangan base"
+      modify_winner("score_name", "Mangan")
     points >= 3 and minipoints >= @mangan_3_han_fu ->
+      total = minipoints :: "Fu"
+      total = 2000 :: "Mangan base"
+      modify_winner("score_name", "Mangan")
+    points >= 2.5 and minipoints >= @mangan_2_5_han_fu ->
       total = minipoints :: "Fu"
       total = 2000 :: "Mangan base"
       modify_winner("score_name", "Mangan")

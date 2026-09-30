@@ -1,5 +1,6 @@
 on after_initialization do
-  add_rule("0.5 Han", "Fractional Han", "(Cosmic Riichi) Half han can be awarded, with the corresponding score determined by the standard han/fu formula. (Each half han multiplies the score by 1.414, the square root of 2.) Mangan is achieved at 3.5 han 50 fu.", -100)
+  add_rule("0.5 Han", "Fractional Han", "(Cosmic Riichi) Half han can be awarded, with the corresponding score determined by the standard han/fu formula. (Each half han multiplies the score by 1.414, the square root of 2.)", -100)
+  update_rule("0.5 Han", "Fractional Han", "Mangan is achieved at 4.5 han 30 fu, 3.5 han 50 fu, or 2.5 han 90 fu. Haneman is still 6+ han.")
   update_rule("0.5 Han", "Fractional Han", "Note that 0.5 han is not enough to satisfy the 1 han minimum by itself.")
   add_rule("0.5 Han", "Mini-Sangen", "0.5 han is awarded for each mixed triplet of dragons.")
   update_rule("0.5 Han", "Mini-Sangen", "%{mixed_triplet}", %{mixed_triplet: ~t"567z"})
@@ -215,6 +216,15 @@ end
 define_yaku yaku, "Mini-Sangen", ["mini_sangen", "Han"], counter_at_least("mini_sangen", 0.5)
 
 # handle mixed winds counting
+# must remove yakuhai wind first for this to work
+define_const yakuhai_wind_groups, [
+  %{groups: ~s"""
+      0@prevalent 0@prevalent 0@prevalent
+    | 0@seat 0@seat 0@seat
+    """, value: 0},
+  %{groups: ~s"0@prevalent&seat 0@prevalent&seat 0@prevalent&seat", value: 0},
+  %{groups: ~s""} # no-op
+]
 define_const mixed_winds_groups, [
   %{groups: ~s"""
       0@prevalent 1@seat 2@wind
@@ -227,14 +237,6 @@ define_const mixed_winds_groups, [
     | 0@wind 1@prevalent&seat 2@wind
     | 0@wind 1@wind 2@prevalent&seat
     """, value: 1},
-  %{groups: ~s""} # no-op
-]
-define_const yakuhai_wind_groups, [
-  %{groups: ~s"""
-      0@prevalent 0@prevalent 0@prevalent
-    | 0@seat 0@seat 0@seat
-    """, value: 2},
-  %{groups: ~s"0@prevalent&seat 0@prevalent&seat 0@prevalent&seat", value: 4},
   %{groups: ~s""} # no-op
 ]
 on before_scoring do
@@ -272,16 +274,16 @@ on before_scoring do
   unless round_wind_is("south") and seat_is("south") do add_counter("chon_134_count", "count_matches", ["calls"], ~m"kontsu_134:1") end
   unless round_wind_is("east") and seat_is("east") do add_counter("chon_234_count", "count_matches", ["calls"], ~m"kontsu_234:1") end
   # the above chon counts will also count fuuns, so subtract fuun count from each
-  subtract_counter("chon_123_count", "fuun_count")
-  subtract_counter("chon_124_count", "fuun_count")
-  subtract_counter("chon_134_count", "fuun_count")
-  subtract_counter("chon_234_count", "fuun_count")
+  chon_123_count -= fuun_count
+  chon_124_count -= fuun_count
+  chon_134_count -= fuun_count
+  chon_234_count -= fuun_count
   # add all positive counts to the total
-  add_counter("mixed_winds", "fuun_count")
-  if counter_at_least("chon_123_count", 1) do add_counter("mixed_winds", "chon_123_count") end
-  if counter_at_least("chon_124_count", 1) do add_counter("mixed_winds", "chon_124_count") end
-  if counter_at_least("chon_134_count", 1) do add_counter("mixed_winds", "chon_134_count") end
-  if counter_at_least("chon_234_count", 1) do add_counter("mixed_winds", "chon_234_count") end
+  mixed_winds += fuun_count
+  if chon_123_count > 0 do mixed_winds += chon_123_count end
+  if chon_124_count > 0 do mixed_winds += chon_124_count end
+  if chon_134_count > 0 do mixed_winds += chon_134_count end
+  if chon_234_count > 0 do mixed_winds += chon_234_count end
   mixed_winds *= 0.5
   remove_attr_all("wind", "prevalent", "seat")
 end

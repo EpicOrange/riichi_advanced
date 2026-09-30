@@ -5,6 +5,9 @@ define_global han, "Han"
 require "cosmic"
 require_after "yakuman_13_han"
 require_after "riichi_fix_rules_tabs"
+
+define "fractional_han" # this is just to modify the kiriage mangan mod
+
 apply set_append, "default_mods", [
   "kontsu",
   "yaku/kontsu_yaku",

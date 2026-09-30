@@ -4,3 +4,13 @@ end
 
 define_const mangan_4_han_fu, 30
 define_const mangan_3_han_fu, 60
+
+# (fractional han is from cosmic riichi)
+if defined("fractional_han") do
+  on after_initialization do
+    add_rule("Rules", "Kiriage Mangan", "(Cosmic Riichi) 4.5 han is always mangan. 3.5 han 40 fu and 2.5 han 80 fu are also worth mangan.")
+  end
+  define_const mangan_4_5_han_fu, 20
+  define_const mangan_3_5_han_fu, 40
+  define_const mangan_2_5_han_fu, 80
+end
