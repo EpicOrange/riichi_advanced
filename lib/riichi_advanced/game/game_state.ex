@@ -398,7 +398,7 @@ defmodule RiichiAdvanced.GameState do
         mods = Map.get(state, :mods, [])
         ruleset_json = ModState.load_ruleset(state.ruleset)
         |> ModState.prepend_mods(mods)
-        |> ModState.extract_json(no_cache: true)
+        |> ModState.extract_json()
 
         # cache mods if that was successful
         if not Enum.empty?(mods) do
@@ -417,7 +417,7 @@ defmodule RiichiAdvanced.GameState do
               ruleset_json: ruleset_json,
               ruleset_jq: [{"config", query}],
               mods: mods
-            })
+            }, no_cache: true)
           rescue
             err ->
               IO.puts("Failed to load config:\n#{state.config}\nError was #{inspect(err)}")
