@@ -2135,7 +2135,7 @@ defmodule RiichiAdvanced.GameState do
       {:ok, pid} = Task.start(fn ->
         for seat <- seats do
           player = state.players[seat]
-          use_difficulty? = "match_start" not in player.status
+          use_difficulty? = true # "match_start" not in player.status
           closest_american_hands = American.calculate_closest_american_hands(state, seat, 5, use_difficulty?)
           GenServer.cast(self, {:set_closest_american_hands, seat, closest_american_hands})
           # IO.inspect(closest_american_hands |> Enum.map(& &1.pairing_r), label: "#{inspect(player.hand)} #{inspect(player.draw)}\n#{inspect(player.calls)}\ndone calculating closest american hands for seat #{seat}")
