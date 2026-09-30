@@ -81,7 +81,7 @@ defmodule RiichiAdvanced.TestUtils do
       end
     end
 
-    state = GenServer.call(test_state.game_state_pid, :get_state)
+    state = GenServer.call(test_state.game_state_pid, :get_state, 15000)
     # IO.inspect(Rules.get(state.rules_ref, "enabled_mods"), limit: :infinity)
     GenServer.cast(test_state.game_state_pid, :terminate_game)
 
