@@ -565,7 +565,7 @@ defmodule RiichiAdvanced.GameState.American do
     shanten
   end
 
-  def compute_closest_american_hands(state, seat, am_match_definitions, num) do
+  def compute_closest_american_hands(state, seat, am_match_definitions, num, use_difficulty? \\ true) do
     hand = state.players[seat].hand
     draw = state.players[seat].draw
     calls = state.players[seat].calls
@@ -614,14 +614,15 @@ defmodule RiichiAdvanced.GameState.American do
               pairing = elem(acc, 0)
               acc = if map_size(new_pairing) > map_size(pairing) do
                 # get matched and missing tiles for later use
-                matched_tiles = Enum.map(new_pairing_r, fn {i, j} -> {Enum.at(hand, i), Enum.at(matching_hand, j)} end)
                 missing_tiles = Enum.map(Enum.to_list(0..length(matching_hand)-1) -- Map.keys(new_pairing), fn j -> Enum.at(matching_hand, j) end)
-                # summarize the hand using the original groups
-                groups = matching_groups_joker
-                |> Enum.map(&Utils.strip_attrs/1)
-                |> Enum.map(&{Enum.at(&1, 0), length(&1)})
-                groups = Enum.map(matching_hand_nojoker, &{&1, 1}) ++ groups
-                difficulty = score_hand_difficulty(am_match_definition, matched_tiles, missing_tiles, groups, concealed?)
+                difficulty = if use_difficulty? do
+                  matched_tiles = Enum.map(new_pairing_r, fn {i, j} -> {Enum.at(hand, i), Enum.at(matching_hand, j)} end)
+                  groups = matching_groups_joker
+                  |> Enum.map(&Utils.strip_attrs/1)
+                  |> Enum.map(&{Enum.at(&1, 0), length(&1)})
+                  groups = Enum.map(matching_hand_nojoker, &{&1, 1}) ++ groups
+                  score_hand_difficulty(am_match_definition, matched_tiles, missing_tiles, groups, concealed?)
+                else 0 end
                 {new_pairing, new_pairing_r, missing_tiles, difficulty}
               else acc end
               {edge_cache, acc}
@@ -639,7 +640,6 @@ defmodule RiichiAdvanced.GameState.American do
     |> Enum.reject(fn {_am_match_definition, _pairing_r, missing_tiles, _difficulty} -> Utils.has_matching_tile?(missing_tiles, [nil]) end)
     # sort by number of matching tiles (TODO: make this sort by difficulty)
     |> Enum.sort_by(fn {_am_match_definition, pairing_r, _missing_tiles, difficulty} -> {-difficulty, map_size(pairing_r)} end, :desc)
-    # |> Enum.sort_by(fn {_am_match_definition, pairing_r, _missing_tiles, difficulty} -> {map_size(pairing_r), -difficulty} end, :desc)
     # |> then(fn x -> IO.inspect(Stream.map(x, fn {a, p, _} -> {a, map_size(p)} end)); x end)
     # remove empty matches (where 0 tiles match)
     # we use stream so we can lazily pick up the first 5 that work later

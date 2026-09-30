@@ -1835,7 +1835,8 @@ defmodule RiichiAdvanced.GameState do
                         Rules.get(state.rules_ref, "win_definition", [])
                         |> Enum.map(&{&1, if &1 in open_win_definition_set do false else true end})
                       else Enum.map(Rules.get(state.rules_ref, "open_win_definition", []), &{&1, false}) end
-                      closest_american_hands = American.compute_closest_american_hands(state, seat, win_definitions, 5)
+                      use_difficulty? = "match_start" not in state.players[seat].status
+                      closest_american_hands = American.compute_closest_american_hands(state, seat, win_definitions, 5, use_difficulty?)
                       GenServer.cast(self, {:set_closest_american_hands, seat, closest_american_hands})
                       params = %{
                         player: state.players[seat],
@@ -2159,7 +2160,8 @@ defmodule RiichiAdvanced.GameState do
         exposed_win_definitions = Enum.map(open_win_definitions, &{&1, false})
         for seat <- state.available_seats do
           win_definitions = if Enum.empty?(state.players[seat].calls) do concealed_win_definitions else exposed_win_definitions end
-          closest_american_hands = American.compute_closest_american_hands(state, seat, win_definitions, 5)
+          use_difficulty? = "match_start" not in state.players[seat].status
+          closest_american_hands = American.compute_closest_american_hands(state, seat, win_definitions, 5, use_difficulty?)
           GenServer.cast(self, {:set_closest_american_hands, seat, closest_american_hands})
           # IO.puts("done calculating closest american hands")
         end
