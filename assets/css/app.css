@@ -4080,9 +4080,9 @@ div.room > input#room-settings-toggle:checked + div.room-settings {
   display: block;
   position: absolute;
   width: calc(100% - 1 * var(--tile-size));
-  height: calc(100% - 4.75 * var(--tile-size));
+  height: calc(100% - 3.5 * var(--tile-size));
   left: 0;
-  top: calc(3.75 * var(--tile-size));
+  top: calc(2.5 * var(--tile-size));
   z-index: 2;
   overflow-y: auto;
   scrollbar-color: var(--bg-color) transparent;
