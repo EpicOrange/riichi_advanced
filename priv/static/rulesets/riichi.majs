@@ -21,7 +21,11 @@ require "default_auto_buttons"
 require "renchan"
 require "standard_win"
 require "riichi_scoring"
+require "chii", %{style: "riichi"}
+require "pon", %{style: "riichi"}
 require "riichi_kan" # adds kan fu for riichi_scoring
+require "ron", %{scoring_key: "ron"}
+require "tsumo", %{scoring_key: "tsumo"}
 require_after "riichi_fix_rules_tabs"
 
 set score_calculation, %{
@@ -42,70 +46,8 @@ set score_calculation, %{
   exhaustive_draw_name: "Ryuukyoku"
 }
 
-define_const can_draw_condition, true
+define_const can_draw_condition, true # set by "base" mod, but we don't have flowers
 define_const ryuukyoku, ryuukyoku("Ryuukyoku", "ryuukyoku")
-
-define_button chii,
-  display_name: "Chii",
-  show_when: not_our_turn and not_no_tiles_remaining and kamicha_discarded and call_available,
-  precedence_over: ["chii"],
-  call: [[-2, -1], [-1, 1], [1, 2]],
-  call_style: %{
-    kamicha: ["call_sideways", 0, 1],
-    toimen: [0, "call_sideways", 1],
-    shimocha: [0, 1, "call_sideways"]
-  }
-  do
-    big_text("Chii")
-    call
-    change_turn("self")
-  end
-
-define_button pon,
-  display_name: "Pon",
-  show_when: not_our_turn
-    and not_no_tiles_remaining
-    and someone_else_just_discarded
-    and call_available,
-  precedence_over: ["chii"],
-  call: [[0, 0]],
-  call_style: %{
-    kamicha: ["call_sideways", 0, 1],
-    toimen: [0, "call_sideways", 1],
-    shimocha: [0, 1, "call_sideways"]
-  }
-  do
-    big_text("Pon")
-    call
-    change_turn("self")
-  end
-
-define_button ron,
-  display_name: "Ron",
-  show_when: not_our_turn
-    and someone_else_just_discarded
-    and match(["hand", "calls"], ["tenpai"])
-    and match(["hand", "calls", "last_discard"], ["win"]),
-  precedence_over: ["chii", "pon"]
-  do
-    big_text("Ron")
-    pause(1000)
-    reveal_hand
-    win_by_discard("ron")
-  end
-
-define_button tsumo,
-  display_name: "Tsumo",
-  show_when: our_turn
-    and has_draw
-    and match(["hand", "calls"], ["tenpai"])
-    and match(["hand", "calls", "draw"], ["win"])
-  do
-    big_text("Tsumo")
-    pause(1000)
-    reveal_hand
-    win_by_draw("tsumo")
-  end
 
 set interruptible_actions, ["play_tile", "advance_turn", "draw", "self_call", "upgrade_call"]
 set display_wall, true
