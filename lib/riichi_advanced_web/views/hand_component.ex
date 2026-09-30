@@ -99,7 +99,7 @@ defmodule RiichiAdvancedWeb.HandComponent do
           </div>
         <% end %>
       <% end %>
-      <div class="calls" phx-hook="SortableHand" id={@id <> " calls"}>
+      <div class="calls" id={@id <> " calls"}>
         <%= if not Enum.empty?(@marking) and @viewer != :spectator do %>
           <%= for {{_name, call}, i} <- prepare_calls(assigns) do %>
             <div class="dead-hand-button inactive" :if={@dead_hand_buttons and i == 0 and @seat != @viewer and @viewer != :spectator}></div>
