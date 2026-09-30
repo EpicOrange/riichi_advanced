@@ -145,6 +145,9 @@ set score_calculation, %{
   exhaustive_draw_name: "Draw"
 }
 
+define_const uniq, not_has_existing_yaku("yaku")
+define_const concealed, has_no_call_named("am_pung", "am_kong", "am_quint", "am_sextet")
+
 define_yaku extra_yaku, "Heavenly", [2, "×"], status("heavenly_available")
 define_yaku extra_yaku, "Jokerless", [2, "×"], jokers == 0 and not_match(["hand", "call_tiles", "winning_tile"], ~m"nojoker, 1j:1")
 
