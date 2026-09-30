@@ -16,9 +16,9 @@ defmodule RiichiAdvanced.TutorialTestUtils do
     excluded_mods = Map.get(sequence, "removed_mods", [])
     config = Map.get(sequence, "config", []) |> Map.put("ai_speed", 256) |> Jason.encode!()
     init_actions = [
+      ["set_log_seeking_mode", true],
       ["initialize_tutorial"],
       ["init_player", session_id, Atom.to_string(seat)],
-      ["set_log_seeking_mode", true],
       ["initialize_game"]
     ]
     test_state = TestUtils.initialize_test_state(ruleset, mods, excluded_mods, config, init_actions)

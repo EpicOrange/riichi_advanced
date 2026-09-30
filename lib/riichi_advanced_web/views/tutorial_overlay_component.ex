@@ -60,6 +60,9 @@ defmodule RiichiAdvancedWeb.TutorialOverlayComponent do
       "exit" ->
         send(self(), :back)
         socket
+      "keep_playing" ->
+        GenServer.cast(socket.assigns.game_state, :disable_tutorial)
+        socket
     end
     if action in ["sleep", "await_click", "await_event", "force_event"] do
       socket

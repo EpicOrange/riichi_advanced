@@ -287,6 +287,14 @@ defmodule RiichiAdvanced.GameState.Rules do
       false
   end
 
+  def disable_tutorial(rules_ref) do
+    :ets.delete(rules_ref, "starting_hand")
+    :ets.delete(rules_ref, "starting_draws")
+    :ets.delete(rules_ref, "starting_dead_wall")
+    :ets.delete(rules_ref, "tsumogiri_bots")
+    :ets.insert(rules_ref, {"no_log", true})
+  end
+
   def translate_sets_in_match_definitions(match_definitions, set_definitions) do
     for match_definition <- match_definitions do
       for match_definition_elem <- match_definition do

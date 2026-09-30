@@ -260,7 +260,7 @@ defmodule RiichiAdvanced.GameState do
       delta_scores_reason: nil,
       next_dealer: nil,
       timer: 0,
-      log_loading_mode: false, # disables pause and doesn't notify players on state change
+      log_loading_mode: false, # disables pause and doesn't notify players/ai on state change
       log_seeking_mode: false, # disables round change on round end
 
       # persistent game state (not reset on new round)
@@ -1512,7 +1512,12 @@ defmodule RiichiAdvanced.GameState do
             start: {RiichiAdvanced.AIPlayer, :start_link, [%{game_state: self(), ruleset: state.ruleset, seat: dir, player: state.players[dir], rules_ref: state.rules_ref, shanten_definitions: Rules.get(state.rules_ref, :shanten_definitions), tsumogiri_bot: tsumogiri_bot}]},
             restart: :permanent
           })
-          IO.puts("Starting AI for #{dir}: #{inspect(ai_pid)}")
+
+          # print unless we're running tutorial tests
+          if not (state.log_seeking_mode and state.forced_events != nil) do
+            IO.puts("Starting AI for #{dir}: #{inspect(ai_pid)}")
+          end
+
           state = Map.put(state, dir, ai_pid)
 
           # mark the ai as having clicked the timer, if one exists
@@ -1599,6 +1604,18 @@ defmodule RiichiAdvanced.GameState do
   def handle_cast({:reset_big_text, seat}, state) do
     state = update_player(state, seat, &Map.put(&1, :big_text, ""))
     state = broadcast_state_change(state)
+    {:noreply, state}
+  end
+
+  def handle_cast(:disable_tutorial, state) do
+    Rules.disable_tutorial(state.rules_ref)
+    state = state
+    |> Map.put(:forced_events, nil)
+    |> Map.put(:block_events, false)
+    |> Map.put(:game_active, true)
+    |> Map.put(:kyoku, 0)
+    |> Map.put(:honba, 0)
+    |> broadcast_state_change()
     {:noreply, state}
   end
 

@@ -72,10 +72,12 @@
       ["sleep", 2000],
       ["add_object", "focus", {"width": 0, "x": 0, "y": 0}],
       ["add_object", "text", {"size": 0.4, "width": 5, "x": 10, "y": 6,
-        "text": "Click to return to the list of tutorials."
+        "text": "If you wish, you may keep playing (with bots) after this screen.\n(Click to continue.)"
       }],
+      ["keep_playing"],
       ["await_click"],
-      ["exit"]
+      ["clear_objects"],
+      ["keep_playing"]
     ]
   }
 }
