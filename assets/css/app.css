@@ -4344,7 +4344,7 @@ div.log-control {
   width: calc(3 * var(--tile-size));
   height: calc(1 * var(--tile-size));
   border-radius: calc(0.25 * var(--tile-size));
-  z-index: 5;
+  z-index: 100;
   display: flex;
   flex-direction: row;
   justify-content: space-around;
