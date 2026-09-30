@@ -110,6 +110,7 @@ end
 define_scoring win do
   convert_fan
   apply_score_modifiers
+  print("a")
 end
 
 on after_win do
@@ -155,7 +156,7 @@ define_mod hk_seven_pairs, name: "Seven Pairs", desc: "Add seven pairs as a poss
 define_mod hk_repeat_on_draw, name: "Repeat On Draw", desc: "If the round ends in a draw, the round repeats."
 
 set default_mods, [
-  %{name: "hk_payment", config: %{discarder_pays: 2, nondiscarders_pay: 1, self_pick_pay: 0}},
+  %{name: "hk_payment", config: %{discarder_pays: 2, self_pick_pay: 1, nondiscarders_pay: 0}},
   "hk_three_point_minimum",
   %{name: "seven_flower_win", config: %{win_on: "7 flowers", seven_value: 3, eight_value: 8}},
   "pao_12_tile"
