@@ -23,5 +23,22 @@ on after_start do
   set_tile_ordering_all(["5z", "6z", "7z", "5z"])
 end
 
+# change fu calculation to count penchan as ryanmen
+define_const winning_groups_fu, [
+  # kanchan
+  %{groups: ~s"-1 0@winning_tile 1", value: 2},
+  # ryanmen
+  %{groups: ~s"0@winning_tile -1 -2"},
+  %{groups: ~s"0@winning_tile 1 2"},
+  # shanpon
+  %{groups: ~s"0@tanyao 0@tanyao 0@winning_tile&ron", value: 2},
+  %{groups: ~s"0@yaochuu 0@yaochuu 0@winning_tile&ron", value: 4},
+  %{groups: ~s"0@tanyao 0@tanyao 0@winning_tile&tsumo", value: 4},
+  %{groups: ~s"0@yaochuu 0@yaochuu 0@winning_tile&tsumo", value: 8},
+  # tanki
+  %{groups: ~s"0@not_yakuhai 0@winning_tile", value: 2},
+  %{groups: ~s"0@prevalent 0@winning_tile | 0@seat 0@winning_tile | 5z 5z@winning_tile | 6z 6z@winning_tile | 7z 7z@winning_tile", value: 4}
+]
+
 # chii from anyone
 apply set, "buttons.chii.show_when", not_our_turn and not_no_tiles_remaining and someone_else_just_discarded and call_available
