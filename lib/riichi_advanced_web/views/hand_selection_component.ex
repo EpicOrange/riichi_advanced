@@ -36,7 +36,7 @@ defmodule RiichiAdvancedWeb.HandSelectionComponent do
             <% end %>
           <% end %>
           <%= for {{_name, call_tiles}, i} <- @calls |> Enum.with_index() |> Enum.reverse() do %>
-            <button type="button" class="hand-selection-call undraggable" phx-cancellable-click="remove_call" phx-value-index={i}>
+            <button type="button" class="hand-selection-call" phx-cancellable-click="remove_call" phx-value-index={i}>
               <%= for tile <- call_tiles do %>
                 <div class={tile |> Utils.to_tile() |> Utils.get_tile_class(-1, %{}, ["flat"])}></div>
               <% end %>

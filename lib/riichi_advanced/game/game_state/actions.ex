@@ -320,33 +320,6 @@ defmodule RiichiAdvanced.GameState.Actions do
     end
   end
 
-  def style_call(style, call_choice, called_tile) do
-    if called_tile != nil do
-      tiles = if "call" in style or "call_sideways" in style do call_choice else call_choice ++ [called_tile] end
-      for style_spec <- style do
-        case style_spec do
-          "call"                                           -> called_tile
-          "call_sideways"                                  -> called_tile |> Utils.add_attr(["_sideways"])
-          ix when is_integer(ix)                           -> Enum.at(tiles, ix)
-          [ix, attrs] when is_integer(ix)                  -> Enum.at(tiles, ix) |> Utils.add_attr(attrs)
-          ["sideways", ix] when is_integer(ix)             -> Enum.at(tiles, ix) |> Utils.add_attr(["_sideways"])
-          ["sideways", [ix, attrs]] when is_integer(ix)    -> Enum.at(tiles, ix) |> Utils.add_attr(["_sideways" | List.wrap(attrs)])
-          ["sideways", "call"]                             -> called_tile |> Utils.add_attr(["_sideways"])
-          ["sideways", tile]                               -> Utils.to_tile(tile) |> Utils.add_attr(["_sideways"])
-          ["1x", ix] when is_integer(ix)                   -> Enum.at(tiles, ix) |> Utils.add_attr(["_facedown"])
-          ["1x", [ix, attrs]] when is_integer(ix)          -> Enum.at(tiles, ix) |> Utils.add_attr(["_facedown" | List.wrap(attrs)]) |> IO.inspect()
-          ["1x", "call"]                                   -> called_tile |> Utils.add_attr(["_facedown"])
-          ["1x", tile]                                     -> Utils.to_tile(tile) |> Utils.add_attr(["_facedown"])
-          ["1x_sideways", ix] when is_integer(ix)          -> Enum.at(tiles, ix) |> Utils.add_attr(["_facedown", "_sideways"])
-          ["1x_sideways", [ix, attrs]] when is_integer(ix) -> Enum.at(tiles, ix) |> Utils.add_attr(["_facedown", "_sideways" | List.wrap(attrs)])
-          ["1x_sideways", "call"]                          -> called_tile |> Utils.add_attr(["_facedown", "_sideways"])
-          ["1x_sideways", tile]                            -> Utils.to_tile(tile) |> Utils.add_attr(["_facedown", "_sideways"])
-          tile                                             -> Utils.to_tile(tile)
-        end
-      end
-    else call_choice end
-  end
-
   def trigger_call(state, seat, button_name, call_choice, called_tile, call_source, silent \\ false) do
     # get the actual called tile (with attrs)
     called_tile = case call_source do
@@ -366,7 +339,7 @@ defmodule RiichiAdvanced.GameState.Actions do
     # style the call
     call = if called_tile != nil do
       style = call_style[Atom.to_string(Utils.get_relative_seat(seat, state.turn))]
-      style_call(style, call_choice, called_tile)
+      Utils.style_call(style, call_choice, called_tile)
     else call_choice end
 
     # add "_concealed" to every tile if it's a hidden call
@@ -479,7 +452,7 @@ defmodule RiichiAdvanced.GameState.Actions do
     buttons = Rules.get(state.rules_ref, "buttons", %{})
     call_style = Map.merge(default_call_style, Map.get(buttons[call_name], "call_style", %{}))
     style = call_style[Atom.to_string(dir)]
-    call = style_call(style, call_choice, called_tile)
+    call = Utils.style_call(style, call_choice, called_tile)
 
     upgraded_call = {call_name, call}
     tile_behavior = state.players[seat].tile_behavior
@@ -1679,7 +1652,7 @@ defmodule RiichiAdvanced.GameState.Actions do
           # make call
           call_style = %{kamicha: ["call_sideways", 0, 1], toimen: [0, "call_sideways", 1], shimocha: [0, 1, "call_sideways"]}
           style = call_style[Utils.get_relative_seat(context.seat, discard_seat)]
-          call = style_call(style, call_choice, discard_tile)
+          call = Utils.style_call(style, call_choice, discard_tile)
           call = {"pon", call}
           state = update_player(state, context.seat, &%{ &1 | calls: &1.calls ++ [call] })
           state = update_action(state, context.seat, :call, %{from: discard_seat, called_tile: discard_tile, other_tiles: call_choice, call_name: "pon"})

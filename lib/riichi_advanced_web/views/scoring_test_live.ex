@@ -74,6 +74,7 @@ defmodule RiichiAdvancedWeb.ScoringTestLive do
     |> assign(:selected_call_button, nil)
     |> assign(:rules_ref, nil)
     |> assign(:ruleset_json, "{}")
+    |> assign(:hand_str, "")
     # |> assign(:hand, [:"4m", :"2m", :"3m", :"4p", :"4p", :"4p", :"5p", :"6p", :"7p", :"3s", :"4s", :"2s", :"2s", :"2s"])
 
     if connected?(socket) do
@@ -165,17 +166,17 @@ defmodule RiichiAdvancedWeb.ScoringTestLive do
         <div class="config-container">
           <textarea name="config" phx-blur="save_config"><%= @config %></textarea>
         </div>
-        <div class="scoring-test-bottom-buttons">
-          <button phx-cancellable-click="clear_hand" class="clear">Clear</button>
-          <form phx-submit="score_hand">
-            <%= if @loading do %>
-              <button><%= t(@lang, "Scoring...") %></button>
-            <% else %>
-              <button name="ron" type="submit"><%= t(@lang, "Ron") %></button>
-              <button name="tsumo" type="submit"><%= t(@lang, "Tsumo") %></button>
-            <% end %>
-          </form>
-        </div>
+        <form phx-submit="submit_hand" class="scoring-test-bottom-buttons">
+          <input type="text" name="hand_str" value={@hand_str}>
+          <button name="load" type="submit" class="shrink"><%= t(@lang, "Load") %></button>
+          <button name="clear" phx-cancellable-click="clear_hand" class="shrink"><%= t(@lang, "Clear") %></button>
+          <%= if @loading do %>
+            <button><%= t(@lang, "Scoring...") %></button>
+          <% else %>
+            <button name="ron" type="submit"><%= t(@lang, "Ron") %></button>
+            <button name="tsumo" type="submit"><%= t(@lang, "Tsumo") %></button>
+          <% end %>
+        </form>
         <.live_component module={RiichiAdvancedWeb.WinWindowComponent}
           id="win-window"
           game_state={@state}
@@ -389,12 +390,22 @@ defmodule RiichiAdvancedWeb.ScoringTestLive do
   def handle_event("add_hand_tile", %{"tile" => serialized_tile}, socket) do
     [tile | attrs] = String.split(serialized_tile, "#")
     tile = Utils.construct_tile(tile, attrs)
-    socket = assign(socket, :hand, Enum.take(socket.assigns.hand ++ [tile], 1 + socket.assigns.hand_length))
+    hand = Enum.take(socket.assigns.hand ++ [tile], 1 + socket.assigns.hand_length)
+    hand_str = if length(hand) > socket.assigns.hand_length do
+      Utils.serialize_hand(Enum.drop(hand, -1), socket.assigns.calls, Enum.take(hand, -1))
+    else Utils.serialize_hand(hand, socket.assigns.calls) end
+    socket = socket
+    |> assign(:hand, hand)
+    |> assign(:hand_str, hand_str)
     {:noreply, socket}
   end
   def handle_event("remove_hand_tile", %{"index" => index}, socket) do
     {ix, _} = Integer.parse(index)
-    socket = assign(socket, :hand, List.delete_at(socket.assigns.hand, ix))
+    hand = List.delete_at(socket.assigns.hand, ix)
+    hand_str = Utils.serialize_hand(hand, socket.assigns.calls)
+    socket = socket
+    |> assign(:hand, hand)
+    |> assign(:hand_str, hand_str)
     {:noreply, socket}
   end
   def handle_event("include_hand_tile", %{"index" => index}, socket) when socket.assigns.selected_call_button != nil do
@@ -407,16 +418,24 @@ defmodule RiichiAdvancedWeb.ScoringTestLive do
       [called_tile | call_choice] = Enum.map(call_tiles, &Utils.to_tile/1)
       style = Map.get(button, "call_style", %{})
       style = Map.get(style, "kamicha", Map.get(style, "self", nil))
-      new_call_tiles = if style != nil do Actions.style_call(style, call_choice, called_tile) else [called_tile | call_choice] end
+      new_call_tiles = if style != nil do Utils.style_call(style, call_choice, called_tile) else [called_tile | call_choice] end
       new_call_tiles = if Enum.all?(new_call_tiles, &Utils.has_attr?(&1, "facedown")) do
         [called_tile | call_choice]
       else new_call_tiles end
       new_call = {socket.assigns.selected_call_button, new_call_tiles}
-      socket = assign(socket, :hand, socket.assigns.hand -- call_tiles)
-      socket = assign(socket, :calls, [new_call | socket.assigns.calls])
-      socket = assign(socket, :selected_call_button, nil)
-      socket = assign(socket, :call_selection_ixs, [])
-      socket = assign(socket, :hand_length, socket.assigns.hand_length - min(3, call_length))
+      hand_length = socket.assigns.hand_length - min(3, call_length)
+      hand = socket.assigns.hand -- call_tiles
+      calls = [new_call | socket.assigns.calls]
+      hand_str = if length(hand) > hand_length do
+        Utils.serialize_hand(Enum.drop(hand, -1), calls, Enum.take(hand, -1))
+      else Utils.serialize_hand(hand, calls) end
+      socket = socket
+      |> assign(:hand, hand)
+      |> assign(:calls, calls)
+      |> assign(:hand_str, hand_str)
+      |> assign(:selected_call_button, nil)
+      |> assign(:call_selection_ixs, [])
+      |> assign(:hand_length, hand_length)
       {:noreply, socket}
     else
       socket = assign(socket, :call_selection_ixs, new_selections)
@@ -440,14 +459,23 @@ defmodule RiichiAdvancedWeb.ScoringTestLive do
   end
   def handle_event("remove_call", %{"index" => index}, socket) do
     {ix, _} = Integer.parse(index)
-    {_name, call} = Enum.at(socket.assigns.calls, ix, [])
+    {_name, call} = Enum.at(socket.assigns.calls, ix, {nil, []})
+    call = Utils.remove_attr(call, ["_sideways", "_facedown"])
+    call_size = length(call)
+    hand_length = socket.assigns.hand_length + min(3, call_size)
+    hand = case Enum.split(socket.assigns.hand, hand_length - call_size) do
+      {hand, []} -> hand ++ call
+      {hand, [winning_tile | _]} -> Enum.take(hand, hand_length) ++ call ++ [winning_tile]
+    end
+    calls = List.delete_at(socket.assigns.calls, ix)
+    hand_str = if length(hand) > hand_length do
+      Utils.serialize_hand(Enum.drop(hand, -1), calls, Enum.take(hand, -1))
+    else Utils.serialize_hand(hand, calls) end
     socket = socket
-    |> assign(:hand_length, socket.assigns.hand_length + min(3, length(call)))
-    |> assign(:calls, List.delete_at(socket.assigns.calls, ix))
-    {:noreply, socket}
-  end
-  def handle_event("clear_hand", _assigns, socket) do
-    socket = assign(socket, :hand, [])
+    |> assign(:hand_length, hand_length)
+    |> assign(:hand, hand)
+    |> assign(:calls, calls)
+    |> assign(:hand_str, hand_str)
     {:noreply, socket}
   end
 
@@ -492,26 +520,49 @@ defmodule RiichiAdvancedWeb.ScoringTestLive do
     {:noreply, socket}
   end
 
-  def handle_event("score_hand", params, socket) do
-    # silent 4MB limit
-    if byte_size(socket.assigns.config) <= 4 * 1024 * 1024 do
-      state = socket.assigns.state
-      |> Map.put(:ruleset, socket.assigns.ruleset)
-      |> Map.put(:config, socket.assigns.config)
-      |> Map.put(:room_code, "scoringtest_" <> String.slice(socket.assigns.session_id, 0..7))
-      |> Map.put(:rules_ref, socket.assigns.rules_ref)
-      |> Map.put(:messages_states, %{east: [{socket.assigns.session_id, socket.assigns.messages_state}]})
-      is_ron? = Map.has_key?(params, "ron")    
-      hand = Enum.map(socket.assigns.hand, &Utils.to_tile(&1))
-      calls = socket.assigns.calls
-      selected_yaku = get_selected_yaku(socket.assigns.yaku)
-      minipoints = socket.assigns.minipoints
-      socket = socket
-      |> start_async(:put_state, fn -> score_hand(state, hand, calls, is_ron?, selected_yaku, minipoints) end)
-      |> assign(:loading, true)
-      {:noreply, socket}
-    else
-      {:noreply, socket}
+  def handle_event("clear_hand", _assigns, socket) do
+    socket = assign(socket, :hand, [])
+    {:noreply, socket}
+  end
+  def handle_event("submit_hand", assigns, socket) do
+    cond do
+      Map.has_key?(assigns, "ron") or Map.has_key?(assigns, "tsumo") ->
+        # silent 4MB limit
+        if byte_size(socket.assigns.config) <= 4 * 1024 * 1024 do
+          state = socket.assigns.state
+          |> Map.put(:ruleset, socket.assigns.ruleset)
+          |> Map.put(:config, socket.assigns.config)
+          |> Map.put(:room_code, "scoringtest_" <> String.slice(socket.assigns.session_id, 0..7))
+          |> Map.put(:rules_ref, socket.assigns.rules_ref)
+          |> Map.put(:messages_states, %{east: [{socket.assigns.session_id, socket.assigns.messages_state}]})
+          is_ron? = Map.has_key?(assigns, "ron")    
+          hand = Enum.map(socket.assigns.hand, &Utils.to_tile(&1))
+          calls = socket.assigns.calls
+          selected_yaku = get_selected_yaku(socket.assigns.yaku)
+          minipoints = socket.assigns.minipoints
+          socket = socket
+          |> start_async(:put_state, fn -> score_hand(state, hand, calls, is_ron?, selected_yaku, minipoints) end)
+          |> assign(:loading, true)
+          {:noreply, socket}
+        else
+          {:noreply, socket}
+        end
+      Map.has_key?(assigns, "load") ->
+        hand_str = Map.get(assigns, "hand_str")
+        {hand, calls, winning_tile} = Utils.deserialize_hand(hand_str, socket.assigns.rules_ref)
+        hand_length = min(17, Rules.get(socket.assigns.rules_ref, "starting_tiles", 13))
+        hand_length = hand_length - Enum.sum(Enum.map(calls, &min(3, length(elem(&1, 1)))))
+        hand = Enum.take(hand, hand_length) ++ if winning_tile != nil do [winning_tile] else [] end
+        socket = socket
+        |> assign(:hand, hand)
+        |> assign(:calls, calls)
+        |> assign(:selected_call_button, nil)
+        |> assign(:call_selection_ixs, [])
+        |> assign(:hand_length, hand_length)
+        |> assign(:hand_str, hand_str)
+        {:noreply, socket}
+      true ->
+        {:noreply, socket}
     end
   end
 

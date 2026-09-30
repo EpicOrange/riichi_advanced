@@ -4599,7 +4599,7 @@ div.scoringtest-container div.yaku-outer-container,
 div.scoringtest-container div.mods-container,
 div.scoringtest-container div.config-container {
   width: 100%;
-  height: calc(100% - 0.875 * var(--tile-size));
+  height: calc(100% - 3 * var(--tile-size));
   border-radius: calc(0.25 * var(--tile-size));
   padding: calc(0.5 * var(--tile-size));
   background: #609060;
@@ -4622,17 +4622,18 @@ div.scoringtest-container input#show-mods:checked ~ div.mods-container { display
 div.scoringtest-container input#show-config:checked ~ div.config-container { display: block; }
 
 /* bottom buttons */
-div.scoringtest-container > div.scoring-test-bottom-buttons {
+div.scoringtest-container > form.scoring-test-bottom-buttons {
   display: flex;
   order: 2;
   flex-flow: row wrap;
   width: 100%;
   text-align: right;
   justify-content: center;
-  column-gap: calc(0.25 * var(--tile-size));
-  & > form { flex-grow: 1; display: flex; column-gap: calc(0.25 * var(--tile-size)); }
+  gap: calc(0.25 * var(--tile-size));
+  flex-grow: 1;
   & button { font-size: 150%; flex-grow: 1; }
-  & button.clear { flex-grow: 0; }
+  & button.shrink { flex-grow: 0; }
+  & input[type="text"] { flex-grow: 1 0 100%; font-size: 150%; width: 100%; }
 }
 div.scoringtest-container div.yaku-outer-container {
   & span.yaku-bottom-minipoint-name {

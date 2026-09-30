@@ -1,7 +1,9 @@
 defmodule RiichiAdvanced.Utils do
   alias RiichiAdvanced.Constants, as: Constants
+  alias RiichiAdvanced.GameState.Rules, as: Rules
   alias RiichiAdvanced.GameState.TileBehavior, as: TileBehavior
   alias RiichiAdvanced.Riichi, as: Riichi
+  require Logger
 
   def to_tile(tile_spec) do
     case tile_spec do
@@ -566,5 +568,141 @@ defmodule RiichiAdvanced.Utils do
   def get_from_points_list(points_list, point_name) do
     ix = Enum.find_index(points_list, & &1 == point_name)
     if ix != nil do Enum.at(points_list, ix - 1) else 0 end
+  end
+
+  def style_call(style, call_choice, called_tile) do
+    if called_tile != nil do
+      tiles = if "call" in style or "call_sideways" in style do call_choice else call_choice ++ [called_tile] end
+      for style_spec <- style do
+        case style_spec do
+          "call"                                           -> called_tile
+          "call_sideways"                                  -> called_tile |> add_attr(["_sideways"])
+          ix when is_integer(ix)                           -> Enum.at(tiles, ix)
+          [ix, attrs] when is_integer(ix)                  -> Enum.at(tiles, ix) |> add_attr(attrs)
+          ["sideways", ix] when is_integer(ix)             -> Enum.at(tiles, ix) |> add_attr(["_sideways"])
+          ["sideways", [ix, attrs]] when is_integer(ix)    -> Enum.at(tiles, ix) |> add_attr(["_sideways" | List.wrap(attrs)])
+          ["sideways", "call"]                             -> called_tile |> add_attr(["_sideways"])
+          ["sideways", tile]                               -> to_tile(tile) |> add_attr(["_sideways"])
+          ["1x", ix] when is_integer(ix)                   -> Enum.at(tiles, ix) |> add_attr(["_facedown"])
+          ["1x", [ix, attrs]] when is_integer(ix)          -> Enum.at(tiles, ix) |> add_attr(["_facedown" | List.wrap(attrs)])
+          ["1x", "call"]                                   -> called_tile |> add_attr(["_facedown"])
+          ["1x", tile]                                     -> to_tile(tile) |> add_attr(["_facedown"])
+          ["1x_sideways", ix] when is_integer(ix)          -> Enum.at(tiles, ix) |> add_attr(["_facedown", "_sideways"])
+          ["1x_sideways", [ix, attrs]] when is_integer(ix) -> Enum.at(tiles, ix) |> add_attr(["_facedown", "_sideways" | List.wrap(attrs)])
+          ["1x_sideways", "call"]                          -> called_tile |> add_attr(["_facedown", "_sideways"])
+          ["1x_sideways", tile]                            -> to_tile(tile) |> add_attr(["_facedown", "_sideways"])
+          tile                                             -> to_tile(tile)
+        end
+      end
+    else call_choice end
+  end
+
+  def serialize_hand(hand, calls \\ [], winning_tile \\ nil) do
+    hand = hand
+    |> Enum.map(&to_tile/1)
+    |> sort_tiles()
+    |> _serialize_hand()
+    calls = calls
+    |> Enum.reverse()
+    |> Enum.map_join(fn {name, call} ->
+      dir = case Enum.find_index(call, &has_attr?(&1, "sideways")) do
+        0 -> "<"
+        1 -> "^"
+        2 -> ">"
+        3 -> ">"
+        _ -> ":"
+      end
+      " " <> name <> dir <> _serialize_hand(remove_attr(call, ["_facedown", "_sideways"]))
+    end)
+    winning_tile = if winning_tile != nil do
+      " " <> _serialize_hand([to_tile(winning_tile)])
+    else "" end
+    hand <> calls <> winning_tile
+  end
+  def _serialize_hand(hand) do
+    # separate hand into suits and parenthesize anything that has more than one digit, or has attrs
+    Enum.group_by(hand, fn
+      {id, attrs} -> Atom.to_string(id) |> String.last()
+      id -> Atom.to_string(id) |> String.last()
+    end)
+    |> Enum.map(fn {suit, tiles} ->
+      Enum.map_join(tiles, fn
+        {id, []} when length(id) > 1 -> "(#{Atom.to_string(id) |> String.replace_suffix(suit, "")})"
+        {id, []} -> Atom.to_string(id) |> String.replace_suffix(suit, "")
+        {id, attrs} -> "(#{Atom.to_string(id) |> String.replace_suffix(suit, "")}@#{Enum.join(attrs, "&")})"
+        id when length(id) > 1 -> "(#{Atom.to_string(id) |> String.replace_suffix(suit, "")})"
+        id -> Atom.to_string(id) |> String.replace_suffix(suit, "")
+      end) <> suit
+    end)
+    |> Enum.join()
+  end
+
+  # parse the hand: a sequence of numbers or paren clauses 12(34@attr1&attr2)567m
+  # for example, the above gives 1m 2m 34m@attr1&attr2 5m 6m 7m
+  defguard is_suit(c) when c in ~w(a b c d e f g h i j k l m n o p q r s t u v w x y z)
+  @call_dirs [":", ">", "^", "<"]
+  @call_seats [:self, :shimocha, :toimen, :kamicha]
+  def deserialize_hand(hand, rules_ref) when is_binary(hand) do
+    case String.split(hand, " ", trim: true) do
+      [] -> {[], [], nil}
+      [hand | calls] ->
+        # hand might be first call
+        {hand, calls} = if String.contains?(hand, @call_dirs) do
+          {"", [hand | calls]}
+        else {hand, calls} end
+        # last call might be winning tile
+        {calls, winning_tile} = case Enum.reverse(calls) do
+          [] -> {[], nil}
+          [last_call | other_calls] = calls ->
+            if String.contains?(last_call, @call_dirs) do
+              {calls, nil}
+            else
+              {other_calls, _deserialize_hand(last_call) |> Enum.at(0)}
+            end
+        end
+
+        buttons = Rules.get(rules_ref, "buttons", %{})
+        hand = _deserialize_hand(hand)
+        calls = for name_call <- calls do
+          delimiter_ix = Enum.find_index(@call_dirs, &String.contains?(name_call, &1))
+          if delimiter_ix != nil do
+            delimiter = Enum.at(@call_dirs, delimiter_ix)
+            seat = Enum.at(@call_seats, delimiter_ix) |> Atom.to_string()
+            case String.split(name_call, delimiter, trim: true) do
+              [name, call] ->
+                [called_tile | call_choice] = _deserialize_hand(call)
+                ret = Map.get(buttons[name], "call_style", %{})
+                |> Map.get(seat, 0..length(call_choice))
+                |> style_call(call_choice, called_tile)
+                [{name, ret}]
+              _ -> 
+                Logger.error("parse_hand_notation: failed to parse call #{inspect(name_call)}")
+                []
+            end
+          else [] end
+        end
+        |> Enum.concat()
+        {hand, calls, winning_tile}
+    end
+  end
+  defp _deserialize_hand(hand) do
+    {acc, _suit} = hand
+    |> String.split(["(", ")"], trim: true)
+    |> Enum.map_every(2, &String.graphemes/1) # even indices are numeric, take each as a grapheme
+    |> List.flatten()
+    |> Enum.reverse()
+    |> Enum.reduce({[], ""}, fn
+      c, {acc, _} when is_suit(c) -> {acc, c}
+      c, {acc, suit} -> case String.split(c, "@", trim: false) do
+        [_] -> {[c <> suit | acc], suit}
+        [id, attrs] -> {[{id <> suit, String.split(attrs, "&", trim: true)} | acc], suit}
+        _ ->
+          Logger.error("parse_hand_notation: failed to parse #{inspect(c)}")
+          {acc, suit}
+      end
+    end)
+    acc
+    |> Enum.map(&to_tile/1)
+    |> sort_tiles()
   end
 end
