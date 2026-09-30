@@ -270,7 +270,7 @@ defmodule RiichiAdvancedWeb.GameLive do
         # otherwise, if buttons, skip
         player = socket.assigns.state.players[socket.assigns.seat]
         if socket.assigns.seat == socket.assigns.state.turn and not Enum.empty?(player.draw) do
-          send(self(), {:play_tile, length(player.hand)})
+          send(self(), {:play_tile, length(player.hand), true})
           update_interaction_state(socket, &%{&1 | selected_index: :any})
         else
           if "skip" in player.buttons do
@@ -457,8 +457,8 @@ defmodule RiichiAdvancedWeb.GameLive do
     {:noreply, navigate_back(socket)}
   end
 
-  def handle_info({:play_tile, index}, socket) do
-    if socket.assigns.seat == socket.assigns.state.turn and socket.assigns.interaction_state.selected_index in [index, :any] do
+  def handle_info({:play_tile, index, force?}, socket) do
+    if socket.assigns.seat == socket.assigns.state.turn and (force? or socket.assigns.interaction_state.selected_index in [index, :any]) do
       socket = update_interaction_state(socket, &%{&1 | visible_waits: %{}, show_waits_index: nil})
       socket = if socket.assigns.tutorial_state == nil do
         update_interaction_state(socket, &%{&1 | preplayed_index: index})

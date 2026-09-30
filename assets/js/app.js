@@ -19,24 +19,51 @@ let Hooks = {}
 
 // sortable.js
 import Sortable from "sortablejs";
-Hooks.Sortable = {
+Hooks.SortableHand = {
   mounted() {
-    let isPortrait = (window.innerWidth / window.innerHeight) < 1.2
-    let sorter = new Sortable(this.el, {
+    // need to not let the liveview send hover diffs while dragging
+    // so we manually orchestrate the firing of hover events, instead of using phx-hove
+    this.dragging = false;
+    const eventName = this.el.id.includes("calls") ? "hover_call" : "hover_tile";
+    for (let i = 0; i < this.el.childElementCount; i++) {
+      const child = this.el.children[i];
+      if (child.nodeName !== "DIV") continue;
+      child.addEventListener("mouseenter", () => {
+        if (!this.dragging) this.pushEvent(eventName, {index: i});
+      });
+    }
+    this.el.addEventListener("mouseleave", () => {
+      if (!this.dragging) this.pushEvent("hover_off", {});
+    });
+
+    // tiles in hand
+    new Sortable(this.el, {
       animation: 150,
-      delay: isPortrait ? 1500 : 200,
+      delay: 100,
       dragClass: "drag-item",
       ghostClass: "drag-ghost",
+      fallbackTolerance: 5,
       filter: ".undraggable",
       forceFallback: true,
-      onStart: function (evt) {
+      sort: true,
+      onStart: e => {
+        this.dragging = true;
         window.mouseDownElement = null;
       },
       onEnd: e => {
-        let params = {old: e.oldIndex, new: e.newIndex, ...e.item.dataset}
-        this.pushEventTo(this.el, "reposition", params)
-      }
-    })
+        const {clientX, clientY} = e.originalEvent.changedTouches?.[0] || e.originalEvent;
+        // just check cursor position to see if we landed in this element
+        const elems = document.elementsFromPoint(clientX, clientY);
+        console.log("onEnd", e, elems);
+        if (elems.includes(this.el)) {
+          let params = {old: e.oldIndex, new: e.newIndex, ...e.item.dataset}
+          this.pushEventTo(this.el, "reposition", params)
+        } else {
+          this.pushEventTo(this.el, "play_dragged_tile", {index: e.oldIndex})
+        }
+        this.dragging = false;
+      },
+    });
   }
 }
 
@@ -61,78 +88,81 @@ function shouldIgnoreDoubleOrRightClick(elem) {
 window.mouseDownElement = null;
 window.hoverElement = null;
 window.ignoreDoubleClick = false;
+function addCancellableClickListeners() {
+  this.el.addEventListener('mousedown', e => {
+    var target = getCancellableClickTarget(e.target);
+    if (target !== null) {
+      window.mouseDownElement = target;
+    }
+    // prevent double click if the first click was on a button
+    window.ignoreDoubleClick = shouldIgnoreDoubleOrRightClick(e.target);
+  });
+  this.el.addEventListener('mouseup', e => {
+    var target = getCancellableClickTarget(e.target);
+    if (target !== null) {
+      if (window.mouseDownElement == target) {
+        var params = {};
+        for (let attr of target.attributes) {
+          if (attr.name.startsWith("phx-value-")) {
+            var key = attr.name.substring(10);
+            params[key] = attr.value;
+          }
+        }
+        if (target.attributes.hasOwnProperty("phx-target")) {
+          this.pushEventTo(target.getAttribute("phx-target"), target.getAttribute("phx-cancellable-click"), params);
+        } else {
+          this.pushEvent(target.getAttribute("phx-cancellable-click"), params);
+        }
+      }
+      window.mouseDownElement = null;
+    }
+  });
+  this.el.addEventListener('dblclick', e => {
+    e.preventDefault();
+    if (!shouldIgnoreDoubleOrRightClick(e.target) && !window.ignoreDoubleClick) {
+      this.pushEvent("double_clicked", {"tag_name": e.target.tagName, "classes": [...e.target.classList]});
+    }
+  });
+  this.el.addEventListener('contextmenu', e => {
+    e.preventDefault();
+    if (!shouldIgnoreDoubleOrRightClick(e.target)) {
+      this.pushEvent("right_clicked", {"tag_name": e.target.tagName, "classes": [...e.target.classList]});
+    }
+  });
+  this.el.addEventListener('mousemove', e => {
+    var target = getHoverTarget(e.target);
+    if (target !== null) {
+      if (window.hoverElement !== target) {
+        var params = {};
+        for (let attr of target.attributes) {
+          if (attr.name.startsWith("phx-value-")) {
+            var key = attr.name.substring(10);
+            params[key] = attr.value;
+          }
+        }
+        if (target.attributes.hasOwnProperty("phx-target")) {
+          this.pushEventTo(target.getAttribute("phx-target"), target.getAttribute("phx-hover"), params);
+        } else {
+          this.pushEvent(target.getAttribute("phx-hover"), params);
+        }
+      }
+      window.hoverElement = target;
+    } else {
+      if (window.hoverElement !== null && window.hoverElement.attributes.hasOwnProperty("phx-hover-off")) {
+        target = window.hoverElement;
+        if (target.attributes.hasOwnProperty("phx-target")) {
+          this.pushEventTo(target.getAttribute("phx-target"), target.getAttribute("phx-hover-off"), params);
+        } else {
+          this.pushEvent(target.getAttribute("phx-hover-off"), params);
+        }
+      }
+      window.hoverElement = null;
+    }
+  });
+}
 Hooks.ClickListener = {
   mounted() {
-    this.el.addEventListener('mousedown', e => {
-      var target = getCancellableClickTarget(e.target);
-      if (target !== null) {
-        window.mouseDownElement = target;
-      }
-      // prevent double click if the first click was on a button
-      window.ignoreDoubleClick = shouldIgnoreDoubleOrRightClick(e.target);
-    });
-    this.el.addEventListener('mouseup', e => {
-      var target = getCancellableClickTarget(e.target);
-      if (target !== null) {
-        if (window.mouseDownElement == target) {
-          var params = {};
-          for (let attr of target.attributes) {
-            if (attr.name.startsWith("phx-value-")) {
-              var key = attr.name.substring(10);
-              params[key] = attr.value;
-            }
-          }
-          if (target.attributes.hasOwnProperty("phx-target")) {
-            this.pushEventTo(target.getAttribute("phx-target"), target.getAttribute("phx-cancellable-click"), params);
-          } else {
-            this.pushEvent(target.getAttribute("phx-cancellable-click"), params);
-          }
-        }
-        window.mouseDownElement = null;
-      }
-    });
-    this.el.addEventListener('dblclick', e => {
-      e.preventDefault();
-      if (!shouldIgnoreDoubleOrRightClick(e.target) && !window.ignoreDoubleClick) {
-        this.pushEvent("double_clicked", {"tag_name": e.target.tagName, "classes": [...e.target.classList]});
-      }
-    });
-    this.el.addEventListener('contextmenu', e => {
-      e.preventDefault();
-      if (!shouldIgnoreDoubleOrRightClick(e.target)) {
-        this.pushEvent("right_clicked", {"tag_name": e.target.tagName, "classes": [...e.target.classList]});
-      }
-    });
-    this.el.addEventListener('mousemove', e => {
-      var target = getHoverTarget(e.target);
-      if (target !== null) {
-        if (window.hoverElement !== target) {
-          var params = {};
-          for (let attr of target.attributes) {
-            if (attr.name.startsWith("phx-value-")) {
-              var key = attr.name.substring(10);
-              params[key] = attr.value;
-            }
-          }
-          if (target.attributes.hasOwnProperty("phx-target")) {
-            this.pushEventTo(target.getAttribute("phx-target"), target.getAttribute("phx-hover"), params);
-          } else {
-            this.pushEvent(target.getAttribute("phx-hover"), params);
-          }
-        }
-        window.hoverElement = target;
-      } else {
-        if (window.hoverElement !== null && window.hoverElement.attributes.hasOwnProperty("phx-hover-off")) {
-          target = window.hoverElement;
-          if (target.attributes.hasOwnProperty("phx-target")) {
-            this.pushEventTo(target.getAttribute("phx-target"), target.getAttribute("phx-hover-off"), params);
-          } else {
-            this.pushEvent(target.getAttribute("phx-hover-off"), params);
-          }
-        }
-        window.hoverElement = null;
-      }
-    });
+    addCancellableClickListeners.bind(this)();
   },
   // sync dora animations
   // TODO rename ClickListener, since it does more than listen

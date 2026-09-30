@@ -473,6 +473,13 @@ div.calls > div.dead-hand-button:hover {
   opacity: 1;
 }
 
+/* css to handle tile dragging visual */
+/* basically SortableJS moves the ghost div into the table container, we style that */
+div.tile.drag-item { opacity: 1 !important; }
+div.tile.drag-item.inactive { opacity: 0.7 !important; }
+div.tile.drag-item.transparent { opacity: 0.5 !important; }
+div.tile.drag-ghost { opacity: 0 !important; }
+
 /* tile attrs */
 div.tile.reversed { transform: scaleX(-100%); }
 div.tile.inactive { opacity: 0.7; --tile-brightness: 60%; }

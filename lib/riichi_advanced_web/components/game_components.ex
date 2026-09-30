@@ -63,7 +63,8 @@ defmodule RiichiAdvancedWeb.GameComponents do
         preplayed_index={@interaction_state.preplayed_index}
         dead_hand_buttons={Rules.get(@state.rules_ref, "dead_hand_buttons", false)}
         dead_hand?={"dead_hand" in @state.players[seat].status}
-        play_tile={&send(self(), {:play_tile, &1})}
+        play_tile={&send(self(), {:play_tile, &1, false})}
+        force_play_tile={&send(self(), {:play_tile, &1, true})}
         mark_tile={&send(self(), {:mark_tile, seat, &1, &2})}
         unmark_tile={&send(self(), {:unmark_tile, seat, &1, &2})}
         hover={&send(self(), {:hover, &1})}
@@ -159,7 +160,7 @@ defmodule RiichiAdvancedWeb.GameComponents do
           marking={@state.marking[@seat]}
           your_turn?={@seat == @state.turn}
           playable_indices={@interaction_state.playable_indices}
-          play_tile={&send(self(), {:play_tile, &1})}
+          play_tile={&send(self(), {:play_tile, &1, false})}
           mark_tile={&send(self(), {:mark_tile, @seat, &1, &2})}
           unmark_tile={&send(self(), {:unmark_tile, @seat, &1, &2})}
           hover={&send(self(), {:hover, &1})}
