@@ -29,7 +29,6 @@ require "yaku/tsumo", %{name: "Self Draw", value: 1}
 require "yaku/menzenchin", %{name: "Concealed Hand", value: 1}
 require "yaku/honitsu", %{chin_name: "Full Flush", chin_value: 7, hon_name: "Half Flush", hon_value: 3}
 require "yaku/honroutou", %{chin_name: "All Terminals", chin_value: 13, hon_name: "Mixed Terminals", hon_value: 4}
-require "yaku/ittsuu", %{name: "Pure Straight", value: 8}
 require "yaku/pinghu", %{name: "All Sequences", value: 1, no_value_pair: false}
 require "yaku/toitoi", %{name: "All Triplets", value: 3}
 require "yaku/haitei", %{haitei_name: "Final Tile", haitei_value: 1, houtei_name: "Final Tile", houtei_value: 1}
@@ -149,8 +148,27 @@ define_mod pao_12_tile, name: "12 Tile Pao", desc: "If you discarded a tile call
 define_mod hk_flowers_open_hand, name: "Flowers Open Hand", desc: "A hand with flowers declared cannot earn 1 fan from Concealed Hand."
 define_mod remove_flowers, name: "Remove Flowers", conflicts: ["seven_flower_win"], desc: "Remove all eight flowers from the wall."
 define_mod "lib/head_bump", name: "Head Bump", desc: "Enable head bump. In case of multiple hu, only the person closest in turn order gets the win."
-define_mod hk_seven_pairs, name: "Seven Pairs", desc: "Add seven pairs as a possible winning hand, worth 4 fan."
 define_mod hk_repeat_on_draw, name: "Repeat On Draw", desc: "If the round ends in a draw, the round repeats."
+
+define_mod_category "Hands"
+define_mod hk_seven_pairs, name: "Seven Pairs", desc: "Add seven pairs as a possible winning hand, worth 4 fan."
+define_mod "lib/yaku/ittsuu", name: "Pure Straight", desc: "Adds the 3 fan hand Pure Straight where you have 123 456 789 in one suit."
+config_mod "lib/yaku/ittsuu", name: "name", values: ["Pure Straight"]
+config_mod "lib/yaku/ittsuu", name: "value", values: [3]
+define_mod "lib/yaku/sankantsu", name: "Three Kongs", desc: "Adds the 3 fan hand Three Kongs where you have three kongs."
+config_mod "lib/yaku/sankantsu", name: "name", values: ["Three Kongs"]
+config_mod "lib/yaku/sankantsu", name: "value", values: [3]
+define_mod "lib/yaku/sanshoku", name: "Mixed Triple Sequence", desc: "Adds the 3 fan hand Mixed Triple Sequence where you have the same number sequence in three different suits."
+config_mod "lib/yaku/sanshoku", name: "name", values: ["Mixed Triple Sequence"]
+config_mod "lib/yaku/sanshoku", name: "value", values: [3]
+define_mod "lib/yaku/iipeikou", name: "Two Identical Sequences", desc: "Adds the 1 fan hand Two Identical Sequences where you have the same sequence twice (same numbers, same suit)."
+config_mod "lib/yaku/iipeikou", name: "ii_name", values: ["Two Identical Sequences"]
+config_mod "lib/yaku/iipeikou", name: "ii_value", values: [1]
+define_mod "lib/yaku/isshoku_sanjun", name: "Three Identical Sequences", desc: "Adds the 3 fan hand Three Identical Sequences where you have the same sequence three times (same numbers, same suit). Also adds Four Identical Sequences, which is a limit hand (13 fan)."
+config_mod "lib/yaku/isshoku_sanjun", name: "san_name", values: ["Three Identical Sequences"]
+config_mod "lib/yaku/isshoku_sanjun", name: "san_value", values: [3]
+config_mod "lib/yaku/isshoku_sanjun", name: "yon_name", values: ["Four Identical Sequences"]
+config_mod "lib/yaku/isshoku_sanjun", name: "yon_value", values: [13]
 
 set default_mods, [
   %{name: "hk_payment", config: %{discarder_pays: 2, self_pick_pay: 1, nondiscarders_pay: 0}},
