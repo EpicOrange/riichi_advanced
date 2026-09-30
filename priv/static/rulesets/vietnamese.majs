@@ -242,9 +242,9 @@ define_mod "yaku/viet_eight_flowers", name: "Eight Flowers", desc: "1 mủn if y
 define_mod "yaku/viet_ten_flowers", name: "Ten Flowers", desc: "1 mủn if you collect any 10 flowers, on top of points normally granted by flowers."
 define_mod "yaku/viet_renchan", name: "Six Consecutive Wins", desc: "1 mủn on your 6th win in a row, plus 1 mủn for each additional win."
 define_mod "yaku/viet_no_renhou", name: "No Blessing of Man", desc: "Blessing of Man (win on someone's first discard before your draw) no longer gives 2 mủn."
-define_mod "yaku/viet_true_no_jokers", name: "True No Jokers", desc: "Winning on a flower/joker discard invalidates No Jokers bonuses, including No Jokers Mosquito Hand."
+define_mod "lib/viet_true_no_jokers", name: "True No Jokers", desc: "Winning on a flower/joker discard invalidates No Jokers bonuses, including No Jokers Mosquito Hand."
 
 define_mod_category "Other"
 define_mod vietnamese_vi, name: "Vietnamese Yaku Names", desc: "Display Vietnamese yaku names. (e.g. All Runs -> Phình)"
 
-apply set_append, "default_mods", ["yaku/viet_tsumo_seven_pairs", "yaku/viet_true_no_jokers"]
+apply set_append, "default_mods", ["yaku/viet_tsumo_seven_pairs", "lib/viet_true_no_jokers"]
