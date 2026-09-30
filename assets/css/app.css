@@ -519,7 +519,7 @@ div.tile.N::after { content: "N"; }
 div.tile.Wh::after { content: "Wh"; }
 div.tile.G::after { content: "G"; }
 div.tile.R::after { content: "R"; }
-div#container > input.tile-numbers-checkbox:checked ~ * div.tile::after {
+input.tile-numbers-checkbox:checked ~ * div.tile::after {
   display: flex;
   align-items: center;
   justify-content: flex-start;
@@ -679,6 +679,7 @@ div.pond.kamicha {
     & > :nth-child(n+15):nth-child(-n+25) { order: 3; }
     &::after { content: ""; order: 4; flex-basis: 0; height: 0; }
     & > :nth-child(n+26) { order: 5; }
+    & > div.tile::after { font-size: calc(0.5 * var(--tile-size)); }
   }
   input.mobile-zoom-checkbox:not(:checked) ~ div.hand.self > div.calls {
     transform: scale(calc(1 / var(--mobile-scale-factor)));
