@@ -370,7 +370,7 @@ defmodule RiichiAdvanced.YakuTest.NingboYaku do
       %{"type" => "buttons_pressed", "buttons" => [%{"button" => "tsumo"}, nil, nil, nil]}
     ], %{
       east: %{
-        yaku: [{"After a Kong", [1, "Tai", 2, "×"]}, {"Edge Wait", [1, "Tai"]}, {"No Baida", [1, "Tai"]}, {"Self Draw", [1, "Tai"]}]
+        yaku: [{"Kong Win", [1, "Tai", 2, "×"]}, {"Edge Wait", [1, "Tai"]}, {"No Baida", [1, "Tai"]}, {"Self Draw", [1, "Tai"]}]
       }
     })
   end
@@ -398,7 +398,7 @@ defmodule RiichiAdvanced.YakuTest.NingboYaku do
       %{"type" => "buttons_pressed", "buttons" => [%{"button" => "tsumo"}, nil, nil, nil]}
     ], %{
       east: %{
-        yaku: [{"After a Kong", [1, "Tai", 2, "×"]}, {"Edge Wait", [1, "Tai"]}, {"Self Draw", [1, "Tai"]}, {"Win On Baida", [1, "Tai"]}, {"Baida Reuse", [1, "Tai"]}]
+        yaku: [{"Kong Win", [1, "Tai", 2, "×"]}, {"Edge Wait", [1, "Tai"]}, {"Self Draw", [1, "Tai"]}, {"Win On Baida", [1, "Tai"]}, {"Baida Reuse", [1, "Tai"]}]
       }
     })
   end
@@ -509,7 +509,7 @@ defmodule RiichiAdvanced.YakuTest.NingboYaku do
     ], %{
       east: %{
         # closed wait, because for tenhou any tile can be considered the drawn tile (here, 6m or 5p or 4s)
-        yaku: [{"Blessing of Heaven", [10, "Tai"]}, {"Closed Wait", [1, "Tai"]}, {"No Baida", [1, "Tai"]}]
+        yaku: [{"Heavenly Hand", [10, "Tai"]}, {"Closed Wait", [1, "Tai"]}, {"No Baida", [1, "Tai"]}]
       }
     })
   end
@@ -535,7 +535,7 @@ defmodule RiichiAdvanced.YakuTest.NingboYaku do
       %{"type" => "buttons_pressed", "buttons" => [nil, %{"button" => "ron"}, nil, nil]}
     ], %{
       south: %{
-        yaku: [{"Blessing of Earth", [10, "Tai"]}, {"No Baida", [1, "Tai"]}]
+        yaku: [{"Earthly Hand", [10, "Tai"]}, {"No Baida", [1, "Tai"]}]
       }
     })
   end

@@ -1,3 +1,5 @@
+# TODO replace usage in hk ruleset with the equivalent options in default_flowers mod
+
 default seven_list, "yaku"
 default seven_name, "Seven Flowers"
 default seven_value, 0
@@ -6,6 +8,7 @@ default eight_list, "yaku"
 default eight_name, "Eight Flowers"
 default eight_value, 0
 default eight_han, !han
+default win_on, "7 flowers"
 
 if !seven_value > 0 do
   on after_initialization do

@@ -3,7 +3,6 @@ set tutorial_link, "https://mahjongpros.com/blogs/how-to-play/beginners-guide-to
 
 require "value_honors"
 require "standard_sets"
-require "ningbo_rules"
 
 define_global pon_name, "Pon"
 define_global kan_name, "Kong"
@@ -24,16 +23,18 @@ require "pon"
 require "kan", %{hide_ankans: true}
 require "ron", %{scoring_key: "win"}
 require "tsumo", %{scoring_key: "win"}
+require "min_han", %{min: 4}
 require "yaku/chankan", %{name: "Robbing a Kong", value: 5, han: "×", scoring_key: "win"}
 require "default_flowers", %{auto_flower_by_default: true, undiscardable: true, eight_value: 10, win_on: "8 flowers"}
 require "yaku/honitsu", %{hon_name: "Half Flush", hon_value: 2, chin_name: "Pure Flush", chin_value: 4}
 require "yaku/toitoi", %{name: "All Triplets", value: 2}
-require "yaku/rinshan", %{value: 2, name: "After a Kong"}
-replace_yaku "yaku", "After a Kong", [1, "Tai", 2, "×"]
+require "yaku/haitei", %{haitei_name: "Last Tile Win", houtei_name: "Last Tile Win", haitei_value: 1, houtei_value: 1}
+require "yaku/rinshan", %{value: 1, name: "Kong Win"}
+replace_yaku "yaku", "Kong Win", [1, "Tai", 2, "×"]
 require "yaku/tsumo", %{name: "Self Draw", value: 1}
-require "yaku/yakuhai", %{value: 1}
+require "yaku/yakuhai", %{rules_name: "Value Pung"}
 require "yaku/tsuuiisou", %{name: "All Honours", value: 10}
-require "yaku/tenhou", %{chiihou_is_tsumo: false, chiihou_name: "Blessing of Earth", chiihou_value: 10, tenhou_name: "Blessing of Heaven", tenhou_value: 10}
+require "yaku/tenhou", %{chiihou_is_tsumo: false, chiihou_name: "Earthly Hand", chiihou_value: 10, tenhou_name: "Heavenly Hand", tenhou_value: 10}
 
 define_match edge_wait, ~m"exhaustive, penchan:1, mentsu:3, pair:1"
 define_match closed_wait, ~m"exhaustive, kanchan:1, mentsu:3, pair:1"
@@ -42,19 +43,13 @@ define_yaku yaku, "Edge Wait", [1, "Tai"], match(["hand", "calls", "winning_tile
 define_yaku yaku, "Closed Wait", [1, "Tai"], match(["hand", "calls", "winning_tile"], ["closed_wait"])
 define_yaku yaku, "Single Wait", [1, "Tai"], match(["hand", "calls", "winning_tile"], ["single_wait"]), ["Closed Wait"]
 
-define_set last_tile_3, ~s"0@winning_tile 0 0"
-define_set last_tile_4, ~s"0@winning_tile 0 0 0"
-define_yaku yaku, "Last Tile", [4, "Tai"],
-         (won_by_draw and match(["all_ponds", "all_call_tiles"], ~m"last_tile_3:1"))
-  or (not_won_by_draw and match(["all_ponds", "all_call_tiles"], ~m"last_tile_4:1"))
-
 define_yaku yaku, "Three Meld Penalty", [5, "×"],
   calls_from_shimocha >= 3 or
   calls_from_toimen >= 3 or
   calls_from_kamicha >= 3
 
 define_yaku_precedence "All Honours", ["All Triplets", "Half Flush"]
-define_yaku_precedence "Blessing of Heaven", ["Self Draw"]
+define_yaku_precedence "Heavenly Hand", ["Self Draw"]
 
 set score_calculation, %{
   yaku_lists: ["yaku", "yaku_multiplier"],
@@ -163,4 +158,25 @@ define_scoring win do
   if points2 > 0 do
     total *= points2 :: "×"
   end
+end
+
+on after_initialization do
+  add_rule("Tiles", "Base Tiles", "By default, Ningbo mahjong uses the following 144 tiles:", -100)
+  add_rule("Tiles", "Base Tiles", "- Four each of the 1 to 9 of circles %{pinzu}", %{pinzu: ~t"123456789p"})
+  add_rule("Tiles", "Base Tiles", "- Four each of the 1 to 9 of bamboo %{souzu}", %{souzu: ~t"123456789s"})
+  add_rule("Tiles", "Base Tiles", "- Four each of the 1 to 9 of characters %{manzu}", %{manzu: ~t"123456789m"})
+  add_rule("Tiles", "Base Tiles", "- Four each of the four winds (East, South, West, North) %{winds}", %{winds: ~t"1234z"})
+  add_rule("Tiles", "Base Tiles", "- Four each of the three dragons (White, Green, Red) %{dragons}", %{dragons: ~t"067z"})
+  add_rule("Tiles", "Base Tiles", "- Four flowers %{flowers}", %{flowers: ~t"1234f"})
+  add_rule("Tiles", "Base Tiles", "- Four seasons %{seasons}", %{seasons: ~t"1234g"})
+  add_rule("Rules", "Instant Payouts", "Declaring kongs and declaring certain flower combinations award instant payouts.", -50)
+  add_rule("Rules", "Baida", "Before the round begins, a tile in the wall is flipped to indicate the Baida tile for the round, i.e. the three other copies of the revealed tile. Baida tiles are wildcards. Using Baida tiles as their original tile value (not as a wildcard) scores 1 Tai each.")
+  add_rule("1 Tai", "Edge Wait", "1 Tai for winning on an edge wait (12 waiting for 3, or 89 waiting for 7).")
+  add_rule("1 Tai", "Closed Wait", "1 Tai for winning on an closed wait (e.g. 35 waiting for 4).")
+  add_rule("1 Tai", "Single Wait", "1 Tai for winning on a pair wait (e.g. 3 waiting for 3).")
+  add_rule("1 Tai", "Win On Baida", "1 Tai for the winning shape containing a Baida tile.")
+  add_rule("1 Tai", "No Baida", "1 Tai for winning without any Baida tiles.")
+  add_rule("1 Tai", "Win On Baida", "1 Tai for the winning shape containing a Baida tile.")
+  add_rule("1 Tai", "Baida Reuse", "1 Tai for using a Baida tile as its original tile.")
+  add_rule("1 Tai", "Baida Pair Win", "1 Tai for winning on a pair wait by drawing a Baida tile.")
 end

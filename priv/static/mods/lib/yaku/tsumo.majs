@@ -1,7 +1,7 @@
 default list, "yaku"
 
 on after_initialization do
-  add_rule("$value $han", "$name", "You won by self-draw.", %{value: !value, han: !han, name: !name})
+  add_rule("$value $han", "$name", "%{value} %{han} if you win by self-draw.", %{value: !value, han: !han, name: !name})
 end
 
 define_yaku !list, !name, [!value, !han], won_by_draw

@@ -4,17 +4,17 @@ on after_initialization do
   cond do
     equals(!min, "Mangan") -> add_rule("Rules", "Minimum Han", "Your hand must score at least mangan to win.", -10)
     equals(!min, "Yakuman") -> add_rule("Rules", "Minimum Han", "Only yakuman hands can win.", -10)
-    true -> add_rule("Rules", "Minimum Han", "Your hand must score at least %{score} %{han} to win.", %{score: !min, han: !han}, -10)
+    true -> add_rule("Rules", "Minimum $han", "Your hand must score at least %{score} %{han} to win.", %{score: !min, han: !han}, -10)
   end
   if rule_exists("Rules", "Dora") do
     if yaku_exists("extra_yaku", "Dora") do
-      update_rule("Rules", "Minimum Han", "(Dora does not count.)", -10)
+      update_rule("Rules", "Minimum $han", "(Dora does not count.)", -10)
     else
-      update_rule("Rules", "Minimum Han", "(Dora counts.)", -10)
+      update_rule("Rules", "Minimum $han", "(Dora counts.)", -10)
     end
   end
   if rule_exists("Rules", "Flowers") do
-    add_rule("Rules", "Minimum Han", "(Flowers do not count.)", -10)
+    add_rule("Rules", "Minimum $han", "(Flowers do not count.)", -10)
   end
 end
 
