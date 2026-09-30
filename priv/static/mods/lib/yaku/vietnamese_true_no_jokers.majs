@@ -1,0 +1,11 @@
+on after_initialization do
+  add_rule("1 Mủn", "Win on Discarded Flower/Joker", "This invalidates No Jokers bonuses, including No Jokers Mosquito Hand.")
+end
+
+define_match discarded_joker, ~m"nojoker, (any_flower any_joker):1"
+
+on before_win do
+  if not_won_by_draw and match(["winning_tile"], ["discarded_joker"]) do
+    set_status("has_joker")
+  end
+end
