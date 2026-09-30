@@ -140,12 +140,10 @@ defmodule RiichiAdvanced.AIPlayer do
     hand_length = length(player.hand)
 
     # get shanten towards all hands
-    shantens = closest_american_hands
-    |> Enum.map(fn {_am_match_definition, pairing_r, _arranged_hand, _difficulty} -> hand_length - map_size(pairing_r) end)
-    |> Enum.sort()
-    best_shanten = Enum.at(shantens, 0, 100)
-    second_best_shanten = Enum.at(shantens, 1, 100)
-    if best_shanten <= 3 or second_best_shanten - best_shanten >= 2 do
+    {difficulty, best_shanten} = closest_american_hands
+    |> Enum.map(fn {_am_match_definition, pairing_r, _arranged_hand, difficulty} -> {-difficulty, hand_length - map_size(pairing_r)} end)
+    |> Enum.min(&<=/2, fn -> {100, 100} end)
+    if best_shanten <= 3 or (best_shanten <= 6 and difficulty <= 30) do
       closest_american_hands
       # then get all hands of that shanten
       |> Enum.filter(fn {_am_match_definition, pairing_r, _arranged_hand, _difficulty} -> best_shanten == (hand_length - map_size(pairing_r)) end)

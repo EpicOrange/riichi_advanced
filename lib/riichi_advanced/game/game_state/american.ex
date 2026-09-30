@@ -539,7 +539,7 @@ defmodule RiichiAdvanced.GameState.American do
     if Enum.empty?(flattened) or nil in flattened do nil else {joker, nojoker} end
   end
 
-  def score_hand_difficulty(am_match_definition, matched_tiles, missing_tiles, groups, concealed?) do
+  def score_hand_difficulty(_am_match_definition, matched_tiles, _missing_tiles, groups, concealed?) do
     {_joker_matched_tiles, hand_matched_tiles} = Keyword.split(matched_tiles, [:"1j"])
     tile_freqs = hand_matched_tiles
     |> Keyword.values()
@@ -557,8 +557,8 @@ defmodule RiichiAdvanced.GameState.American do
           # 1 => 10 + 5, 2 => 20 + 10, 3 => 30 + 15, ...
           10 * concealed_shanten * (1 + 5 * concealed_shanten)
         else
-          # 1 => 10, 2 => 20 + 2, 3 => 30 + 4, ...
-          10 * concealed_shanten * (1 + 2 * (concealed_shanten - 1))
+          # 1 => 10 + 0, 2 => 20 + 5, 3 => 30 + 10, ...
+          10 * concealed_shanten * (1 + 5 * (concealed_shanten - 1))
         end
         # IO.inspect({tile_freqs, tile, num, used, needed, metric})
         {Map.put(tile_freqs, tile, amt - used), shanten + metric}
@@ -576,7 +576,6 @@ defmodule RiichiAdvanced.GameState.American do
     hand = Utils.strip_attrs(hand ++ draw)
 
     # t = System.os_time(:millisecond)
-    am_match_definitions
     am_match_definitions = if not Enum.empty?(Debug.debug_am_match_definitions()) do
       Enum.map(Debug.debug_am_match_definitions(), &{&1, false})
     else am_match_definitions end
