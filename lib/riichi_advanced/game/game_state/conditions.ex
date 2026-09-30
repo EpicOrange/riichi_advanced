@@ -297,7 +297,7 @@ defmodule RiichiAdvanced.GameState.Conditions do
       "has_draw"                 -> not Enum.empty?(state.players[from_seat_spec(state, context, Enum.at(opts, 0, "self"))].draw)
       "has_aside"                -> not Enum.empty?(state.players[from_seat_spec(state, context, Enum.at(opts, 0, "self"))].aside)
       "has_calls"                -> not Enum.empty?(state.players[from_seat_spec(state, context, Enum.at(opts, 0, "self"))].calls)
-      "has_call_named"           -> Enum.all?(cxt_player.calls, fn {name, _call} -> name in opts end)
+      "has_call_named"           -> Enum.any?(cxt_player.calls, fn {name, _call} -> name in opts end)
       "has_no_call_named"        -> Enum.all?(cxt_player.calls, fn {name, _call} -> name not in opts end)
       "won"                      -> Map.get(context, :win_source, nil) != nil
       "won_by_call"              -> Map.get(context, :win_source, nil) == :call
