@@ -169,7 +169,7 @@ defmodule RiichiAdvanced.AIPlayer do
     |> Enum.map(&{&1.difficulty, hand_length - map_size(&1.pairing_r), &1})
     |> Enum.sort(&<=/2)
     # remove all hands that are 30 difficulty more than the lowest difficulty one
-    {d, _, _} = Enum.at(difficulties, 0, {100, 10000})
+    {d, _, _} = Enum.at(difficulties, 0, {100, 10000, []})
     closest_american_hands = difficulties
     |> Enum.reject(fn {d2, _, _} -> d2 > d + 30 end)
     |> Enum.map(fn {_, _, hand} -> hand end)
@@ -450,7 +450,12 @@ defmodule RiichiAdvanced.AIPlayer do
           end
         state.ruleset == "american" ->
           cond do
-            "continue_charleston" in player.buttons -> "continue_charleston"
+            "continue_charleston" in player.buttons ->
+              hand_length = length(player.hand)
+              best_shanten = params.closest_american_hands
+              |> Enum.map(&hand_length - map_size(&1.pairing_r))
+              |> Enum.min()
+              if best_shanten <= 4 do "skip_charleston" else "continue_charleston" end
             "mahjong_discard" in player.buttons and Match.match_hand(player.hand ++ [last_discard], player.calls, state.shanten_definitions.win, player.tile_behavior) -> "mahjong_discard"
             "mahjong_draw" in player.buttons and Match.match_hand(player.hand ++ player.draw, player.calls, state.shanten_definitions.win, player.tile_behavior) -> "mahjong_draw"
             "mahjong_heavenly" in player.buttons and Match.match_hand(player.hand ++ player.draw, player.calls, state.shanten_definitions.win, player.tile_behavior) -> "mahjong_draw"
