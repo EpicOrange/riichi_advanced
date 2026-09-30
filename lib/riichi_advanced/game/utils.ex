@@ -569,6 +569,16 @@ defmodule RiichiAdvanced.Utils do
     ix = Enum.find_index(points_list, & &1 == point_name)
     if ix != nil do Enum.at(points_list, ix - 1) else 0 end
   end
+  def sort_points_list_by_denom(value, sort_values) do
+    value
+    |> Enum.chunk_every(2)
+    |> Enum.sort_by(fn value ->
+      denom = Enum.at(value, 1, Enum.at(sort_values, 0))
+      Enum.find_index(sort_values, & &1 == denom)
+      # nil, being an atom, is higher than any number, so everything else goes to the end
+    end)
+    |> Enum.concat()
+  end
 
   def style_call(style, call_choice, called_tile) do
     if called_tile != nil do

@@ -107,8 +107,10 @@ define_yaku meta_yaku, "Progressive Counting", [3, "Phán"], +@pc_mun and at_lea
 
 # convert multiples of 6 phán to 1 mủn
 on after_win do
-  phan = mod(points, 6)
-  modify_winner("points", "phan")
+  if points > 0 do
+    phan = mod(points, 6)
+    modify_winner("points", "phan")
+  end
   if points2 > 0 or points >= 6 do
     mun = points2 + floor_div(points, 6)
     modify_winner("points2", "mun")

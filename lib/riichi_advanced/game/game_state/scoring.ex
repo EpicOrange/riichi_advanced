@@ -12,14 +12,16 @@ defmodule RiichiAdvanced.GameState.Scoring do
 
   def add_yaku_values(value1, value2) do
     # fallback: get the first unit of the first side that has a unit attached
-    unit = if is_list(value1) do Enum.at(value1, 1) else if is_list(value2) do Enum.at(value2, 1) else "" end end
+    default_unit = cond do is_list(value1) -> Enum.at(value1, 1); is_list(value2) -> Enum.at(value2, 1); true -> "" end
     # coerce both to list form
-    value1 = if is_list(value1) do value1 else [value1, unit] end
-    value2 = if is_list(value2) do value2 else [value2, unit] end
-    for [amt, type] <- Enum.chunk_every(value1, 2) ++ Enum.chunk_every(value2, 2), reduce: %{} do
-      ret -> Map.update(ret, type, amt, &amt + &1)
+    value1 = if is_list(value1) do value1 else [value1, default_unit] end
+    value2 = if is_list(value2) do value2 else [value2, default_unit] end
+    order = Enum.drop_every(value1 ++ value2, 2) |> Enum.uniq()
+    for [amt, unit] <- Enum.chunk_every(value1, 2) ++ Enum.chunk_every(value2, 2), reduce: %{} do
+      ret -> Map.update(ret, unit, amt, &amt + &1)
     end
-    |> Enum.flat_map(fn {type, amt} -> [Utils.try_integer(amt), type] end)
+    |> Enum.sort_by(fn {unit, _amt} -> Enum.find_index(order, & &1 == unit) end)
+    |> Enum.flat_map(fn {unit, amt} -> [Utils.try_integer(amt), unit] end)
   end
 
   def update_yaku_amount(yaku, unit, new_amount) do
@@ -41,8 +43,8 @@ defmodule RiichiAdvanced.GameState.Scoring do
         {Map.update(acc, name, value, &add_yaku_values(&1, value)), [name | order]}
     end
     order
-    |> Enum.uniq()
     |> Enum.reverse()
+    |> Enum.uniq()
     |> Enum.map(&{&1, Map.get(acc, &1)})
   end
 
@@ -294,8 +296,13 @@ defmodule RiichiAdvanced.GameState.Scoring do
 
     highest_scoring_yaku_only = Map.get(score_rules, "highest_scoring_yaku_only", false)
     yaku = if not Enum.empty?(yaku) and highest_scoring_yaku_only do [Enum.max_by(yaku, fn {_name, value} -> value end)] else yaku end
-    yaku = Enum.map(yaku, fn {name, value} -> {translate(state, name), value} end) |> dedup_yaku()
-    points = Enum.map(yaku, fn {_name, value} -> value end) |> Enum.reduce([], &add_yaku_values/2)
+    denoms = [score_rules["point_name"], score_rules["point2_name"], score_rules["shuugi_name"]]
+    yaku = Enum.map(yaku, fn {name, value} -> {translate(state, name), value} end)
+    |> dedup_yaku()
+    |> Enum.map(fn {name, value} -> {name, Utils.sort_points_list_by_denom(value, denoms)} end)
+    points = Enum.map(yaku, fn {_name, value} -> value end)
+    |> Enum.reduce([], &add_yaku_values/2)
+    |> Utils.sort_points_list_by_denom(denoms)
     # put back hand/calls/winning tile
     state = state
     |> update_player(seat, &%{ &1 | hand: &1.cache.orig_hand, calls: &1.cache.orig_calls })
