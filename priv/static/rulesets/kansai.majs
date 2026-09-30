@@ -3,7 +3,7 @@ set display_name, "Kansai Sanma"
 set tutorial_link, "https://github.com/EpicOrange/riichi_advanced/blob/main/documentation/kansai.md"
 require "renchan"
 
-apply subtract, "default_mods", [
+apply subtract, "constants.standard_riichi_yaku", [
   %{name: "lib/yaku/chiitoitsu", config: %{kansai: false, name: "Chiitoitsu", value: 2}},
 ]
 apply set_append, "default_mods", [

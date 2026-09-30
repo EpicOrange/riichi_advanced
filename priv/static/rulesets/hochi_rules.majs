@@ -36,12 +36,15 @@ define_const open_30_fu, false
 # - except chuurenpoutou which is baimangan
 # - pao applies to daisangen, daisuushii, suukantsu, tsuuiisou, and chinroutou
 
-apply subtract, "default_mods", [
+apply subtract, "constants.standard_riichi_yaku", [
   "lib/yaku/ippatsu",
   %{name: "lib/yaku/iipeikou", config: %{ii_value: 1, ryan_value: 3}},
   %{name: "lib/yaku/ryuuiisou", config: %{han: "★"}},
   %{name: "lib/yaku/honitsu", config: %{chin_value: 5, closed_bonus: 1, hon_value: 2} },
   %{name: "lib/yaku/honroutou", config: %{chin_han: "★", chin_list: "yakuman", chin_value: 1, hon_value: 2 } },
+  %{name: "lib/yaku/riichi_renhou", config: %{is: "Yakuman"}},
+]
+apply subtract, "default_mods", [
   %{name: "honba", config: %{value: 100}},
   %{name: "dora", config: %{start_indicators: 1}},
   "ura", "kandora",
@@ -59,7 +62,6 @@ apply subtract, "default_mods", [
   "tenpairenchan",
   %{name: "kyuushu_kyuuhai", config: %{name: "Kyuushu Kyuuhai"}},
   "kokushi_ankan_chankan",
-  %{name: "lib/yaku/riichi_renhou", config: %{is: "Yakuman"}},
 ]
 
 apply append, "default_mods", [

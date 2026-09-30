@@ -16,7 +16,7 @@ set initial_score, 2000
 # - all remaining yakuman are mangan
 # - no minimum han
 
-apply subtract, "default_mods", [
+apply subtract, "constants.standard_riichi_yaku", [
   # these are removed
   "lib/yaku/menzentsumo",
   %{name: "lib/yaku/riichi", config: %{bet: 1000, drawless: true, double_value: 2}},
@@ -40,6 +40,8 @@ apply subtract, "default_mods", [
   %{name: "lib/yaku/chuurenpoutou", config: %{han: "★", junsei_han: "★", junsei_list: "yakuman", junsei_value: 2, list: "yakuman", value: 1}},
   # other mods
   %{name: "lib/yaku/riichi_renhou", config: %{is: "Yakuman"}},
+]
+apply subtract, "default_mods", [
   %{name: "honba", config: %{value: 100}},
   %{name: "dora", config: %{start_indicators: 1}},
   "ura", "kandora",

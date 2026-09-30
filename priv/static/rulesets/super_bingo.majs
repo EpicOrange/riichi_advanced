@@ -8,7 +8,7 @@ require "shuugi", %{worth: 10, pao_pays_all: true, starting_shuugi: 1000}
 require "super_bingo_tictactoe"
 require "super_bingo_tulips"
 require_after "super_bingo_yaku"
-apply subtract, "default_mods", [
+apply subtract, "constants.standard_riichi_yaku", [
   %{name: "lib/yaku/chiitoitsu", config: %{kansai: false, name: "Chiitoitsu", value: 2}},
 ]
 apply set_append, "default_mods", [

@@ -193,10 +193,6 @@ defmodule RiichiAdvanced.GameState.Kyoku do
 
     Map.put(state, :round_result, :win)
 
-    # calculate the delta scores now
-    state = calculate_delta_scores(state)
-    state = process_new_winner(state, seat)
-    
     state = if should_continue_round?(state) and not state.players[seat].hand_revealed do
       Map.put(state, :visible_screen, :scores)
     else
@@ -216,6 +212,9 @@ defmodule RiichiAdvanced.GameState.Kyoku do
       context = state.winners[seat]
       state = Actions.trigger_event(state, "after_win", Map.put(context, :winner_seat, seat))
 
+      # calculate the delta scores now
+      state = calculate_delta_scores(state)
+      
       # send message that prints out yaku and displayed score
       push_message(state, player_prefix(state, context.seat) ++ [
         %{text: "scored a %{score}-point hand", vars: %{score: context.displayed_score}},
@@ -228,7 +227,7 @@ defmodule RiichiAdvanced.GameState.Kyoku do
     else state end
   end
 
-  def exhaustive_draw(state, draw_name, scoring_key) do
+  def exhaustive_draw(state, _draw_name, scoring_key) do
     state = Map.put(state, :round_result, :exhaustive_draw)
 
     push_message(state, [%{text: "Game ended by exhaustive draw"}])

@@ -10,7 +10,7 @@ end
 define_yaku yaku, "Open Kokushi Musou", 3, match(["hand", "call_tiles", "winning_tile"], ~m"orphans_all:1")
 
 # remove chiitoitsu
-apply subtract, "default_mods", [
+apply subtract, "constants.standard_riichi_yaku", [
   %{name: "lib/yaku/chiitoitsu", config: %{kansai: false, name: "Chiitoitsu", value: 2}},
 ]
 

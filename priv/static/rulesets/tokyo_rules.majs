@@ -66,7 +66,7 @@ end
 # - dorahairi chinroutou chiitoitsu is shoumangan
 # - daichiishin is shoumangan
 
-apply subtract, "default_mods", [
+apply subtract, "constants.standard_riichi_yaku", [
   "lib/yaku/ippatsu",
   %{name: "lib/yaku/pinfu", config: %{value: 1}},
   %{name: "lib/yaku/iipeikou", config: %{ii_value: 1, ryan_value: 3}},
@@ -86,6 +86,8 @@ apply subtract, "default_mods", [
   %{name: "lib/yaku/kokushi", config: %{han: "★", juusan_han: "★", juusan_list: "yakuman", juusan_value: 2, list: "yakuman", value: 1}},
   %{name: "lib/yaku/shousuushii", config: %{dai_han: "★", dai_list: "yakuman", dai_value: 2, shou_han: "★", shou_list: "yakuman", shou_value: 1}},
   %{name: "lib/yaku/suukantsu", config: %{han: "★", value: 1}},
+]
+apply subtract, "default_mods", [
   "honba",
   "dora", "ura", "kandora", "aka",
   "nagashi",

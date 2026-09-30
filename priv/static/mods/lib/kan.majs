@@ -30,7 +30,7 @@ unless !ankan_only do
       and not_no_tiles_remaining
       and someone_else_just_discarded
       and status_missing("initial_flowers") # for default_flowers mod
-      and not_is_winner, # for bloody end mod
+      and not_is_winner # for bloody end mod
       and call_available,
     precedence_over: ["chii", "pon"],
     call: [[0, 0, 0]]
@@ -58,7 +58,7 @@ define_button ankan,
     and not_just_discarded
     and not_just_called
     and status_missing("initial_flowers") # for default_flowers mod
-    and not_is_winner, # for bloody end mod
+    and not_is_winner # for bloody end mod
     and self_call_available,
   call: [[0, 0, 0]]
   do
@@ -85,7 +85,7 @@ unless !ankan_only do
       and not_just_discarded
       and not_just_called
       # and status_missing("initial_flowers") # can't have calls in initial flower phase anyways
-      and not_is_winner, # for bloody end mod
+      and not_is_winner # for bloody end mod
       and can_upgrade_call,
     call: [[0, 0, 0]],
     upgrades: "pon"
