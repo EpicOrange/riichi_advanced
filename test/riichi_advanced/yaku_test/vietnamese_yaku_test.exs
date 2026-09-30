@@ -967,6 +967,37 @@ defmodule RiichiAdvanced.YakuTest.VietnameseYaku do
     })
   end
 
+  test "vietnamese - single wait" do
+    TestUtils.test_yaku_advanced("vietnamese", [], [], """
+    {
+      "starting_hand": {
+        "east": ["2m", "0j", "4m", "4m", "5m", "6m", "7m", "7p", "7p", "7p", "9p", "9p", "1z"],
+        "south": ["1m", "4m", "6m", "2p", "5p", "8p", "3s", "6s", "9s", "0z", "2z", "3z", "4z"],
+        "west": ["1m", "4m", "6m", "2p", "5p", "8p", "3s", "6s", "9s", "0z", "2z", "3z", "4z"],
+        "north": ["1m", "3m", "6m", "2p", "5p", "8p", "3s", "6s", "9s", "1z", "2z", "3z", "4z"]
+      },
+      "starting_draws": ["0z", "7m", "6z", "6z", "6z", "3m"]
+    }
+    """, [
+      %{"type" => "buttons_pressed", "buttons" => [%{"button" => "start_no_flower"}, nil, nil, nil]},
+      %{"type" => "buttons_pressed", "buttons" => [nil, %{"button" => "start_no_flower"}, nil, nil]},
+      %{"type" => "buttons_pressed", "buttons" => [nil, nil, %{"button" => "start_no_flower"}, nil]},
+      %{"type" => "buttons_pressed", "buttons" => [nil, nil, nil, %{"button" => "start_no_flower"}]},
+      %{"type" => "discard", "tile" => "0z", "player" => 0, "tsumogiri" => true},
+      %{"type" => "discard", "tile" => "7m", "player" => 1, "tsumogiri" => true},
+      %{"type" => "buttons_pressed", "buttons" => [%{"button" => "pon"}, nil, nil, nil]},
+      %{"type" => "discard", "tile" => "1z", "player" => 0, "tsumogiri" => false},
+      %{"type" => "discard", "tile" => "6z", "player" => 1, "tsumogiri" => true},
+      %{"type" => "discard", "tile" => "6z", "player" => 2, "tsumogiri" => true},
+      %{"type" => "discard", "tile" => "6z", "player" => 3, "tsumogiri" => true},
+      %{"type" => "buttons_pressed", "buttons" => [%{"button" => "tsumo"}, nil, nil, nil]},
+    ], %{
+      east: %{
+        yaku: [{"Single Wait", [1, "Phán"]}],
+      }
+    })
+  end
+
   # # this times out
   # test "vietnamese - entire hand is jokers tenhou" do
   #   TestUtils.test_yaku_advanced("vietnamese", [%{name: "viet_more_jokers", config: %{sets: 32}}], [], """
