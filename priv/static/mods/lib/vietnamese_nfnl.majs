@@ -68,7 +68,11 @@ define_button nfnl1,
     big_text("No Flowers, No Leaves")
     pause(1000)
     reveal_hand
-    win_by_discard("tsumo")
+    cond do
+      someone_else_just_discarded -> win_by_discard("ron")
+      someone_else_just_called -> win_by_call("ron")
+      true -> win_by_draw("tsumo")
+    end
   end
 
 # Discarding Flowers/Blue Jokers
