@@ -4013,29 +4013,37 @@ div.room > header > div.room-header-bottom {
     font-size: calc(0.875 * var(--tile-size));
     line-height: 1;
     padding: calc(0.25 * var(--tile-size));
-    width: 8ex;
+    width: 10ex;
   }
   & svg {
     vertical-align: sub;
   }
   & > div.room-header-right {
+    position: relative;
     display: flex;
-    flex-flow: column nowrap;
+    flex-flow: column-reverse nowrap;
     justify-content: flex-end;
     align-items: flex-end;
     font-size: 85%;
+    & > label.room-settings-toggle {
+      background: none;
+      text-decoration: underline;
+      padding: 0;
+    }
     & > div.tutorial-container {
-      right: 0;
       white-space: nowrap;
+      text-align: right;
       & > a {
         color: white;
         display: inline-block;
       }
     }
-    & > label.room-settings-toggle {
-      background: none;
-      text-decoration: underline;
-      padding: 0;
+  }
+  & > div.room-header-right.ja {
+    height: 2.5em;
+    & > label, & > div {
+      transform: translateY(-2em);
+      & > a { display: block; }
     }
   }
 }

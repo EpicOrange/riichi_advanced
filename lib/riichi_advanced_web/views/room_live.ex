@@ -116,7 +116,7 @@ defmodule RiichiAdvancedWeb.RoomLive do
               </svg>
             <% end %>
           </label>
-          <div class="room-header-right">
+          <div class={["room-header-right", @lang]}>
             <div class="tutorial-container">
               <a class="rules-link" href={@state.tutorial_link} target="_blank" :if={@state.tutorial_link != nil}>
                 <%= if @ruleset == "custom" do %>
