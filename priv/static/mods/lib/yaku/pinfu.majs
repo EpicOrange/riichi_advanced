@@ -1,13 +1,23 @@
 default list, "yaku"
 default name, "Pinfu"
 default value, 0
+default pinfu_ron, 30
+default pinfu_tsumo, 20
+
+apply initialize, "constants.closed_hand", has_no_call_named("chii", "pon", "daiminkan", "kakan")
+apply initialize, "constants.closed_tsumo_20_fu", true
+apply initialize, "constants.open_30_fu", true
+apply initialize, "constants.open_pinfu", false
 
 on after_initialization do
-  add_rule("$value $han", !name, "%{value} %{han} if your hand is closed and only scores base fu (30 for ron and 20 for tsumo, excluding the +2 fu for tsumo). To achieve this, you must win off a double-sided sequence wait, with a closed all-sequence hand, with a non-yakuhai pair.", %{value: !value, han: !han})
+  if @open_pinfu do
+    add_rule("$value $han", !name, "%{value} %{han} if your hand only scores base fu (%{pinfu_ron} for ron and %{pinfu_tsumo} for tsumo). To achieve this, you must win off a double-sided sequence wait, with an all-sequence hand, with a non-yakuhai pair.", %{value: !value, han: !han, pinfu_ron: !pinfu_ron, pinfu_tsumo: !pinfu_tsumo})
+  else
+    add_rule("$value $han", !name, "%{value} %{han} if your hand is closed and only scores base fu (%{pinfu_ron} for ron and %{pinfu_tsumo} for tsumo). To achieve this, you must win off a double-sided sequence wait, with a closed all-sequence hand, with a non-yakuhai pair.", %{value: !value, han: !han, pinfu_ron: !pinfu_ron, pinfu_tsumo: !pinfu_tsumo})
+  end
   update_rule("$value $han", !name, "%{example_hand}", %{value: !value, han: !han, example_hand: ~t"345789m45p23499s 6p"})
 end
 
-apply initialize, "constants.closed_hand", has_no_call_named("chii", "pon", "daiminkan", "kakan")
-define_yaku !list, !name, [!value, !han], @closed_hand
+define_yaku !list, !name, [!value, !han], (@open_pinfu or @closed_hand)
   and match(["hand", "calls", "winning_tile"], ["standard_win"])
-  and ((won_by_draw and minipoints_equals(20)) or (not_won_by_draw and minipoints_equals(30)))
+  and ((won_by_draw and minipoints_equals(!pinfu_tsumo)) or (not_won_by_draw and minipoints_equals(!pinfu_ron)))

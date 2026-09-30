@@ -114,7 +114,7 @@ defmodule RiichiAdvanced.YakuTest.TokyoRulesYaku do
     })
   end
 
-  test "tokyo - isshoku sanjun" do
+  test "tokyo - isshoku sanjun open" do
     TestUtils.test_yaku_advanced("tokyo_rules", [], [], """
     {
       "starting_hand": {
@@ -139,6 +139,62 @@ defmodule RiichiAdvanced.YakuTest.TokyoRulesYaku do
         yaku: [{"Isshoku Sanjun", [3, "Han"]}],
         minipoints: 24,
         score: 1150
+      }
+    })
+  end
+
+  test "tokyo - isshoku sanjun closed pinfu tsumo not sanrenkou" do
+    TestUtils.test_yaku_advanced("tokyo_rules", [], [], """
+    {
+      "starting_hand": {
+        "east": ["2m", "2m", "2m", "3m", "3m", "3m", "4m", "4m", "4m", "2p", "3p", "5p", "5p"],
+        "south": ["1m", "6m", "7m", "2p", "5p", "8p", "3s", "6s", "9s", "1z", "2z", "3z", "4z"],
+        "west": ["2m", "6m", "7m", "2p", "5p", "8p", "3s", "6s", "9s", "1z", "2z", "3z", "4z"],
+        "north": ["5m", "6m", "8m", "5p", "8p", "9p", "3s", "6s", "9s", "1z", "2z", "3z", "4z"]
+      },
+      "starting_draws": ["6z", "6z", "6z", "6z", "1p"]
+    }
+    """, [
+      %{"type" => "discard", "tile" => "6z", "player" => 0, "tsumogiri" => true},
+      %{"type" => "discard", "tile" => "6z", "player" => 1, "tsumogiri" => true},
+      %{"type" => "discard", "tile" => "6z", "player" => 2, "tsumogiri" => true},
+      %{"type" => "discard", "tile" => "6z", "player" => 3, "tsumogiri" => true},
+      %{"type" => "buttons_pressed", "buttons" => [%{"button" => "tsumo"}, nil, nil, nil]},
+    ], %{
+      east: %{
+        yaku: [{"Isshoku Sanjun", [4, "Han"]}, {"Pinfu", [1, "Han"]}, {"Tsumo", [1, "Han"]}],
+        minipoints: 22,
+        score: 6000
+      }
+    })
+  end
+
+
+  test "tokyo - sanrenkou open" do
+    TestUtils.test_yaku_advanced("tokyo_rules", [], [], """
+    {
+      "starting_hand": {
+        "east": ["2m", "2m", "3m", "3m", "3m", "4m", "4m", "4m", "2p", "3p", "4p", "5z", "6z"],
+        "south": ["1m", "6m", "7m", "2p", "5p", "8p", "3s", "6s", "9s", "1z", "2z", "3z", "4z"],
+        "west": ["2m", "6m", "7m", "2p", "5p", "8p", "3s", "6s", "9s", "1z", "2z", "3z", "4z"],
+        "north": ["5m", "6m", "8m", "5p", "8p", "9p", "3s", "6s", "9s", "1z", "2z", "3z", "4z"]
+      },
+      "starting_draws": ["6z", "4z", "2z", "2m", "5z"]
+    }
+    """, [
+      %{"type" => "discard", "tile" => "6z", "player" => 0, "tsumogiri" => true},
+      %{"type" => "discard", "tile" => "4z", "player" => 1, "tsumogiri" => true},
+      %{"type" => "discard", "tile" => "2z", "player" => 2, "tsumogiri" => true},
+      %{"type" => "discard", "tile" => "2m", "player" => 3, "tsumogiri" => true},
+      %{"type" => "buttons_pressed", "buttons" => [%{"button" => "pon"}, nil, nil, nil]},
+      %{"type" => "discard", "tile" => "6z", "player" => 0, "tsumogiri" => false},
+      %{"type" => "discard", "tile" => "5z", "player" => 1, "tsumogiri" => false},
+      %{"type" => "buttons_pressed", "buttons" => [%{"button" => "ron"}, nil, nil, nil]},
+    ], %{
+      east: %{
+        yaku: [{"Sanrenkou", [3, "Han"]}],
+        minipoints: 34,
+        score: 1630
       }
     })
   end

@@ -48,6 +48,8 @@ on after_initialization do
   add_rule("Rules", "Fu", "- Having a single wait like 12₍₃₎, 1₍₂₎3, or 2₍₂₎ adds 2 fu. Only the final shape matters, so 1234 waiting for a pair of 1 or 4, counts as a single wait since it could be read as 1 234 or 123 4.")
   if @round_fu do
     add_rule("Rules", "Fu", "- After adding all the fu, round up to the next 10. So 32 becomes 40 fu, but 30 fu stays 30 fu.")
+  else
+    add_rule("Rules", "Fu", "- Fu is not rounded.")
   end
   add_rule("Rules", "Fu", "Exceptions:")
   if @chiitoitsu_ron_fu == @chiitoitsu_tsumo_fu do
@@ -60,7 +62,7 @@ on after_initialization do
     add_rule("Rules", "Fu", "- If you have a closed hand and won with tsumo (20+2 fu) but not scoring any more fu, it is treated as 20 fu (and awards you the 1 han yaku Pinfu).")
   end
   if @open_30_fu do
-    add_rule("Rules", "Fu", "- An open hand is minimum 30 fu. You still start at 20 fu, but if you end with 20 fu, it becomes 30 fu.")
+    add_rule("Rules", "Fu", "- An open hand is minimum 30 fu. You still start at 20 fu, but if you end with 20 fu open, it becomes 30 fu.")
   end
 end
 

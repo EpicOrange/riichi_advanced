@@ -83,99 +83,101 @@ on before_scoring do
   three_kontsu_points = 0
   # toitoi
   if match(["hand", "calls", "winning_tile"], ~m"koutsu:4, pair:1") do
-    four_triplet_points = four_triplet_points + 2
+    four_triplet_points += 2
   end
   # sanshoku doukou
   if match(["hand", "calls", "winning_tile"], ~m"exhaustive, sanshoku_doukou:1, mentsu:1, pair:1") do
-    four_triplet_points = four_triplet_points + 2
-    three_triplet_points = three_triplet_points + 2
+    four_triplet_points += 2
+    three_triplet_points += 2
   end
   # sanankou
   if (won_by_draw and match(["hand", "calls", "winning_tile"], ["sanankou_tsumo"])) or (not_won_by_draw and match(["hand", "calls", "winning_tile"], ["sanankou_ron"])) do
-    four_triplet_points = four_triplet_points + 2
-    three_triplet_points = three_triplet_points + 2
-  end
-  # suuankou
-  if won_by_draw and @closed_hand and match(["hand", "calls"], ~m"koutsu:3, pair:2") do
-    four_triplet_points = four_triplet_points + 13
+    four_triplet_points += 2
+    three_triplet_points += 2
   end
   # suuankou tanki
   if @closed_hand and match(["hand", "calls"], ~m"koutsu:4") and match(["hand", "calls", "winning_tile"], ~m"koutsu:4, pair:1") do
-    four_triplet_points = four_triplet_points + 26
+    four_triplet_points += 26
+  else
+    # suuankou
+    if won_by_draw and @closed_hand and match(["hand", "calls"], ~m"koutsu:3, pair:2") do
+      four_triplet_points += 13
+    end
   end
   # shousuushii
   if match(["hand", "calls", "winning_tile"], ~m"unique, (ton nan shaa pei):3, (ton_pair nan_pair shaa_pair pei_pair):1") do
-    four_triplet_points = four_triplet_points + 13
-    three_triplet_points = three_triplet_points + 13
+    four_triplet_points += 13
+    three_triplet_points += 13
   end
   # daisuushii
   if match(["hand", "calls", "winning_tile"], ~m"unique, (ton nan shaa pei):4") do
-    four_triplet_points = four_triplet_points + 26
+    four_triplet_points += 26
   end
   # daisangen
   if match(["hand", "calls", "winning_tile"], ~m"haku:1, hatsu:1, chun:1") do
-    four_triplet_points = four_triplet_points + 13
-    three_triplet_points = three_triplet_points + 13
+    four_triplet_points += 13
+    three_triplet_points += 13
   end
   # yakuhai
   if match(["hand", "calls", "winning_tile"], ~m"exhaustive, (haku hatsu chun):1, mentsu:3, pair:1") do
-    four_triplet_points = four_triplet_points + 1
-    three_triplet_points = three_triplet_points + 1
-    three_kontsu_points = three_kontsu_points + 1
+    four_triplet_points += 1
+    three_triplet_points += 1
+    three_kontsu_points += 1
   end
   if (round_wind_is("east") and match(["hand", "calls", "winning_tile"], ~m"exhaustive, ton:1, mentsu:3, pair:1"))
       or (round_wind_is("south") and match(["hand", "calls", "winning_tile"], ~m"exhaustive, nan:1, mentsu:3, pair:1"))
       or (round_wind_is("west") and match(["hand", "calls", "winning_tile"], ~m"exhaustive, shaa:1, mentsu:3, pair:1"))
       or (round_wind_is("north") and match(["hand", "calls", "winning_tile"], ~m"exhaustive, pei:1, mentsu:3, pair:1")) do
-    four_triplet_points = four_triplet_points + 1
-    three_triplet_points = three_triplet_points + 1
-    three_kontsu_points = three_kontsu_points + 1
+    four_triplet_points += 1
+    three_triplet_points += 1
+    three_kontsu_points += 1
   end
   if (seat_is("east") and match(["hand", "calls", "winning_tile"], ~m"exhaustive, ton:1, mentsu:3, pair:1"))
       or (seat_is("south") and match(["hand", "calls", "winning_tile"], ~m"exhaustive, nan:1, mentsu:3, pair:1"))
       or (seat_is("west") and match(["hand", "calls", "winning_tile"], ~m"exhaustive, shaa:1, mentsu:3, pair:1"))
       or (seat_is("north") and match(["hand", "calls", "winning_tile"], ~m"exhaustive, pei:1, mentsu:3, pair:1")) do
-    four_triplet_points = four_triplet_points + 1
-    three_triplet_points = three_triplet_points + 1
-    three_kontsu_points = three_kontsu_points + 1
+    four_triplet_points += 1
+    three_triplet_points += 1
+    three_kontsu_points += 1
   end
 
   # toikon
   if match(["hand", "calls", "winning_tile"], ~m"exhaustive, kontsu:4, pair:1") do
-    four_kontsu_points = four_kontsu_points + 1
+    four_kontsu_points += 1
     if @closed_hand do
-      four_kontsu_points = four_kontsu_points + 1
+      four_kontsu_points += 1
     end
   end
   # yondoukon
   if match(["hand", "calls", "winning_tile"], ~m"exhaustive, yondoukon:1, pair:1") do
-    four_kontsu_points = four_kontsu_points + 13
+    four_kontsu_points += 13
   end
   # sandoukon
   if match(["hand", "calls", "winning_tile"], ~m"exhaustive, sandoukon:1, mentsu:1, pair:1") do
-    four_kontsu_points = four_kontsu_points + 2
-    three_kontsu_points = three_kontsu_points + 2
+    four_kontsu_points += 2
+    three_kontsu_points += 2
     if @closed_hand do
-      four_kontsu_points = four_kontsu_points + 1
-      three_kontsu_points = three_kontsu_points + 1
+      four_kontsu_points += 1
+      three_kontsu_points += 1
     end
   end
   # 1 honors kontsu
   if match(["hand", "calls", "winning_tile"], ~m"exhaustive, honors_kontsu:1, mentsu:3, pair:1") do
-    four_kontsu_points = four_kontsu_points + 0.5
-    three_kontsu_points = three_kontsu_points + 0.5
-    three_triplet_points = three_triplet_points + 0.5
+    four_kontsu_points += 0.5
+    three_kontsu_points += 0.5
+    three_triplet_points += 0.5
   end
   # 3 honors kontsu
   if match(["hand", "calls", "winning_tile"], ~m"exhaustive, honors_kontsu:3, mentsu:1, pair:1") do
-    four_kontsu_points = four_kontsu_points + 1
-    three_kontsu_points = three_kontsu_points + 1
+    four_kontsu_points += 1
+    three_kontsu_points += 1
   end
   # 4 honors kontsu
   if match(["hand", "calls", "winning_tile"], ~m"exhaustive, honors_kontsu:4, pair:1") do
-    four_kontsu_points = four_kontsu_points + 0.5
-    three_kontsu_points = three_kontsu_points + 0.5
+    four_kontsu_points += 0.5
+    three_kontsu_points += 0.5
   end
+
   # now set variables for max number of kontsu and triplets
   max_kontsu = 4
   max_triplets = 4
@@ -278,7 +280,7 @@ on before_scoring do
   if counter_at_least("chon_124_count", 1) do add_counter("mixed_winds", "chon_124_count") end
   if counter_at_least("chon_134_count", 1) do add_counter("mixed_winds", "chon_134_count") end
   if counter_at_least("chon_234_count", 1) do add_counter("mixed_winds", "chon_234_count") end
-  mixed_winds = mixed_winds * 0.5
+  mixed_winds *= 0.5
   remove_attr_all("wind", "prevalent", "seat")
 end
 define_yaku yaku, "Mixed Winds", ["mixed_winds", "Han"], counter_at_least("mixed_winds", 0.5)

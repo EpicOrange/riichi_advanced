@@ -72,12 +72,13 @@ defmodule RiichiAdvanced.GameState.Scoring do
     excluded_lists = if exclude_extra_yaku? do
       Rules.get(state.rules_ref, "score_calculation", %{})
       |> Map.get("extra_yaku_lists", [])
-    else [] end
+      |> MapSet.new()
+    else MapSet.new() end
 
-    {acc, existing_yaku, _skips, _clause_cache} = for yaku <- yakus, reduce: {[], [], MapSet.new(), %{}} do
+    {acc, existing_yaku, _skips, _clause_cache} = for yaku <- yakus, reduce: {[], [], excluded_lists, %{}} do
       {acc, existing_yaku, skips, clause_cache} ->
         debug = yaku["display_name"] in Debug.debug_specific_yaku()
-        if yaku.key not in skips and yaku.list_name not in excluded_lists do
+        if yaku.key not in skips and yaku.list_name not in skips do
           if Debug.debug_yaku_precedence() do
             IO.puts("Evaluating yaku #{yaku["display_name"]}")
           end
@@ -86,10 +87,12 @@ defmodule RiichiAdvanced.GameState.Scoring do
           {result, clause_cache} = Conditions.cached_check_cnf_condition(state, yaku["when"], context, clause_cache, debug_label)
           # result = Conditions.check_cnf_condition(state, yaku["when"], context)
           if result do
-            new_skips = MapSet.union(skips, Map.get(yaku_skip_map, yaku.key, MapSet.new()))
+            new_skips = skips
+            |> MapSet.union(Map.get(yaku_skip_map, yaku.key, MapSet.new()))
+            |> MapSet.union(Map.get(yaku_skip_map, yaku.list_name, MapSet.new()))
             %{"display_name" => name, "value" => value} = yaku
             if debug do IO.puts("Yaku #{inspect(yaku.key)}: passed all checks") end
-            if yaku.key in new_skips do
+            if yaku.key in new_skips or yaku.list_name in new_skips do
               {acc, existing_yaku, new_skips, clause_cache} # we override ourselves
             else
               value = value
@@ -114,7 +117,11 @@ defmodule RiichiAdvanced.GameState.Scoring do
           end
         else
           if yaku["display_name"] in Debug.debug_specific_yaku() or Debug.debug_yaku_precedence() do
-            IO.puts("Yaku #{inspect(yaku.key)}: skipped due to precedence (current yaku: #{Enum.map_join(acc, ",", &Map.get(&1, "display_name"))})")
+            if yaku.key in skips do
+              IO.puts("Yaku #{inspect(yaku.key)}: skipped due to precedence by name (current yaku: #{Enum.map_join(acc, ",", &Map.get(&1, "display_name"))})")
+            else # yaku.list_name in skips
+              IO.puts("Yaku #{inspect(yaku.key)}: skipped due to precedence by list #{inspect(yaku.list_name)} (current yaku: #{Enum.map_join(acc, ",", &Map.get(&1, "display_name"))})")
+            end
           end
           {acc, existing_yaku, skips, clause_cache}
         end

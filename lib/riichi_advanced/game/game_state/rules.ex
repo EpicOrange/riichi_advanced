@@ -52,11 +52,13 @@ defmodule RiichiAdvanced.GameState.Rules do
 
     yaku_map = %{}
     |> Map.merge(Enum.group_by(yakus, &Map.get(&1, :key)), fn _k, l, r -> l ++ r end)
-    |> Map.merge(Enum.group_by(yakus, &Map.get(&1, :list_name)), fn _k, l, r -> l ++ r end)
     |> Map.merge(Enum.group_by(yakus, &Map.get(&1, :value_num)), fn _k, l, r -> l ++ r end)
     |> Map.merge(Enum.group_by(yakus, &Map.get(&1, "value")), fn _k, l, r -> l ++ r end)
     |> Map.merge(Enum.group_by(yakus, &Map.get(&1, "display_name")), fn _k, l, r -> l ++ r end)
+    # |> Map.merge(Enum.group_by(yakus, &Map.get(&1, :list_name)), fn _k, l, r -> l ++ r end) # handle yaku lists differently
     # IO.inspect(yaku_map, limit: :infinity, label: "yaku_map")
+
+
 
     # do a pass over yakus to capture dependencies
     # calculate dependent yaku by seeing if any conditions are dependent on other yaku
@@ -68,8 +70,8 @@ defmodule RiichiAdvanced.GameState.Rules do
         dep_ixs = yaku["when"]
         |> List.flatten()
         |> Enum.flat_map(fn
-          %{"name" => "has_existing_yaku",     "opts" => opts} -> Enum.flat_map(opts, &Map.get(yaku_map, if is_list(&1) do Enum.at(&1, 0, &1) else &1 end, []) |> Enum.map(fn yaku -> yaku.ix end))
-          %{"name" => "not_has_existing_yaku", "opts" => opts} -> Enum.flat_map(opts, &Map.get(yaku_map, if is_list(&1) do Enum.at(&1, 0, &1) else &1 end, []) |> Enum.map(fn yaku -> yaku.ix end))
+          %{"name" => "has_existing_yaku",     "opts" => opts} -> Enum.flat_map(opts, &Map.get(yaku_map, if is_list(&1) do Enum.at(&1, 0, &1) else &1 end, [%{ix: &1}]) |> Enum.map(fn yaku -> yaku.ix end))
+          %{"name" => "not_has_existing_yaku", "opts" => opts} -> Enum.flat_map(opts, &Map.get(yaku_map, if is_list(&1) do Enum.at(&1, 0, &1) else &1 end, [%{ix: &1}]) |> Enum.map(fn yaku -> yaku.ix end))
           "has_no_yaku"                 -> all_ixs
           "not_has_no_yaku"             -> all_ixs
           %{"name" => "has_points"}     -> all_ixs
@@ -91,10 +93,11 @@ defmodule RiichiAdvanced.GameState.Rules do
     end
     
     # IO.inspect(Enum.map(toposorted, &{&1.ix, &1["display_name"]}), limit: :infinity)
+    # IO.inspect(toposorted, limit: :infinity)
 
     skip_map = for {prec_from, precs_to} <- yaku_precedence,
-                   yaku <- Map.get(yaku_map, prec_from, []),
-                   yaku2 <- Enum.flat_map(precs_to, &Map.get(yaku_map, &1, [])),
+                   yaku <- Map.get(yaku_map, prec_from, [%{key: prec_from}]),
+                   yaku2 <- Enum.flat_map(precs_to, &Map.get(yaku_map, &1, [%{key: &1}])),
                    reduce: %{} do
       acc -> Map.update(acc, yaku.key, MapSet.new([yaku2.key]), &MapSet.put(&1, yaku2.key))
     end
@@ -115,8 +118,8 @@ defmodule RiichiAdvanced.GameState.Rules do
 
   defp _toposort_yaku(yaku, yaku_deps, yaku_map, yaku_precedence, acc, visited) do
     if yaku.ix in visited do {acc, visited} else
-      # look up dependent_yaku using ix
-      dependent_yaku = Map.get(yaku_deps, yaku.ix, [])
+      # look up dependent_yaku using ix and list name
+      dependent_yaku = MapSet.union(Map.get(yaku_deps, yaku.ix, MapSet.new()), Map.get(yaku_deps, yaku.list_name, MapSet.new()))
       |> Enum.flat_map(&Map.get(yaku_map, &1, []))
 
       # look up overridden_yaku using a variety of keys
@@ -125,7 +128,8 @@ defmodule RiichiAdvanced.GameState.Rules do
       |> Enum.flat_map(&Map.get(yaku_map, &1, []))
       |> Enum.reject(fn yaku2 -> yaku.key in Map.get(yaku_deps, yaku2.ix, []) end)
 
-      {acc, visited} = for yaku2 <- dependent_yaku ++ overridden_yaku, yaku.ix != yaku2.ix, reduce: {acc, MapSet.put(visited, yaku.ix)} do
+      visited = visited |> MapSet.put(yaku.ix) |> MapSet.put(yaku.list_name)
+      {acc, visited} = for yaku2 <- dependent_yaku ++ overridden_yaku, yaku.ix != yaku2.ix, reduce: {acc, visited} do
         {acc, visited} -> _toposort_yaku(yaku2, yaku_deps, yaku_map, yaku_precedence, acc, visited)
       end
       {[yaku | acc], visited}

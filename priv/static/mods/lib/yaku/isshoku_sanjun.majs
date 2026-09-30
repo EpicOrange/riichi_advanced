@@ -49,6 +49,4 @@ if defined("riichi") do
     add_rule("$value $han", !san_name, "\"Pure Triple Sequences\". %{value} %{han} if you have three of the exact same sequence in one suit, like 123 123 123. Like iipeikou but three. +%{bonus} %{han} if closed. Does not stack with iipeikou (123 123) or sanrenkou (111 222 333).", %{value: !san_value, han: !san_han, bonus: !san_closed_bonus})
     update_rule("$value $han", !san_name, "%{example_hand}", %{example_hand: ~t"345345m789p6s 34m5M 6s", value: !san_value, han: !san_han})
   end
-  define_yaku_precedence "Isshoku Sanjun", ["Iipeikou", "Sanankou", "Sanrenkou", "Choupaikou", "Sujipaikou", "Chousankou"]
-  define_yaku_precedence "Suuankou", ["Isshoku Sanjun"]
 end

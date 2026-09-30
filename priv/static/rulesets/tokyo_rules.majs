@@ -72,6 +72,7 @@ end
 
 apply subtract, "default_mods", [
   "lib/yaku/ippatsu",
+  %{name: "lib/yaku/pinfu", config: %{value: 1}},
   %{name: "lib/yaku/iipeikou", config: %{ii_value: 1, ryan_value: 3}},
   %{name: "lib/yaku/chiitoitsu", config: %{kansai: false, name: "Chiitoitsu", value: 2}},
   %{name: "lib/yaku/chanta", config: %{chanta_value: 1, closed_bonus: 1, junchan_value: 2}},
@@ -108,6 +109,7 @@ apply subtract, "default_mods", [
 ]
 
 apply append, "default_mods", [
+  %{name: "lib/yaku/pinfu", config: %{value: 1, pinfu_ron: 20, pinfu_tsumo: 22}},
   %{name: "lib/yaku/honitsu", config: %{hon_value: 2, chin_value: 1, chin_han: "★", closed_bonus: 1}},
   %{name: "lib/yaku/ittsuu", config: %{value: 2, closed_bonus: 1}},
   %{name: "lib/yaku/sanshoku_doujun", config: %{value: 2, closed_bonus: 1}},
@@ -130,24 +132,33 @@ apply append, "default_mods", [
   %{name: "lib/yaku/sanshoku_ittsuu", config: %{value: 2}},
   %{name: "lib/yaku/shiisanpuutaa", config: %{value: 3}},
   %{name: "lib/yaku/isshoku_sanjun", config: %{san_value: 3, san_closed_bonus: 1}},
+  %{name: "lib/yaku/sanrenkou", config: %{san_value: 3, san_han: "Han"}},
   "no_riichi_ankan",
 ]
+
+# - each yaku needs:
+#   - default mod with settings
+#   - yaku test
+#   - 
 
 # - shiiaru raotai is 1 han
 # - ketsupaihou is 1 han
 # - sanshoku ittsuu is 2 han
 # - shiisanpuutaa is 3 han
 # - isshoku sanjun, is 3/4 han
+# doing the below rn
 # - sanrenkou is 3 han
 # - renkaihou is 3 han
 # - choupaikou/sujipaikou/chousankou is 3 han
 # - otakaze sankou is 3 han
-# - uushin tsuukan is 4 han
+# - uushin tsuukan is 4 han'
+# -
 # - ryandoukou, is 2 han plus toitoi
 # - iipin mouyue is 4 han
 # - uupin kaihou is 4 han
 # - ryansou chankan is 4 han
 # - chinchii toushii is 4 han
+# - 
 # - isshoku yonjun is shoumangan
 # - rentsuu honitsu is shoumangan
 # - dorahairi chinroutou chiitoitsu is shoumangan
@@ -161,4 +172,193 @@ on after_initialization do
   add_rule_tab("Shou")
   add_rule_tab("Dai")
   add_rule_tab("Chou")
+end
+
+
+
+# change fu calculation to count closed isshoku sanjun as itself
+apply append, "constants.winning_groups_fu", [
+  %{groups: ~s"0 0 0@winning_tile&tsumo 1 1 1 2 2 2", value: 0},
+  %{groups: ~s"0 0 0 1 1 1@winning_tile&tsumo 2 2 2", value: 2},
+  %{groups: ~s"0 0 0 1 1 1 2 2 2@winning_tile&tsumo", value: 0},
+]
+apply append, "constants.groups_fu", [
+  %{groups: ~s"0 0 0 1 1 1 2 2 2", value: 0},
+]
+
+# to calculate fu, we need to know which sets are sequences and which are triplets
+# unfortunately, we can only determine this by comparing yaku
+# the relevant sequences yaku are:
+# - pinfu (1 han)
+# - iipeikou (1 han)
+# - ryanpeikou (4 han)
+# - isshoku sanjun (3/4 han)
+# - ittsuu (2/3 han)
+# - sanshoku doujun (2/3 han)
+# - isshoku yonjun (★)
+# the relevant triplets yaku are:
+# - toitoi (2 han)
+# - sanshoku doukou (2 han)
+# - sanankou (2 han)
+# - sanrenkou (3 han)
+# - chinchii toushii (4 han)
+# - suuankou (★)
+# - suuankou tanki (★★)
+# obtaining any triplet yaku invalidates all of the sequences yaku, but only if the triplets yaku are worth more
+
+on before_scoring do
+  triplet_points = 0
+  sequence_points = 0
+  if @closed_hand do set_status("closed") end
+  # toitoi
+  if match(["hand", "calls", "winning_tile"], ~m"koutsu:4, pair:1") do
+    triplet_points += 2
+  end
+  # sanshoku doukou
+  if match(["hand", "calls", "winning_tile"], ~m"exhaustive, sanshoku_doukou:1, mentsu:1, pair:1") do
+    triplet_points += 3
+  end
+  # sanankou
+  if (won_by_draw and match(["hand", "calls", "winning_tile"], ["sanankou_tsumo"])) or (not_won_by_draw and match(["hand", "calls", "winning_tile"], ["sanankou_ron"])) do
+    triplet_points += 2
+  end
+  # sanrenkou
+  if match(["hand", "calls", "winning_tile"], ~m"sanrenkou:1, mentsu:1, pair:1") do
+    triplet_points += 3
+  end
+  # suuankou tanki
+  if status("closed") and match(["hand", "calls"], ~m"koutsu:4") and match(["hand", "calls", "winning_tile"], ~m"koutsu:4, pair:1") do
+    if triplet_points < 2000 do triplet_points = 0 end
+    triplet_points += 2000
+  else
+    # suuankou
+    if won_by_draw and status("closed") and match(["hand", "calls"], ~m"koutsu:3, pair:2") do
+      if triplet_points < 1000 do triplet_points = 0 end
+      triplet_points += 1000
+    end
+  end
+
+  # pinfu
+  if status("closed")
+      and match(["hand", "calls", "winning_tile"], ["standard_win"])
+      and ((won_by_draw and minipoints_equals(22)) or (not_won_by_draw and minipoints_equals(20))) do
+    sequence_points += 1
+  end
+  # ryanpeikou
+  if status("closed") and match(["hand", "calls", "winning_tile"], ~m"exhaustive, iipeikou:2, pair:1") do
+    sequence_points += 4
+  else
+    # iipeikou
+    if status("closed") and match(["hand", "calls", "winning_tile"], ~m"exhaustive, iipeikou:1, mentsu:2, pair:1") do
+      sequence_points += 1
+    end
+  end
+  # ittsuu
+  if match(["hand", "calls", "winning_tile"], ~m"exhaustive, ittsuu:1, mentsu:1, pair:1") do
+    sequence_points += 2
+    if status("closed") do
+      sequence_points += 1
+    end
+  end
+  # sanshoku doujun
+  if match(["hand", "calls", "winning_tile"], ~m"exhaustive, sanshoku_doujun:1, mentsu:1, pair:1") do
+    sequence_points += 2
+    if status("closed") do
+      sequence_points += 1
+    end
+  end
+  # isshoku yonjun
+  if match(["hand", "calls", "winning_tile"], ~m"exhaustive, iishoku_yonjun:1, pair:1") do
+    sequence_points += 3
+    if status("closed") do
+      sequence_points += 1
+    end
+  else
+    # isshoku sanjun
+    if match(["hand", "calls", "winning_tile"], ~m"exhaustive, iishoku_sanjun:1, mentsu:1, pair:1") do
+      sequence_points += 3
+      if status("closed") do
+        if sequence_points < 1000 do sequence_points = 0 end
+        sequence_points += 1000
+      end
+    end
+  end
+  # recalculate minipoints based on whether triplet_points >= sequence_points
+  calculate_fu_with_maximums
+end
+
+# now forbid certain yaku based on the above
+define_yaku meta_yaku, "_triplets_win", [0, "Han"], triplet_points >= sequence_points, [
+  "_triplets_win",
+  "Iipeikou",
+  "Ryanpeikou",
+  "Isshoku Sanjun",
+  "Ittsuu",
+  "Sanshoku Doujun",
+  "Isshoku Yonjun",
+]
+define_yaku meta_yaku, "_sequences_win", [0, "Han"], triplet_points < sequence_points, [
+  "_sequences_win",
+  "Toitoi",
+  "Sanshoku Doukou",
+  "Sanankou",
+  "Sanrenkou",
+  "Chinchii Toushii",
+  "Suuankou",
+  "Suuankou Tanki",
+]
+
+define_const triplets_fu, [
+  %{groups: ~s"0@tanyao 0@tanyao 0@tanyao", value: 4},
+  %{groups: ~s"0@yaochuu 0@yaochuu 0@yaochuu", value: 8},
+  %{groups: ~s""} # no-op
+]
+def calculate_fu_with_maximums do
+  # only recalculate fu for a standard win
+  if match(["hand", "calls", "winning_tile"], ["standard_win"]) do
+    set_counter("fu", "minipoints") do
+      # score calls
+      convert_calls(@calls_fu)
+      remove_calls(["tanyaohai"])
+      convert_calls(@calls_fu)
+      remove_calls
+
+      remove_groups(@winning_groups_fu)
+
+      # only remove triplets if we're doing triplets
+      remove_groups(@triplets_fu, triplet_points >= sequence_points)
+      remove_groups(@triplets_fu, triplet_points >= sequence_points)
+      remove_groups(@triplets_fu, triplet_points >= sequence_points)
+      remove_groups(@triplets_fu, triplet_points >= sequence_points)
+
+      # now remove all closed groups
+      remove_groups(@groups_fu)
+      prune(method: "tile_count", num_tiles: [1,4,7,10])
+      remove_groups(@groups_fu)
+      prune(method: "tile_count", num_tiles: [1,4,7,10])
+      remove_groups(@groups_fu)
+      prune(method: "tile_count", num_tiles: [1,4,7,10])
+      remove_groups(@groups_fu)
+      prune(method: "tile_count", num_tiles: [1,4,7,10])
+
+      # only retain configurations with 0 tiles remaining
+      retain_empty_hands
+
+      # add 1000 to pinfu hands so we prioritize pinfu later
+      add(1000, minipoints_equals(0))
+
+      # base 20
+      add(20)
+
+      # tsumo +2 always
+      add(2, won_by_draw)
+
+      # closed ron +10
+      add(10, not_won_by_draw and @closed_hand)
+
+      # take max, then subtract 1000 from pinfu hands
+      take_maximum
+      add(-1000, minipoints_at_least(1000))
+    end
+  end
 end

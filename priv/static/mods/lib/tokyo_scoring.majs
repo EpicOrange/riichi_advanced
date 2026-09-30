@@ -6,6 +6,7 @@ define_const chiitoitsu_ron_fu, 40
 # open pinfu is 20 fu, pinfu tsumo is 22 fu
 define_const closed_tsumo_20_fu, false
 define_const open_30_fu, false
+define_const open_pinfu, false
 
 on after_initialization do
   rename_rule_tab("1 ★", "Shoumangan")
@@ -17,9 +18,6 @@ on after_initialization do
   rename_rule_tab("Shoumangan", "Shoumangan")
   rename_rule_tab("Daimangan", "Daimangan")
   rename_rule_tab("Choumangan", "Choumangan")
-  delete_rule("1 Han", "Pinfu")
-  add_rule("1 Han", "Pinfu", "You won off a double-sided sequence wait, with an all-sequence hand whose pair is not yakuhai.")
-  update_rule("1 Han", "Pinfu", "%{example_hand}", %{example_hand: ~t"345789m45p99s 2S34s 6p"})
 
   add_rule("Rules", "Tontonsen", "The game consists of two east rounds.")
   delete_rule("Rules", "Multiple Ron")

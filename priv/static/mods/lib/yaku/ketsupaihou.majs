@@ -5,7 +5,7 @@ default name, "Ketsupaihou"
 default value, 1
 
 on after_initialization do
-  add_rule("$value $han", !name, "\"Missing Tile\". Win with an edge or middle wait on a tile for which three copies are already publicly visible.", %{value: !value, han: !han})
+  add_rule("$value $han", !name, "\"Missing Tile\". Win with an edge or middle wait on a tile for which three copies are already publicly visible in discards. (Tiles in hand don't count.)", %{value: !value, han: !han})
   update_rule("$value $han", !name, "%{example_hand}", %{value: !value, han: !han, example_hand: ~t"12999p11567m 33p3P 3p"})
 end
 

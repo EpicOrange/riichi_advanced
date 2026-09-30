@@ -1,9 +1,9 @@
 default san_list, "yaku"
-default san_name, ""
+default san_name, "Sanrenkou"
 default san_value, 0
 default san_han, !han
 default suu_list, "yaku"
-default suu_name, ""
+default suu_name, "Suurenkou"
 default suu_value, 0
 default suu_han, !han
 default closed_only, false

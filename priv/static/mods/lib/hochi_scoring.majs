@@ -8,10 +8,6 @@ on after_initialization do
   rename_rule_tab("1 ★", "Shoumangan")
   rename_rule_tab("1.5 ★", "Daimangan")
   rename_rule_tab("2 ★", "Baimangan")
-  delete_rule("1 Han", "Pinfu")
-  
-  add_rule("1 Han", "Pinfu", "You won off a double-sided sequence wait, with an all-sequence hand whose pair is not yakuhai.")
-  update_rule("1 Han", "Pinfu", "%{example_hand}", %{example_hand: ~t"345789m45p99s 2S34s 6p"})
 
   add_rule("Shoumangan", "Daichiishin", "Shoumangan if you have one pair of each of the seven honor tiles.")
   update_rule("Shoumangan", "Daichiishin", "%{example_hand}", %{example_hand: ~t"1122334455667z 7z"})

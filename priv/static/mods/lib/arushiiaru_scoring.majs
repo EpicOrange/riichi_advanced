@@ -5,10 +5,6 @@ on after_initialization do
   rename_rule_tab("Mangan", "Mangan") # place it last
   delete_rule("Rules", "Tenpai Payments")
 
-  delete_rule("1 Han", "Pinfu")
-  add_rule("1 Han", "Pinfu", "You won off a double-sided sequence wait, with an all-sequence hand whose pair is not yakuhai.")
-  update_rule("1 Han", "Pinfu", "%{example_hand}", %{example_hand: ~t"345789m45p99s 2S34s 6p"})
-
   add_rule("Mangan", "Chuurenpoutou", "Mangan if your hand was 1112345678999 in one suit, and you won via its nine-sided wait.", 2)
   update_rule("Mangan", "Chuurenpoutou", "%{example_hand}", %{example_hand: ~t"1112345678999s 7s"})
 end
