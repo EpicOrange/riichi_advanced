@@ -387,7 +387,7 @@ An American match specification is a string instead of an array. An example is `
 
 `X` groups must be suffixed with a number. For instance, `"XXXXX0a XX1a XXXXX2a"` matches a quint of some number, a pair of that number + 1, and a quint of that number + 2.
 
-The `a` at the end is a suit specifier, required for groups consisting of `1` to `9`, `D`, and/or `X`. The three suit specifiers are `a`, `b`, `c`. For example, `"2024a 2222b 2222c"` matches 2024 of one suit (0 is white dragon), 2222 or another suit, and 2222 of a third suit.
+The `a` at the end is a suit specifier, required for groups consisting of `1` to `9`, `D`, and/or `X`. The three suit specifiers are `a`, `b`, `c`. For example, `"2024a 2222b 2222c"` matches 2024 of one suit (0 is white dragon), 2222 or another suit, and 2222 of a third suit. If you want to force a suit you can use `m`, `p`, `s` for characters, circles, and bamboo respectively.
 
 In addition, you may specify a group with alternatives (OR) using `|`. For example, `RR|GG` matches a pair of red dragons OR a pair of green dragons. Since spaces are used to separate groups, make sure not to put spaces around the `|`.
 

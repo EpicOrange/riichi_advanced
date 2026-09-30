@@ -69,7 +69,12 @@ defmodule RiichiAdvanced.GameState.American do
                 tiles = case t do
                   "D" -> [List.duplicate("0z", freq), List.duplicate("6z", freq), List.duplicate("7z", freq)]
                   "Z" -> [List.duplicate("1z", freq), List.duplicate("2z", freq), List.duplicate("3z", freq), List.duplicate("4z", freq)]
-                  _   -> [List.duplicate(t <> "m", freq), List.duplicate(t <> "p", freq), List.duplicate(t <> "s", freq)]
+                  _   -> case String.last(group) do
+                    "m" -> [List.duplicate(t <> "m", freq)]
+                    "p" -> [List.duplicate(t <> "p", freq)]
+                    "s" -> [List.duplicate(t <> "s", freq)]
+                    _   -> [List.duplicate(t <> "m", freq), List.duplicate(t <> "p", freq), List.duplicate(t <> "s", freq)]
+                  end
                 end
                 result ++ [{:unsuited, [tiles, 1]}]
               else
