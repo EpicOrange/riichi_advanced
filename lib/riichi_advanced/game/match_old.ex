@@ -1,4 +1,5 @@
 defmodule RiichiAdvanced.MatchOld do
+  alias RiichiAdvanced.Constants
   alias RiichiAdvanced.GameState.TileBehavior, as: TileBehavior
   alias RiichiAdvanced.Riichi, as: Riichi
   alias RiichiAdvanced.Utils, as: Utils
@@ -84,8 +85,8 @@ defmodule RiichiAdvanced.MatchOld do
 
   defp _offset_tile_basic(tile, n, tile_behavior) do
     cond do
-      n <= -1 -> _offset_tile(tile_behavior.ordering.ordering_r[tile], n+1, tile_behavior)
-      n >= 1 -> _offset_tile(tile_behavior.ordering.ordering[tile], n-1, tile_behavior)
+      n <= -1 -> _offset_tile(Map.get(tile_behavior.ordering.ordering_r, tile, Constants.ordering_r()[tile]), n+1, tile_behavior)
+      n >= 1 -> _offset_tile(Map.get(tile_behavior.ordering.ordering, tile, Constants.ordering()[tile]), n-1, tile_behavior)
       true -> tile
     end
   end
