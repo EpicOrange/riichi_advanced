@@ -86,11 +86,11 @@ main div#container {
 }
 main div.messages-container {
   position: absolute;
-  box-sizing: border-box;
   background: #3f3f3f;
   border-radius: calc(0.25 * var(--tile-size));
   color: white;
-  width: min(50%, calc(40vw - 20% - 0.5 * var(--tile-size)));
+  --messages-width: min(50%, calc(40vw - 20% - 0.5 * var(--tile-size)));
+  width: var(--messages-width);
   height: calc(100% + var(--tile-size));
   top: calc(-0.5 * var(--tile-size));
   font-size: calc(0.4 * var(--tile-size));
@@ -106,15 +106,13 @@ main div.messages-container > div.messages span.bold {
   font-weight: 800;
 }
 main div.messages-container > button.clear-messages-button {
-  position: sticky;
+  position: fixed;
   background: gray;
   filter: drop-shadow(0 calc(var(--tile-size) / 8) 0 var(--tile-front-side));
   border-radius: calc(0.125 * var(--tile-size));
-  width: calc(1 * var(--tile-size));
-  height: calc(1 * var(--tile-size));
+  width: calc(0.75 * var(--tile-size));
+  height: calc(0.75 * var(--tile-size));
   padding: 0;
-  margin-top: calc(0.125 * var(--tile-size));
-  margin-left: auto;
   &:active { filter: none; }
 }
 
@@ -142,6 +140,10 @@ main div.messages-container > div.messages {
   }
   main div.messages-container {
     left: calc(100% + var(--tile-size));
+    & > button.clear-messages-button {
+      bottom: calc(-1.5 * var(--tile-size));
+      left: calc(100% + var(--messages-width) + 0.25 * var(--tile-size));
+    }
   }
 }
 /* portrait (mobile) */
@@ -153,9 +155,13 @@ main div.messages-container > div.messages {
     height: max(10rem, calc(100svh - 100%));
     flex-direction: column;
     justify-content: flex-start;
-  }
-  main div.messages-container > div.messages {
-    flex-direction: column-reverse;
+    & > div.messages {
+      flex-direction: column-reverse;
+    }
+    & > button.clear-messages-button {
+      top: auto;
+      right: calc(-1.25 * var(--tile-size));
+    }
   }
 }
 /* all tooltips: https://stackoverflow.com/a/60660207 */
