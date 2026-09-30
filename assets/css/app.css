@@ -673,6 +673,10 @@ div.pond.kamicha {
   div#container.minefield input.mobile-zoom-checkbox:not(:checked) ~ div.call-buttons-container {
     bottom: calc(5.75 * var(--tile-size));
   }
+  input.mobile-zoom-checkbox:not(:checked) ~ div.display-am-hand-container {
+    transform: scale(calc(0.9 * var(--mobile-scale-factor)));
+    transform-origin: 50% 100%;
+  }
 }
 
 /* compass */
@@ -2008,8 +2012,8 @@ div.hand-piano-container > div.hand-piano-key {
       left: calc(0.5625 * var(--tile-size));
     }
   }
-  /* rightmost piano key */
-  &:nth-child(2n+1):last-child {
+  /* piano keys for drawn tiles */
+  &:nth-child(2n+1).draw {
     &::before {
       height: calc(2 * var(--tile-size));
       left: calc(0.25 * var(--tile-size));
@@ -2020,7 +2024,7 @@ div.hand-piano-container > div.hand-piano-key {
       width: calc(1.125 * var(--tile-size));
     }
   }
-  &:nth-child(2n):last-child {
+  &:nth-child(2n).draw {
     &::before {
       left: calc(0.25 * var(--tile-size));
     }
@@ -2046,11 +2050,14 @@ div.hand-piano-container > div.hand-piano-key {
   &::before {
     border-left: var(--border-width) solid var(--border-color);
   }
-  &:last-child::before {
+  &.draw::before {
     border-left: none;
   }
-  &:last-child::after {
+  &.draw::after {
     border-left: var(--border-width) solid var(--border-color);
+  }
+  &.draw:nth-child(2n):nth-last-child(1)::after,
+  &.draw:nth-child(2n+1):nth-last-child(2)::after {
     border-right: var(--border-width) solid var(--border-color);
   }
   &.markable {
@@ -2065,6 +2072,9 @@ div.hand-piano-container > div.hand-piano-key {
     --border-color: var(--tile-back);
     &::before, &::after {
       border-bottom: var(--border-width) solid var(--border-color);
+    }
+    &::after {
+      border-right: calc(0.05 * var(--tile-size)) solid var(--border-color);
     }
   }
   &.inactive {
