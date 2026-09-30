@@ -501,17 +501,18 @@ defmodule RiichiAdvanced.GameState.American do
       end 
     end
     |> Enum.unzip()
-    joker = joker |> Enum.concat() |> Enum.reject(& &1 == :ignore)
-    nojoker = nojoker |> Enum.concat() |> Enum.reject(& &1 == :ignore)
-    # break into groups of identical tiles, treating flowers as same tile
-    # this is so we can match with calls next
-    joker = Enum.chunk_while(joker, [], fn x, acc ->
+    joker = joker |> Enum.map(fn group -> Enum.reject(group, & &1 == :ignore) end) |> Enum.reject(& &1 == [])
+    nojoker = nojoker |> Enum.map(fn group -> Enum.reject(group, & &1 == :ignore) end) |> Enum.reject(& &1 == [])
+
+    # break joker into groups of identical tiles, treating flowers as same tile
+    # this is so we can do exact matches with calls next
+    joker = Enum.flat_map(joker, fn group -> Enum.chunk_while(group, [], fn x, acc ->
       if Enum.empty?(acc) or Utils.same_tile(x, Enum.at(acc, 0), tile_behavior) do
         {:cont, [x | acc]}
       else
         {:cont, acc, [x]}
       end
-    end, &{:cont, &1, &1})
+    end, &{:cont, &1, &1}) end)
 
     # remove calls from the instantiation -- any american hand must use every existing call
     joker = for call <- calls, reduce: joker do
@@ -520,12 +521,13 @@ defmodule RiichiAdvanced.GameState.American do
         call_as_group = Utils.replace_jokers(call, [:"1j"], tile_behavior)
         |> Utils.strip_attrs()
         |> Enum.map(&Atom.to_string/1)
-        # here we use remove_group instead of match_hand to ensure the length of the call is matched too
+        # here we use _remove_group instead of match_hand to ensure the length of the call is matched too
         case Enum.find_index(joker, &Match.remove_group(&1, call_as_group, tile_behavior, false, [base_tile]) == [[]]) do
-          nil -> [] # call not found, abort
+          nil -> [] # this instance does not use one of our calls, discard it
           i   -> List.delete_at(joker, i)
         end
     end |> Enum.concat()
+    nojoker = nojoker |> Enum.concat()
     if Enum.empty?(joker ++ nojoker) or nil in joker or nil in nojoker do nil else {joker, nojoker} end
   end
 
@@ -615,9 +617,9 @@ defmodule RiichiAdvanced.GameState.American do
       end
       arranged_hand = arrange_american_hand([am_match_definition], fixed_hand, calls, tile_behavior)
       if arranged_hand == nil do
-        if seat == :east do
-          IO.puts("Failed to arrange #{inspect(hand)} => #{inspect(fixed_hand)} / #{inspect(Enum.map(calls, &Utils.call_to_tiles/1))} into #{am_match_definition}")
-        end
+        # if seat == :east do
+        #   IO.puts("Failed to arrange #{inspect(hand)} => #{inspect(fixed_hand)} / #{inspect(Enum.map(calls, &Utils.call_to_tiles/1))} into #{am_match_definition}")
+        # end
         nil
       else
         # IO.puts("#{am_match_definition}\n=> #{inspect(fixed_hand)}\n=> #{inspect(arranged_hand)}")

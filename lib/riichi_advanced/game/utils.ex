@@ -374,11 +374,12 @@ defmodule RiichiAdvanced.Utils do
     non_joker_tiles = Enum.reject(tiles, &has_matching_tile?([&1], joker_tiles))
     has_joker = length(non_joker_tiles) < length(tiles)
     has_nonjoker = length(non_joker_tiles) > 0
+    default_tile = Enum.at(non_joker_tiles, 0, Enum.at(tiles, 0))
     if has_joker and has_nonjoker do
       [tile | rest] = non_joker_tiles
       tile = strip_attrs(tile)
-      if Enum.all?(rest, &same_tile(&1, tile, tile_behavior)) do tile else nil end
-    else nil end
+      if Enum.all?(rest, &same_tile(&1, tile, tile_behavior)) do tile else default_tile end
+    else default_tile end
   end
   def get_joker_meld_tile(call, tile_behavior) do
     _get_joker_meld_tile(call_to_tiles(call), Map.keys(tile_behavior.mappings), tile_behavior)
@@ -397,7 +398,7 @@ defmodule RiichiAdvanced.Utils do
     else tiles end
   end
 
-  @pon_like_calls ["pon", "daiminkan", "kakan", "ankan", "am_pung", "am_kong", "am_quint"]
+  @pon_like_calls ["pon", "daiminkan", "kakan", "ankan", "am_pung", "am_kong", "am_quint", "am_sextet"]
   def replace_jokers_in_calls(calls, joker_tiles, tile_behavior) do
     Enum.map(calls, fn {name, call} ->
       if name in @pon_like_calls and Enum.any?(call, &has_matching_tile?([&1], joker_tiles)) do

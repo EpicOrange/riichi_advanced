@@ -105,11 +105,12 @@ defmodule RiichiAdvanced.AIPlayer do
 
   defp choose_american_discard(state, playables, closest_american_hands) do
     # get shanten
+    hand_length = length(state.player.hand)
     shanten = closest_american_hands
-    |> Enum.map(fn {_am_match_definition, pairing_r, _arranged_hand} -> 13 - map_size(pairing_r) end)
+    |> Enum.map(fn {_am_match_definition, pairing_r, _arranged_hand} -> hand_length - map_size(pairing_r) end)
     |> Enum.min(&<=/2, fn -> :infinity end)
     # take only the best closest hands
-    closest_american_hands = Enum.filter(closest_american_hands, fn {_am_match_definition, pairing_r, _arranged_hand} -> shanten == (13 - map_size(pairing_r)) end)
+    closest_american_hands = Enum.filter(closest_american_hands, fn {_am_match_definition, pairing_r, _arranged_hand} -> shanten == (hand_length - map_size(pairing_r)) end)
     # rank playables by how often they appear in closest hands
     usages = for {_am_match_definition, pairing_r, _arranged_hand} <- closest_american_hands, reduce: Map.new(playables, fn {_tile, i} -> {i, 0} end) do
       usages -> Map.merge(usages, Map.keys(pairing_r) |> Enum.frequencies(), fn _k, v1, v2 -> v1 + v2 end)
@@ -127,32 +128,38 @@ defmodule RiichiAdvanced.AIPlayer do
 
   defp choose_american_call(params, max_len) do
     %{
+      player: player,
       last_discard: last_discard,
       closest_american_hands: closest_american_hands,
       open_am_match_definitions: open_am_match_definitions
     } = params
 
     last_discard_stripped = Utils.strip_attrs(last_discard)
+    last_discard_stripped = if last_discard_stripped in [:"1f", :"2f", :"3f", :"4f", :"1g", :"2g", :"3g", :"4g"] do :"1f" else last_discard_stripped end
     last_discard_with_inactive = Utils.add_attr(last_discard_stripped, ["inactive"])
+    hand_length = length(player.hand)
 
     # get shanten towards all hands
     shanten = closest_american_hands
-    |> Enum.map(fn {_am_match_definition, pairing_r, _arranged_hand} -> 13 - map_size(pairing_r) end)
+    |> Enum.map(fn {_am_match_definition, pairing_r, _arranged_hand} -> hand_length - map_size(pairing_r) end)
     |> Enum.min(&<=/2, fn -> :infinity end)
     if shanten <= 3 do
       closest_american_hands
       # then get all hands of that shanten
-      |> Enum.filter(fn {_am_match_definition, pairing_r, _arranged_hand} -> shanten == (13 - map_size(pairing_r)) end)
+      |> Enum.filter(fn {_am_match_definition, pairing_r, _arranged_hand} -> shanten == (hand_length - map_size(pairing_r)) end)
       # filter for open hands only (might be none if a concealed hand is closer)
       |> Enum.filter(fn {am_match_definition, _pairing_r, _arranged_hand} -> am_match_definition in open_am_match_definitions end)
       # out of those hands, see if there's any hands for which the last discard would be helpful
-      # we just look at arranged_hand and see which tiles have the "inactive" attribute
+      # we just look at arranged_hand and see which tiles have the "inactive" attribute (TODO: or is a joker)
       |> Enum.filter(fn {_am_match_definition, _pairing_r, arranged_hand} -> last_discard_with_inactive in arranged_hand end)
       # check each hand to see if it's a pung, kong, quint, or sextet
-      |> Enum.map(fn {_am_match_definition, _pairing_r, arranged_hand} ->
+      |> Enum.flat_map(fn {_am_match_definition, _pairing_r, arranged_hand} ->
         arranged_hand
         |> Utils.strip_attrs()
-        |> Enum.count(& &1 == last_discard_stripped)
+        |> Enum.chunk_by(&(&1 == :"3x"))
+        |> Enum.reject(& :"3x" in &1)
+        |> Enum.filter(& last_discard_stripped in &1)
+        |> Enum.map(&length(&1))
       end)
       # filter for max_len
       |> Enum.filter(fn len -> len <= max_len end)
@@ -496,17 +503,25 @@ defmodule RiichiAdvanced.AIPlayer do
   def handle_info({:call_buttons, %{player: player}}, state) do
     if state.initialized do
       state = Map.put(state, :player, player)
-      # pick a random call
-      called_tile = player.call_buttons
-        |> Map.keys()
-        |> Enum.filter(fn tile -> not Enum.empty?(player.call_buttons[tile]) end)
-        |> Enum.random()
+      {called_tile, call_choice} = case state.ruleset do
+        "american" ->
+          # pick the option using the least jokers
+          {called_tile, call_choices} = Enum.at(player.call_buttons, 0)
+          call_choice = Enum.min_by(call_choices, fn call_choice -> Enum.count(Utils.strip_attrs(call_choice), & &1 == :"1j") end)
+          {called_tile, call_choice}
+        _ ->
+          # pick a random call
+          called_tile = player.call_buttons
+          |> Map.keys()
+          |> Enum.filter(fn tile -> not Enum.empty?(player.call_buttons[tile]) end)
+          |> Enum.random()
+          cond do
+            called_tile == "saki" -> {"saki", nil}
+            state.preselected_flower != nil -> {nil, [state.preselected_flower]}
+            true -> {called_tile, Enum.random(player.call_buttons[called_tile])}
+          end
+      end
       if called_tile != "saki" do
-        {called_tile, call_choice} = if state.preselected_flower != nil do
-          {nil, [state.preselected_flower]}
-        else
-          {called_tile, Enum.random(player.call_buttons[called_tile])}
-        end
         if Debug.debug_ai() do
           IO.puts(" >> #{state.seat}: It's my turn to press call buttons! #{inspect(player.call_buttons)} / chose: #{inspect(called_tile)} #{inspect(call_choice)}")
         end
@@ -550,7 +565,7 @@ defmodule RiichiAdvanced.AIPlayer do
       |> Enum.shuffle()
 
       has_minefield_hand = if length(player.hand) == 34 do
-        Utils.strip_attrs(Map.get(state, :minefield_tiles, nil)) == Utils.strip_attrs(player.hand)
+        Utils.strip_attrs(Map.get(state, :minefield_tiles, [])) == Utils.strip_attrs(player.hand)
       else Map.has_key?(state, :minefield_hand) end
       {state, choices} = case state.ruleset do
         "minefield" ->
@@ -594,7 +609,7 @@ defmodule RiichiAdvanced.AIPlayer do
           if Marking.is_marking?(marked_objects, :hand) do
             playables = Enum.map(choices, fn {{_seat, _source, obj}, i} -> {obj, i} end)
             {{_, i}, _} = choose_discard(state, playables, visible_tiles)
-            IO.inspect({choices, i, Enum.filter(choices, fn {_, j} -> i == j end)})
+            # IO.inspect({choices, i, Enum.filter(choices, fn {_, j} -> i == j end)})
             {state, Enum.filter(choices, fn {_, j} -> i == j end)}
           else {state, choices} end
         _ -> {state, choices}
