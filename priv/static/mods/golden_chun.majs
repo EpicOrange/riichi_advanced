@@ -15,6 +15,9 @@ apply merge, "dora_indicators", %{
 
 on after_start do
   set_tile_alias_all(["06z"], ["6z"])
+  # aka hatsu and golden chun are shiny
+  tag_tiles("golden_chun", ["06z", "37z"])
+  add_attr_tagged("golden_chun", ["_dora"])
 end
 
 # treat golden chun as 5 wildcard or chun
