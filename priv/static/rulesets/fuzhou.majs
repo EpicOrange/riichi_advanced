@@ -135,7 +135,7 @@ define_yaku yaku, "Base Points", [10, ""], true
 on before_win do
   if seat_is("east") do dealer_continuation = honba end
   set_counter("flower_count", "count_matches", ["flowers"], ~m"any_flower:1")
-  set_counter("gold_count", "count_matches", ["hand", "calls", "winning_tile", "flowers"], ~m"any@jin:1")
+  set_counter("gold_count", "count_matches", ["hand", "call_tiles", "winning_tile", "flowers"], ~m"any@jin:1")
   dealer_continuation_bonus = dealer_continuation * 2
   flower_bonus = flower_count * 2
   gold_bonus = gold_count * 2

@@ -308,7 +308,7 @@ end
 
 on before_win do
   make_responsible_for("others")
-  set_counter("jokers", "count_matches", ["hand", "calls", "winning_tile"], ~m"nojoker, dismantle_calls, 1j:1")
+  set_counter("jokers", "count_matches", ["hand", "call_tiles", "winning_tile"], ~m"nojoker, dismantle_calls, 1j:1")
   set_counter_all("jokers", "jokers")
 end
 

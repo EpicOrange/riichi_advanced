@@ -37,12 +37,12 @@ end
 
 # track aka hatsu count and set aka hatsu status for aka mod
 on before_win, prepend: true do
-  add_counter("aka", "count_matches", ["hand", "calls", "winning_tile"], ~m"nojoker, 06z:1")
+  add_counter("aka", "count_matches", ["hand", "call_tiles", "winning_tile"], ~m"nojoker, 06z:1")
   if aka > 0 do set_status("aka_h") end
 end
 # ditto but for golden chun
 on before_scoring do
-  add_counter("golden_chuns", "count_matches", ["hand", "calls", "winning_tile"], ~m"nojoker, any@golden:1")
+  add_counter("golden_chuns", "count_matches", ["hand", "call_tiles", "winning_tile"], ~m"nojoker, any@golden:1")
   golden_chun_shuugi = golden_chuns * @golden_chun_shuugi
   if golden_chuns > 0 do set_status("golden_chun") end
 end

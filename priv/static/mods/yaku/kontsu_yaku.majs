@@ -207,7 +207,7 @@ end
 on before_scoring do
   set_counter("mini_sangen", 0)
   # count each mini sangen and multiply by 0.5
-  add_counter("mini_sangen", "count_matches", ["hand", "calls", "winning_tile"], ~m"kontsu_567:1")
+  add_counter("mini_sangen", "count_matches", ["hand", "call_tiles", "winning_tile"], ~m"kontsu_567:1")
   multiply_counter("mini_sangen", 0.5)
 end
 define_yaku yaku, "Mini-Sangen", ["mini_sangen", "Han"], counter_at_least("mini_sangen", 0.5)

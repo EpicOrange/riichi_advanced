@@ -23,7 +23,7 @@ end
 # count ao
 on before_win do
   # use set_counter to be compatible with other ao mods
-  set_counter("ao", "count_matches", ["hand", "calls", "winning_tile"], ~m"nojoker, (25m 25p 25s 25t):1")
+  set_counter("ao", "count_matches", ["hand", "call_tiles", "winning_tile"], ~m"nojoker, (25m 25p 25s 25t):1")
 end
 
 define_yaku extra_yaku, "Ao", ["ao", "Han"], counter_at_least("ao", 1)

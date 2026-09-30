@@ -30,7 +30,7 @@ defmodule RiichiAdvanced.GameState.Conditions do
           "start_flowers" -> [{hand, calls ++ Enum.filter(state.players[context.seat].calls, fn {call_name, _call} -> call_name == "start_flower" end)}]
           "jokers" -> [{hand, calls ++ Enum.filter(state.players[context.seat].calls, fn {call_name, _call} -> call_name in ["joker", "start_joker"] end)}]
           "start_jokers" -> [{hand, calls ++ Enum.filter(state.players[context.seat].calls, fn {call_name, _call} -> call_name == "start_joker" end)}]
-          "call_tiles" -> [{hand ++ Enum.flat_map(state.players[context.seat].calls, &Utils.call_to_tiles(&1, true)), calls}]
+          "call_tiles" -> [{hand ++ Enum.flat_map(Enum.reject(state.players[context.seat].calls, fn {call_name, _call} -> call_name in Riichi.flower_names() end), &Utils.call_to_tiles(&1, true)), calls}]
           "playable_tiles" -> [{hand ++ Enum.filter(state.players[context.seat].hand ++ state.players[context.seat].draw, &is_playable?(state, context.seat, &1)), calls}]
           "winning_hand" ->
             winning_tile = case get_winning_tile(state, context.seat, context.win_source) do

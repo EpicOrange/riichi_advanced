@@ -42,8 +42,8 @@ end
 
 # count aka/ao/kin
 on before_win do
-  add_counter("aka", "count_matches", ["hand", "calls", "winning_tile"], ~m"nojoker, (05m 05p 05s 05t):1")
-  add_counter("ao", "count_matches", ["hand", "calls", "winning_tile"], ~m"nojoker, (27m 27p 27s 27t):1")
+  add_counter("aka", "count_matches", ["hand", "call_tiles", "winning_tile"], ~m"nojoker, (05m 05p 05s 05t):1")
+  add_counter("ao", "count_matches", ["hand", "call_tiles", "winning_tile"], ~m"nojoker, (27m 27p 27s 27t):1")
   if match(["hand", "calls", "winning_tile"], ~m"nojoker, 35p:1") do kin = 1 end
 end
 

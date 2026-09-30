@@ -127,9 +127,9 @@ define_const chiitoitsu_win, ~m"majority_pair:3, (majority_pair tanki_complete):
 define_yaku base, "Base Score", [15, "嘴"], true
 
 on before_win do
-  set_counter("manzu_count", "count_matches", ["hand", "calls", "winning_tile"], ~m"dismantle_calls, manzu:1")
-  set_counter("pinzu_count", "count_matches", ["hand", "calls", "winning_tile"], ~m"dismantle_calls, pinzu:1")
-  set_counter("souzu_count", "count_matches", ["hand", "calls", "winning_tile"], ~m"dismantle_calls, souzu:1")
+  set_counter("manzu_count", "count_matches", ["hand", "call_tiles", "winning_tile"], ~m"dismantle_calls, manzu:1")
+  set_counter("pinzu_count", "count_matches", ["hand", "call_tiles", "winning_tile"], ~m"dismantle_calls, pinzu:1")
+  set_counter("souzu_count", "count_matches", ["hand", "call_tiles", "winning_tile"], ~m"dismantle_calls, souzu:1")
   cond do
     manzu_count > 8 -> suit_bonus = manzu_count - 8
     pinzu_count > 8 -> suit_bonus = pinzu_count - 8
@@ -139,13 +139,13 @@ end
 define_yaku yaku, "Suit Bonus", ["suit_bonus", "嘴"], suit_bonus >= 1
 
 on before_win do
-  set_counter("two_count", "count_matches", ["hand", "calls", "winning_tile"], ~m"dismantle_calls, (2m 2p 2s):1")
-  set_counter("three_count", "count_matches", ["hand", "calls", "winning_tile"], ~m"dismantle_calls, (3m 3p 3s):1")
-  set_counter("four_count", "count_matches", ["hand", "calls", "winning_tile"], ~m"dismantle_calls, (4m 4p 4s):1")
-  set_counter("five_count", "count_matches", ["hand", "calls", "winning_tile"], ~m"dismantle_calls, (5m 5p 5s):1")
-  set_counter("six_count", "count_matches", ["hand", "calls", "winning_tile"], ~m"dismantle_calls, (6m 6p 6s):1")
-  set_counter("seven_count", "count_matches", ["hand", "calls", "winning_tile"], ~m"dismantle_calls, (7m 7p 7s):1")
-  set_counter("eight_count", "count_matches", ["hand", "calls", "winning_tile"], ~m"dismantle_calls, (8m 8p 8s):1")
+  set_counter("two_count", "count_matches", ["hand", "call_tiles", "winning_tile"], ~m"dismantle_calls, (2m 2p 2s):1")
+  set_counter("three_count", "count_matches", ["hand", "call_tiles", "winning_tile"], ~m"dismantle_calls, (3m 3p 3s):1")
+  set_counter("four_count", "count_matches", ["hand", "call_tiles", "winning_tile"], ~m"dismantle_calls, (4m 4p 4s):1")
+  set_counter("five_count", "count_matches", ["hand", "call_tiles", "winning_tile"], ~m"dismantle_calls, (5m 5p 5s):1")
+  set_counter("six_count", "count_matches", ["hand", "call_tiles", "winning_tile"], ~m"dismantle_calls, (6m 6p 6s):1")
+  set_counter("seven_count", "count_matches", ["hand", "call_tiles", "winning_tile"], ~m"dismantle_calls, (7m 7p 7s):1")
+  set_counter("eight_count", "count_matches", ["hand", "call_tiles", "winning_tile"], ~m"dismantle_calls, (8m 8p 8s):1")
   if two_count > 4 do same_number_bonus_2 += two_count - 4 end
   if three_count > 4 do same_number_bonus_3 += three_count - 4 end
   if four_count > 4 do same_number_bonus_4 += four_count - 4 end

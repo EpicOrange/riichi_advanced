@@ -400,8 +400,8 @@ define_yaku yakuman, "Milky Way", [1, "★"], non_galaxy_jokers == 0
 apply set, "buttons.ankan.call_style.self", [0, 1, 2, 3]
 
 on before_win do
-  add_counter("galaxy_jokers", "count_matches", ["hand", "calls", "winning_tile"], ~m"galaxy_tile:1")
-  set_counter("non_galaxy_jokers", "count_matches", ["hand", "calls", "winning_tile"], ~m"any:1") # count num of tiles in hand
+  add_counter("galaxy_jokers", "count_matches", ["hand", "call_tiles", "winning_tile"], ~m"galaxy_tile:1")
+  set_counter("non_galaxy_jokers", "count_matches", ["hand", "call_tiles", "winning_tile"], ~m"any:1") # count num of tiles in hand
   non_galaxy_jokers -= galaxy_jokers
   if non_galaxy_jokers == 0 do
     fu = 30
@@ -416,7 +416,7 @@ if defined("shuugi") do
     update_rule("Shuugi", "Galaxy Tiles", "(Galaxy Mahjong) Every galaxy tile used as its original tile awards one shuugi.")
   end
   on before_scoring do
-    set_counter("galaxy_shuugi", "count_matches", ["hand", "calls", "winning_tile"], ~m"any@original:1")
+    set_counter("galaxy_shuugi", "count_matches", ["hand", "call_tiles", "winning_tile"], ~m"any@original:1")
   end
   define_yaku shuugi, "Original Galaxy Tile", ["galaxy_shuugi", "⛀"], galaxy_shuugi >= 1
 end

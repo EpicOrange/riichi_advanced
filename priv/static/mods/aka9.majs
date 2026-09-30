@@ -25,7 +25,7 @@ end
 # count aka
 on before_win do
   # use add_counter to be compatible with other aka mods
-  add_counter("aka", "count_matches", ["hand", "calls", "winning_tile"], ~m"nojoker, (09m 09p 09s 09t):1")
+  add_counter("aka", "count_matches", ["hand", "call_tiles", "winning_tile"], ~m"nojoker, (09m 09p 09s 09t):1")
 end
 
 # remove extra_yaku "Aka" if it already exists beforehand, so there should only ever be one copy of "Aka"

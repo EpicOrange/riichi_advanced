@@ -22,7 +22,7 @@ apply set_merge, "dora_indicators", %{
 }
 
 on before_win do
-  add_counter("rainbows", "count_matches", ["hand", "calls", "winning_tile"], ~m"nojoker, rainbow:1")
+  add_counter("rainbows", "count_matches", ["hand", "call_tiles", "winning_tile"], ~m"nojoker, rainbow:1")
   rainbow_payment = rainbows * 10
 end
 
