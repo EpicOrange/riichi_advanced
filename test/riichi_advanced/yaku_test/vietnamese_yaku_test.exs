@@ -79,7 +79,7 @@ defmodule RiichiAdvanced.YakuTest.VietnameseYaku do
       %{"type" => "buttons_pressed", "buttons" => [%{"button" => "ron"}, nil, nil, nil]},
     ], %{
       east: %{
-        yaku: [{"No Jokers Bonus", [1, "Mủn"]}, {"Win on Discarded Flower", [1, "Mủn"]}],
+        yaku: [{"Win on Discarded Flower", [1, "Mủn"]}],
       }
     })
   end

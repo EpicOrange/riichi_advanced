@@ -112,11 +112,10 @@ defmodule RiichiAdvanced.YakuTest.VietnameseScoring do
       north: %{
         yaku: [
           {"Blessing of Earth", [2, "Mủn"]},
-          {"No Jokers Bonus", [1, "Mủn"]},
           {"Win on Discarded Flower", [1, "Mủn"]}
         ]
       }
-    }, %{delta_scores: [-512, 0, 0, 512]})
+    }, %{delta_scores: [-384, 0, 0, 384]})
   end
 
   test "vietnamese - robbing a bounce" do
