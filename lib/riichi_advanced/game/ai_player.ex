@@ -155,46 +155,42 @@ defmodule RiichiAdvanced.AIPlayer do
       last_discard: last_discard,
       closest_american_hands: closest_american_hands,
     } = params
-    if Enum.empty?(closest_american_hands) do
-      nil
-    else
-      last_discard_stripped = Utils.strip_attrs(last_discard)
-      last_discard_stripped = if last_discard_stripped in [:"1f", :"2f", :"3f", :"4f", :"1g", :"2g", :"3g", :"4g"] do :"1f" else last_discard_stripped end
-      hand_length = length(player.hand)
+    last_discard_stripped = Utils.strip_attrs(last_discard)
+    last_discard_stripped = if last_discard_stripped in [:"1f", :"2f", :"3f", :"4f", :"1g", :"2g", :"3g", :"4g"] do :"1f" else last_discard_stripped end
+    hand_length = length(player.hand)
 
-      # get shanten towards all hands
-      {difficulty, best_shanten} = closest_american_hands
-      |> Enum.map(&{-&1.difficulty, hand_length - map_size(&1.pairing_r)})
-      |> Enum.min(&<=/2, fn -> {100, 100} end)
-      if best_shanten <= 3 or (best_shanten <= 6 and difficulty <= 30) do
-        closest_american_hands
-        # then get all hands of that shanten
-        |> Enum.filter(&best_shanten == (hand_length - map_size(&1.pairing_r)))
-        # filter for open hands only (might be none if a concealed hand is closer)
-        |> Enum.reject(& &1.yaku.concealed)
-        # out of those hands, see if there's any hands for which the last discard would be helpful
-        # that's why we calculate callable_missing_tiles
-        |> Enum.filter(&Utils.has_matching_tile?(&1.callable_missing_tiles, [last_discard_stripped], player.tile_behavior))
-        |> then(fn x ->
-          if Debug.debug_ai() and not Enum.empty?(x) do
-            IO.inspect(Enum.map(x, & {&1.am_match_definition, &1.callable_missing_tiles}), label: "#{params.seat} calling #{inspect(last_discard_stripped)} for hands")
-          end
-          x
-        end)
-        # check each hand to see if it's a pung, kong, quint, or sextet
-        |> Enum.flat_map(fn hand -> hand.arranged_hand
-          |> Utils.strip_attrs()
-          |> Enum.chunk_by(&:"3x" == &1)
-          |> Enum.reject(&:"3x" in &1)
-          |> Enum.filter(&last_discard_stripped in &1)
-          |> Enum.map(&length(&1))
-        end)
-        # filter for max_len
-        |> Enum.filter(& &1 <= max_len)
-        # take max, or return nil if empty
-        |> Enum.max(&>=/2, fn -> nil end)
-      else nil end
-    end
+    # get shanten towards all hands
+    {difficulty, best_shanten} = closest_american_hands
+    |> Enum.map(&{-&1.difficulty, hand_length - map_size(&1.pairing_r)})
+    |> Enum.min(&<=/2, fn -> {100, 100} end)
+    if best_shanten <= 3 or (best_shanten <= 6 and difficulty <= 30) do
+      closest_american_hands
+      # then get all hands of that shanten
+      |> Enum.filter(&best_shanten == (hand_length - map_size(&1.pairing_r)))
+      # filter for open hands only (might be none if a concealed hand is closer)
+      |> Enum.reject(& &1.yaku.concealed)
+      # out of those hands, see if there's any hands for which the last discard would be helpful
+      # that's why we calculate callable_missing_tiles
+      |> Enum.filter(&Utils.has_matching_tile?(&1.callable_missing_tiles, [last_discard_stripped], player.tile_behavior))
+      |> then(fn x ->
+        if Debug.debug_ai() and not Enum.empty?(x) do
+          IO.inspect(Enum.map(x, & {&1.am_match_definition, &1.callable_missing_tiles}), label: "#{params.seat} calling #{inspect(last_discard_stripped)} for hands")
+        end
+        x
+      end)
+      # check each hand to see if it's a pung, kong, quint, or sextet
+      |> Enum.flat_map(fn hand -> hand.arranged_hand
+        |> Utils.strip_attrs()
+        |> Enum.chunk_by(&:"3x" == &1)
+        |> Enum.reject(&:"3x" in &1)
+        |> Enum.filter(&last_discard_stripped in &1)
+        |> Enum.map(&length(&1))
+      end)
+      # filter for max_len
+      |> Enum.filter(& &1 <= max_len)
+      # take max, or return nil if empty
+      |> Enum.max(&>=/2, fn -> nil end)
+    else nil end
   end
 
   defp get_mark_choices(source, players, revealed_tiles, scryed_tiles) do
@@ -429,30 +425,41 @@ defmodule RiichiAdvanced.AIPlayer do
             "mahjong_heavenly" in player.buttons and Match.match_hand(player.hand ++ player.draw, player.calls, state.shanten_definitions.win, player.tile_behavior) -> "mahjong_draw"
             "am_joker_swap" in player.buttons -> "am_joker_swap"
             "am_blank_swap" in player.buttons -> "am_blank_swap"
-            "4_am_sextet" in player.buttons -> case choose_american_call(params, 6) do
-              6 -> "4_am_sextet"
-              5 -> "3_am_quint"
-              4 -> "2_am_kong"
-              3 -> "1_am_pung"
-              _ -> "skip"
-            end
-            "3_am_quint" in player.buttons -> case choose_american_call(params, 5) do
-              5 -> "3_am_quint"
-              4 -> "2_am_kong"
-              3 -> "1_am_pung"
-              _ -> "skip"
-            end
-            "2_am_kong" in player.buttons -> case choose_american_call(params, 4) do
-              4 -> "2_am_kong"
-              3 -> "1_am_pung"
-              _ -> "skip"
-            end
-            "1_am_pung" in player.buttons -> case choose_american_call(params, 3) do
-              3 -> "1_am_pung"
-              _ -> "skip"
-            end
-            "skip" in player.buttons -> "skip"
-            true -> Enum.random(player.buttons)
+            true ->
+              if Enum.empty?(params.closest_american_hands) do
+                :timer.apply_after(1000, GenServer, :cast, [state.game_state, :notify_ai])
+                cond do
+                  "skip" in player.buttons -> "skip"
+                  true -> Enum.random(player.buttons)
+                end
+              else
+                cond do
+                  "4_am_sextet" in player.buttons -> case choose_american_call(params, 6) do
+                    6 -> "4_am_sextet"
+                    5 -> "3_am_quint"
+                    4 -> "2_am_kong"
+                    3 -> "1_am_pung"
+                    _ -> "skip"
+                  end
+                  "3_am_quint" in player.buttons -> case choose_american_call(params, 5) do
+                    5 -> "3_am_quint"
+                    4 -> "2_am_kong"
+                    3 -> "1_am_pung"
+                    _ -> "skip"
+                  end
+                  "2_am_kong" in player.buttons -> case choose_american_call(params, 4) do
+                    4 -> "2_am_kong"
+                    3 -> "1_am_pung"
+                    _ -> "skip"
+                  end
+                  "1_am_pung" in player.buttons -> case choose_american_call(params, 3) do
+                    3 -> "1_am_pung"
+                    _ -> "skip"
+                  end
+                  "skip" in player.buttons -> "skip"
+                  true -> Enum.random(player.buttons)
+                end
+              end
           end
         state.ruleset == "chinitsu" ->
           cond do

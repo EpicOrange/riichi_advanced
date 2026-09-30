@@ -1784,82 +1784,60 @@ defmodule RiichiAdvanced.GameState do
   def handle_cast(:notify_ai, state) do
     if not state.log_loading_mode do
       if state.game_active do
-        # if there are any new buttons for any AI players, notify them
-        # otherwise, just tell the current player it's their turn
-        if Buttons.no_buttons_remaining?(state) do
-          if is_pid(Map.get(state, state.turn)) do
-            # IO.puts("Notifying #{state.turn} AI that it's their turn")
-            closest_american_hands = state.players[state.turn].cache.closest_american_hands
-            # need to make sure the latest hand calculation is complete
-            if not Enum.empty?(closest_american_hands) or state.calculate_closest_american_hands_pid == nil do
+        GenServer.cast(self(), {:notify_ai, state.available_seats})
+      else
+        :timer.apply_after(1000, GenServer, :cast, [self(), :notify_ai])
+      end
+    end
+    {:noreply, state}
+  end
+
+  def handle_cast({:notify_ai, seats}, state) do
+    if not state.log_loading_mode do
+      if state.game_active do
+        for seat <- seats, is_pid(Map.get(state, seat)) do
+          # tell ai to press a button of their choice
+          has_buttons = not Enum.empty?(state.players[seat].buttons) and state.players[seat].choice == nil
+          has_call_buttons = not Enum.empty?(state.players[seat].call_buttons)
+          has_marking_ui = not Enum.empty?(state.marking[seat])
+          last_discard_action = get_last_discard_action(state)
+          last_discard = if last_discard_action != nil do Map.get(last_discard_action, :tile, nil) else nil end
+          last_discarder_status = if last_discard_action != nil do state.players[last_discard_action.seat].status else nil end
+          cond do
+            has_marking_ui -> notify_ai_marking(state, seat)
+            has_call_buttons -> notify_ai_call_buttons(state, seat)
+            has_buttons ->
+              # IO.puts("Notifying #{seat} AI about their buttons: #{inspect(state.players[seat].buttons)}")
               params = %{
-                seat: state.turn,
-                player: state.players[state.turn],
-                open_riichis: get_open_riichi_hands(state),
-                visible_tiles: get_visible_tiles(state, state.turn),
-                closest_american_hands: closest_american_hands
+                seat: seat,
+                player: state.players[seat],
+                turn: state.turn,
+                last_discard: last_discard,
+                last_discarder_status: last_discarder_status,
+                closest_american_hands: state.players[seat].cache.closest_american_hands,
               }
-              send(Map.get(state, state.turn), {:your_turn, params})
-            end
-          end
-        else
-          for seat <- state.available_seats, is_pid(Map.get(state, seat)) do
-            # # if a button is being forced for this ai, press it (no need to notify ai)
-            # seat_str = Atom.to_string(seat)
-            # forced_button = if state.forced_events != nil do
-            #   Enum.find(state.forced_events, fn ["press_button", ^seat_str, _] -> true; _ -> false end)
-            # else nil end
-            # if forced_button != nil do
-            #   button_name = Enum.at(forced_button, 2)
-            #   :timer.apply_after(300, GenServer, :cast, [self(), {:press_button, seat, button_name}])
-            #   if Debug.debug_tutorial() do
-            #     IO.puts("Seat #{seat} forced to press #{button_name}")
-            #   end
-            # else
-              # otherwise, tell ai to press a button of their choice
-              has_buttons = not Enum.empty?(state.players[seat].buttons) and state.players[seat].choice == nil
-              has_call_buttons = not Enum.empty?(state.players[seat].call_buttons)
-              has_marking_ui = not Enum.empty?(state.marking[seat])
-              last_discard_action = get_last_discard_action(state)
-              last_discard = if last_discard_action != nil do Map.get(last_discard_action, :tile, nil) else nil end
-              last_discarder_status = if last_discard_action != nil do state.players[last_discard_action.seat].status else nil end
-              if is_pid(Map.get(state, seat)) do
-                cond do
-                  has_marking_ui -> notify_ai_marking(state, seat)
-                  has_call_buttons -> notify_ai_call_buttons(state, seat)
-                  has_buttons and state.ruleset == "american" ->
-                    # IO.puts("Notifying #{seat} AI about their buttons: #{inspect(state.players[seat].buttons)}")
-                    # we want to delay so we can calculate closest american hands before continuing
-                    Task.start(fn ->
-                      params = %{
-                        seat: seat,
-                        player: state.players[seat],
-                        turn: state.turn,
-                        last_discard: last_discard,
-                        last_discarder_status: last_discarder_status,
-                        closest_american_hands: state.players[seat].cache.closest_american_hands,
-                      }
-                      send(Map.get(state, seat), {:buttons, params})
-                    end)
-                  has_buttons ->
-                    # non-american game, has buttons
-                    params = %{
-                      seat: seat,
-                      player: state.players[seat],
-                      turn: state.turn,
-                      last_discard: last_discard,
-                      last_discarder_status: last_discarder_status,
-                      closest_american_hands: [],
-                    }
-                    send(Map.get(state, seat), {:buttons, params})
-                  true -> state
-                end
+              send(Map.get(state, seat), {:buttons, params})
+            Actions.can_discard(state, seat) and not Enum.empty?(state.players[seat].cache.playable_indices) ->
+              # IO.puts("Notifying #{seat} AI that it's their turn")
+              closest_american_hands = state.players[seat].cache.closest_american_hands
+              # need to make sure the latest hand calculation is complete
+              if not Enum.empty?(closest_american_hands) or state.calculate_closest_american_hands_pid == nil do
+                params = %{
+                  seat: seat,
+                  player: state.players[seat],
+                  open_riichis: get_open_riichi_hands(state),
+                  visible_tiles: get_visible_tiles(state, seat),
+                  closest_american_hands: closest_american_hands
+                }
+                send(Map.get(state, seat), {:your_turn, params})
+              else
+                :timer.apply_after(100, GenServer, :cast, [self(), {:notify_ai, seats}])
               end
-            # end
+            true -> nil
           end
         end
       else
-        :timer.apply_after(1000, GenServer, :cast, [self(), :notify_ai])
+        :timer.apply_after(1000, GenServer, :cast, [self(), {:notify_ai, seats}])
       end
     end
     {:noreply, state}
