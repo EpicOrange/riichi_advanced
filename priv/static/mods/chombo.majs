@@ -62,7 +62,7 @@ replace 1, "buttons.tsumo.show_when", %{"name": "match", "opts": [["hand", "call
 replace 1, "buttons.tsumo.show_when", %{"name": "match", "opts": [["hand", "calls", "draw"], ["win"]]}, true
 
 # you can riichi discard any tile
-apply append, "buttons.riichi.actions", unset_status("just_reached")
+apply append, "buttons.riichi.actions" do unset_status("just_reached") end
 
 # if you noten riichi, pay 8000 to everyone, and don't increase honba
 # TODO make this payment configurable

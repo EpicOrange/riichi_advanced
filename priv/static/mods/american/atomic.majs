@@ -8,23 +8,28 @@ define_match "atomic_win", ~m"nojoker, 4x:1, (1j 1f 2f 3f 4f 1g 2g 3g 4g):-1, pa
 define_yaku yaku, "Atomic", [!points, "Pts"], match(["hand", "winning_tile"], ["atomic_win"]), ["Jokerless"]
 apply set_append, "win_definition", ["atomic_win"]
 
-on after_charleston do
-  print("B")
-  as everyone do
-    if status_missing("match_start") and match(["hand", "draw"], ~m"nojoker, (1j 1f 2f 3f 4f 1g 2g 3g 4g):-1") do
-      set_status("can_declare_atomic")
+def set_atomic do
+  if not_anyone_status("match_start") do
+    as everyone do
+      if match(["hand", "draw"], ~m"nojoker, (1j 1f 2f 3f 4f 1g 2g 3g 4g):-1") do
+        set_status("can_declare_atomic")
+      end
     end
+    recalculate_buttons
   end
 end
-on after_start do
-  as everyone do
-    if status_missing("match_start") and not_match(["hand", "draw"], ~m"nojoker, (1j 1f 2f 3f 4f 1g 2g 3g 4g):1") do
-      set_status("can_declare_atomic")
-    end
-  end
-end
+
+apply append, "buttons.charleston_across_0.actions" do set_atomic end
+apply append, "buttons.charleston_across_1.actions" do set_atomic end
+apply append, "buttons.charleston_across_2.actions" do set_atomic end
+apply append, "buttons.charleston_across_3.actions" do set_atomic end
+
+on after_start do set_atomic end # if no charleston is on
+
 on before_turn_change do
-  unset_status("can_declare_atomic")
+  if just_discarded do
+    unset_status("can_declare_atomic")
+  end
 end
 
 define_play_restriction "4x", true
@@ -36,7 +41,7 @@ end
 
 define_button atomic,
   display_name: "Atomic",
-  show_when: status("can_declare_atomic") and our_turn and not_just_discarded
+  show_when: status("can_declare_atomic") and status_missing("atomic") and our_turn and not_just_discarded
   do
     big_text("Atomic")
     unset_status("can_declare_atomic")

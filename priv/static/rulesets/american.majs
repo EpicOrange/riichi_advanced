@@ -449,6 +449,7 @@ define_button charleston_across_0,
     if not_anyone_status("final_charleston") do
       start_match
     end
+    recalculate_buttons
   end
 
 define_button charleston_across_1,
@@ -464,6 +465,7 @@ define_button charleston_across_1,
     charleston_across
     unset_status("final_charleston")
     if not_anyone_status("final_charleston") do start_match end
+    recalculate_buttons
   end
 
 define_button charleston_across_2,
@@ -479,6 +481,7 @@ define_button charleston_across_2,
     charleston_across
     unset_status("final_charleston")
     if not_anyone_status("final_charleston") do start_match end
+    recalculate_buttons
   end
 
 define_button charleston_across_3,
@@ -494,6 +497,7 @@ define_button charleston_across_3,
     charleston_across
     unset_status("final_charleston")
     if not_anyone_status("final_charleston") do start_match end
+    recalculate_buttons
   end
 
 # TODO: check that this button behaves the way it should. this button is here for any variants where a player has so many unpassable tiles (e.g. jokers, blanks, flowers in older NMJL rules) that they are unable to pass three tiles during the Charleston.
