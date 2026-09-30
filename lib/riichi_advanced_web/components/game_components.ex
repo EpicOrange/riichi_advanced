@@ -165,12 +165,6 @@ defmodule RiichiAdvancedWeb.GameComponents do
           hover={&send(self(), {:hover, &1})}
           hover_off={fn -> send(self(), :hover_off) end}
           selected_index={@interaction_state.selected_index} />
-        <div class="auto-buttons game-bottom-element">
-          <%= for {{name, desc, checked, _}, i} <- Enum.with_index(@state.players[@seat].auto_buttons) do %>
-            <input id={"auto-button-" <> name} type="checkbox" class="auto-button" phx-click="auto_button_toggled" phx-value-name={name} phx-value-enabled={if checked do "true" else "false" end} checked={checked}>
-            <label for={"auto-button-" <> name} title={desc} data-name={t(@lang, get_auto_button_name(@state.rules_ref, name))} tabindex={i}><%= Rules.get(@state.rules_ref, "auto_buttons", %{})[name]["display_name"] %></label>
-          <% end %>
-        </div>
         <div class="call-buttons-container">
           <%= for {called_tile, choices} <- @state.players[@seat].call_buttons do %>
             <%= if not Enum.empty?(choices) do %>
@@ -245,6 +239,12 @@ defmodule RiichiAdvancedWeb.GameComponents do
         available_seats={@state.available_seats}
         :if={Rules.get(@state.rules_ref, "display_wall", false)} />
       <div class={["big-text"]} :if={@loading && Rules.has_key?(@state.rules_ref, "show_waits")}><%= t(@lang, "Loading...") %></div>
+      <div class="auto-buttons game-bottom-element">
+        <%= for {{name, desc, checked, _}, i} <- Enum.with_index(@state.players[@seat].auto_buttons) do %>
+          <input id={"auto-button-" <> name} type="checkbox" class="auto-button" phx-click="auto_button_toggled" phx-value-name={name} phx-value-enabled={if checked do "true" else "false" end} checked={checked}>
+          <label for={"auto-button-" <> name} title={desc} data-name={t(@lang, get_auto_button_name(@state.rules_ref, name))} tabindex={i}><%= Rules.get(@state.rules_ref, "auto_buttons", %{})[name]["display_name"] %></label>
+        <% end %>
+      </div>
       <div class="display-am-hand-hover game-bottom-element" :if={Rules.get(@state.rules_ref, "show_nearest_american_hand", false)}></div>
       <div class="display-am-hand-container" :if={Rules.get(@state.rules_ref, "show_nearest_american_hand", false)}>
         <% open_definitions = Rules.get(@state.rules_ref, "open_win_definition", []) %>
