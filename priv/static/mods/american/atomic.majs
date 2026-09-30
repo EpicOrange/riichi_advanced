@@ -1,0 +1,39 @@
+default points, 50
+
+on after_initialization do
+  add_rule("Rules", "Atomic", "After the Charleston, you may declare Atomic to enable winning with 7 pairs for %{points} points. This is necessarily a concealed hand, and you cannot use flowers or jokers for it. If at any point you discard a flower or joker, you are no longer eligible for this hand.", %{points: !points})
+end
+
+define_match "atomic_win", ~m"nojoker, 4x:1, (1j 1f 2f 3f 4f 1g 2g 3g 4g):-1, pair:7"
+define_yaku yaku, "Atomic", [!points, "Pts"], match(["hand", "winning_tile"], ["atomic_win"]), ["Jokerless"]
+apply set_append, "win_definition", ["atomic_win"]
+
+on after_charleston do
+  if match(["hand", "draw"], ~m"nojoker, (1j 1f 2f 3f 4f 1g 2g 3g 4g):-1") do
+    set_status("can_declare_atomic")
+  end
+end
+on after_start do
+  if status_missing("match_start") and not_match(["hand", "draw"], ~m"nojoker, (1j 1f 2f 3f 4f 1g 2g 3g 4g):1") do
+    set_status("can_declare_atomic")
+  end
+end
+on before_turn_change do
+  unset_status("can_declare_atomic")
+end
+
+define_play_effect flower_or_joker do
+  unset_status("atomic")
+  delete_tiles("4x")
+end
+
+define_button atomic,
+  display_name: "Atomic",
+  show_when: status("can_declare_atomic") and our_turn and not_just_discarded
+  do
+    big_text("Atomic")
+    unset_status("can_declare_atomic")
+    set_status("atomic")
+    draw(1, "4x")
+    recalculate_buttons
+  end
