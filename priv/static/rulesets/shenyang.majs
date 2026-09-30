@@ -59,8 +59,7 @@ define_set manzu, ~s"1m|2m|3m|4m|5m|6m|7m|8m|9m"
 define_set pinzu, ~s"1p|2p|3p|4p|5p|6p|7p|8p|9p"
 define_set souzu, ~s"1s|2s|3s|4s|5s|6s|7s|8s|9s"
 
-define_match win, ~m"exhaustive, mentsu:4, pair:1"
-# define_match win, ~m"exhaustive, (chii pon daiminkan kakan):0, (koutsu dragons winds haku_pair hatsu_pair chun_pair):0, orphans_any:0, manzu:0, pinzu:0, souzu:0, mentsu:4, pair:1"
+define_match win, ~m"exhaustive, (chii pon daiminkan kakan):0, (koutsu dragons winds haku_pair hatsu_pair chun_pair):0, orphans_any:0, manzu:0, pinzu:0, souzu:0, mentsu:4, pair:1"
 
 on after_win do as everyone do unset_status("liuju_double") end end
 on before_exhaustive_draw do as everyone do set_status("liuju_double") end end
@@ -78,9 +77,18 @@ apply append, "buttons.chii.show_when", not_match(["calls"], ~m"(chii pon daimin
 # cannot call pon/daiminkan if you have three sets, unless it doesn't include chii
 apply append, "buttons.pon.show_when", not_match(["calls"], ~m"chii:0, (chii pon daiminkan kakan ankan dragons winds):3")
 apply append, "buttons.daiminkan.show_when", not_match(["calls"], ~m"chii:0, (chii pon daiminkan kakan ankan dragons winds):3")
-# TODO temporary furiten but only for the specific tile passed
-# TODO if four players discard the same tile in succession, the first discarder pays 4 points to everyone else
-# use shimocha_last_discard etc.
+
+# if four players discard the same tile in succession, the first discarder pays 4 points to everyone else
+define_play_effect any do
+  if match(["self_last_discard", "shimocha_last_discard", "toimen_last_discard", "kamicha_last_discard"], ~m"quad:1") do
+    as shimocha do
+      push_message("must pay 4 points to all players for having discarded the first of four consecutive discards")
+      subtract_score(4); add_score(4, "shimocha"); big_text("  +4  ", as: "shimocha")
+      subtract_score(4); add_score(4, "toimen"); big_text("  +4  ", as: "toimen")
+      subtract_score(4); add_score(4, "kamicha"); big_text("  +4  ", as: "kamicha")
+    end
+  end
+end
 
 # sea floor code from hefei
 on after_turn_change do
