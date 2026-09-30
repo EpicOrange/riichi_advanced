@@ -24,7 +24,7 @@ defmodule RiichiAdvanced.GameState.Scoring do
 
   def update_yaku_amount(yaku, unit, new_amount) do
     case Enum.find_index(yaku, & &1 == unit) do
-      nil -> yaku
+      nil -> yaku ++ [new_amount, unit]
       i when rem(i, 2) == 1 -> List.replace_at(yaku, i - 1, new_amount)
     end
   end
