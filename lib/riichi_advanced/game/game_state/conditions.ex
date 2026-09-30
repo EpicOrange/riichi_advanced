@@ -524,35 +524,27 @@ defmodule RiichiAdvanced.GameState.Conditions do
         number = Enum.at(opts, 0, 1)
         win_definitions = Rules.translate_match_definitions(state.rules_ref, Enum.at(opts, 1, []))
         exclude_jokers? = Enum.at(opts, 2, false)
-        {hand, calls, tile_behavior} = if exclude_jokers? do
-          hand = cxt_player.hand
-          calls = cxt_player.calls
-          tile_behavior = %{cxt_player.tile_behavior | aliases: %{}, mappings: %{}}
-          {hand, calls, tile_behavior}
-        else
-          hand = cxt_player.cache.orig_hand
-          calls = cxt_player.cache.orig_calls
-          tile_behavior = cxt_player.tile_behavior
-          {hand, calls, tile_behavior}
-        end
-        waits = Match.get_waits(hand, calls, win_definitions, tile_behavior) |> Enum.uniq_by(&Utils.strip_attrs/1)
+        hand = cxt_player.cache.orig_hand
+        calls = cxt_player.cache.orig_calls
+        tile_behavior = cxt_player.tile_behavior
+        waits = Match.get_waits(hand, calls, win_definitions, tile_behavior)
+        |> Enum.uniq_by(&Utils.strip_attrs/1)
+        waits = if exclude_jokers? do
+          Enum.reject(waits, &TileBehavior.is_joker?(&1, tile_behavior))
+        else waits end
         length(waits) >= number
       "wait_count_at_most" ->
         number = Enum.at(opts, 0, 1)
         win_definitions = Rules.translate_match_definitions(state.rules_ref, Enum.at(opts, 1, []))
         exclude_jokers? = Enum.at(opts, 2, false)
-        {hand, calls, tile_behavior} = if exclude_jokers? do
-          hand = cxt_player.hand
-          calls = cxt_player.calls
-          tile_behavior = %{cxt_player.tile_behavior | aliases: %{}, mappings: %{}}
-          {hand, calls, tile_behavior}
-        else
-          hand = cxt_player.cache.orig_hand
-          calls = cxt_player.cache.orig_calls
-          tile_behavior = cxt_player.tile_behavior
-          {hand, calls, tile_behavior}
-        end
-        waits = Match.get_waits(hand, calls, win_definitions, tile_behavior) |> Enum.uniq_by(&Utils.strip_attrs/1)
+        hand = cxt_player.cache.orig_hand
+        calls = cxt_player.cache.orig_calls
+        tile_behavior = cxt_player.tile_behavior
+        waits = Match.get_waits(hand, calls, win_definitions, tile_behavior)
+        |> Enum.uniq_by(&Utils.strip_attrs/1)
+        waits = if exclude_jokers? do
+          Enum.reject(waits, &TileBehavior.is_joker?(&1, tile_behavior))
+        else waits end
         length(waits) <= number
       "call_contains" ->
         tiles = Enum.at(opts, 0, []) |> Enum.map(&Utils.to_tile(&1))
