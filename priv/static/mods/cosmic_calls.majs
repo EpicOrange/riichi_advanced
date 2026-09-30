@@ -180,7 +180,7 @@ define_button kakakan,
     shimocha: [0, ["sideways", 1], ["sideways", 2], "call_sideways"]
   }
   do
-    big_text("Pon")
+    big_text("Kan")
     set_status("kan", "can_chankan")
     upgrade_call
     unset_status("can_chankan")
