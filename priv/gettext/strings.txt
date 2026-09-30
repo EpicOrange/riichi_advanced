@@ -96,31 +96,34 @@ Yasume (AI)
 If the AI is stuck or missing, clicking the center compass will try to unstuck them.
 Clicking on the center compass will briefly have it show score differences relative to each opponent.
 After someone calls a win, hover over the winning hand to see how it breaks into sets. (On mobile: tap the winning hand.)
-Public rooms show up in the lobby. The lobby screen only exists if there is at least one public room, otherwise it just drops you directly in a new room.
-To join a private room, select the ruleset you're playing, and then press "Join private room" in the main menu and enter the room code of the room you want to join. Then hit Play.
+Public rooms show up in the lobby screen. The lobby screen only exists if there is at least one public room, otherwise the Play button just drops you directly in a new room.
+To join a private room, press "Join private room" in the main menu and enter the room code of the room you want to join. Then hit Play.
 If you scroll down now, or during a game, you can see the JSON representation of the ruleset you're playing. Which you can modify and play in the Custom ruleset.
 You can double click or right click to discard your drawn tile or skip a call. (On mobile: double tap or long tap.)
 When you start a game, it will send a message saying "Log ID:" followed by a code. You can use this code at (main menu) > Logs to view a replay of this game afterwards.
 A game's log ID can also be found via the Copy Log button on the upper right.
-After a win, you can hover over (or tap) players and arrows in the point exchange screen to view a detailed summary of that transaction.
+After a win, you can hover over (or tap) players and arrows in the point exchange screen to view a detailed breakdown of each point transferred.
 Click/tap the rules tabs on the left to view the current rules in play.
-When viewing the rules, you can hover/tap any tile to enlarge it.
+When viewing the rules on the tabs on the left, you can hover/tap any tile to enlarge it.
 You may apply any custom modifications to the ruleset by typing them in the Config tab of Game Settings. See the documentation link in the Custom gamemode for more details.
-The AI for most variants including Riichi use the standard AI, which simply discards towards the closest win condition.
-Some variants use a different AI than Riichi's. These variants are Minefield, American, Chinitsu Challenge, and Fuzhou.
-Choosing a ruleset (in the Room Settings menu) simply applies a preset set of mods.
+The AI players for most variants, including Riichi, simply discards towards the closest win condition.
+The AI players for some variants will try to call tiles every opportunity they get. These variants are Fuzhou, and Vietnamese, Filipino, and Shenyang.
+The AI players for Minefield, American, and Chinitsu Challenge are specialized for those rulesets.
+Choosing a ruleset (in the Room Settings menu) simply applies a preset set of mods in the Mods tab.
 Riichi Advanced attempts to be mobile-friendly and tries to support all major browsers. This isn't easy, so if you find something amiss, join the Discord!
 Riichi Advanced is open-source, and is currently hosted on GitHub.
 If you want to play with every player showing their hands, enable the "Open Hands" mod in Room Settings.
-If the AI is too fast or too slow, try toggling the "Win Timer" mod in Room Settings.
-The endgame screen takes 30 seconds to advance. If you want it to take longer, toggle the "Change AI Speed" mod in Room Settings.
-It is possible to customize the color of the table using the "Tablecloth Color" and "Tile Color" mods in Room Settings.Confirm
+If the AI is too fast or too slow, try toggling the "Change AI Speed" mod in Room Settings.
+The endgame screen takes 30 seconds to advance. If you want it to take longer, toggle the "Win Timer" mod in Room Settings.
+It is possible to customize the color of the table using the "Tablecloth Color" and "Tile Color" mods in Room Settings.
+With the Show Waits mod on, you can hover over any revealed tenpai hand to see all the tiles it's waiting on. (On mobile: tap the opponent's hand.)Confirm
 Clear
 Cancel
 Cancel
 Show wall
 Loading...
 Loading...
+Calculating waits...
 Ruleset:
 Room code
 Private
@@ -522,6 +525,7 @@ Sanchahou
 Kyuushu Kyuuhai
 Dora
 Ura
+Shadow Dora
 Aka
 Kandora
 Ao
@@ -842,6 +846,7 @@ Enable triple ron abortive draw.
 Enable 9 distinct terminal/honor abortive draw.
 Enables dora.
 Enables ura dora.
+Enables shadow dora. This doubles the value of regular dora, but the dora indicator becomes shadow dora, which is worth negative 1 Han. This will not put your score below 1 Han.
 Enables aka dora (red fives), worth 1 han each.
 Enables dora flip on kan.
 Enables ao dora (blue fives), worth 2 han each.
@@ -1045,6 +1050,761 @@ WRC 2022
 WRC 2025
 M.League
 Just Like Modded Minecraft
+_clear_yaku
+Chombo
+Gathering the Plum Blossom from the Roof
+Scratching a Carrying-Pole
+Plucking the Moon from the Bottom of the Sea
+Dealer's 13 Consecutive Win
+Win
+Before 5th Discard
+Single Wait
+Paníngit
+Base Points
+Flowers
+Gold
+Three Gold Knockdown
+Dealer Continuation
+Open Kongs
+Concealed Kongs
+Full Bloom (Flowers)
+Full Bloom (Seasons)
+Full Bloom (East)
+Full Bloom (South)
+Full Bloom (West)
+Full Bloom (North)
+Full Bloom (White)
+Full Bloom (Green)
+Full Bloom (Red)
+All Sequences
+Only One Flower
+Golden Pair
+Golden Dragon
+Robbing the Gold
+Base Score
+Suit Bonus
+Same Number Bonus (2)
+Same Number Bonus (3)
+Same Number Bonus (4)
+Same Number Bonus (5)
+Same Number Bonus (6)
+Same Number Bonus (7)
+Same Number Bonus (8)
+Single Wait
+Double Sequences
+Two Suits Only
+Concealed Double Sequences
+Concealed Kong
+Concealed Kongs
+Four of a Kind
+Dealer Repeats
+Luxury Seven Pairs
+Double Luxury Seven Pairs
+Sea Floor
+Pure Suit
+Ten Identical Tiles
+Double Concealed Double Sequences
+Manzu Chinitsu
+Honitsu Chiitoitsu
+Chinitsu Chiitoitsu
+Shousharin
+Daisharin
+Manzu Honitsu
+Full Flush
+All Sequences with Dot Eye
+Seat Flower
+Seat Flower
+Seat Flower
+Fourth Flower
+All Flowers
+Seat Season
+Seat Season
+Seat Season
+Fourth Season
+All Seasons
+Animal Tiles
+All Animals
+Face Tiles
+All Faces
+Fei
+No Flowers
+East Wind
+East Wind
+North Wind
+North Wind
+Seat Wind
+Seat Wind
+Seat Wind
+Seat Wind
+Seat Wind
+Seat Wind
+White Dragon
+White Dragon
+Green Dragon
+Green Dragon
+Red Dragon
+Red Dragon
+Small Three Dragons
+Big Three Dragons
+Small Four Winds
+Big Four Winds
+All Triplets
+After a Flower
+After a Gong
+After Multiple Gongs
+Robbing a Gong
+Nine Gates
+Four Gongs
+Four Concealed Triplets
+Blessing of Heaven
+Blessing of Earth
+Final Tile
+All Honours
+Thirteen Orphans
+Big Four Winds
+Big Three Dragons
+All Green
+Nine Gates
+Four Kongs
+Seven Shifted Pairs
+All Terminals
+Little Four Winds
+Little Three Dragons
+All Honors
+Four Concealed Pungs
+Pure Terminal Chows
+Quadruple Chow
+Four Pure Shifted Pungs
+Four Pure Shifted Chows
+Three Kongs
+All Terminals and Honors
+Greater Honors and Knitted Tiles
+Full Flush
+Pure Triple Chow
+Pure Shifted Pungs
+Upper Tiles
+Middle Tiles
+Lower Tiles
+Pure Straight
+Three-Suited Terminal Chows
+Pure Shifted Chows
+All Fives
+Triple Pung
+Three Concealed Pungs
+Lesser Honors and Knitted Tiles
+Knitted Straight
+Upper Four
+Lower Four
+Big Three Winds
+Mixed Straight
+Reversible Tiles
+Mixed Triple Chow
+Mixed Shifted Pungs
+Last Tile Draw
+Last Tile Claim
+Out with Replacement Tile
+Robbing The Kong
+Two Concealed Kongs
+Chicken Hand
+All Pungs
+Half Flush
+Mixed Shifted Chows
+All Types
+Melded Hand
+Two Dragon Pungs
+Melded and Concealed Kongs
+Outside Hand
+Fully Concealed Hand
+Two Melded Kongs
+Last Tile
+White Dragon
+Green Dragon
+Red Dragon
+Prevalent Wind
+Seat Wind
+Concealed Hand
+All Chows
+Tile Hog
+Tile Hog
+Tile Hog
+Tile Hog
+Double Pung
+Two Concealed Pungs
+Concealed Kong
+All Simples
+Pure Double Chow
+Pure Double Chow
+Mixed Double Chow
+Mixed Double Chow
+Short Straight
+Short Straight
+Two Terminal Chows
+Two Terminal Chows
+Pung of Terminals
+Pung of Terminals
+Pung of Terminals
+Pung of Terminals
+Pung of Honors
+Pung of Honors
+Melded Kong
+One Voided Suit
+No Honors
+Self-Drawn
+Edge Wait
+Closed Wait
+Single Wait
+Mixed Double Chow
+Mixed Double Chow
+Short Straight
+Two Terminal Chows
+Short Straight
+Two Terminal Chows
+Pungs of Terminals
+Pungs of Terminals
+Pungs of Terminals
+Pungs of Honors
+Flower Tiles
+Edge Wait
+Closed Wait
+Single Wait
+Three Meld Penalty
+No Baida
+Win On Baida
+Baida Reuse
+Baida Pair Win
+Nukidora
+Haidilaoyue
+Single Wait
+Gang
+Gang
+Gang
+Gang
+Dragons
+Dragons
+Dragons
+Dragons
+Winds
+Winds
+Winds
+Winds
+Root
+Root
+Root
+Root
+All Triplets
+Full Flush
+Seven Pairs
+Golden Single Wait
+Win After Kong
+Robbing The Kong
+Shoot After Kong
+Under The Sea
+All Green
+Little Ping Hu
+Big Ping Hu
+Kansai Chiitoitsu
+Kansai Chiitoitsu
+Kansai Chiitoitsu
+Dealer
+No Flowers
+Flowers
+Seven Flowers Robbing Eighth
+Eight Flowers
+Ting
+Ready Hand
+Self Draw
+Concealed Hand
+Fully Concealed Hand
+All Revealed
+Last Tile (draw)
+Last Tile (discard)
+Robbing a Kong
+Closed Wait
+Single Wait
+Within Ten Discards
+Within Five Discards
+White Dragon
+Green Dragon
+Red Dragon
+Wind Triplets
+Wind Triplets
+Wind Triplets
+Wind Triplets
+No Honors
+No Honors or Flowers
+Little Three Winds
+Little Three Dragons
+Big Three Winds
+Big Three Dragons
+Little Four Winds
+Big Four Winds
+All Triplets
+Open Kongs
+Concealed Kongs
+Two Concealed Triplets
+Three Concealed Triplets
+Four Concealed Triplets
+Five Concealed Triplets
+All Sequences
+All Sequences (full)
+Closed Straight
+Open Straight
+Seven Pairs
+Pure Hand
+Wild Card Wait
+Double Wild Card Wait
+Capturing the Five
+Dragon
+Kong Blossom
+Concealed Kong
+Concealed Kong
+Concealed Kong
+Concealed Kong
+Multiple Patterns
+Multiple Patterns
+Multiple Patterns
+Multiple Patterns
+Multiple Patterns
+Base
+Wildcard Dragon
+Wildcard Dragon
+Wildcard Dragon
+Mosquito Hand
+No Jokers Mosquito Hand
+Single Wait
+Pair Wait
+Quad
+Quad
+Quad
+All Called
+Small No Jokers Bonus
+No Jokers Bonus
+Single Wait Fully Closed Bonus
+Aka
+Aka
+Aka
+Aka
+Aka
+Base Value
+Quints
+Quints
+Pure
+Suit
+Concealed
+2024 #1
+2024 #2
+2024 #3
+2024 #4
+2468 #1
+2468 #2
+2468 #3
+2468 #4
+2468 #5
+2468 #6
+Any Like Numbers #1
+Any Like Numbers #2
+Any Like Numbers #3
+Lucky Sevens #1
+Lucky Sevens #2
+Lucky Sevens #3
+Winds and Dragons #1
+Winds and Dragons #2
+Winds and Dragons #3
+Winds and Dragons #4
+Winds and Dragons #5
+Winds and Dragons #6
+Winds and Dragons #7
+369 #1
+369 #2
+369 #3
+369 #4
+369 #5
+369 #6
+369 #7
+Singles and Pairs #1
+Singles and Pairs #2
+Singles and Pairs #3
+Singles and Pairs #4
+Singles and Pairs #5
+Singles and Pairs #6
+Quints #1
+Quints #2
+Quints #3
+Quints #4
+Consecutive Run #1
+Consecutive Run #2
+Consecutive Run #3
+Consecutive Run #4
+Consecutive Run #5
+Consecutive Run #6
+Consecutive Run #7
+Consecutive Run #8
+13579 #1
+13579 #2
+13579 #3
+13579 #4
+13579 #5
+13579 #6
+13579 #7
+2026 #1
+2026 #2
+2026 #3
+2026 #4
+2468 #1
+2468 #2
+2468 #3
+2468 #4
+2468 #5
+2468 #6
+2468 #7
+2468 #8
+Any Like Numbers #1
+Any Like Numbers #2
+Any Like Numbers #3
+Quints #1
+Quints #2
+Quints #3
+Consecutive Run #1
+Consecutive Run #2
+Consecutive Run #3
+Consecutive Run #4
+Consecutive Run #5
+Consecutive Run #6
+Consecutive Run #7
+Consecutive Run #8
+13579 #1
+13579 #2
+13579 #3
+13579 #4
+13579 #5
+13579 #6
+13579 #7
+13579 #8
+13579 #9
+Winds and Dragons #1
+Winds and Dragons #2
+Winds and Dragons #3
+Winds and Dragons #4
+Winds and Dragons #5
+Winds and Dragons #6
+Winds and Dragons #7
+Winds and Dragons #8
+369 #1
+369 #2
+369 #3
+369 #4
+369 #5
+369 #6
+Singles and Pairs #1
+Singles and Pairs #2
+Singles and Pairs #3
+Singles and Pairs #4
+Singles and Pairs #5
+Singles and Pairs #6
+Ao
+Hakuban
+Daisangen
+Shousuugen
+Daisuugen
+Dora
+Kin
+Sangen Pocchi
+Kin
+Seven Pairs
+Kin
+Flower
+No Honors or Flowers
+Terminal Sequences
+Double Terminal Sequences
+Pure Double Terminal Sequences
+One Voided Suit
+Open Nine Gates
+Open Kong
+Concealed Kong
+Two Shifted Triplets
+Three Small Shifted Triplets
+Four Pure Small Shifted Triplets
+Three Mixed Small Shifted Triplets
+Three Mixed Shifted Triplets
+Four Mixed Small Shifted Triplets
+Four Mixed Shifted Triplets
+Five Mixed Small Shifted Triplets
+Double Triplets
+Quadruple Triplets
+Double Sequences
+Double Sequences
+Short Straight
+Short Straight
+Double Short Straight
+Pure Double Short Straight
+Pure Double Identical Sequences
+Three Mixed Shifted Sequences
+Four Mixed Shifted Sequences
+Three Pure Shifted Sequences
+Four Pure Shifted Sequences
+Three Mixed Linked Sequences
+Three Pure Linked Sequences
+Golden Gate Bridge
+Mixed Straight
+Tile Hog (2)
+Tile Hog (3)
+Tile Hog (4)
+Double Tile Hog
+Double Tile Hog
+All Like Numbers
+All Odds
+All Evens
+One Suji Only
+Three Number Hand
+Two Number Hand
+After a Flower
+Under the Sea
+Within Ten Tiles
+Within Seven Tiles
+Self Drawn Melded Hand
+Melded Hand
+Hell Wait
+No Jokers
+Three Consecutive Pairs
+Five Consecutive Pairs
+Seven Consecutive Pairs
+Three Identical Pairs
+Three Dragons Seven Pairs
+Four Winds Seven Pairs
+Thirteen Unconnected
+Knitted Short Straight
+Knitted Terminal Sequences
+Knitted Straight
+Knitted Triplets
+Knitted Honors
+Eyes of the General
+University Train
+Thirteen Orphans
+Thirteen Orphans
+Mixed Shifted Linked Sequences
+Pure Shifted Linked Sequences
+Chicken Hand
+Ryanpeikou
+Chiitoitsu
+Seat Flower
+Seat Flower
+Seat Flower
+Seat Flower
+Seat Season
+Seat Season
+Seat Season
+Seat Season
+All Flowers
+All Seasons
+Milky Way
+Original Galaxy Tile
+Daichiishin
+Flower
+Chankan
+Rinshan
+Sankantsu
+Suukantsu
+Open Kokushi Musou
+Aka
+Ao
+Kin
+Ultimate All-Stars
+Shiro Pocchi
+Suukantsu
+Bingo
+Tulips
+Kansai Chiitoitsu
+Kansai Chiitoitsu
+Kansai Chiitoitsu
+Chinitsu Chiitoitsu
+Nanashi Musou
+Nanashi Musou Juusan Menmachi
+Renhou
+_triplets_win
+_sequences_win
+Discarding Flowers/Jokers
+Discarding Flowers
+Discarding Blue Jokers
+True No Flowers, No Leaves
+Progressive Counting
+Progressive Counting
+Progressive Counting
+Progressive Counting
+Progressive Counting
+Ippatsu
+Flower
+Isshoku Yonjun
+Renhou
+Renhou
+Suurenkou
+Seat King
+Seat King
+Seat King
+Seat King
+Seat Queen
+Seat Queen
+Seat Queen
+Seat Queen
+Bouquet
+Bouquet
+All Kings
+All Queens
+Matched Royalty
+Matched Royalty
+Matched Royalty
+Matched Royalty
+Win on Discarded Flower
+Anything Joker (縂)
+Dot Joker (筒)
+Bamboo Joker (索)
+Character Joker (萬)
+Flower Joker (花)
+Wind Joker (喜)
+Dragon Joker (元)
+Number Joker (合)
+Blue Joker Set
+Blue Joker Set
+Red Joker Set
+Red Joker Set
+Win on Discarded Joker
+Zoroba
+Zoroba
+Zoroba
+Four Fei
+Blank Tiles
+All Blanks
+Half Flush
+Seven Pairs
+Two Terminal Chows
+Short Straight
+Short Straight
+Short Straight
+Two Terminal Chows
+Pure Double Chow
+Pure Double Chow
+Pure Double Chow
+Mixed Double Chow
+Mixed Double Chow
+Two Terminal Chows
+Pure Double Chow
+Pure Double Chow
+Pure Double Chow
+Mixed Double Chow
+Mixed Double Chow
+Two Terminal Chows
+Pure Double Chow
+Pure Double Chow
+Pure Double Chow
+Mixed Double Chow
+Mixed Double Chow
+Two Terminal Chows
+Pure Double Chow
+Pure Double Chow
+Pure Double Chow
+Mixed Double Chow
+Mixed Double Chow
+Two Terminal Chows
+Pure Double Chow
+Pure Double Chow
+Pure Double Chow
+Mixed Double Chow
+Mixed Double Chow
+Two Terminal Chows
+Pure Double Chow
+Pure Double Chow
+Pure Double Chow
+Mixed Double Chow
+Mixed Double Chow
+Two Terminal Chows
+Pure Double Chow
+Pure Double Chow
+Pure Double Chow
+Mixed Double Chow
+Mixed Double Chow
+Two Terminal Chows
+_no_terminals
+Nagashi Mangan
+Nagashi Haneman
+Nagashi Baiman
+Nagashi Sanbaiman
+Nagashi Yakuman
+North Wind
+Shadow Dora
+Shadow Ura
+Shiro Pocchi
+Aka
+Aka
+Ao
+Ao
+Arisu
+Ippatsu
+Kin
+Kin
+Toriuchi
+Ura
+Yonshoku
+Yonshoku
+Yonshoku Doukou
+Grand Cross
+Grand Cross
+Grand Cross
+Grand Cross
+(grand cross override)
+Rainbow Seven
+Ura
+Blue Joker Set
+Blue Joker Set
+Red Joker Set
+Red Joker Set
+Blue Joker Set
+Blue Joker Set
+Red Joker Set
+Red Joker Set
+Blue Joker Set
+Blue Joker Set
+Red Joker Set
+Red Joker Set
+Two Anything Jokers
+Two Anything Jokers
+Two Anything Jokers
+Two Anything Jokers
+Two Number Jokers
+Two Number Jokers
+Two Number Jokers
+Two Number Jokers
+Mixed Any and Number Jokers
+Matching Any and Number Jokers
+Chanfuun
+Fuunburi
+Mini-Sangen
+Mixed Winds
+Toikon
+Ryandoukon
+Sandoukon
+Yondoukon
+Toikon
+Sandoukon
+_no_triplets
+_one_triplet
+_no_kontsu
+_one_kontsu
+Nippatsu
+Open Riichi
+Open Double Riichi
+Open Riichi
+Sanankon
+Suuankon
+Suuankon Tanki
+Shiisanuushi
+Tsubame Gaeshi
+Uumensai
+Uumensai
+Eight Flowers
+Six Consecutive Wins
+Six Consecutive Wins
+Robbing a Bounce
+Ten Flowers
+Remove Seven Pairs
 Table Rules
 Card
 Other
@@ -2051,6 +2811,7 @@ Sanchahou
 Kyuushu Kyuuhai
 Dora
 Ura
+Shadow Dora
 Aka
 Kandora
 Ao
@@ -4228,6 +4989,7 @@ $value $han
 $value $han
 Rules
 Rules
+Rules
 Tiles
 Shuugi
 Rules
@@ -5479,6 +6241,7 @@ Nukidora
 Nukidora
 Flowers
 Flowers
+Dora
 Shiro Pocchi
 Shiro Pocchi
 Shouhai
@@ -6906,6 +7669,7 @@ You won with eight flowers.
 %{example_hand}
 - As soon as you draw a seventh flower, you may declare a win for an additional 3 Fan, or 8 Fan if you have eight flowers.
 - As soon as you draw an eighth flower, you may declare a win for an additional 8 Fan.
+(Shadow Dora) All dora/ura is worth 2 Han, but the dora indicators become shadow dora/ura, worth -1 Han. This will not put your score below 1 Han.
 One of the white dragons %{5z} is replaced with a shiro pocchi %{shiro_pocchi}. Shiro pocchi acts a joker tile when drawn while in riichi.
 (Shiro Pocchi) Winning in riichi via shiro pocchi is worth 1 shuugi.
 Reduces tiles in hand from 13 to 12. The goal is to achieve a tenpai hand rather than a winning hand. The idea is that your 13th tile is replaced with an invisible 'joker' tile that can be used to complete any hand.
