@@ -562,7 +562,8 @@ defmodule RiichiAdvanced.GameState.American do
     if Enum.empty?(flattened) or nil in flattened do nil else {joker, nojoker} end
   end
 
-  def score_hand_difficulty(_am_match_definition, matched_tiles, _missing_tiles, calls, groups, tile_behavior, concealed?) do
+  def score_hand_difficulty(_am_match_definition, matched_tiles, _missing_tiles, calls, groups, tile_behavior, concealed?, scaling) do
+    scaling = if scaling == nil do %{} else scaling end
     {_joker_matched_tiles, hand_matched_tiles} = Keyword.split(matched_tiles, [:"1j"])
     tile_freqs = hand_matched_tiles
     |> Keyword.values()
@@ -579,35 +580,32 @@ defmodule RiichiAdvanced.GameState.American do
         end
     end
 
-    # calculate concealed shanten
-    {_, concealed_shanten, exposed_shanten} = for group <- groups, reduce: {tile_freqs, -1, 0} do
-      {tile_freqs, shanten_c, shanten_x} ->
+    # number of missing tiles => amount of difficulty it adds
+    nojoker_scaling   = Map.get(scaling, :nojoker, %{})
+    concealed_scaling = Map.get(scaling, :concealed, %{})
+    exposable_scaling = Map.get(scaling, :exposable, %{})
+    # calculate difficulty as some function of shanten
+    {_, nojoker_shanten, concealed_shanten, exposable_shanten} = for group <- groups, reduce: {tile_freqs, 0, 0, 0} do
+      {tile_freqs, shanten_n, shanten_c, shanten_x} ->
         {tile, num} = {Enum.at(group, 0), length(group)}
         amt = Map.get(tile_freqs, tile, 0)
         used = min(num, amt)
         needed = num - used
-        if concealed? or num <= 2 do
-          {Map.put(tile_freqs, tile, amt - used), shanten_c + needed, shanten_x}
-        else
-          {Map.put(tile_freqs, tile, amt - used), shanten_c, shanten_x + needed - 1} # if exposed, we need 1 less since we could call to complete it
+        cond do
+          num <= 2 -> # nojoker
+            increment = Map.get(nojoker_scaling, needed, 0)
+            {Map.put(tile_freqs, tile, amt - used), shanten_n + increment, shanten_c, shanten_x}
+          concealed? -> # concealed
+            increment = Map.get(concealed_scaling, needed, 0)
+            {Map.put(tile_freqs, tile, amt - used), shanten_n, shanten_c + increment, shanten_x}
+          true -> # exposable
+            increment = Map.get(exposable_scaling, needed, 0)
+            {Map.put(tile_freqs, tile, amt - used), shanten_n, shanten_c, shanten_x + increment}
         end
     end
-    # IO.puts("#{am_match_definition} | counts: #{inspect(tile_freqs)}, groups: #{inspect(groups)}, concealed_shanten: #{inspect(concealed_shanten)}, exposed_shanten: #{inspect(exposed_shanten)}")
-    # concealed shanten starts at -1 to represent the last concealed tile not having to be self-drawn
-    # but if no groups are concealed, then don't need it
-    concealed_shanten = max(0, concealed_shanten)
-
-    # assume difficulty is quadratic with shanten
-    # exposed shanten is easier since you can call and use jokers
-    # so we weight them differently to arrive at a final metric
-
-    # 1 => 3 * 3, 2 => 6 * 5, 3 => 9 * 7, ...
-    concealed_difficulty = 3 * concealed_shanten * (1 + 2 * concealed_shanten)
-
-    # 1 => 2 * 4, 2 => 4 * 7, 3 => 6 * 10, ...
-    exposed_difficulty = 2 * exposed_shanten * (1 + 3 * exposed_shanten)
-
-    concealed_difficulty + exposed_difficulty
+    concealed_shanten = max(0, concealed_shanten - Map.get(concealed_scaling, 1, 1))
+    # IO.puts("#{am_match_definition} | counts: #{inspect(tile_freqs)}, groups: #{inspect(groups)}, concealed_shanten: #{inspect(concealed_shanten)}, exposable_shanten: #{inspect(exposable_shanten)}")
+    nojoker_shanten + concealed_shanten + exposable_shanten
   end
 
   defmodule AmericanYaku do
@@ -694,7 +692,7 @@ defmodule RiichiAdvanced.GameState.American do
                   |> Enum.map(&{Enum.at(&1, 0), length(&1)})
                   groups = Enum.map(matching_hand_nojoker, &{&1, 1}) ++ groups
                   groups = Enum.map(groups, fn {tile, num} -> List.duplicate(tile, num) end)
-                  score_hand_difficulty(am_match_definition, matched_tiles, missing_tiles, calls, groups, tile_behavior, yaku.concealed)
+                  score_hand_difficulty(am_match_definition, matched_tiles, missing_tiles, calls, groups, tile_behavior, yaku.concealed, Rules.get(state.rules_ref, :am_difficulty_scaling))
                 else 0 end
                 {new_pairing, new_pairing_r, missing_tiles, callable_missing_tiles, difficulty}
               else acc end

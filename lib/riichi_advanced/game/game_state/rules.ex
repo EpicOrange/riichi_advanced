@@ -173,6 +173,11 @@ defmodule RiichiAdvanced.GameState.Rules do
       {:ok, rules}
     end
   end
+
+  @nojoker_scaling   %{"1" => 8, "2" => 32}
+  @concealed_scaling %{"1" => 2, "2" => 8, "3" => 18, "4" => 32, "5" => 50, "6" => 72}
+  @exposable_scaling %{"1" => 1, "2" => 4, "3" => 9, "4" => 16, "5" => 25, "6" => 36}
+
   defp preprocess_rules(rules_ref, rules) do
     # toposort all yaku by precedence
     score_rules = get(rules_ref, "score_calculation", %{})
@@ -260,6 +265,14 @@ defmodule RiichiAdvanced.GameState.Rules do
     |> Enum.flat_map(fn yaku -> Enum.map(yaku.am_match_definitions, &{&1, yaku}) end)
     |> Map.new()
     :ets.insert(rules_ref, {:am_yaku, am_yaku})
+
+    # for american difficulty calculations
+    :ets.insert(rules_ref, {:am_difficulty_scaling, %{
+      nojoker: Map.get(rules, "nojoker_scaling", @nojoker_scaling) |> Map.new(fn {k, v} -> {String.to_integer(k), v} end),
+      concealed: Map.get(rules, "concealed_scaling", @concealed_scaling) |> Map.new(fn {k, v} -> {String.to_integer(k), v} end),
+      exposable: Map.get(rules, "exposable_scaling", @exposable_scaling) |> Map.new(fn {k, v} -> {String.to_integer(k), v} end),
+    }})
+
   end
 
   def get(rules_ref, key, default \\ nil)

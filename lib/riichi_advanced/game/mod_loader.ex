@@ -471,7 +471,18 @@ defmodule RiichiAdvanced.ModLoader do
   def default_config, do: @default_config
 
   def get_config_majs(ruleset, room_code) do
-    {:ok, config} = RiichiAdvanced.Cache.get({:cache_configs, ruleset, room_code}, @default_config)
+    default_config = if ruleset == "american" do
+      @default_config <> """
+
+      # american mahjong nearest hand sorting parameters
+
+      # set debug_am_difficulty, true
+      # set nojoker_scaling,   %{"1" => 8, "2" => 32}
+      # set concealed_scaling, %{"1" => 2, "2" => 8, "3" => 18, "4" => 32, "5" => 50, "6" => 72}
+      # set exposable_scaling, %{"1" => 1, "2" => 4, "3" => 9,  "4" => 16, "5" => 25, "6" => 36}
+      """
+    else @default_config end
+    {:ok, config} = RiichiAdvanced.Cache.get({:cache_configs, ruleset, room_code}, default_config)
     config
   end
 
