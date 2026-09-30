@@ -2390,7 +2390,9 @@ div.rules-wrapper > label {
   min-height: calc(1 * var(--tile-size));
 }
 div.rules-wrapper > label.lang-en {
-  transform: rotate(180deg); /* make text face right */
+  /* make text face right */
+  transform: rotate(180deg);
+  writing-mode: sideways-rl;
 }
 
 /*
