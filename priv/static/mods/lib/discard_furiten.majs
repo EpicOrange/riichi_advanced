@@ -1,0 +1,14 @@
+require "furiten"
+require "tenpai_check"
+
+on after_initialization do
+  add_rule("Rules", "Furiten", "(Discard Furiten) If you are waiting for a tile to win, but one of your winning tiles is among your discards (including tiles called by other players), then you are 'in furiten' and cannot win by ron (including chankan). You can still win by tsumo.")
+end
+
+# set permanent furiten right after you discard a tile
+define_play_effect any do
+  # add furiten due to discards
+  if status("tenpai") and status_missing("furiten") and match(["hand", "calls", "tile"], ["win"]) do
+    set_status("furiten")
+  end
+end

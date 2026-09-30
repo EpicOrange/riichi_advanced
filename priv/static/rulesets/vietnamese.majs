@@ -42,6 +42,7 @@ require "yaku/tenhou", %{chiihou_name: "Blessing of Earth", chiihou_value: 2, re
 require_after "yaku/vietnamese_flowers"
 require_after "yaku/vietnamese_jokers"
 require_after "vietnamese_nfnl"
+# require_after "temporary_furiten" # not sure how furiten should interact with jokers, yet
 require_after "vietnamese_scoring"
 
 on after_initialization, prepend: true do

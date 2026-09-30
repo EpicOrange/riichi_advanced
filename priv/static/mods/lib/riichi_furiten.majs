@@ -1,0 +1,17 @@
+require "furiten"
+require "tenpai_check"
+require "discard_furiten"
+
+on after_initialization do
+  add_rule("Rules", "Furiten", "(Temporary Furiten) If you discard your winning tile, or skip winning on someone else's discard, you cannot win off ANY discard until your next draw. You can still win by self-drawing your winning tile.")
+end
+
+def discard_passed, prepend: true do
+  # anyone who can win off this tile and didn't is now in furiten
+  # can't check tenpai status here, since that is set before turn change
+  as everyone do
+    if status("tenpai") and match(["hand", "calls", "last_discard"], ["win"]) do
+      set_status("furiten")
+    end
+  end
+end

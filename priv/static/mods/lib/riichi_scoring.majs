@@ -1,3 +1,5 @@
+require "tenpai_check"
+
 define_const calls_fu, %{pon: 2}
 
 define_const winning_groups_fu, [

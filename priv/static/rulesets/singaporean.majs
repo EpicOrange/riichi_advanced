@@ -36,6 +36,7 @@ require "default_auto_buttons"
 require "standard_wall"
 require "framed_5z"
 require "default_flowers", %{four_flowers_value: 2, auto_flower_by_default: true, matching_flower_value: 1, undiscardable: true, win_on: "8 flowers", seven_value: 5, eight_value: 10}
+require "discard_furiten"
 
 # animal tiles, 1 tai yaku for having each, 5 tai for having all 4
 define_const all_animals, ["1a", "2a", "3a", "4a"]

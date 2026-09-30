@@ -10,7 +10,8 @@ require "pao_standard"
 require "pao_suukantsu"
 require "pao_tsuuiisou"
 require "pao_chinroutou"
-require_after "partial_furiten"
+require "discard_furiten"
+require "temporary_furiten"
 require_after "hochi_scoring"
 
 set display_honba, true
@@ -49,6 +50,7 @@ apply subtract, "default_mods", [
   %{name: "uma", config: %{_1st: 10, _2nd: 5, _3rd: -5, _4th: -10}},
   %{name: "lib/tobi", config: %{below: 0}},
   "lib/kuikae_nashi",
+  "lib/riichi_furiten",
   %{name: "lib/min_han", config: %{han: "Han", min: 1}},
   %{name: "suufon_renda", config: %{name: "Suufon Renda"}},
   "suucha_riichi",

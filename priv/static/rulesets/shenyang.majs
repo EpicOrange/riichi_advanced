@@ -25,6 +25,7 @@ require "ron", %{scoring_key: "win"}
 require "tsumo", %{scoring_key: "win"}
 require "agarirenchan"
 require "ryuukyokurenchan"
+require "temporary_furiten"
 require "head_bump" # probably, right?
 
 on after_initialization do
@@ -58,7 +59,8 @@ define_set manzu, ~s"1m|2m|3m|4m|5m|6m|7m|8m|9m"
 define_set pinzu, ~s"1p|2p|3p|4p|5p|6p|7p|8p|9p"
 define_set souzu, ~s"1s|2s|3s|4s|5s|6s|7s|8s|9s"
 
-define_match win, ~m"exhaustive, (chii pon daiminkan kakan):0, (koutsu dragons winds haku_pair hatsu_pair chun_pair):0, orphans_any:0, manzu:0, pinzu:0, souzu:0, mentsu:4, pair:1"
+define_match win, ~m"exhaustive, mentsu:4, pair:1"
+# define_match win, ~m"exhaustive, (chii pon daiminkan kakan):0, (koutsu dragons winds haku_pair hatsu_pair chun_pair):0, orphans_any:0, manzu:0, pinzu:0, souzu:0, mentsu:4, pair:1"
 
 on after_win do as everyone do unset_status("liuju_double") end end
 on before_exhaustive_draw do as everyone do set_status("liuju_double") end end
@@ -78,6 +80,7 @@ apply append, "buttons.pon.show_when", not_match(["calls"], ~m"chii:0, (chii pon
 apply append, "buttons.daiminkan.show_when", not_match(["calls"], ~m"chii:0, (chii pon daiminkan kakan ankan dragons winds):3")
 # TODO temporary furiten but only for the specific tile passed
 # TODO if four players discard the same tile in succession, the first discarder pays 4 points to everyone else
+# use shimocha_last_discard etc.
 
 # sea floor code from hefei
 on after_turn_change do

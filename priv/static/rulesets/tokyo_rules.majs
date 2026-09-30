@@ -11,7 +11,8 @@ require "pao_suukantsu"
 require "pao_tsuuiisou"
 require "pao_chinroutou"
 require "min_han", %{min: 1}
-require_after "partial_furiten", %{check_ryanmen: true}
+require "discard_furiten"
+require "temporary_furiten"
 require_after "tokyo_scoring"
 
 set display_honba, true
@@ -94,6 +95,7 @@ apply subtract, "default_mods", [
   %{name: "lib/tobi", config: %{below: 0}},
   "uma",
   "lib/kuikae_nashi",
+  "lib/riichi_furiten",
   "lib/min_han",
   %{name: "suufon_renda", config: %{name: "Suufon Renda"}},
   "suucha_riichi",

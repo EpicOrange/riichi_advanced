@@ -1,7 +1,8 @@
 define_base_ruleset riichi
 set display_name, "Arushiiaru"
 set tutorial_link, "https://riichi.wiki/Arushiiaru_mahjong"
-require_after "partial_furiten"
+require "discard_furiten"
+require "temporary_furiten"
 require_after "arushiiaru_scoring"
 
 set initial_score, 2000
@@ -47,6 +48,7 @@ apply subtract, "default_mods", [
   %{name: "lib/tobi", config: %{below: 0}},
   %{name: "uma", config: %{_1st: 10, _2nd: 5, _3rd: -5, _4th: -10}},
   "lib/kuikae_nashi",
+  "lib/riichi_furiten",
   %{name: "lib/min_han", config: %{han: "Han", min: 1}},
   %{name: "suufon_renda", config: %{name: "Suufon Renda"}},
   "suucha_riichi",
