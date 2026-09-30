@@ -3,9 +3,13 @@ default name, "Shiisanpuutaa"
 default value, 1
 
 on after_initialization do
-  add_rule("Yakuman", "Shiisanpuutaa", "\"Thirteen Unconnected\". Your starting hand is made of 13 disconnected tiles, plus one forming a pair. Calls invalidate.", 113)
-  update_rule("Yakuman", "Shiisanpuutaa", "%{example_hand}", %{example_hand: ~t"208m449p47s123456z"})
-  add_rule("Rules", "Win Condition", "- (Shiisanpuutaa) Start with 13 disconnected tiles, plus one forming a pair.", -100)
+  if equals(!name, "Shiisanpuutaa") do
+    add_rule("$value $han", !name, "\"Thirteen Unconnected\". Your starting hand is made of 13 disconnected tiles, plus one forming a pair. Calls invalidate.", %{value: !value, han: !han}, 113)
+  else
+    add_rule("$value $han", !name, "Your starting hand is made of 13 disconnected tiles, plus one forming a pair. Calls invalidate.", %{value: !value, han: !han}, 113)
+  end
+  update_rule("$value $han", !name, "%{example_hand}", %{value: !value, han: !han, example_hand: ~t"208m449p47s123456z"})
+  add_rule("Rules", "Win Condition", "- (%{name}) Start with 13 disconnected tiles, plus one forming a pair.", %{name: !name}, -100)
 end
 
 define_match shiisanpuutaa, ~m"pair:1, taatsu:-1"

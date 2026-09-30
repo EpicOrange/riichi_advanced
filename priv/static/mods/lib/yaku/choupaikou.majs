@@ -20,18 +20,30 @@ default spk_han, "Han"
 default csk_han, "Han"
 
 on after_initialization do
-  add_rule("$value $han", !s_cpk_name, "Your hand has the pattern 111333555 in three different suits (doesn't have to start at 1).", %{value: !s_cpk_value, han: !s_cpk_han}, 101)
-  update_rule("$value $han", !s_cpk_name, "%{example_hand}", %{value: !s_cpk_value, han: !s_cpk_han, example_hand: ~t"222m444p66ss4445z 5z"})
-  add_rule("$value $han", !s_spk_name, "Your hand has the pattern 111444777 in three different suits (doesn't have to start at 1).", %{value: !s_spk_value, han: !s_spk_han}, 101)
-  update_rule("$value $han", !s_spk_name, "%{example_hand}", %{value: !s_spk_value, han: !s_spk_han, example_hand: ~t"222m555p88ss4445z 5z"})
-  add_rule("$value $han", !s_csk_name, "Your hand has the pattern 111555999 in three different suits.", %{value: !s_csk_value, han: !s_csk_han}, 101)
-  update_rule("$value $han", !s_csk_name, "%{example_hand}", %{value: !s_csk_value, han: !s_csk_han, example_hand: ~t"111m555p99ss4445z 5z"})
-  add_rule("$value $han", !cpk_name, "Your hand has the pattern 111333555 in the same suit (doesn't have to start at 1).", %{value: !cpk_value, han: !cpk_han}, 101)
-  update_rule("$value $han", !cpk_name, "%{example_hand}", %{value: !cpk_value, han: !cpk_han, example_hand: ~t"222444666m4569s 9s"})
-  add_rule("$value $han", !spk_name, "Your hand has the pattern 111444777 in the same suit (doesn't have to start at 1).", %{value: !spk_value, han: !spk_han}, 101)
-  update_rule("$value $han", !spk_name, "%{example_hand}", %{value: !spk_value, han: !spk_han, example_hand: ~t"222555888m4569s 9s"})
-  add_rule("$value $han", !csk_name, "Your hand has the pattern 111555999 in the same suit.", %{value: !csk_value, han: !csk_han}, 101)
-  update_rule("$value $han", !csk_name, "%{example_hand}", %{value: !csk_value, han: !csk_han, example_hand: ~t"111555999m4569s 9s"})
+  if !s_cpk_value > 0 do
+    add_rule("$value $han", !s_cpk_name, "Your hand has the pattern 111333555 in three different suits (doesn't have to start at 1).", %{value: !s_cpk_value, han: !s_cpk_han}, 101)
+    update_rule("$value $han", !s_cpk_name, "%{example_hand}", %{value: !s_cpk_value, han: !s_cpk_han, example_hand: ~t"222m444p66ss4445z 5z"})
+  end
+  if !s_spk_value > 0 do
+    add_rule("$value $han", !s_spk_name, "Your hand has the pattern 111444777 in three different suits (doesn't have to start at 1).", %{value: !s_spk_value, han: !s_spk_han}, 101)
+    update_rule("$value $han", !s_spk_name, "%{example_hand}", %{value: !s_spk_value, han: !s_spk_han, example_hand: ~t"222m555p88ss4445z 5z"})
+  end
+  if !s_csk_value > 0 do
+    add_rule("$value $han", !s_csk_name, "Your hand has the pattern 111555999 in three different suits.", %{value: !s_csk_value, han: !s_csk_han}, 101)
+    update_rule("$value $han", !s_csk_name, "%{example_hand}", %{value: !s_csk_value, han: !s_csk_han, example_hand: ~t"111m555p99ss4445z 5z"})
+  end
+  if !cpk_value > 0 do
+    add_rule("$value $han", !cpk_name, "Your hand has the pattern 111333555 in the same suit (doesn't have to start at 1).", %{value: !cpk_value, han: !cpk_han}, 101)
+    update_rule("$value $han", !cpk_name, "%{example_hand}", %{value: !cpk_value, han: !cpk_han, example_hand: ~t"222444666m4569s 9s"})
+  end
+  if !spk_value > 0 do
+    add_rule("$value $han", !spk_name, "Your hand has the pattern 111444777 in the same suit (doesn't have to start at 1).", %{value: !spk_value, han: !spk_han}, 101)
+    update_rule("$value $han", !spk_name, "%{example_hand}", %{value: !spk_value, han: !spk_han, example_hand: ~t"222555888m4569s 9s"})
+  end
+  if !csk_value > 0 do
+    add_rule("$value $han", !csk_name, "Your hand has the pattern 111555999 in the same suit.", %{value: !csk_value, han: !csk_han}, 101)
+    update_rule("$value $han", !csk_name, "%{example_hand}", %{value: !csk_value, han: !csk_han, example_hand: ~t"111555999m4569s 9s"})
+  end
 end
 
 define_set "ssk_choupaikou", ~s"0 0 0, 12 12 12, 24 24 24|0 0 0, 22 22 22, 14 14 14"
