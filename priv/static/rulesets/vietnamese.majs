@@ -181,7 +181,7 @@ apply set, "buttons.ankan.call_style", %{self: [0, ["1x", 1], 2, 3]}
 
 # all yaku not handled by yaku mods
 define_yaku meta_yaku, "Mosquito Hand", [0, "Phán"], has_no_yaku
-define_yaku meta_yaku, "No Jokers Mosquito Hand", [1, "Mủn"], has_no_yaku and status_missing("has_joker"), ["Mosquito Hand"]
+define_yaku meta_yaku, "No Jokers Mosquito Hand", [1, "Mủn"], has_no_yaku and status_missing("has_joker"), ["Mosquito Hand", "No Jokers Bonus"]
 define_yaku yaku, "Single Wait", [1, "Phán"], won_by_draw and wait_count_at_most(1, "win", true)
 define_yaku yaku, "Pair Wait", [1, "Phán"], won_by_draw and wait_count_at_most(1, "win", true) and match(["hand", "calls"], ~m"exhaustive, mentsu:4"), ["Single Wait"]
 define_yaku yaku, "Quad", [1, "Phán"], match(["calls"], ~m"(daiminkan ankan kakan):1")
