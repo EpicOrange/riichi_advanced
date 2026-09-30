@@ -131,7 +131,7 @@ define_yaku yaku, "Singles and Pairs #6", [75, "Pts"], has_no_call_named("am_pun
 define_button "4_am_sextet",
   display_name: "Sextet",
   show_when: status_missing("match_start", "dead_hand") and not_our_turn and not_no_tiles_remaining and someone_else_just_discarded and call_available,
-  precedence_over: ["am_pung", "am_kong", "am_quint", "am_sextet"],
+  precedence_over: ["1_am_pung", "2_am_kong", "3_am_quint", "4_am_sextet"],
   call: [[0, 0, 0, 0, 0], ["1f", "1f", "1f", "1f", "1f"]],
   call_name: "am_sextet",
   call_conditions: hand_length_at_least(6)
