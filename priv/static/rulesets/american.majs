@@ -153,6 +153,10 @@ define_scoring win do
       total *= 2 :: "Discarder penalty"
     end
   end
+  # heavenly bonus
+  if status("heavenly_available", as: "winner") do
+    total *= 2 :: "Heavenly hand"
+  end
   # jokerless hand bonus
   if jokers == 0 and not_match(["hand", "call_tiles", "winning_tile"], "singles_win", as: "winner") do
     total *= 2 :: "Jokerless hand"
@@ -570,7 +574,7 @@ define_button am_joker_swap,
 
 define_button mahjong_heavenly,
   display_name: "Mah Jongg",
-  show_when: status("heavenly_available", "charleston_left") and our_turn and match(["hand", "call_tiles", "draw"], ["win"]),
+  show_when: status("heavenly_available") and our_turn and has_draw and has_yaku_with_hand,
   precedence_over: ["am_pung", "am_kong", "am_quint", "am_sextet", "abort_during_charleston"]
   do
     big_text("Mah Jongg")
@@ -581,7 +585,7 @@ define_button mahjong_heavenly,
 
 define_button mahjong_draw,
   display_name: "Mah Jongg",
-  show_when: status_missing("match_start", "dead_hand") and our_turn and has_draw and has_yaku_with_discard(1),
+  show_when: status_missing("match_start", "dead_hand") and our_turn and has_draw and has_yaku_with_hand,
   precedence_over: ["am_pung", "am_kong", "am_quint", "am_sextet"]
   do
     big_text("Mah Jongg")
@@ -592,9 +596,9 @@ define_button mahjong_draw,
 
 define_button mahjong_discard,
   display_name: "Mah Jongg",
-  show_when: status_missing("match_start", "dead_hand") and not_our_turn and not_just_discarded and someone_else_just_discarded
-      and not_match(["last_discard"], ~m"1j:1")
-      and has_yaku_with_hand(1),
+  show_when: status_missing("match_start", "dead_hand") and not_our_turn and someone_else_just_discarded
+      and not_match(["last_discard"], ~m"nojoker, 1j:1")
+      and has_yaku_with_discard,
   precedence_over: ["am_pung", "am_kong", "am_quint", "am_sextet", "mahjong_discard"]
   do
     big_text("Mah Jongg")

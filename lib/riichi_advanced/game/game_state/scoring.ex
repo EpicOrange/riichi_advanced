@@ -178,7 +178,9 @@ defmodule RiichiAdvanced.GameState.Scoring do
   def lazy_map_state_cxts(state, seat, winning_tiles, win_source, f) do
     hand = state.players[seat].hand
     is_tenhou? = winning_tiles == nil or winning_tiles == [nil]
+    hand = if is_tenhou? do hand ++ Utils.remove_attr(state.players[seat].draw, ["_draw"]) else hand end
     if is_tenhou? do hand else winning_tiles end
+    |> Enum.reverse()
     |> Enum.uniq()
     |> Enum.map(fn winning_tile ->
       # first, if this was tenhou, we need to remove the winning tile from hand

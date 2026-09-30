@@ -800,18 +800,20 @@ defmodule RiichiAdvanced.GameState.Conditions do
       [n | cond_spec] when is_integer(n) -> {cond_spec, n}
       cond_spec when is_list(cond_spec) -> {cond_spec, :infinity}
     end
+    atomic = Enum.at(cond_spec, 1) == nil
     case Map.get(clause_cache, {:dnf, clause, context.key}, nil) do
       nil ->
         {num_trues, clause_cache} = Enum.reduce_while(cond_spec, {0, clause_cache},
           fn clause, {num_trues, clause_cache} ->
             {result, clause_cache} = cached_check_cnf_condition(state, clause, context, clause_cache, nil, false)
             case result do
-              true ->  {if num_trues >= allowed_trues or allowed_trues == :infinity do :halt else :cont end, {num_trues + 1, clause_cache}}
+              true  -> {if num_trues >= allowed_trues or allowed_trues == :infinity do :halt else :cont end, {num_trues + 1, clause_cache}}
               false -> {:cont, {num_trues, clause_cache}}
             end
           end)
         result = 1 <= num_trues && num_trues <= allowed_trues
         clause_cache = Map.put(clause_cache, {:dnf, clause, context.key}, result)
+        clause_cache = if atomic do Map.put(clause_cache, {:cnf, clause, context.key}, result) else clause_cache end
         {result, clause_cache}
       b -> {b, clause_cache}
     end
@@ -857,6 +859,7 @@ defmodule RiichiAdvanced.GameState.Conditions do
       [n | cond_spec] when is_integer(n) -> {cond_spec, length(cond_spec) - n}
       cond_spec when is_list(cond_spec) -> {cond_spec, 0}
     end
+    atomic = Enum.at(cond_spec, 1) == nil
     {result, clause_cache, debug_clause} = case Map.get(clause_cache, {:cnf, clause, context.key}, nil) do
       nil ->
         {num_falses, clause_cache, debug_clause} = Enum.reduce_while(cond_spec, {0, clause_cache, nil},
@@ -868,12 +871,13 @@ defmodule RiichiAdvanced.GameState.Conditions do
               cached_check_dnf_condition(state, clause, context, clause_cache)
             end
             case result do
+              true  -> {:cont, {num_falses, clause_cache, nil}}
               false -> {if num_falses >= allowed_falses do :halt else :cont end, {num_falses + 1, clause_cache, clause}}
-              true ->  {:cont, {num_falses, clause_cache, nil}}
             end
           end)
         result = num_falses <= allowed_falses
         clause_cache = Map.put(clause_cache, {:cnf, clause, context.key}, result)
+        clause_cache = if atomic do Map.put(clause_cache, {:dnf, clause, context.key}, result) else clause_cache end
         {result, clause_cache, debug_clause}
       b -> {b, clause_cache, cond_spec}
     end

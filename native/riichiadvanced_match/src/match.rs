@@ -106,7 +106,7 @@ pub fn __remove_match_definition<'a>(
   // this is mostly to prevent 14 tile hands, like kokushi, from matching when we have 13 tiles
   if min_match_length as usize > match_info.num_tiles_in_hand && !has_restart && !has_almost {
     if debug {
-      println!("match_info.initial_hands: {0:?}", match_info.initial_hands);
+      println!("match_info.initial_hands: {0:?}", crate::encode::decode_tiles(&match_info.initial_hands[0].attrs, &match_info.all_attrs));
       println!("match_definition: {match_definition:?}");
       println!("Since we only have {0} tiles, refusing to match length-{1} match {2:?}",
         match_info.num_tiles_in_hand,

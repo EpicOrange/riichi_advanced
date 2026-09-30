@@ -433,7 +433,7 @@ defmodule RiichiAdvanced.GameState.American do
   def get_viable_am_match_definitions(state, seat, am_match_definitions) do
     # replace winner's hand with :any and check which win definitions match, return those
     # TODO take into account concealed hands
-    hand = List.duplicate(:any, length(state.players[seat].hand) + 1)
+    hand = List.duplicate(:any, length(state.players[seat].hand))
     tile_behavior = state.players[seat].tile_behavior
     call_tiles = Utils.replace_jokers_in_calls(state.players[seat].calls, [:"1j"], tile_behavior) |> Enum.flat_map(&Utils.call_to_tiles/1)
     Enum.filter(am_match_definitions, &Match.match_hand(hand ++ call_tiles, [], Rules.translate_match_definitions(state.rules_ref, [&1]), tile_behavior))
