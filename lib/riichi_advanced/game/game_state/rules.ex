@@ -408,6 +408,7 @@ defmodule RiichiAdvanced.GameState.Rules do
     "called_game",
     "shuugi/tobi",
     "shuugi/called_game",
+    "lib/zoroba",
   ]
   def load_default_ruleset(ruleset, mods, excluded_mods, json_config \\ "{}") do
     base_rules_ref = case RiichiAdvanced.Cache.get({:cache_default_ruleset, ruleset, mods, excluded_mods}) do

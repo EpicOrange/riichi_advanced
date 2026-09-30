@@ -1,0 +1,8 @@
+on after_initialization do
+  add_rule("Rules", "Zoroba", "Each 1 or 6 die rolled in the beginning adds 1 han to the winning hand. If they add to 7, an additional 1 han is added. This does not count towards any han minimum.")
+  add_rule("Rules", "Zoroba", "(Unimplemented) If neither die is 1 or 6, then they are rerolled until a 1 or 6 is obtained. Each reroll also increases this round's win score by 300.")
+end
+
+define_yaku extra_yaku, "Zoroba", [1, "Han"], dice_equals(7)
+define_yaku extra_yaku, "Zoroba", [1, "Han"], die1_equals(1, 6)
+define_yaku extra_yaku, "Zoroba", [1, "Han"], die2_equals(1, 6)
