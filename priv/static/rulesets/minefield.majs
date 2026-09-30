@@ -64,7 +64,8 @@ define_button build,
   display_name: "Choose 13 tiles to form a mangan+ hand",
   show_when: status("building"),
   unskippable: true,
-  cancellable: false
+  cancellable: false,
+  needs_confirm: true
   do
     mark([["hand", 13, ["self"]]])
     move_tiles(%{hand: ["marked"]}, "aside")

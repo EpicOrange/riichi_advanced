@@ -395,6 +395,7 @@ defmodule RiichiAdvanced.GameState.Kyoku do
     is_dealer = score_as_dealer or Riichi.is_dealer?(seat, state.kyoku, state.available_seats)
 
     # if we're playing bloody end, record our opponents
+    # TODO this is only used by ScoringOld, remove this once we remove that fallback in adjudicate_win_scoring
     opponents = if Rules.get(state.rules_ref, "bloody_end", false) do
       Enum.reject(state.available_seats, fn dir -> Map.has_key?(state.winners, dir) or dir == seat end)
     else state.available_seats -- [seat] end

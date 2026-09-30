@@ -58,8 +58,12 @@ defmodule RiichiAdvanced.GameState.Marking do
     state
   end
 
+  def marked_enough_objects?(marked_objects) do
+    not Enum.any?(marked_objects, fn {source, mark_info} -> (source not in @special_keys) and length(mark_info.marked) < mark_info.needed end)
+  end
+
   defp has_marked_enough?(state, seat) do
-    not Enum.any?(state.marking[seat], fn {source, mark_info} -> (source not in @special_keys) and length(mark_info.marked) < mark_info.needed end)
+    marked_enough_objects?(state.marking[seat])
   end
 
   defp has_confirmed?(state, seat, default \\ true) do

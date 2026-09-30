@@ -712,15 +712,19 @@ defmodule RiichiAdvanced.AIPlayer do
             GenServer.cast(state.game_state, {:mark_tile, state.seat, seat, i, source})
             GenServer.cast(state.game_state, {:confirm_marked_objects, state.seat})
           _ ->
-            if Debug.debug_ai() do
-              IO.puts(" >> #{state.seat}: Unfortunately I cannot mark anything")
-              IO.puts(" >> #{state.seat}: My choices were: #{inspect(choices)}")
-              IO.puts(" >> #{state.seat}: My marking state was: #{inspect(marked_objects)}")
-              if state.ruleset == "minefield" do
-                IO.puts(" >> #{state.seat}: My minefield hand was: #{inspect(state.minefield_hand)}")
+            if Marking.marked_enough_objects?(marked_objects) do
+              GenServer.cast(state.game_state, {:confirm_marked_objects, state.seat})
+            else
+              if Debug.debug_ai() do
+                IO.puts(" >> #{state.seat}: Unfortunately I cannot mark anything")
+                IO.puts(" >> #{state.seat}: My choices were: #{inspect(choices)}")
+                IO.puts(" >> #{state.seat}: My marking state was: #{inspect(marked_objects)}")
+                if state.ruleset == "minefield" do
+                  IO.puts(" >> #{state.seat}: My minefield hand was: #{inspect(state.minefield_hand)}")
+                end
               end
+              GenServer.cast(state.game_state, {:clear_marked_objects, state.seat})
             end
-            GenServer.cast(state.game_state, {:clear_marked_objects, state.seat})
         end
       end
       {:noreply, state}
