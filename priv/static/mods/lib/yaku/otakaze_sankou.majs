@@ -1,0 +1,29 @@
+default list, "yaku"
+default name, "Otakaze Sankou"
+default value, 3
+
+on after_initialization do
+  if equals(!name, "Otakaze Sankou") do
+    add_rule("$value $han", !name, "\"Three Guest Wind Triplets\". You have triplets of three guest winds. This requires the round wind to match your seat wind.", %{value: !value, han: !han})
+  else
+    add_rule("$value $han", !name, "You have triplets of three guest winds. This requires the round wind to match your seat wind.", %{value: !value, han: !han})
+  end
+  cond do
+    seat_is("east")  and round_wind_is("east")  -> update_rule("$value $han", !name, "%{example_hand}", %{value: !value, han: !han, example_hand: ~t"22p789s22233z 44z4Z 3z"})
+    seat_is("south") and round_wind_is("south") -> update_rule("$value $han", !name, "%{example_hand}", %{value: !value, han: !han, example_hand: ~t"22p789s11133z 44z4Z 3z"})
+    seat_is("west")  and round_wind_is("west")  -> update_rule("$value $han", !name, "%{example_hand}", %{value: !value, han: !han, example_hand: ~t"22p789s11122z 44z4Z 2z"})
+    seat_is("north") and round_wind_is("north") -> update_rule("$value $han", !name, "%{example_hand}", %{value: !value, han: !han, example_hand: ~t"22p789s11122z 33z3Z 2z"})
+  end
+end
+if defined("double_round_wind") do
+  on after_initialization do
+    cond do
+      seat_is("east")  and round_wind_is("west")  -> update_rule("$value $han", !name, "%{example_hand}", %{value: !value, han: !han, example_hand: ~t"22p789s22233z 44z4Z 3z"})
+      seat_is("south") and round_wind_is("north") -> update_rule("$value $han", !name, "%{example_hand}", %{value: !value, han: !han, example_hand: ~t"22p789s11133z 44z4Z 3z"})
+      seat_is("west")  and round_wind_is("east")  -> update_rule("$value $han", !name, "%{example_hand}", %{value: !value, han: !han, example_hand: ~t"22p789s11122z 44z4Z 2z"})
+      seat_is("north") and round_wind_is("south") -> update_rule("$value $han", !name, "%{example_hand}", %{value: !value, han: !han, example_hand: ~t"22p789s11122z 33z3Z 2z"})
+    end
+  end
+end
+
+define_yaku yaku, !name, [!value, !han], match(["hand", "calls", "winning_tile"], ~m"unique, (prevalent_wind seat_wind):-1, (ton nan shaa pei):3")

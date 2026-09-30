@@ -1,0 +1,16 @@
+require "standard_sets"
+require "value_honors"
+
+define "double_round_wind"
+
+on after_initialization do
+  add_rule("Rules", "Double Round Wind", "Opposing winds are also round winds. So in East round, West is also a round wind.")
+end
+
+on before_scoring, prepend: true do
+  # opposite prevalent winds
+  if round_wind_is("east") do add_attr(["hand", "calls", "winning_tile"], ["_prevalent"], ["3z"]) end
+  if round_wind_is("south") do add_attr(["hand", "calls", "winning_tile"], ["_prevalent"], ["4z"]) end
+  if round_wind_is("west") do add_attr(["hand", "calls", "winning_tile"], ["_prevalent"], ["1z"]) end
+  if round_wind_is("north") do add_attr(["hand", "calls", "winning_tile"], ["_prevalent"], ["2z"]) end
+end

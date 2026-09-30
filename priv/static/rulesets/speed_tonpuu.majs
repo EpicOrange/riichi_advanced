@@ -26,7 +26,7 @@ apply set_append, "default_mods", [
   %{name: "agariyame", config: %{round: "every", first_place_only: false, may_choose: true}},
   %{name: "tenpaiyame", config: %{round: "every", first_place_only: false, may_choose: true}},
   "kiriage_mangan",
-  "double_round_wind",
+  "lib/double_round_wind",
   "immediate_kan_dora",
   "yaku/open_riichi",
   "kokushi_ankan_chankan",

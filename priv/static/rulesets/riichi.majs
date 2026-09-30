@@ -354,6 +354,8 @@ config_mod "lib/yaku/sanpuukou", name: "dai_list", values: ["yaku"]
 config_mod "lib/yaku/sanpuukou", name: "dai_name", values: ["Sanpuukou"]
 config_mod "lib/yaku/sanpuukou", name: "dai_value", values: [2]
 config_mod "lib/yaku/sanpuukou", name: "dai_han", values: ["Han"]
+define_mod "lib/yaku/otakaze_sankou", order: 1, name: "Otakaze Sankou", desc: "Local yaku. \"Three Guest Wind Triplets\". 2 han if you have three guest wind triplets. This requires the round wind to match your seat wind."
+config_mod "lib/yaku/otakaze_sankou", name: "value", values: [2]
 define_mod "yaku/renkaihou", deps: ["lib/yaku/rinshan"], name: "Renkaihou", desc: "Local yaku. \"Consecutive Blossom\". 2 han if you kan off the rinshan tile and win off of _that_ rinshan tile. Does not stack with rinshan."
 define_mod "yaku/mondeikou", deps: ["aka"], name: "Mondeikou", desc: "Local yaku. If you have 4 aka, 2 han on top of aka. This counts as a yaku."
 # 3 han
@@ -927,7 +929,7 @@ define_preset "Just Like Modded Minecraft", [
   "lib/kuikae_nashi",
   "kiriage_mangan",
   "double_wind_4_fu",
-  "double_round_wind",
+  "lib/double_round_wind",
   "lib/pao_standard",
   "lib/pao_suukantsu",
   "pao_rinshan",
@@ -962,6 +964,7 @@ define_preset "Just Like Modded Minecraft", [
     shou_name: "", shou_value: 0,
     dai_name: "Sanpuukou", dai_value: 2
   }},
+  %{name: "lib/yaku/otakaze_sankou", config: %{value: 2}},
   "yaku/renkaihou",
   %{name: "lib/yaku/isshoku_sanjun", config: %{
     san_value: 2, san_closed_bonus: 1,

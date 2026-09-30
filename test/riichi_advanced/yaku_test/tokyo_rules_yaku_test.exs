@@ -340,4 +340,102 @@ defmodule RiichiAdvanced.YakuTest.TokyoRulesYaku do
     })
   end
 
+  test "tokyo - otakaze sankou" do
+    TestUtils.test_yaku_advanced("tokyo_rules", [], [], """
+    {
+      "starting_hand": {
+        "east": ["2m", "2m", "3p", "4p", "5p", "2z", "2z", "3z", "3z", "3z", "4z", "4z", "4z"],
+        "south": ["1m", "6m", "7m", "2p", "5p", "8p", "3s", "5s", "7s", "8s", "9s", "3m", "4m"],
+        "west": ["1m", "6m", "7m", "2p", "5p", "8p", "3s", "5s", "7s", "8s", "9s", "3m", "4m"],
+        "north": ["5m", "6m", "8m", "4p", "8p", "9p", "3s", "5s", "7s", "8s", "9s", "3m", "4m"]
+      },
+      "starting_draws": ["6z", "2z"]
+    }
+    """, [
+      %{"type" => "discard", "tile" => "6z", "player" => 0, "tsumogiri" => true},
+      %{"type" => "discard", "tile" => "2z", "player" => 1, "tsumogiri" => true},
+      %{"type" => "buttons_pressed", "buttons" => [%{"button" => "ron"}, nil, nil, nil]},
+    ], %{
+      east: %{
+        yaku: [{"Otakaze Sankou", [3, "Han"]}],
+        minipoints: 50,
+        score: 2400
+      }
+    })
+  end
+
+  test "tokyo - no otakaze sankou if seat wind" do
+    TestUtils.test_yaku_advanced("tokyo_rules", [], [], """
+    {
+      "starting_hand": {
+        "east": ["1m", "6m", "7m", "2p", "5p", "8p", "3s", "5s", "7s", "8s", "9s", "3m", "4m"],
+        "south": ["1m", "1m", "3p", "4p", "5p", "2z", "2z", "3z", "3z", "3z", "4z", "4z", "4z"],
+        "west": ["1m", "6m", "7m", "2p", "5p", "8p", "3s", "5s", "7s", "8s", "9s", "3m", "4m"],
+        "north": ["5m", "6m", "8m", "4p", "8p", "9p", "3s", "5s", "7s", "8s", "9s", "3m", "4m"]
+      },
+      "starting_draws": ["6z", "6z", "2z"]
+    }
+    """, [
+      %{"type" => "discard", "tile" => "6z", "player" => 0, "tsumogiri" => true},
+      %{"type" => "discard", "tile" => "6z", "player" => 1, "tsumogiri" => true},
+      %{"type" => "discard", "tile" => "2z", "player" => 2, "tsumogiri" => true},
+      %{"type" => "buttons_pressed", "buttons" => [nil, %{"button" => "ron"}, nil, nil]},
+    ], %{
+      south: %{
+        yaku: [{"Seat Wind", [1, "Han"]}],
+        minipoints: 50,
+        score: 400
+      }
+    })
+  end
+
+  test "tokyo - no otakaze sankou if round wind" do
+    TestUtils.test_yaku_advanced("tokyo_rules", [], [], """
+    {
+      "starting_hand": {
+        "east": ["1m", "6m", "7m", "2p", "5p", "8p", "3s", "5s", "7s", "8s", "9s", "3m", "4m"],
+        "south": ["1m", "1m", "3p", "4p", "5p", "1z", "1z", "3z", "3z", "3z", "4z", "4z", "4z"],
+        "west": ["1m", "6m", "7m", "2p", "5p", "8p", "3s", "5s", "7s", "8s", "9s", "3m", "4m"],
+        "north": ["5m", "6m", "8m", "4p", "8p", "9p", "3s", "5s", "7s", "8s", "9s", "3m", "4m"]
+      },
+      "starting_draws": ["6z", "6z", "1z"]
+    }
+    """, [
+      %{"type" => "discard", "tile" => "6z", "player" => 0, "tsumogiri" => true},
+      %{"type" => "discard", "tile" => "6z", "player" => 1, "tsumogiri" => true},
+      %{"type" => "discard", "tile" => "1z", "player" => 2, "tsumogiri" => true},
+      %{"type" => "buttons_pressed", "buttons" => [nil, %{"button" => "ron"}, nil, nil]},
+    ], %{
+      south: %{
+        yaku: [{"Round Wind", [1, "Han"]}],
+        minipoints: 50,
+        score: 400
+      }
+    })
+  end
+
+  test "tokyo - otakaze sankou with double round wind not possible" do
+    TestUtils.test_yaku_advanced("tokyo_rules", ["lib/double_round_wind"], [], """
+    {
+      "starting_hand": {
+        "east": ["2m", "2m", "3p", "4p", "5p", "2z", "2z", "3z", "3z", "3z", "4z", "4z", "4z"],
+        "south": ["1m", "6m", "7m", "2p", "5p", "8p", "3s", "5s", "7s", "8s", "9s", "3m", "4m"],
+        "west": ["1m", "6m", "7m", "2p", "5p", "8p", "3s", "5s", "7s", "8s", "9s", "3m", "4m"],
+        "north": ["5m", "6m", "8m", "4p", "8p", "9p", "3s", "5s", "7s", "8s", "9s", "3m", "4m"]
+      },
+      "starting_draws": ["6z", "2z"]
+    }
+    """, [
+      %{"type" => "discard", "tile" => "6z", "player" => 0, "tsumogiri" => true},
+      %{"type" => "discard", "tile" => "2z", "player" => 1, "tsumogiri" => true},
+      %{"type" => "buttons_pressed", "buttons" => [%{"button" => "ron"}, nil, nil, nil]},
+    ], %{
+      east: %{
+        yaku: [{"Round Wind", [1, "Han"]}],
+        minipoints: 50,
+        score: 600
+      }
+    })
+  end
+
 end
