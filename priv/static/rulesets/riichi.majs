@@ -231,7 +231,7 @@ config_mod aka, name: "man", values: [0,1,2,3,4], default: 1
 config_mod aka, name: "pin", values: [0,1,2,3,4], default: 1
 config_mod aka, name: "sou", values: [0,1,2,3,4], default: 1
 define_mod kandora, deps: ["dora"], name: "Kandora", desc: "Enables dora flip on kan."
-define_mod immediate_kan_dora, order: 1, deps: ["kandora", "dora"], name: "Immediate Kan Dora", desc: "Flip kan dora immediately after daiminkan and kakan."
+config_mod kandora, name: "immediate", values: [false, true], default: false
 define_mod ao, order: 3, deps: ["aka"], conflicts: ["its_all_aka"], name: "Ao", desc: "Enables ao dora (blue fives), worth 2 han each."
 config_mod ao, name: "man", values: [0,1,2,3,4], default: 1
 config_mod ao, name: "pin", values: [0,1,2,3,4], default: 1
@@ -875,8 +875,7 @@ define_preset "M.League", [
   "kokushi_ankan_chankan",
   %{name: "dora", config: %{start_indicators: 1}},
   "ura",
-  "kandora",
-  "immediate_kan_dora",
+  %{name: "kandora", config: %{immediate: true}},
   "show_waits",
   %{name: "lib/min_han", config: %{min: 1, han: "Han"}},
   "cancellable_riichi",
@@ -942,7 +941,7 @@ define_preset "Just Like Modded Minecraft", [
   %{name: "kyuushu_kyuuhai", config: %{name: "Kyuushu Kyuuhai"}},
   %{name: "dora", config: %{start_indicators: 3}},
   "ura",
-  "kandora",
+  %{name: "kandora", config: %{immediate: true}},
   "yaku/tsubame_gaeshi",
   "lib/yaku/shiiaru_raotai",
   "yaku/kanburi",
@@ -1028,7 +1027,6 @@ define_preset "Just Like Modded Minecraft", [
   %{name: "lib/min_han", config: %{min: 1, han: "Han"}},
   "cancellable_riichi",
   "yes_riichi_ankan",
-  "immediate_kan_dora",
   "yaku/nippatsu",
   "star_suit",
   "lib/space",

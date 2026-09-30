@@ -1,5 +1,11 @@
+default immediate, false
+
 def after_initialization do
-  add_rule("Rules", "Kandora", "Every kan reveals another dora indicator after the discard, except for concealed kan, which reveals one immediately.")
+  if !immediate do
+    add_rule("Rules", "Kandora", "Every kan reveals another dora indicator immediately.")
+  else
+    add_rule("Rules", "Kandora", "Every kan reveals another dora indicator after the discard, except for concealed kan, which reveals one immediately.")
+  end
 end
 
 def flip_dora do
@@ -21,16 +27,25 @@ end
 on before_turn_change do flip_after_kan end
 on before_call do flip_after_kan end
 # dora flip on win
-on before_win, prepend: true do flip_after_kan end
+if !immediate do on before_win, prepend: true do flip_after_kan end end
 
 apply initialize, "constants.closed_kans", ["ankan"]
 
-# dora flips immediately after ankan
-def do_kan_draw, prepend: true do
-  if last_call_is(+@closed_kans) do
+if !immediate do
+  # dora flips immediately
+  def do_kan_draw, prepend: true do
     flip_dora
     # set status to prevent a second dora flip after turn change
     set_status("skip_kan_dora_flip")
+  end
+else
+  # dora flips immediately after ankan only
+  def do_kan_draw, prepend: true do
+    if last_call_is(+@closed_kans) do
+      flip_dora
+      # set status to prevent a second dora flip after turn change
+      set_status("skip_kan_dora_flip")
+    end
   end
 end
 
