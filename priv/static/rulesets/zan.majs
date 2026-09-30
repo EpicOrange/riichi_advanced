@@ -9,7 +9,7 @@ apply subtract, "default_mods", [
   %{name: "lib/tobi", config: %{below: 1}},
   %{name: "uma", config: %{_1st: 10, _2nd: 5, _3rd: -5, _4th: -10}},
   %{name: "aka", config: %{man: 1, pin: 1, sou: 1}},
-  "kansai_30_fu",
+  %{name: "lib/fixed_fu", config: %{"fu" => 30}},
 ]
 apply set_append, "default_mods", [
   %{name: "honba", config: %{value: 1000}},
@@ -27,7 +27,7 @@ apply set_append, "default_mods", [
   %{name: "shiro_pocchi", config: %{ippatsu_only: false}},
   %{name: "aka", config: %{pin: 4, sou: 4, man: 4}},
   %{name: "shuugi/aka", config: %{chips: 1, closed_only: false}},
-  "kansai_40_fu",
+  %{name: "lib/fixed_fu", config: %{"fu" => 40}},
   "kansai_shuugi",
   "lib/zan_scoring",
   "lib/kansai_draw",

@@ -83,5 +83,5 @@ def calculate_fu do
 end
 
 on before_scoring do
-  calculate_fu
+  if fu == 0 do calculate_fu end
 end

@@ -18,6 +18,9 @@ on after_initialization do
   update_rule("$value $han", !name, "%{example_hand}", %{value: !value, han: !han, example_hand: ~t"345789m45p23499s 6p"})
 end
 
+# this is so fixed fu mod can overwrite fu without affecting pinfu
+def calculate_fu, append: true do pinfu_fu = fu end
+
 define_yaku !list, !name, [!value, !han], (@open_pinfu or @closed_hand)
   and match(["hand", "calls", "winning_tile"], ["standard_win"])
-  and ((won_by_draw and minipoints_equals(!pinfu_tsumo)) or (not_won_by_draw and minipoints_equals(!pinfu_ron)))
+  and ((won_by_draw and pinfu_fu == !pinfu_tsumo) or (not_won_by_draw and pinfu_fu == !pinfu_ron))

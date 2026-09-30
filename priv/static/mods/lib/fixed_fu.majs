@@ -1,0 +1,2 @@
+default fu, 30
+on before_scoring do fu = !fu end

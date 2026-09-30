@@ -14,7 +14,7 @@ apply set_append, "default_mods", [
   "lib/kansai_flowers",
   "kansai_no_furiten_riichi",
   "kansai_no_100_sticks",
-  "kansai_30_fu",
+  %{name: "lib/fixed_fu", config: %{"fu" => 30}},
   %{name: "sanma_no_tsumo_loss", config: %{"method" => "half"}},
   "kansai_shuugi",
   "lib/zan_scoring"
@@ -71,8 +71,8 @@ define_mod "lib/kansai_flowers", name: "Kansai Flowers", category: "Kansai", ord
 define_mod kansai_yaku, name: "Kansai Yaku", category: "Kansai", order: 5, desc: "Enables kansai yaku, namely: Three Consecutive Triplets (2 Han), Four Consecutive Triplets (Yakuman), Big Three Winds (2 Han), Manzu Chinitsu (Yakuman), Honitsu Chiitoitsu (6 Han), and Chinitsu Chiitoitsu (Yakuman). The last three don't stack with Honitsu/Chinitsu/Chiitoitsu."
 define_mod kansai_no_furiten_riichi, name: "No Furiten Riichi", category: "Kansai", order: 6, deps: ["lib/yaku/riichi"], desc: "Riichi is disallowed while in furiten."
 define_mod kansai_no_100_sticks, name: "No 100 sticks", category: "Kansai", order: 5, desc: "All scores are rounded to 1000s instead of 100s."
-define_mod kansai_30_fu, name: "30 Fu", category: "Kansai", order: 5, conflicts: ["kansai_40_fu"], desc: "Fu is fixed at 30."
-define_mod kansai_40_fu, name: "40 Fu", category: "Kansai", order: 5, conflicts: ["kansai_30_fu"], desc: "Fu is fixed at 40."
+define_mod "lib/fixed_fu", name: "Fixed Fu", category: "Kansai", order: 5, desc: "Fu is fixed at some amount."
+config_mod "lib/fixed_fu", name: "fu", values: [20, 30, 40, 50, 60, 70, 80, 90, 100, 110], default: 30
 define_mod kansai_shuugi, name: "Zan Shuugi", category: "Kansai", order: 5, deps: ["shuugi"], desc: "Enable zan shuugi: having 4 flowers is 10 chips ron / 5 chips tsumo. Same payment for non-kazoe yakuman."
 define_mod "lib/zan_scoring", name: "Zan Scoring", category: "Kansai", order: 5, desc: "Use the zan scoring table."
 

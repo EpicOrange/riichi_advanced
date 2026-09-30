@@ -20,7 +20,7 @@ defmodule RiichiAdvanced.YakuTest.KansaiYaku do
     ], %{
       east: %{
         yaku: [{"Ao", [1, "Han"]}, {"Double Riichi", [2, "Han"]}, {"Honitsu", [3, "Han"]}, {"Ippatsu", [1, "Han"]}, {"North Wind", [1, "Han"]}],
-        minipoints: 50
+        minipoints: 30
       }
     })
   end
@@ -43,7 +43,7 @@ defmodule RiichiAdvanced.YakuTest.KansaiYaku do
     ], %{
       east: %{
         yaku: [{"Double Riichi", [2, "Han"]}, {"Ippatsu", [1, "Han"]}, {"Tanyao", [1, "Han"]}],
-        minipoints: 40
+        minipoints: 30
       }
     })
   end
@@ -66,7 +66,7 @@ defmodule RiichiAdvanced.YakuTest.KansaiYaku do
     ], %{
       east: %{
         yaku: [{"Double Riichi", [2, "Han"]}, {"Honitsu", [3, "Han"]}, {"Ippatsu", [1, "Han"]}, {"North Wind", [1, "Han"]}],
-        minipoints: 50
+        minipoints: 30
       }
     })
   end
@@ -111,7 +111,7 @@ defmodule RiichiAdvanced.YakuTest.KansaiYaku do
     ], %{
       east: %{
         yaku: [{"Seat Wind", [1, "Han"]}, {"Flower", [1, "Han"]}],
-        minipoints: 50
+        minipoints: 30
       }
     })
   end
