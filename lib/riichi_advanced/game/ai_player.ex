@@ -634,7 +634,12 @@ defmodule RiichiAdvanced.AIPlayer do
 
       if state.ruleset != "minefield" or has_minefield_hand do
         case choices do
-          [{{seat, source, _obj}, i} | _] -> GenServer.cast(state.game_state, {:mark_tile, state.seat, seat, i, source})
+          [{{seat, source, _obj}, i} | _] ->
+            # if Debug.debug_ai() do
+            #   IO.puts(" >> #{state.seat}: Marking tile #{i}")
+            # end
+            GenServer.cast(state.game_state, {:mark_tile, state.seat, seat, i, source})
+            GenServer.cast(state.game_state, {:confirm_marked_objects, state.seat})
           _ ->
             if Debug.debug_ai() do
               IO.puts(" >> #{state.seat}: Unfortunately I cannot mark anything")

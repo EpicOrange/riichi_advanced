@@ -8,7 +8,7 @@ defmodule RiichiAdvanced.GameState.Marking do
   alias RiichiAdvanced.Utils, as: Utils
   import RiichiAdvanced.GameState
 
-  @special_keys [:done, :cancellable, :post_actions, :cancel_actions]
+  @special_keys [:done, :cancellable, :post_actions, :cancel_actions, :needs_confirm]
   @mark_targets %{
     "hand" => :hand,
     "call" => :calls,
@@ -41,8 +41,9 @@ defmodule RiichiAdvanced.GameState.Marking do
     Map.put(state, :marking, Map.new(state.available_seats, fn seat -> {seat, []} end))
   end
 
-  def setup_marking(state, seat, to_mark, cancellable, post_actions, cancel_actions) do
+  def setup_marking(state, seat, to_mark, cancellable, post_actions, cancel_actions, needs_confirm) do
     init = [done: false, cancellable: cancellable, post_actions: post_actions, cancel_actions: cancel_actions]
+    init = if needs_confirm do [{:needs_confirm, true} | init] else init end
     state = put_in(state.marking[seat], for {target, amount, restrictions} <- to_mark, reduce: init do
       marked_objects ->
         mark_spec = %{marked: [], needed: amount, restrictions: restrictions}
@@ -57,8 +58,16 @@ defmodule RiichiAdvanced.GameState.Marking do
     state
   end
 
+  defp has_marked_enough?(state, seat) do
+    not Enum.any?(state.marking[seat], fn {source, mark_info} -> (source not in @special_keys) and length(mark_info.marked) < mark_info.needed end)
+  end
+
+  defp has_confirmed?(state, seat, default \\ true) do
+    not Keyword.get(state.marking[seat], :needs_confirm, not default)
+  end
+
   def needs_marking?(state, seat) do
-    Enum.any?(state.marking[seat], fn {source, mark_info} -> (source not in @special_keys) and length(mark_info.marked) < mark_info.needed end)
+    not has_confirmed?(state, seat) or not has_marked_enough?(state, seat)
   end
 
   def get_object(state, seat, index, source) do
@@ -198,8 +207,9 @@ defmodule RiichiAdvanced.GameState.Marking do
     mark_infos = get_mark_infos(state.marking[marking_player], source)
     Enum.any?(mark_infos, fn {_src, mark_info} ->
       marked_enough = mark_info != nil and length(mark_info.marked) >= mark_info.needed
+      has_confirmed = mark_info != nil and has_confirmed?(state, marking_player, false)
       already_marked = is_marked?(state, marking_player, seat, index, source)
-      mark_info != nil and not marked_enough and not already_marked and _can_mark?(state, marking_player, seat, index, source, mark_info)
+      mark_info != nil and not marked_enough and not has_confirmed and not already_marked and _can_mark?(state, marking_player, seat, index, source, mark_info)
     end)
   end
 
@@ -224,12 +234,18 @@ defmodule RiichiAdvanced.GameState.Marking do
   end
 
   def unmark_tile(state, marking_player, seat, index, source) do
-    if not Enum.empty?(state.marking[marking_player]) do
+    if not Enum.empty?(state.marking[marking_player]) and not has_confirmed?(state, marking_player) do
       valid_mark_info_ix = state.marking[marking_player]
       |> Enum.find_index(fn {src, mark_info} -> src == source and _can_mark?(state, marking_player, seat, index, source, mark_info) end)
       update_in(state.marking[marking_player], &List.update_at(&1, valid_mark_info_ix, fn {src, mark_info} ->
         {src, update_in(mark_info.marked, fn marked -> marked -- [{get_object(state, seat, index, source), seat, index}] end)}
       end))
+    else state end
+  end
+
+  def confirm_marked_objects(state, marking_player) do
+    if not has_confirmed?(state, marking_player) and has_marked_enough?(state, marking_player) do
+      update_in(state.marking[marking_player], &Keyword.put(&1, :needs_confirm, false))
     else state end
   end
 
@@ -252,7 +268,7 @@ defmodule RiichiAdvanced.GameState.Marking do
   def adjudicate_marking(state) do
     # only continue if no one needs marking
     if not Enum.any?(state.available_seats, &needs_marking?(state, &1)) do
-      state = for seat <- state.available_seats, not Enum.empty?(state.marking[seat]), reduce: state do
+      state = for seat <- state.available_seats, not Enum.empty?(state.marking[seat]) and has_confirmed?(state, seat), reduce: state do
         state ->
           # run actions, including the mark action that marks done
           state = Actions.run_deferred_actions(state, seat)

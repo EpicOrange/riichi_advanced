@@ -441,7 +441,8 @@ define_button charleston_left,
   display_name: "Select three tiles to pass left",
   show_when: passables >= 3 and status("charleston_left"),
   unskippable: true,
-  cancellable: false
+  cancellable: false,
+  needs_confirm: true
   do
     mark [["hand", 3, ["self", "can_discard"]]] do
       unset_status("charleston_left", "heavenly_available")
@@ -457,7 +458,8 @@ define_button charleston_across,
   display_name: "Select three tiles to pass across",
   show_when: passables >= 3 and status("charleston_across"),
   unskippable: true,
-  cancellable: false
+  cancellable: false,
+  needs_confirm: true
   do
     mark [["hand", 3, ["self", "can_discard"]]] do
       unset_status("charleston_across", "heavenly_available")
@@ -473,7 +475,8 @@ define_button charleston_right,
   display_name: "Select three tiles to pass right",
   show_when: passables >= 3 and status("charleston_right"),
   unskippable: true,
-  cancellable: false
+  cancellable: false,
+  needs_confirm: true
   do
     mark [["hand", 3, ["self", "can_discard"]]] do
       unset_status("charleston_right", "heavenly_available")
@@ -574,7 +577,8 @@ define_button charleston_across_0,
   display_name: "Pass no tiles across",
   show_when: status("final_charleston", "charleston_across_0") and toimen_status("final_charleston", "charleston_across_0"),
   unskippable: true,
-  cancellable: false
+  cancellable: false,
+  needs_confirm: true
   do
     unset_status("final_charleston", "charleston_across_0")
     if not_anyone_status("final_charleston") do
@@ -586,7 +590,8 @@ define_button charleston_across_1,
   display_name: "Select a tile to pass across",
   show_when: passables >= 1 and status("final_charleston", "charleston_across_1") and toimen_status("final_charleston", "charleston_across_1"),
   unskippable: true,
-  cancellable: false
+  cancellable: false,
+  needs_confirm: true
   do
     mark [["hand", 1, ["self", "can_discard"]]] do
       unset_status("charleston_across_1")
@@ -600,7 +605,8 @@ define_button charleston_across_2,
   display_name: "Select two tiles to pass across",
   show_when: passables >= 2 and status("final_charleston", "charleston_across_2") and toimen_status("final_charleston", "charleston_across_2"),
   unskippable: true,
-  cancellable: false
+  cancellable: false,
+  needs_confirm: true
   do
     mark [["hand", 2, ["self", "can_discard"]]] do
       unset_status("charleston_across_2")
@@ -614,7 +620,8 @@ define_button charleston_across_3,
   display_name: "Select three tiles to pass across",
   show_when: passables >= 3 and status("final_charleston", "charleston_across_3") and toimen_status("final_charleston", "charleston_across_3"),
   unskippable: true,
-  cancellable: false
+  cancellable: false,
+  needs_confirm: true
   do
     mark [["hand", 3, ["self", "can_discard"]]] do
       unset_status("charleston_across_3")

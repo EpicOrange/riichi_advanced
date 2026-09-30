@@ -2372,7 +2372,8 @@ defmodule RiichiAdvanced.GameState.Actions do
               # setup marking
               buttons = Rules.get(state.rules_ref, "buttons", %{})
               cancellable = Map.get(buttons[choice.name], "cancellable", true)
-              state = Marking.setup_marking(state, seat, mark_spec, cancellable, post_actions, cancel_actions)
+              needs_confirm = Map.get(buttons[choice.name], "needs_confirm", false)
+              state = Marking.setup_marking(state, seat, mark_spec, cancellable, post_actions, cancel_actions, needs_confirm)
               if Debug.debug_actions() do
                 IO.puts("Scheduling mark actions for #{seat}: #{inspect(actions)}")
               end

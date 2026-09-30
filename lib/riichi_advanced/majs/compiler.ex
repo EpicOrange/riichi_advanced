@@ -798,7 +798,7 @@ defmodule RiichiAdvanced.Compiler do
     end
     field_names = [
       "display_name", "show_when", "actions",
-      "precedence_over", "unskippable", "cancellable", "upgrades", "interrupt_level",
+      "precedence_over", "unskippable", "cancellable", "needs_confirm", "upgrades", "interrupt_level",
       "call", "call_conditions", "call_style",
       "call_name", "msg_name"
     ]

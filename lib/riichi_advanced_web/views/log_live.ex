@@ -190,6 +190,11 @@ defmodule RiichiAdvancedWeb.LogLive do
     {:noreply, socket}
   end
 
+  def handle_event("confirm_marked_objects", _assigns, socket) do
+    GenServer.cast(socket.assigns.game_state, {:confirm_marked_objects, socket.assigns.seat})
+    {:noreply, socket}
+  end
+
   def handle_event("clear_marked_objects", _assigns, socket) do
     GenServer.cast(socket.assigns.game_state, {:clear_marked_objects, socket.assigns.seat})
     {:noreply, socket}

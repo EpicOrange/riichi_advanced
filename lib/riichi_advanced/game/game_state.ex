@@ -2072,6 +2072,13 @@ defmodule RiichiAdvanced.GameState do
     {:noreply, state}
   end
 
+  def handle_cast({:confirm_marked_objects, marking_player}, state) do
+    state = Marking.confirm_marked_objects(state, marking_player)
+    state = Marking.adjudicate_marking(state)
+    state = broadcast_state_change(state)
+    {:noreply, state}
+  end
+
   def handle_cast({:clear_marked_objects, marking_player}, state) do
     state = Marking.clear_marked_objects(state, marking_player)
     notify_ai_marking(state, marking_player)
