@@ -337,7 +337,7 @@ define_mod "lib/yaku/sanshoku_ittsuu", name: "Sanshoku Ittsuu", desc: "Local yak
 config_mod "lib/yaku/sanshoku_ittsuu", name: "value", values: [1]
 config_mod "lib/yaku/sanshoku_ittsuu", name: "closed_bonus", values: [1]
 define_mod "yaku/kyandonhou", name: "Kyandonhou", desc: "Local yaku. \"Twice Mixed Double Sequence\". A mixed double sequence is when you have two sequences of the same number in different suits, like 345m 345p. 2 han for having two mixed double sequences."
-define_mod "yaku/ryandoukou", name: "Ryandoukou", desc: "Local yaku. \"Twice Double Triplets\". A double triplet is when you have two triplets of the same number in different suits, like 333m 333p. 2 han for having two sets of double triplets."
+define_mod "lib/yaku/ryandoukou", name: "Ryandoukou", desc: "Local yaku. \"Twice Double Triplets\". A double triplet is when you have two triplets of the same number in different suits, like 333m 333p. 2 han for having two sets of double triplets."
 define_mod "yaku/shoutate", name: "Shoutate", desc: "Local yaku. \"Little Mixed Triplets\". 2 han for having sanshoku doukou, except one of the triplets is a pair."
 define_mod "lib/yaku/choupaikou", name: "Choupaikou etc.", desc: "Local yaku. 2 han for having the pattern 111333555 (choupaikou), 111444777 (sujipaikou), or 111555999 (chousankou) in one suit. The pattern does not have to start with 1, but cannot wrap. 1 han if instead, all three triplets are in different suits."
 define_mod "yaku/suuzuukou", name: "Suuzuukou", desc: "Local yaku. \"Four Honor Triplets\". 2 han for having four honor tile triplets."
@@ -955,7 +955,7 @@ define_preset "Just Like Modded Minecraft", [
   }},
   %{name: "lib/yaku/sanshoku_ittsuu", config: %{value: 1, closed_bonus: 1}},
   "yaku/kyandonhou",
-  "yaku/ryandoukou",
+  "lib/yaku/ryandoukou",
   "yaku/shoutate",
   "lib/yaku/choupaikou",
   "yaku/suuzuukou",

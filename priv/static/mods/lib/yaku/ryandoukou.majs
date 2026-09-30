@@ -1,0 +1,15 @@
+default list, "yaku"
+default name, "Ryandoukou"
+default value, 2
+
+on after_initialization do
+  if equals(!name, "Ryandoukou") do
+    add_rule("$value $han", !name, "\"Twice Double Triplets\". The four sets in your hand form two pairs of double triplets. A double triplet is when you have two triplets of the same number in different suits, like 333m 333p. Stacks with toitoi.", %{value: !value, han: !han}, 102)
+  else
+    add_rule("$value $han", !name, "\"Twice Double Triplets\". The four sets in your hand form two pairs of double triplets. A double triplet is when you have two triplets of the same number in different suits, like 333m 333p.", %{value: !value, han: !han}, 102)
+  end
+  update_rule("$value $han", !name, "%{example_hand}", %{example_hand: ~t"1444m444666p666s 1m"})
+end
+
+define_set ryandoukou, ~s"0 0 0,10 10 10|0 0 0, 20 20 20"
+define_yaku !list, !name, [!value, !han], match(["hand", "calls", "winning_tile"], ~m"exhaustive, ryandoukou:2, pair:1")

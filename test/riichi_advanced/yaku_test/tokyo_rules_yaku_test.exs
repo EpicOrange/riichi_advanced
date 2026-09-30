@@ -462,4 +462,34 @@ defmodule RiichiAdvanced.YakuTest.TokyoRulesYaku do
     })
   end
 
+  test "tokyo - ryandoukou" do
+    TestUtils.test_yaku_advanced("tokyo_rules", [], [], """
+    {
+      "starting_hand": {
+        "east": ["3m", "3m", "3m", "3p", "3p", "3p", "4p", "4p", "5p", "4s", "4s", "8p", "9p"],
+        "south": ["1m", "6m", "7m", "2p", "5p", "8p", "2s", "5s", "7s", "8s", "9s", "2m", "4m"],
+        "west": ["1m", "6m", "7m", "2p", "5p", "9p", "3s", "5s", "7s", "8s", "9s", "2m", "4m"],
+        "north": ["5m", "6m", "8m", "4p", "8p", "9p", "3s", "5s", "7s", "8s", "9s", "2m", "4m"]
+      },
+      "starting_draws": ["6z", "4s", "4p", "8p"]
+    }
+    """, [
+      %{"type" => "discard", "tile" => "6z", "player" => 0, "tsumogiri" => true},
+      %{"type" => "discard", "tile" => "4s", "player" => 1, "tsumogiri" => true},
+      %{"type" => "buttons_pressed", "buttons" => [%{"button" => "pon"}, nil, nil, nil]},
+      %{"type" => "discard", "tile" => "9p", "player" => 0, "tsumogiri" => false},
+      %{"type" => "discard", "tile" => "4p", "player" => 1, "tsumogiri" => true},
+      %{"type" => "buttons_pressed", "buttons" => [%{"button" => "pon"}, nil, nil, nil]},
+      %{"type" => "discard", "tile" => "5p", "player" => 0, "tsumogiri" => false},
+      %{"type" => "discard", "tile" => "8p", "player" => 1, "tsumogiri" => true},
+      %{"type" => "buttons_pressed", "buttons" => [%{"button" => "ron"}, nil, nil, nil]},
+    ], %{
+      east: %{
+        yaku: [{"Toitoi", [2, "Han"]}, {"Tanyao", [1, "Han"]}, {"Ryandoukou", [2, "Han"]}],
+        minipoints: 34,
+        score: 6000
+      }
+    })
+  end
+
 end
