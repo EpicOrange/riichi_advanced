@@ -181,7 +181,24 @@ defmodule RiichiAdvanced.GameState.American do
           ++ translate_american_match_definitions_suits(choice.b, sb)
           ++ translate_american_match_definitions_suits(choice.c, sc)
         {offsets, nonoffsets} = Enum.split_with(parsed_groups, &Enum.any?(&1, fn t -> MatchOld.is_offset(t) end))
-        offsets = Enum.map(offsets, fn g -> if Enum.empty?(g) do [] else [["unique" | g], length(g)] end end)
+        # optimally we combine all offsets together
+        # but for size 1-2 groups whose member(s) are repeated in another group,
+        # we want to keep them separate, so they can be marked nojoker later
+        offsets_i = offsets
+        |> Enum.reject(&Enum.empty?/1)
+        |> Enum.with_index()
+        {offsets, nojoker_offsets} = offsets_i
+        |> Enum.split_with(fn {group, i} ->
+          length(group) >= 3 or not Enum.any?(Enum.drop(offsets, i+1), fn os -> Enum.any?(group, & &1 in os) end)
+        end)
+        offsets = Enum.map(offsets, fn {g, _i} -> g end)
+        nojoker_offsets = Enum.map(nojoker_offsets, fn {g, _i} -> g end)
+        offsets = if Enum.empty?(offsets) do
+          nojoker_offsets
+        else
+          [Enum.concat(offsets) | nojoker_offsets]
+        end
+        |> Enum.map(fn g -> [["unique" | g], length(g)] end)
         nonoffsets = Enum.map(nonoffsets, fn g -> [[g], 1] end)
         [offsets ++ nonoffsets ++ choice.unsuited]
       end
