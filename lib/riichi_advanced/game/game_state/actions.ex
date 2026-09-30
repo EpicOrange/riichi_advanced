@@ -2457,8 +2457,7 @@ defmodule RiichiAdvanced.GameState.Actions do
     # supercede choices
     # basically, starting from the current turn player's choice, clear out others' choices
     buttons = Rules.get(state.rules_ref, "buttons", %{})
-    ordered_seats = [state.turn, Utils.next_turn(state.turn), Utils.next_turn(state.turn, 2), Utils.next_turn(state.turn, 3)]
-    |> Enum.filter(fn seat -> seat in state.available_seats end)
+    ordered_seats = Enum.sort_by(state.available_seats, &Utils.atamahane_order(state.turn, &1))
     {_, _, state} = for _ <- ordered_seats, reduce: {ordered_seats, ["skip", "play_tile"], state} do
       {[seat | later_seats], superceded_choices, state} ->
         choice = state.players[seat].choice
@@ -2478,7 +2477,7 @@ defmodule RiichiAdvanced.GameState.Actions do
                   true -> :ok
                 end
               end
-              %{ player | choice: %Choice{ name: "skip" }, buttons: [], button_choices: %{} }
+              %{ player | choice: %Choice{ name: "skip" }, buttons: [], button_choices: %{}, call_buttons: %{} }
             else player end
           end)
         else state end
@@ -2514,7 +2513,7 @@ defmodule RiichiAdvanced.GameState.Actions do
             if Debug.debug_actions() do
               IO.puts("Superceding choice for #{dir} due to existing #{inspect(player.choice)} having higher call priority")
             end
-            %{ player | choice: %Choice{ name: "skip" }, buttons: [], button_choices: %{} }
+            %{ player | choice: %Choice{ name: "skip" }, buttons: [], button_choices: %{}, call_buttons: %{} }
           else player end
         end)
     end
