@@ -81,7 +81,7 @@ define_button start_no_flower,
     big_text("No Flowers")
     set_status("no_flowers")
     move_tiles("draw", "hand")
-    advance_turn
+    uninterruptible_advance_turn
     recalculate_buttons
   end
 
