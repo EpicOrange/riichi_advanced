@@ -266,6 +266,7 @@ defmodule RiichiAdvancedWeb.GameComponents do
           <div class="status-text" :for={status <- player.status}><%= status %></div>
           <div class="status-text" :for={{name, value} <- player.counters}><%= "#{name}: #{value}" %></div>
           <div class="status-text" :for={button_name <- player.buttons}><%= "[#{button_name}]" %></div>
+          <div class="status-text" :if={not Enum.empty?(player.call_buttons)}><%= "{#{player.choice.name}}" %></div>
         </div>
       <% else %>
         <div class={["status-line", Utils.get_relative_seat(@seat, seat)]} :for={{seat, player} <- @state.players}>
