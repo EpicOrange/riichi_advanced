@@ -44,7 +44,7 @@ defmodule RiichiAdvancedWeb.GameComponents do
       <.live_component module={RiichiAdvancedWeb.HandComponent}
         id={"hand #{Utils.get_relative_seat(@seat, seat)}"}
         game_state={@game_state}
-        revealed?={@viewer == seat or player.hand_revealed or @state.log_seeking_mode}
+        revealed?={@viewer == seat or @state.players[seat].hand_revealed or @state.log_seeking_mode}
         your_hand?={@viewer == seat}
         your_turn?={@seat == @state.turn}
         seat={seat}
@@ -285,10 +285,11 @@ defmodule RiichiAdvancedWeb.GameComponents do
       <%= if Rules.has_key?(@state.rules_ref, "show_waits") do %>
         <% waits = if @interaction_state.hovered_hand != nil and is_map(@interaction_state.visible_opponent_waits) do
              Map.get(@interaction_state.visible_opponent_waits, @interaction_state.hovered_hand, :loading)
-           else [] end %>
-        <% waits = if waits == [] and is_map(@interaction_state.visible_waits) do
-             Map.get(@interaction_state.visible_waits, @interaction_state.show_waits_index, :loading)
-           else waits end %>
+           else
+             if @interaction_state.show_waits_index != nil and is_map(@interaction_state.visible_waits) do
+               Map.get(@interaction_state.visible_waits, @interaction_state.show_waits_index, :loading)
+             else [] end
+           end %>
         <%= if waits == :loading do %>
           <div class="visible-waits-container">
             <div class="visible-waits visible-waits-loading">

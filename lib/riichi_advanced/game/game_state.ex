@@ -2005,7 +2005,7 @@ defmodule RiichiAdvanced.GameState do
           is_playable?(state, seat, tile) -> get_visible_waits(state, seat, index)
           true -> %{}
         end
-                # since this is called so often we don't want to broadcast_state_change
+        # since this is called so often we don't want to broadcast_state_change
         # so as an optimization we use send() to send it to the caller
         # we will send %{tile => waits} but caller translates and saves %{index => waits}
         send(from, {:set_visible_waits, seat, hand, tile, waits})

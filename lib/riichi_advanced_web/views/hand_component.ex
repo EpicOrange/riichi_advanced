@@ -33,7 +33,7 @@ defmodule RiichiAdvancedWeb.HandComponent do
     <div class={[@id, @just_called != nil && "just-called", @just_upgraded != nil && "just-upgraded", @just_called_flower != nil && "just-called-flower", @just_drew && "just-drew", not Enum.empty?(@marking) && "marking"]}>
       <%= if @your_hand? do %>
         <%= if not Enum.empty?(@marking) and @viewer != :spectator do %>
-          <div class="tiles" phx-hook="SortableHand" id={@id}>
+          <div class="tiles" phx-hook="SortableHand" id={@id <> " tiles"}>
             <%= for {i, tile, removed, _highlight} <- prepare_hand(assigns) do %>
               <%= cond do %>
                 <% removed -> %>
@@ -58,7 +58,7 @@ defmodule RiichiAdvancedWeb.HandComponent do
             <% end %>
           </div>
         <% else %>
-          <div class="tiles" phx-hook="SortableHand" id={@id}>
+          <div class="tiles" phx-hook="SortableHand" id={@id <> " tiles"}>
             <%= for {i, tile, removed, highlight} <- prepare_hand(assigns) do %>
               <%= cond do %>
                 <% removed -> %>
@@ -89,7 +89,7 @@ defmodule RiichiAdvancedWeb.HandComponent do
             <% end %>
           </div>
         <% else %>
-          <div class="tiles" id={@id}>
+          <div class="tiles" id={@id <> " tiles inactive"}>
             <%= for {i, tile, removed, highlight} <- prepare_hand(assigns) do %>
               <div class={Utils.get_tile_class(tile, i, assigns, [removed && "removed", highlight && "highlight"], true)} data-id={i}><%= raw debug_tile(tile) %></div>
             <% end %>
@@ -143,7 +143,7 @@ defmodule RiichiAdvancedWeb.HandComponent do
           <% end %>
         </div>
       </div>
-      <div class="calls flowers" phx-hook="SortableHand" id={@id <> " flowers"}>
+      <div class="calls flowers" id={@id <> " flowers"}>
         <%= for {{_name, call}, i} <- prepare_flowers(assigns) do %>
           <div class={Utils.get_tile_class(tile, i, assigns)} data-id={i} :for={tile <- call}><%= raw debug_tile(tile) %></div>
         <% end %>

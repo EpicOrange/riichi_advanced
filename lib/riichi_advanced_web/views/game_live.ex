@@ -309,7 +309,7 @@ defmodule RiichiAdvancedWeb.GameLive do
   end
   defp get_visible_opponent_waits(socket, seat) do
     player = socket.assigns.state.players[seat]
-    visible_hand? = socket.assigns.viewer == seat or player.hand_revealed or socket.assigns.state.log_seeking_mode
+    visible_hand? = player.hand_revealed or socket.assigns.state.log_seeking_mode
     no_draws? = Enum.empty?(player.draw)
     if visible_hand? and no_draws? do
       hand = player.hand ++ player.draw
@@ -735,7 +735,6 @@ defmodule RiichiAdvancedWeb.GameLive do
   # assign that array to each index in hand equal to tile
   def handle_info({:set_visible_waits, seat, hand, tile, waits}, socket) do
     if seat == socket.assigns.seat do
-      IO.inspect({"asf", seat, hand, tile, waits})
       # our own hand's waits
       socket = if hand != socket.assigns.interaction_state.visible_waits_hand do
         # IO.puts("Resetting waits because #{inspect(hand)} != cached #{inspect(socket.assigns.interaction_state.visible_waits_hand)}")
