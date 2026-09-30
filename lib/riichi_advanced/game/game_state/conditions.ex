@@ -423,10 +423,15 @@ defmodule RiichiAdvanced.GameState.Conditions do
         Enum.all?(winning_hand, &Utils.has_matching_tile?(Enum.concat([&1], Map.get(tile_mappings, &1, [])), tiles))
       "all_saki_cards_drafted"   -> Map.has_key?(state, :saki) and Saki.check_if_all_drafted(state)
       "has_existing_yaku"        ->
-        by_name = Enum.all?(opts, fn opt -> case opt do
-          [name, value] -> Enum.any?(context.existing_yaku, fn {name2, value2} -> name == name2 and value == value2 end)
-          name_or_value -> Enum.any?(context.existing_yaku, fn {name2, value2} -> name_or_value == name2 or name_or_value == value2 end)
-         end end)
+        existing_yaku = Scoring.dedup_yaku(context.existing_yaku)
+        by_name = Enum.all?(opts, fn
+          [name, [_ | _] = value] -> Enum.any?(existing_yaku, fn {name2, value2} -> name == name2 and value == value2 end)
+          [name, value]       -> Enum.any?(existing_yaku, fn {name2, [value2 | _]} -> name == name2 and value == value2 end)
+          name_or_value -> Enum.any?(existing_yaku, fn
+            {name, [points | _] = value} -> name_or_value == name or name_or_value == value or name_or_value == points
+            {name, value}       -> name_or_value == name or name_or_value == value
+          end)
+        end)
         by_name or (
           # by_list
           score_rules = Rules.get(state.rules_ref, "score_calculation", %{})
@@ -435,7 +440,7 @@ defmodule RiichiAdvanced.GameState.Conditions do
           if Enum.empty?(lists) do false else
             # true if any of the existing yaku matches a yaku in lists
             yaku_by_key = Rules.get(state.rules_ref, :yaku_by_key, %{})
-            Enum.any?(context.existing_yaku, fn {name, value} ->
+            Enum.any?(existing_yaku, fn {name, value} ->
               possible_denominations = Enum.drop_every(value, 2)
               possible_denominations = [possible_denominations | Enum.map(possible_denominations, &[&1])]
               Enum.any?(possible_denominations, fn denomination ->

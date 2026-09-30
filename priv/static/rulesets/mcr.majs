@@ -286,6 +286,7 @@ define_yaku yaku, "Single Wait", [1, "Fan"], match(["hand", "calls"], ["single_w
 
 # ad-hoc implementation of Exclusionary Rule; just subtract the value of the offending yaku
 define_yaku meta_yaku, "Mixed Double Chow", [-1, "Fan"], has_existing_yaku(["Mixed Double Chow", 2], ["Two Terminal Chows", 2]) # 123m 123p 789p 789m
+define_yaku meta_yaku, "Mixed Double Chow", [-1, "Fan"], has_existing_yaku(["Mixed Double Chow", 2], ["Short Straight", 2]) # 234m 234p 567p 567m
 define_yaku meta_yaku, "Short Straight", [-1, "Fan"], has_existing_yaku("Mixed Straight", "Mixed Double Chow", "Short Straight") # 123m 456p 789s 456s
 define_yaku meta_yaku, "Two Terminal Chows", [-1, "Fan"], has_existing_yaku("Mixed Straight", "Mixed Double Chow", "Two Terminal Chows") # 123m 456p 789s 789m
 define_yaku meta_yaku, "Short Straight", [-1, "Fan"], has_existing_yaku("Pure Straight", "Pure Double Chow", "Short Straight") # 123m 456m 789m 456m

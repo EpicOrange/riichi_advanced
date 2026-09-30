@@ -137,7 +137,7 @@ defmodule RiichiAdvanced.GameState.Scoring do
           names = Enum.map(yaku, fn {name, _value} -> name end)
           Enum.all?(state.players[seat].declared_yaku, fn yaku -> yaku in names end)
         _ ->
-          points = Enum.map(yaku, fn {_name, value} -> value end) |> Enum.reduce([], &Scoring.add_yaku_values/2)
+          points = Enum.map(yaku, fn {_name, value} -> value end) |> Enum.reduce([], &add_yaku_values/2)
           |> Utils.get_from_points_list(point_name)
           # |> IO.inspect(label: inspect(yaku))
           points >= min_points
@@ -266,7 +266,7 @@ defmodule RiichiAdvanced.GameState.Scoring do
     score_rules = Rules.get(state.rules_ref, "score_calculation", %{})
 
     # obtain yaku and minipoints from this state
-    {yaku, minipoints} = Scoring.get_yaku(state, seat, assigned_winning_tile, win_source)
+    {yaku, minipoints} = get_yaku(state, seat, assigned_winning_tile, win_source)
     if Debug.print_wins() do
       assigned_winning_hand = state.players[seat].cache.winning_hand
       IO.puts("checking assignment, hand: #{inspect(assigned_winning_hand)}, tile: #{inspect(winning_tile)}, yaku: #{inspect(yaku)}")
@@ -274,8 +274,8 @@ defmodule RiichiAdvanced.GameState.Scoring do
 
     highest_scoring_yaku_only = Map.get(score_rules, "highest_scoring_yaku_only", false)
     yaku = if not Enum.empty?(yaku) and highest_scoring_yaku_only do [Enum.max_by(yaku, fn {_name, value} -> value end)] else yaku end
-    yaku = Enum.map(yaku, fn {name, value} -> {translate(state, name), value} end) |> Scoring.dedup_yaku()
-    points = Enum.map(yaku, fn {_name, value} -> value end) |> Enum.reduce([], &Scoring.add_yaku_values/2)
+    yaku = Enum.map(yaku, fn {name, value} -> {translate(state, name), value} end) |> dedup_yaku()
+    points = Enum.map(yaku, fn {_name, value} -> value end) |> Enum.reduce([], &add_yaku_values/2)
     # put back hand/calls/winning tile
     state = state
     |> update_player(seat, &%{ &1 | hand: &1.cache.orig_hand, calls: &1.cache.orig_calls })

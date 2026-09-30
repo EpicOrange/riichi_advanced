@@ -51,11 +51,12 @@ defmodule RiichiAdvanced.GameState.Rules do
     # IO.inspect(Enum.map(yakus, &{&1.ix, &1["display_name"]}), limit: :infinity, label: inspect(Enum.map(yakus, &elem(&1, 0))))
 
     yaku_map = %{}
-    |> Map.merge(Enum.group_by(yakus, &Map.get(&1, :key)))
-    |> Map.merge(Enum.group_by(yakus, &Map.get(&1, :list_name)))
-    |> Map.merge(Enum.group_by(yakus, &Map.get(&1, :value_num)))
-    |> Map.merge(Enum.group_by(yakus, &Map.get(&1, "value")))
-    |> Map.merge(Enum.group_by(yakus, &Map.get(&1, "display_name")))
+    |> Map.merge(Enum.group_by(yakus, &Map.get(&1, :key)), fn _k, l, r -> l ++ r end)
+    |> Map.merge(Enum.group_by(yakus, &Map.get(&1, :list_name)), fn _k, l, r -> l ++ r end)
+    |> Map.merge(Enum.group_by(yakus, &Map.get(&1, :value_num)), fn _k, l, r -> l ++ r end)
+    |> Map.merge(Enum.group_by(yakus, &Map.get(&1, "value")), fn _k, l, r -> l ++ r end)
+    |> Map.merge(Enum.group_by(yakus, &Map.get(&1, "display_name")), fn _k, l, r -> l ++ r end)
+    # IO.inspect(yaku_map, limit: :infinity, label: "yaku_map")
 
     # do a pass over yakus to capture dependencies
     # calculate dependent yaku by seeing if any conditions are dependent on other yaku
@@ -67,8 +68,8 @@ defmodule RiichiAdvanced.GameState.Rules do
         dep_ixs = yaku["when"]
         |> List.flatten()
         |> Enum.flat_map(fn
-          %{"name" => "has_existing_yaku",     "opts" => opts} -> Enum.flat_map(opts, &Map.get(yaku_map, &1, []) |> Enum.map(fn yaku -> yaku.ix end))
-          %{"name" => "not_has_existing_yaku", "opts" => opts} -> Enum.flat_map(opts, &Map.get(yaku_map, &1, []) |> Enum.map(fn yaku -> yaku.ix end))
+          %{"name" => "has_existing_yaku",     "opts" => opts} -> Enum.flat_map(opts, &Map.get(yaku_map, if is_list(&1) do Enum.at(&1, 0, &1) else &1 end, []) |> Enum.map(fn yaku -> yaku.ix end))
+          %{"name" => "not_has_existing_yaku", "opts" => opts} -> Enum.flat_map(opts, &Map.get(yaku_map, if is_list(&1) do Enum.at(&1, 0, &1) else &1 end, []) |> Enum.map(fn yaku -> yaku.ix end))
           "has_no_yaku"                 -> all_ixs
           "not_has_no_yaku"             -> all_ixs
           %{"name" => "has_points"}     -> all_ixs
