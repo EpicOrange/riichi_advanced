@@ -11,17 +11,6 @@ def reveal_ura do
     if tile_not_revealed(-10) do reveal_tile("1x") end
     if tile_not_revealed(-12) do reveal_tile("1x") end
     if tile_not_revealed(-14) do reveal_tile("1x") end
-    if tile_not_revealed(-16) do reveal_tile("1x") end
-    if tile_not_revealed(-18) do reveal_tile("1x") end
-    if tile_not_revealed(-20) do reveal_tile("1x") end
-    if tile_not_revealed(-22) do reveal_tile("1x") end
-    if tile_not_revealed(-24) do reveal_tile("1x") end
-    if tile_not_revealed(-26) do reveal_tile("1x") end
-    if tile_not_revealed(-28) do reveal_tile("1x") end
-    if tile_not_revealed(-30) do reveal_tile("1x") end
-    if tile_not_revealed(-32) do reveal_tile("1x") end
-    if tile_not_revealed(-34) do reveal_tile("1x") end
-    if tile_not_revealed(-36) do reveal_tile("1x") end
     reveal_tile("3x")
     if tile_revealed(-6) do # yonma
       reveal_tile(-5)
@@ -47,17 +36,6 @@ def reveal_ura do
     if tile_not_revealed(-9) do reveal_tile("1x") end
     if tile_not_revealed(-11) do reveal_tile("1x") end
     if tile_not_revealed(-13) do reveal_tile("1x") end
-    if tile_not_revealed(-15) do reveal_tile("1x") end
-    if tile_not_revealed(-17) do reveal_tile("1x") end
-    if tile_not_revealed(-19) do reveal_tile("1x") end
-    if tile_not_revealed(-21) do reveal_tile("1x") end
-    if tile_not_revealed(-23) do reveal_tile("1x") end
-    if tile_not_revealed(-25) do reveal_tile("1x") end
-    if tile_not_revealed(-27) do reveal_tile("1x") end
-    if tile_not_revealed(-29) do reveal_tile("1x") end
-    if tile_not_revealed(-31) do reveal_tile("1x") end
-    if tile_not_revealed(-33) do reveal_tile("1x") end
-    if tile_not_revealed(-35) do reveal_tile("1x") end
   end
 end
 
@@ -86,4 +64,4 @@ end
 
 # add ura yaku
 # the "won" is there because of minefield, where dora counts but ura doesn't (until the actual win)
-define_yaku extra_yaku, "Ura", ["ura", "Han"], won and ura >= 1
+define_yaku extra_yaku, "Ura", ["ura", "Han"], won and ura >= 1 and status("riichi")
