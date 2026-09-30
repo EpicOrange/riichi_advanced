@@ -96,8 +96,7 @@ pub fn __remove_match_definition<'a>(
           if !debug { println!("Debugging: {:?}", match_definition); }
           debug = true;
         }
-        else if s == "restart" { has_restart = true; }
-        else if s == "invert" { has_restart = true; }
+        else if s == "restart" || s == "invert" { has_restart = true; }
         else if s == "almost" { has_almost = true; }
       }
       MatchDefinitionElem::Group(_, n) => if *n > 0 { min_match_length += *n; },

@@ -1,6 +1,5 @@
 use std::collections::HashMap;
 
-use num::abs;
 use smallvec::{SmallVec, smallvec};
 
 use crate::encode::{decode, decode_tiles, encode_tile, encode_tiles};
@@ -80,21 +79,15 @@ fn _separate_standard_winner_hand(
     origin_map.entry((tile.0, 0)).and_modify(|v| v.push(i as u8)).or_insert(smallvec!(i as u8));
   }
 
-  // check if the win definition ever mentions offsets of at least 10
+  // check if the win definition ever mentions the offset [0, 10, 20]
   // e.g. [["exhaustive", [[[0, 0]], 1], [[[0, 10, 20], [0, 1, 2], [0, 0, 0]], 4]]]
   let mut use_kontsu_knitted = false;
+  let kontsu: MatchGroup = MatchGroup::Offsets(smallvec!(MatchOffset::Offset(0), MatchOffset::Offset(10), MatchOffset::Offset(20)));
   for win_definition in win_definitions.iter() {
     for elem in win_definition {
       use_kontsu_knitted = match elem {
         MatchDefinitionElem::Keyword(_) => false,
-        MatchDefinitionElem::Group(groups, _) =>
-          groups.iter().any(|g| g.flatten().any(|o| {
-            match o {
-              MatchOffset::Offset(o) => abs(o) >= 10,
-              MatchOffset::AttrsOffset(map) => abs(map.offset) >= 10,
-              _ => false,
-            }
-          }))
+        MatchDefinitionElem::Group(groups, _) => groups.contains(&kontsu)
       };
       if use_kontsu_knitted { break; }
     }
