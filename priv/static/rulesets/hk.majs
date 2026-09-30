@@ -110,7 +110,6 @@ end
 define_scoring win do
   convert_fan
   apply_score_modifiers
-  print("a")
 end
 
 on after_win do

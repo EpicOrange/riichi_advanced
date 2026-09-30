@@ -5,7 +5,6 @@ defmodule RiichiAdvanced.GameState.Scoring do
   alias RiichiAdvanced.GameState.JokerSolver, as: JokerSolver
   alias RiichiAdvanced.GameState.Payment, as: Payment
   alias RiichiAdvanced.GameState.Rules, as: Rules
-  alias RiichiAdvanced.GameState.Scoring, as: Scoring
   alias RiichiAdvanced.GameState.ScoringOld, as: ScoringOld
   alias RiichiAdvanced.Utils, as: Utils
   import RiichiAdvanced.GameState

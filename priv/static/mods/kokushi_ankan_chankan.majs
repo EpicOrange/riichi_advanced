@@ -7,6 +7,6 @@ apply append, "buttons.ankan.actions" do unset_status("can_chankan") end
 
 define_const can_chankan,
   status("can_chankan", as: "caller")
-  or (print("a") and last_call_is("ankan") and match(["hand", "calls"], ["kokushi_tenpai"]))
+  or (last_call_is("ankan") and match(["hand", "calls"], ["kokushi_tenpai"]))
 
 apply set_append, "interruptible_actions", ["self_call"]

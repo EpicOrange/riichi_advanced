@@ -622,7 +622,7 @@ defmodule RiichiAdvanced.Utils do
   def _serialize_hand(hand) do
     # separate hand into suits and parenthesize anything that has more than one digit, or has attrs
     Enum.group_by(hand, fn
-      {id, attrs} -> Atom.to_string(id) |> String.last()
+      {id, _attrs} -> Atom.to_string(id) |> String.last()
       id -> Atom.to_string(id) |> String.last()
     end)
     |> Enum.map(fn {suit, tiles} ->

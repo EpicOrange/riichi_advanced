@@ -337,6 +337,11 @@ defmodule RiichiAdvancedWeb.ScoringTestLive do
     |> Map.put(:visible_screen, :winner)
   end
 
+  # how many hand tiles should a length n call represent?
+  def call_repr_size(1), do: 0
+  def call_repr_size(2), do: 2
+  def call_repr_size(_), do: 3
+
   def handle_event("back", _assigns, socket) do
     socket = push_navigate(socket, to: ~p"/?nickname=#{socket.assigns.nickname}&lang=#{socket.assigns.lang}&ruleset=#{socket.assigns.ruleset}")
     {:noreply, socket}
@@ -385,11 +390,6 @@ defmodule RiichiAdvancedWeb.ScoringTestLive do
     socket = assign(socket, :room_state, RoomState.start_update_rules_task(socket.assigns.room_state))
     {:noreply, socket}
   end
-
-  # how many hand tiles should a length n call represent?
-  def call_repr_size(1), do: 0
-  def call_repr_size(2), do: 2
-  def call_repr_size(_), do: 3
 
   # for hand selection component
   def handle_event("add_hand_tile", %{"tile" => serialized_tile}, socket) do
@@ -538,7 +538,7 @@ defmodule RiichiAdvancedWeb.ScoringTestLive do
       hand_length = min(17, Rules.get(socket.assigns.rules_ref, "starting_tiles", 13))
       hand_length = hand_length - Enum.sum(Enum.map(calls, &call_repr_size(length(elem(&1, 1)))))
       hand = Enum.take(hand, hand_length) ++ if winning_tile != nil do [winning_tile] else [] end
-      socket = socket
+      socket
       |> assign(:hand, hand)
       |> assign(:calls, calls)
       |> assign(:selected_call_button, nil)
