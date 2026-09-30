@@ -529,6 +529,7 @@ define_button "1_am_pung",
     big_text("Pung")
     call
     change_turn("self")
+    recalculate_buttons
   end
 
 define_button "2_am_kong",
@@ -544,6 +545,7 @@ define_button "2_am_kong",
     big_text("Kong")
     call
     change_turn("self")
+    recalculate_buttons
   end
 
 define_button "3_am_quint",
@@ -559,6 +561,7 @@ define_button "3_am_quint",
     big_text("Quint")
     call
     change_turn("self")
+    recalculate_buttons
   end
 
 define_button am_joker_swap,

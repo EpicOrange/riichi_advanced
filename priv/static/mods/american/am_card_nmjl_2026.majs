@@ -16,7 +16,7 @@ define_match win,
   # Any Like Numbers
   ~a"XXXX0a FFFFFF XXXX0c",
   ~a"XXXX0a Da XXX0b Db XXXX0c Dc",
-  ~a"FF XXXX0a XX0b XXXX0c DDa|DDb|DDc",
+  ~a"FF XXXX0a XX0b XXXX0c DD",
   # Quints
   ~a"XXXXX0a XXXX0b XXXXX0c",
   ~a"FF XXXXX0a XX1a XXXXX2a",
@@ -86,7 +86,7 @@ define_yaku yaku, "2468 #7", [30, "Pts"], match(["hand", "call_tiles", "winning_
 define_yaku yaku, "2468 #8", [30, "Pts"], has_no_call_named("am_pung", "am_kong", "am_quint") and match(["hand", "call_tiles", "winning_tile"], [~a"FF 246a 888a 246b 888b"])
 define_yaku yaku, "Any Like Numbers #1", [30, "Pts"], match(["hand", "call_tiles", "winning_tile"], [~a"XXXX0a FFFFFF XXXX0c"])
 define_yaku yaku, "Any Like Numbers #2", [25, "Pts"], match(["hand", "call_tiles", "winning_tile"], [~a"XXXX0a Da XXX0b Db XXXX0c Dc"])
-define_yaku yaku, "Any Like Numbers #3", [25, "Pts"], match(["hand", "call_tiles", "winning_tile"], [~a"FF XXXX0a XX0b XXXX0c DDa|DDb|DDc"])
+define_yaku yaku, "Any Like Numbers #3", [25, "Pts"], match(["hand", "call_tiles", "winning_tile"], [~a"FF XXXX0a XX0b XXXX0c DD"])
 define_yaku yaku, "Quints #1", [40, "Pts"], match(["hand", "call_tiles", "winning_tile"], [~a"XXXXX0a XXXX0b XXXXX0c"])
 define_yaku yaku, "Quints #2", [45, "Pts"], match(["hand", "call_tiles", "winning_tile"], [~a"FF XXXXX0a XX1a XXXXX2a"])
 define_yaku yaku, "Quints #3", [40, "Pts"], match(["hand", "call_tiles", "winning_tile"], [~a"XXXXX0a XXXXX1a|XXXXX2a|XXXXX3a|XXXXX4a|XXXXX5a|XXXXX6a|XXXXX7a|XXXXX8a DDDDb"])
@@ -141,6 +141,7 @@ define_button "4_am_sextet",
     big_text("Sextet")
     call
     change_turn("self")
+    recalculate_buttons
   end
 
 # TODO: rules tabs for the card
