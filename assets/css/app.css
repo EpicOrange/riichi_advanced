@@ -4130,17 +4130,19 @@ div.mods > div.mods-inner-container span.mod-config-name {
 div.mods > div.mods-inner-container form.mod-config-dropdown {
   margin: 0;
   display: flex;
-}
-div.mods > div.mods-inner-container form.mod-config-dropdown > select {
-  -webkit-appearance: none;
-  font-size: 67%;
-  background-color: var(--tile-front);
-  border: none;
-  border-radius: calc(0.125 * var(--tile-size));
-  padding: calc(0.0625 * var(--tile-size));
-  margin: 0;
-  min-width: calc(1 * var(--tile-size));
-  text-align: center;
+  & > select {
+    appearance: none;
+    font-size: 67%;
+    background-color: var(--tile-front);
+    background-clip: padding-box;
+    border-color: transparent;
+    border-width: calc(0.125 * var(--tile-size));
+    border-radius: calc(0.1875 * var(--tile-size));
+    margin: calc(-0.125 * var(--tile-size));
+    padding: calc(0.0625 * var(--tile-size));
+    min-width: calc(1 * var(--tile-size));
+    text-align: center;
+  }
 }
 /* slider -- do not use, since safari does not display datalist values */
 div.mods > div.mods-inner-container form.mod-config-slider {
