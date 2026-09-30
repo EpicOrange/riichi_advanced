@@ -336,7 +336,7 @@ defmodule RiichiAdvanced.GameState.American do
                   if i != nil do
                     # if so, use that call directly
                     {call, calls} = List.pop_at(calls, i)
-                    {hand, calls, [call | ret]}
+                    {hand, calls, [{call, num, orig_ix} | ret]}
                   else
                     # if not, we remove groups one at a time from hand
                     # first we remove tiles from hand, ignoring jokers
@@ -404,7 +404,7 @@ defmodule RiichiAdvanced.GameState.American do
         end)
         # we don't check for empty hand after removing specified tiles, since this procedure is used with larger hands
         # just to see if such a hand can be arranged with the given tiles (i.e. dead hand checking)
-        |> Enum.reject(fn {_hand, _calls, ret} -> ret == nil or not Enum.empty?(calls) end) 
+        |> Enum.reject(fn {_hand, _calls, ret} -> ret == nil end) 
         |> Enum.min_by(fn {_hand, _calls, ret} ->
           # try to minimize "inactive" tiles in jokerless groups
           ret
