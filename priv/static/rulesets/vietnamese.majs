@@ -17,6 +17,7 @@ require "pon"
 require "kan"
 require "ron"
 require "tsumo"
+require "agarirenchan"
 require "head_bump"
 require "default_flowers", %{four_flowers_value: 1, matching_flower_value: 1, four_flowers_han: "Mủn"}
 require "standard_win"
