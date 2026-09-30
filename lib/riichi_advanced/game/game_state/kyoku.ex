@@ -442,11 +442,12 @@ defmodule RiichiAdvanced.GameState.Kyoku do
     end
 
     score_rules = Rules.get(state.rules_ref, "score_calculation", %{})
-    winner = Map.merge(get_in(state.winners[seat]), # set by Payment.run_scoring_logic
-      %{
+    winner = cxt
+    |> Map.merge(state.winners[seat])
+    |> Map.merge(%{
         seat: seat,
         player: state.players[seat],
-        existing_yaku: cxt.yaku,
+        yaku: cxt.yaku,
         score: score,
         displayed_score: score,
         score_denomination: Map.get(score_rules, "score_denomination", ""),
