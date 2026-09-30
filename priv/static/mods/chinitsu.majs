@@ -29,7 +29,7 @@ if defined("sichuan") do
   apply delete_key, "buttons", "void_manzu"
   apply delete_key, "buttons", "void_pinzu"
   apply delete_key, "buttons", "void_souzu"
-  if defined("star_suit")
+  if defined("star_suit") do
     apply delete_key, "buttons", "void_stars"
   end
 end
