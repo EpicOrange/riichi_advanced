@@ -2310,7 +2310,7 @@ div.display-am-hand-difficulty {
   position: absolute;
   font-size: calc(0.25 * var(--tile-size));
   bottom: 4.8em;
-  right: calc(-0.5 * var(--tile-size));
+  right: 0;
 }
 
 /* revealed tiles */

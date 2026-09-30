@@ -580,30 +580,34 @@ defmodule RiichiAdvanced.GameState.American do
     end
 
     # calculate concealed shanten
-    {_, _, shanten} = for group <- groups, reduce: {tile_freqs, false, 0} do
-      {tile_freqs, skipped, shanten} ->
+    {_, concealed_shanten, exposed_shanten} = for group <- groups, reduce: {tile_freqs, -1, 0} do
+      {tile_freqs, shanten_c, shanten_x} ->
         {tile, num} = {Enum.at(group, 0), length(group)}
         amt = Map.get(tile_freqs, tile, 0)
         used = min(num, amt)
         needed = num - used
-        concealed = concealed? or num <= 2
-        # the first concealed tile is treated as exposed (tracked by 'skipped')
-        # if exposed, we can complete it by calling, so we don't need all of it
-        concealed_shanten = if concealed and skipped do needed else needed - 1 end
-        metric = if concealed and skipped do
-          # concealed
-          # 1 => 3 * 3, 2 => 6 * 5, 3 => 9 * 7, ...
-          10 * 3 * concealed_shanten * (1 + 2 * concealed_shanten)
+        if concealed? or num <= 2 do
+          {Map.put(tile_freqs, tile, amt - used), shanten_c + needed, shanten_x}
         else
-          # exposed
-          # 1 => 2 * 4, 2 => 4 * 7, 3 => 6 * 10, ...
-          10 * 2 * concealed_shanten * (1 + 3 * concealed_shanten)
+          {Map.put(tile_freqs, tile, amt - used), shanten_c, shanten_x + needed - 1} # if exposed, we need 1 less since we could call to complete it
         end
-        # IO.inspect({tile_freqs, tile, num, used, needed, metric})
-        {Map.put(tile_freqs, tile, amt - used), concealed, shanten + metric}
     end
-    # IO.puts("#{am_match_definition} | counts: #{inspect(tile_freqs)}, groups: #{inspect(groups)}, shanten: #{inspect(shanten)}")
-    shanten
+    # IO.puts("#{am_match_definition} | counts: #{inspect(tile_freqs)}, groups: #{inspect(groups)}, concealed_shanten: #{inspect(concealed_shanten)}, exposed_shanten: #{inspect(exposed_shanten)}")
+    # concealed shanten starts at -1 to represent the last concealed tile not having to be self-drawn
+    # but if no groups are concealed, then don't need it
+    concealed_shanten = max(0, concealed_shanten)
+
+    # assume difficulty is quadratic with shanten
+    # exposed shanten is easier since you can call and use jokers
+    # so we weight them differently to arrive at a final metric
+
+    # 1 => 3 * 3, 2 => 6 * 5, 3 => 9 * 7, ...
+    concealed_difficulty = 3 * concealed_shanten * (1 + 2 * concealed_shanten)
+
+    # 1 => 2 * 4, 2 => 4 * 7, 3 => 6 * 10, ...
+    exposed_difficulty = 2 * exposed_shanten * (1 + 3 * exposed_shanten)
+
+    concealed_difficulty + exposed_difficulty
   end
 
   defmodule AmericanYaku do

@@ -129,10 +129,10 @@ defmodule RiichiAdvanced.AIPlayer do
 
     # rank playables by how often they appear in closest hands
     # we will discard the tile that appears the least, weighting early appearences
-    # with a larger multiplier 2^n where the last hand is *1, second last is *2, etc
+    # with a larger multiplier 1.2^n where the last hand is *1.2, second last is *1.44, etc
     usages = for %{pairing_r: pairing_r} <- closest_american_hands, reduce: Map.new(playables, fn {_tile, i} -> {i, 0} end) do
       usages -> usages
-        |> Map.new(fn {k, v} -> {k, v * 2} end)
+        |> Map.new(fn {k, v} -> {k, v * 1.2} end)
         |> Map.merge(Map.keys(pairing_r) |> Enum.frequencies(), fn _k, v1, v2 -> v1 + v2 end)
     end
     # jokers are weighted double
@@ -166,17 +166,21 @@ defmodule RiichiAdvanced.AIPlayer do
     hand_length = length(player.hand)
 
     # get shanten towards all hands
-    {difficulty, best_shanten} = closest_american_hands
-    |> Enum.map(&{-&1.difficulty, hand_length - map_size(&1.pairing_r)})
-    |> Enum.min(&<=/2, fn -> {100, 100} end)
-    if (best_shanten <= 3 and difficulty <= 15) or (best_shanten <= 6 and difficulty <= 30) do
-      closest_american_hands
-      # then get all hands of that shanten
-      |> Enum.filter(&best_shanten == (hand_length - map_size(&1.pairing_r)))
-      # filter for open hands only (might be none if a concealed hand is closer)
+    difficulties = closest_american_hands
+    |> Enum.map(&{&1.difficulty, hand_length - map_size(&1.pairing_r), &1})
+    |> Enum.sort(&<=/2)
+    # remove all hands that are 30 difficulty more than the lowest difficulty one
+    {d, _, _} = Enum.at(difficulties, 0, {100, 10000})
+    closest_american_hands = difficulties
+    |> Enum.reject(fn {d2, _, _} -> d2 > d + 30 end)
+    |> Enum.map(fn {_, _, hand} -> hand end)
+    only_one_hand = case closest_american_hands do [_] -> true; _ -> false end
+    if d <= 30 or only_one_hand do
+      closest_american_hands = closest_american_hands
+      # since we're calling, filter for open hands only (might be none if a concealed hand is closer)
       |> Enum.reject(& &1.yaku.concealed)
       # out of those hands, see if there's any hands for which the last discard would be helpful
-      # that's why we calculate callable_missing_tiles
+      # that's why we have callable_missing_tiles
       |> Enum.filter(&Utils.has_matching_tile?(&1.callable_missing_tiles, [last_discard_stripped], player.tile_behavior))
       |> then(fn x ->
         if Debug.debug_ai() and not Enum.empty?(x) do
