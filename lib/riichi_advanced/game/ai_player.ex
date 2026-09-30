@@ -107,14 +107,26 @@ defmodule RiichiAdvanced.AIPlayer do
     # get shanten
     hand_length = length(state.player.hand)
     shanten = closest_american_hands
-    |> Enum.map(fn {_am_match_definition, pairing_r, _arranged_hand, _difficulty} -> hand_length - map_size(pairing_r) end)
+    |> Enum.map(&hand_length - map_size(&1.pairing_r))
     |> Enum.min(&<=/2, fn -> :infinity end)
-    # take only the best closest hands
-    closest_american_hands = Enum.filter(closest_american_hands, fn {_am_match_definition, pairing_r, _arranged_hand, _difficulty} -> shanten == (hand_length - map_size(pairing_r)) end)
+    # take only the best closest hands by shanten
+    closest_american_hands = closest_american_hands
+    |> Enum.filter(&shanten == (hand_length - map_size(&1.pairing_r)))
+    # sort by difficulty
+    |> Enum.sort_by(& &1.difficulty)
+
+    # closest_american_hands
+    # |> Map.new(&{&1.am_match_definition, &1.difficulty})
+    # |> IO.inspect(label: "#{state.seat}: #{shanten}-shanten hands")
+    
     # rank playables by how often they appear in closest hands
-    usages = for {_am_match_definition, pairing_r, _arranged_hand, _difficulty} <- closest_american_hands, reduce: Map.new(playables, fn {_tile, i} -> {i, 0} end) do
-      usages -> Map.merge(usages, Map.keys(pairing_r) |> Enum.frequencies(), fn _k, v1, v2 -> v1 + v2 end)
+    # with a multiplier 2^n where the last hand is *1, second last is *2, etc
+    usages = for %{pairing_r: pairing_r} <- closest_american_hands, reduce: Map.new(playables, fn {_tile, i} -> {i, 0} end) do
+      usages -> usages
+        |> Map.new(fn {k, v} -> {k, v * 2} end)
+        |> Map.merge(Map.keys(pairing_r) |> Enum.frequencies(), fn _k, v1, v2 -> v1 + v2 end)
     end
+
     ret = playables
     # filter out jokers
     |> Enum.reject(fn {tile, _i} -> tile == :"1j" end)
@@ -141,20 +153,19 @@ defmodule RiichiAdvanced.AIPlayer do
 
     # get shanten towards all hands
     {difficulty, best_shanten} = closest_american_hands
-    |> Enum.map(fn {_am_match_definition, pairing_r, _arranged_hand, difficulty} -> {-difficulty, hand_length - map_size(pairing_r)} end)
+    |> Enum.map(&{-&1.difficulty, hand_length - map_size(&1.pairing_r)})
     |> Enum.min(&<=/2, fn -> {100, 100} end)
     if best_shanten <= 3 or (best_shanten <= 6 and difficulty <= 30) do
       closest_american_hands
       # then get all hands of that shanten
-      |> Enum.filter(fn {_am_match_definition, pairing_r, _arranged_hand, _difficulty} -> best_shanten == (hand_length - map_size(pairing_r)) end)
+      |> Enum.filter(&best_shanten == (hand_length - map_size(&1.pairing_r)))
       # filter for open hands only (might be none if a concealed hand is closer)
-      |> Enum.filter(fn {am_match_definition, _pairing_r, _arranged_hand, _difficulty} -> am_match_definition in open_am_match_definitions end)
+      |> Enum.filter(& &1.am_match_definition in open_am_match_definitions)
       # out of those hands, see if there's any hands for which the last discard would be helpful
       # we just look at arranged_hand and see which tiles have the "inactive" attribute (TODO: or is a joker)
-      |> Enum.filter(fn {_am_match_definition, _pairing_r, arranged_hand, _difficulty} -> last_discard_with_inactive in arranged_hand end)
+      |> Enum.filter(&last_discard_with_inactive in &1.arranged_hand)
       # check each hand to see if it's a pung, kong, quint, or sextet
-      |> Enum.flat_map(fn {_am_match_definition, _pairing_r, arranged_hand, _difficulty} ->
-        arranged_hand
+      |> Enum.flat_map(fn hand -> hand.arranged_hand
         |> Utils.strip_attrs()
         |> Enum.chunk_by(&:"3x" == &1)
         |> Enum.reject(&:"3x" in &1)
@@ -162,7 +173,7 @@ defmodule RiichiAdvanced.AIPlayer do
         |> Enum.map(&length(&1))
       end)
       # filter for max_len
-      |> Enum.filter(fn len -> len <= max_len end)
+      |> Enum.filter(& &1 <= max_len)
       # take max, or return 0 if empty
       |> Enum.max(&>=/2, fn -> 0 end)
     else 0 end

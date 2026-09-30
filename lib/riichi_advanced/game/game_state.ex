@@ -1125,7 +1125,7 @@ defmodule RiichiAdvanced.GameState do
       |> Enum.filter(fn {_seat, player} ->
         hand_length = length(player.hand)
         player.cache.closest_american_hands
-        |> Enum.any?(fn {_am_match_definition, pairing_r, _arranged_hand, _difficulty} -> (hand_length - map_size(pairing_r)) <= 3 end)
+        |> Enum.any?(&hand_length - map_size(&1.pairing_r) <= 3)
       end)
     else
       state.players
@@ -1842,7 +1842,6 @@ defmodule RiichiAdvanced.GameState do
                         last_discard: last_discard,
                         last_discarder_status: last_discarder_status,
                         closest_american_hands: closest_american_hands,
-                        open_am_match_definitions: open_win_definitions,
                       }
                       send(Map.get(state, seat), {:buttons, params})
                     end)
@@ -1854,7 +1853,6 @@ defmodule RiichiAdvanced.GameState do
                       last_discard: last_discard,
                       last_discarder_status: last_discarder_status,
                       closest_american_hands: [],
-                      open_am_match_definitions: [],
                     }
                     send(Map.get(state, seat), {:buttons, params})
                   true -> state

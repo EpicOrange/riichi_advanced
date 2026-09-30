@@ -406,7 +406,7 @@ on after_initialization do
   update_rule("15 Faan", "Tile Hog", "%{example_hand}", %{example_hand: ~t"12233344455s 4P56p 88m8M 3s"})
   add_rule("8 Faan", "Double Tile Hog", "8 Faan if your hand (not calls) use up all eight of two different tiles.")
   update_rule("8 Faan", "Double Tile Hog", "%{example_hand}", %{example_hand: ~t"22224444s77z 88m8M 3s"})
-  add_rule("30 Faan", "Triple Tile Hog", "30 Faan if your hand (not calls) use up all twelve of three different tiles. Without jokers, you can only get this via the shape 111 123 33 345 555.")
+  add_rule("30 Faan", "Triple Tile Hog", "30 Faan if your hand (not calls) use up all twelve of three different tiles. Without jokers, you can only get this via the shapes 111 123 33 345 555, 11 123 123 234 234, or 11 234 234 234 234 (closed pure quadruple sequence).")
   update_rule("30 Faan", "Triple Tile Hog", "%{example_hand}", %{example_hand: ~t"2222444456666m 3s"})
 end
 define_set 四歸二, ~s"0 0 0, 0 1 2|0 1 2, 1 1 1|0 1 2, 2 2 2"

@@ -315,7 +315,7 @@ defmodule RiichiAdvanced.GameState.Rules do
           is_binary(match_definition) ->
             case get(rules_ref, match_definition <> "_definition", nil) do
               nil ->
-                if String.contains?(match_definition, " ") do
+                if American.is_american_match_definition?(match_definition) do
                   American.translate_american_match_definitions([match_definition])
                 else
                   if not fail_silently? do
