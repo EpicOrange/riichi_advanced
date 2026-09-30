@@ -20,10 +20,11 @@ require "global_mods"
 require "default_auto_buttons"
 require "chii"
 require "pon"
-require "kan", %{hide_ankans: false, replace_from_dead_wall: true, shift_dead_wall: true}
+require "kan", %{hide_ankans: true, replace_from_dead_wall: true, shift_dead_wall: true}
 require "ron", %{scoring_key: "win"}
 require "tsumo", %{scoring_key: "win"}
 require "agarirenchan"
+require "ryuukyokurenchan"
 require "head_bump" # probably, right?
 
 on after_initialization do
@@ -48,6 +49,9 @@ on after_initialization do
   add_rule("1 Fan", "Gang", "1 Fan for each Gang you declare.")
   add_rule("2 Fan", "Dragons", "2 Fan for each %{dragons} you declare before your first discard.", %{dragons: ~t"067z"})
   add_rule("2 Fan", "Winds", "2 Fan for each %{winds} you declare before your first discard.", %{winds: ~t"1234z"})
+  add_rule("Rules", "Haidilaoyue", "When there are only four tiles left to draw, each player draws without discarding to see if they win. 2 Fan is awarded for winning during this phase.")
+  add_rule("2 Fan", "Haidilaoyue", "When there are only four tiles left to draw, each player draws without discarding to see if they win. 2 Fan is awarded for winning during this phase.")
+  add_rule("Rules", "Calling restriction", "You can only call a fourth set if it confirms an all-triplets hand.")
 end
 
 define_set manzu, ~s"1m|2m|3m|4m|5m|6m|7m|8m|9m"
@@ -67,6 +71,37 @@ apply append, "buttons.ankan.actions" do shift_tile_to_dead_wall(1) end
 # remove tenpai check, since we don't have a tenpai definition
 replace 1, "buttons.ron.show_when", %{name: "match", opts: [["hand", "calls"], ["tenpai"]]}, true
 replace 1, "buttons.tsumo.show_when", %{name: "match", opts: [["hand", "calls"], ["tenpai"]]}, true
+# cannot call chii if you have three sets
+apply append, "buttons.chii.show_when", not_match(["calls"], ~m"(chii pon daiminkan kakan ankan dragons winds):3")
+# cannot call pon/daiminkan if you have three sets, unless it doesn't include chii
+apply append, "buttons.pon.show_when", not_match(["calls"], ~m"chii:0, (chii pon daiminkan kakan ankan dragons winds):3")
+apply append, "buttons.daiminkan.show_when", not_match(["calls"], ~m"chii:0, (chii pon daiminkan kakan ankan dragons winds):3")
+# TODO temporary furiten but only for the specific tile passed
+# TODO if four players discard the same tile in succession, the first discarder pays 4 points to everyone else
+
+# sea floor code from hefei
+on after_turn_change do
+  if not_tiles_remaining(4) do
+    if status_missing("sea_floor") do
+      set_status("sea_floor")
+      recalculate_buttons
+    end
+  end
+end
+define_play_restriction any, status("sea_floor")
+apply append, "buttons.ankan.show_when", tiles_remaining(5)
+apply append, "buttons.kakan.show_when", tiles_remaining(5)
+define_button sea_floor_no_win,
+  display_name: "No Win",
+  show_when: our_turn
+    and has_draw
+    and status("sea_floor"),
+  unskippable: true
+  do
+    big_text("No Win")
+    unset_status("sea_floor") # prevent button popping up again
+    advance_turn
+  end
 
 apply initialize, "constants.closed_hand", has_no_call_named("chii", "pon", "daiminkan", "kakan")
 
@@ -98,6 +133,7 @@ define_scoring win do
 end
 
 apply append, "set_definitions.mentsu", ["dragons", "winds"]
+apply append, "set_definitions.koutsu", ["dragons", "winds"]
 
 define_button dragons,
   display_name: "Dragons",
