@@ -35,44 +35,38 @@ defmodule RiichiAdvancedWeb.HandComponent do
         <%= if not Enum.empty?(@marking) and @viewer != :spectator do %>
           <div class="tiles" phx-hook="SortableHand" id={@id}>
             <%= for {i, tile, removed, _highlight} <- prepare_hand(assigns) do %>
-              <%= if removed do %>
-                <div class={["tile", Utils.strip_attrs(tile), "removed"]} data-id={i}><%= raw debug_tile(tile) %></div>
-              <% else %>
-                <%= if GenServer.call(@game_state, {:can_mark?, @viewer, @seat, i, :hand}) do %>
+              <%= cond do %>
+                <% removed -> %>
+                  <div class={["tile", Utils.strip_attrs(tile), "removed"]} data-id={i}><%= raw debug_tile(tile) %></div>
+                <% GenServer.call(@game_state, {:can_mark?, @viewer, @seat, i, :hand}) -> %>
                   <div class={Utils.get_tile_class(tile, i, assigns, ["markable"])} phx-cancellable-click="mark_tile" phx-target={@myself} phx-value-index={i} data-id={i}><%= raw debug_tile(tile) %></div>
-                <% else %>
-                  <%= if GenServer.call(@game_state, {:is_marked?, @viewer, @seat, i, :hand}) do %>
-                    <div class={Utils.get_tile_class(tile, i, assigns, ["marked", "selected"])} phx-cancellable-click="unmark_tile" phx-target={@myself} phx-value-index={i} data-id={i}><%= raw debug_tile(tile) %></div>
-                  <% else %>
-                    <div class={Utils.get_tile_class(tile, i, assigns, ["inactive"])} data-id={i}><%= raw debug_tile(tile) %></div>
-                  <% end %>
-                <% end %>
+                <% GenServer.call(@game_state, {:is_marked?, @viewer, @seat, i, :hand}) -> %>
+                  <div class={Utils.get_tile_class(tile, i, assigns, ["marked", "selected"])} phx-cancellable-click="unmark_tile" phx-target={@myself} phx-value-index={i} data-id={i}><%= raw debug_tile(tile) %></div>
+                <% true -> %>
+                  <div class={Utils.get_tile_class(tile, i, assigns, ["inactive"])} data-id={i}><%= raw debug_tile(tile) %></div>
               <% end %>
             <% end %>
             <%= for {tile, i} <- prepare_draw(assigns) do %>
-              <%= if GenServer.call(@game_state, {:can_mark?, @viewer, @seat, i, :hand}) do %>
-                <div class={Utils.get_tile_class(tile, i, assigns, ["draw", "markable"])} phx-cancellable-click="mark_tile" phx-target={@myself} phx-value-index={i} data-id={i}><%= raw debug_tile(tile) %></div>
-              <% else %>
-                <%= if GenServer.call(@game_state, {:is_marked?, @viewer, @seat, i, :hand}) do %>
+              <%= cond do %>
+                <% GenServer.call(@game_state, {:can_mark?, @viewer, @seat, i, :hand}) -> %>
+                  <div class={Utils.get_tile_class(tile, i, assigns, ["draw", "markable"])} phx-cancellable-click="mark_tile" phx-target={@myself} phx-value-index={i} data-id={i}><%= raw debug_tile(tile) %></div>
+                <% GenServer.call(@game_state, {:is_marked?, @viewer, @seat, i, :hand}) -> %>
                   <div class={Utils.get_tile_class(tile, i, assigns, ["draw", "marked", "selected"])} phx-cancellable-click="unmark_tile" phx-target={@myself} phx-value-index={i} data-id={i}><%= raw debug_tile(tile) %></div>
-                <% else %>
+                <% true -> %>
                   <div class={Utils.get_tile_class(tile, i, assigns, ["draw", "inactive"])} data-id={i}><%= raw debug_tile(tile) %></div>
-                <% end %>
               <% end %>
             <% end %>
           </div>
-
         <% else %>
           <div class="tiles" phx-hook="SortableHand" id={@id}>
             <%= for {i, tile, removed, highlight} <- prepare_hand(assigns) do %>
-              <%= if removed do %>
-                <div class={["tile", Utils.strip_attrs(tile), "removed"]} data-id={i}><%= raw debug_tile(tile) %></div>
-              <% else %>
-                <%= if not @your_turn? or i in @playable_indices do %>
+              <%= cond do %>
+                <% removed -> %>
+                  <div class={["tile", Utils.strip_attrs(tile), "removed"]} data-id={i}><%= raw debug_tile(tile) %></div>
+                <% not @your_turn? or i in @playable_indices -> %>
                   <div phx-cancellable-click="play_tile" phx-target={@myself} phx-value-index={i} class={Utils.get_tile_class(tile, i, assigns, [highlight && "highlight"], true)} data-id={i}><%= raw debug_tile(tile) %></div>
-                <% else %>
+                <% true -> %>
                   <div class={Utils.get_tile_class(tile, i, assigns, ["inactive", highlight && "highlight"], true)} data-id={i}><%= raw debug_tile(tile) %></div>
-                <% end %>
               <% end %>
             <% end %>
             <%= for {tile, i} <- prepare_draw(assigns) do %>
@@ -98,20 +92,19 @@ defmodule RiichiAdvancedWeb.HandComponent do
         <%= if not Enum.empty?(@marking) and @viewer != :spectator do %>
           <%= for {{_name, call}, i} <- prepare_calls(assigns) do %>
             <div class="dead-hand-button inactive" :if={@dead_hand_buttons and i == 0 and @seat != @viewer and @viewer != :spectator}></div>
-            <%= if GenServer.call(@game_state, {:can_mark?, @viewer, @seat, i, :calls}) do %>
-              <div class="call" phx-hover="hover_call" phx-hover-off="hover_off" phx-cancellable-click="mark_call" phx-target={@myself} phx-value-index={i} data-id={i}>
-                <div class={Utils.get_tile_class(tile, i+100, assigns, ["markable"])} :for={tile <- call}><%= raw debug_tile(tile) %></div>
-              </div>
-            <% else %>
-              <%= if GenServer.call(@game_state, {:is_marked?, @viewer, @seat, i, :calls}) do %>
+            <%= cond do %>
+              <% GenServer.call(@game_state, {:can_mark?, @viewer, @seat, i, :calls}) -> %>
+                <div class="call" phx-hover="hover_call" phx-hover-off="hover_off" phx-cancellable-click="mark_call" phx-target={@myself} phx-value-index={i} data-id={i}>
+                  <div class={Utils.get_tile_class(tile, i+100, assigns, ["markable"])} :for={tile <- call}><%= raw debug_tile(tile) %></div>
+                </div>
+              <% GenServer.call(@game_state, {:is_marked?, @viewer, @seat, i, :calls}) -> %>
                 <div class="call" phx-hover="hover_call" phx-hover-off="hover_off" phx-cancellable-click="unmark_call" phx-target={@myself} phx-value-index={i} data-id={i}>
                   <div class={Utils.get_tile_class(tile, i+100, assigns, ["marked"])} :for={tile <- call}><%= raw debug_tile(tile) %></div>
                 </div>
-              <% else %>
+              <% true -> %>
                 <div class="call" phx-hover="hover_call" phx-hover-off="hover_off" phx-target={@myself} phx-value-index={i} data-id={i}>
                   <div class={Utils.get_tile_class(tile, i+100, assigns)} :for={tile <- call}><%= raw debug_tile(tile) %></div>
                 </div>
-              <% end %>
             <% end %>
           <% end %>
         <% else %>
@@ -125,14 +118,13 @@ defmodule RiichiAdvancedWeb.HandComponent do
         <div class="call aside">
           <%= for {tile, i} <- prepare_aside(assigns) do %>
             <%= if not Enum.empty?(@marking) and @viewer != :spectator do %>
-              <%= if GenServer.call(@game_state, {:can_mark?, @viewer, @seat, i, :aside}) do %>
-                <div class={Utils.get_tile_class(tile, i, assigns, ["markable"])} phx-cancellable-click="mark_tile_aside" phx-target={@myself} phx-value-index={i} data-id={i}><%= raw debug_tile(tile) %></div>
-              <% else %>
-                <%= if GenServer.call(@game_state, {:is_marked?, @viewer, @seat, i, :aside}) do %>
+              <%= cond do %>
+                <% GenServer.call(@game_state, {:can_mark?, @viewer, @seat, i, :aside}) -> %>
+                  <div class={Utils.get_tile_class(tile, i, assigns, ["markable"])} phx-cancellable-click="mark_tile_aside" phx-target={@myself} phx-value-index={i} data-id={i}><%= raw debug_tile(tile) %></div>
+                <% GenServer.call(@game_state, {:is_marked?, @viewer, @seat, i, :aside}) -> %>
                   <div class={Utils.get_tile_class(tile, i, assigns, ["marked"])} data-id={i}><%= raw debug_tile(tile) %></div>
-                <% else %>
+                <% true -> %>
                   <div class={Utils.get_tile_class(tile, i, assigns)} data-id={i}><%= raw debug_tile(tile) %></div>
-                <% end %>
               <% end %>
             <% else %>
               <div class={Utils.get_tile_class(tile, i, assigns)} data-id={i}><%= raw debug_tile(tile) %></div>
