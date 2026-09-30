@@ -11,13 +11,13 @@ define_const riichi_bet, !bet
 on after_initialization do
   if @riichi_bet > 0 do
     if !double_value > 0 do
-      add_rule("Rules", !name, "If you can, you may discard into tenpai (ready hand) by declaring %{name} to lock your hand. If your discard passes, you bet %{bet} points. If you win, you are awarded %{name} (%{value} %{han}). If you declared %{name} on your very first discard, then you are instead awarded %{double_name} (%{double_value} %{han}). Calls before the riichi declaration invalidate %{double_name}.", %{bet: @riichi_bet, name: !name, value: !value, double_name: !double_name, double_value: !double_value, han: !han})
+      add_rule("Rules", !name, "If you can, you may discard into tenpai (ready hand) by declaring %{name} to lock your hand. If your discard passes, you bet %{bet} points. If you win, you are awarded %{name} (%{value} %{han}). If you declared %{name} on your very first discard, then you are instead awarded %{double_name} (%{double_value} %{han}). Calls before the %{name} declaration invalidate %{double_name}.", %{bet: @riichi_bet, name: !name, value: !value, double_name: !double_name, double_value: !double_value, han: !han})
     else
       add_rule("Rules", !name, "If you can, you may discard into tenpai (ready hand) by declaring %{name} to lock your hand. If your discard passes, you bet %{bet} points. If you win, you are awarded %{name} (%{value} %{han}).", %{bet: @riichi_bet, name: !name, value: !value, han: !han})
     end
   else
     if !double_value > 0 do
-      add_rule("Rules", !name, "If you can, you may discard into tenpai (ready hand) by declaring %{name} to lock your hand. If you win, you are awarded %{name} (%{value} %{han}). If you declared %{name} on your very first discard, then you are instead awarded %{double_name} (%{double_value} %{han}). Calls before the riichi declaration invalidate %{double_name}.", %{name: !name, value: !value, double_name: !double_name, double_value: !double_value, han: !han})
+      add_rule("Rules", !name, "If you can, you may discard into tenpai (ready hand) by declaring %{name} to lock your hand. If you win, you are awarded %{name} (%{value} %{han}). If you declared %{name} on your very first discard, then you are instead awarded %{double_name} (%{double_value} %{han}). Calls before the %{name} declaration invalidate %{double_name}.", %{name: !name, value: !value, double_name: !double_name, double_value: !double_value, han: !han})
     else
       add_rule("Rules", !name, "If you can, you may discard into tenpai (ready hand) by declaring %{name} to lock your hand. If you win, you are awarded %{name} (%{value} %{han}).", %{name: !name, value: !value, han: !han})
     end
@@ -26,7 +26,7 @@ on after_initialization do
   if !double_value > 0 do
     add_rule("$value $han", !double_name, "%{value} %{han} for winning after declaring %{name} on your first discard.", %{name: !name, value: !double_value, han: !han})
   end
-  add_rule("Rules", "No Ippatsu", "Winning in the first go-around after your riichi declaration does not award Ippatsu.")
+  add_rule("Rules", "No Ippatsu", "Winning in the first go-around after your %{name} declaration does not award Ippatsu.", %{name: !name})
 end
  
 apply set_prepend, "score_calculation.yaku_lists", ["riichi_yaku"]
