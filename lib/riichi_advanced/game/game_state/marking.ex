@@ -231,7 +231,7 @@ defmodule RiichiAdvanced.GameState.Marking do
           {src, update_in(mark_info.marked, fn marked -> marked ++ [{obj, seat, index}] end)}
         end))
         key = if source == :calls do :call else :tile end
-        params = %{source: source, seat: Log.to_seat(seat)} |> Map.put(key, obj)
+        params = %{source: source, seat: Log.to_seat(seat), ix: index} |> Map.put(key, obj)
         state = Log.log(state, marking_player, :mark, params)
         state
       else state end

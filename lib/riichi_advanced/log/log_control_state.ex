@@ -4,6 +4,7 @@ defmodule RiichiAdvanced.LogControlState do
   alias RiichiAdvanced.GameState.Log, as: Log
   alias RiichiAdvanced.Utils, as: Utils
   use GenServer
+  require Logger
 
   # TODO turn this into a protocol
   # since LogWalker state implements this too
@@ -257,16 +258,27 @@ defmodule RiichiAdvanced.LogControlState do
     mark_seat = Log.from_seat(mark_event["seat"])
     ix = mark_event["ix"]
     ix = if ix == nil do
-      if source == :calls do
-        [call_name, call_tiles] = mark_event["call"] # ["pon", ["1p", "0j", "1p"]]
-        normalize = fn call -> call |> Enum.map(&Utils.to_tile/1) |> Utils.strip_attrs() |> Utils.sort_tiles() end
-        call_tiles = normalize.(call_tiles)
-        calls = state.game_state.players[mark_seat].calls
-        Enum.find_index(calls, fn {name, tiles} -> name == call_name && normalize.(tiles) == call_tiles end)
-      else
-        tile = mark_event["tile"] |> Utils.to_tile()
-        {_tile, ix} = figure_out_hand_tile_ix(state, mark_seat, tile, ix, true)
-        ix
+      case source do
+        :hand          ->
+          tile = mark_event["tile"] |> Utils.to_tile()
+          {_tile, ix} = figure_out_hand_tile_ix(state, mark_seat, tile, ix, true)
+          ix
+        :calls         ->
+          [call_name, call_tiles] = mark_event["call"] # ["pon", ["1p", "0j", "1p"]]
+          normalize = fn call -> call |> Enum.map(&Utils.to_tile/1) |> Utils.strip_attrs() |> Utils.sort_tiles() end
+          call_tiles = normalize.(call_tiles)
+          calls = state.game_state.players[mark_seat].calls
+          Enum.find_index(calls, fn {name, tiles} -> name == call_name && normalize.(tiles) == call_tiles end)
+        :aside         -> Logger.error("mark for source #{source} without ix param is unimplemented"); nil
+        :discard       ->
+          tile = mark_event["tile"] |> Utils.to_tile()
+          discards = state.game_state.players[mark_seat].discards
+          Enum.find_index(discards, fn t -> t == tile or Utils.strip_attrs(t) == tile end)
+        :revealed_tile -> Logger.error("mark for source #{source} without ix param is unimplemented"); nil
+        :scry          -> Logger.error("mark for source #{source} without ix param is unimplemented"); nil
+        _              ->
+          Logger.error("Tried to mark unknown source #{inspect(source)}")
+          nil
       end
     else ix end
     state = Map.put(state, :game_state, GenServer.call(state.game_state_pid, :get_state, 300000))
@@ -286,16 +298,25 @@ defmodule RiichiAdvanced.LogControlState do
     mark_seat = Log.from_seat(mark_event["seat"])
     ix = mark_event["ix"]
     ix = if ix == nil do
-      if source == :calls do
-        [call_name, call_tiles] = mark_event["call"] # ["pon", ["1p", "0j", "1p"]]
-        normalize = fn call -> call |> Enum.map(&Utils.to_tile/1) |> Utils.strip_attrs() |> Utils.sort_tiles() end
-        call_tiles = normalize.(call_tiles)
-        calls = state.game_state.players[mark_seat].calls
-        Enum.find_index(calls, fn {name, tiles} -> name == call_name && normalize.(tiles) == call_tiles end)
-      else
-        tile = mark_event["tile"] |> Utils.to_tile()
-        {_tile, ix} = figure_out_hand_tile_ix(state, mark_seat, tile, ix, true)
-        ix
+      case source do
+        :hand          ->
+          tile = mark_event["tile"] |> Utils.to_tile()
+          {_tile, ix} = figure_out_hand_tile_ix(state, mark_seat, tile, ix, true)
+          ix
+        :calls         ->
+          [call_name, call_tiles] = mark_event["call"] # ["pon", ["1p", "0j", "1p"]]
+          normalize = fn call -> call |> Enum.map(&Utils.to_tile/1) |> Utils.strip_attrs() |> Utils.sort_tiles() end
+          call_tiles = normalize.(call_tiles)
+          calls = state.game_state.players[mark_seat].calls
+          Enum.find_index(calls, fn {name, tiles} -> name == call_name && normalize.(tiles) == call_tiles end)
+        :aside         -> Logger.error("unmark for source #{source} without ix param is unimplemented"); nil
+        :discard       ->
+          tile = mark_event["tile"] |> Utils.to_tile()
+          discards = state.game_state.players[mark_seat].discards
+          Enum.find_index(discards, fn t -> t == tile or Utils.strip_attrs(t) == tile end)
+        :revealed_tile -> Logger.error("unmark for source #{source} without ix param is unimplemented"); nil
+        :scry          -> Logger.error("unmark for source #{source} without ix param is unimplemented"); nil
+        _              -> Logger.error("Tried to mark unknown source #{inspect(source)}"); nil
       end
     else ix end
     state = Map.put(state, :game_state, GenServer.call(state.game_state_pid, :get_state, 300000))
