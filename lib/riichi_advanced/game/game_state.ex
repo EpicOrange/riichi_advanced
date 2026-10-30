@@ -714,7 +714,7 @@ defmodule RiichiAdvanced.GameState do
       dead_wall = Enum.zip(kyoku_log["uras"], kyoku_log["doras"])
       |> Enum.flat_map(fn {a, b} -> [a, b] end)
       |> Enum.reverse()
-      dead_wall = dead_wall ++ kyoku_log["kan_tiles"]
+      dead_wall = dead_wall ++ ([-2, -1, -4, -3] |> Enum.map(&Enum.at(kyoku_log["kan_tiles"], &1)))
       |> Enum.map(&Utils.to_tile/1)
       reserved_tiles = Rules.get(state.rules_ref, "reserved_tiles", [])
       revealed_tiles = Rules.get(state.rules_ref, "revealed_tiles", [])
