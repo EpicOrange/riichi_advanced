@@ -28,6 +28,7 @@ function getSortableHoverTarget(elem) {
 // sortable.js
 window.dragging = false;
 import Sortable from "sortablejs";
+import { getHandDropTarget } from "./hand_drop.mjs";
 Hooks.SortableHand = {
   mounted() {
     // need to not let the liveview send hover diffs while dragging
@@ -47,7 +48,7 @@ Hooks.SortableHand = {
       this.pushEventTo(target, "hover_off", {index: +ix.value});
     }, true);
 
-    new Sortable(this.el, {
+    const sortable = new Sortable(this.el, {
       animation: 150,
       delay: 0,
       dragClass: "drag-item",
@@ -61,18 +62,29 @@ Hooks.SortableHand = {
         window.mouseDownElement = null;
       },
       onEnd: e => {
-        const {clientX, clientY} = e.originalEvent.changedTouches?.[0] || e.originalEvent;
-        // just check cursor position to see if we landed in this element
-        const elems = document.elementsFromPoint(clientX, clientY);
-        if (elems.includes(this.el)) {
+        window.dragging = false;
+        const dropTarget = getHandDropTarget(this.el, e.originalEvent);
+        if (dropTarget === null) {
+          const siblings = [...e.from.children].filter(elem => elem !== e.item);
+          e.from.insertBefore(e.item, siblings[e.oldIndex] || null);
+          return;
+        }
+        if (dropTarget === "hand") {
           let params = {old: e.oldIndex, new: e.newIndex, ...e.item.dataset}
           this.pushEventTo(this.el, "reposition", params)
         } else {
           this.pushEventTo(this.el, "play_dragged_tile", {index: e.oldDraggableIndex})
         }
-        window.dragging = false;
       },
     });
+
+    this.cancelPointerDrag = () => {
+      if (Sortable.active === sortable) document.dispatchEvent(new Event("touchcancel"));
+    };
+    document.addEventListener("pointercancel", this.cancelPointerDrag, true);
+  },
+  destroyed() {
+    document.removeEventListener("pointercancel", this.cancelPointerDrag, true);
   }
 }
 
