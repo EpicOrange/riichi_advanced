@@ -431,7 +431,7 @@ msgid "(Chinroutou Pao) Discarding a tile that is called by another player to fo
 msgstr "（清老头包）打出被他人鸣牌以组成第四组幺九刻子的牌亦算责任，但仅限于和牌者自摸字一色时。"
 
 msgid "(Click the tile twice, or drag it away, to discard it.)"
-msgstr "（连点两下该牌，或将其拖离，即可打出。）"
+msgstr "（点两次同一张牌，或把它拖出手牌区，即可打出。）"
 
 msgid "(Click to continue)"
 msgstr "（点击继续）"
@@ -2384,7 +2384,7 @@ msgid "A discarded joker can also only be claimed for a win, but it acts as itse
 msgstr "打出的万能牌亦仅能鸣取以和牌，但作用为其本身，而非任意万能牌。"
 
 msgid "A game's log ID can also be found via the Copy Log button on the upper right."
-msgstr "亦可透过右上角的「复制记录」按钮找到游戏的记录ID。"
+msgstr "点击右上角的「复制牌谱」，也可以获取本局的牌谱 ID。"
 
 msgid "A hand with flowers declared cannot earn 1 fan from Concealed Hand."
 msgstr "宣告花牌的手牌无法获得门前清的1番。"
@@ -3551,7 +3551,7 @@ msgid "Coong"
 msgstr "Coong"
 
 msgid "Copy log"
-msgstr "复制记录"
+msgstr "复制牌谱"
 
 msgid "Cosmic"
 msgstr "宇宙"
@@ -5282,7 +5282,7 @@ msgid "Intro to space mahjong"
 msgstr "宇宙麻将入门"
 
 msgid "Invalid log id!"
-msgstr "无效的记录ID！"
+msgstr "牌谱 ID 无效！"
 
 msgid "Ippatsu"
 msgstr "一发"
@@ -5807,13 +5807,13 @@ msgid "Locked Discards"
 msgstr "锁定打牌"
 
 msgid "Log %{log_id} does not exist!"
-msgstr "记录%{log_id}不存在！"
+msgstr "找不到牌谱 %{log_id}！"
 
 msgid "Log ID:"
-msgstr "记录ID："
+msgstr "牌谱 ID："
 
 msgid "Logs"
-msgstr "记录"
+msgstr "牌谱"
 
 msgid "Look at next two tiles in the wall"
 msgstr "查看牌山中接下来两张牌"
@@ -8771,7 +8771,7 @@ msgid "Vietnamese Yaku Names"
 msgstr "越南役种名称"
 
 msgid "View log"
-msgstr "查看记录"
+msgstr "查看牌谱"
 
 msgid "Viewing log for %{ruleset}"
 msgstr "查看%{ruleset}的记录"
@@ -8879,7 +8879,7 @@ msgid "When viewing the rules on the tabs on the left, you can hover/tap any til
 msgstr "查看左侧标签的规则时，你可将游标移至／点击任何牌以放大。"
 
 msgid "When you start a game, it will send a message saying \"Log ID:\" followed by a code. You can use this code at (main menu) > Logs to view a replay of this game afterwards."
-msgstr "当你开始游戏时，会发送一则讯息写着「记录ID：」后接代码。你之后可在（主选单）> 记录中使用此代码查看本局的回放。"
+msgstr "对局开始后，消息区会显示「牌谱 ID：」和一串代码。之后可以在主菜单的「牌谱」中输入这串代码，回放本局。"
 
 msgid "White Dragon"
 msgstr "白板"
@@ -9140,7 +9140,7 @@ msgid "You can discard Anything (縂) and Number (合) jokers at any time during
 msgstr "你可在回合中任意时候打出任意（縂）与数字（合）万能牌。惟其他万能牌于初始花牌阶段后不得打出，除非你追求无花无叶手牌。"
 
 msgid "You can double click or right click to discard your drawn tile or skip a call. (On mobile: double tap or long tap.)"
-msgstr "你可连点两下或右键点击以打出摸入的牌或跳过鸣牌。（行动装置：连点两下或长按。）"
+msgstr "双击或右键单击，可以打出摸入的牌或跳过鸣牌。手机上可以双击或长按。"
 
 msgid "You can have two instances of this, for example:"
 msgstr "你可拥有两次此牌型，例如："
