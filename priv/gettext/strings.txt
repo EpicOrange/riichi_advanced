@@ -6353,7 +6353,7 @@ By default, American mahjong uses the following 152 tiles:
 At the start of the round, each player chooses to pass 3 tiles to the player to the right. This is one charleston pass. A total of 3 charleston passes are done (right, across, left) and if all players agree, 3 more passes are done (left, across, right). Regardless of the decision, there is a final round where each player decides to pass 0 to 3 tiles across, and both player passes the lower amount of the two decisions.
 Jokers may not be passed during the Charleston.
 (Blind Pass) On the third (and sixth) charleston pass, each player may choose to 'blind pass' up to three tiles, which means instead of passing a tile from hand, pass 1 to 3 of the tiles that are being passed to you this round. In Riichi Advanced, this is done by selecting the upside-down tiles that appear in your hand.
-To win, one must exactly match one of the hands on the preselected rules card. The 'nearest hands' button at the bottom can show all nearest hands, which is the easiest way to achieve a win as a beginner. You can also scroll down to see the ruleset's win definitions. The encoding for these definitions is described in the \\\"American hand match specifications\\\" section of 'documentation/documentation.json' on the Riichi Advanced GitHub page.
+To win, one must exactly match one of the hands on the preselected rules card. The 'nearest hands' button at the bottom can show all nearest hands, which is the easiest way to achieve a win as a beginner. You can also scroll down to see the ruleset's win definitions. The encoding for these definitions is described in the "American hand match specifications" section of 'documentation/documentation.json' on the Riichi Advanced GitHub page.
 When it comes to forming a winning hand, jokers cannot be used to fill single tiles or pairs. A hand like '1 22 333' can use up to three jokers for the 333, but no jokers can be used for the 1 or 22. There are no sequences in American Mahjong, only singles, pairs, triplets, quads, and so on.
 Note that some hands can only be won while concealed (no calls). These are marked with 'c' to the right of the Nearest Hands hands. 'x' on the other hand means 'exposed' and you can win those hands whether your hand has calls or not.
 You cannot win on a discarded joker.
@@ -6363,7 +6363,7 @@ There are by default 8 jokers %{joker} in the wall. Any amount of jokers can be 
 Joker tiles cannot be called (to form a meld, or to win).
 You may call Pung/Kong/Quint if a just-discarded tile (not a joker!) matches 2/3/4 of the same tile in hand. You may use any amount of joker tiles for this. Pairs cannot be called. After calling, the involved tiles are shown to all players and cannot be modified. Note that there are no 'replacement tiles' in American mahjong, so in every case you will have to immediately discard from hand after calling. There is no way to 'add' to an existing called meld.
 (Joker Swapping) During any player's turn, they can replace a tile in hand if it matches an existing meld on the table (not just their own melds!) that contains a joker. This action swaps the tile in hand with the meld's joker.
-If someone's exposed melds indicate that they have no possible winning hand (e.g. they can only win if they have a pair of %{tile}%{tile} in hand, but three %{tile} are publicly visible), you can press the skull button for that player to declare their hand dead. If the declaration is correct, then the target player has a \\\"dead hand\\\" and can no longer draw or discard, and must sit out of the rest of the round. If the declaration is incorrect, then your own hand is declared dead.
+If someone's exposed melds indicate that they have no possible winning hand (e.g. they can only win if they have a pair of %{tile}%{tile} in hand, but three %{tile} are publicly visible), you can press the skull button for that player to declare their hand dead. If the declaration is correct, then the target player has a "dead hand" and can no longer draw or discard, and must sit out of the rest of the round. If the declaration is incorrect, then your own hand is declared dead.
 There are 8 jokers in the game: %{jokers}.
 - %{any} can represent any tile.
 - %{number} can represent any number (suited) tile.
@@ -6398,7 +6398,7 @@ Every win awards a base payment of 1 $.
 %{example_hand}
 You may win with one of the following:
 - Five sets (sequences or triplets) and a pair.
-After all flowers have been declared, the \\\"gold tile\\\" is revealed (top left).
+After all flowers have been declared, the "gold tile" is revealed (top left).
 When the gold tile is revealed, if it is your winning tile, you may instantly declare a win off it (Qiangjin).
 Otherwise, the gold tile is a joker for any tile, but it cannot be used in calls.
 If you discard a gold tile, you may only win by self-draw.
@@ -6984,21 +6984,21 @@ The maximum hand value is 320 points. However, if your winning hand matches a pa
 (Agariyame) An exception is if it's the last round with the dealer ending in first place -- then the game just ends.
 (Agariyame) An exception is if it's the last round -- then the game just ends.
 (Agariyame) An exception is if the dealer ends up in first place -- then the dealership passes.
-%{man}x %{5m}, %{pin}x %{5p}, and %{sou}x %{5s} are replaced with red \\\"aka dora\\\" fives %{akadora_fives} that are worth one extra han each.
-%{man}x %{1m}, %{pin}x %{1p}, and %{sou}x %{1s} are replaced with red \\\"aka dora\\\" ones %{akadora_ones} that are worth one extra han each.
+%{man}x %{5m}, %{pin}x %{5p}, and %{sou}x %{5s} are replaced with red "aka dora" fives %{akadora_fives} that are worth one extra han each.
+%{man}x %{1m}, %{pin}x %{1p}, and %{sou}x %{1s} are replaced with red "aka dora" ones %{akadora_ones} that are worth one extra han each.
 (Aka) If your hand is closed, each aka dora is worth 1 shuugi chip.
-%{man}x %{3m}, %{pin}x %{3p}, and %{sou}x %{3s} are replaced with red \\\"aka dora\\\" threes %{akadora_threes} that are worth one extra han each.
+%{man}x %{3m}, %{pin}x %{3p}, and %{sou}x %{3s} are replaced with red "aka dora" threes %{akadora_threes} that are worth one extra han each.
 (Aka) If your hand is closed, each aka dora is worth 1 shuugi chip.
-%{man}x %{7m}, %{pin}x %{7p}, and %{sou}x %{7s} are replaced with red \\\"aka dora\\\" sevens %{akadora_sevens} that are worth one extra han each.
+%{man}x %{7m}, %{pin}x %{7p}, and %{sou}x %{7s} are replaced with red "aka dora" sevens %{akadora_sevens} that are worth one extra han each.
 (Aka) If your hand is closed, each aka dora is worth 1 shuugi chip.
-%{man}x %{9m}, %{pin}x %{9p}, and %{sou}x %{9s} are replaced with red \\\"aka dora\\\" nines %{akadora_nines} that are worth one extra han each.
+%{man}x %{9m}, %{pin}x %{9p}, and %{sou}x %{9s} are replaced with red "aka dora" nines %{akadora_nines} that are worth one extra han each.
 (Aka) If your hand is closed, each aka dora is worth 1 shuugi chip.
 %{hand} in two different suits.
 %{hand1} or
 %{hand2} in two different suits.
 %{hand} in three suits.
 %{hand} in two different suits.
-%{man}x %{5m}, %{pin}x %{5p}, and %{sou}x %{5s} are replaced with blue \\\"ao dora\\\" fives %{aodora_fives} that are worth one extra han each.
+%{man}x %{5m}, %{pin}x %{5p}, and %{sou}x %{5s} are replaced with blue "ao dora" fives %{aodora_fives} that are worth one extra han each.
 Limit hands are removed. Scores are calculated with the standard han-fu formula: a standard nondealer ron is worth 4 * fu * 2^(2+han), rounded up.
 If a hand is in tenpai (about to win) but one of the tiles it is waiting on wins no yaku, then the hand cannot win at all (on any wait).
 %{example_hand}
@@ -7052,7 +7052,7 @@ The 100 point sticks in the middle count honba. Each adds %{value} extra points 
 Every kan reveals another dora indicator immediately.
 Every kan reveals another dora indicator after the discard, except for concealed kan, which reveals one immediately.
 (Kansai) At the end of the game, chips are exchanged based on placement and points.
-%{man}x %{5m}, %{pin}x %{5p}, and %{sou}x %{5s} are replaced with gold \\\"kin dora\\\" fives %{kindora_fives} that are worth one extra han each.
+%{man}x %{5m}, %{pin}x %{5p}, and %{sou}x %{5s} are replaced with gold "kin dora" fives %{kindora_fives} that are worth one extra han each.
 3 han 60 fu and 4 han 30 fu are worth mangan.
 (Cosmic Riichi) 4.5 han is always mangan. 3.5 han 40 fu and 2.5 han 80 fu are also worth mangan.
 You may also call ron on concealed kans, but only if you are tenpai for kokushi musou.
@@ -7275,8 +7275,8 @@ Sequences can wrap (891, 912). Winds and dragons can make sequences. You can chi
 - (Space Mahjong) Seven Pairs is no longer a winning hand.
 (Space Mahjong) Open kokushi musou is worth 3 han.
 %{example_hand}
-(Speed Tonpuu) 1x %{5m}, 1x %{5p}, and 1x %{5s} are replaced with red \\\"aka dora\\\" fives %{aka} worth 1 han and one chip each.
-(Speed Tonpuu) 1x %{7m}, 1x %{7p}, and 1x %{7s} are replaced with blue \\\"ao dora\\\" sevens %{ao} worth 1 han and 2 chips each.
+(Speed Tonpuu) 1x %{5m}, 1x %{5p}, and 1x %{5s} are replaced with red "aka dora" fives %{aka} worth 1 han and one chip each.
+(Speed Tonpuu) 1x %{7m}, 1x %{7p}, and 1x %{7s} are replaced with blue "ao dora" sevens %{ao} worth 1 han and 2 chips each.
 (Speed Tonpuu) 1x %{5p} is replaced with a gold five %{kin} worth 1 han and one chip. This 1 han counts as yaku.
 One of the white dragons %{5z} and one of the red dragons %{7z} are replaced with shiro pocchi %{shiro_pocchi}. Shiro pocchi acts a joker tile when drawn while in riichi.
 One of the green dragons %{6z} is replaced with hatsu pocchi %{hatsu_pocchi}. Hatsu pocchi acts a joker tile when drawn with an open tenpai hand.
@@ -7371,7 +7371,7 @@ You may win with one of the following:
 - Seven pairs (no repeated pairs).
 %{value} %{han} if your hand consists of seven pairs (no repeated pairs).
 %{example_hand}
-\\\"Golden Rooster Steals Food\\\". 4 han instead of the usual 2 han if you win ketsupaihou by chankan -- that is, you robbed a kan with an edge or middle wait.
+"Golden Rooster Steals Food". 4 han instead of the usual 2 han if you win ketsupaihou by chankan -- that is, you robbed a kan with an edge or middle wait.
 4 han instead of the usual 2 han if you win ketsupaihou by chankan -- that is, you robbed a kan with an edge or middle wait.
 %{example_hand}
 Your hand has the pattern 111333555 in three different suits (doesn't have to start at 1).
@@ -7421,9 +7421,9 @@ Your hand must be closed.
 %{value} %{han} if you have two double sequences, each being two copies of the exact same sequence in one suit, like 123 123. Cannot be scored as a seven pairs hand.
 Your hand must be closed.
 %{example_hand}
-\\\"Plucking the Moon from the Bottom of the Sea\\\". Mangan if you win with haitei (not houtei) on %{tile}.
+"Plucking the Moon from the Bottom of the Sea". Mangan if you win with haitei (not houtei) on %{tile}.
 %{example_hand}
-\\\"Plucking the Moon from the Bottom of the Sea\\\". %{value} %{han} if you win with haitei (not houtei) on %{tile}.
+"Plucking the Moon from the Bottom of the Sea". %{value} %{han} if you win with haitei (not houtei) on %{tile}.
 %{example_hand}
 (Ippatsu) If you win before or during your next draw after riichi, you are awarded ippatsu (1 han). Calls invalidate ippatsu.
 1 han if you win before or during your next draw after riichi. Calls invalidate ippatsu.
@@ -7433,13 +7433,13 @@ Your hand must be closed.
 %{value} %{han} if you have four of the exact same sequence in one suit, like 123 123 123 123.
 %{example_hand}
 +%{bonus} %{han} if your hand is closed (no calls besides ankan).
-\\\"Pure Triple Sequences\\\". %{value} %{han} if you have three of the exact same sequence in one suit, like 123 123 123. Like iipeikou but three. +%{bonus} %{han} if closed. Does not stack with iipeikou (123 123) or sanrenkou (111 222 333).
+"Pure Triple Sequences". %{value} %{han} if you have three of the exact same sequence in one suit, like 123 123 123. Like iipeikou but three. +%{bonus} %{han} if closed. Does not stack with iipeikou (123 123) or sanrenkou (111 222 333).
 %{example_hand}
 %{value} %{han} if your hand contains the sequences 123 456 879 in one suit. +%{bonus} %{han} if closed.
 %{value} %{han} if your hand contains the sequences 123 456 879 in one suit.
 %{example_hand}
 %{value} %{han} if you win off the tile discarded by a player who just called kan.
-\\\"Missing Tile\\\". Win with an edge or middle wait on a tile for which three copies are already publicly visible in discards. (Tiles in hand don't count.)
+"Missing Tile". Win with an edge or middle wait on a tile for which three copies are already publicly visible in discards. (Tiles in hand don't count.)
 %{example_hand}
 You may win with one of the following:
 - (%{name}) All thirteen terminal/honor tiles plus one forming a pair.
@@ -7450,7 +7450,7 @@ You may win with one of the following:
 %{value} %{han} if you have no calls (except %{ankan}).
 %{value} %{han} if you win by self-draw without having called any tiles (except %{ankan}).
 You have no flowers.
-\\\"Three Guest Wind Triplets\\\". You have triplets of three guest winds. This requires the round wind to match your seat wind.
+"Three Guest Wind Triplets". You have triplets of three guest winds. This requires the round wind to match your seat wind.
 You have triplets of three guest winds. This requires the round wind to match your seat wind.
 %{example_hand}
 %{example_hand}
@@ -7466,7 +7466,7 @@ You have triplets of three guest winds. This requires the round wind to match yo
 %{value} %{han} if all four of your sets are sequences.
 %{example_hand}
 Your pair must not be a value pair (pair of dragons, round wind, or seat wind).
-\\\"Consecutive Blossom\\\". You called kan off on a kan replacement tile and tsumoed _that_ rinshan tile. Does not stack with rinshan.
+"Consecutive Blossom". You called kan off on a kan replacement tile and tsumoed _that_ rinshan tile. Does not stack with rinshan.
 You called kan off on a kan replacement tile and won on _that_ tile.
 %{example_hand}
 Mangan if you have honitsu with dragon yakuhai matching the suit: manzu with chun, pinzu with hatsu (not a typo), or souzu with haku (also not a typo).
@@ -7480,11 +7480,11 @@ If you can, you may discard into tenpai (ready hand) by declaring %{name} to loc
 %{value} %{han} for winning after declaring %{name}.
 %{value} %{han} for winning after declaring %{name} on your first discard.
 Winning in the first go-around after your %{name} declaration does not award Ippatsu.
-\\\"Pure Quadruple Sequences\\\". You have four of the exact same sequence in one suit, like 123m 123m 123m 123m. Like iipeikou but four.
+"Pure Quadruple Sequences". You have four of the exact same sequence in one suit, like 123m 123m 123m 123m. Like iipeikou but four.
 %{example_hand}
 (Isshoku Yonjun) If you win with isshoku yonjun (123123123123 of the same suit) and called the fourth sequence from a player, that player is responsible for the yakuman payment if you tsumo, or half of the payment if you ron off someone else.
 %{is} if you win off the first tile someone dropped before your first draw. Calls invalidate.
-\\\"Four Consecutive Triplets\\\". You have four triplets of the same suit of increasing number, like 111 222 333 444.
+"Four Consecutive Triplets". You have four triplets of the same suit of increasing number, like 111 222 333 444.
 %{example_hand}
 (Suurenkou) If you win with suurenkou (four consecutive triplets of the same suit like 111 222 333 444) and called the fourth triplet or kan from a player, that player is responsible for the yakuman payment if you tsumo, or half of the payment if you ron off someone else.
 %{value} %{han} if you win off a %{kan} or flower replacement tile.
@@ -7493,17 +7493,17 @@ Winning in the first go-around after your %{name} declaration does not award Ipp
 %{value} %{han} if you win off a %{kan} replacement tile drawn after another %{kan}.
 %{value} %{han} if you have two concealed triplets. A triplet completed by a self-draw win counts as concealed.
 %{example_hand}
-\\\"Twice Double Triplets\\\". The four sets in your hand form two pairs of double triplets. A double triplet is when you have two triplets of the same number in different suits, like 333m 333p. Stacks with toitoi.
-\\\"Twice Double Triplets\\\". The four sets in your hand form two pairs of double triplets. A double triplet is when you have two triplets of the same number in different suits, like 333m 333p.
+"Twice Double Triplets". The four sets in your hand form two pairs of double triplets. A double triplet is when you have two triplets of the same number in different suits, like 333m 333p. Stacks with toitoi.
+"Twice Double Triplets". The four sets in your hand form two pairs of double triplets. A double triplet is when you have two triplets of the same number in different suits, like 333m 333p.
 %{example_hand}
 %{value} %{han} if you called %{kan} twice.
 %{example_hand}
 %{value} %{han} if you have two double sequences, each being two copies of the exact same sequence in one suit, like 123 123. Cannot be scored together with seven pairs.
 Your hand must be closed.
 %{example_hand}
-\\\"Scratching a Carrying Pole\\\". Mangan if you win with chankan on %{tile}.
+"Scratching a Carrying Pole". Mangan if you win with chankan on %{tile}.
 %{example_hand}
-\\\"Scratching a Carrying Pole\\\". %{value} %{han} if you win with chankan on %{tile}.
+"Scratching a Carrying Pole". %{value} %{han} if you win with chankan on %{tile}.
 %{example_hand}
 %{value} %{han} if your hand only consists of %{tiles} (all green tiles)
 %{example_hand}
@@ -7535,13 +7535,13 @@ Your hand must be closed.
 %{example_hand}
 %{value} %{han} if your final wait contains at least two pairs waiting for either one to become a triplet.
 %{example_hand}
-\\\"Twelve Tiles Down\\\". Win with four calls (so your hand is just one tile waiting for a pair). Ankans are allowed.
+"Twelve Tiles Down". Win with four calls (so your hand is just one tile waiting for a pair). Ankans are allowed.
 %{example_hand}
 Win with five calls (so your hand is just one tile waiting for a pair).
 %{example_hand}
 Win with four calls (so your hand is just one tile waiting for a pair).
 %{example_hand}
-\\\"Thirteen Unconnected\\\". Your starting hand is made of 13 disconnected tiles, plus one forming a pair. Calls invalidate.
+"Thirteen Unconnected". Your starting hand is made of 13 disconnected tiles, plus one forming a pair. Calls invalidate.
 Your starting hand is made of 13 disconnected tiles, plus one forming a pair. Calls invalidate.
 %{example_hand}
 - (%{name}) Start with 13 disconnected tiles, plus one forming a pair.
@@ -7555,13 +7555,13 @@ Your closed winning hand is 11223344556677 or 33445566778899 of bamboo.
 %{example_hand}
 Your closed winning hand is 11223344556677 or 33445566778899 of characters.
 %{example_hand}
-\\\"Big Wheels\\\". Your closed winning hand is 22334455667788 of circles.
+"Big Wheels". Your closed winning hand is 22334455667788 of circles.
 Your closed winning hand is 22334455667788 of circles.
 %{example_hand}
-\\\"Bamboo Forest\\\". Your closed winning hand is 22334455667788 of bamboo.
+"Bamboo Forest". Your closed winning hand is 22334455667788 of bamboo.
 Your closed winning hand is 22334455667788 of bamboo.
 %{example_hand}
-\\\"Numerous Numbers\\\". Your closed winning hand is 22334455667788 of characters.
+"Numerous Numbers". Your closed winning hand is 22334455667788 of characters.
 Your closed winning hand is 22334455667788 of characters.
 %{example_hand}
 %{value} %{han} if you have triplets of three different winds, and a pair of the fourth.
@@ -7590,11 +7590,11 @@ Your closed winning hand is 22334455667788 of characters.
 %{example_hand}
 %{value} %{han} if your hand includes all 5 suits (character, circle, bamboo, wind, dragon).
 %{example_hand}
-\\\"Gathering a Plum Blossom from the Roof\\\". Mangan if you win with rinshan on %{tile}.
+"Gathering a Plum Blossom from the Roof". Mangan if you win with rinshan on %{tile}.
 %{example_hand}
-\\\"Gathering a Plum Blossom from the Roof\\\". %{value} %{han} if you win with rinshan on %{tile}.
+"Gathering a Plum Blossom from the Roof". %{value} %{han} if you win with rinshan on %{tile}.
 %{example_hand}
-\\\"Five-Heart Straight\\\". %{value} %{han} on top of ittsuu if the winning tile is the five needed for ittsuu.
+"Five-Heart Straight". %{value} %{han} on top of ittsuu if the winning tile is the five needed for ittsuu.
 %{value} %{han} on top of ittsuu if the winning tile is the five needed for ittsuu.
 %{example_hand}
 - Vietnamese mahjong additionally includes 4 kings %{kings}, 4 queens %{queens}, and the flower joker %{hoa} as additional flower tiles.
@@ -7752,11 +7752,11 @@ Yakuman if your hand contains four copies of the exact same kontsu.
 %{example_hand}
 6 han if your hand has four closed kontsu (mixed triplets) in hand, and you won by completing your pair.
 %{example_hand}
-\\\"Thirteen Independent\\\". Yakuman if you start with 14 disconnected tiles. Calls invalidate.
+"Thirteen Independent". Yakuman if you start with 14 disconnected tiles. Calls invalidate.
 %{example_hand}
 - (Shiisanuushi) Start with 14 disconnected tiles.
 Win off a riichi discard.
-\\\"Five Suits Collected\\\". Your standard hand (4 sets and a pair) includes all five suits (character, circle, bamboo, wind, dragon). Mixed triplets (kontsu) of winds and dragons can be used, but not mixed triplets of suited tiles.
+"Five Suits Collected". Your standard hand (4 sets and a pair) includes all five suits (character, circle, bamboo, wind, dragon). Mixed triplets (kontsu) of winds and dragons can be used, but not mixed triplets of suited tiles.
 %{example_hand}
 Your standard hand (4 sets and a pair) includes five different kinds of groups. That is, you have five out of: pair, sequence, triplet, kontsu, kan, fuun.
 %{example_hand}

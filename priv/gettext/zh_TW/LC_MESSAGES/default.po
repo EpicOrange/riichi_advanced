@@ -67,26 +67,26 @@ msgstr "%{hand}，分屬兩種不同花色。"
 msgid "%{is} if you win off the first tile someone dropped before your first draw. Calls invalidate."
 msgstr "若你在首次摸牌前胡他人打出的第一張牌，即為%{is}。途中鳴牌則不成立。"
 
-msgid "%{man}x %{1m}, %{pin}x %{1p}, and %{sou}x %{1s} are replaced with red \\\"aka dora\\\" ones %{akadora_ones} that are worth one extra han each."
-msgstr "各一張%{1m}、%{1p}、%{1s}會替換為紅色「赤寶牌」%{akadora_ones}，每張價值額外一番。"
+msgid "%{man}x %{1m}, %{pin}x %{1p}, and %{sou}x %{1s} are replaced with red \"aka dora\" ones %{akadora_ones} that are worth one extra han each."
+msgstr "%{man}張%{1m}、%{pin}張%{1p}、%{sou}張%{1s}會替換為紅色「赤寶牌」%{akadora_ones}，每張價值額外一番。"
 
-msgid "%{man}x %{3m}, %{pin}x %{3p}, and %{sou}x %{3s} are replaced with red \\\"aka dora\\\" threes %{akadora_threes} that are worth one extra han each."
-msgstr "各一張%{3m}、%{3p}、%{3s}會替換為紅色「赤寶牌」三%{akadora_threes}，每張價值額外一番。"
+msgid "%{man}x %{3m}, %{pin}x %{3p}, and %{sou}x %{3s} are replaced with red \"aka dora\" threes %{akadora_threes} that are worth one extra han each."
+msgstr "%{man}張%{3m}、%{pin}張%{3p}、%{sou}張%{3s}會替換為紅色「赤寶牌」三%{akadora_threes}，每張價值額外一番。"
 
-msgid "%{man}x %{5m}, %{pin}x %{5p}, and %{sou}x %{5s} are replaced with blue \\\"ao dora\\\" fives %{aodora_fives} that are worth one extra han each."
-msgstr "各一張%{5m}、%{5p}、%{5s}會替換為藍色「青寶牌」五%{aodora_fives}，每張價值額外一番。"
+msgid "%{man}x %{5m}, %{pin}x %{5p}, and %{sou}x %{5s} are replaced with blue \"ao dora\" fives %{aodora_fives} that are worth one extra han each."
+msgstr "%{man}張%{5m}、%{pin}張%{5p}、%{sou}張%{5s}會替換為藍色「青寶牌」五%{aodora_fives}，每張價值額外一番。"
 
-msgid "%{man}x %{5m}, %{pin}x %{5p}, and %{sou}x %{5s} are replaced with gold \\\"kin dora\\\" fives %{kindora_fives} that are worth one extra han each."
-msgstr "各一張%{5m}、%{5p}、%{5s}會替換為金色「金寶牌」五%{kindora_fives}，每張價值額外一番。"
+msgid "%{man}x %{5m}, %{pin}x %{5p}, and %{sou}x %{5s} are replaced with gold \"kin dora\" fives %{kindora_fives} that are worth one extra han each."
+msgstr "%{man}張%{5m}、%{pin}張%{5p}、%{sou}張%{5s}會替換為金色「金寶牌」五%{kindora_fives}，每張價值額外一番。"
 
-msgid "%{man}x %{5m}, %{pin}x %{5p}, and %{sou}x %{5s} are replaced with red \\\"aka dora\\\" fives %{akadora_fives} that are worth one extra han each."
-msgstr "各一張%{5m}、%{5p}、%{5s}會替換為紅色「赤寶牌」五%{akadora_fives}，每張價值額外一番。"
+msgid "%{man}x %{5m}, %{pin}x %{5p}, and %{sou}x %{5s} are replaced with red \"aka dora\" fives %{akadora_fives} that are worth one extra han each."
+msgstr "%{man}張%{5m}、%{pin}張%{5p}、%{sou}張%{5s}會替換為紅色「赤寶牌」五%{akadora_fives}，每張價值額外一番。"
 
-msgid "%{man}x %{7m}, %{pin}x %{7p}, and %{sou}x %{7s} are replaced with red \\\"aka dora\\\" sevens %{akadora_sevens} that are worth one extra han each."
-msgstr "各一張%{7m}、%{7p}、%{7s}會替換為紅色「赤寶牌」七%{akadora_sevens}，每張價值額外一番。"
+msgid "%{man}x %{7m}, %{pin}x %{7p}, and %{sou}x %{7s} are replaced with red \"aka dora\" sevens %{akadora_sevens} that are worth one extra han each."
+msgstr "%{man}張%{7m}、%{pin}張%{7p}、%{sou}張%{7s}會替換為紅色「赤寶牌」七%{akadora_sevens}，每張價值額外一番。"
 
-msgid "%{man}x %{9m}, %{pin}x %{9p}, and %{sou}x %{9s} are replaced with red \\\"aka dora\\\" nines %{akadora_nines} that are worth one extra han each."
-msgstr "各一張%{9m}、%{9p}、%{9s}會替換為紅色「赤寶牌」九%{akadora_nines}，每張價值額外一番。"
+msgid "%{man}x %{9m}, %{pin}x %{9p}, and %{sou}x %{9s} are replaced with red \"aka dora\" nines %{akadora_nines} that are worth one extra han each."
+msgstr "%{man}張%{9m}、%{pin}張%{9p}、%{sou}張%{9s}會替換為紅色「赤寶牌」九%{akadora_nines}，每張價值額外一番。"
 
 msgid "%{mixed_triplet}"
 msgstr "%{mixed_triplet}"
@@ -580,13 +580,13 @@ msgstr "（白ポッチ）立直中以白ポッチ和牌價值1枚籌碼。"
 msgid "(Space Mahjong) Open kokushi musou is worth 3 han."
 msgstr "（宇宙麻將）副露國士無雙價值3番。"
 
-msgid "(Speed Tonpuu) 1x %{5m}, 1x %{5p}, and 1x %{5s} are replaced with red \\\"aka dora\\\" fives %{aka} worth 1 han and one chip each."
+msgid "(Speed Tonpuu) 1x %{5m}, 1x %{5p}, and 1x %{5s} are replaced with red \"aka dora\" fives %{aka} worth 1 han and one chip each."
 msgstr "（競速東風）各一張%{5m}、%{5p}、%{5s}會替換為紅色「赤寶牌」五%{aka}，每張價值1番及1枚籌碼。"
 
 msgid "(Speed Tonpuu) 1x %{5p} is replaced with a gold five %{kin} worth 1 han and one chip. This 1 han counts as yaku."
 msgstr "（競速東風）一張%{5p}會替換為金色五%{kin}，價值1番及1枚籌碼。此1番計為役。"
 
-msgid "(Speed Tonpuu) 1x %{7m}, 1x %{7p}, and 1x %{7s} are replaced with blue \\\"ao dora\\\" sevens %{ao} worth 1 han and 2 chips each."
+msgid "(Speed Tonpuu) 1x %{7m}, 1x %{7p}, and 1x %{7s} are replaced with blue \"ao dora\" sevens %{ao} worth 1 han and 2 chips each."
 msgstr "（競速東風）各一張%{7m}、%{7p}、%{7s}會替換為藍色「青寶牌」七%{ao}，每張價值1番及2枚籌碼。"
 
 msgid "(Stackable Limit) You may stack multiple instances of 10 Fan by achieving more than one of these. This is the only way to exceed the 10 Fan limit."
@@ -2629,7 +2629,7 @@ msgstr "每局結束後，若有人分數高於%{above}點，遊戲結束。"
 msgid "After a win, you can hover over (or tap) players and arrows in the point exchange screen to view a detailed breakdown of each point transferred."
 msgstr "和牌後，你可在點數交換畫面將游標移至（或點擊）玩家與箭頭上，查看每筆點數轉移的詳細明細。"
 
-msgid "After all flowers have been declared, the \\\"gold tile\\\" is revealed (top left)."
+msgid "After all flowers have been declared, the \"gold tile\" is revealed (top left)."
 msgstr "所有花牌宣告完畢後，會揭曉「金牌」（左上角）。"
 
 msgid "After issuing a challenge (or passing), you can see your hand and the game begins."
@@ -5029,7 +5029,7 @@ msgstr "若有人加槓升級明刻，而你正聽該牌，你可特別對加槓
 msgid "If someone kans your discard and tsumos off the replacement tile (rinshan), you pay the full amount."
 msgstr "若有人對你的打牌宣告槓並以補牌自摸（嶺上開花），你須支付全額。"
 
-msgid "If someone's exposed melds indicate that they have no possible winning hand (e.g. they can only win if they have a pair of %{tile}%{tile} in hand, but three %{tile} are publicly visible), you can press the skull button for that player to declare their hand dead. If the declaration is correct, then the target player has a \\\"dead hand\\\" and can no longer draw or discard, and must sit out of the rest of the round. If the declaration is incorrect, then your own hand is declared dead."
+msgid "If someone's exposed melds indicate that they have no possible winning hand (e.g. they can only win if they have a pair of %{tile}%{tile} in hand, but three %{tile} are publicly visible), you can press the skull button for that player to declare their hand dead. If the declaration is correct, then the target player has a \"dead hand\" and can no longer draw or discard, and must sit out of the rest of the round. If the declaration is incorrect, then your own hand is declared dead."
 msgstr "若某人的副露顯示其無法組成任何和牌型（例如僅能在手中有%{tile}%{tile}對子時和牌，但已有三張%{tile}公開可見），你可按下該玩家的骷髏按鈕宣告其手牌死手。若宣告正確，則目標玩家成為「死手」，不得再摸牌或打牌，且須退出本局餘下部分。若宣告錯誤，則你自己的手牌被宣告為死手。"
 
 msgid "If the AI is stuck or missing, clicking the center compass will try to unstuck them."
@@ -8458,7 +8458,7 @@ msgstr "要宣告北風，請按拔北按鈕。"
 msgid "To join a private room, press \"Join private room\" in the main menu and enter the room code of the room you want to join. Then hit Play."
 msgstr "要加入私人房間，請在主選單按「加入私人房間」，並輸入欲加入房間的房間代碼。然後按開始。"
 
-msgid "To win, one must exactly match one of the hands on the preselected rules card. The 'nearest hands' button at the bottom can show all nearest hands, which is the easiest way to achieve a win as a beginner. You can also scroll down to see the ruleset's win definitions. The encoding for these definitions is described in the \\\"American hand match specifications\\\" section of 'documentation/documentation.json' on the Riichi Advanced GitHub page."
+msgid "To win, one must exactly match one of the hands on the preselected rules card. The 'nearest hands' button at the bottom can show all nearest hands, which is the easiest way to achieve a win as a beginner. You can also scroll down to see the ruleset's win definitions. The encoding for these definitions is described in the \"American hand match specifications\" section of 'documentation/documentation.json' on the Riichi Advanced GitHub page."
 msgstr "和牌須與預選規則卡上的其中一種手牌完全相符。底部的「最接近手牌」按鈕可顯示所有最接近的手牌，是初學者最容易達成和牌的方式。你亦可向下捲動查看該規則集的和牌定義。這些定義的編碼說明於Riichi Advanced GitHub頁面上'documentation/documentation.json'的「American hand match specifications」章節。"
 
 msgid "Tobi"
@@ -9718,73 +9718,73 @@ msgstr "Zoroba"
 msgid "Zung Jung"
 msgstr "中庸"
 
-msgid "\\\"Bamboo Forest\\\". Your closed winning hand is 22334455667788 of bamboo."
+msgid "\"Bamboo Forest\". Your closed winning hand is 22334455667788 of bamboo."
 msgstr "「竹林」。你的門前清和牌為索子的22334455667788。"
 
-msgid "\\\"Big Wheels\\\". Your closed winning hand is 22334455667788 of circles."
+msgid "\"Big Wheels\". Your closed winning hand is 22334455667788 of circles."
 msgstr "「大車輪」。你的門前清和牌為筒子的22334455667788。"
 
-msgid "\\\"Consecutive Blossom\\\". You called kan off on a kan replacement tile and tsumoed _that_ rinshan tile. Does not stack with rinshan."
+msgid "\"Consecutive Blossom\". You called kan off on a kan replacement tile and tsumoed _that_ rinshan tile. Does not stack with rinshan."
 msgstr "「連續開花」。你以槓後補牌宣告槓，並自摸該嶺上牌。不與嶺上開花疊加。"
 
-msgid "\\\"Five Suits Collected\\\". Your standard hand (4 sets and a pair) includes all five suits (character, circle, bamboo, wind, dragon). Mixed triplets (kontsu) of winds and dragons can be used, but not mixed triplets of suited tiles."
+msgid "\"Five Suits Collected\". Your standard hand (4 sets and a pair) includes all five suits (character, circle, bamboo, wind, dragon). Mixed triplets (kontsu) of winds and dragons can be used, but not mixed triplets of suited tiles."
 msgstr "「五星聚會」。你的標準手牌（四面子一雀頭）包含全部五種花色（萬、筒、索、風、三元）。可使用風與三元的組合刻子，但不得使用數牌的組合刻子。"
 
-msgid "\\\"Five-Heart Straight\\\". %{value} %{han} on top of ittsuu if the winning tile is the five needed for ittsuu."
+msgid "\"Five-Heart Straight\". %{value} %{han} on top of ittsuu if the winning tile is the five needed for ittsuu."
 msgstr "「五心通貫」。若和牌為一氣通貫所需的五，則於一氣通貫之上再加%{value}%{han}。"
 
-msgid "\\\"Four Consecutive Triplets\\\". You have four triplets of the same suit of increasing number, like 111 222 333 444."
+msgid "\"Four Consecutive Triplets\". You have four triplets of the same suit of increasing number, like 111 222 333 444."
 msgstr "「四連刻」。你在同花色擁有數字遞增的四組刻子（如111 222 333 444）。"
 
-msgid "\\\"Gathering a Plum Blossom from the Roof\\\". %{value} %{han} if you win with rinshan on %{tile}."
+msgid "\"Gathering a Plum Blossom from the Roof\". %{value} %{han} if you win with rinshan on %{tile}."
 msgstr "「屋上摘梅」。以嶺上開花胡%{tile}可得%{value}%{han}。"
 
-msgid "\\\"Gathering a Plum Blossom from the Roof\\\". Mangan if you win with rinshan on %{tile}."
+msgid "\"Gathering a Plum Blossom from the Roof\". Mangan if you win with rinshan on %{tile}."
 msgstr "「屋上摘梅」。以嶺上開花胡%{tile}時為滿貫。"
 
-msgid "\\\"Golden Rooster Steals Food\\\". 4 han instead of the usual 2 han if you win ketsupaihou by chankan -- that is, you robbed a kan with an edge or middle wait."
+msgid "\"Golden Rooster Steals Food\". 4 han instead of the usual 2 han if you win ketsupaihou by chankan -- that is, you robbed a kan with an edge or middle wait."
 msgstr "「金雞奪食」。以搶槓胡缺一門（即邊張或坎張聽牌搶槓）時，改為4番而非通常的2番。"
 
-msgid "\\\"Missing Tile\\\". Win with an edge or middle wait on a tile for which three copies are already publicly visible in discards. (Tiles in hand don't count.)"
+msgid "\"Missing Tile\". Win with an edge or middle wait on a tile for which three copies are already publicly visible in discards. (Tiles in hand don't count.)"
 msgstr "「缺一門張」。以邊張或坎張聽牌，且該牌已有三張公開可見於河中。（手牌中之牌不計。）"
 
-msgid "\\\"Numerous Numbers\\\". Your closed winning hand is 22334455667788 of characters."
+msgid "\"Numerous Numbers\". Your closed winning hand is 22334455667788 of characters."
 msgstr "「諸數」。你的門前清和牌為萬子的22334455667788。"
 
-msgid "\\\"Plucking the Moon from the Bottom of the Sea\\\". %{value} %{han} if you win with haitei (not houtei) on %{tile}."
+msgid "\"Plucking the Moon from the Bottom of the Sea\". %{value} %{han} if you win with haitei (not houtei) on %{tile}."
 msgstr "「海底撈月」。以海底（非河底）胡%{tile}可得%{value}%{han}。"
 
-msgid "\\\"Plucking the Moon from the Bottom of the Sea\\\". Mangan if you win with haitei (not houtei) on %{tile}."
+msgid "\"Plucking the Moon from the Bottom of the Sea\". Mangan if you win with haitei (not houtei) on %{tile}."
 msgstr "「海底撈月」。以海底（非河底）胡%{tile}時為滿貫。"
 
-msgid "\\\"Pure Quadruple Sequences\\\". You have four of the exact same sequence in one suit, like 123m 123m 123m 123m. Like iipeikou but four."
+msgid "\"Pure Quadruple Sequences\". You have four of the exact same sequence in one suit, like 123m 123m 123m 123m. Like iipeikou but four."
 msgstr "「純四連順」。你在同花色擁有四組完全相同的順子（如123m 123m 123m 123m）。如一盃口但為四組。"
 
-msgid "\\\"Pure Triple Sequences\\\". %{value} %{han} if you have three of the exact same sequence in one suit, like 123 123 123. Like iipeikou but three. +%{bonus} %{han} if closed. Does not stack with iipeikou (123 123) or sanrenkou (111 222 333)."
+msgid "\"Pure Triple Sequences\". %{value} %{han} if you have three of the exact same sequence in one suit, like 123 123 123. Like iipeikou but three. +%{bonus} %{han} if closed. Does not stack with iipeikou (123 123) or sanrenkou (111 222 333)."
 msgstr "「純三連順」。在同花色擁有三組完全相同的順子（如123 123 123）可得%{value}%{han}。如一盃口但為三組。門前清時+%{bonus}%{han}。不與一盃口（123 123）或三連刻（111 222 333）疊加。"
 
-msgid "\\\"Scratching a Carrying Pole\\\". %{value} %{han} if you win with chankan on %{tile}."
+msgid "\"Scratching a Carrying Pole\". %{value} %{han} if you win with chankan on %{tile}."
 msgstr "「搓扁擔」。以搶槓胡%{tile}可得%{value}%{han}。"
 
-msgid "\\\"Scratching a Carrying Pole\\\". Mangan if you win with chankan on %{tile}."
+msgid "\"Scratching a Carrying Pole\". Mangan if you win with chankan on %{tile}."
 msgstr "「搓扁擔」。以搶槓胡%{tile}時為滿貫。"
 
-msgid "\\\"Thirteen Independent\\\". Yakuman if you start with 14 disconnected tiles. Calls invalidate."
+msgid "\"Thirteen Independent\". Yakuman if you start with 14 disconnected tiles. Calls invalidate."
 msgstr "「十三無靠」。起手14張互不相連時為役滿。鳴牌則不成立。"
 
-msgid "\\\"Thirteen Unconnected\\\". Your starting hand is made of 13 disconnected tiles, plus one forming a pair. Calls invalidate."
+msgid "\"Thirteen Unconnected\". Your starting hand is made of 13 disconnected tiles, plus one forming a pair. Calls invalidate."
 msgstr "「十三不搭」。你的起手由13張互不相連之牌，外加一張成對組成。鳴牌則不成立。"
 
-msgid "\\\"Three Guest Wind Triplets\\\". You have triplets of three guest winds. This requires the round wind to match your seat wind."
+msgid "\"Three Guest Wind Triplets\". You have triplets of three guest winds. This requires the round wind to match your seat wind."
 msgstr "「三客風刻」。你擁有三種客風的刻子。這需要局風與自風相符。"
 
-msgid "\\\"Twelve Tiles Down\\\". Win with four calls (so your hand is just one tile waiting for a pair). Ankans are allowed."
+msgid "\"Twelve Tiles Down\". Win with four calls (so your hand is just one tile waiting for a pair). Ankans are allowed."
 msgstr "「十二張落地」。以四次鳴牌和牌（故手牌僅剩一張等待雀頭）。允許暗槓。"
 
-msgid "\\\"Twice Double Triplets\\\". The four sets in your hand form two pairs of double triplets. A double triplet is when you have two triplets of the same number in different suits, like 333m 333p."
+msgid "\"Twice Double Triplets\". The four sets in your hand form two pairs of double triplets. A double triplet is when you have two triplets of the same number in different suits, like 333m 333p."
 msgstr "「二連雙刻」。你手中的四組面子構成兩組雙刻。雙刻為擁有兩種不同花色的同數字刻子（如333m 333p）。"
 
-msgid "\\\"Twice Double Triplets\\\". The four sets in your hand form two pairs of double triplets. A double triplet is when you have two triplets of the same number in different suits, like 333m 333p. Stacks with toitoi."
+msgid "\"Twice Double Triplets\". The four sets in your hand form two pairs of double triplets. A double triplet is when you have two triplets of the same number in different suits, like 333m 333p. Stacks with toitoi."
 msgstr "「二連雙刻」。你手中的四組面子構成兩組雙刻。雙刻為擁有兩種不同花色的同數字刻子（如333m 333p）。與對對和疊加。"
 
 msgid "_1st"

@@ -67,25 +67,25 @@ msgstr ""
 msgid "%{is} if you win off the first tile someone dropped before your first draw. Calls invalidate."
 msgstr ""
 
-msgid "%{man}x %{1m}, %{pin}x %{1p}, and %{sou}x %{1s} are replaced with red \\\"aka dora\\\" ones %{akadora_ones} that are worth one extra han each."
+msgid "%{man}x %{1m}, %{pin}x %{1p}, and %{sou}x %{1s} are replaced with red \"aka dora\" ones %{akadora_ones} that are worth one extra han each."
 msgstr ""
 
-msgid "%{man}x %{3m}, %{pin}x %{3p}, and %{sou}x %{3s} are replaced with red \\\"aka dora\\\" threes %{akadora_threes} that are worth one extra han each."
+msgid "%{man}x %{3m}, %{pin}x %{3p}, and %{sou}x %{3s} are replaced with red \"aka dora\" threes %{akadora_threes} that are worth one extra han each."
 msgstr ""
 
-msgid "%{man}x %{5m}, %{pin}x %{5p}, and %{sou}x %{5s} are replaced with blue \\\"ao dora\\\" fives %{aodora_fives} that are worth one extra han each."
+msgid "%{man}x %{5m}, %{pin}x %{5p}, and %{sou}x %{5s} are replaced with blue \"ao dora\" fives %{aodora_fives} that are worth one extra han each."
 msgstr ""
 
-msgid "%{man}x %{5m}, %{pin}x %{5p}, and %{sou}x %{5s} are replaced with gold \\\"kin dora\\\" fives %{kindora_fives} that are worth one extra han each."
+msgid "%{man}x %{5m}, %{pin}x %{5p}, and %{sou}x %{5s} are replaced with gold \"kin dora\" fives %{kindora_fives} that are worth one extra han each."
 msgstr ""
 
-msgid "%{man}x %{5m}, %{pin}x %{5p}, and %{sou}x %{5s} are replaced with red \\\"aka dora\\\" fives %{akadora_fives} that are worth one extra han each."
+msgid "%{man}x %{5m}, %{pin}x %{5p}, and %{sou}x %{5s} are replaced with red \"aka dora\" fives %{akadora_fives} that are worth one extra han each."
 msgstr ""
 
-msgid "%{man}x %{7m}, %{pin}x %{7p}, and %{sou}x %{7s} are replaced with red \\\"aka dora\\\" sevens %{akadora_sevens} that are worth one extra han each."
+msgid "%{man}x %{7m}, %{pin}x %{7p}, and %{sou}x %{7s} are replaced with red \"aka dora\" sevens %{akadora_sevens} that are worth one extra han each."
 msgstr ""
 
-msgid "%{man}x %{9m}, %{pin}x %{9p}, and %{sou}x %{9s} are replaced with red \\\"aka dora\\\" nines %{akadora_nines} that are worth one extra han each."
+msgid "%{man}x %{9m}, %{pin}x %{9p}, and %{sou}x %{9s} are replaced with red \"aka dora\" nines %{akadora_nines} that are worth one extra han each."
 msgstr ""
 
 msgid "%{mixed_triplet}"
@@ -580,13 +580,13 @@ msgstr ""
 msgid "(Space Mahjong) Open kokushi musou is worth 3 han."
 msgstr ""
 
-msgid "(Speed Tonpuu) 1x %{5m}, 1x %{5p}, and 1x %{5s} are replaced with red \\\"aka dora\\\" fives %{aka} worth 1 han and one chip each."
+msgid "(Speed Tonpuu) 1x %{5m}, 1x %{5p}, and 1x %{5s} are replaced with red \"aka dora\" fives %{aka} worth 1 han and one chip each."
 msgstr ""
 
 msgid "(Speed Tonpuu) 1x %{5p} is replaced with a gold five %{kin} worth 1 han and one chip. This 1 han counts as yaku."
 msgstr ""
 
-msgid "(Speed Tonpuu) 1x %{7m}, 1x %{7p}, and 1x %{7s} are replaced with blue \\\"ao dora\\\" sevens %{ao} worth 1 han and 2 chips each."
+msgid "(Speed Tonpuu) 1x %{7m}, 1x %{7p}, and 1x %{7s} are replaced with blue \"ao dora\" sevens %{ao} worth 1 han and 2 chips each."
 msgstr ""
 
 msgid "(Stackable Limit) You may stack multiple instances of 10 Fan by achieving more than one of these. This is the only way to exceed the 10 Fan limit."
@@ -2629,7 +2629,7 @@ msgstr ""
 msgid "After a win, you can hover over (or tap) players and arrows in the point exchange screen to view a detailed breakdown of each point transferred."
 msgstr ""
 
-msgid "After all flowers have been declared, the \\\"gold tile\\\" is revealed (top left)."
+msgid "After all flowers have been declared, the \"gold tile\" is revealed (top left)."
 msgstr ""
 
 msgid "After issuing a challenge (or passing), you can see your hand and the game begins."
@@ -5029,7 +5029,7 @@ msgstr ""
 msgid "If someone kans your discard and tsumos off the replacement tile (rinshan), you pay the full amount."
 msgstr ""
 
-msgid "If someone's exposed melds indicate that they have no possible winning hand (e.g. they can only win if they have a pair of %{tile}%{tile} in hand, but three %{tile} are publicly visible), you can press the skull button for that player to declare their hand dead. If the declaration is correct, then the target player has a \\\"dead hand\\\" and can no longer draw or discard, and must sit out of the rest of the round. If the declaration is incorrect, then your own hand is declared dead."
+msgid "If someone's exposed melds indicate that they have no possible winning hand (e.g. they can only win if they have a pair of %{tile}%{tile} in hand, but three %{tile} are publicly visible), you can press the skull button for that player to declare their hand dead. If the declaration is correct, then the target player has a \"dead hand\" and can no longer draw or discard, and must sit out of the rest of the round. If the declaration is incorrect, then your own hand is declared dead."
 msgstr ""
 
 msgid "If the AI is stuck or missing, clicking the center compass will try to unstuck them."
@@ -8458,7 +8458,7 @@ msgstr ""
 msgid "To join a private room, press \"Join private room\" in the main menu and enter the room code of the room you want to join. Then hit Play."
 msgstr ""
 
-msgid "To win, one must exactly match one of the hands on the preselected rules card. The 'nearest hands' button at the bottom can show all nearest hands, which is the easiest way to achieve a win as a beginner. You can also scroll down to see the ruleset's win definitions. The encoding for these definitions is described in the \\\"American hand match specifications\\\" section of 'documentation/documentation.json' on the Riichi Advanced GitHub page."
+msgid "To win, one must exactly match one of the hands on the preselected rules card. The 'nearest hands' button at the bottom can show all nearest hands, which is the easiest way to achieve a win as a beginner. You can also scroll down to see the ruleset's win definitions. The encoding for these definitions is described in the \"American hand match specifications\" section of 'documentation/documentation.json' on the Riichi Advanced GitHub page."
 msgstr ""
 
 msgid "Tobi"
@@ -9718,73 +9718,73 @@ msgstr ""
 msgid "Zung Jung"
 msgstr ""
 
-msgid "\\\"Bamboo Forest\\\". Your closed winning hand is 22334455667788 of bamboo."
+msgid "\"Bamboo Forest\". Your closed winning hand is 22334455667788 of bamboo."
 msgstr ""
 
-msgid "\\\"Big Wheels\\\". Your closed winning hand is 22334455667788 of circles."
+msgid "\"Big Wheels\". Your closed winning hand is 22334455667788 of circles."
 msgstr ""
 
-msgid "\\\"Consecutive Blossom\\\". You called kan off on a kan replacement tile and tsumoed _that_ rinshan tile. Does not stack with rinshan."
+msgid "\"Consecutive Blossom\". You called kan off on a kan replacement tile and tsumoed _that_ rinshan tile. Does not stack with rinshan."
 msgstr ""
 
-msgid "\\\"Five Suits Collected\\\". Your standard hand (4 sets and a pair) includes all five suits (character, circle, bamboo, wind, dragon). Mixed triplets (kontsu) of winds and dragons can be used, but not mixed triplets of suited tiles."
+msgid "\"Five Suits Collected\". Your standard hand (4 sets and a pair) includes all five suits (character, circle, bamboo, wind, dragon). Mixed triplets (kontsu) of winds and dragons can be used, but not mixed triplets of suited tiles."
 msgstr ""
 
-msgid "\\\"Five-Heart Straight\\\". %{value} %{han} on top of ittsuu if the winning tile is the five needed for ittsuu."
+msgid "\"Five-Heart Straight\". %{value} %{han} on top of ittsuu if the winning tile is the five needed for ittsuu."
 msgstr ""
 
-msgid "\\\"Four Consecutive Triplets\\\". You have four triplets of the same suit of increasing number, like 111 222 333 444."
+msgid "\"Four Consecutive Triplets\". You have four triplets of the same suit of increasing number, like 111 222 333 444."
 msgstr ""
 
-msgid "\\\"Gathering a Plum Blossom from the Roof\\\". %{value} %{han} if you win with rinshan on %{tile}."
+msgid "\"Gathering a Plum Blossom from the Roof\". %{value} %{han} if you win with rinshan on %{tile}."
 msgstr ""
 
-msgid "\\\"Gathering a Plum Blossom from the Roof\\\". Mangan if you win with rinshan on %{tile}."
+msgid "\"Gathering a Plum Blossom from the Roof\". Mangan if you win with rinshan on %{tile}."
 msgstr ""
 
-msgid "\\\"Golden Rooster Steals Food\\\". 4 han instead of the usual 2 han if you win ketsupaihou by chankan -- that is, you robbed a kan with an edge or middle wait."
+msgid "\"Golden Rooster Steals Food\". 4 han instead of the usual 2 han if you win ketsupaihou by chankan -- that is, you robbed a kan with an edge or middle wait."
 msgstr ""
 
-msgid "\\\"Missing Tile\\\". Win with an edge or middle wait on a tile for which three copies are already publicly visible in discards. (Tiles in hand don't count.)"
+msgid "\"Missing Tile\". Win with an edge or middle wait on a tile for which three copies are already publicly visible in discards. (Tiles in hand don't count.)"
 msgstr ""
 
-msgid "\\\"Numerous Numbers\\\". Your closed winning hand is 22334455667788 of characters."
+msgid "\"Numerous Numbers\". Your closed winning hand is 22334455667788 of characters."
 msgstr ""
 
-msgid "\\\"Plucking the Moon from the Bottom of the Sea\\\". %{value} %{han} if you win with haitei (not houtei) on %{tile}."
+msgid "\"Plucking the Moon from the Bottom of the Sea\". %{value} %{han} if you win with haitei (not houtei) on %{tile}."
 msgstr ""
 
-msgid "\\\"Plucking the Moon from the Bottom of the Sea\\\". Mangan if you win with haitei (not houtei) on %{tile}."
+msgid "\"Plucking the Moon from the Bottom of the Sea\". Mangan if you win with haitei (not houtei) on %{tile}."
 msgstr ""
 
-msgid "\\\"Pure Quadruple Sequences\\\". You have four of the exact same sequence in one suit, like 123m 123m 123m 123m. Like iipeikou but four."
+msgid "\"Pure Quadruple Sequences\". You have four of the exact same sequence in one suit, like 123m 123m 123m 123m. Like iipeikou but four."
 msgstr ""
 
-msgid "\\\"Pure Triple Sequences\\\". %{value} %{han} if you have three of the exact same sequence in one suit, like 123 123 123. Like iipeikou but three. +%{bonus} %{han} if closed. Does not stack with iipeikou (123 123) or sanrenkou (111 222 333)."
+msgid "\"Pure Triple Sequences\". %{value} %{han} if you have three of the exact same sequence in one suit, like 123 123 123. Like iipeikou but three. +%{bonus} %{han} if closed. Does not stack with iipeikou (123 123) or sanrenkou (111 222 333)."
 msgstr ""
 
-msgid "\\\"Scratching a Carrying Pole\\\". %{value} %{han} if you win with chankan on %{tile}."
+msgid "\"Scratching a Carrying Pole\". %{value} %{han} if you win with chankan on %{tile}."
 msgstr ""
 
-msgid "\\\"Scratching a Carrying Pole\\\". Mangan if you win with chankan on %{tile}."
+msgid "\"Scratching a Carrying Pole\". Mangan if you win with chankan on %{tile}."
 msgstr ""
 
-msgid "\\\"Thirteen Independent\\\". Yakuman if you start with 14 disconnected tiles. Calls invalidate."
+msgid "\"Thirteen Independent\". Yakuman if you start with 14 disconnected tiles. Calls invalidate."
 msgstr ""
 
-msgid "\\\"Thirteen Unconnected\\\". Your starting hand is made of 13 disconnected tiles, plus one forming a pair. Calls invalidate."
+msgid "\"Thirteen Unconnected\". Your starting hand is made of 13 disconnected tiles, plus one forming a pair. Calls invalidate."
 msgstr ""
 
-msgid "\\\"Three Guest Wind Triplets\\\". You have triplets of three guest winds. This requires the round wind to match your seat wind."
+msgid "\"Three Guest Wind Triplets\". You have triplets of three guest winds. This requires the round wind to match your seat wind."
 msgstr ""
 
-msgid "\\\"Twelve Tiles Down\\\". Win with four calls (so your hand is just one tile waiting for a pair). Ankans are allowed."
+msgid "\"Twelve Tiles Down\". Win with four calls (so your hand is just one tile waiting for a pair). Ankans are allowed."
 msgstr ""
 
-msgid "\\\"Twice Double Triplets\\\". The four sets in your hand form two pairs of double triplets. A double triplet is when you have two triplets of the same number in different suits, like 333m 333p."
+msgid "\"Twice Double Triplets\". The four sets in your hand form two pairs of double triplets. A double triplet is when you have two triplets of the same number in different suits, like 333m 333p."
 msgstr ""
 
-msgid "\\\"Twice Double Triplets\\\". The four sets in your hand form two pairs of double triplets. A double triplet is when you have two triplets of the same number in different suits, like 333m 333p. Stacks with toitoi."
+msgid "\"Twice Double Triplets\". The four sets in your hand form two pairs of double triplets. A double triplet is when you have two triplets of the same number in different suits, like 333m 333p. Stacks with toitoi."
 msgstr ""
 
 msgid "_1st"
