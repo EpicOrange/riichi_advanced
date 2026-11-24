@@ -1083,7 +1083,9 @@ defmodule RiichiAdvanced.GameState do
   def calculate_wait_label(state, seat, wait, discard, index) do
     point_name = Rules.get(state.rules_ref, "score_calculation")["point_name"]
     point2_name = Rules.get(state.rules_ref, "score_calculation")["point2_name"]
-    min_han = Rules.get(state.rules_ref, "constants", %{}) |> Map.get("min_points", 0)
+    constants = Rules.get(state.rules_ref, "constants", %{})
+    min_han = Map.get(constants, "min_points", 0)
+    furiten_check = Map.get(constants, "riichi_furiten_check", true)
     # pretend you have discarded that tile
     state = if discard != nil do
       state
@@ -1096,7 +1098,8 @@ defmodule RiichiAdvanced.GameState do
       or Scoring.seat_scores_points(state, point2_name, min_han, 0, seat, [wait], win_source)
     end
     cond do
-      "furiten" in state.players[seat].status -> "Furiten" # hardcoded version of "Self-Draw" for riichi
+      "furiten" in state.players[seat].status or
+          not Conditions.check_cnf_condition(state, furiten_check, %{seat: seat}) -> "Furiten"
       "atozuke" in state.players[seat].status -> "Atozuke" # hardcoded version of "Self-Draw" for riichi
       min_han > 0 and get_score.(update_winning_tile(state, state.turn, :discard, fn _ -> wait end), :discard) -> nil
       min_han > 0 and get_score.(update_winning_tile(state, seat, :draw, fn _ -> wait end), :draw) -> "Self-Draw"
