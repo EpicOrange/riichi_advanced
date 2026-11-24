@@ -1112,7 +1112,7 @@ defmodule RiichiAdvanced.GameState do
     calls = player.calls
     win_definitions = Rules.translate_match_definitions(state.rules_ref, Rules.get(state.rules_ref, "show_waits", %{}) |> Map.get("win_definitions", []))
     tile_behavior = player.tile_behavior
-    visible_tiles = get_visible_tiles(state, seat)
+    visible_tiles = get_visible_tiles(state, seat) ++ get_revealed_tiles(state)
     Match.get_waits_and_ukeire(hand, calls, win_definitions, visible_tiles, tile_behavior)
     |> Enum.uniq_by(fn {wait, _ukeire} -> Utils.strip_attrs(wait, :invisible) end)
     |> Enum.sort_by(fn {wait, _ukeire} -> Constants.sort_value(wait) end)
