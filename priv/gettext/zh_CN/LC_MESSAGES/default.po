@@ -844,8 +844,8 @@ msgstr "-（组合顺子）组合顺子加一组面子及一对雀头。组合�
 msgid "- (No Seven Pairs) Seven Pairs is no longer a winning hand."
 msgstr "-（无七对子）七对子不再是和牌型。"
 
-msgid "- (Open) If you have three of a kind, you can claim a fourth if someone discarded it. This awards you an instant payment of 100 from the discarder."
-msgstr "-（明杠）若持有三张相同牌，可鸣取他人打出的第四张。此动作立即从放枪者获100点。"
+msgid "- (Open) If you have three of a kind, you can claim the fourth if someone discarded it. This awards you an instant payment of 100 from the discarder."
+msgstr "-（明杠）若持有三张相同牌，可鸣取他人打出的第四张。出牌者立即支付100点。"
 
 msgid "- (Seven Pairs) Seven distinct pairs."
 msgstr "-（七对子）七组互异的对子。"
@@ -2509,8 +2509,8 @@ msgstr "新增一张46万能牌，可作为任意四或六。"
 msgid "Adds a copy of the 789 joker, which looks like 大 and can be used as any 7, 8, or 9."
 msgstr "新增一张789万能牌，外观如「大」，可作为任意七、八或九。"
 
-msgid "Adds a copy of the even joker, which looks like 双 and can be used as any even number tile."
-msgstr "新增一张偶数万能牌，外观如「双」，可作为任意偶数牌。"
+msgid "Adds a copy of the even joker, which looks like 雙 and can be used as any even number tile."
+msgstr "新增一张偶数万能牌，外观如「雙」，可作为任意偶数牌。"
 
 msgid "Adds a copy of the five/honors joker, which looks like 伍番 and can be used as any five or any honor tile."
 msgstr "新增一张五／字牌万能牌，外观如「伍番」，可作为任意五或任意字牌。"
@@ -2518,8 +2518,8 @@ msgstr "新增一张五／字牌万能牌，外观如「伍番」，可作为任
 msgid "Adds a copy of the kanchan/honors joker, which looks like 卡番 and can be used as any honor tile, but can also be used as the middle tile in any sequence."
 msgstr "新增一张坎张／字牌万能牌，外观如「卡番」，可作为任意字牌，亦可作为任意顺子的中间牌。"
 
-msgid "Adds a copy of the odd joker, which looks like 单 and can be used as any odd number tile."
-msgstr "新增一张奇数万能牌，外观如「单」，可作为任意奇数牌。"
+msgid "Adds a copy of the odd joker, which looks like 單 and can be used as any odd number tile."
+msgstr "新增一张奇数万能牌，外观如「單」，可作为任意奇数牌。"
 
 msgid "Adds a fifth copy of every standard tile."
 msgstr "每种标准牌新增第五张。"
@@ -2539,8 +2539,8 @@ msgstr "新增第四种花色（星）。可与十模组结合。"
 msgid "Adds a requirement of having 5 points in hand in order to win."
 msgstr "新增和牌须手中有5点的条件。"
 
-msgid "Adds a single manzu joker to the game. The manzu joker looks like 万 and can represent any character tile."
-msgstr "游戏中新增一张万子万能牌。万子万能牌外观如「万」，可代表任意万子牌。"
+msgid "Adds a single manzu joker to the game. The manzu joker looks like 萬 and can represent any character tile."
+msgstr "游戏中新增一张万子万能牌。万子万能牌外观如「萬」，可代表任意万子牌。"
 
 msgid "Adds a single pinzu joker to the game. The pinzu joker looks like 筒 and can represent any character tile."
 msgstr "游戏中新增一张筒子万能牌。筒子万能牌外观如「筒」，可代表任意牌。"
@@ -3322,8 +3322,8 @@ msgstr "混全带幺九"
 msgid "Chanta/Junchan"
 msgstr "混全带幺九／纯全带幺九"
 
-msgid "Character Joker (万)"
-msgstr "万子万能牌（万）"
+msgid "Character Joker (萬)"
+msgstr "万子万能牌（萬）"
 
 msgid "Charleston"
 msgstr "查尔斯顿"
@@ -3513,6 +3513,9 @@ msgstr "暗杠于本局结束前完全隐蔽。"
 
 msgid "Config"
 msgstr "设定"
+
+msgid "Confirm"
+msgstr "确认"
 
 msgid "Congrats, you have a chance at 912 sanshoku! Now go ahead and play the 3 of circles so you can wait on 39 bamboo. A 3 bamboo will give us sanshoku."
 msgstr "恭喜，你有机会达成912三色！现在打出三筒，以便听三索与九索。三索将使我们达成三色。"
@@ -4036,7 +4039,7 @@ msgstr "每位玩家起始持有固定点数。玩家点数不得为负。若玩
 msgid "Each quad (Coong) of any type awards you 1 Phán each. If you have four Quads, you are instead awarded Four Quads (4 Mủn!)."
 msgstr "每组杠（Coong）不论类型各给予1 Phán。若拥有四组杠，则改计四杠（4 Mủn！）。"
 
-msgid "Each round always starts with a flower declaration round. Starting from the East seat, each player replaces flowers in hand, or declares \\\"No Flowers\\\"."
+msgid "Each round always starts with a flower declaration round. Starting from the East seat, each player replaces flowers in hand, or declares \"No Flowers\"."
 msgstr "每局一律以花牌宣告轮开始。自东家起，每位玩家替换手中花牌，或宣告「无花」。"
 
 msgid "Each suit now runs from one to ten: %{tens}"
@@ -5188,7 +5191,7 @@ msgstr "池田华菜"
 msgid "Import mods from clipboard"
 msgstr "从剪贴簿汇入模组"
 
-msgid "In MCR, the goal is to obtain 8 Fan, and this is usually done by going for a high-scoring \\\"main\\\" Fan (6+ Fan) and adding some minor Fan (1-2 Fan) to make up the difference."
+msgid "In MCR, the goal is to obtain 8 Fan, and this is usually done by going for a high-scoring \"main\" Fan (6+ Fan) and adding some minor Fan (1-2 Fan) to make up the difference."
 msgstr "在MCR中，目标为取得8番，通常透过追求高分的「主」番（6番以上）并加上一些次要番（1-2番）来补足差额。"
 
 msgid "In addition, all yakuman now award 13 or 26 han, and having 18+ han awards haneyakuman (12000-24000). By the way, if you were wondering what score you get for having 1.5 han, guess you'll just have to play to find out!"
@@ -6466,10 +6469,10 @@ msgstr "注意加碰不给予补牌。这合理，因为与杠不同，鸣牌后
 msgid "Note that you cannot win on an opponent's discard or Kong."
 msgstr "注意你不能胡对手的打牌或杠。"
 
-msgid "Note that you were not prompted to call ton on this white dragon. Since there's no way to orient the called tile to indicate \\\"across\\\", you can only call ton from your left or your right, not across."
+msgid "Note that you were not prompted to call ton on this white dragon. Since there's no way to orient the called tile to indicate \"across\", you can only call ton from your left or your right, not across."
 msgstr "注意你并未被提示对这张白板鸣Ton。由于无法将鸣取的牌定向以表示「对家」，你仅能鸣左家或右家的Ton，不能鸣对家。"
 
-msgid "Note that your existing 3 of circles is grayed out -- it cannot be discarded. This is because we are playing with a rule called \\\"kuikae nashi\\\", i.e. no swap-calling. You cannot call with 45 of circles and subsequently discard 3 or 6 of circles."
+msgid "Note that your existing 3 of circles is grayed out -- it cannot be discarded. This is because we are playing with a rule called \"kuikae nashi\", i.e. no swap-calling. You cannot call with 45 of circles and subsequently discard 3 or 6 of circles."
 msgstr "注意你现有的三筒已变灰——无法打出。这是因为我们采用「食替无」规则，即禁止食替。你不能以45筒鸣牌后打出3或6筒。"
 
 msgid "Noten (AI)"
@@ -6484,7 +6487,7 @@ msgstr "未听连庄"
 msgid "Now that it's your turn, try issuing a challenge now with the leftmost button."
 msgstr "既然轮到你了，请以最左侧按钮发出挑战。"
 
-msgid "Now that you are out of flowers, press No Flowers to pass the turn. (IRL you would say \\\"Pass\\\")."
+msgid "Now that you are out of flowers, press No Flowers to pass the turn. (IRL you would say \"Pass\")."
 msgstr "既然你已无花牌，请按「无花」以跳过回合。（现实中你会说「过」。）"
 
 msgid "Now you have four sets and a pair! Click Tsumo to declare a win!"
@@ -6661,7 +6664,7 @@ msgstr "客风三刻"
 msgid "Other"
 msgstr "其他"
 
-msgid "Other players might make inferences about your hand based on your calls. In addition, you may no longer discard these tiles -- they are \\\"locked in\\\" for your hand."
+msgid "Other players might make inferences about your hand based on your calls. In addition, you may no longer discard these tiles -- they are \"locked in\" for your hand."
 msgstr "其他玩家可能根据你的鸣牌推断你的手牌。此外，你不得再打出这些牌——它们已为你的手牌「锁定」。"
 
 msgid "Otherwise, the gold tile is a joker for any tile, but it cannot be used in calls."
@@ -8815,7 +8818,7 @@ msgstr "温牌"
 msgid "Washizu"
 msgstr "鹫津"
 
-msgid "We are now in \\\"tenpai\\\": our hand is waiting for the 2 or 5 of characters in order to complete our remaining set and win. We could either self draw the tile..."
+msgid "We are now in \"tenpai\": our hand is waiting for the 2 or 5 of characters in order to complete our remaining set and win. We could either self draw the tile..."
 msgstr "我们现在处于「听牌」：手牌等待二万或五万以完成剩余面子并和牌。我们可自行摸入该牌……"
 
 msgid "We are very close to winning: we just need one more tile. Go ahead and discard a 4 of characters."
@@ -9013,8 +9016,8 @@ msgstr "以此方式和牌可获银河役满！那是银河麻将唯一新增的
 msgid "Winning with no scoring hand patterns gives Mosquito Hand (0 Phán)."
 msgstr "和牌时无任何计分手牌牌型则为蚊子手（0 Phán）。"
 
-msgid "With the Show Waits mod on, you can hover over any revealed tenpai hand to see all the tiles it's waiting on. (On mobile: tap the opponent's hand.)Confirm"
-msgstr "启用「显示听牌」模组后，你可将游标移至任何已公开的听牌手牌上，查看其所有听牌。（行动装置：点击对手手牌。）确认"
+msgid "With the Show Waits mod on, you can hover over any revealed tenpai hand to see all the tiles it's waiting on. (On mobile: tap the opponent's hand.)"
+msgstr "启用「显示听牌」模组后，你可将游标移至任何已公开的听牌手牌上，查看其所有听牌。（行动装置：点击对手手牌。）"
 
 msgid "Within Five Discards"
 msgstr "五打内"
@@ -9178,7 +9181,7 @@ msgstr "你将四张飞万能牌宣告为花牌。此亦为和牌条件。"
 msgid "You drew a flower! When you draw a flower in the middle of a game, you can either declare them (like at the start of the round) or discard them (to avoid dealing a dangerous tile)."
 msgstr "你摸到花牌了！游戏中摸到花牌时，你可宣告（如局初般）或打出（以避免打出危险牌）。"
 
-msgid "You drew a north wind! In sanma, north winds are akin to flower tiles in other variants -- you may declare them and draw a replacement tile. Each north wind (called \\\"pei\\\" or \\\"nukidora\\\") is worth one extra han, and is otherwise not counted as part of your hand."
+msgid "You drew a north wind! In sanma, north winds are akin to flower tiles in other variants -- you may declare them and draw a replacement tile. Each north wind (called \"pei\" or \"nukidora\") is worth one extra han, and is otherwise not counted as part of your hand."
 msgstr "你摸到北风了！在三麻中，北风类似其他变体的花牌——你可宣告并摸补牌。每张北风（称为「拔北」或「拔北宝牌」）价值额外1番，且不计入手牌。"
 
 msgid "You drew the winning tile yourself."
@@ -9199,7 +9202,7 @@ msgstr "拥有与自身座位号码相符的花牌%{tile}可得1番，集齐四�
 msgid "You get 1 Fan for having the number 4 flower tile %{four}, and 1 Fan for having the the number 1 flower tile %{tile}. If you are East, this stacks with the seat flower's 1 Fan. Getting all four flowers %{tiles} instead awards 4 fan total."
 msgstr "拥有4号花牌%{four}可得1番，拥有1号花牌%{tile}可得1番。若你为东家，此与座花的1番叠加。集齐四张花牌%{tiles}则改为总共4番。"
 
-msgid "You get 1 Fan for having the number 4 season tile %{four}, and 1 Fan for having the the number 1 season tile %{tile}. If you are East, this stacks with the seat season's 1 Fan. Getting all four seasons %{tiles} instead awards 4 fan total."
+msgid "You get 1 Fan for having the number 4 season tile %{four}, and 1 Fan for having the number 1 season tile %{tile}. If you are East, this stacks with the seat season's 1 Fan. Getting all four seasons %{tiles} instead awards 4 fan total."
 msgstr "拥有4号季牌%{four}可得1番，拥有1号季牌%{tile}可得1番。若你为东家，此与座季的1番叠加。集齐四张季牌%{tiles}则改为总共4番。"
 
 msgid "You get 1 Fan for having the season tile whose number matches your seat %{tile}, and 1 bonus Fan for having all four %{tiles}."

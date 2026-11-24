@@ -116,7 +116,8 @@ If you want to play with every player showing their hands, enable the "Open Hand
 If the AI is too fast or too slow, try toggling the "Change AI Speed" mod in Room Settings.
 The endgame screen takes 30 seconds to advance. If you want it to take longer, toggle the "Win Timer" mod in Room Settings.
 It is possible to customize the color of the table using the "Tablecloth Color" and "Tile Color" mods in Room Settings.
-With the Show Waits mod on, you can hover over any revealed tenpai hand to see all the tiles it's waiting on. (On mobile: tap the opponent's hand.)Confirm
+With the Show Waits mod on, you can hover over any revealed tenpai hand to see all the tiles it's waiting on. (On mobile: tap the opponent's hand.)
+Confirm
 Clear
 Cancel
 Cancel
@@ -7842,7 +7843,7 @@ Welcome to cosmic riichi! This is a space mahjong variant that adds several new 
 South just played a tile that matches one in your hand. Because of this, you can call ton on the tile to call a pair. Try it!
 A ton call is just like pon, but for a pair instead of a triplet. It's usually not useful to call a pair, but doing so is a valid way to rush chiitoitsu (1 han open) in cosmic riichi.
 (Click to continue)
-Note that you were not prompted to call ton on this white dragon. Since there's no way to orient the called tile to indicate \\\"across\\\", you can only call ton from your left or your right, not across.
+Note that you were not prompted to call ton on this white dragon. Since there's no way to orient the called tile to indicate "across", you can only call ton from your left or your right, not across.
 (Click to continue)
 Discard the 7 of bamboo to continue.
 East just discarded a 1 of bamboo. With your 1 of characters and 1 of circles in hand, in cosmic riichi, you may call Chon to form a mixed triplet (kontsu). Try it now.
@@ -7911,12 +7912,12 @@ Winning this way awards the Milky Way yakuman! That's the only yaku galaxy mahjo
 (Click to continue)
 Welcome to MCR (Mahjong Competition Rules)! The main challenge of this variant is finding a way to score 8 Fan before everyone else.
 (Click to continue)
-Each round always starts with a flower declaration round. Starting from the East seat, each player replaces flowers in hand, or declares \\\"No Flowers\\\".
+Each round always starts with a flower declaration round. Starting from the East seat, each player replaces flowers in hand, or declares "No Flowers".
 (Click to continue)
 Declared flowers are worth 1 Fan, but do not count towards the required 8 Fan. Try declaring a flower now.
 (Click to continue)
-Now that you are out of flowers, press No Flowers to pass the turn. (IRL you would say \\\"Pass\\\").
-In MCR, the goal is to obtain 8 Fan, and this is usually done by going for a high-scoring \\\"main\\\" Fan (6+ Fan) and adding some minor Fan (1-2 Fan) to make up the difference.
+Now that you are out of flowers, press No Flowers to pass the turn. (IRL you would say "Pass").
+In MCR, the goal is to obtain 8 Fan, and this is usually done by going for a high-scoring "main" Fan (6+ Fan) and adding some minor Fan (1-2 Fan) to make up the difference.
 (Click to continue)
 In this case, our hand is a really good mix of sequences in 3 suits. In this situation, it is common to go for Mixed Shifted Sequences (6 Fan if you have 123, 234, 345 in three suits) as our main Fan.
 (Click to continue)
@@ -7967,11 +7968,11 @@ In fact, there are three possible sequences that this 3 of circles can complete.
 Click on one of the options to complete the call with those tiles. Since we want to leave either 123 or 345 in hand, you'll want to call with either 45 or 12.
 Nice work! When you make a call such as Chii, the resulting set is revealed to the table, with the called tile facing in the direction of the player you called it from.
 (Click to continue)
-Other players might make inferences about your hand based on your calls. In addition, you may no longer discard these tiles -- they are \\\"locked in\\\" for your hand.
+Other players might make inferences about your hand based on your calls. In addition, you may no longer discard these tiles -- they are "locked in" for your hand.
 (Click to continue)
 Now you must discard a tile.
 (Click to continue)
-Note that your existing 3 of circles is grayed out -- it cannot be discarded. This is because we are playing with a rule called \\\"kuikae nashi\\\", i.e. no swap-calling. You cannot call with 45 of circles and subsequently discard 3 or 6 of circles.
+Note that your existing 3 of circles is grayed out -- it cannot be discarded. This is because we are playing with a rule called "kuikae nashi", i.e. no swap-calling. You cannot call with 45 of circles and subsequently discard 3 or 6 of circles.
 (Click to continue)
 So go ahead and discard the white dragon.
 The player across from you has just discarded the east wind, which you have two of.
@@ -7980,7 +7981,7 @@ Because the last discard can complete a triplet in our hand, we can immediately 
 Note that unlike Chii, which can only be called from your left, calling Pon messes with the turn order. The left player's turn got skipped, and now it's your turn to discard.
 (Click to continue)
 We are very close to winning: we just need one more tile. Go ahead and discard a 4 of characters.
-We are now in \\\"tenpai\\\": our hand is waiting for the 2 or 5 of characters in order to complete our remaining set and win. We could either self draw the tile...
+We are now in "tenpai": our hand is waiting for the 2 or 5 of characters in order to complete our remaining set and win. We could either self draw the tile...
 (Click to continue)
 ...or someone else can discard it!
 (Click to continue)
@@ -8000,7 +8001,7 @@ You might also note the distinct lack of character tiles in your hand. This is b
 In addition, note that you were not given the option to chii this 3 of bamboo. This is because you cannot call chii in sanma! All other calls are allowed.
 (Click to continue)
 Go ahead and discard this east wind to continue.
-You drew a north wind! In sanma, north winds are akin to flower tiles in other variants -- you may declare them and draw a replacement tile. Each north wind (called \\\"pei\\\" or \\\"nukidora\\\") is worth one extra han, and is otherwise not counted as part of your hand.
+You drew a north wind! In sanma, north winds are akin to flower tiles in other variants -- you may declare them and draw a replacement tile. Each north wind (called "pei" or "nukidora") is worth one extra han, and is otherwise not counted as part of your hand.
 (Click to continue)
 To declare a north wind, press the Pei button.
 The replacement tile gives us three sets and a pair, so we're tenpai. Now declare riichi on the 9 of bamboo!

@@ -3537,6 +3537,9 @@ msgstr ""
 msgid "Config"
 msgstr ""
 
+msgid "Confirm"
+msgstr ""
+
 msgid "Congrats, you have a chance at 912 sanshoku! Now go ahead and play the 3 of circles so you can wait on 39 bamboo. A 3 bamboo will give us sanshoku."
 msgstr ""
 
@@ -4064,7 +4067,7 @@ msgstr ""
 msgid "Each quad (Coong) of any type awards you 1 Phán each. If you have four Quads, you are instead awarded Four Quads (4 Mủn!)."
 msgstr ""
 
-msgid "Each round always starts with a flower declaration round. Starting from the East seat, each player replaces flowers in hand, or declares \\\"No Flowers\\\"."
+msgid "Each round always starts with a flower declaration round. Starting from the East seat, each player replaces flowers in hand, or declares \"No Flowers\"."
 msgstr ""
 
 msgid "Each suit now runs from one to ten: %{tens}"
@@ -5217,7 +5220,7 @@ msgstr ""
 msgid "Import mods from clipboard"
 msgstr ""
 
-msgid "In MCR, the goal is to obtain 8 Fan, and this is usually done by going for a high-scoring \\\"main\\\" Fan (6+ Fan) and adding some minor Fan (1-2 Fan) to make up the difference."
+msgid "In MCR, the goal is to obtain 8 Fan, and this is usually done by going for a high-scoring \"main\" Fan (6+ Fan) and adding some minor Fan (1-2 Fan) to make up the difference."
 msgstr ""
 
 msgid "In addition, all yakuman now award 13 or 26 han, and having 18+ han awards haneyakuman (12000-24000). By the way, if you were wondering what score you get for having 1.5 han, guess you'll just have to play to find out!"
@@ -6500,10 +6503,10 @@ msgstr ""
 msgid "Note that you cannot win on an opponent's discard or Kong."
 msgstr ""
 
-msgid "Note that you were not prompted to call ton on this white dragon. Since there's no way to orient the called tile to indicate \\\"across\\\", you can only call ton from your left or your right, not across."
+msgid "Note that you were not prompted to call ton on this white dragon. Since there's no way to orient the called tile to indicate \"across\", you can only call ton from your left or your right, not across."
 msgstr ""
 
-msgid "Note that your existing 3 of circles is grayed out -- it cannot be discarded. This is because we are playing with a rule called \\\"kuikae nashi\\\", i.e. no swap-calling. You cannot call with 45 of circles and subsequently discard 3 or 6 of circles."
+msgid "Note that your existing 3 of circles is grayed out -- it cannot be discarded. This is because we are playing with a rule called \"kuikae nashi\", i.e. no swap-calling. You cannot call with 45 of circles and subsequently discard 3 or 6 of circles."
 msgstr ""
 
 msgid "Noten (AI)"
@@ -6518,7 +6521,7 @@ msgstr ""
 msgid "Now that it's your turn, try issuing a challenge now with the leftmost button."
 msgstr ""
 
-msgid "Now that you are out of flowers, press No Flowers to pass the turn. (IRL you would say \\\"Pass\\\")."
+msgid "Now that you are out of flowers, press No Flowers to pass the turn. (IRL you would say \"Pass\")."
 msgstr ""
 
 msgid "Now you have four sets and a pair! Click Tsumo to declare a win!"
@@ -6696,7 +6699,7 @@ msgstr ""
 msgid "Other"
 msgstr ""
 
-msgid "Other players might make inferences about your hand based on your calls. In addition, you may no longer discard these tiles -- they are \\\"locked in\\\" for your hand."
+msgid "Other players might make inferences about your hand based on your calls. In addition, you may no longer discard these tiles -- they are \"locked in\" for your hand."
 msgstr ""
 
 msgid "Otherwise, the gold tile is a joker for any tile, but it cannot be used in calls."
@@ -8862,7 +8865,7 @@ msgstr ""
 msgid "Washizu"
 msgstr ""
 
-msgid "We are now in \\\"tenpai\\\": our hand is waiting for the 2 or 5 of characters in order to complete our remaining set and win. We could either self draw the tile..."
+msgid "We are now in \"tenpai\": our hand is waiting for the 2 or 5 of characters in order to complete our remaining set and win. We could either self draw the tile..."
 msgstr ""
 
 msgid "We are very close to winning: we just need one more tile. Go ahead and discard a 4 of characters."
@@ -9060,7 +9063,7 @@ msgstr ""
 msgid "Winning with no scoring hand patterns gives Mosquito Hand (0 Phán)."
 msgstr ""
 
-msgid "With the Show Waits mod on, you can hover over any revealed tenpai hand to see all the tiles it's waiting on. (On mobile: tap the opponent's hand.)Confirm"
+msgid "With the Show Waits mod on, you can hover over any revealed tenpai hand to see all the tiles it's waiting on. (On mobile: tap the opponent's hand.)"
 msgstr ""
 
 msgid "Within Five Discards"
@@ -9226,7 +9229,7 @@ msgstr ""
 msgid "You drew a flower! When you draw a flower in the middle of a game, you can either declare them (like at the start of the round) or discard them (to avoid dealing a dangerous tile)."
 msgstr ""
 
-msgid "You drew a north wind! In sanma, north winds are akin to flower tiles in other variants -- you may declare them and draw a replacement tile. Each north wind (called \\\"pei\\\" or \\\"nukidora\\\") is worth one extra han, and is otherwise not counted as part of your hand."
+msgid "You drew a north wind! In sanma, north winds are akin to flower tiles in other variants -- you may declare them and draw a replacement tile. Each north wind (called \"pei\" or \"nukidora\") is worth one extra han, and is otherwise not counted as part of your hand."
 msgstr ""
 
 msgid "You drew the winning tile yourself."

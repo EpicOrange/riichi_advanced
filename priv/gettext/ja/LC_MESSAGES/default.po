@@ -844,7 +844,7 @@ msgstr "-（組み合わせ順子）組み合わせ順子に1面子と1対子を
 msgid "- (No Seven Pairs) Seven Pairs is no longer a winning hand."
 msgstr "-（七対子なし）七対子はもはや和了手ではありません。"
 
-msgid "- (Open) If you have three of a kind, you can claim a fourth if someone discarded it. This awards you an instant payment of 100 from the discarder."
+msgid "- (Open) If you have three of a kind, you can claim the fourth if someone discarded it. This awards you an instant payment of 100 from the discarder."
 msgstr "-（明槓）同じ牌を3枚持っている場合、誰かが捨てた4枚目を鳴くことができます。これにより放銃者から即座に100の支払いを受けます。"
 
 msgid "- (Seven Pairs) Seven distinct pairs."
@@ -3514,6 +3514,9 @@ msgstr "暗槓は局の終了まで完全に隠されます。"
 msgid "Config"
 msgstr "設定"
 
+msgid "Confirm"
+msgstr "確認"
+
 msgid "Congrats, you have a chance at 912 sanshoku! Now go ahead and play the 3 of circles so you can wait on 39 bamboo. A 3 bamboo will give us sanshoku."
 msgstr "おめでとう、912三色のチャンスがあります！さあ、3筒を捨てて3索と9索を待ちましょう。3索で三色が成立します。"
 
@@ -4036,8 +4039,8 @@ msgstr "各プレイヤーは決められた量の点数からスタートしま
 msgid "Each quad (Coong) of any type awards you 1 Phán each. If you have four Quads, you are instead awarded Four Quads (4 Mủn!)."
 msgstr "あらゆる種類の各槓（Coong）はそれぞれ1 Phánを与えます。4つの槓を持っている場合、代わりに四槓（4 Mủn！）が与えられます。"
 
-msgid "Each round always starts with a flower declaration round. Starting from the East seat, each player replaces flowers in hand, or declares \\\"No Flowers\\\"."
-msgstr "各局は常に花牌宣言ラウンドから始まります。東家から始めて、各プレイヤーは手牌の花牌を置き換えるか、\\\"花牌なし\\\"を宣言します。"
+msgid "Each round always starts with a flower declaration round. Starting from the East seat, each player replaces flowers in hand, or declares \"No Flowers\"."
+msgstr "各局は常に花牌宣言ラウンドから始まります。東家から始めて、各プレイヤーは手牌の花牌を置き換えるか、\"花牌なし\"を宣言します。"
 
 msgid "Each suit now runs from one to ten: %{tens}"
 msgstr "各スートは1から10までになります：%{tens}"
@@ -5188,8 +5191,8 @@ msgstr "池田華菜"
 msgid "Import mods from clipboard"
 msgstr "クリップボードからMODをインポート"
 
-msgid "In MCR, the goal is to obtain 8 Fan, and this is usually done by going for a high-scoring \\\"main\\\" Fan (6+ Fan) and adding some minor Fan (1-2 Fan) to make up the difference."
-msgstr "MCRでは、目標は8番を獲得することで、通常は高得点の\\\"メイン\\\"番（6番以上）を狙い、いくつかのマイナーな番（1〜2番）を加えて差を埋めることによって達成されます。"
+msgid "In MCR, the goal is to obtain 8 Fan, and this is usually done by going for a high-scoring \"main\" Fan (6+ Fan) and adding some minor Fan (1-2 Fan) to make up the difference."
+msgstr "MCRでは、目標は8番を獲得することで、通常は高得点の\"メイン\"番（6番以上）を狙い、いくつかのマイナーな番（1〜2番）を加えて差を埋めることによって達成されます。"
 
 msgid "In addition, all yakuman now award 13 or 26 han, and having 18+ han awards haneyakuman (12000-24000). By the way, if you were wondering what score you get for having 1.5 han, guess you'll just have to play to find out!"
 msgstr "さらに、すべての役満は13または26翻を与え、18翻以上は跳役満（12000〜24000）を与えます。ところで、1.5翻で何点になるか気になっていたなら、プレイして確かめてみてください！"
@@ -6466,11 +6469,11 @@ msgstr "加ポンを鳴いても置換牌は与えられないことに注意し
 msgid "Note that you cannot win on an opponent's discard or Kong."
 msgstr "対戦相手の捨て牌や槓で和了することはできないことに注意してください。"
 
-msgid "Note that you were not prompted to call ton on this white dragon. Since there's no way to orient the called tile to indicate \\\"across\\\", you can only call ton from your left or your right, not across."
-msgstr "この白でトンを鳴くように促されなかったことに注意してください。鳴いた牌を\\\"対面\\\"を示すように向ける方法がないため、トンは左隣または右隣からのみ鳴くことができ、対面からは鳴けません。"
+msgid "Note that you were not prompted to call ton on this white dragon. Since there's no way to orient the called tile to indicate \"across\", you can only call ton from your left or your right, not across."
+msgstr "この白でトンを鳴くように促されなかったことに注意してください。鳴いた牌を\"対面\"を示すように向ける方法がないため、トンは左隣または右隣からのみ鳴くことができ、対面からは鳴けません。"
 
-msgid "Note that your existing 3 of circles is grayed out -- it cannot be discarded. This is because we are playing with a rule called \\\"kuikae nashi\\\", i.e. no swap-calling. You cannot call with 45 of circles and subsequently discard 3 or 6 of circles."
-msgstr "既存の3筒がグレー表示されていることに注意してください -- 捨てることはできません。これは私たちが\\\"喰い替えなし\\\"というルールでプレイしているためです。つまり、筒子の45で鳴いてから筒子の3や6を捨てることはできません。"
+msgid "Note that your existing 3 of circles is grayed out -- it cannot be discarded. This is because we are playing with a rule called \"kuikae nashi\", i.e. no swap-calling. You cannot call with 45 of circles and subsequently discard 3 or 6 of circles."
+msgstr "既存の3筒がグレー表示されていることに注意してください -- 捨てることはできません。これは私たちが\"喰い替えなし\"というルールでプレイしているためです。つまり、筒子の45で鳴いてから筒子の3や6を捨てることはできません。"
 
 msgid "Noten (AI)"
 msgstr "未聴（AI）"
@@ -6484,8 +6487,8 @@ msgstr "未聴連荘"
 msgid "Now that it's your turn, try issuing a challenge now with the leftmost button."
 msgstr "あなたの番になったので、一番左のボタンでチャレンジを発行してみてください。"
 
-msgid "Now that you are out of flowers, press No Flowers to pass the turn. (IRL you would say \\\"Pass\\\")."
-msgstr "花牌がなくなったので、「花牌なし」を押してターンをパスしてください。（現実では\\\"パス\\\"と言います。）"
+msgid "Now that you are out of flowers, press No Flowers to pass the turn. (IRL you would say \"Pass\")."
+msgstr "花牌がなくなったので、「花牌なし」を押してターンをパスしてください。（現実では\"パス\"と言います。）"
 
 msgid "Now you have four sets and a pair! Click Tsumo to declare a win!"
 msgstr "これで4面子1雀頭ができました！ツモをクリックして和了を宣言しましょう！"
@@ -6661,8 +6664,8 @@ msgstr "客風三刻"
 msgid "Other"
 msgstr "その他"
 
-msgid "Other players might make inferences about your hand based on your calls. In addition, you may no longer discard these tiles -- they are \\\"locked in\\\" for your hand."
-msgstr "他のプレイヤーはあなたの鳴きに基づいて手牌を推測するかもしれません。さらに、これらの牌はもはや捨てられません -- あなたの手牌に\\\"ロックされ\\\"ます。"
+msgid "Other players might make inferences about your hand based on your calls. In addition, you may no longer discard these tiles -- they are \"locked in\" for your hand."
+msgstr "他のプレイヤーはあなたの鳴きに基づいて手牌を推測するかもしれません。さらに、これらの牌はもはや捨てられません -- あなたの手牌に\"ロックされ\"ます。"
 
 msgid "Otherwise, the gold tile is a joker for any tile, but it cannot be used in calls."
 msgstr "そうでなければ、金の牌は任意の牌のジョーカーですが、鳴きには使用できません。"
@@ -8815,8 +8818,8 @@ msgstr "温牌"
 msgid "Washizu"
 msgstr "鷲津"
 
-msgid "We are now in \\\"tenpai\\\": our hand is waiting for the 2 or 5 of characters in order to complete our remaining set and win. We could either self draw the tile..."
-msgstr "私たちは今\\\"聴牌\\\"です：手牌は残りの面子を完成させて和了するために2萬または5萬を待っています。その牌を自分でツモるか..."
+msgid "We are now in \"tenpai\": our hand is waiting for the 2 or 5 of characters in order to complete our remaining set and win. We could either self draw the tile..."
+msgstr "私たちは今\"聴牌\"です：手牌は残りの面子を完成させて和了するために2萬または5萬を待っています。その牌を自分でツモるか..."
 
 msgid "We are very close to winning: we just need one more tile. Go ahead and discard a 4 of characters."
 msgstr "私たちは和了に非常に近いです：あと1枚の牌が必要です。4萬を捨ててください。"
@@ -9013,8 +9016,8 @@ msgstr "この方法で和了すると天の川役満が与えられます！こ
 msgid "Winning with no scoring hand patterns gives Mosquito Hand (0 Phán)."
 msgstr "得点となる手牌パターンなしで和了すると蚊手（0 Phán）になります。"
 
-msgid "With the Show Waits mod on, you can hover over any revealed tenpai hand to see all the tiles it's waiting on. (On mobile: tap the opponent's hand.)Confirm"
-msgstr "「待ちを表示」MODをオンにすると、公開された聴牌手牌にカーソルを合わせて、待っているすべての牌を見ることができます。（モバイル：対戦相手の手牌をタップ。）確認"
+msgid "With the Show Waits mod on, you can hover over any revealed tenpai hand to see all the tiles it's waiting on. (On mobile: tap the opponent's hand.)"
+msgstr "「待ちを表示」MODをオンにすると、公開された聴牌手牌にカーソルを合わせて、待っているすべての牌を見ることができます。（モバイル：対戦相手の手牌をタップ。）"
 
 msgid "Within Five Discards"
 msgstr "5捨て牌以内"
@@ -9178,8 +9181,8 @@ msgstr "4枚の飛びジョーカーを花牌として宣言しました。こ�
 msgid "You drew a flower! When you draw a flower in the middle of a game, you can either declare them (like at the start of the round) or discard them (to avoid dealing a dangerous tile)."
 msgstr "花牌を引きました！ゲーム中に花牌を引いた場合、（局の開始時のように）宣言するか、（危険な牌を出さないように）捨てるかのいずれかができます。"
 
-msgid "You drew a north wind! In sanma, north winds are akin to flower tiles in other variants -- you may declare them and draw a replacement tile. Each north wind (called \\\"pei\\\" or \\\"nukidora\\\") is worth one extra han, and is otherwise not counted as part of your hand."
-msgstr "北風を引きました！三麻では、北風は他の変種の花牌に似ています -- 宣言して置換牌を引くことができます。各北風（\\\"ペイ\\\"または\\\"抜きドラ\\\"と呼ばれます）は1翻加算され、それ以外は手牌の一部としてカウントされません。"
+msgid "You drew a north wind! In sanma, north winds are akin to flower tiles in other variants -- you may declare them and draw a replacement tile. Each north wind (called \"pei\" or \"nukidora\") is worth one extra han, and is otherwise not counted as part of your hand."
+msgstr "北風を引きました！三麻では、北風は他の変種の花牌に似ています -- 宣言して置換牌を引くことができます。各北風（\"ペイ\"または\"抜きドラ\"と呼ばれます）は1翻加算され、それ以外は手牌の一部としてカウントされません。"
 
 msgid "You drew the winning tile yourself."
 msgstr "自分で和了牌を引きました。"
@@ -9199,7 +9202,7 @@ msgstr "自分の席と番号が一致する花牌%{tile}を持つと1番、4枚
 msgid "You get 1 Fan for having the number 4 flower tile %{four}, and 1 Fan for having the the number 1 flower tile %{tile}. If you are East, this stacks with the seat flower's 1 Fan. Getting all four flowers %{tiles} instead awards 4 fan total."
 msgstr "4番の花牌%{four}を持つと1番、1番の花牌%{tile}を持つと1番。東家の場合、これは自席花の1番と重複します。代わりに4枚の花牌%{tiles}すべてを取得すると合計4番が与えられます。"
 
-msgid "You get 1 Fan for having the number 4 season tile %{four}, and 1 Fan for having the the number 1 season tile %{tile}. If you are East, this stacks with the seat season's 1 Fan. Getting all four seasons %{tiles} instead awards 4 fan total."
+msgid "You get 1 Fan for having the number 4 season tile %{four}, and 1 Fan for having the number 1 season tile %{tile}. If you are East, this stacks with the seat season's 1 Fan. Getting all four seasons %{tiles} instead awards 4 fan total."
 msgstr "4番の季節牌%{four}を持つと1番、1番の季節牌%{tile}を持つと1番。東家の場合、これは自席季節の1番と重複します。代わりに4枚の季節牌%{tiles}すべてを取得すると合計4番が与えられます。"
 
 msgid "You get 1 Fan for having the season tile whose number matches your seat %{tile}, and 1 bonus Fan for having all four %{tiles}."
