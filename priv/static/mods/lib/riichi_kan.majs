@@ -9,13 +9,11 @@ def discard_passed, prepend: true do
   end
 end
 
-apply initialize, "constants.kan_furiten_trigger", true
-
+# additional furiten check
 def discard_passed, append: true do
   as everyone do
-    if +@kan_furiten_trigger
-       and ((last_call_is("kakan") and match(["hand", "calls", "last_called_tile"], ["win"]))
-            or (last_call_is("ankan") and match(["hand", "calls"], ["kokushi_tenpai"]) and match(["hand", "calls", "last_called_tile"], ["win"]))) do
+    if (last_call_is("kakan") and match(["hand", "calls", "last_called_tile"], ["win"]))
+       or (last_call_is("ankan") and match(["hand", "calls"], ["kokushi_tenpai"]) and match(["hand", "calls", "last_called_tile"], ["win"])) do
       set_status("furiten")
     end
   end

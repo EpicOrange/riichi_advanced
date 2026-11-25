@@ -1,43 +1,23 @@
+require "furiten"
 require "tenpai_check"
 
-define_const riichi_furiten_check,
-  status_missing("furiten") and not_match(["hand", "calls", "any_faceup_discard"], ["win"])
-apply append, "buttons.ron.show_when", +@riichi_furiten_check
-apply set_append, "shown_statuses", ["furiten"]
+define_const discard_furiten_check, not_match(["hand", "calls", "any_faceup_discard"], ["win"])
+apply append, "buttons.ron.show_when", +@discard_furiten_check
+apply append, "buttons.chankan.show_when", +@discard_furiten_check
 
 on after_initialization do
   add_rule("Rules", "Furiten", "(Discard Furiten) If you are waiting for a tile to win, but one of your winning tiles is among your discards (including tiles called by other players), then you are 'in furiten' and cannot win by ron (including chankan). You can still win by tsumo.")
-  add_rule("Rules", "Furiten", "(Temporary Furiten) If you pass on a ron or chankan, you cannot win on another player's tile until your next draw or until you call and take the turn. If you have declared riichi, this restriction lasts until the end of the hand. You can still win by self-drawing your winning tile.")
+  add_rule("Rules", "Furiten", "(Temporary Furiten) If you discard your winning tile, or skip winning on someone else's discard, you cannot win off ANY discard until your next draw. You can still win by self-drawing your winning tile.")
 end
 
-def clear_temporary_furiten do
-  if status_missing("riichi") do unset_status("furiten") end
-end
-
-on after_draw, prepend: true do clear_temporary_furiten end
-on after_call, prepend: true do
-  as caller do
-    if our_turn do clear_temporary_furiten end
-  end
-end
+on after_draw, prepend: true do unset_furiten end
 
 def discard_passed, prepend: true do
-  as not_last_discarder do
-    if not_anyone_just_called and match(["hand", "calls", "last_discard"], ["win"]) do
+  # anyone who can win off this tile and didn't is now in furiten
+  # can't check tenpai status here, since that is set before turn change
+  as everyone do
+    if status("tenpai") and match(["hand", "calls", "last_discard"], ["win"]) do
       set_status("furiten")
-    end
-  end
-end
-
-define_const kan_furiten_trigger, anyone_just_called and not_seat_is("last_caller")
-
-if defined("sanma") do
-  def discard_passed, prepend: true do
-    as everyone do
-      if +@kan_furiten_trigger and last_call_is("flower") and status("pei", as: "last_caller")
-         and match(["hand", "calls", "last_called_tile"], ["win"]) do
-        set_status("furiten")
-      end
     end
   end
 end

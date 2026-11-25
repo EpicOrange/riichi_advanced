@@ -1085,7 +1085,7 @@ defmodule RiichiAdvanced.GameState do
     point2_name = Rules.get(state.rules_ref, "score_calculation")["point2_name"]
     constants = Rules.get(state.rules_ref, "constants", %{})
     min_han = Map.get(constants, "min_points", 0)
-    furiten_check = Map.get(constants, "riichi_furiten_check", true)
+    discard_furiten_check = Map.get(constants, "discard_furiten_check", true)
     # pretend you have discarded that tile
     state = if discard != nil do
       state
@@ -1099,7 +1099,7 @@ defmodule RiichiAdvanced.GameState do
     end
     cond do
       "furiten" in state.players[seat].status or
-          not Conditions.check_cnf_condition(state, furiten_check, %{seat: seat}) -> "Furiten"
+          not Conditions.check_cnf_condition(state, discard_furiten_check, %{seat: seat}) -> "Furiten"
       "atozuke" in state.players[seat].status -> "Atozuke" # hardcoded version of "Self-Draw" for riichi
       min_han > 0 and get_score.(update_winning_tile(state, state.turn, :discard, fn _ -> wait end), :discard) -> nil
       min_han > 0 and get_score.(update_winning_tile(state, seat, :draw, fn _ -> wait end), :draw) -> "Self-Draw"

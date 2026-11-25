@@ -7,7 +7,7 @@ on after_initialization do
   add_rule("$value $han", "$name", "%{value} %{han} if you win off a player adding a drawn tile to an existing %{pung} to form a %{kong}.", %{value: !value, han: !han, name: !name, pung: !pon_name, kong: !kan_name})
 end
 
-apply initialize, "constants.riichi_furiten_check", true
+apply initialize, "constants.discard_furiten_check", true
 
 define_button chankan,
   display_name: !chankan_name,
@@ -16,7 +16,7 @@ define_button chankan,
     and status("can_chankan", as: "caller")
     and status_missing("initial_flowers") # for default_flowers mod
     and match(["hand", "calls", "last_called_tile"], ["win"])
-    and +@riichi_furiten_check,
+    and +@discard_furiten_check,
   precedence_over: ["chii", "pon", "daiminkan"]
   do
     big_text(!chankan_name)
