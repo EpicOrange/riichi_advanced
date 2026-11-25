@@ -1945,6 +1945,7 @@ defmodule RiichiAdvanced.GameState.Actions do
           last_discarder = get_last_discard_action(state).seat
           tile = Utils.remove_attr(Enum.at(state.players[last_discarder].pond, -1), ["_facedown"])
           state = update_in(state.players[last_discarder].pond, fn pond -> List.replace_at(pond, -1, tile) end)
+          state = update_in(state.players[last_discarder].discards, &List.replace_at(&1, -1, tile))
           state = update_action(state, last_discarder, :discard, %{tile: tile})
           state
         "flip_own_calls_faceup"  ->

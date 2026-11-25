@@ -1,10 +1,16 @@
 require "furiten"
 require "tenpai_check"
-require "discard_furiten"
+
+define_const discard_furiten_check, not_match(["hand", "calls", "any_faceup_discard"], ["win"])
+apply append, "buttons.ron.show_when", +@discard_furiten_check
+apply append, "buttons.chankan.show_when", +@discard_furiten_check
 
 on after_initialization do
+  add_rule("Rules", "Furiten", "(Discard Furiten) If you are waiting for a tile to win, but one of your winning tiles is among your discards (including tiles called by other players), then you are 'in furiten' and cannot win by ron (including chankan). You can still win by tsumo.")
   add_rule("Rules", "Furiten", "(Temporary Furiten) If you discard your winning tile, or skip winning on someone else's discard, you cannot win off ANY discard until your next draw. You can still win by self-drawing your winning tile.")
 end
+
+on after_draw, prepend: true do unset_furiten end
 
 def discard_passed, prepend: true do
   # anyone who can win off this tile and didn't is now in furiten

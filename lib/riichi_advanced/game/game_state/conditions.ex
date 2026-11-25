@@ -87,6 +87,11 @@ defmodule RiichiAdvanced.GameState.Conditions do
           "aside_unique" -> [{hand ++ Enum.uniq(state.players[context.seat].aside), calls}]
           "all_last_discards" -> [{hand ++ Enum.flat_map(state.players, fn {_seat, player} -> Enum.take(player.pond, -1) end), calls}]
           "any_discard" -> Enum.map(state.players[context.seat].discards, fn discard -> {hand ++ [discard], calls} end)
+          "any_faceup_discard" ->
+            for discard <- state.players[context.seat].discards,
+                not Utils.has_attr?(discard, ["facedown"]) do
+              {hand ++ [discard], calls}
+            end
           "all_calls" -> [{hand, calls ++ Enum.flat_map(state.players, fn {_seat, player} -> player.calls end)}]
           "all_call_tiles" -> [{hand ++ Enum.flat_map(state.players, fn {_seat, player} -> Enum.flat_map(player.calls, &Utils.call_to_tiles/1) end), calls}]
           "revealed_tiles" -> [{hand ++ get_revealed_tiles(state), calls}]
