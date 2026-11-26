@@ -189,6 +189,7 @@ The following mods are currently available for American:
 - Different Number of Jokers/Flowers: Play using a different number of jokers and flowers. Note that this does NOT, by default, change the rules to a historical ruleset that uses that many jokers/flowers.
 - PIE: Each player starts with a set amount of points. Players' point totals can't go negative. If a player runs out of points, they need not pay.
 - No Charleston: Play without the Charleston.
+- Atomic (beta): After the Charleston, a player without flowers/jokers in hand may declare Atomic. Atomic players may win with 7 pairs. Drawing a flower/joker cancels Atomic.
 - NMJL [Year] Card: Play with the [NMJL Card](https://www.nationalmahjonggleague.org/store.aspx) from the year of your choice (between 2013 and 2026).
 - Mahjong Press [Year] Card: Play with the [Mahjong Press Card](https://themahjongpress.com/) from the year of your choice (2026 only).
 - TML [Year] Big Card (beta): Play with the The Mahjong Line's [The Big Card](https://thebigcard.com/) from the year of your choice (2026 only). (May contain bugs.)
