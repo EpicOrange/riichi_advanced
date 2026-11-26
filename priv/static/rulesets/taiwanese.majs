@@ -251,4 +251,5 @@ set initial_dead_wall_length, 16
 set starting_tiles, 16
 set max_rounds, 16
 
+define_mod_category "Rules"
 define_mod reset_honba_on_draw, name: "Draws Reset Dealer Bonus", desc: "Reset the dealer continuation bonus on exhaustive draws. (The default behavior is to increase the bonus on a draw.)"
