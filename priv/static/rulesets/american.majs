@@ -99,10 +99,10 @@ config_mod "american/am_num_jokers_flowers", name: "flowers", values: [0,2,4,6,8
 define_mod "american/am_PIE", name: "PIE", desc: "Each player starts with a set amount of points. Players' point totals can't go negative. If a player runs out of points, they need not pay."
 config_mod "american/am_PIE", name: "PIE", values: [200,400,600,800,1000,1200], default: 600
 define_mod "american/no_charleston", name: "No Charleston", desc: "Disables the initial Charleston pass."
-define_mod "american/atomic", name: "Atomic (beta)", desc: "After the Charleston, you may declare Atomic to enable winning with 7 pairs."
+define_mod "american/atomic", name: "Atomic (beta)", desc: "After the Charleston, if you have no flowers or jokers, you may declare Atomic to enable winning with 7 pairs. Drawing a flower or joker cancels Atomic."
 config_mod "american/atomic", name: "points", values: [25, 50, 75, 100, 125, 150], default: 50
 define_mod_category "Card"
-define_mod "american/am_card_nmjl", name: "NMJL Card", desc: "Play with the NMJL Card.", conflicts: ["Card"]
+define_mod "american/am_card_nmjl", name: "NMJL Card", desc: "Play with the NMJL Card of the year of your choice.", conflicts: ["Card"]
 config_mod "american/am_card_nmjl", name: "year", values: [2026, 2025, 2024, 2023, 2022, 2021, 2020, 2019, 2018, 2017, 2016, 2015, 2014, 2013], default: 2026
 # define_mod "american/WIP_am_card_network_2025", name: "Network 2025 Card (WIP)", desc: "Play with the Mah Jongg Network 2025 Card. Not fully implemented yet.", conflicts: ["Card"]
 # define_mod "american/WIP_am_card_network_jr_2025", name: "Network Jr 2025 Card (WIP)", desc: "Play with the Mah Jongg Network Jr 2025 Card. Not fully implemented yet.", conflicts: ["Card"]
