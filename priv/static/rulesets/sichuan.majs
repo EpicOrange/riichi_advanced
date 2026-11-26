@@ -651,6 +651,7 @@ set four_rows_discards, true
 set bloody_end, true
 set max_rounds, 16
 
+define_mod_category "Rules"
 define_mod sichuan_no_charleston, name: "No Charleston", desc: "Disables the initial tile pass."
 define_mod ten, name: "Ten", order: 2, desc: "Adds 10m, 10p, and 10s."
 define_mod star_suit, name: "Star Suit", order: 1, desc: "Adds a fourth suit (stars). Can combine with Ten mod."
