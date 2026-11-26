@@ -22,7 +22,7 @@ define_yaku yaku, "Consecutive Run #2", [25, "Pts"], @uniq and match(["hand", "c
 define_yaku yaku, "Consecutive Run #3", [25, "Pts"], @uniq and match(["hand", "call_tiles", "winning_tile"], ~a"FFFF XXXX0a XXXX1a DDa")
 define_yaku yaku, "Consecutive Run #4", [30, "Pts"], @uniq and match(["hand", "call_tiles", "winning_tile"], ~a"XXXX0a XX1b XX1a XX1c XXXX2a")
 define_yaku yaku, "Consecutive Run #5", [25, "Pts"], @uniq and match(["hand", "call_tiles", "winning_tile"], ~a"FF XXXX0a XXXX1b XXXX2c")
-define_yaku yaku, "Consecutive Run #6", [30, "Pts"], @uniq and match(["hand", "call_tiles", "winning_tile"], ~a"XXX0a XXX1a XXX0b XXX1b DDc")
+define_yaku yaku, "Consecutive Run #6", [30, "Pts"], @uniq and @concealed and match(["hand", "call_tiles", "winning_tile"], ~a"XXX0a XXX1a XXX0b XXX1b DDc")
 define_yaku yaku, "13579 #1", [25, "Pts"], @uniq and match(["hand", "call_tiles", "winning_tile"], ~a"11a 333a 5555a 777a 99a")
 define_yaku yaku, "13579 #2", [25, "Pts"], @uniq and match(["hand", "call_tiles", "winning_tile"], [~a"111a 3333a 333b 5555b", ~a"555a 7777a 777b 9999b"])
 define_yaku yaku, "13579 #3", [25, "Pts"], @uniq and match(["hand", "call_tiles", "winning_tile"], [~a"FFFF 1111a 33a 5555a", ~a"FFFF 5555a 77a 9999a"])
