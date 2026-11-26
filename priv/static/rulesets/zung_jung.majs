@@ -239,6 +239,7 @@ define_play_effect any do
   tag_responsible(%{tag: "responsible_for_north"}, as: "north")
 end
 
+define_mod_category "Rules"
 define_mod "zungjung/zj_flowers", name: "Bonus Tiles", desc: "Adds flower tiles to the game. Declaring flowers that match your seat is worth 4 points each, otherwise it's 2 points each. Completing a full set (1234) of either the flowers or the searcons is worth 10 points."
 config_mod "zungjung/zj_flowers", name: "flower_value", values: [1, 2], default: 2
 define_mod "zungjung/zj_five_point_minimum", name: "Five Point Minimum", desc: "Adds a requirement of having 5 points in hand in order to win."
