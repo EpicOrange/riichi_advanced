@@ -11,7 +11,7 @@ apply set_append, "win_definition", ["atomic_win"]
 on after_charleston do
   print("B")
   as everyone do
-    if match(["hand", "draw"], ~m"nojoker, (1j 1f 2f 3f 4f 1g 2g 3g 4g):-1") do
+    if status_missing("match_start") and match(["hand", "draw"], ~m"nojoker, (1j 1f 2f 3f 4f 1g 2g 3g 4g):-1") do
       set_status("can_declare_atomic")
     end
   end
